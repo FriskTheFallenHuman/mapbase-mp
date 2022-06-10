@@ -3,7 +3,9 @@
 #include "map_shared.h"
 #include "fgdlib/fgdlib.h"
 #include "manifest.h"
+#ifdef _WIN32
 #include "windows.h"
+#endif
 
 #ifdef MAPBASE
 entity_t *g_ManifestWorldSpawn = NULL;
@@ -475,6 +477,8 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 	DWORD		UserNameSize;
 
 	UserNameSize = sizeof( UserName );
+	// TODO: What does this do?
+#ifdef _WIN32
 	if ( GetUserName( UserName, &UserNameSize ) == 0 )
 	{
 #ifdef MAPBASE
@@ -483,6 +487,7 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 		strcpy( UserPrefsFileName, "default" );
 #endif
 	}
+#endif
 
 	sprintf( UserPrefsFileName, "\\%s.vmm_prefs", UserName );
 	V_StripExtension( pszFileName, FileName, sizeof( FileName ) );

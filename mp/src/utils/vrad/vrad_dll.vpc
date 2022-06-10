@@ -15,12 +15,14 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories		"$BASE,..\common,..\vmpi,..\vmpi\mysql\mysqlpp\include,..\vmpi\mysql\include"
-		$PreprocessorDefinitions			"$BASE;MPI;PROTECTED_THINGS_DISABLE;VRAD"
+		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE;VRAD"
+		$PreprocessorDefinitions			"$BASE;MPI" [$WINDOWS]
 	}
 
 	$Linker
 	{
-		$AdditionalDependencies				"$BASE ws2_32.lib"
+		$AdditionalDependencies				"$BASE ws2_32.lib" [$WINDOWS]
+		$SystemLibraries				"lzma" [$POSIX]
 	}
 }
 
@@ -39,9 +41,9 @@ $Project "Vrad_dll"
 		$File	"$SRCDIR\public\loadcmdline.cpp"
 		$File	"$SRCDIR\public\lumpfiles.cpp"
 		$File	"macro_texture.cpp"
-		$File	"..\common\mpi_stats.cpp"
-		$File	"mpivrad.cpp"
-		$File	"..\common\MySqlDatabase.cpp"
+		$File	"..\common\mpi_stats.cpp" 		[$WINDOWS]
+		$File	"mpivrad.cpp" 				[$WINDOWS]
+		$File	"..\common\MySqlDatabase.cpp" 		[$WINDOWS]
 		$File	"..\common\pacifier.cpp"
 		$File	"..\common\physdll.cpp"
 		$File	"radial.cpp"
@@ -49,7 +51,7 @@ $Project "Vrad_dll"
 		$File	"trace.cpp"
 		$File	"..\common\utilmatlib.cpp"
 		$File	"vismat.cpp"
-		$File	"..\common\vmpi_tools_shared.cpp"
+		$File	"..\common\vmpi_tools_shared.cpp"	[$WINDOWS]
 		$File	"..\common\vmpi_tools_shared.h"
 		$File	"vrad.cpp"
 		$File	"VRAD_DispColl.cpp"
@@ -72,7 +74,7 @@ $Project "Vrad_dll"
 			$File	"..\common\threads.cpp"
 			$File	"..\common\tools_minidump.cpp"
 			$File	"..\common\tools_minidump.h"
-			$File 	"..\common\filesystem_tools.cpp"
+			$File	"..\common\filesystem_tools.cpp" [$POSIX] // Uncomment me if this breaks windows
 		}
 
 		$Folder	"Public Files"
@@ -81,6 +83,7 @@ $Project "Vrad_dll"
 			$File	"$SRCDIR\public\filesystem_helpers.cpp"
 			$File	"$SRCDIR\public\ScratchPad3D.cpp"
 			$File	"$SRCDIR\public\ScratchPadUtils.cpp"
+			$File	"$SRCDIR\public\filesystem_init.cpp" [$POSIX] // Uncomment me if this breaks windows
 		}
 	}
 
@@ -219,9 +222,9 @@ $Project "Vrad_dll"
 		$Lib mathlib
 		$Lib raytrace
 		$Lib tier2
-		$Lib vmpi
+		$Lib vmpi 		[$WINDOWS]
 		$Lib vtf
-		$Lib "$LIBCOMMON/lzma"
+		$Lib "$LIBCOMMON/lzma" 	[$WINDOWS]
 	}
 
 	$File	"notes.txt"

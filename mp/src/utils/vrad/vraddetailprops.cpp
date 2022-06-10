@@ -10,11 +10,11 @@
 //=============================================================================//
 
 #include "vrad.h"
-#include "Bsplib.h"
-#include "GameBSPFile.h"
-#include "UtlBuffer.h"
+#include "bsplib.h"
+#include "gamebspfile.h"
+#include "utlbuffer.h"
 #include "utlvector.h"
-#include "CModel.h"
+#include "cmodel.h"
 #include "studio.h"
 #include "pacifier.h"
 #include "vraddetailprops.h"
@@ -227,7 +227,9 @@ static void ComputeMaxDirectLighting( DetailObjectLump_t& prop, Vector* maxcolor
 		normal4.DuplicateVector( normal );
 
 		GatherSampleLightSSE ( out, dl, -1, origin4, &normal4, 1, iThread );
-		VectorMA( maxcolor[dl->light.style], out.m_flFalloff.m128_f32[0] * out.m_flDot[0].m128_f32[0], dl->light.intensity, maxcolor[dl->light.style] );
+		//VectorMA( maxcolor[dl->light.style], out.m_flFalloff.m128_f32[0] * out.m_flDot[0].m128_f32[0], dl->light.intensity, maxcolor[dl->light.style] ); // OLD: for Windows
+		VectorMA( maxcolor[dl->light.style], FLTX4_ELEMENT(out.m_flFalloff, 0) * FLTX4_ELEMENT(out.m_flDot[0], 0), dl->light.intensity, maxcolor[dl->light.style] );
+
 	}
 }
 
@@ -961,47 +963,6 @@ void UnserializeDetailPropLighting( int lumpID, int lumpVersion, CUtlVector<Deta
 
 DetailObjectLump_t *g_pMPIDetailProps = NULL;
 
-void VMPI_ProcessDetailPropWU( int iThread, int iWorkUnit, MessageBuffer *pBuf )
-{
-	CUtlVector<DetailPropLightstylesLump_t> *pDetailPropLump = s_pDetailPropLightStyleLump;
-
-	DetailObjectLump_t& prop = g_pMPIDetailProps[iWorkUnit];
-	ComputeLighting( prop, iThread );
-
-	// Send the results back...	
-	pBuf->write( &prop.m_Lighting, sizeof( prop.m_Lighting ) );
-	pBuf->write( &prop.m_LightStyleCount, sizeof( prop.m_LightStyleCount ) );
-	pBuf->write( &prop.m_LightStyles, sizeof( prop.m_LightStyles ) );
-	
-	for ( int i=0; i < prop.m_LightStyleCount; i++ )
-	{
-		DetailPropLightstylesLump_t *l = &pDetailPropLump->Element( i + prop.m_LightStyles );
-		pBuf->write( &l->m_Lighting, sizeof( l->m_Lighting ) );
-		pBuf->write( &l->m_Style, sizeof( l->m_Style ) );
-	}
-}
-
-
-void VMPI_ReceiveDetailPropWU( int iWorkUnit, MessageBuffer *pBuf, int iWorker )
-{
-	CUtlVector<DetailPropLightstylesLump_t> *pDetailPropLump = s_pDetailPropLightStyleLump;
-
-	DetailObjectLump_t& prop = g_pMPIDetailProps[iWorkUnit];
-
-	pBuf->read( &prop.m_Lighting, sizeof( prop.m_Lighting ) );
-	pBuf->read( &prop.m_LightStyleCount, sizeof( prop.m_LightStyleCount ) );
-	pBuf->read( &prop.m_LightStyles, sizeof( prop.m_LightStyles ) );
-	
-	pDetailPropLump->EnsureCount( prop.m_LightStyles + prop.m_LightStyleCount );
-	
-	for ( int i=0; i < prop.m_LightStyleCount; i++ )
-	{
-		DetailPropLightstylesLump_t *l = &pDetailPropLump->Element( i + prop.m_LightStyles );
-		pBuf->read( &l->m_Lighting, sizeof( l->m_Lighting ) );
-		pBuf->read( &l->m_Style, sizeof( l->m_Style ) );
-	}
-}
-	
 //-----------------------------------------------------------------------------
 // Computes lighting for the detail props
 //-----------------------------------------------------------------------------

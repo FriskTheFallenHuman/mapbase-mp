@@ -12,12 +12,15 @@
 
 #pragma warning(push, 1)
 #pragma warning(disable:4701 4702 4530)
+#undef min
+#undef max
 #include <fstream>
 #pragma warning(pop)
-#include "TokenReader.h"
-#include "GDClass.h"
-#include "InputOutput.h"
-#include "UtlString.h"
+
+#include "tokenreader.h"
+#include "gdclass.h"
+#include "inputoutput.h"
+#include "utlstring.h"
 #include "utlvector.h"
 
 
@@ -25,7 +28,7 @@ class MDkeyvalue;
 class GameData;
 class KeyValues;
 
-enum TEXTUREFORMAT;
+//enum TEXTUREFORMAT;
 
 
 typedef void (*GameDataMessageFunc_t)(int level, PRINTF_FORMAT_STRING const char *fmt, ...);

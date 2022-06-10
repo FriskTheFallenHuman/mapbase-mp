@@ -15,12 +15,14 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories		"$BASE,..\common,..\vmpi,..\vmpi\mysql\include"
-		$PreprocessorDefinitions			"$BASE;MPI;PROTECTED_THINGS_DISABLE"
+		$PreprocessorDefinitions			"$BASE;PROTECTED_THINGS_DISABLE"
+		$PreprocessorDefinitions			"$BASE;MPI" [$WINDOWS]
 	}
 
 	$Linker
 	{
-		$AdditionalDependencies				"$BASE odbc32.lib odbccp32.lib ws2_32.lib"
+		$AdditionalDependencies				"$BASE odbc32.lib odbccp32.lib ws2_32.lib" [$WINDOWS]
+		$SystemLibraries				"lzma" [$POSIX]
 	}
 }
 
@@ -35,9 +37,9 @@ $Project "Vvis_dll"
 		$File	"flow.cpp"
 		$File	"$SRCDIR\public\loadcmdline.cpp"
 		$File	"$SRCDIR\public\lumpfiles.cpp"
-		$File	"..\common\mpi_stats.cpp"
-		$File	"mpivis.cpp"
-		$File	"..\common\MySqlDatabase.cpp"
+		$File	"..\common\mpi_stats.cpp"			[$WINDOWS]
+		$File	"mpivis.cpp"					[$WINDOWS]
+		$File	"..\common\MySqlDatabase.cpp" 			[$WINDOWS]
 		$File	"..\common\pacifier.cpp"
 		$File	"$SRCDIR\public\scratchpad3d.cpp"
 		$File	"..\common\scratchpad_helpers.cpp"
@@ -46,10 +48,12 @@ $Project "Vvis_dll"
 		$File	"..\common\tools_minidump.cpp"
 		$File	"..\common\tools_minidump.h"
 		$File 	"..\common\filesystem_tools.cpp"
-		$File	"..\common\vmpi_tools_shared.cpp"
+		$File	"..\common\vmpi_tools_shared.cpp"		[$WINDOWS]
 		$File	"vvis.cpp"
 		$File	"WaterDist.cpp"
 		$File	"$SRCDIR\public\zip_utils.cpp"
+		$File	"$SRCDIR\public\filesystem_init.cpp" 		[$POSIX]
+		$File	"..\common\filesystem_tools.cpp" 		[$POSIX] 
 	}
 
 	$Folder	"Header Files"
@@ -96,7 +100,7 @@ $Project "Vvis_dll"
 	{
 		$Lib mathlib
 		$Lib tier2
-		$Lib vmpi
-		$Lib "$LIBCOMMON/lzma"
+		$Lib vmpi			[$WINDOWS]
+		$Lib "$LIBCOMMON/lzma"		[$WINDOWS]
 	}
 }

@@ -16,7 +16,7 @@
 #include "phyfile.h"
 #include <float.h>
 #include "KeyValues.h"
-#include "UtlBuffer.h"
+#include "utlbuffer.h"
 #include "utlsymbol.h"
 #include "utlrbtree.h"
 #include "ivp.h"
@@ -1054,7 +1054,7 @@ static void Flood_FindConnectedWaterVolumes_r( CUtlVector<node_t *> &list, node_
 	visited.Set( pLeaf->diskId );
 	list.AddToTail( pLeaf );
 
-	baseleaf.minZ = min( pLeaf->mins.z, baseleaf.minZ );
+	baseleaf.minZ = std::min( pLeaf->mins.z, baseleaf.minZ );
 
 	for (portal_t *p = pLeaf->portals ; p ; p = p->next[!oppositeNodeIndex])
 	{

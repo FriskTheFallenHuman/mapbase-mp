@@ -164,7 +164,7 @@ void FileSystem_SetupStandardDirectories( const char *pFilename, const char *pGa
 
 	Q_MakeAbsolutePath( qdir, sizeof( qdir ), pFilename, NULL );
 	Q_StripFilename( qdir );
-	Q_strlower( qdir );
+	// Q_strlower( qdir );
 	if ( qdir[0] != 0 )
 	{
 		Q_AppendSlash( qdir, sizeof( qdir ) );

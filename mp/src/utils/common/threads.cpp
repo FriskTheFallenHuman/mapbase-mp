@@ -13,11 +13,16 @@
 
 #define	USED
 
-#include <windows.h>
 #include "cmdlib.h"
 #define NO_THREAD_NAMES
 #include "threads.h"
 #include "pacifier.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
 
 #ifdef MAPBASE
 // This was suggested in that Source 2013 pull request that fixed Vrad.
@@ -113,7 +118,8 @@ WIN32
 */
 
 int		numthreads = -1;
-CRITICAL_SECTION		crit;
+CThreadMutex mutex;
+//CRITICAL_SECTION		crit;
 static int enter;
 
 
@@ -122,7 +128,7 @@ class CCritInit
 public:
 	CCritInit()
 	{
-		InitializeCriticalSection (&crit);
+		//InitializeCriticalSection (&crit);
 	}
 } g_CritInit;
 
@@ -130,12 +136,16 @@ public:
 
 void SetLowPriority()
 {
+#ifdef _WIN32
 	SetPriorityClass( GetCurrentProcess(), IDLE_PRIORITY_CLASS );
+#endif
+	/* NOT IMPLEMENTED FOR POSIX */
 }
 
 
 void ThreadSetDefault (void)
 {
+#ifdef _WIN32
 	SYSTEM_INFO info;
 
 	if (numthreads == -1)	// not set manually
@@ -147,6 +157,9 @@ void ThreadSetDefault (void)
 	}
 
 	Msg ("%i threads\n", numthreads);
+#else
+	numthreads = 8; /* Not porting the above shit yet, sorry */
+#endif
 }
 
 
@@ -154,7 +167,7 @@ void ThreadLock (void)
 {
 	if (!threaded)
 		return;
-	EnterCriticalSection (&crit);
+	mutex.Lock();
 	if (enter)
 		Error ("Recursive ThreadLock\n");
 	enter = 1;
@@ -167,17 +180,22 @@ void ThreadUnlock (void)
 	if (!enter)
 		Error ("ThreadUnlock without lock\n");
 	enter = 0;
-	LeaveCriticalSection (&crit);
+	mutex.Unlock();
 }
 
 
 // This runs in the thread and dispatches a RunThreadsFn call.
+#ifdef _WIN32
 DWORD WINAPI InternalRunThreadsFn( LPVOID pParameter )
+#else
+void* InternalRunThreadsFn(void* pParameter)
+#endif
 {
 	CRunThreadsData *pData = (CRunThreadsData*)pParameter;
 	pData->m_Fn( pData->m_iThread, pData->m_pUserData );
 	return 0;
 }
+
 
 
 void RunThreads_Start( RunThreadsFn fn, void *pUserData, ERunThreadsPriority ePriority )
@@ -194,6 +212,7 @@ void RunThreads_Start( RunThreadsFn fn, void *pUserData, ERunThreadsPriority ePr
 		g_RunThreadsData[i].m_pUserData = pUserData;
 		g_RunThreadsData[i].m_Fn = fn;
 
+#ifdef _WIN32
 		DWORD dwDummy;
 		g_ThreadHandles[i] = CreateThread(
 		   NULL,	// LPSECURITY_ATTRIBUTES lpsa,
@@ -212,16 +231,29 @@ void RunThreads_Start( RunThreadsFn fn, void *pUserData, ERunThreadsPriority ePr
 		{
 			SetThreadPriority( g_ThreadHandles[i], THREAD_PRIORITY_IDLE );
 		}
+#else
+		g_ThreadHandles[i] = malloc(sizeof(pthread_t));
+		pthread_create((pthread_t*)g_ThreadHandles[i], nullptr, InternalRunThreadsFn, &g_RunThreadsData[i]);
+#endif
 	}
 }
 
 
 void RunThreads_End()
 {
+#ifdef _WIN32
 	WaitForMultipleObjects( numthreads, g_ThreadHandles, TRUE, INFINITE );
+#endif
 	for ( int i=0; i < numthreads; i++ )
-		CloseHandle( g_ThreadHandles[i] );
-
+	{
+#ifdef _WIN32
+		CloseHandle(g_ThreadHandles[i]);
+#else
+		pthread_join(*(pthread_t*)g_ThreadHandles[i], NULL);
+		//pthread_kill(*(pthread_t*)g_ThreadHandles[i], SIGTERM);
+		free(g_ThreadHandles[i]);
+#endif
+	}
 	threaded = false;
 }
 	

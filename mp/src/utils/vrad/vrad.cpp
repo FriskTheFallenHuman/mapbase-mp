@@ -2019,16 +2019,8 @@ bool RadWorld_Go()
 		BuildFacesVisibleToLights( true );
 	}
 
-	// build initial facelights
-	if (g_bUseMPI) 
-	{
-		// RunThreadsOnIndividual (numfaces, true, BuildFacelights);
-		RunMPIBuildFacelights();
-	}
-	else 
-	{
-		RunThreadsOnIndividual (numfaces, true, BuildFacelights);
-	}
+	RunThreadsOnIndividual (numfaces, true, BuildFacelights);
+
 
 	// Was the process interrupted?
 	if( g_pIncremental && (g_iCurFace != numfaces) )
@@ -2080,12 +2072,7 @@ bool RadWorld_Go()
 		StaticDispMgr()->EndTimer();
 
 		// blend bounced light into direct light and save
-		VMPI_SetCurrentStage( "FinalLightFace" );
-		if ( !g_bUseMPI || g_bMPIMaster )
-			RunThreadsOnIndividual (numfaces, true, FinalLightFace);
-		
-		// Distribute the lighting data to workers.
-		VMPI_DistributeLightData();
+		RunThreadsOnIndividual (numfaces, true, FinalLightFace);
 			
 		Msg("FinalLightFace Done\n"); fflush(stdout);
 	}
@@ -2133,6 +2120,7 @@ void VRAD_LoadBSP( char const *pFilename )
 		SetLowPriority();
 	}
 
+	strcpy(source, pFilename);
 	strcpy( level_name, source );
 
 	// This must come after InitFileSystem because the file system pointer might change.
@@ -2141,15 +2129,12 @@ void VRAD_LoadBSP( char const *pFilename )
 
 	// This part is just for VMPI. VMPI's file system needs the basedir in front of all filenames,
 	// so we prepend qdir here.
-	strcpy( source, ExpandPath( source ) );
+	//strcpy( source, ExpandPath( source ) );
 
-	if ( !g_bUseMPI )
-	{
-		// Setup the logfile.
-		char logFile[512];
-		_snprintf( logFile, sizeof(logFile), "%s.log", source );
-		SetSpewFunctionLogFile( logFile );
-	}
+	// Setup the logfile.
+	char logFile[512];
+	_snprintf( logFile, sizeof(logFile), "%s.log", source );
+	SetSpewFunctionLogFile( logFile );
 
 	LoadPhysicsDLL();
 
@@ -2160,8 +2145,13 @@ void VRAD_LoadBSP( char const *pFilename )
 		// Otherwise, try looking in the BIN directory from which we were run from
 		Msg( "Could not find lights.rad in %s.\nTrying VRAD BIN directory instead...\n", 
 			    global_lights );
+#ifdef _WIN32
 		GetModuleFileName( NULL, global_lights, sizeof( global_lights ) );
+#else
+		readlink("/proc/self/exe", global_lights, sizeof(global_lights));
+#endif
 		Q_ExtractFilePath( global_lights, global_lights, sizeof( global_lights ) );
+
 		strcat( global_lights, "lights.rad" );
 	}
 
@@ -2180,23 +2170,13 @@ void VRAD_LoadBSP( char const *pFilename )
 	Q_DefaultExtension(incrementfile, ".r0", sizeof(incrementfile));
 	Q_DefaultExtension(source, ".bsp", sizeof( source ));
 
-	Msg( "Loading %s\n", source );
-	VMPI_SetCurrentStage( "LoadBSPFile" );
-	LoadBSPFile (source);
+	//strcpy(source, ExpandPath(source));
+	Msg( "Loading %s\n", pFilename );
+	LoadBSPFile (pFilename);
 
-	// Add this bsp to our search path so embedded resources can be found
-	if ( g_bUseMPI && g_bMPIMaster )
-	{
-		// MPI Master, MPI workers don't need to do anything
-		g_pOriginalPassThruFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
-		g_pOriginalPassThruFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
-	}
-	else if ( !g_bUseMPI )
-	{
-		// Non-MPI
-		g_pFullFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
-		g_pFullFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
-	}
+	// Non-MPI
+	g_pFullFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
+	g_pFullFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
 
 	// now, set whether or not static prop lighting is present
 	if (g_bStaticPropLighting)
@@ -2323,7 +2303,6 @@ void VRAD_Finish()
 	}
 
 	Msg( "Writing %s\n", source );
-	VMPI_SetCurrentStage( "WriteBSPFile" );
 	WriteBSPFile(source);
 
 	if ( g_bDumpPatches )
@@ -2355,7 +2334,8 @@ void VRAD_Finish()
 // WorldCraft interface into vrad).
 void VRAD_Init()
 {
-	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f, false, false, false, false );
+	FileSystem_Init(nullptr, 0, FSInitType_t::FS_INIT_COMPATIBILITY_MODE);
+	MathLib_Init( 2.2f, 2.2f, 0.0f, 2.0f, false, true, true, false );
 	InstallAllocationFunctions();
 	InstallSpewFunction();
 }
@@ -2757,7 +2737,7 @@ int ParseCommandLine( int argc, char **argv, bool *onlydetail )
 		else if ( !Q_strncasecmp( argv[i], "-mpi", 4 ) || !Q_strncasecmp( argv[i-1], "-mpi", 4 ) )
 		{
 			if ( stricmp( argv[i], "-mpi" ) == 0 )
-				g_bUseMPI = true;
+				Error("VMPI is not supported with this build\n");
 		
 			// Any other args that start with -mpi are ok too.
 			if ( i == argc - 1 && V_stricmp( argv[i], "-mpi_ListParams" ) != 0 )
@@ -2922,8 +2902,6 @@ int RunVRAD( int argc, char **argv )
 
 	VRAD_Finish();
 
-	VMPI_SetCurrentStage( "master done" );
-
 	DeleteCmdLine( argc, argv );
 	CmdLib_Cleanup();
 	return 0;
@@ -2936,20 +2914,9 @@ int VRAD_Main(int argc, char **argv)
 
 	VRAD_Init();
 
-	// This must come first.
-	VRAD_SetupMPI( argc, argv );
+	LoadCmdLineFromFile( argc, argv, source, "vrad" ); // Don't do this if we're a VMPI worker..
+	SetupDefaultToolsMinidumpHandler();
 
-#if !defined( _DEBUG )
-	if ( g_bUseMPI && !g_bMPIMaster )
-	{
-		SetupToolsMinidumpHandler( VMPI_ExceptionFilter );
-	}
-	else
-#endif
-	{
-		LoadCmdLineFromFile( argc, argv, source, "vrad" ); // Don't do this if we're a VMPI worker..
-		SetupDefaultToolsMinidumpHandler();
-	}
 	
 	return RunVRAD( argc, argv );
 }

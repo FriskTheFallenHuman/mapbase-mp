@@ -919,7 +919,8 @@ int RunVBSP( int argc, char **argv )
 	char		path[1024];
 
 	CommandLine()->CreateCmdLine( argc, argv );
-	MathLib_Init( 2.2f, 2.2f, 0.0f, OVERBRIGHT, false, false, false, false );
+	MathLib_Init( 2.2f, 2.2f, 0.0f, OVERBRIGHT, false, true, true, false );
+	FileSystem_Init(nullptr, 0, FSInitType_t::FS_INIT_COMPATIBILITY_MODE);
 	InstallSpewFunction();
 	SpewActivate( "developer", 1 );
 	

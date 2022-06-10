@@ -8,14 +8,15 @@
 #define WCKEYVALUES_H
 #pragma once
 
-
+#pragma warning(push, 1)
+#pragma warning(disable:4701 4702 4530)
+#undef min
+#undef max
+#include <fstream>
+#pragma warning(pop)
 #include <tier0/dbg.h>
 #include <utlvector.h>
 #include <utldict.h>
-#pragma warning(push, 1)
-#pragma warning(disable:4701 4702 4530)
-#include <fstream>
-#pragma warning(pop)
 
 
 #define KEYVALUE_MAX_KEY_LENGTH			80
@@ -188,7 +189,7 @@ typedef WCKeyValuesT<WCKVBase_Vector> WCKeyValuesVector;
 template<class Base>
 inline const char *WCKeyValuesT<Base>::GetKey(int nIndex) const
 {
-	return(m_KeyValues.Element(nIndex).szKey);
+	return WCKeyValuesT<Base>::m_KeyValues.Element(nIndex).szKey;
 }
 
 
@@ -200,7 +201,7 @@ inline const char *WCKeyValuesT<Base>::GetKey(int nIndex) const
 template<class Base>
 inline MDkeyvalue &WCKeyValuesT<Base>::GetKeyValue(int nIndex)
 {
-	return(m_KeyValues.Element(nIndex));
+	return WCKeyValuesT<Base>::m_KeyValues.Element(nIndex);
 }
 
 
@@ -212,7 +213,7 @@ inline MDkeyvalue &WCKeyValuesT<Base>::GetKeyValue(int nIndex)
 template<class Base>
 inline const MDkeyvalue& WCKeyValuesT<Base>::GetKeyValue(int nIndex) const
 {
-	return(m_KeyValues.Element(nIndex));
+	return WCKeyValuesT<Base>::m_KeyValues.Element(nIndex);
 }
 
 
@@ -223,7 +224,7 @@ inline const MDkeyvalue& WCKeyValuesT<Base>::GetKeyValue(int nIndex) const
 template<class Base>
 inline const char *WCKeyValuesT<Base>::GetValue(int nIndex) const
 {
-	return(m_KeyValues.Element(nIndex).szValue);
+	return WCKeyValuesT<Base>::m_KeyValues.Element(nIndex).szValue;
 }
 
 

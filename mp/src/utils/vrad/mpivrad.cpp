@@ -9,8 +9,11 @@
 // mpivrad.cpp
 //
 
+#ifdef _WIN32
 #include <windows.h>
 #include <conio.h>
+#endif
+
 #include "vrad.h"
 #include "physdll.h"
 #include "lightmap.h"

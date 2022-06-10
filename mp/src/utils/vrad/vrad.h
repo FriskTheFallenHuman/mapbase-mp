@@ -24,9 +24,9 @@
 #include "polylib.h"
 #include "threads.h"
 #include "builddisp.h"
-#include "VRAD_DispColl.h"
-#include "UtlMemory.h"
-#include "UtlHash.h"
+#include "vrad_dispcoll.h"
+#include "utlmemory.h"
+#include "utlhash.h"
 #include "utlvector.h"
 #include "iincremental.h"
 #include "raytrace.h"
@@ -39,12 +39,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#ifdef _WIN32
 #pragma warning(disable: 4142 4028)
 #include <io.h>
 #pragma warning(default: 4142 4028)
+#include <direct.h>
+#endif
 
 #include <fcntl.h>
-#include <direct.h>
 #include <ctype.h>
 
 
@@ -610,5 +612,7 @@ extern DispTested_t s_DispTested[MAX_TOOL_THREADS+1];
 IVradStaticPropMgr* StaticPropMgr();
 
 extern float ComputeCoverageFromTexture( float b0, float b1, float b2, int32 hitID );
+
+#define FLTX4_ELEMENT(_flt, _index) (reinterpret_cast<float*>(&_flt)[_index])
 
 #endif // VRAD_H

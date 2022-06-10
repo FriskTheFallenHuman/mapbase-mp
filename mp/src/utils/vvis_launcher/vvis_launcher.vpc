@@ -31,7 +31,7 @@ $Project "Vvis_launcher"
 	{
 		$File	"vvis_launcher.cpp"
 		
-		$File	"StdAfx.cpp"
+		$File	"StdAfx.cpp" [$WINDOWS]
 		{
 			$Configuration
 			{

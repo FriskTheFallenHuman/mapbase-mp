@@ -26,6 +26,8 @@
 #include <vector>
 
 #include <assert.h>
+#include <memory.h>
+#include <limits.h>
 #ifdef _DEBUG
 #include <crtdbg.h>
 #endif

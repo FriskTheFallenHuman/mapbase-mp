@@ -8,16 +8,20 @@
 // vvis_launcher.cpp : Defines the entry point for the console application.
 //
 
-#include "stdafx.h"
+#ifdef _WIN32
+#include "StdAfx.h"
 #include <direct.h>
+#endif
+
 #include "tier1/strtools.h"
 #include "tier0/icommandline.h"
 #include "ilaunchabledll.h"
-
+#include "interface.h"
 
 
 char* GetLastErrorString()
 {
+#ifdef _WIN32
 	static char err[2048];
 	
 	LPVOID lpMsgBuf;
@@ -39,14 +43,22 @@ char* GetLastErrorString()
 	err[ sizeof( err ) - 1 ] = 0;
 
 	return err;
+#else
+	return "";
+#endif
 }
 
 
 int main(int argc, char* argv[])
 {
 	CommandLine()->CreateCmdLine( argc, argv );
+
 #ifndef MAPBASE
+#ifdef _WIN32
 	const char *pDLLName = "vvis_dll.dll";
+#else
+	const char* pDLLName = "vvis_so.so";
+#endif
 	
 	CSysModule *pModule = Sys_LoadModule( pDLLName );
 	if ( !pModule )
@@ -56,20 +68,32 @@ int main(int argc, char* argv[])
 	}
 #else
 	// Coming through!
+#ifdef _WIN32
 	const char *pDLLName = "vvis_dll.dll";
+#else
+	const char* pDLLName = "vvis_so.so";
+#endif
 
 	// With this, we just load the DLL with our filename.
 	// This allows for custom DLLs without having to bother with the launcher.
 	char filename[128];
-	Q_FileBase(argv[0], filename, sizeof(filename));
+	Q_FileBase(argv[0], filename, sizeof(filename));	
+#ifdef _WIN32
 	Q_snprintf(filename, sizeof(filename), "%s_dll.dll", filename);
+#else
+	Q_snprintf(filename, sizeof(filename), "%s_so.so", filename);
+#endif
 	pDLLName = filename;
 
 	CSysModule *pModule = Sys_LoadModule( pDLLName );
 	if ( !pModule )
 	{
 		// Try loading the default then
+#ifdef _WIN32
 		pDLLName = "vvis_dll.dll";
+#else
+		pDLLName = "vvis_so.so";
+#endif
 		pModule = Sys_LoadModule( pDLLName );
 	}
 

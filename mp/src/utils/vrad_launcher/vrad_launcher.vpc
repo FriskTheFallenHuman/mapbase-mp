@@ -32,7 +32,7 @@ $Project "Vrad_launcher"
 		
 		$File	"vrad_launcher.cpp"
 		
-		$File	"StdAfx.cpp"
+		$File	"StdAfx.cpp" [$WINDOWS]
 		{
 			$Configuration
 			{

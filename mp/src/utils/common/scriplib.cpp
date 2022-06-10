@@ -16,8 +16,8 @@
 #include "xbox\xbox_win32stubs.h"
 #endif
 #if defined(POSIX)
-#include "../../filesystem/linux_support.h"
 #include <sys/stat.h>
+#include <dirent.h>
 #endif
 /*
 =============================================================================
@@ -1213,58 +1213,26 @@ int CScriptLib::GetFileList( const char* pDirPath, const char* pPattern, CUtlVec
 
 	_findclose( h );
 #elif defined(POSIX)
-	FIND_DATA findData;
-	Q_FixSlashes( fullPath );
-	void *h = FindFirstFile( fullPath, &findData );
-	if ( (int)h == -1 )
+	/* Open the specified dir */
+	Q_FixSlashes(fullPath);
+	DIR* dirent = opendir(fullPath);
+	struct dirent* fileent;
+
+	if(!dirent) return 0;
+
+	/* Loop thru the directory */
+	while((fileent = readdir(dirent)))
 	{
-		return 0;
-	}
-
-	do
-	{
-		// dos attribute complexities i.e. _A_NORMAL is 0
-		if ( bFindDirs )
-		{
-			// skip non dirs
-			if ( !( findData.dwFileAttributes & S_IFDIR ) )
-				continue;
-		}
-		else
-		{
-			// skip dirs
-			if ( findData.dwFileAttributes & S_IFDIR )
-				continue;
-		}
-
-		if ( !stricmp( findData.cFileName, "." ) )
-			continue;
-
-		if ( !stricmp( findData.cFileName, ".." ) )
-			continue;
-
-		char fileName[MAX_PATH];
-		strcpy( fileName, sourcePath );
-		strcat( fileName, findData.cFileName );
-
-		int j = fileList.AddToTail();
-		fileList[j].fileName.Set( fileName );
 		struct stat statbuf;
-		if ( stat( fileName, &statbuf ) )
-#ifdef OSX
-			fileList[j].timeWrite = statbuf.st_mtimespec.tv_sec;
-#else
-			fileList[j].timeWrite = statbuf.st_mtime;
-#endif
-		else
-			fileList[j].timeWrite = 0;
+		if(!stat(fileent->d_name, &statbuf)) continue;
+		if(!S_ISREG(statbuf.st_mode)) continue;
+
+		fileList_t flist;
+		flist.fileName.Set(fileent->d_name);
+		flist.timeWrite = statbuf.st_mtime;
+		fileList.AddToTail(flist);
 	}
-	while ( !FindNextFile( h, &findData ) );
-
-	FindClose( h );
-
-#else
-#error
+	closedir(dirent);
 #endif
 	
 

@@ -467,14 +467,7 @@ BuildVisMatrix
 */
 void BuildVisMatrix (void)
 {
-	if ( g_bUseMPI )
-	{
-		RunMPIBuildVisLeafs();
-	}
-	else 
-	{
-		RunThreadsOn (dvis->numclusters, true, BuildVisLeafs);
-	}
+	RunThreadsOn (dvis->numclusters, true, BuildVisLeafs);
 }
 
 void FreeVisMatrix (void)

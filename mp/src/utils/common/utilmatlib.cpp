@@ -15,18 +15,221 @@
 #include <cmdlib.h>
 #include "utilmatlib.h"
 #include "tier0/dbg.h"
-#include <windows.h>
+//#include <windows.h>
 #include "filesystem.h"
 #include "materialsystem/materialsystem_config.h"
-#include "mathlib/Mathlib.h"
+#include "mathlib/mathlib.h"
+
+#ifdef _POSIX
+
+#include <appframework/ilaunchermgr.h>
+
+static CreateInterfaceFn g_fileSystemFactory;
+
+class FakeLauncherMgr : public ILauncherMgr
+{
+public:
+	virtual bool Connect( CreateInterfaceFn factory )
+	{
+		return true;
+	}
+
+	virtual void Disconnect()
+	{
+	}
+
+	virtual void *QueryInterface( const char *pInterfaceName )
+	{
+		return NULL;
+	}
+
+	virtual InitReturnVal_t Init()
+	{
+		return (InitReturnVal_t) 0;
+	}
+
+	virtual void Shutdown()
+	{
+	}
+
+	virtual bool CreateGameWindow( const char *pTitle, bool bWindowed, int width, int height )
+	{
+		return true;
+	}
+
+	virtual void IncWindowRefCount()
+	{
+	}
+
+	virtual void DecWindowRefCount()
+	{
+	}
+
+	virtual int GetEvents( CCocoaEvent *pEvents, int nMaxEventsToReturn, bool debugEvents = false )
+	{
+		return 0;
+	}
+
+#ifdef LINUX
+	virtual int PeekAndRemoveKeyboardEvents( bool *pbEsc, bool *pbReturn, bool *pbSpace, bool debugEvents = false )
+	{
+		return 0;
+	}
+#endif
+
+	virtual void SetCursorPosition( int x, int y )
+	{
+	}
+
+	virtual void SetWindowFullScreen( bool bFullScreen, int nWidth, int nHeight )
+	{
+	}
+
+	virtual bool IsWindowFullScreen()
+	{
+		return true;
+	}
+
+	virtual void MoveWindow( int x, int y )
+	{
+	}
+
+	virtual void SizeWindow( int width, int tall )
+	{
+	}
+
+	virtual void PumpWindowsMessageLoop()
+	{
+	}
+
+	virtual void DestroyGameWindow()
+	{
+
+	}
+	virtual void SetApplicationIcon( const char *pchAppIconFile )
+	{
+	}
+
+	virtual void GetMouseDelta( int &x, int &y, bool bIgnoreNextMouseDelta = false )
+	{
+	}
+
+	virtual void GetNativeDisplayInfo( int nDisplay, uint &nWidth, uint &nHeight, uint &nRefreshHz )
+	{
+	}
+
+	virtual void RenderedSize( uint &width, uint &height, bool set )
+	{
+	}
+
+	virtual void DisplayedSize( uint &width, uint &height )
+	{
+	}
+
+#if defined( DX_TO_GL_ABSTRACTION )
+	virtual PseudoGLContextPtr	GetMainContext()
+	{
+		return NULL;
+	}
+
+	virtual PseudoGLContextPtr GetGLContextForWindow( void* windowref )
+	{
+		return NULL;
+	}
+
+	virtual PseudoGLContextPtr CreateExtraContext()
+	{
+		return NULL;
+	}
+
+	virtual void DeleteContext( PseudoGLContextPtr hContext )
+	{
+	}
+
+	virtual bool MakeContextCurrent( PseudoGLContextPtr hContext )
+	{
+		return true;
+	}
+
+	virtual GLMDisplayDB *GetDisplayDB( void )
+	{
+		return NULL;
+	}
+
+	virtual void GetDesiredPixelFormatAttribsAndRendererInfo( uint **ptrOut, uint *countOut, GLMRendererInfoFields *rendInfoOut )
+	{
+	}
+
+	virtual void ShowPixels( CShowPixelsParams *params )
+	{
+	}
+#endif
+
+	virtual void GetStackCrawl( CStackCrawlParams *params )
+	{
+	}
+
+	virtual void WaitUntilUserInput( int msSleepTime )
+	{
+	}
+
+	virtual void *GetWindowRef()
+	{
+		return NULL;
+	}
+
+	virtual void SetMouseVisible( bool bState )
+	{
+	}
+
+	virtual void SetMouseCursor( SDL_Cursor *hCursor )
+	{
+	}
+
+	virtual void SetForbidMouseGrab( bool bForbidMouseGrab )
+	{
+	}
+
+	virtual void OnFrameRendered()
+	{
+	}
+
+	virtual void SetGammaRamp( const uint16 *pRed, const uint16 *pGreen, const uint16 *pBlue )
+	{
+	}
+
+	virtual double GetPrevGLSwapWindowTime()
+	{
+		return 0.0;
+	}
+
+} g_FakeLauncherMgr;
+
+void* SDLMgrFactoryRedirector( const char *pName, int *pReturnCode )
+{
+	return !strcmp("SDLMgrInterface001", pName) ?
+	       &g_FakeLauncherMgr :
+	       g_fileSystemFactory(pName, pReturnCode);
+}
+
+#endif
 
 void LoadMaterialSystemInterface( CreateInterfaceFn fileSystemFactory )
 {
 	if( g_pMaterialSystem )
 		return;
+
+#ifdef _POSIX
+	g_fileSystemFactory = fileSystemFactory;
+	fileSystemFactory = SDLMgrFactoryRedirector;
+#endif
 	
 	// materialsystem.dll should be in the path, it's in bin along with vbsp.
+#ifdef _WIN32
 	const char *pDllName = "materialsystem.dll";
+#else
+	const char* pDllName = "materialsystem.so";
+#endif
 	CSysModule *materialSystemDLLHInst;
 	materialSystemDLLHInst = g_pFullFileSystem->LoadModule( pDllName );
 	if( !materialSystemDLLHInst )
@@ -48,9 +251,15 @@ void LoadMaterialSystemInterface( CreateInterfaceFn fileSystemFactory )
 		Error( "Could not find factory interface in library MaterialSystem.dll" );
 	}
 
-	if (!g_pMaterialSystem->Init( "shaderapiempty.dll", 0, fileSystemFactory ))
+#ifdef _WIN32
+	const char* pShaderAPIEmptyName = "shaderapiempty.dll";
+#else
+	const char* pShaderAPIEmptyName = "shaderapiempty.so";
+#endif
+
+	if (!g_pMaterialSystem->Init( pShaderAPIEmptyName, nullptr, fileSystemFactory ))
 	{
-		Error( "Could not start the empty shader (shaderapiempty.dll)!" );
+		Error( "Could not start the empty shader (%s)!", pShaderAPIEmptyName );
 	}
 }
 

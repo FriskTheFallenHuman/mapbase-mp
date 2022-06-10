@@ -25,6 +25,8 @@
 #include "tier0/icommandline.h"
 #include "KeyValues.h"
 #include "filesystem_tools.h"
+#include <stdio.h>
+#include "utlvector.h"
 
 #if defined( MPI )
 
@@ -59,7 +61,7 @@ CUtlLinkedList<SpewHookFn, unsigned short> g_ExtraSpewHooks;
 bool g_bStopOnExit = false;
 void (*g_ExtraSpewHook)(const char*) = NULL;
 
-#if defined( _WIN32 ) || defined( WIN32 )
+#if defined( _WIN32 ) || defined( WIN32 ) || defined(POSIX)
 
 void CmdLib_FPrintf( FileHandle_t hFile, const char *pFormat, ... )
 {
@@ -126,7 +128,7 @@ char* CmdLib_FGets( char *pOut, int outSize, FileHandle_t hFile )
 	return pOut;
 }
 
-#if !defined( _X360 )
+#ifdef _WIN32
 #include <wincon.h>
 #endif
 
@@ -139,7 +141,7 @@ public:
 		if ( g_bStopOnExit )
 		{
 			Warning( "\nPress any key to quit.\n" );
-			getch();
+			getchar();
 		}
 	}
 } g_ExitStopper;
@@ -151,7 +153,7 @@ static unsigned short g_BadColor = 0xFFFF;
 static WORD g_BackgroundFlags = 0xFFFF;
 static void GetInitialColors( )
 {
-#if !defined( _X360 )
+#ifdef _WIN32
 	// Get the old background attributes.
 	CONSOLE_SCREEN_BUFFER_INFO oldInfo;
 	GetConsoleScreenBufferInfo( GetStdHandle( STD_OUTPUT_HANDLE ), &oldInfo );
@@ -173,7 +175,7 @@ static void GetInitialColors( )
 WORD SetConsoleTextColor( int red, int green, int blue, int intensity )
 {
 	WORD ret = g_LastColor;
-#if !defined( _X360 )
+#ifdef _WIN32
 	
 	g_LastColor = 0;
 	if( red )	g_LastColor |= FOREGROUND_RED;
@@ -186,18 +188,31 @@ WORD SetConsoleTextColor( int red, int green, int blue, int intensity )
 		g_LastColor = g_InitialColor;
 
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), g_LastColor | g_BackgroundFlags );
+#else
+	if(red) red = 255;
+	if(green) green = 255;
+	if(blue) blue = 255;
+	printf("\x1B[38;2;%u;%u;%um", red, green, blue);
 #endif
 	return ret;
 }
 
 void RestoreConsoleTextColor( WORD color )
 {
-#if !defined( _X360 )
+#ifdef _WIN32
 	SetConsoleTextAttribute( GetStdHandle( STD_OUTPUT_HANDLE ), color | g_BackgroundFlags );
 	g_LastColor = color;
+#else
+	printf("\033[39m");
 #endif
 }
 
+#ifdef _POSIX
+void OutputDebugString(const char* str)
+{
+	//printf("%s", str);
+}
+#endif
 
 #if defined( CMDLIB_NODBGLIB )
 
@@ -214,7 +229,7 @@ void Error( char const *pMsg, ... )
 
 #else
 
-CRITICAL_SECTION g_SpewCS;
+CThreadMutex g_SpewMutex;
 bool g_bSpewCSInitted = false;
 bool g_bSuppressPrintfOutput = false;
 
@@ -223,14 +238,13 @@ SpewRetval_t CmdLib_SpewOutputFunc( SpewType_t type, char const *pMsg )
 	// Hopefully two threads won't call this simultaneously right at the start!
 	if ( !g_bSpewCSInitted )
 	{
-		InitializeCriticalSection( &g_SpewCS );
 		g_bSpewCSInitted = true;
 	}
 
 	WORD old;
 	SpewRetval_t retVal;
-	
-	EnterCriticalSection( &g_SpewCS );
+
+	g_SpewMutex.Lock();
 	{
 		if (( type == SPEW_MESSAGE ) || (type == SPEW_LOG ))
 		{
@@ -255,31 +269,6 @@ SpewRetval_t CmdLib_SpewOutputFunc( SpewType_t type, char const *pMsg )
 		{
 			old = SetConsoleTextColor( 1, 0, 0, 1 );
 			retVal = SPEW_DEBUGGER;
-
-#ifdef MPI
-			// VMPI workers don't want to bring up dialogs and suchlike.
-			// They need to have a special function installed to handle
-			// the exceptions and write the minidumps.
-			// Install the function after VMPI_Init with a call:
-			// SetupToolsMinidumpHandler( VMPI_ExceptionFilter );
-			if ( g_bUseMPI && !g_bMPIMaster && !Plat_IsInDebugSession() )
-			{
-				// Generating an exception and letting the
-				// installed handler handle it
-				::RaiseException
-					(
-					0,							// dwExceptionCode
-					EXCEPTION_NONCONTINUABLE,	// dwExceptionFlags
-					0,							// nNumberOfArguments,
-					NULL						// const ULONG_PTR* lpArguments
-					);
-
-					// Never get here (non-continuable exception)
-				
-				VMPI_HandleCrash( pMsg, NULL, true );
-				exit( 0 );
-			}
-#endif
 		}
 		else if( type == SPEW_ERROR )
 		{
@@ -315,7 +304,7 @@ SpewRetval_t CmdLib_SpewOutputFunc( SpewType_t type, char const *pMsg )
 
 		RestoreConsoleTextColor( old );
 	}
-	LeaveCriticalSection( &g_SpewCS );
+	g_SpewMutex.Unlock();
 
 	if ( type == SPEW_ERROR )
 	{
@@ -364,7 +353,7 @@ void InstallAllocationFunctions()
 void SetSpewFunctionLogFile( char const *pFilename )
 {
 	Assert( (!g_pLogFile) );
-	g_pLogFile = g_pFileSystem->Open( pFilename, "a" );
+	g_pLogFile = g_pFileSystem->Open( pFilename, "w" );
 
 	Assert( g_pLogFile );
 	if (!g_pLogFile)
@@ -411,7 +400,11 @@ void CmdLib_Cleanup()
 
 void CmdLib_Exit( int exitCode )
 {
+#ifdef _WIN32
 	TerminateProcess( GetCurrentProcess(), 1 );
+#else
+	exit(exitCode);
+#endif
 }	
 
 
@@ -1004,4 +997,140 @@ void QCopyFile (char *from, char *to)
 }
 
 
+CCommandLine::CCommandLine(int argc, char** argv)
+{
+	m_argc = argc;
+	m_argv = argv;
+}
+	
+bool CCommandLine::FindInt(const char* _short, const char* _long, int& out)
+{
+	size_t longlen = 0;
+	if(_long)
+		longlen = V_strlen(_long);
+	for(int i = 0; i < m_argc; i++) {
+		const char* arg = m_argv[i];
+		/* Check for short arg */
+		if(V_strcmp(_short, arg) == 0) {
+			if(i == m_argc-1)
+				return false;
+			out = V_atoi(m_argv[i+1]);
+			return true;
+		}
+		/* Check for long argument */
+		if(_long && V_strncmp(_long, arg, longlen) == 0) {
+			/* Use B as an offset to the part after the equals */
+			int b = 0;
+			size_t sb = strlen(arg);
+			for(b = 0; arg[b] && arg[b] != '='; b++);
+			if(b == sb-1)
+				return false; // Nothing after the =
+			out = V_atoi(&arg[b]);
+			return true;
+		}
+	}
+	return false;
+}
 
+bool CCommandLine::FindFloat(const char* _short, const char* _long, float& out)
+{
+	size_t longlen = 0;
+	if(_long)
+		longlen = V_strlen(_long);
+	for(int i = 0; i < m_argc; i++) {
+		const char* arg = m_argv[i];
+		/* Check for short arg */
+		if(V_strcmp(_short, arg) == 0) {
+			if(i == m_argc-1)
+				return false;
+			out = V_atof(m_argv[i+1]);
+			return true;
+		}
+		/* Check for long argument */
+		if(_long && V_strncmp(_long, arg, longlen) == 0) {
+			/* Use B as an offset to the part after the equals */
+			int b = 0;
+			size_t sb = strlen(arg);
+			for(b = 0; arg[b] && arg[b] != '='; b++);
+			if(b == sb-1)
+				return false; // Nothing after the =
+			out = V_atof(&arg[b]);
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CCommandLine::FindString(const char* _short, const char* _long, CUtlString& out)
+{
+	size_t longlen = 0;
+	if(_long)
+		longlen = V_strlen(_long);
+	for(int i = 0; i < m_argc; i++) {
+		const char* arg = m_argv[i];
+		/* Check for short arg */
+		if(V_strcmp(_short, arg) == 0) {
+			if(i == m_argc-1)
+				return false;
+			out = (const char*)m_argv[i+1];
+			return true;
+		}
+		/* Check for long argument */
+		if(_long && V_strncmp(_long, arg, longlen) == 0) {
+			/* Use B as an offset to the part after the equals */
+			int b = 0;
+			size_t sb = strlen(arg);
+			for(b = 0; arg[b] && arg[b] != '='; b++);
+			if(b == sb-1)
+				return false; // Nothing after the =
+			out = (const char*)&arg[b];
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CCommandLine::FindList(const char* _long, CUtlVector<CUtlString>& outvec)
+{
+	size_t longlen = 0;
+	if(_long)
+		longlen = V_strlen(_long);
+	for(int i = 0; i < m_argc; i++) {
+		const char* arg = m_argv[i];
+		/* Check for long argument */
+		if(_long && V_strncmp(_long, arg, longlen) == 0) {
+			/* Use B as an offset to the part after the equals */
+			int b = 0;
+			size_t sb = strlen(arg);
+			for(b = 0; arg[b] && arg[b] != '='; b++);
+			if(b == sb-1)
+				return false; // Nothing after the =
+			/* Split string based on , and add the the output vector */
+			CSplitString split(&arg[b], ",");
+			for(auto s : split) {
+				outvec.AddToTail(s);
+			}
+			return true;
+		}
+	}
+	return false;
+}
+
+bool CCommandLine::HasParam(const char* _short, const char* _long)
+{
+	size_t longlen = 0;
+	if(_long)
+		longlen = V_strlen(_long);
+	for(int i = 0; i < m_argc; i++) {
+		const char* arg = m_argv[i];
+		/* Check for short arg */
+		if(V_strcmp(_short, arg) == 0) {
+			return true;
+		}
+		/* Check for long argument */
+		if(_long && V_strncmp(_long, arg, longlen) == 0) {
+			return true;
+		}
+	}
+	return false;
+}

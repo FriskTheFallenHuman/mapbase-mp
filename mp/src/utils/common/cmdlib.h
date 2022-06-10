@@ -174,5 +174,20 @@ typedef struct
 	int		count;
 } cblock_t;
 
+/* Simple and relatively slow command line parsing class */
+class CCommandLine
+{
+private:
+	int m_argc;
+	char** m_argv;
+public:
+	CCommandLine(int argc, char** argv);
+	
+	bool FindInt(const char* _short, const char* _long, int& out);
+	bool FindFloat(const char* _short, const char* _long, float& out);
+	bool FindString(const char* _shoart, const char* _long, CUtlString& out);
+	bool FindList(const char* _long, CUtlVector<CUtlString>& outvec);
+	bool HasParam(const char* _short, const char* _long);
+};
 
 #endif // CMDLIB_H

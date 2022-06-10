@@ -18,7 +18,7 @@
 #include "bsplib.h"
 #include "qfiles.h"
 #include "utilmatlib.h"
-#include "ChunkFile.h"
+#include "chunkfile.h"
 #ifdef MAPBASE_VSCRIPT
 #include "vscript/ivscript.h"
 #endif

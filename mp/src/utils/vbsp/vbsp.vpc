@@ -16,13 +16,14 @@ $Configuration
 	{
 		$AdditionalIncludeDirectories		"$BASE,..\common,..\vmpi"
 		$PreprocessorDefinitions			"$BASE;MACRO_MATHLIB;PROTECTED_THINGS_DISABLE"
-		
+		$PreprocessorDefinitions			"$BASE;USE_SDL" [$POSIX]
 		$PreprocessorDefinitions			"$BASE;MAPBASE_VSCRIPT"	[$MAPBASE_VSCRIPT]
 	}
 
 	$Linker
 	{
-		$AdditionalDependencies				"$BASE ws2_32.lib odbc32.lib odbccp32.lib winmm.lib"
+		$AdditionalDependencies				"$BASE ws2_32.lib odbc32.lib odbccp32.lib winmm.lib" [$WINDOWS]
+		$SystemLibraries				"lzma" [$POSIX]
 	}
 }
 
@@ -189,7 +190,10 @@ $Project "Vbsp"
 		$Lib mathlib
 		$Lib tier2
 		$Lib vtf
-		$Lib "$LIBCOMMON/lzma"
+		$Lib tier1
+		$ImpLib tier0
+		$ImpLib vstdlib
+		$Lib "$LIBCOMMON/lzma" [$WINDOWS]
 		$Lib vscript [$MAPBASE_VSCRIPT]
 	}
 

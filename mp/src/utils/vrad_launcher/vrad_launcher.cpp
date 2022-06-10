@@ -8,14 +8,23 @@
 // vrad_launcher.cpp : Defines the entry point for the console application.
 //
 
+#ifdef _WIN32
 #include "stdafx.h"
 #include <direct.h>
+#else
+#include <stdio.h>
+#include <unistd.h>
+#include <libgen.h>
+#endif
+
 #include "tier1/strtools.h"
 #include "tier0/icommandline.h"
-
+#include "appframework/AppFramework.h"
+#include "ivraddll.h"
 
 char* GetLastErrorString()
 {
+#ifdef _WIN32
 	static char err[2048];
 	
 	LPVOID lpMsgBuf;
@@ -37,6 +46,9 @@ char* GetLastErrorString()
 	err[ sizeof( err ) - 1 ] = 0;
 
 	return err;
+#else
+	return 0;
+#endif
 }
 
 
@@ -60,6 +72,15 @@ int main(int argc, char* argv[])
 	char dllName[512];
 
 	CommandLine()->CreateCmdLine( argc, argv );
+	
+	/* JL: If we're on Linux, find our absolute directory path and use it to locate vrad.so */
+#ifdef LINUX
+	char dir[MAX_PATH];
+	V_strcpy(dir, argv[0]);
+	char* d = dirname(dir);
+	char fullpath[PATH_MAX];
+	realpath(d, fullpath);
+#endif 
 
 	// check whether they used the -both switch. If this is specified, vrad will be run
 	// twice, once with -hdr and once without
@@ -119,7 +140,11 @@ int main(int argc, char* argv[])
 		// If it didn't load the module above, then use the 
 		if ( !pModule )
 		{
+#ifdef _WIN32
 			strcpy( dllName, "vrad_dll.dll" );
+#else
+			V_snprintf(dllName, sizeof(dllName), "%s/%s", fullpath, "vrad.so");
+#endif
 			pModule = Sys_LoadModule( dllName );
 		}
 		
