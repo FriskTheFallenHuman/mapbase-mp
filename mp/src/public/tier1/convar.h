@@ -21,6 +21,9 @@
 #include "tier1/utlvector.h"
 #include "tier1/utlstring.h"
 #include "icvar.h"
+#ifdef MAPBASE
+#include "Color.h"
+#endif
 
 #ifdef _WIN32
 #define FORCEINLINE_CVAR FORCEINLINE
@@ -300,6 +303,10 @@ private:
 		ICommandCallback *m_pCommandCallback; 
 	};
 
+#ifdef MAPBASE_VSCRIPT
+	// Allow late modification of the completion callback.
+public:
+#endif
 	union
 	{
 		FnCommandCompletionCallback	m_fnCompletionCallback;
@@ -307,6 +314,9 @@ private:
 	};
 
 	bool m_bHasCompletionCallback : 1;
+#ifdef MAPBASE_VSCRIPT
+private:
+#endif
 	bool m_bUsingNewCommandCallback : 1;
 	bool m_bUsingCommandCallbackInterface : 1;
 };
@@ -350,6 +360,9 @@ public:
 	// Retrieve value
 	FORCEINLINE_CVAR float			GetFloat( void ) const;
 	FORCEINLINE_CVAR int			GetInt( void ) const;
+#ifdef MAPBASE
+	FORCEINLINE_CVAR Color			GetColor( void ) const;
+#endif
 	FORCEINLINE_CVAR bool			GetBool() const {  return !!GetInt(); }
 	FORCEINLINE_CVAR char const	   *GetString( void ) const;
 
@@ -435,6 +448,17 @@ FORCEINLINE_CVAR int ConVar::GetInt( void ) const
 	return m_pParent->m_nValue;
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: Return ConVar value as a color
+// Output : Color
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR Color ConVar::GetColor( void ) const 
+{
+	unsigned char *pColorElement = ((unsigned char *)&m_pParent->m_nValue);
+	return Color( pColorElement[0], pColorElement[1], pColorElement[2], pColorElement[3] );
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Return ConVar value as a string, return "" for bogus string pointer, etc.
@@ -467,6 +491,9 @@ public:
 	// Get/Set value
 	float GetFloat( void ) const;
 	int GetInt( void ) const;
+#ifdef MAPBASE
+	Color GetColor( void ) const;
+#endif
 	bool GetBool() const { return !!GetInt(); }
 	const char *GetString( void ) const;
 
@@ -520,6 +547,18 @@ FORCEINLINE_CVAR int ConVarRef::GetInt( void ) const
 {
 	return m_pConVarState->m_nValue;
 }
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: Return ConVar value as a color
+// Output : Color
+//-----------------------------------------------------------------------------
+FORCEINLINE_CVAR Color ConVarRef::GetColor( void ) const 
+{
+	unsigned char *pColorElement = ((unsigned char *)&m_pConVarState->m_nValue);
+	return Color( pColorElement[0], pColorElement[1], pColorElement[2], pColorElement[3] );
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Return ConVar value as a string, return "" for bogus string pointer, etc.
@@ -631,6 +670,20 @@ private:
    static void name( const CCommand &args ); \
    static ConCommand name##_command( #name, name, description ); \
    static void name( const CCommand &args )
+
+#ifdef MAPBASE
+#ifdef CLIENT_DLL
+	#define CON_COMMAND_SHARED( name, description ) \
+		static void name( const CCommand &args ); \
+		static ConCommand name##_command_client( #name "_client", name, description ); \
+		static void name( const CCommand &args )
+#else
+	#define CON_COMMAND_SHARED( name, description ) \
+		static void name( const CCommand &args ); \
+		static ConCommand name##_command( #name, name, description ); \
+		static void name( const CCommand &args )
+#endif
+#endif
 
 #define CON_COMMAND_F( name, description, flags ) \
    static void name( const CCommand &args ); \

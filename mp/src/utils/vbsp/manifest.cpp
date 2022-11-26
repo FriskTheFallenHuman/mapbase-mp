@@ -5,13 +5,35 @@
 #include "manifest.h"
 #include "windows.h"
 
+#ifdef MAPBASE
+entity_t *g_ManifestWorldSpawn = NULL;
+
+extern char g_MainMapPath[ MAX_PATH ];
+
+//-----------------------------------------------------------------------------
+// Purpose: default constructor
+//-----------------------------------------------------------------------------
+CManifestMapPrefs::CManifestMapPrefs( void )
+{
+	m_nInternalId = 0;
+	m_bIsVisible = true;
+	//m_bIsPrimary = false;
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: default constructor
 //-----------------------------------------------------------------------------
 CManifestMap::CManifestMap( void )
 {
+#ifdef MAPBASE
+	m_nInternalId = 0;
+#endif
 	m_RelativeMapFileName[ 0 ] = 0;
 	m_bTopLevelMap = false;
+#ifdef MAPBASE
+	m_bIsVisible = true;
+#endif
 }
 
 
@@ -25,7 +47,6 @@ CManifest::CManifest( void )
 	m_CordoningMapEnt = NULL;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: this function will parse through the known keys for the manifest map entry
 // Input  : szKey - the key name
@@ -35,7 +56,15 @@ CManifest::CManifest( void )
 //-----------------------------------------------------------------------------
 ChunkFileResult_t CManifest::LoadManifestMapKeyCallback( const char *szKey, const char *szValue, CManifestMap *pManifestMap )
 {
+#ifdef MAPBASE
+	if ( !stricmp( szKey, "InternalID" ) )
+	{
+		pManifestMap->m_nInternalId = atoi( szValue );
+	}
+	else if ( !stricmp( szKey, "Name" ) )
+#else
 	if ( !stricmp( szKey, "Name" ) )
+#endif
 	{
 		//		pManifestMap->m_FriendlyName = szValue;
 	}
@@ -77,6 +106,84 @@ ChunkFileResult_t CManifest::LoadManifestVMFCallback( CChunkFile *pFile, CManife
 	return( eResult );
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Parses the preferences chunk that pertains to specific submaps in the map:
+//
+//		Maps
+//		{
+//			VMF
+//			{
+//				"InternalID" "1"
+//				"IsPrimary" "1"
+//			}
+//			VMF
+//			{
+//				"InternalID" "2"
+//			}
+//			VMF
+//			{
+//				"InternalID" "3"
+//				"IsVisible" "0"
+//			}
+//		}
+//
+//-----------------------------------------------------------------------------
+
+ChunkFileResult_t CManifest::LoadPrefsVmfKeyCallback( const char *szKey, const char *szValue, CManifestMapPrefs *pManifestMapPrefs )
+{
+	if ( !stricmp( szKey, "InternalID" ) )
+	{
+		pManifestMapPrefs->m_nInternalId = atoi( szValue );
+	}
+	else if ( !stricmp( szKey, "IsVisible" ) )
+	{
+		pManifestMapPrefs->m_bIsVisible = ( atoi( szValue ) == 1 );
+	}
+	//else if ( !stricmp( szKey, "IsPrimary" ) )
+	//{
+	//	pManifestMapPrefs->m_bIsPrimary = ( atoi( szValue ) == 1 );
+	//}
+
+	return ChunkFile_Ok;
+}
+
+//-----------------------------------------------------------------------------
+// Parses preferences and applies them to their corresponding submaps
+//-----------------------------------------------------------------------------
+ChunkFileResult_t CManifest::LoadPrefsVmfCallback( CChunkFile *pFile, CManifest *pManifest )
+{
+	CManifestMapPrefs prefs;
+	ChunkFileResult_t eResult = pFile->ReadChunk( (KeyHandler_t)LoadPrefsVmfKeyCallback, &prefs );
+
+	if (eResult == ChunkFile_Ok && prefs.m_nInternalId != 0)
+	{
+		for( int i = 0; i < pManifest->m_Maps.Count(); i++ )
+		{
+			if ( pManifest->m_Maps[ i ]->m_nInternalId == prefs.m_nInternalId )
+			{
+				pManifest->m_Maps[ i ]->m_bIsVisible = prefs.m_bIsVisible;
+				break;
+			}
+		}
+	}
+
+	return(eResult);
+}
+
+ChunkFileResult_t CManifest::LoadPrefsMapsCallback( CChunkFile *pFile, CManifest *pManifest )
+{
+	CChunkHandlerMap Handlers;
+	Handlers.AddHandler( "VMF", ( ChunkHandler_t )CManifest::LoadPrefsVmfCallback, pManifest );
+	pFile->PushHandlers(&Handlers);
+
+	ChunkFileResult_t eResult = pFile->ReadChunk();
+
+	pFile->PopHandlers();
+
+	return( eResult );
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: this function will load the VMF chunk
@@ -298,12 +405,21 @@ bool CManifest::LoadSubMaps( CMapFile *pMapFile, const char *pszFileName )
 	memset( InstanceEntity, 0, sizeof( *InstanceEntity ) );
 
 	InstanceEntity->origin.Init( 0.0f, 0.0f, 0.0f );
+#ifdef MAPBASE
+	g_ManifestWorldSpawn = InstanceEntity;
+#else
 	pEPair = CreateEPair( "classname", "worldspawn" );
 	pEPair->next = InstanceEntity->epairs;
 	InstanceEntity->epairs = pEPair;
+#endif
 
 	for( int i = 0; i < m_Maps.Count(); i++ )
 	{
+#ifdef MAPBASE
+		if ( g_bNoHiddenManifestMaps && !m_Maps[ i ]->m_bIsVisible )
+			continue;
+#endif
+
 		//		if ( m_Maps[ i ]->m_bTopLevelMap == false )
 		{
 			char		FileName[ MAX_PATH ];
@@ -361,7 +477,11 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 	UserNameSize = sizeof( UserName );
 	if ( GetUserName( UserName, &UserNameSize ) == 0 )
 	{
+#ifdef MAPBASE
+		strcpy( UserName, "default" );
+#else
 		strcpy( UserPrefsFileName, "default" );
+#endif
 	}
 
 	sprintf( UserPrefsFileName, "\\%s.vmm_prefs", UserName );
@@ -384,6 +504,11 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 		//
 		CChunkHandlerMap Handlers;
 		Handlers.AddHandler( "cordoning", ( ChunkHandler_t )CManifest::LoadManifestCordoningPrefsCallback, this );
+
+#ifdef MAPBASE
+		if (g_bNoHiddenManifestMaps)
+			Handlers.AddHandler( "Maps", ( ChunkHandler_t )CManifest::LoadPrefsMapsCallback, this );
+#endif
 
 		//		Handlers.SetErrorHandler( ( ChunkErrorHandler_t )CMapDoc::HandleLoadError, this);
 
@@ -456,11 +581,20 @@ bool CManifest::LoadVMFManifest( const char *pszFileName )
 		if ( g_MainMap == NULL )
 		{
 			g_MainMap = g_LoadingMap;
+#ifdef MAPBASE
+			V_ExtractFilePath( pszFileName, g_MainMapPath, sizeof( g_MainMapPath ) );
+#endif
 		}
 
+#ifndef MAPBASE
 		LoadSubMaps( g_LoadingMap, pszFileName );
+#endif
 
 		LoadVMFManifestUserPrefs( pszFileName );
+
+#ifdef MAPBASE
+		LoadSubMaps( g_LoadingMap, pszFileName );
+#endif
 	}
 
 	return ( eResult == ChunkFile_Ok );

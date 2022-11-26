@@ -59,6 +59,9 @@ void InitMaterialSystem( const char *materialBaseDirPath, CreateInterfaceFn file
 	LoadMaterialSystemInterface( fileSystemFactory );
 	MaterialSystem_Config_t config;
 	g_pMaterialSystem->OverrideConfig( config, false );
+#ifdef MAPBASE
+	g_pMaterialSystem->ModInit();
+#endif
 }
 
 void ShutdownMaterialSystem( )

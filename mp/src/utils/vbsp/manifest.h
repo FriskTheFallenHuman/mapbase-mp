@@ -32,9 +32,26 @@ class CManifestMap
 {
 public:
 	CManifestMap( void );
+#ifdef MAPBASE
+	int         m_nInternalId;
+#endif
 	char		m_RelativeMapFileName[ MAX_PATH ];
 	bool		m_bTopLevelMap;
+#ifdef MAPBASE
+	bool		m_bIsVisible;
+#endif
 };
+
+#ifdef MAPBASE
+class CManifestMapPrefs
+{
+public:
+	CManifestMapPrefs( void );
+	int         m_nInternalId;
+	bool		m_bIsVisible;
+	//int         m_bIsPrimary;
+};
+#endif
 
 class CManifest
 {
@@ -51,6 +68,11 @@ public:
 	static ChunkFileResult_t LoadCordonsKeyCallback( const char *pszKey, const char *pszValue, CManifest *pManifest );
 	static ChunkFileResult_t LoadCordonsCallback( CChunkFile *pFile, CManifest *pManifest );
 	static ChunkFileResult_t LoadManifestCordoningPrefsCallback( CChunkFile *pFile, CManifest *pManifest );
+#ifdef MAPBASE
+	static ChunkFileResult_t LoadPrefsVmfKeyCallback( const char *szKey, const char *szValue, CManifestMapPrefs *pManifestMapPrefs );
+	static ChunkFileResult_t LoadPrefsVmfCallback( CChunkFile *pFile, CManifest *pManifest );
+	static ChunkFileResult_t LoadPrefsMapsCallback( CChunkFile *pFile, CManifest *pManifest );
+#endif
 
 	bool			LoadSubMaps( CMapFile *pMapFile, const char *pszFileName );
 	epair_t			*CreateEPair( char *pKey, char *pValue );
