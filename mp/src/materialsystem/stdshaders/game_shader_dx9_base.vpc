@@ -8,6 +8,9 @@ $Macro OUTBINDIR	"$SRCDIR\..\game\$GAMENAME\bin"
 
 $Include "$SRCDIR\vpc_scripts\source_dll_base.vpc"
 
+// Mapbase shaders
+$Include "$SRCDIR\materialsystem\stdshaders\game_shader_dx9_mapbase.vpc" [$MAPBASE]
+
 $Configuration	"Debug"
 {
 	$General
