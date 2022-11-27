@@ -244,13 +244,35 @@ enum AISpeechTargetSearchFlags_t
 	AIST_IGNORE_RELATIONSHIP	= (1<<2),
 	AIST_ANY_QUALIFIED			= (1<<3),
 	AIST_FACING_TARGET			= (1<<4),
+#ifdef MAPBASE
+	// I needed this for something
+	AIST_NOT_GAGGED				= (1<<5),
+#endif
 };
 
 struct AISpeechSelection_t
 {
+#ifdef NEW_RESPONSE_SYSTEM
 	std::string		concept;
 	AI_Response		Response;
 	EHANDLE			hSpeechTarget;
+#else
+	AISpeechSelection_t()
+	 :	pResponse(NULL)
+	{
+	}
+	
+	void Set( AIConcept_t newConcept, AI_Response *pNewResponse, CBaseEntity *pTarget = NULL )
+	{
+		pResponse = pNewResponse;
+		concept = newConcept;
+		hSpeechTarget = pTarget;
+	}
+	
+	std::string 		concept;
+	AI_Response *		pResponse;
+	EHANDLE			hSpeechTarget;				
+#endif
 };
 
 //-------------------------------------
@@ -284,6 +306,10 @@ public:
 	void		ClearTransientConditions();
 	void		Touch(	CBaseEntity *pOther );
 
+#ifdef MAPBASE
+	virtual bool		CanFlinch( void );
+#endif
+
 	//---------------------------------
 	// Combat
 	//---------------------------------
@@ -313,6 +339,12 @@ public:
 	
 	CBaseEntity *GetSpeechTarget()								{ return m_hTalkTarget.Get(); }
 	void		SetSpeechTarget( CBaseEntity *pSpeechTarget ) 	{ m_hTalkTarget = pSpeechTarget; }
+	
+#ifdef MAPBASE
+	// Needed for additional speech target responses
+	CBaseEntity *GetPotentialSpeechTarget()								{ return m_hPotentialSpeechTarget.Get(); }
+	void		SetPotentialSpeechTarget( CBaseEntity *pSpeechTarget ) 	{ m_hPotentialSpeechTarget = pSpeechTarget; }
+#endif
 	
 	void		SetSpeechFilter( CAI_SpeechFilter *pFilter )	{ m_hSpeechFilter = pFilter; }
 	CAI_SpeechFilter *GetSpeechFilter( void )					{ return m_hSpeechFilter; }
@@ -361,6 +393,9 @@ public:
 	bool		ShouldSpeakRandom( AIConcept_t concept, int iChance );
 	bool		IsAllowedToSpeak( AIConcept_t concept, bool bRespondingToPlayer = false );
 	virtual bool SpeakIfAllowed( AIConcept_t concept, const char *modifiers = NULL, bool bRespondingToPlayer = false, char *pszOutResponseChosen = NULL, size_t bufsize = 0 );
+#ifdef MAPBASE
+	virtual bool SpeakIfAllowed( AIConcept_t concept, AI_CriteriaSet& modifiers, bool bRespondingToPlayer = false, char *pszOutResponseChosen = NULL, size_t bufsize = 0 );
+#endif
 	void		ModifyOrAppendCriteria( AI_CriteriaSet& set );
 
 	//---------------------------------
@@ -386,6 +421,10 @@ public:
 	virtual const char		*GetDeathMessageText( void ) { return "GAMEOVER_ALLY"; }
 	void			InputMakeGameEndAlly( inputdata_t &inputdata );
 	void			InputMakeRegularAlly( inputdata_t &inputdata );
+#ifdef MAPBASE
+	bool			AskQuestionNow( CBaseEntity *pSpeechTarget = NULL, int iQARandomNumber = -1, const char *concept = TLK_QUESTION );
+	void			InputAskQuestion( inputdata_t &inputdata );
+#endif
 	void			InputAnswerQuestion( inputdata_t &inputdata );
 	void			InputAnswerQuestionHello( inputdata_t &inputdata );
 	void			InputEnableSpeakWhileScripting( inputdata_t &inputdata );
