@@ -1,0 +1,50 @@
+..\..\devtools\bin\d3dx9_33.dll 
+..\..\dx10sdk\utilities\dx9_30\dx_proxy.dll 
+C:\Program Files (x86)\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin\shadercompile.exe 
+C:\Program Files (x86)\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin\shadercompile_dll.dll 
+C:\Program Files (x86)\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin\tier0.dll 
+C:\Program Files (x86)\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin\vstdlib.dll 
+SDK_cloak_blended_pass_ps2x.fxc
+SDK_cloak_blended_pass_vs20.fxc
+SDK_decalmodulate_ps2x.fxc
+SDK_decalmodulate_vs20.fxc
+SDK_depthwrite_ps2x.fxc
+SDK_depthwrite_vs20.fxc
+SDK_emissive_scroll_blended_pass_ps2x.fxc
+SDK_emissive_scroll_blended_pass_vs20.fxc
+SDK_eye_refract_ps2x.fxc
+SDK_eye_refract_vs20.fxc
+SDK_eyes_flashlight_ps2x.fxc
+SDK_eyes_flashlight_vs20.fxc
+SDK_eyes_ps2x.fxc
+SDK_eyes_vs20.fxc
+SDK_flashlight_ps2x.fxc
+SDK_lightmappedgeneric_flashlight_ps2x.fxc
+SDK_lightmappedgeneric_flashlight_vs20.fxc
+SDK_lightmappedgeneric_ps20b.fxc
+SDK_lightmappedgeneric_vs20.fxc
+SDK_skin_ps20b.fxc
+SDK_skin_vs20.fxc
+SDK_teeth_bump_ps2x.fxc
+SDK_teeth_bump_vs20.fxc
+SDK_teeth_flashlight_ps2x.fxc
+SDK_teeth_flashlight_vs20.fxc
+SDK_teeth_ps2x.fxc
+SDK_teeth_vs20.fxc
+SDK_vertexlit_and_unlit_generic_bump_ps20b.fxc
+SDK_vertexlit_and_unlit_generic_bump_vs20.fxc
+SDK_vertexlit_and_unlit_generic_ps20b.fxc
+SDK_vertexlit_and_unlit_generic_vs20.fxc
+common_flashlight_fxc.h
+common_fxc.h
+common_hlsl_cpp_consts.h
+common_lightmappedgeneric_fxc.h
+common_pragmas.h
+common_ps_fxc.h
+common_vertexlitgeneric_dx9.h
+common_vs_fxc.h
+eyes_flashlight_inc.fxc
+lightmappedgeneric_ps2_3_x.h
+shader_constant_register_map.h
+tree_sway.h
+vortwarp_vs20_helper.h
