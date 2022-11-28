@@ -1,8 +1,8 @@
 //=========================================================================================================================
 
-               ????Mapbase Multiplayer v7.1 - Source 2013
-    ????????https://github.com/mapbase-source/source-sdk-2013
-        ????????????https://www.moddb.com/mods/mapbase
+                                       Mapbase Multiplayer v7.1 - Source 2013
+                                https://github.com/FriskTheFallenHuman/mapbase-mp
+                                        https://www.moddb.com/mods/mapbase
 
 //=========================================================================================================================
 
@@ -223,7 +223,7 @@ THIS DOCUMENT DESCRIBES A CONTRACT BETWEEN YOU AND VALVE
 CORPORATION ("Valve").  PLEASE READ IT BEFORE DOWNLOADING OR USING 
 THE SOURCE ENGINE SDK ("SDK"). BY DOWNLOADING AND/OR USING THE 
 SOURCE ENGINE SDK YOU ACCEPT THIS LICENSE. IF YOU DO NOT AGREE TO 
-THE TERMS OF THIS LICENSE PLEASE DON’T DOWNLOAD OR USE THE SDK.  
+THE TERMS OF THIS LICENSE PLEASE DONÂ’T DOWNLOAD OR USE THE SDK.  
 
   You may, free of charge, download and use the SDK to develop a modified Valve game 
 running on the Source engine.  You may distribute your modified Valve game in source and 
