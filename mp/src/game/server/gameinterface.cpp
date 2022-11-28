@@ -136,6 +136,10 @@ extern ConVar tf_mm_servermode;
 #include "replay/ireplaysystem.h"
 #endif
 
+#ifdef MAPBASE
+#include "mapbase/mapbase_mountcontent.h"
+#endif
+
 extern IToolFrameworkServer *g_pToolFrameworkServer;
 extern IParticleSystemQuery *g_pParticleSystemQuery;
 
@@ -641,6 +645,11 @@ bool CServerGameDLL::DLLInit( CreateInterfaceFn appSystemFactory,
 			scriptmanager = (IScriptManager*)Sys_GetFactoryThis()(VSCRIPT_INTERFACE_VERSION, NULL);
 		}
 	}
+
+#ifdef MAPBASE
+	// MapBase uses a modified Momentum Mod Content System
+	MapBaseContent::MountGameFiles();
+#endif
 
 	// If not running dedicated, grab the engine vgui interface
 	if ( !engine->IsDedicatedServer() )
@@ -2034,7 +2043,7 @@ void CServerGameDLL::Status( void (*print) (const char *fmt, ...) )
 
 //-----------------------------------------------------------------------------
 void CServerGameDLL::PrepareLevelResources( /* in/out */ char *pszMapName, size_t nMapNameSize,
-                                            /* in/out */ char *pszMapFile, size_t nMapFileSize )
+											/* in/out */ char *pszMapFile, size_t nMapFileSize )
 {
 #ifdef TF_DLL
 	TFMapsWorkshop()->PrepareLevelResources( pszMapName, nMapNameSize, pszMapFile, nMapFileSize );
@@ -2044,8 +2053,8 @@ void CServerGameDLL::PrepareLevelResources( /* in/out */ char *pszMapName, size_
 //-----------------------------------------------------------------------------
 IServerGameDLL::ePrepareLevelResourcesResult
 CServerGameDLL::AsyncPrepareLevelResources( /* in/out */ char *pszMapName, size_t nMapNameSize,
-                                            /* in/out */ char *pszMapFile, size_t nMapFileSize,
-                                            float *flProgress /* = NULL */ )
+											/* in/out */ char *pszMapFile, size_t nMapFileSize,
+											float *flProgress /* = NULL */ )
 {
 #ifdef TF_DLL
 	return TFMapsWorkshop()->AsyncPrepareLevelResources( pszMapName, nMapNameSize, pszMapFile, nMapFileSize, flProgress );
@@ -2630,7 +2639,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 
 	// m_pTransmitAlways must be set if HLTV client
 	Assert( bIsHLTV == ( pInfo->m_pTransmitAlways != NULL) ||
-		    bIsReplay == ( pInfo->m_pTransmitAlways != NULL) );
+			bIsReplay == ( pInfo->m_pTransmitAlways != NULL) );
 #endif
 
 	for ( int i=0; i < nEdicts; i++ )
@@ -2742,7 +2751,7 @@ void CServerGameEnts::CheckTransmit( CCheckTransmitInfo *pInfo, const unsigned s
 
 		// BUG BUG:  I think it might be better to build up a list of edict indices which "depend" on other answers and then
 		// resolve them in a second pass.  Not sure what happens if an entity has two parents who both request PVS check?
-        while ( check )
+		while ( check )
 		{
 			int checkIndex = check->entindex();
 

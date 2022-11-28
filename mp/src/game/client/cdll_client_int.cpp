@@ -152,6 +152,10 @@
 #include "vscript_client.h"
 #endif
 
+#ifdef MAPBASE
+#include "mapbase/mapbase_mountcontent.h"
+#endif
+
 extern vgui::IInputInternal *g_InputInternal;
 
 //=============================================================================
@@ -271,7 +275,7 @@ void ProcessCacheUsedMaterials()
 	g_bRequestCacheUsedMaterials = false;
 	if ( materials )
 	{
-        materials->CacheUsedMaterials();
+		materials->CacheUsedMaterials();
 	}
 }
 
@@ -402,48 +406,48 @@ public:
 		}
 	}
 
-    //=============================================================================
-    // HPE_BEGIN
-    // [dwenger] Necessary for stats display
-    //=============================================================================
+	//=============================================================================
+	// HPE_BEGIN
+	// [dwenger] Necessary for stats display
+	//=============================================================================
 
-    void CreateAchievementsPanel( vgui::Panel* pParent )
-    {
-        if (g_pAchievementsAndStatsInterface)
-        {
-            g_pAchievementsAndStatsInterface->CreatePanel( pParent );
-        }
-    }
+	void CreateAchievementsPanel( vgui::Panel* pParent )
+	{
+		if (g_pAchievementsAndStatsInterface)
+		{
+			g_pAchievementsAndStatsInterface->CreatePanel( pParent );
+		}
+	}
 
-    void DisplayAchievementPanel()
-    {
-        if (g_pAchievementsAndStatsInterface)
-        {
-            g_pAchievementsAndStatsInterface->DisplayPanel();
-        }
-    }
+	void DisplayAchievementPanel()
+	{
+		if (g_pAchievementsAndStatsInterface)
+		{
+			g_pAchievementsAndStatsInterface->DisplayPanel();
+		}
+	}
 
-    void ShutdownAchievementPanel()
-    {
-        if (g_pAchievementsAndStatsInterface)
-        {
-            g_pAchievementsAndStatsInterface->ReleasePanel();
-        }
-    }
+	void ShutdownAchievementPanel()
+	{
+		if (g_pAchievementsAndStatsInterface)
+		{
+			g_pAchievementsAndStatsInterface->ReleasePanel();
+		}
+	}
 
 	int GetAchievementsPanelMinWidth( void ) const
 	{
-        if ( g_pAchievementsAndStatsInterface )
-        {
-            return g_pAchievementsAndStatsInterface->GetAchievementsPanelMinWidth();
-        }
+		if ( g_pAchievementsAndStatsInterface )
+		{
+			return g_pAchievementsAndStatsInterface->GetAchievementsPanelMinWidth();
+		}
 
 		return 0;
 	}
 
-    //=============================================================================
-    // HPE_END
-    //=============================================================================
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 
 	const char *GetHolidayString()
 	{
@@ -981,6 +985,11 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		}
 	}
 
+#ifdef MAPBASE
+	// MapBase uses a modified Momentum Mod Content System
+	MapBaseContent::MountGameFiles();
+#endif
+
 #ifdef WORKSHOP_IMPORT_ENABLED
 	if ( !ConnectDataModel( appSystemFactory ) )
 		return false;
@@ -1212,10 +1221,10 @@ void CHLClient::PostInit()
 //-----------------------------------------------------------------------------
 void CHLClient::Shutdown( void )
 {
-    if (g_pAchievementsAndStatsInterface)
-    {
-        g_pAchievementsAndStatsInterface->ReleasePanel();
-    }
+	if (g_pAchievementsAndStatsInterface)
+	{
+		g_pAchievementsAndStatsInterface->ReleasePanel();
+	}
 
 #ifdef SIXENSE
 	g_pSixenseInput->Shutdown();
@@ -2043,7 +2052,7 @@ void SimulateEntities()
 	VPROF_BUDGET("Client SimulateEntities", VPROF_BUDGETGROUP_CLIENT_SIM);
 
 	// Service timer events (think functions).
-  	ClientThinkList()->PerformThinkFunctions();
+	ClientThinkList()->PerformThinkFunctions();
 
 	// TODO: make an ISimulateable interface so C_BaseNetworkables can simulate?
 	{

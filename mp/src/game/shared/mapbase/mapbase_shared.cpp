@@ -573,7 +573,7 @@ private:
 			}
 			else
 			{
-				CGMsg( 1, CON_GROUP_MAPBASE_MISC, "Loaded custom HUD animations file \"%s\"\n", pszFile );;
+				CGMsg( 1, CON_GROUP_MAPBASE_MISC, "Loaded custom HUD animations file \"%s\"\n", pszFile );
 			}
 		}
 	}

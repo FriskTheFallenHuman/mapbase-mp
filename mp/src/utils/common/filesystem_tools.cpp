@@ -52,6 +52,108 @@ char		qdir[1024];
 // This is the base engine + mod-specific game dir (e.g. "c:\tf2\mytfmod\")
 char		gamedir[1024];	
 
+#ifdef MAPBASE
+class CSteamGameDB
+{
+public:
+	CSteamGameDB()
+	{
+		HKEY steam;
+		if ( RegOpenKeyExA( HKEY_LOCAL_MACHINE, R"(SOFTWARE\Valve\Steam)", 0, KEY_QUERY_VALUE, &steam ) != ERROR_SUCCESS )
+			return;
+
+		char steamLocation[MAX_PATH*2];
+		DWORD dwSize = sizeof( steamLocation );
+		if ( RegQueryValueExA( steam, "InstallPath", NULL, NULL, (LPBYTE)steamLocation, &dwSize ) != ERROR_SUCCESS )
+			return;
+
+		RegCloseKey( steam );
+
+		libFolders.AddToTail( steamLocation );
+
+		V_strcat_safe( steamLocation, R"(\steamapps\libraryfolders.vdf)" );
+
+		{
+			CUtlBuffer lib( 0, 0, CUtlBuffer::TEXT_BUFFER );
+			if ( !g_pFullFileSystem->ReadFile( steamLocation, nullptr, lib ) )
+				return;
+
+			KeyValuesAD libFolder( "LibraryFolders" );
+			libFolder->UsesEscapeSequences( true );
+			libFolder->UsesConditionals( false );
+			if ( !libFolder->LoadFromBuffer( "LibraryFolders", lib ) )
+				return;
+
+			FOR_EACH_SUBKEY( libFolder, folder )
+			{
+				auto name = folder->GetName();
+				if ( !V_stricmp( name, "TimeNextStatsReport" ) || !V_stricmp( name, "ContentStatsID" ) )
+					continue;
+				if ( auto p = folder->GetString() )
+					libFolders.AddToTail( p );
+			}
+		}
+
+		for ( auto& folder : libFolders )
+			folder = CUtlString::PathJoin( folder, "steamapps" );
+
+		for ( const auto& folder : libFolders )
+		{
+			g_pFullFileSystem->AddSearchPath( folder, "__HAMMER_HACK__" );
+
+			FileFindHandle_t h = 0;
+			auto manifest = g_pFullFileSystem->FindFirstEx( "appmanifest_*.acf", "__HAMMER_HACK__", &h );
+			while ( manifest )
+			{
+				games.AddToTail( Game{ static_cast<uint32>( V_atoi64( manifest + 12 ) ), CUtlString::PathJoin( folder, manifest ), &folder } );
+				manifest = g_pFullFileSystem->FindNext( h );
+			}
+
+			g_pFullFileSystem->FindClose( h );
+
+			g_pFullFileSystem->RemoveSearchPath( folder, "__HAMMER_HACK__" );
+		}
+
+		for ( auto& folder : libFolders )
+			folder = CUtlString::PathJoin( folder, "common" );
+
+		games.Sort( []( const Game* a, const Game* b ) { return int( a->appid ) - int( b->appid ); } );
+	}
+
+	bool GetAppInstallDir( uint32 appid, CUtlString& path ) const
+	{
+		const auto game = games.FindMatch( [appid]( const Game& g ) { return g.appid == appid; } );
+		if ( !games.IsValidIndex( game ) )
+			return false;
+
+		CUtlBuffer b( 0, 0, CUtlBuffer::TEXT_BUFFER );
+		if ( !g_pFullFileSystem->ReadFile( games[game].manifest, nullptr, b ) )
+			return false;
+
+		auto f = b.String();
+		auto instD = V_stristr( f, "installdir" );
+		if ( !instD )
+			return false;
+
+		auto dirStart = strchr( instD + ARRAYSIZE( "installdir" ), '"' );
+		auto dirEnd = strchr( dirStart + 1, '"' );
+
+		path = CUtlString::PathJoin( *games[game].library, CUtlString( dirStart + 1, dirEnd - dirStart - 1 ) );
+		return true;
+	}
+
+private:
+	struct Game
+	{
+		uint32 appid;
+		CUtlString manifest;
+		const CUtlString* library;
+	};
+	CUtlVector<CUtlString> libFolders;
+	CUtlVector<Game> games;
+};
+#endif
+
 void FileSystem_SetupStandardDirectories( const char *pFilename, const char *pGameInfoPath )
 {
 	// Set qdir.

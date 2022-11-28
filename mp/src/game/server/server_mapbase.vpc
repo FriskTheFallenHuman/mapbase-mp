@@ -39,6 +39,8 @@ $Project
 		$Folder	"Mapbase"
 		{
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_shared.cpp"
+			$File	"$SRCDIR\game\shared\mapbase\mapbase_mountcontent.cpp"
+			$File	"$SRCDIR\game\shared\mapbase\mapbase_mountcontent.h"
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_usermessages.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_rpc.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\mapbase_game_log.cpp"
