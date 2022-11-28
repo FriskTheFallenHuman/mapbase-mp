@@ -26,6 +26,20 @@
 		"test_speakers"		1
 		"test_hardware"		1
 	}
+	
+	// Mapbase uses Momentum Mod Content mounting, this is how it looks like here
+	//mount
+	//{
+	//	*appid*
+	//	{
+	//		"head"    "0" // put this at head
+	//		"mod_folder"
+	//		{
+	//			"vpk"    "vpk_name" // mounts file: GameDir\mod_folder\vpk_name.vpk
+	//			"dir"    "dir_inside" // mounts folder: GameDir\mod_folder\dir_inside
+	//		}
+	//	}
+	//}
 
 	FileSystem
 	{
@@ -61,7 +75,7 @@
 			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
 			// as the first "mod" search path (after any user customizations).  This is also the one
 			// that's used when writing to the "mod" path.
-			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			game+game_write+mod+mod_write+default_write_path		|gameinfo_path|.
 			gamebin				|gameinfo_path|bin
 			
 			game+mod			|gameinfo_path|content/*
@@ -77,10 +91,7 @@
 			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
 			// system call.)
 			game_lv				hl2/hl2_lv.vpk
-			game+mod			hl2mp/hl2mp_english.vpk
-			game+mod			hl2mp/hl2mp_pak.vpk
 			game				|all_source_engine_paths|hl2/hl2_english.vpk
-			game				|all_source_engine_paths|hl2/hl2_pak.vpk
 			game				|all_source_engine_paths|hl2/hl2_textures.vpk
 			game				|all_source_engine_paths|hl2/hl2_sound_vo_english.vpk
 			game				|all_source_engine_paths|hl2/hl2_sound_misc.vpk
@@ -89,12 +100,7 @@
 	  		game				|all_source_engine_paths|lostcoast/lostcoast_pak.vpk // For those using Hammer with Half-Life 2's bin
 			platform			|all_source_engine_paths|platform/platform_misc.vpk
 
-			// Add the HL2 directory as a game search path.  This is also where where writes
-			// to the "game" path go.
-			game+game_write		hl2mp
-
 			// Last, mount in shared HL2 loose files
-			game				|all_source_engine_paths|hl2mp
 			game				|all_source_engine_paths|hl2
 			platform			|all_source_engine_paths|platform
 		}
