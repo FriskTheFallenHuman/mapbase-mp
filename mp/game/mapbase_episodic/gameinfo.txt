@@ -1,0 +1,100 @@
+"GameInfo"
+{
+	game 		"Mapbase - HL2 Episodic"
+	title 		"HALF-LIFE'"
+	title2		""
+
+	type		singleplayer_only
+	supportsvr	0
+
+	GameData	"bin/halflife2.fgd"
+
+	icon		"resource/icon1"
+	
+	// Indicates this is an original Mapbase mod and not just a mod using its features.
+	mapbase_core 1
+
+	FileSystem
+	{
+		SteamAppId				243730		// This sets the app ID in Steam
+		
+		//
+		// Mapbase has a fairly unique file system that needs some explanation.
+		// In its rawest form, it is spread out across 2-3 folders:
+		// 
+		// mapbase_shared - Shared Mapbase content, like editor icons, that are not unique to Half-Life 2.
+		// mapbase_hl2 - Original HL2 branch of Mapbase.
+		// mapbase_episodic - Episodic branch of Mapbase.
+		// 
+		// Each folder relies on the previous, meaning mapbase_episodic cannot function without mapbase_hl2 and
+		// mapbase_hl2 cannot function without mapbase_shared.
+		// 
+		// mapbase_episodic > mapbase_hl2 > mapbase_shared
+		// 
+		// Each Mapbase folder has its own "content" subfolder contianing VPKs.
+		// These are mounted similar to the "custom" folder in which everything is mounted without listing out their names.
+		// 
+		SearchPaths
+		{
+			// First, mount all user customizations.  This will search for VPKs and subfolders
+			// and mount them in alphabetical order.  The easiest way to distribute a mod is to
+			// pack up the custom content into a VPK.  To "install" a mod, just drop it in this
+			// folder.
+			//
+			// Note that this folder is scanned only when the game is booted.
+			game+mod+addon			|gameinfo_path|custom/*
+			game+mod+addon			|gameinfo_path|../mapbase_hl2/custom/*
+			game+mod+addon			ep2/custom/*
+			game+mod+addon			episodic/custom/*
+			game+mod+addon			hl2/custom/*
+
+			// Now search loose files.  We'll set the directory containing the gameinfo.txt file
+			// as the first "mod" search path (after any user customizations).  This is also the one
+			// that's used when writing to the "mod" path.
+			game+mod+mod_write+default_write_path		|gameinfo_path|.
+			gamebin				|gameinfo_path|bin
+			
+			game+mod			|gameinfo_path|content/*
+			
+			// Get our shared mapbase files.
+			// They should be right next to this mod.
+			// Also, for Episodic Mapbase, get HL2 as well.
+			game+mod			|gameinfo_path|../mapbase_hl2
+			game+mod			|gameinfo_path|../mapbase_hl2/content/*
+			game+mod			|gameinfo_path|../mapbase_shared/shared_misc
+			gamebin				|gameinfo_path|../mapbase_shared/shared_misc/bin
+			game+mod			|gameinfo_path|../mapbase_shared/shared_content_v7_0.vpk
+
+			// We search VPK files before ordinary folders, because most files will be found in
+			// VPK and we can avoid making thousands of file system calls to attempt to open files
+			// in folders where they don't exist.  (Searching a VPK is much faster than making an operating
+			// system call.)
+			game_lv				hl2/hl2_lv.vpk
+			game				|all_source_engine_paths|ep2/ep2_english.vpk
+			game				|all_source_engine_paths|ep2/ep2_pak.vpk
+			game				|all_source_engine_paths|episodic/ep1_english.vpk
+			game				|all_source_engine_paths|episodic/ep1_pak.vpk
+			game				|all_source_engine_paths|hl2/hl2_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_pak.vpk
+			game				|all_source_engine_paths|hl2/hl2_textures.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_vo_english.vpk
+			game				|all_source_engine_paths|hl2/hl2_sound_misc.vpk
+			game				|all_source_engine_paths|hl2/hl2_misc.vpk
+	  		game				|all_source_engine_paths|sourcetest/sourcetest_pak.vpk // sourcetest has Lost Coast content
+	  		game				|all_source_engine_paths|lostcoast/lostcoast_pak.vpk // For those using Hammer with Half-Life 2's bin
+			platform				|all_source_engine_paths|platform/platform_misc.vpk
+
+			// Add the HL2 directory as a game search path.  This is also where where writes
+			// to the "game" path go.
+			game+game_write		ep2
+
+			// Where the game's binaries are
+			gamebin				episodic/bin
+
+			// Last, mount in shared HL2 loose files
+			game				|all_source_engine_paths|episodic
+			game				|all_source_engine_paths|hl2
+			platform			|all_source_engine_paths|platform
+		}
+	}
+}
