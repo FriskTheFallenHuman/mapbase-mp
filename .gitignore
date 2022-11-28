@@ -103,6 +103,7 @@ mp/src/vgui2/*.pdb
 
 # Ignore our mapbase_*/content/ folder
 mp/game/mapbase_*/content/
+mp/game/mapbase_shared/
 
 # Build support files
 mp/src/devtools/gcc9+support.o

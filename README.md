@@ -186,12 +186,21 @@ Other sources:
   -- https://github.com/ValveSoftware/source-sdk-2013/pull/401 (func_rot_button "Starts locked" flag fix)
   -- https://github.com/ValveSoftware/source-sdk-2013/pull/391 (VBSP func_detail smoothing group fix)
   -- https://github.com/ValveSoftware/source-sdk-2013/pull/362 (npc_manhack npc_maker fix; Adjusted for formatting and save/restore in Mapbase)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/334 (Added buffer security checks in sentence.cpp)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/229 (Adding include guards to collision_set.h per issue #228)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/515 (Fixed server physics when server has custom tickrate)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/552 (Fix incorrect plane calculation in IntersectRayWithOBB)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/532 (Fix for being unable to detonate the satchel when holding a detonator (i.e. having a satchel in the world) and ready tripmine in hands.)
+  -- https://github.com/ValveSoftware/source-sdk-2013/pull/515 (Fixed server physics when server has custom tickrate)
   -- https://github.com/Petercov/Source-PlusPlus/commit/ecdf50c48cd31dec4dbdb7fea2d0780e7f0dd8ec (used as a guide for porting the Alien Swarm SDK response system)
 - https://github.com/momentum-mod/game/blob/1d066180b3bf74830c51e6914d46c40b0bea1fc2/mp/src/game/server/player.cpp#L6543 (spec_goto fix)
 - Poison zombie barnacle crash fix implemented based on a snippet from HL2: Plus posted by Agent Agrimar on Discord (Mapbase makes the barnacle recognize it as poison just like poison headcrabs)
 - https://gamebanana.com/skins/172192 (Airboat handling fix; This is asset-based and not reflected in the code)
 - Vortigaunt LOS fix originally created by dky.tehkingd.u for HL2:CE
 - https://combineoverwiki.net/wiki/File:Combine_main_symbol.svg ("icon_combine" instructor icon in "materials/vgui/hud/gameinstructor_hl2_1"; This is asset-based and not reflected in the code)
+- https://github.com/momentum-mod/game/pull/1150 and https://github.com/momentum-mod/game/pull/1161 (Momentum Mod Content Mounting system)
+- https://github.com/ValveSoftware/Source-1-Games/issues/3347 (Used as a guide for fixing showinfo command)
+- https://github.com/ValveSoftware/source-sdk-2013/issues/404 (Models go spastic after some time)
 
 //-------------------------------------------------------------------------------------------------------------------------
 
