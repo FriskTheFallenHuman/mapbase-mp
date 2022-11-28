@@ -42,13 +42,17 @@ BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 
 	DEFINE_SCRIPTFUNC( GetDamage, "Gets the damage." )
 	DEFINE_SCRIPTFUNC( SetDamage, "Sets the damage." )
+
 	DEFINE_SCRIPTFUNC( GetMaxDamage, "Gets the max damage." )
 	DEFINE_SCRIPTFUNC( SetMaxDamage, "Sets the max damage." )
+
 	DEFINE_SCRIPTFUNC( ScaleDamage, "Scales the damage." )
 	DEFINE_SCRIPTFUNC( AddDamage, "Adds to the damage." )
 	DEFINE_SCRIPTFUNC( SubtractDamage, "Removes from the damage." )
+
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetDamageBonusProvider, "GetDamageBonusProvider", "Gets the damage bonus provider." )
 	DEFINE_SCRIPTFUNC( GetDamageBonus, "Gets the damage bonus." )
-	DEFINE_SCRIPTFUNC( SetDamageBonus, "Sets the damage bonus." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetDamageBonus, "SetDamageBonus", "Sets the damage bonus." )
 
 	DEFINE_SCRIPTFUNC( GetBaseDamage, "Gets the base damage." )
 	DEFINE_SCRIPTFUNC( BaseDamageIsValid, "Checks if the base damage is valid." )
@@ -56,6 +60,9 @@ BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 	DEFINE_SCRIPTFUNC( GetDamageForce, "Gets the damage force." )
 	DEFINE_SCRIPTFUNC( SetDamageForce, "Sets the damage force." )
 	DEFINE_SCRIPTFUNC( ScaleDamageForce, "Scales the damage force." )
+
+	DEFINE_SCRIPTFUNC( GetDamageForForceCalc, "Gets the damage force calculation." )
+	DEFINE_SCRIPTFUNC( SetDamageForForceCalc, "Sets the damage force calculation." )
 
 	DEFINE_SCRIPTFUNC( GetDamagePosition, "Gets the damage position." )
 	DEFINE_SCRIPTFUNC( SetDamagePosition, "Sets the damage position." )
@@ -66,10 +73,13 @@ BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 	DEFINE_SCRIPTFUNC( GetDamageType, "Gets the damage type." )
 	DEFINE_SCRIPTFUNC( SetDamageType, "Sets the damage type." )
 	DEFINE_SCRIPTFUNC( AddDamageType, "Adds to the damage type." )
+
 	DEFINE_SCRIPTFUNC( GetDamageCustom, "Gets the damage custom." )
 	DEFINE_SCRIPTFUNC( SetDamageCustom, "Sets the damage custom." )
+
 	DEFINE_SCRIPTFUNC( GetDamageStats, "Gets the damage stats." )
 	DEFINE_SCRIPTFUNC( SetDamageStats, "Sets the damage stats." )
+
 	DEFINE_SCRIPTFUNC( IsForceFriendlyFire, "Gets force friendly fire." )
 	DEFINE_SCRIPTFUNC( SetForceFriendlyFire, "Sets force friendly fire." )
 
@@ -82,6 +92,13 @@ BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 
 	DEFINE_SCRIPTFUNC( GetDamagedOtherPlayers, "Gets whether other players have been damaged." )
 	DEFINE_SCRIPTFUNC( SetDamagedOtherPlayers, "Sets whether other players have been damaged." )
+
+	DEFINE_SCRIPTFUNC( AdjustPlayerDamageInflictedForSkillLevel, "Adjust the damage that the player inflicts based on the skill level." )
+	DEFINE_SCRIPTFUNC( AdjustPlayerDamageTakenForSkillLevel, "Adjust the damage that the player takes based on the skill level." )
+
+	DEFINE_SCRIPTFUNC( CopyDamageToBaseDamage, "Copy the damage dealth to the base damage." )
+
+	//DEFINE_SCRIPTFUNC_NAMED( ScriptDebugGetDamageTypeString, "DebugGetDamageTypeString", "Debug utility to get the damage type has a string." )
 END_SCRIPTDESC();
 #endif
 
@@ -262,6 +279,28 @@ HSCRIPT CTakeDamageInfo::ScriptGetAttacker() const
 void CTakeDamageInfo::ScriptSetAttacker( HSCRIPT pAttacker )
 {
 	SetAttacker( ToEnt( pAttacker ) );
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+HSCRIPT CTakeDamageInfo::ScriptGetDamageBonusProvider() const
+{
+	return ToHScript( GetDamageBonusProvider() );
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CTakeDamageInfo::ScriptSetDamageBonus( float flBonus )
+{
+	m_flDamageBonus = flBonus;
+}
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CTakeDamageInfo::ScriptSetDamageBonusProvider( HSCRIPT pProvider )
+{
+	m_hDamageBonusProvider = ToEnt( pProvider );
 }
 #endif
 
@@ -548,6 +587,15 @@ void CTakeDamageInfo::DebugGetDamageTypeString(unsigned int damageType, char *ou
 	}
 }
 
+/*
+#ifdef MAPBASE_VSCRIPT
+// This is here so we can expose it to Vscript
+void CTakeDamageInfo::ScriptDebugGetDamageTypeString( unsigned int damageType, char* outbuf, int outbuflength )
+{
+	CTakeDamageInfo::DebugGetDamageTypeString( damageType, outbuf,outbuflength);
+}
+#endif
+*/
 
 /*
 // instant damage

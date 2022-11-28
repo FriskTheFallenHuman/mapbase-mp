@@ -108,14 +108,19 @@ public:
 	// Given a damage type (composed of the #defines above), fill out a string with the appropriate text.
 	// For designer debug output.
 	static void		DebugGetDamageTypeString(unsigned int DamageType, char *outbuf, int outbuflength );
-
 #ifdef MAPBASE_VSCRIPT
+	//void			ScriptDebugGetDamageTypeString(unsigned int damageType, char *outbuf, int outbuflength);
+
 	HSCRIPT			ScriptGetInflictor() const;
 	void			ScriptSetInflictor( HSCRIPT pInflictor );
 	HSCRIPT			ScriptGetWeapon() const;
 	void			ScriptSetWeapon( HSCRIPT pWeapon );
 	HSCRIPT			ScriptGetAttacker() const;
 	void			ScriptSetAttacker( HSCRIPT pAttacker );
+
+	HSCRIPT			ScriptGetDamageBonusProvider() const;
+	void			ScriptSetDamageBonus( float flBonus );
+	void			ScriptSetDamageBonusProvider( HSCRIPT pProvider );
 #endif
 
 

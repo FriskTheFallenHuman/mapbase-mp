@@ -1094,7 +1094,7 @@ public:
 	void SendOnKilledGameEvent( const CTakeDamageInfo &info );
 
 	// Notifier that I've killed some other entity. (called from Victim's Event_Killed).
-	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info ) { return; }
 
 	// UNDONE: Make this data?
 	virtual int				BloodColor( void );

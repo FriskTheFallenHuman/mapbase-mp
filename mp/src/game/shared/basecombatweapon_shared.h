@@ -251,8 +251,9 @@ public:
 	static WeaponClass_t	WeaponClassFromString(const char *str);
 
 	virtual bool			SupportsBackupActivity(Activity activity);
-	virtual acttable_t		*GetBackupActivityList();
-	virtual int				GetBackupActivityListCount();
+	virtual acttable_t		*GetBackupActivityList() { return NULL; }
+	// This was commented out to match the non script function	
+	//virtual int				GetBackupActivityListCount( int& iActivityCount ) { return 0; }
 	static acttable_t		*GetDefaultBackupActivityList( acttable_t *pTable, int &actCount );
 #endif
 

@@ -1007,7 +1007,7 @@ void CAI_PlayerAlly::AnswerQuestion( CAI_PlayerAlly *pQuestioner, int iQARandomN
 	m_iQARandomNumber = iQARandomNum;
 
 	// The activator is the person we're responding to
- 	if ( SelectAnswerFriend( pQuestioner, &selection, bAnsweringHello ) )
+	if ( SelectAnswerFriend( pQuestioner, &selection, bAnsweringHello ) )
 	{
 		if ( rr_debug_qa.GetBool() )
 		{
@@ -1078,11 +1078,7 @@ int CAI_PlayerAlly::SelectNonCombatSpeechSchedule()
 		if ( SelectNonCombatSpeech( &selection ) )
 		{
 			SetSpeechTarget( selection.hSpeechTarget );
-#ifdef NEW_RESPONSE_SYSTEM
-			SetPendingSpeech( selection.concept.c_str(), &selection.Response );
-#else
-			SetPendingSpeech( selection.concept.c_str(), selection.pResponse );
-#endif
+			SetPendingSpeech( selection.concept.c_str(), selection.Response );
 		}
 	}
 	

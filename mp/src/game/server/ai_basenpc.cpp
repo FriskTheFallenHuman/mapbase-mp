@@ -992,7 +992,7 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 	// -----------------------------------
 	//  Fire outputs
- 	// -----------------------------------
+	// -----------------------------------
 	if ( m_flLastDamageTime != gpGlobals->curtime )
 	{
 		// only fire once per frame
@@ -3079,7 +3079,7 @@ void CAI_BaseNPC::SetAim( const Vector &aimDir )
 	}
 	else
 	{
- 		m_flInteractionYaw = GetAbsAngles().y;
+		m_flInteractionYaw = GetAbsAngles().y;
 	}
 }
 
@@ -5120,7 +5120,7 @@ void CAI_BaseNPC::CheckFlinches( void )
 
 	// If we've taken heavy damage, try to do a full schedule flinch
 	if ( HasCondition(COND_HEAVY_DAMAGE) )
- 	{
+	{
 		// If we've already flinched recently, gesture flinch instead.
 		if ( HasMemory(bits_MEMORY_FLINCHED) )
 		{
@@ -6223,16 +6223,16 @@ void CAI_BaseNPC::GatherEnemyConditions( CBaseEntity *pEnemy )
 		AI_PROFILE_SCOPE_END();
 	}
 
-  	// -------------------
-  	// If enemy is dead
-  	// -------------------
-  	if ( !pEnemy->IsAlive() )
-  	{
-  		SetCondition( COND_ENEMY_DEAD );
-  		ClearCondition( COND_SEE_ENEMY );
-  		ClearCondition( COND_ENEMY_OCCLUDED );
-  		return;
-  	}	
+	// -------------------
+	// If enemy is dead
+	// -------------------
+	if ( !pEnemy->IsAlive() )
+	{
+		SetCondition( COND_ENEMY_DEAD );
+		ClearCondition( COND_SEE_ENEMY );
+		ClearCondition( COND_ENEMY_OCCLUDED );
+		return;
+	}	
 	
 	float flDistToEnemy = EnemyDistance(pEnemy);
 
@@ -7040,7 +7040,7 @@ void CAI_BaseNPC::SetActivity( Activity NewActivity )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::SetIdealActivity( Activity NewActivity )
 {
-  	// ignore if it's an ACT_TRANSITION, it means somewhere we're setting IdealActivity with a bogus intermediate value
+	// ignore if it's an ACT_TRANSITION, it means somewhere we're setting IdealActivity with a bogus intermediate value
 	if (NewActivity == ACT_TRANSITION)
 	{
 		Assert( 0 );
@@ -8011,7 +8011,7 @@ int	CAI_BaseNPC::HolsterWeapon( void )
 int CAI_BaseNPC::UnholsterWeapon( void )
 {
 	if ( !IsWeaponHolstered() )
- 		return -1;
+		return -1;
 
 #ifdef MAPBASE
 	Activity activity = TranslateActivity( ACT_ARM );
@@ -8173,7 +8173,7 @@ bool CAI_BaseNPC::DoHolster( void )
 			}
 		}
 
- 		GetActiveWeapon()->Holster();
+		GetActiveWeapon()->Holster();
 		SetActiveWeapon( NULL );
 
 		//Force the NPC to recalculate it's arrival activity since it'll most likely be wrong now that we don't have a weapon out.
@@ -9742,46 +9742,46 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 			break;
 		}
 
-  	case EVENT_WEAPON_RELOAD:
+	case EVENT_WEAPON_RELOAD:
 		{
-  			if ( GetActiveWeapon() )
-  			{
+			if ( GetActiveWeapon() )
+			{
 #ifdef MAPBASE
 				GetActiveWeapon()->Reload_NPC( true );
 #else
-  				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
-  				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 
+				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
+				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 
 #endif
-  				ClearCondition(COND_LOW_PRIMARY_AMMO);
-  				ClearCondition(COND_NO_PRIMARY_AMMO);
-  				ClearCondition(COND_NO_SECONDARY_AMMO);
-  			}
-  			break;
+				ClearCondition(COND_LOW_PRIMARY_AMMO);
+				ClearCondition(COND_NO_PRIMARY_AMMO);
+				ClearCondition(COND_NO_SECONDARY_AMMO);
+			}
+			break;
 		}
 
-  	case EVENT_WEAPON_RELOAD_SOUND:
+	case EVENT_WEAPON_RELOAD_SOUND:
 		{
-  			if ( GetActiveWeapon() )
-  			{
-  				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
-  			}
-  			break;
+			if ( GetActiveWeapon() )
+			{
+				GetActiveWeapon()->WeaponSound( RELOAD_NPC );
+			}
+			break;
 		}
 
 	case EVENT_WEAPON_RELOAD_FILL_CLIP:
 		{
-  			if ( GetActiveWeapon() )
-  			{
+			if ( GetActiveWeapon() )
+			{
 #ifdef MAPBASE
 				GetActiveWeapon()->Reload_NPC( false );
 #else
-  				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 
+				GetActiveWeapon()->m_iClip1 = GetActiveWeapon()->GetMaxClip1(); 
 #endif
-  				ClearCondition(COND_LOW_PRIMARY_AMMO);
-  				ClearCondition(COND_NO_PRIMARY_AMMO);
-  				ClearCondition(COND_NO_SECONDARY_AMMO);
-  			}
-  			break;
+				ClearCondition(COND_LOW_PRIMARY_AMMO);
+				ClearCondition(COND_NO_PRIMARY_AMMO);
+				ClearCondition(COND_NO_SECONDARY_AMMO);
+			}
+			break;
 		}
 
 	case NPC_EVENT_LEFTFOOT:
@@ -9819,7 +9819,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 
 				Assert( pWeapon != NULL	); 
 
- 				GetActiveWeapon()->Holster();
+				GetActiveWeapon()->Holster();
 				SetActiveWeapon( NULL );
 
 				//Force the NPC to recalculate it's arrival activity since it'll most likely be wrong now that we don't have a weapon out.
@@ -9906,7 +9906,7 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 				}
 				return;
 			}
- 			else if ( pEvent->event == AE_NPC_WEAPON_DROP )
+			else if ( pEvent->event == AE_NPC_WEAPON_DROP )
 			{
 				// Drop our active weapon (or throw it at the specified target entity).
 				CBaseEntity *pTarget = NULL;
@@ -9980,14 +9980,14 @@ void CAI_BaseNPC::HandleAnimEvent( animevent_t *pEvent )
 							if ( pAttacker && pTarget && pszParam )
 							{
 								int iDamage = atoi( pszParam );
- 								if ( iDamage )
+								if ( iDamage )
 								{
 									// We've got a target, and damage. Now hurt them.
 									CTakeDamageInfo info;
 									info.SetDamage( iDamage );
 									info.SetAttacker( pAttacker );
 									info.SetInflictor( pAttacker );
-   									info.SetDamageType( DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE );
+									info.SetDamageType( DMG_GENERIC | DMG_PREVENT_PHYSICS_FORCE );
 									pTarget->TakeDamage( info );
 									return;
 								}
@@ -12038,7 +12038,7 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_nIdealSequence,				FIELD_INTEGER ),
 	DEFINE_EMBEDDEDBYREF( m_pSenses ),
 	DEFINE_EMBEDDEDBYREF( m_pLockedBestSound ),
-  	DEFINE_FIELD( m_hEnemy,						FIELD_EHANDLE ),
+	DEFINE_FIELD( m_hEnemy,						FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flTimeEnemyAcquired,		FIELD_TIME ),
 	DEFINE_FIELD( m_hTargetEnt,					FIELD_EHANDLE ),
 	DEFINE_EMBEDDED( m_GiveUpOnDeadEnemyTimer ),
@@ -12076,20 +12076,20 @@ BEGIN_DATADESC( CAI_BaseNPC )
 #endif
 	DEFINE_EMBEDDED( m_CheckOnGroundTimer ),
 	DEFINE_FIELD( m_vDefaultEyeOffset,		FIELD_VECTOR ),
-  	DEFINE_FIELD( m_flNextEyeLookTime,		FIELD_TIME ),
-    DEFINE_FIELD( m_flEyeIntegRate,			FIELD_FLOAT ),
-    DEFINE_FIELD( m_vEyeLookTarget,			FIELD_POSITION_VECTOR ),
-    DEFINE_FIELD( m_vCurEyeTarget,			FIELD_POSITION_VECTOR ),
+	DEFINE_FIELD( m_flNextEyeLookTime,		FIELD_TIME ),
+	DEFINE_FIELD( m_flEyeIntegRate,			FIELD_FLOAT ),
+	DEFINE_FIELD( m_vEyeLookTarget,			FIELD_POSITION_VECTOR ),
+	DEFINE_FIELD( m_vCurEyeTarget,			FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_hEyeLookTarget,			FIELD_EHANDLE ),
-    DEFINE_FIELD( m_flHeadYaw,				FIELD_FLOAT ),
-    DEFINE_FIELD( m_flHeadPitch,				FIELD_FLOAT ),
-    DEFINE_FIELD( m_flOriginalYaw,			FIELD_FLOAT ),
+	DEFINE_FIELD( m_flHeadYaw,				FIELD_FLOAT ),
+	DEFINE_FIELD( m_flHeadPitch,				FIELD_FLOAT ),
+	DEFINE_FIELD( m_flOriginalYaw,			FIELD_FLOAT ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bInAScript,			FIELD_BOOLEAN, "SpawnWithStartScripting" ),
 #else
 	DEFINE_FIELD( m_bInAScript,				FIELD_BOOLEAN ),
 #endif
-    DEFINE_FIELD( m_scriptState,				FIELD_INTEGER ),
+	DEFINE_FIELD( m_scriptState,				FIELD_INTEGER ),
 	DEFINE_FIELD( m_hCine,					FIELD_EHANDLE ),
 	DEFINE_CUSTOM_FIELD( m_ScriptArrivalActivity,	ActivityDataOps() ),
 	DEFINE_FIELD( m_strScriptArrivalSequence,	FIELD_STRING ),
@@ -12097,14 +12097,14 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_iszSceneCustomMoveSeq,	FIELD_STRING ),
 	// 							m_pEnemies					Saved specially in ai_saverestore.cpp
 	DEFINE_FIELD( m_afMemory,					FIELD_INTEGER ),
-  	DEFINE_FIELD( m_hEnemyOccluder,			FIELD_EHANDLE ),
-  	DEFINE_FIELD( m_flSumDamage,				FIELD_FLOAT ),
-  	DEFINE_FIELD( m_flLastDamageTime,			FIELD_TIME ),
-  	DEFINE_FIELD( m_flLastPlayerDamageTime,			FIELD_TIME ),
+	DEFINE_FIELD( m_hEnemyOccluder,			FIELD_EHANDLE ),
+	DEFINE_FIELD( m_flSumDamage,				FIELD_FLOAT ),
+	DEFINE_FIELD( m_flLastDamageTime,			FIELD_TIME ),
+	DEFINE_FIELD( m_flLastPlayerDamageTime,			FIELD_TIME ),
 	DEFINE_FIELD( m_flLastSawPlayerTime,			FIELD_TIME ),
-  	DEFINE_FIELD( m_flLastAttackTime,			FIELD_TIME ),
+	DEFINE_FIELD( m_flLastAttackTime,			FIELD_TIME ),
 	DEFINE_FIELD( m_flLastEnemyTime,			FIELD_TIME ),
-  	DEFINE_FIELD( m_flNextWeaponSearchTime,	FIELD_TIME ),
+	DEFINE_FIELD( m_flNextWeaponSearchTime,	FIELD_TIME ),
 	DEFINE_FIELD( m_iszPendingWeapon,		FIELD_STRING ),
 	DEFINE_KEYFIELD( m_bIgnoreUnseenEnemies, FIELD_BOOLEAN , "ignoreunseenenemies"),
 	DEFINE_EMBEDDED( m_ShotRegulator ),
@@ -12114,11 +12114,11 @@ BEGIN_DATADESC( CAI_BaseNPC )
 #endif
 	// 							m_pSquad					Saved specially in ai_saverestore.cpp
 	DEFINE_KEYFIELD(m_SquadName,				FIELD_STRING, "squadname" ),
-    DEFINE_FIELD( m_iMySquadSlot,				FIELD_INTEGER ),
+	DEFINE_FIELD( m_iMySquadSlot,				FIELD_INTEGER ),
 	DEFINE_KEYFIELD( m_strHintGroup,			FIELD_STRING, "hintgroup" ),
 	DEFINE_KEYFIELD( m_bHintGroupNavLimiting,	FIELD_BOOLEAN, "hintlimiting" ),
- 	DEFINE_EMBEDDEDBYREF( m_pTacticalServices ),
- 	DEFINE_FIELD( m_flWaitFinished,			FIELD_TIME ),
+	DEFINE_EMBEDDEDBYREF( m_pTacticalServices ),
+	DEFINE_FIELD( m_flWaitFinished,			FIELD_TIME ),
 	DEFINE_FIELD( m_flNextFlinchTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flNextDodgeTime,		FIELD_TIME ),
 	DEFINE_EMBEDDED( m_MoveAndShootOverlay ),
@@ -12127,12 +12127,12 @@ BEGIN_DATADESC( CAI_BaseNPC )
 	DEFINE_FIELD( m_vInterruptSavePosition,		FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_pHintNode,				FIELD_EHANDLE),
 	DEFINE_FIELD( m_cAmmoLoaded,				FIELD_INTEGER ),
-    DEFINE_FIELD( m_flDistTooFar,				FIELD_FLOAT ),
+	DEFINE_FIELD( m_flDistTooFar,				FIELD_FLOAT ),
 	DEFINE_FIELD( m_hGoalEnt,					FIELD_EHANDLE ),
 	DEFINE_FIELD( m_flTimeLastMovement,			FIELD_TIME ),
 	DEFINE_KEYFIELD(m_spawnEquipment,			FIELD_STRING, "additionalequipment" ),
-  	DEFINE_FIELD( m_fNoDamageDecal,			FIELD_BOOLEAN ),
-  	DEFINE_FIELD( m_hStoredPathTarget,			FIELD_EHANDLE ),
+	DEFINE_FIELD( m_fNoDamageDecal,			FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_hStoredPathTarget,			FIELD_EHANDLE ),
 	DEFINE_FIELD( m_vecStoredPathGoal,		FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_nStoredPathType,			FIELD_INTEGER ),
 	DEFINE_FIELD( m_fStoredPathFlags,			FIELD_INTEGER ),
@@ -12952,7 +12952,7 @@ bool CAI_BaseNPC::LoadedSchedules(void)
 //-----------------------------------------------------------------------------
 CAI_BaseNPC::CAI_BaseNPC(void)
  :	m_UnreachableEnts( 0, 4 ),
-    m_bDeferredNavigation( false )
+	m_bDeferredNavigation( false )
 {
 	m_pMotor = NULL;
 	m_pMoveProbe = NULL;
@@ -13443,7 +13443,7 @@ bool CAI_BaseNPC::HandleInteraction(int interactionType, void *data, CBaseCombat
 		// shocking the system by destroying the entity.
 		StopLoopingSounds();
 		BarnacleDeathSound();
- 		SetThink( NULL );
+		SetThink( NULL );
 
 		// Gag the NPC so they won't talk anymore
 		AddSpawnFlags( SF_NPC_GAG );
@@ -13499,7 +13499,7 @@ bool CAI_BaseNPC::CineCleanup()
 	CAI_ScriptedSequence *pOldCine = m_hCine;
 	int nSavedFlags = ( m_hCine ? m_hCine->m_savedFlags : GetFlags() );
 
- 	bool bDestroyCine = false;
+	bool bDestroyCine = false;
 	if ( IsRunningDynamicInteraction() )
 	{
 		bDestroyCine = true;
@@ -13906,7 +13906,7 @@ bool CAI_BaseNPC::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal,
 
 
 bool CAI_BaseNPC::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal,
- 									 CBaseDoor *pDoor,
+									 CBaseDoor *pDoor,
 									 float distClear,
 									 AIMoveResult_t *pResult )
 {
@@ -13947,7 +13947,7 @@ bool CAI_BaseNPC::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal,
 //-----------------------------------------------------------------------------
 
 bool CAI_BaseNPC::OnUpcomingPropDoor( AILocalMoveGoal_t *pMoveGoal,
- 										CBasePropDoor *pDoor,
+										CBasePropDoor *pDoor,
 										float distClear,
 										AIMoveResult_t *pResult )
 {
@@ -14741,384 +14741,208 @@ bool CAI_BaseNPC::IsAllowedToDodge( void )
 void CAI_BaseNPC::ParseScriptedNPCInteractions(void)
 {
 	// Already parsed them?
-	if (m_ScriptedInteractions.Count())
+	if ( m_ScriptedInteractions.Count() ) 
 		return;
 
 	// Parse the model's key values and find any dynamic interactions
-	KeyValues* modelKeyValues = new KeyValues("");
-	CUtlBuffer buf(1024, 0, CUtlBuffer::TEXT_BUFFER);
-
-	if (!modelinfo->GetModelKeyValue(GetModel(), buf))
+	KeyValues *modelKeyValues = new KeyValues("");
+	CUtlBuffer buf( 1024, 0, CUtlBuffer::TEXT_BUFFER );
+	if (! modelinfo->GetModelKeyValue( GetModel(), buf ))
 		return;
 	
-	if (modelKeyValues->LoadFromBuffer(modelinfo->GetModelName(GetModel()), buf))
-	{
-#ifdef MAPBASE
-		CUtlVector<string_t> iszUsedNames;
-		for (KeyValues* pkvModelBlock = modelKeyValues; pkvModelBlock != nullptr; pkvModelBlock = pkvModelBlock->GetNextKey())
+	if ( modelKeyValues->LoadFromBuffer( modelinfo->GetModelName( GetModel() ), buf ) )
 	{
 		// Do we have a dynamic interactions section?
-			KeyValues* pkvInteractions = pkvModelBlock->FindKey("dynamic_interactions");
-			if (pkvInteractions)
+		KeyValues *pkvInteractions = modelKeyValues->FindKey("dynamic_interactions");
+		if ( pkvInteractions )
 		{
-				KeyValues* pkvNode = pkvInteractions->GetFirstSubKey();
-				while (pkvNode)
+			KeyValues *pkvNode = pkvInteractions->GetFirstSubKey();
+			while ( pkvNode )
 			{
 				ScriptedNPCInteraction_t sInteraction;
-					sInteraction.iszInteractionName = AllocPooledString(pkvNode->GetName());
+				sInteraction.iszInteractionName = AllocPooledString( pkvNode->GetName() );
 
-					if (iszUsedNames.Find(sInteraction.iszInteractionName) != iszUsedNames.InvalidIndex())
+#ifdef MAPBASE
+				// The method for parsing dynamic interactions has been reworked.
+				// Unknown values are now stored as response contexts to test against response criteria.
+
+				bool bValidInteraction = true;
+
+				// Default values
+				UTIL_StringToVector( sInteraction.vecRelativeOrigin.Base(), "0 0 0" );
+				sInteraction.flDelay = 10.0;
+				sInteraction.flDistSqr = (DSS_MAX_DIST * DSS_MAX_DIST);
+
+				// Misc. response criteria
+				const char *szCriteria = "";
+
+				KeyValues *pCurNode = pkvNode->GetFirstSubKey();
+				const char *szName = NULL;
+				const char *szValue = NULL;
+				while (pCurNode)
+				{
+					szName = pCurNode->GetName();
+					szValue = pCurNode->GetString();
+
+					if (!szName || !szValue)
 					{
-						DevMsg(2, "Scripted interaction %s already defined on %s\n", pkvNode->GetName(), GetClassname());
-						pkvNode = pkvNode->GetNextKey();
-						continue;
-					}
-
-					// The method for parsing dynamic interactions has been reworked.
-					// Unknown values are now stored as response contexts to test against response criteria.
-
-					bool bValidInteraction = true;
-
-					// Default values
-					UTIL_StringToVector(sInteraction.vecRelativeOrigin.Base(), "0 0 0");
-					sInteraction.flDelay = 10.0;
-					sInteraction.flDistSqr = (DSS_MAX_DIST * DSS_MAX_DIST);
-
-					// Misc. response criteria
-					char* szCriteria = "";
-
-					KeyValues* pCurNode = pkvNode->GetFirstSubKey();
-					const char* szName = NULL;
-					const char* szValue = NULL;
-					while (pCurNode)
-					{
-						szName = pCurNode->GetName();
-						szValue = pCurNode->GetString();
-
-						if (!szName || !szValue)
-						{
-							DevWarning("ERROR: Invalid dynamic interaction string\n");
-							pCurNode = pCurNode->GetNextKey();
-						}
-
-						if (!Q_strncmp(szName, "classname", 9))
-						{
-							bool pass = false;
-							if (Q_strstr(szValue, "!="))
-							{
-								szValue += 2;
-								pass = true;
-							}
-
-							if (!FStrEq(GetClassname(), szValue))
-								pass = !pass;
-						}
-						else if (!Q_strncmp(szName, "mapbase", 7))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_MAPBASE_ADDITION;
-						}
-						else if (!Q_strncmp(szName, "trigger", 7))
-						{
-							if (!Q_strncmp(szValue, "auto_in_combat", 14))
-								sInteraction.iTriggerMethod = SNPCINT_AUTOMATIC_IN_COMBAT;
-						}
-						else if (!Q_strncmp(szValue, "loop_break_trigger", 18))
-						{
-							char szTrigger[256];
-							Q_strncpy(szTrigger, szValue, sizeof(szTrigger));
-							char* pszParam = strtok(szTrigger, " ");
-							while (pszParam)
-							{
-								if (!Q_strncmp(pszParam, "on_damage", 9))
-								{
-									sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_DAMAGE;
-								}
-								else if (!Q_strncmp(pszParam, "on_flashlight_illum", 19))
-								{
-									sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_FLASHLIGHT_ILLUM;
-								}
-
-								pszParam = strtok(NULL, " ");
-							}
-						}
-						else if (!Q_strncmp(szName, "origin_relative", 15))
-							UTIL_StringToVector(sInteraction.vecRelativeOrigin.Base(), szValue);
-						else if (!Q_strncmp(szName, "angles_relative", 15))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_ANGLES;
-							UTIL_StringToVector(sInteraction.angRelativeAngles.Base(), szValue);
-						}
-						else if (!Q_strncmp(szName, "velocity_relative", 17))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_VELOCITY;
-							UTIL_StringToVector(sInteraction.vecRelativeVelocity.Base(), szValue);
-						}
-						else if (!Q_strncmp(szName, "end_position", 12))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_TEST_END_POSITION;
-							UTIL_StringToVector(sInteraction.vecRelativeEndPos.Base(), szValue);
-						}
-
-						else if (!Q_strncmp(szName, "entry_sequence", 14))
-							sInteraction.sPhases[SNPCINT_ENTRY].iszSequence = AllocPooledString(szValue);
-						else if (!Q_strncmp(szName, "entry_activity", 14))
-							sInteraction.sPhases[SNPCINT_ENTRY].iActivity = GetActivityID(szValue);
-
-						else if (!Q_strncmp(szName, "sequence", 8))
-							sInteraction.sPhases[SNPCINT_SEQUENCE].iszSequence = AllocPooledString(szValue);
-						else if (!Q_strncmp(szName, "activity", 8))
-							sInteraction.sPhases[SNPCINT_SEQUENCE].iActivity = GetActivityID(szValue);
-
-						else if (!Q_strncmp(szName, "exit_sequence", 13))
-							sInteraction.sPhases[SNPCINT_EXIT].iszSequence = AllocPooledString(szValue);
-						else if (!Q_strncmp(szName, "exit_activity", 13))
-							sInteraction.sPhases[SNPCINT_EXIT].iActivity = GetActivityID(szValue);
-
-						else if (!Q_strncmp(szName, "delay", 5))
-							sInteraction.flDelay = atof(szValue);
-						else if (!Q_strncmp(szName, "origin_max_delta", 16))
-							sInteraction.flDistSqr = atof(szValue);
-
-						else if (!Q_strncmp(szName, "loop_in_action", 14) && !FStrEq(szValue, "0"))
-							sInteraction.iFlags |= SCNPC_FLAG_LOOP_IN_ACTION;
-
-						else if (!Q_strncmp(szName, "dont_teleport_at_end", 20))
-						{
-							if (!Q_stricmp(szValue, "me") || !Q_stricmp(szValue, "both"))
-								sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_ME;
-							else if (!Q_stricmp(szValue, "them") || !Q_stricmp(szValue, "both"))
-								sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_THEM;
-						}
-
-						else if (!Q_strncmp(szName, "needs_weapon", 12))
-						{
-							if (!Q_strncmp(szValue, "ME", 2))
-								sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-							else if (!Q_strncmp(szValue, "THEM", 4))
-								sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-							else if (!Q_strncmp(szValue, "BOTH", 4))
-							{
-								sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-								sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-							}
-						}
-
-						else if (!Q_strncmp(szName, "weapon_mine", 11))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-							sInteraction.iszMyWeapon = AllocPooledString(szValue);
-						}
-						else if (!Q_strncmp(szName, "weapon_theirs", 13))
-						{
-							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-							sInteraction.iszTheirWeapon = AllocPooledString(szValue);
-						}
-
-						// Add anything else to our miscellaneous criteria
-						else
-						{
-							szCriteria = UTIL_VarArgs("%s,%s:%s", szCriteria, szName, szValue);
-						}
-
+						DevWarning("ERROR: Invalid dynamic interaction string\n");
 						pCurNode = pCurNode->GetNextKey();
 					}
 
-					if (!bValidInteraction)
+					if (!Q_strncmp(szName, "classname", 9))
 					{
-						DevMsg("Scripted interaction %s rejected by %s\n", pkvNode->GetName(), GetClassname());
-						pkvNode = pkvNode->GetNextKey();
-						continue;
+						bool pass = false;
+						if (Q_strstr(szValue, "!="))
+						{
+							szValue += 2;
+							pass = true;
+						}
+
+						if (!FStrEq(GetClassname(), szValue))
+							pass = !pass;
+					}
+					else if (!Q_strncmp(szName, "mapbase", 7))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_MAPBASE_ADDITION;
+					}
+					else if (!Q_strncmp(szName, "trigger", 7))
+					{
+						if (!Q_strncmp(szValue, "auto_in_combat", 14))
+							sInteraction.iTriggerMethod = SNPCINT_AUTOMATIC_IN_COMBAT;
+					}
+					else if (!Q_strncmp(szValue, "loop_break_trigger", 18))
+					{
+						char szTrigger[256];
+						Q_strncpy( szTrigger, szValue, sizeof(szTrigger) );
+						char *pszParam = strtok( szTrigger, " " );
+						while (pszParam)
+						{
+							if ( !Q_strncmp( pszParam, "on_damage", 9) )
+							{
+								sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_DAMAGE;
+							}
+							else if ( !Q_strncmp( pszParam, "on_flashlight_illum", 19) )
+							{
+								sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_FLASHLIGHT_ILLUM;
+							}
+
+							pszParam = strtok(NULL," ");
+						}
+					}
+					else if (!Q_strncmp(szName, "origin_relative", 15))
+						UTIL_StringToVector( sInteraction.vecRelativeOrigin.Base(), szValue );
+					else if (!Q_strncmp(szName, "angles_relative", 15))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_ANGLES;
+						UTIL_StringToVector( sInteraction.angRelativeAngles.Base(), szValue );
+					}
+					else if (!Q_strncmp(szName, "velocity_relative", 17))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_VELOCITY;
+						UTIL_StringToVector( sInteraction.vecRelativeVelocity.Base(), szValue );
+					}
+#ifdef MAPBASE
+					else if (!Q_strncmp(szName, "end_position", 12))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_TEST_END_POSITION;
+						UTIL_StringToVector( sInteraction.vecRelativeEndPos.Base(), szValue );
+					}
+#endif
+
+					else if (!Q_strncmp(szName, "entry_sequence", 14))
+						sInteraction.sPhases[SNPCINT_ENTRY].iszSequence = AllocPooledString( szValue );
+					else if (!Q_strncmp(szName, "entry_activity", 14))
+						sInteraction.sPhases[SNPCINT_ENTRY].iActivity = GetActivityID( szValue );
+
+					else if (!Q_strncmp(szName, "sequence", 8))
+						sInteraction.sPhases[SNPCINT_SEQUENCE].iszSequence = AllocPooledString( szValue );
+					else if (!Q_strncmp(szName, "activity", 8))
+						sInteraction.sPhases[SNPCINT_SEQUENCE].iActivity = GetActivityID( szValue );
+
+					else if (!Q_strncmp(szName, "exit_sequence", 13))
+						sInteraction.sPhases[SNPCINT_EXIT].iszSequence = AllocPooledString( szValue );
+					else if (!Q_strncmp(szName, "exit_activity", 13))
+						sInteraction.sPhases[SNPCINT_EXIT].iActivity = GetActivityID(szValue);
+
+					else if (!Q_strncmp(szName, "delay", 5))
+						sInteraction.flDelay = atof(szValue);
+					else if (!Q_strncmp(szName, "origin_max_delta", 16))
+						sInteraction.flDistSqr = atof(szValue);
+
+					else if (!Q_strncmp(szName, "loop_in_action", 14) && !FStrEq(szValue, "0"))
+						sInteraction.iFlags |= SCNPC_FLAG_LOOP_IN_ACTION;
+
+					else if (!Q_strncmp(szName, "dont_teleport_at_end", 20))
+					{
+						if ( !Q_stricmp( szValue, "me" ) || !Q_stricmp( szValue, "both" ) )
+							sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_ME;
+						else if ( !Q_stricmp( szValue, "them" ) || !Q_stricmp( szValue, "both" ) ) 
+							sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_THEM;
 					}
 
-					if (szCriteria[0] == ',')
+					else if (!Q_strncmp(szName, "needs_weapon", 12))
 					{
-						szCriteria += 1;
-						sInteraction.MiscCriteria = AllocPooledString(szCriteria);
+						if ( !Q_strncmp( szValue, "ME", 2 ) )
+							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
+						else if ( !Q_strncmp( szValue, "THEM", 4 ) ) 
+							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
+						else if ( !Q_strncmp( szValue, "BOTH", 4 ) ) 
+						{
+							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
+							sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
+						}
 					}
 
+					else if (!Q_strncmp(szName, "weapon_mine", 11))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
+						sInteraction.iszMyWeapon = AllocPooledString( szValue );
+					}
+					else if (!Q_strncmp(szName, "weapon_theirs", 13))
+					{
+						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
+						sInteraction.iszTheirWeapon = AllocPooledString( szValue );
+					}
 
-					// Add it to the list
-					AddScriptedNPCInteraction(&sInteraction);
-					iszUsedNames.AddToTail(sInteraction.iszInteractionName);
+					// Add anything else to our miscellaneous criteria
+					else
+					{
+						szCriteria = UTIL_VarArgs("%s,%s:%s", szCriteria, szName, szValue);
+					}
 
-					// Move to next interaction
+					pCurNode = pCurNode->GetNextKey();
+				}
+
+				if (!bValidInteraction)
+				{
+					DevMsg("Scripted interaction %s rejected by %s\n", pkvNode->GetName(), GetClassname());
 					pkvNode = pkvNode->GetNextKey();
+					continue;
 				}
-			}
-		}
+
+				if (szCriteria[0] == ',')
+				{
+					szCriteria += 1;
+					sInteraction.MiscCriteria = AllocPooledString(szCriteria);
+				}
 #else
-// Do we have a dynamic interactions section?
-		KeyValues* pkvInteractions = modelKeyValues->FindKey("dynamic_interactions");
-		if (pkvInteractions)
-		{
-			KeyValues* pkvNode = pkvInteractions->GetFirstSubKey();
-			while (pkvNode)
-			{
-				ScriptedNPCInteraction_t sInteraction;
-				sInteraction.iszInteractionName = AllocPooledString(pkvNode->GetName());
-
-
 				// Trigger method
-				const char* pszTrigger = pkvNode->GetString("trigger", NULL);
-				if (pszTrigger)
-				{
-					if (!Q_strncmp(pszTrigger, "auto_in_combat", 14))
-					{
-						sInteraction.iTriggerMethod = SNPCINT_AUTOMATIC_IN_COMBAT;
-					}
-				}
-
-				// Loop Break trigger method
-				pszTrigger = pkvNode->GetString("loop_break_trigger", NULL);
-				if (pszTrigger)
-				{
-					char szTrigger[256];
-					Q_strncpy(szTrigger, pszTrigger, sizeof(szTrigger));
-					char* pszParam = strtok(szTrigger, " ");
-					while (pszParam)
-					{
-						if (!Q_strncmp(pszParam, "on_damage", 9))
-						{
-							sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_DAMAGE;
-						}
-						if (!Q_strncmp(pszParam, "on_flashlight_illum", 19))
-						{
-							sInteraction.iLoopBreakTriggerMethod |= SNPCINT_LOOPBREAK_ON_FLASHLIGHT_ILLUM;
-						}
-
-						pszParam = strtok(NULL, " ");
-					}
-				}
-
-				// Origin
-				const char* pszOrigin = pkvNode->GetString("origin_relative", "0 0 0");
-				UTIL_StringToVector(sInteraction.vecRelativeOrigin.Base(), pszOrigin);
-
-				// Angles
-				const char* pszAngles = pkvNode->GetString("angles_relative", NULL);
-				if (pszAngles)
-				{
-					sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_ANGLES;
-					UTIL_StringToVector(sInteraction.angRelativeAngles.Base(), pszAngles);
-				}
-
-				// Velocity 
-				const char* pszVelocity = pkvNode->GetString("velocity_relative", NULL);
-				if (pszVelocity)
-				{
-					sInteraction.iFlags |= SCNPC_FLAG_TEST_OTHER_VELOCITY;
-					UTIL_StringToVector(sInteraction.vecRelativeVelocity.Base(), pszVelocity);
-				}
-
-				// Entry Sequence
-				const char* pszSequence = pkvNode->GetString("entry_sequence", NULL);
-				if (pszSequence)
-				{
-					sInteraction.sPhases[SNPCINT_ENTRY].iszSequence = AllocPooledString(pszSequence);
-				}
-				// Entry Activity
-				const char* pszActivity = pkvNode->GetString("entry_activity", NULL);
-				if (pszActivity)
-				{
-					sInteraction.sPhases[SNPCINT_ENTRY].iActivity = GetActivityID(pszActivity);
-				}
-
-				// Sequence
-				pszSequence = pkvNode->GetString("sequence", NULL);
-				if (pszSequence)
-				{
-					sInteraction.sPhases[SNPCINT_SEQUENCE].iszSequence = AllocPooledString(pszSequence);
-				}
-				// Activity
-				pszActivity = pkvNode->GetString("activity", NULL);
-				if (pszActivity)
-				{
-					sInteraction.sPhases[SNPCINT_SEQUENCE].iActivity = GetActivityID(pszActivity);
-				}
-
-				// Exit Sequence
-				pszSequence = pkvNode->GetString("exit_sequence", NULL);
-				if (pszSequence)
-				{
-					sInteraction.sPhases[SNPCINT_EXIT].iszSequence = AllocPooledString(pszSequence);
-				}
-				// Exit Activity
-				pszActivity = pkvNode->GetString("exit_activity", NULL);
-				if (pszActivity)
-				{
-					sInteraction.sPhases[SNPCINT_EXIT].iActivity = GetActivityID(pszActivity);
-				}
-
-				// Delay
-				sInteraction.flDelay = pkvNode->GetFloat("delay", 10.0);
-
-				// Delta
-				sInteraction.flDistSqr = pkvNode->GetFloat("origin_max_delta", (DSS_MAX_DIST * DSS_MAX_DIST));
-
-				// Loop?
-				if (pkvNode->GetFloat("loop_in_action", 0))
-				{
-					sInteraction.iFlags |= SCNPC_FLAG_LOOP_IN_ACTION;
-				}
-
-				// Fixup position?
-				const char* pszDontFixup = pkvNode->GetString("dont_teleport_at_end", NULL);
-				if (pszDontFixup)
-				{
-					if (!Q_stricmp(pszDontFixup, "me") || !Q_stricmp(pszDontFixup, "both"))
-					{
-						sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_ME;
-					}
-					else if (!Q_stricmp(pszDontFixup, "them") || !Q_stricmp(pszDontFixup, "both"))
-					{
-						sInteraction.iFlags |= SCNPC_FLAG_DONT_TELEPORT_AT_END_THEM;
-					}
-				}
-
-				// Needs a weapon?
-				const char* pszNeedsWeapon = pkvNode->GetString("needs_weapon", NULL);
-				if (pszNeedsWeapon)
-				{
-					if (!Q_strncmp(pszNeedsWeapon, "ME", 2))
-					{
-						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-					}
-					else if (!Q_strncmp(pszNeedsWeapon, "THEM", 4))
-					{
-						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-					}
-					else if (!Q_strncmp(pszNeedsWeapon, "BOTH", 4))
-					{
-						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-						sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-					}
-				}
-
-				// Specific weapon types
-				const char* pszWeaponName = pkvNode->GetString("weapon_mine", NULL);
-				if (pszWeaponName)
-				{
-					sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_ME;
-					sInteraction.iszMyWeapon = AllocPooledString(pszWeaponName);
-				}
-				pszWeaponName = pkvNode->GetString("weapon_theirs", NULL);
-				if (pszWeaponName)
-				{
+				const char *pszTrigger = pkvNode->GetString( "trigger", NULL );
+				if ( pszTrigger )
+	@@ -13111,6 +14744,7 @@ void CAI_BaseNPC::ParseScriptedNPCInteractions( void )
 					sInteraction.iFlags |= SCNPC_FLAG_NEEDS_WEAPON_THEM;
-					sInteraction.iszTheirWeapon = AllocPooledString(pszWeaponName);
+					sInteraction.iszTheirWeapon = AllocPooledString( pszWeaponName );
 				}
+#endif
 
 				// Add it to the list
-				AddScriptedNPCInteraction(&sInteraction);
-
+				AddScriptedNPCInteraction( &sInteraction );
 				// Move to next interaction
 				pkvNode = pkvNode->GetNextKey();
 			}
 		}
-#endif // MAPBASE
-
 	}
-
 	modelKeyValues->deleteThis();
 }
 
@@ -15194,7 +15018,7 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 {
 	variant_t emptyVariant;
 
- 	StartRunningInteraction( pOtherNPC, true );
+	StartRunningInteraction( pOtherNPC, true );
 	if ( pOtherNPC )
 	{
 		pOtherNPC->StartRunningInteraction( this, false );
@@ -15236,13 +15060,13 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 	{
 		Q_snprintf( szSSName, sizeof(szSSName), "dss_%s%d", GetDebugName(), entindex() );
 	}
-  	string_t iszSSName = AllocPooledString(szSSName);
+	string_t iszSSName = AllocPooledString(szSSName);
 
 	// Setup next attempt
 	pInteraction->flNextAttemptTime = gpGlobals->curtime + pInteraction->flDelay + RandomFloat(-2,2);
 
 	// Spawn a scripted sequence for this NPC to play the interaction anim
-   	CAI_ScriptedSequence *pMySequence = (CAI_ScriptedSequence*)CreateEntityByName( "scripted_sequence" );
+	CAI_ScriptedSequence *pMySequence = (CAI_ScriptedSequence*)CreateEntityByName( "scripted_sequence" );
 	pMySequence->KeyValue( "m_iszEntry", pszEntrySequence );
 	pMySequence->KeyValue( "m_iszPlay", pszSequence );
 	pMySequence->KeyValue( "m_iszPostIdle", pszExitSequence );
@@ -15255,10 +15079,10 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 	pMySequence->SetAbsAngles( angDesired );
 	pMySequence->ForceSetTargetEntity( this, true );
 	pMySequence->SetName( iszSSName );
- 	pMySequence->AddSpawnFlags( SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE );
+	pMySequence->AddSpawnFlags( SF_SCRIPT_NOINTERRUPT | SF_SCRIPT_HIGH_PRIORITY | SF_SCRIPT_OVERRIDESTATE );
 	if ((pInteraction->iFlags & SCNPC_FLAG_DONT_TELEPORT_AT_END_ME) != 0)
 	{
-	 	pMySequence->AddSpawnFlags( SF_SCRIPT_DONT_TELEPORT_AT_END );
+		pMySequence->AddSpawnFlags( SF_SCRIPT_DONT_TELEPORT_AT_END );
 	}
 	pMySequence->SetLoopActionSequence( (pInteraction->iFlags & SCNPC_FLAG_LOOP_IN_ACTION) != 0 );
 	pMySequence->SetSynchPostIdles( true );
@@ -15287,7 +15111,7 @@ void CAI_BaseNPC::StartScriptedNPCInteraction( CAI_BaseNPC *pOtherNPC, ScriptedN
 		}
 		pTheirSequence->SetLoopActionSequence( (pInteraction->iFlags & SCNPC_FLAG_LOOP_IN_ACTION) != 0 );
 		pTheirSequence->SetSynchPostIdles( true );
- 		if ( ai_debug_dyninteractions.GetBool() )
+		if ( ai_debug_dyninteractions.GetBool() )
 		{
 			pTheirSequence->m_debugOverlays |= OVERLAY_TEXT_BIT | OVERLAY_PIVOT_BIT;
 		}
@@ -15351,8 +15175,8 @@ bool CAI_BaseNPC::CanRunAScriptedNPCInteraction( bool bForced )
 		return false;
 #endif
 
-  	if ( m_NPCState != NPC_STATE_IDLE && m_NPCState != NPC_STATE_ALERT && m_NPCState != NPC_STATE_COMBAT  )
- 		return false;
+	if ( m_NPCState != NPC_STATE_IDLE && m_NPCState != NPC_STATE_ALERT && m_NPCState != NPC_STATE_COMBAT  )
+		return false;
 
 	if ( !IsAlive() )
 		return false;
@@ -15411,7 +15235,7 @@ void CAI_BaseNPC::CheckForScriptedNPCInteractions( void )
 		return;
 
 	// Recalculate interaction capability whenever we switch enemies
-  	if ( m_hLastInteractionTestTarget != GetEnemy() )
+	if ( m_hLastInteractionTestTarget != GetEnemy() )
 	{
 		m_hLastInteractionTestTarget = GetEnemy();
 
@@ -15665,7 +15489,7 @@ void CAI_BaseNPC::CheckForcedNPCInteractions( void )
 	bool bAbort = false;
 
 	// First, make sure both NPCs are able to do this
- 	if ( !CanRunAScriptedNPCInteraction( true ) || !pNPC->CanRunAScriptedNPCInteraction( true ) )
+	if ( !CanRunAScriptedNPCInteraction( true ) || !pNPC->CanRunAScriptedNPCInteraction( true ) )
 	{
 		// If we were still moving to our target, abort.
 		if ( m_iInteractionState == NPCINT_MOVING_TO_MARK )
@@ -15848,7 +15672,7 @@ bool CAI_BaseNPC::InteractionCouldStart( CAI_BaseNPC *pOtherNPC, ScriptedNPCInte
 		return false;
 	}
 
- 	if ( bDebug )
+	if ( bDebug )
 	{
 		Msg("DYNINT: (%s) testing interaction \"%s\"\n", GetDebugName(), STRING(pInteraction->iszInteractionName) );
 		Msg("   %s is at: %0.2f %0.2f %0.2f\n", GetDebugName(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
@@ -15895,7 +15719,7 @@ bool CAI_BaseNPC::InteractionCouldStart( CAI_BaseNPC *pOtherNPC, ScriptedNPCInte
 	// Valid so far. Now check to make sure there's nothing in the way.
 	// This isn't a very good method of checking, but it's cheap and rules out the problems we're seeing so far.
 	// If we start getting interactions that start a fair distance apart, we're going to need to do more work here.
- 	trace_t tr;
+	trace_t tr;
 	AI_TraceLine( EyePosition(), pOtherNPC->EyePosition(), MASK_NPCSOLID, this, COLLISION_GROUP_NONE, &tr);
 	if ( tr.fraction != 1.0 && tr.m_pEnt != pOtherNPC )
 	{
@@ -16013,7 +15837,7 @@ void CAI_BaseNPC::InputForceInteractionWithNPC( inputdata_t &inputdata )
 		return;
 	}
 	// Find the target
- 	CBaseEntity *pTarget = FindNamedEntity( pszParam );
+	CBaseEntity *pTarget = FindNamedEntity( pszParam );
 	if ( !pTarget )
 	{
 		Warning("%s(%s) received ForceInteractionWithNPC input, but couldn't find entity named: %s\n", GetClassname(), GetDebugName(), pszParam );
@@ -16063,7 +15887,7 @@ void CAI_BaseNPC::InputForceInteractionWithNPC( inputdata_t &inputdata )
 		break;
 	}
 
- 	if ( iInteraction == -1 )
+	if ( iInteraction == -1 )
 	{
 		Warning("%s(%s) received ForceInteractionWithNPC input, but couldn't find an interaction named %s that entity named %s could run.\n", GetClassname(), GetDebugName(), pszParam, pNPC->GetDebugName() );
 		return;
@@ -16107,10 +15931,10 @@ void CAI_BaseNPC::CleanupForcedInteraction( void )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::CalculateForcedInteractionPosition( void )
 {
- 	if ( m_iInteractionPlaying == NPCINT_NONE )
+	if ( m_iInteractionPlaying == NPCINT_NONE )
 		return;
 
-   	ScriptedNPCInteraction_t *pInteraction = GetRunningDynamicInteraction();
+	ScriptedNPCInteraction_t *pInteraction = GetRunningDynamicInteraction();
 
 	// Pretend I was facing the target, and extrapolate from that the position I should be at
 	Vector vecToTarget = m_hForcedInteractionPartner->GetAbsOrigin() - GetAbsOrigin();
@@ -16120,11 +15944,11 @@ void CAI_BaseNPC::CalculateForcedInteractionPosition( void )
 
 	// Get the desired position in worldspace, relative to the target
 	VMatrix matMeToWorld, matLocalToWorld;
- 	matMeToWorld.SetupMatrixOrgAngles( GetAbsOrigin(), angToTarget );
+	matMeToWorld.SetupMatrixOrgAngles( GetAbsOrigin(), angToTarget );
 	MatrixMultiply( matMeToWorld, pInteraction->matDesiredLocalToWorld, matLocalToWorld );
 
- 	Vector vecOrigin = GetAbsOrigin() - matLocalToWorld.GetTranslation();
- 	m_vecForcedWorldPosition = m_hForcedInteractionPartner->GetAbsOrigin() + vecOrigin;
+	Vector vecOrigin = GetAbsOrigin() - matLocalToWorld.GetTranslation();
+	m_vecForcedWorldPosition = m_hForcedInteractionPartner->GetAbsOrigin() + vecOrigin;
 
 	//NDebugOverlay::Axis( m_vecForcedWorldPosition, angToTarget, 20, true, 3.0 );
 }

@@ -351,16 +351,20 @@ bool AnimationController::ParseScriptFile(char *pMem, int length)
 		{
 			// Create a new sequence
 			seqIndex = m_Sequences.AddToTail();
-#ifdef MAPBASE
 		}
-#endif
+
 		AnimSequence_t &seq = m_Sequences[seqIndex];
 		seq.name = nameIndex;
 		seq.duration = 0.0f;
 
 		// get the open brace or a conditional
 		pMem = ParseFile(pMem, token, NULL);
+#ifdef MAPBASE
+		// Fixes ! conditionals
+		if ( Q_stristr( token, "[$" ) || Q_stristr( token, "[!$" ) )
+#else
 		if ( Q_stristr( token, "[$" ) )
+#endif
 		{
 			bAccepted = EvaluateConditional( token );
 

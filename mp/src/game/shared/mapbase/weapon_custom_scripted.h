@@ -166,7 +166,7 @@ private:
 #endif
 
 	DECLARE_CACHED_HOOK( ActivityList );
-	DECLARE_CACHED_HOOK( ActivityListCount );
+	//DECLARE_CACHED_HOOK( ActivityListCount );
 
 private:
 

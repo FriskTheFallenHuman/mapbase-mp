@@ -225,6 +225,9 @@ AI_Response::AI_Response( const AI_Response &from )
 {
 	m_pCriteria = NULL;
 	*this = from;
+#ifdef MAPBASE
+	m_iContextFlags = from.m_iContextFlags;
+#endif
 }
 
 //-----------------------------------------------------------------------------

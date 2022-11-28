@@ -129,7 +129,7 @@ void C_InfoLightingRelative::GetLightingOffset( matrix3x4_t &offset )
 	if ( m_hLightingLandmark.Get() )
 	{
 		matrix3x4_t matWorldToLandmark;
- 		MatrixInvert( m_hLightingLandmark->EntityToWorldTransform(), matWorldToLandmark );
+		MatrixInvert( m_hLightingLandmark->EntityToWorldTransform(), matWorldToLandmark );
 		ConcatTransforms( EntityToWorldTransform(), matWorldToLandmark, offset );
 	}
 	else
@@ -462,7 +462,7 @@ void C_ClientRagdoll::OnRestore( void )
 	AddToLeafSystem( RENDER_GROUP_OPAQUE_ENTITY );
 
 	DestroyShadow();
- 	CreateShadow();
+	CreateShadow();
 
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
 	
@@ -1403,7 +1403,7 @@ void C_BaseAnimating::DelayedInitModelEffects( void )
 			}
 		}
 
- 		if ( !m_bNoModelParticles )
+		if ( !m_bNoModelParticles )
 		{
 			// Do we have a particles section?
 			KeyValues *pkvAllParticleEffects = modelKeyValues->FindKey("Particles");
@@ -5051,8 +5051,8 @@ C_BaseAnimating *C_BaseAnimating::BecomeRagdollOnClient()
 	MoveToLastReceivedPosition( true );
 	GetAbsOrigin();
 
-	m_pClientsideRagdoll *pRagdoll = CreateRagdollCopy();
-	if ( pRagdoll )
+	m_pClientsideRagdoll->CreateRagdollCopy();
+	if ( m_pClientsideRagdoll )
 	{
 		matrix3x4_t boneDelta0[MAXSTUDIOBONES];
 		matrix3x4_t boneDelta1[MAXSTUDIOBONES];
@@ -5064,14 +5064,14 @@ C_BaseAnimating *C_BaseAnimating::BecomeRagdollOnClient()
 
 		if ( bInitBoneArrays )
 		{
-			bInitAsClient = pRagdoll->InitAsClientRagdoll( boneDelta0, boneDelta1, currentBones, boneDt );
+			bInitAsClient = m_pClientsideRagdoll->InitAsClientRagdoll( boneDelta0, boneDelta1, currentBones, boneDt );
 		}
 
 		if ( !bInitAsClient || !bInitBoneArrays )
 		{
-			Warning( "C_BaseAnimating::BecomeRagdollOnClient failed. pRagdoll:%p bInitBoneArrays:%d bInitAsClient:%d\n",
-					 pRagdoll, bInitBoneArrays, bInitAsClient );
-			pRagdoll->Release();
+			Warning( "C_BaseAnimating::BecomeRagdollOnClient failed. m_pClientsideRagdoll:%p bInitBoneArrays:%d bInitAsClient:%d\n",
+					 m_pClientsideRagdoll, bInitBoneArrays, bInitAsClient );
+			m_pClientsideRagdoll->Release();
 			return NULL;
 		}
 	
@@ -5086,7 +5086,7 @@ C_BaseAnimating *C_BaseAnimating::BecomeRagdollOnClient()
 #endif
 	}
 
-	return pRagdoll;
+	return m_pClientsideRagdoll;
 }
 
 bool C_BaseAnimating::InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, const matrix3x4_t *pDeltaBones1, const matrix3x4_t *pCurrentBonePosition, float boneDt, bool bFixedConstraints )
@@ -5132,7 +5132,7 @@ bool C_BaseAnimating::InitAsClientRagdoll( const matrix3x4_t *pDeltaBones0, cons
 	// Now set the dieragdoll sequence to get transforms for all
 	// non-simulated bones
 	m_nRestoreSequence = GetSequence();
-    SetSequence( SelectWeightedSequence( ACT_DIERAGDOLL ) );
+	SetSequence( SelectWeightedSequence( ACT_DIERAGDOLL ) );
 	m_nPrevSequence = GetSequence();
 	m_flPlaybackRate = 0;
 	UpdatePartitionListEntry();
@@ -5563,7 +5563,7 @@ void C_BaseAnimating::StudioFrameAdvance()
 		}
 		else
 		{
-		 	 flNewCycle = (flNewCycle < 0.0f) ? 0.0f : 1.0f;
+			 flNewCycle = (flNewCycle < 0.0f) ? 0.0f : 1.0f;
 		}
 		
 		m_bSequenceFinished = true;	// just in case it wasn't caught in GetEvents
@@ -6663,7 +6663,7 @@ void C_BaseAnimating::CleanupToolRecordingState( KeyValues *msg )
 {
 	if ( !ToolsEnabled() )
 		return;
-		    
+			
 	BaseAnimatingRecordingState_t *pState = (BaseAnimatingRecordingState_t*)msg->GetPtr( "baseanimating" );
 	if ( pState && pState->m_pBoneList )
 	{

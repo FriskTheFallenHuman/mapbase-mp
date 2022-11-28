@@ -2778,13 +2778,13 @@ Activity CBaseCombatCharacter::Weapon_BackupActivity( Activity activity, bool we
 	}
 	*/
 
+	int actCount = 0;
 	acttable_t *pTable = pWeapon->GetBackupActivityList();
-	int actCount = pWeapon->GetBackupActivityListCount();
+
 	if (!pTable)
 	{
 		// Look for a default list
-		actCount = pWeapon->ActivityListCount();
-		pTable = CBaseCombatWeapon::GetDefaultBackupActivityList( pWeapon->ActivityList(), actCount );
+		pTable = CBaseCombatWeapon::GetDefaultBackupActivityList( pWeapon->ActivityList(actCount), actCount );
 	}
 
 	if (pTable && GetModelPtr())

@@ -131,7 +131,6 @@ T Max( T const &val1, T const &val2 )
 #define TRUE (!FALSE)
 #endif
 
-#ifdef MAPBASE
 //-----------------------------------------------------------------------------
 // fsel
 //-----------------------------------------------------------------------------
@@ -196,7 +195,6 @@ FORCEINLINE int ieqsel( int x, int y, int a, int b )
 #define ibitsel(a, nbit, x, y) ( (x) + (((y) - (x)) & (((a) & (1 << (nbit))) ? 0 : -1)) )
 
 #endif
-#endif // MAPBASE
 
 #ifndef DONT_DEFINE_BOOL // Needed for Cocoa stuff to compile.
 typedef int BOOL;

@@ -1183,16 +1183,6 @@ bool CBaseCombatWeapon::SupportsBackupActivity(Activity activity)
 	return true;
 }
 
-acttable_t *CBaseCombatWeapon::GetBackupActivityList()
-{
-	return NULL;
-}
-
-int CBaseCombatWeapon::GetBackupActivityListCount()
-{
-	return 0;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

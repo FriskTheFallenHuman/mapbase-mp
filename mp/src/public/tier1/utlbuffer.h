@@ -143,10 +143,8 @@ public:
 	// Makes sure we've got at least this much memory
 	void			EnsureCapacity( int num );
 
-#ifdef MAPBASE
 	// Access for direct read into buffer
 	void *			AccessForDirectRead( int nBytes );
-#endif
 
 	// Attaches the buffer to external memory....
 	void			SetExternalBuffer( void* pMemory, int nSize, int nInitialPut, int nFlags = 0 );
@@ -195,6 +193,11 @@ public:
 	float			GetFloat( );
 	double			GetDouble( );
 	template <size_t maxLenInChars> void GetString( char( &pString )[maxLenInChars] )
+	{
+		GetStringInternal( pString, maxLenInChars );
+	}
+
+	void GetString( char* pString, size_t maxLenInChars )
 	{
 		GetStringInternal( pString, maxLenInChars );
 	}
@@ -1111,7 +1114,6 @@ inline void	CUtlBuffer::CopyBuffer( const void *pubData, int cubData )
 	}
 }
 
-#ifdef MAPBASE
 inline void *CUtlBuffer::AccessForDirectRead( int nBytes )
 {
 	Assert( m_Get == 0 && m_Put == 0 && m_nMaxPut == 0 );
@@ -1119,7 +1121,6 @@ inline void *CUtlBuffer::AccessForDirectRead( int nBytes )
 	m_nMaxPut = nBytes;
 	return Base();
 }
-#endif
 
 #endif // UTLBUFFER_H
 

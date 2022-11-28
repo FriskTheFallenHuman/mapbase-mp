@@ -1327,6 +1327,58 @@ void CBaseEntity::FireNamedOutput( const char *pszOutput, variant_t variant, CBa
 	}
 }
 
+
+#ifdef MAPBASE_VSCRIPT
+void CBaseEntity::ScriptFireOutput( const char *pszOutput, HSCRIPT hActivator, HSCRIPT hCaller, const char *szValue, float flDelay )
+{
+	variant_t value;
+	value.SetString( MAKE_STRING(szValue) );
+
+	FireNamedOutput( pszOutput, value, ToEnt(hActivator), ToEnt(hCaller), flDelay );
+}
+
+float CBaseEntity::GetMaxOutputDelay( const char *pszOutput )
+{
+	CBaseEntityOutput *pOutput = FindNamedOutput( pszOutput );
+	if ( pOutput )
+	{
+		return pOutput->GetMaxDelay();
+	}
+	return 0;
+}
+
+//void CBaseEntity::CancelEventsByInput( const char *szInput )
+//{
+//	g_EventQueue.CancelEventsByInput( this, szInput );
+//}
+#endif // MAPBASE_VSCRIPT
+
+CBaseEntityOutput *CBaseEntity::FindNamedOutput( const char *pszOutput )
+{
+	if ( pszOutput == NULL )
+		return NULL;
+
+	datamap_t *dmap = GetDataDescMap();
+	while ( dmap )
+	{
+		int fields = dmap->dataNumFields;
+		for ( int i = 0; i < fields; i++ )
+		{
+			typedescription_t *dataDesc = &dmap->dataDesc[i];
+			if ( ( dataDesc->fieldType == FIELD_CUSTOM ) && ( dataDesc->flags & FTYPEDESC_OUTPUT ) )
+			{
+				CBaseEntityOutput *pOutput = ( CBaseEntityOutput * )( ( int )this + ( int )dataDesc->fieldOffset[0] );
+				if ( !Q_stricmp( dataDesc->externalName, pszOutput ) )
+				{
+					return pOutput;
+				}
+			}
+		}
+		dmap = dmap->baseMap;
+	}
+	return NULL;
+}
+
 void CBaseEntity::Activate( void )
 {
 #ifdef DEBUG
@@ -5726,10 +5778,6 @@ void ConsoleFireTargets( CBasePlayer *pPlayer, const char *name)
 }
 
 #ifdef MAPBASE
-inline bool UtlStringLessFunc( const CUtlString &lhs, const CUtlString &rhs )
-{
-	return Q_stricmp( lhs.String(), rhs.String() ) < 0;
-}
 
 //------------------------------------------------------------------------------
 // Purpose : More concommands needed access to entities, so this has been moved to its own function.
