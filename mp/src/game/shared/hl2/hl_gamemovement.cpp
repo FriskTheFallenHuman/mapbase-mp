@@ -1266,9 +1266,7 @@ bool CHL2GameMovement::CanAccelerate()
 	}
 #endif
 
-	BaseClass::CanAccelerate();
-
-	return true;
+	return BaseClass::CanAccelerate();
 }
 
 //-----------------------------------------------------------------------------
