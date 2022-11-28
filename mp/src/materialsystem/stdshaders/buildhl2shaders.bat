@@ -5,7 +5,7 @@ rem ================================
 rem ==== MOD PATH CONFIGURATIONS ===
 
 rem == Set the absolute path to your mod's game directory here ==
-set GAMEDIR=%cd%\..\..\..\game\mod_hl2
+set GAMEDIR=%cd%\..\..\..\game\mapbase_hl2
 
 rem == Set the relative or absolute path to Source SDK Base 2013 Singleplayer\bin ==
 set SDKBINDIR=C:\Program Files (x86)\Steam\SteamApps\common\Source SDK Base 2013 Multiplayer\bin
