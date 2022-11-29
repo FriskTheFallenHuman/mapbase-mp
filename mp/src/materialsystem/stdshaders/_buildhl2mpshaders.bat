@@ -18,7 +18,7 @@ rem ==== MOD PATH CONFIGURATIONS END ===
 rem ====================================
 
 
-call buildsdkshaders.bat
+call _buildsdkshaders.bat
 
 @echo Finished building shaders
 @pause

@@ -184,6 +184,7 @@ float4 main( PS_INPUT i ) : COLOR
 #else
 	float fogFactor = 0;
 #endif
-	
-	return FinalOutput( float4( result.rgb, flAlpha ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, (WRITE_DEPTH_TO_DESTALPHA != 0), i.vProjPos.z );
+
+	bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0);	
+	return FinalOutput( float4( result.rgb, flAlpha ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, bWriteDepthToAlpha, i.vProjPos.z );
 }

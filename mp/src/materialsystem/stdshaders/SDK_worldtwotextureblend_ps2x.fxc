@@ -212,6 +212,7 @@ float4 main( PS_INPUT i ) : COLOR
 	alpha = fogFactor;
 #endif
 
-	return FinalOutput( float4( result, alpha ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, (WRITE_DEPTH_TO_DESTALPHA != 0), i.worldPos_projPosZ.w );
+	bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0);
+	return FinalOutput( float4( result, alpha ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, bWriteDepthToAlpha, i.worldPos_projPosZ.w );
 }
 

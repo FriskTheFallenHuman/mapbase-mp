@@ -108,6 +108,7 @@ float4 main( PS_INPUT i ) : COLOR
 			   NormalSampler, RefractSampler, ReflectSampler,
 			   result, fogFactor );
 
-	return FinalOutput( float4( result.rgb, 1.0f ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, (WRITE_DEPTH_TO_DESTALPHA != 0), i.vProjPos.z );
+	bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0);
+	return FinalOutput( float4( result.rgb, 1.0f ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, bWriteDepthToAlpha, i.vProjPos.z );
 }
 

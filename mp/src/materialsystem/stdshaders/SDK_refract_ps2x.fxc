@@ -246,5 +246,6 @@ float4 main( PS_INPUT i ) : COLOR
 	float resultAlpha = vNormal.a;
 #endif
 
-	return FinalOutput( float4( result, resultAlpha ), pixelFogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, (WRITE_DEPTH_TO_DESTALPHA != 0), i.worldPos_projPosZ.w );
+	bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0);
+	return FinalOutput( float4( result, resultAlpha ), pixelFogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, bWriteDepthToAlpha, i.worldPos_projPosZ.w );
 }

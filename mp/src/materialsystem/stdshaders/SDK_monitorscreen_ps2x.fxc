@@ -51,5 +51,6 @@ float4 main( PS_INPUT i ) : COLOR
 	resultColor.rgb = resultColor.rgb * g_Tint.rgb;										// tint
 	
 	float fogFactor = CalcPixelFogFactor( PIXELFOGTYPE, g_FogParams, g_EyePos_SpecExponent.xyz, i.worldPos_projPosZ.xyz, i.worldPos_projPosZ.w );
-	return FinalOutput( resultColor, fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, (WRITE_DEPTH_TO_DESTALPHA != 0), i.worldPos_projPosZ.w );
+	bool bWriteDepthToAlpha = (WRITE_DEPTH_TO_DESTALPHA != 0);
+	return FinalOutput( resultColor, fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_NONE, bWriteDepthToAlpha, i.worldPos_projPosZ.w );
 }

@@ -59,11 +59,12 @@ float4 main( PS_INPUT i ) : COLOR
 	if ( FLASHLIGHT != 0 )
 	{
 		float4 flashlightSpacePosition = mul( float4( i.worldPos, 1.0f ), g_FlashlightWorldToTexture );
+		bool bFlashLightDepthFilterMode = (FLASHLIGHTDEPTHFILTERMODE != 0);
 
 		diffuseLighting = DoFlashlight( g_FlashlightPos, i.worldPos, flashlightSpacePosition,
 			i.worldNormal, g_FlashlightAttenuationFactors.xyz, 
 			g_FlashlightAttenuationFactors.w, FlashlightSampler, ShadowDepthSampler,
-			NormalizeRandRotSampler, FLASHLIGHTDEPTHFILTERMODE, FLASHLIGHTSHADOWS, true, i.projPos, false, g_ShadowTweaks );
+			NormalizeRandRotSampler, bFlashLightDepthFilterMode, FLASHLIGHTSHADOWS, true, i.projPos, false, g_ShadowTweaks );
 	}
 	else // non-flashlight path
 	{
@@ -87,6 +88,5 @@ float4 main( PS_INPUT i ) : COLOR
 #endif
 
 	bool bWriteDepthToAlpha = ( WRITE_DEPTH_TO_DESTALPHA != 0 ) && ( WRITEWATERFOGTODESTALPHA == 0 );
-
 	return FinalOutput( float4( result, alpha ), fogFactor, PIXELFOGTYPE, TONEMAP_SCALE_LINEAR, bWriteDepthToAlpha, i.projPos.z );
 }

@@ -22,11 +22,11 @@ rem echo ~~~~~~ buildsdkshaders %* ~~~~~~
 set tt_all_start=%ERRORLEVEL%
 set tt_all_chkpt=%tt_start%
 
-set BUILD_SHADER=call buildshaders.bat
+set BUILD_SHADER=call _buildshaders.bat
 set ARG_EXTRA=
 
-%BUILD_SHADER% stdshader_dx9_20b		-game %GAMEDIR% -source %SOURCEDIR%
-%BUILD_SHADER% stdshader_dx9_30			-game %GAMEDIR% -source %SOURCEDIR% -force30 
+%BUILD_SHADER% _stdshader_dx9_20b		-game %GAMEDIR% -source %SOURCEDIR%
+%BUILD_SHADER% _stdshader_dx9_30			-game %GAMEDIR% -source %SOURCEDIR% -force30 
 
 
 rem echo.
