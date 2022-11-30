@@ -4207,8 +4207,10 @@ void CGameMovement::FinishUnDuckJump( trace_t &trace )
 //-----------------------------------------------------------------------------
 void CGameMovement::FinishDuck( void )
 {
+#ifndef MAPBASE_MP
 	if ( player->GetFlags() & FL_DUCKING )
 		return;
+#endif
 
 	player->AddFlag( FL_DUCKING );
 	player->m_Local.m_bDucked = true;
