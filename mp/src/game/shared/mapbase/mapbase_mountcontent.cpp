@@ -111,7 +111,7 @@ void MapBaseContent::MountGameFiles()
             CGWarning( 1, CON_GROUP_MAPBASE_MISC, "Overridden default HL2 mount logic!\n" );
         }
 
-#ifdef HL2_EPISODIC
+#ifdef HL2MP
         // Half Life 2 Deathmatch
         if ( !gotHL2MP )
         {
