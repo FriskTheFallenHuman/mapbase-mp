@@ -2202,7 +2202,7 @@ void CWeaponRPG::CreateLaserPointer( void )
 	if ( pOwner == NULL )
 		return;
 
-	if ( pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+	if ( pOwner->GetAmmoCount(m_iPrimaryAmmoType) < 0 )
 		return;
 
 	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwner() );
