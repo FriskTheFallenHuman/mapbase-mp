@@ -187,7 +187,7 @@ void CWeaponHL2MPBase::Materialize( void )
 		DoMuzzleFlash();
 	}
 
-	if ( HasSpawnFlags( SF_NORESPAWN ) == false )
+	//if ( HasSpawnFlags( SF_NORESPAWN ) == false )
 	{
 		VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false );
 		SetMoveType( MOVETYPE_VPHYSICS );
@@ -195,7 +195,7 @@ void CWeaponHL2MPBase::Materialize( void )
 		HL2MPRules()->AddLevelDesignerPlacedObject( this );
 	}
 
-	if ( HasSpawnFlags( SF_NORESPAWN ) == false )
+	//if ( HasSpawnFlags( SF_NORESPAWN ) == false )
 	{
 		if ( GetOriginalSpawnOrigin() == vec3_origin )
 		{
@@ -222,52 +222,38 @@ void CWeaponHL2MPBase::FallInit( void )
 	SetModel( GetWorldModel() );
 	VPhysicsDestroyObject();
 
-	if ( HasSpawnFlags( SF_NORESPAWN ) == false )
+	// Constrained start?
+	if ( HasSpawnFlags( SF_WEAPON_START_CONSTRAINED ) )
+	{
+		//Constrain the weapon in place
+		IPhysicsObject* pReferenceObject, * pAttachedObject;
+		pReferenceObject = g_PhysWorldObject;
+		pAttachedObject = VPhysicsGetObject();
+
+		if ( pReferenceObject && pAttachedObject )
+		{
+			constraint_fixedparams_t fixed;
+			fixed.Defaults();
+			fixed.InitWithCurrentObjectState( pReferenceObject, pAttachedObject );
+
+			fixed.constraint.forceLimit = lbs2kg( 10000 );
+			fixed.constraint.torqueLimit = lbs2kg( 10000 );
+
+			IPhysicsConstraint* pConstraint = GetConstraint();
+			pConstraint = physenv->CreateFixedConstraint( pReferenceObject,
+				pAttachedObject, NULL, fixed );
+			pConstraint->SetGameData( ( void* ) this );
+		};
+	}
+	else
 	{
 		SetMoveType( MOVETYPE_NONE );
 		SetSolid( SOLID_BBOX );
 		AddSolidFlags( FSOLID_TRIGGER );
 
-		UTIL_DropToFloor( this, MASK_SOLID );
-	}
-	else
-	{
-		if ( !VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false ) )
-		{
-			SetMoveType( MOVETYPE_NONE );
-			SetSolid( SOLID_BBOX );
-			AddSolidFlags( FSOLID_TRIGGER );
-		}
-		else
-		{
-	#if !defined( CLIENT_DLL )
-			// Constrained start?
-			if ( HasSpawnFlags( SF_WEAPON_START_CONSTRAINED ) )
-			{
-				//Constrain the weapon in place
-				IPhysicsObject *pReferenceObject, *pAttachedObject;
-				
-				pReferenceObject = g_PhysWorldObject;
-				pAttachedObject = VPhysicsGetObject();
-
-				if ( pReferenceObject && pAttachedObject )
-				{
-					constraint_fixedparams_t fixed;
-					fixed.Defaults();
-					fixed.InitWithCurrentObjectState( pReferenceObject, pAttachedObject );
-					
-					fixed.constraint.forceLimit	= lbs2kg( 10000 );
-					fixed.constraint.torqueLimit = lbs2kg( 10000 );
-
-					IPhysicsConstraint *pConstraint = GetConstraint();
-
-					pConstraint = physenv->CreateFixedConstraint( pReferenceObject, pAttachedObject, NULL, fixed );
-
-					pConstraint->SetGameData( (void *) this );
-				}
-			}
-	#endif //CLIENT_DLL
-		}
+		//any difference?
+		if ( HasSpawnFlags( SF_NORESPAWN ) == false ) UTIL_DropToFloor( this, MASK_SOLID );
+		else VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false );
 	}
 
 	SetPickupTouch();
