@@ -4431,7 +4431,7 @@ void CBaseEntity::OnEntityEvent( EntityEvent_t event, void *pEventData )
 
 	if ( m_nSlimeTouch > 0 )
 	{
- 		nNewContents |= CONTENTS_SLIME;
+		nNewContents |= CONTENTS_SLIME;
 	}
 
 	if (( nNewContents & MASK_WATER ) == 0)
@@ -6087,7 +6087,7 @@ void CC_Find_Ent( const CCommand& args )
 	}
 
 	int iCount = 0;
- 	const char *pszSubString = args[1];
+	const char *pszSubString = args[1];
 	Msg("Searching for entities with class/target name containing substring: '%s'\n", pszSubString );
 
 	CBaseEntity *ent = NULL;
@@ -6115,7 +6115,7 @@ void CC_Find_Ent( const CCommand& args )
 
 		if ( bMatches )
 		{
- 			iCount++;
+			iCount++;
 			Msg("   '%s' : '%s' (entindex %d) \n", ent->GetClassname(), ent->GetEntityName().ToCStr(), ent->entindex() );
 		}
 	}
@@ -7160,14 +7160,6 @@ void CBaseEntity::SetLocalOrigin( const Vector& origin )
 
 void CBaseEntity::SetLocalAngles( const QAngle& angles )
 {
-	// NOTE: The angle normalize is a little expensive, but we can save
-	// a bunch of time in interpolation if we don't have to invalidate everything
-	// and sometimes it's off by a normalization amount
-
-	// FIXME: The normalize caused problems in server code like momentary_rot_button that isn't
-	//        handling things like +/-180 degrees properly. This should be revisited.
-	//QAngle angleNormalize( AngleNormalize( angles.x ), AngleNormalize( angles.y ), AngleNormalize( angles.z ) );
-
 	// Safety check against NaN's or really huge numbers
 	if ( !IsEntityQAngleReasonable( angles ) )
 	{
@@ -7176,7 +7168,11 @@ void CBaseEntity::SetLocalAngles( const QAngle& angles )
 			Warning( "Bad SetLocalAngles(%f,%f,%f) on %s\n", angles.x, angles.y, angles.z, GetDebugName() );
 		}
 		AssertMsg( false, "Bad SetLocalAngles(%f,%f,%f) on %s\n", angles.x, angles.y, angles.z, GetDebugName() );
-		return;
+
+		// NOTE: The angle normalize is a little expensive, but we can save a bunch of time in interpolation
+		// if we don't have to invalidate everything and sometimes it's off by a normalization amount
+		return SetLocalAngles( QAngle( AngleNormalizePositive( angles.x), AngleNormalizePositive( angles.y ),
+			AngleNormalizePositive( angles.z ) ) );;
 	}
 
 	if (m_angRotation != angles)
@@ -9705,7 +9701,7 @@ void CBaseEntity::SUB_FadeOut( void  )
 		SetRenderColorA( 255 );
 		return;
 	}
-    
+	
 	SUB_PerformFadeOut();
 
 	if ( m_clrRender->a == 0 )
@@ -9735,7 +9731,7 @@ void CBaseEntity::SUB_RemoveWhenNotVisible( void )
 		SetRenderColorA( 255 );
 		return;
 	}
-    
+	
 	SetRenderColorA( m_clrRender->a - 1 );
 
 	if ( m_clrRender->a == 0 )

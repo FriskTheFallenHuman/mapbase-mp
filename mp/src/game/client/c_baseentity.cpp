@@ -1959,7 +1959,7 @@ void C_BaseEntity::SetMoveType( MoveType_t val, MoveCollide_t moveCollide /*= MO
 	}
 #endif
 
- 	m_MoveType = val;
+	m_MoveType = val;
 	SetMoveCollide( moveCollide );
 }
 
@@ -4386,13 +4386,14 @@ vec_t C_BaseEntity::GetLocalAnglesDim( int iDim ) const
 // Prevent these for now until hierarchy is properly networked
 void C_BaseEntity::SetLocalAngles( const QAngle& angles )
 {
-	// NOTE: The angle normalize is a little expensive, but we can save
-	// a bunch of time in interpolation if we don't have to invalidate everything
-	// and sometimes it's off by a normalization amount
-
-	// FIXME: The normalize caused problems in server code like momentary_rot_button that isn't
-	//        handling things like +/-180 degrees properly. This should be revisited.
-	//QAngle angleNormalize( AngleNormalize( angles.x ), AngleNormalize( angles.y ), AngleNormalize( angles.z ) );
+	// Safety check against NaN's or really huge numbers
+	if ( !IsEntityQAngleReasonable( angles ) )
+	{
+		// NOTE: The angle normalize is a little expensive, but we can save a bunch of time in interpolation
+		// if we don't have to invalidate everything and sometimes it's off by a normalization amount
+		return SetLocalAngles( QAngle( AngleNormalizePositive( angles.x ), AngleNormalizePositive( angles.y ),
+			AngleNormalizePositive( angles.z ) ) );
+	}
 
 	if (m_angRotation != angles)
 	{
@@ -6349,7 +6350,7 @@ void C_BaseEntity::SetToolRecording( bool recording )
 	}
 	else
 	{
-        recordinglist->RemoveFromList( GetClientHandle() );
+		recordinglist->RemoveFromList( GetClientHandle() );
 	}
 #endif
 }
