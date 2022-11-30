@@ -86,6 +86,9 @@ ConVar sv_turbophysics( "sv_turbophysics", "0", FCVAR_REPLICATED, "Turns on turb
 
 #ifdef MAPBASE
 ConVar mapbase_prop_consistency_noremove("mapbase_prop_consistency_noremove", "1", FCVAR_NONE, "Prevents the removal of props when their classes do not match up with their models' propdata.");
+#ifdef MAPBASE_MP
+ConVar prop_allow_yoyo_trick("prop_allow_yoyo_trick", "1", FCVAR_ARCHIVE | FCVAR_CHEAT | FCVAR_REPLICATED, "Allows the Prop Yoyo trick to work.");
+#endif
 #endif
 
 #ifdef HL2_EPISODIC
@@ -3385,6 +3388,14 @@ void CPhysicsProp::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t r
 			SetCollisionGroup( COLLISION_GROUP_INTERACTIVE_DEBRIS );
 		}
 	}
+
+#ifdef MAPBASE_MP
+	if ( prop_allow_yoyo_trick.GetBool() && pPhysicsObject && ( pPhysicsObject->GetGameFlags() & FVPHYSICS_WAS_THROWN ) )
+	{
+		PhysClearGameFlags( pPhysicsObject, FVPHYSICS_WAS_THROWN );
+		m_bFirstCollisionAfterLaunch = false;
+	}
+#endif
 
 	m_OnPhysGunPickup.FireOutput( pPhysGunUser, this );
 
