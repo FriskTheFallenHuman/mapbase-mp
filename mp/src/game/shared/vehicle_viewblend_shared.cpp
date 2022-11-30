@@ -281,18 +281,17 @@ void SharedVehicleViewSmoothing(CBasePlayer *pPlayer,
 		{
 			pData->bRunningEnterExit = false;
 
+#ifdef CLIENT_DLL
 			// Enter animation has finished, align view with the eye attachment point
 			// so they can start mouselooking around.
-			if ( !bExitAnimOn )
+			if ( !bExitAnimOn && pPlayer->IsLocalPlayer() )
 			{
 				Vector localEyeOrigin;
 				QAngle localEyeAngles;
-
 				pData->pVehicle->GetAttachmentLocal( eyeAttachmentIndex, localEyeOrigin, localEyeAngles );
-#ifdef CLIENT_DLL
 				engine->SetViewAngles( localEyeAngles );
-#endif
 			}
+#endif // CLIENT_DLL
 		}
 	}
 
