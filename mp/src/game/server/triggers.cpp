@@ -2770,7 +2770,7 @@ void CTriggerToggleSave::Touch( CBaseEntity *pOther )
 	// Only save on clients
 	if ( !pOther->IsPlayer() )
 		return;
-    
+	
 	// Can be re-enabled
 	m_bDisabled = true;
 
@@ -2845,7 +2845,7 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 		}
 	}
 
-    // this is a one-way transition - there is no way to return to the previous map.
+	// this is a one-way transition - there is no way to return to the previous map.
 	if ( m_bForceNewLevelUnit )
 	{
 		engine->ClearSaveDir();
@@ -3497,7 +3497,14 @@ void CTriggerCamera::Enable( void )
 			m_targetSpeed = m_pPath->m_flSpeed;
 		
 		m_flStopTime += m_pPath->GetDelay();
+
+		// Compute the distance to the next path already:
+		m_vecMoveDir = m_pPath->GetLocalOrigin() - GetLocalOrigin();
+		m_moveDistance = VectorNormalize( m_vecMoveDir );
+		m_flStopTime = gpGlobals->curtime + m_pPath->GetDelay();
 	}
+	else
+		m_moveDistance = 0.0f;
 
 
 	// copy over player information. If we're interpolating from
@@ -3542,7 +3549,7 @@ void CTriggerCamera::Enable( void )
 	}
 
 	// Only track if we have a target
-	if ( m_hTarget )
+	if ( m_hTarget || ( m_moveDistance > 0 && m_pPath ) || HasSpawnFlags( SF_CAMERA_PLAYER_INTERRUPT ) )
 	{
 		// follow the player down
 		SetThink( &CTriggerCamera::FollowTarget );
@@ -3663,13 +3670,7 @@ void CTriggerCamera::FollowTarget( )
 	if (m_hPlayer == NULL)
 		return;
 
-	if ( m_hTarget == NULL )
-	{
-		Disable();
-		return;
-	}
-
-	if ( !HasSpawnFlags(SF_CAMERA_PLAYER_INFINITE_WAIT) && (!m_hTarget || m_flReturnTime < gpGlobals->curtime) )
+	if ( ( !HasSpawnFlags( SF_CAMERA_PLAYER_INFINITE_WAIT ) && ( m_flReturnTime < gpGlobals->curtime ) ) || ( !m_hTarget && !m_pPath ) )
 	{
 		Disable();
 		return;
@@ -3748,6 +3749,8 @@ void CTriggerCamera::FollowTarget( )
 	SetNextThink( gpGlobals->curtime );
 
 	Move();
+
+	SetNextThink( gpGlobals->curtime );
 }
 
 void CTriggerCamera::StartCameraShot( const char *pszShotType, CBaseEntity *pSceneEntity, CBaseEntity *pActor1, CBaseEntity *pActor2, float duration )
