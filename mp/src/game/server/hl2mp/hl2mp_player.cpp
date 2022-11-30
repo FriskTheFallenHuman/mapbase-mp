@@ -18,6 +18,7 @@
 #include "team.h"
 #include "weapon_hl2mpbase.h"
 #include "grenade_satchel.h"
+#include "grenade_tripmine.h"
 #include "eventqueue.h"
 #include "gamestats.h"
 #include "tier0/vprof.h"
@@ -1161,6 +1162,43 @@ ReturnSpot:
 	return pSpot;
 } 
 
+void CHL2MP_Player::InitialSpawn( void )
+{
+	BaseClass::InitialSpawn();
+
+#if !defined(NO_STEAM)
+	uint64 thisSteamID = GetSteamIDAsUInt64();
+	const CEntInfo* pInfo = gEntList.FirstEntInfo();
+
+	for ( ; pInfo; pInfo = pInfo->m_pNext )
+	{
+		CBaseEntity* pEntity = ( CBaseEntity* ) pInfo->m_pEntity;
+		if ( !pEntity )
+		{
+			CGWarning( 1, CON_GROUP_MAPBASE_MISC, "NULL entity in global entity list!\n");
+			continue;
+		}
+
+		if ( pEntity->ClassMatches( "npc_satchel" ) )
+		{
+			CSatchelCharge* pSatchel = dynamic_cast< CSatchelCharge* >( pEntity );
+			if ( pSatchel && pSatchel->m_bIsLive && !pSatchel->GetThrower() && pSatchel->GetSteamID() == thisSteamID )
+			{
+				pSatchel->SetThrower( this );
+			}
+		}
+		else if ( pEntity->ClassMatches( "npc_tripmine" ) )
+		{
+			CTripmineGrenade* pMine = dynamic_cast< CTripmineGrenade* >( pEntity );
+			if ( pMine && pMine->m_bIsLive && !pMine->GetThrower() && pMine->GetSteamID() == thisSteamID )
+			{
+				pMine->SetThrower( this );
+				pMine->m_hOwner = this;
+			}
+		}
+	}
+#endif
+}
 
 CON_COMMAND( timeleft, "prints the time remaining in the match" )
 {

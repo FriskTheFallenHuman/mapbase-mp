@@ -12,6 +12,7 @@
 #endif
 
 #include "basegrenade_shared.h"
+#include "hl2mp/weapon_slam.h"
 
 class CBeam;
 
@@ -19,7 +20,7 @@ class CBeam;
 #include "vphysics/constraints.h"
 
 
-class CTripmineGrenade : public CBaseGrenade
+class CTripmineGrenade : public CBaseGrenade, public CSteamIDWeapon
 {
 public:
 	DECLARE_CLASS( CTripmineGrenade, CBaseGrenade );

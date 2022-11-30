@@ -28,6 +28,17 @@ enum
 #define CWeapon_SLAM C_Weapon_SLAM
 #endif
 
+#ifndef NO_STEAM
+class CSteamIDWeapon
+{
+	uint64 m_nSteamID;
+public:
+	CSteamIDWeapon();
+	uint64 GetSteamID()const;
+	void SetSteamID( uint64 steamID );
+};
+#endif // NO_STEAM
+
 class CWeapon_SLAM : public CBaseHL2MPCombatWeapon
 {
 public:

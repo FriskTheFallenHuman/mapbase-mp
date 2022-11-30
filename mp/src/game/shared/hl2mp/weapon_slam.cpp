@@ -15,7 +15,7 @@
 #else
 	#include "hl2mp_player.h"
 	#include "hl2mp/grenade_tripmine.h" // Load the hl2mp version!
-	#include "grenade_satchel.h"
+	#include "hl2mp/grenade_satchel.h" // Load the hl2mp version!
 	#include "entitylist.h"
 	#include "eventqueue.h"
 #endif
@@ -120,6 +120,23 @@ acttable_t	CWeapon_SLAM::m_acttable[] =
 
 IMPLEMENT_ACTTABLE(CWeapon_SLAM);
 
+
+#ifndef NO_STEAM
+CSteamIDWeapon::CSteamIDWeapon()
+{
+	m_nSteamID = 0;
+}
+
+uint64 CSteamIDWeapon::GetSteamID()const
+{
+	return m_nSteamID;
+}
+
+void CSteamIDWeapon::SetSteamID( uint64 steamID )
+{
+	m_nSteamID = steamID;
+}
+#endif // !NO_STEAM
 
 void CWeapon_SLAM::Spawn( )
 {
@@ -392,6 +409,11 @@ void CWeapon_SLAM::TripmineAttach( void )
 			CBaseEntity *pEnt = CBaseEntity::Create( "npc_tripmine", tr.endpos + tr.plane.normal * 3, angles, NULL );
 
 			CTripmineGrenade *pMine = (CTripmineGrenade *)pEnt;
+#if !defined(NO_STEAM)
+			CBasePlayer* pPlayer = dynamic_cast< CBasePlayer* >( pOwner );
+			if ( pPlayer )
+				pMine->SetSteamID( pPlayer->GetSteamIDAsUInt64() );
+#endif
 			pMine->m_hOwner = GetOwner();
 			// Attempt to attach to entity, or just sit still in place.
 			pMine->AttachToEntity( pEntity );
@@ -507,6 +529,9 @@ void CWeapon_SLAM::SatchelThrow( void )
 
 	if ( pSatchel )
 	{
+#if !defined(NO_STEAM)
+		pSatchel->SetSteamID( pPlayer->GetSteamIDAsUInt64() );
+#endif
 		pSatchel->SetThrower( GetOwner() );
 		pSatchel->ApplyAbsVelocityImpulse( vecThrow );
 		pSatchel->SetLocalAngularVelocity( QAngle( 0, 400, 0 ) );
@@ -590,6 +615,11 @@ void CWeapon_SLAM::SatchelAttach( void )
 			tr.endpos.z -= 6.0f;
 					
 			CSatchelCharge *pSatchel	= (CSatchelCharge*)CBaseEntity::Create( "npc_satchel", tr.endpos + tr.plane.normal * 3, angles, NULL );
+#if !defined(NO_STEAM)
+			CBasePlayer* pPlayer = dynamic_cast< CBasePlayer* >( pOwner );
+			if( pPlayer )
+				pSatchel->SetSteamID( pPlayer->GetSteamIDAsUInt64() );
+#endif
 			pSatchel->SetMoveType( MOVETYPE_FLY ); // no gravity
 			pSatchel->m_bIsAttached		= true;
 			pSatchel->m_bIsLive			= true;
@@ -755,6 +785,13 @@ bool CWeapon_SLAM::CanAttachSLAM( void )
 			CBaseEntity *pEntity = tr.m_pEnt;
 			CBaseCombatCharacter *pBCC		= ToBaseCombatCharacter( pEntity );
 			if (pBCC)
+			{
+				return false;
+			}
+
+			//block attaching to another SLAM
+			CBaseGrenade* pGrenade = dynamic_cast< CBaseGrenade* >( pEntity );
+			if ( pGrenade )
 			{
 				return false;
 			}
