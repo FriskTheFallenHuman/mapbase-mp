@@ -102,7 +102,7 @@ void FX_RicochetSound( const Vector& pos )
 {
 	Vector org = pos;
 	CLocalPlayerFilter filter;
- 	C_BaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "FX_RicochetSound.Ricochet", &org );
+	C_BaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "FX_RicochetSound.Ricochet", &org );
 }
 
 //-----------------------------------------------------------------------------

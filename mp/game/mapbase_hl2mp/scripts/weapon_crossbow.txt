@@ -9,6 +9,8 @@ WeaponData
 	"anim_prefix"	"bow"
 	"bucket"			"3"
 	"bucket_position"	"1"
+	"bucket_360"			"0"
+	"bucket_position_360"	"2"
 
 	"clip_size"		"1"
 	"default_clip"		"5"
@@ -17,8 +19,6 @@ WeaponData
 
 	"weight"		"6"
 	"item_flags"		"0"
-
-	"damage"		"100"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -42,9 +42,14 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"g"
 		}
+		"weapon_small"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"g"
+		}
 		"ammo"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"w"
 		}
 		"crosshair"

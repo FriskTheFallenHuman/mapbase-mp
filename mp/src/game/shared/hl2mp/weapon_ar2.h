@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose:		Projectile shot from the AR2 
 //
@@ -41,12 +41,23 @@ public:
 
 	void	AddViewKick( void );
 
+#ifdef GAME_DLL
+	void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+	void	FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
+	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+#endif
+
 	int		GetMinBurst( void ) { return 2; }
 	int		GetMaxBurst( void ) { return 5; }
 	float	GetFireRate( void ) { return 0.1f; }
 
 	bool	CanHolster( void );
 	bool	Reload( void );
+
+#ifdef GAME_DLL
+	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+#endif
 
 	Activity	GetPrimaryAttackActivity( void );
 	
@@ -74,9 +85,13 @@ protected:
 	float					m_flDelayedFire;
 	bool					m_bShotDelayed;
 	int						m_nVentPose;
-	
-#ifndef CLIENT_DLL
+
+#ifdef MAPBASE // Make act table accessible outside class
+public:
+#endif	
 	DECLARE_ACTTABLE();
+#ifdef GAME_DLL
+	DECLARE_DATADESC();
 #endif
 };
 

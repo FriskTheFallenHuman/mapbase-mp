@@ -15,7 +15,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp"
+		$AdditionalIncludeDirectories	"$BASE;$SRCDIR\game\shared\hl2,.\hl2,.\hl2mp,$SRCDIR\game\shared\hl2mp,$SRCDIR\game\shared\Multiplayer"
 		$PreprocessorDefinitions		"$BASE;HL2MP;HL2_DLL"
 	}
 }
@@ -42,24 +42,24 @@ $Project "Server (HL2MP)"
 		$File	"$SRCDIR\game\shared\ragdoll_shared.h"
 		$File	"$SRCDIR\game\shared\solidsetdefaults.h"
 		$File	"$SRCDIR\game\shared\hl2\survival_gamerules.cpp"
-		$File	"team_objectiveresource.cpp"
-		$File	"team_objectiveresource.h"
-		$File	"team_spawnpoint.cpp"
-		$File	"team_spawnpoint.h"
-		$File	"team_control_point.cpp"
-		$File	"team_control_point.h"
-		$File	"team_control_point_master.cpp"
-		$File	"team_control_point_master.h"
-		$File	"team_control_point_round.cpp"
-		$File	"team_control_point_round.h"
-		$File	"team_train_watcher.cpp"
-		$File	"team_train_watcher.h"
-		$File	"$SRCDIR\game\shared\teamplayroundbased_gamerules.cpp"
+		//$File	"team_objectiveresource.cpp"
+		//$File	"team_objectiveresource.h"
+		//$File	"team_spawnpoint.cpp"
+		//$File	"team_spawnpoint.h"
+		//$File	"team_control_point.cpp"
+		//$File	"team_control_point.h"
+		//$File	"team_control_point_master.cpp"
+		//$File	"team_control_point_master.h"
+		//$File	"team_control_point_round.cpp"
+		//$File	"team_control_point_round.h"
+		//$File	"team_train_watcher.cpp"
+		//$File	"team_train_watcher.h"
+		//$File	"$SRCDIR\game\shared\teamplayroundbased_gamerules.cpp"
 		$File	"$SRCDIR\game\shared\touchlink.h"
-		$File	"trigger_area_capture.cpp"
-		$File	"trigger_area_capture.h"
-		$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
-		$File   "$SRCDIR\game\shared\teamplay_round_timer.h"
+		//$File	"trigger_area_capture.cpp"
+		//$File	"trigger_area_capture.h"
+		//$File   "$SRCDIR\game\shared\teamplay_round_timer.cpp"
+		//$File   "$SRCDIR\game\shared\teamplay_round_timer.h"
 
 		$Folder	"HL2 DLL"
 		{
@@ -254,6 +254,8 @@ $Project "Server (HL2MP)"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_gamerules.h"
 			$File	"hl2mp\hl2mp_player.cpp"
 			$File	"hl2mp\hl2mp_player.h"
+			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_playeranimstate.cpp"
+			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_playeranimstate.h"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_player_shared.cpp"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_player_shared.h"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_weapon_parse.cpp"
@@ -291,6 +293,12 @@ $Project "Server (HL2MP)"
 				$File	"$SRCDIR\game\shared\hl2mp\weapon_smg1.cpp"
 				$File	"$SRCDIR\game\shared\hl2mp\weapon_stunstick.cpp"
 			}
+		}
+
+		$Folder	"Multiplayer"
+		{
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.h"
 		}
 	}
 }

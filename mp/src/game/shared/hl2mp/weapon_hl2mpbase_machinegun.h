@@ -1,16 +1,16 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 //=============================================================================//
-
-#include "weapon_hl2mpbase.h"
-
 #ifndef BASEHLCOMBATWEAPON_H
 #define BASEHLCOMBATWEAPON_H
 #ifdef _WIN32
 #pragma once
 #endif
+
+#include "weapon_hl2mpbase.h"
+#include "weapon_hl2mpbasehlmpcombatweapon.h"
 
 #if defined( CLIENT_DLL )
 	#define CHL2MPMachineGun C_HL2MPMachineGun
@@ -19,10 +19,10 @@
 //=========================================================
 // Machine gun base class
 //=========================================================
-class CHL2MPMachineGun : public CWeaponHL2MPBase
+class CHL2MPMachineGun : public CBaseHL2MPCombatWeapon
 {
 public:
-	DECLARE_CLASS( CHL2MPMachineGun, CWeaponHL2MPBase );
+	DECLARE_CLASS( CHL2MPMachineGun, CBaseHL2MPCombatWeapon);
 	DECLARE_DATADESC();
 
 	CHL2MPMachineGun();
@@ -35,6 +35,9 @@ public:
 	// Default calls through to m_hOwner, but plasma weapons can override and shoot projectiles here.
 	virtual void	ItemPostFrame( void );
 	virtual void	FireBullets( const FireBulletsInfo_t &info );
+#ifdef GAME_DLL
+	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
+#endif // GAME_DLL
 	virtual bool	Deploy( void );
 
 	virtual const Vector &GetBulletSpread( void );

@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -16,6 +16,7 @@
 #pragma once
 
 #include "gamerules.h"
+#include "hl2_gamerules.h"
 #include "teamplay_gamerules.h"
 #include "gamevars_shared.h"
 
@@ -38,10 +39,10 @@ enum
 	#define CHL2MPGameRulesProxy C_HL2MPGameRulesProxy
 #endif
 
-class CHL2MPGameRulesProxy : public CGameRulesProxy
+class CHL2MPGameRulesProxy : public CHalfLife2Proxy
 {
 public:
-	DECLARE_CLASS( CHL2MPGameRulesProxy, CGameRulesProxy );
+	DECLARE_CLASS( CHL2MPGameRulesProxy, CHalfLife2Proxy );
 	DECLARE_NETWORKCLASS();
 };
 
@@ -79,21 +80,18 @@ public:
 	Vector m_vCrouchTraceMax;	
 };
 
-class CHL2MPRules : public CTeamplayRules
+class CHL2MPRules : public CHalfLife2
 {
 public:
-	DECLARE_CLASS( CHL2MPRules, CTeamplayRules );
+	DECLARE_CLASS( CHL2MPRules, CHalfLife2 );
 
 #ifdef CLIENT_DLL
-
 	DECLARE_CLIENTCLASS_NOBASE(); // This makes datatables able to access our private vars.
-
 #else
-
 	DECLARE_SERVERCLASS_NOBASE(); // This makes datatables able to access our private vars.
 #endif
 	
-	CHL2MPRules();
+			CHL2MPRules();
 	virtual ~CHL2MPRules();
 
 	virtual void Precache( void );
@@ -145,7 +143,7 @@ public:
 	
 	bool	IsTeamplay( void ) { return m_bTeamPlayEnabled;	}
 	void	CheckAllPlayersReady( void );
-
+	
 	virtual bool IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer );
 	
 private:

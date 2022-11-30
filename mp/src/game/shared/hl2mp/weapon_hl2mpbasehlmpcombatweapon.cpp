@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -37,7 +37,8 @@ BEGIN_DATADESC( CBaseHL2MPCombatWeapon )
 	DEFINE_FIELD( m_bLowered,			FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_flRaiseTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_flHolsterTime,		FIELD_TIME ),
-
+	DEFINE_FIELD( m_iPrimaryAttacks,	FIELD_INTEGER ),
+	DEFINE_FIELD( m_iSecondaryAttacks,	FIELD_INTEGER ),
 END_DATADESC()
 
 #endif
@@ -161,9 +162,9 @@ bool CBaseHL2MPCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 bool CBaseHL2MPCombatWeapon::WeaponShouldBeLowered( void )
 {
 	// Can't be in the middle of another animation
-  	if ( GetIdealActivity() != ACT_VM_IDLE_LOWERED && GetIdealActivity() != ACT_VM_IDLE &&
+	if ( GetIdealActivity() != ACT_VM_IDLE_LOWERED && GetIdealActivity() != ACT_VM_IDLE &&
 		 GetIdealActivity() != ACT_VM_IDLE_TO_LOWERED && GetIdealActivity() != ACT_VM_LOWERED_TO_IDLE )
-  		return false;
+		return false;
 
 	if ( m_bLowered )
 		return true;
@@ -186,6 +187,12 @@ void CBaseHL2MPCombatWeapon::WeaponIdle( void )
 	//See if we should idle high or low
 	if ( WeaponShouldBeLowered() )
 	{
+#if !defined( CLIENT_DLL )
+		CHL2MP_Player *pPlayer = ToHL2MPPlayer( GetOwner() );
+		if( pPlayer )
+			pPlayer->Weapon_Lower();
+#endif
+
 		// Move to lowered position if we're not there yet
 		if ( GetActivity() != ACT_VM_IDLE_LOWERED && GetActivity() != ACT_VM_IDLE_TO_LOWERED 
 			 && GetActivity() != ACT_TRANSITION )
@@ -302,6 +309,14 @@ float CBaseHL2MPCombatWeapon::CalcViewmodelBob( void )
 	g_lateralBob = speed*0.005f;
 	g_lateralBob = g_lateralBob*0.3 + g_lateralBob*0.7*sin(cycle);
 	g_lateralBob = clamp( g_lateralBob, -7.0f, 4.0f );
+
+#ifdef MAPBASE
+	if ( GetBobScale() != 1.0f )
+	{
+		//g_verticalBob *= GetBobScale();
+		g_lateralBob *= GetBobScale();
+	}
+#endif
 	
 	//NOTENOTE: We don't use this return value in our case (need to restructure the calculation function setup!)
 	return 0.0f;
@@ -414,3 +429,4 @@ const WeaponProficiencyInfo_t *CBaseHL2MPCombatWeapon::GetDefaultProficiencyValu
 }
 
 #endif
+

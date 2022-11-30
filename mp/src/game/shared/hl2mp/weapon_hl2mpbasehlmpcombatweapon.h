@@ -1,4 +1,3 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
 #ifndef WEAPON_BASEHL2MPCOMBATWEAPON_SHARED_H
 #define WEAPON_BASEHL2MPCOMBATWEAPON_SHARED_H
 #ifdef _WIN32
@@ -48,6 +47,9 @@ public:
 	static const	WeaponProficiencyInfo_t *GetDefaultProficiencyValues();
 
 	virtual void	ItemHolsterFrame( void );
+
+	int				m_iPrimaryAttacks;		// # of primary attacks performed with this weapon
+	int				m_iSecondaryAttacks;	// # of secondary attacks performed with this weapon
 
 protected:
 

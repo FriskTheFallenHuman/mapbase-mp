@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -39,7 +39,19 @@
 
 extern void respawn(CBaseEntity *pEdict, bool fCopyCorpse);
 
-extern bool FindInList( const char **pStrings, const char *pToFind );
+// Utility function
+bool FindInList( const char **pStrings, const char *pToFind )
+{
+	int i = 0;
+	while ( pStrings[i][0] != 0 )
+	{
+		if ( Q_stricmp( pStrings[i], pToFind ) == 0 )
+			return true;
+		i++;
+	}
+
+	return false;
+}
 
 ConVar sv_hl2mp_weapon_respawn_time( "sv_hl2mp_weapon_respawn_time", "20", FCVAR_GAMEDLL | FCVAR_NOTIFY );
 ConVar sv_hl2mp_item_respawn_time( "sv_hl2mp_item_respawn_time", "30", FCVAR_GAMEDLL | FCVAR_NOTIFY );
@@ -198,6 +210,10 @@ CHL2MPRules::CHL2MPRules()
 	m_bTeamPlayEnabled = teamplay.GetBool();
 	m_flIntermissionEndTime = 0.0f;
 	m_flGameStartTime = 0;
+
+#ifdef MAPBASE_MP
+	InitDefaultAIRelationships();
+#endif
 
 	m_hRespawnableItemsAndWeapons.RemoveAll();
 	m_tmNextPeriodicThink = 0;
@@ -848,7 +864,7 @@ bool CHL2MPRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 {
 	return true;
 }
- 
+
 float CHL2MPRules::GetMapRemainingTime()
 {
 	// if timelimit is disabled, return 0
@@ -904,6 +920,7 @@ bool CHL2MPRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 	return false;
 }
 
+#ifndef MAPBASE_MP
 // shared ammo definition
 // JAY: Trying to make a more physical bullet response
 #define BULLET_MASS_GRAINS_TO_LB(grains)	(0.002285*(grains)/16.0f)
@@ -939,6 +956,7 @@ CAmmoDef *GetAmmoDef()
 
 	return &def;
 }
+#endif // MAPBASE_MP
 
 #ifdef CLIENT_DLL
 
@@ -995,6 +1013,7 @@ CAmmoDef *GetAmmoDef()
 
 #ifndef CLIENT_DLL
 
+//Tony; Re-working restart game so that it cleans up safely, and then respawns everyone.
 void CHL2MPRules::RestartGame()
 {
 	// bounds check
@@ -1009,9 +1028,7 @@ void CHL2MPRules::RestartGame()
 		m_flGameStartTime.GetForModify() = 0.0f;
 	}
 
-	CleanUpMap();
-	
-	// now respawn all players
+	// Pre Map Cleanup
 	for (int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CHL2MP_Player *pPlayer = (CHL2MP_Player*) UTIL_PlayerByIndex( i );
@@ -1019,16 +1036,45 @@ void CHL2MPRules::RestartGame()
 		if ( !pPlayer )
 			continue;
 
-		if ( pPlayer->GetActiveWeapon() )
+		//Tony; if they aren't a spectator, make sure they get cleaned up before entities are removed!
+		if ( pPlayer->GetTeamNumber() != TEAM_SPECTATOR )
 		{
-			pPlayer->GetActiveWeapon()->Holster();
+				// If they're in a vehicle, make sure they get out!
+				if ( pPlayer->IsInAVehicle() )
+					pPlayer->LeaveVehicle();
+
+				QAngle angles = pPlayer->GetLocalAngles();
+
+				angles.x = 0;
+				angles.z = 0;
+
+				pPlayer->SetLocalAngles( angles );
+				CBaseCombatWeapon *pWeapon = (CBaseCombatWeapon*)pPlayer->GetActiveWeapon();
+				if (pWeapon)
+				{
+					pPlayer->Weapon_Detach( pWeapon );
+					UTIL_Remove( pWeapon );
+				}
 		}
-		pPlayer->RemoveAllItems( true );
-		respawn( pPlayer, false );
-		pPlayer->Reset();
+		pPlayer->RemoveAllItems(true);
+		pPlayer->ClearActiveWeapon();
+		pPlayer->ResetScores();
 	}
 
-	// Respawn entities (glass, doors, etc..)
+	CleanUpMap();
+	
+	// now that everything is cleaned up, respawn everyone.
+	for (int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CHL2MP_Player *pPlayer = (CHL2MP_Player*) UTIL_PlayerByIndex( i );
+
+		if ( !pPlayer )
+			continue;
+
+		//Tony; if they aren't a spectator, respawn them.
+		if ( pPlayer->GetTeamNumber() != TEAM_SPECTATOR )
+			pPlayer->Spawn();
+	}
 
 	CTeam *pRebels = GetGlobalTeam( TEAM_REBELS );
 	CTeam *pCombine = GetGlobalTeam( TEAM_COMBINE );

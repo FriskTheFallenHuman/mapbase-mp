@@ -14,7 +14,7 @@ $Configuration
 {
 	$Compiler
 	{
-		$AdditionalIncludeDirectories		"$BASE;hl2mp\ui,.\hl2mp,$SRCDIR\game\shared\hl2mp,.\hl2,.\hl2\elements,$SRCDIR\game\shared\hl2"
+		$AdditionalIncludeDirectories		"$BASE;.\hl2mp\ui,.\hl2mp,$SRCDIR\game\shared\hl2mp,.\hl2,$SRCDIR\game\shared\hl2,$SRCDIR\game\shared\Multiplayer"
 		$PreprocessorDefinitions			"$BASE;HL2MP;HL2_CLIENT_DLL"
 	}
 }
@@ -25,15 +25,15 @@ $Project "Client (HL2MP)"
 	{
 		-$File	"$SRCDIR\game\shared\weapon_parse_default.cpp"
 
-		$File	"c_team_objectiveresource.cpp"
-		$File	"c_team_objectiveresource.h"
-		$File	"c_team_train_watcher.cpp"
-		$File	"c_team_train_watcher.h"
+		//$File	"c_team_objectiveresource.cpp"
+		//$File	"c_team_objectiveresource.h"
+		//$File	"c_team_train_watcher.cpp"
+		//$File	"c_team_train_watcher.h"
 		$File	"hud_voicestatus.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.cpp"
 		$File	"$SRCDIR\game\shared\predicted_viewmodel.h"
-		$File	"$SRCDIR\game\shared\teamplay_round_timer.cpp"
-		$File	"$SRCDIR\game\shared\teamplay_round_timer.h"
+		//$File	"$SRCDIR\game\shared\teamplay_round_timer.cpp"
+		//$File	"$SRCDIR\game\shared\teamplay_round_timer.h"
 
 		$Folder	"HL2 DLL"
 		{
@@ -123,6 +123,8 @@ $Project "Client (HL2MP)"
 			$File	"hl2mp\clientmode_hl2mpnormal.h"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_gamerules.cpp"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_gamerules.h"
+			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_playeranimstate.cpp"
+			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_playeranimstate.h"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_player_shared.cpp"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_player_shared.h"
 			$File	"$SRCDIR\game\shared\hl2mp\hl2mp_weapon_parse.cpp"
@@ -169,6 +171,12 @@ $Project "Client (HL2MP)"
 				$File	"hl2mp\ui\hl2mptextwindow.h"
 				$File	"hl2mp\hud_deathnotice.cpp"
 			}
+		}
+
+		$Folder	"Multiplayer"
+		{
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.cpp"
+			$File	"$SRCDIR\game\shared\Multiplayer\multiplayer_animstate.h"
 		}
 	}
 }

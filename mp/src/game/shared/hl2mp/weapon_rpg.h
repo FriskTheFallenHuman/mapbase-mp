@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -20,6 +20,8 @@
 
 #endif
 
+class CMissile;
+
 #ifndef CLIENT_DLL
 #include "Sprite.h"
 #include "npcevent.h"
@@ -37,6 +39,8 @@ class CMissile : public CBaseCombatCharacter
 	DECLARE_CLASS( CMissile, CBaseCombatCharacter );
 
 public:
+	static const int EXPLOSION_RADIUS = 200;
+
 	CMissile();
 	~CMissile();
 
@@ -70,6 +74,11 @@ public:
 
 	static CMissile *Create( const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner );
 
+	void CreateDangerSounds( bool bState ){ m_bCreateDangerSounds = bState; }
+
+	static void AddCustomDetonator( CBaseEntity *pEntity, float radius, float height = -1 );
+	static void RemoveCustomDetonator( CBaseEntity *pEntity );
+
 protected:
 	virtual void DoExplosion();	
 	virtual void ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed );
@@ -86,8 +95,18 @@ protected:
 	float					m_flMarkDeadTime;
 	float					m_flDamage;
 
+	struct CustomDetonator_t
+	{
+		EHANDLE hEntity;
+		float radiusSq;
+		float halfHeight;
+	};
+
+	static CUtlVector<CustomDetonator_t> gm_CustomDetonators;
+
 private:
 	float					m_flGracePeriodEndsAt;
+	bool					m_bCreateDangerSounds;
 
 	DECLARE_DATADESC();
 };
@@ -124,6 +143,8 @@ public:
 
 	void	AimAtSpecificTarget( CBaseEntity *pTarget );
 	void	SetGuidanceHint( const char *pHintName );
+
+	void	APCSeekThink( void );
 
 	CAPCMissile			*m_pNext;
 
@@ -178,7 +199,11 @@ public:
 	void	Precache( void );
 
 	void	PrimaryAttack( void );
+#ifdef MAPBASE
+	virtual float GetFireRate( void ) { ConVarRef g_weapon_rpg_fire_rate( "g_weapon_rpg_fire_rate" ); return g_weapon_rpg_fire_rate.GetFloat(); };
+#else
 	virtual float GetFireRate( void ) { return 1; };
+#endif
 	void	ItemPostFrame( void );
 
 	void	Activate( void );
@@ -194,10 +219,24 @@ public:
 
 	virtual void Drop( const Vector &vecVelocity );
 
+#ifdef MAPBASE
+	bool	SupportsBackupActivity( Activity activity );
+#endif
+
 	int		GetMinBurst() { return 1; }
 	int		GetMaxBurst() { return 1; }
 	float	GetMinRestTime() { return 4.0; }
 	float	GetMaxRestTime() { return 4.0; }
+
+#ifdef GAME_DLL
+	bool	WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	int		WeaponRangeAttack1Condition( float flDot, float flDist );
+
+	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+#ifdef MAPBASE
+	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
+#endif
+#endif // GAME_DLL
 
 	void	StartGuiding( void );
 	void	StopGuiding( void );
@@ -218,7 +257,16 @@ public:
 	void	UpdateNPCLaserPosition( const Vector &vecTarget );
 	void	SetNPCLaserPosition( const Vector &vecTarget );
 	const Vector &GetNPCLaserPosition( void );
-	
+
+#ifdef GAME_DLL
+	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+#endif // GAME_DLL
+
+	virtual const Vector& GetBulletSpread( void )
+	{
+		static Vector cone = VECTOR_CONE_3DEGREES;
+		return cone;
+	}	
 #ifdef CLIENT_DLL
 
 	// We need to render opaque and translucent pieces
@@ -238,21 +286,24 @@ public:
 	CMaterialReference	m_hBeamMaterial;	// Used for the laser beam
 	Beam_t				*m_pBeam;			// Laser beam temp entity
 
+	//Tony; third person check thing, to destroy/reinitialize the beam ( swapping first -> third or back, etc )
+	virtual void			ThirdPersonSwitch( bool bThirdPerson );
+
 #endif	//CLIENT_DLL
 
 	CBaseEntity *GetMissile( void ) { return m_hMissile; }
 
-#ifndef CLIENT_DLL
 	DECLARE_ACTTABLE();
-#endif
 	
 protected:
 
 	CNetworkVar( bool, m_bInitialStateUpdate );
 	CNetworkVar( bool, m_bGuiding );
-	CNetworkVar( bool, m_bHideGuiding );
-
-	CNetworkHandle( CBaseEntity,	m_hMissile );
+	CNetworkVar( bool, m_bHideGuiding );		//User to override the player's wish to guide under certain circumstances
+#ifdef GAME_DLL
+	Vector				m_vecNPCLaserDot;
+#endif // GAME_DLL
+	CNetworkHandle( CBaseEntity,		m_hMissile );
 	CNetworkVar(	Vector,			m_vecLaserDot );
 
 #ifndef CLIENT_DLL

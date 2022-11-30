@@ -300,7 +300,7 @@ public:
 	virtual CBaseEntity *GetPlayerSpawnSpot( CBasePlayer *pPlayer );// Place this player on their spawnspot and face them the proper direction.
 	virtual bool IsSpawnPointValid( CBaseEntity *pSpot, CBasePlayer *pPlayer );
 
-#ifdef MAPBASE
+#if defined MAPBASE && !defined MAPBASE_MP
 	virtual bool AllowSPRespawn() { return false; }
 #endif
 

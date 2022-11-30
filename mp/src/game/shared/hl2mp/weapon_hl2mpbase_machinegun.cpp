@@ -1,15 +1,20 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 //=============================================================================//
 
 #include "cbase.h"
+#include "in_buttons.h"
+#include "gamestats.h"
 
 #if defined( CLIENT_DLL )
 	#include "c_hl2mp_player.h"
 #else
 	#include "hl2mp_player.h"
+	#include "soundent.h"
+	#include "ai_basenpc.h"
+	#include "game.h"
 #endif
 
 #include "weapon_hl2mpbase_machinegun.h"
@@ -93,7 +98,12 @@ void CHL2MPMachineGun::PrimaryAttack( void )
 
 	CHL2MP_Player *pHL2MPPlayer = ToHL2MPPlayer( pPlayer );
 
-		// Fire the bullets
+#ifdef GAME_DLL
+	m_iPrimaryAttacks++;
+	gamestats->Event_WeaponFired( pPlayer, true, GetClassname() );
+#endif // GAME_DLL
+
+	// Fire the bullets
 	FireBulletsInfo_t info;
 	info.m_iShots = iBulletsToFire;
 	info.m_vecSrc = pHL2MPPlayer->Weapon_ShootPosition( );
@@ -106,7 +116,11 @@ void CHL2MPMachineGun::PrimaryAttack( void )
 
 	//Factor in the view kick
 	AddViewKick();
-	
+
+#ifdef GAME_DLL
+	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pPlayer );
+#endif // GAME_DLL
+
 	if (!m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
 	{
 		// HEV suit - indicate out of ammo condition
@@ -115,6 +129,12 @@ void CHL2MPMachineGun::PrimaryAttack( void )
 
 	SendWeaponAnim( GetPrimaryAttackActivity() );
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	ToHL2MPPlayer(pPlayer)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+
+#ifdef GAME_DLL
+	// Register a muzzleflash for the AI
+	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -128,6 +148,33 @@ void CHL2MPMachineGun::FireBullets( const FireBulletsInfo_t &info )
 		pPlayer->FireBullets(info);
 	}
 }
+
+#ifdef GAME_DLL
+//-----------------------------------------------------------------------------
+// Purpose: Weapon firing conditions
+//-----------------------------------------------------------------------------
+int CHL2MPMachineGun::WeaponRangeAttack1Condition( float flDot, float flDist )
+{
+	if ( m_iClip1 <=0 )
+	{
+		return COND_NO_PRIMARY_AMMO;
+	}
+	else if ( flDist < m_fMinRange1 ) 
+	{
+		return COND_TOO_CLOSE_TO_ATTACK;
+	}
+	else if ( flDist > m_fMaxRange1 )
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+	else if ( flDot < 0.5f )	// UNDONE: Why check this here? Isn't the AI checking this already?
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+#endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose: 

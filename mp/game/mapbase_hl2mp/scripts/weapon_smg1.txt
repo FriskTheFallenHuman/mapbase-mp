@@ -9,6 +9,8 @@ WeaponData
 	"anim_prefix"			"smg2"
 	"bucket"				"2"
 	"bucket_position"		"0"
+	"bucket_360"			"1"
+	"bucket_position_360"	"0"
 
 	"clip_size"				"45"
 	"clip2_size"			"-1"
@@ -20,8 +22,8 @@ WeaponData
 	"secondary_ammo"		"SMG1_Grenade"
 
 	"weight"				"3"
+	"rumble"			"3"
 	"item_flags"			"0"
-	"damage"			"5"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -50,14 +52,19 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"a"
 		}
+		"weapon_small"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"a"
+		}
 		"ammo"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"r"
 		}
 		"ammo2"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"t"
 		}
 		"crosshair"

@@ -29,7 +29,7 @@
 #include "player.h"
 #endif
 
-#ifdef MAPBASE
+#if defined( MAPBASE ) && !defined ( MAPBASE_MP )
 // Special definition for differentiating between SP and HL2:DM anim states
 #define SP_ANIM_STATE 1
 #endif

@@ -88,8 +88,8 @@ void CHudHistoryResource::SetHistoryGap( int iNewHistoryGap )
 void CHudHistoryResource::AddToHistory( C_BaseCombatWeapon *weapon )
 {
 	// don't draw exhaustable weapons (grenades) since they'll have an ammo pickup icon as well
- 	if ( weapon->GetWpnData().iFlags & ITEM_FLAG_EXHAUSTIBLE )
- 		return;
+	if ( weapon->GetWpnData().iFlags & ITEM_FLAG_EXHAUSTIBLE )
+		return;
 
 	int iId = weapon->entindex();
 
@@ -337,7 +337,7 @@ void CHudHistoryResource::Paint( void )
 			case HISTSLOT_AMMO:
 				{
 					// Get the weapon we belong to
-#ifndef HL2MP
+#if !defined HL2MP || defined MAPBASE_MP
 					const FileWeaponInfo_t *pWpnInfo = gWR.GetWeaponFromAmmo( m_PickupHistory[i].iId );
 					if ( pWpnInfo && ( pWpnInfo->iMaxClip1 >= 0 || pWpnInfo->iMaxClip2 >= 0 ) )
 					{
@@ -346,7 +346,7 @@ void CHudHistoryResource::Paint( void )
 						itemAmmoIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
 					}
 					else
-#endif // HL2MP
+#endif // HL2MP || MAPBASE_MP
 					{
 						itemIcon = gWR.GetAmmoIconFromWeapon( m_PickupHistory[i].iId );
 						itemAmmoIcon = NULL;
@@ -420,13 +420,13 @@ void CHudHistoryResource::Paint( void )
 			int ypos = tall - (m_flHistoryGap * (i + 1));
 			int xpos = wide - itemIcon->Width() - m_flIconInset;
 
-#ifndef HL2MP
+#if !defined HL2MP || defined MAPBASE_MP
 			// Adjust for a half-height icon
 			if ( bHalfHeight )
 			{
 				ypos += itemIcon->Height() / 2;
 			}
-#endif // HL2MP
+#endif // !HL2MP || MAPBASE_MP
 
 			itemIcon->DrawSelf( xpos, ypos, clr );
 

@@ -9,6 +9,8 @@ WeaponData
 	"anim_prefix"			"crowbar"
 	"bucket"				"0"
 	"bucket_position"		"0"
+	"bucket_360"				"2"
+	"bucket_position_360"		"0"
 
 	"clip_size"				"-1"
 	"primary_ammo"			"None"
@@ -42,14 +44,6 @@ WeaponData
 		{
 				"font"		"WeaponIcons"
 				"character"	"c"
-		}
-		"ammo2"
-		{
-			"file"		"sprites/640hud7"
-			"x"			"48"
-			"y"			"72"
-			"width"		"24"
-			"height"	"24"
 		}
 		"crosshair"
 		{

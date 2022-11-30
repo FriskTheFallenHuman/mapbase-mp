@@ -9,6 +9,8 @@ WeaponData
 	"anim_prefix"		"python"
 	"bucket"			"1"
 	"bucket_position"	"1"
+	"bucket_360"			"0"
+	"bucket_position_360"	"1"
 
 	"clip_size"			"6"
 	"default_clip"		"6"
@@ -16,9 +18,8 @@ WeaponData
 	"secondary_ammo"	"None"
 
 	"weight"		"7"
+	"rumble"		"2"
 	"item_flags"		"0"
-
-	"damage"		"75"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -40,9 +41,14 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"e"
 		}
+		"weapon_small"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"e"
+		}
 		"ammo"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"q"
 		}
 		"crosshair"

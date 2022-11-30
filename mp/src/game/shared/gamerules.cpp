@@ -120,7 +120,9 @@ BEGIN_SCRIPTDESC_ROOT( CGameRules, SCRIPT_SINGLETON "The container of the game's
 
 	DEFINE_SCRIPTFUNC( GetGameDescription, "This is the game description that gets seen in server browsers." )
 
+#ifndef MAPBASE_MP
 	DEFINE_SCRIPTFUNC( AllowSPRespawn, "" )
+#endif
 
 	DEFINE_SCRIPTFUNC_NAMED( FAllowNPCs, "AllowNPCs", "Returns true if NPCs are allowed." )
 

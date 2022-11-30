@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Physics cannon
 //
@@ -16,6 +16,7 @@
 	#include "model_types.h"
 	#include "clienteffectprecachesystem.h"
 	#include "fx_interpvalue.h"
+	#include "input.h"
 #else
 	#include "hl2mp_player.h"
 	#include "soundent.h"
@@ -1224,7 +1225,9 @@ protected:
 	bool			m_bOldOpen;			// Used for parity checks
 
 	void			NotifyShouldTransmit( ShouldTransmitState_t state );
-
+private:
+	virtual void ThirdPersonSwitch( bool bThirdPerson );
+protected:
 #endif	// CLIENT_DLL
 
 	int		m_nChangeState;				// For delayed state change of elements
@@ -1249,10 +1252,7 @@ protected:
 
 private:
 	CWeaponPhysCannon( const CWeaponPhysCannon & );
-
-#ifndef CLIENT_DLL
 	DECLARE_ACTTABLE();
-#endif
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponPhysCannon, DT_WeaponPhysCannon )
@@ -1289,23 +1289,24 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_physcannon, CWeaponPhysCannon );
 PRECACHE_WEAPON_REGISTER( weapon_physcannon );
 
-#ifndef CLIENT_DLL
-
 acttable_t	CWeaponPhysCannon::m_acttable[] = 
 {
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_PHYSGUN,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_PHYSGUN,					false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_PHYSGUN,			false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_PHYSGUN,			false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_PHYSGUN,		false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_PHYSGUN,					false },
+	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_PHYSGUN,					false },
+	{ ACT_MP_CROUCH_IDLE,				ACT_HL2MP_IDLE_CROUCH_PHYSGUN,			false },
+
+	{ ACT_MP_RUN,						ACT_HL2MP_RUN_PHYSGUN,					false },
+	{ ACT_MP_CROUCHWALK,				ACT_HL2MP_WALK_CROUCH_PHYSGUN,			false },
+
+	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN,	false },
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_PHYSGUN,	false },
+
+	{ ACT_MP_RELOAD_STAND,				ACT_HL2MP_GESTURE_RELOAD_PHYSGUN,		false },
+	{ ACT_MP_RELOAD_CROUCH,				ACT_HL2MP_GESTURE_RELOAD_PHYSGUN,		false },
+
+	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_PHYSGUN,					false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponPhysCannon);
-
-#endif
-
 
 enum
 {
@@ -1703,7 +1704,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 			{
 				maxMass *= 2.5;	// 625 for vehicles
 			}
-			float mass = MIN(totalMass, maxMass); // max 250kg of additional force
+			float mass = min(totalMass, maxMass); // max 250kg of additional force
 
 			// Put some spin on the object
 			for ( i = 0; i < listCount; i++ )
@@ -1715,7 +1716,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 				if ( pList[i] == pEntity->VPhysicsGetObject() )
 				{
 					ratio += hitObjectFactor;
-					ratio = MIN(ratio,1.0f);
+					ratio = min(ratio,1.0f);
 				}
 				else
 				{
@@ -1770,7 +1771,7 @@ void CWeaponPhysCannon::ApplyVelocityBasedForce( CBaseEntity *pEntity, const Vec
 	float mass = pPhysicsObject->GetMass();
 	if (mass > 100)
 	{
-		mass = MIN(mass, 1000);
+		mass = min(mass, 1000);
 		float flForceMin = physcannon_minforce.GetFloat();
 		flForce = SimpleSplineRemapVal(mass, 100, 600, flForceMax, flForceMin);
 	}
@@ -2484,7 +2485,7 @@ void CWeaponPhysCannon::UpdateElementPosition( void )
 
 	float flElementPosition = m_ElementParameter.Interp( gpGlobals->curtime );
 
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		if ( pOwner != NULL )	
 		{
@@ -2601,56 +2602,26 @@ void CWeaponPhysCannon::DoEffectIdle( void )
 
 	StartEffects();
 
-	//if ( ShouldDrawUsingViewModel() )
+	// Turn on the glow sprites
+	for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
 	{
-		// Turn on the glow sprites
-		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
-		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
-		}
-
-		// Turn on the glow sprites
-		for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_ENDCAP_SPRITES); i++ )
-		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 3, 5 ) );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 200, 255 ) );
-		}
-
-		if ( m_EffectState != EFFECT_HOLDING )
-		{
-			// Turn beams off
-			m_Beams[0].SetVisible( false );
-			m_Beams[1].SetVisible( false );
-			m_Beams[2].SetVisible( false );
-		}
+		m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
+		m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
 	}
-	/*
-	else
+
+	// Turn on the glow sprites
+	for ( int i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_ENDCAP_SPRITES); i++ )
 	{
-		// Turn on the glow sprites
-		for ( int i = PHYSCANNON_GLOW1; i < (PHYSCANNON_GLOW1+NUM_GLOW_SPRITES); i++ )
-		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 0.075f, 0.05f ) * SPRITE_SCALE );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 24, 32 ) );
-		}
-
-		// Turn on the glow sprites
-		for ( i = PHYSCANNON_ENDCAP1; i < (PHYSCANNON_ENDCAP1+NUM_ENDCAP_SPRITES); i++ )
-		{
-			m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 3, 5 ) );
-			m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 200, 255 ) );
-		}
-		
-		if ( m_EffectState != EFFECT_HOLDING )
-		{
-			// Turn beams off
-			m_Beams[0].SetVisible( false );
-			m_Beams[1].SetVisible( false );
-			m_Beams[2].SetVisible( false );
-		}
+		m_Parameters[i].GetScale().SetAbsolute( random->RandomFloat( 3, 5 ) );
+		m_Parameters[i].GetAlpha().SetAbsolute( random->RandomInt( 200, 255 ) );
 	}
-	*/
+	if ( m_EffectState != EFFECT_HOLDING )
+	{
+		// Turn beams off
+		m_Beams[0].SetVisible( false );
+		m_Beams[1].SetVisible( false );
+		m_Beams[2].SetVisible( false );
+	}
 #endif
 }
 
@@ -2957,6 +2928,15 @@ void CWeaponPhysCannon::StopEffects( bool stopSound )
 #endif	// !CLIENT_DLL
 }
 
+#ifdef CLIENT_DLL
+void CWeaponPhysCannon::ThirdPersonSwitch( bool bThirdPerson )
+{
+	//Tony; if we switch to first or third person or whatever, destroy and recreate the effects.
+	//Note: the sound only ever gets shut off on the server, so it's okay - as this is entirely client side.
+	DestroyEffects();
+	StartEffects();
+}
+#endif
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -3033,7 +3013,7 @@ void CWeaponPhysCannon::StartEffects( void )
 		m_Parameters[i].GetAlpha().SetAbsolute( 64.0f );
 		
 		// Different for different views
-		if ( ShouldDrawUsingViewModel() )
+		if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 		{
 			m_Parameters[i].SetAttachment( LookupAttachment( attachNamesGlow[i-PHYSCANNON_GLOW1] ) );
 		}
@@ -3110,7 +3090,7 @@ void CWeaponPhysCannon::DoEffectReady( void )
 #ifdef CLIENT_DLL
 
 	// Special POV case
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson())
 	{
 		//Turn on the center sprite
 		m_Parameters[PHYSCANNON_CORE].GetScale().InitFromCurrent( 14.0f, 0.2f );
@@ -3152,7 +3132,7 @@ void CWeaponPhysCannon::DoEffectHolding( void )
 
 #ifdef CLIENT_DLL
 
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		// Scale up the center sprite
 		m_Parameters[PHYSCANNON_CORE].GetScale().InitFromCurrent( 16.0f, 0.2f );
@@ -3414,7 +3394,7 @@ void CWeaponPhysCannon::GetEffectParameters( EffectType_t effectID, color32 &col
 	QAngle	angles;
 
 	// Format for first-person
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 		
@@ -3590,6 +3570,19 @@ CBaseEntity *PhysCannonGetHeldEntity( CBaseCombatWeapon *pActiveWeapon )
 	}
 
 	return NULL;
+}
+
+CBaseEntity *GetPlayerHeldEntity( CBasePlayer *pPlayer )
+{
+	CBaseEntity *pObject = NULL;
+	CPlayerPickupController *pPlayerPickupController = (CPlayerPickupController *)(pPlayer->GetUseEntity());
+
+	if ( pPlayerPickupController )
+	{
+		pObject = pPlayerPickupController->GetGrabController().GetAttached();
+	}
+
+	return pObject;
 }
 
 float PlayerPickupGetHeldObjectMass( CBaseEntity *pPickupControllerEntity, IPhysicsObject *pHeldObject )

@@ -9,14 +9,16 @@ WeaponData
 	"anim_prefix"			"shotgun"
 	"bucket"				"3"
 	"bucket_position"		"0"
+	"bucket_360"			"1"
+	"bucket_position_360"	"1"
 
 	"clip_size"				"6"
 	"primary_ammo"			"Buckshot"
 	"secondary_ammo"		"None"
 
 	"weight"				"4"
+	"rumble"			"5"
 	"item_flags"			"0"
-	"damage"			"9"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -45,9 +47,14 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"b"
 		}
+		"weapon_small"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"b"
+		}
 		"ammo"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"s"
 		}
 		"crosshair"

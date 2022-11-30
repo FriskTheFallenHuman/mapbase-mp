@@ -10,9 +10,7 @@
 #pragma once
 #endif
 
-
 class CPointCamera;
-
 
 //-----------------------------------------------------------------------------
 // Purpose: An entity that's used to control the intro sequence

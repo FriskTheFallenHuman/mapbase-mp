@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Implements the tripmine grenade.
 //
@@ -8,7 +8,7 @@
 #include "cbase.h"
 #include "beam_shared.h"
 #include "shake.h"
-#include "grenade_tripmine.h"
+#include "hl2mp/grenade_tripmine.h" // Load the hl2mp header!!
 #include "vstdlib/random.h"
 #include "engine/IEngineSound.h"
 #include "explode.h"
@@ -34,18 +34,6 @@ BEGIN_DATADESC( CTripmineGrenade )
 	DEFINE_FIELD( m_pBeam,		FIELD_CLASSPTR ),
 	DEFINE_FIELD( m_posOwner,		FIELD_POSITION_VECTOR ),
 	DEFINE_FIELD( m_angleOwner,	FIELD_VECTOR ),
-#ifdef MAPBASE
-	DEFINE_KEYFIELD( m_flPowerUpTime, FIELD_FLOAT, "PowerUpTime" ),
-	DEFINE_FIELD( m_hAttacker,	FIELD_EHANDLE ),
-
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetOwner", InputSetOwner ),
-
-	// Outputs
-	DEFINE_OUTPUT( m_OnExplode, "OnExplode" ),
-#endif
 
 	// Function Pointers
 	DEFINE_THINKFUNC( WarningThink ),
@@ -62,11 +50,22 @@ CTripmineGrenade::CTripmineGrenade()
 	m_posOwner.Init();
 	m_angleOwner.Init();
 
-#ifdef MAPBASE
-	m_flPowerUpTime = 2.0;
-#endif
+	m_pConstraint = NULL;
+	m_bAttached = false;
+	m_hAttachEntity = NULL;
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+CTripmineGrenade::~CTripmineGrenade( void )
+{
+	if (m_pConstraint)
+	{
+		physenv->DestroyConstraint(m_pConstraint);
+		m_pConstraint = NULL;
+	}
+}
 void CTripmineGrenade::Spawn( void )
 {
 	Precache( );
@@ -75,52 +74,24 @@ void CTripmineGrenade::Spawn( void )
 	SetSolid( SOLID_BBOX );
 	SetModel( "models/Weapons/w_slam.mdl" );
 
-    IPhysicsObject *pObject = VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, true );
+	IPhysicsObject *pObject = VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, true );
 	pObject->EnableMotion( false );
 	SetCollisionGroup( COLLISION_GROUP_WEAPON );
 
 	SetCycle( 0.0f );
 	m_nBody			= 3;
-#ifdef MAPBASE
-	if (m_flDamage == 0)
-	m_flDamage		= sk_plr_dmg_tripmine.GetFloat();
-	if (m_DmgRadius == 0)
-	m_DmgRadius		= sk_tripmine_radius.GetFloat();
-#else
 	m_flDamage		= sk_plr_dmg_tripmine.GetFloat();
 	m_DmgRadius		= sk_tripmine_radius.GetFloat();
-#endif
 
 	ResetSequenceInfo( );
 	m_flPlaybackRate	= 0;
 	
 	UTIL_SetSize(this, Vector( -4, -4, -2), Vector(4, 4, 2));
 
-#ifdef MAPBASE
-	if (!HasSpawnFlags(SF_TRIPMINE_START_INACTIVE))
-	{
-		if (m_flPowerUpTime > 0)
-		{
-			m_flPowerUp = gpGlobals->curtime + m_flPowerUpTime;
-	
-			SetThink( &CTripmineGrenade::PowerupThink );
-			SetNextThink( gpGlobals->curtime + 0.2 );
-		}
-		else
-		{
-			MakeBeam( );
-			RemoveSolidFlags( FSOLID_NOT_SOLID );
-			m_bIsLive			= true;
-
-			//EmitSound( "TripmineGrenade.Activate" );
-		}
-	}
-#else
 	m_flPowerUp = gpGlobals->curtime + 2.0;
 	
 	SetThink( &CTripmineGrenade::PowerupThink );
 	SetNextThink( gpGlobals->curtime + 0.2 );
-#endif
 
 	m_takedamage		= DAMAGE_YES;
 
@@ -165,6 +136,11 @@ void CTripmineGrenade::PowerupThink( void  )
 		RemoveSolidFlags( FSOLID_NOT_SOLID );
 		m_bIsLive			= true;
 
+		// The moment it's live, then do this - incase the attach entity moves between placing it, and activation
+		// use the absorigin of what we're attaching to for the check, if it moves - we blow up.
+		if ( m_bAttached && m_hAttachEntity.Get() != NULL )
+			m_vAttachedPosition = m_hAttachEntity.Get()->GetAbsOrigin();
+
 		// play enabled sound
 		EmitSound( "TripmineGrenade.Activate" );
 	}
@@ -186,11 +162,9 @@ void CTripmineGrenade::MakeBeam( void )
 {
 	trace_t tr;
 
-	UTIL_TraceLine( GetAbsOrigin(), m_vecEnd, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( GetAbsOrigin(), m_vecEnd, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 
 	m_flBeamLength = tr.fraction;
-
-
 
 	// If I hit a living thing, send the beam through me so it turns on briefly
 	// and then blows the living thing up
@@ -263,35 +237,43 @@ void CTripmineGrenade::BeamBreakThink( void  )
 	CBaseEntity *pEntity = tr.m_pEnt;
 	CBaseCombatCharacter *pBCC  = ToBaseCombatCharacter( pEntity );
 
-	if (pBCC || fabs( m_flBeamLength - tr.fraction ) > 0.001)
+	bool bAttachMoved = false;
+	if ( m_bAttached && m_hAttachEntity.Get() != NULL )
+	{
+		if ( m_hAttachEntity.Get()->GetAbsOrigin() != m_vAttachedPosition )
+			bAttachMoved = true;
+	}
+
+	// Also blow up if the attached entity goes away, ie: a crate
+	if (pBCC || fabs( m_flBeamLength - tr.fraction ) > 0.001 || ( m_bAttached && m_hAttachEntity.Get() == NULL) || bAttachMoved )
 	{
 		m_iHealth = 0;
-#ifdef MAPBASE
-		Event_Killed( CTakeDamageInfo( (CBaseEntity*)m_hOwner, pEntity, 100, GIB_NORMAL ) );
-#else
+		if (m_pConstraint)
+			m_pConstraint->Deactivate();
+
 		Event_Killed( CTakeDamageInfo( (CBaseEntity*)m_hOwner, this, 100, GIB_NORMAL ) );
-#endif
 		return;
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.05f );
 }
 
-#if 0 // FIXME: OnTakeDamage_Alive() is no longer called now that base grenade derives from CBaseAnimating
-int CTripmineGrenade::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CTripmineGrenade::OnTakeDamage( const CTakeDamageInfo &info )
 {
-	if (gpGlobals->curtime < m_flPowerUp && info.GetDamage() < m_iHealth)
+	if ( m_iHealth < 0 )
+		return 0;	//already dead.
+
+	if ( gpGlobals->curtime > m_flPowerUp )
 	{
-		// disable
-		// Create( "weapon_tripmine", GetLocalOrigin() + m_vecDir * 24, GetAngles() );
-		SetThink( &CTripmineGrenade::SUB_Remove );
-		SetNextThink( gpGlobals->curtime + 0.1f );
-		KillBeam();
-		return FALSE;
+		m_iHealth -= info.GetDamage();
+
+		if ( m_iHealth <= 0 )
+			Event_Killed( info );
+
+		return info.GetDamage();
 	}
-	return BaseClass::OnTakeDamage_Alive( info );
+	return 0;
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -302,14 +284,14 @@ void CTripmineGrenade::Event_Killed( const CTakeDamageInfo &info )
 {
 	m_takedamage		= DAMAGE_NO;
 
-#ifdef MAPBASE
-	m_hAttacker = info.GetAttacker();
-#endif
+	if (m_pConstraint)
+		m_pConstraint->Deactivate();
 
 	SetThink( &CTripmineGrenade::DelayDeathThink );
 	SetNextThink( gpGlobals->curtime + 0.25 );
 
 	EmitSound( "TripmineGrenade.StopSound" );
+
 }
 
 
@@ -323,48 +305,63 @@ void CTripmineGrenade::DelayDeathThink( void )
 	ExplosionCreate( GetAbsOrigin() + m_vecDir * 8, GetAbsAngles(), m_hOwner, GetDamage(), 200, 
 		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
 
-#ifdef MAPBASE
-	m_OnExplode.FireOutput(m_hAttacker.Get(), this);
-#endif
-
 	UTIL_Remove( this );
 }
 
-#ifdef MAPBASE
-//-----------------------------------------------------------------------------
-// Purpose:
-// Input  :
-// Output :
-//-----------------------------------------------------------------------------
-void CTripmineGrenade::InputActivate( inputdata_t &inputdata )
+bool CTripmineGrenade::MakeConstraint( CBaseEntity *pObject )
 {
-	if (m_flPowerUpTime > 0)
-	{
-		m_flPowerUp = gpGlobals->curtime + m_flPowerUpTime;
+	IPhysicsObject *cMinePhysics = VPhysicsGetObject();
+
+	Assert( cMinePhysics );
+
+	IPhysicsObject *pAttached = pObject->VPhysicsGetObject();
+	if ( !cMinePhysics || !pAttached )
+		return false;
+
+	// constraining to the world means object 1 is fixed
+	if ( pAttached == g_PhysWorldObject )
+		PhysSetGameFlags( cMinePhysics, FVPHYSICS_CONSTRAINT_STATIC );
+
+	IPhysicsConstraintGroup *pGroup = NULL;
+
+	constraint_fixedparams_t fixed;
+	fixed.Defaults();
+	fixed.InitWithCurrentObjectState( cMinePhysics, pAttached );
+	fixed.constraint.Defaults();
+
+	m_pConstraint = physenv->CreateFixedConstraint( cMinePhysics, pAttached, pGroup, fixed );
 	
-		SetThink( &CTripmineGrenade::PowerupThink );
-		SetNextThink( gpGlobals->curtime + 0.2 );
-	}
-	else
-	{
-		MakeBeam( );
-		RemoveSolidFlags( FSOLID_NOT_SOLID );
-		m_bIsLive			= true;
+	if (!m_pConstraint)
+		return false;
 
-		//EmitSound( "TripmineGrenade.Activate" );
-	}
+	m_pConstraint->SetGameData( (void *)this );
+
+	return true;
 }
 
-//-----------------------------------------------------------------------------
-// Purpose:
-// Input  :
-// Output :
-//-----------------------------------------------------------------------------
-void CTripmineGrenade::InputDeactivate( inputdata_t &inputdata )
+void CTripmineGrenade::AttachToEntity(CBaseEntity *pOther)
 {
-	KillBeam( );
-	//AddSolidFlags( FSOLID_NOT_SOLID );
-	m_bIsLive = false;
-}
-#endif
+	if (!pOther)
+		return;
 
+	if ( !VPhysicsGetObject() )
+		return;
+
+	m_bAttached			= true;
+	m_hAttachEntity		= pOther;
+
+	SetMoveType			( MOVETYPE_NONE );
+
+	if (pOther->GetSolid() == SOLID_VPHYSICS && pOther->VPhysicsGetObject() != NULL )
+	{
+		SetSolid(SOLID_BBOX); //Tony; switch to bbox solid instead of vphysics, because we've made the physics object non-solid
+		MakeConstraint(pOther);
+		SetMoveType		( MOVETYPE_VPHYSICS ); // use vphysics while constrained!!
+	}
+	//if it isnt vphysics or bsp, use SetParent to follow it.
+	else if (pOther->GetSolid() != SOLID_BSP)
+	{
+		SetSolid(SOLID_BBOX); //Tony; switch to bbox solid instead of vphysics, because we've made the physics object non-solid
+		SetParent( m_hAttachEntity.Get() );
+	}
+}

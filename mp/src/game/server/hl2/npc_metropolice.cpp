@@ -12,7 +12,9 @@
 #include "ai_tacticalservices.h"
 #include "npc_manhack.h"
 #include "npc_metropolice.h"
+#ifndef MAPBASE_MP
 #include "weapon_stunstick.h"
+#endif
 #include "basegrenade_shared.h"
 #include "ai_route.h"
 #include "hl2_player.h"
@@ -3389,7 +3391,7 @@ void CNPC_MetroPolice::OnAnimEventShove( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventBatonOn( void )
 {
-#if !defined(HL2MP) || defined(MAPBASE)
+#if !defined(HL2MP) && defined(MAPBASE)
 
 	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
 
@@ -3406,7 +3408,7 @@ void CNPC_MetroPolice::OnAnimEventBatonOn( void )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventBatonOff( void )
 {
-#if !defined(HL2MP) || defined(MAPBASE)
+#if !defined(HL2MP) && defined(MAPBASE)
 
 	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
 	
@@ -5992,7 +5994,7 @@ bool CNPC_MetroPolice::HasBaton( void )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::BatonActive( void )
 {
-#if !defined(HL2MP) || defined(MAPBASE)
+#if !defined(HL2MP) && defined(MAPBASE)
 
 	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
 

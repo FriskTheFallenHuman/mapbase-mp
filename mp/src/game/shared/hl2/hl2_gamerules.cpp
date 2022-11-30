@@ -61,7 +61,11 @@ BEGIN_DATADESC( CHalfLife2Proxy )
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetLegacyFlashlight", InputSetLegacyFlashlight ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetPlayerSquadAutosummon", InputSetPlayerSquadAutosummon ),
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetStunstickPickupBehavior", InputSetStunstickPickupBehavior ),
+#ifdef MAPBASE_MP
+	DEFINE_INPUTFUNC( FIELD_STRING, "SetAllowRespawning", InputSetAllowRespawning ),
+#else
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetAllowSPRespawn", InputSetAllowSPRespawn ),
+#endif
 
 END_DATADESC()
 #endif
@@ -77,7 +81,11 @@ void CHalfLife2Proxy::InputSetDefaultCitizenType( inputdata_t &inputdata ) { Key
 void CHalfLife2Proxy::InputSetLegacyFlashlight( inputdata_t &inputdata ) { KeyValue("SetLegacyFlashlight", inputdata.value.String()); }
 void CHalfLife2Proxy::InputSetPlayerSquadAutosummon( inputdata_t &inputdata ) { KeyValue("SetPlayerSquadAutosummon", inputdata.value.String()); }
 void CHalfLife2Proxy::InputSetStunstickPickupBehavior( inputdata_t &inputdata ) { KeyValue("SetStunstickPickupBehavior", inputdata.value.String()); }
+#ifdef MAPBASE_MP
+void CHalfLife2Proxy::InputSetAllowRespawning( inputdata_t &inputdata ) { KeyValue( "SetAllowRespawning", inputdata.value.String() ); }
+#else
 void CHalfLife2Proxy::InputSetAllowSPRespawn( inputdata_t &inputdata ) { KeyValue( "SetAllowSPRespawn", inputdata.value.String() ); }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Cache user entity field values until spawn is called.
@@ -132,10 +140,17 @@ bool CHalfLife2Proxy::KeyValue( const char *szKeyName, const char *szValue )
 	{
 		HL2GameRules()->SetStunstickPickupBehavior(atoi(szValue));
 	}
+#ifdef MAPBASE_MP
+	else if (FStrEq(szKeyName, "SetAllowRespawning"))
+	{
+		HL2GameRules()->SetAllowRespawning(!FStrEq(szValue, "0"));
+	}
+#else
 	else if (FStrEq(szKeyName, "SetAllowSPRespawn"))
 	{
 		HL2GameRules()->SetAllowSPRespawn(!FStrEq(szValue, "0"));
 	}
+#endif
 	else
 	{
 		return BaseClass::KeyValue( szKeyName, szValue );
@@ -170,10 +185,26 @@ bool CHalfLife2Proxy::GetKeyValue( const char *szKeyName, char *szValue, int iMa
 	{
 		Q_snprintf( szValue, iMaxLen, "%i", HL2GameRules()->GetStunstickPickupBehavior() );
 	}
+#ifdef MAPBASE_MP
+	else if (FStrEq(szKeyName, "SetAllowRespawning"))
+	{
+		// Only the player fires this way so we can cast
+		for ( int i = 1; i <= MAX_PLAYERS; i++ )
+		{
+			CBasePlayer *pPlayer = ToBasePlayer( UTIL_PlayerByIndex( i ) );
+			if ( !pPlayer )
+				return false;
+
+			Q_snprintf( szValue, iMaxLen, "%d", HL2GameRules()->FPlayerCanRespawn( pPlayer ) );
+
+		}
+	}
+#else
 	else if (FStrEq(szKeyName, "SetAllowSPRespawn"))
 	{
 		Q_snprintf( szValue, iMaxLen, "%d", HL2GameRules()->AllowSPRespawn() );
 	}
+#endif
 	else
 	{
 		return BaseClass::GetKeyValue( szKeyName, szValue, iMaxLen );
@@ -199,7 +230,11 @@ int CHalfLife2Proxy::Save( ISave &save )
 
 	m_save_StunstickPickupBehavior = HL2GameRules()->GetStunstickPickupBehavior();
 
+#ifdef MAPBASE_MP
+	m_save_AllowSPRespawn = HL2GameRules()->AllowRespawning();
+#else
 	m_save_AllowSPRespawn = HL2GameRules()->AllowSPRespawn();
+#endif
 
 	return BaseClass::Save(save);
 }
@@ -228,7 +263,11 @@ int CHalfLife2Proxy::Restore( IRestore &restore )
 
 	HL2GameRules()->SetStunstickPickupBehavior(m_save_StunstickPickupBehavior);
 
-	HL2GameRules()->SetAllowSPRespawn(m_save_AllowSPRespawn);
+#ifdef MAPBASE_MP
+	HL2GameRules()->SetAllowRespawning( m_save_AllowSPRespawn );
+#else
+	HL2GameRules()->SetAllowSPRespawn( m_save_AllowSPRespawn );
+#endif
 
 	return base;
 }
@@ -1615,10 +1654,10 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		return flDamage;
 	}
 
-   	//-----------------------------------------------------------------------------
-  	//-----------------------------------------------------------------------------
- 	bool CHalfLife2::AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info )
-  	{
+	//-----------------------------------------------------------------------------
+	//-----------------------------------------------------------------------------
+	bool CHalfLife2::AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info )
+	{
 #ifndef CLIENT_DLL
 	if( (info.GetDamageType() & DMG_CRUSH) && info.GetInflictor() && pVictim->MyNPCPointer() )
 	{
@@ -1649,7 +1688,7 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 							if ( pVictim->Classify() == CLASS_ANTLION )
 								return true;
 
-  							return false;
+							return false;
 						}
 					}
 				}
@@ -1657,8 +1696,8 @@ ConVar  alyx_darkness_force( "alyx_darkness_force", "0", FCVAR_CHEAT | FCVAR_REP
 		}
 	}
 #endif
-  		return true;
-  	}
+		return true;
+	}
 	//-----------------------------------------------------------------------------
 	// Purpose: Whether or not the NPC should drop a health vial
 	// Output : Returns true on success, false on failure.
@@ -2067,6 +2106,23 @@ void CHalfLife2::SetStunstickPickupBehavior(int val)
 	m_StunstickPickupBehavior = val;
 }
 
+#ifdef MAPBASE_MP
+//-----------------------------------------------------------------------------
+// Gets our respawn setting.
+//-----------------------------------------------------------------------------
+bool CHalfLife2::AllowRespawning()
+{
+	return m_bAllowSPRespawn;
+}
+
+//-----------------------------------------------------------------------------
+// Sets our respawn setting.
+//-----------------------------------------------------------------------------
+void CHalfLife2::SetAllowRespawning( bool toggle )
+{
+	m_bAllowSPRespawn = toggle;
+}
+#else
 //-----------------------------------------------------------------------------
 // Gets our SP respawn setting.
 //-----------------------------------------------------------------------------
@@ -2082,6 +2138,7 @@ void CHalfLife2::SetAllowSPRespawn( bool toggle )
 {
 	m_bAllowSPRespawn = toggle;
 }
+#endif
 
 //BEGIN_SIMPLE_DATADESC( CHalfLife2 )
 //
@@ -2098,7 +2155,7 @@ void CHalfLife2::SetAllowSPRespawn( bool toggle )
 // Global functions.
 // ------------------------------------------------------------------------------------ //
 
-#ifndef HL2MP
+#if !defined HL2MP || defined MAPBASE_MP
 #ifndef PORTAL
 
 // shared ammo definition

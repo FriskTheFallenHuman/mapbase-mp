@@ -1020,7 +1020,7 @@ float CBounceBomb::FindNearestNPC()
 	}
 
 #ifdef MAPBASE_MP
-	for (i = 1; i <= gpGlobals->maxClients; i++)
+	for (int i = 1; i <= gpGlobals->maxClients; i++)
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 		if ( pPlayer && !(pPlayer->GetFlags() & FL_NOTARGET) )
@@ -1122,17 +1122,17 @@ bool CBounceBomb::IsFriend( CBaseEntity *pEntity )
 		return false;
 	}
 
-  	if( classify == CLASS_METROPOLICE || 
-  		classify == CLASS_COMBINE ||
-  		classify == CLASS_MILITARY ||
-  		classify == CLASS_COMBINE_HUNTER ||
+	if( classify == CLASS_METROPOLICE || 
+		classify == CLASS_COMBINE ||
+		classify == CLASS_MILITARY ||
+		classify == CLASS_COMBINE_HUNTER ||
 #ifdef MAPBASE
 		classify == CLASS_MANHACK ||
 		classify == CLASS_STALKER ||
 		classify == CLASS_PROTOSNIPER ||
 		classify == CLASS_COMBINE_GUNSHIP ||
 #endif
-  		classify == CLASS_SCANNER )
+		classify == CLASS_SCANNER )
 	{
 		bIsCombine = true;
 	}
@@ -1195,7 +1195,7 @@ void CBounceBomb::SearchThink()
 	}
 	else
 	{
- 		if( IsAwake() )
+		if( IsAwake() )
 		{
 			Wake( false );
 		}

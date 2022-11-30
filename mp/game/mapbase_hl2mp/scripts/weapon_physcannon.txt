@@ -8,7 +8,9 @@ WeaponData
 	"playermodel"		"models/weapons/w_Physics.mdl"
 	"anim_prefix"		"gauss"
 	"bucket"			"0"
-	"bucket_position"	"2"
+	"bucket_position"	"1"
+	"bucket_360"			"2"
+	"bucket_position_360"	"1"
 	"clip_size"			"0"
 	"clip2_size"		"0"
 	"primary_ammo"		"None"
@@ -52,14 +54,6 @@ WeaponData
 		{	
 				"font"		"WeaponIconsSelected"
 				"character"	"m"
-		}
-		"ammo"
-		{
-			"file"		"sprites/a_icons1"
-			"x"			"0"
-			"y"			"0"
-			"width"		"32"
-			"height"	"32"
 		}
 		"crosshair"
 		{

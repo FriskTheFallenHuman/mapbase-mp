@@ -438,7 +438,7 @@ public:
 
 #ifdef MAPBASE_MP
 	// TODO: Mapbase MP should use reception filter or something to determine which player's eye position is offset
-	CNetworkVar( CHandle<CBasePlayer>, m_hPlayer );
+	CNetworkHandle( CBasePlayer, m_hPlayer );
 #else
 	CHandle<CBasePlayer>	m_hPlayer;
 #endif

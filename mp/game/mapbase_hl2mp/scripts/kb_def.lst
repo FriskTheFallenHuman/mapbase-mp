@@ -44,6 +44,7 @@
 "F5"			"jpeg"
 "F6"			"save quick"
 "F7"			"load quick"
+"F9"			"vr_toggle"
 "F10"			"quit prompt"
 "PAUSE"			"pause"
 "ESCAPE"		"escape"

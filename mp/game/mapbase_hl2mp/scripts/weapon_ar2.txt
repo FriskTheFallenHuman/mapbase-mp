@@ -9,9 +9,11 @@ WeaponData
 	"anim_prefix"			"ar2"
 	"bucket"			"2"
 	"bucket_position"		"1"
+	"bucket_360"			"1"
+	"bucket_position_360"		"2"
 
 	"clip_size"			"30"
-	"default_clip"			"60"
+	"default_clip"			"30"
 
 	"clip2_size"			"-1"
 	"default_clip2"			"-1"
@@ -20,8 +22,8 @@ WeaponData
 	"secondary_ammo"		"AR2AltFire"
 
 	"weight"			"5"
+	"rumble"			"4"
 	"item_flags"			"0"
-	"damage"			"11"
 
 	// Sounds for the weapon. There is a max of 16 sounds per category (i.e. max 16 "single_shot" sounds)
 	SoundData
@@ -51,14 +53,19 @@ WeaponData
 				"font"		"WeaponIconsSelected"
 				"character"	"l"
 		}
+		"weapon_small"
+		{
+				"font"		"WeaponIconsSmall"
+				"character"	"l"
+		}
 		"ammo"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"u"
 		}
 		"ammo2"
 		{
-				"font"		"WeaponIcons"
+				"font"		"WeaponIconsSmall"
 				"character"	"z"
 		}
 		"crosshair"

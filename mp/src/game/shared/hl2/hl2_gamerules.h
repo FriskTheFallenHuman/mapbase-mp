@@ -11,7 +11,13 @@
 #endif
 
 #include "gamerules.h"
+#ifdef MAPBASE_MP
+#include "teamplay_gamerules.h"
+#define CGameRulesClass CTeamplayRules
+#else
 #include "singleplay_gamerules.h"
+#define CGameRulesClass CSingleplayRules
+#endif
 #include "hl2_shareddefs.h"
 
 #ifdef CLIENT_DLL
@@ -46,7 +52,11 @@ public:
 	void InputSetLegacyFlashlight( inputdata_t &inputdata );
 	void InputSetPlayerSquadAutosummon( inputdata_t &inputdata );
 	void InputSetStunstickPickupBehavior( inputdata_t &inputdata );
+#ifdef MAPBASE_MP
+	void InputSetAllowRespawning(inputdata_t& inputdata);
+#else
 	void InputSetAllowSPRespawn( inputdata_t &inputdata );
+#endif
 
 	// Gamerules classes don't seem to support datadescs, so the hl2_gamerules entity takes the current values
 	// from the actual gamerules and saves them in the entity itself, where they're saved via the entity's own datadesc.
@@ -62,10 +72,10 @@ public:
 };
 
 
-class CHalfLife2 : public CSingleplayRules
+class CHalfLife2 : public CGameRulesClass
 {
 public:
-	DECLARE_CLASS( CHalfLife2, CSingleplayRules );
+	DECLARE_CLASS( CHalfLife2, CGameRulesClass );
 
 	// Damage Query Overrides.
 	virtual bool			Damage_IsTimeBased( int iDmgType );
@@ -139,8 +149,13 @@ public:
 	int				GetStunstickPickupBehavior();
 	void			SetStunstickPickupBehavior(int val);
 
+#ifdef MAPBASE_MP
+	virtual bool	AllowRespawning();
+	void			SetAllowRespawning( bool toggle );
+#else
 	virtual bool	AllowSPRespawn();
 	void			SetAllowSPRespawn( bool toggle );
+#endif // MAPBASE_MP
 #endif
 
 private:

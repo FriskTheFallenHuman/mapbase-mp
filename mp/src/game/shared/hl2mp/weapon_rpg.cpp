@@ -1,13 +1,28 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 //=============================================================================//
 
 #include "cbase.h"
-#include "npcevent.h"
+#include "vstdlib/random.h"
+#include "engine/IEngineSound.h"
 #include "in_buttons.h"
-#include "weapon_rpg.h"
+#include "hl2mp/weapon_rpg.h" // Load the HL2MP version!
+#include "shake.h"
+#include "collisionutils.h"
+#include "hl2_shareddefs.h"
+#include "rumble_shared.h"
+#include "gamestats.h"
+#include "debugoverlay_shared.h"
+
+#ifdef PORTAL
+#include "portal_util_shared.h"
+#endif
+
+#ifdef HL2_DLL
+extern int g_interactionPlayerLaunchedRPG;
+#endif
 
 #ifdef CLIENT_DLL
 	#include "c_hl2mp_player.h"
@@ -15,26 +30,21 @@
 	#include "beamdraw.h"
 	#include "fx_line.h"
 	#include "view.h"
+	#include "input.h"
 #else
 	#include "basecombatcharacter.h"
 	#include "movie_explosion.h"
 	#include "soundent.h"
 	#include "player.h"
 	#include "rope.h"
-	#include "vstdlib/random.h"
-	#include "engine/IEngineSound.h"
 	#include "explode.h"
 	#include "util.h"
-	#include "in_buttons.h"
-	#include "shake.h"
+	#include "ai_basenpc.h"
+	#include "ai_squad.h"
 	#include "te_effect_dispatch.h"
 	#include "triggers.h"
 	#include "smoke_trail.h"
-	#include "collisionutils.h"
-	#include "hl2_shareddefs.h"
 #endif
-
-#include "debugoverlay_shared.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -42,10 +52,16 @@
 #define	RPG_SPEED	1500
 
 #ifndef CLIENT_DLL
-const char *g_pLaserDotThink = "LaserThinkContext";
-
 static ConVar sk_apc_missile_damage("sk_apc_missile_damage", "15");
+ConVar g_rpg_missile_use_custom_detonators( "g_rpg_missile_use_custom_detonators", "1" );
+#ifdef MAPBASE
+ConVar g_weapon_rpg_use_old_behavior( "g_weapon_rpg_use_old_behavior", "0" );
+ConVar g_weapon_rpg_fire_rate( "g_weapon_rpg_fire_rate", "4.0" );
+#endif
+
 #define APC_MISSILE_DAMAGE	sk_apc_missile_damage.GetFloat()
+
+const char *g_pLaserDotThink = "LaserThinkContext";
 
 #endif
 
@@ -186,6 +202,7 @@ void CMissile::Spawn( void )
 	SetThink( &CMissile::IgniteThink );
 	
 	SetNextThink( gpGlobals->curtime + 0.3f );
+	SetDamage( 200.0f );
 
 	m_takedamage = DAMAGE_YES;
 	m_iHealth = m_iMaxHealth = 100;
@@ -360,7 +377,7 @@ void CMissile::ShotDown( void )
 void CMissile::DoExplosion( void )
 {
 	// Explode
-	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), GetDamage() * 2, 
+	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), CMissile::EXPLOSION_RADIUS, 
 		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
 }
 
@@ -412,7 +429,11 @@ void CMissile::MissileTouch( CBaseEntity *pOther )
 	
 	// Don't touch triggers (but DO hit weapons)
 	if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER|FSOLID_VOLUME_CONTENTS) && pOther->GetCollisionGroup() != COLLISION_GROUP_WEAPON )
-		return;
+	{
+		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
+		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+			return;
+	}
 
 	Explode();
 }
@@ -453,7 +474,7 @@ void CMissile::IgniteThink( void )
 	SetMoveType( MOVETYPE_FLY );
 	SetModel("models/weapons/w_missile.mdl");
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
- 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+	RemoveSolidFlags( FSOLID_NOT_SOLID );
 
 	//TODO: Play opening sound
 
@@ -470,9 +491,13 @@ void CMissile::IgniteThink( void )
 	if ( m_hOwner && m_hOwner->GetOwner() )
 	{
 		CBasePlayer *pPlayer = ToBasePlayer( m_hOwner->GetOwner() );
+		if (pPlayer)
+		{
+			color32 white = { 255,225,205,64 };
+			UTIL_ScreenFade( pPlayer, white, 0.1f, 0.0f, FFADE_IN );
 
-		color32 white = { 255,225,205,64 };
-		UTIL_ScreenFade( pPlayer, white, 0.1f, 0.0f, FFADE_IN );
+			pPlayer->RumbleEffect( RUMBLE_RPG_MISSILE, 0, RUMBLE_FLAG_RESTART );
+		}
 	}
 
 	CreateSmokeTrail();
@@ -584,6 +609,50 @@ void CMissile::SeekThink( void )
 		}
 	}
 
+	if( hl2_episodic.GetBool() )
+	{
+		if( flBestDist <= ( GetAbsVelocity().Length() * 2.5f ) && FVisible( pBestDot->GetAbsOrigin() ) )
+		{
+			// Scare targets
+			CSoundEnt::InsertSound( SOUND_DANGER, pBestDot->GetAbsOrigin(), CMissile::EXPLOSION_RADIUS, 0.2f, pBestDot, SOUNDENT_CHANNEL_REPEATED_DANGER, NULL );
+		}
+	}
+
+	if ( g_rpg_missile_use_custom_detonators.GetBool() )
+	{
+		for ( int i = gm_CustomDetonators.Count() - 1; i >=0; --i )
+		{
+			CustomDetonator_t &detonator = gm_CustomDetonators[i];
+			if ( !detonator.hEntity )
+			{
+				gm_CustomDetonators.FastRemove( i );
+			}
+			else
+			{
+				const Vector &vPos = detonator.hEntity->CollisionProp()->WorldSpaceCenter();
+				if ( detonator.halfHeight > 0 )
+				{
+					if ( fabsf( vPos.z - GetAbsOrigin().z ) < detonator.halfHeight )
+					{
+						if ( ( GetAbsOrigin().AsVector2D() - vPos.AsVector2D() ).LengthSqr() < detonator.radiusSq )
+						{
+							Explode();
+							return;
+						}
+					}
+				}
+				else
+				{
+					if ( ( GetAbsOrigin() - vPos ).LengthSqr() < detonator.radiusSq )
+					{
+						Explode();
+						return;
+					}
+				}
+			}
+		}
+	}
+
 	//If we have a dot target
 	if ( pBestDot == NULL )
 	{
@@ -605,6 +674,16 @@ void CMissile::SeekThink( void )
 	Vector	vTargetDir;
 	VectorSubtract( targetPos, GetAbsOrigin(), vTargetDir );
 	float flDist = VectorNormalize( vTargetDir );
+
+	if( pLaserDot->GetTargetEntity() != NULL && flDist <= 240.0f && hl2_episodic.GetBool() )
+	{
+		// Prevent the missile circling the Strider like a Halo in ep1_c17_06. If the missile gets within 20
+		// feet of a Strider, tighten up the turn speed of the missile so it can break the halo and strike. (sjb 4/27/2006)
+		if( pLaserDot->GetTargetEntity()->ClassMatches( "npc_strider" ) )
+		{
+			flHomingSpeed *= 1.75f;
+		}
+	}
 
 	Vector	vDir	= GetAbsVelocity();
 	float	flSpeed	= VectorNormalize( vDir );
@@ -643,6 +722,16 @@ void CMissile::SeekThink( void )
 
 	// Think as soon as possible
 	SetNextThink( gpGlobals->curtime );
+
+#ifdef HL2_EPISODIC
+	if ( m_bCreateDangerSounds == true )
+	{
+		trace_t tr;
+		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 0.5, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+
+		CSoundEnt::InsertSound( SOUND_DANGER, tr.endpos, 100, 0.2, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
+	}
+#endif
 }
 
 
@@ -671,7 +760,32 @@ CMissile *CMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, ed
 	return pMissile;
 }
 
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+CUtlVector<CMissile::CustomDetonator_t> CMissile::gm_CustomDetonators;
 
+void CMissile::AddCustomDetonator( CBaseEntity *pEntity, float radius, float height )
+{
+	int i = gm_CustomDetonators.AddToTail();
+	gm_CustomDetonators[i].hEntity = pEntity;
+	gm_CustomDetonators[i].radiusSq = Square( radius );
+	gm_CustomDetonators[i].halfHeight = height * 0.5f;
+}
+
+
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+void CMissile::RemoveCustomDetonator( CBaseEntity *pEntity )
+{
+	for ( int i = 0; i < gm_CustomDetonators.Count(); i++ )
+	{
+		if ( gm_CustomDetonators[i].hEntity == pEntity )
+		{
+			gm_CustomDetonators.FastRemove( i );
+			break;
+		}
+	}
+}
 
 //-----------------------------------------------------------------------------
 // This entity is used to create little force boxes that the helicopter
@@ -868,6 +982,7 @@ BEGIN_DATADESC( CAPCMissile )
 	DEFINE_THINKFUNC( BeginSeekThink ),
 	DEFINE_THINKFUNC( AugerStartThink ),
 	DEFINE_THINKFUNC( ExplodeThink ),
+	DEFINE_THINKFUNC( APCSeekThink ),
 
 	DEFINE_FUNCTION( APCMissileTouch ),
 
@@ -912,6 +1027,13 @@ void CAPCMissile::Init()
 	CreateSmokeTrail();
 	SetTouch( &CAPCMissile::APCMissileTouch );
 	m_flLastHomingSpeed = APC_HOMING_SPEED;
+	CreateDangerSounds( true );
+
+
+	if( g_pGameRules->GetAutoAimMode() == AUTOAIM_ON_CONSOLE )
+	{
+		AddFlag( FL_AIMTARGET );
+	}
 }
 
 
@@ -983,9 +1105,38 @@ void CAPCMissile::ExplodeDelay( float flDelay )
 
 void CAPCMissile::BeginSeekThink( void )
 {
- 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+	RemoveSolidFlags( FSOLID_NOT_SOLID );
 	SetThink( &CAPCMissile::SeekThink );
 	SetNextThink( gpGlobals->curtime );
+}
+
+void CAPCMissile::APCSeekThink( void )
+{
+	BaseClass::SeekThink();
+
+	bool bFoundDot = false;
+
+	//If we can't find a dot to follow around then just send me wherever I'm facing so I can blow up in peace.
+	for( CLaserDot *pEnt = GetLaserDotList(); pEnt != NULL; pEnt = pEnt->m_pNext )
+	{
+		if ( !pEnt->IsOn() )
+			continue;
+
+		if ( pEnt->GetOwnerEntity() != GetOwnerEntity() )
+			continue;
+
+		bFoundDot = true;
+	}
+
+	if ( bFoundDot == false )
+	{
+		Vector	vDir	= GetAbsVelocity();
+		VectorNormalize ( vDir );
+
+		SetAbsVelocity( vDir * 800 );
+
+		SetThink( NULL );
+	}
 }
 
 void CAPCMissile::ExplodeThink()
@@ -1036,8 +1187,11 @@ void CAPCMissile::DoExplosion( void )
 	}
 	else
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), 
-			APC_MISSILE_DAMAGE, 100, true, 20000 );
+#ifdef HL2_EPISODIC
+		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), this, APC_MISSILE_DAMAGE, 100, true, 20000 );
+#else
+		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), APC_MISSILE_DAMAGE, 100, true, 20000 );
+#endif
 	}
 }
 
@@ -1248,7 +1402,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 
 #define	RPG_BEAM_SPRITE		"effects/laser1.vmt"
 #define	RPG_BEAM_SPRITE_NOZ	"effects/laser1_noz.vmt"
-#define	RPG_LASER_SPRITE	"sprites/redglow1"
+#define	RPG_LASER_SPRITE	"sprites/redglow1.vmt"
 
 //=============================================================================
 // RPG
@@ -1305,22 +1459,69 @@ END_PREDICTION_DATA()
 
 #endif
 
-#ifndef CLIENT_DLL
 acttable_t	CWeaponRPG::m_acttable[] = 
 {
-	{ ACT_HL2MP_IDLE,					ACT_HL2MP_IDLE_RPG,					false },
-	{ ACT_HL2MP_RUN,					ACT_HL2MP_RUN_RPG,					false },
-	{ ACT_HL2MP_IDLE_CROUCH,			ACT_HL2MP_IDLE_CROUCH_RPG,			false },
-	{ ACT_HL2MP_WALK_CROUCH,			ACT_HL2MP_WALK_CROUCH_RPG,			false },
-	{ ACT_HL2MP_GESTURE_RANGE_ATTACK,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
-	{ ACT_HL2MP_GESTURE_RELOAD,			ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
-	{ ACT_HL2MP_JUMP,					ACT_HL2MP_JUMP_RPG,					false },
-	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_RPG,				false },
+	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },
+#if EXPANDED_HL2_WEAPON_ACTIVITIES
+	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_RPG_LOW,			false },
+	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_RPG_LOW,		false },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_RPG,	false },
+#endif
+
+#ifdef MAPBASE
+	// Readiness activities should not be required
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_RPG_RELAXED,			false },
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_ANGRY_RPG,				false },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_RPG,				false },
+#else
+	{ ACT_IDLE_RELAXED,				ACT_IDLE_RPG_RELAXED,			true },
+	{ ACT_IDLE_STIMULATED,			ACT_IDLE_ANGRY_RPG,				true },
+	{ ACT_IDLE_AGITATED,			ACT_IDLE_ANGRY_RPG,				true },
+#endif
+
+	{ ACT_IDLE,						ACT_IDLE_RPG,					true },
+	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_RPG,				true },
+	{ ACT_WALK,						ACT_WALK_RPG,					true },
+	{ ACT_WALK_CROUCH,				ACT_WALK_CROUCH_RPG,			true },
+	{ ACT_RUN,						ACT_RUN_RPG,					true },
+	{ ACT_RUN_CROUCH,				ACT_RUN_CROUCH_RPG,				true },
+	{ ACT_COVER_LOW,				ACT_COVER_LOW_RPG,				true },
+
+#if EXPANDED_HL2_WEAPON_ACTIVITIES
+	{ ACT_ARM,						ACT_ARM_RPG,					false },
+	{ ACT_DISARM,					ACT_DISARM_RPG,					false },
+#endif
+
+#if EXPANDED_HL2_COVER_ACTIVITIES
+	{ ACT_RANGE_AIM_MED,			ACT_RANGE_AIM_RPG_MED,			false },
+	{ ACT_RANGE_ATTACK1_MED,		ACT_RANGE_ATTACK_RPG_MED,		false },
+#endif
+
+	// HL2:DM activities (for third-person animations in SP)
+	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_RPG,					false },
+	{ ACT_MP_CROUCH_IDLE,				ACT_HL2MP_IDLE_CROUCH_RPG,			false },
+
+	{ ACT_MP_RUN,						ACT_HL2MP_RUN_RPG,					false },
+#if EXPANDED_HL2DM_ACTIVITIES
+	{ ACT_MP_WALK,						ACT_HL2MP_WALK_RPG,						false },
+#endif
+	{ ACT_MP_CROUCHWALK,				ACT_HL2MP_WALK_CROUCH_RPG,			false },
+
+	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,	false },
+#if EXPANDED_HL2DM_ACTIVITIES
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK2_RPG,  false },
+#else
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_RPG,   false },
+#endif
+
+	{ ACT_MP_RELOAD_STAND,				ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
+	{ ACT_MP_RELOAD_CROUCH,				ACT_HL2MP_GESTURE_RELOAD_RPG,		false },
+
+	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_RPG,					false },
 };
 
 IMPLEMENT_ACTTABLE(CWeaponRPG);
-
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -1328,12 +1529,13 @@ IMPLEMENT_ACTTABLE(CWeaponRPG);
 CWeaponRPG::CWeaponRPG()
 {
 	m_bReloadsSingly = true;
-	m_bInitialStateUpdate= false;
+	m_bInitialStateUpdate = false;
 	m_bHideGuiding = false;
 	m_bGuiding = false;
+	m_hMissile = NULL;
 
-	m_fMinRange1 = m_fMinRange2 = 40*12;
-	m_fMaxRange1 = m_fMaxRange2 = 500*12;
+	m_fMinRange1 = m_fMinRange2 = 40 * 12;
+	m_fMaxRange1 = m_fMaxRange2 = 500 * 12;
 }
 
 //-----------------------------------------------------------------------------
@@ -1395,6 +1597,128 @@ void CWeaponRPG::Activate( void )
 	}
 }
 
+#ifdef GAME_DLL
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : *pEvent - 
+//			*pOperator - 
+//-----------------------------------------------------------------------------
+void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+{
+	switch( pEvent->event )
+	{
+		case EVENT_WEAPON_SMG1:
+		{
+			if ( m_hMissile != NULL )
+				return;
+
+			Vector	muzzlePoint;
+			QAngle	vecAngles;
+
+			muzzlePoint = GetOwner()->Weapon_ShootPosition();
+
+			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			ASSERT( npc != NULL );
+
+			Vector vecShootDir = npc->GetActualShootTrajectory( muzzlePoint );
+
+			// look for a better launch location
+			Vector altLaunchPoint;
+			if (GetAttachment( "missile", altLaunchPoint ))
+			{
+				// check to see if it's relativly free
+				trace_t tr;
+				AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+
+				if( tr.fraction == 1.0)
+				{
+					muzzlePoint = altLaunchPoint;
+				}
+			}
+
+			VectorAngles( vecShootDir, vecAngles );
+
+			CMissile *pMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );
+			if ( pMissile )
+			{
+				pMissile->m_hOwner = this;
+
+				// NPCs always get a grace period
+				pMissile->SetGracePeriod( 0.5 );
+			}
+
+			pOperator->DoMuzzleFlash();
+
+			WeaponSound( SINGLE_NPC );
+
+			// Make sure our laserdot is off
+			m_bGuiding = false;
+
+			if ( m_hLaserDot )
+			{
+				m_hLaserDot->TurnOff();
+			}
+		}
+		break;
+
+		default:
+			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
+			break;
+	}
+}
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+{
+	if ( m_hMissile != NULL )
+		return;
+
+	Vector muzzlePoint, vecShootDir;
+	QAngle	angShootDir;
+	GetAttachment( LookupAttachment( "muzzle" ), muzzlePoint, angShootDir );
+	AngleVectors( angShootDir, &vecShootDir );
+
+	// look for a better launch location
+	Vector altLaunchPoint;
+	if (GetAttachment( "missile", altLaunchPoint ))
+	{
+		// check to see if it's relativly free
+		trace_t tr;
+		AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+
+		if( tr.fraction == 1.0)
+		{
+			muzzlePoint = altLaunchPoint;
+		}
+	}
+
+	CMissile *pMissile = CMissile::Create( muzzlePoint, angShootDir, pOperator->edict() );
+	if ( pMissile )
+	{
+		pMissile->m_hOwner = this;
+
+		// NPCs always get a grace period
+		pMissile->SetGracePeriod( 0.5 );
+	}
+
+	pOperator->DoMuzzleFlash();
+
+	WeaponSound( SINGLE_NPC );
+
+	// Make sure our laserdot is off
+	m_bGuiding = false;
+
+	if ( m_hLaserDot )
+	{
+		m_hLaserDot->TurnOff();
+	}
+}
+#endif
+#endif // GAME_DLL
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -1424,12 +1748,6 @@ bool CWeaponRPG::WeaponShouldBeLowered( void )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::PrimaryAttack( void )
 {
-	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-
-	if (!pPlayer)
-		return;
-
 	// Can't have an active missile out
 	if ( m_hMissile != NULL )
 		return;
@@ -1443,8 +1761,8 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 
+	// Only the player fires this way so we can cast
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
 	if ( pOwner == NULL )
 		return;
 
@@ -1454,33 +1772,79 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	Vector	muzzlePoint = pOwner->Weapon_ShootPosition() + vForward * 12.0f + vRight * 6.0f + vUp * -3.0f;
 
-#ifndef CLIENT_DLL
+#ifdef GAME_DLL
 	QAngle vecAngles;
 	VectorAngles( vForward, vecAngles );
 
 	CMissile *pMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );
-	pMissile->m_hOwner = this;
-
-	// If the shot is clear to the player, give the missile a grace period
-	trace_t	tr;
-	Vector vecEye = pOwner->EyePosition();
-	UTIL_TraceLine( vecEye, vecEye + vForward * 128, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-	if ( tr.fraction == 1.0 )
+	if ( pMissile )
 	{
-		pMissile->SetGracePeriod( 0.3 );
+		pMissile->m_hOwner = this;
+
+		// If the shot is clear to the player, give the missile a grace period
+		trace_t	tr;
+		Vector vecEye = pOwner->EyePosition();
+		UTIL_TraceLine( vecEye, vecEye + vForward * 128, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+		if ( tr.fraction == 1.0 )
+		{
+			pMissile->SetGracePeriod( 0.3 );
+		}
+
+		m_hMissile = pMissile;
 	}
-
-	pMissile->SetDamage( GetHL2MPWpnData().m_iPlayerDamage );
-
-	m_hMissile = pMissile;
-#endif
+#endif // GAME_DLL
 
 	DecrementAmmo( GetOwner() );
+
+#ifdef GAME_DLL
+	// Register a muzzleflash for the AI
+	pOwner->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
+#endif // GAME_DLL
+
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	WeaponSound( SINGLE );
 
 	// player "shoot" animation
-	pPlayer->SetAnimation( PLAYER_ATTACK1 );
+	pOwner->SetAnimation( PLAYER_ATTACK1 );
+	ToHL2MPPlayer(pOwner)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+
+#ifdef GAME_DLL
+	pOwner->RumbleEffect( RUMBLE_SHOTGUN_SINGLE, 0, RUMBLE_FLAG_RESTART );
+
+	m_iPrimaryAttacks++;
+	gamestats->Event_WeaponFired( pOwner, true, GetClassname() );
+
+	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 1000, 0.2, GetOwner(), SOUNDENT_CHANNEL_WEAPON );
+
+	// Check to see if we should trigger any RPG firing triggers
+	int iCount = g_hWeaponFireTriggers.Count();
+	for ( int i = 0; i < iCount; i++ )
+	{
+		if ( g_hWeaponFireTriggers[i]->IsTouching( pOwner ) )
+		{
+			if ( FClassnameIs( g_hWeaponFireTriggers[i], "trigger_rpgfire" ) )
+			{
+				g_hWeaponFireTriggers[i]->ActivateMultiTrigger( pOwner );
+			}
+		}
+	}
+
+	if( hl2_episodic.GetBool() )
+	{
+		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+		int nAIs = g_AI_Manager.NumAIs();
+
+		string_t iszStriderClassname = AllocPooledString( "npc_strider" );
+
+		for ( int i = 0; i < nAIs; i++ )
+		{
+			if( ppAIs[ i ]->m_iClassname == iszStriderClassname )
+			{
+				ppAIs[ i ]->DispatchInteraction( g_interactionPlayerLaunchedRPG, NULL, pMissile );
+			}
+		}
+	}
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1565,13 +1929,23 @@ void CWeaponRPG::ItemPostFrame( void )
 		SuppressGuiding( false );
 	}
 
+	//Player has toggled guidance state
+	//Adrian: Players are not allowed to remove the laser guide in single player anymore, bye!
+	if ( g_pGameRules->IsMultiplayer() == true )
+	{
+		if ( pPlayer->m_afButtonPressed & IN_ATTACK2 )
+		{
+			ToggleGuiding();
+		}
+	}
+
 	//Move the laser
 	UpdateLaserPosition();
 
-	if ( pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 && m_hMissile == NULL )
+	/*if (pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 && m_hMissile == NULL)
 	{
 		StopGuiding();
-	}
+	}*/
 }
 
 //-----------------------------------------------------------------------------
@@ -1598,7 +1972,20 @@ Vector CWeaponRPG::GetLaserPosition( void )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
 {
+#ifdef GAME_DLL
+	CreateLaserPointer();
+	// Turn the laserdot on
+	m_bGuiding = true;
+	m_hLaserDot->TurnOn();
 
+	Vector muzzlePoint = GetOwner()->Weapon_ShootPosition();
+	Vector vecDir = (vecTarget - muzzlePoint);
+	VectorNormalize( vecDir );
+	vecDir = muzzlePoint + ( vecDir * MAX_TRACE_LENGTH );
+	UpdateLaserPosition( muzzlePoint, vecDir );
+
+	SetNPCLaserPosition( vecTarget );
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1606,6 +1993,10 @@ void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::SetNPCLaserPosition( const Vector &vecTarget ) 
 { 
+#ifdef GAME_DLL
+	m_vecNPCLaserDot = vecTarget; 
+	//NDebugOverlay::Box( m_vecNPCLaserDot, -Vector(10,10,10), Vector(10,10,10), 255,0,0, 8, 3 );
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1613,7 +2004,11 @@ void CWeaponRPG::SetNPCLaserPosition( const Vector &vecTarget )
 //-----------------------------------------------------------------------------
 const Vector &CWeaponRPG::GetNPCLaserPosition( void )
 {
+#ifdef GAME_DLL
+	return m_vecNPCLaserDot;
+#else
 	return vec3_origin;
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1636,6 +2031,9 @@ bool CWeaponRPG::Deploy( void )
 	return BaseClass::Deploy();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 bool CWeaponRPG::CanHolster( void )
 {
 	//Can't have an active missile out
@@ -1753,7 +2151,15 @@ void CWeaponRPG::UpdateLaserPosition( Vector vecMuzzlePos, Vector vecEndPos )
 	trace_t	tr;
 	
 	// Trace out for the endpoint
-	UTIL_TraceLine( vecMuzzlePos, vecEndPos, (MASK_SHOT & ~CONTENTS_WINDOW), GetOwner(), COLLISION_GROUP_NONE, &tr );
+#ifdef PORTAL
+	g_bBulletPortalTrace = true;
+	Ray_t rayLaser;
+	rayLaser.Init( vecMuzzlePos, vecEndPos );
+	UTIL_Portal_TraceRay( rayLaser, (MASK_SHOT & ~CONTENTS_WINDOW), this, COLLISION_GROUP_NONE, &tr );
+	g_bBulletPortalTrace = false;
+#else
+	UTIL_TraceLine( vecMuzzlePos, vecEndPos, (MASK_SHOT & ~CONTENTS_WINDOW), this, COLLISION_GROUP_NONE, &tr );
+#endif
 
 	// Move the laser sprite
 	if ( m_hLaserDot != NULL )
@@ -1839,6 +2245,115 @@ bool CWeaponRPG::Reload( void )
 	return true;
 }
 
+#ifdef GAME_DLL
+//-----------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+bool CWeaponRPG::WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions )
+{
+	bool bResult = BaseClass::WeaponLOSCondition( ownerPos, targetPos, bSetConditions );
+
+	if( bResult )
+	{
+		CAI_BaseNPC* npcOwner = GetOwner()->MyNPCPointer();
+
+		if( npcOwner )
+		{
+			trace_t tr;
+
+			Vector vecRelativeShootPosition;
+			VectorSubtract( npcOwner->Weapon_ShootPosition(), npcOwner->GetAbsOrigin(), vecRelativeShootPosition );
+			Vector vecMuzzle = ownerPos + vecRelativeShootPosition;
+			Vector vecShootDir = npcOwner->GetActualShootTrajectory( vecMuzzle );
+
+			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
+#ifdef MAPBASE
+			// Oh, and don't collide with ourselves or our owner. That would be stupid.
+			if ( !g_weapon_rpg_use_old_behavior.GetBool() )
+			{
+				CTraceFilterSkipTwoEntities pTraceFilter( this, GetOwner(), COLLISION_GROUP_NONE );
+				AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
+			}
+			else
+			{
+#endif
+			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+#ifdef MAPBASE
+			}
+#endif
+
+			if( tr.fraction != 1.0f )
+				bResult = false;
+		}
+	}
+
+	return bResult;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : flDot - 
+//			flDist - 
+// Output : int
+//-----------------------------------------------------------------------------
+int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
+{
+	if ( m_hMissile != NULL )
+		return 0;
+
+	// Ignore vertical distance when doing our RPG distance calculations
+	CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
+	if ( pNPC )
+	{
+		CBaseEntity *pEnemy = pNPC->GetEnemy();
+		Vector vecToTarget = (pEnemy->GetAbsOrigin() - pNPC->GetAbsOrigin());
+		vecToTarget.z = 0;
+		flDist = vecToTarget.Length();
+	}
+
+	if ( flDist < MIN( m_fMinRange1, m_fMinRange2 ) )
+		return COND_TOO_CLOSE_TO_ATTACK;
+
+	if ( m_flNextPrimaryAttack > gpGlobals->curtime )
+		return 0;
+
+	// See if there's anyone in the way!
+	CAI_BaseNPC *pOwner = GetOwner()->MyNPCPointer();
+	ASSERT( pOwner != NULL );
+
+	if( pOwner )
+	{
+		// Make sure I don't shoot the world!
+		trace_t tr;
+
+		Vector vecMuzzle = pOwner->Weapon_ShootPosition();
+		Vector vecShootDir = pOwner->GetActualShootTrajectory( vecMuzzle );
+
+		// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
+#ifdef MAPBASE
+		// Oh, and don't collide with ourselves or our owner. That would be stupid.
+		if ( !g_weapon_rpg_use_old_behavior.GetBool() )
+		{
+			CTraceFilterSkipTwoEntities pTraceFilter( this, GetOwner(), COLLISION_GROUP_NONE );
+			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
+		}
+		else
+		{
+#endif
+		AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+#ifdef MAPBASE
+		}
+#endif
+
+		if( tr.fraction != 1.0 )
+		{
+			return COND_WEAPON_SIGHT_OCCLUDED;
+		}
+	}
+
+	return COND_CAN_RANGE_ATTACK1;
+}
+#endif // GAME_DLL
+
 #ifdef CLIENT_DLL
 
 #define	RPG_MUZZLE_ATTACHMENT		1
@@ -1860,7 +2375,8 @@ void CWeaponRPG::GetWeaponAttachment( int attachmentId, Vector &outVector, Vecto
 {
 	QAngle	angles;
 
-	if ( ShouldDrawUsingViewModel() )
+	//Tony; third person attachment
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson())
 	{
 		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 		
@@ -1880,6 +2396,19 @@ void CWeaponRPG::GetWeaponAttachment( int attachmentId, Vector &outVector, Vecto
 	if ( dir != NULL )
 	{
 		AngleVectors( angles, dir, NULL, NULL );
+	}
+}
+
+//Tony; added so when the rpg switches to third person, the beam etc is re-created.
+void CWeaponRPG::ThirdPersonSwitch( bool bThirdPerson )
+{
+	if ( m_pBeam != NULL )
+	{
+		//Tell it to die right away and let the beam code free it.
+		m_pBeam->brightness = 0.0f;
+		m_pBeam->flags &= ~FBEAM_FOREVER;
+		m_pBeam->die = gpGlobals->curtime - 0.1;
+		m_pBeam = NULL;
 	}
 }
 
@@ -1904,7 +2433,7 @@ void CWeaponRPG::InitBeam( void )
 
 	CBaseEntity *pEntity = NULL;
 
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
 		
@@ -1923,13 +2452,15 @@ void CWeaponRPG::InitBeam( void )
 	beamInfo.m_nType = TE_BEAMPOINTS;
 	beamInfo.m_vecStart = vec3_origin;
 	beamInfo.m_vecEnd = vec3_origin;
-	
-	beamInfo.m_pszModelName = ( ShouldDrawUsingViewModel() ) ? RPG_BEAM_SPRITE_NOZ : RPG_BEAM_SPRITE;
+
+	//Tony; third person check
+	beamInfo.m_pszModelName = ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() ) ? RPG_BEAM_SPRITE_NOZ : RPG_BEAM_SPRITE;
+
 	
 	beamInfo.m_flHaloScale = 0.0f;
 	beamInfo.m_flLife = 0.0f;
 	
-	if ( ShouldDrawUsingViewModel() )
+	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		beamInfo.m_flWidth = 2.0f;
 		beamInfo.m_flEndWidth = 2.0f;
@@ -1994,7 +2525,8 @@ void CWeaponRPG::DrawEffects( void )
 
 	float scale = 8.0f + random->RandomFloat( -2.0f, 2.0f );
 
-	int	attachmentID = ( ShouldDrawUsingViewModel() ) ? RPG_GUIDE_ATTACHMENT : RPG_GUIDE_ATTACHMENT_3RD;
+	//Tony;a dd third person check.
+	int	attachmentID = ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() ) ? RPG_GUIDE_ATTACHMENT : RPG_GUIDE_ATTACHMENT_3RD;
 
 	GetWeaponAttachment( attachmentID, vecAttachment, &vecDir );
 
@@ -2073,6 +2605,22 @@ void CWeaponRPG::NotifyShouldTransmit( ShouldTransmitState_t state )
 
 #endif	//CLIENT_DLL
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CWeaponRPG::SupportsBackupActivity( Activity activity )
+{
+	// NPCs shouldn't use their SMG activities to aim and fire RPGs while running.
+	if (activity == ACT_RUN_AIM ||
+		activity == ACT_WALK_AIM ||
+		activity == ACT_RUN_CROUCH_AIM ||
+		activity == ACT_WALK_CROUCH_AIM)
+		return false;
+
+	return true;
+}
+#endif
 
 //=============================================================================
 // Laser Dot
@@ -2230,8 +2778,8 @@ int CLaserDot::DrawModel( int flags )
 
 	if ( pOwner != NULL && pOwner->IsDormant() == false )
 	{
-		// Always draw the dot in front of our faces when in first-person
-		if ( pOwner->IsLocalPlayer() )
+		// Always draw the dot in front of our faces when in first-person -- Tony; added check for third person heres!
+		if ( pOwner->IsLocalPlayer() && !::input->CAM_IsThirdPerson() )
 		{
 			// Take our view position and orientation
 			vecAttachment = CurrentViewOrigin();
@@ -2241,8 +2789,7 @@ int CLaserDot::DrawModel( int flags )
 		{
 			// Take the eye position and direction
 			vecAttachment = pOwner->EyePosition();
-			
-			QAngle angles = pOwner->GetAnimEyeAngles();
+			QAngle angles = pOwner->EyeAngles();
 			AngleVectors( angles, &vecDir );
 		}
 		

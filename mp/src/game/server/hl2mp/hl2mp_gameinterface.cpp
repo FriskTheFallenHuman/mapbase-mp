@@ -1,4 +1,4 @@
-//========= Copyright Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
@@ -15,17 +15,15 @@
 // -------------------------------------------------------------------------------------------- //
 // Mod-specific CServerGameClients implementation.
 // -------------------------------------------------------------------------------------------- //
-
 void CServerGameClients::GetPlayerLimits( int& minplayers, int& maxplayers, int &defaultMaxPlayers ) const
 {
-	minplayers = defaultMaxPlayers = 2; 
-	maxplayers = 16;
+	minplayers = 1; // Allow Singleplayer mode
+	maxplayers = defaultMaxPlayers = MAX_PLAYERS;
 }
 
 // -------------------------------------------------------------------------------------------- //
 // Mod-specific CServerGameDLL implementation.
 // -------------------------------------------------------------------------------------------- //
-
 void CServerGameDLL::LevelInit_ParseAllEntities( const char *pMapEntities )
 {
 }

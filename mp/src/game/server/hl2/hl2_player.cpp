@@ -94,7 +94,7 @@ ConVar hl2_sprintspeed( "hl2_sprintspeed", "320" );
 
 ConVar hl2_darkness_flashlight_factor ( "hl2_darkness_flashlight_factor", "1" );
 
-#ifdef HL2MP
+#if defined HL2MP && !defined MAPBASE
 	#define	HL2_WALK_SPEED 150
 	#define	HL2_NORM_SPEED 190
 	#define	HL2_SPRINT_SPEED 320
@@ -2393,7 +2393,7 @@ void CHL2_Player::SuitPower_Update( void )
 			{
 				if( FlashlightIsOn() )
 				{
-#ifndef HL2MP
+#if !defined HL2MP || defined MAPBASE_MP
 					FlashlightTurnOff();
 #endif
 				}
@@ -2405,7 +2405,7 @@ void CHL2_Player::SuitPower_Update( void )
 			// turn off flashlight a little bit after it hits below one aux power notch (5%)
 			if( m_HL2Local.m_flSuitPower < 4.8f && FlashlightIsOn() )
 			{
-#ifndef HL2MP
+#if !defined HL2MP || defined MAPBASE_MP
 				FlashlightTurnOff();
 #endif
 			}
@@ -2587,6 +2587,9 @@ int CHL2_Player::FlashlightIsOn( void )
 	return IsEffectActive( EF_DIMLIGHT );
 }
 
+#ifdef MAPBASE_MP
+extern ConVar flashlight;
+#endif
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -2605,8 +2608,13 @@ void CHL2_Player::FlashlightTurnOn( void )
 		return;
 #endif
 
-	AddEffects( EF_DIMLIGHT );
-	EmitSound( "HL2Player.FlashLightOn" );
+#ifdef MAPBASE_MP
+	if( flashlight.GetInt() > 0 && IsAlive() )
+#endif
+	{
+		AddEffects( EF_DIMLIGHT );
+		EmitSound( "HL2Player.FlashlightOn" );
+	}
 
 	variant_t flashlighton;
 	flashlighton.SetFloat( m_HL2Local.m_flSuitPower / 100.0f );
@@ -2625,7 +2633,12 @@ void CHL2_Player::FlashlightTurnOff( void )
 	}
 
 	RemoveEffects( EF_DIMLIGHT );
-	EmitSound( "HL2Player.FlashLightOff" );
+#ifdef MAPBASE_MP
+	if( IsAlive() )
+#endif
+	{
+		EmitSound( "HL2Player.FlashlightOff" );
+	}
 
 	variant_t flashlightoff;
 	flashlightoff.SetFloat( m_HL2Local.m_flSuitPower / 100.0f );
@@ -2650,7 +2663,7 @@ bool CHL2_Player::IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flRetu
 	}
 
 	// Within 50 feet?
- 	float flDistSqr = GetAbsOrigin().DistToSqr(pEntity->GetAbsOrigin());
+	float flDistSqr = GetAbsOrigin().DistToSqr(pEntity->GetAbsOrigin());
 	if( flDistSqr > FLASHLIGHT_RANGE )
 		return false;
 
@@ -2726,7 +2739,7 @@ void CHL2_Player::SetPlayerUnderwater( bool state )
 	}
 	else
 	{
-  		SuitPower_RemoveDevice( SuitDeviceBreather );
+		SuitPower_RemoveDevice( SuitDeviceBreather );
 	}
 
 	BaseClass::SetPlayerUnderwater( state );
@@ -3294,7 +3307,7 @@ int CHL2_Player::GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound)
 //-----------------------------------------------------------------------------
 bool CHL2_Player::Weapon_CanUse( CBaseCombatWeapon *pWeapon )
 {
-#ifndef HL2MP	
+#if !defined HL2MP || defined MAPBASE_MP
 #ifdef MAPBASE
 	if ( pWeapon->ClassMatches( "weapon_stunstick" ) )
 	{
