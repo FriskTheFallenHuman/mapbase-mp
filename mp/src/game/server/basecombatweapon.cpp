@@ -199,7 +199,7 @@ CBaseEntity* CBaseCombatWeapon::Respawn( void )
 {
 	// make a copy of this weapon that is invisible and inaccessible to players (no touch function). The weapon spawn/respawn code
 	// will decide when to make the weapon visible and touchable.
-	CBaseEntity *pNewWeapon = CBaseEntity::Create( GetClassname(), g_pGameRules->VecWeaponRespawnSpot( this ), GetLocalAngles(), GetOwnerEntity() );
+	CBaseEntity *pNewWeapon = CBaseEntity::Create( GetClassname(), g_pGameRules->VecWeaponRespawnSpot( this ), GetLocalAngles() );
 
 	if ( pNewWeapon )
 	{
@@ -377,25 +377,25 @@ int CBaseCombatWeapon::WeaponRangeAttack1Condition( float flDot, float flDist )
 	// HACKHACK: HasPrimaryAmmo() checks the NPC's reserve ammo counts, which should not be evaluated here if we use clips
 	if ( UsesPrimaryAmmo() && (UsesClipsForAmmo1() ? !m_iClip1 : !HasPrimaryAmmo()) )
 #else
- 	if ( UsesPrimaryAmmo() && !HasPrimaryAmmo() )
+	if ( UsesPrimaryAmmo() && !HasPrimaryAmmo() )
 #endif
- 	{
- 		return COND_NO_PRIMARY_AMMO;
- 	}
- 	else if ( flDist < m_fMinRange1) 
- 	{
- 		return COND_TOO_CLOSE_TO_ATTACK;
- 	}
- 	else if (flDist > m_fMaxRange1) 
- 	{
- 		return COND_TOO_FAR_TO_ATTACK;
- 	}
- 	else if (flDot < 0.5) 	// UNDONE: Why check this here? Isn't the AI checking this already?
- 	{
- 		return COND_NOT_FACING_ATTACK;
- 	}
+	{
+		return COND_NO_PRIMARY_AMMO;
+	}
+	else if ( flDist < m_fMinRange1) 
+	{
+		return COND_TOO_CLOSE_TO_ATTACK;
+	}
+	else if (flDist > m_fMaxRange1) 
+	{
+		return COND_TOO_FAR_TO_ATTACK;
+	}
+	else if (flDot < 0.5) 	// UNDONE: Why check this here? Isn't the AI checking this already?
+	{
+		return COND_NOT_FACING_ATTACK;
+	}
 
- 	return COND_CAN_RANGE_ATTACK1;
+	return COND_CAN_RANGE_ATTACK1;
 }
 
 //-----------------------------------------------------------------------------
