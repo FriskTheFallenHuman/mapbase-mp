@@ -722,6 +722,10 @@ CBasePlayer::CBasePlayer( )
 	pl.frags = 0;
 	pl.deaths = 0;
 
+#ifdef MAPBASE_MP
+	m_bAllowPickupWeaponThroughObstacle = false;
+#endif
+
 	m_szNetname[0] = '\0';
 
 	m_iHealth = 0;
@@ -6996,13 +7000,18 @@ bool CBasePlayer::BumpWeapon( CBaseCombatWeapon *pWeapon )
 	}
 	else
 	{
-		// Don't let the player fetch weapons through walls (use MASK_SOLID so that you can't pickup through windows)
-#ifdef MAPBASE
-		if( (pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET)) && !HasSpawnFlags(SF_WEAPON_ALWAYS_TOUCHABLE) )
-#else
-		if( pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET) )
+#ifdef MAPBASE_MP
+		if ( !GetAllowPickupWeaponThroughObstacle() )
 #endif
-			return false;
+		{
+			// Don't let the player fetch weapons through walls (use MASK_SOLID so that you can't pickup through windows)
+#ifdef MAPBASE
+			if( (pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET)) && !HasSpawnFlags(SF_WEAPON_ALWAYS_TOUCHABLE) )
+#else
+			if( pWeapon->FVisible( this, MASK_SOLID ) == false && !(GetFlags() & FL_NOTARGET) )
+#endif
+				return false;
+		}
 	}
 	
 	// ----------------------------------------

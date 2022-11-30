@@ -368,7 +368,13 @@ void CHL2MP_Player::Spawn(void)
 
 		RemoveEffects( EF_NODRAW );
 		
+#ifdef MAPBASE_MP
+		SetAllowPickupWeaponThroughObstacle( true );
+#endif
 		GiveDefaultItems();
+#ifdef MAPBASE_MP
+		SetAllowPickupWeaponThroughObstacle( false );
+#endif
 	}
 
 	RemoveEffects( EF_NOINTERP );
