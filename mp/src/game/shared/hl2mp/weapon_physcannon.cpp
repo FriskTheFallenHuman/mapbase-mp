@@ -878,14 +878,19 @@ void CPlayerPickupController::Use( CBaseEntity *pActivator, CBaseEntity *pCaller
 			Shutdown( true );
 			Vector vecLaunch;
 			m_pPlayer->EyeVectors( &vecLaunch );
-			// JAY: Scale this with mass because some small objects really go flying
-			float massFactor = clamp( pPhys->GetMass(), 0.5, 15 );
-			massFactor = RemapVal( massFactor, 0.5, 15, 0.5, 4 );
-			vecLaunch *= player_throwforce.GetFloat() * massFactor;
 
-			pPhys->ApplyForceCenter( vecLaunch );
-			AngularImpulse aVel = RandomAngularImpulse( -10, 10 ) * massFactor;
-			pPhys->ApplyTorqueCenter( aVel );
+			// Prevent a crash that occurs when trying to launch ammo
+			if( pPhys )
+			{
+				// JAY: Scale this with mass because some small objects really go flying
+				float massFactor = clamp( pPhys->GetMass(), 0.5, 15 );
+				massFactor = RemapVal( massFactor, 0.5, 15, 0.5, 4 );
+				vecLaunch *= player_throwforce.GetFloat() * massFactor;
+
+				pPhys->ApplyForceCenter( vecLaunch );
+				AngularImpulse aVel = RandomAngularImpulse( -10, 10 ) * massFactor;
+				pPhys->ApplyTorqueCenter( aVel );
+			}
 			return;
 		}
 
