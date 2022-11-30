@@ -75,7 +75,7 @@ public:
 	// Marks Break() as virtual
 	virtual
 #endif
-	void Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info );
+	virtual void Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info );
 	void BreakThink( void );
 	void AnimateThink( void );
 
@@ -401,6 +401,8 @@ public:
 
 	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
 	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
+
+	void Break( CBaseEntity* pBreaker, const CTakeDamageInfo& info )override;
 
 	void InputWake( inputdata_t &inputdata );
 	void InputSleep( inputdata_t &inputdata );
