@@ -77,7 +77,8 @@ public:
 	void	LobGrenade( CBasePlayer *pPlayer );
 
 	// check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
-	void	CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc );
+	void	CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc,
+		const QAngle& angles = vec3_angle );
 
 private:
 
@@ -421,12 +422,18 @@ void CWeaponFrag::ItemPostFrame( void )
 }
 
 // check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
-void CWeaponFrag::CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc )
+void CWeaponFrag::CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc, const QAngle& angles )
 {
+	// Compute an extended AABB that takes into account the requested grenade rotation.
+	// This will prevent grenade from going through nearby solids when model initially intersects with any.
+	matrix3x4_t rotation;
+	AngleMatrix(angles, rotation);
+	Vector mins, maxs;
+	RotateAABB(rotation, -Vector(GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, 2),
+		Vector(GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, GRENADE_RADIUS * 2 + 2), mins, maxs);
 	trace_t tr;
-
-	UTIL_TraceHull( vecEye, vecSrc, -Vector(GRENADE_RADIUS+2,GRENADE_RADIUS+2,GRENADE_RADIUS+2), Vector(GRENADE_RADIUS+2,GRENADE_RADIUS+2,GRENADE_RADIUS+2), 
-		pPlayer->PhysicsSolidMaskForEntity(), pPlayer, pPlayer->GetCollisionGroup(), &tr );
+	UTIL_TraceHull( vecEye, vecSrc, mins, maxs, pPlayer->PhysicsSolidMaskForEntity(),
+		pPlayer, pPlayer->GetCollisionGroup(), &tr );
 	
 	if ( tr.DidHit() )
 	{
@@ -542,7 +549,6 @@ void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
 		CrossProduct( tr.plane.normal, tangent, vecFacing );
 	}
 	vecSrc += (vecFacing * 18.0);
-	CheckThrowPosition( pPlayer, pPlayer->WorldSpaceCenter(), vecSrc );
 
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
@@ -551,6 +557,7 @@ void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
 	QAngle orientation(0,pPlayer->GetLocalAngles().y,-90);
 	// roll it
 	AngularImpulse rotSpeed(0,0,720);
+	CheckThrowPosition( pPlayer, pPlayer->WorldSpaceCenter(), vecSrc, orientation );
 	Fraggrenade_Create( vecSrc, orientation, vecThrow, rotSpeed, pPlayer, GRENADE_TIMER, false );
 #endif
 
