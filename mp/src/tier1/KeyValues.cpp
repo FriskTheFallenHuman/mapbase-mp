@@ -1526,14 +1526,14 @@ const wchar_t *KeyValues::GetWString( const char *keyName, const wchar_t *defaul
 bool KeyValues::GetBool( const char *keyName, bool defaultValue, bool* optGotDefault )
 {
 	if ( FindKey( keyName ) )
-    {
-        if ( optGotDefault )
-            (*optGotDefault) = false;
+	{
+		if ( optGotDefault )
+			(*optGotDefault) = false;
 		return 0 != GetInt( keyName, 0 );
-    }
-    
-    if ( optGotDefault )
-        (*optGotDefault) = true;
+	}
+	
+	if ( optGotDefault )
+		(*optGotDefault) = true;
 
 	return defaultValue;
 }
@@ -2179,6 +2179,16 @@ void KeyValues::RecursiveMergeKeyValues( KeyValues *baseKV )
 	}
 }
 
+#ifdef MAPBASE
+// Steam Deck resources support by EchoesForeAndAft#8982
+// Check if we are in the SteamDeck Mode
+static bool IsSteamDeck()
+{
+	static bool bIsSteamDeck = getenv( "SteamDeck" ) != nullptr || CommandLine()->CheckParm( "-gamepadui" ) != NULL;
+	return bIsSteamDeck;
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Returns whether a keyvalues conditional evaluates to true or false
 // Needs more flexibility with conditionals, checking convars would be nice.
@@ -2214,6 +2224,9 @@ bool EvaluateConditional( const char *str )
 		return IsPosix() ^ bNot;
 
 #ifdef MAPBASE
+	if ( Q_stristr( str, "$DECK" ) )
+		return IsSteamDeck() ^ bNot;
+
 	// Custom conditional
 	switch( str[bNot ? 1 : 0] )
 	{
