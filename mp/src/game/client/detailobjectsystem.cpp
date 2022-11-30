@@ -26,7 +26,7 @@
 #include <algorithm>
 #include "tier0/valve_minmax_on.h"
 
-#if defined(DOD_DLL) || defined(CSTRIKE_DLL)
+#if defined(DOD_DLL) || defined(CSTRIKE_DLL) || defined(MAPBASE_MP)
 #define USE_DETAIL_SHAPES
 #endif
 
@@ -383,7 +383,7 @@ public:
 	void OnRestore() {}
 	void SafeRemoveIfDesired() {}
 
-    // Gets a particular detail object
+	// Gets a particular detail object
 	IClientRenderable* GetDetailModel( int idx );
 
 	// Prepares detail for rendering 
@@ -2731,7 +2731,7 @@ void CDetailObjectSystem::RenderTranslucentDetailObjectsInLeaf( const Vector &vi
 	meshBuilder.End();
 	pMesh->Draw();
 
- 	pRenderContext->PopMatrix();
+	pRenderContext->PopMatrix();
 }
 
 
@@ -2798,7 +2798,7 @@ void CDetailObjectSystem::BuildDetailObjectRenderLists( const Vector &vViewOrigi
 
 	EnumContext_t ctx;
 	ctx.m_vViewOrigin = vViewOrigin;
- 	ctx.m_BuildWorldListNumber = view->BuildWorldListsNumber();
+	ctx.m_BuildWorldListNumber = view->BuildWorldListsNumber();
 
 	// We need to recompute translucency information for all detail props
 	for (int i = m_DetailObjectDict.Size(); --i >= 0; )

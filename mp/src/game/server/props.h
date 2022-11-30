@@ -75,7 +75,7 @@ public:
 	// Marks Break() as virtual
 	virtual
 #endif
-	virtual void Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info );
+	void Break( CBaseEntity *pBreaker, const CTakeDamageInfo &info );
 	void BreakThink( void );
 	void AnimateThink( void );
 
