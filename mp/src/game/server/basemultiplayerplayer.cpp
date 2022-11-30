@@ -22,7 +22,9 @@ CBaseMultiplayerPlayer::CBaseMultiplayerPlayer()
 	// per life achievement counters
 	m_pAchievementKV = new KeyValues( "achievement_counts" );
 
+#ifdef TF_DLL
 	m_flAreaCaptureScoreAccumulator = 0.0f;
+#endif  // TF_DLL
 }
 
 CBaseMultiplayerPlayer::~CBaseMultiplayerPlayer()
@@ -230,7 +232,9 @@ void CBaseMultiplayerPlayer::Spawn( void )
 {
 	ResetPerLifeCounters();
 
+#ifdef TF_DLL
 	StopScoringEscortPoints();
+#endif // TF_DLL
 
 	BaseClass::Spawn();
 }
@@ -299,7 +303,7 @@ void CBaseMultiplayerPlayer::ResetPerLifeCounters( void )
 	m_pAchievementKV->Clear();
 }
 
-
+#ifdef TF_DLL
 ConVar tf_escort_score_rate( "tf_escort_score_rate", "1", FCVAR_CHEAT, "Score for escorting the train, in points per second" );
 
 #define ESCORT_SCORE_CONTEXT		"AreaScoreContext"
@@ -356,4 +360,4 @@ void CBaseMultiplayerPlayer::StopScoringEscortPoints( void )
 {
 	SetContextThink( NULL, 0, ESCORT_SCORE_CONTEXT );
 }
-
+#endif // TF_DLL

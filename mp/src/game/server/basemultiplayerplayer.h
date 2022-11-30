@@ -79,11 +79,13 @@ public:
 
 	KeyValues *GetPerLifeCounterKeys( void ) { return m_pAchievementKV; }
 
+#ifdef TF_DLL
 	void EscortScoringThink( void );
 	void StartScoringEscortPoints( float flRate );
 	void StopScoringEscortPoints( void );
 	float m_flAreaCaptureScoreAccumulator;
 	float m_flCapPointScoreRate;
+#endif // TF_DLL
 
 	float GetConnectionTime( void ) { return m_flConnectionTime; }
 
@@ -100,6 +102,7 @@ private:
 	CMultiplayer_Expresser		*m_pExpresser;
 
 	float m_flConnectionTime;
+
 	float m_flLastForcedChangeTeamTime;
 
 	int m_iBalanceScore;	// a score used to determine which players are switched to balance the teams
