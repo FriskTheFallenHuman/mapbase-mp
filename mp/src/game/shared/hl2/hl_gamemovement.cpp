@@ -466,7 +466,7 @@ bool CHL2GameMovement::MountPlayerOntoLadder(CFuncLadder *ladder)
 
 	float dist = MIN( dist1sqr, dist2sqr );
 	bool neardismountnode = ( dist < 16.0f * 16.0f ) ? true : false;
-	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * gpGlobals->interval_per_tick );
+	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * TICK_INTERVAL );
 	bool neardismountnode2 = ( dist < ladderUnitsPerTick * ladderUnitsPerTick ) ? true : false;
 
 	// Really close to node, cvar is set, and pressing a key, then simulate a +USE
@@ -718,7 +718,7 @@ void CHL2GameMovement::FullLadderMove()
 
 	float dist = MIN( dist1sqr, dist2sqr );
 	bool neardismountnode = ( dist < 16.0f * 16.0f ) ? true : false;
-	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * gpGlobals->interval_per_tick );
+	float ladderUnitsPerTick = ( MAX_CLIMB_SPEED * TICK_INTERVAL );
 	bool neardismountnode2 = ( dist < ladderUnitsPerTick * ladderUnitsPerTick ) ? true : false;
 
 	// Really close to node, cvar is set, and pressing a key, then simulate a +USE

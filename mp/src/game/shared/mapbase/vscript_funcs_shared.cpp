@@ -980,7 +980,7 @@ void NXPrint( int pos, int r, int g, int b, bool fixed, float ftime, const char*
 
 static float IntervalPerTick()
 {
-	return gpGlobals->interval_per_tick;
+	return TICK_INTERVAL;
 }
 
 static int GetFrameCount()

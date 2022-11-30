@@ -5554,7 +5554,7 @@ private:
 	void InputGetFrameCount( inputdata_t &inputdata ) { m_OutFrameCount.Set(gpGlobals->framecount, inputdata.pActivator, this); }
 	void InputGetFrametime( inputdata_t &inputdata ) { m_OutFrametime.Set(gpGlobals->frametime, inputdata.pActivator, this); }
 	void InputGetTickCount( inputdata_t &inputdata ) { m_OutTickCount.Set(gpGlobals->tickcount, inputdata.pActivator, this); }
-	void InputGetIntervalPerTick( inputdata_t &inputdata ) { m_OutIntervalPerTick.Set(gpGlobals->interval_per_tick, inputdata.pActivator, this); }
+	void InputGetIntervalPerTick( inputdata_t &inputdata ) { m_OutIntervalPerTick.Set(TICK_INTERVAL, inputdata.pActivator, this); }
 
 	// Outputs
 	COutputFloat m_OutCurtime;
