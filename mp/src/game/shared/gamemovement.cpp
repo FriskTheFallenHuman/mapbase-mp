@@ -1679,7 +1679,7 @@ void CGameMovement::Friction( void )
 		VectorScale( mv->m_vecVelocity, newspeed, mv->m_vecVelocity );
 	}
 
- 	mv->m_outWishVel -= (1.f-newspeed) * mv->m_vecVelocity;
+	mv->m_outWishVel -= (1.f-newspeed) * mv->m_vecVelocity;
 }
 
 //-----------------------------------------------------------------------------
@@ -1698,7 +1698,7 @@ void CGameMovement::FinishGravity( void )
 		ent_gravity = 1.0;
 
 	// Get the correct velocity for the end of the dt 
-  	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->frametime * 0.5);
+	mv->m_vecVelocity[2] -= (ent_gravity * GetCurrentGravity() * gpGlobals->frametime * 0.5);
 
 	CheckVelocity();
 }
@@ -2087,7 +2087,7 @@ void CGameMovement::FullWalkMove( )
 		// Was jump button pressed?
 		if (mv->m_nButtons & IN_JUMP)
 		{
- 			CheckJumpButton();
+			CheckJumpButton();
 		}
 		else
 		{
@@ -2396,7 +2396,7 @@ bool CGameMovement::CheckJumpButton( void )
 	}
 
 	// No more effect
- 	if (player->GetGroundEntity() == NULL)
+	if (player->GetGroundEntity() == NULL)
 	{
 		mv->m_nOldButtons |= IN_JUMP;
 		return false;		// in air, so no effect
@@ -2421,7 +2421,7 @@ bool CGameMovement::CheckJumpButton( void )
 
 
 	// In the air now.
-    SetGroundEntity( NULL );
+	SetGroundEntity( NULL );
 	
 	player->PlayStepSound( (Vector &)mv->GetAbsOrigin(), player->m_pSurfaceData, 1.0, true );
 	
@@ -3608,7 +3608,7 @@ void CGameMovement::SetGroundEntity( trace_t *pm )
 	else if ( oldGround && !newGround )
 	{
 		// Add in ground velocity at instant we started jumping
- 		vecBaseVelocity += oldGround->GetAbsVelocity();
+		vecBaseVelocity += oldGround->GetAbsVelocity();
 		vecBaseVelocity.z = oldGround->GetAbsVelocity().z;
 	}
 
@@ -4151,7 +4151,7 @@ void CGameMovement::UpdateDuckJumpEyeOffset( void )
 {
 	if ( player->m_Local.m_flDuckJumpTime != 0.0f )
 	{
- 		float flDuckMilliseconds = MAX( 0.0f, GAMEMOVEMENT_DUCK_TIME - ( float )player->m_Local.m_flDuckJumpTime );
+		float flDuckMilliseconds = MAX( 0.0f, GAMEMOVEMENT_DUCK_TIME - ( float )player->m_Local.m_flDuckJumpTime );
 		float flDuckSeconds = flDuckMilliseconds / GAMEMOVEMENT_DUCK_TIME;						
 		if ( flDuckSeconds > TIME_TO_UNDUCK )
 		{
@@ -4232,7 +4232,7 @@ void CGameMovement::FinishDuck( void )
 		Vector hullSizeCrouch = VEC_DUCK_HULL_MAX_SCALED( player ) - VEC_DUCK_HULL_MIN_SCALED( player );
 		Vector viewDelta = ( hullSizeNormal - hullSizeCrouch );
 		Vector out;
-   		VectorAdd( mv->GetAbsOrigin(), viewDelta, out );
+		VectorAdd( mv->GetAbsOrigin(), viewDelta, out );
 		mv->SetAbsOrigin( out );
 
 #ifdef CLIENT_DLL
@@ -4286,7 +4286,7 @@ void CGameMovement::StartUnDuckJump( void )
 //-----------------------------------------------------------------------------
 void CGameMovement::SetDuckedEyeOffset( float duckFraction )
 {
- 	Vector vDuckHullMin = GetPlayerMins( true );
+	Vector vDuckHullMin = GetPlayerMins( true );
 	Vector vStandHullMin = GetPlayerMins( false );
 
 	float fMore = ( vDuckHullMin.z - vStandHullMin.z );
@@ -4448,7 +4448,7 @@ void CGameMovement::Duck( void )
 			if ( player->m_Local.m_bInDuckJump )
 			{
 				// Check for a crouch override.
-   				if ( !( mv->m_nButtons & IN_DUCK ) )
+				if ( !( mv->m_nButtons & IN_DUCK ) )
 				{
 					trace_t trace;
 					if ( CanUnDuckJump( trace ) )
@@ -4628,7 +4628,7 @@ void CGameMovement::PlayerMove( void )
 	Duck();
 
 	// Don't run ladder code if dead on on a train
-	if ( !player->pl.deadflag && !(player->GetFlags() & FL_ONTRAIN) )
+	if ( !(player->GetFlags() & FL_ONTRAIN) )
 	{
 		// If was not on a ladder now, but was on one before, 
 		//  get off of the ladder
@@ -4827,7 +4827,7 @@ void CGameMovement::FullTossMove( void )
 	if ( player->GetGroundEntity() != NULL )
 	{
 		if (VectorCompare(player->GetBaseVelocity(), vec3_origin) &&
-		    VectorCompare(mv->m_vecVelocity, vec3_origin))
+			VectorCompare(mv->m_vecVelocity, vec3_origin))
 			return;
 	}
 
