@@ -2207,7 +2207,7 @@ const char *nexttoken(char *token, const char *str, char sep, size_t tokenLen)
 	{
 	*token = '\0';
 		tokenLen--;
- 	}
+	}
 
 	//
 	// Advance the pointer unless we hit the end of the input string.

@@ -761,7 +761,7 @@ float CAI_Expresser::GetResponseDuration( AI_Response& response )
 //-----------------------------------------------------------------------------
 bool CAI_Expresser::Speak( AIConcept_t concept, const char *modifiers /*= NULL*/, char *pszOutResponseChosen /* = NULL*/, size_t bufsize /* = 0 */, IRecipientFilter *filter /* = NULL */ )
 {
-    AI_Response response;
+	AI_Response response;
 	bool result = SpeakFindResponse( response, concept, modifiers );
 	if ( !result )
 		return false;
@@ -771,8 +771,8 @@ bool CAI_Expresser::Speak( AIConcept_t concept, const char *modifiers /*= NULL*/
 	bool spoke = SpeakDispatchResponse( concept, response, filter );
 	if ( pszOutResponseChosen )
 	{
-        const char *szResponse = response.GetResponsePtr();
-        Q_strncpy( pszOutResponseChosen, szResponse, bufsize );
+		const char *szResponse = response.GetResponsePtr();
+		Q_strncpy( pszOutResponseChosen, szResponse, bufsize );
 	}
 	
 	return spoke;
@@ -1251,7 +1251,7 @@ void CAI_ExpresserHost_NPC_DoModifyOrAppendCriteria( CAI_BaseNPC *pSpeaker, AI_C
 	const char *pActivityName = pSpeaker->GetActivityName( pSpeaker->GetActivity() );
 	if ( pActivityName )
 	{
-  		set.AppendCriteria( "activity", pActivityName );
+		set.AppendCriteria( "activity", pActivityName );
 	}
 
 	static const char *pStateNames[] = { "None", "Idle", "Alert", "Combat", "Scripted", "PlayDead", "Dead" };

@@ -231,7 +231,7 @@ void CHudMessage::VidInit( void )
 //-----------------------------------------------------------------------------
 void CHudMessage::Reset( void )
 {
- 	memset( m_pMessages, 0, sizeof( m_pMessages[0] ) * maxHUDMessages );
+	memset( m_pMessages, 0, sizeof( m_pMessages[0] ) * maxHUDMessages );
 	memset( m_startTime, 0, sizeof( m_startTime[0] ) * maxHUDMessages );
 	
 	m_gameTitleTime = 0;
@@ -1066,7 +1066,7 @@ void CHudMessage::AddChar( int r, int g, int b, int a, wchar_t ch )
 //-----------------------------------------------------------------------------
 void CHudMessage::GetTextExtents( int *wide, int *tall, const char *string )
 {
-	*wide = g_pMatSystemSurface->DrawTextLen( m_hFont, (char *)string );
+	*wide = g_pMatSystemSurface->DrawTextLen( m_hFont, "%s", (char *)string );
 	*tall = vgui::surface()->GetFontTall( m_hFont );
 }
 
