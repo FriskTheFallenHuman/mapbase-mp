@@ -1711,7 +1711,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 			{
 				const float hitObjectFactor = 0.5f;
 				const float otherObjectFactor = 1.0f - hitObjectFactor;
-  				// Must be light enough
+				// Must be light enough
 				float ratio = pList[i]->GetMass() / totalMass;
 				if ( pList[i] == pEntity->VPhysicsGetObject() )
 				{
@@ -1722,8 +1722,8 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 				{
 					ratio *= otherObjectFactor;
 				}
-  				pList[i]->ApplyForceCenter( forward * 15000.0f * ratio );
-  				pList[i]->ApplyForceOffset( forward * mass * 600.0f * ratio, tr.endpos );
+				pList[i]->ApplyForceCenter( forward * 15000.0f * ratio );
+				pList[i]->ApplyForceOffset( forward * mass * 600.0f * ratio, tr.endpos );
 			}
 		}
 		else
@@ -1958,7 +1958,7 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 			break;
 
 		case OBJECT_NOT_FOUND:
-			m_flNextSecondaryAttack = gpGlobals->curtime + 0.1f;
+			m_flNextSecondaryAttack = gpGlobals->curtime + TICK_INTERVAL;
 			CloseElements();
 			break;
 
@@ -2169,7 +2169,7 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 	// If we're too far, simply start to pull the object towards us
 	Vector	pullDir = start - pEntity->WorldSpaceCenter();
 	VectorNormalize( pullDir );
-	pullDir *= physcannon_pullforce.GetFloat();
+	pullDir *= physcannon_pullforce.GetFloat() * TICK_INTERVAL * 10.0f;
 	
 	float mass = PhysGetEntityMass( pEntity );
 	if ( mass < 50.0f )
