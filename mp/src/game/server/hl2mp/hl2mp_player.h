@@ -139,6 +139,8 @@ private:
 
 	CHL2MPPlayerAnimState *m_PlayerAnimState;
 
+	void LadderRespawnFix();
+
 	CNetworkQAngle( m_angEyeAngles );
 
 	int m_iLastWeaponFireUsercmd;
