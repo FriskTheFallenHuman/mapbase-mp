@@ -128,12 +128,15 @@ void CAI_Senses::Listen( void )
 
 			if ( pCurrentSound	&& (iSoundMask & pCurrentSound->SoundType()) && CanHearSound( pCurrentSound ) )
 			{
-	 			// the npc cares about this sound, and it's close enough to hear.
+				// the npc cares about this sound, and it's close enough to hear.
 				pCurrentSound->m_iNextAudible = m_iAudibleList;
 				m_iAudibleList = iSound;
 			}
 
-			iSound = pCurrentSound->NextSound();
+			if ( pCurrentSound )
+				iSound = pCurrentSound->NextSound();
+			else
+				break;
 		}
 	}
 	
@@ -423,16 +426,16 @@ int CAI_Senses::LookForHighPriorityEntities( int iDistance )
 		}
 	
 		EndGather( nSeen, &m_SeenHighPriority );
-    }
-    else
-    {
-    	for ( int i = m_SeenHighPriority.Count() - 1; i >= 0; --i )
-    	{
-    		if ( m_SeenHighPriority[i].Get() == NULL )
-    			m_SeenHighPriority.FastRemove( i );    			
-    	}
-    	nSeen = m_SeenHighPriority.Count();
-    }
+	}
+	else
+	{
+		for ( int i = m_SeenHighPriority.Count() - 1; i >= 0; --i )
+		{
+			if ( m_SeenHighPriority[i].Get() == NULL )
+				m_SeenHighPriority.FastRemove( i );    			
+		}
+		nSeen = m_SeenHighPriority.Count();
+	}
 	
 	return nSeen;
 }
@@ -480,11 +483,11 @@ int CAI_Senses::LookForNPCs( int iDistance )
 		// Fall through
 	}
 
-    for ( int i = m_SeenNPCs.Count() - 1; i >= 0; --i )
-    {
-    	if ( m_SeenNPCs[i].Get() == NULL )
+	for ( int i = m_SeenNPCs.Count() - 1; i >= 0; --i )
+	{
+		if ( m_SeenNPCs[i].Get() == NULL )
 		{
-    		m_SeenNPCs.FastRemove( i );
+			m_SeenNPCs.FastRemove( i );
 		}
 		else if ( bRemoveStaleFromCache )
 		{
@@ -492,12 +495,12 @@ int CAI_Senses::LookForNPCs( int iDistance )
 				   origin.DistToSqr(m_SeenNPCs[i]->GetAbsOrigin()) > distSq ) ||
 				 !Look( m_SeenNPCs[i] ) )
 			{
-	    		m_SeenNPCs.FastRemove( i );
+				m_SeenNPCs.FastRemove( i );
 			}
 		}
-    }
+	}
 
-    return m_SeenNPCs.Count();
+	return m_SeenNPCs.Count();
 }
 
 //-----------------------------------------------------------------------------
@@ -532,15 +535,15 @@ int CAI_Senses::LookForObjects( int iDistance )
 		
 		EndGather( nSeen, &m_SeenMisc );
 	}
-    else
-    {
-    	for ( int i = m_SeenMisc.Count() - 1; i >= 0; --i )
-    	{
-    		if ( m_SeenMisc[i].Get() == NULL )
-    			m_SeenMisc.FastRemove( i );    			
-    	}
-    	nSeen = m_SeenMisc.Count();
-    }
+	else
+	{
+		for ( int i = m_SeenMisc.Count() - 1; i >= 0; --i )
+		{
+			if ( m_SeenMisc[i].Get() == NULL )
+				m_SeenMisc.FastRemove( i );    			
+		}
+		nSeen = m_SeenMisc.Count();
+	}
 
 	return nSeen;
 }
