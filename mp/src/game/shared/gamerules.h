@@ -164,7 +164,7 @@ public:
 
 // Damage rules for ammo types
 	virtual float GetAmmoDamage( CBaseEntity *pAttacker, CBaseEntity *pVictim, int nAmmoType );
-    virtual float GetDamageMultiplier( void ) { return 1.0f; }    
+	virtual float GetDamageMultiplier( void ) { return 1.0f; }    
 
 // Functions to verify the single/multiplayer status of a game
 	virtual bool IsMultiplayer( void ) = 0;// is this a multiplayer game? (either coop or deathmatch)
@@ -327,6 +327,7 @@ public:
 	virtual float FlWeaponRespawnTime( CBaseCombatWeapon *pWeapon ) = 0;// when may this weapon respawn?
 	virtual float FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon ) = 0; // can i respawn now,  and if not, when should i try again?
 	virtual Vector VecWeaponRespawnSpot( CBaseCombatWeapon *pWeapon ) = 0;// where in the world should this weapon respawn?
+	virtual QAngle DefaultWeaponRespawnAngle( CBaseCombatWeapon* pWeapon ) = 0;// the angles this weapon should use when respawing.
 
 // Item retrieval
 	virtual bool CanHaveItem( CBasePlayer *pPlayer, CItem *pItem ) = 0;// is this player allowed to take this item?
@@ -380,7 +381,7 @@ public:
 
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) {}
-				    
+					
 	// trace line rules
 	virtual float WeaponTraceEntity( CBaseEntity *pEntity, const Vector &vecStart, const Vector &vecEnd, unsigned int mask, trace_t *ptr );
 

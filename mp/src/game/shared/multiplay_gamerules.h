@@ -163,6 +163,7 @@ public:
 	virtual float FlWeaponRespawnTime( CBaseCombatWeapon *pWeapon );
 	virtual float FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon );
 	virtual Vector VecWeaponRespawnSpot( CBaseCombatWeapon *pWeapon );
+	virtual QAngle DefaultWeaponRespawnAngle( CBaseCombatWeapon* pWeapon );
 
 // Item retrieval
 	virtual bool CanHaveItem( CBasePlayer *pPlayer, CItem *pItem );
@@ -251,7 +252,7 @@ public:
 
 protected:
 	virtual bool UseSuicidePenalty() { return true; }		// apply point penalty for suicide?
- 	virtual float GetLastMajorEventTime( void ){ return -1.0f; }
+	virtual float GetLastMajorEventTime( void ){ return -1.0f; }
 
 public:
 	virtual void ChangeLevel( void );

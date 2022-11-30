@@ -937,6 +937,15 @@ ConVarRef suitcharger( "sk_suitcharger" );
 	}
 
 	//=========================================================
+	// DefaultWeaponRespawnAngle - the angles this weapon
+	// should use when respawing.
+	//=========================================================
+	QAngle CMultiplayRules::DefaultWeaponRespawnAngle( CBaseCombatWeapon* pWeapon )
+	{
+		return pWeapon->GetAbsAngles();
+	}
+
+	//=========================================================
 	// WeaponShouldRespawn - any conditions inhibiting the
 	// respawning of this weapon?
 	//=========================================================
