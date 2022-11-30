@@ -369,8 +369,8 @@ bool IsExplosionTraceBlocked( trace_t *ptr )
 		// All doors are push, but not all things that push are doors. This 
 		// narrows the search before we start to do classname compares.
 		if( FClassnameIs(ptr->m_pEnt, "prop_door_rotating") ||
-        FClassnameIs(ptr->m_pEnt, "func_door") ||
-        FClassnameIs(ptr->m_pEnt, "func_door_rotating") )
+		FClassnameIs(ptr->m_pEnt, "func_door") ||
+		FClassnameIs(ptr->m_pEnt, "func_door_rotating") )
 			return true;
 	}
 

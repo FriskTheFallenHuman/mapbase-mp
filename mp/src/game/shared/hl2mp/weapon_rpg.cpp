@@ -194,7 +194,7 @@ void CMissile::Spawn( void )
 
 	SetSolid( SOLID_BBOX );
 	SetModel("models/weapons/w_missile_launch.mdl");
-	UTIL_SetSize( this, -Vector(4,4,4), Vector(4,4,4) );
+	UTIL_SetSize( this, -Vector(2,2,2), Vector(2,2,2) );
 
 	SetTouch( &CMissile::MissileTouch );
 
@@ -376,6 +376,11 @@ void CMissile::ShotDown( void )
 //-----------------------------------------------------------------------------
 void CMissile::DoExplosion( void )
 {
+	//Fix GetAbsOrigin().z+1 in gamerules.cpp:349
+	Vector origin = GetAbsOrigin();
+	origin.z -= 1;
+	SetAbsOrigin( origin );
+
 	// Explode
 	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), CMissile::EXPLOSION_RADIUS, 
 		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
@@ -473,8 +478,9 @@ void CMissile::IgniteThink( void )
 {
 	SetMoveType( MOVETYPE_FLY );
 	SetModel("models/weapons/w_missile.mdl");
-	UTIL_SetSize( this, vec3_origin, vec3_origin );
+	//UTIL_SetSize( this, vec3_origin, vec3_origin ); //This cause weird no damage dealing on stairs
 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+	AddEFlags( EFL_NO_WATER_VELOCITY_CHANGE );//Ignore velocity change by in or out water transition
 
 	//TODO: Play opening sound
 
@@ -749,7 +755,6 @@ CMissile *CMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, ed
 	//CMissile *pMissile = (CMissile *)CreateEntityByName("rpg_missile" );
 	CMissile *pMissile = (CMissile *) CBaseEntity::Create( "rpg_missile", vecOrigin, vecAngles, CBaseEntity::Instance( pentOwner ) );
 	pMissile->SetOwnerEntity( Instance( pentOwner ) );
-	pMissile->Spawn();
 	pMissile->AddEffects( EF_NOSHADOW );
 	
 	Vector vecForward;
