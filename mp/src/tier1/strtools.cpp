@@ -149,11 +149,11 @@ int	_V_wcslen(const char* file, int line, const wchar_t *pwch)
 char *_V_strrchr(const char* file, int line, const char *s, char c)
 {
 	AssertValidStringPtr( s );
-    int len = V_strlen(s);
-    s += len;
-    while (len--)
+	int len = V_strlen(s);
+	s += len;
+	while (len--)
 	if (*--s == c) return (char *)s;
-    return 0;
+	return 0;
 }
 
 int _V_strcmp (const char* file, int line, const char *s1, const char *s2)
@@ -743,9 +743,18 @@ void V_strncpy( char *pDest, char const *pSrc, int maxLen )
 	AssertValidWritePtr( pDest, maxLen );
 	AssertValidStringPtr( pSrc );
 
-	strncpy( pDest, pSrc, maxLen );
 	if ( maxLen > 0 )
 	{
+		for ( int i = 0; i < maxLen; i++ )
+		{
+			pDest[i] = pSrc[i];
+
+			if ( pSrc[i] == '\0' )
+			{
+				return;
+			}
+		}
+
 		pDest[maxLen-1] = 0;
 	}
 }
