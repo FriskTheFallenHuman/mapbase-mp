@@ -47,7 +47,6 @@ public:
 	~C_HL2MP_Player( void );
 
 	// Player avoidance
-	bool ShouldCollide( int collisionGroup, int contentsMask ) const;
 	void AvoidPlayers( CUserCmd *pCmd );
 	float m_fNextThinkPushAway;
 	virtual bool CreateMove( float flInputSampleTime, CUserCmd *pCmd );
@@ -59,25 +58,18 @@ public:
 	virtual int DrawModel( int flags );
 	virtual void AddEntity( void );
 
-	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL );
-
 	virtual C_BaseAnimating *BecomeRagdollOnClient();
 	virtual const QAngle& GetRenderAngles();
 	virtual bool ShouldDraw( void );
 	virtual void OnDataChanged( DataUpdateType_t type );
 	virtual float GetFOV( void );
-	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
 	virtual void ItemPreFrame( void );
 	virtual void ItemPostFrame( void );
 	virtual float GetMinFOV()	const { return 5.0f; }
-	virtual Vector GetAutoaimVector( float flDelta );
 	virtual void NotifyShouldTransmit( ShouldTransmitState_t state );
 	virtual void CreateLightEffects( void ) {}
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
-	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
-	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
 	IRagdoll* GetRepresentativeRagdoll() const;
-	virtual void CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );
 	virtual const QAngle& EyeAngles( void );
 
 	void	UpdateLookAt( void );
@@ -88,8 +80,7 @@ public:
 
 	HL2MPPlayerState State_Get() const;
 
-	virtual void					UpdateClientSideAnimation();
-	void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
+	virtual void UpdateClientSideAnimation();
 	virtual void CalculateIKLocks( float currentTime );
 
 	static void RecvProxy_CycleLatch( const CRecvProxyData *pData, void *pStruct, void *pOut );
@@ -97,9 +88,37 @@ public:
 	virtual float GetServerIntendedCycle() { return m_flServerCycle; }
 	virtual void SetServerIntendedCycle( float cycle ) { m_flServerCycle = cycle; }
 
+	void InitializePoseParams( void );
+
+#ifdef MAPBASE_MP
+    inline void SetLookat( const Vector& pos ) { m_viewtarget = pos; };
+    inline void BlinkEyes() { m_blinktoggle = !m_blinktoggle; };
+#endif // MAPBASE_MP
+
+// Shared code
+public:
+
+	// This passes the event to the client's and server's CHL2MPPlayerAnimState.
+	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
+
 	//Tony; when model is changed, need to init some stuff.
 	virtual CStudioHdr *OnNewModel( void );
-	void InitializePoseParams( void );
+
+	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+
+	virtual void CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );
+
+	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
+
+	virtual void FireBullets ( const FireBulletsInfo_t &info );
+
+	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL );
+
+	virtual Vector GetAutoaimVector( float flDelta );
+
+	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+
+	virtual	bool ShouldCollide( int collisionGroup, int contentsMask ) const;
 
 private:
 	
@@ -112,6 +131,7 @@ private:
 
 	EHANDLE	m_hRagdoll;
 
+#ifndef MAPBASE_MP
 	int	m_headYawPoseParam;
 	int	m_headPitchPoseParam;
 	float m_headYawMin;
@@ -129,6 +149,11 @@ private:
 	int	  m_iIDEntIndex;
 
 	CountdownTimer m_blinkTimer;
+#else
+	Vector m_vLookAtTarget;
+
+	int	  m_iIDEntIndex;
+#endif // !MAPBASE_MP
 
 	int	  m_iSpawnInterpCounter;
 	int	  m_iSpawnInterpCounterCache;

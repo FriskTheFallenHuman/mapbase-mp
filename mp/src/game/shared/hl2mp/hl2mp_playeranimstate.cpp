@@ -11,7 +11,6 @@
 #include "studio.h"
 #include "apparent_velocity_helper.h"
 #include "utldict.h"
-
 #include "hl2mp_playeranimstate.h"
 #include "base_playeranimstate.h"
 #include "datacache/imdlcache.h"
@@ -21,6 +20,15 @@
 #else
 #include "hl2mp_player.h"
 #endif
+
+#ifdef MAPBASE_MP
+#define MAX_FEET_GOAL_DELTA         45.0f
+
+// Don't let the head spass out.
+#define HL2MP_LOOKAT_UPDATE_TIME       0.1f
+#define HL2MP_LOOKAT_DIST              100.0f
+#define HL2MP_LOOKAT_DOT               0.5f // < 0 is way too big of an angle.
+#endif // MAPBASE_MP
 
 #define HL2MP_RUN_SPEED				320.0f
 #define HL2MP_WALK_SPEED			75.0f
@@ -89,8 +97,54 @@ CHL2MPPlayerAnimState::~CHL2MPPlayerAnimState()
 //-----------------------------------------------------------------------------
 void CHL2MPPlayerAnimState::InitHL2MPAnimState( CHL2MP_Player *pPlayer )
 {
+#ifdef MAPBASE_MP
+	Assert( pPlayer );
 	m_pHL2MPPlayer = pPlayer;
+
+	m_blinkTimer.Invalidate();
+	m_flLastLookAtUpdate = 0.0f;
+
+	m_flLastBodyYaw = 0.0f;
+	m_flCurrentHeadYaw = 0.0f;
+	m_flCurrentHeadPitch = 0.0f;
+#else
+	m_pHL2MPPlayer = pPlayer;
+#endif // MAPBASE_MP
 }
+
+#ifdef MAPBASE_MP
+//-----------------------------------------------------------------------------
+// For animations, why would ever want to use the absolute velocity?
+// You want the local velocity, the thing that's not affected by outside sources (ie. moving platforms)
+// ???????
+//-----------------------------------------------------------------------------
+void CHL2MPPlayerAnimState::GetOuterAbsVelocity( Vector& vel )
+{
+	vel = GetHL2MPPlayer()->GetLocalVelocity();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHL2MPPlayerAnimState::ShouldUpdateAnimState()
+{
+	// Don't updated the animation states if we're not even being drawed
+	if ( m_pHL2MPPlayer->IsEffectActive( EF_NODRAW ) )
+		return false;
+
+	if ( m_pHL2MPPlayer->IsObserver() )
+		return false;
+
+	// Why would we update anims if we're not getting updates from server
+#ifdef CLIENT_DLL
+	if ( m_pHL2MPPlayer->IsDormant() )
+		return false;
+#endif
+
+	return m_pHL2MPPlayer->IsAlive() || m_bDying;
+}
+#endif // MAPBASE_MP
+
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -125,15 +179,30 @@ void CHL2MPPlayerAnimState::Update( float eyeYaw, float eyePitch )
 	// Profile the animation update.
 	VPROF( "CHL2MPPlayerAnimState::Update" );
 
+#ifndef MAPBASE_MP
 	// Get the HL2MP player.
 	CHL2MP_Player *pHL2MPPlayer = GetHL2MPPlayer();
 	if ( !pHL2MPPlayer )
 		return;
+#endif // MAPBASE_MP
 
 	// Get the studio header for the player.
+#ifdef MAPBASE_MP
+	CStudioHdr *pStudioHdr = GetHL2MPPlayer()->GetModelPtr();
+#else
 	CStudioHdr *pStudioHdr = pHL2MPPlayer->GetModelPtr();
+#endif
 	if ( !pStudioHdr )
 		return;
+
+#ifdef MAPBASE_MP
+	// We're not updating if we don't need to.
+#ifdef CLIENT_DLL
+	// This will screw up localplayer's ragdoll.
+	//if ( pHL2MPPlayer->IsLocalPlayer() && !C_BasePlayer::ShouldDrawLocalPlayer() )
+	//    return;
+#endif
+#endif
 
 	// Check to see if we should be updating the animation state - dead, ragdolled?
 	if ( !ShouldUpdateAnimState() )
@@ -159,6 +228,15 @@ void CHL2MPPlayerAnimState::Update( float eyeYaw, float eyePitch )
 
 		// Pose parameter - Torso aiming (rotation).
 		ComputePoseParam_AimYaw( pStudioHdr );
+
+#ifdef MAPBASE_MP
+		// Pose parameter - Head + eyes
+		// NOTE: If we ever decide to care/care less about lag compensation on players, we can just make these shared/all on client.
+		// IIRC pose parameters aren't lag compensated anyway.
+#ifdef CLIENT_DLL
+		ComputePoseParam_Head( pStudioHdr );
+#endif
+#endif
 	}
 
 #ifdef CLIENT_DLL 
@@ -235,7 +313,11 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 	case PLAYERANIMEVENT_RELOAD:
 		{
 			// Weapon reload.
+#ifdef MAPBASE_MP
+			if ( GetHL2MPPlayer()->GetFlags() & FL_DUCKING )
+#else
 			if ( GetBasePlayer()->GetFlags() & FL_DUCKING )
+#endif
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_CROUCH );
 			else
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_STAND );
@@ -244,7 +326,11 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 	case PLAYERANIMEVENT_RELOAD_LOOP:
 		{
 			// Weapon reload.
+#ifdef MAPBASE_MP
+			if ( GetHL2MPPlayer()->GetFlags() & FL_DUCKING )
+#else
 			if ( GetBasePlayer()->GetFlags() & FL_DUCKING )
+#endif
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_CROUCH_LOOP );
 			else
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_STAND_LOOP );
@@ -253,7 +339,11 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 	case PLAYERANIMEVENT_RELOAD_END:
 		{
 			// Weapon reload.
+#ifdef MAPBASE_MP
+			if ( GetHL2MPPlayer()->GetFlags() & FL_DUCKING )
+#else
 			if ( GetBasePlayer()->GetFlags() & FL_DUCKING )
+#endif
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_CROUCH_END );
 			else
 				RestartGesture( GESTURE_SLOT_ATTACK_AND_RELOAD, ACT_MP_RELOAD_STAND_END );
@@ -266,6 +356,8 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 		}
 	}
 
+	// This only gets in the way. We send weapon animations ourselves.
+#ifndef MAPBASE_MP
 #ifdef CLIENT_DLL
 	// Make the weapon play the animation as well
 	if ( iGestureActivity != ACT_INVALID )
@@ -281,6 +373,7 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 		}
 	}
 #endif
+#endif // MAPBASE_MP
 }
 
 //-----------------------------------------------------------------------------
@@ -289,9 +382,21 @@ void CHL2MPPlayerAnimState::DoAnimationEvent( PlayerAnimEvent_t event, int nData
 //-----------------------------------------------------------------------------
 bool CHL2MPPlayerAnimState::HandleSwimming( Activity &idealActivity )
 {
+#ifdef MAPBASE_MP
+	// We don't have any swimming animations.
+	// TODO: this is true for ZM:R but we may want to add animations in the future
+	//		 revisit this later!
+	if (m_pHL2MPPlayer->GetWaterLevel() >= WL_Waist )
+	{
+		idealActivity = ACT_MP_JUMP;
+		return true; 
+	}
+	
+	return false;
+#else
 	bool bInWater = BaseClass::HandleSwimming( idealActivity );
-
 	return bInWater;
+#endif
 }
 
 //-----------------------------------------------------------------------------
@@ -330,6 +435,9 @@ bool CHL2MPPlayerAnimState::HandleDucking( Activity &idealActivity )
 
 //-----------------------------------------------------------------------------
 // Purpose: 
+// Input  : *idealActivity - 
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
 bool CHL2MPPlayerAnimState::HandleJumping( Activity &idealActivity )
 {
 	Vector vecVelocity;
@@ -372,7 +480,7 @@ bool CHL2MPPlayerAnimState::HandleJumping( Activity &idealActivity )
 		{
 			if ( bNewJump )
 			{
-				if ( gpGlobals->curtime - m_flJumpStartTime > 0.5 )
+				if ( (gpGlobals->curtime - m_flJumpStartTime) > 0.5f )
 				{
 					idealActivity = ACT_MP_JUMP_FLOAT;
 				}
@@ -404,6 +512,69 @@ bool CHL2MPPlayerAnimState::SetupPoseParameters( CStudioHdr *pStudioHdr )
 	if ( !pStudioHdr )
 		return false;
 
+#ifdef MAPBASE_MP
+	m_bIs9Way = false;
+
+	m_PoseParameterData.m_iMoveX = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "move_x" );
+	m_PoseParameterData.m_iMoveY = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "move_y" );
+
+	//
+	// 9way blending
+	//
+	if ( m_PoseParameterData.m_iMoveX >= 0 && m_PoseParameterData.m_iMoveY >= 0 )
+	{
+		m_bIs9Way = true;
+
+		m_PoseParameterData.m_iAimPitch = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "body_pitch" );
+		if ( m_PoseParameterData.m_iAimPitch < 0 )
+			return false;
+
+		m_PoseParameterData.m_iAimYaw = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "body_yaw" );
+		if ( m_PoseParameterData.m_iAimYaw < 0 )
+			return false;
+	}
+	//
+	// Fallback to 8way blending
+	//
+	else
+	{
+		// 8way blending doesn't use move_x/move_y
+		// and it only has one "move_yaw" param.
+		m_PoseParameterData.m_iMoveX =
+		m_PoseParameterData.m_iMoveY = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "move_yaw" );
+		if ( ( m_PoseParameterData.m_iMoveX < 0 ) || ( m_PoseParameterData.m_iMoveY < 0 ) )
+			return false;
+
+		// Look for the aim pitch blender.
+		m_PoseParameterData.m_iAimPitch = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "aim_pitch" );
+		if ( m_PoseParameterData.m_iAimPitch < 0 )
+			return false;
+
+		// Look for aim yaw blender.
+		m_PoseParameterData.m_iAimYaw = m_pHL2MPPlayer->LookupPoseParameter( pStudioHdr, "aim_yaw" );
+		if ( m_PoseParameterData.m_iAimYaw < 0 )
+			return false;
+	}
+
+
+#ifdef CLIENT_DLL
+	m_headYawPoseParam = m_pHL2MPPlayer->LookupPoseParameter( "head_yaw" );
+	if ( m_headYawPoseParam < 0 )
+		return false;
+
+	m_pHL2MPPlayer->GetPoseParameterRange( m_headYawPoseParam, m_headYawMin, m_headYawMax );
+
+	m_headPitchPoseParam = m_pHL2MPPlayer->LookupPoseParameter( "head_pitch" );
+	if ( m_headPitchPoseParam < 0 )
+		return false;
+
+	m_pHL2MPPlayer->GetPoseParameterRange( m_headPitchPoseParam, m_headPitchMin, m_headPitchMax );
+#endif
+
+	m_bPoseParameterInit = true;
+
+	return true;
+#else
 	// Tony; just set them both to the same for now.
 	m_PoseParameterData.m_iMoveX = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_yaw" );
 	m_PoseParameterData.m_iMoveY = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "move_yaw" );
@@ -419,12 +590,15 @@ bool CHL2MPPlayerAnimState::SetupPoseParameters( CStudioHdr *pStudioHdr )
 	m_PoseParameterData.m_iAimYaw = GetBasePlayer()->LookupPoseParameter( pStudioHdr, "aim_yaw" );
 	if ( m_PoseParameterData.m_iAimYaw < 0 )
 		return false;
+#endif
 
 	m_bPoseParameterInit = true;
 
 	return true;
 }
+
 float SnapYawTo( float flValue );
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -435,70 +609,90 @@ void CHL2MPPlayerAnimState::EstimateYaw( void )
 	if ( flDeltaTime == 0.0f )
 		return;
 
-#if 0 // 9way
-	// Get the player's velocity and angles.
-	Vector vecEstVelocity;
-	GetOuterAbsVelocity( vecEstVelocity );
-	QAngle angles = GetBasePlayer()->GetLocalAngles();
-
-	// If we are not moving, sync up the feet and eyes slowly.
-	if ( vecEstVelocity.x == 0.0f && vecEstVelocity.y == 0.0f )
+#ifdef MAPBASE_MP // 9way
+	if ( Uses9WayAnim() )
 	{
-		float flYawDelta = angles[YAW] - m_PoseParameterData.m_flEstimateYaw;
-		flYawDelta = AngleNormalize( flYawDelta );
+		// Get the player's velocity and angles.
+		Vector vecEstVelocity;
+		GetOuterAbsVelocity( vecEstVelocity );
+		QAngle angles = GetBasePlayer()->GetLocalAngles();
 
-		if ( flDeltaTime < 0.25f )
+		// If we are not moving, sync up the feet and eyes slowly.
+		if ( vecEstVelocity.x == 0.0f && vecEstVelocity.y == 0.0f )
 		{
-			flYawDelta *= ( flDeltaTime * 4.0f );
+			float flYawDelta = angles[YAW] - m_PoseParameterData.m_flEstimateYaw;
+			flYawDelta = AngleNormalize( flYawDelta );
+
+			if ( flDeltaTime < 0.25f )
+			{
+				flYawDelta *= ( flDeltaTime * 4.0f );
+			}
+			else
+			{
+				flYawDelta *= flDeltaTime;
+			}
+
+			m_PoseParameterData.m_flEstimateYaw += flYawDelta;
+			AngleNormalize( m_PoseParameterData.m_flEstimateYaw );
 		}
 		else
 		{
-			flYawDelta *= flDeltaTime;
+			m_PoseParameterData.m_flEstimateYaw = ( atan2( vecEstVelocity.y, vecEstVelocity.x ) * 180.0f / M_PI );
+			m_PoseParameterData.m_flEstimateYaw = clamp( m_PoseParameterData.m_flEstimateYaw, -180.0f, 180.0f );
 		}
-
-		m_PoseParameterData.m_flEstimateYaw += flYawDelta;
-		AngleNormalize( m_PoseParameterData.m_flEstimateYaw );
 	}
 	else
 	{
-		m_PoseParameterData.m_flEstimateYaw = ( atan2( vecEstVelocity.y, vecEstVelocity.x ) * 180.0f / M_PI );
-		m_PoseParameterData.m_flEstimateYaw = clamp( m_PoseParameterData.m_flEstimateYaw, -180.0f, 180.0f );
-	}
-#else
-	float dt = gpGlobals->frametime;
-
-	// Get the player's velocity and angles.
-	Vector vecEstVelocity;
-	GetOuterAbsVelocity( vecEstVelocity );
-	QAngle angles = GetBasePlayer()->GetLocalAngles();
-
-	if ( vecEstVelocity.y == 0 && vecEstVelocity.x == 0 )
-	{
-		float flYawDiff = angles[YAW] - m_PoseParameterData.m_flEstimateYaw;
-		flYawDiff = flYawDiff - (int)(flYawDiff / 360) * 360;
-		if (flYawDiff > 180)
-			flYawDiff -= 360;
-		if (flYawDiff < -180)
-			flYawDiff += 360;
-
-		if (dt < 0.25)
-			flYawDiff *= dt * 4;
-		else
-			flYawDiff *= dt;
-
-		m_PoseParameterData.m_flEstimateYaw += flYawDiff;
-		m_PoseParameterData.m_flEstimateYaw = m_PoseParameterData.m_flEstimateYaw - (int)(m_PoseParameterData.m_flEstimateYaw / 360) * 360;
-	}
-	else
-	{
-		m_PoseParameterData.m_flEstimateYaw = (atan2(vecEstVelocity.y, vecEstVelocity.x) * 180 / M_PI);
-
-		if (m_PoseParameterData.m_flEstimateYaw > 180)
-			m_PoseParameterData.m_flEstimateYaw = 180;
-		else if (m_PoseParameterData.m_flEstimateYaw < -180)
-			m_PoseParameterData.m_flEstimateYaw = -180;
-	}
 #endif
+#ifndef MAPBASE_MP
+		float dt = gpGlobals->frametime;
+#endif
+
+		// Get the player's velocity and angles.
+		Vector vecEstVelocity;
+		GetOuterAbsVelocity( vecEstVelocity );
+#ifdef MAPBASE_MP
+		// Use eye yaw.
+		//QAngle angles = GetBasePlayer()->GetLocalAngles();
+		QAngle angles = QAngle( 0.0f, m_flEyeYaw, 0.0f );
+#else
+		QAngle angles = GetBasePlayer()->GetLocalAngles();
+#endif
+		if ( vecEstVelocity.y == 0 && vecEstVelocity.x == 0 )
+		{
+			float flYawDiff = angles[YAW] - m_PoseParameterData.m_flEstimateYaw;
+			flYawDiff = flYawDiff - (int)(flYawDiff / 360) * 360;
+			if (flYawDiff > 180)
+				flYawDiff -= 360;
+			if (flYawDiff < -180)
+				flYawDiff += 360;
+
+#ifndef MAPBASE_MP
+			if (dt < 0.25)
+				flYawDiff *= dt * 4;
+			else
+				flYawDiff *= dt;
+#else
+			if (flDeltaTime < 0.25)
+				flYawDiff *= flDeltaTime * 4;
+			else
+				flYawDiff *= flDeltaTime;
+#endif
+
+
+			m_PoseParameterData.m_flEstimateYaw += flYawDiff;
+			m_PoseParameterData.m_flEstimateYaw = m_PoseParameterData.m_flEstimateYaw - (int)(m_PoseParameterData.m_flEstimateYaw / 360) * 360;
+		}
+		else
+		{
+			m_PoseParameterData.m_flEstimateYaw = (atan2(vecEstVelocity.y, vecEstVelocity.x) * 180 / M_PI);
+
+			if (m_PoseParameterData.m_flEstimateYaw > 180)
+				m_PoseParameterData.m_flEstimateYaw = 180;
+			else if (m_PoseParameterData.m_flEstimateYaw < -180)
+				m_PoseParameterData.m_flEstimateYaw = -180;
+		}
+	}
 }
 //-----------------------------------------------------------------------------
 // Purpose: Override for backpeddling
@@ -510,70 +704,86 @@ void CHL2MPPlayerAnimState::ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr )
 	// Get the estimated movement yaw.
 	EstimateYaw();
 
-#if 0 // 9way
-	ConVarRef mp_slammoveyaw("mp_slammoveyaw");
-
-	// Get the view yaw.
-	float flAngle = AngleNormalize( m_flEyeYaw );
-
-	// Calc side to side turning - the view vs. movement yaw.
-	float flYaw = flAngle - m_PoseParameterData.m_flEstimateYaw;
-	flYaw = AngleNormalize( -flYaw );
-
-	// Get the current speed the character is running.
-	bool bIsMoving;
-	float flPlaybackRate = 	CalcMovementPlaybackRate( &bIsMoving );
-
-	// Setup the 9-way blend parameters based on our speed and direction.
-	Vector2D vecCurrentMoveYaw( 0.0f, 0.0f );
-	if ( bIsMoving )
+#ifdef MAPBASE // 9way
+	if ( Uses9WayAnim() )
 	{
-		if ( mp_slammoveyaw.GetBool() )
-			flYaw = SnapYawTo( flYaw );
+		ConVarRef mp_slammoveyaw("mp_slammoveyaw");
 
-		vecCurrentMoveYaw.x = cos( DEG2RAD( flYaw ) ) * flPlaybackRate;
-		vecCurrentMoveYaw.y = -sin( DEG2RAD( flYaw ) ) * flPlaybackRate;
+		// Get the view yaw.
+		float flAngle = AngleNormalize( m_flEyeYaw );
+
+		// Calc side to side turning - the view vs. movement yaw.
+		float flYaw = flAngle - m_PoseParameterData.m_flEstimateYaw;
+		flYaw = AngleNormalize( -flYaw );
+
+		// Get the current speed the character is running.
+		bool bIsMoving;
+		float flPlaybackRate = 	CalcMovementPlaybackRate( &bIsMoving );
+
+		// Setup the 9-way blend parameters based on our speed and direction.
+		Vector2D vecCurrentMoveYaw( 0.0f, 0.0f );
+		if ( bIsMoving )
+		{
+			if ( mp_slammoveyaw.GetBool() )
+				flYaw = SnapYawTo( flYaw );
+
+			vecCurrentMoveYaw.x = cosf( DEG2RAD( flYaw ) ) * flPlaybackRate;
+			vecCurrentMoveYaw.y = sinf( DEG2RAD( flYaw ) ) * flPlaybackRate;
+		}
+
+		GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveX, vecCurrentMoveYaw.x );
+		GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveY, vecCurrentMoveYaw.y );
+
+		m_DebugAnimData.m_vecMoveYaw = vecCurrentMoveYaw;
 	}
-
-	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveX, vecCurrentMoveYaw.x );
-	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveY, vecCurrentMoveYaw.y );
-
-	m_DebugAnimData.m_vecMoveYaw = vecCurrentMoveYaw;
-#else
-	// view direction relative to movement
-	float flYaw;	 
-
-	QAngle	angles = GetBasePlayer()->GetLocalAngles();
-	float ang = angles[ YAW ];
-	if ( ang > 180.0f )
-	{
-		ang -= 360.0f;
-	}
-	else if ( ang < -180.0f )
-	{
-		ang += 360.0f;
-	}
-
-	// calc side to side turning
-	flYaw = ang - m_PoseParameterData.m_flEstimateYaw;
-	// Invert for mapping into 8way blend
-	flYaw = -flYaw;
-	flYaw = flYaw - (int)(flYaw / 360) * 360;
-
-	if (flYaw < -180)
-	{
-		flYaw = flYaw + 360;
-	}
-	else if (flYaw > 180)
-	{
-		flYaw = flYaw - 360;
-	}
-
-	//Tony; oops, i inverted this previously above.
-	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveY, flYaw );
-
+	else
 #endif
-	
+	{
+		// view direction relative to movement
+		float flYaw;	 
+#ifdef MAPBASE_MP
+		// This fucked feet movement.
+		// I spent way too much time (AGAIN) debugging this shit.
+		// The above code has it right. Why the fuck was it changed?
+		// AFAIK, it wouldn't only affect us. Really weird that it wasn't caught. It probably was but I copied an older version. Oh well...
+		//QAngle	angles = GetBasePlayer()->GetAbsAngles();
+		//float ang = angles[ YAW ];
+		float ang = m_flEyeYaw;
+#else
+		QAngle	angles = GetBasePlayer()->GetLocalAngles();
+		float ang = angles[ YAW ];
+#endif // MAPBASE_MP
+		if ( ang > 180.0f )
+		{
+			ang -= 360.0f;
+		}
+		else if ( ang < -180.0f )
+		{
+			ang += 360.0f;
+		}
+
+		// calc side to side turning
+		flYaw = ang - m_PoseParameterData.m_flEstimateYaw;
+		// Invert for mapping into 8way blend
+		flYaw = -flYaw;
+		flYaw = flYaw - (int)(flYaw / 360) * 360;
+
+		if (flYaw < -180)
+		{
+			flYaw = flYaw + 360;
+		}
+		else if (flYaw > 180)
+		{
+			flYaw = flYaw - 360;
+		}
+
+		//Tony; oops, i inverted this previously above.
+#ifdef MAPBASE_MP
+		m_pHL2MPPlayer->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveY, flYaw );
+#else
+		GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iMoveY, flYaw );
+#endif // MAPBASE_MP
+	}	
 }
 
 //-----------------------------------------------------------------------------
@@ -654,19 +864,158 @@ void CHL2MPPlayerAnimState::ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr )
 	flAimYaw = AngleNormalize( flAimYaw );
 
 	// Set the aim yaw and save.
+#ifdef MAPBASE_MP
+	m_pHL2MPPlayer->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iAimYaw, flAimYaw );
+#else
 	GetBasePlayer()->SetPoseParameter( pStudioHdr, m_PoseParameterData.m_iAimYaw, flAimYaw );
+#endif
 	m_DebugAnimData.m_flAimYaw	= flAimYaw;
+#ifdef MAPBASE_MP
+	m_flCurrentAimYaw = flAimYaw;
+#endif
 
 	// Turn off a force aim yaw - either we have already updated or we don't need to.
 	m_bForceAimYaw = false;
 
 #ifndef CLIENT_DLL
+#ifdef MAPBASE_MP
+	QAngle angle = m_pHL2MPPlayer->GetAbsAngles();
+#else
 	QAngle angle = GetBasePlayer()->GetAbsAngles();
+#endif
 	angle[YAW] = m_flCurrentFeetYaw;
-
+#ifdef MAPBASE_MP
+	m_pHL2MPPlayer->SetAbsAngles( angle );
+#else
 	GetBasePlayer()->SetAbsAngles( angle );
 #endif
+#endif
 }
+
+#ifdef MAPBASE_MP
+#ifdef CLIENT_DLL
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHL2MPPlayerAnimState::UpdateLookAt()
+{
+	if ( (gpGlobals->curtime - m_flLastLookAtUpdate) < HL2MP_LOOKAT_UPDATE_TIME )
+		return;
+
+	if ( !m_pHL2MPPlayer->IsAlive() )
+		return;
+
+
+	// Update player model's look at target.
+	bool bFoundViewTarget = false;
+	
+	Vector vForward;
+	AngleVectors( m_pHL2MPPlayer->EyeAngles(), &vForward );
+
+	Vector vMyOrigin = m_pHL2MPPlayer->GetAbsOrigin();
+
+	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		C_HL2MP_Player* pPlayer = ToHL2MPPlayer( UTIL_PlayerByIndex( i ) );
+		if( !pPlayer )
+			continue;
+
+		// Don't look at dead players :(
+		if ( !pPlayer->IsAlive() )
+			continue;
+
+		if ( pPlayer->IsObserver() )
+			continue;
+
+		if ( pPlayer->IsEffectActive( EF_NODRAW ) )
+			continue;
+
+		if ( pPlayer->entindex() == m_pHL2MPPlayer->entindex() )
+			continue;
+
+
+		Vector vTargetOrigin = pPlayer->GetAbsOrigin();
+
+		Vector vDir = vTargetOrigin - vMyOrigin;
+		
+		if ( vDir.LengthSqr() > (HL2MP_LOOKAT_DIST*HL2MP_LOOKAT_DIST) ) 
+			continue;
+
+		VectorNormalize( vDir );
+
+		if ( DotProduct( vForward, vDir ) < HL2MP_LOOKAT_DOT )
+				continue;
+
+		m_vLookAtTarget = pPlayer->EyePosition();
+		bFoundViewTarget = true;
+		break;
+	}
+
+	if ( !bFoundViewTarget )
+	{
+		m_vLookAtTarget = m_pHL2MPPlayer->EyePosition() + vForward * 512.0f;
+	}
+
+
+	m_flLastLookAtUpdate = gpGlobals->curtime;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHL2MPPlayerAnimState::ComputePoseParam_Head( CStudioHdr* hdr )
+{
+	UpdateLookAt();
+
+
+	// orient eyes
+	m_pHL2MPPlayer->SetLookat( m_vLookAtTarget );
+
+	// blinking
+	if ( m_blinkTimer.IsElapsed() )
+	{
+		m_pHL2MPPlayer->BlinkEyes();
+		m_blinkTimer.Start( RandomFloat( 1.5f, 4.0f ) );
+	}
+
+	// Figure out where we want to look in world space.
+	QAngle desiredAngles;
+	Vector to = m_vLookAtTarget - m_pHL2MPPlayer->EyePosition();
+	VectorAngles( to, desiredAngles );
+
+	// Figure out where our body is facing in world space.
+	QAngle bodyAngles( 0, 0, 0 );
+	bodyAngles[YAW] = m_flGoalFeetYaw; // Just use our feet goal yaw.
+
+
+	float flBodyYawDiff = bodyAngles[YAW] - m_flLastBodyYaw;
+	m_flLastBodyYaw = bodyAngles[YAW];
+	
+
+	// Set the head's yaw.
+	// Take into account aim yaw.
+	float desired = AngleNormalize( desiredAngles[YAW] - bodyAngles[YAW] - m_flCurrentAimYaw );
+	desired = clamp( desired, m_headYawMin, m_headYawMax );
+	m_flCurrentHeadYaw = ApproachAngle( desired, m_flCurrentHeadYaw, 130 * gpGlobals->frametime );
+
+	// Counterrotate the head from the body rotation so it doesn't rotate past its target.
+	m_flCurrentHeadYaw = AngleNormalize( m_flCurrentHeadYaw - flBodyYawDiff );
+	desired = clamp( desired, m_headYawMin, m_headYawMax );
+	
+	m_pHL2MPPlayer->SetPoseParameter( m_headYawPoseParam, m_flCurrentHeadYaw );
+
+	
+	// Set the head's pitch.
+	desired = AngleNormalize( desiredAngles[PITCH] );
+	desired = clamp( desired, m_headPitchMin, m_headPitchMax );
+	
+	m_flCurrentHeadPitch = ApproachAngle( desired, m_flCurrentHeadPitch, 130 * gpGlobals->frametime );
+	m_flCurrentHeadPitch = AngleNormalize( m_flCurrentHeadPitch );
+	m_pHL2MPPlayer->SetPoseParameter( m_headPitchPoseParam, m_flCurrentHeadPitch );
+}
+#endif
+
+#endif // MAPBASE_MP
 
 //-----------------------------------------------------------------------------
 // Purpose: Override the default, because hl2mp models don't use moveX

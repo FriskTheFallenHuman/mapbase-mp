@@ -381,7 +381,7 @@ void C_BaseHLPlayer::PerformClientSideObstacleAvoidance( float flFrameTime, CUse
 				&flHit2 ) )
 			continue;
 
-        Vector dirToObject = -vecToObject;
+		Vector dirToObject = -vecToObject;
 		VectorNormalize( dirToObject );
 
 		float fwd = 0;

@@ -28,6 +28,9 @@
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "obstacle_pushaway.h"
 #include "ilagcompensationmanager.h"
+#ifdef MAPBASE_MP
+#include "EntityFlame.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -84,6 +87,10 @@ IMPLEMENT_SERVERCLASS_ST(CHL2MP_Player, DT_HL2MP_Player)
 	SendPropExclude( "DT_BaseEntity", "m_angRotation" ),
 	SendPropExclude( "DT_BaseAnimatingOverlay", "overlay_vars" ),
 
+	// Other players' water level is networked for animations.
+	SendPropInt( SENDINFO( m_nWaterLevel ), 2, SPROP_UNSIGNED ),
+	SendPropExclude( "DT_LocalPlayerExclusive", "m_nWaterLevel" ),
+
 	SendPropExclude( "DT_BaseEntity", "m_vecOrigin" ),
 
 	// playeranimstate and clientside animation takes care of these on the client
@@ -101,8 +108,7 @@ IMPLEMENT_SERVERCLASS_ST(CHL2MP_Player, DT_HL2MP_Player)
 
 	SendPropEHandle( SENDINFO( m_hRagdoll ) ),
 	SendPropInt( SENDINFO( m_iSpawnInterpCounter), 4 ),
-	SendPropInt( SENDINFO( m_iPlayerSoundType), 3 ),
-		
+	SendPropInt( SENDINFO( m_iPlayerSoundType), 3 ),		
 END_SEND_TABLE()
 
 BEGIN_DATADESC( CHL2MP_Player )
@@ -110,33 +116,96 @@ END_DATADESC()
 
 const char *g_ppszRandomCitizenModels[] = 
 {
-	"models/humans/group03/male_01.mdl",
-	"models/humans/group03/male_02.mdl",
-	"models/humans/group03/female_01.mdl",
-	"models/humans/group03/male_03.mdl",
-	"models/humans/group03/female_02.mdl",
-	"models/humans/group03/male_04.mdl",
-	"models/humans/group03/female_03.mdl",
-	"models/humans/group03/male_05.mdl",
-	"models/humans/group03/female_04.mdl",
-	"models/humans/group03/male_06.mdl",
-	"models/humans/group03/female_06.mdl",
-	"models/humans/group03/male_07.mdl",
-	"models/humans/group03/female_07.mdl",
-	"models/humans/group03/male_08.mdl",
-	"models/humans/group03/male_09.mdl",
+	// Main Cast
+	"models/player/rebels/alyx.mdl",
+	"models/player/rebels/barney.mdl",
+	"models/player/rebels/breen.mdl",
+	"models/player/rebels/eli.mdl",
+	"models/player/rebels/alyx.mdl",
+	"models/player/rebels/gman.mdl",
+	"models/player/rebels/kleiner.mdl",
+	"models/player/rebels/monk.mdl",
+	"models/player/rebels/mossman.mdl",
+	"models/player/rebels/odessa.mdl",
+
+	// Citizens
+	"models/player/rebels/male_gr01_01.mdl",
+	"models/player/rebels/male_gr01_02.mdl",
+	"models/player/rebels/female_gr01_01.mdl",
+	"models/player/rebels/male_gr01_03.mdl",
+	"models/player/rebels/female_gr01_02.mdl",
+	"models/player/rebels/male_gr01_04.mdl",
+	"models/player/rebels/female_gr01_03.mdl",
+	"models/player/rebels/male_gr01_05.mdl",
+	"models/player/rebels/female_gr01_04.mdl",
+	"models/player/rebels/male_gr01_06.mdl",
+	"models/player/rebels/female_gr01_06.mdl",
+	"models/player/rebels/male_gr01_07.mdl",
+	"models/player/rebels/female_gr01_07.mdl",
+	"models/player/rebels/male_gr01_08.mdl",
+	"models/player/rebels/male_gr01_09.mdl",
+
+	// Refuges
+	"models/player/rebels/male_gr02_01.mdl",
+	"models/player/rebels/male_gr02_02.mdl",
+	"models/player/rebels/female_gr02_01.mdl",
+	"models/player/rebels/male_gr02_03.mdl",
+	"models/player/rebels/female_gr02_02.mdl",
+	"models/player/rebels/male_gr02_04.mdl",
+	"models/player/rebels/female_gr02_03.mdl",
+	"models/player/rebels/male_gr02_05.mdl",
+	"models/player/rebels/female_gr02_04.mdl",
+	"models/player/rebels/male_gr02_06.mdl",
+	"models/player/rebels/female_gr02_06.mdl",
+	"models/player/rebels/male_gr02_07.mdl",
+	"models/player/rebels/female_gr02_07.mdl",
+	"models/player/rebels/male_gr02_08.mdl",
+	"models/player/rebels/male_gr02_09.mdl",
+
+	// Rebels
+	"models/player/rebels/male_gr03_01.mdl",
+	"models/player/rebels/male_gr03_02.mdl",
+	"models/player/rebels/female_gr03_01.mdl",
+	"models/player/rebels/male_gr03_03.mdl",
+	"models/player/rebels/female_gr03_02.mdl",
+	"models/player/rebels/male_gr03_04.mdl",
+	"models/player/rebels/female_gr03_03.mdl",
+	"models/player/rebels/male_gr03_05.mdl",
+	"models/player/rebels/female_gr03_04.mdl",
+	"models/player/rebels/male_gr03_06.mdl",
+	"models/player/rebels/female_gr03_06.mdl",
+	"models/player/rebels/male_gr03_07.mdl",
+	"models/player/rebels/female_gr03_07.mdl",
+	"models/player/rebels/male_gr03_08.mdl",
+	"models/player/rebels/male_gr03_09.mdl",
+
+	// Medic Rebels
+	"models/player/rebels/male_gr03m_01.mdl",
+	"models/player/rebels/male_gr03m_02.mdl",
+	"models/player/rebels/female_gr03m_01.mdl",
+	"models/player/rebels/male_gr03m_03.mdl",
+	"models/player/rebels/female_gr03m_02.mdl",
+	"models/player/rebels/male_gr03m_04.mdl",
+	"models/player/rebels/female_gr03m_03.mdl",
+	"models/player/rebels/male_gr03m_05.mdl",
+	"models/player/rebels/female_gr03m_04.mdl",
+	"models/player/rebels/male_gr03m_06.mdl",
+	"models/player/rebels/female_gr03m_06.mdl",
+	"models/player/rebels/male_gr03m_07.mdl",
+	"models/player/rebels/female_gr03m_07.mdl",
+	"models/player/rebels/male_gr03m_08.mdl",
+	"models/player/rebels/male_gr03m_09.mdl",
 };
 
 const char *g_ppszRandomCombineModels[] =
 {
-	"models/combine_soldier.mdl",
-	"models/combine_soldier_prisonguard.mdl",
-	"models/combine_super_soldier.mdl",
-	"models/police.mdl",
+	"models/player/combine/combine_soldier.mdl",
+	"models/player/combine/combine_soldier_prisonguard.mdl",
+	"models/player/combine/combine_super_soldier.mdl",
+	"models/player/combine/police.mdl",
+//	"models/player/combine/stalker.mdl", -- Fix me
 };
 
-
-#define MAX_COMBINE_MODELS 4
 #define MODEL_CHANGE_INTERVAL 5.0f
 #define TEAM_CHANGE_INTERVAL 5.0f
 
@@ -160,7 +229,6 @@ CHL2MP_Player::CHL2MP_Player()
 	m_iSpawnInterpCounter = 0;
 
 	m_bEnterObserver = false;
-	m_bReady = false;
 
 	m_cycleLatch = 0;
 	m_cycleLatchTimer.Invalidate();
@@ -306,7 +374,7 @@ void CHL2MP_Player::PickDefaultSpawnTeam( void )
 				{
 					char szReturnString[512];
 
-					Q_snprintf( szReturnString, sizeof (szReturnString ), "cl_playermodel models/combine_soldier.mdl\n" );
+					Q_snprintf( szReturnString, sizeof (szReturnString ), "cl_playermodel models/player/combine/combine_soldier.mdl\n" );
 					engine->ClientCommand ( edict(), szReturnString );
 				}
 
@@ -402,8 +470,6 @@ void CHL2MP_Player::Spawn(void)
 
 	SetPlayerUnderwater(false);
 
-	m_bReady = false;
-
 	m_cycleLatchTimer.Start( CYCLELATCH_UPDATE_INTERVAL );
 
 	//Tony; do the spawn animevent
@@ -448,7 +514,7 @@ void CHL2MP_Player::SetPlayerTeamModel( void )
 
 	if ( modelIndex == -1 || ValidatePlayerModel( szModelName ) == false )
 	{
-		szModelName = "models/Combine_Soldier.mdl";
+		szModelName = "models/player/combine/combine_soldier.mdl";
 		m_iModelType = TEAM_COMBINE;
 
 		char szReturnString[512];
@@ -459,7 +525,7 @@ void CHL2MP_Player::SetPlayerTeamModel( void )
 
 	if ( GetTeamNumber() == TEAM_COMBINE )
 	{
-		if ( Q_stristr( szModelName, "models/human") )
+		if ( Q_stristr( szModelName, "models/player/combine") )
 		{
 			int nHeads = ARRAYSIZE( g_ppszRandomCombineModels );
 		
@@ -471,7 +537,7 @@ void CHL2MP_Player::SetPlayerTeamModel( void )
 	}
 	else if ( GetTeamNumber() == TEAM_REBELS )
 	{
-		if ( !Q_stristr( szModelName, "models/human") )
+		if ( !Q_stristr( szModelName, "models/player/rebels") )
 		{
 			int nHeads = ARRAYSIZE( g_ppszRandomCitizenModels );
 
@@ -501,7 +567,7 @@ void CHL2MP_Player::SetPlayerModel( void )
 
 		if ( ValidatePlayerModel( pszCurrentModelName ) == false )
 		{
-			pszCurrentModelName = "models/Combine_Soldier.mdl";
+			pszCurrentModelName = "models/player/combine/combine_Soldier.mdl";
 		}
 
 		Q_snprintf( szReturnString, sizeof (szReturnString ), "cl_playermodel %s\n", pszCurrentModelName );
@@ -535,9 +601,13 @@ void CHL2MP_Player::SetPlayerModel( void )
 			szModelName = g_ppszRandomCitizenModels[0];
 		}
 
-		if ( Q_stristr( szModelName, "models/human") )
+		if ( Q_stristr( szModelName, "models/player/rebels") )
 		{
 			m_iModelType = TEAM_REBELS;
+		}
+		else if ( Q_stristr( szModelName, "models/player/combine" ) )
+		{
+			m_iModelType = TEAM_COMBINE;
 		}
 		else
 		{
@@ -549,7 +619,7 @@ void CHL2MP_Player::SetPlayerModel( void )
 
 	if ( modelIndex == -1 )
 	{
-		szModelName = "models/Combine_Soldier.mdl";
+		szModelName = "models/player/combine/combine_Soldier.mdl";
 		m_iModelType = TEAM_COMBINE;
 
 		char szReturnString[512];
@@ -566,7 +636,7 @@ void CHL2MP_Player::SetPlayerModel( void )
 
 void CHL2MP_Player::SetupPlayerSoundsByModel( const char *pModelName )
 {
-	if ( Q_stristr( pModelName, "models/human") )
+	if ( Q_stristr( pModelName, "models/player/rebels" ) )
 	{
 		m_iPlayerSoundType = (int)PLAYER_SOUNDS_CITIZEN;
 	}
@@ -621,28 +691,6 @@ void CHL2MP_Player::PlayerDeathThink()
 	{
 		BaseClass::PlayerDeathThink();
 	}
-}
-
-void CHL2MP_Player::FireBullets ( const FireBulletsInfo_t &info )
-{
-	// Move other players back to history positions based on local player's lag
-	lagcompensation->StartLagCompensation( this, this->GetCurrentCommand() );
-
-	FireBulletsInfo_t modinfo = info;
-
-	CWeaponHL2MPBase *pWeapon = dynamic_cast<CWeaponHL2MPBase *>( GetActiveWeapon() );
-
-	if ( pWeapon )
-	{
-		modinfo.m_iPlayerDamage = modinfo.m_flDamage = pWeapon->GetHL2MPWpnData().m_iPlayerDamage;
-	}
-
-	NoteWeaponFired();
-
-	BaseClass::FireBullets( modinfo );
-
-	// Move other players back to history positions based on local player's lag
-	lagcompensation->FinishLagCompensation( this );
 }
 
 void CHL2MP_Player::NoteWeaponFired( void )
@@ -933,6 +981,18 @@ void CHL2MP_Player::CreateRagdollEntity( void )
 		pRagdoll->m_nForceBone = m_nForceBone;
 		pRagdoll->m_vecForce = m_vecTotalBulletForce;
 		pRagdoll->SetAbsOrigin( GetAbsOrigin() );
+
+#ifdef MAPBASE_MP
+		// Copy the effect over.
+		CEntityFlame* pFlame = dynamic_cast<CEntityFlame*>( GetEffectEntity() );
+		if ( pFlame )
+		{
+			pFlame->AttachToEntity( pRagdoll );
+			pRagdoll->SetEffectEntity( pFlame );
+
+			SetEffectEntity( nullptr );
+		}
+#endif
 	}
 
 	// ragdolls will be removed on round restart automatically
@@ -989,6 +1049,18 @@ void CHL2MP_Player::Event_Killed( const CTakeDamageInfo &info )
 	// Note: since we're dead, it won't draw us on the client, but we don't set EF_NODRAW
 	// because we still want to transmit to the clients in our PVS.
 	CreateRagdollEntity();
+
+#ifdef MAPBASE_MP
+	// We can't be on fire while dead!
+	Extinguish();
+
+	CBaseEntity* pEffect = GetEffectEntity();
+	if ( pEffect != nullptr )
+	{
+		UTIL_Remove( pEffect );
+		SetEffectEntity( nullptr );
+	}
+#endif
 
 	DetonateTripmines();
 
@@ -1246,43 +1318,6 @@ CON_COMMAND( timeleft, "prints the time remaining in the match" )
 	}	
 }
 
-bool CHL2MP_Player::IsReady()
-{
-	return m_bReady;
-}
-
-void CHL2MP_Player::SetReady( bool bReady )
-{
-	m_bReady = bReady;
-}
-
-void CHL2MP_Player::CheckChatText( char *p, int bufsize )
-{
-	//Look for escape sequences and replace
-
-	char *buf = new char[bufsize];
-	int pos = 0;
-
-	// Parse say text for escape sequences
-	for ( char *pSrc = p; pSrc != NULL && *pSrc != 0 && pos < bufsize-1; pSrc++ )
-	{
-		// copy each char across
-		buf[pos] = *pSrc;
-		pos++;
-	}
-
-	buf[pos] = '\0';
-
-	// copy buf back into p
-	Q_strncpy( p, buf, bufsize );
-
-	delete[] buf;	
-
-	const char *pReadyCheck = p;
-
-	HL2MPRules()->CheckChatForReadySignal( this, pReadyCheck );
-}
-
 void CHL2MP_Player::State_Transition( HL2MPPlayerState newState )
 {
 	State_Leave();
@@ -1406,17 +1441,6 @@ void CHL2MP_Player::State_PreThink_ACTIVE()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: multiplayer does not do autoaiming.
-//-----------------------------------------------------------------------------
-Vector CHL2MP_Player::GetAutoaimVector( float flScale )
-{
-	//No Autoaim
-	Vector	forward;
-	AngleVectors( EyeAngles() + m_Local.m_vecPunchAngle, &forward );
-	return	forward;
-}
-
-//-----------------------------------------------------------------------------
 // Purpose: Do nothing multiplayer_animstate takes care of animation.
 // Input  : playerAnim - 
 //-----------------------------------------------------------------------------
@@ -1464,12 +1488,6 @@ void TE_PlayerAnimEvent( CBasePlayer *pPlayer, PlayerAnimEvent_t event, int nDat
 	g_TEPlayerAnimEvent.Create( filter, 0 );
 }
 
-
-void CHL2MP_Player::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
-{
-	m_PlayerAnimState->DoAnimationEvent( event, nData );
-	TE_PlayerAnimEvent( this, event, nData );	// Send to any clients who can see this guy.
-}
 
 //-----------------------------------------------------------------------------
 // Purpose: Override setup bones so that is uses the render angles from

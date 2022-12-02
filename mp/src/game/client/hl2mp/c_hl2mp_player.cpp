@@ -54,20 +54,29 @@ IMPLEMENT_CLIENTCLASS_DT(C_HL2MP_Player, DT_HL2MP_Player, CHL2MP_Player)
 	RecvPropInt( RECVINFO( m_iSpawnInterpCounter ) ),
 	RecvPropInt( RECVINFO( m_iPlayerSoundType) ),
 
+#ifdef MAPBASE_MP
+	RecvPropInt( RECVINFO( m_nWaterLevel ) ),
+#endif
 END_RECV_TABLE()
 
 BEGIN_PREDICTION_DATA( C_HL2MP_Player )
 	DEFINE_PRED_FIELD( m_flCycle, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	//DEFINE_PRED_FIELD( m_fIsWalking, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_nSequence, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_FIELD( m_flPlaybackRate, FIELD_FLOAT, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
 	DEFINE_PRED_ARRAY_TOL( m_flEncodedController, FIELD_FLOAT, MAXSTUDIOBONECTRLS, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE, 0.02f ),
 	DEFINE_PRED_FIELD( m_nNewSequenceParity, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+#ifdef MAPBASE_MP
+	DEFINE_PRED_FIELD( m_blinktoggle, FIELD_INTEGER, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+	DEFINE_PRED_FIELD( m_viewtarget, FIELD_VECTOR, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK ),
+
+	// Added poseparameter override here. See if this has any effect on crashing, since these are not networked anymore anyway.
+	DEFINE_PRED_ARRAY_TOL( m_flPoseParameter, FIELD_FLOAT, MAXSTUDIOPOSEPARAM, FTYPEDESC_OVERRIDE | FTYPEDESC_PRIVATE | FTYPEDESC_NOERRORCHECK, 0.0f ),
+#endif // MAPBASE_MP
 END_PREDICTION_DATA()
 
 static ConVar cl_playermodel( "cl_playermodel", "none", FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_SERVER_CAN_EXECUTE, "Default Player Model");
 static ConVar cl_defaultweapon( "cl_defaultweapon", "weapon_physcannon", FCVAR_USERINFO | FCVAR_ARCHIVE, "Default Spawn Weapon");
-
-void SpawnBlood (Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage);
 
 C_HL2MP_Player::C_HL2MP_Player() : 
 	m_iv_angEyeAngles( "C_HL2MP_Player::m_iv_angEyeAngles" )
@@ -79,7 +88,9 @@ C_HL2MP_Player::C_HL2MP_Player() :
 
 	m_PlayerAnimState = CreateHL2MPPlayerAnimState( this );
 
+#ifndef MAPBASE_MP
 	m_blinkTimer.Invalidate();
+#endif // !MAPBASE_MP
 
 	m_pFlashlightBeam = NULL;
 
@@ -130,45 +141,12 @@ void C_HL2MP_Player::UpdateIDTarget()
 	}
 }
 
-void C_HL2MP_Player::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
-{
-	Vector vecOrigin = ptr->endpos - vecDir * 4;
-
-	float flDistance = 0.0f;
-	
-	if ( info.GetAttacker() )
-	{
-		flDistance = (ptr->endpos - info.GetAttacker()->GetAbsOrigin()).Length();
-	}
-
-	if ( m_takedamage )
-	{
-		AddMultiDamage( info, this );
-
-		int blood = BloodColor();
-		
-		CBaseEntity *pAttacker = info.GetAttacker();
-
-		if ( pAttacker )
-		{
-			if ( HL2MPRules()->IsTeamplay() && pAttacker->InSameTeam( this ) == true )
-				return;
-		}
-
-		if ( blood != DONT_BLEED )
-		{
-			SpawnBlood( vecOrigin, vecDir, blood, flDistance );// a little surface blood.
-			TraceBleed( flDistance, vecDir, ptr, info.GetDamageType() );
-		}
-	}
-}
-
-
 C_HL2MP_Player* C_HL2MP_Player::GetLocalHL2MPPlayer()
 {
 	return (C_HL2MP_Player*)C_BasePlayer::GetLocalPlayer();
 }
 
+#ifndef MAPBASE_MP
 //-----------------------------------------------------------------------------
 /**
  * Orient head and eyes towards m_lookAt.
@@ -223,6 +201,7 @@ void C_HL2MP_Player::UpdateLookAt( void )
 	m_flCurrentHeadPitch = AngleNormalize( m_flCurrentHeadPitch );
 	SetPoseParameter( m_headPitchPoseParam, m_flCurrentHeadPitch );
 }
+#endif // MAPBASE_MP
 
 void C_HL2MP_Player::ClientThink( void )
 {
@@ -267,10 +246,24 @@ void C_HL2MP_Player::ClientThink( void )
 	{
 		if ( IsAlive() )
 			UpdateIDTarget();
-	}
 
+#ifdef MAPBASE_MP
+		// Update the player's fog data if necessary.
+		UpdateFogController();
+	}
+	else
+	{
+		// Update step sounds for all other players
+		Vector vel;
+		EstimateAbsVelocity( vel );
+		UpdateStepSound( GetGroundSurface(), GetAbsOrigin(), vel );
+	}
+#endif // MAPBASE_MP
+
+#ifndef MAPBASE_MP
 	if ( IsAlive() )
 		UpdateLookAt();
+#endif // !MAPBSE_MP
 
 	// Avoidance
 	if ( gpGlobals->curtime >= m_fNextThinkPushAway )
@@ -291,17 +284,9 @@ int C_HL2MP_Player::DrawModel( int flags )
 	return BaseClass::DrawModel(flags);
 }
 
-void C_HL2MP_Player::DoImpactEffect( trace_t &tr, int nDamageType )
-{
-	if ( GetActiveWeapon() )
-	{
-		GetActiveWeapon()->DoImpactEffect( tr, nDamageType );
-		return;
-	}
-
-	BaseClass::DoImpactEffect( tr, nDamageType );
-}
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 const QAngle &C_HL2MP_Player::EyeAngles()
 {
 	if( IsLocalPlayer() )
@@ -573,29 +558,11 @@ float C_HL2MP_Player::GetFOV( void )
 	return flFOVOffset;
 }
 
-//=========================================================
-// Autoaim
-// set crosshair position to point to enemey
-//=========================================================
-Vector C_HL2MP_Player::GetAutoaimVector( float flDelta )
-{
-	// Never autoaim a predicted weapon (for now)
-	Vector	forward;
-	AngleVectors( EyeAngles() + m_Local.m_vecPunchAngle, &forward );
-	return	forward;
-}
 
 void C_HL2MP_Player::ItemPreFrame( void )
 {
 	if ( GetFlags() & FL_FROZEN )
 		 return;
-
-	// Disallow shooting while zooming
-	if ( m_nButtons & IN_ZOOM )
-	{
-		//FIXME: Held weapons like the grenade get sad when this happens
-		m_nButtons &= ~(IN_ATTACK|IN_ATTACK2);
-	}
 
 	BaseClass::ItemPreFrame();
 
@@ -614,49 +581,6 @@ C_BaseAnimating *C_HL2MP_Player::BecomeRagdollOnClient()
 	// Let the C_CSRagdoll entity do this.
 	// m_builtRagdoll = true;
 	return NULL;
-}
-
-void C_HL2MP_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov )
-{
-	if ( m_lifeState != LIFE_ALIVE && !IsObserver() )
-	{
-		Vector origin = EyePosition();			
-
-		IRagdoll *pRagdoll = GetRepresentativeRagdoll();
-
-		if ( pRagdoll )
-		{
-			origin = pRagdoll->GetRagdollOrigin();
-			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED( this ).z; // look over ragdoll, not through
-		}
-
-		BaseClass::CalcView( eyeOrigin, eyeAngles, zNear, zFar, fov );
-
-		eyeOrigin = origin;
-		
-		Vector vForward; 
-		AngleVectors( eyeAngles, &vForward );
-
-		VectorNormalize( vForward );
-		VectorMA( origin, -CHASE_CAM_DISTANCE_MAX, vForward, eyeOrigin );
-
-		Vector WALL_MIN( -WALL_OFFSET, -WALL_OFFSET, -WALL_OFFSET );
-		Vector WALL_MAX( WALL_OFFSET, WALL_OFFSET, WALL_OFFSET );
-
-		trace_t trace; // clip against world
-		C_BaseEntity::PushEnableAbsRecomputations( false ); // HACK don't recompute positions while doing RayTrace
-		UTIL_TraceHull( origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace );
-		C_BaseEntity::PopEnableAbsRecomputations();
-
-		if (trace.fraction < 1.0)
-		{
-			eyeOrigin = trace.endpos;
-		}
-		
-		return;
-	}
-
-	BaseClass::CalcView( eyeOrigin, eyeAngles, zNear, zFar, fov );
 }
 
 IRagdoll* C_HL2MP_Player::GetRepresentativeRagdoll() const
@@ -912,30 +836,18 @@ void C_HL2MP_Player::UpdateClientSideAnimation()
 	BaseClass::UpdateClientSideAnimation();
 }
 
-CStudioHdr *C_HL2MP_Player::OnNewModel( void )
-{
-	CStudioHdr *hdr = BaseClass::OnNewModel();
-
-	InitializePoseParams();
-
-	// Reset the players animation states, gestures
-	if ( m_PlayerAnimState )
-	{
-		m_PlayerAnimState->OnNewModel();
-	}
-
-	return hdr;
-}
 //-----------------------------------------------------------------------------
 // Purpose: Clear all pose parameters
 //-----------------------------------------------------------------------------
 void C_HL2MP_Player::InitializePoseParams( void )
 {
+#ifndef MAPBASE_MP
 	m_headYawPoseParam = LookupPoseParameter( "head_yaw" );
 	GetPoseParameterRange( m_headYawPoseParam, m_headYawMin, m_headYawMax );
 
 	m_headPitchPoseParam = LookupPoseParameter( "head_pitch" );
 	GetPoseParameterRange( m_headPitchPoseParam, m_headPitchMin, m_headPitchMax );
+#endif // !MAPBASE_MP
 
 	CStudioHdr *hdr = GetModelPtr();
 	for ( int i = 0; i < hdr->GetNumPoseParameters() ; i++ )

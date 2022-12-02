@@ -422,7 +422,7 @@ protected:
 	float				m_flEstIkFloor; // debounced
 	float				m_flEstIkOffset;
 
-  	CIKContext			*m_pIk;
+	CIKContext			*m_pIk;
 	int					m_iIKCounter;
 
 public:

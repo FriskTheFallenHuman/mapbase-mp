@@ -54,8 +54,6 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
 
-	// This passes the event to the client's and server's CHL2MPPlayerAnimState.
-	void			DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
 	void			SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
 
 	virtual void Precache( void );
@@ -71,18 +69,14 @@ public:
 	virtual void Event_Killed( const CTakeDamageInfo &info );
 	virtual int OnTakeDamage( const CTakeDamageInfo &inputInfo );
 	virtual bool WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const;
-	virtual void FireBullets ( const FireBulletsInfo_t &info );
 	virtual void ChangeTeam( int iTeam );
-	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+
 	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget = NULL, const Vector *pVelocity = NULL );
 	virtual void UpdateOnRemove( void );
 	virtual void DeathSound( const CTakeDamageInfo &info );
 	virtual CBaseEntity* EntSelectSpawnPoint( void );
 
 	bool	ValidatePlayerModel( const char *pModel );
-
-	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL );
-	virtual Vector GetAutoaimVector( float flDelta );
 
 	void CheatImpulseCommands( int iImpulse );
 	void CreateRagdollEntity( void );
@@ -106,11 +100,6 @@ public:
 	
 	void  DetonateTripmines( void );
 
-	bool IsReady();
-	void SetReady( bool bReady );
-
-	void CheckChatText( char *p, int bufsize );
-
 	void State_Transition( HL2MPPlayerState newState );
 	void State_Enter( HL2MPPlayerState newState );
 	void State_Leave();
@@ -133,8 +122,33 @@ public:
 	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle 
 
 	// Player avoidance
-	virtual	bool		ShouldCollide( int collisionGroup, int contentsMask ) const;
+
 	void HL2MPPushawayThink(void);
+
+// Shared code
+public:
+
+	// This passes the event to the client's and server's CHL2MPPlayerAnimState.
+	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
+
+	//Tony; when model is changed, need to init some stuff.
+	virtual CStudioHdr *OnNewModel( void );
+
+	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+
+	virtual void CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );
+
+	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
+
+	virtual void FireBullets ( const FireBulletsInfo_t &info );
+
+	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL );
+
+	virtual Vector GetAutoaimVector( float flDelta );
+
+	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+
+	virtual	bool ShouldCollide( int collisionGroup, int contentsMask ) const;
 
 private:
 
@@ -158,7 +172,6 @@ private:
 	CHL2MPPlayerStateInfo *m_pCurStateInfo;
 
 	bool m_bEnterObserver;
-	bool m_bReady;
 
 	CNetworkVar( int, m_cycleLatch ); // Network the cycle to clients periodically
 	CountdownTimer m_cycleLatchTimer;

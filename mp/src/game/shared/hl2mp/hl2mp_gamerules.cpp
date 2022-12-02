@@ -33,7 +33,7 @@
 	#include "hl2mp_gameinterface.h"
 	#include "hl2mp_cvars.h"
 
-#ifdef DEBUG	
+#if defined ( DEBUG ) || defined ( MAPBASE_MP )	
 	#include "hl2mp_bot_temp.h"
 #endif
 
@@ -219,8 +219,6 @@ CHL2MPRules::CHL2MPRules()
 	m_tmNextPeriodicThink = 0;
 	m_flRestartGameTime = 0;
 	m_bCompleteReset = false;
-	m_bHeardAllPlayersReady = false;
-	m_bAwaitingReadyRestart = false;
 	m_bChangelevelDone = false;
 
 #endif
@@ -311,80 +309,42 @@ void CHL2MPRules::Think( void )
 
 #ifndef CLIENT_DLL
 	
-	CGameRules::Think();
+	BaseClass::Think();
 
-	if ( g_fGameOver )   // someone else quit the game already
+	/* Check if we hit a game over condiction */
+	if ( CheckGameOver() )   
 	{
-		// check to see if we should change levels now
-		if ( m_flIntermissionEndTime < gpGlobals->curtime )
+		if ( !m_bChangelevelDone )
 		{
-			if ( !m_bChangelevelDone )
-			{
-				ChangeLevel(); // intermission is over
-				m_bChangelevelDone = true;
-			}
+			ChangeLevel(); // intermission is over
+			m_bChangelevelDone = true;
 		}
-
 		return;
 	}
 
-//	float flTimeLimit = mp_timelimit.GetFloat() * 60;
-	float flFragLimit = fraglimit.GetFloat();
-	
+	/* Check if we exceed the timelimit */
 	if ( GetMapRemainingTime() < 0 )
 	{
 		GoToIntermission();
 		return;
 	}
 
-	if ( flFragLimit )
-	{
-		if( IsTeamplay() == true )
-		{
-			CTeam *pCombine = g_Teams[TEAM_COMBINE];
-			CTeam *pRebels = g_Teams[TEAM_REBELS];
+	/* Check if we hit the fraglimit */
+	if ( CheckFragLimit() )
+		return;
 
-			if ( pCombine->GetScore() >= flFragLimit || pRebels->GetScore() >= flFragLimit )
-			{
-				GoToIntermission();
-				return;
-			}
-		}
-		else
-		{
-			// check if any player is over the frag limit
-			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-			{
-				CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
-				if ( pPlayer && pPlayer->FragCount() >= flFragLimit )
-				{
-					GoToIntermission();
-					return;
-				}
-			}
-		}
-	}
-
+	/* Check if we need to restart the current game */
 	if ( gpGlobals->curtime > m_tmNextPeriodicThink )
 	{		
-		CheckAllPlayersReady();
 		CheckRestartGame();
 		m_tmNextPeriodicThink = gpGlobals->curtime + 1.0;
 	}
 
+	/* Check if we're restarting the game */
 	if ( m_flRestartGameTime > 0.0f && m_flRestartGameTime <= gpGlobals->curtime )
 	{
 		RestartGame();
-	}
-
-	if( m_bAwaitingReadyRestart && m_bHeardAllPlayersReady )
-	{
-		UTIL_ClientPrintAll( HUD_PRINTCENTER, "All players ready. Game will restart in 5 seconds" );
-		UTIL_ClientPrintAll( HUD_PRINTCONSOLE, "All players ready. Game will restart in 5 seconds" );
-
-		m_flRestartGameTime = gpGlobals->curtime + 5;
-		m_bAwaitingReadyRestart = false;
 	}
 
 	ManageObjectRelocation();
@@ -416,18 +376,70 @@ void CHL2MPRules::GoToIntermission( void )
 	
 }
 
+float CHL2MPRules::CheckFragLimit()
+{
+#ifndef CLIENT_DLL
+	// if fraglimit is disabled, return 0
+	if ( fraglimit.GetInt() <= 0 )
+		return 0;
+
+	float flFragLimit = fraglimit.GetFloat();
+	if ( flFragLimit )
+	{
+		if( IsTeamplay() == true )
+		{
+			CTeam *pCombine = g_Teams[TEAM_COMBINE];
+			CTeam *pRebels = g_Teams[TEAM_REBELS];
+
+			if ( pCombine->GetScore() >= flFragLimit || pRebels->GetScore() >= flFragLimit )
+			{
+				GoToIntermission();
+				return flFragLimit;
+			}
+		}
+		else
+		{
+			// check if any player is over the frag limit
+			for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+			{
+				CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+
+				if ( pPlayer && pPlayer->FragCount() >= flFragLimit )
+				{
+					GoToIntermission();
+					return flFragLimit;
+				}
+			}
+		}
+	}
+
+	return flFragLimit;
+#else
+	return 0;
+#endif // !CLIENT_DLL
+}
+
+float CHL2MPRules::GetMapRemainingTime()
+{
+	// if timelimit is disabled, return 0
+	if ( mp_timelimit.GetInt() <= 0 )
+		return 0;
+
+	// timelimit is in minutes
+	float timeleft = (m_flGameStartTime + mp_timelimit.GetInt() * 60.0f ) - gpGlobals->curtime;
+
+	return timeleft;
+}
+
 bool CHL2MPRules::CheckGameOver()
 {
 #ifndef CLIENT_DLL
-	if ( g_fGameOver )   // someone else quit the game already
+	// someone else quit the game already
+	if ( g_fGameOver )   
 	{
-		// check to see if we should change levels now
-		if ( m_flIntermissionEndTime < gpGlobals->curtime )
-		{
-			ChangeLevel(); // intermission is over			
-		}
-
-		return true;
+		// Tony; wait for intermission to end
+		if ( m_flIntermissionEndTime && ( m_flIntermissionEndTime < gpGlobals->curtime ) )
+			return true;
 	}
 #endif
 
@@ -836,9 +848,13 @@ void CHL2MPRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 		}
 		else
 		{
-			if ( Q_stristr( szModelName, "models/human") )
+			if ( Q_stristr( szModelName, "models/player/rebels" ) )
 			{
-				pHL2Player->ChangeTeam( TEAM_REBELS );
+				pHL2Player->ChangeTeam(TEAM_REBELS);
+			}
+			else if ( Q_stristr( szModelName, "models/player/combine" ) )
+			{
+				pHL2Player->ChangeTeam( TEAM_COMBINE );
 			}
 			else
 			{
@@ -886,19 +902,6 @@ bool CHL2MPRules::IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer )
 	return true;
 }
 
-float CHL2MPRules::GetMapRemainingTime()
-{
-	// if timelimit is disabled, return 0
-	if ( mp_timelimit.GetInt() <= 0 )
-		return 0;
-
-	// timelimit is in minutes
-
-	float timeleft = (m_flGameStartTime + mp_timelimit.GetInt() * 60.0f ) - gpGlobals->curtime;
-
-	return timeleft;
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -933,7 +936,6 @@ bool CHL2MPRules::ClientCommand( CBaseEntity *pEdict, const CCommand &args )
 
 
 	CHL2MP_Player *pPlayer = (CHL2MP_Player *) pEdict;
-
 	if ( pPlayer->ClientCommand( args ) )
 		return true;
 #endif
@@ -989,7 +991,7 @@ CAmmoDef *GetAmmoDef()
 
 #else
 
-#ifdef DEBUG
+#if defined ( DEBUG ) || defined ( MAPBASE_MP )
 
 	// Handler for the "bot" command.
 	void Bot_f()
@@ -1223,17 +1225,6 @@ void CHL2MPRules::CleanUpMap()
 	MapEntity_ParseAllEntities( engine->GetMapEntitiesString(), &filter, true );
 }
 
-void CHL2MPRules::CheckChatForReadySignal( CHL2MP_Player *pPlayer, const char *chatmsg )
-{
-	if( m_bAwaitingReadyRestart && FStrEq( chatmsg, mp_ready_signal.GetString() ) )
-	{
-		if( !pPlayer->IsReady() )
-		{
-			pPlayer->SetReady( true );
-		}		
-	}
-}
-
 void CHL2MPRules::CheckRestartGame( void )
 {
 	// Restart the game if specified by the server
@@ -1255,45 +1246,6 @@ void CHL2MPRules::CheckRestartGame( void )
 		m_bCompleteReset = true;
 		mp_restartgame.SetValue( 0 );
 	}
-
-	if( mp_readyrestart.GetBool() )
-	{
-		m_bAwaitingReadyRestart = true;
-		m_bHeardAllPlayersReady = false;
-		
-
-		const char *pszReadyString = mp_ready_signal.GetString();
-
-
-		// Don't let them put anything malicious in there
-		if( pszReadyString == NULL || Q_strlen(pszReadyString) > 16 )
-		{
-			pszReadyString = "ready";
-		}
-
-		IGameEvent *event = gameeventmanager->CreateEvent( "hl2mp_ready_restart" );
-		if ( event )
-			gameeventmanager->FireEvent( event );
-
-		mp_readyrestart.SetValue( 0 );
-
-		// cancel any restart round in progress
-		m_flRestartGameTime = -1;
-	}
-}
-
-void CHL2MPRules::CheckAllPlayersReady( void )
-{
-	for (int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		CHL2MP_Player *pPlayer = (CHL2MP_Player*) UTIL_PlayerByIndex( i );
-
-		if ( !pPlayer )
-			continue;
-		if ( !pPlayer->IsReady() )
-			return;
-	}
-	m_bHeardAllPlayersReady = true;
 }
 
 //-----------------------------------------------------------------------------

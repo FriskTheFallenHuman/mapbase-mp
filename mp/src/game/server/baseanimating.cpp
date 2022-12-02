@@ -1183,7 +1183,7 @@ bool CBaseAnimating::HasAnimEvent( int nSequence, int nEvent )
 		return false;
 	}
 
-  	animevent_t event;
+	animevent_t event;
 
 	int index = 0;
 	while ( ( index = GetAnimationEvent( pstudiohdr, nSequence, &event, 0.0f, 1.0f, index ) ) != 0 )
@@ -1954,7 +1954,7 @@ ConVar ai_setupbones_debug( "ai_setupbones_debug", "0", 0, "Shows that bones tha
 
 
 
-inline bool CBaseAnimating::CanSkipAnimation( void )
+bool CBaseAnimating::CanSkipAnimation( void )
 {
 	if ( !sv_pvsskipanimation.GetBool() )
 		return false;
@@ -3343,7 +3343,7 @@ void CBaseAnimating::DrawRawSkeleton( matrix3x4_t boneToWorld[], int boneMask, b
 			{
 				Vector p2;
 				MatrixPosition( boneToWorld[pStudioHdr->pBone( i )->parent], p2 );
-                NDebugOverlay::Line( p1, p2, r, g, b, noDepthTest, duration );
+				NDebugOverlay::Line( p1, p2, r, g, b, noDepthTest, duration );
 			}
 		}
 	}

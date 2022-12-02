@@ -130,7 +130,6 @@ public:
 	void	AddLevelDesignerPlacedObject( CBaseEntity *pEntity );
 	void	RemoveLevelDesignerPlacedObject( CBaseEntity *pEntity );
 	void	ManageObjectRelocation( void );
-	void    CheckChatForReadySignal( CHL2MP_Player *pPlayer, const char *chatmsg );
 	const char *GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer );
 
 #endif
@@ -143,9 +142,10 @@ public:
 
 	
 	bool	IsTeamplay( void ) { return m_bTeamPlayEnabled;	}
-	void	CheckAllPlayersReady( void );
 	
 	virtual bool IsConnectedUserInfoChangeAllowed( CBasePlayer *pPlayer );
+
+	float CheckFragLimit();
 	
 private:
 	
@@ -155,8 +155,6 @@ private:
 	float m_tmNextPeriodicThink;
 	float m_flRestartGameTime;
 	bool m_bCompleteReset;
-	bool m_bAwaitingReadyRestart;
-	bool m_bHeardAllPlayersReady;
 
 #ifndef CLIENT_DLL
 	bool m_bChangelevelDone;

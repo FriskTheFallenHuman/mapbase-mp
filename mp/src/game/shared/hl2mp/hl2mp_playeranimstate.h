@@ -37,6 +37,10 @@ public:
 	void InitHL2MPAnimState( CHL2MP_Player *pPlayer );
 	CHL2MP_Player *GetHL2MPPlayer( void )							{ return m_pHL2MPPlayer; }
 
+#ifdef MAPBASE_MP
+	virtual void GetOuterAbsVelocity( Vector& vel );
+	virtual bool ShouldUpdateAnimState();
+#endif
 	virtual void ClearAnimationState();
 	virtual Activity TranslateActivity( Activity actDesired );
 	virtual void Update( float eyeYaw, float eyePitch );
@@ -49,6 +53,11 @@ public:
 	bool	HandleSwimming( Activity &idealActivity );
 
 	virtual float GetCurrentMaxGroundSpeed();
+
+#ifdef MAPBASE_MP
+	bool Uses9WayAnim() const { return m_bIs9Way; }
+#endif
+
 private:
 	//Tony; temp till 9way!
 	bool						SetupPoseParameters( CStudioHdr *pStudioHdr );
@@ -56,10 +65,36 @@ private:
 	virtual void				ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr );
 	virtual void				ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr );
 	virtual void				ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr );
+#ifdef MAPBASE_MP
+#ifdef CLIENT_DLL
+	virtual void				ComputePoseParam_Head( CStudioHdr* pStudioHdr );
+
+	virtual void				UpdateLookAt();
+#endif // CLIENT_DLL
+#endif
 	
 	CHL2MP_Player   *m_pHL2MPPlayer;
 	bool		m_bInAirWalk;
 	float		m_flHoldDeployedPoseUntilTime;
+
+#ifdef MAPBASE_MP
+	Vector		m_vLookAtTarget;
+	float		m_flLastLookAtUpdate;
+
+	int		m_headYawPoseParam;
+	int		m_headPitchPoseParam;
+	float		m_headYawMin;
+	float		m_headYawMax;
+	float		m_headPitchMin;
+	float		m_headPitchMax;
+	float		m_flLastBodyYaw;
+	float		m_flCurrentHeadYaw;
+	float		m_flCurrentHeadPitch;
+	float		m_flCurrentAimYaw;
+	CountdownTimer		m_blinkTimer;
+
+	bool		m_bIs9Way;
+#endif
 };
 
 CHL2MPPlayerAnimState *CreateHL2MPPlayerAnimState( CHL2MP_Player *pPlayer );
