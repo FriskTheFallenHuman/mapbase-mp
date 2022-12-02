@@ -30,7 +30,7 @@
 #define	PISTOL_ACCURACY_SHOT_PENALTY_TIME		0.2f	// Applied amount of time each shot adds to the time we must recover from
 #define	PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME	1.5f	// Maximum penalty to deal out
 
-ConVar	g_pistol_use_new_accuracy( "g_pistol_use_new_accuracy", "1" );
+ConVar	g_pistol_use_new_accuracy( "g_pistol_use_new_accuracy", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED );
 
 #ifdef CLIENT_DLL
 #define CWeaponPistol C_WeaponPistol

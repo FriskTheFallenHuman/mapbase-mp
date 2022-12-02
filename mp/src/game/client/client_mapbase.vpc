@@ -9,7 +9,6 @@ $Configuration
 	$Compiler
 	{
 		$PreprocessorDefinitions		"$BASE;ASW_PROJECTED_TEXTURES;DYNAMIC_RTT_SHADOWS;GLOWS_ENABLE"
-		$PreprocessorDefinitions		"$BASE;MAPBASE_MP"	[$MAPBASE_MP]
 		$PreprocessorDefinitions		"$BASE;MAPBASE_RPC;DISCORD_RPC;STEAM_RPC"	[$MAPBASE_RPC]
 		$PreprocessorDefinitions		"$BASE;MAPBASE_VSCRIPT"		[$MAPBASE_VSCRIPT]
 		$PreprocessorDefinitions		"$BASE;NEW_RESPONSE_SYSTEM"		[$NEW_RESPONSE_SYSTEM]
@@ -49,8 +48,8 @@ $Project
 			$File	"$SRCDIR\game\shared\mapbase\MapEdit.h"
 			$File	"$SRCDIR\game\shared\mapbase\matchers.cpp"
 			$File	"$SRCDIR\game\shared\mapbase\matchers.h"
-			$File	"$SRCDIR\game\shared\mapbase\singleplayer_animstate.cpp"
-			$File	"$SRCDIR\game\shared\mapbase\singleplayer_animstate.h"
+			$File	"$SRCDIR\game\shared\mapbase\singleplayer_animstate.cpp" [!$MAPBASE_MP]
+			$File	"$SRCDIR\game\shared\mapbase\singleplayer_animstate.h" [!$MAPBASE_MP]
 			$File	"$SRCDIR\game\shared\mapbase\vscript_funcs_shared.cpp" [$MAPBASE_VSCRIPT]
 			$File	"$SRCDIR\game\shared\mapbase\vscript_funcs_shared.h" [$MAPBASE_VSCRIPT]
 			$File	"$SRCDIR\game\shared\mapbase\vscript_singletons.cpp" [$MAPBASE_VSCRIPT]

@@ -46,7 +46,13 @@ const char *g_MapName;
 
 extern ISoundEmitterSystemBase *soundemitterbase;
 
-ConVar mapbase_load_default_manifest("mapbase_load_default_manifest", "1", FCVAR_ARCHIVE, "Should we automatically load our default manifest file? (\"maps/%mapname%_manifest.txt\")");
+#ifdef MAPBASE_MP
+#define FCVAR_FLAGS FCVAR_REPLICATED | FCVAR_ARCHIVE | FCVAR_CHEAT
+#else
+#define FCVAR_FLAGS FCVAR_ARCHIVE
+#endif
+
+ConVar mapbase_load_default_manifest("mapbase_load_default_manifest", "1", FCVAR_FLAGS, "Should we automatically load our default manifest file? (\"maps/%mapname%_manifest.txt\")");
 
 #ifdef GAME_DLL
 // This constant should change with each Mapbase update
@@ -120,7 +126,7 @@ enum
 
 struct ManifestType_t
 {
-	ManifestType_t( const char *_string, const char *cvarname, const char *cvardesc ) : cvar( cvarname, "1", FCVAR_ARCHIVE, cvardesc )
+	ManifestType_t( const char *_string, const char *cvarname, const char *cvardesc ) : cvar( cvarname, "1", FCVAR_FLAGS, cvardesc )
 	{
 		string = _string;
 	}
@@ -130,7 +136,7 @@ struct ManifestType_t
 	ConVar cvar;
 };
 
-#define DECLARE_MANIFEST_TYPE(name, cvar, desc) { #name,		ConVar(#cvar, "1", FCVAR_ARCHIVE, #desc) }
+#define DECLARE_MANIFEST_TYPE(name, cvar, desc) { #name,		ConVar(#cvar, "1", FCVAR_FLAGS, #desc) }
 
 // KEEP THS IN SYNC WITH THE ENUM!
 static const ManifestType_t gm_szManifestFileStrings[MANIFEST_NUM_TYPES] = {
@@ -237,7 +243,7 @@ public:
 			Q_strncpy( g_szDefaultPlayerModel, gameinfo->GetString( "player_default_model", "models/player.mdl" ), sizeof( g_szDefaultPlayerModel ) );
 			g_bDefaultPlayerDrawExternally = gameinfo->GetBool( "player_default_draw_externally", false );
 
-			Q_strncpy( g_szDefaultHandsModel, gameinfo->GetString( "player_default_hands", "models/weapons/v_hands.mdl" ), sizeof( g_szDefaultHandsModel ) );
+			Q_strncpy( g_szDefaultHandsModel, gameinfo->GetString( "player_default_hands", "models/weapons/c_arms_hev.mdl" ), sizeof( g_szDefaultHandsModel ) );
 			g_iDefaultHandsSkin = gameinfo->GetInt( "player_default_hands_skin", 0 );
 			g_iDefaultHandsBody = gameinfo->GetInt( "player_default_hands_body", 0 );
 #endif

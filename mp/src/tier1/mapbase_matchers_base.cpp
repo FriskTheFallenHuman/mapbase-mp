@@ -15,9 +15,15 @@
 #undef MINMAX_H
 #include "minmax.h"
 
-ConVar mapbase_wildcards_enabled("mapbase_wildcards_enabled", "1", FCVAR_NONE, "Toggles Mapbase's '?' wildcard and true '*' features. Useful for maps that have '?' in their targetnames.");
-ConVar mapbase_wildcards_lazy_hack("mapbase_wildcards_lazy_hack", "1", FCVAR_NONE, "Toggles a hack which prevents Mapbase's lazy '?' wildcards from picking up \"???\", the default instance parameter.");
-ConVar mapbase_regex_enabled("mapbase_regex_enabled", "1", FCVAR_NONE, "Toggles Mapbase's regex matching handover.");
+#ifdef MAPBASE_MP
+#define FCVAR_FLAGS FCVAR_REPLICATED | FCVAR_ARCHIVE | FCVAR_CHEAT
+#else
+#define FCVAR_FLAGS FCVAR_NONE
+#endif
+
+ConVar mapbase_wildcards_enabled("mapbase_wildcards_enabled", "1", FCVAR_FLAGS, "Toggles Mapbase's '?' wildcard and true '*' features. Useful for maps that have '?' in their targetnames.");
+ConVar mapbase_wildcards_lazy_hack("mapbase_wildcards_lazy_hack", "1", FCVAR_FLAGS, "Toggles a hack which prevents Mapbase's lazy '?' wildcards from picking up \"???\", the default instance parameter.");
+ConVar mapbase_regex_enabled("mapbase_regex_enabled", "1", FCVAR_FLAGS, "Toggles Mapbase's regex matching handover.");
 
 //=============================================================================
 // These are the "matchers" that compare with wildcards ("any*" for text starting with "any")

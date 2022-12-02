@@ -2127,7 +2127,7 @@ bool CBaseEntity::HandleShotImpactingWater( const FireBulletsInfo_t &info,
 		int	nMaxSplashSize = GetAmmoDef()->MaxSplashSize(info.m_iAmmoType);
 
 		CEffectData	data;
- 		data.m_vOrigin = waterTrace.endpos;
+		data.m_vOrigin = waterTrace.endpos;
 		data.m_vNormal = waterTrace.plane.normal;
 		data.m_flScale = random->RandomFloat( nMinSplashSize, nMaxSplashSize );
 		if ( waterTrace.contents & CONTENTS_SLIME )

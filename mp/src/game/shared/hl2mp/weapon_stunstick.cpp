@@ -35,8 +35,10 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef GAME_DLL
 ConVar    sk_plr_dmg_stunstick	( "sk_plr_dmg_stunstick","0");
 ConVar    sk_npc_dmg_stunstick	( "sk_npc_dmg_stunstick","0");
+#endif // GAME_DLL
 
 extern ConVar metropolice_move_and_melee;
 
@@ -89,13 +91,12 @@ public:
 	void		SetStunState( bool state );
 	bool		GetStunState( void );
 
-#ifndef CLIENT_DLL
+#ifdef GAME_DLL
 	void		Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 	int			WeaponMeleeAttack1Condition( float flDot, float flDist );
+	float		GetDamageForActivity( Activity hitActivity );
 #endif
 	
-	float		GetDamageForActivity( Activity hitActivity );
-
 #ifdef MAPBASE
 	// Don't use backup activities
 	acttable_t		*GetBackupActivityList() { return NULL; }
@@ -233,6 +234,7 @@ void CWeaponStunStick::Precache()
 	PrecacheModel( STUNSTICK_BEAM_MATERIAL );
 }
 
+#ifdef GAME_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Get the damage amount for the animation we're doing
 // Input  : hitActivity - currently played activity
@@ -245,6 +247,7 @@ float CWeaponStunStick::GetDamageForActivity( Activity hitActivity )
 	
 	return sk_npc_dmg_stunstick.GetFloat();
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)

@@ -150,7 +150,7 @@ const char *CTeamplayRules::SetDefaultPlayerTeam( CBasePlayer *pPlayer )
 			pTeamName = TeamWithFewestPlayers();
 		}
 		pPlayer->SetTeamName( pTeamName );
- 	} */
+	} */
 
 	return team; //pPlayer->TeamName();
 }
@@ -237,7 +237,7 @@ void CTeamplayRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 {
 	/* TODO: handle skin, model & team changes 
 
-  	char text[1024];
+	char text[1024];
 
 	// skin/color/model changes
 	int iTeam = Q_atoi( engine->GetClientConVarValue( pPlayer->entindex(), "cl_team" ) );

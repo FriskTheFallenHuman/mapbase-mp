@@ -56,7 +56,7 @@ ConVar player_limit_jump_speed( "player_limit_jump_speed", "1", FCVAR_REPLICATED
 ConVar option_duck_method("option_duck_method", "1", FCVAR_REPLICATED|FCVAR_ARCHIVE );// 0 = HOLD to duck, 1 = Duck is a toggle
 
 #ifdef MAPBASE
-ConVar player_crouch_multiplier( "player_crouch_multiplier", "0.33333333", FCVAR_NONE );
+ConVar player_crouch_multiplier( "player_crouch_multiplier", "0.33333333", FCVAR_REPLICATED | FCVAR_ARCHIVE );
 #endif
 
 #ifdef STAGING_ONLY

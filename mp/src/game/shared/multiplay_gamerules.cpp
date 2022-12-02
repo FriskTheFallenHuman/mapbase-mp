@@ -372,7 +372,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 		{
 			// Tony; wait for intermission to end
 			if ( m_flIntermissionEndTime && ( m_flIntermissionEndTime < gpGlobals->curtime ) )
-			ChangeLevel(); // intermission is over
+				ChangeLevel(); // intermission is over
 			return;
 		}
 
