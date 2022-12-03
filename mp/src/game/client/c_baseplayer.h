@@ -221,6 +221,12 @@ public:
 	}
 #endif
 
+#ifdef MAPBASE_MP
+	int GetButtons() { return m_nButtons; }
+	int GetButtonPressed() { return m_afButtonPressed; }
+	int GetButtonReleased() { return m_afButtonReleased; }
+	int GetButtonLast() { return m_afButtonLast; }
+#endif
 
 	bool						IsLocalPlayer( void ) const;
 

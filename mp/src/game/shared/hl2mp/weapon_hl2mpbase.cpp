@@ -100,12 +100,14 @@ CWeaponHL2MPBase::CWeaponHL2MPBase()
 	m_flNextResetCheckTime = 0.0f;
 }
 
-
 bool CWeaponHL2MPBase::IsPredicted() const
 { 
 	return true;
 }
-//Tony; override for animation purposes.
+
+//-----------------------------------------------------------------------------
+// Purpose: Tony; override for animation purposes.
+//-----------------------------------------------------------------------------
 bool CWeaponHL2MPBase::Reload( void )
 {
 	bool fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
@@ -116,6 +118,26 @@ bool CWeaponHL2MPBase::Reload( void )
 	}
 	return fRet;
 }
+
+#ifdef MAPBASE_MP
+//-----------------------------------------------------------------------------
+// Purpose: Also override for animation purposes.
+//-----------------------------------------------------------------------------
+bool CWeaponHL2MPBase::Deploy( void )
+{
+	bool fRet = DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), GetDrawActivity(), (char*)GetAnimPrefix() );
+	return fRet;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CWeaponHL2MPBase::Holster( CBaseCombatWeapon *pSwitchingTo )
+{
+	return BaseClass::Holster(pSwitchingTo);
+}
+#endif // MAPBASE_MP
+
 void CWeaponHL2MPBase::WeaponSound( WeaponSound_t sound_type, float soundtime /* = 0.0f */ )
 {
 #ifdef CLIENT_DLL

@@ -31,6 +31,7 @@
 #ifdef MAPBASE_MP
 #include "EntityFlame.h"
 #endif
+#include "weapon_physcannon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -710,23 +711,6 @@ bool CHL2MP_Player::WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, co
 		return false;
 
 	return BaseClass::WantsLagCompensationOnEntity( pPlayer, pCmd, pEntityTransmitBits );
-}
-
-Activity CHL2MP_Player::TranslateTeamActivity( Activity ActToTranslate )
-{
-	if ( m_iModelType == TEAM_COMBINE )
-		 return ActToTranslate;
-	
-	if ( ActToTranslate == ACT_RUN )
-		 return ACT_RUN_AIM_AGITATED;
-
-	if ( ActToTranslate == ACT_IDLE )
-		 return ACT_IDLE_AIM_AGITATED;
-
-	if ( ActToTranslate == ACT_WALK )
-		 return ACT_WALK_AIM_AGITATED;
-
-	return ActToTranslate;
 }
 
 void CHL2MP_Player::ChangeTeam( int iTeam )

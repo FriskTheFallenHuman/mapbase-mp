@@ -1948,7 +1948,7 @@ void CWeaponPhysCannon::PuntVPhysics( CBaseEntity *pEntity, const Vector &vecFor
 			{
 				const float hitObjectFactor = 0.5f;
 				const float otherObjectFactor = 1.0f - hitObjectFactor;
-  				// Must be light enough
+				// Must be light enough
 				float ratio = pList[i]->GetMass() / totalMass;
 				if ( pList[i] == pEntity->VPhysicsGetObject() )
 				{
@@ -2806,7 +2806,7 @@ CBaseEntity *CWeaponPhysCannon::FindObjectInCone( const Vector &vecOrigin, const
 //-----------------------------------------------------------------------------
 bool CGrabController::UpdateObject( CBasePlayer *pPlayer, float flError )
 {
- 	CBaseEntity *pEntity = GetAttached();
+	CBaseEntity *pEntity = GetAttached();
 	if ( !pEntity || ComputeError() > flError || pPlayer->GetGroundEntity() == pEntity || !pEntity->VPhysicsGetObject() )
 	{
 		return false;
@@ -3521,7 +3521,7 @@ bool CWeaponPhysCannon::CanPickupObject( CBaseEntity *pTarget )
 		if ( pPhysBox != NULL )
 		{
 			if ( pTarget->HasSpawnFlags( SF_PHYSBOX_NEVER_PICK_UP ) )
-                return false;
+				return false;
 			else
 				return true;
 		}

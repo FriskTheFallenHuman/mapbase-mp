@@ -285,7 +285,7 @@ void CBaseCombatWeapon::Precache( void )
 				m_iPrimaryAmmoType = (int)TF_AMMO_METAL;
 			}
 #endif
- 		}
+		}
 		if ( GetWpnData().szAmmo2[0] )
 		{
 			m_iSecondaryAmmoType = GetAmmoDef()->Index( GetWpnData().szAmmo2 );
@@ -1782,6 +1782,7 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 #ifdef MAPBASE
 		if (IsWeaponVisible() && pOwner->IsPlayer())
+
 			static_cast<CBasePlayer*>(pOwner)->SetAnimation( PLAYER_HOLSTER );
 #endif
 	}
@@ -3249,14 +3250,14 @@ BEGIN_DATADESC( CBaseCombatWeapon )
 // don't save these, init to 0 and regenerate
 //	DEFINE_FIELD( m_flNextEmptySoundTime, FIELD_TIME ),
 //	DEFINE_FIELD( m_Activity, FIELD_INTEGER ),
- 	DEFINE_FIELD( m_nIdealSequence, FIELD_INTEGER ),
+	DEFINE_FIELD( m_nIdealSequence, FIELD_INTEGER ),
 	DEFINE_FIELD( m_IdealActivity, FIELD_INTEGER ),
 
 	DEFINE_FIELD( m_fFireDuration, FIELD_FLOAT ),
 
 	DEFINE_FIELD( m_bReloadsSingly, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_iSubType, FIELD_INTEGER ),
- 	DEFINE_FIELD( m_bRemoveable, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_bRemoveable, FIELD_BOOLEAN ),
 
 	DEFINE_FIELD( m_flUnlockTime,		FIELD_TIME ),
 	DEFINE_FIELD( m_hLocker,			FIELD_EHANDLE ),

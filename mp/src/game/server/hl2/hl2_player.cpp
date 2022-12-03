@@ -1506,6 +1506,7 @@ void CHL2_Player::Spawn(void)
 	BaseClass::Spawn();
 
 #ifdef MAPBASE
+#ifndef MAPBASE_MP
 	// Ported from CHL2MP_Player. Fixes issues with respawning players in SP
 	if ( !IsObserver() )
 	{
@@ -1514,6 +1515,7 @@ void CHL2_Player::Spawn(void)
 
 		RemoveEffects( EF_NODRAW );
 	}
+#endif
 
 	SetDrawPlayerModelExternally( g_bDefaultPlayerDrawExternally );
 #endif
@@ -4633,6 +4635,7 @@ bool CLogicPlayerProxy::KeyValue( const char *szKeyName, const char *szValue )
 
 	if (Q_strnicmp(szKeyName, "HandsVM", 7) == 0)
 	{
+#ifndef MAPBASE_MP
 		if (m_hPlayer)
 		{
 			szKeyName += 7;
@@ -4649,6 +4652,10 @@ bool CLogicPlayerProxy::KeyValue( const char *szKeyName, const char *szValue )
 			}
 			return true;
 		}
+#else
+		Assert("HandsVM disable in MP");
+		return true;
+#endif // !MAPBASE_MP
 	}
 	else if (FStrEq(szKeyName, "ResponseContext"))
 	{
@@ -4667,8 +4674,10 @@ bool CLogicPlayerProxy::KeyValue( const char *szKeyName, const char *szValue )
 			return true;
 		}
 	}
+
 	else if (FStrEq(szKeyName, "PlayerModel"))
 	{
+#ifndef MAPBASE_MP
 		if (m_hPlayer)
 		{
 			if (PrecacheModel( szValue ))
@@ -4677,7 +4686,12 @@ bool CLogicPlayerProxy::KeyValue( const char *szKeyName, const char *szValue )
 			}
 			return true;
 		}
+#else
+		Assert("PlayerModel disable in MP");
+		return true;
+#endif // !MAPBASE_MP
 	}
+
 	else
 	{
 		if (BaseClass::KeyValue( szKeyName, szValue ))
@@ -5024,6 +5038,7 @@ void CLogicPlayerProxy::InputSuppressCrosshair( inputdata_t &inputdata )
 #ifdef MAPBASE
 void CLogicPlayerProxy::InputSetHandModel( inputdata_t &inputdata )
 {
+#ifndef MAPBASE_MP
 	if (!m_hPlayer)
 		return;
 
@@ -5036,10 +5051,12 @@ void CLogicPlayerProxy::InputSetHandModel( inputdata_t &inputdata )
 	CBaseViewModel *vm = pPlayer->GetViewModel(1);
 	if (vm)
 		vm->SetModel(STRING(iszModel));
+#endif // !MAPBASE_MP
 }
 
 void CLogicPlayerProxy::InputSetHandModelSkin( inputdata_t &inputdata )
 {
+#ifndef MAPBASE_MP
 	if (!m_hPlayer)
 		return;
 
@@ -5047,10 +5064,12 @@ void CLogicPlayerProxy::InputSetHandModelSkin( inputdata_t &inputdata )
 	CBaseViewModel *vm = pPlayer->GetViewModel(1);
 	if (vm)
 		vm->m_nSkin = inputdata.value.Int();
+#endif // !MAPBASE_MP
 }
 
 void CLogicPlayerProxy::InputSetHandModelBodyGroup( inputdata_t &inputdata )
 {
+#ifndef MAPBASE_MP
 	if (!m_hPlayer)
 		return;
 
@@ -5058,10 +5077,12 @@ void CLogicPlayerProxy::InputSetHandModelBodyGroup( inputdata_t &inputdata )
 	CBaseViewModel *vm = pPlayer->GetViewModel(1);
 	if (vm)
 		vm->m_nBody = inputdata.value.Int();
+#endif // !MAPBASE_MP
 }
 
 void CLogicPlayerProxy::InputSetPlayerModel( inputdata_t &inputdata )
 {
+#ifndef MAPBASE_MP
 	if (!m_hPlayer)
 		return;
 
@@ -5079,6 +5100,7 @@ void CLogicPlayerProxy::InputSetPlayerModel( inputdata_t &inputdata )
 	SetModelName( m_hPlayer->GetModelName() );
 
 	m_hPlayer->SetModel( STRING(iszModel) );
+#endif // !MAPBASE_MP
 }
 
 void CLogicPlayerProxy::InputSetPlayerDrawExternally( inputdata_t &inputdata )

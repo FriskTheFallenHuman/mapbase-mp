@@ -91,8 +91,8 @@ public:
 	void InitializePoseParams( void );
 
 #ifdef MAPBASE_MP
-    inline void SetLookat( const Vector& pos ) { m_viewtarget = pos; };
-    inline void BlinkEyes() { m_blinktoggle = !m_blinktoggle; };
+	inline void SetLookat( const Vector& pos ) { m_viewtarget = pos; };
+	inline void BlinkEyes() { m_blinktoggle = !m_blinktoggle; };
 #endif // MAPBASE_MP
 
 // Shared code

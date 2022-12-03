@@ -889,18 +889,6 @@ BEGIN_RECV_TABLE_NOBASE( C_TEPlayerAnimEvent, DT_TEPlayerAnimEvent )
 	RecvPropInt( RECVINFO( m_nData ) )
 END_RECV_TABLE()
 
-void C_HL2MP_Player::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
-{
-	if ( IsLocalPlayer() )
-	{
-		if ( ( prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
-			return;
-	}
-
-	MDLCACHE_CRITICAL_SECTION();
-	m_PlayerAnimState->DoAnimationEvent( event, nData );
-}
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------

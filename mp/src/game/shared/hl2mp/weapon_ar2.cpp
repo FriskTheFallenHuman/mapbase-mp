@@ -194,7 +194,7 @@ acttable_t	CWeaponAR2::m_acttable[] =
 	{ ACT_MP_CROUCH_IDLE,				ACT_HL2MP_IDLE_CROUCH_AR2,				false },
 
 #if EXPANDED_HL2DM_ACTIVITIES
-	{ ACT_HL2MP_WALK,					ACT_HL2MP_WALK_AR2,						false },
+	{ ACT_MP_WALK,						ACT_HL2MP_WALK_AR2,						false },
 #endif
 	{ ACT_MP_RUN,						ACT_HL2MP_RUN_AR2,						false },
 	{ ACT_MP_CROUCHWALK,				ACT_HL2MP_WALK_CROUCH_AR2,				false },

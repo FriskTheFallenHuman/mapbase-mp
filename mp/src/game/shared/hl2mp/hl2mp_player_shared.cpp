@@ -38,7 +38,7 @@ const char *CHL2MP_Player::GetPlayerModelSoundPrefix( void )
 	return g_ppszPlayerSoundPrefixNames[m_iPlayerSoundType];
 }
 
-extern void SpawnBlood (Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage);
+extern void SpawnBlood( Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage );
 
 //-----------------------------------------------------------------------------
 // Purpose: 

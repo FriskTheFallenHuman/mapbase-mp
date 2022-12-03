@@ -633,7 +633,7 @@ void CBasePlayer::DestroyViewModels( void )
 	}
 }
 
-#ifdef MAPBASE
+#if defined MAPBASE && !defined MAPBASE_MP
 extern char g_szDefaultHandsModel[MAX_PATH];
 extern int g_iDefaultHandsSkin;
 extern int g_iDefaultHandsBody;
@@ -1733,7 +1733,7 @@ void CBasePlayer::RemoveAllItems( bool removeSuit )
 	RemoveAllWeapons();
 	RemoveAllAmmo();
 
-#ifdef MAPBASE
+#if defined MAPBASE && !defined MAPBASE_MP
 	// Hide hand viewmodel
 	CBaseViewModel *vm = GetViewModel( 1 );
 	if ( vm )
@@ -5335,7 +5335,7 @@ void CBasePlayer::Spawn( void )
 	enginesound->SetPlayerDSP( user, 0, false );
 
 	CreateViewModel();
-#ifdef MAPBASE
+#if defined MAPBASE && !defined MAPBASE_MP
 	CreateHandModel();
 #endif
 
@@ -5470,7 +5470,7 @@ void CBasePlayer::Precache( void )
 	m_iTrain = TRAIN_NEW;
 #endif
 
-#ifdef MAPBASE
+#if defined MAPBASE && !defined MAPBASE_MP
 	PrecacheModel( g_szDefaultHandsModel );
 #endif
 
@@ -6539,6 +6539,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 	case 101:
 		gEvilImpulse101 = true;
 
+#ifndef MAPBASE_MP
 		EquipSuit();
 
 		// Give the player everything!
@@ -6573,7 +6574,8 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		{
 			TakeHealth( 25, DMG_GENERIC );
 		}
-		
+#endif // !MAPBASE_MP
+
 		gEvilImpulse101		= false;
 
 		break;

@@ -55,7 +55,10 @@ public:
 	virtual float GetCurrentMaxGroundSpeed();
 
 #ifdef MAPBASE_MP
-	bool Uses9WayAnim() const { return m_bIs9Way; }
+	//bool Uses9WayAnim() const { return m_LegAnimType; }
+	bool ModelUses9WaysAnimation() const { return m_LegAnimType == LEGANIM_9WAY; }
+	bool ModelUses8WaysAnimation() const { return m_LegAnimType == LEGANIM_8WAY; }
+	bool ModelUsesGoldsourcesAnimation() const { return m_LegAnimType == LEGANIM_GOLDSRC; }
 #endif
 
 private:
@@ -93,7 +96,12 @@ private:
 	float		m_flCurrentAimYaw;
 	CountdownTimer		m_blinkTimer;
 
-	bool		m_bIs9Way;
+	//bool		m_bIs9Way;
+	float		m_fGroundTime;
+
+	static acttable_t UnarmedAnimsActtable[];
+	static acttable_t CarryLightAnimsActtable[];
+	static acttable_t CarryHeavyAnimsActtable[];
 #endif
 };
 

@@ -39,19 +39,19 @@ ConVar sv_playeranimstate_use_aim_sequences( "sv_playeranimstate_use_aim_sequenc
 
 CSinglePlayerAnimState *CreatePlayerAnimationState( CBasePlayer *pPlayer )
 {
-    MDLCACHE_CRITICAL_SECTION();
+	MDLCACHE_CRITICAL_SECTION();
 
-    CSinglePlayerAnimState *pState = new CSinglePlayerAnimState( pPlayer );
+	CSinglePlayerAnimState *pState = new CSinglePlayerAnimState( pPlayer );
 
-    // Setup the movement data.
-    CModAnimConfig movementData;
-    movementData.m_LegAnimType = (LegAnimType_t)sv_playeranimstate_animtype.GetInt();
-    movementData.m_flMaxBodyYawDegrees = sv_playeranimstate_bodyyaw.GetFloat();
-    movementData.m_bUseAimSequences = sv_playeranimstate_use_aim_sequences.GetBool();
+	// Setup the movement data.
+	CModAnimConfig movementData;
+	movementData.m_LegAnimType = (LegAnimType_t)sv_playeranimstate_animtype.GetInt();
+	movementData.m_flMaxBodyYawDegrees = sv_playeranimstate_bodyyaw.GetFloat();
+	movementData.m_bUseAimSequences = sv_playeranimstate_use_aim_sequences.GetBool();
 
-    pState->Init( pPlayer, movementData );
+	pState->Init( pPlayer, movementData );
 
-    return pState;
+	return pState;
 }
 
 // Below this many degrees, slow down turning rate linearly
@@ -77,25 +77,25 @@ CSinglePlayerAnimState::CSinglePlayerAnimState( CBasePlayer *pPlayer ): m_pPlaye
 Activity CSinglePlayerAnimState::CalcMainActivity()
 {
 #ifdef CLIENT_DLL
-    return ACT_IDLE;
+	return ACT_IDLE;
 #else
-    float speed = GetOuter()->GetAbsVelocity().Length2D();
+	float speed = GetOuter()->GetAbsVelocity().Length2D();
 
-    if ( HandleJumping() )
+	if ( HandleJumping() )
 	{
 		return ACT_HL2MP_JUMP;
 	}
-    else
-    {
-        Activity idealActivity = ACT_HL2MP_IDLE;
+	else
+	{
+		Activity idealActivity = ACT_HL2MP_IDLE;
 
-        if ( GetOuter()->GetFlags() & ( FL_FROZEN | FL_ATCONTROLS ) )
-	    {
-		    speed = 0;
-	    }
-        else
-        {
-            if ( GetOuter()->GetFlags() & FL_DUCKING )
+		if ( GetOuter()->GetFlags() & ( FL_FROZEN | FL_ATCONTROLS ) )
+		{
+			speed = 0;
+		}
+		else
+		{
+			if ( GetOuter()->GetFlags() & FL_DUCKING )
 			{
 				if ( speed > 0 )
 				{
@@ -126,12 +126,12 @@ Activity CSinglePlayerAnimState::CalcMainActivity()
 					idealActivity = ACT_HL2MP_IDLE;
 				}
 			}
-        }
+		}
 
-        return idealActivity;
-    }
+		return idealActivity;
+	}
 
-    //return m_pPlayer->GetActivity();
+	//return m_pPlayer->GetActivity();
 #endif
 }
 
@@ -140,60 +140,60 @@ Activity CSinglePlayerAnimState::CalcMainActivity()
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::SetPlayerAnimation( PLAYER_ANIM playerAnim )
 {
-    if ( playerAnim == PLAYER_ATTACK1 )
-    {
-        m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK ) );
-        m_bFiring = m_iFireSequence != -1;
-        m_flFireCycle = 0;
-    }
-    else if ( playerAnim == PLAYER_ATTACK2 )
-    {
+	if ( playerAnim == PLAYER_ATTACK1 )
+	{
+		m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK ) );
+		m_bFiring = m_iFireSequence != -1;
+		m_flFireCycle = 0;
+	}
+	else if ( playerAnim == PLAYER_ATTACK2 )
+	{
 #if EXPANDED_HL2DM_ACTIVITIES
-        m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK2 ) );
+		m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK2 ) );
 #else
-        m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK ) );
+		m_iFireSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RANGE_ATTACK ) );
 #endif
-        m_bFiring = m_iFireSequence != -1;
-        m_flFireCycle = 0;
-    }
-    else if ( playerAnim == PLAYER_JUMP )
-    {
-        // Play the jump animation.
-        if (!m_bJumping)
-        {
-            m_bJumping = true;
-            m_bFirstJumpFrame = true;
-            m_flJumpStartTime = gpGlobals->curtime;
-        }
-    }
-    else if ( playerAnim == PLAYER_RELOAD )
-    {
-        m_iReloadSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RELOAD ) );
-        if (m_iReloadSequence != -1)
-        {
-            // clear other events that might be playing in our layer
+		m_bFiring = m_iFireSequence != -1;
+		m_flFireCycle = 0;
+	}
+	else if ( playerAnim == PLAYER_JUMP )
+	{
+		// Play the jump animation.
+		if (!m_bJumping)
+		{
+			m_bJumping = true;
+			m_bFirstJumpFrame = true;
+			m_flJumpStartTime = gpGlobals->curtime;
+		}
+	}
+	else if ( playerAnim == PLAYER_RELOAD )
+	{
+		m_iReloadSequence = SelectWeightedSequence( TranslateActivity( ACT_HL2MP_GESTURE_RELOAD ) );
+		if (m_iReloadSequence != -1)
+		{
+			// clear other events that might be playing in our layer
 			m_bWeaponSwitching = false;
-            m_fReloadPlaybackRate = 1.0f;
+			m_fReloadPlaybackRate = 1.0f;
 			m_bReloading = true;			
 			m_flReloadCycle = 0;
-        }
-    }
-    else if ( playerAnim == PLAYER_UNHOLSTER || playerAnim == PLAYER_HOLSTER )
-    {
-        m_iWeaponSwitchSequence = SelectWeightedSequence( TranslateActivity( playerAnim == PLAYER_UNHOLSTER ? ACT_ARM : ACT_DISARM ) );
-        if (m_iWeaponSwitchSequence != -1)
-        {
-            // clear other events that might be playing in our layer
-            m_bPlayingMisc = false;
-            m_bReloading = false;
+		}
+	}
+	else if ( playerAnim == PLAYER_UNHOLSTER || playerAnim == PLAYER_HOLSTER )
+	{
+		m_iWeaponSwitchSequence = SelectWeightedSequence( TranslateActivity( playerAnim == PLAYER_UNHOLSTER ? ACT_ARM : ACT_DISARM ) );
+		if (m_iWeaponSwitchSequence != -1)
+		{
+			// clear other events that might be playing in our layer
+			m_bPlayingMisc = false;
+			m_bReloading = false;
 
-            m_bWeaponSwitching = true;
-            m_flWeaponSwitchCycle = 0;
-            m_flMiscBlendOut = 0.1f;
-            m_flMiscBlendIn = 0.1f;
-            m_bMiscNoOverride = false;
-        }
-    }
+			m_bWeaponSwitching = true;
+			m_flWeaponSwitchCycle = 0;
+			m_flMiscBlendOut = 0.1f;
+			m_flMiscBlendIn = 0.1f;
+			m_bMiscNoOverride = false;
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -202,9 +202,9 @@ void CSinglePlayerAnimState::SetPlayerAnimation( PLAYER_ANIM playerAnim )
 Activity CSinglePlayerAnimState::TranslateActivity( Activity actDesired )
 {
 #ifdef CLIENT_DLL
-    return actDesired;
+	return actDesired;
 #else
-    return m_pPlayer->Weapon_TranslateActivity( actDesired );
+	return m_pPlayer->Weapon_TranslateActivity( actDesired );
 #endif
 }
 
@@ -244,7 +244,7 @@ bool CSinglePlayerAnimState::HandleJumping()
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::ComputeSequences( CStudioHdr *pStudioHdr )
 {
-    CBasePlayerAnimState::ComputeSequences(pStudioHdr);
+	CBasePlayerAnimState::ComputeSequences(pStudioHdr);
 
 	ComputeFireSequence();
 	ComputeMiscSequence();
@@ -257,19 +257,19 @@ void CSinglePlayerAnimState::ComputeSequences( CStudioHdr *pStudioHdr )
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::AddMiscSequence( int iSequence, float flBlendIn, float flBlendOut, float flPlaybackRate, bool bHoldAtEnd, bool bOnlyWhenStill )
 {
-    Assert( iSequence != -1 );
+	Assert( iSequence != -1 );
 
 	m_iMiscSequence = iSequence;
-    m_flMiscBlendIn = flBlendIn;
-    m_flMiscBlendOut = flBlendOut;
+	m_flMiscBlendIn = flBlendIn;
+	m_flMiscBlendOut = flBlendOut;
 
-    m_bPlayingMisc = true;
-    m_bMiscHoldAtEnd = bHoldAtEnd;
-    m_bReloading = false;
-    m_flMiscCycle = 0;
-    m_bMiscOnlyWhenStill = bOnlyWhenStill;
-    m_bMiscNoOverride = true;
-    m_fMiscPlaybackRate = flPlaybackRate;
+	m_bPlayingMisc = true;
+	m_bMiscHoldAtEnd = bHoldAtEnd;
+	m_bReloading = false;
+	m_flMiscCycle = 0;
+	m_bMiscOnlyWhenStill = bOnlyWhenStill;
+	m_bMiscNoOverride = true;
+	m_fMiscPlaybackRate = flPlaybackRate;
 }
 
 //-----------------------------------------------------------------------------
@@ -282,10 +282,10 @@ void CSinglePlayerAnimState::ClearAnimationState()
 	m_bReloading = false;
 	m_bWeaponSwitching = false;
 	m_bPlayingMisc = false;
-    m_flReloadBlendIn = 0.0f;
-    m_flReloadBlendOut = 0.0f;
-    m_flMiscBlendIn = 0.0f;
-    m_flMiscBlendOut = 0.0f;
+	m_flReloadBlendIn = 0.0f;
+	m_flReloadBlendOut = 0.0f;
+	m_flMiscBlendIn = 0.0f;
+	m_flMiscBlendOut = 0.0f;
 	CBasePlayerAnimState::ClearAnimationState();
 }
 
@@ -310,8 +310,8 @@ void CSinglePlayerAnimState::ClearAnimationLayers()
 //-----------------------------------------------------------------------------
 int CSinglePlayerAnimState::CalcAimLayerSequence( float *flCycle, float *flAimSequenceWeight, bool bForceIdle )
 {
-    // TODO?
-    return m_pOuter->LookupSequence( "soldier_Aim_9_directions" );
+	// TODO?
+	return m_pOuter->LookupSequence( "soldier_Aim_9_directions" );
 }
 
 void CSinglePlayerAnimState::UpdateLayerSequenceGeneric( int iLayer, bool &bEnabled,
@@ -451,8 +451,8 @@ float CSinglePlayerAnimState::GetCurrentMaxGroundSpeed()
 	if ( pStudioHdr == NULL )
 		return 1.0f;
 
-    int iMoveX = GetOuter()->LookupPoseParameter( "move_x" );
-    int iMoveY = GetOuter()->LookupPoseParameter( "move_y" );
+	int iMoveX = GetOuter()->LookupPoseParameter( "move_x" );
+	int iMoveY = GetOuter()->LookupPoseParameter( "move_y" );
 
 	float prevX = GetOuter()->GetPoseParameter( iMoveX );
 	float prevY = GetOuter()->GetPoseParameter( iMoveY );
@@ -470,13 +470,13 @@ float CSinglePlayerAnimState::GetCurrentMaxGroundSpeed()
 		newY = prevY / d;
 	}
 
-    GetOuter()->SetPoseParameter( pStudioHdr, iMoveX, newX );
-    GetOuter()->SetPoseParameter( pStudioHdr, iMoveY, newY );
+	GetOuter()->SetPoseParameter( pStudioHdr, iMoveX, newX );
+	GetOuter()->SetPoseParameter( pStudioHdr, iMoveY, newY );
 
 	float speed = GetOuter()->GetSequenceGroundSpeed(GetOuter()->GetSequence() );
 
-    GetOuter()->SetPoseParameter( pStudioHdr, iMoveX, prevX );
-    GetOuter()->SetPoseParameter( pStudioHdr, iMoveY, prevY );
+	GetOuter()->SetPoseParameter( pStudioHdr, iMoveX, prevX );
+	GetOuter()->SetPoseParameter( pStudioHdr, iMoveY, prevY );
 
 	return speed;
 }
@@ -487,9 +487,9 @@ float CSinglePlayerAnimState::GetCurrentMaxGroundSpeed()
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::ComputePoseParam_BodyYaw( void )
 {
-    CBasePlayerAnimState::ComputePoseParam_BodyYaw();
+	CBasePlayerAnimState::ComputePoseParam_BodyYaw();
 
-    //ComputePoseParam_BodyLookYaw();
+	//ComputePoseParam_BodyLookYaw();
 }
 
 //-----------------------------------------------------------------------------
@@ -497,135 +497,135 @@ void CSinglePlayerAnimState::ComputePoseParam_BodyYaw( void )
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::ComputePoseParam_BodyLookYaw( void )
 {
-    // See if we even have a blender for pitch
-    int upper_body_yaw = GetOuter()->LookupPoseParameter( "aim_yaw" );
-    if ( upper_body_yaw < 0 )
-    {
-        return;
-    }
+	// See if we even have a blender for pitch
+	int upper_body_yaw = GetOuter()->LookupPoseParameter( "aim_yaw" );
+	if ( upper_body_yaw < 0 )
+	{
+		return;
+	}
 
-    // Assume upper and lower bodies are aligned and that we're not turning
-    float flGoalTorsoYaw = 0.0f;
-    int turning = TURN_NONE;
-    float turnrate = 360.0f;
+	// Assume upper and lower bodies are aligned and that we're not turning
+	float flGoalTorsoYaw = 0.0f;
+	int turning = TURN_NONE;
+	float turnrate = 360.0f;
 
-    Vector vel;
+	Vector vel;
    
-    GetOuterAbsVelocity( vel );
+	GetOuterAbsVelocity( vel );
 
-    bool isMoving = ( vel.Length() > 1.0f ) ? true : false;
+	bool isMoving = ( vel.Length() > 1.0f ) ? true : false;
 
-    if ( !isMoving )
-    {
-        // Just stopped moving, try and clamp feet
-        if ( m_flLastTurnTime <= 0.0f )
-        {
-            m_flLastTurnTime    = gpGlobals->curtime;
-            m_flLastYaw            = GetOuter()->EyeAngles().y;
-            // Snap feet to be perfectly aligned with torso/eyes
-            m_flGoalFeetYaw        = GetOuter()->EyeAngles().y;
-            m_flCurrentFeetYaw    = m_flGoalFeetYaw;
-            m_nTurningInPlace    = TURN_NONE;
-        }
+	if ( !isMoving )
+	{
+		// Just stopped moving, try and clamp feet
+		if ( m_flLastTurnTime <= 0.0f )
+		{
+			m_flLastTurnTime    = gpGlobals->curtime;
+			m_flLastYaw            = GetOuter()->EyeAngles().y;
+			// Snap feet to be perfectly aligned with torso/eyes
+			m_flGoalFeetYaw        = GetOuter()->EyeAngles().y;
+			m_flCurrentFeetYaw    = m_flGoalFeetYaw;
+			m_nTurningInPlace    = TURN_NONE;
+		}
 
-        // If rotating in place, update stasis timer
+		// If rotating in place, update stasis timer
 
-        if ( m_flLastYaw != GetOuter()->EyeAngles().y )
-        {
-            m_flLastTurnTime    = gpGlobals->curtime;
-            m_flLastYaw            = GetOuter()->EyeAngles().y;
-        }
+		if ( m_flLastYaw != GetOuter()->EyeAngles().y )
+		{
+			m_flLastTurnTime    = gpGlobals->curtime;
+			m_flLastYaw            = GetOuter()->EyeAngles().y;
+		}
 
-        if ( m_flGoalFeetYaw != m_flCurrentFeetYaw )
-        {
-            m_flLastTurnTime    = gpGlobals->curtime;
-        }
+		if ( m_flGoalFeetYaw != m_flCurrentFeetYaw )
+		{
+			m_flLastTurnTime    = gpGlobals->curtime;
+		}
 
-        turning = ConvergeAngles( m_flGoalFeetYaw, turnrate, m_AnimConfig.m_flMaxBodyYawDegrees, gpGlobals->frametime, m_flCurrentFeetYaw );
+		turning = ConvergeAngles( m_flGoalFeetYaw, turnrate, m_AnimConfig.m_flMaxBodyYawDegrees, gpGlobals->frametime, m_flCurrentFeetYaw );
 
-        QAngle eyeAngles = GetOuter()->EyeAngles();
-        QAngle vAngle = GetOuter()->GetLocalAngles();
+		QAngle eyeAngles = GetOuter()->EyeAngles();
+		QAngle vAngle = GetOuter()->GetLocalAngles();
 
-        // See how far off current feetyaw is from true yaw
-        float yawdelta = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;
-        yawdelta = AngleNormalize( yawdelta );
+		// See how far off current feetyaw is from true yaw
+		float yawdelta = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;
+		yawdelta = AngleNormalize( yawdelta );
 
-        bool rotated_too_far = false;
+		bool rotated_too_far = false;
 
-        float yawmagnitude = fabs( yawdelta );
+		float yawmagnitude = fabs( yawdelta );
 
-        // If too far, then need to turn in place
-        if ( yawmagnitude > 45 )
-        {
-            rotated_too_far = true;
-        }
+		// If too far, then need to turn in place
+		if ( yawmagnitude > 45 )
+		{
+			rotated_too_far = true;
+		}
 
-        // Standing still for a while, rotate feet around to face forward
-        // Or rotated too far
-        // FIXME:  Play an in place turning animation
-        if ( rotated_too_far ||
-            ( gpGlobals->curtime > m_flLastTurnTime + mp_facefronttime.GetFloat() ) )
-        {
-            m_flGoalFeetYaw        = GetOuter()->EyeAngles().y;
-            m_flLastTurnTime    = gpGlobals->curtime;
+		// Standing still for a while, rotate feet around to face forward
+		// Or rotated too far
+		// FIXME:  Play an in place turning animation
+		if ( rotated_too_far ||
+			( gpGlobals->curtime > m_flLastTurnTime + mp_facefronttime.GetFloat() ) )
+		{
+			m_flGoalFeetYaw        = GetOuter()->EyeAngles().y;
+			m_flLastTurnTime    = gpGlobals->curtime;
 
-        /*    float yd = m_flCurrentFeetYaw - m_flGoalFeetYaw;
-            if ( yd > 0 )
-            {
-                m_nTurningInPlace = TURN_RIGHT;
-            }
-            else if ( yd < 0 )
-            {
-                m_nTurningInPlace = TURN_LEFT;
-            }
-            else
-            {
-                m_nTurningInPlace = TURN_NONE;
-            }
+		/*    float yd = m_flCurrentFeetYaw - m_flGoalFeetYaw;
+			if ( yd > 0 )
+			{
+				m_nTurningInPlace = TURN_RIGHT;
+			}
+			else if ( yd < 0 )
+			{
+				m_nTurningInPlace = TURN_LEFT;
+			}
+			else
+			{
+				m_nTurningInPlace = TURN_NONE;
+			}
 
-            turning = ConvergeAngles( m_flGoalFeetYaw, turnrate, gpGlobals->frametime, m_flCurrentFeetYaw );
-            yawdelta = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;*/
+			turning = ConvergeAngles( m_flGoalFeetYaw, turnrate, gpGlobals->frametime, m_flCurrentFeetYaw );
+			yawdelta = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;*/
 
-        }
+		}
 
-        // Snap upper body into position since the delta is already smoothed for the feet
-        flGoalTorsoYaw = yawdelta;
-        m_flCurrentTorsoYaw = flGoalTorsoYaw;
-    }
-    else
-    {
-        m_flLastTurnTime = 0.0f;
-        m_nTurningInPlace = TURN_NONE;
-        m_flCurrentFeetYaw = m_flGoalFeetYaw = GetOuter()->EyeAngles().y;
-        flGoalTorsoYaw = 0.0f;
-        m_flCurrentTorsoYaw = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;
-    }
+		// Snap upper body into position since the delta is already smoothed for the feet
+		flGoalTorsoYaw = yawdelta;
+		m_flCurrentTorsoYaw = flGoalTorsoYaw;
+	}
+	else
+	{
+		m_flLastTurnTime = 0.0f;
+		m_nTurningInPlace = TURN_NONE;
+		m_flCurrentFeetYaw = m_flGoalFeetYaw = GetOuter()->EyeAngles().y;
+		flGoalTorsoYaw = 0.0f;
+		m_flCurrentTorsoYaw = GetOuter()->EyeAngles().y - m_flCurrentFeetYaw;
+	}
 
-    if ( turning == TURN_NONE )
-    {
-        m_nTurningInPlace = turning;
-    }
+	if ( turning == TURN_NONE )
+	{
+		m_nTurningInPlace = turning;
+	}
 
-    if ( m_nTurningInPlace != TURN_NONE )
-    {
-        // If we're close to finishing the turn, then turn off the turning animation
-        if ( fabs( m_flCurrentFeetYaw - m_flGoalFeetYaw ) < MIN_TURN_ANGLE_REQUIRING_TURN_ANIMATION )
-        {
-            m_nTurningInPlace = TURN_NONE;
-        }
-    }
+	if ( m_nTurningInPlace != TURN_NONE )
+	{
+		// If we're close to finishing the turn, then turn off the turning animation
+		if ( fabs( m_flCurrentFeetYaw - m_flGoalFeetYaw ) < MIN_TURN_ANGLE_REQUIRING_TURN_ANIMATION )
+		{
+			m_nTurningInPlace = TURN_NONE;
+		}
+	}
 
-    GetOuter()->SetPoseParameter( upper_body_yaw, clamp( m_flCurrentTorsoYaw, -60.0f, 60.0f ) );
+	GetOuter()->SetPoseParameter( upper_body_yaw, clamp( m_flCurrentTorsoYaw, -60.0f, 60.0f ) );
 
-    /*
-    // FIXME: Adrian, what is this?
-    int body_yaw = GetOuter()->LookupPoseParameter( "body_yaw" );
+	/*
+	// FIXME: Adrian, what is this?
+	int body_yaw = GetOuter()->LookupPoseParameter( "body_yaw" );
 
-    if ( body_yaw >= 0 )
-    {
-        GetOuter()->SetPoseParameter( body_yaw, 30 );
-    }
-    */
+	if ( body_yaw >= 0 )
+	{
+		GetOuter()->SetPoseParameter( body_yaw, 30 );
+	}
+	*/
 
 }
 
@@ -634,19 +634,19 @@ void CSinglePlayerAnimState::ComputePoseParam_BodyLookYaw( void )
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::ComputePoseParam_BodyPitch( CStudioHdr *pStudioHdr )
 {
-    // Get pitch from v_angle
-    float flPitch = m_flEyePitch;
+	// Get pitch from v_angle
+	float flPitch = m_flEyePitch;
 
-    if ( flPitch > 180.0f )
-    {
-        flPitch -= 360.0f;
-    }
-    flPitch = clamp( flPitch, -90, 90 );
+	if ( flPitch > 180.0f )
+	{
+		flPitch -= 360.0f;
+	}
+	flPitch = clamp( flPitch, -90, 90 );
 
-    // See if we have a blender for pitch
-    GetOuter()->SetPoseParameter( pStudioHdr, "aim_pitch", flPitch );
+	// See if we have a blender for pitch
+	GetOuter()->SetPoseParameter( pStudioHdr, "aim_pitch", flPitch );
 
-    ComputePoseParam_HeadPitch( pStudioHdr );
+	ComputePoseParam_HeadPitch( pStudioHdr );
 }
 
 //-----------------------------------------------------------------------------
@@ -654,16 +654,16 @@ void CSinglePlayerAnimState::ComputePoseParam_BodyPitch( CStudioHdr *pStudioHdr 
 //-----------------------------------------------------------------------------
 void CSinglePlayerAnimState::ComputePoseParam_HeadPitch( CStudioHdr *pStudioHdr )
 {
-    // Get pitch from v_angle
-    int iHeadPitch = GetOuter()->LookupPoseParameter("head_pitch");
+	// Get pitch from v_angle
+	int iHeadPitch = GetOuter()->LookupPoseParameter("head_pitch");
 
-    float flPitch = m_flEyePitch;
+	float flPitch = m_flEyePitch;
 
-    if ( flPitch > 180.0f )
-    {
-        flPitch -= 360.0f;
-    }
-    flPitch = clamp( flPitch, -90, 90 );
+	if ( flPitch > 180.0f )
+	{
+		flPitch -= 360.0f;
+	}
+	flPitch = clamp( flPitch, -90, 90 );
 
-    GetOuter()->SetPoseParameter( pStudioHdr, iHeadPitch, flPitch );
+	GetOuter()->SetPoseParameter( pStudioHdr, iHeadPitch, flPitch );
 }

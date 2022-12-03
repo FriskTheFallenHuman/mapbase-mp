@@ -760,6 +760,7 @@ bool CBaseViewModel::GetAttachmentVelocity( int number, Vector &originVel, Quate
 
 #endif
 
+#ifndef MAPBASE_MP
 #ifdef MAPBASE
 #if defined( CLIENT_DLL )
 #define CHandViewModel C_HandViewModel
@@ -819,3 +820,4 @@ CBaseCombatWeapon *CHandViewModel::GetOwningWeapon()
 		return NULL;
 }
 #endif
+#endif // !MAPBASE_MP

@@ -59,6 +59,10 @@ public:
 	virtual void FireBullets( const FireBulletsInfo_t &info );
 	virtual void FallInit( void );
 	virtual bool Reload();
+#ifdef MAPBASE_MP
+	virtual bool Deploy();
+	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+#endif // MAPBASE_MP
 	
 public:
 	#if defined( CLIENT_DLL )
