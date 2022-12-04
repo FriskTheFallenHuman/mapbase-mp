@@ -5,8 +5,8 @@
 //-----------------------------------------------------------------------------
 
 $Macro SRCDIR		"..\.."
-$Macro GAMENAME 	"hl2" [!$SOURCESDK]
-$Macro GAMENAME 	"mod_hl2" [$SOURCESDK]
+$Macro GAMENAME 	"mod_hl2" [!$MAPBASE]
+$Macro GAMENAME 	"mapbase_hl2" [$MAPBASE]
 
 $Include "$SRCDIR\game\client\client_base.vpc"
 $Include "$SRCDIR\game\protobuf_include.vpc"
