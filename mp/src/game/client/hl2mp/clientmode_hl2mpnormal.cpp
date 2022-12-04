@@ -28,12 +28,12 @@
 #include "dlight.h"
 #include <imapoverview.h>
 #include "c_playerresource.h"
-#include <keyvalues.h>
+#include <KeyValues.h>
 #include "text_message.h"
 #include "panelmetaclassmgr.h"
 #include "hl2mpclientscoreboard.h"
 #include "hl2mptextwindow.h"
-#include "BuyMenu.h"
+#include "buymenu.h"
 #include "c_baseplayer.h"
 #include "c_weapon__stubs.h"		//Tony; add stubs
 
