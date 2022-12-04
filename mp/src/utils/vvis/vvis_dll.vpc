@@ -28,8 +28,6 @@ $Project "Vvis_dll"
 {
 	$Folder	"Source Files"
 	{
-		-$File	"$SRCDIR\public\tier0\memoverride.cpp"
-
 		$File	"..\common\bsplib.cpp"
 		$File	"..\common\cmdlib.cpp"
 		$File	"$SRCDIR\public\collisionutils.cpp"
@@ -47,6 +45,7 @@ $Project "Vvis_dll"
 		$File	"..\common\threads.cpp"
 		$File	"..\common\tools_minidump.cpp"
 		$File	"..\common\tools_minidump.h"
+		$File 	"..\common\filesystem_tools.cpp"
 		$File	"..\common\vmpi_tools_shared.cpp"
 		$File	"vvis.cpp"
 		$File	"WaterDist.cpp"

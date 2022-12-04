@@ -128,6 +128,11 @@ public:
 	// Finds an element (element needs operator== defined)
 	int Find( const T& src ) const;
 
+#ifdef VALVE_RVALUE_REFS
+	template <typename TMatchFunc> 
+	int FindMatch(TMatchFunc &&func) const;
+#endif // VALVE_RVALUE_REFS
+
 	bool HasElement( const T& src ) const;
 
 	// Makes sure we have enough memory allocated to store a requested # of elements
