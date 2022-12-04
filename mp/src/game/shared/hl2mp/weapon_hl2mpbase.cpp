@@ -10,7 +10,9 @@
 #include "takedamageinfo.h"
 #include "ammodef.h"
 #include "hl2mp_gamerules.h"
-
+#ifdef MAPBASE_MP
+#include "mapbase/mapbase_viewmodel.h"
+#endif
 
 #ifdef CLIENT_DLL
 extern IVModelInfoClient* modelinfo;
@@ -135,6 +137,61 @@ bool CWeaponHL2MPBase::Deploy( void )
 bool CWeaponHL2MPBase::Holster( CBaseCombatWeapon *pSwitchingTo )
 {
 	return BaseClass::Holster(pSwitchingTo);
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
+{
+    CBaseViewModel* vm = nullptr;
+	CMapbaseViewModel* vmhands = nullptr;
+
+    CHL2MP_Player* pOwner = GetHL2MPPlayerOwner();
+    if ( pOwner )
+    {
+        vm = pOwner->GetViewModel( VMINDEX_WEP );
+        vmhands = static_cast<CMapbaseViewModel*>( pOwner->GetViewModel( VMINDEX_HANDS ) );
+#ifndef CLIENT_DLL
+        Assert( vm == pOwner->GetViewModel( m_nViewModelIndex ) );
+#endif
+    }
+
+    if ( visible )
+    {
+        RemoveEffects( EF_NODRAW );
+
+        if ( vm )
+			vm->RemoveEffects( EF_NODRAW );
+
+        if ( vmhands )
+        {
+            //if ( GetWpnData().m_bUsesHands )
+            {
+                vmhands->RemoveEffects( EF_NODRAW );
+#ifdef CLIENT_DLL // Let client override this if they are using a custom viewmodel that doesn't use the new hands system.
+                vmhands->SetDrawVM( true );
+#endif
+            }
+            /*else
+            {
+#ifdef CLIENT_DLL
+                vmhands->SetDrawVM( false );
+#endif
+            }*/
+
+        }
+    }
+    else
+    {
+        AddEffects( EF_NODRAW );
+
+        if ( vm )
+			vm->AddEffects( EF_NODRAW );
+
+        if ( vmhands )
+			vmhands->AddEffects( EF_NODRAW );
+    }
 }
 #endif // MAPBASE_MP
 

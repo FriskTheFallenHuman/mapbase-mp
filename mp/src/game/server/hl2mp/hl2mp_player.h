@@ -80,6 +80,7 @@ public:
 
 	void CheatImpulseCommands( int iImpulse );
 	void CreateRagdollEntity( void );
+	virtual void RemoveAllItems( bool removeSuit );
 	void GiveAllItems( void );
 	void GiveDefaultItems( void );
 
@@ -182,6 +183,12 @@ inline CHL2MP_Player *ToHL2MPPlayer( CBaseEntity *pEntity )
 		return NULL;
 
 	return dynamic_cast<CHL2MP_Player*>( pEntity );
+}
+
+// I have no idea why this was never added
+inline CHL2MP_Player* ToHL2MPPlayer( CBasePlayer* pPlayer )
+{
+	return static_cast<CHL2MP_Player*>( pPlayer );
 }
 
 #endif //HL2MP_PLAYER_H

@@ -30,6 +30,7 @@
 #include "ilagcompensationmanager.h"
 #ifdef MAPBASE_MP
 #include "EntityFlame.h"
+#include "mapbase/mapbase_viewmodel.h"
 #endif
 #include "weapon_physcannon.h"
 
@@ -38,6 +39,14 @@
 
 int g_iLastCitizenModel = 0;
 int g_iLastCombineModel = 0;
+
+#ifdef MAPBASE_MP
+extern char g_szDefaultHandsModel[MAX_PATH];
+extern int g_iDefaultHandsSkin;
+extern int g_iDefaultHandsBody;
+
+extern int gEvilImpulse101;
+#endif // MAPBASE_MP
 
 CBaseEntity	 *g_pLastCombineSpawn = NULL;
 CBaseEntity	 *g_pLastRebelSpawn = NULL;
@@ -283,42 +292,60 @@ void CHL2MP_Player::Precache( void )
 	PrecacheScriptSound( "NPC_MetroPolice.Die" );
 	PrecacheScriptSound( "NPC_CombineS.Die" );
 	PrecacheScriptSound( "NPC_Citizen.die" );
+
+#ifdef MAPBASE_MP
+	PrecacheModel( g_szDefaultHandsModel );
+#endif
 }
 
 void CHL2MP_Player::GiveAllItems( void )
 {
+	gEvilImpulse101 = true;
+
 	EquipSuit();
 
+	// Give the player everything!
 	CBasePlayer::GiveAmmo( 255,	"Pistol");
-	CBasePlayer::GiveAmmo( 255,	"AR2" );
-	CBasePlayer::GiveAmmo( 5,	"AR2AltFire" );
+	CBasePlayer::GiveAmmo( 255,	"AR2");
+	CBasePlayer::GiveAmmo( 5,	"AR2AltFire");
 	CBasePlayer::GiveAmmo( 255,	"SMG1");
-	CBasePlayer::GiveAmmo( 1,	"smg1_grenade");
 	CBasePlayer::GiveAmmo( 255,	"Buckshot");
-	CBasePlayer::GiveAmmo( 32,	"357" );
+	CBasePlayer::GiveAmmo( 3,	"smg1_grenade");
 	CBasePlayer::GiveAmmo( 3,	"rpg_round");
-
-	CBasePlayer::GiveAmmo( 1,	"grenade" );
+	CBasePlayer::GiveAmmo( 5,	"grenade");
 	CBasePlayer::GiveAmmo( 2,	"slam" );
-
+	CBasePlayer::GiveAmmo( 32,	"357" );
+	CBasePlayer::GiveAmmo( 16,	"XBowBolt" );
+#ifdef HL2_EPISODIC
+	CBasePlayer::GiveAmmo( 5,	"Hopwire" );
+#endif		
+	GiveNamedItem( "weapon_smg1" );
+	GiveNamedItem( "weapon_frag" );
 	GiveNamedItem( "weapon_crowbar" );
 	GiveNamedItem( "weapon_stunstick" );
 	GiveNamedItem( "weapon_pistol" );
-	GiveNamedItem( "weapon_357" );
-
-	GiveNamedItem( "weapon_smg1" );
 	GiveNamedItem( "weapon_ar2" );
-	
 	GiveNamedItem( "weapon_shotgun" );
-	GiveNamedItem( "weapon_frag" );
-	
-	GiveNamedItem( "weapon_crossbow" );
-	
-	GiveNamedItem( "weapon_rpg" );
-
-	GiveNamedItem( "weapon_slam" );
-
 	GiveNamedItem( "weapon_physcannon" );
+	GiveNamedItem( "weapon_bugbait" );
+	GiveNamedItem( "weapon_rpg" );
+	GiveNamedItem( "weapon_slam" );
+	GiveNamedItem( "weapon_357" );
+	GiveNamedItem( "weapon_crossbow" );
+#ifdef HL2_EPISODIC
+	// GiveNamedItem( "weapon_magnade" );
+#endif
+#ifdef MAPBASE_MP
+	GiveNamedItem( "weapon_bugbait" );
+	GiveNamedItem( "weapon_alyxgun" );
+	GiveNamedItem( "weapon_annabelle" );
+#endif
+	if ( GetHealth() < 100 )
+	{
+		TakeHealth( 25, DMG_GENERIC );
+	}
+
+	gEvilImpulse101		= false;
 	
 }
 
@@ -358,6 +385,19 @@ void CHL2MP_Player::GiveDefaultItems( void )
 	{
 		Weapon_Switch( Weapon_OwnsThisType( "weapon_physcannon" ) );
 	}
+}
+
+void CHL2MP_Player::RemoveAllItems( bool removeSuit )
+{
+	BaseClass::RemoveAllItems(removeSuit);
+
+#if defined MAPBASE_MP
+    if ( GetViewModel( VMINDEX_WEP ) )
+        GetViewModel()->AddEffects( EF_NODRAW );
+
+	if ( GetViewModel( VMINDEX_HANDS ) )
+		GetViewModel( VMINDEX_HANDS )->AddEffects( EF_NODRAW );
+#endif
 }
 
 void CHL2MP_Player::PickDefaultSpawnTeam( void )
@@ -880,6 +920,44 @@ void CHL2MP_Player::CheatImpulseCommands( int iImpulse )
 
 void CHL2MP_Player::CreateViewModel( int index /*=0*/ )
 {
+#ifdef MAPBASE_MP
+	// We should never create more than the first index.
+	Assert( index == 0 );
+
+	if ( GetViewModel( VMINDEX_WEP ) != nullptr )
+	{
+		if ( GetViewModel( VMINDEX_HANDS ) == nullptr )
+			Warning( "Weapon viewmodel exists but hands don't!!\n" );
+
+		return;
+	}
+
+	CMapbaseViewModel* vm = static_cast<CMapbaseViewModel*>( CreateEntityByName( "mapbase_viewmodel" ) );
+	if ( vm )
+	{
+		vm->SetAbsOrigin( GetAbsOrigin() );
+		vm->SetOwner( this );
+		vm->SetIndex( VMINDEX_WEP );
+		DispatchSpawn( vm );
+		vm->FollowEntity( this, false );
+		m_hViewModel.Set( VMINDEX_WEP, vm );
+
+
+		CMapbaseViewModel* vmhands = static_cast<CMapbaseViewModel*>( CreateEntityByName( "mapbase_viewmodel" ) );
+		if ( vmhands )
+		{
+			vmhands->SetAbsOrigin( GetAbsOrigin() );
+			vmhands->SetOwner( this );
+			vmhands->SetIndex( VMINDEX_HANDS );
+			vmhands->SetModel( g_szDefaultHandsModel );
+			vmhands->SetSkin( g_iDefaultHandsSkin );
+			vmhands->m_nBody = g_iDefaultHandsBody;
+			DispatchSpawn( vmhands );
+			vmhands->FollowEntity( vm, true ); // Sets moveparent.
+			m_hViewModel.Set( VMINDEX_HANDS, vmhands );
+		}
+	}
+#else
 	Assert( index >= 0 && index < MAX_VIEWMODELS );
 
 	if ( GetViewModel( index ) )
@@ -895,6 +973,7 @@ void CHL2MP_Player::CreateViewModel( int index /*=0*/ )
 		vm->FollowEntity( this, false );
 		m_hViewModel.Set( index, vm );
 	}
+#endif // MAPBASE_MP
 }
 
 bool CHL2MP_Player::BecomeRagdollOnClient( const Vector &force )

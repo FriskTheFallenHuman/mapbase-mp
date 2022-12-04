@@ -60,6 +60,7 @@ public:
 	virtual void FallInit( void );
 	virtual bool Reload();
 #ifdef MAPBASE_MP
+	virtual void SetWeaponVisible( bool visible );
 	virtual bool Deploy();
 	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 #endif // MAPBASE_MP

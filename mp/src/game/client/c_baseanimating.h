@@ -142,7 +142,7 @@ public:
 	virtual void GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] );
 	virtual void BuildTransformations( CStudioHdr *pStudioHdr, Vector *pos, Quaternion q[], const matrix3x4_t& cameraTransform, int boneMask, CBoneBitList &boneComputed );
 	virtual void ApplyBoneMatrixTransform( matrix3x4_t& transform );
- 	virtual int	VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
+	virtual int	VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
 
 	// model specific
 	virtual bool SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
@@ -379,6 +379,9 @@ public:
 	int								GetHitboxSetCount( void );
 	void							DrawClientHitboxes( float duration = 0.0f, bool monocolor = false );
 
+#ifdef MAPBASE_MP
+	virtual
+#endif
 	C_BaseAnimating*				FindFollowedEntity();
 
 	virtual bool					IsActivityFinished( void ) { return m_bSequenceFinished; }

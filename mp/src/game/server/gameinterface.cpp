@@ -1083,7 +1083,7 @@ bool CServerGameDLL::LevelInit( const char *pMapName, char const *pMapEntities, 
 	//  to be parsed (the above code has loaded all point_template entities)
 	PrecachePointTemplates();
 
-#ifndef MAPBASE_MP
+#ifdef MAPBASE_MP
 	// load MOTD from file into stringtable
 	LoadMessageOfTheDay();
 #endif // !MAPBASE_MP

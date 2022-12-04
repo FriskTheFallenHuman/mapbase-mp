@@ -21,6 +21,9 @@
 #include "collisionutils.h"
 #include "c_team.h"
 #include "obstacle_pushaway.h"
+#ifdef MAPBASE_MP
+#include "mapbase/mapbase_viewmodel.h"
+#endif
 
 // Don't alias here
 #if defined( CHL2MP_Player )
@@ -1193,3 +1196,33 @@ bool C_HL2MP_Player::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 
 	return true;
 }
+
+#ifdef MAPBASE_MP
+void C_HL2MP_Player::OnSpawn()
+{
+	if ( IsLocalPlayer() )
+	{
+		// By default display hands.
+		// This hack has to be here because SetWeaponVisible isn't called on client when the player spawns.
+		C_MapbaseViewModel* pHands = static_cast<C_MapbaseViewModel*>( GetViewModel( VMINDEX_HANDS, false ) );
+		if ( pHands )
+			pHands->SetDrawVM( true );
+	}
+}
+
+void C_HL2MP_Player::TeamChange( int iNewTeam )
+{
+	BaseClass::TeamChange( iNewTeam );
+
+	// Execute a .cfg base on what team we have change
+	if ( iNewTeam == TEAM_COMBINE )
+	{
+		engine->ClientCmd_Unrestricted( "exec combine.cfg" );
+	}
+	else if ( iNewTeam == TEAM_REBELS )
+	{
+		engine->ClientCmd_Unrestricted( "exec rebels.cfg" );
+	}
+}
+
+#endif

@@ -46,6 +46,9 @@ public:
 	C_HL2MP_Player();
 	~C_HL2MP_Player( void );
 
+    void	OnSpawn();
+    virtual void TeamChange( int iNewTeam );
+
 	// Player avoidance
 	void AvoidPlayers( CUserCmd *pCmd );
 	float m_fNextThinkPushAway;
@@ -180,6 +183,11 @@ inline C_HL2MP_Player *ToHL2MPPlayer( CBaseEntity *pEntity )
 	return dynamic_cast<C_HL2MP_Player*>( pEntity );
 }
 
+// I have no idea why this was never added
+inline C_HL2MP_Player* ToHL2MPPlayer( CBasePlayer* pPlayer )
+{
+	return static_cast<C_HL2MP_Player*>( pPlayer );
+}
 
 class C_HL2MPRagdoll : public C_BaseAnimatingOverlay
 {

@@ -67,7 +67,11 @@ public:
 
 	virtual void			Spawn( void );
 
+#ifdef MAPBASE_MP
+	CBaseEntity *GetOwner( void ) const { return m_hOwner; };
+#else
 	virtual CBaseEntity *GetOwner( void ) { return m_hOwner; };
+#endif
 
 	virtual void			AddEffects( int nEffects );
 	virtual void			RemoveEffects( int nEffects );

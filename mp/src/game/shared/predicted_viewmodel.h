@@ -42,18 +42,29 @@ public:
 	}
 #endif
 
+#ifndef MAPBASE_MP
 private:
+#endif // MAPBASE_MP
 	
 #if defined( CLIENT_DLL )
+#ifdef MAPBASE_MP
+public:
+#endif // MAPBASE_MP
 
 	// This is used to lag the angles.
 	CInterpolatedVar<QAngle> m_LagAnglesHistory;
 	QAngle m_vLagAngles;
 	Vector	m_vPredictedOffset;
 
+#ifdef MAPBASE_MP
+private:
+#endif // MAPBASE_MP
 	CPredictedViewModel( const CPredictedViewModel & ); // not defined, not accessible
 
 #endif
+
+
+
 };
 
 #endif // PREDICTED_VIEWMODEL_H
