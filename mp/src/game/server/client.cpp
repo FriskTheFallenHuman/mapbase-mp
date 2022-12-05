@@ -1042,8 +1042,10 @@ void CC_Player_PhysSwap( void )
 
 		if ( pWeapon )
 		{
+#ifndef MAPBASE_MP
 			// Tell the client to stop selecting weapons
 			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+#endif
 
 			const char *strWeaponName = pWeapon->GetName();
 
@@ -1060,7 +1062,6 @@ void CC_Player_PhysSwap( void )
 	}
 }
 static ConCommand physswap("phys_swap", CC_Player_PhysSwap, "Automatically swaps the current weapon for the physcannon and back again." );
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Quickly switch to the bug bait, or back to previous item
@@ -1075,8 +1076,10 @@ void CC_Player_BugBaitSwap( void )
 
 		if ( pWeapon )
 		{
+#ifndef MAPBASE_MP
 			// Tell the client to stop selecting weapons
 			engine->ClientCommand( UTIL_GetCommandClient()->edict(), "cancelselect" );
+#endif
 
 			const char *strWeaponName = pWeapon->GetName();
 
@@ -1092,6 +1095,7 @@ void CC_Player_BugBaitSwap( void )
 	}
 }
 static ConCommand bugswap("bug_swap", CC_Player_BugBaitSwap, "Automatically swaps the current weapon for the bug bait and back again.", FCVAR_CHEAT );
+#endif
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
