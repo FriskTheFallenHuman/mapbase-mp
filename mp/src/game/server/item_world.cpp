@@ -489,9 +489,11 @@ CBaseEntity* CItem::Respawn( void )
 	UTIL_SetOrigin( this, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
 	SetAbsAngles( g_pGameRules->VecItemRespawnAngles( this ) );// set the angles.
 
+#ifndef MAPBASE_MP
 #if !defined( TF_DLL )
 	UTIL_DropToFloor( this, MASK_SOLID );
 #endif
+#endif // !MAPBASE_MP
 
 	RemoveAllDecals(); //remove any decals
 
@@ -513,6 +515,12 @@ void CItem::Materialize( void )
 #else
 		EmitSound( "Item.Materialize" );
 #endif
+
+#ifdef MAPBASE_MP
+		UTIL_SetOrigin( this, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
+		SetAbsAngles( g_pGameRules->VecItemRespawnAngles( this ) );// set the angles.
+#endif // MAPBASE_MP
+
 		RemoveEffects( EF_NODRAW );
 		DoMuzzleFlash();
 	}
