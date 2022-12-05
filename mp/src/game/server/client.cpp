@@ -1225,6 +1225,7 @@ void CC_God_f (void)
 	if ( !pPlayer )
 		return;
 
+#ifndef MAPBASE_MP
 #ifdef TF_DLL
    if ( TFGameRules() && ( TFGameRules()->IsPVEModeActive() == false ) )
    {
@@ -1234,6 +1235,7 @@ void CC_God_f (void)
 #else
 	if ( gpGlobals->deathmatch )
 		return;
+#endif
 #endif
 
 	pPlayer->ToggleFlag( FL_GODMODE );
@@ -1401,8 +1403,10 @@ void CC_Notarget_f (void)
 	if ( !pPlayer )
 		return;
 
+#ifndef MAPBASE_MP
 	if ( gpGlobals->deathmatch )
 		return;
+#endif
 
 	pPlayer->ToggleFlag( FL_NOTARGET );
 	if ( !(pPlayer->GetFlags() & FL_NOTARGET ) )
