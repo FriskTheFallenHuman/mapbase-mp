@@ -1076,7 +1076,7 @@ struct ClassInstanceData
 
 	void* instance;
 	ScriptClassDesc_t* desc;
-	CUtlString instanceId;
+	CUtlConstString instanceId;
 
 	// Indicates this game-created instance is a weak reference and can be destructed (Blixibon)
 	bool allowDestruct;
