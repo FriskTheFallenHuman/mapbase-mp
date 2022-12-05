@@ -1,9 +1,10 @@
-//========= Mapbase MP - https://github.com/mapbase-source/source-sdk-2013 =================
+//========= Mapbase MP - https://github.com/FriskTheFallenHuman/mapbase-mp ============//
 //
-// Purpose: General matching functions for things like wildcards and !=.
+// Purpose: This is used for the content mounting used in the Game
+// 
+//          This is the work of Chaos Team/Momentum Team all credits goes to them.
 //
-// $NoKeywords: $
-//=============================================================================
+//=============================================================================//
 
 #ifndef MAPBASE_MOUNTCONTENT_H
 #define MAPBASE_MOUNTCONTENT_H
