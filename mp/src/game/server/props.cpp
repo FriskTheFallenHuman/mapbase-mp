@@ -6810,6 +6810,10 @@ void CPhysicsPropRespawnable::Event_Killed( const CTakeDamageInfo &info )
 	PhysCleanupFrictionSounds( this );
 
 	VPhysicsDestroyObject();
+	
+#ifdef MAPBASE_MP
+	RemoveAllDecals();
+#endif
 
 	CBaseEntity::PhysicsRemoveTouchedList( this );
 	CBaseEntity::PhysicsRemoveGroundList( this );
