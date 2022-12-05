@@ -361,8 +361,8 @@ void CPhysCollisionEntryFluid::WriteToTextBuffer( CTextBuffer *pTextBuffer, int 
 	pTextBuffer->WriteText( "fluid {\n" );
 	pTextBuffer->WriteIntKey( "index", collideIndex );
 	pTextBuffer->WriteStringKey( "surfaceprop", m_pSurfaceProp );		// write out water material
-  	pTextBuffer->WriteFloatKey( "damping", m_damping );		// write out water damping
-  	pTextBuffer->WriteIntKey( "contents", m_contentsMask );		// write out water contents
+	pTextBuffer->WriteFloatKey( "damping", m_damping );		// write out water damping
+	pTextBuffer->WriteIntKey( "contents", m_contentsMask );		// write out water contents
 	float array[4];
 	m_surfaceNormal.CopyToArray( array );
 	array[3] = m_surfaceDist;
@@ -1054,7 +1054,7 @@ static void Flood_FindConnectedWaterVolumes_r( CUtlVector<node_t *> &list, node_
 	visited.Set( pLeaf->diskId );
 	list.AddToTail( pLeaf );
 
-	baseleaf.minZ = std::min( pLeaf->mins.z, baseleaf.minZ );
+	baseleaf.minZ = MIN( pLeaf->mins.z, baseleaf.minZ );
 
 	for (portal_t *p = pLeaf->portals ; p ; p = p->next[!oppositeNodeIndex])
 	{
@@ -1163,7 +1163,7 @@ void EmitWaterVolumesForBSP( dmodel_t *pModel, node_t *node )
 
 
 static void ConvertWaterModelToPhysCollide( CUtlVector<CPhysCollisionEntry *> &collisionList, int modelIndex, 
-										    float shrinkSize, float mergeTolerance )
+											float shrinkSize, float mergeTolerance )
 {
 	dmodel_t *pModel = dmodels + modelIndex;
 

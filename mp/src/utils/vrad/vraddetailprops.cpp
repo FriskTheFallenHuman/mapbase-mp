@@ -877,6 +877,8 @@ static void UnserializeSpriteDict( CUtlBuffer& buf )
 }
 
 #if defined ( MPI ) && defined ( _WIN32 )
+DetailObjectLump_t* g_pMPIDetailProps = NULL;
+
 void VMPI_ProcessDetailPropWU( int iThread, int iWorkUnit, MessageBuffer *pBuf )
 {
 	CUtlVector<DetailPropLightstylesLump_t> *pDetailPropLump = s_pDetailPropLightStyleLump;
@@ -1002,8 +1004,6 @@ void UnserializeDetailPropLighting( int lumpID, int lumpVersion, CUtlVector<Deta
 	int lightsize = lumpData.Size() * sizeof(DetailPropLightstylesLump_t);
 	buf.Get( lumpData.Base(), lightsize );
 }
-
-DetailObjectLump_t *g_pMPIDetailProps = NULL;
 
 //-----------------------------------------------------------------------------
 // Computes lighting for the detail props

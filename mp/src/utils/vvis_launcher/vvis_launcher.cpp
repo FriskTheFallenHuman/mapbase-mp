@@ -7,9 +7,9 @@
 //=============================================================================//
 // vvis_launcher.cpp : Defines the entry point for the console application.
 //
+#include "StdAfx.h"
 
 #ifdef _WIN32
-#include "StdAfx.h"
 #include <direct.h>
 #endif
 

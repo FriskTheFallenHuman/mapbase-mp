@@ -24,6 +24,7 @@
 
 #ifdef MAPBASE_VSCRIPT
 #include "vscript_vbsp.h"
+#pragma warning(disable:4477)
 #endif
 
 #ifdef VSVMFIO
@@ -38,7 +39,7 @@
 #define	RENDER_DIST_EPSILON	    0.01f
 
 #define BRUSH_CLIP_EPSILON	0.01f			// this should probably be the same
-                                            // as clip epsilon, but it is 0.1f and I
+											// as clip epsilon, but it is 0.1f and I
 											// currently don't know how that number was 
 											// come to (cab) - this is 0.01 of an inch
 											// for clipping brush solids
@@ -874,17 +875,17 @@ ChunkFileResult_t LoadDispDistancesKeyCallback(const char *szKey, const char *sz
 //-----------------------------------------------------------------------------
 ChunkFileResult_t LoadDispInfoCallback(CChunkFile *pFile, mapdispinfo_t **ppMapDispInfo )
 {
-    //
-    // check to see if we exceeded the maximum displacement info list size
-    //
-    if (nummapdispinfo > MAX_MAP_DISPINFO)
+	//
+	// check to see if we exceeded the maximum displacement info list size
+	//
+	if (nummapdispinfo > MAX_MAP_DISPINFO)
 	{
-        g_MapError.ReportError( "ParseDispInfoChunk: nummapdispinfo > MAX_MAP_DISPINFO" );
+		g_MapError.ReportError( "ParseDispInfoChunk: nummapdispinfo > MAX_MAP_DISPINFO" );
 	}
 
-    // get a pointer to the next available displacement info slot
-    mapdispinfo_t *pMapDispInfo = &mapdispinfo[nummapdispinfo];
-    nummapdispinfo++;
+	// get a pointer to the next available displacement info slot
+	mapdispinfo_t *pMapDispInfo = &mapdispinfo[nummapdispinfo];
+	nummapdispinfo++;
 
 	//
 	// Set up handlers for the subchunks that we are interested in.
@@ -960,7 +961,7 @@ ChunkFileResult_t LoadDispInfoKeyCallback(const char *szKey, const char *szValue
 #endif
 	else if (!stricmp(szKey, "mintess"))
 	{
-	    CChunkFile::ReadKeyValueInt(szValue, pMapDispInfo->minTess);
+		CChunkFile::ReadKeyValueInt(szValue, pMapDispInfo->minTess);
 	}
 	else if (!stricmp(szKey, "smooth"))
 	{
@@ -3045,7 +3046,7 @@ ChunkFileResult_t CMapFile::LoadSideCallback(CChunkFile *pFile, LoadSide_t *pSid
 				{
 					side->texinfo = TexinfoForBrushTexture (&mapplanes[planenum], &pSideInfo->td, vec3_origin);
 				}
-        
+		
 				// save the td off in case there is an origin brush and we
 				// have to recalculate the texinfo
 				if (nummapbrushsides == MAX_MAP_BRUSHSIDES)
@@ -3110,7 +3111,7 @@ ChunkFileResult_t LoadSideKeyCallback(const char *szKey, const char *szValue, Lo
 
 		// Find default flags and values for this material.
 		int mt = FindMiptex(pSideInfo->td.name);
-        pSideInfo->td.flags = textureref[mt].flags;
+		pSideInfo->td.flags = textureref[mt].flags;
 		pSideInfo->td.lightmapWorldUnitsPerLuxel = textureref[mt].lightmapWorldUnitsPerLuxel;
 
 		pSideInfo->pSide->contents = textureref[mt].contents;
@@ -3592,120 +3593,120 @@ void CMapFile::TestExpandBrushes (void)
 //-----------------------------------------------------------------------------
 mapdispinfo_t *ParseDispInfoChunk( void )
 {
-    int             i, j;
-    int             vertCount;
-    mapdispinfo_t   *pMapDispInfo;
+	int             i, j;
+	int             vertCount;
+	mapdispinfo_t   *pMapDispInfo;
 
-    //
-    // check to see if we exceeded the maximum displacement info list size
-    //
-    if( nummapdispinfo > MAX_MAP_DISPINFO )
-        g_MapError.ReportError( "ParseDispInfoChunk: nummapdispinfo > MAX_MAP_DISPINFO");
+	//
+	// check to see if we exceeded the maximum displacement info list size
+	//
+	if( nummapdispinfo > MAX_MAP_DISPINFO )
+		g_MapError.ReportError( "ParseDispInfoChunk: nummapdispinfo > MAX_MAP_DISPINFO");
 
-    // get a pointer to the next available displacement info slot
-    pMapDispInfo = &mapdispinfo[nummapdispinfo];
-    nummapdispinfo++;
+	// get a pointer to the next available displacement info slot
+	pMapDispInfo = &mapdispinfo[nummapdispinfo];
+	nummapdispinfo++;
 
-    //
-    // get the chunk opener - "{"
-    //
-    GetToken( false );
-    if( strcmp( token, "{" ) )
-        g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - {" );
+	//
+	// get the chunk opener - "{"
+	//
+	GetToken( false );
+	if( strcmp( token, "{" ) )
+		g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - {" );
 
-    //
-    //
-    // get the displacement info attribs
-    //
-    //
+	//
+	//
+	// get the displacement info attribs
+	//
+	//
 
-    // power
-    GetToken( true );
-    pMapDispInfo->power = atoi( token );
+	// power
+	GetToken( true );
+	pMapDispInfo->power = atoi( token );
 
-    // u and v mapping axes
-    for( i = 0; i < 2; i++ )
-    {
-        GetToken( false );
-        if( strcmp( token, "[" ) )
-            g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - [" );
+	// u and v mapping axes
+	for( i = 0; i < 2; i++ )
+	{
+		GetToken( false );
+		if( strcmp( token, "[" ) )
+			g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - [" );
 
-        for( j = 0; j < 3; j++ )
-        {
-            GetToken( false );
+		for( j = 0; j < 3; j++ )
+		{
+			GetToken( false );
 
-            if( i == 0 )
-            {
-                pMapDispInfo->uAxis[j] = atof( token );
-            }
-            else
-            {
-                pMapDispInfo->vAxis[j] = atof( token );
-            }
-        }
+			if( i == 0 )
+			{
+				pMapDispInfo->uAxis[j] = atof( token );
+			}
+			else
+			{
+				pMapDispInfo->vAxis[j] = atof( token );
+			}
+		}
 
-        GetToken( false );
-        if( strcmp( token, "]" ) )
-            g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - ]" );
-    }
+		GetToken( false );
+		if( strcmp( token, "]" ) )
+			g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - ]" );
+	}
 
-    // max displacement value
-   	if( g_nMapFileVersion < 350 )
+	// max displacement value
+	if( g_nMapFileVersion < 350 )
 	{
 		GetToken( false );
 		pMapDispInfo->maxDispDist = atof( token );
 	}
 
-    // minimum tesselation value
-    GetToken( false );
-    pMapDispInfo->minTess = atoi( token );
+	// minimum tesselation value
+	GetToken( false );
+	pMapDispInfo->minTess = atoi( token );
 
-    // light smoothing angle
-    GetToken( false );
-    pMapDispInfo->smoothingAngle = atof( token );
+	// light smoothing angle
+	GetToken( false );
+	pMapDispInfo->smoothingAngle = atof( token );
 
-    //
-    // get the displacement info displacement normals
-    //
-    GetToken( true );
-    pMapDispInfo->vectorDisps[0][0] = atof( token );
-    GetToken( false );
-    pMapDispInfo->vectorDisps[0][1] = atof( token );
-    GetToken( false );
-    pMapDispInfo->vectorDisps[0][2] = atof( token );
+	//
+	// get the displacement info displacement normals
+	//
+	GetToken( true );
+	pMapDispInfo->vectorDisps[0][0] = atof( token );
+	GetToken( false );
+	pMapDispInfo->vectorDisps[0][1] = atof( token );
+	GetToken( false );
+	pMapDispInfo->vectorDisps[0][2] = atof( token );
 
-    vertCount = ( ( ( 1 << pMapDispInfo->power ) + 1 ) * ( ( 1 << pMapDispInfo->power ) + 1 ) );
-    for( i = 1; i < vertCount; i++ )
-    {
-        GetToken( false );
-        pMapDispInfo->vectorDisps[i][0] = atof( token );
-        GetToken( false );
-        pMapDispInfo->vectorDisps[i][1] = atof( token );
-        GetToken( false );
-        pMapDispInfo->vectorDisps[i][2] = atof( token );
-    }
+	vertCount = ( ( ( 1 << pMapDispInfo->power ) + 1 ) * ( ( 1 << pMapDispInfo->power ) + 1 ) );
+	for( i = 1; i < vertCount; i++ )
+	{
+		GetToken( false );
+		pMapDispInfo->vectorDisps[i][0] = atof( token );
+		GetToken( false );
+		pMapDispInfo->vectorDisps[i][1] = atof( token );
+		GetToken( false );
+		pMapDispInfo->vectorDisps[i][2] = atof( token );
+	}
 
-    //
-    // get the displacement info displacement values
-    //
-    GetToken( true );
-    pMapDispInfo->dispDists[0] = atof( token );
+	//
+	// get the displacement info displacement values
+	//
+	GetToken( true );
+	pMapDispInfo->dispDists[0] = atof( token );
 
-    for( i = 1; i < vertCount; i++ )
-    {
-        GetToken( false );
-        pMapDispInfo->dispDists[i] = atof( token );
-    }
+	for( i = 1; i < vertCount; i++ )
+	{
+		GetToken( false );
+		pMapDispInfo->dispDists[i] = atof( token );
+	}
 
-    //
-    // get the chunk closer - "}"
-    //
-    GetToken( true );
-    if( strcmp( token, "}" ) )
-        g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - }" );
-    
-    // return the index of the displacement info slot
-    return pMapDispInfo;
+	//
+	// get the chunk closer - "}"
+	//
+	GetToken( true );
+	if( strcmp( token, "}" ) )
+		g_MapError.ReportError( "ParseDispInfoChunk: Illegal Chunk! - }" );
+	
+	// return the index of the displacement info slot
+	return pMapDispInfo;
 }
 
 

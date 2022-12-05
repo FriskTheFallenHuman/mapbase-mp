@@ -8,8 +8,10 @@
 // vrad_launcher.cpp : Defines the entry point for the console application.
 //
 
-#ifdef _WIN32
 #include "stdafx.h"
+
+#ifdef _WIN32
+
 #include <direct.h>
 #else
 #include <stdio.h>
