@@ -716,7 +716,11 @@ void CBreakableProp::StickAtPosition( const Vector &stickPosition, const Vector 
 
 	VPhysicsGetObject()->EnableMotion( false );
 	AddSpawnFlags( SF_PHYSPROP_ENABLE_ON_PHYSCANNON );
+#ifdef MAPBASE_MP
+	SetCollisionGroup( COLLISION_GROUP_INTERACTIVE );
+#else
 	SetCollisionGroup( COLLISION_GROUP_DEBRIS );
+#endif
 }
 
 //-----------------------------------------------------------------------------
