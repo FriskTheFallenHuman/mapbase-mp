@@ -3177,9 +3177,12 @@ void BuildFacelights (int iThread, int facenum)
 		}
 	}
 
-
-	BuildPatchLights( facenum );
-
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( !g_bUseMPI ) 
+#endif // MPI && _WIN32
+	{
+		BuildPatchLights( facenum );
+	}
 
 	if( g_bDumpPatches )
 	{

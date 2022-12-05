@@ -304,9 +304,16 @@ void CalcPortalVis (void)
 		return;
 	}
 
-
-
-	RunThreadsOnIndividual (g_numportals*2, true, PortalFlow);
+#if defined ( MPI ) && defined ( _WIN32 )
+    if ( g_bUseMPI ) 
+	{
+ 		RunMPIPortalFlow();
+	}
+	else 
+#endif // MPI && _WIN32
+	{
+		RunThreadsOnIndividual (g_numportals*2, true, PortalFlow);
+	}
 }
 
 
@@ -328,7 +335,16 @@ void CalcVis (void)
 {
 	int		i;
 
-	RunThreadsOnIndividual (g_numportals*2, true, BasePortalVis);
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( g_bUseMPI ) 
+	{
+		RunMPIBasePortalVis();
+	}
+	else 
+#endif // MPI && _WIN32
+	{
+	    RunThreadsOnIndividual (g_numportals*2, true, BasePortalVis);
+	}
 
 	SortPortals ();
 
@@ -403,11 +419,51 @@ void LoadPortals (char *name)
 
 	FILE *f;
 
+	// Open the portal file.
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( g_bUseMPI )
+	{
+		// If we're using MPI, copy off the file to a temporary first. This will download the file
+		// from the MPI master, then we get to use nice functions like fscanf on it.
+		char tempPath[MAX_PATH], tempFile[MAX_PATH];
+		if ( GetTempPath( sizeof( tempPath ), tempPath ) == 0 )
+		{
+			Error( "LoadPortals: GetTempPath failed.\n" );
+		}
 
+		if ( GetTempFileName( tempPath, "vvis_portal_", 0, tempFile ) == 0 )
+		{
+			Error( "LoadPortals: GetTempFileName failed.\n" );
+		}
+
+		// Read all the data from the network file into memory.
+		FileHandle_t hFile = g_pFileSystem->Open(name, "r");
+		if ( hFile == FILESYSTEM_INVALID_HANDLE )
+			Error( "LoadPortals( %s ): couldn't get file from master.\n", name );
+
+		CUtlVector<char> data;
+		data.SetSize( g_pFileSystem->Size( hFile ) );
+		g_pFileSystem->Read( data.Base(), data.Count(), hFile );
+		g_pFileSystem->Close( hFile );
+
+		// Dump it into a temp file.
+		f = fopen( tempFile, "wt" );
+		fwrite( data.Base(), 1, data.Count(), f );
+		fclose( f );
+
+		// Open the temp file up.
+		f = fopen( tempFile, "rSTD" ); // read only, sequential, temporary, delete on close
+	}
+	else
+	{
+		f = fopen( name, "r" );
+	}
+#else
 	f = fopen( name, "r" );
 
 	if ( !f )
 		Error ("LoadPortals: couldn't read %s\n",name);
+#endif // MPI && _WIN32
 
 	if (fscanf (f,"%79s\n%i\n%i\n",magic, &portalclusters, &g_numportals) != 3)
 		Error ("LoadPortals %s: failed to read header", name);
@@ -928,7 +984,11 @@ int ParseCommandLine( int argc, char **argv )
 		else if ( !Q_strncasecmp( argv[i], "-mpi", 4 ) || !Q_strncasecmp( argv[i-1], "-mpi", 4 ) )
 		{
 			if ( stricmp( argv[i], "-mpi" ) == 0 )
+#if defined ( MPI ) && defined ( _WIN32 )
 				Error("VMPI is not supported on this platform\n");
+#else
+				g_bUseMPI = true;
+#endif // MPI && _WIN32
 		
 			// Any other args that start with -mpi are ok too.
 			if ( i == argc - 1 )
@@ -1063,10 +1123,15 @@ int RunVVis( int argc, char **argv )
 
 	start = Plat_FloatTime();
 
-	// Setup the logfile.
-	char logFile[512];
-	_snprintf( logFile, sizeof(logFile), "%s.log", source );
-	SetSpewFunctionLogFile( logFile );
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( !g_bUseMPI )
+#endif // MPI && _WIN32
+	{
+		// Setup the logfile.
+		char logFile[512];
+		_snprintf( logFile, sizeof(logFile), "%s.log", source );
+		SetSpewFunctionLogFile( logFile );
+	}
 
 	// Run in the background?
 	if( g_bLowPriority )
@@ -1137,6 +1202,12 @@ int RunVVis( int argc, char **argv )
 		{
 			Error("Invalid cluster trace: %d to %d, valid range is 0 to %d\n", g_TraceClusterStart, g_TraceClusterStop, portalclusters-1 );
 		}
+#if defined ( MPI ) && defined ( _WIN32 )
+		if ( g_bUseMPI )
+		{
+			Warning( "Can't compile trace in MPI mode\n" );
+		}
+#endif // MPI && _WIN32
 		CalcVisTrace ();
 		WritePortalTrace(source);
 	}
@@ -1166,9 +1237,15 @@ int main (int argc, char **argv)
 	FileSystem_Init(nullptr, 0, FSInitType_t::FS_INIT_COMPATIBILITY_MODE);
 	MathLib_Init( 2.2f, 2.2f, 0.0f, 1.0f, false, false, false, false );
 	InstallAllocationFunctions();
-	InstallSpewFunction();
+#if defined ( MPI ) && defined ( _WIN32 )
+	VVIS_SetupMPI( argc, argv );
 
-	SetupDefaultToolsMinidumpHandler();
+	// Install an exception handler.
+	if ( g_bUseMPI && !g_bMPIMaster )
+		SetupToolsMinidumpHandler( VMPI_ExceptionFilter );
+	else
+#endif // MPI && _WIN32
+		SetupDefaultToolsMinidumpHandler();
 
 	return RunVVis( argc, argv );
 }

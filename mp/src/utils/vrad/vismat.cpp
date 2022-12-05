@@ -467,7 +467,16 @@ BuildVisMatrix
 */
 void BuildVisMatrix (void)
 {
-	RunThreadsOn (dvis->numclusters, true, BuildVisLeafs);
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( g_bUseMPI )
+	{
+		RunMPIBuildVisLeafs();
+	}
+	else
+#endif // MPI && _WIN32
+	{
+		RunThreadsOn ( dvis->numclusters, true, BuildVisLeafs );
+	}
 }
 
 void FreeVisMatrix (void)

@@ -2019,8 +2019,18 @@ bool RadWorld_Go()
 		BuildFacesVisibleToLights( true );
 	}
 
-	RunThreadsOnIndividual (numfaces, true, BuildFacelights);
-
+	// build initial facelights
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( g_bUseMPI )
+	{
+		// RunThreadsOnIndividual (numfaces, true, BuildFacelights);
+		RunMPIBuildFacelights();
+	}
+	else
+#endif // MPI && _WIN32
+	{
+		RunThreadsOnIndividual (numfaces, true, BuildFacelights );
+	}
 
 	// Was the process interrupted?
 	if( g_pIncremental && (g_iCurFace != numfaces) )
@@ -2072,8 +2082,17 @@ bool RadWorld_Go()
 		StaticDispMgr()->EndTimer();
 
 		// blend bounced light into direct light and save
-		RunThreadsOnIndividual (numfaces, true, FinalLightFace);
-			
+#if defined ( MPI ) && defined ( _WIN32 )
+		VMPI_SetCurrentStage( "FinalLightFace" );
+		if ( !g_bUseMPI || g_bMPIMaster )
+#endif // MPI && _WIN32
+			RunThreadsOnIndividual ( numfaces, true, FinalLightFace );
+		
+#if defined ( MPI ) && defined ( _WIN32 )
+		// Distribute the lighting data to workers.
+		VMPI_DistributeLightData();
+#endif // MPI && _WIN32
+
 		Msg("FinalLightFace Done\n"); fflush(stdout);
 	}
 
@@ -2086,7 +2105,7 @@ FileHandle_t pFileSamples[4][4];
 
 void LoadPhysicsDLL( void )
 {
-	PhysicsDLLPath( "VPHYSICS.DLL" );
+	PhysicsDLLPath( "vphysics" DLL_EXT_STRING );
 }
 
 
@@ -2127,9 +2146,11 @@ void VRAD_LoadBSP( char const *pFilename )
 	if ( g_bDumpPatches )
 		InitDumpPatchesFiles();
 
+#if defined ( MPI ) && defined ( _WIN32 )
 	// This part is just for VMPI. VMPI's file system needs the basedir in front of all filenames,
 	// so we prepend qdir here.
-	//strcpy( source, ExpandPath( source ) );
+	strcpy( source, ExpandPath( source ) );
+#endif // MPI && _WIN32
 
 	// Setup the logfile.
 	char logFile[512];
@@ -2170,13 +2191,31 @@ void VRAD_LoadBSP( char const *pFilename )
 	Q_DefaultExtension(incrementfile, ".r0", sizeof(incrementfile));
 	Q_DefaultExtension(source, ".bsp", sizeof( source ));
 
+#if defined ( MPI ) && defined ( _WIN32 )
+	Msg( "Loading %s\n", source );
+	VMPI_SetCurrentStage( "LoadBSPFile" );
+	LoadBSPFile (source);
+#else
 	//strcpy(source, ExpandPath(source));
 	Msg( "Loading %s\n", pFilename );
 	LoadBSPFile (pFilename);
+#endif // MPI && _WIN32
 
-	// Non-MPI
-	g_pFullFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
-	g_pFullFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
+	// Add this bsp to our search path so embedded resources can be found
+#if defined ( MPI ) && defined ( _WIN32 )
+	if ( g_bUseMPI && g_bMPIMaster )
+	{
+		// MPI Master, MPI workers don't need to do anything
+		g_pOriginalPassThruFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
+		g_pOriginalPassThruFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
+	}
+	else if ( !g_bUseMPI )
+#endif // MPI && _WIN32
+	{
+		// Non-MPI
+		g_pFullFileSystem->AddSearchPath(source, "GAME", PATH_ADD_TO_HEAD);
+		g_pFullFileSystem->AddSearchPath(source, "MOD", PATH_ADD_TO_HEAD);
+	}
 
 	// now, set whether or not static prop lighting is present
 	if (g_bStaticPropLighting)
@@ -2303,6 +2342,9 @@ void VRAD_Finish()
 	}
 
 	Msg( "Writing %s\n", source );
+#if defined ( MPI ) && defined ( _WIN32 )
+	VMPI_SetCurrentStage( "WriteBSPFile" );
+#endif // MPI && _WIN32
 	WriteBSPFile(source);
 
 	if ( g_bDumpPatches )
@@ -2737,7 +2779,11 @@ int ParseCommandLine( int argc, char **argv, bool *onlydetail )
 		else if ( !Q_strncasecmp( argv[i], "-mpi", 4 ) || !Q_strncasecmp( argv[i-1], "-mpi", 4 ) )
 		{
 			if ( stricmp( argv[i], "-mpi" ) == 0 )
+#if defined ( MPI ) && defined ( _WIN32 )
+				g_bUseMPI = true;
+#else
 				Error("VMPI is not supported with this build\n");
+#endif // MPI && _WIN32
 		
 			// Any other args that start with -mpi are ok too.
 			if ( i == argc - 1 && V_stricmp( argv[i], "-mpi_ListParams" ) != 0 )
@@ -2869,13 +2915,18 @@ int RunVRAD( int argc, char **argv )
 {
 #if defined(_MSC_VER) && ( _MSC_VER >= 1310 )
 	Msg("Valve Software - vrad.exe SSE (" __DATE__ ")\n" );
-#else
+#elif POSIX
+	Msg("Valve Software - vrad (" __DATE__ ")\n" );
+else
 	Msg("Valve Software - vrad.exe (" __DATE__ ")\n" );
 #endif
 
 	Msg("\n      Valve Radiosity Simulator     \n");
 
+	// This makes -verbose command line useles, let the user setup this!
+#ifndef MAPBASE
 	verbose = true;  // Originally FALSE
+#endif // !MAPBASE
 
 	bool onlydetail;
 	int i = ParseCommandLine( argc, argv, &onlydetail );
@@ -2902,6 +2953,10 @@ int RunVRAD( int argc, char **argv )
 
 	VRAD_Finish();
 
+#if defined ( MPI ) && defined ( _WIN32 )
+	VMPI_SetCurrentStage( "master done" );
+#endif // MPI && _WIN32
+
 	DeleteCmdLine( argc, argv );
 	CmdLib_Cleanup();
 	return 0;
@@ -2914,9 +2969,25 @@ int VRAD_Main(int argc, char **argv)
 
 	VRAD_Init();
 
+#if defined ( MPI ) && defined ( _WIN32 )
+	// This must come first.
+	VRAD_SetupMPI( argc, argv );
+
+#if !defined( _DEBUG )
+	if ( g_bUseMPI && !g_bMPIMaster )
+	{
+		SetupToolsMinidumpHandler( VMPI_ExceptionFilter );
+	}
+	else
+#endif
+	{
+		LoadCmdLineFromFile( argc, argv, source, "vrad" ); // Don't do this if we're a VMPI worker..
+		SetupDefaultToolsMinidumpHandler();
+	}
+#else
 	LoadCmdLineFromFile( argc, argv, source, "vrad" ); // Don't do this if we're a VMPI worker..
 	SetupDefaultToolsMinidumpHandler();
-
+#endif // MPI && _WIN32
 	
 	return RunVRAD( argc, argv );
 }

@@ -565,6 +565,40 @@ void ComputeAmbientForLeaf( int iThread, int leafID, CUtlVector<ambientsample_t>
 	CompressAmbientSampleList( list );
 }
 
+#if defined ( MPI ) && defined ( _WIN32 )
+void VMPI_ProcessLeafAmbient( int iThread, uint64 iLeaf, MessageBuffer *pBuf )
+{
+	CUtlVector<ambientsample_t> list;
+	ComputeAmbientForLeaf(iThread, (int)iLeaf, list);
+
+	VMPI_SetCurrentStage( "EncodeLeafAmbientResults" );
+
+	// Encode the results.
+	int nSamples = list.Count();
+	pBuf->write( &nSamples, sizeof( nSamples ) );
+	if ( nSamples )
+	{
+		pBuf->write( list.Base(), list.Count() * sizeof( ambientsample_t ) );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Called on the master when a worker finishes processing a static prop.
+//-----------------------------------------------------------------------------
+void VMPI_ReceiveLeafAmbientResults( uint64 leafID, MessageBuffer *pBuf, int iWorker )
+{
+	// Decode the results.
+	int nSamples;
+	pBuf->read( &nSamples, sizeof( nSamples ) );
+
+	g_LeafAmbientSamples[leafID].SetCount( nSamples );
+	if ( nSamples )
+	{
+		pBuf->read(g_LeafAmbientSamples[leafID].Base(), nSamples * sizeof(ambientsample_t) );
+	}
+}
+#endif // MPI && _WIN32
+
 static void ThreadComputeLeafAmbient( int iThread, void *pUserData )
 {
 	CUtlVector<ambientsample_t> list;
