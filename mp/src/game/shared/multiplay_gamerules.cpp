@@ -341,6 +341,7 @@ bool CMultiplayRules::Init()
 	// load all default values
 		BaseClass::RefreshSkillData( forceUpdate );
 
+#ifndef MAPBASE_MP
 	// override some values for multiplay.
 
 		// suitcharger
@@ -357,6 +358,7 @@ ConVarRef suitcharger( "sk_suitcharger" );
 // HPE_END
 //=============================================================================
 #endif
+#endif // !MAPBASE_MP
 	}
 
 
