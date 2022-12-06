@@ -948,7 +948,7 @@ void CBaseHeadcrab::LeapTouch( CBaseEntity *pOther )
 		// Don't hit if back on ground
 		if ( !( GetFlags() & FL_ONGROUND ) )
 		{
-	 		if ( pOther->m_takedamage != DAMAGE_NO )
+			if ( pOther->m_takedamage != DAMAGE_NO )
 			{
 				BiteSound();
 				TouchDamage( pOther );
@@ -2058,9 +2058,13 @@ void CBaseHeadcrab::TraceAttack( const CTakeDamageInfo &info, const Vector &vecD
 			newInfo.SetDamageForce( info.GetDamageForce() * 3000.0f );
 		}
 
-		PainSound( newInfo );
-		SetGroundEntity( NULL );
-		ApplyAbsVelocityImpulse( puntDir );
+		CBaseEntity *attacker = info.GetAttacker();
+		if ( attacker && attacker->GetGroundEntity() != this )
+		{
+			PainSound( newInfo );
+			SetGroundEntity( NULL );
+			ApplyAbsVelocityImpulse( puntDir );
+		}
 	}
 
 	BaseClass::TraceAttack( newInfo, vecDir, ptr, pAccumulator );
@@ -2086,7 +2090,7 @@ void CBaseHeadcrab::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, 
 	}
 #endif// HL2_EPISODIC
 
- 	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
+	BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
 	if( !bWasOnFire )
 	{
