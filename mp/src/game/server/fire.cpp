@@ -555,8 +555,8 @@ BEGIN_DATADESC( CFire )
 	DEFINE_KEYFIELD( m_flFireSize,	FIELD_FLOAT, "firesize" ),
 
 	DEFINE_KEYFIELD( m_flHeatLevel,	FIELD_FLOAT,	"ignitionpoint" ),
- 	DEFINE_FIELD( m_flHeatAbsorb, FIELD_FLOAT ),
- 	DEFINE_KEYFIELD( m_flDamageScale,FIELD_FLOAT,	"damagescale" ),
+	DEFINE_FIELD( m_flHeatAbsorb, FIELD_FLOAT ),
+	DEFINE_KEYFIELD( m_flDamageScale,FIELD_FLOAT,	"damagescale" ),
 
 	DEFINE_FIELD( m_flMaxHeat, FIELD_FLOAT ),
 	//DEFINE_FIELD( m_flLastHeatLevel,	FIELD_FLOAT  ),
@@ -1006,51 +1006,54 @@ void CFire::Update( float simTime )
 	{
 		CBaseEntity *pOther = pNearby[i];
 
-		if ( pOther == this )
+		if ( pOther )
 		{
-			continue;
-		}
+			if ( pOther == this )
+			{
+				continue;
+			}
 #ifdef MAPBASE
-		else if ( EntIsClass( pOther, gm_isz_class_EnvFire ) )
+			else if ( EntIsClass( pOther, gm_isz_class_EnvFire ) )
 #else
-		else if ( FClassnameIs( pOther, "env_fire" ) )
+			else if ( FClassnameIs( pOther, "env_fire" ) )
 #endif
-		{
-			if ( fireCount < ARRAYSIZE(pFires) )
 			{
-				pFires[fireCount] = (CFire *)pOther;
-				fireCount++;
-			}
-			continue;
-		}
-		else if ( pOther->m_takedamage == DAMAGE_NO )
-		{
-			pNearby[i] = NULL;
-		}
-		else if ( damage )
-		{
-			bool bDoDamage;
-
-			if ( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 && !pOther->IsPlayer() ) // if set to 1.0, optimizer will remove this code
-			{
-				Vector otherMins, otherMaxs;
-				pOther->CollisionProp()->WorldSpaceAABB( &otherMins, &otherMaxs );
-				bDoDamage = IsBoxIntersectingBox( otherMins, otherMaxs, 
-												  fireEntityDamageMins, fireEntityDamageMaxs );
-
-			}
-			else
-				bDoDamage = true;
-
-			if ( bDoDamage )
-			{
-				// Make sure can actually see entity (don't damage through walls)
-				trace_t tr;
-				UTIL_TraceLine( this->WorldSpaceCenter(), pOther->WorldSpaceCenter(), MASK_FIRE_SOLID, pOther, COLLISION_GROUP_NONE, &tr );
-
-				if (tr.fraction == 1.0 && !tr.startsolid)
+				if ( fireCount < ARRAYSIZE( pFires ) )
 				{
-					pOther->TakeDamage( CTakeDamageInfo( this, this, outputDamage, damageFlags ) );
+					pFires[fireCount] = (CFire *)pOther;
+					fireCount++;
+				}
+				continue;
+			}
+			else if ( pOther->m_takedamage == DAMAGE_NO )
+			{
+				pNearby[i] = NULL;
+			}
+			else if ( damage )
+			{
+				bool bDoDamage;
+
+				if ( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 && !pOther->IsPlayer() ) // if set to 1.0, optimizer will remove this code
+				{
+					Vector otherMins, otherMaxs;
+					pOther->CollisionProp()->WorldSpaceAABB( &otherMins, &otherMaxs );
+					bDoDamage = IsBoxIntersectingBox( otherMins, otherMaxs,
+						fireEntityDamageMins, fireEntityDamageMaxs );
+
+				}
+				else
+					bDoDamage = true;
+
+				if ( bDoDamage )
+				{
+					// Make sure can actually see entity (don't damage through walls)
+					trace_t tr;
+					UTIL_TraceLine( this->WorldSpaceCenter(), pOther->WorldSpaceCenter(), MASK_FIRE_SOLID, pOther, COLLISION_GROUP_NONE, &tr );
+
+					if ( tr.fraction == 1.0 && !tr.startsolid )
+					{
+						pOther->TakeDamage( CTakeDamageInfo( this, this, outputDamage, damageFlags ) );
+					}
 				}
 			}
 		}
