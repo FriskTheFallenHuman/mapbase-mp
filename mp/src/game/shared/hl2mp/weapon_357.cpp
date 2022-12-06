@@ -294,6 +294,8 @@ void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 				// Emit six spent shells
 				for ( int i = 0; i < 6; i++ )
 				{
+					IPredictionSystem::SuppressHostEvents( NULL );
+
 					data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector( -4, 4 );
 					data.m_vAngles = QAngle( 90, random->RandomInt( 0, 360 ), 0 );
 					data.m_nEntIndex = entindex();
