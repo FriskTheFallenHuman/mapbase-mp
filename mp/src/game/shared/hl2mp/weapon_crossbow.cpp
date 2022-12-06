@@ -1198,6 +1198,8 @@ void CWeaponCrossbow::SetSkin( int skinNum )
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::DoLoadEffect( void )
 {
+	IPredictionSystem::SuppressHostEvents(NULL);
+
 	SetSkin( BOLT_SKIN_GLOW );
 
 	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
@@ -1279,6 +1281,8 @@ void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 #ifndef CLIENT_DLL
 	case CHARGER_STATE_START_CHARGE:
 		{
+			IPredictionSystem::SuppressHostEvents( NULL );
+
 			if ( m_hChargerSprite == NULL )
 				break;
 			

@@ -226,9 +226,7 @@ bool CBaseHL2MPBludgeonWeapon::ImpactWater( const Vector &start, const Vector &e
 {
 	//FIXME: This doesn't handle the case of trying to splash while being underwater, but that's not going to look good
 	//		 right now anyway...
-	
-	IPredictionSystem::SuppressHostEvents( NULL );
-	
+		
 	// We must start outside the water
 	if ( UTIL_PointContents( start ) & (CONTENTS_WATER|CONTENTS_SLIME))
 		return false;
@@ -334,7 +332,10 @@ void CBaseHL2MPBludgeonWeapon::Swing( int bIsSecondary )
 		}
 	}
 
+#ifndef MAPBASE
+	//Play swing sound
 	WeaponSound( SINGLE );
+#endif
 
 	// -------------------------
 	//	Miss
@@ -345,12 +346,29 @@ void CBaseHL2MPBludgeonWeapon::Swing( int bIsSecondary )
 
 		// We want to test the first swing again
 		Vector testEnd = swingStart + forward * GetRange();
+
+#ifdef MAPBASE
+		// Sound has been moved here since we're using the other melee sounds now
+		WeaponSound( SINGLE );
+#endif
 		
 		// See if we happened to hit water
 		ImpactWater( swingStart, testEnd );
+
+		IPredictionSystem::SuppressHostEvents( NULL );
 	}
 	else
 	{
+#ifdef MAPBASE
+		// Other melee sounds
+		if ( traceHit.m_pEnt && traceHit.m_pEnt->IsWorld() )
+			WeaponSound( MELEE_HIT_WORLD );
+		else if (traceHit.m_pEnt && !traceHit.m_pEnt->PassesDamageFilter( triggerInfo ) )
+			WeaponSound( MELEE_MISS );
+		else
+			WeaponSound(MELEE_HIT);
+#endif
+
 		Hit( traceHit, nHitActivity );
 	}
 

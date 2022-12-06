@@ -2072,7 +2072,10 @@ void CWeaponRPG::StartGuiding( void )
 	m_bGuiding = true;
 
 #ifndef CLIENT_DLL
-	WeaponSound(SPECIAL1);
+
+	IPredictionSystem::SuppressHostEvents(NULL );
+
+	WeaponSound( SPECIAL1 );
 
 	CreateLaserPointer();
 #endif
@@ -2087,6 +2090,8 @@ void CWeaponRPG::StopGuiding( void )
 	m_bGuiding = false;
 
 #ifndef CLIENT_DLL
+
+	IPredictionSystem::SuppressHostEvents(NULL );
 
 	WeaponSound( SPECIAL2 );
 

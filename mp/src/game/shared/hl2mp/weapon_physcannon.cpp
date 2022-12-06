@@ -1961,6 +1961,7 @@ void CWeaponPhysCannon::SecondaryAttack( void )
 		switch ( result )
 		{
 		case OBJECT_FOUND:
+			IPredictionSystem::SuppressHostEvents( NULL );
 			WeaponSound( SPECIAL1 );
 			SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 			m_flNextSecondaryAttack = gpGlobals->curtime + 0.5f;
@@ -2154,6 +2155,7 @@ CWeaponPhysCannon::FindObjectResult_t CWeaponPhysCannon::FindObject( void )
 		if ( !m_flLastDenySoundPlayed )
 		{
 			m_flLastDenySoundPlayed = true;
+			IPredictionSystem::SuppressHostEvents( NULL );
 			WeaponSound( SPECIAL3 );
 		}
 
@@ -2422,6 +2424,8 @@ void CWeaponPhysCannon::DetachObject( bool playSound, bool wasLaunched )
 	
 	if ( playSound )
 	{
+		IPredictionSystem::SuppressHostEvents( NULL );
+
 		//Play the detach sound
 		WeaponSound( MELEE_MISS );
 	}
@@ -2828,6 +2832,8 @@ void CWeaponPhysCannon::CloseElements( void )
 {
 	if ( m_bOpen == false )
 		return;
+
+	IPredictionSystem::SuppressHostEvents( NULL );
 
 	WeaponSound( MELEE_HIT );
 
