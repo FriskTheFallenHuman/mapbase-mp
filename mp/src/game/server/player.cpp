@@ -2140,7 +2140,10 @@ void CBasePlayer::WaterMove()
 		
 		if (m_AirFinished < gpGlobals->curtime)
 		{
-			EmitSound( "Player.DrownStart" );
+			if (GetWaterLevel() == WL_Waist)
+			{
+				EmitSound( "Player.DrownStart" );
+			}
 		}
 
 		m_AirFinished = gpGlobals->curtime + AIRTIME;
