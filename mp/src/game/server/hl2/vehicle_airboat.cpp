@@ -747,6 +747,9 @@ void CPropAirboat::ExitVehicle( int nRole )
 	controller.SoundChangeVolume( m_pWaterStoppedSound, 0.0, 0.0 );
 	controller.SoundChangeVolume( m_pWaterFastSound, 0.0, 0.0 );
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.0 );
+
+	if ( m_bHeadlightIsOn )
+		HeadlightTurnOff();
 }
 
 
