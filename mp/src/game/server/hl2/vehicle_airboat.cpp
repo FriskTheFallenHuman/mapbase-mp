@@ -1198,6 +1198,13 @@ void CPropAirboat::UpdatePropeller()
 	#define SPIN_RATE_MED	0.2
 	#define SPIN_RATE_HIGH	0.6
 
+	if ( !( m_hPlayer ) )
+	{
+		m_flSpinRate = 0;
+		SetBodygroup( AIRBOAT_BODYGROUP_PROP, true );
+		SetBodygroup( AIRBOAT_BODYGROUP_BLUR, false );
+	}
+
 	// Determine target spin rate from throttle.
 	float flTargetSpinRate = m_flThrottle;
 	if ((flTargetSpinRate == 0) && (m_hPlayer))
@@ -1212,6 +1219,15 @@ void CPropAirboat::UpdatePropeller()
 	// Determine new spin rate,
 	if (m_flSpinRate < flTargetSpinRate)
 	{
+		if ( m_flSpinRate >= 0.2f )
+		{
+			m_flSpinRate -= gpGlobals->frametime * 0.4;
+		}
+		else
+		{
+			m_flSpinRate += gpGlobals->frametime * 0.4;
+		}
+
 		if (flTargetSpinRate > 0)
 		{
 			m_flSpinRate += gpGlobals->frametime * 1.0;
