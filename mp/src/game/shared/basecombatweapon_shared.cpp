@@ -794,6 +794,10 @@ void CBaseCombatWeapon::Drop( const Vector &vecVelocity )
 	SetRemoveable( true );
 	WeaponManager_AmmoMod( this );
 
+#ifdef MAPBASE
+	RemoveEffects( EF_NOSHADOW );
+#endif // MAPBASE
+
 	//If it was dropped then there's no need to respawn it.
 	AddSpawnFlags( SF_NORESPAWN );
 
@@ -1740,6 +1744,10 @@ bool CBaseCombatWeapon::Deploy( )
 	MDLCACHE_CRITICAL_SECTION();
 	bool bResult = DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), GetDrawActivity(), (char*)GetAnimPrefix() );
 
+#ifdef MAPBASE
+	RemoveEffects( EF_NOSHADOW );
+#endif // MAPBASE
+
 	// override pose parameters
 	PoseParameterOverride( false );
 
@@ -1786,6 +1794,10 @@ bool CBaseCombatWeapon::Holster( CBaseCombatWeapon *pSwitchingTo )
 			static_cast<CBasePlayer*>(pOwner)->SetAnimation( PLAYER_HOLSTER );
 #endif
 	}
+
+#ifdef MAPBASE
+	AddEffects( EF_NOSHADOW );
+#endif // MAPBASE
 
 	// If we don't have a holster anim, hide immediately to avoid timing issues
 	if ( !flSequenceDuration )
