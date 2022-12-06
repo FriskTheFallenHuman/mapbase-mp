@@ -216,7 +216,7 @@ const char *g_ppszRandomCombineModels[] =
 //	"models/player/combine/stalker.mdl", -- Fix me
 };
 
-#define MODEL_CHANGE_INTERVAL 5.0f
+#define MODEL_CHANGE_INTERVAL 0.1f
 #define TEAM_CHANGE_INTERVAL 5.0f
 
 #define HL2MPPLAYER_PHYSDAMAGE_SCALE 4.0f
@@ -392,8 +392,8 @@ void CHL2MP_Player::RemoveAllItems( bool removeSuit )
 	BaseClass::RemoveAllItems(removeSuit);
 
 #if defined MAPBASE_MP
-    if ( GetViewModel( VMINDEX_WEP ) )
-        GetViewModel()->AddEffects( EF_NODRAW );
+	if ( GetViewModel( VMINDEX_WEP ) )
+		GetViewModel()->AddEffects( EF_NODRAW );
 
 	if ( GetViewModel( VMINDEX_HANDS ) )
 		GetViewModel( VMINDEX_HANDS )->AddEffects( EF_NODRAW );
