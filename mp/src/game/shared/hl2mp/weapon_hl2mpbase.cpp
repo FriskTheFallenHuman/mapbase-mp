@@ -144,54 +144,54 @@ bool CWeaponHL2MPBase::Holster( CBaseCombatWeapon *pSwitchingTo )
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 {
-    CBaseViewModel* vm = nullptr;
+	CBaseViewModel* vm = nullptr;
 	CMapbaseViewModel* vmhands = nullptr;
 
-    CHL2MP_Player* pOwner = GetHL2MPPlayerOwner();
-    if ( pOwner )
-    {
-        vm = pOwner->GetViewModel( VMINDEX_WEP );
-        vmhands = static_cast<CMapbaseViewModel*>( pOwner->GetViewModel( VMINDEX_HANDS ) );
+	CHL2MP_Player* pOwner = GetHL2MPPlayerOwner();
+	if ( pOwner )
+	{
+		vm = pOwner->GetViewModel( VMINDEX_WEP );
+		vmhands = static_cast<CMapbaseViewModel*>( pOwner->GetViewModel( VMINDEX_HANDS ) );
 #ifndef CLIENT_DLL
-        Assert( vm == pOwner->GetViewModel( m_nViewModelIndex ) );
+		Assert( vm == pOwner->GetViewModel( m_nViewModelIndex ) );
 #endif
-    }
+	}
 
-    if ( visible )
-    {
-        RemoveEffects( EF_NODRAW );
+	if ( visible )
+	{
+		RemoveEffects( EF_NODRAW );
 
-        if ( vm )
+		if ( vm )
 			vm->RemoveEffects( EF_NODRAW );
 
-        if ( vmhands )
-        {
-            //if ( GetWpnData().m_bUsesHands )
-            {
-                vmhands->RemoveEffects( EF_NODRAW );
+		if ( vmhands )
+		{
+			//if ( GetWpnData().m_bUsesHands )
+			{
+				vmhands->RemoveEffects( EF_NODRAW );
 #ifdef CLIENT_DLL // Let client override this if they are using a custom viewmodel that doesn't use the new hands system.
-                vmhands->SetDrawVM( true );
+				vmhands->SetDrawVM( true );
 #endif
-            }
-            /*else
-            {
+			}
+			/*else
+			{
 #ifdef CLIENT_DLL
-                vmhands->SetDrawVM( false );
+				vmhands->SetDrawVM( false );
 #endif
-            }*/
+			}*/
 
-        }
-    }
-    else
-    {
-        AddEffects( EF_NODRAW );
+		}
+	}
+	else
+	{
+		AddEffects( EF_NODRAW );
 
-        if ( vm )
+		if ( vm )
 			vm->AddEffects( EF_NODRAW );
 
-        if ( vmhands )
+		if ( vmhands )
 			vmhands->AddEffects( EF_NODRAW );
-    }
+	}
 }
 #endif // MAPBASE_MP
 
@@ -283,9 +283,11 @@ void CWeaponHL2MPBase::Materialize( void )
 		}
 	}
 
+	SetOwnerEntity( NULL );
+
 	SetPickupTouch();
 
-	SetThink (NULL);
+	SetThink( NULL );
 }
 
 int CWeaponHL2MPBase::ObjectCaps()
