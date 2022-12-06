@@ -76,12 +76,12 @@ END_DATADESC()
 //------------------------------------------------------------------------------
 void CWindowPane::Spawn( void )
 {
-    Precache( );    
+	Precache( );    
   
 	SetSolid( SOLID_BBOX );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 	m_takedamage = DAMAGE_YES;
- 	
+	
 	SetCollisionGroup( COLLISION_GROUP_BREAKABLE_GLASS ); 
 
 	SetModel( "models/brokenglass_piece.mdl" );//set size and link into world.
@@ -361,17 +361,17 @@ int CBreakableSurface::OnTakeDamage( const CTakeDamageInfo &info )
 //------------------------------------------------------------------------------
 void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
 {
-    //=============================================================================
-    // HPE_BEGIN:
-    // [dwenger] Window break stat tracking
-    //=============================================================================
+	//=============================================================================
+	// HPE_BEGIN:
+	// [dwenger] Window break stat tracking
+	//=============================================================================
 
-    // Make sure this pane has not already been shattered
-    bool bWasBroken = m_bIsBroken;
+	// Make sure this pane has not already been shattered
+	bool bWasBroken = m_bIsBroken;
 
-    //=============================================================================
-    // HPE_END
-    //=============================================================================
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
 
 	// Decrease health
 	m_iHealth -= info.GetDamage();
@@ -394,20 +394,20 @@ void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &
 		
 		if ( ShatterPane(nWidth, nHeight,vecDir*500,ptr->endpos) )
 		{
-            //=============================================================================
-            // HPE_BEGIN:
-            // [dwenger] Window break stat tracking
-            //=============================================================================
+			//=============================================================================
+			// HPE_BEGIN:
+			// [dwenger] Window break stat tracking
+			//=============================================================================
 
-            CBasePlayer* pAttacker = ToBasePlayer(info.GetAttacker());
-            if ( ( pAttacker ) && ( !bWasBroken ) )
-            {
-                gamestats->Event_WindowShattered( pAttacker );
-            }
+			CBasePlayer* pAttacker = ToBasePlayer(info.GetAttacker());
+			if ( ( pAttacker ) && ( !bWasBroken ) )
+			{
+				gamestats->Event_WindowShattered( pAttacker );
+			}
 
-            //=============================================================================
-            // HPE_END
-            //=============================================================================
+			//=============================================================================
+			// HPE_END
+			//=============================================================================
 
 			// Do an impact hit
 			CEffectData	data;
@@ -495,20 +495,20 @@ void CBreakableSurface::TraceAttack( const CTakeDamageInfo &info, const Vector &
 		// ----------------------------------------
 		else
 		{
-            //=============================================================================
-            // HPE_BEGIN:
-            // [pfreese] Window break stat tracking
-            //=============================================================================
+			//=============================================================================
+			// HPE_BEGIN:
+			// [pfreese] Window break stat tracking
+			//=============================================================================
 
-            CBasePlayer* pAttacker = ToBasePlayer(info.GetAttacker());
-            if ( ( pAttacker ) && ( !bWasBroken ) )
-            {
-                gamestats->Event_WindowShattered( pAttacker );
-            }
+			CBasePlayer* pAttacker = ToBasePlayer(info.GetAttacker());
+			if ( ( pAttacker ) && ( !bWasBroken ) )
+			{
+				gamestats->Event_WindowShattered( pAttacker );
+			}
 
-            //=============================================================================
-            // HPE_END
-            //=============================================================================
+			//=============================================================================
+			// HPE_END
+			//=============================================================================
 
 			float flDot = DotProduct(m_vNormal,vecDir);
 
@@ -613,7 +613,7 @@ void CBreakableSurface::Die( CBaseEntity *pBreaker, const Vector &vAttackDir )
 
 	// Play a break sound
 #ifdef MAPBASE
-	if ( HasSpawnFlags(SF_BREAKABLESURF_PLAY_BREAK_SOUND) )
+	if ( HasSpawnFlags( SF_BREAKABLESURF_PLAY_BREAK_SOUND ) )
 	{
 		Vector centerPos = (m_vLLVertex + m_vURVertex) / 2;
 		PhysBreakSound( this, VPhysicsGetObject(), centerPos );
@@ -879,7 +879,7 @@ float CBreakableSurface::RecalcSupport(int nWidth, int nHeight)
 	}
 	else
 	{
- 		flSupport += 1.25 * GetSupport(nWidth,nHeight-1);
+		flSupport += 1.25 * GetSupport(nWidth,nHeight-1);
 	}
 
 	// ------------

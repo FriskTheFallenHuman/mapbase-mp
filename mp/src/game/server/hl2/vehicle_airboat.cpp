@@ -171,7 +171,7 @@ private:
 	void			GetGunAimDirection( Vector *resultDir );
 
 	// Recharges the ammo based on speed
- 	void			RechargeAmmo();
+	void			RechargeAmmo();
 
 	// Removes the ammo...
 	void			RemoveAmmo( float flAmmoAmount );
@@ -590,7 +590,8 @@ void CPropAirboat::InputExitVehicle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CPropAirboat::InputWake( inputdata_t &inputdata )
 {
-	VPhysicsGetObject()->Wake();
+	if ( VPhysicsGetObject() )
+		VPhysicsGetObject()->Wake();
 }
 
 
@@ -1780,7 +1781,7 @@ void CPropAirboat::DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtons
 		{
 			HeadlightTurnOff();
 		}
-        else 
+		else 
 		{
 			HeadlightTurnOn();
 		}
