@@ -830,8 +830,8 @@ void CHL2MPRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 			Q_snprintf( szReturnString, sizeof (szReturnString ), "cl_playermodel %s\n", pCurrentModel );
 			engine->ClientCommand ( pHL2Player->edict(), szReturnString );
 
-			Q_snprintf( szReturnString, sizeof( szReturnString ), "Please wait %d more seconds before trying to switch.\n", (int)(pHL2Player->GetNextModelChangeTime() - gpGlobals->curtime) );
-			ClientPrint( pHL2Player, HUD_PRINTTALK, szReturnString );
+			//Q_snprintf( szReturnString, sizeof( szReturnString ), "Please wait %d more seconds before trying to switch.\n", (int)(pHL2Player->GetNextModelChangeTime() - gpGlobals->curtime) );
+			//ClientPrint( pHL2Player, HUD_PRINTTALK, szReturnString );
 			return;
 		}
 
@@ -839,26 +839,29 @@ void CHL2MPRules::ClientSettingsChanged( CBasePlayer *pPlayer )
 		{
 			pHL2Player->SetPlayerModel();
 
-			const char *pszCurrentModelName = modelinfo->GetModelName( pHL2Player->GetModel() );
+			//const char *pszCurrentModelName = modelinfo->GetModelName( pHL2Player->GetModel() );
 
-			char szReturnString[128];
-			Q_snprintf( szReturnString, sizeof( szReturnString ), "Your player model is: %s\n", pszCurrentModelName );
+			//char szReturnString[128];
+			//Q_snprintf( szReturnString, sizeof( szReturnString ), "Your player model is: %s\n", pszCurrentModelName );
 
-			ClientPrint( pHL2Player, HUD_PRINTTALK, szReturnString );
+			//ClientPrint( pHL2Player, HUD_PRINTTALK, szReturnString );
 		}
 		else
 		{
 			if ( Q_stristr( szModelName, "models/player/rebels" ) )
 			{
-				pHL2Player->ChangeTeam(TEAM_REBELS);
+				//pHL2Player->ChangeTeam(TEAM_REBELS);
+				pHL2Player->SetPlayerTeamModel();
 			}
 			else if ( Q_stristr( szModelName, "models/player/combine" ) )
 			{
-				pHL2Player->ChangeTeam( TEAM_COMBINE );
+				//pHL2Player->ChangeTeam( TEAM_COMBINE );
+				pHL2Player->SetPlayerTeamModel();
 			}
 			else
 			{
-				pHL2Player->ChangeTeam( TEAM_COMBINE );
+				//pHL2Player->ChangeTeam( TEAM_COMBINE );
+				pHL2Player->SetPlayerTeamModel();
 			}
 		}
 	}
