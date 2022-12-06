@@ -834,7 +834,13 @@ bool CHL2MP_Player::HandleCommand_JoinTeam( int team )
 {
 	if ( !GetGlobalTeam( team ) || team == 0 )
 	{
+		// Warn the player about invalid team index on the console
 		Warning( "HandleCommand_JoinTeam( %d ) - invalid team index.\n", team );
+
+		// But also warns them in-game if they're using custon keybinds
+		char szReturnString[128];
+		Q_snprintf( szReturnString, sizeof( szReturnString ), "Please entry valid team index.\n" );
+		ClientPrint( this, HUD_PRINTTALK, szReturnString );
 		return false;
 	}
 
@@ -886,11 +892,6 @@ bool CHL2MP_Player::ClientCommand( const CCommand &args )
 	}
 	else if ( FStrEq( args[0], "jointeam" ) ) 
 	{
-		if ( args.ArgC() < 2 )
-		{
-			Warning( "Player sent bad jointeam syntax\n" );
-		}
-
 		if ( ShouldRunRateLimitedCommand( args ) )
 		{
 			int iTeam = atoi( args[1] );
