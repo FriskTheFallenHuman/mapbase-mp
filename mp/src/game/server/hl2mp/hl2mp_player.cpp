@@ -1281,14 +1281,6 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 		goto ReturnSpot;
 	}
 
-	if ( !pSpot  )
-	{
-		pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_start" );
-
-		if ( pSpot )
-			goto ReturnSpot;
-	}
-
 ReturnSpot:
 
 	if ( HL2MPRules()->IsTeamplay() == true )
@@ -1301,6 +1293,16 @@ ReturnSpot:
 		{
 			g_pLastRebelSpawn = pSpot;
 		}
+	}
+
+	if ( !pSpot )
+	{
+		pSpot = gEntList.FindEntityByClassname( pSpot, "info_player_start" );
+
+		if ( pSpot )
+			goto ReturnSpot;
+		else
+			return CBaseEntity::Instance( INDEXENT( 0 ) );
 	}
 
 	g_pLastSpawn = pSpot;
