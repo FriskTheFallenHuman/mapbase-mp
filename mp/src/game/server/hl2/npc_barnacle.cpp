@@ -132,11 +132,11 @@ CNPC_Barnacle::CNPC_Barnacle(void)
 CNPC_Barnacle::~CNPC_Barnacle( void )
 {
 	// Destroy the ragdoll->tongue tip constraint
-  	if ( m_pConstraint )
-  	{
-  		physenv->DestroyConstraint( m_pConstraint );
-  		m_pConstraint = NULL;
-  	}
+	if ( m_pConstraint )
+	{
+		physenv->DestroyConstraint( m_pConstraint );
+		m_pConstraint = NULL;
+	}
 }
 
 /*
@@ -413,7 +413,7 @@ void CNPC_Barnacle::PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot )
 	// Create a sound to scare friendly allies away from the base on the barnacle
 	if( IsAlive() )
 	{
- 		CSoundEnt::InsertSound( SOUND_MOVE_AWAY | SOUND_CONTEXT_ALLIES_ONLY, m_vecTip, 60.0f, FLASHLIGHT_NPC_CHECK_INTERVAL );
+		CSoundEnt::InsertSound( SOUND_MOVE_AWAY | SOUND_CONTEXT_ALLIES_ONLY, m_vecTip, 60.0f, FLASHLIGHT_NPC_CHECK_INTERVAL );
 	}
 }
 
@@ -462,7 +462,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 	CBaseEntity *pTouchEnt;
 	float flLength;
 
- 	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	UpdateTongue();
 
@@ -533,7 +533,7 @@ void CNPC_Barnacle::BarnacleThink ( void )
 #ifdef MAPBASE
 		if ( m_bLiftingPrey )
 #else
- 		if ( m_bLiftingPrey || m_bSwallowingBomb == true )
+		if ( m_bLiftingPrey || m_bSwallowingBomb == true )
 #endif
 		{	
 			LiftPrey();
@@ -685,13 +685,13 @@ bool CNPC_Barnacle::CanPickup( CBaseCombatCharacter *pBCC )
 	if( !pBCC )
 		return true;
 
+#ifdef MAPBASE
+	// Don't pickup turrets, rollermines, apc drivers
+	if (FClassnameIs( pBCC, "npc_turret_floor" ) || FClassnameIs( pBCC, "npc_apcdriver" ) || FClassnameIs( pBCC, "npc_rollermine" ) )
+		return false;
+#else
 	// Don't pickup turrets
 	if( FClassnameIs( pBCC, "npc_turret_floor" ) )
-		return false;
-
-#ifdef MAPBASE
-	// Don't pickup rollermines
-	if( FClassnameIs( pBCC, "npc_rollermine" ) )
 		return false;
 #endif
 
@@ -740,8 +740,8 @@ bool CNPC_Barnacle::WaitForRagdollToSettle( float flBiteZOffset )
 	Vector vecBitePoint = GetAbsOrigin();
 	vecBitePoint.z -= flBiteZOffset;
 
-   	//NDebugOverlay::Box( vecBitePoint, -Vector(10,10,10), Vector(10,10,10), 0,255,0, 0, 0.1 );
- 	//NDebugOverlay::Line( vecBitePoint, vecCheckPos, 0, 255, 0, true, 0.1 );
+	//NDebugOverlay::Box( vecBitePoint, -Vector(10,10,10), Vector(10,10,10), 0,255,0, 0, 0.1 );
+	//NDebugOverlay::Line( vecBitePoint, vecCheckPos, 0, 255, 0, true, 0.1 );
 
 	if ( (vecBitePoint.x - vecCheckPos.x) > flDelta || (vecBitePoint.y - vecCheckPos.y) > flDelta )
 	{
@@ -851,7 +851,7 @@ void CNPC_Barnacle::PullEnemyTorwardsMouth( bool bAdjustEnemyOrigin )
 
 	float flPull = fabs(sin( m_flLocalTimer * 5 ));
 
- 	flPull *= m_flBarnaclePullSpeed * dt;
+	flPull *= m_flBarnaclePullSpeed * dt;
 
 	SetAltitude( m_flAltitude - flPull );
 
@@ -1074,10 +1074,10 @@ void CNPC_Barnacle::LiftRagdoll( float flBiteZOffset )
 	if ( GetAbsOrigin().z - m_vecTip.Get().z < flBiteZOffset )
 	{
 		// If we've got a ragdoll, wait until the bone is down below the mouth.
- 		if ( !WaitForRagdollToSettle( flBiteZOffset ) )
+		if ( !WaitForRagdollToSettle( flBiteZOffset ) )
 			return;
 
-  		if ( GetEnemy()->Classify() == CLASS_ZOMBIE )
+		if ( GetEnemy()->Classify() == CLASS_ZOMBIE )
 		{
 			// lifted the prey high enough to see it's a zombie. Spit it out.
 			if ( hl2_episodic.GetBool() )
@@ -1335,7 +1335,7 @@ CRagdollProp *CNPC_Barnacle::AttachRagdollToTongue( CBaseAnimating *pAnimating )
 	//m_iGrabbedBoneIndex = pAnimating->LookupBone( "Bip01 L Foot" );
 	if ( m_iGrabbedBoneIndex == -1 )
 	{
- 		// Citizens, Conscripts
+		// Citizens, Conscripts
 		m_iGrabbedBoneIndex = pAnimating->LookupBone( "Bip01 Head" );
 	}
 	if ( m_iGrabbedBoneIndex == -1 )
@@ -1554,7 +1554,7 @@ You can use this stanza to try to counterplace the constraint on the player's he
 	// Make a ragdoll for the guy, and hide him.
 	pTouchEnt->AddSolidFlags( FSOLID_NOT_SOLID );
 
-  	m_hRagdoll = AttachRagdollToTongue( pAnimating );
+	m_hRagdoll = AttachRagdollToTongue( pAnimating );
 	m_hRagdoll->SetDamageEntity( pAnimating );
 
 	// Make it try to blend out of ragdoll on the client on deletion
@@ -1640,7 +1640,7 @@ void CNPC_Barnacle::BitePrey( void )
 	}
 #else
 #ifdef HL2_EPISODIC
- 	if ( pVictim == NULL )
+	if ( pVictim == NULL )
 	{
 		if ( GetEnemy() )
 		{
@@ -1900,11 +1900,11 @@ void CNPC_Barnacle::SwallowPrey( void )
 void CNPC_Barnacle::RemoveRagdoll( bool bDestroyRagdoll )
 {
 	// Destroy the tongue tip constraint
-  	if ( m_pConstraint )
-  	{
-  		physenv->DestroyConstraint( m_pConstraint );
-  		m_pConstraint = NULL;
-  	}
+	if ( m_pConstraint )
+	{
+		physenv->DestroyConstraint( m_pConstraint );
+		m_pConstraint = NULL;
+	}
 
 	// Remove the ragdoll
 	if ( m_hRagdoll )
@@ -1948,7 +1948,7 @@ void CNPC_Barnacle::LostPrey( bool bRemoveRagdoll )
 
 	CBaseEntity * const pEnemy = GetEnemy();
 
- 	if ( pEnemy )
+	if ( pEnemy )
 	{
 #if HL2_EPISODIC
 		PhysEnableEntityCollisions( this, pEnemy );
@@ -2122,11 +2122,11 @@ void CNPC_Barnacle::Event_Killed( const CTakeDamageInfo &info )
 	else
 	{
 		// Destroy the ragdoll->tongue tip constraint
-  		if ( m_pConstraint )
-  		{
-  			physenv->DestroyConstraint( m_pConstraint );
-  			m_pConstraint = NULL;
-  		}
+		if ( m_pConstraint )
+		{
+			physenv->DestroyConstraint( m_pConstraint );
+			m_pConstraint = NULL;
+		}
 		LostPrey( true );
 	}
 
