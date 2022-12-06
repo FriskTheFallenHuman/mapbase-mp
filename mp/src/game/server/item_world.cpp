@@ -305,8 +305,12 @@ void CItem::FallThink ( void )
 	}
 
 	SetThink ( NULL );
-	m_vOriginalSpawnOrigin = GetAbsOrigin();
-	m_vOriginalSpawnAngles = GetAbsAngles();
+
+	if ( GetOriginalSpawnOrigin() == vec3_origin )
+	{
+		m_vOriginalSpawnOrigin = GetAbsOrigin();
+		m_vOriginalSpawnAngles = GetAbsAngles();
+	}
 
 	HL2MPRules()->AddLevelDesignerPlacedObject( this );
 #endif // HL2MP
@@ -515,11 +519,6 @@ void CItem::Materialize( void )
 #else
 		EmitSound( "Item.Materialize" );
 #endif
-
-#ifdef MAPBASE_MP
-		UTIL_SetOrigin( this, g_pGameRules->VecItemRespawnSpot( this ) );// blip to whereever you should respawn.
-		SetAbsAngles( g_pGameRules->VecItemRespawnAngles( this ) );// set the angles.
-#endif // MAPBASE_MP
 
 		RemoveEffects( EF_NODRAW );
 		DoMuzzleFlash();
