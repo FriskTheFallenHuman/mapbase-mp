@@ -363,8 +363,10 @@ void CBaseHL2MPBludgeonWeapon::Swing( int bIsSecondary )
 		// Other melee sounds
 		if ( traceHit.m_pEnt && traceHit.m_pEnt->IsWorld() )
 			WeaponSound( MELEE_HIT_WORLD );
+#ifdef GAME_DLL
 		else if (traceHit.m_pEnt && !traceHit.m_pEnt->PassesDamageFilter( triggerInfo ) )
 			WeaponSound( MELEE_MISS );
+#endif
 		else
 			WeaponSound(MELEE_HIT);
 #endif
