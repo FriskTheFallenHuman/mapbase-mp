@@ -6045,7 +6045,7 @@ CBaseEntity	*CBasePlayer::GiveNamedItem( const char *pszName, int iSubType )
 	if ( pent == NULL )
 	{
 #ifdef MAPBASE
-		ConColorMsg( Color( 255, 216, 0 ), "Can't give %s (Not such item exist!)\n", pszName );
+		ConColorMsg( Color( 255, 216, 0, 255 ), "Can't give %s (Not such item exist!)\n", pszName );
 #else
 		Msg( "NULL Ent in GiveNamedItem!\n" );
 #endif // MAPBASE

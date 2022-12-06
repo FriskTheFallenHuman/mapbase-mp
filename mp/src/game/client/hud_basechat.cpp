@@ -26,7 +26,6 @@
 #include "multiplay_gamerules.h"
 #include "voice_status.h"
 
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -488,18 +487,18 @@ CHudChatFilterPanel::CHudChatFilterPanel( vgui::Panel *pParent, const char *pNam
 	new CHudChatFilterCheckButton( this, "publicchat_button", "Sky is blue?", CHAT_FILTER_PUBLICCHAT );
 	new CHudChatFilterCheckButton( this, "servermsg_button", "Sky is blue?", CHAT_FILTER_SERVERMSG );
 	new CHudChatFilterCheckButton( this, "teamchange_button", "Sky is blue?", CHAT_FILTER_TEAMCHANGE );
-    //=============================================================================
-    // HPE_BEGIN:
-    // [tj]Added a new filter checkbox for achievement announces.
-    //     Also. Yes. Sky is blue.
-    //=============================================================================
-     
-    new CHudChatFilterCheckButton( this, "achivement_button", "Sky is blue?", CHAT_FILTER_ACHIEVEMENT);
-     
-    //=============================================================================
-    // HPE_END
-    //=============================================================================
-    
+	//=============================================================================
+	// HPE_BEGIN:
+	// [tj]Added a new filter checkbox for achievement announces.
+	//     Also. Yes. Sky is blue.
+	//=============================================================================
+	 
+	new CHudChatFilterCheckButton( this, "achivement_button", "Sky is blue?", CHAT_FILTER_ACHIEVEMENT);
+	 
+	//=============================================================================
+	// HPE_END
+	//=============================================================================
+	
 }
 
 void CHudChatFilterPanel::ApplySchemeSettings(vgui::IScheme *pScheme)
@@ -783,7 +782,10 @@ void CBaseHudChat::MsgFunc_SayText( bf_read &msg )
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, "HudChat.Message" );
 
+	// TERROR: color console echo
+#ifndef MAPBASE_MP
 	Msg( "%s", szString );
+#endif // MAPBASE_MP
 }
 
 int CBaseHudChat::GetFilterForString( const char *pString )
@@ -836,7 +838,9 @@ void CBaseHudChat::MsgFunc_SayText2( bf_read &msg )
 		// print raw chat text
 		ChatPrintf( client, iFilter, "%s", ansiString );
 
+#ifndef MAPBASE_MP
 		Msg( "%s\n", RemoveColorMarkup(ansiString) );
+#endif // MAPBASE_MP
 
 		CLocalPlayerFilter filter;
 		C_BaseEntity::EmitSound( filter, SOUND_FROM_LOCAL_PLAYER, "HudChat.Message" );
@@ -923,7 +927,10 @@ void CBaseHudChat::MsgFunc_TextMsg( bf_read &msg )
 			Q_strncat( szString, "\n", sizeof(szString), 1 );
 		}
 		Printf( CHAT_FILTER_NONE, "%s", ConvertCRtoNL( szString ) );
+		// TERROR: color console echo
+#ifndef MAPBASE_MP
 		Msg( "%s", ConvertCRtoNL( szString ) );
+#endif // !MAPBASE_MP
 		break;
 
 	case HUD_PRINTCONSOLE:
@@ -994,7 +1001,7 @@ void CBaseHudChat::MsgFunc_VoiceSubtitle( bf_read &msg )
 
 	const wchar_t *pVoicePrefix = g_pVGuiLocalize->Find( "#Voice" );
 	g_pVGuiLocalize->ConvertUnicodeToANSI( pVoicePrefix, szPrefix, sizeof(szPrefix) );
-	
+
 	ChatPrintf( client, CHAT_FILTER_NONE, "%c(%s) %s%c: %s", COLOR_PLAYERNAME, szPrefix, GetDisplayedSubtitlePlayerName( client ), COLOR_NORMAL, ConvertCRtoNL( szString ) );
 
 	SetVoiceSubtitleState( false );
@@ -1552,6 +1559,10 @@ void CBaseHudChatLine::Colorize( int alpha )
 			InsertColorChange( color );
 			InsertString( wText );
 
+#ifdef MAPBASE_MP
+			ConColorMsg( color, "%ls", wText );
+#endif
+
 			CBaseHudChat *pChat = dynamic_cast<CBaseHudChat*>(GetParent() );
 
 			if ( pChat && pChat->GetChatHistory() )
@@ -1568,6 +1579,10 @@ void CBaseHudChatLine::Colorize( int alpha )
 
 		}
 	}
+
+#ifdef MAPBASE_MP
+	Msg( "\n" );
+#endif
 
 	InvalidateLayout( true );
 }
