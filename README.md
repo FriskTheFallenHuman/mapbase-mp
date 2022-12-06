@@ -19,6 +19,7 @@ Mapbase's main content in this repository may include:
 - More map-specific capabilities for maps unable to branch into their own mods, e.g. MP mods or map compilations
 - View rendering changes for drawing 3D skyboxes and RT-based entities
 - Countless other fixes and improvements
+- HL2MP Fixes and improvements
 
 For more information, view this page:
 https://github.com/mapbase-source/source-sdk-2013/wiki/Introduction-to-Mapbase
@@ -70,7 +71,8 @@ Here's a list of Mapbase's other external code sources:
 - https://github.com/Nbc66/source-sdk-2013-ce/tree/v142 (Base for VS2019 toolset support)
 - https://github.com/hrgve/hl2dm-bugfix (Most of our HL2MP fixes comes from this repo)
 - https://github.com/Adrianilloo/SourceSDK2013 (More fixes for HL2MP)
-- https://github.com/zm-reborn/zmr-game (Misc Fixes & Improvements to the HL2MPAnimstates & New C_Hands system )
+- https://github.com/zm-reborn/zmr-game (Misc Fixes & Improvements to the HL2MPAnimstates & New C_Hands system)
+- https://github.com/weaponcubemap/source-sdk-2013 (More Fixes to HL2MP and fixes for null pointers)
 
 //-------------------------------------------------------------------------------------------------------------------------
 
