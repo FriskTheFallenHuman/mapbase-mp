@@ -1524,9 +1524,11 @@ void CWeaponPhysCannon::Drop( const Vector &vecVelocity )
 {
 	ForceDrop();
 
-#ifndef CLIENT_DLL
-	UTIL_Remove( this );
-#endif
+	Delete();
+
+//#ifndef CLIENT_DLL
+//	UTIL_Remove( this );
+//#endif
 }
 
 //-----------------------------------------------------------------------------
