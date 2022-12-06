@@ -2039,6 +2039,7 @@ bool CWeaponRPG::Deploy( void )
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
+/*
 bool CWeaponRPG::CanHolster( void )
 {
 	//Can't have an active missile out
@@ -2047,6 +2048,7 @@ bool CWeaponRPG::CanHolster( void )
 
 	return BaseClass::CanHolster();
 }
+*/
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -2244,6 +2246,9 @@ bool CWeaponRPG::Reload( void )
 		return false;
 
 	WeaponSound( RELOAD );
+
+	if ( pOwner->GetActiveWeapon() == this )
+		SendWeaponAnim( ACT_VM_RELOAD );
 	
 	SendWeaponAnim( ACT_VM_RELOAD );
 
