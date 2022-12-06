@@ -108,7 +108,12 @@ bool Pickup_ForcePhysGunOpen( CBaseEntity *pObject, CBasePlayer *pPlayer )
 AngularImpulse Pickup_PhysGunLaunchAngularImpulse( CBaseEntity *pObject, PhysGunForce_t reason )
 {
 	IPlayerPickupVPhysics *pPickup = dynamic_cast<IPlayerPickupVPhysics *>(pObject);
+	// This fixes "spin_none" not working post-Orange box
+#ifdef MAPBASE
+	if ( pPickup != NULL )
+#else
 	if ( pPickup != NULL && pPickup->ShouldPuntUseLaunchForces( reason ) )
+#endif
 	{
 		return pPickup->PhysGunLaunchAngularImpulse();
 	}
