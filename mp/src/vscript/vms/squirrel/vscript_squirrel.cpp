@@ -1161,7 +1161,7 @@ void PushVariant(HSQUIRRELVM vm, const ScriptVariant_t& value)
 	case FIELD_VECTOR:
 	{
 		SquirrelVM* pSquirrelVM = (SquirrelVM*)sq_getforeignptr(vm);
-		assert(pSquirrelVM);
+		Assert(pSquirrelVM);
 		sq_pushobject(vm, pSquirrelVM->vectorClass_);
 		sq_createinstance(vm, -1);
 		SQUserPointer p;
@@ -1424,7 +1424,7 @@ SQInteger function_stub(HSQUIRRELVM vm)
 	ScriptVariant_t retval;
 
 	SquirrelVM* pSquirrelVM = (SquirrelVM*)sq_getforeignptr(vm);
-	assert(pSquirrelVM);
+	Assert(pSquirrelVM);
 
 	sq_resetobject(&pSquirrelVM->lastError_);
 
@@ -1477,7 +1477,7 @@ SQInteger constructor_stub(HSQUIRRELVM vm)
 	}
 
 	SquirrelVM* pSquirrelVM = (SquirrelVM*)sq_getforeignptr(vm);
-	assert(pSquirrelVM);
+	Assert(pSquirrelVM);
 
 	sq_resetobject(&pSquirrelVM->lastError_);
 
