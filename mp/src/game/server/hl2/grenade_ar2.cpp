@@ -35,7 +35,7 @@ extern ConVar    sk_max_smg1_grenade;
 
 ConVar	  sk_smg1_grenade_radius		( "sk_smg1_grenade_radius","0");
 #ifdef MAPBASE
-ConVar	smg1_grenade_credit_transfer("smg1_grenade_credit_transfer", "1");
+ConVar	g_grenade_credit_transfer( "g_smg_grenade_credit_transfer", "1" );
 #endif
 
 ConVar g_CV_SmokeTrail("smoke_trail", "1", 0); // temporary dust explosion switch
@@ -165,11 +165,11 @@ void CGrenadeAR2::GrenadeAR2Think( void )
 void CGrenadeAR2::Event_Killed( const CTakeDamageInfo &info )
 {
 #ifdef MAPBASE
-	if (smg1_grenade_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer())
+	if ( g_grenade_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer() )
 	{
 		CBaseCombatCharacter *pBCC = info.GetAttacker()->MyCombatCharacterPointer();
-		SetThrower(pBCC);
-		SetOwnerEntity(pBCC);
+		SetThrower( pBCC );
+		SetOwnerEntity( pBCC );
 	}
 #endif
 	Detonate( );
@@ -206,7 +206,7 @@ void CGrenadeAR2::Detonate(void)
 		return;
 	}
 	m_bIsLive		= false;
-	m_takedamage	= DAMAGE_NO;	
+	m_takedamage	= DAMAGE_NO;
 
 	if(m_hSmokeTrail)
 	{

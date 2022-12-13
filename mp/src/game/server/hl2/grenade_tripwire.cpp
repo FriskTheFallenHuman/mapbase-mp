@@ -20,15 +20,19 @@
 ConVar    sk_dmg_tripwire		( "sk_dmg_tripwire","0");
 ConVar    sk_tripwire_radius	( "sk_tripwire_radius","0"); 
 
-#define GRENADETRIPWIRE_MISSILEMDL	"models/Weapons/ar2_grenade.mdl"
+#define TRIPWIRE_MODEL	"models/Weapons/w_grenade.mdl"
+#define TRIPWIRE_ATTACH_SOUND "TripwireGrenade.Hook"
+#define TRIPWIRE_ACTIVATE_SOUND "TripwireGrenade.Activate"
+#define TRIPWIRE_FLY_SOUND "TripwireGrenade.FlySound"
+#define TRIPWIRE_SHOT_SOUND "TripwireGrenade.ShootRope"
 
-#define TGRENADE_LAUNCH_VEL		1200
-#define TGRENADE_SPIN_MAG		50
-#define TGRENADE_SPIN_SPEED		100
-#define TGRENADE_MISSILE_OFFSET 50
-#define TGRENADE_MAX_ROPE_LEN	1500
+#define TRIPWIRE_LAUNCH_VEL		1200
+#define TRIPWIRE_SPIN_MAG		50
+#define TRIPWIRE_SPIN_SPEED		100
+#define TRIPWIRE_OFFSET 50
+#define TRIPWIRE_MAX_ROPE_LEN	1500
 
-LINK_ENTITY_TO_CLASS( npc_tripwire, CTripwireGrenade );
+LINK_ENTITY_TO_CLASS( npc_grenade_tripwire, CTripwireGrenade );
 
 BEGIN_DATADESC( CTripwireGrenade )
 
@@ -41,10 +45,10 @@ BEGIN_DATADESC( CTripwireGrenade )
 	DEFINE_FIELD( m_pHook,			FIELD_CLASSPTR ),
 
 	// Function Pointers
-	DEFINE_FUNCTION( WarningThink ),
-	DEFINE_FUNCTION( PowerupThink ),
-	DEFINE_FUNCTION( RopeBreakThink ),
-	DEFINE_FUNCTION( FireThink ),
+	DEFINE_THINKFUNC( WarningThink ),
+	DEFINE_THINKFUNC( PowerupThink ),
+	DEFINE_THINKFUNC( RopeBreakThink ),
+	DEFINE_THINKFUNC( FireThink ),
 
 END_DATADESC()
 
@@ -53,28 +57,31 @@ CTripwireGrenade::CTripwireGrenade()
 	m_vecDir.Init();
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::Spawn( void )
 {
-	Precache( );
+	Precache();
 
 	SetMoveType( MOVETYPE_FLY );
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_SOLID );
 
-	SetModel( "models/Weapons/w_slam.mdl" );
+	SetModel( TRIPWIRE_MODEL );
 
 	m_nMissileCount	= 0;
 	
-	UTIL_SetSize(this, Vector( -4, -4, -2), Vector(4, 4, 2));
+	UTIL_SetSize( this, Vector( -4, -4, -2 ), Vector( 4, 4, 2 ) );
 
-	m_flPowerUp = gpGlobals->curtime + 1.2;//<<CHECK>>get rid of this
+	m_flPowerUp = gpGlobals->curtime + 1.2;	// <<CHECK>>get rid of this
 	
-	SetThink( WarningThink );
+	SetThink( &CTripwireGrenade::WarningThink );
 	SetNextThink( gpGlobals->curtime + 1.0f );
 
-	m_takedamage		= DAMAGE_YES;
+	m_takedamage = DAMAGE_YES;
 
-	m_iHealth = 1;
+	SetHealth(1 );
 
 	m_pRope = NULL;
 	m_pHook = NULL;
@@ -86,58 +93,78 @@ void CTripwireGrenade::Spawn( void )
 	AngleVectors( angles, &m_vecDir );
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::Precache( void )
 {
-	PrecacheModel("models/Weapons/w_slam.mdl"); 
+	PrecacheModel( TRIPWIRE_MODEL );
+	PrecacheScriptSound( TRIPWIRE_ACTIVATE_SOUND );
+	PrecacheScriptSound( TRIPWIRE_ATTACH_SOUND );
+	PrecacheScriptSound( TRIPWIRE_FLY_SOUND );
+	PrecacheScriptSound( TRIPWIRE_SHOT_SOUND );
 
-	PrecacheModel(GRENADETRIPWIRE_MISSILEMDL);
+	UTIL_PrecacheOther( "tripwire_hook" );
+	UTIL_PrecacheOther( "grenade_homer" );
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::WarningThink( void  )
 {
 	// play activate sound
-	EmitSound( "TripwireGrenade.Activate" );
+	EmitSound( TRIPWIRE_ACTIVATE_SOUND );
 
 	// set to power up
-	SetThink( PowerupThink );
+	SetThink( &CTripwireGrenade::PowerupThink );
 	SetNextThink( gpGlobals->curtime + 1.0f );
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::PowerupThink( void  )
 {
-	if (gpGlobals->curtime > m_flPowerUp)
+	if ( gpGlobals->curtime > m_flPowerUp )
 	{
 		MakeRope( );
 		RemoveSolidFlags( FSOLID_NOT_SOLID );
-		m_bIsLive			= true;
+		m_bIsLive = true;
 	}
+
 	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::BreakRope( void )
 {
-	if (m_pRope)
+	if ( m_pRope )
 	{
-		m_pRope->m_RopeFlags |= ROPE_COLLIDE;
-		m_pRope->DetachPoint(0);
+		m_pRope->m_RopeFlags |= ROPE_COLLIDE | ROPE_USE_WIND;
+		m_pRope->DetachPoint( 0 );
 
 		Vector vVelocity;
 		m_pHook->GetVelocity( &vVelocity, NULL );
-		if (vVelocity.Length() > 1)
-		{
-			m_pRope->DetachPoint(1);
-		}
+		if ( vVelocity.Length() > 1 )
+			m_pRope->DetachPoint( 1 );
+
+		UTIL_Remove( m_pRope );
+		m_pRope = NULL;
+
+		UTIL_Remove( m_pHook );
+		m_pHook = NULL;
 	}
 }
 
-
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::MakeRope( void )
 {
-	SetThink( RopeBreakThink );
+	SetThink( &CTripwireGrenade::RopeBreakThink );
 
 	// Delay first think slightly so rope has time
 	// to appear if person right in front of it
@@ -158,45 +185,50 @@ void CTripwireGrenade::MakeRope( void )
 			m_pRope->m_Width		= 1;
 			m_pRope->m_RopeLength	= 3;
 			m_pRope->m_Slack		= 100;
+			m_pRope->m_Subdiv		= 64;
 
-			CPASAttenuationFilter filter( this,"TripwireGrenade.ShootRope" );
-			EmitSound( filter, entindex(),"TripwireGrenade.ShootRope" );
+			CPASAttenuationFilter filter( this,TRIPWIRE_SHOT_SOUND );
+			EmitSound( filter, entindex(),TRIPWIRE_SHOT_SOUND );
 		}
 	}
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::Attach( void )
 {
-	StopSound( "TripwireGrenade.ShootRope" );
+	StopSound( TRIPWIRE_SHOT_SOUND );
 }
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
 void CTripwireGrenade::RopeBreakThink( void  )
 {
 	// See if I can go solid yet (has dropper moved out of way?)
-	if (IsSolidFlagSet(FSOLID_NOT_SOLID))
+	if ( IsSolidFlagSet( FSOLID_NOT_SOLID ) )
 	{
 		trace_t tr;
 		Vector	vUpBit = GetAbsOrigin();
 		vUpBit.z += 5.0;
 
 		UTIL_TraceEntity( this, GetAbsOrigin(), vUpBit, MASK_SHOT, &tr );
-		if ( !tr.startsolid && (tr.fraction == 1.0) )
-		{
+		if ( !tr.startsolid && ( tr.fraction == 1.0 ) )
 			RemoveSolidFlags( FSOLID_NOT_SOLID );
-		}
 	}
 
 	// Check if rope had gotten beyond it's max length
-	float flRopeLength = (GetAbsOrigin()-m_pHook->GetAbsOrigin()).Length();
-	if (flRopeLength > TGRENADE_MAX_ROPE_LEN)
+	float flRopeLength = ( GetAbsOrigin()-m_pHook->GetAbsOrigin() ).Length();
+	if ( flRopeLength > TRIPWIRE_MAX_ROPE_LEN )
 	{
 		// Shoot missiles at hook
 		m_iHealth = 0;
 		BreakRope();
 		m_vTargetPos = m_pHook->GetAbsOrigin();
-		CrossProduct ( m_vecDir, Vector(0,0,1), m_vTargetOffset );
-		m_vTargetOffset *=TGRENADE_MISSILE_OFFSET; 
-		SetThink(FireThink);
+		CrossProduct ( m_vecDir, Vector( 0, 0, 1 ), m_vTargetOffset );
+		m_vTargetOffset *= TRIPWIRE_OFFSET; 
+		SetThink( &CTripwireGrenade::FireThink );
 		FireThink();
 	}
 
@@ -207,15 +239,15 @@ void CTripwireGrenade::RopeBreakThink( void  )
 
 	// If can't see hook
 	CBaseEntity *pEntity = tr.m_pEnt;
-	if (tr.fraction != 1.0 && pEntity != m_pHook)
+	if ( tr.fraction != 1.0 && pEntity != m_pHook )
 	{
 		// Shoot missiles at place where rope was intersected
 		m_iHealth = 0;
 		BreakRope();
 		m_vTargetPos = tr.endpos;
-		CrossProduct ( m_vecDir, Vector(0,0,1), m_vTargetOffset );
-		m_vTargetOffset *=TGRENADE_MISSILE_OFFSET; 
-		SetThink(FireThink);
+		CrossProduct ( m_vecDir, Vector( 0, 0, 1 ), m_vTargetOffset );
+		m_vTargetOffset *= TRIPWIRE_OFFSET; 
+		SetThink( &CTripwireGrenade::FireThink );
 		FireThink();
 		return;
 	}
@@ -225,8 +257,6 @@ void CTripwireGrenade::RopeBreakThink( void  )
 
 //------------------------------------------------------------------------------
 // Purpose : Die if I take any damage
-// Input   :
-// Output  :
 //------------------------------------------------------------------------------
 int CTripwireGrenade::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 {
@@ -237,62 +267,60 @@ int CTripwireGrenade::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 //-----------------------------------------------------------------------------
 // Purpose: If someone damaged, me shoot of my missiles and die
-// Input  :
-// Output :
 //-----------------------------------------------------------------------------
 void CTripwireGrenade::Event_Killed( const CTakeDamageInfo &info )
 {
-	if (m_iHealth > 0)
+	if ( m_iHealth > 0 )
 	{
 		// Fire missiles and blow up
-		for (int i=0;i<6;i++)
+		for ( int i=0; i<6; i++ )
 		{
-			Vector vTargetPos = GetAbsOrigin() + RandomVector(-600,600);
-			FireMissile(vTargetPos);
+			Vector vTargetPos = GetAbsOrigin() + RandomVector( -600,600 );
+			FireMissile( vTargetPos );
 		}
+
 		BreakRope();
-		UTIL_Remove(this);
+		SetHealth( 0 ); // Why would i continue spewing rockets if i'm death?
+		UTIL_Remove( this );
 	}
 }
 
 //------------------------------------------------------------------------------
 // Purpose : Fire a missile at the target position
-// Input   :
-// Output  :
 //------------------------------------------------------------------------------
 void CTripwireGrenade::FireMissile(const Vector &vTargetPos)
 {
-	Vector vTargetDir		= (vTargetPos - GetAbsOrigin());
-	VectorNormalize(vTargetDir);
+	Vector vTargetDir = ( vTargetPos - GetAbsOrigin() );
+	VectorNormalize( vTargetDir );
 
-	float flGravity			= 0.0001;	// No gravity on the missiles
-	bool  bSmokeTrail		= true;
-	float flHomingSpeed		= 0;
-	Vector vLaunchVelocity	= TGRENADE_LAUNCH_VEL*vTargetDir;
-	float flSpinMagnitude	= TGRENADE_SPIN_MAG;
-	float flSpinSpeed		= TGRENADE_SPIN_SPEED;
+	float flGravity = 0.0001;	// No gravity on the missiles
+	bool  bSmokeTrail = true;
+	float flHomingSpeed = 0;
+	Vector vLaunchVelocity = TRIPWIRE_LAUNCH_VEL*vTargetDir;
+	float flSpinMagnitude = TRIPWIRE_SPIN_MAG;
+	float flSpinSpeed = TRIPWIRE_SPIN_SPEED;
 
-		//<<CHECK>> hold in string_t
-	CGrenadeHomer *pGrenade = CGrenadeHomer::CreateGrenadeHomer( MAKE_STRING(GRENADETRIPWIRE_MISSILEMDL), MAKE_STRING("TripwireGrenade.FlySound"),  GetAbsOrigin(), vec3_angle, edict() );
+	//<<CHECK>> hold in string_t
+	CGrenadeHomer *pHomer = CGrenadeHomer::CreateGrenadeHomer( MAKE_STRING( TRIPWIRE_MODEL ), MAKE_STRING( TRIPWIRE_FLY_SOUND ),  GetAbsOrigin(), vec3_angle, edict() );
+	if ( pHomer )
+	{
+		pHomer->Spawn();
+		pHomer->SetSpin( flSpinMagnitude, flSpinSpeed );
+		pHomer->SetHoming( 0, 0, 0, 0, 0 );
+		pHomer->SetDamage( sk_dmg_tripwire.GetFloat() );
+		pHomer->SetDamageRadius( sk_tripwire_radius.GetFloat() );
+		pHomer->Launch( this, NULL, vLaunchVelocity, flHomingSpeed, flGravity, bSmokeTrail );
 
-	pGrenade->Spawn( );
-	pGrenade->SetSpin(flSpinMagnitude,flSpinSpeed);
-	pGrenade->SetHoming(0,0,0,0,0);
-	pGrenade->SetDamage(sk_dmg_tripwire.GetFloat());
-	pGrenade->SetDamageRadius(sk_tripwire_radius.GetFloat());
-	pGrenade->Launch(this,NULL,vLaunchVelocity,flHomingSpeed,flGravity,bSmokeTrail);
+		// Calculate travel time
+		float flTargetDist	= ( GetAbsOrigin() - vTargetPos).Length();
 
-	// Calculate travel time
-	float flTargetDist	= (GetAbsOrigin() - vTargetPos).Length();
-
-	pGrenade->m_flDetonateTime = gpGlobals->curtime + flTargetDist/TGRENADE_LAUNCH_VEL;
+		pHomer->m_flDetonateTime = gpGlobals->curtime + flTargetDist / TRIPWIRE_LAUNCH_VEL;
+	}
 
 }
 
 //------------------------------------------------------------------------------
 // Purpose : Shoot off a series of missiles over time, then go intert
-// Input   :
-// Output  :
 //------------------------------------------------------------------------------
 void CTripwireGrenade::FireThink()
 {
@@ -306,9 +334,9 @@ void CTripwireGrenade::FireThink()
 
 
 	m_nMissileCount++;
-	if (m_nMissileCount > 4)
+	if ( m_nMissileCount > 4 )
 	{
-		m_iHealth = -1;
+		SetHealth( -1 );
 		SetThink( NULL );
 	}
 }
@@ -330,21 +358,26 @@ BEGIN_DATADESC( CTripwireHook )
 
 END_DATADESC()
 
-
+//------------------------------------------------------------------------------
+// Purpose :
+//------------------------------------------------------------------------------
 void CTripwireHook::Spawn( void )
 {
 
-	Precache( );
-	SetModel( "models/Weapons/w_grenade.mdl" );//<<CHECK>>
+	Precache();
+	SetModel( TRIPWIRE_MODEL );	//<<CHECK>>
 
-	UTIL_SetSize(this, Vector( -1, -1, -1), Vector(1,1, 1));
+	UTIL_SetSize(this, Vector( -1, -1, -1), Vector( 1, 1, 1 ) );
 
-	m_takedamage		= DAMAGE_NO;
-	m_bAttached			= false;
+	m_takedamage = DAMAGE_NO;
+	m_bAttached = false;
 
 	CreateVPhysics();
 }
 
+//------------------------------------------------------------------------------
+// Purpose :
+//------------------------------------------------------------------------------
 bool CTripwireHook::CreateVPhysics()
 {
 	// Create the object in the physics system
@@ -355,43 +388,47 @@ bool CTripwireHook::CreateVPhysics()
 	{
 		int flags = pPhysicsObject->GetCallbackFlags();
 		flags |= CALLBACK_GLOBAL_TOUCH_STATIC;
-		pPhysicsObject->SetCallbackFlags(flags);
+		pPhysicsObject->SetCallbackFlags( flags );
 	}
 	return true;
 }
 
-
+//------------------------------------------------------------------------------
+// Purpose :
+//------------------------------------------------------------------------------
 void CTripwireHook::Precache( void )
 {
-	PrecacheModel("models/Weapons/w_grenade.mdl"); //<<CHECK>>
+	PrecacheModel( TRIPWIRE_MODEL ); //<<CHECK>>
 }
 
+//------------------------------------------------------------------------------
+// Purpose :
+//------------------------------------------------------------------------------
 void CTripwireHook::EndTouch( CBaseEntity *pOther )
 {
 	//<<CHECK>>do instead by clearing touch function
-	if (!m_bAttached)
+	if ( !m_bAttached )
 	{
 		m_bAttached = true;
 
-		SetVelocity(vec3_origin, vec3_origin);
+		SetVelocity( vec3_origin, vec3_origin );
 		SetMoveType( MOVETYPE_NONE );
 
-		EmitSound( "TripwireGrenade.Hook" );
+		EmitSound( TRIPWIRE_ATTACH_SOUND );
 
 		// Let the tripwire grenade know that I've attached
-		CTripwireGrenade* pGrenade = dynamic_cast<CTripwireGrenade*>((CBaseEntity*)m_hGrenade);
-		if (pGrenade)
-		{
-			pGrenade->Attach();
-		}
+		CTripwireGrenade* pWire = dynamic_cast<CTripwireGrenade*>( (CBaseEntity*)m_hGrenade );
+		if ( pWire )
+			pWire->Attach();
 	}
 }
 
+//------------------------------------------------------------------------------
+// Purpose :
+//------------------------------------------------------------------------------
 void CTripwireHook::SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity )
 {
 	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
 	if ( pPhysicsObject )
-	{
 		pPhysicsObject->AddVelocity( &velocity, &angVelocity );
-	}
 }

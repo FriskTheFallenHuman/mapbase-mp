@@ -22,6 +22,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
+
 // Setup the sensor list template
 
 CEntityClassList<CBugBaitSensor> g_BugBaitSensorList;
@@ -105,20 +107,27 @@ void CGrenadeBugBait::Spawn( void )
 
 	m_takedamage = DAMAGE_NO;
 
-	m_pSporeTrail = NULL;
-
-	/*
-	m_pSporeTrail = SporeTrail::CreateSporeTrail();
+	// -------------
+	// Spore trail.
+	// -------------
+	if( g_CV_SmokeTrail.GetInt() )
+	{
+		m_pSporeTrail = SporeTrail::CreateSporeTrail();
+		
+		if( m_pSporeTrail )
+		{
+			m_pSporeTrail = SporeTrail::CreateSporeTrail();
 	
-	m_pSporeTrail->m_bEmit				= true;
-	m_pSporeTrail->m_flSpawnRate		= 100.0f;
-	m_pSporeTrail->m_flParticleLifetime	= 1.0f;
-	m_pSporeTrail->m_flStartSize		= 1.0f;
-	m_pSporeTrail->m_flEndSize			= 1.0f;
-	m_pSporeTrail->m_flSpawnRadius		= 8.0f;
+			m_pSporeTrail->m_bEmit = true;
+			m_pSporeTrail->m_flSpawnRate = 100.0f;
+			m_pSporeTrail->m_flParticleLifetime	= 1.0f;
+			m_pSporeTrail->m_flStartSize = 1.0f;
+			m_pSporeTrail->m_flEndSize = 1.0f;
+			m_pSporeTrail->m_flSpawnRadius = 8.0f;
 
-	m_pSporeTrail->m_vecEndColor		= Vector( 0, 0, 0 );
-	*/
+			m_pSporeTrail->m_vecEndColor = Vector( 0, 0, 0 );
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------

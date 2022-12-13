@@ -15,6 +15,7 @@
 #endif
 
 #include "basegrenade_shared.h"
+#include "hl2mp/weapon_slam.h"
 
 class CRopeKeyframe;
 
@@ -39,7 +40,7 @@ public:
 	void SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
 };
 
-class CTripwireGrenade : public CBaseGrenade
+class CTripwireGrenade : public CBaseGrenade, public CSteamIDWeapon
 {
 public:
 	DECLARE_CLASS( CTripwireGrenade, CBaseGrenade );
