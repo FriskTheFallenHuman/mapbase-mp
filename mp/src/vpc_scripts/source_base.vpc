@@ -41,6 +41,7 @@ $Configuration "Debug"
 
 		// Mapbase base definitions
 		$PreprocessorDefinitions		"$BASE;MAPBASE"		[$MAPBASE]
+		$PreprocessorDefinitions		"$BASE;MAPBASE_MP"		[$MAPBASE_MP]
 	}
 }
 
