@@ -51,6 +51,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_crowbar, CWeaponCrowbar );
 PRECACHE_WEAPON_REGISTER( weapon_crowbar );
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponCrowbar::m_acttable[] = 
 {
 	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
@@ -228,3 +231,57 @@ void CWeaponCrowbar::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 	}
 }
 #endif
+
+//-----------------------------------------------------------------------------
+// Animation event
+//-----------------------------------------------------------------------------
+
+IMPLEMENT_NETWORKCLASS_ALIASED( WeaponPipe, DT_WeaponPipe )
+
+BEGIN_NETWORK_TABLE( CWeaponPipe, DT_WeaponPipe )
+END_NETWORK_TABLE()
+
+BEGIN_PREDICTION_DATA( CWeaponPipe )
+END_PREDICTION_DATA()
+
+LINK_ENTITY_TO_CLASS( weapon_mattpipe, CWeaponPipe );
+PRECACHE_WEAPON_REGISTER( weapon_mattpipe );
+
+acttable_t	CWeaponPipe::m_acttable[] = 
+{
+	{ ACT_MELEE_ATTACK1,	ACT_MELEE_ATTACK_SWING, true },
+	{ ACT_IDLE,				ACT_IDLE_ANGRY_MELEE,	false },
+	{ ACT_IDLE_ANGRY,		ACT_IDLE_ANGRY_MELEE,	false },
+#if EXPANDED_HL2_WEAPON_ACTIVITIES
+	{ ACT_RUN,				ACT_RUN_MELEE,			false },
+	{ ACT_WALK,				ACT_WALK_MELEE,			false },
+
+	{ ACT_ARM,				ACT_ARM_MELEE,			false },
+	{ ACT_DISARM,			ACT_DISARM_MELEE,		false },
+#endif
+
+	// HL2:DM activities (for third-person animations in SP)
+	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_MELEE,					false },
+	{ ACT_MP_CROUCH_IDLE,				ACT_HL2MP_IDLE_CROUCH_MELEE,			false },
+
+	{ ACT_MP_RUN,						ACT_HL2MP_RUN_MELEE,					false },
+#if EXPANDED_HL2DM_ACTIVITIES
+	{ ACT_MP_WALK,						ACT_HL2MP_WALK_MELEE,					false },
+#endif
+	{ ACT_MP_CROUCHWALK,				ACT_HL2MP_WALK_CROUCH_MELEE,			false },
+
+	{ ACT_MP_ATTACK_STAND_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
+#if EXPANDED_HL2DM_ACTIVITIES
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK2_MELEE,	false },
+#else
+	{ ACT_MP_ATTACK_CROUCH_PRIMARYFIRE,	ACT_HL2MP_GESTURE_RANGE_ATTACK_MELEE,	false },
+#endif
+
+	{ ACT_MP_RELOAD_STAND,				ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
+	{ ACT_MP_RELOAD_CROUCH,				ACT_HL2MP_GESTURE_RELOAD_MELEE,			false },
+
+	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_MELEE,					false },
+};
+
+IMPLEMENT_ACTTABLE( CWeaponPipe );

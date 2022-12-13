@@ -1,9 +1,8 @@
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright ï¿½ 1996-2005, Valve Corporation, All rights reserved. ============//
 //
 // Purpose: 
 //
 //=============================================================================//
-
 #ifndef WEAPON_HL2MPBASE_H
 #define WEAPON_HL2MPBASE_H
 #ifdef _WIN32
@@ -29,6 +28,9 @@ class CHL2MP_Player;
 // MIKETODO: this should use indexing instead of searching and strcmp()'ing all the time.
 bool IsAmmoType( int iAmmoType, const char *pAmmoName );
 
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
 class CWeaponHL2MPBase : public CBaseCombatWeapon
 {
 public:
@@ -41,12 +43,12 @@ public:
 #ifdef GAME_DLL
 	DECLARE_DATADESC();
 	void Materialize( void );
-	virtual	int	ObjectCaps( void );
-	virtual void	FallThink( void );						// make the weapon fall to the ground after spawning
+	virtual	int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_IMPULSE_USE; }
+	virtual void FallThink( void );						// make the weapon fall to the ground after spawning
 #endif
 
 	// All predicted weapons need to implement and return true
-	virtual bool	IsPredicted() const;
+	virtual bool	IsPredicted() const { return true; }
 
 	CBasePlayer* GetPlayerOwner() const;
 	CHL2MP_Player* GetHL2MPPlayerOwner() const;

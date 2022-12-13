@@ -71,7 +71,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_ar2, CWeaponAR2 );
 PRECACHE_WEAPON_REGISTER(weapon_ar2);
 
-
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponAR2::m_acttable[] = 
 {
 #if AR2_ACTIVITY_FIX == 1

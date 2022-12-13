@@ -25,6 +25,9 @@
 	#include "basegrenade_shared.h"
 #endif
 
+// memdbgon must be the last include file in a .cpp file!!!
+#include "tier0/memdbgon.h"
+
 #ifdef CLIENT_DLL
 	#define CWeaponSMG1 C_WeaponSMG1
 #endif
@@ -110,6 +113,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_smg1, CWeaponSMG1 );
 PRECACHE_WEAPON_REGISTER(weapon_smg1);
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponSMG1::m_acttable[] = 
 {
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SMG1,			true },

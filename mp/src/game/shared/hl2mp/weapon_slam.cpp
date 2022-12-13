@@ -20,7 +20,7 @@
 	#include "eventqueue.h"
 #endif
 
-#include "hl2mp/weapon_slam.h"
+#include "hl2mp/weapon_slam.h" // Load the hl2mp version!
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -94,6 +94,9 @@ BEGIN_DATADESC( CWeapon_SLAM )
 END_DATADESC()
 #endif
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeapon_SLAM::m_acttable[] = 
 {
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_SLAM,					false },

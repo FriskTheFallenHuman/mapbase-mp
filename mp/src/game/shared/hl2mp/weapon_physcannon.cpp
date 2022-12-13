@@ -1294,6 +1294,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_physcannon, CWeaponPhysCannon );
 PRECACHE_WEAPON_REGISTER( weapon_physcannon );
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponPhysCannon::m_acttable[] = 
 {
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_PHYSGUN,						false },

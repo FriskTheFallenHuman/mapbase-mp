@@ -66,7 +66,9 @@ PRECACHE_WEAPON_REGISTER( weapon_stunstick );
 
 
 #ifndef CLIENT_DLL
-
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponStunStick::m_acttable[] = 
 {
 #ifdef HL2MP

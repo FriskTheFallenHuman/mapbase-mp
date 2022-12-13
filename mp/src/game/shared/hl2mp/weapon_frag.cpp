@@ -92,8 +92,12 @@ private:
 	DECLARE_ACTTABLE();
 };
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponFrag::m_acttable[] = 
 {
+	// HL2:DM activities (for third-person animations in SP)
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_GRENADE,					 false },
 	{ ACT_MP_CROUCH_IDLE,				ACT_HL2MP_IDLE_CROUCH_GRENADE,			 false },
 
@@ -143,7 +147,7 @@ END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_frag, CWeaponFrag );
-PRECACHE_WEAPON_REGISTER(weapon_frag);
+PRECACHE_WEAPON_REGISTER( weapon_frag );
 
 void DropPrimedFragGrenade( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pGrenade )
 {

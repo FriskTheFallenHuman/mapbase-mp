@@ -707,6 +707,9 @@ LINK_ENTITY_TO_CLASS( weapon_crossbow, CWeaponCrossbow );
 
 PRECACHE_WEAPON_REGISTER( weapon_crossbow );
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponCrossbow::m_acttable[] = 
 {
 #if EXPANDED_HL2_WEAPON_ACTIVITIES

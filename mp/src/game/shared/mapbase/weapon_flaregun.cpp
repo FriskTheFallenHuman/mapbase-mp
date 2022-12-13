@@ -1,17 +1,13 @@
-
-//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Mapbase MP - https://github.com/FriskTheFallenHuman/mapbase-mp ============//
 //
-// Purpose: 
+// Purpose: Flare gun (fffsssssssssss!!)
 //
 //=============================================================================//
-
 #include "cbase.h"
-#include "weapon_hl2mpbasehlmpcombatweapon.h"
+#include "mapbase/weapon_flaregun.h"
 #include "npcevent.h"
-#include "gamerules.h"
 #include "in_buttons.h"
-#include "vstdlib/random.h"
-#include "engine/IEngineSound.h"
+#include "rumble_shared.h"
 #include "gamestats.h"
 
 #ifdef CLIENT_DLL
@@ -19,104 +15,35 @@
 #else
 	#include "basecombatcharacter.h"
 	#include "ai_basenpc.h"
-	#include "hl2mp_player.h"
-	#include "soundent.h"
 	#include "game.h"
-	#include "te_effect_dispatch.h"
+	#include "ai_memory.h"
+	#include "soundent.h"
+	#include "hl2mp_player.h"
+	#include "env_flare.h"
+#endif
 
+#ifdef CLIENT_DLL
+	#define CWeaponSMG1 C_WeaponSMG1
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#ifdef CLIENT_DLL
-#define CWeapon357 C_Weapon357
-#endif
+IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFlaregun, DT_WeaponFlaregun )
 
-//-----------------------------------------------------------------------------
-// CWeapon357
-//-----------------------------------------------------------------------------
-
-#ifdef MAPBASE
-extern acttable_t* GetPistolActtable();
-extern int GetPistolActtableCount();
-#endif
-
-class CWeapon357 : public CBaseHL2MPCombatWeapon
-{
-	DECLARE_CLASS( CWeapon357, CBaseHL2MPCombatWeapon );
-public:
-
-	CWeapon357( void );
-
-	void	PrimaryAttack( void );
-	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
-
-	float	WeaponAutoAimScale()	{ return 0.6f; }
-
-#ifdef MAPBASE
-#ifdef GAME_DLL
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
-#endif // GAME_DLL
-
-	virtual int	GetMinBurst() { return 1; }
-	virtual int	GetMaxBurst() { return 1; }
-	virtual float	GetMinRestTime( void ) { return 1.0f; }
-	virtual float	GetMaxRestTime( void ) { return 2.5f; }
-
-	virtual float GetFireRate( void ) { return 1.0f; }
-
-#ifdef GAME_DLL
-	virtual const Vector& GetBulletSpread( void )
-	{
-		static Vector cone = VECTOR_CONE_15DEGREES;
-		if (!GetOwner() || !GetOwner()->IsNPC())
-			return cone;
-
-		static Vector AllyCone = VECTOR_CONE_2DEGREES;
-		static Vector NPCCone = VECTOR_CONE_5DEGREES;
-
-		if( GetOwner()->MyNPCPointer()->IsPlayerAlly() )
-		{
-			// 357 allies should be cooler
-			return AllyCone;
-		}
-
-		return NPCCone;
-	}
-
-	void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
-	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
-#endif // GAME_DLL
-
-	virtual acttable_t		*GetBackupActivityList() { return GetPistolActtable(); }
-	virtual int				GetBackupActivityListCount() { return GetPistolActtableCount(); }
-#endif
-
-	DECLARE_NETWORKCLASS(); 
-	DECLARE_PREDICTABLE();
-	DECLARE_ACTTABLE();
-
-private:
-	
-	CWeapon357( const CWeapon357 & );
-};
-
-IMPLEMENT_NETWORKCLASS_ALIASED( Weapon357, DT_Weapon357 )
-
-BEGIN_NETWORK_TABLE( CWeapon357, DT_Weapon357 )
+BEGIN_NETWORK_TABLE( CWeaponFlaregun, DT_WeaponFlaregun )
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeapon357 )
+BEGIN_PREDICTION_DATA( CWeaponFlaregun )
 END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( weapon_357, CWeapon357 );
-PRECACHE_WEAPON_REGISTER( weapon_357 );
+LINK_ENTITY_TO_CLASS( weapon_flaregun, CWeaponFlaregun );
+PRECACHE_WEAPON_REGISTER( weapon_flaregun );
 
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t CWeapon357::m_acttable[] = 
+acttable_t CWeaponFlaregun::m_acttable[] = 
 {
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
 	{ ACT_IDLE,						ACT_IDLE_REVOLVER,					true },
@@ -252,119 +179,28 @@ acttable_t CWeapon357::m_acttable[] =
 #endif
 };
 
-IMPLEMENT_ACTTABLE( CWeapon357 );
-
-// Allows Weapon_BackupActivity() to access the 357's activity table.
-acttable_t *Get357Acttable()
-{
-	return CWeapon357::m_acttable;
-}
-
-int Get357ActtableCount()
-{
-	return ARRAYSIZE(CWeapon357::m_acttable);
-}
+IMPLEMENT_ACTTABLE( CWeaponFlaregun );
 
 //-----------------------------------------------------------------------------
-// Purpose: Constructor
+// Purpose: Precache
 //-----------------------------------------------------------------------------
-CWeapon357::CWeapon357( void )
+void CWeaponFlaregun::Precache( void )
 {
-	m_bReloadsSingly	= false;
-	m_bFiresUnderwater	= false;
+	BaseClass::Precache();
 
-#ifdef MAPBASE
-	m_fMinRange1		= 24;
-	m_fMaxRange1		= 1000;
-	m_fMinRange2		= 24;
-	m_fMaxRange2		= 200;
-#endif
-}
+	PrecacheScriptSound( "Flare.Touch" );
+
+	PrecacheScriptSound( "Weapon_FlareGun.Burn" );
 
 #ifdef GAME_DLL
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CWeapon357::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
-{
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-
-	switch( pEvent->event )
-	{
-		case EVENT_WEAPON_RELOAD:
-			{
-				CEffectData data;
-
-				// Emit six spent shells
-				for ( int i = 0; i < 6; i++ )
-				{
-					IPredictionSystem::SuppressHostEvents( NULL );
-
-					data.m_vOrigin = pOwner->WorldSpaceCenter() + RandomVector( -4, 4 );
-					data.m_vAngles = QAngle( 90, random->RandomInt( 0, 360 ), 0 );
-					data.m_nEntIndex = entindex();
-
-					DispatchEffect( "ShellEject", data );
-				}
-
-				break;
-			}
-#ifdef MAPBASE
-		case EVENT_WEAPON_PISTOL_FIRE:
-			{
-				Vector vecShootOrigin, vecShootDir;
-				vecShootOrigin = pOperator->Weapon_ShootPosition();
-
-				CAI_BaseNPC *npc = pOperator->MyNPCPointer();
-				ASSERT( npc != NULL );
-
-				vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
-
-				FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
-	}
-			break;
-		default:
-			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
-			break;
-#endif
-	}
-}
-
-#ifdef MAPBASE
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CWeapon357::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir )
-{
-	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
-
-	WeaponSound( SINGLE_NPC );
-	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 1 );
-	pOperator->DoMuzzleFlash();
-	m_iClip1 = m_iClip1 - 1;
+	UTIL_PrecacheOther( "env_flare" );
+#endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Some things need this. (e.g. the new Force(X)Fire inputs or blindfire actbusy)
+// Purpose: Main attack
 //-----------------------------------------------------------------------------
-void CWeapon357::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
-{
-	// Ensure we have enough rounds in the clip
-	m_iClip1++;
-
-	Vector vecShootOrigin, vecShootDir;
-	QAngle	angShootDir;
-	GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
-	AngleVectors( angShootDir, &vecShootDir );
-	FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
-}
-#endif
-#endif // !GAME_DLL
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CWeapon357::PrimaryAttack( void )
+void CWeaponFlaregun::PrimaryAttack( void )
 {
 	// Only the player fires this way so we can cast
 	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
@@ -398,26 +234,26 @@ void CWeapon357::PrimaryAttack( void )
 	pPlayer->DoMuzzleFlash();
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
+
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
-	ToHL2MPPlayer(pPlayer)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+	ToHL2MPPlayer( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.75;
-	m_flNextSecondaryAttack = gpGlobals->curtime + 0.75;
 
 	m_iClip1--;
 
-	Vector vecSrc		= pPlayer->Weapon_ShootPosition();
-	Vector vecAiming	= pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
+	Vector forward;
+	pPlayer->EyeVectors( &forward );
 
-	FireBulletsInfo_t info( 1, vecSrc, vecAiming, vec3_origin, MAX_TRACE_LENGTH, m_iPrimaryAmmoType );
-	info.m_pAttacker = pPlayer;
+#ifdef GAME_DLL
+	CFlare *pFlare = CFlare::Create( pPlayer->Weapon_ShootPosition(), pPlayer->EyeAngles(), pPlayer, FLARE_DURATION );
+	if ( pFlare )
+		pFlare->SetAbsVelocity( forward * 1500 );	
+#endif // GANE_DLL
 
 #ifdef GAME_DLL
 	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
 #endif
-
-	// Fire the bullets, and force the first shot to be perfectly accuracy
-	pPlayer->FireBullets( info );
 
 	//Disorient the player
 	QAngle angles = pPlayer->GetLocalAngles();
@@ -425,10 +261,6 @@ void CWeapon357::PrimaryAttack( void )
 	angles.x += random->RandomInt( -1, 1 );
 	angles.y += random->RandomInt( -1, 1 );
 	angles.z = 0;
-
-/*#ifdef GAME_DLL
-	pPlayer->SnapEyeAngles( angles );
-#endif*/
 
 	pPlayer->ViewPunch( QAngle( -8, random->RandomFloat( -2, 2 ), 0 ) );
 

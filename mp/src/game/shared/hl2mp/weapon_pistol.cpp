@@ -164,6 +164,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_pistol, CWeaponPistol );
 PRECACHE_WEAPON_REGISTER( weapon_pistol );
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t CWeaponPistol::m_acttable[] = 
 {
 	{ ACT_IDLE,						ACT_IDLE_PISTOL,				true },

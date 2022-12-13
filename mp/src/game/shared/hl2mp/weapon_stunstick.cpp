@@ -162,7 +162,9 @@ END_PREDICTION_DATA()
 LINK_ENTITY_TO_CLASS( weapon_stunstick, CWeaponStunStick );
 PRECACHE_WEAPON_REGISTER( weapon_stunstick );
 
-
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponStunStick::m_acttable[] = 
 {
 	{ ACT_MELEE_ATTACK1,				ACT_MELEE_ATTACK_SWING,	true },

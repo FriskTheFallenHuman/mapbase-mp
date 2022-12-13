@@ -1464,6 +1464,9 @@ END_PREDICTION_DATA()
 
 #endif
 
+//-----------------------------------------------------------------------------
+// Maps base activities to weapons-specific ones so our characters do the right things.
+//-----------------------------------------------------------------------------
 acttable_t	CWeaponRPG::m_acttable[] = 
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },

@@ -22,21 +22,21 @@
 
 #ifdef CLIENT_DLL
 #define CWeaponCrowbar C_WeaponCrowbar
+#define CWeaponPipe C_WeaponPipe
 #endif
 
 #define	CROWBAR_RANGE	75.0f
 #define	CROWBAR_REFIRE	0.4f
 
 //-----------------------------------------------------------------------------
-// CWeaponCrowbar
+// Purpose: Gordon Freeman's Iconic Weapon
 //-----------------------------------------------------------------------------
-
 class CWeaponCrowbar : public CBaseHL2MPBludgeonWeapon
 {
 public:
 	DECLARE_CLASS( CWeaponCrowbar, CBaseHL2MPBludgeonWeapon );
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_ACTTABLE();
 
@@ -69,12 +69,22 @@ public:
 	void HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
 #endif
 
-	CWeaponCrowbar( const CWeaponCrowbar & );
-
 private:
-		
+
+	CWeaponCrowbar( const CWeaponCrowbar & );	
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: Matt's Pipe weapon
+//-----------------------------------------------------------------------------
+class CWeaponPipe : public CWeaponCrowbar
+{
+	DECLARE_CLASS( CWeaponPipe, CWeaponCrowbar );
+
+	DECLARE_NETWORKCLASS(); 
+	DECLARE_PREDICTABLE();
+	DECLARE_ACTTABLE();
+};
 
 #endif // HL2MP_WEAPON_CROWBAR_H
 
