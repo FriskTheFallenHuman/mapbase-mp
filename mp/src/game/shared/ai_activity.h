@@ -46,7 +46,7 @@
 // This essentially just means mods which restore those weapons have the option of using custom activities for them.
 // Mapbase's backup activity system would allow them to fall back to other weapons if the relevant activities do not exist.
 // Also includes activity names for "AR3", "SMG3", and "DUAL_PISTOLS", which were never used in HL2, but may be useful when additional animation sets are needed.
-#define EXPANDED_HL2_UNUSED_WEAPON_ACTIVITIES 0
+#define EXPANDED_HL2_UNUSED_WEAPON_ACTIVITIES 1
 
 // EXPANDED NAVIGATION ACTIVITIES
 // This enables some new navigation-related activities.
