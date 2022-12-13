@@ -95,24 +95,59 @@ $Project
 			$File	"mapbase\logic_register_activator.cpp"
 		}
 		
-		$Folder "HL2 DLL" [!$MAPBASE_MP]
+		$Folder "HL2 Server"
 		{
-			// Original stunstick files are conditional'd out in the HL2 VPCs
-			$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.cpp"
-			$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.h"
+			$Folder	"Point Entities"
+			{
+				$File	"$SRCDIR\game\shared\mapbase\env_flare.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\env_flare.h" [$MAPBASE_MP]
+			}
+
+			$Folder	"Weapons"
+			{
+				$File	"hl2\grenade_molotov.cpp" [$MAPBASE_MP]
+				$File	"hl2\grenade_molotov.h" [$MAPBASE_MP]
+				$File	"hl2\grenade_tripwire.cpp" [$MAPBASE_MP]
+				$File	"hl2\grenade_tripwire.h" [$MAPBASE_MP]
+
+				$File	"$SRCDIR\game\shared\mapbase\concussive_explosion.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\concussive_explosion.h" [$MAPBASE_MP]
+
+				// Original stunstick files are conditional'd out in the HL2 VPCs
+				$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.cpp" [!$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.h" [!$MAPBASE_MP]
+			}
 		}
-		
-		$Folder	"HL2MP" [!$MAPBASE_MP]
+
+		// This guns where ported from SP to MP		
+		$Folder	"HL2MP"
 		{
 			$Folder	"Weapons"
 			{
-				$File	"hl2mp\grenade_satchel.cpp"
-				$File	"hl2mp\grenade_satchel.h"
-				$File	"hl2mp\grenade_tripmine.cpp"
-				$File	"hl2mp\grenade_tripmine.h"
+				$File	"hl2mp\grenade_satchel.cpp" [!$MAPBASE_MP]
+				$File	"hl2mp\grenade_satchel.h" [!$MAPBASE_MP]
+				$File	"hl2mp\grenade_tripmine.cpp" [!$MAPBASE_MP]
+				$File	"hl2mp\grenade_tripmine.h" [!$MAPBASE_MP]
 				
-				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.cpp"
-				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.h"
+				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_annabelle.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_ar1.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_bugbait.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_cguard.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_immolator.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_smg2.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_sniperrifle.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.cpp" [!$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.h" [!$MAPBASE_MP]
 			}
 		}
 	}

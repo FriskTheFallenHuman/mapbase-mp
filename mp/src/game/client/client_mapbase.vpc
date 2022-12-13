@@ -75,19 +75,40 @@ $Project
 			$File	"mapbase\mapbase_autocubemap.cpp"
 		}
 		
-		$Folder "HL2 DLL" [!$MAPBASE_MP]
-		{
-			// Original stunstick files are conditional'd out in the HL2 VPCs
-			$File	"$SRCDIR\game\shared\hl2mp\weapon_stunstick.cpp"
-			$File	"$SRCDIR\game\shared\hl2mp\weapon_stunstick.h"
-		}
-		
-		$Folder	"HL2MP" [!$MAPBASE_MP]
+		$Folder "HL2 Client"
 		{
 			$Folder	"Weapons"
 			{
-				$File	"$SRCDIR\game\shared\hl2mp\weapon_slam.cpp"
-				$File	"$SRCDIR\game\shared\hl2mp\weapon_slam.h"
+				// Original stunstick files are conditional'd out in the HL2 VPCs
+				$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.cpp" [!$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_stunstick.h" [!$MAPBASE_MP]
+			}
+		}
+
+		// This guns where ported from SP to MP		
+		$Folder	"HL2MP"
+		{
+			$Folder	"Weapons"
+			{			
+				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_annabelle.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_ar1.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_bugbait.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_cguard.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_immolator.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_smg2.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_sniperrifle.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.cpp" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.h" [$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.cpp" [!$MAPBASE_MP]
+				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.h" [!$MAPBASE_MP]
 			}
 		}
 	}
