@@ -28,6 +28,7 @@
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "obstacle_pushaway.h"
 #include "ilagcompensationmanager.h"
+#include "CRagdollMagnet.h"
 #ifdef MAPBASE_MP
 #include "EntityFlame.h"
 #include "mapbase/mapbase_viewmodel.h"
@@ -306,28 +307,56 @@ void CHL2MP_Player::GiveAllItems( void )
 
 	// Give the player everything!
 	CBasePlayer::GiveAmmo( 255,	"Pistol");
+#ifdef MAPBASE_MP
+	CBasePlayer::GiveAmmo( 255,	"AlyxGun");
+#endif // MAPBASE_MP
 	CBasePlayer::GiveAmmo( 255,	"AR2");
 	CBasePlayer::GiveAmmo( 5,	"AR2AltFire");
 	CBasePlayer::GiveAmmo( 255,	"SMG1");
 	CBasePlayer::GiveAmmo( 255,	"Buckshot");
 	CBasePlayer::GiveAmmo( 3,	"smg1_grenade");
 	CBasePlayer::GiveAmmo( 3,	"rpg_round");
+#ifdef MAPBASE_MP
+	CBasePlayer::GiveAmmo( 15,	"FlareRounds" );
+	CBasePlayer::GiveAmmo( 255,	"CombineCannonPl" );
+#endif // MAPBASE_MP
 	CBasePlayer::GiveAmmo( 5,	"grenade");
-	CBasePlayer::GiveAmmo( 2,	"slam" );
+#ifdef MAPBASE_MP
+	CBasePlayer::GiveAmmo( 5,	"Molotov" );
+	CBasePlayer::GiveAmmo( 5,	"Tripwire" );
+#endif // MAPBASE_MP
+	CBasePlayer::GiveAmmo( 2,	"Slam" );
 	CBasePlayer::GiveAmmo( 32,	"357" );
 	CBasePlayer::GiveAmmo( 16,	"XBowBolt" );
 #ifdef HL2_EPISODIC
 	CBasePlayer::GiveAmmo( 5,	"Hopwire" );
-#endif		
+#endif
+
 	GiveNamedItem( "weapon_smg1" );
+#ifdef MAPBASE_MP
+	GiveNamedItem( "weapon_smg2" );
+#endif // MAPBASE_MP
 	GiveNamedItem( "weapon_frag" );
 	GiveNamedItem( "weapon_crowbar" );
 	GiveNamedItem( "weapon_stunstick" );
 	GiveNamedItem( "weapon_pistol" );
+#ifdef MAPBASE_MP
+	GiveNamedItem( "weapon_ar1" );
+	GiveNamedItem( "weapon_alyxgun" );
+	GiveNamedItem( "weapon_flaregun" );
+#endif // MAPBASE_MP
 	GiveNamedItem( "weapon_ar2" );
 	GiveNamedItem( "weapon_shotgun" );
+#ifdef MAPBASE_MP
+	GiveNamedItem( "weapon_annabelle" );
+	GiveNamedItem( "weapon_immolator" );
+#endif // MAPBASE_MP
 	GiveNamedItem( "weapon_physcannon" );
+#ifdef MAPBASE_MP
 	GiveNamedItem( "weapon_bugbait" );
+	GiveNamedItem( "weapon_molotov" );
+	GiveNamedItem( "weapon_tripwire" );
+#endif // MAPBASE_MP
 	GiveNamedItem( "weapon_rpg" );
 	GiveNamedItem( "weapon_slam" );
 	GiveNamedItem( "weapon_357" );
@@ -335,11 +364,7 @@ void CHL2MP_Player::GiveAllItems( void )
 #ifdef HL2_EPISODIC
 	// GiveNamedItem( "weapon_magnade" );
 #endif
-#ifdef MAPBASE_MP
-	GiveNamedItem( "weapon_bugbait" );
-	GiveNamedItem( "weapon_alyxgun" );
-	GiveNamedItem( "weapon_annabelle" );
-#endif
+
 	if ( GetHealth() < 100 )
 	{
 		TakeHealth( 25, DMG_GENERIC );
@@ -1116,9 +1141,40 @@ void CHL2MP_Player::Event_Killed( const CTakeDamageInfo &info )
 	CTakeDamageInfo subinfo = info;
 	subinfo.SetDamageForce( m_vecTotalBulletForce );
 
+	// Calculate death force
+	Vector forceVector = CalcDamageForceVector( subinfo );
+
+	// See if there's a ragdoll magnet that should influence our force.
+	CRagdollMagnet *pMagnet = CRagdollMagnet::FindBestMagnet( this );
+	if( pMagnet )
+	{
+#ifdef MAPBASE
+		if ( pMagnet->BoneTarget() && pMagnet->BoneTarget()[0] != '\0' )
+		{
+			int iBone = -1;
+			forceVector += pMagnet->GetForceVector( this, &iBone );
+			if ( iBone != -1 )
+				m_nForceBone = GetPhysicsBone(iBone);
+		}
+		else
+		{
+			forceVector += pMagnet->GetForceVector( this );
+		}
+
+		pMagnet->m_OnUsed.Set( forceVector, this, pMagnet );
+#else
+		forceVector += pMagnet->GetForceVector( this );
+#endif
+	}
+
+	CBaseCombatWeapon *pDroppedWeapon = m_hActiveWeapon.Get();
+
 	// Note: since we're dead, it won't draw us on the client, but we don't set EF_NODRAW
 	// because we still want to transmit to the clients in our PVS.
-	CreateRagdollEntity();
+
+	// Ragdoll unless we've gibbed
+	if ( ShouldGib( subinfo ) == false )
+		CreateRagdollEntity();
 
 #ifdef MAPBASE_MP
 	// We can't be on fire while dead!
@@ -1136,13 +1192,34 @@ void CHL2MP_Player::Event_Killed( const CTakeDamageInfo &info )
 
 	BaseClass::Event_Killed( subinfo );
 
-	if ( info.GetDamageType() & DMG_DISSOLVE )
+	int nDissolveType = ENTITY_DISSOLVE_NORMAL;
+	if ( ( subinfo.GetDamageType() & DMG_DISSOLVE ) && CanBecomeRagdoll() )
 	{
+		if ( subinfo.GetDamageType() & DMG_SHOCK )
+			nDissolveType = ENTITY_DISSOLVE_ELECTRICAL;
+		else if ( subinfo.GetDamageType() & DMG_ENERGYBEAM )
+			nDissolveType = ENTITY_DISSOLVE_ELECTRICAL_LIGHT;
+		else if ( subinfo.GetDamageType() & DMG_PLASMA )
+			nDissolveType = ENTITY_DISSOLVE_CORE;
+
 		if ( m_hRagdoll )
-		{
 			m_hRagdoll->GetBaseAnimating()->Dissolve( NULL, gpGlobals->curtime, false, ENTITY_DISSOLVE_NORMAL );
-		}
+
+		// Also dissolve any weapons we dropped
+		if ( pDroppedWeapon )
+			pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, nDissolveType );
 	}
+#ifdef HL2_DLL
+#ifdef MAPBASE
+	else if ( PlayerHasMegaPhysCannon() && GlobalEntity_GetCounter( "super_phys_gun" ) != 1 )
+#else
+	else if ( PlayerHasMegaPhysCannon() )
+#endif
+	{
+		if ( pDroppedWeapon )
+			pDroppedWeapon->Dissolve( NULL, gpGlobals->curtime, false, nDissolveType );
+	}
+#endif
 
 	CBaseEntity *pAttacker = info.GetAttacker();
 
