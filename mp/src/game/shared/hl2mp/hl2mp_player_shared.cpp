@@ -278,17 +278,11 @@ void CHL2MP_Player::FireBullets( const FireBulletsInfo_t& info )
 	lagcompensation->StartLagCompensation( this, this->GetCurrentCommand() );
 #endif // GAME_DLL
 
-	FireBulletsInfo_t modinfo = info;
-
-	CWeaponHL2MPBase* pWeapon = dynamic_cast<CWeaponHL2MPBase*>( GetActiveWeapon() );
-	if ( pWeapon )
-		modinfo.m_iPlayerDamage = modinfo.m_flDamage = pWeapon->GetHL2MPWpnData().m_iPlayerDamage;
-
 #ifdef GAME_DLL
 	NoteWeaponFired();
 #endif // GAME_DLL
 
-	BaseClass::FireBullets( modinfo );
+	BaseClass::FireBullets( info );
 
 #ifdef GAME_DLL
 	// Move other players back to history positions based on local player's lag
