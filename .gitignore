@@ -157,7 +157,7 @@ mp/game/*/expressions/*
 *.bak
 
 # Ignore our mapbase_*/content/ folder
-mp/game/mapbase_*/content/
+mp/game/mapbase_*/
 mp/game/mapbase_shared/
 
 # Build support files
