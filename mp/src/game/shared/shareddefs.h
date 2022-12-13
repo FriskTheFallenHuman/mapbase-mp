@@ -115,14 +115,24 @@ public:
 #define MAX_WEAPON_SLOTS		6	// hud item selection slots
 #define MAX_WEAPON_POSITIONS	20	// max number of items within a slot
 #define MAX_ITEM_TYPES			6	// hud item selection slots
+#ifdef MAPBASE
+#define MAX_WEAPONS				999	// Max number of weapons available
+#else
 #define MAX_WEAPONS				48	// Max number of weapons available
+#endif // MAPBASE
 
 #define MAX_ITEMS				5	// hard coded item types
 
 #define WEAPON_NOCLIP			-1	// clip sizes set to this tell the weapon it doesn't use a clip
 
+#ifdef MAPBASE
+// No idea of why this exist
+#define	MAX_AMMO_TYPES	999
+#define MAX_AMMO_SLOTS  MAX_AMMO_TYPES
+#else
 #define	MAX_AMMO_TYPES	32		// ???
 #define MAX_AMMO_SLOTS  32		// not really slots
+#endif // MAPBASE
 
 #define HUD_PRINTNOTIFY		1
 #define HUD_PRINTCONSOLE	2

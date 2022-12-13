@@ -260,7 +260,7 @@ enum SolidFlags_t
 
 #ifdef MAPBASE
 	// From https://developer.valvesoftware.com/wiki/Owner
-	FSOLID_COLLIDE_WITH_OWNER	= 0X0400,
+	FSOLID_COLLIDE_WITH_OWNER	= 0X0400,	// Can hit our m_hOwner
 #endif
 
 	FSOLID_MAX_BITS = 11
