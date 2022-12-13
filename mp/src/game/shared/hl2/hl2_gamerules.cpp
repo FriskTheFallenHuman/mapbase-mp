@@ -366,9 +366,11 @@ ConVar	sk_npc_dmg_smg1			( "sk_npc_dmg_smg1","0", FCVAR_REPLICATED);
 ConVar	sk_max_smg1				( "sk_max_smg1","0", FCVAR_REPLICATED);
 
 // FIXME: remove these
-//ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
-//ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED);
-//ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED);
+#ifdef MAPBASE_MP
+ConVar	sk_plr_dmg_flare_round	( "sk_plr_dmg_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_flare_round	( "sk_npc_dmg_flare_round","0", FCVAR_REPLICATED);
+ConVar	sk_max_flare_round		( "sk_max_flare_round","0", FCVAR_REPLICATED);
+#endif // MAPBASE_MP
 
 ConVar	sk_plr_dmg_buckshot		( "sk_plr_dmg_buckshot","0", FCVAR_REPLICATED);	
 ConVar	sk_npc_dmg_buckshot		( "sk_npc_dmg_buckshot","0", FCVAR_REPLICATED);
@@ -387,12 +389,15 @@ ConVar	sk_plr_dmg_sniper_round	( "sk_plr_dmg_sniper_round","0", FCVAR_REPLICATED
 ConVar	sk_npc_dmg_sniper_round	( "sk_npc_dmg_sniper_round","0", FCVAR_REPLICATED);
 ConVar	sk_max_sniper_round		( "sk_max_sniper_round","0", FCVAR_REPLICATED);
 
-//ConVar	sk_max_slam				( "sk_max_slam","0", FCVAR_REPLICATED);
-//ConVar	sk_max_tripwire			( "sk_max_tripwire","0", FCVAR_REPLICATED);
+#ifdef MAPBASE_MP
+ConVar	sk_max_slam				( "sk_max_slam","0", FCVAR_REPLICATED);
+ConVar	sk_max_tripwire			( "sk_max_tripwire","0", FCVAR_REPLICATED);
+ConVar	sk_max_cguard_ammo			( "sk_max_cguard_ammo","0", FCVAR_REPLICATED);
 
-//ConVar	sk_plr_dmg_molotov		( "sk_plr_dmg_molotov","0", FCVAR_REPLICATED);
-//ConVar	sk_npc_dmg_molotov		( "sk_npc_dmg_molotov","0", FCVAR_REPLICATED);
-//ConVar	sk_max_molotov			( "sk_max_molotov","0", FCVAR_REPLICATED);
+ConVar	sk_plr_dmg_molotov		( "sk_plr_dmg_molotov","0", FCVAR_REPLICATED);
+ConVar	sk_npc_dmg_molotov		( "sk_npc_dmg_molotov","0", FCVAR_REPLICATED);
+ConVar	sk_max_molotov			( "sk_max_molotov","0", FCVAR_REPLICATED);
+#endif // MAPBASE_MP
 
 ConVar	sk_plr_dmg_grenade		( "sk_plr_dmg_grenade","0", FCVAR_REPLICATED);
 ConVar	sk_npc_dmg_grenade		( "sk_npc_dmg_grenade","0", FCVAR_REPLICATED);
@@ -2263,7 +2268,13 @@ CAmmoDef *GetAmmoDef()
 		def.AddAmmoType("ammo_proto1",			DMG_BULLET,				TRACER_LINE,			0, 0, 10, 0, 0 );
 #endif // HL2_EPISODIC
 #ifdef MAPBASE
-		def.AddAmmoType("slam",				DMG_BURN,					TRACER_NONE,			0,			0,			5,			0,							0 );
+		def.AddAmmoType("Slam",				DMG_BURN,					TRACER_NONE,			0,			0,			"sk_max_slam",			0,							0 );
+#endif
+#ifdef MAPBASE_MP
+		def.AddAmmoType("CombineCannonPl",	DMG_BULLET,				TRACER_LINE,			"sk_npc_dmg_gunship_to_plr",		"sk_npc_dmg_gunship",			"sk_max_cguard_ammo",		1.5 * 750 * 12, 0); // hit like a 1.5kg weight at 750 ft/s
+		def.AddAmmoType("Tripwire",			DMG_BLAST,					TRACER_NONE,			"sk_plr_dmg_grenade",			"sk_npc_dmg_grenade",			"sk_max_tripwire",			0, 0);
+		def.AddAmmoType("FlareRounds",		DMG_BURN,					TRACER_NONE,			"sk_plr_dmg_flare_round",		"sk_npc_dmg_flare_round",		"sk_max_flare_round",		0, 0 );
+		def.AddAmmoType("Molotov",			DMG_BURN,					TRACER_NONE,			"sk_plr_dmg_molotov",			"sk_npc_dmg_molotov",			"sk_max_molotov",			0, 0 );
 #endif
 	}
 
