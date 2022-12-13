@@ -46,6 +46,10 @@ class CHudChat;
 
 IClientMode* g_pClientMode = NULL;
 
+//Tony; add stubs for cycler weapon and cubemap.
+STUB_WEAPON_CLASS( cycler_weapon,   WeaponCycler,   C_BaseCombatWeapon );
+STUB_WEAPON_CLASS( weapon_cubemap,  WeaponCubemap,  C_BaseCombatWeapon );
+
 // default FOV for HL2
 ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 
