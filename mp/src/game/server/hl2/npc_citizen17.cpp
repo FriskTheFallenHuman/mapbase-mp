@@ -15,22 +15,17 @@
 #include "weapon_rpg.h"
 #include "hl2_player.h"
 #include "items.h"
-
-
 #ifdef HL2MP
-#include "hl2mp/weapon_crowbar.h"
+	#include "hl2mp/weapon_crowbar.h"
 #else
-#include "weapon_crowbar.h"
+	#include "weapon_crowbar.h"
 #endif
-
 #include "eventqueue.h"
-
 #ifdef MAPBASE
-#include "hl2_gamerules.h"
-#include "mapbase/GlobalStrings.h"
-#include "collisionutils.h"
+	#include "hl2_gamerules.h"
+	#include "mapbase/GlobalStrings.h"
+	#include "collisionutils.h"
 #endif
-
 #include "ai_squad.h"
 #include "ai_pathfinder.h"
 #include "ai_route.h"
@@ -260,6 +255,8 @@ BEGIN_DATADESC( CCommandPoint )
 
 END_DATADESC()
 
+// This was added on hl2mp/weapon_crowbar.h
+#ifndef MAPBASE_MP
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 
@@ -274,6 +271,7 @@ class CMattsPipe : public CWeaponCrowbar
 #ifdef MAPBASE
 LINK_ENTITY_TO_CLASS(weapon_mattpipe, CMattsPipe);
 #endif
+#endif // MAPBASE_MP
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -924,7 +922,11 @@ void CNPC_Citizen::FixupMattWeapon()
 	{
 		Weapon_Drop( pWeapon );
 		UTIL_Remove( pWeapon );
+#ifdef MAPBASE_MP
+		pWeapon = (CBaseCombatWeapon *)CREATE_UNSAVED_ENTITY( CWeaponPipe, "weapon_mattpipe" );
+#else
 		pWeapon = (CBaseCombatWeapon *)CREATE_UNSAVED_ENTITY( CMattsPipe, "weapon_crowbar" );
+#endif // MAPBASE_MP
 		pWeapon->SetName( AllocPooledString( "matt_weapon" ) );
 		DispatchSpawn( pWeapon );
 
@@ -1823,7 +1825,7 @@ void CNPC_Citizen::StartTask( const Task_t *pTask )
 	case TASK_CIT_SPEAK_MOURNING:
 		if ( !IsSpeaking() && CanSpeakAfterMyself() )
 		{
- 			//CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();
+			//CAI_AllySpeechManager *pSpeechManager = GetAllySpeechManager();
 
 			//if ( pSpeechManager-> )
 
@@ -3889,15 +3891,15 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 	if ( IsMedic() )
 	{
 		Vector toPlayer = ( pTarget->GetAbsOrigin() - GetAbsOrigin() );
-	 	if (( bActiveUse || !HaveCommandGoal() || toPlayer.Length() < HEAL_TARGET_RANGE) 
+		if (( bActiveUse || !HaveCommandGoal() || toPlayer.Length() < HEAL_TARGET_RANGE) 
 #ifdef HL2_EPISODIC
 			&& fabs(toPlayer.z) < HEAL_TARGET_RANGE_Z
 #endif
 			)
-	 	{
+		{
 			if ( pTarget->m_iHealth > 0 )
 			{
-	 			if ( bActiveUse )
+				if ( bActiveUse )
 				{
 					// Ignore heal requests if we're going to heal a tiny amount
 					float timeFullHeal = m_flPlayerHealTime;
@@ -3909,9 +3911,9 @@ bool CNPC_Citizen::ShouldHealTarget( CBaseEntity *pTarget, bool bActiveUse )
 					if ( healAmt < sk_citizen_heal_player_min_forced.GetFloat() )
 						return false;
 
-	 				return ( pTarget->m_iMaxHealth > pTarget->m_iHealth );
+					return ( pTarget->m_iMaxHealth > pTarget->m_iHealth );
 				}
-	 				
+					
 				// Are we ready to heal again?
 				bool bReadyToHeal = ( ( bTargetIsPlayer && m_flPlayerHealTime <= gpGlobals->curtime ) || 
 									  ( !bTargetIsPlayer && m_flAllyHealTime <= gpGlobals->curtime ) );
