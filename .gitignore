@@ -34,6 +34,7 @@ mp/src/devtools/makefile_base_posix.mak.link
 !utils/smdlexp/smdlexp.mak
 
 # Specific Source build products
+build/
 mp/src/.vs/
 [Rr]elease*/
 [Dd]ebug*/
