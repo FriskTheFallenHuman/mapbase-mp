@@ -51,7 +51,7 @@ set(
 	"${TIER1_DIR}/snappy-sinksource.cpp"
 	"${TIER1_DIR}/snappy-stubs-internal.cpp"
 	"$<$<BOOL:${MAPBASE}>:${TIER1_DIR}/mapbase_con_groups.cpp>"
-	"$<$<BOOL:${MAPBASE}>:${TIER1_DIR}/mapbase_con_groups.h>"
+	"$<$<BOOL:${MAPBASE}>:${TIER1_DIR}/mapbase_matchers_base.cpp>"
 
 	# Select bits from the LZMA SDK to support lzmaDecoder.h
 	# Encoding support requires the full lzma project
@@ -129,8 +129,8 @@ set(
 	"${SRCDIR}/public/tier1/utlsymbollarge.h"
 	"${SRCDIR}/public/tier1/utlvector.h"
 	"${SRCDIR}/public/tier1/utlbinaryblock.h"
-	"$<$<BOOL:${MAPBASE}>:${$SRCDIR}/public/tier1/mapbase_con_groups.h"
-	"$<$<BOOL:${MAPBASE}>:${$SRCDIR}/public/tier1/mapbase_matchers_base.h"
+	"$<$<BOOL:${MAPBASE}>:${SRCDIR}/public/tier1/mapbase_con_groups.h>"
+	"$<$<BOOL:${MAPBASE}>:${SRCDIR}/public/tier1/mapbase_matchers_base.h>"
 	"$<${IS_WINDOWS}:${SRCDIR}/common/xbox/xboxstubs.h>"
 )
 
