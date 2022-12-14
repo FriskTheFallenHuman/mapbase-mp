@@ -23,13 +23,13 @@
 #include "sqstdstring.h"
 
 // HACK: Include internal parts of squirrel for serialization
-#include "squirrel/squirrel/sqobject.h"
-#include "squirrel/squirrel/sqstate.h"
-#include "squirrel/squirrel/sqtable.h"
-#include "squirrel/squirrel/sqclass.h"
-#include "squirrel/squirrel/sqfuncproto.h"
-#include "squirrel/squirrel/sqvm.h"
-#include "squirrel/squirrel/sqclosure.h"
+#include "sqobject.h"
+#include "sqstate.h"
+#include "sqtable.h"
+#include "sqclass.h"
+#include "sqfuncproto.h"
+#include "sqvm.h"
+#include "sqclosure.h"
 
 #include "tier1/utlbuffer.h"
 #include "tier1/mapbase_con_groups.h"
