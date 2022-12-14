@@ -21,14 +21,9 @@ set(
 	"${SERVER_MAPBASE_DIR}/movie_display.cpp"
 	"${SERVER_MAPBASE_DIR}/fogvolume.cpp"
 	"${SERVER_MAPBASE_DIR}/fogvolume.h"
-	"$<$<BOOL:${MAPBASE_RESPONSE_SYSTEM}>:${SERVER_MAPBASE_DIR}/ai_expresserfollowup.cpp>"
-	"$<$<BOOL:${MAPBASE_RESPONSE_SYSTEM}>:${SERVER_MAPBASE_DIR}/ai_speechqueue.cpp>"
-	"$<$<BOOL:${MAPBASE_RESPONSE_SYSTEM}>:${SERVER_MAPBASE_DIR}/ai_speechqueue.h>"
 
 	# Mapbase
 	"${SRCDIR}/game/shared/mapbase/mapbase_shared.cpp"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.h>"
 	"${SRCDIR}/game/shared/mapbase/mapbase_mountcontent.cpp"
 	"${SRCDIR}/game/shared/mapbase/mapbase_mountcontent.h"
 	"${SRCDIR}/game/shared/mapbase/mapbase_usermessages.cpp"
@@ -38,18 +33,6 @@ set(
 	"${SRCDIR}/game/shared/mapbase/MapEdit.h"
 	"${SRCDIR}/game/shared/mapbase/matchers.cpp"
 	"${SRCDIR}/game/shared/mapbase/matchers.h"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/singleplayer_animstate.cpp>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/singleplayer_animstate.h>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.h>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_singletons.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_singletons.h>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_funcs_hl2.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_consts_shared.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/vscript_consts_weapons.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/weapon_custom_scripted.cpp>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/weapon_custom_scripted.h>"
-	"$<$<BOOL:${MAPBASE_VSCRIPT}>:${SRCDIR}/game/shared/mapbase/logic_script_client.cpp>"
 	"${SERVER_MAPBASE_DIR}/mapbase/ai_grenade.cpp"
 	"${SERVER_MAPBASE_DIR}/mapbase/ai_grenade.h"
 	"${SERVER_MAPBASE_DIR}/mapbase/ai_monitor.cpp"
@@ -79,52 +62,120 @@ set(
 	"${SERVER_MAPBASE_DIR}/mapbase/vgui_text_display.cpp"
 	"${SERVER_MAPBASE_DIR}/mapbase/logic_eventlistener.cpp"
 	"${SERVER_MAPBASE_DIR}/mapbase/logic_register_activator.cpp"
-	
-	# HL2->Point Entities
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/env_flare.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/env_flare.h>"
-
-	# HL2->Weapons
-	"$<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.h>"
-
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/concussive_explosion.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/concussive_explosion.h>"
-
-	# Original stunstick files are conditional'd out in the HL2 VPCs
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_stunstick.cpp>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_stunstick.h>"
-
-	# This guns where ported from SP to MP
-	# HL2MP->Weapons
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2mp/grenade_satchel.cpp>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2mp/grenade_satchel.h>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2mp/grenade_tripmine.cpp>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SERVER_MAPBASE_DIR}/hl2mp/grenade_tripmine.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_alyxgun.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_alyxgun.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_annabelle.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_ar1.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_bugbait.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_cguard.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_flaregun.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_flaregun.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_immolator.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_molotov.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_molotov.h>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_smg2.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_sniperrifle.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_tripwire.cpp>"
-	"$<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_tripwire.h>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_slam.cpp>"
-	"$<$<NOT:<$<BOOL:${MAPBASE_MP}>:${SRCDIR}/game/shared/mapbase/weapon_slam.h>"
 )
 
 function(target_use_server_mapbase_features target)
+	# Do NOT append these files if we use the new system
+	if (NOT ${MAPBASE_RESPONSE_SYSTEM})
+		list(
+			APPEND 
+			${SERVER_MAPBASE_SOURCE_FILES}
+			"${SERVER_BASE_DIR}/AI_Criteria.cpp"
+			"${SERVER_BASE_DIR}/AI_ResponseSystem.cpp"
+			"${SERVER_BASE_DIR}/ai_speech.cpp"
+		)
+	endif()
+
+	# If we use the New Response System WE need these files
+	if (${MAPBASE_RESPONSE_SYSTEM})
+		list(
+			APPEND 
+			${SERVER_MAPBASE_SOURCE_FILES}
+			"${SRCDIR}/game/shared/ai_responsesystem_new.cpp"
+			"${SRCDIR}/game/shared/ai_responsesystem_new.h"
+			"${SERVER_BASE_DIR}/ai_speech_new.cpp"
+			"${SERVER_BASE_DIR}/ai_speech_new.h"
+			"${SRCDIR}/game/shared/ai_criteria_new.cpp"
+			"${SRCDIR}/game/shared/ai_criteria_new.h"
+			"${SERVER_MAPBASE_DIR}/ai_expresserfollowup.cpp"
+			"${SERVER_MAPBASE_DIR}/ai_speechqueue.cpp"
+			"${SERVER_MAPBASE_DIR}/ai_speechqueue.h"
+		)
+	endif()
+
+	# Don't append this files if we are running in MP
+	if (NOT ${MAPBASE_MP})
+		list(
+			APPEND 
+			${SERVER_MAPBASE_SOURCE_FILES}
+			"${SRCDIR}/game/shared/mapbase/singleplayer_animstate.cpp"
+			"${SRCDIR}/game/shared/mapbase/singleplayer_animstate.h"
+
+			"${SERVER_MAPBASE_DIR}/hl2mp/grenade_satchel.cpp"
+			"${SERVER_MAPBASE_DIR}/hl2mp/grenade_satchel.h"
+			"${SERVER_MAPBASE_DIR}/hl2mp/grenade_tripmine.cpp"
+			"${SERVER_MAPBASE_DIR}/hl2mp/grenade_tripmine.h"
+
+			# Original stunstick files are conditional'd out in the HL2 VPCs
+			"${SRCDIR}/game/shared/mapbase/weapon_stunstick.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_stunstick.h"
+
+			"${SRCDIR}/game/shared/mapbase/weapon_slam.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_slam.h"
+		)
+	endif()
+
+	# If VSCRIPT is enable, we need to include our implementation
+	if (${MAPBASE_VSCRIPT})
+		list(
+			APPEND 
+			${SERVER_MAPBASE_SOURCE_FILES}
+			"${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.cpp"
+			"${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.h"
+			"${SRCDIR}/game/shared/mapbase/vscript_singletons.cpp"
+			"${SRCDIR}/game/shared/mapbase/vscript_singletons.h"
+			"${SRCDIR}/game/shared/mapbase/vscript_funcs_hl2.cpp"
+			"${SRCDIR}/game/shared/mapbase/vscript_consts_shared.cpp"
+			"${SRCDIR}/game/shared/mapbase/vscript_consts_weapons.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_custom_scripted.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_custom_scripted.h"
+			"${SRCDIR}/game/shared/mapbase/logic_script_client.cpp"
+		)
+	endif()
+
+	# On Multiplayer we may want to use these instead
+	if (${MAPBASE_MP})
+		list(
+			APPEND 
+			${SERVER_MAPBASE_SOURCE_FILES}
+			"${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.cpp"
+			"${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.h"
+
+			# HL2->Point Entities
+			"${SRCDIR}/game/shared/mapbase/env_flare.cpp"
+			"${SRCDIR}/game/shared/mapbase/env_flare.h"
+
+			# HL2->Weapons
+			"${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.cpp"
+			"${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.h"
+			"${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.cpp"
+			"${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.h"
+
+			"${SRCDIR}/game/shared/mapbase/concussive_explosion.cpp"
+			"${SRCDIR}/game/shared/mapbase/concussive_explosion.h"
+
+			# This guns where ported from SP to MP
+			# HL2MP->Weapons
+			"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.h"
+			"${SRCDIR}/game/shared/mapbase/weapon_annabelle.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_ar1.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_bugbait.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_cguard.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h"
+			"${SRCDIR}/game/shared/mapbase/weapon_flaregun.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_flaregun.h"
+			"${SRCDIR}/game/shared/mapbase/weapon_immolator.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_molotov.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_molotov.h"
+			"${SRCDIR}/game/shared/mapbase/weapon_smg2.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_sniperrifle.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_tripwire.cpp"
+			"${SRCDIR}/game/shared/mapbase/weapon_tripwire.h"
+		)
+	endif()
+
 	target_sources(
 		${target} PRIVATE
 		${SERVER_MAPBASE_SOURCE_FILES}

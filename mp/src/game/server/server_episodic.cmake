@@ -284,7 +284,7 @@ set_target_properties(
 	server_episodic PROPERTIES
 	OUTPUT_NAME "server"
 	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${GAMENAME}/bin"
+	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${BUILD_FOLDER}/bin"
 )
 
 target_use_server_base(server_episodic SERVER_EPISODIC_EXCLUDE_SOURCES)

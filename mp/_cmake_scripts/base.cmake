@@ -45,11 +45,11 @@ elseif(${IS_LINUX})
 endif()
 
 # Mapbase only settings
-option(MAPBASE "Build the game code with Mapbase features enable" ON)
-option(MAPBASE_MP "Build the game code with extra features tailored for Multiplayer" ON)
-option(MAPBASE_RPC "Build the game code with Mapbase's Rich Presence Client implementations (requires discord-rpc.dll in game bin)" OFF)
-option(MAPBASE_VSCRIPT "Build the game code with VScript implementation (note: interfaces still exist, just the provided implementation is not present)" ON)
-option(MAPBASE_RESPONSE_SYSTEM "Build the game code with new Response System library based on the Alien Swarm SDK" ON)
+set(MAPBASE "ON" CACHE BOOL "Build the game code with Mapbase features enable")
+set(MAPBASE_MP "ON" CACHE BOOL "Build the game code with extra features tailored for Multiplayer")
+set(MAPBASE_RPC "OFF" CACHE BOOL "Build the game code with Mapbase's Rich Presence Client implementations (requires discord-rpc.dll in game bin)")
+set(MAPBASE_VSCRIPT "ON" CACHE BOOL "Build the game code with VScript implementation (note: interfaces still exist, just the provided implementation is not present)")
+set(MAPBASE_RESPONSE_SYSTEM "ON" CACHE BOOL "Build the game code with new Response System library based on the Alien Swarm SDK")
 
 # Stock source engine options
 option(RETAIL "Build in retail mode" OFF)
@@ -65,7 +65,6 @@ add_compile_definitions(
 	$<$<BOOL:${STAGING_ONLY}>:STAGING_ONLY>
 	$<${TF_BETA}:TF_BETA>
 	$<${RAD_TELEMETRY_DISABLED}:RAD_TELEMETRY_DISABLED>
-	$<${MAPBASE}:MAPBASE>
 	$<$<BOOL:${MAPBASE}>:MAPBASE>
 	$<$<BOOL:${MAPBASE_MP}>:MAPBASE_MP>
 	_DLL_EXT=${_DLL_EXT}

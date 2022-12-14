@@ -120,7 +120,7 @@ set_target_properties(
 	client_episodic PROPERTIES
 	OUTPUT_NAME "client"
 	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${GAMENAME}/bin"
+	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${BUILD_FOLDER}/bin"
 )
 
 target_include_directories(

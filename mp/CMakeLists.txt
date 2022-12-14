@@ -37,16 +37,20 @@ set_property(CACHE BUILD_GROUP PROPERTY STRINGS
 )
 
 # Which game are we building?
-set(BUILD_GAME "mapbase_hl2mp" CACHE STRING "Build Game")
+set(BUILD_GAME "hl2mp" CACHE STRING "Build Game")
+
+# The game build whe are putting the binaries
+set(BUILD_FOLDER "mapbase_hl2mp" CACHE STRING "Build Game")
 
 set_property(
 	CACHE BUILD_GAME PROPERTY STRINGS
-	"mapbase_hl2mp"
+	"hl2mp"
+	"hl2"
+	"episodic"
 )
 
 set(SRCDIR "${CMAKE_CURRENT_LIST_DIR}/src")
 set(GAMEDIR "${CMAKE_CURRENT_LIST_DIR}/game")
-set(GAMENAME "${GAMEDIR}/${BUILD_GAME}")
 set(THIRDPARTYDIR "${SRCDIR}/thirdparty")
 
 # Compile options that are populated and set for each target depending on their type

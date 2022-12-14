@@ -314,7 +314,7 @@ set_target_properties(
 	server_hl2mp PROPERTIES
 	OUTPUT_NAME "server"
 	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${GAMENAME}/bin"
+	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${BUILD_FOLDER}/bin"
 )
 
 target_use_server_base(server_hl2mp SERVER_HL2MP_EXCLUDE_SOURCES)
