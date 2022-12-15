@@ -69,7 +69,7 @@ function(target_use_server_mapbase_features target)
 	if (NOT ${MAPBASE_RESPONSE_SYSTEM})
 		list(
 			APPEND 
-			${SERVER_MAPBASE_SOURCE_FILES}
+			SERVER_MAPBASE_SOURCE_FILES
 			"${SERVER_BASE_DIR}/AI_Criteria.cpp"
 			"${SERVER_BASE_DIR}/AI_ResponseSystem.cpp"
 			"${SERVER_BASE_DIR}/ai_speech.cpp"
@@ -80,7 +80,7 @@ function(target_use_server_mapbase_features target)
 	if (${MAPBASE_RESPONSE_SYSTEM})
 		list(
 			APPEND 
-			${SERVER_MAPBASE_SOURCE_FILES}
+			SERVER_MAPBASE_SOURCE_FILES
 			"${SRCDIR}/game/shared/ai_responsesystem_new.cpp"
 			"${SRCDIR}/game/shared/ai_responsesystem_new.h"
 			"${SERVER_BASE_DIR}/ai_speech_new.cpp"
@@ -97,7 +97,7 @@ function(target_use_server_mapbase_features target)
 	if (NOT ${MAPBASE_MP})
 		list(
 			APPEND 
-			${SERVER_MAPBASE_SOURCE_FILES}
+			SERVER_MAPBASE_SOURCE_FILES
 			"${SRCDIR}/game/shared/mapbase/singleplayer_animstate.cpp"
 			"${SRCDIR}/game/shared/mapbase/singleplayer_animstate.h"
 
@@ -119,7 +119,12 @@ function(target_use_server_mapbase_features target)
 	if (${MAPBASE_VSCRIPT})
 		list(
 			APPEND 
-			${SERVER_MAPBASE_SOURCE_FILES}
+			SERVER_MAPBASE_SOURCE_FILES
+			"${SERVER_MAPBASE_DIR}/vscript_server.cpp"
+			"${SERVER_MAPBASE_DIR}/vscript_server.h"
+			"${SERVER_MAPBASE_DIR}/vscript_server.h"
+			"${SRCDIR}/game/shared/vscript_shared.cpp"
+			"${SRCDIR}/game/shared/vscript_shared.h"
 			"${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.cpp"
 			"${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.h"
 			"${SRCDIR}/game/shared/mapbase/vscript_singletons.cpp"
@@ -137,7 +142,7 @@ function(target_use_server_mapbase_features target)
 	if (${MAPBASE_MP})
 		list(
 			APPEND 
-			${SERVER_MAPBASE_SOURCE_FILES}
+			SERVER_MAPBASE_SOURCE_FILES
 			"${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.cpp"
 			"${SRCDIR}/game/shared/mapbase/mapbase_viewmodel.h"
 

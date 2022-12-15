@@ -259,6 +259,8 @@ set(
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_gameinterface.h"
 	"${SRCDIR}/game/shared/hl2mp/hl2mp_gamerules.cpp"
 	"${SRCDIR}/game/shared/hl2mp/hl2mp_gamerules.h"
+	"${SRCDIR}/game/shared/hl2mp/hl2mp_playeranimstate.cpp"
+	"${SRCDIR}/game/shared/hl2mp/hl2mp_playeranimstate.h"
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_player.cpp"
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_player.h"
 	"${SRCDIR}/game/shared/hl2mp/hl2mp_player_shared.cpp"
@@ -283,6 +285,8 @@ set(
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbase.h"
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbase_machinegun.cpp"
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbase_machinegun.h"
+	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbase_selectfiremachinegun.cpp"
+	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbase_selectfiremachinegun.h"
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbasebasebludgeon.cpp"
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbasehlmpcombatweapon.cpp"
 	"${SRCDIR}/game/shared/hl2mp/weapon_hl2mpbasehlmpcombatweapon.h"
@@ -296,6 +300,10 @@ set(
 	"${SRCDIR}/game/shared/hl2mp/weapon_slam.h"
 	"${SRCDIR}/game/shared/hl2mp/weapon_smg1.cpp"
 	"${SRCDIR}/game/shared/hl2mp/weapon_stunstick.cpp"
+	
+	# Multiplayer
+	"${SRCDIR}/game/shared/Multiplayer/multiplayer_animstate.cpp"
+	"${SRCDIR}/game/shared/Multiplayer/multiplayer_animstate.h"
 )
 
 set_source_files_properties(
