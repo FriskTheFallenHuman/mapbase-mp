@@ -1,2 +1,2 @@
 #!/bin/bash
-cmake -S . -B build -DBUILD_GROUP=shaders $@
+cmake -S . -B build -G "Unix Makefiles" -DBUILD_GROUP=shaders $@
