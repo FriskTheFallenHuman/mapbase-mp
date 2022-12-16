@@ -84,9 +84,9 @@ void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 
 	// If we have a start time now, start the overlays going
 #ifdef MAPBASE
-	if ( m_bIsActive && m_flStartTime > 0 && (view->GetScreenOverlayMaterial() == NULL || (m_iOverlayIndex != -1 && view->GetIndexedScreenOverlayMaterial(m_iOverlayIndex) == NULL)) )
+	if ( m_bIsActive && m_flStartTime > 0 && (g_pView->GetScreenOverlayMaterial() == NULL || (m_iOverlayIndex != -1 && g_pView->GetIndexedScreenOverlayMaterial(m_iOverlayIndex) == NULL)) )
 #else
-	if ( m_bIsActive && m_flStartTime > 0 && view->GetScreenOverlayMaterial() == NULL )
+	if ( m_bIsActive && m_flStartTime > 0 && g_pView->GetScreenOverlayMaterial() == NULL )
 #endif
 	{
 		StartOverlays();
@@ -124,13 +124,13 @@ void C_EnvScreenOverlay::StopOverlays( void )
 #ifdef MAPBASE
 		if (m_iOverlayIndex != -1)
 		{
-			view->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, NULL );
+			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, NULL );
 		}
 		else
 #endif
 		{
-		view->SetScreenOverlayMaterial( NULL );
-	}
+			g_pView->SetScreenOverlayMaterial( NULL );
+		}
 	}
 }
 
@@ -185,12 +185,12 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 #ifdef MAPBASE
 		if (m_iOverlayIndex != -1)
 		{
-			view->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, pMaterial );
+			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, pMaterial );
 		}
 		else
 #endif
 		{
-		view->SetScreenOverlayMaterial( pMaterial );
+			g_pView->SetScreenOverlayMaterial( pMaterial );
 		}
 	}
 	else

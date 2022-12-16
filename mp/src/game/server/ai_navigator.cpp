@@ -1005,17 +1005,17 @@ int CAI_Navigator::GetArrivalSequence( int curSequence )
 		if ( sequence == ACT_INVALID )
 		{
 #ifdef MAPBASE
-			if ( translatedActivity == ACT_SCRIPT_CUSTOM_MOVE )
-			{
-				// ACT_SCRIPT_CUSTOM_MOVE allows activity translation to resolve into specific sequences
-				sequence = GetOuter()->GetScriptCustomMoveSequence();
-			}
-			else
+				if ( translatedActivity == ACT_SCRIPT_CUSTOM_MOVE )
+				{
+					// ACT_SCRIPT_CUSTOM_MOVE allows activity translation to resolve into specific sequences
+					sequence = GetOuter()->GetScriptCustomMoveSequence();
+				}
+				else
 #endif
-			{
-			DevMsg( GetOuter(), "No appropriate sequence for arrival activity %s (%d)\n", GetOuter()->GetActivityName( GetPath()->GetArrivalActivity() ), GetPath()->GetArrivalActivity() );
-			sequence = GetOuter()->SelectWeightedSequence( GetOuter()->TranslateActivity( ACT_IDLE ), curSequence );
-		}
+				{
+				DevMsg( GetOuter(), "No appropriate sequence for arrival activity %s (%d)\n", GetOuter()->GetActivityName( GetPath()->GetArrivalActivity() ), GetPath()->GetArrivalActivity() );
+				sequence = GetOuter()->SelectWeightedSequence( GetOuter()->TranslateActivity( ACT_IDLE ), curSequence );
+			}
 		}
 		Assert( sequence != ACT_INVALID );
 		GetPath()->SetArrivalSequence( sequence );
@@ -4192,8 +4192,8 @@ void CAI_Navigator::DrawDebugRouteOverlay(void)
 
 		if (waypoint->GetNext()) 
 		{
-			Vector RGB = GetRouteColor(waypoint->GetNext()->NavType(), waypoint->GetNext()->Flags());
-			NDebugOverlay::Line(waypoint->GetPos(), waypoint->GetNext()->GetPos(),RGB[0],RGB[1],RGB[2], true,0);
+			Vector nRGB = GetRouteColor(waypoint->GetNext()->NavType(), waypoint->GetNext()->Flags());
+			NDebugOverlay::Line(waypoint->GetPos(), waypoint->GetNext()->GetPos(), nRGB[0], nRGB[1], nRGB[2], true,0);
 		}
 		waypoint = waypoint->GetNext();
 	}

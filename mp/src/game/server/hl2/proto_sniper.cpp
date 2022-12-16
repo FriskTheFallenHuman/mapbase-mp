@@ -1976,15 +1976,15 @@ int CProtoSniper::RangeAttack1Conditions ( float flDot, float flDist )
 			// the shot if he is being patient and the target is outside
 			// of the patience radius.
 
-			float flDist;
+			float flShotDist;
 
 #ifdef MAPBASE
-			flDist = ( GetAbsOrigin() - GetEnemy()->GetAbsOrigin() ).Length2D();
+			flShotDist = ( GetAbsOrigin() - GetEnemy()->GetAbsOrigin() ).Length2D();
 #else
-			flDist = ( GetLocalOrigin() - GetEnemy()->GetLocalOrigin() ).Length2D();
+			flShotDist = ( GetLocalOrigin() - GetEnemy()->GetLocalOrigin() ).Length2D();
 #endif
 
-			if( flDist <= m_flPatience )
+			if( flShotDist <= m_flPatience )
 			{
 				// This target is close enough to attack!
 				return COND_CAN_RANGE_ATTACK1;

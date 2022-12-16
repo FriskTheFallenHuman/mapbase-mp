@@ -579,7 +579,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 	// Draw debugging lightmaps
 	if ( mat_showlightmappage.GetInt() != -1 )
 	{
-		CLightmapDebugView clientView( assert_cast<CViewRender *>( ::view ) );
+		CLightmapDebugView clientView( assert_cast<CViewRender *>( g_pView ) );
 		clientView.Setup( view );
 		clientView.Draw();
 	}
@@ -690,24 +690,24 @@ CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_C
 	{
 		if ( !Q_stricmp( "off", args[1] ) )
 		{
-			view->SetScreenOverlayMaterial( NULL );
+			g_pView->SetScreenOverlayMaterial( NULL );
 		}
 		else
 		{
 			IMaterial *pMaterial = materials->FindMaterial( args[1], TEXTURE_GROUP_OTHER, false );
 			if ( !IsErrorMaterial( pMaterial ) )
 			{
-				view->SetScreenOverlayMaterial( pMaterial );
+				g_pView->SetScreenOverlayMaterial( pMaterial );
 			}
 			else
 			{
-				view->SetScreenOverlayMaterial( NULL );
+				g_pView->SetScreenOverlayMaterial( NULL );
 			}
 		}
 	}
 	else
 	{
-		IMaterial *pMaterial = view->GetScreenOverlayMaterial();
+		IMaterial *pMaterial = g_pView->GetScreenOverlayMaterial();
 		Warning( "r_screenoverlay: %s\n", pMaterial ? pMaterial->GetName() : "off" );
 	}
 }
@@ -729,18 +729,18 @@ CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay i
 
 		if ( !Q_stricmp( "off", args[2] ) )
 		{
-			view->SetIndexedScreenOverlayMaterial( index, NULL );
+			g_pView->SetIndexedScreenOverlayMaterial( index, NULL );
 		}
 		else
 		{
 			IMaterial *pMaterial = materials->FindMaterial( args[2], TEXTURE_GROUP_OTHER, false );
 			if ( !IsErrorMaterial( pMaterial ) )
 			{
-				view->SetIndexedScreenOverlayMaterial( index, pMaterial );
+				g_pView->SetIndexedScreenOverlayMaterial( index, pMaterial );
 			}
 			else
 			{
-				view->SetIndexedScreenOverlayMaterial( index, NULL );
+				g_pView->SetIndexedScreenOverlayMaterial( index, NULL );
 			}
 		}
 	}
@@ -753,7 +753,7 @@ CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay i
 			return;
 		}
 
-		IMaterial *pMaterial = view->GetIndexedScreenOverlayMaterial( index );
+		IMaterial *pMaterial = g_pView->GetIndexedScreenOverlayMaterial( index );
 		Warning( "r_screenoverlay_indexed %i: %s\n", index, pMaterial ? pMaterial->GetName() : "off" );
 	}
 	else

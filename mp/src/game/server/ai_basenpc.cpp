@@ -1000,28 +1000,28 @@ int CAI_BaseNPC::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 		if ( info.GetAttacker() )
 		{
-		if( info.GetAttacker()->IsPlayer() )
-		{
-			m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), this );
-			
-			// This also counts as being harmed by player's squad.
-			m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
-		}
-		else
-		{
-			// See if the person that injured me is an NPC.
-				CAI_BaseNPC *pAttacker = info.GetAttacker()->MyNPCPointer();
-			CBasePlayer *pPlayer = AI_GetSinglePlayer();
-
-			if( pAttacker && pAttacker->IsAlive() && pPlayer )
+			if( info.GetAttacker()->IsPlayer() )
 			{
-				if( pAttacker->GetSquad() != NULL && pAttacker->IsInPlayerSquad() )
+				m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), this );
+			
+				// This also counts as being harmed by player's squad.
+				m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+			}
+			else
+			{
+				// See if the person that injured me is an NPC.
+				CAI_BaseNPC *pAttacker = info.GetAttacker()->MyNPCPointer();
+				CBasePlayer *pPlayer = AI_GetSinglePlayer();
+
+				if( pAttacker && pAttacker->IsAlive() && pPlayer )
 				{
-					m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+					if( pAttacker->GetSquad() != NULL && pAttacker->IsInPlayerSquad() )
+					{
+						m_OnDamagedByPlayerSquad.FireOutput( info.GetAttacker(), this );
+					}
 				}
 			}
 		}
-	}
 	}
 
 	if( (info.GetDamageType() & DMG_CRUSH) && !(info.GetDamageType() & DMG_PHYSGUN) && info.GetDamage() >= MIN_PHYSICS_FLINCH_DAMAGE )
@@ -10909,9 +10909,9 @@ void CAI_BaseNPC::CollectShotStats( const Vector &vecShootOrigin, const Vector &
 	{
 		int iterations = ai_shot_stats_term.GetInt();
 		int iHits = 0;
-		Vector testDir = vecShootDir;
+		Vector testDir_ = vecShootDir;
 
-		CShotManipulator manipulator( testDir );
+		CShotManipulator manipulator( testDir_ );
 
 		for( int i = 0 ; i < iterations ; i++ )
 		{
@@ -13643,9 +13643,9 @@ bool CAI_BaseNPC::CineCleanup()
 				}
 				else if ( drop == 0 ) // Hanging in air?
 				{
-					Vector origin = GetLocalOrigin();
-					origin.z = new_origin.z;
-					SetLocalOrigin( origin );
+					Vector origin_ = GetLocalOrigin();
+					origin_.z = new_origin.z;
+					SetLocalOrigin( origin_ );
 					SetGroundEntity( NULL );
 				}
 			}

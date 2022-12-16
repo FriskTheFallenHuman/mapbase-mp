@@ -214,13 +214,13 @@ void CHudSuitPower::Paint()
 	if ( m_iActiveSuitDevices )
 	{
 		// draw the additional text
-		int ypos = text2_ypos;
+		int ypos2 = text2_ypos;
 
 		if (pPlayer->IsBreatherActive())
 		{
 			tempString = g_pVGuiLocalize->Find("#Valve_Hud_OXYGEN");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -230,14 +230,14 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"OXYGEN", wcslen(L"OXYGEN"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 
 		if (pPlayer->IsFlashlightActive())
 		{
 			tempString = g_pVGuiLocalize->Find("#Valve_Hud_FLASHLIGHT");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -247,14 +247,14 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"FLASHLIGHT", wcslen(L"FLASHLIGHT"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 
 		if (pPlayer->IsSprinting())
 		{
 			tempString = g_pVGuiLocalize->Find("#Valve_Hud_SPRINT");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -264,7 +264,7 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"SPRINT", wcslen(L"SPRINT"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 
 #ifdef MAPBASE
@@ -272,7 +272,7 @@ void CHudSuitPower::Paint()
 		{
 			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE0");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -282,14 +282,14 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"CUSTOM 0", wcslen(L"CUSTOM 0"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 
 		if (pPlayer->IsCustomDevice1Active())
 		{
 			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE1");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -299,14 +299,14 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"CUSTOM 1", wcslen(L"CUSTOM 1"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 
 		if (pPlayer->IsCustomDevice2Active())
 		{
 			tempString = g_pVGuiLocalize->Find("#Mapbase_Hud_DEVICE2");
 
-			surface()->DrawSetTextPos(text2_xpos, ypos);
+			surface()->DrawSetTextPos(text2_xpos, ypos2);
 
 			if (tempString)
 			{
@@ -316,7 +316,7 @@ void CHudSuitPower::Paint()
 			{
 				surface()->DrawPrintText(L"CUSTOM 2", wcslen(L"CUSTOM 2"));
 			}
-			ypos += text2_gap;
+			ypos2 += text2_gap;
 		}
 #endif
 	}

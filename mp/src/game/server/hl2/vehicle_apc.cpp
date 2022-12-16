@@ -566,9 +566,9 @@ int CPropAPC::OnTakeDamage( const CTakeDamageInfo &info )
 			if (ScriptDeathHook( const_cast<CTakeDamageInfo*>(&info) ) != false)
 #endif
 			{
-			m_iHealth = 0;
-			Event_Killed( dmgInfo );
-			return 0;
+				m_iHealth = 0;
+				Event_Killed( dmgInfo );
+				return 0;
 			}
 		}
 

@@ -1666,7 +1666,7 @@ bool IntersectRayWithOBB( const Ray_t &ray, const matrix3x4_t &matOBBToWorld,
 		}
 		temp.type = 3;
 
-		MatrixTransformPlane( matOBBToWorld, temp, pTrace->plane );
+		MatrixITransformPlane( matOBBToWorld, temp, pTrace->plane );
 		return true;
 	}
 

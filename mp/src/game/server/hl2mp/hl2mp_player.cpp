@@ -1292,7 +1292,7 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 {
 	CBaseEntity *pSpot = NULL;
 	CBaseEntity *pLastSpawnPoint = g_pLastSpawn;
-	edict_t		*player = edict();
+	edict_t		*playerEdict = edict();
 	const char *pSpawnpointName = "info_player_deathmatch";
 
 	if ( HL2MPRules()->IsTeamplay() == true )
@@ -1352,7 +1352,7 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 		for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 		{
 			// if ent is a client, kill em (unless they are ourselves)
-			if ( ent->IsPlayer() && !(ent->edict() == player) )
+			if ( ent->IsPlayer() && !(ent->edict() == playerEdict) )
 				ent->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC ) );
 		}
 		goto ReturnSpot;

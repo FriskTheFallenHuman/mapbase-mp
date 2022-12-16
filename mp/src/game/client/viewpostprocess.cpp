@@ -303,9 +303,9 @@ void ApplyPostProcessingPasses(PostProcessingPass *pass_list, // table of effect
 					pRenderContext->SetRenderTarget(NULL);
 					int row=pcount/4;
 					int col=pcount %4;
-					int destwidth,destheight;
-					pRenderContext->GetRenderTargetDimensions( destwidth, destheight );
-					pRenderContext->Viewport( 0, 0, destwidth, destheight );
+					int dest_width_,dest_height_;
+					pRenderContext->GetRenderTargetDimensions( dest_width_, dest_height_ );
+					pRenderContext->Viewport( 0, 0, dest_width_, dest_height_ );
 					DrawClippedScreenSpaceRectangle(src_mat,10+col*220,10+row*220,
 						200,200,
 						0,0,1,1,1,1,cb);
@@ -329,8 +329,8 @@ PostProcessingPass HDRFinal_Float[] =
 {
 	PPP_PROCESS_SRCTEXTURE( "dev/downsample", "_rt_FullFrameFB", "_rt_SmallFB0" ),
 	PPP_PROCESS_SRCTEXTURE( "dev/blurfilterx", "_rt_SmallFB0", "_rt_SmallFB1" ),
- 	PPP_PROCESS_SRCTEXTURE( "dev/blurfiltery", "_rt_SmallFB1", "_rt_SmallFB0" ),
- 	PPP_PROCESS_SRCTEXTURE("dev/floattoscreen_combine","_rt_FullFrameFB",NULL),
+	PPP_PROCESS_SRCTEXTURE( "dev/blurfiltery", "_rt_SmallFB1", "_rt_SmallFB0" ),
+	PPP_PROCESS_SRCTEXTURE("dev/floattoscreen_combine","_rt_FullFrameFB",NULL),
 	PPP_END
 };
 
@@ -609,9 +609,10 @@ void CLuminanceHistogramSystem::Update( void )
 	// now, issue queries for the oldest finished queries we have
 	while( n_queries_issued_this_frame < MAX_QUERIES_PER_FRAME )
 	{
-		int nNumRanges = N_LUMINANCE_RANGES;
-		if ( mat_tonemap_algorithm.GetInt() == 1 )
-			nNumRanges = N_LUMINANCE_RANGES_NEW;
+		// FIXME: VS2022 Port - These 3 lines, why?
+		// int nNumRanges = N_LUMINANCE_RANGES;
+		// if ( mat_tonemap_algorithm.GetInt() == 1 )
+		//	nNumRanges = N_LUMINANCE_RANGES_NEW;
 
 		int oldest_so_far =- 1;
 		for( int i = 0;i < nNumRanges;i ++ )
@@ -1166,14 +1167,14 @@ static bool s_bOverridePostProcessParams = false;
 
 void SetPostProcessParams( const PostProcessParameters_t* pPostProcessParameters )
 {
-    if (!s_bOverridePostProcessParams)
-	    s_LocalPostProcessParameters = *pPostProcessParameters;
+	if (!s_bOverridePostProcessParams)
+		s_LocalPostProcessParameters = *pPostProcessParameters;
 }
 
 void SetPostProcessParams( const PostProcessParameters_t* pPostProcessParameters, bool bOverride )
 {
-    s_bOverridePostProcessParams = bOverride;
-    s_LocalPostProcessParameters = *pPostProcessParameters;
+	s_bOverridePostProcessParams = bOverride;
+	s_LocalPostProcessParameters = *pPostProcessParameters;
 }
 
 void SetViewFadeParams( byte r, byte g, byte b, byte a, bool bModulate )
@@ -2576,9 +2577,9 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 					partialViewportPostDestRect.height	-= 0.50f*fullViewportPostDestRect.height;
 
 					// This math interprets texel coords as being at corner pixel centers (*not* at corner vertices):
-					Vector2D uvScaleCorner(	1.0f - ( (w / 2) / (float)(w - 1) ),
+					Vector2D uvScale_(	1.0f - ( (w / 2) / (float)(w - 1) ),
 										1.0f - ( (h / 2) / (float)(h - 1) ) );
-					CenterScaleQuadUVs( partialViewportPostSrcCorners, uvScaleCorner );
+					CenterScaleQuadUVs( partialViewportPostSrcCorners, uvScale_ );
 				}
 
 				// Temporary hack... Color correction was crashing on the first frame 
@@ -2602,7 +2603,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 						}
 
 						pRenderContext->DrawScreenSpaceRectangle(post_mat,
-                                                                 // TomF - offset already done by the viewport.
+																 // TomF - offset already done by the viewport.
 																 0,0, //partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 																 partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 																 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
@@ -2630,7 +2631,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 							}
 
 							pRenderContext->DrawScreenSpaceRectangle(aa_mat,
-                                                                     // TODO: check if offsets should be 0,0 here, as with the combined-pass case
+																	 // TODO: check if offsets should be 0,0 here, as with the combined-pass case
 																	 partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 																	 partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
@@ -2655,7 +2656,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 							}
 
 							pRenderContext->DrawScreenSpaceRectangle(bloom_mat,
-                                                                     // TODO: check if offsets should be 0,0 here, as with the combined-pass case
+																	 // TODO: check if offsets should be 0,0 here, as with the combined-pass case
 																	 partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 																	 partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
@@ -2686,7 +2687,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 							}
 
 							pRenderContext->DrawScreenSpaceRectangle(colcorrect_mat,
-                                                                     // TODO: check if offsets should be 0,0 here, as with the combined-pass case
+																	 // TODO: check if offsets should be 0,0 here, as with the combined-pass case
 																	 partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 																	 partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 																	 partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
@@ -2713,8 +2714,8 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 						}
 
 						DrawPyroVignette(
-                            // TODO: check if offsets should be 0,0 here, as with the combined-pass case
-                            partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
+							// TODO: check if offsets should be 0,0 here, as with the combined-pass case
+							partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 							partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 							partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
 							partialViewportPostSrcCorners.z,			partialViewportPostSrcCorners.w, 
@@ -2722,7 +2723,7 @@ void DoEnginePostProcessing( int x, int y, int w, int h, bool bFlashlightIsOn, b
 
 						IMaterial *pPyroVisionPostMaterial = materials->FindMaterial( "dev/pyro_post", TEXTURE_GROUP_OTHER, true);
 						DrawPyroPost( pPyroVisionPostMaterial,
-                            // TODO: check if offsets should be 0,0 here, as with the combined-pass case
+							// TODO: check if offsets should be 0,0 here, as with the combined-pass case
 							partialViewportPostDestRect.x,				partialViewportPostDestRect.y, 
 							partialViewportPostDestRect.width,			partialViewportPostDestRect.height, 
 							partialViewportPostSrcCorners.x,			partialViewportPostSrcCorners.y, 
@@ -3303,7 +3304,7 @@ static float GetFarBlurRadius()
 
 bool IsDepthOfFieldEnabled()
 {
-	const CViewSetup *pViewSetup = view->GetViewSetup();
+	const CViewSetup *pViewSetup = g_pView->GetViewSetup();
 	if ( !pViewSetup )
 		return false;
 

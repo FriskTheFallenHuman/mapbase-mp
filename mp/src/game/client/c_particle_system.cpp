@@ -171,23 +171,23 @@ void C_ParticleSystem::ClientThink( void )
 				}
 				else
 				{
-				for ( int i = 0 ; i < kMAXCONTROLPOINTS ; ++i )
-				{
-					CBaseEntity *pOnEntity = m_hControlPointEnts[i].Get();
-					if ( pOnEntity )
+					for ( int i = 0 ; i < kMAXCONTROLPOINTS ; ++i )
 					{
-						ParticleProp()->AddControlPoint( pEffect, i + 1, pOnEntity, PATTACH_ABSORIGIN_FOLLOW );
-					}
+						CBaseEntity *pOnEntity = m_hControlPointEnts[i].Get();
+						if ( pOnEntity )
+						{
+							ParticleProp()->AddControlPoint( pEffect, i + 1, pOnEntity, PATTACH_ABSORIGIN_FOLLOW );
+						}
 
-					AssertMsg2( m_iControlPointParents[i] >= 0 && m_iControlPointParents[i] <= kMAXCONTROLPOINTS ,
-						"Particle system specified bogus control point parent (%d) for point %d.",
-						m_iControlPointParents[i], i );
+						AssertMsg2( m_iControlPointParents[i] >= 0 && m_iControlPointParents[i] <= kMAXCONTROLPOINTS ,
+							"Particle system specified bogus control point parent (%d) for point %d.",
+							m_iControlPointParents[i], i );
 
-					if (m_iControlPointParents[i] != 0)
-					{
-						pEffect->SetControlPointParent(i+1, m_iControlPointParents[i]);
+						if (m_iControlPointParents[i] != 0)
+						{
+							pEffect->SetControlPointParent(i+1, m_iControlPointParents[i]);
+						}
 					}
-				}
 				}
 
 				// NOTE: What we really want here is to compare our lifetime and that of our children and see if this delta is

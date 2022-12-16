@@ -211,7 +211,7 @@ private:
 FORCEINLINE void NetworkVarConstruct( Vector &v ) { v.Zero(); }
 
 
-#define USE_M64S ( ( !defined( _X360 ) ) )
+//#define USE_M64S ( ( !defined( _X360 ) ) )
 
 
 
@@ -228,7 +228,7 @@ public:
 	void Init(short ix = 0, short iy = 0, short iz = 0, short iw = 0 );
 
 
-#if USE_M64S
+#if !defined( _X360 ) /*USE_M64S*/
 	__m64 &AsM64() { return *(__m64*)&x; }
 	const __m64 &AsM64() const { return *(const __m64*)&x; } 
 #endif
@@ -2155,7 +2155,7 @@ inline QAngle QAngle::operator/(float fl) const
 
 inline QAngle operator*(float fl, const QAngle& v)	
 { 
-        QAngle ret( v * fl );
+		QAngle ret( v * fl );
 	return ret;
 }
 
