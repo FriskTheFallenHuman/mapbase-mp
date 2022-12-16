@@ -16,7 +16,7 @@ set(
 	"${SRCDIR}/public/lumpfiles.cpp"
 	"${VRAD_DLL_DIR}/macro_texture.cpp"
 	"$<${IS_WINDOWS}:${SRCDIR}/utils/common/mpi_stats.cpp>"
-	"$<${IS_WINDOWS}:${VRAD_DLL_DIR}/common/mpivrad.cpp>"
+	"$<${IS_WINDOWS}:${VRAD_DLL_DIR}/mpivrad.cpp>"
 	"$<${IS_WINDOWS}:${SRCDIR}/utils/common/MySqlDatabase.cpp>"
 	"${SRCDIR}/utils/common/pacifier.cpp"
 	"${SRCDIR}/utils/common/physdll.cpp"
@@ -199,6 +199,11 @@ target_compile_definitions(
 	$<${IS_WINDOWS}:MPI>
 	PROTECTED_THINGS_DISABLE
 	VRAD
+)
+
+target_link_options(
+	vrad_dll PRIVATE 
+	"$<$<C_COMPILER_ID:MSVC>:-SAFESEH:NO>"
 )
 
 target_link_libraries(

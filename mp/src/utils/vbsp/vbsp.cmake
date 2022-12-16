@@ -140,6 +140,21 @@ set(
 	"${SRCDIR}/public/worldsize.h"
 )
 
+# If VSCRIPT is enable, we need to include our implementation
+if (${MAPBASE_VSCRIPT})
+	list(
+		APPEND 
+		VBSP_SOURCE_FILES
+		"${VBSP_DIR}/vscript_funcs_vis.cpp"
+		"${VBSP_DIR}/vscript_funcs_vis.h"
+		"${VBSP_DIR}/vscript_vbsp.nut"
+		"${VBSP_DIR}/vscript_funcs_vmfs.cpp"
+		"${VBSP_DIR}/vscript_funcs_vmfs.h"
+		"${VBSP_DIR}/vscript_vbsp.cpp"
+		"${VBSP_DIR}/vscript_vbsp.h"
+	)
+endif()
+
 add_executable(vbsp ${VBSP_SOURCE_FILES})
 
 set_target_properties(
@@ -158,7 +173,12 @@ target_compile_definitions(
 	MACRO_MATHLIB
 	PROTECTED_THINGS_DISABLE
 	$<${IS_POSIX}:USE_SDL>
-	$<${MAPBASE_VSCRIPT}:MAPBASE_VSCRIPT>
+	$<$<BOOL:${MAPBASE_VSCRIPT}>:MAPBASE_VSCRIPT>
+)
+
+target_link_options(
+	vbsp PRIVATE 
+	"$<$<C_COMPILER_ID:MSVC>:-SAFESEH:NO>"
 )
 
 target_link_libraries(
@@ -178,5 +198,5 @@ target_link_libraries(
 	"${LIBPUBLIC}/tier0${STATIC_LIB_EXT}"
 	"${LIBPUBLIC}/vstdlib${STATIC_LIB_EXT}"
 	"$<${IS_WINDOWS}:${LIBCOMMON}/lzma${STATIC_LIB_EXT}>"
-	$<${MAPBASE_VSCRIPT}:vscript>
+	$<$<BOOL:${MAPBASE_VSCRIPT}>:vscript>
 )
