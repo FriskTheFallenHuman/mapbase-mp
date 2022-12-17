@@ -404,12 +404,12 @@ void CWeapon_SLAM::TripmineAttach( void )
 		{
 
 #ifndef CLIENT_DLL
-			QAngle angles;
-			VectorAngles(tr.plane.normal, angles);
+			QAngle normAngles;
+			VectorAngles(tr.plane.normal, normAngles);
 
-			angles.x += 90;
+			normAngles.x += 90;
 
-			CBaseEntity *pEnt = CBaseEntity::Create( "npc_tripmine", tr.endpos + tr.plane.normal * 3, angles, NULL );
+			CBaseEntity *pEnt = CBaseEntity::Create( "npc_tripmine", tr.endpos + tr.plane.normal * 3, normAngles, NULL );
 
 			CTripmineGrenade *pMine = (CTripmineGrenade *)pEnt;
 #if !defined(NO_STEAM)

@@ -26,6 +26,7 @@
 #include "multiplay_gamerules.h"
 #include "voice_status.h"
 
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -1563,7 +1564,7 @@ void CBaseHudChatLine::Colorize( int alpha )
 			ConColorMsg( color, "%ls", wText );
 #endif
 
-			CBaseHudChat *pChat = dynamic_cast<CBaseHudChat*>(GetParent() );
+			//CBaseHudChat *pChat = dynamic_cast<CBaseHudChat*>(GetParent() );
 
 			if ( pChat && pChat->GetChatHistory() )
 			{	

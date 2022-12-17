@@ -285,8 +285,8 @@ void C_BaseCombatWeapon::DrawCrosshair()
 	}		 
 */
 
-	CHudCrosshair *crosshair = GET_HUDELEMENT( CHudCrosshair );
-	if ( !crosshair )
+	CHudCrosshair *pCrosshair = GET_HUDELEMENT( CHudCrosshair );
+	if ( !pCrosshair )
 		return;
 
 	// Find out if this weapon's auto-aimed onto a target
@@ -299,16 +299,16 @@ void C_BaseCombatWeapon::DrawCrosshair()
 		{
 			clr[3] = 255;
 
-			crosshair->SetCrosshair( GetWpnData().iconAutoaim, clr );
+			pCrosshair->SetCrosshair( GetWpnData().iconAutoaim, clr );
 		}
 		else if ( GetWpnData().iconCrosshair )
 		{
 			clr[3] = 255;
-			crosshair->SetCrosshair( GetWpnData().iconCrosshair, clr );
+			pCrosshair->SetCrosshair( GetWpnData().iconCrosshair, clr );
 		}
 		else
 		{
-			crosshair->ResetCrosshair();
+			pCrosshair->ResetCrosshair();
 		}
 	}
 	else
@@ -317,11 +317,11 @@ void C_BaseCombatWeapon::DrawCrosshair()
 
 		// zoomed crosshairs
 		if (bOnTarget && GetWpnData().iconZoomedAutoaim)
-			crosshair->SetCrosshair(GetWpnData().iconZoomedAutoaim, white);
+			pCrosshair->SetCrosshair(GetWpnData().iconZoomedAutoaim, white);
 		else if ( GetWpnData().iconZoomedCrosshair )
-			crosshair->SetCrosshair( GetWpnData().iconZoomedCrosshair, white );
+			pCrosshair->SetCrosshair( GetWpnData().iconZoomedCrosshair, white );
 		else
-			crosshair->ResetCrosshair();
+			pCrosshair->ResetCrosshair();
 	}
 }
 

@@ -49,6 +49,7 @@ CManifest::CManifest( void )
 	m_CordoningMapEnt = NULL;
 }
 
+
 //-----------------------------------------------------------------------------
 // Purpose: this function will parse through the known keys for the manifest map entry
 // Input  : szKey - the key name

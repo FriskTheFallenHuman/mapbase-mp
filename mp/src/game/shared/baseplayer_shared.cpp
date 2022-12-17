@@ -714,8 +714,8 @@ void CBasePlayer::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, flo
 	}
 	else
 	{
-		IPhysicsSurfaceProps *physprops = MoveHelper()->GetSurfaceProps();
-		const char *pSoundName = physprops->GetString( stepSoundName );
+		IPhysicsSurfaceProps *physsurfprops = MoveHelper()->GetSurfaceProps();
+		const char *pSoundName = physsurfprops->GetString( stepSoundName );
 
 		// Give child classes an opportunity to override.
 		pSoundName = GetOverrideStepSound( pSoundName );
@@ -1604,7 +1604,7 @@ void CBasePlayer::CalcPlayerView( Vector& eyeOrigin, QAngle& eyeAngles, float& f
 	if ( !prediction->InPrediction() )
 	{
 		// FIXME: Move into prediction
-		view->DriftPitch();
+		g_pView->DriftPitch();
 	}
 #endif
 

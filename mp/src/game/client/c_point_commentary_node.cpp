@@ -472,57 +472,57 @@ void C_PointCommentaryNode::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void C_PointCommentaryNode::StartAudioCommentary( const char *pszCommentaryFile, C_BasePlayer *pPlayer )
 {
-		EmitSound_t es;
-		es.m_nChannel = CHAN_STATIC;
-		es.m_pSoundName = pszCommentaryFile;
- 		es.m_SoundLevel = SNDLVL_GUNFIRE;
-		es.m_nFlags = SND_SHOULDPAUSE;
+	EmitSound_t es;
+	es.m_nChannel = CHAN_STATIC;
+	es.m_pSoundName = pszCommentaryFile;
+	es.m_SoundLevel = SNDLVL_GUNFIRE;
+	es.m_nFlags = SND_SHOULDPAUSE;
 
-		CBaseEntity *pSoundEntity;
-		if ( m_hViewPosition )
-		{
-			pSoundEntity = m_hViewPosition;
-		}
-		else if ( render->GetViewEntity() )
-		{
-			pSoundEntity = cl_entitylist->GetEnt( render->GetViewEntity() );
-			es.m_SoundLevel = SNDLVL_NONE;
-		}
-		else
-		{
-			pSoundEntity = pPlayer;
-		}
-		CSingleUserRecipientFilter filter( pPlayer );
-		m_sndCommentary = (CSoundEnvelopeController::GetController()).SoundCreate( filter, pSoundEntity->entindex(), es );
-		if ( m_sndCommentary )
-		{
-			(CSoundEnvelopeController::GetController()).SoundSetCloseCaptionDuration( m_sndCommentary, -1 );
-			(CSoundEnvelopeController::GetController()).Play( m_sndCommentary, 1.0f, 100, m_flStartTime );
-		}
+	CBaseEntity *pSoundEntity;
+	if ( m_hViewPosition )
+	{
+		pSoundEntity = m_hViewPosition;
+	}
+	else if ( render->GetViewEntity() )
+	{
+		pSoundEntity = cl_entitylist->GetEnt( render->GetViewEntity() );
+		es.m_SoundLevel = SNDLVL_NONE;
+	}
+	else
+	{
+		pSoundEntity = pPlayer;
+	}
+	CSingleUserRecipientFilter filter( pPlayer );
+	m_sndCommentary = (CSoundEnvelopeController::GetController()).SoundCreate( filter, pSoundEntity->entindex(), es );
+	if ( m_sndCommentary )
+	{
+		(CSoundEnvelopeController::GetController()).SoundSetCloseCaptionDuration( m_sndCommentary, -1 );
+		(CSoundEnvelopeController::GetController()).Play( m_sndCommentary, 1.0f, 100, m_flStartTime );
+	}
 
-		// Get the duration so we know when it finishes
-		float flDuration = enginesound->GetSoundDuration( STRING( CSoundEnvelopeController::GetController().SoundGetName( m_sndCommentary ) ) ) ;
+	// Get the duration so we know when it finishes
+	float flDuration = enginesound->GetSoundDuration( STRING( CSoundEnvelopeController::GetController().SoundGetName( m_sndCommentary ) ) ) ;
 	bool bSubtitlesEnabled = false;
 
-		CHudCloseCaption *pHudCloseCaption = (CHudCloseCaption *)GET_HUDELEMENT( CHudCloseCaption );
-		if ( pHudCloseCaption )
+	CHudCloseCaption *pHudCloseCaption = (CHudCloseCaption *)GET_HUDELEMENT( CHudCloseCaption );
+	if ( pHudCloseCaption )
+	{
+		// This is where we play the commentary close caption (and lock the other captions out).
+		// Also, if close captions are off we force a caption in non-English
+		if ( closecaption.GetBool() || ( !closecaption.GetBool() && !english.GetBool() ) )
 		{
-			// This is where we play the commentary close caption (and lock the other captions out).
-			// Also, if close captions are off we force a caption in non-English
-			if ( closecaption.GetBool() || ( !closecaption.GetBool() && !english.GetBool() ) )
-			{
-				// Clear the close caption element in preparation
-				pHudCloseCaption->Reset();
+			// Clear the close caption element in preparation
+			pHudCloseCaption->Reset();
 
-				// Process the commentary caption
-				pHudCloseCaption->ProcessCaptionDirect( pszCommentaryFile, flDuration );
+			// Process the commentary caption
+			pHudCloseCaption->ProcessCaptionDirect( pszCommentaryFile, flDuration );
 
-				// Find the close caption hud element & lock it
-				pHudCloseCaption->Lock();
+			// Find the close caption hud element & lock it
+			pHudCloseCaption->Lock();
 
 			bSubtitlesEnabled = true;
-			}
 		}
+	}
 
 	char *pszSpeakers = m_iszSpeakers;
 

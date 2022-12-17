@@ -3,8 +3,8 @@
 // Purpose:
 //
 //=============================================================================//
-#undef strncpy // we use std::string below that needs a good strncpy define
-#undef sprintf // "
+//#undef strncpy // we use std::string below that needs a good strncpy define
+//#undef sprintf // "
 #include "cbase.h"
 
 #include "ai_behavior_lead.h"
@@ -179,7 +179,7 @@ void CAI_LeadBehavior::StopLeading( void )
 
 bool CAI_LeadBehavior::CanSelectSchedule()
 {
- 	if ( !AI_GetSinglePlayer() || AI_GetSinglePlayer()->IsDead() )
+	if ( !AI_GetSinglePlayer() || AI_GetSinglePlayer()->IsDead() )
 		return false;
 
 	bool fAttacked = ( HasCondition( COND_LIGHT_DAMAGE ) || HasCondition( COND_HEAVY_DAMAGE ) );
@@ -904,13 +904,13 @@ void CAI_LeadBehavior::RunTask( const Task_t *pTask )
 		case TASK_LEAD_MOVE_TO_RANGE:
 		{
 			// If we haven't spoken our start speech, move closer
- 			if ( !m_hasspokenstart)
+			if ( !m_hasspokenstart)
 			{
 				ChainRunTask( TASK_MOVE_TO_GOAL_RANGE, m_leaddistance - 24 );
 			}
 			else
 			{
- 				ChainRunTask( TASK_MOVE_TO_GOAL_RANGE, m_retrievedistance );
+				ChainRunTask( TASK_MOVE_TO_GOAL_RANGE, m_retrievedistance );
 
 				if ( !TaskIsComplete() )
 				{
@@ -1022,7 +1022,7 @@ bool CAI_LeadBehavior::Speak( AIConcept_t concept )
 		// We ignore nag timers for this, because the response rules will control refire rates.
 		CAI_PlayerAlly *pAlly = dynamic_cast<CAI_PlayerAlly*>(GetOuter());
 		if ( pAlly )
- 			return pAlly->SpeakIfAllowed( concept, GetConceptModifiers( concept ) );
+			return pAlly->SpeakIfAllowed( concept, GetConceptModifiers( concept ) );
 	}
 
 	// Don't spam Nags
@@ -1530,7 +1530,7 @@ void CAI_LeadGoal::InputActivate( inputdata_t &inputdata )
 		return;
 	}
 #ifdef HL2_EPISODIC
- 	if ( (m_flLeadDistance*4) < m_flRetrieveDistance )
+	if ( (m_flLeadDistance*4) < m_flRetrieveDistance )
 	{
 		Warning("ai_goal_lead '%s': lead distance (%.2f) * 4 is < retrieve distance (%.2f). This will make the NPC act stupid. Either reduce the retrieve distance, or increase the lead distance.\n", GetDebugName(), m_flLeadDistance, m_flRetrieveDistance );
 	}

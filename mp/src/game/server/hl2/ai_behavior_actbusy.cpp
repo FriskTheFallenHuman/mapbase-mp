@@ -2277,7 +2277,7 @@ void CAI_ActBusyBehavior::NotifyBusyEnding( void )
 	}
 
 	// Then, if we were busy, stop being busy
- 	if ( m_bBusy )
+	if ( m_bBusy )
 	{
 		m_bBusy = false;
 
@@ -2620,7 +2620,7 @@ void CAI_ActBusyGoal::InputForceNPCToActBusy( inputdata_t &inputdata )
 	CBaseEntity *pSeeEntity = NULL;
 
 	// Get NPC name
- 	char *pszParam = strtok(parseString," ");
+	char *pszParam = strtok(parseString," ");
 	CAI_ActBusyBehavior *pBehavior = GetBusyBehaviorForNPC( pszParam, inputdata.pActivator, inputdata.pCaller, "InputForceNPCToActBusy" );
 	if ( !pBehavior )
 		return;
@@ -2654,13 +2654,13 @@ void CAI_ActBusyGoal::InputForceNPCToActBusy( inputdata_t &inputdata )
 
 	if ( !bEpisodicBugFix )
 	{
- 		pszParam = strtok(NULL," ");
+		pszParam = strtok(NULL," ");
 	}
 
 	while ( pszParam )
 	{
 		// Teleport?
- 		if ( !Q_strncmp( pszParam, "teleport", 8 ) )
+		if ( !Q_strncmp( pszParam, "teleport", 8 ) )
 		{
 			bTeleport = true;
 		}

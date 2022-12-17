@@ -407,10 +407,10 @@ extern	bool		g_bNoHiddenManifestMaps;
 extern bool			g_bPropperInsertAllAsStatic;
 extern bool			g_bPropperStripEntities;
 #endif
-extern	char		outbase[32];
+extern	char		g_outbase[32];
 
-extern	char	source[1024];
-extern char		mapbase[ 64 ];
+extern	char	g_source[1024];
+extern char		g_mapbase[ 64 ];
 extern CUtlVector<int> g_SkyAreas;
 
 bool 	LoadMapFile( const char *pszFileName );

@@ -406,7 +406,7 @@ void C_HL2MP_Player::UpdateFlashlight()
 		if (!m_pHL2MPFlashLightEffect)
 		{
 			// Turned on the headlight; create it.
-			m_pHL2MPFlashLightEffect = new CHL2MPFlashlightEffect(index);
+			m_pHL2MPFlashLightEffect = new CHL2MPFlashlightEffect( m_index );
 
 			if (!m_pHL2MPFlashLightEffect)
 				return;

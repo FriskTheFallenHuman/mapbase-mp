@@ -11,21 +11,24 @@
 #pragma once
 #endif
 
-#include "basecombatweapon_shared.h"
+// The base class of the scripted weapon is game-specific.
+#if defined ( HL2MP )
+	#include "weapon_hl2mpbasehlmpcombatweapon.h"
+	#define SCRIPTED_WEAPON_DERIVED_FROM CBaseHL2MPCombatWeapon
+#elif defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
+	#include "basehlcombatweapon_shared.h"
+	#define SCRIPTED_WEAPON_DERIVED_FROM CBaseHLCombatWeapon
+#else
+	#include "basecombatweapon_shared.h"
+	#define SCRIPTED_WEAPON_DERIVED_FROM CBaseCombatWeapon
+#endif // HL2_DLL || HL2_CLIENT_DLL || HL2MP
+
 #ifdef CLIENT_DLL
 #include "vscript_client.h"
 #endif
 
-// The base class of the scripted weapon is game-specific.
-#if defined(HL2_DLL) || defined(HL2_CLIENT_DLL)
-#include "basehlcombatweapon_shared.h"
-#define SCRIPTED_WEAPON_DERIVED_FROM CBaseHLCombatWeapon
-#else
-#define SCRIPTED_WEAPON_DERIVED_FROM CBaseCombatWeapon
-#endif
-
 #ifdef CLIENT_DLL
-#define CWeaponCustomScripted C_WeaponCustomScripted
+	#define CWeaponCustomScripted C_WeaponCustomScripted
 #endif
 
 #define DECLARE_CACHED_HOOK(name) static ScriptHook_t g_Hook_##name; \
@@ -48,64 +51,64 @@ public:
 	// Base script has a function for this
 	//void	Precache( void );
 
-	void			Spawn( void );
+	virtual void	Spawn( void );
 
-	bool			IsPredicted( void ) const { return m_iszClientScripts[0] != '\0'; }
+	virtual bool	IsPredicted( void ) const { return m_iszClientScripts[0] != '\0'; }
 
 	const char*		GetWeaponScriptName() { return m_iszWeaponScriptName[0] != '\0' ? m_iszWeaponScriptName : BaseClass::GetWeaponScriptName(); }
 
 	// Weapon selection
-	bool			HasAnyAmmo( void );						// Returns true is weapon has ammo
-	bool			HasPrimaryAmmo( void );					// Returns true is weapon has ammo
-	bool			HasSecondaryAmmo( void );				// Returns true is weapon has ammo
+	virtual bool	HasAnyAmmo( void );						// Returns true is weapon has ammo
+	virtual bool	HasPrimaryAmmo( void );					// Returns true is weapon has ammo
+	virtual bool	HasSecondaryAmmo( void );				// Returns true is weapon has ammo
 
-	bool			CanHolster( void );		// returns true if the weapon can be holstered
-	bool			CanDeploy( void );			// return true if the weapon's allowed to deploy
-	bool			Deploy( void );								// returns true is deploy was successful
-	bool			Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual bool	CanHolster( void );						// returns true if the weapon can be holstered
+	virtual bool	CanDeploy( void );						// return true if the weapon's allowed to deploy
+	virtual bool	Deploy( void );							// returns true is deploy was successful
+	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
 
 	// Weapon behaviour
-	void			ItemPreFrame( void );					// called each frame by the player PreThink
-	void			ItemPostFrame( void );					// called each frame by the player PostThink
-	void			ItemBusyFrame( void );					// called each frame by the player PostThink, if the player's not ready to attack yet
-	void			ItemHolsterFrame( void );			// called each frame by the player PreThink, if the weapon is holstered
-	void			WeaponIdle( void );						// called when no buttons pressed
-	void			HandleFireOnEmpty();					// Called when they have the attack button down
+	virtual void	ItemPreFrame( void );					// called each frame by the player PreThink
+	virtual void	ItemPostFrame( void );					// called each frame by the player PostThink
+	virtual void	ItemBusyFrame( void );					// called each frame by the player PostThink, if the player's not ready to attack yet
+	virtual void	ItemHolsterFrame( void );				// called each frame by the player PreThink, if the weapon is holstered
+	virtual void	WeaponIdle( void );						// called when no buttons pressed
+	virtual void	HandleFireOnEmpty();					// Called when they have the attack button down
 
 	// Reloading
-	void			CheckReload( void );
-	void			FinishReload( void );
-	void			AbortReload( void );
-	bool			Reload( void );
-	void			Reload_NPC( bool bPlaySound = true );
+	virtual void	CheckReload( void );
+	virtual void	FinishReload( void );
+	virtual void	AbortReload( void );
+	virtual bool	Reload( void );
+	virtual void	Reload_NPC( bool bPlaySound = true );
 
 	// Weapon firing
-	void			PrimaryAttack( void );				// do "+ATTACK"
-	void			SecondaryAttack( void );			// do "+ATTACK2"
+	virtual void	PrimaryAttack( void );				// do "+ATTACK"
+	virtual void	SecondaryAttack( void );			// do "+ATTACK2"
 
 	// Firing animations
-	Activity		GetPrimaryAttackActivity( void );
-	Activity		GetSecondaryAttackActivity( void );
-	Activity		GetDrawActivity( void );
-	float			GetDefaultAnimSpeed( void );
+	virtual Activity	GetPrimaryAttackActivity( void );
+	virtual Activity	GetSecondaryAttackActivity( void );
+	virtual Activity	GetDrawActivity( void );
+	virtual float		GetDefaultAnimSpeed( void );
 
 	// Bullet launch information
-	const Vector&	GetBulletSpread( void );
-	Vector			GetBulletSpread( WeaponProficiency_t proficiency );
-	float			GetFireRate( void );
-	int				GetMinBurst();
-	int				GetMaxBurst();
-	float			GetMinRestTime();
-	float			GetMaxRestTime();
+	virtual const Vector&	GetBulletSpread( void );
+	virtual Vector			GetBulletSpread( WeaponProficiency_t proficiency );
+	virtual float			GetFireRate( void );
+	virtual int				GetMinBurst();
+	virtual int				GetMaxBurst();
+	virtual float			GetMinRestTime();
+	virtual float			GetMaxRestTime();
 
-	void			AddViewKick( void );
+	virtual void	AddViewKick( void );
 
 #ifndef CLIENT_DLL
-	bool			WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
-	int				WeaponRangeAttack1Condition( float flDot, float flDist );
-	int				WeaponRangeAttack2Condition( float flDot, float flDist );
-	int				WeaponMeleeAttack1Condition( float flDot, float flDist );
-	int				WeaponMeleeAttack2Condition( float flDot, float flDist );
+	virtual bool	WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
+	virtual int		WeaponRangeAttack2Condition( float flDot, float flDist );
+	virtual int		WeaponMeleeAttack1Condition( float flDot, float flDist );
+	virtual int		WeaponMeleeAttack2Condition( float flDot, float flDist );
 #endif
 
 	ALLOW_SCRIPT_ACCESS();

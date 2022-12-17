@@ -5,6 +5,7 @@
 // $Workfile:     $
 // $NoKeywords: $
 //=============================================================================//
+
 #if !defined( C_BASEHLPLAYER_H )
 #define C_BASEHLPLAYER_H
 #ifdef _WIN32

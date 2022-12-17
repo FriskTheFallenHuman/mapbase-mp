@@ -850,7 +850,6 @@ void CPropCombineBall::WhizSoundThink()
 	else
 	{
 		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-
 		if ( pPlayer )
 		{
 			Vector vecDelta;
@@ -885,7 +884,6 @@ void CPropCombineBall::WhizSoundThink()
 				}
 			}
 		}
-
 	}
 
 	SetContextThink( &CPropCombineBall::WhizSoundThink, gpGlobals->curtime + 2.0f * TICK_INTERVAL, s_pWhizThinkContext );
@@ -1610,7 +1608,14 @@ void CPropCombineBall::DeflectTowardEnemy( float flSpeed, int index, gamevcollis
 		float flMaxDot = 0.966f;
 		if ( !WasWeaponLaunched() )
 		{
-			float flMaxDot = sk_combineball_seek_angle.GetFloat();
+			
+			// FIXME: VS2022 Port
+			//        This line was causing a warning, and thus an error
+			//		  I would just change the name, but I think it was meant to actually effect flMaxDot?
+			//float flMaxDot = sk_combineball_seek_angle.GetFloat();
+			flMaxDot = sk_combineball_seek_angle.GetFloat();
+			// END OF FIXME 
+			
 			float flGuideFactor = sk_combineball_guidefactor.GetFloat();
 			for ( int i = m_nBounceCount; --i >= 0; )
 			{
@@ -1651,11 +1656,11 @@ void CPropCombineBall::DeflectTowardEnemy( float flSpeed, int index, gamevcollis
 
 	if ( pBestTarget )
 	{
-		Vector vecDelta;
-		VectorSubtract( pBestTarget->WorldSpaceCenter(), vecStartPoint, vecDelta );
-		VectorNormalize( vecDelta );
-		vecDelta *= GetSpeed();
-		PhysCallbackSetVelocity( pEvent->pObjects[index], vecDelta ); 
+		Vector vecDelta_;
+		VectorSubtract( pBestTarget->WorldSpaceCenter(), vecStartPoint, vecDelta_ );
+		VectorNormalize( vecDelta_ );
+		vecDelta_ *= GetSpeed();
+		PhysCallbackSetVelocity( pEvent->pObjects[index], vecDelta_ ); 
 	}
 }
 

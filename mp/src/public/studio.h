@@ -2149,7 +2149,7 @@ struct studiohdr_t
 	int					GetSequenceActivity( int iSequence );
 	void				SetSequenceActivity( int iSequence, int iActivity );
 	int					GetActivityListVersion( void );
-	void				SetActivityListVersion( int iVersion ) const;
+	void				SetActivityListVersion( int version ) const;
 	int					GetEventListVersion( void );
 	void				SetEventListVersion( int version );
 	

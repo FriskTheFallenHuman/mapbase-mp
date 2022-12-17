@@ -316,46 +316,27 @@ void CHL2MP_Player::GiveAllItems( void )
 	CBasePlayer::GiveAmmo( 255,	"Buckshot");
 	CBasePlayer::GiveAmmo( 3,	"smg1_grenade");
 	CBasePlayer::GiveAmmo( 3,	"rpg_round");
-#ifdef MAPBASE_MP
-	CBasePlayer::GiveAmmo( 15,	"FlareRounds" );
-	CBasePlayer::GiveAmmo( 255,	"CombineCannonPl" );
-#endif // MAPBASE_MP
 	CBasePlayer::GiveAmmo( 5,	"grenade");
-#ifdef MAPBASE_MP
-	CBasePlayer::GiveAmmo( 5,	"Molotov" );
-	CBasePlayer::GiveAmmo( 5,	"Tripwire" );
-#endif // MAPBASE_MP
 	CBasePlayer::GiveAmmo( 2,	"Slam" );
 	CBasePlayer::GiveAmmo( 32,	"357" );
 	CBasePlayer::GiveAmmo( 16,	"XBowBolt" );
-#ifdef HL2_EPISODIC
-	CBasePlayer::GiveAmmo( 5,	"Hopwire" );
-#endif
 
 	GiveNamedItem( "weapon_smg1" );
-#ifdef MAPBASE_MP
-	GiveNamedItem( "weapon_smg2" );
-#endif // MAPBASE_MP
 	GiveNamedItem( "weapon_frag" );
 	GiveNamedItem( "weapon_crowbar" );
 	GiveNamedItem( "weapon_stunstick" );
 	GiveNamedItem( "weapon_pistol" );
 #ifdef MAPBASE_MP
-	GiveNamedItem( "weapon_ar1" );
 	GiveNamedItem( "weapon_alyxgun" );
-	GiveNamedItem( "weapon_flaregun" );
 #endif // MAPBASE_MP
 	GiveNamedItem( "weapon_ar2" );
 	GiveNamedItem( "weapon_shotgun" );
 #ifdef MAPBASE_MP
 	GiveNamedItem( "weapon_annabelle" );
-	GiveNamedItem( "weapon_immolator" );
 #endif // MAPBASE_MP
 	GiveNamedItem( "weapon_physcannon" );
 #ifdef MAPBASE_MP
 	GiveNamedItem( "weapon_bugbait" );
-	GiveNamedItem( "weapon_molotov" );
-	GiveNamedItem( "weapon_tripwire" );
 #endif // MAPBASE_MP
 	GiveNamedItem( "weapon_rpg" );
 	GiveNamedItem( "weapon_slam" );
@@ -1292,7 +1273,7 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 {
 	CBaseEntity *pSpot = NULL;
 	CBaseEntity *pLastSpawnPoint = g_pLastSpawn;
-	edict_t		*player = edict();
+	edict_t		*playerEdict = edict();
 	const char *pSpawnpointName = "info_player_deathmatch";
 
 	if ( HL2MPRules()->IsTeamplay() == true )
@@ -1352,7 +1333,7 @@ CBaseEntity* CHL2MP_Player::EntSelectSpawnPoint( void )
 		for ( CEntitySphereQuery sphere( pSpot->GetAbsOrigin(), 128 ); (ent = sphere.GetCurrentEntity()) != NULL; sphere.NextEntity() )
 		{
 			// if ent is a client, kill em (unless they are ourselves)
-			if ( ent->IsPlayer() && !(ent->edict() == player) )
+			if ( ent->IsPlayer() && !(ent->edict() == playerEdict) )
 				ent->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), 300, DMG_GENERIC ) );
 		}
 		goto ReturnSpot;

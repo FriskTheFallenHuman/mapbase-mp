@@ -78,7 +78,7 @@ struct AI_LeadArgs_t
 {
 	const char *pszGoal;
 	const char *pszWaitPoint;
-	unsigned 	flags;
+	int     	flags;
 	float		flWaitDistance;
 	float		flLeadDistance;
 	float		flRetrieveDistance;
