@@ -22,7 +22,7 @@ class CHL2MP_Player;
 #include "utldict.h"
 
 //=============================================================================
-// >> HL2MP_Player
+// Function table for each player state.
 //=============================================================================
 class CHL2MPPlayerStateInfo
 {
