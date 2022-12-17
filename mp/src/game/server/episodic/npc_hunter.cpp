@@ -927,7 +927,7 @@ void CHunterFlechette::Explode()
 
 	RadiusDamage( CTakeDamageInfo( this, GetOwnerEntity(), sk_hunter_flechette_explode_dmg.GetFloat(), nDamageType ), GetAbsOrigin(), sk_hunter_flechette_explode_radius.GetFloat(), CLASS_NONE, NULL );
 		
-    AddEffects( EF_NODRAW );
+	AddEffects( EF_NODRAW );
 
 	SetThink( &CBaseEntity::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -1962,12 +1962,12 @@ bool CNPC_Hunter::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInt
 		return true;
 	}
 
- 	bool bSideStepping = IsCurSchedule( SCHED_HUNTER_SIDESTEP, false );
- 	
-  	// FIXME: this will break scripted sequences that walk when they have an enemy
-  	if ( GetEnemy() &&
-  		( bSideStepping ||
-  		( ( ( GetNavigator()->GetMovementActivity() == ACT_RUN ) || ( GetNavigator()->GetMovementActivity() == ACT_WALK ) ) &&
+	bool bSideStepping = IsCurSchedule( SCHED_HUNTER_SIDESTEP, false );
+	
+	// FIXME: this will break scripted sequences that walk when they have an enemy
+	if ( GetEnemy() &&
+		( bSideStepping ||
+		( ( ( GetNavigator()->GetMovementActivity() == ACT_RUN ) || ( GetNavigator()->GetMovementActivity() == ACT_WALK ) ) &&
 		  !IsCurSchedule( SCHED_HUNTER_TAKE_COVER_FROM_ENEMY, false ) ) ) )
 	{
 		Vector vecEnemyLKP = GetEnemyLKP();
@@ -2235,8 +2235,8 @@ void CNPC_Hunter::PrescheduleThink()
 	{
 		if ( m_flPupilDilateTime < gpGlobals->curtime )
 		{
- 			CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
- 			if ( ( pPlayer && !pPlayer->IsIlluminatedByFlashlight( this, NULL ) ) || !PlayerFlashlightOnMyEyes( pPlayer ) )
+			CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+			if ( ( pPlayer && !pPlayer->IsIlluminatedByFlashlight( this, NULL ) ) || !PlayerFlashlightOnMyEyes( pPlayer ) )
 			{
 				//Msg( "NOT SHINING FLASHLIGHT ON ME\n" );
 			
@@ -2933,7 +2933,7 @@ int CNPC_Hunter::SelectCombatSchedule()
 	//	return SCHED_HUNTER_COMBAT_FACE;
 	//}
 
- 	return SCHED_HUNTER_CHANGE_POSITION;
+	return SCHED_HUNTER_CHANGE_POSITION;
 }
 
 //-----------------------------------------------------------------------------
@@ -4023,11 +4023,11 @@ float CNPC_Hunter::ChargeSteer()
 	{
 		if ( tr.fraction == 1.0f )
 		{
-  			NDebugOverlay::BoxDirection( GetAbsOrigin(), testHullMins, GetHullMaxs() + Vector(testLength,0,0), forward, 0, 255, 0, 8, 0.1f );
-   		}
-   		else
-   		{
-  			NDebugOverlay::BoxDirection( GetAbsOrigin(), testHullMins, GetHullMaxs() + Vector(testLength,0,0), forward, 255, 0, 0, 8, 0.1f );
+			NDebugOverlay::BoxDirection( GetAbsOrigin(), testHullMins, GetHullMaxs() + Vector(testLength,0,0), forward, 0, 255, 0, 8, 0.1f );
+		}
+		else
+		{
+			NDebugOverlay::BoxDirection( GetAbsOrigin(), testHullMins, GetHullMaxs() + Vector(testLength,0,0), forward, 255, 0, 0, 8, 0.1f );
 		}
 	}
 
@@ -4263,8 +4263,8 @@ Activity CNPC_Hunter::NPC_TranslateActivity( Activity baseAct )
 {
 	if ( ( baseAct == ACT_WALK ) || ( baseAct == ACT_RUN ) )
 	{
-  		if ( GetEnemy() )
-  		{
+		if ( GetEnemy() )
+		{
 			Vector vecEnemyLKP = GetEnemyLKP();
 			
 			// Only start facing when we're close enough
@@ -5056,7 +5056,7 @@ int CNPC_Hunter::RangeAttack2Conditions( float flDot, float flDist )
 		flMaxFlechetteRange *= HUNTER_SIEGE_MAX_DIST_MODIFIER;
 	}
 
- 	if ( !bIsBuster && ( flDist > flMaxFlechetteRange ) )
+	if ( !bIsBuster && ( flDist > flMaxFlechetteRange ) )
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}
@@ -6247,7 +6247,7 @@ bool CNPC_Hunter::ShouldSeekTarget( CBaseEntity *pTargetEntity, bool bStriderBus
 
 	if ( bStriderBuster )
 	{
-		bool bSeek = false;
+		//bool bSeek = false;
 
 		if ( pTargetEntity->VPhysicsGetObject() && ( pTargetEntity->VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD ) )
 		{
@@ -6534,8 +6534,8 @@ void CNPC_Hunter::PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot )
 bool CNPC_Hunter::PlayerFlashlightOnMyEyes( CBasePlayer *pPlayer )
 {
 	Vector vecEyes, vecEyeForward, vecPlayerForward;
- 	GetAttachment( gm_nTopGunAttachment, vecEyes, &vecEyeForward );
- 	pPlayer->EyeVectors( &vecPlayerForward );
+	GetAttachment( gm_nTopGunAttachment, vecEyes, &vecEyeForward );
+	pPlayer->EyeVectors( &vecPlayerForward );
 
 	Vector vecToEyes = (vecEyes - pPlayer->EyePosition());
 	//float flDist = VectorNormalize( vecToEyes ); 
@@ -6545,11 +6545,11 @@ bool CNPC_Hunter::PlayerFlashlightOnMyEyes( CBasePlayer *pPlayer )
 		return false;
 
 	// Check facing to ensure we're in front of her
- 	Vector los = ( pPlayer->EyePosition() - EyePosition() );
+	Vector los = ( pPlayer->EyePosition() - EyePosition() );
 	los.z = 0;
 	VectorNormalize( los );
 	Vector facingDir = EyeDirection2D();
- 	flDot = DotProduct( los, facingDir );
+	flDot = DotProduct( los, facingDir );
 	return ( flDot > 0.3 );
 }
 
