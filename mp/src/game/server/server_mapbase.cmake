@@ -150,12 +150,6 @@ function(target_use_server_mapbase_features target)
 			"${SRCDIR}/game/shared/mapbase/env_flare.cpp"
 			"${SRCDIR}/game/shared/mapbase/env_flare.h"
 
-			# HL2->Weapons
-			#"${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.cpp"
-			#"${SERVER_MAPBASE_DIR}/hl2/grenade_molotov.h"
-			#"${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.cpp"
-			#"${SERVER_MAPBASE_DIR}/hl2/grenade_tripwire.h"
-
 			"${SRCDIR}/game/shared/mapbase/concussive_explosion.cpp"
 			"${SRCDIR}/game/shared/mapbase/concussive_explosion.h"
 
@@ -164,20 +158,9 @@ function(target_use_server_mapbase_features target)
 			"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.h"
 			"${SRCDIR}/game/shared/mapbase/weapon_annabelle.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_ar1.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_bugbait.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_cguard.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h"
-			#"${SRCDIR}/game/shared/mapbase/weapon_flaregun.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_flaregun.h"
-			#"${SRCDIR}/game/shared/mapbase/weapon_immolator.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_molotov.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_molotov.h"
-			#"${SRCDIR}/game/shared/mapbase/weapon_smg2.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_sniperrifle.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_tripwire.cpp"
-			#"${SRCDIR}/game/shared/mapbase/weapon_tripwire.h"
 		)
 	endif()
 
