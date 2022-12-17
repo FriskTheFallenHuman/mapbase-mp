@@ -105,11 +105,6 @@ $Project
 
 			$Folder	"Weapons"
 			{
-				$File	"hl2\grenade_molotov.cpp" [$MAPBASE_MP]
-				$File	"hl2\grenade_molotov.h" [$MAPBASE_MP]
-				$File	"hl2\grenade_tripwire.cpp" [$MAPBASE_MP]
-				$File	"hl2\grenade_tripwire.h" [$MAPBASE_MP]
-
 				$File	"$SRCDIR\game\shared\mapbase\concussive_explosion.cpp" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\concussive_explosion.h" [$MAPBASE_MP]
 
@@ -132,20 +127,9 @@ $Project
 				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.cpp" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_alyxgun.h" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_annabelle.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_ar1.cpp" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_bugbait.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_cguard.cpp" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.cpp" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_citizenpackage.h" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_flaregun.h" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_immolator.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_molotov.h" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_smg2.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_sniperrifle.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.cpp" [$MAPBASE_MP]
-				$File	"$SRCDIR\game\shared\mapbase\weapon_tripwire.h" [$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.cpp" [!$MAPBASE_MP]
 				$File	"$SRCDIR\game\shared\mapbase\weapon_slam.h" [!$MAPBASE_MP]
 			}
