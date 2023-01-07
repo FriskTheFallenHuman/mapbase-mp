@@ -5,12 +5,12 @@ set(
 	VRAD_LAUNCHER_SOURCE_FILES
 
 	"${VRAD_LAUNCHER_DIR}/vrad_launcher.cpp"
-	"$<${IS_WINDOWS}:${VRAD_LAUNCHER_DIR}/StdAfx.cpp>"
+	"$<${IS_WINDOWS}:${VRAD_LAUNCHER_DIR}/stdafx.cpp>"
 
 	# Header Files
 	"${SRCDIR}/public/tier1/interface.h"
 	"${SRCDIR}/public/ivraddll.h"
-	"${VRAD_LAUNCHER_DIR}/StdAfx.h"
+	"${VRAD_LAUNCHER_DIR}/stdafx.h"
 )
 
 set(
