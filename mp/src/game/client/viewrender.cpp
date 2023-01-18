@@ -314,7 +314,7 @@ private:
 			pList( ( pList ) ? InlineAddRef( pList ) : NULL ),
 			pListInfo( ( pListInfo ) ? InlineAddRef( pListInfo ) : NULL )
 		{
-            // @NOTE (toml 8/18/2006): because doing memcmp, need to fill all of the fields and the padding!
+			// @NOTE (toml 8/18/2006): because doing memcmp, need to fill all of the fields and the padding!
 			memset( &m_bOrtho, 0, offsetof(Entry_t, pList ) - offsetof(Entry_t, m_bOrtho ) );
 			m_bOrtho = viewSetup.m_bOrtho;			
 			m_OrthoLeft = viewSetup.m_OrthoLeft;		
@@ -949,7 +949,7 @@ void FinishCurrentView()
 //-----------------------------------------------------------------------------
 void CSimpleRenderExecutor::AddView( CRendering3dView *pView )
 {
- 	CBase3dView *pPrevRenderer = m_pMainView->SetActiveRenderer( pView );
+	CBase3dView *pPrevRenderer = m_pMainView->SetActiveRenderer( pView );
 	pView->Draw();
 	m_pMainView->SetActiveRenderer( pPrevRenderer );
 }
@@ -1295,7 +1295,7 @@ void CViewRender::PerformScreenOverlay( int x, int y, int w, int h )
 
 		if ( m_ScreenOverlayMaterial->NeedsFullFrameBufferTexture() )
 		{
-            // FIXME: check with multi/sub-rect renders. Should this be 0,0,w,h instead?
+			// FIXME: check with multi/sub-rect renders. Should this be 0,0,w,h instead?
 			DrawScreenEffectMaterial( m_ScreenOverlayMaterial, x, y, w, h );
 		}
 		else if ( m_ScreenOverlayMaterial->NeedsPowerOfTwoFrameBufferTexture() )
@@ -1308,7 +1308,7 @@ void CViewRender::PerformScreenOverlay( int x, int y, int w, int h )
 			ITexture *pTexture = GetPowerOfTwoFrameBufferTexture( );
 			int sw = pTexture->GetActualWidth();
 			int sh = pTexture->GetActualHeight();
-            // Note - don't offset by x,y - already done by the viewport.
+			// Note - don't offset by x,y - already done by the viewport.
 			pRenderContext->DrawScreenSpaceRectangle( m_ScreenOverlayMaterial, 0, 0, w, h,
 												 0, 0, sw-1, sh-1, sw, sh );
 		}
@@ -1373,7 +1373,7 @@ void CViewRender::DrawUnderwaterOverlay( void )
 		pRenderContext->GetViewport( x, y, w, h );
 		if ( pOverlayMat->NeedsFullFrameBufferTexture() )
 		{
-            // FIXME: check with multi/sub-rect renders. Should this be 0,0,w,h instead?
+			// FIXME: check with multi/sub-rect renders. Should this be 0,0,w,h instead?
 			DrawScreenEffectMaterial( pOverlayMat, x, y, w, h );
 		}
 		else if ( pOverlayMat->NeedsPowerOfTwoFrameBufferTexture() )
@@ -1386,14 +1386,14 @@ void CViewRender::DrawUnderwaterOverlay( void )
 			ITexture *pTexture = GetPowerOfTwoFrameBufferTexture( );
 			int sw = pTexture->GetActualWidth();
 			int sh = pTexture->GetActualHeight();
-            // Note - don't offset by x,y - already done by the viewport.
+			// Note - don't offset by x,y - already done by the viewport.
 			ctx->DrawScreenSpaceRectangle( pOverlayMat, 0, 0, w, h,
 													  0, 0, sw-1, sh-1, sw, sh );
 		}
 		else
 		{
-            // Note - don't offset by x,y - already done by the viewport.
-            // FIXME: actually test this code path.
+			// Note - don't offset by x,y - already done by the viewport.
+			// FIXME: actually test this code path.
 			pRenderContext->DrawScreenSpaceRectangle( pOverlayMat, 0, 0, w, h,
 													  0, 0, 1, 1, 1, 1 );
 		}
@@ -2002,7 +2002,7 @@ void CViewRender::QueueOverlayRenderView( const CViewSetup &view, int nClearFlag
 	// Can't have 2 in a single scene
 	Assert( !m_bDrawOverlay );
 
-    m_bDrawOverlay = true;
+	m_bDrawOverlay = true;
 	m_OverlayViewSetup = view;
 	m_OverlayClearFlags = nClearFlags;
 	m_OverlayDrawFlags = whatToDraw;
@@ -2053,6 +2053,11 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 	m_CurrentView = view;
 
+#ifdef MAPBASE
+	if ( building_cubemaps.GetBool() )
+		m_CurrentView.fov = RAD2DEG( 2.0f * atanf( 64.0f / ( 64 - 0.5f ) ) );
+#endif // MAPBASE
+
 	C_BaseAnimating::AutoAllowBoneAccess boneaccess( true, true );
 	VPROF( "CViewRender::RenderView" );
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
@@ -2093,7 +2098,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 		g_pClientShadowMgr->AdvanceFrame();
 
-	#ifdef USE_MONITORS
+#ifdef USE_MONITORS
 		if ( cl_drawmonitors.GetBool() && 
 			( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() >= 70 ) &&
 			( ( whatToDraw & RENDERVIEW_SUPPRESSMONITORRENDERING ) == 0 ) )
@@ -2119,9 +2124,9 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 				pPortalEnt = NextFakeWorldPortal( pPortalEnt, view, vecAbsPlaneNormal, flLocalPlaneDist, frustum );
 			}
-#endif
+#endif // MAPBASE
 		}
-	#endif
+#endif // USE_MONITOR
 
 		g_bRenderingView = true;
 
@@ -2138,7 +2143,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 		// clear happens here probably
 		SetupMain3DView( view, nClearFlags );
-			 	  
+				  
 		bool bDrew3dSkybox = false;
 		SkyboxVisibility_t nSkyboxVisible = SKYBOX_NOT_VISIBLE;
 
@@ -2238,7 +2243,7 @@ void CViewRender::RenderView( const CViewSetup &view, int nClearFlags, int whatT
 
 		// Now actually draw the viewmodel
 #ifdef MAPBASE
-		if (!bDrawnViewmodel)
+		if ( !bDrawnViewmodel )
 #endif
 		DrawViewModels( view, whatToDraw & RENDERVIEW_DRAWVIEWMODEL );
 
@@ -2687,7 +2692,7 @@ void CViewRender::DetermineWaterRenderInfo( const VisibleFogVolumeInfo_t &fogVol
 	}
 #else
 	if ( ( (fogVolumeInfo.m_flDistanceToWater >= m_flCheapWaterEndDistance) && !bLocalReflection ) || bForceCheap )
- 		return;
+		return;
 #endif
 	// Get the material that is for the water surface that is visible and check to see
 	// what render targets need to be rendered, if any.
@@ -3484,7 +3489,7 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 		SafeRelease( pSkyView );
 
 		ViewDrawScene( bDrew3dSkybox, nSkyMode, monitorView, nClearFlags, VIEW_MONITOR );
- 		render->PopView( frustum );
+		render->PopView( frustum );
 	}
 	else if (nSkyMode == SKYBOX_NOT_VISIBLE)
 	{
@@ -3516,9 +3521,9 @@ bool CViewRender::DrawOneMonitor( ITexture *pRenderTarget, int cameraNum, C_Poin
 #else
 	// @MULTICORE (toml 8/11/2006): this should be a renderer....
 	Frustum frustum;
- 	render->Push3DView( monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, (VPlane *)frustum );
+	render->Push3DView( monitorView, VIEW_CLEAR_DEPTH | VIEW_CLEAR_COLOR, pRenderTarget, (VPlane *)frustum );
 	ViewDrawScene( false, SKYBOX_2DSKYBOX_VISIBLE, monitorView, 0, VIEW_MONITOR );
- 	render->PopView( frustum );
+	render->PopView( frustum );
 #endif
 
 	// Reset the world fog parameters.
@@ -3668,7 +3673,7 @@ bool CViewRender::DrawFakeWorldPortal( ITexture *pRenderTarget, C_FuncFakeWorldP
 	ViewDrawScene( bDrew3dSkybox, nSkyMode, monitorView, nClearFlags, VIEW_MONITOR );
 
 	pRenderContext->PopCustomClipPlane();
- 	render->PopView( frustum );
+	render->PopView( frustum );
 
 	// Reset the world fog parameters.
 	if ( fogEnabled )
@@ -3937,7 +3942,7 @@ void CRendering3dView::BuildWorldRenderLists( bool bDrawEntities, int iForceView
 {
 	VPROF_BUDGET( "BuildWorldRenderLists", VPROF_BUDGETGROUP_WORLD_RENDERING );
 
-    // @MULTICORE (toml 8/18/2006): to address....
+	// @MULTICORE (toml 8/18/2006): to address....
 	extern void UpdateClientRenderableInPVSStatus();
 	UpdateClientRenderableInPVSStatus();
 
@@ -3949,7 +3954,7 @@ void CRendering3dView::BuildWorldRenderLists( bool bDrawEntities, int iForceView
 	bool bUseCache = ( bUseCacheIfEnabled && r_worldlistcache.GetBool() );
 	if ( !bUseCache || pVisData || !g_WorldListCache.Find( *this, &m_pWorldRenderList, &m_pWorldListInfo ) )
 	{
-        // @MULTICORE (toml 8/18/2006): when make parallel, will have to change caching to be atomic, where follow ons receive a pointer to a list that is not yet built
+		// @MULTICORE (toml 8/18/2006): when make parallel, will have to change caching to be atomic, where follow ons receive a pointer to a list that is not yet built
 		m_pWorldRenderList =  render->CreateWorldList();
 		m_pWorldListInfo = new ClientWorldListInfo_t;
 
@@ -4639,7 +4644,7 @@ void CRendering3dView::DrawOpaqueRenderables( ERenderDepthMode DepthMode )
 
 			// Render sequence debugging
 			#if DEBUG_BUCKETS
- 			if ( r_drawopaquesbucket_stats.GetBool() )
+			if ( r_drawopaquesbucket_stats.GetBool() )
 			{
 				con_nprint_s nxPrn = { 0 };
 				nxPrn.index = 20 + bucket * 3;
