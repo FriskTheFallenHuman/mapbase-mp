@@ -218,12 +218,12 @@ static bool cvar_setf( const char* sz, float val )
 
 static const char *GetSource()
 {
-	return source;
+	return g_source;
 }
 
 static const char *GetMapBase()
 {
-	return mapbase;
+	return g_mapbase;
 }
 
 static HSCRIPT GetMainMap()
@@ -335,7 +335,7 @@ bool VScriptVBSPInit()
 
 			// Run the map's script
 			char script[96];
-			Q_snprintf( script, sizeof(script), "%s_vbsp", source );
+			Q_snprintf( script, sizeof(script), "%s_vbsp", g_source );
 			//Msg("VBSP script: \"%s\"\n", script);
 			VScriptRunScript( script, true );
 

@@ -46,7 +46,7 @@ static bool VMFKV_SaveToFile( const char *szFile, HSCRIPT hKV )
 	}
 
 	char pszFullName[MAX_PATH];
-	Q_ExtractFilePath( source, pszFullName, sizeof(pszFullName) );
+	Q_ExtractFilePath( g_source, pszFullName, sizeof(pszFullName) );
 	V_snprintf( pszFullName, sizeof(pszFullName), "%s/vscript_io/%s", pszFullName, szFile );
 
 	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
