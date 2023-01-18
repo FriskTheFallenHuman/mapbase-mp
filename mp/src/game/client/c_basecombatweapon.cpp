@@ -88,13 +88,13 @@ static inline bool ShouldDrawLocalPlayerViewModel( void )
 #elif MAPBASE
 	// We shouldn't draw the viewmodel externally.
 	C_BasePlayer *localplayer = C_BasePlayer::GetLocalPlayer();
-	if (localplayer)
+	if ( localplayer )
 	{
-		if (localplayer->m_bDrawPlayerModelExternally)
+		if ( localplayer->m_bDrawPlayerModelExternally )
 		{
 			// If this isn't the main view, draw the weapon.
 			view_id_t viewID = CurrentViewID();
-			if (viewID != VIEW_MAIN && viewID != VIEW_INTRO_CAMERA)
+			if ( viewID != VIEW_MAIN && viewID != VIEW_INTRO_CAMERA )
 				return false;
 		}
 

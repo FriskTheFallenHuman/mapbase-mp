@@ -3413,10 +3413,10 @@ int C_BaseAnimating::DrawModel( int flags )
 	int drawn = 0;
 
 #ifdef MAPBASE
-	if (m_iViewHideFlags > 0)
+	if ( m_iViewHideFlags > 0 )
 	{
 		// Hide this entity if it's not supposed to be drawn in this view.
-		if (m_iViewHideFlags & (1 << CurrentViewID()))
+		if ( m_iViewHideFlags & ( 1 << CurrentViewID() ) )
 		{
 			return 0;
 		}
@@ -3839,7 +3839,7 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 			}
 				
 #ifdef MAPBASE_VSCRIPT
-			if (ScriptHookFireEvent( GetAbsOrigin(), GetAbsAngles(), pevent[ i ].event, pevent[ i ].pszOptions() ) == false)
+			if ( ScriptHookFireEvent( GetAbsOrigin(), GetAbsAngles(), pevent[ i ].event, pevent[ i ].pszOptions() ) == false )
 				continue;
 #endif
 				
@@ -3892,7 +3892,7 @@ void C_BaseAnimating::DoAnimationEvents( CStudioHdr *pStudioHdr )
 //-----------------------------------------------------------------------------
 bool C_BaseAnimating::ScriptHookFireEvent( const Vector& origin, const QAngle& angles, int event, const char *options )
 {
-	if (m_ScriptScope.IsInitialized() && g_Hook_FireEvent.CanRunInScope(m_ScriptScope))
+	if ( m_ScriptScope.IsInitialized() && g_Hook_FireEvent.CanRunInScope( m_ScriptScope ) )
 	{
 		// origin, angles, event, options
 		ScriptVariant_t args[] = { origin, angles, event, options };
@@ -4225,20 +4225,20 @@ void C_BaseAnimating::FireEvent( const Vector& origin, const QAngle& angles, int
 			if ( ( prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
 				break;
 
-		if ( m_Attachments.Count() > 0 )
-		{
-			if ( MainViewOrigin().DistToSqr( GetAbsOrigin() ) < (256 * 256) )
+			if ( m_Attachments.Count() > 0 )
 			{
-				Vector brassAttachOrigin;
-				QAngle brassAttachAngles; 
-				
-				if( GetAttachment( 2, brassAttachOrigin, brassAttachAngles ) )
+				if ( MainViewOrigin().DistToSqr( GetAbsOrigin() ) < (256 * 256) )
 				{
-					tempents->EjectBrass( brassAttachOrigin, brassAttachAngles, GetAbsAngles(), atoi( options ) );
+					Vector brassAttachOrigin;
+					QAngle brassAttachAngles; 
+				
+					if( GetAttachment( 2, brassAttachOrigin, brassAttachAngles ) )
+					{
+						tempents->EjectBrass( brassAttachOrigin, brassAttachAngles, GetAbsAngles(), atoi( options ) );
+					}
 				}
 			}
-		}
-		break;
+			break;
 		}
 		break;
 
@@ -5552,7 +5552,7 @@ void C_BaseAnimating::StudioFrameAdvance()
 
 	if ( flNewCycle < 0.0f || flNewCycle >= 1.0f ) 
 	{
-		if (flNewCycle >= 1.0f)
+		if ( flNewCycle >= 1.0f )
 		{
 			ReachedEndOfSequence();
 		}

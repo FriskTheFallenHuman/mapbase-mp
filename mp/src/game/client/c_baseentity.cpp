@@ -441,8 +441,8 @@ BEGIN_ENT_SCRIPTDESC_ROOT( C_BaseEntity, "Root class of all client-side entities
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetRight, "GetRightVector", "Get the right vector of the entity" )
 	DEFINE_SCRIPTFUNC_NAMED( GetTeamNumber, "GetTeam", "Gets this entity's team" )
 #endif
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLeft, "GetLeftVector", SCRIPT_HIDE )
-	DEFINE_SCRIPTFUNC_NAMED( GetTeamNumber, "GetTeamNumber", SCRIPT_HIDE )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetLeft, "GetLeftVector", SCRIPT_HIDE "Get the right vector of the entity" )
+	DEFINE_SCRIPTFUNC_NAMED( GetTeamNumber, "GetTeamNumber", SCRIPT_HIDE "Gets this entity's team" )
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetUp, "GetUpVector", "Get the up vector of the entity" )
 
@@ -547,6 +547,7 @@ BEGIN_ENT_SCRIPTDESC_ROOT( C_BaseEntity, "Root class of all client-side entities
 	//DEFINE_SCRIPTFUNC( IsCombatCharacter, "Returns true if this entity is a combat character (player or NPC)." )
 	DEFINE_SCRIPTFUNC_NAMED( IsBaseCombatWeapon, "IsWeapon", "Returns true if this entity is a weapon." )
 	DEFINE_SCRIPTFUNC( IsWorld, "Returns true if this entity is the world." )
+	DEFINE_SCRIPTFUNC( IsNextBot, "Returns true if this entity is a NextBot." )
 
 	DEFINE_SCRIPTFUNC( SetModel, "Set client-only entity model" )
 	//DEFINE_SCRIPTFUNC_NAMED( ScriptInitializeAsClientEntity, "InitializeAsClientEntity", "" )
@@ -609,7 +610,7 @@ BEGIN_RECV_TABLE_NOBASE(C_BaseEntity, DT_BaseEntity)
 	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
 	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
 
-	RecvPropString(RECVINFO(m_iName)),
+	RecvPropString( RECVINFO( m_iName ) ),
 
 	RecvPropInt( "movetype", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveType ),
 	RecvPropInt( "movecollide", 0, SIZEOF_IGNORE, 0, RecvProxy_MoveCollide ),
@@ -2157,10 +2158,10 @@ int C_BaseEntity::DrawModel( int flags )
 	}
 
 #ifdef MAPBASE
-	if (m_iViewHideFlags > 0)
+	if ( m_iViewHideFlags > 0 )
 	{
 		// Hide this entity if it's not supposed to be drawn in this view.
-		if (m_iViewHideFlags & (1 << CurrentViewID()))
+		if ( m_iViewHideFlags & ( 1 << CurrentViewID() ) )
 		{
 			return 0;
 		}
@@ -6652,18 +6653,19 @@ int C_BaseEntity::GetCreationTick() const
 //-----------------------------------------------------------------------------
 HSCRIPT C_BaseEntity::GetScriptInstance()
 {
-	if (!m_hScriptInstance)
+	if ( !m_hScriptInstance )
 	{
-		if (m_iszScriptId == NULL_STRING)
+		if ( m_iszScriptId == NULL_STRING )
 		{
-			char* szName = (char*)stackalloc(1024);
-			g_pScriptVM->GenerateUniqueKey((m_iName != NULL_STRING) ? STRING(GetEntityName()) : GetClassname(), szName, 1024);
-			m_iszScriptId = AllocPooledString(szName);
+			char *szName = (char *)stackalloc( 1024 );
+			g_pScriptVM->GenerateUniqueKey( ( m_iName != NULL_STRING ) ? STRING( GetEntityName() ) : GetClassname(), szName, 1024 );
+			m_iszScriptId = AllocPooledString( szName );
 		}
 
-		m_hScriptInstance = g_pScriptVM->RegisterInstance(GetScriptDesc(), this);
-		g_pScriptVM->SetInstanceUniqeId(m_hScriptInstance, STRING(m_iszScriptId));
+		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDesc(), this );
+		g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, STRING( m_iszScriptId ) );
 	}
+
 	return m_hScriptInstance;
 }
 
@@ -6674,17 +6676,17 @@ HSCRIPT C_BaseEntity::GetScriptInstance()
 //-----------------------------------------------------------------------------
 bool C_BaseEntity::ValidateScriptScope()
 {
-	if (!m_ScriptScope.IsInitialized())
+	if ( !m_ScriptScope.IsInitialized() )
 	{
-		if (scriptmanager == NULL)
+		if ( scriptmanager == NULL )
 		{
-			ExecuteOnce(DevMsg("Cannot execute script because scripting is disabled (-scripting)\n"));
+			ExecuteOnce( DevMsg( "Cannot execute script because scripting is disabled (-scripting)\n" ) );
 			return false;
 		}
 
-		if (g_pScriptVM == NULL)
+		if ( g_pScriptVM == NULL )
 		{
-			ExecuteOnce(DevMsg(" Cannot execute script because there is no available VM\n"));
+			ExecuteOnce( DevMsg( " Cannot execute script because there is no available VM\n" ) );
 			return false;
 		}
 
@@ -6692,16 +6694,16 @@ bool C_BaseEntity::ValidateScriptScope()
 		GetScriptInstance();
 
 		EHANDLE hThis;
-		hThis.Set(this);
+		hThis.Set( this );
 
-		bool bResult = m_ScriptScope.Init(STRING(m_iszScriptId));
+		bool bResult = m_ScriptScope.Init( STRING( m_iszScriptId ) );
 
-		if (!bResult)
+		if ( !bResult )
 		{
-			DevMsg("%s couldn't create ScriptScope!\n", GetDebugName());
+			DevMsg( "%s couldn't create ScriptScope!\n", GetDebugName() );
 			return false;
 		}
-		g_pScriptVM->SetValue(m_ScriptScope, "self", GetScriptInstance());
+		g_pScriptVM->SetValue( m_ScriptScope, "self", GetScriptInstance() );
 	}
 	return true;
 }
@@ -6710,21 +6712,21 @@ bool C_BaseEntity::ValidateScriptScope()
 // Returns true if the function was located and called. false otherwise.
 // NOTE:	Assumes the function takes no parameters at the moment.
 //-----------------------------------------------------------------------------
-bool C_BaseEntity::CallScriptFunction( const char* pFunctionName, ScriptVariant_t* pFunctionReturn )
+bool C_BaseEntity::CallScriptFunction( const char *pFunctionName, ScriptVariant_t *pFunctionReturn )
 {
-	if (!ValidateScriptScope())
+	if ( !ValidateScriptScope() )
 	{
-		DevMsg("\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n");
+		DevMsg( "\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n" );
 		return false;
 	}
 
 
-	HSCRIPT hFunc = m_ScriptScope.LookupFunction(pFunctionName);
+	HSCRIPT hFunc = m_ScriptScope.LookupFunction( pFunctionName );
 
-	if (hFunc)
+	if ( hFunc )
 	{
-		m_ScriptScope.Call(hFunc, pFunctionReturn);
-		m_ScriptScope.ReleaseFunction(hFunc);
+		m_ScriptScope.Call( hFunc, pFunctionReturn );
+		m_ScriptScope.ReleaseFunction( hFunc );
 
 		return true;
 	}
@@ -6735,23 +6737,23 @@ bool C_BaseEntity::CallScriptFunction( const char* pFunctionName, ScriptVariant_
 //-----------------------------------------------------------------------------
 // Gets a function handle
 //-----------------------------------------------------------------------------
-HSCRIPT C_BaseEntity::LookupScriptFunction( const char* pFunctionName )
+HSCRIPT C_BaseEntity::LookupScriptFunction( const char *pFunctionName )
 {
-	if (!m_ScriptScope.IsInitialized())
+	if ( !m_ScriptScope.IsInitialized() )
 	{
 		return NULL;
 	}
 
-	return m_ScriptScope.LookupFunction(pFunctionName);
+	return m_ScriptScope.LookupFunction( pFunctionName );
 }
 
 //-----------------------------------------------------------------------------
 // Calls and releases a function handle (ASSUMES SCRIPT SCOPE AND FUNCTION ARE VALID!)
 //-----------------------------------------------------------------------------
-bool C_BaseEntity::CallScriptFunctionHandle( HSCRIPT hFunc, ScriptVariant_t* pFunctionReturn )
+bool C_BaseEntity::CallScriptFunctionHandle( HSCRIPT hFunc, ScriptVariant_t *pFunctionReturn )
 {
-	m_ScriptScope.Call(hFunc, pFunctionReturn);
-	m_ScriptScope.ReleaseFunction(hFunc);
+	m_ScriptScope.Call( hFunc, pFunctionReturn );
+	m_ScriptScope.ReleaseFunction( hFunc );
 
 	return true;
 }
@@ -6762,21 +6764,21 @@ bool C_BaseEntity::CallScriptFunctionHandle( HSCRIPT hFunc, ScriptVariant_t* pFu
 //			bUseRootScope - If true, runs this script in the root scope, not
 //							in this entity's private scope.
 //-----------------------------------------------------------------------------
-bool C_BaseEntity::RunScriptFile( const char* pScriptFile, bool bUseRootScope )
+bool C_BaseEntity::RunScriptFile( const char *pScriptFile, bool bUseRootScope )
 {
-	if (!ValidateScriptScope())
+	if ( !ValidateScriptScope() )
 	{
-		DevMsg("\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n");
+		DevMsg( "\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n" );
 		return false;
 	}
 
-	if (bUseRootScope)
+	if ( bUseRootScope )
 	{
-		return VScriptRunScript(pScriptFile);
+		return VScriptRunScript( pScriptFile );
 	}
 	else
 	{
-		return VScriptRunScript(pScriptFile, m_ScriptScope, true);
+		return VScriptRunScript( pScriptFile, m_ScriptScope, true );
 	}
 }
 
@@ -6784,17 +6786,17 @@ bool C_BaseEntity::RunScriptFile( const char* pScriptFile, bool bUseRootScope )
 // Purpose: Compile and execute a discrete string of script source code
 // Input  : *pScriptText - A string containing script code to compile and run
 //-----------------------------------------------------------------------------
-bool C_BaseEntity::RunScript( const char* pScriptText, const char* pDebugFilename )
+bool C_BaseEntity::RunScript( const char *pScriptText, const char *pDebugFilename )
 {
-	if (!ValidateScriptScope())
+	if ( !ValidateScriptScope() )
 	{
-		DevMsg("\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n");
+		DevMsg( "\n***\nFAILED to create private ScriptScope. ABORTING script\n***\n" );
 		return false;
 	}
 
-	if (m_ScriptScope.Run(pScriptText, pDebugFilename) == SCRIPT_ERROR)
+	if ( m_ScriptScope.Run( pScriptText, pDebugFilename ) == SCRIPT_ERROR )
 	{
-		DevWarning(" Entity %s encountered an error in RunScript()\n", GetDebugName());
+		DevWarning( " Entity %s encountered an error in RunScript()\n", GetDebugName() );
 	}
 
 	return true;

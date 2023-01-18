@@ -1285,7 +1285,7 @@ bool C_BasePlayer::CreateMove( float flInputSampleTime, CUserCmd *pCmd )
 	
 	// Check to see if we're in vgui input mode...
 #ifdef VGUI_SCREEN_FIX
-	if(pCmd->buttons & IN_VALIDVGUIINPUT)
+	if( pCmd->buttons & IN_VALIDVGUIINPUT )
 		DetermineVguiInputMode( pCmd );
 #else
 	DetermineVguiInputMode( pCmd );
@@ -1499,7 +1499,7 @@ bool C_BasePlayer::ShouldDraw()
 	// We have to "always draw" a player with m_bDrawPlayerModelExternally in order to show up in whatever rendering list all of the views use, 
 	// but we can't put this in ShouldDrawThisPlayer() because we would have no way of knowing if it stomps the other checks that draw the player model anyway.
 	// As a result, we have to put it here in the central ShouldDraw() function. DrawModel() makes sure we only draw in non-main views and nothing's drawing the model anyway.
-	return (ShouldDrawThisPlayer() || m_bDrawPlayerModelExternally) && BaseClass::ShouldDraw();
+	return ( ShouldDrawThisPlayer() || m_bDrawPlayerModelExternally) && BaseClass::ShouldDraw();
 #else
 	return ShouldDrawThisPlayer() && BaseClass::ShouldDraw();
 #endif
@@ -1508,15 +1508,15 @@ bool C_BasePlayer::ShouldDraw()
 int C_BasePlayer::DrawModel( int flags )
 {
 #ifdef MAPBASE
-	if (m_bDrawPlayerModelExternally)
+	if ( m_bDrawPlayerModelExternally )
 	{
 		// Draw the player in any view except the main or "intro" view, both of which are default first-person views.
 		// HACKHACK: Also don't draw in shadow depth textures if the player's flashlight is on, as that causes the playermodel to block it.
 		view_id_t viewID = CurrentViewID();
-		if (viewID == VIEW_MAIN || viewID == VIEW_INTRO_CAMERA || (viewID == VIEW_SHADOW_DEPTH_TEXTURE && IsEffectActive(EF_DIMLIGHT)))
+		if ( viewID == VIEW_MAIN || viewID == VIEW_INTRO_CAMERA || ( viewID == VIEW_SHADOW_DEPTH_TEXTURE && IsEffectActive( EF_DIMLIGHT ) ) )
 		{
 			// Make sure the player model wouldn't draw anyway...
-			if (!ShouldDrawThisPlayer())
+			if ( !ShouldDrawThisPlayer() )
 				return 0;
 		}
 

@@ -270,7 +270,7 @@ inline bool CClient_Precipitation::SimulateSnow( CPrecipitationParticle* pPartic
 
 void CClient_Precipitation::Simulate( float dt )
 {
-	if ( IsParticleRainType(m_nPrecipType) )
+	if ( IsParticleRainType( m_nPrecipType ) )
 	{
 		CreateParticlePrecip();
 		return;
@@ -352,7 +352,7 @@ inline void CClient_Precipitation::RenderParticle( CPrecipitationParticle* pPart
 	float scale;
 	Vector start, delta;
 
-	if ( IsParticleRainType(m_nPrecipType) )
+	if ( IsParticleRainType( m_nPrecipType ) )
 		return;
 
 	if ( m_nPrecipType == PRECIPITATION_TYPE_ASH )
@@ -445,7 +445,7 @@ void CClient_Precipitation::Render()
 	if ( !r_DrawRain.GetInt() )
 		return;
 
-	if ( IsParticleRainType(m_nPrecipType) )
+	if ( IsParticleRainType( m_nPrecipType ) )
 		return;
 
 	// Don't render in monitors or in reflections or refractions.

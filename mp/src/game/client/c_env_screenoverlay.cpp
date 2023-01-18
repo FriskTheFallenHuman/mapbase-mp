@@ -122,7 +122,7 @@ void C_EnvScreenOverlay::StopOverlays( void )
 	if ( m_bWasActive && !m_bIsActive )
 	{
 #ifdef MAPBASE
-		if (m_iOverlayIndex != -1)
+		if ( m_iOverlayIndex != -1 )
 		{
 			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, NULL );
 		}
@@ -183,7 +183,7 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 	if ( !IsErrorMaterial( pMaterial ) )
 	{
 #ifdef MAPBASE
-		if (m_iOverlayIndex != -1)
+		if ( m_iOverlayIndex != -1 )
 		{
 			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, pMaterial );
 		}
