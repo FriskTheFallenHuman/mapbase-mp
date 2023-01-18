@@ -25,11 +25,11 @@ set(
 	"${GAME_SHADER_DX9_BASE_DIR}/example_model_dx9_helper.h"
 
 	# Miscellaneous
-	"${GAME_SHADER_DX9_BASE_DIR}/buildsdkshaders.bat"
-	"${GAME_SHADER_DX9_BASE_DIR}/buildshaders.bat"
+	"${GAME_SHADER_DX9_BASE_DIR}/_buildsdkshaders.bat"
+	"${GAME_SHADER_DX9_BASE_DIR}/_buildshaders.bat"
 
-	"${GAME_SHADER_DX9_BASE_DIR}/stdshader_dx9_20b.txt"
-	"${GAME_SHADER_DX9_BASE_DIR}/stdshader_dx9_30.txt"
+	"${GAME_SHADER_DX9_BASE_DIR}/_stdshader_dx9_20b.txt"
+	"${GAME_SHADER_DX9_BASE_DIR}/_stdshader_dx9_30.txt"
 )
 
 function(target_use_game_shader_dx9_base target)
