@@ -181,6 +181,8 @@ Direct contributions:
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/184 (Projected texture horizontal FOV shadow fix)
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/185 (Fix enemyfinders becoming visible when they wake)
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/186 (Fix for brightly glowing teeth)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/230 (Caption Fixes)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/231 (Fixed sentence source bug)
 
 == Contributions from arbabf:
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/229 (Extend point_bugbait functionality)
