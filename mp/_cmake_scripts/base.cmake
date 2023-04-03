@@ -50,6 +50,7 @@ set(MAPBASE_MP "ON" CACHE BOOL "Build the game code with extra features tailored
 set(MAPBASE_RPC "OFF" CACHE BOOL "Build the game code with Mapbase's Rich Presence Client implementations (requires discord-rpc.dll in game bin)")
 set(MAPBASE_VSCRIPT "ON" CACHE BOOL "Build the game code with VScript implementation (note: interfaces still exist, just the provided implementation is not present)")
 set(MAPBASE_RESPONSE_SYSTEM "ON" CACHE BOOL "Build the game code with new Response System library based on the Alien Swarm SDK")
+set(MAPBASE_GAMEPADUI "ON" CACHE BOOL "Build the game code with Steamdeck GamepadUI")
 
 # Stock source engine options
 option(RETAIL "Build in retail mode" OFF)
@@ -67,6 +68,7 @@ add_compile_definitions(
 	$<${RAD_TELEMETRY_DISABLED}:RAD_TELEMETRY_DISABLED>
 	$<$<BOOL:${MAPBASE}>:MAPBASE>
 	$<$<BOOL:${MAPBASE_MP}>:MAPBASE_MP>
+	$<$<BOOL:${MAPBASE_GAMEPADUI}>:GAMEPADUI>
 	_DLL_EXT=${_DLL_EXT}
 	FRAME_POINTER_OMISSION_DISABLED
 )
