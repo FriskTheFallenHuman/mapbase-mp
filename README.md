@@ -160,6 +160,7 @@ Direct contributions:
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/192 (VScript hook manager and fixes)
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/206 (Fix CScriptNetMsgHelper::WriteEntity())
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/213 (VScript HUD visibility control, optimizations for 3D skybox angles/fake worldportals)
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/221 (VScript serialisation rewrite)
 
 == Contributions from z33ky:
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/21 (Various GCC/Linux compilation fixes)
