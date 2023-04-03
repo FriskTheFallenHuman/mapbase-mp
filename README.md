@@ -182,6 +182,9 @@ Direct contributions:
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/185 (Fix enemyfinders becoming visible when they wake)
 =-- https://github.com/mapbase-source/source-sdk-2013/pull/186 (Fix for brightly glowing teeth)
 
+== Contributions from arbabf:
+=-- https://github.com/mapbase-source/source-sdk-2013/pull/229 (Extend point_bugbait functionality)
+
 //-------------------------------------------------------------------------------------------------------------------------
 
 Other sources:
