@@ -223,6 +223,7 @@ Other sources:
 - https://github.com/momentum-mod/game/pull/1150 and https://github.com/momentum-mod/game/pull/1161 (Momentum Mod Content Mounting system)
 - https://github.com/ValveSoftware/Source-1-Games/issues/3347 (Used as a guide for fixing showinfo command)
 - https://github.com/ValveSoftware/source-sdk-2013/issues/404 (Models go spastic after some time)
+- https://github.com/StrataSource/Engine/issues/700 (Small typo in CLogicBranch)
 
 //-------------------------------------------------------------------------------------------------------------------------
 
