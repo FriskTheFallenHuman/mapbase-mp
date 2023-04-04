@@ -373,22 +373,10 @@ class IClientPurchaseInterfaceV2 *g_pClientPurchaseInterface = (class IClientPur
 
 static ConVar *g_pcv_ThreadMode = NULL;
 
-// GAMEPADUI TODO - put this somewhere better. (Madi)
 #if defined( GAMEPADUI )
-const bool IsSteamDeck()
-{
-	if ( CommandLine()->FindParm( "-gamepadui" ) )
-		return true;
-
-	if ( CommandLine()->FindParm( "-nogamepadui" ) )
-		return false;
-
-	const char *pszSteamDeckEnv = getenv( "SteamDeck" );
-	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
-		return atoi( pszSteamDeckEnv ) != 0;
-
-	return false;
-}
+// Steam Deck resources support by EchoesForeAndAft#8982
+// Check if we are in the SteamDeck Mode
+extern const bool IsSteamDeck();
 #endif
 
 
@@ -1375,6 +1363,11 @@ int CHLClient::HudVidInit( void )
 	gHUD.VidInit();
 
 	GetClientVoiceMgr()->VidInit();
+
+#if defined(GAMEPADUI)
+	if (g_pGamepadUI != nullptr)
+		g_pGamepadUI->VidInit();
+#endif // GAMEPADUI
 
 	return 1;
 }

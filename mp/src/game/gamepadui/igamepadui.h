@@ -12,13 +12,20 @@
 abstract_class IGamepadUI : public IBaseInterface
 {
 public:
-    virtual void Initialize( CreateInterfaceFn factory ) = 0;
-    virtual void Shutdown() = 0;
+	virtual void Initialize( CreateInterfaceFn factory ) = 0;
+	virtual void Shutdown() = 0;
 
-    virtual void OnUpdate( float flFrametime ) = 0;
-    virtual void OnLevelInitializePreEntity() = 0;
-    virtual void OnLevelInitializePostEntity() = 0;
-    virtual void OnLevelShutdown() = 0;
+	virtual void OnUpdate( float flFrametime ) = 0;
+	virtual void OnLevelInitializePreEntity() = 0;
+	virtual void OnLevelInitializePostEntity() = 0;
+	virtual void OnLevelShutdown() = 0;
+	
+	virtual void VidInit() = 0;
+
+#ifdef MAPBASE
+	virtual void BonusMapChallengeNames( char *pchFileName, char *pchMapName, char *pchChallengeName ) = 0;
+	virtual void BonusMapChallengeObjectives( int &iBronze, int &iSilver, int &iGold ) = 0;
+#endif
 };
 
 #define GAMEPADUI_INTERFACE_VERSION "GamepadUI001"

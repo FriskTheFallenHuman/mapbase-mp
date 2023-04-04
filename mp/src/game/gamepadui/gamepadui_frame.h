@@ -44,6 +44,7 @@ protected:
     GAMEPADUI_PANEL_PROPERTY( float, m_flFooterButtonsOffsetX, "FooterButtons.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
     GAMEPADUI_PANEL_PROPERTY( float, m_flFooterButtonsOffsetY, "FooterButtons.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
     GAMEPADUI_PANEL_PROPERTY( float, m_flFooterButtonsSpacing, "FooterButtons.Spacing", "0", SchemeValueTypes::ProportionalFloat );
+    GAMEPADUI_PANEL_PROPERTY( bool, m_bFooterButtonsStack, "FooterButtons.StackVertically", "0", SchemeValueTypes::Bool );
 
     vgui::HFont m_hTitleFont = vgui::INVALID_FONT;
     vgui::HFont m_hGenericFont = vgui::INVALID_FONT;

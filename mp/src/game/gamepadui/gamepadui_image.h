@@ -46,11 +46,11 @@ public:
 
         m_nId = vgui::surface()->CreateNewTextureID( true );
 
-#ifdef HL2_RETAIL // this crashes SDK2013 in the save/load menu (Madi)
+#ifdef MAPBASE_STEAMDECK
         g_pMatSystemSurface->DrawSetTextureRGBAEx2( m_nId, tga.Base(), nWidth, nHeight, IMAGE_FORMAT_RGBA8888, true );
 #else
         g_pMatSystemSurface->DrawSetTextureRGBAEx( m_nId, tga.Base(), nWidth, nHeight, IMAGE_FORMAT_RGBA8888 );
-#endif
+#endif // MAPBASE_STEAMDECK
     }
     bool IsValid()
     {

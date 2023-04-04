@@ -2182,10 +2182,26 @@ void KeyValues::RecursiveMergeKeyValues( KeyValues *baseKV )
 #ifdef MAPBASE
 // Steam Deck resources support by EchoesForeAndAft#8982
 // Check if we are in the SteamDeck Mode
-static bool IsSteamDeck()
+const bool IsSteamDeck()
 {
+#ifdef MAPBASE_STEAMDECK
 	static bool bIsSteamDeck = getenv( "SteamDeck" ) != nullptr || CommandLine()->CheckParm( "-gamepadui" ) != NULL;
 	return bIsSteamDeck;
+
+	if ( CommandLine()->FindParm( "-gamepadui" ) )
+		return true;
+
+	if ( CommandLine()->FindParm( "-nogamepadui" ) )
+		return false;
+
+	const char *pszSteamDeckEnv = getenv( "SteamDeck" );
+	if ( pszSteamDeckEnv && *pszSteamDeckEnv )
+		return atoi( pszSteamDeckEnv ) != 0;
+
+	return false;
+#else
+	return true;
+#endif // MAPBASE_STEAMDECK
 }
 #endif
 

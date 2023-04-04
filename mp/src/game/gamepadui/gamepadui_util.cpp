@@ -9,9 +9,9 @@
 
 // Josh: Unused, but referenced by imageutils.cpp
 // SDK2013: not necessary here (Madi)
-#ifdef HL2_RETAIL
+#ifdef MAPBASE_STEAMDECK
 class IVEngineClient* engine = NULL;
-#endif
+#endif // MAPBASE_STEAMDECK
 
 // Josh: Copied verbatim from basically every other module
 // we have on this planet.

@@ -12,102 +12,102 @@ extern vgui::ILocalize *g_pVGuiLocalize;
 class GamepadUIString
 {
 public:
-    GamepadUIString()
-    {
-    }
+	GamepadUIString()
+	{
+	}
 
-    GamepadUIString( const char *pszText )
-    {
-        SetText( pszText );
-    }
+	GamepadUIString( const char *pszText )
+	{
+		SetText( pszText );
+	}
 
-    GamepadUIString( const wchar_t *pszText )
-    {
-        SetText( pszText );
-    }
+	GamepadUIString( const wchar_t *pszText )
+	{
+		SetText( pszText );
+	}
 
-    GamepadUIString( const wchar_t *pszText, int nLength )
-    {
-        SetText( pszText, nLength );
-    }
+	GamepadUIString( const wchar_t *pszText, int nLength )
+	{
+		SetText( pszText, nLength );
+	}
 
-    const wchar_t *String() const
-    {
-        if ( m_ManagedText.Count() )
-            return m_ManagedText.Base();
+	const wchar_t *String() const
+	{
+		if ( m_ManagedText.Count() )
+			return m_ManagedText.Base();
 
-        return L"";
-    }
+		return L"";
+	}
 
-    int Length() const
-    {
-        if ( m_ManagedText.Count() )
-            return m_ManagedText.Count() - 1;
+	int Length() const
+	{
+		if ( m_ManagedText.Count() )
+			return m_ManagedText.Count() - 1;
 
-        return 0;
-    }
+		return 0;
+	}
 
-    bool IsEmpty() const
-    {
-        return Length() == 0;
-    }
+	bool IsEmpty() const
+	{
+		return Length() == 0;
+	}
 
-    void SetText( const char *pszText )
-    {
-        m_ManagedText.Purge();
+	void SetText( const char *pszText )
+	{
+		m_ManagedText.Purge();
 
-        if ( !pszText || !*pszText )
-            return;
+		if ( !pszText || !*pszText )
+			return;
 
-        const wchar_t *pszFoundText = g_pVGuiLocalize->Find( pszText );
-        if ( !pszFoundText )
-        {
-            SetRawUTF8( pszText );
-        }
-        else
-        {
-            int nChars = V_wcslen( pszFoundText );
-            SetText( pszFoundText, nChars );
-        }
-    }
+		const wchar_t *pszFoundText = g_pVGuiLocalize->Find( pszText );
+		if ( !pszFoundText )
+		{
+			SetRawUTF8( pszText );
+		}
+		else
+		{
+			int nChars = V_wcslen( pszFoundText );
+			SetText( pszFoundText, nChars );
+		}
+	}
 
-    void SetText( const wchar_t *pszText, int nLength )
-    {
-        m_ManagedText.Purge();
+	void SetText( const wchar_t *pszText, int nLength )
+	{
+		m_ManagedText.Purge();
 
-        if ( !pszText || !nLength )
-            return;
+		if ( !pszText || !nLength )
+			return;
 
-        m_ManagedText.EnsureCapacity( nLength + 1 );
-        for ( int i = 0; i < nLength; i++ )
-            m_ManagedText.AddToTail( pszText[ i ] );
-        m_ManagedText.AddToTail( L'\0' );
-    }
+		m_ManagedText.EnsureCapacity( nLength + 1 );
+		for ( int i = 0; i < nLength; i++ )
+			m_ManagedText.AddToTail( pszText[ i ] );
+		m_ManagedText.AddToTail( L'\0' );
+	}
 
-    void SetText( const wchar_t *pszText )
-    {
-        if ( !pszText )
-            SetText( NULL, 0 );
-        else
-            SetText( pszText, V_wcslen( pszText ) );
-    }
+	void SetText( const wchar_t *pszText )
+	{
+		if ( !pszText )
+			SetText( NULL, 0 );
+		else
+			SetText( pszText, V_wcslen( pszText ) );
+	}
 
-    void SetRawUTF8( const char* pszText )
-    {
-        m_ManagedText.Purge();
+	void SetRawUTF8( const char* pszText )
+	{
+		m_ManagedText.Purge();
 
-        if ( !pszText || !*pszText )
-            return;
+		if ( !pszText || !*pszText )
+			return;
 
-        wchar_t szUnicode[ 4096 ];
+		wchar_t szUnicode[ 4096 ];
 		memset( szUnicode, 0, sizeof( wchar_t ) * 4096 );
-        
+		
 		int nChars = V_UTF8ToUnicode( pszText, szUnicode, sizeof( szUnicode ) );
-        if ( nChars > 1 )
-            SetText( szUnicode, nChars - 1 );
-    }
+		if ( nChars > 1 )
+			SetText( szUnicode, nChars - 1 );
+	}
 private:
-    CCopyableUtlVector< wchar_t > m_ManagedText;
+	CCopyableUtlVector< wchar_t > m_ManagedText;
 };
 
 #endif // GAMEPADUI_STRING_H

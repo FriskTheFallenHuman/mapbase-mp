@@ -152,7 +152,7 @@ private:
 
 GamepadUIAchievementsPanel::GamepadUIAchievementsPanel( vgui::Panel *pParent, const char* pPanelName ) : BaseClass( pParent, pPanelName )
 {
-    vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
+    vgui::HScheme hScheme = vgui::scheme()->LoadSchemeFromFileEx( GamepadUI::GetInstance().GetSizingVPanel(), GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
     SetScheme( hScheme );
 
     GetFrameTitle() = GamepadUIString( "#GameUI_Achievements_Title" );

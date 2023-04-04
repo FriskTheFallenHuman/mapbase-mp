@@ -2,7 +2,7 @@
 #include "gamepadui_image.h"
 #include "gamepadui_util.h"
 #include "gamepadui_genericconfirmation.h"
-#include "gamepadui_scroll.h"
+#include "gamepadui_scrollbar.h"
 
 #include "ienginevgui.h"
 #include "vgui/ILocalize.h"
@@ -20,49 +20,58 @@
 
 #include "tier0/memdbgon.h"
 
+ConVar gamepadui_savegame_use_delete_mode( "gamepadui_savegame_use_delete_mode", "1", FCVAR_NONE, "Causes the save game panel to use a \"delete mode\" when not using a controller, showing X buttons next to each save game" );
+
 class GamepadUISaveButton;
 struct SaveGameDescription_t;
 
 class GamepadUISaveGamePanel : public GamepadUIFrame
 {
-    DECLARE_CLASS_SIMPLE( GamepadUISaveGamePanel, GamepadUIFrame );
+	DECLARE_CLASS_SIMPLE( GamepadUISaveGamePanel, GamepadUIFrame );
 
 public:
-    GamepadUISaveGamePanel( vgui::Panel *pParent, const char* pPanelName, bool bIsSave );
+	GamepadUISaveGamePanel( vgui::Panel *pParent, const char* pPanelName, bool bIsSave );
 
-    void UpdateGradients();
+	void UpdateGradients();
 
+	void ApplySchemeSettings( vgui::IScheme *pScheme ) OVERRIDE;
 	void OnThink() OVERRIDE;
-    void Paint() OVERRIDE;
-    void OnCommand( char const* pCommand ) OVERRIDE;
-    void OnMouseWheeled( int nDelta ) OVERRIDE;
+	void Paint() OVERRIDE;
+	void OnCommand( char const* pCommand ) OVERRIDE;
+	void OnMouseWheeled( int nDelta ) OVERRIDE;
 
-    MESSAGE_FUNC_HANDLE( OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button );
+	bool InDeleteMode() { return m_pDeletePanels.Count() > 0; }
+
+	MESSAGE_FUNC_HANDLE( OnGamepadUIButtonNavigatedTo, "OnGamepadUIButtonNavigatedTo", button );
 
 private:
-    void ScanSavedGames();
-    void LayoutSaveButtons();
-    bool ParseSaveData( char const* pFileName, char const* pShortName, SaveGameDescription_t& save );
-    static int SaveReadNameAndComment( FileHandle_t f, OUT_Z_CAP( nameSize ) char* name, int nameSize, OUT_Z_CAP( commentSize ) char* comment, int commentSize );
-    void FindSaveSlot( OUT_Z_CAP( bufsize ) char* buffer, int bufsize );
-    void DeleteSaveGame( const char* pFileName );
+	void ScanSavedGames();
+	void LayoutSaveButtons();
+	bool ParseSaveData( char const* pFileName, char const* pShortName, SaveGameDescription_t& save );
+	static int SaveReadNameAndComment( FileHandle_t f, OUT_Z_CAP( nameSize ) char* name, int nameSize, OUT_Z_CAP( commentSize ) char* comment, int commentSize );
+	void FindSaveSlot( OUT_Z_CAP( bufsize ) char* buffer, int bufsize );
+	void DeleteSaveGame( const char* pFileName );
 
-    void LoadGame( const SaveGameDescription_t* pSave );
-    void SaveGame( const SaveGameDescription_t *pSave );
+	void LoadGame( const SaveGameDescription_t* pSave );
+	void SaveGame( const SaveGameDescription_t *pSave );
 
 	GamepadUIString m_strNoSaveString;
 
-    CUtlVector<GamepadUISaveButton*> m_pSavePanels;
-    CUtlVector<SaveGameDescription_t> m_Saves;
+	CUtlVector<GamepadUISaveButton*> m_pSavePanels;
+	CUtlVector<SaveGameDescription_t> m_Saves;
+	
+	CUtlVector<GamepadUIButton*> m_pDeletePanels;
 
-    GamepadUIScrollState m_ScrollState;
+	GamepadUIScrollState m_ScrollState;
 
-    bool m_bIsSave;
+	GamepadUIScrollBar *m_pScrollBar = NULL;
 
-    GAMEPADUI_PANEL_PROPERTY( float, m_flSavesFade, "Saves.Fade", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_flSavesOffsetX, "Saves.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_flSavesOffsetY, "Saves.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
-    GAMEPADUI_PANEL_PROPERTY( float, m_flSavesSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat );
+	bool m_bIsSave;
+
+	GAMEPADUI_PANEL_PROPERTY( float, m_flSavesFade, "Saves.Fade", "0", SchemeValueTypes::ProportionalFloat );
+	GAMEPADUI_PANEL_PROPERTY( float, m_flSavesOffsetX, "Saves.OffsetX", "0", SchemeValueTypes::ProportionalFloat );
+	GAMEPADUI_PANEL_PROPERTY( float, m_flSavesOffsetY, "Saves.OffsetY", "0", SchemeValueTypes::ProportionalFloat );
+	GAMEPADUI_PANEL_PROPERTY( float, m_flSavesSpacing, "Saves.Spacing", "0", SchemeValueTypes::ProportionalFloat );
 };
 
 /* From GameUI */
@@ -93,13 +102,13 @@ struct SaveGameDescription_t
 class GamepadUISaveButton : public GamepadUIButton
 {
 public:
-    DECLARE_CLASS_SIMPLE( GamepadUISaveButton, GamepadUIButton );
+	DECLARE_CLASS_SIMPLE( GamepadUISaveButton, GamepadUIButton );
 
-    GamepadUISaveButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char* pCommand, const SaveGameDescription_t *pSaveGame )
-        : BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pSaveGame->szComment, pSaveGame->szFileTime )
-        , m_Image()
+	GamepadUISaveButton( vgui::Panel* pParent, vgui::Panel* pActionSignalTarget, const char *pSchemeFile, const char* pCommand, const SaveGameDescription_t *pSaveGame )
+		: BaseClass( pParent, pActionSignalTarget, pSchemeFile, pCommand, pSaveGame->szComment, pSaveGame->szFileTime )
+		, m_Image()
 		, m_pSaveGame( pSaveGame )
-    {
+	{
 		char tga[_MAX_PATH];
 		Q_strncpy( tga, pSaveGame->szFileName, sizeof( tga ) );
 		char *ext = strstr( tga, ".sav" );
@@ -118,14 +127,14 @@ public:
 		{
 			m_Image.SetImage( "gamepadui/save_game.vmt" );
 		}
-    }
+	}
 
-    void Paint() OVERRIDE
-    {
-        int x, y, w, t;
-        GetBounds( x, y, w, t );
+	void Paint() OVERRIDE
+	{
+		int x, y, w, t;
+		GetBounds( x, y, w, t );
 
-        PaintButton();
+		PaintButton();
 
 		if ( m_Image.IsValid() )
 		{
@@ -155,8 +164,8 @@ public:
 			vgui::surface()->DrawFilledRect( 0, 0, imgW, imgH );
 		}
 
-        PaintText();
-    }
+		PaintText();
+	}
 
 	const SaveGameDescription_t* GetSaveGame() const
 	{
@@ -165,7 +174,7 @@ public:
 
 private:
 	bool m_bUseTGAImage = false;
-    GamepadUIImage m_Image;
+	GamepadUIImage m_Image;
 	const SaveGameDescription_t *m_pSaveGame;
 };
 
@@ -173,26 +182,17 @@ GamepadUISaveGamePanel::GamepadUISaveGamePanel( vgui::Panel* pParent, const char
 	: BaseClass( pParent, pPanelName )
 	, m_bIsSave( bIsSave )
 {
-    vgui::HScheme Scheme = vgui::scheme()->LoadSchemeFromFile( GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
-    SetScheme( Scheme );
+	vgui::HScheme Scheme = vgui::scheme()->LoadSchemeFromFileEx( GamepadUI::GetInstance().GetSizingVPanel(), GAMEPADUI_DEFAULT_PANEL_SCHEME, "SchemePanel" );
+	SetScheme( Scheme );
 
-    GetFrameTitle() = GamepadUIString(m_bIsSave ? "#GameUI_SaveGame" : "#GameUI_LoadGame");
+	GetFrameTitle() = GamepadUIString(m_bIsSave ? "#GameUI_SaveGame" : "#GameUI_LoadGame");
 
-    Activate();
+	Activate();
 
-	if ( m_bIsSave )
-		m_Saves.AddToTail( SaveGameDescription_t{ "NewSavedGame", "", "", "#GameUI_NewSaveGame", "", "", "Current", NEW_SAVE_GAME_TIMESTAMP } );
+	ScanSavedGames();
 
-    ScanSavedGames();
-
-    if ( m_pSavePanels.Count() )
-        m_pSavePanels[0]->NavigateTo();
-
-    for ( int i = 1; i < m_pSavePanels.Count(); i++ )
-    {
-        m_pSavePanels[i]->SetNavUp( m_pSavePanels[i - 1] );
-        m_pSavePanels[i - 1]->SetNavDown( m_pSavePanels[i] );
-    }
+	if ( m_pSavePanels.Count() )
+		m_pSavePanels[0]->NavigateTo();
 
 	UpdateGradients();
 }
@@ -205,6 +205,35 @@ void GamepadUISaveGamePanel::UpdateGradients()
 	GamepadUI::GetInstance().GetGradientHelper()->SetTargetGradient( GradientSide::Down, { 1.0f, 1.0f }, flTime );
 }
 
+void GamepadUISaveGamePanel::ApplySchemeSettings( vgui::IScheme *pScheme )
+{
+	BaseClass::ApplySchemeSettings( pScheme );
+
+	m_bFooterButtonsStack = true;
+
+	float flX, flY;
+	if (GamepadUI::GetInstance().GetScreenRatio( flX, flY ))
+	{
+		m_flSavesOffsetX *= (flX);
+	}
+
+	int nX, nY;
+	GamepadUI::GetInstance().GetSizingPanelOffset( nX, nY );
+	if (nX > 0)
+	{
+		GamepadUI::GetInstance().GetSizingPanelScale( flX, flY );
+		flX *= 0.4f;
+
+		m_flSavesOffsetX += ((float)nX) * flX;
+		m_flSavesFade += ((float)nX) * flX;
+	}
+
+	if ( m_pScrollBar )
+	{
+		m_pScrollBar->InitScrollBar( &m_ScrollState, m_flSavesOffsetX + m_pSavePanels[0]->GetWide() + m_flSavesSpacing, m_flSavesOffsetY );
+	}
+}
+
 void GamepadUISaveGamePanel::OnThink()
 {
 	BaseClass::OnThink();
@@ -214,7 +243,7 @@ void GamepadUISaveGamePanel::OnThink()
 
 void GamepadUISaveGamePanel::Paint()
 {
-    BaseClass::Paint();
+	BaseClass::Paint();
 
 	if ( !m_strNoSaveString.IsEmpty() )
 	{
@@ -233,6 +262,13 @@ void GamepadUISaveGamePanel::Paint()
 /* Mostly from GameUI */
 void GamepadUISaveGamePanel::ScanSavedGames()
 {
+	m_Saves.Purge();
+	m_pSavePanels.PurgeAndDeleteElements();
+	m_pDeletePanels.PurgeAndDeleteElements();
+
+	if ( m_bIsSave )
+		m_Saves.AddToTail( SaveGameDescription_t{ "NewSavedGame", "", "", "#GameUI_NewSaveGame", "", "", "Current", NEW_SAVE_GAME_TIMESTAMP } );
+
 	// populate list box with all saved games on record:
 	char	szDirectory[_MAX_PATH];
 	Q_snprintf( szDirectory, sizeof( szDirectory ), "save/*.sav" );
@@ -300,11 +336,42 @@ void GamepadUISaveGamePanel::ScanSavedGames()
 	}
 	else
 	{
-		SetFooterButtons( FooterButtons::Back | FooterButtons::Select, FooterButtons::Select );
+		if ( m_bIsSave )
+		{
+			SetFooterButtons( FooterButtons::Back | FooterButtons::Select, FooterButtons::Select );
+		}
+		else
+		{
+			SetFooterButtons( FooterButtons::Back | FooterButtons::Delete | FooterButtons::Select, FooterButtons::Select );
+		}
 	}
 
 	SetControlEnabled( "loadsave", false );
 	SetControlEnabled( "delete", false );
+
+	if ( m_pSavePanels.Count() )
+	{
+		if ( !m_pScrollBar )
+		{
+			m_pScrollBar = new GamepadUIScrollBar(
+				this, this,
+				GAMEPADUI_RESOURCE_FOLDER "schemescrollbar.res",
+				NULL, false );
+
+			m_pScrollBar->SetNavLeft( m_pSavePanels[0] );
+		}
+	}
+	else if ( m_pScrollBar )
+	{
+		m_pScrollBar->MarkForDeletion();
+		m_pScrollBar = NULL;
+	}
+
+	for ( int i = 1; i < m_pSavePanels.Count(); i++ )
+	{
+		m_pSavePanels[i]->SetNavUp( m_pSavePanels[i - 1] );
+		m_pSavePanels[i - 1]->SetNavDown( m_pSavePanels[i] );
+	}
 }
 
 bool GamepadUISaveGamePanel::ParseSaveData( char const* pFileName, char const* pShortName, SaveGameDescription_t& save )
@@ -567,75 +634,88 @@ void GamepadUISaveGamePanel::DeleteSaveGame( const char* pFileName )
 
 void GamepadUISaveGamePanel::OnGamepadUIButtonNavigatedTo( vgui::VPANEL button )
 {
-    GamepadUIButton *pButton = dynamic_cast< GamepadUIButton * >( vgui::ipanel()->GetPanel( button, GetModuleName() ) );
-    if ( pButton )
-    {
-        if ( pButton->GetAlpha() != 255 )
-        {
-            int nParentW, nParentH;
+	GamepadUIButton *pButton = dynamic_cast< GamepadUIButton * >( vgui::ipanel()->GetPanel( button, GetModuleName() ) );
+	if ( pButton )
+	{
+		if ( pButton->GetAlpha() != 255 )
+		{
+			int nParentW, nParentH;
 			GetParent()->GetSize( nParentW, nParentH );
 
-            int nX, nY;
-            pButton->GetPos( nX, nY );
+			int nX, nY;
+			pButton->GetPos( nX, nY );
 
-            int nTargetY = pButton->GetPriority() * ( pButton->m_flHeightAnimationValue[ButtonStates::Out] + m_flSavesSpacing );
+			int nTargetY = pButton->GetPriority() * ( pButton->m_flHeightAnimationValue[ButtonStates::Out] + m_flSavesSpacing );
 
-            if ( nY < nParentH / 2 )
-            {
-                nTargetY += nParentH - m_flSavesOffsetY;
-                // Add a bit of spacing to make this more visually appealing :)
-                nTargetY -= m_flSavesSpacing;
-            }
-            else
-            {
-                nTargetY += pButton->m_flHeightAnimationValue[ButtonStates::Over];
-                // Add a bit of spacing to make this more visually appealing :)
-                nTargetY += (pButton->m_flHeightAnimationValue[ButtonStates::Over] / 2) + m_flSavesSpacing;
-            }
+			if ( nY < nParentH / 2 )
+			{
+				nTargetY += nParentH - m_flSavesOffsetY;
+				// Add a bit of spacing to make this more visually appealing :)
+				nTargetY -= m_flSavesSpacing;
+			}
+			else
+			{
+				nTargetY += pButton->m_flHeightAnimationValue[ButtonStates::Over];
+				// Add a bit of spacing to make this more visually appealing :)
+				nTargetY += (pButton->m_flHeightAnimationValue[ButtonStates::Over] / 2) + m_flSavesSpacing;
+			}
 
 
-            m_ScrollState.SetScrollTarget( nTargetY - ( nParentH - m_flSavesOffsetY), GamepadUI::GetInstance().GetTime() );
-        }
-    }
+			m_ScrollState.SetScrollTarget( nTargetY - ( nParentH - m_flSavesOffsetY), GamepadUI::GetInstance().GetTime() );
+		}
+	}
 }
 
 void GamepadUISaveGamePanel::LayoutSaveButtons()
 {
-    int nParentW, nParentH;
+	int nParentW, nParentH;
 	GetParent()->GetSize( nParentW, nParentH );
 
-    float scrollClamp = 0.0f;
-    for ( int i = 0; i < ( int )m_pSavePanels.Count(); i++ )
-    {
-        int size = ( m_pSavePanels[i]->GetTall() + m_flSavesSpacing );
+	float scrollClamp = 0.0f;
+	for ( int i = 0; i < ( int )m_pSavePanels.Count(); i++ )
+	{
+		int size = ( m_pSavePanels[i]->GetTall() + m_flSavesSpacing );
 
-        if ( i < ( ( int )m_pSavePanels.Count() ) - 3 )
-            scrollClamp += size;
-    }
+		if ( i < ( ( int )m_pSavePanels.Count() ) - 3 )
+			scrollClamp += size;
+	}
 
-    m_ScrollState.UpdateScrollBounds( 0.0f, scrollClamp );
+	m_ScrollState.UpdateScrollBounds( 0.0f, scrollClamp );
 
-    int previousSizes = 0;
-    for ( int i = 0; i < ( int )m_pSavePanels.Count(); i++ )
-    {
-        int tall = m_pSavePanels[i]->GetTall();
-        int size = ( tall + m_flSavesSpacing );
+	if (m_pSavePanels.Count() > 0)
+	{
+		m_pScrollBar->UpdateScrollBounds( 0.0f, scrollClamp,
+			((m_pSavePanels[0]->GetTall() + m_flSavesSpacing) * 3), nParentH - m_flFooterButtonsOffsetY - m_nFooterButtonHeight - m_flSavesOffsetY );
+	}
 
-        int y = m_flSavesOffsetY + previousSizes - m_ScrollState.GetScrollProgress();
-        int fade = 255;
-        if ( y < m_flSavesOffsetY )
-            fade = ( 1.0f - clamp( -( y - m_flSavesOffsetY ) / m_flSavesFade, 0.0f, 1.0f ) ) * 255.0f;
-        if ( y > nParentH - m_flSavesFade )
-            fade = ( 1.0f - clamp( ( y - ( nParentH - m_flSavesFade - size ) ) / m_flSavesFade, 0.0f, 1.0f ) ) * 255.0f;
-        if ( m_pSavePanels[i]->HasFocus() && fade != 0 )
-            fade = 255;
-        m_pSavePanels[i]->SetAlpha( fade );
-        m_pSavePanels[i]->SetPos( m_flSavesOffsetX, y );
-        m_pSavePanels[i]->SetVisible( true );
-        previousSizes += size;
-    }
+	int previousSizes = 0;
+	for ( int i = 0; i < ( int )m_pSavePanels.Count(); i++ )
+	{
+		int tall = m_pSavePanels[i]->GetTall();
+		int size = ( tall + m_flSavesSpacing );
 
-    m_ScrollState.UpdateScrolling( 2.0f, GamepadUI::GetInstance().GetTime() );
+		int y = m_flSavesOffsetY + previousSizes - m_ScrollState.GetScrollProgress();
+		int fade = 255;
+		if ( y < m_flSavesOffsetY )
+			fade = ( 1.0f - clamp( -( y - m_flSavesOffsetY ) / m_flSavesFade, 0.0f, 1.0f ) ) * 255.0f;
+		if ( y > nParentH - m_flSavesFade )
+			fade = ( 1.0f - clamp( ( y - ( nParentH - m_flSavesFade - size ) ) / m_flSavesFade, 0.0f, 1.0f ) ) * 255.0f;
+		if ( m_pSavePanels[i]->HasFocus() && fade != 0 )
+			fade = 255;
+		m_pSavePanels[i]->SetAlpha( fade );
+		m_pSavePanels[i]->SetPos( m_flSavesOffsetX, y );
+		m_pSavePanels[i]->SetVisible( true );
+		previousSizes += size;
+
+		if (m_pDeletePanels.Count() > i)
+		{
+			m_pDeletePanels[i]->SetPos( m_flSavesOffsetX - m_pDeletePanels[i]->GetWide() - m_flSavesSpacing, y );
+			m_pDeletePanels[i]->SetAlpha( fade );
+			m_pDeletePanels[i]->SetVisible( true );
+		}
+	}
+
+	m_ScrollState.UpdateScrolling( 2.0f, GamepadUI::GetInstance().GetTime() );
 }
 
 void GamepadUISaveGamePanel::LoadGame( const SaveGameDescription_t* pSave )
@@ -676,10 +756,73 @@ void GamepadUISaveGamePanel::SaveGame( const SaveGameDescription_t* pSave )
 
 void GamepadUISaveGamePanel::OnCommand( char const* pCommand )
 {
-    if ( !V_strcmp( pCommand, "action_back" ) )
-    {
-        Close();
-    }
+	if ( !V_strcmp( pCommand, "action_back" ) )
+	{
+		Close();
+	}
+	else if ( !V_strcmp( pCommand, "action_delete_mode_button" ) )
+	{
+		for ( auto& panel : m_pDeletePanels )
+		{
+			if ( panel->HasFocus() )
+			{
+				new GamepadUIGenericConfirmationPanel( this, "SaveDeleteConfirmationPanel", "#GameUI_ConfirmDeleteSaveGame_Title", "#GameUI_ConfirmDeleteSaveGame_Info",
+				[this, panel]()
+				{
+					DeleteSaveGame( panel->GetName() );
+					ScanSavedGames();
+				} );
+				break;
+			}
+		}
+	}
+	else if ( !V_strcmp( pCommand, "action_delete" ) )
+	{
+#if defined(MAPBASE_STEAMDECK)
+		const bool bController = g_pInputSystem->IsSteamControllerActive();
+#else
+		const bool bController = ( g_pInputSystem->GetJoystickCount() >= 1 );
+#endif // MAPBASE_STEAMDECK
+		if (InDeleteMode())
+		{
+			m_pDeletePanels.PurgeAndDeleteElements();
+		}
+		else if (!bController && gamepadui_savegame_use_delete_mode.GetBool())
+		{
+			// Add delete panels
+			for (int i = 0; i < m_pSavePanels.Count(); i++)
+			{
+				GamepadUIButton *button = new GamepadUIButton( this, this, GAMEPADUI_RESOURCE_FOLDER "schemedeletesavebutton.res", "action_delete_mode_button", "X", "");
+				button->SetName( m_pSavePanels[i]->GetSaveGame()->szFileName );
+				button->SetPriority( m_pSavePanels[i]->GetPriority() );
+				button->SetForwardToParent( true );
+				m_pDeletePanels.AddToTail( button );
+			}
+		}
+		else
+		{
+			// Delete directly if using a controller
+			for ( auto& panel : m_pSavePanels )
+			{
+				if ( panel->HasFocus() )
+				{
+					new GamepadUIGenericConfirmationPanel( this, "SaveDeleteConfirmationPanel", "#GameUI_ConfirmDeleteSaveGame_Title", "#GameUI_ConfirmDeleteSaveGame_Info",
+					[this, panel]()
+					{
+						int i = m_pSavePanels.Find( panel );
+						DeleteSaveGame( panel->GetSaveGame()->szFileName );
+						ScanSavedGames();
+
+						if ( i > 0 && m_pSavePanels.Count() >= i )
+							m_pSavePanels[i-1]->NavigateTo();
+						else if ( m_pSavePanels.Count() )
+							m_pSavePanels[0]->NavigateTo();
+					} );
+					break;
+				}
+			}
+		}
+	}
 	else if ( !V_strcmp( pCommand, "load_save" ) )
 	{
 		for ( auto& panel : m_pSavePanels )
@@ -706,20 +849,20 @@ void GamepadUISaveGamePanel::OnCommand( char const* pCommand )
 			}
 		}
 	}
-    else
-    {
-        BaseClass::OnCommand( pCommand );
-    }
+	else
+	{
+		BaseClass::OnCommand( pCommand );
+	}
 }
 
 void GamepadUISaveGamePanel::OnMouseWheeled( int delta )
 {
-    m_ScrollState.OnMouseWheeled( delta * 200.0f, GamepadUI::GetInstance().GetTime() );
+	m_ScrollState.OnMouseWheeled( delta * 200.0f, GamepadUI::GetInstance().GetTime() );
 }
 
 CON_COMMAND( gamepadui_opensavegamedialog, "" )
 {
-    new GamepadUISaveGamePanel( GamepadUI::GetInstance().GetBasePanel(), "", true );
+	new GamepadUISaveGamePanel( GamepadUI::GetInstance().GetBasePanel(), "", true );
 }
 
 CON_COMMAND( gamepadui_openloadgamedialog, "" )
