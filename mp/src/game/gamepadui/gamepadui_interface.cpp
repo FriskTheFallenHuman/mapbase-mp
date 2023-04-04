@@ -1,6 +1,7 @@
 #include "gamepadui_interface.h"
 #include "gamepadui_basepanel.h"
 #include "gamepadui_mainmenu.h"
+#include "gamepadui_loading.h"
 
 #include "vgui/ILocalize.h"
 
@@ -77,6 +78,9 @@ void GamepadUI::Initialize( CreateInterfaceFn factory )
 
 	GamepadUI_Log( "Overriding menu.\n" );
 
+	g_pGamepadUILoading = new GamepadUILoading( GetRootVPanel() );
+	m_pGameUI->SetLoadingBackgroundDialog( g_pGamepadUILoading->GetVPanel() );
+
 	m_pGameUI->SetMainMenuOverride( GetBaseVPanel() );
 
 	m_pAnimationController = new vgui::AnimationController( m_pBasePanel );
@@ -88,10 +92,16 @@ void GamepadUI::Initialize( CreateInterfaceFn factory )
 void GamepadUI::Shutdown()
 {
 	if ( m_pGameUI )
+	{
 		m_pGameUI->SetMainMenuOverride( NULL );
+		m_pGameUI->SetLoadingBackgroundDialog( NULL );
+	}
 
 	if ( m_pBasePanel )
 		m_pBasePanel->DeletePanel();
+
+	if ( g_pGamepadUILoading )
+		g_pGamepadUILoading->DeletePanel();
 
 #ifdef MAPBASE_STEAMDECK
 	m_SteamAPIContext.Clear();
@@ -155,6 +165,7 @@ void GamepadUI::VidInit()
 	m_flScreenYRatio = 1.0f;
 
 	m_pBasePanel->InvalidateLayout( false, true );
+	g_pGamepadUILoading->InvalidateLayout( false, true );
 }
 
 

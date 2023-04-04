@@ -31,6 +31,9 @@ public:
 	void ReleaseBackgroundMusic();
 
 private:
+	void HideGameMenuLogos();
+
+private:
 	GamepadUISizingPanel *m_pSizingPanel = NULL;
 	GamepadUIMainMenu *m_pMainMenu = NULL;
 
