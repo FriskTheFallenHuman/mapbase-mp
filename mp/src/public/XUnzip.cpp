@@ -741,7 +741,7 @@ struct inflate_huft_s
 int inflate_trees_bits(
 	uInt*,                     // 19 code lengths
 	uInt*,                     // bits tree desired/actual depth
-	inflate_huft **,        // bits tree result
+	inflate_huft**,         // bits tree result
 	inflate_huft*,              // space for trees
 	z_streamp );               // for messages
 
@@ -751,16 +751,16 @@ int inflate_trees_dynamic(
 	uInt*,                     // that many (total) code lengths
 	uInt*,                     // literal desired/actual bit depth
 	uInt*,                     // distance desired/actual bit depth
-	inflate_huft **,        // literal/length tree result
-	inflate_huft **,        // distance tree result
+	inflate_huft**,         // literal/length tree result
+	inflate_huft**,         // distance tree result
 	inflate_huft*,              // space for trees
 	z_streamp );               // for messages
 
 int inflate_trees_fixed(
 	uInt*,                     // literal desired/actual bit depth
 	uInt*,                     // distance desired/actual bit depth
-	const inflate_huft **,        // literal/length tree result
-	const inflate_huft **,        // distance tree result
+	const inflate_huft**,         // literal/length tree result
+	const inflate_huft**,         // distance tree result
 	z_streamp );               // for memory allocation
 
 
