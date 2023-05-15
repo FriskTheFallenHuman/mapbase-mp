@@ -472,6 +472,24 @@ bool CHalfLife2::Damage_IsTimeBased( int iDmgType )
 #endif
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHalfLife2::AllowThirdPersonCamera( void )
+{
+#ifdef CLIENT_DLL
+	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+
+	if ( pPlayer && pPlayer->IsObserver() )
+		return false;
+#endif
+
+	return true;
+}
+#endif // MAPBASE
+
+
 #ifdef MAPBASE_MP
 //-----------------------------------------------------------------------------
 // Purpose: 

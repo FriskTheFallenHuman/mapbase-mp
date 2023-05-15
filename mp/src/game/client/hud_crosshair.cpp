@@ -26,6 +26,10 @@
 #include "c_portal_player.h"
 #endif // PORTAL
 
+#ifdef MAPBASE
+#include "cam_thirdperson.h"
+#endif // MAPBASE
+
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -190,6 +194,17 @@ void CHudCrosshair::GetDrawPosition ( float *pX, float *pY, bool *pbBehindCamera
 			bUseOffset = true;
 		}
 #endif
+
+#ifdef MAPBASE
+		if ( g_ThirdPersonManager.WantToUseGameThirdPerson() )
+		{
+			vecStart = pPlayer->Weapon_ShootPosition();
+			Vector vecDir;
+			pPlayer->EyeVectors( &vecDir );
+			vecEnd = vecStart + vecDir * MAX_TRACE_LENGTH;
+			bUseOffset = true;
+		}
+#endif // MAPBASE
 
 		if ( bUseOffset )
 		{

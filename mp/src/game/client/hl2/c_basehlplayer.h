@@ -67,6 +67,10 @@ public:
 	virtual const QAngle&	GetRenderAngles( void );
 #endif
 
+#ifdef MAPBASE
+	virtual void	ThirdPersonSwitch( bool bThirdperson );
+#endif // MAPBASE
+
 public:
 
 	C_HL2PlayerLocalData		m_HL2Local;

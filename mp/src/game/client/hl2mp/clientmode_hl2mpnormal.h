@@ -76,6 +76,7 @@ public:
 	virtual int		GetDeathMessageStartHeight( void );
 	virtual void	PostRenderVGui();
 	virtual bool	CanRecordDemo( char *errorMsg, int length ) const;
+	virtual void	OverrideView( CViewSetup *pSetup );
 };
 
 extern IClientMode *GetClientModeNormal();

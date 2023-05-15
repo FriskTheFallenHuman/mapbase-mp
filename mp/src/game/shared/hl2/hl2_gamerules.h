@@ -104,6 +104,11 @@ public:
 	virtual void			RegisterScriptFunctions( void );
 #endif
 
+#ifdef MAPBASE
+	//Allow thirdperson camera.
+	virtual bool	AllowThirdPersonCamera( void );
+#endif // MAPBASE
+
 private:
 	// Rules change for the mega physgun
 	CNetworkVar( bool, m_bMegaPhysgun );

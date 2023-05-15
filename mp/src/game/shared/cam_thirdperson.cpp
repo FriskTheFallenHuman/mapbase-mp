@@ -11,6 +11,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
+#ifdef MAPBASE
+	#define THIRDPERSON_CVAR_FLAGS FCVAR_USERINFO | FCVAR_ARCHIVE
+#else
+	#define THIRDPERSON_CVAR_FLAGS FCVAR_NOT_CONNECTED | FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY
+#endif
+
 static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET,-CAM_HULL_OFFSET,-CAM_HULL_OFFSET);
 static Vector CAM_HULL_MAX( CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
 
@@ -43,7 +49,7 @@ void ThirdPersonChange( IConVar *pConVar, const char *pOldValue, float flOldValu
 	ToggleThirdPerson( var.GetBool() );
 }
 
-ConVar cl_thirdperson( "cl_thirdperson", "0", FCVAR_NOT_CONNECTED | FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY, "Enables/Disables third person", ThirdPersonChange  );
+ConVar cl_thirdperson( "cl_thirdperson", "0", THIRDPERSON_CVAR_FLAGS, "Enables/Disables third person", ThirdPersonChange  );
 
 #endif
 

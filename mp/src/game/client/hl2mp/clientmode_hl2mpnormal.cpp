@@ -36,6 +36,9 @@
 #include "buymenu.h"
 #include "c_baseplayer.h"
 #include "c_weapon__stubs.h"		//Tony; add stubs
+#ifdef MAPBASE
+#include "cam_thirdperson.h"
+#endif // MAPBASE
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -84,6 +87,7 @@ void CHL2MPModeManager::Init()
 void CHL2MPModeManager::LevelInit( const char *newmap )
 {
 	g_pClientMode->LevelInit( newmap );
+
 	// HACK: the detail sway convars are archive, and default to 0.  Existing CS:S players thus have no detail
 	// prop sway.  We'll force them to DoD's default values for now.
 	if ( !cl_detail_max_sway.GetFloat() &&
@@ -96,6 +100,16 @@ void CHL2MPModeManager::LevelInit( const char *newmap )
 		cl_detail_avoid_force.SetValue( "0.4" );
 		cl_detail_avoid_recover_speed.SetValue( "0.25" );
 	}
+
+	ConVarRef voice_steal( "voice_steal" );
+	if ( voice_steal.IsValid() )
+	{
+		voice_steal.SetValue( 1 );
+	}
+
+#ifdef MAPBASE
+	g_ThirdPersonManager.Init();
+#endif // MAPBASE
 }
 
 void CHL2MPModeManager::LevelShutdown( void )
@@ -196,13 +210,78 @@ bool ClientModeHL2MPNormal::CanRecordDemo( char *errorMsg, int length ) const
 	return true;
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 bool ClientModeHL2MPNormal::ShouldDrawCrosshair( void )
 {
 	return ( g_bRollingCredits == false );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void ClientModeHL2MPNormal::OverrideView( CViewSetup *pSetup )
+{
+	QAngle camAngles;
+
+	// Let the player override the view.
+	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+	if ( !pPlayer )
+		return;
+
+	pPlayer->OverrideView( pSetup );
+
+	if ( ::input->CAM_IsThirdPerson() )
+	{
+		const Vector& cam_ofs = g_ThirdPersonManager.GetCameraOffsetAngles();
+		Vector cam_ofs_distance;
+
+		if ( g_ThirdPersonManager.IsOverridingThirdPerson() )
+		{
+			cam_ofs_distance = g_ThirdPersonManager.GetDesiredCameraOffset();
+		}
+		else
+		{
+			cam_ofs_distance = g_ThirdPersonManager.GetFinalCameraOffset();
+		}
+
+		cam_ofs_distance *= g_ThirdPersonManager.GetDistanceFraction();
+
+		camAngles[ PITCH ] = cam_ofs[ PITCH ];
+		camAngles[ YAW ] = cam_ofs[ YAW ];
+		camAngles[ ROLL ] = 0;
+
+		Vector camForward, camRight, camUp;
+		
+
+		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
+		{
+			engine->GetViewAngles( camAngles );
+		}
+			
+		// get the forward vector
+		AngleVectors( camAngles, &camForward, &camRight, &camUp );
+	
+		VectorMA( pSetup->origin, -cam_ofs_distance[0], camForward, pSetup->origin );
+		VectorMA( pSetup->origin, cam_ofs_distance[1], camRight, pSetup->origin );
+		VectorMA( pSetup->origin, cam_ofs_distance[2], camUp, pSetup->origin );
+
+		// Override angles from third person camera
+		VectorCopy( camAngles, pSetup->angles );
+	}
+	else if (::input->CAM_IsOrthographic())
+	{
+		pSetup->m_bOrtho = true;
+		float w, h;
+		::input->CAM_OrthographicSize( w, h );
+		w *= 0.5f;
+		h *= 0.5f;
+		pSetup->m_OrthoLeft   = -w;
+		pSetup->m_OrthoTop    = -h;
+		pSetup->m_OrthoRight  = w;
+		pSetup->m_OrthoBottom = h;
+	}
 }
 
 // Instance the singleton and expose the interface to it.

@@ -11,6 +11,9 @@
 #include "c_ai_basenpc.h"
 #include "in_buttons.h"
 #include "collisionutils.h"
+#ifdef MAPBASE
+#include "cam_thirdperson.h"
+#endif // MAPBASE
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
@@ -27,6 +30,12 @@ extern ConVar sensitivity;
 
 ConVar cl_npc_speedmod_intime( "cl_npc_speedmod_intime", "0.25", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
 ConVar cl_npc_speedmod_outtime( "cl_npc_speedmod_outtime", "1.5", FCVAR_CLIENTDLL | FCVAR_ARCHIVE );
+
+#ifdef MAPBASE
+#define CAMERA_DIST 64
+#define CAMERA_DIST_RIGHT 30
+#define CAMERA_DIST_UP 0
+#endif // MAPBASE_M
 
 IMPLEMENT_CLIENTCLASS_DT(C_BaseHLPlayer, DT_HL2_Player, CHL2_Player)
 	RecvPropDataTable( RECVINFO_DT(m_HL2Local),0, &REFERENCE_RECV_TABLE(DT_HL2Local) ),
@@ -80,6 +89,24 @@ C_BaseHLPlayer::C_BaseHLPlayer()
 	scissor.SetValue("0");
 #endif
 }
+
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void C_BaseHLPlayer::ThirdPersonSwitch( bool bThirdPerson )
+{
+	BaseClass::ThirdPersonSwitch( bThirdPerson );
+
+	if ( bThirdPerson )
+	{
+		if ( g_ThirdPersonManager.WantToUseGameThirdPerson() )
+		{
+			g_ThirdPersonManager.SetDesiredCameraOffset( Vector( CAMERA_DIST, CAMERA_DIST_RIGHT, CAMERA_DIST_UP ) );
+		}
+	}
+}
+#endif // MAPBASE
 
 //-----------------------------------------------------------------------------
 // Purpose: 
