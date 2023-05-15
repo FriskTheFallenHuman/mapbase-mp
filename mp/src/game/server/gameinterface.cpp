@@ -258,6 +258,20 @@ static void UpdateChapterRestrictions( const char *mapname );
 
 static void UpdateRichPresence ( void );
 
+#ifdef MAPBASE
+//#pragma message(FILE_LINE_STRING " !!FIXME!! replace all this with Sys_LoadGameModule")
+static class DllOverride
+{
+public:
+	DllOverride() {
+		Sys_LoadInterface( "filesystem_stdio.dll", FILESYSTEM_INTERFACE_VERSION, nullptr, (void **)&g_pFullFileSystem );
+		const char *pGameDir = CommandLine()->ParmValue( "-game", "hl2" );
+		pGameDir = UTIL_VarArgs( "%s/bin", pGameDir );
+		g_pFullFileSystem->AddSearchPath( pGameDir, "EXECUTABLE_PATH", PATH_ADD_TO_HEAD );
+	}
+} g_DllOverride;
+#endif
+
 
 #if !defined( _XBOX ) // Don't doubly define this symbol.
 CSharedEdictChangeInfo *g_pSharedChangeInfo = NULL;
