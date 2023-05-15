@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( EVENT_TEMPENTITY_TESTER_H )
 #define EVENT_TEMPENTITY_TESTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CBaseTempEntity;
@@ -26,10 +26,10 @@ public:
 	void				Spawn( void );
 	void				Think( void );
 
-	static	CBaseEntity *Create( const Vector &vecOrigin, const QAngle &vecAngles, const char *lifetime, const char *single_te );
+	static	CBaseEntity* Create( const Vector& vecOrigin, const QAngle& vecAngles, const char* lifetime, const char* single_te );
 private:
 	// Current temp entity to test
-	CBaseTempEntity		*m_pCurrent;
+	CBaseTempEntity*		m_pCurrent;
 
 	// Lifetime
 	float				m_fLifeTime;

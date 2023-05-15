@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( MODES_H )
 #define MODES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 typedef struct vmode_s

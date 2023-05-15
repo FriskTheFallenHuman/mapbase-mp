@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,7 +25,7 @@ public:
 	DECLARE_CLASS( C_TEBreakModel, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEBreakModel( void );
+	C_TEBreakModel( void );
 	virtual			~C_TEBreakModel( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -46,25 +46,25 @@ public:
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBreakModel, DT_TEBreakModel, CTEBreakModel)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
-	RecvPropVector( RECVINFO(m_vecSize)),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nRandomization)),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropFloat( RECVINFO(m_fTime)),
-	RecvPropInt( RECVINFO(m_nFlags)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEBreakModel, DT_TEBreakModel, CTEBreakModel )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
+				RecvPropVector( RECVINFO( m_vecSize ) ),
+				RecvPropVector( RECVINFO( m_vecVelocity ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropInt( RECVINFO( m_nRandomization ) ),
+				RecvPropInt( RECVINFO( m_nCount ) ),
+				RecvPropFloat( RECVINFO( m_fTime ) ),
+				RecvPropInt( RECVINFO( m_nFlags ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TEBreakModel::C_TEBreakModel( void )
+				C_TEBreakModel::C_TEBreakModel( void )
 {
 	m_vecOrigin.Init();
 	m_angRotation.Init();
@@ -85,21 +85,23 @@ C_TEBreakModel::~C_TEBreakModel( void )
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordBreakModel( const Vector &start, const QAngle &angles, const Vector &size,
-	const Vector &vel, int nModelIndex, int nRandomization, int nCount, float flDuration, int nFlags )
+static inline void RecordBreakModel( const Vector& start, const QAngle& angles, const Vector& size,
+									 const Vector& vel, int nModelIndex, int nRandomization, int nCount, float flDuration, int nFlags )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		const model_t* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		return;
+	}
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		const model_t* pModel = ( nModelIndex != 0 ) ? modelinfo->GetModel( nModelIndex ) : NULL;
+		const char* pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
 
- 		msg->SetInt( "te", TE_BREAK_MODEL );
- 		msg->SetString( "name", "TE_BreakModel" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_BREAK_MODEL );
+		msg->SetString( "name", "TE_BreakModel" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -113,7 +115,7 @@ static inline void RecordBreakModel( const Vector &start, const QAngle &angles, 
 		msg->SetFloat( "velx", vel.x );
 		msg->SetFloat( "vely", vel.y );
 		msg->SetFloat( "velz", vel.z );
-  		msg->SetString( "model", pModelName );
+		msg->SetString( "model", pModelName );
 		msg->SetInt( "randomization", nRandomization );
 		msg->SetInt( "count", nCount );
 		msg->SetFloat( "duration", flDuration );
@@ -126,31 +128,31 @@ static inline void RecordBreakModel( const Vector &start, const QAngle &angles, 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void TE_BreakModel( IRecipientFilter& filter, float delay,
-	const Vector& pos, const QAngle &angles, const Vector& size, const Vector& vel, 
-	int modelindex, int randomization, int count, float time, int flags )
+					const Vector& pos, const QAngle& angles, const Vector& size, const Vector& vel,
+					int modelindex, int randomization, int count, float time, int flags )
 {
 	tempents->BreakModel( pos, angles, size, vel, randomization, time, count, modelindex, flags );
-	RecordBreakModel( pos, angles, size, vel, randomization, time, count, modelindex, flags ); 
+	RecordBreakModel( pos, angles, size, vel, randomization, time, count, modelindex, flags );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEBreakModel::PostDataUpdate( DataUpdateType_t updateType )
 {
 	VPROF( "C_TEBreakModel::PostDataUpdate" );
 
 	tempents->BreakModel( m_vecOrigin, m_angRotation, m_vecSize, m_vecVelocity,
-		m_nRandomization, m_fTime, m_nCount, m_nModelIndex, m_nFlags );
+						  m_nRandomization, m_fTime, m_nCount, m_nModelIndex, m_nFlags );
 	RecordBreakModel( m_vecOrigin, m_angRotation, m_vecSize, m_vecVelocity,
-		m_nRandomization, m_fTime, m_nCount, m_nModelIndex, m_nFlags ); 
+					  m_nRandomization, m_fTime, m_nCount, m_nModelIndex, m_nFlags );
 }
 
-void TE_BreakModel( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_BreakModel( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecSize, vecVel;
 	QAngle angles;
@@ -167,13 +169,13 @@ void TE_BreakModel( IRecipientFilter& filter, float delay, KeyValues *pKeyValues
 	vecVel.y = pKeyValues->GetFloat( "vely" );
 	vecVel.z = pKeyValues->GetFloat( "velz" );
 	Color c = pKeyValues->GetColor( "color" );
-	const char *pModelName = pKeyValues->GetString( "model" );
+	const char* pModelName = pKeyValues->GetString( "model" );
 	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
 	int nRandomization = pKeyValues->GetInt( "randomization" );
 	int nCount = pKeyValues->GetInt( "count" );
 	float flDuration = pKeyValues->GetFloat( "duration" );
 	int nFlags = pKeyValues->GetInt( "flags" );
 	TE_BreakModel( filter, 0.0f, vecOrigin, angles, vecSize, vecVel,
-		nModelIndex, nRandomization, nCount, flDuration, nFlags );
+				   nModelIndex, nRandomization, nCount, flDuration, nFlags );
 }
 

@@ -5,7 +5,7 @@
 #ifndef IREPLAYPERFORMANCECONTROLLER_H
 #define IREPLAYPERFORMANCECONTROLLER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -23,26 +23,29 @@ class CReplayPerformance;
 
 //----------------------------------------------------------------------------------------
 
-// These values are what we use to represent 
+// These values are what we use to represent
 
-struct SetViewParams_t 
+struct SetViewParams_t
 {
-	SetViewParams_t() { V_memset( this, 0, sizeof( SetViewParams_t ) ); }
-	SetViewParams_t( float flTime, Vector *pOrigin, QAngle *pAngles, float flFov, float flAccel,
+	SetViewParams_t()
+	{
+		V_memset( this, 0, sizeof( SetViewParams_t ) );
+	}
+	SetViewParams_t( float flTime, Vector* pOrigin, QAngle* pAngles, float flFov, float flAccel,
 					 float flSpeed, float flRotFilter )
-	:	m_flTime( flTime ),
-		m_pOrigin( pOrigin ),
-		m_pAngles( pAngles ),
-		m_flFov( flFov ),
-		m_flAccel( flAccel ),
-		m_flSpeed( flSpeed ),
-		m_flRotationFilter( flRotFilter )
+		:	m_flTime( flTime ),
+		  m_pOrigin( pOrigin ),
+		  m_pAngles( pAngles ),
+		  m_flFov( flFov ),
+		  m_flAccel( flAccel ),
+		  m_flSpeed( flSpeed ),
+		  m_flRotationFilter( flRotFilter )
 	{
 	}
 
 	float	m_flTime;
-	Vector	*m_pOrigin;
-	QAngle	*m_pAngles;
+	Vector*	m_pOrigin;
+	QAngle*	m_pAngles;
 	float	m_flFov;
 
 	// Right now only used for updating UI during playback:
@@ -56,16 +59,16 @@ struct SetViewParams_t
 class IReplayPerformanceController : public IBaseInterface
 {
 public:
-	virtual void		SetEditor( IReplayPerformanceEditor *pEditor ) = 0;
+	virtual void		SetEditor( IReplayPerformanceEditor* pEditor ) = 0;
 
 	virtual bool		IsPlaybackDataLeft() = 0;
 
-	virtual void		StartRecording( CReplay *pReplay, bool bSnip ) = 0;
+	virtual void		StartRecording( CReplay* pReplay, bool bSnip ) = 0;
 	virtual void		NotifyRewinding() = 0;
 
 	virtual void		Stop() = 0;
 	virtual bool		SaveAsync() = 0;
-	virtual bool		SaveAsAsync( const wchar *pTitle ) = 0;
+	virtual bool		SaveAsAsync( const wchar* pTitle ) = 0;
 
 	virtual bool		IsSaving() const = 0;
 
@@ -79,8 +82,8 @@ public:
 	virtual bool		IsDirty() const = 0;
 	virtual void		NotifyDirty() = 0;
 
-	virtual CReplayPerformance	*GetPerformance() = 0;
-	virtual CReplayPerformance	*GetSavedPerformance() = 0;
+	virtual CReplayPerformance*	GetPerformance() = 0;
+	virtual CReplayPerformance*	GetSavedPerformance() = 0;
 	virtual bool		HasSavedPerformance() = 0;
 
 	virtual void		NotifyPauseState( bool bPaused ) = 0;
@@ -98,7 +101,7 @@ public:
 	virtual void		AddEvent_Camera_Change_ThirdPerson( float flTime, int nEntityIndex ) = 0;
 	virtual void		AddEvent_Camera_Change_Free( float flTime ) = 0;
 	virtual void		AddEvent_Camera_ChangePlayer( float flTime, int nEntIndex ) = 0;
-	virtual void		AddEvent_Camera_SetView( const SetViewParams_t &params ) = 0;
+	virtual void		AddEvent_Camera_SetView( const SetViewParams_t& params ) = 0;
 	virtual void		AddEvent_TimeScale( float flTime, float flScale ) = 0;
 };
 

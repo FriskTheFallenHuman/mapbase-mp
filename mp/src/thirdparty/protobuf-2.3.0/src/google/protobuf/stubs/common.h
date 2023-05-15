@@ -41,17 +41,19 @@
 #include <string>
 #include <string.h>
 #if defined(__osf__)
-// Tru64 lacks stdint.h, but has inttypes.h which defines a superset of
-// what stdint.h would define.
-#include <inttypes.h>
+	// Tru64 lacks stdint.h, but has inttypes.h which defines a superset of
+	// what stdint.h would define.
+	#include <inttypes.h>
 #elif !defined(_MSC_VER)
-#include <stdint.h>
+	#include <stdint.h>
 #endif
 
 namespace std {}
 
-namespace google {
-namespace protobuf {
+namespace google
+{
+namespace protobuf
+{
 
 // VALVE - Moved this from the top of the file to the bottom, to avoid a VC++ 2005 bug
 // where it would leak outside of it's scope if declared above due to some compiler bug.
@@ -64,22 +66,23 @@ namespace protobuf {
   void operator=(const TypeName&)
 
 #if defined(_MSC_VER) && defined(PROTOBUF_USE_DLLS)
-  #ifdef LIBPROTOBUF_EXPORTS
-    #define LIBPROTOBUF_EXPORT __declspec(dllexport)
-  #else
-    #define LIBPROTOBUF_EXPORT __declspec(dllimport)
-  #endif
-  #ifdef LIBPROTOC_EXPORTS
-    #define LIBPROTOC_EXPORT   __declspec(dllexport)
-  #else
-    #define LIBPROTOC_EXPORT   __declspec(dllimport)
-  #endif
+	#ifdef LIBPROTOBUF_EXPORTS
+		#define LIBPROTOBUF_EXPORT __declspec(dllexport)
+	#else
+		#define LIBPROTOBUF_EXPORT __declspec(dllimport)
+	#endif
+	#ifdef LIBPROTOC_EXPORTS
+		#define LIBPROTOC_EXPORT   __declspec(dllexport)
+	#else
+		#define LIBPROTOC_EXPORT   __declspec(dllimport)
+	#endif
 #else
-  #define LIBPROTOBUF_EXPORT
-  #define LIBPROTOC_EXPORT
+	#define LIBPROTOBUF_EXPORT
+	#define LIBPROTOC_EXPORT
 #endif
 
-namespace internal {
+namespace internal
+{
 
 // Some of these constants are macros rather than const ints so that they can
 // be used in #if directives.
@@ -107,11 +110,11 @@ static const int kMinHeaderVersionForProtoc = 2003000;
 
 // Verifies that the headers and libraries are compatible.  Use the macro
 // below to call this.
-void LIBPROTOBUF_EXPORT VerifyVersion(int headerVersion, int minLibraryVersion,
-                                      const char* filename);
+void LIBPROTOBUF_EXPORT VerifyVersion( int headerVersion, int minLibraryVersion,
+									   const char* filename );
 
 // Converts a numeric version number to a string.
-std::string LIBPROTOBUF_EXPORT VersionString(int version);
+std::string LIBPROTOBUF_EXPORT VersionString( int version );
 
 }  // namespace internal
 
@@ -130,25 +133,25 @@ std::string LIBPROTOBUF_EXPORT VersionString(int version);
 typedef unsigned int uint;
 
 #ifdef _MSC_VER
-typedef __int8  int8;
-typedef __int16 int16;
-typedef __int32 int32;
-typedef __int64 int64;
+	typedef __int8  int8;
+	typedef __int16 int16;
+	typedef __int32 int32;
+	typedef __int64 int64;
 
-typedef unsigned __int8  uint8;
-typedef unsigned __int16 uint16;
-typedef unsigned __int32 uint32;
-typedef unsigned __int64 uint64;
+	typedef unsigned __int8  uint8;
+	typedef unsigned __int16 uint16;
+	typedef unsigned __int32 uint32;
+	typedef unsigned __int64 uint64;
 #else
-typedef int8_t  int8;
-typedef int16_t int16;
-typedef int32_t int32;
-typedef int64_t int64;
+	typedef int8_t  int8;
+	typedef int16_t int16;
+	typedef int32_t int32;
+	typedef int64_t int64;
 
-typedef uint8_t  uint8;
-typedef uint16_t uint16;
-typedef uint32_t uint32;
-typedef uint64_t uint64;
+	typedef uint8_t  uint8;
+	typedef uint16_t uint16;
+	typedef uint32_t uint32;
+	typedef uint64_t uint64;
 #endif
 
 // long long macros to be used because gcc and vc++ use different suffixes,
@@ -158,21 +161,21 @@ typedef uint64_t uint64;
 #undef GOOGLE_LL_FORMAT
 
 #ifdef _MSC_VER
-#define GOOGLE_LONGLONG(x) x##I64
-#define GOOGLE_ULONGLONG(x) x##UI64
-#define GOOGLE_LL_FORMAT "I64"  // As in printf("%I64d", ...)
+	#define GOOGLE_LONGLONG(x) x##I64
+	#define GOOGLE_ULONGLONG(x) x##UI64
+	#define GOOGLE_LL_FORMAT "I64"  // As in printf("%I64d", ...)
 #else
-#define GOOGLE_LONGLONG(x) x##LL
-#define GOOGLE_ULONGLONG(x) x##ULL
-#define GOOGLE_LL_FORMAT "ll"  // As in "%lld". Note that "q" is poor form also.
+	#define GOOGLE_LONGLONG(x) x##LL
+	#define GOOGLE_ULONGLONG(x) x##ULL
+	#define GOOGLE_LL_FORMAT "ll"  // As in "%lld". Note that "q" is poor form also.
 #endif
 
 static const int32 kint32max = 0x7FFFFFFF;
 static const int32 kint32min = -kint32max - 1;
-static const int64 kint64max = GOOGLE_LONGLONG(0x7FFFFFFFFFFFFFFF);
+static const int64 kint64max = GOOGLE_LONGLONG( 0x7FFFFFFFFFFFFFFF );
 static const int64 kint64min = -kint64max - 1;
 static const uint32 kuint32max = 0xFFFFFFFFu;
-static const uint64 kuint64max = GOOGLE_ULONGLONG(0xFFFFFFFFFFFFFFFF);
+static const uint64 kuint64max = GOOGLE_ULONGLONG( 0xFFFFFFFFFFFFFFFF );
 
 // -------------------------------------------------------------------
 // Annotations:  Some parts of the code have been annotated in ways that might
@@ -181,42 +184,42 @@ static const uint64 kuint64max = GOOGLE_ULONGLONG(0xFFFFFFFFFFFFFFFF);
 //   is not right for you.
 
 #ifndef GOOGLE_ATTRIBUTE_ALWAYS_INLINE
-#if defined(__GNUC__) && (__GNUC__ > 3 ||(__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
-// For functions we want to force inline.
-// Introduced in gcc 3.1.
-#define GOOGLE_ATTRIBUTE_ALWAYS_INLINE __attribute__ ((always_inline))
-#else
-// Other compilers will have to figure it out for themselves.
-#define GOOGLE_ATTRIBUTE_ALWAYS_INLINE
-#endif
+	#if defined(__GNUC__) && (__GNUC__ > 3 ||(__GNUC__ == 3 && __GNUC_MINOR__ >= 1))
+		// For functions we want to force inline.
+		// Introduced in gcc 3.1.
+		#define GOOGLE_ATTRIBUTE_ALWAYS_INLINE __attribute__ ((always_inline))
+	#else
+		// Other compilers will have to figure it out for themselves.
+		#define GOOGLE_ATTRIBUTE_ALWAYS_INLINE
+	#endif
 #endif
 
 #ifndef GOOGLE_ATTRIBUTE_DEPRECATED
-#ifdef __GNUC__
-// If the method/variable/type is used anywhere, produce a warning.
-#define GOOGLE_ATTRIBUTE_DEPRECATED __attribute__((deprecated))
-#else
-#define GOOGLE_ATTRIBUTE_DEPRECATED
-#endif
+	#ifdef __GNUC__
+		// If the method/variable/type is used anywhere, produce a warning.
+		#define GOOGLE_ATTRIBUTE_DEPRECATED __attribute__((deprecated))
+	#else
+		#define GOOGLE_ATTRIBUTE_DEPRECATED
+	#endif
 #endif
 
 #ifndef GOOGLE_PREDICT_TRUE
-#ifdef __GNUC__
-// Provided at least since GCC 3.0.
-#define GOOGLE_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
-#else
-#define GOOGLE_PREDICT_TRUE
-#endif
+	#ifdef __GNUC__
+		// Provided at least since GCC 3.0.
+		#define GOOGLE_PREDICT_TRUE(x) (__builtin_expect(!!(x), 1))
+	#else
+		#define GOOGLE_PREDICT_TRUE
+	#endif
 #endif
 
 // Delimits a block of code which may write to memory which is simultaneously
 // written by other threads, but which has been determined to be thread-safe
 // (e.g. because it is an idempotent write).
 #ifndef GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN
-#define GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN()
+	#define GOOGLE_SAFE_CONCURRENT_WRITES_BEGIN()
 #endif
 #ifndef GOOGLE_SAFE_CONCURRENT_WRITES_END
-#define GOOGLE_SAFE_CONCURRENT_WRITES_END()
+	#define GOOGLE_SAFE_CONCURRENT_WRITES_END()
 #endif
 
 // ===================================================================
@@ -261,7 +264,8 @@ static const uint64 kuint64max = GOOGLE_ULONGLONG(0xFFFFFFFFFFFFFFFF);
   ((sizeof(a) / sizeof(*(a))) / \
    static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))
 
-namespace internal {
+namespace internal
+{
 
 // Use implicit_cast as a safe version of static_cast or const_cast
 // for upcasting in the type hierarchy (i.e. casting a pointer to Foo
@@ -281,8 +285,9 @@ namespace internal {
 // but the proposal was submitted too late.  It will probably make
 // its way into the language in the future.
 template<typename To, typename From>
-inline To implicit_cast(From const &f) {
-  return f;
+inline To implicit_cast( From const& f )
+{
+	return f;
 }
 
 // When you upcast (that is, cast a pointer from type Foo to type
@@ -304,19 +309,21 @@ inline To implicit_cast(From const &f) {
 // You should design the code some other way not to need this.
 
 template<typename To, typename From>     // use like this: down_cast<T*>(foo);
-inline To down_cast(From* f) {                   // so we only accept pointers
-  // Ensures that To is a sub-type of From *.  This test is here only
-  // for compile-time type checking, and has no overhead in an
-  // optimized build at run-time, as it will be optimized away
-  // completely.
-  if (false) {
-    implicit_cast<From*, To>(0);
-  }
+inline To down_cast( From* f )                   // so we only accept pointers
+{
+	// Ensures that To is a sub-type of From *.  This test is here only
+	// for compile-time type checking, and has no overhead in an
+	// optimized build at run-time, as it will be optimized away
+	// completely.
+	if( false )
+	{
+		implicit_cast<From*, To>( 0 );
+	}
 
 #if !defined(NDEBUG) && !defined(GOOGLE_PROTOBUF_NO_RTTI)
-  assert(f == NULL || dynamic_cast<To>(f) != NULL);  // RTTI: debug mode only!
+	assert( f == NULL || dynamic_cast<To>( f ) != NULL ); // RTTI: debug mode only!
 #endif
-  return static_cast<To>(f);
+	return static_cast<To>( f );
 }
 
 }  // namespace internal
@@ -341,10 +348,12 @@ using internal::down_cast;
 // the expression is false, most compilers will issue a warning/error
 // containing the name of the variable.
 
-namespace internal {
+namespace internal
+{
 
 template <bool>
-struct CompileAssert {
+struct CompileAssert
+{
 };
 
 }  // namespace internal
@@ -398,7 +407,8 @@ struct CompileAssert {
 // ===================================================================
 // from google3/base/scoped_ptr.h
 
-namespace internal {
+namespace internal
+{
 
 //  This is an implementation designed to match the anticipated future TR2
 //  implementation of the scoped_ptr class, and its closely-related brethren,
@@ -415,83 +425,100 @@ template <class C> class scoped_array;
 // The size of a scoped_ptr is small:
 // sizeof(scoped_ptr<C>) == sizeof(C*)
 template <class C>
-class scoped_ptr {
- public:
+class scoped_ptr
+{
+public:
 
-  // The element type
-  typedef C element_type;
+	// The element type
+	typedef C element_type;
 
-  // Constructor.  Defaults to intializing with NULL.
-  // There is no way to create an uninitialized scoped_ptr.
-  // The input parameter must be allocated with new.
-  explicit scoped_ptr(C* p = NULL) : ptr_(p) { }
+	// Constructor.  Defaults to intializing with NULL.
+	// There is no way to create an uninitialized scoped_ptr.
+	// The input parameter must be allocated with new.
+	explicit scoped_ptr( C* p = NULL ) : ptr_( p ) { }
 
-  // Destructor.  If there is a C object, delete it.
-  // We don't need to test ptr_ == NULL because C++ does that for us.
-  ~scoped_ptr() {
-    enum { type_must_be_complete = sizeof(C) };
-    delete ptr_;
-  }
+	// Destructor.  If there is a C object, delete it.
+	// We don't need to test ptr_ == NULL because C++ does that for us.
+	~scoped_ptr()
+	{
+		enum { type_must_be_complete = sizeof( C ) };
+		delete ptr_;
+	}
 
-  // Reset.  Deletes the current owned object, if any.
-  // Then takes ownership of a new object, if given.
-  // this->reset(this->get()) works.
-  void reset(C* p = NULL) {
-    if (p != ptr_) {
-      enum { type_must_be_complete = sizeof(C) };
-      delete ptr_;
-      ptr_ = p;
-    }
-  }
+	// Reset.  Deletes the current owned object, if any.
+	// Then takes ownership of a new object, if given.
+	// this->reset(this->get()) works.
+	void reset( C* p = NULL )
+	{
+		if( p != ptr_ )
+		{
+			enum { type_must_be_complete = sizeof( C ) };
+			delete ptr_;
+			ptr_ = p;
+		}
+	}
 
-  // Accessors to get the owned object.
-  // operator* and operator-> will assert() if there is no current object.
-  C& operator*() const {
-    assert(ptr_ != NULL);
-    return *ptr_;
-  }
-  C* operator->() const  {
-    assert(ptr_ != NULL);
-    return ptr_;
-  }
-  C* get() const { return ptr_; }
+	// Accessors to get the owned object.
+	// operator* and operator-> will assert() if there is no current object.
+	C& operator*() const
+	{
+		assert( ptr_ != NULL );
+		return *ptr_;
+	}
+	C* operator->() const
+	{
+		assert( ptr_ != NULL );
+		return ptr_;
+	}
+	C* get() const
+	{
+		return ptr_;
+	}
 
-  // Comparison operators.
-  // These return whether two scoped_ptr refer to the same object, not just to
-  // two different but equal objects.
-  bool operator==(C* p) const { return ptr_ == p; }
-  bool operator!=(C* p) const { return ptr_ != p; }
+	// Comparison operators.
+	// These return whether two scoped_ptr refer to the same object, not just to
+	// two different but equal objects.
+	bool operator==( C* p ) const
+	{
+		return ptr_ == p;
+	}
+	bool operator!=( C* p ) const
+	{
+		return ptr_ != p;
+	}
 
-  // Swap two scoped pointers.
-  void swap(scoped_ptr& p2) {
-    C* tmp = ptr_;
-    ptr_ = p2.ptr_;
-    p2.ptr_ = tmp;
-  }
+	// Swap two scoped pointers.
+	void swap( scoped_ptr& p2 )
+	{
+		C* tmp = ptr_;
+		ptr_ = p2.ptr_;
+		p2.ptr_ = tmp;
+	}
 
-  // Release a pointer.
-  // The return value is the current pointer held by this object.
-  // If this object holds a NULL pointer, the return value is NULL.
-  // After this operation, this object will hold a NULL pointer,
-  // and will not own the object any more.
-  C* release() {
-    C* retVal = ptr_;
-    ptr_ = NULL;
-    return retVal;
-  }
+	// Release a pointer.
+	// The return value is the current pointer held by this object.
+	// If this object holds a NULL pointer, the return value is NULL.
+	// After this operation, this object will hold a NULL pointer,
+	// and will not own the object any more.
+	C* release()
+	{
+		C* retVal = ptr_;
+		ptr_ = NULL;
+		return retVal;
+	}
 
- private:
-  C* ptr_;
+private:
+	C* ptr_;
 
-  // Forbid comparison of scoped_ptr types.  If C2 != C, it totally doesn't
-  // make sense, and if C2 == C, it still doesn't make sense because you should
-  // never have the same object owned by two different scoped_ptrs.
-  template <class C2> bool operator==(scoped_ptr<C2> const& p2) const;
-  template <class C2> bool operator!=(scoped_ptr<C2> const& p2) const;
+	// Forbid comparison of scoped_ptr types.  If C2 != C, it totally doesn't
+	// make sense, and if C2 == C, it still doesn't make sense because you should
+	// never have the same object owned by two different scoped_ptrs.
+	template <class C2> bool operator==( scoped_ptr<C2> const& p2 ) const;
+	template <class C2> bool operator!=( scoped_ptr<C2> const& p2 ) const;
 
-  // Disallow evil constructors
-  scoped_ptr(const scoped_ptr&);
-  void operator=(const scoped_ptr&);
+	// Disallow evil constructors
+	scoped_ptr( const scoped_ptr& );
+	void operator=( const scoped_ptr& );
 };
 
 // scoped_array<C> is like scoped_ptr<C>, except that the caller must allocate
@@ -502,83 +529,97 @@ class scoped_ptr {
 //
 // Size: sizeof(scoped_array<C>) == sizeof(C*)
 template <class C>
-class scoped_array {
- public:
+class scoped_array
+{
+public:
 
-  // The element type
-  typedef C element_type;
+	// The element type
+	typedef C element_type;
 
-  // Constructor.  Defaults to intializing with NULL.
-  // There is no way to create an uninitialized scoped_array.
-  // The input parameter must be allocated with new [].
-  explicit scoped_array(C* p = NULL) : array_(p) { }
+	// Constructor.  Defaults to intializing with NULL.
+	// There is no way to create an uninitialized scoped_array.
+	// The input parameter must be allocated with new [].
+	explicit scoped_array( C* p = NULL ) : array_( p ) { }
 
-  // Destructor.  If there is a C object, delete it.
-  // We don't need to test ptr_ == NULL because C++ does that for us.
-  ~scoped_array() {
-    enum { type_must_be_complete = sizeof(C) };
-    delete[] array_;
-  }
+	// Destructor.  If there is a C object, delete it.
+	// We don't need to test ptr_ == NULL because C++ does that for us.
+	~scoped_array()
+	{
+		enum { type_must_be_complete = sizeof( C ) };
+		delete[] array_;
+	}
 
-  // Reset.  Deletes the current owned object, if any.
-  // Then takes ownership of a new object, if given.
-  // this->reset(this->get()) works.
-  void reset(C* p = NULL) {
-    if (p != array_) {
-      enum { type_must_be_complete = sizeof(C) };
-      delete[] array_;
-      array_ = p;
-    }
-  }
+	// Reset.  Deletes the current owned object, if any.
+	// Then takes ownership of a new object, if given.
+	// this->reset(this->get()) works.
+	void reset( C* p = NULL )
+	{
+		if( p != array_ )
+		{
+			enum { type_must_be_complete = sizeof( C ) };
+			delete[] array_;
+			array_ = p;
+		}
+	}
 
-  // Get one element of the current object.
-  // Will assert() if there is no current object, or index i is negative.
-  C& operator[](std::ptrdiff_t i) const {
-    assert(i >= 0);
-    assert(array_ != NULL);
-    return array_[i];
-  }
+	// Get one element of the current object.
+	// Will assert() if there is no current object, or index i is negative.
+	C& operator[]( std::ptrdiff_t i ) const
+	{
+		assert( i >= 0 );
+		assert( array_ != NULL );
+		return array_[i];
+	}
 
-  // Get a pointer to the zeroth element of the current object.
-  // If there is no current object, return NULL.
-  C* get() const {
-    return array_;
-  }
+	// Get a pointer to the zeroth element of the current object.
+	// If there is no current object, return NULL.
+	C* get() const
+	{
+		return array_;
+	}
 
-  // Comparison operators.
-  // These return whether two scoped_array refer to the same object, not just to
-  // two different but equal objects.
-  bool operator==(C* p) const { return array_ == p; }
-  bool operator!=(C* p) const { return array_ != p; }
+	// Comparison operators.
+	// These return whether two scoped_array refer to the same object, not just to
+	// two different but equal objects.
+	bool operator==( C* p ) const
+	{
+		return array_ == p;
+	}
+	bool operator!=( C* p ) const
+	{
+		return array_ != p;
+	}
 
-  // Swap two scoped arrays.
-  void swap(scoped_array& p2) {
-    C* tmp = array_;
-    array_ = p2.array_;
-    p2.array_ = tmp;
-  }
+	// Swap two scoped arrays.
+	void swap( scoped_array& p2 )
+	{
+		C* tmp = array_;
+		array_ = p2.array_;
+		p2.array_ = tmp;
+	}
 
-  // Release an array.
-  // The return value is the current pointer held by this object.
-  // If this object holds a NULL pointer, the return value is NULL.
-  // After this operation, this object will hold a NULL pointer,
-  // and will not own the object any more.
-  C* release() {
-    C* retVal = array_;
-    array_ = NULL;
-    return retVal;
-  }
+	// Release an array.
+	// The return value is the current pointer held by this object.
+	// If this object holds a NULL pointer, the return value is NULL.
+	// After this operation, this object will hold a NULL pointer,
+	// and will not own the object any more.
+	C* release()
+	{
+		C* retVal = array_;
+		array_ = NULL;
+		return retVal;
+	}
 
- private:
-  C* array_;
+private:
+	C* array_;
 
-  // Forbid comparison of different scoped_array types.
-  template <class C2> bool operator==(scoped_array<C2> const& p2) const;
-  template <class C2> bool operator!=(scoped_array<C2> const& p2) const;
+	// Forbid comparison of different scoped_array types.
+	template <class C2> bool operator==( scoped_array<C2> const& p2 ) const;
+	template <class C2> bool operator!=( scoped_array<C2> const& p2 ) const;
 
-  // Disallow evil constructors
-  scoped_array(const scoped_array&);
-  void operator=(const scoped_array&);
+	// Disallow evil constructors
+	scoped_array( const scoped_array& );
+	void operator=( const scoped_array& );
 };
 
 }  // namespace internal
@@ -591,60 +632,64 @@ using internal::scoped_array;
 // ===================================================================
 // emulates google3/base/logging.h
 
-enum LogLevel {
-  LOGLEVEL_INFO,     // Informational.  This is never actually used by
-                     // libprotobuf.
-  LOGLEVEL_WARNING,  // Warns about issues that, although not technically a
-                     // problem now, could cause problems in the future.  For
-                     // example, a // warning will be printed when parsing a
-                     // message that is near the message size limit.
-  LOGLEVEL_ERROR,    // An error occurred which should never happen during
-                     // normal use.
-  LOGLEVEL_FATAL,    // An error occurred from which the library cannot
-                     // recover.  This usually indicates a programming error
-                     // in the code which calls the library, especially when
-                     // compiled in debug mode.
+enum LogLevel
+{
+	LOGLEVEL_INFO,     // Informational.  This is never actually used by
+	// libprotobuf.
+	LOGLEVEL_WARNING,  // Warns about issues that, although not technically a
+	// problem now, could cause problems in the future.  For
+	// example, a // warning will be printed when parsing a
+	// message that is near the message size limit.
+	LOGLEVEL_ERROR,    // An error occurred which should never happen during
+	// normal use.
+	LOGLEVEL_FATAL,    // An error occurred from which the library cannot
+	// recover.  This usually indicates a programming error
+	// in the code which calls the library, especially when
+	// compiled in debug mode.
 
 #ifdef NDEBUG
-  LOGLEVEL_DFATAL = LOGLEVEL_ERROR
+	LOGLEVEL_DFATAL = LOGLEVEL_ERROR
 #else
-  LOGLEVEL_DFATAL = LOGLEVEL_FATAL
+	LOGLEVEL_DFATAL = LOGLEVEL_FATAL
 #endif
 };
 
-namespace internal {
+namespace internal
+{
 
 class LogFinisher;
 
-class LIBPROTOBUF_EXPORT LogMessage {
- public:
-  LogMessage(LogLevel level, const char* filename, int line);
-  ~LogMessage();
+class LIBPROTOBUF_EXPORT LogMessage
+{
+public:
+	LogMessage( LogLevel level, const char* filename, int line );
+	~LogMessage();
 
-  LogMessage& operator<<(const std::string& value);
-  LogMessage& operator<<(const char* value);
-  LogMessage& operator<<(char value);
-  LogMessage& operator<<(int value);
-  LogMessage& operator<<(uint value);
-  LogMessage& operator<<(long value);
-  LogMessage& operator<<(unsigned long value);
-  LogMessage& operator<<(double value);
+	LogMessage& operator<<( const std::string& value );
+	LogMessage& operator<<( const char* value );
+	LogMessage& operator<<( char value );
+	LogMessage& operator<<( int value );
+	LogMessage& operator<<( uint value );
+	LogMessage& operator<<( long value );
+	LogMessage& operator<<( unsigned long value );
+	LogMessage& operator<<( double value );
 
- private:
-  friend class LogFinisher;
-  void Finish();
+private:
+	friend class LogFinisher;
+	void Finish();
 
-  LogLevel level_;
-  const char* filename_;
-  int line_;
-  std::string message_;
+	LogLevel level_;
+	const char* filename_;
+	int line_;
+	std::string message_;
 };
 
 // Used to make the entire "LOG(BLAH) << etc." expression have a void return
 // type and print a newline after each message.
-class LIBPROTOBUF_EXPORT LogFinisher {
- public:
-  void operator=(LogMessage& other);
+class LIBPROTOBUF_EXPORT LogFinisher
+{
+public:
+	void operator=( LogMessage& other );
 };
 
 }  // namespace internal
@@ -691,32 +736,32 @@ class LIBPROTOBUF_EXPORT LogFinisher {
 
 #ifdef NDEBUG
 
-#define GOOGLE_DLOG GOOGLE_LOG_IF(INFO, false)
+	#define GOOGLE_DLOG GOOGLE_LOG_IF(INFO, false)
 
-#define GOOGLE_DCHECK(EXPRESSION) while(false) GOOGLE_CHECK(EXPRESSION)
-#define GOOGLE_DCHECK_EQ(A, B) GOOGLE_DCHECK((A) == (B))
-#define GOOGLE_DCHECK_NE(A, B) GOOGLE_DCHECK((A) != (B))
-#define GOOGLE_DCHECK_LT(A, B) GOOGLE_DCHECK((A) <  (B))
-#define GOOGLE_DCHECK_LE(A, B) GOOGLE_DCHECK((A) <= (B))
-#define GOOGLE_DCHECK_GT(A, B) GOOGLE_DCHECK((A) >  (B))
-#define GOOGLE_DCHECK_GE(A, B) GOOGLE_DCHECK((A) >= (B))
+	#define GOOGLE_DCHECK(EXPRESSION) while(false) GOOGLE_CHECK(EXPRESSION)
+	#define GOOGLE_DCHECK_EQ(A, B) GOOGLE_DCHECK((A) == (B))
+	#define GOOGLE_DCHECK_NE(A, B) GOOGLE_DCHECK((A) != (B))
+	#define GOOGLE_DCHECK_LT(A, B) GOOGLE_DCHECK((A) <  (B))
+	#define GOOGLE_DCHECK_LE(A, B) GOOGLE_DCHECK((A) <= (B))
+	#define GOOGLE_DCHECK_GT(A, B) GOOGLE_DCHECK((A) >  (B))
+	#define GOOGLE_DCHECK_GE(A, B) GOOGLE_DCHECK((A) >= (B))
 
 #else  // NDEBUG
 
-#define GOOGLE_DLOG GOOGLE_LOG
+	#define GOOGLE_DLOG GOOGLE_LOG
 
-#define GOOGLE_DCHECK    GOOGLE_CHECK
-#define GOOGLE_DCHECK_EQ GOOGLE_CHECK_EQ
-#define GOOGLE_DCHECK_NE GOOGLE_CHECK_NE
-#define GOOGLE_DCHECK_LT GOOGLE_CHECK_LT
-#define GOOGLE_DCHECK_LE GOOGLE_CHECK_LE
-#define GOOGLE_DCHECK_GT GOOGLE_CHECK_GT
-#define GOOGLE_DCHECK_GE GOOGLE_CHECK_GE
+	#define GOOGLE_DCHECK    GOOGLE_CHECK
+	#define GOOGLE_DCHECK_EQ GOOGLE_CHECK_EQ
+	#define GOOGLE_DCHECK_NE GOOGLE_CHECK_NE
+	#define GOOGLE_DCHECK_LT GOOGLE_CHECK_LT
+	#define GOOGLE_DCHECK_LE GOOGLE_CHECK_LE
+	#define GOOGLE_DCHECK_GT GOOGLE_CHECK_GT
+	#define GOOGLE_DCHECK_GE GOOGLE_CHECK_GE
 
 #endif  // !NDEBUG
 
-typedef void LogHandler(LogLevel level, const char* filename, int line,
-						const std::string& message);
+typedef void LogHandler( LogLevel level, const char* filename, int line,
+						 const std::string& message );
 
 // The protobuf library sometimes writes warning and error messages to
 // stderr.  These messages are primarily useful for developers, but may
@@ -731,7 +776,7 @@ typedef void LogHandler(LogLevel level, const char* filename, int line,
 // have some code that tends to trigger them frequently and you know
 // the warnings are not important to you), use the LogSilencer class
 // below.
-LIBPROTOBUF_EXPORT LogHandler* SetLogHandler(LogHandler* new_func);
+LIBPROTOBUF_EXPORT LogHandler* SetLogHandler( LogHandler* new_func );
 
 // Create a LogSilencer if you want to temporarily suppress all log
 // messages.  As long as any LogSilencer objects exist, non-fatal
@@ -740,10 +785,11 @@ LIBPROTOBUF_EXPORT LogHandler* SetLogHandler(LogHandler* new_func);
 // accidentally suppress log messages occurring in another thread, but
 // since messages are generally for debugging purposes only, this isn't
 // a big deal.  If you want to intercept log messages, use SetLogHandler().
-class LIBPROTOBUF_EXPORT LogSilencer {
- public:
-  LogSilencer();
-  ~LogSilencer();
+class LIBPROTOBUF_EXPORT LogSilencer
+{
+public:
+	LogSilencer();
+	~LogSilencer();
 };
 
 // ===================================================================
@@ -806,232 +852,276 @@ class LIBPROTOBUF_EXPORT LogSilencer {
 //   string my_str;
 //   NewCallback(&Foo, my_str);  // WON'T WORK:  Can't use referecnes.
 // However, correctly-typed pointers will work just fine.
-class LIBPROTOBUF_EXPORT Closure {
- public:
-  Closure() {}
-  virtual ~Closure();
+class LIBPROTOBUF_EXPORT Closure
+{
+public:
+	Closure() {}
+	virtual ~Closure();
 
-  virtual void Run() = 0;
+	virtual void Run() = 0;
 
- private:
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(Closure);
+private:
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( Closure );
 };
 
-namespace internal {
+namespace internal
+{
 
-class LIBPROTOBUF_EXPORT FunctionClosure0 : public Closure {
- public:
-  typedef void (*FunctionType)();
+class LIBPROTOBUF_EXPORT FunctionClosure0 : public Closure
+{
+public:
+	typedef void ( *FunctionType )();
 
-  FunctionClosure0(FunctionType function, bool self_deleting)
-    : function_(function), self_deleting_(self_deleting) {}
-  ~FunctionClosure0();
+	FunctionClosure0( FunctionType function, bool self_deleting )
+		: function_( function ), self_deleting_( self_deleting ) {}
+	~FunctionClosure0();
 
-  void Run() {
-    function_();
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		function_();
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  FunctionType function_;
-  bool self_deleting_;
+private:
+	FunctionType function_;
+	bool self_deleting_;
 };
 
 template <typename Class>
-class MethodClosure0 : public Closure {
- public:
-  typedef void (Class::*MethodType)();
+class MethodClosure0 : public Closure
+{
+public:
+	typedef void ( Class::*MethodType )();
 
-  MethodClosure0(Class* object, MethodType method, bool self_deleting)
-    : object_(object), method_(method), self_deleting_(self_deleting) {}
-  ~MethodClosure0() {}
+	MethodClosure0( Class* object, MethodType method, bool self_deleting )
+		: object_( object ), method_( method ), self_deleting_( self_deleting ) {}
+	~MethodClosure0() {}
 
-  void Run() {
-    (object_->*method_)();
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		( object_->*method_ )();
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  Class* object_;
-  MethodType method_;
-  bool self_deleting_;
+private:
+	Class* object_;
+	MethodType method_;
+	bool self_deleting_;
 };
 
 template <typename Arg1>
-class FunctionClosure1 : public Closure {
- public:
-  typedef void (*FunctionType)(Arg1 arg1);
+class FunctionClosure1 : public Closure
+{
+public:
+	typedef void ( *FunctionType )( Arg1 arg1 );
 
-  FunctionClosure1(FunctionType function, bool self_deleting,
-                   Arg1 arg1)
-    : function_(function), self_deleting_(self_deleting),
-      arg1_(arg1) {}
-  ~FunctionClosure1() {}
+	FunctionClosure1( FunctionType function, bool self_deleting,
+					  Arg1 arg1 )
+		: function_( function ), self_deleting_( self_deleting ),
+		  arg1_( arg1 ) {}
+	~FunctionClosure1() {}
 
-  void Run() {
-    function_(arg1_);
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		function_( arg1_ );
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  FunctionType function_;
-  bool self_deleting_;
-  Arg1 arg1_;
+private:
+	FunctionType function_;
+	bool self_deleting_;
+	Arg1 arg1_;
 };
 
 template <typename Class, typename Arg1>
-class MethodClosure1 : public Closure {
- public:
-  typedef void (Class::*MethodType)(Arg1 arg1);
+class MethodClosure1 : public Closure
+{
+public:
+	typedef void ( Class::*MethodType )( Arg1 arg1 );
 
-  MethodClosure1(Class* object, MethodType method, bool self_deleting,
-                 Arg1 arg1)
-    : object_(object), method_(method), self_deleting_(self_deleting),
-      arg1_(arg1) {}
-  ~MethodClosure1() {}
+	MethodClosure1( Class* object, MethodType method, bool self_deleting,
+					Arg1 arg1 )
+		: object_( object ), method_( method ), self_deleting_( self_deleting ),
+		  arg1_( arg1 ) {}
+	~MethodClosure1() {}
 
-  void Run() {
-    (object_->*method_)(arg1_);
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		( object_->*method_ )( arg1_ );
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  Class* object_;
-  MethodType method_;
-  bool self_deleting_;
-  Arg1 arg1_;
+private:
+	Class* object_;
+	MethodType method_;
+	bool self_deleting_;
+	Arg1 arg1_;
 };
 
 template <typename Arg1, typename Arg2>
-class FunctionClosure2 : public Closure {
- public:
-  typedef void (*FunctionType)(Arg1 arg1, Arg2 arg2);
+class FunctionClosure2 : public Closure
+{
+public:
+	typedef void ( *FunctionType )( Arg1 arg1, Arg2 arg2 );
 
-  FunctionClosure2(FunctionType function, bool self_deleting,
-                   Arg1 arg1, Arg2 arg2)
-    : function_(function), self_deleting_(self_deleting),
-      arg1_(arg1), arg2_(arg2) {}
-  ~FunctionClosure2() {}
+	FunctionClosure2( FunctionType function, bool self_deleting,
+					  Arg1 arg1, Arg2 arg2 )
+		: function_( function ), self_deleting_( self_deleting ),
+		  arg1_( arg1 ), arg2_( arg2 ) {}
+	~FunctionClosure2() {}
 
-  void Run() {
-    function_(arg1_, arg2_);
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		function_( arg1_, arg2_ );
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  FunctionType function_;
-  bool self_deleting_;
-  Arg1 arg1_;
-  Arg2 arg2_;
+private:
+	FunctionType function_;
+	bool self_deleting_;
+	Arg1 arg1_;
+	Arg2 arg2_;
 };
 
 template <typename Class, typename Arg1, typename Arg2>
-class MethodClosure2 : public Closure {
- public:
-  typedef void (Class::*MethodType)(Arg1 arg1, Arg2 arg2);
+class MethodClosure2 : public Closure
+{
+public:
+	typedef void ( Class::*MethodType )( Arg1 arg1, Arg2 arg2 );
 
-  MethodClosure2(Class* object, MethodType method, bool self_deleting,
-                 Arg1 arg1, Arg2 arg2)
-    : object_(object), method_(method), self_deleting_(self_deleting),
-      arg1_(arg1), arg2_(arg2) {}
-  ~MethodClosure2() {}
+	MethodClosure2( Class* object, MethodType method, bool self_deleting,
+					Arg1 arg1, Arg2 arg2 )
+		: object_( object ), method_( method ), self_deleting_( self_deleting ),
+		  arg1_( arg1 ), arg2_( arg2 ) {}
+	~MethodClosure2() {}
 
-  void Run() {
-    (object_->*method_)(arg1_, arg2_);
-    if (self_deleting_) delete this;
-  }
+	void Run()
+	{
+		( object_->*method_ )( arg1_, arg2_ );
+		if( self_deleting_ )
+		{
+			delete this;
+		}
+	}
 
- private:
-  Class* object_;
-  MethodType method_;
-  bool self_deleting_;
-  Arg1 arg1_;
-  Arg2 arg2_;
+private:
+	Class* object_;
+	MethodType method_;
+	bool self_deleting_;
+	Arg1 arg1_;
+	Arg2 arg2_;
 };
 
 }  // namespace internal
 
 // See Closure.
-inline Closure* NewCallback(void (*function)()) {
-  return new internal::FunctionClosure0(function, true);
+inline Closure* NewCallback( void ( *function )() )
+{
+	return new internal::FunctionClosure0( function, true );
 }
 
 // See Closure.
-inline Closure* NewPermanentCallback(void (*function)()) {
-  return new internal::FunctionClosure0(function, false);
-}
-
-// See Closure.
-template <typename Class>
-inline Closure* NewCallback(Class* object, void (Class::*method)()) {
-  return new internal::MethodClosure0<Class>(object, method, true);
+inline Closure* NewPermanentCallback( void ( *function )() )
+{
+	return new internal::FunctionClosure0( function, false );
 }
 
 // See Closure.
 template <typename Class>
-inline Closure* NewPermanentCallback(Class* object, void (Class::*method)()) {
-  return new internal::MethodClosure0<Class>(object, method, false);
+inline Closure* NewCallback( Class* object, void ( Class::*method )() )
+{
+	return new internal::MethodClosure0<Class>( object, method, true );
+}
+
+// See Closure.
+template <typename Class>
+inline Closure* NewPermanentCallback( Class* object, void ( Class::*method )() )
+{
+	return new internal::MethodClosure0<Class>( object, method, false );
 }
 
 // See Closure.
 template <typename Arg1>
-inline Closure* NewCallback(void (*function)(Arg1),
-                            Arg1 arg1) {
-  return new internal::FunctionClosure1<Arg1>(function, true, arg1);
+inline Closure* NewCallback( void ( *function )( Arg1 ),
+							 Arg1 arg1 )
+{
+	return new internal::FunctionClosure1<Arg1>( function, true, arg1 );
 }
 
 // See Closure.
 template <typename Arg1>
-inline Closure* NewPermanentCallback(void (*function)(Arg1),
-                                     Arg1 arg1) {
-  return new internal::FunctionClosure1<Arg1>(function, false, arg1);
+inline Closure* NewPermanentCallback( void ( *function )( Arg1 ),
+									  Arg1 arg1 )
+{
+	return new internal::FunctionClosure1<Arg1>( function, false, arg1 );
 }
 
 // See Closure.
 template <typename Class, typename Arg1>
-inline Closure* NewCallback(Class* object, void (Class::*method)(Arg1),
-                            Arg1 arg1) {
-  return new internal::MethodClosure1<Class, Arg1>(object, method, true, arg1);
+inline Closure* NewCallback( Class* object, void ( Class::*method )( Arg1 ),
+							 Arg1 arg1 )
+{
+	return new internal::MethodClosure1<Class, Arg1>( object, method, true, arg1 );
 }
 
 // See Closure.
 template <typename Class, typename Arg1>
-inline Closure* NewPermanentCallback(Class* object, void (Class::*method)(Arg1),
-                                     Arg1 arg1) {
-  return new internal::MethodClosure1<Class, Arg1>(object, method, false, arg1);
+inline Closure* NewPermanentCallback( Class* object, void ( Class::*method )( Arg1 ),
+									  Arg1 arg1 )
+{
+	return new internal::MethodClosure1<Class, Arg1>( object, method, false, arg1 );
 }
 
 // See Closure.
 template <typename Arg1, typename Arg2>
-inline Closure* NewCallback(void (*function)(Arg1, Arg2),
-                            Arg1 arg1, Arg2 arg2) {
-  return new internal::FunctionClosure2<Arg1, Arg2>(
-    function, true, arg1, arg2);
+inline Closure* NewCallback( void ( *function )( Arg1, Arg2 ),
+							 Arg1 arg1, Arg2 arg2 )
+{
+	return new internal::FunctionClosure2<Arg1, Arg2>(
+			   function, true, arg1, arg2 );
 }
 
 // See Closure.
 template <typename Arg1, typename Arg2>
-inline Closure* NewPermanentCallback(void (*function)(Arg1, Arg2),
-                                     Arg1 arg1, Arg2 arg2) {
-  return new internal::FunctionClosure2<Arg1, Arg2>(
-    function, false, arg1, arg2);
+inline Closure* NewPermanentCallback( void ( *function )( Arg1, Arg2 ),
+									  Arg1 arg1, Arg2 arg2 )
+{
+	return new internal::FunctionClosure2<Arg1, Arg2>(
+			   function, false, arg1, arg2 );
 }
 
 // See Closure.
 template <typename Class, typename Arg1, typename Arg2>
-inline Closure* NewCallback(Class* object, void (Class::*method)(Arg1, Arg2),
-                            Arg1 arg1, Arg2 arg2) {
-  return new internal::MethodClosure2<Class, Arg1, Arg2>(
-    object, method, true, arg1, arg2);
+inline Closure* NewCallback( Class* object, void ( Class::*method )( Arg1, Arg2 ),
+							 Arg1 arg1, Arg2 arg2 )
+{
+	return new internal::MethodClosure2<Class, Arg1, Arg2>(
+			   object, method, true, arg1, arg2 );
 }
 
 // See Closure.
 template <typename Class, typename Arg1, typename Arg2>
 inline Closure* NewPermanentCallback(
-    Class* object, void (Class::*method)(Arg1, Arg2),
-    Arg1 arg1, Arg2 arg2) {
-  return new internal::MethodClosure2<Class, Arg1, Arg2>(
-    object, method, false, arg1, arg2);
+	Class* object, void ( Class::*method )( Arg1, Arg2 ),
+	Arg1 arg1, Arg2 arg2 )
+{
+	return new internal::MethodClosure2<Class, Arg1, Arg2>(
+			   object, method, false, arg1, arg2 );
 }
 
 // A function which does nothing.  Useful for creating no-op callbacks, e.g.:
@@ -1041,44 +1131,53 @@ void LIBPROTOBUF_EXPORT DoNothing();
 // ===================================================================
 // emulates google3/base/mutex.h
 
-namespace internal {
+namespace internal
+{
 
 // A Mutex is a non-reentrant (aka non-recursive) mutex.  At most one thread T
 // may hold a mutex at a given time.  If T attempts to Lock() the same Mutex
 // while holding it, T will deadlock.
-class LIBPROTOBUF_EXPORT Mutex {
- public:
-  // Create a Mutex that is not held by anybody.
-  Mutex();
+class LIBPROTOBUF_EXPORT Mutex
+{
+public:
+	// Create a Mutex that is not held by anybody.
+	Mutex();
 
-  // Destructor
-  ~Mutex();
+	// Destructor
+	~Mutex();
 
-  // Block if necessary until this Mutex is free, then acquire it exclusively.
-  void Lock();
+	// Block if necessary until this Mutex is free, then acquire it exclusively.
+	void Lock();
 
-  // Release this Mutex.  Caller must hold it exclusively.
-  void Unlock();
+	// Release this Mutex.  Caller must hold it exclusively.
+	void Unlock();
 
-  // Crash if this Mutex is not held exclusively by this thread.
-  // May fail to crash when it should; will never crash when it should not.
-  void AssertHeld();
+	// Crash if this Mutex is not held exclusively by this thread.
+	// May fail to crash when it should; will never crash when it should not.
+	void AssertHeld();
 
- private:
-  struct Internal;
-  Internal* mInternal;
+private:
+	struct Internal;
+	Internal* mInternal;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(Mutex);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( Mutex );
 };
 
 // MutexLock(mu) acquires mu when constructed and releases it when destroyed.
-class LIBPROTOBUF_EXPORT MutexLock {
- public:
-  explicit MutexLock(Mutex *mu) : mu_(mu) { this->mu_->Lock(); }
-  ~MutexLock() { this->mu_->Unlock(); }
- private:
-  Mutex *const mu_;
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MutexLock);
+class LIBPROTOBUF_EXPORT MutexLock
+{
+public:
+	explicit MutexLock( Mutex* mu ) : mu_( mu )
+	{
+		this->mu_->Lock();
+	}
+	~MutexLock()
+	{
+		this->mu_->Unlock();
+	}
+private:
+	Mutex* const mu_;
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( MutexLock );
 };
 
 // TODO(kenton):  Implement these?  Hard to implement portably.
@@ -1086,14 +1185,27 @@ typedef MutexLock ReaderMutexLock;
 typedef MutexLock WriterMutexLock;
 
 // MutexLockMaybe is like MutexLock, but is a no-op when mu is NULL.
-class LIBPROTOBUF_EXPORT MutexLockMaybe {
- public:
-  explicit MutexLockMaybe(Mutex *mu) :
-    mu_(mu) { if (this->mu_ != NULL) { this->mu_->Lock(); } }
-  ~MutexLockMaybe() { if (this->mu_ != NULL) { this->mu_->Unlock(); } }
- private:
-  Mutex *const mu_;
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(MutexLockMaybe);
+class LIBPROTOBUF_EXPORT MutexLockMaybe
+{
+public:
+	explicit MutexLockMaybe( Mutex* mu ) :
+		mu_( mu )
+	{
+		if( this->mu_ != NULL )
+		{
+			this->mu_->Lock();
+		}
+	}
+	~MutexLockMaybe()
+	{
+		if( this->mu_ != NULL )
+		{
+			this->mu_->Unlock();
+		}
+	}
+private:
+	Mutex* const mu_;
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( MutexLockMaybe );
 };
 
 }  // namespace internal
@@ -1109,21 +1221,36 @@ using internal::MutexLockMaybe;
 // ===================================================================
 // from google3/base/type_traits.h
 
-namespace internal {
+namespace internal
+{
 
 // Specified by TR1 [4.7.4] Pointer modifications.
-template<typename T> struct remove_pointer { typedef T type; };
-template<typename T> struct remove_pointer<T*> { typedef T type; };
-template<typename T> struct remove_pointer<T* const> { typedef T type; };
-template<typename T> struct remove_pointer<T* volatile> { typedef T type; };
-template<typename T> struct remove_pointer<T* const volatile> {
-  typedef T type; };
+template<typename T> struct remove_pointer
+{
+	typedef T type;
+};
+template<typename T> struct remove_pointer<T*>
+{
+	typedef T type;
+};
+template<typename T> struct remove_pointer<T* const>
+{
+	typedef T type;
+};
+template<typename T> struct remove_pointer<T* volatile>
+{
+	typedef T type;
+};
+template<typename T> struct remove_pointer<T* const volatile>
+{
+	typedef T type;
+};
 
 // ===================================================================
 
 // Checks if the buffer contains structurally-valid UTF-8.  Implemented in
 // structurally_valid.cc.
-LIBPROTOBUF_EXPORT bool IsStructurallyValidUTF8(const char* buf, int len);
+LIBPROTOBUF_EXPORT bool IsStructurallyValidUTF8( const char* buf, int len );
 
 }  // namespace internal
 
@@ -1145,10 +1272,11 @@ LIBPROTOBUF_EXPORT bool IsStructurallyValidUTF8(const char* buf, int len);
 // ShutdownProtobufLibrary() has been called.
 LIBPROTOBUF_EXPORT void ShutdownProtobufLibrary();
 
-namespace internal {
+namespace internal
+{
 
 // Register a function to be called when ShutdownProtocolBuffers() is called.
-LIBPROTOBUF_EXPORT void OnShutdown(void (*func)());
+LIBPROTOBUF_EXPORT void OnShutdown( void ( *func )() );
 
 }  // namespace internal
 
@@ -1160,9 +1288,10 @@ LIBPROTOBUF_EXPORT void OnShutdown(void (*func)());
 // where it would leak outside of it's scope if declared above due to some compiler bug.
 namespace google
 {
-	namespace protobuf {
-		using namespace std;  // Don't do this at home, kids.
-	}
+namespace protobuf
+{
+using namespace std;  // Don't do this at home, kids.
+}
 }
 // VALVE
 

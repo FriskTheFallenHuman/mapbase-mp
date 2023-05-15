@@ -28,10 +28,10 @@
 
 #include "studio.h"
 
-static void SetCurrentModel( studiohdr_t *pStudioHdr );
+static void SetCurrentModel( studiohdr_t* pStudioHdr );
 static void FreeCurrentModelVertexes();
 
-IPhysicsCollision *s_pPhysCollision = NULL;
+IPhysicsCollision* s_pPhysCollision = NULL;
 
 //-----------------------------------------------------------------------------
 // These puppies are used to construct the game lumps
@@ -62,7 +62,7 @@ struct StaticPropBuild_t
 	int		m_LightmapResolutionX;
 	int		m_LightmapResolutionY;
 };
- 
+
 
 //-----------------------------------------------------------------------------
 // Used to cache collision model generation
@@ -85,10 +85,12 @@ static CUtlVector<int>	s_LightingInfo;
 //-----------------------------------------------------------------------------
 // Gets the keyvalues from a studiohdr
 //-----------------------------------------------------------------------------
-bool StudioKeyValues( studiohdr_t* pStudioHdr, KeyValues *pValue )
+bool StudioKeyValues( studiohdr_t* pStudioHdr, KeyValues* pValue )
 {
-	if ( !pStudioHdr )
+	if( !pStudioHdr )
+	{
 		return false;
+	}
 
 	return pValue->LoadFromBuffer( pStudioHdr->pszName(), pStudioHdr->KeyValueText() );
 }
@@ -106,18 +108,20 @@ enum isstaticprop_ret
 
 isstaticprop_ret IsStaticProp( studiohdr_t* pHdr )
 {
-	if (!(pHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP))
+	if( !( pHdr->flags & STUDIOHDR_FLAGS_STATIC_PROP ) )
+	{
 		return RET_FAIL_NOT_MARKED_STATIC_PROP;
+	}
 
 #ifndef MAPBASE
 	// If it's got a propdata section in the model's keyvalues, it's not allowed to be a prop_static
-	KeyValues *modelKeyValues = new KeyValues(pHdr->pszName());
-	if ( StudioKeyValues( pHdr, modelKeyValues ) )
+	KeyValues* modelKeyValues = new KeyValues( pHdr->pszName() );
+	if( StudioKeyValues( pHdr, modelKeyValues ) )
 	{
-		KeyValues *sub = modelKeyValues->FindKey("prop_data");
-		if ( sub )
+		KeyValues* sub = modelKeyValues->FindKey( "prop_data" );
+		if( sub )
 		{
-			if ( !(sub->GetInt( "allowstatic", 0 )) )
+			if( !( sub->GetInt( "allowstatic", 0 ) ) )
 			{
 				modelKeyValues->deleteThis();
 				return RET_FAIL_DYNAMIC;
@@ -140,10 +144,12 @@ static int AddStaticPropDictLump( char const* pModelName )
 	StaticPropDictLump_t dictLump;
 	strncpy( dictLump.m_Name, pModelName, DETAIL_NAME_LENGTH );
 
-	for (int i = s_StaticPropDictLump.Size(); --i >= 0; )
+	for( int i = s_StaticPropDictLump.Size(); --i >= 0; )
 	{
-		if (!memcmp(&s_StaticPropDictLump[i], &dictLump, sizeof(dictLump) ))
+		if( !memcmp( &s_StaticPropDictLump[i], &dictLump, sizeof( dictLump ) ) )
+		{
 			return i;
+		}
 	}
 
 	return s_StaticPropDictLump.AddToTail( dictLump );
@@ -155,36 +161,38 @@ static int AddStaticPropDictLump( char const* pModelName )
 //-----------------------------------------------------------------------------
 bool LoadStudioModel( char const* pModelName, char const* pEntityType, CUtlBuffer& buf )
 {
-	if ( !g_pFullFileSystem->ReadFile( pModelName, NULL, buf ) )
-		return false;
-
-	// Check that it's valid
-	if (strncmp ((const char *) buf.PeekGet(), "IDST", 4) &&
-		strncmp ((const char *) buf.PeekGet(), "IDAG", 4))
+	if( !g_pFullFileSystem->ReadFile( pModelName, NULL, buf ) )
 	{
 		return false;
 	}
 
-	studiohdr_t* pHdr = (studiohdr_t*)buf.PeekGet();
+	// Check that it's valid
+	if( strncmp( ( const char* ) buf.PeekGet(), "IDST", 4 ) &&
+			strncmp( ( const char* ) buf.PeekGet(), "IDAG", 4 ) )
+	{
+		return false;
+	}
+
+	studiohdr_t* pHdr = ( studiohdr_t* )buf.PeekGet();
 
 	Studio_ConvertStudioHdrToNewVersion( pHdr );
 
-	if (pHdr->version != STUDIO_VERSION)
+	if( pHdr->version != STUDIO_VERSION )
 	{
 		return false;
 	}
 
-	isstaticprop_ret isStaticProp = IsStaticProp(pHdr);
-	if ( isStaticProp != RET_VALID )
+	isstaticprop_ret isStaticProp = IsStaticProp( pHdr );
+	if( isStaticProp != RET_VALID )
 	{
-		if ( isStaticProp == RET_FAIL_NOT_MARKED_STATIC_PROP )
+		if( isStaticProp == RET_FAIL_NOT_MARKED_STATIC_PROP )
 		{
-			Warning("Error! To use model \"%s\"\n"
-				"      with %s, it must be compiled with $staticprop!\n", pModelName, pEntityType );
+			Warning( "Error! To use model \"%s\"\n"
+					 "      with %s, it must be compiled with $staticprop!\n", pModelName, pEntityType );
 		}
-		else if ( isStaticProp == RET_FAIL_DYNAMIC )
+		else if( isStaticProp == RET_FAIL_DYNAMIC )
 		{
-			Warning("Error! %s using model \"%s\", which must be used on a dynamic entity (i.e. prop_physics). Deleted.\n", pEntityType, pModelName );
+			Warning( "Error! %s using model \"%s\", which must be used on a dynamic entity (i.e. prop_physics). Deleted.\n", pEntityType, pModelName );
 		}
 		return false;
 	}
@@ -203,12 +211,12 @@ bool LoadStudioModel( char const* pModelName, char const* pEntityType, CUtlBuffe
 static CPhysConvex* ComputeConvexHull( mstudiomesh_t* pMesh )
 {
 	// Generate a list of all verts in the mesh
-	Vector** ppVerts = (Vector**)stackalloc(pMesh->numvertices * sizeof(Vector*) );
-	const mstudio_meshvertexdata_t *vertData = pMesh->GetVertexData();
+	Vector** ppVerts = ( Vector** )stackalloc( pMesh->numvertices * sizeof( Vector* ) );
+	const mstudio_meshvertexdata_t* vertData = pMesh->GetVertexData();
 	Assert( vertData ); // This can only return NULL on X360 for now
-	for (int i = 0; i < pMesh->numvertices; ++i)
+	for( int i = 0; i < pMesh->numvertices; ++i )
 	{
-		ppVerts[i] = vertData->Position(i);
+		ppVerts[i] = vertData->Position( i );
 	}
 
 	// Generate a convex hull from the verts
@@ -223,18 +231,18 @@ CPhysCollide* ComputeConvexHull( studiohdr_t* pStudioHdr )
 {
 	CUtlVector<CPhysConvex*>	convexHulls;
 
-	for (int body = 0; body < pStudioHdr->numbodyparts; ++body )
+	for( int body = 0; body < pStudioHdr->numbodyparts; ++body )
 	{
-		mstudiobodyparts_t *pBodyPart = pStudioHdr->pBodypart( body );
+		mstudiobodyparts_t* pBodyPart = pStudioHdr->pBodypart( body );
 		for( int model = 0; model < pBodyPart->nummodels; ++model )
 		{
-			mstudiomodel_t *pStudioModel = pBodyPart->pModel( model );
+			mstudiomodel_t* pStudioModel = pBodyPart->pModel( model );
 			for( int mesh = 0; mesh < pStudioModel->nummeshes; ++mesh )
 			{
 				// Make a convex hull for each mesh
 				// NOTE: This won't work unless the model has been compiled
 				// with $staticprop
-				mstudiomesh_t *pStudioMesh = pStudioModel->pMesh( mesh );
+				mstudiomesh_t* pStudioMesh = pStudioModel->pMesh( mesh );
 				convexHulls.AddToTail( ComputeConvexHull( pStudioMesh ) );
 			}
 		}
@@ -252,7 +260,7 @@ CPhysCollide* ComputeConvexHull( studiohdr_t* pStudioHdr )
 static CPhysCollide* GetCollisionModel( char const* pModelName )
 {
 	// Convert to a common string
-	char* pTemp = (char*)_alloca(strlen(pModelName) + 1);
+	char* pTemp = ( char* )_alloca( strlen( pModelName ) + 1 );
 	strcpy( pTemp, pModelName );
 	strlwr( pTemp );
 
@@ -267,14 +275,16 @@ static CPhysCollide* GetCollisionModel( char const* pModelName )
 	ModelCollisionLookup_t lookup;
 	lookup.m_Name = pTemp;
 	int i = s_ModelCollisionCache.Find( lookup );
-	if (i != s_ModelCollisionCache.InvalidIndex())
+	if( i != s_ModelCollisionCache.InvalidIndex() )
+	{
 		return s_ModelCollisionCache[i].m_pCollide;
+	}
 
 	// Load the studio model file
 	CUtlBuffer buf;
-	if (!LoadStudioModel(pModelName, "prop_static", buf))
+	if( !LoadStudioModel( pModelName, "prop_static", buf ) )
 	{
-		Warning("Error loading studio model \"%s\"!\n", pModelName );
+		Warning( "Error loading studio model \"%s\"!\n", pModelName );
 
 		// This way we don't try to load it multiple times
 		lookup.m_pCollide = 0;
@@ -284,7 +294,7 @@ static CPhysCollide* GetCollisionModel( char const* pModelName )
 	}
 
 	// Compute the convex hull of the model...
-	studiohdr_t* pStudioHdr = (studiohdr_t*)buf.PeekGet();
+	studiohdr_t* pStudioHdr = ( studiohdr_t* )buf.PeekGet();
 
 	// necessary for vertex access
 	SetCurrentModel( pStudioHdr );
@@ -292,13 +302,13 @@ static CPhysCollide* GetCollisionModel( char const* pModelName )
 	lookup.m_pCollide = ComputeConvexHull( pStudioHdr );
 	s_ModelCollisionCache.Insert( lookup );
 
-	if ( !lookup.m_pCollide )
+	if( !lookup.m_pCollide )
 	{
-		Warning("Bad geometry on \"%s\"!\n", pModelName );
+		Warning( "Bad geometry on \"%s\"!\n", pModelName );
 	}
 
 	// Debugging
-	if (g_DumpStaticProps)
+	if( g_DumpStaticProps )
 	{
 		static int propNum = 0;
 		char tmp[128];
@@ -318,23 +328,23 @@ static CPhysCollide* GetCollisionModel( char const* pModelName )
 // Tests a single leaf against the static prop
 //-----------------------------------------------------------------------------
 
-static bool TestLeafAgainstCollide( int depth, int* pNodeList, 
-	Vector const& origin, QAngle const& angles, CPhysCollide* pCollide )
+static bool TestLeafAgainstCollide( int depth, int* pNodeList,
+									Vector const& origin, QAngle const& angles, CPhysCollide* pCollide )
 {
 	// Copy the planes in the node list into a list of planes
-	float* pPlanes = (float*)_alloca(depth * 4 * sizeof(float) );
+	float* pPlanes = ( float* )_alloca( depth * 4 * sizeof( float ) );
 	int idx = 0;
-	for (int i = depth; --i >= 0; ++idx )
+	for( int i = depth; --i >= 0; ++idx )
 	{
-		int sign = (pNodeList[i] < 0) ? -1 : 1;
-		int node = (sign < 0) ? - pNodeList[i] - 1 : pNodeList[i];
+		int sign = ( pNodeList[i] < 0 ) ? -1 : 1;
+		int node = ( sign < 0 ) ? - pNodeList[i] - 1 : pNodeList[i];
 		dnode_t* pNode = &dnodes[node];
 		dplane_t* pPlane = &dplanes[pNode->planenum];
 
-		pPlanes[idx*4] = sign * pPlane->normal[0];
-		pPlanes[idx*4+1] = sign * pPlane->normal[1];
-		pPlanes[idx*4+2] = sign * pPlane->normal[2];
-		pPlanes[idx*4+3] = sign * pPlane->dist;
+		pPlanes[idx * 4] = sign * pPlane->normal[0];
+		pPlanes[idx * 4 + 1] = sign * pPlane->normal[1];
+		pPlanes[idx * 4 + 2] = sign * pPlane->normal[2];
+		pPlanes[idx * 4 + 3] = sign * pPlane->dist;
 	}
 
 	// Make a convex solid out of the planes
@@ -342,19 +352,21 @@ static bool TestLeafAgainstCollide( int depth, int* pNodeList,
 
 	// This should never happen, but if it does, return no collision
 	Assert( pPhysConvex );
-	if (!pPhysConvex)
+	if( !pPhysConvex )
+	{
 		return false;
+	}
 
 	CPhysCollide* pLeafCollide = s_pPhysCollision->ConvertConvexToCollide( &pPhysConvex, 1 );
 
 	// Collide the leaf solid with the static prop solid
 	trace_t	tr;
 	s_pPhysCollision->TraceCollide( vec3_origin, vec3_origin, pLeafCollide, vec3_angle,
-		pCollide, origin, angles, &tr );
+									pCollide, origin, angles, &tr );
 
 	s_pPhysCollision->DestroyCollide( pLeafCollide );
 
-	return (tr.startsolid != 0);
+	return ( tr.startsolid != 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -362,9 +374,9 @@ static bool TestLeafAgainstCollide( int depth, int* pNodeList,
 //-----------------------------------------------------------------------------
 
 static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
-	Vector const& mins, Vector const& maxs,
-	Vector const& origin, QAngle const& angles,	CPhysCollide* pCollide,
-	CUtlVector<unsigned short>& leafList )
+									   Vector const& mins, Vector const& maxs,
+									   Vector const& origin, QAngle const& angles,	CPhysCollide* pCollide,
+									   CUtlVector<unsigned short>& leafList )
 {
 	Assert( pNodeList && pCollide );
 	Vector cornermin, cornermax;
@@ -375,9 +387,9 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 		dplane_t* pPlane = &dplanes[pNode->planenum];
 
 		// Arbitrary split plane here
-		for (int i = 0; i < 3; ++i)
+		for( int i = 0; i < 3; ++i )
 		{
-			if (pPlane->normal[i] >= 0)
+			if( pPlane->normal[i] >= 0 )
 			{
 				cornermin[i] = mins[i];
 				cornermax[i] = maxs[i];
@@ -389,7 +401,7 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 			}
 		}
 
-		if (DotProduct( pPlane->normal, cornermax ) <= pPlane->dist)
+		if( DotProduct( pPlane->normal, cornermax ) <= pPlane->dist )
 		{
 			// Add the node to the list of nodes
 			pNodeList[depth] = node;
@@ -397,7 +409,7 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 
 			node = pNode->children[1];
 		}
-		else if (DotProduct( pPlane->normal, cornermin ) >= pPlane->dist)
+		else if( DotProduct( pPlane->normal, cornermin ) >= pPlane->dist )
 		{
 			// In this case, we are going in front of the plane. That means that
 			// this plane must have an outward normal facing in the oppisite direction
@@ -415,12 +427,12 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 			pNodeList[depth] = node;
 			++depth;
 
-			ComputeConvexHullLeaves_R( pNode->children[1], 
-				depth, pNodeList, mins, maxs, origin, angles, pCollide, leafList );
-			
+			ComputeConvexHullLeaves_R( pNode->children[1],
+									   depth, pNodeList, mins, maxs, origin, angles, pCollide, leafList );
+
 			pNodeList[depth - 1] = - node - 1;
 			ComputeConvexHullLeaves_R( pNode->children[0],
-				depth, pNodeList, mins, maxs, origin, angles, pCollide, leafList );
+									   depth, pNodeList, mins, maxs, origin, angles, pCollide, leafList );
 			return;
 		}
 	}
@@ -428,9 +440,9 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 	Assert( pNodeList && pCollide );
 
 	// Never add static props to solid leaves
-	if ( (dleafs[-node-1].contents & CONTENTS_SOLID) == 0 )
+	if( ( dleafs[-node - 1].contents & CONTENTS_SOLID ) == 0 )
 	{
-		if (TestLeafAgainstCollide( depth, pNodeList, origin, angles, pCollide ))
+		if( TestLeafAgainstCollide( depth, pNodeList, origin, angles, pCollide ) )
 		{
 			leafList.AddToTail( -node - 1 );
 		}
@@ -441,8 +453,8 @@ static void ComputeConvexHullLeaves_R( int node, int depth, int* pNodeList,
 // Places Static Props in the level
 //-----------------------------------------------------------------------------
 
-static void ComputeStaticPropLeaves( CPhysCollide* pCollide, Vector const& origin, 
-				QAngle const& angles, CUtlVector<unsigned short>& leafList )
+static void ComputeStaticPropLeaves( CPhysCollide* pCollide, Vector const& origin,
+									 QAngle const& angles, CUtlVector<unsigned short>& leafList )
 {
 	// Compute an axis-aligned bounding box for the collide
 	Vector mins, maxs;
@@ -451,7 +463,7 @@ static void ComputeStaticPropLeaves( CPhysCollide* pCollide, Vector const& origi
 	// Find all leaves that intersect with the bounds
 	int tempNodeList[1024];
 	ComputeConvexHullLeaves_R( 0, 0, tempNodeList, mins, maxs,
-		origin, angles, pCollide, leafList );
+							   origin, angles, pCollide, leafList );
 }
 
 
@@ -460,13 +472,13 @@ static void ComputeStaticPropLeaves( CPhysCollide* pCollide, Vector const& origi
 //-----------------------------------------------------------------------------
 static bool ComputeLightingOrigin( StaticPropBuild_t const& build, Vector& lightingOrigin )
 {
-	for (int i = s_LightingInfo.Count(); --i >= 0; )
+	for( int i = s_LightingInfo.Count(); --i >= 0; )
 	{
 		int entIndex = s_LightingInfo[i];
 
 		// Check against all lighting info entities
 		char const* pTargetName = ValueForKey( &entities[entIndex], "targetname" );
-		if (!Q_strcmp(pTargetName, build.m_pLightingOrigin))
+		if( !Q_strcmp( pTargetName, build.m_pLightingOrigin ) )
 		{
 			GetVectorForKey( &entities[entIndex], "origin", lightingOrigin );
 			return true;
@@ -484,14 +496,16 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 {
 	// Get the collision model
 	CPhysCollide* pConvexHull = GetCollisionModel( build.m_pModelName );
-	if (!pConvexHull)
+	if( !pConvexHull )
+	{
 		return;
+	}
 
 	// Compute the leaves the static prop's convex hull hits
 	CUtlVector< unsigned short > leafList;
 	ComputeStaticPropLeaves( pConvexHull, build.m_Origin, build.m_Angles, leafList );
 
-	if ( !leafList.Count() )
+	if( !leafList.Count() )
 	{
 		Warning( "Static prop %s outside the map (%.2f, %.2f, %.2f)\n", build.m_pModelName, build.m_Origin.x, build.m_Origin.y, build.m_Origin.z );
 		return;
@@ -499,7 +513,7 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 	// Insert an element into the lump data...
 	int i = s_StaticPropLump.AddToTail( );
 	StaticPropLump_t& propLump = s_StaticPropLump[i];
-	propLump.m_PropType = AddStaticPropDictLump( build.m_pModelName ); 
+	propLump.m_PropType = AddStaticPropDictLump( build.m_pModelName );
 	VectorCopy( build.m_Origin, propLump.m_Origin );
 	VectorCopy( build.m_Angles, propLump.m_Angles );
 	propLump.m_FirstLeaf = s_StaticPropLeafLump.Count();
@@ -507,7 +521,7 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 	propLump.m_Solid = build.m_Solid;
 	propLump.m_Skin = build.m_Skin;
 	propLump.m_Flags = build.m_Flags;
-	if (build.m_FadesOut)
+	if( build.m_FadesOut )
 	{
 		propLump.m_Flags |= STATIC_PROP_FLAG_FADES;
 	}
@@ -516,10 +530,10 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 	propLump.m_flForcedFadeScale = build.m_flForcedFadeScale;
 	propLump.m_nMinDXLevel = build.m_nMinDXLevel;
 	propLump.m_nMaxDXLevel = build.m_nMaxDXLevel;
-	
-	if (build.m_pLightingOrigin && *build.m_pLightingOrigin)
+
+	if( build.m_pLightingOrigin && *build.m_pLightingOrigin )
 	{
-		if (ComputeLightingOrigin( build, propLump.m_LightingOrigin ))
+		if( ComputeLightingOrigin( build, propLump.m_LightingOrigin ) )
 		{
 			propLump.m_Flags |= STATIC_PROP_USE_LIGHTING_ORIGIN;
 		}
@@ -529,7 +543,7 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 	propLump.m_nLightmapResolutionY = build.m_LightmapResolutionY;
 
 	// Add the leaves to the leaf lump
-	for (int j = 0; j < leafList.Size(); ++j)
+	for( int j = 0; j < leafList.Size(); ++j )
 	{
 		StaticPropLeafLump_t insert;
 		insert.m_Leaf = leafList[j];
@@ -545,28 +559,36 @@ static void AddStaticPropToLump( StaticPropBuild_t const& build )
 
 static void SetLumpData( )
 {
-	GameLumpHandle_t handle = g_GameLumps.GetGameLumpHandle(GAMELUMP_STATIC_PROPS);
-	if (handle != g_GameLumps.InvalidGameLump())
-		g_GameLumps.DestroyGameLump(handle);
+	GameLumpHandle_t handle = g_GameLumps.GetGameLumpHandle( GAMELUMP_STATIC_PROPS );
+	if( handle != g_GameLumps.InvalidGameLump() )
+	{
+		g_GameLumps.DestroyGameLump( handle );
+	}
 
-	int dictsize = s_StaticPropDictLump.Size() * sizeof(StaticPropDictLump_t);
-	int objsize = s_StaticPropLump.Size() * sizeof(StaticPropLump_t);
-	int leafsize = s_StaticPropLeafLump.Size() * sizeof(StaticPropLeafLump_t);
-	int size = dictsize + objsize + leafsize + 3 * sizeof(int);
+	int dictsize = s_StaticPropDictLump.Size() * sizeof( StaticPropDictLump_t );
+	int objsize = s_StaticPropLump.Size() * sizeof( StaticPropLump_t );
+	int leafsize = s_StaticPropLeafLump.Size() * sizeof( StaticPropLeafLump_t );
+	int size = dictsize + objsize + leafsize + 3 * sizeof( int );
 
 	handle = g_GameLumps.CreateGameLump( GAMELUMP_STATIC_PROPS, size, 0, GAMELUMP_STATIC_PROPS_VERSION );
 
 	// Serialize the data
-	CUtlBuffer buf( g_GameLumps.GetGameLump(handle), size );
+	CUtlBuffer buf( g_GameLumps.GetGameLump( handle ), size );
 	buf.PutInt( s_StaticPropDictLump.Size() );
-	if (dictsize)
+	if( dictsize )
+	{
 		buf.Put( s_StaticPropDictLump.Base(), dictsize );
+	}
 	buf.PutInt( s_StaticPropLeafLump.Size() );
-	if (leafsize)
+	if( leafsize )
+	{
 		buf.Put( s_StaticPropLeafLump.Base(), leafsize );
+	}
 	buf.PutInt( s_StaticPropLump.Size() );
-	if (objsize)
+	if( objsize )
+	{
 		buf.Put( s_StaticPropLump.Base(), objsize );
+	}
 }
 
 
@@ -577,43 +599,51 @@ static void SetLumpData( )
 void EmitStaticProps()
 {
 #ifdef MAPBASE
-	Msg("Placing static props...\n");
+	Msg( "Placing static props...\n" );
 #endif
 
 	CreateInterfaceFn physicsFactory = GetPhysicsFactory();
-	if ( physicsFactory )
+	if( physicsFactory )
 	{
-		s_pPhysCollision = (IPhysicsCollision *)physicsFactory( VPHYSICS_COLLISION_INTERFACE_VERSION, NULL );
+		s_pPhysCollision = ( IPhysicsCollision* )physicsFactory( VPHYSICS_COLLISION_INTERFACE_VERSION, NULL );
 		if( !s_pPhysCollision )
+		{
 			return;
+		}
 	}
 
 	// Generate a list of lighting origins, and strip them out
 	int i;
-	for ( i = 0; i < num_entities; ++i)
+	for( i = 0; i < num_entities; ++i )
 	{
-		char* pEntity = ValueForKey(&entities[i], "classname");
-		if (!Q_strcmp(pEntity, "info_lighting"))
+		char* pEntity = ValueForKey( &entities[i], "classname" );
+		if( !Q_strcmp( pEntity, "info_lighting" ) )
 		{
-			s_LightingInfo.AddToTail(i);
+			s_LightingInfo.AddToTail( i );
 		}
 	}
 
 	// Emit specifically specified static props
-	for ( i = 0; i < num_entities; ++i)
+	for( i = 0; i < num_entities; ++i )
 	{
-		char* pEntity = ValueForKey(&entities[i], "classname");
+		char* pEntity = ValueForKey( &entities[i], "classname" );
 #ifdef MAPBASE
 		const int iInsertAsStatic = IntForKey( &entities[i], "insertasstaticprop" ); // If the key is absent, IntForKey will return 0.
 		bool bInsertAsStatic = g_bPropperInsertAllAsStatic;
 
 		// 1 = No, 2 = Yes;  Any other number will just use what g_bPropperInsertAllAsStatic is set as.
-		if ( iInsertAsStatic == 1 ) { bInsertAsStatic = false; }
-		else if ( iInsertAsStatic == 2 ) { bInsertAsStatic = true; }
+		if( iInsertAsStatic == 1 )
+		{
+			bInsertAsStatic = false;
+		}
+		else if( iInsertAsStatic == 2 )
+		{
+			bInsertAsStatic = true;
+		}
 
-		if ( !strcmp( pEntity, "static_prop" ) || !strcmp( pEntity, "prop_static" ) || ( !strcmp( pEntity, "propper_model" ) && bInsertAsStatic ) )
+		if( !strcmp( pEntity, "static_prop" ) || !strcmp( pEntity, "prop_static" ) || ( !strcmp( pEntity, "propper_model" ) && bInsertAsStatic ) )
 #else
-		if (!strcmp(pEntity, "static_prop") || !strcmp(pEntity, "prop_static"))
+		if( !strcmp( pEntity, "static_prop" ) || !strcmp( pEntity, "prop_static" ) )
 #endif
 		{
 			StaticPropBuild_t build;
@@ -621,11 +651,11 @@ void EmitStaticProps()
 			GetVectorForKey( &entities[i], "origin", build.m_Origin );
 			GetAnglesForKey( &entities[i], "angles", build.m_Angles );
 #ifdef MAPBASE
-			if ( !strcmp( pEntity, "propper_model" ) )
+			if( !strcmp( pEntity, "propper_model" ) )
 			{
 				char* pModelName = ValueForKey( &entities[i], "modelname" );
-			
-				// The modelname keyvalue lacks 'models/' at the start and '.mdl' at the end, so we have to add them.	
+
+				// The modelname keyvalue lacks 'models/' at the start and '.mdl' at the end, so we have to add them.
 				char modelpath[MAX_VALUE];
 				sprintf( modelpath, "models/%s.mdl", pModelName );
 
@@ -644,31 +674,31 @@ void EmitStaticProps()
 			build.m_Skin = IntForKey( &entities[i], "skin" );
 			build.m_FadeMaxDist = FloatForKey( &entities[i], "fademaxdist" );
 			build.m_Flags = 0;//IntForKey( &entities[i], "spawnflags" ) & STATIC_PROP_WC_MASK;
-			if (IntForKey( &entities[i], "ignorenormals" ) == 1)
+			if( IntForKey( &entities[i], "ignorenormals" ) == 1 )
 			{
 				build.m_Flags |= STATIC_PROP_IGNORE_NORMALS;
 			}
-			if (IntForKey( &entities[i], "disableshadows" ) == 1)
+			if( IntForKey( &entities[i], "disableshadows" ) == 1 )
 			{
 				build.m_Flags |= STATIC_PROP_NO_SHADOW;
 			}
-			if (IntForKey( &entities[i], "disablevertexlighting" ) == 1)
+			if( IntForKey( &entities[i], "disablevertexlighting" ) == 1 )
 			{
 				build.m_Flags |= STATIC_PROP_NO_PER_VERTEX_LIGHTING;
 			}
-			if (IntForKey( &entities[i], "disableselfshadowing" ) == 1)
+			if( IntForKey( &entities[i], "disableselfshadowing" ) == 1 )
 			{
 				build.m_Flags |= STATIC_PROP_NO_SELF_SHADOWING;
 			}
 
-			if (IntForKey( &entities[i], "screenspacefade" ) == 1)
+			if( IntForKey( &entities[i], "screenspacefade" ) == 1 )
 			{
 				build.m_Flags |= STATIC_PROP_SCREEN_SPACE_FADE;
 			}
 
-			if (IntForKey( &entities[i], "generatelightmaps") == 0)
+			if( IntForKey( &entities[i], "generatelightmaps" ) == 0 )
 			{
-				build.m_Flags |= STATIC_PROP_NO_PER_TEXEL_LIGHTING;			
+				build.m_Flags |= STATIC_PROP_NO_PER_TEXEL_LIGHTING;
 				build.m_LightmapResolutionX = 0;
 				build.m_LightmapResolutionY = 0;
 			}
@@ -678,8 +708,8 @@ void EmitStaticProps()
 				build.m_LightmapResolutionY = IntForKey( &entities[i], "lightmapresolutiony" );
 			}
 
-			const char *pKey = ValueForKey( &entities[i], "fadescale" );
-			if ( pKey && pKey[0] )
+			const char* pKey = ValueForKey( &entities[i], "fadescale" );
+			if( pKey && pKey[0] )
 			{
 				build.m_flForcedFadeScale = FloatForKey( &entities[i], "fadescale" );
 			}
@@ -687,29 +717,29 @@ void EmitStaticProps()
 			{
 				build.m_flForcedFadeScale = 1;
 			}
-			build.m_FadesOut = (build.m_FadeMaxDist > 0);
+			build.m_FadesOut = ( build.m_FadeMaxDist > 0 );
 			build.m_pLightingOrigin = ValueForKey( &entities[i], "lightingorigin" );
-			if (build.m_FadesOut)
-			{			  
+			if( build.m_FadesOut )
+			{
 				build.m_FadeMinDist = FloatForKey( &entities[i], "fademindist" );
-				if (build.m_FadeMinDist < 0)
+				if( build.m_FadeMinDist < 0 )
 				{
-					build.m_FadeMinDist = build.m_FadeMaxDist; 
+					build.m_FadeMinDist = build.m_FadeMaxDist;
 				}
 			}
 			else
 			{
 				build.m_FadeMinDist = 0;
 			}
-			build.m_nMinDXLevel = (unsigned short)IntForKey( &entities[i], "mindxlevel" );
-			build.m_nMaxDXLevel = (unsigned short)IntForKey( &entities[i], "maxdxlevel" );
+			build.m_nMinDXLevel = ( unsigned short )IntForKey( &entities[i], "mindxlevel" );
+			build.m_nMaxDXLevel = ( unsigned short )IntForKey( &entities[i], "maxdxlevel" );
 			AddStaticPropToLump( build );
 
 			// strip this ent from the .bsp file
 			entities[i].epairs = 0;
 		}
 #ifdef MAPBASE
-		else if ( g_bPropperStripEntities && !strncmp( pEntity, "propper_", 8 ) ) // Strip out any entities with 'propper_' in their classname, as they don't actually exist in-game.
+		else if( g_bPropperStripEntities && !strncmp( pEntity, "propper_", 8 ) )  // Strip out any entities with 'propper_' in their classname, as they don't actually exist in-game.
 		{
 			Warning( "Not including %s in BSP compile due to it being a propper entity that isn't used in-game.\n", pEntity );
 			entities[i].epairs = 0;
@@ -719,7 +749,7 @@ void EmitStaticProps()
 
 	// Strip out lighting origins; has to be done here because they are used when
 	// static props are made
-	for ( i = s_LightingInfo.Count(); --i >= 0; )
+	for( i = s_LightingInfo.Count(); --i >= 0; )
 	{
 		// strip this ent from the .bsp file
 		entities[s_LightingInfo[i]].epairs = 0;
@@ -729,8 +759,8 @@ void EmitStaticProps()
 	SetLumpData( );
 }
 
-static studiohdr_t *g_pActiveStudioHdr;
-static void SetCurrentModel( studiohdr_t *pStudioHdr )
+static studiohdr_t* g_pActiveStudioHdr;
+static void SetCurrentModel( studiohdr_t* pStudioHdr )
 {
 	// track the correct model
 	g_pActiveStudioHdr = pStudioHdr;
@@ -740,68 +770,68 @@ static void FreeCurrentModelVertexes()
 {
 	Assert( g_pActiveStudioHdr );
 
-	if ( g_pActiveStudioHdr->pVertexBase )
+	if( g_pActiveStudioHdr->pVertexBase )
 	{
 		free( g_pActiveStudioHdr->pVertexBase );
 		g_pActiveStudioHdr->pVertexBase = NULL;
 	}
 }
 
-const vertexFileHeader_t * mstudiomodel_t::CacheVertexData( void * pModelData )
+const vertexFileHeader_t* mstudiomodel_t::CacheVertexData( void* pModelData )
 {
 	char				fileName[260];
 	FileHandle_t		fileHandle;
-	vertexFileHeader_t	*pVvdHdr;
+	vertexFileHeader_t*	pVvdHdr;
 
 	Assert( pModelData == NULL );
 	Assert( g_pActiveStudioHdr );
 
-	if ( g_pActiveStudioHdr->pVertexBase )
+	if( g_pActiveStudioHdr->pVertexBase )
 	{
-		return (vertexFileHeader_t *)g_pActiveStudioHdr->pVertexBase;
+		return ( vertexFileHeader_t* )g_pActiveStudioHdr->pVertexBase;
 	}
 
 	// mandatory callback to make requested data resident
 	// load and persist the vertex file
-	strcpy( fileName, "models/" );	
+	strcpy( fileName, "models/" );
 	strcat( fileName, g_pActiveStudioHdr->pszName() );
 	Q_StripExtension( fileName, fileName, sizeof( fileName ) );
 	strcat( fileName, ".vvd" );
 
 	// load the model
 	fileHandle = g_pFileSystem->Open( fileName, "rb" );
-	if ( !fileHandle )
+	if( !fileHandle )
 	{
 		Error( "Unable to load vertex data \"%s\"\n", fileName );
 	}
 
 	// Get the file size
 	int size = g_pFileSystem->Size( fileHandle );
-	if (size == 0)
+	if( size == 0 )
 	{
 		g_pFileSystem->Close( fileHandle );
 		Error( "Bad size for vertex data \"%s\"\n", fileName );
 	}
 
-	pVvdHdr = (vertexFileHeader_t *)malloc(size);
+	pVvdHdr = ( vertexFileHeader_t* )malloc( size );
 	g_pFileSystem->Read( pVvdHdr, size, fileHandle );
 	g_pFileSystem->Close( fileHandle );
 
 	// check header
-	if (pVvdHdr->id != MODEL_VERTEX_FILE_ID)
+	if( pVvdHdr->id != MODEL_VERTEX_FILE_ID )
 	{
-		Error("Error Vertex File %s id %d should be %d\n", fileName, pVvdHdr->id, MODEL_VERTEX_FILE_ID);
+		Error( "Error Vertex File %s id %d should be %d\n", fileName, pVvdHdr->id, MODEL_VERTEX_FILE_ID );
 	}
-	if (pVvdHdr->version != MODEL_VERTEX_FILE_VERSION)
+	if( pVvdHdr->version != MODEL_VERTEX_FILE_VERSION )
 	{
-		Error("Error Vertex File %s version %d should be %d\n", fileName, pVvdHdr->version, MODEL_VERTEX_FILE_VERSION);
+		Error( "Error Vertex File %s version %d should be %d\n", fileName, pVvdHdr->version, MODEL_VERTEX_FILE_VERSION );
 	}
-	if (pVvdHdr->checksum != g_pActiveStudioHdr->checksum)
+	if( pVvdHdr->checksum != g_pActiveStudioHdr->checksum )
 	{
-		Error("Error Vertex File %s checksum %d should be %d\n", fileName, pVvdHdr->checksum, g_pActiveStudioHdr->checksum);
+		Error( "Error Vertex File %s checksum %d should be %d\n", fileName, pVvdHdr->checksum, g_pActiveStudioHdr->checksum );
 	}
 
-	g_pActiveStudioHdr->pVertexBase = (void*)pVvdHdr;
+	g_pActiveStudioHdr->pVertexBase = ( void* )pVvdHdr;
 	return pVvdHdr;
 }
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -43,9 +43,15 @@ public:
 	bool	Deploy( void );
 
 	void	PrimaryAttack( void );
-	virtual float GetFireRate( void ) { return 1; };
+	virtual float GetFireRate( void )
+	{
+		return 1;
+	};
 
-	int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 
 	virtual const Vector& GetBulletSpread( void )
 	{
@@ -56,20 +62,20 @@ public:
 	DECLARE_ACTTABLE();
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponIRifle, DT_WeaponIRifle)
+IMPLEMENT_SERVERCLASS_ST( CWeaponIRifle, DT_WeaponIRifle )
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_irifle, CWeaponIRifle );
-PRECACHE_WEAPON_REGISTER(weapon_irifle);
+PRECACHE_WEAPON_REGISTER( weapon_irifle );
 
 //---------------------------------------------------------
 // Activity table
 //---------------------------------------------------------
-acttable_t	CWeaponIRifle::m_acttable[] = 
+acttable_t	CWeaponIRifle::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_ML, true },
 };
-IMPLEMENT_ACTTABLE(CWeaponIRifle);
+IMPLEMENT_ACTTABLE( CWeaponIRifle );
 
 //---------------------------------------------------------
 // Constructor
@@ -95,20 +101,24 @@ void CWeaponIRifle::Precache( void )
 //---------------------------------------------------------
 void CWeaponIRifle::PrimaryAttack( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	m_iClip1 = m_iClip1 - 1;
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 	pOwner->m_flNextAttack = gpGlobals->curtime + 1;
 
-	CFlare *pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
+	CFlare* pFlare = CFlare::Create( pOwner->Weapon_ShootPosition(), pOwner->EyeAngles(), pOwner, FLARE_DURATION );
 
-	if ( pFlare == NULL )
+	if( pFlare == NULL )
+	{
 		return;
+	}
 
 	Vector forward;
 	pOwner->EyeVectors( &forward );
@@ -123,10 +133,10 @@ void CWeaponIRifle::PrimaryAttack( void )
 //---------------------------------------------------------
 bool CWeaponIRifle::Deploy( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( pOwner )
 	{
-		pOwner->GiveAmmo( 90, m_iPrimaryAmmoType);
+		pOwner->GiveAmmo( 90, m_iPrimaryAmmoType );
 	}
 	return BaseClass::Deploy();
 }

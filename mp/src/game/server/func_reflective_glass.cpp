@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -25,8 +25,14 @@ class CFuncReflectiveGlass : public CFuncBrush
 	}
 
 #ifdef MAPBASE
-	void InputSetReflectRenderTarget( inputdata_t &inputdata ) { m_iszReflectRenderTarget = inputdata.value.StringID(); }
-	void InputSetRefractRenderTarget( inputdata_t &inputdata ) { m_iszRefractRenderTarget = inputdata.value.StringID(); }
+	void InputSetReflectRenderTarget( inputdata_t& inputdata )
+	{
+		m_iszReflectRenderTarget = inputdata.value.StringID();
+	}
+	void InputSetRefractRenderTarget( inputdata_t& inputdata )
+	{
+		m_iszRefractRenderTarget = inputdata.value.StringID();
+	}
 
 	CNetworkVar( string_t, m_iszReflectRenderTarget );
 	CNetworkVar( string_t, m_iszRefractRenderTarget );

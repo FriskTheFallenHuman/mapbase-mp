@@ -15,7 +15,7 @@
 #define TIER3APP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -35,12 +35,14 @@ public:
 	// Methods of IApplication
 	virtual bool PreInit()
 	{
-		if ( !BaseClass::PreInit() )
+		if( !BaseClass::PreInit() )
+		{
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		ConnectTier3Libraries( &factory, 1 );
-		return true;			
+		return true;
 	}
 
 	virtual void PostShutdown()
@@ -62,12 +64,14 @@ public:
 	// Methods of IApplication
 	virtual bool PreInit()
 	{
-		if ( !BaseClass::PreInit() )
+		if( !BaseClass::PreInit() )
+		{
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		ConnectTier3Libraries( &factory, 1 );
-		return true;			
+		return true;
 	}
 
 	virtual void PostShutdown()
@@ -89,8 +93,10 @@ public:
 	// Methods of IApplication
 	virtual bool PreInit()
 	{
-		if ( !BaseClass::PreInit() )
+		if( !BaseClass::PreInit() )
+		{
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		return vgui::VGui_InitInterfacesList( "CVguiSteamApp", &factory, 1 );
@@ -109,8 +115,10 @@ public:
 	// Methods of IApplication
 	virtual bool PreInit()
 	{
-		if ( !BaseClass::PreInit() )
+		if( !BaseClass::PreInit() )
+		{
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
 		return vgui::VGui_InitInterfacesList( "CVguiSteamApp", &factory, 1 );

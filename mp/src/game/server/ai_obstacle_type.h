@@ -8,7 +8,7 @@
 #define AI_OBSTACLE_TYPE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-------------------------------------

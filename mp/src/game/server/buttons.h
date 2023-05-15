@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef BUTTONS_H
 #define BUTTONS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,7 +21,7 @@ public:
 	virtual void Precache( void );
 	bool CreateVPhysics();
 	void RotSpawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 	int DrawDebugTextOverlays();
 
 protected:
@@ -29,35 +29,35 @@ protected:
 	void ButtonActivate( );
 	void SparkSoundCache( void );
 
-	void ButtonTouch( ::CBaseEntity *pOther );
-	void ButtonSpark ( void );
+	void ButtonTouch( ::CBaseEntity* pOther );
+	void ButtonSpark( void );
 	void TriggerAndWait( void );
 	void ButtonReturn( void );
 	void ButtonBackHome( void );
-	void ButtonUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void ButtonUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	bool OnUseLocked( CBaseEntity *pActivator );
+	bool OnUseLocked( CBaseEntity* pActivator );
 
 	virtual void Lock();
 	virtual void Unlock();
 
 	// Input handlers
-	void InputLock( inputdata_t &inputdata );
-	void InputUnlock( inputdata_t &inputdata );
-	void InputPress( inputdata_t &inputdata );
-	void InputPressIn( inputdata_t &inputdata );
-	void InputPressOut( inputdata_t &inputdata );
+	void InputLock( inputdata_t& inputdata );
+	void InputUnlock( inputdata_t& inputdata );
+	void InputPress( inputdata_t& inputdata );
+	void InputPressIn( inputdata_t& inputdata );
+	void InputPressOut( inputdata_t& inputdata );
 
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
-	
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
+
 	enum BUTTON_CODE { BUTTON_NOTHING, BUTTON_ACTIVATE, BUTTON_RETURN, BUTTON_PRESS };
 
 	BUTTON_CODE	ButtonResponseToTouch( void );
-	void Press( CBaseEntity *pActivator, BUTTON_CODE eCode );
-	
+	void Press( CBaseEntity* pActivator, BUTTON_CODE eCode );
+
 	DECLARE_DATADESC();
 
-	virtual int	ObjectCaps(void);
+	virtual int	ObjectCaps( void );
 
 	Vector m_vecMoveDir;
 
@@ -65,10 +65,10 @@ protected:
 	bool	m_fRotating;		// a rotating button?  default is a sliding button.
 
 	locksound_t m_ls;			// door lock sounds
-	
+
 	byte	m_bLockedSound;		// ordinals from entity selection
-	byte	m_bLockedSentence;	
-	byte	m_bUnlockedSound;	
+	byte	m_bLockedSentence;
+	byte	m_bUnlockedSound;
 	byte	m_bUnlockedSentence;
 	bool	m_bLocked;
 	int		m_sounds;
@@ -107,24 +107,27 @@ class CMomentaryRotButton : public CRotButton
 	DECLARE_CLASS( CMomentaryRotButton, CRotButton );
 
 public:
-	void	Spawn ( void );
+	void	Spawn( void );
 	bool	CreateVPhysics( void );
 	virtual int	ObjectCaps( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	void	UseMoveDone( void );
 	void	ReturnMoveDone( void );
-	void	OutputMovementComplete(void);
-	void	SetPositionMoveDone(void);
+	void	OutputMovementComplete( void );
+	void	SetPositionMoveDone( void );
 	void	UpdateSelf( float value, bool bPlaySound );
 
 	void	PlaySound( void );
-	void	UpdateTarget( float value, CBaseEntity *pActivator );
+	void	UpdateTarget( float value, CBaseEntity* pActivator );
 
-	int		DrawDebugTextOverlays(void);
+	int		DrawDebugTextOverlays( void );
 
-	static CMomentaryRotButton *Instance( edict_t *pent ) { return (CMomentaryRotButton *)GetContainingEntity(pent); }
+	static CMomentaryRotButton* Instance( edict_t* pent )
+	{
+		return ( CMomentaryRotButton* )GetContainingEntity( pent );
+	}
 
-	float GetPos(const QAngle &vecAngles);
+	float GetPos( const QAngle& vecAngles );
 
 	DECLARE_DATADESC();
 
@@ -132,13 +135,13 @@ public:
 	virtual void Unlock();
 
 	// Input handlers
-	void InputSetPosition( inputdata_t &inputdata );
-	void InputSetPositionImmediately( inputdata_t &inputdata );
-	void InputDisableUpdateTarget( inputdata_t &inputdata );
-	void InputEnableUpdateTarget( inputdata_t &inputdata );
+	void InputSetPosition( inputdata_t& inputdata );
+	void InputSetPositionImmediately( inputdata_t& inputdata );
+	void InputDisableUpdateTarget( inputdata_t& inputdata );
+	void InputEnableUpdateTarget( inputdata_t& inputdata );
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 	virtual void Enable( void );
 	virtual void Disable( void );

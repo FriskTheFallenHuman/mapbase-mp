@@ -33,7 +33,7 @@
 #pragma once
 
 #ifdef USE_SDL
-#include "SDL_opengl.h"
+	#include "SDL_opengl.h"
 #endif
 
 #ifdef OSX
@@ -42,10 +42,10 @@
 	#include <OpenGL/CGLCurrent.h>
 	#include <AvailabilityMacros.h>
 
-#ifndef MAC_OS_X_VERSION_10_9
-	#include <OpenGL/CGLProfiler.h>
-	#include <ApplicationServices/ApplicationServices.h>
-#endif
+	#ifndef MAC_OS_X_VERSION_10_9
+		#include <OpenGL/CGLProfiler.h>
+		#include <ApplicationServices/ApplicationServices.h>
+	#endif
 #endif
 
 #include "tier0/platform.h"
@@ -61,24 +61,24 @@
 #include "dxabstract_types.h"
 
 struct GLMRect;
-typedef void *PseudoGLContextPtr;
+typedef void* PseudoGLContextPtr;
 
 // types
 
-	// 3-d integer box (used for texture lock/unlock etc)
+// 3-d integer box (used for texture lock/unlock etc)
 struct	GLMRegion
 {
-	int	xmin,xmax;
-	int	ymin,ymax;
-	int zmin,zmax;
+	int	xmin, xmax;
+	int	ymin, ymax;
+	int zmin, zmax;
 };
 
 struct GLMRect	// follows GL convention - if coming from the D3D rect you will need to fiddle the Y's
 {
-    int xmin;	// left
-    int ymin;	// bottom
-    int xmax;	// right
-    int ymax;	// top
+	int xmin;	// left
+	int ymin;	// bottom
+	int xmax;	// right
+	int ymax;	// top
 };
 
 // macros
@@ -107,29 +107,32 @@ typedef enum
 	eD3D_RSTATE,	// render state
 	eD3D_SIO,		// D3D shader bytecode
 	eD3D_VTXDECLUSAGE,
-	
+
 	// CGL codes
 	eCGL_RENDID,
-	
+
 	// OpenGL error codes
 	eGL_ERROR,
-	
+
 	// OpenGL enums
 	eGL_ENUM,
 	eGL_RENDERER
 
 }	GLMThing_t;
 
-// these will look at the string to guess its flavor: <, >, ---, -M-, -S- 
+// these will look at the string to guess its flavor: <, >, ---, -M-, -S-
 #ifdef TOGL_DLL_EXPORT
 	DLL_EXPORT const char* GLMDecode( GLMThing_t type, unsigned long value );		// decode a numeric const
 #else
 	DLL_IMPORT const char* GLMDecode( GLMThing_t type, unsigned long value );		// decode a numeric const
 #endif
-		
+
 const char* GLMDecodeMask( GLMThing_t type, unsigned long value );	// decode a bitmask
 
-FORCEINLINE void GLMStop( void ) { DXABSTRACT_BREAK_ON_ERROR(); }
+FORCEINLINE void GLMStop( void )
+{
+	DXABSTRACT_BREAK_ON_ERROR();
+}
 
 void GLMEnableTrace( bool on );
 
@@ -138,16 +141,22 @@ void GLMEnableTrace( bool on );
 
 // expose these in release now
 // Mimic PIX events so we can decorate debug spew
-DLL_EXPORT void	GLMBeginPIXEvent( const char *str );
+DLL_EXPORT void	GLMBeginPIXEvent( const char* str );
 DLL_EXPORT void	GLMEndPIXEvent( void );
 
 class CScopedGLMPIXEvent
 {
-	CScopedGLMPIXEvent( const CScopedGLMPIXEvent & );
-	CScopedGLMPIXEvent& operator= ( const CScopedGLMPIXEvent & );
+	CScopedGLMPIXEvent( const CScopedGLMPIXEvent& );
+	CScopedGLMPIXEvent& operator= ( const CScopedGLMPIXEvent& );
 public:
-	inline CScopedGLMPIXEvent( const char *pName ) { GLMBeginPIXEvent( pName ); }
-	inline ~CScopedGLMPIXEvent() { GLMEndPIXEvent( ); }
+	inline CScopedGLMPIXEvent( const char* pName )
+	{
+		GLMBeginPIXEvent( pName );
+	}
+	inline ~CScopedGLMPIXEvent()
+	{
+		GLMEndPIXEvent( );
+	}
 };
 
 #if GLMDEBUG
@@ -160,57 +169,57 @@ public:
 
 class GLMFuncLogger
 {
-	public:
-	
-		// simple function log
-		GLMFuncLogger( const char *funcName )
-		{
-			m_funcName = funcName;
-			m_earlyOut = false;
-			
-			GLMPrintf( ">%s", m_funcName );
-		};
-		
-		// more advanced version lets you pass args (i.e. called parameters or anything else of interest)
-		// no macro for this one, since no easy way to pass through the args as well as the funcname
-		GLMFuncLogger( const char *funcName, char *fmt, ... )
-		{
-			m_funcName = funcName;
-			m_earlyOut = false;
+public:
 
-			// this acts like GLMPrintf here
-			// all the indent policy is down in GLMPrintfVA
-			// which means we need to inject a ">" at the front of the format string to make this work... sigh.
-			
-			char modifiedFmt[2000];
-			modifiedFmt[0] = '>';
-			strcpy( modifiedFmt+1, fmt );
-			
-			va_list	vargs;
-			va_start(vargs, fmt);
-			GLMPrintfVA( modifiedFmt, vargs );
-			va_end( vargs );
+	// simple function log
+	GLMFuncLogger( const char* funcName )
+	{
+		m_funcName = funcName;
+		m_earlyOut = false;
+
+		GLMPrintf( ">%s", m_funcName );
+	};
+
+	// more advanced version lets you pass args (i.e. called parameters or anything else of interest)
+	// no macro for this one, since no easy way to pass through the args as well as the funcname
+	GLMFuncLogger( const char* funcName, char* fmt, ... )
+	{
+		m_funcName = funcName;
+		m_earlyOut = false;
+
+		// this acts like GLMPrintf here
+		// all the indent policy is down in GLMPrintfVA
+		// which means we need to inject a ">" at the front of the format string to make this work... sigh.
+
+		char modifiedFmt[2000];
+		modifiedFmt[0] = '>';
+		strcpy( modifiedFmt + 1, fmt );
+
+		va_list	vargs;
+		va_start( vargs, fmt );
+		GLMPrintfVA( modifiedFmt, vargs );
+		va_end( vargs );
+	}
+
+	~GLMFuncLogger( )
+	{
+		if( m_earlyOut )
+		{
+			GLMPrintf( "<%s (early out)", m_funcName );
 		}
-		
-		~GLMFuncLogger( )
+		else
 		{
-			if (m_earlyOut)
-			{
-				GLMPrintf( "<%s (early out)", m_funcName );
-			}
-			else
-			{
-				GLMPrintf( "<%s", m_funcName );
-			}
-		};
-	
-		void EarlyOut( void )
-		{
-			m_earlyOut = true;
-		};
-		
-		const char *m_funcName;				// set at construction time
-		bool m_earlyOut;
+			GLMPrintf( "<%s", m_funcName );
+		}
+	};
+
+	void EarlyOut( void )
+	{
+		m_earlyOut = true;
+	};
+
+	const char* m_funcName;				// set at construction time
+	bool m_earlyOut;
 };
 
 // handy macro to go with the function tracking class
@@ -224,28 +233,28 @@ class GLMFuncLogger
 class CGLMFileMirror
 {
 public:
-	CGLMFileMirror( char *fullpath );		// just associates mirror with file. if file exists it will be read.
-											//if non existent it will be created with size zero
+	CGLMFileMirror( char* fullpath );		// just associates mirror with file. if file exists it will be read.
+	//if non existent it will be created with size zero
 	~CGLMFileMirror( );
-	
+
 	bool		HasData( void );								// see if data avail
-	void		GetData( char **dataPtr, uint *dataSizePtr );	// read it out
-	void		SetData( char *data, uint dataSize );			// put data in (and write it to disk)
+	void		GetData( char** dataPtr, uint* dataSizePtr );	// read it out
+	void		SetData( char* data, uint dataSize );			// put data in (and write it to disk)
 	bool		PollForChanges( void );							// check disk copy.  If different, read it back in and return true.
-	
+
 	void		UpdateStatInfo( void );		// make sure stat info is current for our file
 	void		ReadFile( void );
 	void		WriteFile( void );
 
-	void		OpenInEditor( bool foreground=false );			// pass TRUE if you would like the editor to pop to foreground
-	
+	void		OpenInEditor( bool foreground = false );			// pass TRUE if you would like the editor to pop to foreground
+
 	/// how about a "wait for change" method..
 
-	char		*m_path;	// fullpath to file
+	char*		m_path;	// fullpath to file
 	bool		m_exists;
 	struct stat	m_stat;		// stat results for the file (last time checked)
-	
-	char		*m_data;	// content of file
+
+	char*		m_data;	// content of file
 	uint		m_size;		// length of content
 
 };
@@ -262,33 +271,33 @@ public:
 class CGLMEditableTextItem
 {
 public:
-					CGLMEditableTextItem( char *text, uint size, bool forceOverwrite, char *prefix, char *suffix = NULL );		// create a text blob from text source, optional filename suffix
-					~CGLMEditableTextItem( );
+	CGLMEditableTextItem( char* text, uint size, bool forceOverwrite, char* prefix, char* suffix = NULL );		// create a text blob from text source, optional filename suffix
+	~CGLMEditableTextItem( );
 
 	bool			HasData( void );
 	bool			PollForChanges( void );									// return true if stale i.e. you need to get a new edition
-	void			GetCurrentText( char **textOut, uint *sizeOut );		// query for read access to the active blob (could be the original, could be external edited copy)
-	void			OpenInEditor( bool foreground=false );									// call user attention to this text
+	void			GetCurrentText( char** textOut, uint* sizeOut );		// query for read access to the active blob (could be the original, could be external edited copy)
+	void			OpenInEditor( bool foreground = false );									// call user attention to this text
 
 	// internal methods
 	void			GenHashOfOrigText( void );
-	void			GenBaseNameAndFullPath( char *prefix, char *suffix );
+	void			GenBaseNameAndFullPath( char* prefix, char* suffix );
 	void			GenMungedText( bool fromMirror );
 
 	// members
 	// orig
 	uint			m_origSize;
-	char			*m_origText;						// what was submitted
+	char*			m_origText;						// what was submitted
 	unsigned char	m_origDigest[MD5_DIGEST_LENGTH];	// digest of what was submitted
-	
+
 	// munged
 	uint			m_mungedSize;
-	char			*m_mungedText;						// re-processed edition, initial content submission to the file mirror
+	char*			m_mungedText;						// re-processed edition, initial content submission to the file mirror
 
 	// mirror
-	char			*m_mirrorBaseName;					// generated from the hash of the orig text, plus the label / prefix
-	char			*m_mirrorFullPath;					// base name 
-	CGLMFileMirror	*m_mirror;							// file mirror itself.  holds "official" copy for GetCurrentText to return.
+	char*			m_mirrorBaseName;					// generated from the hash of the orig text, plus the label / prefix
+	char*			m_mirrorFullPath;					// base name
+	CGLMFileMirror*	m_mirror;							// file mirror itself.  holds "official" copy for GetCurrentText to return.
 };
 
 
@@ -308,25 +317,25 @@ struct GLMTextSection
 class CGLMTextSectioner
 {
 public:
-					CGLMTextSectioner( char *text, int textSize, const char **markers );		// constructor finds all the sections
-					~CGLMTextSectioner( );
-					
+	CGLMTextSectioner( char* text, int textSize, const char** markers );		// constructor finds all the sections
+	~CGLMTextSectioner( );
+
 	int				Count( void );			// how many sections found
-	void			GetSection( int index, uint *offsetOut, uint *lengthOut, int *markerIndexOut );
-		// find section, size, what marker
-		// note that more than one section can be marked similarly.
-		// so policy isn't made here, you walk the sections and decide what to do if there are dupes.
-	
+	void			GetSection( int index, uint* offsetOut, uint* lengthOut, int* markerIndexOut );
+	// find section, size, what marker
+	// note that more than one section can be marked similarly.
+	// so policy isn't made here, you walk the sections and decide what to do if there are dupes.
+
 	//members
-	
+
 	//section table
 	CUtlVector< GLMTextSection >	m_sectionTable;
 };
 
 #ifndef OSX
-void GLMGPUTimestampManagerInit();
-void GLMGPUTimestampManagerDeinit();
-void GLMGPUTimestampManagerTick();
+	void GLMGPUTimestampManagerInit();
+	void GLMGPUTimestampManagerDeinit();
+	void GLMGPUTimestampManagerTick();
 #endif
 
 #endif // GLMBASICS_H

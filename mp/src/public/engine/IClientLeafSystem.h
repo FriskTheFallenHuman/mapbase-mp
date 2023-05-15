@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Revision: $
 // $NoKeywords: $
@@ -12,7 +12,7 @@
 #if !defined( ICLIENTLEAFSYSTEM_H )
 #define ICLIENTLEAFSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -61,9 +61,9 @@ abstract_class IClientLeafSystemEngine
 public:
 	// Adds and removes renderables from the leaf lists
 	// CreateRenderableHandle stores the handle inside pRenderable.
-	virtual void CreateRenderableHandle( IClientRenderable* pRenderable, bool bIsStaticProp = false ) = 0;
+	virtual void CreateRenderableHandle( IClientRenderable * pRenderable, bool bIsStaticProp = false ) = 0;
 	virtual void RemoveRenderable( ClientRenderHandle_t handle ) = 0;
-	virtual void AddRenderableToLeaves( ClientRenderHandle_t renderable, int nLeafCount, unsigned short *pLeaves ) = 0;
+	virtual void AddRenderableToLeaves( ClientRenderHandle_t renderable, int nLeafCount, unsigned short * pLeaves ) = 0;
 	virtual void ChangeRenderableRenderGroup( ClientRenderHandle_t handle, RenderGroup_t group ) = 0;
 };
 

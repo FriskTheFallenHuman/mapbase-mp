@@ -7,7 +7,7 @@
 #ifndef ISTEAMFRIENDS_H
 #define ISTEAMFRIENDS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "isteamclient.h"
@@ -73,7 +73,7 @@ enum EFriendFlags
 	k_EFriendFlagFriendshipRequested	= 0x02,
 	k_EFriendFlagImmediate		= 0x04,			// "regular" friend
 	k_EFriendFlagClanMember		= 0x08,
-	k_EFriendFlagOnGameServer	= 0x10,	
+	k_EFriendFlagOnGameServer	= 0x10,
 	// k_EFriendFlagHasPlayedWith	= 0x20,	// not currently used
 	// k_EFriendFlagFriendOfFriend	= 0x40, // not currently used
 	k_EFriendFlagRequestingFriendship = 0x80,
@@ -87,12 +87,12 @@ enum EFriendFlags
 
 // friend game played information
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-#pragma pack( push, 4 )
+	#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-#pragma pack( push, 8 )
+	#pragma pack( push, 8 )
 #else
-#error isteamclient.h must be included
-#endif 
+	#error isteamclient.h must be included
+#endif
 struct FriendGameInfo_t
 {
 	CGameID m_gameID;
@@ -166,7 +166,7 @@ public:
 	// this is stored in UTF-8 format
 	// like all the other interface functions that return a char *, it's important that this pointer is not saved
 	// off; it will eventually be free'd or re-allocated
-	virtual const char *GetPersonaName() = 0;
+	virtual const char* GetPersonaName() = 0;
 
 	// Sets the player name, stores it on the server and publishes the changes to all friends who are online.
 	// Changes take place locally immediately, and a PersonaStateChange_t is posted, presuming success.
@@ -175,7 +175,7 @@ public:
 	//
 	// If the name change fails to happen on the server, then an additional global PersonaStateChange_t will be posted
 	// to change the name back, in addition to the SetPersonaNameResponse_t callback.
-	virtual SteamAPICall_t SetPersonaName( const char *pchPersonaName ) = 0;
+	virtual SteamAPICall_t SetPersonaName( const char* pchPersonaName ) = 0;
 
 	// gets the status of the current user
 	virtual EPersonaState GetPersonaState() = 0;
@@ -201,18 +201,18 @@ public:
 	// returns the name another user - guaranteed to not be NULL.
 	// same rules as GetFriendPersonaState() apply as to whether or not the user knowns the name of the other user
 	// note that on first joining a lobby, chat room or game server the local user will not known the name of the other users automatically; that information will arrive asyncronously
-	// 
-	virtual const char *GetFriendPersonaName( CSteamID steamIDFriend ) = 0;
+	//
+	virtual const char* GetFriendPersonaName( CSteamID steamIDFriend ) = 0;
 
-	// returns true if the friend is actually in a game, and fills in pFriendGameInfo with an extra details 
-	virtual bool GetFriendGamePlayed( CSteamID steamIDFriend, OUT_STRUCT() FriendGameInfo_t *pFriendGameInfo ) = 0;
+	// returns true if the friend is actually in a game, and fills in pFriendGameInfo with an extra details
+	virtual bool GetFriendGamePlayed( CSteamID steamIDFriend, OUT_STRUCT() FriendGameInfo_t* pFriendGameInfo ) = 0;
 	// accesses old friends names - returns an empty string when their are no more items in the history
-	virtual const char *GetFriendPersonaNameHistory( CSteamID steamIDFriend, int iPersonaName ) = 0;
+	virtual const char* GetFriendPersonaNameHistory( CSteamID steamIDFriend, int iPersonaName ) = 0;
 	// friends steam level
 	virtual int GetFriendSteamLevel( CSteamID steamIDFriend ) = 0;
 
 	// Returns nickname the current user has set for the specified player. Returns NULL if the no nickname has been set for that player.
-	virtual const char *GetPlayerNickname( CSteamID steamIDPlayer ) = 0;
+	virtual const char* GetPlayerNickname( CSteamID steamIDPlayer ) = 0;
 
 	// friend grouping (tag) apis
 	// returns the number of friends groups
@@ -220,11 +220,11 @@ public:
 	// returns the friends group ID for the given index (invalid indices return k_FriendsGroupID_Invalid)
 	virtual FriendsGroupID_t GetFriendsGroupIDByIndex( int iFG ) = 0;
 	// returns the name for the given friends group (NULL in the case of invalid friends group IDs)
-	virtual const char *GetFriendsGroupName( FriendsGroupID_t friendsGroupID ) = 0;
+	virtual const char* GetFriendsGroupName( FriendsGroupID_t friendsGroupID ) = 0;
 	// returns the number of members in a given friends group
 	virtual int GetFriendsGroupMembersCount( FriendsGroupID_t friendsGroupID ) = 0;
 	// gets up to nMembersCount members of the given friends group, if fewer exist than requested those positions' SteamIDs will be invalid
-	virtual void GetFriendsGroupMembersList( FriendsGroupID_t friendsGroupID, OUT_ARRAY_CALL(nMembersCount, GetFriendsGroupMembersCount, friendsGroupID ) CSteamID *pOutSteamIDMembers, int nMembersCount ) = 0;
+	virtual void GetFriendsGroupMembersList( FriendsGroupID_t friendsGroupID, OUT_ARRAY_CALL( nMembersCount, GetFriendsGroupMembersCount, friendsGroupID ) CSteamID* pOutSteamIDMembers, int nMembersCount ) = 0;
 
 	// returns true if the specified user meets any of the criteria specified in iFriendFlags
 	// iFriendFlags can be the union (binary or, |) of one or more k_EFriendFlags values
@@ -233,12 +233,12 @@ public:
 	// clan (group) iteration and access functions
 	virtual int GetClanCount() = 0;
 	virtual CSteamID GetClanByIndex( int iClan ) = 0;
-	virtual const char *GetClanName( CSteamID steamIDClan ) = 0;
-	virtual const char *GetClanTag( CSteamID steamIDClan ) = 0;
+	virtual const char* GetClanName( CSteamID steamIDClan ) = 0;
+	virtual const char* GetClanTag( CSteamID steamIDClan ) = 0;
 	// returns the most recent information we have about what's happening in a clan
-	virtual bool GetClanActivityCounts( CSteamID steamIDClan, int *pnOnline, int *pnInGame, int *pnChatting ) = 0;
+	virtual bool GetClanActivityCounts( CSteamID steamIDClan, int* pnOnline, int* pnInGame, int* pnChatting ) = 0;
 	// for clans a user is a member of, they will have reasonably up-to-date information, but for others you'll have to download the info to have the latest
-	virtual SteamAPICall_t DownloadClanActivityCounts( ARRAY_COUNT(cClansToRequest) CSteamID *psteamIDClans, int cClansToRequest ) = 0;
+	virtual SteamAPICall_t DownloadClanActivityCounts( ARRAY_COUNT( cClansToRequest ) CSteamID* psteamIDClans, int cClansToRequest ) = 0;
 
 	// iterators for getting users in a chat room, lobby, game server or clan
 	// note that large clans that cannot be iterated by the local user
@@ -253,14 +253,14 @@ public:
 	// User is in a game pressing the talk button (will suppress the microphone for all voice comms from the Steam friends UI)
 	virtual void SetInGameVoiceSpeaking( CSteamID steamIDUser, bool bSpeaking ) = 0;
 
-	// activates the game overlay, with an optional dialog to open 
+	// activates the game overlay, with an optional dialog to open
 	// valid options are "Friends", "Community", "Players", "Settings", "OfficialGameGroup", "Stats", "Achievements"
-	virtual void ActivateGameOverlay( const char *pchDialog ) = 0;
+	virtual void ActivateGameOverlay( const char* pchDialog ) = 0;
 
 	// activates game overlay to a specific place
 	// valid options are
 	//		"steamid" - opens the overlay web browser to the specified user or groups profile
-	//		"chat" - opens a chat window to the specified user, or joins the group chat 
+	//		"chat" - opens a chat window to the specified user, or joins the group chat
 	//		"jointrade" - opens a window to a Steam Trading session that was started with the ISteamEconomy/StartTrade Web API
 	//		"stats" - opens the overlay web browser to the specified user's stats
 	//		"achievements" - opens the overlay web browser to the specified user's achievements
@@ -268,17 +268,17 @@ public:
 	//		"friendremove" - opens the overlay in minimal mode prompting the user to remove the target friend
 	//		"friendrequestaccept" - opens the overlay in minimal mode prompting the user to accept an incoming friend invite
 	//		"friendrequestignore" - opens the overlay in minimal mode prompting the user to ignore an incoming friend invite
-	virtual void ActivateGameOverlayToUser( const char *pchDialog, CSteamID steamID ) = 0;
+	virtual void ActivateGameOverlayToUser( const char* pchDialog, CSteamID steamID ) = 0;
 
 	// activates game overlay web browser directly to the specified URL
 	// full address with protocol type is required, e.g. http://www.steamgames.com/
-	virtual void ActivateGameOverlayToWebPage( const char *pchURL ) = 0;
+	virtual void ActivateGameOverlayToWebPage( const char* pchURL ) = 0;
 
 	// activates game overlay to store page for app
 	virtual void ActivateGameOverlayToStore( AppId_t nAppID, EOverlayToStoreFlag eFlag ) = 0;
 
-	// Mark a target user as 'played with'. This is a client-side only feature that requires that the calling user is 
-	// in game 
+	// Mark a target user as 'played with'. This is a client-side only feature that requires that the calling user is
+	// in game
 	virtual void SetPlayedWith( CSteamID steamIDUserPlayedWith ) = 0;
 
 	// activates game overlay to open the invite dialog. Invitations will be sent for the provided lobby.
@@ -295,7 +295,7 @@ public:
 	virtual int GetLargeFriendAvatar( CSteamID steamIDFriend ) = 0;
 
 	// requests information about a user - persona name & avatar
-	// if bRequireNameOnly is set, then the avatar of a user isn't downloaded 
+	// if bRequireNameOnly is set, then the avatar of a user isn't downloaded
 	// - it's a lot slower to download avatars and churns the local cache, so if you don't need avatars, don't request them
 	// if returns true, it means that data is being requested, and a PersonaStateChanged_t callback will be posted when it's retrieved
 	// if returns false, it means that we already have all the details about that user, and functions can be called immediately
@@ -310,7 +310,7 @@ public:
 	virtual SteamAPICall_t RequestClanOfficerList( CSteamID steamIDClan ) = 0;
 
 	// iteration of clan officers - can only be done when a RequestClanOfficerList() call has completed
-	
+
 	// returns the steamID of the clan owner
 	virtual CSteamID GetClanOwner( CSteamID steamIDClan ) = 0;
 	// returns the number of officers in a clan (including the owner)
@@ -332,11 +332,11 @@ public:
 	// SetRichPresence() to a NULL or an empty string deletes the key
 	// You can iterate the current set of keys for a friend with GetFriendRichPresenceKeyCount()
 	// and GetFriendRichPresenceKeyByIndex() (typically only used for debugging)
-	virtual bool SetRichPresence( const char *pchKey, const char *pchValue ) = 0;
+	virtual bool SetRichPresence( const char* pchKey, const char* pchValue ) = 0;
 	virtual void ClearRichPresence() = 0;
-	virtual const char *GetFriendRichPresence( CSteamID steamIDFriend, const char *pchKey ) = 0;
+	virtual const char* GetFriendRichPresence( CSteamID steamIDFriend, const char* pchKey ) = 0;
 	virtual int GetFriendRichPresenceKeyCount( CSteamID steamIDFriend ) = 0;
-	virtual const char *GetFriendRichPresenceKeyByIndex( CSteamID steamIDFriend, int iKey ) = 0;
+	virtual const char* GetFriendRichPresenceKeyByIndex( CSteamID steamIDFriend, int iKey ) = 0;
 	// Requests rich presence for a specific user.
 	virtual void RequestFriendRichPresence( CSteamID steamIDFriend ) = 0;
 
@@ -344,7 +344,7 @@ public:
 	// if the target accepts the invite, the pchConnectString gets added to the command-line for launching the game
 	// if the game is already running, a GameRichPresenceJoinRequested_t callback is posted containing the connect string
 	// invites can only be sent to friends
-	virtual bool InviteUserToGame( CSteamID steamIDFriend, const char *pchConnectString ) = 0;
+	virtual bool InviteUserToGame( CSteamID steamIDFriend, const char* pchConnectString ) = 0;
 
 	// recently-played-with friends iteration
 	// this iterates the entire list of users recently played with, across games
@@ -362,8 +362,8 @@ public:
 	virtual bool LeaveClanChatRoom( CSteamID steamIDClan ) = 0;
 	virtual int GetClanChatMemberCount( CSteamID steamIDClan ) = 0;
 	virtual CSteamID GetChatMemberByIndex( CSteamID steamIDClan, int iUser ) = 0;
-	virtual bool SendClanChatMessage( CSteamID steamIDClanChat, const char *pchText ) = 0;
-	virtual int GetClanChatMessage( CSteamID steamIDClanChat, int iMessage, void *prgchText, int cchTextMax, EChatEntryType *peChatEntryType, OUT_STRUCT() CSteamID *psteamidChatter ) = 0;
+	virtual bool SendClanChatMessage( CSteamID steamIDClanChat, const char* pchText ) = 0;
+	virtual int GetClanChatMessage( CSteamID steamIDClanChat, int iMessage, void* prgchText, int cchTextMax, EChatEntryType* peChatEntryType, OUT_STRUCT() CSteamID* psteamidChatter ) = 0;
 	virtual bool IsClanChatAdmin( CSteamID steamIDClanChat, CSteamID steamIDUser ) = 0;
 
 	// interact with the Steam (game overlay / desktop)
@@ -374,8 +374,8 @@ public:
 	// peer-to-peer chat interception
 	// this is so you can show P2P chats inline in the game
 	virtual bool SetListenForFriendsMessages( bool bInterceptEnabled ) = 0;
-	virtual bool ReplyToFriendMessage( CSteamID steamIDFriend, const char *pchMsgToSend ) = 0;
-	virtual int GetFriendMessage( CSteamID steamIDFriend, int iMessageID, void *pvData, int cubData, EChatEntryType *peChatEntryType ) = 0;
+	virtual bool ReplyToFriendMessage( CSteamID steamIDFriend, const char* pchMsgToSend ) = 0;
+	virtual int GetFriendMessage( CSteamID steamIDFriend, int iMessageID, void* pvData, int cubData, EChatEntryType* peChatEntryType ) = 0;
 
 	// following apis
 	virtual SteamAPICall_t GetFollowerCount( CSteamID steamID ) = 0;
@@ -387,12 +387,12 @@ public:
 
 // callbacks
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-#pragma pack( push, 4 )
+	#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-#pragma pack( push, 8 )
+	#pragma pack( push, 8 )
 #else
-#error isteamclient.h must be included
-#endif 
+	#error isteamclient.h must be included
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: called when a friends' status changes
@@ -400,7 +400,7 @@ public:
 struct PersonaStateChange_t
 {
 	enum { k_iCallback = k_iSteamFriendsCallbacks + 4 };
-	
+
 	uint64 m_ulSteamID;		// steamID of the friend who changed
 	int m_nChangeFlags;		// what's changed
 };
@@ -417,7 +417,7 @@ enum EPersonaChange
 	k_EPersonaChangeGamePlayed	= 0x0010,
 	k_EPersonaChangeGameServer	= 0x0020,
 	k_EPersonaChangeAvatar		= 0x0040,
-	k_EPersonaChangeJoinedSource= 0x0080,
+	k_EPersonaChangeJoinedSource = 0x0080,
 	k_EPersonaChangeLeftSource	= 0x0100,
 	k_EPersonaChangeRelationshipChanged = 0x0200,
 	k_EPersonaChangeNameFirstSet = 0x0400,
@@ -464,7 +464,7 @@ struct GameLobbyJoinRequested_t
 	// On PS3, the friend will be invalid if this was triggered by a PSN invite via the XMB, but
 	// the account type will be console user so you can tell at least that this was from a PSN friend
 	// rather than a Steam friend.
-	CSteamID m_steamIDFriend;		
+	CSteamID m_steamIDFriend;
 };
 
 

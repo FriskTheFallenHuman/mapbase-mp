@@ -8,7 +8,7 @@
 #define PASSWORDHASH_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 
@@ -73,22 +73,23 @@ enum EPasswordHashAlg
 //
 // Hash sizes for the various available hash algorithms,
 // indexed by EPasswordHashAlg.
-const size_t k_HashLengths[] = {
-	sizeof(SHADigest_t),
-	sizeof(BigPasswordHash_t),
-	sizeof(PBKDF2Hash_t),
-	sizeof(PBKDF2Hash_t),
-	sizeof(PBKDF2Hash_t),
-	sizeof(PBKDF2Hash_t),
+const size_t k_HashLengths[] =
+{
+	sizeof( SHADigest_t ),
+	sizeof( BigPasswordHash_t ),
+	sizeof( PBKDF2Hash_t ),
+	sizeof( PBKDF2Hash_t ),
+	sizeof( PBKDF2Hash_t ),
+	sizeof( PBKDF2Hash_t ),
 };
 
 #if defined(C_ASSERT)
-//
-// If you're hitting this assert at compile time, it means that you've added a new
-// hash type and properly updated k_EHashMax, but you forgot to add the length
-// of the new hash type into k_HashLengths.  So do that.
-//
-C_ASSERT( ( ( sizeof(k_HashLengths) / sizeof(size_t) ) == k_EHashMax + 1 ) );
+	//
+	// If you're hitting this assert at compile time, it means that you've added a new
+	// hash type and properly updated k_EHashMax, but you forgot to add the length
+	// of the new hash type into k_HashLengths.  So do that.
+	//
+	C_ASSERT( ( ( sizeof( k_HashLengths ) / sizeof( size_t ) ) == k_EHashMax + 1 ) );
 #endif
 
 #endif // PASSWORDHASH_H

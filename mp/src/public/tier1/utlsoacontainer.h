@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,7 +12,7 @@
 #define UTLSOACONTAINER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -29,33 +29,33 @@
 template<class T> class CStridedPtr
 {
 protected:
-	T *m_pData;
+	T* m_pData;
 	size_t m_nStride;
-	
+
 public:
-	FORCEINLINE CStridedPtr<T>( void *pData, size_t nByteStride )
+	FORCEINLINE CStridedPtr<T>( void* pData, size_t nByteStride )
 	{
-		m_pData = reinterpret_cast<T *>( pData );
+		m_pData = reinterpret_cast<T*>( pData );
 		m_nStride = nByteStride / sizeof( T );
 	}
 
 	FORCEINLINE CStridedPtr<T>( void ) {}
-	T *operator->(void) const
-	{
-		return m_pData;
-	}
-	
-	T & operator*(void) const
-	{
-		return *m_pData;
-	}
-	
-	FORCEINLINE operator T *(void)
+	T* operator->( void ) const
 	{
 		return m_pData;
 	}
 
-	FORCEINLINE CStridedPtr<T> & operator++(void)
+	T& operator*( void ) const
+	{
+		return *m_pData;
+	}
+
+	FORCEINLINE operator T* ( void )
+	{
+		return m_pData;
+	}
+
+	FORCEINLINE CStridedPtr<T>& operator++( void )
 	{
 		m_pData += m_nStride;
 		return *this;
@@ -71,41 +71,41 @@ public:
 template<class T> class CStridedConstPtr
 {
 protected:
-	const T *m_pData;
+	const T* m_pData;
 	size_t m_nStride;
 
 public:
-	FORCEINLINE CStridedConstPtr<T>( void const *pData, size_t nByteStride )
+	FORCEINLINE CStridedConstPtr<T>( void const* pData, size_t nByteStride )
 	{
-		m_pData = reinterpret_cast<T const *>( pData );
+		m_pData = reinterpret_cast<T const*>( pData );
 		m_nStride = nByteStride / sizeof( T );
 	}
 
 	FORCEINLINE CStridedConstPtr<T>( void ) {}
 
-	const T *operator->(void) const
+	const T* operator->( void ) const
 	{
 		return m_pData;
 	}
 
-	const T & operator*(void) const
+	const T& operator*( void ) const
 	{
 		return *m_pData;
 	}
 
-	FORCEINLINE operator const T *(void) const
+	FORCEINLINE operator const T* ( void ) const
 	{
 		return m_pData;
 	}
 
-	FORCEINLINE CStridedConstPtr<T> &operator++(void)
+	FORCEINLINE CStridedConstPtr<T>& operator++( void )
 	{
 		m_pData += m_nStride;
 		return *this;
 	}
 	FORCEINLINE void operator+=( size_t nNumElements )
 	{
-		m_pData += nNumElements*m_nStride;
+		m_pData += nNumElements * m_nStride;
 	}
 };
 
@@ -115,33 +115,33 @@ private:
 	typedef __m128 T;
 
 protected:
-	T *m_pData;
+	T* m_pData;
 	size_t m_nStride;
-	
+
 public:
-	FORCEINLINE CFltx4StridedPtr( void *pData, size_t nByteStride )
+	FORCEINLINE CFltx4StridedPtr( void* pData, size_t nByteStride )
 	{
-		m_pData = reinterpret_cast<T *>( pData );
+		m_pData = reinterpret_cast<T*>( pData );
 		m_nStride = nByteStride / sizeof( T );
 	}
 
 	FORCEINLINE CFltx4StridedPtr( void ) {}
-	T *operator->(void) const
-	{
-		return m_pData;
-	}
-	
-	T & operator*(void) const
-	{
-		return *m_pData;
-	}
-	
-	FORCEINLINE operator T *(void)
+	T* operator->( void ) const
 	{
 		return m_pData;
 	}
 
-	FORCEINLINE CFltx4StridedPtr& operator++(void)
+	T& operator*( void ) const
+	{
+		return *m_pData;
+	}
+
+	FORCEINLINE operator T* ( void )
+	{
+		return m_pData;
+	}
+
+	FORCEINLINE CFltx4StridedPtr& operator++( void )
 	{
 		m_pData += m_nStride;
 		return *this;
@@ -160,41 +160,41 @@ private:
 	typedef __m128 T;
 
 protected:
-	const T *m_pData;
+	const T* m_pData;
 	size_t m_nStride;
 
 public:
-	FORCEINLINE CFltx4StridedConstPtr( void const *pData, size_t nByteStride )
+	FORCEINLINE CFltx4StridedConstPtr( void const* pData, size_t nByteStride )
 	{
-		m_pData = reinterpret_cast<T const *>( pData );
+		m_pData = reinterpret_cast<T const*>( pData );
 		m_nStride = nByteStride / sizeof( T );
 	}
 
 	FORCEINLINE CFltx4StridedConstPtr( void ) {}
 
-	const T *operator->(void) const
+	const T* operator->( void ) const
 	{
 		return m_pData;
 	}
 
-	const T & operator*(void) const
+	const T& operator*( void ) const
 	{
 		return *m_pData;
 	}
 
-	FORCEINLINE operator const T *(void) const
+	FORCEINLINE operator const T* ( void ) const
 	{
 		return m_pData;
 	}
 
-	FORCEINLINE CFltx4StridedConstPtr &operator++(void)
+	FORCEINLINE CFltx4StridedConstPtr& operator++( void )
 	{
 		m_pData += m_nStride;
 		return *this;
 	}
 	FORCEINLINE void operator+=( size_t nNumElements )
 	{
-		m_pData += nNumElements*m_nStride;
+		m_pData += nNumElements * m_nStride;
 	}
 };
 
@@ -204,7 +204,7 @@ enum EAttributeDataType
 	ATTRDATATYPE_FLOAT = 0,									// a float attribute
 	ATTRDATATYPE_4V = 1,									// vector data type, stored as class FourVectors
 	ATTRDATATYPE_INT = 2,									// integer. not especially sse-able on
-															// all architectures.
+	// all architectures.
 	ATTRDATATYPE_POINTER = 3,								// a pointer.
 	ATTRDATATYPE_NONE = -1,									// pad and varargs ender
 };
@@ -222,8 +222,8 @@ protected:
 	int m_nPaddedColumns;									// # of columns rounded up for sse
 	int m_nNumQuadsPerRow;									// # of groups of 4 elements per row
 
-	uint8 *m_pDataMemory;									// the actual data memory
-	uint8 *m_pAttributePtrs[MAX_SOA_FIELDS];
+	uint8* m_pDataMemory;									// the actual data memory
+	uint8* m_pAttributePtrs[MAX_SOA_FIELDS];
 
 	EAttributeDataType m_nDataType[MAX_SOA_FIELDS];
 
@@ -272,10 +272,14 @@ public:
 		Assert( !m_pDataMemory );							// can't change after memory allocated
 		Assert( nAttrIdx < MAX_SOA_FIELDS );
 		m_nDataType[nAttrIdx] = nDataType;
-		if ( ( m_nDataType[nAttrIdx] != ATTRDATATYPE_NONE ) && bAllocateMemory )
+		if( ( m_nDataType[nAttrIdx] != ATTRDATATYPE_NONE ) && bAllocateMemory )
+		{
 			m_nFieldPresentMask |= ( 1 << nAttrIdx );
+		}
 		else
+		{
 			m_nFieldPresentMask &= ~( 1 << nAttrIdx );
+		}
 	}
 
 	FORCEINLINE int NumRows( void ) const
@@ -299,7 +303,7 @@ public:
 		Assert( nAttrIdx < MAX_SOA_FIELDS );
 		Assert( m_nStrideInBytes[nAttrIdx] );
 	}
-	
+
 
 	// # of groups of 4 elements per row
 	FORCEINLINE int NumQuadsPerRow( void ) const
@@ -324,31 +328,31 @@ public:
 	{
 		return 0;
 	}
-	
-	FORCEINLINE void *RowPtr( int nAttributeIdx, int nRowNumber, int nSliceNumber = 0 ) const
+
+	FORCEINLINE void* RowPtr( int nAttributeIdx, int nRowNumber, int nSliceNumber = 0 ) const
 	{
 		Assert( nRowNumber < m_nRows );
 		Assert( nAttributeIdx < MAX_SOA_FIELDS );
 		Assert( m_nDataType[nAttributeIdx] != ATTRDATATYPE_NONE );
 		Assert( m_nFieldPresentMask & ( 1 << nAttributeIdx ) );
-		return m_pAttributePtrs[nAttributeIdx] + 
-			+ nRowNumber * m_nRowStrideInBytes[nAttributeIdx]
-			+ nSliceNumber * m_nSliceStrideInBytes[nAttributeIdx];
+		return m_pAttributePtrs[nAttributeIdx] +
+			   + nRowNumber * m_nRowStrideInBytes[nAttributeIdx]
+			   + nSliceNumber * m_nSliceStrideInBytes[nAttributeIdx];
 	}
 
-	FORCEINLINE void const *ConstRowPtr( int nAttributeIdx, int nRowNumber, int nSliceNumber = 0 ) const
+	FORCEINLINE void const* ConstRowPtr( int nAttributeIdx, int nRowNumber, int nSliceNumber = 0 ) const
 	{
 		Assert( nRowNumber < m_nRows );
 		Assert( nAttributeIdx < MAX_SOA_FIELDS );
 		Assert( m_nDataType[nAttributeIdx] != ATTRDATATYPE_NONE );
-		return m_pAttributePtrs[nAttributeIdx] 
-			+ nRowNumber * m_nRowStrideInBytes[nAttributeIdx]
-			+ nSliceNumber * m_nSliceStrideInBytes[nAttributeIdx];
+		return m_pAttributePtrs[nAttributeIdx]
+			   + nRowNumber * m_nRowStrideInBytes[nAttributeIdx]
+			   + nSliceNumber * m_nSliceStrideInBytes[nAttributeIdx];
 	}
 
 
-	template<class T> FORCEINLINE T *ElementPointer( int nAttributeIdx, 
-													   int nX = 0, int nY = 0, int nZ = 0 ) const
+	template<class T> FORCEINLINE T* ElementPointer( int nAttributeIdx,
+			int nX = 0, int nY = 0, int nZ = 0 ) const
 	{
 		Assert( nAttributeIdx < MAX_SOA_FIELDS );
 		Assert( nX < m_nColumns );
@@ -356,13 +360,13 @@ public:
 		Assert( nZ < m_nSlices );
 		Assert( m_nDataType[nAttributeIdx] != ATTRDATATYPE_NONE );
 		Assert( m_nDataType[nAttributeIdx] != ATTRDATATYPE_4V );
-		return reinterpret_cast<T *>( m_pAttributePtrs[nAttributeIdx] 
-									  + nX * sizeof( float )
-									  + nY * m_nRowStrideInBytes[nAttributeIdx]
-									  + nZ * m_nSliceStrideInBytes[nAttributeIdx]
-			);
+		return reinterpret_cast<T*>( m_pAttributePtrs[nAttributeIdx]
+									 + nX * sizeof( float )
+									 + nY * m_nRowStrideInBytes[nAttributeIdx]
+									 + nZ * m_nSliceStrideInBytes[nAttributeIdx]
+								   );
 	}
-		
+
 	FORCEINLINE size_t ItemByteStride( int nAttributeIdx ) const
 	{
 		Assert( nAttributeIdx < MAX_SOA_FIELDS );
@@ -371,16 +375,16 @@ public:
 	}
 
 	// copy the attribute data from another soacontainer. must be compatible geometry
-	void CopyAttrFrom( CSOAContainer const &other, int nAttributeIdx );
+	void CopyAttrFrom( CSOAContainer const& other, int nAttributeIdx );
 
 	// copy the attribute data from another attribute. must be compatible data format
-	void CopyAttrToAttr( int nSrcAttributeIndex, int nDestAttributeIndex);
+	void CopyAttrToAttr( int nSrcAttributeIndex, int nDestAttributeIndex );
 
 	// move all the data from one csoacontainer to another, leaving the source empty.
 	// this is just a pointer copy.
 	FORCEINLINE void MoveDataFrom( CSOAContainer other )
 	{
-		(*this) = other;
+		( *this ) = other;
 		other.Init();
 	}
 
@@ -393,30 +397,30 @@ public:
 	// set all elements of a float attribute to random #s
 	void RandomizeAttribute( int nAttr, float flMin, float flMax ) const ;
 
-	// fill 2d a rectangle with values interpolated from 4 corner values. 
+	// fill 2d a rectangle with values interpolated from 4 corner values.
 	void FillAttrWithInterpolatedValues( int nAttr, float flValue00, float flValue10, float flValue01, float flValue11 ) const;
 	void FillAttrWithInterpolatedValues( int nAttr, Vector flValue00, Vector flValue10,
-										 Vector const &flValue01, Vector const &flValue11 ) const;
+										 Vector const& flValue01, Vector const& flValue11 ) const;
 
 };
 
 class CFltX4AttributeIterator : public CFltx4StridedConstPtr
 {
-	FORCEINLINE CFltX4AttributeIterator( CSOAContainer const *pContainer, int nAttribute, int nRowNumber = 0 )
-		: CFltx4StridedConstPtr( pContainer->ConstRowPtr( nAttribute, nRowNumber),
-								   pContainer->ItemByteStride( nAttribute ) )
+	FORCEINLINE CFltX4AttributeIterator( CSOAContainer const* pContainer, int nAttribute, int nRowNumber = 0 )
+		: CFltx4StridedConstPtr( pContainer->ConstRowPtr( nAttribute, nRowNumber ),
+								 pContainer->ItemByteStride( nAttribute ) )
 	{
 	}
 };
 
 class CFltX4AttributeWriteIterator : public CFltx4StridedPtr
 {
-	FORCEINLINE CFltX4AttributeWriteIterator( CSOAContainer const *pContainer, int nAttribute, int nRowNumber = 0 )
-		: CFltx4StridedPtr( pContainer->RowPtr( nAttribute, nRowNumber),
-							  pContainer->ItemByteStride( nAttribute ) )
+	FORCEINLINE CFltX4AttributeWriteIterator( CSOAContainer const* pContainer, int nAttribute, int nRowNumber = 0 )
+		: CFltx4StridedPtr( pContainer->RowPtr( nAttribute, nRowNumber ),
+							pContainer->ItemByteStride( nAttribute ) )
 	{
 	}
-	
+
 };
 
 

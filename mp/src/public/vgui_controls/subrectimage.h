@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define SUBRECTIMAGE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/Image.h"
@@ -21,15 +21,15 @@
 class CSubRectImage : public vgui::Image
 {
 public:
-	CSubRectImage( const char *filename, bool hardwareFiltered, int subx, int suby, int subw, int subh );
+	CSubRectImage( const char* filename, bool hardwareFiltered, int subx, int suby, int subw, int subh );
 	virtual ~CSubRectImage();
 
-	void GetSize( int &wide, int &tall );
-	void GetContentSize( int &wide, int &tall );
+	void GetSize( int& wide, int& tall );
+	void GetContentSize( int& wide, int& tall );
 	void SetSize( int x, int y );
 	void SetPos( int x, int y );
 	void SetColor( Color col );
-	const char *GetName();
+	const char* GetName();
 	void Paint();
 	void ForceUpload();
 	vgui::HTexture GetID();
@@ -38,9 +38,9 @@ public:
 private:
 	vgui::HTexture _id;
 	int			sub[ 4 ];
-	char		*_filename;
+	char*		_filename;
 	int			_pos[2];
-	int			_wide,_tall;
+	int			_wide, _tall;
 	Color		_color;
 	bool        _uploaded;
 	bool		_valid;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -17,29 +17,29 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CBaseTempEntity, DT_BaseTempEntity)
+IMPLEMENT_SERVERCLASS_ST_NOBASE( CBaseTempEntity, DT_BaseTempEntity )
 END_SEND_TABLE()
 
 
 
 
 // Global list of temp entity event classes
-CBaseTempEntity *CBaseTempEntity::s_pTempEntities = NULL;
+CBaseTempEntity* CBaseTempEntity::s_pTempEntities = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns head of list
 // Output : CBaseTempEntity * -- head of list
 //-----------------------------------------------------------------------------
-CBaseTempEntity *CBaseTempEntity::GetList( void )
+CBaseTempEntity* CBaseTempEntity::GetList( void )
 {
 	return s_pTempEntities;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates temp entity, sets name, adds to global list
-// Input  : *name - 
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CBaseTempEntity::CBaseTempEntity( const char *name )
+CBaseTempEntity::CBaseTempEntity( const char* name )
 {
 	m_pszName = name;
 	Assert( m_pszName );
@@ -50,7 +50,7 @@ CBaseTempEntity::CBaseTempEntity( const char *name )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CBaseTempEntity::~CBaseTempEntity( void )
 {
@@ -60,7 +60,7 @@ CBaseTempEntity::~CBaseTempEntity( void )
 // Purpose: Get the name of this temp entity
 // Output : const char *
 //-----------------------------------------------------------------------------
-const char *CBaseTempEntity::GetName( void )
+const char* CBaseTempEntity::GetName( void )
 {
 	return m_pszName ? m_pszName : "Unnamed";
 }
@@ -69,13 +69,13 @@ const char *CBaseTempEntity::GetName( void )
 // Purpose: Get next temp ent in chain
 // Output : CBaseTempEntity *
 //-----------------------------------------------------------------------------
-CBaseTempEntity *CBaseTempEntity::GetNext( void )
+CBaseTempEntity* CBaseTempEntity::GetNext( void )
 {
 	return m_pNext;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBaseTempEntity::Precache( void )
 {
@@ -84,8 +84,8 @@ void CBaseTempEntity::Precache( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Default test implementation. Should only be called by derived classes
-// Input  : *current_origin - 
-//			*current_angles - 
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CBaseTempEntity::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -106,8 +106,8 @@ void CBaseTempEntity::Test( const Vector& current_origin, const QAngle& current_
 //-----------------------------------------------------------------------------
 void CBaseTempEntity::PrecacheTempEnts( void )
 {
-	CBaseTempEntity *te_ = GetList();
-	while ( te_ )
+	CBaseTempEntity* te_ = GetList();
+	while( te_ )
 	{
 		te_->Precache();
 		te_ = te_->GetNext();
@@ -119,8 +119,8 @@ void CBaseTempEntity::Create( IRecipientFilter& filter, float delay )
 {
 	// temp entities can't be reliable or part of the signon message, use real entities instead
 	Assert( !filter.IsReliable() && !filter.IsInitMessage() );
-	Assert( delay >= -1 && delay <= 1); // 1 second max delay
+	Assert( delay >= -1 && delay <= 1 ); // 1 second max delay
 
-	engine->PlaybackTempEntity( filter, delay, 
-		(void *)this, GetServerClass()->m_pTable, GetServerClass()->m_ClassID );
+	engine->PlaybackTempEntity( filter, delay,
+								( void* )this, GetServerClass()->m_pTable, GetServerClass()->m_ClassID );
 }

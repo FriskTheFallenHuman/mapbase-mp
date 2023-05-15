@@ -8,7 +8,7 @@
 #define UTLPAIR_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,13 +20,17 @@ public:
 	CUtlPair() {}
 	CUtlPair( T1 t1, T2 t2 ) : first( t1 ), second( t2 ) {}
 
-	bool operator<( const CUtlPair<T1,T2> &rhs ) const {
-		if ( first != rhs.first )
+	bool operator<( const CUtlPair<T1, T2>& rhs ) const
+	{
+		if( first != rhs.first )
+		{
 			return first < rhs.first;
+		}
 		return second < rhs.second;
 	}
 
-	bool operator==( const CUtlPair<T1,T2> &rhs ) const {
+	bool operator==( const CUtlPair<T1, T2>& rhs ) const
+	{
 		return first == rhs.first && second == rhs.second;
 	}
 
@@ -36,9 +40,9 @@ public:
 
 // utility to make a CUtlPair without having to specify template parameters
 template<typename T1, typename T2>
-inline CUtlPair<T1,T2> MakeUtlPair( T1 t1, T2 t2 ) 
-{ 
-	return CUtlPair<T1,T2>(t1, t2); 
+inline CUtlPair<T1, T2> MakeUtlPair( T1 t1, T2 t2 )
+{
+	return CUtlPair<T1, T2>( t1, t2 );
 }
 
 //// HashItem() overload that works automatically with our hash containers

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ENERGYWAVE_H
 #define ENERGYWAVE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basecombatweapon.h"
@@ -30,7 +30,7 @@ public:
 	void Precache( void );
 
 public:
-	static CEnergyWave* Create( CBaseEntity *pentOwner );
+	static CEnergyWave* Create( CBaseEntity* pentOwner );
 };
 
 

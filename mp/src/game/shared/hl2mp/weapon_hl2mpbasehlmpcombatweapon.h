@@ -1,7 +1,7 @@
 #ifndef WEAPON_BASEHL2MPCOMBATWEAPON_SHARED_H
 #define WEAPON_BASEHL2MPCOMBATWEAPON_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef CLIENT_DLL
@@ -13,7 +13,7 @@
 #include "weapon_hl2mpbase.h"
 
 #if defined( CLIENT_DLL )
-#define CBaseHL2MPCombatWeapon C_BaseHL2MPCombatWeapon
+	#define CBaseHL2MPCombatWeapon C_BaseHL2MPCombatWeapon
 #endif
 
 class CBaseHL2MPCombatWeapon : public CWeaponHL2MPBase
@@ -34,17 +34,17 @@ public:
 	virtual bool	Ready( void );
 	virtual bool	Lower( void );
 	virtual bool	Deploy( void );
-	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo );
+	virtual bool	Holster( CBaseCombatWeapon* pSwitchingTo );
 	virtual void	WeaponIdle( void );
 
-	virtual void	AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles );
+	virtual void	AddViewmodelBob( CBaseViewModel* viewmodel, Vector& origin, QAngle& angles );
 	virtual	float	CalcViewmodelBob( void );
 
 	virtual Vector	GetBulletSpread( WeaponProficiency_t proficiency );
 	virtual float	GetSpreadBias( WeaponProficiency_t proficiency );
 
-	virtual const	WeaponProficiencyInfo_t *GetProficiencyValues();
-	static const	WeaponProficiencyInfo_t *GetDefaultProficiencyValues();
+	virtual const	WeaponProficiencyInfo_t* GetProficiencyValues();
+	static const	WeaponProficiencyInfo_t* GetDefaultProficiencyValues();
 
 	virtual void	ItemHolsterFrame( void );
 
@@ -58,8 +58,8 @@ protected:
 	float			m_flHolsterTime;	// When the weapon was holstered
 
 private:
-	
-	CBaseHL2MPCombatWeapon( const CBaseHL2MPCombatWeapon & );
+
+	CBaseHL2MPCombatWeapon( const CBaseHL2MPCombatWeapon& );
 };
 
 #endif // WEAPON_BASEHL2MPCOMBATWEAPON_SHARED_H

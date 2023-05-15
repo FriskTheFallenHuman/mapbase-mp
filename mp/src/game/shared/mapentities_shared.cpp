@@ -13,23 +13,25 @@
 
 #if !defined(_STATIC_LINKED) || defined(CLIENT_DLL)
 
-static const char *s_BraceChars = "{}()\'";
+static const char* s_BraceChars = "{}()\'";
 static bool s_BraceCharacters[256];
 static bool s_BuildReverseMap = true;
 
-bool MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Value[MAPKEY_MAXLENGTH] )
+bool MapEntity_ExtractValue( const char* pEntData, const char* keyName, char Value[MAPKEY_MAXLENGTH] )
 {
 	char token[MAPKEY_MAXLENGTH];
-	const char *inputData = pEntData;
+	const char* inputData = pEntData;
 
-	while ( inputData )
+	while( inputData )
 	{
 		inputData = MapEntity_ParseToken( inputData, token );	// get keyname
-		if ( token[0] == '}' )									// end of entity?
-			break;												// must not have seen the classname
+		if( token[0] == '}' )									// end of entity?
+		{
+			break;    // must not have seen the classname
+		}
 
 		// is this the right key?
-		if ( !strcmp(token, keyName) )
+		if( !strcmp( token, keyName ) )
 		{
 			inputData = MapEntity_ParseToken( inputData, token );	// get value and return it
 			Q_strncpy( Value, token, MAPKEY_MAXLENGTH );
@@ -42,17 +44,19 @@ bool MapEntity_ExtractValue( const char *pEntData, const char *keyName, char Val
 	return false;
 }
 
-int MapEntity_GetNumKeysInEntity( const char *pEntData )
+int MapEntity_GetNumKeysInEntity( const char* pEntData )
 {
 	char token[MAPKEY_MAXLENGTH];
-	const char *inputData = pEntData;
+	const char* inputData = pEntData;
 	int iNumKeys = 0;
 
-	while ( inputData )
+	while( inputData )
 	{
 		inputData = MapEntity_ParseToken( inputData, token );	// get keyname
-		if ( token[0] == '}' )									// end of entity?
-			break;												// must not have seen the classname
+		if( token[0] == '}' )									// end of entity?
+		{
+			break;    // must not have seen the classname
+		}
 
 		iNumKeys++;
 
@@ -65,24 +69,26 @@ int MapEntity_GetNumKeysInEntity( const char *pEntData )
 
 // skips to the beginning of the next entity in the data block
 // returns NULL if no more entities
-const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer )
+const char* MapEntity_SkipToNextEntity( const char* pMapData, char* pWorkBuffer )
 {
-	if ( !pMapData )
+	if( !pMapData )
+	{
 		return NULL;
+	}
 
 	// search through the map string for the next matching '{'
 	int openBraceCount = 1;
-	while ( pMapData != NULL )
+	while( pMapData != NULL )
 	{
 		pMapData = MapEntity_ParseToken( pMapData, pWorkBuffer );
 
-		if ( FStrEq(pWorkBuffer, "{") )
+		if( FStrEq( pWorkBuffer, "{" ) )
 		{
 			openBraceCount++;
 		}
-		else if ( FStrEq(pWorkBuffer, "}") )
+		else if( FStrEq( pWorkBuffer, "}" ) )
 		{
-			if ( --openBraceCount == 0 )
+			if( --openBraceCount == 0 )
 			{
 				// we've found the closing brace, so return the next character
 				return pMapData;
@@ -97,7 +103,7 @@ const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer 
 
 //-----------------------------------------------------------------------------
 // Purpose: parses a token out of a char data block
-//			the token gets fully read no matter what the length, but only MAPKEY_MAXLENGTH 
+//			the token gets fully read no matter what the length, but only MAPKEY_MAXLENGTH
 //			characters are written into newToken
 // Input  : char *data - the data to parse
 //			char *newToken - the buffer into which the new token is written
@@ -105,56 +111,62 @@ const char *MapEntity_SkipToNextEntity( const char *pMapData, char *pWorkBuffer 
 //			distince for each set of braceChars, since the usage is cached.
 // Output : const char * - returns a pointer to the position in the data following the newToken
 //-----------------------------------------------------------------------------
-const char *MapEntity_ParseToken( const char *data, char *newToken )
+const char* MapEntity_ParseToken( const char* data, char* newToken )
 {
 	int             c;
 	int             len;
-		
+
 	len = 0;
 	newToken[0] = 0;
-	
-	if (!data)
+
+	if( !data )
+	{
 		return NULL;
+	}
 
 	// build the new table if we have to
-	if ( s_BuildReverseMap )
+	if( s_BuildReverseMap )
 	{
-		s_BuildReverseMap = false; 
+		s_BuildReverseMap = false;
 
-		Q_memset( s_BraceCharacters, 0, sizeof(s_BraceCharacters) );
+		Q_memset( s_BraceCharacters, 0, sizeof( s_BraceCharacters ) );
 
-		for ( const char *ch = s_BraceChars; *ch; ch++ )
+		for( const char* ch = s_BraceChars; *ch; ch++ )
 		{
-			s_BraceCharacters[(unsigned)*ch] = true;
+			s_BraceCharacters[( unsigned )*ch] = true;
 		}
 	}
-		
+
 // skip whitespace
 skipwhite:
-	while ( (c = *data) <= ' ')
+	while( ( c = *data ) <= ' ' )
 	{
-		if (c == 0)
-			return NULL;                    // end of file;
+		if( c == 0 )
+		{
+			return NULL;    // end of file;
+		}
 		data++;
 	}
-	
+
 // skip // comments
-	if (c=='/' && data[1] == '/')
+	if( c == '/' && data[1] == '/' )
 	{
-		while (*data && *data != '\n')
+		while( *data && *data != '\n' )
+		{
 			data++;
+		}
 		goto skipwhite;
 	}
-	
+
 
 // handle quoted strings specially
-	if (c == '\"')
+	if( c == '\"' )
 	{
 		data++;
-		while ( len < MAPKEY_MAXLENGTH )
+		while( len < MAPKEY_MAXLENGTH )
 		{
 			c = *data++;
-			if (c=='\"' || !c)
+			if( c == '\"' || !c )
 			{
 				newToken[len] = 0;
 				return data;
@@ -163,7 +175,7 @@ skipwhite:
 			len++;
 		}
 
-		if ( len >= MAPKEY_MAXLENGTH )
+		if( len >= MAPKEY_MAXLENGTH )
 		{
 			len--;
 			newToken[len] = 0;
@@ -171,12 +183,12 @@ skipwhite:
 	}
 
 // parse single characters
-	if ( s_BraceCharacters[c]/*c=='{' || c=='}'|| c==')'|| c=='(' || c=='\''*/ )
+	if( s_BraceCharacters[c]/*c=='{' || c=='}'|| c==')'|| c=='(' || c=='\''*/ )
 	{
 		newToken[len] = c;
 		len++;
 		newToken[len] = 0;
-		return data+1;
+		return data + 1;
 	}
 
 // parse a regular word
@@ -186,17 +198,20 @@ skipwhite:
 		data++;
 		len++;
 		c = *data;
-		if ( s_BraceCharacters[c] /*c=='{' || c=='}'|| c==')'|| c=='(' || c=='\''*/ )
+		if( s_BraceCharacters[c] /*c=='{' || c=='}'|| c==')'|| c=='(' || c=='\''*/ )
+		{
 			break;
+		}
 
-		if ( len >= MAPKEY_MAXLENGTH )
+		if( len >= MAPKEY_MAXLENGTH )
 		{
 			len--;
 			newToken[len] = 0;
 		}
 
-	} while (c>32);
-	
+	}
+	while( c > 32 );
+
 	newToken[len] = 0;
 	return data;
 }
@@ -205,65 +220,65 @@ skipwhite:
 
 /* ================= CEntityMapData definition ================ */
 
-bool CEntityMapData::ExtractValue( const char *keyName, char *value )
+bool CEntityMapData::ExtractValue( const char* keyName, char* value )
 {
 	return MapEntity_ExtractValue( m_pEntData, keyName, value );
 }
 
-bool CEntityMapData::GetFirstKey( char *keyName, char *value )
+bool CEntityMapData::GetFirstKey( char* keyName, char* value )
 {
 	m_pCurrentKey = m_pEntData; // reset the status pointer
 	return GetNextKey( keyName, value );
 }
 
-const char *CEntityMapData::CurrentBufferPosition( void )
+const char* CEntityMapData::CurrentBufferPosition( void )
 {
 	return m_pCurrentKey;
 }
 
-bool CEntityMapData::GetNextKey( char *keyName, char *value )
+bool CEntityMapData::GetNextKey( char* keyName, char* value )
 {
 	char token[MAPKEY_MAXLENGTH];
 
 	// parse key
-	char *pPrevKey = m_pCurrentKey;
-	m_pCurrentKey = (char*)MapEntity_ParseToken( m_pCurrentKey, token );
-	if ( token[0] == '}' )
+	char* pPrevKey = m_pCurrentKey;
+	m_pCurrentKey = ( char* )MapEntity_ParseToken( m_pCurrentKey, token );
+	if( token[0] == '}' )
 	{
 		// step back
 		m_pCurrentKey = pPrevKey;
 		return false;
 	}
 
-	if ( !m_pCurrentKey )
+	if( !m_pCurrentKey )
 	{
 		Warning( "CEntityMapData::GetNextKey: EOF without closing brace\n" );
-		Assert(0);
+		Assert( 0 );
 		return false;
 	}
-	
+
 	Q_strncpy( keyName, token, MAPKEY_MAXLENGTH );
 
 	// fix up keynames with trailing spaces
-	int n = strlen(keyName);
-	while (n && keyName[n-1] == ' ')
+	int n = strlen( keyName );
+	while( n && keyName[n - 1] == ' ' )
 	{
-		keyName[n-1] = 0;
+		keyName[n - 1] = 0;
 		n--;
 	}
 
-	// parse value	
-	m_pCurrentKey = (char*)MapEntity_ParseToken( m_pCurrentKey, token );
-	if ( !m_pCurrentKey )
+	// parse value
+	m_pCurrentKey = ( char* )MapEntity_ParseToken( m_pCurrentKey, token );
+	if( !m_pCurrentKey )
 	{
 		Warning( "CEntityMapData::GetNextKey: EOF without closing brace\n" );
-		Assert(0);
+		Assert( 0 );
 		return false;
 	}
-	if ( token[0] == '}' )
+	if( token[0] == '}' )
 	{
 		Warning( "CEntityMapData::GetNextKey: closing brace without data\n" );
-		Assert(0);
+		Assert( 0 );
 		return false;
 	}
 
@@ -275,41 +290,45 @@ bool CEntityMapData::GetNextKey( char *keyName, char *value )
 //-----------------------------------------------------------------------------
 // Purpose: find the keyName in the endata and change its value to specified one
 //-----------------------------------------------------------------------------
-bool CEntityMapData::SetValue( const char *keyName, char *NewValue, int nKeyInstance )
+bool CEntityMapData::SetValue( const char* keyName, char* NewValue, int nKeyInstance )
 {
 	// If this is -1, the size of the string is unknown and cannot be safely modified!
 	Assert( m_nEntDataSize != -1 );
-	if ( m_nEntDataSize == -1 )
+	if( m_nEntDataSize == -1 )
+	{
 		return false;
+	}
 
 	char token[MAPKEY_MAXLENGTH];
-	char *inputData = m_pEntData;
-	char *prevData;
+	char* inputData = m_pEntData;
+	char* prevData;
 
 	char newvaluebuf[ 1024 ];
 	int nCurrKeyInstance = 0;
 
-	while ( inputData )
+	while( inputData )
 	{
-		inputData = (char*)MapEntity_ParseToken( inputData, token );	// get keyname
-		if ( token[0] == '}' )									// end of entity?
-			break;												// must not have seen the classname
+		inputData = ( char* )MapEntity_ParseToken( inputData, token );	// get keyname
+		if( token[0] == '}' )									// end of entity?
+		{
+			break;    // must not have seen the classname
+		}
 
 		// is this the right key?
-		if ( !strcmp(token, keyName) )
+		if( !strcmp( token, keyName ) )
 		{
 			++nCurrKeyInstance;
-			if ( nCurrKeyInstance > nKeyInstance )
+			if( nCurrKeyInstance > nKeyInstance )
 			{
 				// Find the start & end of the token we're going to replace
-				int entLen = strlen(m_pEntData);
-				char *postData = new char[entLen];
+				int entLen = strlen( m_pEntData );
+				char* postData = new char[entLen];
 				prevData = inputData;
-				inputData = (char*)MapEntity_ParseToken( inputData, token );	// get keyname
+				inputData = ( char* )MapEntity_ParseToken( inputData, token );	// get keyname
 				Q_strncpy( postData, inputData, entLen );
 
 				// Insert quotes if caller didn't
-				if ( NewValue[0] != '\"' )
+				if( NewValue[0] != '\"' )
 				{
 					Q_snprintf( newvaluebuf, sizeof( newvaluebuf ), "\"%s\"", NewValue );
 				}
@@ -318,13 +337,13 @@ bool CEntityMapData::SetValue( const char *keyName, char *NewValue, int nKeyInst
 					Q_strncpy( newvaluebuf, NewValue, sizeof( newvaluebuf ) );
 				}
 
-				int iNewValueLen = Q_strlen(newvaluebuf);
+				int iNewValueLen = Q_strlen( newvaluebuf );
 				int iPadding = iNewValueLen - Q_strlen( token ) - 2;	// -2 for the quotes (token doesn't have them)
 
 				// prevData has a space at the start, seperating the value from the key.
 				// Add 1 to prevData when pasting in the new Value, to account for the space.
-				Q_strncpy( prevData+1, newvaluebuf, iNewValueLen+1 );	// +1 for the null terminator
-				Q_strcat( prevData, postData, m_nEntDataSize - ((prevData-m_pEntData)+1) );
+				Q_strncpy( prevData + 1, newvaluebuf, iNewValueLen + 1 );	// +1 for the null terminator
+				Q_strcat( prevData, postData, m_nEntDataSize - ( ( prevData - m_pEntData ) + 1 ) );
 
 				m_pCurrentKey += iPadding;
 				delete [] postData;
@@ -332,7 +351,7 @@ bool CEntityMapData::SetValue( const char *keyName, char *NewValue, int nKeyInst
 			}
 		}
 
-		inputData = (char*)MapEntity_ParseToken( inputData, token );	// skip over value
+		inputData = ( char* )MapEntity_ParseToken( inputData, token );	// skip over value
 	}
 
 	return false;

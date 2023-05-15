@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -14,19 +14,19 @@
 #define MOVIEEXPLOSION_ENTITYNAME	"env_movieexplosion"
 
 
-IMPLEMENT_SERVERCLASS_ST(MovieExplosion, DT_MovieExplosion)
+IMPLEMENT_SERVERCLASS_ST( MovieExplosion, DT_MovieExplosion )
 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS(env_movieexplosion, MovieExplosion);
+LINK_ENTITY_TO_CLASS( env_movieexplosion, MovieExplosion );
 
 
-MovieExplosion* MovieExplosion::CreateMovieExplosion(const Vector &pos)
+MovieExplosion* MovieExplosion::CreateMovieExplosion( const Vector& pos )
 {
-	CBaseEntity *pEnt = CreateEntityByName(MOVIEEXPLOSION_ENTITYNAME);
-	if(pEnt)
+	CBaseEntity* pEnt = CreateEntityByName( MOVIEEXPLOSION_ENTITYNAME );
+	if( pEnt )
 	{
-		MovieExplosion *pEffect = dynamic_cast<MovieExplosion*>(pEnt);
-		if(pEffect && pEffect->edict())
+		MovieExplosion* pEffect = dynamic_cast<MovieExplosion*>( pEnt );
+		if( pEffect && pEffect->edict() )
 		{
 			pEffect->SetLocalOrigin( pos );
 			pEffect->Activate();
@@ -34,7 +34,7 @@ MovieExplosion* MovieExplosion::CreateMovieExplosion(const Vector &pos)
 		}
 		else
 		{
-			UTIL_Remove(pEnt);
+			UTIL_Remove( pEnt );
 		}
 	}
 

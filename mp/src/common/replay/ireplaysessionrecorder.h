@@ -5,7 +5,7 @@
 #ifndef IREPLAYSESSIONRECORDER_H
 #define IREPLAYSESSIONRECORDER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------

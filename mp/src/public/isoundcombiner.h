@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ISOUNDCOMBINER_H
 #define ISOUNDCOMBINER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -31,10 +31,10 @@ abstract_class ISoundCombiner
 public:
 	virtual ~ISoundCombiner() {}
 
-	virtual bool CombineSoundFiles( IFileSystem *filesystem, char const *outfile, CUtlVector< CombinerEntry >& info ) = 0;
-	virtual bool IsCombinedFileChecksumValid( IFileSystem *filesystem, char const *outfile, CUtlVector< CombinerEntry >& info ) = 0;
+	virtual bool CombineSoundFiles( IFileSystem * filesystem, char const * outfile, CUtlVector< CombinerEntry >& info ) = 0;
+	virtual bool IsCombinedFileChecksumValid( IFileSystem * filesystem, char const * outfile, CUtlVector< CombinerEntry >& info ) = 0;
 };
 
-extern ISoundCombiner *soundcombiner;
+extern ISoundCombiner* soundcombiner;
 
 #endif // ISOUNDCOMBINER_H

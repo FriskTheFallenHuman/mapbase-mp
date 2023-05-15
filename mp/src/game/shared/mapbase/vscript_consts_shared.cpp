@@ -11,10 +11,10 @@
 #include "rope_shared.h"
 #include "eventlist.h"
 #ifdef CLIENT_DLL
-#include "c_ai_basenpc.h"
+	#include "c_ai_basenpc.h"
 #else
-#include "ai_basenpc.h"
-#include "globalstate.h"
+	#include "ai_basenpc.h"
+	#include "globalstate.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -26,32 +26,32 @@
 
 BEGIN_SCRIPTENUM( IN, "Button mask bindings" )
 
-	DEFINE_ENUMCONST_NAMED( IN_ATTACK, "ATTACK", "Button for +attack" )
-	DEFINE_ENUMCONST_NAMED( IN_JUMP, "JUMP", "Button for +jump" )
-	DEFINE_ENUMCONST_NAMED( IN_DUCK, "DUCK", "Button for +duck" )
-	DEFINE_ENUMCONST_NAMED( IN_FORWARD, "FORWARD", "Button for +forward" )
-	DEFINE_ENUMCONST_NAMED( IN_BACK, "BACK", "Button for +back" )
-	DEFINE_ENUMCONST_NAMED( IN_USE, "USE", "Button for +use" )
-	DEFINE_ENUMCONST_NAMED( IN_CANCEL, "CANCEL", "Special button flag for attack cancel" )
-	DEFINE_ENUMCONST_NAMED( IN_LEFT, "LEFT", "Button for +left" )
-	DEFINE_ENUMCONST_NAMED( IN_RIGHT, "RIGHT", "Button for +right" )
-	DEFINE_ENUMCONST_NAMED( IN_MOVELEFT, "MOVELEFT", "Button for +moveleft" )
-	DEFINE_ENUMCONST_NAMED( IN_MOVERIGHT, "MOVERIGHT", "Button for +moveright" )
-	DEFINE_ENUMCONST_NAMED( IN_ATTACK2, "ATTACK2", "Button for +attack2" )
-	DEFINE_ENUMCONST_NAMED( IN_RUN, "RUN", "Unused button (see IN.SPEED for sprint)" )
-	DEFINE_ENUMCONST_NAMED( IN_RELOAD, "RELOAD", "Button for +reload" )
-	DEFINE_ENUMCONST_NAMED( IN_ALT1, "ALT1", "Button for +alt1" )
-	DEFINE_ENUMCONST_NAMED( IN_ALT2, "ALT2", "Button for +alt2" )
-	DEFINE_ENUMCONST_NAMED( IN_SCORE, "SCORE", "Button for +score" )
-	DEFINE_ENUMCONST_NAMED( IN_SPEED, "SPEED", "Button for +speed" )
-	DEFINE_ENUMCONST_NAMED( IN_WALK, "WALK", "Button for +walk" )
-	DEFINE_ENUMCONST_NAMED( IN_ZOOM, "ZOOM", "Button for +zoom" )
-	DEFINE_ENUMCONST_NAMED( IN_WEAPON1, "WEAPON1", "Special button used by weapons themselves" )
-	DEFINE_ENUMCONST_NAMED( IN_WEAPON2, "WEAPON2", "Special button used by weapons themselves" )
-	DEFINE_ENUMCONST_NAMED( IN_BULLRUSH, "BULLRUSH", "Unused button" )
-	DEFINE_ENUMCONST_NAMED( IN_GRENADE1, "GRENADE1", "Button for +grenade1" )
-	DEFINE_ENUMCONST_NAMED( IN_GRENADE2, "GRENADE2", "Button for +grenade2" )
-	DEFINE_ENUMCONST_NAMED( IN_ATTACK3, "ATTACK3", "Button for +attack3" )
+DEFINE_ENUMCONST_NAMED( IN_ATTACK, "ATTACK", "Button for +attack" )
+DEFINE_ENUMCONST_NAMED( IN_JUMP, "JUMP", "Button for +jump" )
+DEFINE_ENUMCONST_NAMED( IN_DUCK, "DUCK", "Button for +duck" )
+DEFINE_ENUMCONST_NAMED( IN_FORWARD, "FORWARD", "Button for +forward" )
+DEFINE_ENUMCONST_NAMED( IN_BACK, "BACK", "Button for +back" )
+DEFINE_ENUMCONST_NAMED( IN_USE, "USE", "Button for +use" )
+DEFINE_ENUMCONST_NAMED( IN_CANCEL, "CANCEL", "Special button flag for attack cancel" )
+DEFINE_ENUMCONST_NAMED( IN_LEFT, "LEFT", "Button for +left" )
+DEFINE_ENUMCONST_NAMED( IN_RIGHT, "RIGHT", "Button for +right" )
+DEFINE_ENUMCONST_NAMED( IN_MOVELEFT, "MOVELEFT", "Button for +moveleft" )
+DEFINE_ENUMCONST_NAMED( IN_MOVERIGHT, "MOVERIGHT", "Button for +moveright" )
+DEFINE_ENUMCONST_NAMED( IN_ATTACK2, "ATTACK2", "Button for +attack2" )
+DEFINE_ENUMCONST_NAMED( IN_RUN, "RUN", "Unused button (see IN.SPEED for sprint)" )
+DEFINE_ENUMCONST_NAMED( IN_RELOAD, "RELOAD", "Button for +reload" )
+DEFINE_ENUMCONST_NAMED( IN_ALT1, "ALT1", "Button for +alt1" )
+DEFINE_ENUMCONST_NAMED( IN_ALT2, "ALT2", "Button for +alt2" )
+DEFINE_ENUMCONST_NAMED( IN_SCORE, "SCORE", "Button for +score" )
+DEFINE_ENUMCONST_NAMED( IN_SPEED, "SPEED", "Button for +speed" )
+DEFINE_ENUMCONST_NAMED( IN_WALK, "WALK", "Button for +walk" )
+DEFINE_ENUMCONST_NAMED( IN_ZOOM, "ZOOM", "Button for +zoom" )
+DEFINE_ENUMCONST_NAMED( IN_WEAPON1, "WEAPON1", "Special button used by weapons themselves" )
+DEFINE_ENUMCONST_NAMED( IN_WEAPON2, "WEAPON2", "Special button used by weapons themselves" )
+DEFINE_ENUMCONST_NAMED( IN_BULLRUSH, "BULLRUSH", "Unused button" )
+DEFINE_ENUMCONST_NAMED( IN_GRENADE1, "GRENADE1", "Button for +grenade1" )
+DEFINE_ENUMCONST_NAMED( IN_GRENADE2, "GRENADE2", "Button for +grenade2" )
+DEFINE_ENUMCONST_NAMED( IN_ATTACK3, "ATTACK3", "Button for +attack3" )
 
 END_SCRIPTENUM();
 
@@ -60,17 +60,17 @@ END_SCRIPTENUM();
 
 BEGIN_SCRIPTENUM( RenderMode, "Render modes used by Get/SetRenderMode" )
 
-	DEFINE_ENUMCONST_NAMED( kRenderNormal, "Normal", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransColor, "Color", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransTexture, "Texture", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderGlow, "Glow", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransAlpha, "Solid", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransAdd, "Additive", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderEnvironmental, "Environmental", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransAddFrameBlend, "AdditiveFractionalFrame", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderTransAlphaAdd, "AlphaAdd", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderWorldGlow, "WorldSpaceGlow", "" )
-	DEFINE_ENUMCONST_NAMED( kRenderNone, "None", "" )
+DEFINE_ENUMCONST_NAMED( kRenderNormal, "Normal", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransColor, "Color", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransTexture, "Texture", "" )
+DEFINE_ENUMCONST_NAMED( kRenderGlow, "Glow", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransAlpha, "Solid", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransAdd, "Additive", "" )
+DEFINE_ENUMCONST_NAMED( kRenderEnvironmental, "Environmental", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransAddFrameBlend, "AdditiveFractionalFrame", "" )
+DEFINE_ENUMCONST_NAMED( kRenderTransAlphaAdd, "AlphaAdd", "" )
+DEFINE_ENUMCONST_NAMED( kRenderWorldGlow, "WorldSpaceGlow", "" )
+DEFINE_ENUMCONST_NAMED( kRenderNone, "None", "" )
 
 END_SCRIPTENUM();
 
@@ -79,15 +79,15 @@ END_SCRIPTENUM();
 
 BEGIN_SCRIPTENUM( Hitgroup, "Hit groups from traces" )
 
-	DEFINE_ENUMCONST_NAMED( HITGROUP_GENERIC, "Generic", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_HEAD, "Head", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_CHEST, "Chest", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_STOMACH, "Stomach", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_LEFTARM, "LeftArm", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_RIGHTARM, "RightArm", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_LEFTLEG, "LeftLeg", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_RIGHTLEG, "RightLeg", "" )
-	DEFINE_ENUMCONST_NAMED( HITGROUP_GEAR, "Gear", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_GENERIC, "Generic", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_HEAD, "Head", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_CHEST, "Chest", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_STOMACH, "Stomach", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_LEFTARM, "LeftArm", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_RIGHTARM, "RightArm", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_LEFTLEG, "LeftLeg", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_RIGHTLEG, "RightLeg", "" )
+DEFINE_ENUMCONST_NAMED( HITGROUP_GEAR, "Gear", "" )
 
 END_SCRIPTENUM();
 
@@ -96,10 +96,10 @@ END_SCRIPTENUM();
 
 BEGIN_SCRIPTENUM( MapLoad, "Map load enum for GetLoadType()" )
 
-	DEFINE_ENUMCONST_NAMED( MapLoad_NewGame, "NewGame", "Map was loaded from a new game" )
-	DEFINE_ENUMCONST_NAMED( MapLoad_LoadGame, "LoadGame", "Map was loaded from a save file" )
-	DEFINE_ENUMCONST_NAMED( MapLoad_Transition, "Transition", "Map was loaded from a level transition" )
-	DEFINE_ENUMCONST_NAMED( MapLoad_Background, "Background", "Map was loaded as a background map" )
+DEFINE_ENUMCONST_NAMED( MapLoad_NewGame, "NewGame", "Map was loaded from a new game" )
+DEFINE_ENUMCONST_NAMED( MapLoad_LoadGame, "LoadGame", "Map was loaded from a save file" )
+DEFINE_ENUMCONST_NAMED( MapLoad_Transition, "Transition", "Map was loaded from a level transition" )
+DEFINE_ENUMCONST_NAMED( MapLoad_Background, "Background", "Map was loaded as a background map" )
 
 END_SCRIPTENUM();
 
@@ -109,13 +109,15 @@ END_SCRIPTENUM();
 void RegisterActivityConstants()
 {
 	// Make sure there are no activities declared yet
-	if (g_pScriptVM->ValueExists( "ACT_RESET" ))
+	if( g_pScriptVM->ValueExists( "ACT_RESET" ) )
+	{
 		return;
+	}
 
 	// Register activity constants by just iterating through the entire activity list
-	for (int i = 0; i < ActivityList_HighestIndex(); i++)
+	for( int i = 0; i < ActivityList_HighestIndex(); i++ )
 	{
-		ScriptRegisterConstantNamed( g_pScriptVM, i, ActivityList_NameForIndex(i), "" );
+		ScriptRegisterConstantNamed( g_pScriptVM, i, ActivityList_NameForIndex( i ), "" );
 	}
 }
 
@@ -135,9 +137,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstantNamed( g_pScriptVM, 1, "CLIENT_DLL", "" );
 #endif
 
-	// 
+	//
 	// Activities
-	// 
+	//
 
 	// Scripts have to use this function before using any activity constants.
 	// This is because initializing 1,700+ constants every time a level loads and letting them lay around
@@ -145,9 +147,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterFunction( g_pScriptVM, RegisterActivityConstants, "Registers all activity IDs as usable constants." );
 
 
-	// 
+	//
 	// Damage Types
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, DMG_GENERIC, "Damage type used in damage information." );
 	ScriptRegisterConstant( g_pScriptVM, DMG_CRUSH, "Damage type used in damage information." );
 	ScriptRegisterConstant( g_pScriptVM, DMG_BULLET, "Damage type used in damage information." );
@@ -180,9 +182,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, DMG_DIRECT, "Damage type used in damage information." );
 	ScriptRegisterConstant( g_pScriptVM, DMG_BUCKSHOT, "Damage type used in damage information." );
 
-	// 
+	//
 	// Collision Groups
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, COLLISION_GROUP_NONE, "Collision group used in GetCollisionGroup(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, COLLISION_GROUP_DEBRIS, "Collision group used in GetCollisionGroup(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, COLLISION_GROUP_DEBRIS_TRIGGER, "Collision group used in GetCollisionGroup(), etc." );
@@ -204,9 +206,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, COLLISION_GROUP_NPC_ACTOR, "Collision group used in GetCollisionGroup(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, COLLISION_GROUP_NPC_SCRIPTED, "Collision group used in GetCollisionGroup(), etc." );
 
-	// 
+	//
 	// Flags
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, FL_ONGROUND, "Flag used in GetFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FL_DUCKING, "Flag used in GetFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FL_WATERJUMP, "Flag used in GetFlags(), etc." );
@@ -239,9 +241,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, FL_TRANSRAGDOLL, "Flag used in GetFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FL_UNBLOCKABLE_BY_PLAYER, "Flag used in GetFlags(), etc." );
 
-	// 
+	//
 	// Entity Flags
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, EFL_KILLME, "Entity flag used in GetEFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EFL_DORMANT, "Entity flag used in GetEFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EFL_NOCLIP_ACTIVE, "Entity flag used in GetEFlags(), etc." );
@@ -276,9 +278,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, EFL_NO_PHYSCANNON_INTERACTION, "Entity flag used in GetEFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EFL_NO_DAMAGE_FORCES, "Entity flag used in GetEFlags(), etc." );
 
-	// 
+	//
 	// Effects
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, EF_BONEMERGE, "Effect flag used in GetEffects(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EF_BRIGHTLIGHT, "Effect flag used in GetEffects(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EF_DIMLIGHT, "Effect flag used in GetEffects(), etc." );
@@ -290,9 +292,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, EF_ITEM_BLINK, "Effect flag used in GetEffects(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, EF_PARENT_ANIMATES, "Effect flag used in GetEffects(), etc." );
 
-	// 
+	//
 	// Solid Flags
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, FSOLID_CUSTOMRAYTEST, "Solid flag used in GetSolidFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FSOLID_CUSTOMBOXTEST, "Solid flag used in GetSolidFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FSOLID_NOT_SOLID, "Solid flag used in GetSolidFlags(), etc." );
@@ -305,9 +307,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, FSOLID_TRIGGER_TOUCH_DEBRIS, "Solid flag used in GetSolidFlags(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, FSOLID_COLLIDE_WITH_OWNER, "Solid flag used in GetSolidFlags(), etc." );
 
-	// 
+	//
 	// Movetypes
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, MOVETYPE_NONE, "Move type used in GetMoveType(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, MOVETYPE_ISOMETRIC, "Move type used in GetMoveType(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, MOVETYPE_WALK, "Move type used in GetMoveType(), etc." );
@@ -321,9 +323,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, MOVETYPE_OBSERVER, "Move type used in GetMoveType(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, MOVETYPE_CUSTOM, "Move type used in GetMoveType(), etc." );
 
-	// 
+	//
 	// Animation Stuff
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, AE_TYPE_SERVER, "Animation event flag which indicates an event is supposed to be serverside only." );
 	ScriptRegisterConstant( g_pScriptVM, AE_TYPE_SCRIPTED, "Animation event flag with an unknown purpose." );
 	ScriptRegisterConstant( g_pScriptVM, AE_TYPE_SHARED, "Animation event flag which indicates an event is supposed to be shared between the server and client." );
@@ -332,9 +334,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, AE_TYPE_FACEPOSER, "Animation event flag with an unknown purpose. Presumably related to Faceposer." );
 	ScriptRegisterConstant( g_pScriptVM, AE_TYPE_NEWEVENTSYSTEM, "Animation event flag which indicates an event is using the new system. This is often used by class-specific events from NPCs." );
 
-	// 
+	//
 	// Ropes
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, ROPE_RESIZE, "Try to keep the rope dangling the same amount even as the rope length changes. (for use in rope flags)" );
 	ScriptRegisterConstant( g_pScriptVM, ROPE_BARBED, "Hack option to draw like a barbed wire. (for use in rope flags)" );
 	ScriptRegisterConstant( g_pScriptVM, ROPE_COLLIDE, "Collide with the world. (for use in rope flags)" );
@@ -348,9 +350,9 @@ void RegisterSharedScriptConstants()
 
 	ScriptRegisterConstantNamed( g_pScriptVM, Vector( ROPE_GRAVITY ), "ROPE_GRAVITY", "Default rope gravity vector." );
 
-	// 
+	//
 	// Sounds
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, CHAN_REPLACE, "The sound channel used when playing sounds through console commands." );
 	ScriptRegisterConstant( g_pScriptVM, CHAN_AUTO, "The default generic sound channel." );
 	ScriptRegisterConstant( g_pScriptVM, CHAN_WEAPON, "The sound channel for player and NPC weapons." );
@@ -415,10 +417,10 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, GENDER_FEMALE, "A standard value used to represent female gender. Usually used for sounds." );
 
 #ifdef GAME_DLL
-	// 
+	//
 	// AI Sounds
 	// (QueryHearSound hook can use these)
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, SOUND_NONE, "Sound type used in QueryHearSound hooks, etc." );
 	ScriptRegisterConstant( g_pScriptVM, SOUND_COMBAT, "Sound type used in QueryHearSound hooks, etc." );
 	ScriptRegisterConstant( g_pScriptVM, SOUND_WORLD, "Sound type used in QueryHearSound hooks, etc." );
@@ -465,14 +467,14 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, SOUNDENT_CHANNEL_SPOOKY_NOISE, "Sound channel used in QueryHearSound hooks, etc." );
 	ScriptRegisterConstant( g_pScriptVM, SOUNDENT_CHANNEL_ZOMBINE_GRENADE, "Sound channel used in QueryHearSound hooks, etc." );
 
-	ScriptRegisterConstantNamed( g_pScriptVM, (int)SOUNDENT_VOLUME_MACHINEGUN, "SOUNDENT_VOLUME_MACHINEGUN", "Sound volume preset for use in InsertAISound, etc." );
-	ScriptRegisterConstantNamed( g_pScriptVM, (int)SOUNDENT_VOLUME_SHOTGUN, "SOUNDENT_VOLUME_SHOTGUN", "Sound volume preset for use in InsertAISound, etc." );
-	ScriptRegisterConstantNamed( g_pScriptVM, (int)SOUNDENT_VOLUME_PISTOL, "SOUNDENT_VOLUME_PISTOL", "Sound volume preset for use in InsertAISound, etc." );
-	ScriptRegisterConstantNamed( g_pScriptVM, (int)SOUNDENT_VOLUME_EMPTY, "SOUNDENT_VOLUME_PISTOL", "Sound volume preset for use in InsertAISound, etc." );
+	ScriptRegisterConstantNamed( g_pScriptVM, ( int )SOUNDENT_VOLUME_MACHINEGUN, "SOUNDENT_VOLUME_MACHINEGUN", "Sound volume preset for use in InsertAISound, etc." );
+	ScriptRegisterConstantNamed( g_pScriptVM, ( int )SOUNDENT_VOLUME_SHOTGUN, "SOUNDENT_VOLUME_SHOTGUN", "Sound volume preset for use in InsertAISound, etc." );
+	ScriptRegisterConstantNamed( g_pScriptVM, ( int )SOUNDENT_VOLUME_PISTOL, "SOUNDENT_VOLUME_PISTOL", "Sound volume preset for use in InsertAISound, etc." );
+	ScriptRegisterConstantNamed( g_pScriptVM, ( int )SOUNDENT_VOLUME_EMPTY, "SOUNDENT_VOLUME_PISTOL", "Sound volume preset for use in InsertAISound, etc." );
 
-	// 
+	//
 	// Capabilities
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_MOVE_GROUND, "NPC/player/weapon capability used in GetCapabilities(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_MOVE_JUMP, "NPC/player/weapon capability used in GetCapabilities(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_MOVE_FLY, "NPC/player/weapon capability used in GetCapabilities(), etc." );
@@ -510,9 +512,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_RANGE_ATTACK_GROUP, "NPC/player/weapon capability used in GetCapabilities(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, bits_CAP_MELEE_ATTACK_GROUP, "NPC/player/weapon capability used in GetCapabilities(), etc." );
 
-	// 
+	//
 	// Class_T classes
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, CLASS_NONE, "No class." );
 	ScriptRegisterConstant( g_pScriptVM, CLASS_PLAYER, "Used by players." );
 
@@ -566,9 +568,9 @@ void RegisterSharedScriptConstants()
 
 	ScriptRegisterConstant( g_pScriptVM, NUM_AI_CLASSES, "Number of AI classes." );
 
-	// 
+	//
 	// Misc. AI
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, NPC_STATE_INVALID, "NPC state type used in GetNPCState(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, NPC_STATE_NONE, "NPC state type used in GetNPCState(), etc." );
 	ScriptRegisterConstant( g_pScriptVM, NPC_STATE_IDLE, "NPC state type used in GetNPCState(), etc." );
@@ -604,9 +606,9 @@ void RegisterSharedScriptConstants()
 	ScriptRegisterConstant( g_pScriptVM, D_NU, "Denotes a 'Neutral' relationship. Used by NPCs and players for relationship disposition." );
 #endif
 
-	// 
+	//
 	// Misc. General
-	// 
+	//
 	ScriptRegisterConstant( g_pScriptVM, DAMAGE_NO, "Don't take damage (Use with GetTakeDamage/SetTakeDamage)" );
 	ScriptRegisterConstant( g_pScriptVM, DAMAGE_EVENTS_ONLY, "Call damage functions, but don't modify health (Use with GetTakeDamage/SetTakeDamage)" );
 	ScriptRegisterConstant( g_pScriptVM, DAMAGE_YES, "Allow damage to be taken (Use with GetTakeDamage/SetTakeDamage)" );

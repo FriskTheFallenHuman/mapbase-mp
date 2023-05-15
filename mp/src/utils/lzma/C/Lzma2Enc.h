@@ -10,14 +10,14 @@ EXTERN_C_BEGIN
 
 typedef struct
 {
-  CLzmaEncProps lzmaProps;
-  size_t blockSize;
-  int numBlockThreads;
-  int numTotalThreads;
+	CLzmaEncProps lzmaProps;
+	size_t blockSize;
+	int numBlockThreads;
+	int numTotalThreads;
 } CLzma2EncProps;
 
-void Lzma2EncProps_Init(CLzma2EncProps *p);
-void Lzma2EncProps_Normalize(CLzma2EncProps *p);
+void Lzma2EncProps_Init( CLzma2EncProps* p );
+void Lzma2EncProps_Normalize( CLzma2EncProps* p );
 
 /* ---------- CLzmaEnc2Handle Interface ---------- */
 
@@ -31,14 +31,14 @@ Returns:
   SZ_ERROR_THREAD - errors in multithreading functions (only for Mt version)
 */
 
-typedef void * CLzma2EncHandle;
+typedef void* CLzma2EncHandle;
 
-CLzma2EncHandle Lzma2Enc_Create(ISzAlloc *alloc, ISzAlloc *allocBig);
-void Lzma2Enc_Destroy(CLzma2EncHandle p);
-SRes Lzma2Enc_SetProps(CLzma2EncHandle p, const CLzma2EncProps *props);
-Byte Lzma2Enc_WriteProperties(CLzma2EncHandle p);
-SRes Lzma2Enc_Encode(CLzma2EncHandle p,
-    ISeqOutStream *outStream, ISeqInStream *inStream, ICompressProgress *progress);
+CLzma2EncHandle Lzma2Enc_Create( ISzAlloc* alloc, ISzAlloc* allocBig );
+void Lzma2Enc_Destroy( CLzma2EncHandle p );
+SRes Lzma2Enc_SetProps( CLzma2EncHandle p, const CLzma2EncProps* props );
+Byte Lzma2Enc_WriteProperties( CLzma2EncHandle p );
+SRes Lzma2Enc_Encode( CLzma2EncHandle p,
+					  ISeqOutStream* outStream, ISeqInStream* inStream, ICompressProgress* progress );
 
 /* ---------- One Call Interface ---------- */
 

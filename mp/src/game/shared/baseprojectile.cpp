@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,7 +21,7 @@ END_NETWORK_TABLE()
 
 
 #ifndef CLIENT_DLL
-IMPLEMENT_AUTO_LIST( IBaseProjectileAutoList );
+	IMPLEMENT_AUTO_LIST( IBaseProjectileAutoList );
 #endif // !CLIENT_DLL
 
 
@@ -40,11 +40,11 @@ CBaseProjectile::CBaseProjectile()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CBaseProjectile::SetLauncher( CBaseEntity *pLauncher )
+void CBaseProjectile::SetLauncher( CBaseEntity* pLauncher )
 {
-	if ( m_hOriginalLauncher == NULL )
+	if( m_hOriginalLauncher == NULL )
 	{
 		m_hOriginalLauncher = pLauncher;
 	}
@@ -56,7 +56,7 @@ void CBaseProjectile::SetLauncher( CBaseEntity *pLauncher )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBaseProjectile::Spawn()
 {
@@ -71,7 +71,7 @@ void CBaseProjectile::Spawn()
 #ifdef GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBaseProjectile::CollideWithTeammatesThink()
 {
@@ -80,13 +80,13 @@ void CBaseProjectile::CollideWithTeammatesThink()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBaseProjectile::ResetCollideWithTeammates()
 {
 	// Don't collide with players on the owner's team for the first bit of our life
 	m_bCanCollideWithTeammates = false;
-	
+
 	SetContextThink( &CBaseProjectile::CollideWithTeammatesThink, gpGlobals->curtime + GetCollideWithTeammatesDelay(), "CollideWithTeammates" );
 }
 

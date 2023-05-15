@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -15,9 +15,9 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CBasePanel::CBasePanel( vgui::Panel *pParent, const char *panelName ) : BaseClass( pParent, panelName )
+CBasePanel::CBasePanel( vgui::Panel* pParent, const char* panelName ) : BaseClass( pParent, panelName )
 {
 	m_bTexturedBackground = false;
 	m_nBackgroundMaterial = -1;
@@ -30,14 +30,14 @@ CBasePanel::CBasePanel( vgui::Panel *pParent, const char *panelName ) : BaseClas
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : x - 
-//			y - 
-//			w - 
-//			h - 
+// Purpose:
+// Input  : x -
+//			y -
+//			w -
+//			h -
 //-----------------------------------------------------------------------------
-CBasePanel::CBasePanel( vgui::Panel *pParent, const char *panelName, int x, int y, int w, int h ) :
-  Panel( pParent, panelName )
+CBasePanel::CBasePanel( vgui::Panel* pParent, const char* panelName, int x, int y, int w, int h ) :
+	Panel( pParent, panelName )
 {
 	SetBounds( x, y, w, h );
 	m_bTexturedBackground = false;
@@ -49,11 +49,11 @@ CBasePanel::CBasePanel( vgui::Panel *pParent, const char *panelName, int x, int 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CBasePanel::~CBasePanel( void )
 {
-	if ( vgui::surface() && m_nBackgroundMaterial != -1 )
+	if( vgui::surface() && m_nBackgroundMaterial != -1 )
 	{
 		vgui::surface()->DestroyTextureID( m_nBackgroundMaterial );
 		m_nBackgroundMaterial = -1;
@@ -62,28 +62,28 @@ CBasePanel::~CBasePanel( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBasePanel::PaintBackground( void )
 {
-	if ( !m_bTexturedBackground )
+	if( !m_bTexturedBackground )
 	{
 		BaseClass::PaintBackground();
 		return;
 	}
 
-	if ( m_nBackgroundMaterial == -1 )
+	if( m_nBackgroundMaterial == -1 )
 	{
 		m_nBackgroundMaterial = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( m_nBackgroundMaterial, m_szBgTexture, true, true );
 	}
-	
+
 	vgui::surface()->DrawSetColor( GetFgColor() );
 
 	// Draw it with texture
 	vgui::surface()->DrawSetTexture( m_nBackgroundMaterial );
 
-	if ( m_bTiled && ( !m_nTextureSize[ 0 ] ) )
+	if( m_bTiled && ( !m_nTextureSize[ 0 ] ) )
 	{
 		vgui::surface()->DrawGetTextureSize( m_nBackgroundMaterial, m_nTextureSize[ 0 ], m_nTextureSize[ 1 ] );
 	}
@@ -91,18 +91,18 @@ void CBasePanel::PaintBackground( void )
 	int wide, tall;
 	GetSize( wide, tall );
 
-	if ( m_bTiled && m_nTextureSize[ 0 ] && m_nTextureSize[ 1 ] )
+	if( m_bTiled && m_nTextureSize[ 0 ] && m_nTextureSize[ 1 ] )
 	{
 		int x = 0;
 		int y = 0;
 
-		while ( y < tall )
+		while( y < tall )
 		{
 			vgui::surface()->DrawTexturedRect( 0, 0, m_nTextureSize[ 0 ], m_nTextureSize[ 1 ] );
 
 			x += m_nTextureSize[ 0 ];
 
-			if ( x >= wide )
+			if( x >= wide )
 			{
 				x = 0;
 				y += m_nTextureSize[ 1 ];
@@ -116,20 +116,20 @@ void CBasePanel::PaintBackground( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *texname - 
+// Purpose:
+// Input  : *texname -
 //-----------------------------------------------------------------------------
-void CBasePanel::SetTexture( const char *texname, bool tiled /*=false*/ )
+void CBasePanel::SetTexture( const char* texname, bool tiled /*=false*/ )
 {
 	m_bTexturedBackground = true;
 	m_bTiled = tiled;
 	Q_strncpy( m_szBgTexture, texname, sizeof( m_szBgTexture ) );
 
-	if ( m_nBackgroundMaterial == -1 )
+	if( m_nBackgroundMaterial == -1 )
 	{
 		m_nBackgroundMaterial = vgui::surface()->CreateNewTextureID();
 	}
-	vgui::surface()->DrawSetTextureFile( m_nBackgroundMaterial, m_szBgTexture , true, true);
+	vgui::surface()->DrawSetTextureFile( m_nBackgroundMaterial, m_szBgTexture , true, true );
 }
 
 void CBasePanel::SetReflectMouse( bool reflect )
@@ -137,76 +137,96 @@ void CBasePanel::SetReflectMouse( bool reflect )
 	m_bReflectMouse = true;
 }
 
-void CBasePanel::OnCursorMoved(int x,int y)
+void CBasePanel::OnCursorMoved( int x, int y )
 {
-	if ( !m_bReflectMouse )
+	if( !m_bReflectMouse )
+	{
 		return;
+	}
 
-	if ( !GetParent() )
+	if( !GetParent() )
+	{
 		return;
+	}
 
 	LocalToScreen( x, y );
 
-	vgui::ivgui()->PostMessage( 
-		GetParent()->GetVPanel(), 
-		new KeyValues( "CursorMoved", "xpos", x, "ypos", y ), 
+	vgui::ivgui()->PostMessage(
+		GetParent()->GetVPanel(),
+		new KeyValues( "CursorMoved", "xpos", x, "ypos", y ),
 		GetVPanel() );
 }
 
-void CBasePanel::OnMousePressed(vgui::MouseCode code)
+void CBasePanel::OnMousePressed( vgui::MouseCode code )
 {
-	if ( !m_bReflectMouse )
+	if( !m_bReflectMouse )
+	{
 		return;
+	}
 
-	if ( !GetParent() )
+	if( !GetParent() )
+	{
 		return;
+	}
 
-	vgui::ivgui()->PostMessage( 
-		GetParent()->GetVPanel(), 
-		new KeyValues( "MousePressed", "code", code ), 
+	vgui::ivgui()->PostMessage(
+		GetParent()->GetVPanel(),
+		new KeyValues( "MousePressed", "code", code ),
 		GetVPanel() );
 }
 
-void CBasePanel::OnMouseDoublePressed(vgui::MouseCode code)
+void CBasePanel::OnMouseDoublePressed( vgui::MouseCode code )
 {
-	if ( !m_bReflectMouse )
+	if( !m_bReflectMouse )
+	{
 		return;
+	}
 
-	if ( !GetParent() )
+	if( !GetParent() )
+	{
 		return;
+	}
 
-	vgui::ivgui()->PostMessage( 
-		GetParent()->GetVPanel(), 
-		new KeyValues( "MouseDoublePressed", "code", code ), 
+	vgui::ivgui()->PostMessage(
+		GetParent()->GetVPanel(),
+		new KeyValues( "MouseDoublePressed", "code", code ),
 		GetVPanel() );
 }
 
-void CBasePanel::OnMouseReleased(vgui::MouseCode code)
+void CBasePanel::OnMouseReleased( vgui::MouseCode code )
 {
-	if ( !m_bReflectMouse )
+	if( !m_bReflectMouse )
+	{
 		return;
+	}
 
-	if ( !GetParent() )
+	if( !GetParent() )
+	{
 		return;
+	}
 
-	vgui::ivgui()->PostMessage( 
-		GetParent()->GetVPanel(), 
-		new KeyValues( "MouseReleased", "code", code ), 
+	vgui::ivgui()->PostMessage(
+		GetParent()->GetVPanel(),
+		new KeyValues( "MouseReleased", "code", code ),
 		GetVPanel() );
 }
 
-void CBasePanel::OnMouseWheeled(int delta)
+void CBasePanel::OnMouseWheeled( int delta )
 {
-	if ( !m_bReflectMouse )
+	if( !m_bReflectMouse )
+	{
 		return;
+	}
 
-	if ( !GetParent() )
+	if( !GetParent() )
+	{
 		return;
+	}
 
-	vgui::ivgui()->PostMessage( 
-		GetParent()->GetVPanel(), 
-		new KeyValues( "MouseWheeled", "delta", delta ), 
-		GetVPanel()  );
+	vgui::ivgui()->PostMessage(
+		GetParent()->GetVPanel(),
+		new KeyValues( "MouseWheeled", "delta", delta ),
+		GetVPanel() );
 }
 
 void CBasePanel::OnTick( void )
@@ -215,28 +235,28 @@ void CBasePanel::OnTick( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CHudLabel::CHudLabel( vgui::Panel *parent, const char *panelName, const char *text) :
-	vgui::Label( parent,panelName,text )
+CHudLabel::CHudLabel( vgui::Panel* parent, const char* panelName, const char* text ) :
+	vgui::Label( parent, panelName, text )
 {
 	m_bSelected = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudLabel::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudLabel::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
-	Panel::ApplySchemeSettings(pScheme);
+	Panel::ApplySchemeSettings( pScheme );
 
-	if ( m_bSelected )
+	if( m_bSelected )
 	{
-		SetBgColor( GetSchemeColor("HudStatusSelectedBgColor", pScheme) );
+		SetBgColor( GetSchemeColor( "HudStatusSelectedBgColor", pScheme ) );
 	}
 	else
 	{
-		SetBgColor( GetSchemeColor("HudStatusBgColor", pScheme) );
+		SetBgColor( GetSchemeColor( "HudStatusBgColor", pScheme ) );
 	}
 }
 

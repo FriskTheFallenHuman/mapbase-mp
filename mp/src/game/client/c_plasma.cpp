@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -56,7 +56,7 @@ protected:
 	void	UpdateFlames( void );
 	void	AddFlames( void );
 	void	Start( void );
-	
+
 	float	GetFlickerScale( void );
 
 //C_BaseEntity
@@ -97,51 +97,51 @@ protected:
 	TimedEvent			m_tDecalSpawn;
 
 private:
-	C_Plasma( const C_Plasma & );
+	C_Plasma( const C_Plasma& );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pRecvProp - 
-//			*pStruct - 
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
+// Purpose:
+// Input  : *pRecvProp -
+//			*pStruct -
+//			*pVarData -
+//			*pIn -
+//			objectID -
 //-----------------------------------------------------------------------------
-void RecvProxy_PlasmaScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_PlasmaScale( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_Plasma	*pPlasmaSmoke	= (C_Plasma	*) pStruct;
+	C_Plasma*	pPlasmaSmoke	= ( C_Plasma* ) pStruct;
 	float scale				= pData->m_Value.m_Float;
 
 	//If changed, update our internal information
-	if ( pPlasmaSmoke->m_flScale != scale )
+	if( pPlasmaSmoke->m_flScale != scale )
 	{
 		pPlasmaSmoke->m_flScaleStart	= pPlasmaSmoke->m_flScaleRegister;
-		pPlasmaSmoke->m_flScaleEnd		= scale;			
+		pPlasmaSmoke->m_flScaleEnd		= scale;
 
 		pPlasmaSmoke->m_flScale = scale;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pRecvProp - 
-//			*pStruct - 
-//			*pVarData - 
-//			*pIn - 
-//			objectID - 
+// Purpose:
+// Input  : *pRecvProp -
+//			*pStruct -
+//			*pVarData -
+//			*pIn -
+//			objectID -
 //-----------------------------------------------------------------------------
-void RecvProxy_PlasmaScaleTime( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_PlasmaScaleTime( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_Plasma	*pPlasmaSmoke	= (C_Plasma	*) pStruct;
+	C_Plasma*	pPlasmaSmoke	= ( C_Plasma* ) pStruct;
 	float time				= pData->m_Value.m_Float;
 
 	//If changed, update our internal information
-	if ( pPlasmaSmoke->m_flScaleTime != time )
+	if( pPlasmaSmoke->m_flScaleTime != time )
 	{
-		if ( time == -1.0f )
+		if( time == -1.0f )
 		{
-			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->curtime-1.0f;
+			pPlasmaSmoke->m_flScaleTimeStart	= gpGlobals->curtime - 1.0f;
 			pPlasmaSmoke->m_flScaleTimeEnd	= pPlasmaSmoke->m_flScaleTimeStart;
 		}
 		else
@@ -153,25 +153,25 @@ void RecvProxy_PlasmaScaleTime( const CRecvProxyData *pData, void *pStruct, void
 		pPlasmaSmoke->m_flScaleTime = time;
 	}
 
-	
+
 }
 
 //Receive datatable
 IMPLEMENT_CLIENTCLASS_DT( C_Plasma, DT_Plasma, CPlasma )
-	RecvPropFloat( RECVINFO( m_flStartScale )),
-	RecvPropFloat( RECVINFO( m_flScale ), 0, RecvProxy_PlasmaScale ),
-	RecvPropFloat( RECVINFO( m_flScaleTime ), 0, RecvProxy_PlasmaScaleTime ),
-	RecvPropInt( RECVINFO( m_nFlags ) ),
-	RecvPropInt( RECVINFO( m_nPlasmaModelIndex ) ),
-	RecvPropInt( RECVINFO( m_nPlasmaModelIndex2 ) ),
-	RecvPropInt( RECVINFO( m_nGlowModelIndex ) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flStartScale ) ),
+			   RecvPropFloat( RECVINFO( m_flScale ), 0, RecvProxy_PlasmaScale ),
+			   RecvPropFloat( RECVINFO( m_flScaleTime ), 0, RecvProxy_PlasmaScaleTime ),
+			   RecvPropInt( RECVINFO( m_nFlags ) ),
+			   RecvPropInt( RECVINFO( m_nPlasmaModelIndex ) ),
+			   RecvPropInt( RECVINFO( m_nPlasmaModelIndex2 ) ),
+			   RecvPropInt( RECVINFO( m_nGlowModelIndex ) ),
+			   END_RECV_TABLE()
 
 //==================================================
 // C_Plasma
 //==================================================
 
-C_Plasma::C_Plasma()
+			   C_Plasma::C_Plasma()
 {
 	//Server-side
 	m_flStartScale		= 0.0f;
@@ -190,11 +190,11 @@ C_Plasma::C_Plasma()
 	m_flScaleTimeEnd	= 0.0f;
 	m_flGlowScale		= 0.0f;
 	m_bClipTested		= false;
-	
+
 	m_entGlow.Clear();
-	
+
 	//Clear all child flames
-	for ( int i = 0; i < NUM_CHILD_FLAMES; i++ )
+	for( int i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
 		m_entFlames[i].Clear();
 	}
@@ -205,7 +205,7 @@ C_Plasma::~C_Plasma()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float C_Plasma::GetFlickerScale( void )
@@ -215,18 +215,20 @@ float C_Plasma::GetFlickerScale( void )
 	result = sin( gpGlobals->curtime * 10000.0f );
 	result += 0.5f * sin( gpGlobals->curtime * 2000.0f );
 	result -= 0.5f * cos( gpGlobals->curtime * 8000.0f );
-	
+
 	return result * 0.1f;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::AddEntity( void )
 {
 	//Only do this if we're active
-	if ( ( m_nFlags & bitsFIRESMOKE_ACTIVE ) == false )
+	if( ( m_nFlags & bitsFIRESMOKE_ACTIVE ) == false )
+	{
 		return;
+	}
 
 	Update();
 	AddFlames();
@@ -235,7 +237,7 @@ void C_Plasma::AddEntity( void )
 	m_flGlowScale = m_flScaleRegister;
 
 	// Note: Sprite renderer assumes scale of 0.0 is 1.0
-	m_entGlow.SetScale( MAX( 0.0000001f, (m_flScaleRegister*1.5f) + GetFlickerScale() ) );
+	m_entGlow.SetScale( MAX( 0.0000001f, ( m_flScaleRegister * 1.5f ) + GetFlickerScale() ) );
 	m_entGlow.SetLocalOriginDim( Z_INDEX, m_entGlow.GetLocalOriginDim( Z_INDEX ) + ( dScale * 32.0f ) );
 }
 
@@ -245,25 +247,25 @@ void C_Plasma::AddEntity( void )
 #define	FLAME_TRANS_START	0.75f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::AddFlames( void )
 {
 	Vector	viewDir = GetAbsOrigin() - CurrentViewOrigin();
-	VectorNormalize(viewDir);
+	VectorNormalize( viewDir );
 	float	dot		= viewDir.Dot( Vector( 0, 0, 1 ) );	//NOTENOTE: Flames always point up
 	float	alpha	= 1.0f;
 
 	dot = fabs( dot );
 
-	if ( dot < FLAME_ALPHA_START )
+	if( dot < FLAME_ALPHA_START )
 	{
 		alpha = 1.0f;
 	}
 
-	for ( int i = 0; i < NUM_CHILD_FLAMES; i++ )
+	for( int i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
-		if ( m_entFlames[i].GetScale() > 0.0f )
+		if( m_entFlames[i].GetScale() > 0.0f )
 		{
 			m_entFlames[i].SetRenderColor( ( 255.0f * alpha ), ( 255.0f * alpha ), ( 255.0f * alpha ) );
 			m_entFlames[i].SetBrightness( 255.0f * alpha );
@@ -274,21 +276,21 @@ void C_Plasma::AddFlames( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
 void C_Plasma::OnDataChanged( DataUpdateType_t updateType )
 {
 	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool C_Plasma::ShouldDraw()
@@ -297,53 +299,53 @@ bool C_Plasma::ShouldDraw()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::Start( void )
 {
 	//Various setup info
 	m_tParticleSpawn.Init( 10.0f );
-	m_tDecalSpawn.Init( 20.0f);
+	m_tDecalSpawn.Init( 20.0f );
 
 	QAngle	offset;
 	int		maxFrames;
 
 	// Setup the child flames
 	int i;
-	for ( i = 0; i < NUM_CHILD_FLAMES; i++ )
+	for( i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
 		//Setup our offset angles
 		offset[0] = 0.0f;
 		offset[1] = random->RandomFloat( 0, 360 );
 		offset[2] = 0.0f;
-	
-  		AngleVectors( offset, &m_entFlames[i].m_vecMoveDir );
-		
+
+		AngleVectors( offset, &m_entFlames[i].m_vecMoveDir );
+
 		int	nModelIndex = ( i % 2 ) ? m_nPlasmaModelIndex : m_nPlasmaModelIndex2;
 
-		model_t *pModel	= (model_t *) modelinfo->GetModel( nModelIndex );
+		model_t* pModel	= ( model_t* ) modelinfo->GetModel( nModelIndex );
 		maxFrames	= modelinfo->GetModelFrameCount( pModel );
 
 		// Setup all the information for the client entity
 		m_entFlames[i].SetModelByIndex( nModelIndex );
 		m_entFlames[i].SetLocalOrigin( GetLocalOrigin() );
 		m_entFlames[i].m_flFrame			= random->RandomInt( 0.0f, maxFrames );
-		m_entFlames[i].m_flSpriteFramerate	= (float) random->RandomInt( 15, 20 );
+		m_entFlames[i].m_flSpriteFramerate	= ( float ) random->RandomInt( 15, 20 );
 		m_entFlames[i].SetScale( m_flStartScale );
 		m_entFlames[i].SetRenderMode( kRenderTransAddFrameBlend );
 		m_entFlames[i].m_nRenderFX			= kRenderFxNone;
 		m_entFlames[i].SetRenderColor( 255, 255, 255, 255 );
 		m_entFlames[i].SetBrightness( 255 );
 		m_entFlames[i].m_index				= -1;
-		
-		if ( i == 0 )
+
+		if( i == 0 )
 		{
 			m_entFlameScales[i] = 1.0f;
 		}
 		else
 		{
 			//Keep a scale offset
-			m_entFlameScales[i] = 1.0f - ( ( (float) i / (float) NUM_CHILD_FLAMES ) );
+			m_entFlameScales[i] = 1.0f - ( ( ( float ) i / ( float ) NUM_CHILD_FLAMES ) );
 		}
 	}
 
@@ -356,43 +358,45 @@ void C_Plasma::Start( void )
 	m_entGlow.SetRenderColor( 255, 255, 255, 255 );
 	m_entGlow.SetBrightness( 255 );
 	m_entGlow.m_index				= -1;
-	
+
 	m_flGlowScale				= m_flStartScale;
 
 	m_entGlow.AddToLeafSystem( RENDER_GROUP_TRANSLUCENT_ENTITY );
 
-	for( i=0; i < NUM_CHILD_FLAMES; i++ )
+	for( i = 0; i < NUM_CHILD_FLAMES; i++ )
+	{
 		m_entFlames[i].AddToLeafSystem( RENDER_GROUP_TRANSLUCENT_ENTITY );
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::UpdateAnimation( void )
 {
 	int		numFrames;
 	float	frametime	= gpGlobals->frametime;
 
-	for ( int i = 0; i < NUM_CHILD_FLAMES; i++ )
+	for( int i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
 		m_entFlames[i].m_flFrame += m_entFlames[i].m_flSpriteFramerate * frametime;
 
 		numFrames = modelinfo->GetModelFrameCount( m_entFlames[i].GetModel() );
 
-		if ( m_entFlames[i].m_flFrame >= numFrames )
+		if( m_entFlames[i].m_flFrame >= numFrames )
 		{
-			m_entFlames[i].m_flFrame = m_entFlames[i].m_flFrame - (int)(m_entFlames[i].m_flFrame);
+			m_entFlames[i].m_flFrame = m_entFlames[i].m_flFrame - ( int )( m_entFlames[i].m_flFrame );
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::UpdateFlames( void )
 {
-	for ( int i = 0; i < NUM_CHILD_FLAMES; i++ )
+	for( int i = 0; i < NUM_CHILD_FLAMES; i++ )
 	{
 		float	newScale = m_flScaleRegister * m_entFlameScales[i];
 		float	dScale = newScale - m_entFlames[i].GetScale();
@@ -407,11 +411,11 @@ void C_Plasma::UpdateFlames( void )
 		offset[2] = m_entFlames[i].GetAbsOrigin()[2];
 
 		// Note: Sprite render assumes 0 scale means 1.0
-		m_entFlames[i].SetScale ( MAX(0.000001,newScale) );
-		
-		if ( i != 0 )
+		m_entFlames[i].SetScale( MAX( 0.000001, newScale ) );
+
+		if( i != 0 )
 		{
-			m_entFlames[i].SetLocalOrigin( offset + ( m_entFlames[i].m_vecMoveDir * ((m_entFlames[i].GetScale())*CHILD_SPREAD) ) );
+			m_entFlames[i].SetLocalOrigin( offset + ( m_entFlames[i].m_vecMoveDir * ( ( m_entFlames[i].GetScale() )*CHILD_SPREAD ) ) );
 		}
 
 		Assert( !m_entFlames[i].GetMoveParent() );
@@ -420,23 +424,23 @@ void C_Plasma::UpdateFlames( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_Plasma::UpdateScale( void )
 {
 	float	time = gpGlobals->curtime;
 
-	if ( m_flScaleRegister != m_flScaleEnd )
+	if( m_flScaleRegister != m_flScaleEnd )
 	{
 		//See if we're done scaling
-		if ( time > m_flScaleTimeEnd )
+		if( time > m_flScaleTimeEnd )
 		{
 			m_flScaleRegister = m_flStartScale = m_flScaleEnd;
 		}
 		else
 		{
 			//Lerp the scale and set it
-			float	timeFraction = 1.0f - ( m_flScaleTimeEnd - time ) / ( m_flScaleTimeEnd - m_flScaleTimeStart );	
+			float	timeFraction = 1.0f - ( m_flScaleTimeEnd - time ) / ( m_flScaleTimeEnd - m_flScaleTimeStart );
 			float	newScale = m_flScaleStart + ( ( m_flScaleEnd - m_flScaleStart ) * timeFraction );
 
 			m_flScaleRegister = m_flStartScale = newScale;
@@ -445,8 +449,8 @@ void C_Plasma::UpdateScale( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_Plasma::Update( void )
 {
@@ -455,17 +459,17 @@ void C_Plasma::Update( void )
 	UpdateAnimation();
 	UpdateFlames();
 
-	if (m_flScaleRegister > 0.1)
+	if( m_flScaleRegister > 0.1 )
 	{
 		float tempDelta = gpGlobals->frametime;
 		while( m_tDecalSpawn.NextEvent( tempDelta ) )
 		{
 			// Add decal to floor
-			C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
-			if ( ent )
+			C_BaseEntity* ent = cl_entitylist->GetEnt( 0 );
+			if( ent )
 			{
 				int index = decalsystem->GetDecalIndexForName( "PlasmaGlowFade" );
-				if ( index >= 0 )
+				if( index >= 0 )
 				{
 					effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), GetAbsOrigin(), 0, 0 );
 				}

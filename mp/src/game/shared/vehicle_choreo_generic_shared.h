@@ -8,12 +8,12 @@
 #define VEHICLE_CHOREO_GENERIC_SHARED_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 struct vehicleview_t
 {

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: An extra interface implemented by the material system 
+// Purpose: An extra interface implemented by the material system
 // implementation of vgui::ISurface
 //
 // $Revision: $
@@ -10,7 +10,7 @@
 #ifndef IMATSYSTEMSURFACE_H
 #define IMATSYSTEMSURFACE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -29,13 +29,13 @@ struct InputEvent_t;
 //-----------------------------------------------------------------------------
 // Callbacks for mouse getting + setting
 //-----------------------------------------------------------------------------
-typedef void (*GetMouseCallback_t)(int &x, int &y);
-typedef void (*SetMouseCallback_t)(int x, int y);
+typedef void ( *GetMouseCallback_t )( int& x, int& y );
+typedef void ( *SetMouseCallback_t )( int x, int y );
 
 //-----------------------------------------------------------------------------
 // Callbacks for sound playing
 //-----------------------------------------------------------------------------
-typedef void (*PlaySoundFunc_t)(const char *pFileName);
+typedef void ( *PlaySoundFunc_t )( const char* pFileName );
 
 
 //-----------------------------------------------------------------------------
@@ -48,9 +48,9 @@ class IMatSystemSurface : public vgui::ISurface
 {
 public:
 	// Hook needed to get input to work.
-	// If the app drives the input (like the engine needs to do for VCR mode), 
+	// If the app drives the input (like the engine needs to do for VCR mode),
 	// it can set bLetAppDriveInput to true and call HandleInputEvent for the input events.
-	virtual void AttachToWindow( void *hwnd, bool bLetAppDriveInput=false ) = 0;
+	virtual void AttachToWindow( void* hwnd, bool bLetAppDriveInput = false ) = 0;
 
 	// Tells the surface to ignore windows messages
 	virtual void EnableWindowsMessages( bool bEnable ) = 0;
@@ -65,7 +65,7 @@ public:
 	// method of a panel. Use it to disable clipping for the rendering
 	// of this panel.
 	virtual void DisableClipping( bool bDisable ) = 0;
-	virtual void GetClippingRect( int &left, int &top, int &right, int &bottom, bool &bClippingDisabled ) = 0;  // <<<<< NOTE: output flag is *disabled* state, not enabled, to match the rest of the interface
+	virtual void GetClippingRect( int& left, int& top, int& right, int& bottom, bool& bClippingDisabled ) = 0;  // <<<<< NOTE: output flag is *disabled* state, not enabled, to match the rest of the interface
 	virtual void SetClippingRect( int left, int top, int right, int bottom ) = 0;
 
 	// Prevents vgui from changing the cursor
@@ -79,38 +79,38 @@ public:
 
 	// Some drawing methods that cannot be accomplished under Win32
 	virtual void DrawColoredCircle( int centerx, int centery, float radius, int r, int g, int b, int a ) = 0;
-	virtual int DrawColoredText( vgui::HFont font, int x, int y, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char *fmt, ... ) = 0;
+	virtual int DrawColoredText( vgui::HFont font, int x, int y, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char* fmt, ... ) = 0;
 
 	// Draws text with current font at position and wordwrapped to the rect using color values specified
-	virtual void DrawColoredTextRect( vgui::HFont font, int x, int y, int w, int h, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char *fmt, ... ) = 0;
-	virtual void DrawTextHeight( vgui::HFont font, int w, int& h, PRINTF_FORMAT_STRING const char *fmt, ... ) = 0;
+	virtual void DrawColoredTextRect( vgui::HFont font, int x, int y, int w, int h, int r, int g, int b, int a, PRINTF_FORMAT_STRING const char* fmt, ... ) = 0;
+	virtual void DrawTextHeight( vgui::HFont font, int w, int& h, PRINTF_FORMAT_STRING const char* fmt, ... ) = 0;
 
 	// Returns the length of the text string in pixels
-	virtual int	DrawTextLen( vgui::HFont font, PRINTF_FORMAT_STRING const char *fmt, ... ) = 0;
+	virtual int	DrawTextLen( vgui::HFont font, PRINTF_FORMAT_STRING const char* fmt, ... ) = 0;
 
 	// Draws a panel in 3D space. Assumes view + projection are already set up
 	// Also assumes the (x,y) coordinates of the panels are defined in 640xN coords
 	// (N isn't necessary 480 because the panel may not be 4x3)
 	// The width + height specified are the size of the panel in world coordinates
-	virtual void DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatrix &panelCenterToWorld, int nPixelWidth, int nPixelHeight, float flWorldWidth, float flWorldHeight ) = 0; 
+	virtual void DrawPanelIn3DSpace( vgui::VPANEL pRootPanel, const VMatrix& panelCenterToWorld, int nPixelWidth, int nPixelHeight, float flWorldWidth, float flWorldHeight ) = 0;
 
 	// Binds a material to a surface texture ID
-	virtual void DrawSetTextureMaterial( int id, IMaterial *pMaterial ) = 0;
+	virtual void DrawSetTextureMaterial( int id, IMaterial* pMaterial ) = 0;
 
 	// Handles an input event, returns true if the event should be filtered from the rest of the game
-	virtual bool HandleInputEvent( const InputEvent_t &event ) = 0;
+	virtual bool HandleInputEvent( const InputEvent_t& event ) = 0;
 
-	virtual void Set3DPaintTempRenderTarget( const char *pRenderTargetName ) = 0;
+	virtual void Set3DPaintTempRenderTarget( const char* pRenderTargetName ) = 0;
 	virtual void Reset3DPaintTempRenderTarget( void ) = 0;
 
 // Gets a material bound to a surface texture ID
-	virtual IMaterial *DrawGetTextureMaterial( int id ) = 0;
+	virtual IMaterial* DrawGetTextureMaterial( int id ) = 0;
 
-	virtual void GetFullscreenViewportAndRenderTarget( int & x, int & y, int & w, int & h, ITexture **ppRenderTarget ) = 0;
-	virtual void SetFullscreenViewportAndRenderTarget( int x, int y, int w, int h, ITexture *pRenderTarget ) = 0;
+	virtual void GetFullscreenViewportAndRenderTarget( int& x, int& y, int& w, int& h, ITexture** ppRenderTarget ) = 0;
+	virtual void SetFullscreenViewportAndRenderTarget( int x, int y, int w, int h, ITexture* pRenderTarget ) = 0;
 
 	// get texture id for a texture
-	virtual int  DrawGetTextureId( ITexture *pTexture ) = 0;
+	virtual int  DrawGetTextureId( ITexture* pTexture ) = 0;
 
 	// begin and end skin composition painting
 	virtual void BeginSkinCompositionPainting() = 0;

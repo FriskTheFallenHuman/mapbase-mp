@@ -39,10 +39,14 @@
 #include <google/protobuf/descriptor.h>
 #include <google/protobuf/descriptor.pb.h>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace cpp {
+namespace google
+{
+namespace protobuf
+{
+namespace compiler
+{
+namespace cpp
+{
 
 // Commonly-used separator comments.  Thick is a line of '=', thin is a line
 // of '-'.
@@ -57,94 +61,101 @@ extern const char kThinSeparator[];
 //   ::foo::bar::Baz_Qux
 // While the non-qualified version would be:
 //   Baz_Qux
-string ClassName(const Descriptor* descriptor, bool qualified);
-string ClassName(const EnumDescriptor* enum_descriptor, bool qualified);
+string ClassName( const Descriptor* descriptor, bool qualified );
+string ClassName( const EnumDescriptor* enum_descriptor, bool qualified );
 
-string SuperClassName(const Descriptor* descriptor);
+string SuperClassName( const Descriptor* descriptor );
 
 // Get the (unqualified) name that should be used for this field in C++ code.
 // The name is coerced to lower-case to emulate proto1 behavior.  People
 // should be using lowercase-with-underscores style for proto field names
 // anyway, so normally this just returns field->name().
-string FieldName(const FieldDescriptor* field);
+string FieldName( const FieldDescriptor* field );
 
 // Get the unqualified name that should be used for a field's field
 // number constant.
-string FieldConstantName(const FieldDescriptor *field);
+string FieldConstantName( const FieldDescriptor* field );
 
 // Returns the scope where the field was defined (for extensions, this is
 // different from the message type to which the field applies).
-inline const Descriptor* FieldScope(const FieldDescriptor* field) {
-  return field->is_extension() ?
-    field->extension_scope() : field->containing_type();
+inline const Descriptor* FieldScope( const FieldDescriptor* field )
+{
+	return field->is_extension() ?
+		   field->extension_scope() : field->containing_type();
 }
 
 // Returns the fully-qualified type name field->message_type().  Usually this
 // is just ClassName(field->message_type(), true);
-string FieldMessageTypeName(const FieldDescriptor* field);
+string FieldMessageTypeName( const FieldDescriptor* field );
 
 // Strips ".proto" or ".protodevel" from the end of a filename.
-string StripProto(const string& filename);
+string StripProto( const string& filename );
 
 // Get the C++ type name for a primitive type (e.g. "double", "::google::protobuf::int32", etc.).
 // Note:  non-built-in type names will be qualified, meaning they will start
 // with a ::.  If you are using the type as a template parameter, you will
 // need to insure there is a space between the < and the ::, because the
 // ridiculous C++ standard defines "<:" to be a synonym for "[".
-const char* PrimitiveTypeName(FieldDescriptor::CppType type);
+const char* PrimitiveTypeName( FieldDescriptor::CppType type );
 
 // Get the declared type name in CamelCase format, as is used e.g. for the
 // methods of WireFormat.  For example, TYPE_INT32 becomes "Int32".
-const char* DeclaredTypeMethodName(FieldDescriptor::Type type);
+const char* DeclaredTypeMethodName( FieldDescriptor::Type type );
 
 // Get code that evaluates to the field's default value.
-string DefaultValue(const FieldDescriptor* field);
+string DefaultValue( const FieldDescriptor* field );
 
 // Convert a file name into a valid identifier.
-string FilenameIdentifier(const string& filename);
+string FilenameIdentifier( const string& filename );
 
 // Return the name of the AddDescriptors() function for a given file.
-string GlobalAddDescriptorsName(const string& filename);
+string GlobalAddDescriptorsName( const string& filename );
 
 // Return the name of the AssignDescriptors() function for a given file.
-string GlobalAssignDescriptorsName(const string& filename);
+string GlobalAssignDescriptorsName( const string& filename );
 
 // Return the name of the ShutdownFile() function for a given file.
-string GlobalShutdownFileName(const string& filename);
+string GlobalShutdownFileName( const string& filename );
 
 // Do message classes in this file keep track of unknown fields?
-inline bool HasUnknownFields(const FileDescriptor *file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
+inline bool HasUnknownFields( const FileDescriptor* file )
+{
+	return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
 }
 
 // Does this file have generated parsing, serialization, and other
 // standard methods for which reflection-based fallback implementations exist?
-inline bool HasGeneratedMethods(const FileDescriptor *file) {
-  return file->options().optimize_for() != FileOptions::CODE_SIZE;
+inline bool HasGeneratedMethods( const FileDescriptor* file )
+{
+	return file->options().optimize_for() != FileOptions::CODE_SIZE;
 }
 
 // Do message classes in this file have descriptor and refelction methods?
-inline bool HasDescriptorMethods(const FileDescriptor *file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
+inline bool HasDescriptorMethods( const FileDescriptor* file )
+{
+	return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
 }
 
 // Should we generate generic services for this file?
-inline bool HasGenericServices(const FileDescriptor *file) {
-  return file->service_count() > 0 &&
-         file->options().optimize_for() != FileOptions::LITE_RUNTIME &&
-         file->options().cc_generic_services();
+inline bool HasGenericServices( const FileDescriptor* file )
+{
+	return file->service_count() > 0 &&
+		   file->options().optimize_for() != FileOptions::LITE_RUNTIME &&
+		   file->options().cc_generic_services();
 }
 
 // Should string fields in this file verify that their contents are UTF-8?
-inline bool HasUtf8Verification(const FileDescriptor* file) {
-  return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
+inline bool HasUtf8Verification( const FileDescriptor* file )
+{
+	return file->options().optimize_for() != FileOptions::LITE_RUNTIME;
 }
 
 // Should we generate a separate, super-optimized code path for serializing to
 // flat arrays?  We don't do this in Lite mode because we'd rather reduce code
 // size.
-inline bool HasFastArraySerialization(const FileDescriptor* file) {
-  return file->options().optimize_for() == FileOptions::SPEED;
+inline bool HasFastArraySerialization( const FileDescriptor* file )
+{
+	return file->options().optimize_for() == FileOptions::SPEED;
 }
 
 

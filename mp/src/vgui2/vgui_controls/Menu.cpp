@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,7 +21,7 @@ class vgui::MenuSeparator : public Panel
 public:
 	DECLARE_CLASS_SIMPLE( MenuSeparator, Panel );
 
-	MenuSeparator( Panel *parent, char const *panelName ) :
+	MenuSeparator( Panel* parent, char const* panelName ) :
 		BaseClass( parent, panelName )
 	{
 		SetPaintEnabled( true );
@@ -35,10 +35,10 @@ public:
 		GetSize( w, h );
 
 		surface()->DrawSetColor( GetFgColor() );
-		surface()->DrawFilledRect( 4, 1, w-1, 2 );
+		surface()->DrawFilledRect( 4, 1, w - 1, 2 );
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -52,21 +52,21 @@ DECLARE_BUILD_FACTORY( Menu );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-Menu::Menu(Panel *parent, const char *panelName) : Panel(parent, panelName)
+Menu::Menu( Panel* parent, const char* panelName ) : Panel( parent, panelName )
 {
 	m_Alignment = Label::a_west;
 	m_iFixedWidth = 0;
 	m_iMinimumWidth = 0;
 	m_iNumVisibleLines = -1; // No limit
 	m_iCurrentlySelectedItemID = m_MenuItems.InvalidIndex();
-	m_pScroller = new ScrollBar(this, "MenuScrollBar", true);
-	m_pScroller->SetVisible(false);
-	m_pScroller->AddActionSignalTarget(this);
+	m_pScroller = new ScrollBar( this, "MenuScrollBar", true );
+	m_pScroller->SetVisible( false );
+	m_pScroller->AddActionSignalTarget( this );
 	_sizedForScrollBar = false;
-	SetZPos(1);
-	SetVisible(false);
-	MakePopup(false);
-	SetParent(parent);
+	SetZPos( 1 );
+	SetVisible( false );
+	MakePopup( false );
+	SetParent( parent );
 	_recalculateWidth = true;
 	m_bUseMenuManager = true;
 	m_iInputMode = MOUSE;
@@ -76,7 +76,7 @@ Menu::Menu(Panel *parent, const char *panelName) : Panel(parent, panelName)
 	m_bUseFallbackFont = false;
 	m_hFallbackItemFont = INVALID_FONT;
 
-	if (IsProportional())
+	if( IsProportional() )
 	{
 		m_iMenuItemHeight =  scheme()->GetProportionalScaledValueEx( GetScheme(), DEFAULT_MENU_ITEM_HEIGHT );
 	}
@@ -102,7 +102,7 @@ Menu::~Menu()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Remove all menu items from the menu. 
+// Purpose: Remove all menu items from the menu.
 //-----------------------------------------------------------------------------
 void Menu::DeleteAllItems()
 {
@@ -110,13 +110,13 @@ void Menu::DeleteAllItems()
 	{
 		m_MenuItems[i]->MarkForDeletion();
 	}
-	
+
 	m_MenuItems.RemoveAll();
 	m_SortedItems.RemoveAll();
 	m_VisibleSortedItems.RemoveAll();
 	m_Separators.RemoveAll();
 	int c = m_SeparatorPanels.Count();
-	for ( int i = 0 ; i < c; ++i )
+	for( int i = 0 ; i < c; ++i )
 	{
 		m_SeparatorPanels[ i ]->MarkForDeletion();
 	}
@@ -127,30 +127,30 @@ void Menu::DeleteAllItems()
 //-----------------------------------------------------------------------------
 // Purpose: Add a menu item to the menu.
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( MenuItem *panel )
+int Menu::AddMenuItem( MenuItem* panel )
 {
 	panel->SetParent( this );
 	MEM_ALLOC_CREDIT();
 	int itemID = m_MenuItems.AddToTail( panel );
-	m_SortedItems.AddToTail(itemID);
-	InvalidateLayout(false);
+	m_SortedItems.AddToTail( itemID );
+	InvalidateLayout( false );
 	_recalculateWidth = true;
 	panel->SetContentAlignment( m_Alignment );
-	if ( INVALID_FONT != m_hItemFont )
+	if( INVALID_FONT != m_hItemFont )
 	{
 		panel->SetFont( m_hItemFont );
 	}
-	if ( m_bUseFallbackFont && INVALID_FONT != m_hFallbackItemFont )
+	if( m_bUseFallbackFont && INVALID_FONT != m_hFallbackItemFont )
 	{
-		Label *l = panel;
-		TextImage *ti = l->GetTextImage();
-		if ( ti )
+		Label* l = panel;
+		TextImage* ti = l->GetTextImage();
+		if( ti )
 		{
 			ti->SetUseFallbackFont( m_bUseFallbackFont, m_hFallbackItemFont );
 		}
 	}
 
-	if ( panel->GetHotKey() )
+	if( panel->GetHotKey() )
 	{
 		SetTypeAheadMode( HOT_KEY_MODE );
 	}
@@ -173,291 +173,291 @@ void Menu::DeleteItem( int itemID )
 	m_SortedItems.FindAndRemove( itemID );
 	m_VisibleSortedItems.FindAndRemove( itemID );
 
-	InvalidateLayout(false);
+	InvalidateLayout( false );
 	_recalculateWidth = true;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Add a menu item to the menu.
-// Input  : *item - MenuItem 
-//			*command -  Command text to be sent when menu item is selected	
+// Input  : *item - MenuItem
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
 //			*userData - any user data associated with this menu item
 // Output:  itemID - ID of this item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItemCharCommand(MenuItem *item, const char *command, Panel *target, const KeyValues *userData)
+int Menu::AddMenuItemCharCommand( MenuItem* item, const char* command, Panel* target, const KeyValues* userData )
 {
-	item->SetCommand(command);
+	item->SetCommand( command );
 	item->AddActionSignalTarget( target );
-	item->SetUserData(userData);
+	item->SetUserData( userData );
 	return AddMenuItem( item );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a menu item to the menu. 
-// Input  : *itemName - Name of item 
+// Purpose: Add a menu item to the menu.
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 // Output:  itemID - ID of this item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItemKeyValuesCommand( MenuItem *item, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItemKeyValuesCommand( MenuItem* item, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	item->SetCommand(message);
-	item->AddActionSignalTarget(target);
-	item->SetUserData(userData);
-	return AddMenuItem(item);
+	item->SetCommand( message );
+	item->AddActionSignalTarget( target );
+	item->SetUserData( userData );
+	return AddMenuItem( item );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Add a menu item to the menu.
-// Input  : *itemName - Name of item 
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
 // Output:  itemID - ID of this item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, itemText );
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
-int Menu::AddMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, wszItemText );
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a menu item to the menu. 
+// Purpose: Add a menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
 // Output:  itemID - ID of this item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( const char *itemText, const char *command, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	return AddMenuItem(itemText, itemText, command, target, userData ) ;
+	return AddMenuItem( itemText, itemText, command, target, userData ) ;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a menu item to the menu. 
-// Input  : *itemName - Name of item 
+// Purpose: Add a menu item to the menu.
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, itemText );
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
-int Menu::AddMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, wszItemText );
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a menu item to the menu. 
+// Purpose: Add a menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddMenuItem( const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	return AddMenuItem(itemText, itemText, message, target, userData );
+	return AddMenuItem( itemText, itemText, message, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a menu item to the menu. 
+// Purpose: Add a menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be the text of the command sent when the
 //						item is selected.
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddMenuItem( const char *itemText, Panel *target , const KeyValues *userData )
+int Menu::AddMenuItem( const char* itemText, Panel* target , const KeyValues* userData )
 {
-	return AddMenuItem(itemText, itemText, target, userData );
+	return AddMenuItem( itemText, itemText, target, userData );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Add a checkable menu item to the menu.
-// Input  : *itemName - Name of item 
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
 //-----------------------------------------------------------------------------
-int Menu::AddCheckableMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, const KeyValues *userData )
+int Menu::AddCheckableMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, itemText, NULL, true);
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText, NULL, true );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
-int Menu::AddCheckableMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, const KeyValues *userData )
+int Menu::AddCheckableMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, wszItemText, NULL, true);
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText, NULL, true );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a checkable menu item to the menu. 
+// Purpose: Add a checkable menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCheckableMenuItem( const char *itemText, const char *command, Panel *target, const KeyValues *userData  )
+int Menu::AddCheckableMenuItem( const char* itemText, const char* command, Panel* target, const KeyValues* userData )
 {
-	return AddCheckableMenuItem(itemText, itemText, command, target, userData );
+	return AddCheckableMenuItem( itemText, itemText, command, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a checkable menu item to the menu. 
-// Input  : *itemName - Name of item 
+// Purpose: Add a checkable menu item to the menu.
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCheckableMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddCheckableMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, itemText, NULL, true);
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText, NULL, true );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
-int Menu::AddCheckableMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddCheckableMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, wszItemText, NULL, true);
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText, NULL, true );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a checkable menu item to the menu. 
+// Purpose: Add a checkable menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCheckableMenuItem( const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData  )
+int Menu::AddCheckableMenuItem( const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData )
 {
-	return AddCheckableMenuItem(itemText, itemText, message, target, userData );
+	return AddCheckableMenuItem( itemText, itemText, message, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a checkable menu item to the menu. 
+// Purpose: Add a checkable menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be the text of the command sent when the
 //						item is selected.
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCheckableMenuItem( const char *itemText, Panel *target, const KeyValues *userData  )
+int Menu::AddCheckableMenuItem( const char* itemText, Panel* target, const KeyValues* userData )
 {
-	return AddCheckableMenuItem(itemText, itemText, target, userData );
+	return AddCheckableMenuItem( itemText, itemText, target, userData );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Add a Cascading menu item to the menu.
-// Input  : *itemName - Name of item 
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCascadingMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, Menu *cascadeMenu , const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, Menu* cascadeMenu , const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, itemText, cascadeMenu );
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText, cascadeMenu );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
-int Menu::AddCascadingMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, Menu *cascadeMenu , const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, Menu* cascadeMenu , const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem(this, itemName, wszItemText, cascadeMenu );
-	return AddMenuItemCharCommand(item, command, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText, cascadeMenu );
+	return AddMenuItemCharCommand( item, command, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a Cascading menu item to the menu. 
+// Purpose: Add a Cascading menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
-//			*command -  Command text to be sent when menu item is selected	
+//			*command -  Command text to be sent when menu item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCascadingMenuItem( const char *itemText, const char *command, Panel *target, Menu *cascadeMenu , const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemText, const char* command, Panel* target, Menu* cascadeMenu , const KeyValues* userData )
 {
 	return AddCascadingMenuItem( itemText, itemText, command, target, cascadeMenu, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a Cascading menu item to the menu. 
-// Input  : *itemName - Name of item 
+// Purpose: Add a Cascading menu item to the menu.
+// Input  : *itemName - Name of item
 //			*itemText - Name of item text that will appear in the manu.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCascadingMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem( this, itemName, itemText, cascadeMenu);
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, itemText, cascadeMenu );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
-int Menu::AddCascadingMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData )
 {
-	MenuItem *item = new MenuItem( this, itemName, wszItemText, cascadeMenu);
-	return AddMenuItemKeyValuesCommand(item, message, target, userData);
+	MenuItem* item = new MenuItem( this, itemName, wszItemText, cascadeMenu );
+	return AddMenuItemKeyValuesCommand( item, message, target, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a Cascading menu item to the menu. 
+// Purpose: Add a Cascading menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be used as the name of the menu item panel.
 //			*message - pointer to the message to send when the item is selected
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCascadingMenuItem( const char *itemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData )
 {
-	return AddCascadingMenuItem(itemText, itemText, message, target, cascadeMenu, userData );
+	return AddCascadingMenuItem( itemText, itemText, message, target, cascadeMenu, userData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Add a Cascading menu item to the menu. 
+// Purpose: Add a Cascading menu item to the menu.
 // Input  : *itemText - Name of item text that will appear in the manu.
 //						This will also be the text of the command sent when the
 //						item is selected.
 //			*target - Target panel of the command
-//          *cascadeMenu - if the menu item opens a cascading menu, this is a 
+//          *cascadeMenu - if the menu item opens a cascading menu, this is a
 //							ptr to the menu that opens on selecting the item
 //-----------------------------------------------------------------------------
-int Menu::AddCascadingMenuItem( const char *itemText, Panel *target, Menu *cascadeMenu, const KeyValues *userData )
+int Menu::AddCascadingMenuItem( const char* itemText, Panel* target, Menu* cascadeMenu, const KeyValues* userData )
 {
-	return AddCascadingMenuItem(itemText, itemText, target, cascadeMenu, userData);
+	return AddCascadingMenuItem( itemText, itemText, target, cascadeMenu, userData );
 }
 
 //-----------------------------------------------------------------------------
@@ -465,20 +465,20 @@ int Menu::AddCascadingMenuItem( const char *itemText, Panel *target, Menu *casca
 // Input  : index - the index of this item entry
 //			*message - pointer to the message to send when the item is selected
 //-----------------------------------------------------------------------------
-void Menu::UpdateMenuItem(int itemID, const char *itemText, KeyValues *message, const KeyValues *userData)
+void Menu::UpdateMenuItem( int itemID, const char* itemText, KeyValues* message, const KeyValues* userData )
 {
-	Assert( m_MenuItems.IsValidIndex(itemID) );
-	if ( m_MenuItems.IsValidIndex(itemID) )
+	Assert( m_MenuItems.IsValidIndex( itemID ) );
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		// make sure its enabled since disabled items get highlighted.
-		if (menuItem)
+		if( menuItem )
 		{
-			menuItem->SetText(itemText);
-			menuItem->SetCommand(message);
-			if(userData)
+			menuItem->SetText( itemText );
+			menuItem->SetCommand( message );
+			if( userData )
 			{
-				menuItem->SetUserData(userData);
+				menuItem->SetUserData( userData );
 			}
 		}
 	}
@@ -489,20 +489,20 @@ void Menu::UpdateMenuItem(int itemID, const char *itemText, KeyValues *message, 
 //-----------------------------------------------------------------------------
 // Purpose: Sets the values of a menu item at the specified index
 //-----------------------------------------------------------------------------
-void Menu::UpdateMenuItem(int itemID, const wchar_t *wszItemText, KeyValues *message, const KeyValues *userData)
+void Menu::UpdateMenuItem( int itemID, const wchar_t* wszItemText, KeyValues* message, const KeyValues* userData )
 {
-	Assert( m_MenuItems.IsValidIndex(itemID) );
-	if ( m_MenuItems.IsValidIndex(itemID) )
+	Assert( m_MenuItems.IsValidIndex( itemID ) );
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		// make sure its enabled since disabled items get highlighted.
-		if (menuItem)
+		if( menuItem )
 		{
-			menuItem->SetText(wszItemText);
-			menuItem->SetCommand(message);
-			if(userData)
+			menuItem->SetText( wszItemText );
+			menuItem->SetCommand( message );
+			if( userData )
 			{
-				menuItem->SetUserData(userData);
+				menuItem->SetUserData( userData );
 			}
 		}
 	}
@@ -515,13 +515,13 @@ void Menu::UpdateMenuItem(int itemID, const wchar_t *wszItemText, KeyValues *mes
 //-----------------------------------------------------------------------------
 void Menu::SetContentAlignment( Label::Alignment alignment )
 {
-	if ( m_Alignment != alignment )
+	if( m_Alignment != alignment )
 	{
 		m_Alignment = alignment;
 
 		// Change the alignment of existing menu items
 		int nCount = m_MenuItems.Count();
-		for ( int i = 0; i < nCount; ++i )
+		for( int i = 0; i < nCount; ++i )
 		{
 			m_MenuItems[i]->SetContentAlignment( alignment );
 		}
@@ -532,18 +532,18 @@ void Menu::SetContentAlignment( Label::Alignment alignment )
 //-----------------------------------------------------------------------------
 // Purpose: Locks down a specific width
 //-----------------------------------------------------------------------------
-void Menu::SetFixedWidth(int width)
+void Menu::SetFixedWidth( int width )
 {
 	// the padding makes it so the menu has the label padding on each side of the menu.
 	// makes the menu items look centered.
 	m_iFixedWidth = width;
-	InvalidateLayout(false);
+	InvalidateLayout( false );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: sets the height of each menu item
 //-----------------------------------------------------------------------------
-void Menu::SetMenuItemHeight(int itemHeight)
+void Menu::SetMenuItemHeight( int itemHeight )
 {
 	m_iMenuItemHeight = itemHeight;
 }
@@ -557,10 +557,12 @@ int Menu::CountVisibleItems()
 {
 	int count = 0;
 	int c = m_SortedItems.Count();
-	for ( int i = 0 ; i < c; ++i )
+	for( int i = 0 ; i < c; ++i )
 	{
-		if ( m_MenuItems[ m_SortedItems[ i ] ]->IsVisible() )
+		if( m_MenuItems[ m_SortedItems[ i ] ]->IsVisible() )
+		{
 			++count;
+		}
 	}
 	return count;
 }
@@ -569,41 +571,41 @@ void Menu::ComputeWorkspaceSize( int& workWide, int& workTall )
 {
 	// make sure we factor in insets
 	int ileft, iright, itop, ibottom;
-	GetInset(ileft, iright, itop, ibottom);
+	GetInset( ileft, iright, itop, ibottom );
 
 	int workX, workY;
-	surface()->GetWorkspaceBounds(workX, workY, workWide, workTall);
+	surface()->GetWorkspaceBounds( workX, workY, workWide, workTall );
 	workTall -= 20;
 	workTall -= itop;
 	workTall -= ibottom;
 }
 
 // Assumes relative coords in screenspace
-void Menu::PositionRelativeToPanel( Panel *relative, MenuDirection_e direction, int nAdditionalYOffset /*=0*/, bool showMenu /*=false*/ )
+void Menu::PositionRelativeToPanel( Panel* relative, MenuDirection_e direction, int nAdditionalYOffset /*=0*/, bool showMenu /*=false*/ )
 {
 	Assert( relative );
 	int rx, ry, rw, rh;
 	relative->GetBounds( rx, ry, rw, rh );
 	relative->LocalToScreen( rx, ry );
 
-	if ( direction == CURSOR )
+	if( direction == CURSOR )
 	{
 		// force the menu to appear where the mouse button was pressed
-		input()->GetCursorPos(rx, ry);
+		input()->GetCursorPos( rx, ry );
 		rw = rh = 0;
 	}
-	else if ( direction == ALIGN_WITH_PARENT && relative->GetVParent() )
+	else if( direction == ALIGN_WITH_PARENT && relative->GetVParent() )
 	{
-	   rx = 0, ry = 0;
-	   relative->ParentLocalToScreen(rx, ry);
-	   rx -= 1; // take border into account
-	   ry += rh + nAdditionalYOffset;
-	   rw = rh = 0;
+		rx = 0, ry = 0;
+		relative->ParentLocalToScreen( rx, ry );
+		rx -= 1; // take border into account
+		ry += rh + nAdditionalYOffset;
+		rw = rh = 0;
 	}
 	else
 	{
 		rx = 0, ry = 0;
-		relative->LocalToScreen(rx, ry);
+		relative->LocalToScreen( rx, ry );
 	}
 
 	int workWide, workTall;
@@ -617,23 +619,23 @@ void Menu::PositionRelativeToPanel( Panel *relative, MenuDirection_e direction, 
 
 	switch( direction )
 	{
-	case Menu::UP: // Menu prefers to open upward
+		case Menu::UP: // Menu prefers to open upward
 		{
 			x = rx;
 			int topOfReference = ry;
 			y = topOfReference - mTall;
-			if ( y < 0 )
+			if( y < 0 )
 			{
 				int bottomOfReference = ry + rh + 1;
 				int remainingPixels = workTall - bottomOfReference;
 
 				// Can't fit on bottom, either, move to side
-				if ( mTall >= remainingPixels )
+				if( mTall >= remainingPixels )
 				{
 					y = workTall - mTall;
 					x = rx + rw;
 					// Try and place it to the left of the button
-					if ( x + mWide > workWide )
+					if( x + mWide > workWide )
 					{
 						x = rx - mWide;
 					}
@@ -647,23 +649,23 @@ void Menu::PositionRelativeToPanel( Panel *relative, MenuDirection_e direction, 
 		}
 		break;
 		// Everyone else aligns downward...
-	default:
-	case Menu::LEFT:
-	case Menu::RIGHT:
-	case Menu::DOWN:
+		default:
+		case Menu::LEFT:
+		case Menu::RIGHT:
+		case Menu::DOWN:
 		{
 			x = rx;
 			int bottomOfReference = ry + rh + 1;
 			y = bottomOfReference;
-			if ( bottomOfReference + mTall >= workTall )
+			if( bottomOfReference + mTall >= workTall )
 			{
 				// See if there's run straight above
-				if ( mTall >= ry ) // No room, try and push menu to right or left
+				if( mTall >= ry )  // No room, try and push menu to right or left
 				{
 					y = workTall - mTall;
 					x = rx + rw;
 					// Try and place it to the left of the button
-					if ( x + mWide > workWide )
+					if( x + mWide > workWide )
 					{
 						x = rx - mWide;
 					}
@@ -677,20 +679,20 @@ void Menu::PositionRelativeToPanel( Panel *relative, MenuDirection_e direction, 
 		}
 		break;
 	}
-	
+
 	// Check left rightness
-	if ( x + mWide > workWide )
+	if( x + mWide > workWide )
 	{
 		x = workWide - mWide;
 		Assert( x >= 0 ); // yikes!!!
 	}
-	else if ( x < 0 )
+	else if( x < 0 )
 	{
 		x = 0;
 	}
 
 	SetPos( x, y );
-	if ( showMenu )
+	if( showMenu )
 	{
 		SetVisible( true );
 	}
@@ -700,7 +702,7 @@ int Menu::ComputeFullMenuHeightWithInsets()
 {
 	// make sure we factor in insets
 	int ileft, iright, itop, ibottom;
-	GetInset(ileft, iright, itop, ibottom);
+	GetInset( ileft, iright, itop, ibottom );
 
 	int separatorHeight = 3;
 
@@ -708,23 +710,27 @@ int Menu::ComputeFullMenuHeightWithInsets()
 	// move the child panels to the correct place in the menu
 	int totalTall = itop + ibottom;
 	int i;
-	for ( i = 0 ; i < m_SortedItems.Count() ; i++ )		// use sortedItems instead of MenuItems due to SetPos()
+	for( i = 0 ; i < m_SortedItems.Count() ; i++ )		// use sortedItems instead of MenuItems due to SetPos()
 	{
 		int itemId = m_SortedItems[i];
 
-		MenuItem *child = m_MenuItems[ itemId ];
+		MenuItem* child = m_MenuItems[ itemId ];
 		Assert( child );
-		if ( !child )
+		if( !child )
+		{
 			continue;
+		}
 		// These should all be visible at this point
-		if ( !child->IsVisible() )
+		if( !child->IsVisible() )
+		{
 			continue;
+		}
 
 		totalTall += m_iMenuItemHeight;
 
 		// Add a separator if needed...
 		int sepIndex = m_Separators.Find( itemId );
-		if ( sepIndex != m_Separators.InvalidIndex() )
+		if( sepIndex != m_Separators.InvalidIndex() )
 		{
 			totalTall += separatorHeight;
 		}
@@ -738,12 +744,12 @@ int Menu::ComputeFullMenuHeightWithInsets()
 //-----------------------------------------------------------------------------
 void Menu::PerformLayout()
 {
-	MenuItem *parent = GetParentMenuItem();
+	MenuItem* parent = GetParentMenuItem();
 	bool cascading =  parent != NULL ? true : false;
 
 	// make sure we factor in insets
 	int ileft, iright, itop, ibottom;
-	GetInset(ileft, iright, itop, ibottom);
+	GetInset( ileft, iright, itop, ibottom );
 
 	int workWide, workTall;
 
@@ -751,19 +757,19 @@ void Menu::PerformLayout()
 
 	int fullHeightWouldRequire = ComputeFullMenuHeightWithInsets();
 
-	bool bNeedScrollbar = fullHeightWouldRequire >= workTall; 
+	bool bNeedScrollbar = fullHeightWouldRequire >= workTall;
 
 	int maxVisibleItems = CountVisibleItems();
 
-	if ( m_iNumVisibleLines > 0 && 
-		 maxVisibleItems > m_iNumVisibleLines )
+	if( m_iNumVisibleLines > 0 &&
+			maxVisibleItems > m_iNumVisibleLines )
 	{
 		bNeedScrollbar = true;
 		maxVisibleItems = m_iNumVisibleLines;
 	}
 
 	// if we have a scroll bar
-	if ( bNeedScrollbar )
+	if( bNeedScrollbar )
 	{
 		// add it to the display
 		AddScrollBar();
@@ -778,32 +784,34 @@ void Menu::PerformLayout()
 		m_VisibleSortedItems.RemoveAll();
 		int i;
 		int c = m_SortedItems.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
 			int itemID = m_SortedItems[ i ];
-			MenuItem *child = m_MenuItems[ itemID ];
-			if ( !child || !child->IsVisible() )
+			MenuItem* child = m_MenuItems[ itemID ];
+			if( !child || !child->IsVisible() )
+			{
 				continue;
+			}
 
 			m_VisibleSortedItems.AddToTail( itemID );
 		}
 
 		// Hide the separators, the needed ones will be readded below
 		c = m_SeparatorPanels.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
-			if ( m_SeparatorPanels[ i ] )
+			if( m_SeparatorPanels[ i ] )
 			{
 				m_SeparatorPanels[ i ]->SetVisible( false );
 			}
 		}
 	}
-	
+
 	// get the appropriate menu border
 	LayoutMenuBorder();
 
 	int trueW = GetWide();
-	if ( bNeedScrollbar )
+	if( bNeedScrollbar )
 	{
 		trueW -= m_pScroller->GetWide();
 	}
@@ -814,48 +822,54 @@ void Menu::PerformLayout()
 	int menuTall = 0;
 	int totalTall = itop + ibottom;
 	int i;
-	for ( i = 0 ; i < m_VisibleSortedItems.Count() ; i++ )		// use sortedItems instead of MenuItems due to SetPos()
+	for( i = 0 ; i < m_VisibleSortedItems.Count() ; i++ )		// use sortedItems instead of MenuItems due to SetPos()
 	{
 		int itemId = m_VisibleSortedItems[i];
 
-		MenuItem *child = m_MenuItems[ itemId ];
+		MenuItem* child = m_MenuItems[ itemId ];
 		Assert( child );
-		if ( !child )
+		if( !child )
+		{
 			continue;
+		}
 		// These should all be visible at this point
-		if ( !child->IsVisible() )
+		if( !child->IsVisible() )
+		{
 			continue;
+		}
 
-		if ( totalTall >= workTall )
+		if( totalTall >= workTall )
+		{
 			break;
+		}
 
-		if ( INVALID_FONT != m_hItemFont )
+		if( INVALID_FONT != m_hItemFont )
 		{
 			child->SetFont( m_hItemFont );
 		}
 
 		// take into account inset
-		child->SetPos (0, menuTall);
+		child->SetPos( 0, menuTall );
 		child->SetTall( m_iMenuItemHeight ); // Width is set in a second pass
 		menuTall += m_iMenuItemHeight;
 		totalTall += m_iMenuItemHeight;
 
 		// this will make all the menuitems line up in a column with space for the checks to the left.
-		if ( ( !child->IsCheckable() ) && ( m_iCheckImageWidth > 0 ) )
+		if( ( !child->IsCheckable() ) && ( m_iCheckImageWidth > 0 ) )
 		{
 			// Non checkable items have to move over
 			child->SetTextInset( m_iCheckImageWidth, 0 );
 		}
-		else if ( child->IsCheckable() )
+		else if( child->IsCheckable() )
 		{
-			child->SetTextInset(0, 0); //TODO: for some reason I can't comment this out.
+			child->SetTextInset( 0, 0 ); //TODO: for some reason I can't comment this out.
 		}
 
 		// Add a separator if needed...
 		int sepIndex = m_Separators.Find( itemId );
-		if ( sepIndex != m_Separators.InvalidIndex() )
+		if( sepIndex != m_Separators.InvalidIndex() )
 		{
-			MenuSeparator *sep = m_SeparatorPanels[ sepIndex ];
+			MenuSeparator* sep = m_SeparatorPanels[ sepIndex ];
 			Assert( sep );
 			sep->SetVisible( true );
 			sep->SetBounds( 0, menuTall, trueW, separatorHeight );
@@ -863,37 +877,37 @@ void Menu::PerformLayout()
 			totalTall += separatorHeight;
 		}
 	}
-	
-	if (!m_iFixedWidth)
+
+	if( !m_iFixedWidth )
 	{
 		_recalculateWidth = true;
 		CalculateWidth();
 	}
-	else if (m_iFixedWidth)
+	else if( m_iFixedWidth )
 	{
 		_menuWide = m_iFixedWidth;
 		// fixed width menus include the scroll bar in their width.
-		if (_sizedForScrollBar)
+		if( _sizedForScrollBar )
 		{
 			_menuWide -= m_pScroller->GetWide();
 		}
 	}
-	
+
 	SizeMenuItems();
-	
+
 	int extraWidth = 0;
-	if (_sizedForScrollBar)
+	if( _sizedForScrollBar )
 	{
 		extraWidth = m_pScroller->GetWide();
 	}
 
 	int mwide = _menuWide + extraWidth;
-	if ( mwide > workWide )
+	if( mwide > workWide )
 	{
 		mwide = workWide;
 	}
 	int mtall = menuTall + itop + ibottom;
-	if ( mtall > workTall )
+	if( mtall > workTall )
 	{
 		// Shouldn't happen
 		mtall = workTall;
@@ -901,20 +915,20 @@ void Menu::PerformLayout()
 
 	// set the new size of the menu
 	SetSize( mwide, mtall );
-	
+
 	// move the menu to the correct position if it is a cascading menu.
-	if ( cascading )
+	if( cascading )
 	{
 		// move the menu to the correct position if it is a cascading menu.
 		PositionCascadingMenu();
 	}
-		
+
 	// set up scroll bar as appropriate
-	if ( m_pScroller->IsVisible() )
+	if( m_pScroller->IsVisible() )
 	{
 		LayoutScrollBar();
 	}
-	
+
 	FOR_EACH_LL( m_MenuItems, j )
 	{
 		m_MenuItems[j]->InvalidateLayout(); // cause each menu item to redo its apply settings now we have sized ourselves
@@ -939,27 +953,29 @@ void Menu::ForceCalculateWidth()
 //-----------------------------------------------------------------------------
 void Menu::CalculateWidth()
 {
-	if (!_recalculateWidth)
+	if( !_recalculateWidth )
+	{
 		return;
+	}
 
 	_menuWide = 0;
-	if (!m_iFixedWidth)
+	if( !m_iFixedWidth )
 	{
 		// find the biggest menu item
 		FOR_EACH_LL( m_MenuItems, i )
-		{		
+		{
 			int wide, tall;
-			m_MenuItems[i]->GetContentSize(wide, tall);
-			if (wide > _menuWide - Label::Content)
+			m_MenuItems[i]->GetContentSize( wide, tall );
+			if( wide > _menuWide - Label::Content )
 			{
-				_menuWide =  wide + Label::Content;	
+				_menuWide =  wide + Label::Content;
 			}
-		}	
+		}
 	}
-	
-	// enfoce a minimumWidth 
-	if (_menuWide < m_iMinimumWidth)
-	{		
+
+	// enfoce a minimumWidth
+	if( _menuWide < m_iMinimumWidth )
+	{
 		_menuWide = m_iMinimumWidth;
 	}
 
@@ -972,25 +988,25 @@ void Menu::CalculateWidth()
 void Menu::LayoutScrollBar()
 {
 	//!! need to make it recalculate scroll positions
-	m_pScroller->SetEnabled(false);
+	m_pScroller->SetEnabled( false );
 	m_pScroller->SetRangeWindow( m_VisibleSortedItems.Count() );
-	m_pScroller->SetRange( 0, CountVisibleItems() );	
+	m_pScroller->SetRange( 0, CountVisibleItems() );
 	m_pScroller->SetButtonPressedScrollValue( 1 );
-	
+
 	int wide, tall;
-	GetSize (wide, tall);
+	GetSize( wide, tall );
 
 	// make sure we factor in insets
 	int ileft, iright, itop, ibottom;
-	GetInset(ileft, iright, itop, ibottom);
+	GetInset( ileft, iright, itop, ibottom );
 
 	// with a scroll bar we take off the inset
 	wide -= iright;
 
-	m_pScroller->SetPos(wide - m_pScroller->GetWide(), 1);
-	
+	m_pScroller->SetPos( wide - m_pScroller->GetWide(), 1 );
+
 	// scrollbar is inside the menu's borders.
-	m_pScroller->SetSize(m_pScroller->GetWide(), tall - ibottom - itop);
+	m_pScroller->SetSize( m_pScroller->GetWide(), tall - ibottom - itop );
 
 }
 
@@ -999,30 +1015,30 @@ void Menu::LayoutScrollBar()
 //-----------------------------------------------------------------------------
 void Menu::PositionCascadingMenu()
 {
-	Assert(GetVParent());
+	Assert( GetVParent() );
 	int parentX, parentY, parentWide, parentTall;
 	// move the menu to the correct place below the menuItem
-	ipanel()->GetSize(GetVParent(), parentWide, parentTall);
-	ipanel()->GetPos(GetVParent(), parentX, parentY);
-	
+	ipanel()->GetSize( GetVParent(), parentWide, parentTall );
+	ipanel()->GetPos( GetVParent(), parentX, parentY );
+
 	parentX += parentWide, parentY = 0;
 
-	ParentLocalToScreen(parentX, parentY);
+	ParentLocalToScreen( parentX, parentY );
 
-	SetPos(parentX, parentY);
-	
-	// for cascading menus, 
+	SetPos( parentX, parentY );
+
+	// for cascading menus,
 	// make sure we're on the screen
 	int workX, workY, workWide, workTall, x, y, wide, tall;
-	GetBounds(x, y, wide, tall);
-	surface()->GetWorkspaceBounds(workX, workY, workWide, workTall);
-	
-	if (x + wide > workX + workWide)
+	GetBounds( x, y, wide, tall );
+	surface()->GetWorkspaceBounds( workX, workY, workWide, workTall );
+
+	if( x + wide > workX + workWide )
 	{
 		// we're off the right, move the menu to the left side
 		// orignalX - width of the parentmenuitem - width of this menu.
 		// add 2 pixels to offset one pixel onto the parent menu.
-		x -= (parentWide + wide);
+		x -= ( parentWide + wide );
 		x -= 2;
 	}
 	else
@@ -1031,7 +1047,7 @@ void Menu::PositionCascadingMenu()
 		x += 1;
 	}
 
-	if ( y + tall > workY + workTall )
+	if( y + tall > workY + workTall )
 	{
 		int lastWorkY = workY + workTall;
 		int pixelsOffBottom = ( y + tall ) - lastWorkY;
@@ -1043,8 +1059,8 @@ void Menu::PositionCascadingMenu()
 	{
 		y -= 1;
 	}
-	SetPos(x, y);
-	
+	SetPos( x, y );
+
 	MoveToFront();
 }
 
@@ -1055,17 +1071,17 @@ void Menu::PositionCascadingMenu()
 void Menu::SizeMenuItems()
 {
 	int ileft, iright, itop, ibottom;
-	GetInset(ileft, iright, itop, ibottom);
-	
+	GetInset( ileft, iright, itop, ibottom );
+
 	// assign the sizes of all the menu item panels
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		MenuItem *child = m_MenuItems[i];
-		if (child )
+		MenuItem* child = m_MenuItems[i];
+		if( child )
 		{
 			// labels do thier own sizing. this will size the label to the width of the menu,
-			// this will put the cascading menu arrow on the right side automatically.	
-			child->SetWide(_menuWide - ileft - iright);			
+			// this will put the cascading menu arrow on the right side automatically.
+			child->SetWide( _menuWide - ileft - iright );
 		}
 	}
 }
@@ -1081,7 +1097,7 @@ void Menu::MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAva
 	{
 		m_MenuItems[ item ]->SetBounds( 0, 0, 0, 0 );
 	}
-	for ( i = 0; i < m_SeparatorPanels.Count(); ++i )
+	for( i = 0; i < m_SeparatorPanels.Count(); ++i )
 	{
 		m_SeparatorPanels[ i ]->SetVisible( false );
 	}
@@ -1094,12 +1110,14 @@ void Menu::MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAva
 	Assert( startItem >= 0 );
 	do
 	{
-		if ( startItem >= m_SortedItems.Count() )
+		if( startItem >= m_SortedItems.Count() )
+		{
 			break;
+		}
 
 		int itemId = m_SortedItems[ startItem ];
 
-		if ( !m_MenuItems[ itemId ]->IsVisible() )
+		if( !m_MenuItems[ itemId ]->IsVisible() )
 		{
 			++startItem;
 			continue;
@@ -1107,19 +1125,23 @@ void Menu::MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAva
 
 		int itemHeight = m_iMenuItemHeight;
 		int sepIndex = m_Separators.Find( itemId );
-		if ( sepIndex != m_Separators.InvalidIndex() )
+		if( sepIndex != m_Separators.InvalidIndex() )
 		{
 			itemHeight += MENU_SEPARATOR_HEIGHT;
 		}
 
-		if ( tall + itemHeight > nNumPixelsAvailable )
+		if( tall + itemHeight > nNumPixelsAvailable )
+		{
 			break;
+		}
 
 		// Too many items
-		if ( maxVisibleItems > 0 )
+		if( maxVisibleItems > 0 )
 		{
-			if ( m_VisibleSortedItems.Count() >= maxVisibleItems )
+			if( m_VisibleSortedItems.Count() >= maxVisibleItems )
+			{
 				break;
+			}
 		}
 
 		tall += itemHeight;
@@ -1127,7 +1149,7 @@ void Menu::MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAva
 		m_VisibleSortedItems.AddToTail( itemId );
 		++startItem;
 	}
-	while ( true );
+	while( true );
 }
 
 //-----------------------------------------------------------------------------
@@ -1135,14 +1157,14 @@ void Menu::MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAva
 //-----------------------------------------------------------------------------
 void Menu::LayoutMenuBorder()
 {
-	IBorder *menuBorder;
-	IScheme *pScheme = scheme()->GetIScheme( GetScheme() );
+	IBorder* menuBorder;
+	IScheme* pScheme = scheme()->GetIScheme( GetScheme() );
 
-	menuBorder = pScheme->GetBorder("MenuBorder");	   
-	
-	if ( menuBorder )
+	menuBorder = pScheme->GetBorder( "MenuBorder" );
+
+	if( menuBorder )
 	{
-		SetBorder(menuBorder);
+		SetBorder( menuBorder );
 	}
 }
 
@@ -1151,36 +1173,36 @@ void Menu::LayoutMenuBorder()
 //-----------------------------------------------------------------------------
 void Menu::Paint()
 {
-	if ( m_pScroller->IsVisible() )
-	{			
+	if( m_pScroller->IsVisible() )
+	{
 		// draw black bar
 		int wide, tall;
-		GetSize (wide, tall);
-		surface()->DrawSetColor(_borderDark);
+		GetSize( wide, tall );
+		surface()->DrawSetColor( _borderDark );
 		if( IsProportional() )
 		{
-			surface()->DrawFilledRect(wide - m_pScroller->GetWide(), -1, wide - m_pScroller->GetWide() + 1, tall);	
+			surface()->DrawFilledRect( wide - m_pScroller->GetWide(), -1, wide - m_pScroller->GetWide() + 1, tall );
 		}
 		else
 		{
-			surface()->DrawFilledRect(wide - m_pScroller->GetWide(), -1, wide - m_pScroller->GetWide() + 1, tall);	
+			surface()->DrawFilledRect( wide - m_pScroller->GetWide(), -1, wide - m_pScroller->GetWide() + 1, tall );
 		}
-	}	
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose:	sets the max number of items visible (scrollbar appears with more)
-// Input  : numItems - 
+// Input  : numItems -
 //-----------------------------------------------------------------------------
 void Menu::SetNumberOfVisibleItems( int numItems )
 {
 	m_iNumVisibleLines = numItems;
-	InvalidateLayout(false);
+	InvalidateLayout( false );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void Menu::EnableUseMenuManager( bool bUseMenuManager )
 {
@@ -1188,26 +1210,28 @@ void Menu::EnableUseMenuManager( bool bUseMenuManager )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-MenuItem *Menu::GetMenuItem(int itemID)
+MenuItem* Menu::GetMenuItem( int itemID )
 {
-	if ( !m_MenuItems.IsValidIndex(itemID) )
+	if( !m_MenuItems.IsValidIndex( itemID ) )
+	{
 		return NULL;
-	
+	}
+
 	return m_MenuItems[itemID];
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool Menu::IsValidMenuID(int itemID)
+bool Menu::IsValidMenuID( int itemID )
 {
-	return m_MenuItems.IsValidIndex(itemID);
+	return m_MenuItems.IsValidIndex( itemID );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int Menu::GetInvalidMenuID()
 {
@@ -1220,12 +1244,14 @@ int Menu::GetInvalidMenuID()
 //          want to keep that one open so skip it.
 //          Passing NULL will close all cascading menus.
 //-----------------------------------------------------------------------------
-void Menu::CloseOtherMenus(MenuItem *item)
+void Menu::CloseOtherMenus( MenuItem* item )
 {
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		if (m_MenuItems[i] == item)
+		if( m_MenuItems[i] == item )
+		{
 			continue;
+		}
 
 		m_MenuItems[i]->CloseCascadeMenu();
 	}
@@ -1234,53 +1260,55 @@ void Menu::CloseOtherMenus(MenuItem *item)
 //-----------------------------------------------------------------------------
 // Purpose: Respond to string commands.
 //-----------------------------------------------------------------------------
-void Menu::OnCommand( const char *command )
+void Menu::OnCommand( const char* command )
 {
 	// forward on the message
-	PostActionSignal(new KeyValues("Command", "command", command));
-	
-	Panel::OnCommand(command);
+	PostActionSignal( new KeyValues( "Command", "command", command ) );
+
+	Panel::OnCommand( command );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle key presses, Activate shortcuts
 //-----------------------------------------------------------------------------
-void Menu::OnKeyCodeTyped(KeyCode keycode)
+void Menu::OnKeyCodeTyped( KeyCode keycode )
 {
 	vgui::KeyCode code = GetBaseButtonCode( keycode );
 
 	// Don't allow key inputs when disabled!
-	if ( !IsEnabled() )
+	if( !IsEnabled() )
+	{
 		return;
+	}
 
-	bool alt = (input()->IsKeyDown(KEY_LALT) || input()->IsKeyDown(KEY_RALT));
-	if (alt)
+	bool alt = ( input()->IsKeyDown( KEY_LALT ) || input()->IsKeyDown( KEY_RALT ) );
+	if( alt )
 	{
 		BaseClass::OnKeyCodeTyped( keycode );
 		// Ignore alt when in combobox mode
-		if (m_eTypeAheadMode != TYPE_AHEAD_MODE)
+		if( m_eTypeAheadMode != TYPE_AHEAD_MODE )
 		{
-			PostActionSignal(new KeyValues("MenuClose"));
+			PostActionSignal( new KeyValues( "MenuClose" ) );
 		}
 	}
 
-	switch (code)
+	switch( code )
 	{
-	case KEY_ESCAPE:
-	case KEY_XBUTTON_B: 
+		case KEY_ESCAPE:
+		case KEY_XBUTTON_B:
 		{
 			// hide the menu on ESC
-			SetVisible(false);
+			SetVisible( false );
 			break;
 		}
 		// arrow keys scroll through items on the list.
 		// they should also scroll the scroll bar if needed
-	case KEY_UP:
-	case KEY_XBUTTON_UP: 
-	case KEY_XSTICK1_UP: 
-		{	
-			MoveAlongMenuItemList(MENU_UP, 0);
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+		case KEY_UP:
+		case KEY_XBUTTON_UP:
+		case KEY_XSTICK1_UP:
+		{
+			MoveAlongMenuItemList( MENU_UP, 0 );
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
 				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
@@ -1290,14 +1318,14 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			break;
 		}
-	case KEY_DOWN:
-	case KEY_XBUTTON_DOWN: 
-	case KEY_XSTICK1_DOWN: 
+		case KEY_DOWN:
+		case KEY_XBUTTON_DOWN:
+		case KEY_XSTICK1_DOWN:
 		{
-			MoveAlongMenuItemList(MENU_DOWN, 0);
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+			MoveAlongMenuItemList( MENU_DOWN, 0 );
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
 			else
 			{
@@ -1305,17 +1333,17 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			break;
 		}
-	// for now left and right arrows just open or close submenus if they are there.
-	case KEY_RIGHT:
-	case KEY_XBUTTON_RIGHT: 
-	case KEY_XSTICK1_RIGHT: 
+		// for now left and right arrows just open or close submenus if they are there.
+		case KEY_RIGHT:
+		case KEY_XBUTTON_RIGHT:
+		case KEY_XSTICK1_RIGHT:
 		{
 			// make sure a menuItem is currently selected
-			if ( m_MenuItems.IsValidIndex(m_iCurrentlySelectedItemID) )
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				if (m_MenuItems[m_iCurrentlySelectedItemID]->HasMenu())
+				if( m_MenuItems[m_iCurrentlySelectedItemID]->HasMenu() )
 				{
-					ActivateItem(m_iCurrentlySelectedItemID);
+					ActivateItem( m_iCurrentlySelectedItemID );
 				}
 				else
 				{
@@ -1328,14 +1356,14 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			break;
 		}
-	case KEY_LEFT:
-	case KEY_XBUTTON_LEFT: 
-	case KEY_XSTICK1_LEFT: 
+		case KEY_LEFT:
+		case KEY_XBUTTON_LEFT:
+		case KEY_XSTICK1_LEFT:
 		{
 			// if our parent is a menu item then we are a submenu so close us.
-			if (GetParentMenuItem())
+			if( GetParentMenuItem() )
 			{
-				SetVisible(false);
+				SetVisible( false );
 			}
 			else
 			{
@@ -1343,13 +1371,13 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			}
 			break;
 		}
-	case KEY_ENTER:
-	case KEY_XBUTTON_A:
+		case KEY_ENTER:
+		case KEY_XBUTTON_A:
 		{
 			// make sure a menuItem is currently selected
-			if ( m_MenuItems.IsValidIndex(m_iCurrentlySelectedItemID) )
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				ActivateItem(m_iCurrentlySelectedItemID);
+				ActivateItem( m_iCurrentlySelectedItemID );
 			}
 			else
 			{
@@ -1358,116 +1386,118 @@ void Menu::OnKeyCodeTyped(KeyCode keycode)
 			break;
 		}
 
-	case KEY_PAGEUP:
+		case KEY_PAGEUP:
 		{
-			if ( m_iNumVisibleLines > 1 )
+			if( m_iNumVisibleLines > 1 )
 			{
-				if ( m_iCurrentlySelectedItemID < m_iNumVisibleLines )
+				if( m_iCurrentlySelectedItemID < m_iNumVisibleLines )
 				{
 					MoveAlongMenuItemList( MENU_UP * m_iCurrentlySelectedItemID, 0 );
 				}
 				else
 				{
-					MoveAlongMenuItemList(MENU_UP * m_iNumVisibleLines - 1, 0);
+					MoveAlongMenuItemList( MENU_UP * m_iNumVisibleLines - 1, 0 );
 				}
 			}
 			else
 			{
-				MoveAlongMenuItemList(MENU_UP, 0);
+				MoveAlongMenuItemList( MENU_UP, 0 );
 			}
 
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
 			break;
 		}
 
 
-	case KEY_PAGEDOWN:
+		case KEY_PAGEDOWN:
 		{
-			if ( m_iNumVisibleLines > 1 )
+			if( m_iNumVisibleLines > 1 )
 			{
-				if ( m_iCurrentlySelectedItemID + m_iNumVisibleLines >= GetItemCount() )
+				if( m_iCurrentlySelectedItemID + m_iNumVisibleLines >= GetItemCount() )
 				{
-					MoveAlongMenuItemList(MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1), 0);
+					MoveAlongMenuItemList( MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1 ), 0 );
 				}
 				else
 				{
-					MoveAlongMenuItemList(MENU_DOWN * m_iNumVisibleLines - 1, 0);
+					MoveAlongMenuItemList( MENU_DOWN * m_iNumVisibleLines - 1, 0 );
 				}
 			}
 			else
 			{
-				MoveAlongMenuItemList(MENU_DOWN, 0);
+				MoveAlongMenuItemList( MENU_DOWN, 0 );
 			}
 
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
 			break;
 		}
 
-	case KEY_HOME:
+		case KEY_HOME:
 		{
 			MoveAlongMenuItemList( MENU_UP * m_iCurrentlySelectedItemID, 0 );
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
 			break;
 		}
 
 
-	case KEY_END:
+		case KEY_END:
 		{
-			MoveAlongMenuItemList(MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1), 0);
-			if ( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
+			MoveAlongMenuItemList( MENU_DOWN * ( GetItemCount() - m_iCurrentlySelectedItemID - 1 ), 0 );
+			if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 			{
-				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();	
+				m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 			}
 			break;
 		}
 	}
-	
+
 	// don't chain back
 }
 
-void Menu::OnHotKey(wchar_t unichar)
+void Menu::OnHotKey( wchar_t unichar )
 {
 	// iterate the menu items looking for one with the matching hotkey
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		MenuItem *panel = m_MenuItems[i];
-		if (panel->IsVisible())
+		MenuItem* panel = m_MenuItems[i];
+		if( panel->IsVisible() )
 		{
-			Panel *hot = panel->HasHotkey(unichar);
-			if (hot)
+			Panel* hot = panel->HasHotkey( unichar );
+			if( hot )
 			{
 				// post a message to the menuitem telling it it's hotkey was pressed
-				PostMessage(hot, new KeyValues("Hotkey"));
+				PostMessage( hot, new KeyValues( "Hotkey" ) );
 				return;
 			}
 			// if the menuitem is a cascading menuitem and it is open, check its hotkeys too
-			Menu *cascadingMenu = panel->GetMenu();
-			if (cascadingMenu && cascadingMenu->IsVisible())
+			Menu* cascadingMenu = panel->GetMenu();
+			if( cascadingMenu && cascadingMenu->IsVisible() )
 			{
-				cascadingMenu->OnKeyTyped(unichar);
+				cascadingMenu->OnKeyTyped( unichar );
 			}
 		}
 	}
 }
 
-void Menu::OnTypeAhead(wchar_t unichar)
+void Menu::OnTypeAhead( wchar_t unichar )
 {
 	// Don't do anything if the menu is empty since there cannot be a selected item.
-	if ( m_MenuItems.Count() <= 0)
+	if( m_MenuItems.Count() <= 0 )
+	{
 		return;
+	}
 
 	// expire the type ahead buffer after 0.5 seconds
 	double tCurrentTime = Sys_FloatTime();
-	if ( (tCurrentTime - m_fLastTypeAheadTime) > 0.5f )
+	if( ( tCurrentTime - m_fLastTypeAheadTime ) > 0.5f )
 	{
 		m_iNumTypeAheadChars = 0;
 		m_szTypeAheadBuf[0] = '\0';
@@ -1475,13 +1505,13 @@ void Menu::OnTypeAhead(wchar_t unichar)
 	m_fLastTypeAheadTime = tCurrentTime;
 
 	// add current character to the type ahead buffer
-	if ( m_iNumTypeAheadChars+1 < TYPEAHEAD_BUFSIZE )
+	if( m_iNumTypeAheadChars + 1 < TYPEAHEAD_BUFSIZE )
 	{
 		m_szTypeAheadBuf[m_iNumTypeAheadChars++] = unichar;
 	}
 
 	int itemToSelect = m_iCurrentlySelectedItemID;
-	if ( itemToSelect < 0 || itemToSelect >= m_MenuItems.Count())
+	if( itemToSelect < 0 || itemToSelect >= m_MenuItems.Count() )
 	{
 		itemToSelect = 0;
 	}
@@ -1490,20 +1520,21 @@ void Menu::OnTypeAhead(wchar_t unichar)
 	do
 	{
 		wchar_t menuItemName[255];
-		m_MenuItems[i]->GetText(menuItemName, 254);
+		m_MenuItems[i]->GetText( menuItemName, 254 );
 
 		// This is supposed to be case insensitive but we don't have a portable case
 		// insensitive wide-character routine.
-		if ( wcsncmp( m_szTypeAheadBuf, menuItemName, m_iNumTypeAheadChars) == 0 )			
+		if( wcsncmp( m_szTypeAheadBuf, menuItemName, m_iNumTypeAheadChars ) == 0 )
 		{
 			itemToSelect = i;
-			break;			
+			break;
 		}
 
-		i = (i+1) % m_MenuItems.Count();
-	} while ( i != itemToSelect );
+		i = ( i + 1 ) % m_MenuItems.Count();
+	}
+	while( i != itemToSelect );
 
-	if ( itemToSelect >= 0 )
+	if( itemToSelect >= 0 )
 	{
 		SetCurrentlyHighlightedItem( itemToSelect );
 		InvalidateLayout();
@@ -1512,64 +1543,64 @@ void Menu::OnTypeAhead(wchar_t unichar)
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle key presses, Activate shortcuts
-// Input  : code - 
+// Input  : code -
 //-----------------------------------------------------------------------------
-void Menu::OnKeyTyped(wchar_t unichar)
+void Menu::OnKeyTyped( wchar_t unichar )
 {
-	if (! unichar)
+	if( ! unichar )
 	{
 		return;
 	}
 
 	switch( m_eTypeAheadMode )
 	{
-	case HOT_KEY_MODE:
-		OnHotKey(unichar);
-		return;		
+		case HOT_KEY_MODE:
+			OnHotKey( unichar );
+			return;
 
-	case TYPE_AHEAD_MODE:
-		OnTypeAhead(unichar);
-		return;		
+		case TYPE_AHEAD_MODE:
+			OnTypeAhead( unichar );
+			return;
 
-	case COMPAT_MODE:
-	default:
-		break;
+		case COMPAT_MODE:
+		default:
+			break;
 	}
 
 	int itemToSelect = m_iCurrentlySelectedItemID;
-	if ( itemToSelect < 0 )
+	if( itemToSelect < 0 )
 	{
 		itemToSelect = 0;
 	}
 
 	int i;
-    wchar_t menuItemName[255];
+	wchar_t menuItemName[255];
 
 	i = itemToSelect + 1;
-	if ( i >= m_MenuItems.Count() )
+	if( i >= m_MenuItems.Count() )
 	{
 		i = 0;
 	}
 
-	while ( i != itemToSelect )
+	while( i != itemToSelect )
 	{
-		 m_MenuItems[i]->GetText(menuItemName, 254);
+		m_MenuItems[i]->GetText( menuItemName, 254 );
 
-		if ( tolower( unichar ) == tolower( menuItemName[0] ) )
+		if( tolower( unichar ) == tolower( menuItemName[0] ) )
 		{
 			itemToSelect = i;
-			break;			
+			break;
 		}
 
 		i++;
-		if ( i >= m_MenuItems.Count() )
+		if( i >= m_MenuItems.Count() )
 		{
 			i = 0;
 		}
 	}
 
-	if ( itemToSelect >= 0 )
-    {
+	if( itemToSelect >= 0 )
+	{
 		SetCurrentlyHighlightedItem( itemToSelect );
 		InvalidateLayout();
 	}
@@ -1578,7 +1609,7 @@ void Menu::OnKeyTyped(wchar_t unichar)
 }
 
 
-void Menu::SetTypeAheadMode(MenuTypeAheadMode mode)
+void Menu::SetTypeAheadMode( MenuTypeAheadMode mode )
 {
 	m_eTypeAheadMode = mode;
 }
@@ -1591,15 +1622,17 @@ int Menu::GetTypeAheadMode()
 //-----------------------------------------------------------------------------
 // Purpose: Handle the mouse wheel event, scroll the selection
 //-----------------------------------------------------------------------------
-void Menu::OnMouseWheeled(int delta)
+void Menu::OnMouseWheeled( int delta )
 {
-	if (!m_pScroller->IsVisible())
+	if( !m_pScroller->IsVisible() )
+	{
 		return;
-	
+	}
+
 	int val = m_pScroller->GetValue();
 	val -= delta;
-	
-	m_pScroller->SetValue(val);	
+
+	m_pScroller->SetValue( val );
 
 	// moving the slider redraws the scrollbar,
 	// and so we should redraw the menu since the
@@ -1616,21 +1649,23 @@ void Menu::OnMouseWheeled(int delta)
 void Menu::OnKillFocus()
 {
 	// check to see if it's a child taking it
-	if (!input()->GetFocus() || !ipanel()->HasParent(input()->GetFocus(), GetVPanel()))
+	if( !input()->GetFocus() || !ipanel()->HasParent( input()->GetFocus(), GetVPanel() ) )
 	{
 		// if we don't accept keyboard input, then we have to ignore the killfocus if it's not actually being stolen
-		if (!IsKeyBoardInputEnabled() && !input()->GetFocus())
+		if( !IsKeyBoardInputEnabled() && !input()->GetFocus() )
+		{
 			return;
+		}
 
-		// get the parent of this menu. 
-		MenuItem *item = GetParentMenuItem();
+		// get the parent of this menu.
+		MenuItem* item = GetParentMenuItem();
 		// if the parent is a menu item, this menu is a cascading menu
 		// if the panel that is getting focus is the parent menu, don't close this menu.
-		if ( (item) && (input()->GetFocus() == item->GetVParent()) )
+		if( ( item ) && ( input()->GetFocus() == item->GetVParent() ) )
 		{
 			// if we are in mouse mode and we clicked on the menuitem that
 			// triggers the cascading menu, leave it open.
-			if (m_iInputMode == MOUSE)
+			if( m_iInputMode == MOUSE )
 			{
 				// return the focus to the cascading menu.
 				MoveToFront();
@@ -1639,12 +1674,12 @@ void Menu::OnKillFocus()
 		}
 
 		// forward the message to the parent.
-		PostActionSignal(new KeyValues("MenuClose"));
+		PostActionSignal( new KeyValues( "MenuClose" ) );
 
 		// hide this menu
-		SetVisible(false);
+		SetVisible( false );
 	}
-	
+
 }
 
 namespace vgui
@@ -1653,16 +1688,20 @@ namespace vgui
 class CMenuManager
 {
 public:
-	void AddMenu( Menu *m )
+	void AddMenu( Menu* m )
 	{
-		if ( !m )
+		if( !m )
+		{
 			return;
+		}
 
 		int c = m_Menus.Count();
-		for ( int i = 0 ; i < c; ++i )
+		for( int i = 0 ; i < c; ++i )
 		{
-			if ( m_Menus[ i ].Get() == m )
+			if( m_Menus[ i ].Get() == m )
+			{
 				return;
+			}
 		}
 
 		DHANDLE< Menu > h;
@@ -1670,15 +1709,17 @@ public:
 		m_Menus.AddToTail( h );
 	}
 
-	void RemoveMenu( Menu *m )
+	void RemoveMenu( Menu* m )
 	{
-		if ( !m )
+		if( !m )
+		{
 			return;
+		}
 
 		int c = m_Menus.Count();
-		for ( int i = c - 1 ; i >= 0; --i )
+		for( int i = c - 1 ; i >= 0; --i )
 		{
-			if ( m_Menus[ i ].Get() == m )
+			if( m_Menus[ i ].Get() == m )
 			{
 				m_Menus.Remove( i );
 				return;
@@ -1686,34 +1727,36 @@ public:
 		}
 	}
 
-	void OnInternalMousePressed( Panel *other, MouseCode code )
+	void OnInternalMousePressed( Panel* other, MouseCode code )
 	{
 		int c = m_Menus.Count();
-		if ( !c )
+		if( !c )
+		{
 			return;
+		}
 
 		int x, y;
 		input()->GetCursorPos( x, y );
 
 		bool mouseInsideMenuRelatedPanel = false;
 
-		for ( int i = c - 1; i >= 0 ; --i )
+		for( int i = c - 1; i >= 0 ; --i )
 		{
-			Menu *m = m_Menus[ i ].Get();
-			if ( !m )
+			Menu* m = m_Menus[ i ].Get();
+			if( !m )
 			{
 				m_Menus.Remove( i );
 				continue;
 			}
 
 			// See if the mouse is within a menu
-			if ( IsWithinMenuOrRelative( m, x, y ) )
+			if( IsWithinMenuOrRelative( m, x, y ) )
 			{
 				mouseInsideMenuRelatedPanel = true;
 			}
 		}
 
-		if ( mouseInsideMenuRelatedPanel )
+		if( mouseInsideMenuRelatedPanel )
 		{
 			return;
 		}
@@ -1725,10 +1768,10 @@ public:
 	{
 		// Close all of the menus
 		int c = m_Menus.Count();
-		for ( int i = c - 1; i >= 0 ; --i )
+		for( int i = c - 1; i >= 0 ; --i )
 		{
-			Menu *m = m_Menus[ i ].Get();
-			if ( !m )
+			Menu* m = m_Menus[ i ].Get();
+			if( !m )
 			{
 				continue;
 			}
@@ -1742,33 +1785,33 @@ public:
 		m_Menus.RemoveAll();
 	}
 
-	bool IsWithinMenuOrRelative( Panel *panel, int x, int y )
+	bool IsWithinMenuOrRelative( Panel* panel, int x, int y )
 	{
 		VPANEL topMost = panel->IsWithinTraverse( x, y, true );
-		if ( topMost )
+		if( topMost )
 		{
 			// It's over the menu
-			if ( topMost == panel->GetVPanel() )
+			if( topMost == panel->GetVPanel() )
 			{
 				return true;
 			}
 
 			// It's over something which is parented to the menu (i.e., a menu item)
-			if ( ipanel()->HasParent( topMost, panel->GetVPanel() ) )
+			if( ipanel()->HasParent( topMost, panel->GetVPanel() ) )
 			{
 				return true;
 			}
 		}
 
-		if ( panel->GetParent() )
+		if( panel->GetParent() )
 		{
-			Panel *parent = panel->GetParent();
+			Panel* parent = panel->GetParent();
 
 			topMost = parent->IsWithinTraverse( x, y, true );
 
-			if ( topMost )
+			if( topMost )
 			{
-				if ( topMost == parent->GetVPanel() )
+				if( topMost == parent->GetVPanel() )
 				{
 					return true;
 				}
@@ -1783,7 +1826,7 @@ public:
 					ipanel()->HasParent( topMost, parent->GetVPanel() ) &&
 					dynamic_cast< MenuButton * >( pTopMost ) )
 				{
-					Msg( "topMost %s has parent %s\n", 
+					Msg( "topMost %s has parent %s\n",
 						ipanel()->GetName( topMost ),
 						parent->GetName() );
 
@@ -1797,7 +1840,7 @@ public:
 	}
 
 #ifdef DBGFLAG_VALIDATE
-	void Validate( CValidator &validator, char *pchName )
+	void Validate( CValidator& validator, char* pchName )
 	{
 		validator.Push( "CMenuManager", this, pchName );
 		m_Menus.Validate( validator, "m_Menus" );
@@ -1815,7 +1858,7 @@ private:
 // Singleton helper class
 static CMenuManager g_MenuMgr;
 
-void ValidateMenuGlobals( CValidator &validator )
+void ValidateMenuGlobals( CValidator& validator )
 {
 #ifdef DBGFLAG_VALIDATE
 	g_MenuMgr.Validate( validator, "g_MenuMgr" );
@@ -1826,60 +1869,62 @@ void ValidateMenuGlobals( CValidator &validator )
 
 //-----------------------------------------------------------------------------
 // Purpose: Static method called on mouse released to see if Menu objects should be aborted
-// Input  : *other - 
-//			code - 
+// Input  : *other -
+//			code -
 //-----------------------------------------------------------------------------
-void Menu::OnInternalMousePressed( Panel *other, MouseCode code )
+void Menu::OnInternalMousePressed( Panel* other, MouseCode code )
 {
 	g_MenuMgr.OnInternalMousePressed( other, code );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Set visibility of menu and its children as appropriate. 
+// Purpose: Set visibility of menu and its children as appropriate.
 //-----------------------------------------------------------------------------
-void Menu::SetVisible(bool state)
+void Menu::SetVisible( bool state )
 {
-	if (state == IsVisible())
-		return;
-
-	if ( state == false )
+	if( state == IsVisible() )
 	{
-		PostActionSignal(new KeyValues("MenuClose"));
-		CloseOtherMenus(NULL);
+		return;
+	}
 
-		SetCurrentlySelectedItem(-1);
+	if( state == false )
+	{
+		PostActionSignal( new KeyValues( "MenuClose" ) );
+		CloseOtherMenus( NULL );
+
+		SetCurrentlySelectedItem( -1 );
 
 		g_MenuMgr.RemoveMenu( this );
 	}
-	else if ( state == true )
+	else if( state == true )
 	{
 		MoveToFront();
 		RequestFocus();
 
 		// Add to menu manager?
-		if ( m_bUseMenuManager )
+		if( m_bUseMenuManager )
 		{
 			g_MenuMgr.AddMenu( this );
 		}
 	}
-	
+
 	// must be after movetofront()
-	BaseClass::SetVisible(state);
+	BaseClass::SetVisible( state );
 	_sizedForScrollBar = false;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void Menu::ApplySchemeSettings(IScheme *pScheme)
+void Menu::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
-	
-	SetFgColor(GetSchemeColor("Menu.TextColor", pScheme));
-	SetBgColor(GetSchemeColor("Menu.BgColor", pScheme));
+	BaseClass::ApplySchemeSettings( pScheme );
 
-	_borderDark = pScheme->GetColor("BorderDark", Color(255, 255, 255, 0));
+	SetFgColor( GetSchemeColor( "Menu.TextColor", pScheme ) );
+	SetBgColor( GetSchemeColor( "Menu.BgColor", pScheme ) );
+
+	_borderDark = pScheme->GetColor( "BorderDark", Color( 255, 255, 255, 0 ) );
 
 	FOR_EACH_LL( m_MenuItems, i )
 	{
@@ -1888,7 +1933,7 @@ void Menu::ApplySchemeSettings(IScheme *pScheme)
 			int wide, tall;
 			m_MenuItems[i]->GetCheckImageSize( wide, tall );
 
-			m_iCheckImageWidth = max ( m_iCheckImageWidth, wide );
+			m_iCheckImageWidth = max( m_iCheckImageWidth, wide );
 		}
 	}
 	_recalculateWidth = true;
@@ -1922,50 +1967,50 @@ void Menu::SetFgColor( Color newColor )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void Menu::SetBorder(class IBorder *border)
+void Menu::SetBorder( class IBorder* border )
 {
-	Panel::SetBorder(border);
+	Panel::SetBorder( border );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: returns a pointer to a MenuItem that is this menus parent, if it has one
 //-----------------------------------------------------------------------------
-MenuItem *Menu::GetParentMenuItem()
+MenuItem* Menu::GetParentMenuItem()
 {
-	return dynamic_cast<MenuItem *>(GetParent());
+	return dynamic_cast<MenuItem*>( GetParent() );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Hide the menu when an item has been selected
 //-----------------------------------------------------------------------------
-void Menu::OnMenuItemSelected(Panel *panel)
+void Menu::OnMenuItemSelected( Panel* panel )
 {
-	SetVisible(false);
-	m_pScroller->SetVisible(false);
-	
+	SetVisible( false );
+	m_pScroller->SetVisible( false );
+
 	// chain this message up through the hierarchy so
 	// all the parent menus will close
-	
-	// get the parent of this menu. 
-	MenuItem *item = GetParentMenuItem();
+
+	// get the parent of this menu.
+	MenuItem* item = GetParentMenuItem();
 	// if the parent is a menu item, this menu is a cascading menu
-	if (item)
+	if( item )
 	{
 		// get the parent of the menuitem. it should be a menu.
-		Menu *parentMenu = item->GetParentMenu();
-		if (parentMenu)
+		Menu* parentMenu = item->GetParentMenu();
+		if( parentMenu )
 		{
 			// send the message to this parent menu
-			KeyValues *kv = new KeyValues("MenuItemSelected");
-			kv->SetPtr("panel", panel);
-			ivgui()->PostMessage(parentMenu->GetVPanel(),  kv, GetVPanel());
+			KeyValues* kv = new KeyValues( "MenuItemSelected" );
+			kv->SetPtr( "panel", panel );
+			ivgui()->PostMessage( parentMenu->GetVPanel(),  kv, GetVPanel() );
 		}
 	}
 
 	bool activeItemSet = false;
-	
+
 	FOR_EACH_LL( m_MenuItems, i )
 	{
 		if( m_MenuItems[i] == panel )
@@ -1979,7 +2024,7 @@ void Menu::OnMenuItemSelected(Panel *panel)
 	{
 		FOR_EACH_LL( m_MenuItems, i )
 		{
-			if(m_MenuItems[i]->HasMenu() )
+			if( m_MenuItems[i]->HasMenu() )
 			{
 				/*
 				// GetActiveItem needs to return -1 or similar if it hasn't been set...
@@ -1992,17 +2037,17 @@ void Menu::OnMenuItemSelected(Panel *panel)
 	}
 
 	// also pass it to the parent so they can respond if they like
-	if (GetVParent())
+	if( GetVParent() )
 	{
-		KeyValues *kv = new KeyValues("MenuItemSelected");
-		kv->SetPtr("panel", panel);
+		KeyValues* kv = new KeyValues( "MenuItemSelected" );
+		kv->SetPtr( "panel", panel );
 
-		ivgui()->PostMessage(GetVParent(), kv, GetVPanel());
+		ivgui()->PostMessage( GetVParent(), kv, GetVPanel() );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int Menu::GetActiveItem()
 {
@@ -2010,15 +2055,15 @@ int Menu::GetActiveItem()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-KeyValues *Menu::GetItemUserData(int itemID)
+KeyValues* Menu::GetItemUserData( int itemID )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		// make sure its enabled since disabled items get highlighted.
-		if (menuItem && menuItem->IsEnabled())
+		if( menuItem && menuItem->IsEnabled() )
 		{
 			return menuItem->GetUserData();
 		}
@@ -2030,26 +2075,26 @@ KeyValues *Menu::GetItemUserData(int itemID)
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
-void Menu::GetItemText(int itemID, wchar_t *text, int bufLenInBytes)
+void Menu::GetItemText( int itemID, wchar_t* text, int bufLenInBytes )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
-		if (menuItem)
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
+		if( menuItem )
 		{
-			menuItem->GetText(text, bufLenInBytes);
+			menuItem->GetText( text, bufLenInBytes );
 			return;
 		}
 	}
 	text[0] = 0;
 }
 
-void Menu::GetItemText(int itemID, char *text, int bufLenInBytes)
+void Menu::GetItemText( int itemID, char* text, int bufLenInBytes )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
-		if (menuItem)
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
+		if( menuItem )
 		{
 			menuItem->GetText( text, bufLenInBytes );
 			return;
@@ -2063,13 +2108,13 @@ void Menu::GetItemText(int itemID, char *text, int bufLenInBytes)
 //-----------------------------------------------------------------------------
 // Purpose: Activate the n'th item in the menu list, as if that menu item had been selected by the user
 //-----------------------------------------------------------------------------
-void Menu::ActivateItem(int itemID)
+void Menu::ActivateItem( int itemID )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		// make sure its enabled since disabled items get highlighted.
-		if (menuItem && menuItem->IsEnabled())
+		if( menuItem && menuItem->IsEnabled() )
 		{
 			menuItem->FireActionSignal();
 			m_iActivatedItem = itemID;
@@ -2078,15 +2123,15 @@ void Menu::ActivateItem(int itemID)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void Menu::SilentActivateItem(int itemID)
+void Menu::SilentActivateItem( int itemID )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		// make sure its enabled since disabled items get highlighted.
-		if (menuItem && menuItem->IsEnabled())
+		if( menuItem && menuItem->IsEnabled() )
 		{
 			m_iActivatedItem = itemID;
 		}
@@ -2094,13 +2139,13 @@ void Menu::SilentActivateItem(int itemID)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void Menu::ActivateItemByRow(int row)
+void Menu::ActivateItemByRow( int row )
 {
-	if (m_SortedItems.IsValidIndex(row))
+	if( m_SortedItems.IsValidIndex( row ) )
 	{
-		ActivateItem(m_SortedItems[row]);
+		ActivateItem( m_SortedItems[row] );
 	}
 }
 
@@ -2113,12 +2158,14 @@ int Menu::GetItemCount() const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int Menu::GetMenuID(int index)
+int Menu::GetMenuID( int index )
 {
-	if ( !m_SortedItems.IsValidIndex(index) )
+	if( !m_SortedItems.IsValidIndex( index ) )
+	{
 		return m_MenuItems.InvalidIndex();
+	}
 
 	return m_SortedItems[index];
 }
@@ -2128,12 +2175,12 @@ int Menu::GetMenuID(int index)
 //-----------------------------------------------------------------------------
 int Menu::GetCurrentlyVisibleItemsCount()
 {
-	if (m_MenuItems.Count() < m_iNumVisibleLines)
+	if( m_MenuItems.Count() < m_iNumVisibleLines )
 	{
 		int cMenuItems = 0;
-		FOR_EACH_LL(m_MenuItems, i)
+		FOR_EACH_LL( m_MenuItems, i )
 		{
-			if (m_MenuItems[i]->IsVisible())
+			if( m_MenuItems[i]->IsVisible() )
 			{
 				++cMenuItems;
 			}
@@ -2146,16 +2193,16 @@ int Menu::GetCurrentlyVisibleItemsCount()
 
 //-----------------------------------------------------------------------------
 // Purpose: Enables/disables choices in the list
-//			itemText - string name of item in the list 
+//			itemText - string name of item in the list
 //			state - true enables, false disables
 //-----------------------------------------------------------------------------
-void Menu::SetItemEnabled(const char *itemName, bool state)
+void Menu::SetItemEnabled( const char* itemName, bool state )
 {
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		if ((Q_stricmp(itemName, m_MenuItems[i]->GetName())) == 0)
+		if( ( Q_stricmp( itemName, m_MenuItems[i]->GetName() ) ) == 0 )
 		{
-			m_MenuItems[i]->SetEnabled(state);
+			m_MenuItems[i]->SetEnabled( state );
 		}
 	}
 }
@@ -2163,24 +2210,26 @@ void Menu::SetItemEnabled(const char *itemName, bool state)
 //-----------------------------------------------------------------------------
 // Purpose: Enables/disables choices in the list
 //-----------------------------------------------------------------------------
-void Menu::SetItemEnabled(int itemID, bool state)
+void Menu::SetItemEnabled( int itemID, bool state )
 {
-	if ( !m_MenuItems.IsValidIndex(itemID) )
+	if( !m_MenuItems.IsValidIndex( itemID ) )
+	{
 		return;
+	}
 
-	m_MenuItems[itemID]->SetEnabled(state);
+	m_MenuItems[itemID]->SetEnabled( state );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: shows/hides choices in the list
 //-----------------------------------------------------------------------------
-void Menu::SetItemVisible(const char *itemName, bool state)
+void Menu::SetItemVisible( const char* itemName, bool state )
 {
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		if ((Q_stricmp(itemName, m_MenuItems[i]->GetName())) == 0)
+		if( ( Q_stricmp( itemName, m_MenuItems[i]->GetName() ) ) == 0 )
 		{
-			m_MenuItems[i]->SetVisible(state);
+			m_MenuItems[i]->SetVisible( state );
 			InvalidateLayout();
 		}
 	}
@@ -2189,12 +2238,14 @@ void Menu::SetItemVisible(const char *itemName, bool state)
 //-----------------------------------------------------------------------------
 // Purpose: shows/hides choices in the list
 //-----------------------------------------------------------------------------
-void Menu::SetItemVisible(int itemID, bool state)
+void Menu::SetItemVisible( int itemID, bool state )
 {
-	if ( !m_MenuItems.IsValidIndex(itemID) )
+	if( !m_MenuItems.IsValidIndex( itemID ) )
+	{
 		return;
+	}
 
-	m_MenuItems[itemID]->SetVisible(state);
+	m_MenuItems[itemID]->SetVisible( state );
 }
 
 //-----------------------------------------------------------------------------
@@ -2203,7 +2254,7 @@ void Menu::SetItemVisible(int itemID, bool state)
 //-----------------------------------------------------------------------------
 void Menu::AddScrollBar()
 {
-	m_pScroller->SetVisible(true);
+	m_pScroller->SetVisible( true );
 	_sizedForScrollBar = true;
 }
 
@@ -2212,16 +2263,16 @@ void Menu::AddScrollBar()
 //-----------------------------------------------------------------------------
 void Menu::RemoveScrollBar()
 {
-	m_pScroller->SetVisible(false);
+	m_pScroller->SetVisible( false );
 	_sizedForScrollBar = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Invalidate layout if the slider is moved so items scroll 
+// Purpose: Invalidate layout if the slider is moved so items scroll
 //-----------------------------------------------------------------------------
 void Menu::OnSliderMoved()
 {
-	CloseOtherMenus(NULL); // close any cascading menus
+	CloseOtherMenus( NULL ); // close any cascading menus
 
 	// Invalidate so we redraw the menu!
 	InvalidateLayout();
@@ -2231,26 +2282,26 @@ void Menu::OnSliderMoved()
 //-----------------------------------------------------------------------------
 // Purpose: Toggle into mouse mode.
 //-----------------------------------------------------------------------------
-void Menu::OnCursorMoved(int x, int y)
+void Menu::OnCursorMoved( int x, int y )
 {
 	m_iInputMode = MOUSE;
-	
+
 	// chain up
-	CallParentFunction(new KeyValues("OnCursorMoved", "x", x, "y", y));
+	CallParentFunction( new KeyValues( "OnCursorMoved", "x", x, "y", y ) );
 	RequestFocus();
 	InvalidateLayout();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Toggle into keyboard mode. 
+// Purpose: Toggle into keyboard mode.
 //-----------------------------------------------------------------------------
-void Menu::OnKeyCodePressed(KeyCode code)
+void Menu::OnKeyCodePressed( KeyCode code )
 {
 	m_iInputMode = KEYBOARD;
 	// send the message to this parent in case this is a cascading menu
-	if (GetVParent())
+	if( GetVParent() )
 	{
-		ivgui()->PostMessage(GetVParent(), new KeyValues("KeyModeSet"), GetVPanel());
+		ivgui()->PostMessage( GetVParent(), new KeyValues( "KeyModeSet" ), GetVPanel() );
 	}
 
 	BaseClass::OnKeyCodePressed( code );
@@ -2259,14 +2310,14 @@ void Menu::OnKeyCodePressed(KeyCode code)
 //-----------------------------------------------------------------------------
 // Purpose: Sets the item currently highlighted in the menu by ptr
 //-----------------------------------------------------------------------------
-void Menu::SetCurrentlySelectedItem(MenuItem *item)
-{	
+void Menu::SetCurrentlySelectedItem( MenuItem* item )
+{
 	int itemNum = -1;
 	// find it in our list of menuitems
 	FOR_EACH_LL( m_MenuItems, i )
 	{
-		MenuItem *child = m_MenuItems[i];
-		if (child == item)
+		MenuItem* child = m_MenuItems[i];
+		if( child == item )
 		{
 			itemNum = i;
 			break;
@@ -2274,7 +2325,7 @@ void Menu::SetCurrentlySelectedItem(MenuItem *item)
 	}
 	Assert( itemNum >= 0 );
 
-	SetCurrentlySelectedItem(itemNum);
+	SetCurrentlySelectedItem( itemNum );
 }
 
 
@@ -2283,7 +2334,7 @@ void Menu::SetCurrentlySelectedItem(MenuItem *item)
 //-----------------------------------------------------------------------------
 void Menu::ClearCurrentlyHighlightedItem()
 {
-	if ( m_MenuItems.IsValidIndex(m_iCurrentlySelectedItemID) )
+	if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 	{
 		m_MenuItems[m_iCurrentlySelectedItemID]->DisarmItem();
 	}
@@ -2293,18 +2344,20 @@ void Menu::ClearCurrentlyHighlightedItem()
 //-----------------------------------------------------------------------------
 // Purpose: Sets the item currently highlighted in the menu by index
 //-----------------------------------------------------------------------------
-void Menu::SetCurrentlySelectedItem(int itemID)
+void Menu::SetCurrentlySelectedItem( int itemID )
 {
 	// dont deselect if its the same item
-	if (itemID == m_iCurrentlySelectedItemID)
+	if( itemID == m_iCurrentlySelectedItemID )
+	{
 		return;
+	}
 
-	if ( m_MenuItems.IsValidIndex(m_iCurrentlySelectedItemID) )
+	if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 	{
 		m_MenuItems[m_iCurrentlySelectedItemID]->DisarmItem();
 	}
 
-	PostActionSignal(new KeyValues("MenuItemHighlight", "itemID", itemID));
+	PostActionSignal( new KeyValues( "MenuItemHighlight", "itemID", itemID ) );
 	m_iCurrentlySelectedItemID = itemID;
 }
 
@@ -2314,34 +2367,38 @@ void Menu::SetCurrentlySelectedItem(int itemID)
 // to have the combobox item highlighted in the menu when they open the
 // dropdown.
 //-----------------------------------------------------------------------------
-void Menu::SetCurrentlyHighlightedItem(int itemID)
+void Menu::SetCurrentlyHighlightedItem( int itemID )
 {
-	SetCurrentlySelectedItem(itemID);
-	int row = m_SortedItems.Find(itemID);
+	SetCurrentlySelectedItem( itemID );
+	int row = m_SortedItems.Find( itemID );
 	// If we have no items, then row will be -1. The dev console, for example...
 	Assert( ( m_SortedItems.Count() == 0 ) || ( row != -1 ) );
-	if ( row == -1 )
+	if( row == -1 )
+	{
 		return;
+	}
 
 	// if there is a scroll bar, and we scroll off lets move it.
-	if ( m_pScroller->IsVisible() )
+	if( m_pScroller->IsVisible() )
 	{
 		// now if we are off the scroll bar, it means we moved the scroll bar
-		// by hand or set the item off the list 
+		// by hand or set the item off the list
 		// so just snap the scroll bar straight to the item.
-		if ( ( row >  m_pScroller->GetValue() + m_iNumVisibleLines - 1 ) ||
-			 ( row < m_pScroller->GetValue() ) )
-		{				
-			if ( !m_pScroller->IsVisible() )
+		if( ( row >  m_pScroller->GetValue() + m_iNumVisibleLines - 1 ) ||
+				( row < m_pScroller->GetValue() ) )
+		{
+			if( !m_pScroller->IsVisible() )
+			{
 				return;
-			
-			m_pScroller->SetValue(row);	
+			}
+
+			m_pScroller->SetValue( row );
 		}
 	}
 
-	if ( m_MenuItems.IsValidIndex(m_iCurrentlySelectedItemID) )
+	if( m_MenuItems.IsValidIndex( m_iCurrentlySelectedItemID ) )
 	{
-		if ( !m_MenuItems[m_iCurrentlySelectedItemID]->IsArmed() )
+		if( !m_MenuItems[m_iCurrentlySelectedItemID]->IsArmed() )
 		{
 			m_MenuItems[m_iCurrentlySelectedItemID]->ArmItem();
 		}
@@ -2359,31 +2416,31 @@ int Menu::GetCurrentlyHighlightedItem()
 //-----------------------------------------------------------------------------
 // Purpose: Respond to cursor entering a menuItem.
 //-----------------------------------------------------------------------------
-void Menu::OnCursorEnteredMenuItem(int VPanel)
+void Menu::OnCursorEnteredMenuItem( int VPanel )
 {
-	VPANEL menuItem = (VPANEL)VPanel;
+	VPANEL menuItem = ( VPANEL )VPanel;
 	// if we are in mouse mode
-	if (m_iInputMode == MOUSE)
+	if( m_iInputMode == MOUSE )
 	{
-		MenuItem *item = static_cast<MenuItem *>(ipanel()->GetPanel(menuItem, GetModuleName()));
+		MenuItem* item = static_cast<MenuItem*>( ipanel()->GetPanel( menuItem, GetModuleName() ) );
 		// arm the menu
 		item->ArmItem();
 		// open the cascading menu if there is one.
 		item->OpenCascadeMenu();
-		SetCurrentlySelectedItem(item);
+		SetCurrentlySelectedItem( item );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Respond to cursor exiting a menuItem
 //-----------------------------------------------------------------------------
-void Menu::OnCursorExitedMenuItem(int VPanel)
+void Menu::OnCursorExitedMenuItem( int VPanel )
 {
-	VPANEL menuItem = (VPANEL)VPanel;
+	VPANEL menuItem = ( VPANEL )VPanel;
 	// only care if we are in mouse mode
-	if (m_iInputMode == MOUSE)
+	if( m_iInputMode == MOUSE )
 	{
-		MenuItem *item = static_cast<MenuItem *>(ipanel()->GetPanel(menuItem, GetModuleName()));
+		MenuItem* item = static_cast<MenuItem*>( ipanel()->GetPanel( menuItem, GetModuleName() ) );
 		// unhighlight the item.
 		// note menuItems with cascading menus will stay lit.
 		item->DisarmItem();
@@ -2391,22 +2448,24 @@ void Menu::OnCursorExitedMenuItem(int VPanel)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Move up or down one in the list of items in the menu 
+// Purpose: Move up or down one in the list of items in the menu
 //			Direction is MENU_UP or MENU_DOWN
 //-----------------------------------------------------------------------------
-void Menu::MoveAlongMenuItemList(int direction, int loopCount)
+void Menu::MoveAlongMenuItemList( int direction, int loopCount )
 {
 	// Early out if no menu items to scroll through
-	if (m_MenuItems.Count() <= 0)
+	if( m_MenuItems.Count() <= 0 )
+	{
 		return;
+	}
 
 	int itemID = m_iCurrentlySelectedItemID;
-	int row = m_SortedItems.Find(itemID);
+	int row = m_SortedItems.Find( itemID );
 	row += direction;
-	
-	if ( row > m_SortedItems.Count() - 1 )
+
+	if( row > m_SortedItems.Count() - 1 )
 	{
-		if ( m_pScroller->IsVisible() )
+		if( m_pScroller->IsVisible() )
 		{
 			// stop at bottom of scrolled list
 			row = m_SortedItems.Count() - 1;
@@ -2417,9 +2476,9 @@ void Menu::MoveAlongMenuItemList(int direction, int loopCount)
 			row = 0;
 		}
 	}
-	else if (row < 0)
+	else if( row < 0 )
 	{
-		if ( m_pScroller->IsVisible() )
+		if( m_pScroller->IsVisible() )
 		{
 			// stop at top of scrolled list
 			row = m_pScroller->GetValue();
@@ -2427,65 +2486,65 @@ void Menu::MoveAlongMenuItemList(int direction, int loopCount)
 		else
 		{
 			// if no scroll bar circle around
-			row = m_SortedItems.Count()-1;
+			row = m_SortedItems.Count() - 1;
 		}
 	}
 
 	// if there is a scroll bar, and we scroll off lets move it.
-	if ( m_pScroller->IsVisible() )
+	if( m_pScroller->IsVisible() )
 	{
-		if ( row > m_pScroller->GetValue() + m_iNumVisibleLines - 1)
-		{				
+		if( row > m_pScroller->GetValue() + m_iNumVisibleLines - 1 )
+		{
 			int val = m_pScroller->GetValue();
 			val -= -direction;
-			
-			m_pScroller->SetValue(val);	
-			
+
+			m_pScroller->SetValue( val );
+
 			// moving the slider redraws the scrollbar,
 			// and so we should redraw the menu since the
 			// menu draws the black border to the right of the scrollbar.
 			InvalidateLayout();
 		}
-		else if ( row < m_pScroller->GetValue() )
-		{				
-			int val = m_pScroller->GetValue();	
+		else if( row < m_pScroller->GetValue() )
+		{
+			int val = m_pScroller->GetValue();
 			val -= -direction;
-			
-			m_pScroller->SetValue(val);	
-			
+
+			m_pScroller->SetValue( val );
+
 			// moving the slider redraws the scrollbar,
 			// and so we should redraw the menu since the
 			// menu draws the black border to the right of the scrollbar.
-			InvalidateLayout();	
+			InvalidateLayout();
 		}
-	
+
 		// now if we are still off the scroll bar, it means we moved the scroll bar
 		// by hand and created a situation in which we moved an item down, but the
 		// scroll bar is already too far down and should scroll up or vice versa
 		// so just snap the scroll bar straight to the item.
-		if ( ( row > m_pScroller->GetValue() + m_iNumVisibleLines - 1) ||
-			 ( row < m_pScroller->GetValue() ) )
-		{				
-			m_pScroller->SetValue(row);	
+		if( ( row > m_pScroller->GetValue() + m_iNumVisibleLines - 1 ) ||
+				( row < m_pScroller->GetValue() ) )
+		{
+			m_pScroller->SetValue( row );
 		}
 	}
 
 	// switch it back to an itemID from row
-	if ( m_SortedItems.IsValidIndex( row ) )
+	if( m_SortedItems.IsValidIndex( row ) )
 	{
 		SetCurrentlySelectedItem( m_SortedItems[row] );
 	}
 
 	// don't allow us to loop around more than once
-	if (loopCount < m_MenuItems.Count())
+	if( loopCount < m_MenuItems.Count() )
 	{
 		// see if the text is empty, if so skip
 		wchar_t text[256];
-		m_MenuItems[m_iCurrentlySelectedItemID]->GetText(text, 255);
-		if (text[0] == 0 || !m_MenuItems[m_iCurrentlySelectedItemID]->IsVisible())
+		m_MenuItems[m_iCurrentlySelectedItemID]->GetText( text, 255 );
+		if( text[0] == 0 || !m_MenuItems[m_iCurrentlySelectedItemID]->IsVisible() )
 		{
 			// menu item is empty, keep moving along
-			MoveAlongMenuItemList(direction, loopCount + 1);
+			MoveAlongMenuItemList( direction, loopCount + 1 );
 		}
 	}
 }
@@ -2513,15 +2572,15 @@ void Menu::OnKeyModeSet()
 //-----------------------------------------------------------------------------
 // Purpose: Set the checked state of a menuItem
 //-----------------------------------------------------------------------------
-void Menu::SetMenuItemChecked(int itemID, bool state)
+void Menu::SetMenuItemChecked( int itemID, bool state )
 {
-	m_MenuItems[itemID]->SetChecked(state);
+	m_MenuItems[itemID]->SetChecked( state );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Check if item is checked.
 //-----------------------------------------------------------------------------
-bool Menu::IsChecked(int itemID) 
+bool Menu::IsChecked( int itemID )
 {
 	return m_MenuItems[itemID]->IsChecked();
 }
@@ -2531,7 +2590,7 @@ bool Menu::IsChecked(int itemID)
 // is useful if you have a menu that is sized to the largest item in it
 // but you don't want the menu to be thinner than the menu button
 //-----------------------------------------------------------------------------
-void Menu::SetMinimumWidth(int width)
+void Menu::SetMinimumWidth( int width )
 {
 	m_iMinimumWidth = width;
 }
@@ -2545,8 +2604,8 @@ int Menu::GetMinimumWidth()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  :  - 
+// Purpose:
+// Input  :  -
 //-----------------------------------------------------------------------------
 void Menu::AddSeparator()
 {
@@ -2566,9 +2625,9 @@ void Menu::MoveMenuItem( int itemID, int moveBeforeThisItemID )
 {
 	int c = m_SortedItems.Count();
 	int i;
-	for ( i = 0; i < c; ++i )
+	for( i = 0; i < c; ++i )
 	{
-		if ( m_SortedItems[i] == itemID )
+		if( m_SortedItems[i] == itemID )
 		{
 			m_SortedItems.Remove( i );
 			break;
@@ -2576,16 +2635,16 @@ void Menu::MoveMenuItem( int itemID, int moveBeforeThisItemID )
 	}
 
 	// Didn't find it
-	if ( i >= c )
+	if( i >= c )
 	{
 		return;
 	}
 
 	// Now find insert pos
 	c = m_SortedItems.Count();
-	for ( i = 0; i < c; ++i )
+	for( i = 0; i < c; ++i )
 	{
-		if ( m_SortedItems[i] == moveBeforeThisItemID )
+		if( m_SortedItems[i] == moveBeforeThisItemID )
 		{
 			m_SortedItems.InsertBefore( i, itemID );
 			break;
@@ -2596,7 +2655,7 @@ void Menu::MoveMenuItem( int itemID, int moveBeforeThisItemID )
 void Menu::SetFont( HFont font )
 {
 	m_hItemFont = font;
-	if ( font )
+	if( font )
 	{
 		m_iMenuItemHeight = surface()->GetFontTall( font ) + 2;
 	}
@@ -2604,75 +2663,77 @@ void Menu::SetFont( HFont font )
 }
 
 
-void Menu::SetCurrentKeyBinding( int itemID, char const *hotkey )
+void Menu::SetCurrentKeyBinding( int itemID, char const* hotkey )
 {
-	if ( m_MenuItems.IsValidIndex( itemID ) )
+	if( m_MenuItems.IsValidIndex( itemID ) )
 	{
-		MenuItem *menuItem = dynamic_cast<MenuItem *>(m_MenuItems[itemID]);
+		MenuItem* menuItem = dynamic_cast<MenuItem*>( m_MenuItems[itemID] );
 		menuItem->SetCurrentKeyBinding( hotkey );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Static method to display a context menu
-// Input  : *parent - 
-//			*menu - 
+// Input  : *parent -
+//			*menu -
 //-----------------------------------------------------------------------------
-void Menu::PlaceContextMenu( Panel *parent, Menu *menu )
+void Menu::PlaceContextMenu( Panel* parent, Menu* menu )
 {
 	Assert( parent );
 	Assert( menu );
-	if ( !menu || !parent )
+	if( !menu || !parent )
+	{
 		return;
+	}
 
-	menu->SetVisible(false);
+	menu->SetVisible( false );
 	menu->SetParent( parent );
 	menu->AddActionSignalTarget( parent );
 
 	// get cursor position, this is local to this text edit window
 	int cursorX, cursorY;
-	input()->GetCursorPos(cursorX, cursorY);
+	input()->GetCursorPos( cursorX, cursorY );
 
-	menu->SetVisible(true);
-	
+	menu->SetVisible( true );
+
 	// relayout the menu immediately so that we know it's size
-	menu->InvalidateLayout(true);
+	menu->InvalidateLayout( true );
 	int menuWide, menuTall;
-	menu->GetSize(menuWide, menuTall);
-	
+	menu->GetSize( menuWide, menuTall );
+
 	// work out where the cursor is and therefore the best place to put the menu
 	int wide, tall;
-	surface()->GetScreenSize(wide, tall);
-	
-	if (wide - menuWide > cursorX)
+	surface()->GetScreenSize( wide, tall );
+
+	if( wide - menuWide > cursorX )
 	{
 		// menu hanging right
-		if (tall - menuTall > cursorY)
+		if( tall - menuTall > cursorY )
 		{
 			// menu hanging down
-			menu->SetPos(cursorX, cursorY);
+			menu->SetPos( cursorX, cursorY );
 		}
 		else
 		{
 			// menu hanging up
-			menu->SetPos(cursorX, cursorY - menuTall);
+			menu->SetPos( cursorX, cursorY - menuTall );
 		}
 	}
 	else
 	{
 		// menu hanging left
-		if (tall - menuTall > cursorY)
+		if( tall - menuTall > cursorY )
 		{
 			// menu hanging down
-			menu->SetPos(cursorX - menuWide, cursorY);
+			menu->SetPos( cursorX - menuWide, cursorY );
 		}
 		else
 		{
 			// menu hanging up
-			menu->SetPos(cursorX - menuWide, cursorY - menuTall);
+			menu->SetPos( cursorX - menuWide, cursorY - menuTall );
 		}
 	}
-	
+
 	menu->RequestFocus();
 }
 
@@ -2689,7 +2750,7 @@ void Menu::SetUseFallbackFont( bool bState, HFont hFallback )
 // Input:	validator -		Our global validator object
 //			pchName -		Our name (typically a member var in our container)
 //-----------------------------------------------------------------------------
-void Menu::Validate( CValidator &validator, char *pchName )
+void Menu::Validate( CValidator& validator, char* pchName )
 {
 	validator.Push( "vgui::Menu", this, pchName );
 
@@ -2703,28 +2764,28 @@ void Menu::Validate( CValidator &validator, char *pchName )
 #endif // DBGFLAG_VALIDATE
 
 
-MenuBuilder::MenuBuilder( Menu *pMenu, Panel *pActionTarget )
+MenuBuilder::MenuBuilder( Menu* pMenu, Panel* pActionTarget )
 	: m_pMenu( pMenu )
 	, m_pActionTarget( pActionTarget )
 	, m_pszLastCategory( NULL )
 {}
 
-MenuItem* MenuBuilder::AddMenuItem( const char *pszButtonText, const char *pszCommand, const char *pszCategoryName )
+MenuItem* MenuBuilder::AddMenuItem( const char* pszButtonText, const char* pszCommand, const char* pszCategoryName )
 {
 	AddSepratorIfNeeded( pszCategoryName );
 	return m_pMenu->GetMenuItem( m_pMenu->AddMenuItem( pszButtonText, new KeyValues( pszCommand ), m_pActionTarget ) );
 }
 
-MenuItem* MenuBuilder::AddCascadingMenuItem( const char *pszButtonText, Menu *pSubMenu, const char *pszCategoryName )
+MenuItem* MenuBuilder::AddCascadingMenuItem( const char* pszButtonText, Menu* pSubMenu, const char* pszCategoryName )
 {
 	AddSepratorIfNeeded( pszCategoryName );
 	return m_pMenu->GetMenuItem( m_pMenu->AddCascadingMenuItem( pszButtonText, m_pActionTarget, pSubMenu ) );
 }
 
-void MenuBuilder::AddSepratorIfNeeded( const char *pszCategoryName )
+void MenuBuilder::AddSepratorIfNeeded( const char* pszCategoryName )
 {
 	// Add a separator if the categories are different
-	if ( m_pszLastCategory && V_stricmp( pszCategoryName, m_pszLastCategory ) != 0 )
+	if( m_pszLastCategory && V_stricmp( pszCategoryName, m_pszLastCategory ) != 0 )
 	{
 		m_pMenu->AddSeparator();
 	}

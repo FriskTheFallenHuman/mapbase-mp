@@ -9,7 +9,7 @@
 #define AI_NPCSTATE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 enum NPC_STATE

@@ -11,15 +11,18 @@
 #include "vscript/ivscript.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-extern IScriptVM *g_pScriptVM;
-extern IScriptManager *scriptmanager;
+extern IScriptVM* g_pScriptVM;
+extern IScriptManager* scriptmanager;
 
-HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing = false );
-bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMissing = false );
-inline bool VScriptRunScript( const char *pszScriptName, bool bWarnMissing = false ) { return VScriptRunScript( pszScriptName, NULL, bWarnMissing ); }
+HSCRIPT VScriptCompileScript( const char* pszScriptName, bool bWarnMissing = false );
+bool VScriptRunScript( const char* pszScriptName, HSCRIPT hScope, bool bWarnMissing = false );
+inline bool VScriptRunScript( const char* pszScriptName, bool bWarnMissing = false )
+{
+	return VScriptRunScript( pszScriptName, NULL, bWarnMissing );
+}
 
 bool VScriptVBSPInit();
 void VScriptVBSPTerm();

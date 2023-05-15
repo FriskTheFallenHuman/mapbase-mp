@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -25,9 +25,9 @@ enum EffectType
 
 
 static bool			    s_bUnget = false;
-static unsigned char	*s_buffer;
+static unsigned char*	s_buffer;
 static char			    s_name[ 256 ];
-static const char		*s_currenttoken;
+static const char*		s_currenttoken;
 static int				s_tokencount;
 static char			    s_token[ 1204 ];
 
@@ -57,9 +57,18 @@ public:
 
 	bool  m_bStopFollowOnKill;
 
-	bool IsActive( void ) { return m_bActive; }
-	void Activate( void ) { m_bActive = true; }
-	void Deactivate( void ) { m_bActive = false; }
+	bool IsActive( void )
+	{
+		return m_bActive;
+	}
+	void Activate( void )
+	{
+		m_bActive = true;
+	}
+	void Deactivate( void )
+	{
+		m_bActive = false;
+	}
 private:
 
 	bool m_bActive;
@@ -87,7 +96,7 @@ CEffectScriptElement::CEffectScriptElement()
 
 
 //-----------------------------------------------------------------------------
-// An entity which emits other entities at points 
+// An entity which emits other entities at points
 //-----------------------------------------------------------------------------
 class CEnvEffectsScript : public CBaseAnimating
 {
@@ -99,39 +108,41 @@ public:
 	virtual void Spawn();
 	virtual int  UpdateTransmitState();
 
-	void InputSetSequence( inputdata_t &inputdata );
+	void InputSetSequence( inputdata_t& inputdata );
 	void ParseScriptFile( void );
-	void LoadFromBuffer( const char *scriptfile, const char *buffer );
+	void LoadFromBuffer( const char* scriptfile, const char* buffer );
 
 	virtual void Think( void );
 
 	void ParseNewEffect( void );
 
-	const char *GetScriptFile( void ) 
+	const char* GetScriptFile( void )
 	{
 		return STRING( m_iszScriptName );
 	}
 
-	void HandleAnimEvent ( animevent_t *pEvent );
-	void TrailEffectEvent( CEffectScriptElement *pEffect );
-	void SpriteEffectEvent( CEffectScriptElement *pEffect );
+	void HandleAnimEvent( animevent_t* pEvent );
+	void TrailEffectEvent( CEffectScriptElement* pEffect );
+	void SpriteEffectEvent( CEffectScriptElement* pEffect );
 
-	CEffectScriptElement *GetScriptElementByName( const char *pName );
+	CEffectScriptElement* GetScriptElementByName( const char* pName );
 
 private:
-	
+
 	string_t m_iszScriptName;
-		
+
 	CUtlVector< CEffectScriptElement > m_ScriptElements;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 	bool IsRootCommand( void )
 	{
-		if ( !Q_stricmp( s_token, "effect" ) )
+		if( !Q_stricmp( s_token, "effect" ) )
+		{
 			return true;
+		}
 
 		return false;
 	}
@@ -139,7 +150,7 @@ private:
 
 inline bool ParseToken( void )
 {
-	if ( s_bUnget )
+	if( s_bUnget )
 	{
 		s_bUnget = false;
 		return true;
@@ -157,16 +168,20 @@ inline void Unget()
 
 inline bool TokenWaiting( void )
 {
-	
-	const char *p = s_currenttoken;
-	while ( *p && *p!='\n')
+
+	const char* p = s_currenttoken;
+	while( *p && *p != '\n' )
 	{
 		// Special handler for // comment blocks
-		if ( *p == '/' && *(p+1) == '/' )
+		if( *p == '/' && *( p + 1 ) == '/' )
+		{
 			return false;
+		}
 
-		if ( !V_isspace( *p ) || V_isalnum( *p ) )
+		if( !V_isspace( *p ) || V_isalnum( *p ) )
+		{
 			return true;
+		}
 
 		p++;
 	}
@@ -176,19 +191,19 @@ inline bool TokenWaiting( void )
 
 
 //-----------------------------------------------------------------------------
-// Save/load 
+// Save/load
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CEnvEffectsScript )
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
-	DEFINE_KEYFIELD( m_iszScriptName, FIELD_STRING, "scriptfile" ),
-	// DEFINE_FIELD( m_ScriptElements, CUtlVector < CEffectScriptElement > ),
+// Inputs
+DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
+				  DEFINE_KEYFIELD( m_iszScriptName, FIELD_STRING, "scriptfile" ),
+				  // DEFINE_FIELD( m_ScriptElements, CUtlVector < CEffectScriptElement > ),
 
-	DEFINE_FUNCTION( Think ),
+				  DEFINE_FUNCTION( Think ),
 
-END_DATADESC()
+				  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( env_effectscript, CEnvEffectsScript );
+				  LINK_ENTITY_TO_CLASS( env_effectscript, CEnvEffectsScript );
 
 //-----------------------------------------------------------------------------
 // Should we transmit it to the client?
@@ -206,10 +221,14 @@ void CEnvEffectsScript::Precache()
 	BaseClass::Precache();
 	PrecacheModel( STRING( GetModelName() ) );
 
-	if ( m_iszScriptName != NULL_STRING )
-		 ParseScriptFile();
+	if( m_iszScriptName != NULL_STRING )
+	{
+		ParseScriptFile();
+	}
 	else
-		 Warning( "CEnvEffectsScript with no script!\n" );
+	{
+		Warning( "CEnvEffectsScript with no script!\n" );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -237,18 +256,18 @@ void CEnvEffectsScript::Think( void )
 	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
-void CEnvEffectsScript::TrailEffectEvent( CEffectScriptElement *pEffect )
+void CEnvEffectsScript::TrailEffectEvent( CEffectScriptElement* pEffect )
 {
-	if ( pEffect->IsActive() == false )
+	if( pEffect->IsActive() == false )
 	{
 		//Only one type of this effect active at a time.
-		if ( pEffect->m_pTrail == NULL )
+		if( pEffect->m_pTrail == NULL )
 		{
 			pEffect->m_pTrail = CSpriteTrail::SpriteTrailCreate( pEffect->m_szMaterial, GetAbsOrigin(), true );
 			pEffect->m_pTrail->FollowEntity( this );
 			pEffect->m_pTrail->SetTransparency( pEffect->m_iRenderType, pEffect->m_iR, pEffect->m_iG, pEffect->m_iB, pEffect->m_iA, kRenderFxNone );
 			pEffect->m_pTrail->SetStartWidth( pEffect->m_flScale );
-			if ( pEffect->m_flTextureRes < 0.0f )
+			if( pEffect->m_flTextureRes < 0.0f )
 			{
 				pEffect->m_pTrail->SetTextureResolution( 1.0f / ( 16.0f * pEffect->m_flScale ) );
 			}
@@ -265,12 +284,12 @@ void CEnvEffectsScript::TrailEffectEvent( CEffectScriptElement *pEffect )
 	}
 }
 
-void CEnvEffectsScript::SpriteEffectEvent( CEffectScriptElement *pEffect )
+void CEnvEffectsScript::SpriteEffectEvent( CEffectScriptElement* pEffect )
 {
-	if ( pEffect->IsActive() == false )
+	if( pEffect->IsActive() == false )
 	{
 		//Only one type of this effect active at a time.
-		if ( pEffect->m_pSprite == NULL )
+		if( pEffect->m_pSprite == NULL )
 		{
 			pEffect->m_pSprite = CSprite::SpriteCreate( pEffect->m_szMaterial, GetAbsOrigin(), true );
 			pEffect->m_pSprite->FollowEntity( this );
@@ -284,34 +303,38 @@ void CEnvEffectsScript::SpriteEffectEvent( CEffectScriptElement *pEffect )
 	}
 }
 
-void CEnvEffectsScript::HandleAnimEvent ( animevent_t *pEvent ) 
+void CEnvEffectsScript::HandleAnimEvent( animevent_t* pEvent )
 {
-	if ( pEvent->event == AE_START_SCRIPTED_EFFECT )
+	if( pEvent->event == AE_START_SCRIPTED_EFFECT )
 	{
-		CEffectScriptElement *pCurrent = GetScriptElementByName( pEvent->options );
+		CEffectScriptElement* pCurrent = GetScriptElementByName( pEvent->options );
 
-		if ( pCurrent )
+		if( pCurrent )
 		{
-			if ( pCurrent->m_iType == EFFECT_TYPE_TRAIL )
-				 TrailEffectEvent( pCurrent );
-			else if ( pCurrent->m_iType == EFFECT_TYPE_SPRITE )
-				 SpriteEffectEvent( pCurrent );
+			if( pCurrent->m_iType == EFFECT_TYPE_TRAIL )
+			{
+				TrailEffectEvent( pCurrent );
+			}
+			else if( pCurrent->m_iType == EFFECT_TYPE_SPRITE )
+			{
+				SpriteEffectEvent( pCurrent );
+			}
 		}
 
 		return;
 	}
 
-	if ( pEvent->event == AE_STOP_SCRIPTED_EFFECT )
+	if( pEvent->event == AE_STOP_SCRIPTED_EFFECT )
 	{
-		CEffectScriptElement *pCurrent = GetScriptElementByName( pEvent->options );
+		CEffectScriptElement* pCurrent = GetScriptElementByName( pEvent->options );
 
-		if ( pCurrent && pCurrent->IsActive() )
+		if( pCurrent && pCurrent->IsActive() )
 		{
 			pCurrent->Deactivate();
 
-			if ( pCurrent->m_iType == EFFECT_TYPE_TRAIL )
+			if( pCurrent->m_iType == EFFECT_TYPE_TRAIL )
 			{
-				if ( pCurrent->m_bStopFollowOnKill == true )
+				if( pCurrent->m_bStopFollowOnKill == true )
 				{
 					Vector vOrigin;
 					GetAttachment( pCurrent->m_pTrail->m_nAttachment, vOrigin );
@@ -321,16 +344,16 @@ void CEnvEffectsScript::HandleAnimEvent ( animevent_t *pEvent )
 					pCurrent->m_pTrail->m_hAttachedToEntity = NULL;
 					pCurrent->m_pTrail->m_nAttachment = 0;
 
-					pCurrent->m_pTrail->SetAbsOrigin( vOrigin);
+					pCurrent->m_pTrail->SetAbsOrigin( vOrigin );
 				}
 
 				pCurrent->m_pTrail->FadeAndDie( pCurrent->m_flFadeTime );
 				pCurrent->m_pTrail = NULL;
 			}
 
-			else if ( pCurrent->m_iType == EFFECT_TYPE_SPRITE )
+			else if( pCurrent->m_iType == EFFECT_TYPE_SPRITE )
 			{
-				if ( pCurrent->m_bStopFollowOnKill == true )
+				if( pCurrent->m_bStopFollowOnKill == true )
 				{
 					Vector vOrigin;
 					GetAttachment( pCurrent->m_pSprite->m_nAttachment, vOrigin );
@@ -340,7 +363,7 @@ void CEnvEffectsScript::HandleAnimEvent ( animevent_t *pEvent )
 					pCurrent->m_pSprite->m_hAttachedToEntity = NULL;
 					pCurrent->m_pSprite->m_nAttachment = 0;
 
-					pCurrent->m_pSprite->SetAbsOrigin( vOrigin);
+					pCurrent->m_pSprite->SetAbsOrigin( vOrigin );
 				}
 
 				pCurrent->m_pSprite->FadeAndDie( pCurrent->m_flFadeTime );
@@ -355,12 +378,12 @@ void CEnvEffectsScript::HandleAnimEvent ( animevent_t *pEvent )
 //-----------------------------------------------------------------------------
 // Purpose: Input that sets the sequence of the entity
 //-----------------------------------------------------------------------------
-void CEnvEffectsScript::InputSetSequence( inputdata_t &inputdata )
+void CEnvEffectsScript::InputSetSequence( inputdata_t& inputdata )
 {
-	if ( inputdata.value.StringID() != NULL_STRING )
+	if( inputdata.value.StringID() != NULL_STRING )
 	{
 		int nSequence = LookupSequence( STRING( inputdata.value.StringID() ) );
-		if ( nSequence != ACT_INVALID )
+		if( nSequence != ACT_INVALID )
 		{
 			SetSequence( nSequence );
 			ResetSequenceInfo();
@@ -374,7 +397,7 @@ void CEnvEffectsScript::ParseScriptFile( void )
 {
 	int length = 0;
 	m_ScriptElements.RemoveAll();
-	const char *pScriptName = GetScriptFile();
+	const char* pScriptName = GetScriptFile();
 
 	//Reset everything.
 	s_bUnget = false;
@@ -384,33 +407,33 @@ void CEnvEffectsScript::ParseScriptFile( void )
 	memset( s_name, 0, 256 );
 
 
-	unsigned char *buf = (unsigned char *)UTIL_LoadFileForMe( pScriptName, &length );
-	if ( length <= 0 || !buf )
+	unsigned char* buf = ( unsigned char* )UTIL_LoadFileForMe( pScriptName, &length );
+	if( length <= 0 || !buf )
 	{
 		DevMsg( 1, "CEnvEffectsScript:  failed to load %s\n", pScriptName );
 		return;
 	}
 
-	s_currenttoken = (const char *)buf;
-	LoadFromBuffer( pScriptName, (const char *)buf );
+	s_currenttoken = ( const char* )buf;
+	LoadFromBuffer( pScriptName, ( const char* )buf );
 
 	UTIL_FreeFile( buf );
 }
 
-// FIXME: VS2022 Port 
+// FIXME: VS2022 Port
 //        This parameter, buffer, is unused??
-void CEnvEffectsScript::LoadFromBuffer( const char *scriptfile, const char *buffer )
+void CEnvEffectsScript::LoadFromBuffer( const char* scriptfile, const char* buffer )
 {
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
-		
-		if ( !s_token[0] )
+
+		if( !s_token[0] )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp( s_token, "effect" ) )
+		if( !Q_stricmp( s_token, "effect" ) )
 		{
 			ParseNewEffect();
 		}
@@ -426,12 +449,12 @@ void CEnvEffectsScript::ParseNewEffect( void )
 {
 	//Add a new effect to the list.
 	CEffectScriptElement NewElement;
-	
+
 	// Effect Group Name
 	ParseToken();
 	Q_strncpy( NewElement.m_szEffectName, s_token, sizeof( NewElement.m_szEffectName ) );
 
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
 
@@ -442,27 +465,33 @@ void CEnvEffectsScript::ParseNewEffect( void )
 			break;
 		}
 
-		if ( !Q_stricmp( s_token, "{" ) )
+		if( !Q_stricmp( s_token, "{" ) )
 		{
-			while ( 1 )
+			while( 1 )
 			{
 				ParseToken();
-				if ( !Q_stricmp( s_token, "}" ) )
+				if( !Q_stricmp( s_token, "}" ) )
+				{
 					break;
+				}
 
-				if ( !Q_stricmp( s_token, "type" ) )
+				if( !Q_stricmp( s_token, "type" ) )
 				{
 					ParseToken();
 
-					if ( !Q_stricmp( s_token, "trail" ) )
+					if( !Q_stricmp( s_token, "trail" ) )
+					{
 						NewElement.m_iType = EFFECT_TYPE_TRAIL;
-					else if ( !Q_stricmp( s_token, "sprite" ) )
+					}
+					else if( !Q_stricmp( s_token, "sprite" ) )
+					{
 						NewElement.m_iType = EFFECT_TYPE_SPRITE;
+					}
 
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "material" ) )
+				if( !Q_stricmp( s_token, "material" ) )
 				{
 					ParseToken();
 					Q_strncpy( NewElement.m_szMaterial, s_token, sizeof( NewElement.m_szMaterial ) );
@@ -471,7 +500,7 @@ void CEnvEffectsScript::ParseNewEffect( void )
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "attachment" ) )
+				if( !Q_stricmp( s_token, "attachment" ) )
 				{
 					ParseToken();
 					Q_strncpy( NewElement.m_szAttachment, s_token, sizeof( NewElement.m_szAttachment ) );
@@ -479,7 +508,7 @@ void CEnvEffectsScript::ParseNewEffect( void )
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "color" ) )
+				if( !Q_stricmp( s_token, "color" ) )
 				{
 					ParseToken();
 					sscanf( s_token, "%i %i %i %i", &NewElement.m_iR, &NewElement.m_iG, &NewElement.m_iB, &NewElement.m_iA );
@@ -487,7 +516,7 @@ void CEnvEffectsScript::ParseNewEffect( void )
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "scale" ) )
+				if( !Q_stricmp( s_token, "scale" ) )
 				{
 					ParseToken();
 
@@ -495,16 +524,16 @@ void CEnvEffectsScript::ParseNewEffect( void )
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "texturescale" ) )
+				if( !Q_stricmp( s_token, "texturescale" ) )
 				{
 					ParseToken();
 
 					float flTextureScale = atof( s_token );
-					NewElement.m_flTextureRes = (flTextureScale > 0.0f) ? 1.0f / flTextureScale : 0.0f;
+					NewElement.m_flTextureRes = ( flTextureScale > 0.0f ) ? 1.0f / flTextureScale : 0.0f;
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "fadetime" ) )
+				if( !Q_stricmp( s_token, "fadetime" ) )
 				{
 					ParseToken();
 
@@ -512,7 +541,7 @@ void CEnvEffectsScript::ParseNewEffect( void )
 					continue;
 				}
 
-				if ( !Q_stricmp( s_token, "stopfollowonkill" ) )
+				if( !Q_stricmp( s_token, "stopfollowonkill" ) )
 				{
 					ParseToken();
 
@@ -528,13 +557,13 @@ void CEnvEffectsScript::ParseNewEffect( void )
 	m_ScriptElements.AddToTail( NewElement );
 }
 
-CEffectScriptElement *CEnvEffectsScript::GetScriptElementByName( const char *pName )
+CEffectScriptElement* CEnvEffectsScript::GetScriptElementByName( const char* pName )
 {
-	for ( int i = 0; i < m_ScriptElements.Count(); i++ )
+	for( int i = 0; i < m_ScriptElements.Count(); i++ )
 	{
-		CEffectScriptElement *pCurrent = &m_ScriptElements.Element( i );
+		CEffectScriptElement* pCurrent = &m_ScriptElements.Element( i );
 
-		if ( pCurrent && !Q_stricmp( pCurrent->m_szEffectName, pName ) ) 
+		if( pCurrent && !Q_stricmp( pCurrent->m_szEffectName, pName ) )
 		{
 			return pCurrent;
 		}

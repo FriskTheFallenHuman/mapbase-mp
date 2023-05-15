@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Dr. Breen, the oft maligned genius, heroically saving humanity from 
+// Purpose: Dr. Breen, the oft maligned genius, heroically saving humanity from
 //			its own worst enemy, itself.
 //=============================================================================//
 
@@ -21,7 +21,7 @@
 #define SF_BREEN_BACKGROUND_TALK		( 1 << 16 )		// 65536 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_Breen : public CAI_BaseActor
 {
@@ -30,24 +30,30 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	Class_T Classify ( void );
-	void	HandleAnimEvent( animevent_t *pEvent );
-	int		GetSoundInterests ( void );
+	Class_T Classify( void );
+	void	HandleAnimEvent( animevent_t* pEvent );
+	int		GetSoundInterests( void );
 	bool	UseSemaphore( void );
 
 #ifdef MAPBASE
 	// Use Breen's default subtitle color (188,188,188)
-	bool	GetGameTextSpeechParams( hudtextparms_t &params ) { params.r1 = 188; params.g1 = 188; params.b1 = 188; return BaseClass::GetGameTextSpeechParams( params ); }
+	bool	GetGameTextSpeechParams( hudtextparms_t& params )
+	{
+		params.r1 = 188;
+		params.g1 = 188;
+		params.b1 = 188;
+		return BaseClass::GetGameTextSpeechParams( params );
+	}
 #endif
 };
 
 LINK_ENTITY_TO_CLASS( npc_breen, CNPC_Breen );
 
 //-----------------------------------------------------------------------------
-// Classify - indicates this NPC's place in the 
+// Classify - indicates this NPC's place in the
 // relationship table.
 //-----------------------------------------------------------------------------
-Class_T	CNPC_Breen::Classify ( void )
+Class_T	CNPC_Breen::Classify( void )
 {
 	return	CLASS_NONE;
 }
@@ -58,21 +64,21 @@ Class_T	CNPC_Breen::Classify ( void )
 // HandleAnimEvent - catches the NPC-specific messages
 // that occur when tagged animation frames are played.
 //-----------------------------------------------------------------------------
-void CNPC_Breen::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Breen::HandleAnimEvent( animevent_t* pEvent )
 {
 	switch( pEvent->event )
 	{
-	case 1:
-	default:
-		BaseClass::HandleAnimEvent( pEvent );
-		break;
+		case 1:
+		default:
+			BaseClass::HandleAnimEvent( pEvent );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // GetSoundInterests - generic NPC can't hear.
 //-----------------------------------------------------------------------------
-int CNPC_Breen::GetSoundInterests ( void )
+int CNPC_Breen::GetSoundInterests( void )
 {
 	return	NULL;
 }
@@ -84,11 +90,11 @@ void CNPC_Breen::Spawn()
 {
 	// Breen is allowed to use multiple models, because he has a torso version for monitors.
 	// He defaults to his normal model.
-	char *szModel = (char *)STRING( GetModelName() );
-	if (!szModel || !*szModel)
+	char* szModel = ( char* )STRING( GetModelName() );
+	if( !szModel || !*szModel )
 	{
 		szModel = "models/breen.mdl";
-		SetModelName( AllocPooledString(szModel) );
+		SetModelName( AllocPooledString( szModel ) );
 	}
 
 	Precache();
@@ -96,7 +102,7 @@ void CNPC_Breen::Spawn()
 
 	BaseClass::Spawn();
 
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
@@ -106,7 +112,7 @@ void CNPC_Breen::Spawn()
 	m_iHealth			= 8;
 	m_flFieldOfView		= 0.5;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
-	
+
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_OPEN_DOORS | bits_CAP_ANIMATEDFACE | bits_CAP_TURN_HEAD );
 	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
@@ -121,12 +127,14 @@ void CNPC_Breen::Precache()
 {
 	PrecacheModel( STRING( GetModelName() ) );
 	BaseClass::Precache();
-}	
+}
 
-bool CNPC_Breen::UseSemaphore( void )	
-{ 
-	if ( HasSpawnFlags( SF_BREEN_BACKGROUND_TALK ) )
+bool CNPC_Breen::UseSemaphore( void )
+{
+	if( HasSpawnFlags( SF_BREEN_BACKGROUND_TALK ) )
+	{
 		return false;
+	}
 
 	return BaseClass::UseSemaphore();
 }

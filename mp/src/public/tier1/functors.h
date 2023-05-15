@@ -40,7 +40,7 @@
 #include "tier1/utlenvelope.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -50,18 +50,18 @@
 //
 //-----------------------------------------------------------------------------
 
-#define	FUNC_TEMPLATE_ARG_PARAMS_0			
-#define	FUNC_BASE_TEMPLATE_ARG_PARAMS_0		
-#define	FUNC_ARG_MEMBERS_0					
-#define	FUNC_ARG_FORMAL_PARAMS_0			
-#define	FUNC_PROXY_ARG_FORMAL_PARAMS_0		
-#define	FUNC_CALL_ARGS_INIT_0				
-#define	FUNC_CALL_MEMBER_ARGS_0				
-#define	FUNC_CALL_ARGS_0					
-#define	FUNC_FUNCTOR_CALL_ARGS_0			
-#define	FUNC_TEMPLATE_FUNC_PARAMS_0			
-#define	FUNC_BASE_TEMPLATE_FUNC_PARAMS_0	
-#define	FUNC_ADDL_TEMPLATE_FUNC_PARAMS_0	
+#define	FUNC_TEMPLATE_ARG_PARAMS_0
+#define	FUNC_BASE_TEMPLATE_ARG_PARAMS_0
+#define	FUNC_ARG_MEMBERS_0
+#define	FUNC_ARG_FORMAL_PARAMS_0
+#define	FUNC_PROXY_ARG_FORMAL_PARAMS_0
+#define	FUNC_CALL_ARGS_INIT_0
+#define	FUNC_CALL_MEMBER_ARGS_0
+#define	FUNC_CALL_ARGS_0
+#define	FUNC_FUNCTOR_CALL_ARGS_0
+#define	FUNC_TEMPLATE_FUNC_PARAMS_0
+#define	FUNC_BASE_TEMPLATE_FUNC_PARAMS_0
+#define	FUNC_ADDL_TEMPLATE_FUNC_PARAMS_0
 
 #define	FUNC_TEMPLATE_ARG_PARAMS_1			, typename ARG_TYPE_1
 #define	FUNC_BASE_TEMPLATE_ARG_PARAMS_1		, ARG_TYPE_1
@@ -268,7 +268,8 @@
 //
 //-----------------------------------------------------------------------------
 
-abstract_class CFunctor : public IRefCounted
+abstract_class CFunctor :
+public IRefCounted
 {
 public:
 	CFunctor()
@@ -289,18 +290,18 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// When calling through a functor, care needs to be taken to not pass objects that might go away. 
+// When calling through a functor, care needs to be taken to not pass objects that might go away.
 // Since this code determines the type to store in the functor based on the actual arguments,
-// this is achieved by changing the point of call. 
+// this is achieved by changing the point of call.
 //
 // See also CUtlEnvelope
 //-----------------------------------------------------------------------------
 
 // convert a reference to a passable value
 template <typename T>
-inline T RefToVal(const T &item)
+inline T RefToVal( const T& item )
 {
-   return item;
+	return item;
 }
 
 //-----------------------------------------------------------------------------
@@ -313,18 +314,30 @@ template <typename T>
 class CLateBoundPtr
 {
 public:
-	CLateBoundPtr( T **ppObject )
+	CLateBoundPtr( T** ppObject )
 		: m_ppObject( ppObject )
 	{
 	}
 
-	T *operator->() { return *m_ppObject;	}
-	T &operator *() { return **m_ppObject;	}
-	operator T *() const { return (T*)(*m_ppObject);	}
-	operator void *() { return *m_ppObject;	}
+	T* operator->()
+	{
+		return *m_ppObject;
+	}
+	T& operator *()
+	{
+		return **m_ppObject;
+	}
+	operator T* () const
+	{
+		return ( T* )( *m_ppObject );
+	}
+	operator void* ()
+	{
+		return *m_ppObject;
+	}
 
 private:
-	T **m_ppObject;
+	T** m_ppObject;
 };
 
 //-----------------------------------------------------------------------------
@@ -337,16 +350,22 @@ private:
 class CFuncMemPolicyNone
 {
 public:
-	static void OnAcquire(void *pObject)	{}
-	static void OnRelease(void *pObject)	{}
+	static void OnAcquire( void* pObject )	{}
+	static void OnRelease( void* pObject )	{}
 };
 
-template <class OBJECT_TYPE_PTR = IRefCounted *>
+template <class OBJECT_TYPE_PTR = IRefCounted*>
 class CFuncMemPolicyRefCount
 {
 public:
-	static void OnAcquire(OBJECT_TYPE_PTR pObject)	{ pObject->AddRef(); }
-	static void OnRelease(OBJECT_TYPE_PTR pObject)	{ pObject->Release(); }
+	static void OnAcquire( OBJECT_TYPE_PTR pObject )
+	{
+		pObject->AddRef();
+	}
+	static void OnRelease( OBJECT_TYPE_PTR pObject )
+	{
+		pObject->Release();
+	}
 };
 
 //-----------------------------------------------------------------------------
@@ -362,17 +381,17 @@ class CMemberFuncProxyBase
 {
 protected:
 	CMemberFuncProxyBase( OBJECT_TYPE_PTR pObject, FUNCTION_TYPE pfnProxied )
-	  : m_pObject( pObject ),
-		m_pfnProxied( pfnProxied )
+		: m_pObject( pObject ),
+		  m_pfnProxied( pfnProxied )
 	{
-		MEM_POLICY::OnAcquire(m_pObject);
+		MEM_POLICY::OnAcquire( m_pObject );
 	}
 
 	~CMemberFuncProxyBase()
 	{
-		MEM_POLICY::OnRelease(m_pObject);
+		MEM_POLICY::OnRelease( m_pObject );
 	}
-	
+
 	void Set( OBJECT_TYPE_PTR pObject, FUNCTION_TYPE pfnProxied )
 	{
 		m_pfnProxied = pfnProxied;
@@ -381,7 +400,7 @@ protected:
 
 	void OnCall()
 	{
-		Assert( (void *)m_pObject != NULL );
+		Assert( ( void* )m_pObject != NULL );
 	}
 
 	FUNCTION_TYPE m_pfnProxied;
@@ -568,12 +587,12 @@ template <class CAllocator, class CCustomFunctorBase = CFunctorBase>
 class CCustomizedFunctorFactory
 {
 public:
-	void SetAllocator( CAllocator *pAllocator )
+	void SetAllocator( CAllocator* pAllocator )
 	{
 		m_pAllocator = pAllocator;
 	}
-	
-	#define DEFINE_NONMEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
+
+#define DEFINE_NONMEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
 		template <typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N> \
 		inline CFunctor *CreateFunctor( FUNCTION_RETTYPE (*pfnProxied)( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) \
 		{ \
@@ -585,7 +604,7 @@ public:
 
 	//-------------------------------------
 
-	#define DEFINE_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
+#define DEFINE_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
 		template <typename OBJECT_TYPE_PTR, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N> \
 		inline CFunctor *CreateFunctor(OBJECT_TYPE_PTR pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) \
 		{ \
@@ -596,7 +615,7 @@ public:
 
 	//-------------------------------------
 
-	#define DEFINE_CONST_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
+#define DEFINE_CONST_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
 		template <typename OBJECT_TYPE_PTR, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N> \
 		inline CFunctor *CreateFunctor( OBJECT_TYPE_PTR pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) \
 		{ \
@@ -607,7 +626,7 @@ public:
 
 	//-------------------------------------
 
-	#define DEFINE_REF_COUNTING_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
+#define DEFINE_REF_COUNTING_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
 		template <typename OBJECT_TYPE_PTR, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N> \
 		inline CFunctor *CreateRefCountingFunctor( OBJECT_TYPE_PTR pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) FUNC_ARG_FORMAL_PARAMS_##N ) \
 		{ \
@@ -618,7 +637,7 @@ public:
 
 	//-------------------------------------
 
-	#define DEFINE_REF_COUNTING_CONST_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
+#define DEFINE_REF_COUNTING_CONST_MEMBER_FUNCTOR_FACTORY_CUSTOM(N) \
 		template <typename OBJECT_TYPE_PTR, typename FUNCTION_CLASS, typename FUNCTION_RETTYPE FUNC_TEMPLATE_FUNC_PARAMS_##N FUNC_TEMPLATE_ARG_PARAMS_##N> \
 		inline CFunctor *CreateRefCountingFunctor( OBJECT_TYPE_PTR pObject, FUNCTION_RETTYPE ( FUNCTION_CLASS::*pfnProxied )( FUNC_BASE_TEMPLATE_FUNC_PARAMS_##N ) const FUNC_ARG_FORMAL_PARAMS_##N ) \
 		{ \
@@ -628,8 +647,8 @@ public:
 	FUNC_GENERATE_ALL( DEFINE_REF_COUNTING_CONST_MEMBER_FUNCTOR_FACTORY_CUSTOM );
 
 private:
-	CAllocator *m_pAllocator;
-	
+	CAllocator* m_pAllocator;
+
 };
 
 //-----------------------------------------------------------------------------

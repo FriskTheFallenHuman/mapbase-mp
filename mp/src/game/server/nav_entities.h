@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -26,16 +26,22 @@ public:
 	virtual void Spawn( void );
 	virtual void UpdateOnRemove( void );
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
-	bool IsEnabled( void ) const { return !m_isDisabled; }
+	bool IsEnabled( void ) const
+	{
+		return !m_isDisabled;
+	}
 
 	void CostThink( void );
 
-	bool IsApplicableTo( CBaseCombatCharacter *who ) const;			// Return true if this cost applies to the given actor
+	bool IsApplicableTo( CBaseCombatCharacter* who ) const;			// Return true if this cost applies to the given actor
 
-	virtual float GetCostMultiplier( CBaseCombatCharacter *who ) const	{ return 1.0f; }
+	virtual float GetCostMultiplier( CBaseCombatCharacter* who ) const
+	{
+		return 1.0f;
+	}
 
 protected:
 	int m_team;
@@ -47,7 +53,7 @@ protected:
 	void UpdateAllNavCostDecoration( void );
 
 	CUtlVector< CFmtStr > m_tags;
-	bool HasTag( const char *groupname ) const;
+	bool HasTag( const char* groupname ) const;
 };
 
 
@@ -57,7 +63,7 @@ class CFuncNavAvoid : public CFuncNavCost
 public:
 	DECLARE_CLASS( CFuncNavAvoid, CFuncNavCost );
 
-	virtual float GetCostMultiplier( CBaseCombatCharacter *who ) const;		// return pathfind cost multiplier for the given actor
+	virtual float GetCostMultiplier( CBaseCombatCharacter* who ) const;		// return pathfind cost multiplier for the given actor
 };
 
 
@@ -67,7 +73,7 @@ class CFuncNavPrefer : public CFuncNavCost
 public:
 	DECLARE_CLASS( CFuncNavPrefer, CFuncNavCost );
 
-	virtual float GetCostMultiplier( CBaseCombatCharacter *who ) const;		// return pathfind cost multiplier for the given actor
+	virtual float GetCostMultiplier( CBaseCombatCharacter* who ) const;		// return pathfind cost multiplier for the given actor
 };
 
 
@@ -86,15 +92,15 @@ public:
 	void Spawn();
 	virtual void UpdateOnRemove( void );
 
-	void InputBlockNav( inputdata_t &inputdata );
-	void InputUnblockNav( inputdata_t &inputdata );
+	void InputBlockNav( inputdata_t& inputdata );
+	void InputUnblockNav( inputdata_t& inputdata );
 
 	inline bool IsBlockingNav( int teamNumber ) const
 	{
-		if ( teamNumber == TEAM_ANY )
+		if( teamNumber == TEAM_ANY )
 		{
 			bool isBlocked = false;
-			for ( int i=0; i<MAX_NAV_TEAMS; ++i )
+			for( int i = 0; i < MAX_NAV_TEAMS; ++i )
 			{
 				isBlocked |= m_isBlockingNav[ i ];
 			}
@@ -108,15 +114,15 @@ public:
 
 	int DrawDebugTextOverlays( void );
 
-	bool operator()( CNavArea *area );	// functor that blocks areas in our extent
+	bool operator()( CNavArea* area );	// functor that blocks areas in our extent
 
-	static bool CalculateBlocked( bool *pResultByTeam, const Vector &vecMins, const Vector &vecMaxs );
+	static bool CalculateBlocked( bool* pResultByTeam, const Vector& vecMins, const Vector& vecMaxs );
 
 private:
 
 	void UpdateBlocked();
 
-	static CUtlLinkedList<CFuncNavBlocker *> gm_NavBlockers;
+	static CUtlLinkedList<CFuncNavBlocker*> gm_NavBlockers;
 
 	void BlockNav( void );
 	void UnblockNav( void );

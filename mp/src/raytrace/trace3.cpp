@@ -4,9 +4,9 @@
 #include <bspfile.h>
 #include "bsplib.h"
 
-static Vector VertCoord(dface_t const &f, int vnum)
+static Vector VertCoord( dface_t const& f, int vnum )
 {
-	int eIndex = dsurfedges[f.firstedge+vnum];
+	int eIndex = dsurfedges[f.firstedge + vnum];
 	int point;
 	if( eIndex < 0 )
 	{
@@ -16,46 +16,50 @@ static Vector VertCoord(dface_t const &f, int vnum)
 	{
 		point = dedges[eIndex].v[0];
 	}
-	dvertex_t *v=dvertexes+point;
-	return Vector(v->point[0],v->point[1],v->point[2]);
+	dvertex_t* v = dvertexes + point;
+	return Vector( v->point[0], v->point[1], v->point[2] );
 
 }
 
-Vector colors[]={
-	Vector(0.5,0.5,1),
-	Vector(0.5,1,0.5),
-	Vector(0.5,1,1),
-	Vector(1,0.5,0.5),
-	Vector(1,0.5,1),
-	Vector(1,1,1)};
-
-void RayTracingEnvironment::AddBSPFace(int id,dface_t const &face)
+Vector colors[] =
 {
-	if (face.dispinfo!=-1)									// displacements must be dealt with elsewhere
+	Vector( 0.5, 0.5, 1 ),
+	Vector( 0.5, 1, 0.5 ),
+	Vector( 0.5, 1, 1 ),
+	Vector( 1, 0.5, 0.5 ),
+	Vector( 1, 0.5, 1 ),
+	Vector( 1, 1, 1 )
+};
+
+void RayTracingEnvironment::AddBSPFace( int id, dface_t const& face )
+{
+	if( face.dispinfo != -1 )									// displacements must be dealt with elsewhere
+	{
 		return;
-	texinfo_t *tx =(face.texinfo>=0)?&(texinfo[face.texinfo]):0;
+	}
+	texinfo_t* tx = ( face.texinfo >= 0 ) ? &( texinfo[face.texinfo] ) : 0;
 // 	if (tx && (tx->flags & (SURF_SKY|SURF_NODRAW)))
 // 		return;
-	if (tx)
+	if( tx )
 	{
-		printf("id %d flags=%x\n",id,tx->flags);
+		printf( "id %d flags=%x\n", id, tx->flags );
 	}
-	printf("side: ");
-	for(int v=0;v<face.numedges;v++)
+	printf( "side: " );
+	for( int v = 0; v < face.numedges; v++ )
 	{
-		printf("(%f %f %f) ",XYZ(VertCoord(face,v)));
+		printf( "(%f %f %f) ", XYZ( VertCoord( face, v ) ) );
 	}
-	printf("\n");
-	int ntris=face.numedges-2;
-	for(int tri=0;tri<ntris;tri++)
+	printf( "\n" );
+	int ntris = face.numedges - 2;
+	for( int tri = 0; tri < ntris; tri++ )
 	{
-		
-		AddTriangle(id,VertCoord(face,0),VertCoord(face,(tri+1)%face.numedges),
-					VertCoord(face,(tri+2)%face.numedges),Vector(1,1,1)); //colors[id % NELEMS(colors)]);
+
+		AddTriangle( id, VertCoord( face, 0 ), VertCoord( face, ( tri + 1 ) % face.numedges ),
+					 VertCoord( face, ( tri + 2 ) % face.numedges ), Vector( 1, 1, 1 ) ); //colors[id % NELEMS(colors)]);
 	}
 }
 
-void RayTracingEnvironment::InitializeFromLoadedBSP(void)
+void RayTracingEnvironment::InitializeFromLoadedBSP( void )
 {
 // 	CUtlVector<uint8> PlanesToSkip;
 // 	SidesToSkip.EnsureCapacity(numplanes);
@@ -77,14 +81,14 @@ void RayTracingEnvironment::InitializeFromLoadedBSP(void)
 // 		dface_t const &f=dorigfaces[c];
 // 		if (SidesToSkip[f.AddBSPFace(c,dorigfaces[c]);
 // 	}
-	
+
 
 
 // 	// ugly - I want to traverse all the faces. but there is no way to get from a face back to it's
 // 	// original brush, and I need to get back to the face to the contents field of the brush.  So I
 // 	// will create a temporary mapping from a "side" to its brush. I can get from the face to it
 // 	// side, which can get me back to its brush.
-	
+
 // 	CUtlVector<uint8> OrigFaceVisited;
 // 	OrigFaceVisited.EnsureCapacity(numorigfaces);
 // 	int n_added=0;
@@ -116,10 +120,10 @@ void RayTracingEnvironment::InitializeFromLoadedBSP(void)
 // 		dface_t const &f=dorigfaces[c];
 // 		AddBSPFace(c,dorigfaces[c]);
 // 	}
-	for(int c=0;c<numfaces;c++)
+	for( int c = 0; c < numfaces; c++ )
 	{
 //		dface_t const &f=dfaces[c];
-		AddBSPFace(c,dorigfaces[c]);
+		AddBSPFace( c, dorigfaces[c] );
 	}
 
 //	AddTriangle(1234,Vector(51,145,-700),Vector(71,165,-700),Vector(51,165,-700),colors[5]);

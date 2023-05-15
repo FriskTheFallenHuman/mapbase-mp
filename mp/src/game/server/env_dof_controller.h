@@ -30,15 +30,15 @@ public:
 	void	UpdateParamBlend();
 
 	// Inputs
-	void	InputSetNearBlurDepth( inputdata_t &inputdata );
-	void	InputSetNearFocusDepth( inputdata_t &inputdata );
-	void	InputSetFarFocusDepth( inputdata_t &inputdata );
-	void	InputSetFarBlurDepth( inputdata_t &inputdata );
-	void	InputSetNearBlurRadius( inputdata_t &inputdata );
-	void	InputSetFarBlurRadius( inputdata_t &inputdata );
-	
-	void	InputSetFocusTarget( inputdata_t &inputdata );
-	void	InputSetFocusTargetRange( inputdata_t &inputdata );
+	void	InputSetNearBlurDepth( inputdata_t& inputdata );
+	void	InputSetNearFocusDepth( inputdata_t& inputdata );
+	void	InputSetFarFocusDepth( inputdata_t& inputdata );
+	void	InputSetFarBlurDepth( inputdata_t& inputdata );
+	void	InputSetNearBlurRadius( inputdata_t& inputdata );
+	void	InputSetFarBlurRadius( inputdata_t& inputdata );
+
+	void	InputSetFocusTarget( inputdata_t& inputdata );
+	void	InputSetFocusTargetRange( inputdata_t& inputdata );
 
 private:
 	float	m_flFocusTargetRange;

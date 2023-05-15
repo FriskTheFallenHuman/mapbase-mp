@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,7 +16,7 @@
 
 using namespace vgui;
 
-vgui::Panel *Create_CvarToggleCheckButton()
+vgui::Panel* Create_CvarToggleCheckButton()
 {
 	return new CvarToggleCheckButton< ConVarRef >( NULL, NULL );
 }

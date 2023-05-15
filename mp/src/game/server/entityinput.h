@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define INPUTVAR_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "baseentity.h"
@@ -23,27 +23,30 @@
 class CMultiInputVar
 {
 public:
-	CMultiInputVar() : m_InputList(NULL) {}
+	CMultiInputVar() : m_InputList( NULL ) {}
 	~CMultiInputVar();
 
 	struct inputitem_t
 	{
-		variant_t value;	// local copy of variable (maybe make this a variant?) 
+		variant_t value;	// local copy of variable (maybe make this a variant?)
 		int	outputID;		// the ID number of the output that sent this
-		inputitem_t *next;
+		inputitem_t* next;
 
 		// allocate and free from MPool memory
-		static void *operator new( size_t stAllocBlock );	
-		static void *operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine );
-		static void operator delete( void *pMem );
-		static void operator delete( void *pMem, int nBlockUse, const char *pFileName, int nLine ) { operator delete(pMem); }
+		static void* operator new( size_t stAllocBlock );
+		static void* operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine );
+		static void operator delete( void* pMem );
+		static void operator delete( void* pMem, int nBlockUse, const char* pFileName, int nLine )
+		{
+			operator delete( pMem );
+		}
 	};
 
-	inputitem_t *m_InputList;	// list of data
+	inputitem_t* m_InputList;	// list of data
 	int m_bUpdatedThisFrame;
 
 	void AddValue( variant_t newVal, int outputID );
-	
+
 	DECLARE_SIMPLE_DATADESC();
 };
 

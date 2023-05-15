@@ -30,45 +30,55 @@
 
 #include "snappy-sinksource.h"
 
-namespace snappy {
+namespace snappy
+{
 
 Source::~Source() { }
 
 Sink::~Sink() { }
 
-char* Sink::GetAppendBuffer(size_t length, char* scratch) {
-  (void)length;
-  return scratch;
+char* Sink::GetAppendBuffer( size_t length, char* scratch )
+{
+	( void )length;
+	return scratch;
 }
 
 ByteArraySource::~ByteArraySource() { }
 
-size_t ByteArraySource::Available() const { return left_; }
-
-const char* ByteArraySource::Peek(size_t* len) {
-  *len = left_;
-  return ptr_;
+size_t ByteArraySource::Available() const
+{
+	return left_;
 }
 
-void ByteArraySource::Skip(size_t n) {
-  left_ -= n;
-  ptr_ += n;
+const char* ByteArraySource::Peek( size_t* len )
+{
+	*len = left_;
+	return ptr_;
+}
+
+void ByteArraySource::Skip( size_t n )
+{
+	left_ -= n;
+	ptr_ += n;
 }
 
 UncheckedByteArraySink::~UncheckedByteArraySink() { }
 
-void UncheckedByteArraySink::Append(const char* data, size_t n) {
-  // Do no copying if the caller filled in the result of GetAppendBuffer()
-  if (data != dest_) {
-    memcpy(dest_, data, n);
-  }
-  dest_ += n;
+void UncheckedByteArraySink::Append( const char* data, size_t n )
+{
+	// Do no copying if the caller filled in the result of GetAppendBuffer()
+	if( data != dest_ )
+	{
+		memcpy( dest_, data, n );
+	}
+	dest_ += n;
 }
 
-char* UncheckedByteArraySink::GetAppendBuffer(size_t len, char* scratch) {
-  (void)scratch;
-  (void)len;
-  return dest_;
+char* UncheckedByteArraySink::GetAppendBuffer( size_t len, char* scratch )
+{
+	( void )scratch;
+	( void )len;
+	return dest_;
 }
 
 }

@@ -9,17 +9,17 @@
 #define VGUI_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define null 0L
 
 #ifndef NULL
-#ifdef __cplusplus
-#define NULL    0
-#else
-#define NULL    ((void *)0)
-#endif
+	#ifdef __cplusplus
+		#define NULL    0
+	#else
+		#define NULL    ((void *)0)
+	#endif
 #endif
 
 #pragma warning( disable: 4800 )	// disables 'performance warning converting int to bool'
@@ -36,11 +36,11 @@ typedef unsigned int   uint;
 typedef unsigned long  ulong;
 
 #ifndef _WCHAR_T_DEFINED
-// DAL - wchar_t is a built in define in gcc 3.2 with a size of 4 bytes
-#if !defined( __x86_64__ ) && !defined( __WCHAR_TYPE__  )
-typedef unsigned short wchar_t;
-#define _WCHAR_T_DEFINED
-#endif
+	// DAL - wchar_t is a built in define in gcc 3.2 with a size of 4 bytes
+	#if !defined( __x86_64__ ) && !defined( __WCHAR_TYPE__  )
+		typedef unsigned short wchar_t;
+		#define _WCHAR_T_DEFINED
+	#endif
 #endif
 
 // do this in GOLDSRC only!!!
@@ -67,12 +67,12 @@ const HFont INVALID_FONT = 0; // the value of an invalid font handle
 #include "tier1/strtools.h"
 
 #if 0 // defined( OSX ) // || defined( LINUX )
-// Disabled all platforms. Did a major cleanup of osxfont.cpp, and having this
-//  turned off renders much closer to Windows and Linux and also uses the same
-//  code paths (which is good).
-#define USE_GETKERNEDCHARWIDTH 1
+	// Disabled all platforms. Did a major cleanup of osxfont.cpp, and having this
+	//  turned off renders much closer to Windows and Linux and also uses the same
+	//  code paths (which is good).
+	#define USE_GETKERNEDCHARWIDTH 1
 #else
-#define USE_GETKERNEDCHARWIDTH 0
+	#define USE_GETKERNEDCHARWIDTH 0
 #endif
 
 

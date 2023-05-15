@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -21,7 +21,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_EnvScreenOverlay : public C_BaseEntity
 {
@@ -54,21 +54,21 @@ protected:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvScreenOverlay, DT_EnvScreenOverlay, CEnvScreenOverlay )
-	RecvPropArray( RecvPropString( RECVINFO( m_iszOverlayNames[0]) ), m_iszOverlayNames ),
-	RecvPropArray( RecvPropFloat( RECVINFO( m_flOverlayTimes[0] ) ), m_flOverlayTimes ),
-	RecvPropFloat( RECVINFO( m_flStartTime ) ),
-	RecvPropInt( RECVINFO( m_iDesiredOverlay ) ),
-	RecvPropBool( RECVINFO( m_bIsActive ) ),
+RecvPropArray( RecvPropString( RECVINFO( m_iszOverlayNames[0] ) ), m_iszOverlayNames ),
+			   RecvPropArray( RecvPropFloat( RECVINFO( m_flOverlayTimes[0] ) ), m_flOverlayTimes ),
+			   RecvPropFloat( RECVINFO( m_flStartTime ) ),
+			   RecvPropInt( RECVINFO( m_iDesiredOverlay ) ),
+			   RecvPropBool( RECVINFO( m_bIsActive ) ),
 #ifdef MAPBASE
 	RecvPropInt( RECVINFO( m_iOverlayIndex ) ),
 #endif
-END_RECV_TABLE()
+			   END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
-void C_EnvScreenOverlay::PreDataUpdate( DataUpdateType_t updateType )
+			   void C_EnvScreenOverlay::PreDataUpdate( DataUpdateType_t updateType )
 {
 	BaseClass::PreDataUpdate( updateType );
 
@@ -76,7 +76,7 @@ void C_EnvScreenOverlay::PreDataUpdate( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -84,27 +84,27 @@ void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 
 	// If we have a start time now, start the overlays going
 #ifdef MAPBASE
-	if ( m_bIsActive && m_flStartTime > 0 && (g_pView->GetScreenOverlayMaterial() == NULL || (m_iOverlayIndex != -1 && g_pView->GetIndexedScreenOverlayMaterial(m_iOverlayIndex) == NULL)) )
+	if( m_bIsActive && m_flStartTime > 0 && ( g_pView->GetScreenOverlayMaterial() == NULL || ( m_iOverlayIndex != -1 && g_pView->GetIndexedScreenOverlayMaterial( m_iOverlayIndex ) == NULL ) ) )
 #else
-	if ( m_bIsActive && m_flStartTime > 0 && g_pView->GetScreenOverlayMaterial() == NULL )
+	if( m_bIsActive && m_flStartTime > 0 && g_pView->GetScreenOverlayMaterial() == NULL )
 #endif
 	{
 		StartOverlays();
 	}
-	
-	if ( m_flStartTime == -1 )
+
+	if( m_flStartTime == -1 )
 	{
-		 StopOverlays();
+		StopOverlays();
 	}
 
 	HandleOverlaySwitch();
 
-	if ( updateType == DATA_UPDATE_CREATED &&
-		CommandLine()->FindParm( "-makereslists" ) )
+	if( updateType == DATA_UPDATE_CREATED &&
+			CommandLine()->FindParm( "-makereslists" ) )
 	{
-		for ( int i = 0; i < MAX_SCREEN_OVERLAYS; ++i )
+		for( int i = 0; i < MAX_SCREEN_OVERLAYS; ++i )
 		{
-			if ( m_iszOverlayNames[ i ] && m_iszOverlayNames[ i ][ 0 ] )
+			if( m_iszOverlayNames[ i ] && m_iszOverlayNames[ i ][ 0 ] )
 			{
 				materials->FindMaterial( m_iszOverlayNames[ i ], TEXTURE_GROUP_CLIENT_EFFECTS, false );
 			}
@@ -113,16 +113,16 @@ void C_EnvScreenOverlay::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::StopOverlays( void )
 {
 	SetNextClientThink( CLIENT_THINK_NEVER );
 
-	if ( m_bWasActive && !m_bIsActive )
+	if( m_bWasActive && !m_bIsActive )
 	{
 #ifdef MAPBASE
-		if ( m_iOverlayIndex != -1 )
+		if( m_iOverlayIndex != -1 )
 		{
 			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, NULL );
 		}
@@ -135,7 +135,7 @@ void C_EnvScreenOverlay::StopOverlays( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::StartOverlays( void )
 {
@@ -149,7 +149,7 @@ void C_EnvScreenOverlay::StartOverlays( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::HandleOverlaySwitch( void )
 {
@@ -161,11 +161,11 @@ void C_EnvScreenOverlay::HandleOverlaySwitch( void )
 	}
 }
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::StartCurrentOverlay( void )
 {
-	if ( m_iCurrentOverlay == MAX_SCREEN_OVERLAYS || !m_iszOverlayNames[m_iCurrentOverlay] || !m_iszOverlayNames[m_iCurrentOverlay][0] )
+	if( m_iCurrentOverlay == MAX_SCREEN_OVERLAYS || !m_iszOverlayNames[m_iCurrentOverlay] || !m_iszOverlayNames[m_iCurrentOverlay][0] )
 	{
 		// Hit the end of our overlays, so stop.
 		m_flStartTime = 0;
@@ -173,17 +173,21 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 		return;
 	}
 
-	if ( m_flOverlayTimes[m_iCurrentOverlay] == -1 )
-		 m_flCurrentOverlayTime = -1;
+	if( m_flOverlayTimes[m_iCurrentOverlay] == -1 )
+	{
+		m_flCurrentOverlayTime = -1;
+	}
 	else
-		 m_flCurrentOverlayTime = gpGlobals->curtime + m_flOverlayTimes[m_iCurrentOverlay];
+	{
+		m_flCurrentOverlayTime = gpGlobals->curtime + m_flOverlayTimes[m_iCurrentOverlay];
+	}
 
 	// Bring up the current overlay
-	IMaterial *pMaterial = materials->FindMaterial( m_iszOverlayNames[m_iCurrentOverlay], TEXTURE_GROUP_CLIENT_EFFECTS, false );
-	if ( !IsErrorMaterial( pMaterial ) )
+	IMaterial* pMaterial = materials->FindMaterial( m_iszOverlayNames[m_iCurrentOverlay], TEXTURE_GROUP_CLIENT_EFFECTS, false );
+	if( !IsErrorMaterial( pMaterial ) )
 	{
 #ifdef MAPBASE
-		if ( m_iOverlayIndex != -1 )
+		if( m_iOverlayIndex != -1 )
 		{
 			g_pView->SetIndexedScreenOverlayMaterial( m_iOverlayIndex, pMaterial );
 		}
@@ -195,18 +199,18 @@ void C_EnvScreenOverlay::StartCurrentOverlay( void )
 	}
 	else
 	{
-		Warning("env_screenoverlay couldn't find overlay %s.\n", m_iszOverlayNames[m_iCurrentOverlay] );
+		Warning( "env_screenoverlay couldn't find overlay %s.\n", m_iszOverlayNames[m_iCurrentOverlay] );
 		StopOverlays();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_EnvScreenOverlay::ClientThink( void )
 {
 	// If the current overlay's run out, go to the next one
-	if ( m_flCurrentOverlayTime != -1 && m_flCurrentOverlayTime < gpGlobals->curtime )
+	if( m_flCurrentOverlayTime != -1 && m_flCurrentOverlayTime < gpGlobals->curtime )
 	{
 		m_iCurrentOverlay++;
 		StartCurrentOverlay();
@@ -214,7 +218,7 @@ void C_EnvScreenOverlay::ClientThink( void )
 }
 
 // Effect types
-enum 
+enum
 {
 	SCREENEFFECT_EP2_ADVISOR_STUN,
 	SCREENEFFECT_EP1_INTRO,
@@ -231,7 +235,7 @@ class C_EnvScreenEffect : public C_BaseEntity
 public:
 	DECLARE_CLIENTCLASS();
 
-	virtual void ReceiveMessage( int classID, bf_read &msg );
+	virtual void ReceiveMessage( int classID, bf_read& msg );
 
 private:
 	float	m_flDuration;
@@ -239,19 +243,19 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvScreenEffect, DT_EnvScreenEffect, CEnvScreenEffect )
-	RecvPropFloat( RECVINFO( m_flDuration ) ),
-	RecvPropInt( RECVINFO( m_nType ) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flDuration ) ),
+			   RecvPropInt( RECVINFO( m_nType ) ),
+			   END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : classID - 
-//			&msg - 
+// Purpose:
+// Input  : classID -
+//			&msg -
 //-----------------------------------------------------------------------------
-void C_EnvScreenEffect::ReceiveMessage( int classID, bf_read &msg )
+			   void C_EnvScreenEffect::ReceiveMessage( int classID, bf_read& msg )
 {
 	// Make sure our IDs match
-	if ( classID != GetClientClass()->m_ClassID )
+	if( classID != GetClientClass()->m_ClassID )
 	{
 		// Message is for subclass
 		BaseClass::ReceiveMessage( classID, msg );
@@ -263,64 +267,70 @@ void C_EnvScreenEffect::ReceiveMessage( int classID, bf_read &msg )
 	{
 		// Effect turning on
 		case 0: // FIXME: Declare
-			{		
-				// Create a keyvalue block to set these params
-				KeyValues *pKeys = new KeyValues( "keys" );
-				if ( pKeys == NULL )
-					return;
-
-				if ( m_nType == SCREENEFFECT_EP1_INTRO )
-				{
-					if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
-					{
-						return;
-					}
-
-					// Set our keys
-					pKeys->SetFloat( "duration", m_flDuration );
-					pKeys->SetInt( "fadeout", 0 );
-
-					g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "episodic_intro", pKeys );
-					g_pScreenSpaceEffects->EnableScreenSpaceEffect( "episodic_intro" );
-				}
-				else if ( m_nType == SCREENEFFECT_EP2_ADVISOR_STUN )
-				{
-					// Set our keys
-					pKeys->SetFloat( "duration", m_flDuration );
-
-					g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "episodic_stun", pKeys );
-					g_pScreenSpaceEffects->EnableScreenSpaceEffect( "episodic_stun" );
-				}
-				else if ( m_nType == SCREENEFFECT_EP2_GROGGY )
-				{
-					if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
-						return;
-
-					// Set our keys
-					pKeys->SetFloat( "duration", m_flDuration );
-					pKeys->SetInt( "fadeout", 0 );
-
-					g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "ep2_groggy", pKeys );
-					g_pScreenSpaceEffects->EnableScreenSpaceEffect( "ep2_groggy" );
-				}
-                
-				pKeys->deleteThis();
+		{
+			// Create a keyvalue block to set these params
+			KeyValues* pKeys = new KeyValues( "keys" );
+			if( pKeys == NULL )
+			{
+				return;
 			}
-			break;
+
+			if( m_nType == SCREENEFFECT_EP1_INTRO )
+			{
+				if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
+				{
+					return;
+				}
+
+				// Set our keys
+				pKeys->SetFloat( "duration", m_flDuration );
+				pKeys->SetInt( "fadeout", 0 );
+
+				g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "episodic_intro", pKeys );
+				g_pScreenSpaceEffects->EnableScreenSpaceEffect( "episodic_intro" );
+			}
+			else if( m_nType == SCREENEFFECT_EP2_ADVISOR_STUN )
+			{
+				// Set our keys
+				pKeys->SetFloat( "duration", m_flDuration );
+
+				g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "episodic_stun", pKeys );
+				g_pScreenSpaceEffects->EnableScreenSpaceEffect( "episodic_stun" );
+			}
+			else if( m_nType == SCREENEFFECT_EP2_GROGGY )
+			{
+				if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
+				{
+					return;
+				}
+
+				// Set our keys
+				pKeys->SetFloat( "duration", m_flDuration );
+				pKeys->SetInt( "fadeout", 0 );
+
+				g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "ep2_groggy", pKeys );
+				g_pScreenSpaceEffects->EnableScreenSpaceEffect( "ep2_groggy" );
+			}
+
+			pKeys->deleteThis();
+		}
+		break;
 
 		// Effect turning off
 		case 1:	// FIXME: Declare
-			
-			if ( m_nType == SCREENEFFECT_EP1_INTRO )
+
+			if( m_nType == SCREENEFFECT_EP1_INTRO )
 			{
 				if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
 				{
 					return;
 				}
 				// Create a keyvalue block to set these params
-				KeyValues *pKeys = new KeyValues( "keys" );
-				if ( pKeys == NULL )
+				KeyValues* pKeys = new KeyValues( "keys" );
+				if( pKeys == NULL )
+				{
 					return;
+				}
 
 				// Set our keys
 				pKeys->SetFloat( "duration", m_flDuration );
@@ -328,20 +338,22 @@ void C_EnvScreenEffect::ReceiveMessage( int classID, bf_read &msg )
 
 				g_pScreenSpaceEffects->SetScreenSpaceEffectParams( "episodic_intro", pKeys );
 			}
-			else if ( m_nType == SCREENEFFECT_EP2_ADVISOR_STUN )
+			else if( m_nType == SCREENEFFECT_EP2_ADVISOR_STUN )
 			{
 				g_pScreenSpaceEffects->DisableScreenSpaceEffect( "episodic_stun" );
 			}
-			else if ( m_nType == SCREENEFFECT_EP2_GROGGY )
+			else if( m_nType == SCREENEFFECT_EP2_GROGGY )
 			{
 				if( g_pMaterialSystemHardwareConfig->GetDXSupportLevel() < 80 )
 				{
 					return;
 				}
 				// Create a keyvalue block to set these params
-				KeyValues *pKeys = new KeyValues( "keys" );
-				if ( pKeys == NULL )
+				KeyValues* pKeys = new KeyValues( "keys" );
+				if( pKeys == NULL )
+				{
 					return;
+				}
 
 				// Set our keys
 				pKeys->SetFloat( "duration", m_flDuration );

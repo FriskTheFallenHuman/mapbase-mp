@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef FUNC_BULLETSHIELD_H
 #define FUNC_BULLETSHIELD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //!! replace this with generic start enabled/disabled
@@ -29,8 +29,8 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Spawn( void );
-	
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+
+	bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 	/*
 	bool CreateVPhysics( void );
 

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef MANIPULATOR_H
 #define MANIPULATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/Panel.h"
@@ -19,7 +19,7 @@
 class IManipulator
 {
 public:
-	virtual ~IManipulator(){}
+	virtual ~IManipulator() {}
 	virtual void OnBeginManipulation( void ) = 0;
 	virtual void OnAcceptManipulation( void ) = 0;
 	virtual void OnCancelManipulation( void ) = 0;
@@ -60,7 +60,7 @@ public:
 	virtual void SetViewportSize( int w, int h )
 	{
 		m_nViewport[ 0 ] = w;
-        m_nViewport[ 1 ] = h;
+		m_nViewport[ 1 ] = h;
 	}
 
 protected:
@@ -74,13 +74,13 @@ protected:
 class CTransformManipulator : public CBaseManipulator
 {
 public:
-	CTransformManipulator( matrix3x4_t *pTransform );
+	CTransformManipulator( matrix3x4_t* pTransform );
 
-	void SetTransform( matrix3x4_t *transform );
-	matrix3x4_t *GetTransform();
+	void SetTransform( matrix3x4_t* transform );
+	matrix3x4_t* GetTransform();
 
 protected:
-	matrix3x4_t *m_pTransform;
+	matrix3x4_t* m_pTransform;
 };
 
 
@@ -90,7 +90,7 @@ protected:
 class CPotteryWheelManip : public CTransformManipulator
 {
 public:
-	CPotteryWheelManip( matrix3x4_t *pTransform );
+	CPotteryWheelManip( matrix3x4_t* pTransform );
 
 	virtual void OnBeginManipulation( void );
 	virtual void OnAcceptManipulation( void );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ICLIENTTHINKABLE_H
 #define ICLIENTTHINKABLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,7 +24,7 @@ abstract_class IClientThinkable
 {
 public:
 	// Gets at the containing class...
-	virtual IClientUnknown*		GetIClientUnknown() = 0;
+	virtual IClientUnknown *		GetIClientUnknown() = 0;
 
 	virtual void				ClientThink() = 0;
 

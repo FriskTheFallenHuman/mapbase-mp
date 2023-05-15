@@ -1,20 +1,20 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef SNDINFO_H
 #define SNDINFO_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class Vector;
 #include "utlsymbol.h"
 
 //-----------------------------------------------------------------------------
-// Purpose:  Client side only 
+// Purpose:  Client side only
 //-----------------------------------------------------------------------------
 struct SndInfo_t
 {
@@ -31,14 +31,14 @@ struct SndInfo_t
 	// Radius of this sound effect (spatialization is different within the radius)
 	float		m_flRadius;
 	int			m_nPitch;
-	Vector		*m_pOrigin;
-	Vector		*m_pDirection;
+	Vector*		m_pOrigin;
+	Vector*		m_pDirection;
 
 	// if true, assume sound source can move and update according to entity
 	bool		m_bUpdatePositions;
 	// true if playing linked sentence
 	bool		m_bIsSentence;
-	// if true, bypass all dsp processing for this sound (ie: music)	
+	// if true, bypass all dsp processing for this sound (ie: music)
 	bool		m_bDryMix;
 	// true if sound is playing through in-game speaker entity.
 	bool		m_bSpeaker;

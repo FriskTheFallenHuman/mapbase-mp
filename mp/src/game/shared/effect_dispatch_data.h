@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -8,7 +8,7 @@
 #ifndef EFFECT_DISPATCH_DATA_H
 #define EFFECT_DISPATCH_DATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "particle_parse.h"
@@ -61,7 +61,7 @@ public:
 	int		m_nMaterial;
 	int		m_nDamageType;
 	int		m_nHitBox;
-	
+
 	unsigned char	m_nColor;
 
 	// Color customizability
@@ -108,21 +108,24 @@ public:
 		m_ControlPoint1.m_vecOffset.Init();
 	}
 
-	int GetEffectNameIndex() { return m_iEffectName; }
+	int GetEffectNameIndex()
+	{
+		return m_iEffectName;
+	}
 
 #ifdef CLIENT_DLL
-	IClientRenderable *GetRenderable() const;
-	C_BaseEntity *GetEntity() const;
+	IClientRenderable* GetRenderable() const;
+	C_BaseEntity* GetEntity() const;
 	int entindex() const;
 #endif
 
 private:
 
-	#ifdef CLIENT_DLL
-		DECLARE_CLIENTCLASS_NOBASE()
-	#else
-		DECLARE_SERVERCLASS_NOBASE()
-	#endif
+#ifdef CLIENT_DLL
+	DECLARE_CLIENTCLASS_NOBASE()
+#else
+	DECLARE_SERVERCLASS_NOBASE()
+#endif
 
 	int m_iEffectName;	// Entry in the EffectDispatch network string table. The is automatically handled by DispatchEffect().
 };
@@ -132,8 +135,8 @@ private:
 #define MAX_EFFECT_DISPATCH_STRINGS		( 1 << MAX_EFFECT_DISPATCH_STRING_BITS )
 
 #ifdef CLIENT_DLL
-bool SuppressingParticleEffects();
-void SuppressParticleEffects( bool bSuppress );
+	bool SuppressingParticleEffects();
+	void SuppressParticleEffects( bool bSuppress );
 #endif
 
 #endif // EFFECT_DISPATCH_DATA_H

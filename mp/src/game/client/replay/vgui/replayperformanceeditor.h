@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -10,7 +10,7 @@
 #ifndef REPLAYPERFORMANCEEDITOR_H
 #define REPLAYPERFORMANCEEDITOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/EditablePanel.h"
@@ -47,11 +47,11 @@ enum CameraMode_t
 //-----------------------------------------------------------------------------
 
 class CReplayPerformanceEditorPanel : public vgui::EditablePanel,
-									  public IReplayPerformanceEditor
+	public IReplayPerformanceEditor
 {
 	DECLARE_CLASS_SIMPLE( CReplayPerformanceEditorPanel, vgui::EditablePanel );
 public:
-	CReplayPerformanceEditorPanel( Panel *parent, ReplayHandle_t hReplay );
+	CReplayPerformanceEditorPanel( Panel* parent, ReplayHandle_t hReplay );
 	virtual ~CReplayPerformanceEditorPanel();
 
 	virtual void ShowPanel( bool bShow );
@@ -59,17 +59,17 @@ public:
 	bool OnEndOfReplayReached();
 	void OnInGameMouseWheelEvent( int nDelta );
 	void UpdateCameraSelectionPosition( CameraMode_t nCameraMode );
-	void UpdateFreeCamSettings( const SetViewParams_t &params );
+	void UpdateFreeCamSettings( const SetViewParams_t& params );
 	void UpdateTimeScale( float flScale );
 	void HandleUiToggle();
 	void Exit();
 	void Exit_ShowDialogs();
 
 private:
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void ApplySettings( KeyValues *pInResourceData );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
+	virtual void ApplySettings( KeyValues* pInResourceData );
 	virtual void PerformLayout();
-	virtual void OnCommand( const char *command );
+	virtual void OnCommand( const char* command );
 	virtual void OnMouseWheeled( int nDelta );
 	virtual void OnTick();
 
@@ -80,7 +80,7 @@ private:
 	friend class CReplayButton;
 	friend class CSavingDialog;
 
-	void SetButtonTip( wchar_t *pTipText, Panel *pContextPanel );
+	void SetButtonTip( wchar_t* pTipText, Panel* pContextPanel );
 	void ShowButtonTip( bool bShow );
 
 	void ShowSavingDialog();
@@ -88,14 +88,14 @@ private:
 	//
 	// IReplayPerformanceEditor:
 	//
-	virtual CReplay *GetReplay();
+	virtual CReplay* GetReplay();
 	virtual void OnRewindComplete();
 
 	// Called when the user attempts to change to a different camera, etc.
 	// Returns true if request is immediately granted - false means the event
 	// was queued and the user has been asked if they are OK with nuking any
 	// changes after the current time.
-	bool OnStateChangeRequested( const char *pEventStr );
+	bool OnStateChangeRequested( const char* pEventStr );
 
 	void EnsureRecording( bool bShouldSnip = true );	// Start recording now if not already doing so
 
@@ -103,7 +103,7 @@ private:
 
 	void UpdateCameraButtonImages( bool bForceUseUnselected = false );
 	void LayoutPlayerCells();
-	void SetupHighlightPanel( EditablePanel *pPanel, CPlayerCell *pPlayerCell );
+	void SetupHighlightPanel( EditablePanel* pPanel, CPlayerCell* pPlayerCell );
 	void UpdateTimeLabels();
 	void ClearPlayerCellData();
 
@@ -123,13 +123,13 @@ private:
 		NUM_CTRLBUTTONS
 	};
 
-	CReplayPerformance *GetPerformance() const;
-	CReplayPerformance *GetSavedPerformance() const;
+	CReplayPerformance* GetPerformance() const;
+	CReplayPerformance* GetSavedPerformance() const;
 
 	int		GetCameraModeFromButtonIndex( CameraMode_t iCamera );
 	void	AddSetViewEvent();
 	void	AddTimeScaleEvent( float flTimeScale );
-	void	AddPanelKeyboardInputDisableList( vgui::Panel *pPanel );
+	void	AddPanelKeyboardInputDisableList( vgui::Panel* pPanel );
 	CameraMode_t IsMouseOverActiveCameraOptionsPanel( int nMouseX, int nMouseY );
 	void	SetOrRemoveInTick( int nTick, bool bRemoveIfSet );
 	void	SetOrRemoveOutTick( int nTick, bool bRemoveIfSet );
@@ -141,15 +141,15 @@ private:
 	void	DisplaySavedTip( bool bSucceess );
 	void	OnSaveComplete();
 
-	void	SaveAs( const wchar_t *pTitle );
+	void	SaveAs( const wchar_t* pTitle );
 
 	void	ShowRewindConfirmMessage();
 
-	static void OnConfirmSaveAs( bool bShouldSave, wchar_t *pTitle, void *pContext );
-	static void	OnConfirmDestroyChanges( bool bConfirmed, void *pContext );
-	static void	OnConfirmDiscard( bool bConfirmed, void *pContext );
-	static void OnConfirmExit( bool bConfirmed, void *pContext );
-	static void	OnConfirmRewind( bool bConfirmed, void *pContext );
+	static void OnConfirmSaveAs( bool bShouldSave, wchar_t* pTitle, void* pContext );
+	static void	OnConfirmDestroyChanges( bool bConfirmed, void* pContext );
+	static void	OnConfirmDiscard( bool bConfirmed, void* pContext );
+	static void OnConfirmExit( bool bConfirmed, void* pContext );
+	static void	OnConfirmRewind( bool bConfirmed, void* pContext );
 
 	MESSAGE_FUNC_PARAMS( OnSliderMoved, "SliderMoved", pParams );
 
@@ -158,30 +158,30 @@ private:
 	float				m_flLastTime;	// Can't use gpGlobals->frametime when playback is paused
 	float				m_flOldFps;
 
-	CExLabel			*m_pCurTimeLabel;
-	CExLabel			*m_pTotalTimeLabel;
-	CExLabel			*m_pPlayerNameLabel;
+	CExLabel*			m_pCurTimeLabel;
+	CExLabel*			m_pTotalTimeLabel;
+	CExLabel*			m_pPlayerNameLabel;
 
-	KeyValues			*m_pPlayerCellData;
-	CPlayerCell			*m_pPlayerCells[2][MAX_PLAYERS+1];
-	vgui::ImageList		*m_pImageList;
+	KeyValues*			m_pPlayerCellData;
+	CPlayerCell*			m_pPlayerCells[2][MAX_PLAYERS + 1];
+	vgui::ImageList*		m_pImageList;
 
-	EditablePanel		*m_pMouseTargetPanel;
-	EditablePanel		*m_pBottom;
-	CPlayerCell			*m_pCurTargetCell;
+	EditablePanel*		m_pMouseTargetPanel;
+	EditablePanel*		m_pBottom;
+	CPlayerCell*			m_pCurTargetCell;
 
-	CExImageButton		*m_pCameraButtons[NCAMS];
-	CExImageButton		*m_pCtrlButtons[NUM_CTRLBUTTONS];
+	CExImageButton*		m_pCameraButtons[NCAMS];
+	CExImageButton*		m_pCtrlButtons[NUM_CTRLBUTTONS];
 
 	float				m_flTimeScaleProxy;
 
-	EditablePanel		*m_pPlayerCellsPanel;
+	EditablePanel*		m_pPlayerCellsPanel;
 
-	vgui::ImagePanel	*m_pCameraSelection;
+	vgui::ImagePanel*	m_pCameraSelection;
 	CameraMode_t		m_iCameraSelection;	// NOTE: Indexes into some arrays
 
-	CReplayTipLabel		*m_pButtonTip;
-	CSavingDialog		*m_pSavingDlg;
+	CReplayTipLabel*		m_pButtonTip;
+	CSavingDialog*		m_pSavingDlg;
 
 	enum MenuItems_t
 	{
@@ -192,15 +192,15 @@ private:
 		NUM_MENUITEMS
 	};
 
-	CExImageButton		*m_pMenuButton;
-	vgui::Menu			*m_pMenu;
+	CExImageButton*		m_pMenuButton;
+	vgui::Menu*			m_pMenu;
 	int					m_aMenuItemIds[ NUM_MENUITEMS ];
 
-	CExButton			*m_pSlowMoButton;
+	CExButton*			m_pSlowMoButton;
 
-	CCameraOptionsPanel *m_pCameraOptionsPanels[NCAMS];
+	CCameraOptionsPanel* m_pCameraOptionsPanels[NCAMS];
 
-	CUtlLinkedList< vgui::Panel *, int >	m_lstDisableKeyboardInputPanels;
+	CUtlLinkedList< vgui::Panel*, int >	m_lstDisableKeyboardInputPanels;
 
 	int					m_nRedBlueLabelRightX;
 	int					m_nBottomPanelStartY;
@@ -215,7 +215,7 @@ private:
 	bool				m_bMouseDown;
 	float				m_flDefaultFramerate;	// host_framerate before perf editor started mucking about with it
 	CameraMode_t		m_nMouseClickedOverCameraSettingsPanel;	// Allows user to drag slider outside of camera settings panel w/o the panel disappearing
-	CRecLightPanel		*m_pRecLightPanel;
+	CRecLightPanel*		m_pRecLightPanel;
 	bool				m_bShownAtLeastOnce;	// Has the replay editor shown at least once?  In other words, has the user hit the space bar at all yet?
 	char				m_szSuspendedEvent[128];
 
@@ -230,8 +230,8 @@ private:
 
 //-----------------------------------------------------------------------------
 
-CReplayPerformanceEditorPanel *ReplayUI_InitPerformanceEditor( ReplayHandle_t hReplay );
-CReplayPerformanceEditorPanel *ReplayUI_GetPerformanceEditor();
+CReplayPerformanceEditorPanel* ReplayUI_InitPerformanceEditor( ReplayHandle_t hReplay );
+CReplayPerformanceEditorPanel* ReplayUI_GetPerformanceEditor();
 void ReplayUI_ClosePerformanceEditor();
 
 //-----------------------------------------------------------------------------

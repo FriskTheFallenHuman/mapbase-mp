@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,7 +25,7 @@ public:
 	DECLARE_CLASS( C_TESmoke, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TESmoke( void );
+	C_TESmoke( void );
 	virtual			~C_TESmoke( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -38,7 +38,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESmoke::C_TESmoke( void )
 {
@@ -49,7 +49,7 @@ C_TESmoke::C_TESmoke( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESmoke::~C_TESmoke( void )
 {
@@ -59,17 +59,19 @@ C_TESmoke::~C_TESmoke( void )
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordSmoke( const Vector &start, float flScale, int nFrameRate )
+static inline void RecordSmoke( const Vector& start, float flScale, int nFrameRate )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_SMOKE );
- 		msg->SetString( "name", "TE_Smoke" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_SMOKE );
+		msg->SetString( "name", "TE_Smoke" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -84,7 +86,7 @@ static inline void RecordSmoke( const Vector &start, float flScale, int nFrameRa
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TESmoke::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -96,16 +98,16 @@ void C_TESmoke::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_Smoke( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, float scale, int framerate )
+			   const Vector* pos, int modelindex, float scale, int framerate )
 {
 	// The number passed down is 10 times smaller...
 	g_pEffects->Smoke( *pos, modelindex, scale * 10.0f, framerate );
 	RecordSmoke( *pos, scale * 10.0f, framerate );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESmoke, DT_TESmoke, CTESmoke)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fScale )),
-	RecvPropInt( RECVINFO(m_nFrameRate)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TESmoke, DT_TESmoke, CTESmoke )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropFloat( RECVINFO( m_fScale ) ),
+				RecvPropInt( RECVINFO( m_nFrameRate ) ),
+				END_RECV_TABLE()

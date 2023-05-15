@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,14 +13,14 @@
 #if !defined( IPROFILING_H )
 #define IPROFILING_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 abstract_class IProfiling
@@ -30,6 +30,6 @@ public:
 	virtual void		Destroy( void ) = 0;
 };
 
-extern IProfiling *profiling;
+extern IProfiling* profiling;
 
 #endif // IPROFILING_H

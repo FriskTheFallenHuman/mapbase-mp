@@ -13,7 +13,7 @@
 #include "vgui_bitmapimage.h"
 
 #ifdef INVASION_CLIENT_DLL
-#include "hud_commander_statuspanel.h"
+	#include "hud_commander_statuspanel.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -25,7 +25,7 @@ DECLARE_BUILD_FACTORY( CBitmapPanel );
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage(0)
+CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage( 0 )
 {
 	SetPaintBackgroundEnabled( false );
 	m_szMouseOverText[ 0 ] = 0;
@@ -33,8 +33,8 @@ CBitmapPanel::CBitmapPanel( ) :	BaseClass( NULL, "CBitmapPanel" ), m_pImage(0)
 	m_bOwnsImage = true;
 }
 
-CBitmapPanel::CBitmapPanel( vgui::Panel *pParent, const char *pName ) : 
-	BaseClass( pParent, pName ), m_pImage(0)
+CBitmapPanel::CBitmapPanel( vgui::Panel* pParent, const char* pName ) :
+	BaseClass( pParent, pName ), m_pImage( 0 )
 {
 	SetPaintBackgroundEnabled( false );
 	m_szMouseOverText[ 0 ] = 0;
@@ -44,7 +44,7 @@ CBitmapPanel::CBitmapPanel( vgui::Panel *pParent, const char *pName ) :
 
 CBitmapPanel::~CBitmapPanel()
 {
-	if (m_pImage && m_bOwnsImage)
+	if( m_pImage && m_bOwnsImage )
 	{
 		delete m_pImage;
 		m_pImage = NULL;
@@ -60,15 +60,19 @@ bool CBitmapPanel::Init( KeyValues* pInitData )
 	Assert( pInitData );
 
 	// modulation color
-	if (!ParseRGBA( pInitData, "color", m_r, m_g, m_b, m_a ))
+	if( !ParseRGBA( pInitData, "color", m_r, m_g, m_b, m_a ) )
+	{
 		return false;
+	}
 
 	int x, y, w, h;
-	if (!ParseRect( pInitData, "position", x, y, w, h ))
+	if( !ParseRect( pInitData, "position", x, y, w, h ) )
+	{
 		return false;
+	}
 
-	const char *mouseover = pInitData->GetString( "mousehint", "" );
-	if ( mouseover && mouseover[ 0 ] )
+	const char* mouseover = pInitData->GetString( "mousehint", "" );
+	if( mouseover && mouseover[ 0 ] )
 	{
 		Q_strncpy( m_szMouseOverText, mouseover, sizeof( m_szMouseOverText ) );
 	}
@@ -78,8 +82,10 @@ bool CBitmapPanel::Init( KeyValues* pInitData )
 	SetSize( w, h );
 
 	char const* pClassImage = pInitData->GetString( "material" );
-	if ( !pClassImage || !pClassImage[ 0 ] )
+	if( !pClassImage || !pClassImage[ 0 ] )
+	{
 		return false;
+	}
 
 	// hook in the bitmap
 	m_pImage = new BitmapImage( GetVPanel(), pClassImage );
@@ -92,11 +98,11 @@ bool CBitmapPanel::Init( KeyValues* pInitData )
 //-----------------------------------------------------------------------------
 // initialization from build-mode dialog style .res files
 //-----------------------------------------------------------------------------
-void CBitmapPanel::ApplySettings(KeyValues *pInitData)
+void CBitmapPanel::ApplySettings( KeyValues* pInitData )
 {
-	BaseClass::ApplySettings(pInitData);
+	BaseClass::ApplySettings( pInitData );
 
-	if (m_pImage && m_bOwnsImage)
+	if( m_pImage && m_bOwnsImage )
 	{
 		delete m_pImage;
 		m_pImage = NULL;
@@ -104,16 +110,19 @@ void CBitmapPanel::ApplySettings(KeyValues *pInitData)
 
 	// modulation color. Can't use ParseRGBA since this uses a vgui::KeyValues (feh)
 	m_r = m_g = m_b = m_a = 255;
-	const char *pColorString = pInitData->GetString( "color", "255 255 255 255" );
-	if ( pColorString && pColorString[ 0 ] )
+	const char* pColorString = pInitData->GetString( "color", "255 255 255 255" );
+	if( pColorString && pColorString[ 0 ] )
 	{
 		// Try and scan them in
 		int r = 0, g = 0, b = 0, a = 0;
 		int scanned;
 		scanned = sscanf( pColorString, "%i %i %i %i", &r, &g, &b, &a );
-		if ( scanned == 4 )
+		if( scanned == 4 )
 		{
-			m_r = r; m_g = g; m_b = b; m_a = a;
+			m_r = r;
+			m_g = g;
+			m_b = b;
+			m_a = a;
 		}
 		else
 		{
@@ -124,7 +133,7 @@ void CBitmapPanel::ApplySettings(KeyValues *pInitData)
 	m_szMouseOverText[0] = 0;
 
 	char const* pClassImage = pInitData->GetString( "material" );
-	if ( pClassImage && pClassImage[ 0 ] && m_bOwnsImage )
+	if( pClassImage && pClassImage[ 0 ] && m_bOwnsImage )
 	{
 		// hook in the bitmap
 		m_pImage = new BitmapImage( GetVPanel(), pClassImage );
@@ -137,8 +146,10 @@ void CBitmapPanel::ApplySettings(KeyValues *pInitData)
 //-----------------------------------------------------------------------------
 void CBitmapPanel::Paint( void )
 {
-	if ( !m_pImage )
+	if( !m_pImage )
+	{
 		return;
+	}
 
 	Color color;
 	color.SetColor( m_r, m_g, m_b, m_a );
@@ -148,12 +159,12 @@ void CBitmapPanel::Paint( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBitmapPanel::OnCursorEntered()
 {
 #ifdef INVASION_CLIENT_DLL
-	if ( m_szMouseOverText[ 0 ] )
+	if( m_szMouseOverText[ 0 ] )
 	{
 		StatusPrint( TYPE_HINT, "%s", m_szMouseOverText );
 	}
@@ -162,12 +173,12 @@ void CBitmapPanel::OnCursorEntered()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBitmapPanel::OnCursorExited()
 {
 #ifdef INVASION_CLIENT_DLL
-	if ( m_szMouseOverText[ 0 ] )
+	if( m_szMouseOverText[ 0 ] )
 	{
 		StatusClear();
 	}
@@ -176,10 +187,10 @@ void CBitmapPanel::OnCursorExited()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : char const
 //-----------------------------------------------------------------------------
-const char *CBitmapPanel::GetMouseOverText( void )
+const char* CBitmapPanel::GetMouseOverText( void )
 {
 	return m_szMouseOverText;
 }
@@ -189,13 +200,13 @@ const char *CBitmapPanel::GetMouseOverText( void )
 // Purpose: Sets up the panel
 //			Used by panels that aren't created by the commander overlay factory (i.e. aren't parsed from a keyvalues file)
 //-----------------------------------------------------------------------------
-void CBitmapPanel::SetImage( BitmapImage *pImage )
+void CBitmapPanel::SetImage( BitmapImage* pImage )
 {
 	m_pImage = pImage;
-	m_bOwnsImage = (pImage == NULL);
+	m_bOwnsImage = ( pImage == NULL );
 
 	// Get the color from the image
-	if ( m_pImage )
+	if( m_pImage )
 	{
 		m_pImage->GetColor( m_r, m_g, m_b, m_a );
 	}
@@ -204,11 +215,11 @@ void CBitmapPanel::SetImage( BitmapImage *pImage )
 //-----------------------------------------------------------------------------
 // Purpose: Set image data directly
 //-----------------------------------------------------------------------------
-void CBitmapPanel::SetBitmap( const Bitmap_t &bitmap )
+void CBitmapPanel::SetBitmap( const Bitmap_t& bitmap )
 {
 
 	// Make sure we have an image that we own
-	if ( m_pImage == NULL || !m_bOwnsImage )
+	if( m_pImage == NULL || !m_bOwnsImage )
 	{
 		delete m_pImage;
 		m_pImage = new BitmapImage( GetVPanel(), NULL );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,14 +20,14 @@ class CThermalMaterialProxy : public CEntityMaterialProxy
 public:
 	CThermalMaterialProxy();
 	virtual ~CThermalMaterialProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues* pKeyValues );
-	virtual void OnBind( C_BaseEntity *pEntity );
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( C_BaseEntity* pEntity );
 
 private:
-	IMaterialVar *m_ThermalVar;
-	IMaterialVar *m_ThermalPeriod;
-	IMaterialVar *m_ThermalMax;
-	IMaterialVar *m_ThermalMin;
+	IMaterialVar* m_ThermalVar;
+	IMaterialVar* m_ThermalPeriod;
+	IMaterialVar* m_ThermalMax;
+	IMaterialVar* m_ThermalMin;
 };
 
 CThermalMaterialProxy::CThermalMaterialProxy()
@@ -43,7 +43,7 @@ CThermalMaterialProxy::~CThermalMaterialProxy()
 }
 
 
-bool CThermalMaterialProxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues  )
+bool CThermalMaterialProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	bool foundVar;
 
@@ -74,10 +74,10 @@ bool CThermalMaterialProxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues  )
 	return true;
 }
 
-void CThermalMaterialProxy::OnBind( C_BaseEntity *pEntity )
+void CThermalMaterialProxy::OnBind( C_BaseEntity* pEntity )
 {
 // FIXME, enable this later
-return;
+	return;
 
 	if( !m_ThermalVar )
 	{
@@ -90,12 +90,12 @@ return;
 	min		= m_ThermalMin		? m_ThermalMin->GetFloatValue()	: 0.0f;
 	max		= m_ThermalMax		? m_ThermalMax->GetFloatValue()	: 1.0f;
 	period	= m_ThermalPeriod	? m_ThermalPeriod->GetFloatValue() : 1.0f;
-	
+
 	// get a value in [0,1]
 	value = ( sin( 2.0f * M_PI * gpGlobals->curtime / period ) * 0.5f ) + 0.5f;
-	// get a value in [min,max]	
+	// get a value in [min,max]
 	value = ( max - min ) * value + min;
-	
+
 	Vector color;
 	HueToRGB( 360.f * value, color );
 

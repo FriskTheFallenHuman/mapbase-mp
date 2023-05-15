@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define VGUI_IINPUT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -46,11 +46,11 @@ typedef unsigned long HCursor;
 class IInput : public IBaseInterface
 {
 public:
-	virtual void SetMouseFocus(VPANEL newMouseFocus) = 0;
-	virtual void SetMouseCapture(VPANEL panel) = 0;
+	virtual void SetMouseFocus( VPANEL newMouseFocus ) = 0;
+	virtual void SetMouseCapture( VPANEL panel ) = 0;
 
 	// returns the string name of a scan code
-	virtual void GetKeyCodeText(KeyCode code, OUT_Z_BYTECAP(buflen) char *buf, int buflen) = 0;
+	virtual void GetKeyCodeText( KeyCode code, OUT_Z_BYTECAP( buflen ) char* buf, int buflen ) = 0;
 
 	// focus
 	virtual VPANEL GetFocus() = 0;
@@ -58,44 +58,44 @@ public:
 	virtual VPANEL GetMouseOver() = 0;		// returns the panel the mouse is currently over, ignoring mouse capture
 
 	// mouse state
-	virtual void SetCursorPos(int x, int y) = 0;
-	virtual void GetCursorPos(int &x, int &y) = 0;
-	virtual bool WasMousePressed(MouseCode code) = 0;
-	virtual bool WasMouseDoublePressed(MouseCode code) = 0;
-	virtual bool IsMouseDown(MouseCode code) = 0;
+	virtual void SetCursorPos( int x, int y ) = 0;
+	virtual void GetCursorPos( int& x, int& y ) = 0;
+	virtual bool WasMousePressed( MouseCode code ) = 0;
+	virtual bool WasMouseDoublePressed( MouseCode code ) = 0;
+	virtual bool IsMouseDown( MouseCode code ) = 0;
 
 	// cursor override
-	virtual void SetCursorOveride(HCursor cursor) = 0;
+	virtual void SetCursorOveride( HCursor cursor ) = 0;
 	virtual HCursor GetCursorOveride() = 0;
 
 	// key state
-	virtual bool WasMouseReleased(MouseCode code) = 0;
-	virtual bool WasKeyPressed(KeyCode code) = 0;
-	virtual bool IsKeyDown(KeyCode code) = 0;
-	virtual bool WasKeyTyped(KeyCode code) = 0;
-	virtual bool WasKeyReleased(KeyCode code) = 0;
-	
+	virtual bool WasMouseReleased( MouseCode code ) = 0;
+	virtual bool WasKeyPressed( KeyCode code ) = 0;
+	virtual bool IsKeyDown( KeyCode code ) = 0;
+	virtual bool WasKeyTyped( KeyCode code ) = 0;
+	virtual bool WasKeyReleased( KeyCode code ) = 0;
+
 	virtual VPANEL GetAppModalSurface() = 0;
 	// set the modal dialog panel.
 	// all events will go only to this panel and its children.
-	virtual void SetAppModalSurface(VPANEL panel) = 0;
+	virtual void SetAppModalSurface( VPANEL panel ) = 0;
 	// release the modal dialog panel
 	// do this when your modal dialog finishes.
 	virtual void ReleaseAppModalSurface() = 0;
 
-	virtual void GetCursorPosition( int &x, int &y ) = 0;
+	virtual void GetCursorPosition( int& x, int& y ) = 0;
 
-	virtual void SetIMEWindow( void *hwnd ) = 0;
-	virtual void *GetIMEWindow() = 0;
+	virtual void SetIMEWindow( void* hwnd ) = 0;
+	virtual void* GetIMEWindow() = 0;
 
 	virtual void OnChangeIME( bool forward ) = 0;
 	virtual int  GetCurrentIMEHandle() = 0;
 	virtual int  GetEnglishIMEHandle() = 0;
 
 	// Returns the Language Bar label (Chinese, Korean, Japanese, Russion, Thai, etc.)
-	virtual void GetIMELanguageName( OUT_Z_BYTECAP(unicodeBufferSizeInBytes) wchar_t *buf, int unicodeBufferSizeInBytes ) = 0;
+	virtual void GetIMELanguageName( OUT_Z_BYTECAP( unicodeBufferSizeInBytes ) wchar_t* buf, int unicodeBufferSizeInBytes ) = 0;
 	// Returns the short code for the language (EN, CH, KO, JP, RU, TH, etc. ).
-	virtual void GetIMELanguageShortCode( OUT_Z_BYTECAP(unicodeBufferSizeInBytes) wchar_t *buf, int unicodeBufferSizeInBytes ) = 0;
+	virtual void GetIMELanguageShortCode( OUT_Z_BYTECAP( unicodeBufferSizeInBytes ) wchar_t* buf, int unicodeBufferSizeInBytes ) = 0;
 
 	struct LanguageItem
 	{
@@ -120,9 +120,9 @@ public:
 	};
 
 	// Call with NULL dest to get item count
-	virtual int	 GetIMELanguageList( LanguageItem *dest, int destcount ) = 0;
-	virtual int	 GetIMEConversionModes( ConversionModeItem *dest, int destcount ) = 0;
-	virtual int	 GetIMESentenceModes( SentenceModeItem *dest, int destcount ) = 0;
+	virtual int	 GetIMELanguageList( LanguageItem* dest, int destcount ) = 0;
+	virtual int	 GetIMEConversionModes( ConversionModeItem* dest, int destcount ) = 0;
+	virtual int	 GetIMESentenceModes( SentenceModeItem* dest, int destcount ) = 0;
 
 	virtual void OnChangeIMEByHandle( int handleValue ) = 0;
 	virtual void OnChangeIMEConversionModeByHandle( int handleValue ) = 0;
@@ -139,11 +139,11 @@ public:
 	virtual void OnIMERecomputeModes() = 0;
 
 	virtual int  GetCandidateListCount() = 0;
-	virtual void GetCandidate( int num, OUT_Z_BYTECAP(destSizeBytes) wchar_t *dest, int destSizeBytes ) = 0;
+	virtual void GetCandidate( int num, OUT_Z_BYTECAP( destSizeBytes ) wchar_t* dest, int destSizeBytes ) = 0;
 	virtual int  GetCandidateListSelectedItem() = 0;
 	virtual int  GetCandidateListPageSize() = 0;
 	virtual int  GetCandidateListPageStart() = 0;
-	
+
 	//NOTE:  We render our own candidate lists most of the time...
 	virtual void SetCandidateWindowPos( int x, int y ) = 0;
 
@@ -153,7 +153,7 @@ public:
 	virtual void SetCandidateListPageStart( int start ) = 0;
 
 	// Passes in a keycode which allows hitting other mouse buttons w/o cancelling capture mode
-	virtual void SetMouseCaptureEx(VPANEL panel, MouseCode captureStartMouseCode ) = 0;
+	virtual void SetMouseCaptureEx( VPANEL panel, MouseCode captureStartMouseCode ) = 0;
 
 	// Because OnKeyCodeTyped uses CallParentFunction and is therefore message based, there's no way
 	//  to know if handler actually swallowed the specified keycode.  To get around this, I set a global before calling the

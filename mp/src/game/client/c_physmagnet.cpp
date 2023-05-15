@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -10,7 +10,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_PhysMagnet : public C_BaseAnimating
 {
@@ -22,8 +22,8 @@ public:
 	virtual	~C_PhysMagnet();
 
 	void	PostDataUpdate( DataUpdateType_t updateType );
-	bool	GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;
-	
+	bool	GetShadowCastDirection( Vector* pDirection, ShadowType_t shadowType ) const;
+
 public:
 	// Data received from the server
 	CUtlVector< int > m_aAttachedObjectsFromServer;
@@ -35,52 +35,54 @@ public:
 //-----------------------------------------------------------------------------
 // Purpose: RecvProxy that converts the Magnet's attached object entindexes to handles
 //-----------------------------------------------------------------------------
-void RecvProxy_MagnetAttachedObjectList(  const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_MagnetAttachedObjectList( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_PhysMagnet *pMagnet = (C_PhysMagnet*)pOut;
+	C_PhysMagnet* pMagnet = ( C_PhysMagnet* )pOut;
 	pMagnet->m_aAttachedObjectsFromServer[pData->m_iElement] = pData->m_Value.m_Int;
 }
 
 
-void RecvProxyArrayLength_MagnetAttachedArray( void *pStruct, int objectID, int currentArrayLength )
+void RecvProxyArrayLength_MagnetAttachedArray( void* pStruct, int objectID, int currentArrayLength )
 {
-	C_PhysMagnet *pMagnet = (C_PhysMagnet*)pStruct;
-	
-	if ( pMagnet->m_aAttachedObjectsFromServer.Size() != currentArrayLength )
+	C_PhysMagnet* pMagnet = ( C_PhysMagnet* )pStruct;
+
+	if( pMagnet->m_aAttachedObjectsFromServer.Size() != currentArrayLength )
+	{
 		pMagnet->m_aAttachedObjectsFromServer.SetSize( currentArrayLength );
+	}
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_PhysMagnet, DT_PhysMagnet, CPhysMagnet)
+IMPLEMENT_CLIENTCLASS_DT( C_PhysMagnet, DT_PhysMagnet, CPhysMagnet )
 
-	// ROBIN: Disabled because we don't need it anymore
-	/*
-	RecvPropArray2( 
-		RecvProxyArrayLength_MagnetAttachedArray,
-		RecvPropInt( "magnetattached_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_MagnetAttachedObjectList ), 
-		128, 
-		0, 
-		"magnetattached_array"
-		)
-	*/
+// ROBIN: Disabled because we don't need it anymore
+/*
+RecvPropArray2(
+	RecvProxyArrayLength_MagnetAttachedArray,
+	RecvPropInt( "magnetattached_array_element", 0, SIZEOF_IGNORE, 0, RecvProxy_MagnetAttachedObjectList ),
+	128,
+	0,
+	"magnetattached_array"
+	)
+*/
 
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_PhysMagnet::C_PhysMagnet()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_PhysMagnet::~C_PhysMagnet()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PhysMagnet::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -123,12 +125,12 @@ void C_PhysMagnet::PostDataUpdate( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 // Purpose: Return a per-entity shadow cast direction
 //-----------------------------------------------------------------------------
-bool C_PhysMagnet::GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const
+bool C_PhysMagnet::GetShadowCastDirection( Vector* pDirection, ShadowType_t shadowType ) const
 {
 	// Magnets shadow is more vertical than others
 	//Vector vecDown = g_pClientShadowMgr->GetShadowDirection() - Vector(0,0,1);
 	//VectorNormalize( vecDown );
 	//*pDirection = vecDown;
-	*pDirection = Vector(0,0,-1);
+	*pDirection = Vector( 0, 0, -1 );
 	return true;
 }

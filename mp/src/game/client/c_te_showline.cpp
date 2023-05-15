@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,7 +25,7 @@ public:
 	DECLARE_CLASS( C_TEShowLine, C_TEParticleSystem );
 	DECLARE_CLIENTCLASS();
 
-					C_TEShowLine( void );
+	C_TEShowLine( void );
 	virtual			~C_TEShowLine( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -35,7 +35,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEShowLine::C_TEShowLine( void )
 {
@@ -43,7 +43,7 @@ C_TEShowLine::C_TEShowLine( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEShowLine::~C_TEShowLine( void )
 {
@@ -51,56 +51,58 @@ C_TEShowLine::~C_TEShowLine( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEShowLine::PostDataUpdate( DataUpdateType_t updateType )
 {
 	Vector		vec;
 	float		len;
-	StandardParticle_t	*p;
+	StandardParticle_t*	p;
 	int			dec;
 	static int	tracercount;
 
-	VectorSubtract (m_vecEnd, m_vecOrigin, vec);
-	len = VectorNormalize (vec);
+	VectorSubtract( m_vecEnd, m_vecOrigin, vec );
+	len = VectorNormalize( vec );
 
 	dec = 3;
 
-	VectorScale(vec, dec, vec);
+	VectorScale( vec, dec, vec );
 
 	CSmartPtr<CTEParticleRenderer> pRen = CTEParticleRenderer::Create( "TEShowLine", m_vecOrigin );
 	if( !pRen )
+	{
 		return;
-	
-	while (len > 0)
+	}
+
+	while( len > 0 )
 	{
 		len -= dec;
 
 		p = pRen->AddParticle();
-		if ( p )
+		if( p )
 		{
 			p->m_Velocity.Init();
 
-			pRen->SetParticleLifetime(p, 30);
-			
-			p->SetColor(0, 1, 1);
-			p->SetAlpha(1);
-			pRen->SetParticleType(p, pt_static);
+			pRen->SetParticleLifetime( p, 30 );
+
+			p->SetColor( 0, 1, 1 );
+			p->SetAlpha( 1 );
+			pRen->SetParticleType( p, pt_static );
 
 			p->m_Pos = m_vecOrigin;
-			
+
 			m_vecOrigin += vec;
 		}
 	}
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEShowLine, DT_TEShowLine, CTEShowLine)
-	RecvPropVector( RECVINFO(m_vecEnd)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEShowLine, DT_TEShowLine, CTEShowLine )
+RecvPropVector( RECVINFO( m_vecEnd ) ),
+				END_RECV_TABLE()
 
-void TE_ShowLine( IRecipientFilter& filter, float delay,
-	const Vector* start, const Vector* end )
+				void TE_ShowLine( IRecipientFilter& filter, float delay,
+								  const Vector* start, const Vector* end )
 {
 	// Major hack to simulate receiving network message
 	__g_C_TEShowLine.m_vecOrigin = *start;

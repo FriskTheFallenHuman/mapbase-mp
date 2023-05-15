@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -27,7 +27,7 @@ public:
 	CDebugOverlay( vgui::VPANEL parent );
 	virtual ~CDebugOverlay( void );
 
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 	virtual void Paint();
 	virtual void OnTick( void );
 
@@ -39,7 +39,7 @@ private:
 
 //-----------------------------------------------------------------------------
 // Purpose: Instances the overlay object
-// Input  : *parent - 
+// Input  : *parent -
 //-----------------------------------------------------------------------------
 CDebugOverlay::CDebugOverlay( vgui::VPANEL parent ) :
 	BaseClass( NULL, "CDebugOverlay" )
@@ -57,22 +57,22 @@ CDebugOverlay::CDebugOverlay( vgui::VPANEL parent ) :
 	SetPaintBackgroundEnabled( false );
 
 	// set the scheme before any child control is created
-	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS ), "resource/ClientScheme.res", "Client");
+	vgui::HScheme scheme = vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL_TOOLS ), "resource/ClientScheme.res", "Client" );
 	SetScheme( scheme );
-	
+
 	vgui::ivgui()->AddTickSignal( GetVPanel(), 250 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CDebugOverlay::~CDebugOverlay( void )
 {
 }
 
-void CDebugOverlay::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CDebugOverlay::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
 	// Use a large font
 //	m_hFont = pScheme->GetFont( "Default" );
@@ -86,12 +86,12 @@ void CDebugOverlay::ApplySchemeSettings(vgui::IScheme *pScheme)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CDebugOverlay::OnTick( void )
 {
 	bool bVisible = ShouldDraw();
-	if ( IsVisible() != bVisible )
+	if( IsVisible() != bVisible )
 	{
 		SetVisible( bVisible );
 	}
@@ -99,8 +99,10 @@ void CDebugOverlay::OnTick( void )
 
 bool CDebugOverlay::ShouldDraw( void )
 {
-	if ( debugoverlay->GetFirst() )
+	if( debugoverlay->GetFirst() )
+	{
 		return true;
+	}
 	return false;
 }
 
@@ -110,9 +112,9 @@ bool CDebugOverlay::ShouldDraw( void )
 void CDebugOverlay::Paint()
 {
 	OverlayText_t* pCurrText = debugoverlay->GetFirst();
-	while (pCurrText) 
+	while( pCurrText )
 	{
-		if ( pCurrText->text != NULL ) 
+		if( pCurrText->text != NULL )
 		{
 			// --------------
 			// Draw the text
@@ -123,21 +125,21 @@ void CDebugOverlay::Paint()
 			int a = pCurrText->a;
 			Vector screenPos;
 
-			if (pCurrText->bUseOrigin)
+			if( pCurrText->bUseOrigin )
 			{
-				if (!debugoverlay->ScreenPosition( pCurrText->origin, screenPos )) 
+				if( !debugoverlay->ScreenPosition( pCurrText->origin, screenPos ) )
 				{
 					float xPos		= screenPos[0];
-					float yPos		= screenPos[1]+ (pCurrText->lineOffset*13); // Line spacing;
+					float yPos		= screenPos[1] + ( pCurrText->lineOffset * 13 ); // Line spacing;
 					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, "%s", pCurrText->text );
 				}
 			}
 			else
 			{
-				if (!debugoverlay->ScreenPosition( pCurrText->flXPos,pCurrText->flYPos, screenPos )) 
-				{	
+				if( !debugoverlay->ScreenPosition( pCurrText->flXPos, pCurrText->flYPos, screenPos ) )
+				{
 					float xPos		= screenPos[0];
-					float yPos		= screenPos[1]+ (pCurrText->lineOffset*13); // Line spacing;
+					float yPos		= screenPos[1] + ( pCurrText->lineOffset * 13 ); // Line spacing;
 					g_pMatSystemSurface->DrawColoredText( m_hFont, xPos, yPos, r, g, b, a, "%s", pCurrText->text );
 				}
 			}
@@ -151,7 +153,7 @@ void CDebugOverlay::Paint()
 class CDebugOverlayPanel : public IDebugOverlayPanel
 {
 private:
-	CDebugOverlay *debugOverlayPanel;
+	CDebugOverlay* debugOverlayPanel;
 public:
 	CDebugOverlayPanel( void )
 	{
@@ -163,9 +165,9 @@ public:
 	}
 	void Destroy( void )
 	{
-		if ( debugOverlayPanel )
+		if( debugOverlayPanel )
 		{
-			debugOverlayPanel->SetParent( (vgui::Panel *)NULL );
+			debugOverlayPanel->SetParent( ( vgui::Panel* )NULL );
 			debugOverlayPanel->MarkForDeletion();
 			debugOverlayPanel = NULL;
 		}
@@ -173,10 +175,10 @@ public:
 };
 
 static CDebugOverlayPanel g_DebugOverlay;
-IDebugOverlayPanel *debugoverlaypanel =  ( IDebugOverlayPanel * )&g_DebugOverlay;
+IDebugOverlayPanel* debugoverlaypanel = ( IDebugOverlayPanel* )& g_DebugOverlay;
 
 
 void DebugDrawLine( const Vector& vecAbsStart, const Vector& vecAbsEnd, int r, int g, int b, bool test, float duration )
 {
-	debugoverlay->AddLineOverlay( vecAbsStart + Vector( 0,0,0.1), vecAbsEnd + Vector( 0,0,0.1), r,g,b, test, duration );
+	debugoverlay->AddLineOverlay( vecAbsStart + Vector( 0, 0, 0.1 ), vecAbsEnd + Vector( 0, 0, 0.1 ), r, g, b, test, duration );
 }

@@ -17,47 +17,47 @@ If MY_CPU_LE_UNALIGN is not defined, we don't know about these properties of pla
 */
 
 #if defined(_M_X64) || defined(_M_AMD64) || defined(__x86_64__)
-#define MY_CPU_AMD64
+	#define MY_CPU_AMD64
 #endif
 
 #if defined(MY_CPU_AMD64) || defined(_M_IA64)
-#define MY_CPU_64BIT
+	#define MY_CPU_64BIT
 #endif
 
 #if defined(_M_IX86) || defined(__i386__)
-#define MY_CPU_X86
+	#define MY_CPU_X86
 #endif
 
 #if defined(MY_CPU_X86) || defined(MY_CPU_AMD64)
-#define MY_CPU_X86_OR_AMD64
+	#define MY_CPU_X86_OR_AMD64
 #endif
 
 #if defined(MY_CPU_X86) || defined(_M_ARM)
-#define MY_CPU_32BIT
+	#define MY_CPU_32BIT
 #endif
 
 #if defined(_WIN32) && defined(_M_ARM)
-#define MY_CPU_ARM_LE
+	#define MY_CPU_ARM_LE
 #endif
 
 #if defined(_WIN32) && defined(_M_IA64)
-#define MY_CPU_IA64_LE
+	#define MY_CPU_IA64_LE
 #endif
 
 #if defined(MY_CPU_X86_OR_AMD64)
-#define MY_CPU_LE_UNALIGN
+	#define MY_CPU_LE_UNALIGN
 #endif
 
 #if defined(MY_CPU_X86_OR_AMD64) || defined(MY_CPU_ARM_LE)  || defined(MY_CPU_IA64_LE) || defined(__ARMEL__) || defined(__MIPSEL__) || defined(__LITTLE_ENDIAN__)
-#define MY_CPU_LE
+	#define MY_CPU_LE
 #endif
 
 #if defined(__BIG_ENDIAN__) || defined(__m68k__) ||  defined(__ARMEB__) || defined(__MIPSEB__)
-#define MY_CPU_BE
+	#define MY_CPU_BE
 #endif
 
 #if defined(MY_CPU_LE) && defined(MY_CPU_BE)
-Stop_Compiling_Bad_Endian
+	Stop_Compiling_Bad_Endian
 #endif
 
 #ifdef MY_CPU_LE_UNALIGN
@@ -125,23 +125,23 @@ Stop_Compiling_Bad_Endian
 
 typedef struct
 {
-  UInt32 maxFunc;
-  UInt32 vendor[3];
-  UInt32 ver;
-  UInt32 b;
-  UInt32 c;
-  UInt32 d;
+	UInt32 maxFunc;
+	UInt32 vendor[3];
+	UInt32 ver;
+	UInt32 b;
+	UInt32 c;
+	UInt32 d;
 } Cx86cpuid;
 
 enum
 {
-  CPU_FIRM_INTEL,
-  CPU_FIRM_AMD,
-  CPU_FIRM_VIA
+	CPU_FIRM_INTEL,
+	CPU_FIRM_AMD,
+	CPU_FIRM_VIA
 };
 
-Bool x86cpuid_CheckAndRead(Cx86cpuid *p);
-int x86cpuid_GetFirm(const Cx86cpuid *p);
+Bool x86cpuid_CheckAndRead( Cx86cpuid* p );
+int x86cpuid_GetFirm( const Cx86cpuid* p );
 
 #define x86cpuid_GetFamily(p) (((p)->ver >> 8) & 0xFF00F)
 #define x86cpuid_GetModel(p) (((p)->ver >> 4) & 0xF00F)

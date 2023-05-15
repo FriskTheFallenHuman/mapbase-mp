@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,14 +24,14 @@ enum
 enum HL2MPPlayerState
 {
 	// Happily running around in the game.
-	STATE_ACTIVE=0,
+	STATE_ACTIVE = 0,
 	STATE_OBSERVER_MODE,		// Noclipping around, watching players, etc.
 	NUM_PLAYER_STATES
 };
 
 
 #if defined( CLIENT_DLL )
-#define CHL2MP_Player C_HL2MP_Player
+	#define CHL2MP_Player C_HL2MP_Player
 #endif
 
 // Player avoidance

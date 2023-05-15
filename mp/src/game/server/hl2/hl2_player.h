@@ -17,16 +17,16 @@
 
 // In HL2MP we need to inherit from  BaseMultiplayerPlayer!
 #if defined ( HL2MP )
-#include "basemultiplayerplayer.h"
+	#include "basemultiplayerplayer.h"
 #elif defined ( MAPBASE )
-#include "mapbase/singleplayer_animstate.h"
+	#include "mapbase/singleplayer_animstate.h"
 #endif
 
 class CAI_Squad;
 class CPropCombineBall;
 
-extern int TrainSpeed(int iSpeed, int iMax);
-extern void CopyToBodyQue( CBaseAnimating *pCorpse );
+extern int TrainSpeed( int iSpeed, int iMax );
+extern void CopyToBodyQue( CBaseAnimating* pCorpse );
 
 #define ARMOR_DECAY_TIME 3.5f
 
@@ -34,7 +34,7 @@ enum HL2PlayerPhysFlag_e
 {
 	// 1 -- 5 are used by enum PlayerPhysFlag_e in player.h
 
-	PFLAG_ONBARNACLE	= ( 1<<6 )		// player is hangning from the barnalce
+	PFLAG_ONBARNACLE	= ( 1 << 6 )		// player is hangning from the barnalce
 };
 
 class IPhysicsPlayerController;
@@ -43,7 +43,7 @@ class CLogicPlayerProxy;
 struct commandgoal_t
 {
 	Vector		m_vecGoalLocation;
-	CBaseEntity	*m_pGoalEntity;
+	CBaseEntity*	m_pGoalEntity;
 };
 
 // Time between checks to determine whether NPCs are illuminated by the flashlight
@@ -63,22 +63,36 @@ struct commandgoal_t
 class CSuitPowerDevice
 {
 public:
-	CSuitPowerDevice( int bitsID, float flDrainRate ) { m_bitsDeviceID = bitsID; m_flDrainRate = flDrainRate; }
+	CSuitPowerDevice( int bitsID, float flDrainRate )
+	{
+		m_bitsDeviceID = bitsID;
+		m_flDrainRate = flDrainRate;
+	}
 private:
 	int		m_bitsDeviceID;	// tells what the device is. DEVICE_SPRINT, DEVICE_FLASHLIGHT, etc. BITMASK!!!!!
 	float	m_flDrainRate;	// how quickly does this device deplete suit power? ( percent per second )
 
 public:
-	int		GetDeviceID( void ) const { return m_bitsDeviceID; }
+	int		GetDeviceID( void ) const
+	{
+		return m_bitsDeviceID;
+	}
 	float	GetDeviceDrainRate( void ) const
-	{	
-		if( g_pGameRules->GetSkillLevel() == SKILL_EASY && hl2_episodic.GetBool() && !(GetDeviceID()&bits_SUIT_DEVICE_SPRINT) )
+	{
+		if( g_pGameRules->GetSkillLevel() == SKILL_EASY && hl2_episodic.GetBool() && !( GetDeviceID()&bits_SUIT_DEVICE_SPRINT ) )
+		{
 			return m_flDrainRate * 0.5f;
+		}
 		else
-			return m_flDrainRate; 
+		{
+			return m_flDrainRate;
+		}
 	}
 #ifdef MAPBASE
-	void	SetDeviceDrainRate( float flDrainRate ) { m_flDrainRate = flDrainRate; }
+	void	SetDeviceDrainRate( float flDrainRate )
+	{
+		m_flDrainRate = flDrainRate;
+	}
 #endif
 };
 
@@ -103,25 +117,31 @@ public:
 
 	CHL2_Player();
 	~CHL2_Player( void );
-	
-	static CHL2_Player *CreatePlayer( const char *className, edict_t *ed )
+
+	static CHL2_Player* CreatePlayer( const char* className, edict_t* ed )
 	{
 		CHL2_Player::s_PlayerEdict = ed;
-		return (CHL2_Player*)CreateEntityByName( className );
+		return ( CHL2_Player* )CreateEntityByName( className );
 	}
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-	virtual void		CreateCorpse( void ) { CopyToBodyQue( this ); };
+	virtual void		CreateCorpse( void )
+	{
+		CopyToBodyQue( this );
+	};
 
 	virtual void		Precache( void );
-	virtual void		Spawn(void);
+	virtual void		Spawn( void );
 	virtual void		Activate( void );
 	virtual void		CheatImpulseCommands( int iImpulse );
-	virtual void		PlayerRunCommand( CUserCmd *ucmd, IMoveHelper *moveHelper);
-	virtual void		PlayerUse ( void );
-	virtual void		SuspendUse( float flDuration ) { m_flTimeUseSuspended = gpGlobals->curtime + flDuration; }
+	virtual void		PlayerRunCommand( CUserCmd* ucmd, IMoveHelper* moveHelper );
+	virtual void		PlayerUse( void );
+	virtual void		SuspendUse( float flDuration )
+	{
+		m_flTimeUseSuspended = gpGlobals->curtime + flDuration;
+	}
 	virtual void		UpdateClientData( void );
 	virtual void		OnRestore();
 	virtual void		StopLoopingSounds( void );
@@ -130,9 +150,9 @@ public:
 
 #ifdef MAPBASE
 	// For the logic_playerproxy output
-	void				SpawnedAtPoint( CBaseEntity *pSpawnPoint );
+	void				SpawnedAtPoint( CBaseEntity* pSpawnPoint );
 
-	virtual Activity	Weapon_TranslateActivity( Activity baseAct, bool *pRequired = NULL );
+	virtual Activity	Weapon_TranslateActivity( Activity baseAct, bool* pRequired = NULL );
 
 #ifdef SP_ANIM_STATE
 	void				SetAnimation( PLAYER_ANIM playerAnim );
@@ -142,39 +162,45 @@ public:
 
 	virtual CStudioHdr*	OnNewModel();
 
-	virtual const char *GetOverrideStepSound( const char *pszBaseStepSoundName );
+	virtual const char* GetOverrideStepSound( const char* pszBaseStepSoundName );
 #endif
 
-	void				DrawDebugGeometryOverlays(void);
+	void				DrawDebugGeometryOverlays( void );
 
 	virtual Vector		EyeDirection2D( void );
 	virtual Vector		EyeDirection3D( void );
 
 	virtual void		CommanderMode();
 
-	virtual bool		ClientCommand( const CCommand &args );
+	virtual bool		ClientCommand( const CCommand& args );
 
 	// from cbasecombatcharacter
-	void				InitVCollision( const Vector &vecAbsOrigin, const Vector &vecAbsVelocity );
-	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
+	void				InitVCollision( const Vector& vecAbsOrigin, const Vector& vecAbsVelocity );
+	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon* pWeapon );
 
-	Class_T				Classify ( void );
+	Class_T				Classify( void );
 
 	// from CBasePlayer
-	virtual void		SetupVisibility( CBaseEntity *pViewEntity, unsigned char *pvs, int pvssize );
+	virtual void		SetupVisibility( CBaseEntity* pViewEntity, unsigned char* pvs, int pvssize );
 
 	// Suit Power Interface
 	void SuitPower_Update( void );
 	bool SuitPower_Drain( float flPower ); // consume some of the suit's power.
 	void SuitPower_Charge( float flPower ); // add suit power.
-	void SuitPower_SetCharge( float flPower ) { m_HL2Local.m_flSuitPower = flPower; }
+	void SuitPower_SetCharge( float flPower )
+	{
+		m_HL2Local.m_flSuitPower = flPower;
+	}
 	void SuitPower_Initialize( void );
-	bool SuitPower_IsDeviceActive( const CSuitPowerDevice &device );
-	bool SuitPower_AddDevice( const CSuitPowerDevice &device );
-	bool SuitPower_RemoveDevice( const CSuitPowerDevice &device );
+	bool SuitPower_IsDeviceActive( const CSuitPowerDevice& device );
+	bool SuitPower_AddDevice( const CSuitPowerDevice& device );
+	bool SuitPower_RemoveDevice( const CSuitPowerDevice& device );
 	bool SuitPower_ShouldRecharge( void );
-	float SuitPower_GetCurrentPercentage( void ) { return m_HL2Local.m_flSuitPower; }
-	
+	float SuitPower_GetCurrentPercentage( void )
+	{
+		return m_HL2Local.m_flSuitPower;
+	}
+
 	void SetFlashlightEnabled( bool bState );
 
 #ifdef MAPBASE
@@ -196,37 +222,40 @@ public:
 
 	void CommanderUpdate();
 	void CommanderExecute( CommanderCommand_t command = CC_TOGGLE );
-	bool CommanderFindGoal( commandgoal_t *pGoal );
-	void NotifyFriendsOfDamage( CBaseEntity *pAttackerEntity );
-	CAI_BaseNPC *GetSquadCommandRepresentative();
+	bool CommanderFindGoal( commandgoal_t* pGoal );
+	void NotifyFriendsOfDamage( CBaseEntity* pAttackerEntity );
+	CAI_BaseNPC* GetSquadCommandRepresentative();
 	int GetNumSquadCommandables();
 	int GetNumSquadCommandableMedics();
 
 #ifdef MAPBASE
-	void InputSquadForceSummon( inputdata_t &inputdata );
-	void InputSquadForceGoTo( inputdata_t &inputdata );
+	void InputSquadForceSummon( inputdata_t& inputdata );
+	void InputSquadForceGoTo( inputdata_t& inputdata );
 
-	void InputEnableGeigerCounter( inputdata_t &inputdata );
-	void InputDisableGeigerCounter( inputdata_t &inputdata );
+	void InputEnableGeigerCounter( inputdata_t& inputdata );
+	void InputDisableGeigerCounter( inputdata_t& inputdata );
 
-	void InputShowSquadHUD( inputdata_t &inputdata );
-	void InputHideSquadHUD( inputdata_t &inputdata );
+	void InputShowSquadHUD( inputdata_t& inputdata );
+	void InputHideSquadHUD( inputdata_t& inputdata );
 #endif
 
 	// Locator
-	void UpdateLocatorPosition( const Vector &vecPosition );
+	void UpdateLocatorPosition( const Vector& vecPosition );
 
 	// Sprint Device
 	void StartAutoSprint( void );
 	void StartSprinting( void );
 	void StopSprinting( void );
 	void InitSprinting( void );
-	bool IsSprinting( void ) { return m_fIsSprinting; }
+	bool IsSprinting( void )
+	{
+		return m_fIsSprinting;
+	}
 	bool CanSprint( void );
-	void EnableSprint( bool bEnable);
+	void EnableSprint( bool bEnable );
 
-	bool CanZoom( CBaseEntity *pRequester );
-	void ToggleZoom(void);
+	bool CanZoom( CBaseEntity* pRequester );
+	void ToggleZoom( void );
 	void StartZooming( void );
 	void StopZooming( void );
 	bool IsZooming( void );
@@ -235,115 +264,153 @@ public:
 	// Walking
 	void StartWalking( void );
 	void StopWalking( void );
-	bool IsWalking( void ) { return m_fIsWalking; }
+	bool IsWalking( void )
+	{
+		return m_fIsWalking;
+	}
 
 	// Aiming heuristics accessors
-	virtual float		GetIdleTime( void ) const { return ( m_flIdleTime - m_flMoveTime ); }
-	virtual float		GetMoveTime( void ) const { return ( m_flMoveTime - m_flIdleTime ); }
-	virtual float		GetLastDamageTime( void ) const { return m_flLastDamageTime; }
-	virtual bool		IsDucking( void ) const { return !!( GetFlags() & FL_DUCKING ); }
+	virtual float		GetIdleTime( void ) const
+	{
+		return ( m_flIdleTime - m_flMoveTime );
+	}
+	virtual float		GetMoveTime( void ) const
+	{
+		return ( m_flMoveTime - m_flIdleTime );
+	}
+	virtual float		GetLastDamageTime( void ) const
+	{
+		return m_flLastDamageTime;
+	}
+	virtual bool		IsDucking( void ) const
+	{
+		return !!( GetFlags() & FL_DUCKING );
+	}
 
-	virtual bool		PassesDamageFilter( const CTakeDamageInfo &info );
-	void				InputIgnoreFallDamage( inputdata_t &inputdata );
-	void				InputIgnoreFallDamageWithoutReset( inputdata_t &inputdata );
-	void				InputEnableFlashlight( inputdata_t &inputdata );
-	void				InputDisableFlashlight( inputdata_t &inputdata );
+	virtual bool		PassesDamageFilter( const CTakeDamageInfo& info );
+	void				InputIgnoreFallDamage( inputdata_t& inputdata );
+	void				InputIgnoreFallDamageWithoutReset( inputdata_t& inputdata );
+	void				InputEnableFlashlight( inputdata_t& inputdata );
+	void				InputDisableFlashlight( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void				InputAddArmor( inputdata_t &inputdata );
-	void				InputRemoveArmor( inputdata_t &inputdata );
-	void				InputSetArmor( inputdata_t &inputdata );
+	void				InputAddArmor( inputdata_t& inputdata );
+	void				InputRemoveArmor( inputdata_t& inputdata );
+	void				InputSetArmor( inputdata_t& inputdata );
 
-	void				InputAddAuxPower( inputdata_t &inputdata );
-	void				InputRemoveAuxPower( inputdata_t &inputdata );
-	void				InputSetAuxPower( inputdata_t &inputdata );
+	void				InputAddAuxPower( inputdata_t& inputdata );
+	void				InputRemoveAuxPower( inputdata_t& inputdata );
+	void				InputSetAuxPower( inputdata_t& inputdata );
 
-	void				InputTurnFlashlightOn( inputdata_t &inputdata );
-	void				InputTurnFlashlightOff( inputdata_t &inputdata );
+	void				InputTurnFlashlightOn( inputdata_t& inputdata );
+	void				InputTurnFlashlightOff( inputdata_t& inputdata );
 #endif
 
-	const impactdamagetable_t &GetPhysicsImpactDamageTable();
-	virtual int			OnTakeDamage( const CTakeDamageInfo &info );
-	virtual int			OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual void		OnDamagedByExplosion( const CTakeDamageInfo &info );
-	bool				ShouldShootMissTarget( CBaseCombatCharacter *pAttacker );
+	const impactdamagetable_t& GetPhysicsImpactDamageTable();
+	virtual int			OnTakeDamage( const CTakeDamageInfo& info );
+	virtual int			OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	virtual void		OnDamagedByExplosion( const CTakeDamageInfo& info );
+	bool				ShouldShootMissTarget( CBaseCombatCharacter* pAttacker );
 
-	void				CombineBallSocketed( CPropCombineBall *pCombineBall );
+	void				CombineBallSocketed( CPropCombineBall* pCombineBall );
 
-	virtual void		Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual void		Event_KilledOther( CBaseEntity* pVictim, const CTakeDamageInfo& info );
 
-	virtual void		GetAutoaimVector( autoaim_params_t &params );
+	virtual void		GetAutoaimVector( autoaim_params_t& params );
 	bool				ShouldKeepLockedAutoaimTarget( EHANDLE hLockedTarget );
 
-	void				SetLocatorTargetEntity( CBaseEntity *pEntity ) { m_hLocatorTargetEntity.Set( pEntity ); }
+	void				SetLocatorTargetEntity( CBaseEntity* pEntity )
+	{
+		m_hLocatorTargetEntity.Set( pEntity );
+	}
 
 #ifdef MAPBASE
-	virtual bool		CanAutoSwitchToNextBestWeapon( CBaseCombatWeapon *pWeapon );
+	virtual bool		CanAutoSwitchToNextBestWeapon( CBaseCombatWeapon* pWeapon );
 #endif
 
-	virtual int			GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound);
-	virtual bool		BumpWeapon( CBaseCombatWeapon *pWeapon );
-	
-	virtual bool		Weapon_CanUse( CBaseCombatWeapon *pWeapon );
-	virtual void		Weapon_Equip( CBaseCombatWeapon *pWeapon );
+	virtual int			GiveAmmo( int nCount, int nAmmoIndex, bool bSuppressSound );
+	virtual bool		BumpWeapon( CBaseCombatWeapon* pWeapon );
+
+	virtual bool		Weapon_CanUse( CBaseCombatWeapon* pWeapon );
+	virtual void		Weapon_Equip( CBaseCombatWeapon* pWeapon );
 	virtual bool		Weapon_Lower( void );
 	virtual bool		Weapon_Ready( void );
-	virtual bool		Weapon_Switch( CBaseCombatWeapon *pWeapon, int viewmodelindex = 0 );
-	virtual bool		Weapon_CanSwitchTo( CBaseCombatWeapon *pWeapon );
+	virtual bool		Weapon_Switch( CBaseCombatWeapon* pWeapon, int viewmodelindex = 0 );
+	virtual bool		Weapon_CanSwitchTo( CBaseCombatWeapon* pWeapon );
 
-	void FirePlayerProxyOutput( const char *pszOutputName, variant_t variant, CBaseEntity *pActivator, CBaseEntity *pCaller );
+	void FirePlayerProxyOutput( const char* pszOutputName, variant_t variant, CBaseEntity* pActivator, CBaseEntity* pCaller );
 
-	CLogicPlayerProxy	*GetPlayerProxy( void );
+	CLogicPlayerProxy*	GetPlayerProxy( void );
 
 	// Flashlight Device
 	void				CheckFlashlight( void );
 	int					FlashlightIsOn( void );
 	void				FlashlightTurnOn( void );
 	void				FlashlightTurnOff( void );
-	bool				IsIlluminatedByFlashlight( CBaseEntity *pEntity, float *flReturnDot );
-	void				SetFlashlightPowerDrainScale( float flScale ) { m_flFlashlightPowerDrainScale = flScale; }
+	bool				IsIlluminatedByFlashlight( CBaseEntity* pEntity, float* flReturnDot );
+	void				SetFlashlightPowerDrainScale( float flScale )
+	{
+		m_flFlashlightPowerDrainScale = flScale;
+	}
 
 	// Underwater breather device
 	virtual void		SetPlayerUnderwater( bool state );
-	virtual bool		CanBreatheUnderwater() const { return m_HL2Local.m_flSuitPower > 0.0f; }
+	virtual bool		CanBreatheUnderwater() const
+	{
+		return m_HL2Local.m_flSuitPower > 0.0f;
+	}
 
 	// physics interactions
-	virtual void		PickupObject( CBaseEntity *pObject, bool bLimitMassAndSize );
-	virtual	bool		IsHoldingEntity( CBaseEntity *pEnt );
-	virtual void		ForceDropOfCarriedPhysObjects( CBaseEntity *pOnlyIfHoldindThis );
-	virtual float		GetHeldObjectMass( IPhysicsObject *pHeldObject );
-	virtual CBaseEntity	*GetHeldObject( void );
+	virtual void		PickupObject( CBaseEntity* pObject, bool bLimitMassAndSize );
+	virtual	bool		IsHoldingEntity( CBaseEntity* pEnt );
+	virtual void		ForceDropOfCarriedPhysObjects( CBaseEntity* pOnlyIfHoldindThis );
+	virtual float		GetHeldObjectMass( IPhysicsObject* pHeldObject );
+	virtual CBaseEntity*	GetHeldObject( void );
 
-	virtual bool		IsFollowingPhysics( void ) { return (m_afPhysicsFlags & PFLAG_ONBARNACLE) > 0; }
-	void				InputForceDropPhysObjects( inputdata_t &data );
+	virtual bool		IsFollowingPhysics( void )
+	{
+		return ( m_afPhysicsFlags & PFLAG_ONBARNACLE ) > 0;
+	}
+	void				InputForceDropPhysObjects( inputdata_t& data );
 
-	virtual void		Event_Killed( const CTakeDamageInfo &info );
+	virtual void		Event_Killed( const CTakeDamageInfo& info );
 	void				NotifyScriptsOfDeath( void );
 
 	// override the test for getting hit
-	virtual bool		TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
+	virtual bool		TestHitboxes( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr );
 
-	LadderMove_t		*GetLadderMove() { return &m_HL2Local.m_LadderMove; }
+	LadderMove_t*		GetLadderMove()
+	{
+		return &m_HL2Local.m_LadderMove;
+	}
 	virtual void		ExitLadder();
-	virtual surfacedata_t *GetLadderSurface( const Vector &origin );
+	virtual surfacedata_t* GetLadderSurface( const Vector& origin );
 
 	virtual void EquipSuit( bool bPlayEffects = true );
 	virtual void RemoveSuit( void );
 	void  HandleAdmireGlovesAnimation( void );
 	void  StartAdmireGlovesAnimation( void );
-	
+
 	void  HandleSpeedChanges( void );
 
-	void SetControlClass( Class_T controlClass ) { m_nControlClass = controlClass; }
-	
+	void SetControlClass( Class_T controlClass )
+	{
+		m_nControlClass = controlClass;
+	}
+
 	void StartWaterDeathSounds( void );
 	void StopWaterDeathSounds( void );
 
-	bool IsWeaponLowered( void ) { return m_HL2Local.m_bWeaponLowered; }
+	bool IsWeaponLowered( void )
+	{
+		return m_HL2Local.m_bWeaponLowered;
+	}
 	void HandleArmorReduction( void );
-	void StartArmorReduction( void ) { m_flArmorReductionTime = gpGlobals->curtime + ARMOR_DECAY_TIME; 
-									   m_iArmorReductionFrom = ArmorValue(); 
-									 }
+	void StartArmorReduction( void )
+	{
+		m_flArmorReductionTime = gpGlobals->curtime + ARMOR_DECAY_TIME;
+		m_iArmorReductionFrom = ArmorValue();
+	}
 
 	void MissedAR2AltFire();
 
@@ -360,13 +427,13 @@ public:
 	bool IsCustomSuitDeviceActive( int iDeviceID );
 #endif
 
-	CSoundPatch *m_sndLeeches;
-	CSoundPatch *m_sndWaterSplashes;
+	CSoundPatch* m_sndLeeches;
+	CSoundPatch* m_sndWaterSplashes;
 
 protected:
 	virtual void		PreThink( void );
 	virtual	void		PostThink( void );
-	virtual bool		HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
+	virtual bool		HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	virtual void		UpdateWeaponPosture( void );
 
@@ -374,12 +441,12 @@ protected:
 	virtual void		PlayUseDenySound();
 
 private:
-	bool				CommanderExecuteOne( CAI_BaseNPC *pNpc, const commandgoal_t &goal, CAI_BaseNPC **Allies, int numAllies );
+	bool				CommanderExecuteOne( CAI_BaseNPC* pNpc, const commandgoal_t& goal, CAI_BaseNPC** Allies, int numAllies );
 
-	void				OnSquadMemberKilled( inputdata_t &data );
+	void				OnSquadMemberKilled( inputdata_t& data );
 
 	Class_T				m_nControlClass;			// Class when player is controlling another entity
-	// This player's HL2 specific data that should only be replicated to 
+	// This player's HL2 specific data that should only be replicated to
 	//  the player and not to other players.
 	CNetworkVarEmbedded( CHL2PlayerLocalData, m_HL2Local );
 
@@ -387,7 +454,7 @@ private:
 
 	bool				m_bSprintEnabled;		// Used to disable sprint temporarily
 	bool				m_bIsAutoSprinting;		// A proxy for holding down the sprint key.
-	float				m_fAutoSprintMinTime;	// Minimum time to maintain autosprint regardless of player speed. 
+	float				m_fAutoSprintMinTime;	// Minimum time to maintain autosprint regardless of player speed.
 
 	CNetworkVar( bool, m_fIsSprinting );
 	CNetworkVarForDerived( bool, m_fIsWalking );
@@ -397,7 +464,7 @@ protected:	// Jeep: Portal_Player needs access to this variable to overload Play
 
 private:
 
-	CAI_Squad *			m_pPlayerAISquad;
+	CAI_Squad* 			m_pPlayerAISquad;
 	CSimpleSimTimer		m_CommanderUpdateTimer;
 	float				m_RealTimeLastSquadCommand;
 	CommanderCommand_t	m_QueuedCommand;
@@ -425,7 +492,7 @@ private:
 
 	bool				m_bFlashlightDisabled;
 	bool				m_bUseCappedPhysicsDamageTable;
-	
+
 	float				m_flArmorReductionTime;
 	int					m_iArmorReductionFrom;
 
@@ -439,7 +506,7 @@ private:
 	EHANDLE				m_hLocatorTargetEntity; // The entity that's being tracked by the suit locator.
 
 	float				m_flTimeNextLadderHint;	// Next time we're eligible to display a HUD hint about a ladder.
-	
+
 	friend class CHL2GameMovement;
 
 #ifdef SP_ANIM_STATE

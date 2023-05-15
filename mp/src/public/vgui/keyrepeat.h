@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef KEYREPEAT_H
 #define KEYREPEAT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 namespace vgui

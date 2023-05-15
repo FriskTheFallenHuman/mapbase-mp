@@ -126,7 +126,7 @@
 // Auto generated inc files
 #include "flesh_interior_blended_pass_dx8_vs11.inc"
 
-void InitParamsFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, FleshInteriorBlendedPassVars_t &info )
+void InitParamsFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, FleshInteriorBlendedPassVars_t& info )
 {
 	SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_HW_SKINNING );
 
@@ -147,7 +147,7 @@ void InitParamsFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** 
 	SET_PARAM_FLOAT_IF_NOT_DEFINED( info.m_nTime, 0.0f );
 }
 
-void InitFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, FleshInteriorBlendedPassVars_t &info )
+void InitFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, FleshInteriorBlendedPassVars_t& info )
 {
 	// Load textures
 	pShader->LoadTexture( info.m_nFleshTexture );
@@ -158,8 +158,8 @@ void InitFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 	//pShader->LoadCubeMap( info.m_nFleshCubeTexture );
 }
 
-void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-								  IShaderShadow* pShaderShadow, FleshInteriorBlendedPassVars_t &info, VertexCompressionType_t vertexCompression )
+void DrawFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+								   IShaderShadow* pShaderShadow, FleshInteriorBlendedPassVars_t& info, VertexCompressionType_t vertexCompression )
 {
 	SHADOW_STATE
 	{
@@ -197,7 +197,7 @@ void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 		vshIndex.SetSKINNING( pShaderAPI->GetCurrentNumBones() > 0 );
 		pShaderAPI->SetVertexShaderIndex( vshIndex.GetIndex() );
 
-		// Set Vertex Shader Constants 
+		// Set Vertex Shader Constants
 
 		// Time % 1000
 		float flCurrentTime = IS_PARAM_DEFINED( info.m_nTime ) && params[info.m_nTime]->GetFloatValue() > 0.0f ? params[info.m_nTime]->GetFloatValue() : pShaderAPI->CurrentTime();
@@ -205,45 +205,53 @@ void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 
 		float vVsConst0[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		vVsConst0[0] = flCurrentTime;
-		vVsConst0[0] -= (float)( (int)( vVsConst0[0] / 1000.0f ) ) * 1000.0f;
+		vVsConst0[0] -= ( float )( ( int )( vVsConst0[0] / 1000.0f ) ) * 1000.0f;
 
 		// Flesh effect centers and radii
 		float vVsConst1[4] = { kDefaultEffectCenterRadius[0], kDefaultEffectCenterRadius[1], kDefaultEffectCenterRadius[2], kDefaultEffectCenterRadius[3] };
-		if ( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius1 ) )
+		if( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius1 ) )
 		{
 			params[info.m_nvEffectCenterRadius1]->GetVecValue( vVsConst1, 4 );
-			if ( vVsConst1[3] < 0.001f )
+			if( vVsConst1[3] < 0.001f )
+			{
 				vVsConst1[3] = 0.001f;
+			}
 			vVsConst1[3] = 1.0f / vVsConst1[3]; // Pass 1.0/radius so we do a mul instead of a divide in the shader
 		}
 		pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_1, vVsConst1, 1 );
 
 		float vVsConst2[4] = { kDefaultEffectCenterRadius[0], kDefaultEffectCenterRadius[1], kDefaultEffectCenterRadius[2], kDefaultEffectCenterRadius[3] };
-		if ( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius2 ) )
+		if( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius2 ) )
 		{
 			params[info.m_nvEffectCenterRadius2]->GetVecValue( vVsConst2, 4 );
-			if ( vVsConst2[3] < 0.001f )
+			if( vVsConst2[3] < 0.001f )
+			{
 				vVsConst2[3] = 0.001f;
+			}
 			vVsConst2[3] = 1.0f / vVsConst2[3]; // Pass 1.0/radius so we do a mul instead of a divide in the shader
 		}
 		pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_2, vVsConst2, 2 );
 
 		float vVsConst3[4] = { kDefaultEffectCenterRadius[0], kDefaultEffectCenterRadius[1], kDefaultEffectCenterRadius[2], kDefaultEffectCenterRadius[3] };
-		if ( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius3 ) )
+		if( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius3 ) )
 		{
 			params[info.m_nvEffectCenterRadius3]->GetVecValue( vVsConst3, 4 );
-			if ( vVsConst3[3] < 0.001f )
+			if( vVsConst3[3] < 0.001f )
+			{
 				vVsConst3[3] = 0.001f;
+			}
 			vVsConst3[3] = 1.0f / vVsConst3[3]; // Pass 1.0/radius so we do a mul instead of a divide in the shader
 		}
 		pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_3, vVsConst3, 3 );
 
 		float vVsConst4[4] = { kDefaultEffectCenterRadius[0], kDefaultEffectCenterRadius[1], kDefaultEffectCenterRadius[2], kDefaultEffectCenterRadius[3] };
-		if ( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius4 ) )
+		if( IS_PARAM_DEFINED( info.m_nvEffectCenterRadius4 ) )
 		{
 			params[info.m_nvEffectCenterRadius4]->GetVecValue( vVsConst4, 4 );
-			if ( vVsConst4[3] < 0.001f )
+			if( vVsConst4[3] < 0.001f )
+			{
 				vVsConst4[3] = 0.001f;
+			}
 			vVsConst4[3] = 1.0f / vVsConst4[3]; // Pass 1.0/radius so we do a mul instead of a divide in the shader
 		}
 		pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, vVsConst4, 4 );
@@ -254,7 +262,7 @@ void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params
 		// Bind textures
 		pShader->BindTexture( SHADER_SAMPLER0, info.m_nFleshTexture );
 
-		// Set Pixel Shader Constants 
+		// Set Pixel Shader Constants
 
 		// Border color tint
 		pShaderAPI->SetPixelShaderConstant( 3, IS_PARAM_DEFINED( info.m_ncBorderTint ) ? params[info.m_ncBorderTint]->GetVecValue() : kDefaultBorderTint, 1 );

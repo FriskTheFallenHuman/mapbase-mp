@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef IPREDICTIONSYSTEM_H
 #define IPREDICTIONSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "predictable_entity.h"
@@ -36,7 +36,7 @@ public:
 
 	virtual ~IPredictionSystem() {};
 
-	IPredictionSystem *GetNext()
+	IPredictionSystem* GetNext()
 	{
 		return m_pNextSystem;
 	}
@@ -46,14 +46,14 @@ public:
 		m_bSuppressEvent = state;
 	}
 
-	void SetSuppressHost( CBaseEntity *host )
+	void SetSuppressHost( CBaseEntity* host )
 	{
 		m_pSuppressHost = host;
 	}
 
-	CBaseEntity const *GetSuppressHost( void )
+	CBaseEntity const* GetSuppressHost( void )
 	{
-		if ( DisableFiltering() )
+		if( DisableFiltering() )
 		{
 			return NULL;
 		}
@@ -63,7 +63,7 @@ public:
 
 	bool CanPredict( void ) const
 	{
-		if ( DisableFiltering() )
+		if( DisableFiltering() )
 		{
 			return false;
 		}
@@ -71,22 +71,22 @@ public:
 		return !m_bSuppressEvent;
 	}
 
-	static IPredictionSystem *g_pPredictionSystems;
+	static IPredictionSystem* g_pPredictionSystems;
 
 	static void SuppressEvents( bool state )
 	{
-		IPredictionSystem *sys = g_pPredictionSystems;
-		while ( sys )
+		IPredictionSystem* sys = g_pPredictionSystems;
+		while( sys )
 		{
 			sys->SetSuppressEvent( state );
 			sys = sys->GetNext();
 		}
 	}
 
-	static void SuppressHostEvents( CBaseEntity *host )
+	static void SuppressHostEvents( CBaseEntity* host )
 	{
-		IPredictionSystem *sys = g_pPredictionSystems;
-		while ( sys )
+		IPredictionSystem* sys = g_pPredictionSystems;
+		while( sys )
 		{
 			sys->SetSuppressHost( host );
 			sys = sys->GetNext();
@@ -97,8 +97,8 @@ private:
 
 	static void Push( void )
 	{
-		IPredictionSystem *sys = g_pPredictionSystems;
-		while ( sys )
+		IPredictionSystem* sys = g_pPredictionSystems;
+		while( sys )
 		{
 			sys->_Push();
 			sys = sys->GetNext();
@@ -107,8 +107,8 @@ private:
 
 	static void Pop( void )
 	{
-		IPredictionSystem *sys = g_pPredictionSystems;
-		while ( sys )
+		IPredictionSystem* sys = g_pPredictionSystems;
+		while( sys )
 		{
 			sys->_Pop();
 			sys = sys->GetNext();
@@ -126,12 +126,12 @@ private:
 
 	bool DisableFiltering( void ) const
 	{
-		return ( m_nStatusPushed > 0  ) ? true : false;
+		return ( m_nStatusPushed > 0 ) ? true : false;
 	}
 
-	IPredictionSystem	*m_pNextSystem;
+	IPredictionSystem*	m_pNextSystem;
 	bool				m_bSuppressEvent;
-	CBaseEntity			*m_pSuppressHost;
+	CBaseEntity*			m_pSuppressHost;
 
 	int					m_nStatusPushed;
 
@@ -144,7 +144,7 @@ public:
 	CDisablePredictionFiltering( bool disable = true )
 	{
 		m_bDisabled = disable;
-		if ( m_bDisabled )
+		if( m_bDisabled )
 		{
 			IPredictionSystem::Push();
 		}
@@ -152,7 +152,7 @@ public:
 
 	~CDisablePredictionFiltering( void )
 	{
-		if ( m_bDisabled )
+		if( m_bDisabled )
 		{
 			IPredictionSystem::Pop();
 		}

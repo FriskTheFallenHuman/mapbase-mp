@@ -15,30 +15,30 @@
 #include "gamerules.h"
 #include "vscript_client.nut"
 #ifdef MAPBASE_VSCRIPT
-#include "view.h"
-#include "c_world.h"
-#include "proxyentity.h"
-#include "materialsystem/imaterial.h"
-#include "materialsystem/imaterialvar.h"
-#include "mapbase/matchers.h"
-#include "mapbase/vscript_singletons.h"
-#include "mapbase/vscript_vgui.h"
+	#include "view.h"
+	#include "c_world.h"
+	#include "proxyentity.h"
+	#include "materialsystem/imaterial.h"
+	#include "materialsystem/imaterialvar.h"
+	#include "mapbase/matchers.h"
+	#include "mapbase/vscript_singletons.h"
+	#include "mapbase/vscript_vgui.h"
 #endif
 
-extern IScriptManager *scriptmanager;
-extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
+extern IScriptManager* scriptmanager;
+extern ScriptClassDesc_t* GetScriptDesc( CBaseEntity* );
 
 // #define VMPROFILE 1
 
 #ifdef VMPROFILE
 
-#define VMPROF_START float debugStartTime = Plat_FloatTime();
-#define VMPROF_SHOW( funcname, funcdesc  ) DevMsg("***VSCRIPT PROFILE***: %s %s: %6.4f milliseconds\n", (##funcname), (##funcdesc), (Plat_FloatTime() - debugStartTime)*1000.0 );
+	#define VMPROF_START float debugStartTime = Plat_FloatTime();
+	#define VMPROF_SHOW( funcname, funcdesc  ) DevMsg("***VSCRIPT PROFILE***: %s %s: %6.4f milliseconds\n", (##funcname), (##funcdesc), (Plat_FloatTime() - debugStartTime)*1000.0 );
 
 #else // !VMPROFILE
 
-#define VMPROF_START
-#define VMPROF_SHOW
+	#define VMPROF_START
+	#define VMPROF_SHOW
 
 #endif // VMPROFILE
 
@@ -57,45 +57,56 @@ public:
 		return ToHScript( C_BasePlayer::GetLocalPlayer() );
 	}
 
-	HSCRIPT First() { return Next(NULL); }
+	HSCRIPT First()
+	{
+		return Next( NULL );
+	}
 
 	HSCRIPT Next( HSCRIPT hStartEntity )
 	{
 		return ToHScript( ClientEntityList().NextBaseEntity( ToEnt( hStartEntity ) ) );
 	}
 
-	HSCRIPT CreateByClassname( const char *className )
+	HSCRIPT CreateByClassname( const char* className )
 	{
 		return ToHScript( CreateEntityByName( className ) );
 	}
 
-	HSCRIPT FindByClassname( HSCRIPT hStartEntity, const char *szName )
+	HSCRIPT FindByClassname( HSCRIPT hStartEntity, const char* szName )
 	{
-		const CEntInfo *pInfo = hStartEntity ? ClientEntityList().GetEntInfoPtr( ToEnt( hStartEntity )->GetRefEHandle() )->m_pNext : ClientEntityList().FirstEntInfo();
-		for ( ;pInfo; pInfo = pInfo->m_pNext )
+		const CEntInfo* pInfo = hStartEntity ? ClientEntityList().GetEntInfoPtr( ToEnt( hStartEntity )->GetRefEHandle() )->m_pNext : ClientEntityList().FirstEntInfo();
+		for( ; pInfo; pInfo = pInfo->m_pNext )
 		{
-			C_BaseEntity *ent = (C_BaseEntity *)pInfo->m_pEntity;
-			if ( !ent )
+			C_BaseEntity* ent = ( C_BaseEntity* )pInfo->m_pEntity;
+			if( !ent )
+			{
 				continue;
+			}
 
-			if ( Matcher_Match( szName, ent->GetClassname() ) )
+			if( Matcher_Match( szName, ent->GetClassname() ) )
+			{
 				return ToHScript( ent );
+			}
 		}
 
 		return NULL;
 	}
 
-	HSCRIPT FindByName( HSCRIPT hStartEntity, const char *szName )
+	HSCRIPT FindByName( HSCRIPT hStartEntity, const char* szName )
 	{
-		const CEntInfo *pInfo = hStartEntity ? ClientEntityList().GetEntInfoPtr( ToEnt( hStartEntity )->GetRefEHandle() )->m_pNext : ClientEntityList().FirstEntInfo();
-		for ( ;pInfo; pInfo = pInfo->m_pNext )
+		const CEntInfo* pInfo = hStartEntity ? ClientEntityList().GetEntInfoPtr( ToEnt( hStartEntity )->GetRefEHandle() )->m_pNext : ClientEntityList().FirstEntInfo();
+		for( ; pInfo; pInfo = pInfo->m_pNext )
 		{
-			C_BaseEntity *ent = (C_BaseEntity *)pInfo->m_pEntity;
-			if ( !ent )
+			C_BaseEntity* ent = ( C_BaseEntity* )pInfo->m_pEntity;
+			if( !ent )
+			{
 				continue;
+			}
 
-			if ( Matcher_Match( szName, ent->GetEntityName() ) )
+			if( Matcher_Match( szName, ent->GetEntityName() ) )
+			{
 				return ToHScript( ent );
+			}
 		}
 
 		return NULL;
@@ -113,9 +124,9 @@ public:
 		ClientEntityList().RemoveListenerEntity( this );
 	}
 
-	void OnEntityCreated( CBaseEntity *pEntity )
+	void OnEntityCreated( CBaseEntity* pEntity )
 	{
-		if ( g_pScriptVM && GetScriptHookManager().IsEventHooked( "OnEntityCreated" ) )
+		if( g_pScriptVM && GetScriptHookManager().IsEventHooked( "OnEntityCreated" ) )
 		{
 			// entity
 			ScriptVariant_t args[] = { ScriptVariant_t( pEntity->GetScriptInstance() ) };
@@ -123,9 +134,9 @@ public:
 		}
 	};
 
-	void OnEntityDeleted( CBaseEntity *pEntity )
+	void OnEntityDeleted( CBaseEntity* pEntity )
 	{
-		if ( g_pScriptVM && GetScriptHookManager().IsEventHooked( "OnEntityDeleted" ) )
+		if( g_pScriptVM && GetScriptHookManager().IsEventHooked( "OnEntityDeleted" ) )
 		{
 			// entity
 			ScriptVariant_t args[] = { ScriptVariant_t( pEntity->GetScriptInstance() ) };
@@ -137,23 +148,23 @@ private:
 } g_ScriptEntityIterator;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptClientEntityIterator, "CEntities", SCRIPT_SINGLETON "The global list of entities" )
-	DEFINE_SCRIPTFUNC( GetLocalPlayer, "Get local player" )
-	DEFINE_SCRIPTFUNC( First, "Begin an iteration over the list of entities" )
-	DEFINE_SCRIPTFUNC( Next, "Continue an iteration over the list of entities, providing reference to a previously found entity" )
-	DEFINE_SCRIPTFUNC( CreateByClassname, "Creates an entity by classname" )
-	DEFINE_SCRIPTFUNC( FindByClassname, "Find entities by class name. Pass 'null' to start an iteration, or reference to a previously found entity to continue a search"  )
-	DEFINE_SCRIPTFUNC( FindByName, "Find entities by name. Pass 'null' to start an iteration, or reference to a previously found entity to continue a search"  )
+DEFINE_SCRIPTFUNC( GetLocalPlayer, "Get local player" )
+DEFINE_SCRIPTFUNC( First, "Begin an iteration over the list of entities" )
+DEFINE_SCRIPTFUNC( Next, "Continue an iteration over the list of entities, providing reference to a previously found entity" )
+DEFINE_SCRIPTFUNC( CreateByClassname, "Creates an entity by classname" )
+DEFINE_SCRIPTFUNC( FindByClassname, "Find entities by class name. Pass 'null' to start an iteration, or reference to a previously found entity to continue a search" )
+DEFINE_SCRIPTFUNC( FindByName, "Find entities by name. Pass 'null' to start an iteration, or reference to a previously found entity to continue a search" )
 
-	DEFINE_SCRIPTFUNC( EnableEntityListening, "Enables the 'OnEntity' hooks. This function must be called before using them." )
-	DEFINE_SCRIPTFUNC( DisableEntityListening, "Disables the 'OnEntity' hooks." )
+DEFINE_SCRIPTFUNC( EnableEntityListening, "Enables the 'OnEntity' hooks. This function must be called before using them." )
+DEFINE_SCRIPTFUNC( DisableEntityListening, "Disables the 'OnEntity' hooks." )
 
-	BEGIN_SCRIPTHOOK( g_Hook_OnEntityCreated, "OnEntityCreated", FIELD_VOID, "Called when an entity is created. Requires EnableEntityListening() to be fired beforehand." )
-		DEFINE_SCRIPTHOOK_PARAM( "entity", FIELD_HSCRIPT )
-	END_SCRIPTHOOK()
+BEGIN_SCRIPTHOOK( g_Hook_OnEntityCreated, "OnEntityCreated", FIELD_VOID, "Called when an entity is created. Requires EnableEntityListening() to be fired beforehand." )
+DEFINE_SCRIPTHOOK_PARAM( "entity", FIELD_HSCRIPT )
+END_SCRIPTHOOK()
 
-	BEGIN_SCRIPTHOOK( g_Hook_OnEntityDeleted, "OnEntityDeleted", FIELD_VOID, "Called when an entity is deleted. Requires EnableEntityListening() to be fired beforehand." )
-		DEFINE_SCRIPTHOOK_PARAM( "entity", FIELD_HSCRIPT )
-	END_SCRIPTHOOK()
+BEGIN_SCRIPTHOOK( g_Hook_OnEntityDeleted, "OnEntityDeleted", FIELD_VOID, "Called when an entity is deleted. Requires EnableEntityListening() to be fired beforehand." )
+DEFINE_SCRIPTHOOK_PARAM( "entity", FIELD_HSCRIPT )
+END_SCRIPTHOOK()
 END_SCRIPTDESC();
 
 //-----------------------------------------------------------------------------
@@ -181,9 +192,12 @@ public:
 	virtual ~CScriptMaterialProxy();
 
 	virtual void Release( void );
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pRenderable );
-	virtual IMaterial *GetMaterial() { return NULL; }
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pRenderable );
+	virtual IMaterial* GetMaterial()
+	{
+		return NULL;
+	}
 
 	// Proxies can persist across levels and aren't bound to a loaded map.
 	// The VM, however, is bound to the loaded map, so the proxy's script variables persisting
@@ -192,9 +206,9 @@ public:
 	bool InitScript();
 	void TermScript();
 
-	bool ValidateIndex(int i)
+	bool ValidateIndex( int i )
 	{
-		if (i > SCRIPT_MAT_PROXY_MAX_VARS || i < 0)
+		if( i > SCRIPT_MAT_PROXY_MAX_VARS || i < 0 )
 		{
 			CGWarning( 0, CON_GROUP_VSCRIPT, "VScriptProxy: %i out of range", i );
 			return false;
@@ -203,20 +217,20 @@ public:
 		return true;
 	}
 
-	const char *GetVarString( int i );
+	const char* GetVarString( int i );
 	int GetVarInt( int i );
 	float GetVarFloat( int i );
 	const Vector& GetVarVector( int i );
 
-	void SetVarString( int i, const char *value );
+	void SetVarString( int i, const char* value );
 	void SetVarInt( int i, int value );
 	void SetVarFloat( int i, float value );
-	void SetVarVector( int i, const Vector &value );
+	void SetVarVector( int i, const Vector& value );
 
-	const char *GetVarName( int i );
+	const char* GetVarName( int i );
 
 private:
-	IMaterialVar *m_MaterialVars[SCRIPT_MAT_PROXY_MAX_VARS];
+	IMaterialVar* m_MaterialVars[SCRIPT_MAT_PROXY_MAX_VARS];
 
 	// Save the keyvalue string for InitScript()
 	char m_szFilePath[MAX_PATH];
@@ -228,24 +242,24 @@ private:
 
 class CMaterialProxyScriptInstanceHelper : public IScriptInstanceHelper
 {
-	bool ToString( void *p, char *pBuf, int bufSize );
-	void *BindOnRead( HSCRIPT hInstance, void *pOld, const char *pszId );
+	bool ToString( void* p, char* pBuf, int bufSize );
+	void* BindOnRead( HSCRIPT hInstance, void* pOld, const char* pszId );
 };
 
 CMaterialProxyScriptInstanceHelper g_MaterialProxyScriptInstanceHelper;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptMaterialProxy, "CScriptMaterialProxy", "Material proxy for VScript" )
-	DEFINE_SCRIPT_INSTANCE_HELPER( &g_MaterialProxyScriptInstanceHelper )
-	DEFINE_SCRIPTFUNC( GetVarString, "Gets a material var's string value" )
-	DEFINE_SCRIPTFUNC( GetVarInt, "Gets a material var's int value" )
-	DEFINE_SCRIPTFUNC( GetVarFloat, "Gets a material var's float value" )
-	DEFINE_SCRIPTFUNC( GetVarVector, "Gets a material var's vector value" )
-	DEFINE_SCRIPTFUNC( SetVarString, "Sets a material var's string value" )
-	DEFINE_SCRIPTFUNC( SetVarInt, "Sets a material var's int value" )
-	DEFINE_SCRIPTFUNC( SetVarFloat, "Sets a material var's float value" )
-	DEFINE_SCRIPTFUNC( SetVarVector, "Sets a material var's vector value" )
+DEFINE_SCRIPT_INSTANCE_HELPER( &g_MaterialProxyScriptInstanceHelper )
+DEFINE_SCRIPTFUNC( GetVarString, "Gets a material var's string value" )
+DEFINE_SCRIPTFUNC( GetVarInt, "Gets a material var's int value" )
+DEFINE_SCRIPTFUNC( GetVarFloat, "Gets a material var's float value" )
+DEFINE_SCRIPTFUNC( GetVarVector, "Gets a material var's vector value" )
+DEFINE_SCRIPTFUNC( SetVarString, "Sets a material var's string value" )
+DEFINE_SCRIPTFUNC( SetVarInt, "Sets a material var's int value" )
+DEFINE_SCRIPTFUNC( SetVarFloat, "Sets a material var's float value" )
+DEFINE_SCRIPTFUNC( SetVarVector, "Sets a material var's vector value" )
 
-	DEFINE_SCRIPTFUNC( GetVarName, "Gets a material var's name" )
+DEFINE_SCRIPTFUNC( GetVarName, "Gets a material var's name" )
 END_SCRIPTDESC();
 
 CScriptMaterialProxy::CScriptMaterialProxy()
@@ -253,7 +267,7 @@ CScriptMaterialProxy::CScriptMaterialProxy()
 	m_hScriptInstance = NULL;
 	m_hFuncOnBind = NULL;
 
-	V_memset( m_MaterialVars, 0, sizeof(m_MaterialVars) );
+	V_memset( m_MaterialVars, 0, sizeof( m_MaterialVars ) );
 }
 
 CScriptMaterialProxy::~CScriptMaterialProxy()
@@ -265,38 +279,40 @@ CScriptMaterialProxy::~CScriptMaterialProxy()
 // Cleanup
 //-----------------------------------------------------------------------------
 void CScriptMaterialProxy::Release( void )
-{ 
-	if ( m_hScriptInstance && g_pScriptVM )
+{
+	if( m_hScriptInstance && g_pScriptVM )
 	{
 		g_pScriptVM->RemoveInstance( m_hScriptInstance );
 		m_hScriptInstance = NULL;
 	}
 
-	delete this; 
+	delete this;
 }
 
-bool CScriptMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CScriptMaterialProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	for (KeyValues *pKey = pKeyValues->GetFirstSubKey(); pKey != NULL; pKey = pKey->GetNextKey())
+	for( KeyValues* pKey = pKeyValues->GetFirstSubKey(); pKey != NULL; pKey = pKey->GetNextKey() )
 	{
 		// Get each variable we're looking for
-		if (Q_strnicmp( pKey->GetName(), "var", 3 ) == 0)
+		if( Q_strnicmp( pKey->GetName(), "var", 3 ) == 0 )
 		{
-			int index = atoi(pKey->GetName() + 3);
-			if (index > SCRIPT_MAT_PROXY_MAX_VARS)
+			int index = atoi( pKey->GetName() + 3 );
+			if( index > SCRIPT_MAT_PROXY_MAX_VARS )
 			{
-				Warning("VScript material proxy only supports 8 vars (not %i)\n", index);
+				Warning( "VScript material proxy only supports 8 vars (not %i)\n", index );
 				continue;
 			}
-			
+
 			bool foundVar;
 			m_MaterialVars[index] = pMaterial->FindVar( pKey->GetString(), &foundVar );
 
 			// Don't init if we didn't find the var
-			if (!foundVar)
+			if( !foundVar )
+			{
 				return false;
+			}
 		}
-		else if (FStrEq( pKey->GetName(), "scriptfile" ))
+		else if( FStrEq( pKey->GetName(), "scriptfile" ) )
 		{
 			Q_strncpy( m_szFilePath, pKey->GetString(), sizeof( m_szFilePath ) );
 		}
@@ -307,29 +323,29 @@ bool CScriptMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 
 bool CScriptMaterialProxy::InitScript()
 {
-	if (!m_ScriptScope.IsInitialized())
+	if( !m_ScriptScope.IsInitialized() )
 	{
-		if (scriptmanager == NULL)
+		if( scriptmanager == NULL )
 		{
-			ExecuteOnce(DevMsg("Cannot execute script because scripting is disabled (-scripting)\n"));
+			ExecuteOnce( DevMsg( "Cannot execute script because scripting is disabled (-scripting)\n" ) );
 			return false;
 		}
 
-		if (g_pScriptVM == NULL)
+		if( g_pScriptVM == NULL )
 		{
-			ExecuteOnce(DevMsg(" Cannot execute script because there is no available VM\n"));
+			ExecuteOnce( DevMsg( " Cannot execute script because there is no available VM\n" ) );
 			return false;
 		}
 
-		char* iszScriptId = (char*)stackalloc( 1024 );
-		g_pScriptVM->GenerateUniqueKey("VScriptProxy", iszScriptId, 1024);
+		char* iszScriptId = ( char* )stackalloc( 1024 );
+		g_pScriptVM->GenerateUniqueKey( "VScriptProxy", iszScriptId, 1024 );
 
 		m_hScriptInstance = g_pScriptVM->RegisterInstance( GetScriptDescForClass( CScriptMaterialProxy ), this );
 		g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, iszScriptId );
 
 		bool bResult = m_ScriptScope.Init( iszScriptId );
 
-		if (!bResult)
+		if( !bResult )
 		{
 			CGMsg( 1, CON_GROUP_VSCRIPT, "VScriptProxy couldn't create ScriptScope!\n" );
 			return false;
@@ -339,15 +355,17 @@ bool CScriptMaterialProxy::InitScript()
 	}
 
 	// Don't init if we can't run the script
-	if (!VScriptRunScript( m_szFilePath, m_ScriptScope, true ))
+	if( !VScriptRunScript( m_szFilePath, m_ScriptScope, true ) )
+	{
 		return false;
-	
+	}
+
 	m_hFuncOnBind = m_ScriptScope.LookupFunction( "OnBind" );
 
-	if (!m_hFuncOnBind)
+	if( !m_hFuncOnBind )
 	{
 		// Don't init if we can't find our func
-		Warning("VScript material proxy can't find OnBind function\n");
+		Warning( "VScript material proxy can't find OnBind function\n" );
 		return false;
 	}
 
@@ -357,7 +375,7 @@ bool CScriptMaterialProxy::InitScript()
 
 void CScriptMaterialProxy::TermScript()
 {
-	if ( m_hScriptInstance )
+	if( m_hScriptInstance )
 	{
 		g_pScriptVM->RemoveInstance( m_hScriptInstance );
 		m_hScriptInstance = NULL;
@@ -368,22 +386,22 @@ void CScriptMaterialProxy::TermScript()
 	m_ScriptScope.Term();
 }
 
-void CScriptMaterialProxy::OnBind( void *pRenderable )
+void CScriptMaterialProxy::OnBind( void* pRenderable )
 {
-	if (m_hFuncOnBind != NULL)
+	if( m_hFuncOnBind != NULL )
 	{
-		C_BaseEntity *pEnt = NULL;
-		if (pRenderable)
+		C_BaseEntity* pEnt = NULL;
+		if( pRenderable )
 		{
-			IClientRenderable *pRend = (IClientRenderable*)pRenderable;
+			IClientRenderable* pRend = ( IClientRenderable* )pRenderable;
 			pEnt = pRend->GetIClientUnknown()->GetBaseEntity();
-			if ( pEnt )
+			if( pEnt )
 			{
 				g_pScriptVM->SetValue( m_ScriptScope, "entity", pEnt->GetScriptInstance() );
 			}
 		}
 
-		if (!pEnt)
+		if( !pEnt )
 		{
 			g_pScriptVM->SetValue( m_ScriptScope, "entity", SCRIPT_VARIANT_NULL );
 		}
@@ -394,97 +412,119 @@ void CScriptMaterialProxy::OnBind( void *pRenderable )
 	{
 		// The VM might not exist if we do it from Init(), so we have to do it here.
 		// TODO: We have no handling for if this fails, how do you cancel a proxy?
-		if (InitScript())
+		if( InitScript() )
+		{
 			OnBind( pRenderable );
+		}
 	}
 }
 
-const char *CScriptMaterialProxy::GetVarString( int i )
+const char* CScriptMaterialProxy::GetVarString( int i )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return NULL;
+	}
 
 	return m_MaterialVars[i]->GetStringValue();
 }
 
 int CScriptMaterialProxy::GetVarInt( int i )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return 0;
+	}
 
 	return m_MaterialVars[i]->GetIntValue();
 }
 
 float CScriptMaterialProxy::GetVarFloat( int i )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return 0.0f;
+	}
 
 	return m_MaterialVars[i]->GetFloatValue();
 }
 
 const Vector& CScriptMaterialProxy::GetVarVector( int i )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return vec3_origin;
+	}
 
-	if (m_MaterialVars[i]->GetType() != MATERIAL_VAR_TYPE_VECTOR)
+	if( m_MaterialVars[i]->GetType() != MATERIAL_VAR_TYPE_VECTOR )
+	{
 		return vec3_origin;
+	}
 
 	// This is really bad. Too bad!
-	return *(reinterpret_cast<const Vector*>(m_MaterialVars[i]->GetVecValue()));
+	return *( reinterpret_cast<const Vector*>( m_MaterialVars[i]->GetVecValue() ) );
 }
 
-void CScriptMaterialProxy::SetVarString( int i, const char *value )
+void CScriptMaterialProxy::SetVarString( int i, const char* value )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return;
+	}
 
 	return m_MaterialVars[i]->SetStringValue( value );
 }
 
 void CScriptMaterialProxy::SetVarInt( int i, int value )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return;
+	}
 
 	return m_MaterialVars[i]->SetIntValue( value );
 }
 
 void CScriptMaterialProxy::SetVarFloat( int i, float value )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return;
+	}
 
 	return m_MaterialVars[i]->SetFloatValue( value );
 }
 
-void CScriptMaterialProxy::SetVarVector( int i, const Vector &value )
+void CScriptMaterialProxy::SetVarVector( int i, const Vector& value )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return;
+	}
 
 	return m_MaterialVars[i]->SetVecValue( value.Base(), 3 );
 }
 
-const char *CScriptMaterialProxy::GetVarName( int i )
+const char* CScriptMaterialProxy::GetVarName( int i )
 {
-	if (!ValidateIndex( i ) || !m_MaterialVars[i])
+	if( !ValidateIndex( i ) || !m_MaterialVars[i] )
+	{
 		return NULL;
+	}
 
 	return m_MaterialVars[i]->GetName();
 }
 
 EXPOSE_INTERFACE( CScriptMaterialProxy, IMaterialProxy, "VScriptProxy" IMATERIAL_PROXY_INTERFACE_VERSION );
 
-bool CMaterialProxyScriptInstanceHelper::ToString( void *p, char *pBuf, int bufSize )
+bool CMaterialProxyScriptInstanceHelper::ToString( void* p, char* pBuf, int bufSize )
 {
-	CScriptMaterialProxy *pProxy = (CScriptMaterialProxy *)p;
+	CScriptMaterialProxy* pProxy = ( CScriptMaterialProxy* )p;
 	V_snprintf( pBuf, bufSize, "(proxy: %s)", pProxy->GetMaterial() != NULL ? pProxy->GetMaterial()->GetName() : "<no material>" );
-	return true; 
+	return true;
 }
 
-void *CMaterialProxyScriptInstanceHelper::BindOnRead( HSCRIPT hInstance, void *pOld, const char *pszId )
+void* CMaterialProxyScriptInstanceHelper::BindOnRead( HSCRIPT hInstance, void* pOld, const char* pszId )
 {
 	// TODO: Material proxy save/restore?
 	return NULL;
@@ -499,21 +539,21 @@ static float Time()
 	return gpGlobals->curtime;
 }
 
-static const char *GetMapName()
+static const char* GetMapName()
 {
 	return engine->GetLevelName();
 }
 
-static const char *DoUniqueString( const char *pszBase )
+static const char* DoUniqueString( const char* pszBase )
 {
 	static char szBuf[512];
-	g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE(szBuf) );
+	g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE( szBuf ) );
 	return szBuf;
 }
 
-bool DoIncludeScript( const char *pszScript, HSCRIPT hScope )
+bool DoIncludeScript( const char* pszScript, HSCRIPT hScope )
 {
-	if ( !VScriptRunScript( pszScript, hScope, true ) )
+	if( !VScriptRunScript( pszScript, hScope, true ) )
 	{
 		g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
 		return false;
@@ -541,25 +581,27 @@ static bool IsWindowedMode()
 }
 
 // Creates a client-side prop
-HSCRIPT CreateProp( const char *pszEntityName, const Vector &vOrigin, const char *pszModelName, int iAnim )
+HSCRIPT CreateProp( const char* pszEntityName, const Vector& vOrigin, const char* pszModelName, int iAnim )
 {
-	C_BaseAnimating *pBaseEntity = (C_BaseAnimating *)CreateEntityByName( pszEntityName );
-	if (!pBaseEntity)
+	C_BaseAnimating* pBaseEntity = ( C_BaseAnimating* )CreateEntityByName( pszEntityName );
+	if( !pBaseEntity )
+	{
 		return NULL;
+	}
 
 	pBaseEntity->SetAbsOrigin( vOrigin );
 	pBaseEntity->SetModelName( pszModelName );
-	if (!pBaseEntity->InitializeAsClientEntity( pszModelName, RENDER_GROUP_OPAQUE_ENTITY ))
+	if( !pBaseEntity->InitializeAsClientEntity( pszModelName, RENDER_GROUP_OPAQUE_ENTITY ) )
 	{
-		Warning("Can't initialize %s as client entity\n", pszEntityName);
+		Warning( "Can't initialize %s as client entity\n", pszEntityName );
 		return NULL;
 	}
 
 	pBaseEntity->SetPlaybackRate( 1.0f );
 
-	int iSequence = pBaseEntity->SelectWeightedSequence( (Activity)iAnim );
+	int iSequence = pBaseEntity->SelectWeightedSequence( ( Activity )iAnim );
 
-	if ( iSequence != -1 )
+	if( iSequence != -1 )
 	{
 		pBaseEntity->SetSequence( iSequence );
 	}
@@ -576,50 +618,54 @@ bool VScriptClientInit()
 	{
 		ScriptLanguage_t scriptLanguage = SL_DEFAULT;
 
-		char const *pszScriptLanguage;
+		char const* pszScriptLanguage;
 #ifdef MAPBASE_VSCRIPT
-		if (GetClientWorldEntity()->GetScriptLanguage() != SL_NONE)
+		if( GetClientWorldEntity()->GetScriptLanguage() != SL_NONE )
 		{
 			// Allow world entity to override script language
 			scriptLanguage = GetClientWorldEntity()->GetScriptLanguage();
 
 			// Less than SL_NONE means the script language should literally be none
-			if (scriptLanguage < SL_NONE)
+			if( scriptLanguage < SL_NONE )
+			{
 				scriptLanguage = SL_NONE;
+			}
 		}
 		else
 #endif
-		if ( CommandLine()->CheckParm( "-scriptlang", &pszScriptLanguage ) )
-		{
-			if( !Q_stricmp(pszScriptLanguage, "gamemonkey") )
+			if( CommandLine()->CheckParm( "-scriptlang", &pszScriptLanguage ) )
 			{
-				scriptLanguage = SL_GAMEMONKEY;
-			}
-			else if( !Q_stricmp(pszScriptLanguage, "squirrel") )
-			{
-				scriptLanguage = SL_SQUIRREL;
-			}
-			else if( !Q_stricmp(pszScriptLanguage, "python") )
-			{
-				scriptLanguage = SL_PYTHON;
-			}
+				if( !Q_stricmp( pszScriptLanguage, "gamemonkey" ) )
+				{
+					scriptLanguage = SL_GAMEMONKEY;
+				}
+				else if( !Q_stricmp( pszScriptLanguage, "squirrel" ) )
+				{
+					scriptLanguage = SL_SQUIRREL;
+				}
+				else if( !Q_stricmp( pszScriptLanguage, "python" ) )
+				{
+					scriptLanguage = SL_PYTHON;
+				}
 #ifdef MAPBASE_VSCRIPT
-			else if( !Q_stricmp(pszScriptLanguage, "lua") )
-			{
-				scriptLanguage = SL_LUA;
-			}
+				else if( !Q_stricmp( pszScriptLanguage, "lua" ) )
+				{
+					scriptLanguage = SL_LUA;
+				}
 #endif
-			else
-			{
-				CGWarning( 1, CON_GROUP_VSCRIPT, "-scriptlang does not recognize a language named '%s'. virtual machine did NOT start.\n", pszScriptLanguage );
-				scriptLanguage = SL_NONE;
-			}
+				else
+				{
+					CGWarning( 1, CON_GROUP_VSCRIPT, "-scriptlang does not recognize a language named '%s'. virtual machine did NOT start.\n", pszScriptLanguage );
+					scriptLanguage = SL_NONE;
+				}
 
-		}
+			}
 		if( scriptLanguage != SL_NONE )
 		{
-			if ( g_pScriptVM == NULL )
+			if( g_pScriptVM == NULL )
+			{
 				g_pScriptVM = scriptmanager->CreateVM( scriptLanguage );
+			}
 
 			if( g_pScriptVM )
 			{
@@ -633,7 +679,7 @@ bool VScriptClientInit()
 				GetScriptHookManager().OnInit();
 #endif
 
-				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map.");
+				ScriptRegisterFunction( g_pScriptVM, GetMapName, "Get the name of the map." );
 				ScriptRegisterFunction( g_pScriptVM, Time, "Get the current server time" );
 				ScriptRegisterFunction( g_pScriptVM, DoUniqueString, SCRIPT_ALIAS( "UniqueString", "Generate a string guaranteed to be unique across the life of the script VM, with an optional root string." ) );
 				ScriptRegisterFunction( g_pScriptVM, DoIncludeScript, "Execute a script (internal)" );
@@ -662,7 +708,7 @@ bool VScriptClientInit()
 #endif
 
 
-				if ( GameRules() )
+				if( GameRules() )
 				{
 					GameRules()->RegisterScriptFunctions();
 				}
@@ -682,7 +728,7 @@ bool VScriptClientInit()
 				//g_pScriptVM->RegisterInstance( &g_ScriptEntityIterator, "Entities" );
 #endif
 
-				if (scriptLanguage == SL_SQUIRREL)
+				if( scriptLanguage == SL_SQUIRREL )
 				{
 					g_pScriptVM->Run( g_Script_vscript_client );
 				}
@@ -724,9 +770,9 @@ void VScriptClientTerm()
 	{
 #ifdef MAPBASE_VSCRIPT
 		// Things like proxies can persist across levels, so we have to shut down their scripts manually
-		for (int i = g_ScriptPersistableList.Count()-1; i >= 0; i--)
+		for( int i = g_ScriptPersistableList.Count() - 1; i >= 0; i-- )
 		{
-			if (g_ScriptPersistableList[i])
+			if( g_ScriptPersistableList[i] )
 			{
 				g_ScriptPersistableList[i]->TermScript();
 				g_ScriptPersistableList.FastRemove( i );
@@ -770,10 +816,12 @@ public:
 		VScriptClientTerm();
 	}
 
-	virtual void FrameUpdatePostEntityThink() 
-	{ 
-		if ( g_pScriptVM )
+	virtual void FrameUpdatePostEntityThink()
+	{
+		if( g_pScriptVM )
+		{
 			g_pScriptVM->Frame( gpGlobals->frametime );
+		}
 	}
 
 	bool m_bAllowEntityCreationInScripts;

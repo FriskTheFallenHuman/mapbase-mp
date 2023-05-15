@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,7 +23,7 @@ class C_FireSprite : public C_Sprite
 private:
 	virtual int DrawModel( int flags )
 	{
-		if ( m_bFadeFromAbove )
+		if( m_bFadeFromAbove )
 		{
 			// The sprites become less visible the more you look down or up at them
 			Vector vToPos = GetLocalOrigin() - CurrentViewOrigin();
@@ -33,14 +33,22 @@ private:
 
 			int iAlpha = 255;
 
-			if ( fUpAmount < -0.75f )
+			if( fUpAmount < -0.75f )
+			{
 				iAlpha = 0;
-			else if ( fUpAmount < -0.65f )
-				iAlpha = 255 - (int)( ( fUpAmount + 0.65f ) * 10.0f * -255.0f );
-			else if ( fUpAmount > 0.85f )
+			}
+			else if( fUpAmount < -0.65f )
+			{
+				iAlpha = 255 - ( int )( ( fUpAmount + 0.65f ) * 10.0f * -255.0f );
+			}
+			else if( fUpAmount > 0.85f )
+			{
 				iAlpha = 0;
-			else if ( fUpAmount > 0.75f )
-				iAlpha = 255 - (int)( ( fUpAmount - 0.75f ) * 10.0f * 255.0f );
+			}
+			else if( fUpAmount > 0.75f )
+			{
+				iAlpha = 255 - ( int )( ( fUpAmount - 0.75f ) * 10.0f * 255.0f );
+			}
 
 			SetColor( iAlpha, iAlpha, iAlpha );
 		}
@@ -67,14 +75,22 @@ class C_FireFromAboveSprite : public C_Sprite
 
 		int iAlpha = 0;
 
-		if ( fUpAmount < -0.85f )
+		if( fUpAmount < -0.85f )
+		{
 			iAlpha = 255;
-		else if ( fUpAmount < -0.65f )
-			iAlpha = (int)( ( fUpAmount + 0.65f ) * 5.0f * -255.0f );
-		else if ( fUpAmount > 0.75f )
+		}
+		else if( fUpAmount < -0.65f )
+		{
+			iAlpha = ( int )( ( fUpAmount + 0.65f ) * 5.0f * -255.0f );
+		}
+		else if( fUpAmount > 0.75f )
+		{
 			iAlpha = 255;
-		else if ( fUpAmount > 0.55f )
-			iAlpha = (int)( ( fUpAmount - 0.55f ) * 5.0f * 255.0f );
+		}
+		else if( fUpAmount > 0.55f )
+		{
+			iAlpha = ( int )( ( fUpAmount - 0.55f ) * 5.0f * 255.0f );
+		}
 
 		SetColor( iAlpha, iAlpha, iAlpha );
 
@@ -83,10 +99,10 @@ class C_FireFromAboveSprite : public C_Sprite
 };
 
 #ifdef _XBOX
-// XBox reduces the flame count
-#define	NUM_CHILD_FLAMES	1
+	// XBox reduces the flame count
+	#define	NUM_CHILD_FLAMES	1
 #else
-#define	NUM_CHILD_FLAMES	4
+	#define	NUM_CHILD_FLAMES	4
 #endif
 
 #define	SMOKE_RISE_RATE		92.0f
@@ -135,15 +151,18 @@ protected:
 	void	AddFlames( void );
 	void	SpawnSmoke( void );
 	void	FindClipPlane( void );
-	
+
 //C_BaseEntity
 public:
 
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 	virtual bool	ShouldDraw();
 
-	float GetScale( void ) const { return m_flScaleRegister;	}
-	
+	float GetScale( void ) const
+	{
+		return m_flScaleRegister;
+	}
+
 //From the server
 public:
 	float	m_flStartScale;
@@ -181,21 +200,21 @@ protected:
 
 	TimedEvent			m_tParticleSpawn;
 
-	CFireOverlay		*m_pFireOverlay;
+	CFireOverlay*		m_pFireOverlay;
 
 	// New Particle Fire Effect
-	CNewParticleEffect *m_hEffect;
+	CNewParticleEffect* m_hEffect;
 private:
-	C_FireSmoke( const C_FireSmoke & );
+	C_FireSmoke( const C_FireSmoke& );
 };
 
 //Fire overlay
 class CFireOverlay : public CGlowOverlay
 {
 public:
-	
+
 	//Constructor
-	CFireOverlay( C_FireSmoke *owner )
+	CFireOverlay( C_FireSmoke* owner )
 	{
 		m_pOwner	= owner;
 		m_flScale	= 0.0f;
@@ -215,7 +234,7 @@ public:
 		result = sin( time * 1000.0f );
 		result += 0.5f * sin( time * 2000.0f );
 		result -= 0.5f * cos( time * 8000.0f );
-		
+
 		return result;
 	}
 
@@ -224,8 +243,10 @@ public:
 	//-----------------------------------------------------------------------------
 	virtual bool Update( void )
 	{
-		if ( m_pOwner == NULL )
+		if( m_pOwner == NULL )
+		{
 			return false;
+		}
 
 		float scale	 = m_pOwner->GetScale();
 		float dscale = scale - m_flScale;
@@ -241,17 +262,19 @@ public:
 
 		m_Sprites[0].m_flHorzSize = ( newScale * 0.2f ) + ( m_Sprites[0].m_flHorzSize * 0.8f );
 		m_Sprites[0].m_flVertSize = m_Sprites[0].m_flHorzSize * 1.5f;
-		
-		float	cameraDistance = ( CurrentViewOrigin() - (m_pOwner->GetAbsOrigin())).Length();
 
-		C_BasePlayer *local = C_BasePlayer::GetLocalPlayer();
-		if ( local )
+		float	cameraDistance = ( CurrentViewOrigin() - ( m_pOwner->GetAbsOrigin() ) ).Length();
+
+		C_BasePlayer* local = C_BasePlayer::GetLocalPlayer();
+		if( local )
 		{
 			cameraDistance *= local->GetFOVDistanceAdjustFactor();
 		}
 
-		if ( cameraDistance > OVERLAY_MAX_VISIBLE_RANGE )
+		if( cameraDistance > OVERLAY_MAX_VISIBLE_RANGE )
+		{
 			cameraDistance = OVERLAY_MAX_VISIBLE_RANGE;
+		}
 
 		float alpha = 1.0f - ( cameraDistance / OVERLAY_MAX_VISIBLE_RANGE );
 
@@ -263,7 +286,7 @@ public:
 
 public:
 
-	C_FireSmoke	*m_pOwner;
+	C_FireSmoke*	m_pOwner;
 	Vector		m_vBaseColors[MAX_SUN_LAYERS];
 	float		m_flScale;
 	int			m_nGUID;
@@ -289,7 +312,7 @@ public:
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 	virtual void	ClientThink( void );
 
-	CNewParticleEffect *m_hEffect;
+	CNewParticleEffect* m_hEffect;
 	EHANDLE				m_hEntAttached;		// The entity that we are burning (attached to).
 	EHANDLE				m_hOldAttached;
 

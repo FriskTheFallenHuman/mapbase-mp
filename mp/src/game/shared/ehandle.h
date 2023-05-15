@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,12 +8,12 @@
 #ifndef EHANDLE_H
 #define EHANDLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if defined( _DEBUG ) && defined( GAME_DLL )
-#include "tier0/dbg.h"
-#include "cbase.h"
+	#include "tier0/dbg.h"
+	#include "cbase.h"
 #endif
 
 
@@ -31,7 +31,7 @@ class IHandleEntity;
 
 inline IHandleEntity* CBaseHandle::Get() const
 {
-	extern CBaseEntityList *g_pEntityList;
+	extern CBaseEntityList* g_pEntityList;
 	return g_pEntityList->LookupEntity( *this );
 }
 
@@ -44,10 +44,10 @@ class CHandle : public CBaseHandle
 {
 public:
 
-			CHandle();
-			CHandle( int iEntry, int iSerialNumber );
-			CHandle( const CBaseHandle &handle );
-			CHandle( T *pVal );
+	CHandle();
+	CHandle( int iEntry, int iSerialNumber );
+	CHandle( const CBaseHandle& handle );
+	CHandle( T* pVal );
 
 	// The index should have come from a call to ToInt(). If it hasn't, you're in trouble.
 	static CHandle<T> FromIndex( int index );
@@ -55,13 +55,13 @@ public:
 	T*		Get() const;
 	void	Set( const T* pVal );
 
-			operator T*();
-			operator T*() const;
+	operator T* ();
+	operator T* () const;
 
 	bool	operator !() const;
-	bool	operator==( T *val ) const;
-	bool	operator!=( T *val ) const;
-	const CBaseHandle& operator=( const T *val );
+	bool	operator==( T* val ) const;
+	bool	operator!=( T* val ) const;
+	const CBaseHandle& operator=( const T* val );
 
 	T*		operator->() const;
 };
@@ -85,14 +85,14 @@ CHandle<T>::CHandle( int iEntry, int iSerialNumber )
 
 
 template<class T>
-CHandle<T>::CHandle( const CBaseHandle &handle )
+CHandle<T>::CHandle( const CBaseHandle& handle )
 	: CBaseHandle( handle )
 {
 }
 
 
 template<class T>
-CHandle<T>::CHandle( T *pObj )
+CHandle<T>::CHandle( T* pObj )
 {
 	Term();
 	Set( pObj );
@@ -111,20 +111,20 @@ inline CHandle<T> CHandle<T>::FromIndex( int index )
 template<class T>
 inline T* CHandle<T>::Get() const
 {
-	return (T*)CBaseHandle::Get();
+	return ( T* )CBaseHandle::Get();
 }
 
 
 template<class T>
-inline CHandle<T>::operator T *() 
-{ 
-	return Get( ); 
+inline CHandle<T>::operator T* ()
+{
+	return Get( );
 }
 
 template<class T>
-inline CHandle<T>::operator T *() const
-{ 
-	return Get( ); 
+inline CHandle<T>::operator T* () const
+{
+	return Get( );
 }
 
 
@@ -135,13 +135,13 @@ inline bool CHandle<T>::operator !() const
 }
 
 template<class T>
-inline bool CHandle<T>::operator==( T *val ) const
+inline bool CHandle<T>::operator==( T* val ) const
 {
 	return Get() == val;
 }
 
 template<class T>
-inline bool CHandle<T>::operator!=( T *val ) const
+inline bool CHandle<T>::operator!=( T* val ) const
 {
 	return Get() != val;
 }
@@ -149,11 +149,11 @@ inline bool CHandle<T>::operator!=( T *val ) const
 template<class T>
 void CHandle<T>::Set( const T* pVal )
 {
-	CBaseHandle::Set( reinterpret_cast<const IHandleEntity*>(pVal) );
+	CBaseHandle::Set( reinterpret_cast<const IHandleEntity*>( pVal ) );
 }
 
 template<class T>
-inline const CBaseHandle& CHandle<T>::operator=( const T *val )
+inline const CBaseHandle& CHandle<T>::operator=( const T* val )
 {
 	Set( val );
 	return *this;

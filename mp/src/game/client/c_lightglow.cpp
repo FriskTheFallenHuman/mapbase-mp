@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,19 +16,19 @@ class C_LightGlowOverlay : public CGlowOverlay
 {
 public:
 
-	virtual void CalcSpriteColorAndSize( float flDot, CGlowSprite *pSprite, float *flHorzSize, float *flVertSize, Vector *vColor )
+	virtual void CalcSpriteColorAndSize( float flDot, CGlowSprite* pSprite, float* flHorzSize, float* flVertSize, Vector* vColor )
 	{
 		*flHorzSize = pSprite->m_flHorzSize;
 		*flVertSize = pSprite->m_flVertSize;
-		
+
 		Vector viewDir = ( CurrentViewOrigin() - m_vecOrigin );
 		float distToViewer = VectorNormalize( viewDir );
 
-		if ( m_bOneSided )
+		if( m_bOneSided )
 		{
-			if ( DotProduct( viewDir, m_vecDirection ) < 0.0f )
+			if( DotProduct( viewDir, m_vecDirection ) < 0.0f )
 			{
-				*vColor = Vector(0,0,0);
+				*vColor = Vector( 0, 0, 0 );
 				return;
 			}
 		}
@@ -36,7 +36,7 @@ public:
 		float fade;
 
 		// See if we're in the outer fade distance range
-		if ( m_nOuterMaxDist > m_nMaxDist && distToViewer > m_nMaxDist )
+		if( m_nOuterMaxDist > m_nMaxDist && distToViewer > m_nMaxDist )
 		{
 			fade = RemapValClamped( distToViewer, m_nMaxDist, m_nOuterMaxDist, 1.0f, 0.0f );
 		}
@@ -44,12 +44,15 @@ public:
 		{
 			fade = RemapValClamped( distToViewer, m_nMinDist, m_nMaxDist, 0.0f, 1.0f );
 		}
-		
+
 		*vColor = pSprite->m_vColor * fade * m_flGlowObstructionScale;
 	}
 
-	void SetOrigin( const Vector &origin ) { m_vecOrigin = origin; }
-	
+	void SetOrigin( const Vector& origin )
+	{
+		m_vecOrigin = origin;
+	}
+
 	void SetFadeDistances( int minDist, int maxDist, int outerMaxDist )
 	{
 		m_nMinDist = minDist;
@@ -57,10 +60,20 @@ public:
 		m_nOuterMaxDist = outerMaxDist;
 	}
 
-	void SetOneSided( bool state = true ) { m_bOneSided = state; }
-	void SetModulateByDot( bool state = true ) { m_bModulateByDot = state; }
+	void SetOneSided( bool state = true )
+	{
+		m_bOneSided = state;
+	}
+	void SetModulateByDot( bool state = true )
+	{
+		m_bModulateByDot = state;
+	}
 
-	void SetDirection( const Vector &dir ) { m_vecDirection = dir; VectorNormalize( m_vecDirection ); }
+	void SetDirection( const Vector& dir )
+	{
+		m_vecDirection = dir;
+		VectorNormalize( m_vecDirection );
+	}
 
 protected:
 
@@ -74,7 +87,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_LightGlow : public C_BaseEntity
 {
@@ -92,7 +105,7 @@ public:
 	virtual void	ClientThink( void );
 
 public:
-	
+
 	int					m_nHorizontalSize;
 	int					m_nVerticalSize;
 	int					m_nMinDist;
@@ -108,36 +121,36 @@ public:
 #endif
 };
 
-static void RecvProxy_HDRColorScale( const CRecvProxyData *pData, void *pStruct, void *pOut )
+static void RecvProxy_HDRColorScale( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_LightGlow *pLightGlow = ( C_LightGlow * )pStruct;
+	C_LightGlow* pLightGlow = ( C_LightGlow* )pStruct;
 
 	pLightGlow->m_Glow.m_flHDRColorScale = pData->m_Value.m_Float;
 }
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_LightGlow, DT_LightGlow, CLightGlow )
-	RecvPropInt( RECVINFO(m_clrRender), 0, RecvProxy_IntToColor32 ),
-	RecvPropInt( RECVINFO( m_nHorizontalSize ) ),
-	RecvPropInt( RECVINFO( m_nVerticalSize ) ),
-	RecvPropInt( RECVINFO( m_nMinDist ) ),
-	RecvPropInt( RECVINFO( m_nMaxDist ) ),
-	RecvPropInt( RECVINFO( m_nOuterMaxDist ) ),
-	RecvPropInt( RECVINFO( m_spawnflags ) ),
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	RecvPropFloat(RECVINFO(m_flGlowProxySize)),
+RecvPropInt( RECVINFO( m_clrRender ), 0, RecvProxy_IntToColor32 ),
+			 RecvPropInt( RECVINFO( m_nHorizontalSize ) ),
+			 RecvPropInt( RECVINFO( m_nVerticalSize ) ),
+			 RecvPropInt( RECVINFO( m_nMinDist ) ),
+			 RecvPropInt( RECVINFO( m_nMaxDist ) ),
+			 RecvPropInt( RECVINFO( m_nOuterMaxDist ) ),
+			 RecvPropInt( RECVINFO( m_spawnflags ) ),
+			 RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
+			 RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
+			 RecvPropInt( RECVINFO_NAME( m_hNetworkMoveParent, moveparent ), 0, RecvProxy_IntToMoveParent ),
+			 RecvPropFloat( RECVINFO( m_flGlowProxySize ) ),
 #ifdef MAPBASE
 	RecvPropBool( RECVINFO( m_bDisabled ) ),
 #endif
-	RecvPropFloat("HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale),
-END_RECV_TABLE()
+			 RecvPropFloat( "HDRColorScale", 0, SIZEOF_IGNORE, 0, RecvProxy_HDRColorScale ),
+			 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Constructor 
+// Constructor
 //-----------------------------------------------------------------------------
-C_LightGlow::C_LightGlow() :
-m_nHorizontalSize( 0 ), m_nVerticalSize( 0 ), m_nMinDist( 0 ), m_nMaxDist( 0 )
+			 C_LightGlow::C_LightGlow() :
+				 m_nHorizontalSize( 0 ), m_nVerticalSize( 0 ), m_nMinDist( 0 ), m_nMaxDist( 0 )
 {
 	m_Glow.m_bDirectional = false;
 	m_Glow.m_bInSky = false;
@@ -151,8 +164,8 @@ void C_LightGlow::Simulate( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
 void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 {
@@ -160,7 +173,7 @@ void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 
 	m_Glow.m_vPos = GetAbsOrigin();
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		// Setup our flare.
 		Vector vColor(
@@ -170,22 +183,22 @@ void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 
 		m_Glow.m_nSprites = 1;
 
-		m_Glow.m_Sprites[0].m_flVertSize = (float) m_nVerticalSize;
-		m_Glow.m_Sprites[0].m_flHorzSize = (float) m_nHorizontalSize;
+		m_Glow.m_Sprites[0].m_flVertSize = ( float ) m_nVerticalSize;
+		m_Glow.m_Sprites[0].m_flHorzSize = ( float ) m_nHorizontalSize;
 		m_Glow.m_Sprites[0].m_vColor = vColor;
-		
+
 		m_Glow.SetOrigin( GetAbsOrigin() );
 		m_Glow.SetFadeDistances( m_nMinDist, m_nMaxDist, m_nOuterMaxDist );
 		m_Glow.m_flProxyRadius = m_flGlowProxySize;
 
-		if ( m_spawnflags & SF_LIGHTGLOW_DIRECTIONAL )
+		if( m_spawnflags & SF_LIGHTGLOW_DIRECTIONAL )
 		{
 			m_Glow.SetOneSided();
 		}
 
-		SetNextClientThink( gpGlobals->curtime + RandomFloat(0,3.0) );
+		SetNextClientThink( gpGlobals->curtime + RandomFloat( 0, 3.0 ) );
 	}
-	else if ( updateType == DATA_UPDATE_DATATABLE_CHANGED ) //Right now only color should change.
+	else if( updateType == DATA_UPDATE_DATATABLE_CHANGED )  //Right now only color should change.
 	{
 		// Setup our flare.
 		Vector vColor(
@@ -195,24 +208,24 @@ void C_LightGlow::OnDataChanged( DataUpdateType_t updateType )
 
 		m_Glow.m_Sprites[0].m_vColor = vColor;
 	}
-	
+
 
 	Vector forward;
 	AngleVectors( GetAbsAngles(), &forward, NULL, NULL );
-	
+
 	m_Glow.SetDirection( forward );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_LightGlow::ClientThink( void )
 {
 	Vector mins = GetAbsOrigin();
 #ifdef MAPBASE
-	if ( engine->IsBoxVisible( mins, mins ) && !m_bDisabled )
+	if( engine->IsBoxVisible( mins, mins ) && !m_bDisabled )
 #else
-	if ( engine->IsBoxVisible( mins, mins ) )
+	if( engine->IsBoxVisible( mins, mins ) )
 #endif
 	{
 		m_Glow.Activate();
@@ -222,5 +235,5 @@ void C_LightGlow::ClientThink( void )
 		m_Glow.Deactivate();
 	}
 
-	SetNextClientThink( gpGlobals->curtime + RandomFloat(1.0,3.0) );
+	SetNextClientThink( gpGlobals->curtime + RandomFloat( 1.0, 3.0 ) );
 }

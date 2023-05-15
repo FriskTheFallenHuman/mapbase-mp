@@ -39,58 +39,64 @@
 #include <string>
 #include <google/protobuf/compiler/java/java_field.h>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace java {
+namespace google
+{
+namespace protobuf
+{
+namespace compiler
+{
+namespace java
+{
 
-class PrimitiveFieldGenerator : public FieldGenerator {
- public:
-  explicit PrimitiveFieldGenerator(const FieldDescriptor* descriptor);
-  ~PrimitiveFieldGenerator();
+class PrimitiveFieldGenerator : public FieldGenerator
+{
+public:
+	explicit PrimitiveFieldGenerator( const FieldDescriptor* descriptor );
+	~PrimitiveFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GenerateMembers(io::Printer* printer) const;
-  void GenerateBuilderMembers(io::Printer* printer) const;
-  void GenerateInitializationCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateBuildingCode(io::Printer* printer) const;
-  void GenerateParsingCode(io::Printer* printer) const;
-  void GenerateSerializationCode(io::Printer* printer) const;
-  void GenerateSerializedSizeCode(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GenerateMembers( io::Printer* printer ) const;
+	void GenerateBuilderMembers( io::Printer* printer ) const;
+	void GenerateInitializationCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateBuildingCode( io::Printer* printer ) const;
+	void GenerateParsingCode( io::Printer* printer ) const;
+	void GenerateSerializationCode( io::Printer* printer ) const;
+	void GenerateSerializedSizeCode( io::Printer* printer ) const;
 
-  string GetBoxedType() const;
+	string GetBoxedType() const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(PrimitiveFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( PrimitiveFieldGenerator );
 };
 
-class RepeatedPrimitiveFieldGenerator : public FieldGenerator {
- public:
-  explicit RepeatedPrimitiveFieldGenerator(const FieldDescriptor* descriptor);
-  ~RepeatedPrimitiveFieldGenerator();
+class RepeatedPrimitiveFieldGenerator : public FieldGenerator
+{
+public:
+	explicit RepeatedPrimitiveFieldGenerator( const FieldDescriptor* descriptor );
+	~RepeatedPrimitiveFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GenerateMembers(io::Printer* printer) const;
-  void GenerateBuilderMembers(io::Printer* printer) const;
-  void GenerateInitializationCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateBuildingCode(io::Printer* printer) const;
-  void GenerateParsingCode(io::Printer* printer) const;
-  void GenerateParsingCodeFromPacked(io::Printer* printer) const;
-  void GenerateSerializationCode(io::Printer* printer) const;
-  void GenerateSerializedSizeCode(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GenerateMembers( io::Printer* printer ) const;
+	void GenerateBuilderMembers( io::Printer* printer ) const;
+	void GenerateInitializationCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateBuildingCode( io::Printer* printer ) const;
+	void GenerateParsingCode( io::Printer* printer ) const;
+	void GenerateParsingCodeFromPacked( io::Printer* printer ) const;
+	void GenerateSerializationCode( io::Printer* printer ) const;
+	void GenerateSerializedSizeCode( io::Printer* printer ) const;
 
-  string GetBoxedType() const;
+	string GetBoxedType() const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(RepeatedPrimitiveFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( RepeatedPrimitiveFieldGenerator );
 };
 
 }  // namespace java

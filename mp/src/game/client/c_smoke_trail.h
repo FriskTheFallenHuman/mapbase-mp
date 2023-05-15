@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -29,37 +29,37 @@ class C_SmokeTrail : public C_BaseParticleEntity, public IPrototypeAppEffect
 public:
 	DECLARE_CLASS( C_SmokeTrail, C_BaseParticleEntity );
 	DECLARE_CLIENTCLASS();
-	
-					C_SmokeTrail();
+
+	C_SmokeTrail();
 	virtual			~C_SmokeTrail();
 
 public:
 
 	//For attachments
-	void			GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles );
+	void			GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles );
 
 	// Enable/disable emission.
-	void			SetEmit(bool bEmit);
+	void			SetEmit( bool bEmit );
 
 	// Change the spawn rate.
-	void			SetSpawnRate(float rate);
+	void			SetSpawnRate( float rate );
 
 
 // C_BaseEntity.
 public:
-	virtual	void	OnDataChanged(DataUpdateType_t updateType);
+	virtual	void	OnDataChanged( DataUpdateType_t updateType );
 
-	virtual void	CleanupToolRecordingState( KeyValues *msg );
+	virtual void	CleanupToolRecordingState( KeyValues* msg );
 
 // IPrototypeAppEffect.
 public:
-	virtual void	Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs);
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 
 // IParticleEffect.
 public:
-	virtual void	Update(float fTimeDelta);
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void	Update( float fTimeDelta );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 
 public:
@@ -72,10 +72,10 @@ public:
 
 	float			m_ParticleLifetime;		// How long do the particles live?
 	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
-	
+
 	float			m_MinSpeed;				// Speed range.
 	float			m_MaxSpeed;
-	
+
 	float			m_MinDirectedSpeed;		// Directed speed range.
 	float			m_MaxDirectedSpeed;
 
@@ -91,12 +91,12 @@ public:
 	int				m_nAttachment;
 
 private:
-	C_SmokeTrail( const C_SmokeTrail & );
+	C_SmokeTrail( const C_SmokeTrail& );
 
 	PMaterialHandle	m_MaterialHandle[2];
 	TimedEvent		m_ParticleSpawn;
 
-	CParticleMgr	*m_pParticleMgr;
+	CParticleMgr*	m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pSmokeEmitter;
 };
 
@@ -109,35 +109,35 @@ class C_RocketTrail : public C_BaseParticleEntity, public IPrototypeAppEffect
 public:
 	DECLARE_CLASS( C_RocketTrail, C_BaseParticleEntity );
 	DECLARE_CLIENTCLASS();
-	
-					C_RocketTrail();
+
+	C_RocketTrail();
 	virtual			~C_RocketTrail();
 
 public:
 
 	//For attachments
-	void			GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles );
+	void			GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles );
 
 	// Enable/disable emission.
-	void			SetEmit(bool bEmit);
+	void			SetEmit( bool bEmit );
 
 	// Change the spawn rate.
-	void			SetSpawnRate(float rate);
+	void			SetSpawnRate( float rate );
 
 
 // C_BaseEntity.
 public:
-	virtual	void	OnDataChanged(DataUpdateType_t updateType);
+	virtual	void	OnDataChanged( DataUpdateType_t updateType );
 
 // IPrototypeAppEffect.
 public:
-	virtual void	Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs);
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 
 // IParticleEffect.
 public:
-	virtual void	Update(float fTimeDelta);
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void	Update( float fTimeDelta );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 
 public:
@@ -150,10 +150,10 @@ public:
 
 	float			m_ParticleLifetime;		// How long do the particles live?
 	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
-	
+
 	float			m_MinSpeed;				// Speed range.
 	float			m_MaxSpeed;
-	
+
 	float			m_StartSize;			// Size ramp.
 	float			m_EndSize;
 
@@ -170,12 +170,12 @@ public:
 	float			m_flFlareScale;			// Size of the flare
 
 private:
-	C_RocketTrail( const C_RocketTrail & );
+	C_RocketTrail( const C_RocketTrail& );
 
 	PMaterialHandle	m_MaterialHandle[2];
 	TimedEvent		m_ParticleSpawn;
 
-	CParticleMgr	*m_pParticleMgr;
+	CParticleMgr*	m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pRocketEmitter;
 };
 
@@ -189,15 +189,15 @@ class SporeSmokeEffect;
 class SporeEffect : public CSimpleEmitter
 {
 public:
-							SporeEffect( const char *pDebugName );
-	static SporeEffect*		Create( const char *pDebugName );
+	SporeEffect( const char* pDebugName );
+	static SporeEffect*		Create( const char* pDebugName );
 
-	virtual void			UpdateVelocity( SimpleParticle *pParticle, float timeDelta );
-	virtual Vector			UpdateColor( const SimpleParticle *pParticle );
-	virtual float			UpdateAlpha( const SimpleParticle *pParticle );
+	virtual void			UpdateVelocity( SimpleParticle* pParticle, float timeDelta );
+	virtual Vector			UpdateColor( const SimpleParticle* pParticle );
+	virtual float			UpdateAlpha( const SimpleParticle* pParticle );
 
 private:
-	SporeEffect( const SporeEffect & );
+	SporeEffect( const SporeEffect& );
 };
 
 //==================================================
@@ -209,7 +209,7 @@ class C_SporeExplosion : public C_BaseParticleEntity, public IPrototypeAppEffect
 public:
 	DECLARE_CLASS( C_SporeExplosion, C_BaseParticleEntity );
 	DECLARE_CLIENTCLASS();
-	
+
 	C_SporeExplosion( void );
 	virtual	~C_SporeExplosion( void );
 
@@ -221,13 +221,13 @@ public:
 
 // IPrototypeAppEffect
 public:
-	virtual void	Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs );
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 
 // IParticleEffect
 public:
 	virtual void	Update( float fTimeDelta );
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 
 public:
@@ -242,7 +242,7 @@ public:
 	bool	m_bDontRemove;
 
 private:
-	C_SporeExplosion( const C_SporeExplosion & );
+	C_SporeExplosion( const C_SporeExplosion& );
 
 	void	AddParticles( void );
 
@@ -250,7 +250,7 @@ private:
 	TimedEvent			m_teParticleSpawn;
 
 	CSmartPtr<SporeEffect> m_pSporeEffect;
-	CParticleMgr		*m_pParticleMgr;
+	CParticleMgr*		m_pParticleMgr;
 };
 
 //
@@ -268,7 +268,7 @@ public:
 	C_FireTrail( void );
 	virtual ~C_FireTrail( void );
 
-	virtual void	Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs );
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 	virtual void	Update( float fTimeDelta );
 
 private:
@@ -296,7 +296,7 @@ private:
 
 	Vector						m_vecLastPosition;
 
-	C_FireTrail( const C_FireTrail & );
+	C_FireTrail( const C_FireTrail& );
 };
 
 
@@ -320,34 +320,34 @@ class C_DustTrail : public C_BaseParticleEntity, public IPrototypeAppEffect
 public:
 	DECLARE_CLASS( C_DustTrail, C_BaseParticleEntity );
 	DECLARE_CLIENTCLASS();
-	
-					C_DustTrail();
+
+	C_DustTrail();
 	virtual			~C_DustTrail();
 
 public:
 
 	// Enable/disable emission.
-	void			SetEmit(bool bEmit);
+	void			SetEmit( bool bEmit );
 
 	// Change the spawn rate.
-	void			SetSpawnRate(float rate);
+	void			SetSpawnRate( float rate );
 
 
 // C_BaseEntity.
 public:
-	virtual	void	OnDataChanged(DataUpdateType_t updateType);
+	virtual	void	OnDataChanged( DataUpdateType_t updateType );
 
-	virtual void	CleanupToolRecordingState( KeyValues *msg );
+	virtual void	CleanupToolRecordingState( KeyValues* msg );
 
 // IPrototypeAppEffect.
 public:
-	virtual void	Start(CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs);
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 
 // IParticleEffect.
 public:
-	virtual void	Update(float fTimeDelta);
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void	Update( float fTimeDelta );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 
 public:
@@ -360,10 +360,10 @@ public:
 	float			m_ParticleLifetime;		// How long do the particles live?
 	float			m_StartEmitTime;		// When did I start emitting particles?
 	float			m_StopEmitTime;			// When do I stop emitting particles? (-1 = never)
-	
+
 	float			m_MinSpeed;				// Speed range.
 	float			m_MaxSpeed;
-	
+
 	float			m_MinDirectedSpeed;		// Directed speed range.
 	float			m_MaxDirectedSpeed;
 
@@ -377,13 +377,13 @@ public:
 	bool			m_bEmit;				// Keep emitting particles?
 
 private:
-	C_DustTrail( const C_DustTrail & );
+	C_DustTrail( const C_DustTrail& );
 
 #define DUSTTRAIL_MATERIALS 16
 	PMaterialHandle	m_MaterialHandle[DUSTTRAIL_MATERIALS];
 	TimedEvent		m_ParticleSpawn;
 
-	CParticleMgr	*m_pParticleMgr;
+	CParticleMgr*	m_pParticleMgr;
 	CSmartPtr<CSimpleEmitter> m_pDustEmitter;
 };
 

@@ -20,9 +20,9 @@
 // CScreenSpaceEffectRegistration code
 // Used to register and effect with the IScreenSpaceEffectManager
 //------------------------------------------------------------------------------
-CScreenSpaceEffectRegistration *CScreenSpaceEffectRegistration::s_pHead = NULL;
+CScreenSpaceEffectRegistration* CScreenSpaceEffectRegistration::s_pHead = NULL;
 
-CScreenSpaceEffectRegistration::CScreenSpaceEffectRegistration( const char *pName, IScreenSpaceEffect *pEffect )
+CScreenSpaceEffectRegistration::CScreenSpaceEffectRegistration( const char* pName, IScreenSpaceEffect* pEffect )
 {
 	m_pEffectName = pName;
 	m_pEffect = pEffect;
@@ -41,16 +41,16 @@ public:
 	virtual void InitScreenSpaceEffects( );
 	virtual void ShutdownScreenSpaceEffects( );
 
-	virtual IScreenSpaceEffect *GetScreenSpaceEffect( const char *pEffectName );
+	virtual IScreenSpaceEffect* GetScreenSpaceEffect( const char* pEffectName );
 
-	virtual void SetScreenSpaceEffectParams( const char *pEffectName, KeyValues *params );
-	virtual void SetScreenSpaceEffectParams( IScreenSpaceEffect *pEffect, KeyValues *params );
-    
-	virtual void EnableScreenSpaceEffect( const char *pEffectName );
-	virtual void EnableScreenSpaceEffect( IScreenSpaceEffect *pEffect );
+	virtual void SetScreenSpaceEffectParams( const char* pEffectName, KeyValues* params );
+	virtual void SetScreenSpaceEffectParams( IScreenSpaceEffect* pEffect, KeyValues* params );
 
-	virtual void DisableScreenSpaceEffect( const char *pEffectName );
-	virtual void DisableScreenSpaceEffect( IScreenSpaceEffect *pEffect );
+	virtual void EnableScreenSpaceEffect( const char* pEffectName );
+	virtual void EnableScreenSpaceEffect( IScreenSpaceEffect* pEffect );
+
+	virtual void DisableScreenSpaceEffect( const char* pEffectName );
+	virtual void DisableScreenSpaceEffect( IScreenSpaceEffect* pEffect );
 
 	virtual void DisableAllScreenSpaceEffects( );
 
@@ -58,21 +58,21 @@ public:
 };
 
 CScreenSpaceEffectManager g_ScreenSpaceEffectManager;
-IScreenSpaceEffectManager *g_pScreenSpaceEffects = &g_ScreenSpaceEffectManager;
+IScreenSpaceEffectManager* g_pScreenSpaceEffects = &g_ScreenSpaceEffectManager;
 
 //---------------------------------------------------------------------------------------
 // CScreenSpaceEffectManager::InitScreenSpaceEffects - Initialise all registered effects
 //---------------------------------------------------------------------------------------
 void CScreenSpaceEffectManager::InitScreenSpaceEffects( )
 {
-	if ( CommandLine()->FindParm( "-filmgrain" ) )
+	if( CommandLine()->FindParm( "-filmgrain" ) )
 	{
 		GetScreenSpaceEffect( "filmgrain" )->Enable( true );
 	}
 
-	for( CScreenSpaceEffectRegistration *pReg=CScreenSpaceEffectRegistration::s_pHead; pReg!=NULL; pReg=pReg->m_pNext )
+	for( CScreenSpaceEffectRegistration* pReg = CScreenSpaceEffectRegistration::s_pHead; pReg != NULL; pReg = pReg->m_pNext )
 	{
-		IScreenSpaceEffect *pEffect = pReg->m_pEffect;
+		IScreenSpaceEffect* pEffect = pReg->m_pEffect;
 		if( pEffect )
 		{
 			bool bIsEnabled = pEffect->IsEnabled( );
@@ -88,9 +88,9 @@ void CScreenSpaceEffectManager::InitScreenSpaceEffects( )
 //----------------------------------------------------------------------------------------
 void CScreenSpaceEffectManager::ShutdownScreenSpaceEffects( )
 {
-	for( CScreenSpaceEffectRegistration *pReg=CScreenSpaceEffectRegistration::s_pHead; pReg!=NULL; pReg=pReg->m_pNext )
+	for( CScreenSpaceEffectRegistration* pReg = CScreenSpaceEffectRegistration::s_pHead; pReg != NULL; pReg = pReg->m_pNext )
 	{
-		IScreenSpaceEffect *pEffect = pReg->m_pEffect;
+		IScreenSpaceEffect* pEffect = pReg->m_pEffect;
 		if( pEffect )
 		{
 			pEffect->Shutdown( );
@@ -102,13 +102,13 @@ void CScreenSpaceEffectManager::ShutdownScreenSpaceEffects( )
 //---------------------------------------------------------------------------------------
 // CScreenSpaceEffectManager::GetScreenSpaceEffect - Returns a point to the named effect
 //---------------------------------------------------------------------------------------
-IScreenSpaceEffect *CScreenSpaceEffectManager::GetScreenSpaceEffect( const char *pEffectName )
+IScreenSpaceEffect* CScreenSpaceEffectManager::GetScreenSpaceEffect( const char* pEffectName )
 {
-	for( CScreenSpaceEffectRegistration *pReg=CScreenSpaceEffectRegistration::s_pHead; pReg!=NULL; pReg=pReg->m_pNext )
+	for( CScreenSpaceEffectRegistration* pReg = CScreenSpaceEffectRegistration::s_pHead; pReg != NULL; pReg = pReg->m_pNext )
 	{
 		if( !Q_stricmp( pReg->m_pEffectName, pEffectName ) )
 		{
-			IScreenSpaceEffect *pEffect = pReg->m_pEffect;
+			IScreenSpaceEffect* pEffect = pReg->m_pEffect;
 			return pEffect;
 		}
 	}
@@ -120,20 +120,24 @@ IScreenSpaceEffect *CScreenSpaceEffectManager::GetScreenSpaceEffect( const char 
 
 
 //---------------------------------------------------------------------------------------
-// CScreenSpaceEffectManager::SetScreenSpaceEffectParams 
+// CScreenSpaceEffectManager::SetScreenSpaceEffectParams
 //	- Assign parameters to the specified effect
 //---------------------------------------------------------------------------------------
-void CScreenSpaceEffectManager::SetScreenSpaceEffectParams( const char *pEffectName, KeyValues *params )
+void CScreenSpaceEffectManager::SetScreenSpaceEffectParams( const char* pEffectName, KeyValues* params )
 {
-	IScreenSpaceEffect *pEffect = GetScreenSpaceEffect( pEffectName );
+	IScreenSpaceEffect* pEffect = GetScreenSpaceEffect( pEffectName );
 	if( pEffect )
+	{
 		SetScreenSpaceEffectParams( pEffect, params );
+	}
 }
 
-void CScreenSpaceEffectManager::SetScreenSpaceEffectParams( IScreenSpaceEffect *pEffect, KeyValues *params )
+void CScreenSpaceEffectManager::SetScreenSpaceEffectParams( IScreenSpaceEffect* pEffect, KeyValues* params )
 {
 	if( pEffect )
+	{
 		pEffect->SetParameters( params );
+	}
 }
 
 
@@ -141,17 +145,21 @@ void CScreenSpaceEffectManager::SetScreenSpaceEffectParams( IScreenSpaceEffect *
 // CScreenSpaceEffectManager::EnableScreenSpaceEffect
 //	- Enables the specified effect
 //---------------------------------------------------------------------------------------
-void CScreenSpaceEffectManager::EnableScreenSpaceEffect( const char *pEffectName )
+void CScreenSpaceEffectManager::EnableScreenSpaceEffect( const char* pEffectName )
 {
-	IScreenSpaceEffect *pEffect = GetScreenSpaceEffect( pEffectName );
+	IScreenSpaceEffect* pEffect = GetScreenSpaceEffect( pEffectName );
 	if( pEffect )
+	{
 		EnableScreenSpaceEffect( pEffect );
+	}
 }
 
-void CScreenSpaceEffectManager::EnableScreenSpaceEffect( IScreenSpaceEffect *pEffect )
+void CScreenSpaceEffectManager::EnableScreenSpaceEffect( IScreenSpaceEffect* pEffect )
 {
 	if( pEffect )
+	{
 		pEffect->Enable( true );
+	}
 }
 
 
@@ -159,17 +167,21 @@ void CScreenSpaceEffectManager::EnableScreenSpaceEffect( IScreenSpaceEffect *pEf
 // CScreenSpaceEffectManager::DisableScreenSpaceEffect
 //	- Disables the specified effect
 //---------------------------------------------------------------------------------------
-void CScreenSpaceEffectManager::DisableScreenSpaceEffect( const char *pEffectName )
+void CScreenSpaceEffectManager::DisableScreenSpaceEffect( const char* pEffectName )
 {
-	IScreenSpaceEffect *pEffect = GetScreenSpaceEffect( pEffectName );
+	IScreenSpaceEffect* pEffect = GetScreenSpaceEffect( pEffectName );
 	if( pEffect )
+	{
 		DisableScreenSpaceEffect( pEffect );
+	}
 }
 
-void CScreenSpaceEffectManager::DisableScreenSpaceEffect( IScreenSpaceEffect *pEffect )
+void CScreenSpaceEffectManager::DisableScreenSpaceEffect( IScreenSpaceEffect* pEffect )
 {
 	if( pEffect )
+	{
 		pEffect->Enable( false );
+	}
 }
 
 
@@ -179,9 +191,9 @@ void CScreenSpaceEffectManager::DisableScreenSpaceEffect( IScreenSpaceEffect *pE
 //---------------------------------------------------------------------------------------
 void CScreenSpaceEffectManager::DisableAllScreenSpaceEffects( )
 {
-	for( CScreenSpaceEffectRegistration *pReg=CScreenSpaceEffectRegistration::s_pHead; pReg!=NULL; pReg=pReg->m_pNext )
+	for( CScreenSpaceEffectRegistration* pReg = CScreenSpaceEffectRegistration::s_pHead; pReg != NULL; pReg = pReg->m_pNext )
 	{
-		IScreenSpaceEffect *pEffect = pReg->m_pEffect;
+		IScreenSpaceEffect* pEffect = pReg->m_pEffect;
 		if( pEffect )
 		{
 			pEffect->Enable( false );
@@ -196,9 +208,9 @@ void CScreenSpaceEffectManager::DisableAllScreenSpaceEffects( )
 //---------------------------------------------------------------------------------------
 void CScreenSpaceEffectManager::RenderEffects( int x, int y, int w, int h )
 {
-	for( CScreenSpaceEffectRegistration *pReg=CScreenSpaceEffectRegistration::s_pHead; pReg!=NULL; pReg=pReg->m_pNext )
+	for( CScreenSpaceEffectRegistration* pReg = CScreenSpaceEffectRegistration::s_pHead; pReg != NULL; pReg = pReg->m_pNext )
 	{
-		IScreenSpaceEffect *pEffect = pReg->m_pEffect;
+		IScreenSpaceEffect* pEffect = pReg->m_pEffect;
 		if( pEffect )
 		{
 			pEffect->Render( x, y, w, h );
@@ -213,12 +225,12 @@ class CExampleEffect : public IScreenSpaceEffect
 {
 public:
 	CExampleEffect( );
-   ~CExampleEffect( );
+	~CExampleEffect( );
 
 	void Init( );
 	void Shutdown( );
 
-	void SetParameters( KeyValues *params );
+	void SetParameters( KeyValues* params );
 
 	void Render( int x, int y, int w, int h );
 
@@ -288,7 +300,7 @@ bool CExampleEffect::IsEnabled( )
 //------------------------------------------------------------------------------
 // CExampleEffect SetParameters
 //------------------------------------------------------------------------------
-void CExampleEffect::SetParameters( KeyValues *params )
+void CExampleEffect::SetParameters( KeyValues* params )
 {
 	if( params->GetDataType( "example_param" ) == KeyValues::TYPE_STRING )
 	{
@@ -301,17 +313,19 @@ void CExampleEffect::SetParameters( KeyValues *params )
 //------------------------------------------------------------------------------
 void CExampleEffect::Render( int x, int y, int w, int h )
 {
-	if ( !IsEnabled() )
+	if( !IsEnabled() )
+	{
 		return;
+	}
 
 	// Render Effect
 	Rect_t actualRect;
 	UpdateScreenEffectTexture( 0, x, y, w, h, false, &actualRect );
-	ITexture *pTexture = GetFullFrameFrameBufferTexture( 0 );
+	ITexture* pTexture = GetFullFrameFrameBufferTexture( 0 );
 
 	CMatRenderContextPtr pRenderContext( materials );
 
 	pRenderContext->DrawScreenSpaceRectangle( m_Material, x, y, w, h,
-											actualRect.x, actualRect.y, actualRect.x+actualRect.width-1, actualRect.y+actualRect.height-1, 
-											pTexture->GetActualWidth(), pTexture->GetActualHeight() );
+			actualRect.x, actualRect.y, actualRect.x + actualRect.width - 1, actualRect.y + actualRect.height - 1,
+			pTexture->GetActualWidth(), pTexture->GetActualHeight() );
 }

@@ -17,7 +17,10 @@ public:
 
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
 
-	static C_PostProcessController* GetMasterController() { return ms_pMasterController; }
+	static C_PostProcessController* GetMasterController()
+	{
+		return ms_pMasterController;
+	}
 
 	PostProcessParameters_t	m_PostProcessParameters;
 
@@ -25,7 +28,7 @@ public:
 	// Prevents fade time from being used in save/restore
 	virtual void OnRestore();
 #endif
-	
+
 private:
 	bool m_bMaster;
 

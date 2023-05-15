@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -9,11 +9,11 @@
 #ifndef BASEHLCOMBATWEAPON_SHARED_H
 #define BASEHLCOMBATWEAPON_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if defined( CLIENT_DLL )
-#define CBaseHLCombatWeapon C_BaseHLCombatWeapon
+	#define CBaseHLCombatWeapon C_BaseHLCombatWeapon
 #endif
 
 class CBaseHLCombatWeapon : public CBaseCombatWeapon
@@ -35,21 +35,21 @@ public:
 
 	virtual bool	WeaponShouldBeLowered( void );
 
-			bool	CanLower();
+	bool	CanLower();
 	virtual bool	Ready( void );
 	virtual bool	Lower( void );
 	virtual bool	Deploy( void );
-	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo );
+	virtual bool	Holster( CBaseCombatWeapon* pSwitchingTo );
 	virtual void	WeaponIdle( void );
 
-	virtual void	AddViewmodelBob( CBaseViewModel *viewmodel, Vector &origin, QAngle &angles );
+	virtual void	AddViewmodelBob( CBaseViewModel* viewmodel, Vector& origin, QAngle& angles );
 	virtual	float	CalcViewmodelBob( void );
 
 	virtual Vector	GetBulletSpread( WeaponProficiency_t proficiency );
 	virtual float	GetSpreadBias( WeaponProficiency_t proficiency );
 
-	virtual const	WeaponProficiencyInfo_t *GetProficiencyValues();
-	static const	WeaponProficiencyInfo_t *GetDefaultProficiencyValues();
+	virtual const	WeaponProficiencyInfo_t* GetProficiencyValues();
+	static const	WeaponProficiencyInfo_t* GetDefaultProficiencyValues();
 
 	virtual void	ItemHolsterFrame( void );
 

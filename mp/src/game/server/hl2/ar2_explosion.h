@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -21,9 +21,9 @@ public:
 	DECLARE_CLASS( AR2Explosion, CBaseParticleEntity );
 	DECLARE_SERVERCLASS();
 
-	static AR2Explosion* CreateAR2Explosion(const Vector &pos);
+	static AR2Explosion* CreateAR2Explosion( const Vector& pos );
 
-	inline void SetMaterialName(const char *szMaterialName);
+	inline void SetMaterialName( const char* szMaterialName );
 
 private:
 
@@ -31,11 +31,11 @@ private:
 };
 
 
-void AR2Explosion::SetMaterialName(const char *szMaterialName)
+void AR2Explosion::SetMaterialName( const char* szMaterialName )
 {
-	if (szMaterialName)
+	if( szMaterialName )
 	{
-		Q_strncpy(m_szMaterialName.GetForModify(), szMaterialName, sizeof(m_szMaterialName));
+		Q_strncpy( m_szMaterialName.GetForModify(), szMaterialName, sizeof( m_szMaterialName ) );
 	}
 }
 

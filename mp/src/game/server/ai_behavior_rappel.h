@@ -15,7 +15,7 @@
 #ifndef AI_BEHAVIOR_RAPPEL_H
 #define AI_BEHAVIOR_RAPPEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior.h"
@@ -28,23 +28,29 @@ class CAI_RappelBehavior : public CAI_SimpleBehavior
 
 public:
 	CAI_RappelBehavior();
-	
-	void Precache( void );
-	virtual const char *GetName() {	return "Rappel"; }
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	void Precache( void );
+	virtual const char* GetName()
+	{
+		return "Rappel";
+	}
+
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
 	virtual bool 	CanSelectSchedule();
 	void GatherConditions();
-	void CleanupOnDeath( CBaseEntity *pCulprit = NULL, bool bFireDeathOutput = true );
-	
+	void CleanupOnDeath( CBaseEntity* pCulprit = NULL, bool bFireDeathOutput = true );
+
 	//virtual void	BeginScheduleSelection();
 	//virtual void	EndScheduleSelection();
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
-	bool IsWaitingToRappel() { return m_bWaitingToRappel; }
+	bool IsWaitingToRappel()
+	{
+		return m_bWaitingToRappel;
+	}
 	void BeginRappel();
 	void SetDescentSpeed();
 
@@ -56,10 +62,10 @@ public:
 	//void OnStartSchedule( int scheduleType );
 
 	//void InitializeBehavior();
-	
+
 	enum
 	{
-		SCHED_RAPPEL_WAIT = BaseClass::NEXT_SCHEDULE,		
+		SCHED_RAPPEL_WAIT = BaseClass::NEXT_SCHEDULE,
 		SCHED_RAPPEL,
 		SCHED_CLEAR_RAPPEL_POINT, // Get out of the way for the next guy
 		NEXT_SCHEDULE,
@@ -84,7 +90,7 @@ private:
 	bool	m_bOnGround;
 	CHandle<CBeam> m_hLine;
 	Vector	m_vecRopeAnchor;
-	
+
 	DECLARE_DATADESC();
 };
 

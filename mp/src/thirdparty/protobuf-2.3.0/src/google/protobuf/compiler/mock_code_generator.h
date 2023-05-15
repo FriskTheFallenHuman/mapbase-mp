@@ -36,9 +36,12 @@
 #include <string>
 #include <google/protobuf/compiler/code_generator.h>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
+namespace google
+{
+namespace protobuf
+{
+namespace compiler
+{
 
 // A mock CodeGenerator, used by command_line_interface_unittest.  This is in
 // its own file so that it can be used both directly and as a plugin.
@@ -59,46 +62,47 @@ namespace compiler {
 //     MockCodeGenerator_Exit." to stderr and then calls exit(123).
 //   MockCodeGenerator_Abort:  Generate() prints "Saw message type
 //     MockCodeGenerator_Abort." to stderr and then calls abort().
-class MockCodeGenerator : public CodeGenerator {
- public:
-  MockCodeGenerator(const string& name);
-  virtual ~MockCodeGenerator();
+class MockCodeGenerator : public CodeGenerator
+{
+public:
+	MockCodeGenerator( const string& name );
+	virtual ~MockCodeGenerator();
 
-  // Expect (via gTest) that a MockCodeGenerator with the given name was called
-  // with the given parameters by inspecting the output location.
-  //
-  // |insertions| is a comma-separated list of names of MockCodeGenerators which
-  // should have inserted lines into this file.
-  static void ExpectGenerated(const string& name,
-                              const string& parameter,
-                              const string& insertions,
-                              const string& file,
-                              const string& first_message_name,
-                              const string& output_directory);
+	// Expect (via gTest) that a MockCodeGenerator with the given name was called
+	// with the given parameters by inspecting the output location.
+	//
+	// |insertions| is a comma-separated list of names of MockCodeGenerators which
+	// should have inserted lines into this file.
+	static void ExpectGenerated( const string& name,
+								 const string& parameter,
+								 const string& insertions,
+								 const string& file,
+								 const string& first_message_name,
+								 const string& output_directory );
 
-  // Get the name of the file which would be written by the given generator.
-  static string GetOutputFileName(const string& generator_name,
-                                  const FileDescriptor* file);
-  static string GetOutputFileName(const string& generator_name,
-                                  const string& file);
+	// Get the name of the file which would be written by the given generator.
+	static string GetOutputFileName( const string& generator_name,
+									 const FileDescriptor* file );
+	static string GetOutputFileName( const string& generator_name,
+									 const string& file );
 
-  // implements CodeGenerator ----------------------------------------
+	// implements CodeGenerator ----------------------------------------
 
-  virtual bool Generate(const FileDescriptor* file,
-                        const string& parameter,
-                        OutputDirectory* output_directory,
-                        string* error) const;
+	virtual bool Generate( const FileDescriptor* file,
+						   const string& parameter,
+						   OutputDirectory* output_directory,
+						   string* error ) const;
 
- private:
-  string name_;
+private:
+	string name_;
 
-  static string GetOutputFileContent(const string& generator_name,
-                                     const string& parameter,
-                                     const FileDescriptor* file);
-  static string GetOutputFileContent(const string& generator_name,
-                                     const string& parameter,
-                                     const string& file,
-                                     const string& first_message_name);
+	static string GetOutputFileContent( const string& generator_name,
+										const string& parameter,
+										const FileDescriptor* file );
+	static string GetOutputFileContent( const string& generator_name,
+										const string& parameter,
+										const string& file,
+										const string& first_message_name );
 };
 
 }  // namespace compiler

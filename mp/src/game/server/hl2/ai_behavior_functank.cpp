@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -17,11 +17,11 @@
 #define FUNCTANK_FIRE_TIME	5.0f
 
 BEGIN_DATADESC( CAI_FuncTankBehavior )
-	DEFINE_FIELD( m_hFuncTank, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bMounted, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flBusyTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bSpottedPlayerOutOfCover, FIELD_BOOLEAN ),
-END_DATADESC();
+DEFINE_FIELD( m_hFuncTank, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_bMounted, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flBusyTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_bSpottedPlayerOutOfCover, FIELD_BOOLEAN ),
+			  END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -47,23 +47,31 @@ CAI_FuncTankBehavior::~CAI_FuncTankBehavior()
 bool CAI_FuncTankBehavior::CanSelectSchedule()
 {
 	// If we don't have a func_tank do not bother with conditions, schedules, etc.
-	if ( !m_hFuncTank )
+	if( !m_hFuncTank )
+	{
 		return false;
+	}
 
 #ifdef MAPBASE
 	// We're glued to our func_tank, don't get off of it
-	if ( m_hFuncTank->m_bControllerGlued )
+	if( m_hFuncTank->m_bControllerGlued )
+	{
 		return true;
+	}
 #endif
 
 	// Are you alive, in a script?
-	if ( !GetOuter()->IsInterruptable() )
+	if( !GetOuter()->IsInterruptable() )
+	{
 		return false;
-	
+	}
+
 	// Commander is giving you orders?
-	if ( GetOuter()->HasCondition( COND_RECEIVED_ORDERS ) )
+	if( GetOuter()->HasCondition( COND_RECEIVED_ORDERS ) )
+	{
 		return false;
-	
+	}
+
 	return true;
 }
 
@@ -79,20 +87,20 @@ void CAI_FuncTankBehavior::BeginScheduleSelection()
 //-----------------------------------------------------------------------------
 void CAI_FuncTankBehavior::EndScheduleSelection()
 {
-	if ( m_bMounted )
+	if( m_bMounted )
 	{
 		Dismount();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_FuncTankBehavior::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
 
-	if ( !HasCondition(COND_SEE_PLAYER) )
+	if( !HasCondition( COND_SEE_PLAYER ) )
 	{
 		m_bSpottedPlayerOutOfCover = false;
 	}
@@ -100,13 +108,15 @@ void CAI_FuncTankBehavior::PrescheduleThink()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAI_FuncTankBehavior::IsInterruptable( void )
 {
-	if ( m_hFuncTank && m_hFuncTank->m_bControllerGlued )
+	if( m_hFuncTank && m_hFuncTank->m_bControllerGlued )
+	{
 		return false;
+	}
 
 	return BaseClass::IsInterruptable();
 }
@@ -114,19 +124,21 @@ bool CAI_FuncTankBehavior::IsInterruptable( void )
 ConVar ai_tank_allow_expanded_npcs( "ai_tank_allow_expanded_npcs", "1", FCVAR_NONE, "Allows Father Grigori, Barney, and vortigaunts to automatically man func_tanks." );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CAI_FuncTankBehavior::CanManTank( CFuncTank *pTank, bool bForced )
+bool CAI_FuncTankBehavior::CanManTank( CFuncTank* pTank, bool bForced )
 {
-	if (!bForced)
+	if( !bForced )
 	{
 		// In order to prevent potential problems in existing maps, Father Grigori, Barney, and vortigaunts can be set to not automatically man func_tanks by default.
-		if (ai_tank_allow_expanded_npcs.GetBool() == false)
+		if( ai_tank_allow_expanded_npcs.GetBool() == false )
 		{
-			const char *pszClass = GetOuter()->GetClassname();
-			if ( FStrEq( pszClass, "npc_monk" ) || FStrEq( pszClass, "npc_barney" ) || FStrEq( pszClass, "npc_vortigaunt" ) )
+			const char* pszClass = GetOuter()->GetClassname();
+			if( FStrEq( pszClass, "npc_monk" ) || FStrEq( pszClass, "npc_barney" ) || FStrEq( pszClass, "npc_vortigaunt" ) )
+			{
 				return false;
+			}
 		}
 	}
 
@@ -143,9 +155,9 @@ int	CAI_FuncTankBehavior::SelectSchedule()
 	Assert( m_hFuncTank );
 
 	// If we've been told to dismount, or we are out of ammo - dismount.
-	if ( HasCondition( COND_FUNCTANK_DISMOUNT ) || m_hFuncTank->GetAmmoCount() == 0 )
+	if( HasCondition( COND_FUNCTANK_DISMOUNT ) || m_hFuncTank->GetAmmoCount() == 0 )
 	{
-		if ( m_bMounted )
+		if( m_bMounted )
 		{
 			Dismount();
 		}
@@ -154,12 +166,12 @@ int	CAI_FuncTankBehavior::SelectSchedule()
 	}
 
 	// If we are not mounted to a func_tank look for one.
-	if ( !IsMounted() )
+	if( !IsMounted() )
 	{
 #ifdef MAPBASE
 		// Forced mounts use a special schedule.
 		// If our outer is parented, automatically grab the tank if we're in its control volume.
-		if (HasCondition(COND_FUNCTANK_FORCED) || (GetOuter()->GetParent() && m_hFuncTank->m_hControlVolume))
+		if( HasCondition( COND_FUNCTANK_FORCED ) || ( GetOuter()->GetParent() && m_hFuncTank->m_hControlVolume ) )
 		{
 			return SCHED_FORCE_MOUNT_FUNCTANK;
 		}
@@ -169,10 +181,10 @@ int	CAI_FuncTankBehavior::SelectSchedule()
 	}
 
 	// If we have an enemy, it's in the viewcone & we have LOS to it
-	if ( GetEnemy() )
+	if( GetEnemy() )
 	{
 		// Tell the func tank whenever we see the player for the first time since not seeing him for a while
-		if ( HasCondition( COND_NEW_ENEMY ) && GetEnemy()->IsPlayer() && !m_bSpottedPlayerOutOfCover )
+		if( HasCondition( COND_NEW_ENEMY ) && GetEnemy()->IsPlayer() && !m_bSpottedPlayerOutOfCover )
 		{
 			m_bSpottedPlayerOutOfCover = true;
 			m_hFuncTank->NPC_JustSawPlayer( GetEnemy() );
@@ -191,15 +203,17 @@ int	CAI_FuncTankBehavior::SelectSchedule()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : activity - 
+// Purpose:
+// Input  : activity -
 // Output : Activity
 //-----------------------------------------------------------------------------
 Activity CAI_FuncTankBehavior::NPC_TranslateActivity( Activity activity )
 {
 	// If I'm on the gun, I play the idle manned gun animation
-	if ( m_bMounted ) 
+	if( m_bMounted )
+	{
 		return ACT_IDLE_MANNEDGUN;
+	}
 
 	return BaseClass::NPC_TranslateActivity( activity );
 }
@@ -213,15 +227,17 @@ void CAI_FuncTankBehavior::Dismount( void )
 
 	Assert( m_hFuncTank );
 
-	if ( m_hFuncTank )
+	if( m_hFuncTank )
 	{
 		GetOuter()->SpeakSentence( FUNCTANK_SENTENCE_DISMOUNTING );
 
 		Assert( m_hFuncTank->IsMarkedForDeletion() || m_hFuncTank->GetController() == GetOuter() );
-		
+
 		m_hFuncTank->NPC_SetInRoute( false );
-		if ( m_hFuncTank->GetController() == GetOuter() )
+		if( m_hFuncTank->GetController() == GetOuter() )
+		{
 			m_hFuncTank->StopControl();
+		}
 		SetFuncTank( NULL );
 	}
 
@@ -242,27 +258,29 @@ void CAI_FuncTankBehavior::Dismount( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-int CAI_FuncTankBehavior::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CAI_FuncTankBehavior::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
 	int iResult = BaseClass::OnTakeDamage_Alive( info );
-	if ( !iResult )
+	if( !iResult )
+	{
 		return 0;
+	}
 
-	// If we've been hit by the player, and the player's not targetable 
+	// If we've been hit by the player, and the player's not targetable
 	// by our func_tank, get off the tank.
-	CBaseEntity *pAttacker = info.GetAttacker();
-	bool bValidDismountAttacker = (pAttacker && pAttacker->IsPlayer());
+	CBaseEntity* pAttacker = info.GetAttacker();
+	bool bValidDismountAttacker = ( pAttacker && pAttacker->IsPlayer() );
 
-#ifdef HL2_EPISODIC 
+#ifdef HL2_EPISODIC
 	bValidDismountAttacker = true;
 #endif
 
-	if ( m_hFuncTank && bValidDismountAttacker == true )
+	if( m_hFuncTank && bValidDismountAttacker == true )
 	{
 #ifdef MAPBASE
-		if ( !m_hFuncTank->IsEntityInViewCone( pAttacker ) && !m_hFuncTank->m_bControllerGlued )
+		if( !m_hFuncTank->IsEntityInViewCone( pAttacker ) && !m_hFuncTank->m_bControllerGlued )
 #else
-		if ( !m_hFuncTank->IsEntityInViewCone( pAttacker ) )
+		if( !m_hFuncTank->IsEntityInViewCone( pAttacker ) )
 #endif
 		{
 			SetCondition( COND_FUNCTANK_DISMOUNT );
@@ -275,13 +293,13 @@ int CAI_FuncTankBehavior::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
+void CAI_FuncTankBehavior::StartTask( const Task_t* pTask )
 {
-	switch ( pTask->iTask )
+	switch( pTask->iTask )
 	{
-	case TASK_FUNCTANK_ANNOUNCE_SCAN:
+		case TASK_FUNCTANK_ANNOUNCE_SCAN:
 		{
-			if ( random->RandomInt( 0, 3 ) == 0 )
+			if( random->RandomInt( 0, 3 ) == 0 )
 			{
 				GetOuter()->SpeakSentence( FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES );
 			}
@@ -289,11 +307,11 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_GET_PATH_TO_FUNCTANK:
+		case TASK_GET_PATH_TO_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
-				TaskFail( FAIL_NO_TARGET  );
+				TaskFail( FAIL_NO_TARGET );
 				return;
 			}
 
@@ -301,35 +319,35 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 			m_hFuncTank->NPC_FindManPoint( vecManPos );
 			AI_NavGoal_t goal( vecManPos );
 			goal.pTarget = m_hFuncTank;
-			if ( GetNavigator()->SetGoal( goal ) )
+			if( GetNavigator()->SetGoal( goal ) )
 			{
 				GetNavigator()->SetArrivalDirection( m_hFuncTank->GetAbsAngles() );
 				TaskComplete();
 			}
 			else
 			{
-				TaskFail("NO PATH");
+				TaskFail( "NO PATH" );
 
 				// Don't try and use me again for a while
 				SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
 			}
 			break;
-		}		
-	case TASK_FACE_FUNCTANK:
+		}
+		case TASK_FACE_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
 			}
-			
+
 			// Ensure we've reached the func_tank
 			Vector vecManPos;
 			m_hFuncTank->NPC_FindManPoint( vecManPos );
 
 			// More leniency in Z.
-			Vector vecDelta = (vecManPos - GetAbsOrigin());
-			if ( fabs(vecDelta.x) > 16 || fabs(vecDelta.y) > 16 || fabs(vecDelta.z) > 48 )
+			Vector vecDelta = ( vecManPos - GetAbsOrigin() );
+			if( fabs( vecDelta.x ) > 16 || fabs( vecDelta.y ) > 16 || fabs( vecDelta.z ) > 48 )
 			{
 				TaskFail( "Not correctly on func_tank man point" );
 				m_hFuncTank->NPC_InterruptRoute();
@@ -337,19 +355,19 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 			}
 
 			GetMotor()->SetIdealYawToTarget( m_hFuncTank->GetAbsOrigin() );
-			GetOuter()->SetTurnActivity(); 
+			GetOuter()->SetTurnActivity();
 			break;
 		}
 
-	case TASK_HOLSTER_WEAPON:
+		case TASK_HOLSTER_WEAPON:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
 			}
 
-			if ( GetOuter()->IsWeaponHolstered() || !GetOuter()->CanHolsterWeapon() )
+			if( GetOuter()->IsWeaponHolstered() || !GetOuter()->CanHolsterWeapon() )
 			{
 				GetOuter()->SpeakSentence( FUNCTANK_SENTENCE_JUST_MOUNTED );
 
@@ -368,9 +386,9 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 			break;
 		}
 
-	case TASK_FIRE_FUNCTANK:
+		case TASK_FIRE_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
@@ -378,9 +396,9 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 			GetOuter()->m_flWaitFinished = gpGlobals->curtime + FUNCTANK_FIRE_TIME;
 			break;
 		}
-	case TASK_SCAN_LEFT_FUNCTANK:
+		case TASK_SCAN_LEFT_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
@@ -402,16 +420,16 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 
 			Vector vecTargetForward;
 			AngleVectors( vecTargetAngles, &vecTargetForward );
-			Vector vecTarget = GetOuter()->EyePosition() + (vecTargetForward * 256);
+			Vector vecTarget = GetOuter()->EyePosition() + ( vecTargetForward * 256 );
 			GetOuter()->AddLookTarget( vecTarget, 1.0, 2.0, 0.2 );
 
 			m_hFuncTank->NPC_SetIdleAngle( vecTarget );
 
 			break;
 		}
-	case TASK_SCAN_RIGHT_FUNCTANK:
+		case TASK_SCAN_RIGHT_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
@@ -433,23 +451,23 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 
 			Vector vecTargetForward;
 			AngleVectors( vecTargetAngles, &vecTargetForward );
-			Vector vecTarget = GetOuter()->EyePosition() + (vecTargetForward * 256);
+			Vector vecTarget = GetOuter()->EyePosition() + ( vecTargetForward * 256 );
 			GetOuter()->AddLookTarget( vecTarget, 1.0, 2.0, 0.2 );
 
 			m_hFuncTank->NPC_SetIdleAngle( vecTarget );
 
 			break;
 		}
-	case TASK_FORGET_ABOUT_FUNCTANK:
+		case TASK_FORGET_ABOUT_FUNCTANK:
 		{
-			if ( !m_hFuncTank )
+			if( !m_hFuncTank )
 			{
 				TaskFail( FAIL_NO_TARGET );
 				return;
 			}
 			break;
 		}
-	default:
+		default:
 		{
 			BaseClass::StartTask( pTask );
 			break;
@@ -460,27 +478,27 @@ void CAI_FuncTankBehavior::StartTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
+void CAI_FuncTankBehavior::RunTask( const Task_t* pTask )
 {
-	switch ( pTask->iTask )
+	switch( pTask->iTask )
 	{
-	case TASK_FACE_FUNCTANK:
+		case TASK_FACE_FUNCTANK:
 		{
 			Assert( m_hFuncTank );
 
 			GetMotor()->UpdateYaw();
 
-			if ( GetOuter()->FacingIdeal() )
+			if( GetOuter()->FacingIdeal() )
 			{
 				TaskComplete();
 			}
 			break;
 		}
-	case TASK_HOLSTER_WEAPON:
+		case TASK_HOLSTER_WEAPON:
 		{
 			Assert( m_hFuncTank );
 
-			if ( GetOuter()->IsWeaponHolstered() )
+			if( GetOuter()->IsWeaponHolstered() )
 			{
 				GetOuter()->SpeakSentence( FUNCTANK_SENTENCE_JUST_MOUNTED );
 
@@ -495,7 +513,7 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 
 			break;
 		}
-	case TASK_FIRE_FUNCTANK:
+		case TASK_FIRE_FUNCTANK:
 		{
 			Assert( m_hFuncTank );
 
@@ -504,13 +522,13 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 				TaskComplete();
 			}
 
-			if ( m_hFuncTank->NPC_HasEnemy() )
+			if( m_hFuncTank->NPC_HasEnemy() )
 			{
 				GetOuter()->SetLastAttackTime( gpGlobals->curtime );
 				m_hFuncTank->NPC_Fire();
 
 				// The NPC may have decided to stop using the func_tank, because it's out of ammo.
-				if ( !m_hFuncTank )
+				if( !m_hFuncTank )
 				{
 					TaskComplete();
 					break;
@@ -520,33 +538,33 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 			{
 				TaskComplete();
 			}
-			
+
 			Assert( m_hFuncTank );
 
-			if ( m_hFuncTank->GetAmmoCount() == 0 )
+			if( m_hFuncTank->GetAmmoCount() == 0 )
 			{
 				TaskComplete();
 			}
 			break;
 		}
-	case TASK_SCAN_LEFT_FUNCTANK:
-	case TASK_SCAN_RIGHT_FUNCTANK:
+		case TASK_SCAN_LEFT_FUNCTANK:
+		case TASK_SCAN_RIGHT_FUNCTANK:
 		{
 			GetMotor()->UpdateYaw();
-			if ( GetOuter()->FacingIdeal() )
+			if( GetOuter()->FacingIdeal() )
 			{
 				TaskComplete();
 			}
 			break;
 		}
-	case TASK_FORGET_ABOUT_FUNCTANK:
+		case TASK_FORGET_ABOUT_FUNCTANK:
 		{
 			m_hFuncTank->NPC_InterruptRoute();
 			SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
 			TaskComplete();
 			break;
 		}
-	default:
+		default:
 		{
 			BaseClass::RunTask( pTask );
 			break;
@@ -557,9 +575,9 @@ void CAI_FuncTankBehavior::RunTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CAI_FuncTankBehavior::Event_Killed( const CTakeDamageInfo &info )
+void CAI_FuncTankBehavior::Event_Killed( const CTakeDamageInfo& info )
 {
-	if ( m_hFuncTank )
+	if( m_hFuncTank )
 	{
 		Dismount();
 	}
@@ -573,7 +591,7 @@ void CAI_FuncTankBehavior::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 void CAI_FuncTankBehavior::UpdateOnRemove( void )
 {
-	if ( m_hFuncTank )
+	if( m_hFuncTank )
 	{
 		Dismount();
 	}
@@ -585,24 +603,24 @@ void CAI_FuncTankBehavior::UpdateOnRemove( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CAI_FuncTankBehavior::SetFuncTank( CHandle<CFuncTank> hFuncTank )			
-{ 
-	if ( m_hFuncTank && !hFuncTank )
+void CAI_FuncTankBehavior::SetFuncTank( CHandle<CFuncTank> hFuncTank )
+{
+	if( m_hFuncTank && !hFuncTank )
 	{
 		SetBusy( gpGlobals->curtime + AI_FUNCTANK_BEHAVIOR_BUSYTIME );
 		SetCondition( COND_FUNCTANK_DISMOUNT );
 	}
 
-	m_hFuncTank = hFuncTank; 
+	m_hFuncTank = hFuncTank;
 	GetOuter()->ClearSchedule( "Setting a new func_tank" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_FuncTankBehavior::AimGun( void )
 {
-	if ( m_bMounted && m_hFuncTank)
+	if( m_bMounted && m_hFuncTank )
 	{
 		Vector vecForward;
 		AngleVectors( m_hFuncTank->GetAbsAngles(), &vecForward );
@@ -621,10 +639,10 @@ void CAI_FuncTankBehavior::GatherConditions()
 	BaseClass::GatherConditions();
 
 	// Since we can't pathfind, if we can't see the enemy, he's eluded us
-	// So we deliberately ignore unreachability 
-	if ( GetEnemy() && !HasCondition(COND_SEE_ENEMY) )
+	// So we deliberately ignore unreachability
+	if( GetEnemy() && !HasCondition( COND_SEE_ENEMY ) )
 	{
-		if ( gpGlobals->curtime - GetOuter()->GetEnemyLastTimeSeen() >= 3.0f )
+		if( gpGlobals->curtime - GetOuter()->GetEnemyLastTimeSeen() >= 3.0f )
 		{
 			GetOuter()->MarkEnemyAsEluded();
 		}
@@ -632,9 +650,9 @@ void CAI_FuncTankBehavior::GatherConditions()
 
 #ifdef MAPBASE
 	// So they don't unholster every time there's a tank in the map looking for NPCs
-	if (!m_hFuncTank && m_bMounted)
+	if( !m_hFuncTank && m_bMounted )
 #else
-	if ( !m_hFuncTank )
+	if( !m_hFuncTank )
 #endif
 	{
 		m_bMounted = false;
@@ -646,13 +664,15 @@ void CAI_FuncTankBehavior::GatherConditions()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
+CBaseEntity* CAI_FuncTankBehavior::BestEnemy( void )
 {
 	// Only use this BestEnemy call when we are on the manned gun.
-	if ( !m_hFuncTank ||!IsMounted() )
+	if( !m_hFuncTank || !IsMounted() )
+	{
 		return BaseClass::BestEnemy();
+	}
 
-	CBaseEntity *pBestEnemy	= NULL;
+	CBaseEntity* pBestEnemy	= NULL;
 	int	iBestDistSq	= MAX_COORD_RANGE * MAX_COORD_RANGE;	// so first visible entity will become the closest.
 	int	iBestPriority = -1000;
 	bool bBestUnreachable = false;							// Forces initial check
@@ -663,68 +683,82 @@ CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
 	AIEnemiesIter_t iter;
 
 	// Get the current npc for checking from.
-	CAI_BaseNPC *pNPC = GetOuter();
-	if ( !pNPC )
-		return NULL;
-
-	for( AI_EnemyInfo_t *pEMemory = GetEnemies()->GetFirst( &iter ); pEMemory != NULL; pEMemory = GetEnemies()->GetNext( &iter ) )
+	CAI_BaseNPC* pNPC = GetOuter();
+	if( !pNPC )
 	{
-		CBaseEntity *pEnemy = pEMemory->hEnemy;
-		if ( !pEnemy || !pEnemy->IsAlive() )
+		return NULL;
+	}
+
+	for( AI_EnemyInfo_t* pEMemory = GetEnemies()->GetFirst( &iter ); pEMemory != NULL; pEMemory = GetEnemies()->GetNext( &iter ) )
+	{
+		CBaseEntity* pEnemy = pEMemory->hEnemy;
+		if( !pEnemy || !pEnemy->IsAlive() )
+		{
 			continue;
-		
+		}
+
 		// UNDONE: Move relationship checks into IsValidEnemy?
-		if ( ( pEnemy->GetFlags() & FL_NOTARGET ) || 
-			 ( pNPC->IRelationType( pEnemy ) != D_HT && pNPC->IRelationType( pEnemy ) != D_FR ) ||
-			 !IsValidEnemy( pEnemy ) )
+		if( ( pEnemy->GetFlags() & FL_NOTARGET ) ||
+				( pNPC->IRelationType( pEnemy ) != D_HT && pNPC->IRelationType( pEnemy ) != D_FR ) ||
+				!IsValidEnemy( pEnemy ) )
+		{
 			continue;
+		}
 
-		if ( pEMemory->timeLastSeen < pNPC->GetAcceptableTimeSeenEnemy() )
+		if( pEMemory->timeLastSeen < pNPC->GetAcceptableTimeSeenEnemy() )
+		{
 			continue;
+		}
 
-		if ( pEMemory->timeValidEnemy > gpGlobals->curtime )
+		if( pEMemory->timeValidEnemy > gpGlobals->curtime )
+		{
 			continue;
+		}
 
 		// Skip enemies that have eluded me to prevent infinite loops
-		if ( GetEnemies()->HasEludedMe( pEnemy ) )
+		if( GetEnemies()->HasEludedMe( pEnemy ) )
+		{
 			continue;
+		}
 
 		// Establish the reachability of this enemy
 		bUnreachable = pNPC->IsUnreachable( pEnemy );
 
 		// Check view cone of the view tank here.
 		bUnreachable = !m_hFuncTank->IsEntityInViewCone( pEnemy );
-		if ( !bUnreachable )
+		if( !bUnreachable )
 		{
 			// It's in the viewcone. Now make sure we have LOS to it.
 			bUnreachable = !m_hFuncTank->HasLOSTo( pEnemy );
 		}
 
 		// If best is reachable and current is unreachable, skip the unreachable enemy regardless of priority
-		if ( !bBestUnreachable && bUnreachable )
+		if( !bBestUnreachable && bUnreachable )
+		{
 			continue;
+		}
 
 		//  If best is unreachable and current is reachable, always pick the current regardless of priority
-		if ( bBestUnreachable && !bUnreachable )
+		if( bBestUnreachable && !bUnreachable )
 		{
 			bBestSeen = ( pNPC->GetSenses()->DidSeeEntity( pEnemy ) || pNPC->FVisible( pEnemy ) ); // @TODO (toml 04-02-03): Need to optimize CanSeeEntity() so multiple calls in frame do not recalculate, rather cache
 			iBestPriority = pNPC->IRelationPriority( pEnemy );
-			iBestDistSq = (pEnemy->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
-			pBestEnemy = pEnemy;
-			bBestUnreachable = bUnreachable;
-		}
-		// If both are unreachable or both are reachable, chose enemy based on priority and distance
-		else if ( pNPC->IRelationPriority( pEnemy ) > iBestPriority )
-		{
-			// this entity is disliked MORE than the entity that we
-			// currently think is the best visible enemy. No need to do
-			// a distance check, just get mad at this one for now.
-			iBestPriority = pNPC->IRelationPriority ( pEnemy );
 			iBestDistSq = ( pEnemy->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
 			pBestEnemy = pEnemy;
 			bBestUnreachable = bUnreachable;
 		}
-		else if ( pNPC->IRelationPriority( pEnemy ) == iBestPriority )
+		// If both are unreachable or both are reachable, chose enemy based on priority and distance
+		else if( pNPC->IRelationPriority( pEnemy ) > iBestPriority )
+		{
+			// this entity is disliked MORE than the entity that we
+			// currently think is the best visible enemy. No need to do
+			// a distance check, just get mad at this one for now.
+			iBestPriority = pNPC->IRelationPriority( pEnemy );
+			iBestDistSq = ( pEnemy->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
+			pBestEnemy = pEnemy;
+			bBestUnreachable = bUnreachable;
+		}
+		else if( pNPC->IRelationPriority( pEnemy ) == iBestPriority )
 		{
 			// this entity is disliked just as much as the entity that
 			// we currently think is the best visible enemy, so we only
@@ -733,11 +767,11 @@ CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
 
 			bool bCloser = ( iDistSq < iBestDistSq ) ;
 
-			if ( bCloser || !bBestSeen )
+			if( bCloser || !bBestSeen )
 			{
 				// @TODO (toml 04-02-03): Need to optimize FVisible() so multiple calls in frame do not recalculate, rather cache
 				bool fSeen = ( pNPC->GetSenses()->DidSeeEntity( pEnemy ) || pNPC->FVisible( pEnemy ) );
-				if ( ( bCloser && ( fSeen || !bBestSeen ) ) || ( !bCloser && !bBestSeen && fSeen ) )
+				if( ( bCloser && ( fSeen || !bBestSeen ) ) || ( !bCloser && !bBestSeen && fSeen ) )
 				{
 					bBestSeen = fSeen;
 					iBestDistSq = iDistSq;
@@ -758,102 +792,102 @@ CBaseEntity *CAI_FuncTankBehavior::BestEnemy( void )
 
 AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_FuncTankBehavior )
 
-	DECLARE_TASK( TASK_GET_PATH_TO_FUNCTANK )
-	DECLARE_TASK( TASK_FACE_FUNCTANK )
-	DECLARE_TASK( TASK_HOLSTER_WEAPON )
-	DECLARE_TASK( TASK_FIRE_FUNCTANK )
-	DECLARE_TASK( TASK_SCAN_LEFT_FUNCTANK )
-	DECLARE_TASK( TASK_SCAN_RIGHT_FUNCTANK )
-	DECLARE_TASK( TASK_FORGET_ABOUT_FUNCTANK )
-	DECLARE_TASK( TASK_FUNCTANK_ANNOUNCE_SCAN )
+DECLARE_TASK( TASK_GET_PATH_TO_FUNCTANK )
+DECLARE_TASK( TASK_FACE_FUNCTANK )
+DECLARE_TASK( TASK_HOLSTER_WEAPON )
+DECLARE_TASK( TASK_FIRE_FUNCTANK )
+DECLARE_TASK( TASK_SCAN_LEFT_FUNCTANK )
+DECLARE_TASK( TASK_SCAN_RIGHT_FUNCTANK )
+DECLARE_TASK( TASK_FORGET_ABOUT_FUNCTANK )
+DECLARE_TASK( TASK_FUNCTANK_ANNOUNCE_SCAN )
 
-	DECLARE_CONDITION( COND_FUNCTANK_DISMOUNT )
+DECLARE_CONDITION( COND_FUNCTANK_DISMOUNT )
 #ifdef MAPBASE
 	DECLARE_CONDITION( COND_FUNCTANK_FORCED )
 #endif
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE 
-	(
-		SCHED_MOVE_TO_FUNCTANK,
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_MOVE_TO_FUNCTANK,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE		SCHEDULE: SCHED_FAIL_MOVE_TO_FUNCTANK"
-		"		TASK_GET_PATH_TO_FUNCTANK	0"
-		"		TASK_SPEAK_SENTENCE			1000"	// FUNCTANK_SENTENCE_MOVE_TO_MOUNT
-		"		TASK_RUN_PATH				0"
-		"		TASK_WAIT_FOR_MOVEMENT		0"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_FUNCTANK			0"
-		"		TASK_HOLSTER_WEAPON			0"
-		"	"
-		"	Interrupts"
-		"		COND_FUNCTANK_DISMOUNT"
-	)
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE		SCHEDULE: SCHED_FAIL_MOVE_TO_FUNCTANK"
+	"		TASK_GET_PATH_TO_FUNCTANK	0"
+	"		TASK_SPEAK_SENTENCE			1000"	// FUNCTANK_SENTENCE_MOVE_TO_MOUNT
+	"		TASK_RUN_PATH				0"
+	"		TASK_WAIT_FOR_MOVEMENT		0"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_FUNCTANK			0"
+	"		TASK_HOLSTER_WEAPON			0"
+	"	"
+	"	Interrupts"
+	"		COND_FUNCTANK_DISMOUNT"
+)
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE 
-	(
-		SCHED_FIRE_FUNCTANK,
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_FIRE_FUNCTANK,
 
-		"	Tasks"
-		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"       TASK_FIRE_FUNCTANK      0"
-		"   "
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_LOST_ENEMY"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_WEAPON_BLOCKED_BY_FRIEND"
-		"		COND_WEAPON_SIGHT_OCCLUDED"
-		"		COND_FUNCTANK_DISMOUNT"
-	)
+	"	Tasks"
+	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+	"       TASK_FIRE_FUNCTANK      0"
+	"   "
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_LOST_ENEMY"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_WEAPON_BLOCKED_BY_FRIEND"
+	"		COND_WEAPON_SIGHT_OCCLUDED"
+	"		COND_FUNCTANK_DISMOUNT"
+)
 
-	DEFINE_SCHEDULE 
-	(
-		SCHED_SCAN_WITH_FUNCTANK,
+DEFINE_SCHEDULE
+(
+	SCHED_SCAN_WITH_FUNCTANK,
 
-		"	Tasks"
-		"		TASK_FUNCTANK_ANNOUNCE_SCAN	0"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_WAIT					4"
-		"		TASK_SCAN_LEFT_FUNCTANK		0"
-		"		TASK_WAIT					4"
-		"		TASK_SCAN_RIGHT_FUNCTANK	0"
-		""
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_PROVOKED"
-		"		COND_FUNCTANK_DISMOUNT"
-	)
+	"	Tasks"
+	"		TASK_FUNCTANK_ANNOUNCE_SCAN	0"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_WAIT					4"
+	"		TASK_SCAN_LEFT_FUNCTANK		0"
+	"		TASK_WAIT					4"
+	"		TASK_SCAN_RIGHT_FUNCTANK	0"
+	""
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_PROVOKED"
+	"		COND_FUNCTANK_DISMOUNT"
+)
 
-	DEFINE_SCHEDULE 
-	(
-		SCHED_FAIL_MOVE_TO_FUNCTANK,
+DEFINE_SCHEDULE
+(
+	SCHED_FAIL_MOVE_TO_FUNCTANK,
 
-		"	Tasks"
-		"		TASK_FORGET_ABOUT_FUNCTANK		0"
-		""
-		"	Interrupts"
-	)	
+	"	Tasks"
+	"		TASK_FORGET_ABOUT_FUNCTANK		0"
+	""
+	"	Interrupts"
+)
 
 #ifdef MAPBASE
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE 
-	(
-		SCHED_FORCE_MOUNT_FUNCTANK,
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_FORCE_MOUNT_FUNCTANK,
 
-		"	Tasks"
-		"		TASK_STOP_MOVING			0"
-		"		TASK_FACE_FUNCTANK			0"
-		"		TASK_HOLSTER_WEAPON			0"
-		"	"
-		"	Interrupts"
-	)
+	"	Tasks"
+	"		TASK_STOP_MOVING			0"
+	"		TASK_FACE_FUNCTANK			0"
+	"		TASK_HOLSTER_WEAPON			0"
+	"	"
+	"	Interrupts"
+)
 #endif
 
 AI_END_CUSTOM_SCHEDULE_PROVIDER()

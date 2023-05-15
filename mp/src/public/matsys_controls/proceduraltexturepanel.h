@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define PROCEDURALTEXTUREPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -34,19 +34,19 @@ class CProceduralTexturePanel : public vgui::EditablePanel, public ITextureRegen
 
 public:
 	// constructor
-	CProceduralTexturePanel( vgui::Panel *pParent, const char *pName );
+	CProceduralTexturePanel( vgui::Panel* pParent, const char* pName );
 	~CProceduralTexturePanel();
 
 	// Methods of ITextureRegenerator
 	virtual void Release() {}
-	virtual void RegenerateTextureBits( ITexture *pTexture, IVTFTexture *pVTFTexture, Rect_t *pRect );
+	virtual void RegenerateTextureBits( ITexture* pTexture, IVTFTexture* pVTFTexture, Rect_t* pRect );
 
 	// initialization, shutdown
 	virtual bool Init( int nWidth, int nHeight, bool bAllocateImageBuffer );
 	virtual void Shutdown();
 
 	// Returns the image buffer + dimensions
-	BGRA8888_t *GetImageBuffer();
+	BGRA8888_t* GetImageBuffer();
 	int GetImageWidth() const;
 	int GetImageHeight() const;
 
@@ -54,10 +54,10 @@ public:
 	void DownloadTexture();
 
 	// Sets the rectangle to paint. Use null to fill the entire panel
-	void SetPaintRect( const Rect_t *pPaintRect = NULL );
+	void SetPaintRect( const Rect_t* pPaintRect = NULL );
 
 	// Sets the texcoords to use with the procedural texture
-	void SetTextureSubRect( const Rect_t &subRect );
+	void SetTextureSubRect( const Rect_t& subRect );
 
 	// Maintain proportions when drawing
 	void MaintainProportions( bool bEnable );
@@ -70,7 +70,7 @@ private:
 
 protected:
 	// Image buffer
-	BGRA8888_t *m_pImageBuffer;
+	BGRA8888_t* m_pImageBuffer;
 	int m_nWidth;
 	int m_nHeight;
 

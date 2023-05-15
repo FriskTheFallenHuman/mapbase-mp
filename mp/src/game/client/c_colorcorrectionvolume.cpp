@@ -2,7 +2,7 @@
 //
 // Purpose: Color correction entity.
 //
- // $NoKeywords: $
+// $NoKeywords: $
 //===========================================================================//
 #include "cbase.h"
 
@@ -33,14 +33,14 @@ public:
 	C_ColorCorrectionVolume();
 	virtual ~C_ColorCorrectionVolume();
 
-	void OnDataChanged(DataUpdateType_t updateType);
+	void OnDataChanged( DataUpdateType_t updateType );
 	bool ShouldDraw();
 
 #ifdef MAPBASE // From Alien Swarm SDK
-	void Update( C_BasePlayer *pPlayer, float ccScale );
+	void Update( C_BasePlayer* pPlayer, float ccScale );
 
-	void StartTouch( C_BaseEntity *pOther );
-	void EndTouch( C_BaseEntity *pOther );
+	void StartTouch( C_BaseEntity* pOther );
+	void EndTouch( C_BaseEntity* pOther );
 #else
 	void ClientThink();
 #endif
@@ -62,25 +62,25 @@ private:
 	ClientCCHandle_t m_CCHandle;
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_ColorCorrectionVolume, DT_ColorCorrectionVolume, CColorCorrectionVolume)
+IMPLEMENT_CLIENTCLASS_DT( C_ColorCorrectionVolume, DT_ColorCorrectionVolume, CColorCorrectionVolume )
 #ifdef MAPBASE // From Alien Swarm SDK
 	RecvPropBool( RECVINFO( m_bEnabled ) ),
 	RecvPropFloat( RECVINFO( m_MaxWeight ) ),
 	RecvPropFloat( RECVINFO( m_FadeDuration ) ),
 #endif
-	RecvPropFloat( RECVINFO(m_Weight) ),
-	RecvPropString( RECVINFO(m_lookupFilename) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_Weight ) ),
+			   RecvPropString( RECVINFO( m_lookupFilename ) ),
+			   END_RECV_TABLE()
 
-BEGIN_PREDICTION_DATA( C_ColorCorrectionVolume )
-	DEFINE_PRED_FIELD( m_Weight, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+			   BEGIN_PREDICTION_DATA( C_ColorCorrectionVolume )
+			   DEFINE_PRED_FIELD( m_Weight, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
+			   END_PREDICTION_DATA()
 
 
 //------------------------------------------------------------------------------
 // Constructor, destructor
 //------------------------------------------------------------------------------
-C_ColorCorrectionVolume::C_ColorCorrectionVolume()
+			   C_ColorCorrectionVolume::C_ColorCorrectionVolume()
 {
 	m_CCHandle = INVALID_CLIENT_CCHANDLE;
 }
@@ -96,13 +96,13 @@ C_ColorCorrectionVolume::~C_ColorCorrectionVolume()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_ColorCorrectionVolume::OnDataChanged(DataUpdateType_t updateType)
+void C_ColorCorrectionVolume::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
-		if ( m_CCHandle == INVALID_CLIENT_CCHANDLE )
+		if( m_CCHandle == INVALID_CLIENT_CCHANDLE )
 		{
 #ifdef MAPBASE // From Alien Swarm SDK
 			// forming a unique name without extension
@@ -133,7 +133,7 @@ bool C_ColorCorrectionVolume::ShouldDraw()
 
 #ifdef MAPBASE // From Alien Swarm SDK
 //--------------------------------------------------------------------------------------------------------
-void C_ColorCorrectionVolume::StartTouch( CBaseEntity *pEntity )
+void C_ColorCorrectionVolume::StartTouch( CBaseEntity* pEntity )
 {
 	m_LastEnterTime = gpGlobals->curtime;
 	m_LastEnterWeight = m_Weight;
@@ -141,25 +141,25 @@ void C_ColorCorrectionVolume::StartTouch( CBaseEntity *pEntity )
 
 
 //--------------------------------------------------------------------------------------------------------
-void C_ColorCorrectionVolume::EndTouch( CBaseEntity *pEntity )
+void C_ColorCorrectionVolume::EndTouch( CBaseEntity* pEntity )
 {
 	m_LastExitTime = gpGlobals->curtime;
 	m_LastExitWeight = m_Weight;
 }
 
 
-void C_ColorCorrectionVolume::Update( C_BasePlayer *pPlayer, float ccScale )
+void C_ColorCorrectionVolume::Update( C_BasePlayer* pPlayer, float ccScale )
 {
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		bool isTouching = CollisionProp()->IsPointInBounds( pPlayer->EyePosition() );
 		bool wasTouching = m_LastEnterTime > m_LastExitTime;
 
-		if ( isTouching && !wasTouching )
+		if( isTouching && !wasTouching )
 		{
 			StartTouch( pPlayer );
 		}
-		else if ( !isTouching && wasTouching )
+		else if( !isTouching && wasTouching )
 		{
 			EndTouch( pPlayer );
 		}
@@ -178,9 +178,11 @@ void C_ColorCorrectionVolume::Update( C_BasePlayer *pPlayer, float ccScale )
 			if( m_Weight < 1.0f )
 			{
 				float dt = gpGlobals->curtime - m_LastEnterTime;
-				float weight = m_LastEnterWeight + dt / ((1.0f-m_LastEnterWeight)*m_FadeDuration);
-				if( weight>1.0f )
+				float weight = m_LastEnterWeight + dt / ( ( 1.0f - m_LastEnterWeight ) * m_FadeDuration );
+				if( weight > 1.0f )
+				{
 					weight = 1.0f;
+				}
 
 				m_Weight = weight;
 			}
@@ -192,9 +194,11 @@ void C_ColorCorrectionVolume::Update( C_BasePlayer *pPlayer, float ccScale )
 			if( m_Weight > 0.0f )
 			{
 				float dt = gpGlobals->curtime - m_LastExitTime;
-				float weight = (1.0f-m_LastExitWeight) + dt / (m_LastExitWeight*m_FadeDuration);
-				if( weight>1.0f )
+				float weight = ( 1.0f - m_LastExitWeight ) + dt / ( m_LastExitWeight * m_FadeDuration );
+				if( weight > 1.0f )
+				{
 					weight = 1.0f;
+				}
 
 				m_Weight = 1.0f - weight;
 			}
@@ -206,11 +210,11 @@ void C_ColorCorrectionVolume::Update( C_BasePlayer *pPlayer, float ccScale )
 }
 
 
-void UpdateColorCorrectionVolumes( C_BasePlayer *pPlayer, float ccScale, C_ColorCorrectionVolume **pList, int listCount )
+void UpdateColorCorrectionVolumes( C_BasePlayer* pPlayer, float ccScale, C_ColorCorrectionVolume** pList, int listCount )
 {
-	for ( int i = 0; i < listCount; i++ )
+	for( int i = 0; i < listCount; i++ )
 	{
-		pList[i]->Update(pPlayer, ccScale);
+		pList[i]->Update( pPlayer, ccScale );
 	}
 }
 #else

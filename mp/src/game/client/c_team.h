@@ -8,7 +8,7 @@
 #ifndef C_TEAM_H
 #define C_TEAM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shareddefs.h"
@@ -25,13 +25,13 @@ public:
 	DECLARE_CLIENTCLASS();
 	DECLARE_PREDICTABLE();
 
-					C_Team();
+	C_Team();
 	virtual			~C_Team();
 
 	virtual void	PreDataUpdate( DataUpdateType_t updateType );
 
 	// Data Handling
-	virtual char	*Get_Name( void );
+	virtual char*	Get_Name( void );
 	virtual int		Get_Score( void );
 	virtual int		Get_Deaths( void );
 	virtual int		Get_Ping( void );
@@ -42,11 +42,17 @@ public:
 	C_BasePlayer*	GetPlayer( int idx );
 
 	// for shared code, use the same function name
-	virtual int		GetNumPlayers( void ) { return Get_Number_Players(); }
+	virtual int		GetNumPlayers( void )
+	{
+		return Get_Number_Players();
+	}
 
 	int		GetTeamNumber() const;
 
-	int		GetRoundsWon(void) { return m_iRoundsWon; }
+	int		GetRoundsWon( void )
+	{
+		return m_iRoundsWon;
+	}
 
 	void	RemoveAllPlayers();
 
@@ -74,13 +80,13 @@ public:
 
 
 // Global list of client side team entities
-extern CUtlVector< C_Team * > g_Teams;
+extern CUtlVector< C_Team* > g_Teams;
 
 // Global team handling functions
-C_Team *GetLocalTeam( void );
-C_Team *GetGlobalTeam( int iTeamNumber );
-C_Team *GetPlayersTeam( int iPlayerIndex );
-C_Team *GetPlayersTeam( C_BasePlayer *pPlayer );
+C_Team* GetLocalTeam( void );
+C_Team* GetGlobalTeam( int iTeamNumber );
+C_Team* GetPlayersTeam( int iPlayerIndex );
+C_Team* GetPlayersTeam( C_BasePlayer* pPlayer );
 bool ArePlayersOnSameTeam( int iPlayerIndex1, int iPlayerIndex2 );
 extern int GetNumberOfTeams( void );
 

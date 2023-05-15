@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_ENVPROJECTEDTEXTURE_H
 #define C_ENVPROJECTEDTEXTURE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
@@ -17,7 +17,7 @@
 #ifdef ASW_PROJECTED_TEXTURES
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_EnvProjectedTexture : public C_BaseEntity
 {
@@ -25,7 +25,7 @@ class C_EnvProjectedTexture : public C_BaseEntity
 public:
 	DECLARE_CLIENTCLASS();
 
-	void SetMaterial( IMaterial *pMaterial );
+	void SetMaterial( IMaterial* pMaterial );
 	void SetLightColor( byte r, byte g, byte b, byte a );
 	void SetSize( float flSize );
 	void SetRotation( float flRotation );
@@ -44,9 +44,15 @@ public:
 	C_EnvProjectedTexture();
 	~C_EnvProjectedTexture();
 
-	static void SetVisibleBBoxMinHeight( float flVisibleBBoxMinHeight ) { m_flVisibleBBoxMinHeight = flVisibleBBoxMinHeight; }
-	static float GetVisibleBBoxMinHeight( void ) { return m_flVisibleBBoxMinHeight; }
-	static C_EnvProjectedTexture *Create( );
+	static void SetVisibleBBoxMinHeight( float flVisibleBBoxMinHeight )
+	{
+		m_flVisibleBBoxMinHeight = flVisibleBBoxMinHeight;
+	}
+	static float GetVisibleBBoxMinHeight( void )
+	{
+		return m_flVisibleBBoxMinHeight;
+	}
+	static C_EnvProjectedTexture* Create( );
 
 private:
 
@@ -114,7 +120,7 @@ bool C_EnvProjectedTexture::IsBBoxVisible( void )
 #else
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_EnvProjectedTexture : public C_BaseEntity
 {
@@ -156,7 +162,7 @@ private:
 	bool	m_bCurrentShadow;
 
 public:
-	C_EnvProjectedTexture  *m_pNext;
+	C_EnvProjectedTexture*  m_pNext;
 };
 
 C_EnvProjectedTexture* GetEnvProjectedTextureList();

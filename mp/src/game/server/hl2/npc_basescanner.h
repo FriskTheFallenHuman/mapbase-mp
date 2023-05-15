@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef NPC_BASESCANNER_H
 #define NPC_BASESCANNER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
@@ -60,7 +60,7 @@ enum ScannerInspectAct_t
 #define SCANNER_SQUAD_HELP_DIST			4000	// How far will I fly to help
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_BaseScanner : public CAI_BasePhysicsFlyingBot, public CDefaultPlayerPickupVPhysics
 {
@@ -69,104 +69,122 @@ class CNPC_BaseScanner : public CAI_BasePhysicsFlyingBot, public CDefaultPlayerP
 public:
 	CNPC_BaseScanner();
 
-	void			Spawn(void);
+	void			Spawn( void );
 
 	virtual void	UpdateEfficiency( bool bInPVS );
 
-	Class_T			Classify( void ) { return(CLASS_SCANNER); }
+	Class_T			Classify( void )
+	{
+		return( CLASS_SCANNER );
+	}
 	virtual float	GetAutoAimRadius();
 
-	void			Event_Killed( const CTakeDamageInfo &info );
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	int				OnTakeDamage_Dying( const CTakeDamageInfo &info );
-	void			TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	void			Gib(void);
+	void			Event_Killed( const CTakeDamageInfo& info );
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	int				OnTakeDamage_Dying( const CTakeDamageInfo& info );
+	void			TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	void			Gib( void );
 
 	void			OnStateChange( NPC_STATE eOldState, NPC_STATE eNewState );
-	void			ClampMotorForces( Vector &linear, AngularImpulse &angular );
+	void			ClampMotorForces( Vector& linear, AngularImpulse& angular );
 
-	int				DrawDebugTextOverlays(void);
+	int				DrawDebugTextOverlays( void );
 
 	virtual float	GetHeadTurnRate( void );
 
-	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
+	virtual void	VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
 
 	// 	CDefaultPlayerPickupVPhysics
-	void			OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	void			OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	void			OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	void			OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason );
 
 	bool			ShouldPlayIdleSound( void );
 	void			IdleSound( void );
-	void			DeathSound( const CTakeDamageInfo &info );
+	void			DeathSound( const CTakeDamageInfo& info );
 	void			AlertSound( void );
-	void			PainSound( const CTakeDamageInfo &info );
-	virtual char	*GetScannerSoundPrefix( void ) { return ""; }
-	void			ScannerEmitSound( const char *pszSoundName );
+	void			PainSound( const CTakeDamageInfo& info );
+	virtual char*	GetScannerSoundPrefix( void )
+	{
+		return "";
+	}
+	void			ScannerEmitSound( const char* pszSoundName );
 
-	int				MeleeAttack1Conditions ( float flDot, float flDist );
+	int				MeleeAttack1Conditions( float flDot, float flDist );
 
-	int				SelectSchedule(void);
-	void			StartTask( const Task_t *pTask );
+	int				SelectSchedule( void );
+	void			StartTask( const Task_t* pTask );
 	void			OnScheduleChange( void );
 	void			UpdateOnRemove( void );
 	virtual float	GetMaxSpeed( void );
 
 	void			PostRunStopMoving()	{} // scanner can use "movement" activities but not be moving
 
-	virtual bool	CanBecomeServerRagdoll( void ) { return false;	}
+	virtual bool	CanBecomeServerRagdoll( void )
+	{
+		return false;
+	}
 
 	void			SpeakSentence( int sentenceType );
 
 	bool			IsHeldByPhyscannon( void );
 
 	// Inputs
-	void			InputSetFlightSpeed( inputdata_t &inputdata );
-	void			InputSetDistanceOverride( inputdata_t &inputdata );
+	void			InputSetFlightSpeed( inputdata_t& inputdata );
+	void			InputSetDistanceOverride( inputdata_t& inputdata );
 
 protected:
-	virtual char		*GetEngineSound( void ) { return NULL; }
-	void				PlayFlySound(void);
+	virtual char*		GetEngineSound( void )
+	{
+		return NULL;
+	}
+	void				PlayFlySound( void );
 
 	void				SetBanking( float flInterval );
 	void				UpdateHead( float flInterval );
-	inline CBaseEntity *EntityToWatch( void );
+	inline CBaseEntity* EntityToWatch( void );
 
 	bool				IsEnemyPlayerInSuit( void );
 
 	// Movement
-	virtual bool		OverridePathMove( CBaseEntity *pMoveTarget, float flInterval );
+	virtual bool		OverridePathMove( CBaseEntity* pMoveTarget, float flInterval );
 	virtual bool		OverrideMove( float flInterval );
-	Vector				IdealGoalForMovement( const Vector &goalPos, const Vector &startPos, float idealRange, float idealHeight );
-	virtual void		AdjustScannerVelocity( void ) { return; }
-	virtual void		MoveToAttack(float flInterval);
-	virtual void		MoveToTarget( float flInterval, const Vector &vecMoveTarget );
-	virtual void		MoveExecute_Alive(float flInterval);
-	virtual float		MinGroundDist(void) { return 64; }
-	Vector				VelocityToEvade(CBaseCombatCharacter *pEnemy);
+	Vector				IdealGoalForMovement( const Vector& goalPos, const Vector& startPos, float idealRange, float idealHeight );
+	virtual void		AdjustScannerVelocity( void )
+	{
+		return;
+	}
+	virtual void		MoveToAttack( float flInterval );
+	virtual void		MoveToTarget( float flInterval, const Vector& vecMoveTarget );
+	virtual void		MoveExecute_Alive( float flInterval );
+	virtual float		MinGroundDist( void )
+	{
+		return 64;
+	}
+	Vector				VelocityToEvade( CBaseCombatCharacter* pEnemy );
 	virtual float		GetGoalDistance( void );
 
 	// Divebombing
 	virtual void		AttackDivebomb( void );
 	void				DiveBombSoundThink();
-	void				AttackDivebombCollide(float flInterval);
-	void				MoveToDivebomb(float flInterval);
+	void				AttackDivebombCollide( float flInterval );
+	void				MoveToDivebomb( float flInterval );
 	void				BlendPhyscannonLaunchSpeed();
 
 private:
-	bool	GetGoalDirection( Vector *vOut );
+	bool	GetGoalDirection( Vector* vOut );
 
 	void	StartSmokeTrail( void );
 
-	// Take damage from being thrown by a physcannon 
-	void TakeDamageFromPhyscannon( CBasePlayer *pPlayer );
+	// Take damage from being thrown by a physcannon
+	void TakeDamageFromPhyscannon( CBasePlayer* pPlayer );
 
 	// Take damage from physics impacts
-	void TakeDamageFromPhysicsImpact( int index, gamevcollisionevent_t *pEvent );
+	void TakeDamageFromPhysicsImpact( int index, gamevcollisionevent_t* pEvent );
 
 	// Do we have a physics attacker?
-	CBasePlayer *HasPhysicsAttacker( float dt );
+	CBasePlayer* HasPhysicsAttacker( float dt );
 
-	virtual void		StopLoopingSounds(void);
+	virtual void		StopLoopingSounds( void );
 
 public:
 	// ------------------------
@@ -206,14 +224,14 @@ protected:
 #endif
 
 private:
-	CSoundPatch			*m_pEngineSound;
+	CSoundPatch*			m_pEngineSound;
 
 	// physics influence
 	CHandle<CBasePlayer>	m_hPhysicsAttacker;
 	float					m_flLastPhysicsInfluenceTime;
 
 	// Attacks
-	SmokeTrail			*m_pSmokeTrail;
+	SmokeTrail*			m_pSmokeTrail;
 
 protected:
 	DEFINE_CUSTOM_AI;
@@ -222,7 +240,7 @@ protected:
 	enum
 	{
 		COND_SCANNER_FLY_CLEAR = BaseClass::NEXT_CONDITION,
-		COND_SCANNER_FLY_BLOCKED,							
+		COND_SCANNER_FLY_BLOCKED,
 		COND_SCANNER_GRABBED_BY_PHYSCANNON,
 		COND_SCANNER_RELEASED_FROM_PHYSCANNON,
 

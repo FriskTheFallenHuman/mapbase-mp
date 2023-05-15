@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,7 +9,7 @@
 #if !defined( INPUT_H )
 #define INPUT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "iinput.h"
@@ -21,7 +21,7 @@
 typedef unsigned int CRC32_t;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CKeyboardKey
 {
@@ -29,9 +29,9 @@ public:
 	// Name for key
 	char				name[ 32 ];
 	// Pointer to the underlying structure
-	kbutton_t			*pkey;
+	kbutton_t*			pkey;
 	// Next key in key list.
-	CKeyboardKey		*next;
+	CKeyboardKey*		next;
 };
 
 class ConVar;
@@ -40,29 +40,29 @@ class CInput : public IInput
 {
 // Interface
 public:
-							CInput( void );
-							~CInput( void );
+	CInput( void );
+	~CInput( void );
 
 	virtual		void		Init_All( void );
 	virtual		void		Shutdown_All( void );
 	virtual		int			GetButtonBits( int );
-	virtual		void		CreateMove ( int sequence_number, float input_sample_frametime, bool active );
+	virtual		void		CreateMove( int sequence_number, float input_sample_frametime, bool active );
 	virtual		void		ExtraMouseSample( float frametime, bool active );
-	virtual		bool		WriteUsercmdDeltaToBuffer( bf_write *buf, int from, int to, bool isnewcommand );
+	virtual		bool		WriteUsercmdDeltaToBuffer( bf_write* buf, int from, int to, bool isnewcommand );
 	virtual		void		EncodeUserCmdToBuffer( bf_write& buf, int slot );
 	virtual		void		DecodeUserCmdFromBuffer( bf_read& buf, int slot );
 
-	virtual		CUserCmd	*GetUserCmd( int sequence_number );
+	virtual		CUserCmd*	GetUserCmd( int sequence_number );
 
-	virtual		void		MakeWeaponSelection( C_BaseCombatWeapon *weapon );
+	virtual		void		MakeWeaponSelection( C_BaseCombatWeapon* weapon );
 
-	virtual		float		KeyState( kbutton_t *key );
-	virtual		int			KeyEvent( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
-	virtual		kbutton_t	*FindKey( const char *name );
+	virtual		float		KeyState( kbutton_t* key );
+	virtual		int			KeyEvent( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
+	virtual		kbutton_t*	FindKey( const char* name );
 
 	virtual		void		ControllerCommands( void );
 	virtual		void		Joystick_Advanced( void );
-	virtual		void		Joystick_SetSampleTime(float frametime);
+	virtual		void		Joystick_SetSampleTime( float frametime );
 	virtual		void		IN_SetSampleTime( float frametime );
 
 	virtual		void		AccumulateMouse( void );
@@ -72,7 +72,7 @@ public:
 	virtual		void		ClearStates( void );
 	virtual		float		GetLookSpring( void );
 
-	virtual		void		GetFullscreenMousePos( int *mx, int *my, int *unclampedx = NULL, int *unclampedy = NULL );
+	virtual		void		GetFullscreenMousePos( int* mx, int* my, int* unclampedx = NULL, int* unclampedy = NULL );
 	virtual		void		SetFullscreenMousePos( int mx, int my );
 	virtual		void		ResetMouse( void );
 
@@ -86,12 +86,12 @@ public:
 
 	virtual		void		CAM_Think( void );
 	virtual		int			CAM_IsThirdPerson( void );
-	virtual		void		CAM_ToThirdPerson(void);
-	virtual		void		CAM_ToFirstPerson(void);
-	virtual		void		CAM_StartMouseMove(void);
-	virtual		void		CAM_EndMouseMove(void);
-	virtual		void		CAM_StartDistance(void);
-	virtual		void		CAM_EndDistance(void);
+	virtual		void		CAM_ToThirdPerson( void );
+	virtual		void		CAM_ToFirstPerson( void );
+	virtual		void		CAM_StartMouseMove( void );
+	virtual		void		CAM_EndMouseMove( void );
+	virtual		void		CAM_StartDistance( void );
+	virtual		void		CAM_EndDistance( void );
 	virtual		int			CAM_InterceptingMouse( void );
 
 	// orthographic camera info
@@ -99,17 +99,23 @@ public:
 	virtual		bool		CAM_IsOrthographic() const;
 	virtual		void		CAM_OrthographicSize( float& w, float& h ) const;
 
-	virtual		float		CAM_CapYaw( float fVal ) const { return fVal; }
-	virtual		float		CAM_CapPitch( float fVal ) const { return fVal; }
-	
+	virtual		float		CAM_CapYaw( float fVal ) const
+	{
+		return fVal;
+	}
+	virtual		float		CAM_CapPitch( float fVal ) const
+	{
+		return fVal;
+	}
+
 #if defined( HL2_CLIENT_DLL )
 	// IK back channel info
 	virtual		void		AddIKGroundContactInfo( int entindex, float minheight, float maxheight );
 #endif
 	virtual		void		LevelInit( void );
 
-	virtual		void		CAM_SetCameraThirdData( CameraThirdData_t *pCameraData, const QAngle &vecCameraOffset );
-	virtual		void		CAM_CameraThirdThink( void );	
+	virtual		void		CAM_SetCameraThirdData( CameraThirdData_t* pCameraData, const QAngle& vecCameraOffset );
+	virtual		void		CAM_CameraThirdThink( void );
 
 	virtual	bool		EnableJoystickMode();
 
@@ -121,37 +127,40 @@ protected:
 	void		Init_Mouse( void );
 	void		Shutdown_Keyboard( void );
 	// Add a named key to the list queryable by the engine
-	void		AddKeyButton( const char *name, kbutton_t *pkb );
+	void		AddKeyButton( const char* name, kbutton_t* pkb );
 	// Mouse/keyboard movement input helpers
-	void		ScaleMovements( CUserCmd *cmd );
-	void		ComputeForwardMove( CUserCmd *cmd );
-	void		ComputeUpwardMove( CUserCmd *cmd );
-	void		ComputeSideMove( CUserCmd *cmd );
-	void		AdjustAngles ( float frametime );
+	void		ScaleMovements( CUserCmd* cmd );
+	void		ComputeForwardMove( CUserCmd* cmd );
+	void		ComputeUpwardMove( CUserCmd* cmd );
+	void		ComputeSideMove( CUserCmd* cmd );
+	void		AdjustAngles( float frametime );
 	void		ClampAngles( QAngle& viewangles );
 	void		AdjustPitch( float speed, QAngle& viewangles );
 	virtual void AdjustYaw( float speed, QAngle& viewangles );
 	float		DetermineKeySpeed( float frametime );
-	void		GetAccumulatedMouseDeltasAndResetAccumulators( float *mx, float *my );
-	void		GetMouseDelta( float inmousex, float inmousey, float *pOutMouseX, float *pOutMouseY );
-	void		ScaleMouse( float *x, float *y );
-	virtual void ApplyMouse( QAngle& viewangles, CUserCmd *cmd, float mouse_x, float mouse_y );
-	virtual void MouseMove ( CUserCmd *cmd );
+	void		GetAccumulatedMouseDeltasAndResetAccumulators( float* mx, float* my );
+	void		GetMouseDelta( float inmousex, float inmousey, float* pOutMouseX, float* pOutMouseY );
+	void		ScaleMouse( float* x, float* y );
+	virtual void ApplyMouse( QAngle& viewangles, CUserCmd* cmd, float mouse_x, float mouse_y );
+	virtual void MouseMove( CUserCmd* cmd );
 
 	// Joystick  movement input helpers
-	void		ControllerMove ( float frametime, CUserCmd *cmd );
-	void		JoyStickMove ( float frametime, CUserCmd *cmd );
+	void		ControllerMove( float frametime, CUserCmd* cmd );
+	void		JoyStickMove( float frametime, CUserCmd* cmd );
 	float		ScaleAxisValue( const float axisValue, const float axisThreshold );
-	virtual float JoyStickAdjustYaw( float flSpeed ) { return flSpeed; }
+	virtual float JoyStickAdjustYaw( float flSpeed )
+	{
+		return flSpeed;
+	}
 
 	// Call this to get the cursor position. The call will be logged in the VCR file if there is one.
-	void		GetMousePos(int &x, int &y);
-	void		SetMousePos(int x, int y);
-	void		GetWindowCenter( int&x, int& y );
+	void		GetMousePos( int& x, int& y );
+	void		SetMousePos( int x, int y );
+	void		GetWindowCenter( int& x, int& y );
 	// Called once per frame to allow convar overrides to acceleration settings when mouse is active
 	void		CheckMouseAcclerationVars();
 
-	void		ValidateUserCmd( CUserCmd *usercmd, int sequence_number );
+	void		ValidateUserCmd( CUserCmd* usercmd, int sequence_number );
 
 // Private Data
 private:
@@ -162,8 +171,8 @@ private:
 		unsigned int ControlMap;
 	} joy_axis_t;
 
-	void		DescribeJoystickAxis( char const *axis, joy_axis_t *mapping );
-	char const	*DescribeAxis( int index );
+	void		DescribeJoystickAxis( char const* axis, joy_axis_t* mapping );
+	char const*	DescribeAxis( int index );
 
 	enum
 	{
@@ -220,8 +229,8 @@ private:
 	// Joystick Axis data
 	joy_axis_t m_rgAxes[ MAX_JOYSTICK_AXES ];
 	// List of queryable keys
-	CKeyboardKey *m_pKeys;
-	
+	CKeyboardKey* m_pKeys;
+
 	// Is the 3rd person camera using the mouse?
 	bool		m_fCameraInterceptingMouse;
 	// Are we in 3rd person view?
@@ -229,7 +238,7 @@ private:
 	// Should we move view along with mouse?
 	bool		m_fCameraMovingWithMouse;
 
-	
+
 	// Is the camera in distance moving mode?
 	bool		m_fCameraDistanceMove;
 	// Old and current mouse position readings.
@@ -256,11 +265,11 @@ private:
 		CUserCmd	m_cmd;
 		CRC32_t		m_crc;
 	};
-				
-	CUserCmd	*m_pCommands;
-	CVerifiedUserCmd *m_pVerifiedCommands;
 
-	CameraThirdData_t	*m_pCameraThirdData;
+	CUserCmd*	m_pCommands;
+	CVerifiedUserCmd* m_pVerifiedCommands;
+
+	CameraThirdData_t*	m_pCameraThirdData;
 
 	// Set until polled by CreateMove and cleared
 	CHandle< C_BaseCombatWeapon > m_hSelectedWeapon;
@@ -273,7 +282,7 @@ private:
 extern kbutton_t in_strafe;
 extern kbutton_t in_speed;
 extern kbutton_t in_jlook;
-extern kbutton_t in_graph;  
+extern kbutton_t in_graph;
 extern kbutton_t in_moveleft;
 extern kbutton_t in_moveright;
 extern kbutton_t in_forward;
@@ -283,9 +292,8 @@ extern kbutton_t in_joyspeed;
 extern class ConVar in_joystick;
 extern class ConVar joy_autosprint;
 
-extern void KeyDown( kbutton_t *b, const char *c );
-extern void KeyUp( kbutton_t *b, const char *c );
+extern void KeyDown( kbutton_t* b, const char* c );
+extern void KeyUp( kbutton_t* b, const char* c );
 
 
 #endif // INPUT_H
-	

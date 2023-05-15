@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef GRAPHPANEL_H
 #define GRAPHPANEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -25,31 +25,31 @@ class GraphPanel : public Panel
 	DECLARE_CLASS_SIMPLE( GraphPanel, Panel );
 
 public:
-	GraphPanel(Panel *parent, const char *name);
-	
+	GraphPanel( Panel* parent, const char* name );
+
 	// domain settings (x-axis settings)
 	// sets the window of samples to display
-	void SetDisplayDomainSize(float size);
+	void SetDisplayDomainSize( float size );
 	// sets the range of samples the graph should keep
 	// should be set to the max you would set the display domain size
-	void SetMaxDomainSize(float size);
+	void SetMaxDomainSize( float size );
 	// sets the minimum domain that will be displayed; used to collapse samples
-	void SetMinDomainSize(float size);
+	void SetMinDomainSize( float size );
 
 	// range settings (y-axis settings)
-	void SetUseFixedRange(float lowRange, float highRange);
-	void SetUseDynamicRange(float *rangeList, int numRanges);
-	void GetDisplayedRange(float &lowRange, float &highRange);
+	void SetUseFixedRange( float lowRange, float highRange );
+	void SetUseDynamicRange( float* rangeList, int numRanges );
+	void GetDisplayedRange( float& lowRange, float& highRange );
 
 	// adds an item to the end of the list
 	// sampleEnd is assumed to be the trailing edge of the sample
 	// assumes that the samples are fairly evenly spaced (not much more work to do to fix this though)
-	void AddItem(float sampleEnd, float sampleValue);
+	void AddItem( float sampleEnd, float sampleValue );
 
 protected:
 	virtual void Paint();
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 
 private:
 	int GetVisibleItemCount();

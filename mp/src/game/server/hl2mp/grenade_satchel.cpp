@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -19,30 +19,30 @@
 
 #define	SLAM_SPRITE	"sprites/redglow1.vmt"
 
-ConVar    sk_plr_dmg_satchel		( "sk_plr_dmg_satchel","0");
-ConVar    sk_npc_dmg_satchel		( "sk_npc_dmg_satchel","0");
-ConVar    sk_satchel_radius			( "sk_satchel_radius","0");
+ConVar    sk_plr_dmg_satchel( "sk_plr_dmg_satchel", "0" );
+ConVar    sk_npc_dmg_satchel( "sk_npc_dmg_satchel", "0" );
+ConVar    sk_satchel_radius( "sk_satchel_radius", "0" );
 
 BEGIN_DATADESC( CSatchelCharge )
 
-	DEFINE_FIELD( m_flNextBounceSoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bInAir, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vLastPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_pMyWeaponSLAM, FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_bIsAttached, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_flNextBounceSoundTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_bInAir, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_vLastPosition, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_pMyWeaponSLAM, FIELD_CLASSPTR ),
+			  DEFINE_FIELD( m_bIsAttached, FIELD_BOOLEAN ),
 
-	// Function Pointers
-	DEFINE_THINKFUNC( SatchelThink ),
+			  // Function Pointers
+			  DEFINE_THINKFUNC( SatchelThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Explode", InputExplode),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Explode", InputExplode ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_satchel, CSatchelCharge );
+			  LINK_ENTITY_TO_CLASS( npc_satchel, CSatchelCharge );
 
 //=========================================================
-// Deactivate - do whatever it is we do to an orphaned 
+// Deactivate - do whatever it is we do to an orphaned
 // satchel when we don't want it in the world anymore.
 //=========================================================
 void CSatchelCharge::Deactivate( void )
@@ -50,7 +50,7 @@ void CSatchelCharge::Deactivate( void )
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	UTIL_Remove( this );
 
-	if ( m_hGlowSprite != NULL )
+	if( m_hGlowSprite != NULL )
 	{
 		UTIL_Remove( m_hGlowSprite );
 		m_hGlowSprite = NULL;
@@ -68,7 +68,7 @@ void CSatchelCharge::Spawn( void )
 
 	SetCollisionGroup( COLLISION_GROUP_WEAPON );
 
-	UTIL_SetSize(this, Vector( -6, -6, -2), Vector(6, 6, 2));
+	UTIL_SetSize( this, Vector( -6, -6, -2 ), Vector( 6, 6, 2 ) );
 
 	SetThink( &CSatchelCharge::SatchelThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -98,8 +98,10 @@ void CSatchelCharge::Spawn( void )
 void CSatchelCharge::CreateEffects( void )
 {
 	// Only do this once
-	if ( m_hGlowSprite != NULL )
+	if( m_hGlowSprite != NULL )
+	{
 		return;
+	}
 
 	// Create a blinking light to show we're an active SLAM
 	m_hGlowSprite = CSprite::SpriteCreate( SLAM_SPRITE, GetAbsOrigin(), false );
@@ -115,10 +117,10 @@ void CSatchelCharge::CreateEffects( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CSatchelCharge::InputExplode( inputdata_t &inputdata )
+void CSatchelCharge::InputExplode( inputdata_t& inputdata )
 {
-	ExplosionCreate( GetAbsOrigin() + Vector( 0, 0, 16 ), GetAbsAngles(), GetThrower(), GetDamage(), GetDamageRadius(), 
-		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
+	ExplosionCreate( GetAbsOrigin() + Vector( 0, 0, 16 ), GetAbsAngles(), GetThrower(), GetDamage(), GetDamageRadius(),
+					 SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this );
 
 	UTIL_Remove( this );
 }
@@ -127,14 +129,14 @@ void CSatchelCharge::InputExplode( inputdata_t &inputdata )
 void CSatchelCharge::SatchelThink( void )
 {
 	// If attached resize so player can pick up off wall
-	if (m_bIsAttached)
+	if( m_bIsAttached )
 	{
-		UTIL_SetSize(this, Vector( -2, -2, -6), Vector(2, 2, 6));
+		UTIL_SetSize( this, Vector( -2, -2, -6 ), Vector( 2, 2, 6 ) );
 	}
 
 	// See if I can lose my owner (has dropper moved out of way?)
 	// Want do this so owner can shoot the satchel charge
-	if (GetOwnerEntity())
+	if( GetOwnerEntity() )
 	{
 		trace_t tr;
 		Vector	vUpABit = GetAbsOrigin();
@@ -143,15 +145,15 @@ void CSatchelCharge::SatchelThink( void )
 		CBaseEntity* saveOwner	= GetOwnerEntity();
 		SetOwnerEntity( NULL );
 		UTIL_TraceEntity( this, GetAbsOrigin(), vUpABit, MASK_SOLID, &tr );
-		if ( tr.startsolid || tr.fraction != 1.0 )
+		if( tr.startsolid || tr.fraction != 1.0 )
 		{
 			SetOwnerEntity( saveOwner );
 		}
 	}
-	
-	// Bounce movement code gets this think stuck occasionally so check if I've 
+
+	// Bounce movement code gets this think stuck occasionally so check if I've
 	// succeeded in moving, otherwise kill my motions.
-	else if ((GetAbsOrigin() - m_vLastPosition).LengthSqr()<1)
+	else if( ( GetAbsOrigin() - m_vLastPosition ).LengthSqr() < 1 )
 	{
 		SetAbsVelocity( vec3_origin );
 
@@ -160,22 +162,22 @@ void CSatchelCharge::SatchelThink( void )
 		SetLocalAngularVelocity( angVel );
 
 		// Clear think function
-		SetThink(NULL);
+		SetThink( NULL );
 		return;
 	}
-	m_vLastPosition= GetAbsOrigin();
+	m_vLastPosition = GetAbsOrigin();
 
 	StudioFrameAdvance( );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	if (!IsInWorld())
+	if( !IsInWorld() )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
 	// Is it attached to a wall?
-	if (m_bIsAttached)
+	if( m_bIsAttached )
 	{
 		return;
 	}
@@ -183,13 +185,13 @@ void CSatchelCharge::SatchelThink( void )
 
 void CSatchelCharge::Precache( void )
 {
-	PrecacheModel("models/Weapons/w_slam.mdl");
-	PrecacheModel(SLAM_SPRITE);
+	PrecacheModel( "models/Weapons/w_slam.mdl" );
+	PrecacheModel( SLAM_SPRITE );
 }
 
 void CSatchelCharge::BounceSound( void )
 {
-	if (gpGlobals->curtime > m_flNextBounceSoundTime)
+	if( gpGlobals->curtime > m_flNextBounceSoundTime )
 	{
 		m_flNextBounceSoundTime = gpGlobals->curtime + 0.1;
 	}
@@ -200,15 +202,15 @@ void CSatchelCharge::BounceSound( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CSatchelCharge::CSatchelCharge(void)
+CSatchelCharge::CSatchelCharge( void )
 {
 	m_vLastPosition.Init();
 	m_pMyWeaponSLAM = NULL;
 }
 
-CSatchelCharge::~CSatchelCharge(void)
+CSatchelCharge::~CSatchelCharge( void )
 {
-	if ( m_hGlowSprite != NULL )
+	if( m_hGlowSprite != NULL )
 	{
 		UTIL_Remove( m_hGlowSprite );
 		m_hGlowSprite = NULL;

@@ -8,13 +8,13 @@
 
 #include "cbase.h"
 #if POSIX || _MSC_VER >= 1900
-#include <typeinfo>
+	#include <typeinfo>
 #elif defined(_WIN32)
-#include "typeinfo.h"
-// BUGBUG: typeinfo stomps some of the warning settings (in yvals.h)
-#pragma warning(disable:4244)
+	#include "typeinfo.h"
+	// BUGBUG: typeinfo stomps some of the warning settings (in yvals.h)
+	#pragma warning(disable:4244)
 #else
-#error "need typeinfo defined"
+	#error "need typeinfo defined"
 #endif
 
 #include "player.h"
@@ -39,24 +39,24 @@
 
 extern ConVar think_limit;
 #ifdef _XBOX
-ConVar vprof_think_limit( "vprof_think_limit", "0" );
+	ConVar vprof_think_limit( "vprof_think_limit", "0" );
 #endif
 
 ConVar vprof_scope_entity_thinks( "vprof_scope_entity_thinks", "0" );
 ConVar vprof_scope_entity_gamephys( "vprof_scope_entity_gamephys", "0" );
 
-ConVar	npc_vphysics	( "npc_vphysics","0");
+ConVar	npc_vphysics( "npc_vphysics", "0" );
 //-----------------------------------------------------------------------------
 // helper method for trace hull as used by physics...
 //-----------------------------------------------------------------------------
-static void Physics_TraceEntity( CBaseEntity* pBaseEntity, const Vector &vecAbsStart,
-	const Vector &vecAbsEnd, unsigned int mask, trace_t *ptr )
+static void Physics_TraceEntity( CBaseEntity* pBaseEntity, const Vector& vecAbsStart,
+								 const Vector& vecAbsEnd, unsigned int mask, trace_t* ptr )
 {
 	// FIXME: I really am not sure the best way of doing this
 	// The TraceHull code below for shots will make sure the object passes
-	// through shields which do not block that damage type. It will also 
+	// through shields which do not block that damage type. It will also
 	// send messages to the shields that they've been hit.
-	if (pBaseEntity->GetDamageType() != DMG_GENERIC)
+	if( pBaseEntity->GetDamageType() != DMG_GENERIC )
 	{
 		GameRules()->WeaponTraceEntity( pBaseEntity, vecAbsStart, vecAbsEnd, mask, ptr );
 	}
@@ -69,10 +69,10 @@ static void Physics_TraceEntity( CBaseEntity* pBaseEntity, const Vector &vecAbsS
 
 //-----------------------------------------------------------------------------
 // Purpose: Does not change the entities velocity at all
-// Input  : push - 
+// Input  : push -
 // Output : trace_t
 //-----------------------------------------------------------------------------
-static void PhysicsCheckSweep( CBaseEntity *pEntity, const Vector& vecAbsStart, const Vector &vecAbsDelta, trace_t *pTrace )
+static void PhysicsCheckSweep( CBaseEntity* pEntity, const Vector& vecAbsStart, const Vector& vecAbsDelta, trace_t* pTrace )
 {
 	unsigned int mask = pEntity->PhysicsSolidMaskForEntity();
 
@@ -80,9 +80,9 @@ static void PhysicsCheckSweep( CBaseEntity *pEntity, const Vector& vecAbsStart, 
 	VectorAdd( vecAbsStart, vecAbsDelta, vecAbsEnd );
 
 	// Set collision type
-	if ( !pEntity->IsSolid() || pEntity->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS) )
+	if( !pEntity->IsSolid() || pEntity->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 	{
-		if ( pEntity->GetMoveParent() )
+		if( pEntity->GetMoveParent() )
 		{
 			UTIL_ClearTrace( *pTrace );
 			return;
@@ -97,13 +97,13 @@ static void PhysicsCheckSweep( CBaseEntity *pEntity, const Vector& vecAbsStart, 
 
 CPhysicsPushedEntities s_PushedEntities;
 #ifndef TF_DLL
-CPhysicsPushedEntities *g_pPushedEntities = &s_PushedEntities;
+	CPhysicsPushedEntities* g_pPushedEntities = &s_PushedEntities;
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CPhysicsPushedEntities::CPhysicsPushedEntities( void ) : m_rgPusher(8, 8), m_rgMoved(32, 32)
+CPhysicsPushedEntities::CPhysicsPushedEntities( void ) : m_rgPusher( 8, 8 ), m_rgMoved( 32, 32 )
 {
 	m_flMoveTime = -1.0f;
 }
@@ -111,7 +111,7 @@ CPhysicsPushedEntities::CPhysicsPushedEntities( void ) : m_rgPusher(8, 8), m_rgM
 //-----------------------------------------------------------------------------
 // Purpose: Store off entity and copy original origin to temporary array
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::AddEntity( CBaseEntity *ent )
+void CPhysicsPushedEntities::AddEntity( CBaseEntity* ent )
 {
 	int i = m_rgMoved.AddToTail();
 	m_rgMoved[i].m_pEntity = ent;
@@ -122,17 +122,17 @@ void CPhysicsPushedEntities::AddEntity( CBaseEntity *ent )
 //-----------------------------------------------------------------------------
 // Unlink + relink the pusher list so we can actually do the push
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::UnlinkPusherList( int *pPusherHandles )
+void CPhysicsPushedEntities::UnlinkPusherList( int* pPusherHandles )
 {
-	for ( int i = m_rgPusher.Count(); --i >= 0; )
+	for( int i = m_rgPusher.Count(); --i >= 0; )
 	{
 		pPusherHandles[i] = partition->HideElement( m_rgPusher[i].m_pEntity->CollisionProp()->GetPartitionHandle() );
 	}
 }
 
-void CPhysicsPushedEntities::RelinkPusherList( int *pPusherHandles )
+void CPhysicsPushedEntities::RelinkPusherList( int* pPusherHandles )
 {
-	for ( int i = m_rgPusher.Count(); --i >= 0; )
+	for( int i = m_rgPusher.Count(); --i >= 0; )
 	{
 		partition->UnhideElement( m_rgPusher[i].m_pEntity->CollisionProp()->GetPartitionHandle(), pPusherHandles[i] );
 	}
@@ -142,24 +142,24 @@ void CPhysicsPushedEntities::RelinkPusherList( int *pPusherHandles )
 //-----------------------------------------------------------------------------
 // Compute the direction to move the rotation blocker
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::ComputeRotationalPushDirection( CBaseEntity *pBlocker, const RotatingPushMove_t &rotPushMove, Vector *pMove, CBaseEntity *pRoot )
+void CPhysicsPushedEntities::ComputeRotationalPushDirection( CBaseEntity* pBlocker, const RotatingPushMove_t& rotPushMove, Vector* pMove, CBaseEntity* pRoot )
 {
 	// calculate destination position
 	// "start" is relative to the *root* pusher, world orientation
 	Vector start = pBlocker->CollisionProp()->GetCollisionOrigin();
-	if ( pRoot->GetSolid() == SOLID_VPHYSICS )
+	if( pRoot->GetSolid() == SOLID_VPHYSICS )
 	{
 		// HACKHACK: Use move dir to guess which corner of the box determines contact and rotate the box so
 		// that corner remains in the same local position.
 		// BUGBUG: This will break, but not as badly as the previous solution!!!
 		Vector vecAbsMins, vecAbsMaxs;
 		pBlocker->CollisionProp()->WorldSpaceAABB( &vecAbsMins, &vecAbsMaxs );
-		start.x = (pMove->x < 0) ? vecAbsMaxs.x : vecAbsMins.x;
-		start.y = (pMove->y < 0) ? vecAbsMaxs.y : vecAbsMins.y;
-		start.z = (pMove->z < 0) ? vecAbsMaxs.z : vecAbsMins.z;
-		
-		CBasePlayer *pPlayer = ToBasePlayer(pBlocker);
-		if ( pPlayer )
+		start.x = ( pMove->x < 0 ) ? vecAbsMaxs.x : vecAbsMins.x;
+		start.y = ( pMove->y < 0 ) ? vecAbsMaxs.y : vecAbsMins.y;
+		start.z = ( pMove->z < 0 ) ? vecAbsMaxs.z : vecAbsMins.z;
+
+		CBasePlayer* pPlayer = ToBasePlayer( pBlocker );
+		if( pPlayer )
 		{
 			// notify the player physics code so it can use vphysics to keep players from getting stuck
 			pPlayer->SetPhysicsFlag( PFLAG_GAMEPHYSICS_ROTPUSH, true );
@@ -183,30 +183,32 @@ class CTraceFilterPushFinal : public CTraceFilterSimple
 	DECLARE_CLASS( CTraceFilterPushFinal, CTraceFilterSimple );
 
 public:
-	CTraceFilterPushFinal( CBaseEntity *pEntity, int nCollisionGroup ) 
+	CTraceFilterPushFinal( CBaseEntity* pEntity, int nCollisionGroup )
 		: CTraceFilterSimple( pEntity, nCollisionGroup )
 	{
-	
+
 	}
 
-	bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
+	bool ShouldHitEntity( IHandleEntity* pHandleEntity, int contentsMask )
 	{
-		Assert( dynamic_cast<CBaseEntity*>(pHandleEntity) );
-		CBaseEntity *pTestEntity = static_cast<CBaseEntity*>(pHandleEntity);
+		Assert( dynamic_cast<CBaseEntity*>( pHandleEntity ) );
+		CBaseEntity* pTestEntity = static_cast<CBaseEntity*>( pHandleEntity );
 
 		// UNDONE: This should really filter to just the pushing entities
-		if ( pTestEntity->GetMoveType() == MOVETYPE_VPHYSICS && 
-			pTestEntity->VPhysicsGetObject() && pTestEntity->VPhysicsGetObject()->IsMoveable() )
+		if( pTestEntity->GetMoveType() == MOVETYPE_VPHYSICS &&
+				pTestEntity->VPhysicsGetObject() && pTestEntity->VPhysicsGetObject()->IsMoveable() )
+		{
 			return false;
+		}
 
 		return BaseClass::ShouldHitEntity( pHandleEntity, contentsMask );
 	}
 
 };
 
-bool CPhysicsPushedEntities::IsPushedPositionValid( CBaseEntity *pBlocker )
+bool CPhysicsPushedEntities::IsPushedPositionValid( CBaseEntity* pBlocker )
 {
-	CTraceFilterPushFinal pushFilter(pBlocker, pBlocker->GetCollisionGroup() );
+	CTraceFilterPushFinal pushFilter( pBlocker, pBlocker->GetCollisionGroup() );
 
 	trace_t trace;
 	UTIL_TraceEntity( pBlocker, pBlocker->GetAbsOrigin(), pBlocker->GetAbsOrigin(), pBlocker->PhysicsSolidMaskForEntity(), &pushFilter, &trace );
@@ -217,53 +219,53 @@ bool CPhysicsPushedEntities::IsPushedPositionValid( CBaseEntity *pBlocker )
 //-----------------------------------------------------------------------------
 // Speculatively checks to see if all entities in this list can be pushed
 //-----------------------------------------------------------------------------
-bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, const Vector &vecAbsPush, bool bRotationalPush )
+bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t& info, const Vector& vecAbsPush, bool bRotationalPush )
 {
-	CBaseEntity *pBlocker = info.m_pEntity;
+	CBaseEntity* pBlocker = info.m_pEntity;
 
 	// See if it's possible to move the entity, but disable all pushers in the hierarchy first
-	int *pPusherHandles = (int*)stackalloc( m_rgPusher.Count() * sizeof(int) );
+	int* pPusherHandles = ( int* )stackalloc( m_rgPusher.Count() * sizeof( int ) );
 	UnlinkPusherList( pPusherHandles );
-	CTraceFilterPushMove pushFilter(pBlocker, pBlocker->GetCollisionGroup() );
+	CTraceFilterPushMove pushFilter( pBlocker, pBlocker->GetCollisionGroup() );
 
 	Vector pushDestPosition = pBlocker->GetAbsOrigin() + vecAbsPush;
-	UTIL_TraceEntity( pBlocker, pBlocker->GetAbsOrigin(), pushDestPosition, 
-		pBlocker->PhysicsSolidMaskForEntity(), &pushFilter, &info.m_Trace );
+	UTIL_TraceEntity( pBlocker, pBlocker->GetAbsOrigin(), pushDestPosition,
+					  pBlocker->PhysicsSolidMaskForEntity(), &pushFilter, &info.m_Trace );
 
-	RelinkPusherList(pPusherHandles);
+	RelinkPusherList( pPusherHandles );
 	info.m_bPusherIsGround = false;
-	if ( pBlocker->GetGroundEntity() && pBlocker->GetGroundEntity()->GetRootMoveParent() == m_rgPusher[0].m_pEntity )
+	if( pBlocker->GetGroundEntity() && pBlocker->GetGroundEntity()->GetRootMoveParent() == m_rgPusher[0].m_pEntity )
 	{
 		info.m_bPusherIsGround = true;
 	}
 
-	bool bIsUnblockable = (m_bIsUnblockableByPlayer && (pBlocker->IsPlayer() || pBlocker->MyNPCPointer())) ? true : false;
-	if ( bIsUnblockable )
+	bool bIsUnblockable = ( m_bIsUnblockableByPlayer && ( pBlocker->IsPlayer() || pBlocker->MyNPCPointer() ) ) ? true : false;
+	if( bIsUnblockable )
 	{
 		pBlocker->SetAbsOrigin( pushDestPosition );
 	}
 	else
 	{
 		// Move the blocker into its new position
-		if ( info.m_Trace.fraction )
+		if( info.m_Trace.fraction )
 		{
 			pBlocker->SetAbsOrigin( info.m_Trace.endpos );
 		}
 
 		// We're not blocked if the blocker is point-sized or non-solid
-		if ( pBlocker->IsPointSized() || !pBlocker->IsSolid() || 
-			pBlocker->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+		if( pBlocker->IsPointSized() || !pBlocker->IsSolid() ||
+				pBlocker->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 		{
 			return true;
 		}
 
-		if ( (!bRotationalPush) && (info.m_Trace.fraction == 1.0) )
+		if( ( !bRotationalPush ) && ( info.m_Trace.fraction == 1.0 ) )
 		{
 			//Assert( pBlocker->PhysicsTestEntityPosition() == false );
-			if ( !IsPushedPositionValid(pBlocker) )
+			if( !IsPushedPositionValid( pBlocker ) )
 			{
-				Warning("Interpenetrating entities! (%s and %s)\n",
-					pBlocker->GetClassname(), m_rgPusher[0].m_pEntity->GetClassname() );
+				Warning( "Interpenetrating entities! (%s and %s)\n",
+						 pBlocker->GetClassname(), m_rgPusher[0].m_pEntity->GetClassname() );
 			}
 
 			return true;
@@ -272,31 +274,35 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 
 	// Check to see if we're still blocked by the pushers
 	// FIXME: If the trace fraction == 0 can we early out also?
-	info.m_bBlocked = !IsPushedPositionValid(pBlocker);
+	info.m_bBlocked = !IsPushedPositionValid( pBlocker );
 
-	if ( !info.m_bBlocked )
+	if( !info.m_bBlocked )
+	{
 		return true;
+	}
 
 	// if the player is blocking the train try nudging him around to fix accumulated error
-	if ( bIsUnblockable )
+	if( bIsUnblockable )
 	{
 		Vector org = pBlocker->GetAbsOrigin();
-		for ( int checkCount = 0; checkCount < 4; checkCount++ )
+		for( int checkCount = 0; checkCount < 4; checkCount++ )
 		{
 			Vector move;
-			MatrixGetColumn( m_rgPusher[0].m_pEntity->EntityToWorldTransform(), checkCount>>1, move );
-			
+			MatrixGetColumn( m_rgPusher[0].m_pEntity->EntityToWorldTransform(), checkCount >> 1, move );
+
 			// alternate movements 1/2" in each direction
 			float factor = ( checkCount & 1 ) ? -0.5f : 0.5f;
 			pBlocker->SetAbsOrigin( org + move * factor );
-			info.m_bBlocked = !IsPushedPositionValid(pBlocker);
-			if ( !info.m_bBlocked )
+			info.m_bBlocked = !IsPushedPositionValid( pBlocker );
+			if( !info.m_bBlocked )
+			{
 				return true;
+			}
 		}
 		pBlocker->SetAbsOrigin( pushDestPosition );
 
 #ifndef TF_DLL
-		DevMsg(1, "Ignoring player blocking train!\n");
+		DevMsg( 1, "Ignoring player blocking train!\n" );
 #endif
 		return true;
 	}
@@ -307,14 +313,14 @@ bool CPhysicsPushedEntities::SpeculativelyCheckPush( PhysicsPushedInfo_t &info, 
 //-----------------------------------------------------------------------------
 // Speculatively checks to see if all entities in this list can be pushed
 //-----------------------------------------------------------------------------
-bool CPhysicsPushedEntities::SpeculativelyCheckRotPush( const RotatingPushMove_t &rotPushMove, CBaseEntity *pRoot )
+bool CPhysicsPushedEntities::SpeculativelyCheckRotPush( const RotatingPushMove_t& rotPushMove, CBaseEntity* pRoot )
 {
 	Vector vecAbsPush;
 	m_nBlocker = -1;
-	for (int i = m_rgMoved.Count(); --i >= 0; )
+	for( int i = m_rgMoved.Count(); --i >= 0; )
 	{
 		ComputeRotationalPushDirection( m_rgMoved[i].m_pEntity, rotPushMove, &vecAbsPush, pRoot );
-		if (!SpeculativelyCheckPush( m_rgMoved[i], vecAbsPush, true ))
+		if( !SpeculativelyCheckPush( m_rgMoved[i], vecAbsPush, true ) )
 		{
 			m_nBlocker = i;
 			return false;
@@ -328,12 +334,12 @@ bool CPhysicsPushedEntities::SpeculativelyCheckRotPush( const RotatingPushMove_t
 //-----------------------------------------------------------------------------
 // Speculatively checks to see if all entities in this list can be pushed
 //-----------------------------------------------------------------------------
-bool CPhysicsPushedEntities::SpeculativelyCheckLinearPush( const Vector &vecAbsPush )
+bool CPhysicsPushedEntities::SpeculativelyCheckLinearPush( const Vector& vecAbsPush )
 {
 	m_nBlocker = -1;
-	for (int i = m_rgMoved.Count(); --i >= 0; )
+	for( int i = m_rgMoved.Count(); --i >= 0; )
 	{
-		if (!SpeculativelyCheckPush( m_rgMoved[i], vecAbsPush, false ))
+		if( !SpeculativelyCheckPush( m_rgMoved[i], vecAbsPush, false ) )
 		{
 			m_nBlocker = i;
 			return false;
@@ -351,9 +357,9 @@ void CPhysicsPushedEntities::FinishPushers()
 {
 	// We succeeded! Now that we know the final location of all entities,
 	// touch triggers + update physics objects + do other fixup
-	for ( int i = m_rgPusher.Count(); --i >= 0; )
+	for( int i = m_rgPusher.Count(); --i >= 0; )
 	{
-		PhysicsPusherInfo_t &info = m_rgPusher[i];
+		PhysicsPusherInfo_t& info = m_rgPusher[i];
 
 		// Cause touch functions to be called
 		// FIXME: Need to make moved entities not touch triggers until we know we're ok
@@ -368,17 +374,17 @@ void CPhysicsPushedEntities::FinishPushers()
 //-----------------------------------------------------------------------------
 // Causes all entities in the list to touch triggers from their prev position
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::FinishRotPushedEntity( CBaseEntity *pPushedEntity, const RotatingPushMove_t &rotPushMove )
+void CPhysicsPushedEntities::FinishRotPushedEntity( CBaseEntity* pPushedEntity, const RotatingPushMove_t& rotPushMove )
 {
 	// Impart angular velocity of push onto pushed objects
-	if ( pPushedEntity->IsPlayer() )
+	if( pPushedEntity->IsPlayer() )
 	{
 		QAngle angVel = pPushedEntity->GetLocalAngularVelocity();
 		angVel[1] = rotPushMove.amove[1];
-		pPushedEntity->SetLocalAngularVelocity(angVel);
+		pPushedEntity->SetLocalAngularVelocity( angVel );
 
 		// Look up associated client
-		CBasePlayer *player = ( CBasePlayer * )pPushedEntity;
+		CBasePlayer* player = ( CBasePlayer* )pPushedEntity;
 		player->pl.fixangle = FIXANGLE_RELATIVE;
 		// Because we can run multiple ticks per server frame, accumulate a total offset here instead of straight
 		//  setting it.  The engine will reset anglechange to 0 when the message is actually sent to the client
@@ -387,7 +393,7 @@ void CPhysicsPushedEntities::FinishRotPushedEntity( CBaseEntity *pPushedEntity, 
 	else
 	{
 		QAngle angles = pPushedEntity->GetAbsAngles();
-		
+
 		// only rotate YAW with pushing.  Freely rotateable entities should either use VPHYSICS
 		// or be set up as children
 		angles.y += rotPushMove.amove.y;
@@ -399,33 +405,33 @@ void CPhysicsPushedEntities::FinishRotPushedEntity( CBaseEntity *pPushedEntity, 
 //-----------------------------------------------------------------------------
 // Causes all entities in the list to touch triggers from their prev position
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::FinishPush( bool bIsRotPush, const RotatingPushMove_t *pRotPushMove )
+void CPhysicsPushedEntities::FinishPush( bool bIsRotPush, const RotatingPushMove_t* pRotPushMove )
 {
 	FinishPushers();
 
-	for ( int i = m_rgMoved.Count(); --i >= 0; )
+	for( int i = m_rgMoved.Count(); --i >= 0; )
 	{
-		PhysicsPushedInfo_t &info = m_rgMoved[i];
-		CBaseEntity *pPushedEntity = info.m_pEntity;
+		PhysicsPushedInfo_t& info = m_rgMoved[i];
+		CBaseEntity* pPushedEntity = info.m_pEntity;
 
 		// Cause touch functions to be called
 		// FIXME: it'd be better for the engine to just have a touch method
 		info.m_pEntity->PhysicsTouchTriggers( &info.m_vecStartAbsOrigin );
 		info.m_pEntity->UpdatePhysicsShadowToCurrentPosition( gpGlobals->frametime );
-		CAI_BaseNPC *pNPC = info.m_pEntity->MyNPCPointer();
-		if ( info.m_bPusherIsGround && pNPC )
+		CAI_BaseNPC* pNPC = info.m_pEntity->MyNPCPointer();
+		if( info.m_bPusherIsGround && pNPC )
 		{
 			pNPC->NotifyPushMove();
 		}
 
 
 		// Register physics impacts...
-		if (info.m_Trace.m_pEnt)
+		if( info.m_Trace.m_pEnt )
 		{
 			pPushedEntity->PhysicsImpact( info.m_Trace.m_pEnt, info.m_Trace );
 		}
 
-		if (bIsRotPush)
+		if( bIsRotPush )
 		{
 			FinishRotPushedEntity( pPushedEntity, *pRotPushMove );
 		}
@@ -433,7 +439,7 @@ void CPhysicsPushedEntities::FinishPush( bool bIsRotPush, const RotatingPushMove
 }
 
 // save initial state when beginning a push sequence
-void CPhysicsPushedEntities::BeginPush( CBaseEntity *pRoot )
+void CPhysicsPushedEntities::BeginPush( CBaseEntity* pRoot )
 {
 	m_rgMoved.RemoveAll();
 	m_rgPusher.RemoveAll();
@@ -444,18 +450,18 @@ void CPhysicsPushedEntities::BeginPush( CBaseEntity *pRoot )
 }
 
 // store off a list of what has changed - so vphysicsUpdate can undo this if the object gets blocked
-void CPhysicsPushedEntities::StoreMovedEntities( physicspushlist_t &list )
+void CPhysicsPushedEntities::StoreMovedEntities( physicspushlist_t& list )
 {
 	list.localMoveTime = m_rootPusherStartLocaltime;
 	list.localOrigin = m_rootPusherStartLocalOrigin;
 	list.localAngles = m_rootPusherStartLocalAngles;
 	list.pushedCount = CountMovedEntities();
-	Assert(list.pushedCount < ARRAYSIZE(list.pushedEnts));
-	if ( list.pushedCount > ARRAYSIZE(list.pushedEnts) )
+	Assert( list.pushedCount < ARRAYSIZE( list.pushedEnts ) );
+	if( list.pushedCount > ARRAYSIZE( list.pushedEnts ) )
 	{
-		list.pushedCount = ARRAYSIZE(list.pushedEnts);
+		list.pushedCount = ARRAYSIZE( list.pushedEnts );
 	}
-	for ( int i = 0; i < list.pushedCount; i++ )
+	for( int i = 0; i < list.pushedCount; i++ )
 	{
 		list.pushedEnts[i] = m_rgMoved[i].m_pEntity;
 		list.pushVec[i] = m_rgMoved[i].m_pEntity->GetAbsOrigin() - m_rgMoved[i].m_vecStartAbsOrigin;
@@ -465,18 +471,18 @@ void CPhysicsPushedEntities::StoreMovedEntities( physicspushlist_t &list )
 //-----------------------------------------------------------------------------
 // Registers a blockage
 //-----------------------------------------------------------------------------
-CBaseEntity *CPhysicsPushedEntities::RegisterBlockage()
+CBaseEntity* CPhysicsPushedEntities::RegisterBlockage()
 {
 	Assert(	m_nBlocker >= 0 );
 
 	// Generate a PhysicsImpact against the blocker...
-	PhysicsPushedInfo_t &info = m_rgMoved[m_nBlocker];
-	if ( info.m_Trace.m_pEnt )
+	PhysicsPushedInfo_t& info = m_rgMoved[m_nBlocker];
+	if( info.m_Trace.m_pEnt )
 	{
 		info.m_pEntity->PhysicsImpact( info.m_Trace.m_pEnt, info.m_Trace );
 	}
 
-	// This is the dude 
+	// This is the dude
 	return info.m_pEntity;
 }
 
@@ -484,12 +490,12 @@ CBaseEntity *CPhysicsPushedEntities::RegisterBlockage()
 //-----------------------------------------------------------------------------
 // Purpose: Restore entities that might have been moved
 // Input  : fromrotation - if the move is from a rotation, then angular move must also be reverted
-//			*amove - 
+//			*amove -
 //-----------------------------------------------------------------------------
 void CPhysicsPushedEntities::RestoreEntities( )
 {
 	// Reset all of the pushed entities to get them back into place also
-	for ( int i = m_rgMoved.Count(); --i >= 0; )
+	for( int i = m_rgMoved.Count(); --i >= 0; )
 	{
 		m_rgMoved[ i ].m_pEntity->SetAbsOrigin( m_rgMoved[ i ].m_vecStartAbsOrigin );
 	}
@@ -504,12 +510,14 @@ void CPhysicsPushedEntities::RestoreEntities( )
 class CTraceFilterAgainstEntityList : public ITraceFilter
 {
 public:
-	virtual bool ShouldHitEntity( IHandleEntity *pEntity, int contentsMask )
+	virtual bool ShouldHitEntity( IHandleEntity* pEntity, int contentsMask )
 	{
-		for ( int i = m_entityList.Count()-1; i >= 0; --i )
+		for( int i = m_entityList.Count() - 1; i >= 0; --i )
 		{
-			if ( m_entityList[i] == pEntity )
+			if( m_entityList[i] == pEntity )
+			{
 				return true;
+			}
 		}
 
 		return false;
@@ -520,12 +528,12 @@ public:
 		return TRACE_ENTITIES_ONLY;
 	}
 
-	void AddEntityToHit( IHandleEntity *pEntity )
+	void AddEntityToHit( IHandleEntity* pEntity )
 	{
-		m_entityList.AddToTail(pEntity);
+		m_entityList.AddToTail( pEntity );
 	}
 
-	CUtlVector<IHandleEntity *>	m_entityList;
+	CUtlVector<IHandleEntity*>	m_entityList;
 };
 
 //-----------------------------------------------------------------------------
@@ -534,7 +542,7 @@ public:
 class CPushBlockerEnum : public IPartitionEnumerator
 {
 public:
-	CPushBlockerEnum( CPhysicsPushedEntities *pPushedEntities ) : m_pPushedEntities(pPushedEntities)
+	CPushBlockerEnum( CPhysicsPushedEntities* pPushedEntities ) : m_pPushedEntities( pPushedEntities )
 	{
 		// All elements are part of the same hierarchy, so they all have
 		// the same root, so it doesn't matter which one we grab
@@ -542,23 +550,27 @@ public:
 		++s_nEnumCount;
 
 		m_collisionGroupCount = 0;
-		for ( int i = m_pPushedEntities->m_rgPusher.Count(); --i >= 0; )
+		for( int i = m_pPushedEntities->m_rgPusher.Count(); --i >= 0; )
 		{
-			if ( !m_pPushedEntities->m_rgPusher[i].m_pEntity->IsSolid() )
+			if( !m_pPushedEntities->m_rgPusher[i].m_pEntity->IsSolid() )
+			{
 				continue;
+			}
 
 			m_pushersOnly.AddEntityToHit( m_pPushedEntities->m_rgPusher[i].m_pEntity );
 			int collisionGroup = m_pPushedEntities->m_rgPusher[i].m_pEntity->GetCollisionGroup();
-			AddCollisionGroup(collisionGroup);
+			AddCollisionGroup( collisionGroup );
 		}
 
 	}
 
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity )
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity )
 	{
-		CBaseEntity *pCheck = GetPushableEntity( pHandleEntity );
-		if ( !pCheck )
+		CBaseEntity* pCheck = GetPushableEntity( pHandleEntity );
+		if( !pCheck )
+		{
 			return ITERATION_CONTINUE;
+		}
 
 		// Mark it as seen
 		pCheck->m_nPushEnumCount = s_nEnumCount;
@@ -569,28 +581,30 @@ public:
 
 private:
 
-	inline void AddCollisionGroup(int collisionGroup)
+	inline void AddCollisionGroup( int collisionGroup )
 	{
-		for ( int i = 0; i < m_collisionGroupCount; i++ )
+		for( int i = 0; i < m_collisionGroupCount; i++ )
 		{
-			if ( m_collisionGroups[i] == collisionGroup )
+			if( m_collisionGroups[i] == collisionGroup )
+			{
 				return;
+			}
 		}
-		if ( m_collisionGroupCount < ARRAYSIZE(m_collisionGroups) )
+		if( m_collisionGroupCount < ARRAYSIZE( m_collisionGroups ) )
 		{
 			m_collisionGroups[m_collisionGroupCount] = collisionGroup;
 			m_collisionGroupCount++;
 		}
 	}
 
-	bool IsStandingOnPusher( CBaseEntity *pCheck )
+	bool IsStandingOnPusher( CBaseEntity* pCheck )
 	{
-		CBaseEntity *pGroundEnt = pCheck->GetGroundEntity();
-		if ( pCheck->GetFlags() & FL_ONGROUND || pGroundEnt )
+		CBaseEntity* pGroundEnt = pCheck->GetGroundEntity();
+		if( pCheck->GetFlags() & FL_ONGROUND || pGroundEnt )
 		{
-			for ( int i = m_pPushedEntities->m_rgPusher.Count(); --i >= 0; )
+			for( int i = m_pPushedEntities->m_rgPusher.Count(); --i >= 0; )
 			{
-				if (m_pPushedEntities->m_rgPusher[i].m_pEntity == pGroundEnt)
+				if( m_pPushedEntities->m_rgPusher[i].m_pEntity == pGroundEnt )
 				{
 					return true;
 				}
@@ -599,62 +613,74 @@ private:
 		return false;
 	}
 
-	bool IntersectsPushers( CBaseEntity *pTest )
+	bool IntersectsPushers( CBaseEntity* pTest )
 	{
 		trace_t tr;
 
-		ICollideable *pCollision = pTest->GetCollideable();
-		enginetrace->SweepCollideable( pCollision, pTest->GetAbsOrigin(), pTest->GetAbsOrigin(), pCollision->GetCollisionAngles(), 
-			pTest->PhysicsSolidMaskForEntity(), &m_pushersOnly, &tr );
+		ICollideable* pCollision = pTest->GetCollideable();
+		enginetrace->SweepCollideable( pCollision, pTest->GetAbsOrigin(), pTest->GetAbsOrigin(), pCollision->GetCollisionAngles(),
+									   pTest->PhysicsSolidMaskForEntity(), &m_pushersOnly, &tr );
 
 		return tr.startsolid;
 	}
 
-	CBaseEntity *GetPushableEntity( IHandleEntity *pHandleEntity )
+	CBaseEntity* GetPushableEntity( IHandleEntity* pHandleEntity )
 	{
-		CBaseEntity *pCheck = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
-		if ( !pCheck )
+		CBaseEntity* pCheck = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+		if( !pCheck )
+		{
 			return NULL;
+		}
 
 		// Don't bother if we've already seen this one...
-		if (pCheck->m_nPushEnumCount == s_nEnumCount)
+		if( pCheck->m_nPushEnumCount == s_nEnumCount )
+		{
 			return NULL;
+		}
 
-		if ( !pCheck->IsSolid() )
+		if( !pCheck->IsSolid() )
+		{
 			return NULL;
+		}
 
-		if ( pCheck->GetMoveType() == MOVETYPE_PUSH || 
-			 pCheck->GetMoveType() == MOVETYPE_NONE || 
-			 pCheck->GetMoveType() == MOVETYPE_VPHYSICS ||
-			 pCheck->GetMoveType() == MOVETYPE_NOCLIP )
+		if( pCheck->GetMoveType() == MOVETYPE_PUSH ||
+				pCheck->GetMoveType() == MOVETYPE_NONE ||
+				pCheck->GetMoveType() == MOVETYPE_VPHYSICS ||
+				pCheck->GetMoveType() == MOVETYPE_NOCLIP )
 		{
 			return NULL;
 		}
 
 		bool bCollide = false;
-		for ( int i = 0; i < m_collisionGroupCount; i++ )
+		for( int i = 0; i < m_collisionGroupCount; i++ )
 		{
-			if ( g_pGameRules->ShouldCollide( pCheck->GetCollisionGroup(), m_collisionGroups[i] ) )
+			if( g_pGameRules->ShouldCollide( pCheck->GetCollisionGroup(), m_collisionGroups[i] ) )
 			{
 				bCollide = true;
 				break;
 			}
 		}
-		if ( !bCollide )
+		if( !bCollide )
+		{
 			return NULL;
+		}
 		// We're not pushing stuff we're hierarchically attached to
-		CBaseEntity *pCheckHighestParent = pCheck->GetRootMoveParent();
-		if (pCheckHighestParent == m_pRootHighestParent)
+		CBaseEntity* pCheckHighestParent = pCheck->GetRootMoveParent();
+		if( pCheckHighestParent == m_pRootHighestParent )
+		{
 			return NULL;
+		}
 
 		// If we're standing on the pusher or any rigidly attached child
 		// of the pusher, we don't need to bother checking for interpenetration
-		if ( !IsStandingOnPusher(pCheck) )
+		if( !IsStandingOnPusher( pCheck ) )
 		{
 			// Our surrounding boxes are touching. But we may well not be colliding....
 			// see if the ent's bbox is inside the pusher's final position
-			if ( !IntersectsPushers( pCheck ) )
+			if( !IntersectsPushers( pCheck ) )
+			{
 				return NULL;
+			}
 		}
 
 		// NOTE: This is pretty tricky here. If a rigidly attached child comes into
@@ -665,8 +691,8 @@ private:
 
 private:
 	static int s_nEnumCount;
-	CPhysicsPushedEntities *m_pPushedEntities;
-	CBaseEntity *m_pRootHighestParent;
+	CPhysicsPushedEntities* m_pPushedEntities;
+	CBaseEntity* m_pRootHighestParent;
 	CTraceFilterAgainstEntityList	m_pushersOnly;
 	int m_collisionGroups[8];
 	int m_collisionGroupCount;
@@ -679,17 +705,17 @@ int CPushBlockerEnum::s_nEnumCount = 0;
 //-----------------------------------------------------------------------------
 void CPhysicsPushedEntities::GenerateBlockingEntityList()
 {
-	VPROF("CPhysicsPushedEntities::GenerateBlockingEntityList");
+	VPROF( "CPhysicsPushedEntities::GenerateBlockingEntityList" );
 
 	m_rgMoved.RemoveAll();
 	CPushBlockerEnum blockerEnum( this );
 
-	for ( int i = m_rgPusher.Count(); --i >= 0;  )
+	for( int i = m_rgPusher.Count(); --i >= 0; )
 	{
-		CBaseEntity *pPusher = m_rgPusher[i].m_pEntity;
+		CBaseEntity* pPusher = m_rgPusher[i].m_pEntity;
 
 		// Don't bother if the pusher isn't solid
-		if ( !pPusher->IsSolid() || pPusher->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+		if( !pPusher->IsSolid() || pPusher->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 		{
 			continue;
 		}
@@ -705,28 +731,28 @@ void CPhysicsPushedEntities::GenerateBlockingEntityList()
 //-----------------------------------------------------------------------------
 // Generates a list of potential blocking entities
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::GenerateBlockingEntityListAddBox( const Vector &vecMoved )
+void CPhysicsPushedEntities::GenerateBlockingEntityListAddBox( const Vector& vecMoved )
 {
-	VPROF("CPhysicsPushedEntities::GenerateBlockingEntityListAddBox");
+	VPROF( "CPhysicsPushedEntities::GenerateBlockingEntityListAddBox" );
 
 	m_rgMoved.RemoveAll();
 	CPushBlockerEnum blockerEnum( this );
 
-	for ( int i = m_rgPusher.Count(); --i >= 0;  )
+	for( int i = m_rgPusher.Count(); --i >= 0; )
 	{
-		CBaseEntity *pPusher = m_rgPusher[i].m_pEntity;
+		CBaseEntity* pPusher = m_rgPusher[i].m_pEntity;
 
 		// Don't bother if the pusher isn't solid
-		if ( !pPusher->IsSolid() || pPusher->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+		if( !pPusher->IsSolid() || pPusher->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
 		{
 			continue;
 		}
 
 		Vector vecAbsMins, vecAbsMaxs;
 		pPusher->CollisionProp()->WorldSpaceAABB( &vecAbsMins, &vecAbsMaxs );
-		for ( int iAxis = 0; iAxis < 3; ++iAxis )
+		for( int iAxis = 0; iAxis < 3; ++iAxis )
 		{
-			if ( vecMoved[iAxis] >= 0.0f )
+			if( vecMoved[iAxis] >= 0.0f )
 			{
 				vecAbsMins[iAxis] -= vecMoved[iAxis];
 			}
@@ -743,17 +769,19 @@ void CPhysicsPushedEntities::GenerateBlockingEntityListAddBox( const Vector &vec
 }
 
 #ifdef TF_DLL
-#include "tf_logic_robot_destruction.h"
+	#include "tf_logic_robot_destruction.h"
 #endif
 //-----------------------------------------------------------------------------
-// Purpose: Gets a list of all entities hierarchically attached to the root 
+// Purpose: Gets a list of all entities hierarchically attached to the root
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::SetupAllInHierarchy( CBaseEntity *pParent )
+void CPhysicsPushedEntities::SetupAllInHierarchy( CBaseEntity* pParent )
 {
-	if (!pParent)
+	if( !pParent )
+	{
 		return;
+	}
 
-	VPROF("CPhysicsPushedEntities::SetupAllInHierarchy");
+	VPROF( "CPhysicsPushedEntities::SetupAllInHierarchy" );
 
 	// Make sure to snack the position +before+ relink because applying the
 	// rotation (which occurs in relink) will put it at the final location
@@ -763,8 +791,8 @@ void CPhysicsPushedEntities::SetupAllInHierarchy( CBaseEntity *pParent )
 	m_rgPusher[i].m_pEntity = pParent;
 	m_rgPusher[i].m_vecStartAbsOrigin = pParent->GetAbsOrigin();
 
-	CBaseEntity *pChild;
-	for ( pChild = pParent->FirstMoveChild(); pChild != NULL; pChild = pChild->NextMovePeer() )
+	CBaseEntity* pChild;
+	for( pChild = pParent->FirstMoveChild(); pChild != NULL; pChild = pChild->NextMovePeer() )
 	{
 		SetupAllInHierarchy( pChild );
 	}
@@ -774,15 +802,15 @@ void CPhysicsPushedEntities::SetupAllInHierarchy( CBaseEntity *pParent )
 //-----------------------------------------------------------------------------
 // Purpose: Rotates the root entity, fills in the pushmove structure
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::RotateRootEntity( CBaseEntity *pRoot, float movetime, RotatingPushMove_t &rotation )
+void CPhysicsPushedEntities::RotateRootEntity( CBaseEntity* pRoot, float movetime, RotatingPushMove_t& rotation )
 {
-	VPROF("CPhysicsPushedEntities::RotateRootEntity");
+	VPROF( "CPhysicsPushedEntities::RotateRootEntity" );
 
 	rotation.amove = pRoot->GetLocalAngularVelocity() * movetime;
 	rotation.origin = pRoot->GetAbsOrigin();
 
 	// Knowing the initial + ending basis is needed for determining
-	// which corner we're pushing 
+	// which corner we're pushing
 	MatrixCopy( pRoot->EntityToWorldTransform(), rotation.startLocalToWorld );
 
 	// rotate the pusher to it's final position
@@ -790,7 +818,7 @@ void CPhysicsPushedEntities::RotateRootEntity( CBaseEntity *pRoot, float movetim
 	angles += pRoot->GetLocalAngularVelocity() * movetime;
 
 	pRoot->SetLocalAngles( angles );
-	
+
 	// Compute the change in absangles
 	MatrixCopy( pRoot->EntityToWorldTransform(), rotation.endLocalToWorld );
 }
@@ -799,11 +827,11 @@ void CPhysicsPushedEntities::RotateRootEntity( CBaseEntity *pRoot, float movetim
 //-----------------------------------------------------------------------------
 // Purpose: Tries to rotate an entity hierarchy, returns the blocker if any
 //-----------------------------------------------------------------------------
-CBaseEntity *CPhysicsPushedEntities::PerformRotatePush( CBaseEntity *pRoot, float movetime )
+CBaseEntity* CPhysicsPushedEntities::PerformRotatePush( CBaseEntity* pRoot, float movetime )
 {
-	VPROF("CPhysicsPushedEntities::PerformRotatePush");
+	VPROF( "CPhysicsPushedEntities::PerformRotatePush" );
 
-	m_bIsUnblockableByPlayer = (pRoot->GetFlags() & FL_UNBLOCKABLE_BY_PLAYER) ? true : false;
+	m_bIsUnblockableByPlayer = ( pRoot->GetFlags() & FL_UNBLOCKABLE_BY_PLAYER ) ? true : false;
 	// Build a list of this entity + all its children because we're going to try to move them all
 	// This will also make sure each entity is linked in the appropriate place
 	// with correct absboxes
@@ -824,9 +852,9 @@ CBaseEntity *CPhysicsPushedEntities::PerformRotatePush( CBaseEntity *pRoot, floa
 	// Now we have a unique list of things that could potentially block our push
 	// and need to be pushed out of the way. Lets try to push them all out of the way.
 	// If we fail, undo it all
-	if (!SpeculativelyCheckRotPush( rotPushMove, pRoot ))
+	if( !SpeculativelyCheckRotPush( rotPushMove, pRoot ) )
 	{
-		CBaseEntity *pBlocker = RegisterBlockage();
+		CBaseEntity* pBlocker = RegisterBlockage();
 		pRoot->SetLocalAngles( angPrevAngles );
 		RestoreEntities( );
 		return pBlocker;
@@ -839,14 +867,14 @@ CBaseEntity *CPhysicsPushedEntities::PerformRotatePush( CBaseEntity *pRoot, floa
 //-----------------------------------------------------------------------------
 // Purpose: Linearly moves the root entity
 //-----------------------------------------------------------------------------
-void CPhysicsPushedEntities::LinearlyMoveRootEntity( CBaseEntity *pRoot, float movetime, Vector *pAbsPushVector )
+void CPhysicsPushedEntities::LinearlyMoveRootEntity( CBaseEntity* pRoot, float movetime, Vector* pAbsPushVector )
 {
-	VPROF("CPhysicsPushedEntities::LinearlyMoveRootEntity");
+	VPROF( "CPhysicsPushedEntities::LinearlyMoveRootEntity" );
 
 	// move the pusher to it's final position
 	Vector move = pRoot->GetLocalVelocity() * movetime;
 	Vector origin = pRoot->GetLocalOrigin();
-	origin += move;		
+	origin += move;
 	pRoot->SetLocalOrigin( origin );
 
 	// Store off the abs push vector
@@ -857,13 +885,13 @@ void CPhysicsPushedEntities::LinearlyMoveRootEntity( CBaseEntity *pRoot, float m
 //-----------------------------------------------------------------------------
 // Purpose: Tries to linearly push an entity hierarchy, returns the blocker if any
 //-----------------------------------------------------------------------------
-CBaseEntity *CPhysicsPushedEntities::PerformLinearPush( CBaseEntity *pRoot, float movetime )
+CBaseEntity* CPhysicsPushedEntities::PerformLinearPush( CBaseEntity* pRoot, float movetime )
 {
-	VPROF("CPhysicsPushedEntities::PerformLinearPush");
+	VPROF( "CPhysicsPushedEntities::PerformLinearPush" );
 
 	m_flMoveTime = movetime;
 
-	m_bIsUnblockableByPlayer = (pRoot->GetFlags() & FL_UNBLOCKABLE_BY_PLAYER) ? true : false;
+	m_bIsUnblockableByPlayer = ( pRoot->GetFlags() & FL_UNBLOCKABLE_BY_PLAYER ) ? true : false;
 	// Build a list of this entity + all its children because we're going to try to move them all
 	// This will also make sure each entity is linked in the appropriate place
 	// with correct absboxes
@@ -884,9 +912,9 @@ CBaseEntity *CPhysicsPushedEntities::PerformLinearPush( CBaseEntity *pRoot, floa
 	// Now we have a unique list of things that could potentially block our push
 	// and need to be pushed out of the way. Lets try to push them all out of the way.
 	// If we fail, undo it all
-	if (!SpeculativelyCheckLinearPush( vecAbsPush ))
+	if( !SpeculativelyCheckLinearPush( vecAbsPush ) )
 	{
-		CBaseEntity *pBlocker = RegisterBlockage();
+		CBaseEntity* pBlocker = RegisterBlockage();
 		pRoot->SetLocalOrigin( vecPrevOrigin );
 		RestoreEntities();
 		return pBlocker;
@@ -911,61 +939,63 @@ CBaseEntity *CPhysicsPushedEntities::PerformLinearPush( CBaseEntity *pRoot, floa
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsDispatchThink( BASEPTR thinkFunc )
 {
-	VPROF_ENTER_SCOPE( ( !vprof_scope_entity_thinks.GetBool() ) ? 
-						"CBaseEntity::PhysicsDispatchThink" : 
-						EntityFactoryDictionary()->GetCannonicalName( GetClassname() ) );
+	VPROF_ENTER_SCOPE( ( !vprof_scope_entity_thinks.GetBool() ) ?
+					   "CBaseEntity::PhysicsDispatchThink" :
+					   EntityFactoryDictionary()->GetCannonicalName( GetClassname() ) );
 
 	float thinkLimit = think_limit.GetFloat();
-	
+
 	// The thinkLimit stuff makes a LOT of calls to Sys_FloatTime, which winds up calling into
 	// VCR mode so much that the framerate becomes unusable.
-	if ( VCRGetMode() != VCR_Disabled )
+	if( VCRGetMode() != VCR_Disabled )
+	{
 		thinkLimit = 0;
+	}
 
 	float startTime = 0.0;
 
-	if ( IsDormant() )
+	if( IsDormant() )
 	{
 		Warning( "Dormant entity %s (%s) is thinking!!\n", GetClassname(), GetDebugName() );
-		Assert(0);
+		Assert( 0 );
 	}
 
-	if ( thinkLimit )
+	if( thinkLimit )
 	{
 		startTime = engine->Time();
 	}
-	
-	if ( thinkFunc )
+
+	if( thinkFunc )
 	{
 		MDLCACHE_CRITICAL_SECTION();
-		(this->*thinkFunc)();
+		( this->*thinkFunc )();
 	}
 
-	if ( thinkLimit )
+	if( thinkLimit )
 	{
 		// calculate running time of the AI in milliseconds
 		float flTime = ( engine->Time() - startTime ) * 1000.0f;
-		if ( flTime > thinkLimit )
+		if( flTime > thinkLimit )
 		{
 #if defined( _XBOX ) && !defined( _RETAIL )
-			if ( vprof_think_limit.GetBool() )
+			if( vprof_think_limit.GetBool() )
 			{
 				extern bool g_VProfSignalSpike;
 				g_VProfSignalSpike = true;
 			}
 #endif
 			// If its an NPC print out the shedule/task that took so long
-			CAI_BaseNPC *pNPC = MyNPCPointer();
-			if (pNPC && pNPC->GetCurSchedule())
+			CAI_BaseNPC* pNPC = MyNPCPointer();
+			if( pNPC && pNPC->GetCurSchedule() )
 			{
 				pNPC->ReportOverThinkLimit( flTime );
 			}
 			else
 			{
 #ifdef _WIN32
-				Msg( "%s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid(this).raw_name(), flTime );
+				Msg( "%s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid( this ).raw_name(), flTime );
 #elif POSIX
-				Msg( "%s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid(this).name(), flTime );
+				Msg( "%s(%s) thinking for %.02f ms!!!\n", GetClassname(), typeid( this ).name(), flTime );
 #else
 #error "typeinfo"
 #endif
@@ -978,10 +1008,10 @@ void CBaseEntity::PhysicsDispatchThink( BASEPTR thinkFunc )
 
 //-----------------------------------------------------------------------------
 // Purpose: Does not change the entities velocity at all
-// Input  : push - 
+// Input  : push -
 // Output : trace_t
 //-----------------------------------------------------------------------------
-void CBaseEntity::PhysicsCheckSweep( const Vector& vecAbsStart, const Vector &vecAbsDelta, trace_t *pTrace )
+void CBaseEntity::PhysicsCheckSweep( const Vector& vecAbsStart, const Vector& vecAbsDelta, trace_t* pTrace )
 {
 	::PhysicsCheckSweep( this, vecAbsStart, vecAbsDelta, pTrace );
 }
@@ -998,9 +1028,9 @@ void CBaseEntity::PhysicsCheckSweep( const Vector& vecAbsStart, const Vector &ve
 //   2 = wall / step
 //   4 = dead stop
 //-----------------------------------------------------------------------------
-int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
+int CBaseEntity::PhysicsTryMove( float flTime, trace_t* steptrace )
 {
-	VPROF("CBaseEntity::PhysicsTryMove");
+	VPROF( "CBaseEntity::PhysicsTryMove" );
 
 	int			bumpcount, numbumps;
 	Vector		dir;
@@ -1013,7 +1043,7 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 	Vector		end;
 	float		time_left;
 	int			blocked;
-	
+
 	unsigned int mask = PhysicsSolidMaskForEntity();
 
 	new_velocity.Init();
@@ -1023,97 +1053,109 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 	Vector vecAbsVelocity = GetAbsVelocity();
 
 	blocked = 0;
-	VectorCopy (vecAbsVelocity, original_velocity);
-	VectorCopy (vecAbsVelocity, primal_velocity);
+	VectorCopy( vecAbsVelocity, original_velocity );
+	VectorCopy( vecAbsVelocity, primal_velocity );
 	numplanes = 0;
-	
+
 	time_left = flTime;
 
-	for (bumpcount=0 ; bumpcount<numbumps ; bumpcount++)
+	for( bumpcount = 0 ; bumpcount < numbumps ; bumpcount++ )
 	{
-		if (vecAbsVelocity == vec3_origin)
+		if( vecAbsVelocity == vec3_origin )
+		{
 			break;
+		}
 
 		VectorMA( GetAbsOrigin(), time_left, vecAbsVelocity, end );
 
 		Physics_TraceEntity( this, GetAbsOrigin(), end, mask, &trace );
 
-		if (trace.startsolid)
-		{	// entity is trapped in another solid
-			SetAbsVelocity(vec3_origin);
+		if( trace.startsolid )
+		{
+			// entity is trapped in another solid
+			SetAbsVelocity( vec3_origin );
 			return 4;
 		}
 
-		if (trace.fraction > 0)
-		{	// actually covered some distance
+		if( trace.fraction > 0 )
+		{
+			// actually covered some distance
 			SetAbsOrigin( trace.endpos );
-			VectorCopy (vecAbsVelocity, original_velocity);
+			VectorCopy( vecAbsVelocity, original_velocity );
 			numplanes = 0;
 		}
 
-		if (trace.fraction == 1)
-			 break;		// moved the entire distance
+		if( trace.fraction == 1 )
+		{
+			break;    // moved the entire distance
+		}
 
-		if (!trace.m_pEnt)
+		if( !trace.m_pEnt )
 		{
 			SetAbsVelocity( vecAbsVelocity );
 			Warning( "PhysicsTryMove: !trace.u.ent" );
-			Assert(0);
+			Assert( 0 );
 			return 4;
 		}
 
-		if (trace.plane.normal[2] > 0.7)
+		if( trace.plane.normal[2] > 0.7 )
 		{
 			blocked |= 1;		// floor
-			if (CanStandOn( trace.m_pEnt ))
+			if( CanStandOn( trace.m_pEnt ) )
 			{
 				// keep track of time when changing ground entity
-				if (GetGroundEntity() != trace.m_pEnt)
+				if( GetGroundEntity() != trace.m_pEnt )
 				{
-					SetGroundChangeTime( gpGlobals->curtime + (flTime - (1 - trace.fraction) * time_left) );
+					SetGroundChangeTime( gpGlobals->curtime + ( flTime - ( 1 - trace.fraction ) * time_left ) );
 				}
 
 				SetGroundEntity( trace.m_pEnt );
 			}
 		}
-		if (!trace.plane.normal[2])
+		if( !trace.plane.normal[2] )
 		{
 			blocked |= 2;		// step
-			if (steptrace)
-				*steptrace = trace;	// save for player extrafriction
+			if( steptrace )
+			{
+				*steptrace = trace;    // save for player extrafriction
+			}
 		}
 
 		// run the impact function
 		PhysicsImpact( trace.m_pEnt, trace );
 		// Removed by the impact function
-		if ( IsMarkedForDeletion() || IsEdictFree() )
-			break;		
-	
+		if( IsMarkedForDeletion() || IsEdictFree() )
+		{
+			break;
+		}
+
 		time_left -= time_left * trace.fraction;
-		
+
 		// clipped to another plane
-		if (numplanes >= MAX_CLIP_PLANES)
-		{	// this shouldn't really happen
-			SetAbsVelocity(vec3_origin);
+		if( numplanes >= MAX_CLIP_PLANES )
+		{
+			// this shouldn't really happen
+			SetAbsVelocity( vec3_origin );
 			return blocked;
 		}
 
-		VectorCopy (trace.plane.normal, planes[numplanes]);
+		VectorCopy( trace.plane.normal, planes[numplanes] );
 		numplanes++;
 
 		// modify original_velocity so it parallels all of the clip planes
-		if ( GetMoveType() == MOVETYPE_WALK && (!(GetFlags() & FL_ONGROUND) || GetFriction()!=1) )	// relfect player velocity
+		if( GetMoveType() == MOVETYPE_WALK && ( !( GetFlags() & FL_ONGROUND ) || GetFriction() != 1 ) )	// relfect player velocity
 		{
-			for ( i = 0; i < numplanes; i++ )
+			for( i = 0; i < numplanes; i++ )
 			{
-				if ( planes[i][2] > 0.7  )
-				{// floor or slope
+				if( planes[i][2] > 0.7 )
+				{
+					// floor or slope
 					PhysicsClipVelocity( original_velocity, planes[i], new_velocity, 1 );
 					VectorCopy( new_velocity, original_velocity );
 				}
 				else
 				{
-					PhysicsClipVelocity( original_velocity, planes[i], new_velocity, 1.0 + sv_bounce.GetFloat() * (1-GetFriction()) );
+					PhysicsClipVelocity( original_velocity, planes[i], new_velocity, 1.0 + sv_bounce.GetFloat() * ( 1 - GetFriction() ) );
 				}
 			}
 
@@ -1122,45 +1164,49 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 		}
 		else
 		{
-			for (i=0 ; i<numplanes ; i++)
+			for( i = 0 ; i < numplanes ; i++ )
 			{
-				PhysicsClipVelocity (original_velocity, planes[i], new_velocity, 1);
-				for (j=0 ; j<numplanes ; j++)
-					if (j != i)
+				PhysicsClipVelocity( original_velocity, planes[i], new_velocity, 1 );
+				for( j = 0 ; j < numplanes ; j++ )
+					if( j != i )
 					{
-						if (DotProduct (new_velocity, planes[j]) < 0)
-							break;	// not ok
+						if( DotProduct( new_velocity, planes[j] ) < 0 )
+						{
+							break;    // not ok
+						}
 					}
-				if (j == numplanes)
+				if( j == numplanes )
+				{
 					break;
+				}
 			}
-			
-			if (i != numplanes)
-			{	
+
+			if( i != numplanes )
+			{
 				// go along this plane
-				VectorCopy (new_velocity, vecAbsVelocity);
+				VectorCopy( new_velocity, vecAbsVelocity );
 			}
 			else
-			{	
+			{
 				// go along the crease
-				if (numplanes != 2)
+				if( numplanes != 2 )
 				{
-	//				Msg( "clip velocity, numplanes == %i\n",numplanes);
+					//				Msg( "clip velocity, numplanes == %i\n",numplanes);
 					SetAbsVelocity( vecAbsVelocity );
 					return blocked;
 				}
-				CrossProduct (planes[0], planes[1], dir);
-				d = DotProduct (dir, vecAbsVelocity);
-				VectorScale (dir, d, vecAbsVelocity);
+				CrossProduct( planes[0], planes[1], dir );
+				d = DotProduct( dir, vecAbsVelocity );
+				VectorScale( dir, d, vecAbsVelocity );
 			}
 
 			//
 			// if original velocity is against the original velocity, stop dead
 			// to avoid tiny oscillations in sloping corners
 			//
-			if (DotProduct (vecAbsVelocity, primal_velocity) <= 0)
+			if( DotProduct( vecAbsVelocity, primal_velocity ) <= 0 )
 			{
-				SetAbsVelocity(vec3_origin);
+				SetAbsVelocity( vec3_origin );
 				return blocked;
 			}
 		}
@@ -1172,19 +1218,19 @@ int CBaseEntity::PhysicsTryMove( float flTime, trace_t *steptrace )
 
 //-----------------------------------------------------------------------------
 // Purpose: Applies 1/2 gravity to falling movetype step objects
-//			Simulation should be done assuming average velocity over the time 
-//			interval.  Since that would effect a lot of code, and since most of 
-//			that code is going away, it's easier to just add in the average effect 
-//			of gravity on the velocity over the interval at the beginning of similation, 
+//			Simulation should be done assuming average velocity over the time
+//			interval.  Since that would effect a lot of code, and since most of
+//			that code is going away, it's easier to just add in the average effect
+//			of gravity on the velocity over the interval at the beginning of similation,
 //			then add it in again at the end of simulation so that the final velocity is
 //			correct for the entire interval.
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsAddHalfGravity( float timestep )
 {
-	VPROF("CBaseEntity::PhysicsAddHalfGravity");
+	VPROF( "CBaseEntity::PhysicsAddHalfGravity" );
 	float	ent_gravity;
 
-	if ( GetGravity() )
+	if( GetGravity() )
 	{
 		ent_gravity = GetGravity();
 	}
@@ -1202,7 +1248,7 @@ void CBaseEntity::PhysicsAddHalfGravity( float timestep )
 	Vector vecNewBaseVelocity = GetBaseVelocity();
 	vecNewBaseVelocity[2] = 0;
 	SetBaseVelocity( vecNewBaseVelocity );
-	
+
 	// Bound velocity
 	PhysicsCheckVelocity();
 }
@@ -1210,17 +1256,17 @@ void CBaseEntity::PhysicsAddHalfGravity( float timestep )
 
 //-----------------------------------------------------------------------------
 // Purpose: Does not change the entities velocity at all
-// Input  : push - 
+// Input  : push -
 // Output : trace_t
 //-----------------------------------------------------------------------------
-void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t *pTrace )
+void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t* pTrace )
 {
-	VPROF("CBaseEntity::PhysicsPushEntity");
+	VPROF( "CBaseEntity::PhysicsPushEntity" );
 
-	if ( GetMoveParent() )
+	if( GetMoveParent() )
 	{
 		Warning( "pushing entity (%s) that has parent (%s)!\n", GetDebugName(), GetMoveParent()->GetDebugName() );
-		Assert(0);
+		Assert( 0 );
 	}
 
 	// NOTE: absorigin and origin must be equal because there is no moveparent
@@ -1229,7 +1275,7 @@ void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t *pTrace )
 
 	::PhysicsCheckSweep( this, prevOrigin, push, pTrace );
 
-	if ( pTrace->fraction )
+	if( pTrace->fraction )
 	{
 		SetAbsOrigin( pTrace->endpos );
 
@@ -1241,7 +1287,7 @@ void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t *pTrace )
 	// to test the swept ray from previous to current location for trigger intersections
 	PhysicsTouchTriggers( &prevOrigin );
 
-	if ( pTrace->m_pEnt )
+	if( pTrace->m_pEnt )
 	{
 		PhysicsImpact( pTrace->m_pEnt, *pTrace );
 	}
@@ -1253,47 +1299,47 @@ void CBaseEntity::PhysicsPushEntity( const Vector& push, trace_t *pTrace )
 // Input  : **ppEntity - optional return pointer to entity we are inside of
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CBaseEntity::PhysicsTestEntityPosition( CBaseEntity **ppEntity /*=NULL*/ )
+bool CBaseEntity::PhysicsTestEntityPosition( CBaseEntity** ppEntity /*=NULL*/ )
 {
-	VPROF("CBaseEntity::PhysicsTestEntityPosition");
+	VPROF( "CBaseEntity::PhysicsTestEntityPosition" );
 
 	trace_t	trace;
-	
+
 	unsigned int mask = PhysicsSolidMaskForEntity();
 
 	Physics_TraceEntity( this, GetAbsOrigin(), GetAbsOrigin(), mask, &trace );
-	
-	if ( trace.startsolid )
+
+	if( trace.startsolid )
 	{
-		if ( ppEntity )
+		if( ppEntity )
 		{
 			*ppEntity = trace.m_pEnt;
 		}
 		return true;
 	}
-		
+
 	return false;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CBaseEntity::PhysicsPushMove( float movetime )
+CBaseEntity* CBaseEntity::PhysicsPushMove( float movetime )
 {
-	VPROF("CBaseEntity::PhysicsPushMove");
+	VPROF( "CBaseEntity::PhysicsPushMove" );
 
 	// If this entity isn't moving, just update the time.
 	IncrementLocalTime( movetime );
 
-	if ( GetLocalVelocity() == vec3_origin )
+	if( GetLocalVelocity() == vec3_origin )
 	{
 		return NULL;
 	}
 
 	// Now check that the entire hierarchy can rotate into the new location
-	CBaseEntity *pBlocker = g_pPushedEntities->PerformLinearPush( this, movetime );
-	if ( pBlocker )
+	CBaseEntity* pBlocker = g_pPushedEntities->PerformLinearPush( this, movetime );
+	if( pBlocker )
 	{
 		IncrementLocalTime( -movetime );
 	}
@@ -1303,24 +1349,24 @@ CBaseEntity *CBaseEntity::PhysicsPushMove( float movetime )
 
 //-----------------------------------------------------------------------------
 // Purpose: Tries to rotate, returns success or failure
-// Input  : movetime - 
+// Input  : movetime -
 // Output : bool
 //-----------------------------------------------------------------------------
-CBaseEntity *CBaseEntity::PhysicsPushRotate( float movetime )
+CBaseEntity* CBaseEntity::PhysicsPushRotate( float movetime )
 {
-	VPROF("CBaseEntity::PhysicsPushRotate");
+	VPROF( "CBaseEntity::PhysicsPushRotate" );
 
 	IncrementLocalTime( movetime );
 
 	// Not rotating
-	if ( GetLocalAngularVelocity() == vec3_angle )
+	if( GetLocalAngularVelocity() == vec3_angle )
 	{
 		return NULL;
 	}
 
 	// Now check that the entire hierarchy can rotate into the new location
-	CBaseEntity *pBlocker = g_pPushedEntities->PerformRotatePush( this, movetime );
-	if ( pBlocker )
+	CBaseEntity* pBlocker = g_pPushedEntities->PerformRotatePush( this, movetime );
+	if( pBlocker )
 	{
 		IncrementLocalTime( -movetime );
 	}
@@ -1334,16 +1380,16 @@ CBaseEntity *CBaseEntity::PhysicsPushRotate( float movetime )
 //-----------------------------------------------------------------------------
 void CBaseEntity::PerformPush( float movetime )
 {
-	VPROF("CBaseEntity::PerformPush");
+	VPROF( "CBaseEntity::PerformPush" );
 	// NOTE: Use handle index because the previous blocker could have been deleted
 	int hPrevBlocker = m_pBlocker.ToInt();
-	CBaseEntity *pBlocker;
+	CBaseEntity* pBlocker;
 	g_pPushedEntities->BeginPush( this );
-	if (movetime > 0)
+	if( movetime > 0 )
 	{
-		if ( GetLocalAngularVelocity() != vec3_angle )
+		if( GetLocalAngularVelocity() != vec3_angle )
 		{
-			if ( GetLocalVelocity() != vec3_origin )
+			if( GetLocalVelocity() != vec3_origin )
 			{
 				// NOTE: Both PhysicsPushRotate + PhysicsPushMove
 				// will attempt to advance local time. Choose the one that's
@@ -1355,14 +1401,14 @@ void CBaseEntity::PerformPush( float movetime )
 
 				// moving and rotating, so rotate first, then move
 				pBlocker = PhysicsPushRotate( movetime );
-				if ( !pBlocker )
+				if( !pBlocker )
 				{
 					float flRotateLocalTime = m_flLocalTime;
 
 					// Reset the local time to what it was before we rotated
 					m_flLocalTime = flInitialLocalTime;
 					pBlocker = PhysicsPushMove( movetime );
-					if ( m_flLocalTime < flRotateLocalTime )
+					if( m_flLocalTime < flRotateLocalTime )
 					{
 						m_flLocalTime = flRotateLocalTime;
 					}
@@ -1381,18 +1427,18 @@ void CBaseEntity::PerformPush( float movetime )
 		}
 
 		m_pBlocker = pBlocker;
-		if (m_pBlocker.ToInt() != hPrevBlocker)
+		if( m_pBlocker.ToInt() != hPrevBlocker )
 		{
-			if (hPrevBlocker != INVALID_EHANDLE_INDEX)
+			if( hPrevBlocker != INVALID_EHANDLE_INDEX )
 			{
 				EndBlocked();
 			}
-			if (m_pBlocker)
+			if( m_pBlocker )
 			{
 				StartBlocked( pBlocker );
 			}
 		}
-		if (m_pBlocker)
+		if( m_pBlocker )
 		{
 			Blocked( m_pBlocker );
 		}
@@ -1403,24 +1449,24 @@ void CBaseEntity::PerformPush( float movetime )
 		// the physics system thinks the entity is awake. That will happen if the
 		// shadow gets updated, but the push code above doesn't update unless the
 		// move is successful or non-zero. So we must make sure it's awake
-		if ( VPhysicsGetObject() )
+		if( VPhysicsGetObject() )
 		{
 			VPhysicsGetObject()->Wake();
 		}
 	}
 
 	// move done is handled by physics if it has any
-	if ( VPhysicsGetObject() )
+	if( VPhysicsGetObject() )
 	{
 		// store the list of moved entities for later
 		// if you actually did an unblocked push that moved entities, and you're using physics (which may block later)
-		if ( movetime > 0 && !m_pBlocker && GetSolid() == SOLID_VPHYSICS && g_pPushedEntities->CountMovedEntities() > 0 )
+		if( movetime > 0 && !m_pBlocker && GetSolid() == SOLID_VPHYSICS && g_pPushedEntities->CountMovedEntities() > 0 )
 		{
 			// UNDONE: Any reason to want to call this twice before physics runs?
 			// If so, maybe just append to the list?
 			Assert( !GetDataObject( PHYSICSPUSHLIST ) );
-			physicspushlist_t *pList = (physicspushlist_t *)CreateDataObject( PHYSICSPUSHLIST );
-			if ( pList )
+			physicspushlist_t* pList = ( physicspushlist_t* )CreateDataObject( PHYSICSPUSHLIST );
+			if( pList )
 			{
 				g_pPushedEntities->StoreMovedEntities( *pList );
 			}
@@ -1428,7 +1474,7 @@ void CBaseEntity::PerformPush( float movetime )
 	}
 	else
 	{
-		if ( m_flMoveDoneTime <= m_flLocalTime && m_flMoveDoneTime > 0 )
+		if( m_flMoveDoneTime <= m_flLocalTime && m_flMoveDoneTime > 0 )
 		{
 			SetMoveDoneTime( -1 );
 			MoveDone();
@@ -1442,16 +1488,18 @@ void CBaseEntity::PerformPush( float movetime )
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsPusher( void )
 {
-	VPROF("CBaseEntity::PhysicsPusher");
+	VPROF( "CBaseEntity::PhysicsPusher" );
 
 	// regular thinking
-	if ( !PhysicsRunThink() )
+	if( !PhysicsRunThink() )
+	{
 		return;
+	}
 
 	m_flVPhysicsUpdateLocalTime = m_flLocalTime;
 
 	float movetime = GetMoveDoneTime();
-	if (movetime > gpGlobals->frametime)
+	if( movetime > gpGlobals->frametime )
 	{
 		movetime = gpGlobals->frametime;
 	}
@@ -1466,7 +1514,7 @@ void CBaseEntity::PhysicsPusher( void )
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsNone( void )
 {
-	VPROF("CBaseEntity::PhysicsNone");
+	VPROF( "CBaseEntity::PhysicsNone" );
 
 	// regular thinking
 	PhysicsRunThink();
@@ -1478,14 +1526,14 @@ void CBaseEntity::PhysicsNone( void )
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsNoclip( void )
 {
-	VPROF("CBaseEntity::PhysicsNoclip");
+	VPROF( "CBaseEntity::PhysicsNoclip" );
 
 	// regular thinking
-	if ( !PhysicsRunThink() )
+	if( !PhysicsRunThink() )
 	{
 		return;
 	}
-	
+
 	// Apply angular velocity
 	SimulateAngles( gpGlobals->frametime );
 
@@ -1495,10 +1543,10 @@ void CBaseEntity::PhysicsNoclip( void )
 }
 
 
-void CBaseEntity::PerformCustomPhysics( Vector *pNewPosition, Vector *pNewVelocity, QAngle *pNewAngles, QAngle *pNewAngVelocity )
+void CBaseEntity::PerformCustomPhysics( Vector* pNewPosition, Vector* pNewVelocity, QAngle* pNewAngles, QAngle* pNewAngVelocity )
 {
 	// If you're going to use custom physics, you need to implement this!
-	Assert(0);
+	Assert( 0 );
 }
 
 
@@ -1507,15 +1555,17 @@ void CBaseEntity::PerformCustomPhysics( Vector *pNewPosition, Vector *pNewVeloci
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsCustom()
 {
-	VPROF("CBaseEntity::PhysicsCustom");
+	VPROF( "CBaseEntity::PhysicsCustom" );
 	PhysicsCheckWater();
 
 	// regular thinking
-	if ( !PhysicsRunThink() )
+	if( !PhysicsRunThink() )
+	{
 		return;
+	}
 
 	// Moving upward, off the ground, or  resting on a client/monster, remove FL_ONGROUND
-	if ( m_vecVelocity[2] > 0 || !GetGroundEntity() || !GetGroundEntity()->IsStandable() )
+	if( m_vecVelocity[2] > 0 || !GetGroundEntity() || !GetGroundEntity()->IsStandable() )
 	{
 		SetGroundEntity( NULL );
 	}
@@ -1542,17 +1592,19 @@ void CBaseEntity::PhysicsCustom()
 
 	PhysicsCheckVelocity();
 
-	if (trace.allsolid)
-	{	
+	if( trace.allsolid )
+	{
 		// entity is trapped in another solid
 		// UNDONE: does this entity needs to be removed?
-		SetAbsVelocity(vec3_origin);
-		SetLocalAngularVelocity(vec3_angle);
+		SetAbsVelocity( vec3_origin );
+		SetLocalAngularVelocity( vec3_angle );
 		return;
 	}
-	
-	if (IsEdictFree())
+
+	if( IsEdictFree() )
+	{
 		return;
+	}
 
 	// check for in water
 	PhysicsCheckWaterTransition();
@@ -1567,23 +1619,23 @@ ConVar sv_teststepsimulation( "sv_teststepsimulation", "1", 0 );
 //-----------------------------------------------------------------------------
 void CBaseEntity::CheckStepSimulationChanged()
 {
-	if ( g_bTestMoveTypeStepSimulation != IsSimulatedEveryTick() )
+	if( g_bTestMoveTypeStepSimulation != IsSimulatedEveryTick() )
 	{
 		SetSimulatedEveryTick( g_bTestMoveTypeStepSimulation );
 	}
 
 	bool hadobject = HasDataObjectType( STEPSIMULATION );
 
-	if ( g_bTestMoveTypeStepSimulation )
+	if( g_bTestMoveTypeStepSimulation )
 	{
-		if ( !hadobject )
+		if( !hadobject )
 		{
 			CreateDataObject( STEPSIMULATION );
 		}
 	}
 	else
 	{
-		if ( hadobject )
+		if( hadobject )
 		{
 			DestroyDataObject( STEPSIMULATION );
 		}
@@ -1594,15 +1646,15 @@ void CBaseEntity::CheckStepSimulationChanged()
 #define STEP_TELPORTATION_VEL_SQ	( 4096.0f * 4096.0f )
 //-----------------------------------------------------------------------------
 // Purpose: Run regular think and latch off angle/origin changes so we can interpolate them on the server to fake simulation
-// Input  : *step - 
+// Input  : *step -
 //-----------------------------------------------------------------------------
 void CBaseEntity::StepSimulationThink( float dt )
 {
 	// See if we need to allocate, deallocate step simulation object
 	CheckStepSimulationChanged();
 
-	StepSimulationData *step = ( StepSimulationData * )GetDataObject( STEPSIMULATION );
-	if ( !step )
+	StepSimulationData* step = ( StepSimulationData* )GetDataObject( STEPSIMULATION );
+	if( !step )
 	{
 		PhysicsStepRunTimestep( dt );
 
@@ -1636,7 +1688,7 @@ void CBaseEntity::StepSimulationThink( float dt )
 		PhysicsRunThink( THINK_FIRE_BASE_ONLY );
 
 		// do any local processing that's needed
-		if (GetBaseAnimating() != NULL)
+		if( GetBaseAnimating() != NULL )
 		{
 			GetBaseAnimating()->UpdateStepOrigin();
 		}
@@ -1650,17 +1702,17 @@ void CBaseEntity::StepSimulationThink( float dt )
 		step->m_Next.nTickCount = GetNextThinkTick();
 
 		// Hack:  Add a tick if we are simulating every other tick
-		if ( CBaseEntity::IsSimulatingOnAlternateTicks() )
+		if( CBaseEntity::IsSimulatingOnAlternateTicks() )
 		{
 			++step->m_Next.nTickCount;
 		}
 
 		// Check for teleportation/snapping of the origin
-		if ( dt > 0.0f )
+		if( dt > 0.0f )
 		{
 			Vector deltaorigin = step->m_Next.vecOrigin - step->m_Previous.vecOrigin;
 			float velSq = deltaorigin.LengthSqr() / ( dt * dt );
-			if ( velSq >= STEP_TELPORTATION_VEL_SQ )
+			if( velSq >= STEP_TELPORTATION_VEL_SQ )
 			{
 				// Deactivate it due to large origin change
 				step->m_bOriginActive = false;
@@ -1689,12 +1741,12 @@ void CBaseEntity::PhysicsStep()
 	// Getting them for modify marks them as changed automagically.
 	m_vecOrigin.GetForModify();
 	m_angRotation.GetForModify();
-	
+
 	// HACK:  Make sure that the client latches the networked origin/orientation changes with the current server tick count
 	//  so that we don't get jittery interpolation.  All of this is necessary to mimic actual continuous simulation of the underlying
 	//  variables.
 	SetSimulationTime( gpGlobals->curtime );
-	
+
 	// Run all but the base think function
 	PhysicsRunThink( THINK_FIRE_ALL_BUT_BASE );
 
@@ -1709,13 +1761,13 @@ void CBaseEntity::PhysicsStep()
 	// UNDONE: this happens as the first frame for a bunch of things like dynamically created ents.
 	// can't remove until initial conditions are resolved
 	float deltaThink = thinktime - gpGlobals->curtime;
-	if ( thinktime <= 0 || deltaThink > 0.5 )
+	if( thinktime <= 0 || deltaThink > 0.5 )
 	{
 		PhysicsStepRunTimestep( gpGlobals->frametime );
 		PhysicsCheckWaterTransition();
 		SetLastThink( -1, gpGlobals->curtime );
-		UpdatePhysicsShadowToCurrentPosition(gpGlobals->frametime);
-		PhysicsRelinkChildren(gpGlobals->frametime);
+		UpdatePhysicsShadowToCurrentPosition( gpGlobals->frametime );
+		PhysicsRelinkChildren( gpGlobals->frametime );
 		return;
 	}
 
@@ -1723,10 +1775,10 @@ void CBaseEntity::PhysicsStep()
 
 	// Feed the position delta back from vphysics if enabled
 	bool updateFromVPhysics = npc_vphysics.GetBool();
-	if ( HasDataObjectType(VPHYSICSUPDATEAI) )
+	if( HasDataObjectType( VPHYSICSUPDATEAI ) )
 	{
-		vphysicsupdateai_t *pUpdate = static_cast<vphysicsupdateai_t *>(GetDataObject( VPHYSICSUPDATEAI ));
-		if ( pUpdate->stopUpdateTime > gpGlobals->curtime )
+		vphysicsupdateai_t* pUpdate = static_cast<vphysicsupdateai_t*>( GetDataObject( VPHYSICSUPDATEAI ) );
+		if( pUpdate->stopUpdateTime > gpGlobals->curtime )
 		{
 			updateFromVPhysics = true;
 		}
@@ -1735,17 +1787,17 @@ void CBaseEntity::PhysicsStep()
 			float maxAngular;
 			VPhysicsGetObject()->GetShadowController()->GetMaxSpeed( NULL, &maxAngular );
 			VPhysicsGetObject()->GetShadowController()->MaxSpeed( pUpdate->savedShadowControllerMaxSpeed, maxAngular );
-			DestroyDataObject(VPHYSICSUPDATEAI);
+			DestroyDataObject( VPHYSICSUPDATEAI );
 		}
 	}
 
-	if ( updateFromVPhysics && VPhysicsGetObject() && !GetParent() )
+	if( updateFromVPhysics && VPhysicsGetObject() && !GetParent() )
 	{
 		Vector position;
 		VPhysicsGetObject()->GetShadowPosition( &position, NULL );
-		float delta = (GetAbsOrigin() - position).LengthSqr();
+		float delta = ( GetAbsOrigin() - position ).LengthSqr();
 		// for now, use a tolerance of 1 inch for these tests
-		if ( delta < 1 )
+		if( delta < 1 )
 		{
 			// physics is really close, check to see if my current position is valid.
 			// If so, ignore the physics result.
@@ -1753,7 +1805,7 @@ void CBaseEntity::PhysicsStep()
 			Physics_TraceEntity( this, GetAbsOrigin(), GetAbsOrigin(), PhysicsSolidMaskForEntity(), &tr );
 			updateFromVPhysics = tr.startsolid;
 		}
-		if ( updateFromVPhysics )
+		if( updateFromVPhysics )
 		{
 			SetAbsOrigin( position );
 			PhysicsTouchTriggers();
@@ -1762,15 +1814,17 @@ void CBaseEntity::PhysicsStep()
 	}
 
 	// not going to think, don't run game physics either
-	if ( thinktick > gpGlobals->tickcount )
+	if( thinktick > gpGlobals->tickcount )
+	{
 		return;
-	
+	}
+
 	// Don't let things stay in the past.
 	//  it is possible to start that way
 	//  by a trigger with a local time.
-	if ( thinktime < gpGlobals->curtime )
+	if( thinktime < gpGlobals->curtime )
 	{
-		thinktime = gpGlobals->curtime;	
+		thinktime = gpGlobals->curtime;
 	}
 
 	// simulate over the timestep
@@ -1781,19 +1835,19 @@ void CBaseEntity::PhysicsStep()
 
 	PhysicsCheckWaterTransition();
 
-	if ( VPhysicsGetObject() )
+	if( VPhysicsGetObject() )
 	{
-		if ( !VectorCompare( oldOrigin, GetAbsOrigin() ) )
+		if( !VectorCompare( oldOrigin, GetAbsOrigin() ) )
 		{
-			VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), vec3_angle, (GetFlags() & FL_FLY) ? true : false, dt );
+			VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), vec3_angle, ( GetFlags() & FL_FLY ) ? true : false, dt );
 		}
 	}
-	PhysicsRelinkChildren(dt);
+	PhysicsRelinkChildren( dt );
 }
 
 
-void UTIL_TraceLineFilterEntity( CBaseEntity *pEntity, const Vector &vecAbsStart, const Vector &vecAbsEnd, 
-					   unsigned int mask, const int nCollisionGroup, trace_t *ptr );
+void UTIL_TraceLineFilterEntity( CBaseEntity* pEntity, const Vector& vecAbsStart, const Vector& vecAbsEnd,
+								 unsigned int mask, const int nCollisionGroup, trace_t* ptr );
 
 // Check to see what (if anything) this MOVETYPE_STEP entity is standing on
 void CBaseEntity::PhysicsStepRecheckGround()
@@ -1803,20 +1857,20 @@ void CBaseEntity::PhysicsStepRecheckGround()
 	Vector	mins, maxs, point;
 	int		x, y;
 	trace_t trace;
-	
-	VectorAdd (GetAbsOrigin(), WorldAlignMins(), mins);
-	VectorAdd (GetAbsOrigin(), WorldAlignMaxs(), maxs);
+
+	VectorAdd( GetAbsOrigin(), WorldAlignMins(), mins );
+	VectorAdd( GetAbsOrigin(), WorldAlignMaxs(), maxs );
 	point[2] = mins[2] - 1;
-	for	(x=0 ; x<=1 ; x++)
+	for( x = 0 ; x <= 1 ; x++ )
 	{
-		for	(y=0 ; y<=1 ; y++)
+		for( y = 0 ; y <= 1 ; y++ )
 		{
 			point[0] = x ? maxs[0] : mins[0];
 			point[1] = y ? maxs[1] : mins[1];
 
-			ICollideable *pCollision = GetCollideable();
+			ICollideable* pCollision = GetCollideable();
 
-			if ( pCollision && IsNPC() )
+			if( pCollision && IsNPC() )
 			{
 				UTIL_TraceLineFilterEntity( this, point, point, mask, COLLISION_GROUP_NONE, &trace );
 			}
@@ -1825,7 +1879,7 @@ void CBaseEntity::PhysicsStepRecheckGround()
 				UTIL_TraceLine( point, point, mask, this, COLLISION_GROUP_NONE, &trace );
 			}
 
-			if ( trace.startsolid )
+			if( trace.startsolid )
 			{
 				SetGroundEntity( trace.m_pEnt );
 				return;
@@ -1836,8 +1890,8 @@ void CBaseEntity::PhysicsStepRecheckGround()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : timestep - 
+// Purpose:
+// Input  : timestep -
 //-----------------------------------------------------------------------------
 void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 {
@@ -1860,20 +1914,20 @@ void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 
 	bool isfalling = false;
 
-	if ( !wasonground )
+	if( !wasonground )
 	{
-		if ( !( GetFlags() & FL_FLY ) )
+		if( !( GetFlags() & FL_FLY ) )
 		{
-			if ( !( ( GetFlags() & FL_SWIM ) && ( GetWaterLevel() > 0 ) ) )
+			if( !( ( GetFlags() & FL_SWIM ) && ( GetWaterLevel() > 0 ) ) )
 			{
 #if 0
-				if ( GetAbsVelocity()[2] < ( GetCurrentGravity() * -0.1 ) )
+				if( GetAbsVelocity()[2] < ( GetCurrentGravity() * -0.1 ) )
 				{
 					hitsound = true;
 				}
 #endif
 
-				if ( !inwater )
+				if( !inwater )
 				{
 					PhysicsAddHalfGravity( timestep );
 					isfalling = true;
@@ -1882,27 +1936,29 @@ void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 		}
 	}
 
-	if ( !(GetFlags() & FL_STEPMOVEMENT) &&
-		(!VectorCompare(GetAbsVelocity(), vec3_origin) || 
-		 !VectorCompare(GetBaseVelocity(), vec3_origin)))
+	if( !( GetFlags() & FL_STEPMOVEMENT ) &&
+			( !VectorCompare( GetAbsVelocity(), vec3_origin ) ||
+			  !VectorCompare( GetBaseVelocity(), vec3_origin ) ) )
 	{
 		Vector vecAbsVelocity = GetAbsVelocity();
 
 		SetGroundEntity( NULL );
 		// apply friction
 		// let dead monsters who aren't completely onground slide
-		if ( wasonground )
+		if( wasonground )
 		{
 			speed = VectorLength( vecAbsVelocity );
-			if (speed)
+			if( speed )
 			{
 				friction = sv_friction.GetFloat() * GetFriction();
 
 				control = speed < sv_stopspeed.GetFloat() ? sv_stopspeed.GetFloat() : speed;
-				newspeed = speed - timestep*control*friction;
+				newspeed = speed - timestep * control * friction;
 
-				if (newspeed < 0)
+				if( newspeed < 0 )
+				{
 					newspeed = 0;
+				}
 				newspeed /= speed;
 
 				vecAbsVelocity[0] *= newspeed;
@@ -1928,7 +1984,7 @@ void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 
 		PhysicsCheckVelocity();
 
-		if ( !(GetFlags() & FL_ONGROUND) )
+		if( !( GetFlags() & FL_ONGROUND ) )
 		{
 			PhysicsStepRecheckGround();
 		}
@@ -1936,7 +1992,7 @@ void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 		PhysicsTouchTriggers();
 	}
 
-	if (!( GetFlags() & FL_ONGROUND ) && isfalling)
+	if( !( GetFlags() & FL_ONGROUND ) && isfalling )
 	{
 		PhysicsAddHalfGravity( timestep );
 	}
@@ -1945,23 +2001,23 @@ void CBaseEntity::PhysicsStepRunTimestep( float timestep )
 // After this long, if a player isn't updating, then return it's projectiles to server control
 #define PLAYER_PACKETS_STOPPED_SO_RETURN_TO_PHYSICS_TIME 1.0f
 
-void Physics_SimulateEntity( CBaseEntity *pEntity )
+void Physics_SimulateEntity( CBaseEntity* pEntity )
 {
-	VPROF( ( !vprof_scope_entity_gamephys.GetBool() ) ? 
-			"Physics_SimulateEntity" : 
-			EntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
+	VPROF( ( !vprof_scope_entity_gamephys.GetBool() ) ?
+		   "Physics_SimulateEntity" :
+		   EntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
 
-	if ( pEntity->edict() )
+	if( pEntity->edict() )
 	{
 #if !defined( NO_ENTITY_PREDICTION )
 		// Player drives simulation of this entity
-		if ( pEntity->IsPlayerSimulated() )
+		if( pEntity->IsPlayerSimulated() )
 		{
 			// If the player is gone, dropped, crashed, then return
 			//  control to the game code.
-			CBasePlayer *simulatingPlayer = pEntity->GetSimulatingPlayer();
-			if ( simulatingPlayer &&
-				( simulatingPlayer->GetTimeBase() > gpGlobals->curtime - PLAYER_PACKETS_STOPPED_SO_RETURN_TO_PHYSICS_TIME ) )
+			CBasePlayer* simulatingPlayer = pEntity->GetSimulatingPlayer();
+			if( simulatingPlayer &&
+					( simulatingPlayer->GetTimeBase() > gpGlobals->curtime - PLAYER_PACKETS_STOPPED_SO_RETURN_TO_PHYSICS_TIME ) )
 			{
 				// Okay, the guy is still around
 				return;
@@ -1977,28 +2033,28 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 		// If an object was at one point player simulated, but had that status revoked (as just
 		//  above when no packets have arrived in a while ), then we still will assume that the
 		//  owner/player will be predicting the entity locally (even if the game is playing like butt)
-		//  and so we won't spam that player with additional network data such as effects/sounds 
+		//  and so we won't spam that player with additional network data such as effects/sounds
 		//  that are theoretically being predicted by the player anyway.
-		if ( pEntity->m_PredictableID->IsActive() )
+		if( pEntity->m_PredictableID->IsActive() )
 		{
-			CBasePlayer *playerowner = ToBasePlayer( pEntity->GetOwnerEntity() );
-			if ( playerowner )
+			CBasePlayer* playerowner = ToBasePlayer( pEntity->GetOwnerEntity() );
+			if( playerowner )
 			{
-				CBasePlayer *pl = ToBasePlayer( UTIL_PlayerByIndex( pEntity->m_PredictableID->GetPlayer() + 1 ) );
+				CBasePlayer* pl = ToBasePlayer( UTIL_PlayerByIndex( pEntity->m_PredictableID->GetPlayer() + 1 ) );
 				// Is the player who created it still the owner?
-				if ( pl == playerowner )
+				if( pl == playerowner )
 				{
 					// Set up to suppress sending events to owner player
-					if ( pl->IsPredictingWeapons() )
+					if( pl->IsPredictingWeapons() )
 					{
 						IPredictionSystem::SuppressHostEvents( playerowner );
 					}
 				}
-			}	
+			}
 			{
-				VPROF( ( !vprof_scope_entity_gamephys.GetBool() ) ? 
-						"pEntity->PhysicsSimulate" : 
-						EntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
+				VPROF( ( !vprof_scope_entity_gamephys.GetBool() ) ?
+					   "pEntity->PhysicsSimulate" :
+					   EntityFactoryDictionary()->GetCannonicalName( pEntity->GetClassname() ) );
 
 				// Run entity physics
 				pEntity->PhysicsSimulate();
@@ -2024,7 +2080,7 @@ void Physics_SimulateEntity( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 void Physics_RunThinkFunctions( bool simulating )
 {
-	VPROF( "Physics_RunThinkFunctions");
+	VPROF( "Physics_RunThinkFunctions" );
 
 	g_bTestMoveTypeStepSimulation = sv_teststepsimulation.GetBool();
 
@@ -2032,13 +2088,13 @@ void Physics_RunThinkFunctions( bool simulating )
 	// clear all entites freed outside of this loop
 	gEntList.CleanupDeleteList();
 
-	if ( !simulating )
+	if( !simulating )
 	{
 		// only simulate players
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-			if ( pPlayer )
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+			if( pPlayer )
 			{
 				// Always reset clock to real sv.time
 				gpGlobals->curtime = starttime;
@@ -2052,19 +2108,21 @@ void Physics_RunThinkFunctions( bool simulating )
 	{
 		UTIL_DisableRemoveImmediate();
 		int listMax = SimThink_ListCount();
-		listMax = MAX(listMax,1);
-		CBaseEntity **list = (CBaseEntity **)stackalloc( sizeof(CBaseEntity *) * listMax );
+		listMax = MAX( listMax, 1 );
+		CBaseEntity** list = ( CBaseEntity** )stackalloc( sizeof( CBaseEntity* ) * listMax );
 		// iterate through all entities and have them think or simulate
-		
-		// UNDONE: This has problems with UTIL_RemoveImmediate() (now disabled during this loop).  
+
+		// UNDONE: This has problems with UTIL_RemoveImmediate() (now disabled during this loop).
 		// Do we really need UTIL_RemoveImmediate()?
 		int count = SimThink_ListCopy( list, listMax );
 
 		//DevMsg(1, "Count: %d\n", count );
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			if ( !list[i] )
+			if( !list[i] )
+			{
 				continue;
+			}
 			// Always reset clock to real sv.time
 			gpGlobals->curtime = starttime;
 			Physics_SimulateEntity( list[i] );

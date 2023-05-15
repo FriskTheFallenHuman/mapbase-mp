@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,7 +21,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IntroData_t *g_pIntroData;
+extern IntroData_t* g_pIntroData;
 
 
 // Arbitrary limit so that bad entity logic on the server can't consume tons of memory on the client.
@@ -43,21 +43,21 @@ struct screenfade_t
 };
 
 BEGIN_SIMPLE_DATADESC( screenfade_t )
-	DEFINE_FIELD( Speed,	FIELD_FLOAT ),
-	DEFINE_FIELD( End,		FIELD_TIME ),
-	DEFINE_FIELD( Reset,	FIELD_TIME ),
-	DEFINE_FIELD( r,		FIELD_CHARACTER ),
-	DEFINE_FIELD( g,		FIELD_CHARACTER ),
-	DEFINE_FIELD( b,		FIELD_CHARACTER ),
-	DEFINE_FIELD( alpha,	FIELD_CHARACTER ),
-	DEFINE_FIELD( Flags,	FIELD_INTEGER ),
-END_DATADESC()
+DEFINE_FIELD( Speed,	FIELD_FLOAT ),
+				 DEFINE_FIELD( End,		FIELD_TIME ),
+				 DEFINE_FIELD( Reset,	FIELD_TIME ),
+				 DEFINE_FIELD( r,		FIELD_CHARACTER ),
+				 DEFINE_FIELD( g,		FIELD_CHARACTER ),
+				 DEFINE_FIELD( b,		FIELD_CHARACTER ),
+				 DEFINE_FIELD( alpha,	FIELD_CHARACTER ),
+				 DEFINE_FIELD( Flags,	FIELD_INTEGER ),
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Screen shake variables
 //-----------------------------------------------------------------------------
-struct screenshake_t 
+				 struct screenshake_t
 {
 	float	endtime;
 	float	duration;
@@ -72,17 +72,17 @@ struct screenshake_t
 };
 
 BEGIN_SIMPLE_DATADESC( screenshake_t )
-	DEFINE_FIELD( endtime,		FIELD_TIME ),
-	DEFINE_FIELD( duration,		FIELD_FLOAT ),
-	DEFINE_FIELD( amplitude,	FIELD_FLOAT ),
-	DEFINE_FIELD( frequency,	FIELD_FLOAT ),
-	DEFINE_FIELD( nextShake,	FIELD_TIME ),
-	DEFINE_FIELD( offset,		FIELD_VECTOR ),
-	DEFINE_FIELD( angle,		FIELD_FLOAT ),
-END_DATADESC()
+DEFINE_FIELD( endtime,		FIELD_TIME ),
+				  DEFINE_FIELD( duration,		FIELD_FLOAT ),
+				  DEFINE_FIELD( amplitude,	FIELD_FLOAT ),
+				  DEFINE_FIELD( frequency,	FIELD_FLOAT ),
+				  DEFINE_FIELD( nextShake,	FIELD_TIME ),
+				  DEFINE_FIELD( offset,		FIELD_VECTOR ),
+				  DEFINE_FIELD( angle,		FIELD_FLOAT ),
+				  END_DATADESC()
 
 
-void CC_Shake_Stop();
+				  void CC_Shake_Stop();
 //-----------------------------------------------------------------------------
 // Purpose: Implements the view effects interface for the client .dll
 //-----------------------------------------------------------------------------
@@ -97,28 +97,28 @@ public:
 
 	virtual void	Init( void );
 	virtual void	LevelInit( void );
-	virtual void	GetFadeParams( byte *r, byte *g, byte *b, byte *a, bool *blend );
+	virtual void	GetFadeParams( byte* r, byte* g, byte* b, byte* a, bool* blend );
 	virtual void	CalcShake( void );
 	virtual void	ApplyShake( Vector& origin, QAngle& angles, float factor );
 
-	virtual void	Shake( ScreenShake_t &data );
-	virtual void	Fade( ScreenFade_t &data );
+	virtual void	Shake( ScreenShake_t& data );
+	virtual void	Fade( ScreenFade_t& data );
 	virtual void	ClearPermanentFades( void );
 	virtual void	FadeCalculate( void );
 	virtual void	ClearAllFades( void );
 
 	// Save / Restore
-	virtual void	Save( ISave *pSave );
-	virtual void	Restore( IRestore *pRestore, bool fCreatePlayers );
+	virtual void	Save( ISave* pSave );
+	virtual void	Restore( IRestore* pRestore, bool fCreatePlayers );
 
 private:
 
 	void ClearAllShakes();
-	screenshake_t *FindLongestShake();
+	screenshake_t* FindLongestShake();
 
-	CUtlVector<screenfade_t *>	m_FadeList;
+	CUtlVector<screenfade_t*>	m_FadeList;
 
-	CUtlVector<screenshake_t *>	m_ShakeList;
+	CUtlVector<screenshake_t*>	m_ShakeList;
 	Vector m_vecShakeAppliedOffset;
 	float m_flShakeAppliedAngle;
 
@@ -129,7 +129,7 @@ private:
 };
 
 static CViewEffects g_ViewEffects;
-IViewEffects *vieweffects = ( IViewEffects * )&g_ViewEffects;
+IViewEffects* vieweffects = ( IViewEffects* )& g_ViewEffects;
 
 // Callback function to call at end of screen m_Fade.
 static int s_nCallbackParameter;
@@ -137,13 +137,13 @@ static void ( *s_pfnFadeDoneCallback )( int parm1 );
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pszName - 
-//			iSize - 
-//			*pbuf - 
+// Purpose:
+// Input  : *pszName -
+//			iSize -
+//			*pbuf -
 // Output : static int
 //-----------------------------------------------------------------------------
-void __MsgFunc_Shake( bf_read &msg )
+void __MsgFunc_Shake( bf_read& msg )
 {
 	ScreenShake_t shake;
 
@@ -156,13 +156,13 @@ void __MsgFunc_Shake( bf_read &msg )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pszName - 
-//			iSize - 
-//			*pbuf - 
+// Purpose:
+// Input  : *pszName -
+//			iSize -
+//			*pbuf -
 // Output : static int
 //-----------------------------------------------------------------------------
-void __MsgFunc_Fade( bf_read &msg )
+void __MsgFunc_Fade( bf_read& msg )
 {
 	ScreenFade_t fade;
 
@@ -178,7 +178,7 @@ void __MsgFunc_Fade( bf_read &msg )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CViewEffects::Init( void )
 {
@@ -187,7 +187,7 @@ void CViewEffects::Init( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CViewEffects::LevelInit( void )
 {
@@ -197,7 +197,7 @@ void CViewEffects::LevelInit( void )
 
 
 static ConVar shake_show( "shake_show", "0", 0, "Displays a list of the active screen shakes." );
-static ConCommand shake_stop("shake_stop", CC_Shake_Stop, "Stops all active screen shakes.\n", FCVAR_CHEAT );
+static ConCommand shake_stop( "shake_stop", CC_Shake_Stop, "Stops all active screen shakes.\n", FCVAR_CHEAT );
 
 //-----------------------------------------------------------------------------
 // Purpose: Stops all active screen shakes.
@@ -217,7 +217,7 @@ void CViewEffects::CalcShake( void )
 	float	fraction, freq;
 
 	// We'll accumulate the aggregate shake for this frame into these data members.
-	m_vecShakeAppliedOffset.Init(0, 0, 0);
+	m_vecShakeAppliedOffset.Init( 0, 0, 0 );
 	m_flShakeAppliedAngle = 0;
 	float flRumbleAngle = 0;
 
@@ -228,21 +228,21 @@ void CViewEffects::CalcShake( void )
 
 	int nShakeCount = m_ShakeList.Count();
 
-	for ( int nShake = nShakeCount - 1; nShake >= 0; nShake-- )
+	for( int nShake = nShakeCount - 1; nShake >= 0; nShake-- )
 	{
-		screenshake_t *pShake = m_ShakeList.Element( nShake );
+		screenshake_t* pShake = m_ShakeList.Element( nShake );
 
-		if ( pShake->endtime == 0 )
+		if( pShake->endtime == 0 )
 		{
 			// Shouldn't be any such shakes in the list.
 			Assert( false );
 			continue;
 		}
 
-		if ( ( gpGlobals->curtime > pShake->endtime ) || 
-			pShake->duration <= 0 || 
-			pShake->amplitude <= 0 || 
-			pShake->frequency <= 0 )
+		if( ( gpGlobals->curtime > pShake->endtime ) ||
+				pShake->duration <= 0 ||
+				pShake->amplitude <= 0 ||
+				pShake->frequency <= 0 )
 		{
 			// Retire this shake.
 			delete m_ShakeList.Element( nShake );
@@ -250,7 +250,7 @@ void CViewEffects::CalcShake( void )
 			continue;
 		}
 
-		if ( bShow )
+		if( bShow )
 		{
 			con_nprint_t np;
 			np.time_to_live = 2.0f;
@@ -260,30 +260,30 @@ void CViewEffects::CalcShake( void )
 			np.color[2] = 0.1;
 			np.index = nShake + 2;
 
-			engine->Con_NXPrintf( &np, "%02d: dur(%8.2f) amp(%8.2f) freq(%8.2f)", nShake + 1, (double)pShake->duration, (double)pShake->amplitude, (double)pShake->frequency );
+			engine->Con_NXPrintf( &np, "%02d: dur(%8.2f) amp(%8.2f) freq(%8.2f)", nShake + 1, ( double )pShake->duration, ( double )pShake->amplitude, ( double )pShake->frequency );
 		}
 
-		if ( gpGlobals->curtime > pShake->nextShake )
+		if( gpGlobals->curtime > pShake->nextShake )
 		{
 			// Higher frequency means we recalc the extents more often and perturb the display again
-			pShake->nextShake = gpGlobals->curtime + (1.0f / pShake->frequency);
+			pShake->nextShake = gpGlobals->curtime + ( 1.0f / pShake->frequency );
 
 			// Compute random shake extents (the shake will settle down from this)
-			for (int i = 0; i < 3; i++ )
+			for( int i = 0; i < 3; i++ )
 			{
 				pShake->offset[i] = random->RandomFloat( -pShake->amplitude, pShake->amplitude );
 			}
 
-			pShake->angle = random->RandomFloat( -pShake->amplitude*0.25, pShake->amplitude*0.25 );
+			pShake->angle = random->RandomFloat( -pShake->amplitude * 0.25, pShake->amplitude * 0.25 );
 		}
 
 		// Ramp down amplitude over duration (fraction goes from 1 to 0 linearly with slope 1/duration)
 		fraction = ( pShake->endtime - gpGlobals->curtime ) / pShake->duration;
 
 		// Ramp up frequency over duration
-		if ( fraction )
+		if( fraction )
 		{
-			freq = (pShake->frequency / fraction);
+			freq = ( pShake->frequency / fraction );
 		}
 		else
 		{
@@ -295,12 +295,12 @@ void CViewEffects::CalcShake( void )
 
 		// Sine wave that slowly settles to zero
 		float angle = gpGlobals->curtime * freq;
-		if ( angle > 1e8 )
+		if( angle > 1e8 )
 		{
 			angle = 1e8;
 		}
 		fraction = fraction * sin( angle );
-		
+
 		if( pShake->command != SHAKE_START_NORUMBLE )
 		{
 			// As long as this isn't a NO RUMBLE effect, then accumulate rumble
@@ -310,7 +310,7 @@ void CViewEffects::CalcShake( void )
 		if( pShake->command != SHAKE_START_RUMBLEONLY )
 		{
 			// As long as this isn't a RUMBLE ONLY effect, then accumulate screen shake
-			
+
 			// Add to view origin
 			m_vecShakeAppliedOffset += pShake->offset * fraction;
 
@@ -319,13 +319,15 @@ void CViewEffects::CalcShake( void )
 		}
 
 		// Drop amplitude a bit, less for higher frequency shakes
-		pShake->amplitude -= pShake->amplitude * ( gpGlobals->frametime / (pShake->duration * pShake->frequency) );
+		pShake->amplitude -= pShake->amplitude * ( gpGlobals->frametime / ( pShake->duration * pShake->frequency ) );
 		// NVNT - update our amplitude.
-		hapticShakeAmp += pShake->amplitude*fraction;
+		hapticShakeAmp += pShake->amplitude * fraction;
 	}
 	// NVNT - apply our screen shake update
-	if ( haptics )
-		haptics->SetShake(hapticShakeAmp,1);
+	if( haptics )
+	{
+		haptics->SetShake( hapticShakeAmp, 1 );
+	}
 
 	// Feed this to the rumble system!
 	UpdateScreenShakeRumble( flRumbleAngle );
@@ -335,9 +337,9 @@ void CViewEffects::CalcShake( void )
 //-----------------------------------------------------------------------------
 // Purpose: Apply the current screen shake to this origin/angles.  Factor is the amount to apply
 //  This is so you can blend in part of the shake
-// Input  : origin - 
-//			angles - 
-//			factor - 
+// Input  : origin -
+//			angles -
+//			factor -
 //-----------------------------------------------------------------------------
 void CViewEffects::ApplyShake( Vector& origin, QAngle& angles, float factor )
 {
@@ -352,7 +354,7 @@ void CViewEffects::ApplyShake( Vector& origin, QAngle& angles, float factor )
 void CViewEffects::ClearAllShakes()
 {
 	int nShakeCount = m_ShakeList.Count();
-	for ( int i = 0; i < nShakeCount; i++ )
+	for( int i = 0; i < nShakeCount; i++ )
 	{
 		delete m_ShakeList.Element( i );
 	}
@@ -367,15 +369,15 @@ void CViewEffects::ClearAllShakes()
 //			most likely case is that we're modifying a shake with a long
 //			duration rather than a brief shake caused by an explosion, etc.
 //-----------------------------------------------------------------------------
-screenshake_t *CViewEffects::FindLongestShake()
+screenshake_t* CViewEffects::FindLongestShake()
 {
-	screenshake_t *pLongestShake = NULL;
+	screenshake_t* pLongestShake = NULL;
 
 	int nShakeCount = m_ShakeList.Count();
-	for ( int i = 0; i < nShakeCount; i++ )
+	for( int i = 0; i < nShakeCount; i++ )
 	{
-		screenshake_t *pShake = m_ShakeList.Element( i );
-		if ( pShake && ( !pLongestShake || ( pShake->duration > pLongestShake->duration ) ) )
+		screenshake_t* pShake = m_ShakeList.Element( i );
+		if( pShake && ( !pLongestShake || ( pShake->duration > pLongestShake->duration ) ) )
 		{
 			pLongestShake = pShake;
 		}
@@ -387,17 +389,17 @@ screenshake_t *CViewEffects::FindLongestShake()
 
 //-----------------------------------------------------------------------------
 // Purpose: Message hook to parse ScreenShake messages
-// Input  : pszName - 
-//			iSize - 
-//			pbuf - 
-// Output : 
+// Input  : pszName -
+//			iSize -
+//			pbuf -
+// Output :
 //-----------------------------------------------------------------------------
-void CViewEffects::Shake( ScreenShake_t &data )
+void CViewEffects::Shake( ScreenShake_t& data )
 {
-	if ( ( data.command == SHAKE_START || data.command == SHAKE_START_RUMBLEONLY ) && ( m_ShakeList.Count() < MAX_SHAKES ) )
+	if( ( data.command == SHAKE_START || data.command == SHAKE_START_RUMBLEONLY ) && ( m_ShakeList.Count() < MAX_SHAKES ) )
 	{
-		screenshake_t *pNewShake = new screenshake_t;
-			
+		screenshake_t* pNewShake = new screenshake_t;
+
 		pNewShake->amplitude = data.amplitude;
 		pNewShake->frequency = data.frequency;
 		pNewShake->duration = data.duration;
@@ -407,24 +409,24 @@ void CViewEffects::Shake( ScreenShake_t &data )
 
 		m_ShakeList.AddToTail( pNewShake );
 	}
-	else if ( data.command == SHAKE_STOP)
+	else if( data.command == SHAKE_STOP )
 	{
 		ClearAllShakes();
 	}
-	else if ( data.command == SHAKE_AMPLITUDE )
+	else if( data.command == SHAKE_AMPLITUDE )
 	{
 		// Look for the most likely shake to modify.
-		screenshake_t *pShake = FindLongestShake();
-		if ( pShake )
+		screenshake_t* pShake = FindLongestShake();
+		if( pShake )
 		{
 			pShake->amplitude = data.amplitude;
 		}
 	}
-	else if ( data.command == SHAKE_FREQUENCY )
+	else if( data.command == SHAKE_FREQUENCY )
 	{
 		// Look for the most likely shake to modify.
-		screenshake_t *pShake = FindLongestShake();
-		if ( pShake )
+		screenshake_t* pShake = FindLongestShake();
+		if( pShake )
 		{
 			pShake->frequency = data.frequency;
 		}
@@ -434,17 +436,17 @@ void CViewEffects::Shake( ScreenShake_t &data )
 
 //-----------------------------------------------------------------------------
 // Purpose: Message hook to parse ScreenFade messages
-// Input  : *pszName - 
-//			iSize - 
-//			*pbuf - 
+// Input  : *pszName -
+//			iSize -
+//			*pbuf -
 // Output : int
 //-----------------------------------------------------------------------------
-void CViewEffects::Fade( ScreenFade_t &data )
+void CViewEffects::Fade( ScreenFade_t& data )
 {
 	// Create a new fade and append it to the list
-	screenfade_t *pNewFade = new screenfade_t;
-	pNewFade->End	= data.duration * (1.0f/(float)(1<<SCREENFADE_FRACBITS));
-	pNewFade->Reset	= data.holdTime * (1.0f/(float)(1<<SCREENFADE_FRACBITS));
+	screenfade_t* pNewFade = new screenfade_t;
+	pNewFade->End	= data.duration * ( 1.0f / ( float )( 1 << SCREENFADE_FRACBITS ) );
+	pNewFade->Reset	= data.holdTime * ( 1.0f / ( float )( 1 << SCREENFADE_FRACBITS ) );
 	pNewFade->r		= data.r;
 	pNewFade->g		= data.g;
 	pNewFade->b		= data.b;
@@ -453,13 +455,13 @@ void CViewEffects::Fade( ScreenFade_t &data )
 	pNewFade->Speed	= 0;
 
 	// Calc fade speed
-	if ( data.duration > 0 )
+	if( data.duration > 0 )
 	{
-		if ( data.fadeFlags & FFADE_OUT )
+		if( data.fadeFlags & FFADE_OUT )
 		{
-			if ( pNewFade->End )
+			if( pNewFade->End )
 			{
-				pNewFade->Speed = -(float)pNewFade->alpha / pNewFade->End;
+				pNewFade->Speed = -( float )pNewFade->alpha / pNewFade->End;
 			}
 
 			pNewFade->End	+= gpGlobals->curtime;
@@ -467,9 +469,9 @@ void CViewEffects::Fade( ScreenFade_t &data )
 		}
 		else
 		{
-			if ( pNewFade->End )
+			if( pNewFade->End )
 			{
-				pNewFade->Speed = (float)pNewFade->alpha / pNewFade->End;
+				pNewFade->Speed = ( float )pNewFade->alpha / pNewFade->End;
 			}
 
 			pNewFade->Reset	+= gpGlobals->curtime;
@@ -477,7 +479,7 @@ void CViewEffects::Fade( ScreenFade_t &data )
 		}
 	}
 
-	if ( data.fadeFlags & FFADE_PURGE )
+	if( data.fadeFlags & FFADE_PURGE )
 	{
 		ClearAllFades();
 	}
@@ -493,21 +495,21 @@ void CViewEffects::FadeCalculate( void )
 	// Cycle through all fades and remove any that have finished (work backwards)
 	int i;
 	int iSize = m_FadeList.Size();
-	for (i = iSize-1; i >= 0; i-- )
+	for( i = iSize - 1; i >= 0; i-- )
 	{
-		screenfade_t *pFade = m_FadeList[i];
+		screenfade_t* pFade = m_FadeList[i];
 
 		// Keep pushing reset time out indefinitely
-		if ( pFade->Flags & FFADE_STAYOUT )
+		if( pFade->Flags & FFADE_STAYOUT )
 		{
 			pFade->Reset = gpGlobals->curtime + 0.1;
 		}
 
 		// All done?
-		if ( ( gpGlobals->curtime > pFade->Reset ) && ( gpGlobals->curtime > pFade->End ) )
+		if( ( gpGlobals->curtime > pFade->Reset ) && ( gpGlobals->curtime > pFade->End ) )
 		{
 			// User passed in a callback function, call it now
-			if ( s_pfnFadeDoneCallback )
+			if( s_pfnFadeDoneCallback )
 			{
 				s_pfnFadeDoneCallback( s_nCallbackParameter );
 				s_pfnFadeDoneCallback = NULL;
@@ -524,9 +526,9 @@ void CViewEffects::FadeCalculate( void )
 	m_FadeColorRGBA[0] = m_FadeColorRGBA[1] = m_FadeColorRGBA[2] = m_FadeColorRGBA[3] = 0;
 
 	// Cycle through all fades in the list and calculate the overall color/alpha
-	for ( i = 0; i < m_FadeList.Size(); i++ )
+	for( i = 0; i < m_FadeList.Size(); i++ )
 	{
-		screenfade_t *pFade = m_FadeList[i];
+		screenfade_t* pFade = m_FadeList[i];
 
 		// Color
 		m_FadeColorRGBA[0] += pFade->r;
@@ -535,10 +537,10 @@ void CViewEffects::FadeCalculate( void )
 
 		// Fading...
 		int iFadeAlpha;
-		if ( pFade->Flags & (FFADE_OUT|FFADE_IN) )
+		if( pFade->Flags & ( FFADE_OUT | FFADE_IN ) )
 		{
 			iFadeAlpha = pFade->Speed * ( pFade->End - gpGlobals->curtime );
-			if ( pFade->Flags & FFADE_OUT )
+			if( pFade->Flags & FFADE_OUT )
 			{
 				iFadeAlpha += pFade->alpha;
 			}
@@ -551,20 +553,20 @@ void CViewEffects::FadeCalculate( void )
 		}
 
 		// Use highest alpha
-		if ( iFadeAlpha > m_FadeColorRGBA[3] )
+		if( iFadeAlpha > m_FadeColorRGBA[3] )
 		{
 			m_FadeColorRGBA[3] = iFadeAlpha;
 		}
 
 		// Modulate?
-		if ( pFade->Flags & FFADE_MODULATE )
+		if( pFade->Flags & FFADE_MODULATE )
 		{
 			m_bModulate = true;
 		}
 	}
 
 	// Divide colors
-	if ( m_FadeList.Size() )
+	if( m_FadeList.Size() )
 	{
 		m_FadeColorRGBA[0] /= m_FadeList.Size();
 		m_FadeColorRGBA[1] /= m_FadeList.Size();
@@ -578,11 +580,11 @@ void CViewEffects::FadeCalculate( void )
 void CViewEffects::ClearPermanentFades( void )
 {
 	int iSize = m_FadeList.Size();
-	for (int i =  iSize-1; i >= 0; i-- )
+	for( int i =  iSize - 1; i >= 0; i-- )
 	{
-		screenfade_t *pFade = m_FadeList[i];
+		screenfade_t* pFade = m_FadeList[i];
 
-		if ( pFade->Flags & FFADE_STAYOUT )
+		if( pFade->Flags & FFADE_STAYOUT )
 		{
 			// Destroy this fade
 			m_FadeList.FindAndRemove( pFade );
@@ -597,7 +599,7 @@ void CViewEffects::ClearPermanentFades( void )
 void CViewEffects::ClearAllFades( void )
 {
 	int iSize = m_FadeList.Size();
-	for (int i =  iSize-1; i >= 0; i-- )
+	for( int i =  iSize - 1; i >= 0; i-- )
 	{
 		delete m_FadeList[i];
 	}
@@ -605,18 +607,18 @@ void CViewEffects::ClearAllFades( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Input  : context - Which call to Render is this ( CViewSetup::context )
-//			*r - 
-//			*g - 
-//			*b - 
-//			*a - 
-//			*blend - 
+//			*r -
+//			*g -
+//			*b -
+//			*a -
+//			*blend -
 //-----------------------------------------------------------------------------
-void CViewEffects::GetFadeParams( byte *r, byte *g, byte *b, byte *a, bool *blend )
+void CViewEffects::GetFadeParams( byte* r, byte* g, byte* b, byte* a, bool* blend )
 {
 	// If the intro is overriding our fade, use that instead
-	if ( g_pIntroData && g_pIntroData->m_flCurrentFadeColor[3] )
+	if( g_pIntroData && g_pIntroData->m_flCurrentFadeColor[3] )
 	{
 		*r = g_pIntroData->m_flCurrentFadeColor[0];
 		*g = g_pIntroData->m_flCurrentFadeColor[1];
@@ -636,15 +638,15 @@ void CViewEffects::GetFadeParams( byte *r, byte *g, byte *b, byte *a, bool *blen
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pSave - 
+// Purpose:
+// Input  : *pSave -
 //-----------------------------------------------------------------------------
-void CViewEffects::Save( ISave *pSave )
+void CViewEffects::Save( ISave* pSave )
 {
 	// Save the view fades
 	int iCount = m_FadeList.Count();
 	pSave->WriteInt( &iCount );
-	for ( int i = 0; i < iCount; i++ )
+	for( int i = 0; i < iCount; i++ )
 	{
 		pSave->StartBlock();
 		pSave->WriteAll( m_FadeList[i] );
@@ -654,7 +656,7 @@ void CViewEffects::Save( ISave *pSave )
 	// Save the view shakes
 	iCount = m_ShakeList.Count();
 	pSave->WriteInt( &iCount );
-	for ( int i = 0; i < iCount; i++ )
+	for( int i = 0; i < iCount; i++ )
 	{
 		pSave->StartBlock();
 		pSave->WriteAll( m_ShakeList[i] );
@@ -663,13 +665,13 @@ void CViewEffects::Save( ISave *pSave )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pRestore - 
-//			fCreatePlayers - 
+// Purpose:
+// Input  : *pRestore -
+//			fCreatePlayers -
 //-----------------------------------------------------------------------------
-void CViewEffects::Restore( IRestore *pRestore, bool fCreatePlayers )
+void CViewEffects::Restore( IRestore* pRestore, bool fCreatePlayers )
 {
-	CGameSaveRestoreInfo *pSaveData = pRestore->GetGameSaveRestoreInfo();
+	CGameSaveRestoreInfo* pSaveData = pRestore->GetGameSaveRestoreInfo();
 
 	// View effects is a singleton so we only need to restore it once,
 	// from the level that we are going into.
@@ -680,9 +682,9 @@ void CViewEffects::Restore( IRestore *pRestore, bool fCreatePlayers )
 
 		// Read in the view fades
 		int iCount = pRestore->ReadInt();
-		for ( int i = 0; i < iCount; i++ )
+		for( int i = 0; i < iCount; i++ )
 		{
-			screenfade_t *pNewFade = new screenfade_t;
+			screenfade_t* pNewFade = new screenfade_t;
 
 			pRestore->StartBlock();
 			pRestore->ReadAll( pNewFade );
@@ -693,9 +695,9 @@ void CViewEffects::Restore( IRestore *pRestore, bool fCreatePlayers )
 
 		// Read in the view shakes
 		iCount = pRestore->ReadInt();
-		for ( int i = 0; i < iCount; i++ )
+		for( int i = 0; i < iCount; i++ )
 		{
-			screenshake_t *pNewShake = new screenshake_t;
+			screenshake_t* pNewShake = new screenshake_t;
 
 			pRestore->StartBlock();
 			pRestore->ReadAll( pNewShake );
@@ -703,11 +705,11 @@ void CViewEffects::Restore( IRestore *pRestore, bool fCreatePlayers )
 
 			m_ShakeList.AddToTail( pNewShake );
 		}
-	}	
+	}
 }
 
 //====================================================================================================
-// CLIENTSIDE VIEW EFFECTS SAVE/RESTORE 
+// CLIENTSIDE VIEW EFFECTS SAVE/RESTORE
 //====================================================================================================
 static short VIEWEFFECTS_SAVE_RESTORE_VERSION = 2;
 
@@ -719,46 +721,46 @@ public:
 	{
 	}
 
-	const char *GetBlockName()
+	const char* GetBlockName()
 	{
 		return "ViewEffects";
 	}
 
 	//---------------------------------
 
-	virtual void PreSave( CSaveRestoreData * ) 
+	virtual void PreSave( CSaveRestoreData* )
 	{
 	}
-	
+
 	//---------------------------------
 
-	virtual void Save( ISave *pSave ) 
+	virtual void Save( ISave* pSave )
 	{
 		vieweffects->Save( pSave );
 	}
-	
+
 	//---------------------------------
 
-	virtual void WriteSaveHeaders( ISave *pSave )
+	virtual void WriteSaveHeaders( ISave* pSave )
 	{
 		pSave->WriteShort( &VIEWEFFECTS_SAVE_RESTORE_VERSION );
 	}
-	
+
 	//---------------------------------
 
-	virtual void PostSave() 
+	virtual void PostSave()
 	{
 	}
-	
+
 	//---------------------------------
 
-	virtual void PreRestore() 
+	virtual void PreRestore()
 	{
 	}
-	
+
 	//---------------------------------
 
-	virtual void ReadRestoreHeaders( IRestore *pRestore )
+	virtual void ReadRestoreHeaders( IRestore* pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
 		short version = pRestore->ReadShort();
@@ -766,21 +768,21 @@ public:
 	}
 
 	//---------------------------------
-	
-	virtual void Restore( IRestore *pRestore, bool fCreatePlayers ) 
+
+	virtual void Restore( IRestore* pRestore, bool fCreatePlayers )
 	{
-		if ( m_bDoLoad )
+		if( m_bDoLoad )
 		{
 			vieweffects->Restore( pRestore, fCreatePlayers );
 		}
 	}
-	
+
 	//---------------------------------
-	
-	virtual void PostRestore() 
+
+	virtual void PostRestore()
 	{
 	}
-	
+
 private:
 	bool	m_bDoLoad;
 };
@@ -789,7 +791,7 @@ private:
 
 CViewEffectsSaveRestoreBlockHandler g_ViewEffectsSaveRestoreBlockHandler;
 
-ISaveRestoreBlockHandler *GetViewEffectsRestoreBlockHandler()
+ISaveRestoreBlockHandler* GetViewEffectsRestoreBlockHandler()
 {
 	return &g_ViewEffectsSaveRestoreBlockHandler;
 }

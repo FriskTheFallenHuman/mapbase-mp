@@ -9,7 +9,7 @@
 #define PHYSICS_SAVERESTORE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "vphysics_interface.h"
@@ -20,8 +20,8 @@ class CPhysCollide;
 
 //-----------------------------------------------------------------------------
 
-ISaveRestoreBlockHandler *GetPhysSaveRestoreBlockHandler();
-ISaveRestoreOps *GetPhysObjSaveRestoreOps( PhysInterfaceId_t );
+ISaveRestoreBlockHandler* GetPhysSaveRestoreBlockHandler();
+ISaveRestoreOps* GetPhysObjSaveRestoreOps( PhysInterfaceId_t );
 
 //-------------------------------------
 
@@ -36,16 +36,16 @@ ISaveRestoreOps *GetPhysObjSaveRestoreOps( PhysInterfaceId_t );
 abstract_class IPhysSaveRestoreManager
 {
 public:
-	virtual void NoteBBox( const Vector &mins, const Vector &maxs, CPhysCollide * ) = 0;
+	virtual void NoteBBox( const Vector & mins, const Vector & maxs, CPhysCollide* ) = 0;
 
-	virtual void AssociateModel( IPhysicsObject *, int modelIndex ) = 0;
-	virtual void AssociateModel( IPhysicsObject *, const CPhysCollide *pModel ) = 0;
-	virtual void ForgetModel( IPhysicsObject * ) = 0;
+	virtual void AssociateModel( IPhysicsObject*, int modelIndex ) = 0;
+	virtual void AssociateModel( IPhysicsObject*, const CPhysCollide * pModel ) = 0;
+	virtual void ForgetModel( IPhysicsObject* ) = 0;
 
 	virtual void ForgetAllModels() = 0;
 };
 
-extern IPhysSaveRestoreManager *g_pPhysSaveRestoreManager;
+extern IPhysSaveRestoreManager* g_pPhysSaveRestoreManager;
 
 //=============================================================================
 

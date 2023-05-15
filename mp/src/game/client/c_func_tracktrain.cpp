@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -13,7 +13,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// An entity which emits other entities at points 
+// An entity which emits other entities at points
 //-----------------------------------------------------------------------------
 class C_FuncTrackTrain : public C_BaseEntity
 {
@@ -25,7 +25,10 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	virtual bool GetSoundSpatialization( SpatializationInfo_t& info );
 
-	virtual bool IsBaseTrain( void ) const { return true; }
+	virtual bool IsBaseTrain( void ) const
+	{
+		return true;
+	}
 
 
 private:
@@ -49,25 +52,28 @@ void C_FuncTrackTrain::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if (updateType == DATA_UPDATE_CREATED)
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		// Compute the cross-sectional area and dimension and length of the line segment
 		int nIndex1, nIndex2;
-		const Vector &vecOBBSize = CollisionProp()->OBBSize();
-		if ( ( vecOBBSize.x > vecOBBSize.y ) && ( vecOBBSize.x > vecOBBSize.z ) )
+		const Vector& vecOBBSize = CollisionProp()->OBBSize();
+		if( ( vecOBBSize.x > vecOBBSize.y ) && ( vecOBBSize.x > vecOBBSize.z ) )
 		{
 			m_nLongAxis = 0;
-			nIndex1 = 1; nIndex2 = 2;
+			nIndex1 = 1;
+			nIndex2 = 2;
 		}
-		else if ( vecOBBSize.y > vecOBBSize.z )
+		else if( vecOBBSize.y > vecOBBSize.z )
 		{
 			m_nLongAxis = 1;
-			nIndex1 = 0; nIndex2 = 2;
+			nIndex1 = 0;
+			nIndex2 = 2;
 		}
 		else
 		{
 			m_nLongAxis = 2;
-			nIndex1 = 0; nIndex2 = 1;
+			nIndex1 = 0;
+			nIndex2 = 1;
 		}
 
 		m_flRadius = sqrt( vecOBBSize[nIndex1] * vecOBBSize[nIndex1] + vecOBBSize[nIndex2] * vecOBBSize[nIndex2] ) * 0.5f;
@@ -82,15 +88,17 @@ void C_FuncTrackTrain::OnDataChanged( DataUpdateType_t updateType )
 bool C_FuncTrackTrain::GetSoundSpatialization( SpatializationInfo_t& info )
 {
 	// Out of PVS
-	if ( IsDormant() )
+	if( IsDormant() )
+	{
 		return false;
-	
-	if ( info.pflRadius )
+	}
+
+	if( info.pflRadius )
 	{
 		*info.pflRadius = m_flRadius;
 	}
-	
-	if ( info.pOrigin )
+
+	if( info.pOrigin )
 	{
 		Vector vecStart, vecEnd, vecWorldDir;
 		Vector vecDir = vec3_origin;
@@ -100,18 +108,18 @@ bool C_FuncTrackTrain::GetSoundSpatialization( SpatializationInfo_t& info )
 		VectorMA( vecStart, m_flLineLength, vecWorldDir, vecEnd );
 
 		float t;
-		CalcClosestPointOnLine( info.info.vListenerOrigin, vecStart, vecEnd, *info.pOrigin, &t ); 
-		if ( t < 0.0f )
+		CalcClosestPointOnLine( info.info.vListenerOrigin, vecStart, vecEnd, *info.pOrigin, &t );
+		if( t < 0.0f )
 		{
 			*info.pOrigin = vecStart;
 		}
-		else if ( t > 1.0f )
+		else if( t > 1.0f )
 		{
 			*info.pOrigin = vecEnd;
 		}
 	}
 
-	if ( info.pAngles )
+	if( info.pAngles )
 	{
 		VectorCopy( CollisionProp()->GetCollisionAngles(), *info.pAngles );
 	}

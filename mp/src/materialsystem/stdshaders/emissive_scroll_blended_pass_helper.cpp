@@ -95,25 +95,25 @@
 #include "SDK_emissive_scroll_blended_pass_ps20b.inc"
 
 #ifndef _X360
-#include "SDK_emissive_scroll_blended_pass_vs30.inc"
-#include "SDK_emissive_scroll_blended_pass_ps30.inc"
+	#include "SDK_emissive_scroll_blended_pass_vs30.inc"
+	#include "SDK_emissive_scroll_blended_pass_ps30.inc"
 #endif
 
-void InitParamsEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, EmissiveScrollBlendedPassVars_t &info )
+void InitParamsEmissiveScrollBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, EmissiveScrollBlendedPassVars_t& info )
 {
 	SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_HW_SKINNING );
 
-	if ( ( info.m_nEmissiveScrollVector != -1 ) && ( !params[info.m_nEmissiveScrollVector]->IsDefined() ) )
+	if( ( info.m_nEmissiveScrollVector != -1 ) && ( !params[info.m_nEmissiveScrollVector]->IsDefined() ) )
 	{
 		params[info.m_nEmissiveScrollVector]->SetVecValue( kDefaultEmissiveScrollVector, 4 );
 	}
 
-	if ( ( info.m_nBlendStrength != -1 ) && ( !params[info.m_nBlendStrength]->IsDefined() ) )
+	if( ( info.m_nBlendStrength != -1 ) && ( !params[info.m_nBlendStrength]->IsDefined() ) )
 	{
-        params[info.m_nBlendStrength]->SetFloatValue( kDefaultEmissiveBlendStrength );
+		params[info.m_nBlendStrength]->SetFloatValue( kDefaultEmissiveBlendStrength );
 	}
 
-	if ( ( info.m_nEmissiveTint != -1 ) && ( !params[info.m_nEmissiveTint]->IsDefined() ) )
+	if( ( info.m_nEmissiveTint != -1 ) && ( !params[info.m_nEmissiveTint]->IsDefined() ) )
 	{
 		params[info.m_nEmissiveTint]->SetVecValue( kDefaultEmissiveTint, 4 );
 	}
@@ -121,7 +121,7 @@ void InitParamsEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar**
 	SET_PARAM_FLOAT_IF_NOT_DEFINED( info.m_nTime, 0.0f );
 }
 
-void InitEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, EmissiveScrollBlendedPassVars_t &info )
+void InitEmissiveScrollBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, EmissiveScrollBlendedPassVars_t& info )
 {
 	// Load textures
 	pShader->LoadTexture( info.m_nBaseTexture );
@@ -129,8 +129,8 @@ void InitEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 	pShader->LoadTexture( info.m_nEmissiveTexture );
 }
 
-void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-								   IShaderShadow* pShaderShadow, EmissiveScrollBlendedPassVars_t &info, VertexCompressionType_t vertexCompression )
+void DrawEmissiveScrollBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+									IShaderShadow* pShaderShadow, EmissiveScrollBlendedPassVars_t& info, VertexCompressionType_t vertexCompression )
 {
 	SHADOW_STATE
 	{
@@ -144,7 +144,7 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			// Vertex Shader
@@ -196,16 +196,16 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 		pShaderAPI->SetDefaultState();
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			// Set Vertex Shader Combos
 			DECLARE_DYNAMIC_VERTEX_SHADER( sdk_emissive_scroll_blended_pass_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_emissive_scroll_blended_pass_vs20 );
 
-			// Set Vertex Shader Constants 
+			// Set Vertex Shader Constants
 			// None?
 
 			// Set Pixel Shader Combos
@@ -229,7 +229,7 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 			DECLARE_DYNAMIC_VERTEX_SHADER( sdk_emissive_scroll_blended_pass_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_emissive_scroll_blended_pass_vs30 );
 
 			DECLARE_DYNAMIC_PIXEL_SHADER( sdk_emissive_scroll_blended_pass_ps30 );
@@ -242,23 +242,27 @@ void DrawEmissiveScrollBlendedPass( CBaseVSShader *pShader, IMaterialVar** param
 		pShader->BindTexture( SHADER_SAMPLER1, info.m_nFlowTexture );
 		pShader->BindTexture( SHADER_SAMPLER2, info.m_nEmissiveTexture );
 
-		// Set Pixel Shader Constants 
+		// Set Pixel Shader Constants
 		//float vConstZero[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 		// This brings in the electricity and the second base texture when the second base texture is present
 		float vPsConst0[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		if (1)
+		if( 1 )
 		{
 			// Overall blend strength
 			vPsConst0[0] = IS_PARAM_DEFINED( info.m_nBlendStrength ) ? params[info.m_nBlendStrength]->GetFloatValue() : kDefaultEmissiveBlendStrength;
-			if ( vPsConst0[0] < 0.0f )
+			if( vPsConst0[0] < 0.0f )
+			{
 				vPsConst0[0] = 0.0f;
-			if ( vPsConst0[0] > 1.0f )
+			}
+			if( vPsConst0[0] > 1.0f )
+			{
 				vPsConst0[0] = 1.0f;
+			}
 
 			// Time % 1000 for scrolling
 			vPsConst0[1] = IS_PARAM_DEFINED( info.m_nTime ) && params[info.m_nTime]->GetFloatValue() > 0.0f ? params[info.m_nTime]->GetFloatValue() : pShaderAPI->CurrentTime();
-			vPsConst0[1] -= (float)( (int)( vPsConst0[1] / 1000.0f ) ) * 1000.0f;
+			vPsConst0[1] -= ( float )( ( int )( vPsConst0[1] / 1000.0f ) ) * 1000.0f;
 
 			// Dest alpha value for warping mask - NOTE: If we want to use this, we have to modify the blending mode above!
 			//if ( ( params[info.m_nWarpParam]->GetFloatValue() > 0.0f ) && ( params[info.m_nWarpParam]->GetFloatValue() < 1.0f ) )

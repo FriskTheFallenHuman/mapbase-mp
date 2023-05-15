@@ -7,7 +7,7 @@
 #ifndef TOUCHLINK_H
 #define TOUCHLINK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,13 +22,13 @@ enum touchlink_flags_t
 struct touchlink_t
 {
 #if defined( CLIENT_DLL )
-	C_BaseEntity		*entityTouched;
+	C_BaseEntity*		entityTouched;
 #else
 	EHANDLE				entityTouched;
 #endif
 	int					touchStamp;
-	touchlink_t			*nextLink;
-	touchlink_t			*prevLink;
+	touchlink_t*			nextLink;
+	touchlink_t*			prevLink;
 	int					flags;
 };
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef VEHICLES_H
 #define VEHICLES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "datamap.h"
@@ -78,16 +78,16 @@ class IPhysicsVehicleController
 public:
 	virtual ~IPhysicsVehicleController() {}
 	// call this from the game code with the control parameters
-	virtual void Update( float dt, vehicle_controlparams_t &controls ) = 0;
-	virtual const vehicle_operatingparams_t &GetOperatingParams() = 0;
-	virtual const vehicleparams_t &GetVehicleParams() = 0;
-	virtual vehicleparams_t &GetVehicleParamsForChange() = 0;
-	virtual float UpdateBooster(float dt) = 0;
-	virtual int GetWheelCount(void) = 0;
-	virtual IPhysicsObject *GetWheel(int index) = 0;
-	virtual bool GetWheelContactPoint( int index, Vector *pContactPoint, int *pSurfaceProps ) = 0;
-	virtual void SetSpringLength(int wheelIndex, float length) = 0;
-	virtual void SetWheelFriction(int wheelIndex, float friction) = 0;
+	virtual void Update( float dt, vehicle_controlparams_t& controls ) = 0;
+	virtual const vehicle_operatingparams_t& GetOperatingParams() = 0;
+	virtual const vehicleparams_t& GetVehicleParams() = 0;
+	virtual vehicleparams_t& GetVehicleParamsForChange() = 0;
+	virtual float UpdateBooster( float dt ) = 0;
+	virtual int GetWheelCount( void ) = 0;
+	virtual IPhysicsObject* GetWheel( int index ) = 0;
+	virtual bool GetWheelContactPoint( int index, Vector* pContactPoint, int* pSurfaceProps ) = 0;
+	virtual void SetSpringLength( int wheelIndex, float length ) = 0;
+	virtual void SetWheelFriction( int wheelIndex, float friction ) = 0;
 
 	virtual void OnVehicleEnter( void ) = 0;
 	virtual void OnVehicleExit( void ) = 0;
@@ -96,7 +96,7 @@ public:
 	virtual bool IsEngineDisabled( void ) = 0;
 
 	// Debug
-	virtual void GetCarSystemDebugData( vehicle_debugcarsystem_t &debugCarSystem ) = 0;
+	virtual void GetCarSystemDebugData( vehicle_debugcarsystem_t& debugCarSystem ) = 0;
 	virtual void VehicleDataReload() = 0;
 };
 
@@ -156,8 +156,8 @@ struct vehicle_axleparams_t
 	Vector						raytraceOffset;			// offset to raytrace for non-wheel (some wheeled) vehicles
 	vehicle_wheelparams_t		wheels;
 	vehicle_suspensionparams_t	suspension;
-	float						torqueFactor;		// normalized to 1 across all axles 
-													// e.g. 0,1 for rear wheel drive - 0.5,0.5 for 4 wheel drive
+	float						torqueFactor;		// normalized to 1 across all axles
+	// e.g. 0,1 for rear wheel drive - 0.5,0.5 for 4 wheel drive
 	float						brakeFactor;		// normalized to 1 across all axles
 };
 

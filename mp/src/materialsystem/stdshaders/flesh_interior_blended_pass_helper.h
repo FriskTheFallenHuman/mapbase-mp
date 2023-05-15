@@ -3,7 +3,7 @@
 #ifndef FLESH_INTERIOR_BLENDED_PASS_HELPER_H
 #define FLESH_INTERIOR_BLENDED_PASS_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <string.h>
@@ -21,7 +21,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct FleshInteriorBlendedPassVars_t
 {
-	FleshInteriorBlendedPassVars_t() { memset( this, 0xFF, sizeof(FleshInteriorBlendedPassVars_t) ); }
+	FleshInteriorBlendedPassVars_t()
+	{
+		memset( this, 0xFF, sizeof( FleshInteriorBlendedPassVars_t ) );
+	}
 
 	int m_nFleshTexture;
 	int m_nFleshNoiseTexture;
@@ -60,9 +63,9 @@ static const float kDefaultGlobalOpacity = 1.0f;
 static const float kDefaultGlossBrightness = 0.66f;
 static const float kDefaultScrollSpeed = 1.0f;
 
-void InitParamsFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, FleshInteriorBlendedPassVars_t &info );
-void InitFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, FleshInteriorBlendedPassVars_t &info );
-void DrawFleshInteriorBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-								   IShaderShadow* pShaderShadow, FleshInteriorBlendedPassVars_t &info, VertexCompressionType_t vertexCompression );
+void InitParamsFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, FleshInteriorBlendedPassVars_t& info );
+void InitFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, FleshInteriorBlendedPassVars_t& info );
+void DrawFleshInteriorBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+								   IShaderShadow* pShaderShadow, FleshInteriorBlendedPassVars_t& info, VertexCompressionType_t vertexCompression );
 
 #endif // FLESH_INTERIOR_BLENDED_PASS_HELPER_H

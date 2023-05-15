@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,7 +24,7 @@ class C_TEMetalSparks : public C_BaseTempEntity
 public:
 	DECLARE_CLIENTCLASS();
 
-					C_TEMetalSparks( void );
+	C_TEMetalSparks( void );
 	virtual			~C_TEMetalSparks( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -35,11 +35,11 @@ public:
 	Vector			m_vecPos;
 	Vector			m_vecDir;
 
-	const struct model_t *m_pModel;
+	const struct model_t* m_pModel;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEMetalSparks::C_TEMetalSparks( void )
 {
@@ -49,7 +49,7 @@ C_TEMetalSparks::C_TEMetalSparks( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEMetalSparks::~C_TEMetalSparks( void )
 {
@@ -64,17 +64,19 @@ void C_TEMetalSparks::Precache( void )
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordMetalSparks( const Vector &start, const Vector &direction )
+static inline void RecordMetalSparks( const Vector& start, const Vector& direction )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_METAL_SPARKS );
- 		msg->SetString( "name", "TE_MetalSparks" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_METAL_SPARKS );
+		msg->SetString( "name", "TE_MetalSparks" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -90,8 +92,8 @@ static inline void RecordMetalSparks( const Vector &start, const Vector &directi
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEMetalSparks::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -102,7 +104,7 @@ void C_TEMetalSparks::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_MetalSparks( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* dir )
+					 const Vector* pos, const Vector* dir )
 {
 	g_pEffects->MetalSparks( *pos, *dir );
 	RecordMetalSparks( *pos, *dir );
@@ -123,17 +125,19 @@ public:
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordArmorRicochet( const Vector &start, const Vector &direction )
+static inline void RecordArmorRicochet( const Vector& start, const Vector& direction )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_ARMOR_RICOCHET );
- 		msg->SetString( "name", "TE_ArmorRicochet" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_ARMOR_RICOCHET );
+		msg->SetString( "name", "TE_ArmorRicochet" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -152,7 +156,7 @@ static inline void RecordArmorRicochet( const Vector &start, const Vector &direc
 // Purpose: Client side version of API
 //-----------------------------------------------------------------------------
 void TE_ArmorRicochet( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* dir )
+					   const Vector* pos, const Vector* dir )
 {
 	g_pEffects->Ricochet( *pos, *dir );
 	RecordArmorRicochet( *pos, *dir );
@@ -160,8 +164,8 @@ void TE_ArmorRicochet( IRecipientFilter& filter, float delay,
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEArmorRicochet::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -172,11 +176,11 @@ void C_TEArmorRicochet::PostDataUpdate( DataUpdateType_t updateType )
 // Expose the TE to the engine.
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEMetalSparks, DT_TEMetalSparks, CTEMetalSparks );
 
-BEGIN_RECV_TABLE_NOBASE(C_TEMetalSparks, DT_TEMetalSparks)
-	RecvPropVector(RECVINFO(m_vecPos)),
-	RecvPropVector(RECVINFO(m_vecDir)),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE( C_TEMetalSparks, DT_TEMetalSparks )
+RecvPropVector( RECVINFO( m_vecPos ) ),
+				RecvPropVector( RECVINFO( m_vecDir ) ),
+				END_RECV_TABLE()
 
-IMPLEMENT_CLIENTCLASS_EVENT( C_TEArmorRicochet, DT_TEArmorRicochet, CTEArmorRicochet );
-BEGIN_RECV_TABLE(C_TEArmorRicochet, DT_TEArmorRicochet)
+				IMPLEMENT_CLIENTCLASS_EVENT( C_TEArmorRicochet, DT_TEArmorRicochet, CTEArmorRicochet );
+BEGIN_RECV_TABLE( C_TEArmorRicochet, DT_TEArmorRicochet )
 END_RECV_TABLE()

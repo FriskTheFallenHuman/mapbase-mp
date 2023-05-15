@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef COMPRESSED_LIGHT_CUBE_H
 #define COMPRESSED_LIGHT_CUBE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 

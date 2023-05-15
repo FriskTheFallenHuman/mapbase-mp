@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_SUN_H
 #define C_SUN_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
@@ -22,9 +22,9 @@
 
 class C_SunGlowOverlay : public CGlowOverlay
 {
-	virtual void CalcSpriteColorAndSize( float flDot, CGlowSprite *pSprite, float *flHorzSize, float *flVertSize, Vector *vColor )
+	virtual void CalcSpriteColorAndSize( float flDot, CGlowSprite* pSprite, float* flHorzSize, float* flVertSize, Vector* vColor )
 	{
-		if ( m_bModulateByDot )
+		if( m_bModulateByDot )
 		{
 			float alpha = RemapVal( flDot, 1.0f, 0.9f, 0.75f, 0.0f );
 			alpha = clamp( alpha, 0.0f, 0.75f );
@@ -63,15 +63,15 @@ public:
 	DECLARE_CLASS( C_Sun, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_Sun();
-					~C_Sun();
+	C_Sun();
+	~C_Sun();
 
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 public:
 	C_SunGlowOverlay	m_Overlay;
 	C_SunGlowOverlay	m_GlowOverlay;
-	
+
 	color32				m_clrOverlay;
 	int					m_nSize;
 	int					m_nOverlaySize;

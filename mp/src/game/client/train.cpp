@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -27,13 +27,13 @@ class CHudTrain: public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CHudTrain, vgui::Panel );
 public:
-	CHudTrain( const char *pElementName );
+	CHudTrain( const char* pElementName );
 	void Init( void );
 	void VidInit( void );
 	bool ShouldDraw( void );
-	virtual void	ApplySchemeSettings( vgui::IScheme *scheme );
+	virtual void	ApplySchemeSettings( vgui::IScheme* scheme );
 	virtual void	Paint( void );
-	void MsgFunc_Train(bf_read &msg);
+	void MsgFunc_Train( bf_read& msg );
 
 private:
 	int m_iPos;
@@ -48,22 +48,22 @@ DECLARE_HUDELEMENT( CHudTrain );
 DECLARE_HUD_MESSAGE( CHudTrain, Train )
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CHudTrain::CHudTrain( const char *pElementName ) :
+CHudTrain::CHudTrain( const char* pElementName ) :
 	CHudElement( pElementName ), BaseClass( NULL, "HudTrain" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
-	
+
 	SetHiddenBits( HIDEHUD_MISCSTATUS );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *scheme - 
+// Purpose:
+// Input  : *scheme -
 //-----------------------------------------------------------------------------
-void CHudTrain::ApplySchemeSettings( IScheme *scheme )
+void CHudTrain::ApplySchemeSettings( IScheme* scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
@@ -71,9 +71,9 @@ void CHudTrain::ApplySchemeSettings( IScheme *scheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudTrain::Init(void)
+void CHudTrain::Init( void )
 {
 	HOOK_HUD_MESSAGE( CHudTrain, Train );
 
@@ -81,14 +81,14 @@ void CHudTrain::Init(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudTrain::VidInit(void)
+void CHudTrain::VidInit( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CHudTrain::ShouldDraw( void )
 {
@@ -96,7 +96,7 @@ bool CHudTrain::ShouldDraw( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudTrain::Paint()
 {
@@ -104,9 +104,9 @@ void CHudTrain::Paint()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudTrain::MsgFunc_Train( bf_read &msg )
+void CHudTrain::MsgFunc_Train( bf_read& msg )
 {
 	// update Train data
 	m_iPos = msg.ReadByte();

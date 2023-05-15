@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef C_TESLA_H
 #define C_TESLA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -19,19 +19,19 @@
 class C_Tesla : public C_BaseEntity
 {
 public:
-	
+
 	DECLARE_CLASS( C_Tesla, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
 	C_Tesla();
 
-	virtual void ReceiveMessage( int classID, bf_read &msg );
+	virtual void ReceiveMessage( int classID, bf_read& msg );
 	virtual void ClientThink();
 
 
 public:
 
-	CUtlLinkedList<CTeslaInfo,int> m_QueuedCommands;
+	CUtlLinkedList<CTeslaInfo, int> m_QueuedCommands;
 	char m_SoundName[64];
 	char m_iszSpriteName[256];
 };

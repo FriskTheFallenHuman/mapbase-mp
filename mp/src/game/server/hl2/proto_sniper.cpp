@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -34,11 +34,11 @@
 #include "npc_rollermine.h"
 #include "eventqueue.h"
 #ifdef MAPBASE
-#include "CRagdollMagnet.h"
+	#include "CRagdollMagnet.h"
 #endif
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
-#include "mapbase/expandedrs_combine.h"
-#include "ai_speech.h"
+	#include "mapbase/expandedrs_combine.h"
+	#include "ai_speech.h"
 #endif
 
 #include "effect_dispatch_data.h"
@@ -49,12 +49,12 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern Vector PointOnLineNearestPoint(const Vector& vStartPos, const Vector& vEndPos, const Vector& vPoint);
+extern Vector PointOnLineNearestPoint( const Vector& vStartPos, const Vector& vEndPos, const Vector& vPoint );
 
 ConVar bulletSpeed( "bulletspeed", "6000" );
 ConVar sniperLines( "showsniperlines", "0" );
-ConVar sniperviewdist("sniperviewdist", "35" );
-ConVar showsniperdist("showsniperdist", "0" );
+ConVar sniperviewdist( "sniperviewdist", "35" );
+ConVar showsniperdist( "showsniperdist", "0" );
 ConVar sniperspeak( "sniperspeak", "0" );
 ConVar sniper_xbox_delay( "sniper_xbox_delay", "1" );
 
@@ -70,7 +70,7 @@ extern ConVar sk_dmg_sniper_penetrate_npc;
 #define SF_SNIPER_FAST			(1 << 20) ///< This is faster-shooting sniper. Paint time is decreased 25%. Bullet speed increases 150%.
 #define SF_SNIPER_NOSWEEP		(1 << 21) ///< This sniper doesn't sweep to the target or use decoys.
 #ifdef MAPBASE
-#define SF_SNIPER_DIE_ON_FIRE	(1 << 22) // This sniper dies on fire.
+	#define SF_SNIPER_DIE_ON_FIRE	(1 << 22) // This sniper dies on fire.
 #endif
 
 // If the last time I fired at someone was between 0 and this many seconds, draw
@@ -78,18 +78,18 @@ extern ConVar sk_dmg_sniper_penetrate_npc;
 #define SNIPER_FASTER_ATTACK_PERIOD		3.0f
 
 // These numbers determine the interval between shots. They used to be constants,
-// but are now keyfields. HL2 backwards compatibility was maintained by supplying 
+// but are now keyfields. HL2 backwards compatibility was maintained by supplying
 // default values in the constructor.
 #if 0
-// How long to aim at someone before shooting them.
-#define SNIPER_PAINT_ENEMY_TIME			1.0f
-// ...plus this
-#define	SNIPER_PAINT_NPC_TIME_NOISE		0.75f
+	// How long to aim at someone before shooting them.
+	#define SNIPER_PAINT_ENEMY_TIME			1.0f
+	// ...plus this
+	#define	SNIPER_PAINT_NPC_TIME_NOISE		0.75f
 #else
-// How long to aim at someone before shooting them.
-#define SNIPER_DEFAULT_PAINT_ENEMY_TIME			1.0f
-// ...plus this
-#define	SNIPER_DEFAULT_PAINT_NPC_TIME_NOISE		0.75f
+	// How long to aim at someone before shooting them.
+	#define SNIPER_DEFAULT_PAINT_ENEMY_TIME			1.0f
+	// ...plus this
+	#define	SNIPER_DEFAULT_PAINT_NPC_TIME_NOISE		0.75f
 #endif
 
 #define SNIPER_SUBSEQUENT_PAINT_TIME	( ( IsXbox() ) ? 1.0f : 0.4f )
@@ -141,7 +141,7 @@ class CSniperTarget : public CPointEntity
 public:
 	DECLARE_CLASS( CSniperTarget, CPointEntity );
 
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 
 	string_t m_iszGroupName;
 };
@@ -151,19 +151,22 @@ public:
 //---------------------------------------------------------
 BEGIN_DATADESC( CSniperTarget )
 
-	DEFINE_FIELD( m_iszGroupName, FIELD_STRING ),
+DEFINE_FIELD( m_iszGroupName, FIELD_STRING ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //=========================================================
 //=========================================================
-class CSniperBullet : public CBaseEntity
+			  class CSniperBullet : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CSniperBullet, CBaseEntity );
 
-	CSniperBullet( void ) { Init(); }
+	CSniperBullet( void )
+	{
+		Init();
+	}
 
 	Vector	m_vecDir;
 
@@ -178,9 +181,12 @@ public:
 	bool	m_bDirectShot;
 
 	void Precache( void );
-	bool IsActive( void ) { return m_fActive; }
+	bool IsActive( void )
+	{
+		return m_fActive;
+	}
 
-	bool Start( const Vector &vecOrigin, const Vector &vecTarget, CBaseEntity *pOwner, bool bDirectShot );
+	bool Start( const Vector& vecOrigin, const Vector& vecTarget, CBaseEntity* pOwner, bool bDirectShot );
 	void Stop( void );
 
 	void BulletThink( void );
@@ -195,7 +201,7 @@ private:
 	// hit, the shooter must wait.
 	bool	m_fActive;
 
-	// This tracks how many times this single bullet has 
+	// This tracks how many times this single bullet has
 	// struck. This is for penetration, so the bullet can
 	// go through things.
 	int		m_iImpacts;
@@ -222,30 +228,43 @@ public:
 	float	MaxYawSpeed( void );
 	Vector EyePosition( void );
 
-	void UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
+	void UpdateEfficiency( bool bInPVS )
+	{
+		SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL );
+		SetMoveEfficiency( AIME_NORMAL );
+	}
 
-	bool IsLaserOn( void ) { return m_pBeam != NULL; }
+	bool IsLaserOn( void )
+	{
+		return m_pBeam != NULL;
+	}
 
-	void Event_Killed( const CTakeDamageInfo &info );
-	void Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	void Event_Killed( const CTakeDamageInfo& info );
+	void Event_KilledOther( CBaseEntity* pVictim, const CTakeDamageInfo& info );
 	void UpdateOnRemove( void );
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	bool WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions) {return true;}
-	int IRelationPriority( CBaseEntity *pTarget );
-	bool IsFastSniper() { return HasSpawnFlags(SF_SNIPER_FAST); }
+	int OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	bool WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
+	{
+		return true;
+	}
+	int IRelationPriority( CBaseEntity* pTarget );
+	bool IsFastSniper()
+	{
+		return HasSpawnFlags( SF_SNIPER_FAST );
+	}
 
-	bool QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC = false );
+	bool QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC = false );
 
-	virtual bool FInViewCone( CBaseEntity *pEntity );
+	virtual bool FInViewCone( CBaseEntity* pEntity );
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
-	int RangeAttack1Conditions ( float flDot, float flDist );
-	bool FireBullet( const Vector &vecTarget, bool bDirectShot );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
+	int RangeAttack1Conditions( float flDot, float flDist );
+	bool FireBullet( const Vector& vecTarget, bool bDirectShot );
 	float GetBulletSpeed();
-	Vector  DesiredBodyTarget( CBaseEntity *pTarget );
-	Vector	LeadTarget( CBaseEntity *pTarget );
-	CBaseEntity *PickDeadPlayerTarget();
+	Vector  DesiredBodyTarget( CBaseEntity* pTarget );
+	Vector	LeadTarget( CBaseEntity* pTarget );
+	CBaseEntity* PickDeadPlayerTarget();
 
 	virtual int SelectSchedule( void );
 	virtual int TranslateSchedule( int scheduleType );
@@ -254,13 +273,13 @@ public:
 	Activity	NPC_TranslateActivity( Activity eNewActivity );
 #endif
 
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 
 	void PrescheduleThink( void );
 
-	static const char *pAttackSounds[];
+	static const char* pAttackSounds[];
 
-	bool FCanCheckAttacks ( void );
+	bool FCanCheckAttacks( void );
 	bool FindDecoyObject( void );
 
 	void ScopeGlint();
@@ -270,13 +289,16 @@ public:
 
 	Vector GetBulletOrigin( void );
 
-	virtual int Restore( IRestore &restore );
+	virtual int Restore( IRestore& restore );
 
 	virtual void OnScheduleChange( void );
 
-	bool FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
+	bool FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
 
-	bool ShouldNotDistanceCull() { return true; }
+	bool ShouldNotDistanceCull()
+	{
+		return true;
+	}
 
 	int DrawDebugTextOverlays();
 
@@ -284,62 +306,71 @@ public:
 
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
 	//DeclareResponseSystem()
-	bool SpeakIfAllowed(const char *concept, const char *modifiers = NULL);
+	bool SpeakIfAllowed( const char* concept, const char* modifiers = NULL );
 	void ModifyOrAppendCriteria( AI_CriteriaSet& set );
 
-	virtual CAI_Expresser *CreateExpresser( void );
-	virtual CAI_Expresser *GetExpresser() { return m_pExpresser; }
-	virtual void		PostConstructor( const char *szClassname );
+	virtual CAI_Expresser* CreateExpresser( void );
+	virtual CAI_Expresser* GetExpresser()
+	{
+		return m_pExpresser;
+	}
+	virtual void		PostConstructor( const char* szClassname );
 #endif
 
 private:
-	
+
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
-	CAI_Expresser * m_pExpresser;
+	CAI_Expresser* m_pExpresser;
 #endif
-	
+
 	bool ShouldSnapShot( void );
 	void ClearTargetGroup( void );
 
 	float GetPositionParameter( float flTime, bool fLinear );
 
-	void GetPaintAim( const Vector &vecStart, const Vector &vecGoal, float flParameter, Vector *pProgress );
+	void GetPaintAim( const Vector& vecStart, const Vector& vecGoal, float flParameter, Vector* pProgress );
 
-	bool IsSweepingRandomly( void ) { return m_iNumGroupTargets > 0; }
+	bool IsSweepingRandomly( void )
+	{
+		return m_iNumGroupTargets > 0;
+	}
 
 	void ClearOldDecoys( void );
-	void AddOldDecoy( CBaseEntity *pDecoy );
-	bool HasOldDecoy( CBaseEntity *pDecoy );
+	void AddOldDecoy( CBaseEntity* pDecoy );
+	bool HasOldDecoy( CBaseEntity* pDecoy );
 	bool FindFrustratedShot( float flNoise );
 
-	bool VerifyShot( CBaseEntity *pTarget );
+	bool VerifyShot( CBaseEntity* pTarget );
 
-	void SetSweepTarget( const char *pszTarget );
+	void SetSweepTarget( const char* pszTarget );
 
 	// Inputs
-	void InputEnableSniper( inputdata_t &inputdata );
-	void InputDisableSniper( inputdata_t &inputdata );
-	void InputSetDecoyRadius( inputdata_t &inputdata );
-	void InputSweepTarget( inputdata_t &inputdata );
-	void InputSweepTargetHighestPriority( inputdata_t &inputdata );
-	void InputSweepGroupRandomly( inputdata_t &inputdata );
-	void InputStopSweeping( inputdata_t &inputdata );
-	void InputProtectTarget( inputdata_t &inputdata );
+	void InputEnableSniper( inputdata_t& inputdata );
+	void InputDisableSniper( inputdata_t& inputdata );
+	void InputSetDecoyRadius( inputdata_t& inputdata );
+	void InputSweepTarget( inputdata_t& inputdata );
+	void InputSweepTargetHighestPriority( inputdata_t& inputdata );
+	void InputSweepGroupRandomly( inputdata_t& inputdata );
+	void InputStopSweeping( inputdata_t& inputdata );
+	void InputProtectTarget( inputdata_t& inputdata );
 
 #if HL2_EPISODIC
-	void InputSetPaintInterval( inputdata_t &inputdata );
-	void InputSetPaintIntervalVariance( inputdata_t &inputdata );
+	void InputSetPaintInterval( inputdata_t& inputdata );
+	void InputSetPaintIntervalVariance( inputdata_t& inputdata );
 #endif
 
 	void LaserOff( void );
-	void LaserOn( const Vector &vecTarget, const Vector &vecDeviance );
+	void LaserOn( const Vector& vecTarget, const Vector& vecDeviance );
 
-	void PaintTarget( const Vector &vecTarget, float flPaintTime );
+	void PaintTarget( const Vector& vecTarget, float flPaintTime );
 
 	bool IsPlayerAllySniper();
 
 #ifdef MAPBASE
-	const Vector &GetPaintCursor() { return m_vecPaintCursor; }
+	const Vector& GetPaintCursor()
+	{
+		return m_vecPaintCursor;
+	}
 #endif
 
 private:
@@ -352,7 +383,7 @@ private:
 	/// to yield m_flPaintTime's initial delay.
 	float m_flKeyfieldPaintTimeNoise;
 
-	// This keeps track of the last spot the laser painted. For 
+	// This keeps track of the last spot the laser painted. For
 	// continuous sweeping that changes direction.
 	Vector m_vecPaintCursor;
 	float  m_flPaintTime;
@@ -374,12 +405,12 @@ private:
 
 	float						m_flDecoyRadius;
 
-	CBeam						*m_pBeam;
+	CBeam*						m_pBeam;
 
 	bool m_fSnapShot;
 
 	int							m_iNumGroupTargets;
-	CBaseEntity					*m_pGroupTarget[ SNIPER_MAX_GROUP_TARGETS ];
+	CBaseEntity*					m_pGroupTarget[ SNIPER_MAX_GROUP_TARGETS ];
 
 	bool						m_bSweepHighestPriority; // My hack :[ (sjb)
 	int							m_iBeamBrightness;
@@ -407,7 +438,7 @@ private:
 #endif
 
 	COutputEvent				m_OnShotFired;
-	
+
 	DEFINE_CUSTOM_AI;
 
 	DECLARE_DATADESC();
@@ -423,13 +454,13 @@ private:
 //
 // PATIENCE:
 // The concept of "patience" is simply a restriction placed
-// on how close a target has to be to the sniper before the 
+// on how close a target has to be to the sniper before the
 // sniper will take his first shot at the target. This
 // distance is referred to as "patience" is set by the `
-// designer in Worldcraft. The sniper won't attack unless 
-// the target enters this radius. Once the sniper takes 
+// designer in Worldcraft. The sniper won't attack unless
+// the target enters this radius. Once the sniper takes
 // this first shot, he will not return to a patient state.
-// He will then shoot at any/all targets to which there is 
+// He will then shoot at any/all targets to which there is
 // a clear shot, regardless of distance. (sjb)
 //
 //
@@ -448,71 +479,71 @@ short sHaloSprite;
 //=========================================================
 BEGIN_DATADESC( CProtoSniper )
 
-	DEFINE_FIELD( m_fWeaponLoaded, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fEnabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_fIsPatient, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flPatience, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iMisses, FIELD_INTEGER ),
-	DEFINE_FIELD( m_hDecoyObject, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hSweepTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecDecoyObjectTarget, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecFrustratedTarget, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecPaintStart, FIELD_VECTOR ),
-	DEFINE_FIELD( m_flPaintTime, FIELD_TIME ),
-	DEFINE_FIELD( m_vecPaintCursor, FIELD_VECTOR ),
-	DEFINE_FIELD( m_flFrustration, FIELD_TIME ),
-	DEFINE_FIELD( m_flThinkInterval, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDecoyRadius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_pBeam, FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_fSnapShot, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iNumGroupTargets, FIELD_INTEGER ),
-	DEFINE_ARRAY( m_pGroupTarget, FIELD_CLASSPTR, SNIPER_MAX_GROUP_TARGETS  ),
-	DEFINE_KEYFIELD( m_iBeamBrightness, FIELD_INTEGER, "beambrightness" ),
+DEFINE_FIELD( m_fWeaponLoaded, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_fEnabled, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_fIsPatient, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flPatience, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_iMisses, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_hDecoyObject, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hSweepTarget, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_vecDecoyObjectTarget, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecFrustratedTarget, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecPaintStart, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_flPaintTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_vecPaintCursor, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_flFrustration, FIELD_TIME ),
+			  DEFINE_FIELD( m_flThinkInterval, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flDecoyRadius, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_pBeam, FIELD_CLASSPTR ),
+			  DEFINE_FIELD( m_fSnapShot, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iNumGroupTargets, FIELD_INTEGER ),
+			  DEFINE_ARRAY( m_pGroupTarget, FIELD_CLASSPTR, SNIPER_MAX_GROUP_TARGETS ),
+			  DEFINE_KEYFIELD( m_iBeamBrightness, FIELD_INTEGER, "beambrightness" ),
 
 
-	DEFINE_KEYFIELD(m_flShieldDist, FIELD_FLOAT, "shielddistance" ),
-	DEFINE_KEYFIELD(m_flShieldRadius, FIELD_FLOAT, "shieldradius" ),
-	DEFINE_KEYFIELD(m_bShootZombiesInChest, FIELD_BOOLEAN, "shootZombiesInChest" ),
+			  DEFINE_KEYFIELD( m_flShieldDist, FIELD_FLOAT, "shielddistance" ),
+			  DEFINE_KEYFIELD( m_flShieldRadius, FIELD_FLOAT, "shieldradius" ),
+			  DEFINE_KEYFIELD( m_bShootZombiesInChest, FIELD_BOOLEAN, "shootZombiesInChest" ),
 
-	DEFINE_KEYFIELD(m_flKeyfieldPaintTime, FIELD_FLOAT, "PaintInterval" ),
-	DEFINE_KEYFIELD(m_flKeyfieldPaintTimeNoise, FIELD_FLOAT, "PaintIntervalVariance" ),
+			  DEFINE_KEYFIELD( m_flKeyfieldPaintTime, FIELD_FLOAT, "PaintInterval" ),
+			  DEFINE_KEYFIELD( m_flKeyfieldPaintTimeNoise, FIELD_FLOAT, "PaintIntervalVariance" ),
 
-	DEFINE_FIELD( m_flTimeLastAttackedPlayer, FIELD_TIME ),
-	DEFINE_FIELD( m_hProtectTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flDangerEnemyDistance, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flTimeLastAttackedPlayer, FIELD_TIME ),
+			  DEFINE_FIELD( m_hProtectTarget, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flDangerEnemyDistance, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_bSweepHighestPriority, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bSweepHighestPriority, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_bWarnedTargetEntity, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeLastShotMissed, FIELD_TIME ),
+			  DEFINE_FIELD( m_bWarnedTargetEntity, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flTimeLastShotMissed, FIELD_TIME ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_iszBeamName, FIELD_STRING, "BeamName" ),
 	DEFINE_KEYFIELD( m_BeamColor, FIELD_COLOR32, "BeamColor" ),
 #endif
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableSniper", InputEnableSniper ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableSniper", InputDisableSniper ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetDecoyRadius", InputSetDecoyRadius ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SweepTarget", InputSweepTarget ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SweepTargetHighestPriority", InputSweepTargetHighestPriority ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SweepGroupRandomly", InputSweepGroupRandomly ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "StopSweeping", InputStopSweeping ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "ProtectTarget", InputProtectTarget ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "EnableSniper", InputEnableSniper ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "DisableSniper", InputDisableSniper ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetDecoyRadius", InputSetDecoyRadius ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SweepTarget", InputSweepTarget ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SweepTargetHighestPriority", InputSweepTargetHighestPriority ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SweepGroupRandomly", InputSweepGroupRandomly ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "StopSweeping", InputStopSweeping ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "ProtectTarget", InputProtectTarget ),
 
 #if HL2_EPISODIC
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPaintInterval", InputSetPaintInterval ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPaintIntervalVariance", InputSetPaintIntervalVariance ),
 #endif
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnShotFired, "OnShotFired" ),
-	
-END_DATADESC()
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnShotFired, "OnShotFired" ),
+
+			  END_DATADESC()
 
 #ifdef MAPBASE_VSCRIPT
-BEGIN_ENT_SCRIPTDESC( CProtoSniper, CAI_BaseNPC, "Combine sniper NPC." )
+	BEGIN_ENT_SCRIPTDESC( CProtoSniper, CAI_BaseNPC, "Combine sniper NPC." )
 
 	DEFINE_SCRIPTFUNC( GetBulletSpeed, "" )
 	DEFINE_SCRIPTFUNC( GetBulletOrigin, "" )
@@ -528,37 +559,37 @@ BEGIN_ENT_SCRIPTDESC( CProtoSniper, CAI_BaseNPC, "Combine sniper NPC." )
 
 	DEFINE_SCRIPTFUNC( GetPaintCursor, "Get the point the sniper is currently aiming at." )
 
-END_SCRIPTDESC()
+	END_SCRIPTDESC()
 #endif
 
 
 
 //=========================================================
 //=========================================================
-BEGIN_DATADESC( CSniperBullet )
+			  BEGIN_DATADESC( CSniperBullet )
 
-	DEFINE_FIELD( m_SoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_AmmoType, FIELD_INTEGER ),
-	DEFINE_FIELD( m_PenetratedAmmoType, FIELD_INTEGER ),
-	DEFINE_FIELD( m_fActive, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iImpacts, FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecOrigin, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecDir, FIELD_VECTOR ),
-	DEFINE_FIELD( m_flLastThink, FIELD_TIME ),
-	DEFINE_FIELD( m_Speed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bDirectShot, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_SoundTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_AmmoType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_PenetratedAmmoType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_fActive, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iImpacts, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_vecOrigin, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecDir, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_flLastThink, FIELD_TIME ),
+			  DEFINE_FIELD( m_Speed, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_bDirectShot, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_vecStart, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecEnd, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecStart, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecEnd, FIELD_VECTOR ),
 
-	DEFINE_THINKFUNC( BulletThink ),
+			  DEFINE_THINKFUNC( BulletThink ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //=========================================================
 // Private conditions
 //=========================================================
-enum Sniper_Conds
+			  enum Sniper_Conds
 {
 	COND_SNIPER_CANATTACKDECOY = LAST_SHARED_CONDITION,
 	COND_SNIPER_SUPPRESSED,
@@ -611,9 +642,9 @@ enum
 
 
 
-CProtoSniper::CProtoSniper( void ) : m_flKeyfieldPaintTime(SNIPER_DEFAULT_PAINT_ENEMY_TIME), 
-	m_flKeyfieldPaintTimeNoise(SNIPER_DEFAULT_PAINT_NPC_TIME_NOISE)
-{ 
+CProtoSniper::CProtoSniper( void ) : m_flKeyfieldPaintTime( SNIPER_DEFAULT_PAINT_ENEMY_TIME ),
+	m_flKeyfieldPaintTimeNoise( SNIPER_DEFAULT_PAINT_NPC_TIME_NOISE )
+{
 #ifdef _DEBUG
 	m_vecPaintCursor.Init();
 	m_vecDecoyObjectTarget.Init();
@@ -621,17 +652,17 @@ CProtoSniper::CProtoSniper( void ) : m_flKeyfieldPaintTime(SNIPER_DEFAULT_PAINT_
 	m_vecPaintStart.Init();
 #endif
 
-	m_iMisses = 0; 
-	m_flDecoyRadius = SNIPER_DECOY_RADIUS; 
-	m_fSnapShot = false; 
+	m_iMisses = 0;
+	m_flDecoyRadius = SNIPER_DECOY_RADIUS;
+	m_fSnapShot = false;
 	m_iBeamBrightness = 100;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CProtoSniper::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC )
+bool CProtoSniper::QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC )
 {
-	Disposition_t disp = IRelationType(pEntity);
+	Disposition_t disp = IRelationType( pEntity );
 #ifdef MAPBASE
 	if( disp > D_FR )
 #else
@@ -642,9 +673,9 @@ bool CProtoSniper::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfN
 		return false;
 	}
 
-	if( !FInViewCone(pEntity) )
+	if( !FInViewCone( pEntity ) )
 	{
-		// Yes, this does call FInViewCone twice a frame for all entities checked for 
+		// Yes, this does call FInViewCone twice a frame for all entities checked for
 		// visibility, but doing this allows us to cut out a bunch of traces that would
 		// be done by VerifyShot for entities that aren't even in our viewcone.
 		return false;
@@ -652,7 +683,7 @@ bool CProtoSniper::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfN
 
 	if( VerifyShot( pEntity ) )
 	{
-		return BaseClass::QuerySeeEntity(pEntity, bOnlyHateOrFearIfNPC);
+		return BaseClass::QuerySeeEntity( pEntity, bOnlyHateOrFearIfNPC );
 	}
 
 	return false;
@@ -660,11 +691,11 @@ bool CProtoSniper::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfN
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CProtoSniper::FInViewCone ( CBaseEntity *pEntity )
+bool CProtoSniper::FInViewCone( CBaseEntity* pEntity )
 {
 	if( pEntity->GetFlags() & FL_CLIENT )
 	{
-		CBasePlayer *pPlayer;
+		CBasePlayer* pPlayer;
 
 		pPlayer = ToBasePlayer( pEntity );
 
@@ -678,7 +709,7 @@ bool CProtoSniper::FInViewCone ( CBaseEntity *pEntity )
 
 			vecEyes = EyePosition();
 			vecLOS = m_vecPaintCursor - vecEyes;
-			VectorNormalize(vecLOS);
+			VectorNormalize( vecLOS );
 
 			vecNearestPoint = PointOnLineNearestPoint( EyePosition(), EyePosition() + vecLOS * 8192, pPlayer->EyePosition() );
 
@@ -707,7 +738,7 @@ void CProtoSniper::LaserOff( void )
 {
 	if( m_pBeam )
 	{
-		UTIL_Remove( m_pBeam);
+		UTIL_Remove( m_pBeam );
 		m_pBeam = NULL;
 	}
 
@@ -718,12 +749,12 @@ void CProtoSniper::LaserOff( void )
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 #define LASER_LEAD_DIST	64
-void CProtoSniper::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
+void CProtoSniper::LaserOn( const Vector& vecTarget, const Vector& vecDeviance )
 {
-	if (!m_pBeam)
+	if( !m_pBeam )
 	{
 #ifdef MAPBASE
-		m_pBeam = CBeam::BeamCreate( STRING(m_iszBeamName), 1.0f );
+		m_pBeam = CBeam::BeamCreate( STRING( m_iszBeamName ), 1.0f );
 		m_pBeam->SetColor( m_BeamColor.r, m_BeamColor.g, m_BeamColor.b );
 #else
 		m_pBeam = CBeam::BeamCreate( "effects/bluelaser1.vmt", 1.0f );
@@ -752,7 +783,7 @@ void CProtoSniper::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
 	vecInitialAim.x += random->RandomFloat( -vecDeviance.x, vecDeviance.x );
 	vecInitialAim.y += random->RandomFloat( -vecDeviance.y, vecDeviance.y );
 	vecInitialAim.z += random->RandomFloat( -vecDeviance.z, vecDeviance.z );
-	
+
 	// The beam is backwards, sortof. The endpoint is the sniper. This is
 	// so that the beam can be tapered to very thin where it emits from the sniper.
 	m_pBeam->PointsInit( vecInitialAim, GetBulletOrigin() );
@@ -767,7 +798,7 @@ void CProtoSniper::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
 
 	m_vecPaintStart = vecInitialAim;
 
-	// Think faster whilst painting. Higher resolution on the 
+	// Think faster whilst painting. Higher resolution on the
 	// beam movement.
 	SetNextThink( gpGlobals->curtime + 0.02 );
 }
@@ -780,7 +811,7 @@ float CProtoSniper::GetPositionParameter( float flTime, bool fLinear )
 	float flElapsedTime;
 	float flTimeParameter;
 
-	flElapsedTime = flTime - (GetWaitFinishTime() - gpGlobals->curtime);
+	flElapsedTime = flTime - ( GetWaitFinishTime() - gpGlobals->curtime );
 
 	flTimeParameter = ( flElapsedTime / flTime );
 
@@ -790,13 +821,13 @@ float CProtoSniper::GetPositionParameter( float flTime, bool fLinear )
 	}
 	else
 	{
-		return (1 + sin( (M_PI * flTimeParameter) - (M_PI / 2) ) ) / 2;
+		return ( 1 + sin( ( M_PI * flTimeParameter ) - ( M_PI / 2 ) ) ) / 2;
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::GetPaintAim( const Vector &vecStart, const Vector &vecGoal, float flParameter, Vector *pProgress )
+void CProtoSniper::GetPaintAim( const Vector& vecStart, const Vector& vecGoal, float flParameter, Vector* pProgress )
 {
 #if 0
 	Vector vecDelta;
@@ -805,9 +836,9 @@ void CProtoSniper::GetPaintAim( const Vector &vecStart, const Vector &vecGoal, f
 
 	float flDist = VectorNormalize( vecDelta );
 
-	vecDelta = vecStart + vecDelta * (flDist * flParameter);
+	vecDelta = vecStart + vecDelta * ( flDist * flParameter );
 
-	vecDelta = (vecDelta - GetBulletOrigin() ).Normalize();
+	vecDelta = ( vecDelta - GetBulletOrigin() ).Normalize();
 
 	*pProgress = vecDelta;
 #else
@@ -823,14 +854,14 @@ void CProtoSniper::GetPaintAim( const Vector &vecStart, const Vector &vecGoal, f
 	// laser, not actually aiming the weapon. A large discrepancy will look
 	// bad, though.
 	vecIdealDir = vecGoal - vecBulletOrigin;
-	VectorNormalize(vecIdealDir);
+	VectorNormalize( vecIdealDir );
 
 	// Now turn vecIdealDir into angles!
 	VectorAngles( vecIdealDir, vecIdealAngles );
 
 	// This is the vector of the beam's current aim.
 	vecCurrentDir = vecStart - vecBulletOrigin;
-	VectorNormalize(vecCurrentDir);
+	VectorNormalize( vecCurrentDir );
 
 	// Turn this to angles, too.
 	VectorAngles( vecCurrentDir, vecCurrentAngles );
@@ -856,7 +887,7 @@ void CProtoSniper::GetPaintAim( const Vector &vecStart, const Vector &vecGoal, f
 //-----------------------------------------------------------------------------
 // Sweep the laser sight towards the point where the gun should be aimed
 //-----------------------------------------------------------------------------
-void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
+void CProtoSniper::PaintTarget( const Vector& vecTarget, float flPaintTime )
 {
 	Vector vecCurrentDir;
 	Vector vecStart;
@@ -872,29 +903,29 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 	P = GetPositionParameter( flPaintTime, false );
 
 	// Vital allies are sharper about avoiding the sniper.
-	if( P > 0.25f && GetEnemy() && GetEnemy()->IsNPC() && HasCondition(COND_SEE_ENEMY) && !m_bWarnedTargetEntity )
+	if( P > 0.25f && GetEnemy() && GetEnemy()->IsNPC() && HasCondition( COND_SEE_ENEMY ) && !m_bWarnedTargetEntity )
 	{
 		m_bWarnedTargetEntity = true;
 
-		if( GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL && GetEnemy()->MyNPCPointer()->FVisible(this) )
+		if( GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL && GetEnemy()->MyNPCPointer()->FVisible( this ) )
 		{
 			CSoundEnt::InsertSound( SOUND_DANGER | SOUND_CONTEXT_REACT_TO_SOURCE, GetEnemy()->EarPosition(), 16, 1.0f, this );
 		}
 	}
 
-	GetPaintAim( m_vecPaintStart, vecTarget, clamp(P,0.0f,1.0f), &vecCurrentDir );
+	GetPaintAim( m_vecPaintStart, vecTarget, clamp( P, 0.0f, 1.0f ), &vecCurrentDir );
 
 #if 1
 #define THRESHOLD 0.8f
 	float flNoiseScale;
-	
-	if ( P >= THRESHOLD )
+
+	if( P >= THRESHOLD )
 	{
-		flNoiseScale = 1 - (1 / (1 - THRESHOLD)) * ( P - THRESHOLD );
+		flNoiseScale = 1 - ( 1 / ( 1 - THRESHOLD ) ) * ( P - THRESHOLD );
 	}
-	else if ( P <= 1 - THRESHOLD )
+	else if( P <= 1 - THRESHOLD )
 	{
-		flNoiseScale = P / (1 - THRESHOLD);
+		flNoiseScale = P / ( 1 - THRESHOLD );
 	}
 	else
 	{
@@ -921,16 +952,16 @@ void CProtoSniper::PaintTarget( const Vector &vecTarget, float flPaintTime )
 //-----------------------------------------------------------------------------
 bool CProtoSniper::IsPlayerAllySniper()
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
+	CBaseEntity* pPlayer = AI_GetSinglePlayer();
 
 	return IRelationType( pPlayer ) == D_LI;
 }
-			
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSetDecoyRadius( inputdata_t &inputdata )
+void CProtoSniper::InputSetDecoyRadius( inputdata_t& inputdata )
 {
-	m_flDecoyRadius = (float)inputdata.value.Int();
+	m_flDecoyRadius = ( float )inputdata.value.Int();
 }
 
 
@@ -941,7 +972,7 @@ void CProtoSniper::OnScheduleChange( void )
 	LaserOff();
 
 #ifdef MAPBASE
-	if ( m_bKilledPlayer && HasCondition( COND_SEE_PLAYER ) )
+	if( m_bKilledPlayer && HasCondition( COND_SEE_PLAYER ) )
 	{
 		// IMPOSSIBLE! (possible when SP respawn is enabled)
 		m_bKilledPlayer = false;
@@ -954,14 +985,14 @@ void CProtoSniper::OnScheduleChange( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CProtoSniper::KeyValue( const char *szKeyName, const char *szValue )
+bool CProtoSniper::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "radius"))
+	if( FStrEq( szKeyName, "radius" ) )
 	{
-		m_flPatience = atof(szValue);
+		m_flPatience = atof( szValue );
 
 		// If the designer specifies a patience radius of 0, the
-		// sniper won't have any patience at all. The sniper will 
+		// sniper won't have any patience at all. The sniper will
 		// shoot at the first target it sees regardless of distance.
 		if( m_flPatience == 0.0 )
 		{
@@ -974,7 +1005,7 @@ bool CProtoSniper::KeyValue( const char *szKeyName, const char *szValue )
 
 		return true;
 	}
-	else if( FStrEq(szKeyName, "misses") )
+	else if( FStrEq( szKeyName, "misses" ) )
 	{
 		m_iMisses = atoi( szValue );
 		return true;
@@ -990,52 +1021,54 @@ LINK_ENTITY_TO_CLASS( proto_sniper, CProtoSniper );
 LINK_ENTITY_TO_CLASS( sniperbullet, CSniperBullet );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CProtoSniper::Precache( void )
 {
 #ifdef MAPBASE
-	if (GetModelName() == NULL_STRING)
-		SetModelName(AllocPooledString("models/combine_soldier.mdl"));
+	if( GetModelName() == NULL_STRING )
+	{
+		SetModelName( AllocPooledString( "models/combine_soldier.mdl" ) );
+	}
 
-	PrecacheModel(STRING(GetModelName()));
+	PrecacheModel( STRING( GetModelName() ) );
 
 	// Should we bother to make these customizable? These are static, too.
-	sHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
+	sHaloSprite = PrecacheModel( "sprites/light_glow03.vmt" );
 	sFlashSprite = PrecacheModel( "sprites/muzzleflash1.vmt" );
 
-	if (m_iszBeamName == NULL_STRING)
+	if( m_iszBeamName == NULL_STRING )
 	{
-		m_iszBeamName = AllocPooledString("effects/bluelaser1.vmt");
+		m_iszBeamName = AllocPooledString( "effects/bluelaser1.vmt" );
 		m_BeamColor.r = 0;
 		m_BeamColor.g = 100;
 		m_BeamColor.b = 255;
 	}
-	else if (Q_GetFileExtension(STRING(m_iszBeamName)) == NULL)
+	else if( Q_GetFileExtension( STRING( m_iszBeamName ) ) == NULL )
 	{
 		// The path doesn't have a .vmt. Fix this or we crash!
-		// 
+		//
 		// I know I warn against using .vmt even though this code ultimately ensures there is no consequence other than a warning,
 		// but it's bad practice and remember: That old string without the .vmt would likely be floating around somewhere doing nothing.
-		Warning("%s beam name \"%s\" lacks .vmt!\n", GetDebugName(), STRING(m_iszBeamName));
-		m_iszBeamName = AllocPooledString(UTIL_VarArgs("%s.vmt", STRING(m_iszBeamName)));
+		Warning( "%s beam name \"%s\" lacks .vmt!\n", GetDebugName(), STRING( m_iszBeamName ) );
+		m_iszBeamName = AllocPooledString( UTIL_VarArgs( "%s.vmt", STRING( m_iszBeamName ) ) );
 	}
 
-	PrecacheModel(STRING(m_iszBeamName));
+	PrecacheModel( STRING( m_iszBeamName ) );
 #else
-	PrecacheModel("models/combine_soldier.mdl");
-	sHaloSprite = PrecacheModel("sprites/light_glow03.vmt");
+	PrecacheModel( "models/combine_soldier.mdl" );
+	sHaloSprite = PrecacheModel( "sprites/light_glow03.vmt" );
 	sFlashSprite = PrecacheModel( "sprites/muzzleflash1.vmt" );
-	PrecacheModel("effects/bluelaser1.vmt");	
+	PrecacheModel( "effects/bluelaser1.vmt" );
 #endif
 
 	UTIL_PrecacheOther( "sniperbullet" );
 
 	PrecacheScriptSound( "NPC_Sniper.Die" );
 	PrecacheScriptSound( "NPC_Sniper.TargetDestroyed" );
-	PrecacheScriptSound( "NPC_Sniper.HearDanger");
+	PrecacheScriptSound( "NPC_Sniper.HearDanger" );
 	PrecacheScriptSound( "NPC_Sniper.FireBullet" );
 	PrecacheScriptSound( "NPC_Sniper.Reload" );
 	PrecacheScriptSound( "NPC_Sniper.SonicBoom" );
@@ -1045,7 +1078,7 @@ void CProtoSniper::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -1054,7 +1087,7 @@ void CProtoSniper::Spawn( void )
 	Precache();
 
 #ifdef MAPBASE
-	SetModel( STRING(GetModelName()) );
+	SetModel( STRING( GetModelName() ) );
 #else
 	/// HACK:
 	SetModel( "models/combine_soldier.mdl" );
@@ -1090,7 +1123,7 @@ void CProtoSniper::Spawn( void )
 	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 );
 	CapabilitiesAdd( bits_CAP_SIMPLE_RADIUS_DAMAGE );
 
-	m_HackedGunPos = Vector ( 0, 0, 0 );
+	m_HackedGunPos = Vector( 0, 0, 0 );
 
 	m_spawnflags |= SF_NPC_LONG_RANGE;
 	m_spawnflags |= SF_NPC_ALWAYSTHINK;
@@ -1132,9 +1165,9 @@ void CProtoSniper::Spawn( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::SetSweepTarget( const char *pszTarget )
+void CProtoSniper::SetSweepTarget( const char* pszTarget )
 {
-	CBaseEntity *pTarget;
+	CBaseEntity* pTarget;
 
 	// In case the sniper was sweeping a random set of targets when asked to sweep a normal chain.
 	ClearTargetGroup();
@@ -1154,14 +1187,14 @@ void CProtoSniper::SetSweepTarget( const char *pszTarget )
 //-----------------------------------------------------------------------------
 // Purpose: Forces an idle sniper to paint the specified target.
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSweepTarget( inputdata_t &inputdata )
+void CProtoSniper::InputSweepTarget( inputdata_t& inputdata )
 {
 	SetSweepTarget( inputdata.value.String() );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSweepTargetHighestPriority( inputdata_t &inputdata )
+void CProtoSniper::InputSweepTargetHighestPriority( inputdata_t& inputdata )
 {
 	SetSweepTarget( inputdata.value.String() );
 	m_bSweepHighestPriority = true;
@@ -1192,11 +1225,11 @@ void CProtoSniper::ClearTargetGroup( void )
 // Purpose: Similar to SweepTarget, but forces the sniper to sweep targets
 // in a group (bound by groupname) randomly until interrupted.
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSweepGroupRandomly( inputdata_t &inputdata )
+void CProtoSniper::InputSweepGroupRandomly( inputdata_t& inputdata )
 {
 	ClearTargetGroup();
 
-	CBaseEntity *pEnt;
+	CBaseEntity* pEnt;
 
 	// PERFORMANCE
 	// Go through the whole ent list? This could hurt. (sjb)
@@ -1205,9 +1238,9 @@ void CProtoSniper::InputSweepGroupRandomly( inputdata_t &inputdata )
 
 	do
 	{
-		CSniperTarget *pTarget;
+		CSniperTarget* pTarget;
 
-		pTarget = dynamic_cast<CSniperTarget*>(pEnt);
+		pTarget = dynamic_cast<CSniperTarget*>( pEnt );
 
 		// If the pointer is null, this isn't a sniper target.
 		if( pTarget )
@@ -1221,7 +1254,8 @@ void CProtoSniper::InputSweepGroupRandomly( inputdata_t &inputdata )
 
 		pEnt = gEntList.NextEnt( pEnt );
 
-	} while( pEnt );
+	}
+	while( pEnt );
 
 	m_hSweepTarget = m_pGroupTarget[ random->RandomInt( 0, m_iNumGroupTargets - 1 ) ];
 }
@@ -1229,21 +1263,21 @@ void CProtoSniper::InputSweepGroupRandomly( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputStopSweeping( inputdata_t &inputdata )
+void CProtoSniper::InputStopSweeping( inputdata_t& inputdata )
 {
 	m_hSweepTarget = NULL;
 	ClearSchedule( "Told to stop sweeping via input" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputProtectTarget( inputdata_t &inputdata )
+void CProtoSniper::InputProtectTarget( inputdata_t& inputdata )
 {
 	m_hProtectTarget = gEntList.FindEntityByName( NULL, inputdata.value.String(), NULL, inputdata.pActivator, inputdata.pCaller );
 
-	if ( !m_hProtectTarget )
+	if( !m_hProtectTarget )
 	{
 		DevMsg( "Sniper %s cannot find protect target %s\n", GetClassname(), inputdata.value.String() );
 		return;
@@ -1257,7 +1291,7 @@ void CProtoSniper::InputProtectTarget( inputdata_t &inputdata )
 #if HL2_EPISODIC
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSetPaintInterval( inputdata_t &inputdata )
+void CProtoSniper::InputSetPaintInterval( inputdata_t& inputdata )
 {
 	m_flKeyfieldPaintTime = inputdata.value.Float();
 }
@@ -1265,7 +1299,7 @@ void CProtoSniper::InputSetPaintInterval( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CProtoSniper::InputSetPaintIntervalVariance( inputdata_t &inputdata )
+void CProtoSniper::InputSetPaintIntervalVariance( inputdata_t& inputdata )
 {
 	m_flKeyfieldPaintTimeNoise = inputdata.value.Float();
 }
@@ -1273,26 +1307,26 @@ void CProtoSniper::InputSetPaintIntervalVariance( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTarget - 
+// Purpose:
+// Input  : *pTarget -
 // Output : int
 //-----------------------------------------------------------------------------
-int CProtoSniper::IRelationPriority( CBaseEntity *pTarget )
+int CProtoSniper::IRelationPriority( CBaseEntity* pTarget )
 {
 	int priority = BaseClass::IRelationPriority( pTarget );
 
 	// If we have a target to protect, increase priority on targets closer to it
-	if ( m_hProtectTarget )
+	if( m_hProtectTarget )
 	{
-		float flDistance = (pTarget->GetAbsOrigin() - m_hProtectTarget->GetAbsOrigin()).LengthSqr();
-		if ( flDistance <= SNIPER_PROTECTION_MINDIST )
- 		{
- 			float flBonus = (1.0 - (flDistance / SNIPER_PROTECTION_MINDIST)) * SNIPER_PROTECTION_PRIORITYCAP;
+		float flDistance = ( pTarget->GetAbsOrigin() - m_hProtectTarget->GetAbsOrigin() ).LengthSqr();
+		if( flDistance <= SNIPER_PROTECTION_MINDIST )
+		{
+			float flBonus = ( 1.0 - ( flDistance / SNIPER_PROTECTION_MINDIST ) ) * SNIPER_PROTECTION_PRIORITYCAP;
 			priority += flBonus;
 
-			if ( m_debugOverlays & OVERLAY_NPC_SELECTED_BIT )
+			if( m_debugOverlays & OVERLAY_NPC_SELECTED_BIT )
 			{
-				NDebugOverlay::Text( pTarget->GetAbsOrigin() + Vector(0,0,16), UTIL_VarArgs("P: %d (b %f)!", priority, flBonus), false, 0.1 );
+				NDebugOverlay::Text( pTarget->GetAbsOrigin() + Vector( 0, 0, 16 ), UTIL_VarArgs( "P: %d (b %f)!", priority, flBonus ), false, 0.1 );
 			}
 		}
 	}
@@ -1301,10 +1335,10 @@ int CProtoSniper::IRelationPriority( CBaseEntity *pTarget )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CProtoSniper::Classify( void )
 {
@@ -1359,7 +1393,7 @@ void CProtoSniper::ClearOldDecoys( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CProtoSniper::HasOldDecoy( CBaseEntity *pDecoy )
+bool CProtoSniper::HasOldDecoy( CBaseEntity* pDecoy )
 {
 #if 0
 	int i;
@@ -1371,18 +1405,18 @@ bool CProtoSniper::HasOldDecoy( CBaseEntity *pDecoy )
 			return true;
 		}
 	}
-#endif 
+#endif
 
 	return false;
 }
 
 
 //-----------------------------------------------------------------------------
-// The list of old decoys is just a circular list. We put decoys that we've 
+// The list of old decoys is just a circular list. We put decoys that we've
 // already fired at in this list. When they've been pushed off the list by others,
 // then they are valid targets again.
 //-----------------------------------------------------------------------------
-void CProtoSniper::AddOldDecoy( CBaseEntity *pDecoy )
+void CProtoSniper::AddOldDecoy( CBaseEntity* pDecoy )
 {
 #if 0
 	m_pOldDecoys[ m_iOldDecoySlot ] = pDecoy;
@@ -1400,10 +1434,10 @@ void CProtoSniper::AddOldDecoy( CBaseEntity *pDecoy )
 // Purpose: Only blast damage can hurt a sniper.
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
 #define SNIPER_MAX_INFLICTOR_DIST	15.0f * 12.0f // 15 feet.
-int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
 	if( !m_fEnabled )
 	{
@@ -1412,21 +1446,25 @@ int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	if( !info.GetInflictor() )
+	{
 		return 0;
+	}
 
 	CTakeDamageInfo newInfo = info;
 
 	// Allow SetHealth() & npc_kill inputs to hurt the sniper
-	if ( info.GetDamageType() == DMG_GENERIC && info.GetInflictor() == this )
+	if( info.GetDamageType() == DMG_GENERIC && info.GetInflictor() == this )
+	{
 		return CAI_BaseNPC::OnTakeDamage_Alive( newInfo );
+	}
 
-	if( !(info.GetDamageType() & (DMG_BLAST|DMG_BURN) ) )
+	if( !( info.GetDamageType() & ( DMG_BLAST | DMG_BURN ) ) )
 	{
 		// Only blasts and burning hurt
 		return 0;
 	}
 
-	if( (info.GetDamageType() & DMG_BLAST) && info.GetDamage() < m_iHealth )
+	if( ( info.GetDamageType() & DMG_BLAST ) && info.GetDamage() < m_iHealth )
 	{
 		// Only blasts powerful enough to kill hurt
 		return 0;
@@ -1435,9 +1473,9 @@ int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	float flDist = GetAbsOrigin().DistTo( info.GetInflictor()->GetAbsOrigin() );
 	if( flDist > SNIPER_MAX_INFLICTOR_DIST )
 	{
-		// Sniper only takes damage from explosives that are nearby. This makes a sniper 
+		// Sniper only takes damage from explosives that are nearby. This makes a sniper
 		// susceptible to a grenade that lands in his nest, but not to a large explosion
-		// that goes off elsewhere and just happens to be able to trace into the sniper's 
+		// that goes off elsewhere and just happens to be able to trace into the sniper's
 		// nest.
 		return 0;
 	}
@@ -1455,22 +1493,22 @@ int CProtoSniper::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 // sniper was blasted out of his nest.
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
-void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
+void CProtoSniper::Event_Killed( const CTakeDamageInfo& info )
 {
-	if( !(m_spawnflags & SF_SNIPER_NOCORPSE) )
+	if( !( m_spawnflags & SF_SNIPER_NOCORPSE ) )
 	{
 #ifdef MAPBASE
 		Vector vecForce;
 
 		// See if there's a ragdoll magnet that should influence our force.
 		// However, to avoid conflicts with existing maps, only allow magnets that have us as their target.
-		CRagdollMagnet *pMagnet = CRagdollMagnet::FindBestMagnet( this );
+		CRagdollMagnet* pMagnet = CRagdollMagnet::FindBestMagnet( this );
 		if( pMagnet && pMagnet->m_target == GetEntityName() )
 		{
 			vecForce = pMagnet->GetForceVector( this );
-			pMagnet->m_OnUsed.Set(vecForce, this, pMagnet);
+			pMagnet->m_OnUsed.Set( vecForce, this, pMagnet );
 		}
 		else
 		{
@@ -1478,16 +1516,16 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 			AngleVectors( GetAbsAngles(), &vecForward );
 			float flForce = random->RandomFloat( 500, 700 ) * 10;
 
-			vecForce = (vecForward * flForce) + Vector(0, 0, 600);
+			vecForce = ( vecForward * flForce ) + Vector( 0, 0, 600 );
 		}
 #else
 		Vector vecForward;
-		
+
 		float flForce = random->RandomFloat( 500, 700 ) * 10;
 
 		AngleVectors( GetLocalAngles(), &vecForward );
 #endif
-		
+
 		float flFadeTime = 0.0;
 
 		if( HasSpawnFlags( SF_NPC_FADE_CORPSE ) )
@@ -1495,13 +1533,13 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 			flFadeTime = 5.0;
 		}
 
-		CBaseEntity *pGib;
+		CBaseEntity* pGib;
 #ifdef MAPBASE
-		bool bShouldIgnite = IsOnFire() || HasSpawnFlags(SF_SNIPER_DIE_ON_FIRE);
-		pGib = CreateRagGib( STRING(GetModelName()), GetAbsOrigin(), GetAbsAngles(), vecForce, flFadeTime, bShouldIgnite );
+		bool bShouldIgnite = IsOnFire() || HasSpawnFlags( SF_SNIPER_DIE_ON_FIRE );
+		pGib = CreateRagGib( STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), vecForce, flFadeTime, bShouldIgnite );
 #else
 		bool bShouldIgnite = IsOnFire() || hl2_episodic.GetBool();
-		pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), (vecForward * flForce) + Vector(0, 0, 600), flFadeTime, bShouldIgnite );
+		pGib = CreateRagGib( "models/combine_soldier.mdl", GetLocalOrigin(), GetLocalAngles(), ( vecForward * flForce ) + Vector( 0, 0, 600 ), flFadeTime, bShouldIgnite );
 #endif
 
 	}
@@ -1511,7 +1549,7 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 	// Tell my killer that he got me!
 	if( info.GetAttacker() )
 	{
-		info.GetAttacker()->Event_KilledOther(this, info);
+		info.GetAttacker()->Event_KilledOther( this, info );
 		g_EventQueue.AddEvent( info.GetAttacker(), "KilledNPC", 0.3, this, this );
 	}
 
@@ -1528,13 +1566,15 @@ void CProtoSniper::Event_Killed( const CTakeDamageInfo &info )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CProtoSniper::Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info )
+void CProtoSniper::Event_KilledOther( CBaseEntity* pVictim, const CTakeDamageInfo& info )
 {
 #ifdef MAPBASE
 	BaseClass::Event_KilledOther( pVictim, info );
 
-	if (pVictim == GetEnemy())
-		SetCondition(COND_SNIPER_KILLED_ENEMY);
+	if( pVictim == GetEnemy() )
+	{
+		SetCondition( COND_SNIPER_KILLED_ENEMY );
+	}
 #endif
 
 	if( pVictim && pVictim->IsPlayer() )
@@ -1553,16 +1593,16 @@ void CProtoSniper::UpdateOnRemove( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CProtoSniper::SelectSchedule ( void )
+int CProtoSniper::SelectSchedule( void )
 {
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
-	if (HasCondition(COND_SNIPER_KILLED_ENEMY))
+	if( HasCondition( COND_SNIPER_KILLED_ENEMY ) )
 	{
-		SpeakIfAllowed(TLK_SNIPER_TARGETDESTROYED);
-		ClearCondition(COND_SNIPER_KILLED_ENEMY);
+		SpeakIfAllowed( TLK_SNIPER_TARGETDESTROYED );
+		ClearCondition( COND_SNIPER_KILLED_ENEMY );
 	}
 #else
-	if( HasCondition(COND_ENEMY_DEAD) && sniperspeak.GetBool() )
+	if( HasCondition( COND_ENEMY_DEAD ) && sniperspeak.GetBool() )
 	{
 		EmitSound( "NPC_Sniper.TargetDestroyed" );
 	}
@@ -1576,18 +1616,18 @@ int CProtoSniper::SelectSchedule ( void )
 
 	if( !AI_GetSinglePlayer()->IsAlive() && m_bKilledPlayer )
 	{
-		if( HasCondition(COND_IN_PVS) )
+		if( HasCondition( COND_IN_PVS ) )
 		{
 			return SCHED_PSNIPER_PLAYER_DEAD;
 		}
 	}
-	
+
 	if( HasCondition( COND_HEAR_DANGER ) )
 	{
 		// Next priority is to be suppressed!
 		ScopeGlint();
 
-		CSound *pSound = GetBestSound();
+		CSound* pSound = GetBestSound();
 
 		if( pSound && pSound->IsSoundType( SOUND_DANGER ) && BaseClass::FVisible( pSound->GetSoundReactOrigin() ) )
 		{
@@ -1600,9 +1640,9 @@ int CProtoSniper::SelectSchedule ( void )
 
 			// Also, don't play the sound effect if we're an ally.
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
-			SpeakIfAllowed(TLK_SNIPER_DANGER);
+			SpeakIfAllowed( TLK_SNIPER_DANGER );
 #else
-			if ( IsPlayerAllySniper() == false )
+			if( IsPlayerAllySniper() == false )
 			{
 				EmitSound( "NPC_Sniper.HearDanger" );
 			}
@@ -1691,11 +1731,11 @@ void CProtoSniper::OnListened()
 
 	GetVectors( &forward, NULL, NULL );
 
-	CSound *pCurrentSound = GetSenses()->GetFirstHeardSound( &iter );
-	while ( pCurrentSound )
+	CSound* pCurrentSound = GetSenses()->GetFirstHeardSound( &iter );
+	while( pCurrentSound )
 	{
 		// the npc cares about this sound, and it's close enough to hear.
-		if ( pCurrentSound->FIsSound() )
+		if( pCurrentSound->FIsSound() )
 		{
 			// this is an audible sound.
 			if( pCurrentSound->SoundTypeNoContext() == SOUND_DANGER_SNIPERONLY )
@@ -1716,15 +1756,15 @@ void CProtoSniper::OnListened()
 					plane.normal = forward;
 					plane.type = PLANE_ANYX;
 					plane.dist = DotProduct( plane.normal, WorldSpaceCenter() + forward * m_flShieldDist );
-					plane.signbits = SignbitsForPlane(&plane);
+					plane.signbits = SignbitsForPlane( &plane );
 
 					float fraction = IntersectRayWithPlane( ray, plane );
 
 					Vector vecImpactPoint = ray.m_Start + ray.m_Delta * fraction;
 
-					float flDist = (vecImpactPoint - (WorldSpaceCenter() + forward * m_flShieldDist)).LengthSqr();
+					float flDist = ( vecImpactPoint - ( WorldSpaceCenter() + forward * m_flShieldDist ) ).LengthSqr();
 
-					if( flDist <= (m_flShieldRadius * m_flShieldRadius) )
+					if( flDist <= ( m_flShieldRadius * m_flShieldRadius ) )
 					{
 						CEffectData data;
 
@@ -1746,7 +1786,7 @@ void CProtoSniper::OnListened()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CProtoSniper::FCanCheckAttacks ( void )
+bool CProtoSniper::FCanCheckAttacks( void )
 {
 	return true;
 }
@@ -1758,16 +1798,16 @@ bool CProtoSniper::FindDecoyObject( void )
 {
 #define SEARCH_DEPTH	50
 
-	CBaseEntity *pDecoys[ SNIPER_NUM_DECOYS ];
-	CBaseEntity *pList[ SEARCH_DEPTH ];
-	CBaseEntity	*pCurrent;
+	CBaseEntity* pDecoys[ SNIPER_NUM_DECOYS ];
+	CBaseEntity* pList[ SEARCH_DEPTH ];
+	CBaseEntity*	pCurrent;
 	int			count;
 	int			i;
 	Vector vecTarget = GetEnemy()->WorldSpaceCenter();
 	Vector vecDelta;
 
 	m_hDecoyObject = NULL;
-	
+
 	for( i = 0 ; i < SNIPER_NUM_DECOYS ; i++ )
 	{
 		pDecoys[ i ] = NULL;
@@ -1779,7 +1819,7 @@ bool CProtoSniper::FindDecoyObject( void )
 
 	count = UTIL_EntitiesInBox( pList, SEARCH_DEPTH, vecTarget - vecDelta, vecTarget + vecDelta, 0 );
 
-	// Now we have the list of entities near the target. 
+	// Now we have the list of entities near the target.
 	// Dig through that list and build the list of decoys.
 	int iIterator = 0;
 
@@ -1790,9 +1830,11 @@ bool CProtoSniper::FindDecoyObject( void )
 		if( FClassnameIs( pCurrent, "func_breakable" ) || FClassnameIs( pCurrent, "prop_physics" ) || FClassnameIs( pCurrent, "func_physbox" ) )
 		{
 			if( !pCurrent->VPhysicsGetObject() )
+			{
 				continue;
+			}
 
-			if( pCurrent->VPhysicsGetObject()->GetMass() > SNIPER_DECOY_MAX_MASS ) 
+			if( pCurrent->VPhysicsGetObject()->GetMass() > SNIPER_DECOY_MAX_MASS )
 			{
 				// Skip this very heavy object. Probably a car or dumpster.
 				continue;
@@ -1809,7 +1851,7 @@ bool CProtoSniper::FindDecoyObject( void )
 				}
 			}
 
-			// This item meets criteria for a decoy object to shoot at. 
+			// This item meets criteria for a decoy object to shoot at.
 
 			// But have we shot at this item recently? If we HAVE, don't add it.
 #if 0
@@ -1837,10 +1879,10 @@ bool CProtoSniper::FindDecoyObject( void )
 
 	// try 4 times to pick a random object from the list
 	// and trace to it. If the trace goes off, that's the object!
-	
+
 	for( i = 0 ; i < 4 ; i++ )
 	{
-		CBaseEntity *pProspect;
+		CBaseEntity* pProspect;
 		trace_t		tr;
 
 		// Pick one of the decoys at random.
@@ -1853,17 +1895,17 @@ bool CProtoSniper::FindDecoyObject( void )
 		vecBulletOrigin = GetBulletOrigin();
 		pProspect->CollisionProp()->RandomPointInBounds( Vector( .1, .1, .1 ), Vector( .6, .6, .6 ), &vecDecoyTarget );
 
-		// When trying to trace to an object using its absmin + some fraction of its size, it's best 
+		// When trying to trace to an object using its absmin + some fraction of its size, it's best
 		// to lengthen the trace a little beyond the object's bounding box in case it's a more complex
-		// object, or not axially aligned. 
+		// object, or not axially aligned.
 		vecDirToDecoy = vecDecoyTarget - vecBulletOrigin;
-		VectorNormalize(vecDirToDecoy);
+		VectorNormalize( vecDirToDecoy );
 
-		
+
 		// Right now, tracing with MASK_BLOCKLOS and checking the fraction as well as the object the trace
-		// has hit makes it possible for the decoy behavior to shoot through glass. 
-		UTIL_TraceLine( vecBulletOrigin, vecDecoyTarget + vecDirToDecoy * 32, 
-			MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr);
+		// has hit makes it possible for the decoy behavior to shoot through glass.
+		UTIL_TraceLine( vecBulletOrigin, vecDecoyTarget + vecDirToDecoy * 32,
+						MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr );
 
 		if( tr.m_pEnt == pProspect || tr.fraction == 1.0 )
 		{
@@ -1907,7 +1949,7 @@ bool CProtoSniper::ShouldSnapShot( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CProtoSniper::VerifyShot( CBaseEntity *pTarget )
+bool CProtoSniper::VerifyShot( CBaseEntity* pTarget )
 {
 	trace_t tr;
 
@@ -1918,8 +1960,8 @@ bool CProtoSniper::VerifyShot( CBaseEntity *pTarget )
 	{
 		if( pTarget->IsPlayer() )
 		{
-			// if the target is the player, do another trace to see if we can shoot his eyeposition. This should help 
-			// improve sniper responsiveness in cases where the player is hiding his chest from the sniper with his 
+			// if the target is the player, do another trace to see if we can shoot his eyeposition. This should help
+			// improve sniper responsiveness in cases where the player is hiding his chest from the sniper with his
 			// head in full view.
 			UTIL_TraceLine( GetBulletOrigin(), pTarget->EyePosition(), MASK_SHOT, pTarget, COLLISION_GROUP_NONE, &tr );
 
@@ -1949,7 +1991,7 @@ bool CProtoSniper::VerifyShot( CBaseEntity *pTarget )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CProtoSniper::RangeAttack1Conditions ( float flDot, float flDist )
+int CProtoSniper::RangeAttack1Conditions( float flDot, float flDist )
 {
 	float fFrustration;
 	fFrustration = gpGlobals->curtime - m_flFrustration;
@@ -2004,12 +2046,12 @@ int CProtoSniper::RangeAttack1Conditions ( float flDot, float flDist )
 
 	if( fFrustration >= 2 && !m_fIsPatient )
 	{
-		if( !(m_spawnflags & SF_SNIPER_NOSWEEP) && !m_hDecoyObject && FindDecoyObject() )
+		if( !( m_spawnflags & SF_SNIPER_NOSWEEP ) && !m_hDecoyObject && FindDecoyObject() )
 		{
 			// If I don't have a decoy, try to find one and shoot it.
 			return COND_SNIPER_CANATTACKDECOY;
 		}
-		
+
 
 		if( fFrustration >= 2.5 )
 		{
@@ -2024,39 +2066,39 @@ int CProtoSniper::RangeAttack1Conditions ( float flDot, float flDist )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CProtoSniper::TranslateSchedule( int scheduleType ) 
+int CProtoSniper::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_RANGE_ATTACK1:
-		if( m_hSweepTarget != NULL && m_fSnapShot && ShouldSnapShot() )
-		{
-			return SCHED_PSNIPER_SNAPATTACK;
-		}
+		case SCHED_RANGE_ATTACK1:
+			if( m_hSweepTarget != NULL && m_fSnapShot && ShouldSnapShot() )
+			{
+				return SCHED_PSNIPER_SNAPATTACK;
+			}
 
-		return SCHED_PSNIPER_ATTACK;
-		break;
+			return SCHED_PSNIPER_ATTACK;
+			break;
 
-	case SCHED_RANGE_ATTACK2:
-		return SCHED_PSNIPER_ATTACKDECOY;
-		break;
+		case SCHED_RANGE_ATTACK2:
+			return SCHED_PSNIPER_ATTACKDECOY;
+			break;
 
-	case SCHED_RELOAD:
-		return SCHED_PSNIPER_RELOAD;
-		break;
+		case SCHED_RELOAD:
+			return SCHED_PSNIPER_RELOAD;
+			break;
 	}
 	return BaseClass::TranslateSchedule( scheduleType );
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Activity CProtoSniper::NPC_TranslateActivity( Activity eNewActivity )
 {
 	// ACT_IDLE is now just the soldier's unarmed idle animation.
 	// Use a gun-holding animation like what unhidden snipers were using before.
-	if (!HasSpawnFlags( SF_SNIPER_HIDDEN ) && eNewActivity == ACT_IDLE)
+	if( !HasSpawnFlags( SF_SNIPER_HIDDEN ) && eNewActivity == ACT_IDLE )
 	{
 		eNewActivity = ACT_IDLE_SMG1;
 	}
@@ -2082,25 +2124,25 @@ void CProtoSniper::ScopeGlint()
 
 //---------------------------------------------------------
 // This starts the bullet state machine.  The actual effects
-// of the bullet will happen later.  This function schedules 
+// of the bullet will happen later.  This function schedules
 // those effects.
 //
 // fDirectShot indicates whether the bullet is a "direct shot"
 // that is - fired with the intent that it will strike the
-// enemy. Otherwise, the bullet is intended to strike a 
+// enemy. Otherwise, the bullet is intended to strike a
 // decoy object or nothing at all in particular.
 //---------------------------------------------------------
-bool CProtoSniper::FireBullet( const Vector &vecTarget, bool bDirectShot )
+bool CProtoSniper::FireBullet( const Vector& vecTarget, bool bDirectShot )
 {
-	CSniperBullet	*pBullet;
+	CSniperBullet*	pBullet;
 	Vector			vecBulletOrigin;
 
 	vecBulletOrigin = GetBulletOrigin();
 
 #ifdef MAPBASE
-	pBullet = (CSniperBullet *)Create( "sniperbullet", GetBulletOrigin(), GetAbsAngles(), NULL );
+	pBullet = ( CSniperBullet* )Create( "sniperbullet", GetBulletOrigin(), GetAbsAngles(), NULL );
 #else
-	pBullet = (CSniperBullet *)Create( "sniperbullet", GetBulletOrigin(), GetLocalAngles(), NULL );
+	pBullet = ( CSniperBullet* )Create( "sniperbullet", GetBulletOrigin(), GetLocalAngles(), NULL );
 #endif
 
 	Assert( pBullet != NULL );
@@ -2118,9 +2160,9 @@ bool CProtoSniper::FireBullet( const Vector &vecTarget, bool bDirectShot )
 
 	CPVSFilter filter( vecBulletOrigin );
 	te->Sprite( filter, 0.0, &vecBulletOrigin, sFlashSprite, 0.3, 255 );
-	
+
 	// force a reload when we're done
-	 m_fWeaponLoaded = false;
+	m_fWeaponLoaded = false;
 
 	// Once the sniper takes a shot, turn the patience off!
 	m_fIsPatient = false;
@@ -2162,11 +2204,11 @@ float CProtoSniper::GetBulletSpeed()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CProtoSniper::StartTask( const Task_t *pTask )
+void CProtoSniper::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_SNIPER_PLAYER_DEAD:
+		case TASK_SNIPER_PLAYER_DEAD:
 		{
 			m_hSweepTarget = AI_GetSinglePlayer();
 			SetWait( 4.0f );
@@ -2174,167 +2216,167 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_SNIPER_ATTACK_CURSOR:
-		break;
+		case TASK_SNIPER_ATTACK_CURSOR:
+			break;
 
-	case TASK_RANGE_ATTACK1:
-		// Start task does nothing here.
-		// We fall through to RunTask() which will keep trying to take
-		// the shot until the weapon is ready to fire. In some rare cases,
-		// the weapon may be ready to fire before the single bullet allocated
-		// to the sniper has hit its target. 
-		break;
+		case TASK_RANGE_ATTACK1:
+			// Start task does nothing here.
+			// We fall through to RunTask() which will keep trying to take
+			// the shot until the weapon is ready to fire. In some rare cases,
+			// the weapon may be ready to fire before the single bullet allocated
+			// to the sniper has hit its target.
+			break;
 
-	case TASK_RANGE_ATTACK2:
-		// Don't call up to base class, it will try to set the activity.
-		break;
+		case TASK_RANGE_ATTACK2:
+			// Don't call up to base class, it will try to set the activity.
+			break;
 
-	case TASK_SNIPER_PAINT_SWEEP_TARGET:
-		if ( !m_hSweepTarget.Get() )
-		{
-			TaskFail( FAIL_NO_TARGET );
-			return;
-		}
+		case TASK_SNIPER_PAINT_SWEEP_TARGET:
+			if( !m_hSweepTarget.Get() )
+			{
+				TaskFail( FAIL_NO_TARGET );
+				return;
+			}
 
-		SetWait( m_hSweepTarget->m_flSpeed );
-		
-		// Snap directly to this target if this spawnflag is set.
-		// Otherwise, sweep from wherever the cursor was.
-		if( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SNAPTO ) )
-		{
+			SetWait( m_hSweepTarget->m_flSpeed );
+
+			// Snap directly to this target if this spawnflag is set.
+			// Otherwise, sweep from wherever the cursor was.
+			if( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SNAPTO ) )
+			{
 #ifdef MAPBASE
-			m_vecPaintCursor = m_hSweepTarget->GetAbsOrigin();
+				m_vecPaintCursor = m_hSweepTarget->GetAbsOrigin();
 #else
-			m_vecPaintCursor = m_hSweepTarget->GetLocalOrigin();
+				m_vecPaintCursor = m_hSweepTarget->GetLocalOrigin();
 #endif
-		}
+			}
 
 #ifdef MAPBASE
-		LaserOn( m_hSweepTarget->GetAbsOrigin(), vec3_origin );
+			LaserOn( m_hSweepTarget->GetAbsOrigin(), vec3_origin );
 #else
-		LaserOn( m_hSweepTarget->GetLocalOrigin(), vec3_origin );
+			LaserOn( m_hSweepTarget->GetLocalOrigin(), vec3_origin );
 #endif
-		break;
+			break;
 
-	case TASK_SNIPER_PAINT_ENEMY:
-		// Everytime we start to paint an enemy, this is reset to false.
-		m_bWarnedTargetEntity = false;
+		case TASK_SNIPER_PAINT_ENEMY:
+			// Everytime we start to paint an enemy, this is reset to false.
+			m_bWarnedTargetEntity = false;
 
-		// If the sniper has a sweep target, clear it, unless it's flagged to resume
-		if( m_hSweepTarget != NULL )
-		{
-			if ( !m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_RESUME) )
+			// If the sniper has a sweep target, clear it, unless it's flagged to resume
+			if( m_hSweepTarget != NULL )
 			{
-				ClearTargetGroup();
-				m_hSweepTarget = NULL;
-			}
-		}
-
-		if( m_spawnflags & SF_SNIPER_VIEWCONE )
-		{
-			SetWait( SNIPER_FOG_PAINT_ENEMY_TIME );
-
-			// Just turn it on where it is.
-			LaserOn( m_vecPaintCursor, vec3_origin );
-		}
-		else
-		{
-			if( GetEnemy()->IsPlayer() )
-			{
-				float delay = 0;
-#ifdef _XBOX
-				delay += sniper_xbox_delay.GetFloat();
-#endif
-
-				if( gpGlobals->curtime - m_flTimeLastAttackedPlayer <= SNIPER_FASTER_ATTACK_PERIOD )
+				if( !m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_RESUME ) )
 				{
-					SetWait( SNIPER_SUBSEQUENT_PAINT_TIME + delay );
-					m_flPaintTime = SNIPER_SUBSEQUENT_PAINT_TIME + delay;
-				}
-				else
-				{
-					SetWait( m_flKeyfieldPaintTime + delay );
-					m_flPaintTime = m_flKeyfieldPaintTime + delay;
+					ClearTargetGroup();
+					m_hSweepTarget = NULL;
 				}
 			}
-			else
+
+			if( m_spawnflags & SF_SNIPER_VIEWCONE )
 			{
-				m_flPaintTime = m_flKeyfieldPaintTimeNoise > 0									 ? 
-					m_flKeyfieldPaintTime + random->RandomFloat( 0, m_flKeyfieldPaintTimeNoise ) :
-					m_flKeyfieldPaintTime
-				;
+				SetWait( SNIPER_FOG_PAINT_ENEMY_TIME );
 
-				if( IsFastSniper() )
-				{
-					// Get the shot off a little faster.
-					m_flPaintTime *= 0.75f;
-				}
-
-				SetWait( m_flPaintTime );
-			}
-
-			Vector vecCursor;
-
-			if ( m_spawnflags & SF_SNIPER_NOSWEEP )
-			{
+				// Just turn it on where it is.
 				LaserOn( m_vecPaintCursor, vec3_origin );
 			}
 			else
 			{
-				// Try to start the laser where the player can't miss seeing it!
-#ifdef MAPBASE
-				AngleVectors( GetEnemy()->GetAbsAngles(), &vecCursor );
-#else
-				AngleVectors( GetEnemy()->GetLocalAngles(), &vecCursor );
+				if( GetEnemy()->IsPlayer() )
+				{
+					float delay = 0;
+#ifdef _XBOX
+					delay += sniper_xbox_delay.GetFloat();
 #endif
-				vecCursor = vecCursor * 300;
-				vecCursor += GetEnemy()->EyePosition();				
-				LaserOn( vecCursor, Vector( 16, 16, 16 ) );
+
+					if( gpGlobals->curtime - m_flTimeLastAttackedPlayer <= SNIPER_FASTER_ATTACK_PERIOD )
+					{
+						SetWait( SNIPER_SUBSEQUENT_PAINT_TIME + delay );
+						m_flPaintTime = SNIPER_SUBSEQUENT_PAINT_TIME + delay;
+					}
+					else
+					{
+						SetWait( m_flKeyfieldPaintTime + delay );
+						m_flPaintTime = m_flKeyfieldPaintTime + delay;
+					}
+				}
+				else
+				{
+					m_flPaintTime = m_flKeyfieldPaintTimeNoise > 0									 ?
+									m_flKeyfieldPaintTime + random->RandomFloat( 0, m_flKeyfieldPaintTimeNoise ) :
+									m_flKeyfieldPaintTime
+									;
+
+					if( IsFastSniper() )
+					{
+						// Get the shot off a little faster.
+						m_flPaintTime *= 0.75f;
+					}
+
+					SetWait( m_flPaintTime );
+				}
+
+				Vector vecCursor;
+
+				if( m_spawnflags & SF_SNIPER_NOSWEEP )
+				{
+					LaserOn( m_vecPaintCursor, vec3_origin );
+				}
+				else
+				{
+					// Try to start the laser where the player can't miss seeing it!
+#ifdef MAPBASE
+					AngleVectors( GetEnemy()->GetAbsAngles(), &vecCursor );
+#else
+					AngleVectors( GetEnemy()->GetLocalAngles(), &vecCursor );
+#endif
+					vecCursor = vecCursor * 300;
+					vecCursor += GetEnemy()->EyePosition();
+					LaserOn( vecCursor, Vector( 16, 16, 16 ) );
+				}
+
 			}
-			
-		}
 
-		// Scope glints if shooting at player.
-		if( GetEnemy()->IsPlayer() )
-		{
-			ScopeGlint();
-		}
+			// Scope glints if shooting at player.
+			if( GetEnemy()->IsPlayer() )
+			{
+				ScopeGlint();
+			}
 
-		break;
+			break;
 
-	case TASK_SNIPER_PAINT_NO_SHOT:
-		SetWait( SNIPER_PAINT_NO_SHOT_TIME );
-		if( FindFrustratedShot( pTask->flTaskData ) )
-		{
-			LaserOff();
-			LaserOn( m_vecFrustratedTarget, vec3_origin );
-		}
-		else
-		{
-			TaskFail( "Frustrated shot with no enemy" );
-		}
-		break;
+		case TASK_SNIPER_PAINT_NO_SHOT:
+			SetWait( SNIPER_PAINT_NO_SHOT_TIME );
+			if( FindFrustratedShot( pTask->flTaskData ) )
+			{
+				LaserOff();
+				LaserOn( m_vecFrustratedTarget, vec3_origin );
+			}
+			else
+			{
+				TaskFail( "Frustrated shot with no enemy" );
+			}
+			break;
 
-	case TASK_SNIPER_PAINT_FRUSTRATED:
-		m_flPaintTime = SNIPER_PAINT_FRUSTRATED_TIME + random->RandomFloat( 0, SNIPER_PAINT_FRUSTRATED_TIME );
-		SetWait( m_flPaintTime );
-		if( FindFrustratedShot( pTask->flTaskData ) )
-		{
-			LaserOff();
-			LaserOn( m_vecFrustratedTarget, vec3_origin );
-		}
-		else
-		{
-			TaskFail( "Frustrated shot with no enemy" );
-		}
-		break;
+		case TASK_SNIPER_PAINT_FRUSTRATED:
+			m_flPaintTime = SNIPER_PAINT_FRUSTRATED_TIME + random->RandomFloat( 0, SNIPER_PAINT_FRUSTRATED_TIME );
+			SetWait( m_flPaintTime );
+			if( FindFrustratedShot( pTask->flTaskData ) )
+			{
+				LaserOff();
+				LaserOn( m_vecFrustratedTarget, vec3_origin );
+			}
+			else
+			{
+				TaskFail( "Frustrated shot with no enemy" );
+			}
+			break;
 
-	case TASK_SNIPER_PAINT_DECOY:
-		SetWait( pTask->flTaskData );
-		LaserOn( m_vecDecoyObjectTarget, Vector( 64, 64, 64 ) );
-		break;
+		case TASK_SNIPER_PAINT_DECOY:
+			SetWait( pTask->flTaskData );
+			LaserOn( m_vecDecoyObjectTarget, Vector( 64, 64, 64 ) );
+			break;
 
-	case TASK_RELOAD:
+		case TASK_RELOAD:
 		{
 			CPASAttenuationFilter filter( this );
 			EmitSound( filter, entindex(), "NPC_Sniper.Reload" );
@@ -2343,208 +2385,209 @@ void CProtoSniper::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_SNIPER_FRUSTRATED_ATTACK:
-		//FindFrustratedShot();
-		break;
+		case TASK_SNIPER_FRUSTRATED_ATTACK:
+			//FindFrustratedShot();
+			break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CProtoSniper::RunTask( const Task_t *pTask )
+void CProtoSniper::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_SNIPER_PLAYER_DEAD:
-		if( IsWaitFinished() )
-		{
-			m_hSweepTarget = PickDeadPlayerTarget();
-			m_vecPaintStart = m_vecPaintCursor;
-			SetWait( 4.0f );
-		}
-		else
-		{
-			PaintTarget( m_hSweepTarget->GetAbsOrigin(), 4.0f );
-		}
-		break;
-
-	case TASK_SNIPER_ATTACK_CURSOR:
-		if( FireBullet( m_vecPaintCursor, true ) )
-		{
-			TaskComplete();
-		}
-		break;
-
-	case TASK_RANGE_ATTACK1:
-		// Fire at enemy.
-		if( FireBullet( LeadTarget( GetEnemy() ), true ) )
-		{
-			// Msg("Firing at %s\n",GetEnemy()->GetEntityName().ToCStr());
-
-			if( GetEnemy() && GetEnemy()->IsPlayer() )
+		case TASK_SNIPER_PLAYER_DEAD:
+			if( IsWaitFinished() )
 			{
-				m_flTimeLastAttackedPlayer = gpGlobals->curtime;
-			}
-
-			TaskComplete();
-		}
-		else
-		{
-			// Msg("Firebullet %s is false\n",GetEnemy()->GetEntityName().ToCStr());
-		}
-		break;
-
-	case TASK_SNIPER_FRUSTRATED_ATTACK:
-		if( FireBullet( m_vecFrustratedTarget, false ) )
-		{
-			TaskComplete();
-		}
-		break;
-
-	case TASK_SNIPER_PAINT_SWEEP_TARGET:
-		if ( !m_hSweepTarget.Get() )
-		{
-			TaskFail( FAIL_NO_TARGET );
-			return;
-		}
-
-		if( IsWaitFinished() )
-		{
-			// Time up! Paint the next target in the chain, or stop.
-			CBaseEntity *pNext;
-			pNext = gEntList.FindEntityByName( NULL, m_hSweepTarget->m_target );
-
-			if ( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SHOOTME ) )
-			{
-#ifdef MAPBASE
-				FireBullet( m_hSweepTarget->GetAbsOrigin(), false );
-#else
-				FireBullet( m_hSweepTarget->GetLocalOrigin(), false );
-#endif
-				TaskComplete(); // Force a reload.
-			}
-
-			if( pNext || IsSweepingRandomly() )
-			{
-				// Bump the timer up, update the cursor, paint the new target!
-				// This is done regardless of whether we just fired at the current target.
-
-#ifdef MAPBASE
-				m_vecPaintCursor = m_hSweepTarget->GetAbsOrigin();
-#else
-				m_vecPaintCursor = m_hSweepTarget->GetLocalOrigin();
-#endif
-				if( IsSweepingRandomly() )
-				{
-					// If sweeping randomly, just pick another target.
-					CBaseEntity *pOldTarget;
-
-					pOldTarget = m_hSweepTarget;
-
-					// Pick another target in the group. Don't shoot at the one we just shot at.
-					if( m_iNumGroupTargets > 1 )
-					{
-						do
-						{
-							m_hSweepTarget = m_pGroupTarget[ random->RandomInt( 0, m_iNumGroupTargets - 1 ) ];
-						} while( m_hSweepTarget == pOldTarget );
-					}
-				}
-				else
-				{
-					// If not, go with the next target in the chain.
-					m_hSweepTarget = pNext;
-				}
-
+				m_hSweepTarget = PickDeadPlayerTarget();
 				m_vecPaintStart = m_vecPaintCursor;
-				SetWait( m_hSweepTarget->m_flSpeed );
+				SetWait( 4.0f );
 			}
 			else
 			{
-				m_hSweepTarget = NULL;
-				LaserOff();
-				TaskComplete();
-			} 
+				PaintTarget( m_hSweepTarget->GetAbsOrigin(), 4.0f );
+			}
+			break;
 
-#if 0
-			NDebugOverlay::Line(GetBulletOrigin(), m_hSweepTarget->GetLocalOrigin(), 0,255,0, true, 20 );
-#endif
-		}
-		else
-		{
-			if ( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SNAPSHOT ) )
+		case TASK_SNIPER_ATTACK_CURSOR:
+			if( FireBullet( m_vecPaintCursor, true ) )
 			{
-				m_fSnapShot = true;
+				TaskComplete();
+			}
+			break;
+
+		case TASK_RANGE_ATTACK1:
+			// Fire at enemy.
+			if( FireBullet( LeadTarget( GetEnemy() ), true ) )
+			{
+				// Msg("Firing at %s\n",GetEnemy()->GetEntityName().ToCStr());
+
+				if( GetEnemy() && GetEnemy()->IsPlayer() )
+				{
+					m_flTimeLastAttackedPlayer = gpGlobals->curtime;
+				}
+
+				TaskComplete();
+			}
+			else
+			{
+				// Msg("Firebullet %s is false\n",GetEnemy()->GetEntityName().ToCStr());
+			}
+			break;
+
+		case TASK_SNIPER_FRUSTRATED_ATTACK:
+			if( FireBullet( m_vecFrustratedTarget, false ) )
+			{
+				TaskComplete();
+			}
+			break;
+
+		case TASK_SNIPER_PAINT_SWEEP_TARGET:
+			if( !m_hSweepTarget.Get() )
+			{
+				TaskFail( FAIL_NO_TARGET );
+				return;
 			}
 
-			PaintTarget( m_hSweepTarget->GetAbsOrigin(), m_hSweepTarget->m_flSpeed );
-		}
+			if( IsWaitFinished() )
+			{
+				// Time up! Paint the next target in the chain, or stop.
+				CBaseEntity* pNext;
+				pNext = gEntList.FindEntityByName( NULL, m_hSweepTarget->m_target );
 
-		break;
+				if( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SHOOTME ) )
+				{
+#ifdef MAPBASE
+					FireBullet( m_hSweepTarget->GetAbsOrigin(), false );
+#else
+					FireBullet( m_hSweepTarget->GetLocalOrigin(), false );
+#endif
+					TaskComplete(); // Force a reload.
+				}
 
-	case TASK_SNIPER_PAINT_ENEMY:
-		if( IsWaitFinished() )
-		{
-			TaskComplete();
-		}
+				if( pNext || IsSweepingRandomly() )
+				{
+					// Bump the timer up, update the cursor, paint the new target!
+					// This is done regardless of whether we just fired at the current target.
 
-		PaintTarget( LeadTarget( GetEnemy() ), m_flPaintTime );
-		break;
+#ifdef MAPBASE
+					m_vecPaintCursor = m_hSweepTarget->GetAbsOrigin();
+#else
+					m_vecPaintCursor = m_hSweepTarget->GetLocalOrigin();
+#endif
+					if( IsSweepingRandomly() )
+					{
+						// If sweeping randomly, just pick another target.
+						CBaseEntity* pOldTarget;
 
-	case TASK_SNIPER_PAINT_DECOY:
-		if( IsWaitFinished() )
-		{
-			TaskComplete();
-		}
+						pOldTarget = m_hSweepTarget;
 
-		PaintTarget( m_vecDecoyObjectTarget, pTask->flTaskData );
-		break;
+						// Pick another target in the group. Don't shoot at the one we just shot at.
+						if( m_iNumGroupTargets > 1 )
+						{
+							do
+							{
+								m_hSweepTarget = m_pGroupTarget[ random->RandomInt( 0, m_iNumGroupTargets - 1 ) ];
+							}
+							while( m_hSweepTarget == pOldTarget );
+						}
+					}
+					else
+					{
+						// If not, go with the next target in the chain.
+						m_hSweepTarget = pNext;
+					}
 
-	case TASK_SNIPER_PAINT_NO_SHOT:
-		if( IsWaitFinished() )
-		{
-			//HACKHACK(sjb)
-			// This condition should be turned off 
-			// by a task.
-			ClearCondition( COND_SNIPER_NO_SHOT );
-			TaskComplete();
-		}
+					m_vecPaintStart = m_vecPaintCursor;
+					SetWait( m_hSweepTarget->m_flSpeed );
+				}
+				else
+				{
+					m_hSweepTarget = NULL;
+					LaserOff();
+					TaskComplete();
+				}
 
-		PaintTarget( m_vecFrustratedTarget, SNIPER_PAINT_NO_SHOT_TIME );
-		break;
+#if 0
+				NDebugOverlay::Line( GetBulletOrigin(), m_hSweepTarget->GetLocalOrigin(), 0, 255, 0, true, 20 );
+#endif
+			}
+			else
+			{
+				if( m_hSweepTarget->HasSpawnFlags( SF_SNIPERTARGET_SNAPSHOT ) )
+				{
+					m_fSnapShot = true;
+				}
 
-	case TASK_SNIPER_PAINT_FRUSTRATED:
-		if( IsWaitFinished() )
-		{
-			TaskComplete();
-		}
+				PaintTarget( m_hSweepTarget->GetAbsOrigin(), m_hSweepTarget->m_flSpeed );
+			}
 
-		PaintTarget( m_vecFrustratedTarget, m_flPaintTime );
-		break;
-
-	case TASK_RANGE_ATTACK2:
-		// Fire at decoy
-		if( m_hDecoyObject == NULL )
-		{
-			TaskFail("sniper: bad decoy");
 			break;
-		}
 
-		if( FireBullet( m_vecDecoyObjectTarget, false ) )
-		{
-			//Msg( "Fired at decoy\n" );
-			AddOldDecoy( m_hDecoyObject );
-			TaskComplete();
-		}
-		break;
+		case TASK_SNIPER_PAINT_ENEMY:
+			if( IsWaitFinished() )
+			{
+				TaskComplete();
+			}
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+			PaintTarget( LeadTarget( GetEnemy() ), m_flPaintTime );
+			break;
+
+		case TASK_SNIPER_PAINT_DECOY:
+			if( IsWaitFinished() )
+			{
+				TaskComplete();
+			}
+
+			PaintTarget( m_vecDecoyObjectTarget, pTask->flTaskData );
+			break;
+
+		case TASK_SNIPER_PAINT_NO_SHOT:
+			if( IsWaitFinished() )
+			{
+				//HACKHACK(sjb)
+				// This condition should be turned off
+				// by a task.
+				ClearCondition( COND_SNIPER_NO_SHOT );
+				TaskComplete();
+			}
+
+			PaintTarget( m_vecFrustratedTarget, SNIPER_PAINT_NO_SHOT_TIME );
+			break;
+
+		case TASK_SNIPER_PAINT_FRUSTRATED:
+			if( IsWaitFinished() )
+			{
+				TaskComplete();
+			}
+
+			PaintTarget( m_vecFrustratedTarget, m_flPaintTime );
+			break;
+
+		case TASK_RANGE_ATTACK2:
+			// Fire at decoy
+			if( m_hDecoyObject == NULL )
+			{
+				TaskFail( "sniper: bad decoy" );
+				break;
+			}
+
+			if( FireBullet( m_vecDecoyObjectTarget, false ) )
+			{
+				//Msg( "Fired at decoy\n" );
+				AddOldDecoy( m_hDecoyObject );
+				TaskComplete();
+			}
+			break;
+
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
@@ -2552,7 +2595,7 @@ void CProtoSniper::RunTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 // The sniper throws away the circular list of old decoys when we restore.
 //-----------------------------------------------------------------------------
-int CProtoSniper::Restore( IRestore &restore )
+int CProtoSniper::Restore( IRestore& restore )
 {
 	ClearOldDecoys();
 
@@ -2561,7 +2604,7 @@ int CProtoSniper::Restore( IRestore &restore )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -2575,11 +2618,11 @@ float CProtoSniper::MaxYawSpeed( void )
 void CProtoSniper::PrescheduleThink( void )
 {
 	BaseClass::PrescheduleThink();
-	
+
 	// If a sweep target is set, keep asking the AI to sweep the target
 	if( m_hSweepTarget != NULL )
 	{
-		if( m_bSweepHighestPriority || (!HasCondition( COND_CAN_RANGE_ATTACK1 ) && !HasCondition( COND_SNIPER_NO_SHOT ) ) )
+		if( m_bSweepHighestPriority || ( !HasCondition( COND_CAN_RANGE_ATTACK1 ) && !HasCondition( COND_SNIPER_NO_SHOT ) ) )
 		{
 			SetCondition( COND_SNIPER_SWEEP_TARGET );
 		}
@@ -2609,7 +2652,7 @@ void CProtoSniper::PrescheduleThink( void )
 		{
 			// Stop pestering enemies after 30 seconds of frustration.
 			GetEnemies()->ClearMemory( GetEnemy() );
-			SetEnemy(NULL);
+			SetEnemy( NULL );
 		}
 	}
 
@@ -2641,20 +2684,22 @@ Vector CProtoSniper::EyePosition( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-Vector CProtoSniper::DesiredBodyTarget( CBaseEntity *pTarget )
+Vector CProtoSniper::DesiredBodyTarget( CBaseEntity* pTarget )
 {
 	// By default, aim for the center
 	Vector vecTarget = pTarget->WorldSpaceCenter();
 
 #ifdef MAPBASE_VSCRIPT
-	if (m_ScriptScope.IsInitialized() && g_Hook_GetActualShootPosition.CanRunInScope(m_ScriptScope))
+	if( m_ScriptScope.IsInitialized() && g_Hook_GetActualShootPosition.CanRunInScope( m_ScriptScope ) )
 	{
 		ScriptVariant_t functionReturn;
 		ScriptVariant_t args[] = { GetBulletOrigin(), ToHScript( pTarget ) };
-		if (g_Hook_GetActualShootPosition.Call( m_ScriptScope, &functionReturn, args ))
+		if( g_Hook_GetActualShootPosition.Call( m_ScriptScope, &functionReturn, args ) )
 		{
-			if (functionReturn.m_type == FIELD_VECTOR && functionReturn.m_pVector->LengthSqr() != 0.0f)
+			if( functionReturn.m_type == FIELD_VECTOR && functionReturn.m_pVector->LengthSqr() != 0.0f )
+			{
 				return *functionReturn.m_pVector;
+			}
 		}
 	}
 #endif
@@ -2713,7 +2758,7 @@ Vector CProtoSniper::DesiredBodyTarget( CBaseEntity *pTarget )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
+Vector CProtoSniper::LeadTarget( CBaseEntity* pTarget )
 {
 	float targetTime;
 	float targetDist;
@@ -2729,7 +2774,7 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 	*/
 	if( sniperLines.GetBool() )
 	{
-		Msg("Sniper %s is targeting %s\n", GetDebugName(), pTarget ? pTarget->GetDebugName() : "nobody" );
+		Msg( "Sniper %s is targeting %s\n", GetDebugName(), pTarget ? pTarget->GetDebugName() : "nobody" );
 	}
 
 	if( pTarget == NULL )
@@ -2742,10 +2787,10 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 	vecTarget = DesiredBodyTarget( pTarget );
 
 	// Get bullet time to target
-	targetDist = (vecTarget - GetBulletOrigin() ).Length();
+	targetDist = ( vecTarget - GetBulletOrigin() ).Length();
 	targetTime = targetDist / GetBulletSpeed();
-	
-	// project target's velocity over that time. 
+
+	// project target's velocity over that time.
 	Vector vecVelocity = vec3_origin;
 
 	if( pTarget->IsPlayer() || pTarget->Classify() == CLASS_MISSILE )
@@ -2772,9 +2817,9 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 		else
 		{
 			// Have to build a velocity vector using the character's current groundspeed.
-			CBaseAnimating *pAnimating;
+			CBaseAnimating* pAnimating;
 
-			pAnimating = (CBaseAnimating *)pTarget;
+			pAnimating = ( CBaseAnimating* )pTarget;
 
 			Assert( pAnimating != NULL );
 
@@ -2799,7 +2844,7 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 	{
 		// I'm supposed to miss this shot, so aim above the target's head.
 		// BUT DON'T miss bullseyes, and don't count the shot.
-		vecAdjustedShot = vecTarget; 
+		vecAdjustedShot = vecTarget;
 		vecAdjustedShot.z += 16;
 
 		m_iMisses--;
@@ -2812,7 +2857,7 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 	vecAdjustedShot = vecTarget + ( vecVelocity * targetTime );
 
 	// if the adjusted shot falls well short of the target, take the straight shot.
-	// it's not very interesting for the bullet to hit something far away from the 
+	// it's not very interesting for the bullet to hit something far away from the
 	// target. (for instance, if a sign or ledge or something is between the player
 	// and the sniper, and the sniper would hit this object if he tries to lead the player)
 
@@ -2832,21 +2877,21 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 
 
 
-/*
-	UTIL_TraceLine( vecBulletOrigin, vecAdjustedShot, MASK_SHOT, this, &tr );
+	/*
+		UTIL_TraceLine( vecBulletOrigin, vecAdjustedShot, MASK_SHOT, this, &tr );
 
-	actualShotDist = (tr.endpos - vecBulletOrigin ).Length();
-	adjustedShotDist = ( vecAdjustedShot - vecBulletOrigin ).Length();
+		actualShotDist = (tr.endpos - vecBulletOrigin ).Length();
+		adjustedShotDist = ( vecAdjustedShot - vecBulletOrigin ).Length();
 
-	/////////////////////////////////////////////
-	// the shot taken should hit within 10% of the sniper's distance to projected target.
-	// else, shoot straight. (there's some object in the way of the adjusted shot)
-	/////////////////////////////////////////////
-	if( actualShotDist <= adjustedShotDist * 0.9 )
-	{
-		vecAdjustedShot = vecTarget;
-	}
-*/
+		/////////////////////////////////////////////
+		// the shot taken should hit within 10% of the sniper's distance to projected target.
+		// else, shoot straight. (there's some object in the way of the adjusted shot)
+		/////////////////////////////////////////////
+		if( actualShotDist <= adjustedShotDist * 0.9 )
+		{
+			vecAdjustedShot = vecTarget;
+		}
+	*/
 	return vecAdjustedShot;
 }
 
@@ -2855,11 +2900,11 @@ Vector CProtoSniper::LeadTarget( CBaseEntity *pTarget )
 // nearby to point the laser at, so that the player can get
 // a fix on the sniper's location.
 //---------------------------------------------------------
-CBaseEntity *CProtoSniper::PickDeadPlayerTarget()
+CBaseEntity* CProtoSniper::PickDeadPlayerTarget()
 {
 	const int iSearchSize = 32;
-	CBaseEntity *pTarget = AI_GetSinglePlayer();
-	CBaseEntity *pEntities[ iSearchSize ];
+	CBaseEntity* pTarget = AI_GetSinglePlayer();
+	CBaseEntity* pEntities[ iSearchSize ];
 
 	int iNumEntities = UTIL_EntitiesInSphere( pEntities, iSearchSize, AI_GetSinglePlayer()->GetAbsOrigin(), 180.0f, 0 );
 
@@ -2868,12 +2913,12 @@ CBaseEntity *CProtoSniper::PickDeadPlayerTarget()
 	{
 		int i;
 
-		// Try a few times to randomly select a target. 
+		// Try a few times to randomly select a target.
 		for( i = 0 ; i < 10 ; i++ )
 		{
-			CBaseEntity *pCandidate = pEntities[ random->RandomInt(0, iNumEntities - 1) ];
+			CBaseEntity* pCandidate = pEntities[ random->RandomInt( 0, iNumEntities - 1 ) ];
 
-			if( !pCandidate->IsNPC() && FInViewCone(pCandidate) )
+			if( !pCandidate->IsNPC() && FInViewCone( pCandidate ) )
 			{
 				return pCandidate;
 			}
@@ -2886,7 +2931,7 @@ CBaseEntity *CProtoSniper::PickDeadPlayerTarget()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CProtoSniper::InputEnableSniper( inputdata_t &inputdata )
+void CProtoSniper::InputEnableSniper( inputdata_t& inputdata )
 {
 	ClearCondition( COND_SNIPER_DISABLED );
 	SetCondition( COND_SNIPER_ENABLED );
@@ -2897,7 +2942,7 @@ void CProtoSniper::InputEnableSniper( inputdata_t &inputdata )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CProtoSniper::InputDisableSniper( inputdata_t &inputdata )
+void CProtoSniper::InputDisableSniper( inputdata_t& inputdata )
 {
 	ClearCondition( COND_SNIPER_ENABLED );
 	SetCondition( COND_SNIPER_DISABLED );
@@ -2921,7 +2966,7 @@ bool CProtoSniper::FindFrustratedShot( float flNoise )
 	}
 
 	// Just pick a spot somewhere around the target.
-	// Try a handful of times to pick a spot that guarantees the 
+	// Try a handful of times to pick a spot that guarantees the
 	// target will see the laser.
 #define MAX_TRIES	15
 	for( int i = 0 ; i < MAX_TRIES ; i++ )
@@ -2934,25 +2979,33 @@ bool CProtoSniper::FindFrustratedShot( float flNoise )
 
 		// Help move the frustrated spot off the target's BBOX in X/Y space.
 		if( vecSpot.x < 0 )
+		{
 			vecSpot.x -= 32;
+		}
 		else
+		{
 			vecSpot.x += 32;
+		}
 
 		if( vecSpot.y < 0 )
+		{
 			vecSpot.y -= 32;
+		}
 		else
+		{
 			vecSpot.y += 32;
+		}
 
 		Vector vecSrc, vecDir;
 
-		vecSrc = GetAbsOrigin(); 
+		vecSrc = GetAbsOrigin();
 		vecDir = vecSpot - vecSrc;
 		VectorNormalize( vecDir );
 
 		if( GetEnemy()->FVisible( vecSpot ) || i == MAX_TRIES - 1 )
 		{
 			trace_t tr;
-			AI_TraceLine(vecSrc, vecSrc + vecDir * 8192, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr);
+			AI_TraceLine( vecSrc, vecSrc + vecDir * 8192, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
 			if( !GetEnemy()->FVisible( tr.endpos ) )
 			{
@@ -2968,7 +3021,7 @@ bool CProtoSniper::FindFrustratedShot( float flNoise )
 	}
 
 #if 0
-	NDebugOverlay::Line(vecStart, tr.endpos, 0,255,0, true, 20 );
+	NDebugOverlay::Line( vecStart, tr.endpos, 0, 255, 0, true, 20 );
 #endif
 
 	return true;
@@ -2978,13 +3031,13 @@ bool CProtoSniper::FindFrustratedShot( float flNoise )
 //---------------------------------------------------------
 // See all NPC's easily.
 //
-// Only see the player if you can trace to both of his 
+// Only see the player if you can trace to both of his
 // eyeballs. That is, allow the player to peek around corners.
 // This is a little more expensive than the base class' check!
 //---------------------------------------------------------
 #define SNIPER_EYE_DIST 0.75
 #define SNIPER_TARGET_VERTICAL_OFFSET Vector( 0, 0, 5 );
-bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CProtoSniper::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
 	if( m_spawnflags & SF_SNIPER_VIEWCONE )
 	{
@@ -3001,7 +3054,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 		return BaseClass::FVisible( pEntity, traceMask, ppBlocker );
 	}
 
-	if ( pEntity->GetFlags() & FL_NOTARGET )
+	if( pEntity->GetFlags() & FL_NOTARGET )
 	{
 		return false;
 	}
@@ -3013,7 +3066,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 
 	if( fabs( GetAbsOrigin().z - pEntity->WorldSpaceCenter().z ) <= 120.f )
 	{
-		// If the player is around the same elevation, look straight at his eyes. 
+		// If the player is around the same elevation, look straight at his eyes.
 		// At the same elevation, the vertical peeking allowance makes it too easy
 		// for a player to dispatch the sniper from cover.
 		vecVerticalOffset = vec3_origin;
@@ -3035,7 +3088,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 	UTIL_TraceLine( EyePosition(), pEntity->EyePosition() + vecEye, MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr );
 
 #if 0
-	NDebugOverlay::Line(EyePosition(), tr.endpos, 0,255,0, true, 0.1);
+	NDebugOverlay::Line( EyePosition(), tr.endpos, 0, 255, 0, true, 0.1 );
 #endif
 
 	bool fCheckFailed = false;
@@ -3052,8 +3105,8 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 		UTIL_TraceLine( EyePosition(), pEntity->EyePosition() + vecEye, MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr );
 
 #if 0
-		NDebugOverlay::Line(EyePosition(), tr.endpos, 0,255,0, true, 0.1);
-#endif 
+		NDebugOverlay::Line( EyePosition(), tr.endpos, 0, 255, 0, true, 0.1 );
+#endif
 
 		if( tr.fraction != 1.0 )
 		{
@@ -3066,17 +3119,17 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 		// Can see the player.
 		return true;
 	}
-	
+
 	// Now, if the check failed, see if the player is ducking and has recently
-	// fired a muzzleflash. If yes, see if you'd be able to see the player if 
+	// fired a muzzleflash. If yes, see if you'd be able to see the player if
 	// they were standing in their current position instead of ducking. Since
 	// the sniper doesn't have a clear shot in this situation, he will harrass
 	// near the player.
-	CBasePlayer *pPlayer;
+	CBasePlayer* pPlayer;
 
 	pPlayer = ToBasePlayer( pEntity );
 
-	if( (pPlayer->GetFlags() & FL_DUCKING) && pPlayer->MuzzleFlashTime() > gpGlobals->curtime )
+	if( ( pPlayer->GetFlags() & FL_DUCKING ) && pPlayer->MuzzleFlashTime() > gpGlobals->curtime )
 	{
 		vecEye = pPlayer->EyePosition() + Vector( 0, 0, 32 );
 		UTIL_TraceLine( EyePosition(), vecEye, MASK_BLOCKLOS, this, COLLISION_GROUP_NONE, &tr );
@@ -3084,7 +3137,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 		if( tr.fraction != 1.0 )
 		{
 			// Everything failed.
-			if (ppBlocker)
+			if( ppBlocker )
 			{
 				*ppBlocker = tr.m_pEnt;
 			}
@@ -3097,7 +3150,7 @@ bool CProtoSniper::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **
 		}
 	}
 
-	if (ppBlocker)
+	if( ppBlocker )
 	{
 		*ppBlocker = tr.m_pEnt;
 	}
@@ -3119,25 +3172,25 @@ int CProtoSniper::DrawDebugTextOverlays()
 	// ---------------------
 	text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT)
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
 
-		CSniperTarget *pTarget = NULL;
-		if ( m_iNumGroupTargets > 0 )
+		CSniperTarget* pTarget = NULL;
+		if( m_iNumGroupTargets > 0 )
 		{
-			pTarget = dynamic_cast<CSniperTarget *>(m_pGroupTarget[0]);
+			pTarget = dynamic_cast<CSniperTarget*>( m_pGroupTarget[0] );
 		}
 
 		Q_snprintf( tempstr, sizeof( tempstr ), "Sweep group (count): %s (%d)", pTarget != NULL ? STRING( pTarget->m_iszGroupName ) : "<None>", m_iNumGroupTargets );
 		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 
-		for ( int i = 0; i < m_iNumGroupTargets; i++ )
+		for( int i = 0; i < m_iNumGroupTargets; i++ )
 		{
-			if ( m_pGroupTarget[i] != NULL )
+			if( m_pGroupTarget[i] != NULL )
 			{
-				NDebugOverlay::VertArrow( EyePosition(), m_pGroupTarget[i]->GetAbsOrigin(), 8, 0, 255, 0, 0, true, 0);
+				NDebugOverlay::VertArrow( EyePosition(), m_pGroupTarget[i]->GetAbsOrigin(), 8, 0, 255, 0, 0, true, 0 );
 			}
 		}
 	}
@@ -3147,7 +3200,7 @@ int CProtoSniper::DrawDebugTextOverlays()
 
 //-----------------------------------------------------------------------------
 // Inform the sniper that a bullet missed its intended target. We don't know
-// which bullet or which target. 
+// which bullet or which target.
 //-----------------------------------------------------------------------------
 void CProtoSniper::NotifyShotMissedTarget()
 {
@@ -3162,12 +3215,14 @@ void CProtoSniper::NotifyShotMissedTarget()
 //-----------------------------------------------------------------------------
 // Purpose: Speak concept
 //-----------------------------------------------------------------------------
-bool CProtoSniper::SpeakIfAllowed(const char *concept, const char *modifiers)
+bool CProtoSniper::SpeakIfAllowed( const char* concept, const char* modifiers )
 {
-	if (!GetExpresser()->CanSpeakConcept(concept))
+	if( !GetExpresser()->CanSpeakConcept( concept ) )
+	{
 		return false;
+	}
 
-	return Speak(concept, modifiers);
+	return Speak( concept, modifiers );
 }
 
 //-----------------------------------------------------------------------------
@@ -3177,29 +3232,31 @@ void CProtoSniper::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 	BaseClass::ModifyOrAppendCriteria( set );
 
 	// We still need this
-	set.AppendCriteria( "sniperspeak", UTIL_VarArgs("%i", sniperspeak.GetInt()) );
-	set.AppendCriteria( "playerally", UTIL_VarArgs("%d", IsPlayerAllySniper()) );
+	set.AppendCriteria( "sniperspeak", UTIL_VarArgs( "%i", sniperspeak.GetInt() ) );
+	set.AppendCriteria( "playerally", UTIL_VarArgs( "%d", IsPlayerAllySniper() ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CAI_Expresser *CProtoSniper::CreateExpresser( void )
+CAI_Expresser* CProtoSniper::CreateExpresser( void )
 {
-	m_pExpresser = new CAI_Expresser(this);
-	if (!m_pExpresser)
+	m_pExpresser = new CAI_Expresser( this );
+	if( !m_pExpresser )
+	{
 		return NULL;
+	}
 
-	m_pExpresser->Connect(this);
+	m_pExpresser->Connect( this );
 	return m_pExpresser;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CProtoSniper::PostConstructor(const char *szClassname)
+void CProtoSniper::PostConstructor( const char* szClassname )
 {
-	BaseClass::PostConstructor(szClassname);
+	BaseClass::PostConstructor( szClassname );
 	CreateExpresser();
 }
 #endif
@@ -3212,244 +3269,244 @@ void CProtoSniper::PostConstructor(const char *szClassname)
 
 AI_BEGIN_CUSTOM_NPC( proto_sniper, CProtoSniper )
 
-	DECLARE_CONDITION( COND_SNIPER_CANATTACKDECOY );
-	DECLARE_CONDITION( COND_SNIPER_SUPPRESSED );
-	DECLARE_CONDITION( COND_SNIPER_ENABLED );
-	DECLARE_CONDITION( COND_SNIPER_DISABLED );
-	DECLARE_CONDITION( COND_SNIPER_FRUSTRATED );
-	DECLARE_CONDITION( COND_SNIPER_SWEEP_TARGET );	
-	DECLARE_CONDITION( COND_SNIPER_NO_SHOT );	
+DECLARE_CONDITION( COND_SNIPER_CANATTACKDECOY );
+DECLARE_CONDITION( COND_SNIPER_SUPPRESSED );
+DECLARE_CONDITION( COND_SNIPER_ENABLED );
+DECLARE_CONDITION( COND_SNIPER_DISABLED );
+DECLARE_CONDITION( COND_SNIPER_FRUSTRATED );
+DECLARE_CONDITION( COND_SNIPER_SWEEP_TARGET );
+DECLARE_CONDITION( COND_SNIPER_NO_SHOT );
 #ifdef MAPBASE
 	DECLARE_CONDITION( COND_SNIPER_KILLED_ENEMY );
 #endif
 
-	DECLARE_TASK( TASK_SNIPER_FRUSTRATED_ATTACK );
-	DECLARE_TASK( TASK_SNIPER_PAINT_ENEMY );
-	DECLARE_TASK( TASK_SNIPER_PAINT_DECOY );
-	DECLARE_TASK( TASK_SNIPER_PAINT_FRUSTRATED );
-	DECLARE_TASK( TASK_SNIPER_PAINT_SWEEP_TARGET );
-	DECLARE_TASK( TASK_SNIPER_ATTACK_CURSOR );
-	DECLARE_TASK( TASK_SNIPER_PAINT_NO_SHOT );
-	DECLARE_TASK( TASK_SNIPER_PLAYER_DEAD );
+DECLARE_TASK( TASK_SNIPER_FRUSTRATED_ATTACK );
+DECLARE_TASK( TASK_SNIPER_PAINT_ENEMY );
+DECLARE_TASK( TASK_SNIPER_PAINT_DECOY );
+DECLARE_TASK( TASK_SNIPER_PAINT_FRUSTRATED );
+DECLARE_TASK( TASK_SNIPER_PAINT_SWEEP_TARGET );
+DECLARE_TASK( TASK_SNIPER_ATTACK_CURSOR );
+DECLARE_TASK( TASK_SNIPER_PAINT_NO_SHOT );
+DECLARE_TASK( TASK_SNIPER_PLAYER_DEAD );
 
-	//=========================================================
-	// SCAN
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_SCAN,
+//=========================================================
+// SCAN
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_SCAN,
 
-		"	Tasks"
-		"		TASK_WAIT_INDEFINITE		0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_DISABLED"
-		"		COND_SNIPER_SWEEP_TARGET"
-	)
+	"	Tasks"
+	"		TASK_WAIT_INDEFINITE		0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_DISABLED"
+	"		COND_SNIPER_SWEEP_TARGET"
+)
 
-	//=========================================================
-	// CAMP
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_CAMP,
+//=========================================================
+// CAMP
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_CAMP,
 
-		"	Tasks"
-		"		TASK_WAIT_INDEFINITE		0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_SNIPER_CANATTACKDECOY"
-		"		COND_SNIPER_SUPPRESSED"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_DISABLED"
-		"		COND_SNIPER_FRUSTRATED"
-		"		COND_SNIPER_SWEEP_TARGET"
-	)
+	"	Tasks"
+	"		TASK_WAIT_INDEFINITE		0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_SNIPER_CANATTACKDECOY"
+	"		COND_SNIPER_SUPPRESSED"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_DISABLED"
+	"		COND_SNIPER_FRUSTRATED"
+	"		COND_SNIPER_SWEEP_TARGET"
+)
 
-	//=========================================================
-	// ATTACK
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_ATTACK,
+//=========================================================
+// ATTACK
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_ATTACK,
 
-		"	Tasks"
-		"		TASK_SNIPER_PAINT_ENEMY		0"
-		"		TASK_RANGE_ATTACK1			0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_DEAD"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_DISABLED"
-	)
-		
-	//=========================================================
-	// ATTACK
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_SNAPATTACK,
+	"	Tasks"
+	"		TASK_SNIPER_PAINT_ENEMY		0"
+	"		TASK_RANGE_ATTACK1			0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_DEAD"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_DISABLED"
+)
 
-		"	Tasks"
-		"		TASK_SNIPER_ATTACK_CURSOR	0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_DISABLED"
-	)
+//=========================================================
+// ATTACK
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_SNAPATTACK,
 
-	//=========================================================
-	// RELOAD
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_RELOAD,
+	"	Tasks"
+	"		TASK_SNIPER_ATTACK_CURSOR	0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_DISABLED"
+)
 
-		"	Tasks"
-		"		TASK_RELOAD				0"
-		"		TASK_WAIT				1.0"
-		"	"
-		"	Interrupts"
-		"		COND_HEAR_DANGER"
-	)
+//=========================================================
+// RELOAD
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_RELOAD,
 
-	//=========================================================
-	// Attack decoy
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_ATTACKDECOY,
+	"	Tasks"
+	"		TASK_RELOAD				0"
+	"		TASK_WAIT				1.0"
+	"	"
+	"	Interrupts"
+	"		COND_HEAR_DANGER"
+)
 
-		"	Tasks"
-		"		TASK_SNIPER_PAINT_DECOY		2.0"
-		"		TASK_RANGE_ATTACK2			0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_HEAR_DANGER"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_SNIPER_DISABLED"
-		"		COND_SNIPER_SWEEP_TARGET"
-	)
+//=========================================================
+// Attack decoy
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_ATTACKDECOY,
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_SUPPRESSED,
+	"	Tasks"
+	"		TASK_SNIPER_PAINT_DECOY		2.0"
+	"		TASK_RANGE_ATTACK2			0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_HEAR_DANGER"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_SNIPER_DISABLED"
+	"		COND_SNIPER_SWEEP_TARGET"
+)
 
-		"	Tasks"
-		"		TASK_WAIT			2.0"
-		"	"
-		"	Interrupts"
-	)
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_SUPPRESSED,
 
-	//=========================================================
-	// Sniper is allowed to process a couple conditions while
-	// disabled, but mostly he waits until he's enabled.
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_DISABLEDWAIT,
+	"	Tasks"
+	"		TASK_WAIT			2.0"
+	"	"
+	"	Interrupts"
+)
 
-		"	Tasks"
-		"		TASK_WAIT			0.5"
-		"	"
-		"	Interrupts"
-		"		COND_SNIPER_ENABLED"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-	)
+//=========================================================
+// Sniper is allowed to process a couple conditions while
+// disabled, but mostly he waits until he's enabled.
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_DISABLEDWAIT,
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_FRUSTRATED_ATTACK,
+	"	Tasks"
+	"		TASK_WAIT			0.5"
+	"	"
+	"	Interrupts"
+	"		COND_SNIPER_ENABLED"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+)
 
-		"	Tasks"
-		"		TASK_WAIT						2.0"
-		"		TASK_SNIPER_PAINT_FRUSTRATED	0.05"
-		"		TASK_SNIPER_PAINT_FRUSTRATED	0.025"
-		"		TASK_SNIPER_PAINT_FRUSTRATED	0.0"
-		"		TASK_SNIPER_FRUSTRATED_ATTACK	0.0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_SNIPER_DISABLED"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_SEE_ENEMY"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_SWEEP_TARGET"
-	)
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_FRUSTRATED_ATTACK,
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_SWEEP_TARGET,
+	"	Tasks"
+	"		TASK_WAIT						2.0"
+	"		TASK_SNIPER_PAINT_FRUSTRATED	0.05"
+	"		TASK_SNIPER_PAINT_FRUSTRATED	0.025"
+	"		TASK_SNIPER_PAINT_FRUSTRATED	0.0"
+	"		TASK_SNIPER_FRUSTRATED_ATTACK	0.0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_SNIPER_DISABLED"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_SEE_ENEMY"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_SWEEP_TARGET"
+)
 
-		"	Tasks"
-		"		TASK_SNIPER_PAINT_SWEEP_TARGET	0.0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_SNIPER_DISABLED"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_HEAR_DANGER"
-		"		COND_SNIPER_NO_SHOT"
-	)
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_SWEEP_TARGET,
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_SWEEP_TARGET_NOINTERRUPT,
+	"	Tasks"
+	"		TASK_SNIPER_PAINT_SWEEP_TARGET	0.0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_SNIPER_DISABLED"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_HEAR_DANGER"
+	"		COND_SNIPER_NO_SHOT"
+)
 
-		"	Tasks"
-		"		TASK_SNIPER_PAINT_SWEEP_TARGET	0.0"
-		"	"
-		"	Interrupts"
-		"		COND_SNIPER_DISABLED"
-	)
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_SWEEP_TARGET_NOINTERRUPT,
 
-	//=========================================================
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_PSNIPER_NO_CLEAR_SHOT,
+	"	Tasks"
+	"		TASK_SNIPER_PAINT_SWEEP_TARGET	0.0"
+	"	"
+	"	Interrupts"
+	"		COND_SNIPER_DISABLED"
+)
 
-		"	Tasks"
-		"		TASK_SNIPER_PAINT_NO_SHOT	0.0"
-		"		TASK_SNIPER_PAINT_NO_SHOT	0.075"
-		"		TASK_SNIPER_PAINT_NO_SHOT	0.05"
-		"		TASK_SNIPER_PAINT_NO_SHOT	0.0"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_SNIPER_DISABLED"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_HEAR_DANGER"
-	)
+//=========================================================
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_PSNIPER_NO_CLEAR_SHOT,
 
-	//=========================================================
-	//=========================================================
+	"	Tasks"
+	"		TASK_SNIPER_PAINT_NO_SHOT	0.0"
+	"		TASK_SNIPER_PAINT_NO_SHOT	0.075"
+	"		TASK_SNIPER_PAINT_NO_SHOT	0.05"
+	"		TASK_SNIPER_PAINT_NO_SHOT	0.0"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_SNIPER_DISABLED"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_HEAR_DANGER"
+)
+
+//=========================================================
+//=========================================================
 #ifdef MAPBASE
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_PSNIPER_PLAYER_DEAD,
 
 	"	Tasks"
@@ -3457,17 +3514,17 @@ AI_BEGIN_CUSTOM_NPC( proto_sniper, CProtoSniper )
 	"	"
 	"	Interrupts"
 	"		COND_SEE_PLAYER"
-	)
+)
 #else
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_PSNIPER_PLAYER_DEAD,
 
 	"	Tasks"
 	"		TASK_SNIPER_PLAYER_DEAD		0"
 	"	"
 	"	Interrupts"
-	)
+)
 #endif
 
 AI_END_CUSTOM_NPC()
@@ -3508,8 +3565,8 @@ void CSniperBullet::BulletThink( void )
 
 		if( GetOwnerEntity() )
 		{
-			CAI_BaseNPC *pSniper;
-			CAI_BaseNPC *pEnemyNPC;
+			CAI_BaseNPC* pSniper;
+			CAI_BaseNPC* pEnemyNPC;
 			pSniper = GetOwnerEntity()->MyNPCPointer();
 
 			if( pSniper && pSniper->GetEnemy() )
@@ -3535,8 +3592,8 @@ void CSniperBullet::BulletThink( void )
 
 	flInterval = gpGlobals->curtime - GetLastThink();
 	vecStart = GetAbsOrigin();
-	vecEnd = vecStart + ( m_vecDir * (m_Speed * flInterval) );
-	float flDist = (vecStart - vecEnd).Length();
+	vecEnd = vecStart + ( m_vecDir * ( m_Speed * flInterval ) );
+	float flDist = ( vecStart - vecEnd ).Length();
 
 	//Msg(".");
 
@@ -3551,17 +3608,17 @@ void CSniperBullet::BulletThink( void )
 
 #ifdef HL2_EPISODIC
 		if( tr.m_pEnt->IsNPC() || m_iImpacts == NUM_PENETRATIONS )
-#else	 
+#else
 		if( tr.m_pEnt->m_takedamage == DAMAGE_YES || m_iImpacts == NUM_PENETRATIONS )
 #endif//HL2_EPISODIC
 		{
 			// Bullet stops when it hits an NPC, or when it has penetrated enough times.
-			
+
 			if( tr.m_pEnt && tr.m_pEnt->VPhysicsGetObject() )
 			{
 				if( tr.m_pEnt->VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 				{
-					Pickup_ForcePlayerToDropThisObject(tr.m_pEnt);
+					Pickup_ForcePlayerToDropThisObject( tr.m_pEnt );
 				}
 			}
 
@@ -3570,11 +3627,11 @@ void CSniperBullet::BulletThink( void )
 		}
 		else
 		{
-			#define STEP_SIZE	2
-			#define NUM_STEPS	6
-			// Try to slide a 'cursor' through the object that was hit. 
+#define STEP_SIZE	2
+#define NUM_STEPS	6
+			// Try to slide a 'cursor' through the object that was hit.
 			Vector vecCursor = tr.endpos;
-			
+
 			for( int i = 0 ; i < NUM_STEPS ; i++ )
 			{
 				//Msg("-");
@@ -3582,7 +3639,7 @@ void CSniperBullet::BulletThink( void )
 
 				if( UTIL_PointContents( vecCursor ) != CONTENTS_SOLID )
 				{
-					// Passed out of a solid! 
+					// Passed out of a solid!
 					SetAbsOrigin( vecCursor );
 
 					// Fire another tracer.
@@ -3596,7 +3653,7 @@ void CSniperBullet::BulletThink( void )
 			//Msg("#\n");
 			if( m_bDirectShot )
 			{
-				CProtoSniper *pSniper = dynamic_cast<CProtoSniper*>(GetOwnerEntity());
+				CProtoSniper* pSniper = dynamic_cast<CProtoSniper*>( GetOwnerEntity() );
 				if( pSniper )
 				{
 					pSniper->NotifyShotMissedTarget();
@@ -3616,7 +3673,7 @@ void CSniperBullet::BulletThink( void )
 
 //=========================================================
 //=========================================================
-bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBaseEntity *pOwner, bool bDirectShot )
+bool CSniperBullet::Start( const Vector& vecOrigin, const Vector& vecTarget, CBaseEntity* pOwner, bool bDirectShot )
 {
 	m_flLastThink = gpGlobals->curtime;
 
@@ -3625,13 +3682,13 @@ bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBa
 		// This guy doesn't have a REAL weapon, per say, but he does fire
 		// sniper rounds. Since there's no weapon to index the ammo type,
 		// do it manually here.
-		m_AmmoType = GetAmmoDef()->Index("SniperRound"); 
+		m_AmmoType = GetAmmoDef()->Index( "SniperRound" );
 
 		// This is the bullet that is used for all subsequent FireBullets() calls after the first
 		// call penetrates a surface and keeps going.
-		m_PenetratedAmmoType = GetAmmoDef()->Index("SniperPenetratedRound");
+		m_PenetratedAmmoType = GetAmmoDef()->Index( "SniperPenetratedRound" );
 	}
-	
+
 	if( m_fActive )
 	{
 		return false;
@@ -3645,7 +3702,7 @@ bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBa
 	VectorNormalize( m_vecDir );
 
 	// Set speed;
-	CProtoSniper *pSniper = dynamic_cast<CProtoSniper*>(pOwner);
+	CProtoSniper* pSniper = dynamic_cast<CProtoSniper*>( pOwner );
 
 	if( pSniper )
 	{
@@ -3662,108 +3719,108 @@ bool CSniperBullet::Start( const Vector &vecOrigin, const Vector &vecTarget, CBa
 	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + m_vecDir * 8192, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 	UTIL_Tracer( vecOrigin, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, m_Speed, true, "StriderTracer" );
 
-	float flElapsedTime = ( (tr.startpos - tr.endpos).Length() / m_Speed );
+	float flElapsedTime = ( ( tr.startpos - tr.endpos ).Length() / m_Speed );
 	m_SoundTime = gpGlobals->curtime + flElapsedTime * 0.5;
-	
+
 	SetThink( &CSniperBullet::BulletThink );
 	SetNextThink( gpGlobals->curtime );
 	m_fActive = true;
 	m_bDirectShot = bDirectShot;
 	return true;
 
-/*
-	int i;
+	/*
+		int i;
 
-	// Try to find all of the things the bullet can go through along the way.
-	//-------------------------------
-	//-------------------------------
-	m_vecDir = vecTarget - vecOrigin;
-	VectorNormalize( m_vecDir );
+		// Try to find all of the things the bullet can go through along the way.
+		//-------------------------------
+		//-------------------------------
+		m_vecDir = vecTarget - vecOrigin;
+		VectorNormalize( m_vecDir );
 
-	trace_t	tr;
+		trace_t	tr;
 
-	
-	// Elapsed time counts how long the bullet is in motion through this simulation.
-	float flElapsedTime = 0;
 
-	for( i = 0 ; i < NUM_PENETRATIONS ; i++ )
-	{
-		// Trace to the target. 
-		UTIL_TraceLine( GetAbsOrigin(), vecTarget, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+		// Elapsed time counts how long the bullet is in motion through this simulation.
+		float flElapsedTime = 0;
 
-		flShotDist = (tr.endpos - GetAbsOrigin()).Length();
-
-		// Record the two endpoints of the segment and the time at which this bullet hits,
-		// and the time at which it's supposed to hit its mark.
-		m_ImpactTime[ i ] = flElapsedTime + ( flShotDist / GetBulletSpeed() );
-		m_vecStart[ i ] = tr.startpos;
-		m_vecEnd[ i ] = tr.endpos;
-
-		// The elapsed time is now pushed forward by how long it takes the bullet
-		// to travel through this segment.
-		flElapsedTime += ( flShotDist / GetBulletSpeed() );
-
-		// Never let gpGlobals->curtime get added to the elapsed time!
-		m_ImpactTime[ i ] += gpGlobals->curtime;
-
-		CBaseEntity *pEnt;
-
-		pEnt = tr.m_pEnt;
-
-		if( !pEnt												||
-			pEnt->MyNPCPointer()								|| 
-			UTIL_DistApprox2D( tr.endpos, vecTarget ) <= 4		||
-			FClassnameIs( pEnt, "prop_physics" ) )
+		for( i = 0 ; i < NUM_PENETRATIONS ; i++ )
 		{
-			// If we're close to the target, assume the shot is going to hit
-			// the target and stop penetrating.
-			//
-			// If we're going to hit an NPC, stop penetrating.
-			//
-			// If we hit a physics prop, stop penetrating.
-			//
-			// Otherwise, keep looping.
-			break;
+			// Trace to the target.
+			UTIL_TraceLine( GetAbsOrigin(), vecTarget, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+
+			flShotDist = (tr.endpos - GetAbsOrigin()).Length();
+
+			// Record the two endpoints of the segment and the time at which this bullet hits,
+			// and the time at which it's supposed to hit its mark.
+			m_ImpactTime[ i ] = flElapsedTime + ( flShotDist / GetBulletSpeed() );
+			m_vecStart[ i ] = tr.startpos;
+			m_vecEnd[ i ] = tr.endpos;
+
+			// The elapsed time is now pushed forward by how long it takes the bullet
+			// to travel through this segment.
+			flElapsedTime += ( flShotDist / GetBulletSpeed() );
+
+			// Never let gpGlobals->curtime get added to the elapsed time!
+			m_ImpactTime[ i ] += gpGlobals->curtime;
+
+			CBaseEntity *pEnt;
+
+			pEnt = tr.m_pEnt;
+
+			if( !pEnt												||
+				pEnt->MyNPCPointer()								||
+				UTIL_DistApprox2D( tr.endpos, vecTarget ) <= 4		||
+				FClassnameIs( pEnt, "prop_physics" ) )
+			{
+				// If we're close to the target, assume the shot is going to hit
+				// the target and stop penetrating.
+				//
+				// If we're going to hit an NPC, stop penetrating.
+				//
+				// If we hit a physics prop, stop penetrating.
+				//
+				// Otherwise, keep looping.
+				break;
+			}
+
+			// We're going to try to penetrate whatever the bullet has hit.
+
+			// Push through the object by the penetration distance, then trace back.
+			Vector vecCursor;
+
+			vecCursor = tr.endpos;
+			vecCursor += m_vecDir * PENETRATION_THICKNESS;
+
+			UTIL_TraceLine( vecCursor, vecCursor + m_vecDir * -2, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+
+	#if 1
+			if( tr.startsolid )
+			{
+				// The cursor is inside the solid. Solid is too thick to penetrate.
+	#ifdef SNIPER_DEBUG
+				Msg( "SNIPER STARTSOLID\n" );
+	#endif
+				break;
+			}
+	#endif
+
+			// Now put the bullet at this point and continue.
+			UTIL_SetOrigin( this, vecCursor );
 		}
+		//-------------------------------
+		//-------------------------------
+	*/
 
-		// We're going to try to penetrate whatever the bullet has hit. 
 
-		// Push through the object by the penetration distance, then trace back.
-		Vector vecCursor;
+	/*
+	#ifdef SNIPER_DEBUG
+		Msg( "PENETRATING %d items", i );
+	#endif // SNIPER_DEBUG
 
-		vecCursor = tr.endpos;
-		vecCursor += m_vecDir * PENETRATION_THICKNESS;
-
-		UTIL_TraceLine( vecCursor, vecCursor + m_vecDir * -2, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-
-#if 1
-		if( tr.startsolid )
-		{
-			// The cursor is inside the solid. Solid is too thick to penetrate.
-#ifdef SNIPER_DEBUG
-			Msg( "SNIPER STARTSOLID\n" );
-#endif
-			break;
-		}
-#endif
-		
-		// Now put the bullet at this point and continue.
-		UTIL_SetOrigin( this, vecCursor );
-	}
-	//-------------------------------
-	//-------------------------------
-*/	
-	
-
-/*
-#ifdef SNIPER_DEBUG
-	Msg( "PENETRATING %d items", i );
-#endif // SNIPER_DEBUG
-
-#ifdef SNIPER_DEBUG
-	Msg( "Dist: %f Travel Time: %f\n", flShotDist, m_ImpactTime );
-#endif // SNIPER_DEBUG
-*/
+	#ifdef SNIPER_DEBUG
+		Msg( "Dist: %f Travel Time: %f\n", flShotDist, m_ImpactTime );
+	#endif // SNIPER_DEBUG
+	*/
 }
 
 
@@ -3776,8 +3833,8 @@ void CSniperBullet::Init( void )
 #endif // SNIPER_DEBUG
 
 	m_fActive = false;
-	m_vecDir.Init(); 
-	m_AmmoType = -1; 
+	m_vecDir.Init();
+	m_AmmoType = -1;
 	m_SoundTime = 1e9;
 	m_iImpacts = 0;
 }
@@ -3797,9 +3854,9 @@ void CSniperBullet::Stop( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CSniperTarget::KeyValue( const char *szKeyName, const char *szValue )
+bool CSniperTarget::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "groupname"))
+	if( FStrEq( szKeyName, "groupname" ) )
 	{
 		m_iszGroupName = AllocPooledString( szValue );
 		return true;

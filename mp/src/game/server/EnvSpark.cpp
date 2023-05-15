@@ -15,14 +15,14 @@
 
 //-----------------------------------------------------------------------------
 // Purpose: Emits sparks from the given location and plays a random spark sound.
-// Input  : pev - 
-//			location - 
+// Input  : pev -
+//			location -
 //-----------------------------------------------------------------------------
-void DoSpark( CBaseEntity *ent, const Vector &location, int nMagnitude, int nTrailLength, bool bPlaySound, const Vector &vecDir )
+void DoSpark( CBaseEntity* ent, const Vector& location, int nMagnitude, int nTrailLength, bool bPlaySound, const Vector& vecDir )
 {
 	g_pEffects->Sparks( location, nMagnitude, nTrailLength, &vecDir );
 
-	if ( bPlaySound )
+	if( bPlaySound )
 	{
 		ent->EmitSound( "DoSpark" );
 	}
@@ -35,25 +35,25 @@ const int SF_SPARK_DIRECTIONAL		= 512;
 
 BEGIN_DATADESC( CEnvSpark )
 
-	DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "MaxDelay" ),
-	DEFINE_FIELD( m_nGlowSpriteIndex, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_nMagnitude, FIELD_INTEGER, "Magnitude" ),
-	DEFINE_KEYFIELD( m_nTrailLength, FIELD_INTEGER, "TrailLength" ),
+DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "MaxDelay" ),
+				 DEFINE_FIELD( m_nGlowSpriteIndex, FIELD_INTEGER ),
+				 DEFINE_KEYFIELD( m_nMagnitude, FIELD_INTEGER, "Magnitude" ),
+				 DEFINE_KEYFIELD( m_nTrailLength, FIELD_INTEGER, "TrailLength" ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( SparkThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( SparkThink ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartSpark", InputStartSpark ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StopSpark", InputStopSpark ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ToggleSpark", InputToggleSpark ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "SparkOnce", InputSparkOnce ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "StartSpark", InputStartSpark ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "StopSpark", InputStopSpark ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "ToggleSpark", InputToggleSpark ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "SparkOnce", InputSparkOnce ),
 
-	DEFINE_OUTPUT( m_OnSpark, "OnSpark" ),
+				 DEFINE_OUTPUT( m_OnSpark, "OnSpark" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( env_spark, CEnvSpark );
+				 LINK_ENTITY_TO_CLASS( env_spark, CEnvSpark );
 
 
 //-----------------------------------------------------------------------------
@@ -69,12 +69,12 @@ CEnvSpark::CEnvSpark( void )
 //-----------------------------------------------------------------------------
 // Purpose: Called when spawning, after keyvalues have been handled.
 //-----------------------------------------------------------------------------
-void CEnvSpark::Spawn(void)
+void CEnvSpark::Spawn( void )
 {
 	SetThink( NULL );
 	SetUse( NULL );
 
-	if ( FBitSet(m_spawnflags, SF_SPARK_START_ON ) )
+	if( FBitSet( m_spawnflags, SF_SPARK_START_ON ) )
 	{
 		SetThink( &CEnvSpark::SparkThink );	// start sparking
 	}
@@ -82,7 +82,7 @@ void CEnvSpark::Spawn(void)
 	SetNextThink( gpGlobals->curtime + 0.1 + random->RandomFloat( 0, 1.5 ) );
 
 	// Negative delays are not allowed
-	if ( m_flDelay < 0 )
+	if( m_flDelay < 0 )
 	{
 		m_flDelay = 0;
 	}
@@ -94,15 +94,15 @@ void CEnvSpark::Spawn(void)
 		m_flDelay = 1.0f;
 	}
 #endif//HL1_DLL
-	
+
 	Precache( );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvSpark::Precache(void)
+void CEnvSpark::Precache( void )
 {
 	m_nGlowSpriteIndex = PrecacheModel( "sprites/glow01.vmt" );
 
@@ -114,12 +114,12 @@ extern ConVar phys_pushscale;
 //-----------------------------------------------------------------------------
 // Purpose: Emits sparks at random intervals.
 //-----------------------------------------------------------------------------
-void CEnvSpark::SparkThink(void)
+void CEnvSpark::SparkThink( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1 + random->RandomFloat(0, m_flDelay) );
+	SetNextThink( gpGlobals->curtime + 0.1 + random->RandomFloat( 0, m_flDelay ) );
 
 	Vector vecDir = vec3_origin;
-	if ( FBitSet( m_spawnflags, SF_SPARK_DIRECTIONAL ) )
+	if( FBitSet( m_spawnflags, SF_SPARK_DIRECTIONAL ) )
 	{
 		AngleVectors( GetAbsAngles(), &vecDir );
 	}
@@ -128,7 +128,7 @@ void CEnvSpark::SparkThink(void)
 
 	m_OnSpark.FireOutput( this, this );
 
-	if (FBitSet(m_spawnflags, SF_SPARK_GLOW))
+	if( FBitSet( m_spawnflags, SF_SPARK_GLOW ) )
 	{
 		CPVSFilter filter( GetAbsOrigin() );
 		te->GlowSprite( filter, 0.0, &GetAbsOrigin(), m_nGlowSpriteIndex, 0.2, 1.5, 25 );
@@ -138,13 +138,13 @@ void CEnvSpark::SparkThink(void)
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for starting the sparks.
 //-----------------------------------------------------------------------------
-void CEnvSpark::InputStartSpark( inputdata_t &inputdata )
+void CEnvSpark::InputStartSpark( inputdata_t& inputdata )
 {
 	StartSpark();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvSpark::StartSpark( void )
 {
@@ -155,7 +155,7 @@ void CEnvSpark::StartSpark( void )
 //-----------------------------------------------------------------------------
 // Purpose: Shoot one spark.
 //-----------------------------------------------------------------------------
-void CEnvSpark::InputSparkOnce( inputdata_t &inputdata )
+void CEnvSpark::InputSparkOnce( inputdata_t& inputdata )
 {
 	SparkThink();
 	SetNextThink( TICK_NEVER_THINK );
@@ -164,13 +164,13 @@ void CEnvSpark::InputSparkOnce( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for starting the sparks.
 //-----------------------------------------------------------------------------
-void CEnvSpark::InputStopSpark( inputdata_t &inputdata )
+void CEnvSpark::InputStopSpark( inputdata_t& inputdata )
 {
 	StopSpark();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvSpark::StopSpark( void )
 {
@@ -180,9 +180,9 @@ void CEnvSpark::StopSpark( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for toggling the on/off state of the sparks.
 //-----------------------------------------------------------------------------
-void CEnvSpark::InputToggleSpark( inputdata_t &inputdata )
+void CEnvSpark::InputToggleSpark( inputdata_t& inputdata )
 {
-	if ( GetNextThink() == TICK_NEVER_THINK )
+	if( GetNextThink() == TICK_NEVER_THINK )
 	{
 		InputStartSpark( inputdata );
 	}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define CONTROLS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -28,10 +28,10 @@ namespace vgui
 // handles the initialization of the vgui interfaces
 // interfaces (listed below) are first attempted to be loaded from primaryProvider, then secondaryProvider
 // moduleName should be the name of the module that this instance of the vgui_controls has been compiled into
-bool VGui_InitInterfacesList( const char *moduleName, CreateInterfaceFn *factoryList, int numFactories );
+bool VGui_InitInterfacesList( const char* moduleName, CreateInterfaceFn* factoryList, int numFactories );
 
 // returns the name of the module as specified above
-const char *GetControlsModuleName();
+const char* GetControlsModuleName();
 
 class IPanel;
 class IInput;
@@ -47,37 +47,37 @@ class IVGui;
 //-----------------------------------------------------------------------------
 
 // #include <vgui/IInput.h>
-inline vgui::IInput *input()
+inline vgui::IInput* input()
 {
 	return g_pVGuiInput;
 }
 
 // #include <vgui/IScheme.h>
-inline vgui::ISchemeManager *scheme()
+inline vgui::ISchemeManager* scheme()
 {
 	return g_pVGuiSchemeManager;
 }
 
 // #include <vgui/ISurface.h>
-inline vgui::ISurface *surface()
+inline vgui::ISurface* surface()
 {
 	return g_pVGuiSurface;
 }
 
 // #include <vgui/ISystem.h>
-inline vgui::ISystem *system()
+inline vgui::ISystem* system()
 {
 	return g_pVGuiSystem;
 }
 
 // #include <vgui/IVGui.h>
-inline vgui::IVGui *ivgui()
+inline vgui::IVGui* ivgui()
 {
 	return g_pVGui;
 }
 
 // #include <vgui/IPanel.h>
-inline vgui::IPanel *ipanel()
+inline vgui::IPanel* ipanel()
 {
 	return g_pVGuiPanel;
 }

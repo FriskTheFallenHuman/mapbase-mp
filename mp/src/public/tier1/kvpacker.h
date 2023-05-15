@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define KVPACKER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "KeyValues.h"
@@ -24,8 +24,8 @@
 class KVPacker
 {
 public:
-	bool WriteAsBinary( KeyValues *pNode, CUtlBuffer &buffer );
-	bool ReadAsBinary( KeyValues *pNode, CUtlBuffer &buffer );
+	bool WriteAsBinary( KeyValues* pNode, CUtlBuffer& buffer );
+	bool ReadAsBinary( KeyValues* pNode, CUtlBuffer& buffer );
 
 private:
 	// These types are used for serialization of KeyValues nodes.

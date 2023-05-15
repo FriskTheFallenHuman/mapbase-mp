@@ -40,33 +40,33 @@ private:
 	float m_flFarBlurRadius;
 
 private:
-	C_EnvDOFController( const C_EnvDOFController & );
+	C_EnvDOFController( const C_EnvDOFController& );
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvDOFController, DT_EnvDOFController, CEnvDOFController )
-	RecvPropInt( RECVINFO(m_bDOFEnabled) ),
-	RecvPropFloat( RECVINFO(m_flNearBlurDepth) ),
-	RecvPropFloat( RECVINFO(m_flNearFocusDepth) ),
-	RecvPropFloat( RECVINFO(m_flFarFocusDepth) ),
-	RecvPropFloat( RECVINFO(m_flFarBlurDepth) ),
-	RecvPropFloat( RECVINFO(m_flNearBlurRadius) ),
-	RecvPropFloat( RECVINFO(m_flFarBlurRadius) )
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_bDOFEnabled ) ),
+			 RecvPropFloat( RECVINFO( m_flNearBlurDepth ) ),
+			 RecvPropFloat( RECVINFO( m_flNearFocusDepth ) ),
+			 RecvPropFloat( RECVINFO( m_flFarFocusDepth ) ),
+			 RecvPropFloat( RECVINFO( m_flFarBlurDepth ) ),
+			 RecvPropFloat( RECVINFO( m_flNearBlurRadius ) ),
+			 RecvPropFloat( RECVINFO( m_flFarBlurRadius ) )
+			 END_RECV_TABLE()
 
-C_EnvDOFController::C_EnvDOFController()
-:	m_bDOFEnabled( true ),
-	m_flNearBlurDepth( 20.0f ),
-	m_flNearFocusDepth( 100.0f ),
-	m_flFarFocusDepth( 250.0f ),
-	m_flFarBlurDepth( 1000.0f ),
-	m_flNearBlurRadius( 0.0f ),		// no near blur by default
-	m_flFarBlurRadius( 5.0f )
+			 C_EnvDOFController::C_EnvDOFController()
+				 :	m_bDOFEnabled( true ),
+				   m_flNearBlurDepth( 20.0f ),
+				   m_flNearFocusDepth( 100.0f ),
+				   m_flFarFocusDepth( 250.0f ),
+				   m_flFarBlurDepth( 1000.0f ),
+				   m_flNearBlurRadius( 0.0f ),		// no near blur by default
+				   m_flFarBlurRadius( 5.0f )
 {
 }
 
 C_EnvDOFController::~C_EnvDOFController()
 {
-	if ( g_hDOFControllerInUse == this )
+	if( g_hDOFControllerInUse == this )
 	{
 		g_bDOFEnabled = false;
 	}

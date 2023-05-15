@@ -9,9 +9,9 @@
 #define ACHIEVEMENT_SAVERESTORE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-ISaveRestoreBlockHandler *GetAchievementSaveRestoreBlockHandler();
+ISaveRestoreBlockHandler* GetAchievementSaveRestoreBlockHandler();
 
 #endif // ACHIEVEMENT_SAVERESTORE_H

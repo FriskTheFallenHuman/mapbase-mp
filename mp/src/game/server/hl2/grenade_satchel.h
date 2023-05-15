@@ -11,7 +11,7 @@
 #define	SATCHEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -29,10 +29,10 @@ public:
 	void			Precache( void );
 	void			BounceSound( void );
 	void			UpdateSlideSound( void );
-	void			KillSlideSound(void);
-	void			SatchelTouch( CBaseEntity *pOther );
+	void			KillSlideSound( void );
+	void			SatchelTouch( CBaseEntity* pOther );
 	void			SatchelThink( void );
-	void			SatchelUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void			SatchelUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	CSoundPatch*	m_soundSlide;
 	float			m_flSlideVolume;
@@ -51,7 +51,7 @@ public:
 	DECLARE_DATADESC();
 
 private:
-	void InitSlideSound(void);
+	void InitSlideSound( void );
 };
 
 #endif	//SATCHEL_H

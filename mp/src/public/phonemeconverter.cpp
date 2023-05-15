@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -11,11 +11,11 @@
 
 struct PhonemeMap_t
 {
-	const char		*string;
+	const char*		string;
 	int				code;
 	float			weight;
 	bool			isStandard;
-	const char		*desc;
+	const char*		desc;
 };
 
 static PhonemeMap_t g_Phonemes[] =
@@ -81,17 +81,19 @@ static PhonemeMap_t g_Phonemes[] =
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : code - 
+// Purpose:
+// Input  : code -
 // Output : const char
 //-----------------------------------------------------------------------------
-const char *ConvertPhoneme( int code )
+const char* ConvertPhoneme( int code )
 {
-	for ( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
 	{
-		PhonemeMap_t *test = &g_Phonemes[ i ];
-		if ( test->code == code )
+		PhonemeMap_t* test = &g_Phonemes[ i ];
+		if( test->code == code )
+		{
 			return test->string;
+		}
 	}
 
 	Warning( "Unrecognized phoneme code %i\n", code );
@@ -99,17 +101,19 @@ const char *ConvertPhoneme( int code )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *text - 
+// Purpose:
+// Input  : *text -
 // Output : int
 //-----------------------------------------------------------------------------
-int TextToPhoneme( const char *text )
+int TextToPhoneme( const char* text )
 {
-	for ( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
 	{
-		PhonemeMap_t *test = &g_Phonemes[ i ];
-		if ( !stricmp( test->string, text ) )
+		PhonemeMap_t* test = &g_Phonemes[ i ];
+		if( !stricmp( test->string, text ) )
+		{
 			return test->code;
+		}
 	}
 
 	Warning( "Unrecognized phoneme %s\n", text );
@@ -117,17 +121,19 @@ int TextToPhoneme( const char *text )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : code - 
+// Purpose:
+// Input  : code -
 // Output : float
 //-----------------------------------------------------------------------------
 float WeightForPhonemeCode( int code )
 {
-	for ( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
 	{
-		PhonemeMap_t *test = &g_Phonemes[ i ];
-		if ( test->code == code )
+		PhonemeMap_t* test = &g_Phonemes[ i ];
+		if( test->code == code )
+		{
 			return test->weight;
+		}
 	}
 
 	Warning( "Unrecognized phoneme code %i\n", code );
@@ -135,17 +141,19 @@ float WeightForPhonemeCode( int code )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *text - 
+// Purpose:
+// Input  : *text -
 // Output : float
 //-----------------------------------------------------------------------------
-float WeightForPhoneme( char *text )
+float WeightForPhoneme( char* text )
 {
-	for ( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
 	{
-		PhonemeMap_t *test = &g_Phonemes[ i ];
-		if ( !stricmp( test->string, text ) )
+		PhonemeMap_t* test = &g_Phonemes[ i ];
+		if( !stricmp( test->string, text ) )
+		{
 			return test->weight;
+		}
 	}
 
 	Warning( "WeightForPhoneme:: Unrecognized phoneme %s\n", text );
@@ -157,24 +165,26 @@ int NumPhonemes()
 	return ARRAYSIZE( g_Phonemes );
 }
 
-const char *NameForPhonemeByIndex( int index )
+const char* NameForPhonemeByIndex( int index )
 {
 	Assert( index >= 0 && index < NumPhonemes() );
 	return g_Phonemes[ index ].string;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *text - 
+// Purpose:
+// Input  : *text -
 // Output : int
 //-----------------------------------------------------------------------------
-int TextToPhonemeIndex( const char *text )
+int TextToPhonemeIndex( const char* text )
 {
-	for ( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_Phonemes ); ++i )
 	{
-		PhonemeMap_t *test = &g_Phonemes[ i ];
-		if ( !stricmp( test->string, text ) )
+		PhonemeMap_t* test = &g_Phonemes[ i ];
+		if( !stricmp( test->string, text ) )
+		{
 			return i;
+		}
 	}
 
 	return -1;
@@ -182,21 +192,27 @@ int TextToPhonemeIndex( const char *text )
 
 int CodeForPhonemeByIndex( int index )
 {
-	if ( index < 0 || index >= NumPhonemes() )
+	if( index < 0 || index >= NumPhonemes() )
+	{
 		return '_';
+	}
 	return g_Phonemes[ index ].code;
 }
 
 bool IsStandardPhoneme( int index )
 {
-	if ( index < 0 || index >= NumPhonemes() )
+	if( index < 0 || index >= NumPhonemes() )
+	{
 		return false;
+	}
 	return g_Phonemes[ index ].isStandard;
 }
 
-const char *DescForPhonemeByIndex( int index )
+const char* DescForPhonemeByIndex( int index )
 {
-	if ( index < 0 || index >= NumPhonemes() )
+	if( index < 0 || index >= NumPhonemes() )
+	{
 		return NULL;
+	}
 	return g_Phonemes[ index ].desc;
 }

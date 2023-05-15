@@ -19,21 +19,21 @@
 #include "tier0/memdbgon.h"
 
 #define COLLISION_PLANE_OFFSET 6.0f
-		  
+
 //-----------------------------------------------------------------------------
 // constructor, destructor
 //-----------------------------------------------------------------------------
 
-CSheetSimulator::CSheetSimulator( TraceLineFunc_t traceline, 
-							 TraceHullFunc_t traceHull ) : 
-	m_pFixedPoint(0), m_ControlPoints(0),
-	m_TraceLine(traceline), m_TraceHull(traceHull)
+CSheetSimulator::CSheetSimulator( TraceLineFunc_t traceline,
+								  TraceHullFunc_t traceHull ) :
+	m_pFixedPoint( 0 ), m_ControlPoints( 0 ),
+	m_TraceLine( traceline ), m_TraceHull( traceHull )
 {
 }
 
 CSheetSimulator::~CSheetSimulator()
 {
-	if (m_pFixedPoint)
+	if( m_pFixedPoint )
 	{
 		delete[] m_pFixedPoint;
 		delete[] m_ControlPoints;
@@ -54,7 +54,7 @@ void CSheetSimulator::Init( int w, int h, int fixedPointCount )
 	m_VerticalCount = h;
 	m_Particle = new Particle_t[w * h];
 	m_FixedPointCount = fixedPointCount;
-	if (fixedPointCount)
+	if( fixedPointCount )
 	{
 		m_pFixedPoint = new Vector[fixedPointCount];
 		m_ControlPoints = new Vector[fixedPointCount];
@@ -63,13 +63,13 @@ void CSheetSimulator::Init( int w, int h, int fixedPointCount )
 	}
 
 	// Initialize distances and such
-	m_Origin = Vector(0, 0, 0);
-	for ( int i = 0; i < NumParticles(); ++i )
+	m_Origin = Vector( 0, 0, 0 );
+	for( int i = 0; i < NumParticles(); ++i )
 	{
 		m_Particle[i].m_Mass = 1.0f;
 		m_Particle[i].m_Collided = false;
-		m_Particle[i].m_Position = Vector(0,0,0);
-		m_Particle[i].m_Velocity = Vector(0,0,0);
+		m_Particle[i].m_Position = Vector( 0, 0, 0 );
+		m_Particle[i].m_Velocity = Vector( 0, 0, 0 );
 	}
 }
 
@@ -90,7 +90,7 @@ void CSheetSimulator::AddFixedPointSpring( int fixedPoint, int p, float restLeng
 	assert( fixedPoint < m_FixedPointCount );
 	int spring = m_Springs.AddToTail();
 	m_Springs[spring].m_Particle1 = p;
-	m_Springs[spring].m_Particle2 = -(fixedPoint+1);
+	m_Springs[spring].m_Particle2 = -( fixedPoint + 1 );
 	m_Springs[spring].m_RestLength = restLength;
 }
 
@@ -156,13 +156,13 @@ void CSheetSimulator::SetBoundingBox( Vector& mins, Vector& maxs )
 //-----------------------------------------------------------------------------
 // bounding box for collision
 //-----------------------------------------------------------------------------
- 
+
 void CSheetSimulator::ComputeBounds( Vector& mins, Vector& maxs )
 {
 	VectorCopy( m_Particle[0].m_Position, mins );
 	VectorCopy( m_Particle[0].m_Position, maxs );
 
-	for (int i = 1; i < NumParticles(); ++i)
+	for( int i = 1; i < NumParticles(); ++i )
 	{
 		VectorMin( mins, m_Particle[i].m_Position, mins );
 		VectorMax( maxs, m_Particle[i].m_Position, maxs );
@@ -178,12 +178,12 @@ void CSheetSimulator::ComputeBounds( Vector& mins, Vector& maxs )
 void CSheetSimulator::SetPosition( const Vector& origin, const QAngle& angles )
 {
 	// FIXME: Need a better metric for position reset
-	if (m_Origin.DistToSqr(origin) > 1e3)
+	if( m_Origin.DistToSqr( origin ) > 1e3 )
 	{
-		for ( int i = 0; i < NumParticles(); ++i )
+		for( int i = 0; i < NumParticles(); ++i )
 		{
 			m_Particle[i].m_Position = origin;
-			m_Particle[i].m_Velocity = Vector(0,0,0);
+			m_Particle[i].m_Velocity = Vector( 0, 0, 0 );
 		}
 	}
 
@@ -208,7 +208,7 @@ int CSheetSimulator::NumVertical() const
 
 int CSheetSimulator::PointCount() const
 {
-	return m_HorizontalCount * m_VerticalCount; 
+	return m_HorizontalCount * m_VerticalCount;
 }
 
 const Vector& CSheetSimulator::GetPoint( int x, int y ) const
@@ -245,9 +245,9 @@ void CSheetSimulator::ComputeControlPoints()
 {
 	//trace_t tr;
 	Vector forward, right, up;
-	AngleVectors(m_Angles, &forward, &right, &up);
+	AngleVectors( m_Angles, &forward, &right, &up );
 
-	for (int i = 0; i < m_FixedPointCount; ++i)
+	for( int i = 0; i < m_FixedPointCount; ++i )
 	{
 		VectorAdd( m_Origin, m_ControlPointOffset, m_ControlPoints[i] );
 		m_ControlPoints[i] += right * m_pFixedPoint[i].x;
@@ -257,20 +257,20 @@ void CSheetSimulator::ComputeControlPoints()
 }
 
 //-----------------------------------------------------------------------------
-// Clear forces + velocities affecting each point 
+// Clear forces + velocities affecting each point
 //-----------------------------------------------------------------------------
 
 void CSheetSimulator::ClearForces()
 {
 	int i;
-	for ( i = 0; i < NumParticles(); ++i)
+	for( i = 0; i < NumParticles(); ++i )
 	{
-		m_Particle[i].m_Force = Vector(0,0,0);
+		m_Particle[i].m_Force = Vector( 0, 0, 0 );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Update the shield positions 
+// Update the shield positions
 //-----------------------------------------------------------------------------
 
 void CSheetSimulator::ComputeForces()
@@ -278,7 +278,7 @@ void CSheetSimulator::ComputeForces()
 
 	float springConstant;
 	int i;
-	for ( i = 0; i < m_Springs.Size(); ++i )
+	for( i = 0; i < m_Springs.Size(); ++i )
 	{
 		// Hook's law for a damped spring:
 		// got two particles, a and b with positions xa and xb and velocities va and vb
@@ -286,11 +286,11 @@ void CSheetSimulator::ComputeForces()
 		// fa = -( ks * (|l| - r) + kd * (va - vb) dot (l) / |l|) * l/|l|
 
 		Vector dx, dv, force;
-		if (m_Springs[i].m_Particle2 < 0)
+		if( m_Springs[i].m_Particle2 < 0 )
 		{
 			// Case where we're connected to a control point
-			dx = m_Particle[m_Springs[i].m_Particle1].m_Position - 
-				m_ControlPoints[- m_Springs[i].m_Particle2 - 1];
+			dx = m_Particle[m_Springs[i].m_Particle1].m_Position -
+				 m_ControlPoints[- m_Springs[i].m_Particle2 - 1];
 			dv = m_Particle[m_Springs[i].m_Particle1].m_Velocity;
 
 			springConstant = m_FixedSpringConstant;
@@ -298,50 +298,56 @@ void CSheetSimulator::ComputeForces()
 		else
 		{
 			// Case where we're connected to another part of the shield
-			dx = m_Particle[m_Springs[i].m_Particle1].m_Position - 
-				m_Particle[m_Springs[i].m_Particle2].m_Position;
-			dv = m_Particle[m_Springs[i].m_Particle1].m_Velocity - 
-				m_Particle[m_Springs[i].m_Particle2].m_Velocity;
+			dx = m_Particle[m_Springs[i].m_Particle1].m_Position -
+				 m_Particle[m_Springs[i].m_Particle2].m_Position;
+			dv = m_Particle[m_Springs[i].m_Particle1].m_Velocity -
+				 m_Particle[m_Springs[i].m_Particle2].m_Velocity;
 
 			springConstant = m_PointSpringConstant;
 		}
 
 		float length = dx.Length();
-		if (length < 1e-6)
+		if( length < 1e-6 )
+		{
 			continue;
+		}
 
 		dx /= length;
 
-		float springfactor = springConstant * ( length - m_Springs[i].m_RestLength);
+		float springfactor = springConstant * ( length - m_Springs[i].m_RestLength );
 		float dampfactor = m_DampConstant * DotProduct( dv, dx );
 		force = dx * -( springfactor + dampfactor );
 
 		m_Particle[m_Springs[i].m_Particle1].m_Force += force;
-		if (m_Springs[i].m_Particle2 >= 0)
+		if( m_Springs[i].m_Particle2 >= 0 )
+		{
 			m_Particle[m_Springs[i].m_Particle2].m_Force -= force;
+		}
 
 		assert( IsFinite( m_Particle[m_Springs[i].m_Particle1].m_Force.x ) &&
-			IsFinite( m_Particle[m_Springs[i].m_Particle1].m_Force.y) &&
-			IsFinite( m_Particle[m_Springs[i].m_Particle1].m_Force.z) );
+				IsFinite( m_Particle[m_Springs[i].m_Particle1].m_Force.y ) &&
+				IsFinite( m_Particle[m_Springs[i].m_Particle1].m_Force.z ) );
 	}
 
 	// gravity term
-	for (i = 0; i < m_Gravity.Count(); ++i)
+	for( i = 0; i < m_Gravity.Count(); ++i )
 	{
 		m_Particle[m_Gravity[i]].m_Force.z -= m_Particle[m_Gravity[i]].m_Mass * m_GravityConstant;
 	}
 
 	// viscous drag term
-	for (i = 0; i < NumParticles(); ++i)
+	for( i = 0; i < NumParticles(); ++i )
 	{
-		// Factor out bad forces for surface contact 
+		// Factor out bad forces for surface contact
 		// Do this before the drag term otherwise the drag will be too large
-		if ((m_Particle[i].m_CollisionPlane) >= 0)
+		if( ( m_Particle[i].m_CollisionPlane ) >= 0 )
 		{
 			const Vector& planeNormal = m_pCollisionPlanes[m_Particle[i].m_CollisionPlane].normal;
 			float perp = DotProduct( m_Particle[i].m_Force, planeNormal );
-			if (perp < 0)
+			if( perp < 0 )
+			{
 				m_Particle[i].m_Force -= planeNormal * perp;
+			}
 		}
 
 		Vector drag = m_Particle[i].m_Velocity * m_ViscousDrag;
@@ -355,19 +361,21 @@ void CSheetSimulator::ComputeForces()
 //-----------------------------------------------------------------------------
 void CSheetSimulator::TestVertAgainstPlane( int vert, int plane, bool bFarTest )
 {
-	if (!m_pValidCollisionPlane[plane])
+	if( !m_pValidCollisionPlane[plane] )
+	{
 		return;
+	}
 
 	// Compute distance to the plane under consideration
 	cplane_t* pPlane = &m_pCollisionPlanes[plane];
 
 	Ray_t ray;
-	ray.Init( m_Origin, m_Particle[vert].m_Position ); 
-	float t = IntersectRayWithPlane( ray, *pPlane ); 
+	ray.Init( m_Origin, m_Particle[vert].m_Position );
+	float t = IntersectRayWithPlane( ray, *pPlane );
 
-	if (!bFarTest || (t <= 1.0f))
+	if( !bFarTest || ( t <= 1.0f ) )
 	{
-		if ((t < m_Particle[vert].m_CollisionDist) && (t >= 0.0f))
+		if( ( t < m_Particle[vert].m_CollisionDist ) && ( t >= 0.0f ) )
 		{
 			m_Particle[vert].m_CollisionDist = t;
 			m_Particle[vert].m_CollisionPlane = plane;
@@ -386,34 +394,36 @@ void CSheetSimulator::InitPosition( int i )
 	// Check a line that goes farther out than our current point...
 	// This will let us check for resting contact
 	trace_t tr;
-	m_TraceHull(m_Origin, m_ControlPoints[i], m_FrustumBoxMin, m_FrustumBoxMax,
-		MASK_SOLID_BRUSHONLY, m_CollisionGroup, &tr );
-	if ( tr.fraction - 1.0 < 0 )
+	m_TraceHull( m_Origin, m_ControlPoints[i], m_FrustumBoxMin, m_FrustumBoxMax,
+				 MASK_SOLID_BRUSHONLY, m_CollisionGroup, &tr );
+	if( tr.fraction - 1.0 < 0 )
 	{
-		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof(cplane_t) );
+		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof( cplane_t ) );
 		m_pCollisionPlanes[i].dist += COLLISION_PLANE_OFFSET;
 
 		// The trace endpos represents where the center of the box
-		// ends up being. We actually want to choose a point which is on the 
+		// ends up being. We actually want to choose a point which is on the
 		// collision plane
 		Vector delta;
 		VectorSubtract( m_ControlPoints[i], m_Origin, delta );
-		int maxdist = VectorNormalize( delta ); 
-		float dist = (m_pCollisionPlanes[i].dist - DotProduct( m_Origin, m_pCollisionPlanes[i].normal )) / 
-			DotProduct( delta, m_pCollisionPlanes[i].normal );
+		int maxdist = VectorNormalize( delta );
+		float dist = ( m_pCollisionPlanes[i].dist - DotProduct( m_Origin, m_pCollisionPlanes[i].normal ) ) /
+					 DotProduct( delta, m_pCollisionPlanes[i].normal );
 
-		if (dist > maxdist)
+		if( dist > maxdist )
+		{
 			dist = maxdist;
+		}
 
 		VectorMA( m_Origin, dist, delta, m_Particle[i].m_Position );
-		
+
 		m_pValidCollisionPlane[i] = true;
 	}
-	else if (tr.allsolid || tr.startsolid)
+	else if( tr.allsolid || tr.startsolid )
 	{
 		m_pValidCollisionPlane[i] = true;
 		VectorSubtract( m_Origin, m_ControlPoints[i], m_pCollisionPlanes[i].normal );
-		VectorNormalize( m_pCollisionPlanes[i].normal ); 
+		VectorNormalize( m_pCollisionPlanes[i].normal );
 		m_pCollisionPlanes[i].dist = DotProduct( m_Origin, m_pCollisionPlanes[i].normal ) - COLLISION_PLANE_OFFSET;
 		m_pCollisionPlanes[i].type = 3;
 	}
@@ -435,19 +445,19 @@ void CSheetSimulator::DetectCollision( int i, float flPlaneOffset )
 //	Vector endpt = m_Particle[i].m_Position;
 
 	trace_t tr;
-	m_TraceHull(m_Origin, m_ControlPoints[i], m_FrustumBoxMin, m_FrustumBoxMax,
-		MASK_SOLID_BRUSHONLY, m_CollisionGroup, &tr );
-	if ( tr.fraction - 1.0 < 0 )
+	m_TraceHull( m_Origin, m_ControlPoints[i], m_FrustumBoxMin, m_FrustumBoxMax,
+				 MASK_SOLID_BRUSHONLY, m_CollisionGroup, &tr );
+	if( tr.fraction - 1.0 < 0 )
 	{
 		m_pValidCollisionPlane[i] = true;
-		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof(cplane_t) );
+		memcpy( &m_pCollisionPlanes[i], &tr.plane, sizeof( cplane_t ) );
 		m_pCollisionPlanes[i].dist += flPlaneOffset;
 	}
-	else if (tr.allsolid || tr.startsolid)
+	else if( tr.allsolid || tr.startsolid )
 	{
 		m_pValidCollisionPlane[i] = true;
 		VectorSubtract( m_Origin, m_ControlPoints[i], m_pCollisionPlanes[i].normal );
-		VectorNormalize( m_pCollisionPlanes[i].normal ); 
+		VectorNormalize( m_pCollisionPlanes[i].normal );
 		m_pCollisionPlanes[i].dist = DotProduct( m_Origin, m_pCollisionPlanes[i].normal ) - flPlaneOffset;
 		m_pCollisionPlanes[i].type = 3;
 	}
@@ -464,9 +474,9 @@ void CSheetSimulator::DetectCollision( int i, float flPlaneOffset )
 void CSheetSimulator::DetermineBestCollisionPlane( bool bFarTest )
 {
 	// Check neighbors for violation of collision plane constraints
-	for	( int i = 0; i < NumVertical(); ++i)
+	for( int i = 0; i < NumVertical(); ++i )
 	{
-		for ( int j = 0; j < NumHorizontal(); ++j)
+		for( int j = 0; j < NumHorizontal(); ++j )
 		{
 			// Here's the particle we're making springs for
 			int idx = i * NumHorizontal() + j;
@@ -477,18 +487,22 @@ void CSheetSimulator::DetermineBestCollisionPlane( bool bFarTest )
 			m_Particle[idx].m_CollisionDist = FLT_MAX;
 			m_Particle[idx].m_CollisionPlane = -1;
 			TestVertAgainstPlane( idx, idx, bFarTest );
-			if (j > 0)
+			if( j > 0 )
 			{
-				TestVertAgainstPlane( idx, idx-1, bFarTest );
+				TestVertAgainstPlane( idx, idx - 1, bFarTest );
 			}
-			if (j < NumHorizontal() - 1)
+			if( j < NumHorizontal() - 1 )
 			{
-				TestVertAgainstPlane( idx, idx+1, bFarTest );
+				TestVertAgainstPlane( idx, idx + 1, bFarTest );
 			}
-			if (i > 0)
-				TestVertAgainstPlane( idx, idx-NumHorizontal(), bFarTest );
-			if (i < NumVertical() - 1)
-				TestVertAgainstPlane( idx, idx+NumHorizontal(), bFarTest );
+			if( i > 0 )
+			{
+				TestVertAgainstPlane( idx, idx - NumHorizontal(), bFarTest );
+			}
+			if( i < NumVertical() - 1 )
+			{
+				TestVertAgainstPlane( idx, idx + NumHorizontal(), bFarTest );
+			}
 		}
 	}
 }
@@ -500,10 +514,10 @@ void CSheetSimulator::DetermineBestCollisionPlane( bool bFarTest )
 void CSheetSimulator::SatisfyCollisionConstraints()
 {
 	// Eliminate velocity perp to a collision plane
-	for ( int i = 0; i < NumParticles(); ++i )
+	for( int i = 0; i < NumParticles(); ++i )
 	{
-		// The actual collision plane 
-		if (m_Particle[i].m_CollisionPlane >= 0)
+		// The actual collision plane
+		if( m_Particle[i].m_CollisionPlane >= 0 )
 		{
 			cplane_t* pPlane = &m_pCollisionPlanes[m_Particle[i].m_CollisionPlane];
 
@@ -512,8 +526,10 @@ void CSheetSimulator::SatisfyCollisionConstraints()
 			m_Particle[i].m_Position = m_Origin + delta * m_Particle[i].m_CollisionDist;
 
 			float perp = DotProduct( m_Particle[i].m_Velocity, pPlane->normal );
-			if (perp < 0)
+			if( perp < 0 )
+			{
 				m_Particle[i].m_Velocity -=	pPlane->normal * perp;
+			}
 		}
 	}
 }
@@ -528,49 +544,49 @@ void CSheetSimulator::EulerStep( float dt )
 	ComputeForces();
 
 	// Update positions and velocities
-	for ( int i = 0; i < NumParticles(); ++i)
+	for( int i = 0; i < NumParticles(); ++i )
 	{
-		m_Particle[i].m_Position += m_Particle[i].m_Velocity * dt; 
+		m_Particle[i].m_Position += m_Particle[i].m_Velocity * dt;
 		m_Particle[i].m_Velocity += m_Particle[i].m_Force * dt / m_Particle[i].m_Mass;
 
 		assert( IsFinite( m_Particle[i].m_Velocity.x ) &&
-			IsFinite( m_Particle[i].m_Velocity.y) &&
-			IsFinite( m_Particle[i].m_Velocity.z) );
+				IsFinite( m_Particle[i].m_Velocity.y ) &&
+				IsFinite( m_Particle[i].m_Velocity.z ) );
 
 		// clamp for stability
 		float lensq = m_Particle[i].m_Velocity.LengthSqr();
-		if (lensq > 1e6)
+		if( lensq > 1e6 )
 		{
-			m_Particle[i].m_Velocity *= 1e3 / sqrt(lensq);
+			m_Particle[i].m_Velocity *= 1e3 / sqrt( lensq );
 		}
 	}
 	SatisfyCollisionConstraints();
 }
 
 //-----------------------------------------------------------------------------
-// Update the shield position: 
+// Update the shield position:
 //-----------------------------------------------------------------------------
 
 void CSheetSimulator::Simulate( float dt )
 {
 	// Initialize positions if necessary
-	EulerStep(dt);
+	EulerStep( dt );
 }
 
 
 void CSheetSimulator::Simulate( float dt, int steps )
 {
 	ComputeControlPoints();
-	
+
 	// Initialize positions if necessary
 	dt /= steps;
-	for (int i = 0; i < steps; ++i)
+	for( int i = 0; i < steps; ++i )
 	{
 		// Each step, we want to re-select the best collision planes to constrain
 		// the movement by
 		DetermineBestCollisionPlane();
 
-		EulerStep(dt);
+		EulerStep( dt );
 	}
 }
 
@@ -583,17 +599,19 @@ void CSheetSimulator::ClampPointsToCollisionPlanes()
 	DetermineBestCollisionPlane( false );
 
 	// Eliminate velocity perp to a collision plane
-	for ( int i = 0; i < NumParticles(); ++i )
+	for( int i = 0; i < NumParticles(); ++i )
 	{
-		// The actual collision plane 
-		if (m_Particle[i].m_CollisionPlane >= 0)
+		// The actual collision plane
+		if( m_Particle[i].m_CollisionPlane >= 0 )
 		{
 			cplane_t* pPlane = &m_pCollisionPlanes[m_Particle[i].m_CollisionPlane];
 
 			// Make sure we have a close enough perpendicular distance to the plane...
-			float flPerpDist = fabs ( DotProduct( m_Particle[i].m_Position, pPlane->normal ) - pPlane->dist );
-			if (flPerpDist >= CLAMP_DIST)
+			float flPerpDist = fabs( DotProduct( m_Particle[i].m_Position, pPlane->normal ) - pPlane->dist );
+			if( flPerpDist >= CLAMP_DIST )
+			{
 				continue;
+			}
 
 			// Drop it along the perp
 			VectorMA( m_Particle[i].m_Position, -flPerpDist, pPlane->normal, m_Particle[i].m_Position );
@@ -607,7 +625,7 @@ void CSheetSimulator::ClampPointsToCollisionPlanes()
 //-----------------------------------------------------------------------------
 CIterativeSheetSimulator::CIterativeSheetSimulator( TraceLineFunc_t traceline, TraceHullFunc_t traceHull ) :
 	CSheetSimulator( traceline, traceHull ),
-	m_SimulationSteps(0) 
+	m_SimulationSteps( 0 )
 {
 }
 
@@ -627,7 +645,7 @@ bool CIterativeSheetSimulator::Think( )
 	assert( m_SimulationSteps >= 0 );
 
 	// Need to iteratively perform collision detection
-	if (m_CurrentCollisionPt >= 0)
+	if( m_CurrentCollisionPt >= 0 )
 	{
 		DetectCollisions();
 		return false;
@@ -635,13 +653,13 @@ bool CIterativeSheetSimulator::Think( )
 	else
 	{
 		// Simulate it a bunch of times
-		Simulate(m_TimeStep, m_SubSteps);
+		Simulate( m_TimeStep, m_SubSteps );
 
 		// Reset the collision point for collision detect
 		m_CurrentCollisionPt = 0;
 		--m_SimulationSteps;
 
-		if ( m_SimulationSteps == 0 )
+		if( m_SimulationSteps == 0 )
 		{
 			ClampPointsToCollisionPlanes();
 		}
@@ -650,22 +668,22 @@ bool CIterativeSheetSimulator::Think( )
 	}
 }
 
-// Iterative collision detection 
+// Iterative collision detection
 void CIterativeSheetSimulator::DetectCollisions( void )
 {
-	for ( int i = 0; i < m_CollisionCount; ++i )
+	for( int i = 0; i < m_CollisionCount; ++i )
 	{
-		if (m_InitialPass)
+		if( m_InitialPass )
 		{
 			InitPosition( m_CurrentCollisionPt );
 		}
 		else
 		{
-			float flOffset = COLLISION_PLANE_OFFSET * ( (float)(m_SimulationSteps - 1) / (float)(m_TotalSteps - 1) );
+			float flOffset = COLLISION_PLANE_OFFSET * ( ( float )( m_SimulationSteps - 1 ) / ( float )( m_TotalSteps - 1 ) );
 			DetectCollision( m_CurrentCollisionPt, flOffset );
 		}
 
-		if (++m_CurrentCollisionPt >= NumParticles())
+		if( ++m_CurrentCollisionPt >= NumParticles() )
 		{
 			m_CurrentCollisionPt = -1;
 			m_InitialPass = false;

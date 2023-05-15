@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -40,7 +40,7 @@ public:
 	typedef C_EnvelopeFX	BaseClass;
 
 	C_GunshipFX();
-	void			Update( C_BaseEntity *pOwner, const Vector &targetPos );
+	void			Update( C_BaseEntity* pOwner, const Vector& targetPos );
 
 	// Returns the bounds relative to the origin (render bounds)
 	virtual void	GetRenderBounds( Vector& mins, Vector& maxs )
@@ -54,20 +54,20 @@ public:
 
 	virtual int	DrawModel( int flags );
 
-	C_BaseEntity			*m_pOwner;
+	C_BaseEntity*			m_pOwner;
 	Vector					m_targetPosition;
 	Vector					m_beamEndPosition;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_GunshipFX::C_GunshipFX( void )
 {
 	m_pOwner = NULL;
 }
 
-enum 
+enum
 {
 	GUNSHIPFX_WARP_SCALE = 0,
 	GUNSHIPFX_DARKNESS,
@@ -76,7 +76,7 @@ enum
 
 	GUNSHIPFX_NARROW_BEAM_COLOR,
 	GUNSHIPFX_NARROW_BEAM_SIZE,
-	
+
 	GUNSHIPFX_WIDE_BEAM_COLOR,
 	GUNSHIPFX_WIDE_BEAM_SIZE,
 
@@ -93,11 +93,11 @@ class CGunshipFXEnvelope
 public:
 	CGunshipFXEnvelope();
 
-	void AddKey( int parameterIndex, const CSimpleKeyInterp &key )
+	void AddKey( int parameterIndex, const CSimpleKeyInterp& key )
 	{
 		Assert( parameterIndex >= 0 && parameterIndex < GUNSHIPFX_PARAMETERS );
 
-		if ( parameterIndex >= 0 && parameterIndex < GUNSHIPFX_PARAMETERS )
+		if( parameterIndex >= 0 && parameterIndex < GUNSHIPFX_PARAMETERS )
 		{
 			m_parameters[parameterIndex].Insert( key );
 		}
@@ -146,15 +146,15 @@ CGunshipFXEnvelope::CGunshipFXEnvelope()
 
 CGunshipFXEnvelope g_GunshipCannonEnvelope;
 
-static void ScaleColor( color32 &out, const color32 &in, float scale )
+static void ScaleColor( color32& out, const color32& in, float scale )
 {
-	out.r = (byte)(int)((float)in.r * scale);
-	out.g = (byte)(int)((float)in.g * scale);
-	out.b = (byte)(int)((float)in.b * scale);
-	out.a = (byte)(int)((float)in.a * scale);
+	out.r = ( byte )( int )( ( float )in.r * scale );
+	out.g = ( byte )( int )( ( float )in.g * scale );
+	out.b = ( byte )( int )( ( float )in.b * scale );
+	out.a = ( byte )( int )( ( float )in.a * scale );
 }
 
-static void DrawSpriteTangentSpace( const Vector &vecOrigin, float flWidth, float flHeight, color32 color )
+static void DrawSpriteTangentSpace( const Vector& vecOrigin, float flWidth, float flHeight, color32 color )
 {
 	unsigned char pColor[4] = { color.r, color.g, color.b, color.a };
 
@@ -166,17 +166,17 @@ static void DrawSpriteTangentSpace( const Vector &vecOrigin, float flWidth, floa
 	Vector fwd, right( 1, 0, 0 ), up( 0, 1, 0 );
 	VectorSubtract( CurrentViewOrigin(), vecOrigin, fwd );
 	float flDist = VectorNormalize( fwd );
-	if (flDist >= 1e-3)
+	if( flDist >= 1e-3 )
 	{
 		CrossProduct( CurrentViewUp(), fwd, right );
 		flDist = VectorNormalize( right );
-		if (flDist >= 1e-3)
+		if( flDist >= 1e-3 )
 		{
 			CrossProduct( fwd, right, up );
 		}
 		else
 		{
-			// In this case, fwd == g_vecVUp, it's right above or 
+			// In this case, fwd == g_vecVUp, it's right above or
 			// below us in screen space
 			CrossProduct( fwd, CurrentViewRight(), up );
 			VectorNormalize( up );
@@ -189,86 +189,90 @@ static void DrawSpriteTangentSpace( const Vector &vecOrigin, float flWidth, floa
 	Vector back = -fwd;
 
 	CMatRenderContextPtr pRenderContext( materials );
-	
+
 	CMeshBuilder meshBuilder;
 	Vector point;
 	IMesh* pMesh = pRenderContext->GetDynamicMesh( );
 
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, 1 );
 
-	meshBuilder.Color4ubv (pColor);
-	meshBuilder.TexCoord2f (0, 0, 1);
-	VectorMA (vecOrigin, -flHeight, up, point);
-	VectorMA (point, -flWidth, right, point);
+	meshBuilder.Color4ubv( pColor );
+	meshBuilder.TexCoord2f( 0, 0, 1 );
+	VectorMA( vecOrigin, -flHeight, up, point );
+	VectorMA( point, -flWidth, right, point );
 	meshBuilder.TangentS3fv( left.Base() );
 	meshBuilder.TangentT3fv( down.Base() );
 	meshBuilder.Normal3fv( back.Base() );
-	meshBuilder.Position3fv (point.Base());
+	meshBuilder.Position3fv( point.Base() );
 	meshBuilder.AdvanceVertex();
 
-	meshBuilder.Color4ubv (pColor);
-	meshBuilder.TexCoord2f (0, 0, 0);
-	VectorMA (vecOrigin, flHeight, up, point);
-	VectorMA (point, -flWidth, right, point);
+	meshBuilder.Color4ubv( pColor );
+	meshBuilder.TexCoord2f( 0, 0, 0 );
+	VectorMA( vecOrigin, flHeight, up, point );
+	VectorMA( point, -flWidth, right, point );
 	meshBuilder.TangentS3fv( left.Base() );
 	meshBuilder.TangentT3fv( down.Base() );
 	meshBuilder.Normal3fv( back.Base() );
-	meshBuilder.Position3fv (point.Base());
+	meshBuilder.Position3fv( point.Base() );
 	meshBuilder.AdvanceVertex();
 
-	meshBuilder.Color4ubv (pColor);
-	meshBuilder.TexCoord2f (0, 1, 0);
-	VectorMA (vecOrigin, flHeight, up, point);
-	VectorMA (point, flWidth, right, point);
+	meshBuilder.Color4ubv( pColor );
+	meshBuilder.TexCoord2f( 0, 1, 0 );
+	VectorMA( vecOrigin, flHeight, up, point );
+	VectorMA( point, flWidth, right, point );
 	meshBuilder.TangentS3fv( left.Base() );
 	meshBuilder.TangentT3fv( down.Base() );
 	meshBuilder.Normal3fv( back.Base() );
-	meshBuilder.Position3fv (point.Base());
+	meshBuilder.Position3fv( point.Base() );
 	meshBuilder.AdvanceVertex();
 
-	meshBuilder.Color4ubv (pColor);
-	meshBuilder.TexCoord2f (0, 1, 1);
-	VectorMA (vecOrigin, -flHeight, up, point);
-	VectorMA (point, flWidth, right, point);
+	meshBuilder.Color4ubv( pColor );
+	meshBuilder.TexCoord2f( 0, 1, 1 );
+	VectorMA( vecOrigin, -flHeight, up, point );
+	VectorMA( point, flWidth, right, point );
 	meshBuilder.TangentS3fv( left.Base() );
 	meshBuilder.TangentT3fv( down.Base() );
 	meshBuilder.Normal3fv( back.Base() );
-	meshBuilder.Position3fv (point.Base());
+	meshBuilder.Position3fv( point.Base() );
 	meshBuilder.AdvanceVertex();
-	
+
 	meshBuilder.End();
 	pMesh->Draw();
 }
 
 
-void Gunship_DrawSprite( const Vector &vecOrigin, float size, const color32 &color, bool glow )
+void Gunship_DrawSprite( const Vector& vecOrigin, float size, const color32& color, bool glow )
 {
-	if ( glow )
+	if( glow )
 	{
 		pixelvis_queryparams_t params;
 		params.Init( vecOrigin );
-		if ( PixelVisibility_FractionVisible( params, NULL ) <= 0.0f )
+		if( PixelVisibility_FractionVisible( params, NULL ) <= 0.0f )
+		{
 			return;
+		}
 	}
 
 	DrawSpriteTangentSpace( vecOrigin, size, size, color );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : int - 
+// Purpose:
+// Input  : int -
 //-----------------------------------------------------------------------------
 int	C_GunshipFX::DrawModel( int )
 {
-	static color32 white = {255,255,255,255};
+	static color32 white = {255, 255, 255, 255};
 	Vector params[GUNSHIPFX_PARAMETERS];
 	bool hasParam[GUNSHIPFX_PARAMETERS];
 
-	if ( !m_active )
+	if( !m_active )
+	{
 		return 1;
+	}
 
-	C_BaseEntity *ent = cl_entitylist->GetEnt( m_entityIndex );
-	if ( ent )
+	C_BaseEntity* ent = cl_entitylist->GetEnt( m_entityIndex );
+	if( ent )
 	{
 		QAngle angles;
 		ent->GetAttachment( m_attachment, m_worldPosition, angles );
@@ -276,7 +280,7 @@ int	C_GunshipFX::DrawModel( int )
 
 	Vector test;
 	m_t += gpGlobals->frametime;
-	if ( m_tMax > 0 )
+	if( m_tMax > 0 )
 	{
 		m_t = clamp( m_t, 0, m_tMax );
 		m_beamEndPosition = m_worldPosition;
@@ -284,17 +288,17 @@ int	C_GunshipFX::DrawModel( int )
 	float t = m_t;
 
 	bool hasAny = false;
-	memset( hasParam, 0, sizeof(hasParam) );
-	for ( int i = 0; i < GUNSHIPFX_PARAMETERS; i++ )
+	memset( hasParam, 0, sizeof( hasParam ) );
+	for( int i = 0; i < GUNSHIPFX_PARAMETERS; i++ )
 	{
 		hasParam[i] = g_GunshipCannonEnvelope.m_parameters[i].Interp( params[i], t );
 		hasAny = hasAny || hasParam[i];
 	}
 
 	// draw the narrow beam
-	if ( hasParam[GUNSHIPFX_NARROW_BEAM_COLOR] && hasParam[GUNSHIPFX_NARROW_BEAM_SIZE] )
+	if( hasParam[GUNSHIPFX_NARROW_BEAM_COLOR] && hasParam[GUNSHIPFX_NARROW_BEAM_SIZE] )
 	{
-		IMaterial *pMat = materials->FindMaterial( "sprites/bluelaser1", TEXTURE_GROUP_CLIENT_EFFECTS );
+		IMaterial* pMat = materials->FindMaterial( "sprites/bluelaser1", TEXTURE_GROUP_CLIENT_EFFECTS );
 		float width = NARROW_BEAM_WIDTH * params[GUNSHIPFX_NARROW_BEAM_SIZE].x;
 		color32 color;
 		float bright = params[GUNSHIPFX_NARROW_BEAM_COLOR].x;
@@ -305,33 +309,33 @@ int	C_GunshipFX::DrawModel( int )
 	}
 
 	// glowy blue flare sprite
-	if ( hasParam[GUNSHIPFX_FLARE_COLOR] && hasParam[GUNSHIPFX_FLARE_SIZE] )
+	if( hasParam[GUNSHIPFX_FLARE_COLOR] && hasParam[GUNSHIPFX_FLARE_SIZE] )
 	{
-		IMaterial *pMat = materials->FindMaterial( "effects/blueblackflash", TEXTURE_GROUP_CLIENT_EFFECTS );
+		IMaterial* pMat = materials->FindMaterial( "effects/blueblackflash", TEXTURE_GROUP_CLIENT_EFFECTS );
 		float size = FLARE_SIZE * params[GUNSHIPFX_FLARE_SIZE].x;
 		color32 color;
 		float bright = params[GUNSHIPFX_FLARE_COLOR].x;
 		ScaleColor( color, white, bright );
-		color.a = (int)(255 * params[GUNSHIPFX_DARKNESS].x);
+		color.a = ( int )( 255 * params[GUNSHIPFX_DARKNESS].x );
 		CMatRenderContextPtr pRenderContext( materials );
-		pRenderContext->Bind( pMat, (IClientRenderable*)this );
+		pRenderContext->Bind( pMat, ( IClientRenderable* )this );
 		Gunship_DrawSprite( m_worldPosition, size, color, true );
 	}
 
-	if ( hasParam[GUNSHIPFX_AFTERGLOW_COLOR] )
+	if( hasParam[GUNSHIPFX_AFTERGLOW_COLOR] )
 	{
 		// Muzzle effect
-		dlight_t *dl = effects->CL_AllocDlight( m_entityIndex );
+		dlight_t* dl = effects->CL_AllocDlight( m_entityIndex );
 		dl->origin = m_worldPosition;
-		dl->color.r = 40*params[GUNSHIPFX_AFTERGLOW_COLOR].x;
-		dl->color.g = 60*params[GUNSHIPFX_AFTERGLOW_COLOR].x;
-		dl->color.b = 255*params[GUNSHIPFX_AFTERGLOW_COLOR].x;
+		dl->color.r = 40 * params[GUNSHIPFX_AFTERGLOW_COLOR].x;
+		dl->color.g = 60 * params[GUNSHIPFX_AFTERGLOW_COLOR].x;
+		dl->color.b = 255 * params[GUNSHIPFX_AFTERGLOW_COLOR].x;
 		dl->color.exponent = 5;
 		dl->radius = 128.0f;
 		dl->die = gpGlobals->curtime + 0.001;
 	}
 
-	if ( m_t >= 4.0 && !hasAny )
+	if( m_t >= 4.0 && !hasAny )
 	{
 		EffectShutdown();
 	}
@@ -340,17 +344,17 @@ int	C_GunshipFX::DrawModel( int )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOwner - 
-//			&targetPos - 
+// Purpose:
+// Input  : *pOwner -
+//			&targetPos -
 //-----------------------------------------------------------------------------
-void C_GunshipFX::Update( C_BaseEntity *pOwner, const Vector &targetPos )
+void C_GunshipFX::Update( C_BaseEntity* pOwner, const Vector& targetPos )
 {
 	BaseClass::Update();
 
 	m_pOwner = pOwner;
-	
-	if ( m_active )
+
+	if( m_active )
 	{
 		m_targetPosition = targetPos;
 	}
@@ -367,7 +371,7 @@ public:
 	DECLARE_CLIENTCLASS();
 
 	C_CombineGunship( void ) {}
-	
+
 	virtual ~C_CombineGunship( void )
 	{
 		m_cannonFX.EffectShutdown();
@@ -377,14 +381,14 @@ public:
 	Vector		m_vecHitPos;
 
 	//-----------------------------------------------------------------------------
-	// Purpose: 
-	// Input  : length - 
-	//			*data - 
+	// Purpose:
+	// Input  : length -
+	//			*data -
 	// Output : 	void
 	//-----------------------------------------------------------------------------
-	void ReceiveMessage( int classID, bf_read &msg )
+	void ReceiveMessage( int classID, bf_read& msg )
 	{
-		if ( classID != GetClientClass()->m_ClassID )
+		if( classID != GetClientClass()->m_ClassID )
 		{
 			// message is for subclass
 			BaseClass::ReceiveMessage( classID, msg );
@@ -394,7 +398,7 @@ public:
 		int messageType = msg.ReadByte();
 		switch( messageType )
 		{
-		case GUNSHIP_MSG_STREAKS:
+			case GUNSHIP_MSG_STREAKS:
 			{
 				Vector	pos;
 				msg.ReadBitVec3Coord( pos );
@@ -404,7 +408,7 @@ public:
 			}
 			break;
 
-		case GUNSHIP_MSG_BIG_SHOT:
+			case GUNSHIP_MSG_BIG_SHOT:
 			{
 				Vector tmp;
 				msg.ReadBitVec3Coord( tmp );
@@ -413,7 +417,7 @@ public:
 			}
 			break;
 
-		case GUNSHIP_MSG_DEAD:
+			case GUNSHIP_MSG_DEAD:
 			{
 				m_cannonFX.EffectShutdown();
 			}
@@ -430,7 +434,7 @@ public:
 
 	virtual RenderGroup_t GetRenderGroup()
 	{
-		if ( hl2_episodic.GetBool() == true )
+		if( hl2_episodic.GetBool() == true )
 		{
 			return RENDER_GROUP_TWOPASS;
 		}
@@ -441,29 +445,31 @@ public:
 	}
 
 private:
-	C_CombineGunship( const C_CombineGunship & ) {}
+	C_CombineGunship( const C_CombineGunship& ) {}
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_CombineGunship, DT_CombineGunship, CNPC_CombineGunship )
-	RecvPropVector(RECVINFO(m_vecHitPos)),
-END_RECV_TABLE()
+RecvPropVector( RECVINFO( m_vecHitPos ) ),
+				END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle gunship impacts
 //-----------------------------------------------------------------------------
-void ImpactGunshipCallback( const CEffectData &data )
+				void ImpactGunshipCallback( const CEffectData& data )
 {
 	trace_t tr;
 	Vector vecOrigin, vecStart, vecShotDir;
 	int iMaterial, iDamageType, iHitbox;
 	short nSurfaceProp;
-	C_BaseEntity *pEntity = ParseImpactData( data, &vecOrigin, &vecStart, &vecShotDir, nSurfaceProp, iMaterial, iDamageType, iHitbox );
+	C_BaseEntity* pEntity = ParseImpactData( data, &vecOrigin, &vecStart, &vecShotDir, nSurfaceProp, iMaterial, iDamageType, iHitbox );
 
-	if ( !pEntity )
+	if( !pEntity )
+	{
 		return;
+	}
 
 	// If we hit, perform our custom effects and play the sound
-	if ( Impact( vecOrigin, vecStart, iMaterial, iDamageType, iHitbox, pEntity, tr ) )
+	if( Impact( vecOrigin, vecStart, iMaterial, iDamageType, iHitbox, pEntity, tr ) )
 	{
 		// Check for custom effects based on the Decal index
 		PerformCustomEffects( vecOrigin, tr, vecShotDir, iMaterial, 3 );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -13,7 +13,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar sk_dynamic_resupply_modifier( "sk_dynamic_resupply_modifier","1.0" );
+ConVar sk_dynamic_resupply_modifier( "sk_dynamic_resupply_modifier", "1.0" );
 extern ConVar sk_battery;
 extern ConVar sk_healthkit;
 
@@ -21,8 +21,8 @@ ConVar g_debug_dynamicresupplies( "g_debug_dynamicresupplies", "0", FCVAR_NONE, 
 
 struct DynamicResupplyItems_t
 {
-	const char *sEntityName;
-	const char *sAmmoDef;
+	const char* sEntityName;
+	const char* sAmmoDef;
 	int			iAmmoCount;
 	float		flFullProbability;	// Probability of spawning if the player meeds all goals
 };
@@ -86,22 +86,25 @@ public:
 	void CheckPVSThink( void );
 
 	// Inputs
-	void InputKill( inputdata_t &data );
-	void InputCalculateType( inputdata_t &data );
-	void InputBecomeMaster( inputdata_t &data );
+	void InputKill( inputdata_t& data );
+	void InputCalculateType( inputdata_t& data );
+	void InputBecomeMaster( inputdata_t& data );
 
-	float	GetDesiredHealthPercentage( void ) const { return m_flDesiredHealth[0]; }
+	float	GetDesiredHealthPercentage( void ) const
+	{
+		return m_flDesiredHealth[0];
+	}
 
 private:
-	friend void DynamicResupply_InitFromAlternateMaster( CBaseEntity *pTargetEnt, string_t iszMaster );
-	void FindPotentialItems( int nCount, DynamicResupplyItems_t *pItems, int iDebug, SpawnInfo_t *pSpawnInfo );
-	void ComputeHealthRatios( CItem_DynamicResupply* pMaster, CBasePlayer *pPlayer, int iDebug, SpawnInfo_t *pSpawnInfo );
-	void ComputeAmmoRatios( CItem_DynamicResupply* pMaster, CBasePlayer *pPlayer, int iDebug, SpawnInfo_t *pSpawnInfo );
-	bool SpawnItemFromRatio( int nCount, DynamicResupplyItems_t *pItems, int iDebug, SpawnInfo_t *pSpawnInfo, Vector *pVecSpawnOrigin );
+	friend void DynamicResupply_InitFromAlternateMaster( CBaseEntity* pTargetEnt, string_t iszMaster );
+	void FindPotentialItems( int nCount, DynamicResupplyItems_t* pItems, int iDebug, SpawnInfo_t* pSpawnInfo );
+	void ComputeHealthRatios( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug, SpawnInfo_t* pSpawnInfo );
+	void ComputeAmmoRatios( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug, SpawnInfo_t* pSpawnInfo );
+	bool SpawnItemFromRatio( int nCount, DynamicResupplyItems_t* pItems, int iDebug, SpawnInfo_t* pSpawnInfo, Vector* pVecSpawnOrigin );
 
 	// Spawns an item when the player is full
-	void SpawnFullItem( CItem_DynamicResupply *pMaster, CBasePlayer *pPlayer, int iDebug );
-	void SpawnDynamicItem( CBasePlayer *pPlayer );
+	void SpawnFullItem( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug );
+	void SpawnDynamicItem( CBasePlayer* pPlayer );
 
 	enum Versions
 	{
@@ -122,7 +125,7 @@ private:
 #endif
 };
 
-LINK_ENTITY_TO_CLASS(item_dynamic_resupply, CItem_DynamicResupply);
+LINK_ENTITY_TO_CLASS( item_dynamic_resupply, CItem_DynamicResupply );
 
 // Master
 typedef CHandle<CItem_DynamicResupply> DynamicResupplyHandle_t;
@@ -131,47 +134,47 @@ static DynamicResupplyHandle_t	g_MasterResupply;
 
 
 //-----------------------------------------------------------------------------
-// Save/load: 
+// Save/load:
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CItem_DynamicResupply )
 
-	DEFINE_THINKFUNC( CheckPVSThink ),
+DEFINE_THINKFUNC( CheckPVSThink ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "CalculateType", InputCalculateType ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "BecomeMaster", InputBecomeMaster ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "CalculateType", InputCalculateType ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "BecomeMaster", InputBecomeMaster ),
 
-	DEFINE_KEYFIELD( m_flDesiredHealth[0], FIELD_FLOAT, "DesiredHealth" ),
-	DEFINE_KEYFIELD( m_flDesiredHealth[1], FIELD_FLOAT, "DesiredArmor" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[0], FIELD_FLOAT, "DesiredAmmoPistol" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[1], FIELD_FLOAT, "DesiredAmmoSMG1" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[2], FIELD_FLOAT, "DesiredAmmoSMG1_Grenade" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[3], FIELD_FLOAT, "DesiredAmmoAR2" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[4], FIELD_FLOAT, "DesiredAmmoBuckshot" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[5], FIELD_FLOAT, "DesiredAmmoRPG_Round" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[6], FIELD_FLOAT, "DesiredAmmoGrenade" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[7], FIELD_FLOAT, "DesiredAmmo357" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[8], FIELD_FLOAT, "DesiredAmmoCrossbow" ),
-	DEFINE_KEYFIELD( m_flDesiredAmmo[9], FIELD_FLOAT, "DesiredAmmoAR2_AltFire" ),
+				  DEFINE_KEYFIELD( m_flDesiredHealth[0], FIELD_FLOAT, "DesiredHealth" ),
+				  DEFINE_KEYFIELD( m_flDesiredHealth[1], FIELD_FLOAT, "DesiredArmor" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[0], FIELD_FLOAT, "DesiredAmmoPistol" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[1], FIELD_FLOAT, "DesiredAmmoSMG1" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[2], FIELD_FLOAT, "DesiredAmmoSMG1_Grenade" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[3], FIELD_FLOAT, "DesiredAmmoAR2" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[4], FIELD_FLOAT, "DesiredAmmoBuckshot" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[5], FIELD_FLOAT, "DesiredAmmoRPG_Round" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[6], FIELD_FLOAT, "DesiredAmmoGrenade" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[7], FIELD_FLOAT, "DesiredAmmo357" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[8], FIELD_FLOAT, "DesiredAmmoCrossbow" ),
+				  DEFINE_KEYFIELD( m_flDesiredAmmo[9], FIELD_FLOAT, "DesiredAmmoAR2_AltFire" ),
 
-	DEFINE_FIELD( m_version, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bIsMaster, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_version, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_bIsMaster, FIELD_BOOLEAN ),
 
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnItem, "OnItem" ),
 #endif
 
-	// Silence, Classcheck!
+				  // Silence, Classcheck!
 //	DEFINE_ARRAY( m_flDesiredHealth, FIELD_FLOAT,  NUM_HEALTH_ITEMS  ),
 //	DEFINE_ARRAY( m_flDesiredAmmo, FIELD_FLOAT,  NUM_AMMO_ITEMS  ),
 
-END_DATADESC()
+				  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CItem_DynamicResupply::CItem_DynamicResupply( void )
+				  CItem_DynamicResupply::CItem_DynamicResupply( void )
 {
 	AddSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER );
 	m_version = VERSION_CURRENT;
@@ -193,11 +196,11 @@ CItem_DynamicResupply::CItem_DynamicResupply( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::Spawn( void )
-{ 
-	if ( g_pGameRules->IsAllowedToSpawn( this ) == false )
+{
+	if( g_pGameRules->IsAllowedToSpawn( this ) == false )
 	{
 		UTIL_Remove( this );
 		return;
@@ -209,25 +212,25 @@ void CItem_DynamicResupply::Spawn( void )
 	m_bIsMaster = HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER );
 
 	// Am I the master?
-	if ( !HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER | SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) )
+	if( !HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER | SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) )
 	{
 		// Stagger the thinks a bit so they don't all think at the same time
-		SetNextThink( gpGlobals->curtime + RandomFloat(0.2f, 0.4f) );
+		SetNextThink( gpGlobals->curtime + RandomFloat( 0.2f, 0.4f ) );
 		SetThink( &CItem_DynamicResupply::CheckPVSThink );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::Activate( void )
-{ 
+{
 	BaseClass::Activate();
 
-	if ( HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER ) )
+	if( HasSpawnFlags( SF_DYNAMICRESUPPLY_IS_MASTER ) )
 	{
-		if ( !g_MasterResupply && ( m_bIsMaster || m_version < VERSION_1_PERSISTENT_MASTER ) )
+		if( !g_MasterResupply && ( m_bIsMaster || m_version < VERSION_1_PERSISTENT_MASTER ) )
 		{
 			g_MasterResupply = this;
 		}
@@ -236,9 +239,9 @@ void CItem_DynamicResupply::Activate( void )
 			m_bIsMaster = false;
 		}
 	}
-	if ( !HasSpawnFlags( SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) && HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && gpGlobals->curtime < 1.0 )
+	if( !HasSpawnFlags( SF_DYNAMICRESUPPLY_ALTERNATE_MASTER ) && HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && gpGlobals->curtime < 1.0 )
 	{
-		if ( !g_MasterResupply )
+		if( !g_MasterResupply )
 		{
 			Warning( "item_dynamic_resupply set to 'Use Master', but no item_dynamic_resupply master exists.\n" );
 		}
@@ -247,18 +250,18 @@ void CItem_DynamicResupply::Activate( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::Precache( void )
 {
 	// Precache all the items potentially spawned
 	int i;
-	for ( i = 0; i < NUM_HEALTH_ITEMS; i++ )
+	for( i = 0; i < NUM_HEALTH_ITEMS; i++ )
 	{
 		UTIL_PrecacheOther( g_DynamicResupplyHealthItems[i].sEntityName );
 	}
 
-	for ( i = 0; i < NUM_AMMO_ITEMS; i++ )
+	for( i = 0; i < NUM_AMMO_ITEMS; i++ )
 	{
 		UTIL_PrecacheOther( g_DynamicResupplyAmmoItems[i].sEntityName );
 	}
@@ -266,15 +269,15 @@ void CItem_DynamicResupply::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_DynamicResupply::CheckPVSThink( void )
 {
-	edict_t *pentPlayer = UTIL_FindClientInPVS( edict() );
-	if ( pentPlayer )
+	edict_t* pentPlayer = UTIL_FindClientInPVS( edict() );
+	if( pentPlayer )
 	{
-		CBasePlayer *pPlayer = (CBasePlayer *)CBaseEntity::Instance( pentPlayer );
-		if ( pPlayer )
+		CBasePlayer* pPlayer = ( CBasePlayer* )CBaseEntity::Instance( pentPlayer );
+		if( pPlayer )
 		{
 			SpawnDynamicItem( pPlayer );
 			return;
@@ -285,10 +288,10 @@ void CItem_DynamicResupply::CheckPVSThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::InputKill( inputdata_t &data )
+void CItem_DynamicResupply::InputKill( inputdata_t& data )
 {
 #ifdef MAPBASE
 	// What's the point of this being its own function?
@@ -299,23 +302,25 @@ void CItem_DynamicResupply::InputKill( inputdata_t &data )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::InputCalculateType( inputdata_t &data )
+void CItem_DynamicResupply::InputCalculateType( inputdata_t& data )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 	SpawnDynamicItem( pPlayer );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::InputBecomeMaster( inputdata_t &data )
+void CItem_DynamicResupply::InputBecomeMaster( inputdata_t& data )
 {
-	if ( g_MasterResupply )
+	if( g_MasterResupply )
+	{
 		g_MasterResupply->m_bIsMaster = false;
+	}
 
 	g_MasterResupply = this;
 	m_bIsMaster = true;
@@ -328,21 +333,23 @@ void CItem_DynamicResupply::InputBecomeMaster( inputdata_t &data )
 //-----------------------------------------------------------------------------
 // Chooses an item when the player is full
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::SpawnFullItem( CItem_DynamicResupply *pMaster, CBasePlayer *pPlayer, int iDebug )
+void CItem_DynamicResupply::SpawnFullItem( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug )
 {
 	// Can we not actually spawn the item?
-	if ( !HasSpawnFlags(SF_DYNAMICRESUPPLY_ALWAYS_SPAWN) )
+	if( !HasSpawnFlags( SF_DYNAMICRESUPPLY_ALWAYS_SPAWN ) )
+	{
 		return;
+	}
 
 	float flRatio[NUM_AMMO_ITEMS];
 	int i;
 	float flTotalProb = 0.0f;
-	for ( i = 0; i < NUM_AMMO_ITEMS; ++i )
+	for( i = 0; i < NUM_AMMO_ITEMS; ++i )
 	{
 		int iAmmoType = GetAmmoDef()->Index( g_DynamicResupplyAmmoItems[i].sAmmoDef );
 		bool bCanSpawn = pPlayer->Weapon_GetWpnForAmmo( iAmmoType ) != NULL;
 
-		if ( bCanSpawn && ( g_DynamicResupplyAmmoItems[i].flFullProbability != 0 ) && ( pMaster->m_flDesiredAmmo[i] != 0.0f ) )
+		if( bCanSpawn && ( g_DynamicResupplyAmmoItems[i].flFullProbability != 0 ) && ( pMaster->m_flDesiredAmmo[i] != 0.0f ) )
 		{
 			flTotalProb += g_DynamicResupplyAmmoItems[i].flFullProbability;
 			flRatio[i] = flTotalProb;
@@ -353,21 +360,21 @@ void CItem_DynamicResupply::SpawnFullItem( CItem_DynamicResupply *pMaster, CBase
 		}
 	}
 
-	if ( flTotalProb == 0.0f )
+	if( flTotalProb == 0.0f )
 	{
 		// If we're supposed to fallback to just a health vial, do that and finish.
-		if ( pMaster->HasSpawnFlags(SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL) )
+		if( pMaster->HasSpawnFlags( SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL ) )
 		{
 #ifdef MAPBASE
-			CBaseEntity *pItem = CBaseEntity::Create("item_healthvial", GetAbsOrigin(), GetAbsAngles(), this);
-			m_OnItem.Set(pItem, pItem, this);
+			CBaseEntity* pItem = CBaseEntity::Create( "item_healthvial", GetAbsOrigin(), GetAbsAngles(), this );
+			m_OnItem.Set( pItem, pItem, this );
 #else
 			CBaseEntity::Create( "item_healthvial", GetAbsOrigin(), GetAbsAngles(), this );
 #endif
 
-			if ( iDebug )
+			if( iDebug )
 			{
-				Msg("Player is full, spawning item_healthvial due to spawnflag.\n");
+				Msg( "Player is full, spawning item_healthvial due to spawnflag.\n" );
 			}
 			return;
 		}
@@ -376,60 +383,64 @@ void CItem_DynamicResupply::SpawnFullItem( CItem_DynamicResupply *pMaster, CBase
 		flRatio[0] = 1.0f;
 		flTotalProb = 1.0f;
 	}
-	
-	float flChoice = random->RandomFloat( 0.0f, flTotalProb ); 
-	for ( i = 0; i < NUM_AMMO_ITEMS; ++i )
+
+	float flChoice = random->RandomFloat( 0.0f, flTotalProb );
+	for( i = 0; i < NUM_AMMO_ITEMS; ++i )
 	{
-		if ( flChoice <= flRatio[i] )
+		if( flChoice <= flRatio[i] )
 		{
 #ifdef MAPBASE
-			CBaseEntity *pItem = CBaseEntity::Create( g_DynamicResupplyAmmoItems[i].sEntityName, GetAbsOrigin(), GetAbsAngles(), this );
-			m_OnItem.Set(pItem, pItem, this);
+			CBaseEntity* pItem = CBaseEntity::Create( g_DynamicResupplyAmmoItems[i].sEntityName, GetAbsOrigin(), GetAbsAngles(), this );
+			m_OnItem.Set( pItem, pItem, this );
 #else
 			CBaseEntity::Create( g_DynamicResupplyAmmoItems[i].sEntityName, GetAbsOrigin(), GetAbsAngles(), this );
 #endif
 
-			if ( iDebug )
+			if( iDebug )
 			{
-				Msg("Player is full, spawning %s \n", g_DynamicResupplyAmmoItems[i].sEntityName );
+				Msg( "Player is full, spawning %s \n", g_DynamicResupplyAmmoItems[i].sEntityName );
 			}
 			return;
 		}
 	}
 
-	if ( iDebug )
+	if( iDebug )
 	{
-		Msg("Player is full on all health + ammo, is not spawning.\n" );
+		Msg( "Player is full on all health + ammo, is not spawning.\n" );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::FindPotentialItems( int nCount, DynamicResupplyItems_t *pItems, int iDebug, SpawnInfo_t *pSpawnInfo )
+void CItem_DynamicResupply::FindPotentialItems( int nCount, DynamicResupplyItems_t* pItems, int iDebug, SpawnInfo_t* pSpawnInfo )
 {
 	int i;
-	for ( i = 0; i < nCount; ++i )
+	for( i = 0; i < nCount; ++i )
 	{
 		pSpawnInfo[i].m_iPotentialItems = 0;
 	}
 
 	// Count the potential addition of items in the PVS
-	CBaseEntity *pEntity = NULL;
-	while ( (pEntity = UTIL_EntitiesInPVS( this, pEntity )) != NULL )
+	CBaseEntity* pEntity = NULL;
+	while( ( pEntity = UTIL_EntitiesInPVS( this, pEntity ) ) != NULL )
 	{
-		if ( pEntity->WorldSpaceCenter().DistToSqr( WorldSpaceCenter() ) > (POTENTIAL_ITEM_RADIUS * POTENTIAL_ITEM_RADIUS) )
-			continue;
-
-		for ( i = 0; i < nCount; ++i )
+		if( pEntity->WorldSpaceCenter().DistToSqr( WorldSpaceCenter() ) > ( POTENTIAL_ITEM_RADIUS * POTENTIAL_ITEM_RADIUS ) )
 		{
-			if ( !FClassnameIs( pEntity, pItems[i].sEntityName ) )
-				continue;
+			continue;
+		}
 
-			if ( iDebug == 2 )
+		for( i = 0; i < nCount; ++i )
+		{
+			if( !FClassnameIs( pEntity, pItems[i].sEntityName ) )
 			{
-				NDebugOverlay::Line( WorldSpaceCenter(), pEntity->WorldSpaceCenter(), 0,255,0, true, 20.0 );
+				continue;
+			}
+
+			if( iDebug == 2 )
+			{
+				NDebugOverlay::Line( WorldSpaceCenter(), pEntity->WorldSpaceCenter(), 0, 255, 0, true, 20.0 );
 			}
 
 			++pSpawnInfo[i].m_iPotentialItems;
@@ -437,47 +448,47 @@ void CItem_DynamicResupply::FindPotentialItems( int nCount, DynamicResupplyItems
 		}
 	}
 
-	if ( iDebug )
+	if( iDebug )
 	{
-		Msg("Searching the PVS:\n");
-		for ( int j = 0; j < nCount; j++ )
+		Msg( "Searching the PVS:\n" );
+		for( int j = 0; j < nCount; j++ )
 		{
-			Msg("   Found %d '%s' in the PVS.\n", pSpawnInfo[j].m_iPotentialItems, pItems[j].sEntityName );
+			Msg( "   Found %d '%s' in the PVS.\n", pSpawnInfo[j].m_iPotentialItems, pItems[j].sEntityName );
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::ComputeHealthRatios( CItem_DynamicResupply* pMaster, CBasePlayer *pPlayer, int iDebug, SpawnInfo_t *pSpawnInfo )
+void CItem_DynamicResupply::ComputeHealthRatios( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug, SpawnInfo_t* pSpawnInfo )
 {
-	for ( int i = 0; i < NUM_HEALTH_ITEMS; i++ )
+	for( int i = 0; i < NUM_HEALTH_ITEMS; i++ )
 	{
 		// Figure out the current level of this resupply type
 		float flMax;
-		if ( i == DS_HEALTH_INDEX )
+		if( i == DS_HEALTH_INDEX )
 		{
 			// Health
 			flMax = pPlayer->GetMaxHealth();
 
-			float flCurrentHealth = pPlayer->GetHealth() + (pSpawnInfo[i].m_iPotentialItems * sk_healthkit.GetFloat());
-			pSpawnInfo[i].m_flCurrentRatio = (flCurrentHealth / flMax);
+			float flCurrentHealth = pPlayer->GetHealth() + ( pSpawnInfo[i].m_iPotentialItems * sk_healthkit.GetFloat() );
+			pSpawnInfo[i].m_flCurrentRatio = ( flCurrentHealth / flMax );
 		}
-		else if ( i == DS_ARMOR_INDEX )
+		else if( i == DS_ARMOR_INDEX )
 		{
-			// Armor 
+			// Armor
 			// Ignore armor if we don't have the suit
-			if ( !pPlayer->IsSuitEquipped() )
+			if( !pPlayer->IsSuitEquipped() )
 			{
 				pSpawnInfo[i].m_flCurrentRatio = 1.0;
 			}
 			else
 			{
 				flMax = MAX_NORMAL_BATTERY;
-				float flCurrentArmor = pPlayer->ArmorValue() + (pSpawnInfo[i].m_iPotentialItems * sk_battery.GetFloat());
-				pSpawnInfo[i].m_flCurrentRatio = (flCurrentArmor / flMax);
+				float flCurrentArmor = pPlayer->ArmorValue() + ( pSpawnInfo[i].m_iPotentialItems * sk_battery.GetFloat() );
+				pSpawnInfo[i].m_flCurrentRatio = ( flCurrentArmor / flMax );
 			}
 		}
 
@@ -486,31 +497,31 @@ void CItem_DynamicResupply::ComputeHealthRatios( CItem_DynamicResupply* pMaster,
 		pSpawnInfo[i].m_flDelta = clamp( pSpawnInfo[i].m_flDelta, 0, 1 );
 	}
 
-	if ( iDebug )
+	if( iDebug )
 	{
-		Msg("Calculating desired health ratios & deltas:\n");
-		for ( int i = 0; i < NUM_HEALTH_ITEMS; i++ )
+		Msg( "Calculating desired health ratios & deltas:\n" );
+		for( int i = 0; i < NUM_HEALTH_ITEMS; i++ )
 		{
-			Msg("   %s Desired Ratio: %.2f, Current Ratio: %.2f = Delta of %.2f\n", 
-				g_DynamicResupplyHealthItems[i].sEntityName, pSpawnInfo[i].m_flDesiredRatio, pSpawnInfo[i].m_flCurrentRatio, pSpawnInfo[i].m_flDelta );
+			Msg( "   %s Desired Ratio: %.2f, Current Ratio: %.2f = Delta of %.2f\n",
+				 g_DynamicResupplyHealthItems[i].sEntityName, pSpawnInfo[i].m_flDesiredRatio, pSpawnInfo[i].m_flCurrentRatio, pSpawnInfo[i].m_flDelta );
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::ComputeAmmoRatios( CItem_DynamicResupply* pMaster, CBasePlayer *pPlayer, int iDebug, SpawnInfo_t *pSpawnInfo )
+void CItem_DynamicResupply::ComputeAmmoRatios( CItem_DynamicResupply* pMaster, CBasePlayer* pPlayer, int iDebug, SpawnInfo_t* pSpawnInfo )
 {
-	for ( int i = 0; i < NUM_AMMO_ITEMS; i++ )
+	for( int i = 0; i < NUM_AMMO_ITEMS; i++ )
 	{
 		// Get the ammodef's
 		int iAmmoType = GetAmmoDef()->Index( g_DynamicResupplyAmmoItems[i].sAmmoDef );
 		Assert( iAmmoType != -1 );
 
 		// Ignore ammo types if we don't have a weapon that uses it (except for the grenade)
-		if ( (i != DS_GRENADE_INDEX) && !pPlayer->Weapon_GetWpnForAmmo( iAmmoType ) )
+		if( ( i != DS_GRENADE_INDEX ) && !pPlayer->Weapon_GetWpnForAmmo( iAmmoType ) )
 		{
 			pSpawnInfo[i].m_flCurrentRatio = 1.0;
 		}
@@ -518,8 +529,8 @@ void CItem_DynamicResupply::ComputeAmmoRatios( CItem_DynamicResupply* pMaster, C
 		{
 			float flMax = GetAmmoDef()->MaxCarry( iAmmoType );
 			float flCurrentAmmo = pPlayer->GetAmmoCount( iAmmoType );
-			flCurrentAmmo += (pSpawnInfo[i].m_iPotentialItems * g_DynamicResupplyAmmoItems[i].iAmmoCount);
-			pSpawnInfo[i].m_flCurrentRatio = (flCurrentAmmo / flMax);
+			flCurrentAmmo += ( pSpawnInfo[i].m_iPotentialItems * g_DynamicResupplyAmmoItems[i].iAmmoCount );
+			pSpawnInfo[i].m_flCurrentRatio = ( flCurrentAmmo / flMax );
 		}
 
 		// Use the master if we're supposed to
@@ -528,60 +539,62 @@ void CItem_DynamicResupply::ComputeAmmoRatios( CItem_DynamicResupply* pMaster, C
 		pSpawnInfo[i].m_flDelta = clamp( pSpawnInfo[i].m_flDelta, 0, 1 );
 	}
 
-	if ( iDebug )
+	if( iDebug )
 	{
-		Msg("Calculating desired ammo ratios & deltas:\n");
-		for ( int i = 0; i < NUM_AMMO_ITEMS; i++ )
+		Msg( "Calculating desired ammo ratios & deltas:\n" );
+		for( int i = 0; i < NUM_AMMO_ITEMS; i++ )
 		{
-			Msg("   %s Desired Ratio: %.2f, Current Ratio: %.2f = Delta of %.2f\n", 
-				g_DynamicResupplyAmmoItems[i].sEntityName, pSpawnInfo[i].m_flDesiredRatio, pSpawnInfo[i].m_flCurrentRatio, pSpawnInfo[i].m_flDelta );
+			Msg( "   %s Desired Ratio: %.2f, Current Ratio: %.2f = Delta of %.2f\n",
+				 g_DynamicResupplyAmmoItems[i].sEntityName, pSpawnInfo[i].m_flDesiredRatio, pSpawnInfo[i].m_flCurrentRatio, pSpawnInfo[i].m_flDelta );
 		}
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CItem_DynamicResupply::SpawnItemFromRatio( int nCount, DynamicResupplyItems_t *pItems, int iDebug, SpawnInfo_t *pSpawnInfo, Vector *pVecSpawnOrigin )
+bool CItem_DynamicResupply::SpawnItemFromRatio( int nCount, DynamicResupplyItems_t* pItems, int iDebug, SpawnInfo_t* pSpawnInfo, Vector* pVecSpawnOrigin )
 {
 	// Now find the one we're farthest from
 	float flFarthest = 0;
 	int iSelectedIndex = -1;
-	for ( int i = 0; i < nCount; ++i )
+	for( int i = 0; i < nCount; ++i )
 	{
-		if ( pSpawnInfo[i].m_flDelta > flFarthest )
+		if( pSpawnInfo[i].m_flDelta > flFarthest )
 		{
 			flFarthest = pSpawnInfo[i].m_flDelta;
 			iSelectedIndex = i;
 		}
 	}
 
-	if ( iSelectedIndex < 0 )
-		return false;
-
-	if ( iDebug )
+	if( iSelectedIndex < 0 )
 	{
-		Msg("Chosen item: %s (had farthest delta, %.2f)\n", pItems[iSelectedIndex].sEntityName, pSpawnInfo[iSelectedIndex].m_flDelta );
+		return false;
 	}
 
-	CBaseEntity *pEnt = CBaseEntity::Create( pItems[iSelectedIndex].sEntityName, *pVecSpawnOrigin, GetAbsAngles(), this );
+	if( iDebug )
+	{
+		Msg( "Chosen item: %s (had farthest delta, %.2f)\n", pItems[iSelectedIndex].sEntityName, pSpawnInfo[iSelectedIndex].m_flDelta );
+	}
+
+	CBaseEntity* pEnt = CBaseEntity::Create( pItems[iSelectedIndex].sEntityName, *pVecSpawnOrigin, GetAbsAngles(), this );
 	pEnt->SetAbsVelocity( GetAbsVelocity() );
 	pEnt->SetLocalAngularVelocity( GetLocalAngularVelocity() );
 
 #ifdef MAPBASE
-	m_OnItem.Set(pEnt, pEnt, this);
+	m_OnItem.Set( pEnt, pEnt, this );
 #endif
 
 	// Move the entity up so that it doesn't go below the spawn origin
 	Vector vecWorldMins, vecWorldMaxs;
 	pEnt->CollisionProp()->WorldSpaceAABB( &vecWorldMins, &vecWorldMaxs );
-	if ( vecWorldMins.z < pVecSpawnOrigin->z )
+	if( vecWorldMins.z < pVecSpawnOrigin->z )
 	{
 		float dz = pVecSpawnOrigin->z - vecWorldMins.z;
 		pVecSpawnOrigin->z += dz;
 		vecWorldMaxs.z += dz;
-		pEnt->SetAbsOrigin( *pVecSpawnOrigin ); 
+		pEnt->SetAbsOrigin( *pVecSpawnOrigin );
 	}
 
 	// Update the spawn position to spawn them on top of each other
@@ -593,22 +606,24 @@ bool CItem_DynamicResupply::SpawnItemFromRatio( int nCount, DynamicResupplyItems
 	return true;
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer *pPlayer )
+void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer* pPlayer )
 {
 	Assert( pPlayer );
 
 	// If we're the master, we never want to spawn
-	if ( g_MasterResupply == this )
+	if( g_MasterResupply == this )
+	{
 		return;
+	}
 
 	int iDebug = g_debug_dynamicresupplies.GetInt();
-	if ( iDebug )
+	if( iDebug )
 	{
-		Msg("Spawning item_dynamic_resupply:\n");
+		Msg( "Spawning item_dynamic_resupply:\n" );
 	}
 
 	SpawnInfo_t pAmmoInfo[ NUM_AMMO_ITEMS ];
@@ -619,8 +634,8 @@ void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer *pPlayer )
 	FindPotentialItems( NUM_AMMO_ITEMS, g_DynamicResupplyAmmoItems, iDebug, pAmmoInfo );
 
 	// Use the master if we're supposed to
-	CItem_DynamicResupply *pMaster = this;
-	if ( HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && g_MasterResupply )
+	CItem_DynamicResupply* pMaster = this;
+	if( HasSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER ) && g_MasterResupply )
 	{
 		pMaster = g_MasterResupply;
 	}
@@ -632,7 +647,7 @@ void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer *pPlayer )
 	Vector vecSpawnOrigin = GetAbsOrigin();
 	bool bHealthSpawned = SpawnItemFromRatio( NUM_HEALTH_ITEMS, g_DynamicResupplyHealthItems, iDebug, pHealthInfo, &vecSpawnOrigin );
 	bool bAmmoSpawned = SpawnItemFromRatio( NUM_AMMO_ITEMS, g_DynamicResupplyAmmoItems, iDebug, pAmmoInfo, &vecSpawnOrigin );
-	if ( !bHealthSpawned && !bAmmoSpawned )
+	if( !bHealthSpawned && !bAmmoSpawned )
 	{
 		SpawnFullItem( pMaster, pPlayer, iDebug );
 	}
@@ -642,14 +657,16 @@ void CItem_DynamicResupply::SpawnDynamicItem( CBasePlayer *pPlayer )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float DynamicResupply_GetDesiredHealthPercentage( void )
 {
 	// Return what the master supply dictates
-	if ( g_MasterResupply != NULL )
+	if( g_MasterResupply != NULL )
+	{
 		return g_MasterResupply->GetDesiredHealthPercentage();
+	}
 
 	// Full health if they haven't specified otherwise
 	return 1.0f;
@@ -659,31 +676,33 @@ float DynamicResupply_GetDesiredHealthPercentage( void )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void DynamicResupply_InitFromAlternateMaster( CBaseEntity *pTargetEnt, string_t iszMaster )
+void DynamicResupply_InitFromAlternateMaster( CBaseEntity* pTargetEnt, string_t iszMaster )
 {
-	if ( iszMaster== NULL_STRING )
+	if( iszMaster == NULL_STRING )
 	{
 		return;
 	}
 
-	CItem_DynamicResupply *pTargetResupply = assert_cast<CItem_DynamicResupply *>( pTargetEnt );
-	CBaseEntity *pMasterEnt = gEntList.FindEntityByName( NULL, iszMaster );
+	CItem_DynamicResupply* pTargetResupply = assert_cast<CItem_DynamicResupply*>( pTargetEnt );
+	CBaseEntity* pMasterEnt = gEntList.FindEntityByName( NULL, iszMaster );
 
-	if ( !pMasterEnt || !pMasterEnt->ClassMatches( pTargetResupply->GetClassname() ) )
+	if( !pMasterEnt || !pMasterEnt->ClassMatches( pTargetResupply->GetClassname() ) )
 	{
 		DevWarning( "Invalid item_dynamic_resupply name %s\n", STRING( iszMaster ) );
 		return;
 	}
 
-	CItem_DynamicResupply *pMasterResupply = assert_cast<CItem_DynamicResupply *>( pMasterEnt );
+	CItem_DynamicResupply* pMasterResupply = assert_cast<CItem_DynamicResupply*>( pMasterEnt );
 
 	pTargetResupply->RemoveSpawnFlags( SF_DYNAMICRESUPPLY_USE_MASTER );
 	memcpy( pTargetResupply->m_flDesiredHealth, pMasterResupply->m_flDesiredHealth, sizeof( pMasterResupply->m_flDesiredHealth ) );
 	memcpy( pTargetResupply->m_flDesiredAmmo, pMasterResupply->m_flDesiredAmmo, sizeof( pMasterResupply->m_flDesiredAmmo ) );
 
 #ifdef MAPBASE
-	if (pMasterResupply->HasSpawnFlags(SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL))
-		pTargetResupply->AddSpawnFlags(SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL);
+	if( pMasterResupply->HasSpawnFlags( SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL ) )
+	{
+		pTargetResupply->AddSpawnFlags( SF_DYNAMICRESUPPLY_FALLBACK_TO_VIAL );
+	}
 #endif
 
 }

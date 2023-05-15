@@ -5,7 +5,7 @@
 #ifndef REPLAY_RENDEROVERLAY_H
 #define REPLAY_RENDEROVERLAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -28,21 +28,21 @@ class CReplayRenderOverlay : public vgui::Frame
 {
 	DECLARE_CLASS_SIMPLE( CReplayRenderOverlay, vgui::Frame );
 public:
-	CReplayRenderOverlay( Panel *pParent );
+	CReplayRenderOverlay( Panel* pParent );
 	~CReplayRenderOverlay();
 
 	void Show();
 	void Hide();
 
-	CReplayRenderer		*m_pRenderer;
+	CReplayRenderer*		m_pRenderer;
 
 private:
-	virtual void	ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void	ApplySchemeSettings( vgui::IScheme* pScheme );
 	virtual void	PerformLayout();
 	virtual void	OnTick();
 	virtual void	OnMousePressed( vgui::MouseCode nCode );
 	virtual void	OnKeyCodeTyped( vgui::KeyCode nCode );
-	virtual void	OnCommand( const char *pCommand );
+	virtual void	OnCommand( const char* pCommand );
 
 private:
 	MESSAGE_FUNC_PTR( OnCheckButtonChecked, "CheckButtonChecked", pPanel );
@@ -54,13 +54,13 @@ private:
 	int					m_unNumFrames;
 	float				m_flStartTime;
 	float				m_flPreviousTimeLeft;
-	EditablePanel		*m_pBottom;
-	vgui::ProgressBar	*m_pRenderProgress;
-	vgui::CheckButton	*m_pPreviewCheckButton;
-	CExButton			*m_pCancelButton;
-	CExLabel			*m_pTitleLabel;
-	CExLabel			*m_pFilenameLabel;
-	CExLabel			*m_pProgressLabel;
+	EditablePanel*		m_pBottom;
+	vgui::ProgressBar*	m_pRenderProgress;
+	vgui::CheckButton*	m_pPreviewCheckButton;
+	CExButton*			m_pCancelButton;
+	CExLabel*			m_pTitleLabel;
+	CExLabel*			m_pFilenameLabel;
+	CExLabel*			m_pProgressLabel;
 };
 
 //-----------------------------------------------------------------------------

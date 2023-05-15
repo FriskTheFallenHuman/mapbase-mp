@@ -33,31 +33,31 @@
 	#include "EntityFlame.h"
 	#include "weapon_flaregun.h"
 	#include "npc_combine.h"
-#ifdef MAPBASE
-	#include "npc_playercompanion.h"
-#endif
+	#ifdef MAPBASE
+		#include "npc_playercompanion.h"
+	#endif
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 #ifndef CLIENT_DLL
-ConVar sk_weapon_ar2_alt_fire_radius( "sk_weapon_ar2_alt_fire_radius", "10" );
-ConVar sk_weapon_ar2_alt_fire_duration( "sk_weapon_ar2_alt_fire_duration", "4" );
-ConVar sk_weapon_ar2_alt_fire_mass( "sk_weapon_ar2_alt_fire_mass", "150" );
+	ConVar sk_weapon_ar2_alt_fire_radius( "sk_weapon_ar2_alt_fire_radius", "10" );
+	ConVar sk_weapon_ar2_alt_fire_duration( "sk_weapon_ar2_alt_fire_duration", "4" );
+	ConVar sk_weapon_ar2_alt_fire_mass( "sk_weapon_ar2_alt_fire_mass", "150" );
 #endif
 
 //=========================================================
 //=========================================================
 
 #ifdef GAME_DLL
-BEGIN_DATADESC( CWeaponAR2 )
+	BEGIN_DATADESC( CWeaponAR2 )
 
 	DEFINE_FIELD( m_flDelayedFire,	FIELD_TIME ),
 	DEFINE_FIELD( m_bShotDelayed,	FIELD_BOOLEAN ),
 	//DEFINE_FIELD( m_nVentPose, FIELD_INTEGER ),
 
-END_DATADESC()
+	END_DATADESC()
 #endif
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAR2, DT_WeaponAR2 )
@@ -69,12 +69,12 @@ BEGIN_PREDICTION_DATA( CWeaponAR2 )
 END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( weapon_ar2, CWeaponAR2 );
-PRECACHE_WEAPON_REGISTER(weapon_ar2);
+PRECACHE_WEAPON_REGISTER( weapon_ar2 );
 
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponAR2::m_acttable[] = 
+acttable_t	CWeaponAR2::m_acttable[] =
 {
 #if AR2_ACTIVITY_FIX == 1
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR2,			true },
@@ -98,7 +98,7 @@ acttable_t	CWeaponAR2::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_AR2_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_AR2_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_AR2_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_AR2,				false },//always aims
 
@@ -147,7 +147,7 @@ acttable_t	CWeaponAR2::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
 
@@ -214,18 +214,18 @@ acttable_t	CWeaponAR2::m_acttable[] =
 	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_AR2,						false },
 };
 
-IMPLEMENT_ACTTABLE(CWeaponAR2);
+IMPLEMENT_ACTTABLE( CWeaponAR2 );
 
 #ifdef MAPBASE
 // Allows Weapon_BackupActivity() to access the AR2's activity table.
-acttable_t *GetAR2Acttable()
+acttable_t* GetAR2Acttable()
 {
 	return CWeaponAR2::m_acttable;
 }
 
 int GetAR2ActtableCount()
 {
-	return ARRAYSIZE(CWeaponAR2::m_acttable);
+	return ARRAYSIZE( CWeaponAR2::m_acttable );
 }
 #endif
 
@@ -251,7 +251,7 @@ void CWeaponAR2::Precache( void )
 	UTIL_PrecacheOther( "prop_combine_ball" );
 	UTIL_PrecacheOther( "env_entity_dissolver" );
 #endif
-	
+
 }
 
 //-----------------------------------------------------------------------------
@@ -260,25 +260,25 @@ void CWeaponAR2::Precache( void )
 void CWeaponAR2::ItemPostFrame( void )
 {
 	// See if we need to fire off our secondary round
-	if ( m_bShotDelayed && gpGlobals->curtime > m_flDelayedFire )
+	if( m_bShotDelayed && gpGlobals->curtime > m_flDelayedFire )
 	{
 		DelayedAttack();
 	}
 
 	// Update our pose parameter for the vents
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	if ( pOwner )
+	if( pOwner )
 	{
-		CBaseViewModel *pVM = pOwner->GetViewModel();
+		CBaseViewModel* pVM = pOwner->GetViewModel();
 
-		if ( pVM )
+		if( pVM )
 		{
-			if ( m_nVentPose == -1 )
+			if( m_nVentPose == -1 )
 			{
 				m_nVentPose = pVM->LookupPoseParameter( "VentPoses" );
 			}
-			
+
 			float flVentPose = RemapValClamped( m_nShotsFired, 0, 5, 0.0f, 1.0f );
 			pVM->SetPoseParameter( m_nVentPose, flVentPose );
 		}
@@ -288,36 +288,42 @@ void CWeaponAR2::ItemPostFrame( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Activity
 //-----------------------------------------------------------------------------
 Activity CWeaponAR2::GetPrimaryAttackActivity( void )
 {
-	if ( m_nShotsFired < 2 )
+	if( m_nShotsFired < 2 )
+	{
 		return ACT_VM_PRIMARYATTACK;
+	}
 
-	if ( m_nShotsFired < 3 )
+	if( m_nShotsFired < 3 )
+	{
 		return ACT_VM_RECOIL1;
-	
-	if ( m_nShotsFired < 4 )
+	}
+
+	if( m_nShotsFired < 4 )
+	{
 		return ACT_VM_RECOIL2;
+	}
 
 	return ACT_VM_RECOIL3;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &tr - 
-//			nDamageType - 
+// Purpose:
+// Input  : &tr -
+//			nDamageType -
 //-----------------------------------------------------------------------------
-void CWeaponAR2::DoImpactEffect( trace_t &tr, int nDamageType )
+void CWeaponAR2::DoImpactEffect( trace_t& tr, int nDamageType )
 {
 	CEffectData data;
 
 	data.m_vOrigin = tr.endpos + ( tr.plane.normal * 1.0f );
 	data.m_vNormal = tr.plane.normal;
 
-	if ( tr.fraction == 1.0 || !( tr.surface.flags & SURF_SKY ) )
+	if( tr.fraction == 1.0 || !( tr.surface.flags & SURF_SKY ) )
 	{
 		DispatchEffect( "AR2Impact", data );
 	}
@@ -326,16 +332,18 @@ void CWeaponAR2::DoImpactEffect( trace_t &tr, int nDamageType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponAR2::DelayedAttack( void )
 {
 	m_bShotDelayed = false;
-	
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
+
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	// Deplete the clip completely
 	SendWeaponAnim( ACT_VM_SECONDARYATTACK );
@@ -363,18 +371,18 @@ void CWeaponAR2::DelayedAttack( void )
 
 #ifdef GAME_DLL
 	// Fire the combine ball
-	CreateCombineBall(	vecSrc, 
-						vecVelocity, 
-						sk_weapon_ar2_alt_fire_radius.GetFloat(), 
+	CreateCombineBall(	vecSrc,
+						vecVelocity,
+						sk_weapon_ar2_alt_fire_radius.GetFloat(),
 						sk_weapon_ar2_alt_fire_mass.GetFloat(),
 						sk_weapon_ar2_alt_fire_duration.GetFloat(),
 						pOwner );
 
 	// View effects
 	color32 white = {255, 255, 255, 64};
-	UTIL_ScreenFade( pOwner, white, 0.1, 0, FFADE_IN  );
+	UTIL_ScreenFade( pOwner, white, 0.1, 0, FFADE_IN );
 #endif
-	
+
 	//Disorient the player
 	QAngle angles = pOwner->GetLocalAngles();
 
@@ -399,15 +407,17 @@ void CWeaponAR2::DelayedAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponAR2::SecondaryAttack( void )
 {
-	if ( m_bShotDelayed )
+	if( m_bShotDelayed )
+	{
 		return;
+	}
 
 	// Cannot fire underwater
-	if ( GetOwner() && GetOwner()->GetWaterLevel() == 3 )
+	if( GetOwner() && GetOwner()->GetWaterLevel() == 3 )
 	{
 		SendWeaponAnim( ACT_VM_DRYFIRE );
 		BaseClass::WeaponSound( EMPTY );
@@ -418,11 +428,11 @@ void CWeaponAR2::SecondaryAttack( void )
 	m_bShotDelayed = true;
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack = m_flDelayedFire = gpGlobals->curtime + 0.5f;
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 	if( pPlayer )
 	{
 #ifdef GAME_DLL
-		pPlayer->RumbleEffect(RUMBLE_AR2_ALT_FIRE, 0, RUMBLE_FLAG_RESTART );
+		pPlayer->RumbleEffect( RUMBLE_AR2_ALT_FIRE, 0, RUMBLE_FLAG_RESTART );
 #endif
 #ifdef MAPBASE
 		ToHL2MPPlayer( pPlayer )->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_SECONDARY );
@@ -444,8 +454,10 @@ void CWeaponAR2::SecondaryAttack( void )
 //-----------------------------------------------------------------------------
 bool CWeaponAR2::CanHolster( void ) const
 {
-	if ( m_bShotDelayed )
+	if( m_bShotDelayed )
+	{
 		return false;
+	}
 
 	return BaseClass::CanHolster();
 }
@@ -466,31 +478,33 @@ bool CWeaponAR2::Deploy( void )
 //-----------------------------------------------------------------------------
 bool CWeaponAR2::Reload( void )
 {
-	if ( m_bShotDelayed )
+	if( m_bShotDelayed )
+	{
 		return false;
+	}
 
 	return BaseClass::Reload();
 }
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOperator - 
+// Purpose:
+// Input  : *pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponAR2::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles )
+void CWeaponAR2::FireNPCPrimaryAttack( CBaseCombatCharacter* pOperator, bool bUseWeaponAngles )
 {
 	Vector vecShootOrigin, vecShootDir;
 
-	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 	ASSERT( npc != NULL );
 
-	if ( bUseWeaponAngles )
+	if( bUseWeaponAngles )
 	{
 		QAngle	angShootDir;
 		GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 		AngleVectors( angShootDir, &vecShootDir );
 	}
-	else 
+	else
 	{
 		vecShootOrigin = pOperator->Weapon_ShootPosition();
 		vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
@@ -498,7 +512,7 @@ void CWeaponAR2::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUs
 
 	WeaponSoundRealtime( SINGLE_NPC );
 
-	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
+	CSoundEnt::InsertSound( SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_MACHINEGUN, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
 
 	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2 );
 
@@ -509,48 +523,52 @@ void CWeaponAR2::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUs
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles )
+void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter* pOperator, bool bUseWeaponAngles )
 {
 	WeaponSound( WPN_DOUBLE );
 
-	if ( !GetOwner() )
+	if( !GetOwner() )
+	{
 		return;
-		
-	CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
-	if ( !pNPC )
+	}
+
+	CAI_BaseNPC* pNPC = GetOwner()->MyNPCPointer();
+	if( !pNPC )
+	{
 		return;
-	
+	}
+
 	// Fire!
 	Vector vecSrc;
 	Vector vecAiming;
 
-	if ( bUseWeaponAngles )
+	if( bUseWeaponAngles )
 	{
 		QAngle	angShootDir;
 		GetAttachment( LookupAttachment( "muzzle" ), vecSrc, angShootDir );
 		AngleVectors( angShootDir, &vecAiming );
 	}
-	else 
+	else
 	{
 		vecSrc = pNPC->Weapon_ShootPosition( );
-		
+
 		Vector vecTarget;
 
 #ifdef MAPBASE
 		// It's shared across all NPCs now that it's available on more than just soldiers on more than just the AR2.
 		vecTarget = pNPC->GetAltFireTarget();
 #else
-		CNPC_Combine *pSoldier = dynamic_cast<CNPC_Combine *>( pNPC );
-		if ( pSoldier )
+		CNPC_Combine* pSoldier = dynamic_cast<CNPC_Combine*>( pNPC );
+		if( pSoldier )
 		{
 			// In the distant misty past, elite soldiers tried to use bank shots.
 			// Therefore, we must ask them specifically what direction they are shooting.
 			vecTarget = pSoldier->GetAltFireTarget();
 		}
 #ifdef MAPBASE
-		else if ( CNPC_PlayerCompanion *pCompanion = dynamic_cast<CNPC_PlayerCompanion *>( pNPC ) )
+		else if( CNPC_PlayerCompanion* pCompanion = dynamic_cast<CNPC_PlayerCompanion*>( pNPC ) )
 		{
 			// Companions can use energy balls now. Isn't that lovely?
 			vecTarget = pCompanion->GetAltFireTarget();
@@ -559,9 +577,11 @@ void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool b
 		else
 		{
 			// All other users of the AR2 alt-fire shoot directly at their enemy.
-			if ( !pNPC->GetEnemy() )
+			if( !pNPC->GetEnemy() )
+			{
 				return;
-				
+			}
+
 			vecTarget = pNPC->GetEnemy()->BodyTarget( vecSrc );
 		}
 #endif
@@ -581,32 +601,32 @@ void CWeaponAR2::FireNPCSecondaryAttack( CBaseCombatCharacter *pOperator, bool b
 
 	// Fire the combine ball
 #ifdef MAPBASE
-	CBaseEntity *pBall = CreateCombineBall(	vecSrc, 
-		vecVelocity, 
-		flRadius, 
-		sk_weapon_ar2_alt_fire_mass.GetFloat(),
-		flDuration,
-		pNPC );
+	CBaseEntity* pBall = CreateCombineBall(	vecSrc,
+											vecVelocity,
+											flRadius,
+											sk_weapon_ar2_alt_fire_mass.GetFloat(),
+											flDuration,
+											pNPC );
 
 	variant_t var;
-	var.SetEntity(pBall);
-	pNPC->FireNamedOutput("OnThrowGrenade", var, pBall, pNPC);
+	var.SetEntity( pBall );
+	pNPC->FireNamedOutput( "OnThrowGrenade", var, pBall, pNPC );
 #else
-	CreateCombineBall(	vecSrc, 
-		vecVelocity, 
-		flRadius, 
-		sk_weapon_ar2_alt_fire_mass.GetFloat(),
-		flDuration,
-		pNPC );
+	CreateCombineBall(	vecSrc,
+						vecVelocity,
+						flRadius,
+						sk_weapon_ar2_alt_fire_mass.GetFloat(),
+						flDuration,
+						pNPC );
 #endif
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponAR2::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+void CWeaponAR2::Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary )
 {
-	if ( bSecondary )
+	if( bSecondary )
 	{
 		FireNPCSecondaryAttack( pOperator, true );
 	}
@@ -620,25 +640,25 @@ void CWeaponAR2::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bS
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponAR2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponAR2::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
-	{ 
+	{
 		case EVENT_WEAPON_AR2:
-			{
-				FireNPCPrimaryAttack( pOperator, false );
-			}
-			break;
+		{
+			FireNPCPrimaryAttack( pOperator, false );
+		}
+		break;
 
 		case EVENT_WEAPON_AR2_ALTFIRE:
-			{
-				FireNPCSecondaryAttack( pOperator, false );
-			}
-			break;
+		{
+			FireNPCSecondaryAttack( pOperator, false );
+		}
+		break;
 
 		default:
 			CBaseCombatWeapon::Operator_HandleAnimEvent( pEvent, pOperator );
@@ -648,18 +668,20 @@ void CWeaponAR2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponAR2::AddViewKick( void )
 {
-	#define	EASY_DAMPEN			0.5f
-	#define	MAX_VERTICAL_KICK	8.0f	//Degrees
-	#define	SLIDE_LIMIT			5.0f	//Seconds
-	
+#define	EASY_DAMPEN			0.5f
+#define	MAX_VERTICAL_KICK	8.0f	//Degrees
+#define	SLIDE_LIMIT			5.0f	//Seconds
+
 	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
 #ifdef GAME_DLL
 	float flDuration = m_fFireDuration;
@@ -678,18 +700,18 @@ void CWeaponAR2::AddViewKick( void )
 }
 
 //-----------------------------------------------------------------------------
-const WeaponProficiencyInfo_t *CWeaponAR2::GetProficiencyValues()
+const WeaponProficiencyInfo_t* CWeaponAR2::GetProficiencyValues()
 {
 	static WeaponProficiencyInfo_t proficiencyTable[] =
 	{
 		{ 7.0,		0.75	},
 		{ 5.00,		0.75	},
 		{ 3.0,		0.85	},
-		{ 5.0/3.0,	0.75	},
+		{ 5.0 / 3.0,	0.75	},
 		{ 1.00,		1.0		},
 	};
 
-	COMPILE_TIME_ASSERT( ARRAYSIZE(proficiencyTable) == WEAPON_PROFICIENCY_PERFECT + 1);
+	COMPILE_TIME_ASSERT( ARRAYSIZE( proficiencyTable ) == WEAPON_PROFICIENCY_PERFECT + 1 );
 
 	return proficiencyTable;
 }

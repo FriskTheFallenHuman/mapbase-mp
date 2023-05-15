@@ -12,7 +12,7 @@
 #define VALIDATOR_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -27,13 +27,13 @@ public:
 	~CValidator( void );
 
 	// Call this each time we enter a new Validate function
-	void Push( tchar *pchType, void *pvObj, tchar *pchName );
+	void Push( tchar* pchType, void* pvObj, tchar* pchName );
 
 	// Call this each time we exit a Validate function
 	void Pop( void );
 
 	// Claim ownership of a memory block
-	void ClaimMemory( void *pvMem );
+	void ClaimMemory( void* pvMem );
 
 	// Finish performing a check and perform necessary computations
 	void Finalize( void );
@@ -43,21 +43,27 @@ public:
 	void RenderLeaks( void );				// Render all memory leaks
 
 	// List manipulation functions:
-	CValObject *FindObject( void *pvObj );				// Returns CValObject containing pvObj, or NULL.
-	void DiffAgainst( CValidator *pOtherValidator );	// Removes any entries from this validator that are also present in the other.
+	CValObject* FindObject( void* pvObj );				// Returns CValObject containing pvObj, or NULL.
+	void DiffAgainst( CValidator* pOtherValidator );	// Removes any entries from this validator that are also present in the other.
 
 	// Accessors
-	bool BMemLeaks( void ) { return m_bMemLeaks; };
-	CValObject *PValObjectFirst( void ) { return m_pValObjectFirst; };
+	bool BMemLeaks( void )
+	{
+		return m_bMemLeaks;
+	};
+	CValObject* PValObjectFirst( void )
+	{
+		return m_pValObjectFirst;
+	};
 
-	void Validate( CValidator &validator, tchar *pchName );		// Validate our internal structures
+	void Validate( CValidator& validator, tchar* pchName );		// Validate our internal structures
 
 
 private:
-	CValObject *m_pValObjectFirst;	// Linked list of all ValObjects
-	CValObject *m_pValObjectLast;	// Last ValObject on the linked list
+	CValObject* m_pValObjectFirst;	// Linked list of all ValObjects
+	CValObject* m_pValObjectLast;	// Last ValObject on the linked list
 
-	CValObject *m_pValObjectCur;	// Object we're current processing
+	CValObject* m_pValObjectCur;	// Object we're current processing
 
 	int m_cpvOwned;		// Total # of blocks owned
 

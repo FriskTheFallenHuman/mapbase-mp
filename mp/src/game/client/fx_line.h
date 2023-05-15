@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -14,7 +14,7 @@
 #if !defined( FXLINE_H )
 #define FXLINE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 struct FXLineData_t
@@ -29,8 +29,8 @@ struct FXLineData_t
 	float		m_flEndScale;
 	float		m_flDieTime;
 	float		m_flLifeTime;
-	
-	IMaterial	*m_pMaterial;
+
+	IMaterial*	m_pMaterial;
 };
 
 #include "fx_staticline.h"
@@ -39,8 +39,8 @@ class CFXLine : public CClientSideEffect
 {
 public:
 
-	CFXLine( const char *name, const FXLineData_t &data );
-	
+	CFXLine( const char* name, const FXLineData_t& data );
+
 	~CFXLine( void );
 
 	virtual void	Draw( double frametime );
@@ -53,7 +53,7 @@ protected:
 	FXLineData_t	m_FXData;
 };
 
-void FX_DrawLine( const Vector &start, const Vector &end, float scale, IMaterial *pMaterial, const color32 &color );
-void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMaterial *pMaterial, const color32 &color, float fadeDist );
+void FX_DrawLine( const Vector& start, const Vector& end, float scale, IMaterial* pMaterial, const color32& color );
+void FX_DrawLineFade( const Vector& start, const Vector& end, float scale, IMaterial* pMaterial, const color32& color, float fadeDist );
 
 #endif	//FXLINE_H

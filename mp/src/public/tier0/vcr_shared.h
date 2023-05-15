@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef VCR_SHARED_H
 #define VCR_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,7 +20,7 @@
 // the calls in the same order).
 typedef enum
 {
-	VCREvent_Sys_FloatTime=0,
+	VCREvent_Sys_FloatTime = 0,
 	VCREvent_recvfrom,
 	VCREvent_SyncToken,
 	VCREvent_GetCursorPos,

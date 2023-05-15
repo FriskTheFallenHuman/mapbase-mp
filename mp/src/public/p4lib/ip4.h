@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef IP4_H
 #define IP4_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlsymbol.h"
@@ -59,7 +59,7 @@ struct P4Revision_t
 	int m_nHour, m_nMinute, m_nSecond;
 
 	CUtlSymbol m_sUser;		// submitting user
-	CUtlSymbol m_sClient;	// submitting client 
+	CUtlSymbol m_sClient;	// submitting client
 	CUtlString m_Description;
 };
 
@@ -81,111 +81,112 @@ struct P4Client_t
 //-----------------------------------------------------------------------------
 #define P4_INTERFACE_VERSION		"VP4002"
 
-abstract_class IP4  : public IAppSystem
+abstract_class IP4  :
+public IAppSystem
 {
 public:
 	// name of the current clientspec
-	virtual P4Client_t &GetActiveClient() = 0;
+	virtual P4Client_t& GetActiveClient() = 0;
 
 	// changes the current client
-	virtual void SetActiveClient(const char *clientname) = 0;
+	virtual void SetActiveClient( const char* clientname ) = 0;
 
 	// Refreshes the current client from p4 settings
 	virtual void RefreshActiveClient() = 0;
 
 	// translate filespecs into the desired syntax
-	virtual void GetDepotFilePath(char *depotFilePath, const char *filespec, int size) = 0;
-	virtual void GetClientFilePath(char *clientFilePath, const char *filespec, int size) = 0;
-	virtual void GetLocalFilePath(char *localFilePath, const char *filespec, int size) = 0;
+	virtual void GetDepotFilePath( char* depotFilePath, const char* filespec, int size ) = 0;
+	virtual void GetClientFilePath( char* clientFilePath, const char* filespec, int size ) = 0;
+	virtual void GetLocalFilePath( char* localFilePath, const char* filespec, int size ) = 0;
 
 	// retreives the list of files in a path
-	virtual CUtlVector<P4File_t> &GetFileList( const char *path ) = 0;
+	virtual CUtlVector<P4File_t>& GetFileList( const char* path ) = 0;
 
-	// returns the list of files opened for edit/integrate/delete 
-	virtual void GetOpenedFileList( CUtlVector<P4File_t> &fileList ) = 0;
-	virtual void GetOpenedFileList( const char *pRootDirectory, CUtlVector<P4File_t> &fileList ) = 0;
-	virtual void GetOpenedFileListInPath( const char *pPathID, CUtlVector<P4File_t> &fileList ) = 0;
+	// returns the list of files opened for edit/integrate/delete
+	virtual void GetOpenedFileList( CUtlVector<P4File_t>& fileList ) = 0;
+	virtual void GetOpenedFileList( const char* pRootDirectory, CUtlVector<P4File_t>& fileList ) = 0;
+	virtual void GetOpenedFileListInPath( const char* pPathID, CUtlVector<P4File_t>& fileList ) = 0;
 
 	// retrieves revision history for a file or directory
-	virtual CUtlVector<P4Revision_t> &GetRevisionList( const char *path, bool bIsDir ) = 0;
+	virtual CUtlVector<P4Revision_t>& GetRevisionList( const char* path, bool bIsDir ) = 0;
 
 	// returns a list of clientspecs
-	virtual CUtlVector<P4Client_t> &GetClientList() = 0;
+	virtual CUtlVector<P4Client_t>& GetClientList() = 0;
 
 	// changes the clientspec to remove the specified path (cloaking)
-	virtual void RemovePathFromActiveClientspec( const char *path ) = 0;
+	virtual void RemovePathFromActiveClientspec( const char* path ) = 0;
 
 	// sets the name of the changelist to open files under, NULL for "Default" changelist
-	virtual void SetOpenFileChangeList(const char *pChangeListName) = 0;
+	virtual void SetOpenFileChangeList( const char* pChangeListName ) = 0;
 
 	// file manipulation
-	virtual bool OpenFileForAdd( const char *pFullPath ) = 0;
-	virtual bool OpenFileForEdit( const char *pFullPath ) = 0;
-	virtual bool OpenFileForDelete( const char *pFullPath ) = 0;
+	virtual bool OpenFileForAdd( const char* pFullPath ) = 0;
+	virtual bool OpenFileForEdit( const char* pFullPath ) = 0;
+	virtual bool OpenFileForDelete( const char* pFullPath ) = 0;
 
 	// submit/revert
-	virtual bool SubmitFile( const char *pFullPath, const char *pDescription ) = 0;
-	virtual bool RevertFile( const char *pFullPath ) = 0;
+	virtual bool SubmitFile( const char* pFullPath, const char* pDescription ) = 0;
+	virtual bool RevertFile( const char* pFullPath ) = 0;
 
 	// file checkin/checkout for multiple files
-	virtual bool OpenFilesForAdd( int nCount, const char **ppFullPathList ) = 0;
-	virtual bool OpenFilesForEdit( int nCount, const char **ppFullPathList ) = 0;
-	virtual bool OpenFilesForDelete( int nCount, const char **ppFullPathList ) = 0;
+	virtual bool OpenFilesForAdd( int nCount, const char** ppFullPathList ) = 0;
+	virtual bool OpenFilesForEdit( int nCount, const char** ppFullPathList ) = 0;
+	virtual bool OpenFilesForDelete( int nCount, const char** ppFullPathList ) = 0;
 
 	// submit/revert for multiple files
-	virtual bool SubmitFiles( int nCount, const char **ppFullPathList, const char *pDescription ) = 0;
-	virtual bool RevertFiles( int nCount, const char **ppFullPathList ) = 0;
+	virtual bool SubmitFiles( int nCount, const char** ppFullPathList, const char* pDescription ) = 0;
+	virtual bool RevertFiles( int nCount, const char** ppFullPathList ) = 0;
 
 	// Is this file in perforce?
-	virtual bool IsFileInPerforce( const char *pFullPath ) = 0;
+	virtual bool IsFileInPerforce( const char* pFullPath ) = 0;
 
 	// Get the perforce file state
-	virtual P4FileState_t GetFileState( const char *pFullPath ) = 0;
+	virtual P4FileState_t GetFileState( const char* pFullPath ) = 0;
 
 	// depot root
-	virtual const char *GetDepotRoot() = 0;
+	virtual const char* GetDepotRoot() = 0;
 	virtual int GetDepotRootLength() = 0;
 
 	// local root
-	virtual const char *GetLocalRoot() = 0;
+	virtual const char* GetLocalRoot() = 0;
 	virtual int GetLocalRootLength() = 0;
 
 	// Gets a string for a symbol
-	virtual const char *String( CUtlSymbol s ) const = 0;
+	virtual const char* String( CUtlSymbol s ) const = 0;
 
 	// Returns which clientspec a file lies under. This will
 	// search for p4config files in root directories of the file
 	// It returns false if it didn't find a p4config file.
-	virtual bool GetClientSpecForFile( const char *pFullPath, char *pClientSpec, int nMaxLen ) = 0;
-	virtual bool GetClientSpecForDirectory( const char *pFullPathDir, char *pClientSpec, int nMaxLen ) = 0;
+	virtual bool GetClientSpecForFile( const char* pFullPath, char* pClientSpec, int nMaxLen ) = 0;
+	virtual bool GetClientSpecForDirectory( const char* pFullPathDir, char* pClientSpec, int nMaxLen ) = 0;
 
 	// Returns which clientspec a filesystem path ID lies under. This will
 	// search for p4config files in all root directories of the all paths in
 	// the search path. NOTE: All directories in a path need to use the same clientspec
 	// or this function will return false.
 	// It returns false if it didn't find a p4config file.
-	virtual bool GetClientSpecForPath( const char *pPathId, char *pClientSpec, int nMaxLen ) = 0;
+	virtual bool GetClientSpecForPath( const char* pPathId, char* pClientSpec, int nMaxLen ) = 0;
 
 	// Opens a file in p4 win
-	virtual void OpenFileInP4Win( const char *pFullPath ) = 0;
+	virtual void OpenFileInP4Win( const char* pFullPath ) = 0;
 
 	// have we connected? if not, nothing works
 	virtual bool IsConnectedToServer( bool bRetry = true ) = 0;
 
 	// Returns file information for a single file
-	virtual bool GetFileInfo( const char *pFullPath, P4File_t *pFileInfo ) = 0;
+	virtual bool GetFileInfo( const char* pFullPath, P4File_t* pFileInfo ) = 0;
 
-	// Reopens a file for edit or add with the specified filetype. To see the valid strings for 
+	// Reopens a file for edit or add with the specified filetype. To see the valid strings for
 	// filetypes, see p4 help fileinfo. Perforce has to know about files before the filetype can
 	// be changed (so for new files, they must be added first, then the filetype modified).
-	virtual bool SetFileType( const char *pFullPath, const char *pFileType ) = 0;
+	virtual bool SetFileType( const char* pFullPath, const char* pFileType ) = 0;
 
 	// retreives the list of files in a path, using a known client spec
-	virtual CUtlVector<P4File_t> &GetFileListUsingClientSpec( const char *pPath, const char *pClientSpec ) = 0;
+	virtual CUtlVector<P4File_t>& GetFileListUsingClientSpec( const char* pPath, const char* pClientSpec ) = 0;
 
 	// retrieves the last error from the last op (which is likely to span multiple lines)
 	// this is only valid after OpenFile[s]For{Add,Edit,Delete} or {Submit,Revert}File[s]
-	virtual const char *GetLastError() = 0;
+	virtual const char* GetLastError() = 0;
 };
 
 

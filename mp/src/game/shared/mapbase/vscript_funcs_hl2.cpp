@@ -9,7 +9,7 @@
 
 #include "hl2_gamerules.h"
 #ifndef CLIENT_DLL
-#include "eventqueue.h"
+	#include "eventqueue.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -24,75 +24,77 @@ public:
 		m_AllowList.RemoveAll();
 
 		KeyValuesAD kvAllowList( "vscript_convar_allowlist" );
-		if ( kvAllowList->LoadFromFile( g_pFullFileSystem, "cfg/vscript_convar_allowlist.txt", "GAME" ) )
+		if( kvAllowList->LoadFromFile( g_pFullFileSystem, "cfg/vscript_convar_allowlist.txt", "GAME" ) )
 		{
 			FOR_EACH_SUBKEY( kvAllowList, pSubKey )
 			{
-				if ( !V_stricmp( pSubKey->GetString(), "allowed" ) )
+				if( !V_stricmp( pSubKey->GetString(), "allowed" ) )
+				{
 					m_AllowList.AddString( pSubKey->GetName() );
+				}
 			}
 		}
 	}
 
-	ScriptVariant_t GetClientConvarValue( int clientIndex, const char *name )
+	ScriptVariant_t GetClientConvarValue( int clientIndex, const char* name )
 	{
-		const char *cvar = engine->GetClientConVarValue( clientIndex, name );
-		if ( cvar )
+		const char* cvar = engine->GetClientConVarValue( clientIndex, name );
+		if( cvar )
 		{
 			return ScriptVariant_t( cvar, true );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
-	ScriptVariant_t GetStr( const char *name )
+	ScriptVariant_t GetStr( const char* name )
 	{
 		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		if( cvar.IsValid() )
 		{
 			return ScriptVariant_t( cvar.GetString(), true );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
-	ScriptVariant_t GetFloat( const char *name )
+	ScriptVariant_t GetFloat( const char* name )
 	{
 		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		if( cvar.IsValid() )
 		{
 			return ScriptVariant_t( cvar.GetFloat() );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
-	ScriptVariant_t GetInt( const char *name )
+	ScriptVariant_t GetInt( const char* name )
 	{
 		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		if( cvar.IsValid() )
 		{
 			return ScriptVariant_t( cvar.GetInt() );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
-	ScriptVariant_t GetBool( const char *name )
+	ScriptVariant_t GetBool( const char* name )
 	{
 		ConVarRef cvar( name );
-		if ( cvar.IsValid() )
+		if( cvar.IsValid() )
 		{
 			return ScriptVariant_t( cvar.GetBool() );
 		}
 		return SCRIPT_VARIANT_NULL;
 	}
 
-	void SetValue( const char *name, ScriptVariant_t value )
+	void SetValue( const char* name, ScriptVariant_t value )
 	{
 		ConVarRef cvar( name );
-		if ( !cvar.IsValid() )
+		if( !cvar.IsValid() )
 		{
 			return;
 		}
 
-		switch ( value.m_type )
+		switch( value.m_type )
 		{
 			case FIELD_INTEGER:
 			{
@@ -130,7 +132,7 @@ public:
 		}
 	}
 
-	bool IsConVarOnAllowList( char const *name )
+	bool IsConVarOnAllowList( char const* name )
 	{
 		CUtlSymbol sym = m_AllowList.Find( name );
 		return sym.IsValid();
@@ -141,41 +143,45 @@ private:
 } g_ConvarsVScript;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptConvars, "Convars", SCRIPT_SINGLETON "Provides an interface for getting and setting convars on the server." )
-	DEFINE_SCRIPTFUNC( GetClientConvarValue, "Returns the convar value for the entindex as a string. Only works with client convars with the FCVAR_USERINFO flag." )
-	DEFINE_SCRIPTFUNC( GetStr, "Returns the convar as a string. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetFloat, "Returns the convar as a float. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetInt, "Returns the convar as an integer. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetBool, "Returns the convar as a boolean. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( SetValue, "Sets the value of the convar. The convar must be in cfg/vscript_convar_allowlist.txt to be set. Supported types are bool, int, float, string." )
-	DEFINE_SCRIPTFUNC( IsConVarOnAllowList, "Checks if the convar is allowed to be used and is in cfg/vscript_convar_allowlist.txt." )
+DEFINE_SCRIPTFUNC( GetClientConvarValue, "Returns the convar value for the entindex as a string. Only works with client convars with the FCVAR_USERINFO flag." )
+DEFINE_SCRIPTFUNC( GetStr, "Returns the convar as a string. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetFloat, "Returns the convar as a float. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetInt, "Returns the convar as an integer. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetBool, "Returns the convar as a boolean. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( SetValue, "Sets the value of the convar. The convar must be in cfg/vscript_convar_allowlist.txt to be set. Supported types are bool, int, float, string." )
+DEFINE_SCRIPTFUNC( IsConVarOnAllowList, "Checks if the convar is allowed to be used and is in cfg/vscript_convar_allowlist.txt." )
 END_SCRIPTDESC();
 #endif // GAME_DLL
 
-static float AttribHookValueFloat( float value, char const *szName, HSCRIPT hEntity )
+static float AttribHookValueFloat( float value, char const* szName, HSCRIPT hEntity )
 {
-	CBaseEntity *pEntity = ToEnt( hEntity );
-	if ( !pEntity )
+	CBaseEntity* pEntity = ToEnt( hEntity );
+	if( !pEntity )
+	{
 		return value;
+	}
 
 	return value;
 }
 
-static int AttribHookValueInt( int value, char const *szName, HSCRIPT hEntity )
+static int AttribHookValueInt( int value, char const* szName, HSCRIPT hEntity )
 {
-	CBaseEntity *pEntity = ToEnt( hEntity );
-	if ( !pEntity )
+	CBaseEntity* pEntity = ToEnt( hEntity );
+	if( !pEntity )
+	{
 		return value;
+	}
 
 	return value;
 }
 
 #if defined( GAME_DLL )
-extern CBaseEntity *CreatePlayerLoadSave( Vector vOrigin, float flDuration, float flHoldTime, float flLoadTime );
+extern CBaseEntity* CreatePlayerLoadSave( Vector vOrigin, float flDuration, float flHoldTime, float flLoadTime );
 
-HSCRIPT ScriptGameOver( const char *pszMessage, float flDelay, float flFadeTime, float flLoadTime, int r, int g, int b )
+HSCRIPT ScriptGameOver( const char* pszMessage, float flDelay, float flFadeTime, float flLoadTime, int r, int g, int b )
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
-	if (pPlayer)
+	CBaseEntity* pPlayer = AI_GetSinglePlayer();
+	if( pPlayer )
 	{
 		UTIL_ShowMessage( pszMessage, ToBasePlayer( pPlayer ) );
 		ToBasePlayer( pPlayer )->NotifySinglePlayerGameEnding();
@@ -186,8 +192,8 @@ HSCRIPT ScriptGameOver( const char *pszMessage, float flDelay, float flFadeTime,
 		return NULL;
 	}
 
-	CBaseEntity *pReload = CreatePlayerLoadSave( vec3_origin, flFadeTime, flLoadTime + 1.0f, flLoadTime );
-	if (pReload)
+	CBaseEntity* pReload = CreatePlayerLoadSave( vec3_origin, flFadeTime, flLoadTime + 1.0f, flLoadTime );
+	if( pReload )
 	{
 		pReload->SetRenderColor( r, g, b, 255 );
 		g_EventQueue.AddEvent( pReload, "Reload", flDelay, pReload, pReload );
@@ -203,7 +209,7 @@ bool ScriptMegaPhyscannonActive()
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHalfLife2::RegisterScriptFunctions( void )
 {

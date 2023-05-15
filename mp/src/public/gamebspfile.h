@@ -10,7 +10,7 @@
 #define GAMEBSPFILE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -25,10 +25,10 @@
 #define GAMELUMP_MAKE_CODE(a, b, c, d) ((a) << 24 | (b) << 16 | (c) << 8 | (d) << 0)
 enum
 {
-	GAMELUMP_DETAIL_PROPS = GAMELUMP_MAKE_CODE('d', 'p', 'r', 'p'),
-	GAMELUMP_DETAIL_PROP_LIGHTING = GAMELUMP_MAKE_CODE('d', 'p', 'l', 't'),
-	GAMELUMP_STATIC_PROPS = GAMELUMP_MAKE_CODE('s', 'p', 'r', 'p'),
-	GAMELUMP_DETAIL_PROP_LIGHTING_HDR = GAMELUMP_MAKE_CODE('d', 'p', 'l', 'h'),
+	GAMELUMP_DETAIL_PROPS = GAMELUMP_MAKE_CODE( 'd', 'p', 'r', 'p' ),
+	GAMELUMP_DETAIL_PROP_LIGHTING = GAMELUMP_MAKE_CODE( 'd', 'p', 'l', 't' ),
+	GAMELUMP_STATIC_PROPS = GAMELUMP_MAKE_CODE( 's', 'p', 'r', 'p' ),
+	GAMELUMP_DETAIL_PROP_LIGHTING_HDR = GAMELUMP_MAKE_CODE( 'd', 'p', 'l', 'h' ),
 };
 
 // Versions...
@@ -80,7 +80,7 @@ struct DetailSpriteDictLump_t
 {
 	DECLARE_BYTESWAP_DATADESC();
 	// NOTE: All detail prop sprites must lie in the material detail/detailsprites
-	Vector2D	m_UL;		// Coordinate of upper left 
+	Vector2D	m_UL;		// Coordinate of upper left
 	Vector2D	m_LR;		// Coordinate of lower right
 	Vector2D	m_TexUL;	// Texcoords of upper left
 	Vector2D	m_TexLR;	// Texcoords of lower left
@@ -94,7 +94,7 @@ struct DetailObjectLump_t
 	unsigned short	m_DetailModel;		// either index into DetailObjectDictLump_t or DetailPropSpriteLump_t
 	unsigned short	m_Leaf;
 	ColorRGBExp32	m_Lighting;
-	unsigned int	m_LightStyles; 
+	unsigned int	m_LightStyles;
 	unsigned char	m_LightStyleCount;
 	unsigned char   m_SwayAmount;		// how much do the details sway
 	unsigned char	m_ShapeAngle;		// angle param for shaped sprites
@@ -135,8 +135,8 @@ enum
 	STATIC_PROP_SCREEN_SPACE_FADE	= 0x20,
 
 	STATIC_PROP_NO_PER_VERTEX_LIGHTING = 0x40,				// in vrad, compute lighting at
-															// lighting origin, not for each vertex
-	
+	// lighting origin, not for each vertex
+
 	STATIC_PROP_NO_SELF_SHADOWING = 0x80,					// disable self shadowing in vrad
 
 	STATIC_PROP_NO_PER_TEXEL_LIGHTING = 0x100,				// whether we should do per-texel lightmaps in vrad.
@@ -227,7 +227,7 @@ struct StaticPropLump_t
 	unsigned short  m_nLightmapResolutionY;
 
 
-	StaticPropLump_t& operator=(const StaticPropLumpV4_t& _rhs)
+	StaticPropLump_t& operator=( const StaticPropLumpV4_t& _rhs )
 	{
 		m_Origin				= _rhs.m_Origin;
 		m_Angles				= _rhs.m_Angles;
@@ -250,21 +250,21 @@ struct StaticPropLump_t
 		m_nLightmapResolutionY	= 0;
 
 		// Older versions don't want this.
-		m_Flags					|= STATIC_PROP_NO_PER_TEXEL_LIGHTING;		
+		m_Flags					|= STATIC_PROP_NO_PER_TEXEL_LIGHTING;
 		return *this;
 	}
 
-	StaticPropLump_t& operator=(const StaticPropLumpV5_t& _rhs)
+	StaticPropLump_t& operator=( const StaticPropLumpV5_t& _rhs )
 	{
-		(*this) = reinterpret_cast<const StaticPropLumpV4_t&>(_rhs);
+		( *this ) = reinterpret_cast<const StaticPropLumpV4_t&>( _rhs );
 
 		m_flForcedFadeScale = _rhs.m_flForcedFadeScale;
 		return *this;
 	}
 
-	StaticPropLump_t& operator=(const StaticPropLumpV6_t& _rhs)
+	StaticPropLump_t& operator=( const StaticPropLumpV6_t& _rhs )
 	{
-		(*this) = reinterpret_cast<const StaticPropLumpV5_t&>(_rhs);
+		( *this ) = reinterpret_cast<const StaticPropLumpV5_t&>( _rhs );
 
 		m_nMinDXLevel = _rhs.m_nMinDXLevel;
 		m_nMaxDXLevel = _rhs.m_nMaxDXLevel;

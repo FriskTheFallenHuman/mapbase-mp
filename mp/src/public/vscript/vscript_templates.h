@@ -10,10 +10,10 @@
 #include "tier0/basetypes.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-#define	FUNC_APPEND_PARAMS_0	
+#define	FUNC_APPEND_PARAMS_0
 #define	FUNC_APPEND_PARAMS_1	pDesc->m_Parameters.SetGrowSize( 1 ); pDesc->m_Parameters.EnsureCapacity( 1 ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_1 ) );
 #define	FUNC_APPEND_PARAMS_2	pDesc->m_Parameters.SetGrowSize( 1 ); pDesc->m_Parameters.EnsureCapacity( 2 ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_1 ) ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_2 ) );
 #define	FUNC_APPEND_PARAMS_3	pDesc->m_Parameters.SetGrowSize( 1 ); pDesc->m_Parameters.EnsureCapacity( 3 ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_1 ) ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_2 ) ); pDesc->m_Parameters.AddToTail( ScriptDeduceType( FUNC_ARG_TYPE_3 ) );
@@ -69,17 +69,17 @@ FUNC_GENERATE_ALL( DEFINE_CONST_MEMBER_FUNC_TYPE_DEDUCER );
 #define ScriptInitMemberFuncDescriptor( pDesc, class, func )							ScriptInitMemberFuncDescriptorNamed( pDesc, class, func, #func )
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 
 template <typename FUNCPTR_TYPE>
-inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
+inline void* ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 {
-	if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) ) )
+	if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) ) )
 	{
 		union FuncPtrConvert
 		{
-			void *p;
+			void* p;
 			FUNCPTR_TYPE pFunc;
 		};
 
@@ -88,14 +88,14 @@ inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 		return convert.p;
 	}
 #if defined( _MSC_VER )
-	else if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + sizeof( int ) ) )
+	else if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + sizeof( int ) ) )
 	{
 		struct MicrosoftUnknownMFP
 		{
-			void *p;
+			void* p;
 			int m_delta;
 		};
-	
+
 		union FuncPtrConvertMI
 		{
 			MicrosoftUnknownMFP mfp;
@@ -104,17 +104,17 @@ inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 
 		FuncPtrConvertMI convert;
 		convert.pFunc = pFunc;
-		if ( convert.mfp.m_delta == 0 )
+		if( convert.mfp.m_delta == 0 )
 		{
 			return convert.mfp.p;
 		}
 		AssertMsg( 0, "Function pointer must be from primary vtable" );
 	}
-	else if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + ( sizeof( int ) * 3 ) ) )
+	else if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + ( sizeof( int ) * 3 ) ) )
 	{
 		struct MicrosoftUnknownMFP
 		{
-			void *p;
+			void* p;
 			int m_delta;
 			int m_vtordisp;
 			int m_vtable_index;
@@ -128,27 +128,27 @@ inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 
 		FuncPtrConvertMI convert;
 		convert.pFunc = pFunc;
-		if ( convert.mfp.m_delta == 0 )
+		if( convert.mfp.m_delta == 0 )
 		{
 			return convert.mfp.p;
 		}
 		AssertMsg( 0, "Function pointer must be from primary vtable" );
 	}
 #elif defined( GNUC )
-	else if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + sizeof( int ) ) )
+	else if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + sizeof( int ) ) )
 	{
 		struct GnuMFP
 		{
 			union
 			{
-				void *funcadr;		// If vtable_index_2 is even, then this is the function pointer.
+				void* funcadr;		// If vtable_index_2 is even, then this is the function pointer.
 				int vtable_index_2;		// If vtable_index_2 is odd, then (vtable_index_2 - 1) * 2 is the index into the vtable.
 			};
 			int delta;	// Offset from this-ptr to vtable
 		};
 
-		GnuMFP *p = (GnuMFP*)&pFunc;
-		if ( p->delta == 0 )
+		GnuMFP* p = ( GnuMFP* )&pFunc;
+		if( p->delta == 0 )
 		{
 			// No need to check whether this is a direct function pointer or not,
 			// this gets converted back to a "proper" member-function pointer in
@@ -161,15 +161,15 @@ inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 #error "Need to implement code to crack non-offset member function pointer case"
 	// For gcc, see: http://www.codeproject.com/KB/cpp/FastDelegate.aspx
 	//
-	// Current versions of the GNU compiler use a strange and tricky 
-	// optimization. It observes that, for virtual inheritance, you have to look 
-	// up the vtable in order to get the voffset required to calculate the this 
-	// pointer. While you're doing that, you might as well store the function 
-	// pointer in the vtable. By doing this, they combine the m_func_address and 
-	// m_vtable_index fields into one, and they distinguish between them by 
-	// ensuring that function pointers always point to even addresses but vtable 
+	// Current versions of the GNU compiler use a strange and tricky
+	// optimization. It observes that, for virtual inheritance, you have to look
+	// up the vtable in order to get the voffset required to calculate the this
+	// pointer. While you're doing that, you might as well store the function
+	// pointer in the vtable. By doing this, they combine the m_func_address and
+	// m_vtable_index fields into one, and they distinguish between them by
+	// ensuring that function pointers always point to even addresses but vtable
 	// indices are always odd:
-	// 
+	//
 	// 	// GNU g++ uses a tricky space optimisation, also adopted by IBM's VisualAge and XLC.
 	// 	struct GnuMFP {
 	// 	   union {
@@ -181,29 +181,31 @@ inline void *ScriptConvertFuncPtrToVoid( FUNCPTR_TYPE pFunc )
 	// 	adjustedthis = this + delta
 	// 	if (funcadr & 1) CALL (* ( *delta + (vindex+1)/2) + 4)
 	// 	else CALL funcadr
-	// 
-	// The G++ method is well documented, so it has been adopted by many other 
-	// vendors, including IBM's VisualAge and XLC compilers, recent versions of 
-	// Open64, Pathscale EKO, and Metrowerks' 64-bit compilers. A simpler scheme 
-	// used by earlier versions of GCC is also very common. SGI's now 
-	// discontinued MIPSPro and Pro64 compilers, and Apple's ancient MrCpp 
-	// compiler used this method. (Note that the Pro64 compiler has become the 
+	//
+	// The G++ method is well documented, so it has been adopted by many other
+	// vendors, including IBM's VisualAge and XLC compilers, recent versions of
+	// Open64, Pathscale EKO, and Metrowerks' 64-bit compilers. A simpler scheme
+	// used by earlier versions of GCC is also very common. SGI's now
+	// discontinued MIPSPro and Pro64 compilers, and Apple's ancient MrCpp
+	// compiler used this method. (Note that the Pro64 compiler has become the
 	// open source Open64 compiler).
 
 #endif
 	else
+	{
 		AssertMsg( 0, "Member function pointer not supported. Why on earth are you using virtual inheritance!?" );
+	}
 	return NULL;
 }
 
 template <typename FUNCPTR_TYPE>
-inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
+inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void* p )
 {
-	if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) ) )
+	if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) ) )
 	{
 		union FuncPtrConvert
 		{
-			void *p;
+			void* p;
 			FUNCPTR_TYPE pFunc;
 		};
 
@@ -213,11 +215,11 @@ inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
 	}
 
 #if defined( _MSC_VER )
-	if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + sizeof( int ) ) )
+	if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + sizeof( int ) ) )
 	{
 		struct MicrosoftUnknownMFP
 		{
-			void *p;
+			void* p;
 			int m_delta;
 		};
 
@@ -232,11 +234,11 @@ inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
 		convert.mfp.m_delta = 0;
 		return convert.pFunc;
 	}
-	if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + ( sizeof( int ) * 3 ) ) )
+	if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + ( sizeof( int ) * 3 ) ) )
 	{
 		struct MicrosoftUnknownMFP
 		{
-			void *p;
+			void* p;
 			int m_delta;
 			int m_vtordisp;
 			int m_vtable_index;
@@ -254,13 +256,13 @@ inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
 		return convert.pFunc;
 	}
 #elif defined( GNUC )
-	if ( ( sizeof( FUNCPTR_TYPE ) == sizeof( void * ) + sizeof( int ) ) )
+	if( ( sizeof( FUNCPTR_TYPE ) == sizeof( void* ) + sizeof( int ) ) )
 	{
 		struct GnuMFP
 		{
 			union
 			{
-				void *funcadr;		// If vtable_index_2 is even, then this is the function pointer.
+				void* funcadr;		// If vtable_index_2 is even, then this is the function pointer.
 				int vtable_index_2;		// If vtable_index_2 is odd, then (vtable_index_2 - 1) * 2 is the index into the vtable.
 			};
 			int delta;	// Offset from this-ptr to vtable
@@ -285,7 +287,7 @@ inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 
 #define FUNC_BASE_TEMPLATE_FUNC_PARAMS_PASSTHRU_0
@@ -426,7 +428,7 @@ inline FUNCPTR_TYPE ScriptConvertFuncPtrFromVoid( void *p )
 FUNC_GENERATE_ALL( DEFINE_SCRIPT_BINDINGS );
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 
 #endif // VSCRIPT_TEMPLATES_H

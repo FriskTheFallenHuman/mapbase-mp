@@ -1,7 +1,7 @@
 //========= Copyright © 1996-2003, Valve LLC, All rights reserved. ============
 //
 // Purpose: Implements a sniper rifle weapon.
-//			
+//
 //			Primary attack: fires a single high-powered shot, then reloads.
 //			Secondary attack: cycles sniper scope through zoom levels.
 //
@@ -69,24 +69,30 @@ public:
 	DECLARE_PREDICTABLE();
 
 #ifdef GAME_DLL
-	virtual int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	virtual int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
-	virtual const Vector &GetBulletSpread( void )
+	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone = SNIPER_CONE_PLAYER;
 		return cone;
 	}
 
-	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual bool Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 	virtual void ItemPostFrame( void );
 	virtual void PrimaryAttack( void );
 	virtual bool Reload( void );
 	virtual void Zoom( void );
-	virtual float GetFireRate( void ) { return 1; }
+	virtual float GetFireRate( void )
+	{
+		return 1;
+	}
 
 #ifdef GAME_DLL
-	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif // GAME_DLL
 
 	DECLARE_ACTTABLE();
@@ -110,10 +116,10 @@ BEGIN_NETWORK_TABLE( CWeaponSniperRifle, DT_WeaponSniperRifle )
 END_NETWORK_TABLE()
 
 #ifndef GAME_DLL
-BEGIN_PREDICTION_DATA( CWeaponSniperRifle )
+	BEGIN_PREDICTION_DATA( CWeaponSniperRifle )
 	DEFINE_PRED_FIELD( m_fNextZoom, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_nZoomLevel, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif // !GAME_DLL
 
 LINK_ENTITY_TO_CLASS( weapon_sniperrifle, CWeaponSniperRifle );
@@ -122,7 +128,7 @@ PRECACHE_WEAPON_REGISTER( weapon_sniperrifle );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponSniperRifle::m_acttable[] = 
+acttable_t	CWeaponSniperRifle::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SNIPER_RIFLE,		true },
 
@@ -147,7 +153,7 @@ acttable_t	CWeaponSniperRifle::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_SNIPER_RIFLE,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SNIPER_RIFLE_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SNIPER_RIFLE_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_SNIPER_RIFLE_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SNIPER_RIFLE,			false },//always aims
 
@@ -228,18 +234,18 @@ CWeaponSniperRifle::CWeaponSniperRifle( void )
 //-----------------------------------------------------------------------------
 // Purpose: Turns off the zoom when the rifle is holstered.
 //-----------------------------------------------------------------------------
-bool CWeaponSniperRifle::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponSniperRifle::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( pPlayer != NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( pPlayer != NULL )
 	{
-		if ( m_nZoomLevel != 0 )
+		if( m_nZoomLevel != 0 )
 		{
 #ifdef GAME_DLL
 			pPlayer->ShowViewModel( true );
 #endif // GAME_DLL
-			pPlayer->SetFOV(pPlayer, 0 );
+			pPlayer->SetFOV( pPlayer, 0 );
 
 			m_nZoomLevel = 0;
 		}
@@ -253,33 +259,35 @@ bool CWeaponSniperRifle::Holster( CBaseCombatWeapon *pSwitchingTo )
 //-----------------------------------------------------------------------------
 void CWeaponSniperRifle::ItemPostFrame( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
-	if ( ( m_bInReload ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	if( ( m_bInReload ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		FinishReload();
 		m_bInReload = false;
 	}
 
-	if ( pPlayer->m_nButtons & IN_ATTACK2 )
+	if( pPlayer->m_nButtons & IN_ATTACK2 )
 	{
-		if ( m_fNextZoom <= gpGlobals->curtime )
+		if( m_fNextZoom <= gpGlobals->curtime )
 		{
 			Zoom();
 			pPlayer->m_nButtons &= ~IN_ATTACK2;
 		}
 	}
-	else if ( ( pPlayer->m_nButtons & IN_ATTACK ) && (m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	else if( ( pPlayer->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
-		if ( ( m_iClip1 == 0 && UsesClipsForAmmo1() ) || ( !UsesClipsForAmmo1() && !pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) ) )
+		if( ( m_iClip1 == 0 && UsesClipsForAmmo1() ) || ( !UsesClipsForAmmo1() && !pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) ) )
 		{
 			m_bFireOnEmpty = true;
 		}
 
 		// Fire underwater?
-		if ( pPlayer->GetWaterLevel() == 3 && m_bFiresUnderwater == false )
+		if( pPlayer->GetWaterLevel() == 3 && m_bFiresUnderwater == false )
 		{
 			WeaponSound( EMPTY );
 			m_flNextPrimaryAttack = gpGlobals->curtime + 0.2;
@@ -288,8 +296,10 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 		else
 		{
 			// If the firing button was just pressed, reset the firing time
-			if ( pPlayer && pPlayer->m_afButtonPressed & IN_ATTACK )
-				 m_flNextPrimaryAttack = gpGlobals->curtime;
+			if( pPlayer && pPlayer->m_afButtonPressed & IN_ATTACK )
+			{
+				m_flNextPrimaryAttack = gpGlobals->curtime;
+			}
 
 			PrimaryAttack();
 		}
@@ -298,7 +308,7 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 	// -----------------------
 	//  Reload pressed / Clip Empty
 	// -----------------------
-	if ( pPlayer->m_nButtons & IN_RELOAD && UsesClipsForAmmo1() && !m_bInReload ) 
+	if( pPlayer->m_nButtons & IN_RELOAD && UsesClipsForAmmo1() && !m_bInReload )
 	{
 		// reload when reload is pressed, or if no buttons are down and weapon is empty.
 		Reload();
@@ -307,15 +317,15 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	if ( !( ( pPlayer->m_nButtons & IN_ATTACK ) || ( pPlayer->m_nButtons & IN_ATTACK2 ) || ( pPlayer->m_nButtons & IN_RELOAD ) ) )
+	if( !( ( pPlayer->m_nButtons & IN_ATTACK ) || ( pPlayer->m_nButtons & IN_ATTACK2 ) || ( pPlayer->m_nButtons & IN_RELOAD ) ) )
 	{
 		// no fire buttons down
 		m_bFireOnEmpty = false;
 
-		if ( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->curtime ) 
+		if( !HasAnyAmmo() && m_flNextPrimaryAttack < gpGlobals->curtime )
 		{
 			// weapon isn't useable, switch.
-			if ( !( GetFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY ) && pPlayer->SwitchToNextBestWeapon( this ) )
+			if( !( GetFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY ) && pPlayer->SwitchToNextBestWeapon( this ) )
 			{
 				m_flNextPrimaryAttack = gpGlobals->curtime + 0.3;
 				return;
@@ -324,7 +334,7 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 		else
 		{
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
-			if ( m_iClip1 == 0 && !( GetFlags() & ITEM_FLAG_NOAUTORELOAD ) && m_flNextPrimaryAttack < gpGlobals->curtime )
+			if( m_iClip1 == 0 && !( GetFlags() & ITEM_FLAG_NOAUTORELOAD ) && m_flNextPrimaryAttack < gpGlobals->curtime )
 			{
 				Reload();
 				return;
@@ -345,21 +355,23 @@ void CWeaponSniperRifle::ItemPostFrame( void )
 //-----------------------------------------------------------------------------
 bool CWeaponSniperRifle::Reload( void )
 {
-	CBaseCombatCharacter *pOwner = GetOwner();
-	if ( !pOwner )
+	CBaseCombatCharacter* pOwner = GetOwner();
+	if( !pOwner )
+	{
 		return false;
-		
-	if ( pOwner->GetAmmoCount(m_iPrimaryAmmoType) > 0 )
+	}
+
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 	{
 		int primary		= MIN( GetMaxClip1() - m_iClip1, pOwner->GetAmmoCount( m_iPrimaryAmmoType ) );
 		int secondary	= MIN( GetMaxClip2() - m_iClip2, pOwner->GetAmmoCount( m_iSecondaryAmmoType ) );
 
-		if ( primary > 0 || secondary > 0 )
+		if( primary > 0 || secondary > 0 )
 		{
-			CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-			if ( pPlayer != NULL )
+			CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+			if( pPlayer != NULL )
 			{
-				if ( m_nZoomLevel != 0 )
+				if( m_nZoomLevel != 0 )
 				{
 #ifdef GAME_DLL
 					pPlayer->ShowViewModel( true );
@@ -391,26 +403,28 @@ bool CWeaponSniperRifle::Reload( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponSniperRifle::PrimaryAttack( void )
 {
 	// Only the player fires this way so we can cast safely.
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( gpGlobals->curtime >= m_flNextPrimaryAttack )
+	if( gpGlobals->curtime >= m_flNextPrimaryAttack )
 	{
 		// If my clip is empty (and I use clips) start reload
-		if ( !m_iClip1 ) 
+		if( !m_iClip1 )
 		{
 			Reload();
 			return;
 		}
 
 		// MUST call sound before removing a round from the clip of a CMachineGun dvs: does this apply to the sniper rifle? I don't know.
-		WeaponSound(SINGLE);
+		WeaponSound( SINGLE );
 
 		pPlayer->DoMuzzleFlash();
 
@@ -441,12 +455,14 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 		CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 600, 0.2 );
 #endif // GAME_DLL
 
-		QAngle vecPunch(random->RandomFloat( -SNIPER_KICKBACK, SNIPER_KICKBACK ), 0, 0);
+		QAngle vecPunch( random->RandomFloat( -SNIPER_KICKBACK, SNIPER_KICKBACK ), 0, 0 );
 		pPlayer->ViewPunch( vecPunch );
 
 		// Indicate out of ammo condition if we run out of ammo.
-		if ( !m_iClip1 && pPlayer->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
-			pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 ); 
+		if( !m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+		{
+			pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
+		}
 	}
 
 #ifdef GAME_DLL
@@ -461,11 +477,13 @@ void CWeaponSniperRifle::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeaponSniperRifle::Zoom( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( m_nZoomLevel >= sizeof( g_nZoomFOV ) / sizeof( g_nZoomFOV[0] ) )
+	if( m_nZoomLevel >= sizeof( g_nZoomFOV ) / sizeof( g_nZoomFOV[0] ) )
 	{
 #ifdef GAME_DLL
 		pPlayer->ShowViewModel( true );
@@ -478,7 +496,7 @@ void CWeaponSniperRifle::Zoom( void )
 	}
 	else
 	{
-		if ( m_nZoomLevel == 0 )
+		if( m_nZoomLevel == 0 )
 #ifdef GAME_DLL
 			pPlayer->ShowViewModel( false );
 #endif // GAME_DLL
@@ -493,20 +511,20 @@ void CWeaponSniperRifle::Zoom( void )
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponSniperRifle::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponSniperRifle::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
-	switch ( pEvent->event )
+	switch( pEvent->event )
 	{
 		case EVENT_WEAPON_SNIPER_RIFLE_FIRE:
 		{
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			Vector vecSpread;
-			if (npc)
+			if( npc )
 			{
 				vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
 				vecSpread = VECTOR_CONE_PRECALCULATED;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -18,7 +18,7 @@ public:
 	virtual ~CAnimatedOffsetTextureProxy() {}
 
 	virtual float GetAnimationStartTime( void* pBaseEntity );
-	virtual void OnBind( void *pBaseEntity );
+	virtual void OnBind( void* pBaseEntity );
 
 protected:
 
@@ -28,8 +28,8 @@ protected:
 EXPOSE_INTERFACE( CAnimatedOffsetTextureProxy, IMaterialProxy, "AnimatedOffsetTexture" IMATERIAL_PROXY_INTERFACE_VERSION );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pArg - 
+// Purpose:
+// Input  : pArg -
 // Output : float
 //-----------------------------------------------------------------------------
 float CAnimatedOffsetTextureProxy::GetAnimationStartTime( void* pArg )
@@ -38,14 +38,14 @@ float CAnimatedOffsetTextureProxy::GetAnimationStartTime( void* pArg )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pBaseEntity - 
+// Purpose:
+// Input  : *pBaseEntity -
 //-----------------------------------------------------------------------------
-void CAnimatedOffsetTextureProxy::OnBind( void *pBaseEntity )
+void CAnimatedOffsetTextureProxy::OnBind( void* pBaseEntity )
 {
-	C_BaseEntity* pEntity = (C_BaseEntity*)pBaseEntity;
-	
-	if ( pEntity )
+	C_BaseEntity* pEntity = ( C_BaseEntity* )pBaseEntity;
+
+	if( pEntity )
 	{
 		m_flFrameOffset = pEntity->GetTextureAnimationStartTime();
 	}

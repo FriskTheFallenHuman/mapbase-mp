@@ -14,7 +14,7 @@
 **
 **		This file is distributed to Steam application developers.
 **
-**		
+**
 **
 *******************************************************************************/
 
@@ -22,7 +22,7 @@
 #define INCLUDED_STEAM_COMMON_STEAMCOMMON_H
 
 #if defined(_MSC_VER) && (_MSC_VER > 1000)
-#pragma once
+	#pragma once
 #endif
 
 
@@ -50,7 +50,7 @@ extern "C"
 
 #endif
 
-typedef void (STEAM_CALL  *KeyValueIteratorCallback_t )(const char *Key, const char *Val, void *pvParam);
+typedef void ( STEAM_CALL*  KeyValueIteratorCallback_t )( const char* Key, const char* Val, void* pvParam );
 
 
 /******************************************************************************
@@ -104,7 +104,7 @@ typedef void (STEAM_CALL  *KeyValueIteratorCallback_t )(const char *Key, const c
 
 typedef unsigned int SteamHandle_t;
 
-typedef void * SteamUserIDTicketValidationHandle_t;
+typedef void* SteamUserIDTicketValidationHandle_t;
 
 typedef unsigned int SteamCallHandle_t;
 
@@ -271,7 +271,7 @@ typedef struct
 
 typedef struct
 {
-	char *szLabel;
+	char* szLabel;
 	unsigned int uMaxLabelChars;
 	unsigned int uVersionId;
 	int bIsNotAvailable;
@@ -279,9 +279,9 @@ typedef struct
 
 typedef struct
 {
-	char *szDesc;
+	char* szDesc;
 	unsigned int uMaxDescChars;
-	char *szCmdLine;
+	char* szCmdLine;
 	unsigned int uMaxCmdLineChars;
 	unsigned int uIndex;
 	unsigned int uIconIndex;
@@ -294,13 +294,13 @@ typedef struct
 
 typedef struct
 {
-	char *szName;
+	char* szName;
 	unsigned int uMaxNameChars;
-	char *szLatestVersionLabel;
+	char* szLatestVersionLabel;
 	unsigned int uMaxLatestVersionLabelChars;
-	char *szCurrentVersionLabel;
+	char* szCurrentVersionLabel;
 	unsigned int uMaxCurrentVersionLabelChars;
-	char *szInstallDirName;
+	char* szInstallDirName;
 	unsigned int uMaxInstallDirNameChars;
 	unsigned int uId;
 	unsigned int uLatestVersionId;
@@ -314,7 +314,7 @@ typedef struct
 
 } TSteamApp;
 
-typedef enum 
+typedef enum
 {
 	eNoCost				= 0,
 	eBillOnceOnly		= 1,
@@ -327,9 +327,9 @@ typedef enum
 
 typedef struct
 {
-	char *szName;
+	char* szName;
 	unsigned int uMaxNameChars;
-	unsigned int *puAppIds;
+	unsigned int* puAppIds;
 	unsigned int uMaxAppIds;
 	unsigned int uId;
 	unsigned int uNumApps;
@@ -388,7 +388,7 @@ typedef enum
 } ESteamNotificationCallbackEvent;
 
 
-typedef void(*SteamNotificationCallback_t)(ESteamNotificationCallbackEvent eEvent, unsigned int nData);
+typedef void( *SteamNotificationCallback_t )( ESteamNotificationCallbackEvent eEvent, unsigned int nData );
 
 
 typedef char SteamPersonalQuestion_t[ STEAM_QUESTION_MAXLEN + 1 ];
@@ -411,10 +411,10 @@ typedef enum
 typedef struct
 {
 	ESteamPaymentCardType eCardType;
-	char szCardNumber[ STEAM_CARD_NUMBER_SIZE +1 ];
+	char szCardNumber[ STEAM_CARD_NUMBER_SIZE + 1 ];
 	char szCardHolderName[ STEAM_CARD_HOLDERNAME_SIZE + 1];
 	char szCardExpYear[ STEAM_CARD_EXPYEAR_SIZE + 1 ];
-	char szCardExpMonth[ STEAM_CARD_EXPMONTH_SIZE+ 1 ];
+	char szCardExpMonth[ STEAM_CARD_EXPMONTH_SIZE + 1 ];
 	char szCardCVV2[ STEAM_CARD_CVV2_SIZE + 1 ];
 	char szBillingAddress1[ STEAM_BILLING_ADDRESS1_SIZE + 1 ];
 	char szBillingAddress2[ STEAM_BILLING_ADDRESS2_SIZE + 1 ];
@@ -447,7 +447,7 @@ typedef struct
 
 	/* A ProofOfPurchase token is not necessarily a nul-terminated string; it may be binary data
 	   (perhaps encrypted). Hence we need a length and an array of bytes.							*/
-	unsigned int			uLengthOfBinaryProofOfPurchaseToken;	
+	unsigned int			uLengthOfBinaryProofOfPurchaseToken;
 	char					cBinaryProofOfPurchaseToken[ STEAM_PROOF_OF_PURCHASE_TOKEN_SIZE + 1 ];
 } TSteamPrepurchaseInfo;
 
@@ -471,7 +471,8 @@ typedef enum
 typedef struct
 {
 	ESteamSubscriptionBillingInfoType	eBillingInfoType;
-	union {
+	union
+	{
 		TSteamPaymentCardInfo			PaymentCardInfo;
 		TSteamPrepurchaseInfo			PrepurchaseInfo;
 		TSteamExternalBillingInfo		ExternalBillingInfo;
@@ -536,7 +537,8 @@ typedef struct
 	ESteamSubscriptionStatus			ePreviousStatus;
 	ESteamSubscriptionBillingInfoType	eReceiptInfoType;
 	char szConfirmationCode[ STEAM_BILLING_CONFIRMATION_CODE_SIZE +	1];
-	union {
+	union
+	{
 		TSteamPaymentCardReceiptInfo	PaymentCardReceiptInfo;
 		TSteamPrepurchaseReceiptInfo	PrepurchaseReceiptInfo;
 	};
@@ -563,10 +565,10 @@ typedef enum
 	eSteamUserAdministrator	=	0x00000001, /* May subscribe, unsubscribe, etc */
 	eSteamUserDeveloper		=	0x00000002, /* Steam or App developer */
 	eSteamUserCyberCafe		=	0x00000004  /* CyberCafe, school, etc -- UI should ask for password */
-											/* before allowing logout, unsubscribe, etc             */
+								/* before allowing logout, unsubscribe, etc             */
 } ESteamUserTypeFlags;
 
-typedef enum 
+typedef enum
 {
 	eSteamAccountStatusDefault			=	0x00000000,
 	eSteamAccountStatusEmailVerified	=	0x00000001,
@@ -599,9 +601,9 @@ typedef struct
 
 typedef struct
 {
-  unsigned int uAppId;
-  int bIsSystemDefined;
-  char szMountPath[STEAM_MAX_PATH];
+	unsigned int uAppId;
+	int bIsSystemDefined;
+	char szMountPath[STEAM_MAX_PATH];
 } TSteamAppDependencyInfo;
 
 typedef enum
@@ -650,9 +652,9 @@ const unsigned int										STEAM_USE_LATEST_VERSION = 0xFFFFFFFF;
 ** Each Steam instance (licensed Steam Service Provider) has a unique SteamInstanceID_t.
 **
 ** Each Steam instance as its own DB of users.
-** Each user in the DB has a unique SteamLocalUserID_t (a serial number, with possible 
+** Each user in the DB has a unique SteamLocalUserID_t (a serial number, with possible
 ** rare gaps in the sequence).
-** 
+**
 ******************************************************************************/
 
 typedef	unsigned short		SteamInstanceID_t;		// MUST be 16 bits
@@ -667,16 +669,16 @@ typedef	unsigned long long	SteamLocalUserID_t;		// MUST be 64 bits
 /******************************************************************************
 **
 ** Applications need to be able to authenticate Steam users from ANY instance.
-** So a SteamIDTicket contains SteamGlobalUserID, which is a unique combination of 
+** So a SteamIDTicket contains SteamGlobalUserID, which is a unique combination of
 ** instance and user id.
 **
 ** SteamLocalUserID is an unsigned 64-bit integer.
-** For platforms without 64-bit int support, we provide access via a union that splits it into 
-** high and low unsigned 32-bit ints.  Such platforms will only need to compare LocalUserIDs 
+** For platforms without 64-bit int support, we provide access via a union that splits it into
+** high and low unsigned 32-bit ints.  Such platforms will only need to compare LocalUserIDs
 ** for equivalence anyway - not perform arithmetic with them.
-** 
+**
 ********************************************************************************/
-typedef struct	
+typedef struct
 {
 	unsigned int	Low32bits;
 	unsigned int	High32bits;

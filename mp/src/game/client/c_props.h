@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef C_PROPS_H
 #define C_PROPS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_breakableprop.h"
@@ -16,7 +16,7 @@
 #define CDynamicProp C_DynamicProp
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_DynamicProp : public C_BreakableProp
 {
@@ -30,11 +30,11 @@ public:
 
 	void GetRenderBounds( Vector& theMins, Vector& theMaxs );
 	unsigned int ComputeClientSideAnimationFlags();
-	bool TestBoneFollowers( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
-	bool TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
+	bool TestBoneFollowers( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr );
+	bool TestCollision( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr );
 
 private:
-	C_DynamicProp( const C_DynamicProp & );
+	C_DynamicProp( const C_DynamicProp& );
 
 	bool	m_bUseHitboxesForRenderBox;
 	int		m_iCachedFrameCount;

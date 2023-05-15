@@ -1,13 +1,13 @@
 //====== Copyright © 1996-2004, Valve Corporation, All rights reserved. =======
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef UTLBINARYBLOCK_H
 #define UTLBINARYBLOCK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlmemory.h"
@@ -27,10 +27,10 @@ public:
 	CUtlBinaryBlock( const void* pMemory, int nSizeInBytes );
 	CUtlBinaryBlock( const CUtlBinaryBlock& src );
 
-	void		Get( void *pValue, int nMaxLen ) const;
-	void		Set( const void *pValue, int nLen );
-	const void	*Get( ) const;
-	void		*Get( );
+	void		Get( void* pValue, int nMaxLen ) const;
+	void		Set( const void* pValue, int nLen );
+	const void*	Get( ) const;
+	void*		Get( );
 
 	unsigned char& operator[]( int i );
 	const unsigned char& operator[]( int i ) const;
@@ -43,10 +43,10 @@ public:
 
 	bool		IsReadOnly() const;
 
-	CUtlBinaryBlock &operator=( const CUtlBinaryBlock &src );
+	CUtlBinaryBlock& operator=( const CUtlBinaryBlock& src );
 
 	// Test for equality
-	bool operator==( const CUtlBinaryBlock &src ) const;
+	bool operator==( const CUtlBinaryBlock& src ) const;
 
 private:
 	CUtlMemory<unsigned char> m_Memory;
@@ -57,12 +57,12 @@ private:
 //-----------------------------------------------------------------------------
 // class inlines
 //-----------------------------------------------------------------------------
-inline const void *CUtlBinaryBlock::Get( ) const
+inline const void* CUtlBinaryBlock::Get( ) const
 {
 	return m_Memory.Base();
 }
 
-inline void *CUtlBinaryBlock::Get( )
+inline void* CUtlBinaryBlock::Get( )
 {
 	return m_Memory.Base();
 }

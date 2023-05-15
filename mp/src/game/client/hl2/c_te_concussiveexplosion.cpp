@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -38,20 +38,22 @@ public:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEConcussiveExplosion, DT_TEConcussiveExplosion, CTEConcussiveExplosion )
-	RecvPropVector( RECVINFO(m_vecNormal)),
-	RecvPropFloat( RECVINFO(m_flScale)),
-	RecvPropInt( RECVINFO(m_nRadius)),	
-	RecvPropInt( RECVINFO(m_nMagnitude)),
-END_RECV_TABLE()
+RecvPropVector( RECVINFO( m_vecNormal ) ),
+				RecvPropFloat( RECVINFO( m_flScale ) ),
+				RecvPropInt( RECVINFO( m_nRadius ) ),
+				RecvPropInt( RECVINFO( m_nMagnitude ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_TEConcussiveExplosion::AffectRagdolls( void )
+				void C_TEConcussiveExplosion::AffectRagdolls( void )
 {
-	if ( ( m_nRadius == 0 ) || ( m_nMagnitude == 0 ) )
+	if( ( m_nRadius == 0 ) || ( m_nMagnitude == 0 ) )
+	{
 		return;
+	}
 
 	CRagdollExplosionEnumerator	ragdollEnum( m_vecOrigin, m_nRadius, m_nMagnitude );
 	partition->EnumerateElementsInSphere( PARTITION_CLIENT_RESPONSIVE_EDICTS, m_vecOrigin, m_nRadius, false, &ragdollEnum );
@@ -59,19 +61,21 @@ void C_TEConcussiveExplosion::AffectRagdolls( void )
 
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordConcussiveExplosion( const Vector& start, const Vector &vecDirection )
+static inline void RecordConcussiveExplosion( const Vector& start, const Vector& vecDirection )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_CONCUSSIVE_EXPLOSION );
- 		msg->SetString( "name", "TE_ConcussiveExplosion" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_CONCUSSIVE_EXPLOSION );
+		msg->SetString( "name", "TE_ConcussiveExplosion" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -87,7 +91,7 @@ static inline void RecordConcussiveExplosion( const Vector& start, const Vector 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEConcussiveExplosion::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -96,8 +100,8 @@ void C_TEConcussiveExplosion::PostDataUpdate( DataUpdateType_t updateType )
 	FX_ConcussiveExplosion( m_vecOrigin, m_vecNormal );
 	RecordConcussiveExplosion( m_vecOrigin, m_vecNormal );
 }
-						  
-void TE_ConcussiveExplosion( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+
+void TE_ConcussiveExplosion( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecDirection;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );

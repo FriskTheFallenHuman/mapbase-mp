@@ -1,12 +1,12 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #ifndef CL2CACHE_H
 #define CL2CACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class P4Event_BSQ_cache_reference;
@@ -30,14 +30,14 @@ public:
 	}
 
 #ifdef DBGFLAG_VALIDATE
-	void Validate( CValidator &validator, tchar *pchName );		// Validate our internal structures
+	void Validate( CValidator& validator, tchar* pchName );		// Validate our internal structures
 #endif // DBGFLAG_VALIDATE
 
 private:
 
 	int								m_nID;
 
-	P4Event_BSQ_cache_reference		*m_pL2CacheEvent;
+	P4Event_BSQ_cache_reference*		m_pL2CacheEvent;
 	int64							m_i64Start;
 	int64							m_i64End;
 	int								m_iL2CacheMissCount;

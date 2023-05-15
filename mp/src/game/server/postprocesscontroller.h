@@ -22,24 +22,27 @@ public:
 	virtual int UpdateTransmitState();
 
 	// Input handlers
-	void InputSetFadeTime(inputdata_t &data);
-	void InputSetLocalContrastStrength(inputdata_t &data);
-	void InputSetLocalContrastEdgeStrength(inputdata_t &data);
-	void InputSetVignetteStart(inputdata_t &data);
-	void InputSetVignetteEnd(inputdata_t &data);
-	void InputSetVignetteBlurStrength(inputdata_t &data);
-	void InputSetFadeToBlackStrength(inputdata_t &data);
-	void InputSetDepthBlurFocalDistance(inputdata_t &data);
-	void InputSetDepthBlurStrength(inputdata_t &data);
-	void InputSetScreenBlurStrength(inputdata_t &data);
-	void InputSetFilmGrainStrength(inputdata_t &data);
+	void InputSetFadeTime( inputdata_t& data );
+	void InputSetLocalContrastStrength( inputdata_t& data );
+	void InputSetLocalContrastEdgeStrength( inputdata_t& data );
+	void InputSetVignetteStart( inputdata_t& data );
+	void InputSetVignetteEnd( inputdata_t& data );
+	void InputSetVignetteBlurStrength( inputdata_t& data );
+	void InputSetFadeToBlackStrength( inputdata_t& data );
+	void InputSetDepthBlurFocalDistance( inputdata_t& data );
+	void InputSetDepthBlurStrength( inputdata_t& data );
+	void InputSetScreenBlurStrength( inputdata_t& data );
+	void InputSetFilmGrainStrength( inputdata_t& data );
 
-	void InputTurnOn(inputdata_t &data);
-	void InputTurnOff(inputdata_t &data);
+	void InputTurnOn( inputdata_t& data );
+	void InputTurnOff( inputdata_t& data );
 
 	void Spawn();
 
-	bool IsMaster() const { return HasSpawnFlags( SF_FOG_MASTER ); }
+	bool IsMaster() const
+	{
+		return HasSpawnFlags( SF_FOG_MASTER );
+	}
 
 public:
 	CNetworkArray( float, m_flPostProcessParameters, POST_PROCESS_PARAMETER_COUNT );
@@ -56,7 +59,7 @@ class CPostProcessSystem : public CAutoGameSystem, public CGameEventListener
 public:
 
 	// Creation/Init.
-	CPostProcessSystem( char const *name ) : CAutoGameSystem( name ) 
+	CPostProcessSystem( char const* name ) : CAutoGameSystem( name )
 	{
 		m_hMasterController = nullptr;
 	}
@@ -68,8 +71,11 @@ public:
 
 	virtual void LevelInitPreEntity();
 	virtual void LevelInitPostEntity();
-	virtual void FireGameEvent( IGameEvent *pEvent );
-	CPostProcessController *GetMasterPostProcessController()			{ return m_hMasterController; }
+	virtual void FireGameEvent( IGameEvent* pEvent );
+	CPostProcessController* GetMasterPostProcessController()
+	{
+		return m_hMasterController;
+	}
 
 private:
 
@@ -77,4 +83,4 @@ private:
 	CHandle< CPostProcessController > m_hMasterController;
 };
 
-CPostProcessSystem *PostProcessSystem();
+CPostProcessSystem* PostProcessSystem();

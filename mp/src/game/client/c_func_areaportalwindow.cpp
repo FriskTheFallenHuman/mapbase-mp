@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -50,15 +50,15 @@ public:
 
 
 IMPLEMENT_CLIENTCLASS_DT( C_FuncAreaPortalWindow, DT_FuncAreaPortalWindow, CFuncAreaPortalWindow )
-	RecvPropFloat( RECVINFO( m_flFadeStartDist ) ),
-	RecvPropFloat( RECVINFO( m_flFadeDist ) ),
-	RecvPropFloat( RECVINFO( m_flTranslucencyLimit ) ),
-	RecvPropInt( RECVINFO( m_iBackgroundModelIndex ) )
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flFadeStartDist ) ),
+			   RecvPropFloat( RECVINFO( m_flFadeDist ) ),
+			   RecvPropFloat( RECVINFO( m_flTranslucencyLimit ) ),
+			   RecvPropInt( RECVINFO( m_iBackgroundModelIndex ) )
+			   END_RECV_TABLE()
 
 
 
-void C_FuncAreaPortalWindow::ComputeFxBlend()
+			   void C_FuncAreaPortalWindow::ComputeFxBlend()
 {
 	// We reset our blend down below so pass anything except 0 to the renderer.
 	m_nRenderFXBlend = 255;
@@ -78,46 +78,52 @@ bool C_FuncAreaPortalWindow::IsTransparent()
 
 int C_FuncAreaPortalWindow::DrawModel( int flags )
 {
-	if ( !m_bReadyToDraw )
+	if( !m_bReadyToDraw )
+	{
 		return 0;
+	}
 
 	if( !GetModel() )
+	{
 		return 0;
+	}
 
 	// Make sure we're a brush model.
 	int modelType = modelinfo->GetModelType( GetModel() );
 	if( modelType != mod_brush )
+	{
 		return 0;
+	}
 
 	// Draw the fading version.
 	render->SetBlend( GetDistanceBlend() );
 
 	DrawBrushModelMode_t mode = DBM_DRAW_ALL;
-	if ( flags & STUDIO_TWOPASS )
+	if( flags & STUDIO_TWOPASS )
 	{
 		mode = ( flags & STUDIO_TRANSPARENCY ) ? DBM_DRAW_TRANSLUCENT_ONLY : DBM_DRAW_OPAQUE_ONLY;
 	}
 
-	render->DrawBrushModelEx( 
-		this, 
-		(model_t *)GetModel(), 
-		GetAbsOrigin(), 
-		GetAbsAngles(), 
+	render->DrawBrushModelEx(
+		this,
+		( model_t* )GetModel(),
+		GetAbsOrigin(),
+		GetAbsAngles(),
 		mode );
 
 	// Draw the optional foreground model next.
 	// Only use the alpha in the texture from the thing in the front.
-	if (m_iBackgroundModelIndex >= 0)
+	if( m_iBackgroundModelIndex >= 0 )
 	{
 		render->SetBlend( 1 );
-		model_t *pBackground = ( model_t * )modelinfo->GetModel( m_iBackgroundModelIndex );
+		model_t* pBackground = ( model_t* )modelinfo->GetModel( m_iBackgroundModelIndex );
 		if( pBackground && modelinfo->GetModelType( pBackground ) == mod_brush )
 		{
-			render->DrawBrushModelEx( 
-				this, 
-				pBackground, 
-				GetAbsOrigin(), 
-				GetAbsAngles(), 
+			render->DrawBrushModelEx(
+				this,
+				pBackground,
+				GetAbsOrigin(),
+				GetAbsAngles(),
 				mode );
 		}
 	}
@@ -130,12 +136,12 @@ float C_FuncAreaPortalWindow::GetDistanceBlend()
 {
 	// Get the viewer's distance to us.
 	float flDist = CollisionProp()->CalcDistanceFromPoint( CurrentViewOrigin() );
-	C_BasePlayer *local = C_BasePlayer::GetLocalPlayer();
-	if ( local )
+	C_BasePlayer* local = C_BasePlayer::GetLocalPlayer();
+	if( local )
 	{
 		flDist *= local->GetFOVDistanceAdjustFactor();
 	}
-	
+
 	return RemapValClamped( flDist, m_flFadeStartDist, m_flFadeDist, m_flTranslucencyLimit, 1 );
 }
 

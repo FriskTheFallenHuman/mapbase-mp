@@ -22,21 +22,21 @@ class CTEBeamLaser : public CTEBaseBeam
 public:
 	DECLARE_SERVERCLASS();
 
-					CTEBeamLaser( const char *name );
+	CTEBeamLaser( const char* name );
 	virtual			~CTEBeamLaser( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBeamLaser::CTEBeamLaser( const char *name ) :
+CTEBeamLaser::CTEBeamLaser( const char* name ) :
 	CTEBaseBeam( name )
 {
 	m_nStartEntity	= 0;
@@ -44,16 +44,16 @@ CTEBeamLaser::CTEBeamLaser( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBeamLaser::~CTEBeamLaser( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBeamLaser::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -76,37 +76,37 @@ void CTEBeamLaser::Test( const Vector& current_origin, const QAngle& current_ang
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamLaser, DT_TEBeamLaser)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEBeamLaser, DT_TEBeamLaser )
+SendPropInt( SENDINFO( m_nStartEntity ), 24, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nEndEntity ), 24, SPROP_UNSIGNED ),
+			 END_SEND_TABLE()
 
 
 // Singleton to fire TEBeamLaser objects
-static CTEBeamLaser g_TEBeamLaser( "BeamLaser" );
+			 static CTEBeamLaser g_TEBeamLaser( "BeamLaser" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*start - 
-//			*end - 
-//			modelindex - 
-//			startframe - 
-//			framerate - 
-//			msg_dest - 
-//			delay - 
-//			origin - 
-//			recipient - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*start -
+//			*end -
+//			modelindex -
+//			startframe -
+//			framerate -
+//			msg_dest -
+//			delay -
+//			origin -
+//			recipient -
 //-----------------------------------------------------------------------------
 void TE_BeamLaser( IRecipientFilter& filter, float delay,
-	int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
-	float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
+				   int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
+				   float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
 {
-	g_TEBeamLaser.m_nStartEntity = (start & 0x0FFF) | ((1 & 0xF)<<12);
-	g_TEBeamLaser.m_nEndEntity	= (end & 0x0FFF) | ((1 & 0xF)<<12);
+	g_TEBeamLaser.m_nStartEntity = ( start & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
+	g_TEBeamLaser.m_nEndEntity	= ( end & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
 	g_TEBeamLaser.m_nModelIndex	= modelindex;
 	g_TEBeamLaser.m_nHaloIndex	= haloindex;
 	g_TEBeamLaser.m_nStartFrame	= startframe;

@@ -5,7 +5,7 @@
 #ifndef REPLAY_H
 #define REPLAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ class CReplayPerformance;
 //----------------------------------------------------------------------------------------
 
 class CReplay : public CBaseReplaySerializeable,
-				public IQueryableReplayItem
+	public IQueryableReplayItem
 {
 	typedef CBaseReplaySerializeable BaseClass;
 
@@ -49,11 +49,11 @@ public:
 	//
 	// IReplaySerializeable
 	//
-	virtual const char	*GetSubKeyTitle() const;
-	virtual const char	*GetPath() const;
+	virtual const char*	GetSubKeyTitle() const;
+	virtual const char*	GetPath() const;
 	virtual void		OnDelete();
-	virtual bool		Read( KeyValues *pIn );
-	virtual void		Write( KeyValues *pOut );
+	virtual bool		Read( KeyValues* pIn );
+	virtual void		Write( KeyValues* pOut );
 
 	virtual void DumpGameSpecificData() const {}
 
@@ -67,54 +67,78 @@ public:
 	virtual void OnComplete();
 
 	// Should we allow this replay to be deleted?
-	virtual bool ShouldAllowDelete() const { return true; }
+	virtual bool ShouldAllowDelete() const
+	{
+		return true;
+	}
 
 	void AutoNameTitleIfEmpty();
 
-	void AddScreenshot( int nWidth, int nHeight, const char *pBaseFilename );
+	void AddScreenshot( int nWidth, int nHeight, const char* pBaseFilename );
 
 	bool HasReconstructedReplay() const;
 	bool IsSignificantBlock( int iBlockReconstruction ) const;	// Does this replay care about the given block?
 
-	CReplayPerformance *AddNewPerformance( bool bGenTitle = true, bool bGenFilename = true );
-	void AddPerformance( KeyValues *pIn );
-	void AddPerformance( CReplayPerformance *pPerformance );
+	CReplayPerformance* AddNewPerformance( bool bGenTitle = true, bool bGenFilename = true );
+	void AddPerformance( KeyValues* pIn );
+	void AddPerformance( CReplayPerformance* pPerformance );
 
 	// Accessors:
-	inline int GetScreenshotCount() const			{ return m_vecScreenshots.Count(); }
-	inline const CReplayScreenshot *GetScreenshot( int i ) const { return m_vecScreenshots[ i ]; }
+	inline int GetScreenshotCount() const
+	{
+		return m_vecScreenshots.Count();
+	}
+	inline const CReplayScreenshot* GetScreenshot( int i ) const
+	{
+		return m_vecScreenshots[ i ];
+	}
 	bool IsDownloaded() const;
-	inline int GetPerformanceCount() const			{ return m_vecPerformances.Count(); }
-	CReplayPerformance *GetPerformance( int i );
-	const CReplayPerformance *GetPerformance( int i ) const;
-	inline bool HasPerformance( CReplayPerformance *pPerformance )	{ return m_vecPerformances.Find( pPerformance ) != m_vecPerformances.InvalidIndex(); }
-	bool FindPerformance( CReplayPerformance *pPerformance, int &iResult );
-	CReplayPerformance *GetPerformanceWithTitle( const wchar_t *pTitle );
-	inline const char *GetMapName() const { return m_szMapName; }
-	inline int GetSpawnTick() const { return m_nSpawnTick; }
-	inline int GetDeathTick() const { return m_nDeathTick; }
+	inline int GetPerformanceCount() const
+	{
+		return m_vecPerformances.Count();
+	}
+	CReplayPerformance* GetPerformance( int i );
+	const CReplayPerformance* GetPerformance( int i ) const;
+	inline bool HasPerformance( CReplayPerformance* pPerformance )
+	{
+		return m_vecPerformances.Find( pPerformance ) != m_vecPerformances.InvalidIndex();
+	}
+	bool FindPerformance( CReplayPerformance* pPerformance, int& iResult );
+	CReplayPerformance* GetPerformanceWithTitle( const wchar_t* pTitle );
+	inline const char* GetMapName() const
+	{
+		return m_szMapName;
+	}
+	inline int GetSpawnTick() const
+	{
+		return m_nSpawnTick;
+	}
+	inline int GetDeathTick() const
+	{
+		return m_nDeathTick;
+	}
 
 	// IQueryableReplayItem implementation:
-	virtual const CReplayTime &GetItemDate() const;
+	virtual const CReplayTime& GetItemDate() const;
 	virtual bool IsItemRendered() const;
-	virtual CReplay *GetItemReplay();
+	virtual CReplay* GetItemReplay();
 	virtual ReplayHandle_t	GetItemReplayHandle() const;
 	virtual QueryableReplayItemHandle_t	GetItemHandle() const;
-	virtual const wchar_t *GetItemTitle() const;
-	virtual void SetItemTitle( const wchar_t *pTitle );
+	virtual const wchar_t* GetItemTitle() const;
+	virtual void SetItemTitle( const wchar_t* pTitle );
 	virtual float GetItemLength() const;
-	virtual void *GetUserData();
+	virtual void* GetUserData();
 	virtual void SetUserData( void* pUserData );
 	virtual bool IsItemAMovie() const;
 
 	// Non-persistent data
-	mutable IReplayDownloadEventHandler *m_pDownloadEventHandler;	// Implemented by replay browser - the reason we've got one per replay rather than
-																	// one per download group is because the browser needs to receive events per-thumbnail
+	mutable IReplayDownloadEventHandler* m_pDownloadEventHandler;	// Implemented by replay browser - the reason we've got one per replay rather than
+	// one per download group is because the browser needs to receive events per-thumbnail
 	bool				m_bSaved;				// True as soon as the replay is saved to disk for the first time
 	bool				m_bRequestedByUser;		// Did the user request to save this replay?
 	bool				m_bComplete;			// Indicates whether the replay is done recording - this should be false
-												// until the player dies, the round ends, or the level changes
-	void				*m_pUserData;
+	// until the player dies, the round ends, or the level changes
+	void*				m_pUserData;
 	float				m_flNextUpdateTime;
 	bool				m_bDirty;
 
@@ -132,8 +156,8 @@ public:
 	bool				m_bRendered;	// Has the replay been rendered yet?
 	int					m_nPlayerSlot;	// Player slot (+1), used to determine which player recorded the demo during playback
 	int					m_nPostDeathRecordTime;	// replay_postdeathrecordtime at the time of record
-	CUtlVector< CReplayScreenshot * >	m_vecScreenshots;
-	CUtlVector< CReplayPerformance * >	m_vecPerformances;
+	CUtlVector< CReplayScreenshot* >	m_vecScreenshots;
+	CUtlVector< CReplayPerformance* >	m_vecPerformances;
 	int					m_iMaxSessionBlockRequired;	// The maximum session block required to reconstruct a viewable .dem file from spawn tick until length
 	CReplayTime			m_RecordTime;	// Contains time/date when spawn tick was recorded
 	float				m_flStartTime;	// Start time (uses engine's host_time)

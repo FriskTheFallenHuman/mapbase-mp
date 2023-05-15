@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -39,7 +39,7 @@ enum
 #define MINE_CITIZEN_SKIN_MIN 1
 #define MINE_CITIZEN_SKIN_MAX 2
 
-char *pszMineStateNames[] =
+char* pszMineStateNames[] =
 {
 	"Dormant",
 	"Deploy",
@@ -59,38 +59,38 @@ char *pszMineStateNames[] =
 #define BOUNCEBOMB_RADIUS		24
 
 #ifdef MAPBASE
-ConVar combine_mine_trace_dist( "combine_mine_trace_dist", "1024" );
+	ConVar combine_mine_trace_dist( "combine_mine_trace_dist", "1024" );
 #endif
 
 BEGIN_DATADESC( CBounceBomb )
-	DEFINE_THINKFUNC( ExplodeThink ),
-	DEFINE_ENTITYFUNC( ExplodeTouch ),
-	DEFINE_THINKFUNC( SearchThink ),
-	DEFINE_THINKFUNC( BounceThink ),
-	DEFINE_THINKFUNC( SettleThink ),
-	DEFINE_THINKFUNC( CaptiveThink ),
-	DEFINE_THINKFUNC( CavernBounceThink ),
+DEFINE_THINKFUNC( ExplodeThink ),
+				  DEFINE_ENTITYFUNC( ExplodeTouch ),
+				  DEFINE_THINKFUNC( SearchThink ),
+				  DEFINE_THINKFUNC( BounceThink ),
+				  DEFINE_THINKFUNC( SettleThink ),
+				  DEFINE_THINKFUNC( CaptiveThink ),
+				  DEFINE_THINKFUNC( CavernBounceThink ),
 
-	DEFINE_SOUNDPATCH( m_pWarnSound ),
+				  DEFINE_SOUNDPATCH( m_pWarnSound ),
 
-	DEFINE_KEYFIELD( m_flExplosionDelay,	FIELD_FLOAT, "ExplosionDelay" ),
-	DEFINE_KEYFIELD( m_bBounce,			FIELD_BOOLEAN, "Bounce" ),
+				  DEFINE_KEYFIELD( m_flExplosionDelay,	FIELD_FLOAT, "ExplosionDelay" ),
+				  DEFINE_KEYFIELD( m_bBounce,			FIELD_BOOLEAN, "Bounce" ),
 
-	DEFINE_FIELD( m_bAwake, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hNearestNPC, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hSprite, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_LastSpriteColor, FIELD_COLOR32 ),
+				  DEFINE_FIELD( m_bAwake, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_hNearestNPC, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_hSprite, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_LastSpriteColor, FIELD_COLOR32 ),
 
-	DEFINE_FIELD( m_flHookPositions, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iHookN, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iHookE, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iHookS, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iAllHooks, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_flHookPositions, FIELD_FLOAT ),
+				  DEFINE_FIELD( m_iHookN, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_iHookE, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_iHookS, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_iAllHooks, FIELD_INTEGER ),
 
-	DEFINE_KEYFIELD( m_bLockSilently, FIELD_BOOLEAN, "LockSilently" ),
-	DEFINE_FIELD( m_bFoeNearest, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flIgnoreWorldTime, FIELD_TIME ),
-	DEFINE_KEYFIELD( m_bDisarmed, FIELD_BOOLEAN, "StartDisarmed" ),
+				  DEFINE_KEYFIELD( m_bLockSilently, FIELD_BOOLEAN, "LockSilently" ),
+				  DEFINE_FIELD( m_bFoeNearest, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_flIgnoreWorldTime, FIELD_TIME ),
+				  DEFINE_KEYFIELD( m_bDisarmed, FIELD_BOOLEAN, "StartDisarmed" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_iInitialState, FIELD_INTEGER, "InitialState" ),
 	DEFINE_KEYFIELD( m_bCheapWarnSound, FIELD_BOOLEAN, "CheapWarnSound" ),
@@ -98,19 +98,19 @@ BEGIN_DATADESC( CBounceBomb )
 	DEFINE_INPUT( m_bUnavoidable, FIELD_BOOLEAN, "SetUnavoidable" ),
 	DEFINE_KEYFIELD( m_vecPlantOrientation, FIELD_VECTOR, "PlantOrientation" ),
 #endif
-	DEFINE_KEYFIELD( m_iModification, FIELD_INTEGER, "Modification" ),
+				  DEFINE_KEYFIELD( m_iModification, FIELD_INTEGER, "Modification" ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bPlacedByPlayer, FIELD_BOOLEAN, "Friendly" ),
 #else
 	DEFINE_FIELD( m_bPlacedByPlayer, FIELD_BOOLEAN ),
 #endif
-	DEFINE_FIELD( m_bHeldByPhysgun, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bHeldByPhysgun, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_iFlipAttempts, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_iFlipAttempts, FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_flTimeGrabbed, FIELD_TIME ),
-	DEFINE_FIELD( m_iMineState, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_flTimeGrabbed, FIELD_TIME ),
+				  DEFINE_FIELD( m_iMineState, FIELD_INTEGER ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bFilterExclusive, FIELD_BOOLEAN, "FilterExclusive" ),
@@ -122,14 +122,14 @@ BEGIN_DATADESC( CBounceBomb )
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetFriendFilter", InputSetFriendFilter ),
 #endif
 
-	// Physics Influence
-	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
+				  // Physics Influence
+				  DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
 
-	DEFINE_PHYSPTR( m_pConstraint ),
+				  DEFINE_PHYSPTR( m_pConstraint ),
 
-	DEFINE_OUTPUT( m_OnPulledUp, "OnPulledUp" ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disarm", InputDisarm ),
+				  DEFINE_OUTPUT( m_OnPulledUp, "OnPulledUp" ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disarm", InputDisarm ),
 
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "Bounce", InputBounce ),
@@ -141,16 +141,16 @@ BEGIN_DATADESC( CBounceBomb )
 	DEFINE_OUTPUT( m_OnExplode, "OnExplode" ),
 #endif
 
-END_DATADESC()
+				  END_DATADESC()
 
-string_t CBounceBomb::gm_iszFloorTurretClassname;
+				  string_t CBounceBomb::gm_iszFloorTurretClassname;
 string_t CBounceBomb::gm_iszGroundTurretClassname;
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 void CBounceBomb::Precache()
 {
-	PrecacheModel("models/props_combine/combine_mine01.mdl");
+	PrecacheModel( "models/props_combine/combine_mine01.mdl" );
 
 	PrecacheScriptSound( "NPC_CombineMine.Hop" );
 	PrecacheScriptSound( "NPC_CombineMine.FlipOver" );
@@ -167,10 +167,14 @@ void CBounceBomb::Precache()
 	gm_iszGroundTurretClassname = AllocPooledString( "npc_turret_ground" );
 
 #ifdef MAPBASE
-	if (m_iszEnemyFilter != NULL_STRING)
-		m_hEnemyFilter = dynamic_cast<CBaseFilter*>(gEntList.FindEntityByName(NULL, STRING(m_iszEnemyFilter), this));
-	if (m_iszFriendFilter != NULL_STRING)
-		m_hFriendFilter = dynamic_cast<CBaseFilter*>(gEntList.FindEntityByName( NULL, STRING(m_iszFriendFilter), this ));
+	if( m_iszEnemyFilter != NULL_STRING )
+	{
+		m_hEnemyFilter = dynamic_cast<CBaseFilter*>( gEntList.FindEntityByName( NULL, STRING( m_iszEnemyFilter ), this ) );
+	}
+	if( m_iszFriendFilter != NULL_STRING )
+	{
+		m_hFriendFilter = dynamic_cast<CBaseFilter*>( gEntList.FindEntityByName( NULL, STRING( m_iszFriendFilter ), this ) );
+	}
 #endif
 }
 
@@ -182,7 +186,7 @@ void CBounceBomb::Spawn()
 
 	Wake( false );
 
-	SetModel("models/props_combine/combine_mine01.mdl");
+	SetModel( "models/props_combine/combine_mine01.mdl" );
 
 	SetSolid( SOLID_VPHYSICS );
 
@@ -204,7 +208,7 @@ void CBounceBomb::Spawn()
 
 	OpenHooks( true );
 
-	m_bHeldByPhysgun = false;	
+	m_bHeldByPhysgun = false;
 
 	m_iFlipAttempts = 0;
 
@@ -224,12 +228,18 @@ void CBounceBomb::Spawn()
 	else
 	{
 		// NOTE: MINE_STATE_DEPLOY and MINE_STATE_DORMANT are swapped in this case!
-		if (m_iInitialState == 0)
+		if( m_iInitialState == 0 )
+		{
 			SetMineState( MINE_STATE_DEPLOY );
-		else if (m_iInitialState == 1)
+		}
+		else if( m_iInitialState == 1 )
+		{
 			SetMineState( MINE_STATE_DORMANT );
+		}
 		else
+		{
 			SetMineState( m_iInitialState );
+		}
 	}
 #else
 	else
@@ -239,43 +249,43 @@ void CBounceBomb::Spawn()
 #endif
 
 	// default to a different skin for cavern turrets (unless explicitly overridden)
-	if ( m_iModification == MINE_MODIFICATION_CAVERN )
+	if( m_iModification == MINE_MODIFICATION_CAVERN )
 	{
 		// look for this value in the first datamap
 		// loop through the data description list, restoring each data desc block
-		datamap_t *dmap = GetDataDescMap();
+		datamap_t* dmap = GetDataDescMap();
 
 		bool bFoundSkin = false;
 		// search through all the readable fields in the data description, looking for a match
-		for ( int i = 0; i < dmap->dataNumFields; ++i )
+		for( int i = 0; i < dmap->dataNumFields; ++i )
 		{
-			if ( dmap->dataDesc[i].flags & (FTYPEDESC_OUTPUT | FTYPEDESC_KEY) )
+			if( dmap->dataDesc[i].flags & ( FTYPEDESC_OUTPUT | FTYPEDESC_KEY ) )
 			{
-				if ( !Q_stricmp(dmap->dataDesc[i].externalName, "Skin") )
+				if( !Q_stricmp( dmap->dataDesc[i].externalName, "Skin" ) )
 				{
-					bFoundSkin = true; 
+					bFoundSkin = true;
 					break;
 				}
 			}
 		}
 
-		if (!bFoundSkin)
+		if( !bFoundSkin )
 		{
-			// select a random skin for the mine. Actually, we'll cycle through the available skins 
+			// select a random skin for the mine. Actually, we'll cycle through the available skins
 			// using a static variable to provide better distribution. The static isn't saved but
 			// really it's only cosmetic.
 			static unsigned int nextSkin = MINE_CITIZEN_SKIN_MIN;
 			m_nSkin = nextSkin;
 			// increment the skin for next time
-			nextSkin = (nextSkin >= MINE_CITIZEN_SKIN_MAX) ? MINE_CITIZEN_SKIN_MIN : nextSkin + 1;
-		}	
+			nextSkin = ( nextSkin >= MINE_CITIZEN_SKIN_MAX ) ? MINE_CITIZEN_SKIN_MIN : nextSkin + 1;
+		}
 
 		// pretend like the player set me down.
 		m_bPlacedByPlayer = true;
 	}
 
 #ifdef MAPBASE
-	if (m_vecPlantOrientation != vec3_invalid)
+	if( m_vecPlantOrientation != vec3_invalid )
 	{
 		// Turn angles into direction
 		AngleVectors( QAngle( m_vecPlantOrientation.x, m_vecPlantOrientation.y, m_vecPlantOrientation.z ), &m_vecPlantOrientation );
@@ -288,7 +298,7 @@ void CBounceBomb::Spawn()
 void CBounceBomb::OnRestore()
 {
 	BaseClass::OnRestore();
-	if ( gpGlobals->eLoadType == MapLoad_Transition && !m_hSprite && m_LastSpriteColor.GetRawColor() != 0 )
+	if( gpGlobals->eLoadType == MapLoad_Transition && !m_hSprite && m_LastSpriteColor.GetRawColor() != 0 )
 	{
 		UpdateLight( true, m_LastSpriteColor.r(), m_LastSpriteColor.g(), m_LastSpriteColor.b(), m_LastSpriteColor.a() );
 	}
@@ -298,17 +308,17 @@ void CBounceBomb::OnRestore()
 		VPhysicsGetObject()->Wake();
 	}
 }
-	
+
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CBounceBomb::DrawDebugTextOverlays(void) 
+int CBounceBomb::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
-		Q_snprintf(tempstr,sizeof(tempstr), "%s", pszMineStateNames[m_iMineState] );
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "%s", pszMineStateNames[m_iMineState] );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;
@@ -322,12 +332,12 @@ void CBounceBomb::SetMineState( int iState )
 
 	switch( iState )
 	{
-	case MINE_STATE_DORMANT:
+		case MINE_STATE_DORMANT:
 		{
 #ifdef MAPBASE
 			SilenceWarnSound( 0.1 );
 #else
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 			controller.SoundChangeVolume( m_pWarnSound, 0.0, 0.1 );
 #endif
 			UpdateLight( false, 0, 0, 0, 0 );
@@ -335,12 +345,12 @@ void CBounceBomb::SetMineState( int iState )
 		}
 		break;
 
-	case MINE_STATE_CAPTIVE:
+		case MINE_STATE_CAPTIVE:
 		{
 #ifdef MAPBASE
 			SilenceWarnSound( 0.2 );
 #else
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 			controller.SoundChangeVolume( m_pWarnSound, 0.0, 0.2 );
 #endif
 
@@ -358,21 +368,21 @@ void CBounceBomb::SetMineState( int iState )
 		}
 		break;
 
-	case MINE_STATE_DEPLOY:
-		OpenHooks( true );
-		UpdateLight( true, 0, 0, 255, 190 );
-		SetThink( &CBounceBomb::SettleThink );
-		SetTouch( NULL );
-		SetNextThink( gpGlobals->curtime + 0.1f );
-		break;
+		case MINE_STATE_DEPLOY:
+			OpenHooks( true );
+			UpdateLight( true, 0, 0, 255, 190 );
+			SetThink( &CBounceBomb::SettleThink );
+			SetTouch( NULL );
+			SetNextThink( gpGlobals->curtime + 0.1f );
+			break;
 
-	case MINE_STATE_ARMED:
-		UpdateLight( false, 0, 0, 0, 0 );
-		SetThink( &CBounceBomb::SearchThink );
-		SetNextThink( gpGlobals->curtime + 0.1f );
-		break;
+		case MINE_STATE_ARMED:
+			UpdateLight( false, 0, 0, 0, 0 );
+			SetThink( &CBounceBomb::SearchThink );
+			SetNextThink( gpGlobals->curtime + 0.1f );
+			break;
 
-	case MINE_STATE_TRIGGERED:
+		case MINE_STATE_TRIGGERED:
 		{
 			OpenHooks();
 
@@ -388,7 +398,7 @@ void CBounceBomb::SetMineState( int iState )
 #ifdef MAPBASE
 			SilenceWarnSound( 0.2 );
 #else
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 			controller.SoundChangeVolume( m_pWarnSound, 0.0, 0.2 );
 #endif
 
@@ -413,15 +423,15 @@ void CBounceBomb::SetMineState( int iState )
 			VPhysicsGetObject()->ApplyTorqueCenter( AngularImpulse( x, y, 0 ) );
 
 			// Since we just nudged the mine, ignore collisions with the world until
-			// the mine is in the air. We only want to explode if the player tries to 
+			// the mine is in the air. We only want to explode if the player tries to
 			// run over the mine before it jumps up.
 			m_flIgnoreWorldTime = gpGlobals->curtime + 1.0;
 			UpdateLight( true, 255, 0, 0, 190 );
 
 			// use the correct bounce behavior
-			if (m_iModification == MINE_MODIFICATION_CAVERN)
+			if( m_iModification == MINE_MODIFICATION_CAVERN )
 			{
-				SetThink ( &CBounceBomb::CavernBounceThink );
+				SetThink( &CBounceBomb::CavernBounceThink );
 				SetNextThink( gpGlobals->curtime + 0.15 );
 			}
 			else
@@ -436,7 +446,7 @@ void CBounceBomb::SetMineState( int iState )
 		}
 		break;
 
-	case MINE_STATE_LAUNCHED:
+		case MINE_STATE_LAUNCHED:
 		{
 			UpdateLight( true, 255, 0, 0, 190 );
 			SetThink( NULL );
@@ -448,24 +458,24 @@ void CBounceBomb::SetMineState( int iState )
 		}
 		break;
 
-	default:
-		DevMsg("**Unknown Mine State: %d\n", iState );
-		break;
+		default:
+			DevMsg( "**Unknown Mine State: %d\n", iState );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 // Bouncbomb flips to try to right itself, try to get off
-// of and object that it's not allowed to clamp to, or 
+// of and object that it's not allowed to clamp to, or
 // to get away from a hint node that inhibits placement
 // of mines.
 //---------------------------------------------------------
-void CBounceBomb::Flip( const Vector &vecForce, const AngularImpulse &torque )
+void CBounceBomb::Flip( const Vector& vecForce, const AngularImpulse& torque )
 {
 	if( m_iFlipAttempts > BOUNCEBOMB_MAX_FLIPS )
 	{
 		// Not allowed to try anymore.
-		SetThink(NULL);
+		SetThink( NULL );
 		return;
 	}
 
@@ -478,11 +488,11 @@ void CBounceBomb::Flip( const Vector &vecForce, const AngularImpulse &torque )
 //---------------------------------------------------------
 //---------------------------------------------------------
 #define MINE_MIN_PROXIMITY_SQR	676 // 27 inches
-bool CBounceBomb::IsValidLocation() 
+bool CBounceBomb::IsValidLocation()
 {
-	CBaseEntity *pAvoidObject = NULL;
+	CBaseEntity* pAvoidObject = NULL;
 	float flAvoidForce = 0.0f;
-	CAI_Hint *pHint;
+	CAI_Hint* pHint;
 	CHintCriteria criteria;
 	criteria.SetHintType( HINT_WORLD_INHIBIT_COMBINE_MINES );
 	criteria.SetFlag( bits_HINT_NODE_NEAREST );
@@ -497,14 +507,14 @@ bool CBounceBomb::IsValidLocation()
 	else
 	{
 		// Look for other mines that are too close to me.
-		CBaseEntity *pEntity = gEntList.FirstEnt();
+		CBaseEntity* pEntity = gEntList.FirstEnt();
 		Vector vecMyPosition = GetAbsOrigin();
 		while( pEntity )
 		{
 			if( pEntity->m_iClassname == m_iClassname && pEntity != this )
 			{
 				// Don't lock down if I'm near a mine that's already locked down.
-				if( vecMyPosition.DistToSqr(pEntity->GetAbsOrigin()) < MINE_MIN_PROXIMITY_SQR )
+				if( vecMyPosition.DistToSqr( pEntity->GetAbsOrigin() ) < MINE_MIN_PROXIMITY_SQR )
 				{
 					pAvoidObject = pEntity;
 					flAvoidForce = 60.0f;
@@ -545,9 +555,9 @@ void CBounceBomb::BounceThink()
 	SetNextThink( gpGlobals->curtime + 0.1 );
 	StudioFrameAdvance();
 
-	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
-	
-	if ( pPhysicsObject != NULL )
+	IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
+
+	if( pPhysicsObject != NULL )
 	{
 		const float MINE_MAX_JUMP_HEIGHT = 200;
 
@@ -566,11 +576,13 @@ void CBounceBomb::BounceThink()
 		{
 			height = tr.endpos.z - GetAbsOrigin().z;
 			height -= BOUNCEBOMB_RADIUS;
-			if ( height < 0.1 )
+			if( height < 0.1 )
+			{
 				height = 0.1;
+			}
 		}
 
-		float time = sqrt( height / (0.5 * GetCurrentGravity()) );
+		float time = sqrt( height / ( 0.5 * GetCurrentGravity() ) );
 		float velocity = GetCurrentGravity() * time;
 
 		// or you can just AddVelocity to the object instead of ApplyForce
@@ -583,7 +595,7 @@ void CBounceBomb::BounceThink()
 		pPhysicsObject->ApplyForceCenter( up * force );
 
 		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( random->RandomFloat( 5, 25 ), random->RandomFloat( 5, 25 ), 0 ) );
-		
+
 
 		if( m_hNearestNPC )
 		{
@@ -599,7 +611,7 @@ void CBounceBomb::BounceThink()
 
 
 //---------------------------------------------------------
-// A different bounce behavior for the citizen-modified mine. Detonates at the top of its apex, 
+// A different bounce behavior for the citizen-modified mine. Detonates at the top of its apex,
 // and does not attempt to track enemies.
 //---------------------------------------------------------
 void CBounceBomb::CavernBounceThink()
@@ -607,9 +619,9 @@ void CBounceBomb::CavernBounceThink()
 	SetNextThink( gpGlobals->curtime + 0.1 );
 	StudioFrameAdvance();
 
-	IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
+	IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
 
-	if ( pPhysicsObject != NULL )
+	if( pPhysicsObject != NULL )
 	{
 		const float MINE_MAX_JUMP_HEIGHT = 78;
 
@@ -628,11 +640,13 @@ void CBounceBomb::CavernBounceThink()
 		{
 			height = tr.endpos.z - GetAbsOrigin().z;
 			height -= BOUNCEBOMB_RADIUS;
-			if ( height < 0.1 )
+			if( height < 0.1 )
+			{
 				height = 0.1;
+			}
 		}
 
-		float time = sqrt( height / (0.5 * GetCurrentGravity()) );
+		float time = sqrt( height / ( 0.5 * GetCurrentGravity() ) );
 		float velocity = GetCurrentGravity() * time;
 
 		// or you can just AddVelocity to the object instead of ApplyForce
@@ -641,18 +655,18 @@ void CBounceBomb::CavernBounceThink()
 		Vector up;
 
 		GetVectors( NULL, NULL, &up );
-		
+
 		pPhysicsObject->Wake();
 		pPhysicsObject->ApplyForceCenter( up * force );
 		if( m_hNearestNPC )
 		{
 			Vector vecPredict = m_hNearestNPC->GetSmoothedVelocity();
 
-			pPhysicsObject->ApplyForceCenter( vecPredict * (pPhysicsObject->GetMass() * 0.65f) );
+			pPhysicsObject->ApplyForceCenter( vecPredict * ( pPhysicsObject->GetMass() * 0.65f ) );
 		}
 
 		pPhysicsObject->ApplyTorqueCenter( AngularImpulse( random->RandomFloat( 15, 40 ), random->RandomFloat( 15, 40 ), random->RandomFloat( 30, 60 ) ) );
-		
+
 		EmitSound( "NPC_CombineMine.Hop" );
 
 		SetThink( &CBounceBomb::ExplodeThink );
@@ -694,7 +708,7 @@ void CBounceBomb::SettleThink()
 
 		if( !VPhysicsGetObject() )
 		{
-			Msg("**** Can't create vphysics for combine_mine!\n" );
+			Msg( "**** Can't create vphysics for combine_mine!\n" );
 			UTIL_Remove( this );
 			return;
 		}
@@ -705,13 +719,13 @@ void CBounceBomb::SettleThink()
 
 	if( !m_bDisarmed )
 	{
-		if( VPhysicsGetObject()->IsAsleep() && !(VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD) )
+		if( VPhysicsGetObject()->IsAsleep() && !( VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD ) )
 		{
 			// If i'm not resting on the world, jump randomly.
 			trace_t tr;
 #ifdef MAPBASE
 			Vector vecTraceDir;
-			if (m_vecPlantOrientation != vec3_invalid)
+			if( m_vecPlantOrientation != vec3_invalid )
 			{
 				vecTraceDir = m_vecPlantOrientation * combine_mine_trace_dist.GetFloat();
 			}
@@ -722,12 +736,12 @@ void CBounceBomb::SettleThink()
 #else
 			Vector vecTraceDir = Vector( 0, 0, 1024 );
 #endif
-			UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - vecTraceDir, MASK_SHOT|CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &tr );
+			UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - vecTraceDir, MASK_SHOT | CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &tr );
 
 			bool bHop = false;
 			if( tr.m_pEnt )
 			{
-				IPhysicsObject *pPhysics = tr.m_pEnt->VPhysicsGetObject();
+				IPhysicsObject* pPhysics = tr.m_pEnt->VPhysicsGetObject();
 
 				if( pPhysics && pPhysics->GetMass() <= 1000 )
 				{
@@ -757,10 +771,10 @@ void CBounceBomb::SettleThink()
 				Vector vecUp;
 				GetVectors( NULL, NULL, &vecUp );
 #ifdef MAPBASE
-				if (m_vecPlantOrientation != vec3_invalid)
+				if( m_vecPlantOrientation != vec3_invalid )
 				{
-					float flDiff = abs(m_vecPlantOrientation.z - vecUp.z);
-					if ( flDiff >= 0.2f )
+					float flDiff = abs( m_vecPlantOrientation.z - vecUp.z );
+					if( flDiff >= 0.2f )
 					{
 						// Landed upside down. Right self
 						Vector vecForce( 0, 0, 2500 );
@@ -770,13 +784,13 @@ void CBounceBomb::SettleThink()
 				}
 				else
 #endif
-				if( vecUp.z <= 0.8 )
-				{
-					// Landed upside down. Right self
-					Vector vecForce( 0, 0, 2500 );
-					Flip( vecForce, AngularImpulse( 60, 0, 0 ) );
-					return;
-				}
+					if( vecUp.z <= 0.8 )
+					{
+						// Landed upside down. Right self
+						Vector vecForce( 0, 0, 2500 );
+						Flip( vecForce, AngularImpulse( 60, 0, 0 ) );
+						return;
+					}
 			}
 
 			// Check to make sure I'm not in a forbidden location
@@ -789,8 +803,8 @@ void CBounceBomb::SettleThink()
 			constraint_ballsocketparams_t ballsocket;
 			ballsocket.Defaults();
 			ballsocket.constraint.Defaults();
-			ballsocket.constraint.forceLimit = lbs2kg(1000);
-			ballsocket.constraint.torqueLimit = lbs2kg(1000);
+			ballsocket.constraint.forceLimit = lbs2kg( 1000 );
+			ballsocket.constraint.torqueLimit = lbs2kg( 1000 );
 			ballsocket.InitWithCurrentObjectState( g_PhysWorldObject, VPhysicsGetObject(), GetAbsOrigin() );
 			m_pConstraint = physenv->CreateBallsocketConstraint( g_PhysWorldObject, VPhysicsGetObject(), NULL, ballsocket );
 			CloseHooks();
@@ -802,9 +816,9 @@ void CBounceBomb::SettleThink()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CBounceBomb::OnTakeDamage( const CTakeDamageInfo &info )
+int CBounceBomb::OnTakeDamage( const CTakeDamageInfo& info )
 {
-	if( m_pConstraint || !VPhysicsGetObject())
+	if( m_pConstraint || !VPhysicsGetObject() )
 	{
 		return false;
 	}
@@ -835,11 +849,11 @@ void CBounceBomb::UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, uns
 
 			// Light isn't on.
 			m_hSprite = CSprite::SpriteCreate( "sprites/glow01.vmt", GetAbsOrigin() + up * 10.0f, false );
-			CSprite *pSprite = (CSprite *)m_hSprite.Get();
+			CSprite* pSprite = ( CSprite* )m_hSprite.Get();
 
 			if( m_hSprite )
 			{
-				pSprite->SetParent( this );		
+				pSprite->SetParent( this );
 				pSprite->SetTransparency( kRenderTransAdd, r, g, b, a, kRenderFxNone );
 				pSprite->SetScale( 0.35, 0.0 );
 			}
@@ -847,7 +861,7 @@ void CBounceBomb::UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, uns
 		else
 		{
 			// Update color
-			CSprite *pSprite = (CSprite *)m_hSprite.Get();
+			CSprite* pSprite = ( CSprite* )m_hSprite.Get();
 			pSprite->SetTransparency( kRenderTransAdd, r, g, b, a, kRenderFxNone );
 		}
 	}
@@ -860,8 +874,8 @@ void CBounceBomb::UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, uns
 			m_hSprite.Set( NULL );
 		}
 	}
-	
-	if ( !m_hSprite )
+
+	if( !m_hSprite )
 	{
 		m_LastSpriteColor.SetRawColor( 0 );
 	}
@@ -875,10 +889,10 @@ void CBounceBomb::UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, uns
 //---------------------------------------------------------
 void CBounceBomb::Wake( bool bAwake )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 
 	CReliableBroadcastRecipientFilter filter;
-	
+
 #ifdef MAPBASE
 	if( !m_pWarnSound && !m_bCheapWarnSound )
 #else
@@ -886,7 +900,7 @@ void CBounceBomb::Wake( bool bAwake )
 #endif
 	{
 		m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_CombineMine.ActiveLoop" );
-		controller.Play( m_pWarnSound, 1.0, PITCH_NORM  );
+		controller.Play( m_pWarnSound, 1.0, PITCH_NORM );
 	}
 
 	if( bAwake )
@@ -941,67 +955,83 @@ void CBounceBomb::Wake( bool bAwake )
 //---------------------------------------------------------
 float CBounceBomb::FindNearestNPC()
 {
-	float flNearest = (BOUNCEBOMB_WARN_RADIUS * BOUNCEBOMB_WARN_RADIUS) + 1.0;
+	float flNearest = ( BOUNCEBOMB_WARN_RADIUS * BOUNCEBOMB_WARN_RADIUS ) + 1.0;
 
 	// Assume this search won't find anyone.
 	SetNearestNPC( NULL );
 
-	CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+	CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
 	int nAIs = g_AI_Manager.NumAIs();
 
-	for ( int i = 0; i < nAIs; i++ )
+	for( int i = 0; i < nAIs; i++ )
 	{
-		CAI_BaseNPC *pNPC = ppAIs[ i ];
+		CAI_BaseNPC* pNPC = ppAIs[ i ];
 
 		if( pNPC->IsAlive() )
 		{
 			// ignore hidden objects
-			if ( pNPC->IsEffectActive( EF_NODRAW ) )
+			if( pNPC->IsEffectActive( EF_NODRAW ) )
+			{
 				continue;
+			}
 
 			// Don't bother with NPC's that are below me.
 			if( pNPC->EyePosition().z < GetAbsOrigin().z )
+			{
 				continue;
+			}
 
 #ifdef MAPBASE
 			bool bPassesFilter = false;
-			if (m_hEnemyFilter || m_hFriendFilter)
+			if( m_hEnemyFilter || m_hFriendFilter )
 			{
 				// If we have an enemy or friend filter, always accept those who pass it
 				// If we're only supposed to be using filters, only find entities that pass one of them
 
-				if (m_hEnemyFilter && m_hEnemyFilter->PassesFilter( this, pNPC ))
+				if( m_hEnemyFilter && m_hEnemyFilter->PassesFilter( this, pNPC ) )
+				{
 					bPassesFilter = true;
+				}
 
-				else if (m_hFriendFilter && m_hFriendFilter->PassesFilter( this, pNPC ))
+				else if( m_hFriendFilter && m_hFriendFilter->PassesFilter( this, pNPC ) )
+				{
 					bPassesFilter = true;
+				}
 
-				if (m_bFilterExclusive && !bPassesFilter)
+				if( m_bFilterExclusive && !bPassesFilter )
+				{
 					continue;
+				}
 			}
-			
-			if (!bPassesFilter)
+
+			if( !bPassesFilter )
 			{
 #endif
 
-			// Disregard things that want to be disregarded
-			if( pNPC->Classify() == CLASS_NONE )
-				continue; 
+				// Disregard things that want to be disregarded
+				if( pNPC->Classify() == CLASS_NONE )
+				{
+					continue;
+				}
 
-			// Disregard bullseyes
-			if( pNPC->Classify() == CLASS_BULLSEYE )
-				continue;
+				// Disregard bullseyes
+				if( pNPC->Classify() == CLASS_BULLSEYE )
+				{
+					continue;
+				}
 
-			// Disregard turrets
-			if( pNPC->m_iClassname == gm_iszFloorTurretClassname || pNPC->m_iClassname == gm_iszGroundTurretClassname )
-				continue;
+				// Disregard turrets
+				if( pNPC->m_iClassname == gm_iszFloorTurretClassname || pNPC->m_iClassname == gm_iszGroundTurretClassname )
+				{
+					continue;
+				}
 
 #ifdef MAPBASE
 			}
 #endif
 
 
-			float flDist = (GetAbsOrigin() - pNPC->GetAbsOrigin()).LengthSqr();
+			float flDist = ( GetAbsOrigin() - pNPC->GetAbsOrigin() ).LengthSqr();
 
 			if( flDist < flNearest )
 			{
@@ -1020,12 +1050,12 @@ float CBounceBomb::FindNearestNPC()
 	}
 
 #ifdef MAPBASE_MP
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
-		if ( pPlayer && !(pPlayer->GetFlags() & FL_NOTARGET) )
+		CBaseEntity* pPlayer = UTIL_PlayerByIndex( i );
+		if( pPlayer && !( pPlayer->GetFlags() & FL_NOTARGET ) )
 		{
-			float flDist = (pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
+			float flDist = ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
 
 			if( flDist < flNearest && FVisible( pPlayer, m_iLOSMask ) )
 			{
@@ -1036,26 +1066,30 @@ float CBounceBomb::FindNearestNPC()
 	}
 #else
 	// finally, check the player.
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
-	if( pPlayer && !(pPlayer->GetFlags() & FL_NOTARGET) )
+	if( pPlayer && !( pPlayer->GetFlags() & FL_NOTARGET ) )
 	{
 #ifdef MAPBASE
 		bool bPassesFilter = true;
-		if ((m_hEnemyFilter || m_hFriendFilter) && m_bFilterExclusive)
+		if( ( m_hEnemyFilter || m_hFriendFilter ) && m_bFilterExclusive )
 		{
 			// If we have an enemy or friend filter, and that's all we're supposed to be using,
 			// don't accept the player if they don't pass our filters
 
-			if (m_hEnemyFilter && !m_hEnemyFilter->PassesFilter( this, pPlayer ))
+			if( m_hEnemyFilter && !m_hEnemyFilter->PassesFilter( this, pPlayer ) )
+			{
 				bPassesFilter = false;
+			}
 
-			else if (m_hFriendFilter && !m_hFriendFilter->PassesFilter( this, pPlayer ))
+			else if( m_hFriendFilter && !m_hFriendFilter->PassesFilter( this, pPlayer ) )
+			{
 				bPassesFilter = false;
+			}
 		}
 #endif
 
-		float flDist = (pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
+		float flDist = ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
 
 #ifdef MAPBASE
 		if( flDist < flNearest && FVisible( pPlayer, m_iLOSMask ) && bPassesFilter )
@@ -1103,14 +1137,18 @@ float CBounceBomb::FindNearestNPC()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CBounceBomb::IsFriend( CBaseEntity *pEntity )
+bool CBounceBomb::IsFriend( CBaseEntity* pEntity )
 {
 #ifdef MAPBASE
-	if (m_hFriendFilter && m_hFriendFilter->PassesFilter(this, pEntity))
+	if( m_hFriendFilter && m_hFriendFilter->PassesFilter( this, pEntity ) )
+	{
 		return true;
+	}
 
-	if (m_hEnemyFilter && m_hEnemyFilter->PassesFilter(this, pEntity))
+	if( m_hEnemyFilter && m_hEnemyFilter->PassesFilter( this, pEntity ) )
+	{
 		return false;
+	}
 #endif
 
 	int classify = pEntity->Classify();
@@ -1122,17 +1160,17 @@ bool CBounceBomb::IsFriend( CBaseEntity *pEntity )
 		return false;
 	}
 
-	if( classify == CLASS_METROPOLICE || 
-		classify == CLASS_COMBINE ||
-		classify == CLASS_MILITARY ||
-		classify == CLASS_COMBINE_HUNTER ||
+	if( classify == CLASS_METROPOLICE ||
+			classify == CLASS_COMBINE ||
+			classify == CLASS_MILITARY ||
+			classify == CLASS_COMBINE_HUNTER ||
 #ifdef MAPBASE
-		classify == CLASS_MANHACK ||
-		classify == CLASS_STALKER ||
-		classify == CLASS_PROTOSNIPER ||
-		classify == CLASS_COMBINE_GUNSHIP ||
+			classify == CLASS_MANHACK ||
+			classify == CLASS_STALKER ||
+			classify == CLASS_PROTOSNIPER ||
+			classify == CLASS_COMBINE_GUNSHIP ||
 #endif
-		classify == CLASS_SCANNER )
+			classify == CLASS_SCANNER )
 	{
 		bIsCombine = true;
 	}
@@ -1151,18 +1189,18 @@ bool CBounceBomb::IsFriend( CBaseEntity *pEntity )
 //---------------------------------------------------------
 void CBounceBomb::SearchThink()
 {
-	if( !UTIL_FindClientInPVS(edict()) )
+	if( !UTIL_FindClientInPVS( edict() ) )
 	{
 		// Sleep!
 		SetNextThink( gpGlobals->curtime + 0.5 );
 		return;
 	}
 
-	if(	(CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI) )
+	if(	( CAI_BaseNPC::m_nDebugBits & bits_debugDisableAI ) )
 	{
 		if( IsAwake() )
 		{
-			Wake(false);
+			Wake( false );
 		}
 
 		SetNextThink( gpGlobals->curtime + 0.5 );
@@ -1223,15 +1261,19 @@ void CBounceBomb::SearchThink()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::ExplodeTouch( CBaseEntity *pOther )
+void CBounceBomb::ExplodeTouch( CBaseEntity* pOther )
 {
 	// Don't touch anything if held by physgun.
 	if( m_bHeldByPhysgun )
+	{
 		return;
+	}
 
 	// Don't touch triggers.
-	if( pOther->IsSolidFlagSet(FSOLID_TRIGGER) )
+	if( pOther->IsSolidFlagSet( FSOLID_TRIGGER ) )
+	{
 		return;
+	}
 
 	// Don't touch gibs and other debris
 	if( pOther->GetCollisionGroup() == COLLISION_GROUP_DEBRIS )
@@ -1277,21 +1319,21 @@ void CBounceBomb::ExplodeThink()
 
 	if( m_pWarnSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		controller.SoundDestroy( m_pWarnSound );
 	}
 
 
-	CBaseEntity *pThrower = HasPhysicsAttacker( 0.5 );
+	CBaseEntity* pThrower = HasPhysicsAttacker( 0.5 );
 
-	if (m_iModification == MINE_MODIFICATION_CAVERN)
+	if( m_iModification == MINE_MODIFICATION_CAVERN )
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true,
-			NULL, CLASS_PLAYER_ALLY );
+		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), ( pThrower ) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true,
+						 NULL, CLASS_PLAYER_ALLY );
 	}
 	else
 	{
-		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), (pThrower) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true);
+		ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), ( pThrower ) ? pThrower : this, BOUNCEBOMB_EXPLODE_DAMAGE, BOUNCEBOMB_EXPLODE_RADIUS, true );
 	}
 
 #ifdef MAPBASE
@@ -1320,7 +1362,7 @@ void CBounceBomb::OpenHooks( bool bSilent )
 
 	SetPoseParameter( m_iAllHooks, BOUNCEBOMB_HOOK_RANGE );
 
-#ifdef _XBOX 
+#ifdef _XBOX
 	RemoveEffects( EF_NOSHADOW );
 #endif
 
@@ -1351,7 +1393,7 @@ void CBounceBomb::CloseHooks()
 	// Once I lock down, forget how many tries it took.
 	m_iFlipAttempts = 0;
 
-#ifdef _XBOX 
+#ifdef _XBOX
 	AddEffects( EF_NOSHADOW );
 #endif
 }
@@ -1367,31 +1409,31 @@ extern int ACT_BARNACLE_BITE_SMALL_THINGS;
 // Output :	 true  - if sub-class has a response for the interaction
 //			 false - if sub-class has no response
 //-----------------------------------------------------------------------------
-bool CBounceBomb::HandleInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt )
+bool CBounceBomb::HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt )
 {
 	// This was originally done in npc_barnacle itself, but
 	// we've transitioned to interactions so we could extend special behavior to others
 	// without just adding more casting.
-	if ( interactionType == g_interactionBarnacleVictimBite )
+	if( interactionType == g_interactionBarnacleVictimBite )
 	{
 		Assert( sourceEnt && sourceEnt->IsNPC() );
-		sourceEnt->MyNPCPointer()->SetActivity( (Activity)ACT_BARNACLE_BITE_SMALL_THINGS );
+		sourceEnt->MyNPCPointer()->SetActivity( ( Activity )ACT_BARNACLE_BITE_SMALL_THINGS );
 		return true;
 	}
-	else if ( interactionType == g_interactionBarnacleVictimFinalBite )
+	else if( interactionType == g_interactionBarnacleVictimFinalBite )
 	{
 		ExplodeThink();
 		return true;
 	}
 
-	return BaseClass::HandleInteraction(interactionType, data, sourceEnt);
+	return BaseClass::HandleInteraction( interactionType, data, sourceEnt );
 }
 
 //-----------------------------------------------------------------------------
 void CBounceBomb::UpdateWarnSound( float flVolume, float flDelta )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
-	if (m_bCheapWarnSound && !m_pWarnSound)
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+	if( m_bCheapWarnSound && !m_pWarnSound )
 	{
 		CReliableBroadcastRecipientFilter filter;
 		//m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_CombineMine.ActiveLoop" );
@@ -1412,8 +1454,8 @@ void CBounceBomb::UpdateWarnSound( float flVolume, float flDelta )
 
 void CBounceBomb::SilenceWarnSound( float flDelta )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
-	if (m_bCheapWarnSound)
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+	if( m_bCheapWarnSound )
 	{
 		//if ( m_pWarnSound )
 		//{
@@ -1424,7 +1466,7 @@ void CBounceBomb::SilenceWarnSound( float flDelta )
 	}
 	else
 	{
-		if ( m_pWarnSound )
+		if( m_pWarnSound )
 		{
 			controller.SoundChangeVolume( m_pWarnSound, 0.0, flDelta );
 		}
@@ -1434,7 +1476,7 @@ void CBounceBomb::SilenceWarnSound( float flDelta )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::InputDisarm( inputdata_t &inputdata )
+void CBounceBomb::InputDisarm( inputdata_t& inputdata )
 {
 	// Only affect a mine that's armed and not placed by player.
 	if( !m_bPlacedByPlayer && m_iMineState == MINE_STATE_ARMED )
@@ -1446,57 +1488,57 @@ void CBounceBomb::InputDisarm( inputdata_t &inputdata )
 		}
 
 		m_bDisarmed = true;
-		OpenHooks(false);
+		OpenHooks( false );
 
-		SetMineState(MINE_STATE_DORMANT);
+		SetMineState( MINE_STATE_DORMANT );
 	}
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CBounceBomb::InputSetEnemyFilter( inputdata_t &inputdata )
+void CBounceBomb::InputSetEnemyFilter( inputdata_t& inputdata )
 {
 	m_iszEnemyFilter = inputdata.value.StringID();
-	m_hEnemyFilter = dynamic_cast<CBaseFilter*>(gEntList.FindEntityByName( NULL, STRING(m_iszEnemyFilter), this ));
+	m_hEnemyFilter = dynamic_cast<CBaseFilter*>( gEntList.FindEntityByName( NULL, STRING( m_iszEnemyFilter ), this ) );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CBounceBomb::InputSetFriendFilter( inputdata_t &inputdata )
+void CBounceBomb::InputSetFriendFilter( inputdata_t& inputdata )
 {
 	m_iszFriendFilter = inputdata.value.StringID();
-	m_hFriendFilter = dynamic_cast<CBaseFilter*>(gEntList.FindEntityByName( NULL, STRING(m_iszFriendFilter), this ));
+	m_hFriendFilter = dynamic_cast<CBaseFilter*>( gEntList.FindEntityByName( NULL, STRING( m_iszFriendFilter ), this ) );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::InputBounce( inputdata_t &inputdata )
+void CBounceBomb::InputBounce( inputdata_t& inputdata )
 {
 	m_hNearestNPC = NULL;
-	SetMineState(MINE_STATE_TRIGGERED);
+	SetMineState( MINE_STATE_TRIGGERED );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::InputBounceAtTarget( inputdata_t &inputdata )
+void CBounceBomb::InputBounceAtTarget( inputdata_t& inputdata )
 {
 	m_hNearestNPC = inputdata.value.Entity();
-	SetMineState(MINE_STATE_TRIGGERED);
+	SetMineState( MINE_STATE_TRIGGERED );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::InputSetPlantOrientation( inputdata_t &inputdata )
+void CBounceBomb::InputSetPlantOrientation( inputdata_t& inputdata )
 {
 	Vector vecInput;
 	inputdata.value.Vector3D( vecInput );
-	AngleVectors( QAngle(vecInput.x, vecInput.y, vecInput.z), &m_vecPlantOrientation );
+	AngleVectors( QAngle( vecInput.x, vecInput.y, vecInput.z ), &m_vecPlantOrientation );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::InputSetPlantOrientationRaw( inputdata_t &inputdata )
+void CBounceBomb::InputSetPlantOrientationRaw( inputdata_t& inputdata )
 {
 	inputdata.value.Vector3D( m_vecPlantOrientation );
 }
@@ -1504,7 +1546,7 @@ void CBounceBomb::InputSetPlantOrientationRaw( inputdata_t &inputdata )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason )
+void CBounceBomb::OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
@@ -1527,7 +1569,7 @@ void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason
 		OpenHooks( true );
 		SetMineState( MINE_STATE_DEPLOY );
 	}
-	else if ( Reason == LAUNCHED_BY_CANNON )
+	else if( Reason == LAUNCHED_BY_CANNON )
 	{
 		SetMineState( MINE_STATE_LAUNCHED );
 	}
@@ -1535,9 +1577,9 @@ void CBounceBomb::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-CBasePlayer *CBounceBomb::HasPhysicsAttacker( float dt )
+CBasePlayer* CBounceBomb::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if( gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime )
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -1549,8 +1591,10 @@ CBasePlayer *CBounceBomb::HasPhysicsAttacker( float dt )
 bool CBounceBomb::ShouldBeAvoidedByCompanions()
 {
 #ifdef MAPBASE
-	if (m_bUnavoidable)
+	if( m_bUnavoidable )
+	{
 		return false;
+	}
 #endif
 
 	return !IsPlayerPlaced() && IsAwake();
@@ -1558,7 +1602,7 @@ bool CBounceBomb::ShouldBeAvoidedByCompanions()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CBounceBomb::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
@@ -1576,9 +1620,9 @@ void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t re
 
 			VPhysicsGetObject()->EnableMotion( true );
 
-			// Try to scatter NPCs without panicking them. Make a move away sound up around their 
+			// Try to scatter NPCs without panicking them. Make a move away sound up around their
 			// ear level.
-			CSoundEnt::InsertSound( SOUND_MOVE_AWAY, GetAbsOrigin() + Vector( 0, 0, 60), 32.0f, 0.2f );
+			CSoundEnt::InsertSound( SOUND_MOVE_AWAY, GetAbsOrigin() + Vector( 0, 0, 60 ), 32.0f, 0.2f );
 			return;
 		}
 		else
@@ -1615,10 +1659,10 @@ void CBounceBomb::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t re
 		m_bPlacedByPlayer = true;
 		SetTouch( NULL );
 		SetThink( &CBounceBomb::SettleThink );
-		SetNextThink( gpGlobals->curtime + 0.1);
+		SetNextThink( gpGlobals->curtime + 0.1 );
 
 		// Since being punted causes the mine to flip, sometimes it 'catches an edge'
-		// and ends up touching the ground from whence it came, exploding instantly. 
+		// and ends up touching the ground from whence it came, exploding instantly.
 		// This little stunt prevents that by ignoring world collisions for a very short time.
 		m_flIgnoreWorldTime = gpGlobals->curtime + 0.1;
 	}

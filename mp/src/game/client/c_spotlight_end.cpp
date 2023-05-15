@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -27,7 +27,7 @@ public:
 	C_SpotlightEnd();
 
 public:
-	void	OnDataChanged(DataUpdateType_t updateType);
+	void	OnDataChanged( DataUpdateType_t updateType );
 	bool	ShouldDraw();
 	void	ClientThink( void );
 
@@ -50,7 +50,7 @@ private:
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-C_SpotlightEnd::C_SpotlightEnd(void) : /*m_pModelLight(0), */m_pDynamicLight(0)
+C_SpotlightEnd::C_SpotlightEnd( void ) : /*m_pModelLight(0), */m_pDynamicLight( 0 )
 {
 	m_flLightScale	= 100;
 }
@@ -60,11 +60,11 @@ C_SpotlightEnd::C_SpotlightEnd(void) : /*m_pModelLight(0), */m_pDynamicLight(0)
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_SpotlightEnd::OnDataChanged(DataUpdateType_t updateType)
+void C_SpotlightEnd::OnDataChanged( DataUpdateType_t updateType )
 {
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
-		SetNextClientThink(CLIENT_THINK_ALWAYS);
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 }
 
@@ -81,7 +81,7 @@ bool C_SpotlightEnd::ShouldDraw()
 //-----------------------------------------------------------------------------
 // Purpose: YWB:  This is a hack, BaseClass::Interpolate skips this entity because model == NULL
 //   We could do something like model = (model_t *)0x00000001, but that's probably more evil.
-// Input  : currentTime - 
+// Input  : currentTime -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool C_SpotlightEnd::ShouldInterpolate()
@@ -94,30 +94,34 @@ bool C_SpotlightEnd::ShouldInterpolate()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_SpotlightEnd::ClientThink(void)
+void C_SpotlightEnd::ClientThink( void )
 {
 	// If light scale is zero, don't draw light
-	if ( m_flLightScale <= 0 )
+	if( m_flLightScale <= 0 )
+	{
 		return;
+	}
 
 	ColorRGBExp32 color;
 	color.r	= m_clrRender->r * m_clrRender->a;
 	color.g	= m_clrRender->g * m_clrRender->a;
 	color.b	= m_clrRender->b * m_clrRender->a;
 	color.exponent = 0;
-	if ( color.r == 0 && color.g == 0 && color.b == 0 )
+	if( color.r == 0 && color.g == 0 && color.b == 0 )
+	{
 		return;
+	}
 
 	// Deal with the environment light
-	if ( !m_pDynamicLight || (m_pDynamicLight->key != m_index) )
+	if( !m_pDynamicLight || ( m_pDynamicLight->key != m_index ) )
 	{
 		m_pDynamicLight = effects->CL_AllocDlight( m_index );
-		assert (m_pDynamicLight);
+		assert( m_pDynamicLight );
 	}
 
 	//m_pDynamicLight->flags = DLIGHT_NO_MODEL_ILLUMINATION;
-	m_pDynamicLight->radius		= m_flLightScale*3.0f;
-	m_pDynamicLight->origin		= GetAbsOrigin() + Vector(0,0,5);
+	m_pDynamicLight->radius		= m_flLightScale * 3.0f;
+	m_pDynamicLight->origin		= GetAbsOrigin() + Vector( 0, 0, 5 );
 	m_pDynamicLight->die		= gpGlobals->curtime + 0.05f;
 	m_pDynamicLight->color		= color;
 
@@ -126,7 +130,7 @@ void C_SpotlightEnd::ClientThink(void)
 	VectorCopy (m_vSpotlightDir,  m_pDynamicLight->m_Direction);
 
 	// Deal with the model light
- 	if ( !m_pModelLight || (m_pModelLight->key != -index) )
+	if ( !m_pModelLight || (m_pModelLight->key != -index) )
 	{
 		m_pModelLight = effects->CL_AllocDlight( -index );
 		assert (m_pModelLight);
@@ -148,9 +152,9 @@ void C_SpotlightEnd::ClientThink(void)
 	SetNextClientThink( CLIENT_THINK_ALWAYS );
 }
 
-IMPLEMENT_CLIENTCLASS_DT(C_SpotlightEnd, DT_SpotlightEnd, CSpotlightEnd)
-	RecvPropFloat	(RECVINFO(m_flLightScale)),
-	RecvPropFloat	(RECVINFO(m_Radius)),
+IMPLEMENT_CLIENTCLASS_DT( C_SpotlightEnd, DT_SpotlightEnd, CSpotlightEnd )
+RecvPropFloat( RECVINFO( m_flLightScale ) ),
+			   RecvPropFloat( RECVINFO( m_Radius ) ),
 //	RecvPropVector	(RECVINFO(m_vSpotlightOrg)),
 //	RecvPropVector	(RECVINFO(m_vSpotlightDir)),
-END_RECV_TABLE()
+			   END_RECV_TABLE()

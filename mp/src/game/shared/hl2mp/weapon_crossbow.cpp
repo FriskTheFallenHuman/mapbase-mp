@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -57,10 +57,10 @@ extern ConVar sk_plr_dmg_crossbow;
 extern ConVar sk_npc_dmg_crossbow;
 
 #ifdef MAPBASE
-ConVar g_weapon_crossbow_new_hit_locations( "g_weapon_crossbow_new_hit_locations", "1", FCVAR_NONE, "Toggles new crossbow knockback that properly pushes back the correct limbs." );
+	ConVar g_weapon_crossbow_new_hit_locations( "g_weapon_crossbow_new_hit_locations", "1", FCVAR_NONE, "Toggles new crossbow knockback that properly pushes back the correct limbs." );
 #endif
 
-void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector *origin );
+void TE_StickyBolt( IRecipientFilter& filter, float delay,	Vector vecDirection, const Vector* origin );
 
 //-----------------------------------------------------------------------------
 // Crossbow Bolt
@@ -77,24 +77,30 @@ public:
 #endif
 	~CCrossbowBolt();
 
-	Class_T Classify( void ) { return CLASS_NONE; }
+	Class_T Classify( void )
+	{
+		return CLASS_NONE;
+	}
 
 public:
 	void Spawn( void );
 	void Precache( void );
 	void BubbleThink( void );
-	void BoltTouch( CBaseEntity *pOther );
+	void BoltTouch( CBaseEntity* pOther );
 	bool CreateVPhysics( void );
 	unsigned int PhysicsSolidMaskForEntity() const;
 #ifdef MAPBASE
-	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseCombatCharacter *pentOwner = NULL );
+	static CCrossbowBolt* BoltCreate( const Vector& vecOrigin, const QAngle& angAngles, CBaseCombatCharacter* pentOwner = NULL );
 
-	void InputSetDamage( inputdata_t &inputdata );
+	void InputSetDamage( inputdata_t& inputdata );
 	float m_flDamage;
 
-	virtual void SetDamage(float flDamage) { m_flDamage = flDamage; }
+	virtual void SetDamage( float flDamage )
+	{
+		m_flDamage = flDamage;
+	}
 #else
-	static CCrossbowBolt *BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner = NULL );
+	static CCrossbowBolt* BoltCreate( const Vector& vecOrigin, const QAngle& angAngles, CBasePlayer* pentOwner = NULL );
 #endif
 
 protected:
@@ -103,7 +109,7 @@ protected:
 
 	CHandle<CSprite>		m_pGlowSprite;
 	CHandle<CSpriteTrail>	m_pGlowTrail;
-	
+
 	int		m_iDamage;
 
 	DECLARE_DATADESC();
@@ -112,13 +118,13 @@ protected:
 LINK_ENTITY_TO_CLASS( crossbow_bolt, CCrossbowBolt );
 
 BEGIN_DATADESC( CCrossbowBolt )
-	// Function Pointers
-	DEFINE_FUNCTION( BubbleThink ),
-	DEFINE_FUNCTION( BoltTouch ),
+// Function Pointers
+DEFINE_FUNCTION( BubbleThink ),
+				 DEFINE_FUNCTION( BoltTouch ),
 
-	// These are recreated on reload, they don't need storage
-	DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
+				 // These are recreated on reload, they don't need storage
+				 DEFINE_FIELD( m_pGlowSprite, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_pGlowTrail, FIELD_EHANDLE ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_flDamage, FIELD_FLOAT, "Damage" ),
@@ -127,27 +133,29 @@ BEGIN_DATADESC( CCrossbowBolt )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDamage", InputSetDamage ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CCrossbowBolt, DT_CrossbowBolt )
-END_SEND_TABLE()
+				 IMPLEMENT_SERVERCLASS_ST( CCrossbowBolt, DT_CrossbowBolt )
+				 END_SEND_TABLE()
 
 #ifdef MAPBASE
-CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBaseCombatCharacter *pentOwner )
+	CCrossbowBolt* CCrossbowBolt::BoltCreate( const Vector& vecOrigin, const QAngle& angAngles, CBaseCombatCharacter* pentOwner )
 #else
-CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle &angAngles, CBasePlayer *pentOwner )
+	CCrossbowBolt* CCrossbowBolt::BoltCreate( const Vector& vecOrigin, const QAngle& angAngles, CBasePlayer* pentOwner )
 #endif
 {
 	// Create a new entity with CCrossbowBolt private data
-	CCrossbowBolt *pBolt = (CCrossbowBolt *)CreateEntityByName( "crossbow_bolt" );
+	CCrossbowBolt* pBolt = ( CCrossbowBolt* )CreateEntityByName( "crossbow_bolt" );
 	UTIL_SetOrigin( pBolt, vecOrigin );
 	pBolt->SetAbsAngles( angAngles );
 	pBolt->Spawn();
 	pBolt->SetOwnerEntity( pentOwner );
 
 #ifdef MAPBASE
-	if ( pentOwner && pentOwner->IsNPC() )
+	if( pentOwner && pentOwner->IsNPC() )
+	{
 		pBolt->m_flDamage = sk_npc_dmg_crossbow.GetFloat();
+	}
 	//else
 	//	pBolt->m_flDamage = sk_plr_dmg_crossbow.GetFloat();
 #endif
@@ -157,7 +165,7 @@ CCrossbowBolt *CCrossbowBolt::BoltCreate( const Vector &vecOrigin, const QAngle 
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CCrossbowBolt::CCrossbowBolt( void )
 {
@@ -167,23 +175,23 @@ CCrossbowBolt::CCrossbowBolt( void )
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CCrossbowBolt::~CCrossbowBolt( void )
 {
-	if ( m_pGlowSprite )
+	if( m_pGlowSprite )
 	{
 		UTIL_Remove( m_pGlowSprite );
 	}
 
-	if ( m_pGlowTrail )
+	if( m_pGlowTrail )
 	{
 		UTIL_Remove( m_pGlowTrail );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CCrossbowBolt::CreateVPhysics( void )
@@ -202,17 +210,17 @@ unsigned int CCrossbowBolt::PhysicsSolidMaskForEntity() const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CCrossbowBolt::CreateSprites( void )
 {
-	if ( m_pGlowSprite  == NULL )
+	if( m_pGlowSprite  == NULL )
 	{
 		// Start up the eye glow
 		m_pGlowSprite = CSprite::SpriteCreate( GLOW_SPRITE, GetLocalOrigin(), false );
 
-		if ( m_pGlowSprite != NULL )
+		if( m_pGlowSprite != NULL )
 		{
 			m_pGlowSprite->FollowEntity( this );
 			m_pGlowSprite->SetTransparency( kRenderGlow, 255, 255, 255, 128, kRenderFxNoDissipation );
@@ -221,12 +229,12 @@ bool CCrossbowBolt::CreateSprites( void )
 		}
 	}
 
-	if ( m_pGlowTrail  == NULL )
+	if( m_pGlowTrail  == NULL )
 	{
 		// Start up the eye trail
 		m_pGlowTrail = CSpriteTrail::SpriteTrailCreate( GLOW_TRAIL_SPRITE, GetLocalOrigin(), false );
 
-		if ( m_pGlowTrail != NULL )
+		if( m_pGlowTrail != NULL )
 		{
 			m_pGlowTrail->FollowEntity( this );
 			m_pGlowTrail->SetTransparency( kRenderTransAdd, 255, 255, 255, 128, kRenderFxNone );
@@ -240,7 +248,7 @@ bool CCrossbowBolt::CreateSprites( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CCrossbowBolt::Spawn( void )
 {
@@ -248,10 +256,10 @@ void CCrossbowBolt::Spawn( void )
 
 	SetModel( BOLT_MODEL );
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_CUSTOM );
-	UTIL_SetSize( this, -Vector(1,1,1), Vector(1,1,1) );
+	UTIL_SetSize( this, -Vector( 1, 1, 1 ), Vector( 1, 1, 1 ) );
 	SetSolid( SOLID_BBOX );
 	SetGravity( 0.05f );
-	
+
 	// Make sure we're updated if we're underwater
 	UpdateWaterState();
 
@@ -259,7 +267,7 @@ void CCrossbowBolt::Spawn( void )
 
 	SetThink( &CCrossbowBolt::BubbleThink );
 	SetNextThink( gpGlobals->curtime + 0.1f );
-	
+
 	CreateSprites();
 
 	// Make us glow until we've hit the wall
@@ -277,9 +285,9 @@ void CCrossbowBolt::Precache( void )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CCrossbowBolt::InputSetDamage( inputdata_t &inputdata )
+void CCrossbowBolt::InputSetDamage( inputdata_t& inputdata )
 {
 	m_flDamage = inputdata.value.Float();
 }
@@ -287,31 +295,31 @@ void CCrossbowBolt::InputSetDamage( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOther - 
+// Purpose:
+// Input  : *pOther -
 //-----------------------------------------------------------------------------
-void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
+void CCrossbowBolt::BoltTouch( CBaseEntity* pOther )
 {
-	if ( pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER) )
+	if( pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER ) )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
 #ifdef MAPBASE
 		// But some physics objects that are also triggers (like weapons) shouldn't go through this check.
-		// 
+		//
 		// Note: rpg_missile has the same code, except it properly accounts for weapons in a different way.
 		// This was discovered after I implemented this and both work fine, but if this ever causes problems,
 		// use rpg_missile's implementation:
-		// 
+		//
 		// if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER|FSOLID_VOLUME_CONTENTS) && pOther->GetCollisionGroup() != COLLISION_GROUP_WEAPON )
-		// 
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) ) )
+		//
+		if( pOther->GetMoveType() == MOVETYPE_NONE && ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) ) )
 #else
-		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		if( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
 #endif
 			return;
 	}
 
-	if ( pOther->m_takedamage != DAMAGE_NO )
+	if( pOther->m_takedamage != DAMAGE_NO )
 	{
 		trace_t	tr;
 		tr = BaseClass::GetTouchTrace();
@@ -334,31 +342,31 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 #endif//HL2_EPISODIC
 
 #ifdef MAPBASE
-		if ( g_weapon_crossbow_new_hit_locations.GetInt() > 0 )
+		if( g_weapon_crossbow_new_hit_locations.GetInt() > 0 )
 		{
 			// A very experimental and weird way of getting a crossbow bolt to deal accurate knockback.
-			CBaseAnimating *pOtherAnimating = pOther->GetBaseAnimating();
-			if ( pOtherAnimating && pOtherAnimating->GetModelPtr() && pOtherAnimating->GetModelPtr()->numbones() > 1 )
+			CBaseAnimating* pOtherAnimating = pOther->GetBaseAnimating();
+			if( pOtherAnimating && pOtherAnimating->GetModelPtr() && pOtherAnimating->GetModelPtr()->numbones() > 1 )
 			{
 				int iClosestBone = -1;
-				float flCurDistSqr = Square(128.0f);
+				float flCurDistSqr = Square( 128.0f );
 				matrix3x4_t bonetoworld;
 				Vector vecBonePos;
 
-				for ( int i = 0; i < pOtherAnimating->GetModelPtr()->numbones(); i++ )
+				for( int i = 0; i < pOtherAnimating->GetModelPtr()->numbones(); i++ )
 				{
 					pOtherAnimating->GetBoneTransform( i, bonetoworld );
 					MatrixPosition( bonetoworld, vecBonePos );
 
 					float flDist = vecBonePos.DistToSqr( GetLocalOrigin() );
-					if ( flDist < flCurDistSqr )
+					if( flDist < flCurDistSqr )
 					{
 						iClosestBone = i;
 						flCurDistSqr = flDist;
 					}
 				}
 
-				if ( iClosestBone != -1 )
+				if( iClosestBone != -1 )
 				{
 					tr.physicsbone = pOtherAnimating->GetPhysicsBone( iClosestBone );
 				}
@@ -366,7 +374,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		}
 #endif
 
-		if ( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
+		if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() && pOther->IsNPC() )
 		{
 #ifdef MAPBASE
 			CTakeDamageInfo	dmgInfo( this, GetOwnerEntity(), m_flDamage, DMG_NEVERGIB );
@@ -385,15 +393,21 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			SetThink( &CCrossbowBolt::SUB_Remove );
 			SetNextThink( gpGlobals->curtime + 2.0f );
 
-			if ( m_pGlowSprite != NULL )
+			if( m_pGlowSprite != NULL )
+			{
 				m_pGlowSprite->TurnOff();
+			}
 
-			if ( m_pGlowTrail != NULL )
+			if( m_pGlowTrail != NULL )
+			{
 				m_pGlowTrail->TurnOff();
+			}
 
-			CBasePlayer *pPlayer = ToBasePlayer( GetOwnerEntity() );
-			if ( pPlayer )
+			CBasePlayer* pPlayer = ToBasePlayer( GetOwnerEntity() );
+			if( pPlayer )
+			{
 				gamestats->Event_WeaponHit( pPlayer, true, "weapon_crossbow", dmgInfo );
+			}
 		}
 		else
 		{
@@ -412,10 +426,12 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			// See if we should reflect off this surface
 			float hitDot = DotProduct( tr.plane.normal, -vecDir );
 
-			if ( ( hitDot < 0.5f ) && ( speed > 100 ) )
+			if( ( hitDot < 0.5f ) && ( speed > 100 ) )
 			{
-				if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+				if( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+				{
 					return;
+				}
 
 				Vector vReflection = 2.0f * tr.plane.normal * hitDot + vecDir;
 
@@ -429,8 +445,10 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			}
 			else
 			{
-				if ( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+				if( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
+				{
 					return;
+				}
 
 				SetThink( &CCrossbowBolt::SUB_Remove );
 				SetNextThink( gpGlobals->curtime + 2.0f );
@@ -450,11 +468,15 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				SetThink( &CCrossbowBolt::SUB_Remove );
 				SetNextThink( gpGlobals->curtime + 2.0f );
 
-				if ( m_pGlowSprite != NULL )
+				if( m_pGlowSprite != NULL )
+				{
 					m_pGlowSprite->TurnOff();
+				}
 
-				if ( m_pGlowTrail != NULL )
+				if( m_pGlowTrail != NULL )
+				{
 					m_pGlowTrail->TurnOff();
+				}
 			}
 		}
 
@@ -466,7 +488,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		tr = BaseClass::GetTouchTrace();
 
 		// See if we struck the world
-		if ( pOther->GetCollisionGroup() == COLLISION_GROUP_NONE && !( tr.surface.flags & SURF_SKY ) )
+		if( pOther->GetCollisionGroup() == COLLISION_GROUP_NONE && !( tr.surface.flags & SURF_SKY ) )
 		{
 			EmitSound( "Weapon_Crossbow.BoltHitWorld" );
 
@@ -477,7 +499,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 			// See if we should reflect off this surface
 			float hitDot = DotProduct( tr.plane.normal, -vecDir );
 
-			if ( ( hitDot < 0.5f ) && ( speed > 100 ) )
+			if( ( hitDot < 0.5f ) && ( speed > 100 ) )
 			{
 				Vector vReflection = 2.0f * tr.plane.normal * hitDot + vecDir;
 
@@ -520,21 +542,21 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 				SetThink( &CCrossbowBolt::SUB_Remove );
 				SetNextThink( gpGlobals->curtime + 2.0f );
 
-				if ( m_pGlowSprite != NULL )
+				if( m_pGlowSprite != NULL )
 				{
 					m_pGlowSprite->TurnOn();
-					m_pGlowSprite->FadeAndDie(3.0f);
+					m_pGlowSprite->FadeAndDie( 3.0f );
 				}
 
-				if ( m_pGlowTrail != NULL )
+				if( m_pGlowTrail != NULL )
 				{
 					m_pGlowTrail->TurnOn();
-					m_pGlowSprite->FadeAndDie(3.0f);
+					m_pGlowSprite->FadeAndDie( 3.0f );
 				}
 			}
 
 			// Shoot some sparks
-			if ( UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER )
+			if( UTIL_PointContents( GetAbsOrigin() ) != CONTENTS_WATER )
 			{
 				g_pEffects->Sparks( GetAbsOrigin() );
 			}
@@ -542,7 +564,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 		else
 		{
 			// Put a mark unless we've hit the sky
-			if ( ( tr.surface.flags & SURF_SKY ) == false )
+			if( ( tr.surface.flags & SURF_SKY ) == false )
 			{
 				UTIL_ImpactTrace( &tr, DMG_BULLET );
 			}
@@ -553,7 +575,7 @@ void CCrossbowBolt::BoltTouch( CBaseEntity *pOther )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CCrossbowBolt::BubbleThink( void )
 {
@@ -567,8 +589,10 @@ void CCrossbowBolt::BubbleThink( void )
 	// Make danger sounds out in front of me, to scare snipers back into their hole
 	CSoundEnt::InsertSound( SOUND_DANGER_SNIPERONLY, GetAbsOrigin() + GetAbsVelocity() * 0.2, 120.0f, 0.5f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
 
-	if ( GetWaterLevel()  == 0 )
+	if( GetWaterLevel()  == 0 )
+	{
 		return;
+	}
 
 	UTIL_BubbleTrail( GetAbsOrigin() - GetAbsVelocity() * 0.1f, GetAbsOrigin(), 5 );
 }
@@ -580,7 +604,7 @@ void CCrossbowBolt::BubbleThink( void )
 //-----------------------------------------------------------------------------
 
 #ifdef CLIENT_DLL
-#define CWeaponCrossbow C_WeaponCrossbow
+	#define CWeaponCrossbow C_WeaponCrossbow
 #endif
 
 class CWeaponCrossbow : public CBaseHL2MPCombatWeapon
@@ -589,13 +613,13 @@ class CWeaponCrossbow : public CBaseHL2MPCombatWeapon
 public:
 
 	CWeaponCrossbow( void );
-	
+
 	virtual void	Precache( void );
 	virtual void	PrimaryAttack( void );
 	virtual void	SecondaryAttack( void );
 	virtual bool	Deploy( void );
-	virtual void	Drop( const Vector &vecVelocity );
-	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual void	Drop( const Vector& vecVelocity );
+	virtual bool	Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 	virtual bool	Reload( void );
 #ifdef MAPBASE
 	virtual void	Reload_NPC( bool bPlaySound = true );
@@ -603,33 +627,59 @@ public:
 	virtual void	ItemPostFrame( void );
 	virtual void	ItemBusyFrame( void );
 #ifdef GAME_DLL
-	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #ifdef MAPBASE
-	virtual void	Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary );
+	virtual void	Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary );
 #endif
 #endif
 	virtual bool	SendWeaponAnim( int iActivity );
-	virtual bool	IsWeaponZoomed() { return m_bInZoom; }
-	
-	bool	ShouldDisplayHUDHint() { return true; }
+	virtual bool	IsWeaponZoomed()
+	{
+		return m_bInZoom;
+	}
+
+	bool	ShouldDisplayHUDHint()
+	{
+		return true;
+	}
 
 #ifdef MAPBASE
 #ifdef GAME_DLL
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int		CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
-	virtual int	GetMinBurst() { return 1; }
-	virtual int	GetMaxBurst() { return 1; }
+	virtual int	GetMinBurst()
+	{
+		return 1;
+	}
+	virtual int	GetMaxBurst()
+	{
+		return 1;
+	}
 
-	virtual float	GetMinRestTime( void ) { return 3.0f; } // 1.5f
-	virtual float	GetMaxRestTime( void ) { return 3.0f; } // 2.0f
+	virtual float	GetMinRestTime( void )
+	{
+		return 3.0f;    // 1.5f
+	}
+	virtual float	GetMaxRestTime( void )
+	{
+		return 3.0f;    // 2.0f
+	}
 
-	virtual float GetFireRate( void )  { return 5.0f; }
+	virtual float GetFireRate( void )
+	{
+		return 5.0f;
+	}
 
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone = VECTOR_CONE_15DEGREES;
-		if (!GetOwner() || !GetOwner()->IsNPC())
+		if( !GetOwner() || !GetOwner()->IsNPC() )
+		{
 			return cone;
+		}
 
 		static Vector NPCCone = VECTOR_CONE_5DEGREES;
 
@@ -637,12 +687,12 @@ public:
 	}
 #endif
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_ACTTABLE();
 
 private:
-	
+
 	void	StopEffects( void );
 	void	SetSkin( int skinNum );
 	void	CheckZoomToggle( void );
@@ -650,11 +700,11 @@ private:
 #ifdef MAPBASE
 	void	SetBolt( int iSetting );
 #ifdef GAME_DLL
-	void	FireNPCBolt( CAI_BaseNPC *pOwner, Vector &vecShootOrigin, Vector &vecShootDir );
+	void	FireNPCBolt( CAI_BaseNPC* pOwner, Vector& vecShootOrigin, Vector& vecShootDir );
 #endif
 #endif
 	void	ToggleZoom( void );
-	
+
 	// Various states for the crossbow's charger
 	enum ChargerState_t
 	{
@@ -670,7 +720,7 @@ private:
 	void	DoLoadEffect( void );
 
 private:
-	
+
 	// Charger effects
 	ChargerState_t		m_nChargeState;
 
@@ -681,7 +731,7 @@ private:
 	CNetworkVar( bool,	m_bInZoom );
 	CNetworkVar( bool,	m_bMustReload );
 
-	CWeaponCrossbow( const CWeaponCrossbow & );
+	CWeaponCrossbow( const CWeaponCrossbow& );
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCrossbow, DT_WeaponCrossbow )
@@ -697,10 +747,10 @@ BEGIN_NETWORK_TABLE( CWeaponCrossbow, DT_WeaponCrossbow )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponCrossbow )
+	BEGIN_PREDICTION_DATA( CWeaponCrossbow )
 	DEFINE_PRED_FIELD( m_bInZoom, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bMustReload, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_crossbow, CWeaponCrossbow );
@@ -710,7 +760,7 @@ PRECACHE_WEAPON_REGISTER( weapon_crossbow );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponCrossbow::m_acttable[] = 
+acttable_t	CWeaponCrossbow::m_acttable[] =
 {
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_CROSSBOW,		true },
@@ -732,7 +782,7 @@ acttable_t	CWeaponCrossbow::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_CROSSBOW,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_CROSSBOW_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_CROSSBOW_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_CROSSBOW_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_CROSSBOW,			false },//always aims
 
@@ -770,7 +820,7 @@ acttable_t	CWeaponCrossbow::m_acttable[] =
 
 	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
 	{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true  },
-	
+
 // Readiness activities (not aiming)
 	{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
 	{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
@@ -785,7 +835,7 @@ acttable_t	CWeaponCrossbow::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
 
@@ -842,7 +892,7 @@ acttable_t	CWeaponCrossbow::m_acttable[] =
 	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_CROSSBOW,					false },
 };
 
-IMPLEMENT_ACTTABLE(CWeaponCrossbow);
+IMPLEMENT_ACTTABLE( CWeaponCrossbow );
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
@@ -867,7 +917,7 @@ CWeaponCrossbow::CWeaponCrossbow( void )
 #define	CROSSBOW_GLOW_SPRITE2	"sprites/blueflare1.vmt"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::Precache( void )
 {
@@ -890,7 +940,7 @@ void CWeaponCrossbow::Precache( void )
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::PrimaryAttack( void )
 {
-	if ( m_bInZoom && g_pGameRules->IsMultiplayer() )
+	if( m_bInZoom && g_pGameRules->IsMultiplayer() )
 	{
 //		FireSniperBolt();
 		FireBolt();
@@ -905,8 +955,8 @@ void CWeaponCrossbow::PrimaryAttack( void )
 
 	SetWeaponIdleTime( gpGlobals->curtime + SequenceDuration( ACT_VM_PRIMARYATTACK ) );
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( pPlayer )
 	{
 #ifdef GAME_DLL
 		m_iPrimaryAttacks++;
@@ -927,12 +977,12 @@ void CWeaponCrossbow::SecondaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponCrossbow::Reload( void )
 {
-	if ( BaseClass::Reload() )
+	if( BaseClass::Reload() )
 	{
 		m_bMustReload = false;
 		return true;
@@ -943,7 +993,7 @@ bool CWeaponCrossbow::Reload( void )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::Reload_NPC( bool bPlaySound )
 {
@@ -954,20 +1004,20 @@ void CWeaponCrossbow::Reload_NPC( bool bPlaySound )
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::CheckZoomToggle( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	
-	if ( pPlayer->m_afButtonPressed & IN_ATTACK2 )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+
+	if( pPlayer->m_afButtonPressed & IN_ATTACK2 )
 	{
 		ToggleZoom();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::ItemBusyFrame( void )
 {
@@ -976,14 +1026,14 @@ void CWeaponCrossbow::ItemBusyFrame( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::ItemPostFrame( void )
 {
 	// Allow zoom toggling
 	CheckZoomToggle();
 
-	if ( m_bMustReload && HasWeaponIdleTimeElapsed() )
+	if( m_bMustReload && HasWeaponIdleTimeElapsed() )
 	{
 		Reload();
 	}
@@ -992,13 +1042,13 @@ void CWeaponCrossbow::ItemPostFrame( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::FireBolt( void )
 {
-	if ( m_iClip1 <= 0 )
+	if( m_iClip1 <= 0 )
 	{
-		if ( !m_bFireOnEmpty )
+		if( !m_bFireOnEmpty )
 		{
 			Reload();
 		}
@@ -1011,15 +1061,17 @@ void CWeaponCrossbow::FireBolt( void )
 		return;
 	}
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 #ifdef GAME_DLL
 	pOwner->RumbleEffect( RUMBLE_357, 0, RUMBLE_FLAG_RESTART );
 
-	Vector vecAiming	= pOwner->GetAutoaimVector( 0 );	
+	Vector vecAiming	= pOwner->GetAutoaimVector( 0 );
 	Vector vecSrc		= pOwner->Weapon_ShootPosition();
 
 	QAngle angAiming;
@@ -1027,7 +1079,7 @@ void CWeaponCrossbow::FireBolt( void )
 
 #if defined(HL2_EPISODIC)
 	// !!!HACK - the other piece of the Alyx crossbow bolt hack for Outland_10 (see ::BoltTouch() for more detail)
-	if( FStrEq(STRING(gpGlobals->mapname), "ep2_outland_10") )
+	if( FStrEq( STRING( gpGlobals->mapname ), "ep2_outland_10" ) )
 	{
 		trace_t tr;
 		UTIL_TraceLine( vecSrc, vecSrc + vecAiming * 24.0f, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
@@ -1035,16 +1087,16 @@ void CWeaponCrossbow::FireBolt( void )
 		if( tr.m_pEnt != NULL && tr.m_pEnt->Classify() == CLASS_PLAYER_ALLY_VITAL )
 		{
 			// If Alyx is right in front of the player, make sure the bolt starts outside of the player's BBOX, or the bolt
-			// will instantly collide with the player after the owner of the bolt is switched to Alyx in ::BoltTouch(). We 
+			// will instantly collide with the player after the owner of the bolt is switched to Alyx in ::BoltTouch(). We
 			// avoid this altogether by making it impossible for the bolt to collide with the player.
 			vecSrc += vecAiming * 24.0f;
 		}
 	}
 #endif
 
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
+	CCrossbowBolt* pBolt = CCrossbowBolt::BoltCreate( vecSrc, angAiming, pOwner );
 
-	if ( pOwner->GetWaterLevel() == 3 )
+	if( pOwner->GetWaterLevel() == 3 )
 	{
 		pBolt->SetAbsVelocity( vecAiming * BOLT_WATER_VELOCITY );
 	}
@@ -1072,10 +1124,10 @@ void CWeaponCrossbow::FireBolt( void )
 
 	SendWeaponAnim( ACT_VM_PRIMARYATTACK );
 
-	if ( !m_iClip1 && pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	if( !m_iClip1 && pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 	{
 		// HEV suit - indicate out of ammo condition
-		pOwner->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		pOwner->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
 	}
 
 	m_flNextPrimaryAttack = m_flNextSecondaryAttack	= gpGlobals->curtime + 0.75;
@@ -1085,17 +1137,17 @@ void CWeaponCrossbow::FireBolt( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponCrossbow::Deploy( void )
 {
-	if ( m_iClip1 <= 0 )
+	if( m_iClip1 <= 0 )
 	{
 #ifdef MAPBASE
 		SetBolt( 1 );
 #endif
-		return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), ACT_CROSSBOW_DRAW_UNLOADED, (char*)GetAnimPrefix() );
+		return DefaultDeploy( ( char* )GetViewModel(), ( char* )GetWorldModel(), ACT_CROSSBOW_DRAW_UNLOADED, ( char* )GetAnimPrefix() );
 	}
 
 	SetSkin( BOLT_SKIN_GLOW );
@@ -1114,26 +1166,30 @@ bool CWeaponCrossbow::Deploy( void )
 inline void CWeaponCrossbow::SetBolt( int iSetting )
 {
 	int iBody = FindBodygroupByName( "bolt" );
-	if (iBody != -1 /*|| (GetOwner() && GetOwner()->IsPlayer())*/) // TODO: Player models check the viewmodel instead of the worldmodel, but setting the bodygroup regardless can cause a crash, so we need a better solution
+	if( iBody != -1 /*|| (GetOwner() && GetOwner()->IsPlayer())*/ ) // TODO: Player models check the viewmodel instead of the worldmodel, but setting the bodygroup regardless can cause a crash, so we need a better solution
+	{
 		SetBodygroup( iBody, iSetting );
+	}
 	else
+	{
 		m_nSkin = iSetting;
+	}
 }
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponCrossbow::FireNPCBolt( CAI_BaseNPC *pOwner, Vector &vecShootOrigin, Vector &vecShootDir )
+void CWeaponCrossbow::FireNPCBolt( CAI_BaseNPC* pOwner, Vector& vecShootOrigin, Vector& vecShootDir )
 {
-	Assert(pOwner);
+	Assert( pOwner );
 
 	QAngle angAiming;
 	VectorAngles( vecShootDir, angAiming );
 
-	CCrossbowBolt *pBolt = CCrossbowBolt::BoltCreate( vecShootOrigin, angAiming, pOwner );
+	CCrossbowBolt* pBolt = CCrossbowBolt::BoltCreate( vecShootOrigin, angAiming, pOwner );
 
-	if ( pOwner->GetWaterLevel() == 3 )
+	if( pOwner->GetWaterLevel() == 3 )
 	{
 		pBolt->SetAbsVelocity( vecShootDir * BOLT_WATER_VELOCITY );
 	}
@@ -1160,11 +1216,11 @@ void CWeaponCrossbow::FireNPCBolt( CAI_BaseNPC *pOwner, Vector &vecShootOrigin, 
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pSwitchingTo - 
+// Purpose:
+// Input  : *pSwitchingTo -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponCrossbow::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponCrossbow::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	StopEffects();
 
@@ -1172,25 +1228,31 @@ bool CWeaponCrossbow::Holster( CBaseCombatWeapon *pSwitchingTo )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::ToggleZoom( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 #ifdef GAME_DLL
-	if ( m_bInZoom )
+	if( m_bInZoom )
 	{
-		if ( pPlayer->SetFOV( this, 0, 0.2f ) )
+		if( pPlayer->SetFOV( this, 0, 0.2f ) )
+		{
 			m_bInZoom = false;
+		}
 	}
 	else
 	{
-		if ( pPlayer->SetFOV( this, 20, 0.1f ) )
+		if( pPlayer->SetFOV( this, 20, 0.1f ) )
+		{
 			m_bInZoom = true;
+		}
 	}
 #endif
 }
@@ -1198,19 +1260,21 @@ void CWeaponCrossbow::ToggleZoom( void )
 #define	BOLT_TIP_ATTACHMENT	2
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::CreateChargerEffects( void )
 {
 #ifndef CLIENT_DLL
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	if ( m_hChargerSprite != NULL )
+	if( m_hChargerSprite != NULL )
+	{
 		return;
+	}
 
 	m_hChargerSprite = CSprite::SpriteCreate( CROSSBOW_GLOW_SPRITE, GetAbsOrigin(), false );
 
-	if ( m_hChargerSprite )
+	if( m_hChargerSprite )
 	{
 		m_hChargerSprite->SetAttachment( pOwner->GetViewModel(), BOLT_TIP_ATTACHMENT );
 		m_hChargerSprite->SetTransparency( kRenderTransAdd, 255, 128, 0, 255, kRenderFxNoDissipation );
@@ -1222,37 +1286,43 @@ void CWeaponCrossbow::CreateChargerEffects( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : skinNum - 
+// Purpose:
+// Input  : skinNum -
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::SetSkin( int skinNum )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
-		return;
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	CBaseViewModel *pViewModel = pOwner->GetViewModel();
-
-	if ( pViewModel == NULL )
+	if( pOwner == NULL )
+	{
 		return;
+	}
+
+	CBaseViewModel* pViewModel = pOwner->GetViewModel();
+
+	if( pViewModel == NULL )
+	{
+		return;
+	}
 
 	pViewModel->m_nSkin = skinNum;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::DoLoadEffect( void )
 {
-	IPredictionSystem::SuppressHostEvents(NULL);
+	IPredictionSystem::SuppressHostEvents( NULL );
 
 	SetSkin( BOLT_SKIN_GLOW );
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	if ( pOwner == NULL )
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	//Tony; change this up a bit; on the server, dispatch an effect but don't send it to the client who fires
 	//on the client, create an effect either in the view model, or on the world model if first person.
@@ -1267,24 +1337,28 @@ void CWeaponCrossbow::DoLoadEffect( void )
 	filter.RemoveRecipient( pOwner );
 	te->DispatchEffect( filter, 0.0, data.m_vOrigin, "CrossbowLoad", data );
 #else
-	CBaseViewModel *pViewModel = pOwner->GetViewModel();
+	CBaseViewModel* pViewModel = pOwner->GetViewModel();
 
-	if ( pViewModel != NULL )
+	if( pViewModel != NULL )
 	{
 
-		if ( ::input->CAM_IsThirdPerson() )
+		if( ::input->CAM_IsThirdPerson() )
+		{
 			data.m_hEntity = pViewModel->GetRefEHandle();
+		}
 		else
+		{
 			data.m_hEntity = GetRefEHandle();
+		}
 		DispatchEffect( "CrossbowLoad", data );
 	}
 #endif
 
 	//Tony; switched this up, always attach it to the weapon, not the view model!!
 #ifndef CLIENT_DLL
-	CSprite *pBlast = CSprite::SpriteCreate( CROSSBOW_GLOW_SPRITE2, GetAbsOrigin(), false );
+	CSprite* pBlast = CSprite::SpriteCreate( CROSSBOW_GLOW_SPRITE2, GetAbsOrigin(), false );
 
-	if ( pBlast )
+	if( pBlast )
 	{
 		pBlast->SetAttachment( this, 1 );
 		pBlast->SetTransparency( kRenderTransAdd, 255, 255, 255, 255, kRenderFxNone );
@@ -1293,12 +1367,12 @@ void CWeaponCrossbow::DoLoadEffect( void )
 		pBlast->FadeOutFromSpawn();
 	}
 #endif
-	
+
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 {
@@ -1306,33 +1380,37 @@ void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 	CreateChargerEffects();
 
 	// Don't do this twice
-	if ( state == m_nChargeState )
+	if( state == m_nChargeState )
+	{
 		return;
+	}
 
 	m_nChargeState = state;
 
 	switch( m_nChargeState )
 	{
-	case CHARGER_STATE_START_LOAD:
-	
-		WeaponSound( SPECIAL1 );
-		
-		// Shoot some sparks and draw a beam between the two outer points
-		DoLoadEffect();
+		case CHARGER_STATE_START_LOAD:
+
+			WeaponSound( SPECIAL1 );
+
+			// Shoot some sparks and draw a beam between the two outer points
+			DoLoadEffect();
 
 #ifdef MAPBASE
-		SetBolt(0);
+			SetBolt( 0 );
 #endif
-		
-		break;
+
+			break;
 #ifndef CLIENT_DLL
-	case CHARGER_STATE_START_CHARGE:
+		case CHARGER_STATE_START_CHARGE:
 		{
 			IPredictionSystem::SuppressHostEvents( NULL );
 
-			if ( m_hChargerSprite == NULL )
+			if( m_hChargerSprite == NULL )
+			{
 				break;
-			
+			}
+
 			m_hChargerSprite->SetBrightness( 32, 0.5f );
 			m_hChargerSprite->SetScale( 0.025f, 0.5f );
 			m_hChargerSprite->TurnOn();
@@ -1340,12 +1418,14 @@ void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 
 		break;
 
-	case CHARGER_STATE_READY:
+		case CHARGER_STATE_READY:
 		{
 			// Get fully charged
-			if ( m_hChargerSprite == NULL )
+			if( m_hChargerSprite == NULL )
+			{
 				break;
-			
+			}
+
 			m_hChargerSprite->SetBrightness( 80, 1.0f );
 			m_hChargerSprite->SetScale( 0.1f, 0.5f );
 			m_hChargerSprite->TurnOn();
@@ -1353,65 +1433,69 @@ void CWeaponCrossbow::SetChargerState( ChargerState_t state )
 
 		break;
 
-	case CHARGER_STATE_DISCHARGE:
+		case CHARGER_STATE_DISCHARGE:
 		{
 			SetSkin( BOLT_SKIN_NORMAL );
-			
-			if ( m_hChargerSprite == NULL )
+
+			if( m_hChargerSprite == NULL )
+			{
 				break;
-			
+			}
+
 			m_hChargerSprite->SetBrightness( 0 );
 			m_hChargerSprite->TurnOff();
 		}
 
 		break;
 #endif
-	case CHARGER_STATE_OFF:
+		case CHARGER_STATE_OFF:
 		{
 			SetSkin( BOLT_SKIN_NORMAL );
 
 #ifndef CLIENT_DLL
-			if ( m_hChargerSprite == NULL )
+			if( m_hChargerSprite == NULL )
+			{
 				break;
-			
+			}
+
 			m_hChargerSprite->SetBrightness( 0 );
 			m_hChargerSprite->TurnOff();
 #endif
 		}
 		break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 }
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponCrossbow::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponCrossbow::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
-	case EVENT_WEAPON_THROW:
-		SetChargerState( CHARGER_STATE_START_LOAD );
-		break;
+		case EVENT_WEAPON_THROW:
+			SetChargerState( CHARGER_STATE_START_LOAD );
+			break;
 
-	case EVENT_WEAPON_THROW2:
-		SetChargerState( CHARGER_STATE_START_CHARGE );
-		break;
-	
-	case EVENT_WEAPON_THROW3:
-		SetChargerState( CHARGER_STATE_READY );
-		break;
+		case EVENT_WEAPON_THROW2:
+			SetChargerState( CHARGER_STATE_START_CHARGE );
+			break;
+
+		case EVENT_WEAPON_THROW3:
+			SetChargerState( CHARGER_STATE_READY );
+			break;
 
 #ifdef MAPBASE
-	case EVENT_WEAPON_SMG1:
+		case EVENT_WEAPON_SMG1:
 		{
-			CAI_BaseNPC *pNPC = pOperator->MyNPCPointer();
-			Assert(pNPC);
+			CAI_BaseNPC* pNPC = pOperator->MyNPCPointer();
+			Assert( pNPC );
 
 			Vector vecSrc = pNPC->Weapon_ShootPosition();
 			Vector vecAiming = pNPC->GetActualShootTrajectory( vecSrc );
@@ -1422,17 +1506,17 @@ void CWeaponCrossbow::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 		break;
 #endif
 
-	default:
-		BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
-		break;
+		default:
+			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
+			break;
 	}
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponCrossbow::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+void CWeaponCrossbow::Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary )
 {
 	// Ensure we have enough rounds in the clip
 	m_iClip1++;
@@ -1457,7 +1541,7 @@ bool CWeaponCrossbow::SendWeaponAnim( int iActivity )
 	int newActivity = iActivity;
 
 	// The last shot needs a non-loaded activity
-	if ( ( newActivity == ACT_VM_IDLE ) && ( m_iClip1 <= 0 ) )
+	if( ( newActivity == ACT_VM_IDLE ) && ( m_iClip1 <= 0 ) )
 	{
 		newActivity = ACT_VM_FIDGET;
 	}
@@ -1472,7 +1556,7 @@ bool CWeaponCrossbow::SendWeaponAnim( int iActivity )
 void CWeaponCrossbow::StopEffects( void )
 {
 	// Stop zooming
-	if ( m_bInZoom )
+	if( m_bInZoom )
 	{
 		ToggleZoom();
 	}
@@ -1482,9 +1566,9 @@ void CWeaponCrossbow::StopEffects( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponCrossbow::Drop( const Vector &vecVelocity )
+void CWeaponCrossbow::Drop( const Vector& vecVelocity )
 {
 	StopEffects();
 	BaseClass::Drop( vecVelocity );

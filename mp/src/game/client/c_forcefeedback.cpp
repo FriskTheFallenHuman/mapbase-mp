@@ -16,9 +16,9 @@ public:
 struct FFEffectInfo_t
 {
 	FORCEFEEDBACK_t	effectType;
-	char const		*name;
+	char const*		name;
 };
-	
+
 #define DECLARE_FFEFFECT( name )	{ name, #name }
 
 static FFEffectInfo_t g_EffectTypes[] =
@@ -32,43 +32,47 @@ static FFEffectInfo_t g_EffectTypes[] =
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : effect - 
+// Purpose:
+// Input  : effect -
 // Output : char const
 //-----------------------------------------------------------------------------
-char const *NameForForceFeedbackEffect( FORCEFEEDBACK_t effect )
+char const* NameForForceFeedbackEffect( FORCEFEEDBACK_t effect )
 {
 	int c = ARRAYSIZE( g_EffectTypes );
-	if ( (int)effect < 0 || (int)effect >= c )
+	if( ( int )effect < 0 || ( int )effect >= c )
+	{
 		return "???";
+	}
 
-	const FFEffectInfo_t& info = g_EffectTypes[ (int)effect ];
+	const FFEffectInfo_t& info = g_EffectTypes[( int )effect ];
 	Assert( info.effectType == effect );
 	return info.name;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 // Output : FORCEFEEDBACK_t
 //-----------------------------------------------------------------------------
-FORCEFEEDBACK_t ForceFeedbackEffectForName( const char *name )
+FORCEFEEDBACK_t ForceFeedbackEffectForName( const char* name )
 {
 	int c = ARRAYSIZE( g_EffectTypes );
-	for ( int i = 0 ; i < c; ++i )
+	for( int i = 0 ; i < c; ++i )
 	{
 		const FFEffectInfo_t& info = g_EffectTypes[ i ];
 
-		if ( !Q_stricmp( info.name, name ) )
+		if( !Q_stricmp( info.name, name ) )
+		{
 			return info.effectType;
+		}
 	}
 
-	return ( FORCEFEEDBACK_t )-1;
+	return ( FORCEFEEDBACK_t ) - 1;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CForceFeedback : public IForceFeedback, public CAutoGameSystem
 {
@@ -77,14 +81,14 @@ public:
 	virtual void			Shutdown();
 
 	// API
-	virtual void			StopAllEffects( CBasePlayer *player );
-	virtual void			StopEffect( CBasePlayer *player, FORCEFEEDBACK_t effect );
-	virtual void			StartEffect( CBasePlayer *player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params );
+	virtual void			StopAllEffects( CBasePlayer* player );
+	virtual void			StopEffect( CBasePlayer* player, FORCEFEEDBACK_t effect );
+	virtual void			StartEffect( CBasePlayer* player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params );
 
-	virtual void			PauseAll( CBasePlayer *player );
-	virtual void			ResumeAll( CBasePlayer *player );
+	virtual void			PauseAll( CBasePlayer* player );
+	virtual void			ResumeAll( CBasePlayer* player );
 
-	void					MsgFunc_ForceFeedback( bf_read &msg );
+	void					MsgFunc_ForceFeedback( bf_read& msg );
 
 private:
 
@@ -96,19 +100,19 @@ private:
 };
 
 static CForceFeedback g_ForceFeedbackSingleton;
-IForceFeedback *forcefeedback = &g_ForceFeedbackSingleton;
+IForceFeedback* forcefeedback = &g_ForceFeedbackSingleton;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &msg - 
+// Purpose:
+// Input  : &msg -
 //-----------------------------------------------------------------------------
-void __MsgFunc_ForceFeedback( bf_read &msg )
+void __MsgFunc_ForceFeedback( bf_read& msg )
 {
 	g_ForceFeedbackSingleton.MsgFunc_ForceFeedback( msg );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CForceFeedback::Init()
@@ -118,46 +122,50 @@ bool CForceFeedback::Init()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CForceFeedback::Shutdown()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
+// Purpose:
+// Input  : *player -
 //-----------------------------------------------------------------------------
-void CForceFeedback::StopAllEffects( CBasePlayer *player )
+void CForceFeedback::StopAllEffects( CBasePlayer* player )
 {
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	Internal_StopAllEffects();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
-//			effect - 
+// Purpose:
+// Input  : *player -
+//			effect -
 //-----------------------------------------------------------------------------
-void CForceFeedback::StopEffect( CBasePlayer *player, FORCEFEEDBACK_t effect )
+void CForceFeedback::StopEffect( CBasePlayer* player, FORCEFEEDBACK_t effect )
 {
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	Internal_StopEffect( effect );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
-//			effect - 
-//			params - 
+// Purpose:
+// Input  : *player -
+//			effect -
+//			params -
 //-----------------------------------------------------------------------------
-void CForceFeedback::StartEffect( CBasePlayer *player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params )
+void CForceFeedback::StartEffect( CBasePlayer* player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params )
 {
-	if ( !player )
+	if( !player )
 	{
 		return;
 	}
@@ -166,31 +174,35 @@ void CForceFeedback::StartEffect( CBasePlayer *player, FORCEFEEDBACK_t effect, c
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
+// Purpose:
+// Input  : *player -
 //-----------------------------------------------------------------------------
-void CForceFeedback::PauseAll( CBasePlayer *player )
+void CForceFeedback::PauseAll( CBasePlayer* player )
 {
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	Internal_PauseAll();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
+// Purpose:
+// Input  : *player -
 //-----------------------------------------------------------------------------
-void CForceFeedback::ResumeAll( CBasePlayer *player )
+void CForceFeedback::ResumeAll( CBasePlayer* player )
 {
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	Internal_ResumeAll();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CForceFeedback::Internal_StopAllEffects()
 {
@@ -198,8 +210,8 @@ void CForceFeedback::Internal_StopAllEffects()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : heffect - 
+// Purpose:
+// Input  : heffect -
 //-----------------------------------------------------------------------------
 void CForceFeedback::Internal_StopEffect( FORCEFEEDBACK_t effect )
 {
@@ -207,12 +219,12 @@ void CForceFeedback::Internal_StopEffect( FORCEFEEDBACK_t effect )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : effect - 
+// Purpose:
+// Input  : effect -
 //-----------------------------------------------------------------------------
-void CForceFeedback::Internal_StartEffect( FORCEFEEDBACK_t effect, const FFBaseParams_t& params)
+void CForceFeedback::Internal_StartEffect( FORCEFEEDBACK_t effect, const FFBaseParams_t& params )
 {
-	char const *name = NameForForceFeedbackEffect( effect );
+	char const* name = NameForForceFeedbackEffect( effect );
 	Msg( "Starting FF effect '%s'\n", name );
 
 	FFParams p;
@@ -223,7 +235,7 @@ void CForceFeedback::Internal_StartEffect( FORCEFEEDBACK_t effect, const FFBaseP
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CForceFeedback::Internal_PauseAll()
 {
@@ -231,7 +243,7 @@ void CForceFeedback::Internal_PauseAll()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CForceFeedback::Internal_ResumeAll()
 {
@@ -239,39 +251,39 @@ void CForceFeedback::Internal_ResumeAll()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pszName - 
-//			iSize - 
-//			*pbuf - 
+// Purpose:
+// Input  : *pszName -
+//			iSize -
+//			*pbuf -
 //-----------------------------------------------------------------------------
-void CForceFeedback::MsgFunc_ForceFeedback( bf_read &msg )
+void CForceFeedback::MsgFunc_ForceFeedback( bf_read& msg )
 {
 	byte msgType = msg.ReadByte();
 
-	switch ( msgType )
+	switch( msgType )
 	{
-	default:
+		default:
 		{
 			Warning( "Bad parse in MsgFunc_ForceFeedback!\n" );
 		}
 		break;
-	case FFMSG_STOPALL:
+		case FFMSG_STOPALL:
 		{
 			Internal_StopAllEffects();
 		}
 		break;
-	case FFMSG_START:
+		case FFMSG_START:
 		{
-			FORCEFEEDBACK_t effectType = (FORCEFEEDBACK_t)msg.ReadByte();
+			FORCEFEEDBACK_t effectType = ( FORCEFEEDBACK_t )msg.ReadByte();
 
 			FFBaseParams_t params;
-			params.m_flDirection = 360.0f * ( (byte)msg.ReadByte() / 255.0f );
-			params.m_flDuration = (float)msg.ReadLong() / 1000.0f;
-			params.m_flGain = ( (byte)msg.ReadByte() / 255.0f );
+			params.m_flDirection = 360.0f * ( ( byte )msg.ReadByte() / 255.0f );
+			params.m_flDuration = ( float )msg.ReadLong() / 1000.0f;
+			params.m_flGain = ( ( byte )msg.ReadByte() / 255.0f );
 			params.m_nPriority = msg.ReadByte();
 			params.m_bSolo = msg.ReadByte() == 0 ? false : true;
 
-			if ( effectType >= 0 && effectType < NUM_FORCE_FEEDBACK_PRESETS )
+			if( effectType >= 0 && effectType < NUM_FORCE_FEEDBACK_PRESETS )
 			{
 				Internal_StartEffect( effectType, params );
 			}
@@ -281,19 +293,19 @@ void CForceFeedback::MsgFunc_ForceFeedback( bf_read &msg )
 			}
 		}
 		break;
-	case FFMSG_STOP:
+		case FFMSG_STOP:
 		{
-			FORCEFEEDBACK_t effectType = (FORCEFEEDBACK_t)msg.ReadByte();
+			FORCEFEEDBACK_t effectType = ( FORCEFEEDBACK_t )msg.ReadByte();
 
 			Internal_StopEffect( effectType );
 		}
 		break;
-	case FFMSG_PAUSE:
+		case FFMSG_PAUSE:
 		{
 			Internal_PauseAll();
 		}
 		break;
-	case FFMSG_RESUME:
+		case FFMSG_RESUME:
 		{
 			Internal_ResumeAll();
 		}

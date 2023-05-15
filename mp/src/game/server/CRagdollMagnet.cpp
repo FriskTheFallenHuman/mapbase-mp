@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,44 +9,44 @@
 #include "CRagdollMagnet.h"
 #include "cplane.h"
 
-ConVar ai_debug_ragdoll_magnets( "ai_debug_ragdoll_magnets", "0");
+ConVar ai_debug_ragdoll_magnets( "ai_debug_ragdoll_magnets", "0" );
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 LINK_ENTITY_TO_CLASS( phys_ragdollmagnet, CRagdollMagnet );
 BEGIN_DATADESC( CRagdollMagnet )
-	DEFINE_KEYFIELD( m_radius,		FIELD_FLOAT, "radius" ),
-	DEFINE_KEYFIELD( m_force,		FIELD_FLOAT, "force" ),
-	DEFINE_KEYFIELD( m_axis,		FIELD_VECTOR, "axis" ),
-	DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN,	"StartDisabled" ),
+DEFINE_KEYFIELD( m_radius,		FIELD_FLOAT, "radius" ),
+					 DEFINE_KEYFIELD( m_force,		FIELD_FLOAT, "force" ),
+					 DEFINE_KEYFIELD( m_axis,		FIELD_VECTOR, "axis" ),
+					 DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN,	"StartDisabled" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_BoneTarget,	FIELD_STRING, "BoneTarget" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+					 DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+					 DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnUsed, "OnUsed" ),
 #endif
 
-END_DATADESC()
+					 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CRagdollMagnet::InputEnable( inputdata_t &inputdata )
+					 void CRagdollMagnet::InputEnable( inputdata_t& inputdata )
 {
 	Enable( true );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CRagdollMagnet::InputDisable( inputdata_t &inputdata )
+void CRagdollMagnet::InputDisable( inputdata_t& inputdata )
 {
 	Enable( false );
 }
@@ -65,20 +65,20 @@ void CRagdollMagnet::InputDisable( inputdata_t &inputdata )
 //  - LATER: I'm not flagged to ignore ragdoll magnets
 //	- LATER: The magnet is not turned OFF
 //-----------------------------------------------------------------------------
-CRagdollMagnet *CRagdollMagnet::FindBestMagnet( CBaseEntity *pNPC )
+CRagdollMagnet* CRagdollMagnet::FindBestMagnet( CBaseEntity* pNPC )
 {
-	CRagdollMagnet	*pMagnet = NULL;
-	CRagdollMagnet	*pBestMagnet;
+	CRagdollMagnet*	pMagnet = NULL;
+	CRagdollMagnet*	pBestMagnet;
 
 	float			flClosestDist;
 
 	// Assume we won't find one.
 	pBestMagnet = NULL;
 	flClosestDist = FLT_MAX;
-	
+
 	do
 	{
-		pMagnet = (CRagdollMagnet *)gEntList.FindEntityByClassname( pMagnet, "phys_ragdollmagnet" );
+		pMagnet = ( CRagdollMagnet* )gEntList.FindEntityByClassname( pMagnet, "phys_ragdollmagnet" );
 
 		if( pMagnet && pMagnet->IsEnabled() )
 		{
@@ -106,22 +106,23 @@ CRagdollMagnet *CRagdollMagnet::FindBestMagnet( CBaseEntity *pNPC )
 			}
 		}
 
-	} while( pMagnet );
+	}
+	while( pMagnet );
 
 	return pBestMagnet;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Get the force that we should add to this NPC's ragdoll.
-// Input  : *pNPC - 
+// Input  : *pNPC -
 // Output : Vector
 //
 // NOTE: This function assumes pNPC is within this magnet's radius.
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE
-Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC, int *pBone )
+	Vector CRagdollMagnet::GetForceVector( CBaseEntity* pNPC, int* pBone )
 #else
-Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC )
+	Vector CRagdollMagnet::GetForceVector( CBaseEntity* pNPC )
 #endif
 {
 	Vector vecForceToApply;
@@ -129,17 +130,17 @@ Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC )
 #ifdef MAPBASE
 	Vector vecNPCPos = pNPC->WorldSpaceCenter();
 
-	if (pBone)
+	if( pBone )
 	{
-		CBaseAnimating *pAnimating = pNPC->GetBaseAnimating();
+		CBaseAnimating* pAnimating = pNPC->GetBaseAnimating();
 		Assert( pAnimating != NULL );
 
-		const char *szBoneTarget = BoneTarget();
+		const char* szBoneTarget = BoneTarget();
 		Assert( szBoneTarget != NULL );
 
 		int iBone = pAnimating->LookupBone( szBoneTarget );
 
-		if (iBone != -1)
+		if( iBone != -1 )
 		{
 			matrix3x4_t bonetoworld;
 			pAnimating->GetBoneTransform( iBone, bonetoworld );
@@ -158,12 +159,12 @@ Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC )
 #ifdef MAPBASE
 		CalcClosestPointOnLineSegment( vecNPCPos, GetAbsOrigin(), m_axis, vecClosest, NULL );
 
-		vecForceDir = (vecClosest - vecNPCPos );
+		vecForceDir = ( vecClosest - vecNPCPos );
 		VectorNormalize( vecForceDir );
 #else
 		CalcClosestPointOnLineSegment( pNPC->WorldSpaceCenter(), GetAbsOrigin(), m_axis, vecClosest, NULL );
 
-		vecForceDir = (vecClosest - pNPC->WorldSpaceCenter() );
+		vecForceDir = ( vecClosest - pNPC->WorldSpaceCenter() );
 		VectorNormalize( vecForceDir );
 #endif
 
@@ -185,13 +186,13 @@ Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC )
 
 	if( ai_debug_ragdoll_magnets.GetBool() )
 	{
-		IPhysicsObject *pPhysObject;
+		IPhysicsObject* pPhysObject;
 
 		pPhysObject = pNPC->VPhysicsGetObject();
 
 		if( pPhysObject )
 		{
-			Msg("Ragdoll magnet adding %f inches/sec to %s\n", m_force/pPhysObject->GetMass(), pNPC->GetClassname() );
+			Msg( "Ragdoll magnet adding %f inches/sec to %s\n", m_force / pPhysObject->GetMass(), pNPC->GetClassname() );
 		}
 	}
 
@@ -203,7 +204,7 @@ Vector CRagdollMagnet::GetForceVector( CBaseEntity *pNPC )
 // Input  : &vecPoint - the point
 // Output : float - the dist
 //-----------------------------------------------------------------------------
-float CRagdollMagnet::DistToPoint( const Vector &vecPoint )
+float CRagdollMagnet::DistToPoint( const Vector& vecPoint )
 {
 	if( IsBarMagnet() )
 	{
@@ -240,7 +241,7 @@ float CRagdollMagnet::DistToPoint( const Vector &vecPoint )
 
 			// Need to get a vector that's right-hand to m_axis
 			VectorVectors( vecAxis, vecRight, vecUp );
-			
+
 			//CrossProduct( vecAxis, vecUp, vecRight );
 			//VectorNormalize( vecRight );
 			//VectorNormalize( vecUp );

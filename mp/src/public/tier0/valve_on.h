@@ -16,7 +16,7 @@
 // Unicode-related #defines (see wchartypes.h)
 //-----------------------------------------------------------------------------
 #ifdef ENFORCE_WCHAR
-#define char DontUseChar_SeeWcharOn.h
+	#define char DontUseChar_SeeWcharOn.h
 #endif
 
 

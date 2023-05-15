@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef DISP_VRAD_H
 #define DISP_VRAD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -16,7 +16,7 @@
 
 
 // Blend the normals of neighboring displacement surfaces so they match at edges and corners.
-void SmoothNeighboringDispSurfNormals( CCoreDispInfo **ppListBase, int listSize );
+void SmoothNeighboringDispSurfNormals( CCoreDispInfo** ppListBase, int listSize );
 
 
 #endif // DISP_VRAD_H

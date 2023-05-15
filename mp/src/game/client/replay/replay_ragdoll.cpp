@@ -22,7 +22,7 @@ static int gs_nBytesAllocated = 0;
 
 //--------------------------------------------------------------------------------
 
-void OnReplayCacheClientRagdollsCvarChange( IConVar *pVar, const char *pOldValue, float flOldValue )
+void OnReplayCacheClientRagdollsCvarChange( IConVar* pVar, const char* pOldValue, float flOldValue )
 {
 	// TODO: need to be able to gracefully turn replay ragdolls on/off
 }
@@ -35,20 +35,22 @@ static ConVar replay_cache_client_ragdolls( "replay_cache_client_ragdolls", "0",
 //--------------------------------------------------------------------------------
 
 void DrawBones( matrix3x4_t const* pBones, int nNumBones, ragdoll_t const* pRagdoll,
-			    int nRed, int nGreen, int nBlue, C_BaseAnimating* pBaseAnimating )
+				int nRed, int nGreen, int nBlue, C_BaseAnimating* pBaseAnimating )
 {
 	Assert( pBones );
 	Assert( pRagdoll );
 	Assert( pBaseAnimating );
 
 	Vector from, to;
-	for ( int i = 0; i < nNumBones; ++i )
+	for( int i = 0; i < nNumBones; ++i )
 	{
 //		debugoverlay->AddCoordFrameOverlay( pBones[ i ], 3.0f );
 
 		int const iRagdollParentIndex = pRagdoll->list[ i ].parentIndex;
-		if ( iRagdollParentIndex < 0 )
+		if( iRagdollParentIndex < 0 )
+		{
 			continue;
+		}
 
 		int iBoneIndex = pRagdoll->boneIndex[ i ];
 		int iParentIndex = pRagdoll->boneIndex[ iRagdollParentIndex ];
@@ -83,13 +85,13 @@ inline int GetServerTickCount()
 //--------------------------------------------------------------------------------
 
 RagdollSimulationData_t::RagdollSimulationData_t( C_BaseAnimating* pEntity, int nStartTick, int nNumBones )
-:	m_pEntity( pEntity ),
-	m_nEntityIndex( -1 ),
-	m_nStartTick( nStartTick ),
-	m_nNumBones( nNumBones ),
-	m_nDuration( -1 )
+	:	m_pEntity( pEntity ),
+	  m_nEntityIndex( -1 ),
+	  m_nStartTick( nStartTick ),
+	  m_nNumBones( nNumBones ),
+	  m_nDuration( -1 )
 {
-	if ( pEntity )
+	if( pEntity )
 	{
 		m_nEntityIndex = pEntity->entindex();
 	}
@@ -97,7 +99,7 @@ RagdollSimulationData_t::RagdollSimulationData_t( C_BaseAnimating* pEntity, int 
 	Assert( nNumBones >= 0 && nNumBones < MAXSTUDIOBONES );
 }
 
-bool _ComputeRagdollBones( const ragdoll_t *pRagdoll, matrix3x4_t &parentTransform, matrix3x4_t *pBones, Vector *pPositions, QAngle *pAngles )
+bool _ComputeRagdollBones( const ragdoll_t* pRagdoll, matrix3x4_t& parentTransform, matrix3x4_t* pBones, Vector* pPositions, QAngle* pAngles )
 {
 	matrix3x4_t inverted, output;
 
@@ -106,16 +108,18 @@ bool _ComputeRagdollBones( const ragdoll_t *pRagdoll, matrix3x4_t &parentTransfo
 	vBonesComputed.ClearAll();
 #endif
 
-	for ( int i = 0; i < pRagdoll->listCount; ++i )
+	for( int i = 0; i < pRagdoll->listCount; ++i )
 	{
 		const ragdollelement_t& element = pRagdoll->list[ i ];
 
 		// during restore if a model has changed since the file was saved, this could be NULL
-		if ( !element.pObject )
+		if( !element.pObject )
+		{
 			return false;
+		}
 
 		int const boneIndex = pRagdoll->boneIndex[ i ];
-		if ( boneIndex < 0 )
+		if( boneIndex < 0 )
 		{
 			AssertMsg( 0, "Replay: No mapping for ragdoll bone\n" );
 			return false;
@@ -125,13 +129,13 @@ bool _ComputeRagdollBones( const ragdoll_t *pRagdoll, matrix3x4_t &parentTransfo
 		element.pObject->GetPositionMatrix( &pBones[ boneIndex ] );
 
 		// Ensure a fixed translation from the parent (no stretching)
-		if ( element.parentIndex >= 0 && !pRagdoll->allowStretch )
+		if( element.parentIndex >= 0 && !pRagdoll->allowStretch )
 		{
 			int parentIndex = pRagdoll->boneIndex[ element.parentIndex ];
 
 #ifdef _DEBUG
 			// Make sure we computed the parent already
-			Assert( vBonesComputed.IsBitSet(parentIndex) );
+			Assert( vBonesComputed.IsBitSet( parentIndex ) );
 #endif
 
 			// overwrite the position from physics to force rigid attachment
@@ -142,7 +146,7 @@ bool _ComputeRagdollBones( const ragdoll_t *pRagdoll, matrix3x4_t &parentTransfo
 
 			MatrixInvert( pBones[ parentIndex ], inverted );
 		}
-		else if ( element.parentIndex == - 1 )
+		else if( element.parentIndex == - 1 )
 		{
 			// Decompose into parent space
 			MatrixInvert( parentTransform, inverted );
@@ -153,10 +157,10 @@ bool _ComputeRagdollBones( const ragdoll_t *pRagdoll, matrix3x4_t &parentTransfo
 #endif
 
 		// Compute local transform and put into 'output'
- 		ConcatTransforms( inverted, pBones[ boneIndex ], output );
+		ConcatTransforms( inverted, pBones[ boneIndex ], output );
 
 		// Cache as Euler/position
- 		MatrixAngles( output, pAngles[ i ], pPositions[ i ] );
+		MatrixAngles( output, pAngles[ i ], pPositions[ i ] );
 	}
 	return true;
 }
@@ -167,8 +171,10 @@ void RagdollSimulationData_t::Record()
 
 	// Allocate a frame
 	RagdollSimulationFrame_t* pNewFrame = RagdollSimulationFrame_t::Alloc( m_nNumBones );
-	if ( !pNewFrame )
+	if( !pNewFrame )
+	{
 		return;
+	}
 
 	// Set the current tick
 	pNewFrame->nTick = GetServerTickCount();
@@ -193,7 +199,7 @@ void RagdollSimulationData_t::Record()
 	_ComputeRagdollBones( m_pEntity->m_pRagdoll->GetRagdoll(), parentTransform, pBones, pNewFrame->pPositions, pNewFrame->pAngles );
 
 	// Draw bones
-	if ( replay_ragdoll_dbg.GetBool() )
+	if( replay_ragdoll_dbg.GetBool() )
 	{
 		DrawBones( pBones, m_pEntity->m_pRagdoll->RagdollBoneCount(), m_pEntity->m_pRagdoll->GetRagdoll(), 255, 0, 0, m_pEntity );
 	}
@@ -202,7 +208,7 @@ void RagdollSimulationData_t::Record()
 //--------------------------------------------------------------------------------
 
 CReplayRagdollRecorder::CReplayRagdollRecorder()
-:	m_bIsRecording(false)
+	:	m_bIsRecording( false )
 {
 }
 
@@ -225,15 +231,17 @@ void CReplayRagdollRecorder::Init()
 
 void CReplayRagdollRecorder::Shutdown()
 {
-	if ( !m_bIsRecording )
+	if( !m_bIsRecording )
+	{
 		return;
+	}
 
 	m_lstRagdolls.PurgeAndDeleteElements();
 	gs_nBytesAllocated = 0;
 
 	// RemoveAll() purges, and there is no UnlinkAll() - is there an easier way to do this?
 	Iterator_t i = m_lstRagdollsToRecord.Head();
-	while ( i != m_lstRagdollsToRecord.InvalidIndex() )
+	while( i != m_lstRagdollsToRecord.InvalidIndex() )
 	{
 		m_lstRagdollsToRecord.Unlink( i );
 		i = m_lstRagdollsToRecord.Head();
@@ -262,8 +270,10 @@ void CReplayRagdollRecorder::StopRecordingRagdoll( C_BaseAnimating* pEntity )
 
 	// Find the entry in the recording list
 	Iterator_t nIndex;
-	if ( !FindEntryInRecordingList( pEntity, nIndex ) )
+	if( !FindEntryInRecordingList( pEntity, nIndex ) )
+	{
 		return;
+	}
 
 	StopRecordingRagdollAtIndex( nIndex );
 }
@@ -274,9 +284,10 @@ void CReplayRagdollRecorder::StopRecordingRagdollAtIndex( Iterator_t nIndex )
 	RagdollSimulationData_t* pData = m_lstRagdollsToRecord[ nIndex ];
 
 	// Does duration need to be set?
-	if ( pData->m_nDuration < 0 )
+	if( pData->m_nDuration < 0 )
 	{
-		pData->m_nDuration = GetServerTickCount() - pData->m_nStartTick;		Assert( pData->m_nDuration > 0 );
+		pData->m_nDuration = GetServerTickCount() - pData->m_nStartTick;
+		Assert( pData->m_nDuration > 0 );
 	}
 
 	// Remove it from the recording list
@@ -286,9 +297,9 @@ void CReplayRagdollRecorder::StopRecordingRagdollAtIndex( Iterator_t nIndex )
 void CReplayRagdollRecorder::StopRecordingSleepingRagdolls()
 {
 	Iterator_t i = m_lstRagdollsToRecord.Head();
-	while ( i != m_lstRagdollsToRecord.InvalidIndex() )
+	while( i != m_lstRagdollsToRecord.InvalidIndex() )
 	{
-		if ( RagdollIsAsleep( *m_lstRagdollsToRecord[ i ]->m_pEntity->m_pRagdoll->GetRagdoll() ) )
+		if( RagdollIsAsleep( *m_lstRagdollsToRecord[ i ]->m_pEntity->m_pRagdoll->GetRagdoll() ) )
 		{
 			DevMsg( "entity %d: Removing sleeping ragdoll\n", m_lstRagdollsToRecord[ i ]->m_nEntityIndex );
 
@@ -303,12 +314,12 @@ void CReplayRagdollRecorder::StopRecordingSleepingRagdolls()
 }
 
 bool CReplayRagdollRecorder::FindEntryInRecordingList( C_BaseAnimating* pEntity,
-													   CReplayRagdollRecorder::Iterator_t& nOutIndex )
+		CReplayRagdollRecorder::Iterator_t& nOutIndex )
 {
 	// Find the entry
 	FOR_EACH_LL( m_lstRagdollsToRecord, i )
 	{
-		if ( m_lstRagdollsToRecord[ i ]->m_pEntity == pEntity )
+		if( m_lstRagdollsToRecord[ i ]->m_pEntity == pEntity )
 		{
 			nOutIndex = i;
 			return true;
@@ -323,16 +334,20 @@ void CReplayRagdollRecorder::Record()
 {
 	static ConVar* pReplayEnable = NULL;
 	static bool bLookedForConvar = false;
-	if ( bLookedForConvar )
+	if( bLookedForConvar )
 	{
-		pReplayEnable =  (ConVar*)cvar->FindVar( "replay_enable" );
+		pReplayEnable = ( ConVar* )cvar->FindVar( "replay_enable" );
 		bLookedForConvar = true;
 	}
-	if ( !pReplayEnable || !pReplayEnable->GetInt() )
+	if( !pReplayEnable || !pReplayEnable->GetInt() )
+	{
 		return;
+	}
 
-	if ( !replay_cache_client_ragdolls.GetInt() )
+	if( !replay_cache_client_ragdolls.GetInt() )
+	{
 		return;
+	}
 
 	FOR_EACH_LL( m_lstRagdollsToRecord, i )
 	{
@@ -343,8 +358,10 @@ void CReplayRagdollRecorder::Record()
 
 void CReplayRagdollRecorder::Think()
 {
-	if ( !IsRecording() )
+	if( !IsRecording() )
+	{
 		return;
+	}
 
 	StopRecordingSleepingRagdolls();
 	Record();
@@ -354,8 +371,10 @@ void CReplayRagdollRecorder::Think()
 
 void CReplayRagdollRecorder::PrintDebug()
 {
-	if ( !replay_ragdoll_dbg.GetInt() )
+	if( !replay_ragdoll_dbg.GetInt() )
+	{
 		return;
+	}
 
 	int nLine = 0;
 
@@ -381,10 +400,12 @@ void CReplayRagdollRecorder::CleanupStartupTicksAndDurations( int nStartTick )
 		RagdollSimulationData_t* pRagdollData = m_lstRagdolls[ i ];
 
 		// Offset start tick with start tick, sent over from server
-		pRagdollData->m_nStartTick -= nStartTick;			Assert( pRagdollData->m_nStartTick >= 0 );
+		pRagdollData->m_nStartTick -= nStartTick;
+		Assert( pRagdollData->m_nStartTick >= 0 );
 
 		// Setup duration
-		pRagdollData->m_nDuration = GetServerTickCount() - nStartTick;		Assert( pRagdollData->m_nDuration > 0 );
+		pRagdollData->m_nDuration = GetServerTickCount() - nStartTick;
+		Assert( pRagdollData->m_nDuration > 0 );
 
 		// Go through all frames and subtract the start tick
 		FOR_EACH_LL( pRagdollData->m_lstFrames, j )
@@ -395,10 +416,10 @@ void CReplayRagdollRecorder::CleanupStartupTicksAndDurations( int nStartTick )
 }
 
 BEGIN_DMXELEMENT_UNPACK( RagdollSimulationData_t )
-	DMXELEMENT_UNPACK_FIELD( "nEntityIndex", "0", int, m_nEntityIndex )
-	DMXELEMENT_UNPACK_FIELD( "nStartTick", "0", int, m_nStartTick )
-	DMXELEMENT_UNPACK_FIELD( "nDuration", "0", int, m_nDuration )
-	DMXELEMENT_UNPACK_FIELD( "nNumBones", "0", int, m_nNumBones )
+DMXELEMENT_UNPACK_FIELD( "nEntityIndex", "0", int, m_nEntityIndex )
+DMXELEMENT_UNPACK_FIELD( "nStartTick", "0", int, m_nStartTick )
+DMXELEMENT_UNPACK_FIELD( "nDuration", "0", int, m_nDuration )
+DMXELEMENT_UNPACK_FIELD( "nNumBones", "0", int, m_nNumBones )
 END_DMXELEMENT_UNPACK( RagdollSimulationData_t, s_RagdollSimulationDataUnpack )
 
 bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
@@ -409,12 +430,12 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 	CDmxElement* pSimulations = CreateDmxElement( "Simulations" );
 	CDmxElementModifyScope modify( pSimulations );
 
-		int const nNumRagdolls = m_lstRagdolls.Count();
+	int const nNumRagdolls = m_lstRagdolls.Count();
 
-		pSimulations->SetValue( "iNumRagdolls", nNumRagdolls );
+	pSimulations->SetValue( "iNumRagdolls", nNumRagdolls );
 
-		CDmxAttribute* pRagdolls = pSimulations->AddAttribute( "ragdolls" );
-		CUtlVector< CDmxElement* >& ragdolls = pRagdolls->GetArrayForEdit< CDmxElement* >();
+	CDmxAttribute* pRagdolls = pSimulations->AddAttribute( "ragdolls" );
+	CUtlVector< CDmxElement* >& ragdolls = pRagdolls->GetArrayForEdit< CDmxElement* >();
 
 	modify.Release();
 
@@ -430,7 +451,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 		CDmxElement* pRagdoll = CreateDmxElement( "ragdoll" );
 		ragdolls.AddToTail( pRagdoll );
 
-		V_snprintf( name, sizeof(name), "ragdoll %d", i );
+		V_snprintf( name, sizeof( name ), "ragdoll %d", i );
 		pRagdoll->SetValue( "name", name );
 
 		CDmxElementModifyScope modifyClass( pRagdoll );
@@ -445,7 +466,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 			CDmxElement* pFrame = CreateDmxElement( "frame" );
 			frames.AddToTail( pFrame );
 
-			V_snprintf( name, sizeof(name), "frame %d", j );
+			V_snprintf( name, sizeof( name ), "frame %d", j );
 			pFrame->SetValue( "name", name );
 
 			// Store tick
@@ -455,7 +476,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 			pFrame->SetValue( "root_pos"   , pData->m_lstFrames[ j ]->vRootPosition );
 			pFrame->SetValue( "root_angles", pData->m_lstFrames[ j ]->angRootAngles );
 
-			for ( int k = 0; k < pData->m_nNumBones; ++k )
+			for( int k = 0; k < pData->m_nNumBones; ++k )
 			{
 				CDmxAttribute* pPositions = pFrame->AddAttribute( "positions" );
 				CUtlVector< Vector >& positions = pPositions->GetArrayForEdit< Vector >();
@@ -472,7 +493,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 	{
 		MEM_ALLOC_CREDIT();
 		CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-		if ( !SerializeDMX( buf, pSimulations, pFilename ) )
+		if( !SerializeDMX( buf, pSimulations, pFilename ) )
 		{
 			Warning( "Replay: Failed to write ragdoll cache, %s.\n", pFilename );
 			return false;
@@ -492,7 +513,7 @@ bool CReplayRagdollRecorder::DumpRagdollsToDisk( char const* pFilename ) const
 //--------------------------------------------------------------------------------
 
 CReplayRagdollCache::CReplayRagdollCache()
-:	m_bInit( false )
+	:	m_bInit( false )
 {
 }
 
@@ -507,19 +528,23 @@ bool CReplayRagdollCache::Init( char const* pFilename )
 	Assert( !m_bInit );
 
 	// Make sure valid filename
-	if ( !pFilename || pFilename[0] == 0 )
+	if( !pFilename || pFilename[0] == 0 )
+	{
 		return false;
+	}
 
 	DECLARE_DMX_CONTEXT();
 
 	// Attempt to read from disk
 	CDmxElement* pRagdolls = NULL;
-	if ( !UnserializeDMX( pFilename, "MOD", true, &pRagdolls ) )
+	if( !UnserializeDMX( pFilename, "MOD", true, &pRagdolls ) )
 //	if ( !UnserializeDMX( pFilename, "GAME", false, &pRagdolls ) )
+	{
 		return false;
+	}
 
 	CUtlVector< CDmxElement* > const& ragdolls = pRagdolls->GetArray< CDmxElement* >( "ragdolls" );
-	for ( int i = 0; i < ragdolls.Count(); ++i )
+	for( int i = 0; i < ragdolls.Count(); ++i )
 	{
 		CDmxElement* pCurRagdollInput = ragdolls[ i ];
 
@@ -534,7 +559,7 @@ bool CReplayRagdollCache::Init( char const* pFilename )
 
 		// Read frames
 		CUtlVector< CDmxElement* > const& frames = pCurRagdollInput->GetArray< CDmxElement* >( "frames" );
-		for ( int j = 0; j < frames.Count(); ++j )
+		for( int j = 0; j < frames.Count(); ++j )
 		{
 			CDmxElement* pCurFrameInput = frames[ j ];
 
@@ -543,7 +568,8 @@ bool CReplayRagdollCache::Init( char const* pFilename )
 			pNewSimData->m_lstFrames.AddToTail( pNewFrame );
 
 			// Read tick
-			pNewFrame->nTick = pCurFrameInput->GetValue( "tick", -1 );			Assert( pNewFrame->nTick != -1 );
+			pNewFrame->nTick = pCurFrameInput->GetValue( "tick", -1 );
+			Assert( pNewFrame->nTick != -1 );
 
 			// Read root pos/orientation
 			pNewFrame->vRootPosition = pCurFrameInput->GetValue( "root_pos"   , vec3_origin );
@@ -552,7 +578,7 @@ bool CReplayRagdollCache::Init( char const* pFilename )
 			CUtlVector< Vector > const& positions = pCurFrameInput->GetArray< Vector >( "positions" );
 			CUtlVector< QAngle > const& angles = pCurFrameInput->GetArray< QAngle >( "angles" );
 
-			for ( int k = 0; k < pNewSimData->m_nNumBones; ++k )
+			for( int k = 0; k < pNewSimData->m_nNumBones; ++k )
 			{
 				pNewFrame->pPositions[ k ] = positions[ k ];
 				pNewFrame->pAngles[ k ]    = angles[ k ];
@@ -571,8 +597,10 @@ bool CReplayRagdollCache::Init( char const* pFilename )
 
 void CReplayRagdollCache::Shutdown()
 {
-	if ( !m_bInit )
+	if( !m_bInit )
+	{
 		return;
+	}
 
 	m_lstRagdolls.PurgeAndDeleteElements();
 	m_bInit = false;
@@ -591,22 +619,26 @@ bool CReplayRagdollCache::GetFrame( C_BaseAnimating* pEntity, int nTick, bool* p
 
 	// Find ragdoll for the given entity - will return NULL if nTick is out of the entry's time window
 	const RagdollSimulationData_t* pRagdollEntry = FindRagdollEntry( pEntity, nTick );
-	if ( !pRagdollEntry )
+	if( !pRagdollEntry )
+	{
 		return false;
+	}
 
 	// Find frame for the given tick
 	RagdollSimulationFrame_t* pFrame;
 	RagdollSimulationFrame_t* pNextFrame;
-	if ( !FindFrame( pFrame, pNextFrame, pRagdollEntry, nTick ) )
+	if( !FindFrame( pFrame, pNextFrame, pRagdollEntry, nTick ) )
+	{
 		return false;
+	}
 
 	// Compute root transform
 	matrix3x4_t rootTransform;
 	float flInterpAmount = gpGlobals->interpolation_amount;
-	if ( pNextFrame )
+	if( pNextFrame )
 	{
 		AngleMatrix(
-			(const QAngle &)Lerp( flInterpAmount, pFrame->angRootAngles, pNextFrame->angRootAngles ),	// Actually does a slerp
+			( const QAngle& )Lerp( flInterpAmount, pFrame->angRootAngles, pNextFrame->angRootAngles ),	// Actually does a slerp
 			Lerp( flInterpAmount, pFrame->vRootPosition, pNextFrame->vRootPosition ),
 			rootTransform
 		);
@@ -617,22 +649,25 @@ bool CReplayRagdollCache::GetFrame( C_BaseAnimating* pEntity, int nTick, bool* p
 	}
 
 	// Compute each bone
-	ragdoll_t* pRagdoll = pEntity->m_pRagdoll->GetRagdoll();		Assert( pRagdoll );
-	for ( int k = 0; k < pRagdoll->listCount; ++k )
+	ragdoll_t* pRagdoll = pEntity->m_pRagdoll->GetRagdoll();
+	Assert( pRagdoll );
+	for( int k = 0; k < pRagdoll->listCount; ++k )
 	{
 		int objectIndex = k;
 		const ragdollelement_t& element = pRagdoll->list[ objectIndex ];
 
-		int const boneIndex = pRagdoll->boneIndex[ objectIndex ];			Assert( boneIndex >= 0 );
+		int const boneIndex = pRagdoll->boneIndex[ objectIndex ];
+		Assert( boneIndex >= 0 );
 
 		// Compute blended transform if possible
 		matrix3x4_t localTransform;
-		if ( pNextFrame && replay_ragdoll_blending.GetInt() )
+		if( pNextFrame && replay_ragdoll_blending.GetInt() )
 		{
 			// Get blended Eular angles - NOTE: The Lerp() here actually calls Lerp<QAngle>() which converts to quats and back
-			float flInterpAmount = gpGlobals->interpolation_amount;		Assert( flInterpAmount >= 0.0f && flInterpAmount <= 1.0f );
+			float flInterpAmount = gpGlobals->interpolation_amount;
+			Assert( flInterpAmount >= 0.0f && flInterpAmount <= 1.0f );
 			AngleMatrix(
-				(const QAngle &)Lerp( flInterpAmount, pFrame->pAngles   [ objectIndex ], pNextFrame->pAngles   [ objectIndex ] ), 
+				( const QAngle& )Lerp( flInterpAmount, pFrame->pAngles   [ objectIndex ], pNextFrame->pAngles   [ objectIndex ] ),
 				Lerp( flInterpAmount, pFrame->pPositions[ objectIndex ], pNextFrame->pPositions[ objectIndex ] ),
 				localTransform
 			);
@@ -645,13 +680,14 @@ bool CReplayRagdollCache::GetFrame( C_BaseAnimating* pEntity, int nTick, bool* p
 
 		matrix3x4_t& boneMatrix = pBoneAccessor->GetBoneForWrite( boneIndex );
 
-		if ( element.parentIndex < 0 )
+		if( element.parentIndex < 0 )
 		{
 			ConcatTransforms( rootTransform, localTransform, boneMatrix );
 		}
 		else
 		{
-			int parentBoneIndex = pRagdoll->boneIndex[ element.parentIndex ];		Assert( parentBoneIndex >= 0 );
+			int parentBoneIndex = pRagdoll->boneIndex[ element.parentIndex ];
+			Assert( parentBoneIndex >= 0 );
 			Assert( pBoneSimulated[ parentBoneIndex ] );
 			matrix3x4_t const& parentMatrix = pBoneAccessor->GetBone( parentBoneIndex );
 			ConcatTransforms( parentMatrix, localTransform, boneMatrix );
@@ -661,7 +697,7 @@ bool CReplayRagdollCache::GetFrame( C_BaseAnimating* pEntity, int nTick, bool* p
 		pBoneSimulated[ boneIndex ] = true;
 	}
 
-	if ( replay_ragdoll_dbg.GetBool() )
+	if( replay_ragdoll_dbg.GetBool() )
 	{
 		DrawBones( pBoneAccessor->GetBoneArrayForWrite(), pRagdollEntry->m_nNumBones, pRagdoll, 0, 0, 255, pEntity );
 	}
@@ -680,13 +716,17 @@ RagdollSimulationData_t* CReplayRagdollCache::FindRagdollEntry( C_BaseAnimating*
 		RagdollSimulationData_t* pRagdollData = m_lstRagdolls[ i ];
 
 		// If not the right entity or the tick is out range, continue.
-		if ( pRagdollData->m_nEntityIndex != nEntIndex )
+		if( pRagdollData->m_nEntityIndex != nEntIndex )
+		{
 			continue;
+		}
 
 		// We've got the ragdoll, but only return it if nTick is in the window
-		if ( nTick < pRagdollData->m_nStartTick ||
-			 nTick > pRagdollData->m_nStartTick + pRagdollData->m_nDuration )
+		if( nTick < pRagdollData->m_nStartTick ||
+				nTick > pRagdollData->m_nStartTick + pRagdollData->m_nDuration )
+		{
 			return NULL;
+		}
 
 		return pRagdollData;
 	}
@@ -708,9 +748,10 @@ bool CReplayRagdollCache::FindFrame( RagdollSimulationFrame_t*& pFrameOut, Ragdo
 			nNext == pRagdollEntry->m_lstFrames.InvalidIndex() ? NULL : pRagdollEntry->m_lstFrames[ nNext ];
 
 		// Use this frame?
-		if ( nTick >= pFrame->nTick &&
-			( (pNextFrame && nTick <= pNextFrame->nTick) || !pNextFrame ) )		// Use the last frame if the tick is past the range of frames -
-		{																		// this is the "sleeping" ragdoll frame
+		if( nTick >= pFrame->nTick &&
+				( ( pNextFrame && nTick <= pNextFrame->nTick ) || !pNextFrame ) )		// Use the last frame if the tick is past the range of frames -
+		{
+			// this is the "sleeping" ragdoll frame
 			pFrameOut     = pFrame;
 			pNextFrameOut = pNextFrame;
 

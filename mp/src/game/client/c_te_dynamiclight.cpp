@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS( C_TEDynamicLight, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEDynamicLight( void );
+	C_TEDynamicLight( void );
 	virtual			~C_TEDynamicLight( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -44,24 +44,24 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// Networking 
+// Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEDynamicLight, DT_TEDynamicLight, CTEDynamicLight)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(r)),
-	RecvPropInt( RECVINFO(g)),
-	RecvPropInt( RECVINFO(b)),
-	RecvPropInt( RECVINFO(exponent)),
-	RecvPropFloat( RECVINFO(m_fRadius)),
-	RecvPropFloat( RECVINFO(m_fTime)),
-	RecvPropFloat( RECVINFO(m_fDecay)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEDynamicLight, DT_TEDynamicLight, CTEDynamicLight )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropInt( RECVINFO( r ) ),
+				RecvPropInt( RECVINFO( g ) ),
+				RecvPropInt( RECVINFO( b ) ),
+				RecvPropInt( RECVINFO( exponent ) ),
+				RecvPropFloat( RECVINFO( m_fRadius ) ),
+				RecvPropFloat( RECVINFO( m_fTime ) ),
+				RecvPropFloat( RECVINFO( m_fDecay ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TEDynamicLight::C_TEDynamicLight( void )
+				C_TEDynamicLight::C_TEDynamicLight( void )
 {
 	m_vecOrigin.Init();
 	r = 0;
@@ -74,18 +74,20 @@ C_TEDynamicLight::C_TEDynamicLight( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEDynamicLight::~C_TEDynamicLight( void )
 {
 }
 
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
-	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay, int nLightIndex )
+					  const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay, int nLightIndex )
 {
-	dlight_t *dl = effects->CL_AllocDlight( nLightIndex );
-	if ( !dl )
+	dlight_t* dl = effects->CL_AllocDlight( nLightIndex );
+	if( !dl )
+	{
 		return;
+	}
 
 	dl->origin	= *org;
 	dl->radius	= radius;
@@ -96,14 +98,14 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 	dl->die		= gpGlobals->curtime + time;
 	dl->decay	= decay;
 
-	if ( ToolsEnabled() && clienttools->IsInRecordingMode() )
+	if( ToolsEnabled() && clienttools->IsInRecordingMode() )
 	{
 		Color clr( r, g, b, 255 );
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
 
- 		msg->SetInt( "te", TE_DYNAMIC_LIGHT );
- 		msg->SetString( "name", "TE_DynamicLight" );
+		msg->SetInt( "te", TE_DYNAMIC_LIGHT );
+		msg->SetString( "name", "TE_DynamicLight" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "duration", time );
 		msg->SetFloat( "originx", org->x );
@@ -112,8 +114,8 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 		msg->SetFloat( "radius", radius );
 		msg->SetFloat( "decay", decay );
 		msg->SetColor( "color", clr );
- 		msg->SetInt( "exponent", exponent );
- 		msg->SetInt( "lightindex", nLightIndex );
+		msg->SetInt( "exponent", exponent );
+		msg->SetInt( "lightindex", nLightIndex );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -122,8 +124,8 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay,
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEDynamicLight::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -133,7 +135,7 @@ void C_TEDynamicLight::PostDataUpdate( DataUpdateType_t updateType )
 	TE_DynamicLight( filter, 0.0f, &m_vecOrigin, r, g, b, exponent, m_fRadius, m_fTime, m_fDecay, LIGHT_INDEX_TE_DYNAMIC );
 }
 
-void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );
@@ -144,9 +146,9 @@ void TE_DynamicLight( IRecipientFilter& filter, float delay, KeyValues *pKeyValu
 	int nExponent = pKeyValues->GetInt( "exponent" );
 	float flRadius = pKeyValues->GetFloat( "radius" );
 	float flDecay = pKeyValues->GetFloat( "decay" );
- 	int nLightIndex = pKeyValues->GetInt( "lightindex", LIGHT_INDEX_TE_DYNAMIC );
+	int nLightIndex = pKeyValues->GetInt( "lightindex", LIGHT_INDEX_TE_DYNAMIC );
 
-	TE_DynamicLight( filter, 0.0f, &vecOrigin, c.r(), c.g(), c.b(), nExponent, 
-		flRadius, flDuration, flDecay, nLightIndex );
+	TE_DynamicLight( filter, 0.0f, &vecOrigin, c.r(), c.g(), c.b(), nExponent,
+					 flRadius, flDuration, flDecay, nLightIndex );
 }
 

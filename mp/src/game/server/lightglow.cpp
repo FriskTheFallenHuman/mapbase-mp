@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -26,16 +26,22 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-					CLightGlow();
-					
+	CLightGlow();
+
 	virtual void	Spawn( void );
 	virtual void	Activate( void );
 	virtual int		UpdateTransmitState( void );
 
-	void InputColor(inputdata_t &data);
+	void InputColor( inputdata_t& data );
 #ifdef MAPBASE
-	void InputEnable( inputdata_t &data ) { m_bDisabled = false; }
-	void InputDisable( inputdata_t &data ) { m_bDisabled = true; }
+	void InputEnable( inputdata_t& data )
+	{
+		m_bDisabled = false;
+	}
+	void InputDisable( inputdata_t& data )
+	{
+		m_bDisabled = true;
+	}
 #endif
 
 public:
@@ -53,50 +59,50 @@ public:
 #endif
 };
 
-extern void SendProxy_Angles( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+extern void SendProxy_Angles( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID );
 
 IMPLEMENT_SERVERCLASS_ST_NOBASE( CLightGlow, DT_LightGlow )
-	SendPropInt( SENDINFO(m_clrRender), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
-	SendPropInt( SENDINFO(m_nHorizontalSize), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nVerticalSize), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMinDist), 16, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMaxDist), LIGHTGLOW_MAXDIST_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nOuterMaxDist), LIGHTGLOW_OUTERMAXDIST_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_spawnflags), 8, SPROP_UNSIGNED ),
-	SendPropVector(SENDINFO(m_vecOrigin), -1,  SPROP_COORD ),
-	SendPropQAngles	(SENDINFO(m_angRotation), 13, 0, SendProxy_Angles ),
-	SendPropEHandle (SENDINFO_NAME(m_hMoveParent, moveparent)),
-	SendPropFloat( SENDINFO(m_flGlowProxySize ), 6,	SPROP_ROUNDUP,	0.0f,	64.0f ),
-	SendPropFloat( SENDINFO_NAME( m_flHDRColorScale, HDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f ),
+SendPropInt( SENDINFO( m_clrRender ), 32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
+			 SendPropInt( SENDINFO( m_nHorizontalSize ), 16, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nVerticalSize ), 16, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nMinDist ), 16, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nMaxDist ), LIGHTGLOW_MAXDIST_BITS, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nOuterMaxDist ), LIGHTGLOW_OUTERMAXDIST_BITS, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_spawnflags ), 8, SPROP_UNSIGNED ),
+			 SendPropVector( SENDINFO( m_vecOrigin ), -1,  SPROP_COORD ),
+			 SendPropQAngles( SENDINFO( m_angRotation ), 13, 0, SendProxy_Angles ),
+			 SendPropEHandle( SENDINFO_NAME( m_hMoveParent, moveparent ) ),
+			 SendPropFloat( SENDINFO( m_flGlowProxySize ), 6,	SPROP_ROUNDUP,	0.0f,	64.0f ),
+			 SendPropFloat( SENDINFO_NAME( m_flHDRColorScale, HDRColorScale ), 0,	SPROP_NOSCALE,	0.0f,	100.0f ),
 #ifdef MAPBASE
 	SendPropBool( SENDINFO( m_bDisabled ) ),
 #endif
-END_SEND_TABLE()
+			 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( env_lightglow, CLightGlow );
+			 LINK_ENTITY_TO_CLASS( env_lightglow, CLightGlow );
 
 BEGIN_DATADESC( CLightGlow )
 
-	DEFINE_KEYFIELD( m_nVerticalSize,		FIELD_INTEGER,	"VerticalGlowSize" ),
-	DEFINE_KEYFIELD( m_nHorizontalSize,		FIELD_INTEGER,	"HorizontalGlowSize" ),
-	DEFINE_KEYFIELD( m_nMinDist,			FIELD_INTEGER,	"MinDist" ),
-	DEFINE_KEYFIELD( m_nMaxDist,			FIELD_INTEGER,	"MaxDist" ),
-	DEFINE_KEYFIELD( m_nOuterMaxDist,		FIELD_INTEGER,	"OuterMaxDist" ),
-	DEFINE_KEYFIELD( m_flGlowProxySize,		FIELD_FLOAT,	"GlowProxySize" ),
-	DEFINE_KEYFIELD( m_flHDRColorScale,		FIELD_FLOAT,	"HDRColorScale" ),
+DEFINE_KEYFIELD( m_nVerticalSize,		FIELD_INTEGER,	"VerticalGlowSize" ),
+					   DEFINE_KEYFIELD( m_nHorizontalSize,		FIELD_INTEGER,	"HorizontalGlowSize" ),
+					   DEFINE_KEYFIELD( m_nMinDist,			FIELD_INTEGER,	"MinDist" ),
+					   DEFINE_KEYFIELD( m_nMaxDist,			FIELD_INTEGER,	"MaxDist" ),
+					   DEFINE_KEYFIELD( m_nOuterMaxDist,		FIELD_INTEGER,	"OuterMaxDist" ),
+					   DEFINE_KEYFIELD( m_flGlowProxySize,		FIELD_FLOAT,	"GlowProxySize" ),
+					   DEFINE_KEYFIELD( m_flHDRColorScale,		FIELD_FLOAT,	"HDRColorScale" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bDisabled,			FIELD_BOOLEAN, "StartDisabled" ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 #endif
-	DEFINE_INPUTFUNC( FIELD_COLOR32, "Color",  InputColor ),
+					   DEFINE_INPUTFUNC( FIELD_COLOR32, "Color",  InputColor ),
 
-END_DATADESC()
+					   END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Constructor 
+// Constructor
 //-----------------------------------------------------------------------------
-CLightGlow::CLightGlow( void )
+					   CLightGlow::CLightGlow( void )
 {
 	m_nHorizontalSize = 0.0f;
 	m_nVerticalSize = 0.0f;
@@ -107,7 +113,7 @@ CLightGlow::CLightGlow( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLightGlow::Spawn( void )
 {
@@ -127,26 +133,26 @@ int CLightGlow::UpdateTransmitState( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLightGlow::Activate()
 {
 	BaseClass::Activate();
 
-	if ( m_nMaxDist > LIGHTGLOW_MAXDIST_MAX_VALUE )
+	if( m_nMaxDist > LIGHTGLOW_MAXDIST_MAX_VALUE )
 	{
 		Warning( "env_lightglow maxdist too large (%d should be %d).\n", m_nMaxDist.Get(), LIGHTGLOW_MAXDIST_MAX_VALUE );
 		m_nMaxDist = LIGHTGLOW_MAXDIST_MAX_VALUE;
 	}
 
-	if ( m_nOuterMaxDist > LIGHTGLOW_OUTERMAXDIST_MAX_VALUE )
+	if( m_nOuterMaxDist > LIGHTGLOW_OUTERMAXDIST_MAX_VALUE )
 	{
 		Warning( "env_lightglow outermaxdist too large (%d should be %d).\n", m_nOuterMaxDist.Get(), LIGHTGLOW_OUTERMAXDIST_MAX_VALUE );
 		m_nOuterMaxDist = LIGHTGLOW_OUTERMAXDIST_MAX_VALUE;
 	}
 }
 
-void CLightGlow::InputColor(inputdata_t &inputdata)
+void CLightGlow::InputColor( inputdata_t& inputdata )
 {
 	m_clrRender = inputdata.value.Color32();
 }

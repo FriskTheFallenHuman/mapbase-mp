@@ -37,7 +37,7 @@
 
 // Makes sure this header is not included before gtest.h.
 #ifndef GTEST_INCLUDE_GTEST_GTEST_H_
-#error Do not include gtest_pred_impl.h directly.  Include gtest.h instead.
+	#error Do not include gtest_pred_impl.h directly.  Include gtest.h instead.
 #endif  // GTEST_INCLUDE_GTEST_GTEST_H_
 
 // This header implements a family of generic predicate assertion
@@ -83,18 +83,22 @@
 // Helper function for implementing {EXPECT|ASSERT}_PRED1.  Don't use
 // this in your code.
 template <typename Pred,
-          typename T1>
-AssertionResult AssertPred1Helper(const char* pred_text,
-                                  const char* e1,
-                                  Pred pred,
-                                  const T1& v1) {
-  if (pred(v1)) return AssertionSuccess();
+		  typename T1>
+AssertionResult AssertPred1Helper( const char* pred_text,
+								   const char* e1,
+								   Pred pred,
+								   const T1& v1 )
+{
+	if( pred( v1 ) )
+	{
+		return AssertionSuccess();
+	}
 
-  Message msg;
-  msg << pred_text << "("
-      << e1 << ") evaluates to false, where"
-      << "\n" << e1 << " evaluates to " << v1;
-  return AssertionFailure(msg);
+	Message msg;
+	msg << pred_text << "("
+		<< e1 << ") evaluates to false, where"
+		<< "\n" << e1 << " evaluates to " << v1;
+	return AssertionFailure( msg );
 }
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT1.
@@ -126,23 +130,27 @@ AssertionResult AssertPred1Helper(const char* pred_text,
 // Helper function for implementing {EXPECT|ASSERT}_PRED2.  Don't use
 // this in your code.
 template <typename Pred,
-          typename T1,
-          typename T2>
-AssertionResult AssertPred2Helper(const char* pred_text,
-                                  const char* e1,
-                                  const char* e2,
-                                  Pred pred,
-                                  const T1& v1,
-                                  const T2& v2) {
-  if (pred(v1, v2)) return AssertionSuccess();
+		  typename T1,
+		  typename T2>
+AssertionResult AssertPred2Helper( const char* pred_text,
+								   const char* e1,
+								   const char* e2,
+								   Pred pred,
+								   const T1& v1,
+								   const T2& v2 )
+{
+	if( pred( v1, v2 ) )
+	{
+		return AssertionSuccess();
+	}
 
-  Message msg;
-  msg << pred_text << "("
-      << e1 << ", "
-      << e2 << ") evaluates to false, where"
-      << "\n" << e1 << " evaluates to " << v1
-      << "\n" << e2 << " evaluates to " << v2;
-  return AssertionFailure(msg);
+	Message msg;
+	msg << pred_text << "("
+		<< e1 << ", "
+		<< e2 << ") evaluates to false, where"
+		<< "\n" << e1 << " evaluates to " << v1
+		<< "\n" << e2 << " evaluates to " << v2;
+	return AssertionFailure( msg );
 }
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT2.
@@ -176,28 +184,32 @@ AssertionResult AssertPred2Helper(const char* pred_text,
 // Helper function for implementing {EXPECT|ASSERT}_PRED3.  Don't use
 // this in your code.
 template <typename Pred,
-          typename T1,
-          typename T2,
-          typename T3>
-AssertionResult AssertPred3Helper(const char* pred_text,
-                                  const char* e1,
-                                  const char* e2,
-                                  const char* e3,
-                                  Pred pred,
-                                  const T1& v1,
-                                  const T2& v2,
-                                  const T3& v3) {
-  if (pred(v1, v2, v3)) return AssertionSuccess();
+		  typename T1,
+		  typename T2,
+		  typename T3>
+AssertionResult AssertPred3Helper( const char* pred_text,
+								   const char* e1,
+								   const char* e2,
+								   const char* e3,
+								   Pred pred,
+								   const T1& v1,
+								   const T2& v2,
+								   const T3& v3 )
+{
+	if( pred( v1, v2, v3 ) )
+	{
+		return AssertionSuccess();
+	}
 
-  Message msg;
-  msg << pred_text << "("
-      << e1 << ", "
-      << e2 << ", "
-      << e3 << ") evaluates to false, where"
-      << "\n" << e1 << " evaluates to " << v1
-      << "\n" << e2 << " evaluates to " << v2
-      << "\n" << e3 << " evaluates to " << v3;
-  return AssertionFailure(msg);
+	Message msg;
+	msg << pred_text << "("
+		<< e1 << ", "
+		<< e2 << ", "
+		<< e3 << ") evaluates to false, where"
+		<< "\n" << e1 << " evaluates to " << v1
+		<< "\n" << e2 << " evaluates to " << v2
+		<< "\n" << e3 << " evaluates to " << v3;
+	return AssertionFailure( msg );
 }
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT3.
@@ -233,33 +245,37 @@ AssertionResult AssertPred3Helper(const char* pred_text,
 // Helper function for implementing {EXPECT|ASSERT}_PRED4.  Don't use
 // this in your code.
 template <typename Pred,
-          typename T1,
-          typename T2,
-          typename T3,
-          typename T4>
-AssertionResult AssertPred4Helper(const char* pred_text,
-                                  const char* e1,
-                                  const char* e2,
-                                  const char* e3,
-                                  const char* e4,
-                                  Pred pred,
-                                  const T1& v1,
-                                  const T2& v2,
-                                  const T3& v3,
-                                  const T4& v4) {
-  if (pred(v1, v2, v3, v4)) return AssertionSuccess();
+		  typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4>
+AssertionResult AssertPred4Helper( const char* pred_text,
+								   const char* e1,
+								   const char* e2,
+								   const char* e3,
+								   const char* e4,
+								   Pred pred,
+								   const T1& v1,
+								   const T2& v2,
+								   const T3& v3,
+								   const T4& v4 )
+{
+	if( pred( v1, v2, v3, v4 ) )
+	{
+		return AssertionSuccess();
+	}
 
-  Message msg;
-  msg << pred_text << "("
-      << e1 << ", "
-      << e2 << ", "
-      << e3 << ", "
-      << e4 << ") evaluates to false, where"
-      << "\n" << e1 << " evaluates to " << v1
-      << "\n" << e2 << " evaluates to " << v2
-      << "\n" << e3 << " evaluates to " << v3
-      << "\n" << e4 << " evaluates to " << v4;
-  return AssertionFailure(msg);
+	Message msg;
+	msg << pred_text << "("
+		<< e1 << ", "
+		<< e2 << ", "
+		<< e3 << ", "
+		<< e4 << ") evaluates to false, where"
+		<< "\n" << e1 << " evaluates to " << v1
+		<< "\n" << e2 << " evaluates to " << v2
+		<< "\n" << e3 << " evaluates to " << v3
+		<< "\n" << e4 << " evaluates to " << v4;
+	return AssertionFailure( msg );
 }
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT4.
@@ -297,38 +313,42 @@ AssertionResult AssertPred4Helper(const char* pred_text,
 // Helper function for implementing {EXPECT|ASSERT}_PRED5.  Don't use
 // this in your code.
 template <typename Pred,
-          typename T1,
-          typename T2,
-          typename T3,
-          typename T4,
-          typename T5>
-AssertionResult AssertPred5Helper(const char* pred_text,
-                                  const char* e1,
-                                  const char* e2,
-                                  const char* e3,
-                                  const char* e4,
-                                  const char* e5,
-                                  Pred pred,
-                                  const T1& v1,
-                                  const T2& v2,
-                                  const T3& v3,
-                                  const T4& v4,
-                                  const T5& v5) {
-  if (pred(v1, v2, v3, v4, v5)) return AssertionSuccess();
+		  typename T1,
+		  typename T2,
+		  typename T3,
+		  typename T4,
+		  typename T5>
+AssertionResult AssertPred5Helper( const char* pred_text,
+								   const char* e1,
+								   const char* e2,
+								   const char* e3,
+								   const char* e4,
+								   const char* e5,
+								   Pred pred,
+								   const T1& v1,
+								   const T2& v2,
+								   const T3& v3,
+								   const T4& v4,
+								   const T5& v5 )
+{
+	if( pred( v1, v2, v3, v4, v5 ) )
+	{
+		return AssertionSuccess();
+	}
 
-  Message msg;
-  msg << pred_text << "("
-      << e1 << ", "
-      << e2 << ", "
-      << e3 << ", "
-      << e4 << ", "
-      << e5 << ") evaluates to false, where"
-      << "\n" << e1 << " evaluates to " << v1
-      << "\n" << e2 << " evaluates to " << v2
-      << "\n" << e3 << " evaluates to " << v3
-      << "\n" << e4 << " evaluates to " << v4
-      << "\n" << e5 << " evaluates to " << v5;
-  return AssertionFailure(msg);
+	Message msg;
+	msg << pred_text << "("
+		<< e1 << ", "
+		<< e2 << ", "
+		<< e3 << ", "
+		<< e4 << ", "
+		<< e5 << ") evaluates to false, where"
+		<< "\n" << e1 << " evaluates to " << v1
+		<< "\n" << e2 << " evaluates to " << v2
+		<< "\n" << e3 << " evaluates to " << v3
+		<< "\n" << e4 << " evaluates to " << v4
+		<< "\n" << e5 << " evaluates to " << v5;
+	return AssertionFailure( msg );
 }
 
 // Internal macro for implementing {EXPECT|ASSERT}_PRED_FORMAT5.

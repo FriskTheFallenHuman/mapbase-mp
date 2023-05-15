@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -29,22 +29,22 @@ private:
 
 	CNetworkVar( int, m_iOverlayID );
 };
-							  
+
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CInfoOverlayAccessor, DT_InfoOverlayAccessor)
-	SendPropInt	(	SENDINFO(m_iTextureFrameIndex),		8,	SPROP_UNSIGNED ),
-	SendPropInt	(	SENDINFO(m_iOverlayID),				32,	SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST_NOBASE( CInfoOverlayAccessor, DT_InfoOverlayAccessor )
+SendPropInt(	SENDINFO( m_iTextureFrameIndex ),		8,	SPROP_UNSIGNED ),
+					  SendPropInt(	SENDINFO( m_iOverlayID ),				32,	SPROP_UNSIGNED ),
+					  END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( info_overlay_accessor, CInfoOverlayAccessor );
+					  LINK_ENTITY_TO_CLASS( info_overlay_accessor, CInfoOverlayAccessor );
 
 BEGIN_DATADESC( CInfoOverlayAccessor )
-	DEFINE_KEYFIELD( m_iOverlayID,	FIELD_INTEGER, "OverlayID" ),
-END_DATADESC()
+DEFINE_KEYFIELD( m_iOverlayID,	FIELD_INTEGER, "OverlayID" ),
+				  END_DATADESC()
 
 
-int CInfoOverlayAccessor::UpdateTransmitState()
+				  int CInfoOverlayAccessor::UpdateTransmitState()
 {
 	return SetTransmitState( FL_EDICT_ALWAYS );
 }

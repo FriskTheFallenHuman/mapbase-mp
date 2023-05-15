@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -17,7 +17,7 @@
 #include "tier0/memdbgon.h"
 
 // forward declarations
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 // $textureScrollVar
 // $textureScrollRate
@@ -27,13 +27,16 @@ class CTextureScrollMaterialProxy : public IMaterialProxy
 public:
 	CTextureScrollMaterialProxy();
 	virtual ~CTextureScrollMaterialProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pC_BaseEntity );
-	virtual void Release( void ) { delete this; }
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pC_BaseEntity );
+	virtual void Release( void )
+	{
+		delete this;
+	}
+	virtual IMaterial* GetMaterial();
 
 private:
-	IMaterialVar *m_pTextureScrollVar;
+	IMaterialVar* m_pTextureScrollVar;
 	CFloatInput m_TextureScrollRate;
 	CFloatInput m_TextureScrollAngle;
 	CFloatInput m_TextureScale;
@@ -49,16 +52,20 @@ CTextureScrollMaterialProxy::~CTextureScrollMaterialProxy()
 }
 
 
-bool CTextureScrollMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CTextureScrollMaterialProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	char const* pScrollVarName = pKeyValues->GetString( "textureScrollVar" );
 	if( !pScrollVarName )
+	{
 		return false;
+	}
 
 	bool foundVar;
 	m_pTextureScrollVar = pMaterial->FindVar( pScrollVarName, &foundVar, false );
 	if( !foundVar )
+	{
 		return false;
+	}
 
 	m_TextureScrollRate.Init( pMaterial, pKeyValues, "textureScrollRate", 1.0f );
 	m_TextureScrollAngle.Init( pMaterial, pKeyValues, "textureScrollAngle", 0.0f );
@@ -67,7 +74,7 @@ bool CTextureScrollMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyVal
 	return true;
 }
 
-void CTextureScrollMaterialProxy::OnBind( void *pC_BaseEntity )
+void CTextureScrollMaterialProxy::OnBind( void* pC_BaseEntity )
 {
 	if( !m_pTextureScrollVar )
 	{
@@ -82,7 +89,7 @@ void CTextureScrollMaterialProxy::OnBind( void *pC_BaseEntity )
 	scale		= m_TextureScale.GetFloat();
 
 	float sOffset, tOffset;
-	
+
 	sOffset = gpGlobals->curtime * cos( angle * ( M_PI / 180.0f ) ) * rate;
 	tOffset = gpGlobals->curtime * sin( angle * ( M_PI / 180.0f ) ) * rate;
 
@@ -95,17 +102,17 @@ void CTextureScrollMaterialProxy::OnBind( void *pC_BaseEntity )
 	{
 		tOffset += 1.0f + -( int )tOffset;
 	}
-			    
+
 	// make sure that we are in a [0,1] range
 	sOffset = sOffset - ( int )sOffset;
 	tOffset = tOffset - ( int )tOffset;
-	
-	if (m_pTextureScrollVar->GetType() == MATERIAL_VAR_TYPE_MATRIX)
+
+	if( m_pTextureScrollVar->GetType() == MATERIAL_VAR_TYPE_MATRIX )
 	{
 		VMatrix mat( scale, 0.0f, 0.0f, sOffset,
-			0.0f, scale, 0.0f, tOffset,
-			0.0f, 0.0f, 1.0f, 0.0f,
-			0.0f, 0.0f, 0.0f, 1.0f );
+					 0.0f, scale, 0.0f, tOffset,
+					 0.0f, 0.0f, 1.0f, 0.0f,
+					 0.0f, 0.0f, 0.0f, 1.0f );
 		m_pTextureScrollVar->SetMatrixValue( mat );
 	}
 	else
@@ -113,13 +120,13 @@ void CTextureScrollMaterialProxy::OnBind( void *pC_BaseEntity )
 		m_pTextureScrollVar->SetVecValue( sOffset, tOffset, 0.0f );
 	}
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
 }
 
-IMaterial *CTextureScrollMaterialProxy::GetMaterial()
+IMaterial* CTextureScrollMaterialProxy::GetMaterial()
 {
 	return m_pTextureScrollVar->GetOwningMaterial();
 }

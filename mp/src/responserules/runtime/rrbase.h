@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,20 +8,20 @@
 #ifndef RRBASE_H
 #define RRBASE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef _WIN32
-// Silence certain warnings
-// #pragma warning(disable : 4244)		// int or float down-conversion
-// #pragma warning(disable : 4305)		// int or float data truncation
-// #pragma warning(disable : 4201)		// nameless struct/union
-// #pragma warning(disable : 4511)     // copy constructor could not be generated
-// #pragma warning(disable : 4675)     // resolved overload was found by argument dependent lookup
+	// Silence certain warnings
+	// #pragma warning(disable : 4244)		// int or float down-conversion
+	// #pragma warning(disable : 4305)		// int or float data truncation
+	// #pragma warning(disable : 4201)		// nameless struct/union
+	// #pragma warning(disable : 4511)     // copy constructor could not be generated
+	// #pragma warning(disable : 4675)     // resolved overload was found by argument dependent lookup
 #endif
 
 #ifdef _DEBUG
-#define DEBUG 1
+	#define DEBUG 1
 #endif
 
 // Misc C-runtime library headers
@@ -48,7 +48,7 @@
 
 // app
 #if defined(_X360)
-#define DISABLE_DEBUG_HISTORY 1
+	#define DISABLE_DEBUG_HISTORY 1
 #endif
 
 #include "responserules/response_types.h"

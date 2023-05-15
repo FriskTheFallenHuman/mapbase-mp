@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -25,7 +25,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct LightmappedGeneric_DX9_Vars_t
 {
-	LightmappedGeneric_DX9_Vars_t() { memset( this, 0xFF, sizeof(LightmappedGeneric_DX9_Vars_t) ); }
+	LightmappedGeneric_DX9_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( LightmappedGeneric_DX9_Vars_t ) );
+	}
 
 	int m_nBaseTexture;
 	int m_nBaseTextureFrame;
@@ -138,11 +141,11 @@ struct LightmappedGenericFlashlight_DX9_Vars_t : public CBaseVSShader::DrawFlash
 };
 
 
-void InitParamsLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, LightmappedGeneric_DX9_Vars_t &info );
-void InitLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, LightmappedGeneric_DX9_Vars_t &info );
-void DrawLightmappedGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
-								 IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow, 
-								 LightmappedGeneric_DX9_Vars_t &info, CBasePerMaterialContextData **pContextDataPtr	 );
+void InitParamsLightmappedGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, LightmappedGeneric_DX9_Vars_t& info );
+void InitLightmappedGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, LightmappedGeneric_DX9_Vars_t& info );
+void DrawLightmappedGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params,
+								 IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow,
+								 LightmappedGeneric_DX9_Vars_t& info, CBasePerMaterialContextData** pContextDataPtr );
 
 
 #endif // LIGHTMAPPEDGENERIC_DX9_HELPER_H

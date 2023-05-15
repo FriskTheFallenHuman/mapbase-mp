@@ -10,7 +10,7 @@
 #define C_FUNC_FAKE_WORLDPORTAL
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 struct cplane_t;
@@ -28,11 +28,14 @@ public:
 	virtual bool	ShouldDraw();
 	virtual void	OnDataChanged( DataUpdateType_t type );
 
-	SkyboxVisibility_t	SkyMode() { return m_iSkyMode; }
+	SkyboxVisibility_t	SkyMode()
+	{
+		return m_iSkyMode;
+	}
 
-	ITexture		*RenderTarget();
+	ITexture*		RenderTarget();
 
-	fogparams_t		*GetFog();
+	fogparams_t*		GetFog();
 
 public:
 
@@ -42,19 +45,19 @@ public:
 	float		m_flScale;
 
 	EHANDLE		m_hFogController;
-	fogparams_t *m_pFog;
+	fogparams_t* m_pFog;
 
 	char m_iszRenderTarget[64];
-	ITexture *m_pRenderTarget;
+	ITexture* m_pRenderTarget;
 
-	C_FuncFakeWorldPortal	*m_pNext;
+	C_FuncFakeWorldPortal*	m_pNext;
 };
 
 //-----------------------------------------------------------------------------
 // Do we have reflective glass in view? If so, what's the reflection plane?
 //-----------------------------------------------------------------------------
-C_FuncFakeWorldPortal *NextFakeWorldPortal( C_FuncFakeWorldPortal *pStart, const CViewSetup& view,
-	Vector &vecAbsPlaneNormal, float &flLocalPlaneDist, const Frustum_t &frustum );
+C_FuncFakeWorldPortal* NextFakeWorldPortal( C_FuncFakeWorldPortal* pStart, const CViewSetup& view,
+		Vector& vecAbsPlaneNormal, float& flLocalPlaneDist, const Frustum_t& frustum );
 
 
 #endif // C_FUNC_FAKE_WORLDPORTAL

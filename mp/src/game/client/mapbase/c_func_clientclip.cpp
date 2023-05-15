@@ -1,6 +1,6 @@
 //========= Mapbase - https://github.com/mapbase-source/source-sdk-2013 ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -18,32 +18,34 @@ public:
 
 	void OnDataChanged( DataUpdateType_t type );
 	void ClientThink();
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 
 	bool m_bDisabled;
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_FuncClientClip, DT_FuncClientClip, CFuncClientClip )
-	RecvPropBool( RECVINFO( m_bDisabled ) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bDisabled ) ),
+			  END_RECV_TABLE()
 
-void C_FuncClientClip::OnDataChanged( DataUpdateType_t type )
+			  void C_FuncClientClip::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
 	//if ( type == DATA_UPDATE_CREATED )
 	//{
-		SetSolid(GetMoveParent() ? SOLID_VPHYSICS :  SOLID_BSP); // SOLID_VPHYSICS
+	SetSolid( GetMoveParent() ? SOLID_VPHYSICS :  SOLID_BSP ); // SOLID_VPHYSICS
 	//}
-	
-	if ( !m_bDisabled )
+
+	if( !m_bDisabled )
 	{
 		VPhysicsDestroyObject();
 		VPhysicsInitShadow( true, true );
 
 		// Think constantly updates the shadow
-		if (GetMoveParent())
+		if( GetMoveParent() )
+		{
 			SetNextClientThink( CLIENT_THINK_ALWAYS );
+		}
 	}
 	else
 	{
@@ -56,9 +58,9 @@ void C_FuncClientClip::OnDataChanged( DataUpdateType_t type )
 void C_FuncClientClip::ClientThink()
 {
 	// We shouldn't be thinking if we're disabled
-	Assert(!m_bDisabled);
+	Assert( !m_bDisabled );
 
-	if (VPhysicsGetObject())
+	if( VPhysicsGetObject() )
 	{
 		// Constantly updates the shadow.
 		// This think function should really only be active when we're parented.
@@ -73,17 +75,21 @@ void C_FuncClientClip::ClientThink()
 	BaseClass::ClientThink();
 }
 
-bool C_FuncClientClip::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
+bool C_FuncClientClip::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
 {
-	if ( m_bDisabled )
+	if( m_bDisabled )
+	{
 		return false;
+	}
 
-	if ( !VPhysicsGetObject() )
+	if( !VPhysicsGetObject() )
+	{
 		return false;
+	}
 
 	physcollision->TraceBox( ray, VPhysicsGetObject()->GetCollide(), GetAbsOrigin(), GetAbsAngles(), &trace );
 
-	if ( trace.DidHit() )
+	if( trace.DidHit() )
 	{
 		trace.surface.surfaceProps = VPhysicsGetObject()->GetMaterialIndex();
 		return true;

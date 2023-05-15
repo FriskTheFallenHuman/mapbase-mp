@@ -17,29 +17,29 @@
 
 BEGIN_DATADESC( CWeaponCustomScripted )
 
-	DEFINE_AUTO_ARRAY( m_iszClientScripts, FIELD_CHARACTER ),
-	DEFINE_AUTO_ARRAY( m_iszWeaponScriptName, FIELD_CHARACTER ),
+DEFINE_AUTO_ARRAY( m_iszClientScripts, FIELD_CHARACTER ),
+				   DEFINE_AUTO_ARRAY( m_iszWeaponScriptName, FIELD_CHARACTER ),
 
-END_DATADESC()
+				   END_DATADESC()
 
-IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCustomScripted, DT_WeaponCustomScripted )
+				   IMPLEMENT_NETWORKCLASS_ALIASED( WeaponCustomScripted, DT_WeaponCustomScripted )
 
-BEGIN_NETWORK_TABLE( CWeaponCustomScripted, DT_WeaponCustomScripted )
+				   BEGIN_NETWORK_TABLE( CWeaponCustomScripted, DT_WeaponCustomScripted )
 
 #ifdef CLIENT_DLL
-	RecvPropString( RECVINFO(m_iszClientScripts) ),
-	RecvPropString( RECVINFO(m_iszWeaponScriptName) ),
+	RecvPropString( RECVINFO( m_iszClientScripts ) ),
+	RecvPropString( RECVINFO( m_iszWeaponScriptName ) ),
 #else
-	SendPropString( SENDINFO(m_iszClientScripts) ),
-	SendPropString( SENDINFO(m_iszWeaponScriptName) ),
+	SendPropString( SENDINFO( m_iszClientScripts ) ),
+	SendPropString( SENDINFO( m_iszWeaponScriptName ) ),
 #endif
 
-END_NETWORK_TABLE()
+				   END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponCustomScripted )
-END_PREDICTION_DATA()
+				   BEGIN_PREDICTION_DATA( CWeaponCustomScripted )
+				   END_PREDICTION_DATA()
 
-LINK_ENTITY_TO_CLASS( weapon_custom_scripted1, CWeaponCustomScripted );
+				   LINK_ENTITY_TO_CLASS( weapon_custom_scripted1, CWeaponCustomScripted );
 
 // Only need one of the names
 PRECACHE_WEAPON_REGISTER( weapon_custom_scripted1 );
@@ -89,11 +89,11 @@ DEFINE_STATIC_HOOK( GetMaxRestTime );
 DEFINE_STATIC_HOOK( AddViewKick );
 
 #ifndef CLIENT_DLL
-DEFINE_STATIC_HOOK( WeaponLOSCondition );
-DEFINE_STATIC_HOOK( WeaponRangeAttack1Condition );
-DEFINE_STATIC_HOOK( WeaponRangeAttack2Condition );
-DEFINE_STATIC_HOOK( WeaponMeleeAttack1Condition );
-DEFINE_STATIC_HOOK( WeaponMeleeAttack2Condition );
+	DEFINE_STATIC_HOOK( WeaponLOSCondition );
+	DEFINE_STATIC_HOOK( WeaponRangeAttack1Condition );
+	DEFINE_STATIC_HOOK( WeaponRangeAttack2Condition );
+	DEFINE_STATIC_HOOK( WeaponMeleeAttack1Condition );
+	DEFINE_STATIC_HOOK( WeaponMeleeAttack2Condition );
 #endif
 
 DEFINE_STATIC_HOOK( ActivityList );
@@ -104,49 +104,49 @@ DEFINE_STATIC_HOOK( ActivityList );
 
 BEGIN_ENT_SCRIPTDESC( CWeaponCustomScripted, CBaseCombatWeapon, "Special weapon class with tons of hooks" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( HasAnyAmmo, FIELD_BOOLEAN, "Should return true if weapon has ammo" )
-	DEFINE_SIMPLE_WEAPON_HOOK( HasPrimaryAmmo, FIELD_BOOLEAN, "Should return true if weapon has primary ammo" )
-	DEFINE_SIMPLE_WEAPON_HOOK( HasSecondaryAmmo, FIELD_BOOLEAN, "Should return true if weapon has secondary ammo" )
+DEFINE_SIMPLE_WEAPON_HOOK( HasAnyAmmo, FIELD_BOOLEAN, "Should return true if weapon has ammo" )
+DEFINE_SIMPLE_WEAPON_HOOK( HasPrimaryAmmo, FIELD_BOOLEAN, "Should return true if weapon has primary ammo" )
+DEFINE_SIMPLE_WEAPON_HOOK( HasSecondaryAmmo, FIELD_BOOLEAN, "Should return true if weapon has secondary ammo" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( CanHolster, FIELD_BOOLEAN, "Should return true if weapon can be holstered" )
-	DEFINE_SIMPLE_WEAPON_HOOK( CanDeploy, FIELD_BOOLEAN, "Should return true if weapon can be deployed" )
-	DEFINE_SIMPLE_WEAPON_HOOK( Deploy, FIELD_BOOLEAN, "Called when weapon is being deployed" )
-	BEGIN_WEAPON_HOOK( Holster, FIELD_BOOLEAN, "Called when weapon is being holstered" )
-		DEFINE_SCRIPTHOOK_PARAM( "switchingto", FIELD_HSCRIPT )
-	END_SCRIPTHOOK()
+DEFINE_SIMPLE_WEAPON_HOOK( CanHolster, FIELD_BOOLEAN, "Should return true if weapon can be holstered" )
+DEFINE_SIMPLE_WEAPON_HOOK( CanDeploy, FIELD_BOOLEAN, "Should return true if weapon can be deployed" )
+DEFINE_SIMPLE_WEAPON_HOOK( Deploy, FIELD_BOOLEAN, "Called when weapon is being deployed" )
+BEGIN_WEAPON_HOOK( Holster, FIELD_BOOLEAN, "Called when weapon is being holstered" )
+DEFINE_SCRIPTHOOK_PARAM( "switchingto", FIELD_HSCRIPT )
+END_SCRIPTHOOK()
 
-	DEFINE_SIMPLE_WEAPON_HOOK( ItemPreFrame, FIELD_VOID, "Called each frame by the player PreThink" )
-	DEFINE_SIMPLE_WEAPON_HOOK( ItemPostFrame, FIELD_VOID, "Called each frame by the player PostThink" )
-	DEFINE_SIMPLE_WEAPON_HOOK( ItemBusyFrame, FIELD_VOID, "Called each frame by the player PostThink, if the player's not ready to attack yet" )
-	DEFINE_SIMPLE_WEAPON_HOOK( ItemHolsterFrame, FIELD_VOID, "Called each frame by the player PreThink, if the weapon is holstered" )
-	DEFINE_SIMPLE_WEAPON_HOOK( WeaponIdle, FIELD_VOID, "Called when no buttons pressed" )
-	DEFINE_SIMPLE_WEAPON_HOOK( HandleFireOnEmpty, FIELD_VOID, "Called when they have the attack button down but they are out of ammo. The default implementation either reloads, switches weapons, or plays an empty sound." )
+DEFINE_SIMPLE_WEAPON_HOOK( ItemPreFrame, FIELD_VOID, "Called each frame by the player PreThink" )
+DEFINE_SIMPLE_WEAPON_HOOK( ItemPostFrame, FIELD_VOID, "Called each frame by the player PostThink" )
+DEFINE_SIMPLE_WEAPON_HOOK( ItemBusyFrame, FIELD_VOID, "Called each frame by the player PostThink, if the player's not ready to attack yet" )
+DEFINE_SIMPLE_WEAPON_HOOK( ItemHolsterFrame, FIELD_VOID, "Called each frame by the player PreThink, if the weapon is holstered" )
+DEFINE_SIMPLE_WEAPON_HOOK( WeaponIdle, FIELD_VOID, "Called when no buttons pressed" )
+DEFINE_SIMPLE_WEAPON_HOOK( HandleFireOnEmpty, FIELD_VOID, "Called when they have the attack button down but they are out of ammo. The default implementation either reloads, switches weapons, or plays an empty sound." )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( CheckReload, FIELD_VOID, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( FinishReload, FIELD_VOID, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( AbortReload, FIELD_VOID, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( Reload, FIELD_BOOLEAN, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( Reload_NPC, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( CheckReload, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( FinishReload, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( AbortReload, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( Reload, FIELD_BOOLEAN, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( Reload_NPC, FIELD_VOID, "" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( PrimaryAttack, FIELD_VOID, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( SecondaryAttack, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( PrimaryAttack, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( SecondaryAttack, FIELD_VOID, "" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( GetPrimaryAttackActivity, FIELD_VARIANT, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetSecondaryAttackActivity, FIELD_VARIANT, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetDrawActivity, FIELD_VARIANT, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetDefaultAnimSpeed, FIELD_FLOAT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetPrimaryAttackActivity, FIELD_VARIANT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetSecondaryAttackActivity, FIELD_VARIANT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetDrawActivity, FIELD_VARIANT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetDefaultAnimSpeed, FIELD_FLOAT, "" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( GetBulletSpread, FIELD_VECTOR, "" )
-	BEGIN_WEAPON_HOOK( GetBulletSpreadForProficiency, FIELD_VECTOR, "Returns the bullet spread of a specific proficiency level. If this isn't defined, it will fall back to GetBulletSpread." )
-		DEFINE_SCRIPTHOOK_PARAM( "proficiency", FIELD_INTEGER )
-	END_SCRIPTHOOK()
-	DEFINE_SIMPLE_WEAPON_HOOK( GetFireRate, FIELD_FLOAT, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetMinBurst, FIELD_INTEGER, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetMaxBurst, FIELD_INTEGER, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetMinRestTime, FIELD_FLOAT, "" )
-	DEFINE_SIMPLE_WEAPON_HOOK( GetMaxRestTime, FIELD_FLOAT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetBulletSpread, FIELD_VECTOR, "" )
+BEGIN_WEAPON_HOOK( GetBulletSpreadForProficiency, FIELD_VECTOR, "Returns the bullet spread of a specific proficiency level. If this isn't defined, it will fall back to GetBulletSpread." )
+DEFINE_SCRIPTHOOK_PARAM( "proficiency", FIELD_INTEGER )
+END_SCRIPTHOOK()
+DEFINE_SIMPLE_WEAPON_HOOK( GetFireRate, FIELD_FLOAT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetMinBurst, FIELD_INTEGER, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetMaxBurst, FIELD_INTEGER, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetMinRestTime, FIELD_FLOAT, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( GetMaxRestTime, FIELD_FLOAT, "" )
 
-	DEFINE_SIMPLE_WEAPON_HOOK( AddViewKick, FIELD_VOID, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( AddViewKick, FIELD_VOID, "" )
 
 #ifndef CLIENT_DLL
 	DEFINE_SIMPLE_WEAPON_HOOK( WeaponLOSCondition, FIELD_BOOLEAN, "" )
@@ -156,8 +156,8 @@ BEGIN_ENT_SCRIPTDESC( CWeaponCustomScripted, CBaseCombatWeapon, "Special weapon 
 	DEFINE_SIMPLE_WEAPON_HOOK( WeaponMeleeAttack2Condition, FIELD_INTEGER, "" )
 #endif
 
-	DEFINE_SIMPLE_WEAPON_HOOK( ActivityList, FIELD_HSCRIPT, "" )
-	//DEFINE_SIMPLE_WEAPON_HOOK( ActivityListCount, FIELD_INTEGER, "" )
+DEFINE_SIMPLE_WEAPON_HOOK( ActivityList, FIELD_HSCRIPT, "" )
+//DEFINE_SIMPLE_WEAPON_HOOK( ActivityListCount, FIELD_INTEGER, "" )
 
 END_SCRIPTDESC();
 
@@ -175,17 +175,17 @@ CWeaponCustomScripted::CWeaponCustomScripted()
 	//m_bAltFiresUnderwater = false;
 }
 
-bool CWeaponCustomScripted::RunWeaponHook( ScriptHook_t &hook, HSCRIPT &cached, ScriptVariant_t *retVal, ScriptVariant_t *pArgs )
+bool CWeaponCustomScripted::RunWeaponHook( ScriptHook_t& hook, HSCRIPT& cached, ScriptVariant_t* retVal, ScriptVariant_t* pArgs )
 {
-	if ( !cached )
+	if( !cached )
 	{
-		if ( hook.CanRunInScope( m_ScriptScope ) )
+		if( hook.CanRunInScope( m_ScriptScope ) )
 		{
 			cached = hook.m_hFunc;
 		}
 	}
 
-	if (cached)
+	if( cached )
 	{
 		return hook.Call( m_ScriptScope, retVal, pArgs, false );
 	}
@@ -194,12 +194,12 @@ bool CWeaponCustomScripted::RunWeaponHook( ScriptHook_t &hook, HSCRIPT &cached, 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCustomScripted::Spawn( void )
 {
 #ifdef CLIENT_DLL
-	if (m_iszClientScripts[0] != '\0' && ValidateScriptScope())
+	if( m_iszClientScripts[0] != '\0' && ValidateScriptScope() )
 	{
 		RunScriptFile( m_iszClientScripts );
 	}
@@ -208,13 +208,13 @@ void CWeaponCustomScripted::Spawn( void )
 	BaseClass::Spawn();
 }
 
-bool CWeaponCustomScripted::KeyValue( const char *szKeyName, const char *szValue )
+bool CWeaponCustomScripted::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if ( FStrEq( szKeyName, "vscripts_client" ) )
+	if( FStrEq( szKeyName, "vscripts_client" ) )
 	{
 		Q_strcpy( m_iszClientScripts.GetForModify(), szValue );
 	}
-	else if ( FStrEq( szKeyName, "weapondatascript_name" ) )
+	else if( FStrEq( szKeyName, "weapondatascript_name" ) )
 	{
 		Q_strcpy( m_iszWeaponScriptName.GetForModify(), szValue );
 	}
@@ -226,14 +226,14 @@ bool CWeaponCustomScripted::KeyValue( const char *szKeyName, const char *szValue
 	return true;
 }
 
-bool CWeaponCustomScripted::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen )
+bool CWeaponCustomScripted::GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen )
 {
-	if ( FStrEq( szKeyName, "vscripts_client" ) )
+	if( FStrEq( szKeyName, "vscripts_client" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%s", m_iszClientScripts.Get() );
 		return true;
 	}
-	else if ( FStrEq( szKeyName, "weapondatascript_name" ) )
+	else if( FStrEq( szKeyName, "weapondatascript_name" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%s", m_iszWeaponScriptName.Get() );
 		return true;
@@ -272,7 +272,7 @@ bool CWeaponCustomScripted::GetKeyValue( const char *szKeyName, char *szValue, i
 	}
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponCustomScripted::HasAnyAmmo( void )
 {
@@ -296,7 +296,7 @@ bool CWeaponCustomScripted::HasSecondaryAmmo( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponCustomScripted::CanHolster( void )
 {
@@ -319,7 +319,7 @@ bool CWeaponCustomScripted::Deploy( void )
 	return BaseClass::Deploy();
 }
 
-bool CWeaponCustomScripted::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponCustomScripted::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	ScriptVariant_t pArgs[] = { ToHScript( pSwitchingTo ) };
 	SIMPLE_BOOL_OVERRIDE( Holster, pArgs );
@@ -328,7 +328,7 @@ bool CWeaponCustomScripted::Holster( CBaseCombatWeapon *pSwitchingTo )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCustomScripted::ItemPreFrame( void )
 {
@@ -373,7 +373,7 @@ void CWeaponCustomScripted::HandleFireOnEmpty( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCustomScripted::CheckReload( void )
 {
@@ -412,7 +412,7 @@ void CWeaponCustomScripted::Reload_NPC( bool bPlaySound )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCustomScripted::PrimaryAttack( void )
 {
@@ -429,7 +429,7 @@ void CWeaponCustomScripted::SecondaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 #define ACTIVITY_FUNC_OVERRIDE( name ) ScriptVariant_t retVal; \
 	if (RunWeaponHook( g_Hook_##name, m_Func_##name, &retVal ) && retVal.m_bool == false) \
@@ -477,7 +477,7 @@ float CWeaponCustomScripted::GetDefaultAnimSpeed( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 const Vector& CWeaponCustomScripted::GetBulletSpread( void )
 {
@@ -488,11 +488,11 @@ const Vector& CWeaponCustomScripted::GetBulletSpread( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector CWeaponCustomScripted::GetBulletSpread( WeaponProficiency_t proficiency )
 {
-	ScriptVariant_t pArgs[] = { (int)proficiency };
+	ScriptVariant_t pArgs[] = { ( int )proficiency };
 	SIMPLE_VECTOR_OVERRIDE( GetBulletSpreadForProficiency, pArgs );
 
 	return BaseClass::GetBulletSpread( proficiency );
@@ -534,7 +534,7 @@ float CWeaponCustomScripted::GetMaxRestTime( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCustomScripted::AddViewKick( void )
 {
@@ -545,9 +545,9 @@ void CWeaponCustomScripted::AddViewKick( void )
 
 #ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponCustomScripted::WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions )
+bool CWeaponCustomScripted::WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
 {
 	ScriptVariant_t pArgs[] = { ownerPos, targetPos, bSetConditions };
 	SIMPLE_BOOL_OVERRIDE( WeaponLOSCondition, pArgs );
@@ -589,13 +589,13 @@ int CWeaponCustomScripted::WeaponMeleeAttack2Condition( float flDot, float flDis
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-acttable_t *CWeaponCustomScripted::ActivityList( int &iActivityCount )
+acttable_t* CWeaponCustomScripted::ActivityList( int& iActivityCount )
 {
 	// TODO
 
-	return BaseClass::ActivityList(iActivityCount);
+	return BaseClass::ActivityList( iActivityCount );
 }
 
 // ActivityList does the same thing this now

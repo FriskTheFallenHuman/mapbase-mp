@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SPRITETRAIL_H
 #define SPRITETRAIL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "Sprite.h"
 
 #if defined( CLIENT_DLL )
-#define CSpriteTrail C_SpriteTrail
+	#define CSpriteTrail C_SpriteTrail
 #endif
 
 
@@ -47,19 +47,22 @@ public:
 	void SetStartWidthVariance( float flStartWidthVariance );
 	void SetTextureResolution( float flTexelsPerInch );
 	void SetMinFadeLength( float flMinFadeLength );
-	void SetSkybox( const Vector &vecSkyboxOrigin, float flSkyboxScale );
+	void SetSkybox( const Vector& vecSkyboxOrigin, float flSkyboxScale );
 
 	// Is the trail in the skybox?
 	bool IsInSkybox() const;
 	void Spawn( void );
 	void Precache( void );
-	void SetTransmit( bool bTransmit = true ) { m_bDrawForMoveParent = bTransmit; }
+	void SetTransmit( bool bTransmit = true )
+	{
+		m_bDrawForMoveParent = bTransmit;
+	}
 
-#if defined( CLIENT_DLL ) 
+#if defined( CLIENT_DLL )
 	// Client only code
 	virtual int DrawModel( int flags );
-	virtual const Vector &GetRenderOrigin( void );
-	virtual const QAngle &GetRenderAngles( void );
+	virtual const Vector& GetRenderOrigin( void );
+	virtual const QAngle& GetRenderAngles( void );
 
 	// On data update
 	virtual void OnPreDataChanged( DataUpdateType_t updateType );
@@ -67,13 +70,13 @@ public:
 	virtual void GetRenderBounds( Vector& mins, Vector& maxs );
 	virtual void ClientThink();
 
-	virtual bool ValidateEntityAttachedToPlayer( bool &bShouldRetry );
+	virtual bool ValidateEntityAttachedToPlayer( bool& bShouldRetry );
 
 #else
 	// Server only code
 
-	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo );
-	static CSpriteTrail *SpriteTrailCreate( const char *pSpriteName, const Vector &origin, bool animate );
+	virtual int ShouldTransmit( const CCheckTransmitInfo* pInfo );
+	static CSpriteTrail* SpriteTrailCreate( const char* pSpriteName, const Vector& origin, bool animate );
 
 #endif
 
@@ -86,9 +89,9 @@ private:
 		MAX_SPRITE_TRAIL_MASK = MAX_SPRITE_TRAIL_POINTS - 1,
 	};
 
-	TrailPoint_t *GetTrailPoint( int n );
+	TrailPoint_t* GetTrailPoint( int n );
 	void	UpdateTrail( void );
-	void	ComputeScreenPosition( Vector *pScreenPos );
+	void	ComputeScreenPosition( Vector* pScreenPos );
 	void	ConvertSkybox();
 	void	UpdateBoundingBox( void );
 
@@ -117,7 +120,10 @@ private:
 
 #if defined( CLIENT_DLL )
 public:
-	void SetUpdateTime(float setTo){ m_flUpdateTime = setTo; }
+	void SetUpdateTime( float setTo )
+	{
+		m_flUpdateTime = setTo;
+	}
 #endif
 };
 

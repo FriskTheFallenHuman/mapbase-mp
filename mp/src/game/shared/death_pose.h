@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef DEATH_POSE_H
 #define DEATH_POSE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 enum
@@ -23,12 +23,12 @@ enum
 
 #ifdef CLIENT_DLL
 
-void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *curBones, float flTime, int activity, int frame );
+	void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating* entity, matrix3x4_t* curBones, float flTime, int activity, int frame );
 
 #else // !CLIENT_DLL
 
-/// Calculates death pose activity and frame
-void SelectDeathPoseActivityAndFrame( CBaseAnimating *entity, const CTakeDamageInfo &info, int hitgroup, Activity& activity, int& frame );
+	/// Calculates death pose activity and frame
+	void SelectDeathPoseActivityAndFrame( CBaseAnimating* entity, const CTakeDamageInfo& info, int hitgroup, Activity& activity, int& frame );
 
 #endif // !CLIENT_DLL
 

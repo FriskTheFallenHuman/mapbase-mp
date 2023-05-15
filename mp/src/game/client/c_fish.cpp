@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -16,7 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern float UTIL_WaterLevel( const Vector &position, float minz, float maxz );
+extern float UTIL_WaterLevel( const Vector& position, float minz, float maxz );
 
 
 ConVar FishDebug( "fish_debug", "0", FCVAR_CHEAT, "Show debug info for fish" );
@@ -38,8 +38,8 @@ public:
 	virtual void OnDataChanged( DataUpdateType_t type );
 
 private:
-	friend void RecvProxy_FishOriginX( const CRecvProxyData *pData, void *pStruct, void *pOut );
-	friend void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pOut );
+	friend void RecvProxy_FishOriginX( const CRecvProxyData* pData, void* pStruct, void* pOut );
+	friend void RecvProxy_FishOriginY( const CRecvProxyData* pData, void* pStruct, void* pOut );
 
 	Vector m_pos;						///< local position
 	Vector m_vel;						///< local velocity
@@ -72,18 +72,18 @@ private:
 
 
 //-----------------------------------------------------------------------------
-void RecvProxy_FishOriginX( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_FishOriginX( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_Fish *fish = (C_Fish *)pStruct;
-	float *out = (float *)pOut;
+	C_Fish* fish = ( C_Fish* )pStruct;
+	float* out = ( float* )pOut;
 
 	*out = pData->m_Value.m_Float + fish->m_poolOrigin.x;
 }
 
-void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_FishOriginY( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_Fish *fish = (C_Fish *)pStruct;
-	float *out = (float *)pOut;
+	C_Fish* fish = ( C_Fish* )pStruct;
+	float* out = ( float* )pOut;
 
 	*out = pData->m_Value.m_Float + fish->m_poolOrigin.y;
 }
@@ -91,25 +91,25 @@ void RecvProxy_FishOriginY( const CRecvProxyData *pData, void *pStruct, void *pO
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_Fish, DT_CFish, CFish )
 
-	RecvPropVector( RECVINFO(m_poolOrigin) ),
+RecvPropVector( RECVINFO( m_poolOrigin ) ),
 
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.x, m_x ), 0, RecvProxy_FishOriginX ),
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.y, m_y ), 0, RecvProxy_FishOriginY ),
-	RecvPropFloat( RECVINFO_NAME( m_actualPos.z, m_z ) ),
+				RecvPropFloat( RECVINFO_NAME( m_actualPos.x, m_x ), 0, RecvProxy_FishOriginX ),
+				RecvPropFloat( RECVINFO_NAME( m_actualPos.y, m_y ), 0, RecvProxy_FishOriginY ),
+				RecvPropFloat( RECVINFO_NAME( m_actualPos.z, m_z ) ),
 
-	RecvPropFloat( RECVINFO_NAME( m_actualAngles.y, m_angle ) ),
+				RecvPropFloat( RECVINFO_NAME( m_actualAngles.y, m_angle ) ),
 
-	RecvPropInt( RECVINFO(m_nModelIndex) ),
-	RecvPropInt( RECVINFO(m_lifeState) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropInt( RECVINFO( m_lifeState ) ),
 
-	RecvPropFloat( RECVINFO(m_waterLevel) ),		///< get this from the server in case we die when slightly out of the water due to error correction
+				RecvPropFloat( RECVINFO( m_waterLevel ) ),		///< get this from the server in case we die when slightly out of the water due to error correction
 
-END_RECV_TABLE()
+				END_RECV_TABLE()
 
 
 
 //-----------------------------------------------------------------------------
-void C_Fish::Spawn( void )
+				void C_Fish::Spawn( void )
 {
 	BaseClass::Spawn();
 
@@ -132,7 +132,7 @@ void C_Fish::Spawn( void )
 //-----------------------------------------------------------------------------
 void C_Fish::ClientThink()
 {
-	if (FishDebug.GetBool())
+	if( FishDebug.GetBool() )
 	{
 		debugoverlay->AddLineOverlay( m_pos, m_actualPos, 255, 0, 0, true, 0.1f );
 		switch( m_localLifeState )
@@ -151,7 +151,7 @@ void C_Fish::ClientThink()
 
 
 	// check if we just died
-	if (m_localLifeState == LIFE_ALIVE && m_lifeState != LIFE_ALIVE)
+	if( m_localLifeState == LIFE_ALIVE && m_lifeState != LIFE_ALIVE )
 	{
 		// we have died
 		m_localLifeState = LIFE_DYING;
@@ -159,7 +159,7 @@ void C_Fish::ClientThink()
 		m_deathDepth = m_pos.z;
 
 		// determine surface float angle
-		m_deathAngle = RandomFloat( 87.0f, 93.0f ) * ((RandomInt( 0, 100 ) < 50) ? 1.0f : -1.0f);
+		m_deathAngle = RandomFloat( 87.0f, 93.0f ) * ( ( RandomInt( 0, 100 ) < 50 ) ? 1.0f : -1.0f );
 	}
 
 
@@ -168,7 +168,7 @@ void C_Fish::ClientThink()
 		case LIFE_DYING:
 		{
 			// depth parameter
-			float t = (m_pos.z - m_deathDepth) / (m_waterLevel - m_deathDepth);
+			float t = ( m_pos.z - m_deathDepth ) / ( m_waterLevel - m_deathDepth );
 			t *= t;
 
 			// roll onto side
@@ -176,9 +176,9 @@ void C_Fish::ClientThink()
 
 			// float to surface
 			const float fudge = 2.0f;
-			if (m_pos.z < m_waterLevel - fudge)
+			if( m_pos.z < m_waterLevel - fudge )
 			{
-				m_vel.z += (1.0f - t) * m_buoyancy * deltaT;
+				m_vel.z += ( 1.0f - t ) * m_buoyancy * deltaT;
 			}
 			else
 			{
@@ -191,7 +191,7 @@ void C_Fish::ClientThink()
 		case LIFE_DEAD:
 		{
 			// depth parameter
-			float t = (m_pos.z - m_deathDepth) / (m_waterLevel - m_deathDepth);
+			float t = ( m_pos.z - m_deathDepth ) / ( m_waterLevel - m_deathDepth );
 			t *= t;
 
 			// roll onto side
@@ -199,24 +199,24 @@ void C_Fish::ClientThink()
 
 			// keep near water surface
 			const float sub = 0.5f;
-			m_vel.z += 10.0f * (m_waterLevel - m_pos.z - sub) * deltaT;
+			m_vel.z += 10.0f * ( m_waterLevel - m_pos.z - sub ) * deltaT;
 
 			// bob on surface
 			const float rollAmp = 5.0f;
 			const float rollFreq = 2.33f;
-			m_angles.z += rollAmp * sin( rollFreq * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_angles.z += rollAmp * sin( rollFreq * ( gpGlobals->curtime + 10.0f * entindex() ) ) * deltaT;
 
 			const float rollAmp2 = 7.0f;
 			const float rollFreq2 = 4.0f;
-			m_angles.x += rollAmp2 * sin( rollFreq2 * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_angles.x += rollAmp2 * sin( rollFreq2 * ( gpGlobals->curtime + 10.0f * entindex() ) ) * deltaT;
 
 			const float bobAmp = 0.75f;
 			const float bobFreq = 4.0f;
-			m_vel.z += bobAmp * sin( bobFreq * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_vel.z += bobAmp * sin( bobFreq * ( gpGlobals->curtime + 10.0f * entindex() ) ) * deltaT;
 
 			const float bobAmp2 = 0.75f;
 			const float bobFreq2 = 3.333f;
-			m_vel.z += bobAmp2 * sin( bobFreq2 * (gpGlobals->curtime + 10.0f * entindex()) ) * deltaT;
+			m_vel.z += bobAmp2 * sin( bobFreq2 * ( gpGlobals->curtime + 10.0f * entindex() ) ) * deltaT;
 
 			// decay movement speed to zero
 			const float drag = 1.0f;
@@ -234,9 +234,9 @@ void C_Fish::ClientThink()
 			m_angles = m_actualAngles;
 
 			// fishy wiggle based on movement
-			if (!m_wiggleTimer.IsElapsed())
+			if( !m_wiggleTimer.IsElapsed() )
 			{
-				float swimPower = 1.0f - (m_wiggleTimer.GetElapsedTime() / m_wiggleTimer.GetCountdownDuration());
+				float swimPower = 1.0f - ( m_wiggleTimer.GetElapsedTime() / m_wiggleTimer.GetCountdownDuration() );
 				const float amp = 6.0f * swimPower;
 				float wiggle = amp * sin( m_wigglePhase );
 
@@ -258,11 +258,11 @@ void C_Fish::ClientThink()
 	error.z = 0.0f;
 	float errorLen = error.Length();
 
-	if (m_localLifeState == LIFE_ALIVE)
+	if( m_localLifeState == LIFE_ALIVE )
 	{
 		// if error is far above average, start swimming
 		const float wiggleThreshold = 2.0f;
-		if (errorLen - m_averageError > wiggleThreshold)
+		if( errorLen - m_averageError > wiggleThreshold )
 		{
 			// if error is large, we must have started swimming
 			const float swimTime = 5.0f;
@@ -271,7 +271,7 @@ void C_Fish::ClientThink()
 			m_wiggleRate = 2.0f * errorLen;
 
 			const float maxWiggleRate = 30.0f;
-			if (m_wiggleRate > maxWiggleRate)
+			if( m_wiggleRate > maxWiggleRate )
 			{
 				m_wiggleRate = maxWiggleRate;
 			}
@@ -279,24 +279,24 @@ void C_Fish::ClientThink()
 
 		// update average error
 		m_errorHistory[ m_errorHistoryIndex++ ] = errorLen;
-		if (m_errorHistoryIndex >= MAX_ERROR_HISTORY)
+		if( m_errorHistoryIndex >= MAX_ERROR_HISTORY )
 		{
 			m_errorHistoryIndex = 0;
 			m_errorHistoryCount = MAX_ERROR_HISTORY;
 		}
-		else if (m_errorHistoryCount < MAX_ERROR_HISTORY)
+		else if( m_errorHistoryCount < MAX_ERROR_HISTORY )
 		{
 			++m_errorHistoryCount;
 		}
 
 		m_averageError = 0.0f;
-		if (m_errorHistoryCount)
+		if( m_errorHistoryCount )
 		{
-			for( int r=0; r<m_errorHistoryCount; ++r )
+			for( int r = 0; r < m_errorHistoryCount; ++r )
 			{
 				m_averageError += m_errorHistory[r];
 			}
-			m_averageError /= (float)m_errorHistoryCount;
+			m_averageError /= ( float )m_errorHistoryCount;
 		}
 	}
 
@@ -304,7 +304,7 @@ void C_Fish::ClientThink()
 	// NOTE: This only tracks XY motion
 	const float maxError = 20.0f;
 	float errorT = errorLen / maxError;
-	if (errorT > 1.0f)
+	if( errorT > 1.0f )
 	{
 		errorT = 1.0f;
 	}
@@ -338,7 +338,7 @@ void C_Fish::OnDataChanged( DataUpdateType_t type )
 {
 	//if (!m_gotUpdate)
 
-	if (type == DATA_UPDATE_CREATED)
+	if( type == DATA_UPDATE_CREATED )
 	{
 		// initial update
 		m_gotUpdate = true;

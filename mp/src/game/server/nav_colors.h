@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -70,7 +70,7 @@ void NavDrawTriangle( const Vector& point1, const Vector& point2, const Vector& 
 void NavDrawFilledTriangle( const Vector& point1, const Vector& point2, const Vector& point3, NavEditColor navColor, bool dark );
 void NavDrawHorizontalArrow( const Vector& from, const Vector& to, float width, NavEditColor navColor );
 void NavDrawDashedLine( const Vector& from, const Vector& to, NavEditColor navColor );
-void NavDrawVolume( const Vector &vMin, const Vector &vMax, int zMidline, NavEditColor navColor );
+void NavDrawVolume( const Vector& vMin, const Vector& vMax, int zMidline, NavEditColor navColor );
 
 //--------------------------------------------------------------------------------------------------------------
 

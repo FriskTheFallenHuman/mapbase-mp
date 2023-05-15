@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,7 +13,7 @@
 #if !defined( OVERLAYTEXT_H )
 #define OVERLAYTEXT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -52,7 +52,7 @@ public:
 	int				g;
 	int				b;
 	int				a;
-	OverlayText_t	*nextOverlayText;
+	OverlayText_t*	nextOverlayText;
 };
 
 #endif // OVERLAYTEXT_H

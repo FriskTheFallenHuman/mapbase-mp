@@ -18,27 +18,27 @@ using namespace vgui;
 
 //-----------------------------------------------------------------------------
 
-CMoviePlayerPanel::CMoviePlayerPanel( Panel *pParent, const char *pName, const char *pMovieFilename )
-:	CReplayBasePanel( pParent, pName ),
-	m_flCurFrame( 0.0f ),
-	m_flLastTime( 0.0f ),
-	m_nLastMouseXPos( 0 ),
-	m_bPlaying( false ),
-	m_bLooping( false ),
-	m_bFullscreen( false ),
-	m_bMouseOverScrub( false ),
-	m_pOldParent( NULL ),
-	m_pVideoMaterial( NULL )
+CMoviePlayerPanel::CMoviePlayerPanel( Panel* pParent, const char* pName, const char* pMovieFilename )
+	:	CReplayBasePanel( pParent, pName ),
+	  m_flCurFrame( 0.0f ),
+	  m_flLastTime( 0.0f ),
+	  m_nLastMouseXPos( 0 ),
+	  m_bPlaying( false ),
+	  m_bLooping( false ),
+	  m_bFullscreen( false ),
+	  m_bMouseOverScrub( false ),
+	  m_pOldParent( NULL ),
+	  m_pVideoMaterial( NULL )
 {
-	if ( g_pVideo )
+	if( g_pVideo )
 	{
 		m_pVideoMaterial = g_pVideo->CreateVideoMaterial( pMovieFilename, pMovieFilename, "GAME" );
-		if ( m_pVideoMaterial )
+		if( m_pVideoMaterial )
 		{
 			m_pMaterial = m_pVideoMaterial->GetMaterial();
 			m_pMaterial->AddRef();
 			m_nNumFrames = m_pVideoMaterial->GetFrameCount();
-		
+
 		}
 	}
 
@@ -58,7 +58,7 @@ void CMoviePlayerPanel::PerformLayout()
 
 	GetPosRelativeToAncestor( NULL, m_nGlobalPos[0], m_nGlobalPos[1] );
 
-	if ( m_bFullscreen )
+	if( m_bFullscreen )
 	{
 		// Cache parent
 		m_pOldParent = GetParent();
@@ -66,11 +66,11 @@ void CMoviePlayerPanel::PerformLayout()
 
 		// Adjust parent for fullscreen mode
 		SetParent( g_pClientMode->GetViewport() );
-		
+
 		// Adjust bounds for fullscreen
 		SetBounds( 0, 0, ScreenWidth(), ScreenHeight() );
 	}
-	else if ( m_pOldParent )
+	else if( m_pOldParent )
 	{
 		// Restore old parent/bounds
 		SetParent( m_pOldParent );
@@ -85,7 +85,7 @@ void CMoviePlayerPanel::OnMousePressed( MouseCode code )
 
 void CMoviePlayerPanel::SetScrubOnMouseOverMode( bool bOn )
 {
-	if ( bOn )
+	if( bOn )
 	{
 		m_bPlaying = false;
 	}
@@ -103,9 +103,9 @@ void CMoviePlayerPanel::Play()
 
 void CMoviePlayerPanel::FreeMaterial()
 {
-	if ( m_pVideoMaterial )
+	if( m_pVideoMaterial )
 	{
-		if ( g_pVideo )
+		if( g_pVideo )
 		{
 			g_pVideo->DestroyVideoMaterial( m_pVideoMaterial );
 		}
@@ -113,7 +113,7 @@ void CMoviePlayerPanel::FreeMaterial()
 		m_pVideoMaterial = NULL;
 	}
 
-	if ( m_pMaterial )
+	if( m_pMaterial )
 	{
 		m_pMaterial->Release();
 		m_pMaterial = NULL;
@@ -122,31 +122,33 @@ void CMoviePlayerPanel::FreeMaterial()
 
 void CMoviePlayerPanel::OnTick()
 {
-	if ( !IsEnabled() )
+	if( !IsEnabled() )
+	{
 		return;
+	}
 
-	if ( m_bMouseOverScrub )
+	if( m_bMouseOverScrub )
 	{
 		int nMouseX, nMouseY;
 		input()->GetCursorPos( nMouseX, nMouseY );
-		if ( IsWithin( nMouseX, nMouseY ) &&
-			 nMouseX != m_nLastMouseXPos )
+		if( IsWithin( nMouseX, nMouseY ) &&
+				nMouseX != m_nLastMouseXPos )
 		{
-			float flPercent = (float)( nMouseX - m_nGlobalPos[0] ) / GetWide();
+			float flPercent = ( float )( nMouseX - m_nGlobalPos[0] ) / GetWide();
 			m_flCurFrame = flPercent * ( m_nNumFrames - 1 );
 			m_nLastMouseXPos = nMouseX;
 		}
 	}
-	else if ( m_bPlaying )
+	else if( m_bPlaying )
 	{
 		float flElapsed = gpGlobals->realtime - m_flLastTime;
 		m_flLastTime = gpGlobals->realtime;
 
 		m_flCurFrame += flElapsed * m_pVideoMaterial->GetVideoFrameRate().GetFPS();
 		// Loop if necessary
-		if ( m_flCurFrame >= m_nNumFrames )
+		if( m_flCurFrame >= m_nNumFrames )
 		{
-			if ( m_bLooping )
+			if( m_bLooping )
 			{
 				m_flCurFrame = m_flCurFrame - m_nNumFrames;
 			}
@@ -165,14 +167,16 @@ void CMoviePlayerPanel::OnTick()
 
 void CMoviePlayerPanel::Paint()
 {
-	if ( m_pVideoMaterial == NULL )
+	if( m_pVideoMaterial == NULL )
+	{
 		return;
+	}
 
 	// Get panel position/dimensions
-	int x,y;
-	int w,h;
+	int x, y;
+	int w, h;
 	GetPosRelativeToAncestor( NULL, x, y );
-	GetSize( w,h );
+	GetSize( w, h );
 
 	CMatRenderContextPtr pRenderContext( materials );
 	pRenderContext->Bind( m_pMaterial );

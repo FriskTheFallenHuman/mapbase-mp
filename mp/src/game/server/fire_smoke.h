@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -62,7 +62,7 @@ public:
 	void	EnableSmoke( int state = true );
 	void	EnableGlow( int state = true );
 	void	EnableVisibleFromAbove( int state = true );
-	
+
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 

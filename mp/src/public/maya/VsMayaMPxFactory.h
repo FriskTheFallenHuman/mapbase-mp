@@ -8,7 +8,7 @@
 #ifndef VSMAYAMPXFACTORY_H
 #define VSMAYAMPXFACTORY_H
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include <maya/MPxCommand.h>
@@ -25,7 +25,7 @@
 #include <maya/MSyntax.h>
 
 #if MAYA_API_VERSION >= 200800
-#include <maya/MPxImageFile.h>
+	#include <maya/MPxImageFile.h>
 #endif //MAYA_API_VERSION >= 200800
 
 //-----------------------------------------------------------------------------
@@ -36,7 +36,7 @@
 class MFnPlugin;
 namespace ValveMaya
 {
-	class CMSyntaxHelp;
+class CMSyntaxHelp;
 }
 
 
@@ -49,13 +49,13 @@ class CVsMayaMPxFactoryBase
 {
 public:
 	// Registers all MPx derived things that have been allocated
-	static MStatus RegisterEverything( MFnPlugin &pluginFn );
+	static MStatus RegisterEverything( MFnPlugin& pluginFn );
 
 	// Deregisters all MPx derived things that have been allocated
-	static MStatus DeregisterEverything( MFnPlugin &pluginFn );
+	static MStatus DeregisterEverything( MFnPlugin& pluginFn );
 
 	// Displays a list of stuff in the plugin
-	static void DisplaySummary( const MString &pluginName );
+	static void DisplaySummary( const MString& pluginName );
 
 	// Types of things the MPxFactory can create
 	enum Type
@@ -72,9 +72,15 @@ public:
 		kUnknown
 	};
 
-	void Enable( bool bEnabled ) { m_bEnabled = bEnabled; }
+	void Enable( bool bEnabled )
+	{
+		m_bEnabled = bEnabled;
+	}
 
-	bool IsEnabled() const { return m_bEnabled; }
+	bool IsEnabled() const
+	{
+		return m_bEnabled;
+	}
 
 protected:
 	// Constructor
@@ -85,19 +91,19 @@ private:
 	CVsMayaMPxFactoryBase* m_pNextFactory;
 
 	// The starting factory
-	static CVsMayaMPxFactoryBase *s_pFirstFactory;
+	static CVsMayaMPxFactoryBase* s_pFirstFactory;
 
 	// Register the thing associated with this factory
-	virtual MStatus Register( MFnPlugin &pluginFn ) const = 0;
+	virtual MStatus Register( MFnPlugin& pluginFn ) const = 0;
 
 	// Deregister the thing associated with this factory
-	virtual MStatus Deregister( MFnPlugin &pluginFn ) const = 0;
+	virtual MStatus Deregister( MFnPlugin& pluginFn ) const = 0;
 
 	// Everything has a name
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 	// Everything has a description
-	virtual const MString &GetDesc() const = 0;
+	virtual const MString& GetDesc() const = 0;
 
 	// Everything has a type
 	virtual Type GetType() const = 0;
@@ -120,23 +126,23 @@ class CVsMayaMPxFactory : public CVsMayaMPxFactoryBase
 {
 private:
 	// Register the thing associated with this factory
-	virtual MStatus Register( MFnPlugin &pluginFn ) const
+	virtual MStatus Register( MFnPlugin& pluginFn ) const
 	{
 		return T::Register( pluginFn );
 	}
 
 	// Deregister the thing associated with this factory
-	virtual MStatus Deregister( MFnPlugin &pluginFn ) const
+	virtual MStatus Deregister( MFnPlugin& pluginFn ) const
 	{
 		return T::Deregister( pluginFn );
 	}
 
-	virtual const MString &GetName() const
+	virtual const MString& GetName() const
 	{
 		return T::s_name;
 	}
 
-	virtual const MString &GetDesc() const
+	virtual const MString& GetDesc() const
 	{
 		return T::s_desc;
 	}
@@ -156,24 +162,33 @@ private:
 class CVsMayaMPxCommand : public MPxCommand
 {
 public:
-	virtual const MString &GetName() const { return m_nullStr; }
-	virtual const MString &GetDesc() const { return m_nullStr; }
+	virtual const MString& GetName() const
+	{
+		return m_nullStr;
+	}
+	virtual const MString& GetDesc() const
+	{
+		return m_nullStr;
+	}
 
 protected:
 	// Derived classes must specify this to override syntax
-	virtual void SpecifySyntax( MSyntax &mSyntax, ValveMaya::CMSyntaxHelp &help );
-	ValveMaya::CMSyntaxHelp *GetSyntaxHelp() { return m_pSyntaxHelp; }
+	virtual void SpecifySyntax( MSyntax& mSyntax, ValveMaya::CMSyntaxHelp& help );
+	ValveMaya::CMSyntaxHelp* GetSyntaxHelp()
+	{
+		return m_pSyntaxHelp;
+	}
 
 private:
-	ValveMaya::CMSyntaxHelp *m_pSyntaxHelp;
+	ValveMaya::CMSyntaxHelp* m_pSyntaxHelp;
 
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
+		MFnPlugin& pluginFn,
+		const MString& name,
 		MCreatorFunction creatorFunction,
 		MCreateSyntaxFunction createSyntaxFunction = NULL );
 
-	static MStatus Deregister( MFnPlugin &pluginFn, const MString &name );
+	static MStatus Deregister( MFnPlugin& pluginFn, const MString& name );
 
 	template < class T > friend class CVsMayaMPxCommandDecorator;
 
@@ -190,13 +205,28 @@ template < class T >
 class CVsMayaMPxCommandDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
-	static const MString &Desc() { return s_desc; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
+	static const MString& Desc()
+	{
+		return s_desc;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
-	virtual const MString &GetDesc() const { return Desc(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
+	virtual const MString& GetDesc() const
+	{
+		return Desc();
+	};
 
-	static CVsMayaMPxFactoryBase::Type GetType() { return CVsMayaMPxFactoryBase::kCommand; }
+	static CVsMayaMPxFactoryBase::Type GetType()
+	{
+		return CVsMayaMPxFactoryBase::kCommand;
+	}
 
 private:
 	friend class CVsMayaMPxFactoryBase;
@@ -209,9 +239,9 @@ private:
 	static MString s_desc;
 	static ValveMaya::CMSyntaxHelp s_mSyntaxHelp;	// Keeps track of command line flags
 
-	static void *Create()
+	static void* Create()
 	{
-		CVsMayaMPxCommandDecorator *pDecorator = new CVsMayaMPxCommandDecorator< T >;
+		CVsMayaMPxCommandDecorator* pDecorator = new CVsMayaMPxCommandDecorator< T >;
 		pDecorator->m_pSyntaxHelp = &s_mSyntaxHelp;
 		return pDecorator;
 	}
@@ -230,12 +260,12 @@ private:
 		return mSyntax;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, Create, T().hasSyntax() ? CreateSyntax : NULL );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_name );
 	}
@@ -250,24 +280,33 @@ private:
 class CVsMayaMPxToolCommand : public MPxToolCommand
 {
 public:
-	virtual const MString &GetName() const { return m_nullStr; }
-	virtual const MString &GetDesc() const { return m_nullStr; }
+	virtual const MString& GetName() const
+	{
+		return m_nullStr;
+	}
+	virtual const MString& GetDesc() const
+	{
+		return m_nullStr;
+	}
 
 protected:
 	// Derived classes must specify this to override syntax
-	virtual void SpecifySyntax( MSyntax &mSyntax, ValveMaya::CMSyntaxHelp &help );
-	ValveMaya::CMSyntaxHelp *GetSyntaxHelp() { return m_pSyntaxHelp; }
+	virtual void SpecifySyntax( MSyntax& mSyntax, ValveMaya::CMSyntaxHelp& help );
+	ValveMaya::CMSyntaxHelp* GetSyntaxHelp()
+	{
+		return m_pSyntaxHelp;
+	}
 
 private:
-	ValveMaya::CMSyntaxHelp *m_pSyntaxHelp;
+	ValveMaya::CMSyntaxHelp* m_pSyntaxHelp;
 
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
+		MFnPlugin& pluginFn,
+		const MString& name,
 		MCreatorFunction creatorFunction,
 		MCreateSyntaxFunction createSyntaxFunction = NULL );
 
-	static MStatus Deregister( MFnPlugin &pluginFn, const MString &name );
+	static MStatus Deregister( MFnPlugin& pluginFn, const MString& name );
 
 	template < class T > friend class CVsMayaMPxToolCommandDecorator;
 
@@ -284,13 +323,28 @@ template < class T >
 class CVsMayaMPxToolCommandDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
-	static const MString &Desc() { return s_desc; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
+	static const MString& Desc()
+	{
+		return s_desc;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
-	virtual const MString &GetDesc() const { return Desc(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
+	virtual const MString& GetDesc() const
+	{
+		return Desc();
+	};
 
-	static CVsMayaMPxFactoryBase::Type GetType() { return CVsMayaMPxFactoryBase::kCommand; }
+	static CVsMayaMPxFactoryBase::Type GetType()
+	{
+		return CVsMayaMPxFactoryBase::kCommand;
+	}
 
 private:
 	friend class CVsMayaMPxFactoryBase;
@@ -303,9 +357,9 @@ private:
 	static MString s_desc;
 	static ValveMaya::CMSyntaxHelp s_mSyntaxHelp;	// Keeps track of command line flags
 
-	static void *Create()
+	static void* Create()
 	{
-		CVsMayaMPxToolCommandDecorator *pDecorator = new CVsMayaMPxToolCommandDecorator< T >;
+		CVsMayaMPxToolCommandDecorator* pDecorator = new CVsMayaMPxToolCommandDecorator< T >;
 		pDecorator->m_pSyntaxHelp = &s_mSyntaxHelp;
 		return pDecorator;
 	}
@@ -324,12 +378,12 @@ private:
 		return mSyntax;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, Create, T().hasSyntax() ? CreateSyntax : NULL );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_name );
 	}
@@ -344,19 +398,19 @@ private:
 class CVsMayaMPxFileTranslator : public MPxFileTranslator
 {
 public:
-	virtual const MString &GetName() const = 0;
-	virtual const MString &GetGUIName() const = 0;
+	virtual const MString& GetName() const = 0;
+	virtual const MString& GetGUIName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MString &guiName,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MString& guiName,
 		MCreatorFunction creatorFunction );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MString &name );
+		MFnPlugin& pluginFn,
+		const MString& name );
 };
 
 
@@ -369,13 +423,25 @@ template < class T >
 class CVsMayaMPxFileTranslatorDecorator : public T
 {
 public:
-	virtual const MString &GetName() const { return s_name; };
+	virtual const MString& GetName() const
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetGUIName() const { return s_guiName; };
+	virtual const MString& GetGUIName() const
+	{
+		return s_guiName;
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
-	static CVsMayaMPxFactoryBase::Type GetType() { return CVsMayaMPxFactoryBase::kFileTranslator; }
+	static CVsMayaMPxFactoryBase::Type GetType()
+	{
+		return CVsMayaMPxFactoryBase::kFileTranslator;
+	}
 
 private:
 	template < class U > friend class CVsMayaMPxFactory;
@@ -386,17 +452,17 @@ private:
 
 	static const MString s_guiName;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxFileTranslatorDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_guiName, Create );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_guiName );
 	}
@@ -411,20 +477,20 @@ private:
 class CVsMayaMPxNode : public MPxNode
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction,
-		const MString &classification );
+		const MString& classification );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MTypeId &mTypeId );
+		MFnPlugin& pluginFn,
+		const MTypeId& mTypeId );
 };
 
 
@@ -437,11 +503,20 @@ template < class T >
 class CVsMayaMPxNodeDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -461,17 +536,17 @@ private:
 
 	static const MString s_classification;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxNodeDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_mTypeId, Create, s_mInitializeFunction, s_classification );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_mTypeId );
 	}
@@ -486,39 +561,39 @@ private:
 class CVsMayaMPxTransform : public MPxTransform
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 
 #if MAYA_API_VERSION >= 200900
 
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction,
 		MCreateXformMatrixFunction xformCreatorFunction = MPxTransformationMatrix::creator,
-		const MTypeId &xformMTypeId = MPxTransformationMatrix::baseTransformationMatrixId,
-		const MString *classification = NULL );
+		const MTypeId& xformMTypeId = MPxTransformationMatrix::baseTransformationMatrixId,
+		const MString* classification = NULL );
 
 #else // #if MAYA_API_VERSION >= 200900
 
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction,
 		MCreatorFunction xformCreatorFunction = MPxTransformationMatrix::creator,
-		const MTypeId &xformMTypeId = MPxTransformationMatrix::baseTransformationMatrixId,
-		const MString *classification = NULL );
+		const MTypeId& xformMTypeId = MPxTransformationMatrix::baseTransformationMatrixId,
+		const MString* classification = NULL );
 
 #endif // #if MAYA_API_VERSION >= 200900
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MTypeId &mTypeId );
+		MFnPlugin& pluginFn,
+		const MTypeId& mTypeId );
 };
 
 
@@ -531,13 +606,25 @@ template < class T >
 class CVsMayaMPxTransformDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
-	static CVsMayaMPxFactoryBase::Type GetType() { return CVsMayaMPxFactoryBase::kTransform; }
+	static CVsMayaMPxFactoryBase::Type GetType()
+	{
+		return CVsMayaMPxFactoryBase::kTransform;
+	}
 
 private:
 	template < class U > friend class CVsMayaMPxFactory;
@@ -562,17 +649,17 @@ private:
 
 	static const MTypeId s_xformMTypeId;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxTransformDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_mTypeId, Create, s_mInitializeFunction, s_xformMCreatorFunction, s_xformMTypeId );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_mTypeId );
 	}
@@ -587,19 +674,19 @@ private:
 class CVsMayaMPxLocatorNode : public MPxLocatorNode
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MTypeId &mTypeId );
+		MFnPlugin& pluginFn,
+		const MTypeId& mTypeId );
 };
 
 
@@ -612,11 +699,20 @@ template < class T >
 class CVsMayaMPxLocatorNodeDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -634,17 +730,17 @@ private:
 
 	static const MInitializeFunction s_mInitializeFunction;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxLocatorNodeDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_mTypeId, Create, s_mInitializeFunction );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_mTypeId );
 	}
@@ -659,17 +755,17 @@ private:
 class CVsMayaMPxDragAndDropBehavior : public MPxDragAndDropBehavior
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
+		MFnPlugin& pluginFn,
+		const MString& name,
 		MCreatorFunction creatorFunction );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MString &name );
+		MFnPlugin& pluginFn,
+		const MString& name );
 };
 
 
@@ -682,11 +778,20 @@ template < class T >
 class CVsMayaMPxDragAndDropBehaviorDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -702,17 +807,17 @@ private:
 
 	static const MInitializeFunction s_mInitializeFunction;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxDragAndDropBehaviorDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, Create );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_name );
 	}
@@ -727,20 +832,20 @@ private:
 class CVsMayaMPxShapeNode : public MPxSurfaceShape
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction,
 		MCreatorFunction uiCreatorFunction );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MTypeId &mTypeId );
+		MFnPlugin& pluginFn,
+		const MTypeId& mTypeId );
 };
 
 
@@ -753,11 +858,20 @@ template < class T, class U >
 class CVsMayaMPxShapeNodeDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -777,22 +891,22 @@ private:
 
 	static const MCreatorFunction s_uiCreatorFunction;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxShapeNodeDecorator< T, U >;
 	}
 
-	static void *CreateUI()
+	static void* CreateUI()
 	{
 		return new U;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_mTypeId, Create, s_mInitializeFunction, CreateUI );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_mTypeId );
 	}
@@ -807,18 +921,18 @@ private:
 class CVsMayaMPxImageFile : public MPxImageFile
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
+		MFnPlugin& pluginFn,
+		const MString& name,
 		MCreatorFunction creatorFunction,
-		const MStringArray &extensions );
+		const MStringArray& extensions );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MString &name );
+		MFnPlugin& pluginFn,
+		const MString& name );
 };
 
 
@@ -831,11 +945,20 @@ template < class T >
 class CVsMayaMPxImageFileDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -853,17 +976,17 @@ private:
 
 	static const MCreatorFunction s_creatorFunction;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxImageFileDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, Create, s_extensions );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_name );
 	}
@@ -891,20 +1014,20 @@ private:
 class CVsMayaMPxDeformerNode : public MPxDeformerNode
 {
 public:
-	virtual const MString &GetName() const = 0;
+	virtual const MString& GetName() const = 0;
 
 protected:
 	static MStatus Register(
-		MFnPlugin &pluginFn,
-		const MString &name,
-		const MTypeId &mTypeId,
+		MFnPlugin& pluginFn,
+		const MString& name,
+		const MTypeId& mTypeId,
 		MCreatorFunction creatorFunction,
 		MInitializeFunction initFunction,
-		const MString &classification );
+		const MString& classification );
 
 	static MStatus Deregister(
-		MFnPlugin &pluginFn,
-		const MTypeId &mTypeId );
+		MFnPlugin& pluginFn,
+		const MTypeId& mTypeId );
 };
 
 
@@ -917,11 +1040,20 @@ template < class T >
 class CVsMayaMPxDeformerNodeDecorator : public T
 {
 public:
-	static const MString &Name() { return s_name; };
+	static const MString& Name()
+	{
+		return s_name;
+	};
 
-	virtual const MString &GetName() const { return Name(); };
+	virtual const MString& GetName() const
+	{
+		return Name();
+	};
 
-	virtual const MString &GetDesc() const { return s_desc; };
+	virtual const MString& GetDesc() const
+	{
+		return s_desc;
+	};
 
 	static CVsMayaMPxFactoryBase::Type GetType()
 	{
@@ -941,17 +1073,17 @@ private:
 
 	static const MString s_classification;
 
-	static void *Create()
+	static void* Create()
 	{
 		return new CVsMayaMPxDeformerNodeDecorator< T >;
 	}
 
-	static MStatus Register( MFnPlugin &pluginFn )
+	static MStatus Register( MFnPlugin& pluginFn )
 	{
 		return T::Register( pluginFn, s_name, s_mTypeId, Create, s_mInitializeFunction, s_classification );
 	}
 
-	static MStatus Deregister( MFnPlugin &pluginFn )
+	static MStatus Deregister( MFnPlugin& pluginFn )
 	{
 		return T::Deregister( pluginFn, s_mTypeId );
 	}
@@ -965,7 +1097,7 @@ private:
 //=============================================================================
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a command 
+// Helper macro to instantiate a command
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXCOMMAND( _class, _name, _desc )										\
 	MString CVsMayaMPxCommandDecorator< _class >::s_name( #_name );							\
@@ -974,7 +1106,7 @@ private:
 	static CVsMayaMPxFactory< CVsMayaMPxCommandDecorator< _class > > s_##_name##_Factory
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a command 
+// Helper macro to instantiate a command
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXTOOLCOMMAND( _class, _name, _desc )										\
 	MString CVsMayaMPxToolCommandDecorator< _class >::s_name( #_name );							\
@@ -984,7 +1116,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a translator 
+// Helper macro to instantiate a translator
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXFILETRANSLATOR( _class, _name, _guiName, _desc )				\
 	const MString CVsMayaMPxFileTranslatorDecorator< _class >::s_name( #_name );		\
@@ -994,7 +1126,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a regular dependency node 
+// Helper macro to instantiate a regular dependency node
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXNODE( _class, _name, _typeId, _initializeFunction, _desc )								\
 	const MString CVsMayaMPxNodeDecorator< _class >::s_name( #_name );											\
@@ -1006,7 +1138,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a shader dependency node 
+// Helper macro to instantiate a shader dependency node
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXSHADERNODE( _class, _name, _typeId, _initializeFunction, _classification, _desc )		\
 	const MString CVsMayaMPxNodeDecorator< _class >::s_name( #_name );											\
@@ -1018,7 +1150,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a transform node 
+// Helper macro to instantiate a transform node
 //-----------------------------------------------------------------------------
 #if MAYA_API_VERSION >= 200900
 
@@ -1075,7 +1207,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a locator node 
+// Helper macro to instantiate a locator node
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXLOCATORNODE( _class, _name, _typeId, _initializeFunction, _desc )								\
 	const MString CVsMayaMPxLocatorNodeDecorator< _class >::s_name( #_name );											\
@@ -1095,7 +1227,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a shape node 
+// Helper macro to instantiate a shape node
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXSHAPENODE( _class, _name, _typeId, _initializeFunction, _uiClass, _desc )									\
 	const MString CVsMayaMPxShapeNodeDecorator< _class, _uiClass >::s_name( #_name );											\
@@ -1106,7 +1238,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to instantiate a deformer dependency node 
+// Helper macro to instantiate a deformer dependency node
 //-----------------------------------------------------------------------------
 #define INSTALL_MAYA_MPXDEFORMERNODE( _class, _name, _typeId, _initializeFunction, _desc )								\
 	const MString CVsMayaMPxDeformerNodeDecorator< _class >::s_name( #_name );											\

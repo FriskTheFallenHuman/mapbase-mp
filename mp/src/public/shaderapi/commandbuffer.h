@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -16,7 +16,7 @@
 
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // all commands defined with their struct
@@ -25,8 +25,8 @@ enum CommandBufferCommand_t
 	// flow control commands.
 	CBCMD_END = 0,											// end of stream
 	CBCMD_JUMP = 1,											// int cmd, void *adr. jump to another
-															// stream. Can be used to implement
-															// non-sequentially allocated storage
+	// stream. Can be used to implement
+	// non-sequentially allocated storage
 	CBCMD_JSR = 2,											// int cmd, void *adr. subroutine call to another stream.
 
 	// constant setting commands
@@ -63,7 +63,7 @@ enum CommandBufferCommand_t
 
 //-----------------------------------------------------------------------------
 // Commands used by the per-instance command buffer
-// NOTE: If you add commands, you probably want to change the size of 
+// NOTE: If you add commands, you probably want to change the size of
 // CInstanceStorageBuffer and/or the choice of making it a fixed-size allocation
 // see shaderlib/baseshader.*
 //

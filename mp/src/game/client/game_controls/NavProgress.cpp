@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -25,16 +25,16 @@
 using namespace vgui;
 
 //--------------------------------------------------------------------------------------------------------------
-CNavProgress::CNavProgress( IViewPort *pViewPort ) : Frame( NULL, PANEL_NAV_PROGRESS )
+CNavProgress::CNavProgress( IViewPort* pViewPort ) : Frame( NULL, PANEL_NAV_PROGRESS )
 {
 	// initialize dialog
 	m_pViewPort = pViewPort;
 
 	// load the new scheme early!!
-	SetScheme("ClientScheme");
-	SetMoveable(false);
-	SetSizeable(false);
-	SetProportional(true);
+	SetScheme( "ClientScheme" );
+	SetMoveable( false );
+	SetSizeable( false );
+	SetProportional( true );
 
 	// hide the system buttons
 	SetTitleBarVisible( false );
@@ -46,7 +46,7 @@ CNavProgress::CNavProgress( IViewPort *pViewPort ) : Frame( NULL, PANEL_NAV_PROG
 	m_pProgressBar = new Panel( this, "ProgressBar" );
 	m_pProgressBarSizer = new Panel( this, "ProgressBarSizer" );
 
-	LoadControlSettings("Resource/UI/NavProgress.res");
+	LoadControlSettings( "Resource/UI/NavProgress.res" );
 
 	Reset();
 }
@@ -57,7 +57,7 @@ CNavProgress::~CNavProgress()
 }
 
 //--------------------------------------------------------------------------------------------------------------
-void CNavProgress::ApplySchemeSettings(IScheme *pScheme)
+void CNavProgress::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -77,7 +77,7 @@ void CNavProgress::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	if ( m_numTicks )
+	if( m_numTicks )
 	{
 		int w = m_pProgressBarSizer->GetWide();
 		w = w * m_currentTick / m_numTicks;
@@ -86,7 +86,7 @@ void CNavProgress::PerformLayout()
 }
 
 //--------------------------------------------------------------------------------------------------------------
-void CNavProgress::Init( const char *title, int numTicks, int startTick )
+void CNavProgress::Init( const char* title, int numTicks, int startTick )
 {
 	m_pText->SetText( title );
 
@@ -97,22 +97,24 @@ void CNavProgress::Init( const char *title, int numTicks, int startTick )
 }
 
 //--------------------------------------------------------------------------------------------------------------
-void CNavProgress::SetData(KeyValues *data)
+void CNavProgress::SetData( KeyValues* data )
 {
 	Init( data->GetString( "msg" ),
-		data->GetInt( "total" ),
-		data->GetInt( "current" ) );
+		  data->GetInt( "total" ),
+		  data->GetInt( "current" ) );
 }
 
 //--------------------------------------------------------------------------------------------------------------
 void CNavProgress::ShowPanel( bool bShow )
 {
-	if ( BaseClass::IsVisible() == bShow )
+	if( BaseClass::IsVisible() == bShow )
+	{
 		return;
+	}
 
 	m_pViewPort->ShowBackGround( bShow );
 
-	if ( bShow )
+	if( bShow )
 	{
 		Activate();
 		SetMouseInputEnabled( true );

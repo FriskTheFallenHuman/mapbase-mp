@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -25,25 +25,25 @@
 
 static Vector g_AntlionDustColor( 0.3f, 0.25f, 0.2f );
 
-extern IPhysicsSurfaceProps *physprops;
+extern IPhysicsSurfaceProps* physprops;
 
 class CAntlionDustEmitter : public CSimpleEmitter
 {
 public:
-	static CAntlionDustEmitter *Create( const char *debugname )
+	static CAntlionDustEmitter* Create( const char* debugname )
 	{
 		return new CAntlionDustEmitter( debugname );
 	}
 
-	void UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
+	void UpdateVelocity( SimpleParticle* pParticle, float timeDelta )
 	{
 		//FIXME: Incorrect
 		pParticle->m_vecVelocity *= 0.9f;
 	}
 
 private:
-	CAntlionDustEmitter( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
-	CAntlionDustEmitter( const CAntlionDustEmitter & ); // not defined, not accessible
+	CAntlionDustEmitter( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
+	CAntlionDustEmitter( const CAntlionDustEmitter& );  // not defined, not accessible
 };
 
 //==================================================
@@ -57,19 +57,22 @@ public:
 	DECLARE_CLASS( C_TEAntlionDust, C_TEParticleSystem );
 	DECLARE_CLIENTCLASS();
 
-				C_TEAntlionDust();
+	C_TEAntlionDust();
 	virtual		~C_TEAntlionDust();
 
 //C_BaseEntity
 public:
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
-	virtual	bool	ShouldDraw() { return true; }
+	virtual	bool	ShouldDraw()
+	{
+		return true;
+	}
 
 
 //IParticleEffect
 public:
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 public:
 	PMaterialHandle	m_MaterialHandle;
@@ -79,23 +82,23 @@ public:
 	bool		m_bBlockedSpawner;
 
 protected:
-	void		GetDustColor( Vector &color );
+	void		GetDustColor( Vector& color );
 };
 
 // Expose to the particle app.
 EXPOSE_PROTOTYPE_EFFECT( AntlionDust, C_TEAntlionDust );
 
 IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEAntlionDust, DT_TEAntlionDust, CTEAntlionDust )
-	RecvPropVector(RECVINFO( m_vecOrigin )),
-	RecvPropVector(RECVINFO( m_vecAngles )),
-	RecvPropBool(RECVINFO( m_bBlockedSpawner )),
-END_RECV_TABLE()
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecAngles ) ),
+				RecvPropBool( RECVINFO( m_bBlockedSpawner ) ),
+				END_RECV_TABLE()
 
 //==================================================
 // C_TEAntlionDust
 //==================================================
 
-C_TEAntlionDust::C_TEAntlionDust()
+				C_TEAntlionDust::C_TEAntlionDust()
 {
 	m_MaterialHandle	= INVALID_MATERIAL_HANDLE;
 	m_vecOrigin.Init();
@@ -108,7 +111,7 @@ C_TEAntlionDust::~C_TEAntlionDust()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Input  : bNewEntity - whether or not to start a new entity
 //-----------------------------------------------------------------------------
 
@@ -132,32 +135,32 @@ void C_TEAntlionDust::PostDataUpdate( DataUpdateType_t updateType )
 
 	int iParticleCount = 16;
 
-	if ( m_bBlockedSpawner == true )
+	if( m_bBlockedSpawner == true )
 	{
 		iParticleCount = 8;
 	}
 
 	//Spawn the dust
 	SimpleParticle particle;
-	for ( int i = 0; i < iParticleCount; i++ )
+	for( int i = 0; i < iParticleCount; i++ )
 	{
 		//Offset this dust puff's origin
 		offset[0] = random->RandomFloat( -DUST_RADIUS, DUST_RADIUS );
 		offset[1] = random->RandomFloat( -DUST_RADIUS, DUST_RADIUS );
-		offset[2] = random->RandomFloat(  -16, 8 );
-		
+		offset[2] = random->RandomFloat( -16, 8 );
+
 		offset += m_vecOrigin;
 
 		particle.m_Pos = offset;
 		particle.m_flDieTime	= random->RandomFloat( 0.75f, 1.25f );
 		particle.m_flLifetime	= 0.0f;
-		
+
 		Vector	dir	= particle.m_Pos - m_vecOrigin;
 		particle.m_vecVelocity = dir * random->RandomFloat( 0.5f, 1.0f );
-		dir.z = fabs(dir.z);
+		dir.z = fabs( dir.z );
 
 		float	colorRamp = random->RandomFloat( 0.5f, 1.0f );
-		Vector	color = vecColor*colorRamp;
+		Vector	color = vecColor * colorRamp;
 
 		color[0] = clamp( color[0], 0.0f, 1.0f );
 		color[1] = clamp( color[1], 0.0f, 1.0f );
@@ -169,7 +172,7 @@ void C_TEAntlionDust::PostDataUpdate( DataUpdateType_t updateType )
 		particle.m_uchColor[1]	= color[1];
 		particle.m_uchColor[2]	= color[2];
 
-		particle.m_uchStartAlpha= random->RandomFloat( 64, 128 );
+		particle.m_uchStartAlpha = random->RandomFloat( 64, 128 );
 		particle.m_uchEndAlpha	= 0;
 
 		particle.m_uchStartSize	= random->RandomInt( 16, 32 );
@@ -186,19 +189,19 @@ void C_TEAntlionDust::PostDataUpdate( DataUpdateType_t updateType )
 	}
 }
 
-void GetColorForSurface( trace_t *trace, Vector *color );
+void GetColorForSurface( trace_t* trace, Vector* color );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &color - 
+// Purpose:
+// Input  : &color -
 //-----------------------------------------------------------------------------
-void C_TEAntlionDust::GetDustColor( Vector &color )
+void C_TEAntlionDust::GetDustColor( Vector& color )
 {
 	trace_t	tr;
-	UTIL_TraceLine( m_vecOrigin+Vector(0,0,1), m_vecOrigin+Vector(0,0,-32), 
-		MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( m_vecOrigin + Vector( 0, 0, 1 ), m_vecOrigin + Vector( 0, 0, -32 ),
+					MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
 
-	if ( tr.fraction < 1.0f )
+	if( tr.fraction < 1.0f )
 	{
 		GetColorForSurface( &tr, &color );
 	}
@@ -209,11 +212,11 @@ void C_TEAntlionDust::GetDustColor( Vector &color )
 	}
 }
 
-void C_TEAntlionDust::RenderParticles( CParticleRenderIterator *pIterator )
+void C_TEAntlionDust::RenderParticles( CParticleRenderIterator* pIterator )
 {
 }
 
-void C_TEAntlionDust::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_TEAntlionDust::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
 }
 

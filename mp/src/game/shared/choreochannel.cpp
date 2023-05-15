@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -19,7 +19,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CChoreoChannel::CChoreoChannel( void )
 {
@@ -27,28 +27,28 @@ CChoreoChannel::CChoreoChannel( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CChoreoChannel::CChoreoChannel(const char *name )
+CChoreoChannel::CChoreoChannel( const char* name )
 {
 	Init();
 	SetName( name );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Assignment
-// Input  : src - 
+// Input  : src -
 //-----------------------------------------------------------------------------
 CChoreoChannel&	CChoreoChannel::operator=( const CChoreoChannel& src )
 {
 	m_bActive = src.m_bActive;
 	Q_strncpy( m_szName, src.m_szName, sizeof( m_szName ) );
-	for ( int i = 0; i < src.m_Events.Size(); i++ )
+	for( int i = 0; i < src.m_Events.Size(); i++ )
 	{
-		CChoreoEvent *e = src.m_Events[ i ];
-		CChoreoEvent *newEvent = new CChoreoEvent( e->GetScene() );
+		CChoreoEvent* e = src.m_Events[ i ];
+		CChoreoEvent* newEvent = new CChoreoEvent( e->GetScene() );
 		*newEvent = *e;
 		AddEvent( newEvent );
 		newEvent->SetChannel( this );
@@ -59,26 +59,26 @@ CChoreoChannel&	CChoreoChannel::operator=( const CChoreoChannel& src )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-void CChoreoChannel::SetName( const char *name )
+void CChoreoChannel::SetName( const char* name )
 {
 	assert( Q_strlen( name ) < MAX_CHANNEL_NAME );
 	Q_strncpy( m_szName, name, sizeof( m_szName ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : const char
 //-----------------------------------------------------------------------------
-const char *CChoreoChannel::GetName( void )
+const char* CChoreoChannel::GetName( void )
 {
 	return m_szName;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CChoreoChannel::GetNumEvents( void )
@@ -87,13 +87,13 @@ int CChoreoChannel::GetNumEvents( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : event - 
+// Purpose:
+// Input  : event -
 // Output : CChoreoEvent
 //-----------------------------------------------------------------------------
-CChoreoEvent *CChoreoChannel::GetEvent( int event )
+CChoreoEvent* CChoreoChannel::GetEvent( int event )
 {
-	if ( event < 0 || event >= m_Events.Size() )
+	if( event < 0 || event >= m_Events.Size() )
 	{
 		return NULL;
 	}
@@ -102,29 +102,31 @@ CChoreoEvent *CChoreoChannel::GetEvent( int event )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *event - 
+// Purpose:
+// Input  : *event -
 //-----------------------------------------------------------------------------
-void CChoreoChannel::AddEvent( CChoreoEvent *event )
+void CChoreoChannel::AddEvent( CChoreoEvent* event )
 {
 	m_Events.AddToTail( event );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *event - 
+// Purpose:
+// Input  : *event -
 //-----------------------------------------------------------------------------
-void CChoreoChannel::RemoveEvent( CChoreoEvent *event )
+void CChoreoChannel::RemoveEvent( CChoreoEvent* event )
 {
 	int idx = FindEventIndex( event );
-	if ( idx == -1 )
+	if( idx == -1 )
+	{
 		return;
+	}
 
 	m_Events.Remove( idx );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CChoreoChannel::RemoveAllEvents()
 {
@@ -132,15 +134,15 @@ void CChoreoChannel::RemoveAllEvents()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *event - 
+// Purpose:
+// Input  : *event -
 // Output : int
 //-----------------------------------------------------------------------------
-int CChoreoChannel::FindEventIndex( CChoreoEvent *event )
+int CChoreoChannel::FindEventIndex( CChoreoEvent* event )
 {
-	for ( int i = 0; i < m_Events.Size(); i++ )
+	for( int i = 0; i < m_Events.Size(); i++ )
 	{
-		if ( event == m_Events[ i ] )
+		if( event == m_Events[ i ] )
 		{
 			return i;
 		}
@@ -149,7 +151,7 @@ int CChoreoChannel::FindEventIndex( CChoreoEvent *event )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CChoreoChannel::Init( void )
 {
@@ -159,26 +161,26 @@ void CChoreoChannel::Init( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : CChoreoActor
 //-----------------------------------------------------------------------------
-CChoreoActor *CChoreoChannel::GetActor( void )
+CChoreoActor* CChoreoChannel::GetActor( void )
 {
 	return m_pActor;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *actor - 
+// Purpose:
+// Input  : *actor -
 //-----------------------------------------------------------------------------
-void CChoreoChannel::SetActor( CChoreoActor *actor )
+void CChoreoChannel::SetActor( CChoreoActor* actor )
 {
 	m_pActor = actor;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : active - 
+// Purpose:
+// Input  : active -
 //-----------------------------------------------------------------------------
 void CChoreoChannel::SetActive( bool active )
 {
@@ -186,7 +188,7 @@ void CChoreoChannel::SetActive( bool active )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CChoreoChannel::GetActive( void ) const
@@ -194,13 +196,13 @@ bool CChoreoChannel::GetActive( void ) const
 	return m_bActive;
 }
 
-static bool ChoreEventStartTimeLessFunc( CChoreoEvent * const &p1, CChoreoEvent * const &p2 )
+static bool ChoreEventStartTimeLessFunc( CChoreoEvent* const& p1, CChoreoEvent* const& p2 )
 {
-	CChoreoEvent *e1;
-	CChoreoEvent *e2;
+	CChoreoEvent* e1;
+	CChoreoEvent* e2;
 
-	e1 = const_cast< CChoreoEvent * >( p1 );
-	e2 = const_cast< CChoreoEvent * >( p2 );
+	e1 = const_cast< CChoreoEvent* >( p1 );
+	e2 = const_cast< CChoreoEvent* >( p2 );
 
 	return e1->GetStartTime() < e2->GetStartTime();
 }
@@ -208,48 +210,52 @@ static bool ChoreEventStartTimeLessFunc( CChoreoEvent * const &p1, CChoreoEvent 
 void CChoreoChannel::ReconcileGestureTimes()
 {
 	// Sort gesture events within channel by starting time
-	CUtlRBTree< CChoreoEvent * >  sortedGestures( 0, 0, ChoreEventStartTimeLessFunc );
+	CUtlRBTree< CChoreoEvent* >  sortedGestures( 0, 0, ChoreEventStartTimeLessFunc );
 	int i;
 	// Sort items
 	int c = GetNumEvents();
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
-		CChoreoEvent *e = GetEvent( i );
+		CChoreoEvent* e = GetEvent( i );
 		Assert( e );
-		if ( e->GetType() != CChoreoEvent::GESTURE )
+		if( e->GetType() != CChoreoEvent::GESTURE )
+		{
 			continue;
+		}
 
 		sortedGestures.Insert( e );
 	}
 
 	// Now walk list of gestures
-	if ( !sortedGestures.Count() )
-		return;
-
-	CChoreoEvent *previous = NULL;
-
-	for ( i = sortedGestures.FirstInorder(); i != sortedGestures.InvalidIndex(); i = sortedGestures.NextInorder( i ) )
+	if( !sortedGestures.Count() )
 	{
-		CChoreoEvent *event = sortedGestures[ i ];
+		return;
+	}
 
-		if ( !previous )
+	CChoreoEvent* previous = NULL;
+
+	for( i = sortedGestures.FirstInorder(); i != sortedGestures.InvalidIndex(); i = sortedGestures.NextInorder( i ) )
+	{
+		CChoreoEvent* event = sortedGestures[ i ];
+
+		if( !previous )
 		{
 			// event->SetStartTime( 0.0f );
 		}
-		else if ( previous->GetSyncToFollowingGesture() )
+		else if( previous->GetSyncToFollowingGesture() )
 		{
 			// TODO: ask the sequence for what tags to match
 
-			CEventAbsoluteTag *pEntryTag = event->FindEntryTag( CChoreoEvent::PLAYBACK );
-			CEventAbsoluteTag *pExitTag = previous->FindExitTag( CChoreoEvent::PLAYBACK );
+			CEventAbsoluteTag* pEntryTag = event->FindEntryTag( CChoreoEvent::PLAYBACK );
+			CEventAbsoluteTag* pExitTag = previous->FindExitTag( CChoreoEvent::PLAYBACK );
 
-			if (pEntryTag && pExitTag)
+			if( pEntryTag && pExitTag )
 			{
 				float entryTime = pEntryTag->GetAbsoluteTime( );
 
 				// get current decay rate of previous gesture
 				float duration = previous->GetDuration();
-				float decayTime = (1.0 - pExitTag->GetPercentage()) * duration;
+				float decayTime = ( 1.0 - pExitTag->GetPercentage() ) * duration;
 
 				// adjust the previous gestures end time to current apex + existing decay rate
 				previous->RescaleGestureTimes( previous->GetStartTime(), entryTime + decayTime, true );
@@ -265,7 +271,7 @@ void CChoreoChannel::ReconcileGestureTimes()
 			// I think this fixes the issue with abutting past NULL gestures on paste:
 			// Here's the bug report:
 			// -------------------------
-			// When copying and pasteing posture and gesture clips in face poser the beginings of the clips stretch 
+			// When copying and pasteing posture and gesture clips in face poser the beginings of the clips stretch
 			//  to the begining of the scene even if there is a null gesture in place at the begining.
 			// -------------------------
 			/*
@@ -285,10 +291,10 @@ void CChoreoChannel::ReconcileGestureTimes()
 		previous = event;
 	}
 
-	if ( previous )
+	if( previous )
 	{
-		CChoreoScene *scene = previous->GetScene();
-		if ( scene )
+		CChoreoScene* scene = previous->GetScene();
+		if( scene )
 		{
 			// HACK:  Could probably do better by allowing user to drag the blue "end time" bar
 			//float finish = scene->FindStopTime();
@@ -316,16 +322,16 @@ void CChoreoChannel::ReconcileGestureTimes()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CChoreoChannel::MarkForSaveAll( bool mark )
 {
 	SetMarkedForSave( mark );
 
 	int c = GetNumEvents();
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		CChoreoEvent *e = GetEvent( i );
+		CChoreoEvent* e = GetEvent( i );
 		e->SetMarkedForSave( mark );
 	}
 }
@@ -344,7 +350,7 @@ struct EventGroup
 	{
 		timeSortedEvents.RemoveAll();
 		int i = src.timeSortedEvents.FirstInorder();
-		while ( i != src.timeSortedEvents.InvalidIndex() )
+		while( i != src.timeSortedEvents.InvalidIndex() )
 		{
 			timeSortedEvents.Insert( src.timeSortedEvents[ i ] );
 
@@ -352,14 +358,16 @@ struct EventGroup
 		}
 	}
 
-	EventGroup & operator=( const EventGroup& src )
+	EventGroup& operator=( const EventGroup& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		timeSortedEvents.RemoveAll();
 		int i = src.timeSortedEvents.FirstInorder();
-		while ( i != src.timeSortedEvents.InvalidIndex() )
+		while( i != src.timeSortedEvents.InvalidIndex() )
 		{
 			timeSortedEvents.Insert( src.timeSortedEvents[ i ] );
 
@@ -368,12 +376,12 @@ struct EventGroup
 		return *this;
 	}
 
-	CUtlRBTree< CChoreoEvent * > timeSortedEvents;
+	CUtlRBTree< CChoreoEvent* > timeSortedEvents;
 };
 
 // Compute master/slave, count, endtime info for close captioning data
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CChoreoChannel::ReconcileCloseCaption()
 {
@@ -383,17 +391,19 @@ void CChoreoChannel::ReconcileCloseCaption()
 	int i;
 	// Sort items
 	int c = GetNumEvents();
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
-		CChoreoEvent *e = GetEvent( i );
+		CChoreoEvent* e = GetEvent( i );
 		Assert( e );
-		if ( e->GetType() != CChoreoEvent::SPEAK )
+		if( e->GetType() != CChoreoEvent::SPEAK )
+		{
 			continue;
+		}
 
 		CChoreoEvent::CLOSECAPTION type;
 
 		type = e->GetCloseCaptionType();
-		if ( type == CChoreoEvent::CC_DISABLED )
+		if( type == CChoreoEvent::CC_DISABLED )
 		{
 			e->SetUsingCombinedFile( false );
 			e->SetRequiredCombinedChecksum( 0 );
@@ -402,11 +412,11 @@ void CChoreoChannel::ReconcileCloseCaption()
 			continue;
 		}
 
-		char const *name = e->GetCloseCaptionToken();
-		if ( !name || !name[0] )
+		char const* name = e->GetCloseCaptionToken();
+		if( !name || !name[0] )
 		{
 			// Fixup invalid slave tag
-			if ( type == CChoreoEvent::CC_SLAVE )
+			if( type == CChoreoEvent::CC_SLAVE )
 			{
 				e->SetCloseCaptionType( CChoreoEvent::CC_MASTER );
 				e->SetUsingCombinedFile( false );
@@ -416,9 +426,9 @@ void CChoreoChannel::ReconcileCloseCaption()
 			}
 			continue;
 		}
-	
+
 		int idx = validSpeakEventsGroupedByName.Find( name );
-		if ( idx == validSpeakEventsGroupedByName.InvalidIndex() )
+		if( idx == validSpeakEventsGroupedByName.InvalidIndex() )
 		{
 			EventGroup eg;
 			eg.timeSortedEvents.Insert( e );
@@ -426,26 +436,26 @@ void CChoreoChannel::ReconcileCloseCaption()
 		}
 		else
 		{
-			EventGroup & eg = validSpeakEventsGroupedByName[ idx ];
+			EventGroup& eg = validSpeakEventsGroupedByName[ idx ];
 			eg.timeSortedEvents.Insert( e );
 		}
 	}
 
 	c = validSpeakEventsGroupedByName.Count();
 	// Now walk list of events by group
-	if ( !c )
+	if( !c )
 	{
 		return;
 	}
 
-	for ( i = 0; i < c; ++i )
+	for( i = 0; i < c; ++i )
 	{
-		EventGroup & eg = validSpeakEventsGroupedByName[ i ];
+		EventGroup& eg = validSpeakEventsGroupedByName[ i ];
 		int sortedEventInGroup = eg.timeSortedEvents.Count();
 		// If there's only one, just mark it valid
-		if ( sortedEventInGroup <= 1 )
+		if( sortedEventInGroup <= 1 )
 		{
-			CChoreoEvent *e = eg.timeSortedEvents[ 0 ];
+			CChoreoEvent* e = eg.timeSortedEvents[ 0 ];
 			Assert( e );
 			// Make sure it's the master
 			e->SetCloseCaptionType( CChoreoEvent::CC_MASTER );
@@ -459,11 +469,11 @@ void CChoreoChannel::ReconcileCloseCaption()
 
 		// Okay, read them back in of start time
 		int j = eg.timeSortedEvents.FirstInorder();
-		CChoreoEvent *master = NULL;
-		while ( j != eg.timeSortedEvents.InvalidIndex() )
+		CChoreoEvent* master = NULL;
+		while( j != eg.timeSortedEvents.InvalidIndex() )
 		{
-			CChoreoEvent *e = eg.timeSortedEvents[ j ];
-			if ( !master )
+			CChoreoEvent* e = eg.timeSortedEvents[ j ];
+			if( !master )
 			{
 				master = e;
 				e->SetCloseCaptionType( CChoreoEvent::CC_MASTER );
@@ -487,31 +497,39 @@ void CChoreoChannel::ReconcileCloseCaption()
 	}
 }
 
-bool CChoreoChannel::GetSortedCombinedEventList( char const *cctoken, CUtlRBTree< CChoreoEvent * >& events )
+bool CChoreoChannel::GetSortedCombinedEventList( char const* cctoken, CUtlRBTree< CChoreoEvent* >& events )
 {
 	events.RemoveAll();
 
 	int i;
 	// Sort items
 	int c = GetNumEvents();
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
-		CChoreoEvent *e = GetEvent( i );
+		CChoreoEvent* e = GetEvent( i );
 		Assert( e );
-		if ( e->GetType() != CChoreoEvent::SPEAK )
+		if( e->GetType() != CChoreoEvent::SPEAK )
+		{
 			continue;
+		}
 
-		if ( e->GetCloseCaptionType() == CChoreoEvent::CC_DISABLED )
+		if( e->GetCloseCaptionType() == CChoreoEvent::CC_DISABLED )
+		{
 			continue;
+		}
 
 		// A master with no slaves is not a combined event
-		if ( e->GetCloseCaptionType() == CChoreoEvent::CC_MASTER &&
-			 e->GetNumSlaves() == 0 )
-			 continue;
-
-		char const *token = e->GetCloseCaptionToken();
-		if ( Q_stricmp( token, cctoken ) )
+		if( e->GetCloseCaptionType() == CChoreoEvent::CC_MASTER &&
+				e->GetNumSlaves() == 0 )
+		{
 			continue;
+		}
+
+		char const* token = e->GetCloseCaptionToken();
+		if( Q_stricmp( token, cctoken ) )
+		{
+			continue;
+		}
 
 		events.Insert( e );
 	}
@@ -519,7 +537,7 @@ bool CChoreoChannel::GetSortedCombinedEventList( char const *cctoken, CUtlRBTree
 	return ( events.Count() > 0 ) ? true : false;
 }
 
-void CChoreoChannel::SaveToBuffer( CUtlBuffer& buf, CChoreoScene *pScene, IChoreoStringPool *pStringPool )
+void CChoreoChannel::SaveToBuffer( CUtlBuffer& buf, CChoreoScene* pScene, IChoreoStringPool* pStringPool )
 {
 	buf.PutShort( pStringPool->FindOrAddString( GetName() ) );
 
@@ -527,9 +545,9 @@ void CChoreoChannel::SaveToBuffer( CUtlBuffer& buf, CChoreoScene *pScene, IChore
 	Assert( c <= 255 );
 	buf.PutUnsignedChar( c );
 
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		CChoreoEvent *e = GetEvent( i );
+		CChoreoEvent* e = GetEvent( i );
 		Assert( e );
 		e->SaveToBuffer( buf, pScene, pStringPool );
 	}
@@ -537,17 +555,17 @@ void CChoreoChannel::SaveToBuffer( CUtlBuffer& buf, CChoreoScene *pScene, IChore
 	buf.PutChar( GetActive() ? 1 : 0 );
 }
 
-bool CChoreoChannel::RestoreFromBuffer( CUtlBuffer& buf, CChoreoScene *pScene, CChoreoActor *pActor, IChoreoStringPool *pStringPool )
+bool CChoreoChannel::RestoreFromBuffer( CUtlBuffer& buf, CChoreoScene* pScene, CChoreoActor* pActor, IChoreoStringPool* pStringPool )
 {
 	char sz[ 256 ];
 	pStringPool->GetString( buf.GetShort(), sz, sizeof( sz ) );
 	SetName( sz );
 
-	int numEvents = (int)buf.GetUnsignedChar();
-	for ( int i = 0 ; i < numEvents; ++i )
+	int numEvents = ( int )buf.GetUnsignedChar();
+	for( int i = 0 ; i < numEvents; ++i )
 	{
-		CChoreoEvent *e = pScene->AllocEvent();
-		if ( e->RestoreFromBuffer( buf, pScene, pStringPool ) )
+		CChoreoEvent* e = pScene->AllocEvent();
+		if( e->RestoreFromBuffer( buf, pScene, pStringPool ) )
 		{
 			AddEvent( e );
 			e->SetChannel( this );

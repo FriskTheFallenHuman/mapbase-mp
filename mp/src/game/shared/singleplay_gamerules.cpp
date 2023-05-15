@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -33,7 +33,7 @@ bool CSingleplayRules::IsMultiplayer( void )
 
 // Needed during the conversion, but once DMG_* types have been fixed, this isn't used anymore.
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CSingleplayRules::Damage_GetTimeBased( void )
 {
@@ -42,7 +42,7 @@ int CSingleplayRules::Damage_GetTimeBased( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CSingleplayRules::Damage_GetShouldGibCorpse( void )
 {
@@ -51,7 +51,7 @@ int	CSingleplayRules::Damage_GetShouldGibCorpse( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CSingleplayRules::Damage_GetShowOnHud( void )
 {
@@ -60,7 +60,7 @@ int CSingleplayRules::Damage_GetShowOnHud( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CSingleplayRules::Damage_GetNoPhysicsForce( void )
 {
@@ -70,7 +70,7 @@ int	CSingleplayRules::Damage_GetNoPhysicsForce( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CSingleplayRules::Damage_GetShouldNotBleed( void )
 {
@@ -80,8 +80,8 @@ int	CSingleplayRules::Damage_GetShouldNotBleed( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CSingleplayRules::Damage_IsTimeBased( int iDmgType )
@@ -91,8 +91,8 @@ bool CSingleplayRules::Damage_IsTimeBased( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CSingleplayRules::Damage_ShouldGibCorpse( int iDmgType )
@@ -102,8 +102,8 @@ bool CSingleplayRules::Damage_ShouldGibCorpse( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CSingleplayRules::Damage_ShowOnHUD( int iDmgType )
@@ -113,8 +113,8 @@ bool CSingleplayRules::Damage_ShowOnHUD( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CSingleplayRules::Damage_NoPhysicsForce( int iDmgType )
@@ -125,8 +125,8 @@ bool CSingleplayRules::Damage_NoPhysicsForce( int iDmgType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : iDmgType - 
+// Purpose:
+// Input  : iDmgType -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
@@ -139,371 +139,397 @@ bool CSingleplayRules::Damage_ShouldNotBleed( int iDmgType )
 
 #else
 
-	extern CGameRules	*g_pGameRules;
-	extern bool		g_fGameOver;
+extern CGameRules*	g_pGameRules;
+extern bool		g_fGameOver;
 
-	//=========================================================
-	//=========================================================
-	CSingleplayRules::CSingleplayRules( void )
-	{
-		RefreshSkillData( true );
-	}
+//=========================================================
+//=========================================================
+CSingleplayRules::CSingleplayRules( void )
+{
+	RefreshSkillData( true );
+}
 
-	//=========================================================
-	//=========================================================
-	void CSingleplayRules::Think ( void )
-	{
-		BaseClass::Think();
-	}
+//=========================================================
+//=========================================================
+void CSingleplayRules::Think( void )
+{
+	BaseClass::Think();
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::IsDeathmatch ( void )
+//=========================================================
+//=========================================================
+bool CSingleplayRules::IsDeathmatch( void )
+{
+	return false;
+}
+
+//=========================================================
+//=========================================================
+bool CSingleplayRules::IsCoOp( void )
+{
+	return false;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Determine whether the player should switch to the weapon passed in
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CSingleplayRules::FShouldSwitchWeapon( CBasePlayer* pPlayer, CBaseCombatWeapon* pWeapon )
+{
+	//Must have ammo
+	if( ( pWeapon->HasAnyAmmo() == false ) && ( pPlayer->GetAmmoCount( pWeapon->m_iPrimaryAmmoType ) <= 0 ) )
 	{
 		return false;
 	}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::IsCoOp( void )
+	//Always take a loaded gun if we have nothing else
+	if( pPlayer->GetActiveWeapon() == NULL )
 	{
-		return false;
-	}
-
-	//-----------------------------------------------------------------------------
-	// Purpose: Determine whether the player should switch to the weapon passed in
-	// Output : Returns true on success, false on failure.
-	//-----------------------------------------------------------------------------
-	bool CSingleplayRules::FShouldSwitchWeapon( CBasePlayer *pPlayer, CBaseCombatWeapon *pWeapon )
-	{
-		//Must have ammo
-		if ( ( pWeapon->HasAnyAmmo() == false ) && ( pPlayer->GetAmmoCount( pWeapon->m_iPrimaryAmmoType ) <= 0 ) )
-			return false;
-
-		//Always take a loaded gun if we have nothing else
-		if ( pPlayer->GetActiveWeapon() == NULL )
-			return true;
-
-		// The given weapon must allow autoswitching to it from another weapon.
-		if ( !pWeapon->AllowsAutoSwitchTo() )
-			return false;
-
-		// The active weapon must allow autoswitching from it.
-		if ( !pPlayer->GetActiveWeapon()->AllowsAutoSwitchFrom() )
-			return false;
-
-		//Don't switch if our current gun doesn't want to be holstered
-		if ( pPlayer->GetActiveWeapon()->CanHolster() == false )
-			return false;
-
-		//Only switch if the weapon is better than what we're using
-		if ( ( pWeapon != pPlayer->GetActiveWeapon() ) && ( pWeapon->GetWeight() <= pPlayer->GetActiveWeapon()->GetWeight() ) )
-			return false;
-
 		return true;
 	}
 
-	//-----------------------------------------------------------------------------
-	// Purpose: Find the next best weapon to use and return it.
-	//-----------------------------------------------------------------------------
-	CBaseCombatWeapon *CSingleplayRules::GetNextBestWeapon( CBaseCombatCharacter *pPlayer, CBaseCombatWeapon *pCurrentWeapon )
+	// The given weapon must allow autoswitching to it from another weapon.
+	if( !pWeapon->AllowsAutoSwitchTo() )
 	{
-		if ( pCurrentWeapon && !pCurrentWeapon->AllowsAutoSwitchFrom() )
-			return NULL;
+		return false;
+	}
 
-		CBaseCombatWeapon	*pBestWeapon = NULL;
-		CBaseCombatWeapon	*pWeapon;
-		
-		int	nBestWeight	= -1;
+	// The active weapon must allow autoswitching from it.
+	if( !pPlayer->GetActiveWeapon()->AllowsAutoSwitchFrom() )
+	{
+		return false;
+	}
 
-		//Search for the best weapon to use next based on its weight
-		for ( int i = 0; i < pPlayer->WeaponCount(); i++ )
+	//Don't switch if our current gun doesn't want to be holstered
+	if( pPlayer->GetActiveWeapon()->CanHolster() == false )
+	{
+		return false;
+	}
+
+	//Only switch if the weapon is better than what we're using
+	if( ( pWeapon != pPlayer->GetActiveWeapon() ) && ( pWeapon->GetWeight() <= pPlayer->GetActiveWeapon()->GetWeight() ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Find the next best weapon to use and return it.
+//-----------------------------------------------------------------------------
+CBaseCombatWeapon* CSingleplayRules::GetNextBestWeapon( CBaseCombatCharacter* pPlayer, CBaseCombatWeapon* pCurrentWeapon )
+{
+	if( pCurrentWeapon && !pCurrentWeapon->AllowsAutoSwitchFrom() )
+	{
+		return NULL;
+	}
+
+	CBaseCombatWeapon*	pBestWeapon = NULL;
+	CBaseCombatWeapon*	pWeapon;
+
+	int	nBestWeight	= -1;
+
+	//Search for the best weapon to use next based on its weight
+	for( int i = 0; i < pPlayer->WeaponCount(); i++ )
+	{
+		pWeapon = pPlayer->GetWeapon( i );
+
+		if( pWeapon == NULL )
 		{
-			pWeapon = pPlayer->GetWeapon(i);
-
-			if ( pWeapon == NULL )
-				continue;
-
-			// If we have an active weapon and this weapon doesn't allow autoswitching away
-			// from another weapon, skip it.
-			if ( pCurrentWeapon && !pWeapon->AllowsAutoSwitchTo() )
-				continue;
-
-			// Must be eligible for switching to.
-			if (!pPlayer->Weapon_CanSwitchTo(pWeapon))
-				continue;
-			
-			// Must be of higher quality.
-			if ( pWeapon->GetWeight() <= nBestWeight )
-				continue;
-
-			// We must have primary ammo
-			if ( pWeapon->UsesClipsForAmmo1() && pWeapon->Clip1() <= 0 && !pPlayer->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) )
-				continue;
-
-			// This is a better candidate than what we had.
-			nBestWeight = pWeapon->GetWeight();
-			pBestWeapon = pWeapon;
+			continue;
 		}
 
-		return pBestWeapon;
+		// If we have an active weapon and this weapon doesn't allow autoswitching away
+		// from another weapon, skip it.
+		if( pCurrentWeapon && !pWeapon->AllowsAutoSwitchTo() )
+		{
+			continue;
+		}
+
+		// Must be eligible for switching to.
+		if( !pPlayer->Weapon_CanSwitchTo( pWeapon ) )
+		{
+			continue;
+		}
+
+		// Must be of higher quality.
+		if( pWeapon->GetWeight() <= nBestWeight )
+		{
+			continue;
+		}
+
+		// We must have primary ammo
+		if( pWeapon->UsesClipsForAmmo1() && pWeapon->Clip1() <= 0 && !pPlayer->GetAmmoCount( pWeapon->GetPrimaryAmmoType() ) )
+		{
+			continue;
+		}
+
+		// This is a better candidate than what we had.
+		nBestWeight = pWeapon->GetWeight();
+		pBestWeapon = pWeapon;
 	}
 
-	//-----------------------------------------------------------------------------
-	// Purpose: 
-	// Output : Returns true on success, false on failure.
-	//-----------------------------------------------------------------------------
-	bool CSingleplayRules::SwitchToNextBestWeapon( CBaseCombatCharacter *pPlayer, CBaseCombatWeapon *pCurrentWeapon )
+	return pBestWeapon;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+// Output : Returns true on success, false on failure.
+//-----------------------------------------------------------------------------
+bool CSingleplayRules::SwitchToNextBestWeapon( CBaseCombatCharacter* pPlayer, CBaseCombatWeapon* pCurrentWeapon )
+{
+	CBaseCombatWeapon* pWeapon = GetNextBestWeapon( pPlayer, pCurrentWeapon );
+
+	if( pWeapon != NULL )
 	{
-		CBaseCombatWeapon *pWeapon = GetNextBestWeapon( pPlayer, pCurrentWeapon );
-
-		if ( pWeapon != NULL )
-			return pPlayer->Weapon_Switch( pWeapon );
-
-		return false;
+		return pPlayer->Weapon_Switch( pWeapon );
 	}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::ClientConnected( edict_t *pEntity, const char *pszName, const char *pszAddress, char *reject, int maxrejectlen )
-	{
-		return true;
-	}
+	return false;
+}
 
-	void CSingleplayRules::InitHUD( CBasePlayer *pl )
-	{
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::ClientConnected( edict_t* pEntity, const char* pszName, const char* pszAddress, char* reject, int maxrejectlen )
+{
+	return true;
+}
 
-	//=========================================================
-	//=========================================================
-	void CSingleplayRules::ClientDisconnected( edict_t *pClient )
-	{
-	}
+void CSingleplayRules::InitHUD( CBasePlayer* pl )
+{
+}
 
-	//=========================================================
-	//=========================================================
-	float CSingleplayRules::FlPlayerFallDamage( CBasePlayer *pPlayer )
-	{
-		// subtract off the speed at which a player is allowed to fall without being hurt,
-		// so damage will be based on speed beyond that, not the entire fall
-		pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
-		return pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
-	}
+//=========================================================
+//=========================================================
+void CSingleplayRules::ClientDisconnected( edict_t* pClient )
+{
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info )
-	{
-		return true;
-	}
+//=========================================================
+//=========================================================
+float CSingleplayRules::FlPlayerFallDamage( CBasePlayer* pPlayer )
+{
+	// subtract off the speed at which a player is allowed to fall without being hurt,
+	// so damage will be based on speed beyond that, not the entire fall
+	pPlayer->m_Local.m_flFallVelocity -= PLAYER_MAX_SAFE_FALL_SPEED;
+	return pPlayer->m_Local.m_flFallVelocity * DAMAGE_FOR_FALL_SPEED;
+}
 
-	//=========================================================
-	//=========================================================
-	void CSingleplayRules::PlayerSpawn( CBasePlayer *pPlayer )
-	{
-		// Player no longer gets all weapons to start.
-		// He has to pick them up now.  Use impulse 101
-		// to give him all weapons
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::AllowDamage( CBaseEntity* pVictim, const CTakeDamageInfo& info )
+{
+	return true;
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::AllowAutoTargetCrosshair( void )
-	{
-		return ( IsSkillLevel(SKILL_EASY) );
-	}
+//=========================================================
+//=========================================================
+void CSingleplayRules::PlayerSpawn( CBasePlayer* pPlayer )
+{
+	// Player no longer gets all weapons to start.
+	// He has to pick them up now.  Use impulse 101
+	// to give him all weapons
+}
 
-	//=========================================================
-	//=========================================================
-	int	CSingleplayRules::GetAutoAimMode()
-	{
-		return sk_autoaim_mode.GetInt();
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::AllowAutoTargetCrosshair( void )
+{
+	return ( IsSkillLevel( SKILL_EASY ) );
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::FPlayerCanRespawn( CBasePlayer *pPlayer )
-	{
-		return true;
-	}
+//=========================================================
+//=========================================================
+int	CSingleplayRules::GetAutoAimMode()
+{
+	return sk_autoaim_mode.GetInt();
+}
 
-	//=========================================================
-	//=========================================================
-	float CSingleplayRules::FlPlayerSpawnTime( CBasePlayer *pPlayer )
-	{
-		return gpGlobals->curtime;//now!
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::FPlayerCanRespawn( CBasePlayer* pPlayer )
+{
+	return true;
+}
 
-	//=========================================================
-	// IPointsForKill - how many points awarded to anyone
-	// that kills this player?
-	//=========================================================
-	int CSingleplayRules::IPointsForKill( CBasePlayer *pAttacker, CBasePlayer *pKilled )
-	{
-		return 1;
-	}
+//=========================================================
+//=========================================================
+float CSingleplayRules::FlPlayerSpawnTime( CBasePlayer* pPlayer )
+{
+	return gpGlobals->curtime;//now!
+}
 
-	//=========================================================
-	// PlayerKilled - someone/something killed this player
-	//=========================================================
-	void CSingleplayRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &info )
-	{
-	}
+//=========================================================
+// IPointsForKill - how many points awarded to anyone
+// that kills this player?
+//=========================================================
+int CSingleplayRules::IPointsForKill( CBasePlayer* pAttacker, CBasePlayer* pKilled )
+{
+	return 1;
+}
 
-	//=========================================================
-	// Deathnotice
-	//=========================================================
-	void CSingleplayRules::DeathNotice( CBasePlayer *pVictim, const CTakeDamageInfo &info )
-	{
-	}
+//=========================================================
+// PlayerKilled - someone/something killed this player
+//=========================================================
+void CSingleplayRules::PlayerKilled( CBasePlayer* pVictim, const CTakeDamageInfo& info )
+{
+}
 
-	//=========================================================
-	// FlWeaponRespawnTime - what is the time in the future
-	// at which this weapon may spawn?
-	//=========================================================
-	float CSingleplayRules::FlWeaponRespawnTime( CBaseCombatWeapon *pWeapon )
-	{
-		return -1;
-	}
+//=========================================================
+// Deathnotice
+//=========================================================
+void CSingleplayRules::DeathNotice( CBasePlayer* pVictim, const CTakeDamageInfo& info )
+{
+}
 
-	//=========================================================
-	// FlWeaponRespawnTime - Returns 0 if the weapon can respawn 
-	// now,  otherwise it returns the time at which it can try
-	// to spawn again.
-	//=========================================================
-	float CSingleplayRules::FlWeaponTryRespawn( CBaseCombatWeapon *pWeapon )
-	{
-		return 0;
-	}
+//=========================================================
+// FlWeaponRespawnTime - what is the time in the future
+// at which this weapon may spawn?
+//=========================================================
+float CSingleplayRules::FlWeaponRespawnTime( CBaseCombatWeapon* pWeapon )
+{
+	return -1;
+}
 
-	//=========================================================
-	// VecWeaponRespawnSpot - where should this weapon spawn?
-	// Some game variations may choose to randomize spawn locations
-	//=========================================================
-	Vector CSingleplayRules::VecWeaponRespawnSpot( CBaseCombatWeapon *pWeapon )
-	{
-		return pWeapon->GetAbsOrigin();
-	}
+//=========================================================
+// FlWeaponRespawnTime - Returns 0 if the weapon can respawn
+// now,  otherwise it returns the time at which it can try
+// to spawn again.
+//=========================================================
+float CSingleplayRules::FlWeaponTryRespawn( CBaseCombatWeapon* pWeapon )
+{
+	return 0;
+}
 
-	//=========================================================
-	// DefaultWeaponRespawnAngle - the angles this weapon
-	// should use when respawing.
-	//=========================================================
-	QAngle CSingleplayRules::DefaultWeaponRespawnAngle( CBaseCombatWeapon* pWeapon )
-	{
-		return pWeapon->GetAbsAngles();
-	}
+//=========================================================
+// VecWeaponRespawnSpot - where should this weapon spawn?
+// Some game variations may choose to randomize spawn locations
+//=========================================================
+Vector CSingleplayRules::VecWeaponRespawnSpot( CBaseCombatWeapon* pWeapon )
+{
+	return pWeapon->GetAbsOrigin();
+}
 
-	//=========================================================
-	// WeaponShouldRespawn - any conditions inhibiting the
-	// respawning of this weapon?
-	//=========================================================
-	int CSingleplayRules::WeaponShouldRespawn( CBaseCombatWeapon *pWeapon )
-	{
-		return GR_WEAPON_RESPAWN_NO;
-	}
+//=========================================================
+// DefaultWeaponRespawnAngle - the angles this weapon
+// should use when respawing.
+//=========================================================
+QAngle CSingleplayRules::DefaultWeaponRespawnAngle( CBaseCombatWeapon* pWeapon )
+{
+	return pWeapon->GetAbsAngles();
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::CanHaveItem( CBasePlayer *pPlayer, CItem *pItem )
-	{
-		return true;
-	}
+//=========================================================
+// WeaponShouldRespawn - any conditions inhibiting the
+// respawning of this weapon?
+//=========================================================
+int CSingleplayRules::WeaponShouldRespawn( CBaseCombatWeapon* pWeapon )
+{
+	return GR_WEAPON_RESPAWN_NO;
+}
 
-	//=========================================================
-	//=========================================================
-	void CSingleplayRules::PlayerGotItem( CBasePlayer *pPlayer, CItem *pItem )
-	{
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::CanHaveItem( CBasePlayer* pPlayer, CItem* pItem )
+{
+	return true;
+}
 
-	//=========================================================
-	//=========================================================
-	int CSingleplayRules::ItemShouldRespawn( CItem *pItem )
-	{
-		return GR_ITEM_RESPAWN_NO;
-	}
+//=========================================================
+//=========================================================
+void CSingleplayRules::PlayerGotItem( CBasePlayer* pPlayer, CItem* pItem )
+{
+}
+
+//=========================================================
+//=========================================================
+int CSingleplayRules::ItemShouldRespawn( CItem* pItem )
+{
+	return GR_ITEM_RESPAWN_NO;
+}
 
 
-	//=========================================================
-	// At what time in the future may this Item respawn?
-	//=========================================================
-	float CSingleplayRules::FlItemRespawnTime( CItem *pItem )
-	{
-		return -1;
-	}
+//=========================================================
+// At what time in the future may this Item respawn?
+//=========================================================
+float CSingleplayRules::FlItemRespawnTime( CItem* pItem )
+{
+	return -1;
+}
 
-	//=========================================================
-	// Where should this item respawn?
-	// Some game variations may choose to randomize spawn locations
-	//=========================================================
-	Vector CSingleplayRules::VecItemRespawnSpot( CItem *pItem )
-	{
-		return pItem->GetAbsOrigin();
-	}
+//=========================================================
+// Where should this item respawn?
+// Some game variations may choose to randomize spawn locations
+//=========================================================
+Vector CSingleplayRules::VecItemRespawnSpot( CItem* pItem )
+{
+	return pItem->GetAbsOrigin();
+}
 
-	//=========================================================
-	// What angles should this item use to respawn?
-	//=========================================================
-	QAngle CSingleplayRules::VecItemRespawnAngles( CItem *pItem )
-	{
-		return pItem->GetAbsAngles();
-	}
+//=========================================================
+// What angles should this item use to respawn?
+//=========================================================
+QAngle CSingleplayRules::VecItemRespawnAngles( CItem* pItem )
+{
+	return pItem->GetAbsAngles();
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::IsAllowedToSpawn( CBaseEntity *pEntity )
-	{
-		return true;
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::IsAllowedToSpawn( CBaseEntity* pEntity )
+{
+	return true;
+}
 
-	//=========================================================
-	//=========================================================
-	void CSingleplayRules::PlayerGotAmmo( CBaseCombatCharacter *pPlayer, char *szName, int iCount )
-	{
-	}
+//=========================================================
+//=========================================================
+void CSingleplayRules::PlayerGotAmmo( CBaseCombatCharacter* pPlayer, char* szName, int iCount )
+{
+}
 
-	//=========================================================
-	//=========================================================
-	float CSingleplayRules::FlHealthChargerRechargeTime( void )
-	{
-		return 0;// don't recharge
-	}
+//=========================================================
+//=========================================================
+float CSingleplayRules::FlHealthChargerRechargeTime( void )
+{
+	return 0;// don't recharge
+}
 
-	//=========================================================
-	//=========================================================
-	int CSingleplayRules::DeadPlayerWeapons( CBasePlayer *pPlayer )
-	{
-		return GR_PLR_DROP_GUN_NO;
-	}
+//=========================================================
+//=========================================================
+int CSingleplayRules::DeadPlayerWeapons( CBasePlayer* pPlayer )
+{
+	return GR_PLR_DROP_GUN_NO;
+}
 
-	//=========================================================
-	//=========================================================
-	int CSingleplayRules::DeadPlayerAmmo( CBasePlayer *pPlayer )
-	{
-		return GR_PLR_DROP_AMMO_NO;
-	}
+//=========================================================
+//=========================================================
+int CSingleplayRules::DeadPlayerAmmo( CBasePlayer* pPlayer )
+{
+	return GR_PLR_DROP_AMMO_NO;
+}
 
-	//=========================================================
-	//=========================================================
-	int CSingleplayRules::PlayerRelationship( CBaseEntity *pPlayer, CBaseEntity *pTarget )
-	{
-		// why would a single player in half life need this? 
-		return GR_NOTTEAMMATE;
-	}
+//=========================================================
+//=========================================================
+int CSingleplayRules::PlayerRelationship( CBaseEntity* pPlayer, CBaseEntity* pTarget )
+{
+	// why would a single player in half life need this?
+	return GR_NOTTEAMMATE;
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::PlayerCanHearChat( CBasePlayer *pListener, CBasePlayer *pSpeaker )
-	{
-		return ( PlayerRelationship( pListener, pSpeaker ) == GR_TEAMMATE );
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::PlayerCanHearChat( CBasePlayer* pListener, CBasePlayer* pSpeaker )
+{
+	return ( PlayerRelationship( pListener, pSpeaker ) == GR_TEAMMATE );
+}
 
-	//=========================================================
-	//=========================================================
-	bool CSingleplayRules::FAllowNPCs( void )
-	{
-		return true;
-	}
+//=========================================================
+//=========================================================
+bool CSingleplayRules::FAllowNPCs( void )
+{
+	return true;
+}
 
 #endif
 

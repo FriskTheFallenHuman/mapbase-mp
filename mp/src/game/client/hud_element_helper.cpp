@@ -11,16 +11,16 @@
 #include "tier0/memdbgon.h"
 
 // Start with empty list
-CHudElementHelper *CHudElementHelper::m_sHelpers = NULL;
+CHudElementHelper* CHudElementHelper::m_sHelpers = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructs a technology factory
-// Input  : pfnCreate - fn Ptr to the constructor for this element 
+// Input  : pfnCreate - fn Ptr to the constructor for this element
 //			depth - determines position in the creation list, 100 is farthest into the screen
 //					0 is nearest, default is 50
 //
 //-----------------------------------------------------------------------------
-CHudElementHelper::CHudElementHelper( CHudElement *( *pfnCreate )( void ), int depth )
+CHudElementHelper::CHudElementHelper( CHudElement * ( *pfnCreate )( void ), int depth )
 {
 	//Insert into the list based on depth
 
@@ -33,8 +33,8 @@ CHudElementHelper::CHudElementHelper( CHudElement *( *pfnCreate )( void ), int d
 	else
 	{
 		//Scan to insert in decreasing depth order
-		CHudElementHelper *pPrev = m_sHelpers;
-		CHudElementHelper *pCurrent = m_sHelpers->m_pNext;
+		CHudElementHelper* pPrev = m_sHelpers;
+		CHudElementHelper* pCurrent = m_sHelpers->m_pNext;
 
 		while( pCurrent != NULL && depth < pCurrent->m_iDepth )
 		{
@@ -57,28 +57,28 @@ CHudElementHelper::CHudElementHelper( CHudElement *( *pfnCreate )( void ), int d
 // Purpose: Returns next object in list
 // Output : CHudElementHelper
 //-----------------------------------------------------------------------------
-CHudElementHelper *CHudElementHelper::GetNext( void )
-{ 
+CHudElementHelper* CHudElementHelper::GetNext( void )
+{
 	return m_pNext;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Static class creation factory
-//  Searches list of registered factories for a match and then instances the 
+//  Searches list of registered factories for a match and then instances the
 //  requested technology by name
-// Input  : *name - 
+// Input  : *name -
 // Output : CBaseTFTechnology
 //-----------------------------------------------------------------------------
 void CHudElementHelper::CreateAllElements( void )
 {
 	// Start of list
-	CHudElementHelper *p = m_sHelpers;
-	while ( p )
+	CHudElementHelper* p = m_sHelpers;
+	while( p )
 	{
 		// Dispatch creation function directly
 		CHudElement *( *fCreate )( void ) = p->m_pfnCreate;
-		CHudElement *newElement = (fCreate)();
-		if ( newElement )
+		CHudElement* newElement = ( fCreate )();
+		if( newElement )
 		{
 			gHUD.AddHudElement( newElement );
 		}

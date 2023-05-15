@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -20,7 +20,7 @@
 
 typedef struct
 {
-	dface_t		*faces[2];
+	dface_t*		faces[2];
 	Vector		interface_normal;
 	qboolean	coplanar;
 } edgeshare_t;
@@ -35,14 +35,14 @@ extern edgeshare_t	edgeshare[MAX_MAP_EDGES];
 extern int g_iCurFace;
 
 extern int vertexref[MAX_MAP_VERTS];
-extern int *vertexface[MAX_MAP_VERTS];
+extern int* vertexface[MAX_MAP_VERTS];
 
 struct faceneighbor_t
 {
 	int		numneighbors;			// neighboring faces that share vertices
-	int		*neighbor;				// neighboring face list (max of 64)
+	int*		neighbor;				// neighboring face list (max of 64)
 
-	Vector	*normal;				// adjusted normal per vertex
+	Vector*	normal;				// adjusted normal per vertex
 	Vector	facenormal;				// face normal
 
 	bool	bHasDisp;				// is this surface a displacement surface???
@@ -56,33 +56,33 @@ extern faceneighbor_t faceneighbor[MAX_MAP_FACES];
 struct sample_t
 {
 	// in local luxel space
-	winding_t	*w;
+	winding_t*	w;
 	int			s, t;
-	Vector2D	coord;	
+	Vector2D	coord;
 	Vector2D	mins;
 	Vector2D	maxs;
 	// in world units
 	Vector		pos;
 	Vector		normal;
-	float		area;	
+	float		area;
 };
 
 struct facelight_t
 {
 	// irregularly shaped light sample data, clipped by face and luxel grid
 	int			numsamples;
-	sample_t	*sample;			
-	LightingValue_t *light[MAXLIGHTMAPS][NUM_BUMP_VECTS+1];	// result of direct illumination, indexed by sample
+	sample_t*	sample;
+	LightingValue_t* light[MAXLIGHTMAPS][NUM_BUMP_VECTS + 1];	// result of direct illumination, indexed by sample
 
 	// regularly spaced lightmap grid
-	int			numluxels;			
-	Vector		*luxel;				// world space position of luxel
-	Vector		*luxelNormals;		// world space normal of luxel
+	int			numluxels;
+	Vector*		luxel;				// world space position of luxel
+	Vector*		luxelNormals;		// world space normal of luxel
 	float		worldAreaPerLuxel;
 };
 
-extern directlight_t	*activelights;
-extern directlight_t	*freelights;
+extern directlight_t*	activelights;
+extern directlight_t*	freelights;
 
 extern facelight_t		facelight[MAX_MAP_FACES];
 extern int				numdlights;
@@ -104,7 +104,7 @@ struct lightinfo_t
 	Vector	luxelToWorldSpace[2]; // world = luxelOrigin + s * luxelToWorldSpace[0] + t * luxelToWorldSpace[1]
 
 	int		facenum;
-	dface_t	*face;
+	dface_t*	face;
 
 	int		isflat;
 	int		hasbumpmap;
@@ -114,14 +114,14 @@ struct SSE_SampleInfo_t
 {
 	int		m_FaceNum;
 	int		m_WarnFace;
-	dface_t	*m_pFace;
-	facelight_t	*m_pFaceLight;
+	dface_t*	m_pFace;
+	facelight_t*	m_pFaceLight;
 	int		m_LightmapWidth;
 	int		m_LightmapHeight;
 	int		m_LightmapSize;
 	int		m_NormalCount;
 	int		m_iThread;
-	texinfo_t	*m_pTexInfo;
+	texinfo_t*	m_pTexInfo;
 	bool	m_IsDispFace;
 
 	int          m_NumSamples;
@@ -131,7 +131,7 @@ struct SSE_SampleInfo_t
 	FourVectors	m_PointNormals[ NUM_BUMP_VECTS + 1 ];
 };
 
-extern void InitLightinfo( lightinfo_t *l, int facenum );
+extern void InitLightinfo( lightinfo_t* l, int facenum );
 
 void FreeDLights();
 

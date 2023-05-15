@@ -38,13 +38,13 @@ PMaterialHandle g_Blood_Gore = NULL;
 PMaterialHandle g_Blood_Drops = NULL;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bloodtype - 
-//			r - 
-//			g - 
-//			b - 
+// Purpose:
+// Input  : bloodtype -
+//			r -
+//			g -
+//			b -
 //-----------------------------------------------------------------------------
-void GetBloodColor( int bloodtype, colorentry_t &color )
+void GetBloodColor( int bloodtype, colorentry_t& color )
 {
 	int i;
 
@@ -64,28 +64,30 @@ void GetBloodColor( int bloodtype, colorentry_t &color )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			&normal - 
-//			scale - 
-//			r - 
-//			g - 
-//			b - 
-//			flags - 
+// Purpose:
+// Input  : &origin -
+//			&normal -
+//			scale -
+//			r -
+//			g -
+//			b -
+//			flags -
 //-----------------------------------------------------------------------------
-void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, unsigned char r, unsigned char g, unsigned char b, int flags )
+void FX_BloodSpray( const Vector& origin, const Vector& normal, float scale, unsigned char r, unsigned char g, unsigned char b, int flags )
 {
-	if ( UTIL_IsLowViolence() )
+	if( UTIL_IsLowViolence() )
+	{
 		return;
+	}
 
-	//debugoverlay->AddLineOverlay( origin, origin + normal * 72, 255, 255, 255, true, 10 ); 
+	//debugoverlay->AddLineOverlay( origin, origin + normal * 72, 255, 255, 255, true, 10 );
 
 	Vector offset;
 	float spread	= 0.2f;
-	
+
 	//Find area ambient light color and use it to tint smoke
 	Vector worldLight = WorldGetLightForPoint( origin, true );
-	Vector color = Vector( (float)(worldLight[0] * r) / 255.0f, (float)(worldLight[1] * g) / 255.0f, (float)(worldLight[2] * b) / 255.0f );
+	Vector color = Vector( ( float )( worldLight[0] * r ) / 255.0f, ( float )( worldLight[1] * g ) / 255.0f, ( float )( worldLight[2] * b ) / 255.0f );
 	float colorRamp;
 
 	int i;
@@ -95,32 +97,34 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 	Vector right;
 	Vector up;
 
-	if (normal != Vector(0, 0, 1) )
+	if( normal != Vector( 0, 0, 1 ) )
 	{
-		right = normal.Cross( Vector(0, 0, 1) );
+		right = normal.Cross( Vector( 0, 0, 1 ) );
 		up = right.Cross( normal );
 	}
 	else
 	{
-		right = Vector(0, 0, 1);
+		right = Vector( 0, 0, 1 );
 		up = right.Cross( normal );
 	}
 
 	//
 	// Dump out drops
 	//
-	if (flags & FX_BLOODSPRAY_DROPS)
+	if( flags & FX_BLOODSPRAY_DROPS )
 	{
-		TrailParticle *tParticle;
+		TrailParticle* tParticle;
 
 		CSmartPtr<CTrailParticles> pTrailEmitter = CTrailParticles::Create( "blooddrops" );
-		if ( !pTrailEmitter )
+		if( !pTrailEmitter )
+		{
 			return;
+		}
 
 		pTrailEmitter->SetSortOrigin( origin );
 
 		// Partial gravity on blood drops.
-		pTrailEmitter->SetGravity( 600.0 ); 
+		pTrailEmitter->SetGravity( 600.0 );
 
 		pTrailEmitter->GetBinding().SetBBox( origin - Vector( 32, 32, 32 ), origin + Vector( 32, 32, 32 ) );
 		pTrailEmitter->SetFlag( bitsPARTICLE_TRAIL_VELOCITY_DAMPEN );
@@ -131,17 +135,19 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 		//
 		// Long stringy drops of blood.
 		//
-		for ( i = 0; i < 14; i++ )
+		for( i = 0; i < 14; i++ )
 		{
 			// Originate from within a circle 'scale' inches in diameter.
 			offset = origin;
 			offset += right * random->RandomFloat( -0.5f, 0.5f ) * scale;
 			offset += up * random->RandomFloat( -0.5f, 0.5f ) * scale;
 
-			tParticle = (TrailParticle *) pTrailEmitter->AddParticle( sizeof(TrailParticle), hMaterial, offset );
+			tParticle = ( TrailParticle* ) pTrailEmitter->AddParticle( sizeof( TrailParticle ), hMaterial, offset );
 
-			if ( tParticle == NULL )
+			if( tParticle == NULL )
+			{
 				break;
+			}
 
 			tParticle->m_flLifetime	= 0.0f;
 
@@ -160,22 +166,24 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 		//
 		// Shorter droplets.
 		//
-		for ( i = 0; i < 24; i++ )
+		for( i = 0; i < 24; i++ )
 		{
 			// Originate from within a circle 'scale' inches in diameter.
 			offset = origin;
 			offset += right * random->RandomFloat( -0.5f, 0.5f ) * scale;
 			offset += up * random->RandomFloat( -0.5f, 0.5f ) * scale;
 
-			tParticle = (TrailParticle *) pTrailEmitter->AddParticle( sizeof(TrailParticle), hMaterial, offset );
+			tParticle = ( TrailParticle* ) pTrailEmitter->AddParticle( sizeof( TrailParticle ), hMaterial, offset );
 
-			if ( tParticle == NULL )
+			if( tParticle == NULL )
+			{
 				break;
+			}
 
 			tParticle->m_flLifetime	= 0.0f;
 
 			offDir = normal + RandomVector( -1.0f, 1.0f );
-			offDir[2] += random->RandomFloat(0, 1.0f);
+			offDir[2] += random->RandomFloat( 0, 1.0f );
 
 			tParticle->m_vecVelocity = offDir * random->RandomFloat( 2.0f * scale, 25.0f * scale );
 			tParticle->m_vecVelocity[2] += random->RandomFloat( 4.0f, 16.0f ) * scale;
@@ -188,11 +196,13 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 		}
 	}
 
-	if ((flags & FX_BLOODSPRAY_GORE) || (flags & FX_BLOODSPRAY_CLOUD))
+	if( ( flags & FX_BLOODSPRAY_GORE ) || ( flags & FX_BLOODSPRAY_CLOUD ) )
 	{
 		CSmartPtr<CBloodSprayEmitter> pSimple = CBloodSprayEmitter::Create( "bloodgore" );
-		if ( !pSimple )
+		if( !pSimple )
+		{
 			return;
+		}
 
 		pSimple->SetSortOrigin( origin );
 		pSimple->SetGravity( 0 );
@@ -202,22 +212,22 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 		//
 		// Tight blossom of blood at the center.
 		//
-		if (flags & FX_BLOODSPRAY_GORE)
+		if( flags & FX_BLOODSPRAY_GORE )
 		{
 			hMaterial = ParticleMgr()->GetPMaterial( "effects/blood_gore" );
 
-			SimpleParticle *pParticle;
+			SimpleParticle* pParticle;
 
-			for ( i = 0; i < 6; i++ )
+			for( i = 0; i < 6; i++ )
 			{
 				// Originate from within a circle 'scale' inches in diameter.
 				offset = origin + ( 0.5 * scale * normal );
 				offset += right * random->RandomFloat( -0.5f, 0.5f ) * scale;
 				offset += up * random->RandomFloat( -0.5f, 0.5f ) * scale;
 
-				pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
+				pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
 
-				if ( pParticle != NULL )
+				if( pParticle != NULL )
 				{
 					pParticle->m_flLifetime = 0.0f;
 					pParticle->m_flDieTime	= 0.3f;
@@ -232,13 +242,13 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 					pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-					
+
 					pParticle->m_uchStartSize	= random->RandomFloat( scale * 0.25, scale );
 					pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2;
-					
+
 					pParticle->m_uchStartAlpha	= random->RandomInt( 200, 255 );
 					pParticle->m_uchEndAlpha	= 0;
-					
+
 					pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 					pParticle->m_flRollDelta	= 0.0f;
 				}
@@ -248,25 +258,25 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 		//
 		// Diffuse cloud just in front of the exit wound.
 		//
-		if (flags & FX_BLOODSPRAY_CLOUD)
+		if( flags & FX_BLOODSPRAY_CLOUD )
 		{
 			hMaterial = ParticleMgr()->GetPMaterial( "effects/blood_puff" );
 
-			SimpleParticle *pParticle;
+			SimpleParticle* pParticle;
 
-			for ( i = 0; i < 6; i++ )
+			for( i = 0; i < 6; i++ )
 			{
 				// Originate from within a circle '2 * scale' inches in diameter.
 				offset = origin + ( scale * normal );
 				offset += right * random->RandomFloat( -1, 1 ) * scale;
 				offset += up * random->RandomFloat( -1, 1 ) * scale;
 
-				pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
+				pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
 
-				if ( pParticle != NULL )
+				if( pParticle != NULL )
 				{
 					pParticle->m_flLifetime = 0.0f;
-					pParticle->m_flDieTime	= random->RandomFloat( 0.5f, 0.8f);
+					pParticle->m_flDieTime	= random->RandomFloat( 0.5f, 0.8f );
 
 					spread = 0.5f;
 					pParticle->m_vecVelocity.Random( -spread, spread );
@@ -277,13 +287,13 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 					pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-					
+
 					pParticle->m_uchStartSize	= random->RandomFloat( scale * 1.5f, scale * 2.0f );
 					pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 4;
-					
+
 					pParticle->m_uchStartAlpha	= random->RandomInt( 80, 128 );
 					pParticle->m_uchEndAlpha	= 0;
-					
+
 					pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 					pParticle->m_flRollDelta	= 0.0f;
 				}
@@ -298,21 +308,23 @@ void FX_BloodSpray( const Vector &origin, const Vector &normal, float scale, uns
 
 //-----------------------------------------------------------------------------
 // Purpose: Used for bullets hitting bleeding surfaces
-// Input  : origin - 
-//			normal - 
+// Input  : origin -
+//			normal -
 //			scale - This parameter is not currently used
 //-----------------------------------------------------------------------------
-void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float scale /*NOTE: Unused!*/, unsigned char r, unsigned char g, unsigned char b )
+void FX_BloodBulletImpact( const Vector& origin, const Vector& normal, float scale /*NOTE: Unused!*/, unsigned char r, unsigned char g, unsigned char b )
 {
-	if ( UTIL_IsLowViolence() )
+	if( UTIL_IsLowViolence() )
+	{
 		return;
+	}
 
 	Vector offset;
-	
+
 	//Find area ambient light color and use it to tint smoke
 	Vector worldLight = WorldGetLightForPoint( origin, true );
-	
-	if ( gpGlobals->maxClients > 1 )
+
+	if( gpGlobals->maxClients > 1 )
 	{
 		worldLight = Vector( 1.0, 1.0, 1.0 );
 		r = 96;
@@ -320,39 +332,41 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 		b = 10;
 	}
 
-	Vector color = Vector( (float)(worldLight[0] * r) / 255.0f, (float)(worldLight[1] * g) / 255.0f, (float)(worldLight[2] * b) / 255.0f );
+	Vector color = Vector( ( float )( worldLight[0] * r ) / 255.0f, ( float )( worldLight[1] * g ) / 255.0f, ( float )( worldLight[2] * b ) / 255.0f );
 	float colorRamp;
 
 	Vector	offDir;
 
 	CSmartPtr<CBloodSprayEmitter> pSimple = CBloodSprayEmitter::Create( "bloodgore" );
-	if ( !pSimple )
+	if( !pSimple )
+	{
 		return;
+	}
 
 	pSimple->SetSortOrigin( origin );
 	pSimple->SetGravity( 200 );
-	
+
 	// Setup a bounding box to contain the particles without (stops auto-updating)
 	pSimple->GetBinding().SetBBox( origin - Vector( 16, 16, 16 ), origin + Vector( 16, 16, 16 ) );
 
 	// Cache the material if we haven't already
-	if ( g_Blood_Core == NULL )
+	if( g_Blood_Core == NULL )
 	{
 		g_Blood_Core = ParticleMgr()->GetPMaterial( "effects/blood_core" );
 	}
 
-	SimpleParticle *pParticle;
+	SimpleParticle* pParticle;
 
 	Vector	dir = normal * RandomVector( -0.5f, 0.5f );
 
 	offset = origin + ( 2.0f * normal );
 
-	pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Blood_Core, offset );
+	pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Blood_Core, offset );
 
-	if ( pParticle != NULL )
+	if( pParticle != NULL )
 	{
 		pParticle->m_flLifetime = 0.0f;
-		pParticle->m_flDieTime	= random->RandomFloat( 0.25f, 0.5f);
+		pParticle->m_flDieTime	= random->RandomFloat( 0.25f, 0.5f );
 
 		pParticle->m_vecVelocity	= dir * random->RandomFloat( 16.0f, 32.0f );
 		pParticle->m_vecVelocity[2] -= random->RandomFloat( 8.0f, 16.0f );
@@ -362,49 +376,49 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 		pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-		
+
 		pParticle->m_uchStartSize	= random->RandomInt( 2, 4 );
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 8;
-	
+
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
-		
+
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
 	// Cache the material if we haven't already
-	if ( g_Blood_Gore == NULL )
+	if( g_Blood_Gore == NULL )
 	{
 		g_Blood_Gore = ParticleMgr()->GetPMaterial( "effects/blood_gore" );
 	}
 
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
 		offset = origin + ( 2.0f * normal );
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Blood_Gore, offset );
+		pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Blood_Gore, offset );
 
-		if ( pParticle != NULL )
+		if( pParticle != NULL )
 		{
 			pParticle->m_flLifetime = 0.0f;
-			pParticle->m_flDieTime	= random->RandomFloat( 0.5f, 0.75f);
+			pParticle->m_flDieTime	= random->RandomFloat( 0.5f, 0.75f );
 
-			pParticle->m_vecVelocity	= dir * random->RandomFloat( 16.0f, 32.0f )*(i+1);
-			pParticle->m_vecVelocity[2] -= random->RandomFloat( 32.0f, 64.0f )*(i+1);
+			pParticle->m_vecVelocity	= dir * random->RandomFloat( 16.0f, 32.0f ) * ( i + 1 );
+			pParticle->m_vecVelocity[2] -= random->RandomFloat( 32.0f, 64.0f ) * ( i + 1 );
 
 			colorRamp = random->RandomFloat( 0.75f, 2.0f );
 
 			pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 			pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 			pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-			
+
 			pParticle->m_uchStartSize	= random->RandomInt( 2, 4 );
 			pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 4;
-		
+
 			pParticle->m_uchStartAlpha	= 255;
 			pParticle->m_uchEndAlpha	= 0;
-			
+
 			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 			pParticle->m_flRollDelta	= 0.0f;
 		}
@@ -413,21 +427,23 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 	//
 	// Dump out drops
 	//
-	TrailParticle *tParticle;
+	TrailParticle* tParticle;
 
 	CSmartPtr<CTrailParticles> pTrailEmitter = CTrailParticles::Create( "blooddrops" );
-	if ( !pTrailEmitter )
+	if( !pTrailEmitter )
+	{
 		return;
+	}
 
 	pTrailEmitter->SetSortOrigin( origin );
 
 	// Partial gravity on blood drops
-	pTrailEmitter->SetGravity( 400.0 ); 
-	
-	// Enable simple collisions with nearby surfaces
-	pTrailEmitter->Setup(origin, &normal, 1, 10, 100, 400, 0.2, 0 );
+	pTrailEmitter->SetGravity( 400.0 );
 
-	if ( g_Blood_Drops == NULL )
+	// Enable simple collisions with nearby surfaces
+	pTrailEmitter->Setup( origin, &normal, 1, 10, 100, 400, 0.2, 0 );
+
+	if( g_Blood_Drops == NULL )
 	{
 		g_Blood_Drops = ParticleMgr()->GetPMaterial( "effects/blood_drop" );
 	}
@@ -435,15 +451,17 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 	//
 	// Shorter droplets
 	//
-	for ( int i = 0; i < 8; i++ )
+	for( int i = 0; i < 8; i++ )
 	{
 		// Originate from within a circle 'scale' inches in diameter
 		offset = origin;
 
-		tParticle = (TrailParticle *) pTrailEmitter->AddParticle( sizeof(TrailParticle), g_Blood_Drops, offset );
+		tParticle = ( TrailParticle* ) pTrailEmitter->AddParticle( sizeof( TrailParticle ), g_Blood_Drops, offset );
 
-		if ( tParticle == NULL )
+		if( tParticle == NULL )
+		{
 			break;
+		}
 
 		tParticle->m_flLifetime	= 0.0f;
 
@@ -469,7 +487,7 @@ void FX_BloodBulletImpact( const Vector &origin, const Vector &normal, float sca
 struct ParticleForBlood_t
 {
 	int nColor;
-	const char *lpszParticleSystemName;
+	const char* lpszParticleSystemName;
 };
 
 ParticleForBlood_t	bloodCallbacks[] =
@@ -487,7 +505,7 @@ ParticleForBlood_t	bloodCallbacks[] =
 //-----------------------------------------------------------------------------
 // Purpose: Intercepts the blood spray message.
 //-----------------------------------------------------------------------------
-void BloodSprayCallback( const CEffectData &data )
+void BloodSprayCallback( const CEffectData& data )
 {
 	colorentry_t color;
 
@@ -499,14 +517,14 @@ DECLARE_CLIENT_EFFECT( "bloodspray", BloodSprayCallback );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void BloodImpactCallback( const CEffectData & data )
+void BloodImpactCallback( const CEffectData& data )
 {
 	bool bFoundBlood = false;
 
 	// Find which sort of blood we are
-	for ( int i = 0; i < ARRAYSIZE( bloodCallbacks ); i++ )
+	for( int i = 0; i < ARRAYSIZE( bloodCallbacks ); i++ )
 	{
-		if ( bloodCallbacks[i].nColor == data.m_nColor )
+		if( bloodCallbacks[i].nColor == data.m_nColor )
 		{
 			QAngle	vecAngles;
 			VectorAngles( -data.m_vNormal, vecAngles );
@@ -516,11 +534,11 @@ void BloodImpactCallback( const CEffectData & data )
 		}
 	}
 
-	if ( bFoundBlood == false )
+	if( bFoundBlood == false )
 	{
 		Vector vecPosition;
 		vecPosition = data.m_vOrigin;
-		
+
 		// Fetch the blood color.
 		colorentry_t color;
 		GetBloodColor( data.m_nColor, color );
@@ -533,11 +551,13 @@ DECLARE_CLIENT_EFFECT( "BloodImpact", BloodImpactCallback );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void HunterDamageCallback( const CEffectData &data )
+void HunterDamageCallback( const CEffectData& data )
 {
 	CSmartPtr<CSimple3DEmitter> pGlassEmitter = CSimple3DEmitter::Create( "HunterDamage" );
-	if ( pGlassEmitter == NULL )
+	if( pGlassEmitter == NULL )
+	{
 		return;
+	}
 
 	pGlassEmitter->SetSortOrigin( data.m_vOrigin );
 
@@ -553,17 +573,19 @@ void HunterDamageCallback( const CEffectData &data )
 
 	int	numFlecks = 32;
 
-	Particle3D *pFleckParticle;
+	Particle3D* pFleckParticle;
 	Vector spawnOffset;
 
 	//Dump out flecks
-	for ( int i = 0; i < numFlecks; i++ )
+	for( int i = 0; i < numFlecks; i++ )
 	{
 		spawnOffset = data.m_vOrigin + RandomVector( -32.0f, 32.0f );
-		pFleckParticle = (Particle3D *) pGlassEmitter->AddParticle( sizeof(Particle3D), g_Mat_Fleck_Antlion[random->RandomInt(0,1)], spawnOffset );
+		pFleckParticle = ( Particle3D* ) pGlassEmitter->AddParticle( sizeof( Particle3D ), g_Mat_Fleck_Antlion[random->RandomInt( 0, 1 )], spawnOffset );
 
-		if ( pFleckParticle == NULL )
+		if( pFleckParticle == NULL )
+		{
 			break;
+		}
 
 		pFleckParticle->m_flLifeRemaining	= random->RandomFloat( 2.0f, 3.0f );
 
@@ -573,7 +595,7 @@ void HunterDamageCallback( const CEffectData &data )
 
 		pFleckParticle->m_uchSize		= random->RandomInt( 3, 8 );
 
-		pFleckParticle->m_vecVelocity	= dir * random->RandomFloat( flMinSpeed, flMaxSpeed);
+		pFleckParticle->m_vecVelocity	= dir * random->RandomFloat( flMinSpeed, flMaxSpeed );
 
 		pFleckParticle->m_vAngles		= RandomAngle( 0, 360 );
 		pFleckParticle->m_flAngSpeed	= random->RandomFloat( -800, 800 );

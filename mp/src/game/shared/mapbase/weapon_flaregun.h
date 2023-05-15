@@ -6,13 +6,13 @@
 #ifndef WEAPON_FLAREGUN_H
 #define WEAPON_FLAREGUN_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
 
 #ifdef CLIENT_DLL
-#define CWeaponFlaregun C_WeaponFlaregun
+	#define CWeaponFlaregun C_WeaponFlaregun
 #endif
 
 //---------------------

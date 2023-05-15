@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -20,57 +20,57 @@ ConVar mat_hdr_tonemapscale( "mat_hdr_tonemapscale", "1.0", FCVAR_CHEAT, "The HD
 LINK_ENTITY_TO_CLASS( env_tonemap_controller, CEnvTonemapController );
 
 BEGIN_DATADESC( CEnvTonemapController )
-	DEFINE_FIELD( m_flBlendTonemapStart, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flBlendTonemapEnd, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flBlendEndTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flBlendStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bUseCustomAutoExposureMin, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bUseCustomAutoExposureMax, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flCustomAutoExposureMin, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flCustomAutoExposureMax, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flCustomBloomScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flCustomBloomScaleMinimum, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bUseCustomBloomScale, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_flBlendTonemapStart, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flBlendTonemapEnd, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flBlendEndTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flBlendStartTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_bUseCustomAutoExposureMin, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bUseCustomAutoExposureMax, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flCustomAutoExposureMin, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flCustomAutoExposureMax, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flCustomBloomScale, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flCustomBloomScaleMinimum, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_bUseCustomBloomScale, FIELD_BOOLEAN ),
 
-	DEFINE_THINKFUNC( UpdateTonemapScaleBlend ),
+			  DEFINE_THINKFUNC( UpdateTonemapScaleBlend ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetTonemapScale", InputSetTonemapScale ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "BlendTonemapScale", InputBlendTonemapScale ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetTonemapRate", InputSetTonemapRate ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAutoExposureMin", InputSetAutoExposureMin ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAutoExposureMax", InputSetAutoExposureMax ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "UseDefaultAutoExposure", InputUseDefaultAutoExposure ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "UseDefaultBloomScale", InputUseDefaultBloomScale ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBloomScale", InputSetBloomScale ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetTonemapScale", InputSetTonemapScale ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "BlendTonemapScale", InputBlendTonemapScale ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetTonemapRate", InputSetTonemapRate ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAutoExposureMin", InputSetAutoExposureMin ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAutoExposureMax", InputSetAutoExposureMax ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "UseDefaultAutoExposure", InputUseDefaultAutoExposure ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "UseDefaultBloomScale", InputUseDefaultBloomScale ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBloomScale", InputSetBloomScale ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetBloomScaleRange", InputSetBloomScaleRange ),
 #else
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBloomScaleRange", InputSetBloomScaleRange ),
 #endif
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController )
-	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMin), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_bUseCustomAutoExposureMax), 1, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_bUseCustomBloomScale), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flCustomAutoExposureMin), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomAutoExposureMax), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomBloomScale), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flCustomBloomScaleMinimum), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CEnvTonemapController, DT_EnvTonemapController )
+			  SendPropInt( SENDINFO( m_bUseCustomAutoExposureMin ), 1, SPROP_UNSIGNED ),
+			  SendPropInt( SENDINFO( m_bUseCustomAutoExposureMax ), 1, SPROP_UNSIGNED ),
+			  SendPropInt( SENDINFO( m_bUseCustomBloomScale ), 1, SPROP_UNSIGNED ),
+			  SendPropFloat( SENDINFO( m_flCustomAutoExposureMin ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flCustomAutoExposureMax ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flCustomBloomScale ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flCustomBloomScaleMinimum ), 0, SPROP_NOSCALE ),
+			  END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::Spawn( void )
+			  void CEnvTonemapController::Spawn( void )
 {
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_NONE );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CEnvTonemapController::UpdateTransmitState()
 {
@@ -79,52 +79,52 @@ int CEnvTonemapController::UpdateTransmitState()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CEnvTonemapController::KeyValue( const char *szKeyName, const char *szValue )
+bool CEnvTonemapController::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if ( FStrEq( szKeyName, "TonemapScale" ) )
+	if( FStrEq( szKeyName, "TonemapScale" ) )
 	{
 		float flTonemapScale = atof( szValue );
-		if (flTonemapScale != -1.0f)
+		if( flTonemapScale != -1.0f )
 		{
 			mat_hdr_tonemapscale.SetValue( flTonemapScale );
 		}
 	}
-	else if (FStrEq( szKeyName, "TonemapRate" ))
+	else if( FStrEq( szKeyName, "TonemapRate" ) )
 	{
 		float flTonemapRate = atof( szValue );
-		if (flTonemapRate != -1.0f)
+		if( flTonemapRate != -1.0f )
 		{
 			ConVarRef mat_hdr_manual_tonemap_rate( "mat_hdr_manual_tonemap_rate" );
-			if ( mat_hdr_manual_tonemap_rate.IsValid() )
+			if( mat_hdr_manual_tonemap_rate.IsValid() )
 			{
 				mat_hdr_manual_tonemap_rate.SetValue( flTonemapRate );
 			}
 		}
 	}
-	else if (FStrEq( szKeyName, "AutoExposureMin" ))
+	else if( FStrEq( szKeyName, "AutoExposureMin" ) )
 	{
 		float flAutoExposureMin = atof( szValue );
-		if (flAutoExposureMin != -1.0f)
+		if( flAutoExposureMin != -1.0f )
 		{
 			m_flCustomAutoExposureMin = flAutoExposureMin;
 			m_bUseCustomAutoExposureMin = true;
 		}
 	}
-	else if (FStrEq( szKeyName, "AutoExposureMax" ))
+	else if( FStrEq( szKeyName, "AutoExposureMax" ) )
 	{
 		float flAutoExposureMax = atof( szValue );
-		if (flAutoExposureMax != -1.0f)
+		if( flAutoExposureMax != -1.0f )
 		{
 			m_flCustomAutoExposureMax = flAutoExposureMax;
 			m_bUseCustomAutoExposureMax = true;
 		}
 	}
-	else if (FStrEq( szKeyName, "BloomScale" ))
+	else if( FStrEq( szKeyName, "BloomScale" ) )
 	{
 		float flBloomScale = atof( szValue );
-		if (flBloomScale != -1.0f)
+		if( flBloomScale != -1.0f )
 		{
 			m_flCustomBloomScale = flBloomScale;
 			m_flCustomBloomScaleMinimum = flBloomScale;
@@ -132,7 +132,9 @@ bool CEnvTonemapController::KeyValue( const char *szKeyName, const char *szValue
 		}
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
@@ -141,7 +143,7 @@ bool CEnvTonemapController::KeyValue( const char *szKeyName, const char *szValue
 //-----------------------------------------------------------------------------
 // Purpose: Set the tonemap scale to the specified value
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetTonemapScale( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetTonemapScale( inputdata_t& inputdata )
 {
 	float flRemapped = inputdata.value.Float();
 	mat_hdr_tonemapscale.SetValue( flRemapped );
@@ -150,25 +152,25 @@ void CEnvTonemapController::InputSetTonemapScale( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Blend the tonemap scale to the specified value
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputBlendTonemapScale( inputdata_t &inputdata )
+void CEnvTonemapController::InputBlendTonemapScale( inputdata_t& inputdata )
 {
 	char parseString[255];
-	Q_strncpy(parseString, inputdata.value.String(), sizeof(parseString));
+	Q_strncpy( parseString, inputdata.value.String(), sizeof( parseString ) );
 
 	// Get the target tonemap scale
-	char *pszParam = strtok(parseString," ");
-	if ( !pszParam || !pszParam[0] )
+	char* pszParam = strtok( parseString, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received BlendTonemapScale input without a target tonemap scale. Syntax: <target tonemap scale> <blend time>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received BlendTonemapScale input without a target tonemap scale. Syntax: <target tonemap scale> <blend time>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	m_flBlendTonemapEnd = atof( pszParam );
 
 	// Get the blend time
-	pszParam = strtok(NULL," ");
-	if ( !pszParam || !pszParam[0] )
+	pszParam = strtok( NULL, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received BlendTonemapScale input without a blend time. Syntax: <target tonemap scale> <blend time>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received BlendTonemapScale input without a blend time. Syntax: <target tonemap scale> <blend time>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	m_flBlendEndTime = gpGlobals->curtime + atof( pszParam );
@@ -184,17 +186,17 @@ void CEnvTonemapController::InputBlendTonemapScale( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: set a base and minimum bloom scale
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetBloomScaleRange( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetBloomScaleRange( inputdata_t& inputdata )
 {
-	float bloom_max=1, bloom_min=1;
-	int nargs=sscanf("%f %f",inputdata.value.String(), bloom_max, bloom_min );
-	if (nargs != 2)
+	float bloom_max = 1, bloom_min = 1;
+	int nargs = sscanf( "%f %f", inputdata.value.String(), bloom_max, bloom_min );
+	if( nargs != 2 )
 	{
-		Warning("%s (%s) received SetBloomScaleRange input without 2 arguments. Syntax: <max bloom> <min bloom>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received SetBloomScaleRange input without 2 arguments. Syntax: <max bloom> <min bloom>\n", GetClassname(), GetDebugName() );
 		return;
 	}
-	m_flCustomBloomScale=bloom_max;
-	m_flCustomBloomScaleMinimum=bloom_min;
+	m_flCustomBloomScale = bloom_max;
+	m_flCustomBloomScaleMinimum = bloom_min;
 #ifdef MAPBASE
 	m_bUseCustomBloomScale = true;
 #endif
@@ -203,11 +205,11 @@ void CEnvTonemapController::InputSetBloomScaleRange( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetTonemapRate( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetTonemapRate( inputdata_t& inputdata )
 {
 	// TODO: There should be a better way to do this.
 	ConVarRef mat_hdr_manual_tonemap_rate( "mat_hdr_manual_tonemap_rate" );
-	if ( mat_hdr_manual_tonemap_rate.IsValid() )
+	if( mat_hdr_manual_tonemap_rate.IsValid() )
 	{
 		float flTonemapRate = inputdata.value.Float();
 		mat_hdr_manual_tonemap_rate.SetValue( flTonemapRate );
@@ -218,15 +220,17 @@ void CEnvTonemapController::InputSetTonemapRate( inputdata_t &inputdata )
 // Purpose: Blend the tonemap scale to the specified value
 //-----------------------------------------------------------------------------
 void CEnvTonemapController::UpdateTonemapScaleBlend( void )
-{ 
+{
 	float flRemapped = RemapValClamped( gpGlobals->curtime, m_flBlendStartTime, m_flBlendEndTime, m_flBlendTonemapStart, m_flBlendTonemapEnd );
 	mat_hdr_tonemapscale.SetValue( flRemapped );
 
-	//Msg("Setting tonemap scale to %f (curtime %f, %f -> %f)\n", flRemapped, gpGlobals->curtime, m_flBlendStartTime, m_flBlendEndTime ); 
+	//Msg("Setting tonemap scale to %f (curtime %f, %f -> %f)\n", flRemapped, gpGlobals->curtime, m_flBlendStartTime, m_flBlendEndTime );
 
 	// Stop when we're out of the blend range
-	if ( gpGlobals->curtime >= m_flBlendEndTime )
+	if( gpGlobals->curtime >= m_flBlendEndTime )
+	{
 		return;
+	}
 
 	SetNextThink( gpGlobals->curtime + 0.1 );
 }
@@ -234,7 +238,7 @@ void CEnvTonemapController::UpdateTonemapScaleBlend( void )
 //-----------------------------------------------------------------------------
 // Purpose: Set the auto exposure min to the specified value
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetAutoExposureMin( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetAutoExposureMin( inputdata_t& inputdata )
 {
 	m_flCustomAutoExposureMin = inputdata.value.Float();
 	m_bUseCustomAutoExposureMin = true;
@@ -243,25 +247,25 @@ void CEnvTonemapController::InputSetAutoExposureMin( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Set the auto exposure max to the specified value
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetAutoExposureMax( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetAutoExposureMax( inputdata_t& inputdata )
 {
 	m_flCustomAutoExposureMax = inputdata.value.Float();
 	m_bUseCustomAutoExposureMax = true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputUseDefaultAutoExposure( inputdata_t &inputdata )
+void CEnvTonemapController::InputUseDefaultAutoExposure( inputdata_t& inputdata )
 {
 	m_bUseCustomAutoExposureMin = false;
 	m_bUseCustomAutoExposureMax = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputSetBloomScale( inputdata_t &inputdata )
+void CEnvTonemapController::InputSetBloomScale( inputdata_t& inputdata )
 {
 	m_flCustomBloomScale = inputdata.value.Float();
 	m_flCustomBloomScaleMinimum = m_flCustomBloomScale;
@@ -269,9 +273,9 @@ void CEnvTonemapController::InputSetBloomScale( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvTonemapController::InputUseDefaultBloomScale( inputdata_t &inputdata )
+void CEnvTonemapController::InputUseDefaultBloomScale( inputdata_t& inputdata )
 {
 	m_bUseCustomBloomScale = false;
 }
@@ -281,12 +285,12 @@ void CEnvTonemapController::InputUseDefaultBloomScale( inputdata_t &inputdata )
 LINK_ENTITY_TO_CLASS( trigger_tonemap, CTonemapTrigger );
 
 BEGIN_DATADESC( CTonemapTrigger )
-	DEFINE_KEYFIELD( m_tonemapControllerName,	FIELD_STRING,	"TonemapName" ),
-END_DATADESC()
+DEFINE_KEYFIELD( m_tonemapControllerName,	FIELD_STRING,	"TonemapName" ),
+					 END_DATADESC()
 
 
 //--------------------------------------------------------------------------------------------------------
-void CTonemapTrigger::Spawn( void )
+					 void CTonemapTrigger::Spawn( void )
 {
 	AddSpawnFlags( SF_TRIGGER_ALLOW_CLIENTS );
 
@@ -298,32 +302,40 @@ void CTonemapTrigger::Spawn( void )
 
 
 //--------------------------------------------------------------------------------------------------------
-void CTonemapTrigger::StartTouch( CBaseEntity *other )
+void CTonemapTrigger::StartTouch( CBaseEntity* other )
 {
-	if ( !PassesTriggerFilters( other ) )
+	if( !PassesTriggerFilters( other ) )
+	{
 		return;
+	}
 
 	BaseClass::StartTouch( other );
 
-	CBasePlayer *player = ToBasePlayer( other );
-	if ( !player )
+	CBasePlayer* player = ToBasePlayer( other );
+	if( !player )
+	{
 		return;
+	}
 
 	player->OnTonemapTriggerStartTouch( this );
 }
 
 
 //--------------------------------------------------------------------------------------------------------
-void CTonemapTrigger::EndTouch( CBaseEntity *other )
+void CTonemapTrigger::EndTouch( CBaseEntity* other )
 {
-	if ( !PassesTriggerFilters( other ) )
+	if( !PassesTriggerFilters( other ) )
+	{
 		return;
+	}
 
 	BaseClass::EndTouch( other );
 
-	CBasePlayer *player = ToBasePlayer( other );
-	if ( !player )
+	CBasePlayer* player = ToBasePlayer( other );
+	if( !player )
+	{
 		return;
+	}
 
 	player->OnTonemapTriggerEndTouch( this );
 }
@@ -338,33 +350,34 @@ void CTonemapSystem::LevelInitPreEntity( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: On level load find the master fog controller.  If no controller is 
+// Purpose: On level load find the master fog controller.  If no controller is
 //			set as Master, use the first fog controller found.
 //-----------------------------------------------------------------------------
 void CTonemapSystem::LevelInitPostEntity( void )
 {
 	// Overall master controller
-	CEnvTonemapController *pTonemapController = NULL;
+	CEnvTonemapController* pTonemapController = NULL;
 	do
 	{
 		pTonemapController = static_cast<CEnvTonemapController*>( gEntList.FindEntityByClassname( pTonemapController, "env_tonemap_controller" ) );
-		if ( pTonemapController )
+		if( pTonemapController )
 		{
-			if ( m_hMasterController == NULL )
+			if( m_hMasterController == NULL )
 			{
 				m_hMasterController = pTonemapController;
 			}
 			else
 			{
-				if ( pTonemapController->IsMaster() )
+				if( pTonemapController->IsMaster() )
 				{
 					m_hMasterController = pTonemapController;
 				}
 			}
 		}
-	} while ( pTonemapController );
+	}
+	while( pTonemapController );
 
-	
+
 }
 
 
@@ -373,7 +386,7 @@ CTonemapSystem s_TonemapSystem( "TonemapSystem" );
 
 
 //--------------------------------------------------------------------------------------------------------
-CTonemapSystem *TheTonemapSystem( void )
+CTonemapSystem* TheTonemapSystem( void )
 {
 	return &s_TonemapSystem;
 }

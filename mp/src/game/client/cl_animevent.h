@@ -10,7 +10,7 @@
 #if !defined( CL_ANIMEVENT_H )
 #define CL_ANIMEVENT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //Animation event codes

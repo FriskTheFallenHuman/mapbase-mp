@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( MEASURE_SECTION_H )
 #define MEASURE_SECTION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -49,7 +49,7 @@ class CMeasureSection
 {
 public:
 	// Allows for measuring named section
-						CMeasureSection( const char *name );
+	CMeasureSection( const char* name );
 	virtual				~CMeasureSection( void );
 
 
@@ -60,23 +60,23 @@ public:
 	// Reset sortable totals
 	void				SortReset( void );
 	// Get static name of section
-	const char			*GetName( void );
-	
+	const char*			GetName( void );
+
 	// Get accumulated time
 	CCycleCount const&	GetTotalTime( void );
 
 	CCycleCount const&	GetTime();
 
 	CCycleCount const&	GetMaxTime();
-	
+
 	// Add in some time
-	void				AddTime( CCycleCount const &rCount );
+	void				AddTime( CCycleCount const& rCount );
 
 	// Get next section in chain
-	CMeasureSection		*GetNext( void );
+	CMeasureSection*		GetNext( void );
 
 	// Get head of list of all sections
-	static CMeasureSection *GetList( void );
+	static CMeasureSection* GetList( void );
 	// Sort all sections by most time consuming
 	static void			SortSections( void );
 
@@ -87,32 +87,32 @@ public:
 private:
 	// Accumulated time for section
 	CCycleCount			m_dAccumulatedTime;
-	
+
 	// Max time for section
 	CCycleCount			m_dMaxTime;
 
 	// Elapsed time for section
 	CCycleCount			m_dTotalTime;
-	
+
 	// Name of section
-	const char			*m_pszName;
+	const char*			m_pszName;
 	// Next section in chain
-	CMeasureSection		*m_pNext;
+	CMeasureSection*		m_pNext;
 	// Head of section list
-	static CMeasureSection *s_pSections;
+	static CMeasureSection* s_pSections;
 	// Quick total for doing sorts faster
 	static int			s_nCount;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: On construction marks time and on destruction adds time to 
+// Purpose: On construction marks time and on destruction adds time to
 //  parent CMeasureSection object
 //-----------------------------------------------------------------------------
 class CMeasureSectionInstance
 {
 public:
 	// Constructor:  Points to object to accumulate time into
-						CMeasureSectionInstance( CMeasureSection *ms );
+	CMeasureSectionInstance( CMeasureSection* ms );
 	// Destructor:  Latches accumulated time
 	virtual				~CMeasureSectionInstance( void );
 
@@ -121,7 +121,7 @@ private:
 	CFastTimer			m_Timer;
 
 	// Where to place elapsed time
-	CMeasureSection		*m_pMS;
+	CMeasureSection*		m_pMS;
 };
 
 #endif // MEASURE_SECTION_H

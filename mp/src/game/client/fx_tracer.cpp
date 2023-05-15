@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -16,12 +16,12 @@
 ConVar r_drawtracers( "r_drawtracers", "1", FCVAR_CHEAT );
 ConVar r_drawtracers_firstperson( "r_drawtracers_firstperson", "1", FCVAR_ARCHIVE, "Toggle visibility of first person weapon tracers" );
 
-#define	TRACER_SPEED			5000 
+#define	TRACER_SPEED			5000
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-Vector GetTracerOrigin( const CEffectData &data )
+Vector GetTracerOrigin( const CEffectData& data )
 {
 	Vector vecStart = data.m_vStart;
 	QAngle vecAngles;
@@ -29,33 +29,37 @@ Vector GetTracerOrigin( const CEffectData &data )
 	int iAttachment = data.m_nAttachmentIndex;
 
 	// Attachment?
-	if ( data.m_fFlags & TRACER_FLAG_USEATTACHMENT )
+	if( data.m_fFlags & TRACER_FLAG_USEATTACHMENT )
 	{
-		C_BaseViewModel *pViewModel = NULL;
+		C_BaseViewModel* pViewModel = NULL;
 
 		// If the entity specified is a weapon being carried by this player, use the viewmodel instead
-		IClientRenderable *pRenderable = data.GetRenderable();
-		if ( !pRenderable )
+		IClientRenderable* pRenderable = data.GetRenderable();
+		if( !pRenderable )
+		{
 			return vecStart;
+		}
 
-		C_BaseEntity *pEnt = data.GetEntity();
+		C_BaseEntity* pEnt = data.GetEntity();
 
 		// This check should probably be for all multiplayer games, investigate later
 		// 10/09/2008: It should.
-		if ( gpGlobals->maxClients > 1 )
+		if( gpGlobals->maxClients > 1 )
 		{
-			if ( pEnt && pEnt->IsDormant() )
+			if( pEnt && pEnt->IsDormant() )
+			{
 				return vecStart;
+			}
 		}
 
-		C_BaseCombatWeapon *pWpn = dynamic_cast<C_BaseCombatWeapon *>( pEnt );
-		if ( pWpn && pWpn->ShouldDrawUsingViewModel() )
+		C_BaseCombatWeapon* pWpn = dynamic_cast<C_BaseCombatWeapon*>( pEnt );
+		if( pWpn && pWpn->ShouldDrawUsingViewModel() )
 		{
-			C_BasePlayer *player = ToBasePlayer( pWpn->GetOwner() );
+			C_BasePlayer* player = ToBasePlayer( pWpn->GetOwner() );
 
 			// Use GetRenderedWeaponModel() instead?
 			pViewModel = player ? player->GetViewModel( 0 ) : NULL;
-			if ( pViewModel )
+			if( pViewModel )
 			{
 				// Get the viewmodel and use it instead
 				pRenderable = pViewModel;
@@ -63,10 +67,10 @@ Vector GetTracerOrigin( const CEffectData &data )
 		}
 
 		// Get the attachment origin
-		if ( !pRenderable->GetAttachment( iAttachment, vecStart, vecAngles ) )
+		if( !pRenderable->GetAttachment( iAttachment, vecStart, vecAngles ) )
 		{
-			DevMsg( "GetTracerOrigin: Couldn't find attachment %d on model %s\n", iAttachment, 
-				modelinfo->GetModelName( pRenderable->GetModel() ) );
+			DevMsg( "GetTracerOrigin: Couldn't find attachment %d on model %s\n", iAttachment,
+					modelinfo->GetModelName( pRenderable->GetModel() ) );
 		}
 	}
 
@@ -74,32 +78,38 @@ Vector GetTracerOrigin( const CEffectData &data )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void TracerCallback( const CEffectData &data )
+void TracerCallback( const CEffectData& data )
 {
-	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-	if ( !player )
-		return;
-
-	if ( !r_drawtracers.GetBool() )
-		return;
-
-	if ( !r_drawtracers_firstperson.GetBool() )
+	C_BasePlayer* player = C_BasePlayer::GetLocalPlayer();
+	if( !player )
 	{
-		C_BasePlayer *pPlayer = dynamic_cast<C_BasePlayer*>( data.GetEntity() );
+		return;
+	}
 
-		if ( pPlayer && !pPlayer->ShouldDrawThisPlayer() )
+	if( !r_drawtracers.GetBool() )
+	{
+		return;
+	}
+
+	if( !r_drawtracers_firstperson.GetBool() )
+	{
+		C_BasePlayer* pPlayer = dynamic_cast<C_BasePlayer*>( data.GetEntity() );
+
+		if( pPlayer && !pPlayer->ShouldDrawThisPlayer() )
+		{
 			return;
+		}
 	}
 
 	// Grab the data
 	Vector vecStart = GetTracerOrigin( data );
 	float flVelocity = data.m_flScale;
-	bool bWhiz = (data.m_fFlags & TRACER_FLAG_WHIZ);
+	bool bWhiz = ( data.m_fFlags & TRACER_FLAG_WHIZ );
 	int iEntIndex = data.entindex();
 
-	if ( iEntIndex && iEntIndex == player->m_index )
+	if( iEntIndex && iEntIndex == player->m_index )
 	{
 		Vector	foo = data.m_vStart;
 		QAngle	vangles;
@@ -111,40 +121,46 @@ void TracerCallback( const CEffectData &data )
 		VectorMA( data.m_vStart, 4, vright, foo );
 		foo[2] -= 0.5f;
 
-		FX_PlayerTracer( foo, (Vector&)data.m_vOrigin );
+		FX_PlayerTracer( foo, ( Vector& )data.m_vOrigin );
 		return;
 	}
-	
+
 	// Use default velocity if none specified
-	if ( !flVelocity )
+	if( !flVelocity )
 	{
 		flVelocity = TRACER_SPEED;
 	}
 
 	// Do tracer effect
-	FX_Tracer( (Vector&)vecStart, (Vector&)data.m_vOrigin, flVelocity, bWhiz );
+	FX_Tracer( ( Vector& )vecStart, ( Vector& )data.m_vOrigin, flVelocity, bWhiz );
 }
 
 DECLARE_CLIENT_EFFECT( "Tracer", TracerCallback );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ParticleTracerCallback( const CEffectData &data )
+void ParticleTracerCallback( const CEffectData& data )
 {
-	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-	if ( !player )
-		return;
-
-	if ( !r_drawtracers.GetBool() )
-		return;
-
-	if ( !r_drawtracers_firstperson.GetBool() )
+	C_BasePlayer* player = C_BasePlayer::GetLocalPlayer();
+	if( !player )
 	{
-		C_BasePlayer *pPlayer = dynamic_cast<C_BasePlayer*>( data.GetEntity() );
+		return;
+	}
 
-		if ( pPlayer && !pPlayer->ShouldDrawThisPlayer() )
+	if( !r_drawtracers.GetBool() )
+	{
+		return;
+	}
+
+	if( !r_drawtracers_firstperson.GetBool() )
+	{
+		C_BasePlayer* pPlayer = dynamic_cast<C_BasePlayer*>( data.GetEntity() );
+
+		if( pPlayer && !pPlayer->ShouldDrawThisPlayer() )
+		{
 			return;
+		}
 	}
 
 	// Grab the data
@@ -152,8 +168,8 @@ void ParticleTracerCallback( const CEffectData &data )
 	Vector vecEnd = data.m_vOrigin;
 
 	// Adjust view model tracers
-	C_BaseEntity *pEntity = data.GetEntity();
-	if ( data.entindex() && data.entindex() == player->m_index )
+	C_BaseEntity* pEntity = data.GetEntity();
+	if( data.entindex() && data.entindex() == player->m_index )
 	{
 		QAngle	vangles;
 		Vector	vforward, vright, vup;
@@ -168,28 +184,28 @@ void ParticleTracerCallback( const CEffectData &data )
 	// Create the particle effect
 	QAngle vecAngles;
 	Vector vecToEnd = vecEnd - vecStart;
-	VectorNormalize(vecToEnd);
+	VectorNormalize( vecToEnd );
 	VectorAngles( vecToEnd, vecAngles );
 	DispatchParticleEffect( data.m_nHitBox, vecStart, vecEnd, vecAngles, pEntity );
 
-	if ( data.m_fFlags & TRACER_FLAG_WHIZ )
+	if( data.m_fFlags & TRACER_FLAG_WHIZ )
 	{
-		FX_TracerSound( vecStart, vecEnd, TRACER_TYPE_DEFAULT );	
+		FX_TracerSound( vecStart, vecEnd, TRACER_TYPE_DEFAULT );
 	}
 }
 
 DECLARE_CLIENT_EFFECT( "ParticleTracer", ParticleTracerCallback );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void TracerSoundCallback( const CEffectData &data )
+void TracerSoundCallback( const CEffectData& data )
 {
 	// Grab the data
 	Vector vecStart = GetTracerOrigin( data );
-	
+
 	// Do tracer effect
-	FX_TracerSound( vecStart, (Vector&)data.m_vOrigin, data.m_fFlags );
+	FX_TracerSound( vecStart, ( Vector& )data.m_vOrigin, data.m_fFlags );
 }
 
 DECLARE_CLIENT_EFFECT( "TracerSound", TracerSoundCallback );

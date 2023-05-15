@@ -8,7 +8,7 @@
 #ifndef CBASESPRITEPROJECTILE_H
 #define CBASESPRITEPROJECTILE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "Sprite.h"
@@ -25,21 +25,21 @@ class CBaseSpriteProjectile : public CSprite
 	DECLARE_CLASS( CBaseSpriteProjectile, CSprite );
 
 public:
-	void Touch( CBaseEntity *pOther );
-	virtual void HandleTouch( CBaseEntity *pOther );
+	void Touch( CBaseEntity* pOther );
+	virtual void HandleTouch( CBaseEntity* pOther );
 
 	void Think();
 	virtual void HandleThink();
 
-	void Spawn(	char *pszModel,
-									const Vector &vecOrigin,
-									const Vector &vecVelocity,
-									edict_t *pOwner,
-									MoveType_t	iMovetype,
-									MoveCollide_t nMoveCollide,
-									int	iDamage,
-									int iDamageType,
-									CBaseEntity *pIntendedTarget = NULL );
+	void Spawn(	char* pszModel,
+				const Vector& vecOrigin,
+				const Vector& vecVelocity,
+				edict_t* pOwner,
+				MoveType_t	iMovetype,
+				MoveCollide_t nMoveCollide,
+				int	iDamage,
+				int iDamageType,
+				CBaseEntity* pIntendedTarget = NULL );
 
 	virtual void Precache( void ) {};
 

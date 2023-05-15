@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef VMPI_H
 #define VMPI_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -17,12 +17,12 @@
 #include "iphelpers.h"
 
 
-// These are called to handle incoming messages. 
+// These are called to handle incoming messages.
 // Return true if you handled the message and false otherwise.
 // Note: the first byte in each message is the packet ID.
-typedef bool (*VMPIDispatchFn)( MessageBuffer *pBuf, int iSource, int iPacketID );
+typedef bool ( *VMPIDispatchFn )( MessageBuffer* pBuf, int iSource, int iPacketID );
 
-typedef void (*VMPI_Disconnect_Handler)( int procID, const char *pReason );
+typedef void ( *VMPI_Disconnect_Handler )( int procID, const char* pReason );
 
 
 // Which machine is the master.
@@ -30,7 +30,7 @@ typedef void (*VMPI_Disconnect_Handler)( int procID, const char *pReason );
 
 #define VMPI_SEND_TO_ALL	-2
 #define VMPI_PERSISTENT		-3	// If this is set as the destination for a packet, it is sent to all
-								// workers, and also to new workers that connect.
+// workers, and also to new workers that connect.
 
 #define MAX_VMPI_PACKET_IDS		32
 
@@ -52,9 +52,9 @@ public:
 #define VMPI_PARAM( paramName, paramFlags, helpText ) paramName,
 enum EVMPICmdLineParam
 {
-	k_eVMPICmdLineParam_FirstParam=0,
+	k_eVMPICmdLineParam_FirstParam = 0,
 	k_eVMPICmdLineParam_VMPIParam,
-	#include "vmpi_parameters.h"
+#include "vmpi_parameters.h"
 	k_eVMPICmdLineParam_LastParam
 };
 #undef VMPI_PARAM
@@ -105,17 +105,17 @@ enum VMPIFileSystemMode
 //
 // Note: runMode is only relevant for the VMPI master. The worker always connects to the master
 // the same way.
-bool VMPI_Init( 
-	int &argc, 
-	char **&argv, 
-	const char *pDependencyFilename, 
-	VMPI_Disconnect_Handler handler = NULL, 
+bool VMPI_Init(
+	int& argc,
+	char**& argv,
+	const char* pDependencyFilename,
+	VMPI_Disconnect_Handler handler = NULL,
 	VMPIRunMode runMode = VMPI_RUN_NETWORKED, // Networked or local?,
 	bool bConnectingAsService = false
-	);
+);
 
 // Used when hosting a patch.
-void VMPI_Init_PatchMaster( int argc, char **argv );
+void VMPI_Init_PatchMaster( int argc, char** argv );
 
 void VMPI_Finalize();
 
@@ -133,18 +133,18 @@ int VMPI_GetCurrentNumberOfConnections();
 //
 // If bWait is true, then this function either succeeds or Error() is called. If it's false, then if the first available message
 // is handled by a dispatch, this function returns false.
-bool VMPI_DispatchUntil( MessageBuffer *pBuf, int *pSource, int packetID, int subPacketID = -1, bool bWait = true );
+bool VMPI_DispatchUntil( MessageBuffer* pBuf, int* pSource, int packetID, int subPacketID = -1, bool bWait = true );
 
 // This waits for the next message and dispatches it.
 // You can specify a timeout in milliseconds. If the timeout expires, the function returns false.
-bool VMPI_DispatchNextMessage( unsigned long timeout=VMPI_TIMEOUT_INFINITE );
+bool VMPI_DispatchNextMessage( unsigned long timeout = VMPI_TIMEOUT_INFINITE );
 
 // This should be called periodically in modal loops that don't call other VMPI functions. This will
 // check for disconnected sockets and call disconnect handlers so the app can error out if
-// it loses all of its connections. 
+// it loses all of its connections.
 //
 // This can be used in place of a Sleep() call by specifying a timeout value.
-void VMPI_HandleSocketErrors( unsigned long timeout=0 );
+void VMPI_HandleSocketErrors( unsigned long timeout = 0 );
 
 
 
@@ -152,18 +152,18 @@ enum VMPISendFlags
 {
 	k_eVMPISendFlags_GroupPackets = 0x0001
 };
-	
+
 // Use these to send data to one of the machines.
 // If iDest is VMPI_SEND_TO_ALL, then the message goes to all the machines.
 // Flags is a combination of the VMPISendFlags enums.
-bool VMPI_SendData( void *pData, int nBytes, int iDest, int fVMPISendFlags=0 );
-bool VMPI_SendChunks( void const * const *pChunks, const int *pChunkLengths, int nChunks, int iDest, int fVMPISendFlags=0 );
-bool VMPI_Send2Chunks( const void *pChunk1, int chunk1Len, const void *pChunk2, int chunk2Len, int iDest, int fVMPISendFlags=0 );	// for convenience..
-bool VMPI_Send3Chunks( const void *pChunk1, int chunk1Len, const void *pChunk2, int chunk2Len, const void *pChunk3, int chunk3Len, int iDest, int fVMPISendFlags=0 );
+bool VMPI_SendData( void* pData, int nBytes, int iDest, int fVMPISendFlags = 0 );
+bool VMPI_SendChunks( void const* const* pChunks, const int* pChunkLengths, int nChunks, int iDest, int fVMPISendFlags = 0 );
+bool VMPI_Send2Chunks( const void* pChunk1, int chunk1Len, const void* pChunk2, int chunk2Len, int iDest, int fVMPISendFlags = 0 );	// for convenience..
+bool VMPI_Send3Chunks( const void* pChunk1, int chunk1Len, const void* pChunk2, int chunk2Len, const void* pChunk3, int chunk3Len, int iDest, int fVMPISendFlags = 0 );
 
 // Flush any groups that were queued with k_eVMPISendFlags_GroupPackets.
 // If msInterval is > 0, then it will check a timer and only flush that often (so you can call this a lot, and have it check).
-void VMPI_FlushGroupedPackets( unsigned long msInterval=0 ); 
+void VMPI_FlushGroupedPackets( unsigned long msInterval = 0 );
 
 // This registers a function that gets called when a connection is terminated ungracefully.
 void VMPI_AddDisconnectHandler( VMPI_Disconnect_Handler handler );
@@ -190,11 +190,11 @@ void VMPI_SetJobWorkerID( int iProc, unsigned long jobWorkerID );
 // Search a command line to find arguments. Looks for pName, and if it finds it, returns the
 // argument following it. If pName is the last argument, it returns pDefault. If it doesn't
 // find pName, returns NULL.
-const char* VMPI_FindArg( int argc, char **argv, const char *pName, const char *pDefault = "" );
+const char* VMPI_FindArg( int argc, char** argv, const char* pName, const char* pDefault = "" );
 
 // (Threadsafe) get and set the current stage. This info winds up in the VMPI database.
-void VMPI_GetCurrentStage( char *pOut, int strLen );
-void VMPI_SetCurrentStage( const char *pCurStage );
+void VMPI_GetCurrentStage( char* pOut, int strLen );
+void VMPI_SetCurrentStage( const char* pCurStage );
 
 // VMPI is always broadcasting this job in the background.
 // This changes the password to 'debugworker' and allows more workers in.

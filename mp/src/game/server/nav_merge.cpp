@@ -14,17 +14,17 @@
 
 
 //--------------------------------------------------------------------------------------------------------
-void CNavArea::SaveToSelectedSet( KeyValues *areaKey ) const
+void CNavArea::SaveToSelectedSet( KeyValues* areaKey ) const
 {
-	const char *placeName = TheNavMesh->PlaceToName( GetPlace() );
-	areaKey->SetString( "Place", (placeName)?placeName:"" );
+	const char* placeName = TheNavMesh->PlaceToName( GetPlace() );
+	areaKey->SetString( "Place", ( placeName ) ? placeName : "" );
 
 	areaKey->SetInt( "Attributes", GetAttributes() );
 }
 
 
 //--------------------------------------------------------------------------------------------------------
-void CNavArea::RestoreFromSelectedSet( KeyValues *areaKey )
+void CNavArea::RestoreFromSelectedSet( KeyValues* areaKey )
 {
 	SetPlace( TheNavMesh->NameToPlace( areaKey->GetString( "Place" ) ) );
 
@@ -36,17 +36,17 @@ void CNavArea::RestoreFromSelectedSet( KeyValues *areaKey )
 class BuildSelectedSet
 {
 public:
-	BuildSelectedSet( KeyValues *kv )
+	BuildSelectedSet( KeyValues* kv )
 	{
 		m_kv = kv;
 		m_areaCount = 0;
 	}
 
-	bool operator() ( CNavArea *area )
+	bool operator()( CNavArea* area )
 	{
 		CFmtStrN<32> name( "%d", area->GetID() );
-		KeyValues *areaKey = m_kv->FindKey( name.Access(), true );
-		if ( areaKey )
+		KeyValues* areaKey = m_kv->FindKey( name.Access(), true );
+		if( areaKey )
 		{
 			++m_areaCount;
 
@@ -71,10 +71,10 @@ public:
 	}
 
 private:
-	void WriteCorner( CNavArea *area, KeyValues *areaKey, NavCornerType corner, const char *cornerName )
+	void WriteCorner( CNavArea* area, KeyValues* areaKey, NavCornerType corner, const char* cornerName )
 	{
-		KeyValues *cornerKey = areaKey->FindKey( cornerName, true );
-		if ( cornerKey )
+		KeyValues* cornerKey = areaKey->FindKey( cornerName, true );
+		if( cornerKey )
 		{
 			Vector pos = area->GetCorner( corner );
 			cornerKey->SetFloat( "x", pos.x );
@@ -83,15 +83,15 @@ private:
 		}
 	}
 
-	void WriteConnections( CNavArea *area, KeyValues *areaKey, NavDirType dir, const char *dirName )
+	void WriteConnections( CNavArea* area, KeyValues* areaKey, NavDirType dir, const char* dirName )
 	{
-		KeyValues *dirKey = areaKey->FindKey( dirName, true );
-		if ( dirKey )
+		KeyValues* dirKey = areaKey->FindKey( dirName, true );
+		if( dirKey )
 		{
-			for ( int i=0; i<area->GetAdjacentCount( dir ); ++i )
+			for( int i = 0; i < area->GetAdjacentCount( dir ); ++i )
 			{
-				CNavArea *other = area->GetAdjacentArea( dir, i );
-				if ( other && TheNavMesh->IsInSelectedSet( other ) )
+				CNavArea* other = area->GetAdjacentArea( dir, i );
+				if( other && TheNavMesh->IsInSelectedSet( other ) )
 				{
 					CFmtStrN<32> name( "%d", i );
 					dirKey->SetInt( name.Access(), other->GetID() );
@@ -101,20 +101,20 @@ private:
 	}
 
 	int m_areaCount;
-	KeyValues *m_kv;
+	KeyValues* m_kv;
 };
 
 
 //--------------------------------------------------------------------------------------------------------
-void CNavMesh::CommandNavSaveSelected( const CCommand &args )
+void CNavMesh::CommandNavSaveSelected( const CCommand& args )
 {
-	KeyValues *data = new KeyValues( "Selected Nav Areas" );
+	KeyValues* data = new KeyValues( "Selected Nav Areas" );
 	data->SetInt( "version", 1 );
 
 	BuildSelectedSet setBuilder( data );
 	TheNavMesh->ForAllSelectedAreas( setBuilder );
 
-	if ( !setBuilder.Count() )
+	if( !setBuilder.Count() )
 	{
 		Msg( "Not saving empty selected set to disk.\n" );
 		data->deleteThis();
@@ -123,7 +123,7 @@ void CNavMesh::CommandNavSaveSelected( const CCommand &args )
 
 	char fname[32];
 	char path[MAX_PATH];
-	if ( args.ArgC() == 2 )
+	if( args.ArgC() == 2 )
 	{
 		V_FileBase( args[0], fname, sizeof( fname ) );
 	}
@@ -133,23 +133,23 @@ void CNavMesh::CommandNavSaveSelected( const CCommand &args )
 	}
 
 	int i;
-	for ( i=0; i<1000; ++i )
+	for( i = 0; i < 1000; ++i )
 	{
 		V_snprintf( path, sizeof( path ), "maps/%s_selected_%4.4d.txt", fname, i );
-		if ( !filesystem->FileExists( path ) )
+		if( !filesystem->FileExists( path ) )
 		{
 			break;
 		}
 	}
 
-	if ( i == 1000 )
+	if( i == 1000 )
 	{
 		Msg( "Unable to find a filename to save the selected set to disk.\n" );
 		data->deleteThis();
 		return;
 	}
 
-	if ( !data->SaveToFile( filesystem, path ) )
+	if( !data->SaveToFile( filesystem, path ) )
 	{
 		Msg( "Unable to save the selected set to disk.\n" );
 	}
@@ -162,19 +162,21 @@ void CNavMesh::CommandNavSaveSelected( const CCommand &args )
 //--------------------------------------------------------------------------------------------------------
 CON_COMMAND_F( nav_save_selected, "Writes the selected set to disk for merging into another mesh via nav_merge_mesh.", FCVAR_GAMEDLL | FCVAR_CHEAT )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	TheNavMesh->CommandNavSaveSelected( args );
 }
 
 
 //--------------------------------------------------------------------------------------------------------
-Vector ReadCorner( KeyValues *areaKey, const char *cornerName )
+Vector ReadCorner( KeyValues* areaKey, const char* cornerName )
 {
 	Vector pos( vec3_origin );
-	KeyValues *cornerKey = areaKey->FindKey( cornerName, false );
-	if ( cornerKey )
+	KeyValues* cornerKey = areaKey->FindKey( cornerName, false );
+	if( cornerKey )
 	{
 		pos.x = cornerKey->GetFloat( "x" );
 		pos.y = cornerKey->GetFloat( "y" );
@@ -186,29 +188,29 @@ Vector ReadCorner( KeyValues *areaKey, const char *cornerName )
 
 
 //--------------------------------------------------------------------------------------------------------
-void ReconnectMergedArea( CUtlDict< CNavArea *, int > &newAreas, KeyValues *areaKey, NavDirType dir, const char *dirName )
+void ReconnectMergedArea( CUtlDict< CNavArea*, int >& newAreas, KeyValues* areaKey, NavDirType dir, const char* dirName )
 {
 	int index = newAreas.Find( areaKey->GetName() );
-	if ( index == newAreas.InvalidIndex() )
+	if( index == newAreas.InvalidIndex() )
 	{
 		Assert( false );
 		return;
 	}
 
-	CNavArea *area = newAreas[index];
+	CNavArea* area = newAreas[index];
 
-	KeyValues *dirKey = areaKey->FindKey( dirName, true );
-	if ( dirKey )
+	KeyValues* dirKey = areaKey->FindKey( dirName, true );
+	if( dirKey )
 	{
-		KeyValues *connection = dirKey->GetFirstValue();
-		while ( connection )
+		KeyValues* connection = dirKey->GetFirstValue();
+		while( connection )
 		{
-			const char *otherID = connection->GetString();
+			const char* otherID = connection->GetString();
 			int otherIndex = newAreas.Find( otherID );
 			Assert( otherIndex != newAreas.InvalidIndex() );
-			if ( otherIndex != newAreas.InvalidIndex() )
+			if( otherIndex != newAreas.InvalidIndex() )
 			{
-				CNavArea *other = newAreas[otherIndex];
+				CNavArea* other = newAreas[otherIndex];
 
 				area->ConnectTo( other, dir );	// only a 1-way connection.  the other area will connect back to us.
 			}
@@ -220,9 +222,9 @@ void ReconnectMergedArea( CUtlDict< CNavArea *, int > &newAreas, KeyValues *area
 
 
 //--------------------------------------------------------------------------------------------------------
-void CNavMesh::CommandNavMergeMesh( const CCommand &args )
+void CNavMesh::CommandNavMergeMesh( const CCommand& args )
 {
-	if ( args.ArgC() != 2 )
+	if( args.ArgC() != 2 )
 	{
 		Msg( "Usage: nav_merge_mesh filename\n" );
 		return;
@@ -233,8 +235,8 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 	V_FileBase( args[1], fname, sizeof( fname ) );
 	V_snprintf( path, sizeof( path ), "maps/%s.txt", fname );
 
-	KeyValues *data = new KeyValues( "Nav Selected Set" );
-	if ( !data->LoadFromFile( filesystem, path ) )
+	KeyValues* data = new KeyValues( "Nav Selected Set" );
+	if( !data->LoadFromFile( filesystem, path ) )
 	{
 		Msg( "Unable to load %s.\n", path );
 	}
@@ -244,18 +246,18 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 
 		// First add the areas, and put them in the correct places.  We can save off the new area ID
 		// at the same time.
-		CUtlDict< CNavArea *, int > newAreas;
-		CUtlVector< CNavArea * > areaVector;
-		KeyValues *areaKey = data->GetFirstSubKey();
-		while ( areaKey )
+		CUtlDict< CNavArea*, int > newAreas;
+		CUtlVector< CNavArea* > areaVector;
+		KeyValues* areaKey = data->GetFirstSubKey();
+		while( areaKey )
 		{
 			Vector northWest = ReadCorner( areaKey, "NorthWest" );
 			Vector northEast = ReadCorner( areaKey, "NorthEast" );
 			Vector southWest = ReadCorner( areaKey, "SouthWest" );
 			Vector southEast = ReadCorner( areaKey, "SouthEast" );
 
-			CNavArea *newArea = TheNavMesh->CreateArea();
-			if (newArea == NULL)
+			CNavArea* newArea = TheNavMesh->CreateArea();
+			if( newArea == NULL )
 			{
 				Warning( "nav_merge_mesh: Out of memory\n" );
 				return;
@@ -269,7 +271,7 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 			// save the new ID for connections
 			int index = newAreas.Find( areaKey->GetName() );
 			Assert( index == newAreas.InvalidIndex() );
-			if ( index == newAreas.InvalidIndex() )
+			if( index == newAreas.InvalidIndex() )
 			{
 				newAreas.Insert( areaKey->GetName(), newArea );
 			}
@@ -282,7 +284,7 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 
 		// Go back and reconnect the new areas to each other
 		areaKey = data->GetFirstSubKey();
-		while ( areaKey )
+		while( areaKey )
 		{
 			ReconnectMergedArea( newAreas, areaKey, NORTH, "North" );
 			ReconnectMergedArea( newAreas, areaKey, SOUTH, "South" );
@@ -301,27 +303,29 @@ void CNavMesh::CommandNavMergeMesh( const CCommand &args )
 
 
 //--------------------------------------------------------------------------------------------------------
-int NavMeshMergeAutocomplete( char const *partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
+int NavMeshMergeAutocomplete( char const* partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
 {
-	char *commandName = "nav_merge_mesh";
+	char* commandName = "nav_merge_mesh";
 	int numMatches = 0;
 	partial += Q_strlen( commandName ) + 1;
 	int partialLength = Q_strlen( partial );
 
 	FileFindHandle_t findHandle;
 	char txtFilenameNoExtension[ MAX_PATH ];
-	const char *txtFilename = filesystem->FindFirstEx( "maps/*_selected_*.txt", "MOD", &findHandle );
-	while ( txtFilename )
+	const char* txtFilename = filesystem->FindFirstEx( "maps/*_selected_*.txt", "MOD", &findHandle );
+	while( txtFilename )
 	{
 		Q_FileBase( txtFilename, txtFilenameNoExtension, sizeof( txtFilenameNoExtension ) );
-		if ( !Q_strnicmp( txtFilenameNoExtension, partial, partialLength ) && V_stristr( txtFilenameNoExtension, "_selected_" ) )
+		if( !Q_strnicmp( txtFilenameNoExtension, partial, partialLength ) && V_stristr( txtFilenameNoExtension, "_selected_" ) )
 		{
 			// Add the place name to the autocomplete array
 			Q_snprintf( commands[ numMatches++ ], COMMAND_COMPLETION_ITEM_LENGTH, "%s %s", commandName, txtFilenameNoExtension );
 
 			// Make sure we don't try to return too many place names
-			if ( numMatches == COMMAND_COMPLETION_MAXITEMS )
+			if( numMatches == COMMAND_COMPLETION_MAXITEMS )
+			{
 				return numMatches;
+			}
 		}
 
 		txtFilename = filesystem->FindNext( findHandle );
@@ -335,8 +339,10 @@ int NavMeshMergeAutocomplete( char const *partial, char commands[ COMMAND_COMPLE
 //--------------------------------------------------------------------------------------------------------
 CON_COMMAND_F_COMPLETION( nav_merge_mesh, "Merges a saved selected set into the current mesh.", FCVAR_GAMEDLL | FCVAR_CHEAT, NavMeshMergeAutocomplete )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	TheNavMesh->CommandNavMergeMesh( args );
 }

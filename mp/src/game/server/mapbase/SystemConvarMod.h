@@ -10,7 +10,7 @@
 
 // Convar restoration save/restore
 #define MAX_MODIFIED_CONVAR_STRING		128
-struct modifiedconvars_t 
+struct modifiedconvars_t
 {
 	DECLARE_SIMPLE_DATADESC();
 
@@ -37,10 +37,10 @@ public:
 
 	void OnRestore( void );
 
-	void InputActivate(inputdata_t &inputdata);
-	void InputDeactivate(inputdata_t &inputdata);
+	void InputActivate( inputdata_t& inputdata );
+	void InputDeactivate( inputdata_t& inputdata );
 
-	bool NewCVar( ConVarRef *var, const char *pOldString, CBaseEntity *modent );
+	bool NewCVar( ConVarRef* var, const char* pOldString, CBaseEntity* modent );
 
 	CUtlVector< modifiedconvars_t > m_ModifiedConvars;
 	bool m_bUseServer;

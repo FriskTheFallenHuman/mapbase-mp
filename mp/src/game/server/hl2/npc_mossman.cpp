@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Dr. Mossman, stalwart heroine, doing what is right in the face of 
+// Purpose: Dr. Mossman, stalwart heroine, doing what is right in the face of
 //			near certain doom, all while fighting off the clumsy advances of her
 //			misogynistic colleges.
 //=============================================================================//
@@ -25,7 +25,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_Mossman : public CAI_PlayerAlly
 {
@@ -35,15 +35,21 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	Class_T Classify ( void );
-	void	HandleAnimEvent( animevent_t *pEvent );
-	int		GetSoundInterests ( void );
+	Class_T Classify( void );
+	void	HandleAnimEvent( animevent_t* pEvent );
+	int		GetSoundInterests( void );
 	bool	CreateBehaviors( void );
 	int		SelectSchedule( void );
 
 #ifdef MAPBASE
 	// Use Mossman's default subtitle color (220,255,198)
-	bool	GetGameTextSpeechParams( hudtextparms_t &params ) { params.r1 = 220; params.g1 = 255; params.b1 = 198; return BaseClass::GetGameTextSpeechParams( params ); }
+	bool	GetGameTextSpeechParams( hudtextparms_t& params )
+	{
+		params.r1 = 220;
+		params.g1 = 255;
+		params.b1 = 198;
+		return BaseClass::GetGameTextSpeechParams( params );
+	}
 #endif
 
 private:
@@ -57,10 +63,10 @@ BEGIN_DATADESC( CNPC_Mossman )
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Classify - indicates this NPC's place in the 
+// Classify - indicates this NPC's place in the
 // relationship table.
 //-----------------------------------------------------------------------------
-Class_T	CNPC_Mossman::Classify ( void )
+Class_T	CNPC_Mossman::Classify( void )
 {
 	return	CLASS_PLAYER_ALLY_VITAL;
 }
@@ -71,21 +77,21 @@ Class_T	CNPC_Mossman::Classify ( void )
 // HandleAnimEvent - catches the NPC-specific messages
 // that occur when tagged animation frames are played.
 //-----------------------------------------------------------------------------
-void CNPC_Mossman::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Mossman::HandleAnimEvent( animevent_t* pEvent )
 {
 	switch( pEvent->event )
 	{
-	case 1:
-	default:
-		BaseClass::HandleAnimEvent( pEvent );
-		break;
+		case 1:
+		default:
+			BaseClass::HandleAnimEvent( pEvent );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // GetSoundInterests - generic NPC can't hear.
 //-----------------------------------------------------------------------------
-int CNPC_Mossman::GetSoundInterests ( void )
+int CNPC_Mossman::GetSoundInterests( void )
 {
 	return	NULL;
 }
@@ -101,7 +107,7 @@ void CNPC_Mossman::Spawn()
 
 	SetModel( "models/mossman.mdl" );
 
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
@@ -111,7 +117,7 @@ void CNPC_Mossman::Spawn()
 	m_iHealth			= 8;
 	m_flFieldOfView		= 0.5;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
-	
+
 	CapabilitiesAdd( bits_CAP_MOVE_GROUND | bits_CAP_OPEN_DOORS | bits_CAP_ANIMATEDFACE | bits_CAP_TURN_HEAD );
 	CapabilitiesAdd( bits_CAP_FRIENDLY_DMG_IMMUNE );
 	AddEFlags( EFL_NO_DISSOLVE | EFL_NO_MEGAPHYSCANNON_RAGDOLL | EFL_NO_PHYSCANNON_INTERACTION );
@@ -125,9 +131,9 @@ void CNPC_Mossman::Spawn()
 void CNPC_Mossman::Precache()
 {
 	PrecacheModel( "models/mossman.mdl" );
-	
+
 	BaseClass::Precache();
-}	
+}
 
 //=========================================================
 // Purpose:
@@ -135,16 +141,16 @@ void CNPC_Mossman::Precache()
 bool CNPC_Mossman::CreateBehaviors()
 {
 	AddBehavior( &m_FollowBehavior );
-	
+
 	return BaseClass::CreateBehaviors();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CNPC_Mossman::SelectSchedule( void )
 {
-	if ( !BehaviorSelectSchedule() )
+	if( !BehaviorSelectSchedule() )
 	{
 	}
 

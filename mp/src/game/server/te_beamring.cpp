@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -28,21 +28,21 @@ public:
 	DECLARE_CLASS( CTEBeamRing, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
 
-					CTEBeamRing( const char *name );
+	CTEBeamRing( const char* name );
 	virtual			~CTEBeamRing( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 public:
 	CNetworkVar( int, m_nStartEntity );
 	CNetworkVar( int, m_nEndEntity );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBeamRing::CTEBeamRing( const char *name ) :
+CTEBeamRing::CTEBeamRing( const char* name ) :
 	CTEBaseBeam( name )
 {
 	m_nStartEntity	= 0;
@@ -50,16 +50,16 @@ CTEBeamRing::CTEBeamRing( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBeamRing::~CTEBeamRing( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBeamRing::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -83,37 +83,37 @@ void CTEBeamRing::Test( const Vector& current_origin, const QAngle& current_angl
 }
 
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamRing, DT_TEBeamRing)
-	SendPropInt( SENDINFO(m_nStartEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEBeamRing, DT_TEBeamRing )
+SendPropInt( SENDINFO( m_nStartEntity ), MAX_EDICT_BITS, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nEndEntity ), MAX_EDICT_BITS, SPROP_UNSIGNED ),
+			 END_SEND_TABLE()
 
 
 // Singleton to fire TEBeamRing objects
-static CTEBeamRing g_TEBeamRing( "BeamRing" );
+			 static CTEBeamRing g_TEBeamRing( "BeamRing" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//				int	start - 
-//			end - 
-//			modelindex - 
-//			startframe - 
-//			framerate - 
-//			msg_dest - 
-//			delay - 
-//			origin - 
-//			recipient - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//				int	start -
+//			end -
+//			modelindex -
+//			startframe -
+//			framerate -
+//			msg_dest -
+//			delay -
+//			origin -
+//			recipient -
 //-----------------------------------------------------------------------------
 void TE_BeamRing( IRecipientFilter& filter, float delay,
-	int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
-	float life, float width, int spread, float amplitude, int r, int g, int b, int a, int speed, int flags )
+				  int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
+				  float life, float width, int spread, float amplitude, int r, int g, int b, int a, int speed, int flags )
 {
-	g_TEBeamRing.m_nStartEntity = (start & 0x0FFF) | ((1 & 0xF)<<12);
-	g_TEBeamRing.m_nEndEntity	= (end & 0x0FFF) | ((1 & 0xF)<<12);
+	g_TEBeamRing.m_nStartEntity = ( start & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
+	g_TEBeamRing.m_nEndEntity	= ( end & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
 	g_TEBeamRing.m_nModelIndex	= modelindex;
 	g_TEBeamRing.m_nHaloIndex	= haloindex;
 	g_TEBeamRing.m_nStartFrame	= startframe;

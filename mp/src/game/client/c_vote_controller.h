@@ -8,7 +8,7 @@
 #ifndef C_VoteController_H
 #define C_VoteController_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shareddefs.h"
@@ -26,10 +26,10 @@ public:
 	virtual void	Spawn( void );
 	virtual void	ClientThink( void );
 
-	static void		RecvProxy_VoteType( const CRecvProxyData *pData, void *pStruct, void *pOut );
-	static void		RecvProxy_VoteOption( const CRecvProxyData *pData, void *pStruct, void *pOut );
+	static void		RecvProxy_VoteType( const CRecvProxyData* pData, void* pStruct, void* pOut );
+	static void		RecvProxy_VoteOption( const CRecvProxyData* pData, void* pStruct, void* pOut );
 
-	void			FireGameEvent( IGameEvent *event );
+	void			FireGameEvent( IGameEvent* event );
 protected:
 	void			ResetData();
 

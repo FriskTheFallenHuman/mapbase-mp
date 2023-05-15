@@ -8,7 +8,7 @@
 #ifndef VSCRIPT_SINGLETONS_H
 #define VSCRIPT_SINGLETONS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 void RegisterScriptSingletons();
@@ -16,11 +16,11 @@ void RegisterScriptSingletons();
 
 
 #ifdef CLIENT_DLL
-// usercmd
-#define SCRIPT_NETMSG_DATA_SIZE		( ( 1 << 11 ) - 1 )
+	// usercmd
+	#define SCRIPT_NETMSG_DATA_SIZE		( ( 1 << 11 ) - 1 )
 #else
-// usermsg
-#define SCRIPT_NETMSG_DATA_SIZE		MAX_USER_MSG_DATA
+	// usermsg
+	#define SCRIPT_NETMSG_DATA_SIZE		MAX_USER_MSG_DATA
 #endif
 
 #define SCRIPT_NETMSG_QUEUE_BITS	3	// determines the number of custom messages client can write to a usercmd
@@ -41,7 +41,7 @@ public:
 
 private:
 #ifdef GAME_DLL
-	bf_read *m_MsgIn;
+	bf_read* m_MsgIn;
 	CRecipientFilter m_filter;
 #else
 	bf_read m_MsgIn;
@@ -57,12 +57,12 @@ private:
 #endif
 
 public:
-	CNetMsgScriptHelper() : m_Hooks(NULL)
+	CNetMsgScriptHelper() : m_Hooks( NULL )
 
 #ifdef CLIENT_DLL
-		, m_bWriteReady(0), m_bWriteIgnore(0), m_nQueueCount(0), m_iLastBit(0)
+		, m_bWriteReady( 0 ), m_bWriteIgnore( 0 ), m_nQueueCount( 0 ), m_iLastBit( 0 )
 #else
-		, m_MsgIn(0)
+		, m_MsgIn( 0 )
 #endif
 
 	{}
@@ -70,36 +70,36 @@ public:
 public:
 #ifdef CLIENT_DLL
 	bool Init(); // IGameSystem
-	static void __MsgFunc_ScriptMsg( bf_read &msg );
+	static void __MsgFunc_ScriptMsg( bf_read& msg );
 #endif
 	void LevelShutdownPreVM(); // Executed in CVScriptGameSystem
 	void InitPostVM();
 
 #ifdef GAME_DLL
-	void ReceiveMessage( bf_read *msg, CBaseEntity *pPlayer );
+	void ReceiveMessage( bf_read* msg, CBaseEntity* pPlayer );
 #else
-	void ReceiveMessage( bf_read &msg );
+	void ReceiveMessage( bf_read& msg );
 #endif
-	void WriteToBuffer( bf_write *bf );
+	void WriteToBuffer( bf_write* bf );
 
 public:
 	inline void Reset();
-	void Start( const char *msg );
+	void Start( const char* msg );
 #ifdef GAME_DLL
 	void Send( HSCRIPT player, bool bReliable );
 #else
 	void Send();
 #endif
-	void Receive( const char *msg, HSCRIPT func );
+	void Receive( const char* msg, HSCRIPT func );
 
 #ifdef GAME_DLL
-	inline void DoSendUserMsg( CRecipientFilter *filter, int type );
-	inline void DoSendEntityMsg( CBaseEntity *entity, bool reliable );
+	inline void DoSendUserMsg( CRecipientFilter* filter, int type );
+	inline void DoSendEntityMsg( CBaseEntity* entity, bool reliable );
 
-	void SendUserMessage( HSCRIPT hPlayer, const char *msg, bool bReliable );
+	void SendUserMessage( HSCRIPT hPlayer, const char* msg, bool bReliable );
 	void SendEntityMessage( HSCRIPT hEnt, bool bReliable );
 #else // CLIENT_DLL
-	void DispatchUserMessage( const char *msg );
+	void DispatchUserMessage( const char* msg );
 #endif
 
 public:
@@ -117,7 +117,7 @@ public:
 	void WriteVec3Coord( const Vector& rgflValue );
 	void WriteVec3Normal( const Vector& rgflValue ); // 27 bit ( 3 + 2 * (1 + NORMAL_FRACTIONAL_BITS) )
 	void WriteAngles( const QAngle& rgflValue );
-	void WriteString( const char *sz );
+	void WriteString( const char* sz );
 	void WriteBool( bool bValue );      // 1 bit
 	void WriteEntity( HSCRIPT hEnt );   // 11 bit (entindex)
 	void WriteEHandle( HSCRIPT hEnt );  // 32 bit long
@@ -143,13 +143,13 @@ public:
 	int           GetNumBitsWritten();
 
 public:
-	static inline int Hash( const char *key );
+	static inline int Hash( const char* key );
 };
 
-extern CNetMsgScriptHelper *g_ScriptNetMsg;
+extern CNetMsgScriptHelper* g_ScriptNetMsg;
 
 #ifdef CLIENT_DLL
-void VScriptSaveRestoreUtil_OnVMRestore();
+	void VScriptSaveRestoreUtil_OnVMRestore();
 #endif
 
 #endif

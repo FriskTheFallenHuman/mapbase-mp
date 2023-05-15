@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -9,7 +9,7 @@
 
 #ifdef CLIENT_DLL
 
-void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *curBones, float flTime, int activity, int frame )
+void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating* entity, matrix3x4_t* curBones, float flTime, int activity, int frame )
 {
 	// blow the cached prev bones
 	entity->InvalidateBoneCache();
@@ -17,8 +17,8 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *c
 	Vector vPrevOrigin = entity->GetAbsOrigin();
 
 	entity->Interpolate( flTime );
-	
-	if ( activity != ACT_INVALID )
+
+	if( activity != ACT_INVALID )
 	{
 		Vector vNewOrigin = entity->GetAbsOrigin();
 		Vector vDirection = vNewOrigin - vPrevOrigin;
@@ -32,7 +32,7 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *c
 
 		entity->SetSequence( activity );
 
-		entity->SetCycle( (float)frame / MAX_DEATHPOSE_FRAMES );
+		entity->SetCycle( ( float )frame / MAX_DEATHPOSE_FRAMES );
 
 		entity->SetAbsOrigin( vAdjustedOrigin );
 
@@ -64,9 +64,9 @@ void GetRagdollCurSequenceWithDeathPose( C_BaseAnimating *entity, matrix3x4_t *c
 
 #else // !CLIENT_DLL
 
-Activity GetDeathPoseActivity( CBaseAnimating *entity, const CTakeDamageInfo &info )
+Activity GetDeathPoseActivity( CBaseAnimating* entity, const CTakeDamageInfo& info )
 {
-	if ( !entity )
+	if( !entity )
 	{
 		return ACT_INVALID;
 	}
@@ -85,43 +85,53 @@ Activity GetDeathPoseActivity( CBaseAnimating *entity, const CTakeDamageInfo &in
 	bool bNegativeForward = false;
 	bool bNegativeRight = false;
 
-	if ( flDotForward < 0.0f )
+	if( flDotForward < 0.0f )
 	{
 		bNegativeForward = true;
 		flDotForward = flDotForward * -1;
 	}
 
-	if ( flDotRight < 0.0f )
+	if( flDotRight < 0.0f )
 	{
 		bNegativeRight = true;
 		flDotRight = flDotRight * -1;
 	}
 
-	if ( flDotRight > flDotForward )
+	if( flDotRight > flDotForward )
 	{
-		if ( bNegativeRight == true )
+		if( bNegativeRight == true )
+		{
 			aActivity = ACT_DIE_LEFTSIDE;
-		else 
+		}
+		else
+		{
 			aActivity = ACT_DIE_RIGHTSIDE;
+		}
 	}
 	else
 	{
-		if ( bNegativeForward == true )
+		if( bNegativeForward == true )
+		{
 			aActivity = ACT_DIE_BACKSIDE;
-		else 
+		}
+		else
+		{
 			aActivity = ACT_DIE_FRONTSIDE;
+		}
 	}
 
 	return aActivity;
 }
 
-void SelectDeathPoseActivityAndFrame( CBaseAnimating *entity, const CTakeDamageInfo &info, int hitgroup, Activity& activity, int& frame )
+void SelectDeathPoseActivityAndFrame( CBaseAnimating* entity, const CTakeDamageInfo& info, int hitgroup, Activity& activity, int& frame )
 {
 	activity = ACT_INVALID;
 	frame = 0;
 
-	if ( !entity->GetModelPtr() )
+	if( !entity->GetModelPtr() )
+	{
 		return;
+	}
 
 	activity = GetDeathPoseActivity( entity, info );
 	frame = DEATH_FRAME_HEAD;
@@ -134,7 +144,7 @@ void SelectDeathPoseActivityAndFrame( CBaseAnimating *entity, const CTakeDamageI
 		{
 			return;
 		}
-			
+
 		case HITGROUP_HEAD:
 		{
 			frame = DEATH_FRAME_HEAD;
@@ -152,7 +162,7 @@ void SelectDeathPoseActivityAndFrame( CBaseAnimating *entity, const CTakeDamageI
 		case HITGROUP_STOMACH:
 			frame = DEATH_FRAME_STOMACH;
 			break;
-	
+
 		case HITGROUP_LEFTLEG:
 			frame = DEATH_FRAME_LEFTLEG;
 			break;

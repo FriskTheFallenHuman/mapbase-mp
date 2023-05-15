@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HUD_CLOSECAPTION_H
 #define HUD_CLOSECAPTION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -27,7 +27,7 @@ typedef CUtlSortVector< CaptionLookup_t, CCaptionLookupLess > CaptionDictionary_
 struct AsyncCaptionData_t;
 struct AsyncCaption_t
 {
-	AsyncCaption_t() : 
+	AsyncCaption_t() :
 		m_DataBaseFile( UTL_INVAL_SYMBOL ),
 		m_RequestedBlocks( 0, 0, BlockInfo_t::Less )
 	{
@@ -42,8 +42,10 @@ struct AsyncCaption_t
 
 		static bool Less( const BlockInfo_t& lhs, const BlockInfo_t& rhs )
 		{
-			if ( lhs.fileindex != rhs.fileindex )
+			if( lhs.fileindex != rhs.fileindex )
+			{
 				return lhs.fileindex < rhs.fileindex;
+			}
 
 			return lhs.blocknum < rhs.blocknum;
 		}
@@ -51,14 +53,16 @@ struct AsyncCaption_t
 
 	AsyncCaption_t& operator =( const AsyncCaption_t& rhs )
 	{
-		if ( this == &rhs )
+		if( this == &rhs )
+		{
 			return *this;
+		}
 
 		m_CaptionDirectory = rhs.m_CaptionDirectory;
 		m_Header = rhs.m_Header;
 		m_DataBaseFile = rhs.m_DataBaseFile;
 
-		for ( int i = rhs.m_RequestedBlocks.FirstInorder(); i != rhs.m_RequestedBlocks.InvalidIndex(); i = rhs.m_RequestedBlocks.NextInorder( i ) )
+		for( int i = rhs.m_RequestedBlocks.FirstInorder(); i != rhs.m_RequestedBlocks.InvalidIndex(); i = rhs.m_RequestedBlocks.NextInorder( i ) )
 		{
 			m_RequestedBlocks.Insert( rhs.m_RequestedBlocks[ i ] );
 		}
@@ -74,7 +78,7 @@ struct AsyncCaption_t
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CHudCloseCaption : public CHudElement, public vgui::Panel
 {
@@ -82,7 +86,7 @@ class CHudCloseCaption : public CHudElement, public vgui::Panel
 public:
 	DECLARE_MULTIPLY_INHERITED();
 
-					CHudCloseCaption( const char *pElementName );
+	CHudCloseCaption( const char* pElementName );
 	virtual 		~CHudCloseCaption();
 
 	// Expire lingering items
@@ -98,25 +102,25 @@ public:
 	// Painting methods
 	virtual void	Paint();
 
-	void MsgFunc_CloseCaption(bf_read &msg);
+	void MsgFunc_CloseCaption( bf_read& msg );
 
 	// Clear all CC data
 	void			Reset( void );
-	void			Process( const wchar_t *stream, float duration, char const *tokenstream, bool fromplayer, bool direct = false );
-	
-	bool			ProcessCaption( char const *tokenname, float duration, bool fromplayer = false, bool direct = false );
-	void			ProcessCaptionDirect( char const *tokenname, float duration, bool fromplayer = false );
+	void			Process( const wchar_t* stream, float duration, char const* tokenstream, bool fromplayer, bool direct = false );
 
-	void			ProcessSentenceCaptionStream( char const *tokenstream );
+	bool			ProcessCaption( char const* tokenname, float duration, bool fromplayer = false, bool direct = false );
+	void			ProcessCaptionDirect( char const* tokenname, float duration, bool fromplayer = false );
+
+	void			ProcessSentenceCaptionStream( char const* tokenstream );
 	void			PlayRandomCaption();
 
-	void				InitCaptionDictionary( char const *dbfile );
+	void				InitCaptionDictionary( char const* dbfile );
 #ifdef MAPBASE
-	void				AddAdditionalCaptionDictionary( char const *dbfile, CUtlVector<CUtlSymbol> &outPathSymbols );
-	void				AddCustomCaptionFile( char const *file, CUtlVector<CUtlSymbol> &outPathSymbols );
-	void				RemoveCaptionDictionary( const CUtlSymbol &dbFileSymbol );
+	void				AddAdditionalCaptionDictionary( char const* dbfile, CUtlVector<CUtlSymbol>& outPathSymbols );
+	void				AddCustomCaptionFile( char const* file, CUtlVector<CUtlSymbol>& outPathSymbols );
+	void				RemoveCaptionDictionary( const CUtlSymbol& dbFileSymbol );
 #endif
-	void				OnFinishAsyncLoad( int nFileIndex, int nBlockNum, AsyncCaptionData_t *pData );
+	void				OnFinishAsyncLoad( int nFileIndex, int nBlockNum, AsyncCaptionData_t* pData );
 
 	void			Flush();
 	void			TogglePaintDebug();
@@ -136,11 +140,17 @@ public:
 	void			Lock( void );
 	void			Unlock( void );
 
-	void			FindSound( char const *pchANSI );
+	void			FindSound( char const* pchANSI );
 
 #ifdef MAPBASE
-	inline bool		IsUsingCommentaryDimensions() const { return m_bUsingCommentaryDimensions; }
-	inline void		SetUsingCommentaryDimensions( bool bToggle ) { m_bUsingCommentaryDimensions = bToggle; }
+	inline bool		IsUsingCommentaryDimensions() const
+	{
+		return m_bUsingCommentaryDimensions;
+	}
+	inline void		SetUsingCommentaryDimensions( bool bToggle )
+	{
+		m_bUsingCommentaryDimensions = bToggle;
+	}
 #endif
 
 public:
@@ -164,38 +174,38 @@ private:
 
 	void ClearAsyncWork();
 	void ProcessAsyncWork();
-	bool AddAsyncWork( char const *tokenstream, bool bIsStream, float duration, bool fromplayer, bool direct = false );
+	bool AddAsyncWork( char const* tokenstream, bool bIsStream, float duration, bool fromplayer, bool direct = false );
 
-	void _ProcessSentenceCaptionStream( int wordCount, char const *tokenstream, const wchar_t *caption_full );
-	void _ProcessCaption( const wchar_t *caption, char const *tokenname, float duration, bool fromplayer, bool direct = false );
+	void _ProcessSentenceCaptionStream( int wordCount, char const* tokenstream, const wchar_t* caption_full );
+	void _ProcessCaption( const wchar_t* caption, char const* tokenname, float duration, bool fromplayer, bool direct = false );
 
-	CUtlLinkedList< CAsyncCaption *, unsigned short >	m_AsyncWork;
+	CUtlLinkedList< CAsyncCaption*, unsigned short >	m_AsyncWork;
 
 	CUtlRBTree< CaptionRepeat, int >	m_CloseCaptionRepeats;
 
 private:
 
-	static bool CaptionTokenLessFunc( const CaptionRepeat &lhs, const CaptionRepeat &rhs );
+	static bool CaptionTokenLessFunc( const CaptionRepeat& lhs, const CaptionRepeat& rhs );
 
-	void	DrawStream( wrect_t& rect, wrect_t &rcWindow, CCloseCaptionItem *item, int iFadeLine, float flFadeLineAlpha ); 
-	void	ComputeStreamWork( int available_width, CCloseCaptionItem *item );
-	bool	SplitCommand( wchar_t const **ppIn, wchar_t *cmd, wchar_t *args, int size ) const;
+	void	DrawStream( wrect_t& rect, wrect_t& rcWindow, CCloseCaptionItem* item, int iFadeLine, float flFadeLineAlpha );
+	void	ComputeStreamWork( int available_width, CCloseCaptionItem* item );
+	bool	SplitCommand( wchar_t const** ppIn, wchar_t* cmd, wchar_t* args, int size ) const;
 
-	bool	StreamHasCommand( const wchar_t *stream, const wchar_t *findcmd ) const;
-	bool	GetFloatCommandValue( const wchar_t *stream, const wchar_t *findcmd, float& value ) const;
+	bool	StreamHasCommand( const wchar_t* stream, const wchar_t* findcmd ) const;
+	bool	GetFloatCommandValue( const wchar_t* stream, const wchar_t* findcmd, float& value ) const;
 
-	bool	GetNoRepeatValue( const wchar_t *caption, float &retval );
+	bool	GetNoRepeatValue( const wchar_t* caption, float& retval );
 
-	void	ParseCloseCaptionStream( const wchar_t *in, int available_width );
-	bool	StreamHasCommand( const wchar_t *stream, const wchar_t *search );
+	void	ParseCloseCaptionStream( const wchar_t* in, int available_width );
+	bool	StreamHasCommand( const wchar_t* stream, const wchar_t* search );
 
-	void	DumpWork( CCloseCaptionItem *item );
+	void	DumpWork( CCloseCaptionItem* item );
 
-	void AddWorkUnit( 
-		CCloseCaptionItem *item,	
+	void AddWorkUnit(
+		CCloseCaptionItem* item,
 		WorkUnitParams& params );
 
-	CUtlVector< CCloseCaptionItem * > m_Items;
+	CUtlVector< CCloseCaptionItem* > m_Items;
 
 	vgui::HFont		m_hFonts[CCFONT_MAX];
 

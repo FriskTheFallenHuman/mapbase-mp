@@ -3,7 +3,7 @@
 #ifndef VOLUME_CLOUDS_HELPER_H
 #define VOLUME_CLOUDS_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <string.h>
@@ -21,7 +21,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct VolumeCloudsVars_t
 {
-	VolumeCloudsVars_t() { memset( this, 0xFF, sizeof( VolumeCloudsVars_t ) ); }
+	VolumeCloudsVars_t()
+	{
+		memset( this, 0xFF, sizeof( VolumeCloudsVars_t ) );
+	}
 
 	int m_nRefractAmount;
 	int m_nTexture1;
@@ -33,9 +36,9 @@ struct VolumeCloudsVars_t
 // Default values (Arrays should only be vec[4])
 static const float kDefaultRefractAmount = 0.1f;
 
-void InitParamsVolumeClouds( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, VolumeCloudsVars_t &info );
-void InitVolumeClouds( CBaseVSShader *pShader, IMaterialVar** params, VolumeCloudsVars_t &info );
-void DrawVolumeClouds( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-					  IShaderShadow* pShaderShadow, VolumeCloudsVars_t &info, VertexCompressionType_t vertexCompression );
+void InitParamsVolumeClouds( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, VolumeCloudsVars_t& info );
+void InitVolumeClouds( CBaseVSShader* pShader, IMaterialVar** params, VolumeCloudsVars_t& info );
+void DrawVolumeClouds( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+					   IShaderShadow* pShaderShadow, VolumeCloudsVars_t& info, VertexCompressionType_t vertexCompression );
 
 #endif // VolumeClouds_HELPER_H

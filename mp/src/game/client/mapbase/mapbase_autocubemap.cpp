@@ -2,10 +2,10 @@
 //
 // Purpose: A utility which automatically generates HDR and LDR cubemaps.
 //			This has the following purposes:
-// 
+//
 //            1. Allow both HDR and LDR cubemaps to be generated automatically after a map is compiled
 //            2. Have a way to batch build cubemaps for several levels at once
-// 
+//
 // Author: Blixibon
 //
 // $NoKeywords: $
@@ -21,13 +21,13 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern const char *g_MapName;
+extern const char* g_MapName;
 
 ConVar autocubemap_hdr_do_both( "autocubemap_hdr_do_both", "1" );
 ConVar autocubemap_hdr_value( "autocubemap_hdr_value", "2" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CAutoCubemapSystem : public CAutoGameSystem
 {
@@ -38,10 +38,10 @@ public:
 
 	virtual bool Init()
 	{
-		const char *pszFile = NULL;
-		if (CommandLine()->CheckParm( "-autocubemap", &pszFile ))
+		const char* pszFile = NULL;
+		if( CommandLine()->CheckParm( "-autocubemap", &pszFile ) )
 		{
-			if (!pszFile || pszFile[0] == '\0')
+			if( !pszFile || pszFile[0] == '\0' )
 			{
 				// Assume that we just want to autocubemap the first map we load
 				// (no code here for now)
@@ -60,12 +60,12 @@ public:
 
 	virtual void LevelInitPostEntity()
 	{
-		if (m_bAutoCubemapActive)
+		if( m_bAutoCubemapActive )
 		{
-			if (m_bAutoCubemapBuildingCubemaps)
+			if( m_bAutoCubemapBuildingCubemaps )
 			{
 				// Check if we need to do the other HDR level
-				if (autocubemap_hdr_do_both.GetBool() && !m_bAutoCubemapDoingBoth)
+				if( autocubemap_hdr_do_both.GetBool() && !m_bAutoCubemapDoingBoth )
 				{
 					m_bAutoCubemapBuildingCubemaps = false;
 					m_bAutoCubemapDoingBoth = true;
@@ -81,7 +81,7 @@ public:
 					m_bAutoCubemapDoingBoth = false;
 
 					m_AutoCubemapMapsIndex++;
-					if (m_AutoCubemapMapsIndex < m_AutoCubemapMaps.Count())
+					if( m_AutoCubemapMapsIndex < m_AutoCubemapMaps.Count() )
 					{
 						engine->ClientCmd_Unrestricted( VarArgs( "map %s", m_AutoCubemapMaps[m_AutoCubemapMapsIndex] ) );
 					}
@@ -94,7 +94,7 @@ public:
 
 						Msg( "CUBEMAPPER FINISHED\n" );
 
-						if (autocubemap_hdr_do_both.GetBool())
+						if( autocubemap_hdr_do_both.GetBool() )
 						{
 							engine->ClientCmd_Unrestricted( VarArgs( "mat_hdr_level %i", m_iAutoCubemapUserHDRLevel ) );
 						}
@@ -108,7 +108,7 @@ public:
 				engine->ClientCmd_Unrestricted( "exec buildcubemaps_prep; buildcubemaps" );
 			}
 		}
-		else if (m_bAutoCubemapOnFirstLevel)
+		else if( m_bAutoCubemapOnFirstLevel )
 		{
 			// Start autocubemap now
 			StartAutoCubemap();
@@ -120,7 +120,7 @@ public:
 
 	void StartAutoCubemap()
 	{
-		if (m_AutoCubemapMaps.Count() <= 0)
+		if( m_AutoCubemapMaps.Count() <= 0 )
 		{
 			//Msg("No maps to cubemap with!\n");
 			//return;
@@ -129,7 +129,7 @@ public:
 			m_AutoCubemapMaps.AddToTail( strdup( g_MapName ) );
 		}
 
-		if (autocubemap_hdr_do_both.GetBool())
+		if( autocubemap_hdr_do_both.GetBool() )
 		{
 			// Save the user's HDR level
 			ConVarRef mat_hdr_level( "mat_hdr_level" );
@@ -139,7 +139,7 @@ public:
 		m_bAutoCubemapActive = true;
 		m_AutoCubemapMapsIndex = 0;
 
-		if (FStrEq( m_AutoCubemapMaps[m_AutoCubemapMapsIndex], g_MapName ))
+		if( FStrEq( m_AutoCubemapMaps[m_AutoCubemapMapsIndex], g_MapName ) )
 		{
 			// Build cubemaps right here, right now
 			m_bAutoCubemapBuildingCubemaps = true;
@@ -152,17 +152,17 @@ public:
 		}
 	}
 
-	void LoadFile( const char *pszFile )
+	void LoadFile( const char* pszFile )
 	{
-		KeyValues *pKV = new KeyValues( "AutoCubemap" );
+		KeyValues* pKV = new KeyValues( "AutoCubemap" );
 
-		if ( pKV->LoadFromFile( filesystem, pszFile, NULL ) )
+		if( pKV->LoadFromFile( filesystem, pszFile, NULL ) )
 		{
-			KeyValues *pSubKey = pKV->GetFirstSubKey();
+			KeyValues* pSubKey = pKV->GetFirstSubKey();
 
-			while ( pSubKey )
+			while( pSubKey )
 			{
-				m_AutoCubemapMaps.AddToTail( strdup(pSubKey->GetName()) );
+				m_AutoCubemapMaps.AddToTail( strdup( pSubKey->GetName() ) );
 				pSubKey = pSubKey->GetNextKey();
 			}
 
@@ -190,7 +190,7 @@ public:
 	{
 		char szCmd[1024] = { 0 };
 
-		if (m_AutoCubemapMaps.Count() > 0)
+		if( m_AutoCubemapMaps.Count() > 0 )
 		{
 			Q_strncpy( szCmd, "=== CUBEMAPPER MAP LIST ===\n", sizeof( szCmd ) );
 
@@ -231,15 +231,15 @@ CAutoCubemapSystem	g_AutoCubemapSystem;
 
 CON_COMMAND( autocubemap_init, "Inits autocubemap" )
 {
-	if (gpGlobals->maxClients > 1)
+	if( gpGlobals->maxClients > 1 )
 	{
 		Msg( "Can't run autocubemap in multiplayer\n" );
 		return;
 	}
 
-	if (args.ArgC() <= 1)
+	if( args.ArgC() <= 1 )
 	{
-		Msg("Format: autocubemap_init <file name in the 'cfg' folder>\n");
+		Msg( "Format: autocubemap_init <file name in the 'cfg' folder>\n" );
 		return;
 	}
 
@@ -248,9 +248,9 @@ CON_COMMAND( autocubemap_init, "Inits autocubemap" )
 
 CON_COMMAND( autocubemap_print, "Prints current autocubemap information" )
 {
-	if (gpGlobals->maxClients > 1)
+	if( gpGlobals->maxClients > 1 )
 	{
-		Msg("Can't run autocubemap in multiplayer\n");
+		Msg( "Can't run autocubemap in multiplayer\n" );
 		return;
 	}
 
@@ -259,9 +259,9 @@ CON_COMMAND( autocubemap_print, "Prints current autocubemap information" )
 
 CON_COMMAND( autocubemap_clear, "Clears autocubemap stuff" )
 {
-	if (gpGlobals->maxClients > 1)
+	if( gpGlobals->maxClients > 1 )
 	{
-		Msg("Can't run autocubemap in multiplayer\n");
+		Msg( "Can't run autocubemap in multiplayer\n" );
 		return;
 	}
 
@@ -270,9 +270,9 @@ CON_COMMAND( autocubemap_clear, "Clears autocubemap stuff" )
 
 CON_COMMAND( autocubemap_start, "Begins the autocubemap (it's recommended to check 'autocubemap_print' before running this command)" )
 {
-	if (gpGlobals->maxClients > 1)
+	if( gpGlobals->maxClients > 1 )
 	{
-		Msg("Can't run autocubemap in multiplayer\n");
+		Msg( "Can't run autocubemap in multiplayer\n" );
 		return;
 	}
 

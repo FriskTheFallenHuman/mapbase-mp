@@ -8,7 +8,7 @@
 #define XBOXSTUBS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -85,17 +85,17 @@ typedef enum
 
 typedef unsigned short WORD;
 #ifndef POSIX
-typedef unsigned long DWORD;
-typedef void* HANDLE;
-typedef unsigned __int64 ULONGLONG;
+	typedef unsigned long DWORD;
+	typedef void* HANDLE;
+	typedef unsigned __int64 ULONGLONG;
 #endif
 
 #ifdef POSIX
-typedef DWORD COLORREF;
+	typedef DWORD COLORREF;
 #endif
 
 #ifndef INVALID_HANDLE_VALUE
-#define INVALID_HANDLE_VALUE ((HANDLE)-1)
+	#define INVALID_HANDLE_VALUE ((HANDLE)-1)
 #endif
 
 // typedef struct {
@@ -109,11 +109,13 @@ typedef DWORD COLORREF;
 typedef int XNADDR;
 typedef uint64 XUID;
 
-typedef struct {
+typedef struct
+{
 	BYTE        ab[8];                          // xbox to xbox key identifier
 } XNKID;
 
-typedef struct {
+typedef struct
+{
 	BYTE        ab[16];                         // xbox to xbox key exchange key
 } XNKEY;
 
@@ -136,13 +138,13 @@ typedef struct _XUSER_DATA
 		struct                                     // XUSER_DATA_TYPE_UNICODE
 		{
 			uint                       cbData;    // Includes null-terminator
-			char *                      pwszData;
+			char*                       pwszData;
 		} string;
 		float                           fData;     // XUSER_DATA_TYPE_FLOAT
 		struct                                     // XUSER_DATA_TYPE_BINARY
 		{
 			uint                       cbData;
-			char *                       pbData;
+			char*                        pbData;
 		} binary;
 	};
 } XUSER_DATA, *PXUSER_DATA;
@@ -175,7 +177,7 @@ typedef struct _XSESSION_SEARCHRESULT
 typedef struct _XSESSION_SEARCHRESULT_HEADER
 {
 	DWORD dwSearchResults;
-	XSESSION_SEARCHRESULT *pResults;
+	XSESSION_SEARCHRESULT* pResults;
 } XSESSION_SEARCHRESULT_HEADER, *PXSESSION_SEARCHRESULT_HEADER;
 
 typedef struct _XSESSION_REGISTRANT
@@ -183,33 +185,35 @@ typedef struct _XSESSION_REGISTRANT
 	uint64 qwMachineID;
 	DWORD bTrustworthiness;
 	DWORD bNumUsers;
-	XUID *rgUsers;
+	XUID* rgUsers;
 
 } XSESSION_REGISTRANT;
 
 typedef struct _XSESSION_REGISTRATION_RESULTS
 {
 	DWORD wNumRegistrants;
-	XSESSION_REGISTRANT *rgRegistrants;
+	XSESSION_REGISTRANT* rgRegistrants;
 } XSESSION_REGISTRATION_RESULTS, *PXSESSION_REGISTRATION_RESULTS;
 
-typedef struct {
-	BYTE        bFlags;                         
-	BYTE        bReserved;                    
-	WORD        cProbesXmit;                   
-	WORD        cProbesRecv;                   
-	WORD        cbData;                        
-	BYTE *      pbData;                        
-	WORD        wRttMinInMsecs;                
-	WORD        wRttMedInMsecs;                
-	DWORD       dwUpBitsPerSec;                
-	DWORD       dwDnBitsPerSec;                
+typedef struct
+{
+	BYTE        bFlags;
+	BYTE        bReserved;
+	WORD        cProbesXmit;
+	WORD        cProbesRecv;
+	WORD        cbData;
+	BYTE*       pbData;
+	WORD        wRttMinInMsecs;
+	WORD        wRttMedInMsecs;
+	DWORD       dwUpBitsPerSec;
+	DWORD       dwDnBitsPerSec;
 } XNQOSINFO;
 
-typedef struct {
-	uint        cxnqos;                        
-	uint        cxnqosPending;                 
-	XNQOSINFO   axnqosinfo[1];                 
+typedef struct
+{
+	uint        cxnqos;
+	uint        cxnqosPending;
+	XNQOSINFO   axnqosinfo[1];
 } XNQOS;
 
 #define XSESSION_CREATE_HOST				0
@@ -220,13 +224,28 @@ typedef struct {
 #define XNET_QOS_LISTEN_SET_DATA			0
 
 FORCEINLINE void			XBX_ProcessEvents() {}
-FORCEINLINE unsigned int	XBX_GetSystemTime() { return 0; }
-FORCEINLINE	int				XBX_GetPrimaryUserId() { return 0; }
+FORCEINLINE unsigned int	XBX_GetSystemTime()
+{
+	return 0;
+}
+FORCEINLINE	int				XBX_GetPrimaryUserId()
+{
+	return 0;
+}
 FORCEINLINE	void			XBX_SetPrimaryUserId( DWORD idx ) {}
-FORCEINLINE	int				XBX_GetStorageDeviceId() { return 0; }
+FORCEINLINE	int				XBX_GetStorageDeviceId()
+{
+	return 0;
+}
 FORCEINLINE	void			XBX_SetStorageDeviceId( DWORD idx ) {}
-FORCEINLINE const char		*XBX_GetLanguageString() { return ""; }
-FORCEINLINE bool			XBX_IsLocalized() { return false; }
+FORCEINLINE const char*		XBX_GetLanguageString()
+{
+	return "";
+}
+FORCEINLINE bool			XBX_IsLocalized()
+{
+	return false;
+}
 
 #define XCONTENT_MAX_DISPLAYNAME_LENGTH	128
 #define XCONTENT_MAX_FILENAME_LENGTH	42

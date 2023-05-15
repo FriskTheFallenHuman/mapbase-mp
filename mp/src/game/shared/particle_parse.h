@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef PARTICLE_PARSE_H
 #define PARTICLE_PARSE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -32,7 +32,7 @@ enum ParticleAttachment_t
 	MAX_PATTACH_TYPES,
 };
 
-extern int GetAttachTypeFromString( const char *pszString );
+extern int GetAttachTypeFromString( const char* pszString );
 
 #define PARTICLE_DISPATCH_FROM_ENTITY		(1<<0)
 #define PARTICLE_DISPATCH_RESET_PARTICLES	(1<<1)
@@ -55,7 +55,7 @@ struct te_tf_particle_effects_control_point_t
 // Parse the particle manifest file & register the effects within it
 // Only needs to be called once per game, unless tools change particle definitions
 void ParseParticleEffects( bool bLoadSheets, bool bPrecache );
-void ParseParticleEffectsMap( const char *pMapName, bool bLoadSheets, IFileList *pFilesToReload = NULL ); 
+void ParseParticleEffectsMap( const char* pMapName, bool bLoadSheets, IFileList* pFilesToReload = NULL );
 
 // Get a list of the files inside the particle manifest file
 void GetParticleManifest( CUtlVector<CUtlString>& list );
@@ -65,22 +65,22 @@ void GetParticleManifest( CUtlVector<CUtlString>& list );
 void PrecacheStandardParticleSystems( );
 
 class IFileList;
-void ReloadParticleEffectsInList( IFileList *pFilesToReload );
+void ReloadParticleEffectsInList( IFileList* pFilesToReload );
 
 //-----------------------------------------------------------------------------
 // Particle spawning methods
 //-----------------------------------------------------------------------------
-void DispatchParticleEffect( const char *pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity *pEntity, const char *pszAttachmentName, bool bResetAllParticlesOnEntity = false );
-void DispatchParticleEffect( const char *pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity *pEntity = NULL, int iAttachmentPoint = -1, bool bResetAllParticlesOnEntity = false );
-void DispatchParticleEffect( const char *pszParticleName, Vector vecOrigin, QAngle vecAngles, CBaseEntity *pEntity = NULL );
-void DispatchParticleEffect( const char *pszParticleName, Vector vecOrigin, Vector vecStart, QAngle vecAngles, CBaseEntity *pEntity = NULL );
-void DispatchParticleEffect( int iEffectIndex, Vector vecOrigin, Vector vecStart, QAngle vecAngles, CBaseEntity *pEntity = NULL );
+void DispatchParticleEffect( const char* pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity* pEntity, const char* pszAttachmentName, bool bResetAllParticlesOnEntity = false );
+void DispatchParticleEffect( const char* pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity* pEntity = NULL, int iAttachmentPoint = -1, bool bResetAllParticlesOnEntity = false );
+void DispatchParticleEffect( const char* pszParticleName, Vector vecOrigin, QAngle vecAngles, CBaseEntity* pEntity = NULL );
+void DispatchParticleEffect( const char* pszParticleName, Vector vecOrigin, Vector vecStart, QAngle vecAngles, CBaseEntity* pEntity = NULL );
+void DispatchParticleEffect( int iEffectIndex, Vector vecOrigin, Vector vecStart, QAngle vecAngles, CBaseEntity* pEntity = NULL );
 
-void DispatchParticleEffect( const char *pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity *pEntity, const char *pszAttachmentName, Vector vecColor1, Vector vecColor2, bool bUseColors=true, bool bResetAllParticlesOnEntity = false );
-void DispatchParticleEffect( const char *pszParticleName, Vector vecOrigin, QAngle vecAngles, Vector vecColor1, Vector vecColor2, bool bUseColors=true, CBaseEntity *pEntity = NULL, int iAttachType = PATTACH_CUSTOMORIGIN );
+void DispatchParticleEffect( const char* pszParticleName, ParticleAttachment_t iAttachType, CBaseEntity* pEntity, const char* pszAttachmentName, Vector vecColor1, Vector vecColor2, bool bUseColors = true, bool bResetAllParticlesOnEntity = false );
+void DispatchParticleEffect( const char* pszParticleName, Vector vecOrigin, QAngle vecAngles, Vector vecColor1, Vector vecColor2, bool bUseColors = true, CBaseEntity* pEntity = NULL, int iAttachType = PATTACH_CUSTOMORIGIN );
 
 
-void StopParticleEffects( CBaseEntity *pEntity );
+void StopParticleEffects( CBaseEntity* pEntity );
 
 
 #endif // PARTICLE_PARSE_H

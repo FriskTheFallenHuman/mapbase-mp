@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -15,9 +15,9 @@
 //-----------------------------------------------------------------------------
 // Purpose: Given and condition name, return the condition ID
 //-----------------------------------------------------------------------------
-int CAI_BaseNPC::GetConditionID(const char* condName)
+int CAI_BaseNPC::GetConditionID( const char* condName )
 {
-	return GetSchedulingSymbols()->ConditionSymbolToId(condName);
+	return GetSchedulingSymbols()->ConditionSymbolToId( condName );
 }
 
 //-----------------------------------------------------------------------------
@@ -28,9 +28,9 @@ int CAI_BaseNPC::GetConditionID(const char* condName)
 
 #define ADD_CONDITION_TO_SR( _n ) idSpace.AddCondition( #_n, _n, "CAI_BaseNPC" )
 
-void	CAI_BaseNPC::InitDefaultConditionSR(void)
+void	CAI_BaseNPC::InitDefaultConditionSR( void )
 {
-	CAI_ClassScheduleIdSpace &idSpace = CAI_BaseNPC::AccessClassScheduleIdSpaceDirect();
+	CAI_ClassScheduleIdSpace& idSpace = CAI_BaseNPC::AccessClassScheduleIdSpaceDirect();
 
 	ADD_CONDITION_TO_SR( COND_NONE );
 	ADD_CONDITION_TO_SR( COND_IN_PVS );

@@ -6,7 +6,7 @@
 #ifndef CONCUSSIVE_EXPLOSION_H
 #define CONCUSSIVE_EXPLOSION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "te_particlesystem.h"
@@ -20,7 +20,7 @@ public:
 	DECLARE_CLASS( CTEConcussiveExplosion, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
 
-	CTEConcussiveExplosion( const char *name );
+	CTEConcussiveExplosion( const char* name );
 	virtual	~CTEConcussiveExplosion( void );
 
 	CNetworkVector( m_vecNormal );
@@ -30,7 +30,7 @@ public:
 };
 
 #ifdef MAPBASE
-#define SF_CONCUSSIVEBLAST_REPEATABLE 0x00000001
+	#define SF_CONCUSSIVEBLAST_REPEATABLE 0x00000001
 #endif
 
 //-----------------------------------------------------------------------------
@@ -56,8 +56,8 @@ public:
 	virtual void Precache( void );
 	virtual void Explode( float magnitude );
 #ifdef MAPBASE
-	virtual void InputExplode( inputdata_t &inputdata );
-	virtual void InputExplodeWithMagnitude( inputdata_t &inputdata );
+	virtual void InputExplode( inputdata_t& inputdata );
+	virtual void InputExplodeWithMagnitude( inputdata_t& inputdata );
 #endif
 
 };

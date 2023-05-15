@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ENVMICROPHONE_H
 #define ENVMICROPHONE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CBaseFilter;
@@ -21,20 +21,20 @@ const int SF_MICROPHONE_SWALLOW_ROUTED_SOUNDS	= 0x10;
 const int SF_MICROPHONE_SOUND_EXPLOSION			= 0x20;
 const int SF_MICROPHONE_IGNORE_NONATTENUATED	= 0x40;
 #ifdef MAPBASE
-const int SF_MICROPHONE_SOUND_SENTENCE			= 0x80;
+	const int SF_MICROPHONE_SOUND_SENTENCE			= 0x80;
 #endif
 
 
 // Return codes from SoundPlayed
 enum MicrophoneResult_t
 {
-    MicrophoneResult_Ok = 0,
-    MicrophoneResult_Swallow,       // The microphone swallowed the sound. Don't play it.
-    MicrophoneResult_Remove,        // The microphone should be removed from the list of microphones.
+	MicrophoneResult_Ok = 0,
+	MicrophoneResult_Swallow,       // The microphone swallowed the sound. Don't play it.
+	MicrophoneResult_Remove,        // The microphone should be removed from the list of microphones.
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CEnvMicrophone : public CPointEntity
 {
@@ -43,48 +43,54 @@ class CEnvMicrophone : public CPointEntity
 public:
 	~CEnvMicrophone();
 
-	void Spawn(void);
-	void Activate(void);
+	void Spawn( void );
+	void Activate( void );
 	void OnRestore( void );
 	void ActivateSpeaker( void );
-	void Think(void);
-	bool CanHearSound(CSound *pSound, float &flVolume);
-	bool CanHearSound( int entindex, soundlevel_t soundlevel, float &flVolume, const Vector *pOrigin );
+	void Think( void );
+	bool CanHearSound( CSound* pSound, float& flVolume );
+	bool CanHearSound( int entindex, soundlevel_t soundlevel, float& flVolume, const Vector* pOrigin );
 
 	void SetSensitivity( float flSensitivity );
 	void SetSpeakerName( string_t iszSpeakerName );
 #ifdef MAPBASE
-	bool ShouldHearSentences() const { return HasSpawnFlags( SF_MICROPHONE_SOUND_SENTENCE ); }
-	inline void ToggleHearingSentence( bool bToggle ) { m_bHearingSentence = bToggle; }
+	bool ShouldHearSentences() const
+	{
+		return HasSpawnFlags( SF_MICROPHONE_SOUND_SENTENCE );
+	}
+	inline void ToggleHearingSentence( bool bToggle )
+	{
+		m_bHearingSentence = bToggle;
+	}
 #endif
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
-	void InputSetSpeakerName( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
+	void InputSetSpeakerName( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetDSPPreset( inputdata_t &inputdata );
-	void InputSetPitchScale( inputdata_t &inputdata );
-	void InputSetVolumeScale( inputdata_t &inputdata );
-	void InputSetChannel( inputdata_t &inputdata );
+	void InputSetDSPPreset( inputdata_t& inputdata );
+	void InputSetPitchScale( inputdata_t& inputdata );
+	void InputSetVolumeScale( inputdata_t& inputdata );
+	void InputSetChannel( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
 
 	// Hook for the sound system to tell us when a sound's been played. Returns true if it's to swallow the passed in sound.
-	static bool OnSoundPlayed( int entindex, const char *soundname, soundlevel_t soundlevel, 
-		float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
+	static bool OnSoundPlayed( int entindex, const char* soundname, soundlevel_t soundlevel,
+							   float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
 
 #ifdef MAPBASE
 	// Same as above, except for sentences.
-	static bool OnSentencePlayed( int entindex, int sentenceIndex, soundlevel_t soundlevel, 
-		float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
+	static bool OnSentencePlayed( int entindex, int sentenceIndex, soundlevel_t soundlevel,
+								  float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
 #endif
 
 private:
 
 	// Per-microphone notification that a sound has played.
-	MicrophoneResult_t SoundPlayed( int entindex, const char *soundname, soundlevel_t soundlevel, 
-		float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
+	MicrophoneResult_t SoundPlayed( int entindex, const char* soundname, soundlevel_t soundlevel,
+									float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins );
 
 	bool		m_bDisabled;			// If true, the microphone will not measure sound.
 	EHANDLE		m_hMeasureTarget;		// Point at which to measure sound level.

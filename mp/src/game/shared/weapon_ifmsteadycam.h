@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef WEAPON_IFMSTEADYCAM_H
 #define WEAPON_IFMSTEADYCAM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_ifmbasecamera.h"
@@ -20,7 +20,7 @@ class CWeaponIFMSteadyCam : public CWeaponIFMBaseCamera
 {
 public:
 	DECLARE_CLASS( CWeaponIFMSteadyCam, CWeaponIFMBaseCamera );
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 #ifdef GAME_DLL
@@ -32,7 +32,7 @@ public:
 	CWeaponIFMSteadyCam();
 	virtual ~CWeaponIFMSteadyCam();
 
- 	virtual void ItemPostFrame();
+	virtual void ItemPostFrame();
 
 private:
 
@@ -40,9 +40,9 @@ private:
 
 public:
 	// Client code
-	virtual void CreateMove( float flInputSampleTime, CUserCmd *pCmd, const QAngle &vecOldViewAngles );
+	virtual void CreateMove( float flInputSampleTime, CUserCmd* pCmd, const QAngle& vecOldViewAngles );
 	virtual void DrawCrosshair( void );
-	virtual void GetToolRecordingState( KeyValues *msg );
+	virtual void GetToolRecordingState( KeyValues* msg );
 
 private:
 	// Purpose: Draw the weapon's crosshair
@@ -56,9 +56,9 @@ private:
 	void UpdateRelativeOrientation();
 	void UpdateLockedRelativeOrientation();
 	void UpdateDirectRelativeOrientation();
-	
+
 	// Computes a matrix given a forward direction
-	void MatrixFromForwardDirection( const Vector &vecForward, matrix3x4_t &mat );
+	void MatrixFromForwardDirection( const Vector& vecForward, matrix3x4_t& mat );
 
 	// Targets the camera to always look at a point
 	void LockCamera();
@@ -68,10 +68,10 @@ private:
 	void ToggleDirectMode();
 
 	// Compute the location of the camera for rendering
-	virtual void ComputeAbsCameraTransform( Vector &origin, QAngle &angles );
+	virtual void ComputeAbsCameraTransform( Vector& origin, QAngle& angles );
 
 	// Updates the relative orientation of the camera, spring mode
-	void ComputeMouseRay( const VMatrix &steadyCamToPlayer, Vector &vecForward );
+	void ComputeMouseRay( const VMatrix& steadyCamToPlayer, Vector& vecForward );
 
 	// Updates the 2d spring
 	void ComputeViewOffset();
@@ -97,9 +97,9 @@ public:
 
 private:
 	EHANDLE m_hLockTarget;
-	
+
 private:
-	CWeaponIFMSteadyCam( const CWeaponIFMSteadyCam & );
+	CWeaponIFMSteadyCam( const CWeaponIFMSteadyCam& );
 };
 
 

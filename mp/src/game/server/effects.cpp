@@ -30,9 +30,9 @@
 #include "precipitation_shared.h"
 #include "shot_manipulator.h"
 #ifdef MAPBASE
-#include "point_template.h"
-#include "TemplateEntities.h"
-#include "mapentities_shared.h"
+	#include "point_template.h"
+	#include "TemplateEntities.h"
+	#include "mapentities_shared.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -40,7 +40,7 @@
 
 #define SF_FUNNEL_REVERSE			1 // funnel effect repels particles instead of attracting them.
 #ifdef MAPBASE
-#define SF_FUNNEL_DONT_REMOVE		2
+	#define SF_FUNNEL_DONT_REMOVE		2
 #endif
 
 #define	SF_GIBSHOOTER_REPEATABLE	(1<<0)	// allows a gibshooter to be refired
@@ -59,13 +59,13 @@ public:
 	void	FizzThink( void );
 
 	// Input handlers.
-	void	InputActivate( inputdata_t &inputdata );
-	void	InputDeactivate( inputdata_t &inputdata );
-	void	InputToggle( inputdata_t &inputdata );
+	void	InputActivate( inputdata_t& inputdata );
+	void	InputDeactivate( inputdata_t& inputdata );
+	void	InputToggle( inputdata_t& inputdata );
 
-	void	InputSetCurrent( inputdata_t &inputdata );
-	void	InputSetDensity( inputdata_t &inputdata );
-	void	InputSetFrequency( inputdata_t &inputdata );
+	void	InputSetCurrent( inputdata_t& inputdata );
+	void	InputSetDensity( inputdata_t& inputdata );
+	void	InputSetFrequency( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -85,31 +85,31 @@ LINK_ENTITY_TO_CLASS( env_bubbles, CBubbling );
 
 BEGIN_DATADESC( CBubbling )
 
-	DEFINE_KEYFIELD( m_flSpeed, FIELD_FLOAT, "current" ),
-	DEFINE_KEYFIELD( m_density, FIELD_INTEGER, "density" ),
-	DEFINE_KEYFIELD( m_frequency, FIELD_INTEGER, "frequency" ),
+DEFINE_KEYFIELD( m_flSpeed, FIELD_FLOAT, "current" ),
+				 DEFINE_KEYFIELD( m_density, FIELD_INTEGER, "density" ),
+				 DEFINE_KEYFIELD( m_frequency, FIELD_INTEGER, "frequency" ),
 
-	DEFINE_FIELD( m_state, FIELD_INTEGER ),
-	// Let spawn restore this!
-	//	DEFINE_FIELD( m_bubbleModel, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_state, FIELD_INTEGER ),
+				 // Let spawn restore this!
+				 //	DEFINE_FIELD( m_bubbleModel, FIELD_INTEGER ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( FizzThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( FizzThink ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetCurrent", InputSetCurrent ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetDensity", InputSetDensity ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetFrequency", InputSetFrequency ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				 DEFINE_INPUTFUNC( FIELD_INTEGER, "SetCurrent", InputSetCurrent ),
+				 DEFINE_INPUTFUNC( FIELD_INTEGER, "SetDensity", InputSetDensity ),
+				 DEFINE_INPUTFUNC( FIELD_INTEGER, "SetFrequency", InputSetFrequency ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 
 #define SF_BUBBLES_STARTOFF		0x0001
 
-void CBubbling::Spawn( void )
+				 void CBubbling::Spawn( void )
 {
 	Precache( );
 	SetModel( STRING( GetModelName() ) );		// Set size
@@ -119,7 +119,7 @@ void CBubbling::Spawn( void )
 
 	SetSolid( SOLID_NONE );						// Remove model & collisions
 
-	if ( !HasSpawnFlags(SF_BUBBLES_STARTOFF) )
+	if( !HasSpawnFlags( SF_BUBBLES_STARTOFF ) )
 	{
 		SetThink( &CBubbling::FizzThink );
 		SetNextThink( gpGlobals->curtime + 2.0 );
@@ -133,13 +133,13 @@ void CBubbling::Spawn( void )
 
 void CBubbling::Precache( void )
 {
-	m_bubbleModel = PrecacheModel("sprites/bubble.vmt");			// Precache bubble sprite
+	m_bubbleModel = PrecacheModel( "sprites/bubble.vmt" );			// Precache bubble sprite
 }
 
 
 void CBubbling::Toggle()
 {
-	if (!m_state)
+	if( !m_state )
 	{
 		TurnOn();
 	}
@@ -167,7 +167,7 @@ void CBubbling::TurnOff()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CBubbling::InputActivate( inputdata_t &inputdata )
+void CBubbling::InputActivate( inputdata_t& inputdata )
 {
 	TurnOn();
 }
@@ -175,7 +175,7 @@ void CBubbling::InputActivate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CBubbling::InputDeactivate( inputdata_t &inputdata )
+void CBubbling::InputDeactivate( inputdata_t& inputdata )
 {
 	TurnOff();
 }
@@ -183,7 +183,7 @@ void CBubbling::InputDeactivate( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CBubbling::InputToggle( inputdata_t &inputdata )
+void CBubbling::InputToggle( inputdata_t& inputdata )
 {
 	Toggle();
 }
@@ -192,16 +192,16 @@ void CBubbling::InputToggle( inputdata_t &inputdata )
 // Purpose:
 // Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CBubbling::InputSetCurrent( inputdata_t &inputdata )
+void CBubbling::InputSetCurrent( inputdata_t& inputdata )
 {
-	m_flSpeed = (float)inputdata.value.Int();
+	m_flSpeed = ( float )inputdata.value.Int();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 // Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CBubbling::InputSetDensity( inputdata_t &inputdata )
+void CBubbling::InputSetDensity( inputdata_t& inputdata )
 {
 	m_density = inputdata.value.Int();
 }
@@ -210,20 +210,20 @@ void CBubbling::InputSetDensity( inputdata_t &inputdata )
 // Purpose:
 // Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CBubbling::InputSetFrequency( inputdata_t &inputdata )
+void CBubbling::InputSetFrequency( inputdata_t& inputdata )
 {
 	m_frequency = inputdata.value.Int();
 
 	// Reset think time
-	if ( m_state )
+	if( m_state )
 	{
-		if ( m_frequency > 19 )
+		if( m_frequency > 19 )
 		{
 			SetNextThink( gpGlobals->curtime + 0.5f );
 		}
 		else
 		{
-			SetNextThink( gpGlobals->curtime + 2.5 - (0.1 * m_frequency) );
+			SetNextThink( gpGlobals->curtime + 2.5 - ( 0.1 * m_frequency ) );
 		}
 	}
 }
@@ -232,15 +232,15 @@ void CBubbling::FizzThink( void )
 {
 	Vector center = WorldSpaceCenter();
 	CPASFilter filter( center );
-	te->Fizz( filter, 0.0, this, m_bubbleModel, m_density, (int)m_flSpeed );
+	te->Fizz( filter, 0.0, this, m_bubbleModel, m_density, ( int )m_flSpeed );
 
-	if ( m_frequency > 19 )
+	if( m_frequency > 19 )
 	{
 		SetNextThink( gpGlobals->curtime + 0.5f );
 	}
 	else
 	{
-		SetNextThink( gpGlobals->curtime + 2.5 - (0.1 * m_frequency) );
+		SetNextThink( gpGlobals->curtime + 2.5 - ( 0.1 * m_frequency ) );
 	}
 }
 
@@ -266,27 +266,29 @@ LINK_ENTITY_TO_CLASS( env_tracer, CEnvTracer );
 
 BEGIN_DATADESC( CEnvTracer )
 
-	DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "delay" ),
+DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "delay" ),
 
-	DEFINE_FIELD( m_vecEnd, FIELD_POSITION_VECTOR ),
+				 DEFINE_FIELD( m_vecEnd, FIELD_POSITION_VECTOR ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( TracerThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( TracerThink ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Called after keyvalues are parsed.
 //-----------------------------------------------------------------------------
-void CEnvTracer::Spawn( void )
+				 void CEnvTracer::Spawn( void )
 {
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_NONE );
 
-	if (!m_flDelay)
+	if( !m_flDelay )
+	{
 		m_flDelay = 1;
+	}
 }
 
 
@@ -297,8 +299,8 @@ void CEnvTracer::Activate( void )
 {
 	BaseClass::Activate();
 
-	CBaseEntity *pEnd = gEntList.FindEntityByName( NULL, m_target );
-	if (pEnd != NULL)
+	CBaseEntity* pEnd = gEntList.FindEntityByName( NULL, m_target );
+	if( pEnd != NULL )
 	{
 		m_vecEnd = pEnd->GetLocalOrigin();
 		SetThink( &CEnvTracer::TracerThink );
@@ -306,7 +308,7 @@ void CEnvTracer::Activate( void )
 	}
 	else
 	{
-		Msg( "env_tracer: unknown entity \"%s\"\n", STRING(m_target) );
+		Msg( "env_tracer: unknown entity \"%s\"\n", STRING( m_target ) );
 	}
 }
 
@@ -336,17 +338,17 @@ public:
 
 	void Spawn( void );
 	void Precache( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	virtual CGib *CreateGib( void );
+	virtual CGib* CreateGib( void );
 
 protected:
 	// Purpose:
-	CBaseEntity *SpawnGib( const Vector &vecShootDir, float flSpeed );
+	CBaseEntity* SpawnGib( const Vector& vecShootDir, float flSpeed );
 
 	DECLARE_DATADESC();
 private:
-	void InitPointGib( CGib *pGib, const Vector &vecShootDir, float flSpeed );
+	void InitPointGib( CGib* pGib, const Vector& vecShootDir, float flSpeed );
 	void ShootThink( void );
 
 protected:
@@ -371,54 +373,54 @@ protected:
 	// ----------------
 	//	Inputs
 	// ----------------
-	void InputShoot( inputdata_t &inputdata );
+	void InputShoot( inputdata_t& inputdata );
 };
 
 BEGIN_DATADESC( CGibShooter )
 
-	DEFINE_KEYFIELD( m_iGibs, FIELD_INTEGER, "m_iGibs" ),
-	DEFINE_KEYFIELD( m_flGibVelocity, FIELD_FLOAT, "m_flVelocity" ),
-	DEFINE_KEYFIELD( m_flVariance, FIELD_FLOAT, "m_flVariance" ),
-	DEFINE_KEYFIELD( m_flGibLife, FIELD_FLOAT, "m_flGibLife" ),
-	DEFINE_KEYFIELD( m_nSimulationType, FIELD_INTEGER, "Simulation" ),
-	DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "delay" ),
-	DEFINE_KEYFIELD( m_angGibRotation, FIELD_VECTOR, "gibangles" ),
-	DEFINE_KEYFIELD( m_flGibAngVelocity, FIELD_FLOAT, "gibanglevelocity"),
-	DEFINE_FIELD( m_bIsSprite, FIELD_BOOLEAN ),
+DEFINE_KEYFIELD( m_iGibs, FIELD_INTEGER, "m_iGibs" ),
+				 DEFINE_KEYFIELD( m_flGibVelocity, FIELD_FLOAT, "m_flVelocity" ),
+				 DEFINE_KEYFIELD( m_flVariance, FIELD_FLOAT, "m_flVariance" ),
+				 DEFINE_KEYFIELD( m_flGibLife, FIELD_FLOAT, "m_flGibLife" ),
+				 DEFINE_KEYFIELD( m_nSimulationType, FIELD_INTEGER, "Simulation" ),
+				 DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "delay" ),
+				 DEFINE_KEYFIELD( m_angGibRotation, FIELD_VECTOR, "gibangles" ),
+				 DEFINE_KEYFIELD( m_flGibAngVelocity, FIELD_FLOAT, "gibanglevelocity" ),
+				 DEFINE_FIELD( m_bIsSprite, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_iGibCapacity, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iGibMaterial, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iGibModelIndex, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nMaxGibModelFrame, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iGibCapacity, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iGibMaterial, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iGibModelIndex, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_nMaxGibModelFrame, FIELD_INTEGER ),
 
-	DEFINE_KEYFIELD( m_iszLightingOrigin, FIELD_STRING, "LightingOrigin" ),
-	DEFINE_KEYFIELD( m_bNoGibShadows, FIELD_BOOLEAN, "nogibshadows" ),
+				 DEFINE_KEYFIELD( m_iszLightingOrigin, FIELD_STRING, "LightingOrigin" ),
+				 DEFINE_KEYFIELD( m_bNoGibShadows, FIELD_BOOLEAN, "nogibshadows" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID,	"Shoot", InputShoot ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID,	"Shoot", InputShoot ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( ShootThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( ShootThink ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( gibshooter, CGibShooter );
+				 LINK_ENTITY_TO_CLASS( gibshooter, CGibShooter );
 
 
-void CGibShooter::Precache ( void )
+void CGibShooter::Precache( void )
 {
-	if ( g_Language.GetInt() == LANGUAGE_GERMAN )
+	if( g_Language.GetInt() == LANGUAGE_GERMAN )
 	{
-		m_iGibModelIndex = PrecacheModel ("models/germanygibs.mdl");
+		m_iGibModelIndex = PrecacheModel( "models/germanygibs.mdl" );
 	}
 	else
 	{
-		m_iGibModelIndex = PrecacheModel ("models/gibs/hgibs.mdl");
+		m_iGibModelIndex = PrecacheModel( "models/gibs/hgibs.mdl" );
 	}
 }
 
 
-void CGibShooter::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CGibShooter::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	SetThink( &CGibShooter::ShootThink );
 	SetNextThink( gpGlobals->curtime );
@@ -428,7 +430,7 @@ void CGibShooter::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE u
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for shooting gibs.
 //-----------------------------------------------------------------------------
-void CGibShooter::InputShoot( inputdata_t &inputdata )
+void CGibShooter::InputShoot( inputdata_t& inputdata )
 {
 	SetThink( &CGibShooter::ShootThink );
 	SetNextThink( gpGlobals->curtime );
@@ -442,12 +444,12 @@ void CGibShooter::Spawn( void )
 	SetSolid( SOLID_NONE );
 	AddEffects( EF_NODRAW );
 
-	if ( m_flDelay < 0 )
+	if( m_flDelay < 0 )
 	{
 		m_flDelay = 0.0;
 	}
 
-	if ( m_flGibLife == 0 )
+	if( m_flGibLife == 0 )
 	{
 		m_flGibLife = 25;
 	}
@@ -457,24 +459,26 @@ void CGibShooter::Spawn( void )
 	m_nMaxGibModelFrame = modelinfo->GetModelFrameCount( modelinfo->GetModel( m_iGibModelIndex ) );
 }
 
-CGib *CGibShooter::CreateGib ( void )
+CGib* CGibShooter::CreateGib( void )
 {
 	ConVarRef violence_hgibs( "violence_hgibs" );
-	if ( violence_hgibs.IsValid() && !violence_hgibs.GetInt() )
+	if( violence_hgibs.IsValid() && !violence_hgibs.GetInt() )
+	{
 		return NULL;
+	}
 
-	CGib *pGib = CREATE_ENTITY( CGib, "gib" );
+	CGib* pGib = CREATE_ENTITY( CGib, "gib" );
 	pGib->Spawn( "models/gibs/hgibs.mdl" );
 	pGib->SetBloodColor( BLOOD_COLOR_RED );
 
-	if ( m_nMaxGibModelFrame <= 1 )
+	if( m_nMaxGibModelFrame <= 1 )
 	{
 		DevWarning( 2, "GibShooter Body is <= 1!\n" );
 	}
 
-	pGib->m_nBody = random->RandomInt ( 1, m_nMaxGibModelFrame - 1 );// avoid throwing random amounts of the 0th gib. (skull).
+	pGib->m_nBody = random->RandomInt( 1, m_nMaxGibModelFrame - 1 ); // avoid throwing random amounts of the 0th gib. (skull).
 
-	if ( m_iszLightingOrigin != NULL_STRING )
+	if( m_iszLightingOrigin != NULL_STRING )
 	{
 		// Make the gibs use the lighting origin
 		pGib->SetLightingOrigin( m_iszLightingOrigin );
@@ -484,19 +488,19 @@ CGib *CGibShooter::CreateGib ( void )
 }
 
 
-void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flSpeed )
+void CGibShooter::InitPointGib( CGib* pGib, const Vector& vecShootDir, float flSpeed )
 {
-	if ( pGib )
+	if( pGib )
 	{
 		pGib->SetLocalOrigin( GetAbsOrigin() );
 		pGib->SetAbsVelocity( vecShootDir * flSpeed );
 
-		QAngle angVel( random->RandomFloat ( 100, 200 ), random->RandomFloat ( 100, 300 ), 0 );
+		QAngle angVel( random->RandomFloat( 100, 200 ), random->RandomFloat( 100, 300 ), 0 );
 		pGib->SetLocalAngularVelocity( angVel );
 
 		float thinkTime = ( pGib->GetNextThink() - gpGlobals->curtime );
 
-		pGib->m_lifeTime = (m_flGibLife * random->RandomFloat( 0.95, 1.05 ));	// +/- 5%
+		pGib->m_lifeTime = ( m_flGibLife * random->RandomFloat( 0.95, 1.05 ) );	// +/- 5%
 
 		// HL1 gibs always die after a certain time, other games have to opt-in
 #ifndef HL1_DLL
@@ -504,22 +508,22 @@ void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flS
 #endif
 		{
 			pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
-			pGib->SetThink ( &CGib::DieThink );
+			pGib->SetThink( &CGib::DieThink );
 		}
 
-		if ( pGib->m_lifeTime < thinkTime )
+		if( pGib->m_lifeTime < thinkTime )
 		{
 			pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
 			pGib->m_lifeTime = 0;
 		}
 
-		if ( m_bIsSprite == true )
+		if( m_bIsSprite == true )
 		{
 			pGib->SetSprite( CSprite::SpriteCreate( STRING( GetModelName() ), pGib->GetAbsOrigin(), false ) );
 
-			CSprite *pSprite = (CSprite*)pGib->GetSprite();
+			CSprite* pSprite = ( CSprite* )pGib->GetSprite();
 
-			if ( pSprite )
+			if( pSprite )
 			{
 				pSprite->SetAttachment( pGib, 0 );
 				pSprite->SetOwnerEntity( pGib );
@@ -536,16 +540,16 @@ void CGibShooter::InitPointGib( CGib *pGib, const Vector &vecShootDir, float flS
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
+CBaseEntity* CGibShooter::SpawnGib( const Vector& vecShootDir, float flSpeed )
 {
-	switch (m_nSimulationType)
+	switch( m_nSimulationType )
 	{
 		case GIB_SIMULATE_RAGDOLL:
 		{
 			// UNDONE: Assume a mass of 200 for now
 			Vector force = vecShootDir * flSpeed * 200;
 #ifdef MAPBASE
-			return CreateRagGib( STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), force, m_flGibLife, HasSpawnFlags(SF_SHOOTER_FLAMING) );
+			return CreateRagGib( STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), force, m_flGibLife, HasSpawnFlags( SF_SHOOTER_FLAMING ) );
 #else
 			return CreateRagGib( STRING( GetModelName() ), GetAbsOrigin(), GetAbsAngles(), force, m_flGibLife );
 #endif
@@ -553,24 +557,24 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 
 		case GIB_SIMULATE_PHYSICS:
 		{
-			CGib *pGib = CreateGib();
+			CGib* pGib = CreateGib();
 
-			if ( pGib )
+			if( pGib )
 			{
 				pGib->SetAbsOrigin( GetAbsOrigin() );
 				pGib->SetAbsAngles( m_angGibRotation );
 
-				pGib->m_lifeTime = (m_flGibLife * random->RandomFloat( 0.95, 1.05 ));	// +/- 5%
+				pGib->m_lifeTime = ( m_flGibLife * random->RandomFloat( 0.95, 1.05 ) );	// +/- 5%
 
 				pGib->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-				IPhysicsObject *pPhysicsObject = pGib->VPhysicsInitNormal( SOLID_VPHYSICS, pGib->GetSolidFlags(), false );
+				IPhysicsObject* pPhysicsObject = pGib->VPhysicsInitNormal( SOLID_VPHYSICS, pGib->GetSolidFlags(), false );
 				pGib->SetMoveType( MOVETYPE_VPHYSICS );
 
-				if ( pPhysicsObject )
+				if( pPhysicsObject )
 				{
 					// Set gib velocity
 					Vector vVel		= vecShootDir * flSpeed;
-					pPhysicsObject->AddVelocity(&vVel, NULL);
+					pPhysicsObject->AddVelocity( &vVel, NULL );
 
 					AngularImpulse torque;
 					torque.x = m_flGibAngVelocity * random->RandomFloat( 0.1f, 1.0f );
@@ -586,7 +590,7 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 					{
 						pGib->m_bForceRemove = true;
 						pGib->SetNextThink( gpGlobals->curtime + pGib->m_lifeTime );
-						pGib->SetThink ( &CGib::DieThink );
+						pGib->SetThink( &CGib::DieThink );
 					}
 
 				}
@@ -600,9 +604,9 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 
 		case GIB_SIMULATE_POINT:
 		{
-			CGib *pGib = CreateGib();
+			CGib* pGib = CreateGib();
 
-			if ( pGib )
+			if( pGib )
 			{
 				pGib->SetAbsAngles( m_angGibRotation );
 
@@ -619,32 +623,32 @@ CBaseEntity *CGibShooter::SpawnGib( const Vector &vecShootDir, float flSpeed )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CGibShooter::ShootThink ( void )
+void CGibShooter::ShootThink( void )
 {
 	SetNextThink( gpGlobals->curtime + m_flDelay );
 
-	Vector vecShootDir, vForward,vRight,vUp;
+	Vector vecShootDir, vForward, vRight, vUp;
 	AngleVectors( GetAbsAngles(), &vForward, &vRight, &vUp );
 	vecShootDir = vForward;
-	vecShootDir = vecShootDir + vRight * random->RandomFloat( -1, 1) * m_flVariance;
-	vecShootDir = vecShootDir + vForward * random->RandomFloat( -1, 1) * m_flVariance;
-	vecShootDir = vecShootDir + vUp * random->RandomFloat( -1, 1) * m_flVariance;
+	vecShootDir = vecShootDir + vRight * random->RandomFloat( -1, 1 ) * m_flVariance;
+	vecShootDir = vecShootDir + vForward * random->RandomFloat( -1, 1 ) * m_flVariance;
+	vecShootDir = vecShootDir + vUp * random->RandomFloat( -1, 1 ) * m_flVariance;
 
 	VectorNormalize( vecShootDir );
 
 	SpawnGib( vecShootDir, m_flGibVelocity );
 
-	if ( --m_iGibs <= 0 )
+	if( --m_iGibs <= 0 )
 	{
-		if ( HasSpawnFlags(SF_GIBSHOOTER_REPEATABLE) )
+		if( HasSpawnFlags( SF_GIBSHOOTER_REPEATABLE ) )
 		{
 			m_iGibs = m_iGibCapacity;
-			SetThink ( NULL );
+			SetThink( NULL );
 			SetNextThink( gpGlobals->curtime );
 		}
 		else
 		{
-			SetThink ( &CGibShooter::SUB_Remove );
+			SetThink( &CGibShooter::SUB_Remove );
 			SetNextThink( gpGlobals->curtime );
 		}
 	}
@@ -655,11 +659,14 @@ class CEnvShooter : public CGibShooter
 public:
 	DECLARE_CLASS( CEnvShooter, CGibShooter );
 
-	CEnvShooter() { m_flGibGravityScale = 1.0f; }
+	CEnvShooter()
+	{
+		m_flGibGravityScale = 1.0f;
+	}
 	void		Precache( void );
-	bool		KeyValue( const char *szKeyName, const char *szValue );
+	bool		KeyValue( const char* szKeyName, const char* szValue );
 
-	CGib		*CreateGib( void );
+	CGib*		CreateGib( void );
 
 	DECLARE_DATADESC();
 
@@ -676,56 +683,58 @@ public:
 
 BEGIN_DATADESC( CEnvShooter )
 
-	DEFINE_KEYFIELD( m_nSkin, FIELD_INTEGER, "skin" ),
-	DEFINE_KEYFIELD( m_flGibScale, FIELD_FLOAT ,"scale" ),
-	DEFINE_KEYFIELD( m_flGibGravityScale, FIELD_FLOAT, "gibgravityscale" ),
+DEFINE_KEYFIELD( m_nSkin, FIELD_INTEGER, "skin" ),
+				 DEFINE_KEYFIELD( m_flGibScale, FIELD_FLOAT , "scale" ),
+				 DEFINE_KEYFIELD( m_flGibGravityScale, FIELD_FLOAT, "gibgravityscale" ),
 
 #if HL2_EPISODIC
 	DEFINE_KEYFIELD( m_flMassOverride, FIELD_FLOAT, "massoverride" ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( env_shooter, CEnvShooter );
+				 LINK_ENTITY_TO_CLASS( env_shooter, CEnvShooter );
 
-bool CEnvShooter::KeyValue( const char *szKeyName, const char *szValue )
+bool CEnvShooter::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "shootmodel"))
+	if( FStrEq( szKeyName, "shootmodel" ) )
 	{
 		m_bIsSprite = false;
-		SetModelName( AllocPooledString(szValue) );
+		SetModelName( AllocPooledString( szValue ) );
 
 		//Adrian - not pretty...
-		if ( Q_stristr( szValue, ".vmt" ) )
-			 m_bIsSprite = true;
+		if( Q_stristr( szValue, ".vmt" ) )
+		{
+			m_bIsSprite = true;
+		}
 	}
 
-	else if (FStrEq(szKeyName, "shootsounds"))
+	else if( FStrEq( szKeyName, "shootsounds" ) )
 	{
-		int iNoise = atoi(szValue);
+		int iNoise = atoi( szValue );
 		switch( iNoise )
 		{
-		case 0:
-			m_iGibMaterial = matGlass;
-			break;
-		case 1:
-			m_iGibMaterial = matWood;
-			break;
-		case 2:
-			m_iGibMaterial = matMetal;
-			break;
-		case 3:
-			m_iGibMaterial = matFlesh;
-			break;
-		case 4:
-			m_iGibMaterial = matRocks;
-			break;
+			case 0:
+				m_iGibMaterial = matGlass;
+				break;
+			case 1:
+				m_iGibMaterial = matWood;
+				break;
+			case 2:
+				m_iGibMaterial = matMetal;
+				break;
+			case 3:
+				m_iGibMaterial = matFlesh;
+				break;
+			case 4:
+				m_iGibMaterial = matRocks;
+				break;
 
-		default:
-		case -1:
-			m_iGibMaterial = matNone;
-			break;
+			default:
+			case -1:
+				m_iGibMaterial = matNone;
+				break;
 		}
 	}
 	else
@@ -737,17 +746,17 @@ bool CEnvShooter::KeyValue( const char *szKeyName, const char *szValue )
 }
 
 
-void CEnvShooter::Precache ( void )
+void CEnvShooter::Precache( void )
 {
 	m_iGibModelIndex = PrecacheModel( STRING( GetModelName() ) );
 }
 
 
-CGib *CEnvShooter::CreateGib ( void )
+CGib* CEnvShooter::CreateGib( void )
 {
-	CGib *pGib = CREATE_ENTITY( CGib, "gib" );
+	CGib* pGib = CREATE_ENTITY( CGib, "gib" );
 
-	if ( m_bIsSprite == true )
+	if( m_bIsSprite == true )
 	{
 		//HACK HACK
 		pGib->Spawn( "" );
@@ -759,9 +768,9 @@ CGib *CEnvShooter::CreateGib ( void )
 
 	int bodyPart = 0;
 
-	if ( m_nMaxGibModelFrame > 1 )
+	if( m_nMaxGibModelFrame > 1 )
 	{
-		bodyPart = random->RandomInt( 0, m_nMaxGibModelFrame-1 );
+		bodyPart = random->RandomInt( 0, m_nMaxGibModelFrame - 1 );
 	}
 
 	pGib->m_nBody = bodyPart;
@@ -777,18 +786,18 @@ CGib *CEnvShooter::CreateGib ( void )
 	pGib->SetGravity( m_flGibGravityScale );
 
 	// Spawn a flaming gib
-	if ( HasSpawnFlags( SF_SHOOTER_FLAMING ) )
+	if( HasSpawnFlags( SF_SHOOTER_FLAMING ) )
 	{
 		// Tag an entity flame along with us
-		CEntityFlame *pFlame = CEntityFlame::Create( pGib, false );
-		if ( pFlame != NULL )
+		CEntityFlame* pFlame = CEntityFlame::Create( pGib, false );
+		if( pFlame != NULL )
 		{
 			pFlame->SetLifetime( pGib->m_lifeTime );
 			pGib->SetFlame( pFlame );
 		}
 	}
 
-	if ( m_iszLightingOrigin != NULL_STRING )
+	if( m_iszLightingOrigin != NULL_STRING )
 	{
 		// Make the gibs use the lighting origin
 		pGib->SetLightingOrigin( m_iszLightingOrigin );
@@ -801,10 +810,10 @@ CGib *CEnvShooter::CreateGib ( void )
 
 #if HL2_EPISODIC
 	// if a mass override is set, apply it to the gib
-	if (m_flMassOverride != 0)
+	if( m_flMassOverride != 0 )
 	{
-		IPhysicsObject *pPhys = pGib->VPhysicsGetObject();
-		if (pPhys)
+		IPhysicsObject* pPhys = pGib->VPhysicsGetObject();
+		if( pPhys )
 		{
 			pPhys->SetMass( m_flMassOverride );
 		}
@@ -828,7 +837,7 @@ public:
 
 public:
 	// Inherited from IRotorWashShooter
-	virtual CBaseEntity *DoWashPush( float flTimeSincePushStarted, const Vector &vecForce );
+	virtual CBaseEntity* DoWashPush( float flTimeSincePushStarted, const Vector& vecForce );
 
 private:
 	// Amount of time we need to spend under the rotor before we shoot
@@ -849,21 +858,21 @@ LINK_ENTITY_TO_CLASS( env_rotorshooter, CRotorWashShooter );
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CRotorWashShooter )
 
-	DEFINE_KEYFIELD( m_flTimeUnderRotor,	FIELD_FLOAT ,"rotortime" ),
-	DEFINE_KEYFIELD( m_flTimeUnderRotorVariance,	FIELD_FLOAT ,"rotortimevariance" ),
-	DEFINE_FIELD( m_flLastWashStartTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_flNextGibTime, FIELD_TIME ),
+DEFINE_KEYFIELD( m_flTimeUnderRotor,	FIELD_FLOAT , "rotortime" ),
+					DEFINE_KEYFIELD( m_flTimeUnderRotorVariance,	FIELD_FLOAT , "rotortimevariance" ),
+					DEFINE_FIELD( m_flLastWashStartTime,	FIELD_TIME ),
+					DEFINE_FIELD( m_flNextGibTime, FIELD_TIME ),
 
-END_DATADESC()
+					END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
 // Gets at the interface if the entity supports it
 //-----------------------------------------------------------------------------
-IRotorWashShooter *GetRotorWashShooter( CBaseEntity *pEntity )
+					IRotorWashShooter* GetRotorWashShooter( CBaseEntity* pEntity )
 {
-	CRotorWashShooter *pShooter = dynamic_cast<CRotorWashShooter*>(pEntity);
+	CRotorWashShooter* pShooter = dynamic_cast<CRotorWashShooter*>( pEntity );
 	return pShooter;
 }
 
@@ -882,17 +891,19 @@ void CRotorWashShooter::Spawn()
 //-----------------------------------------------------------------------------
 // Inherited from IRotorWashShooter
 //-----------------------------------------------------------------------------
-CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector &vecForce )
+CBaseEntity* CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector& vecForce )
 {
-	if ( flWashStartTime == m_flLastWashStartTime )
+	if( flWashStartTime == m_flLastWashStartTime )
 	{
-		if ( m_flNextGibTime > gpGlobals->curtime )
+		if( m_flNextGibTime > gpGlobals->curtime )
+		{
 			return NULL;
+		}
 	}
 
 	m_flLastWashStartTime = flWashStartTime;
-	m_flNextGibTime	= gpGlobals->curtime + m_flTimeUnderRotor + random->RandomFloat( -1, 1) * m_flTimeUnderRotorVariance;
-	if ( m_flNextGibTime <= gpGlobals->curtime )
+	m_flNextGibTime	= gpGlobals->curtime + m_flTimeUnderRotor + random->RandomFloat( -1, 1 ) * m_flTimeUnderRotorVariance;
+	if( m_flNextGibTime <= gpGlobals->curtime )
 	{
 		m_flNextGibTime = gpGlobals->curtime + 0.01f;
 	}
@@ -908,17 +919,17 @@ CBaseEntity *CRotorWashShooter::DoWashPush( float flWashStartTime, const Vector 
 
 	VectorNormalize( vecShootDir );
 
-	CBaseEntity *pGib = SpawnGib( vecShootDir, m_flGibVelocity /*flLength*/ );
+	CBaseEntity* pGib = SpawnGib( vecShootDir, m_flGibVelocity /*flLength*/ );
 
-	if ( --m_iGibs <= 0 )
+	if( --m_iGibs <= 0 )
 	{
-		if ( HasSpawnFlags(SF_GIBSHOOTER_REPEATABLE) )
+		if( HasSpawnFlags( SF_GIBSHOOTER_REPEATABLE ) )
 		{
 			m_iGibs = m_iGibCapacity;
 		}
 		else
 		{
-			SetThink ( &CGibShooter::SUB_Remove );
+			SetThink( &CGibShooter::SUB_Remove );
 			SetNextThink( gpGlobals->curtime );
 		}
 	}
@@ -939,11 +950,11 @@ public:
 	void	Precache( void );
 	// bool	KeyValue( const char *szKeyName, const char *szValue );
 	void Think( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	int		m_iLoop;
 	int		m_iBeam;
-	CBeam	*m_pBeam[24];
+	CBeam*	m_pBeam[24];
 	float	m_flBeamTime[24];
 	float	m_flStartTime;
 };
@@ -964,18 +975,18 @@ void CTestEffect::Precache( void )
 void CTestEffect::Think( void )
 {
 	int i;
-	float t = (gpGlobals->curtime - m_flStartTime);
+	float t = ( gpGlobals->curtime - m_flStartTime );
 
-	if (m_iBeam < 24)
+	if( m_iBeam < 24 )
 	{
-		CBeam *pbeam = CBeam::BeamCreate( "sprites/lgtning.vmt", 10 );
+		CBeam* pbeam = CBeam::BeamCreate( "sprites/lgtning.vmt", 10 );
 
 		trace_t	tr;
 
 		Vector vecSrc = GetAbsOrigin();
-		Vector vecDir = Vector( random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( -1.0, 1.0 ),random->RandomFloat( -1.0, 1.0 ) );
+		Vector vecDir = Vector( random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( -1.0, 1.0 ), random->RandomFloat( -1.0, 1.0 ) );
 		VectorNormalize( vecDir );
-		UTIL_TraceLine( vecSrc, vecSrc + vecDir * 128, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr);
+		UTIL_TraceLine( vecSrc, vecSrc + vecDir * 128, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 
 		pbeam->PointsInit( vecSrc, tr.endpos );
 		// pbeam->SetColor( 80, 100, 255 );
@@ -988,18 +999,18 @@ void CTestEffect::Think( void )
 		m_iBeam++;
 
 #if 0
-		Vector vecMid = (vecSrc + tr.endpos) * 0.5;
+		Vector vecMid = ( vecSrc + tr.endpos ) * 0.5;
 		CBroadcastRecipientFilter filter;
 		TE_DynamicLight( filter, 0.0,
-			vecMid, 255, 180, 100, 3, 2.0, 0.0 );
+						 vecMid, 255, 180, 100, 3, 2.0, 0.0 );
 #endif
 	}
 
-	if (t < 3.0)
+	if( t < 3.0 )
 	{
-		for (i = 0; i < m_iBeam; i++)
+		for( i = 0; i < m_iBeam; i++ )
 		{
-			t = (gpGlobals->curtime - m_flBeamTime[i]) / ( 3 + m_flStartTime - m_flBeamTime[i]);
+			t = ( gpGlobals->curtime - m_flBeamTime[i] ) / ( 3 + m_flStartTime - m_flBeamTime[i] );
 			m_pBeam[i]->SetBrightness( 255 * t );
 			// m_pBeam[i]->SetScrollRate( 20 * t );
 		}
@@ -1007,7 +1018,7 @@ void CTestEffect::Think( void )
 	}
 	else
 	{
-		for (i = 0; i < m_iBeam; i++)
+		for( i = 0; i < m_iBeam; i++ )
 		{
 			UTIL_Remove( m_pBeam[i] );
 		}
@@ -1018,7 +1029,7 @@ void CTestEffect::Think( void )
 }
 
 
-void CTestEffect::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CTestEffect::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	SetNextThink( gpGlobals->curtime + 0.1f );
 	m_flStartTime = gpGlobals->curtime;
@@ -1033,18 +1044,27 @@ public:
 	DECLARE_CLASS( CBlood, CPointEntity );
 
 	void	Spawn( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 
-	inline	int		Color( void ) { return m_Color; }
-	inline	float 	BloodAmount( void ) { return m_flAmount; }
+	inline	int		Color( void )
+	{
+		return m_Color;
+	}
+	inline	float 	BloodAmount( void )
+	{
+		return m_flAmount;
+	}
 
-	inline	void SetColor( int color ) { m_Color = color; }
+	inline	void SetColor( int color )
+	{
+		m_Color = color;
+	}
 
 	// Input handlers
-	void InputEmitBlood( inputdata_t &inputdata );
+	void InputEmitBlood( inputdata_t& inputdata );
 
 	Vector	Direction( void );
-	Vector	BloodPosition( CBaseEntity *pActivator );
+	Vector	BloodPosition( CBaseEntity* pActivator );
 
 	DECLARE_DATADESC();
 
@@ -1059,13 +1079,13 @@ LINK_ENTITY_TO_CLASS( env_blood, CBlood );
 
 BEGIN_DATADESC( CBlood )
 
-	DEFINE_KEYFIELD( m_vecSprayDir, FIELD_VECTOR, "spraydir" ),
-	DEFINE_KEYFIELD( m_flAmount, FIELD_FLOAT, "amount" ),
-	DEFINE_FIELD( m_Color, FIELD_INTEGER ),
+DEFINE_KEYFIELD( m_vecSprayDir, FIELD_VECTOR, "spraydir" ),
+				 DEFINE_KEYFIELD( m_flAmount, FIELD_FLOAT, "amount" ),
+				 DEFINE_FIELD( m_Color, FIELD_INTEGER ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "EmitBlood", InputEmitBlood ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "EmitBlood", InputEmitBlood ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 #define SF_BLOOD_RANDOM		0x0001
@@ -1080,7 +1100,7 @@ END_DATADESC()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CBlood::Spawn( void )
+				 void CBlood::Spawn( void )
 {
 	// Convert spraydir from angles to a vector
 	QAngle angSprayDir = QAngle( m_vecSprayDir.x, m_vecSprayDir.y, m_vecSprayDir.z );
@@ -1098,12 +1118,12 @@ void CBlood::Spawn( void )
 //			szValue -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CBlood::KeyValue( const char *szKeyName, const char *szValue )
+bool CBlood::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "color"))
+	if( FStrEq( szKeyName, "color" ) )
 	{
-		int color = atoi(szValue);
-		switch ( color )
+		int color = atoi( szValue );
+		switch( color )
 		{
 			case 1:
 			{
@@ -1123,20 +1143,22 @@ bool CBlood::KeyValue( const char *szKeyName, const char *szValue )
 
 Vector CBlood::Direction( void )
 {
-	if ( HasSpawnFlags( SF_BLOOD_RANDOM ) )
+	if( HasSpawnFlags( SF_BLOOD_RANDOM ) )
+	{
 		return UTIL_RandomBloodVector();
+	}
 
 	return m_vecSprayDir;
 }
 
 
-Vector CBlood::BloodPosition( CBaseEntity *pActivator )
+Vector CBlood::BloodPosition( CBaseEntity* pActivator )
 {
-	if ( HasSpawnFlags( SF_BLOOD_PLAYER ) )
+	if( HasSpawnFlags( SF_BLOOD_PLAYER ) )
 	{
-		CBasePlayer *player;
+		CBasePlayer* player;
 
-		if ( pActivator && pActivator->IsPlayer() )
+		if( pActivator && pActivator->IsPlayer() )
 		{
 			player = ToBasePlayer( pActivator );
 		}
@@ -1145,9 +1167,9 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 			player = UTIL_GetLocalPlayer();
 		}
 
-		if ( player )
+		if( player )
 		{
-			return (player->EyePosition()) + Vector( random->RandomFloat(-10,10), random->RandomFloat(-10,10), random->RandomFloat(-10,10) );
+			return ( player->EyePosition() ) + Vector( random->RandomFloat( -10, 10 ), random->RandomFloat( -10, 10 ), random->RandomFloat( -10, 10 ) );
 		}
 	}
 
@@ -1158,16 +1180,18 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void UTIL_BloodSpray( const Vector &pos, const Vector &dir, int color, int amount, int flags )
+void UTIL_BloodSpray( const Vector& pos, const Vector& dir, int color, int amount, int flags )
 {
 	if( color == DONT_BLEED )
+	{
 		return;
+	}
 
 	CEffectData	data;
 
 	data.m_vOrigin = pos;
 	data.m_vNormal = dir;
-	data.m_flScale = (float)amount;
+	data.m_flScale = ( float )amount;
 	data.m_fFlags = flags;
 	data.m_nColor = color;
 
@@ -1177,25 +1201,25 @@ void UTIL_BloodSpray( const Vector &pos, const Vector &dir, int color, int amoun
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for triggering the blood effect.
 //-----------------------------------------------------------------------------
-void CBlood::InputEmitBlood( inputdata_t &inputdata )
+void CBlood::InputEmitBlood( inputdata_t& inputdata )
 {
-	if ( HasSpawnFlags( SF_BLOOD_STREAM ) )
+	if( HasSpawnFlags( SF_BLOOD_STREAM ) )
 	{
-		UTIL_BloodStream( BloodPosition(inputdata.pActivator), Direction(), Color(), BloodAmount() );
+		UTIL_BloodStream( BloodPosition( inputdata.pActivator ), Direction(), Color(), BloodAmount() );
 	}
 	else
 	{
-		UTIL_BloodDrips( BloodPosition(inputdata.pActivator), Direction(), Color(), BloodAmount() );
+		UTIL_BloodDrips( BloodPosition( inputdata.pActivator ), Direction(), Color(), BloodAmount() );
 	}
 
-	if ( HasSpawnFlags( SF_BLOOD_DECAL ) )
+	if( HasSpawnFlags( SF_BLOOD_DECAL ) )
 	{
 		Vector forward = Direction();
 		Vector start = BloodPosition( inputdata.pActivator );
 		trace_t tr;
 
 		UTIL_TraceLine( start, start + forward * BloodAmount() * 2, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
-		if ( tr.fraction != 1.0 )
+		if( tr.fraction != 1.0 )
 		{
 			UTIL_BloodDecalTrace( &tr, Color() );
 		}
@@ -1204,25 +1228,25 @@ void CBlood::InputEmitBlood( inputdata_t &inputdata )
 	//
 	// New-fangled blood effects.
 	//
-	if ( HasSpawnFlags( SF_BLOOD_CLOUD | SF_BLOOD_DROPS | SF_BLOOD_GORE ) )
+	if( HasSpawnFlags( SF_BLOOD_CLOUD | SF_BLOOD_DROPS | SF_BLOOD_GORE ) )
 	{
 		int nFlags = 0;
-		if (HasSpawnFlags(SF_BLOOD_CLOUD))
+		if( HasSpawnFlags( SF_BLOOD_CLOUD ) )
 		{
 			nFlags |= FX_BLOODSPRAY_CLOUD;
 		}
 
-		if (HasSpawnFlags(SF_BLOOD_DROPS))
+		if( HasSpawnFlags( SF_BLOOD_DROPS ) )
 		{
 			nFlags |= FX_BLOODSPRAY_DROPS;
 		}
 
-		if (HasSpawnFlags(SF_BLOOD_GORE))
+		if( HasSpawnFlags( SF_BLOOD_GORE ) )
 		{
 			nFlags |= FX_BLOODSPRAY_GORE;
 		}
 
-		UTIL_BloodSpray(GetAbsOrigin(), Direction(), Color(), BloodAmount(), nFlags);
+		UTIL_BloodSpray( GetAbsOrigin(), Direction(), Color(), BloodAmount(), nFlags );
 	}
 }
 
@@ -1230,14 +1254,14 @@ void CBlood::InputEmitBlood( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Console command for emitting the blood spray effect from an NPC.
 //-----------------------------------------------------------------------------
-void CC_BloodSpray( const CCommand &args )
+void CC_BloodSpray( const CCommand& args )
 {
-	CBaseEntity *pEnt = NULL;
-	while ( ( pEnt = gEntList.FindEntityGeneric( pEnt, args[1] ) ) != NULL )
+	CBaseEntity* pEnt = NULL;
+	while( ( pEnt = gEntList.FindEntityGeneric( pEnt, args[1] ) ) != NULL )
 	{
 		Vector forward;
-		pEnt->GetVectors(&forward, NULL, NULL);
-		UTIL_BloodSpray( (forward * 4 ) + ( pEnt->EyePosition() + pEnt->WorldSpaceCenter() ) * 0.5f, forward, BLOOD_COLOR_RED, 4, FX_BLOODSPRAY_ALL );
+		pEnt->GetVectors( &forward, NULL, NULL );
+		UTIL_BloodSpray( ( forward * 4 ) + ( pEnt->EyePosition() + pEnt->WorldSpaceCenter() ) * 0.5f, forward, BLOOD_COLOR_RED, 4, FX_BLOODSPRAY_ALL );
 	}
 }
 
@@ -1255,7 +1279,7 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	int		m_iSprite;	// Don't save, precache
 #ifdef MAPBASE
@@ -1281,28 +1305,30 @@ END_DATADESC()
 
 
 
-void CEnvFunnel::Precache ( void )
+void CEnvFunnel::Precache( void )
 {
 #ifdef MAPBASE
 	//if (m_iszSprite == NULL_STRING)
 	//	m_iszSprite = AllocPooledString("sprites/flare6.vmt");
 
 	//m_iSprite = PrecacheModel(STRING(m_iszSprite));
-	m_iSprite = PrecacheModel ( "sprites/flare6.vmt" );
+	m_iSprite = PrecacheModel( "sprites/flare6.vmt" );
 #else
-	m_iSprite = PrecacheModel ( "sprites/flare6.vmt" );
+	m_iSprite = PrecacheModel( "sprites/flare6.vmt" );
 #endif
 }
 
-void CEnvFunnel::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CEnvFunnel::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	CBroadcastRecipientFilter filter;
 	te->LargeFunnel( filter, 0.0,
-		&GetAbsOrigin(), m_iSprite, HasSpawnFlags( SF_FUNNEL_REVERSE ) ? 1 : 0 );
+					 &GetAbsOrigin(), m_iSprite, HasSpawnFlags( SF_FUNNEL_REVERSE ) ? 1 : 0 );
 
 #ifdef MAPBASE
-	if (HasSpawnFlags(SF_FUNNEL_DONT_REMOVE))
+	if( HasSpawnFlags( SF_FUNNEL_DONT_REMOVE ) )
+	{
 		return;
+	}
 #endif
 	SetThink( &CEnvFunnel::SUB_Remove );
 	SetNextThink( gpGlobals->curtime );
@@ -1326,11 +1352,11 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 
 	// Input handlers.
-	void	InputActivate( inputdata_t &inputdata );
+	void	InputActivate( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -1339,26 +1365,26 @@ public:
 	int		m_nBeverageType;
 };
 
-void CEnvBeverage::Precache ( void )
+void CEnvBeverage::Precache( void )
 {
 	PrecacheModel( "models/can.mdl" );
 }
 
 BEGIN_DATADESC( CEnvBeverage )
-	DEFINE_FIELD( m_CanInDispenser, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nBeverageType, FIELD_INTEGER ),
+DEFINE_FIELD( m_CanInDispenser, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_nBeverageType, FIELD_INTEGER ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-END_DATADESC()
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( env_beverage, CEnvBeverage );
+			  LINK_ENTITY_TO_CLASS( env_beverage, CEnvBeverage );
 
 
-bool CEnvBeverage::KeyValue( const char *szKeyName, const char *szValue )
+bool CEnvBeverage::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "beveragetype"))
+	if( FStrEq( szKeyName, "beveragetype" ) )
 	{
-		m_nBeverageType = atoi(szValue);
+		m_nBeverageType = atoi( szValue );
 	}
 	else
 	{
@@ -1368,17 +1394,17 @@ bool CEnvBeverage::KeyValue( const char *szKeyName, const char *szValue )
 	return true;
 }
 
-void CEnvBeverage::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CEnvBeverage::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	if ( m_CanInDispenser || m_iHealth <= 0 )
+	if( m_CanInDispenser || m_iHealth <= 0 )
 	{
 		// no more cans while one is waiting in the dispenser, or if I'm out of cans.
 		return;
 	}
 
-	CBaseAnimating *pCan = (CBaseAnimating *)CBaseEntity::Create( "item_sodacan", GetLocalOrigin(), GetLocalAngles(), this );
+	CBaseAnimating* pCan = ( CBaseAnimating* )CBaseEntity::Create( "item_sodacan", GetLocalOrigin(), GetLocalAngles(), this );
 
-	if ( m_nBeverageType == 6 )
+	if( m_nBeverageType == 6 )
 	{
 		// random
 		pCan->m_nSkin = random->RandomInt( 0, 5 );
@@ -1395,7 +1421,7 @@ void CEnvBeverage::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	//SetNextThink( gpGlobals->curtime );
 }
 
-void CEnvBeverage::InputActivate( inputdata_t &inputdata )
+void CEnvBeverage::InputActivate( inputdata_t& inputdata )
 {
 	Use( inputdata.pActivator, inputdata.pCaller, USE_ON, 0 );
 }
@@ -1407,7 +1433,7 @@ void CEnvBeverage::Spawn( void )
 	AddEffects( EF_NODRAW );
 	m_CanInDispenser = false;
 
-	if ( m_iHealth == 0 )
+	if( m_iHealth == 0 )
 	{
 		m_iHealth = 10;
 	}
@@ -1423,8 +1449,8 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	void	CanThink ( void );
-	void	CanTouch ( CBaseEntity *pOther );
+	void	CanThink( void );
+	void	CanTouch( CBaseEntity* pOther );
 
 	DECLARE_DATADESC();
 };
@@ -1432,15 +1458,15 @@ public:
 
 BEGIN_DATADESC( CItemSoda )
 
-	// Function Pointers
-	DEFINE_FUNCTION( CanThink ),
-	DEFINE_FUNCTION( CanTouch ),
+// Function Pointers
+DEFINE_FUNCTION( CanThink ),
+				 DEFINE_FUNCTION( CanTouch ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( item_sodacan, CItemSoda );
+				 LINK_ENTITY_TO_CLASS( item_sodacan, CItemSoda );
 
-void CItemSoda::Precache ( void )
+void CItemSoda::Precache( void )
 {
 	PrecacheModel( "models/can.mdl" );
 
@@ -1453,28 +1479,28 @@ void CItemSoda::Spawn( void )
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_FLYGRAVITY );
 
-	SetModel ( "models/can.mdl" );
-	UTIL_SetSize ( this, Vector ( 0, 0, 0 ), Vector ( 0, 0, 0 ) );
+	SetModel( "models/can.mdl" );
+	UTIL_SetSize( this, Vector( 0, 0, 0 ), Vector( 0, 0, 0 ) );
 
-	SetThink (&CItemSoda::CanThink);
+	SetThink( &CItemSoda::CanThink );
 	SetNextThink( gpGlobals->curtime + 0.5f );
 }
 
-void CItemSoda::CanThink ( void )
+void CItemSoda::CanThink( void )
 {
 	EmitSound( "ItemSoda.Bounce" );
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_TRIGGER );
-	UTIL_SetSize ( this, Vector ( -8, -8, 0 ), Vector ( 8, 8, 8 ) );
+	UTIL_SetSize( this, Vector( -8, -8, 0 ), Vector( 8, 8, 8 ) );
 
-	SetThink ( NULL );
-	SetTouch ( &CItemSoda::CanTouch );
+	SetThink( NULL );
+	SetTouch( &CItemSoda::CanTouch );
 }
 
-void CItemSoda::CanTouch ( CBaseEntity *pOther )
+void CItemSoda::CanTouch( CBaseEntity* pOther )
 {
-	if ( !pOther->IsPlayer() )
+	if( !pOther->IsPlayer() )
 	{
 		return;
 	}
@@ -1483,18 +1509,18 @@ void CItemSoda::CanTouch ( CBaseEntity *pOther )
 
 	pOther->TakeHealth( 1, DMG_GENERIC );// a bit of health.
 
-	if ( GetOwnerEntity() )
+	if( GetOwnerEntity() )
 	{
 		// tell the machine the can was taken
-		CEnvBeverage *bev = (CEnvBeverage *)GetOwnerEntity();
+		CEnvBeverage* bev = ( CEnvBeverage* )GetOwnerEntity();
 		bev->m_CanInDispenser = false;
 	}
 
 	AddSolidFlags( FSOLID_NOT_SOLID );
 	SetMoveType( MOVETYPE_NONE );
 	AddEffects( EF_NODRAW );
-	SetTouch ( NULL );
-	SetThink ( &CItemSoda::SUB_Remove );
+	SetTouch( NULL );
+	SetThink( &CItemSoda::SUB_Remove );
 	SetNextThink( gpGlobals->curtime );
 }
 
@@ -1521,19 +1547,19 @@ public:
 LINK_ENTITY_TO_CLASS( func_precipitation, CPrecipitation );
 
 BEGIN_DATADESC( CPrecipitation )
-	DEFINE_KEYFIELD( m_nPrecipType, FIELD_INTEGER, "preciptype" ),
-END_DATADESC()
+DEFINE_KEYFIELD( m_nPrecipType, FIELD_INTEGER, "preciptype" ),
+				 END_DATADESC()
 
 // Just send the normal entity crap
-IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation)
-	SendPropInt( SENDINFO( m_nPrecipType ), Q_log2( NUM_PRECIPITATION_TYPES ) + 1, SPROP_UNSIGNED ),
+				 IMPLEMENT_SERVERCLASS_ST( CPrecipitation, DT_Precipitation )
+				 SendPropInt( SENDINFO( m_nPrecipType ), Q_log2( NUM_PRECIPITATION_TYPES ) + 1, SPROP_UNSIGNED ),
 #ifdef MAPBASE
 	SendPropInt( SENDINFO( m_spawnflags ), 2, SPROP_UNSIGNED ),
 #endif
-END_SEND_TABLE()
+				 END_SEND_TABLE()
 
 
-CPrecipitation::CPrecipitation()
+				 CPrecipitation::CPrecipitation()
 {
 	m_nPrecipType = PRECIPITATION_TYPE_RAIN; // default to rain.
 }
@@ -1556,7 +1582,7 @@ void CPrecipitation::Spawn( void )
 	Precache();
 	SetMoveType( MOVETYPE_NONE );
 	SetModel( STRING( GetModelName() ) );		// Set size
-	if ( IsParticleRainType( m_nPrecipType ) )
+	if( IsParticleRainType( m_nPrecipType ) )
 	{
 		SetSolid( SOLID_VPHYSICS );
 		AddSolidFlags( FSOLID_NOT_SOLID );
@@ -1569,8 +1595,10 @@ void CPrecipitation::Spawn( void )
 	}
 
 	// Default to rain.
-	if ( m_nPrecipType < 0 || m_nPrecipType > NUM_PRECIPITATION_TYPES )
+	if( m_nPrecipType < 0 || m_nPrecipType > NUM_PRECIPITATION_TYPES )
+	{
 		m_nPrecipType = PRECIPITATION_TYPE_RAIN;
+	}
 
 	m_nRenderMode = kRenderEnvironmental;
 }
@@ -1604,14 +1632,14 @@ LINK_ENTITY_TO_CLASS( env_wind, CEnvWind );
 
 BEGIN_DATADESC( CEnvWind )
 
-	DEFINE_KEYFIELD( m_EnvWindShared.m_iMinWind, FIELD_INTEGER, "minwind" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_iMaxWind, FIELD_INTEGER, "maxwind" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_iMinGust, FIELD_INTEGER, "mingust" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_iMaxGust, FIELD_INTEGER, "maxgust" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_flMinGustDelay, FIELD_FLOAT, "mingustdelay" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_flMaxGustDelay, FIELD_FLOAT, "maxgustdelay" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_iGustDirChange, FIELD_INTEGER, "gustdirchange" ),
-	DEFINE_KEYFIELD( m_EnvWindShared.m_flGustDuration, FIELD_FLOAT, "gustduration" ),
+DEFINE_KEYFIELD( m_EnvWindShared.m_iMinWind, FIELD_INTEGER, "minwind" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_iMaxWind, FIELD_INTEGER, "maxwind" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_iMinGust, FIELD_INTEGER, "mingust" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_iMaxGust, FIELD_INTEGER, "maxgust" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_flMinGustDelay, FIELD_FLOAT, "mingustdelay" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_flMaxGustDelay, FIELD_FLOAT, "maxgustdelay" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_iGustDirChange, FIELD_INTEGER, "gustdirchange" ),
+				 DEFINE_KEYFIELD( m_EnvWindShared.m_flGustDuration, FIELD_FLOAT, "gustduration" ),
 //	DEFINE_KEYFIELD( m_EnvWindShared.m_iszGustSound, FIELD_STRING, "gustsound" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_EnvWindShared.m_windRadius, FIELD_FLOAT, "windradius" ),
@@ -1620,10 +1648,10 @@ BEGIN_DATADESC( CEnvWind )
 #endif
 
 // Just here to quiet down classcheck
-	// DEFINE_FIELD( m_EnvWindShared, CEnvWindShared ),
+				 // DEFINE_FIELD( m_EnvWindShared, CEnvWindShared ),
 
-	DEFINE_FIELD( m_EnvWindShared.m_iWindDir, FIELD_INTEGER ),
-	DEFINE_FIELD( m_EnvWindShared.m_flWindSpeed, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_EnvWindShared.m_iWindDir, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_EnvWindShared.m_flWindSpeed, FIELD_FLOAT ),
 
 #ifdef MAPBASE
 	DEFINE_INPUT( m_EnvWindShared.m_iMinWind, FIELD_INTEGER, "SetMinWind" ),
@@ -1639,48 +1667,48 @@ BEGIN_DATADESC( CEnvWind )
 	DEFINE_INPUT( m_EnvWindShared.m_flTreeSwayScale, FIELD_FLOAT, "SetTreeSwayScale" ),
 #endif
 
-	DEFINE_OUTPUT( m_EnvWindShared.m_OnGustStart, "OnGustStart" ),
-	DEFINE_OUTPUT( m_EnvWindShared.m_OnGustEnd,	"OnGustEnd" ),
+				 DEFINE_OUTPUT( m_EnvWindShared.m_OnGustStart, "OnGustStart" ),
+				 DEFINE_OUTPUT( m_EnvWindShared.m_OnGustEnd,	"OnGustEnd" ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( WindThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( WindThink ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-BEGIN_SEND_TABLE_NOBASE(CEnvWindShared, DT_EnvWindShared)
-	// These are parameters that are used to generate the entire motion
-	SendPropInt		(SENDINFO(m_iMinWind),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMaxWind),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMinGust),		10, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iMaxGust),		10, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flMinGustDelay), 0, SPROP_NOSCALE),		// NOTE: Have to do this, so it's *exactly* the same on client
-	SendPropFloat	(SENDINFO(m_flMaxGustDelay), 0, SPROP_NOSCALE),
-	SendPropInt		(SENDINFO(m_iGustDirChange), 9, SPROP_UNSIGNED ),
-	SendPropInt		(SENDINFO(m_iWindSeed),		32, SPROP_UNSIGNED ),
+				 BEGIN_SEND_TABLE_NOBASE( CEnvWindShared, DT_EnvWindShared )
+				 // These are parameters that are used to generate the entire motion
+				 SendPropInt( SENDINFO( m_iMinWind ),		10, SPROP_UNSIGNED ),
+				 SendPropInt( SENDINFO( m_iMaxWind ),		10, SPROP_UNSIGNED ),
+				 SendPropInt( SENDINFO( m_iMinGust ),		10, SPROP_UNSIGNED ),
+				 SendPropInt( SENDINFO( m_iMaxGust ),		10, SPROP_UNSIGNED ),
+				 SendPropFloat( SENDINFO( m_flMinGustDelay ), 0, SPROP_NOSCALE ),		// NOTE: Have to do this, so it's *exactly* the same on client
+				 SendPropFloat( SENDINFO( m_flMaxGustDelay ), 0, SPROP_NOSCALE ),
+				 SendPropInt( SENDINFO( m_iGustDirChange ), 9, SPROP_UNSIGNED ),
+				 SendPropInt( SENDINFO( m_iWindSeed ),		32, SPROP_UNSIGNED ),
 
-	// These are related to initial state
-	SendPropInt		(SENDINFO(m_iInitialWindDir),9, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flInitialWindSpeed),0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flStartTime),	 0, SPROP_NOSCALE ),
+				 // These are related to initial state
+				 SendPropInt( SENDINFO( m_iInitialWindDir ), 9, SPROP_UNSIGNED ),
+				 SendPropFloat( SENDINFO( m_flInitialWindSpeed ), 0, SPROP_NOSCALE ),
+				 SendPropFloat( SENDINFO( m_flStartTime ),	 0, SPROP_NOSCALE ),
 
-	SendPropFloat	(SENDINFO(m_flGustDuration), 0, SPROP_NOSCALE),
-	// Sound related
+				 SendPropFloat( SENDINFO( m_flGustDuration ), 0, SPROP_NOSCALE ),
+				 // Sound related
 //	SendPropInt		(SENDINFO(m_iszGustSound),	10, SPROP_UNSIGNED ),
 #ifdef MAPBASE
-	SendPropFloat	(SENDINFO(m_windRadius), 0, SPROP_NOSCALE),
-	SendPropFloat	(SENDINFO(m_windRadiusInner), 0, SPROP_NOSCALE),
-	SendPropVector	(SENDINFO(m_location), -1, SPROP_COORD),
-	SendPropFloat	(SENDINFO(m_flTreeSwayScale), 0, SPROP_NOSCALE),
+	SendPropFloat( SENDINFO( m_windRadius ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_windRadiusInner ), 0, SPROP_NOSCALE ),
+	SendPropVector( SENDINFO( m_location ), -1, SPROP_COORD ),
+	SendPropFloat( SENDINFO( m_flTreeSwayScale ), 0, SPROP_NOSCALE ),
 #endif
-END_SEND_TABLE()
+				 END_SEND_TABLE()
 
 // This table encodes the CBaseEntity data.
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CEnvWind, DT_EnvWind)
-	SendPropDataTable(SENDINFO_DT(m_EnvWindShared), &REFERENCE_SEND_TABLE(DT_EnvWindShared)),
-END_SEND_TABLE()
+				 IMPLEMENT_SERVERCLASS_ST_NOBASE( CEnvWind, DT_EnvWind )
+				 SendPropDataTable( SENDINFO_DT( m_EnvWindShared ), &REFERENCE_SEND_TABLE( DT_EnvWindShared ) ),
+				 END_SEND_TABLE()
 
-void CEnvWind::Precache ( void )
+				 void CEnvWind::Precache( void )
 {
 //	if (m_iszGustSound)
 //	{
@@ -1695,7 +1723,7 @@ void CEnvWind::Spawn( void )
 	AddEffects( EF_NODRAW );
 
 #ifdef MAPBASE
-	m_EnvWindShared.m_iInitialWindDir = (int)(anglemod( m_EnvWindShared.m_iInitialWindDir ));
+	m_EnvWindShared.m_iInitialWindDir = ( int )( anglemod( m_EnvWindShared.m_iInitialWindDir ) );
 	m_EnvWindShared.Init( entindex(), 0, gpGlobals->curtime, GetLocalAngles().y, 0 );
 	m_EnvWindShared.m_location = GetAbsOrigin();
 #else
@@ -1734,7 +1762,7 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 
-	void	EmberUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	EmberUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	CNetworkVar( int, m_nDensity );
 	CNetworkVar( int, m_nLifetime );
@@ -1751,30 +1779,30 @@ LINK_ENTITY_TO_CLASS( env_embers, CEmbers );
 //Data description
 BEGIN_DATADESC( CEmbers )
 
-	DEFINE_KEYFIELD( m_nDensity,	FIELD_INTEGER, "density" ),
-	DEFINE_KEYFIELD( m_nLifetime,	FIELD_INTEGER, "lifetime" ),
-	DEFINE_KEYFIELD( m_nSpeed,		FIELD_INTEGER, "speed" ),
+DEFINE_KEYFIELD( m_nDensity,	FIELD_INTEGER, "density" ),
+					DEFINE_KEYFIELD( m_nLifetime,	FIELD_INTEGER, "lifetime" ),
+					DEFINE_KEYFIELD( m_nSpeed,		FIELD_INTEGER, "speed" ),
 
-	DEFINE_FIELD( m_bEmit,	FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_bEmit,	FIELD_BOOLEAN ),
 
-	//Function pointers
-	DEFINE_FUNCTION( EmberUse ),
+					//Function pointers
+					DEFINE_FUNCTION( EmberUse ),
 
-END_DATADESC()
+					END_DATADESC()
 
 
 //Data table
-IMPLEMENT_SERVERCLASS_ST( CEmbers, DT_Embers )
-	SendPropInt(	SENDINFO( m_nDensity ),		32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_nLifetime ),	32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_nSpeed ),		32,	SPROP_UNSIGNED ),
-	SendPropInt(	SENDINFO( m_bEmit ),		2,	SPROP_UNSIGNED ),
-END_SEND_TABLE()
+					IMPLEMENT_SERVERCLASS_ST( CEmbers, DT_Embers )
+					SendPropInt(	SENDINFO( m_nDensity ),		32,	SPROP_UNSIGNED ),
+					SendPropInt(	SENDINFO( m_nLifetime ),	32,	SPROP_UNSIGNED ),
+					SendPropInt(	SENDINFO( m_nSpeed ),		32,	SPROP_UNSIGNED ),
+					SendPropInt(	SENDINFO( m_bEmit ),		2,	SPROP_UNSIGNED ),
+					END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CEmbers::Spawn( void )
+					void CEmbers::Spawn( void )
 {
 	Precache();
 	SetModel( STRING( GetModelName() ) );
@@ -1803,33 +1831,33 @@ void CEmbers::Precache( void )
 //			useType -
 //			value -
 //-----------------------------------------------------------------------------
-void CEmbers::EmberUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CEmbers::EmberUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	//If we're not toggable, only allow one use
-	if ( !HasSpawnFlags( bitsSF_EMBERS_TOGGLE ) )
+	if( !HasSpawnFlags( bitsSF_EMBERS_TOGGLE ) )
 	{
 		SetUse( NULL );
 	}
 
 	//Handle it
-	switch ( useType )
+	switch( useType )
 	{
-	case USE_OFF:
-		m_bEmit = false;
-		break;
+		case USE_OFF:
+			m_bEmit = false;
+			break;
 
-	case USE_ON:
-		m_bEmit = true;
-		break;
+		case USE_ON:
+			m_bEmit = true;
+			break;
 
-	case USE_SET:
-		m_bEmit = !!(int)value;
-		break;
+		case USE_SET:
+			m_bEmit = !!( int )value;
+			break;
 
-	default:
-	case USE_TOGGLE:
-		m_bEmit = !m_bEmit;
-		break;
+		default:
+		case USE_TOGGLE:
+			m_bEmit = !m_bEmit;
+			break;
 	}
 }
 
@@ -1858,21 +1886,21 @@ LINK_ENTITY_TO_CLASS( env_physwire, CPhysicsWire );
 
 BEGIN_DATADESC( CPhysicsWire )
 
-	DEFINE_KEYFIELD( m_nDensity,	FIELD_INTEGER, "Density" ),
+DEFINE_KEYFIELD( m_nDensity,	FIELD_INTEGER, "Density" ),
 //	DEFINE_KEYFIELD( m_frequency, FIELD_INTEGER, "frequency" ),
 
 //	DEFINE_FIELD( m_flFoo, FIELD_FLOAT ),
 
-	// Function Pointers
+					// Function Pointers
 //	DEFINE_FUNCTION( WireThink ),
 
-END_DATADESC()
+					END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CPhysicsWire::Spawn( void )
+					void CPhysicsWire::Spawn( void )
 {
 	BaseClass::Spawn();
 
@@ -1897,45 +1925,45 @@ class CPhysBallSocket;
 //-----------------------------------------------------------------------------
 bool CPhysicsWire::SetupPhysics( void )
 {
-/*
-	CPointEntity	*anchorEnt, *freeEnt;
-	CPhysBallSocket *socket;
+	/*
+		CPointEntity	*anchorEnt, *freeEnt;
+		CPhysBallSocket *socket;
 
-	char	anchorName[256];
-	char	freeName[256];
+		char	anchorName[256];
+		char	freeName[256];
 
-	int		iAnchorName, iFreeName;
+		int		iAnchorName, iFreeName;
 
-	anchorEnt = (CPointEntity *) CreateEntityByName( "info_target" );
+		anchorEnt = (CPointEntity *) CreateEntityByName( "info_target" );
 
-	if ( anchorEnt == NULL )
-		return false;
+		if ( anchorEnt == NULL )
+			return false;
 
-	//Create and connect all segments
-	for ( int i = 0; i < m_nDensity; i++ )
-	{
-		// Create other end of our link
-		freeEnt = (CPointEntity *) CreateEntityByName( "info_target" );
+		//Create and connect all segments
+		for ( int i = 0; i < m_nDensity; i++ )
+		{
+			// Create other end of our link
+			freeEnt = (CPointEntity *) CreateEntityByName( "info_target" );
 
-		// Create a ballsocket and attach the two
-		//socket = (CPhysBallSocket *) CreateEntityByName( "phys_ballsocket" );
+			// Create a ballsocket and attach the two
+			//socket = (CPhysBallSocket *) CreateEntityByName( "phys_ballsocket" );
 
-		Q_snprintf( anchorName,sizeof(anchorName), "__PWIREANCHOR%d", i );
-		Q_snprintf( freeName,sizeof(freeName), "__PWIREFREE%d", i+1 );
+			Q_snprintf( anchorName,sizeof(anchorName), "__PWIREANCHOR%d", i );
+			Q_snprintf( freeName,sizeof(freeName), "__PWIREFREE%d", i+1 );
 
-		iAnchorName = MAKE_STRING( anchorName );
-		iFreeName	= MAKE_STRING( freeName );
+			iAnchorName = MAKE_STRING( anchorName );
+			iFreeName	= MAKE_STRING( freeName );
 
-		//Fake the names
-		//socket->m_nameAttach1 = anchorEnt->m_iGlobalname	= iAnchorName;
-		//socket->m_nameAttach2 = freeEnt->m_iGlobalname	= iFreeName
+			//Fake the names
+			//socket->m_nameAttach1 = anchorEnt->m_iGlobalname	= iAnchorName;
+			//socket->m_nameAttach2 = freeEnt->m_iGlobalname	= iFreeName
 
-		//socket->Activate();
+			//socket->Activate();
 
-		//The free ent is now the anchor for the next link
-		anchorEnt = freeEnt;
-	}
-*/
+			//The free ent is now the anchor for the next link
+			anchorEnt = freeEnt;
+		}
+	*/
 
 	return true;
 }
@@ -1952,7 +1980,7 @@ public:
 	virtual void Spawn();
 
 	// Input handlers
-	void	InputFire( inputdata_t &inputdata );
+	void	InputFire( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -1962,15 +1990,15 @@ public:
 
 BEGIN_DATADESC( CEnvMuzzleFlash )
 
-	DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "scale" ),
-	DEFINE_KEYFIELD( m_iszParentAttachment, FIELD_STRING, "parentattachment" ),
+DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "scale" ),
+				 DEFINE_KEYFIELD( m_iszParentAttachment, FIELD_STRING, "parentattachment" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Fire", InputFire ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Fire", InputFire ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( env_muzzleflash, CEnvMuzzleFlash );
+				 LINK_ENTITY_TO_CLASS( env_muzzleflash, CEnvMuzzleFlash );
 
 
 //-----------------------------------------------------------------------------
@@ -1978,11 +2006,11 @@ LINK_ENTITY_TO_CLASS( env_muzzleflash, CEnvMuzzleFlash );
 //-----------------------------------------------------------------------------
 void CEnvMuzzleFlash::Spawn()
 {
-	if ( (m_iszParentAttachment != NULL_STRING) && GetParent() && GetParent()->GetBaseAnimating() )
+	if( ( m_iszParentAttachment != NULL_STRING ) && GetParent() && GetParent()->GetBaseAnimating() )
 	{
-		CBaseAnimating *pAnim = GetParent()->GetBaseAnimating();
-		int nParentAttachment = pAnim->LookupAttachment( STRING(m_iszParentAttachment) );
-		if ( nParentAttachment > 0 )
+		CBaseAnimating* pAnim = GetParent()->GetBaseAnimating();
+		int nParentAttachment = pAnim->LookupAttachment( STRING( m_iszParentAttachment ) );
+		if( nParentAttachment > 0 )
 		{
 			SetParent( GetParent(), nParentAttachment );
 			SetLocalOrigin( vec3_origin );
@@ -1996,7 +2024,7 @@ void CEnvMuzzleFlash::Spawn()
 // Purpose:
 // Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMuzzleFlash::InputFire( inputdata_t &inputdata )
+void CEnvMuzzleFlash::InputFire( inputdata_t& inputdata )
 {
 	g_pEffects->MuzzleFlash( GetAbsOrigin(), GetAbsAngles(), m_flScale, MUZZLEFLASH_TYPE_DEFAULT );
 }
@@ -2013,7 +2041,7 @@ class CEnvSplash : public CPointEntity
 
 public:
 	// Input handlers
-	void	InputSplash( inputdata_t &inputdata );
+	void	InputSplash( inputdata_t& inputdata );
 
 protected:
 
@@ -2023,19 +2051,19 @@ protected:
 };
 
 BEGIN_DATADESC( CEnvSplash )
-	DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "scale" ),
+DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "scale" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Splash", InputSplash ),
-END_DATADESC()
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Splash", InputSplash ),
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( env_splash, CEnvSplash );
+				 LINK_ENTITY_TO_CLASS( env_splash, CEnvSplash );
 
 //-----------------------------------------------------------------------------
 // Purpose:
 // Input  : &inputdata -
 //-----------------------------------------------------------------------------
 #define SPLASH_MAX_DEPTH	120.0f
-void CEnvSplash::InputSplash( inputdata_t &inputdata )
+void CEnvSplash::InputSplash( inputdata_t& inputdata )
 {
 	CEffectData	data;
 
@@ -2045,7 +2073,7 @@ void CEnvSplash::InputSplash( inputdata_t &inputdata )
 
 	if( HasSpawnFlags( SF_ENVSPLASH_FINDWATERSURFACE ) )
 	{
-		if( UTIL_PointContents(GetAbsOrigin()) & MASK_WATER )
+		if( UTIL_PointContents( GetAbsOrigin() ) & MASK_WATER )
 		{
 			// No splash if I'm supposed to find the surface of the water, but I'm underwater.
 			return;
@@ -2054,10 +2082,10 @@ void CEnvSplash::InputSplash( inputdata_t &inputdata )
 		// Trace down and find the water's surface. This is designed for making
 		// splashes on the surface of water that can change water level.
 		trace_t tr;
-		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 4096 ), (MASK_WATER|MASK_SOLID_BRUSHONLY), this, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 4096 ), ( MASK_WATER | MASK_SOLID_BRUSHONLY ), this, COLLISION_GROUP_NONE, &tr );
 		data.m_vOrigin = tr.endpos;
 
-		if ( tr.contents & CONTENTS_SLIME )
+		if( tr.contents & CONTENTS_SLIME )
 		{
 			data.m_fFlags |= FX_WATER_IN_SLIME;
 		}
@@ -2077,7 +2105,7 @@ void CEnvSplash::InputSplash( inputdata_t &inputdata )
 
 		depth = fabs( tr.startpos.z - tr.endpos.z );
 
-		float factor = 1.0f - (depth / SPLASH_MAX_DEPTH);
+		float factor = 1.0f - ( depth / SPLASH_MAX_DEPTH );
 
 		if( factor < 0.1 )
 		{
@@ -2119,11 +2147,11 @@ public:
 	void ShootThink();
 	void UpdateTarget();
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void InputFireBurst( inputdata_t &inputdata );
+	void InputFireBurst( inputdata_t& inputdata );
 #endif
 
 	int	m_iMinBurstSize;
@@ -2160,36 +2188,36 @@ public:
 };
 
 BEGIN_DATADESC( CEnvGunfire )
-	DEFINE_KEYFIELD( m_iMinBurstSize, FIELD_INTEGER, "minburstsize" ),
-	DEFINE_KEYFIELD( m_iMaxBurstSize, FIELD_INTEGER, "maxburstsize" ),
-	DEFINE_KEYFIELD( m_flMinBurstDelay, FIELD_TIME, "minburstdelay" ),
-	DEFINE_KEYFIELD( m_flMaxBurstDelay, FIELD_TIME, "maxburstdelay" ),
-	DEFINE_KEYFIELD( m_flRateOfFire, FIELD_FLOAT, "rateoffire" ),
-	DEFINE_KEYFIELD( m_iszShootSound, FIELD_STRING, "shootsound" ),
-	DEFINE_KEYFIELD( m_iszTracerType, FIELD_STRING, "tracertype" ),
-	DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "startdisabled" ),
-	DEFINE_KEYFIELD( m_iSpread, FIELD_INTEGER, "spread" ),
-	DEFINE_KEYFIELD( m_flBias, FIELD_FLOAT, "bias" ),
-	DEFINE_KEYFIELD( m_bCollide, FIELD_BOOLEAN, "collisions" ),
+DEFINE_KEYFIELD( m_iMinBurstSize, FIELD_INTEGER, "minburstsize" ),
+				 DEFINE_KEYFIELD( m_iMaxBurstSize, FIELD_INTEGER, "maxburstsize" ),
+				 DEFINE_KEYFIELD( m_flMinBurstDelay, FIELD_TIME, "minburstdelay" ),
+				 DEFINE_KEYFIELD( m_flMaxBurstDelay, FIELD_TIME, "maxburstdelay" ),
+				 DEFINE_KEYFIELD( m_flRateOfFire, FIELD_FLOAT, "rateoffire" ),
+				 DEFINE_KEYFIELD( m_iszShootSound, FIELD_STRING, "shootsound" ),
+				 DEFINE_KEYFIELD( m_iszTracerType, FIELD_STRING, "tracertype" ),
+				 DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "startdisabled" ),
+				 DEFINE_KEYFIELD( m_iSpread, FIELD_INTEGER, "spread" ),
+				 DEFINE_KEYFIELD( m_flBias, FIELD_FLOAT, "bias" ),
+				 DEFINE_KEYFIELD( m_bCollide, FIELD_BOOLEAN, "collisions" ),
 
-	DEFINE_FIELD( m_iShotsRemaining, FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecSpread, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecTargetPosition, FIELD_VECTOR ),
-	DEFINE_FIELD( m_flTargetDist, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_iShotsRemaining, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_vecSpread, FIELD_VECTOR ),
+				 DEFINE_FIELD( m_vecTargetPosition, FIELD_VECTOR ),
+				 DEFINE_FIELD( m_flTargetDist, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
 
-	DEFINE_THINKFUNC( ShootThink ),
+				 DEFINE_THINKFUNC( ShootThink ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "FireBurst", InputFireBurst ),
 
 	DEFINE_OUTPUT( m_OnFire, "OnFire" ),
 #endif
-END_DATADESC()
-LINK_ENTITY_TO_CLASS( env_gunfire, CEnvGunfire );
+				 END_DATADESC()
+				 LINK_ENTITY_TO_CLASS( env_gunfire, CEnvGunfire );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -2209,22 +2237,22 @@ void CEnvGunfire::Spawn()
 
 	switch( m_iSpread )
 	{
-	case 1:
-		m_vecSpread = VECTOR_CONE_1DEGREES;
-		break;
-	case 5:
-		m_vecSpread = VECTOR_CONE_5DEGREES;
-		break;
-	case 10:
-		m_vecSpread = VECTOR_CONE_10DEGREES;
-		break;
-	case 15:
-		m_vecSpread = VECTOR_CONE_15DEGREES;
-		break;
+		case 1:
+			m_vecSpread = VECTOR_CONE_1DEGREES;
+			break;
+		case 5:
+			m_vecSpread = VECTOR_CONE_5DEGREES;
+			break;
+		case 10:
+			m_vecSpread = VECTOR_CONE_10DEGREES;
+			break;
+		case 15:
+			m_vecSpread = VECTOR_CONE_15DEGREES;
+			break;
 
-	default:
-		m_vecSpread = vec3_origin;
-		break;
+		default:
+			m_vecSpread = vec3_origin;
+			break;
 	}
 
 	if( !m_bDisabled )
@@ -2238,7 +2266,7 @@ void CEnvGunfire::Spawn()
 void CEnvGunfire::Activate( void )
 {
 	// Find my target
-	if (m_target != NULL_STRING)
+	if( m_target != NULL_STRING )
 	{
 		m_hTarget = gEntList.FindEntityByName( NULL, m_target );
 	}
@@ -2267,7 +2295,7 @@ void CEnvGunfire::UpdateTarget()
 			// Target has moved.
 			// Locate my target and cache the position and distance.
 			m_vecTargetPosition = m_hTarget->WorldSpaceCenter();
-			m_flTargetDist = (GetAbsOrigin() - m_vecTargetPosition).Length();
+			m_flTargetDist = ( GetAbsOrigin() - m_vecTargetPosition ).Length();
 		}
 	}
 }
@@ -2321,25 +2349,25 @@ void CEnvGunfire::ShootThink()
 
 	if( m_iszTracerType != NULL_STRING )
 	{
-		UTIL_Tracer( GetAbsOrigin(), vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, STRING(m_iszTracerType) );
+		UTIL_Tracer( GetAbsOrigin(), vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, STRING( m_iszTracerType ) );
 	}
 	else
 	{
 		UTIL_Tracer( GetAbsOrigin(), vecEnd, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true );
 	}
 
-	EmitSound( STRING(m_iszShootSound) );
+	EmitSound( STRING( m_iszShootSound ) );
 
 	m_iShotsRemaining--;
 
 #ifdef MAPBASE
-	m_OnFire.FireOutput(m_hTarget, this);
+	m_OnFire.FireOutput( m_hTarget, this );
 #endif
 
 	if( m_iShotsRemaining == 0 )
 	{
 #ifdef MAPBASE
-		if (m_bDisabled)
+		if( m_bDisabled )
 		{
 			StopShooting();
 		}
@@ -2357,7 +2385,7 @@ void CEnvGunfire::ShootThink()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvGunfire::InputEnable( inputdata_t &inputdata )
+void CEnvGunfire::InputEnable( inputdata_t& inputdata )
 {
 	m_bDisabled = false;
 	StartShooting();
@@ -2365,7 +2393,7 @@ void CEnvGunfire::InputEnable( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvGunfire::InputDisable( inputdata_t &inputdata )
+void CEnvGunfire::InputDisable( inputdata_t& inputdata )
 {
 	m_bDisabled = true;
 	SetThink( NULL );
@@ -2374,7 +2402,7 @@ void CEnvGunfire::InputDisable( inputdata_t &inputdata )
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvGunfire::InputFireBurst( inputdata_t &inputdata )
+void CEnvGunfire::InputFireBurst( inputdata_t& inputdata )
 {
 	m_iShotsRemaining = inputdata.value.Int();
 
@@ -2387,39 +2415,39 @@ void CEnvGunfire::InputFireBurst( inputdata_t &inputdata )
 // Quadratic spline beam effect
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CEnvQuadraticBeam )
-	DEFINE_FIELD( m_targetPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_controlPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_scrollRate, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flWidth, FIELD_FLOAT ),
-END_DATADESC()
+DEFINE_FIELD( m_targetPosition, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_controlPosition, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_scrollRate, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flWidth, FIELD_FLOAT ),
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( env_quadraticbeam, CEnvQuadraticBeam );
+			  LINK_ENTITY_TO_CLASS( env_quadraticbeam, CEnvQuadraticBeam );
 
 IMPLEMENT_SERVERCLASS_ST( CEnvQuadraticBeam, DT_QuadraticBeam )
-	SendPropVector(SENDINFO(m_targetPosition), -1, SPROP_COORD),
-	SendPropVector(SENDINFO(m_controlPosition), -1, SPROP_COORD),
-	SendPropFloat(SENDINFO(m_scrollRate), 8, 0, -4, 4),
-	SendPropFloat(SENDINFO(m_flWidth), -1, SPROP_NOSCALE),
-END_SEND_TABLE()
+SendPropVector( SENDINFO( m_targetPosition ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_controlPosition ), -1, SPROP_COORD ),
+				SendPropFloat( SENDINFO( m_scrollRate ), 8, 0, -4, 4 ),
+				SendPropFloat( SENDINFO( m_flWidth ), -1, SPROP_NOSCALE ),
+				END_SEND_TABLE()
 
-void CEnvQuadraticBeam::Spawn()
+				void CEnvQuadraticBeam::Spawn()
 {
 	BaseClass::Spawn();
 	m_nRenderMode = kRenderTransAdd;
 	SetRenderColor( 255, 255, 255 );
 }
 
-CEnvQuadraticBeam *CreateQuadraticBeam( const char *pSpriteName, const Vector &start, const Vector &control, const Vector &end, float width, CBaseEntity *pOwner )
+CEnvQuadraticBeam* CreateQuadraticBeam( const char* pSpriteName, const Vector& start, const Vector& control, const Vector& end, float width, CBaseEntity* pOwner )
 {
-	CEnvQuadraticBeam *pBeam = (CEnvQuadraticBeam *)CBaseEntity::Create( "env_quadraticbeam", start, vec3_angle, pOwner );
+	CEnvQuadraticBeam* pBeam = ( CEnvQuadraticBeam* )CBaseEntity::Create( "env_quadraticbeam", start, vec3_angle, pOwner );
 	UTIL_SetModel( pBeam, pSpriteName );
 	pBeam->SetSpline( control, end );
 	pBeam->SetScrollRate( 0.0 );
-	pBeam->SetWidth(width);
+	pBeam->SetWidth( width );
 	return pBeam;
 }
 
-void EffectsPrecache( void *pUser )
+void EffectsPrecache( void* pUser )
 {
 	CBaseEntity::PrecacheScriptSound( "Underwater.BulletImpact" );
 
@@ -2429,7 +2457,7 @@ void EffectsPrecache( void *pUser )
 	CBaseEntity::PrecacheScriptSound( "BaseExplosionEffect.Sound" );
 	CBaseEntity::PrecacheScriptSound( "Splash.SplashSound" );
 
-	if ( gpGlobals->maxClients > 1 )
+	if( gpGlobals->maxClients > 1 )
 	{
 		CBaseEntity::PrecacheScriptSound( "HudChat.Message" );
 	}
@@ -2447,7 +2475,7 @@ public:
 	virtual void Spawn();
 
 	// Input handlers
-	void InputViewPunch( inputdata_t &inputdata );
+	void InputViewPunch( inputdata_t& inputdata );
 
 private:
 
@@ -2463,12 +2491,12 @@ LINK_ENTITY_TO_CLASS( env_viewpunch, CEnvViewPunch );
 
 BEGIN_DATADESC( CEnvViewPunch )
 
-	DEFINE_KEYFIELD( m_angViewPunch, FIELD_VECTOR, "punchangle" ),
-	DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
+DEFINE_KEYFIELD( m_angViewPunch, FIELD_VECTOR, "punchangle" ),
+				 DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "ViewPunch", InputViewPunch ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "ViewPunch", InputViewPunch ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 #define SF_PUNCH_EVERYONE	0x0001		// Don't check radius
 #define SF_PUNCH_IN_AIR		0x0002		// Punch players in air
@@ -2476,12 +2504,12 @@ END_DATADESC()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvViewPunch::Spawn( void )
+				 void CEnvViewPunch::Spawn( void )
 {
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_NONE );
 
-	if ( GetSpawnFlags() & SF_PUNCH_EVERYONE )
+	if( GetSpawnFlags() & SF_PUNCH_EVERYONE )
 	{
 		m_flRadius = 0;
 	}
@@ -2492,14 +2520,14 @@ void CEnvViewPunch::Spawn( void )
 //-----------------------------------------------------------------------------
 void CEnvViewPunch::DoViewPunch()
 {
-	bool bAir = (GetSpawnFlags() & SF_PUNCH_IN_AIR) ? true : false;
+	bool bAir = ( GetSpawnFlags() & SF_PUNCH_IN_AIR ) ? true : false;
 	UTIL_ViewPunch( GetAbsOrigin(), m_angViewPunch, m_flRadius, bAir );
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvViewPunch::InputViewPunch( inputdata_t &inputdata )
+void CEnvViewPunch::InputViewPunch( inputdata_t& inputdata )
 {
 	DoViewPunch();
 }
@@ -2511,7 +2539,7 @@ class CBreakableGibShooter : public CBaseEntity
 	DECLARE_DATADESC();
 public:
 
-	int GetRandomTemplateModelIndex( CPointTemplate *pTemplate );
+	int GetRandomTemplateModelIndex( CPointTemplate* pTemplate );
 
 	void		Precache( void );
 
@@ -2520,7 +2548,7 @@ public:
 	// ----------------
 	//	Inputs
 	// ----------------
-	void InputShoot( inputdata_t &inputdata );
+	void InputShoot( inputdata_t& inputdata );
 
 public:
 
@@ -2543,69 +2571,77 @@ public:
 
 BEGIN_DATADESC( CBreakableGibShooter )
 
-	DEFINE_KEYFIELD( m_iModelType, FIELD_INTEGER, "modeltype" ),
-	DEFINE_INPUT( m_iCount, FIELD_INTEGER, "SetCount" ),
-	DEFINE_INPUT( m_flDelay, FIELD_FLOAT, "SetDelay" ),
-	DEFINE_INPUT( m_vecGibSize, FIELD_VECTOR, "SetGibSize" ),
-	DEFINE_INPUT( m_flGibSpeed, FIELD_FLOAT, "SetGibSpeed" ),
-	DEFINE_INPUT( m_iRandomization, FIELD_INTEGER, "SetRandomization" ),
-	DEFINE_INPUT( m_flLifetime, FIELD_FLOAT, "SetLifetime" ),
-	DEFINE_INPUT( m_iGibFlags, FIELD_INTEGER, "SetGibFlags" ),
+DEFINE_KEYFIELD( m_iModelType, FIELD_INTEGER, "modeltype" ),
+				 DEFINE_INPUT( m_iCount, FIELD_INTEGER, "SetCount" ),
+				 DEFINE_INPUT( m_flDelay, FIELD_FLOAT, "SetDelay" ),
+				 DEFINE_INPUT( m_vecGibSize, FIELD_VECTOR, "SetGibSize" ),
+				 DEFINE_INPUT( m_flGibSpeed, FIELD_FLOAT, "SetGibSpeed" ),
+				 DEFINE_INPUT( m_iRandomization, FIELD_INTEGER, "SetRandomization" ),
+				 DEFINE_INPUT( m_flLifetime, FIELD_FLOAT, "SetLifetime" ),
+				 DEFINE_INPUT( m_iGibFlags, FIELD_INTEGER, "SetGibFlags" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Shoot", InputShoot ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Shoot", InputShoot ),
 
-END_DATADESC()
-
-
-LINK_ENTITY_TO_CLASS( env_break_shooter, CBreakableGibShooter );
+				 END_DATADESC()
 
 
-int CBreakableGibShooter::GetRandomTemplateModelIndex( CPointTemplate *pTemplate )
+				 LINK_ENTITY_TO_CLASS( env_break_shooter, CBreakableGibShooter );
+
+
+int CBreakableGibShooter::GetRandomTemplateModelIndex( CPointTemplate* pTemplate )
 {
 	int iIndex = RandomInt( 0, pTemplate->GetNumTemplates() );
-	const char *szTemplate = STRING(Templates_FindByIndex(pTemplate->GetTemplateIndexForTemplate(iIndex)));
+	const char* szTemplate = STRING( Templates_FindByIndex( pTemplate->GetTemplateIndexForTemplate( iIndex ) ) );
 
 	// This might seem a little messy, but I think it's cheaper than creating the entity.
 	char szModel[MAPKEY_MAXLENGTH];
-	bool modelExtracted = MapEntity_ExtractValue(szTemplate, "model", szModel);
+	bool modelExtracted = MapEntity_ExtractValue( szTemplate, "model", szModel );
 
 	return modelinfo->GetModelIndex( modelExtracted ? szModel : NULL );
 }
 
 void CBreakableGibShooter::Precache( void )
 {
-	if (m_iModelType == MODELTYPE_MODEL)
-		PrecacheModel( STRING(GetModelName()) );
+	if( m_iModelType == MODELTYPE_MODEL )
+	{
+		PrecacheModel( STRING( GetModelName() ) );
+	}
 }
 
 void CBreakableGibShooter::Shoot( void )
 {
 	int iModelIndex = 0;
-	if (m_iModelType == MODELTYPE_MODEL)
-		iModelIndex = modelinfo->GetModelIndex( STRING(GetModelName()) );
-
-	CPointTemplate *pTemplate = NULL;
-	if (m_iModelType == MODELTYPE_TEMPLATE)
+	if( m_iModelType == MODELTYPE_MODEL )
 	{
-		pTemplate = dynamic_cast<CPointTemplate*>(gEntList.FindEntityByName(NULL, STRING(GetModelName()), this));
-		if (!pTemplate)
+		iModelIndex = modelinfo->GetModelIndex( STRING( GetModelName() ) );
+	}
+
+	CPointTemplate* pTemplate = NULL;
+	if( m_iModelType == MODELTYPE_TEMPLATE )
+	{
+		pTemplate = dynamic_cast<CPointTemplate*>( gEntList.FindEntityByName( NULL, STRING( GetModelName() ), this ) );
+		if( !pTemplate )
 		{
-			Warning("%s cannot find point_template %s!\n", GetDebugName(), STRING(GetModelName()));
+			Warning( "%s cannot find point_template %s!\n", GetDebugName(), STRING( GetModelName() ) );
 			return;
 		}
 	}
 
 	CPVSFilter filter( GetAbsOrigin() );
-	for ( int i = 0; i < m_iCount; i++ )
+	for( int i = 0; i < m_iCount; i++ )
 	{
-		if (m_iModelType == MODELTYPE_BREAKABLECHUNKS)
+		if( m_iModelType == MODELTYPE_BREAKABLECHUNKS )
+		{
 			iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( STRING( GetModelName() ) ) );
-		else if (m_iModelType == MODELTYPE_TEMPLATE)
+		}
+		else if( m_iModelType == MODELTYPE_TEMPLATE )
+		{
 			iModelIndex = GetRandomTemplateModelIndex( pTemplate );
+		}
 
 		// All objects except the first one in this run are marked as slaves...
 		int slaveFlag = 0;
-		if ( i != 0 )
+		if( i != 0 )
 		{
 			slaveFlag = BREAK_SLAVE;
 		}
@@ -2618,7 +2654,7 @@ void CBreakableGibShooter::Shoot( void )
 	}
 }
 
-void CBreakableGibShooter::InputShoot( inputdata_t &inputdata )
+void CBreakableGibShooter::InputShoot( inputdata_t& inputdata )
 {
 	Shoot();
 }

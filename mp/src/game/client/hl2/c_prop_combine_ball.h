@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define CPROPCOMBINEBALL_H_
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class C_PropCombineBall : public C_BaseAnimating
@@ -36,9 +36,9 @@ protected:
 	bool	m_bHeld;
 	bool	m_bLaunched;
 
-	IMaterial	*m_pFlickerMaterial;
-	IMaterial	*m_pBodyMaterial;
-	IMaterial	*m_pBlurMaterial;
+	IMaterial*	m_pFlickerMaterial;
+	IMaterial*	m_pBodyMaterial;
+	IMaterial*	m_pBlurMaterial;
 };
 
 

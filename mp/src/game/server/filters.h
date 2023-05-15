@@ -2,7 +2,7 @@
 //
 // Purpose: Filters are outboard entities that hold a set of rules that other
 //			entities can use to determine behaviors.
-//			
+//
 //			For example, triggers can use an activator filter to determine who
 //			activates them. NPCs and breakables can use a damage filter to
 //			determine what can damage them.
@@ -22,7 +22,7 @@
 #ifndef FILTERS_H
 #define FILTERS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "baseentity.h"
@@ -42,21 +42,30 @@ public:
 	DECLARE_ENT_SCRIPTDESC();
 #endif
 
-	bool PassesFilter( CBaseEntity *pCaller, CBaseEntity *pEntity );
+	bool PassesFilter( CBaseEntity* pCaller, CBaseEntity* pEntity );
 #ifdef MAPBASE
-	bool PassesDamageFilter( CBaseEntity *pCaller, const CTakeDamageInfo &info );
+	bool PassesDamageFilter( CBaseEntity* pCaller, const CTakeDamageInfo& info );
 
 	// This was made for filter_damage_transfer. Should return true on all other filters.
-	virtual bool PassesFinalDamageFilter( CBaseEntity *pCaller, const CTakeDamageInfo &info ) { return true; }
+	virtual bool PassesFinalDamageFilter( CBaseEntity* pCaller, const CTakeDamageInfo& info )
+	{
+		return true;
+	}
 
-	virtual bool BloodAllowed( CBaseEntity *pCaller, const CTakeDamageInfo &info ) { return true; }
+	virtual bool BloodAllowed( CBaseEntity* pCaller, const CTakeDamageInfo& info )
+	{
+		return true;
+	}
 
-	virtual bool DamageMod( CBaseEntity *pCaller, CTakeDamageInfo &info ) { return false; }
+	virtual bool DamageMod( CBaseEntity* pCaller, CTakeDamageInfo& info )
+	{
+		return false;
+	}
 
 	// Deprecated. Pass the caller in front.
-	bool PassesDamageFilter( const CTakeDamageInfo &info );
+	bool PassesDamageFilter( const CTakeDamageInfo& info );
 #else
-	bool PassesDamageFilter( const CTakeDamageInfo &info );
+	bool PassesDamageFilter( const CTakeDamageInfo& info );
 #endif
 
 #ifdef MAPBASE_VSCRIPT
@@ -70,11 +79,11 @@ public:
 	bool m_bNegated;
 
 	// Inputs
-	void InputTestActivator( inputdata_t &inputdata );
+	void InputTestActivator( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void InputTestEntity( inputdata_t &inputdata );
-	virtual void InputSetField( inputdata_t &inputdata );
+	void InputTestEntity( inputdata_t& inputdata );
+	virtual void InputSetField( inputdata_t& inputdata );
 
 	bool m_bPassCallerWhenTested;
 #endif
@@ -85,11 +94,11 @@ public:
 
 protected:
 
-	virtual bool PassesFilterImpl( CBaseEntity *pCaller, CBaseEntity *pEntity );
+	virtual bool PassesFilterImpl( CBaseEntity* pCaller, CBaseEntity* pEntity );
 #ifdef MAPBASE
-	virtual bool PassesDamageFilterImpl(CBaseEntity *pCaller, const CTakeDamageInfo &info);
+	virtual bool PassesDamageFilterImpl( CBaseEntity* pCaller, const CTakeDamageInfo& info );
 #else
-	virtual bool PassesDamageFilterImpl(const CTakeDamageInfo &info);
+	virtual bool PassesDamageFilterImpl( const CTakeDamageInfo& info );
 #endif
 };
 
@@ -104,26 +113,28 @@ protected:
 class CTraceFilterEntityFilter : public CTraceFilterSimple
 {
 public:
-	CTraceFilterEntityFilter( const IHandleEntity *passentity, int collisionGroup ) : CTraceFilterSimple( passentity, collisionGroup ) {}
+	CTraceFilterEntityFilter( const IHandleEntity* passentity, int collisionGroup ) : CTraceFilterSimple( passentity, collisionGroup ) {}
 	CTraceFilterEntityFilter( int collisionGroup ) : CTraceFilterSimple( NULL, collisionGroup ) {}
 
-	bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
+	bool ShouldHitEntity( IHandleEntity* pHandleEntity, int contentsMask )
 	{
 		bool base = CTraceFilterSimple::ShouldHitEntity( pHandleEntity, contentsMask );
-		CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
+		CBaseEntity* pEntity = EntityFromEntityHandle( pHandleEntity );
 
-		if (m_bFilterExclusive && m_pFilter)
-			return m_pFilter->PassesFilter(m_pCaller, pEntity) ? m_bHitIfPassed : !m_bHitIfPassed;
-		else if (m_pFilter && (base ? !m_bHitIfPassed : m_bHitIfPassed))
+		if( m_bFilterExclusive && m_pFilter )
 		{
-			return m_bHitIfPassed ? m_pFilter->PassesFilter(m_pCaller, pEntity) : !m_pFilter->PassesFilter(m_pCaller, pEntity);
+			return m_pFilter->PassesFilter( m_pCaller, pEntity ) ? m_bHitIfPassed : !m_bHitIfPassed;
+		}
+		else if( m_pFilter && ( base ? !m_bHitIfPassed : m_bHitIfPassed ) )
+		{
+			return m_bHitIfPassed ? m_pFilter->PassesFilter( m_pCaller, pEntity ) : !m_pFilter->PassesFilter( m_pCaller, pEntity );
 		}
 
 		return base;
 	}
 
-	CBaseFilter *m_pFilter;
-	CBaseEntity *m_pCaller;
+	CBaseFilter* m_pFilter;
+	CBaseEntity* m_pCaller;
 
 	bool m_bHitIfPassed;
 	bool m_bFilterExclusive;

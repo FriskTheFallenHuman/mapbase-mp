@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PREDICTABLEID_H
 #define PREDICTABLEID_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if !defined( NO_ENTITY_PREDICTION )
@@ -19,7 +19,7 @@ class CPredictableId
 {
 public:
 	// Construction
-					CPredictableId( void );
+	CPredictableId( void );
 
 	static void		ResetInstanceCounters( void );
 
@@ -27,7 +27,7 @@ public:
 	bool			IsActive( void ) const;
 
 	// Call this to set from data
-	void			Init( int player, int command, const char *classname, const char *module, int line );
+	void			Init( int player, int command, const char* classname, const char* module, int line );
 
 	// Get player index
 	int				GetPlayer( void ) const;
@@ -49,7 +49,7 @@ public:
 	int				GetRaw( void ) const;
 	void			SetRaw( int raw );
 
-	char const		*Describe( void ) const;
+	char const*		Describe( void ) const;
 
 	// Equality test
 	bool operator ==( const CPredictableId& other ) const;
@@ -62,16 +62,16 @@ private:
 	// Encoding bits, should total 32
 	struct bitfields
 	{
-		 unsigned int ack		: 1;	// 1
-		 unsigned int player	: 5;	// 6
-		 unsigned int command	: 10;	// 16
-		 unsigned int hash		: 12;	// 28
-		 unsigned int instance	: 4;	// 32
+		unsigned int ack		: 1;	// 1
+		unsigned int player	: 5;	// 6
+		unsigned int command	: 10;	// 16
+		unsigned int hash		: 12;	// 28
+		unsigned int instance	: 4;	// 32
 	} m_PredictableID;
 };
 
 // This can be empty, the class has a proper constructor
-FORCEINLINE void NetworkVarConstruct( CPredictableId &x ) {}
+FORCEINLINE void NetworkVarConstruct( CPredictableId& x ) {}
 
 #endif
 

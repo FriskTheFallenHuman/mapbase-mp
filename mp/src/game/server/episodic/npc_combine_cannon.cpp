@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -39,75 +39,97 @@ class CNPC_Combine_Cannon : public CAI_BaseNPC
 	DECLARE_CLASS( CNPC_Combine_Cannon, CAI_BaseNPC );
 
 public:
-						CNPC_Combine_Cannon( void );
+	CNPC_Combine_Cannon( void );
 	virtual void		Precache( void );
 	virtual void		Spawn( void );
 	virtual Class_T		Classify( void );
 	virtual float		MaxYawSpeed( void );
 	virtual Vector		EyePosition( void );
 	virtual void		UpdateOnRemove( void );
-	virtual int			OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual bool		QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC = false );
-	virtual void		StartTask( const Task_t *pTask );
-	virtual void		RunTask( const Task_t *pTask );
+	virtual int			OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	virtual bool		QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC = false );
+	virtual void		StartTask( const Task_t* pTask );
+	virtual void		RunTask( const Task_t* pTask );
 	virtual int			RangeAttack1Conditions( float flDot, float flDist );
 	virtual int			SelectSchedule( void );
 	virtual int			TranslateSchedule( int scheduleType );
 	virtual void		PrescheduleThink( void );
-	virtual bool		FCanCheckAttacks ( void );
-	virtual int			Restore( IRestore &restore );
+	virtual bool		FCanCheckAttacks( void );
+	virtual int			Restore( IRestore& restore );
 	virtual void		OnScheduleChange( void );
-	virtual bool		FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
-	
-	virtual bool		WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions) { return true; }
+	virtual bool		FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
 
-	virtual int			GetSoundInterests( void ) { return (SOUND_PLAYER|SOUND_COMBAT|SOUND_DANGER); }
+	virtual bool		WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
+	{
+		return true;
+	}
 
-	virtual bool		ShouldNotDistanceCull( void ) { return true; }
+	virtual int			GetSoundInterests( void )
+	{
+		return ( SOUND_PLAYER | SOUND_COMBAT | SOUND_DANGER );
+	}
 
-	virtual void		UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
+	virtual bool		ShouldNotDistanceCull( void )
+	{
+		return true;
+	}
 
-	virtual const char *GetTracerType( void ) { return "HelicopterTracer"; }
+	virtual void		UpdateEfficiency( bool bInPVS )
+	{
+		SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL );
+		SetMoveEfficiency( AIME_NORMAL );
+	}
+
+	virtual const char* GetTracerType( void )
+	{
+		return "HelicopterTracer";
+	}
 
 private:
 
 	void	ScopeGlint( void );
-	void	AdjustShotPosition( CBaseEntity *pTarget, Vector *vecIn );
+	void	AdjustShotPosition( CBaseEntity* pTarget, Vector* vecIn );
 
-	float	GetRefireTime( void ) { return 0.1f; }
+	float	GetRefireTime( void )
+	{
+		return 0.1f;
+	}
 
-	bool IsLaserOn( void ) { return m_pBeam != NULL; }
-	bool FireBullet( const Vector &vecTarget, bool bDirectShot );
-	Vector  DesiredBodyTarget( CBaseEntity *pTarget );
-	Vector	LeadTarget( CBaseEntity *pTarget );
+	bool IsLaserOn( void )
+	{
+		return m_pBeam != NULL;
+	}
+	bool FireBullet( const Vector& vecTarget, bool bDirectShot );
+	Vector  DesiredBodyTarget( CBaseEntity* pTarget );
+	Vector	LeadTarget( CBaseEntity* pTarget );
 	Vector GetBulletOrigin( void );
 
-	static const char *pAttackSounds[];
-	
+	static const char* pAttackSounds[];
+
 	void ClearTargetGroup( void );
 
 	float GetWaitTimePercentage( float flTime, bool fLinear );
 
-	void GetPaintAim( const Vector &vecStart, const Vector &vecGoal, float flParameter, Vector *pProgress );
+	void GetPaintAim( const Vector& vecStart, const Vector& vecGoal, float flParameter, Vector* pProgress );
 
-	bool VerifyShot( CBaseEntity *pTarget );
+	bool VerifyShot( CBaseEntity* pTarget );
 
-	void SetSweepTarget( const char *pszTarget );
+	void SetSweepTarget( const char* pszTarget );
 
 	// Inputs
-	void InputEnableSniper( inputdata_t &inputdata );
-	void InputDisableSniper( inputdata_t &inputdata );
+	void InputEnableSniper( inputdata_t& inputdata );
+	void InputDisableSniper( inputdata_t& inputdata );
 
 	void LaserOff( void );
-	void LaserOn( const Vector &vecTarget, const Vector &vecDeviance );
+	void LaserOn( const Vector& vecTarget, const Vector& vecDeviance );
 
-	void PaintTarget( const Vector &vecTarget, float flPaintTime );
+	void PaintTarget( const Vector& vecTarget, float flPaintTime );
 
 private:
 
 	void	CreateLaser( void );
 	void	CreateAncillaryBeams( void );
-	void	UpdateAncillaryBeams( float flConvergencePerc, const Vector &vecOrigin, const Vector &vecBasis );
+	void	UpdateAncillaryBeams( float flConvergencePerc, const Vector& vecOrigin, const Vector& vecBasis );
 
 	int		m_iAmmoType;
 	float	m_flBarrageDuration;
@@ -135,31 +157,31 @@ LINK_ENTITY_TO_CLASS( npc_combine_cannon, CNPC_Combine_Cannon );
 //=========================================================
 BEGIN_DATADESC( CNPC_Combine_Cannon )
 
-	DEFINE_FIELD( m_fEnabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecPaintStart, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_flPaintTime, FIELD_TIME ),
-	DEFINE_FIELD( m_vecPaintCursor, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_pBeam, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flTimeLastAttackedPlayer, FIELD_TIME ),
-	DEFINE_FIELD( m_flTimeLastShotMissed, FIELD_TIME ),
-	DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flBarrageDuration, FIELD_TIME ),
-	DEFINE_FIELD( m_hBarrageTarget, FIELD_EHANDLE ),
+DEFINE_FIELD( m_fEnabled, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_vecPaintStart, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_flPaintTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_vecPaintCursor, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_pBeam, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flTimeLastAttackedPlayer, FIELD_TIME ),
+			  DEFINE_FIELD( m_flTimeLastShotMissed, FIELD_TIME ),
+			  DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_flBarrageDuration, FIELD_TIME ),
+			  DEFINE_FIELD( m_hBarrageTarget, FIELD_EHANDLE ),
 
-	DEFINE_ARRAY( m_pAncillaryBeams, FIELD_EHANDLE, NUM_ANCILLARY_BEAMS ),
+			  DEFINE_ARRAY( m_pAncillaryBeams, FIELD_EHANDLE, NUM_ANCILLARY_BEAMS ),
 
-	DEFINE_KEYFIELD( m_flSightDist, FIELD_FLOAT, "sightdist" ),
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableSniper", InputEnableSniper ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableSniper", InputDisableSniper ),
+			  DEFINE_KEYFIELD( m_flSightDist, FIELD_FLOAT, "sightdist" ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "EnableSniper", InputEnableSniper ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "DisableSniper", InputDisableSniper ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //=========================================================
 // Private conditions
 //=========================================================
-enum Sniper_Conds
+			  enum Sniper_Conds
 {
 	COND_CANNON_ENABLED = LAST_SHARED_CONDITION,
 	COND_CANNON_DISABLED,
@@ -191,10 +213,10 @@ enum
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CNPC_Combine_Cannon::CNPC_Combine_Cannon( void ) : 	
+CNPC_Combine_Cannon::CNPC_Combine_Cannon( void ) :
 	m_pBeam( NULL ),
 	m_hBarrageTarget( NULL )
-{ 
+{
 #ifdef _DEBUG
 	m_vecPaintCursor.Init();
 	m_vecPaintStart.Init();
@@ -203,25 +225,27 @@ CNPC_Combine_Cannon::CNPC_Combine_Cannon( void ) :
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Combine_Cannon::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC )
+bool CNPC_Combine_Cannon::QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC )
 {
-	Disposition_t disp = IRelationType(pEntity);
-	if ( disp != D_HT )
+	Disposition_t disp = IRelationType( pEntity );
+	if( disp != D_HT )
 	{
 		// Don't bother with anything I wouldn't shoot.
 		return false;
 	}
 
-	if ( !FInViewCone(pEntity) )
+	if( !FInViewCone( pEntity ) )
 	{
-		// Yes, this does call FInViewCone twice a frame for all entities checked for 
+		// Yes, this does call FInViewCone twice a frame for all entities checked for
 		// visibility, but doing this allows us to cut out a bunch of traces that would
 		// be done by VerifyShot for entities that aren't even in our viewcone.
 		return false;
 	}
 
-	if ( VerifyShot( pEntity ) )
+	if( VerifyShot( pEntity ) )
+	{
 		return BaseClass::QuerySeeEntity( pEntity, bOnlyHateOrFearIfNPC );
+	}
 
 	return false;
 }
@@ -232,15 +256,17 @@ bool CNPC_Combine_Cannon::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOr
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::LaserOff( void )
 {
-	if ( m_pBeam != NULL )
+	if( m_pBeam != NULL )
 	{
 		m_pBeam->TurnOn();
 	}
 
-	for ( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
+	for( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
 	{
-		if ( m_pAncillaryBeams[i] == NULL )
+		if( m_pAncillaryBeams[i] == NULL )
+		{
 			continue;
+		}
 
 		m_pAncillaryBeams[i]->TurnOn();
 	}
@@ -252,9 +278,9 @@ void CNPC_Combine_Cannon::LaserOff( void )
 //-----------------------------------------------------------------------------
 // Purpose: Switch on the laser and point it at a direction
 //-----------------------------------------------------------------------------
-void CNPC_Combine_Cannon::LaserOn( const Vector &vecTarget, const Vector &vecDeviance )
+void CNPC_Combine_Cannon::LaserOn( const Vector& vecTarget, const Vector& vecDeviance )
 {
-	if ( m_pBeam != NULL )
+	if( m_pBeam != NULL )
 	{
 		m_pBeam->TurnOff();
 
@@ -281,10 +307,12 @@ void CNPC_Combine_Cannon::LaserOn( const Vector &vecTarget, const Vector &vecDev
 		m_vecPaintStart = vecInitialAim;
 	}
 
-	for ( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
+	for( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
 	{
-		if ( m_pAncillaryBeams[i] == NULL )
+		if( m_pAncillaryBeams[i] == NULL )
+		{
 			continue;
+		}
 
 		m_pAncillaryBeams[i]->TurnOff();
 	}
@@ -298,7 +326,7 @@ float CNPC_Combine_Cannon::GetWaitTimePercentage( float flTime, bool fLinear )
 	float flElapsedTime;
 	float flTimeParameter;
 
-	flElapsedTime = flTime - (GetWaitFinishTime() - gpGlobals->curtime);
+	flElapsedTime = flTime - ( GetWaitFinishTime() - gpGlobals->curtime );
 
 	flTimeParameter = ( flElapsedTime / flTime );
 
@@ -308,13 +336,13 @@ float CNPC_Combine_Cannon::GetWaitTimePercentage( float flTime, bool fLinear )
 	}
 	else
 	{
-		return (1 + sin( (M_PI * flTimeParameter) - (M_PI / 2) ) ) / 2;
+		return ( 1 + sin( ( M_PI * flTimeParameter ) - ( M_PI / 2 ) ) ) / 2;
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Combine_Cannon::GetPaintAim( const Vector &vecStart, const Vector &vecGoal, float flParameter, Vector *pProgress )
+void CNPC_Combine_Cannon::GetPaintAim( const Vector& vecStart, const Vector& vecGoal, float flParameter, Vector* pProgress )
 {
 	// Quaternions
 	Vector vecIdealDir;
@@ -328,14 +356,14 @@ void CNPC_Combine_Cannon::GetPaintAim( const Vector &vecStart, const Vector &vec
 	// laser, not actually aiming the weapon. A large discrepancy will look
 	// bad, though.
 	vecIdealDir = vecGoal - vecBulletOrigin;
-	VectorNormalize(vecIdealDir);
+	VectorNormalize( vecIdealDir );
 
 	// Now turn vecIdealDir into angles!
 	VectorAngles( vecIdealDir, vecIdealAngles );
 
 	// This is the vector of the beam's current aim.
 	vecCurrentDir = m_vecPaintStart - vecBulletOrigin;
-	VectorNormalize(vecCurrentDir);
+	VectorNormalize( vecCurrentDir );
 
 	// Turn this to angles, too.
 	VectorAngles( vecCurrentDir, vecCurrentAngles );
@@ -358,12 +386,14 @@ void CNPC_Combine_Cannon::GetPaintAim( const Vector &vecStart, const Vector &vec
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::CreateLaser( void )
 {
-	if ( m_pBeam != NULL )
+	if( m_pBeam != NULL )
+	{
 		return;
+	}
 
 	m_pBeam = CBeam::BeamCreate( g_pModelNameLaser, 2.0f );
 
@@ -384,14 +414,16 @@ void CNPC_Combine_Cannon::CreateLaser( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::CreateAncillaryBeams( void )
 {
-	for ( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
+	for( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
 	{
-		if ( m_pAncillaryBeams[i] != NULL )
+		if( m_pAncillaryBeams[i] != NULL )
+		{
 			continue;
+		}
 
 		m_pAncillaryBeams[i] = CBeam::BeamCreate( g_pModelNameLaser, 2.0f );
 		m_pAncillaryBeams[i]->SetColor( 0, 100, 255 );
@@ -412,22 +444,22 @@ void CNPC_Combine_Cannon::CreateAncillaryBeams( void )
 #define LINE_LENGTH 1600.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flConvergencePerc - 
-//			vecBasis - 
+// Purpose:
+// Input  : flConvergencePerc -
+//			vecBasis -
 //-----------------------------------------------------------------------------
-void CNPC_Combine_Cannon::UpdateAncillaryBeams( float flConvergencePerc, const Vector &vecOrigin, const Vector &vecBasis )
+void CNPC_Combine_Cannon::UpdateAncillaryBeams( float flConvergencePerc, const Vector& vecOrigin, const Vector& vecBasis )
 {
-	// Multiple beams deviate from the basis direction by a certain number of degrees and "converge" 
-	// at the basis vector over a duration of time, the position in that duration expressed by 
+	// Multiple beams deviate from the basis direction by a certain number of degrees and "converge"
+	// at the basis vector over a duration of time, the position in that duration expressed by
 	// flConvergencePerc.  The beams are most deviated at 0 and fully converged at 1.
 
-	float flRotationOffset = (2*M_PI)/(float)NUM_ANCILLARY_BEAMS; // Degrees separating each beam, in radians
-	float flDeviation = DEG2RAD(90) * ( 1.0f - flConvergencePerc );
+	float flRotationOffset = ( 2 * M_PI ) / ( float )NUM_ANCILLARY_BEAMS; // Degrees separating each beam, in radians
+	float flDeviation = DEG2RAD( 90 ) * ( 1.0f - flConvergencePerc );
 	float flOffset;
 	Vector vecFinal;
 	Vector vecOffset;
-	
+
 	matrix3x4_t matRotate;
 	QAngle vecAngles;
 	VectorAngles( vecBasis, vecAngles );
@@ -439,9 +471,9 @@ void CNPC_Combine_Cannon::UpdateAncillaryBeams( float flConvergencePerc, const V
 	float flScale = LINE_LENGTH * flDeviation;
 
 	// For each beam, find its offset and trace outwards to place its endpoint
-	for ( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
+	for( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
 	{
-		if ( flConvergencePerc >= 0.99f )
+		if( flConvergencePerc >= 0.99f )
 		{
 			m_pAncillaryBeams[i]->TurnOn();
 			continue;
@@ -450,9 +482,9 @@ void CNPC_Combine_Cannon::UpdateAncillaryBeams( float flConvergencePerc, const V
 		m_pAncillaryBeams[i]->TurnOff();
 
 		// Find the number of radians offset we are
-		flOffset = (float) i * flRotationOffset + DEG2RAD( 30.0f );
-		flOffset += (M_PI/8.0f) * sin( gpGlobals->curtime * 3.0f );
-		
+		flOffset = ( float ) i * flRotationOffset + DEG2RAD( 30.0f );
+		flOffset += ( M_PI / 8.0f ) * sin( gpGlobals->curtime * 3.0f );
+
 		// Construct a circle that's also offset by the line's length
 		vecOffset.x = cos( flOffset ) * flScale;
 		vecOffset.y = sin( flOffset ) * flScale;
@@ -475,7 +507,7 @@ void CNPC_Combine_Cannon::UpdateAncillaryBeams( float flConvergencePerc, const V
 //-----------------------------------------------------------------------------
 // Sweep the laser sight towards the point where the gun should be aimed
 //-----------------------------------------------------------------------------
-void CNPC_Combine_Cannon::PaintTarget( const Vector &vecTarget, float flPaintTime )
+void CNPC_Combine_Cannon::PaintTarget( const Vector& vecTarget, float flPaintTime )
 {
 	// vecStart is the barrel of the gun (or the laser sight)
 	Vector vecStart = GetBulletOrigin();
@@ -496,14 +528,14 @@ void CNPC_Combine_Cannon::PaintTarget( const Vector &vecTarget, float flPaintTim
 
 #define THRESHOLD 0.9f
 	float flNoiseScale;
-	
-	if ( flPaintPerc >= THRESHOLD )
+
+	if( flPaintPerc >= THRESHOLD )
 	{
-		flNoiseScale = 1 - (1 / (1 - THRESHOLD)) * ( flPaintPerc - THRESHOLD );
+		flNoiseScale = 1 - ( 1 / ( 1 - THRESHOLD ) ) * ( flPaintPerc - THRESHOLD );
 	}
-	else if ( flPaintPerc <= 1 - THRESHOLD )
+	else if( flPaintPerc <= 1 - THRESHOLD )
 	{
-		flNoiseScale = flPaintPerc / (1 - THRESHOLD);
+		flNoiseScale = flPaintPerc / ( 1 - THRESHOLD );
 	}
 	else
 	{
@@ -531,26 +563,26 @@ void CNPC_Combine_Cannon::PaintTarget( const Vector &vecTarget, float flPaintTim
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::OnScheduleChange( void )
 {
 	LaserOff();
-	
+
 	m_hBarrageTarget = NULL;
 
 	BaseClass::OnScheduleChange();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::Precache( void )
 {
-	PrecacheModel("models/combine_soldier.mdl");
-	PrecacheModel("effects/bluelaser1.vmt");	
-	
-	gHaloTexture = PrecacheModel("sprites/light_glow03.vmt");
+	PrecacheModel( "models/combine_soldier.mdl" );
+	PrecacheModel( "effects/bluelaser1.vmt" );
+
+	gHaloTexture = PrecacheModel( "sprites/light_glow03.vmt" );
 
 	PrecacheScriptSound( "NPC_Combine_Cannon.FireBullet" );
 
@@ -559,7 +591,7 @@ void CNPC_Combine_Cannon::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Combine_Cannon::Spawn( void )
 {
@@ -599,7 +631,7 @@ void CNPC_Combine_Cannon::Spawn( void )
 	CapabilitiesClear();
 	CapabilitiesAdd( bits_CAP_INNATE_RANGE_ATTACK1 | bits_CAP_SIMPLE_RADIUS_DAMAGE );
 
-	m_HackedGunPos = Vector ( 0, 0, 0 ); 
+	m_HackedGunPos = Vector( 0, 0, 0 );
 
 	AddSpawnFlags( SF_NPC_LONG_RANGE | SF_NPC_ALWAYSTHINK );
 
@@ -625,19 +657,21 @@ void CNPC_Combine_Cannon::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Combine_Cannon::Classify( void )
 {
-	if ( m_fEnabled )
+	if( m_fEnabled )
+	{
 		return	CLASS_COMBINE;
+	}
 
 	return CLASS_NONE;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector CNPC_Combine_Cannon::GetBulletOrigin( void )
 {
@@ -648,29 +682,31 @@ Vector CNPC_Combine_Cannon::GetBulletOrigin( void )
 //-----------------------------------------------------------------------------
 // Purpose: Nothing kills the cannon but entity I/O
 //-----------------------------------------------------------------------------
-int CNPC_Combine_Cannon::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_Combine_Cannon::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
 	// We are invulnerable to normal attacks for the moment
 	return 0;
 }
 
 //---------------------------------------------------------
-// Purpose: 
+// Purpose:
 //---------------------------------------------------------
 void CNPC_Combine_Cannon::UpdateOnRemove( void )
 {
 	// Remove the main laser
-	if ( m_pBeam != NULL )
+	if( m_pBeam != NULL )
 	{
-		UTIL_Remove( m_pBeam);
+		UTIL_Remove( m_pBeam );
 		m_pBeam = NULL;
 	}
 
 	// Remove our ancillary beams
-	for ( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
+	for( int i = 0; i < NUM_ANCILLARY_BEAMS; i++ )
 	{
-		if ( m_pAncillaryBeams[i] == NULL )
+		if( m_pAncillaryBeams[i] == NULL )
+		{
 			continue;
+		}
 
 		UTIL_Remove( m_pAncillaryBeams[i] );
 		m_pAncillaryBeams[i] = NULL;
@@ -680,13 +716,15 @@ void CNPC_Combine_Cannon::UpdateOnRemove( void )
 }
 
 //---------------------------------------------------------
-// Purpose: 
+// Purpose:
 //---------------------------------------------------------
-int CNPC_Combine_Cannon::SelectSchedule ( void )
+int CNPC_Combine_Cannon::SelectSchedule( void )
 {
 	// Fire at our target
 	if( GetEnemy() && HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+	{
 		return SCHED_RANGE_ATTACK1;
+	}
 
 	// Wait for a target
 	// TODO: Sweep like a sniper?
@@ -694,9 +732,9 @@ int CNPC_Combine_Cannon::SelectSchedule ( void )
 }
 
 //---------------------------------------------------------
-// Purpose: 
+// Purpose:
 //---------------------------------------------------------
-bool CNPC_Combine_Cannon::FCanCheckAttacks ( void )
+bool CNPC_Combine_Cannon::FCanCheckAttacks( void )
 {
 	return true;
 }
@@ -704,7 +742,7 @@ bool CNPC_Combine_Cannon::FCanCheckAttacks ( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CNPC_Combine_Cannon::VerifyShot( CBaseEntity *pTarget )
+bool CNPC_Combine_Cannon::VerifyShot( CBaseEntity* pTarget )
 {
 	trace_t tr;
 
@@ -715,8 +753,8 @@ bool CNPC_Combine_Cannon::VerifyShot( CBaseEntity *pTarget )
 	{
 		if( pTarget->IsPlayer() )
 		{
-			// if the target is the player, do another trace to see if we can shoot his eyeposition. This should help 
-			// improve sniper responsiveness in cases where the player is hiding his chest from the sniper with his 
+			// if the target is the player, do another trace to see if we can shoot his eyeposition. This should help
+			// improve sniper responsiveness in cases where the player is hiding his chest from the sniper with his
 			// head in full view.
 			UTIL_TraceLine( GetBulletOrigin(), pTarget->EyePosition(), MASK_SHOT, pTarget, COLLISION_GROUP_NONE, &tr );
 
@@ -748,12 +786,14 @@ bool CNPC_Combine_Cannon::VerifyShot( CBaseEntity *pTarget )
 //---------------------------------------------------------
 int CNPC_Combine_Cannon::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if ( GetNextAttack() > gpGlobals->curtime )
-		return COND_NONE;
-
-	if ( HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_ENEMY_OCCLUDED ) )
+	if( GetNextAttack() > gpGlobals->curtime )
 	{
-		if ( VerifyShot( GetEnemy() ) )
+		return COND_NONE;
+	}
+
+	if( HasCondition( COND_SEE_ENEMY ) && !HasCondition( COND_ENEMY_OCCLUDED ) )
+	{
+		if( VerifyShot( GetEnemy() ) )
 		{
 			// Can see the enemy, have a clear shot to his midsection
 			ClearCondition( COND_CANNON_NO_SHOT );
@@ -773,13 +813,13 @@ int CNPC_Combine_Cannon::RangeAttack1Conditions( float flDot, float flDist )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CNPC_Combine_Cannon::TranslateSchedule( int scheduleType ) 
+int CNPC_Combine_Cannon::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_RANGE_ATTACK1:
-		return SCHED_CANNON_ATTACK;
-		break;
+		case SCHED_RANGE_ATTACK1:
+			return SCHED_CANNON_ATTACK;
+			break;
 	}
 	return BaseClass::TranslateSchedule( scheduleType );
 }
@@ -799,34 +839,36 @@ void CNPC_Combine_Cannon::ScopeGlint( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *vecIn - 
+// Purpose:
+// Input  : *vecIn -
 //-----------------------------------------------------------------------------
-void CNPC_Combine_Cannon::AdjustShotPosition( CBaseEntity *pTarget, Vector *vecIn )
+void CNPC_Combine_Cannon::AdjustShotPosition( CBaseEntity* pTarget, Vector* vecIn )
 {
-	if ( pTarget == NULL || vecIn == NULL )
+	if( pTarget == NULL || vecIn == NULL )
+	{
 		return;
+	}
 
 	Vector low = pTarget->WorldSpaceCenter() - ( pTarget->WorldSpaceCenter() - pTarget->GetAbsOrigin() ) * .25;
 	Vector high = pTarget->EyePosition();
 	Vector delta = high - low;
-	Vector result = low + delta * 0.5; 
+	Vector result = low + delta * 0.5;
 
 	// Only take the height
-	(*vecIn)[2] = result[2];
+	( *vecIn )[2] = result[2];
 }
 
 //---------------------------------------------------------
 // This starts the bullet state machine.  The actual effects
-// of the bullet will happen later.  This function schedules 
+// of the bullet will happen later.  This function schedules
 // those effects.
 //
 // fDirectShot indicates whether the bullet is a "direct shot"
 // that is - fired with the intent that it will strike the
-// enemy. Otherwise, the bullet is intended to strike a 
+// enemy. Otherwise, the bullet is intended to strike a
 // decoy object or nothing at all in particular.
 //---------------------------------------------------------
-bool CNPC_Combine_Cannon::FireBullet( const Vector &vecTarget, bool bDirectShot )
+bool CNPC_Combine_Cannon::FireBullet( const Vector& vecTarget, bool bDirectShot )
 {
 	Vector vecBulletOrigin = GetBulletOrigin();
 	Vector vecDir = ( vecTarget - vecBulletOrigin );
@@ -860,26 +902,26 @@ bool CNPC_Combine_Cannon::FireBullet( const Vector &vecTarget, bool bDirectShot 
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Combine_Cannon::StartTask( const Task_t *pTask )
+void CNPC_Combine_Cannon::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_CANNON_ATTACK_CURSOR:
-		break;
+		case TASK_CANNON_ATTACK_CURSOR:
+			break;
 
-	case TASK_RANGE_ATTACK1:
-		// Setup the information for this barrage
-		m_flBarrageDuration = gpGlobals->curtime + random->RandomFloat( 0.25f, 0.5f );
-		m_hBarrageTarget = GetEnemy();
-		break;
+		case TASK_RANGE_ATTACK1:
+			// Setup the information for this barrage
+			m_flBarrageDuration = gpGlobals->curtime + random->RandomFloat( 0.25f, 0.5f );
+			m_hBarrageTarget = GetEnemy();
+			break;
 
-	case TASK_CANNON_PAINT_ENEMY:
+		case TASK_CANNON_PAINT_ENEMY:
 		{
-			if ( GetEnemy()->IsPlayer() )
+			if( GetEnemy()->IsPlayer() )
 			{
 				float delay = random->RandomFloat( 0.0f, 0.3f );
-			
-				if ( ( gpGlobals->curtime - m_flTimeLastAttackedPlayer ) < 1.0f )
+
+				if( ( gpGlobals->curtime - m_flTimeLastAttackedPlayer ) < 1.0f )
 				{
 					SetWait( CANNON_SUBSEQUENT_PAINT_TIME );
 					m_flPaintTime = CANNON_SUBSEQUENT_PAINT_TIME;
@@ -901,56 +943,56 @@ void CNPC_Combine_Cannon::StartTask( const Task_t *pTask )
 			Vector vecCursor;
 			AngleVectors( GetEnemy()->GetLocalAngles(), &vecCursor );
 			vecCursor *= 300;
-			vecCursor += GetEnemy()->EyePosition();				
+			vecCursor += GetEnemy()->EyePosition();
 			LaserOn( vecCursor, Vector( 16, 16, 16 ) );
 		}
 		break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Combine_Cannon::RunTask( const Task_t *pTask )
+void CNPC_Combine_Cannon::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_CANNON_ATTACK_CURSOR:
-		if( FireBullet( m_vecPaintCursor, true ) )
-		{
-			TaskComplete();
-		}
-		break;
+		case TASK_CANNON_ATTACK_CURSOR:
+			if( FireBullet( m_vecPaintCursor, true ) )
+			{
+				TaskComplete();
+			}
+			break;
 
-	case TASK_RANGE_ATTACK1:
+		case TASK_RANGE_ATTACK1:
 		{
 			// Where we're focusing our fire
 			Vector vecTarget = ( m_hBarrageTarget == NULL ) ? m_vecPaintCursor : LeadTarget( m_hBarrageTarget );
 
 			// Fire at enemy
-			if ( FireBullet( vecTarget, true ) )
+			if( FireBullet( vecTarget, true ) )
 			{
 				bool bPlayerIsEnemy = ( m_hBarrageTarget && m_hBarrageTarget->IsPlayer() );
 				bool bBarrageFinished = m_flBarrageDuration < gpGlobals->curtime;
 				bool bNoShot = ( QuerySeeEntity( m_hBarrageTarget ) == false );	// FIXME: Store this info off better
 				bool bSeePlayer = HasCondition( COND_SEE_PLAYER	);
-				
+
 				// Treat the player differently to normal NPCs
-				if ( bPlayerIsEnemy )
+				if( bPlayerIsEnemy )
 				{
 					// Store the last time we shot for doing an abbreviated attack telegraph
 					m_flTimeLastAttackedPlayer = gpGlobals->curtime;
 
 					// If we've got no shot and we're done with our current barrage
-					if ( bNoShot && bBarrageFinished )
+					if( bNoShot && bBarrageFinished )
 					{
 						TaskComplete();
 					}
 				}
-				else if ( bBarrageFinished || bSeePlayer )
+				else if( bBarrageFinished || bSeePlayer )
 				{
 					// Done with the barrage or we saw the player as a better target
 					TaskComplete();
@@ -959,11 +1001,11 @@ void CNPC_Combine_Cannon::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_CANNON_PAINT_ENEMY:
+		case TASK_CANNON_PAINT_ENEMY:
 		{
 			// See if we're done painting our target
-			if ( IsWaitFinished() )
-			{			
+			if( IsWaitFinished() )
+			{
 				TaskComplete();
 			}
 
@@ -972,9 +1014,9 @@ void CNPC_Combine_Cannon::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
@@ -982,14 +1024,14 @@ void CNPC_Combine_Cannon::RunTask( const Task_t *pTask )
 //-----------------------------------------------------------------------------
 // The sniper throws away the circular list of old decoys when we restore.
 //-----------------------------------------------------------------------------
-int CNPC_Combine_Cannon::Restore( IRestore &restore )
+int CNPC_Combine_Cannon::Restore( IRestore& restore )
 {
 	return BaseClass::Restore( restore );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -1003,7 +1045,7 @@ float CNPC_Combine_Cannon::MaxYawSpeed( void )
 void CNPC_Combine_Cannon::PrescheduleThink( void )
 {
 	BaseClass::PrescheduleThink();
-	
+
 	// NOTE: We'll deal with this on the client
 	// Think faster if the beam is on, this gives the beam higher resolution.
 	if( m_pBeam )
@@ -1025,7 +1067,7 @@ void CNPC_Combine_Cannon::PrescheduleThink( void )
 		{
 			// Stop pestering enemies after 30 seconds of frustration.
 			GetEnemies()->ClearMemory( GetEnemy() );
-			SetEnemy(NULL);
+			SetEnemy( NULL );
 		}
 	}
 }
@@ -1040,7 +1082,7 @@ Vector CNPC_Combine_Cannon::EyePosition( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-Vector CNPC_Combine_Cannon::DesiredBodyTarget( CBaseEntity *pTarget )
+Vector CNPC_Combine_Cannon::DesiredBodyTarget( CBaseEntity* pTarget )
 {
 	// By default, aim for the center
 	Vector vecTarget = pTarget->WorldSpaceCenter();
@@ -1099,9 +1141,9 @@ Vector CNPC_Combine_Cannon::DesiredBodyTarget( CBaseEntity *pTarget )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-Vector CNPC_Combine_Cannon::LeadTarget( CBaseEntity *pTarget )
+Vector CNPC_Combine_Cannon::LeadTarget( CBaseEntity* pTarget )
 {
-	if ( pTarget != NULL )
+	if( pTarget != NULL )
 	{
 		Vector vecFuturePos;
 		UTIL_PredictedPosition( pTarget, 0.05f, &vecFuturePos );
@@ -1115,7 +1157,7 @@ Vector CNPC_Combine_Cannon::LeadTarget( CBaseEntity *pTarget )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Combine_Cannon::InputEnableSniper( inputdata_t &inputdata )
+void CNPC_Combine_Cannon::InputEnableSniper( inputdata_t& inputdata )
 {
 	ClearCondition( COND_CANNON_DISABLED );
 	SetCondition( COND_CANNON_ENABLED );
@@ -1126,7 +1168,7 @@ void CNPC_Combine_Cannon::InputEnableSniper( inputdata_t &inputdata )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Combine_Cannon::InputDisableSniper( inputdata_t &inputdata )
+void CNPC_Combine_Cannon::InputDisableSniper( inputdata_t& inputdata )
 {
 	ClearCondition( COND_CANNON_ENABLED );
 	SetCondition( COND_CANNON_DISABLED );
@@ -1137,20 +1179,24 @@ void CNPC_Combine_Cannon::InputDisableSniper( inputdata_t &inputdata )
 //---------------------------------------------------------
 // See all NPC's easily.
 //
-// Only see the player if you can trace to both of his 
+// Only see the player if you can trace to both of his
 // eyeballs. That is, allow the player to peek around corners.
 // This is a little more expensive than the base class' check!
 //---------------------------------------------------------
 #define CANNON_EYE_DIST 0.75
 #define CANNON_TARGET_VERTICAL_OFFSET Vector( 0, 0, 5 );
-bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_Combine_Cannon::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
 	// NPC
-	if ( pEntity->IsPlayer() == false )
+	if( pEntity->IsPlayer() == false )
+	{
 		return BaseClass::FVisible( pEntity, traceMask, ppBlocker );
+	}
 
-	if ( pEntity->GetFlags() & FL_NOTARGET )
+	if( pEntity->GetFlags() & FL_NOTARGET )
+	{
 		return false;
+	}
 
 	Vector	vecVerticalOffset;
 	Vector	vecRight;
@@ -1159,7 +1205,7 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 
 	if( fabs( GetAbsOrigin().z - pEntity->WorldSpaceCenter().z ) <= 120.f )
 	{
-		// If the player is around the same elevation, look straight at his eyes. 
+		// If the player is around the same elevation, look straight at his eyes.
 		// At the same elevation, the vertical peeking allowance makes it too easy
 		// for a player to dispatch the sniper from cover.
 		vecVerticalOffset = vec3_origin;
@@ -1177,12 +1223,12 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 	UTIL_TraceLine( EyePosition(), pEntity->EyePosition() + vecEye, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
 #if 0
-	NDebugOverlay::Line(EyePosition(), tr.endpos, 0,255,0, true, 0.1);
+	NDebugOverlay::Line( EyePosition(), tr.endpos, 0, 255, 0, true, 0.1 );
 #endif
 
 	bool fCheckFailed = false;
 
-	if ( tr.fraction != 1.0 && tr.m_pEnt != pEntity )
+	if( tr.fraction != 1.0 && tr.m_pEnt != pEntity )
 	{
 		fCheckFailed = true;
 	}
@@ -1194,10 +1240,10 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 		UTIL_TraceLine( EyePosition(), pEntity->EyePosition() + vecEye, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
 #if 0
-		NDebugOverlay::Line(EyePosition(), tr.endpos, 0,255,0, true, 0.1);
-#endif 
+		NDebugOverlay::Line( EyePosition(), tr.endpos, 0, 255, 0, true, 0.1 );
+#endif
 
-		if ( tr.fraction != 1.0 && tr.m_pEnt != pEntity )
+		if( tr.fraction != 1.0 && tr.m_pEnt != pEntity )
 		{
 			fCheckFailed = true;
 		}
@@ -1208,17 +1254,17 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 		// Can see the player.
 		return true;
 	}
-	
+
 	// Now, if the check failed, see if the player is ducking and has recently
-	// fired a muzzleflash. If yes, see if you'd be able to see the player if 
+	// fired a muzzleflash. If yes, see if you'd be able to see the player if
 	// they were standing in their current position instead of ducking. Since
 	// the sniper doesn't have a clear shot in this situation, he will harrass
 	// near the player.
-	CBasePlayer *pPlayer;
+	CBasePlayer* pPlayer;
 
 	pPlayer = ToBasePlayer( pEntity );
 
-	if( (pPlayer->GetFlags() & FL_DUCKING) && pPlayer->MuzzleFlashTime() > gpGlobals->curtime )
+	if( ( pPlayer->GetFlags() & FL_DUCKING ) && pPlayer->MuzzleFlashTime() > gpGlobals->curtime )
 	{
 		vecEye = pPlayer->EyePosition() + Vector( 0, 0, 32 );
 		UTIL_TraceLine( EyePosition(), vecEye, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
@@ -1226,7 +1272,7 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 		if( tr.fraction != 1.0 )
 		{
 			// Everything failed.
-			if (ppBlocker)
+			if( ppBlocker )
 			{
 				*ppBlocker = tr.m_pEnt;
 			}
@@ -1239,7 +1285,7 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 		}
 	}
 
-	if (ppBlocker)
+	if( ppBlocker )
 	{
 		*ppBlocker = tr.m_pEnt;
 	}
@@ -1256,80 +1302,80 @@ bool CNPC_Combine_Cannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEn
 
 AI_BEGIN_CUSTOM_NPC( npc_combine_cannon, CNPC_Combine_Cannon )
 
-	DECLARE_CONDITION( COND_CANNON_ENABLED );
-	DECLARE_CONDITION( COND_CANNON_DISABLED );
-	DECLARE_CONDITION( COND_CANNON_NO_SHOT );	
+DECLARE_CONDITION( COND_CANNON_ENABLED );
+DECLARE_CONDITION( COND_CANNON_DISABLED );
+DECLARE_CONDITION( COND_CANNON_NO_SHOT );
 
-	DECLARE_TASK( TASK_CANNON_PAINT_ENEMY );
-	DECLARE_TASK( TASK_CANNON_ATTACK_CURSOR );
+DECLARE_TASK( TASK_CANNON_PAINT_ENEMY );
+DECLARE_TASK( TASK_CANNON_ATTACK_CURSOR );
 
-	//=========================================================
-	// CAMP
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CANNON_CAMP,
+//=========================================================
+// CAMP
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_CANNON_CAMP,
 
-		"	Tasks"
-		"		TASK_WAIT		1"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_HEAR_DANGER"
-		"		COND_CANNON_DISABLED"
-	)
+	"	Tasks"
+	"		TASK_WAIT		1"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_HEAR_DANGER"
+	"		COND_CANNON_DISABLED"
+)
 
-	//=========================================================
-	// ATTACK
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CANNON_ATTACK,
+//=========================================================
+// ATTACK
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_CANNON_ATTACK,
 
-		"	Tasks"
-		"		TASK_CANNON_PAINT_ENEMY		0"
-		"		TASK_RANGE_ATTACK1			0"
-		"	"
-		"	Interrupts"
-		"		COND_HEAR_DANGER"
-		"		COND_CANNON_DISABLED"
-	)
-		
-	//=========================================================
-	// ATTACK
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CANNON_SNAPATTACK,
+	"	Tasks"
+	"		TASK_CANNON_PAINT_ENEMY		0"
+	"		TASK_RANGE_ATTACK1			0"
+	"	"
+	"	Interrupts"
+	"		COND_HEAR_DANGER"
+	"		COND_CANNON_DISABLED"
+)
 
-		"	Tasks"
-		"		TASK_CANNON_ATTACK_CURSOR	0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_HEAR_DANGER"
-		"		COND_CANNON_DISABLED"
-	)
+//=========================================================
+// ATTACK
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_CANNON_SNAPATTACK,
 
-	//=========================================================
-	// Sniper is allowed to process a couple conditions while
-	// disabled, but mostly he waits until he's enabled.
-	//=========================================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CANNON_DISABLEDWAIT,
+	"	Tasks"
+	"		TASK_CANNON_ATTACK_CURSOR	0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_HEAR_DANGER"
+	"		COND_CANNON_DISABLED"
+)
 
-		"	Tasks"
-		"		TASK_WAIT			0.5"
-		"	"
-		"	Interrupts"
-		"		COND_CANNON_ENABLED"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-	)
+//=========================================================
+// Sniper is allowed to process a couple conditions while
+// disabled, but mostly he waits until he's enabled.
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_CANNON_DISABLEDWAIT,
+
+	"	Tasks"
+	"		TASK_WAIT			0.5"
+	"	"
+	"	Interrupts"
+	"		COND_CANNON_ENABLED"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+)
 
 AI_END_CUSTOM_NPC()

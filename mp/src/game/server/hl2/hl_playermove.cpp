@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -31,8 +31,8 @@ public:
 		m_vecSaveOrigin.Init();
 	}
 
-	void SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
-	void FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move );
+	void SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move );
+	void FinishMove( CBasePlayer* player, CUserCmd* ucmd, CMoveData* move );
 
 private:
 	Vector m_vecSaveOrigin;
@@ -50,7 +50,7 @@ static CHLPlayerMove g_PlayerMove;
 //-----------------------------------------------------------------------------
 // Singleton accessor
 //-----------------------------------------------------------------------------
-CPlayerMove *PlayerMove()
+CPlayerMove* PlayerMove()
 {
 	return &g_PlayerMove;
 }
@@ -58,20 +58,20 @@ CPlayerMove *PlayerMove()
 //
 
 static CHLMoveData g_HLMoveData;
-CMoveData *g_pMoveData = &g_HLMoveData;
+CMoveData* g_pMoveData = &g_HLMoveData;
 
-IPredictionSystem *IPredictionSystem::g_pPredictionSystems = NULL;
+IPredictionSystem* IPredictionSystem::g_pPredictionSystems = NULL;
 
-void CHLPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move )
+void CHLPlayerMove::SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move )
 {
 	// Call the default SetupMove code.
 	BaseClass::SetupMove( player, ucmd, pHelper, move );
 
 	// Convert to HL2 data.
-	CHL2_Player *pHLPlayer = static_cast<CHL2_Player*>( player );
+	CHL2_Player* pHLPlayer = static_cast<CHL2_Player*>( player );
 	Assert( pHLPlayer );
 
-	CHLMoveData *pHLMove = static_cast<CHLMoveData*>( move );
+	CHLMoveData* pHLMove = static_cast<CHLMoveData*>( move );
 	Assert( pHLMove );
 
 	player->m_flForwardMove = ucmd->forwardmove;
@@ -79,15 +79,15 @@ void CHLPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 
 	pHLMove->m_bIsSprinting = pHLPlayer->IsSprinting();
 
-	if ( gpGlobals->frametime != 0 )
+	if( gpGlobals->frametime != 0 )
 	{
-		IServerVehicle *pVehicle = player->GetVehicle();
+		IServerVehicle* pVehicle = player->GetVehicle();
 
-		if ( pVehicle )
+		if( pVehicle )
 		{
-			pVehicle->SetupMove( player, ucmd, pHelper, move ); 
+			pVehicle->SetupMove( player, ucmd, pHelper, move );
 
-			if ( !m_bWasInVehicle )
+			if( !m_bWasInVehicle )
 			{
 				m_bWasInVehicle = true;
 				m_vecSaveOrigin.Init();
@@ -96,7 +96,7 @@ void CHLPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 		else
 		{
 			m_vecSaveOrigin = player->GetAbsOrigin();
-			if ( m_bWasInVehicle )
+			if( m_bWasInVehicle )
 			{
 				m_bWasInVehicle = false;
 			}
@@ -105,36 +105,38 @@ void CHLPlayerMove::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper 
 }
 
 
-void CHLPlayerMove::FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move )
+void CHLPlayerMove::FinishMove( CBasePlayer* player, CUserCmd* ucmd, CMoveData* move )
 {
 	// Call the default FinishMove code.
 	BaseClass::FinishMove( player, ucmd, move );
-	if ( gpGlobals->frametime != 0 )
-	{		
+	if( gpGlobals->frametime != 0 )
+	{
 		float distance = 0.0f;
-		IServerVehicle *pVehicle = player->GetVehicle();
-		if ( pVehicle )
+		IServerVehicle* pVehicle = player->GetVehicle();
+		if( pVehicle )
 		{
 			pVehicle->FinishMove( player, ucmd, move );
-			IPhysicsObject *obj = player->GetVehicleEntity()->VPhysicsGetObject();
-			if ( obj )
+			IPhysicsObject* obj = player->GetVehicleEntity()->VPhysicsGetObject();
+			if( obj )
 			{
 				Vector newPos;
 				obj->GetPosition( &newPos, NULL );
 				distance = VectorLength( newPos - m_vecSaveOrigin );
-				if ( m_vecSaveOrigin == vec3_origin || distance > 100.0f )
+				if( m_vecSaveOrigin == vec3_origin || distance > 100.0f )
+				{
 					distance = 0.0f;
+				}
 				m_vecSaveOrigin = newPos;
 			}
-			
-			CPropVehicleDriveable *driveable = dynamic_cast< CPropVehicleDriveable * >( player->GetVehicleEntity() );
-			if ( driveable )
+
+			CPropVehicleDriveable* driveable = dynamic_cast< CPropVehicleDriveable* >( player->GetVehicleEntity() );
+			if( driveable )
 			{
 				// Overturned and at rest (if still moving it can fix itself)
 				bool bFlipped = driveable->IsOverturned() && ( distance < 0.5f );
-				if ( m_bVehicleFlipped != bFlipped )
+				if( m_bVehicleFlipped != bFlipped )
 				{
-					if ( bFlipped )
+					if( bFlipped )
 					{
 						gamestats->Event_FlippedVehicle( player, driveable );
 					}
@@ -151,26 +153,26 @@ void CHLPlayerMove::FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *
 			m_bVehicleFlipped = false;
 			distance = VectorLength( player->GetAbsOrigin() - m_vecSaveOrigin );
 		}
-		if ( distance > 0 )
+		if( distance > 0 )
 		{
-			gamestats->Event_PlayerTraveled( player, distance, pVehicle ? true : false, !pVehicle && static_cast< CHL2_Player * >( player )->IsSprinting() );
+			gamestats->Event_PlayerTraveled( player, distance, pVehicle ? true : false, !pVehicle && static_cast< CHL2_Player* >( player )->IsSprinting() );
 		}
 	}
 
 	bool bGodMode = ( player->GetFlags() & FL_GODMODE ) ? true : false;
-	if ( m_bInGodMode != bGodMode )
+	if( m_bInGodMode != bGodMode )
 	{
 		m_bInGodMode = bGodMode;
-		if ( bGodMode )
+		if( bGodMode )
 		{
 			gamestats->Event_PlayerEnteredGodMode( player );
 		}
 	}
 	bool bNoClip = ( player->GetMoveType() == MOVETYPE_NOCLIP );
-	if ( m_bInNoClip != bNoClip )
+	if( m_bInNoClip != bNoClip )
 	{
 		m_bInNoClip = bNoClip;
-		if ( bNoClip )
+		if( bNoClip )
 		{
 			gamestats->Event_PlayerEnteredNoClip( player );
 		}

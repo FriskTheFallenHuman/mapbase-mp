@@ -32,7 +32,7 @@ public:
 	DECLARE_CLASS( CEntityImageHealthPanel, CEntityPanel );
 
 	// constructor
-	CEntityImageHealthPanel( vgui::Panel *parent, const char *panelName );
+	CEntityImageHealthPanel( vgui::Panel* parent, const char* panelName );
 	~CEntityImageHealthPanel();
 
 	// initialization
@@ -44,10 +44,10 @@ public:
 	virtual void ComputeAndSetSize( void );
 
 private:
-	CHealthBarPanel			*m_CommanderHealthBar;
-	CHealthBarPanel			*m_NormalHealthBar;
-	CHealthBarPanel			*m_ResourceLevelBar;
-	CEntityTeamImagePanel	*m_pImagePanel;
+	CHealthBarPanel*			m_CommanderHealthBar;
+	CHealthBarPanel*			m_NormalHealthBar;
+	CHealthBarPanel*			m_ResourceLevelBar;
+	CEntityTeamImagePanel*	m_pImagePanel;
 };
 
 #endif //  VGUI_IMAGEHEALTHPANEL_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -18,10 +18,10 @@
 #include "engine/IEngineSound.h"
 #include "game.h"
 #ifdef MAPBASE
-#include <vgui_controls/Controls.h> 
-#include <vgui/ILocalize.h>
-#include "utlbuffer.h"
-#include "saverestore_utlvector.h"
+	#include <vgui_controls/Controls.h>
+	#include <vgui/ILocalize.h>
+	#include "utlbuffer.h"
+	#include "saverestore_utlvector.h"
 #endif
 
 #include "player.h"
@@ -34,7 +34,7 @@
 #define SF_MESSAGE_DISABLED		1
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CMessageEntity : public CPointEntity
 {
@@ -47,14 +47,14 @@ public:
 #ifdef MAPBASE
 	virtual
 #endif
-	void	DrawOverlays(void);
+	void	DrawOverlays( void );
 
 	virtual void UpdateOnRemove();
 
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
 #ifdef MAPBASE
-	virtual void	InputSetMessage( inputdata_t &inputdata );
+	virtual void	InputSetMessage( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
@@ -71,22 +71,22 @@ LINK_ENTITY_TO_CLASS( point_message, CMessageEntity );
 
 BEGIN_DATADESC( CMessageEntity )
 
-	DEFINE_KEYFIELD( m_radius, FIELD_INTEGER, "radius" ),
-	DEFINE_KEYFIELD( m_messageText, FIELD_STRING, "message" ),
-	DEFINE_KEYFIELD( m_bDeveloperOnly, FIELD_BOOLEAN, "developeronly" ),
-	DEFINE_FIELD( m_drawText, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+DEFINE_KEYFIELD( m_radius, FIELD_INTEGER, "radius" ),
+				 DEFINE_KEYFIELD( m_messageText, FIELD_STRING, "message" ),
+				 DEFINE_KEYFIELD( m_bDeveloperOnly, FIELD_BOOLEAN, "developeronly" ),
+				 DEFINE_FIELD( m_drawText, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID,	 "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	 "Disable", InputDisable ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID,	 "Enable", InputEnable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID,	 "Disable", InputDisable ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_STRING,	 "SetMessage", InputSetMessage ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
-static CUtlVector< CHandle< CMessageEntity > >	g_MessageEntities;
+				 static CUtlVector< CHandle< CMessageEntity > >	g_MessageEntities;
 
 //-----------------------------------------
 // Spawn
@@ -101,7 +101,7 @@ void CMessageEntity::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMessageEntity::Activate( void )
 {
@@ -113,7 +113,7 @@ void CMessageEntity::Activate( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMessageEntity::UpdateOnRemove()
 {
@@ -134,15 +134,17 @@ void CMessageEntity::Think( void )
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	// check for player distance
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
-	if ( !pPlayer || ( pPlayer->GetFlags() & FL_NOTARGET ) )
+	if( !pPlayer || ( pPlayer->GetFlags() & FL_NOTARGET ) )
+	{
 		return;
+	}
 
 	Vector worldTargetPosition = pPlayer->EyePosition();
 
 	// bail if player is too far away
-	if ( (worldTargetPosition - GetAbsOrigin()).Length() > m_radius )
+	if( ( worldTargetPosition - GetAbsOrigin() ).Length() > m_radius )
 	{
 		m_drawText = false;
 		return;
@@ -151,52 +153,58 @@ void CMessageEntity::Think( void )
 	// turn on text
 	m_drawText = true;
 }
-	
+
 //-------------------------------------------
 //-------------------------------------------
-void CMessageEntity::DrawOverlays(void) 
+void CMessageEntity::DrawOverlays( void )
 {
-	if ( !m_drawText )
+	if( !m_drawText )
+	{
 		return;
+	}
 
-	if ( m_bDeveloperOnly && !g_pDeveloper->GetInt() )
+	if( m_bDeveloperOnly && !g_pDeveloper->GetInt() )
+	{
 		return;
+	}
 
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	// display text if they are within range
 	char tempstr[512];
-	Q_snprintf( tempstr, sizeof(tempstr), "%s", STRING(m_messageText) );
-	EntityText( 0, tempstr, 0);
+	Q_snprintf( tempstr, sizeof( tempstr ), "%s", STRING( m_messageText ) );
+	EntityText( 0, tempstr, 0 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMessageEntity::InputEnable( inputdata_t &inputdata )
+void CMessageEntity::InputEnable( inputdata_t& inputdata )
 {
 	m_bEnabled = true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMessageEntity::InputDisable( inputdata_t &inputdata )
+void CMessageEntity::InputDisable( inputdata_t& inputdata )
 {
 	m_bEnabled = false;
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMessageEntity::InputSetMessage( inputdata_t &inputdata )
+void CMessageEntity::InputSetMessage( inputdata_t& inputdata )
 {
 	char newmessage[256];
-	Q_strncpy(newmessage, inputdata.value.String(), sizeof(newmessage));
+	Q_strncpy( newmessage, inputdata.value.String(), sizeof( newmessage ) );
 
-	m_messageText = AllocPooledString(newmessage);
+	m_messageText = AllocPooledString( newmessage );
 }
 #endif
 
@@ -205,10 +213,10 @@ void CMessageEntity::InputSetMessage( inputdata_t &inputdata )
 void DrawMessageEntities()
 {
 	int c = g_MessageEntities.Count();
-	for ( int i = c - 1; i >= 0; i-- )
+	for( int i = c - 1; i >= 0; i-- )
 	{
-		CMessageEntity *me = g_MessageEntities[ i ];
-		if ( !me )
+		CMessageEntity* me = g_MessageEntities[ i ];
+		if( !me )
 		{
 			g_MessageEntities.Remove( i );
 			continue;
@@ -220,17 +228,17 @@ void DrawMessageEntities()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CMessageEntityLocalized : public CMessageEntity
 {
 	DECLARE_CLASS( CMessageEntityLocalized, CMessageEntity );
 
 public:
-	bool	KeyValue(const char *szKeyName, const char *szValue);
-	void	SetMessage(const char *szValue);
-	void	DrawOverlays(void);
-	void	InputSetMessage( inputdata_t &inputdata );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
+	void	SetMessage( const char* szValue );
+	void	DrawOverlays( void );
+	void	InputSetMessage( inputdata_t& inputdata );
 
 	CUtlVector<string_t> m_messageLines;
 
@@ -241,99 +249,109 @@ LINK_ENTITY_TO_CLASS( point_message_localized, CMessageEntityLocalized );
 
 BEGIN_DATADESC( CMessageEntityLocalized )
 
-	DEFINE_UTLVECTOR( m_messageLines, FIELD_STRING ),
+DEFINE_UTLVECTOR( m_messageLines, FIELD_STRING ),
 
-	//DEFINE_INPUTFUNC( FIELD_STRING,	 "SetMessage", InputSetMessage ),
+				  //DEFINE_INPUTFUNC( FIELD_STRING,	 "SetMessage", InputSetMessage ),
 
-END_DATADESC()
+				  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 // Purpose: Handles key values from the BSP before spawn is called.
 //-----------------------------------------------------------------------------
-bool CMessageEntityLocalized::KeyValue(const char *szKeyName, const char *szValue)
+				  bool CMessageEntityLocalized::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "message"))
+	if( FStrEq( szKeyName, "message" ) )
 	{
-		SetMessage(szValue);
+		SetMessage( szValue );
 		return true;
 	}
 
-	return BaseClass::KeyValue(szKeyName, szValue);
+	return BaseClass::KeyValue( szKeyName, szValue );
 }
 
 // I would use "\\n", but Hammer doesn't let you use back slashes.
 #define CONVERSION_CHAR "/n"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMessageEntityLocalized::SetMessage(const char *szValue)
+void CMessageEntityLocalized::SetMessage( const char* szValue )
 {
 	// Find a localization token matching this string
-	wchar_t *pszMessage = g_pVGuiLocalize->Find(szValue);
+	wchar_t* pszMessage = g_pVGuiLocalize->Find( szValue );
 
 	// If this is a localized string, convert it back to char.
 	// If it isn't, just copy it right into this.
 	char szBackToChar[256];
-	if (pszMessage)
-		g_pVGuiLocalize->ConvertUnicodeToANSI(pszMessage, szBackToChar, sizeof(szBackToChar));
+	if( pszMessage )
+	{
+		g_pVGuiLocalize->ConvertUnicodeToANSI( pszMessage, szBackToChar, sizeof( szBackToChar ) );
+	}
 	else
-		Q_strncpy(szBackToChar, szValue, sizeof(szBackToChar));
+	{
+		Q_strncpy( szBackToChar, szValue, sizeof( szBackToChar ) );
+	}
 
 	// szTemp is used to turn \n from localized strings into /n.
 	char szTemp[256];
-	if (Q_strstr(szBackToChar, "\n"))
+	if( Q_strstr( szBackToChar, "\n" ) )
 	{
-		char *token = strtok(szBackToChar, "\n");
-		while (token)
+		char* token = strtok( szBackToChar, "\n" );
+		while( token )
 		{
-			Q_snprintf(szTemp, sizeof(szTemp), "%s%s%s", szTemp, token, CONVERSION_CHAR);
-			token = strtok(NULL, "\n");
+			Q_snprintf( szTemp, sizeof( szTemp ), "%s%s%s", szTemp, token, CONVERSION_CHAR );
+			token = strtok( NULL, "\n" );
 		}
 	}
 	else
 	{
-		Q_strncpy(szTemp, szBackToChar, sizeof(szTemp));
+		Q_strncpy( szTemp, szBackToChar, sizeof( szTemp ) );
 	}
 
 	m_messageLines.RemoveAll();
 
 	CUtlStringList vecLines;
-	Q_SplitString(szTemp, CONVERSION_CHAR, vecLines);
+	Q_SplitString( szTemp, CONVERSION_CHAR, vecLines );
 	FOR_EACH_VEC( vecLines, i )
 	{
-		m_messageLines.AddToTail( AllocPooledString(vecLines[i]) );
+		m_messageLines.AddToTail( AllocPooledString( vecLines[i] ) );
 	}
 
 	vecLines.PurgeAndDeleteElements();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMessageEntityLocalized::InputSetMessage( inputdata_t &inputdata )
+void CMessageEntityLocalized::InputSetMessage( inputdata_t& inputdata )
 {
-	SetMessage(inputdata.value.String());
+	SetMessage( inputdata.value.String() );
 }
 
 //-------------------------------------------
 //-------------------------------------------
-void CMessageEntityLocalized::DrawOverlays(void) 
+void CMessageEntityLocalized::DrawOverlays( void )
 {
-	if ( !m_drawText )
+	if( !m_drawText )
+	{
 		return;
+	}
 
-	if ( m_bDeveloperOnly && !g_pDeveloper->GetInt() )
+	if( m_bDeveloperOnly && !g_pDeveloper->GetInt() )
+	{
 		return;
+	}
 
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	// display text if they are within range
 	int offset = 0;
 	FOR_EACH_VEC( m_messageLines, i )
 	{
-		EntityText( offset, STRING(m_messageLines[i]), 0 );
+		EntityText( offset, STRING( m_messageLines[i] ), 0 );
 		offset++;
 	}
 }

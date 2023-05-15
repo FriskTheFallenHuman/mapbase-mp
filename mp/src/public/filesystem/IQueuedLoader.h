@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -8,7 +8,7 @@
 #define QUEUEDLOADER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -30,9 +30,9 @@ enum LoaderPriority_t
 	LOADERPRIORITY_DURINGPRELOAD = 2,	// job must be complete during preload phase
 };
 
-typedef void ( *QueuedLoaderCallback_t )( void *pContext, void *pContext2, const void *pData, int nSize, LoaderError_t loaderError );
+typedef void ( *QueuedLoaderCallback_t )( void* pContext, void* pContext2, const void* pData, int nSize, LoaderError_t loaderError );
 
-typedef void ( *DynamicResourceCallback_t )( const char *pFilename, void *pContext, void *pContext2 );
+typedef void ( *DynamicResourceCallback_t )( const char* pFilename, void* pContext, void* pContext2 );
 
 struct LoaderJob_t
 {
@@ -41,12 +41,12 @@ struct LoaderJob_t
 		memset( this, 0, sizeof( *this ) );
 	}
 
-	const char				*m_pFilename;				// path to resource
-	const char				*m_pPathID;					// optional, can be NULL
+	const char*				m_pFilename;				// path to resource
+	const char*				m_pPathID;					// optional, can be NULL
 	QueuedLoaderCallback_t	m_pCallback;				// called at i/o delivery
-	void					*m_pContext;				// caller provided data
-	void					*m_pContext2;				// caller provided data
-	void					*m_pTargetData;				// optional, caller provided target buffer
+	void*					m_pContext;				// caller provided data
+	void*					m_pContext2;				// caller provided data
+	void*					m_pTargetData;				// optional, caller provided target buffer
 	int						m_nBytesToRead;				// optional read clamp, otherwise 0
 	unsigned int			m_nStartOffset;				// optional start offset, otherwise 0
 	LoaderPriority_t		m_Priority;					// data must arrive by specified interval
@@ -71,7 +71,7 @@ public:
 	// Called during preload phase for ALL the resources expected by the level.
 	// Caller should not do i/o but generate AddJob() requests. Resources that already exist
 	// and are not referenced by this function would be candidates for purge.
-	virtual bool CreateResource( const char *pName ) = 0;
+	virtual bool CreateResource( const char* pName ) = 0;
 
 	// Sent as an event hint during preload, that creation has completed, AddJob() i/o is about to commence.
 	// Caller should purge any unreferenced resources before the AddJobs are performed.
@@ -111,30 +111,31 @@ public:
 #define LOADER_DETAIL_PURGES			(1<<3)
 
 #define QUEUEDLOADER_INTERFACE_VERSION		"QueuedLoaderVersion004"
-abstract_class IQueuedLoader : public IAppSystem
+abstract_class IQueuedLoader :
+public IAppSystem
 {
 public:
-	virtual void				InstallLoader( ResourcePreload_t type, IResourcePreload *pLoader ) = 0;
-	virtual void				InstallProgress( ILoaderProgress *pProgress ) = 0;
+	virtual void				InstallLoader( ResourcePreload_t type, IResourcePreload * pLoader ) = 0;
+	virtual void				InstallProgress( ILoaderProgress * pProgress ) = 0;
 
 	// Set bOptimizeReload if you want appropriate data (such as static prop lighting)
 	// to persist - rather than being purged and reloaded - when going from map A to map A.
-	virtual bool				BeginMapLoading( const char *pMapName, bool bLoadForHDR, bool bOptimizeMapReload ) = 0;
+	virtual bool				BeginMapLoading( const char* pMapName, bool bLoadForHDR, bool bOptimizeMapReload ) = 0;
 	virtual void				EndMapLoading( bool bAbort ) = 0;
-	virtual bool				AddJob( const LoaderJob_t *pLoaderJob ) = 0;
+	virtual bool				AddJob( const LoaderJob_t* pLoaderJob ) = 0;
 
 	// injects a resource into the map's reslist, rejected if not understood
-	virtual void				AddMapResource( const char *pFilename ) = 0;
+	virtual void				AddMapResource( const char* pFilename ) = 0;
 
 	// dynamically load a map resource
-	virtual void				DynamicLoadMapResource( const char *pFilename, DynamicResourceCallback_t pCallback, void *pContext, void *pContext2 ) = 0;
-	virtual void				QueueDynamicLoadFunctor( CFunctor* pFunctor ) = 0;
+	virtual void				DynamicLoadMapResource( const char* pFilename, DynamicResourceCallback_t pCallback, void* pContext, void* pContext2 ) = 0;
+	virtual void				QueueDynamicLoadFunctor( CFunctor * pFunctor ) = 0;
 	virtual bool				CompleteDynamicLoad() = 0;
 
 	// callback is asynchronous
-	virtual bool				ClaimAnonymousJob( const char *pFilename, QueuedLoaderCallback_t pCallback, void *pContext, void *pContext2 = NULL ) = 0;
+	virtual bool				ClaimAnonymousJob( const char* pFilename, QueuedLoaderCallback_t pCallback, void* pContext, void* pContext2 = NULL ) = 0;
 	// provides data if loaded, caller owns data
-	virtual bool				ClaimAnonymousJob( const char *pFilename, void **pData, int *pDataSize, LoaderError_t *pError = NULL ) = 0;
+	virtual bool				ClaimAnonymousJob( const char* pFilename, void** pData, int* pDataSize, LoaderError_t* pError = NULL ) = 0;
 
 	virtual bool				IsMapLoading() const = 0;
 	virtual bool				IsSameMapLoading() const = 0;
@@ -151,6 +152,6 @@ public:
 	virtual void				PurgeAll() = 0;
 };
 
-extern IQueuedLoader *g_pQueuedLoader;
+extern IQueuedLoader* g_pQueuedLoader;
 
 #endif // QUEUEDLOADER_H

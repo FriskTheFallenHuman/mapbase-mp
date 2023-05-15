@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -28,17 +28,17 @@ CBaseEntityList::CEntInfoList::CEntInfoList()
 }
 
 // NOTE: Cut from UtlFixedLinkedList<>, UNDONE: Find a way to share this code
-void CBaseEntityList::CEntInfoList::LinkBefore( CEntInfo *pBefore, CEntInfo *pElement )
+void CBaseEntityList::CEntInfoList::LinkBefore( CEntInfo* pBefore, CEntInfo* pElement )
 {
 	Assert( pElement );
-	
+
 	// Unlink it if it's in the list at the moment
-	Unlink(pElement);
-	
+	Unlink( pElement );
+
 	// The element *after* our newly linked one is the one we linked before.
 	pElement->m_pNext = pBefore;
-	
-	if (pBefore == NULL)
+
+	if( pBefore == NULL )
 	{
 		// In this case, we're linking to the end of the list, so reset the tail
 		pElement->m_pPrev = m_pTail;
@@ -48,13 +48,13 @@ void CBaseEntityList::CEntInfoList::LinkBefore( CEntInfo *pBefore, CEntInfo *pEl
 	{
 		// Here, we're not linking to the end. Set the prev pointer to point to
 		// the element we're linking.
-		Assert( IsInList(pBefore) );
+		Assert( IsInList( pBefore ) );
 		pElement->m_pPrev = pBefore->m_pPrev;
 		pBefore->m_pPrev = pElement;
 	}
-	
+
 	// Reset the head if we linked to the head of the list
-	if (pElement->m_pPrev == NULL)
+	if( pElement->m_pPrev == NULL )
 	{
 		m_pHead = pElement;
 	}
@@ -64,17 +64,19 @@ void CBaseEntityList::CEntInfoList::LinkBefore( CEntInfo *pBefore, CEntInfo *pEl
 	}
 }
 
-void CBaseEntityList::CEntInfoList::LinkAfter( CEntInfo *pAfter, CEntInfo *pElement )
+void CBaseEntityList::CEntInfoList::LinkAfter( CEntInfo* pAfter, CEntInfo* pElement )
 {
 	Assert( pElement );
-	
+
 	// Unlink it if it's in the list at the moment
-	if ( IsInList(pElement) )
-		Unlink(pElement);
-	
+	if( IsInList( pElement ) )
+	{
+		Unlink( pElement );
+	}
+
 	// The element *before* our newly linked one is the one we linked after
 	pElement->m_pPrev = pAfter;
-	if (pAfter == NULL)
+	if( pAfter == NULL )
 	{
 		// In this case, we're linking to the head of the list, reset the head
 		pElement->m_pNext = m_pHead;
@@ -84,13 +86,13 @@ void CBaseEntityList::CEntInfoList::LinkAfter( CEntInfo *pAfter, CEntInfo *pElem
 	{
 		// Here, we're not linking to the end. Set the next pointer to point to
 		// the element we're linking.
-		Assert( IsInList(pAfter) );
+		Assert( IsInList( pAfter ) );
 		pElement->m_pNext = pAfter->m_pNext;
 		pAfter->m_pNext = pElement;
 	}
-	
+
 	// Reset the tail if we linked to the tail of the list
-	if (pElement->m_pNext == NULL )
+	if( pElement->m_pNext == NULL )
 	{
 		m_pTail = pElement;
 	}
@@ -100,13 +102,13 @@ void CBaseEntityList::CEntInfoList::LinkAfter( CEntInfo *pAfter, CEntInfo *pElem
 	}
 }
 
-void CBaseEntityList::CEntInfoList::Unlink( CEntInfo *pElement )
+void CBaseEntityList::CEntInfoList::Unlink( CEntInfo* pElement )
 {
-	if (IsInList(pElement))
+	if( IsInList( pElement ) )
 	{
 		// If we're the first guy, reset the head
 		// otherwise, make our previous node's next pointer = our next
-		if ( pElement->m_pPrev )
+		if( pElement->m_pPrev )
 		{
 			pElement->m_pPrev->m_pNext = pElement->m_pNext;
 		}
@@ -114,10 +116,10 @@ void CBaseEntityList::CEntInfoList::Unlink( CEntInfo *pElement )
 		{
 			m_pHead = pElement->m_pNext;
 		}
-		
+
 		// If we're the last guy, reset the tail
 		// otherwise, make our next node's prev pointer = our prev
-		if ( pElement->m_pNext )
+		if( pElement->m_pNext )
 		{
 			pElement->m_pNext->m_pPrev = pElement->m_pPrev;
 		}
@@ -125,14 +127,14 @@ void CBaseEntityList::CEntInfoList::Unlink( CEntInfo *pElement )
 		{
 			m_pTail = pElement->m_pPrev;
 		}
-		
-		// This marks this node as not in the list, 
+
+		// This marks this node as not in the list,
 		// but not in the free list either
 		pElement->ClearLinks();
 	}
 }
 
-bool CBaseEntityList::CEntInfoList::IsInList( CEntInfo *pElement )
+bool CBaseEntityList::CEntInfoList::IsInList( CEntInfo* pElement )
 {
 	return pElement->m_pPrev != pElement;
 }
@@ -141,18 +143,18 @@ CBaseEntityList::CBaseEntityList()
 {
 	// These are not in any list (yet)
 	int i;
-	for ( i = 0; i < NUM_ENT_ENTRIES; i++ )
+	for( i = 0; i < NUM_ENT_ENTRIES; i++ )
 	{
 		m_EntPtrArray[i].ClearLinks();
-		m_EntPtrArray[i].m_SerialNumber = (rand()& SERIAL_MASK); // generate random starting serial number
+		m_EntPtrArray[i].m_SerialNumber = ( rand()& SERIAL_MASK ); // generate random starting serial number
 		m_EntPtrArray[i].m_pEntity = NULL;
 	}
 
 	// make a free list of the non-networkable entities
 	// Initially, all the slots are free.
-	for ( i=MAX_EDICTS+1; i < NUM_ENT_ENTRIES; i++ )
+	for( i = MAX_EDICTS + 1; i < NUM_ENT_ENTRIES; i++ )
 	{
-		CEntInfo *pList = &m_EntPtrArray[i];
+		CEntInfo* pList = &m_EntPtrArray[i];
 		m_freeNonNetworkableList.AddToTail( pList );
 	}
 }
@@ -160,29 +162,29 @@ CBaseEntityList::CBaseEntityList()
 
 CBaseEntityList::~CBaseEntityList()
 {
-	CEntInfo *pList = m_activeList.Head();
+	CEntInfo* pList = m_activeList.Head();
 
-	while ( pList )
+	while( pList )
 	{
-		CEntInfo *pNext = pList->m_pNext;
+		CEntInfo* pNext = pList->m_pNext;
 		RemoveEntityAtSlot( GetEntInfoIndex( pList ) );
 		pList = pNext;
 	}
 }
 
 
-CBaseHandle CBaseEntityList::AddNetworkableEntity( IHandleEntity *pEnt, int index, int iForcedSerialNum )
+CBaseHandle CBaseEntityList::AddNetworkableEntity( IHandleEntity* pEnt, int index, int iForcedSerialNum )
 {
 	Assert( index >= 0 && index < MAX_EDICTS );
 	return AddEntityAtSlot( pEnt, index, iForcedSerialNum );
 }
 
 
-CBaseHandle CBaseEntityList::AddNonNetworkableEntity( IHandleEntity *pEnt )
+CBaseHandle CBaseEntityList::AddNonNetworkableEntity( IHandleEntity* pEnt )
 {
 	// Find a slot for it.
-	CEntInfo *pSlot = m_freeNonNetworkableList.Head();
-	if ( !pSlot )
+	CEntInfo* pSlot = m_freeNonNetworkableList.Head();
+	if( !pSlot )
 	{
 		Warning( "CBaseEntityList::AddNonNetworkableEntity: no free slots!\n" );
 		AssertMsg( 0, ( "CBaseEntityList::AddNonNetworkableEntity: no free slots!\n" ) );
@@ -192,7 +194,7 @@ CBaseHandle CBaseEntityList::AddNonNetworkableEntity( IHandleEntity *pEnt )
 	// Move from the free list into the allocated list.
 	m_freeNonNetworkableList.Unlink( pSlot );
 	int iSlot = GetEntInfoIndex( pSlot );
-	
+
 	return AddEntityAtSlot( pEnt, iSlot, -1 );
 }
 
@@ -203,24 +205,24 @@ void CBaseEntityList::RemoveEntity( CBaseHandle handle )
 }
 
 
-CBaseHandle CBaseEntityList::AddEntityAtSlot( IHandleEntity *pEnt, int iSlot, int iForcedSerialNum )
+CBaseHandle CBaseEntityList::AddEntityAtSlot( IHandleEntity* pEnt, int iSlot, int iForcedSerialNum )
 {
 	// Init the CSerialEntity.
-	CEntInfo *pSlot = &m_EntPtrArray[iSlot];
+	CEntInfo* pSlot = &m_EntPtrArray[iSlot];
 	Assert( pSlot->m_pEntity == NULL );
 	pSlot->m_pEntity = pEnt;
 
 	// Force the serial number (client-only)?
-	if ( iForcedSerialNum != -1 )
+	if( iForcedSerialNum != -1 )
 	{
 		pSlot->m_SerialNumber = iForcedSerialNum;
-		
-		#if !defined( CLIENT_DLL )
-			// Only the client should force the serial numbers.
-			Assert( false );
-		#endif
+
+#if !defined( CLIENT_DLL )
+		// Only the client should force the serial numbers.
+		Assert( false );
+#endif
 	}
-	
+
 	// Update our list of active entities.
 	m_activeList.AddToTail( pSlot );
 	CBaseHandle retVal( iSlot, pSlot->m_SerialNumber );
@@ -238,9 +240,9 @@ void CBaseEntityList::RemoveEntityAtSlot( int iSlot )
 {
 	Assert( iSlot >= 0 && iSlot < NUM_ENT_ENTRIES );
 
-	CEntInfo *pInfo = &m_EntPtrArray[iSlot];
+	CEntInfo* pInfo = &m_EntPtrArray[iSlot];
 
-	if ( pInfo->m_pEntity )
+	if( pInfo->m_pEntity )
 	{
 		pInfo->m_pEntity->SetRefEHandle( INVALID_EHANDLE_INDEX );
 
@@ -249,12 +251,12 @@ void CBaseEntityList::RemoveEntityAtSlot( int iSlot )
 
 		// Increment the serial # so ehandles go invalid.
 		pInfo->m_pEntity = NULL;
-		pInfo->m_SerialNumber = ( pInfo->m_SerialNumber+1)& SERIAL_MASK;
+		pInfo->m_SerialNumber = ( pInfo->m_SerialNumber + 1 )& SERIAL_MASK;
 
 		m_activeList.Unlink( pInfo );
 
 		// Add the slot back to the free list if it's a non-networkable entity.
-		if ( iSlot >= MAX_EDICTS )
+		if( iSlot >= MAX_EDICTS )
 		{
 			m_freeNonNetworkableList.AddToTail( pInfo );
 		}
@@ -262,12 +264,12 @@ void CBaseEntityList::RemoveEntityAtSlot( int iSlot )
 }
 
 
-void CBaseEntityList::OnAddEntity( IHandleEntity *pEnt, CBaseHandle handle )
+void CBaseEntityList::OnAddEntity( IHandleEntity* pEnt, CBaseHandle handle )
 {
 }
 
 
 
-void CBaseEntityList::OnRemoveEntity( IHandleEntity *pEnt, CBaseHandle handle )
+void CBaseEntityList::OnRemoveEntity( IHandleEntity* pEnt, CBaseHandle handle )
 {
 }

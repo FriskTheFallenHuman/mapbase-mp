@@ -10,7 +10,7 @@
 #define VGUI_ENTITYPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
@@ -30,7 +30,7 @@ public:
 	DECLARE_CLASS( CEntityPanel, CBasePanel );
 
 	// constructor
-	CEntityPanel( vgui::Panel *pParent, const char *panelName );
+	CEntityPanel( vgui::Panel* pParent, const char* panelName );
 
 	virtual void	ComputeParent( void );
 	virtual void	ComputeAndSetSize( void );
@@ -50,9 +50,12 @@ public:
 	virtual void OnCursorEntered();
 	virtual void OnCursorExited();
 
-	const char *GetMouseOverText( void );
+	const char* GetMouseOverText( void );
 
-	C_BaseEntity* GetEntity() { return (C_BaseEntity*)m_pBaseEntity; }
+	C_BaseEntity* GetEntity()
+	{
+		return ( C_BaseEntity* )m_pBaseEntity;
+	}
 
 	// Attach to a new entity
 	void	SetEntity( C_BaseEntity* pEntity );

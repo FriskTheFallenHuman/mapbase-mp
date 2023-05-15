@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,24 +16,26 @@
 // Cleanup
 //-----------------------------------------------------------------------------
 void CEntityMaterialProxy::Release( void )
-{ 
-	delete this; 
+{
+	delete this;
 }
 
 //-----------------------------------------------------------------------------
 // Helper class to deal with floating point inputs
 //-----------------------------------------------------------------------------
-void CEntityMaterialProxy::OnBind( void *pRenderable )
+void CEntityMaterialProxy::OnBind( void* pRenderable )
 {
 	if( !pRenderable )
+	{
 		return;
+	}
 
-	IClientRenderable *pRend = ( IClientRenderable* )pRenderable;
-	C_BaseEntity *pEnt = pRend->GetIClientUnknown()->GetBaseEntity();
-	if ( pEnt )
+	IClientRenderable* pRend = ( IClientRenderable* )pRenderable;
+	C_BaseEntity* pEnt = pRend->GetIClientUnknown()->GetBaseEntity();
+	if( pEnt )
 	{
 		OnBind( pEnt );
-		if ( ToolsEnabled() )
+		if( ToolsEnabled() )
 		{
 			ToolFramework_RecordMaterialParams( GetMaterial() );
 		}

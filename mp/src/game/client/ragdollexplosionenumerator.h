@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef RAGDOLLEXPLOSIONENUMERATOR_H
 #define RAGDOLLEXPLOSIONENUMERATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ispatialpartition.h"
@@ -23,7 +23,7 @@ public:
 	~CRagdollExplosionEnumerator();
 
 	//Actual work code
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity );
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity );
 
 public:
 	//Data members

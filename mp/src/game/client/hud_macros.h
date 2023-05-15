@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( HUD_MACROS_H )
 #define HUD_MACROS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "usermessages.h"

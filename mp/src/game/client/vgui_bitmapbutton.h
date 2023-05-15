@@ -10,7 +10,7 @@
 #define VGUI_BITMAPBUTTON_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Button.h>
@@ -40,17 +40,17 @@ public:
 	};
 
 	// constructor
-	CBitmapButton( vgui::Panel *pParent, const char *pName, const char *pText );
+	CBitmapButton( vgui::Panel* pParent, const char* pName, const char* pText );
 	~CBitmapButton();
 
 	// initialization
 	bool Init( KeyValues* pInitData );
 
-	void SetImage( ButtonImageType_t type, const char *pMaterialName, color32 color );
+	void SetImage( ButtonImageType_t type, const char* pMaterialName, color32 color );
 	bool IsImageLoaded( ButtonImageType_t type ) const;
 
 	// initialization from build-mode dialog style .res files
-	virtual void ApplySettings(KeyValues *inResourceData);
+	virtual void ApplySettings( KeyValues* inResourceData );
 
 	virtual void Paint( void );
 	virtual void PaintBackground( void ) {}

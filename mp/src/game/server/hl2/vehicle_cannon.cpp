@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -27,7 +27,7 @@
 class CPropCannon;
 
 // Crane bones that have physics followers
-static const char *pCannonFollowerBoneNames[] =
+static const char* pCannonFollowerBoneNames[] =
 {
 	"base",
 	"arm",
@@ -69,16 +69,16 @@ class CCannonServerVehicle : public CBaseServerVehicle
 	typedef CBaseServerVehicle BaseClass;
 // IServerVehicle
 public:
-	void	GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV = NULL );
+	void	GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV = NULL );
 
 
 protected:
-	CPropCannon *GetCannon( void );
+	CPropCannon* GetCannon( void );
 };
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPropCannon : public CBaseProp, public IDrivableVehicle
 {
@@ -93,55 +93,89 @@ public:
 	}
 
 	//IDrivableVehicle's Pure Virtuals
-	virtual CBaseEntity *GetDriver( void );
-	virtual void		ItemPostFrame( CBasePlayer *pPlayer );
-	virtual void		SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
-	virtual void		ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) { return; }
-	virtual void		FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move ) { return; }
-	virtual bool		CanEnterVehicle( CBaseEntity *pEntity );
-	virtual bool		CanExitVehicle( CBaseEntity *pEntity );
-	virtual void		SetVehicleEntryAnim( bool bOn ) { m_bEnterAnimOn = bOn; }
-	virtual void		SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint ) { m_bExitAnimOn = bOn; if ( bOn ) m_vecEyeExitEndpoint = vecEyeExitEndpoint; }
-	virtual void		EnterVehicle( CBaseCombatCharacter *pPassenger );
-	virtual bool		AllowBlockedExit( CBaseCombatCharacter *pPassenger, int nRole ) { return true; }
-	virtual bool		AllowMidairExit( CBaseCombatCharacter *pPassenger, int nRole ) { return false; }
-	virtual void		PreExitVehicle( CBaseCombatCharacter *pPassenger, int nRole ) {}
+	virtual CBaseEntity* GetDriver( void );
+	virtual void		ItemPostFrame( CBasePlayer* pPlayer );
+	virtual void		SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move );
+	virtual void		ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData )
+	{
+		return;
+	}
+	virtual void		FinishMove( CBasePlayer* player, CUserCmd* ucmd, CMoveData* move )
+	{
+		return;
+	}
+	virtual bool		CanEnterVehicle( CBaseEntity* pEntity );
+	virtual bool		CanExitVehicle( CBaseEntity* pEntity );
+	virtual void		SetVehicleEntryAnim( bool bOn )
+	{
+		m_bEnterAnimOn = bOn;
+	}
+	virtual void		SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint )
+	{
+		m_bExitAnimOn = bOn;
+		if( bOn )
+		{
+			m_vecEyeExitEndpoint = vecEyeExitEndpoint;
+		}
+	}
+	virtual void		EnterVehicle( CBaseCombatCharacter* pPassenger );
+	virtual bool		AllowBlockedExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return true;
+	}
+	virtual bool		AllowMidairExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return false;
+	}
+	virtual void		PreExitVehicle( CBaseCombatCharacter* pPassenger, int nRole ) {}
 	virtual void		ExitVehicle( int nRole );
-	virtual string_t GetVehicleScriptName() { return m_vehicleScript; }
-	virtual bool		PassengerShouldReceiveDamage( CTakeDamageInfo &info ) { return false; }
-	
+	virtual string_t GetVehicleScriptName()
+	{
+		return m_vehicleScript;
+	}
+	virtual bool		PassengerShouldReceiveDamage( CTakeDamageInfo& info )
+	{
+		return false;
+	}
+
 	// If this is a vehicle, returns the vehicle interface
-	virtual IServerVehicle *GetServerVehicle() { return &m_ServerVehicle; }
+	virtual IServerVehicle* GetServerVehicle()
+	{
+		return &m_ServerVehicle;
+	}
 
 	virtual void Precache( void );
 	virtual void Spawn( void );
-	virtual int	 ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	virtual int	 ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
+	};
+	virtual void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	virtual void Think( void );
-	
+
 	virtual	bool CreateVPhysics( void );
 	virtual void UpdateOnRemove( void );
 
 	void	DriveCannon( int iDriverButtons, int iButtonsPressed );
-	void	ResetUseKey( CBasePlayer *pPlayer );
+	void	ResetUseKey( CBasePlayer* pPlayer );
 	void	InitCannonSpeeds( void );
 	void	RunCraneMovement( float flTime );
 	void	LaunchProjectile( void );
 	void	ProjectileExplosion( void );
 
 private:
-	
+
 	string_t		m_vehicleScript;
 
 	// Entering / Exiting
 	bool				m_bLocked;
-	
+
 	CNetworkVar( bool,	m_bEnterAnimOn );
 	CNetworkVar( bool,	m_bExitAnimOn );
-	CNetworkVector(		m_vecEyeExitEndpoint );
+	CNetworkVector(	m_vecEyeExitEndpoint );
 
 	CNetworkHandle( CBasePlayer, m_hPlayer );
-	
+
 	COutputEvent		m_playerOn;
 	COutputEvent		m_playerOff;
 
@@ -177,41 +211,41 @@ protected:
 LINK_ENTITY_TO_CLASS( prop_vehicle_cannon, CPropCannon );
 
 BEGIN_DATADESC( CPropCannon )
-	DEFINE_KEYFIELD( m_vehicleScript, FIELD_STRING, "vehiclescript" ),
-	DEFINE_OUTPUT( m_playerOn, "PlayerOn" ),
-	DEFINE_OUTPUT( m_playerOff, "PlayerOff" ),
+DEFINE_KEYFIELD( m_vehicleScript, FIELD_STRING, "vehiclescript" ),
+				 DEFINE_OUTPUT( m_playerOn, "PlayerOn" ),
+				 DEFINE_OUTPUT( m_playerOff, "PlayerOff" ),
 
-	DEFINE_EMBEDDED( m_BoneFollowerManager ),
+				 DEFINE_EMBEDDED( m_BoneFollowerManager ),
 
-	DEFINE_FIELD( m_iTurning, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flTurn, FIELD_FLOAT ),
-	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ), 
+				 DEFINE_FIELD( m_iTurning, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_flTurn, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
 
-	DEFINE_FIELD( m_bExtending, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flExtension, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flExtensionRate, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_bExtending, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_flExtension, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flExtensionRate, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_flMaxExtensionSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flMaxTurnSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flExtensionAccel, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flExtensionDecel, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flMaxExtensionSpeed, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flMaxTurnSpeed, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flExtensionAccel, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flExtensionDecel, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_flTurnAccel, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTurnDecel, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flTurnAccel, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flTurnDecel, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_flFlyTime, FIELD_TIME ),
-	DEFINE_FIELD( m_vCrashPoint, FIELD_POSITION_VECTOR ),
+				 DEFINE_FIELD( m_flFlyTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_vCrashPoint, FIELD_POSITION_VECTOR ),
 
-	DEFINE_FIELD( m_flNextAttackTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flNextAttackTime, FIELD_TIME ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropCannon, DT_PropCannon)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-END_SEND_TABLE();
+				 IMPLEMENT_SERVERCLASS_ST( CPropCannon, DT_PropCannon )
+				 SendPropEHandle( SENDINFO( m_hPlayer ) ),
+				 SendPropBool( SENDINFO( m_bEnterAnimOn ) ),
+				 SendPropBool( SENDINFO( m_bExitAnimOn ) ),
+				 SendPropVector( SENDINFO( m_vecEyeExitEndpoint ), -1, SPROP_COORD ),
+				 END_SEND_TABLE();
 
 //------------------------------------------------
 // Precache
@@ -222,7 +256,7 @@ void CPropCannon::Precache( void )
 	m_ServerVehicle.Initialize( STRING( m_vehicleScript ) );
 
 	PrecacheModel( CANNON_PROJECTILE_MODEL );
-	
+
 	PrecacheScriptSound( "HeadcrabCanister.LaunchSound" );
 	PrecacheScriptSound( "HeadcrabCanister.Explosion" );
 	PrecacheScriptSound( "Weapon_Mortar.Incomming" );
@@ -254,7 +288,7 @@ void CPropCannon::Spawn( void )
 	m_flNextAttackTime = gpGlobals->curtime;
 
 	InitCannonSpeeds();
-	
+
 	SetPoseParameter( "armextensionpose", m_flExtension );
 
 	CreateVPhysics();
@@ -262,7 +296,7 @@ void CPropCannon::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropCannon::InitCannonSpeeds( void )
 {
@@ -275,26 +309,28 @@ void CPropCannon::InitCannonSpeeds( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CPropCannon::GetDriver( void ) 
-{ 
-	return m_hPlayer; 
+CBaseEntity* CPropCannon::GetDriver( void )
+{
+	return m_hPlayer;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropCannon::EnterVehicle( CBaseCombatCharacter *pPassenger )
+void CPropCannon::EnterVehicle( CBaseCombatCharacter* pPassenger )
 {
-	if ( pPassenger == NULL )
+	if( pPassenger == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( pPassenger );
-	if ( pPlayer != NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( pPassenger );
+	if( pPlayer != NULL )
 	{
 		// Remove any player who may be in the vehicle at the moment
-		if ( m_hPlayer )
+		if( m_hPlayer )
 		{
 			ExitVehicle( VEHICLE_ROLE_DRIVER );
 		}
@@ -312,13 +348,15 @@ void CPropCannon::EnterVehicle( CBaseCombatCharacter *pPassenger )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropCannon::ExitVehicle( int nRole )
 {
-	CBasePlayer *pPlayer = m_hPlayer;
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = m_hPlayer;
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	m_hPlayer = NULL;
 	ResetUseKey( pPlayer );
@@ -331,12 +369,14 @@ void CPropCannon::ExitVehicle( int nRole )
 //-----------------------------------------------------------------------------
 // Purpose: Return true of the player's allowed to enter / exit the vehicle
 //-----------------------------------------------------------------------------
-bool CPropCannon::CanEnterVehicle( CBaseEntity *pEntity )
+bool CPropCannon::CanEnterVehicle( CBaseEntity* pEntity )
 {
 	// Prevent entering if the vehicle's being driven by an NPC
-	if ( GetDriver() && GetDriver() != pEntity )
+	if( GetDriver() && GetDriver() != pEntity )
+	{
 		return false;
-	
+	}
+
 	// Prevent entering if the vehicle's locked
 	return ( !m_bLocked );
 }
@@ -344,17 +384,17 @@ bool CPropCannon::CanEnterVehicle( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 // Purpose: Return true of the player's allowed to enter / exit the vehicle
 //-----------------------------------------------------------------------------
-bool CPropCannon::CanExitVehicle( CBaseEntity *pEntity )
+bool CPropCannon::CanExitVehicle( CBaseEntity* pEntity )
 {
 	// Prevent exiting if the vehicle's locked, or rotating
 	// Adrian: Check also if I'm currently jumping in or out.
-	return ( !m_bLocked && (GetLocalAngularVelocity() == vec3_angle) && m_bExitAnimOn == false && m_bEnterAnimOn == false );
+	return ( !m_bLocked && ( GetLocalAngularVelocity() == vec3_angle ) && m_bExitAnimOn == false && m_bEnterAnimOn == false );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropCannon::ResetUseKey( CBasePlayer *pPlayer )
+void CPropCannon::ResetUseKey( CBasePlayer* pPlayer )
 {
 	pPlayer->m_afButtonPressed &= ~IN_USE;
 }
@@ -362,10 +402,10 @@ void CPropCannon::ResetUseKey( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 // Purpose: Pass player movement into the crane's driving system
 //-----------------------------------------------------------------------------
-void CPropCannon::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move )
+void CPropCannon::SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move )
 {
 	// If the player's entering/exiting the vehicle, prevent movement
-	if ( !m_bEnterAnimOn && !m_bExitAnimOn )
+	if( !m_bEnterAnimOn && !m_bExitAnimOn )
 	{
 		DriveCannon( ucmd->buttons, player->m_afButtonPressed );
 	}
@@ -375,7 +415,7 @@ void CPropCannon::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *p
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Crane rotates around with +left and +right, and extends/retracts 
+// Purpose: Crane rotates around with +left and +right, and extends/retracts
 //			the cable with +forward and +back.
 //-----------------------------------------------------------------------------
 void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
@@ -383,12 +423,12 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 	bool bWasExtending = m_bExtending;
 
 	// Handle rotation of the crane
-	if ( iDriverButtons & IN_MOVELEFT )
+	if( iDriverButtons & IN_MOVELEFT )
 	{
-		// Try adding some randomness to make it feel shaky? 
+		// Try adding some randomness to make it feel shaky?
 		float flTurnAdd = m_flTurnAccel;
 		// If we're turning back on ourselves, use decel speed
-		if ( m_flTurn < 0 )
+		if( m_flTurn < 0 )
 		{
 			flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 		}
@@ -397,12 +437,12 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 
 		m_iTurning = CANNON_TURNING_LEFT;
 	}
-	else if ( iDriverButtons & IN_MOVERIGHT )
+	else if( iDriverButtons & IN_MOVERIGHT )
 	{
 		// Try adding some randomness to make it feel shaky?
 		float flTurnAdd = m_flTurnAccel;
 		// If we're turning back on ourselves, increase the rate
-		if ( m_flTurn > 0 )
+		if( m_flTurn > 0 )
 		{
 			flTurnAdd = MAX( flTurnAdd, m_flTurnDecel );
 		}
@@ -416,15 +456,15 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 		m_iTurning = CANNON_TURNING_NOT;
 	}
 
-	SetLocalAngularVelocity( QAngle(0,m_flTurn * 10,0) );
+	SetLocalAngularVelocity( QAngle( 0, m_flTurn * 10, 0 ) );
 
 	// Handle extension / retraction of the arm
-	if ( iDriverButtons & IN_FORWARD )
+	if( iDriverButtons & IN_FORWARD )
 	{
 		m_flExtensionRate = UTIL_Approach( m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
 		m_bExtending = true;
 	}
-	else if ( iDriverButtons & IN_BACK )
+	else if( iDriverButtons & IN_BACK )
 	{
 		m_flExtensionRate = UTIL_Approach( -m_flMaxExtensionSpeed, m_flExtensionRate, m_flExtensionAccel * gpGlobals->frametime );
 		m_bExtending = true;
@@ -438,30 +478,30 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 	//Msg("Turn: %f\nExtensionRate: %f\n", m_flTurn, m_flExtensionRate );
 
 	//If we're holding down an attack button, update our state
-	if ( iButtonsPressed & (IN_ATTACK | IN_ATTACK2) )
+	if( iButtonsPressed & ( IN_ATTACK | IN_ATTACK2 ) )
 	{
-		if ( m_flNextAttackTime <= gpGlobals->curtime )
+		if( m_flNextAttackTime <= gpGlobals->curtime )
 		{
 			LaunchProjectile();
 		}
 	}
 
-	float flSpeedPercentage = clamp( fabs(m_flTurn) / m_flMaxTurnSpeed, 0, 1 );
+	float flSpeedPercentage = clamp( fabs( m_flTurn ) / m_flMaxTurnSpeed, 0, 1 );
 	vbs_sound_update_t params;
 	params.Defaults();
-	params.bThrottleDown = (m_iTurning != CANNON_TURNING_NOT);
+	params.bThrottleDown = ( m_iTurning != CANNON_TURNING_NOT );
 	params.flCurrentSpeedFraction = flSpeedPercentage;
 	params.flWorldSpaceSpeed = 0;
 
 	m_ServerVehicle.SoundUpdate( params );
 
 	// Play sounds for arm extension / retraction
-	if ( m_bExtending && !bWasExtending )
+	if( m_bExtending && !bWasExtending )
 	{
 		m_ServerVehicle.StopSound( VS_ENGINE2_STOP );
 		m_ServerVehicle.PlaySound( VS_ENGINE2_START );
 	}
-	else if ( !m_bExtending && bWasExtending )
+	else if( !m_bExtending && bWasExtending )
 	{
 		m_ServerVehicle.StopSound( VS_ENGINE2_START );
 		m_ServerVehicle.PlaySound( VS_ENGINE2_STOP );
@@ -469,26 +509,26 @@ void CPropCannon::DriveCannon( int iDriverButtons, int iButtonsPressed )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
-//			*pMoveData - 
+// Purpose:
+// Input  : *pPlayer -
+//			*pMoveData -
 //-----------------------------------------------------------------------------
 void CPropCannon::RunCraneMovement( float flTime )
 {
-	if ( m_flExtensionRate )
+	if( m_flExtensionRate )
 	{
 		// Extend / Retract the crane
-		m_flExtension = clamp( m_flExtension + (m_flExtensionRate * 10 * flTime), 0, 2 );
+		m_flExtension = clamp( m_flExtension + ( m_flExtensionRate * 10 * flTime ), 0, 2 );
 		SetPoseParameter( "armextensionpose", m_flExtension );
 		StudioFrameAdvance();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *player - 
+// Purpose:
+// Input  : *player -
 //-----------------------------------------------------------------------------
-void CPropCannon::ItemPostFrame( CBasePlayer *player )
+void CPropCannon::ItemPostFrame( CBasePlayer* player )
 {
 
 }
@@ -505,63 +545,63 @@ void CPropCannon::ProjectileExplosion( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropCannon::Think( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.1 );
 
-	if ( GetDriver() )
+	if( GetDriver() )
 	{
 		BaseClass::Think();
 	}
 
-	if ( GetDriver() )
+	if( GetDriver() )
 	{
 		BaseClass::Think();
-	
+
 		// play enter animation
 		StudioFrameAdvance();
 
 		// If the enter or exit animation has finished, tell the server vehicle
-		if ( IsSequenceFinished() && (m_bExitAnimOn || m_bEnterAnimOn) )
+		if( IsSequenceFinished() && ( m_bExitAnimOn || m_bEnterAnimOn ) )
 		{
-			if ( m_bEnterAnimOn )
+			if( m_bEnterAnimOn )
 			{
 				// Finished entering, display the hint for using the crane
 				//UTIL_HudHintText( m_hPlayer, "#Valve_Hint_CraneKeys" );
 			}
-			
+
 			GetServerVehicle()->HandleEntryExitFinish( m_bExitAnimOn, true );
 		}
 	}
 	else
 	{
 		// Run the crane's movement
-	//	RunCraneMovement( 0.1 );
+		//	RunCraneMovement( 0.1 );
 	}
 
 	// Update follower bones
-	m_BoneFollowerManager.UpdateBoneFollowers(this);
+	m_BoneFollowerManager.UpdateBoneFollowers( this );
 
-	if ( m_flFlyTime > 0.0f )
+	if( m_flFlyTime > 0.0f )
 	{
-		if ( m_flFlyTime - 1.0f <= gpGlobals->curtime && m_flFlyTime - 0.8f > gpGlobals->curtime)
+		if( m_flFlyTime - 1.0f <= gpGlobals->curtime && m_flFlyTime - 0.8f > gpGlobals->curtime )
 		{
 			CPASAttenuationFilter filter( this );
-				
+
 			EmitSound_t ep;
 			ep.m_nChannel = CHAN_STATIC;
 			ep.m_pSoundName = "Weapon_Mortar.Incomming";
 			ep.m_flVolume = 255;
 			ep.m_SoundLevel = SNDLVL_180dB;
-	
+
 			EmitSound( filter, entindex(), ep );
 		}
 
-		if ( m_flFlyTime <= gpGlobals->curtime )
+		if( m_flFlyTime <= gpGlobals->curtime )
 		{
-			if ( m_vCrashPoint != vec3_origin )
+			if( m_vCrashPoint != vec3_origin )
 			{
 				ProjectileExplosion();
 			}
@@ -579,17 +619,19 @@ void CPropCannon::Think( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropCannon::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPropCannon::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( pActivator );
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	ResetUseKey( pPlayer );
 
-	GetServerVehicle()->HandlePassengerEntry( pPlayer, (value>0) );
+	GetServerVehicle()->HandlePassengerEntry( pPlayer, ( value > 0 ) );
 }
 
 void CPropCannon::LaunchProjectile( void )
@@ -609,23 +651,23 @@ void CPropCannon::LaunchProjectile( void )
 	float flDistance = 0.0f;
 
 	int iFailSafe = 0;
-	
-	while ( bCollided == false && iFailSafe < 100000 )
+
+	while( bCollided == false && iFailSafe < 100000 )
 	{
 		Vector vOldOrigin = vOrigin;
 		vOrigin = vOrigin + vVelocity * gpGlobals->frametime;
 
-		flDistance += (vOrigin - vOldOrigin).Length();
+		flDistance += ( vOrigin - vOldOrigin ).Length();
 
-		if ( g_cannon_debug.GetBool() == true )
+		if( g_cannon_debug.GetBool() == true )
 		{
 			NDebugOverlay::Line( vOldOrigin, vOrigin, 0, 255, 0, true, 5 );
 		}
 
-		trace_t pm;		
+		trace_t pm;
 		UTIL_TraceLine( vOldOrigin, vOrigin, MASK_SOLID, this, COLLISION_GROUP_NONE, &pm );
 
-		if ( pm.surface.flags & SURF_SKY || pm.allsolid == true ) 
+		if( pm.surface.flags & SURF_SKY || pm.allsolid == true )
 		{
 			bInSky = true;
 			iFailSafe++;
@@ -637,12 +679,12 @@ void CPropCannon::LaunchProjectile( void )
 
 		iFailSafe++;
 
-		if ( pm.fraction != 1.0f && bInSky == false )
+		if( pm.fraction != 1.0f && bInSky == false )
 		{
 			bCollided = true;
 			vOrigin = pm.endpos;
 
-			if ( g_cannon_debug.GetBool() == true )
+			if( g_cannon_debug.GetBool() == true )
 			{
 				NDebugOverlay::Box( vOrigin, Vector( 256, 256, 256 ), Vector( -256, -256, -256 ), 255, 0, 0, 0, 5 );
 			}
@@ -652,16 +694,16 @@ void CPropCannon::LaunchProjectile( void )
 			vVelocity[2] += gravity;
 		}
 	}
-	
+
 	float flTravelTime = flDistance / vVelocity.Length();
 
-	if ( flTravelTime > g_cannon_max_traveltime.GetFloat() )
+	if( flTravelTime > g_cannon_max_traveltime.GetFloat() )
 	{
 		flTravelTime = g_cannon_max_traveltime.GetFloat();
 
-		if ( bCollided == false )
+		if( bCollided == false )
 		{
-			vOrigin = vec3_origin; 
+			vOrigin = vec3_origin;
 		}
 	}
 
@@ -669,7 +711,7 @@ void CPropCannon::LaunchProjectile( void )
 	m_vCrashPoint = vOrigin;
 
 	m_flNextAttackTime = gpGlobals->curtime + g_cannon_reloadtime.GetFloat();
-	
+
 	EmitSound( "HeadcrabCanister.LaunchSound" );
 
 	UTIL_ScreenShake( GetDriver()->GetAbsOrigin(), 50.0, 150.0, 1.0, 750, SHAKE_START, true );
@@ -678,25 +720,25 @@ void CPropCannon::LaunchProjectile( void )
 //========================================================================================================================================
 // CRANE VEHICLE SERVER VEHICLE
 //========================================================================================================================================
-CPropCannon *CCannonServerVehicle::GetCannon( void )
+CPropCannon* CCannonServerVehicle::GetCannon( void )
 {
-	return (CPropCannon*)GetDrivableVehicle();
+	return ( CPropCannon* )GetDrivableVehicle();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CPropCannon::CreateVPhysics( void )
 {
 	BaseClass::CreateVPhysics();
-	m_BoneFollowerManager.InitBoneFollowers( this, ARRAYSIZE(pCannonFollowerBoneNames), pCannonFollowerBoneNames );
+	m_BoneFollowerManager.InitBoneFollowers( this, ARRAYSIZE( pCannonFollowerBoneNames ), pCannonFollowerBoneNames );
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropCannon::UpdateOnRemove( void )
 {
@@ -705,12 +747,12 @@ void CPropCannon::UpdateOnRemove( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CCannonServerVehicle::GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV /*= NULL*/ )
+void CCannonServerVehicle::GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV /*= NULL*/ )
 {
 	Assert( nRole == VEHICLE_ROLE_DRIVER );
-	CBasePlayer *pPlayer = ToBasePlayer( GetDrivableVehicle()->GetDriver() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetDrivableVehicle()->GetDriver() );
 	Assert( pPlayer );
 
 	*pAbsAngles = pPlayer->EyeAngles(); // yuck. this is an in/out parameter.

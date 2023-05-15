@@ -2,14 +2,14 @@
 //
 // Purpose: A special variant of predicted_viewmodel with nethworked C_Hands +
 //          Poseparameters base viewbob.
-// 
+//
 //          This is base of ZM:R zmr_viewmodel credits goes to the ZM:R
 //
 //=============================================================================//
 #ifndef MAPBASE_VIEWMODEL_H
 #define MAPBASE_VIEWMODEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef CLIENT_DLL
@@ -20,7 +20,7 @@
 #include "weapon_hl2mpbase.h"
 
 #ifdef CLIENT_DLL
-	#include "c_hl2mp_player.h"  
+	#include "c_hl2mp_player.h"
 #else
 	#include "hl2mp_player.h"
 #endif
@@ -40,7 +40,7 @@ public:
 	DECLARE_PREDICTABLE();
 #endif
 
-			CMapbaseViewModel();
+	CMapbaseViewModel();
 	virtual ~CMapbaseViewModel();
 
 #ifdef CLIENT_DLL
@@ -55,7 +55,10 @@ public:
 	virtual CBaseCombatWeapon* GetOwningWeapon();
 
 #ifdef CLIENT_DLL
-	virtual void SetDrawVM( bool state ) { m_bDrawVM = state; };
+	virtual void SetDrawVM( bool state )
+	{
+		m_bDrawVM = state;
+	};
 #endif
 
 private:

@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( C_BASEDOOR_H )
 #define C_BASEDOOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
 
 #if defined( CLIENT_DLL )
-#define CBaseDoor C_BaseDoor
+	#define CBaseDoor C_BaseDoor
 #endif
 
 class C_BaseDoor : public C_BaseEntity

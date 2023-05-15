@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef CLIENT_THINKLIST_H
 #define CLIENT_THINKLIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -30,16 +30,22 @@ class CClientThinkList : public IGameSystemPerFrame
 {
 public:
 
-							CClientThinkList();
+	CClientThinkList();
 	virtual					~CClientThinkList();
-	
-	virtual char const		*Name() { return "CClientThinkList"; }
-	virtual bool			IsPerFrame() { return true; }
+
+	virtual char const*		Name()
+	{
+		return "CClientThinkList";
+	}
+	virtual bool			IsPerFrame()
+	{
+		return true;
+	}
 
 	// Set the next time at which you want to think. You can also use
 	// one of the CLIENT_THINK_ defines.
 	void					SetNextClientThink( ClientEntityHandle_t hEnt, float nextTime );
-	
+
 	// Remove an entity from the think list.
 	void					RemoveThinkable( ClientEntityHandle_t hEnt );
 
@@ -50,7 +56,7 @@ public:
 	void					PerformThinkFunctions();
 
 	// Call this to destroy a thinkable object - deletes the object post think.
-	void					AddToDeleteList( ClientEntityHandle_t hEnt );	
+	void					AddToDeleteList( ClientEntityHandle_t hEnt );
 	void					RemoveFromDeleteList( ClientEntityHandle_t hEnt );
 
 // IClientSystem implementation.
@@ -90,12 +96,12 @@ private:
 private:
 	void			SetNextClientThink( ClientThinkHandle_t hThink, float nextTime );
 	void			RemoveThinkable( ClientThinkHandle_t hThink );
-	void			PerformThinkFunction( ThinkEntry_t *pEntry, float curtime );
+	void			PerformThinkFunction( ThinkEntry_t* pEntry, float curtime );
 	ThinkEntry_t*	GetThinkEntry( ClientThinkHandle_t hThink );
 	void			CleanUpDeleteList();
 
 	// Add entity to frame think list
-	void			AddEntityToFrameThinkList( ThinkEntry_t *pEntry, bool bAlwaysChain, int &nCount, ThinkEntry_t **ppFrameThinkList );
+	void			AddEntityToFrameThinkList( ThinkEntry_t* pEntry, bool bAlwaysChain, int& nCount, ThinkEntry_t** ppFrameThinkList );
 
 private:
 	CUtlLinkedList<ThinkEntry_t, unsigned short>	m_ThinkEntries;
@@ -115,13 +121,13 @@ private:
 
 inline ClientThinkHandle_t CClientThinkList::GetInvalidThinkHandle()
 {
-	return (ClientThinkHandle_t)(uintp)m_ThinkEntries.InvalidIndex();
+	return ( ClientThinkHandle_t )( uintp )m_ThinkEntries.InvalidIndex();
 }
 
 
 inline CClientThinkList::ThinkEntry_t* CClientThinkList::GetThinkEntry( ClientThinkHandle_t hThink )
 {
-	return &m_ThinkEntries[ (unsigned long)hThink ];
+	return &m_ThinkEntries[( unsigned long )hThink ];
 }
 
 

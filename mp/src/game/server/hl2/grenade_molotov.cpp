@@ -32,9 +32,9 @@ extern short	g_sModelIndexFireball;			// (in combatweapon.cpp) holds the index f
 extern ConVar    sk_plr_dmg_molotov;
 extern ConVar    sk_npc_dmg_molotov;
 
-ConVar	  sk_molotov_radius		( "sk_molotov_radius","0");
+ConVar	  sk_molotov_radius( "sk_molotov_radius", "0" );
 #ifdef MAPBASE
-ConVar	g_molotov_credit_transfer( "g_molotov_credit_transfer", "1" );
+	ConVar	g_molotov_credit_transfer( "g_molotov_credit_transfer", "1" );
 #endif
 
 extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
@@ -43,18 +43,18 @@ extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
 
 BEGIN_DATADESC( CGrenade_Molotov )
 
-	DEFINE_FIELD( m_hSmokeTrail, FIELD_EHANDLE ),
+DEFINE_FIELD( m_hSmokeTrail, FIELD_EHANDLE ),
 #ifdef MAPBASE_MP
 	DEFINE_FIELD( m_hFireTrail, FIELD_EHANDLE ),
 #endif
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( MolotovTouch ),
-	DEFINE_THINKFUNC( MolotovThink ),
+			  // Function Pointers
+			  DEFINE_ENTITYFUNC( MolotovTouch ),
+			  DEFINE_THINKFUNC( MolotovThink ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( grenade_molotov, CGrenade_Molotov );
+			  LINK_ENTITY_TO_CLASS( grenade_molotov, CGrenade_Molotov );
 
 //------------------------------------------------------------------------------
 // Purpose :
@@ -74,7 +74,7 @@ void CGrenade_Molotov::Spawn( void )
 {
 	Precache();
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-	SetSolid( SOLID_BBOX ); 
+	SetSolid( SOLID_BBOX );
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 
 	SetModel( "models/props_junk/garbage_glassbottle001a.mdl" );
@@ -87,14 +87,18 @@ void CGrenade_Molotov::Spawn( void )
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	if( GetOwnerEntity() && GetOwnerEntity()->IsPlayer() )
+	{
 		SetDamage( sk_plr_dmg_molotov.GetFloat() );
+	}
 	else
+	{
 		SetDamage( sk_npc_dmg_molotov.GetFloat() );
+	}
 
 	SetDamageRadius( sk_molotov_radius.GetFloat() );
 
 	m_takedamage	= DAMAGE_YES;
-	SetHealth(1 );
+	SetHealth( 1 );
 
 	SetGravity( UTIL_ScaleForGravity( 400 ) );	// use a lower gravity for grenades to make them easier to see
 	SetFriction( 0.8 );  // Give a little bounce so can flatten
@@ -110,7 +114,7 @@ void CGrenade_Molotov::Spawn( void )
 	if( g_CV_SmokeTrail.GetInt() )
 	{
 		m_hSmokeTrail = SmokeTrail::CreateSmokeTrail();
-		
+
 		if( m_hSmokeTrail )
 		{
 			m_hSmokeTrail->m_SpawnRate = 48;
@@ -136,7 +140,7 @@ void CGrenade_Molotov::Spawn( void )
 	if( g_CV_SmokeTrail.GetInt() )
 	{
 		m_hFireTrail = CFireTrail::CreateFireTrail();
-		
+
 		if( m_hFireTrail )
 		{
 			m_hFireTrail->SetLifetime( 20.0f );
@@ -149,14 +153,16 @@ void CGrenade_Molotov::Spawn( void )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CGrenade_Molotov::MolotovTouch( CBaseEntity *pOther )
+void CGrenade_Molotov::MolotovTouch( CBaseEntity* pOther )
 {
 	Assert( pOther );
-	if ( !pOther->IsSolid() )
+	if( !pOther->IsSolid() )
+	{
 		return;
+	}
 
 	// If I'm live go ahead and blow up
-	if ( m_bIsLive )
+	if( m_bIsLive )
 	{
 		Detonate();
 	}
@@ -164,8 +170,8 @@ void CGrenade_Molotov::MolotovTouch( CBaseEntity *pOther )
 	{
 		// If I'm not live, only blow up if I'm hitting an chacter that
 		// is not the owner of the weapon
-		CBaseCombatCharacter *pBCC = ToBaseCombatCharacter( pOther );
-		if ( pBCC && GetThrower() != pBCC )
+		CBaseCombatCharacter* pBCC = ToBaseCombatCharacter( pOther );
+		if( pBCC && GetThrower() != pBCC )
 		{
 			m_bIsLive = true;
 			Detonate();
@@ -174,12 +180,14 @@ void CGrenade_Molotov::MolotovTouch( CBaseEntity *pOther )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CGrenade_Molotov::Detonate( void ) 
+void CGrenade_Molotov::Detonate( void )
 {
-	if ( !m_bIsLive )
+	if( !m_bIsLive )
+	{
 		return;
+	}
 
 	m_bIsLive		= false;
 	m_takedamage	= DAMAGE_NO;
@@ -201,32 +209,36 @@ void CGrenade_Molotov::Detonate( void )
 	CPASFilter filter( GetAbsOrigin() );
 
 	te->Explosion( filter, 0.0,
-		&GetAbsOrigin(), 
-		g_sModelIndexFireball,
-		2.0, 
-		15,
-		TE_EXPLFLAG_NOPARTICLES,
-		m_DmgRadius,
-		m_flDamage );
+				   &GetAbsOrigin(),
+				   g_sModelIndexFireball,
+				   2.0,
+				   15,
+				   TE_EXPLFLAG_NOPARTICLES,
+				   m_DmgRadius,
+				   m_flDamage );
 
 	Vector vecForward = GetAbsVelocity();
-	VectorNormalize(vecForward);
+	VectorNormalize( vecForward );
 	trace_t		tr;
-	UTIL_TraceLine ( GetAbsOrigin(), GetAbsOrigin() + 60 * vecForward, MASK_SHOT, 
-		this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + 60 * vecForward, MASK_SHOT,
+					this, COLLISION_GROUP_NONE, &tr );
 
-	if ( ( tr.m_pEnt != GetWorldEntity() ) || ( tr.hitbox != 0 ) )
+	if( ( tr.m_pEnt != GetWorldEntity() ) || ( tr.hitbox != 0 ) )
 	{
 		// non-world needs smaller decals
 		if( tr.m_pEnt && !tr.m_pEnt->IsNPC() )
+		{
 			UTIL_DecalTrace( &tr, "SmallScorch" );
+		}
 	}
 	else
+	{
 		UTIL_DecalTrace( &tr, "Scorch" );
+	}
 
 	// TODO: Turn this back into a prop_physics when we touch a water surface
-	int contents = UTIL_PointContents ( GetAbsOrigin() );
-	if ( ( contents & MASK_WATER ) )
+	int contents = UTIL_PointContents( GetAbsOrigin() );
+	if( ( contents & MASK_WATER ) )
 	{
 		UTIL_Remove( this );
 		return;
@@ -241,8 +253,8 @@ void CGrenade_Molotov::Detonate( void )
 	for( i = 0 ; i < 16 ; i++ )
 	{
 		// build a little ray
-		vecTraceAngles[PITCH]	= random->RandomFloat(45, 135);
-		vecTraceAngles[YAW]		= random->RandomFloat(0, 360);
+		vecTraceAngles[PITCH]	= random->RandomFloat( 45, 135 );
+		vecTraceAngles[YAW]		= random->RandomFloat( 0, 360 );
 		vecTraceAngles[ROLL]	= 0.0f;
 
 		AngleVectors( vecTraceAngles, &vecTraceDir );
@@ -257,8 +269,10 @@ void CGrenade_Molotov::Detonate( void )
 		Vector	ofsDir = ( firetrace.endpos - GetAbsOrigin() );
 		float	offset = VectorNormalize( ofsDir );
 
-		if ( offset > 128 )
+		if( offset > 128 )
+		{
 			offset = 128;
+		}
 
 		//Get our scale based on distance
 		float scale	 = 0.1f + ( 0.75f * ( 1.0f - ( offset / 128.0f ) ) );
@@ -266,14 +280,14 @@ void CGrenade_Molotov::Detonate( void )
 
 		if( firetrace.fraction != 1.0 )
 		{
-			FireSystem_StartFire( firetrace.endpos, scale, growth, 30.0f, (SF_FIRE_START_ON|SF_FIRE_SMOKELESS|SF_FIRE_NO_GLOW), (CBaseEntity*) this, FIRE_NATURAL );
+			FireSystem_StartFire( firetrace.endpos, scale, growth, 30.0f, ( SF_FIRE_START_ON | SF_FIRE_SMOKELESS | SF_FIRE_NO_GLOW ), ( CBaseEntity* ) this, FIRE_NATURAL );
 		}
 	}
 // End Start some fires
 
 	UTIL_ScreenShake( GetAbsOrigin(), 25.0, 150.0, 1.0, 750, SHAKE_START );
 
-	RadiusDamage ( CTakeDamageInfo( this, GetThrower(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+	RadiusDamage( CTakeDamageInfo( this, GetThrower(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
 	UTIL_Remove( this );
 }
@@ -285,7 +299,7 @@ void CGrenade_Molotov::MolotovThink( void )
 {
 	// See if I can lose my owner (has dropper moved out of way?)
 	// Want do this so owner can throw the brickbat
-	if (GetOwnerEntity())
+	if( GetOwnerEntity() )
 	{
 		trace_t tr;
 		Vector	vUpABit = GetAbsOrigin();
@@ -294,7 +308,7 @@ void CGrenade_Molotov::MolotovThink( void )
 		CBaseEntity* saveOwner	= GetOwnerEntity();
 		SetOwnerEntity( NULL );
 		UTIL_TraceEntity( this, GetAbsOrigin(), vUpABit, MASK_SOLID, &tr );
-		if ( tr.startsolid || tr.fraction != 1.0 )
+		if( tr.startsolid || tr.fraction != 1.0 )
 		{
 			SetOwnerEntity( saveOwner );
 		}
@@ -303,27 +317,33 @@ void CGrenade_Molotov::MolotovThink( void )
 
 	SetNextThink( gpGlobals->curtime + 0.05f );
 
-	if ( !m_bIsLive )
+	if( !m_bIsLive )
 	{
 		// Go live after a short delay
-		if ( m_fSpawnTime + MAX_MOLOTOV_NO_COLLIDE_TIME < gpGlobals->curtime )
+		if( m_fSpawnTime + MAX_MOLOTOV_NO_COLLIDE_TIME < gpGlobals->curtime )
+		{
 			m_bIsLive  = true;
+		}
 	}
-	
+
 	// If I just went solid and my velocity is zero, it means I'm resting on
 	// the floor already when I went solid so blow up
-	if ( m_bIsLive )
+	if( m_bIsLive )
 	{
-		if ( GetAbsVelocity().Length() == 0.0 ||
-			GetGroundEntity() != NULL )
+		if( GetAbsVelocity().Length() == 0.0 ||
+				GetGroundEntity() != NULL )
+		{
 			Detonate();
+		}
 	}
 
 	// The old way of making danger sounds would scare the crap out of EVERYONE between you and where the grenade
 	// was going to hit. The radius of the danger sound now 'blossoms' over the grenade's lifetime, making it seem
 	// dangerous to a larger area downrange than it does from where it was fired.
 	if( m_fDangerRadius <= MOLOTOV_MAX_DANGER_RADIUS )
+	{
 		m_fDangerRadius += ( MOLOTOV_MAX_DANGER_RADIUS * 0.05 );
+	}
 
 	CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, m_fDangerRadius, 0.2, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
 }
@@ -331,12 +351,12 @@ void CGrenade_Molotov::MolotovThink( void )
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CGrenade_Molotov::Event_Killed( const CTakeDamageInfo &info )
+void CGrenade_Molotov::Event_Killed( const CTakeDamageInfo& info )
 {
 #ifdef MAPBASE
-	if ( g_molotov_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer() )
+	if( g_molotov_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer() )
 	{
-		CBaseCombatCharacter *pBCC = info.GetAttacker()->MyCombatCharacterPointer();
+		CBaseCombatCharacter* pBCC = info.GetAttacker()->MyCombatCharacterPointer();
 		SetThrower( pBCC );
 		SetOwnerEntity( pBCC );
 	}

@@ -8,11 +8,11 @@
 #define TEAM_ROUND_TIMER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef CLIENT_DLL
-#define CTeamRoundTimer C_TeamRoundTimer
+	#define CTeamRoundTimer C_TeamRoundTimer
 #endif
 
 class CTeamRoundTimer : public CBaseEntity
@@ -33,17 +33,35 @@ public:
 	virtual float GetTimeRemaining( void );
 	virtual int GetTimerMaxLength( void );
 	virtual bool ShowInHud( void );
-	virtual bool StartPaused( void ){ return m_bStartPaused; }
-	bool ShowTimeRemaining( void ) { return m_bShowTimeRemaining; }
+	virtual bool StartPaused( void )
+	{
+		return m_bStartPaused;
+	}
+	bool ShowTimeRemaining( void )
+	{
+		return m_bShowTimeRemaining;
+	}
 
-	bool IsDisabled( void ) { return m_bIsDisabled; }
-	int GetTimerState( void ){ return m_nState; }
+	bool IsDisabled( void )
+	{
+		return m_bIsDisabled;
+	}
+	int GetTimerState( void )
+	{
+		return m_nState;
+	}
 
-	bool IsTimerPaused( void ) { return m_bTimerPaused; }
-	
+	bool IsTimerPaused( void )
+	{
+		return m_bTimerPaused;
+	}
+
 #ifdef CLIENT_DLL
 
-	void InternalSetPaused( bool bPaused ) { m_bTimerPaused = bPaused; }
+	void InternalSetPaused( bool bPaused )
+	{
+		m_bTimerPaused = bPaused;
+	}
 
 #else
 
@@ -52,35 +70,59 @@ public:
 	virtual void AddTimerSeconds( int iSecondsToAdd, int iTeamResponsible = TEAM_UNASSIGNED ); // Add time to an already running ( or paused ) timer
 	virtual void PauseTimer( void );
 	virtual void ResumeTimer( void );
-	virtual void SetAutoCountdown( bool bAuto ){ m_bAutoCountdown = bAuto; }
+	virtual void SetAutoCountdown( bool bAuto )
+	{
+		m_bAutoCountdown = bAuto;
+	}
 
-	void		 SetShowInHud( bool bShowInHUD ) { m_bShowInHUD = bShowInHUD; }
+	void		 SetShowInHud( bool bShowInHUD )
+	{
+		m_bShowInHUD = bShowInHUD;
+	}
 
 	int UpdateTransmitState();
 
-	void InputEnable( inputdata_t &input );
-	void InputDisable( inputdata_t &input );
-	void InputPause( inputdata_t &input );
-	void InputResume( inputdata_t &input );
-	void InputSetTime( inputdata_t &input );
-	void InputAddTime( inputdata_t &input );
-	void InputRestart( inputdata_t &input );
-	void InputShowInHUD( inputdata_t &input );
-	void InputRoundSpawn( inputdata_t &inputdata );
-	void InputSetMaxTime( inputdata_t &input );
-	void InputAutoCountdown( inputdata_t &input );
-	void InputAddTeamTime( inputdata_t &input );
-	void InputSetSetupTime( inputdata_t &input );
+	void InputEnable( inputdata_t& input );
+	void InputDisable( inputdata_t& input );
+	void InputPause( inputdata_t& input );
+	void InputResume( inputdata_t& input );
+	void InputSetTime( inputdata_t& input );
+	void InputAddTime( inputdata_t& input );
+	void InputRestart( inputdata_t& input );
+	void InputShowInHUD( inputdata_t& input );
+	void InputRoundSpawn( inputdata_t& inputdata );
+	void InputSetMaxTime( inputdata_t& input );
+	void InputAutoCountdown( inputdata_t& input );
+	void InputAddTeamTime( inputdata_t& input );
+	void InputSetSetupTime( inputdata_t& input );
 
 #endif
 
 	void SetCaptureWatchState( bool bCaptureWatch );
-	bool IsWatchingTimeStamps( void ) { return m_bInCaptureWatchState; }
-	void SetStopWatch( bool bState ) { m_bStopWatchTimer = bState; }
-	bool IsStopWatchTimer( void ) { return m_bStopWatchTimer; }
-	float GetStopWatchTotalTime( void ) { return m_flTotalTime; }
-	bool IsRoundMaxTimerSet( void ) { return m_nTimerMaxLength > 0; }
-	int GetTimerInitialLength( void ) { return m_nTimerInitialLength; }
+	bool IsWatchingTimeStamps( void )
+	{
+		return m_bInCaptureWatchState;
+	}
+	void SetStopWatch( bool bState )
+	{
+		m_bStopWatchTimer = bState;
+	}
+	bool IsStopWatchTimer( void )
+	{
+		return m_bStopWatchTimer;
+	}
+	float GetStopWatchTotalTime( void )
+	{
+		return m_flTotalTime;
+	}
+	bool IsRoundMaxTimerSet( void )
+	{
+		return m_nTimerMaxLength > 0;
+	}
+	int GetTimerInitialLength( void )
+	{
+		return m_nTimerInitialLength;
+	}
 
 private:
 	void CalculateOutputMessages( void );
@@ -90,7 +132,7 @@ private:
 	void OnPreDataChanged( DataUpdateType_t updateType );
 	void OnDataChanged( DataUpdateType_t updateType );
 	void SendTimeWarning( int nWarning );
-	const char *GetTimeWarningSound( int nWarning );
+	const char* GetTimeWarningSound( int nWarning );
 
 #else
 	void SetState( int nState, bool bFireOutput = true );
@@ -98,13 +140,13 @@ private:
 	void EXPORT RoundTimerThink( void );
 	void EXPORT RoundTimerSetupThink( void );
 
-	static void SetActiveTimer( CTeamRoundTimer *pNewlyActive );
+	static void SetActiveTimer( CTeamRoundTimer* pNewlyActive );
 #endif
 
 private:
 	CNetworkVar( bool, m_bTimerPaused );
 	CNetworkVar( float, m_flTimeRemaining );
-	CNetworkVar( float, m_flTimerEndTime );	
+	CNetworkVar( float, m_flTimerEndTime );
 	CNetworkVar( bool, m_bIsDisabled );
 	CNetworkVar( bool, m_bShowInHUD );
 	CNetworkVar( int, m_nTimerLength );			// current timer's length (used in the timer panel if no max length is set)
@@ -133,7 +175,7 @@ private:
 	bool			m_bFire2SecRemain;
 	bool			m_bFire1SecRemain;
 
-#ifdef CLIENT_DLL 
+#ifdef CLIENT_DLL
 
 	int				m_nOldTimerLength;
 	int				m_nOldTimerState;
@@ -165,11 +207,11 @@ private:
 	bool			m_bPauseDueToWin;
 	bool			m_bResetTimeOnRoundStart;
 	int				m_nTimeToUseAfterSetupFinished;
-#endif 
+#endif
 };
 
 #ifdef CLIENT_DLL
-extern CTeamRoundTimer *g_TeamRoundTimer;
+	extern CTeamRoundTimer* g_TeamRoundTimer;
 #endif
 
 #endif	//TEAM_ROUND_TIMER_H

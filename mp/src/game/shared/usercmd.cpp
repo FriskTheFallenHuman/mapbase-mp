@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -11,7 +11,7 @@
 #include "checksum_md5.h"
 
 #ifdef MAPBASE_VSCRIPT
-#include "mapbase/vscript_singletons.h"
+	#include "mapbase/vscript_singletons.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -21,19 +21,19 @@
 #define WEAPON_SUBTYPE_BITS	6
 
 #ifdef MAPBASE_VSCRIPT
-extern CNetMsgScriptHelper *g_ScriptNetMsg;
+	extern CNetMsgScriptHelper* g_ScriptNetMsg;
 #endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Write a delta compressed user command.
-// Input  : *buf - 
-//			*to - 
-//			*from - 
+// Input  : *buf -
+//			*to -
+//			*from -
 // Output : static
 //-----------------------------------------------------------------------------
-void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
+void WriteUsercmd( bf_write* buf, const CUserCmd* to, const CUserCmd* from )
 {
-	if ( to->command_number != ( from->command_number + 1 ) )
+	if( to->command_number != ( from->command_number + 1 ) )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteUBitLong( to->command_number, 32 );
@@ -43,7 +43,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->tick_count != ( from->tick_count + 1 ) )
+	if( to->tick_count != ( from->tick_count + 1 ) )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteUBitLong( to->tick_count, 32 );
@@ -54,7 +54,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 	}
 
 
-	if ( to->viewangles[ 0 ] != from->viewangles[ 0 ] )
+	if( to->viewangles[ 0 ] != from->viewangles[ 0 ] )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->viewangles[ 0 ] );
@@ -64,7 +64,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->viewangles[ 1 ] != from->viewangles[ 1 ] )
+	if( to->viewangles[ 1 ] != from->viewangles[ 1 ] )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->viewangles[ 1 ] );
@@ -74,7 +74,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->viewangles[ 2 ] != from->viewangles[ 2 ] )
+	if( to->viewangles[ 2 ] != from->viewangles[ 2 ] )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->viewangles[ 2 ] );
@@ -84,7 +84,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->forwardmove != from->forwardmove )
+	if( to->forwardmove != from->forwardmove )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->forwardmove );
@@ -94,7 +94,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->sidemove != from->sidemove )
+	if( to->sidemove != from->sidemove )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->sidemove );
@@ -104,7 +104,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->upmove != from->upmove )
+	if( to->upmove != from->upmove )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteFloat( to->upmove );
@@ -114,33 +114,33 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->buttons != from->buttons )
+	if( to->buttons != from->buttons )
 	{
 		buf->WriteOneBit( 1 );
-	  	buf->WriteUBitLong( to->buttons, 32 );
- 	}
-	else
-	{
-		buf->WriteOneBit( 0 );
-	}
-
-	if ( to->impulse != from->impulse )
-	{
-		buf->WriteOneBit( 1 );
-	    buf->WriteUBitLong( to->impulse, 8 );
+		buf->WriteUBitLong( to->buttons, 32 );
 	}
 	else
 	{
 		buf->WriteOneBit( 0 );
 	}
 
+	if( to->impulse != from->impulse )
+	{
+		buf->WriteOneBit( 1 );
+		buf->WriteUBitLong( to->impulse, 8 );
+	}
+	else
+	{
+		buf->WriteOneBit( 0 );
+	}
 
-	if ( to->weaponselect != from->weaponselect )
+
+	if( to->weaponselect != from->weaponselect )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteUBitLong( to->weaponselect, MAX_EDICT_BITS );
 
-		if ( to->weaponsubtype != from->weaponsubtype )
+		if( to->weaponsubtype != from->weaponsubtype )
 		{
 			buf->WriteOneBit( 1 );
 			buf->WriteUBitLong( to->weaponsubtype, WEAPON_SUBTYPE_BITS );
@@ -157,7 +157,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 
 
 	// TODO: Can probably get away with fewer bits.
-	if ( to->mousedx != from->mousedx )
+	if( to->mousedx != from->mousedx )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteShort( to->mousedx );
@@ -167,7 +167,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-	if ( to->mousedy != from->mousedy )
+	if( to->mousedy != from->mousedy )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteShort( to->mousedy );
@@ -178,12 +178,12 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 	}
 
 #if defined( HL2_CLIENT_DLL )
-	if ( to->entitygroundcontact.Count() != 0 )
+	if( to->entitygroundcontact.Count() != 0 )
 	{
 		buf->WriteOneBit( 1 );
 		buf->WriteShort( to->entitygroundcontact.Count() );
 		int i;
-		for (i = 0; i < to->entitygroundcontact.Count(); i++)
+		for( i = 0; i < to->entitygroundcontact.Count(); i++ )
 		{
 			buf->WriteUBitLong( to->entitygroundcontact[i].entindex, MAX_EDICT_BITS );
 			buf->WriteBitCoord( to->entitygroundcontact[i].minheight );
@@ -199,7 +199,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 #if defined( MAPBASE_VSCRIPT ) && defined( CLIENT_DLL )
 	Assert( g_ScriptNetMsg );
 
-	if ( g_ScriptNetMsg->m_bWriteReady )
+	if( g_ScriptNetMsg->m_bWriteReady )
 	{
 		buf->WriteOneBit( 1 );
 		g_ScriptNetMsg->WriteToBuffer( buf );
@@ -215,21 +215,21 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 
 //-----------------------------------------------------------------------------
 // Purpose: Read in a delta compressed usercommand.
-// Input  : *buf - 
-//			*move - 
-//			*from - 
+// Input  : *buf -
+//			*move -
+//			*from -
 // Output : static void ReadUsercmd
 //-----------------------------------------------------------------------------
 #if defined( MAPBASE_VSCRIPT ) && defined( GAME_DLL )
-void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from, CBaseEntity *pPlayer )
+	void ReadUsercmd( bf_read* buf, CUserCmd* move, CUserCmd* from, CBaseEntity* pPlayer )
 #else
-void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
+	void ReadUsercmd( bf_read* buf, CUserCmd* move, CUserCmd* from )
 #endif
 {
 	// Assume no change
 	*move = *from;
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->command_number = buf->ReadUBitLong( 32 );
 	}
@@ -239,7 +239,7 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 		move->command_number = from->command_number + 1;
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->tick_count = buf->ReadUBitLong( 32 );
 	}
@@ -250,17 +250,17 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 	}
 
 	// Read direction
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->viewangles[0] = buf->ReadFloat();
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->viewangles[1] = buf->ReadFloat();
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->viewangles[2] = buf->ReadFloat();
 	}
@@ -268,37 +268,37 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 	// Moved value validation and clamping to CBasePlayer::ProcessUsercmds()
 
 	// Read movement
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->forwardmove = buf->ReadFloat();
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->sidemove = buf->ReadFloat();
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->upmove = buf->ReadFloat();
 	}
 
 	// read buttons
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->buttons = buf->ReadUBitLong( 32 );
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->impulse = buf->ReadUBitLong( 8 );
 	}
 
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->weaponselect = buf->ReadUBitLong( MAX_EDICT_BITS );
-		if ( buf->ReadOneBit() )
+		if( buf->ReadOneBit() )
 		{
 			move->weaponsubtype = buf->ReadUBitLong( WEAPON_SUBTYPE_BITS );
 		}
@@ -307,23 +307,23 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 
 	move->random_seed = MD5_PseudoRandom( move->command_number ) & 0x7fffffff;
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->mousedx = buf->ReadShort();
 	}
 
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->mousedy = buf->ReadShort();
 	}
 
 #if defined( HL2_DLL )
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		move->entitygroundcontact.SetCount( buf->ReadShort() );
 
 		int i;
-		for (i = 0; i < move->entitygroundcontact.Count(); i++)
+		for( i = 0; i < move->entitygroundcontact.Count(); i++ )
 		{
 			move->entitygroundcontact[i].entindex = buf->ReadUBitLong( MAX_EDICT_BITS );
 			move->entitygroundcontact[i].minheight = buf->ReadBitCoord( );
@@ -333,7 +333,7 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 #endif
 
 #if defined( MAPBASE_VSCRIPT ) && defined( GAME_DLL )
-	if ( buf->ReadOneBit() )
+	if( buf->ReadOneBit() )
 	{
 		g_ScriptNetMsg->ReceiveMessage( buf, pPlayer );
 	}

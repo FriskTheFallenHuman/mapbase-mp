@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,13 +20,16 @@ public:
 	DECLARE_CLASS( C_TestTraceline, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TestTraceline();
+	C_TestTraceline();
 	virtual			~C_TestTraceline();
 
 // IClientEntity overrides.
 public:
 	virtual int			DrawModel( int flags );
-	virtual bool		ShouldDraw() { return true; }
+	virtual bool		ShouldDraw()
+	{
+		return true;
+	}
 
 private:
 	void DrawCube( Vector& center, unsigned char* pColor );
@@ -34,25 +37,25 @@ private:
 };
 
 // Expose it to the engine.
-IMPLEMENT_CLIENTCLASS(C_TestTraceline, DT_TestTraceline, CTestTraceline);
+IMPLEMENT_CLIENTCLASS( C_TestTraceline, DT_TestTraceline, CTestTraceline );
 
-BEGIN_RECV_TABLE_NOBASE(C_TestTraceline, DT_TestTraceline)
-	RecvPropInt(RECVINFO(m_clrRender)),
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[0], m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[1], m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[2], m_angRotation[2] ) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE( C_TestTraceline, DT_TestTraceline )
+RecvPropInt( RECVINFO( m_clrRender ) ),
+			 RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
+			 RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[0], m_angRotation[0] ) ),
+			 RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[1], m_angRotation[1] ) ),
+			 RecvPropFloat( RECVINFO_NAME( m_angNetworkAngles[2], m_angRotation[2] ) ),
+			 RecvPropInt( RECVINFO_NAME( m_hNetworkMoveParent, moveparent ), 0, RecvProxy_IntToMoveParent ),
+			 END_RECV_TABLE()
 
 
 // -------------------------------------------------------------------------------- //
 // Functions.
 // -------------------------------------------------------------------------------- //
 
-C_TestTraceline::C_TestTraceline()
+			 C_TestTraceline::C_TestTraceline()
 {
-	m_pWireframe = materials->FindMaterial("shadertest/wireframevertexcolor", TEXTURE_GROUP_OTHER);
+	m_pWireframe = materials->FindMaterial( "shadertest/wireframevertexcolor", TEXTURE_GROUP_OTHER );
 }
 
 C_TestTraceline::~C_TestTraceline()
@@ -120,7 +123,7 @@ void C_TestTraceline::DrawCube( Vector& center, unsigned char* pColor )
 		{ 0, 4, 6, 2 }
 	};
 
-	for (int nFace = 0; nFace < 6; nFace++)
+	for( int nFace = 0; nFace < 6; nFace++ )
 	{
 		int nP1, nP2, nP3, nP4;
 
@@ -133,8 +136,8 @@ void C_TestTraceline::DrawCube( Vector& center, unsigned char* pColor )
 		CMeshBuilder meshBuilder;
 		CMatRenderContextPtr pRenderContext( materials );
 		IMesh* pMesh = pRenderContext->GetDynamicMesh();
-		meshBuilder.DrawQuad( pMesh, facePoints[nP1].Base(), facePoints[nP2].Base(), 
-			facePoints[nP3].Base(), facePoints[nP4].Base(), pColor, true );
+		meshBuilder.DrawQuad( pMesh, facePoints[nP1].Base(), facePoints[nP2].Base(),
+							  facePoints[nP3].Base(), facePoints[nP4].Base(), pColor, true );
 	}
 }
 
@@ -142,7 +145,7 @@ int C_TestTraceline::DrawModel( int flags )
 {
 	trace_t tr;
 	Vector forward, right, up, endpos, hitpos;
-	AngleVectors (GetAbsAngles(), &forward, &right, &up);
+	AngleVectors( GetAbsAngles(), &forward, &right, &up );
 	endpos = GetAbsOrigin() + forward * MAX_TRACE_LENGTH;
 
 	UTIL_TraceLine( GetAbsOrigin(), endpos, MASK_SOLID_BRUSHONLY, NULL, COLLISION_GROUP_NONE, &tr );
@@ -165,13 +168,13 @@ int C_TestTraceline::DrawModel( int flags )
 	pMesh->Draw();
 
 	// Didn't hit anything
-	if ( tr.fraction != 1.0 )
+	if( tr.fraction != 1.0 )
 	{
 		unsigned char color[] = { 0, 255, 0 };
 		DrawCube( tr.endpos, color );
 	}
 
-	if ( (!tr.allsolid) && (tr.fractionleftsolid != 0.0) )
+	if( ( !tr.allsolid ) && ( tr.fractionleftsolid != 0.0 ) )
 	{
 		unsigned char color[] = { 255, 0, 0 };
 		DrawCube( tr.startpos, color );

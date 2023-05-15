@@ -28,18 +28,20 @@
 
 #include <algorithm>
 #ifdef _WIN32
-#pragma warning(disable:4530) // warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
+	#pragma warning(disable:4530) // warning C4530: C++ exception handler used, but unwind semantics are not enabled. Specify /EHsc
 #endif //_WIN32
 #include <string>
 
 #include "snappy-stubs-internal.h"
 
-namespace snappy {
+namespace snappy
+{
 
-void Varint::Append32(string* s, uint32 value) {
-  char buf[Varint::kMax32];
-  const char* p = Varint::Encode32(buf, value);
-  s->append(buf, p - buf);
+void Varint::Append32( string* s, uint32 value )
+{
+	char buf[Varint::kMax32];
+	const char* p = Varint::Encode32( buf, value );
+	s->append( buf, p - buf );
 }
 
 }  // namespace snappy

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,9 +9,9 @@
 #include "dt_shared.h"
 
 #if !defined (CLIENT_DLL)
-#include "sendproxy.h"
+	#include "sendproxy.h"
 #else
-#include "recvproxy.h"
+	#include "recvproxy.h"
 #endif
 
 
@@ -21,14 +21,14 @@
 
 // Use these functions to setup your data tables.
 DataTableProp PropFloat(
-	char *pVarName,					// Variable name.
+	char* pVarName,					// Variable name.
 	int offset,						// Offset into container structure.
 	int sizeofVar,
 	int nBits,					// Number of bits to use when encoding.
 	int flags,
 	float fLowValue,			// For floating point, low and high values.
 	float fHighValue	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	)
+)
 {
 #if !defined (CLIENT_DLL)
 	return SendPropFloat( pVarName, offset, sizeofVar, nBits, flags, fLowValue, fHighValue );
@@ -38,14 +38,14 @@ DataTableProp PropFloat(
 }
 
 DataTableProp PropVector(
-	char *pVarName,
+	char* pVarName,
 	int offset,
 	int sizeofVar,
 	int nBits,					// Number of bits (for each floating-point component) to use when encoding.
 	int flags,
 	float fLowValue,			// For floating point, low and high values.
 	float fHighValue	// High value. If HIGH_DEFAULT, it's (1<<nBits).
-	)
+)
 {
 #if !defined (CLIENT_DLL)
 	return SendPropVector( pVarName, offset, sizeofVar, nBits, flags, fLowValue, fHighValue );
@@ -55,12 +55,12 @@ DataTableProp PropVector(
 }
 
 DataTableProp PropAngle(
-	char *pVarName,
+	char* pVarName,
 	int offset,
 	int sizeofVar,
 	int nBits,
 	int flags
-	)
+)
 {
 #if !defined (CLIENT_DLL)
 	return SendPropAngle( pVarName, offset, sizeofVar, nBits, flags );
@@ -70,13 +70,13 @@ DataTableProp PropAngle(
 }
 
 DataTableProp PropInt(
-	char *pVarName,
+	char* pVarName,
 	int offset,
 	int sizeofVar,	// Handled by SENDINFO macro.
 	int nBits,					// Set to -1 to automatically pick (max) number of bits based on size of element.
 	int flags,
 	int rightShift
-	)
+)
 {
 #if !defined (CLIENT_DLL)
 	return SendPropInt( pVarName, offset, sizeofVar, nBits, flags, rightShift );
@@ -86,11 +86,11 @@ DataTableProp PropInt(
 }
 
 DataTableProp PropString(
-	char *pVarName,
+	char* pVarName,
 	int offset,
 	int bufferLen,
 	int flags
-	)
+)
 {
 #if !defined (CLIENT_DLL)
 	return SendPropString( pVarName, offset, bufferLen, flags );
@@ -100,7 +100,7 @@ DataTableProp PropString(
 }
 
 DataTableProp PropEHandle(
-	char *pVarName,
+	char* pVarName,
 	int offset,
 	int sizeofVar )
 {

@@ -16,8 +16,8 @@
 #include "soundent.h"
 #include "logicrelay.h"
 #ifdef MAPBASE
-#include "mapbase/variant_tools.h"
-#include "saverestore_utlvector.h"
+	#include "mapbase/variant_tools.h"
+	#include "saverestore_utlvector.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -26,45 +26,45 @@
 const int SF_REMOVE_ON_FIRE				= 0x001;	// Relay will remove itself after being triggered.
 const int SF_ALLOW_FAST_RETRIGGER		= 0x002;	// Unless set, relay will disable itself until the last output is sent.
 
-LINK_ENTITY_TO_CLASS(logic_relay, CLogicRelay);
+LINK_ENTITY_TO_CLASS( logic_relay, CLogicRelay );
 
 
 BEGIN_DATADESC( CLogicRelay )
 
-	DEFINE_FIELD(m_bWaitForRefire, FIELD_BOOLEAN),
-	DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
+DEFINE_FIELD( m_bWaitForRefire, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "StartDisabled" ),
 #if RELAY_QUEUE_SYSTEM
-	DEFINE_KEYFIELD(m_bQueueTrigger, FIELD_BOOLEAN, "QueueDisabledTrigger"),
-	DEFINE_FIELD(m_bQueueWaiting, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_flRefireTime, FIELD_TIME),
+	DEFINE_KEYFIELD( m_bQueueTrigger, FIELD_BOOLEAN, "QueueDisabledTrigger" ),
+	DEFINE_FIELD( m_bQueueWaiting, FIELD_BOOLEAN ),
+	DEFINE_FIELD( m_flRefireTime, FIELD_TIME ),
 #endif
 
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "EnableRefire", InputEnableRefire),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Trigger", InputTrigger),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "EnableRefire", InputEnableRefire ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Trigger", InputTrigger ),
 #ifdef MAPBASE
-	DEFINE_INPUTFUNC(FIELD_INPUT, "TriggerWithParameter", InputTriggerWithParameter),
+	DEFINE_INPUTFUNC( FIELD_INPUT, "TriggerWithParameter", InputTriggerWithParameter ),
 #endif
-	DEFINE_INPUTFUNC(FIELD_VOID, "CancelPending", InputCancelPending),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "CancelPending", InputCancelPending ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnTrigger, "OnTrigger"),
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnTrigger, "OnTrigger" ),
 #ifdef MAPBASE
-	DEFINE_OUTPUT(m_OnTriggerParameter, "OnTriggerParameter"),
+	DEFINE_OUTPUT( m_OnTriggerParameter, "OnTriggerParameter" ),
 #endif
-	DEFINE_OUTPUT(m_OnSpawn, "OnSpawn"),
+			  DEFINE_OUTPUT( m_OnSpawn, "OnSpawn" ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
-CLogicRelay::CLogicRelay(void)
+			  CLogicRelay::CLogicRelay( void )
 {
 }
 
@@ -75,8 +75,8 @@ CLogicRelay::CLogicRelay(void)
 void CLogicRelay::Activate()
 {
 	BaseClass::Activate();
-	
-	if ( m_OnSpawn.NumberOfElements() > 0)
+
+	if( m_OnSpawn.NumberOfElements() > 0 )
 	{
 		SetNextThink( gpGlobals->curtime + 0.01 );
 	}
@@ -95,9 +95,9 @@ void CLogicRelay::Think()
 	m_OnSpawn.FireOutput( this, this );
 
 	// We only get here if we had OnSpawn connections, so this is safe.
-	if ( m_spawnflags & SF_REMOVE_ON_FIRE )
+	if( m_spawnflags & SF_REMOVE_ON_FIRE )
 	{
-		UTIL_Remove(this);
+		UTIL_Remove( this );
 	}
 }
 
@@ -105,13 +105,15 @@ void CLogicRelay::Think()
 //------------------------------------------------------------------------------
 // Purpose: Turns on the relay, allowing it to fire outputs.
 //------------------------------------------------------------------------------
-void CLogicRelay::InputEnable( inputdata_t &inputdata )
+void CLogicRelay::InputEnable( inputdata_t& inputdata )
 {
 	m_bDisabled = false;
 
 #if RELAY_QUEUE_SYSTEM
-	if (m_bQueueWaiting)
+	if( m_bQueueWaiting )
+	{
 		m_OnTrigger.FireOutput( inputdata.pActivator, this );
+	}
 #endif
 }
 
@@ -119,8 +121,8 @@ void CLogicRelay::InputEnable( inputdata_t &inputdata )
 // Purpose: Enables us to fire again. This input is only posted from our Trigger
 //			function to prevent rapid refire.
 //------------------------------------------------------------------------------
-void CLogicRelay::InputEnableRefire( inputdata_t &inputdata )
-{ 
+void CLogicRelay::InputEnableRefire( inputdata_t& inputdata )
+{
 	m_bWaitForRefire = false;
 }
 
@@ -128,8 +130,8 @@ void CLogicRelay::InputEnableRefire( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Cancels any I/O events in the queue that were fired by us.
 //------------------------------------------------------------------------------
-void CLogicRelay::InputCancelPending( inputdata_t &inputdata )
-{ 
+void CLogicRelay::InputCancelPending( inputdata_t& inputdata )
+{
 	g_EventQueue.CancelEvents( this );
 
 	// Stop waiting; allow another Trigger.
@@ -140,8 +142,8 @@ void CLogicRelay::InputCancelPending( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Turns off the relay, preventing it from firing outputs.
 //------------------------------------------------------------------------------
-void CLogicRelay::InputDisable( inputdata_t &inputdata )
-{ 
+void CLogicRelay::InputDisable( inputdata_t& inputdata )
+{
 	m_bDisabled = true;
 }
 
@@ -149,13 +151,15 @@ void CLogicRelay::InputDisable( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Toggles the enabled/disabled state of the relay.
 //------------------------------------------------------------------------------
-void CLogicRelay::InputToggle( inputdata_t &inputdata )
-{ 
+void CLogicRelay::InputToggle( inputdata_t& inputdata )
+{
 	m_bDisabled = !m_bDisabled;
 
 #if RELAY_QUEUE_SYSTEM
-	if (m_bQueueWaiting)
+	if( m_bQueueWaiting )
+	{
 		m_OnTrigger.FireOutput( inputdata.pActivator, this );
+	}
 #endif
 }
 
@@ -163,37 +167,43 @@ void CLogicRelay::InputToggle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that triggers the relay.
 //-----------------------------------------------------------------------------
-void CLogicRelay::InputTrigger( inputdata_t &inputdata )
+void CLogicRelay::InputTrigger( inputdata_t& inputdata )
 {
-	if ((!m_bDisabled) && (!m_bWaitForRefire))
+	if( ( !m_bDisabled ) && ( !m_bWaitForRefire ) )
 	{
 		m_OnTrigger.FireOutput( inputdata.pActivator, this );
-		
-		if (m_spawnflags & SF_REMOVE_ON_FIRE)
+
+		if( m_spawnflags & SF_REMOVE_ON_FIRE )
 		{
-			UTIL_Remove(this);
+			UTIL_Remove( this );
 		}
-		else if (!(m_spawnflags & SF_ALLOW_FAST_RETRIGGER))
+		else if( !( m_spawnflags & SF_ALLOW_FAST_RETRIGGER ) )
 		{
 			//
 			// Disable the relay so that it cannot be refired until after the last output
 			// has been fired and post an input to re-enable ourselves.
 			//
 			m_bWaitForRefire = true;
-			g_EventQueue.AddEvent(this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this);
+			g_EventQueue.AddEvent( this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this );
 #if RELAY_QUEUE_SYSTEM
-			if (m_bQueueTrigger)
+			if( m_bQueueTrigger )
+			{
 				m_flRefireTime = gpGlobals->curtime + m_OnTrigger.GetMaxDelay() + 0.002;
+			}
 #endif
 		}
 	}
 #if RELAY_QUEUE_SYSTEM
-	else if (m_bQueueTrigger)
+	else if( m_bQueueTrigger )
 	{
-		if (m_bDisabled)
+		if( m_bDisabled )
+		{
 			m_bQueueWaiting = true;
+		}
 		else // m_bWaitForRefire
-			m_OnTrigger.FireOutput( inputdata.pActivator, this, (gpGlobals->curtime - m_flRefireTime) );
+		{
+			m_OnTrigger.FireOutput( inputdata.pActivator, this, ( gpGlobals->curtime - m_flRefireTime ) );
+		}
 	}
 #endif
 }
@@ -202,24 +212,24 @@ void CLogicRelay::InputTrigger( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that triggers the relay.
 //-----------------------------------------------------------------------------
-void CLogicRelay::InputTriggerWithParameter( inputdata_t &inputdata )
+void CLogicRelay::InputTriggerWithParameter( inputdata_t& inputdata )
 {
-	if ((!m_bDisabled) && (!m_bWaitForRefire))
+	if( ( !m_bDisabled ) && ( !m_bWaitForRefire ) )
 	{
 		m_OnTriggerParameter.Set( inputdata.value, inputdata.pActivator, this );
-		
-		if (m_spawnflags & SF_REMOVE_ON_FIRE)
+
+		if( m_spawnflags & SF_REMOVE_ON_FIRE )
 		{
-			UTIL_Remove(this);
+			UTIL_Remove( this );
 		}
-		else if (!(m_spawnflags & SF_ALLOW_FAST_RETRIGGER))
+		else if( !( m_spawnflags & SF_ALLOW_FAST_RETRIGGER ) )
 		{
 			//
 			// Disable the relay so that it cannot be refired until after the last output
 			// has been fired and post an input to re-enable ourselves.
 			//
 			m_bWaitForRefire = true;
-			g_EventQueue.AddEvent(this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this);
+			g_EventQueue.AddEvent( this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this );
 		}
 	}
 }
@@ -229,46 +239,46 @@ void CLogicRelay::InputTriggerWithParameter( inputdata_t &inputdata )
 
 BEGIN_SIMPLE_DATADESC( LogicRelayQueueInfo_t )
 
-	DEFINE_FIELD( TriggerWithParameter,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( pActivator,				FIELD_CLASSPTR ),
-	DEFINE_VARIANT( value ),
-	DEFINE_FIELD( outputID,					FIELD_INTEGER ),
+DEFINE_FIELD( TriggerWithParameter,		FIELD_BOOLEAN ),
+DEFINE_FIELD( pActivator,				FIELD_CLASSPTR ),
+DEFINE_VARIANT( value ),
+DEFINE_FIELD( outputID,					FIELD_INTEGER ),
 
 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(logic_relay_queue, CLogicRelayQueue);
+LINK_ENTITY_TO_CLASS( logic_relay_queue, CLogicRelayQueue );
 
 
 BEGIN_DATADESC( CLogicRelayQueue )
 
-	DEFINE_FIELD(m_bWaitForRefire, FIELD_BOOLEAN),
-	DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
+DEFINE_FIELD( m_bWaitForRefire, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "StartDisabled" ),
 
-	DEFINE_INPUT(m_iMaxQueueItems, FIELD_INTEGER, "SetMaxQueueItems"),
-	DEFINE_KEYFIELD(m_bDontQueueWhenDisabled, FIELD_BOOLEAN, "DontQueueWhenDisabled"),
+			  DEFINE_INPUT( m_iMaxQueueItems, FIELD_INTEGER, "SetMaxQueueItems" ),
+			  DEFINE_KEYFIELD( m_bDontQueueWhenDisabled, FIELD_BOOLEAN, "DontQueueWhenDisabled" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "EnableRefire", InputEnableRefire),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Trigger", InputTrigger),
-	DEFINE_INPUTFUNC(FIELD_INPUT, "TriggerWithParameter", InputTriggerWithParameter),
-	DEFINE_INPUTFUNC(FIELD_VOID, "CancelPending", InputCancelPending),
-	DEFINE_INPUTFUNC(FIELD_VOID, "ClearQueue", InputClearQueue),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "EnableRefire", InputEnableRefire ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Trigger", InputTrigger ),
+			  DEFINE_INPUTFUNC( FIELD_INPUT, "TriggerWithParameter", InputTriggerWithParameter ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "CancelPending", InputCancelPending ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "ClearQueue", InputClearQueue ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnTrigger, "OnTrigger"),
-	DEFINE_OUTPUT(m_OnTriggerParameter, "OnTriggerParameter"),
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnTrigger, "OnTrigger" ),
+			  DEFINE_OUTPUT( m_OnTriggerParameter, "OnTriggerParameter" ),
 
-	DEFINE_UTLVECTOR(m_QueueItems, FIELD_EMBEDDED),
+			  DEFINE_UTLVECTOR( m_QueueItems, FIELD_EMBEDDED ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor.
 //-----------------------------------------------------------------------------
-CLogicRelayQueue::CLogicRelayQueue(void)
+			  CLogicRelayQueue::CLogicRelayQueue( void )
 {
 }
 
@@ -276,46 +286,52 @@ CLogicRelayQueue::CLogicRelayQueue(void)
 //------------------------------------------------------------------------------
 // Purpose: Turns on the relay, allowing it to fire outputs.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputEnable( inputdata_t &inputdata )
+void CLogicRelayQueue::InputEnable( inputdata_t& inputdata )
 {
 	m_bDisabled = false;
 
-	if (!m_bWaitForRefire && m_QueueItems.Count() > 0)
+	if( !m_bWaitForRefire && m_QueueItems.Count() > 0 )
+	{
 		HandleNextQueueItem();
+	}
 }
 
 //------------------------------------------------------------------------------
 // Purpose: Enables us to fire again. This input is only posted from our Trigger
 //			function to prevent rapid refire.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputEnableRefire( inputdata_t &inputdata )
-{ 
+void CLogicRelayQueue::InputEnableRefire( inputdata_t& inputdata )
+{
 	m_bWaitForRefire = false;
 
-	if (!m_bDisabled && m_QueueItems.Count() > 0)
+	if( !m_bDisabled && m_QueueItems.Count() > 0 )
+	{
 		HandleNextQueueItem();
+	}
 }
 
 
 //------------------------------------------------------------------------------
 // Purpose: Cancels any I/O events in the queue that were fired by us.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputCancelPending( inputdata_t &inputdata )
-{ 
+void CLogicRelayQueue::InputCancelPending( inputdata_t& inputdata )
+{
 	g_EventQueue.CancelEvents( this );
 
 	// Stop waiting; allow another Trigger.
 	m_bWaitForRefire = false;
 
-	if (!m_bDisabled && m_QueueItems.Count() > 0)
+	if( !m_bDisabled && m_QueueItems.Count() > 0 )
+	{
 		HandleNextQueueItem();
+	}
 }
 
 
 //------------------------------------------------------------------------------
 // Purpose: Clears the queue.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputClearQueue( inputdata_t &inputdata )
+void CLogicRelayQueue::InputClearQueue( inputdata_t& inputdata )
 {
 	m_QueueItems.RemoveAll();
 }
@@ -324,8 +340,8 @@ void CLogicRelayQueue::InputClearQueue( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Turns off the relay, preventing it from firing outputs.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputDisable( inputdata_t &inputdata )
-{ 
+void CLogicRelayQueue::InputDisable( inputdata_t& inputdata )
+{
 	m_bDisabled = true;
 }
 
@@ -333,21 +349,23 @@ void CLogicRelayQueue::InputDisable( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Toggles the enabled/disabled state of the relay.
 //------------------------------------------------------------------------------
-void CLogicRelayQueue::InputToggle( inputdata_t &inputdata )
-{ 
+void CLogicRelayQueue::InputToggle( inputdata_t& inputdata )
+{
 	m_bDisabled = !m_bDisabled;
 
-	if (!m_bDisabled && !m_bWaitForRefire && m_QueueItems.Count() > 0)
+	if( !m_bDisabled && !m_bWaitForRefire && m_QueueItems.Count() > 0 )
+	{
 		HandleNextQueueItem();
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that triggers the relay.
 //-----------------------------------------------------------------------------
-void CLogicRelayQueue::InputTrigger( inputdata_t &inputdata )
+void CLogicRelayQueue::InputTrigger( inputdata_t& inputdata )
 {
-	if ((!m_bDisabled) && (!m_bWaitForRefire))
+	if( ( !m_bDisabled ) && ( !m_bWaitForRefire ) )
 	{
 		m_OnTrigger.FireOutput( inputdata.pActivator, this );
 
@@ -356,33 +374,33 @@ void CLogicRelayQueue::InputTrigger( inputdata_t &inputdata )
 		// has been fired and post an input to re-enable ourselves.
 		//
 		m_bWaitForRefire = true;
-		g_EventQueue.AddEvent(this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this);
+		g_EventQueue.AddEvent( this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this );
 	}
-	else if ( (!m_bDisabled || !m_bDontQueueWhenDisabled) && (m_QueueItems.Count() < m_iMaxQueueItems) )
+	else if( ( !m_bDisabled || !m_bDontQueueWhenDisabled ) && ( m_QueueItems.Count() < m_iMaxQueueItems ) )
 	{
-		AddQueueItem(inputdata.pActivator, inputdata.nOutputID);
+		AddQueueItem( inputdata.pActivator, inputdata.nOutputID );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that triggers the relay.
 //-----------------------------------------------------------------------------
-void CLogicRelayQueue::InputTriggerWithParameter( inputdata_t &inputdata )
+void CLogicRelayQueue::InputTriggerWithParameter( inputdata_t& inputdata )
 {
-	if ((!m_bDisabled) && (!m_bWaitForRefire))
+	if( ( !m_bDisabled ) && ( !m_bWaitForRefire ) )
 	{
 		m_OnTriggerParameter.Set( inputdata.value, inputdata.pActivator, this );
-		
+
 		//
 		// Disable the relay so that it cannot be refired until after the last output
 		// has been fired and post an input to re-enable ourselves.
 		//
 		m_bWaitForRefire = true;
-		g_EventQueue.AddEvent(this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this);
+		g_EventQueue.AddEvent( this, "EnableRefire", m_OnTrigger.GetMaxDelay() + 0.001, this, this );
 	}
-	else if ( (!m_bDisabled || !m_bDontQueueWhenDisabled) && (m_QueueItems.Count() < m_iMaxQueueItems) )
+	else if( ( !m_bDisabled || !m_bDontQueueWhenDisabled ) && ( m_QueueItems.Count() < m_iMaxQueueItems ) )
 	{
-		AddQueueItem(inputdata.pActivator, inputdata.nOutputID, inputdata.value);
+		AddQueueItem( inputdata.pActivator, inputdata.nOutputID, inputdata.value );
 	}
 }
 
@@ -391,7 +409,7 @@ void CLogicRelayQueue::InputTriggerWithParameter( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CLogicRelayQueue::HandleNextQueueItem()
 {
-	LogicRelayQueueInfo_t info = m_QueueItems.Element(0);
+	LogicRelayQueueInfo_t info = m_QueueItems.Element( 0 );
 
 	//if (!info.TriggerWithParameter)
 	//{
@@ -402,15 +420,15 @@ void CLogicRelayQueue::HandleNextQueueItem()
 	//	m_OnTriggerParameter.Set(info.value, info.pActivator, this);
 	//}
 
-	AcceptInput(info.TriggerWithParameter ? "TriggerWithParameter" : "Trigger", info.pActivator, this, info.value, info.outputID);
+	AcceptInput( info.TriggerWithParameter ? "TriggerWithParameter" : "Trigger", info.pActivator, this, info.value, info.outputID );
 
-	m_QueueItems.Remove(0);
+	m_QueueItems.Remove( 0 );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a queue item.
 //-----------------------------------------------------------------------------
-void CLogicRelayQueue::AddQueueItem(CBaseEntity *pActivator, int outputID, variant_t &value)
+void CLogicRelayQueue::AddQueueItem( CBaseEntity* pActivator, int outputID, variant_t& value )
 {
 	LogicRelayQueueInfo_t info;
 	info.pActivator = pActivator;
@@ -419,13 +437,13 @@ void CLogicRelayQueue::AddQueueItem(CBaseEntity *pActivator, int outputID, varia
 	info.value = value;
 	info.TriggerWithParameter = true;
 
-	m_QueueItems.AddToTail(info);
+	m_QueueItems.AddToTail( info );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a queue item without a parameter.
 //-----------------------------------------------------------------------------
-void CLogicRelayQueue::AddQueueItem(CBaseEntity *pActivator, int outputID)
+void CLogicRelayQueue::AddQueueItem( CBaseEntity* pActivator, int outputID )
 {
 	LogicRelayQueueInfo_t info;
 	info.pActivator = pActivator;
@@ -433,44 +451,44 @@ void CLogicRelayQueue::AddQueueItem(CBaseEntity *pActivator, int outputID)
 
 	info.TriggerWithParameter = false;
 
-	m_QueueItems.AddToTail(info);
+	m_QueueItems.AddToTail( info );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CLogicRelayQueue::DrawDebugTextOverlays(void)
+int CLogicRelayQueue::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		// --------------
 		// Print Target
 		// --------------
 		char tempstr[255];
 
-		if (m_QueueItems.Count() > 0)
+		if( m_QueueItems.Count() > 0 )
 		{
-			Q_snprintf(tempstr, sizeof(tempstr), "Queue Items: %i (%i)", m_QueueItems.Count(), m_iMaxQueueItems);
-			EntityText(text_offset, tempstr, 0);
+			Q_snprintf( tempstr, sizeof( tempstr ), "Queue Items: %i (%i)", m_QueueItems.Count(), m_iMaxQueueItems );
+			EntityText( text_offset, tempstr, 0 );
 			text_offset++;
 
-			for (int i = 0; i < m_QueueItems.Count(); i++)
+			for( int i = 0; i < m_QueueItems.Count(); i++ )
 			{
-				Q_snprintf(tempstr, sizeof(tempstr), "	Input: %s, Activator: %s, Output ID: %i",
-					m_QueueItems[i].TriggerWithParameter ? "TriggerWithParameter" : "Trigger",
-					m_QueueItems[i].pActivator ? m_QueueItems[i].pActivator->GetDebugName() : "None",
-					m_QueueItems[i].outputID);
-				EntityText(text_offset, tempstr, 0);
+				Q_snprintf( tempstr, sizeof( tempstr ), "	Input: %s, Activator: %s, Output ID: %i",
+							m_QueueItems[i].TriggerWithParameter ? "TriggerWithParameter" : "Trigger",
+							m_QueueItems[i].pActivator ? m_QueueItems[i].pActivator->GetDebugName() : "None",
+							m_QueueItems[i].outputID );
+				EntityText( text_offset, tempstr, 0 );
 				text_offset++;
 			}
 		}
 		else
 		{
-			Q_snprintf(tempstr, sizeof(tempstr), "Queue Items: 0 (%i)", m_iMaxQueueItems);
-			EntityText(text_offset, tempstr, 0);
+			Q_snprintf( tempstr, sizeof( tempstr ), "Queue Items: 0 (%i)", m_iMaxQueueItems );
+			EntityText( text_offset, tempstr, 0 );
 			text_offset++;
 		}
 	}

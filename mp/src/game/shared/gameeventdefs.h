@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define GAMEEVENTDEFS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // Make sure your gameevents.res and this file is in sync

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ANIMATIONCONTROLLER_H
 #define ANIMATIONCONTROLLER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -28,19 +28,22 @@ class AnimationController : public Panel
 	DECLARE_CLASS_SIMPLE( AnimationController, Panel );
 
 public:
-	AnimationController(Panel *parent);
+	AnimationController( Panel* parent );
 	~AnimationController();
 
 	// sets which script file to use
-	bool SetScriptFile( VPANEL sizingPanel, const char *fileName, bool wipeAll = false );
+	bool SetScriptFile( VPANEL sizingPanel, const char* fileName, bool wipeAll = false );
 
 	// reloads the currently set script file
 	void ReloadScriptFile();
 
 	// runs a frame of animation (time is passed in so slow motion, etc. works)
 	void UpdateAnimations( float curtime );
-	
-	int	 GetNumActiveAnimations( void ) { return m_ActiveAnimations.Count(); }
+
+	int	 GetNumActiveAnimations( void )
+	{
+		return m_ActiveAnimations.Count();
+	}
 
 	// plays all animations to completion instantly
 	void RunAllAnimationsToCompletion();
@@ -49,18 +52,18 @@ public:
 	void CancelAllAnimations();
 
 	// starts an animation sequence script
-	bool StartAnimationSequence(const char *sequenceName);
-	bool StartAnimationSequence(Panel *pWithinParent, const char *sequenceName);
+	bool StartAnimationSequence( const char* sequenceName );
+	bool StartAnimationSequence( Panel* pWithinParent, const char* sequenceName );
 
-	bool StopAnimationSequence( Panel *pWithinParent, const char *sequenceName );
-	void CancelAnimationsForPanel( Panel *pWithinParent );
+	bool StopAnimationSequence( Panel* pWithinParent, const char* sequenceName );
+	void CancelAnimationsForPanel( Panel* pWithinParent );
 
 	// gets the length of an animation sequence, in seconds
-	float GetAnimationSequenceLength(const char *sequenceName);
+	float GetAnimationSequenceLength( const char* sequenceName );
 
 	// sets that the script file should be reloaded each time a script is ran
 	// used for development
-	void SetAutoReloadScript(bool state);
+	void SetAutoReloadScript( bool state );
 
 	enum Interpolators_e
 	{
@@ -74,17 +77,17 @@ public:
 	};
 
 	// runs the specific animation command (doesn't use script file at all)
-	void RunAnimationCommand(vgui::Panel *panel, const char *variable, float targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0 );
-	void RunAnimationCommand(vgui::Panel *panel, const char *variable, Color targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0 );
+	void RunAnimationCommand( vgui::Panel* panel, const char* variable, float targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0 );
+	void RunAnimationCommand( vgui::Panel* panel, const char* variable, Color targetValue, float startDelaySeconds, float durationSeconds, Interpolators_e interpolator, float animParameter = 0 );
 
 private:
 	bool UpdateScreenSize();
-	
-	bool LoadScriptFile(const char *fileName);
-	bool ParseScriptFile(char *pMem, int length);
 
-	void UpdatePostedMessages(bool bRunToCompletion);
-	void UpdateActiveAnimations(bool bRunToCompletion);
+	bool LoadScriptFile( const char* fileName );
+	bool ParseScriptFile( char* pMem, int length );
+
+	void UpdatePostedMessages( bool bRunToCompletion );
+	void UpdateActiveAnimations( bool bRunToCompletion );
 
 	bool m_bAutoReloadScript;
 	float m_flCurrentTime;
@@ -120,7 +123,7 @@ private:
 	struct RelativeAlignmentLookup
 	{
 		RelativeAlignment align;
-		char const *name;
+		char const* name;
 	};
 
 	// a single animatable value
@@ -205,7 +208,7 @@ private:
 	// posted messages
 	struct PostedMessage_t
 	{
-		AnimCommandType_e commandType; 
+		AnimCommandType_e commandType;
 		UtlSymId_t seqName;
 		UtlSymId_t event;
 		UtlSymId_t variable;
@@ -218,9 +221,9 @@ private:
 	struct RanEvent_t
 	{
 		UtlSymId_t event;
-		Panel *pParent;
-	
-		bool operator==( const RanEvent_t &other ) const
+		Panel* pParent;
+
+		bool operator==( const RanEvent_t& other ) const
 		{
 			return ( event == other.event && pParent == other.pParent );
 		}
@@ -235,32 +238,32 @@ private:
 	CUtlVector<UtlSymId_t>	m_ScriptFileNames;
 
 	// runs a single line of the script
-	void ExecAnimationCommand(UtlSymId_t seqName, AnimCommand_t &animCommand, Panel *pWithinParent);
+	void ExecAnimationCommand( UtlSymId_t seqName, AnimCommand_t& animCommand, Panel* pWithinParent );
 	// removes all commands belonging to a script
-	void RemoveQueuedAnimationCommands(UtlSymId_t seqName, vgui::Panel *panel = NULL);
+	void RemoveQueuedAnimationCommands( UtlSymId_t seqName, vgui::Panel* panel = NULL );
 	// removes an existing instance of a command
-	void RemoveQueuedAnimationByType(vgui::Panel *panel, UtlSymId_t variable, UtlSymId_t sequenceToIgnore);
+	void RemoveQueuedAnimationByType( vgui::Panel* panel, UtlSymId_t variable, UtlSymId_t sequenceToIgnore );
 
 	// handlers
-	void StartCmd_Animate(UtlSymId_t seqName, AnimCmdAnimate_t &cmd, Panel *pWithinParent);
-	void StartCmd_Animate(Panel *panel, UtlSymId_t seqName, AnimCmdAnimate_t &cmd);
-	void RunCmd_RunEvent(PostedMessage_t &msg);
-	void RunCmd_StopEvent(PostedMessage_t &msg);
-	void RunCmd_StopPanelAnimations(PostedMessage_t &msg);
-	void RunCmd_StopAnimation(PostedMessage_t &msg);
-	void RunCmd_SetFont(PostedMessage_t &msg);
-	void RunCmd_SetTexture(PostedMessage_t &msg);
-	void RunCmd_SetString(PostedMessage_t &msg);
+	void StartCmd_Animate( UtlSymId_t seqName, AnimCmdAnimate_t& cmd, Panel* pWithinParent );
+	void StartCmd_Animate( Panel* panel, UtlSymId_t seqName, AnimCmdAnimate_t& cmd );
+	void RunCmd_RunEvent( PostedMessage_t& msg );
+	void RunCmd_StopEvent( PostedMessage_t& msg );
+	void RunCmd_StopPanelAnimations( PostedMessage_t& msg );
+	void RunCmd_StopAnimation( PostedMessage_t& msg );
+	void RunCmd_SetFont( PostedMessage_t& msg );
+	void RunCmd_SetTexture( PostedMessage_t& msg );
+	void RunCmd_SetString( PostedMessage_t& msg );
 
 	// value access
-	Value_t GetValue(ActiveAnimation_t& anim, Panel *panel, UtlSymId_t var);
-	void SetValue(ActiveAnimation_t& anim, Panel *panel, UtlSymId_t var, Value_t &value);
+	Value_t GetValue( ActiveAnimation_t& anim, Panel* panel, UtlSymId_t var );
+	void SetValue( ActiveAnimation_t& anim, Panel* panel, UtlSymId_t var, Value_t& value );
 
 	// interpolation
-	Value_t GetInterpolatedValue(int interpolator, float interpolatorParam, float currentTime, float startTime, float endTime, Value_t &startValue, Value_t &endValue);
+	Value_t GetInterpolatedValue( int interpolator, float interpolatorParam, float currentTime, float startTime, float endTime, Value_t& startValue, Value_t& endValue );
 
-	void	SetupPosition( AnimCmdAnimate_t& cmd, float *output, char const *psz, int screendimension );
-	static RelativeAlignment LookupAlignment( char const *token );
+	void	SetupPosition( AnimCmdAnimate_t& cmd, float* output, char const* psz, int screendimension );
+	static RelativeAlignment LookupAlignment( char const* token );
 	static RelativeAlignmentLookup g_AlignmentLookup[];
 
 	int		GetRelativeOffset( AnimAlign_t& cmd, bool xcoord );
@@ -270,7 +273,7 @@ private:
 };
 
 // singleton accessor for use only by other vgui_controls
-extern AnimationController *GetAnimationController();
+extern AnimationController* GetAnimationController();
 
 } // namespace vgui
 

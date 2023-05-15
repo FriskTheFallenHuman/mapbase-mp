@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -31,21 +31,21 @@ public:
 	void		SetParent( CBaseEntity* pNewParent, int iAttachment = -1 );
 #endif
 
-	void		MoveTo(Vector vPosition, float flSpeed);
-	void		Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void		MoveTo( Vector vPosition, float flSpeed );
+	void		Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	void		MoveDone( void );
 	void		StopMoveSound( void );
-	void		Blocked( CBaseEntity *pOther );
+	void		Blocked( CBaseEntity* pOther );
 	void		SetPosition( float flPosition );
 
-	int			DrawDebugTextOverlays(void);
+	int			DrawDebugTextOverlays( void );
 
 	// Input handlers
-	void InputOpen( inputdata_t &inputdata );
-	void InputClose( inputdata_t &inputdata );
-	void InputSetPosition( inputdata_t &inputdata );
-	void InputSetSpeed( inputdata_t &inputdata );
-	
+	void InputOpen( inputdata_t& inputdata );
+	void InputClose( inputdata_t& inputdata );
+	void InputSetPosition( inputdata_t& inputdata );
+	void InputSetSpeed( inputdata_t& inputdata );
+
 	DECLARE_DATADESC();
 
 	Vector		m_vecMoveDir;			// Move direction.
@@ -63,7 +63,7 @@ public:
 	Vector		m_vecReference;
 #endif
 
-	IPhysicsFluidController *m_pFluidController;
+	IPhysicsFluidController* m_pFluidController;
 
 	// Outputs
 	COutputEvent m_OnFullyOpen;

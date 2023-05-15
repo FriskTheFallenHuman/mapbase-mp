@@ -14,14 +14,14 @@
 
 // Default global instance.  Mods should override this.
 static CBasePresence s_basePresence;
-IPresence *presence = NULL;
+IPresence* presence = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Init
 //-----------------------------------------------------------------------------
 bool CBasePresence::Init( void )
 {
-	if ( !presence )
+	if( !presence )
 	{
 		// Mod didn't override, default to base implementation
 		presence = &s_basePresence;
@@ -53,7 +53,7 @@ void CBasePresence::Update( float frametime )
 //-----------------------------------------------------------------------------
 void CBasePresence::UserSetContext( unsigned int nUserIndex, unsigned int nContextId, unsigned int nContextValue, bool bAsync )
 {
-	if ( !xboxsystem->UserSetContext( nUserIndex, nContextId, nContextValue, bAsync ) )
+	if( !xboxsystem->UserSetContext( nUserIndex, nContextId, nContextValue, bAsync ) )
 	{
 		Warning( "CBasePresence: UserSetContext failed.\n" );
 	}
@@ -63,18 +63,18 @@ void CBasePresence::UserSetContext( unsigned int nUserIndex, unsigned int nConte
 //-----------------------------------------------------------------------------
 // Properties are (usually) numeric values that can be insterted into context strings.
 //-----------------------------------------------------------------------------
-void CBasePresence::UserSetProperty( unsigned int nUserIndex, unsigned int nPropertyId, unsigned int nBytes, const void *pvValue, bool bAsync )
+void CBasePresence::UserSetProperty( unsigned int nUserIndex, unsigned int nPropertyId, unsigned int nBytes, const void* pvValue, bool bAsync )
 {
- 	if ( !xboxsystem->UserSetProperty( nUserIndex, nPropertyId, nBytes, pvValue, bAsync ) )
- 	{
- 		Warning( "CBasePresence: UserSetProperty failed.\n" );
- 	}
+	if( !xboxsystem->UserSetProperty( nUserIndex, nPropertyId, nBytes, pvValue, bAsync ) )
+	{
+		Warning( "CBasePresence: UserSetProperty failed.\n" );
+	}
 }
 
 //-----------------------------------------------------------------------------
 // Get game session properties from matchmaking.
 //-----------------------------------------------------------------------------
-void CBasePresence::SetupGameProperties( CUtlVector< XUSER_CONTEXT > &contexts, CUtlVector< XUSER_PROPERTY > &properties )
+void CBasePresence::SetupGameProperties( CUtlVector< XUSER_CONTEXT >& contexts, CUtlVector< XUSER_PROPERTY >& properties )
 {
 	Assert( 0 );
 }
@@ -82,7 +82,7 @@ void CBasePresence::SetupGameProperties( CUtlVector< XUSER_CONTEXT > &contexts, 
 //-----------------------------------------------------------------------------
 // Convert a string to a presence ID.
 //-----------------------------------------------------------------------------
-uint CBasePresence::GetPresenceID( const char *pIdName )
+uint CBasePresence::GetPresenceID( const char* pIdName )
 {
 	Assert( 0 );
 	return 0;
@@ -91,7 +91,7 @@ uint CBasePresence::GetPresenceID( const char *pIdName )
 //-----------------------------------------------------------------------------
 // Convert a presence ID to a string.
 //-----------------------------------------------------------------------------
-const char *CBasePresence::GetPropertyIdString( const uint id )
+const char* CBasePresence::GetPropertyIdString( const uint id )
 {
 	Assert( 0 );
 	return NULL;
@@ -100,7 +100,7 @@ const char *CBasePresence::GetPropertyIdString( const uint id )
 //-----------------------------------------------------------------------------
 // Get display string for a game property.
 //-----------------------------------------------------------------------------
-void CBasePresence::GetPropertyDisplayString( uint id, uint value, char *pOutput, int nBytes )
+void CBasePresence::GetPropertyDisplayString( uint id, uint value, char* pOutput, int nBytes )
 {
 	Assert( 0 );
 }
@@ -121,7 +121,7 @@ void CBasePresence::StartStatsReporting( HANDLE handle, bool bArbitrated )
 //-----------------------------------------------------------------------------
 void CBasePresence::SetStat( uint iPropertyId, int iPropertyValue, int dataType )
 {
-	if ( m_bReportingStats )
+	if( m_bReportingStats )
 	{
 		XUSER_PROPERTY prop;
 		prop.dwPropertyId = iPropertyId;
@@ -142,9 +142,9 @@ void CBasePresence::UploadStats()
 //---------------------------------------------------------
 // Debug support
 //---------------------------------------------------------
-void CBasePresence::DebugUserSetContext( const CCommand &args )
+void CBasePresence::DebugUserSetContext( const CCommand& args )
 {
-	if ( args.ArgC() == 3 )
+	if( args.ArgC() == 3 )
 	{
 		UserSetContext( XBX_GetPrimaryUserId(), atoi( args.Arg( 1 ) ), atoi( args.Arg( 2 ) ) );
 	}
@@ -153,12 +153,12 @@ void CBasePresence::DebugUserSetContext( const CCommand &args )
 		Warning( "user_context <context id> <context value>\n" );
 	}
 }
-void CBasePresence::DebugUserSetProperty( const CCommand &args )
+void CBasePresence::DebugUserSetProperty( const CCommand& args )
 {
-	if ( args.ArgC() == 3 )
+	if( args.ArgC() == 3 )
 	{
 		int value = atoi( args.Arg( 2 ) );
-		UserSetProperty( XBX_GetPrimaryUserId(), strtoul( args.Arg( 1 ), NULL, 0 ), sizeof(int), &value );
+		UserSetProperty( XBX_GetPrimaryUserId(), strtoul( args.Arg( 1 ), NULL, 0 ), sizeof( int ), &value );
 	}
 	else
 	{

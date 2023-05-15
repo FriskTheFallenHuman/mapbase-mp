@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef CONTROLLERMAP_H
 #define CONTROLLERMAP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "Panel.h"
@@ -22,17 +22,17 @@ class CControllerMap : public vgui::Panel
 	virtual void OnKeyCodeTyped( vgui::KeyCode code );
 
 public:
-	CControllerMap( vgui::Panel *parent, const char *name );
+	CControllerMap( vgui::Panel* parent, const char* name );
 
-	virtual void ApplySettings( KeyValues *inResourceData );
+	virtual void ApplySettings( KeyValues* inResourceData );
 
 	int NumButtons( void )
 	{
 		return m_buttonMap.Count();
 	}
 
-	const char *GetBindingText( int idx );
-	const char *GetBindingIcon( int idx );
+	const char* GetBindingText( int idx );
+	const char* GetBindingIcon( int idx );
 
 private:
 

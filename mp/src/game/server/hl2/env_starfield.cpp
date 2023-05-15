@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -13,7 +13,7 @@
 #include "tier0/memdbgon.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CEnvStarfield : public CBaseEntity
 {
@@ -24,12 +24,12 @@ public:
 
 	virtual void Precache();
 	virtual void Spawn( void );
-	virtual int  UpdateTransmitState(void);
+	virtual int  UpdateTransmitState( void );
 
 	// Inputs
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputSetDensity( inputdata_t &inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputSetDensity( inputdata_t& inputdata );
 
 private:
 	CNetworkVar( bool, m_bOn );
@@ -37,23 +37,23 @@ private:
 };
 
 BEGIN_DATADESC( CEnvStarfield )
-	DEFINE_FIELD( m_bOn, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flDensity, FIELD_FLOAT ),
+DEFINE_FIELD( m_bOn, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flDensity, FIELD_FLOAT ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDensity", InputSetDensity ),
-END_DATADESC()
+			  DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDensity", InputSetDensity ),
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CEnvStarfield, DT_EnvStarfield )
-	SendPropInt( SENDINFO(m_bOn), 1, SPROP_UNSIGNED ),
-	SendPropFloat( SENDINFO(m_flDensity), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CEnvStarfield, DT_EnvStarfield )
+			  SendPropInt( SENDINFO( m_bOn ), 1, SPROP_UNSIGNED ),
+			  SendPropFloat( SENDINFO( m_flDensity ), 0, SPROP_NOSCALE ),
+			  END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( env_starfield, CEnvStarfield );
+			  LINK_ENTITY_TO_CLASS( env_starfield, CEnvStarfield );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvStarfield::Spawn()
 {
@@ -73,7 +73,7 @@ void CEnvStarfield::Precache()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CEnvStarfield::UpdateTransmitState()
 {
@@ -81,27 +81,27 @@ int CEnvStarfield::UpdateTransmitState()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvStarfield::InputTurnOn( inputdata_t &inputdata )
+void CEnvStarfield::InputTurnOn( inputdata_t& inputdata )
 {
 	m_bOn = true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvStarfield::InputTurnOff( inputdata_t &inputdata )
+void CEnvStarfield::InputTurnOff( inputdata_t& inputdata )
 {
 	m_bOn = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvStarfield::InputSetDensity( inputdata_t &inputdata )
+void CEnvStarfield::InputSetDensity( inputdata_t& inputdata )
 {
 	m_flDensity = inputdata.value.Float();
 }

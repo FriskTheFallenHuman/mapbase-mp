@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ENTITYBLOCKER_H
 #define ENTITYBLOCKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //==================================================================================================================
@@ -19,10 +19,10 @@ class CEntityBlocker : public CBaseEntity
 
 public:
 
-	static CEntityBlocker *Create( const Vector &origin, const Vector &mins, const Vector &maxs, CBaseEntity *pOwner = NULL, bool bBlockPhysics = false );
+	static CEntityBlocker* Create( const Vector& origin, const Vector& mins, const Vector& maxs, CBaseEntity* pOwner = NULL, bool bBlockPhysics = false );
 
 	void Spawn( void );
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 };
 
 #endif // ENTITYBLOCKER_H

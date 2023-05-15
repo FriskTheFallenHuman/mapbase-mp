@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef AI_ROUTE_H
 #define AI_ROUTE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -34,63 +34,102 @@ class CAI_Path
 
 public:
 
-	void			SetWaypoints(AI_Waypoint_t* route, bool fSetGoalFromLast = false) ;
+	void			SetWaypoints( AI_Waypoint_t* route, bool fSetGoalFromLast = false ) ;
 
-	void 			PrependWaypoints( AI_Waypoint_t *pWaypoints );
-	void 			PrependWaypoint( const Vector &newPoint, Navigation_t navType, unsigned waypointFlags );
+	void 			PrependWaypoints( AI_Waypoint_t* pWaypoints );
+	void 			PrependWaypoint( const Vector& newPoint, Navigation_t navType, unsigned waypointFlags );
 
-	bool 			IsEmpty() const				{ return m_Waypoints.IsEmpty(); }
+	bool 			IsEmpty() const
+	{
+		return m_Waypoints.IsEmpty();
+	}
 
-	AI_Waypoint_t *	GetCurWaypoint() 				{ return m_Waypoints.GetFirst(); }
-	const AI_Waypoint_t *GetCurWaypoint() const 	{ return m_Waypoints.GetFirst(); }
+	AI_Waypoint_t* 	GetCurWaypoint()
+	{
+		return m_Waypoints.GetFirst();
+	}
+	const AI_Waypoint_t* GetCurWaypoint() const
+	{
+		return m_Waypoints.GetFirst();
+	}
 
-	AI_Waypoint_t *	GetGoalWaypoint() 				{ return m_Waypoints.GetLast(); }
-	const AI_Waypoint_t *GetGoalWaypoint() const 	{ return m_Waypoints.GetLast(); }
+	AI_Waypoint_t* 	GetGoalWaypoint()
+	{
+		return m_Waypoints.GetLast();
+	}
+	const AI_Waypoint_t* GetGoalWaypoint() const
+	{
+		return m_Waypoints.GetLast();
+	}
 
-	const Vector &	CurWaypointPos() const;
-	const Vector &	NextWaypointPos() const;
+	const Vector& 	CurWaypointPos() const;
+	const Vector& 	NextWaypointPos() const;
 	float			CurWaypointYaw() const;
 	int				CurWaypointFlags() const;
 	Navigation_t	CurWaypointNavType() const;
 
-	AI_Waypoint_t * GetTransitionWaypoint();
+	AI_Waypoint_t* GetTransitionWaypoint();
 
 	//---------------------------------
 
 	float			GetPathLength();
-	float			GetPathDistanceToGoal( const Vector &);
+	float			GetPathDistanceToGoal( const Vector& );
 
-	float			GetStartTime() const	{ return m_routeStartTime; }
+	float			GetStartTime() const
+	{
+		return m_routeStartTime;
+	}
 
 	//---------------------------------
 	// How close do we need to get to the goal
 	//---------------------------------
-	void			SetGoalTolerance(float tolerance)	{ m_goalTolerance = tolerance;		}
-	float			GetGoalTolerance() const			{ return m_goalTolerance;			}
+	void			SetGoalTolerance( float tolerance )
+	{
+		m_goalTolerance = tolerance;
+	}
+	float			GetGoalTolerance() const
+	{
+		return m_goalTolerance;
+	}
 
-	void			SetWaypointTolerance(float tolerance)	{ m_waypointTolerance = tolerance;  }
-	float			GetWaypointTolerance() const			{ return m_waypointTolerance;  }
+	void			SetWaypointTolerance( float tolerance )
+	{
+		m_waypointTolerance = tolerance;
+	}
+	float			GetWaypointTolerance() const
+	{
+		return m_waypointTolerance;
+	}
 
 	//---------------------------------
 	// The activity to use during motion
 	//---------------------------------
-	Activity		GetMovementActivity() const					{ return m_activity;				}
-	Activity		SetMovementActivity(Activity activity);
-	int				GetMovementSequence() const 				{ return m_sequence;				}
-	int				SetMovementSequence(int sequence)			{ return (m_sequence = sequence);	}
+	Activity		GetMovementActivity() const
+	{
+		return m_activity;
+	}
+	Activity		SetMovementActivity( Activity activity );
+	int				GetMovementSequence() const
+	{
+		return m_sequence;
+	}
+	int				SetMovementSequence( int sequence )
+	{
+		return ( m_sequence = sequence );
+	}
 
 	Activity		GetArrivalActivity( ) const;
-	void			SetArrivalActivity(Activity activity);
+	void			SetArrivalActivity( Activity activity );
 	int				GetArrivalSequence( ) const;
-	void			SetArrivalSequence(int sequence);
+	void			SetArrivalSequence( int sequence );
 
-	void			SetGoalDirection( const Vector &goalDirection );
-	void			SetGoalDirection( CBaseEntity *pTarget );
-	Vector			GetGoalDirection( const Vector &startPos );
+	void			SetGoalDirection( const Vector& goalDirection );
+	void			SetGoalDirection( CBaseEntity* pTarget );
+	Vector			GetGoalDirection( const Vector& startPos );
 
 	void			SetGoalSpeed( float flSpeed );
-	void			SetGoalSpeed( CBaseEntity *pTarget );
-	float			GetGoalSpeed( const Vector &startPos );
+	void			SetGoalSpeed( CBaseEntity* pTarget );
+	float			GetGoalSpeed( const Vector& startPos );
 
 	void			SetGoalStoppingDistance( float flDistance );
 	float			GetGoalStoppingDistance( ) const;
@@ -98,41 +137,60 @@ public:
 	//---------------------------------
 	// Target of this path
 	//---------------------------------
-	void			SetTarget(CBaseEntity * pTarget )	{ m_target = pTarget;				}
-	void			ClearTarget()						{ m_target = NULL; m_vecTargetOffset = vec3_origin;	}
-	void			SetTargetOffset( const Vector &vecOffset)	{ m_vecTargetOffset = vecOffset;	}
-	CBaseEntity *	GetTarget()							{ return m_target;					}
+	void			SetTarget( CBaseEntity* pTarget )
+	{
+		m_target = pTarget;
+	}
+	void			ClearTarget()
+	{
+		m_target = NULL;
+		m_vecTargetOffset = vec3_origin;
+	}
+	void			SetTargetOffset( const Vector& vecOffset )
+	{
+		m_vecTargetOffset = vecOffset;
+	}
+	CBaseEntity* 	GetTarget()
+	{
+		return m_target;
+	}
 
-	void			SetGoalType(GoalType_t goalType);				// Set the goal type
-	void			SetGoalPosition(const Vector &goalPos);			// Set the goal position
-	void			SetLastNodeAsGoal(bool bReset = false);			// Sets last node as goal and goal position
-	void			ResetGoalPosition(const Vector &goalPos);		// Reset the goal position
+	void			SetGoalType( GoalType_t goalType );				// Set the goal type
+	void			SetGoalPosition( const Vector& goalPos );			// Set the goal position
+	void			SetLastNodeAsGoal( bool bReset = false );			// Sets last node as goal and goal position
+	void			ResetGoalPosition( const Vector& goalPos );		// Reset the goal position
 
-	// Returns the *base* goal position (without the offset applied) 
+	// Returns the *base* goal position (without the offset applied)
 	const Vector&	BaseGoalPosition() const;
 
 	// Returns the *actual* goal position (with the offset applied)
-	const Vector &	ActualGoalPosition(void) const;			// Get the goal position
+	const Vector& 	ActualGoalPosition( void ) const;			// Get the goal position
 
-	GoalType_t		GoalType(void) const;						// Get the goal type
-	
-	void			SetGoalFlags( unsigned flags )		{ m_goalFlags = flags;				}
+	GoalType_t		GoalType( void ) const;						// Get the goal type
+
+	void			SetGoalFlags( unsigned flags )
+	{
+		m_goalFlags = flags;
+	}
 	unsigned		GoalFlags( void ) const;			// Get the goal flags
 
 	void			Advance( void );					// Advance to next waypoint if possible
 
-	bool			CurWaypointIsGoal(void) const;
+	bool			CurWaypointIsGoal( void ) const;
 
-	void			Clear(void);
+	void			Clear( void );
 
 	CAI_Path();
 	~CAI_Path();
 
 	//---------------------------------
 
-	int GetLastNodeReached() { return m_iLastNodeReached; }
+	int GetLastNodeReached()
+	{
+		return m_iLastNodeReached;
+	}
 	void ClearWaypoints()
-	{ 
+	{
 		m_Waypoints.RemoveAll();
 		m_iLastNodeReached = NO_NODE;
 	}
@@ -140,7 +198,7 @@ public:
 private:
 
 	// Computes the goal distance for each waypoint along the route
-	static void ComputeRouteGoalDistances(AI_Waypoint_t *pGoalWaypoint);
+	static void ComputeRouteGoalDistances( AI_Waypoint_t* pGoalWaypoint );
 
 	//---------------------------------
 	CAI_WaypointList m_Waypoints;

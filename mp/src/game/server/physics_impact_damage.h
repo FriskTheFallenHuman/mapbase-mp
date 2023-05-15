@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef PHYSICS_IMPACT_DAMAGE_H
 #define PHYSICS_IMPACT_DAMAGE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,8 +20,8 @@ struct impactentry_t
 // UNDONE: Add a flag to turn off aggregation of mass in object systems (e.g. ragdolls, vehicles)?
 struct impactdamagetable_t
 {
-	impactentry_t	*linearTable;
-	impactentry_t	*angularTable;
+	impactentry_t*	linearTable;
+	impactentry_t*	angularTable;
 	int			linearCount;	// array size of linearTable
 	int			angularCount;	// array size of angularTable
 
@@ -48,10 +48,10 @@ extern impactdamagetable_t gDefaultPlayerImpactDamageTable;
 extern impactdamagetable_t gDefaultPlayerVehicleImpactDamageTable;
 
 // NOTE Default uses default NPC table
-float CalculateDefaultPhysicsDamage( int index, gamevcollisionevent_t *pEvent, float energyScale, bool allowStaticDamage, int &damageTypeOut, string_t iszDamageTableName = NULL_STRING, bool bDamageFromHeldObjects = false );
+float CalculateDefaultPhysicsDamage( int index, gamevcollisionevent_t* pEvent, float energyScale, bool allowStaticDamage, int& damageTypeOut, string_t iszDamageTableName = NULL_STRING, bool bDamageFromHeldObjects = false );
 
 // use passes in the table
-float CalculatePhysicsImpactDamage( int index, gamevcollisionevent_t *pEvent, const impactdamagetable_t &table, float energyScale, bool allowStaticDamage, int &damageTypeOut, bool bDamageFromHeldObjects = false );
+float CalculatePhysicsImpactDamage( int index, gamevcollisionevent_t* pEvent, const impactdamagetable_t& table, float energyScale, bool allowStaticDamage, int& damageTypeOut, bool bDamageFromHeldObjects = false );
 
 struct vphysics_objectstress_t
 {
@@ -61,6 +61,6 @@ struct vphysics_objectstress_t
 	bool		hasLargeObjectContact;
 };
 
-float CalculateObjectStress( IPhysicsObject *pObject, CBaseEntity *pOwnerEntity, vphysics_objectstress_t *pOutput );
+float CalculateObjectStress( IPhysicsObject* pObject, CBaseEntity* pOwnerEntity, vphysics_objectstress_t* pOutput );
 
 #endif // PHYSICS_IMPACT_DAMAGE_H

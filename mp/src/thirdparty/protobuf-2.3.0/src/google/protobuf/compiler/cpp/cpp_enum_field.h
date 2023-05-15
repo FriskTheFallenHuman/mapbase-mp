@@ -39,60 +39,66 @@
 #include <string>
 #include <google/protobuf/compiler/cpp/cpp_field.h>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace cpp {
+namespace google
+{
+namespace protobuf
+{
+namespace compiler
+{
+namespace cpp
+{
 
-class EnumFieldGenerator : public FieldGenerator {
- public:
-  explicit EnumFieldGenerator(const FieldDescriptor* descriptor);
-  ~EnumFieldGenerator();
+class EnumFieldGenerator : public FieldGenerator
+{
+public:
+	explicit EnumFieldGenerator( const FieldDescriptor* descriptor );
+	~EnumFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GeneratePrivateMembers(io::Printer* printer) const;
-  void GenerateAccessorDeclarations(io::Printer* printer) const;
-  void GenerateInlineAccessorDefinitions(io::Printer* printer) const;
-  void GenerateClearingCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateSwappingCode(io::Printer* printer) const;
-  void GenerateConstructorCode(io::Printer* printer) const;
-  void GenerateMergeFromCodedStream(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizes(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const;
-  void GenerateByteSize(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GeneratePrivateMembers( io::Printer* printer ) const;
+	void GenerateAccessorDeclarations( io::Printer* printer ) const;
+	void GenerateInlineAccessorDefinitions( io::Printer* printer ) const;
+	void GenerateClearingCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateSwappingCode( io::Printer* printer ) const;
+	void GenerateConstructorCode( io::Printer* printer ) const;
+	void GenerateMergeFromCodedStream( io::Printer* printer ) const;
+	void GenerateSerializeWithCachedSizes( io::Printer* printer ) const;
+	void GenerateSerializeWithCachedSizesToArray( io::Printer* printer ) const;
+	void GenerateByteSize( io::Printer* printer ) const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( EnumFieldGenerator );
 };
 
-class RepeatedEnumFieldGenerator : public FieldGenerator {
- public:
-  explicit RepeatedEnumFieldGenerator(const FieldDescriptor* descriptor);
-  ~RepeatedEnumFieldGenerator();
+class RepeatedEnumFieldGenerator : public FieldGenerator
+{
+public:
+	explicit RepeatedEnumFieldGenerator( const FieldDescriptor* descriptor );
+	~RepeatedEnumFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GeneratePrivateMembers(io::Printer* printer) const;
-  void GenerateAccessorDeclarations(io::Printer* printer) const;
-  void GenerateInlineAccessorDefinitions(io::Printer* printer) const;
-  void GenerateClearingCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateSwappingCode(io::Printer* printer) const;
-  void GenerateConstructorCode(io::Printer* printer) const;
-  void GenerateMergeFromCodedStream(io::Printer* printer) const;
-  void GenerateMergeFromCodedStreamWithPacking(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizes(io::Printer* printer) const;
-  void GenerateSerializeWithCachedSizesToArray(io::Printer* printer) const;
-  void GenerateByteSize(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GeneratePrivateMembers( io::Printer* printer ) const;
+	void GenerateAccessorDeclarations( io::Printer* printer ) const;
+	void GenerateInlineAccessorDefinitions( io::Printer* printer ) const;
+	void GenerateClearingCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateSwappingCode( io::Printer* printer ) const;
+	void GenerateConstructorCode( io::Printer* printer ) const;
+	void GenerateMergeFromCodedStream( io::Printer* printer ) const;
+	void GenerateMergeFromCodedStreamWithPacking( io::Printer* printer ) const;
+	void GenerateSerializeWithCachedSizes( io::Printer* printer ) const;
+	void GenerateSerializeWithCachedSizesToArray( io::Printer* printer ) const;
+	void GenerateByteSize( io::Printer* printer ) const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(RepeatedEnumFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( RepeatedEnumFieldGenerator );
 };
 
 }  // namespace cpp

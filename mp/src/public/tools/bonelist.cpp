@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -20,7 +20,7 @@ CBoneList::CBoneList()
 
 void CBoneList::Release()
 {
-	if (m_bShouldDelete )
+	if( m_bShouldDelete )
 	{
 		delete this;
 	}
@@ -30,11 +30,11 @@ void CBoneList::Release()
 	}
 }
 
-CBoneList *CBoneList::Alloc()
+CBoneList* CBoneList::Alloc()
 {
-	CBoneList *newList = new CBoneList;
+	CBoneList* newList = new CBoneList;
 	Assert( newList );
-	if ( newList )
+	if( newList )
 	{
 		newList->m_bShouldDelete = true;
 	}
@@ -50,7 +50,7 @@ CFlexList::CFlexList()
 
 void CFlexList::Release()
 {
-	if (m_bShouldDelete )
+	if( m_bShouldDelete )
 	{
 		delete this;
 	}
@@ -60,11 +60,11 @@ void CFlexList::Release()
 	}
 }
 
-CFlexList *CFlexList::Alloc()
+CFlexList* CFlexList::Alloc()
 {
-	CFlexList *newList = new CFlexList;
+	CFlexList* newList = new CFlexList;
 	Assert( newList );
-	if ( newList )
+	if( newList )
 	{
 		newList->m_bShouldDelete = true;
 	}

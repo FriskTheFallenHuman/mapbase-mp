@@ -38,9 +38,9 @@ class CAI_Link
 public:
 
 	short	m_iSrcID;							// the node that 'owns' this link
-	short	m_iDestID;							// the node on the other end of the link. 
-	
-	int		DestNodeID(int srcID);				// Given the source node ID, returns the destination ID
+	short	m_iDestID;							// the node on the other end of the link.
+
+	int		DestNodeID( int srcID );				// Given the source node ID, returns the destination ID
 
 	byte 	m_iAcceptedMoveTypes[NUM_HULLS];	// Capability_T of motions acceptable for each hull type
 
@@ -48,8 +48,8 @@ public:
 
 	float	m_timeStaleExpires;
 
-	CAI_DynamicLink *m_pDynamicLink;
-	
+	CAI_DynamicLink* m_pDynamicLink;
+
 	//edict_t	*m_pLinkEnt;	// the entity that blocks this connection (doors, etc)
 
 	// m_szLinkEntModelname is not necessarily NULL terminated (so we can store it in a more alignment-friendly 4 bytes)
@@ -59,7 +59,7 @@ public:
 
 private:
 	friend class CAI_Network;
-	CAI_Link(void);
+	CAI_Link( void );
 };
 
 #endif // AI_LINK_H

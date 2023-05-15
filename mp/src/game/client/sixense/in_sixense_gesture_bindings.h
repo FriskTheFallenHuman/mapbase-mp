@@ -2,12 +2,13 @@
 #ifndef IN_SIXENSE_GESTURES_H
 #define IN_SIXENSE_GESTURES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <sixense_utils/interfaces.hpp>
 
-class SixenseGestureBindings {
+class SixenseGestureBindings
+{
 public:
 	SixenseGestureBindings();
 
@@ -31,36 +32,37 @@ public:
 
 	// Check to see if any bindings need to be triggered. disable_activations allows the caller to prevent new bindings from being triggered, while
 	// still allowing enabled gestures to disable.
-	void UpdateBindings( sixenseUtils::IButtonStates *pLeftButtonStates, sixenseUtils::IButtonStates *pRightButtonStates, bool bIsMenuVisible );
+	void UpdateBindings( sixenseUtils::IButtonStates* pLeftButtonStates, sixenseUtils::IButtonStates* pRightButtonStates, bool bIsMenuVisible );
 
 	// How many bindings are there?
 	int GetNumBindings();
 
 	// Allow per-game authorization of commmands when the menu is up
-	bool AllowMenuCommand( char * );
+	bool AllowMenuCommand( char* );
 
 	// Allow per-game authorization of commmands in general
-	bool AllowCommand( char * );
+	bool AllowCommand( char* );
 
 protected:
-	typedef struct {
+	typedef struct
+	{
 		int m_Action;
 		int m_iHand; // 0=left, 1=right
 		int m_iArgument;
-		char *m_pActivateCommand;
-		char *m_pDeactivateCommand;
+		char* m_pActivateCommand;
+		char* m_pDeactivateCommand;
 		bool m_bAutoMirrored;
 	} GestureBinding;
 
 	// some helpers for converting input strings
-	bool HandFromString( CUtlString hand_str, int *hand );
-	bool ActionFromString( CUtlString action_str, sixenseUtils::IButtonStates::ActionType *action );
-	bool ButtonMaskFromString( CUtlString button, unsigned short *button_token );
-	bool DirectionFromString( CUtlString dir_str, sixenseUtils::IButtonStates::Direction *dir );
-	bool ActionTokenToStr( sixenseUtils::IButtonStates::ActionType action, char *buf, int buflen );
-	bool DirectionTokenToStr( int arg, char *buf, int buflen );
-	bool ButtonTokenToStr( int arg, char *buf, int buflen );
-	bool HandTokenToStr( int hand, char *buf, int buflen );
+	bool HandFromString( CUtlString hand_str, int* hand );
+	bool ActionFromString( CUtlString action_str, sixenseUtils::IButtonStates::ActionType* action );
+	bool ButtonMaskFromString( CUtlString button, unsigned short* button_token );
+	bool DirectionFromString( CUtlString dir_str, sixenseUtils::IButtonStates::Direction* dir );
+	bool ActionTokenToStr( sixenseUtils::IButtonStates::ActionType action, char* buf, int buflen );
+	bool DirectionTokenToStr( int arg, char* buf, int buflen );
+	bool ButtonTokenToStr( int arg, char* buf, int buflen );
+	bool HandTokenToStr( int hand, char* buf, int buflen );
 
 	// Help deallocate a binding
 	void FreeStrings( GestureBinding binding );

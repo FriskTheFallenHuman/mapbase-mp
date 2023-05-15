@@ -7,7 +7,7 @@
 #ifndef NPC_HEADCRAB_H
 #define NPC_HEADCRAB_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_squadslot.h"
@@ -16,48 +16,52 @@
 
 
 
-abstract_class CBaseHeadcrab : public CAI_BaseNPC
+abstract_class CBaseHeadcrab :
+public CAI_BaseNPC
 {
 	DECLARE_CLASS( CBaseHeadcrab, CAI_BaseNPC );
 
 public:
 	void Spawn( void );
 	void Precache( void );
-	void RunTask( const Task_t *pTask );
-	void StartTask( const Task_t *pTask );
+	void RunTask( const Task_t* pTask );
+	void StartTask( const Task_t* pTask );
 
 	void OnChangeActivity( Activity NewActivity );
 
 	bool IsFirmlyOnGround();
-	void MoveOrigin( const Vector &vecDelta );
-	void ThrowAt( const Vector &vecPos );
+	void MoveOrigin( const Vector & vecDelta );
+	void ThrowAt( const Vector & vecPos );
 	void ThrowThink( void );
-	virtual void JumpAttack( bool bRandomJump, const Vector &vecPos = vec3_origin, bool bThrown = false );
-	void JumpToBurrowHint( CAI_Hint *pHint );
+	virtual void JumpAttack( bool bRandomJump, const Vector& vecPos = vec3_origin, bool bThrown = false );
+	void JumpToBurrowHint( CAI_Hint * pHint );
 
 	bool	HasHeadroom();
-	void	LeapTouch ( CBaseEntity *pOther );
-	virtual void TouchDamage( CBaseEntity *pOther );
-	bool	CorpseGib( const CTakeDamageInfo &info );
-	void	Touch( CBaseEntity *pOther );
-	Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
+	void	LeapTouch( CBaseEntity * pOther );
+	virtual void TouchDamage( CBaseEntity * pOther );
+	bool	CorpseGib( const CTakeDamageInfo & info );
+	void	Touch( CBaseEntity * pOther );
+	Vector	BodyTarget( const Vector & posSrc, bool bNoisy = true );
 	float	GetAutoAimRadius();
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void	TraceAttack( const CTakeDamageInfo & info, const Vector & vecDir, trace_t* ptr, CDmgAccumulator * pAccumulator );
 	void	Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 
 	float	MaxYawSpeed( void );
 	void	GatherConditions( void );
 	void	PrescheduleThink( void );
 	Class_T Classify( void );
-	void	HandleAnimEvent( animevent_t *pEvent );
-	int		RangeAttack1Conditions ( float flDot, float flDist );
-	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void	ClampRagdollForce( const Vector &vecForceIn, Vector *vecForceOut );
-	void	Event_Killed( const CTakeDamageInfo &info );
+	void	HandleAnimEvent( animevent_t* pEvent );
+	int		RangeAttack1Conditions( float flDot, float flDist );
+	int		OnTakeDamage_Alive( const CTakeDamageInfo & info );
+	void	ClampRagdollForce( const Vector & vecForceIn, Vector * vecForceOut );
+	void	Event_Killed( const CTakeDamageInfo & info );
 	void	BuildScheduleTestBits( void );
-	bool	FValidateHintType( CAI_Hint *pHint );
+	bool	FValidateHintType( CAI_Hint * pHint );
 
-	bool	IsJumping( void ) { return m_bMidJump; }
+	bool	IsJumping( void )
+	{
+		return m_bMidJump;
+	}
 
 	virtual void BiteSound( void ) = 0;
 	virtual void AttackSound( void ) {};
@@ -68,26 +72,32 @@ public:
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	virtual int		TranslateSchedule( int scheduleType );
 
-	virtual float	GetReactionDelay( CBaseEntity *pEnemy ) { return 0.0; }
+	virtual float	GetReactionDelay( CBaseEntity * pEnemy )
+	{
+		return 0.0;
+	}
 
-	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter * sourceEnt );
 
 	void	CrawlFromCanister();
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
+	virtual	bool		AllowedToIgnite( void )
+	{
+		return true;
+	}
 
-	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
+	virtual bool CanBeAnEnemyOf( CBaseEntity * pEnemy );
 
-	bool	IsHangingFromCeiling( void ) 
-	{ 
+	bool	IsHangingFromCeiling( void )
+	{
 #ifdef HL2_EPISODIC
-		return m_bHangingFromCeiling;	
+		return m_bHangingFromCeiling;
 #else
 		return false;
 #endif
 	}
 
-	virtual void PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot );
+	virtual void PlayerHasIlluminatedNPC( CBasePlayer * pPlayer, float flDot );
 
 	void DropFromCeiling( void );
 
@@ -97,12 +107,12 @@ public:
 protected:
 	void HeadcrabInit();
 
-	void Leap( const Vector &vecVel );
+	void Leap( const Vector & vecVel );
 
-	void GrabHintNode( CAI_Hint *pHint );
-	bool FindBurrow( const Vector &origin, float distance, bool excludeNear );
-	bool ValidBurrowPoint( const Vector &point );
-	void ClearBurrowPoint( const Vector &origin );
+	void GrabHintNode( CAI_Hint * pHint );
+	bool FindBurrow( const Vector & origin, float distance, bool excludeNear );
+	bool ValidBurrowPoint( const Vector & point );
+	void ClearBurrowPoint( const Vector & origin );
 	void Burrow( void );
 	void Unburrow( void );
 	void SetBurrowed( bool bBurrowed );
@@ -111,14 +121,14 @@ protected:
 	// Begins the climb from the canister
 	void BeginClimbFromCanister();
 
-	void InputBurrow( inputdata_t &inputdata );
-	void InputBurrowImmediate( inputdata_t &inputdata );
-	void InputUnburrow( inputdata_t &inputdata );
+	void InputBurrow( inputdata_t& inputdata );
+	void InputBurrowImmediate( inputdata_t& inputdata );
+	void InputUnburrow( inputdata_t& inputdata );
 
-	void InputStartHangingFromCeiling( inputdata_t &inputdata );
-	void InputDropFromCeiling( inputdata_t &inputdata );
+	void InputStartHangingFromCeiling( inputdata_t& inputdata );
+	void InputDropFromCeiling( inputdata_t& inputdata );
 
-	int CalcDamageInfo( CTakeDamageInfo *pInfo );
+	int CalcDamageInfo( CTakeDamageInfo * pInfo );
 	void CreateDust( bool placeDecal = true );
 
 	// Eliminates roll + pitch potentially in the headcrab at canister jump time
@@ -173,8 +183,8 @@ public:
 	Activity NPC_TranslateActivity( Activity eNewActivity );
 
 	void	BiteSound( void );
-	void	PainSound( const CTakeDamageInfo &info );
-	void	DeathSound( const CTakeDamageInfo &info );
+	void	PainSound( const CTakeDamageInfo& info );
+	void	DeathSound( const CTakeDamageInfo& info );
 	void	IdleSound( void );
 	void	AlertSound( void );
 	void	AttackSound( void );
@@ -194,13 +204,13 @@ public:
 
 	void	Precache( void );
 	void	Spawn( void );
-	bool	QuerySeeEntity(CBaseEntity *pSightEnt, bool bOnlyHateOrFearIfNPC = false);
+	bool	QuerySeeEntity( CBaseEntity* pSightEnt, bool bOnlyHateOrFearIfNPC = false );
 
 	float	MaxYawSpeed( void );
 
 	void	PrescheduleThink( void );
-	void	RunTask( const Task_t *pTask );
-	void	StartTask( const Task_t *pTask );
+	void	RunTask( const Task_t* pTask );
+	void	StartTask( const Task_t* pTask );
 
 	int		SelectSchedule( void );
 	int		TranslateSchedule( int scheduleType );
@@ -212,14 +222,14 @@ public:
 	Vector	m_vecJumpVel;
 
 	void	BiteSound( void );
-	void	PainSound( const CTakeDamageInfo &info );
-	void	DeathSound( const CTakeDamageInfo &info );
+	void	PainSound( const CTakeDamageInfo& info );
+	void	DeathSound( const CTakeDamageInfo& info );
 	void	IdleSound( void );
 	void	AlertSound( void );
 	void	AttackSound( void );
 
 	enum SquadSlot_t
-	{	
+	{
 		SQUAD_SLOT_ENGAGE1 = LAST_SHARED_SQUADSLOT,
 		SQUAD_SLOT_ENGAGE2,
 		SQUAD_SLOT_ENGAGE3,
@@ -240,13 +250,13 @@ class CBlackHeadcrab : public CBaseHeadcrab
 	DECLARE_CLASS( CBlackHeadcrab, CBaseHeadcrab );
 
 public:
-	void Eject( const QAngle &vecAngles, float flVelocityScale, CBaseEntity *pEnemy );
-	void EjectTouch( CBaseEntity *pOther );
+	void Eject( const QAngle& vecAngles, float flVelocityScale, CBaseEntity* pEnemy );
+	void EjectTouch( CBaseEntity* pOther );
 
 	//
 	// CBaseHeadcrab implementation.
 	//
-	void TouchDamage( CBaseEntity *pOther );
+	void TouchDamage( CBaseEntity* pOther );
 	void BiteSound( void );
 	void AttackSound( void );
 
@@ -259,21 +269,24 @@ public:
 	virtual int TranslateSchedule( int scheduleType );
 
 	virtual Activity NPC_TranslateActivity( Activity eNewActivity );
-	virtual void HandleAnimEvent( animevent_t *pEvent );
+	virtual void HandleAnimEvent( animevent_t* pEvent );
 	virtual float MaxYawSpeed( void );
 
-	virtual int	GetSoundInterests( void ) { return (BaseClass::GetSoundInterests() | SOUND_DANGER | SOUND_BULLET_IMPACT); }
+	virtual int	GetSoundInterests( void )
+	{
+		return ( BaseClass::GetSoundInterests() | SOUND_DANGER | SOUND_BULLET_IMPACT );
+	}
 
-	bool IsHeavyDamage( const CTakeDamageInfo &info );
+	bool IsHeavyDamage( const CTakeDamageInfo& info );
 
-	virtual void PainSound( const CTakeDamageInfo &info );
-	virtual void DeathSound( const CTakeDamageInfo &info );
+	virtual void PainSound( const CTakeDamageInfo& info );
+	virtual void DeathSound( const CTakeDamageInfo& info );
 	virtual void IdleSound( void );
 	virtual void AlertSound( void );
 	virtual void ImpactSound( void );
 	virtual void TelegraphSound( void );
 #if HL2_EPISODIC
-	virtual bool FInViewCone( CBaseEntity *pEntity );
+	virtual bool FInViewCone( CBaseEntity* pEntity );
 #endif
 
 	//
@@ -288,7 +301,7 @@ public:
 private:
 
 
-	void JumpFlinch( const Vector *pvecAwayFromPos );
+	void JumpFlinch( const Vector* pvecAwayFromPos );
 	void Panic( float flDuration );
 
 	bool m_bPanicState;

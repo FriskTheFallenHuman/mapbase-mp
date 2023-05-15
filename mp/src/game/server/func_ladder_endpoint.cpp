@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -30,8 +30,10 @@ void CFuncLadderEndPoint::Activate()
 {
 	BaseClass::Activate();
 
-	if ( IsMarkedForDeletion() )
+	if( IsMarkedForDeletion() )
+	{
 		return;
+	}
 
 	Validate();
 }
@@ -40,9 +42,9 @@ bool CFuncLadderEndPoint::Validate()
 {
 	// Find the the other end
 	Vector startPos = GetAbsOrigin();
-	
-	CFuncLadderEndPoint *other = dynamic_cast< CFuncLadderEndPoint * >( GetNextTarget() );
-	if ( !other )
+
+	CFuncLadderEndPoint* other = dynamic_cast< CFuncLadderEndPoint* >( GetNextTarget() );
+	if( !other )
 	{
 		DevMsg( 1, "func_ladderendpoint(%s) without matching target\n", GetEntityName().ToCStr() );
 		return false;
@@ -50,8 +52,8 @@ bool CFuncLadderEndPoint::Validate()
 
 	Vector endPos = other->GetAbsOrigin();
 
-	CFuncLadder *ladder = ( CFuncLadder * )CreateEntityByName( "func_useableladder" );
-	if ( ladder )
+	CFuncLadder* ladder = ( CFuncLadder* )CreateEntityByName( "func_useableladder" );
+	if( ladder )
 	{
 		ladder->SetEndPoints( startPos, endPos );
 		ladder->SetAbsOrigin( GetAbsOrigin() );

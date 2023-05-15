@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=====================================================================================//
 
@@ -8,7 +8,7 @@
 #define MESHREADER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -26,25 +26,25 @@ public:
 	~CBaseMeshReader();
 
 	// Use BeginRead/EndRead to initialize the mesh reader.
-	void BeginRead( 
-		IMesh* pMesh, 
-		int firstVertex = 0, 
-		int numVertices = 0, 
-		int firstIndex = 0, 
+	void BeginRead(
+		IMesh* pMesh,
+		int firstVertex = 0,
+		int numVertices = 0,
+		int firstIndex = 0,
 		int numIndices = 0 );
-		
+
 	void EndRead();
 
 	// PC can use this if it stores its own copy of meshes around, in case
 	// locking static buffers is too costly.
-	void BeginRead_Direct( const MeshDesc_t &desc, int numVertices, int nIndices );
+	void BeginRead_Direct( const MeshDesc_t& desc, int numVertices, int nIndices );
 
 	// Resets the mesh builder so it points to the start of everything again
 	void Reset();
-	
+
 
 protected:
-	IMesh *m_pMesh;
+	IMesh* m_pMesh;
 	int m_MaxVertices;
 	int m_MaxIndices;
 };
@@ -62,19 +62,19 @@ public:
 	const Vector& Position( int iVertex ) const;
 
 	unsigned int Color( int iVertex ) const;
-	
-	const float *TexCoord( int iVertex, int stage ) const;
-	void TexCoord2f( int iVertex, int stage, float &s, float &t ) const;
+
+	const float* TexCoord( int iVertex, int stage ) const;
+	void TexCoord2f( int iVertex, int stage, float& s, float& t ) const;
 	const Vector2D& TexCoordVector2D( int iVertex, int stage ) const;
 
 	int NumBoneWeights() const;
 	float Wrinkle( int iVertex ) const;
 
-	const Vector &Normal( int iVertex ) const;
-	void Normal( int iVertex, Vector &vNormal ) const;
+	const Vector& Normal( int iVertex ) const;
+	void Normal( int iVertex, Vector& vNormal ) const;
 
-	const Vector &TangentS( int iVertex ) const;
-	const Vector &TangentT( int iVertex ) const;
+	const Vector& TangentS( int iVertex ) const;
+	const Vector& TangentT( int iVertex ) const;
 	float BoneWeight( int iVertex ) const;
 
 #ifdef NEW_SKINNING
@@ -99,21 +99,21 @@ inline CBaseMeshReader::~CBaseMeshReader()
 	Assert( !m_pMesh );
 }
 
-inline void CBaseMeshReader::BeginRead( 
-	IMesh* pMesh, 
-	int firstVertex, 
-	int numVertices, 
-	int firstIndex, 
+inline void CBaseMeshReader::BeginRead(
+	IMesh* pMesh,
+	int firstVertex,
+	int numVertices,
+	int firstIndex,
 	int numIndices )
 {
-	Assert( pMesh && (!m_pMesh) );
+	Assert( pMesh && ( !m_pMesh ) );
 
-	if ( numVertices < 0 )
+	if( numVertices < 0 )
 	{
 		numVertices = pMesh->VertexCount();
 	}
 
-	if ( numIndices < 0 )
+	if( numIndices < 0 )
 	{
 		numIndices = pMesh->IndexCount();
 	}
@@ -125,7 +125,7 @@ inline void CBaseMeshReader::BeginRead(
 	// UNDONE: support reading from compressed VBs if needed
 	VertexCompressionType_t compressionType = CompressionType( pMesh->GetVertexFormat() );
 	Assert( compressionType == VERTEX_COMPRESSION_NONE );
-	if ( compressionType != VERTEX_COMPRESSION_NONE )
+	if( compressionType != VERTEX_COMPRESSION_NONE )
 	{
 		Warning( "Cannot use CBaseMeshReader with compressed vertices! Will get junk data or a crash.\n" );
 	}
@@ -144,16 +144,16 @@ inline void CBaseMeshReader::EndRead()
 	m_pMesh = NULL;
 }
 
-inline void CBaseMeshReader::BeginRead_Direct( const MeshDesc_t &desc, int nVertices, int nIndices )
+inline void CBaseMeshReader::BeginRead_Direct( const MeshDesc_t& desc, int nVertices, int nIndices )
 {
-	MeshDesc_t *pThis = this;
+	MeshDesc_t* pThis = this;
 	*pThis = desc;
 	m_MaxVertices = nVertices;
 	m_MaxIndices = nIndices;
 
 	// UNDONE: support reading from compressed verts if necessary
 	Assert( desc.m_CompressionType == VERTEX_COMPRESSION_NONE );
-	if ( desc.m_CompressionType != VERTEX_COMPRESSION_NONE )
+	if( desc.m_CompressionType != VERTEX_COMPRESSION_NONE )
 	{
 		Warning( "Cannot use CBaseMeshReader with compressed vertices!\n" );
 	}
@@ -177,33 +177,33 @@ inline int CMeshReader::NumIndices() const
 
 inline unsigned short CMeshReader::Index( int index ) const
 {
-	Assert( (index >= 0) && (index < m_MaxIndices) );
+	Assert( ( index >= 0 ) && ( index < m_MaxIndices ) );
 	return m_pIndices[index * m_nIndexSize];
 }
 
 inline const Vector& CMeshReader::Position( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return *(Vector*)((char*)m_pPosition + iVertex * m_VertexSize_Position);
+	return *( Vector* )( ( char* )m_pPosition + iVertex * m_VertexSize_Position );
 }
 
 inline unsigned int CMeshReader::Color( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	unsigned char *pColor = m_pColor + iVertex * m_VertexSize_Color;
-	return (pColor[0] << 16) | (pColor[1] << 8) | (pColor[2]) | (pColor[3] << 24);
+	unsigned char* pColor = m_pColor + iVertex * m_VertexSize_Color;
+	return ( pColor[0] << 16 ) | ( pColor[1] << 8 ) | ( pColor[2] ) | ( pColor[3] << 24 );
 }
 
-inline const float *CMeshReader::TexCoord( int iVertex, int iStage ) const
+inline const float* CMeshReader::TexCoord( int iVertex, int iStage ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return (float*)( (char*)m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
+	return ( float* )( ( char* )m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
 }
 
-inline void CMeshReader::TexCoord2f( int iVertex, int iStage, float &s, float &t ) const
+inline void CMeshReader::TexCoord2f( int iVertex, int iStage, float& s, float& t ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	float *p = (float*)( (char*)m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
+	float* p = ( float* )( ( char* )m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
 	s = p[0];
 	t = p[1];
 }
@@ -211,14 +211,14 @@ inline void CMeshReader::TexCoord2f( int iVertex, int iStage, float &s, float &t
 inline const Vector2D& CMeshReader::TexCoordVector2D( int iVertex, int iStage ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	Vector2D *p = (Vector2D*)( (char*)m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
+	Vector2D* p = ( Vector2D* )( ( char* )m_pTexCoord[iStage] + iVertex * m_VertexSize_TexCoord[iStage] );
 	return *p;
 }
 
 inline float CMeshReader::Wrinkle( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return *(float*)( (char*)m_pWrinkle + iVertex * m_VertexSize_Wrinkle );
+	return *( float* )( ( char* )m_pWrinkle + iVertex * m_VertexSize_Wrinkle );
 }
 
 inline int CMeshReader::NumBoneWeights() const
@@ -226,35 +226,35 @@ inline int CMeshReader::NumBoneWeights() const
 	return m_NumBoneWeights;
 }
 
-inline const Vector &CMeshReader::Normal( int iVertex ) const
+inline const Vector& CMeshReader::Normal( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return *(const Vector *)(const float*)( (char*)m_pNormal + iVertex  * m_VertexSize_Normal );
+	return *( const Vector* )( const float* )( ( char* )m_pNormal + iVertex  * m_VertexSize_Normal );
 }
 
-inline void CMeshReader::Normal( int iVertex, Vector &vNormal ) const
+inline void CMeshReader::Normal( int iVertex, Vector& vNormal ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	const float *p = (const float*)( (char*)m_pNormal + iVertex * m_VertexSize_Normal );
+	const float* p = ( const float* )( ( char* )m_pNormal + iVertex * m_VertexSize_Normal );
 	vNormal.Init( p[0], p[1], p[2] );
 }
 
-inline const Vector &CMeshReader::TangentS( int iVertex ) const
+inline const Vector& CMeshReader::TangentS( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return *(const Vector*)( (char*)m_pTangentS + iVertex * m_VertexSize_TangentS );
+	return *( const Vector* )( ( char* )m_pTangentS + iVertex * m_VertexSize_TangentS );
 }
 
-inline const Vector &CMeshReader::TangentT( int iVertex ) const
+inline const Vector& CMeshReader::TangentT( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	return *(const Vector*)( (char*)m_pTangentT + iVertex * m_VertexSize_TangentT );
+	return *( const Vector* )( ( char* )m_pTangentT + iVertex * m_VertexSize_TangentT );
 }
 
 inline float CMeshReader::BoneWeight( int iVertex ) const
 {
 	Assert( iVertex >= 0 && iVertex < m_MaxVertices );
-	float *p = (float*)( (char*)m_pBoneWeight + iVertex * m_VertexSize_BoneWeight );
+	float* p = ( float* )( ( char* )m_pBoneWeight + iVertex * m_VertexSize_BoneWeight );
 	return *p;
 }
 

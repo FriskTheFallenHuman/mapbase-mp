@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef HLTVCAMERA_H
 #define HLTVCAMERA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "GameEventListener.h"
@@ -21,34 +21,40 @@ public:
 	void Init();
 	void Reset();
 
-	void CalcView(Vector& origin, QAngle& angles, float& fov);
-	void FireGameEvent( IGameEvent *event );
+	void CalcView( Vector& origin, QAngle& angles, float& fov );
+	void FireGameEvent( IGameEvent* event );
 
-	void SetMode(int iMode);
-	void SetChaseCamParams( float flOffset, float flDistance, float flTheta, float flPhi  );
+	void SetMode( int iMode );
+	void SetChaseCamParams( float flOffset, float flDistance, float flTheta, float flPhi );
 	void SpecNextPlayer( bool bInverse );
-	void SpecNamedPlayer( const char *szPlayerName );
+	void SpecNamedPlayer( const char* szPlayerName );
 	void ToggleChaseAsFirstPerson();
 	bool IsPVSLocked();
 	void SetAutoDirector( bool bActive );
-	
-	int  GetMode();	// returns current camera mode
-	C_BaseEntity *GetPrimaryTarget();  // return primary target
-	void SetPrimaryTarget( int nEntity); // set the primary obs target
-	C_BaseEntity *GetCameraMan();  // return camera entity if any
 
-	void CreateMove(CUserCmd *cmd);
+	int  GetMode();	// returns current camera mode
+	C_BaseEntity* GetPrimaryTarget();  // return primary target
+	void SetPrimaryTarget( int nEntity ); // set the primary obs target
+	C_BaseEntity* GetCameraMan();  // return camera entity if any
+
+	void CreateMove( CUserCmd* cmd );
 	void FixupMovmentParents();
 	void PostEntityPacketReceived();
-	const char* GetTitleText() { return m_szTitleText; }
-	int  GetNumSpectators() { return m_nNumSpectators; }
-			
+	const char* GetTitleText()
+	{
+		return m_szTitleText;
+	}
+	int  GetNumSpectators()
+	{
+		return m_nNumSpectators;
+	}
+
 protected:
 
 	void CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov );
 	void CalcFixedView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov );
 	void CalcInEyeCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov );
-	void CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov);
+	void CalcRoamingView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov );
 
 	void SmoothCameraAngle( QAngle& targetAngle );
 	void SetCameraAngle( QAngle& targetAngle );
@@ -64,7 +70,7 @@ protected:
 	float		m_flOffset;  // z-offset from target origin
 	float		m_flDistance; // distance to traget origin+offset
 	float		m_flLastDistance; // too smooth distance
-	float		m_flTheta; // view angle horizontal 
+	float		m_flTheta; // view angle horizontal
 	float		m_flPhi; // view angle vertical
 	float		m_flInertia; // camera inertia 0..100
 	float		m_flLastAngleUpdateTime;
@@ -76,7 +82,7 @@ protected:
 };
 
 
-extern C_HLTVCamera *HLTVCamera();	// get Singleton
+extern C_HLTVCamera* HLTVCamera();	// get Singleton
 
 
 

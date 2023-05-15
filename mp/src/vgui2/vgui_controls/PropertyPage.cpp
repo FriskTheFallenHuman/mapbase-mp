@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,7 +21,7 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-PropertyPage::PropertyPage(Panel *parent, const char *panelName) : EditablePanel(parent, panelName)
+PropertyPage::PropertyPage( Panel* parent, const char* panelName ) : EditablePanel( parent, panelName )
 {
 }
 
@@ -61,54 +61,58 @@ void PropertyPage::OnPageHide()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pageTab - 
+// Purpose:
+// Input  : *pageTab -
 //-----------------------------------------------------------------------------
-void PropertyPage::OnPageTabActivated(Panel *pageTab)
+void PropertyPage::OnPageTabActivated( Panel* pageTab )
 {
 	_pageTab = pageTab;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void PropertyPage::OnKeyCodeTyped(KeyCode code)
+void PropertyPage::OnKeyCodeTyped( KeyCode code )
 {
-	switch (code)
+	switch( code )
 	{
-        // left and right only get propogated to parents if our tab has focus
-	case KEY_RIGHT:
+		// left and right only get propogated to parents if our tab has focus
+		case KEY_RIGHT:
 		{
-            if (_pageTab != 0 && _pageTab->HasFocus())
-                BaseClass::OnKeyCodeTyped(code);
+			if( _pageTab != 0 && _pageTab->HasFocus() )
+			{
+				BaseClass::OnKeyCodeTyped( code );
+			}
 			break;
 		}
-	case KEY_LEFT:
+		case KEY_LEFT:
 		{
-            if (_pageTab != 0 && _pageTab->HasFocus())
-                BaseClass::OnKeyCodeTyped(code);
+			if( _pageTab != 0 && _pageTab->HasFocus() )
+			{
+				BaseClass::OnKeyCodeTyped( code );
+			}
 			break;
 		}
-	default:
-		BaseClass::OnKeyCodeTyped(code);
-		break;
+		default:
+			BaseClass::OnKeyCodeTyped( code );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void PropertyPage::SetVisible(bool state)
+void PropertyPage::SetVisible( bool state )
 {
-    if (IsVisible() && !state)
-    {
-        // if we're going away and we have a current button, get rid of it
-        if (GetFocusNavGroup().GetCurrentDefaultButton())
-        {
-            GetFocusNavGroup().SetCurrentDefaultButton(NULL);
-        }
-    }
+	if( IsVisible() && !state )
+	{
+		// if we're going away and we have a current button, get rid of it
+		if( GetFocusNavGroup().GetCurrentDefaultButton() )
+		{
+			GetFocusNavGroup().SetCurrentDefaultButton( NULL );
+		}
+	}
 
-    BaseClass::SetVisible(state);
+	BaseClass::SetVisible( state );
 }
 

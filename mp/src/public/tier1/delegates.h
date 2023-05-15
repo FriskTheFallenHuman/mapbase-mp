@@ -8,7 +8,7 @@
 #define DELEGATES_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #define DELEGATE_TO_OBJECT_0( RetType, FuncName, pDelegated ) RetType FuncName()	{ return (pDelegated)->FuncName(); }

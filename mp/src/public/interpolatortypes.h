@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef INTERPOLATORTYPES_H
 #define INTERPOLATORTYPES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class Quaternion;
@@ -16,18 +16,18 @@ enum
 {
 	INTERPOLATE_DEFAULT = 0,
 	INTERPOLATE_CATMULL_ROM_NORMALIZEX,
-	INTERPOLATE_EASE_IN,								
-	INTERPOLATE_EASE_OUT,								
-	INTERPOLATE_EASE_INOUT,			
-	INTERPOLATE_BSPLINE,							
-	INTERPOLATE_LINEAR_INTERP,				
-	INTERPOLATE_KOCHANEK_BARTELS,			
-	INTERPOLATE_KOCHANEK_BARTELS_EARLY,	
+	INTERPOLATE_EASE_IN,
+	INTERPOLATE_EASE_OUT,
+	INTERPOLATE_EASE_INOUT,
+	INTERPOLATE_BSPLINE,
+	INTERPOLATE_LINEAR_INTERP,
+	INTERPOLATE_KOCHANEK_BARTELS,
+	INTERPOLATE_KOCHANEK_BARTELS_EARLY,
 	INTERPOLATE_KOCHANEK_BARTELS_LATE,
 	INTERPOLATE_SIMPLE_CUBIC,
 
 	INTERPOLATE_CATMULL_ROM,
-	INTERPOLATE_CATMULL_ROM_NORMALIZE,	
+	INTERPOLATE_CATMULL_ROM_NORMALIZE,
 	INTERPOLATE_CATMULL_ROM_TANGENT,
 
 	INTERPOLATE_EXPONENTIAL_DECAY,
@@ -61,42 +61,42 @@ enum
 };
 
 // Turn enum into string and vice versa
-int			Interpolator_CurveTypeForName( const char *name );
-const char	*Interpolator_NameForCurveType( int type, bool printname );
+int			Interpolator_CurveTypeForName( const char* name );
+const char*	Interpolator_NameForCurveType( int type, bool printname );
 void		Interpolator_CurveInterpolatorsForType( int type, int& inbound, int& outbound );
 int			Interpolator_CurveTypeForHotkey( int key );
 
-int			Interpolator_InterpolatorForName( char const *name );
-char const	*Interpolator_NameForInterpolator( int type, bool printname );
+int			Interpolator_InterpolatorForName( char const* name );
+char const*	Interpolator_NameForInterpolator( int type, bool printname );
 
 void		Interpolator_GetKochanekBartelsParams( int interpolatorType, float& tension, float& bias, float& continuity );
 
 class Vector;
 // Main spline interpolation function, assumes .x holds time and .y holds one dimensional value
 void Interpolator_CurveInterpolate( int interpolationType,
-	const Vector &vPre,
-	const Vector &vStart,
-	const Vector &vEnd,
-	const Vector &vNext,
-	float f,
-	Vector &vOut );
+									const Vector& vPre,
+									const Vector& vStart,
+									const Vector& vEnd,
+									const Vector& vNext,
+									float f,
+									Vector& vOut );
 
 // Main spline interpolation function for Vectors, doesn't assume time is in .x and doesn't do normalization
 void Interpolator_CurveInterpolate_NonNormalized( int interpolationType,
-	const Vector &vPre,
-	const Vector &vStart,
-	const Vector &vEnd,
-	const Vector &vNext,
-	float f,
-	Vector &vOut );
+		const Vector& vPre,
+		const Vector& vStart,
+		const Vector& vEnd,
+		const Vector& vNext,
+		float f,
+		Vector& vOut );
 
 // Main spline interpolation function for Vectors, doesn't assume time is in .x and doesn't do normalization
 void Interpolator_CurveInterpolate_NonNormalized( int interpolationType,
-												 const Quaternion &vPre,
-												 const Quaternion &vStart,
-												 const Quaternion &vEnd,
-												 const Quaternion &vNext,
-												 float f,
-												 Quaternion &vOut );
+		const Quaternion& vPre,
+		const Quaternion& vStart,
+		const Quaternion& vEnd,
+		const Quaternion& vNext,
+		float f,
+		Quaternion& vOut );
 
 #endif // INTERPOLATORTYPES_H

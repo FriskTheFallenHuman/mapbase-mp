@@ -9,7 +9,7 @@
 #define NPC_HYDRA_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -81,10 +81,10 @@ public:
 
 	void		PrescheduleThink( void );
 
-	void        HandleAnimEvent( animevent_t *pEvent );
+	void        HandleAnimEvent( animevent_t* pEvent );
 
-	void		StartTask( const Task_t *pTask );
-	void		RunTask( const Task_t *pTask );
+	void		StartTask( const Task_t* pTask );
+	void		RunTask( const Task_t* pTask );
 
 #define			CHAIN_LINKS 32
 
@@ -116,19 +116,19 @@ public:
 	void		CheckLength( void );
 
 	bool		m_bExtendSoundActive;
-	CSoundPatch		*m_pExtendTentacleSound;
+	CSoundPatch*		m_pExtendTentacleSound;
 
-	void		Nudge( CBaseEntity *pHitEntity, const Vector &vecContact, const Vector &vecSpeed );
-	void		Stab( CBaseEntity *pHitEntity, const Vector &vecSpeed, trace_t &ptr );
-	void		Kick( CBaseEntity *pHitEntity, const Vector &vecContact, const Vector &vecSpeed );
-	void		Splash( const Vector &vecSplashPos );
+	void		Nudge( CBaseEntity* pHitEntity, const Vector& vecContact, const Vector& vecSpeed );
+	void		Stab( CBaseEntity* pHitEntity, const Vector& vecSpeed, trace_t& ptr );
+	void		Kick( CBaseEntity* pHitEntity, const Vector& vecContact, const Vector& vecSpeed );
+	void		Splash( const Vector& vecSplashPos );
 
 	// float		FreeNeckLength( void );
 
 	virtual Vector		EyePosition( void );
-	virtual const QAngle &EyeAngles( void );
+	virtual const QAngle& EyeAngles( void );
 
-	virtual	Vector		BodyTarget( const Vector &posSrc, bool bNoisy) ;
+	virtual	Vector		BodyTarget( const Vector& posSrc, bool bNoisy ) ;
 
 	void		AimHeadInTravelDirection( float flInfluence );
 
@@ -162,10 +162,10 @@ public:
 
 	bool		IsValidConnection( int iNode0, int iNode1 );
 
-	void		AttachStabbedEntity( CBaseAnimating *pAnimating, Vector vecForce, trace_t &tr );
+	void		AttachStabbedEntity( CBaseAnimating* pAnimating, Vector vecForce, trace_t& tr );
 	void		UpdateStabbedEntity( void );
 	void		DetachStabbedEntity( bool playSound );
-	void		GetDesiredImpaledPosition( Vector *vecOrigin, QAngle *vecAngles );
+	void		GetDesiredImpaledPosition( Vector* vecOrigin, QAngle* vecAngles );
 
 	bool		m_bStabbedEntity;
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,8 +23,9 @@
 #define SIMSHIFT	10
 
 
-typedef enum {
-	pt_static, 
+typedef enum
+{
+	pt_static,
 	pt_grav,
 	pt_slowgrav,
 	pt_fire,
@@ -48,7 +49,7 @@ public:
 	DECLARE_CLASS( C_TEParticleSystem, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEParticleSystem();
+	C_TEParticleSystem();
 
 
 public:
@@ -71,29 +72,29 @@ public:
 	virtual						~CTEParticleRenderer();
 
 	// Create a CTEParticleRenderer. Pass in your sort origin (m_vecOrigin).
-	static CSmartPtr<CTEParticleRenderer>	Create( const char *pDebugName, const Vector &vOrigin );
+	static CSmartPtr<CTEParticleRenderer>	Create( const char* pDebugName, const Vector& vOrigin );
 
 	StandardParticle_t*		AddParticle();
 
 	CParticleMgr*			GetParticleMgr();
 
-	void					SetParticleType( StandardParticle_t *pParticle, ptype_t type );
-	ptype_t					GetParticleType( StandardParticle_t *pParticle );
+	void					SetParticleType( StandardParticle_t* pParticle, ptype_t type );
+	ptype_t					GetParticleType( StandardParticle_t* pParticle );
 
-	// Get/set lifetime. Note: lifetime here is a counter. You set it to a value and it 
+	// Get/set lifetime. Note: lifetime here is a counter. You set it to a value and it
 	// counts down and disappears after that long.
-	void					SetParticleLifetime( StandardParticle_t *pParticle, float lifetime );
-	float					GetParticleLifetime( StandardParticle_t *pParticle );
+	void					SetParticleLifetime( StandardParticle_t* pParticle, float lifetime );
+	float					GetParticleLifetime( StandardParticle_t* pParticle );
 
 
-// IParticleEffect overrides.	
+// IParticleEffect overrides.
 public:
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 private:
-					CTEParticleRenderer( const char *pDebugName );
-					CTEParticleRenderer( const CTEParticleRenderer & ); // not defined, not accessible
+	CTEParticleRenderer( const char* pDebugName );
+	CTEParticleRenderer( const CTEParticleRenderer& );  // not defined, not accessible
 
 	int				m_nActiveParticles;
 	float			m_ParticleSize;
@@ -105,23 +106,23 @@ private:
 // ------------------------------------------------------------------------ //
 // Inlines.
 // ------------------------------------------------------------------------ //
-inline void CTEParticleRenderer::SetParticleType(StandardParticle_t *pParticle, ptype_t type)
+inline void CTEParticleRenderer::SetParticleType( StandardParticle_t* pParticle, ptype_t type )
 {
-	pParticle->m_EffectData = (unsigned char)type;
+	pParticle->m_EffectData = ( unsigned char )type;
 }
 
-inline ptype_t CTEParticleRenderer::GetParticleType(StandardParticle_t *pParticle)
+inline ptype_t CTEParticleRenderer::GetParticleType( StandardParticle_t* pParticle )
 {
-	return (ptype_t)pParticle->m_EffectData;
+	return ( ptype_t )pParticle->m_EffectData;
 }
 
-// Get/set lifetime. Note that 
-inline void CTEParticleRenderer::SetParticleLifetime(StandardParticle_t *pParticle, float lifetime)
+// Get/set lifetime. Note that
+inline void CTEParticleRenderer::SetParticleLifetime( StandardParticle_t* pParticle, float lifetime )
 {
 	pParticle->m_Lifetime = lifetime;
 }
 
-inline float CTEParticleRenderer::GetParticleLifetime(StandardParticle_t *pParticle)
+inline float CTEParticleRenderer::GetParticleLifetime( StandardParticle_t* pParticle )
 {
 	return pParticle->m_Lifetime;
 }

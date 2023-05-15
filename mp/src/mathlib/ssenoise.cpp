@@ -23,16 +23,16 @@
 static fltx4 Four_MagicNumbers = { MAGIC_NUMBER, MAGIC_NUMBER, MAGIC_NUMBER, MAGIC_NUMBER };
 
 
-static ALIGN16 int32 idx_mask[4]= {0xffff, 0xffff, 0xffff, 0xffff};
+static ALIGN16 int32 idx_mask[4] = {0xffff, 0xffff, 0xffff, 0xffff};
 
 #define MASK255 (*((fltx4 *)(& idx_mask )))
 
 // returns 0..1
 static inline float GetLatticePointValue( int idx_x, int idx_y, int idx_z )
 {
-	NOTE_UNUSED(perm_d);
-	NOTE_UNUSED(impulse_ycoords);
-	NOTE_UNUSED(impulse_zcoords);
+	NOTE_UNUSED( perm_d );
+	NOTE_UNUSED( impulse_ycoords );
+	NOTE_UNUSED( impulse_zcoords );
 
 	int ret_idx = perm_a[idx_x & 0xff];
 	ret_idx = perm_b[( idx_y + ret_idx ) & 0xff];
@@ -41,7 +41,7 @@ static inline float GetLatticePointValue( int idx_x, int idx_y, int idx_z )
 
 }
 
-fltx4 NoiseSIMD( const fltx4 & x, const fltx4 & y, const fltx4 & z )
+fltx4 NoiseSIMD( const fltx4& x, const fltx4& y, const fltx4& z )
 {
 	// use magic to convert to integer index
 	fltx4 x_idx = AndSIMD( MASK255, AddSIMD( x, Four_MagicNumbers ) );
@@ -103,7 +103,7 @@ fltx4 NoiseSIMD( const fltx4 & x, const fltx4 & y, const fltx4 & z )
 
 }
 
-fltx4 NoiseSIMD( FourVectors const &pos )
+fltx4 NoiseSIMD( FourVectors const& pos )
 {
 	return NoiseSIMD( pos.x, pos.y, pos.z );
 }

@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2009, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=====================================================================================//
 
@@ -18,12 +18,27 @@ public:
 	C_MovieDisplay();
 	~C_MovieDisplay();
 
-	bool IsEnabled( void ) const { return m_bEnabled; }
-	bool IsLooping( void ) const { return m_bLooping; }
-	bool IsMuted(void) const { return m_bMuted; }
+	bool IsEnabled( void ) const
+	{
+		return m_bEnabled;
+	}
+	bool IsLooping( void ) const
+	{
+		return m_bLooping;
+	}
+	bool IsMuted( void ) const
+	{
+		return m_bMuted;
+	}
 
-	const char *GetMovieFilename( void ) const { return m_szMovieFilename; }
-	const char *GetGroupName( void ) const { return m_szGroupName; }
+	const char* GetMovieFilename( void ) const
+	{
+		return m_szMovieFilename;
+	}
+	const char* GetGroupName( void ) const
+	{
+		return m_szGroupName;
+	}
 
 private:
 	bool	m_bEnabled;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		TRIPWIRE 
+// Purpose:		TRIPWIRE
 //
 //=============================================================================//
 #include "cbase.h"
@@ -37,19 +37,19 @@ BEGIN_NETWORK_TABLE( CWeaponTripwire, DT_WeaponTripwire )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponTripwire )
+	BEGIN_PREDICTION_DATA( CWeaponTripwire )
 	DEFINE_PRED_FIELD( m_bNeedReload, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bClearReload, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bAttachTripwire, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 #ifndef CLIENT_DLL
-BEGIN_DATADESC( CWeaponTripwire )
+	BEGIN_DATADESC( CWeaponTripwire )
 	DEFINE_FIELD( m_bNeedReload, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bClearReload, FIELD_BOOLEAN ),
 	DEFINE_FIELD( m_bAttachTripwire, FIELD_BOOLEAN ),
-END_DATADESC()
+	END_DATADESC()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_tripwire, CWeaponTripwire );
@@ -58,7 +58,7 @@ PRECACHE_WEAPON_REGISTER( weapon_tripwire );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponTripwire::m_acttable[] = 
+acttable_t	CWeaponTripwire::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_TRIPWIRE,				true },
 
@@ -123,11 +123,11 @@ void CWeaponTripwire::Precache( void )
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-bool CWeaponTripwire::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponTripwire::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	SetThink( NULL );
 
-	return BaseClass::Holster(pSwitchingTo);
+	return BaseClass::Holster( pSwitchingTo );
 }
 
 //-----------------------------------------------------------------------------
@@ -144,15 +144,21 @@ bool CWeaponTripwire::Reload( void )
 //-----------------------------------------------------------------------------
 void CWeaponTripwire::PrimaryAttack( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if ( !pOwner )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
+	{
 		return;
+	}
 
-	if ( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	{
 		return;
+	}
 
-	if ( CanAttachTripwire() )
+	if( CanAttachTripwire() )
+	{
 		StartTripwireAttach();
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -160,27 +166,29 @@ void CWeaponTripwire::PrimaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeaponTripwire::TripwireAttach( void )
 {
-	CHL2MP_Player *pOwner  = ToHL2MPPlayer( GetOwner() );
-	if ( !pOwner )
+	CHL2MP_Player* pOwner  = ToHL2MPPlayer( GetOwner() );
+	if( !pOwner )
+	{
 		return;
+	}
 
 	Vector vecSrc, vecAiming;
 
 	// Take the eye position and direction
 	vecSrc = pOwner->EyePosition();
-	
+
 	QAngle angles = pOwner->GetLocalAngles();
 
 	AngleVectors( angles, &vecAiming );
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
 
-	if ( tr.fraction < 1.0 )
+	if( tr.fraction < 1.0 )
 	{
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if ( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 #ifndef CLIENT_DLL
 			QAngle angles;
@@ -188,14 +196,16 @@ void CWeaponTripwire::TripwireAttach( void )
 
 			angles.x += 90;
 
-			CBaseEntity *pEnt = CBaseEntity::Create( "npc_tripwire", tr.endpos + tr.plane.normal * 3, angles, NULL );
-			if ( pEnt )
+			CBaseEntity* pEnt = CBaseEntity::Create( "npc_tripwire", tr.endpos + tr.plane.normal * 3, angles, NULL );
+			if( pEnt )
 			{
-				CTripwireGrenade *pWire = (CTripwireGrenade *)pEnt;
+				CTripwireGrenade* pWire = ( CTripwireGrenade* )pEnt;
 #if !defined(NO_STEAM)
 				CBasePlayer* pPlayer = dynamic_cast< CBasePlayer* >( pOwner );
-				if ( pPlayer )
+				if( pPlayer )
+				{
 					pWire->SetSteamID( pPlayer->GetSteamIDAsUInt64() );
+				}
 #endif
 				//pWire->m_hOwner = GetOwner();
 				pWire->SetThrower( GetOwner() );
@@ -214,29 +224,31 @@ void CWeaponTripwire::TripwireAttach( void )
 void CWeaponTripwire::StartTripwireAttach( void )
 {
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	Vector vecSrc, vecAiming;
 
 	// Take the eye position and direction
 	vecSrc = pPlayer->EyePosition();
-	
+
 	QAngle angles = pPlayer->GetLocalAngles();
 
 	AngleVectors( angles, &vecAiming );
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
-	
-	if ( tr.fraction < 1.0 )
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
+
+	if( tr.fraction < 1.0 )
 	{
 		ConColorMsg( Color( 6, 255, 0, 255 ), "[StartTripwireAttach] hitting: %f\n", tr.fraction );
 
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if ( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 			// player "shoot" animation
 			pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -248,7 +260,7 @@ void CWeaponTripwire::StartTripwireAttach( void )
 			// -----------------------------------------
 			//  Play attach animation
 			// -----------------------------------------
-			SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH);
+			SendWeaponAnim( ACT_SLAM_TRIPMINE_ATTACH );
 
 			m_bNeedReload		= true;
 			m_bAttachTripwire	= true;
@@ -258,7 +270,7 @@ void CWeaponTripwire::StartTripwireAttach( void )
 			ConColorMsg( Color( 0, 255, 210, 255 ), "[StartTripwireAttach] no deploy\n" );
 		}
 	}
-	
+
 	// needs a higher delay on all of these, a minimum time really - to elimiate refires.
 	m_flNextPrimaryAttack	= 0.05f + gpGlobals->curtime + SequenceDuration();
 }
@@ -268,15 +280,17 @@ void CWeaponTripwire::StartTripwireAttach( void )
 //-----------------------------------------------------------------------------
 bool CWeaponTripwire::CanAttachTripwire( void )
 {
-	CHL2MP_Player *pOwner = ToHL2MPPlayer( GetOwner() );
-	if ( !pOwner )
+	CHL2MP_Player* pOwner = ToHL2MPPlayer( GetOwner() );
+	if( !pOwner )
+	{
 		return false;
+	}
 
 	Vector vecSrc, vecAiming;
 
 	// Take the eye position and direction
 	vecSrc = pOwner->EyePosition();
-	
+
 	QAngle angles = pOwner->GetLocalAngles();
 
 	AngleVectors( angles, &vecAiming );
@@ -285,21 +299,25 @@ bool CWeaponTripwire::CanAttachTripwire( void )
 
 	Vector	vecEnd = vecSrc + ( vecAiming * 42 );
 	UTIL_TraceLine( vecSrc, vecEnd, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if ( tr.fraction < 1.0 )
+
+	if( tr.fraction < 1.0 )
 	{
 		// Don't attach to a living creature
-		if ( tr.m_pEnt )
+		if( tr.m_pEnt )
 		{
-			CBaseEntity *pEntity = tr.m_pEnt;
-			CBaseCombatCharacter *pBCC = ToBaseCombatCharacter( pEntity );
-			if ( pBCC )
+			CBaseEntity* pEntity = tr.m_pEnt;
+			CBaseCombatCharacter* pBCC = ToBaseCombatCharacter( pEntity );
+			if( pBCC )
+			{
 				return false;
+			}
 
 			//block attaching to another grenade
 			CBaseGrenade* pGrenade = dynamic_cast< CBaseGrenade* >( pEntity );
-			if ( pGrenade )
+			if( pGrenade )
+			{
 				return false;
+			}
 		}
 		return true;
 	}
@@ -310,32 +328,34 @@ bool CWeaponTripwire::CanAttachTripwire( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
 void CWeaponTripwire::ItemPostFrame( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if ( !pOwner )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+	if( !pOwner )
+	{
 		return;
+	}
 
 #ifdef MAPBASE
-	if ( pOwner->HasSpawnFlags( SF_PLAYER_SUPPRESS_FIRING ) )
+	if( pOwner->HasSpawnFlags( SF_PLAYER_SUPPRESS_FIRING ) )
 	{
 		WeaponIdle();
 		return;
 	}
 #endif
 
-	if ( !m_bNeedReload && ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	if( !m_bNeedReload && ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		PrimaryAttack();
 	}
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	else 
+	else
 	{
 		WeaponIdle( );
 		return;
@@ -348,29 +368,31 @@ void CWeaponTripwire::ItemPostFrame( void )
 void CWeaponTripwire::WeaponIdle( void )
 {
 	// Ready to switch animations?
-	if ( HasWeaponIdleTimeElapsed() )
+	if( HasWeaponIdleTimeElapsed() )
 	{
-		if ( m_bClearReload )
+		if( m_bClearReload )
 		{
 			m_bNeedReload  = false;
 			m_bClearReload = false;
 		}
 
-		CBaseCombatCharacter *pOwner  = GetOwner();
-		if ( !pOwner )
+		CBaseCombatCharacter* pOwner  = GetOwner();
+		if( !pOwner )
+		{
 			return;
+		}
 
 		int iAnim = 0;
 
-		if ( m_bAttachTripwire )
+		if( m_bAttachTripwire )
 		{
 			TripwireAttach();
 			iAnim = ACT_SLAM_TRIPMINE_ATTACH2;
-		}	
-		else if ( m_bNeedReload )
-		{	
+		}
+		else if( m_bNeedReload )
+		{
 			// If owner had ammo draw the correct tripwire type
-			if ( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
+			if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 			{
 				iAnim = ACT_SLAM_TRIPMINE_DRAW;
 				m_bClearReload = true;
@@ -383,7 +405,7 @@ void CWeaponTripwire::WeaponIdle( void )
 #endif // GAME_DLL
 			}
 		}
-		else if (pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0)
+		else if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 		{
 #ifdef GAME_DLL
 			pOwner->Weapon_Drop( this );
@@ -406,22 +428,24 @@ void CWeaponTripwire::WeaponIdle( void )
 //-----------------------------------------------------------------------------
 bool CWeaponTripwire::Deploy( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if ( !pOwner )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
+	{
 		return false;
+	}
 
 	SetModel( GetViewModel() );
 
 	// If detonator is already armed
 	m_bNeedReload = false;
 
-	return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), ACT_SLAM_STICKWALL_ND_DRAW, (char*)GetAnimPrefix() );
+	return DefaultDeploy( ( char* )GetViewModel(), ( char* )GetWorldModel(), ACT_SLAM_STICKWALL_ND_DRAW, ( char* )GetAnimPrefix() );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CWeaponTripwire::CWeaponTripwire(void)
+CWeaponTripwire::CWeaponTripwire( void )
 {
 	m_bNeedReload = true;
 	m_bClearReload = false;

@@ -8,7 +8,7 @@
 #ifndef VSCRIPT_VGUI_H
 #define VSCRIPT_VGUI_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 void RegisterScriptVGUI();

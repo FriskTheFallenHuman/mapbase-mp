@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef TRIGGER_AREA_CAPTURE_H
 #define TRIGGER_AREA_CAPTURE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basemultiplayerplayer.h"
@@ -35,9 +35,12 @@ class CTeamTrainWatcher;
 // This class is to get around the fact that DEFINE_FUNCTION doesn't like multiple inheritance
 class CTriggerAreaCaptureShim : public CBaseTrigger
 {
-	virtual void AreaTouch( CBaseEntity *pOther ) = 0;
+	virtual void AreaTouch( CBaseEntity* pOther ) = 0;
 public:
-	void	Touch( CBaseEntity *pOther ) { return AreaTouch( pOther ) ; }
+	void	Touch( CBaseEntity* pOther )
+	{
+		return AreaTouch( pOther ) ;
+	}
 };
 
 DECLARE_AUTO_LIST( ITriggerAreaCaptureAutoList );
@@ -51,19 +54,28 @@ public:
 	// Derived, game-specific area triggers must override these functions
 public:
 	// Display a hint about capturing zones to the player
-	virtual void DisplayCapHintTo( CBaseMultiplayerPlayer *pPlayer ) { return; }
+	virtual void DisplayCapHintTo( CBaseMultiplayerPlayer* pPlayer )
+	{
+		return;
+	}
 
 	// A team has finished capturing the zone.
-	virtual void OnEndCapture( int iTeam ) { return; }
-	virtual void OnStartCapture( int iTeam ) { return; }
+	virtual void OnEndCapture( int iTeam )
+	{
+		return;
+	}
+	virtual void OnStartCapture( int iTeam )
+	{
+		return;
+	}
 
 public:
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
 	bool	IsActive( void );
-	bool	CheckIfDeathCausesBlock( CBaseMultiplayerPlayer *pVictim, CBaseMultiplayerPlayer *pKiller );
+	bool	CheckIfDeathCausesBlock( CBaseMultiplayerPlayer* pVictim, CBaseMultiplayerPlayer* pKiller );
 
 	void	UpdateNumPlayers( bool bBlocked = false );
 	void	UpdateOwningTeam( void );
@@ -73,27 +85,48 @@ public:
 
 	void	ForceOwner( int team ); // by the control_point_round to force an owner of this point (so we can play a specific round)
 
-	bool	TeamCanCap( int iTeam ){ return m_TeamData[iTeam].bCanCap; }
-	CHandle<CTeamControlPoint> GetControlPoint( void ){ return m_hPoint; }
+	bool	TeamCanCap( int iTeam )
+	{
+		return m_TeamData[iTeam].bCanCap;
+	}
+	CHandle<CTeamControlPoint> GetControlPoint( void )
+	{
+		return m_hPoint;
+	}
 
-	int		GetOwningTeam( void ) { return m_nOwningTeam; }
+	int		GetOwningTeam( void )
+	{
+		return m_nOwningTeam;
+	}
 
-	bool	IsBlocked( void ) { return m_bBlocked; }
+	bool	IsBlocked( void )
+	{
+		return m_bBlocked;
+	}
 
-	void	SetTrainWatcher( CTeamTrainWatcher *pTrainWatcher ){ m_hTrainWatcher = pTrainWatcher; } // used for train watchers that control train movement
-	CTeamTrainWatcher *GetTrainWatcher( void ) const { return m_hTrainWatcher; }
+	void	SetTrainWatcher( CTeamTrainWatcher* pTrainWatcher )
+	{
+		m_hTrainWatcher = pTrainWatcher;    // used for train watchers that control train movement
+	}
+	CTeamTrainWatcher* GetTrainWatcher( void ) const
+	{
+		return m_hTrainWatcher;
+	}
 
-	virtual void StartTouch(CBaseEntity *pOther) OVERRIDE;
-	virtual void EndTouch(CBaseEntity *pOther) OVERRIDE;
+	virtual void StartTouch( CBaseEntity* pOther ) OVERRIDE;
+	virtual void EndTouch( CBaseEntity* pOther ) OVERRIDE;
 
-	float GetCapTime() const { return m_flCapTime; }
+	float GetCapTime() const
+	{
+		return m_flCapTime;
+	}
 
 protected:
 
 	virtual bool CaptureModeScalesWithPlayers() const;
 
 private:
-	virtual void AreaTouch( CBaseEntity *pOther ) OVERRIDE;
+	virtual void AreaTouch( CBaseEntity* pOther ) OVERRIDE;
 	void	CaptureThink( void );
 
 	void	StartCapture( int team, int capmode );
@@ -104,16 +137,16 @@ private:
 	void	SendNumPlayers( void );
 
 	void	SetOwner( int team );	//sets the owner of this point - useful for resetting all to -1
-	
-	void	InputRoundSpawn( inputdata_t &inputdata );
-	void	InputCaptureCurrentCP( inputdata_t &inputdata );
-	void	InputSetTeamCanCap( inputdata_t &inputdata );
-	void	InputSetControlPoint( inputdata_t &inputdata );
-	
+
+	void	InputRoundSpawn( inputdata_t& inputdata );
+	void	InputCaptureCurrentCP( inputdata_t& inputdata );
+	void	InputSetTeamCanCap( inputdata_t& inputdata );
+	void	InputSetControlPoint( inputdata_t& inputdata );
+
 	void	SetCapTimeRemaining( float flTime );
 
 	void	HandleRespawnTimeAdjustments( int oldTeam, int newTeam );
-	void	GetNumCappingPlayers( int team, int &numcappers, int *cappingplayers );
+	void	GetNumCappingPlayers( int team, int& numcappers, int* cappingplayers );
 
 	void	SetNumCappers( int nNumCappers, bool bBlocked = false );
 
@@ -169,7 +202,7 @@ private:
 	COutputEvent m_StartOutput;
 	COutputEvent m_BreakOutput;
 	COutputEvent m_CapOutput;
-	
+
 	COutputInt m_OnNumCappersChanged;
 	COutputInt m_OnNumCappersChanged2;
 

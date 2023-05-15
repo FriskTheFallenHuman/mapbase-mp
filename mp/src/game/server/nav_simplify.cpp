@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -20,10 +20,12 @@ extern ConVar nav_coplanar_slope_limit;
 extern ConVar nav_coplanar_slope_limit_displacement;
 
 //--------------------------------------------------------------------------------------------------------
-static bool ReduceToComponentAreas( CNavArea *area, bool addToSelectedSet )
+static bool ReduceToComponentAreas( CNavArea* area, bool addToSelectedSet )
 {
-	if ( !area )
+	if( !area )
+	{
 		return false;
+	}
 
 	bool splitAlongX;
 	float splitEdge;
@@ -33,31 +35,35 @@ static bool ReduceToComponentAreas( CNavArea *area, bool addToSelectedSet )
 	float sizeX = area->GetSizeX();
 	float sizeY = area->GetSizeY();
 
-	CNavArea *first = NULL;
-	CNavArea *second = NULL;
-	CNavArea *third = NULL;
-	CNavArea *fourth = NULL;
+	CNavArea* first = NULL;
+	CNavArea* second = NULL;
+	CNavArea* third = NULL;
+	CNavArea* fourth = NULL;
 
 	bool didSplit = false;
 
-	if ( sizeX > GenerationStepSize )
+	if( sizeX > GenerationStepSize )
 	{
 		splitEdge = RoundToUnits( area->GetCorner( NORTH_WEST ).x, GenerationStepSize );
-		if ( splitEdge < area->GetCorner( NORTH_WEST ).x + minSplitSize )
+		if( splitEdge < area->GetCorner( NORTH_WEST ).x + minSplitSize )
+		{
 			splitEdge += GenerationStepSize;
+		}
 		splitAlongX = false;
 
 		didSplit = area->SplitEdit( splitAlongX, splitEdge, &first, &second );
 	}
 
-	if ( sizeY > GenerationStepSize )
+	if( sizeY > GenerationStepSize )
 	{
 		splitEdge = RoundToUnits( area->GetCorner( NORTH_WEST ).y, GenerationStepSize );
-		if ( splitEdge < area->GetCorner( NORTH_WEST ).y + minSplitSize )
+		if( splitEdge < area->GetCorner( NORTH_WEST ).y + minSplitSize )
+		{
 			splitEdge += GenerationStepSize;
+		}
 		splitAlongX = true;
 
-		if ( didSplit )
+		if( didSplit )
 		{
 			didSplit = first->SplitEdit( splitAlongX, splitEdge, &third, &fourth );
 			didSplit = second->SplitEdit( splitAlongX, splitEdge, &first, &second );
@@ -68,10 +74,12 @@ static bool ReduceToComponentAreas( CNavArea *area, bool addToSelectedSet )
 		}
 	}
 
-	if ( !didSplit )
+	if( !didSplit )
+	{
 		return false;
+	}
 
-	if ( addToSelectedSet )
+	if( addToSelectedSet )
 	{
 		TheNavMesh->AddToSelectedSet( first );
 		TheNavMesh->AddToSelectedSet( second );
@@ -91,8 +99,10 @@ static bool ReduceToComponentAreas( CNavArea *area, bool addToSelectedSet )
 //--------------------------------------------------------------------------------------------------------
 CON_COMMAND_F( nav_chop_selected, "Chops all selected areas into their component 1x1 areas", FCVAR_CHEAT )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() || engine->IsDedicatedServer() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() || engine->IsDedicatedServer() )
+	{
 		return;
+	}
 
 	TheNavMesh->StripNavigationAreas();
 	TheNavMesh->SetMarkedArea( NULL );
@@ -100,7 +110,7 @@ CON_COMMAND_F( nav_chop_selected, "Chops all selected areas into their component
 	NavAreaCollector collector;
 	TheNavMesh->ForAllSelectedAreas( collector );
 
-	for ( int i=0; i<collector.m_area.Count(); ++i )
+	for( int i = 0; i < collector.m_area.Count(); ++i )
 	{
 		ReduceToComponentAreas( collector.m_area[i], true );
 	}
@@ -123,13 +133,13 @@ void CNavMesh::RemoveNodes( void )
 
 
 //--------------------------------------------------------------------------------------------------------
-void CNavMesh::GenerateNodes( const Extent &bounds )
+void CNavMesh::GenerateNodes( const Extent& bounds )
 {
 	m_simplifyGenerationExtent = bounds;
 	m_seedIdx = 0;
 
 	Assert( m_generationMode == GENERATE_SIMPLIFY );
-	while ( SampleStep() )
+	while( SampleStep() )
 	{
 		// do nothing
 	}
@@ -166,10 +176,10 @@ void CNavMesh::SimplifySelectedAreas( void )
 	Extent bounds;
 	bounds.lo.Init( FLT_MAX, FLT_MAX, FLT_MAX );
 	bounds.hi.Init( -FLT_MAX, -FLT_MAX, -FLT_MAX );
-	for ( int i=0; i<collector.m_area.Count(); ++i )
+	for( int i = 0; i < collector.m_area.Count(); ++i )
 	{
 		Extent areaExtent;
-		CNavArea *area = collector.m_area[i];
+		CNavArea* area = collector.m_area[i];
 		area->GetExtent( &areaExtent );
 		areaExtent.lo.z -= HalfHumanHeight;
 		areaExtent.hi.z += 2 * HumanHeight;
@@ -180,7 +190,7 @@ void CNavMesh::SimplifySelectedAreas( void )
 		center.y = SnapToGrid( center.y );
 
 		Vector normal;
-		if ( FindGroundForNode( &center, &normal ) )
+		if( FindGroundForNode( &center, &normal ) )
 		{
 			AddWalkableSeed( center, normal );
 
@@ -193,7 +203,7 @@ void CNavMesh::SimplifySelectedAreas( void )
 	ClearWalkableSeeds();
 
 	// Split nav areas up into 1x1 component areas
-	for ( int i=0; i<collector.m_area.Count(); ++i )
+	for( int i = 0; i < collector.m_area.Count(); ++i )
 	{
 		ReduceToComponentAreas( collector.m_area[i], true );
 	}
@@ -201,22 +211,22 @@ void CNavMesh::SimplifySelectedAreas( void )
 	// Assign nodes to each component area
 	FOR_EACH_VEC( m_selectedSet, it )
 	{
-		CNavArea *area = m_selectedSet[ it ];
+		CNavArea* area = m_selectedSet[ it ];
 
 		Vector corner = area->GetCorner( NORTH_EAST );
 		Vector normal;
-		if ( FindGroundForNode( &corner, &normal ) )
+		if( FindGroundForNode( &corner, &normal ) )
 		{
 			area->m_node[ NORTH_EAST ] = CNavNode::GetNode( corner );
-			if ( area->m_node[ NORTH_EAST ] )
+			if( area->m_node[ NORTH_EAST ] )
 			{
 				area->m_node[ NORTH_WEST ] = area->m_node[ NORTH_EAST ]->GetConnectedNode( WEST );
 				area->m_node[ SOUTH_EAST ] = area->m_node[ NORTH_EAST ]->GetConnectedNode( SOUTH );
-				if ( area->m_node[ SOUTH_EAST ] )
+				if( area->m_node[ SOUTH_EAST ] )
 				{
 					area->m_node[ SOUTH_WEST ] = area->m_node[ SOUTH_EAST ]->GetConnectedNode( WEST );
 
-					if ( area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_WEST ] )
+					if( area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_WEST ] )
 					{
 						area->AssignNodes( area );
 					}
@@ -224,8 +234,8 @@ void CNavMesh::SimplifySelectedAreas( void )
 			}
 		}
 
-		Assert ( area->m_node[ NORTH_EAST ] && area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_EAST ] && area->m_node[ SOUTH_WEST ] );
-		if ( !( area->m_node[ NORTH_EAST ] && area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_EAST ] && area->m_node[ SOUTH_WEST ] ) )
+		Assert( area->m_node[ NORTH_EAST ] && area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_EAST ] && area->m_node[ SOUTH_WEST ] );
+		if( !( area->m_node[ NORTH_EAST ] && area->m_node[ NORTH_WEST ] && area->m_node[ SOUTH_EAST ] && area->m_node[ SOUTH_WEST ] ) )
 		{
 			Warning( "Area %d didn't get any nodes!\n", area->GetID() );
 		}
@@ -245,8 +255,8 @@ void CNavMesh::SimplifySelectedAreas( void )
 	ClearSelectedSet();
 	FOR_EACH_VEC( TheNavAreas, i )
 	{
-		CNavArea *area = TheNavAreas[i];
-		if ( area->HasNodes() )
+		CNavArea* area = TheNavAreas[i];
+		if( area->HasNodes() )
 		{
 			AddToSelectedSet( area );
 		}
@@ -268,11 +278,13 @@ void CNavMesh::SimplifySelectedAreas( void )
 //--------------------------------------------------------------------------------------------------------
 CON_COMMAND_F( nav_simplify_selected, "Chops all selected areas into their component 1x1 areas and re-merges them together into larger areas", FCVAR_CHEAT )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() || engine->IsDedicatedServer() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() || engine->IsDedicatedServer() )
+	{
 		return;
+	}
 
 	int selectedSetSize = TheNavMesh->GetSelecteSetSize();
-	if ( selectedSetSize == 0 )
+	if( selectedSetSize == 0 )
 	{
 		Msg( "nav_simplify_selected only works on the selected set\n" );
 		return;

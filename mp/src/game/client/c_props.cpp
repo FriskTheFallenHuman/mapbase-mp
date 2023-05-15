@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,15 +21,15 @@
 IMPLEMENT_NETWORKCLASS_ALIASED( DynamicProp, DT_DynamicProp )
 
 BEGIN_NETWORK_TABLE( CDynamicProp, DT_DynamicProp )
-	RecvPropBool(RECVINFO(m_bUseHitboxesForRenderBox)),
-END_NETWORK_TABLE()
+RecvPropBool( RECVINFO( m_bUseHitboxesForRenderBox ) ),
+			  END_NETWORK_TABLE()
 
 #ifdef MAPBASE_VSCRIPT
-// Allows client-side VScript to create dynamic props via CreateProp()
-LINK_ENTITY_TO_CLASS( prop_dynamic, C_DynamicProp );
+	// Allows client-side VScript to create dynamic props via CreateProp()
+	LINK_ENTITY_TO_CLASS( prop_dynamic, C_DynamicProp );
 #endif
 
-C_DynamicProp::C_DynamicProp( void )
+			  C_DynamicProp::C_DynamicProp( void )
 {
 	m_iCachedFrameCount = -1;
 }
@@ -38,20 +38,20 @@ C_DynamicProp::~C_DynamicProp( void )
 {
 }
 
-bool C_DynamicProp::TestBoneFollowers( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr )
+bool C_DynamicProp::TestBoneFollowers( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr )
 {
 	// UNDONE: There is no list of the bone followers that is networked to the client
 	// so instead we do a search for solid stuff here.  This is not really great - a list would be
 	// preferable.
-	CBaseEntity	*pList[128];
+	CBaseEntity*	pList[128];
 	Vector mins, maxs;
 	CollisionProp()->WorldSpaceAABB( &mins, &maxs );
-	int count = UTIL_EntitiesInBox( pList, ARRAYSIZE(pList), mins, maxs, 0, PARTITION_CLIENT_SOLID_EDICTS );
-	for ( int i = 0; i < count; i++ )
+	int count = UTIL_EntitiesInBox( pList, ARRAYSIZE( pList ), mins, maxs, 0, PARTITION_CLIENT_SOLID_EDICTS );
+	for( int i = 0; i < count; i++ )
 	{
-		if ( pList[i]->GetOwnerEntity() == this )
+		if( pList[i]->GetOwnerEntity() == this )
 		{
-			if ( pList[i]->TestCollision(ray, fContentsMask, tr) )
+			if( pList[i]->TestCollision( ray, fContentsMask, tr ) )
 			{
 				return true;
 			}
@@ -60,12 +60,12 @@ bool C_DynamicProp::TestBoneFollowers( const Ray_t &ray, unsigned int fContentsM
 	return false;
 }
 
-bool C_DynamicProp::TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr )
+bool C_DynamicProp::TestCollision( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr )
 {
-	if ( IsSolidFlagSet(FSOLID_NOT_SOLID) )
+	if( IsSolidFlagSet( FSOLID_NOT_SOLID ) )
 	{
 		// if this entity is marked non-solid and custom test it must have bone followers
-		if ( IsSolidFlagSet( FSOLID_CUSTOMBOXTEST ) && IsSolidFlagSet( FSOLID_CUSTOMRAYTEST ))
+		if( IsSolidFlagSet( FSOLID_CUSTOMBOXTEST ) && IsSolidFlagSet( FSOLID_CUSTOMRAYTEST ) )
 		{
 			return TestBoneFollowers( ray, fContentsMask, tr );
 		}
@@ -78,12 +78,12 @@ bool C_DynamicProp::TestCollision( const Ray_t &ray, unsigned int fContentsMask,
 //-----------------------------------------------------------------------------
 void C_DynamicProp::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 {
-	if ( m_bUseHitboxesForRenderBox )
+	if( m_bUseHitboxesForRenderBox )
 	{
-		if ( GetModel() )
+		if( GetModel() )
 		{
-			studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( GetModel() );
-			if ( !pStudioHdr || GetSequence() == -1 )
+			studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel( GetModel() );
+			if( !pStudioHdr || GetSequence() == -1 )
 			{
 				theMins = vec3_origin;
 				theMaxs = vec3_origin;
@@ -91,7 +91,7 @@ void C_DynamicProp::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 			}
 
 			// Only recompute if it's a new frame
-			if ( gpGlobals->framecount != m_iCachedFrameCount )
+			if( gpGlobals->framecount != m_iCachedFrameCount )
 			{
 				ComputeEntitySpaceHitboxSurroundingBox( &m_vecCachedRenderMins, &m_vecCachedRenderMaxs );
 				m_iCachedFrameCount = gpGlobals->framecount;
@@ -108,10 +108,10 @@ void C_DynamicProp::GetRenderBounds( Vector& theMins, Vector& theMaxs )
 
 unsigned int C_DynamicProp::ComputeClientSideAnimationFlags()
 {
-	if ( GetSequence() != -1 )
+	if( GetSequence() != -1 )
 	{
-		CStudioHdr *pStudioHdr = GetModelPtr();
-		if ( GetSequenceCycleRate(pStudioHdr, GetSequence()) != 0.0f )
+		CStudioHdr* pStudioHdr = GetModelPtr();
+		if( GetSequenceCycleRate( pStudioHdr, GetSequence() ) != 0.0f )
 		{
 			return BaseClass::ComputeClientSideAnimationFlags();
 		}
@@ -135,13 +135,13 @@ public:
 
 	virtual void OnDataChanged( DataUpdateType_t type );
 
-	virtual bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	virtual bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 
 private:
-	C_BasePropDoor( const C_BasePropDoor & );
+	C_BasePropDoor( const C_BasePropDoor& );
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_BasePropDoor, DT_BasePropDoor, CBasePropDoor)
+IMPLEMENT_CLIENTCLASS_DT( C_BasePropDoor, DT_BasePropDoor, CBasePropDoor )
 END_RECV_TABLE()
 
 C_BasePropDoor::C_BasePropDoor( void )
@@ -156,29 +156,33 @@ void C_BasePropDoor::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( type == DATA_UPDATE_CREATED )
+	if( type == DATA_UPDATE_CREATED )
 	{
-		SetSolid(SOLID_VPHYSICS);
+		SetSolid( SOLID_VPHYSICS );
 		VPhysicsInitShadow( false, false );
 	}
-	else if ( VPhysicsGetObject() )
+	else if( VPhysicsGetObject() )
 	{
 		VPhysicsGetObject()->UpdateShadow( GetAbsOrigin(), GetAbsAngles(), false, TICK_INTERVAL );
 	}
 }
 
-bool C_BasePropDoor::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
+bool C_BasePropDoor::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
 {
-	if ( !VPhysicsGetObject() )
+	if( !VPhysicsGetObject() )
+	{
 		return false;
+	}
 
-	CStudioHdr *pStudioHdr = GetModelPtr( );
-	if (!pStudioHdr)
+	CStudioHdr* pStudioHdr = GetModelPtr( );
+	if( !pStudioHdr )
+	{
 		return false;
+	}
 
 	physcollision->TraceBox( ray, VPhysicsGetObject()->GetCollide(), GetAbsOrigin(), GetAbsAngles(), &trace );
 
-	if ( trace.DidHit() )
+	if( trace.DidHit() )
 	{
 		trace.surface.surfaceProps = VPhysicsGetObject()->GetMaterialIndex();
 		return true;
@@ -208,23 +212,23 @@ public:
 
 	virtual bool IsAsleep()
 	{
-		Assert ( 0 );
+		Assert( 0 );
 		return true;
 	}
 
-	CNetworkVar( int, m_iPhysicsMode );	// One of the PHYSICS_MULTIPLAYER_ defines.	
+	CNetworkVar( int, m_iPhysicsMode );	// One of the PHYSICS_MULTIPLAYER_ defines.
 	CNetworkVar( float, m_fMass );
 
 	DECLARE_CLIENTCLASS();
 };
 
 IMPLEMENT_CLIENTCLASS_DT( CPhysBoxMultiplayer, DT_PhysBoxMultiplayer, CPhysBoxMultiplayer )
-	RecvPropInt( RECVINFO( m_iPhysicsMode ) ),
-	RecvPropFloat( RECVINFO( m_fMass ) ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_iPhysicsMode ) ),
+			 RecvPropFloat( RECVINFO( m_fMass ) ),
+			 END_RECV_TABLE()
 
 
-class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
+			 class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 {
 	DECLARE_CLASS( CPhysicsPropMultiplayer, CPhysicsProp );
 
@@ -245,17 +249,19 @@ class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 		return !m_bAwake;
 	}
 
-	virtual void ComputeWorldSpaceSurroundingBox( Vector *mins, Vector *maxs )
+	virtual void ComputeWorldSpaceSurroundingBox( Vector* mins, Vector* maxs )
 	{
 		Assert( mins != NULL && maxs != NULL );
-		if ( !mins || !maxs )
+		if( !mins || !maxs )
+		{
 			return;
+		}
 
 		// Take our saved collision bounds, and transform into world space
 		TransformAABB( EntityToWorldTransform(), m_collisionMins, m_collisionMaxs, *mins, *maxs );
 	}
 
-	CNetworkVar( int, m_iPhysicsMode );	// One of the PHYSICS_MULTIPLAYER_ defines.	
+	CNetworkVar( int, m_iPhysicsMode );	// One of the PHYSICS_MULTIPLAYER_ defines.
 	CNetworkVar( float, m_fMass );
 	CNetworkVector( m_collisionMins );
 	CNetworkVector( m_collisionMaxs );
@@ -264,9 +270,9 @@ class CPhysicsPropMultiplayer : public CPhysicsProp, public IMultiplayerPhysics
 };
 
 IMPLEMENT_CLIENTCLASS_DT( CPhysicsPropMultiplayer, DT_PhysicsPropMultiplayer, CPhysicsPropMultiplayer )
-	RecvPropInt( RECVINFO( m_iPhysicsMode ) ),
-	RecvPropFloat( RECVINFO( m_fMass ) ),
-	RecvPropVector( RECVINFO( m_collisionMins ) ),
-	RecvPropVector( RECVINFO( m_collisionMaxs ) ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_iPhysicsMode ) ),
+			 RecvPropFloat( RECVINFO( m_fMass ) ),
+			 RecvPropVector( RECVINFO( m_collisionMins ) ),
+			 RecvPropVector( RECVINFO( m_collisionMaxs ) ),
+			 END_RECV_TABLE()
 #endif

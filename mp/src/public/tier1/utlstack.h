@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,7 +24,7 @@
 // by index (they should *never* maintain pointers to elements in the stack).
 //-----------------------------------------------------------------------------
 
-template< class T, class M = CUtlMemory< T > > 
+template< class T, class M = CUtlMemory< T > >
 class CUtlStack
 {
 public:
@@ -32,7 +32,7 @@ public:
 	CUtlStack( int growSize = 0, int initSize = 0 );
 	~CUtlStack();
 
-	void CopyFrom( const CUtlStack<T, M> &from );
+	void CopyFrom( const CUtlStack<T, M>& from );
 
 	// element access
 	T& operator[]( int i );
@@ -94,7 +94,7 @@ private:
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline void CUtlStack<T,M>::ResetDbgInfo()
+inline void CUtlStack<T, M>::ResetDbgInfo()
 {
 	m_pElements = m_Memory.Base();
 }
@@ -104,14 +104,14 @@ inline void CUtlStack<T,M>::ResetDbgInfo()
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-CUtlStack<T,M>::CUtlStack( int growSize, int initSize )	: 
-	m_Memory(growSize, initSize), m_Size(0)
+CUtlStack<T, M>::CUtlStack( int growSize, int initSize )	:
+	m_Memory( growSize, initSize ), m_Size( 0 )
 {
 	ResetDbgInfo();
 }
 
 template< class T, class M >
-CUtlStack<T,M>::~CUtlStack()
+CUtlStack<T, M>::~CUtlStack()
 {
 	Purge();
 }
@@ -122,11 +122,11 @@ CUtlStack<T,M>::~CUtlStack()
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::CopyFrom( const CUtlStack<T, M> &from )
+void CUtlStack<T, M>::CopyFrom( const CUtlStack<T, M>& from )
 {
 	Purge();
 	EnsureCapacity( from.Count() );
-	for ( int i = 0; i < from.Count(); i++ )
+	for( int i = 0; i < from.Count(); i++ )
 	{
 		Push( from[i] );
 	}
@@ -137,30 +137,30 @@ void CUtlStack<T,M>::CopyFrom( const CUtlStack<T, M> &from )
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline T& CUtlStack<T,M>::operator[]( int i )
+inline T& CUtlStack<T, M>::operator[]( int i )
 {
-	assert( IsIdxValid(i) );
+	assert( IsIdxValid( i ) );
 	return m_Memory[i];
 }
 
 template< class T, class M >
-inline T const& CUtlStack<T,M>::operator[]( int i ) const
+inline T const& CUtlStack<T, M>::operator[]( int i ) const
 {
-	assert( IsIdxValid(i) );
+	assert( IsIdxValid( i ) );
 	return m_Memory[i];
 }
 
 template< class T, class M >
-inline T& CUtlStack<T,M>::Element( int i )
+inline T& CUtlStack<T, M>::Element( int i )
 {
-	assert( IsIdxValid(i) );
+	assert( IsIdxValid( i ) );
 	return m_Memory[i];
 }
 
 template< class T, class M >
-inline T const& CUtlStack<T,M>::Element( int i ) const
+inline T const& CUtlStack<T, M>::Element( int i ) const
 {
-	assert( IsIdxValid(i) );
+	assert( IsIdxValid( i ) );
 	return m_Memory[i];
 }
 
@@ -170,13 +170,13 @@ inline T const& CUtlStack<T,M>::Element( int i ) const
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline T* CUtlStack<T,M>::Base()
+inline T* CUtlStack<T, M>::Base()
 {
 	return m_Memory.Base();
 }
 
 template< class T, class M >
-inline T const* CUtlStack<T,M>::Base() const
+inline T const* CUtlStack<T, M>::Base() const
 {
 	return m_Memory.Base();
 }
@@ -186,17 +186,17 @@ inline T const* CUtlStack<T,M>::Base() const
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline T& CUtlStack<T,M>::Top()
+inline T& CUtlStack<T, M>::Top()
 {
 	assert( m_Size > 0 );
-	return Element(m_Size-1);
+	return Element( m_Size - 1 );
 }
 
 template< class T, class M >
-inline T const& CUtlStack<T,M>::Top() const
+inline T const& CUtlStack<T, M>::Top() const
 {
 	assert( m_Size > 0 );
-	return Element(m_Size-1);
+	return Element( m_Size - 1 );
 }
 
 //-----------------------------------------------------------------------------
@@ -204,7 +204,7 @@ inline T const& CUtlStack<T,M>::Top() const
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline int CUtlStack<T,M>::Count() const
+inline int CUtlStack<T, M>::Count() const
 {
 	return m_Size;
 }
@@ -215,20 +215,22 @@ inline int CUtlStack<T,M>::Count() const
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-inline bool CUtlStack<T,M>::IsIdxValid( int i ) const
+inline bool CUtlStack<T, M>::IsIdxValid( int i ) const
 {
-	return (i >= 0) && (i < m_Size);
+	return ( i >= 0 ) && ( i < m_Size );
 }
- 
+
 //-----------------------------------------------------------------------------
 // Grows the stack
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::GrowStack()
+void CUtlStack<T, M>::GrowStack()
 {
-	if (m_Size >= m_Memory.NumAllocated())
+	if( m_Size >= m_Memory.NumAllocated() )
+	{
 		m_Memory.Grow();
+	}
 
 	++m_Size;
 
@@ -240,9 +242,9 @@ void CUtlStack<T,M>::GrowStack()
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::EnsureCapacity( int num )
+void CUtlStack<T, M>::EnsureCapacity( int num )
 {
-	m_Memory.EnsureCapacity(num);
+	m_Memory.EnsureCapacity( num );
 	ResetDbgInfo();
 }
 
@@ -252,10 +254,10 @@ void CUtlStack<T,M>::EnsureCapacity( int num )
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-int CUtlStack<T,M>::Push()
+int CUtlStack<T, M>::Push()
 {
 	GrowStack();
-	Construct( &Element(m_Size-1) );
+	Construct( &Element( m_Size - 1 ) );
 	return m_Size - 1;
 }
 
@@ -264,10 +266,10 @@ int CUtlStack<T,M>::Push()
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-int CUtlStack<T,M>::Push( T const& src )
+int CUtlStack<T, M>::Push( T const& src )
 {
 	GrowStack();
-	CopyConstruct( &Element(m_Size-1), src );
+	CopyConstruct( &Element( m_Size - 1 ), src );
 	return m_Size - 1;
 }
 
@@ -277,15 +279,15 @@ int CUtlStack<T,M>::Push( T const& src )
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::Pop()
+void CUtlStack<T, M>::Pop()
 {
 	assert( m_Size > 0 );
-	Destruct( &Element(m_Size-1) );
+	Destruct( &Element( m_Size - 1 ) );
 	--m_Size;
 }
 
 template< class T, class M >
-void CUtlStack<T,M>::Pop( T& oldTop )
+void CUtlStack<T, M>::Pop( T& oldTop )
 {
 	assert( m_Size > 0 );
 	oldTop = Top();
@@ -293,11 +295,13 @@ void CUtlStack<T,M>::Pop( T& oldTop )
 }
 
 template< class T, class M >
-void CUtlStack<T,M>::PopMultiple( int num )
+void CUtlStack<T, M>::PopMultiple( int num )
 {
 	assert( m_Size >= num );
-	for ( int i = 0; i < num; ++i )
+	for( int i = 0; i < num; ++i )
+	{
 		Destruct( &Element( m_Size - i - 1 ) );
+	}
 	m_Size -= num;
 }
 
@@ -307,10 +311,12 @@ void CUtlStack<T,M>::PopMultiple( int num )
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::Clear()
+void CUtlStack<T, M>::Clear()
 {
-	for (int i = m_Size; --i >= 0; )
-		Destruct(&Element(i));
+	for( int i = m_Size; --i >= 0; )
+	{
+		Destruct( &Element( i ) );
+	}
 
 	m_Size = 0;
 }
@@ -321,7 +327,7 @@ void CUtlStack<T,M>::Clear()
 //-----------------------------------------------------------------------------
 
 template< class T, class M >
-void CUtlStack<T,M>::Purge()
+void CUtlStack<T, M>::Purge()
 {
 	Clear();
 	m_Memory.Purge( );

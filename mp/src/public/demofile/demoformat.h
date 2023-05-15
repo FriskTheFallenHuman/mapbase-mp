@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef DEMOFORMAT_H
 #define DEMOFORMAT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -18,7 +18,7 @@
 #define DEMO_PROTOCOL		3
 
 #if !defined( MAX_OSPATH )
-#define	MAX_OSPATH		260			// max length of a filesystem pathname
+	#define	MAX_OSPATH		260			// max length of a filesystem pathname
 #endif
 
 // Demo messages
@@ -30,7 +30,7 @@ enum
 	dem_packet,
 	// sync client clock to demo tick
 	dem_synctick,
-	// console command 
+	// console command
 	dem_consolecmd,
 	// user input command
 	dem_usercmd,
@@ -60,7 +60,7 @@ struct demoheader_t
 	int		signonlength;					// length of sigondata in bytes
 };
 
-inline void ByteSwap_demoheader_t( demoheader_t &swap )
+inline void ByteSwap_demoheader_t( demoheader_t& swap )
 {
 	swap.demoprotocol = LittleDWord( swap.demoprotocol );
 	swap.networkprotocol = LittleDWord( swap.networkprotocol );
@@ -93,10 +93,12 @@ struct democmdinfo_t
 
 	// Copy constructor
 	// Assignment
-	democmdinfo_t&	operator=(const democmdinfo_t& src )
+	democmdinfo_t&	operator=( const democmdinfo_t& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		flags = src.flags;
 		viewOrigin = src.viewOrigin;
@@ -111,7 +113,7 @@ struct democmdinfo_t
 
 	const Vector& GetViewOrigin()
 	{
-		if ( flags & FDEMO_USE_ORIGIN2 )
+		if( flags & FDEMO_USE_ORIGIN2 )
 		{
 			return viewOrigin2;
 		}
@@ -120,7 +122,7 @@ struct democmdinfo_t
 
 	const QAngle& GetViewAngles()
 	{
-		if ( flags & FDEMO_USE_ANGLES2 )
+		if( flags & FDEMO_USE_ANGLES2 )
 		{
 			return viewAngles2;
 		}
@@ -128,7 +130,7 @@ struct democmdinfo_t
 	}
 	const QAngle& GetLocalViewAngles()
 	{
-		if ( flags & FDEMO_USE_ANGLES2 )
+		if( flags & FDEMO_USE_ANGLES2 )
 		{
 			return localViewAngles2;
 		}
@@ -172,10 +174,12 @@ struct demosmoothing_t
 		vectarget.Init();
 	}
 
-	demosmoothing_t&	operator=(const demosmoothing_t& src )
+	demosmoothing_t&	operator=( const demosmoothing_t& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		file_offset = src.file_offset;
 		frametick = src.frametick;
@@ -218,10 +222,12 @@ struct CSmoothingContext
 		m_nFirstSelectableSample = 0;
 	}
 
-	CSmoothingContext&	operator=(const CSmoothingContext& src )
+	CSmoothingContext&	operator=( const CSmoothingContext& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		active = src.active;
 		Q_strncpy( filename, src.filename, sizeof( filename ) );
@@ -229,7 +235,7 @@ struct CSmoothingContext
 		smooth.RemoveAll();
 		int c = src.smooth.Count();
 		int i;
-		for ( i = 0; i < c; i++ )
+		for( i = 0; i < c; i++ )
 		{
 			demosmoothing_t newitem;
 			newitem = src.smooth[ i ];

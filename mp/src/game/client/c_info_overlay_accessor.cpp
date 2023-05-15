@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -31,25 +31,25 @@ private:
 };
 
 // Expose it to the engine.
-IMPLEMENT_CLIENTCLASS(C_InfoOverlayAccessor, DT_InfoOverlayAccessor, CInfoOverlayAccessor);
+IMPLEMENT_CLIENTCLASS( C_InfoOverlayAccessor, DT_InfoOverlayAccessor, CInfoOverlayAccessor );
 
-BEGIN_RECV_TABLE_NOBASE(C_InfoOverlayAccessor, DT_InfoOverlayAccessor)
-	RecvPropInt(RECVINFO(m_iTextureFrameIndex)),
-	RecvPropInt(RECVINFO(m_iOverlayID)),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE( C_InfoOverlayAccessor, DT_InfoOverlayAccessor )
+RecvPropInt( RECVINFO( m_iTextureFrameIndex ) ),
+			 RecvPropInt( RECVINFO( m_iOverlayID ) ),
+			 END_RECV_TABLE()
 
 
 // -------------------------------------------------------------------------------- //
 // Functions.
 // -------------------------------------------------------------------------------- //
 
-C_InfoOverlayAccessor::C_InfoOverlayAccessor()
+			 C_InfoOverlayAccessor::C_InfoOverlayAccessor()
 {
 }
 
 void C_InfoOverlayAccessor::OnDataChanged( DataUpdateType_t updateType )
 {
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		// Update overlay's bind proxy
 		engine->SetOverlayBindProxy( m_iOverlayID, GetClientRenderable() );

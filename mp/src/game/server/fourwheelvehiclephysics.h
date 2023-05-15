@@ -9,7 +9,7 @@
 #define FOUR_WHEEL_VEHICLE_PHYSICS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vphysics/vehicles.h"
@@ -27,25 +27,25 @@ class CFourWheelServerVehicle;
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CFourWheelVehiclePhysics
 {
 public:
 	DECLARE_DATADESC();
 
-	CFourWheelVehiclePhysics( CBaseAnimating *pOuter );
-	~CFourWheelVehiclePhysics ();
+	CFourWheelVehiclePhysics( CBaseAnimating* pOuter );
+	~CFourWheelVehiclePhysics();
 
 	// Call Precache + Spawn from the containing entity's Precache + Spawn methods
 	void Spawn();
-	void SetOuter( CBaseAnimating *pOuter, CFourWheelServerVehicle *pServerVehicle ); 
-	
+	void SetOuter( CBaseAnimating* pOuter, CFourWheelServerVehicle* pServerVehicle );
+
 	// Initializes the vehicle physics so we can drive it
-	bool Initialize( const char *pScriptName, unsigned int nVehicleType );
+	bool Initialize( const char* pScriptName, unsigned int nVehicleType );
 
 	void Teleport( matrix3x4_t& relativeTransform );
-	bool VPhysicsUpdate( IPhysicsObject *pPhysics );
+	bool VPhysicsUpdate( IPhysicsObject* pPhysics );
 	bool Think();
 	void PlaceWheelDust( int wheelIndex, bool ignoreSpeed = false );
 
@@ -53,7 +53,7 @@ public:
 	int DrawDebugTextOverlays( int nOffset );
 
 	// Updates the controls based on user input
-	void UpdateDriverControls( CUserCmd *cmd, float flFrameTime );
+	void UpdateDriverControls( CUserCmd* cmd, float flFrameTime );
 
 	// Various steering parameters
 	void SetThrottle( float flThrottle );
@@ -66,7 +66,10 @@ public:
 	void TurnOff();
 	void ReleaseHandbrake();
 	void SetHandbrake( bool bBrake );
-	bool IsOn() const { return m_bIsOn; }
+	bool IsOn() const
+	{
+		return m_bIsOn;
+	}
 	void ResetControls();
 	void SetBoost( float flBoost );
 	bool UpdateBooster( void );
@@ -74,16 +77,22 @@ public:
 
 	// Engine
 	void SetDisableEngine( bool bDisable );
-	bool IsEngineDisabled( void )							{ return m_pVehicle->IsEngineDisabled(); }
+	bool IsEngineDisabled( void )
+	{
+		return m_pVehicle->IsEngineDisabled();
+	}
 
 	// Enable/Disable Motion
 	void EnableMotion( void );
 	void DisableMotion( void );
 
 	// Shared code to compute the vehicle view position
-	void GetVehicleViewPosition( const char *pViewAttachment, float flPitchFactor, Vector *pAbsPosition, QAngle *pAbsAngles );
+	void GetVehicleViewPosition( const char* pViewAttachment, float flPitchFactor, Vector* pAbsPosition, QAngle* pAbsAngles );
 
-	IPhysicsObject *GetWheel( int iWheel )				{ return m_pWheels[iWheel]; }
+	IPhysicsObject* GetWheel( int iWheel )
+	{
+		return m_pWheels[iWheel];
+	}
 
 	int	GetSpeed() const;
 	int GetMaxSpeed() const;
@@ -95,41 +104,62 @@ public:
 	float GetHLSpeed() const;
 	float GetSteering() const;
 	float GetSteeringDegrees() const;
-	IPhysicsVehicleController* GetVehicle(void) { return m_pVehicle; } 
-	float GetWheelBaseHeight(int wheelIndex) { return m_wheelBaseHeight[wheelIndex]; }
-	float GetWheelTotalHeight(int wheelIndex) { return m_wheelTotalHeight[wheelIndex]; }
+	IPhysicsVehicleController* GetVehicle( void )
+	{
+		return m_pVehicle;
+	}
+	float GetWheelBaseHeight( int wheelIndex )
+	{
+		return m_wheelBaseHeight[wheelIndex];
+	}
+	float GetWheelTotalHeight( int wheelIndex )
+	{
+		return m_wheelTotalHeight[wheelIndex];
+	}
 
-	IPhysicsVehicleController *GetVehicleController() { return m_pVehicle; }
-	const vehicleparams_t &GetVehicleParams( void ) { return m_pVehicle->GetVehicleParams(); }
-	const vehicle_controlparams_t &GetVehicleControls( void ) { return m_controls; }
-	const vehicle_operatingparams_t &GetVehicleOperatingParams( void ) { return m_pVehicle->GetOperatingParams(); }
+	IPhysicsVehicleController* GetVehicleController()
+	{
+		return m_pVehicle;
+	}
+	const vehicleparams_t& GetVehicleParams( void )
+	{
+		return m_pVehicle->GetVehicleParams();
+	}
+	const vehicle_controlparams_t& GetVehicleControls( void )
+	{
+		return m_controls;
+	}
+	const vehicle_operatingparams_t& GetVehicleOperatingParams( void )
+	{
+		return m_pVehicle->GetOperatingParams();
+	}
 
-	int VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
+	int VPhysicsGetObjectList( IPhysicsObject** pList, int listMax );
 
 private:
 	// engine sounds
-	void CalcWheelData( vehicleparams_t &vehicle );
+	void CalcWheelData( vehicleparams_t& vehicle );
 
-	void SteeringRest( float carSpeed, const vehicleparams_t &vehicleData );
-	void SteeringTurn( float carSpeed, const vehicleparams_t &vehicleData, bool bTurnLeft, bool bBrake, bool bThrottle );
-	void SteeringTurnAnalog( float carSpeed, const vehicleparams_t &vehicleData, float sidemove );
+	void SteeringRest( float carSpeed, const vehicleparams_t& vehicleData );
+	void SteeringTurn( float carSpeed, const vehicleparams_t& vehicleData, bool bTurnLeft, bool bBrake, bool bThrottle );
+	void SteeringTurnAnalog( float carSpeed, const vehicleparams_t& vehicleData, float sidemove );
 
 	// A couple wrapper methods to perform common operations
-	int		LookupPoseParameter( const char *szName );
+	int		LookupPoseParameter( const char* szName );
 	float	GetPoseParameter( int iParameter );
 	float	SetPoseParameter( int iParameter, float flValue );
-	bool	GetAttachment ( const char *szName, Vector &origin, QAngle &angles );
+	bool	GetAttachment( const char* szName, Vector& origin, QAngle& angles );
 
 	void InitializePoseParameters();
-	bool ParseVehicleScript( const char *pScriptName, solid_t &solid, vehicleparams_t &vehicle );
+	bool ParseVehicleScript( const char* pScriptName, solid_t& solid, vehicleparams_t& vehicle );
 
 private:
 	// This is the entity that contains this class
 	CHandle<CBaseAnimating>		m_pOuter;
-	CFourWheelServerVehicle		*m_pOuterServerVehicle;
+	CFourWheelServerVehicle*		m_pOuterServerVehicle;
 
 	vehicle_controlparams_t		m_controls;
-	IPhysicsVehicleController	*m_pVehicle;
+	IPhysicsVehicleController*	m_pVehicle;
 
 	// Vehicle state info
 	int					m_nSpeed;
@@ -143,7 +173,7 @@ private:
 	float				m_flMaxRevThrottle;
 	float				m_flMaxSpeed;
 	float				m_actionSpeed;
-	IPhysicsObject		*m_pWheels[4];
+	IPhysicsObject*		m_pWheels[4];
 
 	int					m_wheelCount;
 
@@ -178,7 +208,7 @@ inline int CFourWheelVehiclePhysics::GetSpeed() const
 
 inline int CFourWheelVehiclePhysics::GetMaxSpeed() const
 {
-	return INS2MPH(m_pVehicle->GetVehicleParams().engine.maxSpeed);
+	return INS2MPH( m_pVehicle->GetVehicleParams().engine.maxSpeed );
 }
 
 inline int CFourWheelVehiclePhysics::GetRPM() const
@@ -201,10 +231,10 @@ inline int CFourWheelVehiclePhysics::BoostTimeLeft() const
 	return m_nBoostTimeLeft;
 }
 
-inline void CFourWheelVehiclePhysics::SetOuter( CBaseAnimating *pOuter, CFourWheelServerVehicle *pServerVehicle ) 
-{ 
-	m_pOuter = pOuter; 
-	m_pOuterServerVehicle = pServerVehicle; 
+inline void CFourWheelVehiclePhysics::SetOuter( CBaseAnimating* pOuter, CFourWheelServerVehicle* pServerVehicle )
+{
+	m_pOuter = pOuter;
+	m_pOuterServerVehicle = pServerVehicle;
 }
 
 float RemapAngleRange( float startInterval, float endInterval, float value );

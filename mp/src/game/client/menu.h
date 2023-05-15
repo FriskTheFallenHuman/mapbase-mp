@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HUD_MENU_H
 #define HUD_MENU_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -18,21 +18,21 @@
 #define MENU_SELECTION_TIMEOUT	5.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CHudMenu : public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CHudMenu, vgui::Panel );
 public:
-	CHudMenu( const char *pElementName );
+	CHudMenu( const char* pElementName );
 	void Init( void );
 	void VidInit( void );
 	void Reset( void );
 	virtual bool ShouldDraw( void );
-	void MsgFunc_ShowMenu( bf_read &msg );
+	void MsgFunc_ShowMenu( bf_read& msg );
 	void HideMenu( void );
-	void ShowMenu( const char * menuName, int keySlot );
-	void ShowMenu_KeyValueItems( KeyValues *pKV );
+	void ShowMenu( const char* menuName, int keySlot );
+	void ShowMenu_KeyValueItems( KeyValues* pKV );
 
 	bool IsMenuOpen( void );
 	void SelectMenuItem( int menu_item );
@@ -40,11 +40,11 @@ public:
 private:
 	virtual void OnThink();
 	virtual void Paint();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 private:
 	void		ProcessText( void );
 
-	void PaintString( const wchar_t *text, int textlen, vgui::HFont& font, int x, int y );
+	void PaintString( const wchar_t* text, int textlen, vgui::HFont& font, int x, int y );
 
 	struct ProcessedLine
 	{

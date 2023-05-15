@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -21,8 +21,8 @@
 
 
 #ifdef CLIENT_DLL
-#define CWeaponCrowbar C_WeaponCrowbar
-#define CWeaponPipe C_WeaponPipe
+	#define CWeaponCrowbar C_WeaponCrowbar
+	#define CWeaponPipe C_WeaponPipe
 #endif
 
 #define	CROWBAR_RANGE	75.0f
@@ -42,8 +42,14 @@ public:
 
 	CWeaponCrowbar();
 
-	float		GetRange( void )		{ return CROWBAR_RANGE;	}
-	float		GetFireRate( void )		{ return CROWBAR_REFIRE; }
+	float		GetRange( void )
+	{
+		return CROWBAR_RANGE;
+	}
+	float		GetFireRate( void )
+	{
+		return CROWBAR_REFIRE;
+	}
 
 	void		AddViewKick( void );
 	float		GetDamageForActivity( Activity hitActivity );
@@ -51,27 +57,36 @@ public:
 #ifndef CLIENT_DLL
 	virtual int WeaponMeleeAttack1Condition( float flDot, float flDist );
 #endif
-	void		SecondaryAttack( void )	{	return;	}
+	void		SecondaryAttack( void )
+	{
+		return;
+	}
 
 	// Animation event
 #ifndef CLIENT_DLL
-	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif
 
 #ifdef MAPBASE
 	// Don't use backup activities
-	acttable_t		*GetBackupActivityList() { return NULL; }
-	int				GetBackupActivityListCount() { return 0; }
+	acttable_t*		GetBackupActivityList()
+	{
+		return NULL;
+	}
+	int				GetBackupActivityListCount()
+	{
+		return 0;
+	}
 #endif
 
 #ifndef CLIENT_DLL
 	// Animation event handlers
-	void HandleAnimEventMeleeHit( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void HandleAnimEventMeleeHit( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif
 
 private:
 
-	CWeaponCrowbar( const CWeaponCrowbar & );	
+	CWeaponCrowbar( const CWeaponCrowbar& );
 };
 
 //-----------------------------------------------------------------------------
@@ -81,7 +96,7 @@ class CWeaponPipe : public CWeaponCrowbar
 {
 	DECLARE_CLASS( CWeaponPipe, CWeaponCrowbar );
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_ACTTABLE();
 };

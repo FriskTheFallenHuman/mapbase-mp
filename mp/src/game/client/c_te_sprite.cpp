@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS( C_TESprite, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TESprite( void );
+	C_TESprite( void );
 	virtual			~C_TESprite( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -42,18 +42,18 @@ public:
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESprite, DT_TESprite, CTESprite)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fScale )),
-	RecvPropInt( RECVINFO(m_nBrightness)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TESprite, DT_TESprite, CTESprite )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropFloat( RECVINFO( m_fScale ) ),
+				RecvPropInt( RECVINFO( m_nBrightness ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TESprite::C_TESprite( void )
+				C_TESprite::C_TESprite( void )
 {
 	m_vecOrigin.Init();
 	m_nModelIndex = 0;
@@ -62,7 +62,7 @@ C_TESprite::C_TESprite( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESprite::~C_TESprite( void )
 {
@@ -70,30 +70,32 @@ C_TESprite::~C_TESprite( void )
 
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordSprite( const Vector& start, int nModelIndex, 
+static inline void RecordSprite( const Vector& start, int nModelIndex,
 								 float flScale, int nBrightness )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		const model_t* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		return;
+	}
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		const model_t* pModel = ( nModelIndex != 0 ) ? modelinfo->GetModel( nModelIndex ) : NULL;
+		const char* pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
 
- 		msg->SetInt( "te", TE_SPRITE_SINGLE );
- 		msg->SetString( "name", "TE_Sprite" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_SPRITE_SINGLE );
+		msg->SetString( "name", "TE_Sprite" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
 		msg->SetFloat( "originz", start.z );
-  		msg->SetString( "model", pModelName );
- 		msg->SetFloat( "scale", flScale );
- 		msg->SetInt( "brightness", nBrightness );
+		msg->SetString( "model", pModelName );
+		msg->SetFloat( "scale", flScale );
+		msg->SetInt( "brightness", nBrightness );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -102,7 +104,7 @@ static inline void RecordSprite( const Vector& start, int nModelIndex,
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TESprite::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -114,20 +116,20 @@ void C_TESprite::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_Sprite( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, float size, int brightness )
+				const Vector* pos, int modelindex, float size, int brightness )
 {
 	float a = ( 1.0 / 255.0 ) * brightness;
 	tempents->TempSprite( *pos, vec3_origin, size, modelindex, kRenderTransAdd, 0, a, 0, FTENT_SPRANIMATE );
 	RecordSprite( *pos, modelindex, size, brightness );
 }
 
-void TE_Sprite( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_Sprite( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecDirection;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );
 	vecOrigin.y = pKeyValues->GetFloat( "originy" );
 	vecOrigin.z = pKeyValues->GetFloat( "originz" );
-	const char *pModelName = pKeyValues->GetString( "model" );
+	const char* pModelName = pKeyValues->GetString( "model" );
 	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
 	float flScale = pKeyValues->GetFloat( "scale" );
 	int nBrightness = pKeyValues->GetInt( "brightness" );

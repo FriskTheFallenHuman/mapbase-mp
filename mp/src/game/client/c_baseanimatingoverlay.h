@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -27,7 +27,7 @@ public:
 
 	C_BaseAnimatingOverlay();
 
-	virtual CStudioHdr *OnNewModel();
+	virtual CStudioHdr* OnNewModel();
 
 	C_AnimationLayer* GetAnimOverlay( int i );
 	void SetNumAnimOverlays( int num );	// This makes sure there is space for this # of layers.
@@ -35,11 +35,11 @@ public:
 
 	virtual void	GetRenderBounds( Vector& theMins, Vector& theMaxs );
 
-	void			CheckForLayerChanges( CStudioHdr *hdr, float currentTime );
+	void			CheckForLayerChanges( CStudioHdr* hdr, float currentTime );
 
 	// model specific
-	virtual void	AccumulateLayers( IBoneSetup &boneSetup, Vector pos[], Quaternion q[], float currentTime );
-	virtual void DoAnimationEvents( CStudioHdr *pStudioHdr );
+	virtual void	AccumulateLayers( IBoneSetup& boneSetup, Vector pos[], Quaternion q[], float currentTime );
+	virtual void DoAnimationEvents( CStudioHdr* pStudioHdr );
 
 	enum
 	{
@@ -53,11 +53,11 @@ public:
 	float m_flOverlayPrevEventCycle[ MAX_OVERLAYS ];
 
 private:
-	C_BaseAnimatingOverlay( const C_BaseAnimatingOverlay & ); // not defined, not accessible
+	C_BaseAnimatingOverlay( const C_BaseAnimatingOverlay& );  // not defined, not accessible
 };
 
 
-EXTERN_RECV_TABLE(DT_BaseAnimatingOverlay);
+EXTERN_RECV_TABLE( DT_BaseAnimatingOverlay );
 
 
 #endif // C_BASEANIMATINGOVERLAY_H

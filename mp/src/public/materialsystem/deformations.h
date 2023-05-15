@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -8,13 +8,13 @@
 #define DEFORMATIONS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
 
 // nonlinear transformations which may be applied to model vertices when rendering. must be powers of two
-enum DeformationType_t	
+enum DeformationType_t
 {
 	DEFORMATION_CLAMP_TO_BOX_IN_WORLDSPACE = 1,							// minxyz.minsoftness / maxxyz.maxsoftness
 };
@@ -43,7 +43,7 @@ struct BoxDeformation_t : DeformationBase_t
 	{
 		m_eType = DEFORMATION_CLAMP_TO_BOX_IN_WORLDSPACE;
 		// invalid cube
-		m_SourceMins.Init( 0,0,0 );
+		m_SourceMins.Init( 0, 0, 0 );
 		m_SourceMaxes.Init( -1, -1, -1 );
 
 		// no clamp

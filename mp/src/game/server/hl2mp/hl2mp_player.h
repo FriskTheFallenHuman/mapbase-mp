@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -28,12 +28,12 @@ class CHL2MPPlayerStateInfo
 {
 public:
 	HL2MPPlayerState m_iPlayerState;
-	const char *m_pStateName;
+	const char* m_pStateName;
 
-	void (CHL2MP_Player::*pfnEnterState)();	// Init and deinit the state.
-	void (CHL2MP_Player::*pfnLeaveState)();
+	void ( CHL2MP_Player::*pfnEnterState )();	// Init and deinit the state.
+	void ( CHL2MP_Player::*pfnLeaveState )();
 
-	void (CHL2MP_Player::*pfnPreThink)();	// Do a PreThink() in this state.
+	void ( CHL2MP_Player::*pfnPreThink )();	// Do a PreThink() in this state.
 };
 
 class CHL2MP_Player : public CHL2_Player
@@ -43,18 +43,18 @@ public:
 
 	CHL2MP_Player();
 	~CHL2MP_Player( void );
-	
-	static CHL2MP_Player *CreatePlayer( const char *className, edict_t *ed )
+
+	static CHL2MP_Player* CreatePlayer( const char* className, edict_t* ed )
 	{
 		CHL2MP_Player::s_PlayerEdict = ed;
-		return (CHL2MP_Player*)CreateEntityByName( className );
+		return ( CHL2MP_Player* )CreateEntityByName( className );
 	}
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 	DECLARE_PREDICTABLE();
 
-	void			SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
+	void			SetupBones( matrix3x4_t* pBoneToWorld, int boneMask );
 
 	virtual void Precache( void );
 	virtual void InitialSpawn( void );
@@ -63,20 +63,20 @@ public:
 	virtual void PreThink( void );
 	virtual void PlayerDeathThink( void );
 	virtual bool HandleCommand_JoinTeam( int team );
-	virtual bool ClientCommand( const CCommand &args );
+	virtual bool ClientCommand( const CCommand& args );
 	virtual void CreateViewModel( int viewmodelindex = 0 );
-	virtual bool BecomeRagdollOnClient( const Vector &force );
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual int OnTakeDamage( const CTakeDamageInfo &inputInfo );
-	virtual bool WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const;
+	virtual bool BecomeRagdollOnClient( const Vector& force );
+	virtual void Event_Killed( const CTakeDamageInfo& info );
+	virtual int OnTakeDamage( const CTakeDamageInfo& inputInfo );
+	virtual bool WantsLagCompensationOnEntity( const CBasePlayer* pPlayer, const CUserCmd* pCmd, const CBitVec<MAX_EDICTS>* pEntityTransmitBits ) const;
 	virtual void ChangeTeam( int iTeam );
 
-	virtual void Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector *pvecTarget = NULL, const Vector *pVelocity = NULL );
+	virtual void Weapon_Drop( CBaseCombatWeapon* pWeapon, const Vector* pvecTarget = NULL, const Vector* pVelocity = NULL );
 	virtual void UpdateOnRemove( void );
-	virtual void DeathSound( const CTakeDamageInfo &info );
+	virtual void DeathSound( const CTakeDamageInfo& info );
 	virtual CBaseEntity* EntSelectSpawnPoint( void );
 
-	bool	ValidatePlayerModel( const char *pModel );
+	bool	ValidatePlayerModel( const char* pModel );
 
 	void CheatImpulseCommands( int iImpulse );
 	void CreateRagdollEntity( void );
@@ -90,21 +90,30 @@ public:
 
 	void SetPlayerModel( void );
 	void SetPlayerTeamModel( void );
-	
-	float GetNextModelChangeTime( void ) { return m_flNextModelChangeTime; }
-	float GetNextTeamChangeTime( void ) { return m_flNextTeamChangeTime; }
+
+	float GetNextModelChangeTime( void )
+	{
+		return m_flNextModelChangeTime;
+	}
+	float GetNextTeamChangeTime( void )
+	{
+		return m_flNextTeamChangeTime;
+	}
 	void  PickDefaultSpawnTeam( void );
-	void  SetupPlayerSoundsByModel( const char *pModelName );
-	const char *GetPlayerModelSoundPrefix( void );
-	int	  GetPlayerModelType( void ) { return m_iPlayerSoundType; }
-	
+	void  SetupPlayerSoundsByModel( const char* pModelName );
+	const char* GetPlayerModelSoundPrefix( void );
+	int	  GetPlayerModelType( void )
+	{
+		return m_iPlayerSoundType;
+	}
+
 	void  DetonateTripmines( void );
 
 	void State_Transition( HL2MPPlayerState newState );
 	void State_Enter( HL2MPPlayerState newState );
 	void State_Leave();
 	void State_PreThink();
-	CHL2MPPlayerStateInfo *State_LookupInfo( HL2MPPlayerState state );
+	CHL2MPPlayerStateInfo* State_LookupInfo( HL2MPPlayerState state );
 
 	void State_Enter_ACTIVE();
 	void State_PreThink_ACTIVE();
@@ -119,11 +128,11 @@ public:
 	Vector m_vecTotalBulletForce;	//Accumulator for bullet force in a single frame
 
 	// Tracks our ragdoll entity.
-	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle 
+	CNetworkHandle( CBaseEntity, m_hRagdoll );	// networked entity handle
 
 	// Player avoidance
 
-	void HL2MPPushawayThink(void);
+	void HL2MPPushawayThink( void );
 
 // Shared code
 public:
@@ -132,27 +141,27 @@ public:
 	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
 
 	//Tony; when model is changed, need to init some stuff.
-	virtual CStudioHdr *OnNewModel( void );
+	virtual CStudioHdr* OnNewModel( void );
 
-	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	virtual void TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 
-	virtual void CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov );
+	virtual void CalcView( Vector& eyeOrigin, QAngle& eyeAngles, float& zNear, float& zFar, float& fov );
 
-	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
+	virtual void DoImpactEffect( trace_t& tr, int nDamageType );
 
-	virtual void FireBullets ( const FireBulletsInfo_t &info );
+	virtual void FireBullets( const FireBulletsInfo_t& info );
 
-	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget = NULL );
+	Vector GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget = NULL );
 
 	virtual Vector GetAutoaimVector( float flDelta );
 
-	virtual void PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force );
+	virtual void PlayStepSound( Vector& vecOrigin, surfacedata_t* psurface, float fvol, bool force );
 
 	virtual	bool ShouldCollide( int collisionGroup, int contentsMask ) const;
 
 private:
 
-	CHL2MPPlayerAnimState *m_PlayerAnimState;
+	CHL2MPPlayerAnimState* m_PlayerAnimState;
 
 	void LadderRespawnFix();
 
@@ -166,10 +175,10 @@ private:
 	float m_flNextModelChangeTime;
 	float m_flNextTeamChangeTime;
 
-	float m_flSlamProtectTime;	
+	float m_flSlamProtectTime;
 
 	HL2MPPlayerState m_iPlayerState;
-	CHL2MPPlayerStateInfo *m_pCurStateInfo;
+	CHL2MPPlayerStateInfo* m_pCurStateInfo;
 
 	bool m_bEnterObserver;
 
@@ -177,10 +186,12 @@ private:
 	CountdownTimer m_cycleLatchTimer;
 };
 
-inline CHL2MP_Player *ToHL2MPPlayer( CBaseEntity *pEntity )
+inline CHL2MP_Player* ToHL2MPPlayer( CBaseEntity* pEntity )
 {
-	if ( !pEntity || !pEntity->IsPlayer() )
+	if( !pEntity || !pEntity->IsPlayer() )
+	{
 		return NULL;
+	}
 
 	return dynamic_cast<CHL2MP_Player*>( pEntity );
 }

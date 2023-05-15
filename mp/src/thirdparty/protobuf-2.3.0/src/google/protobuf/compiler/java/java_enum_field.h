@@ -39,58 +39,64 @@
 #include <string>
 #include <google/protobuf/compiler/java/java_field.h>
 
-namespace google {
-namespace protobuf {
-namespace compiler {
-namespace java {
+namespace google
+{
+namespace protobuf
+{
+namespace compiler
+{
+namespace java
+{
 
-class EnumFieldGenerator : public FieldGenerator {
- public:
-  explicit EnumFieldGenerator(const FieldDescriptor* descriptor);
-  ~EnumFieldGenerator();
+class EnumFieldGenerator : public FieldGenerator
+{
+public:
+	explicit EnumFieldGenerator( const FieldDescriptor* descriptor );
+	~EnumFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GenerateMembers(io::Printer* printer) const;
-  void GenerateBuilderMembers(io::Printer* printer) const;
-  void GenerateInitializationCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateBuildingCode(io::Printer* printer) const;
-  void GenerateParsingCode(io::Printer* printer) const;
-  void GenerateSerializationCode(io::Printer* printer) const;
-  void GenerateSerializedSizeCode(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GenerateMembers( io::Printer* printer ) const;
+	void GenerateBuilderMembers( io::Printer* printer ) const;
+	void GenerateInitializationCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateBuildingCode( io::Printer* printer ) const;
+	void GenerateParsingCode( io::Printer* printer ) const;
+	void GenerateSerializationCode( io::Printer* printer ) const;
+	void GenerateSerializedSizeCode( io::Printer* printer ) const;
 
-  string GetBoxedType() const;
+	string GetBoxedType() const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(EnumFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( EnumFieldGenerator );
 };
 
-class RepeatedEnumFieldGenerator : public FieldGenerator {
- public:
-  explicit RepeatedEnumFieldGenerator(const FieldDescriptor* descriptor);
-  ~RepeatedEnumFieldGenerator();
+class RepeatedEnumFieldGenerator : public FieldGenerator
+{
+public:
+	explicit RepeatedEnumFieldGenerator( const FieldDescriptor* descriptor );
+	~RepeatedEnumFieldGenerator();
 
-  // implements FieldGenerator ---------------------------------------
-  void GenerateMembers(io::Printer* printer) const;
-  void GenerateBuilderMembers(io::Printer* printer) const;
-  void GenerateInitializationCode(io::Printer* printer) const;
-  void GenerateMergingCode(io::Printer* printer) const;
-  void GenerateBuildingCode(io::Printer* printer) const;
-  void GenerateParsingCode(io::Printer* printer) const;
-  void GenerateParsingCodeFromPacked(io::Printer* printer) const;
-  void GenerateSerializationCode(io::Printer* printer) const;
-  void GenerateSerializedSizeCode(io::Printer* printer) const;
+	// implements FieldGenerator ---------------------------------------
+	void GenerateMembers( io::Printer* printer ) const;
+	void GenerateBuilderMembers( io::Printer* printer ) const;
+	void GenerateInitializationCode( io::Printer* printer ) const;
+	void GenerateMergingCode( io::Printer* printer ) const;
+	void GenerateBuildingCode( io::Printer* printer ) const;
+	void GenerateParsingCode( io::Printer* printer ) const;
+	void GenerateParsingCodeFromPacked( io::Printer* printer ) const;
+	void GenerateSerializationCode( io::Printer* printer ) const;
+	void GenerateSerializedSizeCode( io::Printer* printer ) const;
 
-  string GetBoxedType() const;
+	string GetBoxedType() const;
 
- private:
-  const FieldDescriptor* descriptor_;
-  map<string, string> variables_;
+private:
+	const FieldDescriptor* descriptor_;
+	map<string, string> variables_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(RepeatedEnumFieldGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( RepeatedEnumFieldGenerator );
 };
 
 }  // namespace java

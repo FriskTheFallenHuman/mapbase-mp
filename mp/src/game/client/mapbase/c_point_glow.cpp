@@ -28,7 +28,10 @@ public:
 
 	void OnDataChanged( DataUpdateType_t type );
 
-	CGlowObject			*GetGlowObject( void ){ return m_pGlowEffect; }
+	CGlowObject*			GetGlowObject( void )
+	{
+		return m_pGlowEffect;
+	}
 	void				UpdateGlowEffect( void );
 	void				DestroyGlowEffect( void );
 
@@ -36,25 +39,25 @@ public:
 	color32 m_GlowColor;
 
 	bool				m_bGlowDisabled;
-	CGlowObject			*m_pGlowEffect;
+	CGlowObject*			m_pGlowEffect;
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_PointGlow, DT_PointGlow, CPointGlow )
-	RecvPropEHandle( RECVINFO( m_hGlowTarget ) ),
-	RecvPropInt( RECVINFO( m_GlowColor ), 0, RecvProxy_IntToColor32 ),
-	RecvPropBool( RECVINFO( m_bGlowDisabled ) ),
-END_RECV_TABLE()
+RecvPropEHandle( RECVINFO( m_hGlowTarget ) ),
+				 RecvPropInt( RECVINFO( m_GlowColor ), 0, RecvProxy_IntToColor32 ),
+				 RecvPropBool( RECVINFO( m_bGlowDisabled ) ),
+				 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_PointGlow::~C_PointGlow()
+				 C_PointGlow::~C_PointGlow()
 {
 	DestroyGlowEffect();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PointGlow::OnDataChanged( DataUpdateType_t updateType )
 {
@@ -64,24 +67,26 @@ void C_PointGlow::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PointGlow::UpdateGlowEffect( void )
 {
 	// destroy the existing effect
-	if ( m_pGlowEffect )
+	if( m_pGlowEffect )
 	{
 		DestroyGlowEffect();
 	}
 
 	// create a new effect
-	if ( !m_bGlowDisabled )
+	if( !m_bGlowDisabled )
 	{
 		Vector4D vecColor( m_GlowColor.r, m_GlowColor.g, m_GlowColor.b, m_GlowColor.a );
-		for (int i = 0; i < 4; i++)
+		for( int i = 0; i < 4; i++ )
 		{
-			if (vecColor[i] == 0.0f)
+			if( vecColor[i] == 0.0f )
+			{
 				continue;
+			}
 
 			vecColor[i] /= 255.0f;
 		}
@@ -91,11 +96,11 @@ void C_PointGlow::UpdateGlowEffect( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PointGlow::DestroyGlowEffect( void )
 {
-	if ( m_pGlowEffect )
+	if( m_pGlowEffect )
 	{
 		delete m_pGlowEffect;
 		m_pGlowEffect = NULL;

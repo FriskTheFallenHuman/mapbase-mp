@@ -12,7 +12,7 @@
 #include "saverestore_utlclass.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-------------------------------------
@@ -26,24 +26,24 @@ public:
 		UTLCLASS_SAVERESTORE_VALIDATE_TYPE( FIELD_TYPE );
 	}
 
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
-	{		
-		datamap_t *pTreeTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( (UTLRBTREE *)NULL );
-		typedescription_t dataDesc = 
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
+	{
+		datamap_t* pTreeTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( ( UTLRBTREE* )NULL );
+		typedescription_t dataDesc =
 		{
-			(fieldtype_t)FIELD_TYPE, 
-			"elem", 
+			( fieldtype_t )FIELD_TYPE,
+			"elem",
 			{ 0, 0 },
-			1, 
-			FTYPEDESC_SAVE, 
-			NULL, 
-			NULL, 
+			1,
+			FTYPEDESC_SAVE,
+			NULL,
+			NULL,
 			NULL,
 			pTreeTypeDatamap,
 			-1,
 		};
-		
-		datamap_t dataMap = 
+
+		datamap_t dataMap =
 		{
 			&dataDesc,
 			1,
@@ -56,18 +56,18 @@ public:
 			true
 #endif
 		};
-		
-		UTLRBTREE *pUtlRBTree = (UTLRBTREE *)fieldInfo.pField;
+
+		UTLRBTREE* pUtlRBTree = ( UTLRBTREE* )fieldInfo.pField;
 
 		pSave->StartBlock();
-		
+
 		int nElems = pUtlRBTree->Count();
 		pSave->WriteInt( &nElems, 1 );
 
 		typename UTLRBTREE::IndexType_t i = pUtlRBTree->FirstInorder();
-		while ( i != pUtlRBTree->InvalidIndex() )
+		while( i != pUtlRBTree->InvalidIndex() )
 		{
-			typename UTLRBTREE::ElemType_t &elem = pUtlRBTree->Element( i );
+			typename UTLRBTREE::ElemType_t& elem = pUtlRBTree->Element( i );
 
 			pSave->WriteAll( &elem, &dataMap );
 
@@ -75,25 +75,25 @@ public:
 		}
 		pSave->EndBlock();
 	}
-	
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		datamap_t *pTreeTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( (UTLRBTREE *)NULL );
-		typedescription_t dataDesc = 
+		datamap_t* pTreeTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( ( UTLRBTREE* )NULL );
+		typedescription_t dataDesc =
 		{
-			(fieldtype_t)FIELD_TYPE, 
-			"elems", 
+			( fieldtype_t )FIELD_TYPE,
+			"elems",
 			{ 0, 0 },
-			1, 
-			FTYPEDESC_SAVE, 
-			NULL, 
-			NULL, 
+			1,
+			FTYPEDESC_SAVE,
+			NULL,
+			NULL,
 			NULL,
 			pTreeTypeDatamap,
 			-1,
 		};
-		
-		datamap_t dataMap = 
+
+		datamap_t dataMap =
 		{
 			&dataDesc,
 			1,
@@ -106,35 +106,35 @@ public:
 			true
 #endif
 		};
-		
-		UTLRBTREE *pUtlRBTree = (UTLRBTREE *)fieldInfo.pField;
+
+		UTLRBTREE* pUtlRBTree = ( UTLRBTREE* )fieldInfo.pField;
 
 		pRestore->StartBlock();
 
 		int nElems = pRestore->ReadInt();
 		typename UTLRBTREE::ElemType_t temp;
 
-		while ( nElems-- )
+		while( nElems-- )
 		{
 			pRestore->ReadAll( &temp, &dataMap );
 			pUtlRBTree->Insert( temp );
 		}
-		
+
 		pRestore->EndBlock();
 	}
-	
-	virtual void MakeEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+
+	virtual void MakeEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		UTLRBTREE *pUtlRBTree = (UTLRBTREE *)fieldInfo.pField;
+		UTLRBTREE* pUtlRBTree = ( UTLRBTREE* )fieldInfo.pField;
 		pUtlRBTree->RemoveAll();
 	}
 
-	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual bool IsEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		UTLRBTREE *pUtlRBTree = (UTLRBTREE *)fieldInfo.pField;
+		UTLRBTREE* pUtlRBTree = ( UTLRBTREE* )fieldInfo.pField;
 		return ( pUtlRBTree->Count() == 0 );
 	}
-	
+
 };
 
 //-------------------------------------
@@ -144,7 +144,7 @@ class CUtlRBTreeDataopsInstantiator
 {
 public:
 	template <class UTLRBTREE>
-	static ISaveRestoreOps *GetDataOps(UTLRBTREE *)
+	static ISaveRestoreOps* GetDataOps( UTLRBTREE* )
 	{
 		static CUtlRBTreeDataOps<UTLRBTREE, FIELD_TYPE> ops;
 		return &ops;

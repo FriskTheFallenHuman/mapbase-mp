@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef EFFECT_COLOR_TABLES_H
 #define EFFECT_COLOR_TABLES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 struct colorentry_t
 {
 	unsigned char	index;
-	
+
 	unsigned char	r;
 	unsigned char	g;
 	unsigned char	b;

@@ -26,30 +26,54 @@ public:
 	CGlobalLight();
 
 	void Spawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
-	virtual bool GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	bool KeyValue( const char* szKeyName, const char* szValue );
+	virtual bool GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 	int  UpdateTransmitState();
 
 	// Inputs
-	void	InputSetAngles( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
-	void	InputSetTexture( inputdata_t &inputdata );
-	void	InputSetEnableShadows( inputdata_t &inputdata );
-	void	InputSetLightColor( inputdata_t &inputdata );
+	void	InputSetAngles( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
+	void	InputSetTexture( inputdata_t& inputdata );
+	void	InputSetEnableShadows( inputdata_t& inputdata );
+	void	InputSetLightColor( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void	InputSetBrightness( inputdata_t &inputdata );
-	void	InputSetColorTransitionTime( inputdata_t &inputdata );
-	void	InputSetXOffset( inputdata_t &inputdata ) { m_flEastOffset = inputdata.value.Float(); }
-	void	InputSetYOffset( inputdata_t &inputdata ) { m_flForwardOffset = inputdata.value.Float(); }
-	void	InputSetOrthoSize( inputdata_t &inputdata ) { m_flOrthoSize = inputdata.value.Float(); }
-	void	InputSetDistance( inputdata_t &inputdata ) { m_flSunDistance = inputdata.value.Float(); }
-	void	InputSetFOV( inputdata_t &inputdata ) { m_flFOV = inputdata.value.Float(); }
-	void	InputSetNearZDistance( inputdata_t &inputdata ) { m_flNearZ = inputdata.value.Float(); }
-	void	InputSetNorthOffset( inputdata_t &inputdata ) { m_flNorthOffset = inputdata.value.Float(); }
+	void	InputSetBrightness( inputdata_t& inputdata );
+	void	InputSetColorTransitionTime( inputdata_t& inputdata );
+	void	InputSetXOffset( inputdata_t& inputdata )
+	{
+		m_flEastOffset = inputdata.value.Float();
+	}
+	void	InputSetYOffset( inputdata_t& inputdata )
+	{
+		m_flForwardOffset = inputdata.value.Float();
+	}
+	void	InputSetOrthoSize( inputdata_t& inputdata )
+	{
+		m_flOrthoSize = inputdata.value.Float();
+	}
+	void	InputSetDistance( inputdata_t& inputdata )
+	{
+		m_flSunDistance = inputdata.value.Float();
+	}
+	void	InputSetFOV( inputdata_t& inputdata )
+	{
+		m_flFOV = inputdata.value.Float();
+	}
+	void	InputSetNearZDistance( inputdata_t& inputdata )
+	{
+		m_flNearZ = inputdata.value.Float();
+	}
+	void	InputSetNorthOffset( inputdata_t& inputdata )
+	{
+		m_flNorthOffset = inputdata.value.Float();
+	}
 #endif
 
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
@@ -80,34 +104,34 @@ private:
 	CNetworkVar( bool, m_bEnableShadows );
 };
 
-LINK_ENTITY_TO_CLASS(env_global_light, CGlobalLight);
+LINK_ENTITY_TO_CLASS( env_global_light, CGlobalLight );
 
 BEGIN_DATADESC( CGlobalLight )
 
-	DEFINE_KEYFIELD( m_bEnabled,		FIELD_BOOLEAN, "enabled" ),
-	DEFINE_AUTO_ARRAY_KEYFIELD( m_TextureName, FIELD_CHARACTER, "texturename" ),
+DEFINE_KEYFIELD( m_bEnabled,		FIELD_BOOLEAN, "enabled" ),
+					   DEFINE_AUTO_ARRAY_KEYFIELD( m_TextureName, FIELD_CHARACTER, "texturename" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_nSpotlightTextureFrame, FIELD_INTEGER, "textureframe" ),
 #endif
-	DEFINE_KEYFIELD( m_flSunDistance,	FIELD_FLOAT, "distance" ),
-	DEFINE_KEYFIELD( m_flFOV,	FIELD_FLOAT, "fov" ),
-	DEFINE_KEYFIELD( m_flNearZ,	FIELD_FLOAT, "nearz" ),
-	DEFINE_KEYFIELD( m_flNorthOffset,	FIELD_FLOAT, "northoffset" ),
+					   DEFINE_KEYFIELD( m_flSunDistance,	FIELD_FLOAT, "distance" ),
+					   DEFINE_KEYFIELD( m_flFOV,	FIELD_FLOAT, "fov" ),
+					   DEFINE_KEYFIELD( m_flNearZ,	FIELD_FLOAT, "nearz" ),
+					   DEFINE_KEYFIELD( m_flNorthOffset,	FIELD_FLOAT, "northoffset" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_flEastOffset,	FIELD_FLOAT, "eastoffset" ),
 	DEFINE_KEYFIELD( m_flForwardOffset,	FIELD_FLOAT, "forwardoffset" ),
 	DEFINE_KEYFIELD( m_flOrthoSize,	FIELD_FLOAT, "orthosize" ),
 #endif
-	DEFINE_KEYFIELD( m_bEnableShadows, FIELD_BOOLEAN, "enableshadows" ),
-	DEFINE_FIELD( m_LightColor, FIELD_COLOR32 ), 
+					   DEFINE_KEYFIELD( m_bEnableShadows, FIELD_BOOLEAN, "enableshadows" ),
+					   DEFINE_FIELD( m_LightColor, FIELD_COLOR32 ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_flBrightnessScale, FIELD_FLOAT, "brightnessscale" ),
 #endif
-	DEFINE_KEYFIELD( m_flColorTransitionTime, FIELD_FLOAT, "colortransitiontime" ),
+					   DEFINE_KEYFIELD( m_flColorTransitionTime, FIELD_FLOAT, "colortransitiontime" ),
 
-	DEFINE_FIELD( m_shadowDirection, FIELD_VECTOR ),
+					   DEFINE_FIELD( m_shadowDirection, FIELD_VECTOR ),
 
-	// Inputs
+					   // Inputs
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetXOffset", InputSetXOffset ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetYOffset", InputSetYOffset ),
@@ -123,47 +147,47 @@ BEGIN_DATADESC( CGlobalLight )
 	DEFINE_INPUT( m_flNorthOffset,			FIELD_FLOAT, "SetNorthOffset" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_COLOR32, "LightColor", InputSetLightColor ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetAngles", InputSetAngles ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetTexture", InputSetTexture ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "EnableShadows", InputSetEnableShadows ),
+					   DEFINE_INPUTFUNC( FIELD_COLOR32, "LightColor", InputSetLightColor ),
+					   DEFINE_INPUTFUNC( FIELD_STRING, "SetAngles", InputSetAngles ),
+					   DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+					   DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+					   DEFINE_INPUTFUNC( FIELD_STRING, "SetTexture", InputSetTexture ),
+					   DEFINE_INPUTFUNC( FIELD_BOOLEAN, "EnableShadows", InputSetEnableShadows ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetBrightness", InputSetBrightness ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetColorTransitionTime", InputSetColorTransitionTime ),
 #endif
 
-END_DATADESC()
+					   END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CGlobalLight, DT_GlobalLight)
-	SendPropVector(SENDINFO(m_shadowDirection), -1,  SPROP_NOSCALE ),
-	SendPropBool(SENDINFO(m_bEnabled) ),
-	SendPropString(SENDINFO(m_TextureName)),
+					   IMPLEMENT_SERVERCLASS_ST_NOBASE( CGlobalLight, DT_GlobalLight )
+					   SendPropVector( SENDINFO( m_shadowDirection ), -1,  SPROP_NOSCALE ),
+					   SendPropBool( SENDINFO( m_bEnabled ) ),
+					   SendPropString( SENDINFO( m_TextureName ) ),
 #ifdef MAPBASE
-	SendPropInt(SENDINFO(m_nSpotlightTextureFrame)),
+	SendPropInt( SENDINFO( m_nSpotlightTextureFrame ) ),
 #endif
-	/*SendPropInt(SENDINFO (m_LightColor ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),*/
-	SendPropInt(SENDINFO (m_LightColor ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
+					   /*SendPropInt(SENDINFO (m_LightColor ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),*/
+					   SendPropInt( SENDINFO( m_LightColor ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 #ifdef MAPBASE
 	SendPropFloat( SENDINFO( m_flBrightnessScale ) ),
 #endif
-	SendPropFloat( SENDINFO( m_flColorTransitionTime ) ),
-	SendPropFloat(SENDINFO(m_flSunDistance), 0, SPROP_NOSCALE ),
-	SendPropFloat(SENDINFO(m_flFOV), 0, SPROP_NOSCALE ),
-	SendPropFloat(SENDINFO(m_flNearZ), 0, SPROP_NOSCALE ),
-	SendPropFloat(SENDINFO(m_flNorthOffset), 0, SPROP_NOSCALE ),
+					   SendPropFloat( SENDINFO( m_flColorTransitionTime ) ),
+					   SendPropFloat( SENDINFO( m_flSunDistance ), 0, SPROP_NOSCALE ),
+					   SendPropFloat( SENDINFO( m_flFOV ), 0, SPROP_NOSCALE ),
+					   SendPropFloat( SENDINFO( m_flNearZ ), 0, SPROP_NOSCALE ),
+					   SendPropFloat( SENDINFO( m_flNorthOffset ), 0, SPROP_NOSCALE ),
 #ifdef MAPBASE
-	SendPropFloat(SENDINFO(m_flEastOffset), 0, SPROP_NOSCALE ),
-	SendPropFloat(SENDINFO(m_flForwardOffset), 0, SPROP_NOSCALE ),
-	SendPropFloat(SENDINFO(m_flOrthoSize), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flEastOffset ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flForwardOffset ), 0, SPROP_NOSCALE ),
+	SendPropFloat( SENDINFO( m_flOrthoSize ), 0, SPROP_NOSCALE ),
 #endif
-	SendPropBool( SENDINFO( m_bEnableShadows ) ),
-END_SEND_TABLE()
+					   SendPropBool( SENDINFO( m_bEnableShadows ) ),
+					   END_SEND_TABLE()
 
 
-CGlobalLight::CGlobalLight()
+					   CGlobalLight::CGlobalLight()
 {
 #if defined( _X360 )
 	Q_strcpy( m_TextureName.GetForModify(), "effects/flashlight_border" );
@@ -198,12 +222,12 @@ int CGlobalLight::UpdateTransmitState()
 }
 
 
-bool CGlobalLight::KeyValue( const char *szKeyName, const char *szValue )
+bool CGlobalLight::KeyValue( const char* szKeyName, const char* szValue )
 {
 #ifdef MAPBASE
-	if ( FStrEq( szKeyName, "lightcolor" ) || FStrEq( szKeyName, "color" ) )
+	if( FStrEq( szKeyName, "lightcolor" ) || FStrEq( szKeyName, "color" ) )
 #else
-	if ( FStrEq( szKeyName, "color" ) )
+	if( FStrEq( szKeyName, "color" ) )
 #endif
 	{
 		float tmp[4];
@@ -214,11 +238,11 @@ bool CGlobalLight::KeyValue( const char *szKeyName, const char *szValue )
 		m_LightColor.SetB( tmp[2] );
 		m_LightColor.SetA( tmp[3] );
 	}
-	else if ( FStrEq( szKeyName, "angles" ) )
+	else if( FStrEq( szKeyName, "angles" ) )
 	{
 		QAngle angles;
 		UTIL_StringToVector( angles.Base(), szValue );
-		if (angles == vec3_angle)
+		if( angles == vec3_angle )
 		{
 			angles.Init( 80, 30, 0 );
 		}
@@ -227,10 +251,10 @@ bool CGlobalLight::KeyValue( const char *szKeyName, const char *szValue )
 		m_shadowDirection = vForward;
 		return true;
 	}
-	else if ( FStrEq( szKeyName, "texturename" ) )
+	else if( FStrEq( szKeyName, "texturename" ) )
 	{
 #if defined( _X360 )
-		if ( Q_strcmp( szValue, "effects/flashlight001" ) == 0 )
+		if( Q_strcmp( szValue, "effects/flashlight001" ) == 0 )
 		{
 			// Use this as the default for Xbox
 			Q_strcpy( m_TextureName.GetForModify(), "effects/flashlight_border" );
@@ -243,7 +267,7 @@ bool CGlobalLight::KeyValue( const char *szKeyName, const char *szValue )
 		Q_strcpy( m_TextureName.GetForModify(), szValue );
 #endif
 	}
-	else if ( FStrEq( szKeyName, "StartDisabled" ) )
+	else if( FStrEq( szKeyName, "StartDisabled" ) )
 	{
 		m_bEnabled.Set( atoi( szValue ) <= 0 );
 	}
@@ -251,19 +275,19 @@ bool CGlobalLight::KeyValue( const char *szKeyName, const char *szValue )
 	return BaseClass::KeyValue( szKeyName, szValue );
 }
 
-bool CGlobalLight::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen )
+bool CGlobalLight::GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen )
 {
-	if ( FStrEq( szKeyName, "color" ) )
+	if( FStrEq( szKeyName, "color" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%d %d %d %d", m_LightColor.GetR(), m_LightColor.GetG(), m_LightColor.GetB(), m_LightColor.GetA() );
 		return true;
 	}
-	else if ( FStrEq( szKeyName, "texturename" ) )
+	else if( FStrEq( szKeyName, "texturename" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%s", m_TextureName.Get() );
 		return true;
 	}
-	else if ( FStrEq( szKeyName, "StartDisabled" ) )
+	else if( FStrEq( szKeyName, "StartDisabled" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%d", !m_bEnabled.Get() );
 		return true;
@@ -283,9 +307,9 @@ void CGlobalLight::Spawn( void )
 //------------------------------------------------------------------------------
 // Input values
 //------------------------------------------------------------------------------
-void CGlobalLight::InputSetAngles( inputdata_t &inputdata )
+void CGlobalLight::InputSetAngles( inputdata_t& inputdata )
 {
-	const char *pAngles = inputdata.value.String();
+	const char* pAngles = inputdata.value.String();
 
 	QAngle angles;
 	UTIL_StringToVector( angles.Base(), pAngles );
@@ -298,38 +322,38 @@ void CGlobalLight::InputSetAngles( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose : Input handlers
 //------------------------------------------------------------------------------
-void CGlobalLight::InputEnable( inputdata_t &inputdata )
+void CGlobalLight::InputEnable( inputdata_t& inputdata )
 {
 	m_bEnabled = true;
 }
 
-void CGlobalLight::InputDisable( inputdata_t &inputdata )
+void CGlobalLight::InputDisable( inputdata_t& inputdata )
 {
 	m_bEnabled = false;
 }
 
-void CGlobalLight::InputSetTexture( inputdata_t &inputdata )
+void CGlobalLight::InputSetTexture( inputdata_t& inputdata )
 {
 	Q_strcpy( m_TextureName.GetForModify(), inputdata.value.String() );
 }
 
-void CGlobalLight::InputSetEnableShadows( inputdata_t &inputdata )
+void CGlobalLight::InputSetEnableShadows( inputdata_t& inputdata )
 {
 	m_bEnableShadows = inputdata.value.Bool();
 }
 
-void CGlobalLight::InputSetLightColor( inputdata_t &inputdata )
+void CGlobalLight::InputSetLightColor( inputdata_t& inputdata )
 {
 	m_LightColor = inputdata.value.Color32();
-} 
+}
 
 #ifdef MAPBASE
-void CGlobalLight::InputSetBrightness( inputdata_t &inputdata )
+void CGlobalLight::InputSetBrightness( inputdata_t& inputdata )
 {
 	m_flBrightnessScale = inputdata.value.Float();
 }
 
-void CGlobalLight::InputSetColorTransitionTime( inputdata_t &inputdata )
+void CGlobalLight::InputSetColorTransitionTime( inputdata_t& inputdata )
 {
 	m_flColorTransitionTime = inputdata.value.Float();
 }

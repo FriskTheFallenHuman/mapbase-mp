@@ -39,56 +39,70 @@
 #include <vector>
 #include <google/protobuf/stubs/common.h>
 
-namespace google {
-namespace protobuf {
-  class FileDescriptor;        // descriptor.h
-  namespace io {
-    class Printer;             // printer.h
-  }
-  namespace compiler {
-    class OutputDirectory;     // code_generator.h
-  }
+namespace google
+{
+namespace protobuf
+{
+class FileDescriptor;        // descriptor.h
+namespace io
+{
+class Printer;             // printer.h
+}
+namespace compiler
+{
+class OutputDirectory;     // code_generator.h
+}
 }
 
-namespace protobuf {
-namespace compiler {
-namespace java {
+namespace protobuf
+{
+namespace compiler
+{
+namespace java
+{
 
-class FileGenerator {
- public:
-  explicit FileGenerator(const FileDescriptor* file);
-  ~FileGenerator();
+class FileGenerator
+{
+public:
+	explicit FileGenerator( const FileDescriptor* file );
+	~FileGenerator();
 
-  // Checks for problems that would otherwise lead to cryptic compile errors.
-  // Returns true if there are no problems, or writes an error description to
-  // the given string and returns false otherwise.
-  bool Validate(string* error);
+	// Checks for problems that would otherwise lead to cryptic compile errors.
+	// Returns true if there are no problems, or writes an error description to
+	// the given string and returns false otherwise.
+	bool Validate( string* error );
 
-  void Generate(io::Printer* printer);
+	void Generate( io::Printer* printer );
 
-  // If we aren't putting everything into one file, this will write all the
-  // files other than the outer file (i.e. one for each message, enum, and
-  // service type).
-  void GenerateSiblings(const string& package_dir,
-                        OutputDirectory* output_directory,
-                        vector<string>* file_list);
+	// If we aren't putting everything into one file, this will write all the
+	// files other than the outer file (i.e. one for each message, enum, and
+	// service type).
+	void GenerateSiblings( const string& package_dir,
+						   OutputDirectory* output_directory,
+						   vector<string>* file_list );
 
-  const string& java_package() { return java_package_; }
-  const string& classname()    { return classname_;    }
+	const string& java_package()
+	{
+		return java_package_;
+	}
+	const string& classname()
+	{
+		return classname_;
+	}
 
- private:
-  // Returns whether the dependency should be included in the output file.
-  // Always returns true for opensource, but used internally at Google to help
-  // improve compatibility with version 1 of protocol buffers.
-  bool ShouldIncludeDependency(const FileDescriptor* descriptor);
+private:
+	// Returns whether the dependency should be included in the output file.
+	// Always returns true for opensource, but used internally at Google to help
+	// improve compatibility with version 1 of protocol buffers.
+	bool ShouldIncludeDependency( const FileDescriptor* descriptor );
 
-  const FileDescriptor* file_;
-  string java_package_;
-  string classname_;
+	const FileDescriptor* file_;
+	string java_package_;
+	string classname_;
 
-  void GenerateEmbeddedDescriptor(io::Printer* printer);
+	void GenerateEmbeddedDescriptor( io::Printer* printer );
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(FileGenerator);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( FileGenerator );
 };
 
 }  // namespace java

@@ -43,7 +43,7 @@ PRECACHE_WEAPON_REGISTER( weapon_flaregun );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t CWeaponFlaregun::m_acttable[] = 
+acttable_t CWeaponFlaregun::m_acttable[] =
 {
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
 	{ ACT_IDLE,						ACT_IDLE_REVOLVER,					true },
@@ -67,7 +67,7 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 	{ ACT_RELOAD,					ACT_RELOAD_PISTOL,				true },
 	{ ACT_WALK_AIM,					ACT_WALK_AIM_PISTOL,			true },
 	{ ACT_RUN_AIM,					ACT_RUN_AIM_PISTOL,				true },
-	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL,true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL, true },
 	{ ACT_RELOAD_LOW,				ACT_RELOAD_PISTOL_LOW,			false },
 	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_PISTOL_LOW,	false },
 	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
@@ -77,9 +77,9 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 	{ ACT_RUN,						ACT_RUN_PISTOL,					false },
 #endif
 
-	// 
+	//
 	// Activities ported from weapon_alyxgun below
-	// 
+	//
 
 	// Readiness activities (not aiming)
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
@@ -101,7 +101,7 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 #endif
 	{ ACT_WALK_AGITATED,			ACT_WALK_AIM_PISTOL,			false },//always aims
 	{ ACT_WALK_STEALTH,				ACT_WALK_STEALTH_PISTOL,		false },
-	
+
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
 	{ ACT_RUN_RELAXED,				ACT_RUN_PISTOL_RELAXED,			false },//never aims
 	{ ACT_RUN_STIMULATED,			ACT_RUN_PISTOL_STIMULATED,		false },
@@ -113,7 +113,7 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
 
 	// Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY_PISTOL,			false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
 	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
@@ -131,7 +131,7 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 
 	// Crouch activities
 	{ ACT_CROUCHIDLE_STIMULATED,	ACT_CROUCHIDLE_STIMULATED,		false },
-	{ ACT_CROUCHIDLE_AIM_STIMULATED,ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+	{ ACT_CROUCHIDLE_AIM_STIMULATED, ACT_RANGE_AIM_PISTOL_LOW,		false }, //always aims
 	{ ACT_CROUCHIDLE_AGITATED,		ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
 
 	// Readiness translations
@@ -145,7 +145,7 @@ acttable_t CWeaponFlaregun::m_acttable[] =
 	{ ACT_RANGE_ATTACK1_MED,		ACT_RANGE_ATTACK_REVOLVER_MED,		false },
 #endif
 
-		// HL2:DM activities (for third-person animations in SP)
+	// HL2:DM activities (for third-person animations in SP)
 #if EXPANDED_HL2DM_ACTIVITIES
 	// HL2:DM activities (for third-person animations in SP)
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_REVOLVER,					false },
@@ -203,16 +203,16 @@ void CWeaponFlaregun::Precache( void )
 void CWeaponFlaregun::PrimaryAttack( void )
 {
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
-	if ( !pPlayer )
+	if( !pPlayer )
 	{
 		return;
 	}
 
-	if ( m_iClip1 <= 0 )
+	if( m_iClip1 <= 0 )
 	{
-		if ( !m_bFireOnEmpty )
+		if( !m_bFireOnEmpty )
 		{
 			Reload();
 		}
@@ -246,9 +246,11 @@ void CWeaponFlaregun::PrimaryAttack( void )
 	pPlayer->EyeVectors( &forward );
 
 #ifdef GAME_DLL
-	CFlare *pFlare = CFlare::Create( pPlayer->Weapon_ShootPosition(), pPlayer->EyeAngles(), pPlayer, FLARE_DURATION );
-	if ( pFlare )
-		pFlare->SetAbsVelocity( forward * 1500 );	
+	CFlare* pFlare = CFlare::Create( pPlayer->Weapon_ShootPosition(), pPlayer->EyeAngles(), pPlayer, FLARE_DURATION );
+	if( pFlare )
+	{
+		pFlare->SetAbsVelocity( forward * 1500 );
+	}
 #endif // GANE_DLL
 
 #ifdef GAME_DLL
@@ -268,9 +270,9 @@ void CWeaponFlaregun::PrimaryAttack( void )
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 600, 0.2, GetOwner() );
 #endif
 
-	if ( !m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	if( !m_iClip1 && pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 	{
 		// HEV suit - indicate out of ammo condition
-		pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 ); 
+		pPlayer->SetSuitUpdate( "!HEV_AMO0", FALSE, 0 );
 	}
 }

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef ISERVERENGINETOOLS_H
 #define ISERVERENGINETOOLS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
@@ -38,7 +38,7 @@ public:
 
 	// The server uses this to call into the tools to get the actual
 	// entities to spawn on startup
-	virtual const char* GetEntityData( const char *pActualEntityData ) = 0;
+	virtual const char* GetEntityData( const char* pActualEntityData ) = 0;
 
 	virtual void PreSetupVisibilityAllTools() = 0;
 

@@ -16,30 +16,30 @@
 
 using namespace vgui;
 
-CHudBaseTimer::CHudBaseTimer(vgui::Panel *parent, const char *name) : BaseClass(parent, name)
+CHudBaseTimer::CHudBaseTimer( vgui::Panel* parent, const char* name ) : BaseClass( parent, name )
 {
 	m_iMinutes = 0;
 	m_iSeconds = 0;
-	SetLabelText(L"");
+	SetLabelText( L"" );
 }
 
-void CHudBaseTimer::SetMinutes(int minutes)
-{	
+void CHudBaseTimer::SetMinutes( int minutes )
+{
 	m_iMinutes = minutes;
 }
 
-void CHudBaseTimer::SetSeconds(int seconds)
-{	
+void CHudBaseTimer::SetSeconds( int seconds )
+{
 	m_iSeconds = seconds;
 }
 
-void CHudBaseTimer::PaintTime(HFont font, int xpos, int ypos, int mins, int secs)
+void CHudBaseTimer::PaintTime( HFont font, int xpos, int ypos, int mins, int secs )
 {
-	surface()->DrawSetTextFont(font);
+	surface()->DrawSetTextFont( font );
 	wchar_t unicode[6];
-	V_snwprintf(unicode, ARRAYSIZE(unicode), L"%d:%.2d", mins, secs);
-	
-	surface()->DrawSetTextPos(xpos, ypos);
+	V_snwprintf( unicode, ARRAYSIZE( unicode ), L"%d:%.2d", mins, secs );
+
+	surface()->DrawSetTextPos( xpos, ypos );
 	surface()->DrawUnicodeString( unicode );
 }
 
@@ -49,24 +49,24 @@ void CHudBaseTimer::Paint()
 	Color fgColor = GetFgColor();
 	fgColor[3] *= alpha;
 	SetFgColor( fgColor );
-	
-	surface()->DrawSetTextColor(GetFgColor());
+
+	surface()->DrawSetTextColor( GetFgColor() );
 	PaintTime( m_hNumberFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds );
 
 	// draw the overbright blur
-	for (float fl = m_flBlur; fl > 0.0f; fl -= 1.0f)
+	for( float fl = m_flBlur; fl > 0.0f; fl -= 1.0f )
 	{
-		if (fl >= 1.0f)
+		if( fl >= 1.0f )
 		{
-			PaintTime(m_hNumberGlowFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds);
+			PaintTime( m_hNumberGlowFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds );
 		}
 		else
 		{
 			// draw a percentage of the last one
 			Color col = GetFgColor();
 			col[3] *= fl;
-			surface()->DrawSetTextColor(col);
-			PaintTime(m_hNumberGlowFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds);
+			surface()->DrawSetTextColor( col );
+			PaintTime( m_hNumberGlowFont, digit_xpos, digit_ypos, m_iMinutes, m_iSeconds );
 		}
 	}
 
@@ -75,10 +75,10 @@ void CHudBaseTimer::Paint()
 
 void CHudBaseTimer::SetToPrimaryColor()
 {
-	SetFgColor(m_TextColor);
+	SetFgColor( m_TextColor );
 }
 
 void CHudBaseTimer::SetToSecondaryColor()
 {
-	SetFgColor(m_FlashColor);
+	SetFgColor( m_FlashColor );
 }

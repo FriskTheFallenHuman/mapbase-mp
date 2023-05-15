@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -35,7 +35,7 @@ static double Benchmark_ValidTime()
 	Plat_SetBenchmarkMode( false );
 	double flRet = Plat_FloatTime();
 	Plat_SetBenchmarkMode( bOld );
-	
+
 	return flRet;
 }
 
@@ -49,14 +49,14 @@ public:
 	CServerBenchmark()
 	{
 		m_BenchmarkState = BENCHMARKSTATE_NOT_RUNNING;
-		
+
 		// The benchmark should always have the same seed and do exactly the same thing on the same ticks.
-		m_RandomStream.SetSeed( 1111 ); 
+		m_RandomStream.SetSeed( 1111 );
 	}
 
 	virtual bool StartBenchmark()
 	{
-		bool bBenchmark = (CommandLine()->FindParm( "-sv_benchmark" ) != 0);
+		bool bBenchmark = ( CommandLine()->FindParm( "-sv_benchmark" ) != 0 );
 
 		return InternalStartBenchmark( bBenchmark, s_flBenchmarkStartWaitSeconds );
 	}
@@ -66,20 +66,24 @@ public:
 	//                 2 = exit out afterwards and write sv_benchmark.txt
 	bool InternalStartBenchmark( int nBenchmarkMode, float flCountdown )
 	{
-		bool bWasRunningBenchmark = (m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING);
+		bool bWasRunningBenchmark = ( m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING );
 
-		if ( nBenchmarkMode == 0 )
+		if( nBenchmarkMode == 0 )
 		{
 			// Tear down the previous benchmark environment if necessary.
-			if ( bWasRunningBenchmark )
+			if( bWasRunningBenchmark )
+			{
 				EndBenchmark();
+			}
 			return false;
 		}
 
 		m_nBenchmarkMode = nBenchmarkMode;
 
-		if ( !CServerBenchmarkHook::s_pBenchmarkHook )
+		if( !CServerBenchmarkHook::s_pBenchmarkHook )
+		{
 			Error( "This game doesn't support server benchmarks (no CServerBenchmarkHook found)." );
+		}
 
 		m_BenchmarkState = BENCHMARKSTATE_START_WAIT;
 		m_flBenchmarkStartTime = Plat_FloatTime();
@@ -100,14 +104,16 @@ public:
 
 	virtual void UpdateBenchmark()
 	{
-		// No benchmark running?	
-		if ( m_BenchmarkState == BENCHMARKSTATE_NOT_RUNNING )
+		// No benchmark running?
+		if( m_BenchmarkState == BENCHMARKSTATE_NOT_RUNNING )
+		{
 			return;
+		}
 
 		// Wait a certain number of ticks to start the benchmark.
-		if ( m_BenchmarkState == BENCHMARKSTATE_START_WAIT )
+		if( m_BenchmarkState == BENCHMARKSTATE_START_WAIT )
 		{
-			if ( (Plat_FloatTime() - m_flBenchmarkStartTime) < m_flBenchmarkStartWaitTime )
+			if( ( Plat_FloatTime() - m_flBenchmarkStartTime ) < m_flBenchmarkStartWaitTime )
 			{
 				UpdateStartWaitCounter();
 				return;
@@ -131,9 +137,9 @@ public:
 
 		int nTicksRunSoFar = gpGlobals->tickcount - m_nBenchmarkStartTick;
 		UpdateBenchmarkCounter();
-	
+
 		// Are we finished with the benchmark?
-		if ( nTicksRunSoFar >= sv_benchmark_numticks.GetInt() )
+		if( nTicksRunSoFar >= sv_benchmark_numticks.GetInt() )
 		{
 			EndVProfRecord();
 			OutputResults();
@@ -149,7 +155,7 @@ public:
 
 	void StartVProfRecord()
 	{
-		if ( sv_benchmark_autovprofrecord.GetInt() )
+		if( sv_benchmark_autovprofrecord.GetInt() )
 		{
 			engine->ServerCommand( "vprof_record_start benchmark\n" );
 			engine->ServerExecute();
@@ -158,7 +164,7 @@ public:
 
 	void EndVProfRecord()
 	{
-		if ( sv_benchmark_autovprofrecord.GetInt() )
+		if( sv_benchmark_autovprofrecord.GetInt() )
 		{
 			engine->ServerCommand( "vprof_record_stop\n" );
 			engine->ServerExecute();
@@ -169,12 +175,12 @@ public:
 	{
 		// Write out the results if we're running the build scripts.
 		float flRunTime = Benchmark_ValidTime() - m_fl_ValidTime_BenchmarkStartTime;
-		if ( m_nBenchmarkMode == 2 )
+		if( m_nBenchmarkMode == 2 )
 		{
 			FileHandle_t fh = filesystem->Open( "sv_benchmark_results.txt", "wt", "DEFAULT_WRITE_PATH" );
-			
+
 			// If this file doesn't get written out, then the build script will generate an email that there's a problem somewhere.
-			if ( fh )
+			if( fh )
 			{
 				filesystem->FPrintf( fh, "sv_benchmark := %.2f\n", flRunTime );
 			}
@@ -183,19 +189,21 @@ public:
 			// Quit out.
 			engine->ServerCommand( "quit\n" );
 		}
-		
+
 		m_BenchmarkState = BENCHMARKSTATE_NOT_RUNNING;
 		engine->SetDedicatedServerBenchmarkMode( false );
 	}
 
-	virtual bool IsLocalBenchmarkPlayer( CBasePlayer *pPlayer )
+	virtual bool IsLocalBenchmarkPlayer( CBasePlayer* pPlayer )
 	{
-		if ( m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING )
+		if( m_BenchmarkState != BENCHMARKSTATE_NOT_RUNNING )
 		{
 			if( !engine->IsDedicatedServer() && pPlayer->entindex() == 1 )
+			{
 				return true;
+			}
 		}
-		
+
 		return false;
 	}
 
@@ -204,41 +212,41 @@ public:
 		int nPhysicsObjectInterval = sv_benchmark_numticks.GetInt() / s_nBenchmarkPhysicsObjects;
 
 		int nNextSpawnTick = m_nLastPhysicsObjectTick + nPhysicsObjectInterval;
-		if ( GetTickOffset() >= nNextSpawnTick )
+		if( GetTickOffset() >= nNextSpawnTick )
 		{
 			m_nLastPhysicsObjectTick = nNextSpawnTick;
-			
-			if ( m_PhysicsObjects.Count() < s_nBenchmarkPhysicsObjects )
+
+			if( m_PhysicsObjects.Count() < s_nBenchmarkPhysicsObjects )
 			{
 				// Find a bot to spawn it from.
 				CUtlVector<CBasePlayer*> curPlayers;
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+				for( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
-					CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-					if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) )
+					CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+					if( pPlayer && ( pPlayer->GetFlags() & FL_FAKECLIENT ) )
 					{
 						curPlayers.AddToTail( pPlayer );
 					}
 				}
 
-				if ( curPlayers.Count() > 0 && m_PhysicsModelNames.Count() > 0 )
+				if( curPlayers.Count() > 0 && m_PhysicsModelNames.Count() > 0 )
 				{
 					int iModelName = this->RandomInt( 0, m_PhysicsModelNames.Count() - 1 );
-					const char *pModelName = m_PhysicsModelNames[iModelName];
+					const char* pModelName = m_PhysicsModelNames[iModelName];
 
 					int iPlayer = this->RandomInt( 0, curPlayers.Count() - 1 );
-						
+
 					Vector vSpawnPos = curPlayers[iPlayer]->EyePosition() + Vector( 0, 0, 50 );
-					
+
 					// We'll try 15 locations around the player to spawn this thing.
-					for ( int i=0; i < 15; i++ )
+					for( int i = 0; i < 15; i++ )
 					{
 						Vector vOffset( this->RandomFloat( -2000, 2000 ), this->RandomFloat( -2000, 2000 ), 0 );
-						CPhysicsProp *pProp = CreatePhysicsProp( pModelName, vSpawnPos, vSpawnPos+vOffset, curPlayers[iPlayer], false, "prop_physics_multiplayer" );
-						if ( pProp )
+						CPhysicsProp* pProp = CreatePhysicsProp( pModelName, vSpawnPos, vSpawnPos + vOffset, curPlayers[iPlayer], false, "prop_physics_multiplayer" );
+						if( pProp )
 						{
 							m_PhysicsObjects.AddToTail( pProp );
-							pProp->SetAbsVelocity( Vector( this->RandomFloat(-500,500), this->RandomFloat(-500,500), this->RandomFloat(-500,500) ) );
+							pProp->SetAbsVelocity( Vector( this->RandomFloat( -500, 500 ), this->RandomFloat( -500, 500 ), this->RandomFloat( -500, 500 ) ) );
 							break;
 						}
 					}
@@ -250,32 +258,32 @@ public:
 		int nPhysicsForceInterval = sv_benchmark_numticks.GetInt() / 20;
 
 		int nNextForceTick = m_nLastPhysicsForceTick + nPhysicsForceInterval;
-		if ( GetTickOffset() >= nNextForceTick )
+		if( GetTickOffset() >= nNextForceTick )
 		{
 			m_nLastPhysicsForceTick = nNextForceTick;
 
-			for ( int i=0; i < m_PhysicsObjects.Count(); i++ )
+			for( int i = 0; i < m_PhysicsObjects.Count(); i++ )
 			{
-				CBaseEntity *pEnt = m_PhysicsObjects[i];
-				if ( pEnt )
+				CBaseEntity* pEnt = m_PhysicsObjects[i];
+				if( pEnt )
 				{
-					IPhysicsObject *pPhysicsObject = pEnt->VPhysicsGetObject();
-					if ( pPhysicsObject )
+					IPhysicsObject* pPhysicsObject = pEnt->VPhysicsGetObject();
+					if( pPhysicsObject )
 					{
 						float flAngImpulse = 300000;
 						float flForce = 500000;
-						AngularImpulse vAngularImpulse( this->RandomFloat(-flAngImpulse,flAngImpulse), this->RandomFloat(-flAngImpulse,flAngImpulse), this->RandomFloat(flAngImpulse,flAngImpulse) );
-						pPhysicsObject->ApplyForceCenter( Vector( this->RandomFloat(-flForce,flForce), this->RandomFloat(-flForce,flForce), this->RandomFloat(0,flForce) ) );
+						AngularImpulse vAngularImpulse( this->RandomFloat( -flAngImpulse, flAngImpulse ), this->RandomFloat( -flAngImpulse, flAngImpulse ), this->RandomFloat( flAngImpulse, flAngImpulse ) );
+						pPhysicsObject->ApplyForceCenter( Vector( this->RandomFloat( -flForce, flForce ), this->RandomFloat( -flForce, flForce ), this->RandomFloat( 0, flForce ) ) );
 					}
-				}				
+				}
 			}
 		}
 	}
 
 	void UpdateStartWaitCounter()
 	{
-		int nSecondsLeft = (int)ceil( m_flBenchmarkStartWaitTime - (Plat_FloatTime() - m_flBenchmarkStartTime) );
-		if ( m_nStartWaitCounter != nSecondsLeft )
+		int nSecondsLeft = ( int )ceil( m_flBenchmarkStartWaitTime - ( Plat_FloatTime() - m_flBenchmarkStartTime ) );
+		if( m_nStartWaitCounter != nSecondsLeft )
 		{
 			Msg( "Starting benchmark in %d seconds...\n", nSecondsLeft );
 			m_nStartWaitCounter = nSecondsLeft;
@@ -285,21 +293,21 @@ public:
 	void UpdateBenchmarkCounter()
 	{
 		float flCurTime = Plat_FloatTime();
-		if ( (flCurTime - m_flLastBenchmarkCounterUpdate) > 3.0f )
+		if( ( flCurTime - m_flLastBenchmarkCounterUpdate ) > 3.0f )
 		{
 			m_flLastBenchmarkCounterUpdate = flCurTime;
-			Msg( "Benchmark: %d%% complete.\n", ((gpGlobals->tickcount - m_nBenchmarkStartTick) * 100) / sv_benchmark_numticks.GetInt() );
+			Msg( "Benchmark: %d%% complete.\n", ( ( gpGlobals->tickcount - m_nBenchmarkStartTick ) * 100 ) / sv_benchmark_numticks.GetInt() );
 		}
 	}
 
 	virtual bool IsBenchmarkRunning()
 	{
-		return (m_BenchmarkState == BENCHMARKSTATE_RUNNING);
+		return ( m_BenchmarkState == BENCHMARKSTATE_RUNNING );
 	}
 
 	virtual int GetTickOffset()
 	{
-		if ( m_BenchmarkState == BENCHMARKSTATE_RUNNING )
+		if( m_BenchmarkState == BENCHMARKSTATE_RUNNING )
 		{
 			Assert( gpGlobals->tickcount >= m_nBenchmarkStartTick );
 			return gpGlobals->tickcount - m_nBenchmarkStartTick;
@@ -313,13 +321,15 @@ public:
 
 	void UpdatePlayerCreation()
 	{
-		if ( m_nBotsCreated >= s_nBenchmarkBotsToCreate )
+		if( m_nBotsCreated >= s_nBenchmarkBotsToCreate )
+		{
 			return;
+		}
 
 		// Spawn the player.
 		int nTicksRunSoFar = gpGlobals->tickcount - m_nBenchmarkStartTick;
 
-		if ( (nTicksRunSoFar % s_nBenchmarkBotCreateInterval) == 0 )
+		if( ( nTicksRunSoFar % s_nBenchmarkBotCreateInterval ) == 0 )
 		{
 			CServerBenchmarkHook::s_pBenchmarkHook->CreateBot();
 			++m_nBotsCreated;
@@ -342,14 +352,14 @@ public:
 	{
 		int crc = 0;
 
-		for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+		for( int i = 1; i <= gpGlobals->maxClients; i++ )
 		{
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-			if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) )
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+			if( pPlayer && ( pPlayer->GetFlags() & FL_FAKECLIENT ) )
 			{
 				crc += pPlayer->GetTeamNumber();
-				crc += (int)pPlayer->GetAbsOrigin().x; 
-				crc += (int)pPlayer->GetAbsOrigin().y; 
+				crc += ( int )pPlayer->GetAbsOrigin().x;
+				crc += ( int )pPlayer->GetAbsOrigin().y;
 			}
 		}
 
@@ -368,7 +378,7 @@ public:
 
 
 private:
-	
+
 	enum EBenchmarkState
 	{
 		BENCHMARKSTATE_NOT_RUNNING,
@@ -378,7 +388,7 @@ private:
 	EBenchmarkState m_BenchmarkState;
 
 	float m_fl_ValidTime_BenchmarkStartTime;
-	
+
 	float m_flBenchmarkStartTime;
 	float m_flLastBenchmarkCounterUpdate;
 	float m_flBenchmarkStartWaitTime;
@@ -398,12 +408,14 @@ private:
 };
 
 static CServerBenchmark g_ServerBenchmark;
-IServerBenchmark *g_pServerBenchmark = &g_ServerBenchmark;
+IServerBenchmark* g_pServerBenchmark = &g_ServerBenchmark;
 
 CON_COMMAND( sv_benchmark_force_start, "Force start the benchmark. This is only for debugging. It's better to set sv_benchmark to 1 and restart the level." )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	g_ServerBenchmark.InternalStartBenchmark( 1, 1 );
 }
@@ -413,12 +425,14 @@ CON_COMMAND( sv_benchmark_force_start, "Force start the benchmark. This is only 
 // CServerBenchmarkHook implementation.
 // ---------------------------------------------------------------------------------------------- //
 
-CServerBenchmarkHook *CServerBenchmarkHook::s_pBenchmarkHook = NULL;
+CServerBenchmarkHook* CServerBenchmarkHook::s_pBenchmarkHook = NULL;
 
 CServerBenchmarkHook::CServerBenchmarkHook()
 {
-	if ( s_pBenchmarkHook )
+	if( s_pBenchmarkHook )
+	{
 		Error( "There can only be one CServerBenchmarkHook" );
+	}
 
 	s_pBenchmarkHook = this;
 }

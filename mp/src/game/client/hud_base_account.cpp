@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -12,7 +12,7 @@
 
 using namespace vgui;
 
-CHudBaseAccount::CHudBaseAccount( const char *pName ) :
+CHudBaseAccount::CHudBaseAccount( const char* pName ) :
 	CHudNumericDisplay( NULL, pName ), CHudElement( pName )
 {
 	SetHiddenBits( HIDEHUD_PLAYERDEAD );
@@ -28,12 +28,12 @@ void CHudBaseAccount::LevelInit( void )
 	m_pszLastAnimationName = NULL;
 	m_pszQueuedAnimationName = NULL;
 
-	GetAnimationController()->StartAnimationSequence("AccountMoneyInvisible");
+	GetAnimationController()->StartAnimationSequence( "AccountMoneyInvisible" );
 }
 
-void CHudBaseAccount::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudBaseAccount::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_clrRed	= pScheme->GetColor( "HudIcon_Red", Color( 255, 16, 16, 255 ) );
 	m_clrGreen	= pScheme->GetColor( "HudIcon_Green", Color( 16, 255, 16, 255 ) );
@@ -44,9 +44,9 @@ void CHudBaseAccount::ApplySchemeSettings(vgui::IScheme *pScheme)
 
 	if( m_pAccountIcon )
 	{
-		icon_tall = ( GetTall() / 2 ) - YRES(2);
-		float scale = icon_tall / (float)m_pAccountIcon->Height();
-		icon_wide = ( scale ) * (float)m_pAccountIcon->Width();
+		icon_tall = ( GetTall() / 2 ) - YRES( 2 );
+		float scale = icon_tall / ( float )m_pAccountIcon->Height();
+		icon_wide = ( scale ) * ( float )m_pAccountIcon->Width();
 	}
 }
 
@@ -62,7 +62,7 @@ bool CHudBaseAccount::ShouldDraw()
 void CHudBaseAccount::Reset( void )
 {
 	// Round is restarting
-	if ( m_flLastAnimationEnd > gpGlobals->curtime && m_pszLastAnimationName )
+	if( m_flLastAnimationEnd > gpGlobals->curtime && m_pszLastAnimationName )
 	{
 		// if we had an animation in progress, queue it to be kicked it off again
 		m_pszQueuedAnimationName = m_pszLastAnimationName;
@@ -76,7 +76,9 @@ void CHudBaseAccount::Paint()
 
 	//don't show delta on initial money give
 	if( m_iPreviousAccount < 0 )
+	{
 		m_iPreviousAccount = account;
+	}
 
 	if( m_iPreviousAccount != account )
 	{
@@ -87,7 +89,7 @@ void CHudBaseAccount::Paint()
 		{
 			m_pszLastAnimationName = "AccountMoneyRemoved";
 		}
-		else 
+		else
 		{
 			m_pszLastAnimationName = "AccountMoneyAdded";
 		}
@@ -96,7 +98,7 @@ void CHudBaseAccount::Paint()
 
 		m_iPreviousAccount = account;
 	}
-	else if ( m_pszQueuedAnimationName )
+	else if( m_pszQueuedAnimationName )
 	{
 		GetAnimationController()->StartAnimationSequence( m_pszQueuedAnimationName );
 		m_pszQueuedAnimationName = NULL;
@@ -110,7 +112,7 @@ void CHudBaseAccount::Paint()
 	int xpos = digit_xpos - GetNumberWidth( m_hNumberFont, account );
 
 	// draw current account
-	vgui::surface()->DrawSetTextColor(GetFgColor());
+	vgui::surface()->DrawSetTextColor( GetFgColor() );
 	PaintNumbers( m_hNumberFont, xpos, digit_ypos, account );
 
 	//draw account additions / subtractions
@@ -129,24 +131,24 @@ void CHudBaseAccount::Paint()
 		}
 	}
 
-	int delta = abs(m_iPreviousDelta);
+	int delta = abs( m_iPreviousDelta );
 
 	xpos = digit2_xpos - GetNumberWidth( m_hNumberFont, delta );
 
 	// draw delta
-	vgui::surface()->DrawSetTextColor(m_Ammo2Color);
+	vgui::surface()->DrawSetTextColor( m_Ammo2Color );
 	PaintNumbers( m_hNumberFont, xpos, digit2_ypos, delta );
 }
 
-int CHudBaseAccount::GetNumberWidth(HFont font, int number)
+int CHudBaseAccount::GetNumberWidth( HFont font, int number )
 {
 	int width = 0;
 
-	surface()->DrawSetTextFont(font);
+	surface()->DrawSetTextFont( font );
 	wchar_t unicode[6];
-	V_snwprintf(unicode, ARRAYSIZE(unicode), L"%d", number);
+	V_snwprintf( unicode, ARRAYSIZE( unicode ), L"%d", number );
 
-	for (wchar_t *ch = unicode; *ch != 0; ch++)
+	for( wchar_t* ch = unicode; *ch != 0; ch++ )
 	{
 		width += vgui::surface()->GetCharacterWidth( font, *ch );
 	}

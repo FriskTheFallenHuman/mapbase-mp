@@ -18,7 +18,7 @@
 #include "mathlib/vector4d.h"
 
 //-----------------------------------------------------------------------------
-// Spline patch: 
+// Spline patch:
 //-----------------------------------------------------------------------------
 
 class CSplinePatch
@@ -50,8 +50,14 @@ public:
 	float GetChannel( int channel ) const;
 
 	// Gets at the dimensions
-	int	Width() const { return m_Width; }
-	int Height() const { return m_Height; }
+	int	Width() const
+	{
+		return m_Width;
+	}
+	int Height() const
+	{
+		return m_Height;
+	}
 
 public:
 	// The integer + float values for the patch query

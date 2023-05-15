@@ -10,9 +10,9 @@
 #include "ai_speechconcept.h"
 
 #ifdef GAME_DLL
-#include "game.h"
-#include "ai_basenpc.h"
-#include "sceneentity.h"
+	#include "game.h"
+	#include "ai_basenpc.h"
+	#include "sceneentity.h"
 #endif
 
 #include "engine/ienginesound.h"

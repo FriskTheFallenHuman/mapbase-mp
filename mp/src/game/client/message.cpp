@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -41,12 +41,12 @@ using namespace vgui;
 // Simultaneous message limit
 #define MAX_TEXTMESSAGE_CHARS 2048
 
-static const char *s_NetworkMessageNames[MAX_NETMESSAGE] = { NETWORK_MESSAGE1, NETWORK_MESSAGE2, NETWORK_MESSAGE3, NETWORK_MESSAGE4, NETWORK_MESSAGE5, NETWORK_MESSAGE6 };
+static const char* s_NetworkMessageNames[MAX_NETMESSAGE] = { NETWORK_MESSAGE1, NETWORK_MESSAGE2, NETWORK_MESSAGE3, NETWORK_MESSAGE4, NETWORK_MESSAGE5, NETWORK_MESSAGE6 };
 
 const int maxHUDMessages = 16;
 struct message_parms_t
 {
-	client_textmessage_t	*pMessage;
+	client_textmessage_t*	pMessage;
 	float	time;
 	int x, y;
 	int	totalWidth, totalHeight;
@@ -59,7 +59,7 @@ struct message_parms_t
 	int fadeBlend;
 	float charTime;
 	float fadeTime;
-	const char *vguiFontName;
+	const char* vguiFontName;
 	vgui::HFont	font;
 };
 
@@ -67,7 +67,7 @@ struct message_parms_t
 //-----------------------------------------------------
 //
 
-class CHudMessage: public CHudElement, public vgui::Panel, public ITextMessage 
+class CHudMessage: public CHudElement, public vgui::Panel, public ITextMessage
 {
 	DECLARE_CLASS_SIMPLE( CHudMessage, vgui::Panel );
 public:
@@ -89,58 +89,58 @@ public:
 		byte		r, g, b, a;
 	};
 
-	CHudMessage( const char *pElementName );
+	CHudMessage( const char* pElementName );
 	~CHudMessage();
 
 	void Init( void );
 	void VidInit( void );
 	bool ShouldDraw( void );
 	virtual void Paint();
-	void MsgFunc_HudText(bf_read &msg);
-	void MsgFunc_GameTitle(bf_read &msg);
-	void MsgFunc_HudMsg(bf_read &msg);
+	void MsgFunc_HudText( bf_read& msg );
+	void MsgFunc_GameTitle( bf_read& msg );
+	void MsgFunc_HudMsg( bf_read& msg );
 
 	float FadeBlend( float fadein, float fadeout, float hold, float localTime );
 	int	XPosition( float x, int width, int lineWidth );
 	int YPosition( float y, int height );
 
-	void MessageAdd( const char *pName );
-	void MessageDrawScan( client_textmessage_t *pMessage, float time );
+	void MessageAdd( const char* pName );
+	void MessageDrawScan( client_textmessage_t* pMessage, float time );
 	void MessageScanStart( void );
 	void MessageScanNextChar( void );
 	void Reset( void );
 
-	virtual void ApplySchemeSettings( IScheme *scheme );
+	virtual void ApplySchemeSettings( IScheme* scheme );
 
-	void SetFont( HScheme scheme, const char *pFontName );
+	void SetFont( HScheme scheme, const char* pFontName );
 
 public: // ITextMessage
 	virtual void		SetPosition( int x, int y );
 	virtual void		AddChar( int r, int g, int b, int a, wchar_t ch );
 
-	virtual void		GetLength( int *wide, int *tall, const char *string );
-	virtual int			GetFontInfo( FONTABC *pABCs, vgui::HFont hFont );
+	virtual void		GetLength( int* wide, int* tall, const char* string );
+	virtual int			GetFontInfo( FONTABC* pABCs, vgui::HFont hFont );
 
 	virtual void		SetFont( vgui::HFont hCustomFont );
 	virtual void		SetDefaultFont( void );
 
 private:
 
-	message_t			*AllocMessage( void );
+	message_t*			AllocMessage( void );
 	void				ResetCharacters( void );
 	void				PaintCharacters();
-	virtual void		GetTextExtents( int *wide, int *tall, const char *string );
+	virtual void		GetTextExtents( int* wide, int* tall, const char* string );
 
 
-	client_textmessage_t		*m_pMessages[maxHUDMessages];
+	client_textmessage_t*		m_pMessages[maxHUDMessages];
 	float						m_startTime[maxHUDMessages];
 	message_parms_t				m_parms;
 	float						m_gameTitleTime;
-	client_textmessage_t		*m_pGameTitle;
+	client_textmessage_t*		m_pGameTitle;
 	bool						m_bHaveMessage;
 
-	CHudTexture *m_iconTitleLife;
-	CHudTexture *m_iconTitleHalf;
+	CHudTexture* m_iconTitleLife;
+	CHudTexture* m_iconTitleHalf;
 
 	vgui::HFont					m_hFont;
 	vgui::HFont					m_hDefaultFont;
@@ -148,14 +148,14 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void DispatchHudText( const char *pszText )
+void DispatchHudText( const char* pszText )
 {
-	CHudMessage *pHudMessage = (CHudMessage *)GET_HUDELEMENT( CHudMessage );
-	if ( pHudMessage )
+	CHudMessage* pHudMessage = ( CHudMessage* )GET_HUDELEMENT( CHudMessage );
+	if( pHudMessage )
 	{
-		if ( pszText == NULL )
+		if( pszText == NULL )
 		{
 			pHudMessage->Reset();
 		}
@@ -175,15 +175,15 @@ DECLARE_HUD_MESSAGE( CHudMessage, HudText );
 DECLARE_HUD_MESSAGE( CHudMessage, GameTitle );
 DECLARE_HUD_MESSAGE( CHudMessage, HudMsg );
 
-ITextMessage *textmessage = NULL;
+ITextMessage* textmessage = NULL;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CHudMessage::CHudMessage( const char *pElementName ) :
+CHudMessage::CHudMessage( const char* pElementName ) :
 	CHudElement( pElementName ), BaseClass( NULL, "HudMessage" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 	textmessage = this;
 	m_hFont = g_hFontTrebuchet24;
@@ -197,7 +197,7 @@ CHudMessage::~CHudMessage()
 	textmessage = NULL;
 }
 
-void CHudMessage::ApplySchemeSettings( IScheme *scheme )
+void CHudMessage::ApplySchemeSettings( IScheme* scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
@@ -205,9 +205,9 @@ void CHudMessage::ApplySchemeSettings( IScheme *scheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudMessage::Init(void)
+void CHudMessage::Init( void )
 {
 	HOOK_HUD_MESSAGE( CHudMessage, HudText );
 	HOOK_HUD_MESSAGE( CHudMessage, GameTitle );
@@ -217,7 +217,7 @@ void CHudMessage::Init(void)
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::VidInit( void )
 {
@@ -227,13 +227,13 @@ void CHudMessage::VidInit( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::Reset( void )
 {
 	memset( m_pMessages, 0, sizeof( m_pMessages[0] ) * maxHUDMessages );
 	memset( m_startTime, 0, sizeof( m_startTime[0] ) * maxHUDMessages );
-	
+
 	m_gameTitleTime = 0;
 	m_pGameTitle = NULL;
 	m_bHaveMessage = false;
@@ -241,90 +241,116 @@ void CHudMessage::Reset( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CHudMessage::FadeBlend( float fadein, float fadeout, float hold, float localTime )
 {
 	float fadeTime = fadein + hold;
 	float fadeBlend;
 
-	if ( localTime < 0 )
+	if( localTime < 0 )
+	{
 		return 0;
-
-	if ( localTime < fadein )
-	{
-		fadeBlend = 1 - ((fadein - localTime) / fadein);
 	}
-	else if ( localTime > fadeTime )
+
+	if( localTime < fadein )
 	{
-		if ( fadeout > 0 )
-			fadeBlend = 1 - ((localTime - fadeTime) / fadeout);
+		fadeBlend = 1 - ( ( fadein - localTime ) / fadein );
+	}
+	else if( localTime > fadeTime )
+	{
+		if( fadeout > 0 )
+		{
+			fadeBlend = 1 - ( ( localTime - fadeTime ) / fadeout );
+		}
 		else
+		{
 			fadeBlend = 0;
+		}
 	}
 	else
+	{
 		fadeBlend = 1;
+	}
 
 	return fadeBlend;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CHudMessage::XPosition( float x, int width, int totalWidth )
 {
 	int xPos;
 
-	if ( x == -1 )
+	if( x == -1 )
 	{
-		xPos = (ScreenWidth() - width) / 2;
+		xPos = ( ScreenWidth() - width ) / 2;
 	}
 	else
 	{
-		if ( x < 0 )
-			xPos = (1.0 + x) * ScreenWidth() - totalWidth;	// Align to right
+		if( x < 0 )
+		{
+			xPos = ( 1.0 + x ) * ScreenWidth() - totalWidth;    // Align to right
+		}
 		else
+		{
 			xPos = x * ScreenWidth();
+		}
 	}
 
-	if ( xPos + width > ScreenWidth() )
+	if( xPos + width > ScreenWidth() )
+	{
 		xPos = ScreenWidth() - width;
-	else if ( xPos < 0 )
+	}
+	else if( xPos < 0 )
+	{
 		xPos = 0;
+	}
 
 	return xPos;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CHudMessage::YPosition( float y, int height )
 {
 	int yPos;
 
-	if ( y == -1 )	// Centered?
-		yPos = (ScreenHeight() - height) * 0.5;
+	if( y == -1 )	// Centered?
+	{
+		yPos = ( ScreenHeight() - height ) * 0.5;
+	}
 	else
 	{
 		// Alight bottom?
-		if ( y < 0 )
-			yPos = (1.0 + y) * ScreenHeight() - height;	// Alight bottom
+		if( y < 0 )
+		{
+			yPos = ( 1.0 + y ) * ScreenHeight() - height;    // Alight bottom
+		}
 		else // align top
+		{
 			yPos = y * ScreenHeight();
+		}
 	}
 
-	if ( yPos + height > ScreenHeight() )
+	if( yPos + height > ScreenHeight() )
+	{
 		yPos = ScreenHeight() - height;
-	else if ( yPos < 0 )
+	}
+	else if( yPos < 0 )
+	{
 		yPos = 0;
+	}
 
 	return yPos;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::MessageScanNextChar( void )
 {
@@ -340,52 +366,58 @@ void CHudMessage::MessageScanNextChar( void )
 
 	switch( m_parms.pMessage->effect )
 	{
-	// Fade-in / Fade-out
-	case 0:
-	case 1:
-		destRed = destGreen = destBlue = 0;
-		blend = m_parms.fadeBlend;
-		break;
-
-	case 2:
-		m_parms.charTime += m_parms.pMessage->fadein;
-		if ( m_parms.charTime > m_parms.time )
-		{
-			srcRed = srcGreen = srcBlue = 0;
-			blend = 0;	// pure source
-		}
-		else
-		{
-			float deltaTime = m_parms.time - m_parms.charTime;
-
+		// Fade-in / Fade-out
+		case 0:
+		case 1:
 			destRed = destGreen = destBlue = 0;
-			if ( m_parms.time > m_parms.fadeTime )
+			blend = m_parms.fadeBlend;
+			break;
+
+		case 2:
+			m_parms.charTime += m_parms.pMessage->fadein;
+			if( m_parms.charTime > m_parms.time )
 			{
-				blend = m_parms.fadeBlend;
+				srcRed = srcGreen = srcBlue = 0;
+				blend = 0;	// pure source
 			}
-			else if ( deltaTime > m_parms.pMessage->fxtime )
-				blend = 0;	// pure dest
 			else
 			{
-				destRed = m_parms.pMessage->r2;
-				destGreen = m_parms.pMessage->g2;
-				destBlue = m_parms.pMessage->b2;
-				blend = 255 - (deltaTime * (1.0/m_parms.pMessage->fxtime) * 255.0 + 0.5);
-			}
-		}
-		break;
-	}
-	if ( blend > 255 )
-		blend = 255;
-	else if ( blend < 0 )
-		blend = 0;
+				float deltaTime = m_parms.time - m_parms.charTime;
 
-	m_parms.r = ((srcRed * (255-blend)) + (destRed * blend)) >> 8;
-	m_parms.g = ((srcGreen * (255-blend)) + (destGreen * blend)) >> 8;
-	m_parms.b = ((srcBlue * (255-blend)) + (destBlue * blend)) >> 8;
+				destRed = destGreen = destBlue = 0;
+				if( m_parms.time > m_parms.fadeTime )
+				{
+					blend = m_parms.fadeBlend;
+				}
+				else if( deltaTime > m_parms.pMessage->fxtime )
+				{
+					blend = 0;    // pure dest
+				}
+				else
+				{
+					destRed = m_parms.pMessage->r2;
+					destGreen = m_parms.pMessage->g2;
+					destBlue = m_parms.pMessage->b2;
+					blend = 255 - ( deltaTime * ( 1.0 / m_parms.pMessage->fxtime ) * 255.0 + 0.5 );
+				}
+			}
+			break;
+	}
+	if( blend > 255 )
+	{
+		blend = 255;
+	}
+	else if( blend < 0 )
+	{
+		blend = 0;
+	}
+
+	m_parms.r = ( ( srcRed * ( 255 - blend ) ) + ( destRed * blend ) ) >> 8;
+	m_parms.g = ( ( srcGreen * ( 255 - blend ) ) + ( destGreen * blend ) ) >> 8;
+	m_parms.b = ( ( srcBlue * ( 255 - blend ) ) + ( destBlue * blend ) ) >> 8;
 
 #if 0
-	if ( m_parms.pMessage->effect == 1 && m_parms.charTime != 0 )
+	if( m_parms.pMessage->effect == 1 && m_parms.charTime != 0 )
 	{
 		textmessage->AddChar( m_parms.pMessage->r2, m_parms.pMessage->g2, m_parms.pMessage->b2, 255, m_parms.text );
 	}
@@ -393,11 +425,11 @@ void CHudMessage::MessageScanNextChar( void )
 }
 
 
-void CHudMessage::SetFont( HScheme scheme, const char *pFontName )
+void CHudMessage::SetFont( HScheme scheme, const char* pFontName )
 {
-	vgui::IScheme *pScheme = vgui::scheme()->GetIScheme( scheme );
+	vgui::IScheme* pScheme = vgui::scheme()->GetIScheme( scheme );
 
-	if ( pScheme )
+	if( pScheme )
 	{
 		vgui::HFont font = pScheme->GetFont( pFontName );
 		textmessage->SetFont( font );
@@ -406,53 +438,65 @@ void CHudMessage::SetFont( HScheme scheme, const char *pFontName )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::MessageScanStart( void )
 {
 	switch( m_parms.pMessage->effect )
 	{
-	// Fade-in / out with flicker
-	case 1:
-	case 0:
-		m_parms.fadeTime = m_parms.pMessage->fadein + m_parms.pMessage->holdtime;
-		
+		// Fade-in / out with flicker
+		case 1:
+		case 0:
+			m_parms.fadeTime = m_parms.pMessage->fadein + m_parms.pMessage->holdtime;
 
-		if ( m_parms.time < m_parms.pMessage->fadein )
-		{
-			m_parms.fadeBlend = ((m_parms.pMessage->fadein - m_parms.time) * (1.0/m_parms.pMessage->fadein) * 255);
-		}
-		else if ( m_parms.time > m_parms.fadeTime )
-		{
-			if ( m_parms.pMessage->fadeout > 0 )
-				m_parms.fadeBlend = (((m_parms.time - m_parms.fadeTime) / m_parms.pMessage->fadeout) * 255);
+
+			if( m_parms.time < m_parms.pMessage->fadein )
+			{
+				m_parms.fadeBlend = ( ( m_parms.pMessage->fadein - m_parms.time ) * ( 1.0 / m_parms.pMessage->fadein ) * 255 );
+			}
+			else if( m_parms.time > m_parms.fadeTime )
+			{
+				if( m_parms.pMessage->fadeout > 0 )
+				{
+					m_parms.fadeBlend = ( ( ( m_parms.time - m_parms.fadeTime ) / m_parms.pMessage->fadeout ) * 255 );
+				}
+				else
+				{
+					m_parms.fadeBlend = 255;    // Pure dest (off)
+				}
+			}
 			else
-				m_parms.fadeBlend = 255; // Pure dest (off)
-		}
-		else
-			m_parms.fadeBlend = 0;	// Pure source (on)
-		m_parms.charTime = 0;
+			{
+				m_parms.fadeBlend = 0;    // Pure source (on)
+			}
+			m_parms.charTime = 0;
 
-		if ( m_parms.pMessage->effect == 1 && (rand()%100) < 10 )
-			m_parms.charTime = 1;
-		break;
+			if( m_parms.pMessage->effect == 1 && ( rand() % 100 ) < 10 )
+			{
+				m_parms.charTime = 1;
+			}
+			break;
 
-	case 2:
-		m_parms.fadeTime = (m_parms.pMessage->fadein * m_parms.length) + m_parms.pMessage->holdtime;
-		
-		if ( m_parms.time > m_parms.fadeTime && m_parms.pMessage->fadeout > 0 )
-			m_parms.fadeBlend = (((m_parms.time - m_parms.fadeTime) / m_parms.pMessage->fadeout) * 255);
-		else
-			m_parms.fadeBlend = 0;
-		break;
+		case 2:
+			m_parms.fadeTime = ( m_parms.pMessage->fadein * m_parms.length ) + m_parms.pMessage->holdtime;
+
+			if( m_parms.time > m_parms.fadeTime && m_parms.pMessage->fadeout > 0 )
+			{
+				m_parms.fadeBlend = ( ( ( m_parms.time - m_parms.fadeTime ) / m_parms.pMessage->fadeout ) * 255 );
+			}
+			else
+			{
+				m_parms.fadeBlend = 0;
+			}
+			break;
 	}
 
 	// Font was just set in MessageDrawScan()
 #ifndef MAPBASE
 	m_parms.font = g_hFontTrebuchet24;
 
-	if ( m_parms.vguiFontName != NULL && 
-		m_parms.vguiFontName[ 0 ] )
+	if( m_parms.vguiFontName != NULL &&
+			m_parms.vguiFontName[ 0 ] )
 	{
 
 		SetFont( vgui::scheme()->GetDefaultScheme(), m_parms.vguiFontName );
@@ -461,12 +505,12 @@ void CHudMessage::MessageScanStart( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
+void CHudMessage::MessageDrawScan( client_textmessage_t* pMessage, float time )
 {
 	int i, j, length, width;
-	const wchar_t *pText;
+	const wchar_t* pText;
 	wchar_t textBuf[ 1024 ];
 
 	{
@@ -474,22 +518,22 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 		// strip off any trailing newlines
 		int len = Q_strlen( pMessage->pMessage );
 		int tempLen = len + 2;
-		char *localString = (char *)_alloca( tempLen );
+		char* localString = ( char* )_alloca( tempLen );
 		Q_strncpy( localString, pMessage->pMessage, tempLen );
-		if (V_iscntrl(localString[len - 1]))
+		if( V_iscntrl( localString[len - 1] ) )
 		{
 			localString[len - 1] = 0;
 		}
 
 		pText = g_pVGuiLocalize->Find( localString );
-		if ( !pText ) 
+		if( !pText )
 		{
 			g_pVGuiLocalize->ConvertANSIToUnicode( pMessage->pMessage, textBuf, sizeof( textBuf ) );
 			pText = textBuf;
 		}
 	}
 
-	const wchar_t *pPerm = pText;
+	const wchar_t* pPerm = pText;
 
 	// Count lines
 	m_parms.lines = 1;
@@ -501,21 +545,21 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 	m_parms.vguiFontName = pMessage->pVGuiSchemeFontName;
 
 #ifdef MAPBASE
-	if ( m_parms.vguiFontName != NULL &&
-		m_parms.vguiFontName[ 0 ] )
+	if( m_parms.vguiFontName != NULL &&
+			m_parms.vguiFontName[ 0 ] )
 	{
 		SetFont( vgui::scheme()->GetDefaultScheme(), m_parms.vguiFontName );
 
-	#ifdef MAPBASE_VSCRIPT
-		if ( m_parms.font == vgui::INVALID_FONT )
+#ifdef MAPBASE_VSCRIPT
+		if( m_parms.font == vgui::INVALID_FONT )
 		{
-			extern vgui::HFont GetScriptFont( const char *, bool );
+			extern vgui::HFont GetScriptFont( const char*, bool );
 
 			vgui::HFont font = GetScriptFont( m_parms.vguiFontName, IsProportional() );
 			textmessage->SetFont( font );
 			m_parms.font = font;
 		}
-	#endif
+#endif
 	}
 	else
 	{
@@ -525,13 +569,15 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 	m_parms.font = g_hFontTrebuchet24;
 #endif
 
-	while ( *pText )
+	while( *pText )
 	{
-		if ( *pText == '\n' )
+		if( *pText == '\n' )
 		{
 			m_parms.lines++;
-			if ( width > m_parms.totalWidth )
+			if( width > m_parms.totalWidth )
+			{
 				m_parms.totalWidth = width;
+			}
 			width = 0;
 		}
 		else
@@ -541,14 +587,16 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 		pText++;
 		length++;
 	}
-	if ( width > m_parms.totalWidth )
+	if( width > m_parms.totalWidth )
+	{
 		m_parms.totalWidth = width;
+	}
 	m_parms.length = length;
 
 	int fontHeight = vgui::surface()->GetFontTall( m_parms.font );
 
 	m_parms.totalHeight = ( m_parms.lines * fontHeight );
-	
+
 	m_parms.y = YPosition( pMessage->y, m_parms.totalHeight );
 	pText = pPerm;
 
@@ -558,7 +606,7 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 
 	MessageScanStart();
 
-	if ( pMessage->bRoundedRectBackdropBox )
+	if( pMessage->bRoundedRectBackdropBox )
 	{
 		// 2.0f since we have extra space at both the top and bottom
 		flBoxPixels = pMessage->flBoxSize * fontHeight;
@@ -570,30 +618,30 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 		boxx -= flBoxPixels;
 		boxy -= flBoxPixels * 0.5f;
 
-		float flAlphaScale = clamp( ( 255.0f - (float)m_parms.fadeBlend ) / 255.0f, 0.0f, 1.0f );
-		Color boxColor( 
+		float flAlphaScale = clamp( ( 255.0f - ( float )m_parms.fadeBlend ) / 255.0f, 0.0f, 1.0f );
+		Color boxColor(
 			pMessage->boxcolor[ 0 ],
 			pMessage->boxcolor[ 1 ],
-			pMessage->boxcolor[ 2 ], 
+			pMessage->boxcolor[ 2 ],
 			pMessage->boxcolor[ 3 ] * flAlphaScale );
 
 		DrawBox( boxx, boxy, m_parms.totalWidth + 2.0f * flBoxPixels, m_parms.totalHeight + 2.0f * flBoxPixels * 0.5f, boxColor, 1.0f );
 	}
 
 	wchar_t line[ 512 ];
-	for ( i = 0; i < m_parms.lines; i++ )
+	for( i = 0; i < m_parms.lines; i++ )
 	{
 		m_parms.lineLength = 0;
 		m_parms.width = 0;
-		while ( *pText && *pText != '\n' )
+		while( *pText && *pText != '\n' )
 		{
 			wchar_t c = *pText;
 			line[m_parms.lineLength] = c;
-			m_parms.width += vgui::surface()->GetCharacterWidth( m_parms.font, c);
+			m_parms.width += vgui::surface()->GetCharacterWidth( m_parms.font, c );
 			m_parms.lineLength++;
-			if ( m_parms.lineLength > (ARRAYSIZE(line)-1) )
+			if( m_parms.lineLength > ( ARRAYSIZE( line ) - 1 ) )
 			{
-				m_parms.lineLength = ARRAYSIZE(line)-1;
+				m_parms.lineLength = ARRAYSIZE( line ) - 1;
 			}
 			pText++;
 		}
@@ -604,10 +652,12 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 
 		textmessage->SetPosition( m_parms.x, m_parms.y );
 
-		if (m_parms.fadeBlend > 255)
+		if( m_parms.fadeBlend > 255 )
+		{
 			m_parms.fadeBlend = 255;
-		
-		for ( j = 0; j < m_parms.lineLength; j++ )
+		}
+
+		for( j = 0; j < m_parms.lineLength; j++ )
 		{
 			m_parms.text = line[j];
 			MessageScanNextChar();
@@ -622,37 +672,37 @@ void CHudMessage::MessageDrawScan( client_textmessage_t *pMessage, float time )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CHudMessage::ShouldDraw( void )
 {
-	return ( CHudElement::ShouldDraw() && 
-		( m_bHaveMessage || m_Messages.Count() ) );
+	return ( CHudElement::ShouldDraw() &&
+			 ( m_bHaveMessage || m_Messages.Count() ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::Paint()
 {
 	int i, drawn;
-	client_textmessage_t *pMessage;
+	client_textmessage_t* pMessage;
 	float endTime;
 
 	drawn = 0;
 
-	if ( m_gameTitleTime > 0 )
+	if( m_gameTitleTime > 0 )
 	{
 		float localTime = gpGlobals->curtime - m_gameTitleTime;
 		float brightness;
 
 		// Maybe timer isn't set yet
-		if ( m_gameTitleTime > gpGlobals->curtime )
+		if( m_gameTitleTime > gpGlobals->curtime )
 		{
 			m_gameTitleTime = gpGlobals->curtime;
 		}
 
-		if ( localTime > (m_pGameTitle->fadein + m_pGameTitle->holdtime + m_pGameTitle->fadeout) )
+		if( localTime > ( m_pGameTitle->fadein + m_pGameTitle->holdtime + m_pGameTitle->fadeout ) )
 		{
 			m_gameTitleTime = 0;
 		}
@@ -674,42 +724,44 @@ void CHudMessage::Paint()
 	}
 
 	// Fixup level transitions
-	for ( i = 0; i < maxHUDMessages; i++ )
+	for( i = 0; i < maxHUDMessages; i++ )
 	{
 		// Assume m_parms.time contains last time
-		if ( m_pMessages[i] )
+		if( m_pMessages[i] )
 		{
 			pMessage = m_pMessages[i];
-			if ( m_startTime[i] > gpGlobals->curtime )
-				m_startTime[i] = gpGlobals->curtime + m_parms.time - m_startTime[i] + 0.2;	// Server takes 0.2 seconds to spawn, adjust for this
+			if( m_startTime[i] > gpGlobals->curtime )
+			{
+				m_startTime[i] = gpGlobals->curtime + m_parms.time - m_startTime[i] + 0.2;    // Server takes 0.2 seconds to spawn, adjust for this
+			}
 		}
 	}
 
-	for ( i = 0; i < maxHUDMessages; i++ )
+	for( i = 0; i < maxHUDMessages; i++ )
 	{
-		if ( m_pMessages[i] )
+		if( m_pMessages[i] )
 		{
 			pMessage = m_pMessages[i];
 
 			// This is when the message is over
 			switch( pMessage->effect )
 			{
-			case 0:
-			case 1:
-				endTime = m_startTime[i] + pMessage->fadein + pMessage->fadeout + pMessage->holdtime;
-				break;
-			
-			// Fade in is per character in scanning messages
-			case 2:
-				endTime = m_startTime[i] + (pMessage->fadein * strlen( pMessage->pMessage )) + pMessage->fadeout + pMessage->holdtime;
-				break;
+				case 0:
+				case 1:
+					endTime = m_startTime[i] + pMessage->fadein + pMessage->fadeout + pMessage->holdtime;
+					break;
 
-			default:
-				endTime = 0;
-				break;
+				// Fade in is per character in scanning messages
+				case 2:
+					endTime = m_startTime[i] + ( pMessage->fadein * strlen( pMessage->pMessage ) ) + pMessage->fadeout + pMessage->holdtime;
+					break;
+
+				default:
+					endTime = 0;
+					break;
 			}
 
-			if ( gpGlobals->curtime <= endTime )
+			if( gpGlobals->curtime <= endTime )
 			{
 				float messageTime = gpGlobals->curtime - m_startTime[i];
 
@@ -733,7 +785,7 @@ void CHudMessage::Paint()
 	m_parms.time = gpGlobals->curtime;
 
 	// Did we draw any messages?
-	if ( !drawn )
+	if( !drawn )
 	{
 		m_bHaveMessage = false;
 	}
@@ -742,33 +794,35 @@ void CHudMessage::Paint()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudMessage::MessageAdd( const char *pName )
+void CHudMessage::MessageAdd( const char* pName )
 {
 	int i;
 
 	float time = gpGlobals->curtime;
 
-	client_textmessage_t *pMessage = NULL;
+	client_textmessage_t* pMessage = NULL;
 
-	if ( pName[0] == '#' )
+	if( pName[0] == '#' )
 	{
-		pMessage = TextMessageGet( pName+1 );
+		pMessage = TextMessageGet( pName + 1 );
 	}
 	else
 	{
 		pMessage = TextMessageGet( pName );
 	}
 
-	if ( !pMessage )
-		return;
-
-	if ( pMessage->pClearMessage )
+	if( !pMessage )
 	{
-		for ( i = 0; i < maxHUDMessages; i++ )
+		return;
+	}
+
+	if( pMessage->pClearMessage )
+	{
+		for( i = 0; i < maxHUDMessages; i++ )
 		{
-			if ( m_pMessages[ i ] && !Q_stricmp( m_pMessages[ i ]->pName, pMessage->pClearMessage ) )
+			if( m_pMessages[ i ] && !Q_stricmp( m_pMessages[ i ]->pName, pMessage->pClearMessage ) )
 			{
 				m_startTime[ i ] = 0.0f;
 				m_pMessages[ i ] = NULL;
@@ -777,9 +831,9 @@ void CHudMessage::MessageAdd( const char *pName )
 		}
 	}
 
-	for ( i = 0; i < maxHUDMessages; i++ )
+	for( i = 0; i < maxHUDMessages; i++ )
 	{
-		if ( !m_pMessages[i] )
+		if( !m_pMessages[i] )
 		{
 			m_pMessages[i] = pMessage;
 			m_startTime[i] = time;
@@ -796,12 +850,12 @@ void CHudMessage::MessageAdd( const char *pName )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudMessage::MsgFunc_HudText( bf_read &msg )
+void CHudMessage::MsgFunc_HudText( bf_read& msg )
 {
 	char szString[2048];
-	msg.ReadString( szString, sizeof(szString) );
+	msg.ReadString( szString, sizeof( szString ) );
 
 	MessageAdd( szString );
 }
@@ -810,12 +864,12 @@ void CHudMessage::MsgFunc_HudText( bf_read &msg )
 #include "shake.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudMessage::MsgFunc_GameTitle( bf_read &msg )
+void CHudMessage::MsgFunc_GameTitle( bf_read& msg )
 {
 	m_pGameTitle = TextMessageGet( "GAMETITLE" );
-	if ( m_pGameTitle != NULL )
+	if( m_pGameTitle != NULL )
 	{
 		m_gameTitleTime = gpGlobals->curtime;
 
@@ -830,8 +884,8 @@ void CHudMessage::MsgFunc_GameTitle( bf_read &msg )
 		sf.r = 0;
 		sf.g = 0;
 		sf.b = 0;
-		sf.duration = (float)(1<<SCREENFADE_FRACBITS) * 5.0f;
-		sf.holdTime = (float)(1<<SCREENFADE_FRACBITS) * 1.0f;
+		sf.duration = ( float )( 1 << SCREENFADE_FRACBITS ) * 5.0f;
+		sf.holdTime = ( float )( 1 << SCREENFADE_FRACBITS ) * 1.0f;
 		sf.fadeFlags = FFADE_IN | FFADE_PURGE;
 		vieweffects->Fade( sf );
 
@@ -840,9 +894,9 @@ void CHudMessage::MsgFunc_GameTitle( bf_read &msg )
 }
 
 
-void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
+void CHudMessage::MsgFunc_HudMsg( bf_read& msg )
 {
-// Position command $position x y 
+// Position command $position x y
 // x & y are from 0 to 1 to be screen resolution independent
 // -1 means center in each dimension
 // Effect command $effect <effect number>
@@ -857,11 +911,13 @@ void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
 // $holdtime (stay on the screen for this long)
 
 	int channel = msg.ReadByte() % MAX_NETMESSAGE;	// Pick the buffer
-	
-	client_textmessage_t *pNetMessage = TextMessageGet( s_NetworkMessageNames[ channel ] );
-	
-	if ( !pNetMessage || !pNetMessage->pMessage )
+
+	client_textmessage_t* pNetMessage = TextMessageGet( s_NetworkMessageNames[ channel ] );
+
+	if( !pNetMessage || !pNetMessage->pMessage )
+	{
 		return;
+	}
 
 	pNetMessage->x = msg.ReadFloat();
 	pNetMessage->y = msg.ReadFloat();
@@ -886,29 +942,29 @@ void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
 	pNetMessage->pName = s_NetworkMessageNames[ channel ];
 
 	// see tmessage.cpp why 512
-	msg.ReadString( (char*)pNetMessage->pMessage, 512 );
+	msg.ReadString( ( char* )pNetMessage->pMessage, 512 );
 
 #ifdef MAPBASE
-	// 
+	//
 	// Mapbase adds a new data entry for custom fonts on entities like game_text.
 	// Some existing instances of this user message may not have this, so we have to make sure we have any bits left first.
-	// 
-	if (msg.GetNumBitsLeft() > 0)
+	//
+	if( msg.GetNumBitsLeft() > 0 )
 	{
 		// Try to have VGui font names for each channel
 		static char szVGuiFontNames[MAX_NETMESSAGE][512];
 		msg.ReadString( szVGuiFontNames[channel], 512 );
-		if (szVGuiFontNames[channel][0] != '\0')
+		if( szVGuiFontNames[channel][0] != '\0' )
 		{
 			pNetMessage->pVGuiSchemeFontName = szVGuiFontNames[channel];
 		}
 	}
 
-	// 
+	//
 	// Mapbase adds a new data entry for breaking game_text into newline when it goes past the user's screen.
 	// Some existing instances of this user message may not have this, so we have to make sure we have any bits left first.
-	// 
-	if (msg.GetNumBitsLeft() > 0)
+	//
+	if( msg.GetNumBitsLeft() > 0 )
 	{
 		int len = msg.ReadByte();
 
@@ -920,32 +976,32 @@ void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
 
 		CGMsg( 2, CON_GROUP_CHOREO, "Line max is %i from an aspect ratio of %.3f (strlen %i)\n", lineMax, engine->GetScreenAspectRatio(), len );
 
-		char *curMessage = (char*)pNetMessage->pMessage;
+		char* curMessage = ( char* )pNetMessage->pMessage;
 		char newMessage[512];
 
 		int cur = 0; // Current time on this line
 		int i = 0; // curMessage
 		int i2 = 0; // newMessage
-		for (i = 0; i < len; i++)
+		for( i = 0; i < len; i++ )
 		{
 			cur++;
 			newMessage[i2] = curMessage[i];
 
 			// Check if we're past the point in which we should break the line
-			if (cur >= lineMinBreak)
+			if( cur >= lineMinBreak )
 			{
 				// Line break at the next space
-				if (curMessage[i] == ' ')
+				if( curMessage[i] == ' ' )
 				{
 					newMessage[i2] = '\n';
 					cur = 0;
 				}
-				else if (curMessage[i] == '\n')
+				else if( curMessage[i] == '\n' )
 				{
 					// Already a newline here
 					cur = 0;
 				}
-				else if (cur >= lineMax)
+				else if( cur >= lineMax )
 				{
 					// We're at the max and there's no space. Force a newline with a hyphen
 					newMessage[i2] = '-';
@@ -963,7 +1019,7 @@ void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
 		// Null terminate
 		newMessage[i2] = '\0';
 
-		Q_strncpy( (char*)pNetMessage->pMessage, newMessage, 512 );
+		Q_strncpy( ( char* )pNetMessage->pMessage, newMessage, 512 );
 	}
 #endif
 
@@ -972,31 +1028,33 @@ void CHudMessage::MsgFunc_HudMsg(bf_read &msg)
 
 //-----------------------------------------------------------------------------
 // Purpose: Get font sizes
-// Input  : *pWidth - 
+// Input  : *pWidth -
 // Output : int
 //-----------------------------------------------------------------------------
-int CHudMessage::GetFontInfo( FONTABC *pABCs, vgui::HFont hFont )
+int CHudMessage::GetFontInfo( FONTABC* pABCs, vgui::HFont hFont )
 {
 	int i;
 
-	if ( !hFont )
+	if( !hFont )
 	{
 		hFont = m_hFont;
 	}
 
-	if ( !hFont )
-		return 0;
-
-	if ( pABCs )
+	if( !hFont )
 	{
-		for ( i =0; i < 256; i++ )
+		return 0;
+	}
+
+	if( pABCs )
+	{
+		for( i = 0; i < 256; i++ )
 		{
 			int a, b, c;
-			vgui::surface()->GetCharABCwide( hFont, (char)i, a, b, c );
+			vgui::surface()->GetCharABCwide( hFont, ( char )i, a, b, c );
 			pABCs[i].abcA = a;
 			pABCs[i].abcB = b;
 			pABCs[i].abcC = c;
-			pABCs[i].total = a+b+c;
+			pABCs[i].total = a + b + c;
 		}
 	}
 
@@ -1015,12 +1073,14 @@ void CHudMessage::ResetCharacters( void )
 // Purpose: Grab next free message, if any
 // Output : CTextMessagePanel::message_t
 //-----------------------------------------------------------------------------
-CHudMessage::message_t *CHudMessage::AllocMessage( void )
+CHudMessage::message_t* CHudMessage::AllocMessage( void )
 {
-	message_t *msg;
+	message_t* msg;
 
-	if ( m_Messages.Count() >= MAX_TEXTMESSAGE_CHARS )
+	if( m_Messages.Count() >= MAX_TEXTMESSAGE_CHARS )
+	{
 		return NULL;
+	}
 
 	msg = &m_Messages[ m_Messages.AddToTail() ];
 
@@ -1040,15 +1100,17 @@ CHudMessage::message_t *CHudMessage::AllocMessage( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : x - 
-//			y - 
+// Purpose:
+// Input  : x -
+//			y -
 //-----------------------------------------------------------------------------
 void CHudMessage::SetPosition( int x, int y )
 {
-	message_t *msg = AllocMessage();
-	if ( !msg )
+	message_t* msg = AllocMessage();
+	if( !msg )
+	{
 		return;
+	}
 
 	msg->type = TYPE_POSITION;
 
@@ -1059,20 +1121,22 @@ void CHudMessage::SetPosition( int x, int y )
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a character to the active list, if possible
-// Input  : x - 
-//			y - 
-//			r - 
-//			g - 
-//			b - 
-//			a - 
-//			ch - 
+// Input  : x -
+//			y -
+//			r -
+//			g -
+//			b -
+//			a -
+//			ch -
 // Output : int
 //-----------------------------------------------------------------------------
 void CHudMessage::AddChar( int r, int g, int b, int a, wchar_t ch )
 {
-	message_t *msg = AllocMessage();
-	if ( !msg )
+	message_t* msg = AllocMessage();
+	if( !msg )
+	{
 		return;
+	}
 
 	msg->type = TYPE_CHARACTER;
 
@@ -1086,26 +1150,28 @@ void CHudMessage::AddChar( int r, int g, int b, int a, wchar_t ch )
 
 //-----------------------------------------------------------------------------
 // Purpose: Determine width and height of specified string
-// Input  : *wide - 
-//			*tall - 
-//			*string - 
+// Input  : *wide -
+//			*tall -
+//			*string -
 //-----------------------------------------------------------------------------
-void CHudMessage::GetTextExtents( int *wide, int *tall, const char *string )
+void CHudMessage::GetTextExtents( int* wide, int* tall, const char* string )
 {
-	*wide = g_pMatSystemSurface->DrawTextLen( m_hFont, "%s", (char *)string );
+	*wide = g_pMatSystemSurface->DrawTextLen( m_hFont, "%s", ( char* )string );
 	*tall = vgui::surface()->GetFontTall( m_hFont );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::SetFont( vgui::HFont hCustomFont )
 {
 	m_hFont = hCustomFont;
 
-	message_t *msg = AllocMessage();
-	if ( !msg )
+	message_t* msg = AllocMessage();
+	if( !msg )
+	{
 		return;
+	}
 
 	msg->type = TYPE_FONT;
 
@@ -1114,7 +1180,7 @@ void CHudMessage::SetFont( vgui::HFont hCustomFont )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudMessage::SetDefaultFont( void )
 {
@@ -1124,52 +1190,52 @@ void CHudMessage::SetDefaultFont( void )
 //-----------------------------------------------------------------------------
 // Purpose: Draw current text items
 //-----------------------------------------------------------------------------
-void CHudMessage::PaintCharacters() 
+void CHudMessage::PaintCharacters()
 {
 	int xpos = 0, ypos = 0;
 	vgui::surface()->DrawSetTextFont( m_hFont );
 
 	int messageCount = m_Messages.Count();
-	for ( int i = 0 ; i < messageCount; ++i )
+	for( int i = 0 ; i < messageCount; ++i )
 	{
-		message_t *msg = &m_Messages[ i ];
+		message_t* msg = &m_Messages[ i ];
 
-		switch ( msg->type )
+		switch( msg->type )
 		{
-		default:
-		case TYPE_UNKNOWN:
-			Assert( 0 );
-			break;
-		case TYPE_POSITION:
-			xpos = msg->x;
-			ypos = msg->y;
-			break;
-		case TYPE_FONT:
-			m_hFont = msg->font;
-			vgui::surface()->DrawSetTextFont( m_hFont );
-			break;
-		case TYPE_CHARACTER:
-			if ( m_hFont )
-			{
-				int a, b, c;
-				vgui::surface()->GetCharABCwide( m_hFont, msg->ch, a, b, c );
-
-				if ( msg->ch > 32 )
+			default:
+			case TYPE_UNKNOWN:
+				Assert( 0 );
+				break;
+			case TYPE_POSITION:
+				xpos = msg->x;
+				ypos = msg->y;
+				break;
+			case TYPE_FONT:
+				m_hFont = msg->font;
+				vgui::surface()->DrawSetTextFont( m_hFont );
+				break;
+			case TYPE_CHARACTER:
+				if( m_hFont )
 				{
-					vgui::surface()->DrawSetTextColor( msg->r,  msg->g,  msg->b,  msg->a );
-					vgui::surface()->DrawSetTextPos( xpos, ypos );
-					vgui::surface()->DrawUnicodeChar( msg->ch );
+					int a, b, c;
+					vgui::surface()->GetCharABCwide( m_hFont, msg->ch, a, b, c );
+
+					if( msg->ch > 32 )
+					{
+						vgui::surface()->DrawSetTextColor( msg->r,  msg->g,  msg->b,  msg->a );
+						vgui::surface()->DrawSetTextPos( xpos, ypos );
+						vgui::surface()->DrawUnicodeChar( msg->ch );
+					}
+					xpos += a + b + c;
 				}
-				xpos += a + b + c;
-			}
-			break;
+				break;
 		}
 	}
 
 	ResetCharacters();
 }
 
-void CHudMessage::GetLength( int *wide, int *tall, const char *string )
+void CHudMessage::GetLength( int* wide, int* tall, const char* string )
 {
 	GetTextExtents( wide, tall, string );
 }

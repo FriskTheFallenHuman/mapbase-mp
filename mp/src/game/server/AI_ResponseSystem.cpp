@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -23,29 +23,31 @@
 #include "fmtstr.h"
 #include "multiplay_gamerules.h"
 #ifdef MAPBASE
-#include "mapbase/matchers.h"
+	#include "mapbase/matchers.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 ConVar rr_debugresponses( "rr_debugresponses", "0", FCVAR_NONE, "Show verbose matching output (1 for simple, 2 for rule scoring). If set to 3, it will only show response success/failure for npc_selected NPCs." );
-ConVar rr_debugrule( "rr_debugrule", "", FCVAR_NONE, "If set to the name of the rule, that rule's score will be shown whenever a concept is passed into the response rules system.");
+ConVar rr_debugrule( "rr_debugrule", "", FCVAR_NONE, "If set to the name of the rule, that rule's score will be shown whenever a concept is passed into the response rules system." );
 ConVar rr_dumpresponses( "rr_dumpresponses", "0", FCVAR_NONE, "Dump all response_rules.txt and rules (requires restart)" );
 
 #ifdef MAPBASE
-ConVar rr_enhanced_saverestore( "rr_enhanced_saverestore", "0", FCVAR_NONE, "Enables enhanced save/restore capabilities for the Response System." );
+	ConVar rr_enhanced_saverestore( "rr_enhanced_saverestore", "0", FCVAR_NONE, "Enables enhanced save/restore capabilities for the Response System." );
 #endif
 
 static CUtlSymbolTable g_RS;
 
-inline static char *CopyString( const char *in )
+inline static char* CopyString( const char* in )
 {
-	if ( !in )
+	if( !in )
+	{
 		return NULL;
+	}
 
 	int len = Q_strlen( in );
-	char *out = new char[ len + 1 ];
+	char* out = new char[ len + 1 ];
 	Q_memcpy( out, in, len );
 	out[ len ] = 0;
 	return out;
@@ -76,7 +78,7 @@ public:
 
 	void Describe( void )
 	{
-		if ( !valid )
+		if( !valid )
 		{
 			DevMsg( "    invalid!\n" );
 			return;
@@ -85,17 +87,17 @@ public:
 
 		sz[ 0] = 0;
 		int minmaxcount = 0;
-		if ( usemin )
+		if( usemin )
 		{
 			Q_snprintf( sz, sizeof( sz ), ">%s%.3f", minequals ? "=" : "", minval );
 			minmaxcount++;
 		}
-		if ( usemax )
+		if( usemax )
 		{
 			char sz2[ 128 ];
 			Q_snprintf( sz2, sizeof( sz2 ), "<%s%.3f", maxequals ? "=" : "", maxval );
 
-			if ( minmaxcount > 0 )
+			if( minmaxcount > 0 )
 			{
 				Q_strncat( sz, " and ", sizeof( sz ), COPY_ALL_CHARACTERS );
 			}
@@ -103,21 +105,21 @@ public:
 			minmaxcount++;
 		}
 
-		if ( minmaxcount >= 1 )
+		if( minmaxcount >= 1 )
 		{
 			DevMsg( "    matcher:  %s\n", sz );
 			return;
 		}
 
 #ifdef MAPBASE
-		if (isbit)
+		if( isbit )
 		{
 			DevMsg( "    matcher:  &%s%s\n", notequal ? "~" : "", GetToken() );
 			return;
 		}
 #endif
-		
-		if ( notequal )
+
+		if( notequal )
 		{
 			DevMsg( "    matcher:  !=%s\n", GetToken() );
 			return;
@@ -140,26 +142,26 @@ public:
 	bool	isbit : 1; //8
 #endif
 
-	void	SetToken( char const *s )
+	void	SetToken( char const* s )
 	{
 		token = g_RS.AddString( s );
 	}
 
-	char const *GetToken()
+	char const* GetToken()
 	{
-		if ( token.IsValid() )
+		if( token.IsValid() )
 		{
 			return g_RS.String( token );
 		}
 		return "";
 	}
-	void	SetRaw( char const *raw )
+	void	SetRaw( char const* raw )
 	{
 		rawtoken = g_RS.AddString( raw );
 	}
-	char const *GetRaw()
+	char const* GetRaw()
 	{
-		if ( rawtoken.IsValid() )
+		if( rawtoken.IsValid() )
 		{
 			return g_RS.String( rawtoken );
 		}
@@ -197,8 +199,10 @@ struct Response
 
 	Response& operator =( const Response& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 		weight = src.weight;
 		type = src.type;
 		value = CopyString( src.value );
@@ -213,15 +217,18 @@ struct Response
 		delete[] value;
 	}
 
-	ResponseType_t GetType() { return (ResponseType_t)type; }
+	ResponseType_t GetType()
+	{
+		return ( ResponseType_t )type;
+	}
 
-	char						*value;  // fixed up value spot		// 4
+	char*						value;  // fixed up value spot		// 4
 	float16						weight;								// 6
 
 	byte						depletioncount;						// 7
 	byte						type : 6;							// 8
-	byte						first : 1;							// 
-	byte						last : 1;							// 
+	byte						first : 1;							//
+	byte						last : 1;							//
 };
 
 struct ResponseGroup
@@ -244,7 +251,7 @@ struct ResponseGroup
 	ResponseGroup( const ResponseGroup& src )
 	{
 		int c = src.group.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			group.AddToTail( src.group[ i ] );
 		}
@@ -262,10 +269,12 @@ struct ResponseGroup
 
 	ResponseGroup& operator=( const ResponseGroup& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 		int c = src.group.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			group.AddToTail( src.group[ i ] );
 		}
@@ -284,14 +293,18 @@ struct ResponseGroup
 
 	bool	HasUndepletedChoices() const
 	{
-		if ( !m_bDepleteBeforeRepeat )
+		if( !m_bDepleteBeforeRepeat )
+		{
 			return true;
+		}
 
 		int c = group.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
-			if ( group[ i ].depletioncount != m_nDepletionCount )
+			if( group[ i ].depletioncount != m_nDepletionCount )
+			{
 				return true;
+			}
 		}
 
 		return false;
@@ -299,10 +312,12 @@ struct ResponseGroup
 
 	void	MarkResponseUsed( int idx )
 	{
-		if ( !m_bDepleteBeforeRepeat )
+		if( !m_bDepleteBeforeRepeat )
+		{
 			return;
+		}
 
-		if ( idx < 0 || idx >= group.Count() )
+		if( idx < 0 || idx >= group.Count() )
 		{
 			Assert( 0 );
 			return;
@@ -313,8 +328,10 @@ struct ResponseGroup
 
 	void	ResetDepletionCount()
 	{
-		if ( !m_bDepleteBeforeRepeat )
+		if( !m_bDepleteBeforeRepeat )
+		{
 			return;
+		}
 		++m_nDepletionCount;
 	}
 
@@ -325,7 +342,7 @@ struct ResponseGroup
 		SetCurrentIndex( 0 );
 		m_nDepletionCount = 1;
 
-		for ( int i = 0; i < group.Count(); ++i )
+		for( int i = 0; i < group.Count(); ++i )
 		{
 			group[ i ].depletioncount = 0;
 		}
@@ -335,15 +352,17 @@ struct ResponseGroup
 	{
 		index = -1;
 
-		if ( !m_bDepleteBeforeRepeat )
+		if( !m_bDepleteBeforeRepeat )
+		{
 			return false;
+		}
 
 		int c = group.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
-			Response *r = &group[ i ];
+			Response* r = &group[ i ];
 
-			if ( ( r->depletioncount != m_nDepletionCount ) && r->first )
+			if( ( r->depletioncount != m_nDepletionCount ) && r->first )
 			{
 				index = i;
 				return true;
@@ -352,20 +371,22 @@ struct ResponseGroup
 
 		return false;
 	}
-	
+
 	bool HasUndepletedLast( int& index )
 	{
 		index = -1;
 
-		if ( !m_bDepleteBeforeRepeat )
+		if( !m_bDepleteBeforeRepeat )
+		{
 			return false;
+		}
 
 		int c = group.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
-			Response *r = &group[ i ];
+			Response* r = &group[ i ];
 
-			if ( ( r->depletioncount != m_nDepletionCount ) && r->last )
+			if( ( r->depletioncount != m_nDepletionCount ) && r->last )
 			{
 				index = i;
 				return true;
@@ -375,20 +396,50 @@ struct ResponseGroup
 		return false;
 	}
 
-	bool	ShouldCheckRepeats() const { return m_bDepleteBeforeRepeat; }
-	int		GetDepletionCount() const { return m_nDepletionCount; }
+	bool	ShouldCheckRepeats() const
+	{
+		return m_bDepleteBeforeRepeat;
+	}
+	int		GetDepletionCount() const
+	{
+		return m_nDepletionCount;
+	}
 
-	bool	IsSequential() const { return m_bSequential; }
-	void	SetSequential( bool seq ) { m_bSequential = seq; }
+	bool	IsSequential() const
+	{
+		return m_bSequential;
+	}
+	void	SetSequential( bool seq )
+	{
+		m_bSequential = seq;
+	}
 
-	bool	IsNoRepeat() const { return m_bNoRepeat; }
-	void	SetNoRepeat( bool norepeat ) { m_bNoRepeat = norepeat; }
+	bool	IsNoRepeat() const
+	{
+		return m_bNoRepeat;
+	}
+	void	SetNoRepeat( bool norepeat )
+	{
+		m_bNoRepeat = norepeat;
+	}
 
-	bool	IsEnabled() const { return m_bEnabled; }
-	void	SetEnabled( bool enabled ) { m_bEnabled = enabled; }
+	bool	IsEnabled() const
+	{
+		return m_bEnabled;
+	}
+	void	SetEnabled( bool enabled )
+	{
+		m_bEnabled = enabled;
+	}
 
-	int		GetCurrentIndex() const { return m_nCurrentIndex; }
-	void	SetCurrentIndex( byte idx ) { m_nCurrentIndex = idx; }
+	int		GetCurrentIndex() const
+	{
+		return m_nCurrentIndex;
+	}
+	void	SetCurrentIndex( byte idx )
+	{
+		m_nCurrentIndex = idx;
+	}
 
 	CUtlVector< Response >	group;
 
@@ -406,7 +457,7 @@ struct ResponseGroup
 	bool					m_bHasLast : 1;
 	bool					m_bSequential : 1;
 	bool					m_bNoRepeat : 1;
-	
+
 };
 
 struct Criteria
@@ -418,10 +469,12 @@ struct Criteria
 		weight.SetFloat( 1.0f );
 		required = false;
 	}
-	Criteria& operator =(const Criteria& src )
+	Criteria& operator =( const Criteria& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		name = CopyString( src.name );
 		value = CopyString( src.value );
@@ -431,14 +484,14 @@ struct Criteria
 		matcher = src.matcher;
 
 		int c = src.subcriteria.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			subcriteria.AddToTail( src.subcriteria[ i ] );
 		}
 
 		return *this;
 	}
-	Criteria(const Criteria& src )
+	Criteria( const Criteria& src )
 	{
 		name = CopyString( src.name );
 		value = CopyString( src.value );
@@ -448,7 +501,7 @@ struct Criteria
 		matcher = src.matcher;
 
 		int c = src.subcriteria.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			subcriteria.AddToTail( src.subcriteria[ i ] );
 		}
@@ -464,8 +517,8 @@ struct Criteria
 		return ( subcriteria.Count() > 0 ) ? true : false;
 	}
 
-	char						*name;
-	char						*value;
+	char*						name;
+	char*						value;
 	float16						weight;
 	bool						required;
 
@@ -491,20 +544,22 @@ struct Rule
 
 	Rule& operator =( const Rule& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		int i;
 		int c;
-		
-		c = src.m_Criteria.Count(); 
-		for ( i = 0; i < c; i++ )
+
+		c = src.m_Criteria.Count();
+		for( i = 0; i < c; i++ )
 		{
 			m_Criteria.AddToTail( src.m_Criteria[ i ] );
 		}
 
-		c = src.m_Responses.Count(); 
-		for ( i = 0; i < c; i++ )
+		c = src.m_Responses.Count();
+		for( i = 0; i < c; i++ )
 		{
 			m_Responses.AddToTail( src.m_Responses[ i ] );
 		}
@@ -524,15 +579,15 @@ struct Rule
 	{
 		int i;
 		int c;
-		
-		c = src.m_Criteria.Count(); 
-		for ( i = 0; i < c; i++ )
+
+		c = src.m_Criteria.Count();
+		for( i = 0; i < c; i++ )
 		{
 			m_Criteria.AddToTail( src.m_Criteria[ i ] );
 		}
 
-		c = src.m_Responses.Count(); 
-		for ( i = 0; i < c; i++ )
+		c = src.m_Responses.Count();
+		for( i = 0; i < c; i++ )
 		{
 			m_Responses.AddToTail( src.m_Responses[ i ] );
 		}
@@ -552,28 +607,46 @@ struct Rule
 		delete[] m_szContext;
 	}
 
-	void SetContext( const char *context )
+	void SetContext( const char* context )
 	{
 		delete[] m_szContext;
 		m_szContext = CopyString( context );
 	}
 
-	const char *GetContext( void ) const { return m_szContext; }
+	const char* GetContext( void ) const
+	{
+		return m_szContext;
+	}
 
-	bool	IsEnabled() const { return m_bEnabled; }
-	void	Disable() { m_bEnabled = false; }
-	bool	IsMatchOnce() const { return m_bMatchOnce; }
+	bool	IsEnabled() const
+	{
+		return m_bEnabled;
+	}
+	void	Disable()
+	{
+		m_bEnabled = false;
+	}
+	bool	IsMatchOnce() const
+	{
+		return m_bMatchOnce;
+	}
 #ifdef MAPBASE
-	bool	IsApplyContextToWorld() const { return (m_iContextFlags & APPLYCONTEXT_WORLD) != 0; }
+	bool	IsApplyContextToWorld() const
+	{
+		return ( m_iContextFlags & APPLYCONTEXT_WORLD ) != 0;
+	}
 #else
-	bool	IsApplyContextToWorld() const { return m_bApplyContextToWorld; }
+	bool	IsApplyContextToWorld() const
+	{
+		return m_bApplyContextToWorld;
+	}
 #endif
 
 	// Indices into underlying criteria and response dictionaries
 	CUtlVector< unsigned short >	m_Criteria;
 	CUtlVector< unsigned short>		m_Responses;
 
-	char				*m_szContext;
+	char*				m_szContext;
 #ifdef MAPBASE
 	int					m_iContextFlags;
 #else
@@ -586,17 +659,18 @@ struct Rule
 #pragma pack()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-abstract_class CResponseSystem : public IResponseSystem 
+abstract_class CResponseSystem :
+public IResponseSystem
 {
 public:
 	CResponseSystem();
 	~CResponseSystem();
 
 	// IResponseSystem
-	virtual bool FindBestResponse( const AI_CriteriaSet& set, AI_Response& response, IResponseFilter *pFilter = NULL );
-	virtual void GetAllResponses( CUtlVector<AI_Response *> *pResponses );
+	virtual bool FindBestResponse( const AI_CriteriaSet & set, AI_Response & response, IResponseFilter* pFilter = NULL );
+	virtual void GetAllResponses( CUtlVector<AI_Response*>* pResponses );
 
 	virtual void Release() = 0;
 
@@ -609,29 +683,35 @@ public:
 		m_bPrecache = bEnable;
 	}
 
-	bool		ShouldPrecache()	{ return m_bPrecache; }
-	bool		IsCustomManagable()	{ return m_bCustomManagable; }
+	bool		ShouldPrecache()
+	{
+		return m_bPrecache;
+	}
+	bool		IsCustomManagable()
+	{
+		return m_bCustomManagable;
+	}
 
 	void		Clear();
 
-	void		DumpDictionary( const char *pszName );
+	void		DumpDictionary( const char* pszName );
 
 protected:
 
-	virtual const char *GetScriptFile( void ) = 0;
-	void		LoadRuleSet( const char *setname );
+	virtual const char* GetScriptFile( void ) = 0;
+	void		LoadRuleSet( const char* setname );
 
 	void		ResetResponseGroups();
 
-	float		LookForCriteria( const AI_CriteriaSet &criteriaSet, int iCriteria );
-	float		RecursiveLookForCriteria( const AI_CriteriaSet &criteriaSet, Criteria *pParent );
+	float		LookForCriteria( const AI_CriteriaSet & criteriaSet, int iCriteria );
+	float		RecursiveLookForCriteria( const AI_CriteriaSet & criteriaSet, Criteria * pParent );
 
 public:
 
-	void		CopyRuleFrom( Rule *pSrcRule, int iRule, CResponseSystem *pCustomSystem );
-	void		CopyCriteriaFrom( Rule *pSrcRule, Rule *pDstRule, CResponseSystem *pCustomSystem );
-	void		CopyResponsesFrom( Rule *pSrcRule, Rule *pDstRule, CResponseSystem *pCustomSystem );
-	void		CopyEnumerationsFrom( CResponseSystem *pCustomSystem );
+	void		CopyRuleFrom( Rule * pSrcRule, int iRule, CResponseSystem * pCustomSystem );
+	void		CopyCriteriaFrom( Rule * pSrcRule, Rule * pDstRule, CResponseSystem * pCustomSystem );
+	void		CopyResponsesFrom( Rule * pSrcRule, Rule * pDstRule, CResponseSystem * pCustomSystem );
+	void		CopyEnumerationsFrom( CResponseSystem * pCustomSystem );
 
 //private:
 
@@ -648,18 +728,18 @@ public:
 			action = NULL;
 		}
 
-		ResponseGroup	*group;
-		Response		*action;
+		ResponseGroup*	group;
+		Response*		action;
 	};
 
 	inline bool ParseToken( void )
 	{
-		if ( m_bUnget )
+		if( m_bUnget )
 		{
 			m_bUnget = false;
 			return true;
 		}
-		if ( m_ScriptStack.Count() <= 0 )
+		if( m_ScriptStack.Count() <= 0 )
 		{
 			Assert( 0 );
 			return false;
@@ -677,78 +757,82 @@ public:
 
 	inline bool TokenWaiting( void )
 	{
-		if ( m_ScriptStack.Count() <= 0 )
+		if( m_ScriptStack.Count() <= 0 )
 		{
 			Assert( 0 );
 			return false;
 		}
 
-		const char *p = m_ScriptStack[ 0 ].currenttoken;
+		const char* p = m_ScriptStack[ 0 ].currenttoken;
 
-		if ( !p )
+		if( !p )
 		{
 			Error( "AI_ResponseSystem:  Unxpected TokenWaiting() with NULL buffer in %p", m_ScriptStack[ 0 ].name );
 			return false;
 		}
 
 
-		while ( *p && *p!='\n')
+		while( *p && *p != '\n' )
 		{
 			// Special handler for // comment blocks
-			if ( *p == '/' && *(p+1) == '/' )
+			if( *p == '/' && *( p + 1 ) == '/' )
+			{
 				return false;
+			}
 
-			if ( !isspace( *p ) || isalnum( *p ) )
+			if( !isspace( *p ) || isalnum( *p ) )
+			{
 				return true;
+			}
 
 			p++;
 		}
 
 		return false;
 	}
-	
-	void		ParseOneResponse( const char *responseGroupName, ResponseGroup& group );
+
+	void		ParseOneResponse( const char* responseGroupName, ResponseGroup & group );
 
 #ifdef MAPBASE
-	void		ParseInclude( CStringPool &includedFiles, const char *scriptfile = NULL );
+	void		ParseInclude( CStringPool & includedFiles, const char* scriptfile = NULL );
 #else
-	void		ParseInclude( CStringPool &includedFiles );
+	void		ParseInclude( CStringPool & includedFiles );
 #endif
 	void		ParseResponse( void );
 	void		ParseCriterion( void );
 	void		ParseRule( void );
 	void		ParseEnumeration( void );
 
-	int			ParseOneCriterion( const char *criterionName );
-	
-	bool		Compare( const char *setValue, Criteria *c, bool verbose = false );
-	bool		CompareUsingMatcher( const char *setValue, Matcher& m, bool verbose = false );
-	void		ComputeMatcher( Criteria *c, Matcher& matcher );
-	void		ResolveToken( Matcher& matcher, char *token, size_t bufsize, char const *rawtoken );
-	float		LookupEnumeration( const char *name, bool& found );
+	int			ParseOneCriterion( const char* criterionName );
 
-	int			FindBestMatchingRule( const AI_CriteriaSet& set, bool verbose );
+	bool		Compare( const char* setValue, Criteria * c, bool verbose = false );
+	bool		CompareUsingMatcher( const char* setValue, Matcher & m, bool verbose = false );
+	void		ComputeMatcher( Criteria * c, Matcher & matcher );
+	void		ResolveToken( Matcher & matcher, char* token, size_t bufsize, char const * rawtoken );
+	float		LookupEnumeration( const char* name, bool & found );
 
-	float		ScoreCriteriaAgainstRule( const AI_CriteriaSet& set, int irule, bool verbose = false );
-	float		RecursiveScoreSubcriteriaAgainstRule( const AI_CriteriaSet& set, Criteria *parent, bool& exclude, bool verbose /*=false*/ );
-	float		ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet& set, int icriterion, bool& exclude, bool verbose = false );
-	bool		GetBestResponse( ResponseSearchResult& result, Rule *rule, bool verbose = false, IResponseFilter *pFilter = NULL );
-	bool		ResolveResponse( ResponseSearchResult& result, int depth, const char *name, bool verbose = false, IResponseFilter *pFilter = NULL );
-	int			SelectWeightedResponseFromResponseGroup( ResponseGroup *g, IResponseFilter *pFilter );
-	void		DescribeResponseGroup( ResponseGroup *group, int selected, int depth );
-	void		DebugPrint( int depth, const char *fmt, ... );
+	int			FindBestMatchingRule( const AI_CriteriaSet & set, bool verbose );
 
-	void		LoadFromBuffer( const char *scriptfile, const char *buffer, CStringPool &includedFiles );
+	float		ScoreCriteriaAgainstRule( const AI_CriteriaSet & set, int irule, bool verbose = false );
+	float		RecursiveScoreSubcriteriaAgainstRule( const AI_CriteriaSet & set, Criteria * parent, bool & exclude, bool verbose /*=false*/ );
+	float		ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet & set, int icriterion, bool & exclude, bool verbose = false );
+	bool		GetBestResponse( ResponseSearchResult & result, Rule * rule, bool verbose = false, IResponseFilter* pFilter = NULL );
+	bool		ResolveResponse( ResponseSearchResult & result, int depth, const char* name, bool verbose = false, IResponseFilter* pFilter = NULL );
+	int			SelectWeightedResponseFromResponseGroup( ResponseGroup * g, IResponseFilter * pFilter );
+	void		DescribeResponseGroup( ResponseGroup * group, int selected, int depth );
+	void		DebugPrint( int depth, const char* fmt, ... );
 
-	void		GetCurrentScript( char *buf, size_t buflen );
+	void		LoadFromBuffer( const char* scriptfile, const char* buffer, CStringPool & includedFiles );
+
+	void		GetCurrentScript( char* buf, size_t buflen );
 	int			GetCurrentToken() const;
-	void		SetCurrentScript( const char *script );
+	void		SetCurrentScript( const char* script );
 	bool		IsRootCommand();
 
-	void		PushScript( const char *scriptfile, unsigned char *buffer );
-	void		PopScript(void);
+	void		PushScript( const char* scriptfile, unsigned char* buffer );
+	void		PopScript( void );
 
-	void		ResponseWarning( const char *fmt, ... );
+	void		ResponseWarning( const char* fmt, ... );
 
 	CUtlDict< ResponseGroup, short >	m_Responses;
 	CUtlDict< Criteria, short >	m_Criteria;
@@ -758,15 +842,15 @@ public:
 	char		token[ 1204 ];
 
 	bool		m_bUnget;
-	bool		m_bPrecache;	
+	bool		m_bPrecache;
 
 	bool		m_bCustomManagable;
 
 	struct ScriptEntry
 	{
-		unsigned char	*buffer;
+		unsigned char*	buffer;
 		FileNameHandle_t name;
-		const char		*currenttoken;
+		const char*		currenttoken;
 		int				tokencount;
 	};
 
@@ -777,31 +861,31 @@ public:
 };
 
 BEGIN_SIMPLE_DATADESC( Response )
-	// DEFINE_FIELD( type, FIELD_INTEGER ),
-	// DEFINE_ARRAY( value, FIELD_CHARACTER ),
-	// DEFINE_FIELD( weight, FIELD_FLOAT ),
-	DEFINE_FIELD( depletioncount, FIELD_CHARACTER ),
-	// DEFINE_FIELD( first, FIELD_BOOLEAN ),
-	// DEFINE_FIELD( last, FIELD_BOOLEAN ),
-END_DATADESC()
+// DEFINE_FIELD( type, FIELD_INTEGER ),
+// DEFINE_ARRAY( value, FIELD_CHARACTER ),
+// DEFINE_FIELD( weight, FIELD_FLOAT ),
+DEFINE_FIELD( depletioncount, FIELD_CHARACTER ),
+			  // DEFINE_FIELD( first, FIELD_BOOLEAN ),
+			  // DEFINE_FIELD( last, FIELD_BOOLEAN ),
+			  END_DATADESC()
 
-BEGIN_SIMPLE_DATADESC( ResponseGroup )
-	// DEFINE_FIELD( group, FIELD_UTLVECTOR ),
-	// DEFINE_FIELD( rp, FIELD_EMBEDDED ),
-	// DEFINE_FIELD( m_bDepleteBeforeRepeat, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nDepletionCount, FIELD_CHARACTER ),
-	// DEFINE_FIELD( m_bHasFirst, FIELD_BOOLEAN ),
-	// DEFINE_FIELD( m_bHasLast, FIELD_BOOLEAN ),
-	// DEFINE_FIELD( m_bSequential, FIELD_BOOLEAN ),
-	// DEFINE_FIELD( m_bNoRepeat, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nCurrentIndex, FIELD_CHARACTER ),
-END_DATADESC()
+			  BEGIN_SIMPLE_DATADESC( ResponseGroup )
+			  // DEFINE_FIELD( group, FIELD_UTLVECTOR ),
+			  // DEFINE_FIELD( rp, FIELD_EMBEDDED ),
+			  // DEFINE_FIELD( m_bDepleteBeforeRepeat, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_nDepletionCount, FIELD_CHARACTER ),
+			  // DEFINE_FIELD( m_bHasFirst, FIELD_BOOLEAN ),
+			  // DEFINE_FIELD( m_bHasLast, FIELD_BOOLEAN ),
+			  // DEFINE_FIELD( m_bSequential, FIELD_BOOLEAN ),
+			  // DEFINE_FIELD( m_bNoRepeat, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_nCurrentIndex, FIELD_CHARACTER ),
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CResponseSystem::CResponseSystem()
+			  CResponseSystem::CResponseSystem()
 {
 	token[0] = 0;
 	m_bUnget = false;
@@ -810,51 +894,55 @@ CResponseSystem::CResponseSystem()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CResponseSystem::~CResponseSystem()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : char const
 //-----------------------------------------------------------------------------
-void CResponseSystem::GetCurrentScript( char *buf, size_t buflen )
+void CResponseSystem::GetCurrentScript( char* buf, size_t buflen )
 {
 	Assert( buf );
 	buf[ 0 ] = 0;
-	if ( m_ScriptStack.Count() <= 0 )
+	if( m_ScriptStack.Count() <= 0 )
+	{
 		return;
-	
-	if ( filesystem->String( m_ScriptStack[ 0 ].name, buf, buflen ) )
+	}
+
+	if( filesystem->String( m_ScriptStack[ 0 ].name, buf, buflen ) )
 	{
 		return;
 	}
 	buf[ 0 ] = 0;
 }
 
-void CResponseSystem::PushScript( const char *scriptfile, unsigned char *buffer )
+void CResponseSystem::PushScript( const char* scriptfile, unsigned char* buffer )
 {
 	ScriptEntry e;
 	e.name = filesystem->FindOrAddFileName( scriptfile );
 	e.buffer = buffer;
-	e.currenttoken = (char *)e.buffer;
+	e.currenttoken = ( char* )e.buffer;
 	e.tokencount = 0;
 	m_ScriptStack.AddToHead( e );
 }
 
-void CResponseSystem::PopScript(void)
+void CResponseSystem::PopScript( void )
 {
 	Assert( m_ScriptStack.Count() >= 1 );
-	if ( m_ScriptStack.Count() <= 0 )
+	if( m_ScriptStack.Count() <= 0 )
+	{
 		return;
+	}
 
 	m_ScriptStack.Remove( 0 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CResponseSystem::Clear()
 {
@@ -865,15 +953,15 @@ void CResponseSystem::Clear()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
-//			found - 
+// Purpose:
+// Input  : *name -
+//			found -
 // Output : float
 //-----------------------------------------------------------------------------
-float CResponseSystem::LookupEnumeration( const char *name, bool& found )
+float CResponseSystem::LookupEnumeration( const char* name, bool& found )
 {
 	int idx = m_Enumerations.Find( name );
-	if ( idx == m_Enumerations.InvalidIndex() )
+	if( idx == m_Enumerations.InvalidIndex() )
 	{
 		found = false;
 		return 0.0f;
@@ -885,12 +973,12 @@ float CResponseSystem::LookupEnumeration( const char *name, bool& found )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : matcher - 
+// Purpose:
+// Input  : matcher -
 //-----------------------------------------------------------------------------
-void CResponseSystem::ResolveToken( Matcher& matcher, char *token, size_t bufsize, char const *rawtoken )
+void CResponseSystem::ResolveToken( Matcher& matcher, char* token, size_t bufsize, char const* rawtoken )
 {
-	if ( rawtoken[0] != '[' )
+	if( rawtoken[0] != '[' )
 	{
 		Q_strncpy( token, rawtoken, bufsize );
 		return;
@@ -899,7 +987,7 @@ void CResponseSystem::ResolveToken( Matcher& matcher, char *token, size_t bufsiz
 	// Now lookup enumeration
 	bool found = false;
 	float f = LookupEnumeration( rawtoken, found );
-	if ( !found )
+	if( !found )
 	{
 		Q_strncpy( token, rawtoken, bufsize );
 		ResponseWarning( "No such enumeration '%s'\n", token );
@@ -911,16 +999,20 @@ void CResponseSystem::ResolveToken( Matcher& matcher, char *token, size_t bufsiz
 
 
 #ifndef MAPBASE // Moved to matchers.h
-static bool AppearsToBeANumber( char const *token )
+static bool AppearsToBeANumber( char const* token )
 {
-	if ( atof( token ) != 0.0f )
-		return true;
-
-	char const *p = token;
-	while ( *p )
+	if( atof( token ) != 0.0f )
 	{
-		if ( *p != '0' )
+		return true;
+	}
+
+	char const* p = token;
+	while( *p )
+	{
+		if( *p != '0' )
+		{
 			return false;
+		}
 
 		p++;
 	}
@@ -929,16 +1021,16 @@ static bool AppearsToBeANumber( char const *token )
 }
 #endif
 
-void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
+void CResponseSystem::ComputeMatcher( Criteria* c, Matcher& matcher )
 {
-	const char *s = c->value;
-	if ( !s )
+	const char* s = c->value;
+	if( !s )
 	{
 		matcher.valid = false;
 		return;
 	}
 
-	const char *in = s;
+	const char* in = s;
 
 	char token[ 128 ];
 	char rawtoken[ 128 ];
@@ -957,29 +1049,29 @@ void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
 #endif
 
 	bool done = false;
-	while ( !done )
+	while( !done )
 	{
 		switch( *in )
 		{
-		case '>':
+			case '>':
 			{
 				gt = true;
 				Assert( !lt ); // Can't be both
 			}
 			break;
-		case '<':
+			case '<':
 			{
 				lt = true;
 				Assert( !gt );  // Can't be both
 			}
 			break;
-		case '=':
+			case '=':
 			{
 				eq = true;
 			}
 			break;
-		case ',':
-		case '\0':
+			case ',':
+			case '\0':
 			{
 				rawtoken[ n ] = 0;
 				n = 0;
@@ -989,7 +1081,7 @@ void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
 
 #ifdef MAPBASE
 				// Bits are an entirely different and independent story
-				if (bit)
+				if( bit )
 				{
 					matcher.isbit = true;
 					matcher.notequal = nt;
@@ -998,57 +1090,57 @@ void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
 				}
 				else
 #endif
-				// Fill in first data set
-				if ( gt )
-				{
-					matcher.usemin = true;
-					matcher.minequals = eq;
-					matcher.minval = (float)atof( token );
-
-					matcher.isnumeric = true;
-				}
-				else if ( lt )
-				{
-					matcher.usemax = true;
-					matcher.maxequals = eq;
-					matcher.maxval = (float)atof( token );
-
-					matcher.isnumeric = true;
-				}
-				else
-				{
-					if ( *in == ',' )
+					// Fill in first data set
+					if( gt )
 					{
-						// If there's a comma, this better have been a less than or a gt key
-						Assert( 0 );
+						matcher.usemin = true;
+						matcher.minequals = eq;
+						matcher.minval = ( float )atof( token );
+
+						matcher.isnumeric = true;
 					}
+					else if( lt )
+					{
+						matcher.usemax = true;
+						matcher.maxequals = eq;
+						matcher.maxval = ( float )atof( token );
 
-					matcher.notequal = nt;
+						matcher.isnumeric = true;
+					}
+					else
+					{
+						if( *in == ',' )
+						{
+							// If there's a comma, this better have been a less than or a gt key
+							Assert( 0 );
+						}
 
-					matcher.isnumeric = AppearsToBeANumber( token );
-				}
+						matcher.notequal = nt;
+
+						matcher.isnumeric = AppearsToBeANumber( token );
+					}
 
 				gt = lt = eq = nt = false;
 
-				if ( !(*in) )
+				if( !( *in ) )
 				{
 					done = true;
 				}
 			}
 			break;
-		case '!':
-			nt = true;
-			break;
+			case '!':
+				nt = true;
+				break;
 #ifdef MAPBASE
-		case '~':
-			nt = true;
-		case '&':
-			bit = true;
-			break;
+			case '~':
+				nt = true;
+			case '&':
+				bit = true;
+				break;
 #endif
-		default:
-			rawtoken[ n++ ] = *in;
-			break;
+			default:
+				rawtoken[ n++ ] = *in;
+				break;
 		}
 
 		in++;
@@ -1059,84 +1151,100 @@ void CResponseSystem::ComputeMatcher( Criteria *c, Matcher& matcher )
 	matcher.valid = true;
 }
 
-bool CResponseSystem::CompareUsingMatcher( const char *setValue, Matcher& m, bool verbose /*=false*/ )
+bool CResponseSystem::CompareUsingMatcher( const char* setValue, Matcher& m, bool verbose /*=false*/ )
 {
-	if ( !m.valid )
+	if( !m.valid )
+	{
 		return false;
+	}
 
-	float v = (float)atof( setValue );
-	if ( setValue[0] == '[' )
+	float v = ( float )atof( setValue );
+	if( setValue[0] == '[' )
 	{
 		bool found = false;
 		v = LookupEnumeration( setValue, found );
 	}
-	
+
 #ifdef MAPBASE
 	// Bits are always a different story
-	if (m.isbit)
+	if( m.isbit )
 	{
 		int v1 = v;
-		int v2 = atoi(m.GetToken());
-		if (m.notequal)
-			return (v1 & v2) == 0;
-		else
-			return (v1 & v2) != 0;
-	}
-#endif
-	
-	int minmaxcount = 0;
-
-	if ( m.usemin )
-	{
-		if ( m.minequals )
+		int v2 = atoi( m.GetToken() );
+		if( m.notequal )
 		{
-			if ( v < m.minval )
-				return false;
+			return ( v1 & v2 ) == 0;
 		}
 		else
 		{
-			if ( v <= m.minval )
+			return ( v1 & v2 ) != 0;
+		}
+	}
+#endif
+
+	int minmaxcount = 0;
+
+	if( m.usemin )
+	{
+		if( m.minequals )
+		{
+			if( v < m.minval )
+			{
 				return false;
+			}
+		}
+		else
+		{
+			if( v <= m.minval )
+			{
+				return false;
+			}
 		}
 
 		++minmaxcount;
 	}
 
-	if ( m.usemax )
+	if( m.usemax )
 	{
-		if ( m.maxequals )
+		if( m.maxequals )
 		{
-			if ( v > m.maxval )
+			if( v > m.maxval )
+			{
 				return false;
+			}
 		}
 		else
 		{
-			if ( v >= m.maxval )
+			if( v >= m.maxval )
+			{
 				return false;
+			}
 		}
 
 		++minmaxcount;
 	}
 
 	// Had one or both criteria and met them
-	if ( minmaxcount >= 1 )
+	if( minmaxcount >= 1 )
 	{
 		return true;
 	}
 
-	if ( m.notequal )
+	if( m.notequal )
 	{
-		if ( m.isnumeric )
+		if( m.isnumeric )
 		{
-			if ( v == (float)atof( m.GetToken() ) )
+			if( v == ( float )atof( m.GetToken() ) )
+			{
 				return false;
+			}
 		}
 		else
 		{
 #ifdef MAPBASE
-			if ( Matcher_NamesMatch(m.GetToken(), setValue) )
+			if( Matcher_NamesMatch( m.GetToken(), setValue ) )
 #else
-			if ( !Q_stricmp( setValue, m.GetToken() ) )
+			if( !Q_stricmp( setValue, m.GetToken() ) )
 #endif
 				return false;
 		}
@@ -1144,32 +1252,34 @@ bool CResponseSystem::CompareUsingMatcher( const char *setValue, Matcher& m, boo
 		return true;
 	}
 
-	if ( m.isnumeric )
+	if( m.isnumeric )
 	{
 		// If the setValue is "", the NPC doesn't have the key at all,
 		// in which case we shouldn't match "0".
-		if ( !setValue || !setValue[0] )
+		if( !setValue || !setValue[0] )
+		{
 			return false;
+		}
 
-		return v == (float)atof( m.GetToken() );
+		return v == ( float )atof( m.GetToken() );
 	}
 
 #ifdef MAPBASE
 	// Wildcards.
-	return Matcher_NamesMatch(m.GetToken(), setValue) ? true : false;
+	return Matcher_NamesMatch( m.GetToken(), setValue ) ? true : false;
 #else
 	return !Q_stricmp( setValue, m.GetToken() ) ? true : false;
 #endif
 }
 
-bool CResponseSystem::Compare( const char *setValue, Criteria *c, bool verbose /*= false*/ )
+bool CResponseSystem::Compare( const char* setValue, Criteria* c, bool verbose /*= false*/ )
 {
 	Assert( c );
 	Assert( setValue );
 
 	bool bret = CompareUsingMatcher( setValue, c->matcher, verbose );
 
-	if ( verbose )
+	if( verbose )
 	{
 		DevMsg( "'%20s' vs. '%20s' = ", setValue, c->value );
 
@@ -1181,16 +1291,16 @@ bool CResponseSystem::Compare( const char *setValue, Criteria *c, bool verbose /
 	return bret;
 }
 
-float CResponseSystem::RecursiveScoreSubcriteriaAgainstRule( const AI_CriteriaSet& set, Criteria *parent, bool& exclude, bool verbose /*=false*/ )
+float CResponseSystem::RecursiveScoreSubcriteriaAgainstRule( const AI_CriteriaSet& set, Criteria* parent, bool& exclude, bool verbose /*=false*/ )
 {
 	float score = 0.0f;
 	int subcount = parent->subcriteria.Count();
-	for ( int i = 0; i < subcount; i++ )
+	for( int i = 0; i < subcount; i++ )
 	{
 		int icriterion = parent->subcriteria[ i ];
 
 		bool excludesubrule = false;
-		if (verbose)
+		if( verbose )
 		{
 			DevMsg( "\n" );
 		}
@@ -1202,11 +1312,11 @@ float CResponseSystem::RecursiveScoreSubcriteriaAgainstRule( const AI_CriteriaSe
 	return score * parent->weight.GetFloat();
 }
 
-float CResponseSystem::RecursiveLookForCriteria( const AI_CriteriaSet &criteriaSet, Criteria *pParent )
+float CResponseSystem::RecursiveLookForCriteria( const AI_CriteriaSet& criteriaSet, Criteria* pParent )
 {
 	float flScore = 0.0f;
 	int nSubCount = pParent->subcriteria.Count();
-	for ( int iSub = 0; iSub < nSubCount; ++iSub )
+	for( int iSub = 0; iSub < nSubCount; ++iSub )
 	{
 		int iCriteria = pParent->subcriteria[iSub];
 		flScore += LookForCriteria( criteriaSet, iCriteria );
@@ -1215,35 +1325,39 @@ float CResponseSystem::RecursiveLookForCriteria( const AI_CriteriaSet &criteriaS
 	return flScore;
 }
 
-float CResponseSystem::LookForCriteria( const AI_CriteriaSet &criteriaSet, int iCriteria )
+float CResponseSystem::LookForCriteria( const AI_CriteriaSet& criteriaSet, int iCriteria )
 {
-	Criteria *pCriteria = &m_Criteria[iCriteria];
-	if ( pCriteria->IsSubCriteriaType() )
+	Criteria* pCriteria = &m_Criteria[iCriteria];
+	if( pCriteria->IsSubCriteriaType() )
 	{
 		return RecursiveLookForCriteria( criteriaSet, pCriteria );
 	}
 
 	int iIndex = criteriaSet.FindCriterionIndex( pCriteria->name );
-	if ( iIndex == -1 )
+	if( iIndex == -1 )
+	{
 		return 0.0f;
+	}
 
 	Assert( criteriaSet.GetValue( iIndex ) );
-	if ( Q_stricmp( criteriaSet.GetValue( iIndex ), pCriteria->value ) )
+	if( Q_stricmp( criteriaSet.GetValue( iIndex ), pCriteria->value ) )
+	{
 		return 0.0f;
+	}
 
 	return 1.0f;
 }
 
 float CResponseSystem::ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet& set, int icriterion, bool& exclude, bool verbose /*=false*/ )
 {
-	Criteria *c = &m_Criteria[ icriterion ];
+	Criteria* c = &m_Criteria[ icriterion ];
 
-	if ( c->IsSubCriteriaType() )
+	if( c->IsSubCriteriaType() )
 	{
 		return RecursiveScoreSubcriteriaAgainstRule( set, c, exclude, verbose );
 	}
 
-	if ( verbose )
+	if( verbose )
 	{
 		DevMsg( "  criterion '%25s':'%15s' ", m_Criteria.GetElementName( icriterion ), c->name );
 	}
@@ -1252,13 +1366,13 @@ float CResponseSystem::ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet& s
 
 	float score = 0.0f;
 
-	const char *actualValue = "";
+	const char* actualValue = "";
 
 	int found = set.FindCriterionIndex( c->name );
-	if ( found != -1 )
+	if( found != -1 )
 	{
 		actualValue = set.GetValue( found );
-		if ( !actualValue )
+		if( !actualValue )
 		{
 			Assert( 0 );
 			return score;
@@ -1267,30 +1381,30 @@ float CResponseSystem::ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet& s
 
 	Assert( actualValue );
 
-	if ( Compare( actualValue, c, verbose ) )
+	if( Compare( actualValue, c, verbose ) )
 	{
 		float w = set.GetWeight( found );
 		score = w * c->weight.GetFloat();
 
-		if ( verbose )
+		if( verbose )
 		{
 			DevMsg( "matched, weight %4.2f (s %4.2f x c %4.2f)",
-				score, w, c->weight.GetFloat() );
+					score, w, c->weight.GetFloat() );
 		}
 	}
 	else
 	{
-		if ( c->required )
+		if( c->required )
 		{
 			exclude = true;
-			if ( verbose )
+			if( verbose )
 			{
 				DevMsg( "failed (+exclude rule)" );
 			}
 		}
 		else
 		{
-			if ( verbose )
+			if( verbose )
 			{
 				DevMsg( "failed" );
 			}
@@ -1302,73 +1416,73 @@ float CResponseSystem::ScoreCriteriaAgainstRuleCriteria( const AI_CriteriaSet& s
 
 float CResponseSystem::ScoreCriteriaAgainstRule( const AI_CriteriaSet& set, int irule, bool verbose /*=false*/ )
 {
-	Rule *rule = &m_Rules[ irule ];
+	Rule* rule = &m_Rules[ irule ];
 	float score = 0.0f;
 
 	bool bBeingWatched = false;
 
 	// See if we're trying to debug this rule
-	const char *pszText = rr_debugrule.GetString();
-	if ( pszText && pszText[0] && !Q_stricmp( pszText, m_Rules.GetElementName( irule ) ) )
+	const char* pszText = rr_debugrule.GetString();
+	if( pszText && pszText[0] && !Q_stricmp( pszText, m_Rules.GetElementName( irule ) ) )
 	{
 		bBeingWatched = true;
 	}
 
-	if ( !rule->IsEnabled() )
+	if( !rule->IsEnabled() )
 	{
-		if ( bBeingWatched )
+		if( bBeingWatched )
 		{
-			DevMsg("Rule '%s' is disabled.\n", m_Rules.GetElementName( irule ) );
+			DevMsg( "Rule '%s' is disabled.\n", m_Rules.GetElementName( irule ) );
 		}
 		return 0.0f;
 	}
 
-	if ( bBeingWatched )
+	if( bBeingWatched )
 	{
 		verbose = true;
 	}
 
-	if ( verbose )
+	if( verbose )
 	{
-		DevMsg( "Scoring rule '%s' (%i)\n{\n", m_Rules.GetElementName( irule ), irule+1 );
+		DevMsg( "Scoring rule '%s' (%i)\n{\n", m_Rules.GetElementName( irule ), irule + 1 );
 	}
 
 	// Iterate set criteria
 	int count = rule->m_Criteria.Count();
 	int i;
-	for ( i = 0; i < count; i++ )
+	for( i = 0; i < count; i++ )
 	{
 		int icriterion = rule->m_Criteria[ i ];
 
 		bool exclude = false;
 		score += ScoreCriteriaAgainstRuleCriteria( set, icriterion, exclude, verbose );
 
-		if ( verbose )
+		if( verbose )
 		{
 			DevMsg( ", score %4.2f\n", score );
 		}
 
-		if ( exclude ) 
+		if( exclude )
 		{
 			score = 0.0f;
 			break;
 		}
 	}
 
-	if ( verbose )
+	if( verbose )
 	{
 		DevMsg( "}\n" );
 	}
-	
+
 	return score;
 }
 
-void CResponseSystem::DebugPrint( int depth, const char *fmt, ... )
+void CResponseSystem::DebugPrint( int depth, const char* fmt, ... )
 {
 	int indentchars = 3 * depth;
-	char *indent = (char *)_alloca( indentchars + 1);
+	char* indent = ( char* )_alloca( indentchars + 1 );
 	indent[ indentchars ] = 0;
-	while ( --indentchars >= 0 )
+	while( --indentchars >= 0 )
 	{
 		indent[ indentchars ] = ' ';
 	}
@@ -1377,35 +1491,35 @@ void CResponseSystem::DebugPrint( int depth, const char *fmt, ... )
 	va_list argptr;
 	char szText[1024];
 
-	va_start (argptr, fmt);
-	Q_vsnprintf (szText, sizeof( szText ), fmt, argptr);
-	va_end (argptr);
+	va_start( argptr, fmt );
+	Q_vsnprintf( szText, sizeof( szText ), fmt, argptr );
+	va_end( argptr );
 
 	DevMsg( "%s%s", indent, szText );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CResponseSystem::ResetResponseGroups()
 {
 	int i;
 	int c = m_Responses.Count();
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
 		m_Responses[ i ].Reset();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *g - 
+// Purpose:
+// Input  : *g -
 // Output : int
 //-----------------------------------------------------------------------------
-int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, IResponseFilter *pFilter )
+int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup* g, IResponseFilter* pFilter )
 {
 	int c = g->group.Count();
-	if ( !c )
+	if( !c )
 	{
 		Assert( !"Expecting response group with >= 1 elements" );
 		return -1;
@@ -1415,12 +1529,12 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 
 	// Fake depletion of unavailable choices
 	CUtlVector<int> fakedDepletes;
-	if ( pFilter && g->ShouldCheckRepeats() )
+	if( pFilter && g->ShouldCheckRepeats() )
 	{
-		for ( i = 0; i < c; i++ )
+		for( i = 0; i < c; i++ )
 		{
-			Response *r = &g->group[ i ];
-			if ( r->depletioncount != g->GetDepletionCount() && !pFilter->IsValidResponse( r->GetType(), r->value ) )
+			Response* r = &g->group[ i ];
+			if( r->depletioncount != g->GetDepletionCount() && !pFilter->IsValidResponse( r->GetType(), r->value ) )
 			{
 				fakedDepletes.AddToTail( i );
 				g->MarkResponseUsed( i );
@@ -1428,17 +1542,17 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 		}
 	}
 
-	if ( !g->HasUndepletedChoices() )
+	if( !g->HasUndepletedChoices() )
 	{
 		g->ResetDepletionCount();
 
-		if ( pFilter && g->ShouldCheckRepeats() )
+		if( pFilter && g->ShouldCheckRepeats() )
 		{
 			fakedDepletes.RemoveAll();
-			for ( i = 0; i < c; i++ )
+			for( i = 0; i < c; i++ )
 			{
-				Response *r = &g->group[ i ];
-				if ( !pFilter->IsValidResponse( r->GetType(), r->value ) )
+				Response* r = &g->group[ i ];
+				if( !pFilter->IsValidResponse( r->GetType(), r->value ) )
 				{
 					fakedDepletes.AddToTail( i );
 					g->MarkResponseUsed( i );
@@ -1446,11 +1560,13 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 			}
 		}
 
-		if ( !g->HasUndepletedChoices() )
+		if( !g->HasUndepletedChoices() )
+		{
 			return -1;
+		}
 
 		// Disable the group if we looped through all the way
-		if ( g->IsNoRepeat() )
+		if( g->IsNoRepeat() )
 		{
 			g->SetEnabled( false );
 			return -1;
@@ -1463,28 +1579,28 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 	float totalweight = 0.0f;
 	int slot = -1;
 
-	if ( checkrepeats )
+	if( checkrepeats )
 	{
-		int check= -1;
+		int check = -1;
 		// Snag the first slot right away
-		if ( g->HasUndepletedFirst( check ) && check != -1 )
+		if( g->HasUndepletedFirst( check ) && check != -1 )
 		{
 			slot = check;
 		}
 
-		if ( slot == -1 && g->HasUndepletedLast( check ) && check != -1 )
+		if( slot == -1 && g->HasUndepletedLast( check ) && check != -1 )
 		{
 			// If this is the only undepleted one, use it now
-			for ( i = 0; i < c; i++ )
+			for( i = 0; i < c; i++ )
 			{
-				Response *r = &g->group[ i ];
-				if ( checkrepeats && 
-					( r->depletioncount == depletioncount ) )
+				Response* r = &g->group[ i ];
+				if( checkrepeats &&
+						( r->depletioncount == depletioncount ) )
 				{
 					continue;
-				}		
+				}
 
-				if ( r->last )
+				if( r->last )
 				{
 					Assert( i == check );
 					continue;
@@ -1494,44 +1610,46 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 				break;
 			}
 
-			// No more undepleted so use the r->last slot 
-			if ( i >= c )
+			// No more undepleted so use the r->last slot
+			if( i >= c )
 			{
 				slot = check;
 			}
 		}
 	}
 
-	if ( slot == -1 )
+	if( slot == -1 )
 	{
-		for ( i = 0; i < c; i++ )
+		for( i = 0; i < c; i++ )
 		{
-			Response *r = &g->group[ i ];
-			if ( checkrepeats && 
-				( r->depletioncount == depletioncount ) )
+			Response* r = &g->group[ i ];
+			if( checkrepeats &&
+					( r->depletioncount == depletioncount ) )
 			{
 				continue;
 			}
 
 			// Always skip last entry here since we will deal with it above
-			if ( checkrepeats && r->last )
+			if( checkrepeats && r->last )
+			{
 				continue;
+			}
 
 			int prevSlot = slot;
 
-			if ( !totalweight )
+			if( !totalweight )
 			{
 				slot = i;
 			}
 
 			// Always assume very first slot will match
 			totalweight += r->weight.GetFloat();
-			if ( !totalweight || random->RandomFloat(0,totalweight) < r->weight.GetFloat() )
+			if( !totalweight || random->RandomFloat( 0, totalweight ) < r->weight.GetFloat() )
 			{
 				slot = i;
 			}
 
-			if ( !checkrepeats && slot != prevSlot && pFilter && !pFilter->IsValidResponse( r->GetType(), r->value ) )
+			if( !checkrepeats && slot != prevSlot && pFilter && !pFilter->IsValidResponse( r->GetType(), r->value ) )
 			{
 				slot = prevSlot;
 				totalweight -= r->weight.GetFloat();
@@ -1539,13 +1657,15 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 		}
 	}
 
-	if ( slot != -1 )
+	if( slot != -1 )
+	{
 		g->MarkResponseUsed( slot );
+	}
 
 	// Revert fake depletion of unavailable choices
-	if ( pFilter && g->ShouldCheckRepeats() )
+	if( pFilter && g->ShouldCheckRepeats() )
 	{
-		for ( i = 0; i < fakedDepletes.Count(); i++ )
+		for( i = 0; i < fakedDepletes.Count(); i++ )
 		{
 			g->group[ fakedDepletes[ i ] ].depletioncount = 0;;
 		}
@@ -1555,43 +1675,49 @@ int CResponseSystem::SelectWeightedResponseFromResponseGroup( ResponseGroup *g, 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : searchResult - 
-//			depth - 
-//			*name - 
-//			verbose - 
+// Purpose:
+// Input  : searchResult -
+//			depth -
+//			*name -
+//			verbose -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CResponseSystem::ResolveResponse( ResponseSearchResult& searchResult, int depth, const char *name, bool verbose /*= false*/, IResponseFilter *pFilter )
+bool CResponseSystem::ResolveResponse( ResponseSearchResult& searchResult, int depth, const char* name, bool verbose /*= false*/, IResponseFilter* pFilter )
 {
 	int responseIndex = m_Responses.Find( name );
-	if ( responseIndex == m_Responses.InvalidIndex() )
+	if( responseIndex == m_Responses.InvalidIndex() )
+	{
 		return false;
+	}
 
-	ResponseGroup *g = &m_Responses[ responseIndex ];
+	ResponseGroup* g = &m_Responses[ responseIndex ];
 	// Group has been disabled
-	if ( !g->IsEnabled() )
+	if( !g->IsEnabled() )
+	{
 		return false;
+	}
 
 	int c = g->group.Count();
-	if ( !c )
+	if( !c )
+	{
 		return false;
+	}
 
 	int idx = 0;
 
-	if ( g->IsSequential() )
+	if( g->IsSequential() )
 	{
 		// See if next index is valid
 		int initialIndex = g->GetCurrentIndex();
 		bool bFoundValid = false;
 
-		do 
+		do
 		{
 			idx = g->GetCurrentIndex();
 			g->SetCurrentIndex( idx + 1 );
-			if ( idx >= c )
+			if( idx >= c )
 			{
-				if ( g->IsNoRepeat() )
+				if( g->IsNoRepeat() )
 				{
 					g->SetEnabled( false );
 					return false;
@@ -1600,25 +1726,30 @@ bool CResponseSystem::ResolveResponse( ResponseSearchResult& searchResult, int d
 				g->SetCurrentIndex( 0 );
 			}
 
-			if ( !pFilter || pFilter->IsValidResponse( g->group[idx].GetType(), g->group[idx].value ) )
+			if( !pFilter || pFilter->IsValidResponse( g->group[idx].GetType(), g->group[idx].value ) )
 			{
 				bFoundValid = true;
 				break;
 			}
-			
-		} while ( g->GetCurrentIndex() != initialIndex );
 
-		if ( !bFoundValid )
+		}
+		while( g->GetCurrentIndex() != initialIndex );
+
+		if( !bFoundValid )
+		{
 			return false;
+		}
 	}
 	else
 	{
 		idx = SelectWeightedResponseFromResponseGroup( g, pFilter );
-		if ( idx < 0 )
+		if( idx < 0 )
+		{
 			return false;
+		}
 	}
 
-	if ( verbose )
+	if( verbose )
 	{
 		DebugPrint( depth, "%s\n", m_Responses.GetElementName( responseIndex ) );
 		DebugPrint( depth, "{\n" );
@@ -1627,8 +1758,8 @@ bool CResponseSystem::ResolveResponse( ResponseSearchResult& searchResult, int d
 
 	bool bret = true;
 
-	Response *result = &g->group[ idx ];
-	if ( result->type == RESPONSE_RESPONSE )
+	Response* result = &g->group[ idx ];
+	if( result->type == RESPONSE_RESPONSE )
 	{
 		// Recurse
 		bret = ResolveResponse( searchResult, depth + 1, result->value, verbose, pFilter );
@@ -1648,65 +1779,71 @@ bool CResponseSystem::ResolveResponse( ResponseSearchResult& searchResult, int d
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *group - 
-//			selected - 
-//			depth - 
+// Purpose:
+// Input  : *group -
+//			selected -
+//			depth -
 //-----------------------------------------------------------------------------
-void CResponseSystem::DescribeResponseGroup( ResponseGroup *group, int selected, int depth )
+void CResponseSystem::DescribeResponseGroup( ResponseGroup* group, int selected, int depth )
 {
 	int c = group->group.Count();
 
-	for ( int i = 0; i < c ; i++ )
+	for( int i = 0; i < c ; i++ )
 	{
-		Response *r = &group->group[ i ];
+		Response* r = &group->group[ i ];
 		DebugPrint( depth + 1, "%s%20s : %40s %5.3f\n",
-			i == selected ? "-> " : "   ",
-			AI_Response::DescribeResponse( r->GetType() ),
-			r->value,
-			r->weight.GetFloat() );
+					i == selected ? "-> " : "   ",
+					AI_Response::DescribeResponse( r->GetType() ),
+					r->value,
+					r->weight.GetFloat() );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *rule - 
+// Purpose:
+// Input  : *rule -
 // Output : CResponseSystem::Response
 //-----------------------------------------------------------------------------
-bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule *rule, bool verbose /*=false*/, IResponseFilter *pFilter )
+bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule* rule, bool verbose /*=false*/, IResponseFilter* pFilter )
 {
 	int c = rule->m_Responses.Count();
-	if ( !c )
+	if( !c )
+	{
 		return false;
+	}
 
 	int index = random->RandomInt( 0, c - 1 );
 	int groupIndex = rule->m_Responses[ index ];
 
-	ResponseGroup *g = &m_Responses[ groupIndex ];
+	ResponseGroup* g = &m_Responses[ groupIndex ];
 
 	// Group has been disabled
-	if ( !g->IsEnabled() )
+	if( !g->IsEnabled() )
+	{
 		return false;
+	}
 
 	int count = g->group.Count();
-	if ( !count )
+	if( !count )
+	{
 		return false;
+	}
 
 	int responseIndex = 0;
 
-	if ( g->IsSequential() )
+	if( g->IsSequential() )
 	{
 		// See if next index is valid
 		int initialIndex = g->GetCurrentIndex();
 		bool bFoundValid = false;
 
-		do 
+		do
 		{
 			responseIndex = g->GetCurrentIndex();
 			g->SetCurrentIndex( responseIndex + 1 );
-			if ( responseIndex >= count )
+			if( responseIndex >= count )
 			{
-				if ( g->IsNoRepeat() )
+				if( g->IsNoRepeat() )
 				{
 					g->SetEnabled( false );
 					return false;
@@ -1715,30 +1852,35 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 				g->SetCurrentIndex( 0 );
 			}
 
-			if ( !pFilter || pFilter->IsValidResponse( g->group[responseIndex].GetType(), g->group[responseIndex].value ) )
+			if( !pFilter || pFilter->IsValidResponse( g->group[responseIndex].GetType(), g->group[responseIndex].value ) )
 			{
 				bFoundValid = true;
 				break;
 			}
-			
-		} while ( g->GetCurrentIndex() != initialIndex );
 
-		if ( !bFoundValid )
+		}
+		while( g->GetCurrentIndex() != initialIndex );
+
+		if( !bFoundValid )
+		{
 			return false;
+		}
 	}
 	else
 	{
 		responseIndex = SelectWeightedResponseFromResponseGroup( g, pFilter );
-		if ( responseIndex < 0 )
+		if( responseIndex < 0 )
+		{
 			return false;
+		}
 	}
 
 
-	Response *r = &g->group[ responseIndex ];
+	Response* r = &g->group[ responseIndex ];
 
 	int depth = 0;
 
-	if ( verbose )
+	if( verbose )
 	{
 		DebugPrint( depth, "%s\n", m_Responses.GetElementName( groupIndex ) );
 		DebugPrint( depth, "{\n" );
@@ -1748,7 +1890,7 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 
 	bool bret = true;
 
-	if ( r->type == RESPONSE_RESPONSE )
+	if( r->type == RESPONSE_RESPONSE )
 	{
 		bret = ResolveResponse( searchResult, depth + 1, r->value, verbose, pFilter );
 	}
@@ -1758,7 +1900,7 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 		searchResult.group	= g;
 	}
 
-	if ( verbose )
+	if( verbose )
 	{
 		DebugPrint( depth, "}\n" );
 	}
@@ -1767,9 +1909,9 @@ bool CResponseSystem::GetBestResponse( ResponseSearchResult& searchResult, Rule 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : set - 
-//			verbose - 
+// Purpose:
+// Input  : set -
+//			verbose -
 // Output : int
 //-----------------------------------------------------------------------------
 int CResponseSystem::FindBestMatchingRule( const AI_CriteriaSet& set, bool verbose )
@@ -1779,11 +1921,11 @@ int CResponseSystem::FindBestMatchingRule( const AI_CriteriaSet& set, bool verbo
 
 	int c = m_Rules.Count();
 	int i;
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
 		float score = ScoreCriteriaAgainstRule( set, i, verbose );
 		// Check equals so that we keep track of all matching rules
-		if ( score >= bestscore )
+		if( score >= bestscore )
 		{
 			// Reset bucket
 			if( score != bestscore )
@@ -1798,15 +1940,19 @@ int CResponseSystem::FindBestMatchingRule( const AI_CriteriaSet& set, bool verbo
 	}
 
 	int bestCount = bestrules.Count();
-	if ( bestCount <= 0 )
+	if( bestCount <= 0 )
+	{
 		return -1;
+	}
 
-	if ( bestCount == 1 )
+	if( bestCount == 1 )
+	{
 		return bestrules[ 0 ];
+	}
 
 	// Randomly pick one of the tied matching rules
 	int idx = random->RandomInt( 0, bestCount - 1 );
-	if ( verbose )
+	if( verbose )
 	{
 		DevMsg( "Found %i matching rules, selecting slot %i\n", bestCount, idx );
 	}
@@ -1814,11 +1960,11 @@ int CResponseSystem::FindBestMatchingRule( const AI_CriteriaSet& set, bool verbo
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : set - 
+// Purpose:
+// Input  : set -
 // Output : AI_Response
 //-----------------------------------------------------------------------------
-bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& response, IResponseFilter *pFilter )
+bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& response, IResponseFilter* pFilter )
 {
 	bool valid = false;
 
@@ -1827,14 +1973,14 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 	bool showResult = ( iDbgResponse == 1 || iDbgResponse == 2 );
 
 	// Look for match. verbose mode used to be at level 2, but disabled because the writers don't actually care for that info.
-	int bestRule = FindBestMatchingRule( set, iDbgResponse == 3 ); 
+	int bestRule = FindBestMatchingRule( set, iDbgResponse == 3 );
 
 	ResponseType_t responseType = RESPONSE_NONE;
 	AI_ResponseParams rp;
 
 	char ruleName[ 128 ];
 	char responseName[ 128 ];
-	const char *context;
+	const char* context;
 #ifdef MAPBASE
 	int contextflags;
 #else
@@ -1848,12 +1994,12 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 #else
 	bcontexttoworld = false;
 #endif
-	if ( bestRule != -1 )
+	if( bestRule != -1 )
 	{
-		Rule *r = &m_Rules[ bestRule ];
+		Rule* r = &m_Rules[ bestRule ];
 
 		ResponseSearchResult result;
-		if ( GetBestResponse( result, r, showResult, pFilter ) )
+		if( GetBestResponse( result, r, showResult, pFilter ) )
 		{
 			Q_strncpy( responseName, result.action->value, sizeof( responseName ) );
 			responseType = result.action->GetType();
@@ -1863,7 +2009,7 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 		Q_strncpy( ruleName, m_Rules.GetElementName( bestRule ), sizeof( ruleName ) );
 
 		// Disable the rule if it only allows for matching one time
-		if ( r->IsMatchOnce() )
+		if( r->IsMatchOnce() )
 		{
 			r->Disable();
 		}
@@ -1883,7 +2029,7 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 	response.Init( responseType, responseName, set, rp, ruleName, context, bcontexttoworld );
 #endif
 
-	if ( showResult )
+	if( showResult )
 	{
 		/*
 		// clipped -- chet doesn't really want this info
@@ -1893,9 +2039,9 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 			ScoreCriteriaAgainstRule( set, bestRule, true );
 		}
 		*/
-		
-	
-		if ( valid || showRules )
+
+
+		if( valid || showRules )
 		{
 			// Describe the response, too
 			response.Describe();
@@ -1907,75 +2053,75 @@ bool CResponseSystem::FindBestResponse( const AI_CriteriaSet& set, AI_Response& 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CResponseSystem::GetAllResponses( CUtlVector<AI_Response *> *pResponses )
+void CResponseSystem::GetAllResponses( CUtlVector<AI_Response*>* pResponses )
 {
-	for ( int i = 0; i < (int)m_Responses.Count(); i++ )
+	for( int i = 0; i < ( int )m_Responses.Count(); i++ )
 	{
-		ResponseGroup &group = m_Responses[i];
+		ResponseGroup& group = m_Responses[i];
 
-		for ( int j = 0; j < group.group.Count(); j++)
+		for( int j = 0; j < group.group.Count(); j++ )
 		{
-			Response &response = group.group[j];
-			if ( response.type != RESPONSE_RESPONSE )
+			Response& response = group.group[j];
+			if( response.type != RESPONSE_RESPONSE )
 			{
-				AI_Response *pResponse = new AI_Response;
+				AI_Response* pResponse = new AI_Response;
 				pResponse->Init( response.GetType(), response.value, AI_CriteriaSet(), group.rp, NULL, NULL, false );
-				pResponses->AddToTail(pResponse);
+				pResponses->AddToTail( pResponse );
 			}
 		}
 	}
 }
 
-static void TouchFile( char const *pchFileName )
+static void TouchFile( char const* pchFileName )
 {
 	filesystem->Size( pchFileName );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CResponseSystem::Precache()
 {
 	bool bTouchFiles = CommandLine()->FindParm( "-makereslists" ) != 0;
 
 	// enumerate and mark all the scripts so we know they're referenced
-	for ( int i = 0; i < (int)m_Responses.Count(); i++ )
+	for( int i = 0; i < ( int )m_Responses.Count(); i++ )
 	{
-		ResponseGroup &group = m_Responses[i];
+		ResponseGroup& group = m_Responses[i];
 
-		for ( int j = 0; j < group.group.Count(); j++)
+		for( int j = 0; j < group.group.Count(); j++ )
 		{
-			Response &response = group.group[j];
+			Response& response = group.group[j];
 
-			switch ( response.type )
+			switch( response.type )
 			{
-			default:
-				break;
-			case RESPONSE_SCENE:
+				default:
+					break;
+				case RESPONSE_SCENE:
 				{
 					// fixup $gender references
 					char file[_MAX_PATH];
-					Q_strncpy( file, response.value, sizeof(file) );
-					char *gender = strstr( file, "$gender" );
-					if ( gender )
+					Q_strncpy( file, response.value, sizeof( file ) );
+					char* gender = strstr( file, "$gender" );
+					if( gender )
 					{
 						// replace with male & female
-						const char *postGender = gender + strlen("$gender");
+						const char* postGender = gender + strlen( "$gender" );
 						*gender = 0;
 						char genderFile[_MAX_PATH];
 						// male
-						Q_snprintf( genderFile, sizeof(genderFile), "%smale%s", file, postGender);
+						Q_snprintf( genderFile, sizeof( genderFile ), "%smale%s", file, postGender );
 
 						PrecacheInstancedScene( genderFile );
-						if ( bTouchFiles )
+						if( bTouchFiles )
 						{
 							TouchFile( genderFile );
 						}
 
-						Q_snprintf( genderFile, sizeof(genderFile), "%sfemale%s", file, postGender);
+						Q_snprintf( genderFile, sizeof( genderFile ), "%sfemale%s", file, postGender );
 
 						PrecacheInstancedScene( genderFile );
-						if ( bTouchFiles )
+						if( bTouchFiles )
 						{
 							TouchFile( genderFile );
 						}
@@ -1983,14 +2129,14 @@ void CResponseSystem::Precache()
 					else
 					{
 						PrecacheInstancedScene( file );
-						if ( bTouchFiles )
+						if( bTouchFiles )
 						{
 							TouchFile( file );
 						}
 					}
 				}
 				break;
-			case RESPONSE_SPEAK:
+				case RESPONSE_SPEAK:
 				{
 					CBaseEntity::PrecacheScriptSound( response.value );
 				}
@@ -2001,45 +2147,49 @@ void CResponseSystem::Precache()
 }
 
 #ifdef MAPBASE
-void CResponseSystem::ParseInclude( CStringPool &includedFiles, const char *scriptfile )
+	void CResponseSystem::ParseInclude( CStringPool& includedFiles, const char* scriptfile )
 #else
-void CResponseSystem::ParseInclude( CStringPool &includedFiles )
+	void CResponseSystem::ParseInclude( CStringPool& includedFiles )
 #endif
 {
 	char includefile[ 256 ];
 	ParseToken();
 #ifdef MAPBASE
-	if (scriptfile)
+	if( scriptfile )
 	{
 		// Gets first path
 		// (for example, an #include from a file in resource/script/resp will return resource)
-		size_t len = strlen(scriptfile)-1;
-		for (size_t i = 0; i < len; i++)
+		size_t len = strlen( scriptfile ) - 1;
+		for( size_t i = 0; i < len; i++ )
 		{
-			if (scriptfile[i] == CORRECT_PATH_SEPARATOR || scriptfile[i] == INCORRECT_PATH_SEPARATOR)
+			if( scriptfile[i] == CORRECT_PATH_SEPARATOR || scriptfile[i] == INCORRECT_PATH_SEPARATOR )
 			{
 				len = i;
 			}
 		}
-		Q_strncpy(includefile, scriptfile, len+1);
+		Q_strncpy( includefile, scriptfile, len + 1 );
 
-		if (len+1 != strlen(scriptfile))
+		if( len + 1 != strlen( scriptfile ) )
 		{
 			Q_strncat( includefile, "/", sizeof( includefile ) );
 			Q_strncat( includefile, token, sizeof( includefile ) );
 		}
 		else
+		{
 			includefile[0] = '\0';
+		}
 	}
 
-	if (!includefile[0])
-	Q_snprintf( includefile, sizeof( includefile ), "scripts/%s", token );
+	if( !includefile[0] )
+	{
+		Q_snprintf( includefile, sizeof( includefile ), "scripts/%s", token );
+	}
 #else
 	Q_snprintf( includefile, sizeof( includefile ), "scripts/%s", token );
 #endif
 
 	// check if the file is already included
-	if ( includedFiles.Find( includefile ) != NULL )
+	if( includedFiles.Find( includefile ) != NULL )
 	{
 		return;
 	}
@@ -2048,34 +2198,34 @@ void CResponseSystem::ParseInclude( CStringPool &includedFiles )
 
 	// Try and load it
 	CUtlBuffer buf;
-	if ( !filesystem->ReadFile( includefile, "GAME", buf ) )
+	if( !filesystem->ReadFile( includefile, "GAME", buf ) )
 	{
 		DevMsg( "Unable to load #included script %s\n", includefile );
 		return;
 	}
 
-	LoadFromBuffer( includefile, (const char *)buf.PeekGet(), includedFiles );
+	LoadFromBuffer( includefile, ( const char* )buf.PeekGet(), includedFiles );
 }
 
-void CResponseSystem::LoadFromBuffer( const char *scriptfile, const char *buffer, CStringPool &includedFiles )
+void CResponseSystem::LoadFromBuffer( const char* scriptfile, const char* buffer, CStringPool& includedFiles )
 {
 	includedFiles.Allocate( scriptfile );
-	PushScript( scriptfile, (unsigned char * )buffer );
+	PushScript( scriptfile, ( unsigned char* )buffer );
 
 	if( rr_dumpresponses.GetBool() )
 	{
-		DevMsg("Reading: %s\n", scriptfile );
+		DevMsg( "Reading: %s\n", scriptfile );
 	}
 
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
-		if ( !token[0] )
+		if( !token[0] )
 		{
 			break;
 		}
 
-		if ( !Q_stricmp( token, "#include" ) )
+		if( !Q_stricmp( token, "#include" ) )
 		{
 #ifdef MAPBASE
 			ParseInclude( includedFiles, scriptfile );
@@ -2084,45 +2234,45 @@ void CResponseSystem::LoadFromBuffer( const char *scriptfile, const char *buffer
 #endif
 		}
 #ifdef MAPBASE
-		else if ( !Q_stricmp( token, "#base" ) )
+		else if( !Q_stricmp( token, "#base" ) )
 		{
 			// Actual #base in the future?
 			ParseInclude( includedFiles, scriptfile );
 		}
 #endif
-		else if ( !Q_stricmp( token, "response" ) )
+		else if( !Q_stricmp( token, "response" ) )
 		{
 			ParseResponse();
 		}
-		else if ( !Q_stricmp( token, "criterion" ) || 
-			!Q_stricmp( token, "criteria" ) )
+		else if( !Q_stricmp( token, "criterion" ) ||
+				 !Q_stricmp( token, "criteria" ) )
 		{
 			ParseCriterion();
 		}
-		else if ( !Q_stricmp( token, "rule" ) )
+		else if( !Q_stricmp( token, "rule" ) )
 		{
 			ParseRule();
 		}
-		else if ( !Q_stricmp( token, "enumeration" ) )
+		else if( !Q_stricmp( token, "enumeration" ) )
 		{
 			ParseEnumeration();
 		}
 		else
 		{
-			int byteoffset = m_ScriptStack[ 0 ].currenttoken - (const char *)m_ScriptStack[ 0 ].buffer;
+			int byteoffset = m_ScriptStack[ 0 ].currenttoken - ( const char* )m_ScriptStack[ 0 ].buffer;
 
-			Error( "CResponseSystem::LoadFromBuffer:  Unknown entry type '%s', expecting 'response', 'criterion', 'enumeration' or 'rules' in file %s(offset:%i)\n", 
-				token, scriptfile, byteoffset );
+			Error( "CResponseSystem::LoadFromBuffer:  Unknown entry type '%s', expecting 'response', 'criterion', 'enumeration' or 'rules' in file %s(offset:%i)\n",
+				   token, scriptfile, byteoffset );
 			break;
 		}
 	}
 
-	if ( m_ScriptStack.Count() == 1 )
+	if( m_ScriptStack.Count() == 1 )
 	{
 		char cur[ 256 ];
 		GetCurrentScript( cur, sizeof( cur ) );
 		DevMsg( 1, "CResponseSystem:  %s (%i rules, %i criteria, and %i responses)\n",
-			cur, m_Rules.Count(), m_Criteria.Count(), m_Responses.Count() );
+				cur, m_Rules.Count(), m_Criteria.Count(), m_Responses.Count() );
 
 		if( rr_dumpresponses.GetBool() )
 		{
@@ -2134,13 +2284,13 @@ void CResponseSystem::LoadFromBuffer( const char *scriptfile, const char *buffer
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CResponseSystem::LoadRuleSet( const char *basescript )
+void CResponseSystem::LoadRuleSet( const char* basescript )
 {
 	int length = 0;
-	unsigned char *buffer = (unsigned char *)UTIL_LoadFileForMe( basescript, &length );
-	if ( length <= 0 || !buffer )
+	unsigned char* buffer = ( unsigned char* )UTIL_LoadFileForMe( basescript, &length );
+	if( length <= 0 || !buffer )
 	{
 		DevMsg( 1, "CResponseSystem:  failed to load %s\n", basescript );
 		return;
@@ -2148,32 +2298,32 @@ void CResponseSystem::LoadRuleSet( const char *basescript )
 
 	CStringPool includedFiles;
 
-	LoadFromBuffer( basescript, (const char *)buffer, includedFiles );
+	LoadFromBuffer( basescript, ( const char* )buffer, includedFiles );
 
 	UTIL_FreeFile( buffer );
 
 	Assert( m_ScriptStack.Count() == 0 );
 }
 
-static ResponseType_t ComputeResponseType( const char *s )
+static ResponseType_t ComputeResponseType( const char* s )
 {
-	if ( !Q_stricmp( s, "scene" ) )
+	if( !Q_stricmp( s, "scene" ) )
 	{
 		return RESPONSE_SCENE;
 	}
-	else if ( !Q_stricmp( s, "sentence" ) )
+	else if( !Q_stricmp( s, "sentence" ) )
 	{
 		return RESPONSE_SENTENCE;
 	}
-	else if ( !Q_stricmp( s, "speak" ) )
+	else if( !Q_stricmp( s, "speak" ) )
 	{
 		return RESPONSE_SPEAK;
 	}
-	else if ( !Q_stricmp( s, "response" ) )
+	else if( !Q_stricmp( s, "response" ) )
 	{
 		return RESPONSE_RESPONSE;
 	}
-	else if ( !Q_stricmp( s, "print" ) )
+	else if( !Q_stricmp( s, "print" ) )
 	{
 		return RESPONSE_PRINT;
 	}
@@ -2181,14 +2331,14 @@ static ResponseType_t ComputeResponseType( const char *s )
 	return RESPONSE_NONE;
 }
 
-void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseGroup& group )
+void CResponseSystem::ParseOneResponse( const char* responseGroupName, ResponseGroup& group )
 {
 	Response newResponse;
 	newResponse.weight.SetFloat( 1.0f );
-	AI_ResponseParams *rp = &group.rp;
+	AI_ResponseParams* rp = &group.rp;
 
 	newResponse.type = ComputeResponseType( token );
-	if ( RESPONSE_NONE == newResponse.type )
+	if( RESPONSE_NONE == newResponse.type )
 	{
 		ResponseWarning( "response entry '%s' with unknown response type '%s'\n", responseGroupName, token );
 		return;
@@ -2197,17 +2347,17 @@ void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseG
 	ParseToken();
 	newResponse.value = CopyString( token );
 
-	while ( TokenWaiting() )
+	while( TokenWaiting() )
 	{
 		ParseToken();
-		if ( !Q_stricmp( token, "weight" ) )
+		if( !Q_stricmp( token, "weight" ) )
 		{
 			ParseToken();
-			newResponse.weight.SetFloat( (float)atof( token ) );
+			newResponse.weight.SetFloat( ( float )atof( token ) );
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "predelay" ) )
+		if( !Q_stricmp( token, "predelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYBEFORESPEAK;
@@ -2215,7 +2365,7 @@ void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseG
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "nodelay" ) )
+		if( !Q_stricmp( token, "nodelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
@@ -2224,57 +2374,57 @@ void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseG
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "defaultdelay" ) )
+		if( !Q_stricmp( token, "defaultdelay" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
 			rp->delay.start = AIS_DEF_MIN_DELAY;
 			rp->delay.range = ( AIS_DEF_MAX_DELAY - AIS_DEF_MIN_DELAY );
 			continue;
 		}
-	
-		if ( !Q_stricmp( token, "delay" ) )
+
+		if( !Q_stricmp( token, "delay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
 			rp->delay.FromInterval( ReadInterval( token ) );
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "speakonce" ) )
+
+		if( !Q_stricmp( token, "speakonce" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_SPEAKONCE;
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "noscene" ) )
+
+		if( !Q_stricmp( token, "noscene" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_DONT_USE_SCENE;
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "stop_on_nonidle" ) )
+		if( !Q_stricmp( token, "stop_on_nonidle" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_STOP_ON_NONIDLE;
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "odds" ) )
+
+		if( !Q_stricmp( token, "odds" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_ODDS;
 			rp->odds = clamp( atoi( token ), 0, 100 );
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "respeakdelay" ) )
+
+		if( !Q_stricmp( token, "respeakdelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_RESPEAKDELAY;
 			rp->respeakdelay.FromInterval( ReadInterval( token ) );
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "weapondelay" ) )
+
+		if( !Q_stricmp( token, "weapondelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_WEAPONDELAY;
@@ -2282,25 +2432,25 @@ void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseG
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "soundlevel" ) )
+		if( !Q_stricmp( token, "soundlevel" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_SOUNDLEVEL;
-			rp->soundlevel = (soundlevel_t)TextToSoundLevel( token );
+			rp->soundlevel = ( soundlevel_t )TextToSoundLevel( token );
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "displayfirst" ) )
+		if( !Q_stricmp( token, "displayfirst" ) )
 		{
 			newResponse.first = true;
 			group.m_bHasFirst = true;
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "displaylast" ) )
+		if( !Q_stricmp( token, "displaylast" ) )
 		{
 			newResponse.last = true;
-			group.m_bHasLast= true;
+			group.m_bHasLast = true;
 			continue;
 		}
 
@@ -2311,29 +2461,41 @@ void CResponseSystem::ParseOneResponse( const char *responseGroupName, ResponseG
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CResponseSystem::IsRootCommand()
 {
-	if ( !Q_stricmp( token, "#include" ) )
+	if( !Q_stricmp( token, "#include" ) )
+	{
 		return true;
-	if ( !Q_stricmp( token, "response" ) )
+	}
+	if( !Q_stricmp( token, "response" ) )
+	{
 		return true;
-	if ( !Q_stricmp( token, "enumeration" ) )
+	}
+	if( !Q_stricmp( token, "enumeration" ) )
+	{
 		return true;
-	if ( !Q_stricmp( token, "criteria" ) )
+	}
+	if( !Q_stricmp( token, "criteria" ) )
+	{
 		return true;
-	if ( !Q_stricmp( token, "criterion" ) )
+	}
+	if( !Q_stricmp( token, "criterion" ) )
+	{
 		return true;
-	if ( !Q_stricmp( token, "rule" ) )
+	}
+	if( !Q_stricmp( token, "rule" ) )
+	{
 		return true;
+	}
 	return false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *kv - 
+// Purpose:
+// Input  : *kv -
 //-----------------------------------------------------------------------------
 void CResponseSystem::ParseResponse( void )
 {
@@ -2341,13 +2503,13 @@ void CResponseSystem::ParseResponse( void )
 	char responseGroupName[ 128 ];
 
 	ResponseGroup newGroup;
-	AI_ResponseParams *rp = &newGroup.rp;
+	AI_ResponseParams* rp = &newGroup.rp;
 
 	// Response Group Name
 	ParseToken();
 	Q_strncpy( responseGroupName, token, sizeof( responseGroupName ) );
 
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
 
@@ -2358,25 +2520,27 @@ void CResponseSystem::ParseResponse( void )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "{" ) )
+		if( !Q_stricmp( token, "{" ) )
 		{
-			while ( 1 )
+			while( 1 )
 			{
 				ParseToken();
-				if ( !Q_stricmp( token, "}" ) )
+				if( !Q_stricmp( token, "}" ) )
+				{
 					break;
+				}
 
-				if ( !Q_stricmp( token, "permitrepeats" ) )
+				if( !Q_stricmp( token, "permitrepeats" ) )
 				{
 					newGroup.m_bDepleteBeforeRepeat = false;
 					continue;
 				}
-				else if ( !Q_stricmp( token, "sequential" ) )
+				else if( !Q_stricmp( token, "sequential" ) )
 				{
 					newGroup.SetSequential( true );
 					continue;
 				}
-				else if ( !Q_stricmp( token, "norepeat" ) )
+				else if( !Q_stricmp( token, "norepeat" ) )
 				{
 					newGroup.SetNoRepeat( true );
 					continue;
@@ -2387,7 +2551,7 @@ void CResponseSystem::ParseResponse( void )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "predelay" ) )
+		if( !Q_stricmp( token, "predelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYBEFORESPEAK;
@@ -2395,7 +2559,7 @@ void CResponseSystem::ParseResponse( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "nodelay" ) )
+		if( !Q_stricmp( token, "nodelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
@@ -2404,49 +2568,49 @@ void CResponseSystem::ParseResponse( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "defaultdelay" ) )
+		if( !Q_stricmp( token, "defaultdelay" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
 			rp->delay.start = AIS_DEF_MIN_DELAY;
 			rp->delay.range = ( AIS_DEF_MAX_DELAY - AIS_DEF_MIN_DELAY );
 			continue;
 		}
-	
-		if ( !Q_stricmp( token, "delay" ) )
+
+		if( !Q_stricmp( token, "delay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_DELAYAFTERSPEAK;
 			rp->delay.FromInterval( ReadInterval( token ) );
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "speakonce" ) )
+
+		if( !Q_stricmp( token, "speakonce" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_SPEAKONCE;
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "noscene" ) )
+
+		if( !Q_stricmp( token, "noscene" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_DONT_USE_SCENE;
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "stop_on_nonidle" ) )
+
+		if( !Q_stricmp( token, "stop_on_nonidle" ) )
 		{
 			rp->flags |= AI_ResponseParams::RG_STOP_ON_NONIDLE;
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "odds" ) )
+		if( !Q_stricmp( token, "odds" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_ODDS;
 			rp->odds = clamp( atoi( token ), 0, 100 );
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "respeakdelay" ) )
+
+		if( !Q_stricmp( token, "respeakdelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_RESPEAKDELAY;
@@ -2454,7 +2618,7 @@ void CResponseSystem::ParseResponse( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "weapondelay" ) )
+		if( !Q_stricmp( token, "weapondelay" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_WEAPONDELAY;
@@ -2462,11 +2626,11 @@ void CResponseSystem::ParseResponse( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "soundlevel" ) )
+		if( !Q_stricmp( token, "soundlevel" ) )
 		{
 			ParseToken();
 			rp->flags |= AI_ResponseParams::RG_SOUNDLEVEL;
-			rp->soundlevel = (soundlevel_t)TextToSoundLevel( token );
+			rp->soundlevel = ( soundlevel_t )TextToSoundLevel( token );
 			continue;
 		}
 
@@ -2475,11 +2639,11 @@ void CResponseSystem::ParseResponse( void )
 
 #ifdef MAPBASE
 	short existing = m_Responses.Find( responseGroupName );
-	if ( existing != m_Responses.InvalidIndex() )
+	if( existing != m_Responses.InvalidIndex() )
 	{
 		//ResponseWarning( "Additional definition for response '%s', overwriting\n", responseGroupName );
 		m_Responses[existing] = newGroup;
-		m_Responses.SetElementName(existing, responseGroupName);
+		m_Responses.SetElementName( existing, responseGroupName );
 		return;
 	}
 #endif
@@ -2488,10 +2652,10 @@ void CResponseSystem::ParseResponse( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *criterion - 
+// Purpose:
+// Input  : *criterion -
 //-----------------------------------------------------------------------------
-int CResponseSystem::ParseOneCriterion( const char *criterionName )
+int CResponseSystem::ParseOneCriterion( const char* criterionName )
 {
 	char key[ 128 ];
 	char value[ 128 ];
@@ -2500,7 +2664,7 @@ int CResponseSystem::ParseOneCriterion( const char *criterionName )
 
 	bool gotbody = false;
 
-	while ( TokenWaiting() || !gotbody )
+	while( TokenWaiting() || !gotbody )
 	{
 		ParseToken();
 
@@ -2511,19 +2675,21 @@ int CResponseSystem::ParseOneCriterion( const char *criterionName )
 			break;
 		}
 
-		if ( !Q_stricmp( token, "{" ) )
+		if( !Q_stricmp( token, "{" ) )
 		{
 			gotbody = true;
 
-			while ( 1 )
+			while( 1 )
 			{
 				ParseToken();
-				if ( !Q_stricmp( token, "}" ) )
+				if( !Q_stricmp( token, "}" ) )
+				{
 					break;
+				}
 
 				// Look up subcriteria index
 				int idx = m_Criteria.Find( token );
-				if ( idx != m_Criteria.InvalidIndex() )
+				if( idx != m_Criteria.InvalidIndex() )
 				{
 					newCriterion.subcriteria.AddToTail( idx );
 				}
@@ -2534,14 +2700,14 @@ int CResponseSystem::ParseOneCriterion( const char *criterionName )
 			}
 			continue;
 		}
-		else if ( !Q_stricmp( token, "required" ) )
+		else if( !Q_stricmp( token, "required" ) )
 		{
 			newCriterion.required = true;
 		}
-		else if ( !Q_stricmp( token, "weight" ) )
+		else if( !Q_stricmp( token, "weight" ) )
 		{
 			ParseToken();
-			newCriterion.weight.SetFloat( (float)atof( token ) );
+			newCriterion.weight.SetFloat( ( float )atof( token ) );
 		}
 		else
 		{
@@ -2559,22 +2725,22 @@ int CResponseSystem::ParseOneCriterion( const char *criterionName )
 		}
 	}
 
-	if ( !newCriterion.IsSubCriteriaType() )
+	if( !newCriterion.IsSubCriteriaType() )
 	{
 		ComputeMatcher( &newCriterion, newCriterion.matcher );
 	}
 
 #ifdef MAPBASE
 	short existing = m_Criteria.Find( criterionName );
-	if ( existing != m_Criteria.InvalidIndex() )
+	if( existing != m_Criteria.InvalidIndex() )
 	{
 		//ResponseWarning( "Additional definition for criteria '%s', overwriting\n", criterionName );
 		m_Criteria[existing] = newCriterion;
-		m_Criteria.SetElementName(existing, criterionName);
+		m_Criteria.SetElementName( existing, criterionName );
 		return existing;
 	}
 #else
-	if ( m_Criteria.Find( criterionName ) != m_Criteria.InvalidIndex() )
+	if( m_Criteria.Find( criterionName ) != m_Criteria.InvalidIndex() )
 	{
 		ResponseWarning( "Multiple definitions for criteria '%s'\n", criterionName );
 		return m_Criteria.InvalidIndex();
@@ -2586,8 +2752,8 @@ int CResponseSystem::ParseOneCriterion( const char *criterionName )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *kv - 
+// Purpose:
+// Input  : *kv -
 //-----------------------------------------------------------------------------
 void CResponseSystem::ParseCriterion( void )
 {
@@ -2600,8 +2766,8 @@ void CResponseSystem::ParseCriterion( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *kv - 
+// Purpose:
+// Input  : *kv -
 //-----------------------------------------------------------------------------
 void CResponseSystem::ParseEnumeration( void )
 {
@@ -2610,19 +2776,21 @@ void CResponseSystem::ParseEnumeration( void )
 	Q_strncpy( enumerationName, token, sizeof( enumerationName ) );
 
 	ParseToken();
-	if ( Q_stricmp( token, "{" ) )
+	if( Q_stricmp( token, "{" ) )
 	{
 		ResponseWarning( "Expecting '{' in enumeration '%s', got '%s'\n", enumerationName, token );
 		return;
 	}
 
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
-		if ( !Q_stricmp( token, "}" ) )
+		if( !Q_stricmp( token, "}" ) )
+		{
 			break;
+		}
 
-		if ( Q_strlen( token ) <= 0 )
+		if( Q_strlen( token ) <= 0 )
 		{
 			ResponseWarning( "Expecting more tokens in enumeration '%s'\n", enumerationName );
 			break;
@@ -2632,7 +2800,7 @@ void CResponseSystem::ParseEnumeration( void )
 
 		Q_strncpy( key, token, sizeof( key ) );
 		ParseToken();
-		float value = (float)atof( token );
+		float value = ( float )atof( token );
 
 		char sz[ 128 ];
 		Q_snprintf( sz, sizeof( sz ), "[%s::%s]", enumerationName, key );
@@ -2641,7 +2809,7 @@ void CResponseSystem::ParseEnumeration( void )
 		Enumeration newEnum;
 		newEnum.value = value;
 
-		if ( m_Enumerations.Find( sz ) == m_Enumerations.InvalidIndex() )
+		if( m_Enumerations.Find( sz ) == m_Enumerations.InvalidIndex() )
 		{
 			m_Enumerations.Insert( sz, newEnum );
 		}
@@ -2651,7 +2819,7 @@ void CResponseSystem::ParseEnumeration( void )
 			short existing = m_Enumerations.Find( sz );
 			//ResponseWarning( "Additional definition for enumeration '%s', overwriting\n", sz );
 			m_Enumerations[existing] = newEnum;
-			m_Enumerations.SetElementName(existing, sz);
+			m_Enumerations.SetElementName( existing, sz );
 		}
 #else
 		/*
@@ -2665,8 +2833,8 @@ void CResponseSystem::ParseEnumeration( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *kv - 
+// Purpose:
+// Input  : *kv -
 //-----------------------------------------------------------------------------
 void CResponseSystem::ParseRule( void )
 {
@@ -2677,7 +2845,7 @@ void CResponseSystem::ParseRule( void )
 	Q_strncpy( ruleName, token, sizeof( ruleName ) );
 
 	ParseToken();
-	if ( Q_stricmp( token, "{" ) )
+	if( Q_stricmp( token, "{" ) )
 	{
 		ResponseWarning( "Expecting '{' in rule '%s', got '%s'\n", ruleName, token );
 		return;
@@ -2689,27 +2857,27 @@ void CResponseSystem::ParseRule( void )
 	char sz[ 128 ];
 
 	bool validRule = true;
-	while ( 1 )
+	while( 1 )
 	{
 		ParseToken();
-		if ( !Q_stricmp( token, "}" ) )
+		if( !Q_stricmp( token, "}" ) )
 		{
 			break;
 		}
 
-		if ( Q_strlen( token ) <= 0 )
+		if( Q_strlen( token ) <= 0 )
 		{
 			ResponseWarning( "Expecting more tokens in rule '%s'\n", ruleName );
 			break;
 		}
 
-		if ( !Q_stricmp( token, "matchonce" ) )
+		if( !Q_stricmp( token, "matchonce" ) )
 		{
 			newRule.m_bMatchOnce = true;
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "applyContextToWorld" ) )
+		if( !Q_stricmp( token, "applyContextToWorld" ) )
 		{
 #ifdef MAPBASE
 			newRule.m_iContextFlags |= APPLYCONTEXT_WORLD;
@@ -2720,23 +2888,23 @@ void CResponseSystem::ParseRule( void )
 		}
 
 #ifdef MAPBASE
-		if ( !Q_stricmp( token, "applyContextToSquad" ) )
+		if( !Q_stricmp( token, "applyContextToSquad" ) )
 		{
 			newRule.m_iContextFlags |= APPLYCONTEXT_SQUAD;
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "applyContextToEnemy" ) )
+		if( !Q_stricmp( token, "applyContextToEnemy" ) )
 		{
 			newRule.m_iContextFlags |= APPLYCONTEXT_ENEMY;
 			continue;
 		}
 #endif
 
-		if ( !Q_stricmp( token, "applyContext" ) )
+		if( !Q_stricmp( token, "applyContext" ) )
 		{
 			ParseToken();
-			if ( newRule.GetContext() == NULL )
+			if( newRule.GetContext() == NULL )
 			{
 				newRule.SetContext( token );
 			}
@@ -2747,15 +2915,15 @@ void CResponseSystem::ParseRule( void )
 			}
 			continue;
 		}
-		
-		if ( !Q_stricmp( token, "response" ) )
+
+		if( !Q_stricmp( token, "response" ) )
 		{
 			// Read them until we run out.
-			while ( TokenWaiting() )
+			while( TokenWaiting() )
 			{
 				ParseToken();
 				int idx = m_Responses.Find( token );
-				if ( idx != m_Responses.InvalidIndex() )
+				if( idx != m_Responses.InvalidIndex() )
 				{
 					MEM_ALLOC_CREDIT();
 					newRule.m_Responses.AddToTail( idx );
@@ -2769,16 +2937,16 @@ void CResponseSystem::ParseRule( void )
 			continue;
 		}
 
-		if ( !Q_stricmp( token, "criteria" ) ||
-			 !Q_stricmp( token, "criterion" ) )
+		if( !Q_stricmp( token, "criteria" ) ||
+				!Q_stricmp( token, "criterion" ) )
 		{
 			// Read them until we run out.
-			while ( TokenWaiting() )
+			while( TokenWaiting() )
 			{
 				ParseToken();
 
 				int idx = m_Criteria.Find( token );
-				if ( idx != m_Criteria.InvalidIndex() )
+				if( idx != m_Criteria.InvalidIndex() )
 				{
 					MEM_ALLOC_CREDIT();
 					newRule.m_Criteria.AddToTail( idx );
@@ -2796,21 +2964,21 @@ void CResponseSystem::ParseRule( void )
 		Q_snprintf( sz, sizeof( sz ), "[%s%03i]", ruleName, ++instancedCriteria );
 		Unget();
 		int idx = ParseOneCriterion( sz );
-		if ( idx != m_Criteria.InvalidIndex() )
+		if( idx != m_Criteria.InvalidIndex() )
 		{
 			newRule.m_Criteria.AddToTail( idx );
 		}
 	}
 
-	if ( validRule )
+	if( validRule )
 	{
 #ifdef MAPBASE
 		short existing = m_Rules.Find( ruleName );
-		if ( existing != m_Rules.InvalidIndex() )
+		if( existing != m_Rules.InvalidIndex() )
 		{
 			//ResponseWarning( "Additional definition for rule '%s', overwriting\n", ruleName );
 			m_Rules[existing] = newRule;
-			m_Rules.SetElementName(existing, ruleName);
+			m_Rules.SetElementName( existing, ruleName );
 			return;
 		}
 #endif
@@ -2823,29 +2991,31 @@ void CResponseSystem::ParseRule( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int	CResponseSystem::GetCurrentToken() const
 {
-	if ( m_ScriptStack.Count() <= 0 )
+	if( m_ScriptStack.Count() <= 0 )
+	{
 		return -1;
-	
+	}
+
 	return m_ScriptStack[ 0 ].tokencount;
 }
 
 
-void CResponseSystem::ResponseWarning( const char *fmt, ... )
+void CResponseSystem::ResponseWarning( const char* fmt, ... )
 {
 	va_list		argptr;
 #ifndef _XBOX
 	static char	string[1024];
 #else
 	char		string[1024];
-#endif	
+#endif
 
-	va_start (argptr, fmt);
-	Q_vsnprintf(string, sizeof(string), fmt,argptr);
-	va_end (argptr);
+	va_start( argptr, fmt );
+	Q_vsnprintf( string, sizeof( string ), fmt, argptr );
+	va_end( argptr );
 
 	char cur[ 256 ];
 	GetCurrentScript( cur, sizeof( cur ) );
@@ -2855,18 +3025,18 @@ void CResponseSystem::ResponseWarning( const char *fmt, ... )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CResponseSystem::CopyCriteriaFrom( Rule *pSrcRule, Rule *pDstRule, CResponseSystem *pCustomSystem )
+void CResponseSystem::CopyCriteriaFrom( Rule* pSrcRule, Rule* pDstRule, CResponseSystem* pCustomSystem )
 {
 	// Add criteria from this rule to global list in custom response system.
 	int nCriteriaCount = pSrcRule->m_Criteria.Count();
-	for ( int iCriteria = 0; iCriteria < nCriteriaCount; ++iCriteria )
+	for( int iCriteria = 0; iCriteria < nCriteriaCount; ++iCriteria )
 	{
 		int iSrcIndex = pSrcRule->m_Criteria[iCriteria];
-		Criteria *pSrcCriteria = &m_Criteria[iSrcIndex];
-		if ( pSrcCriteria )
+		Criteria* pSrcCriteria = &m_Criteria[iSrcIndex];
+		if( pSrcCriteria )
 		{
 			int iIndex = pCustomSystem->m_Criteria.Find( m_Criteria.GetElementName( iSrcIndex ) );
-			if ( iIndex != pCustomSystem->m_Criteria.InvalidIndex() )
+			if( iIndex != pCustomSystem->m_Criteria.InvalidIndex() )
 			{
 				pDstRule->m_Criteria.AddToTail( iIndex );
 				continue;
@@ -2882,15 +3052,17 @@ void CResponseSystem::CopyCriteriaFrom( Rule *pSrcRule, Rule *pDstRule, CRespons
 			dstCriteria.matcher = pSrcCriteria->matcher;
 
 			int nSubCriteriaCount = pSrcCriteria->subcriteria.Count();
-			for ( int iSubCriteria = 0; iSubCriteria < nSubCriteriaCount; ++iSubCriteria )
+			for( int iSubCriteria = 0; iSubCriteria < nSubCriteriaCount; ++iSubCriteria )
 			{
 				int iSrcSubIndex = pSrcCriteria->subcriteria[iSubCriteria];
-				Criteria *pSrcSubCriteria = &m_Criteria[iSrcSubIndex];
-				if ( pSrcCriteria )
+				Criteria* pSrcSubCriteria = &m_Criteria[iSrcSubIndex];
+				if( pSrcCriteria )
 				{
 					int iSubIndex = pCustomSystem->m_Criteria.Find( pSrcSubCriteria->value );
-					if ( iSubIndex != pCustomSystem->m_Criteria.InvalidIndex() )
+					if( iSubIndex != pCustomSystem->m_Criteria.InvalidIndex() )
+					{
 						continue;
+					}
 
 					// Add the criteria.
 					Criteria dstSubCriteria;
@@ -2915,17 +3087,17 @@ void CResponseSystem::CopyCriteriaFrom( Rule *pSrcRule, Rule *pDstRule, CRespons
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CResponseSystem::CopyResponsesFrom( Rule *pSrcRule, Rule *pDstRule, CResponseSystem *pCustomSystem )
+void CResponseSystem::CopyResponsesFrom( Rule* pSrcRule, Rule* pDstRule, CResponseSystem* pCustomSystem )
 {
 	// Add responses from this rule to global list in custom response system.
 	int nResponseGroupCount = pSrcRule->m_Responses.Count();
-	for ( int iResponseGroup = 0; iResponseGroup < nResponseGroupCount; ++iResponseGroup )
+	for( int iResponseGroup = 0; iResponseGroup < nResponseGroupCount; ++iResponseGroup )
 	{
 		int iSrcResponseGroup = pSrcRule->m_Responses[iResponseGroup];
-		ResponseGroup *pSrcResponseGroup = &m_Responses[iSrcResponseGroup];
-		if ( pSrcResponseGroup )
+		ResponseGroup* pSrcResponseGroup = &m_Responses[iSrcResponseGroup];
+		if( pSrcResponseGroup )
 		{
-			// Add response group.			
+			// Add response group.
 			ResponseGroup dstResponseGroup;
 
 			dstResponseGroup.rp = pSrcResponseGroup->rp;
@@ -2939,10 +3111,10 @@ void CResponseSystem::CopyResponsesFrom( Rule *pSrcRule, Rule *pDstRule, CRespon
 			dstResponseGroup.m_nCurrentIndex = pSrcResponseGroup->m_nCurrentIndex;
 
 			int nSrcResponseCount = pSrcResponseGroup->group.Count();
-			for ( int iResponse = 0; iResponse < nSrcResponseCount; ++iResponse )
+			for( int iResponse = 0; iResponse < nSrcResponseCount; ++iResponse )
 			{
-				Response *pSrcResponse = &pSrcResponseGroup->group[iResponse];
-				if ( pSrcResponse )
+				Response* pSrcResponse = &pSrcResponseGroup->group[iResponse];
+				if( pSrcResponse )
 				{
 					// Add Response
 					Response dstResponse;
@@ -2965,15 +3137,15 @@ void CResponseSystem::CopyResponsesFrom( Rule *pSrcRule, Rule *pDstRule, CRespon
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CResponseSystem::CopyEnumerationsFrom( CResponseSystem *pCustomSystem )
+void CResponseSystem::CopyEnumerationsFrom( CResponseSystem* pCustomSystem )
 {
 	int nEnumerationCount = m_Enumerations.Count();
-	for ( int iEnumeration = 0; iEnumeration < nEnumerationCount; ++iEnumeration )
+	for( int iEnumeration = 0; iEnumeration < nEnumerationCount; ++iEnumeration )
 	{
-		Enumeration *pSrcEnumeration = &m_Enumerations[iEnumeration];
-		if ( pSrcEnumeration )
+		Enumeration* pSrcEnumeration = &m_Enumerations[iEnumeration];
+		if( pSrcEnumeration )
 		{
 			Enumeration dstEnumeration;
 			dstEnumeration.value = pSrcEnumeration->value;
@@ -2983,15 +3155,17 @@ void CResponseSystem::CopyEnumerationsFrom( CResponseSystem *pCustomSystem )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CResponseSystem::CopyRuleFrom( Rule *pSrcRule, int iRule, CResponseSystem *pCustomSystem )
+void CResponseSystem::CopyRuleFrom( Rule* pSrcRule, int iRule, CResponseSystem* pCustomSystem )
 {
 	// Verify data.
 	Assert( pSrcRule );
 	Assert( pCustomSystem );
-	if ( !pSrcRule || !pCustomSystem )
+	if( !pSrcRule || !pCustomSystem )
+	{
 		return;
+	}
 
 	// New rule
 	Rule dstRule;
@@ -3019,7 +3193,7 @@ void CResponseSystem::CopyRuleFrom( Rule *pSrcRule, int iRule, CResponseSystem *
 }
 
 #ifdef MAPBASE
-ConVar mapbase_rs_clear("mapbase_rs_clear", "1");
+	ConVar mapbase_rs_clear( "mapbase_rs_clear", "1" );
 #endif
 
 //-----------------------------------------------------------------------------
@@ -3030,8 +3204,8 @@ class CInstancedResponseSystem : public CResponseSystem
 	typedef CResponseSystem BaseClass;
 
 public:
-	CInstancedResponseSystem( const char *scriptfile ) :
-	  m_pszScriptFile( 0 )
+	CInstancedResponseSystem( const char* scriptfile ) :
+		m_pszScriptFile( 0 )
 	{
 		Assert( scriptfile );
 
@@ -3045,7 +3219,7 @@ public:
 	{
 		delete[] m_pszScriptFile;
 	}
-	virtual const char *GetScriptFile( void ) 
+	virtual const char* GetScriptFile( void )
 	{
 		Assert( m_pszScriptFile );
 		return m_pszScriptFile;
@@ -3054,7 +3228,7 @@ public:
 	// CAutoGameSystem
 	virtual bool Init()
 	{
-		const char *basescript = GetScriptFile();
+		const char* basescript = GetScriptFile();
 		LoadRuleSet( basescript );
 		return true;
 	}
@@ -3097,7 +3271,7 @@ public:
 #endif
 private:
 
-	char *m_pszScriptFile;
+	char* m_pszScriptFile;
 };
 
 //-----------------------------------------------------------------------------
@@ -3112,7 +3286,7 @@ public:
 	{
 	}
 
-	virtual const char *GetScriptFile( void ) 
+	virtual const char* GetScriptFile( void )
 	{
 		return "scripts/talker/response_rules.txt";
 	}
@@ -3130,31 +3304,33 @@ public:
 		Assert( 0 );
 	}
 
-	void AddInstancedResponseSystem( const char *scriptfile, CInstancedResponseSystem *sys )
+	void AddInstancedResponseSystem( const char* scriptfile, CInstancedResponseSystem* sys )
 	{
 		m_InstancedSystems.Insert( scriptfile, sys );
 	}
 
-	CInstancedResponseSystem *FindResponseSystem( const char *scriptfile )
+	CInstancedResponseSystem* FindResponseSystem( const char* scriptfile )
 	{
 		int idx = m_InstancedSystems.Find( scriptfile );
-		if ( idx == m_InstancedSystems.InvalidIndex() )
+		if( idx == m_InstancedSystems.InvalidIndex() )
+		{
 			return NULL;
+		}
 		return m_InstancedSystems[ idx ];
 	}
 
-	IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile )
+	IResponseSystem* PrecacheCustomResponseSystem( const char* scriptfile )
 	{
-		CInstancedResponseSystem *sys = ( CInstancedResponseSystem * )FindResponseSystem( scriptfile );
-		if ( !sys )
+		CInstancedResponseSystem* sys = ( CInstancedResponseSystem* )FindResponseSystem( scriptfile );
+		if( !sys )
 		{
 			sys = new CInstancedResponseSystem( scriptfile );
-			if ( !sys )
+			if( !sys )
 			{
 				Error( "Failed to load response system data from %s", scriptfile );
 			}
 
-			if ( !sys->Init() )
+			if( !sys->Init() )
 			{
 				Error( "CInstancedResponseSystem:  Failed to init response system from %s!", scriptfile );
 			}
@@ -3164,10 +3340,10 @@ public:
 
 		sys->Precache();
 
-		return ( IResponseSystem * )sys;
+		return ( IResponseSystem* )sys;
 	}
 
-	IResponseSystem *BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore );
+	IResponseSystem* BuildCustomResponseSystemGivenCriteria( const char* pszBaseFile, const char* pszCustomName, AI_CriteriaSet& criteriaSet, float flCriteriaScore );
 	void DestroyCustomResponseSystems();
 
 	virtual void LevelInitPreEntity()
@@ -3176,15 +3352,15 @@ public:
 		// All user installed systems are init'd by PrecacheCustomResponseSystem which will call sys->Precache() on the ones being used
 
 		// FIXME:  This is SLOW the first time you run the engine (can take 3 - 10 seconds!!!)
-		if ( ShouldPrecache() )
+		if( ShouldPrecache() )
 		{
 			Precache();
 		}
 
 #ifdef MAPBASE
-		if (!rr_enhanced_saverestore.GetBool() || gpGlobals->eLoadType != MapLoad_Transition)
+		if( !rr_enhanced_saverestore.GetBool() || gpGlobals->eLoadType != MapLoad_Transition )
 #endif
-		ResetResponseGroups();
+			ResetResponseGroups();
 	}
 
 	void ReloadAllResponseSystems()
@@ -3193,10 +3369,10 @@ public:
 		Init();
 
 		int c = m_InstancedSystems.Count();
-		for ( int i = c - 1 ; i >= 0; i-- )
+		for( int i = c - 1 ; i >= 0; i-- )
 		{
-			CInstancedResponseSystem *sys = m_InstancedSystems[ i ];
-			if ( !IsCustomManagable() )
+			CInstancedResponseSystem* sys = m_InstancedSystems[ i ];
+			if( !IsCustomManagable() )
 			{
 				sys->Clear();
 				sys->Init();
@@ -3215,22 +3391,22 @@ private:
 	void ClearInstanced()
 	{
 		int c = m_InstancedSystems.Count();
-		for ( int i = c - 1 ; i >= 0; i-- )
+		for( int i = c - 1 ; i >= 0; i-- )
 		{
-			CInstancedResponseSystem *sys = m_InstancedSystems[ i ];
+			CInstancedResponseSystem* sys = m_InstancedSystems[ i ];
 			sys->Release();
 		}
 		m_InstancedSystems.RemoveAll();
 	}
 
-	CUtlDict< CInstancedResponseSystem *, int > m_InstancedSystems;
+	CUtlDict< CInstancedResponseSystem*, int > m_InstancedSystems;
 };
 
-IResponseSystem *CDefaultResponseSystem::BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore )
+IResponseSystem* CDefaultResponseSystem::BuildCustomResponseSystemGivenCriteria( const char* pszBaseFile, const char* pszCustomName, AI_CriteriaSet& criteriaSet, float flCriteriaScore )
 {
-	// Create a instanced response system. 
-	CInstancedResponseSystem *pCustomSystem = new CInstancedResponseSystem( pszCustomName );
-	if ( !pCustomSystem )
+	// Create a instanced response system.
+	CInstancedResponseSystem* pCustomSystem = new CInstancedResponseSystem( pszCustomName );
+	if( !pCustomSystem )
 	{
 		Error( "BuildCustomResponseSystemGivenCriterea: Failed to create custom response system %s!", pszCustomName );
 	}
@@ -3239,20 +3415,20 @@ IResponseSystem *CDefaultResponseSystem::BuildCustomResponseSystemGivenCriteria(
 
 	// Copy the relevant rules and data.
 	int nRuleCount = m_Rules.Count();
-	for ( int iRule = 0; iRule < nRuleCount; ++iRule )
+	for( int iRule = 0; iRule < nRuleCount; ++iRule )
 	{
-		Rule *pRule = &m_Rules[iRule];
-		if ( pRule )
+		Rule* pRule = &m_Rules[iRule];
+		if( pRule )
 		{
 			float flScore = 0.0f;
 
 			int nCriteriaCount = pRule->m_Criteria.Count();
-			for ( int iCriteria = 0; iCriteria < nCriteriaCount; ++iCriteria )
+			for( int iCriteria = 0; iCriteria < nCriteriaCount; ++iCriteria )
 			{
 				int iRuleCriteria = pRule->m_Criteria[iCriteria];
 
 				flScore += LookForCriteria( criteriaSet, iRuleCriteria );
-				if ( flScore >= flCriteriaScore )
+				if( flScore >= flCriteriaScore )
 				{
 					CopyRuleFrom( pRule, iRule, pCustomSystem );
 					break;
@@ -3277,12 +3453,14 @@ void CDefaultResponseSystem::DestroyCustomResponseSystems()
 
 
 static CDefaultResponseSystem defaultresponsesytem;
-IResponseSystem *g_pResponseSystem = &defaultresponsesytem;
+IResponseSystem* g_pResponseSystem = &defaultresponsesytem;
 
 CON_COMMAND( rr_reloadresponsesystems, "Reload all response system scripts." )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	defaultresponsesytem.ReloadAllResponseSystems();
 
@@ -3290,7 +3468,7 @@ CON_COMMAND( rr_reloadresponsesystems, "Reload all response system scripts." )
 	// This is kind of hacky, but I need to get it in for now!
 	if( g_pGameRules->IsMultiplayer() )
 	{
-		CMultiplayRules *pMultiplayRules = static_cast<CMultiplayRules*>( g_pGameRules );
+		CMultiplayRules* pMultiplayRules = static_cast<CMultiplayRules*>( g_pGameRules );
 		pMultiplayRules->InitCustomResponseRulesDicts();
 	}
 #endif
@@ -3299,12 +3477,12 @@ CON_COMMAND( rr_reloadresponsesystems, "Reload all response system scripts." )
 #ifdef MAPBASE
 // Designed for extern magic, this gives the <, >, etc. of response system criteria to the outside world.
 // Mostly just used for Matcher_Match in matchers.h.
-bool ResponseSystemCompare(const char *criterion, const char *value)
+bool ResponseSystemCompare( const char* criterion, const char* value )
 {
 	Criteria criteria;
 	criteria.value = CopyString( criterion );
-	defaultresponsesytem.ComputeMatcher(&criteria, criteria.matcher);
-	return defaultresponsesytem.CompareUsingMatcher(value, criteria.matcher, true);
+	defaultresponsesytem.ComputeMatcher( &criteria, criteria.matcher );
+	return defaultresponsesytem.CompareUsingMatcher( value, criteria.matcher, true );
 
 	return false;
 }
@@ -3331,7 +3509,7 @@ const char *ResponseSystemCompare(const char *criterion, const char *value, bool
 // CResponseFilePrecacher
 //
 // Purpose: Precaches a single talker file. That's it.
-// 
+//
 // It copies from a bunch of the original Response System class and therefore it's really messy.
 // Despite the horrors a normal programmer might find in here, I think it performs better than anything else I could've come up with.
 //-----------------------------------------------------------------------------
@@ -3343,10 +3521,15 @@ public:
 	// Direct copy-pastes are very compact, to say the least.
 	inline bool ParseToken( void )
 	{
-		if ( m_bUnget )
-		{ m_bUnget = false; return true; }
-		if ( m_ScriptStack.Count() <= 0 )
-		{ return false; }
+		if( m_bUnget )
+		{
+			m_bUnget = false;
+			return true;
+		}
+		if( m_ScriptStack.Count() <= 0 )
+		{
+			return false;
+		}
 
 		m_ScriptStack[ 0 ].currenttoken = engine->ParseFile( m_ScriptStack[ 0 ].currenttoken, token, sizeof( token ) );
 		m_ScriptStack[ 0 ].tokencount++;
@@ -3358,31 +3541,31 @@ public:
 	char		token[ 1204 ];
 
 
-	void PrecacheResponse( const char *response, byte type )
+	void PrecacheResponse( const char* response, byte type )
 	{
-		switch ( type )
+		switch( type )
 		{
-		default:
-			break;
-		case RESPONSE_SCENE:
+			default:
+				break;
+			case RESPONSE_SCENE:
 			{
-				DevMsg("Precaching scene %s...\n", response);
+				DevMsg( "Precaching scene %s...\n", response );
 
 				// fixup $gender references
 				char file[_MAX_PATH];
-				Q_strncpy( file, response, sizeof(file) );
-				char *gender = strstr( file, "$gender" );
-				if ( gender )
+				Q_strncpy( file, response, sizeof( file ) );
+				char* gender = strstr( file, "$gender" );
+				if( gender )
 				{
 					// replace with male & female
-					const char *postGender = gender + strlen("$gender");
+					const char* postGender = gender + strlen( "$gender" );
 					*gender = 0;
 					char genderFile[_MAX_PATH];
 
-					Q_snprintf( genderFile, sizeof(genderFile), "%smale%s", file, postGender);
+					Q_snprintf( genderFile, sizeof( genderFile ), "%smale%s", file, postGender );
 					PrecacheInstancedScene( genderFile );
 
-					Q_snprintf( genderFile, sizeof(genderFile), "%sfemale%s", file, postGender);
+					Q_snprintf( genderFile, sizeof( genderFile ), "%sfemale%s", file, postGender );
 					PrecacheInstancedScene( genderFile );
 				}
 				else
@@ -3391,21 +3574,23 @@ public:
 				}
 			}
 			break;
-		case RESPONSE_SPEAK:
+			case RESPONSE_SPEAK:
 			{
-				DevMsg("Precaching sound %s...\n", response);
+				DevMsg( "Precaching sound %s...\n", response );
 				CBaseEntity::PrecacheScriptSound( response );
 			}
 			break;
 		}
 	}
-	
+
 	bool IsRootCommand()
 	{
-		if (!Q_stricmp( token, "#include" ) || !Q_stricmp( token, "response" )
-			|| !Q_stricmp( token, "enumeration" ) || !Q_stricmp( token, "criteria" )
-			|| !Q_stricmp( token, "criterion" ) || !Q_stricmp( token, "rule" ))
+		if( !Q_stricmp( token, "#include" ) || !Q_stricmp( token, "response" )
+				|| !Q_stricmp( token, "enumeration" ) || !Q_stricmp( token, "criteria" )
+				|| !Q_stricmp( token, "criterion" ) || !Q_stricmp( token, "rule" ) )
+		{
 			return true;
+		}
 		return false;
 	}
 
@@ -3414,116 +3599,139 @@ public:
 		// Must go to response group name
 		ParseToken();
 
-		while ( 1 )
+		while( 1 )
 		{
 			ParseToken();
 
-			if ( !Q_stricmp( token, "{" ) )
+			if( !Q_stricmp( token, "{" ) )
 			{
-				while ( 1 )
+				while( 1 )
 				{
 					ParseToken();
-					if ( !Q_stricmp( token, "}" ) )
+					if( !Q_stricmp( token, "}" ) )
+					{
 						break;
+					}
 
 					byte type = ComputeResponseType( token );
-					if (type == RESPONSE_NONE)
+					if( type == RESPONSE_NONE )
+					{
 						continue;
+					}
 
 					ParseToken();
-					char *value = CopyString( token );
+					char* value = CopyString( token );
 
-					PrecacheResponse(value, type);
+					PrecacheResponse( value, type );
 				}
 				break;
 			}
 
 			byte type = ComputeResponseType( token );
-			if (type == RESPONSE_NONE)
+			if( type == RESPONSE_NONE )
+			{
 				break;
+			}
 
 			ParseToken();
-			char *value = CopyString( token );
+			char* value = CopyString( token );
 
-			PrecacheResponse(value, type);
+			PrecacheResponse( value, type );
 
 			break;
 		}
 	}
 
-	bool LoadFromBuffer(const char *scriptfile, unsigned char *buffer, CStringPool &includedFiles)
+	bool LoadFromBuffer( const char* scriptfile, unsigned char* buffer, CStringPool& includedFiles )
 	{
 		includedFiles.Allocate( scriptfile );
 
 		CResponseSystem::ScriptEntry e;
 		e.name = filesystem->FindOrAddFileName( scriptfile );
 		e.buffer = buffer;
-		e.currenttoken = (char *)e.buffer;
+		e.currenttoken = ( char* )e.buffer;
 		e.tokencount = 0;
 		m_ScriptStack.AddToHead( e );
 
-		while ( 1 )
+		while( 1 )
 		{
 			ParseToken();
-			if ( !token[0] )
+			if( !token[0] )
 			{
 				break;
 			}
 
-			if ( !Q_stricmp( token, "response" ) )
+			if( !Q_stricmp( token, "response" ) )
 			{
 				ParseResponse();
 			}
-			else if ( !Q_stricmp( token, "#include" ) || !Q_stricmp( token, "#base" ) )
+			else if( !Q_stricmp( token, "#include" ) || !Q_stricmp( token, "#base" ) )
 			{
 				// Compacted version of ParseInclude(), including new changes.
 				// Look at that if you want to read.
 				char includefile[ 256 ];
 				ParseToken();
-				if (scriptfile) { size_t len = strlen(scriptfile)-1;
-					for (size_t i = 0; i < len; i++)
-					{ if (scriptfile[i] == CORRECT_PATH_SEPARATOR || scriptfile[i] == INCORRECT_PATH_SEPARATOR)
-						{ len = i; }
-					} Q_strncpy(includefile, scriptfile, len+1);
-					if (len+1 != strlen(scriptfile))
-					{ Q_snprintf(includefile, sizeof(includefile), "%s/%s", includefile, token); }
-					else includefile[0] = '\0';
-				} if (!includefile[0]) Q_snprintf( includefile, sizeof( includefile ), "scripts/%s", token );
+				if( scriptfile )
+				{
+					size_t len = strlen( scriptfile ) - 1;
+					for( size_t i = 0; i < len; i++ )
+					{
+						if( scriptfile[i] == CORRECT_PATH_SEPARATOR || scriptfile[i] == INCORRECT_PATH_SEPARATOR )
+						{
+							len = i;
+						}
+					}
+					Q_strncpy( includefile, scriptfile, len + 1 );
+					if( len + 1 != strlen( scriptfile ) )
+					{
+						Q_snprintf( includefile, sizeof( includefile ), "%s/%s", includefile, token );
+					}
+					else
+					{
+						includefile[0] = '\0';
+					}
+				}
+				if( !includefile[0] )
+				{
+					Q_snprintf( includefile, sizeof( includefile ), "scripts/%s", token );
+				}
 
-				if ( includedFiles.Find( includefile ) == NULL )
+				if( includedFiles.Find( includefile ) == NULL )
 				{
 					MEM_ALLOC_CREDIT();
 
 					// Try and load it
 					CUtlBuffer buf;
-					if ( filesystem->ReadFile( includefile, "GAME", buf ) )
+					if( filesystem->ReadFile( includefile, "GAME", buf ) )
 					{
-						LoadFromBuffer( includefile, (unsigned char *)buf.PeekGet(), includedFiles );
+						LoadFromBuffer( includefile, ( unsigned char* )buf.PeekGet(), includedFiles );
 					}
 				}
 			}
 		}
 
-		if ( m_ScriptStack.Count() > 0 )
+		if( m_ScriptStack.Count() > 0 )
+		{
 			m_ScriptStack.Remove( 0 );
+		}
 
 		return true;
 	}
 };
 
 // Loads a file directly to the main response system
-bool LoadResponseSystemFile(const char *scriptfile)
+bool LoadResponseSystemFile( const char* scriptfile )
 {
 	CUtlBuffer buf;
-	if ( !filesystem->ReadFile( scriptfile, "GAME", buf ) )
+	if( !filesystem->ReadFile( scriptfile, "GAME", buf ) )
 	{
 		return false;
 	}
 
 	// This is a really messy and specialized system that precaches the responses and only the responses of a talker file.
 	CStringPool includedFiles;
-	CResponseFilePrecacher *rs = new CResponseFilePrecacher();
-	if (!rs || !rs->LoadFromBuffer(scriptfile, (unsigned char *)buf.PeekGet(), includedFiles))
+	CResponseFilePrecacher* rs = new CResponseFilePrecacher();
+	if( !rs || !rs->LoadFromBuffer( scriptfile, ( unsigned char* )buf.PeekGet(), includedFiles ) )
 	{
 		Warning( "Failed to load response system data from %s", scriptfile );
 		delete rs;
@@ -3532,7 +3740,7 @@ bool LoadResponseSystemFile(const char *scriptfile)
 	delete rs;
 
 	CStringPool includedFiles2;
-	defaultresponsesytem.LoadFromBuffer(scriptfile, (const char *)buf.PeekGet(), includedFiles2);
+	defaultresponsesytem.LoadFromBuffer( scriptfile, ( const char* )buf.PeekGet(), includedFiles2 );
 
 	return true;
 }
@@ -3547,21 +3755,21 @@ void ReloadResponseSystem()
 static short RESPONSESYSTEM_SAVE_RESTORE_VERSION = 1;
 
 // note:  this won't save/restore settings from instanced response systems.  Could add that with a CDefSaveRestoreOps implementation if needed
-// 
+//
 class CDefaultResponseSystemSaveRestoreBlockHandler : public CDefSaveRestoreBlockHandler
 {
 public:
-	const char *GetBlockName()
+	const char* GetBlockName()
 	{
 		return "ResponseSystem";
 	}
 
-	void WriteSaveHeaders( ISave *pSave )
+	void WriteSaveHeaders( ISave* pSave )
 	{
 		pSave->WriteShort( &RESPONSESYSTEM_SAVE_RESTORE_VERSION );
 	}
-	
-	void ReadRestoreHeaders( IRestore *pRestore )
+
+	void ReadRestoreHeaders( IRestore* pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
 		short version;
@@ -3569,25 +3777,25 @@ public:
 		m_fDoLoad = ( version == RESPONSESYSTEM_SAVE_RESTORE_VERSION );
 	}
 
-	void Save( ISave *pSave )
+	void Save( ISave* pSave )
 	{
 		CDefaultResponseSystem& rs = defaultresponsesytem;
 
 		int count = rs.m_Responses.Count();
 		pSave->WriteInt( &count );
-		for ( int i = 0; i < count; ++i )
+		for( int i = 0; i < count; ++i )
 		{
 			pSave->StartBlock( "ResponseGroup" );
 
 			pSave->WriteString( rs.m_Responses.GetElementName( i ) );
-			const ResponseGroup *group = &rs.m_Responses[ i ];
+			const ResponseGroup* group = &rs.m_Responses[ i ];
 			pSave->WriteAll( group );
 
 			short groupCount = group->group.Count();
 			pSave->WriteShort( &groupCount );
-			for ( int j = 0; j < groupCount; ++j )
+			for( int j = 0; j < groupCount; ++j )
 			{
-				const Response *response = &group->group[ j ];
+				const Response* response = &group->group[ j ];
 				pSave->StartBlock( "Response" );
 				pSave->WriteString( response->value );
 				pSave->WriteAll( response );
@@ -3600,17 +3808,17 @@ public:
 #ifdef MAPBASE
 		// Enhanced Response System save/restore
 		int count2 = 0;
-		if (rr_enhanced_saverestore.GetBool())
+		if( rr_enhanced_saverestore.GetBool() )
 		{
 			// Rule state save/load
 			count2 = rs.m_Rules.Count();
 			pSave->WriteInt( &count2 );
-			for ( int i = 0; i < count2; ++i )
+			for( int i = 0; i < count2; ++i )
 			{
 				pSave->StartBlock( "Rule" );
 
 				pSave->WriteString( rs.m_Rules.GetElementName( i ) );
-				const Rule *rule = &rs.m_Rules[ i ];
+				const Rule* rule = &rs.m_Rules[ i ];
 
 				bool bEnabled = rule->m_bEnabled;
 				pSave->WriteBool( &bEnabled );
@@ -3626,19 +3834,21 @@ public:
 #endif
 	}
 
-	void Restore( IRestore *pRestore, bool createPlayers )
+	void Restore( IRestore* pRestore, bool createPlayers )
 	{
-		if ( !m_fDoLoad )
+		if( !m_fDoLoad )
+		{
 			return;
+		}
 
 		CDefaultResponseSystem& rs = defaultresponsesytem;
 
 		int count = pRestore->ReadInt();
-		for ( int i = 0; i < count; ++i )
+		for( int i = 0; i < count; ++i )
 		{
 			char szResponseGroupBlockName[SIZE_BLOCK_NAME_BUF];
 			pRestore->StartBlock( szResponseGroupBlockName );
-			if ( !Q_stricmp( szResponseGroupBlockName, "ResponseGroup" ) )
+			if( !Q_stricmp( szResponseGroupBlockName, "ResponseGroup" ) )
 			{
 
 				char groupname[ 256 ];
@@ -3646,36 +3856,36 @@ public:
 
 				// Try and find it
 				int idx = rs.m_Responses.Find( groupname );
-				if ( idx != rs.m_Responses.InvalidIndex() )
+				if( idx != rs.m_Responses.InvalidIndex() )
 				{
-					ResponseGroup *group = &rs.m_Responses[ idx ];
+					ResponseGroup* group = &rs.m_Responses[ idx ];
 					pRestore->ReadAll( group );
 
 					short groupCount = pRestore->ReadShort();
-					for ( int j = 0; j < groupCount; ++j )
+					for( int j = 0; j < groupCount; ++j )
 					{
 						char szResponseBlockName[SIZE_BLOCK_NAME_BUF];
 
 						char responsename[ 256 ];
 						pRestore->StartBlock( szResponseBlockName );
-						if ( !Q_stricmp( szResponseBlockName, "Response" ) )
+						if( !Q_stricmp( szResponseBlockName, "Response" ) )
 						{
 							pRestore->ReadString( responsename, sizeof( responsename ), 0 );
 
 							// Find it by name
 							int ri;
-							for ( ri = 0; ri < group->group.Count(); ++ri )
+							for( ri = 0; ri < group->group.Count(); ++ri )
 							{
-								Response *response = &group->group[ ri ];
-								if ( !Q_stricmp( response->value, responsename ) )
+								Response* response = &group->group[ ri ];
+								if( !Q_stricmp( response->value, responsename ) )
 								{
 									break;
 								}
 							}
 
-							if ( ri < group->group.Count() )
+							if( ri < group->group.Count() )
 							{
-								Response *response = &group->group[ ri ];
+								Response* response = &group->group[ ri ];
 								pRestore->ReadAll( response );
 							}
 						}
@@ -3691,20 +3901,20 @@ public:
 #ifdef MAPBASE
 		// Enhanced Response System save/restore
 		count = pRestore->ReadInt();
-		for ( int i = 0; i < count; ++i )
+		for( int i = 0; i < count; ++i )
 		{
 			char szRuleBlockName[SIZE_BLOCK_NAME_BUF];
 			pRestore->StartBlock( szRuleBlockName );
-			if ( !Q_stricmp( szRuleBlockName, "Rule" ) )
+			if( !Q_stricmp( szRuleBlockName, "Rule" ) )
 			{
 				char groupname[ 256 ];
 				pRestore->ReadString( groupname, sizeof( groupname ), 0 );
 
 				// Try and find it
 				int idx = rs.m_Rules.Find( groupname );
-				if ( idx != rs.m_Rules.InvalidIndex() )
+				if( idx != rs.m_Rules.InvalidIndex() )
 				{
-					Rule *rule = &rs.m_Rules[ idx ];
+					Rule* rule = &rs.m_Rules[ idx ];
 
 					bool bEnabled;
 					pRestore->ReadBool( &bEnabled );
@@ -3721,8 +3931,8 @@ private:
 	bool		m_fDoLoad;
 
 } g_DefaultResponseSystemSaveRestoreBlockHandler;
-	
-ISaveRestoreBlockHandler *GetDefaultResponseSystemSaveRestoreBlockHandler()
+
+ISaveRestoreBlockHandler* GetDefaultResponseSystemSaveRestoreBlockHandler()
 {
 	return &g_DefaultResponseSystemSaveRestoreBlockHandler;
 }
@@ -3732,7 +3942,7 @@ ISaveRestoreBlockHandler *GetDefaultResponseSystemSaveRestoreBlockHandler()
 //
 // Purpose: Handles save and load for instanced response systems...
 //
-// BUGBUG:  This will save the same response system to file multiple times for "shared" response systems and 
+// BUGBUG:  This will save the same response system to file multiple times for "shared" response systems and
 //  therefore it'll restore the same data onto the same pointer N times on reload (probably benign for now, but we could
 //  write code to save/restore the instanced ones by filename in the block handler above maybe?
 //-----------------------------------------------------------------------------
@@ -3741,27 +3951,29 @@ class CResponseSystemSaveRestoreOps : public CDefSaveRestoreOps
 {
 public:
 
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
 	{
-		CResponseSystem *pRS = *(CResponseSystem **)fieldInfo.pField;
-		if ( !pRS || pRS == &defaultresponsesytem )
+		CResponseSystem* pRS = *( CResponseSystem** )fieldInfo.pField;
+		if( !pRS || pRS == &defaultresponsesytem )
+		{
 			return;
-		
+		}
+
 		int count = pRS->m_Responses.Count();
 		pSave->WriteInt( &count );
-		for ( int i = 0; i < count; ++i )
+		for( int i = 0; i < count; ++i )
 		{
 			pSave->StartBlock( "ResponseGroup" );
 
 			pSave->WriteString( pRS->m_Responses.GetElementName( i ) );
-			const ResponseGroup *group = &pRS->m_Responses[ i ];
+			const ResponseGroup* group = &pRS->m_Responses[ i ];
 			pSave->WriteAll( group );
 
 			short groupCount = group->group.Count();
 			pSave->WriteShort( &groupCount );
-			for ( int j = 0; j < groupCount; ++j )
+			for( int j = 0; j < groupCount; ++j )
 			{
-				const Response *response = &group->group[ j ];
+				const Response* response = &group->group[ j ];
 				pSave->StartBlock( "Response" );
 				pSave->WriteString( response->value );
 				pSave->WriteAll( response );
@@ -3771,19 +3983,21 @@ public:
 			pSave->EndBlock();
 		}
 	}
-	
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		CResponseSystem *pRS = *(CResponseSystem **)fieldInfo.pField;
-		if ( !pRS || pRS == &defaultresponsesytem )
+		CResponseSystem* pRS = *( CResponseSystem** )fieldInfo.pField;
+		if( !pRS || pRS == &defaultresponsesytem )
+		{
 			return;
+		}
 
 		int count = pRestore->ReadInt();
-		for ( int i = 0; i < count; ++i )
+		for( int i = 0; i < count; ++i )
 		{
 			char szResponseGroupBlockName[SIZE_BLOCK_NAME_BUF];
 			pRestore->StartBlock( szResponseGroupBlockName );
-			if ( !Q_stricmp( szResponseGroupBlockName, "ResponseGroup" ) )
+			if( !Q_stricmp( szResponseGroupBlockName, "ResponseGroup" ) )
 			{
 
 				char groupname[ 256 ];
@@ -3791,36 +4005,36 @@ public:
 
 				// Try and find it
 				int idx = pRS->m_Responses.Find( groupname );
-				if ( idx != pRS->m_Responses.InvalidIndex() )
+				if( idx != pRS->m_Responses.InvalidIndex() )
 				{
-					ResponseGroup *group = &pRS->m_Responses[ idx ];
+					ResponseGroup* group = &pRS->m_Responses[ idx ];
 					pRestore->ReadAll( group );
 
 					short groupCount = pRestore->ReadShort();
-					for ( int j = 0; j < groupCount; ++j )
+					for( int j = 0; j < groupCount; ++j )
 					{
 						char szResponseBlockName[SIZE_BLOCK_NAME_BUF];
 
 						char responsename[ 256 ];
 						pRestore->StartBlock( szResponseBlockName );
-						if ( !Q_stricmp( szResponseBlockName, "Response" ) )
+						if( !Q_stricmp( szResponseBlockName, "Response" ) )
 						{
 							pRestore->ReadString( responsename, sizeof( responsename ), 0 );
 
 							// Find it by name
 							int ri;
-							for ( ri = 0; ri < group->group.Count(); ++ri )
+							for( ri = 0; ri < group->group.Count(); ++ri )
 							{
-								Response *response = &group->group[ ri ];
-								if ( !Q_stricmp( response->value, responsename ) )
+								Response* response = &group->group[ ri ];
+								if( !Q_stricmp( response->value, responsename ) )
 								{
 									break;
 								}
 							}
 
-							if ( ri < group->group.Count() )
+							if( ri < group->group.Count() )
 							{
-								Response *response = &group->group[ ri ];
+								Response* response = &group->group[ ri ];
 								pRestore->ReadAll( response );
 							}
 						}
@@ -3833,24 +4047,24 @@ public:
 			pRestore->EndBlock();
 		}
 	}
-	
+
 } g_ResponseSystemSaveRestoreOps;
 
-ISaveRestoreOps *responseSystemSaveRestoreOps = &g_ResponseSystemSaveRestoreOps;
+ISaveRestoreOps* responseSystemSaveRestoreOps = &g_ResponseSystemSaveRestoreOps;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CDefaultResponseSystem::Init()
 {
-/*
-	Warning( "sizeof( Response ) == %d\n", sizeof( Response ) );
-	Warning( "sizeof( ResponseGroup ) == %d\n", sizeof( ResponseGroup ) );
-	Warning( "sizeof( Criteria ) == %d\n", sizeof( Criteria ) );
-	Warning( "sizeof( AI_ResponseParams ) == %d\n", sizeof( AI_ResponseParams ) );
-*/
-	const char *basescript = GetScriptFile();
+	/*
+		Warning( "sizeof( Response ) == %d\n", sizeof( Response ) );
+		Warning( "sizeof( ResponseGroup ) == %d\n", sizeof( ResponseGroup ) );
+		Warning( "sizeof( Criteria ) == %d\n", sizeof( Criteria ) );
+		Warning( "sizeof( AI_ResponseParams ) == %d\n", sizeof( AI_ResponseParams ) );
+	*/
+	const char* basescript = GetScriptFile();
 
 	LoadRuleSet( basescript );
 
@@ -3858,7 +4072,7 @@ bool CDefaultResponseSystem::Init()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CDefaultResponseSystem::Shutdown()
 {
@@ -3873,10 +4087,10 @@ void CDefaultResponseSystem::Shutdown()
 
 //-----------------------------------------------------------------------------
 // Purpose: Instance a custom response system
-// Input  : *scriptfile - 
+// Input  : *scriptfile -
 // Output : IResponseSystem
 //-----------------------------------------------------------------------------
-IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile )
+IResponseSystem* PrecacheCustomResponseSystem( const char* scriptfile )
 {
 	return defaultresponsesytem.PrecacheCustomResponseSystem( scriptfile );
 }
@@ -3884,10 +4098,10 @@ IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile )
 //-----------------------------------------------------------------------------
 // Purpose: Instance a custom response system
 // Input  : *scriptfile -
-//			set - 
+//			set -
 // Output : IResponseSystem
 //-----------------------------------------------------------------------------
-IResponseSystem *BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore )
+IResponseSystem* BuildCustomResponseSystemGivenCriteria( const char* pszBaseFile, const char* pszCustomName, AI_CriteriaSet& criteriaSet, float flCriteriaScore )
 {
 	return defaultresponsesytem.BuildCustomResponseSystemGivenCriteria( pszBaseFile, pszCustomName, criteriaSet, flCriteriaScore );
 }
@@ -3907,45 +4121,45 @@ void CResponseSystem::DumpRules()
 	int c = m_Rules.Count();
 	int i;
 
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
-		Msg("%s\n", m_Rules.GetElementName( i ) );
+		Msg( "%s\n", m_Rules.GetElementName( i ) );
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CResponseSystem::DumpDictionary( const char *pszName )
+void CResponseSystem::DumpDictionary( const char* pszName )
 {
 	Msg( "\nDictionary: %s\n", pszName );
 
 	int nRuleCount = m_Rules.Count();
-	for ( int iRule = 0; iRule < nRuleCount; ++iRule )
+	for( int iRule = 0; iRule < nRuleCount; ++iRule )
 	{
-		Msg("	Rule %d: %s\n", iRule, m_Rules.GetElementName( iRule ) );
+		Msg( "	Rule %d: %s\n", iRule, m_Rules.GetElementName( iRule ) );
 
-		Rule *pRule = &m_Rules[iRule];
+		Rule* pRule = &m_Rules[iRule];
 
 		int nCriteriaCount = pRule->m_Criteria.Count();
 		for( int iCriteria = 0; iCriteria < nCriteriaCount; ++iCriteria )
 		{
 			int iRuleCriteria = pRule->m_Criteria[iCriteria];
-			Criteria *pCriteria = &m_Criteria[iRuleCriteria];
+			Criteria* pCriteria = &m_Criteria[iRuleCriteria];
 			Msg( "		Criteria %d: %s %s\n", iCriteria, pCriteria->name, pCriteria->value );
 		}
 
 		int nResponseGroupCount = pRule->m_Responses.Count();
-		for ( int iResponseGroup = 0; iResponseGroup < nResponseGroupCount; ++iResponseGroup )
+		for( int iResponseGroup = 0; iResponseGroup < nResponseGroupCount; ++iResponseGroup )
 		{
 			int iRuleResponse = pRule->m_Responses[iResponseGroup];
-			ResponseGroup *pResponseGroup = &m_Responses[iRuleResponse];
+			ResponseGroup* pResponseGroup = &m_Responses[iRuleResponse];
 
 			Msg( "		ResponseGroup %d: %s\n", iResponseGroup, m_Responses.GetElementName( iRuleResponse ) );
 
 			int nResponseCount = pResponseGroup->group.Count();
-			for ( int iResponse = 0; iResponse < nResponseCount; ++iResponse )
+			for( int iResponse = 0; iResponse < nResponseCount; ++iResponse )
 			{
-				Response *pResponse = &pResponseGroup->group[iResponse];
+				Response* pResponse = &pResponseGroup->group[iResponse];
 				Msg( "			Response %d: %s\n", iResponse, pResponse->value );
 			}
 		}

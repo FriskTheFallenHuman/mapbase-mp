@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -33,15 +33,15 @@ class CConstantForceController : public IMotionEvent
 	DECLARE_SIMPLE_DATADESC();
 
 public:
-	void Init( IMotionEvent::simresult_e controlType ) 
-	{ 
+	void Init( IMotionEvent::simresult_e controlType )
+	{
 		m_controlType = controlType;
 	}
 
-	void SetConstantForce( const Vector &linear, const AngularImpulse &angular );
+	void SetConstantForce( const Vector& linear, const AngularImpulse& angular );
 	void ScaleConstantForce( float scale );
-	
-	IMotionEvent::simresult_e Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
+
+	IMotionEvent::simresult_e Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular );
 	IMotionEvent::simresult_e	m_controlType;
 	Vector			m_linear;
 	AngularImpulse	m_angular;
@@ -50,15 +50,15 @@ public:
 };
 
 BEGIN_SIMPLE_DATADESC( CConstantForceController )
-	DEFINE_FIELD( m_controlType,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_linear,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_angular,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_linearSave,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_angularSave,	FIELD_VECTOR ),
-END_DATADESC()
+DEFINE_FIELD( m_controlType,	FIELD_INTEGER ),
+				 DEFINE_FIELD( m_linear,		FIELD_VECTOR ),
+				 DEFINE_FIELD( m_angular,		FIELD_VECTOR ),
+				 DEFINE_FIELD( m_linearSave,	FIELD_VECTOR ),
+				 DEFINE_FIELD( m_angularSave,	FIELD_VECTOR ),
+				 END_DATADESC()
 
 
-void CConstantForceController::SetConstantForce( const Vector &linear, const AngularImpulse &angular )
+				 void CConstantForceController::SetConstantForce( const Vector& linear, const AngularImpulse& angular )
 {
 	m_linear = linear;
 	m_angular = angular;
@@ -74,20 +74,21 @@ void CConstantForceController::ScaleConstantForce( float scale )
 }
 
 
-IMotionEvent::simresult_e CConstantForceController::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )
+IMotionEvent::simresult_e CConstantForceController::Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular )
 {
 	linear = m_linear;
 	angular = m_angular;
-	
+
 	return m_controlType;
 }
 
 // UNDONE: Make these logical entities
 //-----------------------------------------------------------------------------
-// Purpose: This is a general entity that has a force/motion controller that 
+// Purpose: This is a general entity that has a force/motion controller that
 //			simply integrates a constant linear/angular acceleration
 //-----------------------------------------------------------------------------
-abstract_class CPhysForce : public CPointEntity
+abstract_class CPhysForce :
+public CPointEntity
 {
 public:
 	DECLARE_CLASS( CPhysForce, CPointEntity );
@@ -106,21 +107,21 @@ public:
 	void ActivateForce( void );
 
 	// Input handlers
-	void InputActivate( inputdata_t &inputdata );
-	void InputDeactivate( inputdata_t &inputdata );
-	void InputForceScale( inputdata_t &inputdata );
+	void InputActivate( inputdata_t& inputdata );
+	void InputDeactivate( inputdata_t& inputdata );
+	void InputForceScale( inputdata_t& inputdata );
 
 	void SaveForce( void );
 	void ScaleForce( float scale );
 
 	// MUST IMPLEMENT THIS IN DERIVED CLASS
-	virtual void SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularImpulse &angular ) = 0;
+	virtual void SetupForces( IPhysicsObject * pPhys, Vector & linear, AngularImpulse & angular ) = 0;
 
 	// optional
 	virtual void OnActivate( void ) {}
 
-protected:	
-	IPhysicsMotionController	*m_pController;
+protected:
+	IPhysicsMotionController*	m_pController;
 
 	string_t		m_nameAttach;
 	float			m_force;
@@ -133,26 +134,26 @@ protected:
 
 BEGIN_DATADESC( CPhysForce )
 
-	DEFINE_PHYSPTR( m_pController ),
-	DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
-	DEFINE_KEYFIELD( m_force, FIELD_FLOAT, "force" ),
-	DEFINE_KEYFIELD( m_forceTime, FIELD_FLOAT, "forcetime" ),
+DEFINE_PHYSPTR( m_pController ),
+				DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
+				DEFINE_KEYFIELD( m_force, FIELD_FLOAT, "force" ),
+				DEFINE_KEYFIELD( m_forceTime, FIELD_FLOAT, "forcetime" ),
 
-	DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
-	//DEFINE_FIELD( m_wasRestored, FIELD_BOOLEAN ), // NOTE: DO NOT save/load this - it's used to detect loads
-	DEFINE_EMBEDDED( m_integrator ),
-	
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "scale", InputForceScale ),
-	
-	// Function Pointers
-	DEFINE_FUNCTION( ForceOff ),
+				DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
+				//DEFINE_FIELD( m_wasRestored, FIELD_BOOLEAN ), // NOTE: DO NOT save/load this - it's used to detect loads
+				DEFINE_EMBEDDED( m_integrator ),
 
-END_DATADESC()
+				DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+				DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
+				DEFINE_INPUTFUNC( FIELD_FLOAT, "scale", InputForceScale ),
+
+				// Function Pointers
+				DEFINE_FUNCTION( ForceOff ),
+
+				END_DATADESC()
 
 
-CPhysForce::CPhysForce( void )
+				CPhysForce::CPhysForce( void )
 {
 	m_pController = NULL;
 	m_wasRestored = false;
@@ -160,7 +161,7 @@ CPhysForce::CPhysForce( void )
 
 CPhysForce::~CPhysForce()
 {
-	if ( m_pController )
+	if( m_pController )
 	{
 		physenv->DestroyMotionController( m_pController );
 	}
@@ -168,7 +169,7 @@ CPhysForce::~CPhysForce()
 
 void CPhysForce::Spawn( void )
 {
-	if ( m_spawnflags & SF_THRUST_LOCAL_ORIENTATION )
+	if( m_spawnflags & SF_THRUST_LOCAL_ORIENTATION )
 	{
 		m_integrator.Init( IMotionEvent::SIM_LOCAL_ACCELERATION );
 	}
@@ -182,7 +183,7 @@ void CPhysForce::OnRestore( )
 {
 	BaseClass::OnRestore();
 
-	if ( m_pController )
+	if( m_pController )
 	{
 		m_pController->SetEventHandler( &m_integrator );
 	}
@@ -193,22 +194,24 @@ void CPhysForce::Activate( void )
 {
 	BaseClass::Activate();
 
-	if ( m_pController )
+	if( m_pController )
 	{
 		m_pController->WakeObjects();
 	}
-	if ( m_wasRestored )
+	if( m_wasRestored )
+	{
 		return;
+	}
 
-	if ( m_attachedObject == NULL )
+	if( m_attachedObject == NULL )
 	{
 		m_attachedObject = gEntList.FindEntityByName( NULL, m_nameAttach );
 	}
-	
+
 	// Let the derived class set up before we throw the switch
 	OnActivate();
 
-	if ( m_spawnflags & SF_THRUST_STARTACTIVE )
+	if( m_spawnflags & SF_THRUST_STARTACTIVE )
 	{
 		ForceOn();
 	}
@@ -216,42 +219,44 @@ void CPhysForce::Activate( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPhysForce::InputActivate( inputdata_t &inputdata )
+void CPhysForce::InputActivate( inputdata_t& inputdata )
 {
 	ForceOn();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPhysForce::InputDeactivate( inputdata_t &inputdata )
+void CPhysForce::InputDeactivate( inputdata_t& inputdata )
 {
 	ForceOff();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPhysForce::InputForceScale( inputdata_t &inputdata )
+void CPhysForce::InputForceScale( inputdata_t& inputdata )
 {
 	ScaleForce( inputdata.value.Float() );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPhysForce::ForceOn( void )
 {
-	if ( m_pController )
+	if( m_pController )
+	{
 		return;
+	}
 
 	ActivateForce();
-	if ( m_forceTime )
+	if( m_forceTime )
 	{
 		SetNextThink( gpGlobals->curtime + m_forceTime );
 		SetThink( &CPhysForce::ForceOff );
@@ -261,14 +266,16 @@ void CPhysForce::ForceOn( void )
 
 void CPhysForce::ActivateForce( void )
 {
-	IPhysicsObject *pPhys = NULL;
-	if ( m_attachedObject )
+	IPhysicsObject* pPhys = NULL;
+	if( m_attachedObject )
 	{
 		pPhys = m_attachedObject->VPhysicsGetObject();
 	}
-	
-	if ( !pPhys )
+
+	if( !pPhys )
+	{
 		return;
+	}
 
 	Vector linear;
 	AngularImpulse angular;
@@ -285,18 +292,20 @@ void CPhysForce::ActivateForce( void )
 
 void CPhysForce::ForceOff( void )
 {
-	if ( !m_pController )
+	if( !m_pController )
+	{
 		return;
+	}
 
 	physenv->DestroyMotionController( m_pController );
 	m_pController = NULL;
 	SetThink( NULL );
 	SetNextThink( TICK_NEVER_THINK );
-	IPhysicsObject *pPhys = NULL;
-	if ( m_attachedObject )
+	IPhysicsObject* pPhys = NULL;
+	if( m_attachedObject )
 	{
 		pPhys = m_attachedObject->VPhysicsGetObject();
-		if ( pPhys )
+		if( pPhys )
 		{
 			pPhys->Wake();
 		}
@@ -306,8 +315,10 @@ void CPhysForce::ForceOff( void )
 
 void CPhysForce::ScaleForce( float scale )
 {
-	if ( !m_pController )
+	if( !m_pController )
+	{
 		ForceOn();
+	}
 
 	m_integrator.ScaleConstantForce( scale );
 	m_pController->WakeObjects();
@@ -325,9 +336,9 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void OnActivate( void );
-	virtual void SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularImpulse &angular );
+	virtual void SetupForces( IPhysicsObject* pPhys, Vector& linear, AngularImpulse& angular );
 
-private:	
+private:
 	Vector			m_localOrigin;
 };
 
@@ -335,22 +346,22 @@ LINK_ENTITY_TO_CLASS( phys_thruster, CPhysThruster );
 
 BEGIN_DATADESC( CPhysThruster )
 
-	DEFINE_FIELD( m_localOrigin, FIELD_VECTOR ),
+DEFINE_FIELD( m_localOrigin, FIELD_VECTOR ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 
-void CPhysThruster::OnActivate( void )
+			  void CPhysThruster::OnActivate( void )
 {
-	if ( m_attachedObject != NULL )
+	if( m_attachedObject != NULL )
 	{
 		matrix3x4_t worldToAttached, thrusterToAttached;
 		MatrixInvert( m_attachedObject->EntityToWorldTransform(), worldToAttached );
 		ConcatTransforms( worldToAttached, EntityToWorldTransform(), thrusterToAttached );
 		MatrixGetColumn( thrusterToAttached, 3, m_localOrigin );
 
-		if ( HasSpawnFlags( SF_THRUST_LOCAL_ORIENTATION ) )
+		if( HasSpawnFlags( SF_THRUST_LOCAL_ORIENTATION ) )
 		{
 			QAngle angles;
 			MatrixAngles( thrusterToAttached, angles );
@@ -358,7 +369,7 @@ void CPhysThruster::OnActivate( void )
 		}
 		// maintain the local relationship with this entity
 		// it may move before the thruster is activated
-		if ( HasSpawnFlags( SF_THRUST_IGNORE_POS ) )
+		if( HasSpawnFlags( SF_THRUST_IGNORE_POS ) )
 		{
 			m_localOrigin.Init();
 		}
@@ -366,7 +377,7 @@ void CPhysThruster::OnActivate( void )
 }
 
 // utility function to duplicate this call in local space
-void CalculateVelocityOffsetLocal( IPhysicsObject *pPhys, const Vector &forceLocal, const Vector &positionLocal, Vector &outVelLocal, AngularImpulse &outAngular )
+void CalculateVelocityOffsetLocal( IPhysicsObject* pPhys, const Vector& forceLocal, const Vector& positionLocal, Vector& outVelLocal, AngularImpulse& outAngular )
 {
 	Vector posWorld, forceWorld;
 	pPhys->LocalToWorld( &posWorld, positionLocal );
@@ -376,18 +387,18 @@ void CalculateVelocityOffsetLocal( IPhysicsObject *pPhys, const Vector &forceLoc
 	pPhys->WorldToLocalVector( &outVelLocal, velWorld );
 }
 
-void CPhysThruster::SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularImpulse &angular )
+void CPhysThruster::SetupForces( IPhysicsObject* pPhys, Vector& linear, AngularImpulse& angular )
 {
 	Vector thrustVector;
 	AngleVectors( GetLocalAngles(), &thrustVector );
 	thrustVector *= m_force;
 
 	// multiply the force by mass (it's actually just an acceleration)
-	if ( m_spawnflags & SF_THRUST_MASS_INDEPENDENT )
+	if( m_spawnflags & SF_THRUST_MASS_INDEPENDENT )
 	{
 		thrustVector *= pPhys->GetMass();
 	}
-	if ( m_spawnflags & SF_THRUST_LOCAL_ORIENTATION )
+	if( m_spawnflags & SF_THRUST_LOCAL_ORIENTATION )
 	{
 		CalculateVelocityOffsetLocal( pPhys, thrustVector, m_localOrigin, linear, angular );
 	}
@@ -398,13 +409,13 @@ void CPhysThruster::SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularI
 		pPhys->CalculateVelocityOffset( thrustVector, position, &linear, &angular );
 	}
 
-	if ( !(m_spawnflags & SF_THRUST_FORCE) )
+	if( !( m_spawnflags & SF_THRUST_FORCE ) )
 	{
 		// clear out force
 		linear.Init();
 	}
 
-	if ( !(m_spawnflags & SF_THRUST_TORQUE) )
+	if( !( m_spawnflags & SF_THRUST_TORQUE ) )
 	{
 		// clear out torque
 		angular.Init();
@@ -421,18 +432,18 @@ class CPhysTorque : public CPhysForce
 public:
 	DECLARE_DATADESC();
 	void Spawn( void );
-	virtual void SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularImpulse &angular );
-private:	
+	virtual void SetupForces( IPhysicsObject* pPhys, Vector& linear, AngularImpulse& angular );
+private:
 	Vector m_axis;
 };
 
 BEGIN_DATADESC( CPhysTorque )
 
-	DEFINE_KEYFIELD( m_axis, FIELD_VECTOR, "axis" ),
+DEFINE_KEYFIELD( m_axis, FIELD_VECTOR, "axis" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( phys_torque, CPhysTorque );
+				 LINK_ENTITY_TO_CLASS( phys_torque, CPhysTorque );
 
 void CPhysTorque::Spawn( void )
 {
@@ -441,12 +452,12 @@ void CPhysTorque::Spawn( void )
 	m_spawnflags &= ~SF_THRUST_FORCE;
 
 	m_axis -= GetAbsOrigin();
-	VectorNormalize(m_axis);
+	VectorNormalize( m_axis );
 	UTIL_SnapDirectionToAxis( m_axis );
 	BaseClass::Spawn();
 }
 
-void CPhysTorque::SetupForces( IPhysicsObject *pPhys, Vector &linear, AngularImpulse &angular )
+void CPhysTorque::SetupForces( IPhysicsObject* pPhys, Vector& linear, AngularImpulse& angular )
 {
 	// clear out force
 	linear.Init();
@@ -473,7 +484,7 @@ class CMotorController : public IMotionEvent
 	DECLARE_SIMPLE_DATADESC();
 
 public:
-	IMotionEvent::simresult_e Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
+	IMotionEvent::simresult_e Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular );
 	float		m_speed;
 	float		m_maxTorque;
 	Vector		m_axis;
@@ -487,37 +498,39 @@ public:
 
 BEGIN_SIMPLE_DATADESC( CMotorController )
 
-	DEFINE_FIELD( m_speed,				FIELD_FLOAT ),
-	DEFINE_FIELD( m_maxTorque,			FIELD_FLOAT ),
-	DEFINE_KEYFIELD( m_axis,				FIELD_VECTOR, "axis" ),
-	DEFINE_KEYFIELD( m_inertiaFactor,		FIELD_FLOAT, "inertiafactor" ),
-	DEFINE_FIELD( m_lastSpeed,			FIELD_FLOAT ),
-	DEFINE_FIELD( m_lastAcceleration,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_lastForce,			FIELD_FLOAT ),
-	DEFINE_FIELD( m_restistanceDamping,	FIELD_FLOAT ),
+DEFINE_FIELD( m_speed,				FIELD_FLOAT ),
+						DEFINE_FIELD( m_maxTorque,			FIELD_FLOAT ),
+						DEFINE_KEYFIELD( m_axis,				FIELD_VECTOR, "axis" ),
+						DEFINE_KEYFIELD( m_inertiaFactor,		FIELD_FLOAT, "inertiafactor" ),
+						DEFINE_FIELD( m_lastSpeed,			FIELD_FLOAT ),
+						DEFINE_FIELD( m_lastAcceleration,		FIELD_FLOAT ),
+						DEFINE_FIELD( m_lastForce,			FIELD_FLOAT ),
+						DEFINE_FIELD( m_restistanceDamping,	FIELD_FLOAT ),
 
-END_DATADESC()
+						END_DATADESC()
 
 
-IMotionEvent::simresult_e CMotorController::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )
+						IMotionEvent::simresult_e CMotorController::Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular )
 {
 	linear = vec3_origin;
 	angular = vec3_origin;
 
-	if ( m_speed == 0 )
+	if( m_speed == 0 )
+	{
 		return SIM_NOTHING;
+	}
 
 	matrix3x4_t matrix;
 	pObject->GetPositionMatrix( &matrix );
 	AngularImpulse currentRotAxis;
-	
+
 	// currentRotAxis is in local space
 	pObject->GetVelocity( NULL, &currentRotAxis );
 	// transform motor axis to local space
 	Vector motorAxis_ls;
 	VectorIRotate( m_axis, matrix, motorAxis_ls );
 	float currentSpeed = DotProduct( currentRotAxis, motorAxis_ls );
-	
+
 	float inertia = DotProductAbs( pObject->GetInertia(), motorAxis_ls );
 
 	// compute absolute acceleration, don't integrate over the timestep
@@ -526,23 +539,23 @@ IMotionEvent::simresult_e CMotorController::Simulate( IPhysicsMotionController *
 
 	// BUGBUG: This heuristic is a little flaky
 	// UNDONE: Make a better heuristic for speed control
-	if ( fabsf(m_lastAcceleration) > 0 )
+	if( fabsf( m_lastAcceleration ) > 0 )
 	{
 		float deltaSpeed = currentSpeed - m_lastSpeed;
 		// make sure they are going the same way
-		if ( deltaSpeed * accel > 0 )
+		if( deltaSpeed * accel > 0 )
 		{
 			float factor = deltaSpeed / m_lastAcceleration;
 			factor = 1 - clamp( factor, 0.f, 1.f );
 			rotForce += m_lastForce * factor * m_restistanceDamping;
 		}
-		else 
+		else
 		{
-			if ( currentSpeed != 0 )
+			if( currentSpeed != 0 )
 			{
 				// have we reached a steady state that isn't our target?
 				float increase = deltaSpeed / m_lastAcceleration;
-				if ( fabsf(increase) < 0.05 )
+				if( fabsf( increase ) < 0.05 )
 				{
 					rotForce += m_lastForce * m_restistanceDamping;
 				}
@@ -552,25 +565,25 @@ IMotionEvent::simresult_e CMotorController::Simulate( IPhysicsMotionController *
 	// -------------------------------------------------------
 
 
-	if ( m_maxTorque != 0 )
+	if( m_maxTorque != 0 )
 	{
-		if ( rotForce > m_maxTorque )
+		if( rotForce > m_maxTorque )
 		{
 			rotForce = m_maxTorque;
 		}
-		else if ( rotForce < -m_maxTorque )
+		else if( rotForce < -m_maxTorque )
 		{
 			rotForce = -m_maxTorque;
 		}
 	}
 
 	m_lastForce = rotForce;
-	m_lastAcceleration = (rotForce / inertia);
+	m_lastAcceleration = ( rotForce / inertia );
 	m_lastSpeed = currentSpeed;
 
 	// this is in local space
 	angular = motorAxis_ls * rotForce;
-	
+
 	return SIM_LOCAL_FORCE;
 }
 
@@ -594,9 +607,9 @@ public:
 	void TargetSpeedChanged( void );
 	void OnRestore();
 
-	void InputSetTargetSpeed( inputdata_t &inputdata );
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
+	void InputSetTargetSpeed( inputdata_t& inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
 	void CalculateAcceleration();
 
 	string_t	m_nameAttach;
@@ -608,53 +621,55 @@ public:
 	// FIXME: can we remove m_flSpeed from CBaseEntity?
 	//float m_flSpeed;
 
-	IPhysicsConstraint	*m_pHinge;
-	IPhysicsMotionController *m_pController;
+	IPhysicsConstraint*	m_pHinge;
+	IPhysicsMotionController* m_pController;
 	CMotorController m_motor;
 };
 
 
 BEGIN_DATADESC( CPhysMotor )
 
-	DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
-	DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_spinUp, FIELD_FLOAT, "spinup" ),
-	DEFINE_KEYFIELD( m_additionalAcceleration, FIELD_FLOAT, "addangaccel" ),
-	DEFINE_FIELD( m_angularAcceleration, FIELD_FLOAT ),
-	DEFINE_FIELD( m_lastTime, FIELD_TIME ),
-	DEFINE_PHYSPTR( m_pHinge ),
-	DEFINE_PHYSPTR( m_pController ),
-	
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeed", InputSetTargetSpeed ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
+				 DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
+				 DEFINE_KEYFIELD( m_spinUp, FIELD_FLOAT, "spinup" ),
+				 DEFINE_KEYFIELD( m_additionalAcceleration, FIELD_FLOAT, "addangaccel" ),
+				 DEFINE_FIELD( m_angularAcceleration, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_lastTime, FIELD_TIME ),
+				 DEFINE_PHYSPTR( m_pHinge ),
+				 DEFINE_PHYSPTR( m_pController ),
 
-	DEFINE_EMBEDDED( m_motor ),
+				 DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeed", InputSetTargetSpeed ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
 
-END_DATADESC()
+				 DEFINE_EMBEDDED( m_motor ),
 
-LINK_ENTITY_TO_CLASS( phys_motor, CPhysMotor );
+				 END_DATADESC()
+
+				 LINK_ENTITY_TO_CLASS( phys_motor, CPhysMotor );
 
 
 void CPhysMotor::CalculateAcceleration()
 {
-	if ( m_spinUp )
+	if( m_spinUp )
 	{
-		m_angularAcceleration = fabsf(m_flSpeed / m_spinUp);
+		m_angularAcceleration = fabsf( m_flSpeed / m_spinUp );
 	}
 	else
 	{
-		m_angularAcceleration = fabsf(m_flSpeed);
+		m_angularAcceleration = fabsf( m_flSpeed );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that sets a speed to spin up or down to.
 //-----------------------------------------------------------------------------
-void CPhysMotor::InputSetTargetSpeed( inputdata_t &inputdata )
+void CPhysMotor::InputSetTargetSpeed( inputdata_t& inputdata )
 {
-	if ( m_flSpeed == inputdata.value.Float() )
+	if( m_flSpeed == inputdata.value.Float() )
+	{
 		return;
+	}
 
 	m_flSpeed = inputdata.value.Float();
 	TargetSpeedChanged();
@@ -673,7 +688,7 @@ void CPhysMotor::TargetSpeedChanged( void )
 //------------------------------------------------------------------------------
 // Purpose: Input handler that turns the motor on.
 //------------------------------------------------------------------------------
-void CPhysMotor::InputTurnOn( inputdata_t &inputdata )
+void CPhysMotor::InputTurnOn( inputdata_t& inputdata )
 {
 	TurnOn();
 }
@@ -682,7 +697,7 @@ void CPhysMotor::InputTurnOn( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose: Input handler that turns the motor off.
 //------------------------------------------------------------------------------
-void CPhysMotor::InputTurnOff( inputdata_t &inputdata )
+void CPhysMotor::InputTurnOff( inputdata_t& inputdata )
 {
 	m_motor.m_speed = 0;
 	SetNextThink( TICK_NEVER_THINK );
@@ -691,12 +706,12 @@ void CPhysMotor::InputTurnOff( inputdata_t &inputdata )
 
 CPhysMotor::~CPhysMotor()
 {
-	if ( m_attachedObject && m_pHinge )
+	if( m_attachedObject && m_pHinge )
 	{
-		IPhysicsObject *pPhys = m_attachedObject->VPhysicsGetObject();
-		if ( pPhys )
+		IPhysicsObject* pPhys = m_attachedObject->VPhysicsGetObject();
+		if( pPhys )
 		{
-			PhysClearGameFlags(pPhys, FVPHYSICS_NO_PLAYER_PICKUP);
+			PhysClearGameFlags( pPhys, FVPHYSICS_NO_PLAYER_PICKUP );
 		}
 	}
 
@@ -708,32 +723,34 @@ CPhysMotor::~CPhysMotor()
 void CPhysMotor::Spawn( void )
 {
 	m_motor.m_axis -= GetLocalOrigin();
-	float axisLength = VectorNormalize(m_motor.m_axis);
+	float axisLength = VectorNormalize( m_motor.m_axis );
 	// double check that the axis is at least a unit long. If not, warn and self-destruct.
-	if ( axisLength > 1.0f )
+	if( axisLength > 1.0f )
 	{
 		UTIL_SnapDirectionToAxis( m_motor.m_axis );
 	}
 	else
 	{
-		Warning("phys_motor %s does not have a valid axis helper, and self-destructed!\n", GetDebugName());
+		Warning( "phys_motor %s does not have a valid axis helper, and self-destructed!\n", GetDebugName() );
 
 		m_motor.m_speed = 0;
 		SetNextThink( TICK_NEVER_THINK );
 
-		UTIL_Remove(this);
+		UTIL_Remove( this );
 	}
 }
 
 
 void CPhysMotor::TurnOn( void )
 {
-	CBaseEntity *pAttached = m_attachedObject;
-	if ( !pAttached )
+	CBaseEntity* pAttached = m_attachedObject;
+	if( !pAttached )
+	{
 		return;
+	}
 
-	IPhysicsObject *pPhys = pAttached->VPhysicsGetObject();
-	if ( pPhys )
+	IPhysicsObject* pPhys = pAttached->VPhysicsGetObject();
+	if( pPhys )
 	{
 		m_pController->WakeObjects();
 		// If the current speed is zero, the objects can run a tick without getting torque'd and go back to sleep
@@ -747,35 +764,35 @@ void CPhysMotor::TurnOn( void )
 void CPhysMotor::Activate( void )
 {
 	BaseClass::Activate();
-	
+
 	// This gets called after all objects spawn and after all objects restore
-	if ( m_attachedObject == NULL )
+	if( m_attachedObject == NULL )
 	{
-		CBaseEntity *pAttach = gEntList.FindEntityByName( NULL, m_nameAttach );
-		if ( pAttach && pAttach->GetMoveType() == MOVETYPE_VPHYSICS )
+		CBaseEntity* pAttach = gEntList.FindEntityByName( NULL, m_nameAttach );
+		if( pAttach && pAttach->GetMoveType() == MOVETYPE_VPHYSICS )
 		{
 			m_attachedObject = pAttach;
-			IPhysicsObject *pPhys = m_attachedObject->VPhysicsGetObject();
+			IPhysicsObject* pPhys = m_attachedObject->VPhysicsGetObject();
 			CalculateAcceleration();
 			matrix3x4_t matrix;
 			pPhys->GetPositionMatrix( &matrix );
 			Vector motorAxis_ls;
 			VectorIRotate( m_motor.m_axis, matrix, motorAxis_ls );
 			float inertia = DotProductAbs( pPhys->GetInertia(), motorAxis_ls );
-			m_motor.m_maxTorque = inertia * m_motor.m_inertiaFactor * (m_angularAcceleration + m_additionalAcceleration);
+			m_motor.m_maxTorque = inertia * m_motor.m_inertiaFactor * ( m_angularAcceleration + m_additionalAcceleration );
 			m_motor.m_restistanceDamping = 1.0f;
 		}
 	}
 
-	if ( m_attachedObject )
+	if( m_attachedObject )
 	{
-		IPhysicsObject *pPhys = m_attachedObject->VPhysicsGetObject();
+		IPhysicsObject* pPhys = m_attachedObject->VPhysicsGetObject();
 
 		// create a hinge constraint for this object?
-		if ( m_spawnflags & SF_MOTOR_HINGE )
+		if( m_spawnflags & SF_MOTOR_HINGE )
 		{
 			// UNDONE: Don't do this on restore?
-			if ( !m_pHinge )
+			if( !m_pHinge )
 			{
 				constraint_hingeparams_t hingeParams;
 				hingeParams.Defaults();
@@ -783,12 +800,12 @@ void CPhysMotor::Activate( void )
 				hingeParams.worldPosition = GetLocalOrigin();
 
 				m_pHinge = physenv->CreateHingeConstraint( g_PhysWorldObject, pPhys, NULL, hingeParams );
-				m_pHinge->SetGameData( (void *)this );
+				m_pHinge->SetGameData( ( void* )this );
 				// can't grab this object
-				PhysSetGameFlags(pPhys, FVPHYSICS_NO_PLAYER_PICKUP);
+				PhysSetGameFlags( pPhys, FVPHYSICS_NO_PLAYER_PICKUP );
 			}
 
-			if ( m_spawnflags & SF_MOTOR_NOCOLLIDE )
+			if( m_spawnflags & SF_MOTOR_NOCOLLIDE )
 			{
 				PhysDisableEntityCollisions( g_PhysWorldObject, pPhys );
 			}
@@ -799,12 +816,12 @@ void CPhysMotor::Activate( void )
 		}
 
 		// NOTE: On restore, this path isn't run because m_pController will not be NULL
-		if ( !m_pController )
+		if( !m_pController )
 		{
 			m_pController = physenv->CreateMotionController( &m_motor );
 			m_pController->AttachObject( m_attachedObject->VPhysicsGetObject(), false );
 
-			if ( m_spawnflags & SF_MOTOR_START_ON )
+			if( m_spawnflags & SF_MOTOR_START_ON )
 			{
 				TurnOn();
 			}
@@ -816,7 +833,7 @@ void CPhysMotor::OnRestore()
 {
 	BaseClass::OnRestore();
 	// Need to do this on restore since there's no good way to save this
-	if ( m_pController )
+	if( m_pController )
 	{
 		m_pController->SetEventHandler( &m_motor );
 	}
@@ -824,13 +841,13 @@ void CPhysMotor::OnRestore()
 
 void CPhysMotor::Think( void )
 {
-	// angular acceleration is always positive - it should be treated as a magnitude - the controller 
+	// angular acceleration is always positive - it should be treated as a magnitude - the controller
 	// will apply it in the proper direction
-	Assert(m_angularAcceleration>=0);
+	Assert( m_angularAcceleration >= 0 );
 
-	m_motor.m_speed = UTIL_Approach( m_flSpeed, m_motor.m_speed, m_angularAcceleration*(gpGlobals->curtime-m_lastTime) );
+	m_motor.m_speed = UTIL_Approach( m_flSpeed, m_motor.m_speed, m_angularAcceleration * ( gpGlobals->curtime - m_lastTime ) );
 	m_lastTime = gpGlobals->curtime;
-	if ( m_motor.m_speed != m_flSpeed )
+	if( m_motor.m_speed != m_flSpeed )
 	{
 		SetNextThink( gpGlobals->curtime );
 	}
@@ -852,29 +869,29 @@ public:
 	void Activate();
 
 	// IMotionEvent
-	virtual simresult_e	Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
+	virtual simresult_e	Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular );
 
 	// Inputs
-	void InputTurnOn( inputdata_t &inputdata )
+	void InputTurnOn( inputdata_t& inputdata )
 	{
 		m_bActive = true;
 	}
-	void InputTurnOff( inputdata_t &inputdata )
+	void InputTurnOff( inputdata_t& inputdata )
 	{
 		m_bActive = false;
 	}
 
-	void InputSetAngularLimit( inputdata_t &inputdata )
+	void InputSetAngularLimit( inputdata_t& inputdata )
 	{
 		m_angularLimit = inputdata.value.Float();
 	}
 
-private:	
-	friend CBaseEntity *CreateKeepUpright( const Vector &vecOrigin, const QAngle &vecAngles, CBaseEntity *pOwner, float flAngularLimit, bool bActive );
+private:
+	friend CBaseEntity* CreateKeepUpright( const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity* pOwner, float flAngularLimit, bool bActive );
 
 	Vector						m_worldGoalAxis;
 	Vector						m_localTestAxis;
-	IPhysicsMotionController	*m_pController;
+	IPhysicsMotionController*	m_pController;
 	string_t					m_nameAttach;
 	EHANDLE						m_attachedObject;
 	float						m_angularLimit;
@@ -888,22 +905,22 @@ LINK_ENTITY_TO_CLASS( phys_keepupright, CKeepUpright );
 
 BEGIN_DATADESC( CKeepUpright )
 
-	DEFINE_FIELD( m_worldGoalAxis, FIELD_VECTOR ),
-	DEFINE_FIELD( m_localTestAxis, FIELD_VECTOR ),
-	DEFINE_PHYSPTR( m_pController ),
-	DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
-	DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_angularLimit, FIELD_FLOAT, "angularlimit" ),
-	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bDampAllRotation, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_worldGoalAxis, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_localTestAxis, FIELD_VECTOR ),
+			  DEFINE_PHYSPTR( m_pController ),
+			  DEFINE_KEYFIELD( m_nameAttach, FIELD_STRING, "attach1" ),
+			  DEFINE_FIELD( m_attachedObject, FIELD_EHANDLE ),
+			  DEFINE_KEYFIELD( m_angularLimit, FIELD_FLOAT, "angularlimit" ),
+			  DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bDampAllRotation, FIELD_BOOLEAN ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAngularLimit", InputSetAngularLimit ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAngularLimit", InputSetAngularLimit ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-CKeepUpright::CKeepUpright()
+			  CKeepUpright::CKeepUpright()
 {
 	// by default, recover from up to 15 degrees / sec angular velocity
 	m_angularLimit = 15;
@@ -913,7 +930,7 @@ CKeepUpright::CKeepUpright()
 
 CKeepUpright::~CKeepUpright()
 {
-	if ( m_pController )
+	if( m_pController )
 	{
 		physenv->DestroyMotionController( m_pController );
 		m_pController = NULL;
@@ -929,7 +946,7 @@ void CKeepUpright::Spawn()
 
 	SetMoveType( MOVETYPE_NONE );
 
-	if ( m_spawnflags & SF_KEEPUPRIGHT_START_INACTIVE )
+	if( m_spawnflags & SF_KEEPUPRIGHT_START_INACTIVE )
 	{
 		m_bActive = false;
 	}
@@ -942,23 +959,23 @@ void CKeepUpright::Spawn()
 void CKeepUpright::Activate()
 {
 	BaseClass::Activate();
-	
-	if ( !m_pController )
+
+	if( !m_pController )
 	{
 		// This case occurs when spawning
-		IPhysicsObject *pPhys;
-		if ( m_attachedObject )
+		IPhysicsObject* pPhys;
+		if( m_attachedObject )
 		{
 			pPhys = m_attachedObject->VPhysicsGetObject();
 		}
 		else
 		{
-			pPhys = FindPhysicsObjectByName( STRING(m_nameAttach), this );
+			pPhys = FindPhysicsObjectByName( STRING( m_nameAttach ), this );
 		}
 
-		if ( !pPhys )
+		if( !pPhys )
 		{
-			UTIL_Remove(this);
+			UTIL_Remove( this );
 			return;
 		}
 		// HACKHACK: Due to changes in the vehicle simulator the keepupright controller used in coast_01 is unstable
@@ -966,17 +983,17 @@ void CKeepUpright::Activate()
 		// detect it using the hack of angular limit == 150, attached to a vehicle
 		// Fixing it in the code is the simplest course of action presently
 #ifdef HL2_DLL
-		if ( m_angularLimit == 150.0f )
+		if( m_angularLimit == 150.0f )
 		{
-			CBaseEntity *pEntity = static_cast<CBaseEntity *>(pPhys->GetGameData());
-			if ( pEntity && pEntity->GetServerVehicle() && Q_stristr( gpGlobals->mapname.ToCStr(), "d2_coast_01" ) )
+			CBaseEntity* pEntity = static_cast<CBaseEntity*>( pPhys->GetGameData() );
+			if( pEntity && pEntity->GetServerVehicle() && Q_stristr( gpGlobals->mapname.ToCStr(), "d2_coast_01" ) )
 			{
 				m_bDampAllRotation = true;
 			}
 		}
 #endif
 
-		m_pController = physenv->CreateMotionController( (IMotionEvent *)this );
+		m_pController = physenv->CreateMotionController( ( IMotionEvent* )this );
 		m_pController->AttachObject( pPhys, false );
 	}
 	else
@@ -989,14 +1006,14 @@ void CKeepUpright::Activate()
 //-----------------------------------------------------------------------------
 // Purpose: Use this to spawn a keepupright controller via code instead of map-placed
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateKeepUpright( const Vector &vecOrigin, const QAngle &vecAngles, CBaseEntity *pOwner, float flAngularLimit, bool bActive )
+CBaseEntity* CreateKeepUpright( const Vector& vecOrigin, const QAngle& vecAngles, CBaseEntity* pOwner, float flAngularLimit, bool bActive )
 {
-	CKeepUpright *pKeepUpright = (CKeepUpright*)CBaseEntity::Create( "phys_keepupright", vecOrigin, vecAngles, pOwner );
-	if ( pKeepUpright )
+	CKeepUpright* pKeepUpright = ( CKeepUpright* )CBaseEntity::Create( "phys_keepupright", vecOrigin, vecAngles, pOwner );
+	if( pKeepUpright )
 	{
 		pKeepUpright->m_attachedObject = pOwner;
 		pKeepUpright->m_angularLimit = flAngularLimit;
-		if ( !bActive )
+		if( !bActive )
 		{
 			pKeepUpright->AddSpawnFlags( SF_KEEPUPRIGHT_START_INACTIVE );
 		}
@@ -1007,10 +1024,12 @@ CBaseEntity *CreateKeepUpright( const Vector &vecOrigin, const QAngle &vecAngles
 	return pKeepUpright;
 }
 
-IMotionEvent::simresult_e CKeepUpright::Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular )
+IMotionEvent::simresult_e CKeepUpright::Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular )
 {
-	if ( !m_bActive )
+	if( !m_bActive )
+	{
 		return SIM_NOTHING;
+	}
 
 	linear.Init();
 
@@ -1025,9 +1044,9 @@ IMotionEvent::simresult_e CKeepUpright::Simulate( IPhysicsMotionController *pCon
 	Vector currentLocalTargetAxis;
 	VectorIRotate( m_worldGoalAxis, matrix, currentLocalTargetAxis );
 
-	float invDeltaTime = (1/deltaTime);
+	float invDeltaTime = ( 1 / deltaTime );
 
-	if ( m_bDampAllRotation )
+	if( m_bDampAllRotation )
 	{
 		angular = ComputeRotSpeedToAlignAxes( m_localTestAxis, currentLocalTargetAxis, angVel, 0, invDeltaTime, m_angularLimit );
 		angular -= angVel;
@@ -1053,7 +1072,7 @@ IMotionEvent::simresult_e CKeepUpright::Simulate( IPhysicsMotionController *pCon
 
 
 // computes the torque necessary to align testAxis with alignAxis
-AngularImpulse ComputeRotSpeedToAlignAxes( const Vector &testAxis, const Vector &alignAxis, const AngularImpulse &currentSpeed, float damping, float scale, float maxSpeed )
+AngularImpulse ComputeRotSpeedToAlignAxes( const Vector& testAxis, const Vector& alignAxis, const AngularImpulse& currentSpeed, float damping, float scale, float maxSpeed )
 {
 	Vector rotationAxis = CrossProduct( testAxis, alignAxis );
 
@@ -1062,13 +1081,13 @@ AngularImpulse ComputeRotSpeedToAlignAxes( const Vector &testAxis, const Vector 
 	float sine = VectorNormalize( rotationAxis );
 	float angle = atan2( sine, cosine );
 
-	angle = RAD2DEG(angle);
+	angle = RAD2DEG( angle );
 	AngularImpulse angular = rotationAxis * scale * angle;
 	angular -= rotationAxis * damping * DotProduct( currentSpeed, rotationAxis );
 
 	float len = VectorNormalize( angular );
 
-	if ( len > maxSpeed )
+	if( len > maxSpeed )
 	{
 		len = maxSpeed;
 	}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NETWORKSTRINGTABLE_GAMEDLL_H
 #define NETWORKSTRINGTABLE_GAMEDLL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "networkstringtabledefs.h"
@@ -32,10 +32,10 @@ class CStringTableSaveRestoreOps;
 #define MAX_PARTICLESYSTEMS_STRINGS			( 1 << MAX_PARTICLESYSTEMS_STRING_BITS )
 #define PARTICLESYSTEMS_INVALID_STRING	( MAX_PARTICLESYSTEMS_STRINGS - 1 )
 
-extern INetworkStringTableContainer *networkstringtable;
-extern INetworkStringTable *g_pStringTableVguiScreen;
-extern INetworkStringTable *g_pStringTableEffectDispatch;
-extern INetworkStringTable *g_pStringTableClientSideChoreoScenes;
+extern INetworkStringTableContainer* networkstringtable;
+extern INetworkStringTable* g_pStringTableVguiScreen;
+extern INetworkStringTable* g_pStringTableEffectDispatch;
+extern INetworkStringTable* g_pStringTableClientSideChoreoScenes;
 
 #define MAX_INFOPANEL_STRINGS			128
 

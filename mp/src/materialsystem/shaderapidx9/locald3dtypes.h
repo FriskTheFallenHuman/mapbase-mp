@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define LOCALD3DTYPES_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if defined( DX10 ) && !defined( DX_TO_GL_ABSTRACTION )
@@ -19,16 +19,16 @@
 
 struct IDirect3D10BaseTexture
 {
-	ID3D10Resource			 *m_pBaseTexture;
-	ID3D10ShaderResourceView *m_pSRView;
-	ID3D10RenderTargetView	 *m_pRTView;
+	ID3D10Resource*		 	m_pBaseTexture;
+	ID3D10ShaderResourceView* m_pSRView;
+	ID3D10RenderTargetView* 	m_pRTView;
 };
 
 class CDx10Types
 {
 public:
 	typedef struct IDirect3D10BaseTexture	IDirect3DTexture;
-	// FIXME: What is this called now ? 
+	// FIXME: What is this called now ?
 	// typedef ID3D10TextureCube			IDirect3DCubeTexture;
 	typedef ID3D10Texture3D					IDirect3DVolumeTexture;
 	typedef ID3D10Device					IDirect3DDevice;
@@ -41,18 +41,18 @@ public:
 	typedef ID3DX10Font						ID3DXFont;
 	typedef ID3D10Query						ID3DQuery;
 
-	typedef ID3D10Device					*LPDIRECT3DDEVICE;
-	typedef ID3D10Buffer					*LPDIRECT3DINDEXBUFFER;
-	typedef ID3D10Buffer					*LPDIRECT3DVERTEXBUFFER;
+	typedef ID3D10Device*					LPDIRECT3DDEVICE;
+	typedef ID3D10Buffer*					LPDIRECT3DINDEXBUFFER;
+	typedef ID3D10Buffer*					LPDIRECT3DVERTEXBUFFER;
 };
 
 #endif // defined( DX10 ) && !defined( DX_TO_GL_ABSTRACTION )
 
 
 #if !defined( _X360 ) && !defined( DX_TO_GL_ABSTRACTION )
-#ifdef _DEBUG
-#define D3D_DEBUG_INFO 1
-#endif
+	#ifdef _DEBUG
+		#define D3D_DEBUG_INFO 1
+	#endif
 #endif
 
 struct IDirect3DTexture9;
@@ -84,9 +84,9 @@ typedef D3DCAPS9						D3DCAPS;
 typedef IDirect3DIndexBuffer9			IDirect3DIndexBuffer;
 typedef IDirect3DVertexBuffer9			IDirect3DVertexBuffer;
 typedef IDirect3DPixelShader9			IDirect3DPixelShader;
-typedef IDirect3DDevice					*LPDIRECT3DDEVICE;
-typedef IDirect3DIndexBuffer			*LPDIRECT3DINDEXBUFFER;
-typedef IDirect3DVertexBuffer			*LPDIRECT3DVERTEXBUFFER;
+typedef IDirect3DDevice*					LPDIRECT3DDEVICE;
+typedef IDirect3DIndexBuffer*			LPDIRECT3DINDEXBUFFER;
+typedef IDirect3DVertexBuffer*			LPDIRECT3DVERTEXBUFFER;
 
 class CDx9Types
 {
@@ -103,18 +103,18 @@ public:
 	typedef IDirect3DIndexBuffer9			IDirect3DIndexBuffer;
 	typedef IDirect3DVertexBuffer9			IDirect3DVertexBuffer;
 	typedef IDirect3DPixelShader9			IDirect3DPixelShader;
-	typedef IDirect3DDevice					*LPDIRECT3DDEVICE;
-	typedef IDirect3DIndexBuffer			*LPDIRECT3DINDEXBUFFER;
-	typedef IDirect3DVertexBuffer			*LPDIRECT3DVERTEXBUFFER;
+	typedef IDirect3DDevice*					LPDIRECT3DDEVICE;
+	typedef IDirect3DIndexBuffer*			LPDIRECT3DINDEXBUFFER;
+	typedef IDirect3DVertexBuffer*			LPDIRECT3DVERTEXBUFFER;
 };
 
-typedef void *HardwareShader_t;
+typedef void* HardwareShader_t;
 
 //-----------------------------------------------------------------------------
 // The vertex and pixel shader type
 //-----------------------------------------------------------------------------
 typedef int VertexShader_t;
-typedef int PixelShader_t;	
+typedef int PixelShader_t;
 
 //-----------------------------------------------------------------------------
 // Bitpattern for an invalid shader
@@ -153,7 +153,7 @@ typedef int PixelShader_t;
 #define D3DRS_NORMALIZENORMALS					D3DRS_NOTSUPPORTED
 #define D3DRS_SPECULARMATERIALSOURCE			D3DRS_NOTSUPPORTED
 #define D3DRS_AMBIENTMATERIALSOURCE				D3DRS_NOTSUPPORTED
-#define D3DRS_EMISSIVEMATERIALSOURCE			D3DRS_NOTSUPPORTED	
+#define D3DRS_EMISSIVEMATERIALSOURCE			D3DRS_NOTSUPPORTED
 #define D3DRS_VERTEXBLEND						D3DRS_NOTSUPPORTED
 #define D3DRS_POINTSCALEENABLE					D3DRS_NOTSUPPORTED
 #define D3DRS_POINTSCALE_A						D3DRS_NOTSUPPORTED

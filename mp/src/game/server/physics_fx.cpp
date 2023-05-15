@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,16 +12,16 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static int BestAxisMatchingNormal( matrix3x4_t &matrix, const Vector &normal )
+static int BestAxisMatchingNormal( matrix3x4_t& matrix, const Vector& normal )
 {
 	float bestDot = -1;
 	int best = 0;
-	for ( int i = 0; i < 3; i++ )
+	for( int i = 0; i < 3; i++ )
 	{
 		Vector tmp;
 		MatrixGetColumn( matrix, i, tmp );
-		float dot = fabs(DotProduct( tmp, normal ));
-		if ( dot > bestDot )
+		float dot = fabs( DotProduct( tmp, normal ) );
+		if( dot > bestDot )
 		{
 			bestDot = dot;
 			best = i;
@@ -31,19 +31,19 @@ static int BestAxisMatchingNormal( matrix3x4_t &matrix, const Vector &normal )
 	return best;
 }
 
-void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CBaseEntity *pEntity )
+void PhysicsSplash( IPhysicsFluidController* pFluid, IPhysicsObject* pObject, CBaseEntity* pEntity )
 {
 	Vector normal;
 	float dist;
 	pFluid->GetSurfacePlane( &normal, &dist );
 
-	matrix3x4_t &matrix = pEntity->EntityToWorldTransform();
-	
+	matrix3x4_t& matrix = pEntity->EntityToWorldTransform();
+
 	// Find the local axis that best matches the water surface normal
 	int bestAxis = BestAxisMatchingNormal( matrix, normal );
 
 	Vector tangent, binormal;
-	MatrixGetColumn( matrix, (bestAxis+1)%3, tangent );
+	MatrixGetColumn( matrix, ( bestAxis + 1 ) % 3, tangent );
 	binormal = CrossProduct( normal, tangent );
 	VectorNormalize( binormal );
 	tangent = CrossProduct( binormal, normal );
@@ -51,7 +51,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 
 	// Now we have a basis tangent to the surface that matches the object's local orientation as well as possible
 	// compute an OBB using this basis
-	
+
 	// Get object extents in basis
 	Vector tanPts[2], binPts[2];
 	tanPts[0] = physcollision->CollideGetExtent( pObject->GetCollide(), pEntity->GetAbsOrigin(), pEntity->GetAbsAngles(), -tangent );
@@ -67,8 +67,8 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	mins[1] = DotProduct( binPts[0], binormal );
 	maxs[1] = DotProduct( binPts[1], binormal );
 
-	center[0] = 0.5 * (mins[0] + maxs[0]);
-	center[1] = 0.5 * (mins[1] + maxs[1]);
+	center[0] = 0.5 * ( mins[0] + maxs[0] );
+	center[1] = 0.5 * ( mins[1] + maxs[1] );
 
 	extents[0] = maxs[0] - center[0];
 	extents[1] = maxs[1] - center[1];
@@ -76,8 +76,8 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	Vector centerPoint = center[0] * tangent + center[1] * binormal + dist * normal;
 
 	Vector axes[2];
-	axes[0] = (maxs[0] - center[0]) * tangent;
-	axes[1] = (maxs[1] - center[1]) * binormal;
+	axes[0] = ( maxs[0] - center[0] ) * tangent;
+	axes[1] = ( maxs[1] - center[1] ) * binormal;
 
 	// visualize OBB hit
 	/*
@@ -100,7 +100,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 
 	CEffectData	data;
 
-	if ( pObject->GetGameFlags() & FVPHYSICS_PART_OF_RAGDOLL )
+	if( pObject->GetGameFlags() & FVPHYSICS_PART_OF_RAGDOLL )
 	{
 		/*
 		data.m_vOrigin = centerPoint;
@@ -109,7 +109,7 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 		data.m_flScale = random->RandomFloat( 8, 10 );
 
 		DispatchEffect( "watersplash", data );
-		
+
 		int		splashes = 4;
 		Vector	point;
 
@@ -138,22 +138,26 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	float rawSpeed = -DotProduct( normal, vel );
 
 	// proportional to cross-sectional area times velocity squared (fluid pressure)
-	float speed = rawSpeed * rawSpeed * extents[0] * extents[1] * (1.0f / 2500000.0f) * pObject->GetMass() * (0.01f);
+	float speed = rawSpeed * rawSpeed * extents[0] * extents[1] * ( 1.0f / 2500000.0f ) * pObject->GetMass() * ( 0.01f );
 
 	speed = clamp( speed, 0.f, 50.f );
 
 	bool bRippleOnly = false;
 
 	// allow the entity to perform a custom splash effect
-	if ( pEntity->PhysicsSplash( centerPoint, normal, rawSpeed, speed ) )
+	if( pEntity->PhysicsSplash( centerPoint, normal, rawSpeed, speed ) )
+	{
 		return;
+	}
 
 	//Deny really weak hits
 	//FIXME: We still need to ripple the surface in this case
-	if ( speed <= 0.35f )
+	if( speed <= 0.35f )
 	{
-		if ( speed <= 0.1f )
+		if( speed <= 0.1f )
+		{
 			return;
+		}
 
 		bRippleOnly = true;
 	}
@@ -173,12 +177,12 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 	data.m_vNormal = normal;
 	VectorAngles( normal, data.m_vAngles );
 	data.m_flScale = size + random->RandomFloat( 0, 2 );
-	if ( pEntity->GetWaterType() & CONTENTS_SLIME )
+	if( pEntity->GetWaterType() & CONTENTS_SLIME )
 	{
 		data.m_fFlags |= FX_WATER_IN_SLIME;
 	}
 
-	if ( bRippleOnly )
+	if( bRippleOnly )
 	{
 		DispatchEffect( "waterripple", data );
 	}
@@ -187,11 +191,11 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 		DispatchEffect( "watersplash", data );
 	}
 
-	if ( radius > 500.0f )
+	if( radius > 500.0f )
 	{
 		int splashes = random->RandomInt( 1, 4 );
 
-		for ( int i = 0; i < splashes; i++ )
+		for( int i = 0; i < splashes; i++ )
 		{
 			point = RandomVector( -4.0f, 4.0f );
 			point[2] = 0.0f;
@@ -203,12 +207,12 @@ void PhysicsSplash( IPhysicsFluidController *pFluid, IPhysicsObject *pObject, CB
 			data.m_vNormal = normal;
 			VectorAngles( normal, data.m_vAngles );
 			data.m_flScale = size + random->RandomFloat( -3, 1 );
- 			if ( pEntity->GetWaterType() & CONTENTS_SLIME )
+			if( pEntity->GetWaterType() & CONTENTS_SLIME )
 			{
 				data.m_fFlags |= FX_WATER_IN_SLIME;
 			}
 
-			if ( bRippleOnly )
+			if( bRippleOnly )
 			{
 				DispatchEffect( "waterripple", data );
 			}

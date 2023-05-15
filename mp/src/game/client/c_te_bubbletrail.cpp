@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -23,7 +23,7 @@ public:
 	DECLARE_CLASS( C_TEBubbleTrail, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEBubbleTrail( void );
+	C_TEBubbleTrail( void );
 	virtual			~C_TEBubbleTrail( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -38,7 +38,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEBubbleTrail::C_TEBubbleTrail( void )
 {
@@ -51,21 +51,21 @@ C_TEBubbleTrail::C_TEBubbleTrail( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEBubbleTrail::~C_TEBubbleTrail( void )
 {
 }
 
 void TE_BubbleTrail( IRecipientFilter& filter, float delay,
-	const Vector* mins, const Vector* maxs, float flWaterZ, int modelindex, int count, float speed )
+					 const Vector* mins, const Vector* maxs, float flWaterZ, int modelindex, int count, float speed )
 {
 	tempents->BubbleTrail( *mins, *maxs, flWaterZ, modelindex, count, speed );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEBubbleTrail::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -74,11 +74,11 @@ void C_TEBubbleTrail::PostDataUpdate( DataUpdateType_t updateType )
 	tempents->BubbleTrail( m_vecMins, m_vecMaxs, m_flWaterZ, m_nModelIndex, m_nCount, m_fSpeed );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBubbleTrail, DT_TEBubbleTrail, CTEBubbleTrail)
-	RecvPropVector( RECVINFO(m_vecMins)),
-	RecvPropVector( RECVINFO(m_vecMaxs)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_flWaterZ )),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropFloat( RECVINFO(m_fSpeed )),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEBubbleTrail, DT_TEBubbleTrail, CTEBubbleTrail )
+RecvPropVector( RECVINFO( m_vecMins ) ),
+				RecvPropVector( RECVINFO( m_vecMaxs ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropFloat( RECVINFO( m_flWaterZ ) ),
+				RecvPropInt( RECVINFO( m_nCount ) ),
+				RecvPropFloat( RECVINFO( m_fSpeed ) ),
+				END_RECV_TABLE()

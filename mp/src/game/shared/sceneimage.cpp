@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -26,11 +26,11 @@
 class CSceneImage : public ISceneImage
 {
 public:
-	virtual bool CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pchModPath, bool bLittleEndian, bool bQuiet, ISceneCompileStatus *Status );
+	virtual bool CreateSceneImageFile( CUtlBuffer& targetBuffer, char const* pchModPath, bool bLittleEndian, bool bQuiet, ISceneCompileStatus* Status );
 };
 
 static CSceneImage g_SceneImage;
-ISceneImage *g_pSceneImage = &g_SceneImage;
+ISceneImage* g_pSceneImage = &g_SceneImage;
 
 struct SceneFile_t
 {
@@ -53,7 +53,7 @@ CUtlVector< SceneFile_t > g_SceneFiles;
 class CSceneTokenProcessor : public ISceneTokenProcessor
 {
 public:
-	const char *CurrentToken( void )
+	const char* CurrentToken( void )
 	{
 		return token;
 	}
@@ -68,12 +68,12 @@ public:
 		return ::TokenAvailable() ? true : false;
 	}
 
-	void Error( const char *fmt, ... )
+	void Error( const char* fmt, ... )
 	{
 		char string[2048];
 		va_list argptr;
 		va_start( argptr, fmt );
-		Q_vsnprintf( string, sizeof(string), fmt, argptr );
+		Q_vsnprintf( string, sizeof( string ), fmt, argptr );
 		va_end( argptr );
 
 		Warning( "%s", string );
@@ -81,7 +81,7 @@ public:
 	}
 };
 static CSceneTokenProcessor g_SceneTokenProcessor;
-ISceneTokenProcessor *tokenprocessor = &g_SceneTokenProcessor;
+ISceneTokenProcessor* tokenprocessor = &g_SceneTokenProcessor;
 
 // a simple case insensitive string pool
 // the final pool contains all the unique strings seperated by a null
@@ -94,16 +94,16 @@ public:
 	}
 
 	// Returns a valid id into the string table
-	virtual short FindOrAddString( const char *pString )
+	virtual short FindOrAddString( const char* pString )
 	{
 		int stringId = m_StringMap.Find( pString );
-		if ( stringId != m_StringMap.InvalidIndex() )
+		if( stringId != m_StringMap.InvalidIndex() )
 		{
 			// found in pool
 			return stringId;
 		}
 
-		int &nOffset = m_StringMap[pString];
+		int& nOffset = m_StringMap[pString];
 		nOffset = m_nOffset;
 		// advance by string and null
 		m_nOffset += strlen( pString ) + 1;
@@ -114,9 +114,9 @@ public:
 		return stringId;
 	}
 
-	virtual bool GetString( short stringId, char *buff, int buffSize )
+	virtual bool GetString( short stringId, char* buff, int buffSize )
 	{
-		if ( stringId < 0 || stringId >= m_StringMap.GetNumStrings() )
+		if( stringId < 0 || stringId >= m_StringMap.GetNumStrings() )
 		{
 			V_strncpy( buff, "", buffSize );
 			return false;
@@ -136,7 +136,7 @@ public:
 	}
 
 	// build the final pool
-	void GetTableAndPool( CUtlVector< unsigned int > &offsets, CUtlBuffer &buffer )
+	void GetTableAndPool( CUtlVector< unsigned int >& offsets, CUtlBuffer& buffer )
 	{
 		offsets.Purge();
 		buffer.Purge();
@@ -145,19 +145,19 @@ public:
 		buffer.EnsureCapacity( m_nOffset );
 
 		unsigned int currentOffset = 0;
-		for ( int i = 0; i < m_StringMap.GetNumStrings(); i++ )
+		for( int i = 0; i < m_StringMap.GetNumStrings(); i++ )
 		{
 			offsets.AddToTail( currentOffset );
 
-			const char *pString = m_StringMap.String( i );
-			buffer.Put( pString, strlen( pString ) + 1 ); 
+			const char* pString = m_StringMap.String( i );
+			buffer.Put( pString, strlen( pString ) + 1 );
 
 			currentOffset += strlen( pString ) + 1;
 		}
 		Assert( currentOffset == m_nOffset );
 
 		// align string pool to end on dword boundary
-		while ( buffer.TellMaxPut() & 0x03 )
+		while( buffer.TellMaxPut() & 0x03 )
 		{
 			buffer.PutChar( '\0' );
 			m_nOffset++;
@@ -166,9 +166,9 @@ public:
 
 	void DumpPool()
 	{
-		for ( int i = 0; i < m_StringMap.GetNumStrings(); i++ )
+		for( int i = 0; i < m_StringMap.GetNumStrings(); i++ )
 		{
-			const char *pString = m_StringMap.String( i );
+			const char* pString = m_StringMap.String( i );
 			Msg( "%s\n", pString );
 		}
 	}
@@ -188,24 +188,26 @@ CChoreoStringPool g_ChoreoStringPool;
 //-----------------------------------------------------------------------------
 // Helper for crawling events to determine sounds
 //-----------------------------------------------------------------------------
-void FindSoundsInEvent( CChoreoEvent *pEvent, CUtlVector< short >& soundList )
+void FindSoundsInEvent( CChoreoEvent* pEvent, CUtlVector< short >& soundList )
 {
-	if ( !pEvent || pEvent->GetType() != CChoreoEvent::SPEAK )
+	if( !pEvent || pEvent->GetType() != CChoreoEvent::SPEAK )
+	{
 		return;
+	}
 
 	unsigned short stringId = g_ChoreoStringPool.FindOrAddString( pEvent->GetParameters() );
-	if ( soundList.Find( stringId ) == soundList.InvalidIndex() )
+	if( soundList.Find( stringId ) == soundList.InvalidIndex() )
 	{
 		soundList.AddToTail( stringId );
 	}
 
-	if ( pEvent->GetCloseCaptionType() == CChoreoEvent::CC_MASTER )
+	if( pEvent->GetCloseCaptionType() == CChoreoEvent::CC_MASTER )
 	{
 		char tok[ CChoreoEvent::MAX_CCTOKEN_STRING ];
-		if ( pEvent->GetPlaybackCloseCaptionToken( tok, sizeof( tok ) ) )
+		if( pEvent->GetPlaybackCloseCaptionToken( tok, sizeof( tok ) ) )
 		{
 			stringId = g_ChoreoStringPool.FindOrAddString( tok );
-			if ( soundList.Find( stringId ) == soundList.InvalidIndex() )
+			if( soundList.Find( stringId ) == soundList.InvalidIndex() )
 			{
 				soundList.AddToTail( stringId );
 			}
@@ -217,10 +219,10 @@ void FindSoundsInEvent( CChoreoEvent *pEvent, CUtlVector< short >& soundList )
 // Create binary compiled version of VCD. Stores to a dictionary for later
 // post processing
 //-----------------------------------------------------------------------------
-bool CreateTargetFile_VCD( const char *pSourceName, const char *pTargetName, bool bWriteToZip, bool bLittleEndian )
+bool CreateTargetFile_VCD( const char* pSourceName, const char* pTargetName, bool bWriteToZip, bool bLittleEndian )
 {
 	CUtlBuffer sourceBuf;
-	if ( !scriptlib->ReadFileToBuffer( pSourceName, sourceBuf ) )
+	if( !scriptlib->ReadFileToBuffer( pSourceName, sourceBuf ) )
 	{
 		return false;
 	}
@@ -230,10 +232,10 @@ bool CreateTargetFile_VCD( const char *pSourceName, const char *pTargetName, boo
 	CRC32_ProcessBuffer( &crcSource, sourceBuf.Base(), sourceBuf.TellMaxPut() );
 	CRC32_Final( &crcSource );
 
-	ParseFromMemory( (char *)sourceBuf.Base(), sourceBuf.TellMaxPut() );
+	ParseFromMemory( ( char* )sourceBuf.Base(), sourceBuf.TellMaxPut() );
 
-	CChoreoScene *pChoreoScene = ChoreoLoadScene( pSourceName, NULL, &g_SceneTokenProcessor, Msg );
-	if ( !pChoreoScene )
+	CChoreoScene* pChoreoScene = ChoreoLoadScene( pSourceName, NULL, &g_SceneTokenProcessor, Msg );
+	if( !pChoreoScene )
 	{
 		return false;
 	}
@@ -243,23 +245,23 @@ bool CreateTargetFile_VCD( const char *pSourceName, const char *pTargetName, boo
 	g_SceneFiles[iScene].fileName.Set( pSourceName );
 
 	// Walk all events looking for SPEAK events
-	CChoreoEvent *pEvent;
-	for ( int i = 0; i < pChoreoScene->GetNumEvents(); ++i )
+	CChoreoEvent* pEvent;
+	for( int i = 0; i < pChoreoScene->GetNumEvents(); ++i )
 	{
 		pEvent = pChoreoScene->GetEvent( i );
 		FindSoundsInEvent( pEvent, g_SceneFiles[iScene].soundList );
 	}
 
 	// calc duration
-	g_SceneFiles[iScene].msecs = (unsigned int)( pChoreoScene->FindStopTime() * 1000.0f + 0.5f );
+	g_SceneFiles[iScene].msecs = ( unsigned int )( pChoreoScene->FindStopTime() * 1000.0f + 0.5f );
 
 	// compile to binary buffer
 	g_SceneFiles[iScene].compiledBuffer.SetBigEndian( !bLittleEndian );
 	pChoreoScene->SaveToBinaryBuffer( g_SceneFiles[iScene].compiledBuffer, crcSource, &g_ChoreoStringPool );
 
 	unsigned int compressedSize;
-	unsigned char *pCompressedBuffer = LZMA_Compress( (unsigned char *)g_SceneFiles[iScene].compiledBuffer.Base(), g_SceneFiles[iScene].compiledBuffer.TellMaxPut(), &compressedSize );
-	if ( pCompressedBuffer )
+	unsigned char* pCompressedBuffer = LZMA_Compress( ( unsigned char* )g_SceneFiles[iScene].compiledBuffer.Base(), g_SceneFiles[iScene].compiledBuffer.TellMaxPut(), &compressedSize );
+	if( pCompressedBuffer )
 	{
 		// replace the compiled buffer with the compressed version
 		g_SceneFiles[iScene].compiledBuffer.Purge();
@@ -276,7 +278,7 @@ bool CreateTargetFile_VCD( const char *pSourceName, const char *pTargetName, boo
 class CSceneImageEntryLessFunc
 {
 public:
-	bool Less( const SceneImageEntry_t &entryLHS, const SceneImageEntry_t &entryRHS, void *pCtx )
+	bool Less( const SceneImageEntry_t& entryLHS, const SceneImageEntry_t& entryRHS, void* pCtx )
 	{
 		return entryLHS.crcFilename < entryRHS.crcFilename;
 	}
@@ -287,7 +289,7 @@ public:
 //-----------------------------------------------------------------------------
 // A Scene image file contains all the compiled .XCD
 //-----------------------------------------------------------------------------
-bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pchModPath, bool bLittleEndian, bool bQuiet, ISceneCompileStatus *pStatus )
+bool CSceneImage::CreateSceneImageFile( CUtlBuffer& targetBuffer, char const* pchModPath, bool bLittleEndian, bool bQuiet, ISceneCompileStatus* pStatus )
 {
 	CUtlVector<fileList_t>	vcdFileList;
 	CUtlSymbolTable			vcdSymbolTable( 0, 32, true );
@@ -297,8 +299,8 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	// get all the VCD files according to the seacrh paths
 	char searchPaths[512];
 	g_pFullFileSystem->GetSearchPath( "GAME", false, searchPaths, sizeof( searchPaths ) );
-	char *pPath = strtok( searchPaths, ";" );
-	while ( pPath )
+	char* pPath = strtok( searchPaths, ";" );
+	while( pPath )
 	{
 		int currentCount = vcdFileList.Count();
 
@@ -312,7 +314,7 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 		pPath = strtok( NULL, ";" );
 	}
 
-	if ( !vcdFileList.Count() )
+	if( !vcdFileList.Count() )
 	{
 		Msg( "Scenes: No Scene Files found!\n" );
 		return false;
@@ -320,16 +322,16 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 
 	// iterate and convert all the VCD files
 	bool bGameIsTF = V_stristr( pchModPath, "\\tf" ) != NULL;
-	for ( int i=0; i<vcdFileList.Count(); i++ )
+	for( int i = 0; i < vcdFileList.Count(); i++ )
 	{
-		const char *pFilename = vcdFileList[i].fileName.String();
-		const char *pSceneName = V_stristr( pFilename, "scenes\\" );
-		if ( !pSceneName )
+		const char* pFilename = vcdFileList[i].fileName.String();
+		const char* pSceneName = V_stristr( pFilename, "scenes\\" );
+		if( !pSceneName )
 		{
 			continue;
 		}
 
-		if ( !bLittleEndian && bGameIsTF && V_stristr( pSceneName, "high\\" ) )
+		if( !bLittleEndian && bGameIsTF && V_stristr( pSceneName, "high\\" ) )
 		{
 			continue;
 		}
@@ -337,13 +339,13 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 		// process files in order they would be found in search paths
 		// i.e. skipping later processed files that match an earlier conversion
 		UtlSymId_t symbol = vcdSymbolTable.Find( pSceneName );
-		if ( symbol == UTL_INVAL_SYMBOL )
+		if( symbol == UTL_INVAL_SYMBOL )
 		{
 			vcdSymbolTable.AddString( pSceneName );
 
 			pStatus->UpdateStatus( pFilename, bQuiet, i, vcdFileList.Count() );
 
-			if ( !CreateTargetFile_VCD( pFilename, "", false, bLittleEndian ) )
+			if( !CreateTargetFile_VCD( pFilename, "", false, bLittleEndian ) )
 			{
 				Error( "CreateSceneImageFile: Failed on '%s' conversion!\n", pFilename );
 			}
@@ -352,7 +354,7 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 		}
 	}
 
-	if ( !g_SceneFiles.Count() )
+	if( !g_SceneFiles.Count() )
 	{
 		// nothing to do
 		return true;
@@ -366,9 +368,9 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	CUtlBuffer stringPool;
 	g_ChoreoStringPool.GetTableAndPool( stringOffsets, stringPool );
 
-	if ( !bQuiet )
+	if( !bQuiet )
 	{
-		Msg( "Scenes: String Table: %llu bytes\n", (uint64)(stringOffsets.Count() * sizeof( int )) );
+		Msg( "Scenes: String Table: %llu bytes\n", ( uint64 )( stringOffsets.Count() * sizeof( int ) ) );
 		Msg( "Scenes: String Pool: %d bytes\n", stringPool.TellMaxPut() );
 	}
 
@@ -388,7 +390,7 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	imageHeader.nNumScenes = g_SceneFiles.Count();
 	imageHeader.nNumStrings = stringOffsets.Count();
 	imageHeader.nSceneEntryOffset = sceneEntryStart;
-	if ( !bLittleEndian )
+	if( !bLittleEndian )
 	{
 		imageHeader.nId = BigLong( imageHeader.nId );
 		imageHeader.nVersion = BigLong( imageHeader.nVersion );
@@ -399,10 +401,10 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	targetBuffer.Put( &imageHeader, sizeof( imageHeader ) );
 
 	// header is immediately followed by string table and pool
-	for ( int i = 0; i < stringOffsets.Count(); i++ )
+	for( int i = 0; i < stringOffsets.Count(); i++ )
 	{
 		unsigned int offset = stringPoolStart + stringOffsets[i];
-		if ( !bLittleEndian )
+		if( !bLittleEndian )
 		{
 			offset = BigLong( offset );
 		}
@@ -417,7 +419,7 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 
 	// build directory
 	// directory is linear sorted by filename checksum for later binary search
-	for ( int i = 0; i < g_SceneFiles.Count(); i++ )
+	for( int i = 0; i < g_SceneFiles.Count(); i++ )
 	{
 		SceneImageEntry_t imageEntry = { 0 };
 
@@ -427,8 +429,8 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 		V_strncpy( szCleanName, g_SceneFiles[i].fileName.String(), sizeof( szCleanName ) );
 		V_strlower( szCleanName );
 		V_FixSlashes( szCleanName );
-		char *pName = V_stristr( szCleanName, "scenes\\" );
-		if ( !pName )
+		char* pName = V_stristr( szCleanName, "scenes\\" );
+		if( !pName )
 		{
 			// must have scenes\ in filename
 			Error( "CreateSceneImageFile: Unexpected lack of scenes prefix on %s\n", g_SceneFiles[i].fileName.String() );
@@ -439,11 +441,11 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 
 		// temp store an index to its file, fixup later, necessary to access post sort
 		imageEntry.nDataOffset = i;
-		if ( imageDirectory.Find( imageEntry ) != imageDirectory.InvalidIndex() )
+		if( imageDirectory.Find( imageEntry ) != imageDirectory.InvalidIndex() )
 		{
 			// filename checksums must be unique or runtime binary search would be bogus
 			Error( "CreateSceneImageFile: Unexpected filename checksum collision!\n" );
-		}		
+		}
 
 		imageDirectory.Insert( imageEntry );
 	}
@@ -452,7 +454,7 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	CUtlVector< int > writeOrder;
 	writeOrder.EnsureCapacity( g_SceneFiles.Count() );
 	sceneDataStart = sceneSummaryStart;
-	for ( int i = 0; i < imageDirectory.Count(); i++ )
+	for( int i = 0; i < imageDirectory.Count(); i++ )
 	{
 		// reclaim offset, indicates write order of scene file
 		int iScene = imageDirectory[i].nDataOffset;
@@ -467,14 +469,14 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 	Assert( sceneEntryStart == targetBuffer.TellMaxPut() );
 	int nSummaryOffset = sceneSummaryStart;
 	int nDataOffset = sceneDataStart;
-	for ( int i = 0; i < imageDirectory.Count(); i++ )
+	for( int i = 0; i < imageDirectory.Count(); i++ )
 	{
 		int iScene = writeOrder[i];
 
 		imageDirectory[i].nDataOffset = nDataOffset;
 		imageDirectory[i].nDataLength = g_SceneFiles[iScene].compiledBuffer.TellMaxPut();
 		imageDirectory[i].nSceneSummaryOffset = nSummaryOffset;
-		if ( !bLittleEndian )
+		if( !bLittleEndian )
 		{
 			imageDirectory[i].crcFilename = BigLong( imageDirectory[i].crcFilename );
 			imageDirectory[i].nDataOffset = BigLong( imageDirectory[i].nDataOffset );
@@ -484,29 +486,29 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 		targetBuffer.Put( &imageDirectory[i], sizeof( SceneImageEntry_t ) );
 
 		int numSounds = g_SceneFiles[iScene].soundList.Count();
-		nSummaryOffset += sizeof( SceneImageSummary_t ) + (numSounds - 1) * sizeof( int );
+		nSummaryOffset += sizeof( SceneImageSummary_t ) + ( numSounds - 1 ) * sizeof( int );
 
 		nDataOffset += g_SceneFiles[iScene].compiledBuffer.TellMaxPut();
 	}
 
 	// finalize and write summaries
 	Assert( sceneSummaryStart == targetBuffer.TellMaxPut() );
-	for ( int i = 0; i < imageDirectory.Count(); i++ )
+	for( int i = 0; i < imageDirectory.Count(); i++ )
 	{
 		int iScene = writeOrder[i];
 		int msecs = g_SceneFiles[iScene].msecs;
 		int soundCount = g_SceneFiles[iScene].soundList.Count();
-		if ( !bLittleEndian )
+		if( !bLittleEndian )
 		{
 			msecs = BigLong( msecs );
 			soundCount = BigLong( soundCount );
 		}
 		targetBuffer.PutInt( msecs );
 		targetBuffer.PutInt( soundCount );
-		for ( int j = 0; j < g_SceneFiles[iScene].soundList.Count(); j++ )
+		for( int j = 0; j < g_SceneFiles[iScene].soundList.Count(); j++ )
 		{
 			int soundId = g_SceneFiles[iScene].soundList[j];
-			if ( !bLittleEndian )
+			if( !bLittleEndian )
 			{
 				soundId = BigLong( soundId );
 			}
@@ -516,15 +518,15 @@ bool CSceneImage::CreateSceneImageFile( CUtlBuffer &targetBuffer, char const *pc
 
 	// finalize and write data
 	Assert( sceneDataStart == targetBuffer.TellMaxPut() );
-	for ( int i = 0; i < imageDirectory.Count(); i++ )
-	{	
+	for( int i = 0; i < imageDirectory.Count(); i++ )
+	{
 		int iScene = writeOrder[i];
 		targetBuffer.Put( g_SceneFiles[iScene].compiledBuffer.Base(), g_SceneFiles[iScene].compiledBuffer.TellMaxPut() );
 	}
 
-	if ( !bQuiet )
+	if( !bQuiet )
 	{
-		Msg( "Scenes: Final size: %.2f MB\n", targetBuffer.TellMaxPut() / (1024.0f * 1024.0f ) );
+		Msg( "Scenes: Final size: %.2f MB\n", targetBuffer.TellMaxPut() / ( 1024.0f * 1024.0f ) );
 	}
 
 	// cleanup

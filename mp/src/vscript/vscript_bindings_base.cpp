@@ -1,7 +1,7 @@
 //========= Mapbase - https://github.com/mapbase-source/source-sdk-2013 ============//
 //
 // Purpose: VScript functions, constants, etc. registered within the library itself.
-// 
+//
 //			This is for things which don't have to depend on server/client and can be accessed
 //			from anywhere.
 //
@@ -26,27 +26,27 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IScriptManager *scriptmanager;
+extern IScriptManager* scriptmanager;
 
 //=============================================================================
 //
 // Prints
-// 
+//
 //=============================================================================
-static void ScriptMsg( const char *msg )
+static void ScriptMsg( const char* msg )
 {
 	Msg( "%s", msg );
 }
 
-static void ScriptColorPrint( int r, int g, int b, const char *pszMsg )
+static void ScriptColorPrint( int r, int g, int b, const char* pszMsg )
 {
-	const Color clr(r, g, b, 255);
+	const Color clr( r, g, b, 255 );
 	ConColorMsg( clr, "%s", pszMsg );
 }
 
-static void ScriptColorPrintL( int r, int g, int b, const char *pszMsg )
+static void ScriptColorPrintL( int r, int g, int b, const char* pszMsg )
 {
-	const Color clr(r, g, b, 255);
+	const Color clr( r, g, b, 255 );
 	ConColorMsg( clr, "%s\n", pszMsg );
 }
 
@@ -54,7 +54,7 @@ static void ScriptColorPrintL( int r, int g, int b, const char *pszMsg )
 //=============================================================================
 //
 // Command Line
-// 
+//
 //=============================================================================
 class CGlobalSys
 {
@@ -64,80 +64,82 @@ public:
 		return CommandLine()->GetCmdLine();
 	}
 
-	bool CommandLineCheck(const char* name)
+	bool CommandLineCheck( const char* name )
 	{
-		return !!CommandLine()->FindParm(name);
+		return !!CommandLine()->FindParm( name );
 	}
 
-	const char* CommandLineCheckStr(const char* name)
+	const char* CommandLineCheckStr( const char* name )
 	{
-		return CommandLine()->ParmValue(name);
+		return CommandLine()->ParmValue( name );
 	}
 
-	float CommandLineCheckFloat(const char* name)
+	float CommandLineCheckFloat( const char* name )
 	{
-		return CommandLine()->ParmValue(name, 0);
+		return CommandLine()->ParmValue( name, 0 );
 	}
 
-	int CommandLineCheckInt(const char* name)
+	int CommandLineCheckInt( const char* name )
 	{
-		return CommandLine()->ParmValue(name, 0);
+		return CommandLine()->ParmValue( name, 0 );
 	}
 } g_ScriptGlobalSys;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CGlobalSys, "CGlobalSys", SCRIPT_SINGLETON "GlobalSys" )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommandLine, "GetCommandLine", "returns the command line" )
-	DEFINE_SCRIPTFUNC( CommandLineCheck, "returns true if the command line param was used, otherwise false." )
-	DEFINE_SCRIPTFUNC( CommandLineCheckStr, "returns the command line param as a string." )
-	DEFINE_SCRIPTFUNC( CommandLineCheckFloat, "returns the command line param as a float." )
-	DEFINE_SCRIPTFUNC( CommandLineCheckInt, "returns the command line param as an int." )
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetCommandLine, "GetCommandLine", "returns the command line" )
+DEFINE_SCRIPTFUNC( CommandLineCheck, "returns true if the command line param was used, otherwise false." )
+DEFINE_SCRIPTFUNC( CommandLineCheckStr, "returns the command line param as a string." )
+DEFINE_SCRIPTFUNC( CommandLineCheckFloat, "returns the command line param as a float." )
+DEFINE_SCRIPTFUNC( CommandLineCheckInt, "returns the command line param as an int." )
 END_SCRIPTDESC();
 
 // ----------------------------------------------------------------------------
 // KeyValues access - CBaseEntity::ScriptGetKeyFromModel returns root KeyValues
 // ----------------------------------------------------------------------------
 BEGIN_SCRIPTDESC_ROOT( CScriptKeyValues, "Wrapper class over KeyValues instance" )
-	DEFINE_SCRIPT_CONSTRUCTOR()	
-	DEFINE_SCRIPTFUNC_NAMED( ScriptFindKey, "FindKey", "Given a KeyValues object and a key name, find a KeyValues object associated with the key name" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetFirstSubKey, "GetFirstSubKey", "Given a KeyValues object, return the first sub key object" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetNextKey, "GetNextKey", "Given a KeyValues object, return the next key object in a sub key group" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueInt, "GetKeyInt", "Given a KeyValues object and a key name, return associated integer value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueFloat, "GetKeyFloat", "Given a KeyValues object and a key name, return associated float value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueBool, "GetKeyBool", "Given a KeyValues object and a key name, return associated bool value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueString, "GetKeyString", "Given a KeyValues object and a key name, return associated string value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptIsKeyValueEmpty, "IsKeyEmpty", "Given a KeyValues object and a key name, return true if key name has no value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptReleaseKeyValues, "ReleaseKeyValues", "Given a root KeyValues object, release its contents" );
+DEFINE_SCRIPT_CONSTRUCTOR()
+DEFINE_SCRIPTFUNC_NAMED( ScriptFindKey, "FindKey", "Given a KeyValues object and a key name, find a KeyValues object associated with the key name" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetFirstSubKey, "GetFirstSubKey", "Given a KeyValues object, return the first sub key object" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetNextKey, "GetNextKey", "Given a KeyValues object, return the next key object in a sub key group" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueInt, "GetKeyInt", "Given a KeyValues object and a key name, return associated integer value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueFloat, "GetKeyFloat", "Given a KeyValues object and a key name, return associated float value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueBool, "GetKeyBool", "Given a KeyValues object and a key name, return associated bool value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueString, "GetKeyString", "Given a KeyValues object and a key name, return associated string value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptIsKeyValueEmpty, "IsKeyEmpty", "Given a KeyValues object and a key name, return true if key name has no value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptReleaseKeyValues, "ReleaseKeyValues", "Given a root KeyValues object, release its contents" );
 
-	DEFINE_SCRIPTFUNC( TableToSubKeys, "Converts a script table to KeyValues." );
-	DEFINE_SCRIPTFUNC( SubKeysToTable, "Converts to script table." );
+DEFINE_SCRIPTFUNC( TableToSubKeys, "Converts a script table to KeyValues." );
+DEFINE_SCRIPTFUNC( SubKeysToTable, "Converts to script table." );
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptFindOrCreateKey, "FindOrCreateKey", "Given a KeyValues object and a key name, find or create a KeyValues object associated with the key name" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptFindOrCreateKey, "FindOrCreateKey", "Given a KeyValues object and a key name, find or create a KeyValues object associated with the key name" );
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetName, "GetName", "Given a KeyValues object, return its name" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetInt, "GetInt", "Given a KeyValues object, return its own associated integer value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetFloat, "GetFloat", "Given a KeyValues object, return its own associated float value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetString, "GetString", "Given a KeyValues object, return its own associated string value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetBool, "GetBool", "Given a KeyValues object, return its own associated bool value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetName, "GetName", "Given a KeyValues object, return its name" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetInt, "GetInt", "Given a KeyValues object, return its own associated integer value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetFloat, "GetFloat", "Given a KeyValues object, return its own associated float value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetString, "GetString", "Given a KeyValues object, return its own associated string value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetBool, "GetBool", "Given a KeyValues object, return its own associated bool value" );
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueInt, "SetKeyInt", "Given a KeyValues object and a key name, set associated integer value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueFloat, "SetKeyFloat", "Given a KeyValues object and a key name, set associated float value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueBool, "SetKeyBool", "Given a KeyValues object and a key name, set associated bool value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueString, "SetKeyString", "Given a KeyValues object and a key name, set associated string value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueInt, "SetKeyInt", "Given a KeyValues object and a key name, set associated integer value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueFloat, "SetKeyFloat", "Given a KeyValues object and a key name, set associated float value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueBool, "SetKeyBool", "Given a KeyValues object and a key name, set associated bool value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetKeyValueString, "SetKeyString", "Given a KeyValues object and a key name, set associated string value" );
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetName, "SetName", "Given a KeyValues object, set its name" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetInt, "SetInt", "Given a KeyValues object, set its own associated integer value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetFloat, "SetFloat", "Given a KeyValues object, set its own associated float value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetBool, "SetBool", "Given a KeyValues object, set its own associated bool value" );
-	DEFINE_SCRIPTFUNC_NAMED( ScriptSetString, "SetString", "Given a KeyValues object, set its own associated string value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetName, "SetName", "Given a KeyValues object, set its name" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetInt, "SetInt", "Given a KeyValues object, set its own associated integer value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetFloat, "SetFloat", "Given a KeyValues object, set its own associated float value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetBool, "SetBool", "Given a KeyValues object, set its own associated bool value" );
+DEFINE_SCRIPTFUNC_NAMED( ScriptSetString, "SetString", "Given a KeyValues object, set its own associated string value" );
 END_SCRIPTDESC();
 
-HSCRIPT CScriptKeyValues::ScriptFindKey( const char *pszName )
+HSCRIPT CScriptKeyValues::ScriptFindKey( const char* pszName )
 {
-	KeyValues *pKeyValues = m_pKeyValues->FindKey(pszName);
-	if ( pKeyValues == NULL )
+	KeyValues* pKeyValues = m_pKeyValues->FindKey( pszName );
+	if( pKeyValues == NULL )
+	{
 		return NULL;
+	}
 
-	CScriptKeyValues *pScriptKey = new CScriptKeyValues( pKeyValues );
+	CScriptKeyValues* pScriptKey = new CScriptKeyValues( pKeyValues );
 
 	// UNDONE: who calls ReleaseInstance on this??
 	HSCRIPT hScriptInstance = g_pScriptVM->RegisterInstance( pScriptKey );
@@ -146,11 +148,13 @@ HSCRIPT CScriptKeyValues::ScriptFindKey( const char *pszName )
 
 HSCRIPT CScriptKeyValues::ScriptGetFirstSubKey( void )
 {
-	KeyValues *pKeyValues = m_pKeyValues->GetFirstSubKey();
-	if ( pKeyValues == NULL )
+	KeyValues* pKeyValues = m_pKeyValues->GetFirstSubKey();
+	if( pKeyValues == NULL )
+	{
 		return NULL;
+	}
 
-	CScriptKeyValues *pScriptKey = new CScriptKeyValues( pKeyValues );
+	CScriptKeyValues* pScriptKey = new CScriptKeyValues( pKeyValues );
 
 	// UNDONE: who calls ReleaseInstance on this??
 	HSCRIPT hScriptInstance = g_pScriptVM->RegisterInstance( pScriptKey );
@@ -159,42 +163,44 @@ HSCRIPT CScriptKeyValues::ScriptGetFirstSubKey( void )
 
 HSCRIPT CScriptKeyValues::ScriptGetNextKey( void )
 {
-	KeyValues *pKeyValues = m_pKeyValues->GetNextKey();
-	if ( pKeyValues == NULL )
+	KeyValues* pKeyValues = m_pKeyValues->GetNextKey();
+	if( pKeyValues == NULL )
+	{
 		return NULL;
+	}
 
-	CScriptKeyValues *pScriptKey = new CScriptKeyValues( pKeyValues );
+	CScriptKeyValues* pScriptKey = new CScriptKeyValues( pKeyValues );
 
 	// UNDONE: who calls ReleaseInstance on this??
 	HSCRIPT hScriptInstance = g_pScriptVM->RegisterInstance( pScriptKey );
 	return hScriptInstance;
 }
 
-int CScriptKeyValues::ScriptGetKeyValueInt( const char *pszName )
+int CScriptKeyValues::ScriptGetKeyValueInt( const char* pszName )
 {
 	int i = m_pKeyValues->GetInt( pszName );
 	return i;
 }
 
-float CScriptKeyValues::ScriptGetKeyValueFloat( const char *pszName )
+float CScriptKeyValues::ScriptGetKeyValueFloat( const char* pszName )
 {
 	float f = m_pKeyValues->GetFloat( pszName );
 	return f;
 }
 
-const char *CScriptKeyValues::ScriptGetKeyValueString( const char *pszName )
+const char* CScriptKeyValues::ScriptGetKeyValueString( const char* pszName )
 {
-	const char *psz = m_pKeyValues->GetString( pszName );
+	const char* psz = m_pKeyValues->GetString( pszName );
 	return psz;
 }
 
-bool CScriptKeyValues::ScriptIsKeyValueEmpty( const char *pszName )
+bool CScriptKeyValues::ScriptIsKeyValueEmpty( const char* pszName )
 {
 	bool b = m_pKeyValues->IsEmpty( pszName );
 	return b;
 }
 
-bool CScriptKeyValues::ScriptGetKeyValueBool( const char *pszName )
+bool CScriptKeyValues::ScriptGetKeyValueBool( const char* pszName )
 {
 	bool b = m_pKeyValues->GetBool( pszName );
 	return b;
@@ -206,24 +212,34 @@ void CScriptKeyValues::ScriptReleaseKeyValues( )
 	m_pKeyValues = NULL;
 }
 
-void KeyValues_TableToSubKeys( HSCRIPT hTable, KeyValues *pKV )
+void KeyValues_TableToSubKeys( HSCRIPT hTable, KeyValues* pKV )
 {
 	int nIterator = -1;
 	ScriptVariant_t varKey, varValue;
-	while ((nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &varKey, &varValue )) != -1)
+	while( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &varKey, &varValue ) ) != -1 )
 	{
-		if ( varKey.m_type == FIELD_CSTRING )
+		if( varKey.m_type == FIELD_CSTRING )
 		{
-			switch ( varValue.m_type )
+			switch( varValue.m_type )
 			{
-				case FIELD_CSTRING:		pKV->SetString( varKey.m_pszString, varValue.m_pszString ); break;
-				case FIELD_INTEGER:		pKV->SetInt( varKey.m_pszString, varValue.m_int ); break;
-				case FIELD_FLOAT:		pKV->SetFloat( varKey.m_pszString, varValue.m_float ); break;
-				case FIELD_BOOLEAN:		pKV->SetBool( varKey.m_pszString, varValue.m_bool ); break;
-				case FIELD_VECTOR:		pKV->SetString( varKey.m_pszString, CFmtStr( "%f %f %f", varValue.m_pVector->x, varValue.m_pVector->y, varValue.m_pVector->z ) ); break;
+				case FIELD_CSTRING:
+					pKV->SetString( varKey.m_pszString, varValue.m_pszString );
+					break;
+				case FIELD_INTEGER:
+					pKV->SetInt( varKey.m_pszString, varValue.m_int );
+					break;
+				case FIELD_FLOAT:
+					pKV->SetFloat( varKey.m_pszString, varValue.m_float );
+					break;
+				case FIELD_BOOLEAN:
+					pKV->SetBool( varKey.m_pszString, varValue.m_bool );
+					break;
+				case FIELD_VECTOR:
+					pKV->SetString( varKey.m_pszString, CFmtStr( "%f %f %f", varValue.m_pVector->x, varValue.m_pVector->y, varValue.m_pVector->z ) );
+					break;
 				case FIELD_HSCRIPT:
 				{
-					KeyValues *subKey = pKV->FindKey( varKey.m_pszString, true );
+					KeyValues* subKey = pKV->FindKey( varKey.m_pszString, true );
 					KeyValues_TableToSubKeys( varValue, subKey );
 					break;
 				}
@@ -235,15 +251,21 @@ void KeyValues_TableToSubKeys( HSCRIPT hTable, KeyValues *pKV )
 	}
 }
 
-void KeyValues_SubKeysToTable( KeyValues *pKV, HSCRIPT hTable )
+void KeyValues_SubKeysToTable( KeyValues* pKV, HSCRIPT hTable )
 {
 	FOR_EACH_SUBKEY( pKV, key )
 	{
-		switch ( key->GetDataType() )
+		switch( key->GetDataType() )
 		{
-			case KeyValues::TYPE_STRING: g_pScriptVM->SetValue( hTable, key->GetName(), key->GetString() ); break;
-			case KeyValues::TYPE_INT:    g_pScriptVM->SetValue( hTable, key->GetName(), key->GetInt()    ); break;
-			case KeyValues::TYPE_FLOAT:  g_pScriptVM->SetValue( hTable, key->GetName(), key->GetFloat()  ); break;
+			case KeyValues::TYPE_STRING:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetString() );
+				break;
+			case KeyValues::TYPE_INT:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetInt() );
+				break;
+			case KeyValues::TYPE_FLOAT:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetFloat() );
+				break;
 			case KeyValues::TYPE_NONE:
 			{
 				ScriptVariant_t subTable;
@@ -267,22 +289,24 @@ void CScriptKeyValues::SubKeysToTable( HSCRIPT hTable )
 	KeyValues_SubKeysToTable( m_pKeyValues, hTable );
 }
 
-HSCRIPT CScriptKeyValues::ScriptFindOrCreateKey( const char *pszName )
+HSCRIPT CScriptKeyValues::ScriptFindOrCreateKey( const char* pszName )
 {
-	KeyValues *pKeyValues = m_pKeyValues->FindKey(pszName, true);
-	if ( pKeyValues == NULL )
+	KeyValues* pKeyValues = m_pKeyValues->FindKey( pszName, true );
+	if( pKeyValues == NULL )
+	{
 		return NULL;
+	}
 
-	CScriptKeyValues *pScriptKey = new CScriptKeyValues( pKeyValues );
+	CScriptKeyValues* pScriptKey = new CScriptKeyValues( pKeyValues );
 
 	// UNDONE: who calls ReleaseInstance on this??
 	HSCRIPT hScriptInstance = g_pScriptVM->RegisterInstance( pScriptKey );
 	return hScriptInstance;
 }
 
-const char *CScriptKeyValues::ScriptGetName()
+const char* CScriptKeyValues::ScriptGetName()
 {
-	const char *psz = m_pKeyValues->GetName();
+	const char* psz = m_pKeyValues->GetName();
 	return psz;
 }
 
@@ -298,9 +322,9 @@ float CScriptKeyValues::ScriptGetFloat()
 	return f;
 }
 
-const char *CScriptKeyValues::ScriptGetString()
+const char* CScriptKeyValues::ScriptGetString()
 {
-	const char *psz = m_pKeyValues->GetString();
+	const char* psz = m_pKeyValues->GetString();
 	return psz;
 }
 
@@ -311,27 +335,27 @@ bool CScriptKeyValues::ScriptGetBool()
 }
 
 
-void CScriptKeyValues::ScriptSetKeyValueInt( const char *pszName, int iValue )
+void CScriptKeyValues::ScriptSetKeyValueInt( const char* pszName, int iValue )
 {
 	m_pKeyValues->SetInt( pszName, iValue );
 }
 
-void CScriptKeyValues::ScriptSetKeyValueFloat( const char *pszName, float flValue )
+void CScriptKeyValues::ScriptSetKeyValueFloat( const char* pszName, float flValue )
 {
 	m_pKeyValues->SetFloat( pszName, flValue );
 }
 
-void CScriptKeyValues::ScriptSetKeyValueString( const char *pszName, const char *pszValue )
+void CScriptKeyValues::ScriptSetKeyValueString( const char* pszName, const char* pszValue )
 {
 	m_pKeyValues->SetString( pszName, pszValue );
 }
 
-void CScriptKeyValues::ScriptSetKeyValueBool( const char *pszName, bool bValue )
+void CScriptKeyValues::ScriptSetKeyValueBool( const char* pszName, bool bValue )
 {
 	m_pKeyValues->SetBool( pszName, bValue );
 }
 
-void CScriptKeyValues::ScriptSetName( const char *pszValue )
+void CScriptKeyValues::ScriptSetName( const char* pszValue )
 {
 	m_pKeyValues->SetName( pszValue );
 }
@@ -346,7 +370,7 @@ void CScriptKeyValues::ScriptSetFloat( float flValue )
 	m_pKeyValues->SetFloat( NULL, flValue );
 }
 
-void CScriptKeyValues::ScriptSetString( const char *pszValue )
+void CScriptKeyValues::ScriptSetString( const char* pszValue )
 {
 	m_pKeyValues->SetString( NULL, pszValue );
 }
@@ -358,11 +382,11 @@ void CScriptKeyValues::ScriptSetBool( bool bValue )
 
 
 // constructors
-CScriptKeyValues::CScriptKeyValues( KeyValues *pKeyValues = NULL )
+CScriptKeyValues::CScriptKeyValues( KeyValues* pKeyValues = NULL )
 {
-	if (pKeyValues == NULL)
+	if( pKeyValues == NULL )
 	{
-		m_pKeyValues = new KeyValues("CScriptKeyValues");
+		m_pKeyValues = new KeyValues( "CScriptKeyValues" );
 	}
 	else
 	{
@@ -373,7 +397,7 @@ CScriptKeyValues::CScriptKeyValues( KeyValues *pKeyValues = NULL )
 // destructor
 CScriptKeyValues::~CScriptKeyValues( )
 {
-	if (m_pKeyValues)
+	if( m_pKeyValues )
 	{
 		m_pKeyValues->deleteThis();
 	}
@@ -383,42 +407,42 @@ CScriptKeyValues::~CScriptKeyValues( )
 //=============================================================================
 //
 // matrix3x4_t
-// 
+//
 //=============================================================================
 CScriptColorInstanceHelper g_ColorScriptInstanceHelper;
 
 BEGIN_SCRIPTDESC_ROOT( Color, "" )
 
-	DEFINE_SCRIPT_CONSTRUCTOR()
-	DEFINE_SCRIPT_INSTANCE_HELPER( &g_ColorScriptInstanceHelper )
+DEFINE_SCRIPT_CONSTRUCTOR()
+DEFINE_SCRIPT_INSTANCE_HELPER( &g_ColorScriptInstanceHelper )
 
-	DEFINE_SCRIPTFUNC( SetColor, "Sets the color." )
+DEFINE_SCRIPTFUNC( SetColor, "Sets the color." )
 
-	DEFINE_SCRIPTFUNC( SetRawColor, "Sets the raw color integer." )
-	DEFINE_SCRIPTFUNC( GetRawColor, "Gets the raw color integer." )
+DEFINE_SCRIPTFUNC( SetRawColor, "Sets the raw color integer." )
+DEFINE_SCRIPTFUNC( GetRawColor, "Gets the raw color integer." )
 
-	DEFINE_MEMBERVAR( "r", FIELD_CHARACTER, "Member variable for red." )
-	DEFINE_MEMBERVAR( "g", FIELD_CHARACTER, "Member variable for green." )
-	DEFINE_MEMBERVAR( "b", FIELD_CHARACTER, "Member variable for blue." )
-	DEFINE_MEMBERVAR( "a", FIELD_CHARACTER, "Member variable for alpha. (transparency)" )
+DEFINE_MEMBERVAR( "r", FIELD_CHARACTER, "Member variable for red." )
+DEFINE_MEMBERVAR( "g", FIELD_CHARACTER, "Member variable for green." )
+DEFINE_MEMBERVAR( "b", FIELD_CHARACTER, "Member variable for blue." )
+DEFINE_MEMBERVAR( "a", FIELD_CHARACTER, "Member variable for alpha. (transparency)" )
 
 END_SCRIPTDESC();
 
 //-----------------------------------------------------------------------------
 
-bool CScriptColorInstanceHelper::ToString( void *p, char *pBuf, int bufSize )
+bool CScriptColorInstanceHelper::ToString( void* p, char* pBuf, int bufSize )
 {
-	Color *pClr = ((Color *)p);
+	Color* pClr = ( ( Color* )p );
 	V_snprintf( pBuf, bufSize, "(color: (%i, %i, %i, %i))", pClr->r(), pClr->g(), pClr->b(), pClr->a() );
-	return true; 
+	return true;
 }
 
-bool CScriptColorInstanceHelper::Get( void *p, const char *pszKey, ScriptVariant_t &variant )
+bool CScriptColorInstanceHelper::Get( void* p, const char* pszKey, ScriptVariant_t& variant )
 {
-	Color *pClr = ((Color *)p);
-	if ( strlen(pszKey) == 1 )
+	Color* pClr = ( ( Color* )p );
+	if( strlen( pszKey ) == 1 )
 	{
-		switch (pszKey[0])
+		switch( pszKey[0] )
 		{
 			case 'r':
 				variant = pClr->r();
@@ -437,27 +461,27 @@ bool CScriptColorInstanceHelper::Get( void *p, const char *pszKey, ScriptVariant
 	return false;
 }
 
-bool CScriptColorInstanceHelper::Set( void *p, const char *pszKey, ScriptVariant_t &variant )
+bool CScriptColorInstanceHelper::Set( void* p, const char* pszKey, ScriptVariant_t& variant )
 {
-	Color *pClr = ((Color *)p);
-	if ( strlen(pszKey) == 1 )
+	Color* pClr = ( ( Color* )p );
+	if( strlen( pszKey ) == 1 )
 	{
 		int iVal;
 		variant.AssignTo( &iVal );
-		switch (pszKey[0])
+		switch( pszKey[0] )
 		{
 			// variant.AssignTo( &(*pClr)[0] );
 			case 'r':
-				(*pClr)[0] = iVal;
+				( *pClr )[0] = iVal;
 				return true;
 			case 'g':
-				(*pClr)[1] = iVal;
+				( *pClr )[1] = iVal;
 				return true;
 			case 'b':
-				(*pClr)[2] = iVal;
+				( *pClr )[2] = iVal;
 				return true;
 			case 'a':
-				(*pClr)[3] = iVal;
+				( *pClr )[3] = iVal;
 				return true;
 		}
 	}
@@ -467,7 +491,7 @@ bool CScriptColorInstanceHelper::Set( void *p, const char *pszKey, ScriptVariant
 //=============================================================================
 //=============================================================================
 
-void RegisterBaseBindings( IScriptVM *pVM )
+void RegisterBaseBindings( IScriptVM* pVM )
 {
 	ScriptRegisterFunctionNamed( pVM, ScriptMsg, "Msg", "" );
 	ScriptRegisterFunctionNamed( pVM, ScriptColorPrint, "printc", "Version of print() which takes a color before the message." );
@@ -496,9 +520,9 @@ void RegisterBaseBindings( IScriptVM *pVM )
 	ScriptRegisterConstant( pVM, MAX_COORD_FLOAT, "Maximum float coordinate." );
 	ScriptRegisterConstant( pVM, MAX_TRACE_LENGTH, "Maximum traceable distance (assumes cubic world and trace from one corner to opposite)." );
 
-	// 
+	//
 	// Trace Contents/Masks
-	// 
+	//
 	ScriptRegisterConstant( pVM, CONTENTS_EMPTY, "Spatial content flags." );
 	ScriptRegisterConstant( pVM, CONTENTS_SOLID, "Spatial content flags." );
 	ScriptRegisterConstant( pVM, CONTENTS_WINDOW, "Spatial content flags." );
@@ -554,9 +578,9 @@ void RegisterBaseBindings( IScriptVM *pVM )
 	ScriptRegisterConstant( pVM, MASK_NPCWORLDSTATIC, "Spatial content mask representing objects static to NPCs, used for nodegraph rebuilding (CONTENTS_SOLID|CONTENTS_WINDOW|CONTENTS_MONSTERCLIP|CONTENTS_GRATE)" );
 	ScriptRegisterConstant( pVM, MASK_SPLITAREAPORTAL, "Spatial content mask representing objects which can split areaportals (CONTENTS_WATER|CONTENTS_SLIME)" );
 
-	// 
+	//
 	// Misc. General
-	// 
+	//
 	ScriptRegisterConstant( pVM, FCVAR_NONE, "Empty convar flag." );
 	ScriptRegisterConstant( pVM, FCVAR_UNREGISTERED, "If this convar flag is set, it isn't added to linked list, etc." );
 	ScriptRegisterConstant( pVM, FCVAR_DEVELOPMENTONLY, "If this convar flag is set, it's hidden in \"retail\" DLLs." );

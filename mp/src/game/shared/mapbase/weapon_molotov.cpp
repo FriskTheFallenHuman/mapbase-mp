@@ -38,7 +38,7 @@ extern ConVar    sk_plr_dmg_molotov;
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponMolotov::m_acttable[] = 
+acttable_t	CWeaponMolotov::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1,				ACT_RANGE_ATTACK_THROW,					true },
 
@@ -78,24 +78,24 @@ BEGIN_NETWORK_TABLE( CWeaponMolotov, DT_WeaponMolotov )
 	SendPropBool( SENDINFO( m_fDrawbackFinished ) ),
 	SendPropInt( SENDINFO( m_AttackPaused ) ),
 #endif
-	
+
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponMolotov )
+	BEGIN_PREDICTION_DATA( CWeaponMolotov )
 	DEFINE_PRED_FIELD( m_bRedraw, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_fDrawbackFinished, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_AttackPaused, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_molotov, CWeaponMolotov );
 PRECACHE_WEAPON_REGISTER( weapon_molotov );
 
-void DropMolotov( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pWeapon )
+void DropMolotov( CHL2MP_Player* pPlayer, CBaseCombatWeapon* pWeapon )
 {
-	CWeaponMolotov *pMolotov = dynamic_cast<CWeaponMolotov*>( pWeapon );
-	if ( pMolotov )
+	CWeaponMolotov* pMolotov = dynamic_cast<CWeaponMolotov*>( pWeapon );
+	if( pMolotov )
 	{
 		pMolotov->ThrowMolotov( pPlayer );
 		pMolotov->DecrementAmmo( pPlayer );
@@ -103,7 +103,7 @@ void DropMolotov( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pWeapon )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponMolotov::CWeaponMolotov( void ) : CBaseHL2MPCombatWeapon()
 {
@@ -111,7 +111,7 @@ CWeaponMolotov::CWeaponMolotov( void ) : CBaseHL2MPCombatWeapon()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponMolotov::Precache( void )
 {
@@ -123,7 +123,7 @@ void CWeaponMolotov::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponMolotov::Deploy( void )
 {
@@ -134,10 +134,10 @@ bool CWeaponMolotov::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponMolotov::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponMolotov::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	m_bRedraw = false;
 	m_fDrawbackFinished = false;
@@ -148,13 +148,13 @@ bool CWeaponMolotov::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 #ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponMolotov::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponMolotov::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 	bool fThrewMolotov = false;
 
 	switch( pEvent->event )
@@ -184,15 +184,17 @@ void CWeaponMolotov::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponMolotov::Reload( void )
 {
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
+	{
 		return false;
+	}
 
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	if( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
@@ -209,58 +211,66 @@ bool CWeaponMolotov::Reload( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponMolotov::PrimaryAttack( void )
 {
-	if ( m_bRedraw )
+	if( m_bRedraw )
+	{
 		return;
+	}
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if ( pOwner == NULL )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );;
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );;
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// Note that this is a primary attack and prepare the grenade attack to pause.
 	m_AttackPaused = MOLOTOV_PAUSED_PRIMARY;
 	SendWeaponAnim( ACT_VM_PULLBACK_HIGH );
-	
+
 	// Put both of these off indefinitely. We do not know how long
 	// the player will hold the grenade.
 	m_flTimeWeaponIdle = FLT_MAX;
 	m_flNextPrimaryAttack = FLT_MAX;
 
 	// If I'm now out of ammo, switch away
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
+	{
 		pPlayer->SwitchToNextBestWeapon( this );
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOwner - 
+// Purpose:
+// Input  : *pOwner -
 //-----------------------------------------------------------------------------
-void CWeaponMolotov::DecrementAmmo( CBaseCombatCharacter *pOwner )
+void CWeaponMolotov::DecrementAmmo( CBaseCombatCharacter* pOwner )
 {
 	pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponMolotov::ItemPostFrame( void )
 {
 	if( m_fDrawbackFinished )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-		if ( pOwner )
+		CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+		if( pOwner )
 		{
 			if( !( pOwner->m_nButtons & IN_ATTACK ) )
 			{
 				SendWeaponAnim( ACT_VM_THROW );
-				ToHL2MPPlayer(pOwner)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+				ToHL2MPPlayer( pOwner )->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
 
 				//Tony; fire the sequence
 				m_fDrawbackFinished = false;
@@ -270,38 +280,42 @@ void CWeaponMolotov::ItemPostFrame( void )
 
 	BaseClass::ItemPostFrame();
 
-	if ( m_bRedraw )
+	if( m_bRedraw )
 	{
-		if ( IsViewModelSequenceFinished() )
+		if( IsViewModelSequenceFinished() )
+		{
 			Reload();
+		}
 	}
 }
 
 //----------------------------------------------------------------------------------------------------------
 // Purpose: check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
 //----------------------------------------------------------------------------------------------------------
-void CWeaponMolotov::CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc, const QAngle& angles )
+void CWeaponMolotov::CheckThrowPosition( CBasePlayer* pPlayer, const Vector& vecEye, Vector& vecSrc, const QAngle& angles )
 {
 	// Compute an extended AABB that takes into account the requested grenade rotation.
 	// This will prevent grenade from going through nearby solids when model initially intersects with any.
 	matrix3x4_t rotation;
-	AngleMatrix(angles, rotation);
+	AngleMatrix( angles, rotation );
 	Vector mins, maxs;
-	RotateAABB(rotation, -Vector(MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS + 2, 2),
-		Vector(MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS * 2 + 2), mins, maxs);
+	RotateAABB( rotation, -Vector( MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS + 2, 2 ),
+				Vector( MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS + 2, MOLOTOV_RADIUS * 2 + 2 ), mins, maxs );
 	trace_t tr;
 	UTIL_TraceHull( vecEye, vecSrc, mins, maxs, pPlayer->PhysicsSolidMaskForEntity(),
-		pPlayer, pPlayer->GetCollisionGroup(), &tr );
-	
-	if ( tr.DidHit() )
+					pPlayer, pPlayer->GetCollisionGroup(), &tr );
+
+	if( tr.DidHit() )
+	{
 		vecSrc = tr.endpos;
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
+// Purpose:
+// Input  : *pPlayer -
 //-----------------------------------------------------------------------------
-void CWeaponMolotov::ThrowMolotov( CBasePlayer *pPlayer )
+void CWeaponMolotov::ThrowMolotov( CBasePlayer* pPlayer )
 {
 #ifndef CLIENT_DLL
 	Vector	vecEye = pPlayer->EyePosition();
@@ -317,8 +331,8 @@ void CWeaponMolotov::ThrowMolotov( CBasePlayer *pPlayer )
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 1200;
 
-	CGrenade_Molotov *pMolotov = (CGrenade_Molotov*)Create( "grenade_molotov", vecSrc, vec3_angle, pPlayer );
-	if ( pMolotov )
+	CGrenade_Molotov* pMolotov = ( CGrenade_Molotov* )Create( "grenade_molotov", vecSrc, vec3_angle, pPlayer );
+	if( pMolotov )
 	{
 		pMolotov->SetAbsVelocity( vecThrow );
 		//pMolotov->SetLocalAngularVelocity( RandomAngle( -400, 400 ) );
@@ -326,13 +340,15 @@ void CWeaponMolotov::ThrowMolotov( CBasePlayer *pPlayer )
 		pMolotov->SetThrower( GetOwner() );
 		pMolotov->SetDamage( sk_plr_dmg_molotov.GetFloat() );
 
-		if ( pPlayer && pPlayer->m_lifeState != LIFE_ALIVE )
+		if( pPlayer && pPlayer->m_lifeState != LIFE_ALIVE )
 		{
 			pPlayer->GetVelocity( &vecThrow, NULL );
 
-			IPhysicsObject *pPhysicsObject = pMolotov->VPhysicsGetObject();
-			if ( pPhysicsObject )
+			IPhysicsObject* pPhysicsObject = pMolotov->VPhysicsGetObject();
+			if( pPhysicsObject )
+			{
 				pPhysicsObject->SetVelocity( &vecThrow, NULL );
+			}
 		}
 	}
 #endif
@@ -340,7 +356,7 @@ void CWeaponMolotov::ThrowMolotov( CBasePlayer *pPlayer )
 	m_bRedraw = true;
 
 	WeaponSound( SINGLE );
-	
+
 	// player "shoot" animation
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 

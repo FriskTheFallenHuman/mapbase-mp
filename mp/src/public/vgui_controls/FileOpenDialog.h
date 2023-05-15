@@ -9,7 +9,7 @@
 #define FILEOPENDIALOG_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/Frame.h"
@@ -37,34 +37,34 @@ class FileOpenDialog : public vgui::Frame
 
 public:
 	// NOTE: Backward compat constructor
-	FileOpenDialog( Panel *parent, const char *title, bool bOpenFile, KeyValues *pContextKeyValues = 0 );
+	FileOpenDialog( Panel* parent, const char* title, bool bOpenFile, KeyValues* pContextKeyValues = 0 );
 
 	// The context keyvalues are added to all messages sent by this dialog if they are specified
-	FileOpenDialog( Panel *parent, const char *title, FileOpenDialogType_t type, KeyValues *pContextKeyValues = 0 );
+	FileOpenDialog( Panel* parent, const char* title, FileOpenDialogType_t type, KeyValues* pContextKeyValues = 0 );
 	~FileOpenDialog();
 
 	// Set the directory the file search starts in
-	void SetStartDirectory(const char *dir);
+	void SetStartDirectory( const char* dir );
 
 	// Sets the start directory context (and resets the start directory in the process)
 	// NOTE: If you specify a startdir context, then if you've already opened
 	// a file with that same start dir context before, it will start in the
 	// same directory it ended up in.
-	void SetStartDirectoryContext( const char *pContext, const char *pDefaultDir );
+	void SetStartDirectoryContext( const char* pContext, const char* pDefaultDir );
 
 	// Add filters for the drop down combo box
 	// The filter info, if specified, gets sent back to the app in the FileSelected message
-	void AddFilter( const char *filter, const char *filterName, bool bActive, const char *pFilterInfo = NULL );
+	void AddFilter( const char* filter, const char* filterName, bool bActive, const char* pFilterInfo = NULL );
 
 	// Activate the dialog
 	// NOTE: The argument is there for backward compat
 	void DoModal( bool bUnused = false );
 
 	// Get the directory this is currently in
-	void GetCurrentDirectory( char *buf, int bufSize );
+	void GetCurrentDirectory( char* buf, int bufSize );
 
 	// Get the last selected file name
-	void GetSelectedFileName( char *buf, int bufSize );
+	void GetSelectedFileName( char* buf, int bufSize );
 
 	/*
 		messages sent:
@@ -75,10 +75,10 @@ public:
 	*/
 
 protected:
-	virtual void OnCommand( const char *command );
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void OnCommand( const char* command );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void OnClose();
-	virtual void OnKeyCodeTyped(KeyCode code);
+	virtual void OnKeyCodeTyped( KeyCode code );
 
 	// handles the open button being pressed
 	// checks on what has changed and acts accordingly
@@ -113,38 +113,38 @@ protected:
 
 private:
 	// Necessary because we have 2 constructors
-	void Init( const char *title, KeyValues *pContextKeyValues );
+	void Init( const char* title, KeyValues* pContextKeyValues );
 
 	// Does the specified extension match something in the filter list?
-	bool ExtensionMatchesFilter( const char *pExt );
+	bool ExtensionMatchesFilter( const char* pExt );
 
 	// Choose the first non *.* filter in the filter list
-	void ChooseExtension( char *pExt, int nBufLen );
+	void ChooseExtension( char* pExt, int nBufLen );
 
 	// Saves the file to the start dir context
-	void SaveFileToStartDirContext( const char *pFullPath );
+	void SaveFileToStartDirContext( const char* pFullPath );
 
 	// Posts a file selected message
-	void PostFileSelectedMessage( const char *pFileName );
+	void PostFileSelectedMessage( const char* pFileName );
 
 	// Creates a new folder
-	void NewFolder( char const *folderName );
+	void NewFolder( char const* folderName );
 
-	vgui::ComboBox 		*m_pFullPathEdit;
-	vgui::ListPanel		*m_pFileList;
-	
-	FileCompletionEdit 	*m_pFileNameEdit;
+	vgui::ComboBox*		 m_pFullPathEdit;
+	vgui::ListPanel*		m_pFileList;
 
-	vgui::ComboBox 		*m_pFileTypeCombo;
-	vgui::Button 		*m_pOpenButton;
-	vgui::Button 		*m_pCancelButton;
-	vgui::Button 		*m_pFolderUpButton;
-	vgui::Button		*m_pNewFolderButton;
-	vgui::Button		*m_pOpenInExplorerButton;
-	vgui::ImagePanel 	*m_pFolderIcon;
-	vgui::Label			*m_pFileTypeLabel;
+	FileCompletionEdit*	 m_pFileNameEdit;
 
-	KeyValues			*m_pContextKeyValues;
+	vgui::ComboBox*		 m_pFileTypeCombo;
+	vgui::Button*		 m_pOpenButton;
+	vgui::Button*		 m_pCancelButton;
+	vgui::Button*		 m_pFolderUpButton;
+	vgui::Button*		m_pNewFolderButton;
+	vgui::Button*		m_pOpenInExplorerButton;
+	vgui::ImagePanel*	 m_pFolderIcon;
+	vgui::Label*			m_pFileTypeLabel;
+
+	KeyValues*			m_pContextKeyValues;
 
 	char m_szLastPath[1024];
 	unsigned short m_nStartDirContext;

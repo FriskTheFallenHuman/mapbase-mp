@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,10 +25,10 @@ class CTEShatterSurface : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEShatterSurface, CBaseTempEntity );
 
-	CTEShatterSurface( const char *name );
+	CTEShatterSurface( const char* name );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -45,10 +45,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEShatterSurface::CTEShatterSurface( const char *name ) :
+CTEShatterSurface::CTEShatterSurface( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -67,9 +67,9 @@ CTEShatterSurface::CTEShatterSurface( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -77,7 +77,7 @@ void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& curren
 	m_vecOrigin = current_origin;
 
 	Vector vecEnd;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -99,41 +99,41 @@ void CTEShatterSurface::Test( const Vector& current_origin, const QAngle& curren
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEShatterSurface, DT_TEShatterSurface)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecAngles), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecForce), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecForcePos), -1, SPROP_COORD),
-	SendPropFloat( SENDINFO(m_flWidth), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flHeight), 0, SPROP_NOSCALE ),
-	SendPropFloat( SENDINFO(m_flShardSize), 0, SPROP_NOSCALE ),
-	SendPropInt( SENDINFO(m_nSurfaceType), 2, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 0 ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 1 ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 2 ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 0 ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 1 ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 2 ), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEShatterSurface, DT_TEShatterSurface )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecAngles ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecForce ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecForcePos ), -1, SPROP_COORD ),
+				SendPropFloat( SENDINFO( m_flWidth ), 0, SPROP_NOSCALE ),
+				SendPropFloat( SENDINFO( m_flHeight ), 0, SPROP_NOSCALE ),
+				SendPropFloat( SENDINFO( m_flShardSize ), 0, SPROP_NOSCALE ),
+				SendPropInt( SENDINFO( m_nSurfaceType ), 2, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 0 ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 1 ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchFrontColor, 2 ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 0 ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 1 ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO_ARRAYELEM( m_uchBackColor, 2 ), 8, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TEShatterSurface objects
-static CTEShatterSurface g_TEShatterSurface( "Surface Shatter" );
+				static CTEShatterSurface g_TEShatterSurface( "Surface Shatter" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			entity - 
-//			index - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			entity -
+//			index -
 //-----------------------------------------------------------------------------
 void TE_ShatterSurface( IRecipientFilter& filter, float delay,
-	const Vector* pos, const QAngle* angle, const Vector* force, const Vector* forcepos, 
-	float width, float height, float shardsize, ShatterSurface_t surfacetype,
-	int front_r, int front_g, int front_b, int back_r, int back_g, int back_b)
+						const Vector* pos, const QAngle* angle, const Vector* force, const Vector* forcepos,
+						float width, float height, float shardsize, ShatterSurface_t surfacetype,
+						int front_r, int front_g, int front_b, int back_r, int back_g, int back_b )
 {
 	g_TEShatterSurface.m_vecOrigin			= *pos;
 	g_TEShatterSurface.m_vecAngles			= *angle;

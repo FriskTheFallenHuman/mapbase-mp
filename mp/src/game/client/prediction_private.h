@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,11 +13,11 @@
 #if !defined( PREDICTION_PRIVATE_H )
 #define PREDICTION_PRIVATE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // point on plane side epsilon
-#define	ON_EPSILON		0.1			
+#define	ON_EPSILON		0.1
 
 #define	MAX_FORWARD	6
 

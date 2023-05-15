@@ -32,15 +32,18 @@ public:
 	DECLARE_SERVERCLASS();
 
 	CWeaponImmolator( void );
-	
+
 	void Precache( void );
 	void PrimaryAttack( void );
 	void ItemPostFrame( void );
 
-	int CapabilitiesGet( void ) {	return bits_CAP_WEAPON_RANGE_ATTACK1;	}
+	int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 
-	void ImmolationDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore );
-	virtual bool WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );	
+	void ImmolationDamage( const CTakeDamageInfo& info, const Vector& vecSrcIn, float flRadius, int iClassIgnore );
+	virtual bool WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
 	virtual int	WeaponRangeAttack1Condition( float flDot, float flDist );
 
 	void Update();
@@ -48,7 +51,10 @@ public:
 
 	void StartImmolating();
 	void StopImmolating();
-	bool IsImmolating() { return m_flBurnRadius != 0.0; }
+	bool IsImmolating()
+	{
+		return m_flBurnRadius != 0.0;
+	}
 
 	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();
@@ -61,7 +67,7 @@ public:
 	Vector  m_vecImmolatorTarget;
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponImmolator, DT_WeaponImmolator)
+IMPLEMENT_SERVERCLASS_ST( CWeaponImmolator, DT_WeaponImmolator )
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( info_target_immolator, CPointEntity );
@@ -70,19 +76,19 @@ PRECACHE_WEAPON_REGISTER( weapon_immolator );
 
 BEGIN_DATADESC( CWeaponImmolator )
 
-	DEFINE_FIELD( m_beamIndex, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flBurnRadius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTimeLastUpdatedRadius, FIELD_TIME ),
-	DEFINE_FIELD( m_vecImmolatorTarget, FIELD_VECTOR ),
+DEFINE_FIELD( m_beamIndex, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_flBurnRadius, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flTimeLastUpdatedRadius, FIELD_TIME ),
+			  DEFINE_FIELD( m_vecImmolatorTarget, FIELD_VECTOR ),
 
-	DEFINE_ENTITYFUNC( UpdateThink ),
-END_DATADESC()
+			  DEFINE_ENTITYFUNC( UpdateThink ),
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t CWeaponImmolator::m_acttable[] = 
+			  acttable_t CWeaponImmolator::m_acttable[] =
 {
 	{	ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SNIPER_RIFLE, true }
 };
@@ -100,7 +106,7 @@ CWeaponImmolator::CWeaponImmolator( void )
 
 void CWeaponImmolator::StartImmolating()
 {
-	// Start the radius really tiny because we use radius == 0.0 to 
+	// Start the radius really tiny because we use radius == 0.0 to
 	// determine whether the immolator is operating or not.
 	m_flBurnRadius = 0.1;
 	m_flTimeLastUpdatedRadius = gpGlobals->curtime;
@@ -114,12 +120,12 @@ void CWeaponImmolator::StopImmolating()
 {
 	m_flBurnRadius = 0.0;
 	SetThink( NULL );
-	m_vecImmolatorTarget= IMMOLATOR_TARGET_INVALID;
+	m_vecImmolatorTarget = IMMOLATOR_TARGET_INVALID;
 	m_flNextPrimaryAttack = gpGlobals->curtime + 5.0;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponImmolator::Precache( void )
 {
@@ -129,7 +135,7 @@ void CWeaponImmolator::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponImmolator::PrimaryAttack( void )
 {
@@ -138,14 +144,14 @@ void CWeaponImmolator::PrimaryAttack( void )
 	if( !IsImmolating() )
 	{
 		StartImmolating();
-	} 
+	}
 }
 
 //-----------------------------------------------------------------------------
 // This weapon is said to have Line of Sight when it CAN'T see the target, but
 // can see a place near the target than can.
 //-----------------------------------------------------------------------------
-bool CWeaponImmolator::WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions )
+bool CWeaponImmolator::WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
 {
 	CAI_BaseNPC* npcOwner = GetOwner()->MyNPCPointer();
 
@@ -189,11 +195,11 @@ int CWeaponImmolator::WeaponRangeAttack1Condition( float flDot, float flDist )
 		return COND_NONE;
 	}
 
-	if ( flDist > m_fMaxRange1 )
+	if( flDist > m_fMaxRange1 )
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}
-	else if ( flDot < 0.5f )	// UNDONE: Why check this here? Isn't the AI checking this already?
+	else if( flDot < 0.5f )	// UNDONE: Why check this here? Isn't the AI checking this already?
 	{
 		return COND_NOT_FACING_ATTACK;
 	}
@@ -203,7 +209,7 @@ int CWeaponImmolator::WeaponRangeAttack1Condition( float flDot, float flDist )
 
 void CWeaponImmolator::UpdateThink( void )
 {
-	CBaseCombatCharacter *pOwner = GetOwner();
+	CBaseCombatCharacter* pOwner = GetOwner();
 
 	if( pOwner && !pOwner->IsAlive() )
 	{
@@ -228,7 +234,7 @@ void CWeaponImmolator::Update()
 	// Clamp
 	m_flBurnRadius = MIN( m_flBurnRadius, MAX_BURN_RADIUS );
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
 	Vector vecSrc;
 	Vector vecAiming;
@@ -236,11 +242,11 @@ void CWeaponImmolator::Update()
 	if( pOwner )
 	{
 		vecSrc	 = pOwner->Weapon_ShootPosition( );
-		vecAiming = pOwner->GetAutoaimVector(AUTOAIM_2DEGREES);
+		vecAiming = pOwner->GetAutoaimVector( AUTOAIM_2DEGREES );
 	}
 	else
 	{
-		CBaseCombatCharacter *pOwner = GetOwner();
+		CBaseCombatCharacter* pOwner = GetOwner();
 
 		vecSrc = pOwner->Weapon_ShootPosition( );
 		vecAiming = m_vecImmolatorTarget - vecSrc;
@@ -251,26 +257,26 @@ void CWeaponImmolator::Update()
 	UTIL_TraceLine( vecSrc, vecSrc + vecAiming * MAX_TRACE_LENGTH, MASK_SHOT, pOwner, COLLISION_GROUP_NONE, &tr );
 
 	int brightness;
-	brightness = 255 * (m_flBurnRadius/MAX_BURN_RADIUS);
-	UTIL_Beam(  vecSrc,
-				tr.endpos,
-				m_beamIndex,
-				0,		//halo index
-				0,		//frame start
-				2.0f,	//framerate
-				0.1f,	//life
-				20,		// width
-				1,		// endwidth
-				0,		// fadelength,
-				1,		// noise
+	brightness = 255 * ( m_flBurnRadius / MAX_BURN_RADIUS );
+	UTIL_Beam( vecSrc,
+			   tr.endpos,
+			   m_beamIndex,
+			   0,		//halo index
+			   0,		//frame start
+			   2.0f,	//framerate
+			   0.1f,	//life
+			   20,		// width
+			   1,		// endwidth
+			   0,		// fadelength,
+			   1,		// noise
 
-				0,		// red
-				255,	// green
-				0,		// blue,
+			   0,		// red
+			   255,	// green
+			   0,		// blue,
 
-				brightness, // bright
-				100  // speed
-				);
+			   brightness, // bright
+			   100  // speed
+			 );
 
 
 	if( tr.DidHitWorld() )
@@ -289,25 +295,25 @@ void CWeaponImmolator::Update()
 			// Push out to radius dist.
 			vecDest = tr.endpos + vecDest * m_flBurnRadius;
 
-			UTIL_Beam(  tr.endpos,
-						vecDest,
-						m_beamIndex,
-						0,		//halo index
-						0,		//frame start
-						2.0f,	//framerate
-						0.15f,	//life
-						20,		// width
-						1.75,	// endwidth
-						0.75,	// fadelength,
-						15,		// noise
+			UTIL_Beam( tr.endpos,
+					   vecDest,
+					   m_beamIndex,
+					   0,		//halo index
+					   0,		//frame start
+					   2.0f,	//framerate
+					   0.15f,	//life
+					   20,		// width
+					   1.75,	// endwidth
+					   0.75,	// fadelength,
+					   15,		// noise
 
-						0,		// red
-						255,	// green
-						0,		// blue,
+					   0,		// red
+					   255,	// green
+					   0,		// blue,
 
-						128, // bright
-						100  // speed
-						);
+					   128, // bright
+					   100  // speed
+					 );
 		}
 
 		// Immolator starts to hurt a few seconds after the effect is seen
@@ -330,7 +336,7 @@ void CWeaponImmolator::Update()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponImmolator::ItemPostFrame( void )
 {
@@ -339,25 +345,25 @@ void CWeaponImmolator::ItemPostFrame( void )
 
 
 
-void CWeaponImmolator::ImmolationDamage( const CTakeDamageInfo &info, const Vector &vecSrcIn, float flRadius, int iClassIgnore )
+void CWeaponImmolator::ImmolationDamage( const CTakeDamageInfo& info, const Vector& vecSrcIn, float flRadius, int iClassIgnore )
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity* pEntity = NULL;
 	trace_t		tr;
 	Vector		vecSpot;
 
 	Vector vecSrc = vecSrcIn;
 
 	// iterate on all entities in the vicinity.
-	for ( CEntitySphereQuery sphere( vecSrc, flRadius ); pEntity = sphere.GetCurrentEntity(); sphere.NextEntity() )
+	for( CEntitySphereQuery sphere( vecSrc, flRadius ); pEntity = sphere.GetCurrentEntity(); sphere.NextEntity() )
 	{
-		CBaseCombatCharacter *pBCC;
+		CBaseCombatCharacter* pBCC;
 
 		pBCC = pEntity->MyCombatCharacterPointer();
 
-		if ( pBCC && !pBCC->IsOnFire() )
+		if( pBCC && !pBCC->IsOnFire() )
 		{
 			// UNDONE: this should check a damage mask, not an ignore
-			if ( iClassIgnore != CLASS_NONE && pEntity->Classify() == iClassIgnore )
+			if( iClassIgnore != CLASS_NONE && pEntity->Classify() == iClassIgnore )
 			{
 				continue;
 			}

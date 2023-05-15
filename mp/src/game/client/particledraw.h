@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,13 +24,13 @@ class CParticleSubTexture;
 
 class ParticleDraw
 {
-friend class CParticleEffectBinding;
+	friend class CParticleEffectBinding;
 
 public:
 
-					ParticleDraw();
+	ParticleDraw();
 
-	void			Init( CMeshBuilder *pMeshBuilder, IMaterial *pMaterial, float fTimeDelta );
+	void			Init( CMeshBuilder* pMeshBuilder, IMaterial* pMaterial, float fTimeDelta );
 
 	// Time delta..
 	float			GetTimeDelta() const;
@@ -41,11 +41,11 @@ public:
 	// This can return NULL if the particle system is only being simulated.
 	CMeshBuilder*	GetMeshBuilder();
 
-	CParticleSubTexture	*m_pSubTexture;
+	CParticleSubTexture*	m_pSubTexture;
 
 private:
-	CMeshBuilder	*m_pMeshBuilder;
-	IMaterial		*m_pMaterial;
+	CMeshBuilder*	m_pMeshBuilder;
+	IMaterial*		m_pMaterial;
 	float			m_fTimeDelta;
 };
 
@@ -60,7 +60,7 @@ inline ParticleDraw::ParticleDraw()
 	m_pMaterial = 0;
 }
 
-inline void ParticleDraw::Init( CMeshBuilder *pMeshBuilder, IMaterial *pMaterial, float fTimeDelta )
+inline void ParticleDraw::Init( CMeshBuilder* pMeshBuilder, IMaterial* pMaterial, float fTimeDelta )
 {
 	m_pMeshBuilder = pMeshBuilder;
 	m_pMaterial = pMaterial;

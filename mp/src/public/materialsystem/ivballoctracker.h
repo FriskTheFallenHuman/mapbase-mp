@@ -12,9 +12,9 @@
 // By default, only enable this alloc tracking for a debug shaderapidx*.dll
 // (it uses about 0.25MB to track ~7000 allocations)
 #if defined(_DEBUG)
-#define ENABLE_VB_ALLOC_TRACKER 1
+	#define ENABLE_VB_ALLOC_TRACKER 1
 #else
-#define ENABLE_VB_ALLOC_TRACKER 0
+	#define ENABLE_VB_ALLOC_TRACKER 0
 #endif
 
 // This interface is actually exported by the shader API DLL.
@@ -25,11 +25,11 @@ abstract_class IVBAllocTracker
 {
 public:
 	// This should be called wherever VertexBuffers are allocated
-	virtual void CountVB(   void * buffer, bool isDynamic, int bufferSize, int vertexSize, VertexFormat_t fmt ) = 0;
+	virtual void CountVB( void* buffer, bool isDynamic, int bufferSize, int vertexSize, VertexFormat_t fmt ) = 0;
 	// This should be called wherever VertexBuffers are freed
-	virtual void UnCountVB( void * buffer ) = 0;
+	virtual void UnCountVB( void* buffer ) = 0;
 	// Track mesh allocations (set this before an allocation, clear it after)
-	virtual bool TrackMeshAllocations( const char * allocatorName ) = 0;
+	virtual bool TrackMeshAllocations( const char* allocatorName ) = 0;
 };
 
 #endif // IVBALLOCTRACKER_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,7 +9,7 @@
 #define IA32DETECT_H
 
 #ifdef PLATFORM_WINDOWS_PC
-#include <intrin.h>
+	#include <intrin.h>
 #endif
 
 /*
@@ -21,9 +21,9 @@ typedef	unsigned			bit;
 
 enum CPUVendor
 {
-    INTEL,
-    AMD,
-    UNKNOWN_VENDOR
+	INTEL,
+	AMD,
+	UNKNOWN_VENDOR
 };
 class ia32detect
 {
@@ -85,7 +85,7 @@ public:
 		bit	MCE			: 1; // Machine Check Exception
 		bit	CX8			: 1; // CMPXCHG8 Instruction
 		bit	APIC		: 1; // APIC On-Chip
-		bit	Reserved1	: 1; 
+		bit	Reserved1	: 1;
 		bit	SEP			: 1; // SYSENTER and SYSEXIT instructions
 		bit	MTRR		: 1; // Memory Type Range Registers
 		bit	PGE			: 1; // PTE Global Bit
@@ -112,28 +112,28 @@ public:
 #	pragma pack(pop)
 
 	tstring vendor_name;
-    CPUVendor vendor;
+	CPUVendor vendor;
 	tstring brand;
 	version_t version;
 	misc_t misc;
 	feature_t feature;
-	byte *cache;
+	byte* cache;
 
-	ia32detect ()
+	ia32detect()
 	{
 
-        cache = 0;
+		cache = 0;
 		uint32 m = init0();
 
-		uint32 *d = new uint32[m * 4];
+		uint32* d = new uint32[m * 4];
 
-		for (uint32 i = 1; i <= m; i++)
+		for( uint32 i = 1; i <= m; i++ )
 		{
 #ifdef COMPILER_MSVC64
-			__cpuid((int *) (d + (i-1) * 4), i);
+			__cpuid( ( int* )( d + ( i - 1 ) * 4 ), i );
 
 #else
-			uint32 *t = d + (i - 1) * 4;
+			uint32* t = d + ( i - 1 ) * 4;
 
 			__asm
 			{
@@ -150,99 +150,105 @@ public:
 #endif
 		}
 
-		if (m >= 1)
-			init1(d);
+		if( m >= 1 )
+		{
+			init1( d );
+		}
 
-		if (m >= 2)
-			init2(d[4] & 0xFF);
+		if( m >= 2 )
+		{
+			init2( d[4] & 0xFF );
+		}
 
 		delete [] d;
 
 		init0x80000000();
 
 
-        //-----------------------------------------------------------------------
-        // Get the vendor of the processor
-        //-----------------------------------------------------------------------
-        if (_tcscmp(vendor_name.c_str(), _T("GenuineIntel")) == 0)
-        {
-            vendor = INTEL;
+		//-----------------------------------------------------------------------
+		// Get the vendor of the processor
+		//-----------------------------------------------------------------------
+		if( _tcscmp( vendor_name.c_str(), _T( "GenuineIntel" ) ) == 0 )
+		{
+			vendor = INTEL;
 
-        }
-        else if (_tcscmp(vendor_name.c_str(), _T("AuthenticAMD")) == 0)
-        {
-            vendor = AMD;
+		}
+		else if( _tcscmp( vendor_name.c_str(), _T( "AuthenticAMD" ) ) == 0 )
+		{
+			vendor = AMD;
 
-        }
-        else 
-        {
-            vendor = UNKNOWN_VENDOR;
-        }
+		}
+		else
+		{
+			vendor = UNKNOWN_VENDOR;
+		}
 	}
 
-	const tstring version_text () const
+	const tstring version_text() const
 	{
 		tchar b[128];
 
-		_stprintf(b, _T("%d.%d.%d %s XVersion(%d.%d)"), 
-			version.Family, version.Model, version.Stepping, type_text(), version.XFamily, version.XModel);
+		_stprintf( b, _T( "%d.%d.%d %s XVersion(%d.%d)" ),
+				   version.Family, version.Model, version.Stepping, type_text(), version.XFamily, version.XModel );
 
-		return tstring(b);
+		return tstring( b );
 	}
 
 protected:
 
-	const tchar * type_text () const
+	const tchar* type_text() const
 	{
-		static const tchar *text[] =
+		static const tchar* text[] =
 		{
-			_T("Intel OEM Processor"),
-			_T("Intel OverDrive(R) Processor"),
-			_T("Intel Dual Processor"),
-			_T("reserved")
+			_T( "Intel OEM Processor" ),
+			_T( "Intel OverDrive(R) Processor" ),
+			_T( "Intel Dual Processor" ),
+			_T( "reserved" )
 		};
 
 		return text[version.Type];
 	}
 
-	const tstring brand_text () const
+	const tstring brand_text() const
 	{
-		static const tchar *text[] =
+		static const tchar* text[] =
 		{
-			_T("n/a"),
-			_T("Celeron"),
-			_T("Pentium III"),
-			_T("Pentium III Xeon"),
-			_T("reserved (4)"),
-			_T("reserved (5)"),
-			_T("Pentium III Mobile"),
-			_T("reserved (7)"),
-			_T("Pentium 4")
+			_T( "n/a" ),
+			_T( "Celeron" ),
+			_T( "Pentium III" ),
+			_T( "Pentium III Xeon" ),
+			_T( "reserved (4)" ),
+			_T( "reserved (5)" ),
+			_T( "Pentium III Mobile" ),
+			_T( "reserved (7)" ),
+			_T( "Pentium 4" )
 		};
 
-		if (misc.Brand < brand_invalid)
-			return tstring(text[misc.Brand]);
+		if( misc.Brand < brand_invalid )
+		{
+			return tstring( text[misc.Brand] );
+		}
 		else
 		{
 			tchar b[32];
 
-			_stprintf(b, _T("Brand %d (Update)"), misc.Brand);
+			_stprintf( b, _T( "Brand %d (Update)" ), misc.Brand );
 
-			return tstring(b);
+			return tstring( b );
 		}
 	}
 
 private:
 
-	uint32 init0 ()
+	uint32 init0()
 	{
 		uint32 m;
 
 		int data[4 + 1];
-		tchar * s1;
+		tchar* s1;
 
-		s1 = (tchar *) &data[1];
-		__cpuid(data, 0);
+		s1 = ( tchar* ) &data[1];
+		__cpuid( data, 0 );
 		data[4] = 0;
 		// Returns something like this:
 		//  data[0] = 0x0000000b
@@ -259,32 +265,36 @@ private:
 		return m;
 	}
 
-	void init1 (uint32 *d)
+	void init1( uint32* d )
 	{
-		version = *(version_t *)&d[0];
-		misc = *(misc_t *)&d[1];
-		feature = *(feature_t *)&d[3];
+		version = *( version_t* )&d[0];
+		misc = *( misc_t* )&d[1];
+		feature = *( feature_t* )&d[3];
 	}
 
-	void process2 (uint32 d, bool c[])
+	void process2( uint32 d, bool c[] )
 	{
-		if ((d & 0x80000000) == 0)
-			for (int i = 0; i < 32; i += 8)
-				c[(d >> i) & 0xFF] = true;
+		if( ( d & 0x80000000 ) == 0 )
+			for( int i = 0; i < 32; i += 8 )
+			{
+				c[( d >> i ) & 0xFF] = true;
+			}
 	}
 
-	void init2 (byte count)
+	void init2( byte count )
 	{
 		uint32 d[4];
 		bool c[256];
 
-		for (int ci1 = 0; ci1 < 256; ci1++)
+		for( int ci1 = 0; ci1 < 256; ci1++ )
+		{
 			c[ci1] = false;
+		}
 
-		for (int i = 0; i < count; i++)
+		for( int i = 0; i < count; i++ )
 		{
 #ifdef COMPILER_MSVC64
-			__cpuid((int *) d, 2);
+			__cpuid( ( int* ) d, 2 );
 #else
 			__asm
 			{
@@ -298,39 +308,45 @@ private:
 			}
 #endif
 
-			if (i == 0)
+			if( i == 0 )
+			{
 				d[0] &= 0xFFFFFF00;
+			}
 
-			process2(d[0], c);
-			process2(d[1], c);
-			process2(d[2], c);
-			process2(d[3], c);
+			process2( d[0], c );
+			process2( d[1], c );
+			process2( d[2], c );
+			process2( d[3], c );
 		}
 
 		int m = 0;
 
-		for (int ci2 = 0; ci2 < 256; ci2++)
-			if (c[ci2])
+		for( int ci2 = 0; ci2 < 256; ci2++ )
+			if( c[ci2] )
+			{
 				m++;
+			}
 
 		cache = new byte[m];
 
 		m = 0;
 
-		for (int ci3 = 1; ci3 < 256; ci3++)
-			if (c[ci3])
+		for( int ci3 = 1; ci3 < 256; ci3++ )
+			if( c[ci3] )
+			{
 				cache[m++] = ci3;
+			}
 
 		cache[m] = 0;
 	}
 
-	void init0x80000000 ()
+	void init0x80000000()
 	{
 		uint32 m;
 
 #ifdef COMPILER_MSVC64
 		int data[4];
-		__cpuid(data, 0x80000000);
+		__cpuid( data, 0x80000000 );
 		m = data[0];
 #else
 		__asm
@@ -341,16 +357,16 @@ private:
 		}
 #endif
 
-		if ((m & 0x80000000) != 0)
+		if( ( m & 0x80000000 ) != 0 )
 		{
-			uint32 *d = new uint32[(m - 0x80000000) * 4];
+			uint32* d = new uint32[( m - 0x80000000 ) * 4];
 
-			for (uint32 i = 0x80000001; i <= m; i++)
+			for( uint32 i = 0x80000001; i <= m; i++ )
 			{
-				uint32 *t = d + (i - 0x80000001) * 4;
+				uint32* t = d + ( i - 0x80000001 ) * 4;
 
 #ifdef COMPILER_MSVC64
-				__cpuid((int *) (d + (i - 0x80000001) * 4), i);
+				__cpuid( ( int* )( d + ( i - 0x80000001 ) * 4 ), i );
 #else
 				__asm
 				{
@@ -365,8 +381,10 @@ private:
 #endif
 			}
 
-			if (m >= 0x80000002)
-				brand = (tchar *)(d + 4);
+			if( m >= 0x80000002 )
+			{
+				brand = ( tchar* )( d + 4 );
+			}
 
 			// note the assignment to brand above does a copy, we need to delete
 			delete[] d;

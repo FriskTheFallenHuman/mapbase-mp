@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef PHYSICS_PROP_RAGDOLL_H
 #define PHYSICS_PROP_RAGDOLL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ragdoll_shared.h"
@@ -44,79 +44,100 @@ public:
 
 	DECLARE_SERVERCLASS();
 	// Don't treat as a live target
-	virtual bool IsAlive( void ) { return false; }
-	
-	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &dir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	virtual bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
-	virtual void Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity );
-	virtual void SetupBones( matrix3x4_t *pBoneToWorld, int boneMask );
-	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
-	virtual int VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
+	virtual bool IsAlive( void )
+	{
+		return false;
+	}
+
+	virtual void TraceAttack( const CTakeDamageInfo& info, const Vector& dir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	virtual bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
+	virtual void Teleport( const Vector* newPosition, const QAngle* newAngles, const Vector* newVelocity );
+	virtual void SetupBones( matrix3x4_t* pBoneToWorld, int boneMask );
+	virtual void VPhysicsUpdate( IPhysicsObject* pPhysics );
+	virtual int VPhysicsGetObjectList( IPhysicsObject** pList, int listMax );
 #ifdef MAPBASE
 	int VPhysicsGetFlesh();
 #endif
 
-	virtual int DrawDebugTextOverlays(void);
+	virtual int DrawDebugTextOverlays( void );
 
 	// Response system stuff
-	virtual IResponseSystem *GetResponseSystem();
+	virtual IResponseSystem* GetResponseSystem();
 	virtual void ModifyOrAppendCriteria( AI_CriteriaSet& set );
-	void SetSourceClassName( const char *pClassname );
+	void SetSourceClassName( const char* pClassname );
 #ifdef MAPBASE
-	const char *GetSourceClassNameAsCStr() { return STRING( m_strSourceClassName ); }
+	const char* GetSourceClassNameAsCStr()
+	{
+		return STRING( m_strSourceClassName );
+	}
 #endif
 
 	// Physics attacker
-	virtual CBasePlayer *HasPhysicsAttacker( float dt );
+	virtual CBasePlayer* HasPhysicsAttacker( float dt );
 
 	// locals
 	void InitRagdollAnimation( void );
-	void InitRagdoll( const Vector &forceVector, int forceBone, const Vector &forcePos, matrix3x4_t *pPrevBones, matrix3x4_t *pBoneToWorld, float dt, int collisionGroup, bool activateRagdoll, bool bWakeRagdoll = true );
-	
+	void InitRagdoll( const Vector& forceVector, int forceBone, const Vector& forcePos, matrix3x4_t* pPrevBones, matrix3x4_t* pBoneToWorld, float dt, int collisionGroup, bool activateRagdoll, bool bWakeRagdoll = true );
+
 	void RecheckCollisionFilter( void );
 	void SetDebrisThink();
 	void ClearFlagsThink( void );
-	inline ragdoll_t *GetRagdoll( void ) { return &m_ragdoll; }
+	inline ragdoll_t* GetRagdoll( void )
+	{
+		return &m_ragdoll;
+	}
 
-	virtual bool	IsRagdoll() { return true; }
+	virtual bool	IsRagdoll()
+	{
+		return true;
+	}
 
 	// Damage passing
-	virtual void	SetDamageEntity( CBaseEntity *pEntity );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
-	virtual void OnSave( IEntitySaveUtils *pUtils );
+	virtual void	SetDamageEntity( CBaseEntity* pEntity );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
+	virtual void OnSave( IEntitySaveUtils* pUtils );
 	virtual void OnRestore();
 
 	// Purpose: CDefaultPlayerPickupVPhysics
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
- 	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
+	virtual void OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason );
 	virtual AngularImpulse	PhysGunLaunchAngularImpulse();
-	bool HasPhysgunInteraction( const char *pszKeyName, const char *pszValue );
-	void HandleFirstCollisionInteractions( int index, gamevcollisionevent_t *pEvent );
+	bool HasPhysgunInteraction( const char* pszKeyName, const char* pszValue );
+	void HandleFirstCollisionInteractions( int index, gamevcollisionevent_t* pEvent );
 
-	void			SetUnragdoll( CBaseAnimating *pOther );
+	void			SetUnragdoll( CBaseAnimating* pOther );
 
-	void			SetBlendWeight( float weight ) { m_flBlendWeight = weight; }
+	void			SetBlendWeight( float weight )
+	{
+		m_flBlendWeight = weight;
+	}
 	void			SetOverlaySequence( Activity activity );
 	void			FadeOut( float flDelay = 0, float fadeTime = -1 );
 	bool			IsFading();
-	CBaseEntity*	GetKiller() { return m_hKiller; }
-	void			SetKiller( CBaseEntity *pKiller ) { m_hKiller = pKiller; }
-	void			GetAngleOverrideFromCurrentState( char *pOut, int size );
+	CBaseEntity*	GetKiller()
+	{
+		return m_hKiller;
+	}
+	void			SetKiller( CBaseEntity* pKiller )
+	{
+		m_hKiller = pKiller;
+	}
+	void			GetAngleOverrideFromCurrentState( char* pOut, int size );
 
 	void			DisableMotion( void );
 
 	// Input/Output
-	void			InputStartRadgollBoogie( inputdata_t &inputdata );
-	void			InputEnableMotion( inputdata_t &inputdata );
-	void			InputDisableMotion( inputdata_t &inputdata );
+	void			InputStartRadgollBoogie( inputdata_t& inputdata );
+	void			InputEnableMotion( inputdata_t& inputdata );
+	void			InputDisableMotion( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void			InputWake( inputdata_t &inputdata );
-	void			InputSleep( inputdata_t &inputdata );
+	void			InputWake( inputdata_t& inputdata );
+	void			InputSleep( inputdata_t& inputdata );
 #endif
-	void			InputTurnOn( inputdata_t &inputdata );
-	void			InputTurnOff( inputdata_t &inputdata );
-	void			InputFadeAndRemove( inputdata_t &inputdata );
+	void			InputTurnOn( inputdata_t& inputdata );
+	void			InputTurnOff( inputdata_t& inputdata );
+	void			InputFadeAndRemove( inputdata_t& inputdata );
 
 #ifdef MAPBASE_VSCRIPT
 	HSCRIPT			ScriptGetRagdollObject( int iIndex );
@@ -130,7 +151,7 @@ protected:
 	ragdoll_t			m_ragdoll;
 
 private:
-	void UpdateNetworkDataFromVPhysics( IPhysicsObject *pPhysics, int index );
+	void UpdateNetworkDataFromVPhysics( IPhysicsObject* pPhysics, int index );
 	void FadeOutThink();
 
 	bool				m_bStartDisabled;
@@ -162,19 +183,19 @@ private:
 	CNetworkVar( float, m_flBlendWeight );
 	CNetworkVar( int, m_nOverlaySequence );
 	float	m_flDefaultFadeScale;
-	
+
 	Vector				m_ragdollMins[RAGDOLL_MAX_ELEMENTS];
 	Vector				m_ragdollMaxs[RAGDOLL_MAX_ELEMENTS];
 };
 
-CBaseEntity *CreateServerRagdoll( CBaseAnimating *pAnimating, int forceBone, const CTakeDamageInfo &info, int collisionGroup, bool bUseLRURetirement = false );
-CRagdollProp *CreateServerRagdollAttached( CBaseAnimating *pAnimating, const Vector &vecForce, int forceBone, int collisionGroup, IPhysicsObject *pAttached, CBaseAnimating *pParentEntity, int boneAttach, const Vector &originAttached, int parentBoneAttach, const Vector &boneOrigin );
-void DetachAttachedRagdoll( CBaseEntity *pRagdollIn );
-void DetachAttachedRagdollsForEntity( CBaseEntity *pRagdollParent );
-CBaseAnimating *CreateServerRagdollSubmodel( CBaseAnimating *pOwner, const char *pModelName, const Vector &position, const QAngle &angles, int collisionGroup );
+CBaseEntity* CreateServerRagdoll( CBaseAnimating* pAnimating, int forceBone, const CTakeDamageInfo& info, int collisionGroup, bool bUseLRURetirement = false );
+CRagdollProp* CreateServerRagdollAttached( CBaseAnimating* pAnimating, const Vector& vecForce, int forceBone, int collisionGroup, IPhysicsObject* pAttached, CBaseAnimating* pParentEntity, int boneAttach, const Vector& originAttached, int parentBoneAttach, const Vector& boneOrigin );
+void DetachAttachedRagdoll( CBaseEntity* pRagdollIn );
+void DetachAttachedRagdollsForEntity( CBaseEntity* pRagdollParent );
+CBaseAnimating* CreateServerRagdollSubmodel( CBaseAnimating* pOwner, const char* pModelName, const Vector& position, const QAngle& angles, int collisionGroup );
 
-bool Ragdoll_IsPropRagdoll( CBaseEntity *pEntity );
-void Ragdoll_GetAngleOverrideString( char *pOut, int size, CBaseEntity *pEntity );
-ragdoll_t *Ragdoll_GetRagdoll( CBaseEntity *pEntity );
+bool Ragdoll_IsPropRagdoll( CBaseEntity* pEntity );
+void Ragdoll_GetAngleOverrideString( char* pOut, int size, CBaseEntity* pEntity );
+ragdoll_t* Ragdoll_GetRagdoll( CBaseEntity* pEntity );
 
 #endif // PHYSICS_PROP_RAGDOLL_H

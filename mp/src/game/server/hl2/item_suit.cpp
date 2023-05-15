@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -28,35 +28,41 @@ public:
 	DECLARE_CLASS( CItemSuit, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
 		SetModel( "models/items/hevsuit.mdl" );
 		BaseClass::Spawn( );
-		
+
 		CollisionProp()->UseTriggerBounds( false, 0 );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/hevsuit.mdl");
+		PrecacheModel( "models/items/hevsuit.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if ( pPlayer->IsSuitEquipped() )
+		if( pPlayer->IsSuitEquipped() )
+		{
 			return FALSE;
+		}
 
-		if ( m_spawnflags & SF_SUIT_SHORTLOGON )
-			UTIL_EmitSoundSuit(pPlayer->edict(), "!HEV_A0");		// short version of suit logon,
+		if( m_spawnflags & SF_SUIT_SHORTLOGON )
+		{
+			UTIL_EmitSoundSuit( pPlayer->edict(), "!HEV_A0" );    // short version of suit logon,
+		}
 		else
-			UTIL_EmitSoundSuit(pPlayer->edict(), "!HEV_AAx");	// long version of suit logon
+		{
+			UTIL_EmitSoundSuit( pPlayer->edict(), "!HEV_AAx" );    // long version of suit logon
+		}
 
 #ifdef MAPBASE
-		pPlayer->EquipSuit(!HasSpawnFlags(SF_SUIT_SHORTLOGON));
+		pPlayer->EquipSuit( !HasSpawnFlags( SF_SUIT_SHORTLOGON ) );
 #else
 		pPlayer->EquipSuit();
 #endif
-				
+
 		return true;
 	}
 };
 
-LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
+LINK_ENTITY_TO_CLASS( item_suit, CItemSuit );

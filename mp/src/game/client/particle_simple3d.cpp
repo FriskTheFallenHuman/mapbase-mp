@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -20,7 +20,7 @@ float anglemod( float a );
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-CSmartPtr<CSimple3DEmitter> CSimple3DEmitter::Create( const char *pDebugName )	
+CSmartPtr<CSimple3DEmitter> CSimple3DEmitter::Create( const char* pDebugName )
 {
 	CSimple3DEmitter* pSimple3DEmitter = new CSimple3DEmitter( pDebugName );
 
@@ -30,17 +30,17 @@ CSmartPtr<CSimple3DEmitter> CSimple3DEmitter::Create( const char *pDebugName )
 }
 
 
-void CSimple3DEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
+void CSimple3DEmitter::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
-	Particle3D *pParticle = (Particle3D*)pIterator->GetFirst();
-	while ( pParticle )
+	Particle3D* pParticle = ( Particle3D* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		const float	timeDelta = pIterator->GetTimeDelta();
 
 		//Should this particle die?
 		pParticle->m_flLifeRemaining -= timeDelta;
 
-		if ( pParticle->IsDead() )
+		if( pParticle->IsDead() )
 		{
 			pIterator->RemoveParticle( pParticle );
 		}
@@ -58,41 +58,41 @@ void CSimple3DEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
 			// ---------------------------------------
 			// Decay towards flat
 			// ---------------------------------------
-			if (pParticle->m_flAngSpeed == 0 || trace.fraction != 1.0)
+			if( pParticle->m_flAngSpeed == 0 || trace.fraction != 1.0 )
 			{
-				pParticle->m_vAngles.x = anglemod(pParticle->m_vAngles.x);
-				if (pParticle->m_vAngles.x < 180)
+				pParticle->m_vAngles.x = anglemod( pParticle->m_vAngles.x );
+				if( pParticle->m_vAngles.x < 180 )
 				{
-					if (fabs(pParticle->m_vAngles.x - 90) > 0.5)
+					if( fabs( pParticle->m_vAngles.x - 90 ) > 0.5 )
 					{
-						pParticle->m_vAngles.x = 0.5*pParticle->m_vAngles.x + 46;
+						pParticle->m_vAngles.x = 0.5 * pParticle->m_vAngles.x + 46;
 					}
 				}
 				else
 				{
-					if (fabs(pParticle->m_vAngles.x - 270) > 0.5)
+					if( fabs( pParticle->m_vAngles.x - 270 ) > 0.5 )
 					{
-						pParticle->m_vAngles.x = 0.5*pParticle->m_vAngles.x + 135;
+						pParticle->m_vAngles.x = 0.5 * pParticle->m_vAngles.x + 135;
 					}
 				}
 
-				pParticle->m_vAngles.y = anglemod(pParticle->m_vAngles.y);
-				if (fabs(pParticle->m_vAngles.y) > 0.5)
+				pParticle->m_vAngles.y = anglemod( pParticle->m_vAngles.y );
+				if( fabs( pParticle->m_vAngles.y ) > 0.5 )
 				{
-					pParticle->m_vAngles.y = 0.5*pParticle->m_vAngles.z;
+					pParticle->m_vAngles.y = 0.5 * pParticle->m_vAngles.z;
 				}
 			}
 		}
 
-		pParticle = (Particle3D*)pIterator->GetNext();
+		pParticle = ( Particle3D* )pIterator->GetNext();
 	}
 }
 
 
-void CSimple3DEmitter::RenderParticles( CParticleRenderIterator *pIterator )
+void CSimple3DEmitter::RenderParticles( CParticleRenderIterator* pIterator )
 {
-	const Particle3D *pParticle = (const Particle3D *)pIterator->GetFirst();
-	while ( pParticle )
+	const Particle3D* pParticle = ( const Particle3D* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		float sortKey = CurrentViewForward().Dot( CurrentViewOrigin() - pParticle->m_Pos );
 
@@ -101,11 +101,11 @@ void CSimple3DEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 		// -------------------------------------------------------
 		Vector	color;
 		Vector vFaceNorm;
-		Vector vCameraToFace = (pParticle->m_Pos - CurrentViewOrigin());
-		AngleVectors(pParticle->m_vAngles,&vFaceNorm);
-		float flFacing = DotProduct(vCameraToFace,vFaceNorm);
+		Vector vCameraToFace = ( pParticle->m_Pos - CurrentViewOrigin() );
+		AngleVectors( pParticle->m_vAngles, &vFaceNorm );
+		float flFacing = DotProduct( vCameraToFace, vFaceNorm );
 
-		if (flFacing <= 0)
+		if( flFacing <= 0 )
 		{
 			color[0] = pParticle->m_uchFrontColor[0] / 255.0f;
 			color[1] = pParticle->m_uchFrontColor[1] / 255.0f;
@@ -125,9 +125,9 @@ void CSimple3DEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 			color,
 			pParticle->GetFadeFraction(),
 			pParticle->m_uchSize,
-			pParticle->m_vAngles);
+			pParticle->m_vAngles );
 
-		pParticle = (const Particle3D *)pIterator->GetNext( sortKey );
+		pParticle = ( const Particle3D* )pIterator->GetNext( sortKey );
 	}
 }
 

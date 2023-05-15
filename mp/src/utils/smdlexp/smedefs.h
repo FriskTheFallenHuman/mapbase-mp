@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,34 +24,64 @@
 //
 class SmdExportClass : public SceneExport
 {
-	friend BOOL CALLBACK ExportOptionsDlgProc(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam);
+	friend BOOL CALLBACK ExportOptionsDlgProc( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam );
 	friend class DumpModelTEP;
 	friend class DumpDeformsTEP;
 
 public:
-	CONSTRUCTOR				SmdExportClass	(void);
-	DESTRUCTOR				~SmdExportClass	(void);
+	CONSTRUCTOR				SmdExportClass( void );
+	DESTRUCTOR				~SmdExportClass( void );
 
 	// Required by classes derived from SceneExport
-	virtual int				ExtCount		(void)		{ return 1;						}
-	virtual const TCHAR*	Ext				(int i)		{ return DEFAULT_EXT;			}
-	virtual const TCHAR*	LongDesc		(void)		{ return _T("Valve Skeletal Model Exporter for 3D Studio Max");	}
-	virtual const TCHAR*	ShortDesc		(void)		{ return _T("Valve SMD");			}
-	virtual const TCHAR*	AuthorName		(void)		{ return _T("Valve, LLC");			}
-	virtual const TCHAR*	CopyrightMessage(void)		{ return _T("Copyright (c) 1998, Valve LLC");			}
-	virtual const TCHAR*	OtherMessage1	(void)		{ return _T("");				}
-	virtual const TCHAR*	OtherMessage2	(void)		{ return _T("");				}
-	virtual unsigned int	Version			(void)		{ return 201;					}
-	virtual void			ShowAbout		(HWND hWnd)	{ return;						}
+	virtual int				ExtCount( void )
+	{
+		return 1;
+	}
+	virtual const TCHAR*	Ext( int i )
+	{
+		return DEFAULT_EXT;
+	}
+	virtual const TCHAR*	LongDesc( void )
+	{
+		return _T( "Valve Skeletal Model Exporter for 3D Studio Max" );
+	}
+	virtual const TCHAR*	ShortDesc( void )
+	{
+		return _T( "Valve SMD" );
+	}
+	virtual const TCHAR*	AuthorName( void )
+	{
+		return _T( "Valve, LLC" );
+	}
+	virtual const TCHAR*	CopyrightMessage( void )
+	{
+		return _T( "Copyright (c) 1998, Valve LLC" );
+	}
+	virtual const TCHAR*	OtherMessage1( void )
+	{
+		return _T( "" );
+	}
+	virtual const TCHAR*	OtherMessage2( void )
+	{
+		return _T( "" );
+	}
+	virtual unsigned int	Version( void )
+	{
+		return 201;
+	}
+	virtual void			ShowAbout( HWND hWnd )
+	{
+		return;
+	}
 	// virtual int				DoExport		(const TCHAR *name, ExpInterface *ei, Interface *i);
-	virtual int		DoExport(const TCHAR *name,ExpInterface *ei,Interface *i, BOOL suppressPrompts=FALSE,DWORD options=0); // Export	file
+	virtual int		DoExport( const TCHAR* name, ExpInterface* ei, Interface* i, BOOL suppressPrompts = FALSE, DWORD options = 0 ); // Export	file
 
 	// Integer constants for this class
 	enum
-		{
+	{
 		MAX_NAME_CHARS			= 70,
 		UNDESIRABLE_NODE_MARKER	= -7777
-		};
+	};
 
 	// For keeping info about each (non-ignored) 3dsMax node in the tree
 	typedef struct
@@ -65,7 +95,7 @@ public:
 		float		zRotFirstFrame;				// 1st frame's Z rotation
 		bool		isMirrored;
 	} MaxNode;
-	MaxNode		*m_rgmaxnode;		// array of nodes
+	MaxNode*		m_rgmaxnode;		// array of nodes
 	long		m_imaxnodeMac;		// # of nodes
 
 	// Animation metrics (gleaned from 3dsMax and cached for convenience)
@@ -75,11 +105,11 @@ public:
 	int			m_tpf;		// ticks-per-frame
 
 private:
-	BOOL					CollectNodes	(ExpInterface *expiface);
-	BOOL					DumpBones		(FILE *pFile, ExpInterface *pexpiface);
-	BOOL					DumpRotations	(FILE *pFile, ExpInterface *pexpiface);
-	BOOL					DumpModel		(FILE *pFile, ExpInterface *pexpiface);
-	BOOL					DumpDeforms		(FILE *pFile, ExpInterface *pexpiface);
+	BOOL					CollectNodes( ExpInterface* expiface );
+	BOOL					DumpBones( FILE* pFile, ExpInterface* pexpiface );
+	BOOL					DumpRotations( FILE* pFile, ExpInterface* pexpiface );
+	BOOL					DumpModel( FILE* pFile, ExpInterface* pexpiface );
+	BOOL					DumpDeforms( FILE* pFile, ExpInterface* pexpiface );
 
 	// Is this MAX file just the reference frame, or an animation?
 	// If TRUE, the "bones" and "mesh" files will be created.
@@ -94,12 +124,30 @@ private:
 class SmdExportClassDesc : public ClassDesc
 {
 public:
-	int				IsPublic		(void)					{ return TRUE;								}
-	void *			Create			(BOOL loading=FALSE)	{ return new SmdExportClass;				}
-	const TCHAR *	ClassName		(void)					{ return _T("SmdExport");					}
-	SClass_ID 		SuperClassID	(void)					{ return SCENE_EXPORT_CLASS_ID;				}
-	Class_ID 		ClassID			(void)					{ return Class_ID(0x774a43fd, 0x794d2210);	}
-	const TCHAR *	Category		(void)					{ return _T("");							}
+	int				IsPublic( void )
+	{
+		return TRUE;
+	}
+	void* 			Create( BOOL loading = FALSE )
+	{
+		return new SmdExportClass;
+	}
+	const TCHAR* 	ClassName( void )
+	{
+		return _T( "SmdExport" );
+	}
+	SClass_ID 		SuperClassID( void )
+	{
+		return SCENE_EXPORT_CLASS_ID;
+	}
+	Class_ID 		ClassID( void )
+	{
+		return Class_ID( 0x774a43fd, 0x794d2210 );
+	}
+	const TCHAR* 	Category( void )
+	{
+		return _T( "" );
+	}
 };
 
 
@@ -110,7 +158,7 @@ public:
 class CountNodesTEP : public ITreeEnumProc
 {
 public:
-	virtual int				callback(INode *node);
+	virtual int				callback( INode* node );
 	int						m_cNodes;		// running count of nodes
 };
 
@@ -122,8 +170,8 @@ public:
 class CollectNodesTEP : public ITreeEnumProc
 {
 public:
-	virtual int				callback(INode *node);
-	SmdExportClass			*m_phec;
+	virtual int				callback( INode* node );
+	SmdExportClass*			m_phec;
 };
 
 
@@ -134,9 +182,9 @@ public:
 class DumpNodesTEP : public ITreeEnumProc
 {
 public:
-	virtual int				callback(INode *node);
-	FILE					*m_pfile;		// write to this file
-	SmdExportClass			*m_phec;
+	virtual int				callback( INode* node );
+	FILE*					m_pfile;		// write to this file
+	SmdExportClass*			m_phec;
 };
 
 
@@ -147,11 +195,11 @@ public:
 class DumpFrameRotationsTEP : public ITreeEnumProc
 {
 public:
-	virtual int				callback(INode *node);
-	void					cleanup(void);
-	FILE					*m_pfile;		// write to this file
+	virtual int				callback( INode* node );
+	void					cleanup( void );
+	FILE*					m_pfile;		// write to this file
 	TimeValue				m_tvToDump;		// dump snapshot at this frame time
-	SmdExportClass			*m_phec;
+	SmdExportClass*			m_phec;
 };
 
 //===================================================================
@@ -161,18 +209,18 @@ public:
 class DumpModelTEP : public ITreeEnumProc
 {
 public:
-	virtual int				callback(INode *node);
-	void					cleanup(void);
-	FILE					*m_pfile;		// write to this file
+	virtual int				callback( INode* node );
+	void					cleanup( void );
+	FILE*					m_pfile;		// write to this file
 	TimeValue				m_tvToDump;		// dump snapshot at this frame time
-	SmdExportClass			*m_phec;
-	IPhyContextExport		*m_mcExport;
-	IPhysiqueExport			*m_phyExport;
-    Modifier				*m_phyMod;
-	Modifier				*m_bonesProMod;
-	BonesPro_WeightArray	*m_wa;
+	SmdExportClass*			m_phec;
+	IPhyContextExport*		m_mcExport;
+	IPhysiqueExport*			m_phyExport;
+	Modifier*				m_phyMod;
+	Modifier*				m_bonesProMod;
+	BonesPro_WeightArray*	m_wa;
 private:
-	Point3					Pt3GetRVertexNormal(RVertex *prvertex, DWORD smGroupFace);
+	Point3					Pt3GetRVertexNormal( RVertex* prvertex, DWORD smGroupFace );
 	void					DumpWeights( int iVertex );
 };
 

@@ -8,7 +8,7 @@
 #ifndef SHAREDDEFS_H
 #define SHAREDDEFS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define TICK_INTERVAL			(gpGlobals->interval_per_tick)
@@ -20,9 +20,9 @@
 #define TICK_NEVER_THINK		(-1)
 
 #if defined( TF_DLL )
-#define ANIMATION_CYCLE_BITS		10
+	#define ANIMATION_CYCLE_BITS		10
 #else
-#define ANIMATION_CYCLE_BITS		15
+	#define ANIMATION_CYCLE_BITS		15
 #endif
 #define ANIMATION_CYCLE_MINFRAC		(1.0f / (1<<ANIMATION_CYCLE_BITS))
 
@@ -32,7 +32,7 @@ class CViewVectors
 public:
 	CViewVectors() {}
 
-	CViewVectors( 
+	CViewVectors(
 		Vector vView,
 		Vector vHullMin,
 		Vector vHullMax,
@@ -56,17 +56,17 @@ public:
 
 	// Height above entity position where the viewer's eye is.
 	Vector m_vView;
-	
+
 	Vector m_vHullMin;
 	Vector m_vHullMax;
-	
+
 	Vector m_vDuckHullMin;
 	Vector m_vDuckHullMax;
 	Vector m_vDuckView;
-	
+
 	Vector m_vObsHullMin;
 	Vector m_vObsHullMax;
-	
+
 	Vector m_vDeadViewHeight;
 };
 
@@ -108,7 +108,7 @@ public:
 #else
 	#define TIME_TO_DUCK		0.4
 	#define TIME_TO_DUCK_MS		400.0f
-#endif 
+#endif
 #define TIME_TO_UNDUCK		0.2
 #define TIME_TO_UNDUCK_MS	200.0f
 
@@ -116,9 +116,9 @@ public:
 #define MAX_WEAPON_POSITIONS	20	// max number of items within a slot
 #define MAX_ITEM_TYPES			6	// hud item selection slots
 #ifdef MAPBASE
-#define MAX_WEAPONS				999	// Max number of weapons available
+	#define MAX_WEAPONS				999	// Max number of weapons available
 #else
-#define MAX_WEAPONS				48	// Max number of weapons available
+	#define MAX_WEAPONS				48	// Max number of weapons available
 #endif // MAPBASE
 
 #define MAX_ITEMS				5	// hard coded item types
@@ -126,12 +126,12 @@ public:
 #define WEAPON_NOCLIP			-1	// clip sizes set to this tell the weapon it doesn't use a clip
 
 #ifdef MAPBASE
-// No idea of why this exist
-#define	MAX_AMMO_TYPES	999
-#define MAX_AMMO_SLOTS  MAX_AMMO_TYPES
+	// No idea of why this exist
+	#define	MAX_AMMO_TYPES	999
+	#define MAX_AMMO_SLOTS  MAX_AMMO_TYPES
 #else
-#define	MAX_AMMO_TYPES	32		// ???
-#define MAX_AMMO_SLOTS  32		// not really slots
+	#define	MAX_AMMO_TYPES	32		// ???
+	#define MAX_AMMO_SLOTS  32		// not really slots
 #endif // MAPBASE
 
 #define HUD_PRINTNOTIFY		1
@@ -223,10 +223,10 @@ enum CastVote
 #define bits_SUIT_DEVICE_BREATHER	0x00000004
 
 #ifdef MAPBASE
-// Custom suit power devices
-#define bits_SUIT_DEVICE_CUSTOM0	0x00000008
-#define bits_SUIT_DEVICE_CUSTOM1	0x00000010
-#define bits_SUIT_DEVICE_CUSTOM2	0x00000020
+	// Custom suit power devices
+	#define bits_SUIT_DEVICE_CUSTOM0	0x00000008
+	#define bits_SUIT_DEVICE_CUSTOM1	0x00000010
+	#define bits_SUIT_DEVICE_CUSTOM2	0x00000020
 #endif
 
 #define MAX_SUIT_DEVICES			6		// Mapbase boosts this to 6 for the custom devices
@@ -355,7 +355,7 @@ enum
 #define	HITGROUP_HEAD		1
 #define	HITGROUP_CHEST		2
 #define	HITGROUP_STOMACH	3
-#define HITGROUP_LEFTARM	4	
+#define HITGROUP_LEFTARM	4
 #define HITGROUP_RIGHTARM	5
 #define HITGROUP_LEFTLEG	6
 #define HITGROUP_RIGHTLEG	7
@@ -389,20 +389,20 @@ enum PLAYER_ANIM
 };
 
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
-// HL2 has 600 gravity by default
-// NOTE: The discrete ticks can have quantization error, so these numbers are biased a little to
-// make the heights more exact
-#define PLAYER_FATAL_FALL_SPEED		922.5f // approx 60 feet sqrt( 2 * gravity * 60 * 12 )
-#define PLAYER_MAX_SAFE_FALL_SPEED	526.5f // approx 20 feet sqrt( 2 * gravity * 20 * 12 )
-#define PLAYER_LAND_ON_FLOATING_OBJECT	173 // Can fall another 173 in/sec without getting hurt
-#define PLAYER_MIN_BOUNCE_SPEED		173
-#define PLAYER_FALL_PUNCH_THRESHOLD 303.0f // won't punch player's screen/make scrape noise unless player falling at least this fast - at least a 76" fall (sqrt( 2 * g * 76))
+	// HL2 has 600 gravity by default
+	// NOTE: The discrete ticks can have quantization error, so these numbers are biased a little to
+	// make the heights more exact
+	#define PLAYER_FATAL_FALL_SPEED		922.5f // approx 60 feet sqrt( 2 * gravity * 60 * 12 )
+	#define PLAYER_MAX_SAFE_FALL_SPEED	526.5f // approx 20 feet sqrt( 2 * gravity * 20 * 12 )
+	#define PLAYER_LAND_ON_FLOATING_OBJECT	173 // Can fall another 173 in/sec without getting hurt
+	#define PLAYER_MIN_BOUNCE_SPEED		173
+	#define PLAYER_FALL_PUNCH_THRESHOLD 303.0f // won't punch player's screen/make scrape noise unless player falling at least this fast - at least a 76" fall (sqrt( 2 * g * 76))
 #else
-#define PLAYER_FATAL_FALL_SPEED		1024 // approx 60 feet
-#define PLAYER_MAX_SAFE_FALL_SPEED	580 // approx 20 feet
-#define PLAYER_LAND_ON_FLOATING_OBJECT	200 // Can go another 200 units without getting hurt
-#define PLAYER_MIN_BOUNCE_SPEED		200
-#define PLAYER_FALL_PUNCH_THRESHOLD (float)350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
+	#define PLAYER_FATAL_FALL_SPEED		1024 // approx 60 feet
+	#define PLAYER_MAX_SAFE_FALL_SPEED	580 // approx 20 feet
+	#define PLAYER_LAND_ON_FLOATING_OBJECT	200 // Can go another 200 units without getting hurt
+	#define PLAYER_MIN_BOUNCE_SPEED		200
+	#define PLAYER_FALL_PUNCH_THRESHOLD (float)350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 #endif
 #define DAMAGE_FOR_FALL_SPEED		100.0f / ( PLAYER_FATAL_FALL_SPEED - PLAYER_MAX_SAFE_FALL_SPEED ) // damage per unit per second.
 
@@ -422,8 +422,8 @@ enum PLAYER_ANIM
 // CTakeDamageInfo::DebugGetDamageTypeString(unsigned int DamageType, char *outbuf, unsigned int outbuflength )
 #define DMG_GENERIC			0			// generic damage -- do not use if you want players to flinch and bleed!
 #define DMG_CRUSH			(1 << 0)	// crushed by falling or moving object. 
-										// NOTE: It's assumed crush damage is occurring as a result of physics collision, so no extra physics force is generated by crush damage.
-										// DON'T use DMG_CRUSH when damaging entities unless it's the result of a physics collision. You probably want DMG_CLUB instead.
+// NOTE: It's assumed crush damage is occurring as a result of physics collision, so no extra physics force is generated by crush damage.
+// DON'T use DMG_CRUSH when damaging entities unless it's the result of a physics collision. You probably want DMG_CLUB instead.
 #define DMG_BULLET			(1 << 1)	// shot
 #define DMG_SLASH			(1 << 2)	// cut, clawed, stabbed
 #define DMG_BURN			(1 << 3)	// heat burned
@@ -449,7 +449,7 @@ enum PLAYER_ANIM
 #define DMG_SLOWBURN		(1 << 21)	// in an oven
 
 #define DMG_REMOVENORAGDOLL	(1<<22)		// with this bit OR'd in, no ragdoll will be created, and the target will be quietly removed.
-										// use this to kill an entity that you've already got a server-side ragdoll for
+// use this to kill an entity that you've already got a server-side ragdoll for
 
 #define DMG_PHYSGUN			(1<<23)		// Hit by manipulator. Usually doesn't do any damage.
 #define DMG_PLASMA			(1<<24)		// Shot by Cremator
@@ -475,7 +475,8 @@ enum PLAYER_ANIM
 #define	DAMAGE_AIM				3
 
 // Spectator Movement modes
-enum {
+enum
+{
 	OBS_MODE_NONE = 0,	// not in spectator mode
 	OBS_MODE_DEATHCAM,	// special mode for death cam animation
 	OBS_MODE_FREEZECAM,	// zooms to a target, and freeze-frames on them
@@ -491,7 +492,8 @@ enum {
 #define LAST_PLAYER_OBSERVERMODE	OBS_MODE_ROAMING
 
 // Force Camera Restrictions with mp_forcecamera
-enum {
+enum
+{
 	OBS_ALLOW_ALL = 0,	// allow all modes, all targets
 	OBS_ALLOW_TEAM,		// allow only own team & first person, no PIP
 	OBS_ALLOW_NONE,		// don't allow any spectating after death (fixed & fade to black)
@@ -541,9 +543,9 @@ enum
 
 typedef enum
 {
-	USE_OFF = 0, 
-	USE_ON = 1, 
-	USE_SET = 2, 
+	USE_OFF = 0,
+	USE_ON = 1,
+	USE_SET = 2,
 	USE_TOGGLE = 3
 } USE_TYPE;
 
@@ -582,7 +584,7 @@ enum PassengerRole_t
 	VEHICLE_ROLE_NONE = -1,
 
 	VEHICLE_ROLE_DRIVER = 0,	// Only one driver
-	
+
 	LAST_SHARED_VEHICLE_ROLE,
 };
 
@@ -602,55 +604,55 @@ enum
 // entity flags, CBaseEntity::m_iEFlags
 enum
 {
-	EFL_KILLME	=				(1<<0),	// This entity is marked for death -- This allows the game to actually delete ents at a safe time
-	EFL_DORMANT	=				(1<<1),	// Entity is dormant, no updates to client
-	EFL_NOCLIP_ACTIVE =			(1<<2),	// Lets us know when the noclip command is active.
-	EFL_SETTING_UP_BONES =		(1<<3),	// Set while a model is setting up its bones.
-	EFL_KEEP_ON_RECREATE_ENTITIES = (1<<4), // This is a special entity that should not be deleted when we restart entities only
+	EFL_KILLME	=	( 1 << 0 ),	// This entity is marked for death -- This allows the game to actually delete ents at a safe time
+	EFL_DORMANT	=	( 1 << 1 ),	// Entity is dormant, no updates to client
+	EFL_NOCLIP_ACTIVE =	( 1 << 2 ),	// Lets us know when the noclip command is active.
+	EFL_SETTING_UP_BONES =	( 1 << 3 ),	// Set while a model is setting up its bones.
+	EFL_KEEP_ON_RECREATE_ENTITIES = ( 1 << 4 ), // This is a special entity that should not be deleted when we restart entities only
 
 	//Tony; BUG?? I noticed this today while performing stealz on flag 16! look at the definition of the flag above...
-	EFL_HAS_PLAYER_CHILD=		(1<<4),	// One of the child entities is a player.
+	EFL_HAS_PLAYER_CHILD =	( 1 << 4 ),	// One of the child entities is a player.
 
-	EFL_DIRTY_SHADOWUPDATE =	(1<<5),	// Client only- need shadow manager to update the shadow...
-	EFL_NOTIFY =				(1<<6),	// Another entity is watching events on this entity (used by teleport)
+	EFL_DIRTY_SHADOWUPDATE =	( 1 << 5 ),	// Client only- need shadow manager to update the shadow...
+	EFL_NOTIFY =	( 1 << 6 ),	// Another entity is watching events on this entity (used by teleport)
 
 	// The default behavior in ShouldTransmit is to not send an entity if it doesn't
 	// have a model. Certain entities want to be sent anyway because all the drawing logic
 	// is in the client DLL. They can set this flag and the engine will transmit them even
 	// if they don't have a model.
-	EFL_FORCE_CHECK_TRANSMIT =	(1<<7),
+	EFL_FORCE_CHECK_TRANSMIT =	( 1 << 7 ),
 
-	EFL_BOT_FROZEN =			(1<<8),	// This is set on bots that are frozen.
-	EFL_SERVER_ONLY =			(1<<9),	// Non-networked entity.
-	EFL_NO_AUTO_EDICT_ATTACH =	(1<<10), // Don't attach the edict; we're doing it explicitly
-	
+	EFL_BOT_FROZEN =	( 1 << 8 ),	// This is set on bots that are frozen.
+	EFL_SERVER_ONLY =	( 1 << 9 ),	// Non-networked entity.
+	EFL_NO_AUTO_EDICT_ATTACH =	( 1 << 10 ), // Don't attach the edict; we're doing it explicitly
+
 	// Some dirty bits with respect to abs computations
-	EFL_DIRTY_ABSTRANSFORM =	(1<<11),
-	EFL_DIRTY_ABSVELOCITY =		(1<<12),
-	EFL_DIRTY_ABSANGVELOCITY =	(1<<13),
-	EFL_DIRTY_SURROUNDING_COLLISION_BOUNDS	= (1<<14),
-	EFL_DIRTY_SPATIAL_PARTITION = (1<<15),
-	EFL_PLUGIN_BASED_BOT		= (1<<16),		//this is set on plugin bots, so that if any games include their own bot code, they won't affect plugin bots.
+	EFL_DIRTY_ABSTRANSFORM =	( 1 << 11 ),
+	EFL_DIRTY_ABSVELOCITY =	( 1 << 12 ),
+	EFL_DIRTY_ABSANGVELOCITY =	( 1 << 13 ),
+	EFL_DIRTY_SURROUNDING_COLLISION_BOUNDS	= ( 1 << 14 ),
+	EFL_DIRTY_SPATIAL_PARTITION = ( 1 << 15 ),
+	EFL_PLUGIN_BASED_BOT		= ( 1 << 16 ),		//this is set on plugin bots, so that if any games include their own bot code, they won't affect plugin bots.
 
-	EFL_IN_SKYBOX =				(1<<17),	// This is set if the entity detects that it's in the skybox.
-											// This forces it to pass the "in PVS" for transmission.
-	EFL_USE_PARTITION_WHEN_NOT_SOLID = (1<<18),	// Entities with this flag set show up in the partition even when not solid
-	EFL_TOUCHING_FLUID =		(1<<19),	// Used to determine if an entity is floating
+	EFL_IN_SKYBOX =	( 1 << 17 ),	// This is set if the entity detects that it's in the skybox.
+	// This forces it to pass the "in PVS" for transmission.
+	EFL_USE_PARTITION_WHEN_NOT_SOLID = ( 1 << 18 ),	// Entities with this flag set show up in the partition even when not solid
+	EFL_TOUCHING_FLUID =	( 1 << 19 ),	// Used to determine if an entity is floating
 
 	// FIXME: Not really sure where I should add this...
-	EFL_IS_BEING_LIFTED_BY_BARNACLE = (1<<20),
-	EFL_NO_ROTORWASH_PUSH =		(1<<21),		// I shouldn't be pushed by the rotorwash
-	EFL_NO_THINK_FUNCTION =		(1<<22),
-	EFL_NO_GAME_PHYSICS_SIMULATION = (1<<23),
+	EFL_IS_BEING_LIFTED_BY_BARNACLE = ( 1 << 20 ),
+	EFL_NO_ROTORWASH_PUSH =	( 1 << 21 ),		// I shouldn't be pushed by the rotorwash
+	EFL_NO_THINK_FUNCTION =	( 1 << 22 ),
+	EFL_NO_GAME_PHYSICS_SIMULATION = ( 1 << 23 ),
 
-	EFL_CHECK_UNTOUCH =			(1<<24),
-	EFL_DONTBLOCKLOS =			(1<<25),		// I shouldn't block NPC line-of-sight
-	EFL_DONTWALKON =			(1<<26),		// NPC;s should not walk on this entity
-	EFL_NO_DISSOLVE =			(1<<27),		// These guys shouldn't dissolve
-	EFL_NO_MEGAPHYSCANNON_RAGDOLL = (1<<28),	// Mega physcannon can't ragdoll these guys.
-	EFL_NO_WATER_VELOCITY_CHANGE  =	(1<<29),	// Don't adjust this entity's velocity when transitioning into water
-	EFL_NO_PHYSCANNON_INTERACTION =	(1<<30),	// Physcannon can't pick these up or punt them
-	EFL_NO_DAMAGE_FORCES =		(1<<31),	// Doesn't accept forces from physics damage
+	EFL_CHECK_UNTOUCH =	( 1 << 24 ),
+	EFL_DONTBLOCKLOS =	( 1 << 25 ),		// I shouldn't block NPC line-of-sight
+	EFL_DONTWALKON =	( 1 << 26 ),		// NPC;s should not walk on this entity
+	EFL_NO_DISSOLVE =	( 1 << 27 ),		// These guys shouldn't dissolve
+	EFL_NO_MEGAPHYSCANNON_RAGDOLL = ( 1 << 28 ),	// Mega physcannon can't ragdoll these guys.
+	EFL_NO_WATER_VELOCITY_CHANGE  =	( 1 << 29 ),	// Don't adjust this entity's velocity when transitioning into water
+	EFL_NO_PHYSCANNON_INTERACTION =	( 1 << 30 ),	// Physcannon can't pick these up or punt them
+	EFL_NO_DAMAGE_FORCES =	( 1 << 31 ),	// Doesn't accept forces from physics damage
 };
 
 //-----------------------------------------------------------------------------
@@ -687,8 +689,8 @@ class CBaseEntity;
 //-----------------------------------------------------------------------------
 class CBaseEntity;
 #ifdef MAPBASE_VSCRIPT
-// For the VScript functions in FireBUlletsInfo_t
-FORWARD_DECLARE_HANDLE( HSCRIPT );
+	// For the VScript functions in FireBUlletsInfo_t
+	FORWARD_DECLARE_HANDLE( HSCRIPT );
 #endif
 
 enum FireBulletsFlags_t
@@ -730,7 +732,7 @@ struct FireBulletsInfo_t
 #endif
 	}
 
-	FireBulletsInfo_t( int nShots, const Vector &vecSrc, const Vector &vecDir, const Vector &vecSpread, float flDistance, int nAmmoType, bool bPrimaryAttack = true )
+	FireBulletsInfo_t( int nShots, const Vector& vecSrc, const Vector& vecDir, const Vector& vecSpread, float flDistance, int nAmmoType, bool bPrimaryAttack = true )
 	{
 		m_iShots = nShots;
 		m_vecSrc = vecSrc;
@@ -767,8 +769,8 @@ struct FireBulletsInfo_t
 	int m_iPlayerDamage;	// Damage to be used instead of m_flDamage if we hit a player
 	int m_nFlags;			// See FireBulletsFlags_t
 	float m_flDamageForceScale;
-	CBaseEntity *m_pAttacker;
-	CBaseEntity *m_pAdditionalIgnoreEnt;
+	CBaseEntity* m_pAttacker;
+	CBaseEntity* m_pAdditionalIgnoreEnt;
 	bool m_bPrimaryAttack;
 	bool m_bUseServerRandomSeed;
 #ifdef MAPBASE
@@ -777,53 +779,125 @@ struct FireBulletsInfo_t
 	// After much trial and error, I decided to just add more excluded entities to the bullet firing info.
 	// It could've just been a single entity called "m_pAdditionalIgnoreEnt2", but since these are just pointers,
 	// I planned ahead and made it a CUtlVector instead.
-	CUtlVector<CBaseEntity*> *m_pIgnoreEntList;
+	CUtlVector<CBaseEntity*>* m_pIgnoreEntList;
 #endif
 
 #ifdef MAPBASE_VSCRIPT // These functions are used by VScript to expose FireBulletsInfo_t to users.
-	int GetShots() { return m_iShots; }
-	void SetShots( int value ) { m_iShots = value; }
+	int GetShots()
+	{
+		return m_iShots;
+	}
+	void SetShots( int value )
+	{
+		m_iShots = value;
+	}
 
-	Vector GetSource() { return m_vecSrc; }
-	void SetSource( Vector value ) { m_vecSrc = value; }
-	Vector GetDirShooting() { return m_vecDirShooting; }
-	void SetDirShooting( Vector value ) { m_vecDirShooting = value; }
-	Vector GetSpread() { return m_vecSpread; }
-	void SetSpread( Vector value ) { m_vecSpread = value; }
+	Vector GetSource()
+	{
+		return m_vecSrc;
+	}
+	void SetSource( Vector value )
+	{
+		m_vecSrc = value;
+	}
+	Vector GetDirShooting()
+	{
+		return m_vecDirShooting;
+	}
+	void SetDirShooting( Vector value )
+	{
+		m_vecDirShooting = value;
+	}
+	Vector GetSpread()
+	{
+		return m_vecSpread;
+	}
+	void SetSpread( Vector value )
+	{
+		m_vecSpread = value;
+	}
 
-	float GetDistance() { return m_flDistance; }
-	void SetDistance( float value ) { m_flDistance = value; }
+	float GetDistance()
+	{
+		return m_flDistance;
+	}
+	void SetDistance( float value )
+	{
+		m_flDistance = value;
+	}
 
-	int GetAmmoType() { return m_iAmmoType; }
-	void SetAmmoType( int value ) { m_iAmmoType = value; }
+	int GetAmmoType()
+	{
+		return m_iAmmoType;
+	}
+	void SetAmmoType( int value )
+	{
+		m_iAmmoType = value;
+	}
 
-	int GetTracerFreq() { return m_iTracerFreq; }
-	void SetTracerFreq( int value ) { m_iTracerFreq = value; }
+	int GetTracerFreq()
+	{
+		return m_iTracerFreq;
+	}
+	void SetTracerFreq( int value )
+	{
+		m_iTracerFreq = value;
+	}
 
-	float GetDamage() { return m_flDamage; }
-	void SetDamage( float value ) { m_flDamage = value; }
-	int GetPlayerDamage() { return m_iPlayerDamage; }
-	void SetPlayerDamage( float value ) { m_iPlayerDamage = value; }
+	float GetDamage()
+	{
+		return m_flDamage;
+	}
+	void SetDamage( float value )
+	{
+		m_flDamage = value;
+	}
+	int GetPlayerDamage()
+	{
+		return m_iPlayerDamage;
+	}
+	void SetPlayerDamage( float value )
+	{
+		m_iPlayerDamage = value;
+	}
 
-	int GetFlags() { return m_nFlags; }
-	void SetFlags( float value ) { m_nFlags = value; }
+	int GetFlags()
+	{
+		return m_nFlags;
+	}
+	void SetFlags( float value )
+	{
+		m_nFlags = value;
+	}
 
-	float GetDamageForceScale() { return m_flDamageForceScale; }
-	void SetDamageForceScale( float value ) { m_flDamageForceScale = value; }
+	float GetDamageForceScale()
+	{
+		return m_flDamageForceScale;
+	}
+	void SetDamageForceScale( float value )
+	{
+		m_flDamageForceScale = value;
+	}
 
 	HSCRIPT ScriptGetAttacker();
 	void ScriptSetAttacker( HSCRIPT value );
 	HSCRIPT ScriptGetAdditionalIgnoreEnt();
 	void ScriptSetAdditionalIgnoreEnt( HSCRIPT value );
 
-	bool GetPrimaryAttack() { return m_bPrimaryAttack; }
-	void SetPrimaryAttack( bool value ) { m_bPrimaryAttack = value; }
+	bool GetPrimaryAttack()
+	{
+		return m_bPrimaryAttack;
+	}
+	void SetPrimaryAttack( bool value )
+	{
+		m_bPrimaryAttack = value;
+	}
 #endif
 };
 
 //-----------------------------------------------------------------------------
 // Purpose: Data for making the MOVETYPE_STEP entities appear to simulate every frame
-//  We precompute the simulation and then meter it out each tick during networking of the 
+//  We precompute the simulation and then meter it out each tick during networking of the
 //  entities origin and orientation.  Uses a bit more bandwidth, but it solves the NPCs interacting
 //  with elevators/lifts bugs.
 //-----------------------------------------------------------------------------
@@ -901,18 +975,18 @@ struct EmitSound_t
 	{
 	}
 
-	EmitSound_t( const CSoundParameters &src );
+	EmitSound_t( const CSoundParameters& src );
 
 	int							m_nChannel;
-	char const					*m_pSoundName;
+	char const*					m_pSoundName;
 	float						m_flVolume;
 	soundlevel_t				m_SoundLevel;
 	int							m_nFlags;
 	int							m_nPitch;
 	int							m_nSpecialDSP;
-	const Vector				*m_pOrigin;
+	const Vector*				m_pOrigin;
 	float						m_flSoundTime; ///< NOT DURATION, but rather, some absolute time in the future until which this sound should be delayed
-	float						*m_pflSoundDuration;
+	float*						m_pflSoundDuration;
 	bool						m_bEmitCloseCaption;
 	bool						m_bWarnOnMissingCloseCaption;
 	bool						m_bWarnOnDirectWaveReference;
@@ -979,21 +1053,21 @@ enum
 // Commentary Mode
 //-----------------------------------------------------------------------------
 #if defined(TF_DLL) || defined(TF_CLIENT_DLL)
-#define GAME_HAS_NO_USE_KEY
+	#define GAME_HAS_NO_USE_KEY
 
-#if defined( SPROP_COORD )
-#undef SPROP_COORD
-#endif
+	#if defined( SPROP_COORD )
+		#undef SPROP_COORD
+	#endif
 
-#define SPROP_COORD SPROP_COORD_MP
+	#define SPROP_COORD SPROP_COORD_MP
 
 #endif
 
 // The player's method of starting / stopping commentary
 #ifdef GAME_HAS_NO_USE_KEY
-#define COMMENTARY_BUTTONS		(IN_ATTACK | IN_ATTACK2 | IN_USE)
+	#define COMMENTARY_BUTTONS		(IN_ATTACK | IN_ATTACK2 | IN_USE)
 #else
-#define COMMENTARY_BUTTONS		(IN_USE)
+	#define COMMENTARY_BUTTONS		(IN_USE)
 #endif
 
 enum tprbGameInfo_e
@@ -1026,7 +1100,7 @@ enum tprbGameInfo_e
 
 //Tony; including sdk_shareddefs.h because I use it in a _lot_ of places that needs to be seen before many other things.
 #ifdef SDK_DLL
-#include "sdk_shareddefs.h"
+	#include "sdk_shareddefs.h"
 #endif
 
 #define TEAM_TRAIN_MAX_TEAMS			4

@@ -18,7 +18,7 @@
 #ifndef CLIENTRENDERTARTETS_H_
 #define CLIENTRENDERTARTETS_H_
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "game/client/iclientrendertargets.h"		// base class with interfaces called by the engine
@@ -35,12 +35,12 @@ class CBaseClientRenderTargets : public IClientRenderTargets
 	DECLARE_CLASS_GAMEROOT( CBaseClientRenderTargets, IClientRenderTargets );
 public:
 	// Interface called by engine during material system startup.
-	virtual void InitClientRenderTargets ( IMaterialSystem* pMaterialSystem, IMaterialSystemHardwareConfig* pHardwareConfig, int iWaterTextureSize = 1024, int iCameraTextureSize = 256 );
+	virtual void InitClientRenderTargets( IMaterialSystem* pMaterialSystem, IMaterialSystemHardwareConfig* pHardwareConfig, int iWaterTextureSize = 1024, int iCameraTextureSize = 256 );
 	// Shutdown all custom render targets here.
-	virtual void ShutdownClientRenderTargets ( void );
+	virtual void ShutdownClientRenderTargets( void );
 
 protected:
-	
+
 	// Standard render textures used by most mods-- Classes inheriting from
 	// this can choose to init these or not depending on their needs.
 

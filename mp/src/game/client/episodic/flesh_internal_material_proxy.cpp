@@ -1,5 +1,5 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=====================================================================================//
@@ -13,13 +13,13 @@
 #include "tier0/memdbgon.h"
 
 class C_FleshEffectTarget;
-void AddFleshProxyTarget( C_FleshEffectTarget *pTarget );
-void RemoveFleshProxy( C_FleshEffectTarget *pTarget );
+void AddFleshProxyTarget( C_FleshEffectTarget* pTarget );
+void RemoveFleshProxy( C_FleshEffectTarget* pTarget );
 
 //=============================================================================
-// 
+//
 //  Flesh effect target (used for orchestrating the "Invisible Alyx" moment
-//	
+//
 //=============================================================================
 
 class C_FleshEffectTarget : public C_BaseEntity
@@ -27,14 +27,18 @@ class C_FleshEffectTarget : public C_BaseEntity
 	DECLARE_CLASS( C_FleshEffectTarget, C_BaseEntity );
 
 public:
-	float GetRadius( void ) 
+	float GetRadius( void )
 	{
-		if ( m_flScaleTime <= 0.0f )
+		if( m_flScaleTime <= 0.0f )
+		{
 			return m_flRadius;
+		}
 
 		float dt = ( gpGlobals->curtime - m_flScaleStartTime );
-		if ( dt >= m_flScaleTime )
+		if( dt >= m_flScaleTime )
+		{
 			return m_flRadius;
+		}
 
 		return SimpleSplineRemapVal( ( dt / m_flScaleTime ), 0.0f, 1.0f, m_flStartRadius, m_flRadius );
 	}
@@ -49,7 +53,7 @@ public:
 	{
 		BaseClass::OnDataChanged( updateType );
 
-		if ( updateType == DATA_UPDATE_CREATED )
+		if( updateType == DATA_UPDATE_CREATED )
 		{
 			// Add us to the list of flesh proxy targets
 			AddFleshProxyTarget( this );
@@ -64,38 +68,38 @@ public:
 	DECLARE_CLIENTCLASS();
 };
 
-void RecvProxy_FleshEffect_Radius( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_FleshEffect_Radius( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_FleshEffectTarget	*pTarget = (C_FleshEffectTarget	*) pStruct;
+	C_FleshEffectTarget*	pTarget = ( C_FleshEffectTarget* ) pStruct;
 	float flRadius	= pData->m_Value.m_Float;
 
 	//If changed, update our internal information
-	if ( pTarget->m_flRadius != flRadius )
+	if( pTarget->m_flRadius != flRadius )
 	{
 		pTarget->m_flStartRadius	= pTarget->m_flRadius;
 		pTarget->m_flScaleStartTime = gpGlobals->curtime;
 	}
-	
+
 	pTarget->m_flRadius = flRadius;
 }
 
 IMPLEMENT_CLIENTCLASS_DT( C_FleshEffectTarget, DT_FleshEffectTarget, CFleshEffectTarget )
-	RecvPropFloat( RECVINFO(m_flRadius), 0, RecvProxy_FleshEffect_Radius ),
-	RecvPropFloat( RECVINFO(m_flScaleTime) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flRadius ), 0, RecvProxy_FleshEffect_Radius ),
+			   RecvPropFloat( RECVINFO( m_flScaleTime ) ),
+			   END_RECV_TABLE()
 
-CUtlVector< C_FleshEffectTarget * >	g_FleshProxyTargets;
+			   CUtlVector< C_FleshEffectTarget* >	g_FleshProxyTargets;
 
-void AddFleshProxyTarget( C_FleshEffectTarget *pTarget )
+void AddFleshProxyTarget( C_FleshEffectTarget* pTarget )
 {
 	// Take it!
 	g_FleshProxyTargets.AddToTail( pTarget );
 }
 
-void RemoveFleshProxy( C_FleshEffectTarget *pTarget )
+void RemoveFleshProxy( C_FleshEffectTarget* pTarget )
 {
 	int nIndex = g_FleshProxyTargets.Find( pTarget );
-	if ( nIndex != g_FleshProxyTargets.InvalidIndex() )
+	if( nIndex != g_FleshProxyTargets.InvalidIndex() )
 	{
 		g_FleshProxyTargets.Remove( nIndex );
 	}
@@ -107,17 +111,17 @@ class CFleshInteriorMaterialProxy : public CEntityMaterialProxy
 public:
 	CFleshInteriorMaterialProxy();
 	virtual ~CFleshInteriorMaterialProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( C_BaseEntity *pEntity );
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( C_BaseEntity* pEntity );
+	virtual IMaterial* GetMaterial();
 
 private:
-	IMaterialVar *m_pMaterialParamFleshEffectCenterRadius1;
-	IMaterialVar *m_pMaterialParamFleshEffectCenterRadius2;
-	IMaterialVar *m_pMaterialParamFleshEffectCenterRadius3;
-	IMaterialVar *m_pMaterialParamFleshEffectCenterRadius4;
-	IMaterialVar *m_pMaterialParamFleshGlobalOpacity;
-	IMaterialVar *m_pMaterialParamFleshSubsurfaceTint;
+	IMaterialVar* m_pMaterialParamFleshEffectCenterRadius1;
+	IMaterialVar* m_pMaterialParamFleshEffectCenterRadius2;
+	IMaterialVar* m_pMaterialParamFleshEffectCenterRadius3;
+	IMaterialVar* m_pMaterialParamFleshEffectCenterRadius4;
+	IMaterialVar* m_pMaterialParamFleshGlobalOpacity;
+	IMaterialVar* m_pMaterialParamFleshSubsurfaceTint;
 };
 
 CFleshInteriorMaterialProxy::CFleshInteriorMaterialProxy()
@@ -135,40 +139,52 @@ CFleshInteriorMaterialProxy::~CFleshInteriorMaterialProxy()
 	// Do nothing
 }
 
-bool CFleshInteriorMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CFleshInteriorMaterialProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	bool bFoundVar = false;
 
 	m_pMaterialParamFleshEffectCenterRadius1 = pMaterial->FindVar( "$FleshEffectCenterRadius1", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	m_pMaterialParamFleshEffectCenterRadius2 = pMaterial->FindVar( "$FleshEffectCenterRadius2", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	m_pMaterialParamFleshEffectCenterRadius3 = pMaterial->FindVar( "$FleshEffectCenterRadius3", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	m_pMaterialParamFleshEffectCenterRadius4 = pMaterial->FindVar( "$FleshEffectCenterRadius4", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	m_pMaterialParamFleshGlobalOpacity = pMaterial->FindVar( "$FleshGlobalOpacity", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	m_pMaterialParamFleshSubsurfaceTint = pMaterial->FindVar( "$FleshSubsurfaceTint", &bFoundVar, false );
-	if ( bFoundVar == false)
+	if( bFoundVar == false )
+	{
 		return false;
+	}
 
 	return true;
 }
 
-void CFleshInteriorMaterialProxy::OnBind( C_BaseEntity *pEnt )
+void CFleshInteriorMaterialProxy::OnBind( C_BaseEntity* pEnt )
 {
-	IMaterialVar *pParams[] =
+	IMaterialVar* pParams[] =
 	{
 		m_pMaterialParamFleshEffectCenterRadius1,
 		m_pMaterialParamFleshEffectCenterRadius2,
@@ -177,13 +193,15 @@ void CFleshInteriorMaterialProxy::OnBind( C_BaseEntity *pEnt )
 	};
 
 	float vEffectCenterRadius[4];
-	for ( int i = 0; i < ARRAYSIZE( pParams ); i++ )
+	for( int i = 0; i < ARRAYSIZE( pParams ); i++ )
 	{
-		if ( i < g_FleshProxyTargets.Count() )
+		if( i < g_FleshProxyTargets.Count() )
 		{
 			// Setup the target
-			if ( g_FleshProxyTargets[i]->IsAbsQueriesValid() == false )
+			if( g_FleshProxyTargets[i]->IsAbsQueriesValid() == false )
+			{
 				continue;
+			}
 
 			Vector vecAbsOrigin = g_FleshProxyTargets[i]->GetAbsOrigin();
 			vEffectCenterRadius[0] = vecAbsOrigin.x;
@@ -203,7 +221,7 @@ void CFleshInteriorMaterialProxy::OnBind( C_BaseEntity *pEnt )
 
 	// Subsurface texture. NOTE: This texture bleeds through the color of the flesh texture so expect
 	//   to have to set this brighter than white to really see the subsurface texture glow through.
-	if ( m_pMaterialParamFleshSubsurfaceTint != NULL )
+	if( m_pMaterialParamFleshSubsurfaceTint != NULL )
 	{
 		float vSubsurfaceTintColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -214,10 +232,12 @@ void CFleshInteriorMaterialProxy::OnBind( C_BaseEntity *pEnt )
 	}
 }
 
-IMaterial *CFleshInteriorMaterialProxy::GetMaterial()
+IMaterial* CFleshInteriorMaterialProxy::GetMaterial()
 {
-	if ( m_pMaterialParamFleshEffectCenterRadius1 == NULL)
+	if( m_pMaterialParamFleshEffectCenterRadius1 == NULL )
+	{
 		return NULL;
+	}
 
 	return m_pMaterialParamFleshEffectCenterRadius1->GetOwningMaterial();
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,19 +21,19 @@
 class CLampBeamProxy : public CEntityMaterialProxy
 {
 public:
-						CLampBeamProxy( void );
+	CLampBeamProxy( void );
 	virtual				~CLampBeamProxy( void );
-	virtual bool		Init( IMaterial *pMaterial, KeyValues* pKeyValues );
-	virtual void		OnBind( C_BaseEntity *pC_BaseEntity );
+	virtual bool		Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void		OnBind( C_BaseEntity* pC_BaseEntity );
 
-	virtual IMaterial *	GetMaterial();
+	virtual IMaterial* 	GetMaterial();
 
 private:
-	IMaterialVar		*m_pFadeValue;
+	IMaterialVar*		m_pFadeValue;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CLampBeamProxy::CLampBeamProxy( void )
 {
@@ -41,7 +41,7 @@ CLampBeamProxy::CLampBeamProxy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CLampBeamProxy::~CLampBeamProxy( void )
 {
@@ -49,9 +49,9 @@ CLampBeamProxy::~CLampBeamProxy( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Get pointer to the color value
-// Input  : *pMaterial - 
+// Input  : *pMaterial -
 //-----------------------------------------------------------------------------
-bool CLampBeamProxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues )
+bool CLampBeamProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	assert( pMaterial );
 
@@ -62,15 +62,17 @@ bool CLampBeamProxy::Init( IMaterial *pMaterial, KeyValues* pKeyValues )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pC_BaseEntity - 
+// Purpose:
+// Input  : *pC_BaseEntity -
 //-----------------------------------------------------------------------------
 #define FADE_DIST	150
 
-void CLampBeamProxy::OnBind( C_BaseEntity *pEnt )
+void CLampBeamProxy::OnBind( C_BaseEntity* pEnt )
 {
-	if ( !m_pFadeValue )
+	if( !m_pFadeValue )
+	{
 		return;
+	}
 
 	Vector vecLocal = pEnt->GetAbsOrigin() - CurrentViewOrigin();
 	VectorNormalize( vecLocal );
@@ -80,10 +82,12 @@ void CLampBeamProxy::OnBind( C_BaseEntity *pEnt )
 	m_pFadeValue->SetFloatValue( fade );
 }
 
-IMaterial *CLampBeamProxy::GetMaterial()
+IMaterial* CLampBeamProxy::GetMaterial()
 {
-	if ( !m_pFadeValue )
+	if( !m_pFadeValue )
+	{
 		return NULL;
+	}
 
 	return m_pFadeValue->GetOwningMaterial();
 }

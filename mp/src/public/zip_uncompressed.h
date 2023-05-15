@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ZIP_UNCOMPRESSED_H
 #define ZIP_UNCOMPRESSED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "datamap.h"
@@ -37,44 +37,44 @@ struct ZIP_EndOfCentralDirRecord
 struct ZIP_FileHeader
 {
 	DECLARE_BYTESWAP_DATADESC();
-	unsigned int	signature; //  4 bytes PK12 
-	unsigned short	versionMadeBy; // version made by 2 bytes 
-	unsigned short	versionNeededToExtract; // version needed to extract 2 bytes 
-	unsigned short	flags; // general purpose bit flag 2 bytes 
-	unsigned short	compressionMethod; // compression method 2 bytes 
-	unsigned short	lastModifiedTime; // last mod file time 2 bytes 
-	unsigned short	lastModifiedDate; // last mod file date 2 bytes 
-	unsigned int	crc32; // crc-32 4 bytes 
-	unsigned int	compressedSize; // compressed size 4 bytes 
-	unsigned int	uncompressedSize; // uncompressed size 4 bytes 
-	unsigned short	fileNameLength; // file name length 2 bytes 
-	unsigned short	extraFieldLength; // extra field length 2 bytes 
-	unsigned short	fileCommentLength; // file comment length 2 bytes 
-	unsigned short	diskNumberStart; // disk number start 2 bytes 
-	unsigned short	internalFileAttribs; // internal file attributes 2 bytes 
-	unsigned int	externalFileAttribs; // external file attributes 4 bytes 
-	unsigned int	relativeOffsetOfLocalHeader; // relative offset of local header 4 bytes 
-	// file name (variable size) 
-	// extra field (variable size) 
-	// file comment (variable size) 
+	unsigned int	signature; //  4 bytes PK12
+	unsigned short	versionMadeBy; // version made by 2 bytes
+	unsigned short	versionNeededToExtract; // version needed to extract 2 bytes
+	unsigned short	flags; // general purpose bit flag 2 bytes
+	unsigned short	compressionMethod; // compression method 2 bytes
+	unsigned short	lastModifiedTime; // last mod file time 2 bytes
+	unsigned short	lastModifiedDate; // last mod file date 2 bytes
+	unsigned int	crc32; // crc-32 4 bytes
+	unsigned int	compressedSize; // compressed size 4 bytes
+	unsigned int	uncompressedSize; // uncompressed size 4 bytes
+	unsigned short	fileNameLength; // file name length 2 bytes
+	unsigned short	extraFieldLength; // extra field length 2 bytes
+	unsigned short	fileCommentLength; // file comment length 2 bytes
+	unsigned short	diskNumberStart; // disk number start 2 bytes
+	unsigned short	internalFileAttribs; // internal file attributes 2 bytes
+	unsigned int	externalFileAttribs; // external file attributes 4 bytes
+	unsigned int	relativeOffsetOfLocalHeader; // relative offset of local header 4 bytes
+	// file name (variable size)
+	// extra field (variable size)
+	// file comment (variable size)
 };
 
 struct ZIP_LocalFileHeader
 {
 	DECLARE_BYTESWAP_DATADESC();
-	unsigned int	signature; //local file header signature 4 bytes PK34 
-	unsigned short	versionNeededToExtract; // version needed to extract 2 bytes 
-	unsigned short	flags; // general purpose bit flag 2 bytes 
-	unsigned short	compressionMethod; // compression method 2 bytes 
-	unsigned short	lastModifiedTime; // last mod file time 2 bytes 
-	unsigned short	lastModifiedDate; // last mod file date 2 bytes 
-	unsigned int	crc32; // crc-32 4 bytes 
-	unsigned int	compressedSize; // compressed size 4 bytes 
-	unsigned int	uncompressedSize; // uncompressed size 4 bytes 
-	unsigned short	fileNameLength; // file name length 2 bytes 
-	unsigned short	extraFieldLength; // extra field length 2 bytes 
-	// file name (variable size) 
-	// extra field (variable size) 
+	unsigned int	signature; //local file header signature 4 bytes PK34
+	unsigned short	versionNeededToExtract; // version needed to extract 2 bytes
+	unsigned short	flags; // general purpose bit flag 2 bytes
+	unsigned short	compressionMethod; // compression method 2 bytes
+	unsigned short	lastModifiedTime; // last mod file time 2 bytes
+	unsigned short	lastModifiedDate; // last mod file date 2 bytes
+	unsigned int	crc32; // crc-32 4 bytes
+	unsigned int	compressedSize; // compressed size 4 bytes
+	unsigned int	uncompressedSize; // uncompressed size 4 bytes
+	unsigned short	fileNameLength; // file name length 2 bytes
+	unsigned short	extraFieldLength; // extra field length 2 bytes
+	// file name (variable size)
+	// extra field (variable size)
 };
 
 //=============================================================================//
@@ -90,7 +90,7 @@ struct ZIP_LocalFileHeader
 #define XZIP_COMMENT_LENGTH		32
 #define INVALID_PRELOAD_ENTRY	( (unsigned short)-1 )
 
-struct ZIP_PreloadHeader 
+struct ZIP_PreloadHeader
 {
 	DECLARE_BYTESWAP_DATADESC();
 	unsigned int Version;					// VERSION
@@ -102,8 +102,8 @@ struct ZIP_PreloadHeader
 struct ZIP_PreloadDirectoryEntry
 {
 	DECLARE_BYTESWAP_DATADESC();
-    unsigned int Length;					// Length of the file's preload data in bytes
-    unsigned int DataOffset;				// Offset the file data in the .zip, relative to the logical beginning of the preload file.
+	unsigned int Length;					// Length of the file's preload data in bytes
+	unsigned int DataOffset;				// Offset the file data in the .zip, relative to the logical beginning of the preload file.
 };
 
 struct ZIP_PreloadRemapTable

@@ -1,24 +1,24 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef DT_UTLVECTOR_COMMON_H
 #define DT_UTLVECTOR_COMMON_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
 #include "utlvector.h"
 
 
-typedef void (*EnsureCapacityFn)( void *pVoid, int offsetToUtlVector, int len );
-typedef void (*ResizeUtlVectorFn)( void *pVoid, int offsetToUtlVector, int len );
+typedef void ( *EnsureCapacityFn )( void* pVoid, int offsetToUtlVector, int len );
+typedef void ( *ResizeUtlVectorFn )( void* pVoid, int offsetToUtlVector, int len );
 
 template< class T >
-void UtlVector_InitializeAllocatedElements( T *pBase, int count )
+void UtlVector_InitializeAllocatedElements( T* pBase, int count )
 {
 	memset( reinterpret_cast<void*>( pBase ), 0, count * sizeof( T ) );
 }
@@ -27,13 +27,17 @@ template< class T, class A >
 class UtlVectorTemplate
 {
 public:
-	static void ResizeUtlVector( void *pStruct, int offsetToUtlVector, int len )
+	static void ResizeUtlVector( void* pStruct, int offsetToUtlVector, int len )
 	{
-		CUtlVector<T,A> *pVec = (CUtlVector<T,A>*)((char*)pStruct + offsetToUtlVector);
-		if ( pVec->Count() < len )
+		CUtlVector<T, A>* pVec = ( CUtlVector<T, A>* )( ( char* )pStruct + offsetToUtlVector );
+		if( pVec->Count() < len )
+		{
 			pVec->AddMultipleToTail( len - pVec->Count() );
-		else if ( pVec->Count() > len )
-			pVec->RemoveMultiple( len, pVec->Count()-len );
+		}
+		else if( pVec->Count() > len )
+		{
+			pVec->RemoveMultiple( len, pVec->Count() - len );
+		}
 
 		// Ensure capacity
 		pVec->EnsureCapacity( len );
@@ -46,12 +50,12 @@ public:
 		UtlVector_InitializeAllocatedElements( pVec->Base() + pVec->Count(), nNumAllocated - pVec->Count() );
 	}
 
-	static void EnsureCapacity( void *pStruct, int offsetToUtlVector, int len )
+	static void EnsureCapacity( void* pStruct, int offsetToUtlVector, int len )
 	{
-		CUtlVector<T,A> *pVec = (CUtlVector<T,A>*)((char*)pStruct + offsetToUtlVector);
+		CUtlVector<T, A>* pVec = ( CUtlVector<T, A>* )( ( char* )pStruct + offsetToUtlVector );
 
 		pVec->EnsureCapacity( len );
-		
+
 		int nNumAllocated = pVec->NumAllocated();
 
 		// This is important to do because EnsureCapacity doesn't actually call the constructors
@@ -62,24 +66,24 @@ public:
 };
 
 template< class T, class A >
-inline ResizeUtlVectorFn GetResizeUtlVectorTemplate( CUtlVector<T,A> &vec )
+inline ResizeUtlVectorFn GetResizeUtlVectorTemplate( CUtlVector<T, A>& vec )
 {
-	return &UtlVectorTemplate<T,A>::ResizeUtlVector;
+	return &UtlVectorTemplate<T, A>::ResizeUtlVector;
 }
 
 template< class T, class A >
-inline EnsureCapacityFn GetEnsureCapacityTemplate( CUtlVector<T,A> &vec )
+inline EnsureCapacityFn GetEnsureCapacityTemplate( CUtlVector<T, A>& vec )
 {
-	return &UtlVectorTemplate<T,A>::EnsureCapacity;
+	return &UtlVectorTemplate<T, A>::EnsureCapacity;
 }
 
 
 // Format and allocate a string.
-char* AllocateStringHelper( PRINTF_FORMAT_STRING const char *pFormat, ... );
+char* AllocateStringHelper( PRINTF_FORMAT_STRING const char* pFormat, ... );
 
 // Allocates a string for a data table name. Data table names must be unique, so this will
 // assert if you try to allocate a duplicate.
-char* AllocateUniqueDataTableName( bool bSendTable, PRINTF_FORMAT_STRING const char *pFormat, ... );
+char* AllocateUniqueDataTableName( bool bSendTable, PRINTF_FORMAT_STRING const char* pFormat, ... );
 
 
 #endif // DT_UTLVECTOR_COMMON_H

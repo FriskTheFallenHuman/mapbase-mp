@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -15,32 +15,32 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar    sk_plr_dmg_satchel		( "sk_plr_dmg_satchel","0");
-ConVar    sk_npc_dmg_satchel		( "sk_npc_dmg_satchel","0");
-ConVar    sk_satchel_radius			( "sk_satchel_radius","0");
+ConVar    sk_plr_dmg_satchel( "sk_plr_dmg_satchel", "0" );
+ConVar    sk_npc_dmg_satchel( "sk_npc_dmg_satchel", "0" );
+ConVar    sk_satchel_radius( "sk_satchel_radius", "0" );
 
 BEGIN_DATADESC( CSatchelCharge )
 
-	DEFINE_SOUNDPATCH( m_soundSlide ),
+DEFINE_SOUNDPATCH( m_soundSlide ),
 
-	DEFINE_FIELD( m_flSlideVolume, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flNextBounceSoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bInAir, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vLastPosition, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_pMyWeaponSLAM, FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_bIsAttached, FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_flSlideVolume, FIELD_FLOAT ),
+				   DEFINE_FIELD( m_flNextBounceSoundTime, FIELD_TIME ),
+				   DEFINE_FIELD( m_bInAir, FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_vLastPosition, FIELD_POSITION_VECTOR ),
+				   DEFINE_FIELD( m_pMyWeaponSLAM, FIELD_CLASSPTR ),
+				   DEFINE_FIELD( m_bIsAttached, FIELD_BOOLEAN ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( SatchelTouch ),
-	DEFINE_FUNCTION( SatchelThink ),
-	DEFINE_FUNCTION( SatchelUse ),
+				   // Function Pointers
+				   DEFINE_FUNCTION( SatchelTouch ),
+				   DEFINE_FUNCTION( SatchelThink ),
+				   DEFINE_FUNCTION( SatchelUse ),
 
-END_DATADESC()
+				   END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_satchel, CSatchelCharge );
+				   LINK_ENTITY_TO_CLASS( npc_satchel, CSatchelCharge );
 
 //=========================================================
-// Deactivate - do whatever it is we do to an orphaned 
+// Deactivate - do whatever it is we do to an orphaned
 // satchel when we don't want it in the world anymore.
 //=========================================================
 void CSatchelCharge::Deactivate( void )
@@ -55,11 +55,11 @@ void CSatchelCharge::Spawn( void )
 	Precache( );
 	// motor
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
-	SetSolid( SOLID_BBOX ); 
+	SetSolid( SOLID_BBOX );
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	SetModel( "models/Weapons/w_slam.mdl" );
 
-	UTIL_SetSize(this, Vector( -6, -6, -2), Vector(6, 6, 2));
+	UTIL_SetSize( this, Vector( -6, -6, -2 ), Vector( 6, 6, 2 ) );
 
 	SetTouch( SatchelTouch );
 	SetUse( SatchelUse );
@@ -87,11 +87,11 @@ void CSatchelCharge::Spawn( void )
 
 //-----------------------------------------------------------------------------
 
-void CSatchelCharge::InitSlideSound(void)
+void CSatchelCharge::InitSlideSound( void )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	CPASAttenuationFilter filter( this );
-	m_soundSlide = controller.SoundCreate( filter, entindex(), CHAN_STATIC, "SatchelCharge.Slide", ATTN_NORM );	
+	m_soundSlide = controller.SoundCreate( filter, entindex(), CHAN_STATIC, "SatchelCharge.Slide", ATTN_NORM );
 }
 
 //-----------------------------------------------------------------------------
@@ -99,9 +99,9 @@ void CSatchelCharge::InitSlideSound(void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CSatchelCharge::KillSlideSound(void)
+void CSatchelCharge::KillSlideSound( void )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	controller.CommandClear( m_soundSlide );
 	controller.SoundFadeOut( m_soundSlide, 0.0 );
 }
@@ -111,7 +111,7 @@ void CSatchelCharge::KillSlideSound(void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CSatchelCharge::SatchelUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CSatchelCharge::SatchelUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	KillSlideSound();
 	SetThink( Detonate );
@@ -123,21 +123,23 @@ void CSatchelCharge::SatchelUse( CBaseEntity *pActivator, CBaseEntity *pCaller, 
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
+void CSatchelCharge::SatchelTouch( CBaseEntity* pOther )
 {
 	Assert( pOther );
-	if ( !pOther->IsSolid() )
-		return;
-
-	// If successfully thrown and touching the 
-	// NPC that released this grenade, pick it up
-	if ( pOther == GetThrower() && GetOwnerEntity() == NULL )
+	if( !pOther->IsSolid() )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( m_pMyWeaponSLAM->GetOwner() );
-		if (pPlayer)
+		return;
+	}
+
+	// If successfully thrown and touching the
+	// NPC that released this grenade, pick it up
+	if( pOther == GetThrower() && GetOwnerEntity() == NULL )
+	{
+		CBasePlayer* pPlayer = ToBasePlayer( m_pMyWeaponSLAM->GetOwner() );
+		if( pPlayer )
 		{
 			// Give the player ammo
-			pPlayer->GiveAmmo(1, m_pMyWeaponSLAM->m_iSecondaryAmmoType);
+			pPlayer->GiveAmmo( 1, m_pMyWeaponSLAM->m_iSecondaryAmmoType );
 
 			CPASAttenuationFilter filter( pPlayer, "SatchelCharge.Pickup" );
 			EmitSound( filter, pPlayer->entindex(), "SatchelCharge.Pickup" );
@@ -145,7 +147,7 @@ void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
 			m_bIsLive = false;
 
 			// Take weapon out of detonate mode if necessary
-			if (!m_pMyWeaponSLAM->AnyUndetonatedCharges())
+			if( !m_pMyWeaponSLAM->AnyUndetonatedCharges() )
 			{
 				m_pMyWeaponSLAM->m_bDetonatorArmed			= false;
 				m_pMyWeaponSLAM->m_bNeedDetonatorHolster	= true;
@@ -167,7 +169,7 @@ void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
 	StudioFrameAdvance( );
 
 	// Is it attached to a wall?
-	if (m_bIsAttached)
+	if( m_bIsAttached )
 	{
 		return;
 	}
@@ -176,9 +178,9 @@ void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
 
 	// HACKHACK - On ground isn't always set, so look for ground underneath
 	trace_t tr;
-	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector(0,0,10), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 10 ), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 
-	if ( tr.fraction < 1.0 )
+	if( tr.fraction < 1.0 )
 	{
 		// add a bit of static friction
 		SetAbsVelocity( GetAbsVelocity() * 0.85 );
@@ -187,7 +189,7 @@ void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
 
 	UpdateSlideSound();
 
-	if (m_bInAir)
+	if( m_bInAir )
 	{
 		BounceSound();
 		m_bInAir = false;
@@ -196,37 +198,37 @@ void CSatchelCharge::SatchelTouch( CBaseEntity *pOther )
 }
 
 void CSatchelCharge::UpdateSlideSound( void )
-{	
-	if (!m_soundSlide)
+{
+	if( !m_soundSlide )
 	{
 		return;
 	}
 
-	float volume = GetAbsVelocity().Length2D()/1000;
-	if (volume < 0.01 && m_soundSlide)
+	float volume = GetAbsVelocity().Length2D() / 1000;
+	if( volume < 0.01 && m_soundSlide )
 	{
 		KillSlideSound();
 		return;
 	}
-		// HACKHACK - On ground isn't always set, so look for ground underneath
+	// HACKHACK - On ground isn't always set, so look for ground underneath
 	trace_t tr;
-	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector(0,0,10), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 10 ), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &tr );
 
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 
-	
-	if ( tr.fraction < 1.0 )
+
+	if( tr.fraction < 1.0 )
 	{
-		if (m_flSlideVolume == -1.0)
+		if( m_flSlideVolume == -1.0 )
 		{
 			controller.CommandClear( m_soundSlide );
 			controller.Play( m_soundSlide, 1.0, 100 );
 			m_flSlideVolume = 1.0;
 		}
-		else 
+		else
 		{
-			float volume = GetAbsVelocity().Length()/1000;
-			if ( volume < m_flSlideVolume )
+			float volume = GetAbsVelocity().Length() / 1000;
+			if( volume < m_flSlideVolume )
 			{
 				m_flSlideVolume = volume;
 				controller.CommandClear( m_soundSlide );
@@ -234,7 +236,7 @@ void CSatchelCharge::UpdateSlideSound( void )
 			}
 		}
 	}
-	else 
+	else
 	{
 		controller.CommandClear( m_soundSlide );
 		controller.SoundChangeVolume( m_soundSlide, 0.0, 0.01 );
@@ -247,16 +249,16 @@ void CSatchelCharge::UpdateSlideSound( void )
 void CSatchelCharge::SatchelThink( void )
 {
 	// If attached resize so player can pick up off wall
-	if (m_bIsAttached)
+	if( m_bIsAttached )
 	{
-		UTIL_SetSize(this, Vector( -2, -2, -6), Vector(2, 2, 6));
+		UTIL_SetSize( this, Vector( -2, -2, -6 ), Vector( 2, 2, 6 ) );
 	}
 
 	UpdateSlideSound();
 
 	// See if I can lose my owner (has dropper moved out of way?)
 	// Want do this so owner can shoot the satchel charge
-	if (GetOwnerEntity())
+	if( GetOwnerEntity() )
 	{
 		trace_t tr;
 		Vector	vUpABit = GetAbsOrigin();
@@ -265,15 +267,15 @@ void CSatchelCharge::SatchelThink( void )
 		CBaseEntity* saveOwner	= GetOwnerEntity();
 		SetOwnerEntity( NULL );
 		UTIL_TraceEntity( this, GetAbsOrigin(), vUpABit, MASK_SOLID, &tr );
-		if ( tr.startsolid || tr.fraction != 1.0 )
+		if( tr.startsolid || tr.fraction != 1.0 )
 		{
 			SetOwnerEntity( saveOwner );
 		}
 	}
-	
-	// Bounce movement code gets this think stuck occasionally so check if I've 
+
+	// Bounce movement code gets this think stuck occasionally so check if I've
 	// succeeded in moving, otherwise kill my motions.
-	else if ((GetAbsOrigin() - m_vLastPosition).LengthSqr()<1)
+	else if( ( GetAbsOrigin() - m_vLastPosition ).LengthSqr() < 1 )
 	{
 		SetAbsVelocity( vec3_origin );
 
@@ -285,15 +287,15 @@ void CSatchelCharge::SatchelThink( void )
 		KillSlideSound();
 
 		// Clear think function
-		SetThink(NULL);
+		SetThink( NULL );
 		return;
 	}
-	m_vLastPosition= GetAbsOrigin();
+	m_vLastPosition = GetAbsOrigin();
 
 	StudioFrameAdvance( );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	if (!IsInWorld())
+	if( !IsInWorld() )
 	{
 		// Kill any remaining sound
 		KillSlideSound();
@@ -303,20 +305,20 @@ void CSatchelCharge::SatchelThink( void )
 	}
 
 	// Is it attached to a wall?
-	if (m_bIsAttached)
+	if( m_bIsAttached )
 	{
 		return;
 	}
 
 	Vector vecNewVel = GetAbsVelocity();
-	if (GetWaterLevel() == 3)
+	if( GetWaterLevel() == 3 )
 	{
 		SetMoveType( MOVETYPE_FLY );
 		vecNewVel *= 0.8;
 		vecNewVel.z += 8;
 		SetLocalAngularVelocity( GetLocalAngularVelocity() * 0.9 );
 	}
-	else if (GetWaterLevel() == 0)
+	else if( GetWaterLevel() == 0 )
 	{
 		SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	}
@@ -329,7 +331,7 @@ void CSatchelCharge::SatchelThink( void )
 
 void CSatchelCharge::Precache( void )
 {
-	PrecacheModel("models/Weapons/w_slam.mdl");
+	PrecacheModel( "models/Weapons/w_slam.mdl" );
 
 	PrecacheScriptSound( "SatchelCharge.Pickup" );
 	PrecacheScriptSound( "SatchelCharge.Bounce" );
@@ -339,7 +341,7 @@ void CSatchelCharge::Precache( void )
 
 void CSatchelCharge::BounceSound( void )
 {
-	if (gpGlobals->curtime > m_flNextBounceSoundTime)
+	if( gpGlobals->curtime > m_flNextBounceSoundTime )
 	{
 		EmitSound( "SatchelCharge.Bounce" );
 
@@ -352,14 +354,14 @@ void CSatchelCharge::BounceSound( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CSatchelCharge::CSatchelCharge(void)
+CSatchelCharge::CSatchelCharge( void )
 {
 	m_vLastPosition.Init();
 	m_pMyWeaponSLAM = NULL;
 }
 
-CSatchelCharge::~CSatchelCharge(void)
+CSatchelCharge::~CSatchelCharge( void )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	controller.SoundDestroy( m_soundSlide );
 }

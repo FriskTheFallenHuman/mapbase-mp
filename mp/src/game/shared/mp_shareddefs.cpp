@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #include "cbase.h"
 #include "mp_shareddefs.h"
 
-const char *g_pszMPConcepts[] =
+const char* g_pszMPConcepts[] =
 {
 	"TLK_FIREWEAPON",				// MP_CONCEPT_FIREWEAPON
 	"TLK_HURT",						// MP_CONCEPT_HURT
@@ -15,7 +15,7 @@ const char *g_pszMPConcepts[] =
 	"TLK_WINDMINIGUN",				// MP_CONCEPT_WINDMINIGUN
 	"TLK_FIREMINIGUN",				// MP_CONCEPT_FIREMINIGUN
 	"TLK_PLAYER_MEDIC",				// MP_CONCEPT_PLAYER_MEDIC
-	"TLK_DETONATED_OBJECT",			// MP_CONCEPT_DETONATED_OBJECT 
+	"TLK_DETONATED_OBJECT",			// MP_CONCEPT_DETONATED_OBJECT
 	"TLK_KILLED_PLAYER",			// MP_CONCEPT_KILLED_PLAYER
 	"TLK_KILLED_OBJECT",			// MP_CONCEPT_KILLED_OBJECT
 	"TLK_PLAYER_PAIN",				// MP_CONCEPT_PLAYER_PAIN
@@ -91,7 +91,7 @@ const char *g_pszMPConcepts[] =
 	"TLK_HIGHFIVE_FAILURE",			// MP_CONCEPT_HIGHFIVE_FAILURE
 	"TLK_HIGHFIVE_FAILURE_FULL",	// MP_CONCEPT_HIGHFIVE_FAILURE_FULL
 	"TLK_PLAYER_TAUNT2",			// MP_CONCEPT_PLAYER_TAUNT2
-	"TLK_PICKUP_BUILDING",			// MP_CONCEPT_PICKUP_BUILDING,				
+	"TLK_PICKUP_BUILDING",			// MP_CONCEPT_PICKUP_BUILDING,
 	"TLK_REDEPLOY_BUILDING",		// MP_CONCEPT_REDEPLOY_BUILDING
 	"TLK_CARRYING_BUILDING",		// MP_CONCEPT_CARRYING_BUILDING
 	"TLK_REQUEST_DUEL",				// MP_CONCEPT_DUEL_REQUEST
@@ -136,12 +136,12 @@ const char *g_pszMPConcepts[] =
 	"TLK_MVM_WAVE_START",			// MP_CONCEPT_MVM_WAVE_START
 	"TLK_MVM_WAVE_WIN",				// MP_CONCEPT_MVM_WAVE_WIN
 	"TLK_MVM_WAVE_LOSE",			// MP_CONCEPT_MVM_WAVE_LOSE
-	"TLK_MVM_DEPLOY_RAGE",			// MP_CONCEPT_MVM_DEPLOY_RAGE	
+	"TLK_MVM_DEPLOY_RAGE",			// MP_CONCEPT_MVM_DEPLOY_RAGE
 	"TLK_MAGIC_BIGHEAD",			// MP_CONCEPT_MAGIC_BIGHEAD
-	"TLK_MAGIC_SMALLHEAD",			// MP_CONCEPT_MAGIC_SMALLHEAD	
-	"TLK_MAGIC_GRAVITY",			// MP_CONCEPT_MAGIC_GRAVITY	
-	"TLK_MAGIC_GOOD",				// MP_CONCEPT_MAGIC_GOOD	
-	"TLK_MAGIC_DANCE",				// MP_CONCEPT_MAGIC_DANCE	
+	"TLK_MAGIC_SMALLHEAD",			// MP_CONCEPT_MAGIC_SMALLHEAD
+	"TLK_MAGIC_GRAVITY",			// MP_CONCEPT_MAGIC_GRAVITY
+	"TLK_MAGIC_GOOD",				// MP_CONCEPT_MAGIC_GOOD
+	"TLK_MAGIC_DANCE",				// MP_CONCEPT_MAGIC_DANCE
 	"HalloweenLongFall",			// MP_CONCEPT_HALLOWEEN_LONGFALL
 	"TLK_TAUNT_GUITAR_RIFF",		// MP_CONCEPT_TAUNT_GUITAR_RIFF
 
@@ -199,12 +199,14 @@ COMPILE_TIME_ASSERT( ARRAYSIZE( g_pszMPConcepts ) == MP_TF_CONCEPT_COUNT );
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-int GetMPConceptIndexFromString( const char *pszConcept )
+int GetMPConceptIndexFromString( const char* pszConcept )
 {
-	for ( int iConcept = 0; iConcept < ARRAYSIZE( g_pszMPConcepts ); ++iConcept )
+	for( int iConcept = 0; iConcept < ARRAYSIZE( g_pszMPConcepts ); ++iConcept )
 	{
-		if ( !Q_stricmp( pszConcept, g_pszMPConcepts[iConcept] ) )
+		if( !Q_stricmp( pszConcept, g_pszMPConcepts[iConcept] ) )
+		{
 			return iConcept;
+		}
 	}
 
 	return MP_CONCEPT_NONE;

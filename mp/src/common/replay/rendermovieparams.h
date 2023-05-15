@@ -5,7 +5,7 @@
 #ifndef RENDERMOVIEPARAMS_H
 #define RENDERMOVIEPARAMS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -22,7 +22,11 @@ typedef unsigned int MovieHandle_t;
 
 struct RenderMovieParams_t
 {
-	inline RenderMovieParams_t() : m_iPerformance( -1 ) { V_memset( this, 0, sizeof( RenderMovieParams_t ) ); m_Settings.m_FPS.SetFPS( 0, false ); }
+	inline RenderMovieParams_t() : m_iPerformance( -1 )
+	{
+		V_memset( this, 0, sizeof( RenderMovieParams_t ) );
+		m_Settings.m_FPS.SetFPS( 0, false );
+	}
 
 	ReplayHandle_t		m_hReplay;
 	int					m_iPerformance;		// -1 for default view, otherwise this is an index into the replay's m_vecPerformances vector.

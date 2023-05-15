@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HL2_PLAYERLOCALDATA_H
 #define HL2_PLAYERLOCALDATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "networkvar.h"
@@ -50,7 +50,7 @@ public:
 	LadderMove_t			m_LadderMove;
 };
 
-EXTERN_SEND_TABLE(DT_HL2Local);
+EXTERN_SEND_TABLE( DT_HL2Local );
 
 
 #endif // HL2_PLAYERLOCALDATA_H

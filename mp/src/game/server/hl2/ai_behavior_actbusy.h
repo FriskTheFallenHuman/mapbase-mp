@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef AI_BEHAVIOR_ACTBUSY_H
 #define AI_BEHAVIOR_ACTBUSY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior.h"
@@ -66,7 +66,7 @@ struct busysafezone_t
 class CAI_ActBusyGoal;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CAI_ActBusyBehavior : public CAI_SimpleBehavior
 {
@@ -84,7 +84,7 @@ public:
 		SCHED_ACTBUSY_LEAVE,
 		SCHED_ACTBUSY_TELEPORT_TO_BUSY,
 		NEXT_SCHEDULE,
-		
+
 		// Tasks
 		TASK_ACTBUSY_PLAY_BUSY_ANIM = BaseClass::NEXT_TASK,
 		TASK_ACTBUSY_PLAY_ENTRY,
@@ -94,67 +94,91 @@ public:
 		TASK_ACTBUSY_GET_PATH_TO_ACTBUSY,
 		TASK_ACTBUSY_VERIFY_EXIT,
 		NEXT_TASK,
-		
+
 		// Conditions
 		COND_ACTBUSY_LOST_SEE_ENTITY = BaseClass::NEXT_CONDITION,
 		COND_ACTBUSY_AWARE_OF_ENEMY_IN_SAFE_ZONE,
 		COND_ACTBUSY_ENEMY_TOO_CLOSE,
 		NEXT_CONDITION,
 	};
-	
-	virtual const char *GetName() {	return "ActBusy"; }
 
-	void	Enable( CAI_ActBusyGoal *pGoal, float flRange, bool bVisibleOnly );
+	virtual const char* GetName()
+	{
+		return "ActBusy";
+	}
+
+	void	Enable( CAI_ActBusyGoal* pGoal, float flRange, bool bVisibleOnly );
 	void	OnRestore();
 	void	SetBusySearchRange( float flRange );
 	void	Disable( void );
-	void	ForceActBusy( CAI_ActBusyGoal *pGoal, CAI_Hint *pHintNode = NULL, float flMaxTime = NO_MAX_TIME, bool bVisibleOnly = false, bool bTeleportToBusy = false, bool bUseNearestBusy = false, CBaseEntity *pSeeEntity = NULL, Activity activity = ACT_INVALID );
+	void	ForceActBusy( CAI_ActBusyGoal* pGoal, CAI_Hint* pHintNode = NULL, float flMaxTime = NO_MAX_TIME, bool bVisibleOnly = false, bool bTeleportToBusy = false, bool bUseNearestBusy = false, CBaseEntity* pSeeEntity = NULL, Activity activity = ACT_INVALID );
 	void	ForceActBusyLeave( bool bVisibleOnly = false );
 	void	StopBusying( void );
 	bool	IsStopBusying();
-	CAI_Hint *FindActBusyHintNode( void );
-	CAI_Hint *FindCombatActBusyHintNode( void );
-	CAI_Hint *FindCombatActBusyTeleportHintNode( void );
+	CAI_Hint* FindActBusyHintNode( void );
+	CAI_Hint* FindCombatActBusyHintNode( void );
+	CAI_Hint* FindCombatActBusyTeleportHintNode( void );
 	bool	CanSelectSchedule( void );
 	bool	IsCurScheduleOverridable( void );
-	bool	ShouldIgnoreSound( CSound *pSound );
-	void	OnFriendDamaged( CBaseCombatCharacter *pSquadmate, CBaseEntity *pAttacker );
-	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	bool	ShouldIgnoreSound( CSound* pSound );
+	void	OnFriendDamaged( CBaseCombatCharacter* pSquadmate, CBaseEntity* pAttacker );
+	int		OnTakeDamage_Alive( const CTakeDamageInfo& info );
 	void	GatherConditions( void );
 	void	BuildScheduleTestBits( void );
 	void	EndScheduleSelection( void );
 	Activity NPC_TranslateActivity( Activity nActivity );
-	void	HandleAnimEvent( animevent_t *pEvent );
+	void	HandleAnimEvent( animevent_t* pEvent );
 	void	CheckAndCleanupOnExit( void );
-	bool	FValidateHintType( CAI_Hint *pHint );
+	bool	FValidateHintType( CAI_Hint* pHint );
 	bool	ActBusyNodeStillActive( void );
-	bool	IsMovingToBusy( void ) { return m_bMovingToBusy; }
-	bool	IsEnabled( void ) { return m_bEnabled; }
-	float	GetReasonableFacingDist( void ) { return 0; }	// Actbusy ignores reasonable facing
+	bool	IsMovingToBusy( void )
+	{
+		return m_bMovingToBusy;
+	}
+	bool	IsEnabled( void )
+	{
+		return m_bEnabled;
+	}
+	float	GetReasonableFacingDist( void )
+	{
+		return 0;    // Actbusy ignores reasonable facing
+	}
 	bool	IsInterruptable( void );
 	bool	ShouldPlayerAvoid( void );
-	void	SetUseRenderBounds( bool bUseBounds ) { m_bUseRenderBoundsForCollision = bUseBounds; }
+	void	SetUseRenderBounds( bool bUseBounds )
+	{
+		m_bUseRenderBoundsForCollision = bUseBounds;
+	}
 	void	ComputeAndSetRenderBounds();
 	bool	CanFlinch( void );
 	bool	CanRunAScriptedNPCInteraction( bool bForced );
 	void	OnScheduleChange();
-	bool	QueryHearSound( CSound *pSound );
-	void	OnSeeEntity( CBaseEntity *pEntity );
-	bool	NeedsToPlayExitAnim() { return m_bNeedsToPlayExitAnim; }
+	bool	QueryHearSound( CSound* pSound );
+	void	OnSeeEntity( CBaseEntity* pEntity );
+	bool	NeedsToPlayExitAnim()
+	{
+		return m_bNeedsToPlayExitAnim;
+	}
 
 	// Returns true if the current NPC is acting busy, or moving to an actbusy
 	bool	IsActive( void );
 	// Returns true if the current NPC is actually acting busy (i.e. inside an act busy anim)
-	bool	IsInsideActBusy( void ) { return m_bBusy; }
+	bool	IsInsideActBusy( void )
+	{
+		return m_bBusy;
+	}
 
 	// Combat act busy stuff
 	bool	IsCombatActBusy();
-	void 	CollectSafeZoneVolumes( CAI_ActBusyGoal *pActBusyGoal );
-	bool	IsInSafeZone( CBaseEntity *pEntity );
+	void 	CollectSafeZoneVolumes( CAI_ActBusyGoal* pActBusyGoal );
+	bool	IsInSafeZone( CBaseEntity* pEntity );
 	int		CountEnemiesInSafeZone();
 
 #ifdef MAPBASE
-	CAI_ActBusyGoal	*GetActBusyGoal() const { return m_hActBusyGoal; }
+	CAI_ActBusyGoal*	GetActBusyGoal() const
+	{
+		return m_hActBusyGoal;
+	}
 #endif
 
 private:
@@ -162,12 +186,12 @@ private:
 	int				SelectScheduleForLeaving( void );
 	int				SelectScheduleWhileNotBusy( int iBase );
 	int				SelectScheduleWhileBusy( void );
-	virtual void	StartTask( const Task_t *pTask );
-	virtual void	RunTask( const Task_t *pTask );
+	virtual void	StartTask( const Task_t* pTask );
+	virtual void	RunTask( const Task_t* pTask );
 	void			NotifyBusyEnding( void );
 	bool			HasAnimForActBusy( int iActBusy, busyanimparts_t AnimPart );
 	bool			PlayAnimForActBusy( busyanimparts_t AnimPart );
-	void			PlaySoundForActBusy( busyanimparts_t AnimPart ); 
+	void			PlaySoundForActBusy( busyanimparts_t AnimPart );
 
 private:
 	bool			m_bEnabled;
@@ -182,7 +206,7 @@ private:
 	bool			m_bBusy;
 	bool			m_bMovingToBusy;
 	bool			m_bNeedsToPlayExitAnim;
-	float			m_flNextBusySearchTime;	
+	float			m_flNextBusySearchTime;
 	float			m_flEndBusyAt;
 	float			m_flBusySearchRange;
 	bool			m_bInQueue;
@@ -227,20 +251,26 @@ public:
 		m_flSeeEntityTimeout = 1;
 	}
 
-	virtual void NPCMovingToBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCAbortedMoveTo( CAI_BaseNPC *pNPC );
-	virtual void NPCStartedBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCStartedLeavingBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCFinishedBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCLeft( CAI_BaseNPC *pNPC );
-	virtual void NPCLostSeeEntity( CAI_BaseNPC *pNPC );
-	virtual void NPCSeeEnemy( CAI_BaseNPC *pNPC );
+	virtual void NPCMovingToBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCAbortedMoveTo( CAI_BaseNPC* pNPC );
+	virtual void NPCStartedBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCStartedLeavingBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCFinishedBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCLeft( CAI_BaseNPC* pNPC );
+	virtual void NPCLostSeeEntity( CAI_BaseNPC* pNPC );
+	virtual void NPCSeeEnemy( CAI_BaseNPC* pNPC );
 
-	int GetType() { return m_iType; }
-	bool IsCombatActBusyTeleportAllowed()	{ return m_bAllowCombatActBusyTeleport; }
+	int GetType()
+	{
+		return m_iType;
+	}
+	bool IsCombatActBusyTeleportAllowed()
+	{
+		return m_bAllowCombatActBusyTeleport;
+	}
 
 #ifdef MAPBASE
-	interval_t &NextBusySearchInterval();
+	interval_t& NextBusySearchInterval();
 #endif
 
 #ifdef MAPBASE_VSCRIPT
@@ -250,20 +280,20 @@ public:
 #endif
 
 protected:
-	CAI_ActBusyBehavior *GetBusyBehaviorForNPC( const char *pszActorName, CBaseEntity *pActivator, CBaseEntity *pCaller, const char *sInputName );
-	CAI_ActBusyBehavior *GetBusyBehaviorForNPC( CBaseEntity *pEntity, const char *sInputName );
+	CAI_ActBusyBehavior* GetBusyBehaviorForNPC( const char* pszActorName, CBaseEntity* pActivator, CBaseEntity* pCaller, const char* sInputName );
+	CAI_ActBusyBehavior* GetBusyBehaviorForNPC( CBaseEntity* pEntity, const char* sInputName );
 
-	void		 EnableGoal( CAI_BaseNPC *pAI );
+	void		 EnableGoal( CAI_BaseNPC* pAI );
 
 	// Inputs
-	virtual void InputActivate( inputdata_t &inputdata );
-	virtual void InputDeactivate( inputdata_t &inputdata );
-	void		 InputSetBusySearchRange( inputdata_t &inputdata );
-	void		 InputForceNPCToActBusy( inputdata_t &inputdata );
-	void		 InputForceThisNPCToActBusy( inputdata_t &inputdata );
-	void		 InputForceThisNPCToLeave( inputdata_t &inputdata );
+	virtual void InputActivate( inputdata_t& inputdata );
+	virtual void InputDeactivate( inputdata_t& inputdata );
+	void		 InputSetBusySearchRange( inputdata_t& inputdata );
+	void		 InputForceNPCToActBusy( inputdata_t& inputdata );
+	void		 InputForceThisNPCToActBusy( inputdata_t& inputdata );
+	void		 InputForceThisNPCToLeave( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void		InputForceThisNPCToStopBusy( inputdata_t &inputdata );
+	void		InputForceThisNPCToStopBusy( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
@@ -304,7 +334,7 @@ protected:
 #define MAX_QUEUE_NODES		20
 
 //-----------------------------------------------------------------------------
-// Purpose: A level tool to control the actbusy behavior to create NPC queues 
+// Purpose: A level tool to control the actbusy behavior to create NPC queues
 //-----------------------------------------------------------------------------
 class CAI_ActBusyQueueGoal : public CAI_ActBusyGoal
 {
@@ -312,26 +342,26 @@ class CAI_ActBusyQueueGoal : public CAI_ActBusyGoal
 public:
 	virtual void Spawn( void );
 	virtual void DrawDebugGeometryOverlays( void );
-	virtual void NPCMovingToBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCStartedBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCAbortedMoveTo( CAI_BaseNPC *pNPC );
-	virtual void NPCFinishedBusy( CAI_BaseNPC *pNPC );
-	virtual void NPCStartedLeavingBusy( CAI_BaseNPC *pNPC );
+	virtual void NPCMovingToBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCStartedBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCAbortedMoveTo( CAI_BaseNPC* pNPC );
+	virtual void NPCFinishedBusy( CAI_BaseNPC* pNPC );
+	virtual void NPCStartedLeavingBusy( CAI_BaseNPC* pNPC );
 
-	virtual void InputActivate( inputdata_t &inputdata );
-	void		 InputPlayerStartedBlocking( inputdata_t &inputdata );
-	void		 InputPlayerStoppedBlocking( inputdata_t &inputdata );
-	void		 InputMoveQueueUp( inputdata_t &inputdata );
+	virtual void InputActivate( inputdata_t& inputdata );
+	void		 InputPlayerStartedBlocking( inputdata_t& inputdata );
+	void		 InputPlayerStoppedBlocking( inputdata_t& inputdata );
+	void		 InputMoveQueueUp( inputdata_t& inputdata );
 
-	void		 PushNPCBackInQueue( CAI_BaseNPC *pNPC, int iStartingNode );
-	void		 RemoveNPCFromQueue( CAI_BaseNPC *pNPC );
+	void		 PushNPCBackInQueue( CAI_BaseNPC* pNPC, int iStartingNode );
+	void		 RemoveNPCFromQueue( CAI_BaseNPC* pNPC );
 	void		 RecalculateQueueCount( void );
 	void		 QueueThink( void );
-  	void		 MoveQueueUp( void );
-  	void		 MoveQueueUpThink( void );
+	void		 MoveQueueUp( void );
+	void		 MoveQueueUpThink( void );
 	bool		 NodeIsOccupied( int i );
-	CAI_BaseNPC			*GetNPCOnNode( int iNode );
-	CAI_ActBusyBehavior *GetQueueBehaviorForNPC( CAI_BaseNPC	*pNPC );
+	CAI_BaseNPC*			GetNPCOnNode( int iNode );
+	CAI_ActBusyBehavior* GetQueueBehaviorForNPC( CAI_BaseNPC*	pNPC );
 
 	DECLARE_DATADESC();
 

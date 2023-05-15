@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef GAMERULES_REGISTER_H
 #define GAMERULES_REGISTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,28 +23,28 @@
 #endif
 
 #ifdef _XBOX
-// force symbol expansion
-#define REGISTER_GAMERULES_CLASS2( className ) REGISTER_GAMERULES_CLASS( className )
+	// force symbol expansion
+	#define REGISTER_GAMERULES_CLASS2( className ) REGISTER_GAMERULES_CLASS( className )
 #endif
 
 class CGameRulesRegister
 {
 public:
-	typedef void (*CreateGameRulesFn)();
+	typedef void ( *CreateGameRulesFn )();
 
-	CGameRulesRegister( const char *pClassName, CreateGameRulesFn fn );
+	CGameRulesRegister( const char* pClassName, CreateGameRulesFn fn );
 
 	// Allocates the gamerules object associated with this class.
 	void CreateGameRules();
 
-	static CGameRulesRegister* FindByName( const char *pName );
+	static CGameRulesRegister* FindByName( const char* pName );
 
 private:
-	const char *m_pClassName;
+	const char* m_pClassName;
 	CreateGameRulesFn m_pFn;
-	CGameRulesRegister *m_pNext;	// Links it into the global list.
-	
-	static CGameRulesRegister *s_pHead;
+	CGameRulesRegister* m_pNext;	// Links it into the global list.
+
+	static CGameRulesRegister* s_pHead;
 
 };
 
@@ -60,10 +60,10 @@ private:
 
 	// Server calls this at startup.
 	void CreateNetworkStringTables_GameRules();
-	
+
 	// Server calls this to install a specific game rules object. The class should have been registered
 	// with REGISTER_GAMERULES_CLASS.
-	void CreateGameRulesObject( const char *pClassName );
+	void CreateGameRulesObject( const char* pClassName );
 
 #endif
 

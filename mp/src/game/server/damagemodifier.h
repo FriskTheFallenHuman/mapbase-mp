@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef DAMAGEMODIFIER_H
 #define DAMAGEMODIFIER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,9 +23,9 @@ class CBaseEntity;
 class CDamageModifier
 {
 public:
-				CDamageModifier();
+	CDamageModifier();
 
-	void		AddModifierToEntity( CBaseEntity *pChar );
+	void		AddModifierToEntity( CBaseEntity* pChar );
 	void		RemoveModifier();
 
 	void		SetModifier( float flDamageScale );
@@ -34,7 +34,7 @@ public:
 	void		SetDoneToMe( bool bDoneToMe );
 	bool		IsDamageDoneToMe() const;
 
-	CBaseEntity	*GetCharacter() const;
+	CBaseEntity*	GetCharacter() const;
 
 private:
 	float							m_flModifier;

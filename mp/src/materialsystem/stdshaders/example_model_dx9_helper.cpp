@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -31,12 +31,12 @@ static ConVar r_rimlight( "r_rimlight", "1", FCVAR_NONE );
 //-----------------------------------------------------------------------------
 // Initialize shader parameters
 //-----------------------------------------------------------------------------
-void InitParamsExampleModel_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, ExampleModel_DX9_Vars_t &info )
-{	
+void InitParamsExampleModel_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, ExampleModel_DX9_Vars_t& info )
+{
 	// FLASHLIGHTFIXME: Do ShaderAPI::BindFlashlightTexture
 	Assert( info.m_nFlashlightTexture >= 0 );
 
-	if ( g_pHardwareConfig->SupportsBorderColor() )
+	if( g_pHardwareConfig->SupportsBorderColor() )
 	{
 		params[FLASHLIGHTTEXTURE]->SetStringValue( "effects/flashlight_border" );
 	}
@@ -53,17 +53,17 @@ void InitParamsExampleModel_DX9( CBaseVSShader *pShader, IMaterialVar** params, 
 //-----------------------------------------------------------------------------
 // Initialize shader
 //-----------------------------------------------------------------------------
-void InitExampleModel_DX9( CBaseVSShader *pShader, IMaterialVar** params, ExampleModel_DX9_Vars_t &info )
+void InitExampleModel_DX9( CBaseVSShader* pShader, IMaterialVar** params, ExampleModel_DX9_Vars_t& info )
 {
 	Assert( info.m_nFlashlightTexture >= 0 );
 	pShader->LoadTexture( info.m_nFlashlightTexture, TEXTUREFLAGS_SRGB );
-	
+
 	bool bIsBaseTextureTranslucent = false;
-	if ( params[info.m_nBaseTexture]->IsDefined() )
+	if( params[info.m_nBaseTexture]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nBaseTexture, TEXTUREFLAGS_SRGB );
-		
-		if ( params[info.m_nBaseTexture]->GetTextureValue()->IsTranslucent() )
+
+		if( params[info.m_nBaseTexture]->GetTextureValue()->IsTranslucent() )
 		{
 			bIsBaseTextureTranslucent = true;
 		}
@@ -81,18 +81,18 @@ public:
 //-----------------------------------------------------------------------------
 // Draws the shader
 //-----------------------------------------------------------------------------
-void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow,
-	bool bHasFlashlight, ExampleModel_DX9_Vars_t &info, VertexCompressionType_t vertexCompression,
-							CBasePerMaterialContextData **pContextDataPtr )
+void DrawExampleModel_DX9_Internal( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow,
+									bool bHasFlashlight, ExampleModel_DX9_Vars_t& info, VertexCompressionType_t vertexCompression,
+									CBasePerMaterialContextData** pContextDataPtr )
 {
-	bool bHasBaseTexture = (info.m_nBaseTexture != -1) && params[info.m_nBaseTexture]->IsTexture();
+	bool bHasBaseTexture = ( info.m_nBaseTexture != -1 ) && params[info.m_nBaseTexture]->IsTexture();
 	bool bIsAlphaTested = IS_FLAG_SET( MATERIAL_VAR_ALPHATEST ) != 0;
 
-	BlendType_t nBlendType= pShader->EvaluateBlendRequirements( info.m_nBaseTexture, true );
+	BlendType_t nBlendType = pShader->EvaluateBlendRequirements( info.m_nBaseTexture, true );
 	bool bFullyOpaque = ( nBlendType != BT_BLENDADD ) && ( nBlendType != BT_BLEND ) && !bIsAlphaTested && !bHasFlashlight;
 
-	CExampleModel_DX9_Context *pContextData = reinterpret_cast< CExampleModel_DX9_Context *> ( *pContextDataPtr );
-	if ( !pContextData )
+	CExampleModel_DX9_Context* pContextData = reinterpret_cast< CExampleModel_DX9_Context*>( *pContextDataPtr );
+	if( !pContextData )
 	{
 		pContextData = new CExampleModel_DX9_Context;
 		*pContextDataPtr = pContextData;
@@ -110,14 +110,14 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 		int nShadowFilterMode = 0;
 		if( bHasFlashlight )
 		{
-			if (params[info.m_nBaseTexture]->IsTexture())
+			if( params[info.m_nBaseTexture]->IsTexture() )
 			{
 				pShader->SetAdditiveBlendingShadowState( info.m_nBaseTexture, true );
 			}
 
 			if( bIsAlphaTested )
 			{
-				// disable alpha test and use the zfunc zequals since alpha isn't guaranteed to 
+				// disable alpha test and use the zfunc zequals since alpha isn't guaranteed to
 				// be the same on both the regular pass and the flashlight pass.
 				pShaderShadow->EnableAlphaTest( false );
 				pShaderShadow->DepthFunc( SHADER_DEPTHFUNC_EQUAL );
@@ -132,12 +132,12 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 		}
 		else // not flashlight pass
 		{
-			if (params[info.m_nBaseTexture]->IsTexture())
+			if( params[info.m_nBaseTexture]->IsTexture() )
 			{
 				pShader->SetDefaultBlendingShadowState( info.m_nBaseTexture, true );
 			}
 		}
-		
+
 		unsigned int flags = VERTEX_POSITION | VERTEX_NORMAL;
 		int userDataSize = 0;
 
@@ -161,7 +161,7 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 		userDataSize = 4; // tangent S
 		pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );		// Normalizing cube map
 		pShaderShadow->EnableSRGBWrite( true );
-		
+
 		// texcoord0 : base texcoord, texcoord2 : decal hw morph delta
 		int pTexCoordDim[3] = { 2, 0, 3 };
 		int nTexCoordCount = 1;
@@ -213,7 +213,7 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 			Assert( info.m_nFlashlightTexture >= 0 && info.m_nFlashlightTextureFrame >= 0 );
 			pShader->BindTexture( SHADER_SAMPLER6, info.m_nFlashlightTexture, info.m_nFlashlightTextureFrame );
 			VMatrix worldToTexture;
-			ITexture *pFlashlightDepthTexture;
+			ITexture* pFlashlightDepthTexture;
 			FlashlightState_t state = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
 			bFlashlightShadows = state.m_bEnableShadows && ( pFlashlightDepthTexture != NULL );
 
@@ -236,18 +236,18 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 
 		bool bWriteDepthToAlpha = false;
 		bool bWriteWaterFogToAlpha = false;
-		if( bFullyOpaque ) 
+		if( bFullyOpaque )
 		{
 			bWriteDepthToAlpha = pShaderAPI->ShouldWriteDepthToDestAlpha();
-			bWriteWaterFogToAlpha = (fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z);
-			AssertMsg( !(bWriteDepthToAlpha && bWriteWaterFogToAlpha), "Can't write two values to alpha at the same time." );
+			bWriteWaterFogToAlpha = ( fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+			AssertMsg( !( bWriteDepthToAlpha && bWriteWaterFogToAlpha ), "Can't write two values to alpha at the same time." );
 		}
 
 		DECLARE_DYNAMIC_VERTEX_SHADER( example_model_vs20 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG, fogIndex );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, numBones > 0 );
-		SET_DYNAMIC_VERTEX_SHADER_COMBO( LIGHTING_PREVIEW, pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_ENABLE_FIXED_LIGHTING)!=0);
-		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( LIGHTING_PREVIEW, pShaderAPI->GetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING ) != 0 );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 		SET_DYNAMIC_VERTEX_SHADER( example_model_vs20 );
 
@@ -284,7 +284,7 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 			VMatrix worldToTexture;
 			float atten[4], pos[4], tweaks[4];
 
-			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
+			const FlashlightState_t& flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
 			SetFlashLightColorFromState( flashlightState, pShaderAPI, PSREG_FLASHLIGHT_COLOR );
 
 			pShader->BindTexture( SHADER_SAMPLER6, flashlightState.m_pSpotlightTexture, flashlightState.m_nSpotlightTextureFrame );
@@ -312,8 +312,8 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 			float vScreenScale[4] = {1280.0f / 32.0f, 720.0f / 32.0f, 0, 0};
 			int nWidth, nHeight;
 			pShaderAPI->GetBackBufferDimensions( nWidth, nHeight );
-			vScreenScale[0] = (float) nWidth  / 32.0f;
-			vScreenScale[1] = (float) nHeight / 32.0f;
+			vScreenScale[0] = ( float ) nWidth  / 32.0f;
+			vScreenScale[1] = ( float ) nHeight / 32.0f;
 			pShaderAPI->SetPixelShaderConstant( PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1 );
 		}
 	}
@@ -324,15 +324,15 @@ void DrawExampleModel_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** param
 //-----------------------------------------------------------------------------
 // Draws the shader
 //-----------------------------------------------------------------------------
-void DrawExampleModel_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow,
-				   ExampleModel_DX9_Vars_t &info, VertexCompressionType_t vertexCompression, CBasePerMaterialContextData **pContextDataPtr )
+void DrawExampleModel_DX9( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow,
+						   ExampleModel_DX9_Vars_t& info, VertexCompressionType_t vertexCompression, CBasePerMaterialContextData** pContextDataPtr )
 
 {
 	bool bHasFlashlight = pShader->UsingFlashlight( params );
-	if ( bHasFlashlight )
+	if( bHasFlashlight )
 	{
 		DrawExampleModel_DX9_Internal( pShader, params, pShaderAPI,	pShaderShadow, false, info, vertexCompression, pContextDataPtr++ );
-		if ( pShaderShadow )
+		if( pShaderShadow )
 		{
 			pShader->SetInitialShadowState( );
 		}

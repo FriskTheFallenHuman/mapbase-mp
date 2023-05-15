@@ -32,14 +32,14 @@ public:
 
 	// Adds an event to the queue, will pop off stale events from the queue
 	// NOTE: All events added to the queue must monotonically increase in time!
-	I PushEvent( float flTime, const T &data );
+	I PushEvent( float flTime, const T& data );
 
 	// Grabs the last event that happened before or at the specified time
 	I GetEventIndex( float flTime ) const;
 
 	// Gets event information
 	float GetEventTime( I i ) const;
-	const T &GetEventData( I i ) const;
+	const T& GetEventData( I i ) const;
 
 private:
 	struct QueueEntry_t
@@ -58,7 +58,7 @@ private:
 // The time passed in here represents the amount of time the queue stores
 //-----------------------------------------------------------------------------
 template <class T, class I>
-CTimedEventQueue<T,I>::CTimedEventQueue( float flMaxTime ) : m_flMaxTime(flMaxTime)
+CTimedEventQueue<T, I>::CTimedEventQueue( float flMaxTime ) : m_flMaxTime( flMaxTime )
 {
 	// The length of time of events in the queue must be reasonable
 	Assert( m_flMaxTime > 0.0f );
@@ -70,7 +70,7 @@ CTimedEventQueue<T,I>::CTimedEventQueue( float flMaxTime ) : m_flMaxTime(flMaxTi
 // Adds an event to the queue, will pop off stale events from the queue
 //-----------------------------------------------------------------------------
 template <class T, class I>
-I CTimedEventQueue<T,I>::PushEvent( float flTime, const T &data )
+I CTimedEventQueue<T, I>::PushEvent( float flTime, const T& data )
 {
 	Assert( m_flQueueHeadTime <= flTime );
 	m_flQueueHeadTime = flTime;
@@ -79,14 +79,14 @@ I CTimedEventQueue<T,I>::PushEvent( float flTime, const T &data )
 	I idx = m_Queue.AddToHead();
 	m_Queue[idx].m_flTime = flTime;
 	m_Queue[idx].m_Data = data;
-	
+
 	// Then retire stale events...
 	I i = m_Queue.Tail();
-	while (m_Queue[i].m_flTime < m_flQueueHeadTime - m_flMaxTime )
+	while( m_Queue[i].m_flTime < m_flQueueHeadTime - m_flMaxTime )
 	{
-		I prev = m_Queue.Prev(i);
+		I prev = m_Queue.Prev( i );
 		Assert( prev != m_Queue.InvalidIndex() );
-		m_Queue.Remove(i);
+		m_Queue.Remove( i );
 		i = prev;
 	}
 
@@ -98,16 +98,16 @@ I CTimedEventQueue<T,I>::PushEvent( float flTime, const T &data )
 // Grabs the last event that happened before or at the specified time
 //-----------------------------------------------------------------------------
 template <class T, class I>
-I CTimedEventQueue<T,I>::GetEventIndex( float flTime ) const
+I CTimedEventQueue<T, I>::GetEventIndex( float flTime ) const
 {
 	// This checks for a request that fell off the queue
-	Assert( (flTime >= m_flQueueHeadTime - m_flMaxTime) && (flTime <= m_flQueueHeadTime) );
-	
+	Assert( ( flTime >= m_flQueueHeadTime - m_flMaxTime ) && ( flTime <= m_flQueueHeadTime ) );
+
 	// Then retire stale events...
 	I i = m_Queue.Head();
 	while( m_Queue[i].m_flTime > flTime )
 	{
-		i = m_Queue.Next(i);
+		i = m_Queue.Next( i );
 		Assert( i != m_Queue.InvalidIndex() );
 	}
 
@@ -119,13 +119,13 @@ I CTimedEventQueue<T,I>::GetEventIndex( float flTime ) const
 // Gets event information
 //-----------------------------------------------------------------------------
 template <class T, class I>
-inline float CTimedEventQueue<T,I>::GetEventTime( I i )	const
+inline float CTimedEventQueue<T, I>::GetEventTime( I i )	const
 {
 	return m_Queue[i].m_flTime;
 }
 
 template <class T, class I>
-inline const T &CTimedEventQueue<T,I>::GetEventData( I i ) const
+inline const T& CTimedEventQueue<T, I>::GetEventData( I i ) const
 {
 	return m_Queue[i].m_Data;
 }
@@ -139,14 +139,14 @@ class CEnvWindShared
 public:
 	DECLARE_CLASS_NOBASE( CEnvWindShared );
 	DECLARE_EMBEDDED_NETWORKVAR();
-	
+
 	CEnvWindShared();
 	~CEnvWindShared();
 
 	void Init( int iEntIndex, int iRandomSeed, float flTime, int iWindDir, float flInitialWindSpeed );
 
 #ifdef MAPBASE
-	void SetLocation( const Vector &location );
+	void SetLocation( const Vector& location );
 #endif
 
 	// Method to update the wind speed
@@ -241,19 +241,19 @@ private:
 	CUniformRandomStream m_WindVariationStream;
 
 	// Used to generate the wind sound...
-	CSoundPatch *m_pWindSound;
+	CSoundPatch* m_pWindSound;
 
 	// Event history required for prediction
 	CTimedEventQueue< WindAveEvent_t, unsigned short >	m_WindAveQueue;
 	CTimedEventQueue< WindVariationEvent_t, unsigned short > m_WindVariationQueue;
 
 private:
-	CEnvWindShared( const CEnvWindShared & ); // not defined, not accessible
+	CEnvWindShared( const CEnvWindShared& );  // not defined, not accessible
 };
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-inline void CEnvWindShared::SetLocation( const Vector &location )
+inline void CEnvWindShared::SetLocation( const Vector& location )
 {
 	m_location = location;
 }
@@ -262,13 +262,13 @@ inline void CEnvWindShared::SetLocation( const Vector &location )
 //-----------------------------------------------------------------------------
 // Method to sample the wind speed at a particular location
 //-----------------------------------------------------------------------------
-Vector GetWindspeedAtLocation( const Vector &location );
+Vector GetWindspeedAtLocation( const Vector& location );
 #endif
 
 //-----------------------------------------------------------------------------
 // Method to sample the windspeed at a particular time
 //-----------------------------------------------------------------------------
-void GetWindspeedAtTime( float flTime, Vector &vecVelocity );
+void GetWindspeedAtTime( float flTime, Vector& vecVelocity );
 
 
 //-----------------------------------------------------------------------------

@@ -86,7 +86,7 @@ ConVar locator_split_maxwide_percent( "locator_split_maxwide_percent", "0.80f", 
 ConVar locator_split_len( "locator_split_len", "0.5f", FCVAR_CHEAT );
 
 #ifdef MAPBASE
-extern ConVar gameinstructor_default_bindingcolor;
+	extern ConVar gameinstructor_default_bindingcolor;
 #endif
 
 
@@ -95,17 +95,17 @@ CLocatorTarget::CLocatorTarget( void )
 {
 	Deactivate( true );
 
-	PrecacheMaterial("vgui/hud/icon_arrow_left");
-	PrecacheMaterial("vgui/hud/icon_arrow_right");
-	PrecacheMaterial("vgui/hud/icon_arrow_up");
-	PrecacheMaterial("vgui/hud/icon_arrow_down");
-	PrecacheMaterial("vgui/hud/icon_arrow_plain");
+	PrecacheMaterial( "vgui/hud/icon_arrow_left" );
+	PrecacheMaterial( "vgui/hud/icon_arrow_right" );
+	PrecacheMaterial( "vgui/hud/icon_arrow_up" );
+	PrecacheMaterial( "vgui/hud/icon_arrow_down" );
+	PrecacheMaterial( "vgui/hud/icon_arrow_plain" );
 }
 
 //------------------------------------
 void CLocatorTarget::Activate( int serialNumber )
-{ 
-	m_serialNumber		= serialNumber; 
+{
+	m_serialNumber		= serialNumber;
 	m_frameLastUpdated	= gpGlobals->framecount;
 	m_isActive			= true;
 
@@ -120,8 +120,10 @@ void CLocatorTarget::Activate( int serialNumber )
 	int iStartY = ScreenHeight() / 4;
 
 	// We want to start lessons at the players crosshair, cause that's where they're looking!
-	if ( locator_start_at_crosshair.GetBool() )
+	if( locator_start_at_crosshair.GetBool() )
+	{
 		vgui::input()->GetCursorPos( iStartX, iStartY );
+	}
 
 	m_lastXPos = iStartX;
 	m_lastYPos = iStartY;
@@ -132,16 +134,16 @@ void CLocatorTarget::Activate( int serialNumber )
 	m_declutterIndex		= 0;
 	m_lastDeclutterIndex	= 0;
 
-	AddIconEffects(LOCATOR_ICON_FX_FADE_IN);
+	AddIconEffects( LOCATOR_ICON_FX_FADE_IN );
 
 #ifdef MAPBASE
 	// Mods are capable of using a custom binding color
 	CSplitString colorValues( gameinstructor_default_bindingcolor.GetString(), "," );
 
-	int r,g,b;
+	int r, g, b;
 	r = g = b = 0;
 
-	if (colorValues.Count() == 3)
+	if( colorValues.Count() == 3 )
 	{
 		r = atoi( colorValues[0] );
 		g = atoi( colorValues[1] );
@@ -153,11 +155,11 @@ void CLocatorTarget::Activate( int serialNumber )
 }
 
 //------------------------------------
-void CLocatorTarget::Deactivate( bool bNoFade )						
-{ 
-	if ( bNoFade || m_alpha == 0 || 
-		 ( m_bOccluded && !( m_iEffectsFlags & LOCATOR_ICON_FX_FORCE_CAPTION ) ) || 
-		 ( !m_bOnscreen && ( m_iEffectsFlags & LOCATOR_ICON_FX_NO_OFFSCREEN ) ) )
+void CLocatorTarget::Deactivate( bool bNoFade )
+{
+	if( bNoFade || m_alpha == 0 ||
+			( m_bOccluded && !( m_iEffectsFlags & LOCATOR_ICON_FX_FORCE_CAPTION ) ) ||
+			( !m_bOnscreen && ( m_iEffectsFlags & LOCATOR_ICON_FX_NO_OFFSCREEN ) ) )
 	{
 		m_bOriginInScreenspace = false;
 
@@ -191,9 +193,9 @@ void CLocatorTarget::Deactivate( bool bNoFade )
 		m_iBindingChoicesCount	= 0;
 
 		m_wszCaption.RemoveAll();
-		m_wszCaption.AddToTail( (wchar_t)0 );
+		m_wszCaption.AddToTail( ( wchar_t )0 );
 	}
-	else if ( !( m_iEffectsFlags & LOCATOR_ICON_FX_FADE_OUT ) )
+	else if( !( m_iEffectsFlags & LOCATOR_ICON_FX_FADE_OUT ) )
 	{
 		// Determine home much time it would have spent fading to reach the current alpha
 		float flAssumedFadeTime;
@@ -207,11 +209,11 @@ void CLocatorTarget::Deactivate( bool bNoFade )
 }
 
 //------------------------------------
-void CLocatorTarget::Update()							
+void CLocatorTarget::Update()
 {
 	m_frameLastUpdated = gpGlobals->framecount;
 
-	if ( m_bVisible && ( m_iEffectsFlags & LOCATOR_ICON_FX_FADE_OUT ) )
+	if( m_bVisible && ( m_iEffectsFlags & LOCATOR_ICON_FX_FADE_OUT ) )
 	{
 		// Determine home much time it would have spent fading to reach the current alpha
 		float flAssumedFadeTime;
@@ -226,12 +228,12 @@ void CLocatorTarget::Update()
 
 int CLocatorTarget::GetIconX( void )
 {
-	return m_iconX + ( IsOnScreen() ? locator_target_offset_x.GetInt()+m_offsetX : 0 );
+	return m_iconX + ( IsOnScreen() ? locator_target_offset_x.GetInt() + m_offsetX : 0 );
 }
 
 int CLocatorTarget::GetIconY( void )
 {
-	return m_iconY + ( IsOnScreen() ? locator_target_offset_y.GetInt()+m_offsetY : 0 );
+	return m_iconY + ( IsOnScreen() ? locator_target_offset_y.GetInt() + m_offsetY : 0 );
 }
 
 int CLocatorTarget::GetIconCenterX( void )
@@ -247,12 +249,14 @@ int CLocatorTarget::GetIconCenterY( void )
 void CLocatorTarget::SetVisible( bool bVisible )
 {
 	// They are already the same
-	if ( m_bVisible == bVisible )
+	if( m_bVisible == bVisible )
+	{
 		return;
+	}
 
 	m_bVisible = bVisible;
 
-	if ( bVisible )
+	if( bVisible )
 	{
 		// Determine home much time it would have spent fading to reach the current alpha
 		float flAssumedFadeTime;
@@ -281,55 +285,57 @@ bool CLocatorTarget::IsVisible( void )
 	return m_bVisible;
 }
 
-void CLocatorTarget::SetCaptionText( const char *pszText, const char *pszParam )
+void CLocatorTarget::SetCaptionText( const char* pszText, const char* pszParam )
 {
 	wchar_t outbuf[ 256 ];
 	outbuf[ 0 ] = L'\0';
 
-	if ( pszParam && pszParam[ 0 ] != '\0' )
+	if( pszParam && pszParam[ 0 ] != '\0' )
 	{
 		wchar_t wszParamBuff[ 128 ];
-		wchar_t *pLocalizedParam = NULL;
+		wchar_t* pLocalizedParam = NULL;
 
-		if ( pszParam[ 0 ] == '#' )
+		if( pszParam[ 0 ] == '#' )
 		{
 			pLocalizedParam = g_pVGuiLocalize->Find( pszParam );
 		}
 
-		if ( !pLocalizedParam )
+		if( !pLocalizedParam )
 		{
 			g_pVGuiLocalize->ConvertANSIToUnicode( pszParam, wszParamBuff, sizeof( wszParamBuff ) );
 			pLocalizedParam = wszParamBuff;
 		}
 
 		wchar_t wszTextBuff[ 128 ];
-		wchar_t *pLocalizedText = NULL;
+		wchar_t* pLocalizedText = NULL;
 
-		if ( pszText[ 0 ] == '#' )
+		if( pszText[ 0 ] == '#' )
+		{
 			pLocalizedText = g_pVGuiLocalize->Find( pszText );
+		}
 
-		if ( !pLocalizedText )
+		if( !pLocalizedText )
 		{
 			g_pVGuiLocalize->ConvertANSIToUnicode( pszText, wszTextBuff, sizeof( wszTextBuff ) );
 			pLocalizedText = wszTextBuff;
 		}
 
 		wchar_t buf[ 256 ];
-		g_pVGuiLocalize->ConstructString( buf, sizeof(buf), pLocalizedText, 1, pLocalizedParam );
+		g_pVGuiLocalize->ConstructString( buf, sizeof( buf ), pLocalizedText, 1, pLocalizedParam );
 
 		UTIL_ReplaceKeyBindings( buf, sizeof( buf ), outbuf, sizeof( outbuf ) );
 	}
 	else
 	{
 		wchar_t wszTextBuff[ 128 ];
-		wchar_t *pLocalizedText = NULL;
+		wchar_t* pLocalizedText = NULL;
 
-		if ( pszText[ 0 ] == '#' )
+		if( pszText[ 0 ] == '#' )
 		{
 			pLocalizedText = g_pVGuiLocalize->Find( pszText );
 		}
 
-		if ( !pLocalizedText )
+		if( !pLocalizedText )
 		{
 			g_pVGuiLocalize->ConvertANSIToUnicode( pszText, wszTextBuff, sizeof( wszTextBuff ) );
 			pLocalizedText = wszTextBuff;
@@ -338,7 +344,7 @@ void CLocatorTarget::SetCaptionText( const char *pszText, const char *pszParam )
 		wchar_t buf[ 256 ];
 		Q_wcsncpy( buf, pLocalizedText, sizeof( buf ) );
 
-		UTIL_ReplaceKeyBindings( buf, sizeof(buf), outbuf, sizeof( outbuf ) );
+		UTIL_ReplaceKeyBindings( buf, sizeof( buf ), outbuf, sizeof( outbuf ) );
 	}
 
 	int len = wcslen( outbuf ) + 1;
@@ -347,9 +353,9 @@ void CLocatorTarget::SetCaptionText( const char *pszText, const char *pszParam )
 	Q_wcsncpy( m_wszCaption.Base(), outbuf, len * sizeof( wchar_t ) );
 }
 
-void CLocatorTarget::SetCaptionColor( const char *pszCaptionColor )
+void CLocatorTarget::SetCaptionColor( const char* pszCaptionColor )
 {
-	int r,g,b;
+	int r, g, b;
 	r = g = b = 0;
 
 	CSplitString colorValues( pszCaptionColor, "," );
@@ -360,11 +366,11 @@ void CLocatorTarget::SetCaptionColor( const char *pszCaptionColor )
 		g = atoi( colorValues[1] );
 		b = atoi( colorValues[2] );
 
-		m_captionColor.SetColor( r,g,b, 255 );
+		m_captionColor.SetColor( r, g, b, 255 );
 	}
 	else
 	{
-		DevWarning( "caption_color format incorrect. RRR,GGG,BBB expected.\n");
+		DevWarning( "caption_color format incorrect. RRR,GGG,BBB expected.\n" );
 	}
 }
 
@@ -380,7 +386,7 @@ bool CLocatorTarget::IsPresenting()
 
 void CLocatorTarget::StartTimedLerp()
 {
-	if ( gpGlobals->curtime - m_lerpStart > locator_lerp_rest.GetFloat() )
+	if( gpGlobals->curtime - m_lerpStart > locator_lerp_rest.GetFloat() )
 	{
 		m_lerpStart = gpGlobals->curtime - locator_lerp_rest.GetFloat();
 	}
@@ -394,7 +400,7 @@ void CLocatorTarget::StartPresent()
 
 void CLocatorTarget::EndPresent()
 {
-	if ( gpGlobals->curtime - m_lerpStart < locator_lerp_rest.GetFloat() )
+	if( gpGlobals->curtime - m_lerpStart < locator_lerp_rest.GetFloat() )
 	{
 		m_lerpStart = gpGlobals->curtime - locator_lerp_rest.GetFloat();
 	}
@@ -402,30 +408,30 @@ void CLocatorTarget::EndPresent()
 
 void CLocatorTarget::UpdateVguiTarget( void )
 {
-	const char *pchVguiTargetName = m_szVguiTargetName.String();
+	const char* pchVguiTargetName = m_szVguiTargetName.String();
 
-	if ( !pchVguiTargetName || pchVguiTargetName[ 0 ] == '\0' )
+	if( !pchVguiTargetName || pchVguiTargetName[ 0 ] == '\0' )
 	{
 		m_hVguiTarget = NULL;
 		return;
 	}
 
 	// Get the appropriate token based on the binding
-	if ( m_iBindingChoicesCount > 0 )
+	if( m_iBindingChoicesCount > 0 )
 	{
 		int nTagetToken = m_iBindChoicesOriginalToken[ m_iBindingTick % m_iBindingChoicesCount ];
 
-		for ( int nToken = 0; nToken < nTagetToken && pchVguiTargetName; ++nToken )
+		for( int nToken = 0; nToken < nTagetToken && pchVguiTargetName; ++nToken )
 		{
 			pchVguiTargetName = strchr( pchVguiTargetName, ';' );
 
-			if ( pchVguiTargetName )
+			if( pchVguiTargetName )
 			{
 				pchVguiTargetName++;
 			}
 		}
 
-		if ( !pchVguiTargetName || pchVguiTargetName[ 0 ] == '\0' )
+		if( !pchVguiTargetName || pchVguiTargetName[ 0 ] == '\0' )
 		{
 			// There wasn't enough tokens, just use the first
 			pchVguiTargetName = m_szVguiTargetName.String();
@@ -435,17 +441,19 @@ void CLocatorTarget::UpdateVguiTarget( void )
 	m_hVguiTarget = g_pClientMode->GetViewport();
 }
 
-void CLocatorTarget::SetVguiTargetName( const char *pchVguiTargetName )
+void CLocatorTarget::SetVguiTargetName( const char* pchVguiTargetName )
 {
-	if ( Q_strcmp( m_szVguiTargetName.String(), pchVguiTargetName ) == 0 )
+	if( Q_strcmp( m_szVguiTargetName.String(), pchVguiTargetName ) == 0 )
+	{
 		return;
+	}
 
 	m_szVguiTargetName = pchVguiTargetName;
 
 	UpdateVguiTarget();
 }
 
-void CLocatorTarget::SetVguiTargetLookup( const char *pchVguiTargetLookup )
+void CLocatorTarget::SetVguiTargetLookup( const char* pchVguiTargetLookup )
 {
 	m_szVguiTargetLookup = pchVguiTargetLookup;
 }
@@ -455,16 +463,18 @@ void CLocatorTarget::SetVguiTargetEdge( int nVguiEdge )
 	m_nVguiTargetEdge = nVguiEdge;
 }
 
-vgui::Panel *CLocatorTarget::GetVguiTarget( void )
+vgui::Panel* CLocatorTarget::GetVguiTarget( void )
 {
-	return (vgui::Panel *)m_hVguiTarget.Get();
+	return ( vgui::Panel* )m_hVguiTarget.Get();
 }
 
 //------------------------------------
-void CLocatorTarget::SetOnscreenIconTextureName( const char *pszTexture )
+void CLocatorTarget::SetOnscreenIconTextureName( const char* pszTexture )
 {
-	if ( Q_strcmp( m_szOnscreenTexture.String(), pszTexture ) == 0 )
+	if( Q_strcmp( m_szOnscreenTexture.String(), pszTexture ) == 0 )
+	{
 		return;
+	}
 
 	m_szOnscreenTexture = pszTexture;
 	m_pIcon_onscreen	= NULL; // Dirty the onscreen icon so that the Locator will look up the new icon by name.
@@ -472,10 +482,12 @@ void CLocatorTarget::SetOnscreenIconTextureName( const char *pszTexture )
 }
 
 //------------------------------------
-void CLocatorTarget::SetOffscreenIconTextureName( const char *pszTexture )
+void CLocatorTarget::SetOffscreenIconTextureName( const char* pszTexture )
 {
-	if ( Q_strcmp( m_szOffscreenTexture.String(), pszTexture ) == 0 )
+	if( Q_strcmp( m_szOffscreenTexture.String(), pszTexture ) == 0 )
+	{
 		return;
+	}
 
 	m_szOffscreenTexture	= pszTexture;
 	m_pIcon_offscreen		= NULL; // Ditto
@@ -483,7 +495,7 @@ void CLocatorTarget::SetOffscreenIconTextureName( const char *pszTexture )
 }
 
 //------------------------------------
-void CLocatorTarget::SetBinding( const char *pszBinding )	
+void CLocatorTarget::SetBinding( const char* pszBinding )
 {
 	int iAllowJoystick = -1;
 
@@ -495,11 +507,13 @@ void CLocatorTarget::SetBinding( const char *pszBinding )
 
 	bool bIsControllerNow = ( iAllowJoystick != 0 );
 
-	if ( m_bWasControllerLast == bIsControllerNow )
+	if( m_bWasControllerLast == bIsControllerNow )
 	{
 		// We haven't toggled joystick enabled recently, so if it's the same bind, bail
-		if ( Q_strcmp( m_szBinding.String(), pszBinding ) == 0 )
+		if( Q_strcmp( m_szBinding.String(), pszBinding ) == 0 )
+		{
 			return;
+		}
 	}
 
 	m_bWasControllerLast = bIsControllerNow;
@@ -514,18 +528,18 @@ void CLocatorTarget::SetBinding( const char *pszBinding )
 
 	// Tokenize the binding name (could be more than one binding)
 	int nOriginalToken		= 0;
-	const char	*pchToken	= m_szBinding.String();
+	const char*	pchToken	= m_szBinding.String();
 	char		szToken[ 128 ];
 
 	pchToken = nexttoken( szToken, pchToken, ';', sizeof( szToken ) );
 
-	while ( pchToken )
+	while( pchToken )
 	{
 		// Get the first parameter
 		int iTokenBindingCount = 0;
-		const char *pchBinding = engine->Key_LookupBindingExact( szToken );
+		const char* pchBinding = engine->Key_LookupBindingExact( szToken );
 
-		while ( m_iBindingChoicesCount < MAX_LOCATOR_BINDINGS_SHOWN && pchBinding )
+		while( m_iBindingChoicesCount < MAX_LOCATOR_BINDINGS_SHOWN && pchBinding )
 		{
 			m_pchBindingChoices[ m_iBindingChoicesCount ]			= pchBinding;
 			m_iBindChoicesOriginalToken[ m_iBindingChoicesCount ]	= nOriginalToken;
@@ -543,13 +557,13 @@ void CLocatorTarget::SetBinding( const char *pszBinding )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CLocatorTarget::UseBindingImage( char *pchIconTextureName, size_t bufSize )
+const char* CLocatorTarget::UseBindingImage( char* pchIconTextureName, size_t bufSize )
 {
-	if ( m_iBindingChoicesCount <= 0 )
+	if( m_iBindingChoicesCount <= 0 )
 	{
-		if ( IsX360() )
+		if( IsX360() )
 		{
 			Q_strncpy( pchIconTextureName, "icon_blank", bufSize );
 		}
@@ -563,34 +577,34 @@ const char *CLocatorTarget::UseBindingImage( char *pchIconTextureName, size_t bu
 	}
 
 	// Cycle through the list of binds at a rate of 2 per second
-	const char *pchBinding = m_pchBindingChoices[ m_iBindingTick % m_iBindingChoicesCount ];
+	const char* pchBinding = m_pchBindingChoices[ m_iBindingTick % m_iBindingChoicesCount ];
 
 	// We counted at least one binding... this should not be NULL!
 	Assert( pchBinding );
 
-	if ( IsX360() )
+	if( IsX360() )
 	{
 		// Use a blank background for the button icons
 		Q_strncpy( pchIconTextureName, "icon_blank", bufSize );
 		return pchBinding;
 	}
 
-	/*if ( input->ControllerModeActive() && 
-		 ( Q_strcmp( pchBinding, "A_BUTTON" ) == 0 || 
-		   Q_strcmp( pchBinding, "B_BUTTON" ) == 0 || 
-		   Q_strcmp( pchBinding, "X_BUTTON" ) == 0 || 
-		   Q_strcmp( pchBinding, "Y_BUTTON" ) == 0 || 
-		   Q_strcmp( pchBinding, "L_SHOULDER" ) == 0 || 
-		   Q_strcmp( pchBinding, "R_SHOULDER" ) == 0 || 
-		   Q_strcmp( pchBinding, "L_TRIGGER" ) == 0 || 
-		   Q_strcmp( pchBinding, "R_TRIGGER" ) == 0 || 
-		   Q_strcmp( pchBinding, "BACK" ) == 0 || 
-		   Q_strcmp( pchBinding, "START" ) == 0 || 
-		   Q_strcmp( pchBinding, "STICK1" ) == 0 || 
-		   Q_strcmp( pchBinding, "STICK2" ) == 0 || 
-		   Q_strcmp( pchBinding, "UP" ) == 0 || 
-		   Q_strcmp( pchBinding, "DOWN" ) == 0 || 
-		   Q_strcmp( pchBinding, "LEFT" ) == 0 || 
+	/*if ( input->ControllerModeActive() &&
+		 ( Q_strcmp( pchBinding, "A_BUTTON" ) == 0 ||
+		   Q_strcmp( pchBinding, "B_BUTTON" ) == 0 ||
+		   Q_strcmp( pchBinding, "X_BUTTON" ) == 0 ||
+		   Q_strcmp( pchBinding, "Y_BUTTON" ) == 0 ||
+		   Q_strcmp( pchBinding, "L_SHOULDER" ) == 0 ||
+		   Q_strcmp( pchBinding, "R_SHOULDER" ) == 0 ||
+		   Q_strcmp( pchBinding, "L_TRIGGER" ) == 0 ||
+		   Q_strcmp( pchBinding, "R_TRIGGER" ) == 0 ||
+		   Q_strcmp( pchBinding, "BACK" ) == 0 ||
+		   Q_strcmp( pchBinding, "START" ) == 0 ||
+		   Q_strcmp( pchBinding, "STICK1" ) == 0 ||
+		   Q_strcmp( pchBinding, "STICK2" ) == 0 ||
+		   Q_strcmp( pchBinding, "UP" ) == 0 ||
+		   Q_strcmp( pchBinding, "DOWN" ) == 0 ||
+		   Q_strcmp( pchBinding, "LEFT" ) == 0 ||
 		   Q_strcmp( pchBinding, "RIGHT" ) == 0 ) )
 	{
 		// Use a blank background for the button icons
@@ -598,72 +612,72 @@ const char *CLocatorTarget::UseBindingImage( char *pchIconTextureName, size_t bu
 		return pchBinding;
 	}*/
 
-	if ( Q_strcmp( pchBinding, "MOUSE1" ) == 0 )
+	if( Q_strcmp( pchBinding, "MOUSE1" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_mouseLeft", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "MOUSE2" ) == 0 )
+	else if( Q_strcmp( pchBinding, "MOUSE2" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_mouseRight", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "MOUSE3" ) == 0 )
+	else if( Q_strcmp( pchBinding, "MOUSE3" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_mouseThree", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "MWHEELUP" ) == 0 )
+	else if( Q_strcmp( pchBinding, "MWHEELUP" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_mouseWheel_up", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "MWHEELDOWN" ) == 0 )
+	else if( Q_strcmp( pchBinding, "MWHEELDOWN" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_mouseWheel_down", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "UPARROW" ) == 0 )
+	else if( Q_strcmp( pchBinding, "UPARROW" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_up", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "LEFTARROW" ) == 0 )
+	else if( Q_strcmp( pchBinding, "LEFTARROW" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_left", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "DOWNARROW" ) == 0 )
+	else if( Q_strcmp( pchBinding, "DOWNARROW" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_down", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "RIGHTARROW" ) == 0 )
+	else if( Q_strcmp( pchBinding, "RIGHTARROW" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_right", bufSize );
 		return NULL;
 	}
-	else if ( Q_strcmp( pchBinding, "SEMICOLON" ) == 0 || 
-		Q_strcmp( pchBinding, "INS" ) == 0 || 
-		Q_strcmp( pchBinding, "DEL" ) == 0 || 
-		Q_strcmp( pchBinding, "HOME" ) == 0 || 
-		Q_strcmp( pchBinding, "END" ) == 0 || 
-		Q_strcmp( pchBinding, "PGUP" ) == 0 || 
-		Q_strcmp( pchBinding, "PGDN" ) == 0 || 
-		Q_strcmp( pchBinding, "PAUSE" ) == 0 || 
-		Q_strcmp( pchBinding, "F10" ) == 0 || 
-		Q_strcmp( pchBinding, "F11" ) == 0 || 
-		Q_strcmp( pchBinding, "F12" ) == 0 )
+	else if( Q_strcmp( pchBinding, "SEMICOLON" ) == 0 ||
+			 Q_strcmp( pchBinding, "INS" ) == 0 ||
+			 Q_strcmp( pchBinding, "DEL" ) == 0 ||
+			 Q_strcmp( pchBinding, "HOME" ) == 0 ||
+			 Q_strcmp( pchBinding, "END" ) == 0 ||
+			 Q_strcmp( pchBinding, "PGUP" ) == 0 ||
+			 Q_strcmp( pchBinding, "PGDN" ) == 0 ||
+			 Q_strcmp( pchBinding, "PAUSE" ) == 0 ||
+			 Q_strcmp( pchBinding, "F10" ) == 0 ||
+			 Q_strcmp( pchBinding, "F11" ) == 0 ||
+			 Q_strcmp( pchBinding, "F12" ) == 0 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_generic", bufSize );
 		return pchBinding;
 	}
-	else if ( Q_strlen( pchBinding ) <= 2 )
+	else if( Q_strlen( pchBinding ) <= 2 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_generic", bufSize );
 		return pchBinding;
 	}
-	else if ( Q_strlen( pchBinding ) <= 6 )
+	else if( Q_strlen( pchBinding ) <= 6 )
 	{
 		Q_strncpy( pchIconTextureName, "icon_key_wide", bufSize );
 		return pchBinding;
@@ -690,51 +704,51 @@ int CLocatorTarget::GetIconHeight( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CLocatorPanel : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CLocatorPanel, vgui::EditablePanel );
 public:
-	CLocatorPanel( vgui::Panel *parent, const char *name );
+	CLocatorPanel( vgui::Panel* parent, const char* name );
 	~CLocatorPanel( void );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 	virtual void PerformLayout( void );
 	virtual void OnTick( void );
 	virtual void PaintBackground( void );
 	virtual void Paint( void );
-	void ValidateTexture( int *pTextureID, const char *pszTextureName );
-	bool ValidateTargetTextures( CLocatorTarget *pTarget );
-	bool IconsAreIntersecting( CLocatorTarget &first, CLocatorTarget &second, int iTolerance );
-	virtual void PaintTarget( CLocatorTarget *pTarget );
+	void ValidateTexture( int* pTextureID, const char* pszTextureName );
+	bool ValidateTargetTextures( CLocatorTarget* pTarget );
+	bool IconsAreIntersecting( CLocatorTarget& first, CLocatorTarget& second, int iTolerance );
+	virtual void PaintTarget( CLocatorTarget* pTarget );
 
-	void DrawPointerBackground( CLocatorTarget *pTarget, int nPointerX, int nPointerY, int nWide, int nTall, bool bPointer );
-	void DrawStaticIcon( CLocatorTarget *pTarget );
-	void DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption, bool bDrawSimpleArrow );
+	void DrawPointerBackground( CLocatorTarget* pTarget, int nPointerX, int nPointerY, int nWide, int nTall, bool bPointer );
+	void DrawStaticIcon( CLocatorTarget* pTarget );
+	void DrawDynamicIcon( CLocatorTarget* pTarget, bool bDrawCaption, bool bDrawSimpleArrow );
 	void DrawIndicatorArrow( int x, int y, int iconWide, int iconTall, int textWidth, int direction );
-	void DrawTargetCaption( CLocatorTarget *pTarget, int x, int y, bool bDrawMultiline );
-	int  GetScreenWidthForCaption( const wchar_t *pString, vgui::HFont hFont );
-	void DrawBindingName( CLocatorTarget *pTarget, const char *pchBindingName, int x, int y, bool bController );
-	void ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSetPosition );
-	void CalculateOcclusion( CLocatorTarget *pTarget );
+	void DrawTargetCaption( CLocatorTarget* pTarget, int x, int y, bool bDrawMultiline );
+	int  GetScreenWidthForCaption( const wchar_t* pString, vgui::HFont hFont );
+	void DrawBindingName( CLocatorTarget* pTarget, const char* pchBindingName, int x, int y, bool bController );
+	void ComputeTargetIconPosition( CLocatorTarget* pTarget, bool bSetPosition );
+	void CalculateOcclusion( CLocatorTarget* pTarget );
 
 	void DrawSimpleArrow( int x, int y, int iconWide, int iconTall );
-	void GetIconPositionForOffscreenTarget( const Vector &vecDelta, float flDist, int *pXPos, int *pYPos );
+	void GetIconPositionForOffscreenTarget( const Vector& vecDelta, float flDist, int* pXPos, int* pYPos );
 
-	CLocatorTarget *GetPointerForHandle( int hTarget );
+	CLocatorTarget* GetPointerForHandle( int hTarget );
 	int		AddTarget();
 	void	RemoveTarget( int hTarget );
 
-	void	GetTargetPosition( const Vector &vecDelta, float flRadius, float *xpos, float *ypos, float *flRotation );
+	void	GetTargetPosition( const Vector& vecDelta, float flRadius, float* xpos, float* ypos, float* flRotation );
 
 	void	DeactivateAllTargets();
 	void	CollectGarbage();
 
 	// Animation
-	void	AnimateIconSize( int flags, int *wide, int *tall, float fPulseStart );
-	void	AnimateIconPosition( int flags, int *x, int *y );
-	void	AnimateIconAlpha( int flags, int *alpha, float fadeStart );
+	void	AnimateIconSize( int flags, int* wide, int* tall, float fPulseStart );
+	void	AnimateIconPosition( int flags, int* x, int* y );
+	void	AnimateIconAlpha( int flags, int* alpha, float fadeStart );
 
 private:
 
@@ -742,13 +756,13 @@ private:
 	CPanelAnimationVar( vgui::HFont, m_hCaptionFont_ss, "font", "InstructorTitle_ss" );
 	CPanelAnimationVar( vgui::HFont, m_hCaptionGlowFont, "font", "InstructorTitleGlow" );
 	CPanelAnimationVar( vgui::HFont, m_hCaptionGlowFont_ss, "font", "InstructorTitleGlow_ss" );
-	
+
 	CPanelAnimationVar( vgui::HFont, m_hButtonFont, "font", "InstructorButtons" );
 
 	CPanelAnimationVar( vgui::HFont, m_hButtonFont_ss, "font", "InstructorButtons_ss" );
 	CPanelAnimationVar( vgui::HFont, m_hKeysFont, "font", "InstructorKeyBindings" );
 
-	
+
 	CPanelAnimationVar( int, m_iShouldWrapStaticLocators, "WrapStaticLocators", "0" );
 
 	static	int		m_serializer;			// Used to issue unique serial numbers to targets, for use as handles
@@ -766,12 +780,12 @@ private:
 //-----------------------------------------------------------------------------
 // Local variables
 //-----------------------------------------------------------------------------
-static CLocatorPanel *s_pLocatorPanel;
+static CLocatorPanel* s_pLocatorPanel;
 
-inline CLocatorPanel * GetPlayerLocatorPanel()
+inline CLocatorPanel* GetPlayerLocatorPanel()
 {
 	//if ( !engine->IsLocalPlayerResolvable() )
-		//return NULL;
+	//return NULL;
 
 	Assert( s_pLocatorPanel );
 	return s_pLocatorPanel;
@@ -791,8 +805,8 @@ int Locator_AddTarget()
 	if( s_pLocatorPanel == NULL )
 	{
 		// Locator has not been used yet. Construct it.
-		CLocatorPanel *pLocator = new CLocatorPanel( g_pClientMode->GetViewport(), "LocatorPanel" );
-		vgui::SETUP_PANEL(pLocator);
+		CLocatorPanel* pLocator = new CLocatorPanel( g_pClientMode->GetViewport(), "LocatorPanel" );
+		vgui::SETUP_PANEL( pLocator );
 		pLocator->SetBounds( 0, 0, ScreenWidth(), ScreenHeight() );
 		pLocator->SetPos( 0, 0 );
 		pLocator->SetVisible( true );
@@ -807,25 +821,31 @@ int Locator_AddTarget()
 //-----------------------------------------------------------------------------
 void Locator_RemoveTarget( int hTarget )
 {
-	if ( CLocatorPanel *pPanel = GetPlayerLocatorPanel() )
+	if( CLocatorPanel* pPanel = GetPlayerLocatorPanel() )
+	{
 		pPanel->RemoveTarget( hTarget );
+	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CLocatorTarget *Locator_GetTargetFromHandle( int hTarget )
+CLocatorTarget* Locator_GetTargetFromHandle( int hTarget )
 {
-	if ( CLocatorPanel *pPanel = GetPlayerLocatorPanel() )
+	if( CLocatorPanel* pPanel = GetPlayerLocatorPanel() )
+	{
 		return pPanel->GetPointerForHandle( hTarget );
+	}
 	else
+	{
 		return NULL;
+	}
 }
 
 void Locator_ComputeTargetIconPositionFromHandle( int hTarget )
 {
-	if ( CLocatorPanel *pPanel = GetPlayerLocatorPanel() )
+	if( CLocatorPanel* pPanel = GetPlayerLocatorPanel() )
 	{
-		if ( CLocatorTarget *pTarget = pPanel->GetPointerForHandle( hTarget ) )
+		if( CLocatorTarget* pTarget = pPanel->GetPointerForHandle( hTarget ) )
 		{
 			if( !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_STATIC ) )
 			{
@@ -838,9 +858,9 @@ void Locator_ComputeTargetIconPositionFromHandle( int hTarget )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CLocatorPanel::CLocatorPanel( Panel *parent, const char *name ) : EditablePanel(parent,name)
+CLocatorPanel::CLocatorPanel( Panel* parent, const char* name ) : EditablePanel( parent, name )
 {
 	Assert( s_pLocatorPanel == NULL );
 	DeactivateAllTargets();
@@ -854,7 +874,7 @@ CLocatorPanel::CLocatorPanel( Panel *parent, const char *name ) : EditablePanel(
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CLocatorPanel::~CLocatorPanel( void )
 {
@@ -865,23 +885,25 @@ CLocatorPanel::~CLocatorPanel( void )
 //-----------------------------------------------------------------------------
 // Purpose: Applies scheme settings
 //-----------------------------------------------------------------------------
-void CLocatorPanel::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CLocatorPanel::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
-	LoadControlSettings("resource/UI/Locator.res");
+	LoadControlSettings( "resource/UI/Locator.res" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLocatorPanel::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
-	vgui::Panel *pPanel = FindChildByName( "LocatorBG" );
+	vgui::Panel* pPanel = FindChildByName( "LocatorBG" );
 
-	if ( pPanel )
-		pPanel->SetPos( (GetWide() - pPanel->GetWide()) * 0.5, (GetTall() - pPanel->GetTall()) * 0.5 );
+	if( pPanel )
+	{
+		pPanel->SetPos( ( GetWide() - pPanel->GetWide() ) * 0.5, ( GetTall() - pPanel->GetTall() ) * 0.5 );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -889,33 +911,33 @@ void CLocatorPanel::PerformLayout( void )
 // so that we can draw an icon on the imaginary circle around the crosshair
 // that indicates which way the player should turn to bring the target into view.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::GetTargetPosition( const Vector &vecDelta, float flRadius, float *xpos, float *ypos, float *flRotation )
+void CLocatorPanel::GetTargetPosition( const Vector& vecDelta, float flRadius, float* xpos, float* ypos, float* flRotation )
 {
 	// Player Data
 	Vector playerPosition	= MainViewOrigin();
 	QAngle playerAngles		= MainViewAngles();
 
-	Vector forward, right, up(0,0,1);
-	AngleVectors (playerAngles, &forward, NULL, NULL );
+	Vector forward, right, up( 0, 0, 1 );
+	AngleVectors( playerAngles, &forward, NULL, NULL );
 	forward.z = 0;
-	VectorNormalize(forward);
+	VectorNormalize( forward );
 	CrossProduct( up, forward, right );
-	float front = DotProduct(vecDelta, forward);
-	float side = DotProduct(vecDelta, right);
+	float front = DotProduct( vecDelta, forward );
+	float side = DotProduct( vecDelta, right );
 	*xpos = flRadius * -side;
 	*ypos = flRadius * -front;
 
 	// Get the rotation (yaw)
-	*flRotation = atan2(*xpos,*ypos) + M_PI;
+	*flRotation = atan2( *xpos, *ypos ) + M_PI;
 	*flRotation *= 180 / M_PI;
 
-	float yawRadians = -(*flRotation) * M_PI / 180.0f;
+	float yawRadians = -( *flRotation ) * M_PI / 180.0f;
 	float ca = cos( yawRadians );
 	float sa = sin( yawRadians );
 
 	// Rotate it around the circle, squash Y to make an oval rather than a circle
-	*xpos = (int)((ScreenWidth() / 2) + (flRadius * sa));
-	*ypos = (int)((ScreenHeight() / 2) - (flRadius * 0.6f * ca));
+	*xpos = ( int )( ( ScreenWidth() / 2 ) + ( flRadius * sa ) );
+	*ypos = ( int )( ( ScreenHeight() / 2 ) - ( flRadius * 0.6f * ca ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -923,7 +945,9 @@ void CLocatorPanel::GetTargetPosition( const Vector &vecDelta, float flRadius, f
 void CLocatorPanel::DeactivateAllTargets()
 {
 	for( int i = 0 ; i < MAX_LOCATOR_TARGETS ; i++ )
+	{
 		m_targets[ i ].Deactivate( true );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -936,7 +960,9 @@ void CLocatorPanel::CollectGarbage()
 		if( m_targets[ i ].m_isActive )
 		{
 			if( gpGlobals->framecount - m_targets[ i ].m_frameLastUpdated > 20 )
+			{
 				m_targets[ i ].Deactivate();
+			}
 		}
 	}
 }
@@ -945,7 +971,7 @@ void CLocatorPanel::CollectGarbage()
 // Purpose: Provide simple animation by modifying the width and height of the
 // icon before it is drawn.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::AnimateIconSize( int flags, int *wide, int *tall, float fPulseStart )
+void CLocatorPanel::AnimateIconSize( int flags, int* wide, int* tall, float fPulseStart )
 {
 	float flScale	 = MIN_ICON_SCALE;
 	float scaleDelta = MAX_ICON_SCALE - MIN_ICON_SCALE;
@@ -966,10 +992,10 @@ void CLocatorPanel::AnimateIconSize( int flags, int *wide, int *tall, float fPul
 		flScale += scaleDelta * fabs( sin( gpGlobals->curtime * 4 * M_PI ) );
 	}
 
-	if ( newWide > newTall )
+	if( newWide > newTall )
 	{
 		// Get scale to make width change by only the standard height amount of pixels
-		int iHeightDelta = (int)(newTall * flScale - newTall);
+		int iHeightDelta = ( int )( newTall * flScale - newTall );
 		flScale = ( newWide + iHeightDelta ) / newWide;
 	}
 
@@ -983,7 +1009,7 @@ void CLocatorPanel::AnimateIconSize( int flags, int *wide, int *tall, float fPul
 //-----------------------------------------------------------------------------
 // Purpose: Modify the alpha of the icon before it is drawn.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::AnimateIconAlpha( int flags, int *alpha, float fadeStart )
+void CLocatorPanel::AnimateIconAlpha( int flags, int* alpha, float fadeStart )
 {
 	float flScale = MIN_ICON_ALPHA;
 	float scaleDelta = MAX_ICON_ALPHA - MIN_ICON_ALPHA;
@@ -1005,11 +1031,11 @@ void CLocatorPanel::AnimateIconAlpha( int flags, int *alpha, float fadeStart )
 		flScale = MAX_ICON_ALPHA;
 	}
 
-	if ( flags & LOCATOR_ICON_FX_FADE_OUT )
+	if( flags & LOCATOR_ICON_FX_FADE_OUT )
 	{
 		flScale *= MAX( 0.0f, ( locator_fade_time.GetFloat() - ( gpGlobals->curtime - fadeStart ) ) / locator_fade_time.GetFloat() );
 	}
-	else if ( flags & LOCATOR_ICON_FX_FADE_IN )
+	else if( flags & LOCATOR_ICON_FX_FADE_IN )
 	{
 		flScale *= MAX_ICON_ALPHA - MAX( 0.0f, ( locator_fade_time.GetFloat() - ( gpGlobals->curtime - fadeStart ) ) / locator_fade_time.GetFloat() );
 	}
@@ -1018,9 +1044,9 @@ void CLocatorPanel::AnimateIconAlpha( int flags, int *alpha, float fadeStart )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLocatorPanel::AnimateIconPosition( int flags, int *x, int *y )
+void CLocatorPanel::AnimateIconPosition( int flags, int* x, int* y )
 {
 	int newX = *x;
 	int newY = *y;
@@ -1041,7 +1067,7 @@ void CLocatorPanel::AnimateIconPosition( int flags, int *x, int *y )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLocatorPanel::OnTick( void )
 {
@@ -1049,7 +1075,7 @@ void CLocatorPanel::OnTick( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLocatorPanel::PaintBackground( void )
 {
@@ -1057,7 +1083,7 @@ void CLocatorPanel::PaintBackground( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLocatorPanel::Paint( void )
 {
@@ -1079,18 +1105,18 @@ void CLocatorPanel::Paint( void )
 	//----------
 	// Batch 1
 	// Go through all of the active locator targets and compute where to draw the icons
-	// that represent each of them. This builds a poor man's draw list by updating the 
+	// that represent each of them. This builds a poor man's draw list by updating the
 	// m_iconX, m_iconY members of each locator target.
-	CUtlVectorFixed< CLocatorTarget *, MAX_LOCATOR_TARGETS > vecValid;
+	CUtlVectorFixed< CLocatorTarget*, MAX_LOCATOR_TARGETS > vecValid;
 
 	for( int i = 0 ; i < MAX_LOCATOR_TARGETS ; i++ )
 	{
-		CLocatorTarget *pLocatorTarget = &(m_targets[ i ]);
+		CLocatorTarget* pLocatorTarget = &( m_targets[ i ] );
 
 		// Reset drawing state for this frame... set back to true when it's finally draws
 		pLocatorTarget->m_bIsDrawing = false;
 
-		if ( ( !pLocatorTarget->m_bVisible && !pLocatorTarget->m_alpha ) || !pLocatorTarget->m_isActive )
+		if( ( !pLocatorTarget->m_bVisible && !pLocatorTarget->m_alpha ) || !pLocatorTarget->m_isActive )
 		{
 			// Don't want to be visible and have finished fading
 			continue;
@@ -1099,7 +1125,7 @@ void CLocatorPanel::Paint( void )
 		vecValid.AddToTail( pLocatorTarget );
 
 		// This prevents an error that if a locator was fading as the map transitioned
-		pLocatorTarget->m_fadeStart = fpmin( pLocatorTarget->m_fadeStart, gpGlobals->curtime ); 
+		pLocatorTarget->m_fadeStart = fpmin( pLocatorTarget->m_fadeStart, gpGlobals->curtime );
 
 		if( !( pLocatorTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_STATIC ) )
 		{
@@ -1114,11 +1140,11 @@ void CLocatorPanel::Paint( void )
 
 	//----------
 	// Batch 2
-	// Now that we know where each icon _wants_ to be drawn, we grovel through them and 
+	// Now that we know where each icon _wants_ to be drawn, we grovel through them and
 	// push apart any icons that are too close to one another. This helps to unclutter
 	// the display and ensure the maximum number of legible icons and captions. Obviously
 	// this process changes where some icons will be drawn. Bubble sort, but tiny data set.
-	int iTolerance = 1.25 * (ScreenWidth() * ICON_SIZE);
+	int iTolerance = 1.25 * ( ScreenWidth() * ICON_SIZE );
 	int iterations = 0;// Count iterations, don't go infinite in the event of some weird case.
 	bool bStillUncluttering = true;
 	static int MAX_UNCLUTTER_ITERATIONS = 10;
@@ -1129,16 +1155,16 @@ void CLocatorPanel::Paint( void )
 
 		for( int i = 0 ; i < vecValid.Count() ; ++i )
 		{
-			CLocatorTarget *pLocatorTarget1 = vecValid[ i ];
+			CLocatorTarget* pLocatorTarget1 = vecValid[ i ];
 
 			for( int j = i + 1 ; j < vecValid.Count() ; ++j )
 			{
-				CLocatorTarget *pLocatorTarget2 = vecValid[ j ];
+				CLocatorTarget* pLocatorTarget2 = vecValid[ j ];
 
 				// Don't attempt to declutter icons if one or both is attempting to fade out
-				bool bLocatorsFullyActive = !((pLocatorTarget1->GetIconEffectsFlags()|pLocatorTarget2->GetIconEffectsFlags()) & LOCATOR_ICON_FX_FADE_OUT);
+				bool bLocatorsFullyActive = !( ( pLocatorTarget1->GetIconEffectsFlags() | pLocatorTarget2->GetIconEffectsFlags() ) & LOCATOR_ICON_FX_FADE_OUT );
 
-				if ( bLocatorsFullyActive && IconsAreIntersecting( *pLocatorTarget1, *pLocatorTarget2, iTolerance ) )
+				if( bLocatorsFullyActive && IconsAreIntersecting( *pLocatorTarget1, *pLocatorTarget2, iTolerance ) )
 				{
 					// Unclutter. Lift whichever icon is highest a bit higher
 					if( pLocatorTarget1->m_iconY < pLocatorTarget2->m_iconY )
@@ -1162,7 +1188,7 @@ void CLocatorPanel::Paint( void )
 
 	if( iterations == MAX_UNCLUTTER_ITERATIONS )
 	{
-		DevWarning( "Game instructor hit MAX_UNCLUTTER_ITERATIONS!\n");
+		DevWarning( "Game instructor hit MAX_UNCLUTTER_ITERATIONS!\n" );
 	}
 
 	float flLocatorLerpRest = locator_lerp_rest.GetFloat();
@@ -1173,9 +1199,9 @@ void CLocatorPanel::Paint( void )
 	// Draw each of the icons.
 	for( int i = 0 ; i < vecValid.Count() ; i++ )
 	{
-		CLocatorTarget *pLocatorTarget = vecValid[ i ];
+		CLocatorTarget* pLocatorTarget = vecValid[ i ];
 		// Back to lerping for these guys
-		if ( pLocatorTarget->m_lastDeclutterIndex != pLocatorTarget->m_declutterIndex )
+		if( pLocatorTarget->m_lastDeclutterIndex != pLocatorTarget->m_declutterIndex )
 		{
 			// It wants to be popped to another position... do it smoothly
 			pLocatorTarget->StartTimedLerp();
@@ -1184,7 +1210,7 @@ void CLocatorPanel::Paint( void )
 		// Lerp to the desired position
 		float flLerpTime = gpGlobals->curtime - pLocatorTarget->m_lerpStart;
 
-		if ( flLerpTime >= flLocatorLerpRest && flLerpTime < flLocatorLerpRest + flLocatorLerpTime )
+		if( flLerpTime >= flLocatorLerpRest && flLerpTime < flLocatorLerpRest + flLocatorLerpTime )
 		{
 			// Lerp slow to fast
 			float fInterp = 1.0f - ( ( flLocatorLerpTime - ( flLerpTime - flLocatorLerpRest ) ) / flLocatorLerpTime );
@@ -1208,7 +1234,7 @@ void CLocatorPanel::Paint( void )
 			pLocatorTarget->m_centerX += iOffsetX;
 			pLocatorTarget->m_centerY += iOffsetY;
 
-			if ( iOffsetX < 3 && iOffsetY < 3 )
+			if( iOffsetX < 3 && iOffsetY < 3 )
 			{
 				// Near our target! Stop lerping!
 				flLerpTime = flLocatorLerpRest + flLocatorLerpTime;
@@ -1222,10 +1248,10 @@ void CLocatorPanel::Paint( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: A helper function to save on typing. Make sure our texture ID's 
+// Purpose: A helper function to save on typing. Make sure our texture ID's
 //			stay valid.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::ValidateTexture( int *pTextureID, const char *pszTextureName )
+void CLocatorPanel::ValidateTexture( int* pTextureID, const char* pszTextureName )
 {
 	if( *pTextureID == -1 )
 	{
@@ -1238,13 +1264,13 @@ void CLocatorPanel::ValidateTexture( int *pTextureID, const char *pszTextureName
 // Purpose: Called every frame before painting the targets. Ensures that the
 //			target's textures are properly cached.
 //-----------------------------------------------------------------------------
-bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
+bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget* pTarget )
 {
 	bool bBindingTick = false;
 
-	if ( gpGlobals->curtime >= pTarget->m_flNextBindingTick )
+	if( gpGlobals->curtime >= pTarget->m_flNextBindingTick )
 	{
-		if ( pTarget->m_iBindingChoicesCount > 1 )
+		if( pTarget->m_iBindingChoicesCount > 1 )
 		{
 			bBindingTick = true;
 			pTarget->m_iBindingTick++;
@@ -1260,9 +1286,9 @@ bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
 	if( !pTarget->m_pIcon_onscreen || !pTarget->m_pIcon_offscreen || ( bUsesBinding && bBindingTick ) )
 	{
 		char szIconTextureName[ 256 ];
-		if ( bUsesBinding )
+		if( bUsesBinding )
 		{
-			const char *pchDrawBindingName		= pTarget->UseBindingImage( szIconTextureName, sizeof( szIconTextureName ) );
+			const char* pchDrawBindingName		= pTarget->UseBindingImage( szIconTextureName, sizeof( szIconTextureName ) );
 			pTarget->m_bDrawControllerButton		= ( Q_strcmp( szIconTextureName, "icon_blank" ) == 0 );
 
 			pTarget->DrawBindingName( pchDrawBindingName );
@@ -1277,15 +1303,15 @@ bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
 		// This target's texture ID is dirty, meaning the target is about to be drawn
 		// for the first time, or about to be drawn for the first time since a texture
 		// was changed.
-		if ( Q_strlen(szIconTextureName) == 0 )
+		if( Q_strlen( szIconTextureName ) == 0 )
 		{
-			DevWarning("Locator Target has no onscreen texture name!\n");
+			DevWarning( "Locator Target has no onscreen texture name!\n" );
 			return false;
 		}
 		else
 		{
 			pTarget->m_pIcon_onscreen = HudIcons().GetIcon( szIconTextureName );
-			if ( pTarget->m_pIcon_onscreen )
+			if( pTarget->m_pIcon_onscreen )
 			{
 				pTarget->m_widthScale_onscreen = static_cast< float >( pTarget->m_pIcon_onscreen->Width() ) / pTarget->m_pIcon_onscreen->Height();
 			}
@@ -1295,9 +1321,9 @@ bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
 			}
 		}
 
-		if ( Q_stricmp( pTarget->GetOffscreenIconTextureName() , "use_binding" ) == 0 )
+		if( Q_stricmp( pTarget->GetOffscreenIconTextureName() , "use_binding" ) == 0 )
 		{
-			const char *pchDrawBindingName = pTarget->UseBindingImage( szIconTextureName, sizeof( szIconTextureName ) );
+			const char* pchDrawBindingName = pTarget->UseBindingImage( szIconTextureName, sizeof( szIconTextureName ) );
 			pTarget->m_bDrawControllerButtonOffscreen = ( Q_strcmp( szIconTextureName, "icon_blank" ) == 0 );
 
 			pTarget->DrawBindingNameOffscreen( pchDrawBindingName );
@@ -1309,17 +1335,17 @@ bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
 			pTarget->DrawBindingNameOffscreen( NULL );
 		}
 
-		if( Q_strlen(szIconTextureName) == 0 )
+		if( Q_strlen( szIconTextureName ) == 0 )
 		{
 			if( !pTarget->m_pIcon_onscreen )
 			{
-				DevWarning("Locator Target has no offscreen texture name and can't fall back!\n");
+				DevWarning( "Locator Target has no offscreen texture name and can't fall back!\n" );
 			}
 			else
 			{
 				// The onscreen texture is valid, so default behavior is to use that.
 				pTarget->m_pIcon_offscreen = pTarget->m_pIcon_onscreen;
-				const char *pchDrawBindingName = pTarget->DrawBindingName();
+				const char* pchDrawBindingName = pTarget->DrawBindingName();
 				pTarget->DrawBindingNameOffscreen( pchDrawBindingName );
 			}
 		}
@@ -1337,7 +1363,7 @@ bool CLocatorPanel::ValidateTargetTextures( CLocatorTarget *pTarget )
 //-----------------------------------------------------------------------------
 // Purpose: Compute where on the screen to draw the icon for this target.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSetPosition )
+void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget* pTarget, bool bSetPosition )
 {
 	int iconX;
 	int iconY;
@@ -1346,7 +1372,7 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 	Vector vecTarget = pTarget->m_vecOrigin;
 	Vector vecDelta = vecTarget - MainViewOrigin();
 
-	if ( pTarget->m_bOriginInScreenspace )
+	if( pTarget->m_bOriginInScreenspace )
 	{
 		// Coordinates are already in screenspace
 		pTarget->m_distFromPlayer = 0.0f;
@@ -1360,9 +1386,9 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 	{
 		pTarget->m_distFromPlayer = VectorNormalize( vecDelta );
 
-		if ( GetVectorInScreenSpace( vecTarget, iconX, iconY ) )
+		if( GetVectorInScreenSpace( vecTarget, iconX, iconY ) )
 		{
-			// NOTE: GetVectorInScreenSpace returns false in an edge case where the 
+			// NOTE: GetVectorInScreenSpace returns false in an edge case where the
 			// target is very far off screen... just us the old values
 			pTarget->m_targetX = iconX;
 			pTarget->m_targetY = iconY;
@@ -1376,14 +1402,14 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 	if( iconX < fTitleSafeInset || iconX > ScreenWidth() - fTitleSafeInset )
 	{
 		// It's off the screen left or right.
-		if ( pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
+		if( pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
 		{
 			// Back to lerping
 			pTarget->StartTimedLerp();
 			pTarget->m_pulseStart = gpGlobals->curtime;
 		}
 
-		if ( bSetPosition )
+		if( bSetPosition )
 		{
 			pTarget->m_bOnscreen = false;
 		}
@@ -1392,21 +1418,25 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 
 		Vector vCenter = pTarget->m_vecOrigin;
 		if( MainViewRight().Dot( vCenter - MainViewOrigin() ) > 0 )
+		{
 			pTarget->m_drawArrowDirection = DRAW_ARROW_RIGHT;
+		}
 		else
+		{
 			pTarget->m_drawArrowDirection = DRAW_ARROW_LEFT;
+		}
 	}
 	else if( iconY < fTitleSafeInset || iconY > ScreenHeight() - fTitleSafeInset )
 	{
 		// It's off the screen up or down.
-		if ( pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
+		if( pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
 		{
 			// Back to lerping
 			pTarget->StartTimedLerp();
 			pTarget->m_pulseStart = gpGlobals->curtime;
 		}
 
-		if ( bSetPosition )
+		if( bSetPosition )
 		{
 			pTarget->m_bOnscreen = false;
 		}
@@ -1415,13 +1445,17 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 
 		Vector vCenter = pTarget->m_vecOrigin;
 		if( MainViewUp().Dot( vCenter - MainViewOrigin() ) > 0 )
+		{
 			pTarget->m_drawArrowDirection = DRAW_ARROW_UP;
+		}
 		else
+		{
 			pTarget->m_drawArrowDirection = DRAW_ARROW_DOWN;
+		}
 	}
 	else
 	{
-		if ( !pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
+		if( !pTarget->m_bOnscreen && !( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
 		{
 			// Back to lerping
 			pTarget->StartTimedLerp();
@@ -1431,7 +1465,7 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 		pTarget->m_bOnscreen = true;
 	}
 
-	if ( bSetPosition )
+	if( bSetPosition )
 	{
 		int tall = ScreenWidth() * ICON_SIZE;
 		int wide = tall * pTarget->m_widthScale_onscreen;
@@ -1458,21 +1492,23 @@ void CLocatorPanel::ComputeTargetIconPosition( CLocatorTarget *pTarget, bool bSe
 	}
 }
 
-void CLocatorPanel::CalculateOcclusion( CLocatorTarget *pTarget )
+void CLocatorPanel::CalculateOcclusion( CLocatorTarget* pTarget )
 {
-	if ( gpGlobals->curtime >= pTarget->m_flNextOcclusionTest )
+	if( gpGlobals->curtime >= pTarget->m_flNextOcclusionTest )
 	{
 		pTarget->m_flNextOcclusionTest = gpGlobals->curtime + LOCATOR_OCCLUSION_TEST_RATE;
 
 		// Assume the target is not occluded.
 		pTarget->m_bOccluded = false;
 
-		if ( pTarget->m_bOriginInScreenspace )
+		if( pTarget->m_bOriginInScreenspace )
+		{
 			return;
+		}
 
 		trace_t	tr;
-		UTIL_TraceLine( pTarget->m_vecOrigin, MainViewOrigin(), (CONTENTS_SOLID|CONTENTS_MOVEABLE), NULL, COLLISION_GROUP_NONE, &tr );
-		if ( tr.fraction < 1.0f )
+		UTIL_TraceLine( pTarget->m_vecOrigin, MainViewOrigin(), ( CONTENTS_SOLID | CONTENTS_MOVEABLE ), NULL, COLLISION_GROUP_NONE, &tr );
+		if( tr.fraction < 1.0f )
 		{
 			pTarget->m_bOccluded = true;
 		}
@@ -1483,7 +1519,7 @@ void CLocatorPanel::CalculateOcclusion( CLocatorTarget *pTarget )
 // Purpose: This is not valid until after you have computed the onscreen
 //			icon position for each target!
 //-----------------------------------------------------------------------------
-bool CLocatorPanel::IconsAreIntersecting( CLocatorTarget &first, CLocatorTarget &second, int iTolerance )
+bool CLocatorPanel::IconsAreIntersecting( CLocatorTarget& first, CLocatorTarget& second, int iTolerance )
 {
 	if( first.m_bOnscreen != second.m_bOnscreen )
 	{
@@ -1497,13 +1533,13 @@ bool CLocatorPanel::IconsAreIntersecting( CLocatorTarget &first, CLocatorTarget 
 		return false;
 	}
 
-	if( abs(first.GetIconY() - second.GetIconY()) < iTolerance )
+	if( abs( first.GetIconY() - second.GetIconY() ) < iTolerance )
 	{
 		// OK, we need the Y-check first. Now we have to see if these icons and their captions overlap.
 		int firstWide = iTolerance + first.m_captionWide;
 		int secondWide = iTolerance + second.m_captionWide;
-		
-		if( abs(first.GetIconX() - second.GetIconX()) < (firstWide + secondWide) / 2 )
+
+		if( abs( first.GetIconX() - second.GetIconX() ) < ( firstWide + secondWide ) / 2 )
 		{
 			return true;
 		}
@@ -1519,11 +1555,11 @@ bool CLocatorPanel::IconsAreIntersecting( CLocatorTarget &first, CLocatorTarget 
 // IF onscreen and occluded, draw icon transparently, draw no arrows
 // IF offscreen, draw icon, draw an arrow indicating the direction to the target
 //-----------------------------------------------------------------------------
-void CLocatorPanel::PaintTarget( CLocatorTarget *pTarget )
+void CLocatorPanel::PaintTarget( CLocatorTarget* pTarget )
 {
 	bool bNewTexture = ValidateTargetTextures( pTarget );
 
-	if ( bNewTexture )
+	if( bNewTexture )
 	{
 		// Refigure the width/height for the new texture
 		int tall = ScreenWidth() * ICON_SIZE;
@@ -1535,7 +1571,7 @@ void CLocatorPanel::PaintTarget( CLocatorTarget *pTarget )
 		pTarget->m_tall = tall;
 	}
 
-	// A static icon just draws with other static icons in a stack under the crosshair. 
+	// A static icon just draws with other static icons in a stack under the crosshair.
 	// Once displayed, they do not move. The are often used for notifiers.
 	if( pTarget->IsStatic() )
 	{
@@ -1543,7 +1579,7 @@ void CLocatorPanel::PaintTarget( CLocatorTarget *pTarget )
 		return;
 	}
 
-	if ( !pTarget->m_bOnscreen && ( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
+	if( !pTarget->m_bOnscreen && ( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_NO_OFFSCREEN ) )
 	{
 		// Doesn't draw when offscreen... reset it's alpha so it has to fade in again
 		pTarget->m_fadeStart = gpGlobals->curtime;
@@ -1563,10 +1599,12 @@ void CLocatorPanel::PaintTarget( CLocatorTarget *pTarget )
 //-----------------------------------------------------------------------------
 // Purpose: Draws the caption-like background with word-bubble style pointer
 //-----------------------------------------------------------------------------
-void CLocatorPanel::DrawPointerBackground( CLocatorTarget *pTarget, int nPointerX, int nPointerY, int nWide, int nTall, bool bPointer )
+void CLocatorPanel::DrawPointerBackground( CLocatorTarget* pTarget, int nPointerX, int nPointerY, int nWide, int nTall, bool bPointer )
 {
-	if ( locator_background_style.GetInt() == 0 || pTarget->m_alpha == 0 )
+	if( locator_background_style.GetInt() == 0 || pTarget->m_alpha == 0 )
+	{
 		return;
+	}
 
 	/*
 	int nPosX = pTarget->GetIconX() + locator_background_shift_x.GetInt() - locator_background_thickness_x.GetInt() / 2;
@@ -1586,15 +1624,15 @@ void CLocatorPanel::DrawPointerBackground( CLocatorTarget *pTarget, int nPointer
 	rgbaBorder[ 3 ] *= fAlpha;
 	*/
 
-	DevMsg("[TODO] vgui::surface()->DrawWordBubble \n");
+	DevMsg( "[TODO] vgui::surface()->DrawWordBubble \n" );
 
 	//vgui::surface()->DrawWordBubble( nPosX, nPosY, nPosX + nBackgroundWide, nPosY + nBackgroundTall, locator_background_border_thickness.GetInt(),  rgbaBackground, rgbaBorder, bPointer, nPointerX, nPointerY, ScreenWidth() * ICON_SIZE );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Draw an icon with the group of static icons. 
+// Purpose: Draw an icon with the group of static icons.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
+void CLocatorPanel::DrawStaticIcon( CLocatorTarget* pTarget )
 {
 	int centerX = ScreenWidth() / 2;
 	int centerY = ScreenHeight() / 2;
@@ -1616,9 +1654,9 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 
 	bool bDrawMultilineCaption = false;
 
-	if ( m_iShouldWrapStaticLocators > 0 )	// conditionalized in locator.res
+	if( m_iShouldWrapStaticLocators > 0 )	// conditionalized in locator.res
 	{
-		if ( pTarget->m_captionWide > (  ScreenWidth() * locator_split_maxwide_percent.GetFloat() ) )
+		if( pTarget->m_captionWide > ( ScreenWidth() * locator_split_maxwide_percent.GetFloat() ) )
 		{
 			// we will double-line this
 			pTarget->m_captionWide = pTarget->m_captionWide * locator_split_len.GetFloat();
@@ -1643,15 +1681,15 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 
 	pTarget->m_bIsDrawing = true;
 
-	vgui::Panel *pVguiTarget = pTarget->GetVguiTarget();
+	vgui::Panel* pVguiTarget = pTarget->GetVguiTarget();
 
-	if ( pVguiTarget )
+	if( pVguiTarget )
 	{
 		int nPanelX, nPanelY;
 		nPanelX = 0;
 		nPanelY = 0;
 
-		vgui::Label::Alignment nVguiTargetEdge = (vgui::Label::Alignment)pTarget->GetVguiTargetEdge();
+		vgui::Label::Alignment nVguiTargetEdge = ( vgui::Label::Alignment )pTarget->GetVguiTargetEdge();
 
 		int nWide = pVguiTarget->GetWide();
 		int nTall = pVguiTarget->GetTall();
@@ -1667,28 +1705,28 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 		}
 		*/
 
-		if ( nVguiTargetEdge == vgui::Label::a_north || 
-			 nVguiTargetEdge == vgui::Label::a_center || 
-			 nVguiTargetEdge == vgui::Label::a_south )
+		if( nVguiTargetEdge == vgui::Label::a_north ||
+				nVguiTargetEdge == vgui::Label::a_center ||
+				nVguiTargetEdge == vgui::Label::a_south )
 		{
 			nPanelX += nWide / 2;
 		}
-		else if ( nVguiTargetEdge == vgui::Label::a_northeast || 
-			 nVguiTargetEdge == vgui::Label::a_east || 
-			 nVguiTargetEdge == vgui::Label::a_southeast )
+		else if( nVguiTargetEdge == vgui::Label::a_northeast ||
+				 nVguiTargetEdge == vgui::Label::a_east ||
+				 nVguiTargetEdge == vgui::Label::a_southeast )
 		{
 			nPanelX += nWide;
 		}
 
-		if ( nVguiTargetEdge == vgui::Label::a_west || 
-			 nVguiTargetEdge == vgui::Label::a_center || 
-			 nVguiTargetEdge == vgui::Label::a_east )
+		if( nVguiTargetEdge == vgui::Label::a_west ||
+				nVguiTargetEdge == vgui::Label::a_center ||
+				nVguiTargetEdge == vgui::Label::a_east )
 		{
 			nPanelY += nTall / 2;
 		}
-		else if ( nVguiTargetEdge == vgui::Label::a_southwest || 
-			 nVguiTargetEdge == vgui::Label::a_south || 
-			 nVguiTargetEdge == vgui::Label::a_southeast )
+		else if( nVguiTargetEdge == vgui::Label::a_southwest ||
+				 nVguiTargetEdge == vgui::Label::a_south ||
+				 nVguiTargetEdge == vgui::Label::a_southeast )
 		{
 			nPanelY += nTall;
 		}
@@ -1702,9 +1740,9 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 		DrawPointerBackground( pTarget, pTarget->m_centerX, pTarget->m_centerY, totalWide, iconTall, false );
 	}
 
-	if ( pTarget->m_pIcon_onscreen )
+	if( pTarget->m_pIcon_onscreen )
 	{
-		if ( !pTarget->m_bDrawControllerButton )
+		if( !pTarget->m_bDrawControllerButton )
 		{
 			// Don't draw the icon if we're on 360 and have a binding to draw
 			pTarget->m_pIcon_onscreen->DrawSelf( pTarget->GetIconX(), pTarget->GetIconY(), iconWide, iconTall, Color( 255, 255, 255, pTarget->m_alpha ) );
@@ -1712,9 +1750,9 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 	}
 
 	DrawTargetCaption( pTarget, pTarget->GetIconX() + iconWide + ICON_GAP, pTarget->GetIconCenterY(), bDrawMultilineCaption );
-	if ( pTarget->DrawBindingName() )
+	if( pTarget->DrawBindingName() )
 	{
-		DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + (iconWide>>1), pTarget->GetIconY() + (iconTall>>1), pTarget->m_bDrawControllerButton );
+		DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + ( iconWide >> 1 ), pTarget->GetIconY() + ( iconTall >> 1 ), pTarget->m_bDrawControllerButton );
 	}
 
 	// Draw the arrow.
@@ -1724,27 +1762,27 @@ void CLocatorPanel::DrawStaticIcon( CLocatorTarget *pTarget )
 	pTarget->m_bOnscreen = true;
 
 	// Move the static icon position so the next static icon drawn this frame below this one.
-	m_staticIconPosition += iconTall + (iconTall>>2);
+	m_staticIconPosition += iconTall + ( iconTall >> 2 );
 	// Move down a little more if this one was multi-line
-	if ( bDrawMultilineCaption )
+	if( bDrawMultilineCaption )
 	{
-		m_staticIconPosition += (iconTall>>2);
+		m_staticIconPosition += ( iconTall >> 2 );
 	}
 	return;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Position and animate this target's icon on the screen. Based on
-//			options, draw the indicator arrows (arrows that point to the 
-//			direction the player should turn to see the icon), text caption, 
-//			and the 'simple' arrow which just points down to indicate the 
+//			options, draw the indicator arrows (arrows that point to the
+//			direction the player should turn to see the icon), text caption,
+//			and the 'simple' arrow which just points down to indicate the
 //			item the icon represents.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption, bool bDrawSimpleArrow )
+void CLocatorPanel::DrawDynamicIcon( CLocatorTarget* pTarget, bool bDrawCaption, bool bDrawSimpleArrow )
 {
 	int alpha = pTarget->m_alpha;
 
-	if( pTarget->m_bOccluded && !( (pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_FORCE_CAPTION) || locator_topdown_style.GetBool() ) )
+	if( pTarget->m_bOccluded && !( ( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_FORCE_CAPTION ) || locator_topdown_style.GetBool() ) )
 	{
 		return;
 	}
@@ -1754,7 +1792,7 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	int iWide = pTarget->m_wide;
 
-	if ( !pTarget->m_bOnscreen )
+	if( !pTarget->m_bOnscreen )
 	{
 		// Width is always square for offscreen icons
 		iWide /= pTarget->m_widthScale_onscreen;
@@ -1762,12 +1800,12 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	// Figure out the caption width
 	pTarget->m_captionWide = GetScreenWidthForCaption( pTarget->GetCaptionText(), m_hCaptionFont );
-	
+
 	bool bDrawMultilineCaption = false;
 
-	if ( m_iShouldWrapStaticLocators > 0 )	// conditionalized in locator.res
+	if( m_iShouldWrapStaticLocators > 0 )	// conditionalized in locator.res
 	{
-		if ( pTarget->m_captionWide > (  ScreenWidth() * locator_split_maxwide_percent.GetFloat() ) )
+		if( pTarget->m_captionWide > ( ScreenWidth() * locator_split_maxwide_percent.GetFloat() ) )
 		{
 			// we will double-line this
 			pTarget->m_captionWide = pTarget->m_captionWide * locator_split_len.GetFloat();
@@ -1777,7 +1815,7 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	int totalWide = iWide;
 
-	bool bShouldDrawCaption = ( (pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_FORCE_CAPTION) || (!pTarget->m_bOccluded && pTarget->m_distFromPlayer <= ICON_DIST_TOO_FAR) || locator_topdown_style.GetBool() );
+	bool bShouldDrawCaption = ( ( pTarget->GetIconEffectsFlags() & LOCATOR_ICON_FX_FORCE_CAPTION ) || ( !pTarget->m_bOccluded && pTarget->m_distFromPlayer <= ICON_DIST_TOO_FAR ) || locator_topdown_style.GetBool() );
 
 	if( pTarget->m_bOnscreen && bDrawCaption && bShouldDrawCaption )
 	{
@@ -1788,21 +1826,21 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	int nTargetX, nTargetY;
 
-	vgui::Panel *pVguiTarget = pTarget->GetVguiTarget();
+	vgui::Panel* pVguiTarget = pTarget->GetVguiTarget();
 
-	if ( pVguiTarget )
+	if( pVguiTarget )
 	{
 		nTargetX = 0;
 		nTargetY = 0;
 
-		vgui::Label::Alignment nVguiTargetEdge = (vgui::Label::Alignment)pTarget->GetVguiTargetEdge();
+		vgui::Label::Alignment nVguiTargetEdge = ( vgui::Label::Alignment )pTarget->GetVguiTargetEdge();
 
 		int nWide = pVguiTarget->GetWide();
 		int nTall = pVguiTarget->GetTall();
 
 		/*
 		const char *pchLookup = pTarget->GetVguiTargetLookup();
-		
+
 		if ( pchLookup[ 0 ] != '\0' )
 		{
 			bool bLookupSuccess = false;
@@ -1811,35 +1849,35 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 		}
 		*/
 
-		if ( nVguiTargetEdge == vgui::Label::a_north || 
-			 nVguiTargetEdge == vgui::Label::a_center || 
-			 nVguiTargetEdge == vgui::Label::a_south )
+		if( nVguiTargetEdge == vgui::Label::a_north ||
+				nVguiTargetEdge == vgui::Label::a_center ||
+				nVguiTargetEdge == vgui::Label::a_south )
 		{
 			nTargetX += nWide / 2;
 		}
-		else if ( nVguiTargetEdge== vgui::Label::a_northeast || 
-			 nVguiTargetEdge == vgui::Label::a_east || 
-			 nVguiTargetEdge == vgui::Label::a_southeast )
+		else if( nVguiTargetEdge == vgui::Label::a_northeast ||
+				 nVguiTargetEdge == vgui::Label::a_east ||
+				 nVguiTargetEdge == vgui::Label::a_southeast )
 		{
 			nTargetX += nWide;
 		}
 
-		if ( nVguiTargetEdge == vgui::Label::a_west || 
-			 nVguiTargetEdge == vgui::Label::a_center || 
-			 nVguiTargetEdge == vgui::Label::a_east )
+		if( nVguiTargetEdge == vgui::Label::a_west ||
+				nVguiTargetEdge == vgui::Label::a_center ||
+				nVguiTargetEdge == vgui::Label::a_east )
 		{
 			nTargetY += nTall / 2;
 		}
-		else if ( nVguiTargetEdge == vgui::Label::a_southwest || 
-			 nVguiTargetEdge == vgui::Label::a_south || 
-			 nVguiTargetEdge == vgui::Label::a_southeast )
+		else if( nVguiTargetEdge == vgui::Label::a_southwest ||
+				 nVguiTargetEdge == vgui::Label::a_south ||
+				 nVguiTargetEdge == vgui::Label::a_southeast )
 		{
 			nTargetY += nTall;
 		}
 
 		pVguiTarget->LocalToScreen( nTargetX, nTargetY );
 	}
-	else if ( !pTarget->m_bOnscreen )
+	else if( !pTarget->m_bOnscreen )
 	{
 		nTargetX = pTarget->m_targetX;
 		nTargetY = pTarget->m_targetY;
@@ -1850,7 +1888,7 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 		nTargetY = pTarget->m_centerY;
 	}
 
-	if ( pTarget->m_bOnscreen )
+	if( pTarget->m_bOnscreen )
 	{
 		DrawPointerBackground( pTarget, nTargetX, nTargetY, totalWide, pTarget->m_tall, true );
 	}
@@ -1862,14 +1900,14 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	if( pTarget->m_bOnscreen && pTarget->m_pIcon_onscreen )
 	{
-		if ( !pTarget->m_bDrawControllerButton )
+		if( !pTarget->m_bDrawControllerButton )
 		{
 			pTarget->m_pIcon_onscreen->DrawSelf( pTarget->GetIconX(), pTarget->GetIconY(), iWide, pTarget->m_tall, Color( 255, 255, 255, alpha ) );
 		}
 	}
-	else if ( pTarget->m_pIcon_offscreen )
+	else if( pTarget->m_pIcon_offscreen )
 	{
-		if ( !pTarget->m_bDrawControllerButtonOffscreen )
+		if( !pTarget->m_bDrawControllerButtonOffscreen )
 		{
 			pTarget->m_pIcon_offscreen->DrawSelf( pTarget->GetIconX(), pTarget->GetIconY(), iWide, pTarget->m_tall, Color( 255, 255, 255, alpha ) );
 		}
@@ -1877,12 +1915,12 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 
 	if( !pTarget->m_bOnscreen )
 	{
-		if ( pTarget->DrawBindingNameOffscreen() )
+		if( pTarget->DrawBindingNameOffscreen() )
 		{
-			DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + (iWide>>1), pTarget->GetIconY() + (pTarget->m_tall>>1), pTarget->m_bDrawControllerButtonOffscreen );
+			DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + ( iWide >> 1 ), pTarget->GetIconY() + ( pTarget->m_tall >> 1 ), pTarget->m_bDrawControllerButtonOffscreen );
 		}
 
-		if ( locator_background_style.GetInt() == 0 )
+		if( locator_background_style.GetInt() == 0 )
 		{
 			// Draw the arrow.
 			DrawIndicatorArrow( pTarget->GetIconX(), pTarget->GetIconY(), iWide, pTarget->m_tall, 0, pTarget->m_drawArrowDirection );
@@ -1895,9 +1933,9 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 			//ScreenWidth() *  * pTarget->m_widthScale_onscreen
 			DrawTargetCaption( pTarget, pTarget->GetIconCenterX() + ICON_GAP + pTarget->GetIconWidth() * 0.5, pTarget->GetIconCenterY(), bDrawMultilineCaption );
 		}
-		if ( pTarget->DrawBindingName() )
+		if( pTarget->DrawBindingName() )
 		{
-			DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + (iWide>>1), pTarget->GetIconY() + (pTarget->m_tall>>1), pTarget->m_bDrawControllerButton );
+			DrawBindingName( pTarget, pTarget->DrawBindingName(), pTarget->GetIconX() + ( iWide >> 1 ), pTarget->GetIconY() + ( pTarget->m_tall >> 1 ), pTarget->m_bDrawControllerButton );
 		}
 	}
 }
@@ -1905,14 +1943,14 @@ void CLocatorPanel::DrawDynamicIcon( CLocatorTarget *pTarget, bool bDrawCaption,
 //-----------------------------------------------------------------------------
 // Purpose: Some targets have text captions. Draw the text.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::DrawTargetCaption( CLocatorTarget *pTarget, int x, int y, bool bDrawMultiline )
+void CLocatorPanel::DrawTargetCaption( CLocatorTarget* pTarget, int x, int y, bool bDrawMultiline )
 {
 	// Draw the caption
 	vgui::surface()->DrawSetTextFont( m_hCaptionFont );
 	int fontTall = vgui::surface()->GetFontTall( m_hCaptionFont );
 	int iCaptionWidth = GetScreenWidthForCaption( pTarget->GetCaptionText(), m_hCaptionFont );
 
-	if ( bDrawMultiline )
+	if( bDrawMultiline )
 	{
 		iCaptionWidth *= locator_split_len.GetFloat();
 	}
@@ -1921,55 +1959,55 @@ void CLocatorPanel::DrawTargetCaption( CLocatorTarget *pTarget, int x, int y, bo
 	bool bDrawGlow = locator_text_glow.GetBool();
 	bool bDrawShadow = !IsConsole() && locator_text_drop_shadow.GetBool(); // Only draw drop shadow on PC because it looks crappy on a TV
 
-	if ( !bDrawMultiline )
+	if( !bDrawMultiline )
 	{
-		if ( bDrawGlow )
+		if( bDrawGlow )
 		{
 			vgui::surface()->DrawSetTextFont( m_hCaptionGlowFont );
 			Color glowColor = locator_text_glow_color.GetColor();
 			vgui::surface()->DrawSetTextColor( glowColor.r(), glowColor.g(), glowColor.b(), ( glowColor.a() / 255.0f ) * pTarget->m_alpha );
-			vgui::surface()->DrawSetTextPos( x - 1, y - (fontTall >>1) - 1 );
+			vgui::surface()->DrawSetTextPos( x - 1, y - ( fontTall >> 1 ) - 1 );
 			vgui::surface()->DrawUnicodeString( pTarget->GetCaptionText() );
 			vgui::surface()->DrawSetTextFont( m_hCaptionFont );
 		}
 
-		if ( bDrawShadow )
+		if( bDrawShadow )
 		{
 			// Draw black text (drop shadow)
-			vgui::surface()->DrawSetTextColor( 0,0,0, pTarget->m_alpha );
-			vgui::surface()->DrawSetTextPos( x, y - (fontTall >>1) );
+			vgui::surface()->DrawSetTextColor( 0, 0, 0, pTarget->m_alpha );
+			vgui::surface()->DrawSetTextPos( x, y - ( fontTall >> 1 ) );
 			vgui::surface()->DrawUnicodeString( pTarget->GetCaptionText() );
 		}
 
 		// Draw text
-		vgui::surface()->DrawSetTextColor( pTarget->m_captionColor.r(),pTarget->m_captionColor.g(),pTarget->m_captionColor.b(), pTarget->m_alpha );
-		vgui::surface()->DrawSetTextPos( x - 1, y - (fontTall >>1) - 1 );
+		vgui::surface()->DrawSetTextColor( pTarget->m_captionColor.r(), pTarget->m_captionColor.g(), pTarget->m_captionColor.b(), pTarget->m_alpha );
+		vgui::surface()->DrawSetTextPos( x - 1, y - ( fontTall >> 1 ) - 1 );
 		vgui::surface()->DrawUnicodeString( pTarget->GetCaptionText() );
 	}
 	else
 	{
-		int charX = x-1;
+		int charX = x - 1;
 		int charY = y - ( fontTall >> 1 ) - 1;
 
 		int iWidth = 0;
 
-		const wchar_t *pString = pTarget->GetCaptionText();
+		const wchar_t* pString = pTarget->GetCaptionText();
 		int len = Q_wcslen( pString );
 
 		Color glowColor = locator_text_glow_color.GetColor();
-		for ( int iChar = 0; iChar < len; ++ iChar )
+		for( int iChar = 0; iChar < len; ++ iChar )
 		{
 			int charW = vgui::surface()->GetCharacterWidth( m_hCaptionFont, pString[ iChar ] );
 			iWidth += charW;
 
-			if ( iWidth > pTarget->m_captionWide && pString[iChar] == L' ' )
+			if( iWidth > pTarget->m_captionWide && pString[iChar] == L' ' )
 			{
 				charY += fontTall;
-				charX = x-1;
+				charX = x - 1;
 				iWidth = 0;
 			}
 
-			if ( bDrawGlow )
+			if( bDrawGlow )
 			{
 				vgui::surface()->DrawSetTextFont( m_hCaptionGlowFont );
 				vgui::surface()->DrawSetTextColor( glowColor.r(), glowColor.g(), glowColor.b(), ( glowColor.a() / 255.0f ) * pTarget->m_alpha );
@@ -1978,32 +2016,32 @@ void CLocatorPanel::DrawTargetCaption( CLocatorTarget *pTarget, int x, int y, bo
 				vgui::surface()->DrawSetTextFont( m_hCaptionFont );
 			}
 
-			if ( bDrawShadow )
+			if( bDrawShadow )
 			{
 				// Draw black text (drop shadow)
-				vgui::surface()->DrawSetTextColor( 0,0,0, pTarget->m_alpha );
+				vgui::surface()->DrawSetTextColor( 0, 0, 0, pTarget->m_alpha );
 				vgui::surface()->DrawSetTextPos( charX, charY + 1 );
 				vgui::surface()->DrawUnicodeChar( pString[iChar] );
 			}
 
 			// Draw text
-			vgui::surface()->DrawSetTextColor( pTarget->m_captionColor.r(),pTarget->m_captionColor.g(),pTarget->m_captionColor.b(), pTarget->m_alpha );
+			vgui::surface()->DrawSetTextColor( pTarget->m_captionColor.r(), pTarget->m_captionColor.g(), pTarget->m_captionColor.b(), pTarget->m_alpha );
 			vgui::surface()->DrawSetTextPos( charX, charY );
 			vgui::surface()->DrawUnicodeChar( pString[iChar] );
 			charX += charW;
-		}		
+		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Figure out how wide (pixels) a string will be if rendered with this font
-// 
+//
 //-----------------------------------------------------------------------------
-int CLocatorPanel::GetScreenWidthForCaption( const wchar_t *pString, vgui::HFont hFont )
+int CLocatorPanel::GetScreenWidthForCaption( const wchar_t* pString, vgui::HFont hFont )
 {
 	int iWidth = 0;
 
-	for ( int iChar = 0; iChar < Q_wcslen( pString ); ++ iChar )
+	for( int iChar = 0; iChar < Q_wcslen( pString ); ++ iChar )
 	{
 		iWidth += vgui::surface()->GetCharacterWidth( hFont, pString[ iChar ] );
 	}
@@ -2015,9 +2053,9 @@ int CLocatorPanel::GetScreenWidthForCaption( const wchar_t *pString, vgui::HFont
 // Purpose: Some targets' captions contain information about key bindings that
 //			should be displayed to the player. Do so.
 //-----------------------------------------------------------------------------
-void CLocatorPanel::DrawBindingName( CLocatorTarget *pTarget, const char *pchBindingName, int x, int y, bool bController )
+void CLocatorPanel::DrawBindingName( CLocatorTarget* pTarget, const char* pchBindingName, int x, int y, bool bController )
 {
-	if ( !bController && !IsConsole() )
+	if( !bController && !IsConsole() )
 	{
 		// Draw the caption
 		vgui::surface()->DrawSetTextFont( m_hKeysFont );
@@ -2026,18 +2064,18 @@ void CLocatorPanel::DrawBindingName( CLocatorTarget *pTarget, const char *pchBin
 		char szBinding[ 256 ];
 		Q_strcpy( szBinding, pchBindingName ? pchBindingName : "" );
 
-		if ( Q_strcmp( szBinding, "SEMICOLON" ) == 0 )
+		if( Q_strcmp( szBinding, "SEMICOLON" ) == 0 )
 		{
 			Q_strcpy( szBinding, ";" );
 		}
-		else if ( Q_strlen( szBinding ) == 1 && szBinding[ 0 ] >= 'a' && szBinding[ 0 ] <= 'z' )
+		else if( Q_strlen( szBinding ) == 1 && szBinding[ 0 ] >= 'a' && szBinding[ 0 ] <= 'z' )
 		{
 			// Make single letters uppercase
 			szBinding[ 0 ] += ( 'A' - 'a' );
 		}
 
 		wchar_t wszCaption[ 64 ];
-		g_pVGuiLocalize->ConstructString( wszCaption, sizeof(wchar_t)*64, szBinding, NULL );
+		g_pVGuiLocalize->ConstructString( wszCaption, sizeof( wchar_t ) * 64, szBinding, NULL );
 
 		int iWidth = GetScreenWidthForCaption( wszCaption, m_hKeysFont );
 
@@ -2046,9 +2084,9 @@ void CLocatorPanel::DrawBindingName( CLocatorTarget *pTarget, const char *pchBin
 		vgui::surface()->DrawSetTextColor( pTarget->m_bindingColor.r(), pTarget->m_bindingColor.g(), pTarget->m_bindingColor.b(), pTarget->m_alpha );
 #else
 		// Draw black text
-		vgui::surface()->DrawSetTextColor( 0,0,0, pTarget->m_alpha );
+		vgui::surface()->DrawSetTextColor( 0, 0, 0, pTarget->m_alpha );
 #endif
-		vgui::surface()->DrawSetTextPos( x - (iWidth>>1) - 1, y - (fontTall >>1) - 1 );
+		vgui::surface()->DrawSetTextPos( x - ( iWidth >> 1 ) - 1, y - ( fontTall >> 1 ) - 1 );
 		vgui::surface()->DrawUnicodeString( wszCaption );
 	}
 	else
@@ -2071,8 +2109,8 @@ void CLocatorPanel::DrawBindingName( CLocatorTarget *pTarget, const char *pchBin
 		int iLargeIconShift = MAX( 0, iWidth - ( ScreenWidth() * ICON_SIZE + ICON_GAP + ICON_GAP ) );
 
 		// Draw the button
-		vgui::surface()->DrawSetTextColor( 255,255,255, pTarget->m_alpha );
-		vgui::surface()->DrawSetTextPos( x - (iWidth>>1) - iLargeIconShift, y - (fontTall >>1) );
+		vgui::surface()->DrawSetTextColor( 255, 255, 255, pTarget->m_alpha );
+		vgui::surface()->DrawSetTextPos( x - ( iWidth >> 1 ) - iLargeIconShift, y - ( fontTall >> 1 ) );
 		vgui::surface()->DrawUnicodeString( wszCaption );
 
 	}
@@ -2093,37 +2131,37 @@ void CLocatorPanel::DrawIndicatorArrow( int x, int y, int iconWide, int iconTall
 
 	switch( direction )
 	{
-	case DRAW_ARROW_LEFT:
-		vgui::surface()->DrawSetTexture( m_textureID_ArrowLeft );
-		x -= wide;
-		y += iconTall / 2 - tall / 2;
-		vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
-		break;
+		case DRAW_ARROW_LEFT:
+			vgui::surface()->DrawSetTexture( m_textureID_ArrowLeft );
+			x -= wide;
+			y += iconTall / 2 - tall / 2;
+			vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
+			break;
 
-	case DRAW_ARROW_RIGHT:
-		vgui::surface()->DrawSetTexture( m_textureID_ArrowRight );
-		x += iconWide + textWidth;
-		y += iconTall / 2 - tall / 2;
-		vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
-		break;
+		case DRAW_ARROW_RIGHT:
+			vgui::surface()->DrawSetTexture( m_textureID_ArrowRight );
+			x += iconWide + textWidth;
+			y += iconTall / 2 - tall / 2;
+			vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
+			break;
 
-	case DRAW_ARROW_UP:
-		vgui::surface()->DrawSetTexture( m_textureID_ArrowUp );
-		x += iconWide / 2 - wide / 2;
-		y -= tall;
-		vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
-		break;
+		case DRAW_ARROW_UP:
+			vgui::surface()->DrawSetTexture( m_textureID_ArrowUp );
+			x += iconWide / 2 - wide / 2;
+			y -= tall;
+			vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
+			break;
 
-	case DRAW_ARROW_DOWN:
-		vgui::surface()->DrawSetTexture( m_textureID_ArrowDown );
-		x += iconWide / 2 - wide / 2;
-		y += iconTall;
-		vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
-		break;
+		case DRAW_ARROW_DOWN:
+			vgui::surface()->DrawSetTexture( m_textureID_ArrowDown );
+			x += iconWide / 2 - wide / 2;
+			y += iconTall;
+			vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
+			break;
 
-	default:
-		// Do not draw.
-		break;
+		default:
+			// Do not draw.
+			break;
 	}
 }
 
@@ -2141,13 +2179,13 @@ void CLocatorPanel::DrawSimpleArrow( int x, int y, int iconWide, int iconTall )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CLocatorPanel::GetIconPositionForOffscreenTarget( const Vector &vecDelta, float flDist, int *pXPos, int *pYPos )
+void CLocatorPanel::GetIconPositionForOffscreenTarget( const Vector& vecDelta, float flDist, int* pXPos, int* pYPos )
 {
 	float xpos, ypos;
 	float flRotation;
-	float flRadius = YRES(OFFSCREEN_ICON_POSITION_RADIUS);
+	float flRadius = YRES( OFFSCREEN_ICON_POSITION_RADIUS );
 
-	if ( locator_topdown_style.GetBool() )
+	if( locator_topdown_style.GetBool() )
 	{
 		flRadius *= clamp( flDist / 600.0f, 1.75f, 3.0f );
 	}
@@ -2161,7 +2199,7 @@ void CLocatorPanel::GetIconPositionForOffscreenTarget( const Vector &vecDelta, f
 //-----------------------------------------------------------------------------
 // Purpose: Given a handle, return the pointer to the proper locator target.
 //-----------------------------------------------------------------------------
-CLocatorTarget *CLocatorPanel::GetPointerForHandle( int hTarget )
+CLocatorTarget* CLocatorPanel::GetPointerForHandle( int hTarget )
 {
 	for( int i = 0 ; i < MAX_LOCATOR_TARGETS ; i++ )
 	{
@@ -2197,7 +2235,7 @@ int CLocatorPanel::AddTarget()
 //-----------------------------------------------------------------------------
 void CLocatorPanel::RemoveTarget( int hTarget )
 {
-	CLocatorTarget *pTarget = GetPointerForHandle( hTarget );
+	CLocatorTarget* pTarget = GetPointerForHandle( hTarget );
 
 	if( pTarget )
 	{

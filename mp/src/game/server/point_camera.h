@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,13 +8,13 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPointCamera : public CBaseEntity
 {
@@ -29,20 +29,32 @@ public:
 
 	// Tell the client that this camera needs to be rendered
 	void SetActive( bool bActive );
-	int  UpdateTransmitState(void);
+	int  UpdateTransmitState( void );
 
 	void ChangeFOVThink( void );
 
-	void InputChangeFOV( inputdata_t &inputdata );
-	void InputSetOnAndTurnOthersOff( inputdata_t &inputdata );
-	void InputSetOn( inputdata_t &inputdata );
-	void InputSetOff( inputdata_t &inputdata );
+	void InputChangeFOV( inputdata_t& inputdata );
+	void InputSetOnAndTurnOthersOff( inputdata_t& inputdata );
+	void InputSetOn( inputdata_t& inputdata );
+	void InputSetOff( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetSkyMode( inputdata_t &inputdata ) { m_iSkyMode = inputdata.value.Int(); }
-	void InputSetRenderTarget( inputdata_t &inputdata ) { m_iszRenderTarget = inputdata.value.StringID(); }
+	void InputSetSkyMode( inputdata_t& inputdata )
+	{
+		m_iSkyMode = inputdata.value.Int();
+	}
+	void InputSetRenderTarget( inputdata_t& inputdata )
+	{
+		m_iszRenderTarget = inputdata.value.StringID();
+	}
 
-	float GetFOV() const { return m_FOV; }
-	bool IsActive() const { return m_bIsOn; }
+	float GetFOV() const
+	{
+		return m_FOV;
+	}
+	bool IsActive() const
+	{
+		return m_bIsOn;
+	}
 #endif
 
 private:
@@ -67,12 +79,12 @@ private:
 	bool	m_bIsOn;
 
 public:
-	CPointCamera	*m_pNext;
+	CPointCamera*	m_pNext;
 };
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPointCameraOrtho : public CPointCamera
 {
@@ -95,18 +107,33 @@ public:
 
 	void Spawn( void );
 
-	bool KeyValue( const char *szKeyName, const char *szValue );
-	bool GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	bool KeyValue( const char* szKeyName, const char* szValue );
+	bool GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 
-	void ChangeOrtho( int iType, const char *szChange );
+	void ChangeOrtho( int iType, const char* szChange );
 	void ChangeOrthoThink( void );
 
-	void InputSetOrthoEnabled( inputdata_t &inputdata ) { m_bOrtho = inputdata.value.Bool(); }
-	void InputScaleOrtho( inputdata_t &inputdata );
-	void InputSetOrthoTop( inputdata_t &inputdata ) { ChangeOrtho(ORTHO_TOP, inputdata.value.String()); }
-	void InputSetOrthoBottom( inputdata_t &inputdata ) { ChangeOrtho( ORTHO_BOTTOM, inputdata.value.String() ); }
-	void InputSetOrthoLeft( inputdata_t &inputdata ) { ChangeOrtho( ORTHO_LEFT, inputdata.value.String() ); }
-	void InputSetOrthoRight( inputdata_t &inputdata ) { ChangeOrtho( ORTHO_RIGHT, inputdata.value.String() ); }
+	void InputSetOrthoEnabled( inputdata_t& inputdata )
+	{
+		m_bOrtho = inputdata.value.Bool();
+	}
+	void InputScaleOrtho( inputdata_t& inputdata );
+	void InputSetOrthoTop( inputdata_t& inputdata )
+	{
+		ChangeOrtho( ORTHO_TOP, inputdata.value.String() );
+	}
+	void InputSetOrthoBottom( inputdata_t& inputdata )
+	{
+		ChangeOrtho( ORTHO_BOTTOM, inputdata.value.String() );
+	}
+	void InputSetOrthoLeft( inputdata_t& inputdata )
+	{
+		ChangeOrtho( ORTHO_LEFT, inputdata.value.String() );
+	}
+	void InputSetOrthoRight( inputdata_t& inputdata )
+	{
+		ChangeOrtho( ORTHO_RIGHT, inputdata.value.String() );
+	}
 
 private:
 	float m_TargetOrtho[NUM_ORTHO_DIMENSIONS];
@@ -117,9 +144,9 @@ private:
 };
 #endif
 
-CPointCamera *GetPointCameraList();
+CPointCamera* GetPointCameraList();
 
 #ifdef MAPBASE
-edict_t *UTIL_FindRTCameraInEntityPVS( edict_t *pEdict );
+	edict_t* UTIL_FindRTCameraInEntityPVS( edict_t* pEdict );
 #endif
 #endif // CAMERA_H

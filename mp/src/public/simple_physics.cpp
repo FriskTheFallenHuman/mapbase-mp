@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,35 +23,35 @@ void CSimplePhysics::Init( float flTimeStep )
 	m_flPredictedTime = 0;
 	m_iCurTimeStep = 0;
 	m_flTimeStep = flTimeStep;
-	m_flTimeStepMul = m_flTimeStep*m_flTimeStep*0.5f;
+	m_flTimeStepMul = m_flTimeStep * m_flTimeStep * 0.5f;
 }
 
 
-void CSimplePhysics::Simulate( 
-	CSimplePhysics::CNode *pNodes, 
-	int nNodes, 
-	CSimplePhysics::IHelper *pHelper, 
+void CSimplePhysics::Simulate(
+	CSimplePhysics::CNode* pNodes,
+	int nNodes,
+	CSimplePhysics::IHelper* pHelper,
 	float dt,
 	float flDamp )
 {
 	// Figure out how many time steps to run.
 	m_flPredictedTime += dt;
-	int newTimeStep = (int)ceil( m_flPredictedTime / m_flTimeStep );
+	int newTimeStep = ( int )ceil( m_flPredictedTime / m_flTimeStep );
 	int nTimeSteps = newTimeStep - m_iCurTimeStep;
-	for( int iTimeStep=0; iTimeStep < nTimeSteps; iTimeStep++ )
+	for( int iTimeStep = 0; iTimeStep < nTimeSteps; iTimeStep++ )
 	{
 		// Simulate everything..
-		for( int iNode=0; iNode < nNodes; iNode++ )
+		for( int iNode = 0; iNode < nNodes; iNode++ )
 		{
-			CSimplePhysics::CNode *pNode = &pNodes[iNode];
+			CSimplePhysics::CNode* pNode = &pNodes[iNode];
 
 			// Apply forces.
 			Vector vAccel;
 			pHelper->GetNodeForces( pNodes, iNode, &vAccel );
- 			Assert( vAccel.IsValid() ); 
+			Assert( vAccel.IsValid() );
 
 			Vector vPrevPos = pNode->m_vPos;
-			pNode->m_vPos = pNode->m_vPos + (pNode->m_vPos - pNode->m_vPrevPos) * flDamp + vAccel * m_flTimeStepMul;
+			pNode->m_vPos = pNode->m_vPos + ( pNode->m_vPos - pNode->m_vPrevPos ) * flDamp + vAccel * m_flTimeStepMul;
 			pNode->m_vPrevPos = vPrevPos;
 		}
 
@@ -61,10 +61,10 @@ void CSimplePhysics::Simulate(
 	m_iCurTimeStep = newTimeStep;
 
 	// Setup predicted positions.
-	float flInterpolant = (m_flPredictedTime - (GetCurTime() - m_flTimeStep)) / m_flTimeStep;
-	for( int iNode=0; iNode < nNodes; iNode++ )
+	float flInterpolant = ( m_flPredictedTime - ( GetCurTime() - m_flTimeStep ) ) / m_flTimeStep;
+	for( int iNode = 0; iNode < nNodes; iNode++ )
 	{
-		CSimplePhysics::CNode *pNode = &pNodes[iNode];
+		CSimplePhysics::CNode* pNode = &pNodes[iNode];
 		VectorLerp( pNode->m_vPrevPos, pNode->m_vPos, flInterpolant, pNode->m_vPredicted );
 	}
 }

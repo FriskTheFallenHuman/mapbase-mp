@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -17,12 +17,13 @@
 #if !defined( TE_BASEBEAM_H )
 #define TE_BASEBEAM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basetempentity.h"
 
-abstract_class CTEBaseBeam : public CBaseTempEntity
+abstract_class CTEBaseBeam :
+public CBaseTempEntity
 {
 public:
 
@@ -31,11 +32,11 @@ public:
 
 
 public:
-					CTEBaseBeam( const char *name );
+	CTEBaseBeam( const char* name );
 	virtual			~CTEBaseBeam( void );
 
-	virtual void	Test( const Vector& current_origin, const QAngle& current_angles ) = 0;
-	
+	virtual void	Test( const Vector & current_origin, const QAngle & current_angles ) = 0;
+
 public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nHaloIndex );
@@ -54,6 +55,6 @@ public:
 	CNetworkVar( int, m_nFlags );
 };
 
-EXTERN_SEND_TABLE(DT_BaseBeam);
+EXTERN_SEND_TABLE( DT_BaseBeam );
 
 #endif // TE_BASEBEAM_H

@@ -1,15 +1,15 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #if defined( _WIN32 ) && !defined( _X360 )
-#include <windows.h>
-#include <direct.h>
-#include <io.h> // _chmod
+	#include <windows.h>
+	#include <direct.h>
+	#include <io.h> // _chmod
 #elif _LINUX
-#include <unistd.h>
+	#include <unistd.h>
 #endif
 
 #include <stdio.h>
@@ -34,10 +34,10 @@
 // Module interface.
 // ---------------------------------------------------------------------------------------------------- //
 
-IBaseFileSystem *g_pFileSystem = NULL;
+IBaseFileSystem* g_pFileSystem = NULL;
 
 // These are only used for tools that need the search paths that the engine's file system provides.
-CSysModule			*g_pFullFileSystemModule = NULL;
+CSysModule*			g_pFullFileSystemModule = NULL;
 
 // ---------------------------------------------------------------------------
 //
@@ -50,7 +50,7 @@ CSysModule			*g_pFullFileSystemModule = NULL;
 char		qdir[1024];
 
 // This is the base engine + mod-specific game dir (e.g. "c:\tf2\mytfmod\")
-char		gamedir[1024];	
+char		gamedir[1024];
 
 #ifdef MAPBASE
 class CSteamGameDB
@@ -59,13 +59,17 @@ public:
 	CSteamGameDB()
 	{
 		HKEY steam;
-		if ( RegOpenKeyExA( HKEY_LOCAL_MACHINE, R"(SOFTWARE\Valve\Steam)", 0, KEY_QUERY_VALUE, &steam ) != ERROR_SUCCESS )
+		if( RegOpenKeyExA( HKEY_LOCAL_MACHINE, R"(SOFTWARE\Valve\Steam)", 0, KEY_QUERY_VALUE, &steam ) != ERROR_SUCCESS )
+		{
 			return;
+		}
 
-		char steamLocation[MAX_PATH*2];
+		char steamLocation[MAX_PATH * 2];
 		DWORD dwSize = sizeof( steamLocation );
-		if ( RegQueryValueExA( steam, "InstallPath", NULL, NULL, (LPBYTE)steamLocation, &dwSize ) != ERROR_SUCCESS )
+		if( RegQueryValueExA( steam, "InstallPath", NULL, NULL, ( LPBYTE )steamLocation, &dwSize ) != ERROR_SUCCESS )
+		{
 			return;
+		}
 
 		RegCloseKey( steam );
 
@@ -75,35 +79,45 @@ public:
 
 		{
 			CUtlBuffer lib( 0, 0, CUtlBuffer::TEXT_BUFFER );
-			if ( !g_pFullFileSystem->ReadFile( steamLocation, nullptr, lib ) )
+			if( !g_pFullFileSystem->ReadFile( steamLocation, nullptr, lib ) )
+			{
 				return;
+			}
 
 			KeyValuesAD libFolder( "LibraryFolders" );
 			libFolder->UsesEscapeSequences( true );
 			libFolder->UsesConditionals( false );
-			if ( !libFolder->LoadFromBuffer( "LibraryFolders", lib ) )
+			if( !libFolder->LoadFromBuffer( "LibraryFolders", lib ) )
+			{
 				return;
+			}
 
 			FOR_EACH_SUBKEY( libFolder, folder )
 			{
 				auto name = folder->GetName();
-				if ( !V_stricmp( name, "TimeNextStatsReport" ) || !V_stricmp( name, "ContentStatsID" ) )
+				if( !V_stricmp( name, "TimeNextStatsReport" ) || !V_stricmp( name, "ContentStatsID" ) )
+				{
 					continue;
-				if ( auto p = folder->GetString() )
+				}
+				if( auto p = folder->GetString() )
+				{
 					libFolders.AddToTail( p );
+				}
 			}
 		}
 
-		for ( auto& folder : libFolders )
+		for( auto& folder : libFolders )
+		{
 			folder = CUtlString::PathJoin( folder, "steamapps" );
+		}
 
-		for ( const auto& folder : libFolders )
+		for( const auto& folder : libFolders )
 		{
 			g_pFullFileSystem->AddSearchPath( folder, "__HAMMER_HACK__" );
 
 			FileFindHandle_t h = 0;
 			auto manifest = g_pFullFileSystem->FindFirstEx( "appmanifest_*.acf", "__HAMMER_HACK__", &h );
-			while ( manifest )
+			while( manifest )
 			{
 				games.AddToTail( Game{ static_cast<uint32>( V_atoi64( manifest + 12 ) ), CUtlString::PathJoin( folder, manifest ), &folder } );
 				manifest = g_pFullFileSystem->FindNext( h );
@@ -114,26 +128,40 @@ public:
 			g_pFullFileSystem->RemoveSearchPath( folder, "__HAMMER_HACK__" );
 		}
 
-		for ( auto& folder : libFolders )
+		for( auto& folder : libFolders )
+		{
 			folder = CUtlString::PathJoin( folder, "common" );
+		}
 
-		games.Sort( []( const Game* a, const Game* b ) { return int( a->appid ) - int( b->appid ); } );
+		games.Sort( []( const Game * a, const Game * b )
+		{
+			return int( a->appid ) - int( b->appid );
+		} );
 	}
 
 	bool GetAppInstallDir( uint32 appid, CUtlString& path ) const
 	{
-		const auto game = games.FindMatch( [appid]( const Game& g ) { return g.appid == appid; } );
-		if ( !games.IsValidIndex( game ) )
+		const auto game = games.FindMatch( [appid]( const Game & g )
+		{
+			return g.appid == appid;
+		} );
+		if( !games.IsValidIndex( game ) )
+		{
 			return false;
+		}
 
 		CUtlBuffer b( 0, 0, CUtlBuffer::TEXT_BUFFER );
-		if ( !g_pFullFileSystem->ReadFile( games[game].manifest, nullptr, b ) )
+		if( !g_pFullFileSystem->ReadFile( games[game].manifest, nullptr, b ) )
+		{
 			return false;
+		}
 
 		auto f = b.String();
 		auto instD = V_stristr( f, "installdir" );
-		if ( !instD )
+		if( !instD )
+		{
 			return false;
+		}
 
 		auto dirStart = strchr( instD + ARRAYSIZE( "installdir" ), '"' );
 		auto dirEnd = strchr( dirStart + 1, '"' );
@@ -154,10 +182,10 @@ private:
 };
 #endif
 
-void FileSystem_SetupStandardDirectories( const char *pFilename, const char *pGameInfoPath )
+void FileSystem_SetupStandardDirectories( const char* pFilename, const char* pGameInfoPath )
 {
 	// Set qdir.
-	if ( !pFilename )
+	if( !pFilename )
 	{
 		pFilename = ".";
 	}
@@ -165,7 +193,7 @@ void FileSystem_SetupStandardDirectories( const char *pFilename, const char *pGa
 	Q_MakeAbsolutePath( qdir, sizeof( qdir ), pFilename, NULL );
 	Q_StripFilename( qdir );
 	// Q_strlower( qdir );
-	if ( qdir[0] != 0 )
+	if( qdir[0] != 0 )
 	{
 		Q_AppendSlash( qdir, sizeof( qdir ) );
 	}
@@ -176,15 +204,17 @@ void FileSystem_SetupStandardDirectories( const char *pFilename, const char *pGa
 }
 
 
-bool FileSystem_Init_Normal( const char *pFilename, FSInitType_t initType, bool bOnlyUseDirectoryName )
+bool FileSystem_Init_Normal( const char* pFilename, FSInitType_t initType, bool bOnlyUseDirectoryName )
 {
-	if ( initType == FS_INIT_FULL )
+	if( initType == FS_INIT_FULL )
 	{
 		// First, get the name of the module
 		char fileSystemDLLName[MAX_PATH];
 		bool bSteam;
-		if ( FileSystem_GetFileSystemDLLName( fileSystemDLLName, MAX_PATH, bSteam ) != FS_OK )
+		if( FileSystem_GetFileSystemDLLName( fileSystemDLLName, MAX_PATH, bSteam ) != FS_OK )
+		{
 			return false;
+		}
 
 		// Next, load the module, call Connect/Init.
 		CFSLoadModuleInfo loadModuleInfo;
@@ -194,23 +224,29 @@ bool FileSystem_Init_Normal( const char *pFilename, FSInitType_t initType, bool 
 		loadModuleInfo.m_ConnectFactory = Sys_GetFactoryThis();
 		loadModuleInfo.m_bSteam = bSteam;
 		loadModuleInfo.m_bToolsMode = true;
-		if ( FileSystem_LoadFileSystemModule( loadModuleInfo ) != FS_OK )
+		if( FileSystem_LoadFileSystemModule( loadModuleInfo ) != FS_OK )
+		{
 			return false;
+		}
 
 		// Next, mount the content
 		CFSMountContentInfo mountContentInfo;
-		mountContentInfo.m_pDirectoryName=  loadModuleInfo.m_GameInfoPath;
+		mountContentInfo.m_pDirectoryName =  loadModuleInfo.m_GameInfoPath;
 		mountContentInfo.m_pFileSystem = loadModuleInfo.m_pFileSystem;
 		mountContentInfo.m_bToolsMode = true;
-		if ( FileSystem_MountContent( mountContentInfo ) != FS_OK )
+		if( FileSystem_MountContent( mountContentInfo ) != FS_OK )
+		{
 			return false;
-		
+		}
+
 		// Finally, load the search paths.
 		CFSSearchPathsInit searchPathsInit;
 		searchPathsInit.m_pDirectoryName = loadModuleInfo.m_GameInfoPath;
 		searchPathsInit.m_pFileSystem = loadModuleInfo.m_pFileSystem;
-		if ( FileSystem_LoadSearchPaths( searchPathsInit ) != FS_OK )
+		if( FileSystem_LoadSearchPaths( searchPathsInit ) != FS_OK )
+		{
 			return false;
+		}
 
 		// Store the data we got from filesystem_init.
 		g_pFileSystem = g_pFullFileSystem = loadModuleInfo.m_pFileSystem;
@@ -222,17 +258,19 @@ bool FileSystem_Init_Normal( const char *pFilename, FSInitType_t initType, bool 
 	}
 	else
 	{
-		if ( !Sys_LoadInterface(
-			"filesystem_stdio",
-			FILESYSTEM_INTERFACE_VERSION,
-			&g_pFullFileSystemModule,
-			(void**)&g_pFullFileSystem ) )
+		if( !Sys_LoadInterface(
+					"filesystem_stdio",
+					FILESYSTEM_INTERFACE_VERSION,
+					&g_pFullFileSystemModule,
+					( void** )&g_pFullFileSystem ) )
 		{
 			return false;
 		}
 
-		if ( g_pFullFileSystem->Init() != INIT_OK )
+		if( g_pFullFileSystem->Init() != INIT_OK )
+		{
 			return false;
+		}
 
 		g_pFullFileSystem->RemoveAllSearchPaths();
 		g_pFullFileSystem->AddSearchPath( "../platform", "PLATFORM" );
@@ -245,18 +283,20 @@ bool FileSystem_Init_Normal( const char *pFilename, FSInitType_t initType, bool 
 }
 
 
-bool FileSystem_Init( const char *pBSPFilename, int maxMemoryUsage, FSInitType_t initType, bool bOnlyUseFilename )
+bool FileSystem_Init( const char* pBSPFilename, int maxMemoryUsage, FSInitType_t initType, bool bOnlyUseFilename )
 {
 	Assert( CommandLine()->GetCmdLine() != NULL ); // Should have called CreateCmdLine by now.
 
 	// If this app uses VMPI, then let VMPI intercept all filesystem calls.
 #if defined( MPI )
-	if ( g_bUseMPI )
+	if( g_bUseMPI )
 	{
-		if ( g_bMPIMaster )
+		if( g_bMPIMaster )
 		{
-			if ( !FileSystem_Init_Normal( pBSPFilename, initType, bOnlyUseFilename ) )
+			if( !FileSystem_Init_Normal( pBSPFilename, initType, bOnlyUseFilename ) )
+			{
 				return false;
+			}
 
 			g_pFileSystem = g_pFullFileSystem = VMPI_FileSystem_Init( maxMemoryUsage, g_pFullFileSystem );
 			SendQDirInfo();
@@ -277,20 +317,20 @@ bool FileSystem_Init( const char *pBSPFilename, int maxMemoryUsage, FSInitType_t
 void FileSystem_Term()
 {
 #if defined( MPI )
-	if ( g_bUseMPI )
+	if( g_bUseMPI )
 	{
 		g_pFileSystem = g_pFullFileSystem = VMPI_FileSystem_Term();
 	}
 #endif
 
-	if ( g_pFullFileSystem )
+	if( g_pFullFileSystem )
 	{
 		g_pFullFileSystem->Shutdown();
 		g_pFullFileSystem = NULL;
 		g_pFileSystem = NULL;
 	}
 
-	if ( g_pFullFileSystemModule )
+	if( g_pFullFileSystemModule )
 	{
 		Sys_UnloadModule( g_pFullFileSystemModule );
 		g_pFullFileSystemModule = NULL;
@@ -301,8 +341,10 @@ void FileSystem_Term()
 CreateInterfaceFn FileSystem_GetFactory()
 {
 #if defined( MPI )
-	if ( g_bUseMPI )
+	if( g_bUseMPI )
+	{
 		return VMPI_FileSystem_GetFactory();
+	}
 #endif
 	return Sys_GetFactory( g_pFullFileSystemModule );
 }

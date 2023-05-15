@@ -17,7 +17,8 @@ ConVar mat_dof_quality( "mat_dof_quality", "3" );
 ConVar mat_dof_constant( "mat_dof_constant", "512" );
 
 // 8 samples
-static const float s_flPoissonConstsQuality0[16] = {
+static const float s_flPoissonConstsQuality0[16] =
+{
 	0.0, 0.0,
 	0.527837, -0.085868,
 	-0.040088, 0.536087,
@@ -29,7 +30,8 @@ static const float s_flPoissonConstsQuality0[16] = {
 };
 
 // 16 samples
-static const float s_flPoissonConstsQuality1[32] = {
+static const float s_flPoissonConstsQuality1[32] =
+{
 	0.0747,		-0.8341,
 	-0.9138,	0.3251,
 	0.8667,		-0.3029,
@@ -49,7 +51,8 @@ static const float s_flPoissonConstsQuality1[32] = {
 };
 
 // 32 samples
-static const float s_flPoissonConstsQuality2[64] = {
+static const float s_flPoissonConstsQuality2[64] =
+{
 	0.0854f, -0.0644f,
 	0.8744f, 0.1665f,
 	0.2329f, 0.3995f,
@@ -86,134 +89,134 @@ static const float s_flPoissonConstsQuality2[64] = {
 
 DEFINE_FALLBACK_SHADER( DepthOfField, DepthOfField_dx9 )
 BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
-	BEGIN_SHADER_PARAMS
-		SHADER_PARAM( SMALLFB, SHADER_PARAM_TYPE_TEXTURE, "_rt_SmallFB1", "Downsampled backbuffer" )
-		SHADER_PARAM( NEARPLANE, SHADER_PARAM_TYPE_FLOAT, "0", "Near plane depth" )
-		SHADER_PARAM( FARPLANE,  SHADER_PARAM_TYPE_FLOAT, "0", "Far plane depth" )
-		SHADER_PARAM( NEARBLURDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Near blur plane depth" )
-		SHADER_PARAM( NEARFOCUSDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Near focus plane depth" )
-		SHADER_PARAM( FARFOCUSDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Far focus plane depth" )
-		SHADER_PARAM( FARBLURDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Far blur plane depth" )
-		SHADER_PARAM( NEARBLURRADIUS,  SHADER_PARAM_TYPE_FLOAT, "0", "Max near blur radius" )
-		SHADER_PARAM( FARBLURRADIUS,  SHADER_PARAM_TYPE_FLOAT, "0", "Max far blur radius" )
-		SHADER_PARAM( QUALITY, SHADER_PARAM_TYPE_INTEGER, "0", "Quality level. Selects different algorithms." )
-	END_SHADER_PARAMS
+BEGIN_SHADER_PARAMS
+SHADER_PARAM( SMALLFB, SHADER_PARAM_TYPE_TEXTURE, "_rt_SmallFB1", "Downsampled backbuffer" )
+SHADER_PARAM( NEARPLANE, SHADER_PARAM_TYPE_FLOAT, "0", "Near plane depth" )
+SHADER_PARAM( FARPLANE,  SHADER_PARAM_TYPE_FLOAT, "0", "Far plane depth" )
+SHADER_PARAM( NEARBLURDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Near blur plane depth" )
+SHADER_PARAM( NEARFOCUSDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Near focus plane depth" )
+SHADER_PARAM( FARFOCUSDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Far focus plane depth" )
+SHADER_PARAM( FARBLURDEPTH,  SHADER_PARAM_TYPE_FLOAT, "0", "Far blur plane depth" )
+SHADER_PARAM( NEARBLURRADIUS,  SHADER_PARAM_TYPE_FLOAT, "0", "Max near blur radius" )
+SHADER_PARAM( FARBLURRADIUS,  SHADER_PARAM_TYPE_FLOAT, "0", "Max far blur radius" )
+SHADER_PARAM( QUALITY, SHADER_PARAM_TYPE_INTEGER, "0", "Quality level. Selects different algorithms." )
+END_SHADER_PARAMS
 
-	SHADER_INIT_PARAMS()
+SHADER_INIT_PARAMS()
+{
+	SET_PARAM_STRING_IF_NOT_DEFINED( SMALLFB, "_rt_SmallFB1" );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARPLANE, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( FARPLANE, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARBLURDEPTH, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARFOCUSDEPTH, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( FARFOCUSDEPTH, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( FARBLURDEPTH, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARBLURRADIUS, 0.0f );
+	SET_PARAM_FLOAT_IF_NOT_DEFINED( FARBLURRADIUS, 0.0f );
+	SET_PARAM_INT_IF_NOT_DEFINED( QUALITY, 0 );
+}
+
+SHADER_FALLBACK
+{
+	if( g_pHardwareConfig->GetDXSupportLevel() < 92 )
 	{
-		SET_PARAM_STRING_IF_NOT_DEFINED( SMALLFB, "_rt_SmallFB1" );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARPLANE, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( FARPLANE, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARBLURDEPTH, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARFOCUSDEPTH, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( FARFOCUSDEPTH, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( FARBLURDEPTH, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( NEARBLURRADIUS, 0.0f );
-		SET_PARAM_FLOAT_IF_NOT_DEFINED( FARBLURRADIUS, 0.0f );
-		SET_PARAM_INT_IF_NOT_DEFINED( QUALITY, 0 );
+		return "Wireframe";
 	}
 
-	SHADER_FALLBACK
+	return 0;
+}
+
+SHADER_INIT
+{
+	if( params[BASETEXTURE]->IsDefined() )
 	{
-		if ( g_pHardwareConfig->GetDXSupportLevel() < 92 )
+		LoadTexture( BASETEXTURE );
+	}
+	if( params[SMALLFB]->IsDefined() )
+	{
+		LoadTexture( SMALLFB );
+	}
+}
+
+SHADER_DRAW
+{
+	SHADOW_STATE
+	{
+		pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION, 1, 0, 0 );
+
+		pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
+		pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
+		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, false );
+		pShaderShadow->EnableSRGBWrite( false );
+
+		DECLARE_STATIC_VERTEX_SHADER( depth_of_field_vs20 );
+		SET_STATIC_VERTEX_SHADER( depth_of_field_vs20 );
+
+		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 		{
-			return "Wireframe";
+			DECLARE_STATIC_PIXEL_SHADER( depth_of_field_ps20b );
+			SET_STATIC_PIXEL_SHADER( depth_of_field_ps20b );
+		}
+		else
+		{
+			Assert( !"No ps_2_b. This shouldn't be happening" );
 		}
 
-		return 0;
+		pShaderShadow->EnableDepthWrites( false );
+		pShaderShadow->EnableAlphaWrites( false );
 	}
 
-	SHADER_INIT
+	DYNAMIC_STATE
 	{
-		if ( params[BASETEXTURE]->IsDefined() )
+		DECLARE_DYNAMIC_VERTEX_SHADER( depth_of_field_vs20 );
+		SET_DYNAMIC_VERTEX_SHADER( depth_of_field_vs20 );
+
+		// Bind textures
+		BindTexture( SHADER_SAMPLER0, BASETEXTURE );
+		BindTexture( SHADER_SAMPLER1, SMALLFB );
+
+		// near blur = blur of stuff in front of focus range
+		// far blur = blur of stuff behind focus range
+
+		// C0: set near/far blur and focus distances
+		// x = near blur distance
+		// y = near focus distance
+		// z = far focus distance
+		// w = far blur distance
+		// C1:
+		// x = blur radius for near blur (in pixels)
+		// y = blur radius for far blur (in pixels)
+		// TODO: Specifying this stuff in pixels makes blurs look smaller on high backbuffer resolutions.
+		// This might be a problem for tweaking these values.
+		float vConst[16] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
+
+		vConst[0] = params[NEARBLURDEPTH]->GetFloatValue();
+		vConst[1] = params[NEARFOCUSDEPTH]->GetFloatValue();
+		vConst[2] = params[FARFOCUSDEPTH]->GetFloatValue();
+		vConst[3] = params[FARBLURDEPTH]->GetFloatValue();;
+		// max blur radius will need to be set based on quality level and screen res
+		vConst[4] = mat_dof_max_blur_radius.GetFloat();
+		vConst[5] = MIN( params[NEARBLURRADIUS]->GetFloatValue(), vConst[4] ) / vConst[4];	// near and far blur radius as fraction of max radius
+		vConst[6] = MIN( params[FARBLURRADIUS]->GetFloatValue(), vConst[4] ) / vConst[4];
+
+		vConst[8] = params[NEARPLANE]->GetFloatValue();
+		vConst[9] = params[FARPLANE]->GetFloatValue();
+
+		vConst[10] = mat_dof_constant.GetFloat() * ( vConst[9] - vConst[8] ) / vConst[9];
+
+		vConst[12] = vConst[10] / ( vConst[0] - vConst[1] );
+		vConst[13] = ( vConst[8] - vConst[1] ) / ( vConst[0] - vConst[1] );
+		vConst[14] = vConst[10] / ( vConst[3] - vConst[2] );
+		vConst[15] = ( vConst[8] - vConst[2] ) / ( vConst[3] - vConst[2] );
+
+		pShaderAPI->SetPixelShaderConstant( 0, vConst, 4 );
+
+		// set up poisson sample location constants pre-divided by screen res
+		int nNumPoissonSamples = 0;
+		const float* pPoissonSrc = NULL;
+		switch( params[QUALITY]->GetIntValue() )
 		{
-			LoadTexture( BASETEXTURE );
-		}
-		if ( params[SMALLFB]->IsDefined() )
-		{
-			LoadTexture( SMALLFB );
-		}
-	}
-
-	SHADER_DRAW
-	{
-		SHADOW_STATE
-		{
-			pShaderShadow->VertexShaderVertexFormat( VERTEX_POSITION, 1, 0, 0 );
-
-			pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
-			pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
-			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, false );
-			pShaderShadow->EnableSRGBWrite( false );
-
-			DECLARE_STATIC_VERTEX_SHADER( depth_of_field_vs20 );
-			SET_STATIC_VERTEX_SHADER( depth_of_field_vs20 );
-
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_STATIC_PIXEL_SHADER( depth_of_field_ps20b );
-				SET_STATIC_PIXEL_SHADER( depth_of_field_ps20b );
-			}
-			else
-			{
-				Assert( !"No ps_2_b. This shouldn't be happening" );
-			}
-
-			pShaderShadow->EnableDepthWrites( false );
-			pShaderShadow->EnableAlphaWrites( false );
-		}
-
-		DYNAMIC_STATE
-		{
-			DECLARE_DYNAMIC_VERTEX_SHADER( depth_of_field_vs20 );
-			SET_DYNAMIC_VERTEX_SHADER( depth_of_field_vs20 );
-
-			// Bind textures
-			BindTexture( SHADER_SAMPLER0, BASETEXTURE );
-			BindTexture( SHADER_SAMPLER1, SMALLFB );
-
-			// near blur = blur of stuff in front of focus range
-			// far blur = blur of stuff behind focus range
-
-			// C0: set near/far blur and focus distances
-			// x = near blur distance
-			// y = near focus distance
-			// z = far focus distance
-			// w = far blur distance
-			// C1:
-			// x = blur radius for near blur (in pixels)
-			// y = blur radius for far blur (in pixels)
-			// TODO: Specifying this stuff in pixels makes blurs look smaller on high backbuffer resolutions.
-			// This might be a problem for tweaking these values.
-			float vConst[16] = { 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
-
-			vConst[0] = params[NEARBLURDEPTH]->GetFloatValue();
-			vConst[1] = params[NEARFOCUSDEPTH]->GetFloatValue();
-			vConst[2] = params[FARFOCUSDEPTH]->GetFloatValue();
-			vConst[3] = params[FARBLURDEPTH]->GetFloatValue();;
-			// max blur radius will need to be set based on quality level and screen res
-			vConst[4] = mat_dof_max_blur_radius.GetFloat();
-			vConst[5] = MIN( params[NEARBLURRADIUS]->GetFloatValue(), vConst[4] ) / vConst[4];	// near and far blur radius as fraction of max radius
-			vConst[6] = MIN( params[FARBLURRADIUS]->GetFloatValue(), vConst[4] ) / vConst[4];
-
-			vConst[8] = params[NEARPLANE]->GetFloatValue();
-			vConst[9] = params[FARPLANE]->GetFloatValue();
-			
-			vConst[10] = mat_dof_constant.GetFloat() * ( vConst[9] - vConst[8] ) / vConst[9]; 
-
-			vConst[12] = vConst[10] / ( vConst[0] - vConst[1] );
-			vConst[13] = ( vConst[8] - vConst[1] ) / ( vConst[0] - vConst[1] );
-			vConst[14] = vConst[10] / ( vConst[3] - vConst[2] );
-			vConst[15] = ( vConst[8] - vConst[2] ) / ( vConst[3] - vConst[2] );
-
-			pShaderAPI->SetPixelShaderConstant( 0, vConst, 4 );
-
-			// set up poisson sample location constants pre-divided by screen res
-			int nNumPoissonSamples = 0;
-			const float *pPoissonSrc = NULL;
-			switch ( params[QUALITY]->GetIntValue() )
-			{
 			case 0:
 				// NOTE: These must match the shader
 				nNumPoissonSamples = 8;
@@ -237,44 +240,44 @@ BEGIN_VS_SHADER_FLAGS( DepthOfField_dx9, "Depth of Field", SHADER_NOT_EDITABLE )
 				nNumPoissonSamples = 8;
 				pPoissonSrc = s_flPoissonConstsQuality0;
 				break;
-			}
-
-			float vPoissonConst[64];	// temp table
-
-			// Get texture dimensions
-			ITexture *pTex = params[BASETEXTURE]->GetTextureValue();
-			Assert( pTex );
-			float flInvTexWidth = 1.0f / static_cast<float>( pTex->GetActualWidth() );
-			float flInvTexHeight = 1.0f / static_cast<float>( pTex->GetActualHeight() );
-
-			for ( int i = 0; i < nNumPoissonSamples; i++ )
-			{
-				vPoissonConst[ 2*i ] = pPoissonSrc[ 2*i ] * flInvTexWidth;
-				vPoissonConst[ 2*i+1 ] = pPoissonSrc[ 2*i+1 ] * flInvTexHeight;
-			}
-
-			// swizzle every other 2-tuple so that I can use the free .wz swizzle in the shader
-			for ( int i = 1; i < nNumPoissonSamples; i += 2)
-			{
-				float t = vPoissonConst[ 2*i ];
-				vPoissonConst[ 2*i ] = vPoissonConst[ 2*i+1 ];
-				vPoissonConst[ 2*i+1 ] = t;
-			}
-
-			pShaderAPI->SetPixelShaderConstant( 4, vPoissonConst, nNumPoissonSamples / 2 );
-
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
-			{
-				DECLARE_DYNAMIC_PIXEL_SHADER( depth_of_field_ps20b );
-				SET_DYNAMIC_PIXEL_SHADER_COMBO( QUALITY, params[QUALITY]->GetIntValue() );
-				SET_DYNAMIC_PIXEL_SHADER( depth_of_field_ps20b );
-			}
-			else
-			{
-				Assert( !"No ps_2_b. This shouldn't be happening" );
-			}
 		}
 
-		Draw();
+		float vPoissonConst[64];	// temp table
+
+		// Get texture dimensions
+		ITexture* pTex = params[BASETEXTURE]->GetTextureValue();
+		Assert( pTex );
+		float flInvTexWidth = 1.0f / static_cast<float>( pTex->GetActualWidth() );
+		float flInvTexHeight = 1.0f / static_cast<float>( pTex->GetActualHeight() );
+
+		for( int i = 0; i < nNumPoissonSamples; i++ )
+		{
+			vPoissonConst[ 2 * i ] = pPoissonSrc[ 2 * i ] * flInvTexWidth;
+			vPoissonConst[ 2 * i + 1 ] = pPoissonSrc[ 2 * i + 1 ] * flInvTexHeight;
+		}
+
+		// swizzle every other 2-tuple so that I can use the free .wz swizzle in the shader
+		for( int i = 1; i < nNumPoissonSamples; i += 2 )
+		{
+			float t = vPoissonConst[ 2 * i ];
+			vPoissonConst[ 2 * i ] = vPoissonConst[ 2 * i + 1 ];
+			vPoissonConst[ 2 * i + 1 ] = t;
+		}
+
+		pShaderAPI->SetPixelShaderConstant( 4, vPoissonConst, nNumPoissonSamples / 2 );
+
+		if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+		{
+			DECLARE_DYNAMIC_PIXEL_SHADER( depth_of_field_ps20b );
+			SET_DYNAMIC_PIXEL_SHADER_COMBO( QUALITY, params[QUALITY]->GetIntValue() );
+			SET_DYNAMIC_PIXEL_SHADER( depth_of_field_ps20b );
+		}
+		else
+		{
+			Assert( !"No ps_2_b. This shouldn't be happening" );
+		}
 	}
+
+	Draw();
+}
 END_SHADER

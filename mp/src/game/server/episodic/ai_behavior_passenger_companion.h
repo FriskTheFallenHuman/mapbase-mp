@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef AI_BEHAVIOR_PASSENGER_COMPANION_H
 #define AI_BEHAVIOR_PASSENGER_COMPANION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior_passenger.h"
@@ -18,7 +18,7 @@ struct VehicleAvoidParams_t
 {
 	Vector vecStartPos;
 	Vector vecGoalPos;
-	Vector *pNodePositions;
+	Vector* pNodePositions;
 	int nNumNodes;
 	int nDirection;
 	int nStartNode;
@@ -69,7 +69,7 @@ public:
 		NEXT_TASK,
 
 		// Conditions
-		 
+
 		COND_PASSENGER_CAN_LEAVE_STUCK_VEHICLE = BaseClass::NEXT_CONDITION,
 		COND_PASSENGER_WARN_OVERTURNED,
 		COND_PASSENGER_WARN_COLLISION,
@@ -80,12 +80,12 @@ public:
 	};
 
 	virtual bool	CanSelectSchedule( void );
-	virtual void	Enable( CPropJeepEpisodic *pVehicle, bool bImmediateEnter = false);
+	virtual void	Enable( CPropJeepEpisodic* pVehicle, bool bImmediateEnter = false );
 	virtual void	GatherConditions( void );
 	virtual int		SelectSchedule( void );
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
-	virtual void	StartTask( const Task_t *pTask );
-	virtual void	RunTask( const Task_t *pTask );
+	virtual void	StartTask( const Task_t* pTask );
+	virtual void	RunTask( const Task_t* pTask );
 	virtual void	AimGun( void );
 	virtual void	EnterVehicle( void );
 	virtual void	ExitVehicle( void );
@@ -94,7 +94,7 @@ public:
 	virtual void	BuildScheduleTestBits( void );
 	virtual Activity NPC_TranslateActivity( Activity activity );
 	virtual bool	CanExitVehicle( void );
-	virtual bool	IsValidEnemy( CBaseEntity *pEntity );
+	virtual bool	IsValidEnemy( CBaseEntity* pEntity );
 	virtual void	OnUpdateShotRegulator( void );
 	virtual bool	IsNavigationUrgent( void );
 	virtual	bool	IsCurTaskContinuousMove( void );
@@ -106,12 +106,12 @@ private:
 	virtual void	OnExitVehicleFailed( void );
 
 	bool	CanFidget( void );
-	bool	UseRadialRouteToEntryPoint( const Vector &vecEntryPoint );
-	float	GetArcToEntryPoint( const Vector &vecCenterPoint, const Vector &vecEntryPoint, bool &bClockwise );
+	bool	UseRadialRouteToEntryPoint( const Vector& vecEntryPoint );
+	float	GetArcToEntryPoint( const Vector& vecCenterPoint, const Vector& vecEntryPoint, bool& bClockwise );
 	int		SelectScheduleInsideVehicle( void );
 	int		SelectScheduleOutsideVehicle( void );
 	bool	FindPathToVehicleEntryPoint( void );
-	bool	CanEnterVehicleImmediately( int *pResultSequence, Vector *pResultPos, QAngle *pResultAngles );
+	bool	CanEnterVehicleImmediately( int* pResultSequence, Vector* pResultPos, QAngle* pResultAngles );
 	void	EnterVehicleImmediately( void );
 
 	// ------------------------------------------
@@ -121,20 +121,20 @@ private:
 	virtual void	GatherVehicleStateConditions( void );
 
 	float	GetVehicleSpeed( void );
-	void	GatherVehicleCollisionConditions( const Vector &localVelocity );
+	void	GatherVehicleCollisionConditions( const Vector& localVelocity );
 
 	// ------------------------------------------
 	//  Overturned tracking
 	// ------------------------------------------
 	void	UpdateStuckStatus( void );
-	bool	CanExitAtPosition( const Vector &vecTestPos );
-	bool	GetStuckExitPos( Vector *vecResult );
+	bool	CanExitAtPosition( const Vector& vecTestPos );
+	bool	GetStuckExitPos( Vector* vecResult );
 	bool	ExitStuckVehicle( void );
 
 	bool			UpdateVehicleEntrancePath( void );
-	bool			PointIsWithinEntryFailureRadius( const Vector &vecPosition );
+	bool			PointIsWithinEntryFailureRadius( const Vector& vecPosition );
 	void			ResetVehicleEntryFailedState( void );
-	void			MarkVehicleEntryFailed( const Vector &vecPosition );
+	void			MarkVehicleEntryFailed( const Vector& vecPosition );
 	virtual int		FindEntrySequence( bool bNearest = false );
 	void			CalculateBodyLean( void );
 
@@ -153,10 +153,10 @@ private:
 
 protected:
 	virtual int	SelectTransitionSchedule( void );
-	
+
 	void	ExtendFidgetDelay( float flDuration );
 	bool	CanPlayJostle( bool bLargeJostle );
-	
+
 	float	m_flEntraceUpdateTime;
 	float	m_flNextEnterAttempt;
 	float	m_flNextFidgetTime;

@@ -2,7 +2,7 @@
 //
 // Purpose: Custom implementation of VScript in Source 2013, created from scratch
 //			using the Alien Swarm SDK as a reference for Valve's library.
-// 
+//
 // Author(s): ReDucTor (header written by Blixibon)
 //
 // $NoKeywords: $
@@ -21,10 +21,10 @@ int vscript_token = 0;
 class CScriptManager : public CTier1AppSystem<IScriptManager>
 {
 public:
-	virtual IScriptVM* CreateVM(ScriptLanguage_t language) override
+	virtual IScriptVM* CreateVM( ScriptLanguage_t language ) override
 	{
 		IScriptVM* pScriptVM = nullptr;
-		if (language == SL_SQUIRREL)
+		if( language == SL_SQUIRREL )
 		{
 			pScriptVM = makeSquirrelVM();
 		}
@@ -33,12 +33,12 @@ public:
 			return nullptr;
 		}
 
-		if (pScriptVM == nullptr)
+		if( pScriptVM == nullptr )
 		{
 			return nullptr;
 		}
 
-		if (!pScriptVM->Init())
+		if( !pScriptVM->Init() )
 		{
 			delete pScriptVM;
 			return nullptr;
@@ -50,9 +50,9 @@ public:
 		return pScriptVM;
 	}
 
-	virtual void DestroyVM(IScriptVM * pScriptVM) override
+	virtual void DestroyVM( IScriptVM* pScriptVM ) override
 	{
-		if (pScriptVM)
+		if( pScriptVM )
 		{
 			pScriptVM->Shutdown();
 			delete pScriptVM;
@@ -60,17 +60,17 @@ public:
 	}
 
 	// Mapbase moves CScriptKeyValues into the library so it could be used elsewhere
-	virtual HSCRIPT CreateScriptKeyValues( IScriptVM *pVM, KeyValues *pKV, bool bAllowDestruct ) override
+	virtual HSCRIPT CreateScriptKeyValues( IScriptVM* pVM, KeyValues* pKV, bool bAllowDestruct ) override
 	{
-		CScriptKeyValues *pSKV = new CScriptKeyValues( pKV );
+		CScriptKeyValues* pSKV = new CScriptKeyValues( pKV );
 		HSCRIPT hSKV = pVM->RegisterInstance( pSKV, bAllowDestruct );
 		return hSKV;
 	}
 
-	virtual KeyValues *GetKeyValuesFromScriptKV( IScriptVM *pVM, HSCRIPT hSKV ) override
+	virtual KeyValues* GetKeyValuesFromScriptKV( IScriptVM* pVM, HSCRIPT hSKV ) override
 	{
-		CScriptKeyValues *pSKV = (hSKV ? (CScriptKeyValues*)pVM->GetInstanceValue( hSKV, GetScriptDesc( (CScriptKeyValues*)NULL ) ) : nullptr);
-		if (pSKV)
+		CScriptKeyValues* pSKV = ( hSKV ? ( CScriptKeyValues* )pVM->GetInstanceValue( hSKV, GetScriptDesc( ( CScriptKeyValues* )NULL ) ) : nullptr );
+		if( pSKV )
 		{
 			return pSKV->m_pKeyValues;
 		}
@@ -79,4 +79,4 @@ public:
 	}
 };
 
-EXPOSE_SINGLE_INTERFACE(CScriptManager, IScriptManager, VSCRIPT_INTERFACE_VERSION);
+EXPOSE_SINGLE_INTERFACE( CScriptManager, IScriptManager, VSCRIPT_INTERFACE_VERSION );

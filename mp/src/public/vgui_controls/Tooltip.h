@@ -9,7 +9,7 @@
 #define TOOLTIP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -25,28 +25,31 @@ namespace vgui
 class BaseTooltip
 {
 public:
-	BaseTooltip(Panel *parent, const char *text = NULL);
+	BaseTooltip( Panel* parent, const char* text = NULL );
 
-	virtual void SetText(const char *text);
-	virtual const char *GetText();
+	virtual void SetText( const char* text );
+	virtual const char* GetText();
 
-	virtual void ShowTooltip(Panel *currentPanel);
+	virtual void ShowTooltip( Panel* currentPanel );
 	virtual void HideTooltip();
 
 	bool		 ShouldLayout( void );
-	virtual void PerformLayout() { return; }
-	virtual void PositionWindow( Panel *pTipPanel );
+	virtual void PerformLayout()
+	{
+		return;
+	}
+	virtual void PositionWindow( Panel* pTipPanel );
 
 	void ResetDelay();
 	void SetTooltipFormatToSingleLine();
 	void SetTooltipFormatToMultiLine();
-	void SetTooltipDelay(int tooltipDelayMilliseconds);
+	void SetTooltipDelay( int tooltipDelayMilliseconds );
 	int GetTooltipDelay();
 	void SetEnabled( bool bState );
 
 private:
-	Panel *m_pParent;
-	virtual void ApplySchemeSettings(IScheme *pScheme) {};
+	Panel* m_pParent;
+	virtual void ApplySchemeSettings( IScheme* pScheme ) {};
 protected:
 	CUtlVector<char> m_Text;
 	int _delay;			// delay that counts down
@@ -60,15 +63,15 @@ protected:
 class TextTooltip : public BaseTooltip
 {
 public:
-	TextTooltip(Panel *parent, const char *text = NULL);
+	TextTooltip( Panel* parent, const char* text = NULL );
 	~TextTooltip();
 
-	virtual void SetText(const char *text);
-	virtual void ShowTooltip(Panel *currentPanel);
+	virtual void SetText( const char* text );
+	virtual void ShowTooltip( Panel* currentPanel );
 	virtual void HideTooltip();
 	virtual void SizeTextWindow();
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 };
 
 };

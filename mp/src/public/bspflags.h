@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define BSPFLAGS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // contents flags are seperate bits
@@ -36,9 +36,9 @@
 #define ALL_VISIBLE_CONTENTS (LAST_VISIBLE_CONTENTS | (LAST_VISIBLE_CONTENTS-1))
 
 #define CONTENTS_TESTFOGVOLUME	0x100
-#define CONTENTS_UNUSED			0x200	
+#define CONTENTS_UNUSED			0x200
 
-// unused 
+// unused
 // NOTE: If it's visible, grab from the top + update LAST_VISIBLE_CONTENTS
 // if not visible, then grab from the bottom.
 #define CONTENTS_UNUSED6		0x400

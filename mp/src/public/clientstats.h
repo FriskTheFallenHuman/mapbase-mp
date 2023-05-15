@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,7 +9,7 @@
 #if !defined( CLIENTSTATS_H )
 #define CLIENTSTATS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
@@ -35,7 +35,7 @@ struct IClientStatsTime
 struct IClientStatsTextDisplay
 {
 	// Draws the stats
-	virtual void DrawStatsText( PRINTF_FORMAT_STRING const char *fmt, ... ) = 0;
+	virtual void DrawStatsText( PRINTF_FORMAT_STRING const char* fmt, ... ) = 0;
 
 	virtual void SetDrawColor( unsigned char r, unsigned char g, unsigned char b ) = 0;
 
@@ -53,7 +53,7 @@ abstract_class IClientStats
 {
 public:
 	// This is called at startup to tell the stats about time
-	virtual void Init( IClientStatsTime* pTime ) = 0;
+	virtual void Init( IClientStatsTime * pTime ) = 0;
 
 	// These methods are called at the beginning and the end of each run
 	virtual void BeginRun() = 0;
@@ -80,10 +80,11 @@ public:
 //-----------------------------------------------------------------------------
 
 template <int timedStatCount, int countedStatCount>
-abstract_class CBaseClientStats : public IClientStats
+abstract_class CBaseClientStats :
+public IClientStats
 {
 public:
-	void Init( IClientStatsTime* pTime );
+	void Init( IClientStatsTime * pTime );
 	void BeginRun();
 	void EndRun();
 	void BeginFrame();
@@ -109,8 +110,8 @@ public:
 		Assert( statID >= 0 && statID < timedStatCount );
 		return m_TotalStatTime[statID];
 	}
-	virtual const char *GetCountedStatName( int statID ) const = 0;
-	virtual const char *GetTimedStatName( int statID ) const = 0;
+	virtual const char* GetCountedStatName( int statID ) const = 0;
+	virtual const char* GetTimedStatName( int statID ) const = 0;
 
 protected:
 
@@ -144,8 +145,10 @@ void CBaseClientStats<timedStatCount, countedStatCount>::BeginRun()
 {
 	int i;
 
-	for (i = 0; i < timedStatCount; ++i)
+	for( i = 0; i < timedStatCount; ++i )
+	{
 		m_TotalStatTime[i] = 0.0;
+	}
 
 }
 
@@ -163,16 +166,20 @@ template <int timedStatCount, int countedStatCount>
 void CBaseClientStats<timedStatCount, countedStatCount>::BeginFrame()
 {
 	int i;
-	for (i = 0; i < timedStatCount; ++i)
+	for( i = 0; i < timedStatCount; ++i )
+	{
 		m_StatFrameTime[i] = 0.0;
+	}
 }
 
 template <int timedStatCount, int countedStatCount>
 void CBaseClientStats<timedStatCount, countedStatCount>::EndFrame()
 {
 	int i;
-	for (i = 0; i < timedStatCount; ++i)
+	for( i = 0; i < timedStatCount; ++i )
+	{
 		m_TotalStatTime[i] += m_StatFrameTime[i];
+	}
 }
 
 
@@ -183,15 +190,19 @@ void CBaseClientStats<timedStatCount, countedStatCount>::EndFrame()
 template <int timedStatCount, int countedStatCount>
 void CBaseClientStats<timedStatCount, countedStatCount>::BeginTimedStat( int stat )
 {
-	if (m_pTime)
+	if( m_pTime )
+	{
 		m_StatStartTime[stat] = m_pTime->GetTime();
+	}
 }
 
 template <int timedStatCount, int countedStatCount>
 void CBaseClientStats<timedStatCount, countedStatCount>::EndTimedStat( int stat )
 {
-	if (m_pTime)
+	if( m_pTime )
+	{
 		m_StatFrameTime[stat] += m_pTime->GetTime() - m_StatStartTime[stat];
+	}
 }
 
 

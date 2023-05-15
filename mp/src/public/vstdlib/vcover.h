@@ -11,16 +11,16 @@
 #include "vstdlib.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 class CVCoverage
 {
 public:
 	CVCoverage() :
-	  m_bActive( false ),
-	  m_depth( 0 ),
-	  m_token( 1 )
+		m_bActive( false ),
+		m_depth( 0 ),
+		m_token( 1 )
 	{
 	}
 
@@ -33,8 +33,10 @@ public:
 	{
 		Assert( bActive != m_bActive );
 		m_bActive = bActive;
-		if ( bActive )
+		if( bActive )
+		{
 			++m_token;
+		}
 	}
 
 	void Begin()
@@ -57,7 +59,7 @@ public:
 		return ( m_bActive && m_depth > 0 && token != m_token );
 	}
 
-	unsigned Cover( const char *pszFile, int line )
+	unsigned Cover( const char* pszFile, int line )
 	{
 		Location_t location = { pszFile, line };
 
@@ -68,7 +70,7 @@ public:
 
 	void Report()
 	{
-		for ( int i = m_locations.FirstInorder(); i != m_locations.InvalidIndex(); i = m_locations.NextInorder( i ) )
+		for( int i = m_locations.FirstInorder(); i != m_locations.InvalidIndex(); i = m_locations.NextInorder( i ) )
 		{
 			Msg( "%s(%d) :\n", m_locations[i].pszFile, m_locations[i].line );
 		}
@@ -77,7 +79,7 @@ public:
 private:
 	struct Location_t
 	{
-		const char *pszFile;
+		const char* pszFile;
 		int line;
 
 	};
@@ -86,11 +88,14 @@ private:
 	{
 	public:
 		CLocationLess( int ignored ) {}
-		bool operator!() { return false; }
-
-		bool operator()(  const Location_t &lhs, const Location_t &rhs ) const
+		bool operator!()
 		{
-			if ( lhs.line < rhs.line )
+			return false;
+		}
+
+		bool operator()( const Location_t& lhs, const Location_t& rhs ) const
+		{
+			if( lhs.line < rhs.line )
 			{
 				return true;
 			}

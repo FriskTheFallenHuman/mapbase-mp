@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
 #if !defined( BEAMDRAW_H )
 #define BEAMDRAW_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "materialsystem/imaterial.h"
@@ -38,7 +38,7 @@ public:
 	// Methods of IClientRenderable
 	virtual const Vector&	GetRenderOrigin( void );
 	virtual const QAngle&	GetRenderAngles( void );
-	virtual const matrix3x4_t &RenderableToWorldTransform();
+	virtual const matrix3x4_t& RenderableToWorldTransform();
 	virtual void			GetRenderBounds( Vector& mins, Vector& maxs );
 	virtual bool			ShouldDraw( void );
 	virtual bool			IsTransparent( void );
@@ -55,7 +55,7 @@ public:
 	// Bounding box...
 	Vector			m_Mins;
 	Vector			m_Maxs;
-	pixelvis_handle_t *m_queryHandleHalo;
+	pixelvis_handle_t* m_queryHandleHalo;
 	float			m_haloProxySize;
 
 	// Data is below..
@@ -73,7 +73,7 @@ public:
 	Vector			delta;
 
 	// 0 .. 1 over lifetime of beam
-	float			t;		
+	float			t;
 	float			freq;
 
 	// Time when beam should die
@@ -107,7 +107,7 @@ public:
 	float			haloScale;
 	int				frameCount;
 
-	float			rgNoise[NOISE_DIVISIONS+1];
+	float			rgNoise[NOISE_DIVISIONS + 1];
 
 	// Popcorn trail for beam follows to use
 	BeamTrail_t*	trail;
@@ -130,44 +130,44 @@ public:
 
 int ScreenTransform( const Vector& point, Vector& screen );
 
-void DrawSegs( int noise_divisions, float *prgNoise, const model_t* spritemodel,
-				float frame, int rendermode, const Vector& source, const Vector& delta, 
-				float startWidth, float endWidth, float scale, float freq, float speed, int segments,
-				int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
-void DrawTeslaSegs( int noise_divisions, float *prgNoise, const model_t* spritemodel,
-				float frame, int rendermode, const Vector& source, const Vector& delta, 
-				float startWidth, float endWidth, float scale, float freq, float speed, int segments,
-				int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
-void DrawSplineSegs( int noise_divisions, float *prgNoise, 
-				const model_t* beammodel, const model_t* halomodel, float flHaloScale,
-				float frame, int rendermode, int numAttachments, Vector* attachment, 
-				float startWidth, float endWidth, float scale, float freq, float speed, int segments,
-				int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
-void DrawHalo(IMaterial* pMaterial, const Vector& source, float scale, float const* color, float flHDRColorScale = 1.0f );
-void BeamDrawHalo( const model_t* spritemodel, float frame, int rendermode, const Vector& source, 
-				  float scale, float* color, float flHDRColorScale = 1.0f );
-void DrawDisk( int noise_divisions, float *prgNoise, const model_t* spritemodel,
-			  float frame, int rendermode, const Vector& source, const Vector& delta, 
-			  float width, float scale, float freq, float speed, 
-			  int segments, float* color, float flHDRColorScale = 1.0f );
-void DrawCylinder( int noise_divisions, float *prgNoise, const model_t* spritemodel, 
-				  float frame, int rendermode, const Vector& source, 
-				  const Vector&  delta, float width, float scale, float freq, 
-				  float speed, int segments, float* color, float flHDRColorScale = 1.0f );
-void DrawRing( int noise_divisions, float *prgNoise, void (*pfnNoise)( float *noise, int divs, float scale ), 
-			  const model_t* spritemodel, float frame, int rendermode, 
-			  const Vector& source, const Vector& delta, float width, float amplitude, 
-			  float freq, float speed, int segments, float* color, float flHDRColorScale = 1.0f );
-void DrawBeamFollow( const model_t* spritemodel, BeamTrail_t* pHead, int frame, int rendermode, Vector& delta, 
-					Vector& screen, Vector& screenLast, float die, const Vector& source, 
-					int flags, float width, float amplitude, float freq, float* color, float flHDRColorScale = 1.0f );
+void DrawSegs( int noise_divisions, float* prgNoise, const model_t* spritemodel,
+			   float frame, int rendermode, const Vector& source, const Vector& delta,
+			   float startWidth, float endWidth, float scale, float freq, float speed, int segments,
+			   int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
+void DrawTeslaSegs( int noise_divisions, float* prgNoise, const model_t* spritemodel,
+					float frame, int rendermode, const Vector& source, const Vector& delta,
+					float startWidth, float endWidth, float scale, float freq, float speed, int segments,
+					int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
+void DrawSplineSegs( int noise_divisions, float* prgNoise,
+					 const model_t* beammodel, const model_t* halomodel, float flHaloScale,
+					 float frame, int rendermode, int numAttachments, Vector* attachment,
+					 float startWidth, float endWidth, float scale, float freq, float speed, int segments,
+					 int flags, float* color, float fadeLength, float flHDRColorScale = 1.0f );
+void DrawHalo( IMaterial* pMaterial, const Vector& source, float scale, float const* color, float flHDRColorScale = 1.0f );
+void BeamDrawHalo( const model_t* spritemodel, float frame, int rendermode, const Vector& source,
+				   float scale, float* color, float flHDRColorScale = 1.0f );
+void DrawDisk( int noise_divisions, float* prgNoise, const model_t* spritemodel,
+			   float frame, int rendermode, const Vector& source, const Vector& delta,
+			   float width, float scale, float freq, float speed,
+			   int segments, float* color, float flHDRColorScale = 1.0f );
+void DrawCylinder( int noise_divisions, float* prgNoise, const model_t* spritemodel,
+				   float frame, int rendermode, const Vector& source,
+				   const Vector&  delta, float width, float scale, float freq,
+				   float speed, int segments, float* color, float flHDRColorScale = 1.0f );
+void DrawRing( int noise_divisions, float* prgNoise, void ( *pfnNoise )( float* noise, int divs, float scale ),
+			   const model_t* spritemodel, float frame, int rendermode,
+			   const Vector& source, const Vector& delta, float width, float amplitude,
+			   float freq, float speed, int segments, float* color, float flHDRColorScale = 1.0f );
+void DrawBeamFollow( const model_t* spritemodel, BeamTrail_t* pHead, int frame, int rendermode, Vector& delta,
+					 Vector& screen, Vector& screenLast, float die, const Vector& source,
+					 int flags, float width, float amplitude, float freq, float* color, float flHDRColorScale = 1.0f );
 
-void DrawBeamQuadratic( const Vector &start, const Vector &control, const Vector &end, float width, const Vector &color, float scrollOffset, float flHDRColorScale = 1.0f );
-class CEngineSprite *Draw_SetSpriteTexture( const model_t *pSpriteModel, int frame, int rendermode );
+void DrawBeamQuadratic( const Vector& start, const Vector& control, const Vector& end, float width, const Vector& color, float scrollOffset, float flHDRColorScale = 1.0f );
+class CEngineSprite* Draw_SetSpriteTexture( const model_t* pSpriteModel, int frame, int rendermode );
 
 //-----------------------------------------------------------------------------
 // Assumes the material has already been bound
 //-----------------------------------------------------------------------------
-void DrawSprite( const Vector &vecOrigin, float flWidth, float flHeight, color32 color );
+void DrawSprite( const Vector& vecOrigin, float flWidth, float flHeight, color32 color );
 
 #endif // BEAMDRAW_H

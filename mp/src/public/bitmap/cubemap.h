@@ -11,7 +11,7 @@
 #define CUBEMAP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -21,28 +21,28 @@
 template<class T, int RES> struct CCubeMap
 {
 	T m_Samples[6][RES][RES];
-	
+
 public:
-	FORCEINLINE void GetCoords( Vector const &vecNormalizedDirection, int &nX, int &nY, int &nFace )
+	FORCEINLINE void GetCoords( Vector const& vecNormalizedDirection, int& nX, int& nY, int& nFace )
 	{
 		// find largest magnitude component
 		int nLargest = 0;
 		int nAxis0 = 1;
 		int nAxis1 = 2;
-		if ( fabs( vecNormalizedDirection[1] ) > fabs( vecNormalizedDirection[0] ) )
+		if( fabs( vecNormalizedDirection[1] ) > fabs( vecNormalizedDirection[0] ) )
 		{
 			nLargest = 1;
 			nAxis0 = 0;
 			nAxis1 = 2;
 		}
-		if ( fabs( vecNormalizedDirection[2] ) > fabs( vecNormalizedDirection[nLargest] ) )
+		if( fabs( vecNormalizedDirection[2] ) > fabs( vecNormalizedDirection[nLargest] ) )
 		{
 			nLargest = 2;
 			nAxis0 = 0;
 			nAxis1 = 1;
 		}
 		float flZ = vecNormalizedDirection[nLargest];
-		if ( flZ < 0 )
+		if( flZ < 0 )
 		{
 			flZ = - flZ;
 			nLargest += 3;
@@ -53,7 +53,7 @@ public:
 		nY = RemapValClamped( vecNormalizedDirection[nAxis1] * flZ, -1, 1, 0, RES - 1 );
 	}
 
-	FORCEINLINE T & GetSample( Vector const &vecNormalizedDirection )
+	FORCEINLINE T& GetSample( Vector const& vecNormalizedDirection )
 	{
 		int nX, nY, nFace;
 		GetCoords( vecNormalizedDirection, nX, nY, nFace );

@@ -25,7 +25,7 @@ class	CAI_BaseNPC;
 struct	Task_t;
 
 #ifndef MAX_CONDITIONS
-#define	MAX_CONDITIONS 32*8
+	#define	MAX_CONDITIONS 32*8
 #endif
 typedef CBitVec<MAX_CONDITIONS> CAI_ScheduleBits;
 
@@ -72,36 +72,39 @@ public:
 		m_CurLoadSig = 0;		// Note when schedules reset
 	}
 
-	int				GetScheduleLoadSignature() { return m_CurLoadSig; }
-	CAI_Schedule*	GetScheduleFromID( int schedID );	// Function to return schedule from linked list 
-	CAI_Schedule*	GetScheduleByName( const char *name );
+	int				GetScheduleLoadSignature()
+	{
+		return m_CurLoadSig;
+	}
+	CAI_Schedule*	GetScheduleFromID( int schedID );	// Function to return schedule from linked list
+	CAI_Schedule*	GetScheduleByName( const char* name );
 
-	bool LoadAllSchedules(void);
+	bool LoadAllSchedules( void );
 
-	bool LoadSchedules( const char* prefix, CAI_ClassScheduleIdSpace *pIdSpace  );
-	bool LoadSchedulesFromBuffer( const char *prefix, const char *pfile, CAI_ClassScheduleIdSpace *pIdSpace );
+	bool LoadSchedules( const char* prefix, CAI_ClassScheduleIdSpace* pIdSpace );
+	bool LoadSchedulesFromBuffer( const char* prefix, const char* pfile, CAI_ClassScheduleIdSpace* pIdSpace );
 
 private:
 	friend class CAI_SystemHook;
-	
+
 	int				m_CurLoadSig;					// Note when schedules reset
 	CAI_Schedule*	allSchedules;						// A linked list of all schedules
 
-	CAI_Schedule *	CreateSchedule(char *name, int schedule_id);
+	CAI_Schedule* 	CreateSchedule( char* name, int schedule_id );
 
 	void CreateStringRegistries( void );
 	void DestroyStringRegistries( void );
-	void DeleteAllSchedules(void);
+	void DeleteAllSchedules( void );
 
 	//static bool	LoadSchedules( char* prefix,	int taskIDOffset,	int taskENOffset,
 	//											int schedIDOffset,  int schedENOffset,
 	//											int condIDOffset,	int condENOffset);
 
 	// parsing helpers
-	int	GetStateID(const char *state_name);
-	int	GetMemoryID(const char *memory_name);
-	int GetPathID( const char *token );
-	int GetGoalID( const char *token );
+	int	GetStateID( const char* state_name );
+	int	GetMemoryID( const char* memory_name );
+	int GetPathID( const char* token );
+	int GetGoalID( const char* token );
 
 };
 
@@ -118,18 +121,18 @@ public:
 	{
 		return m_iScheduleID;
 	}
-	
-	const Task_t *GetTaskList() const
+
+	const Task_t* GetTaskList() const
 	{
 		return m_pTaskList;
 	}
-	
+
 	int NumTasks() const
 	{
 		return m_iNumTasks;
 	}
-	
-	void GetInterruptMask( CAI_ScheduleBits *pBits ) const
+
+	void GetInterruptMask( CAI_ScheduleBits* pBits ) const
 	{
 		m_InterruptMask.CopyTo( pBits );
 	}
@@ -138,26 +141,26 @@ public:
 	{
 		return m_InterruptMask.IsBitSet( condition );
 	}
-	
-	const char *GetName() const
+
+	const char* GetName() const
 	{
 		return m_pName;
 	}
-	
+
 private:
 	friend class CAI_SchedulesManager;
 
 	int			m_iScheduleID;				// The id number of this schedule
 
-	Task_t		*m_pTaskList;
-	int			m_iNumTasks;	 
+	Task_t*		m_pTaskList;
+	int			m_iNumTasks;
 
-	CAI_ScheduleBits m_InterruptMask;			// a bit mask of conditions that can interrupt this schedule 
-	char		*m_pName;
+	CAI_ScheduleBits m_InterruptMask;			// a bit mask of conditions that can interrupt this schedule
+	char*		m_pName;
 
-	CAI_Schedule *nextSchedule;				// The next schedule in the list of schedules
+	CAI_Schedule* nextSchedule;				// The next schedule in the list of schedules
 
-	CAI_Schedule(char *name,int schedule_id, CAI_Schedule *pNext);
+	CAI_Schedule( char* name, int schedule_id, CAI_Schedule* pNext );
 	~CAI_Schedule( void );
 };
 

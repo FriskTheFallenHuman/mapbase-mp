@@ -5,14 +5,14 @@
 // Contains texture data that was encoded with the map. The initial use case
 // is for per-texel lightmaps to allow static props to match the lighting
 // of the surrounding BSP geometry.
-// 
+//
 //=============================================================================//
 
 #ifndef HARDWARETEXELS_H
 #define HARDWARETEXELS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "bitmap/imageformat.h"
@@ -64,16 +64,16 @@ struct FileHeader_t
 	// Number of meshes
 	int m_nMeshes;
 
-	inline MeshHeader_t *pMesh( int nMesh ) const 
+	inline MeshHeader_t* pMesh( int nMesh ) const
 	{
-		Assert(nMesh < m_nMeshes);
+		Assert( nMesh < m_nMeshes );
 
-		return (MeshHeader_t *)(((byte *)this) + sizeof(FileHeader_t)) + nMesh;
+		return ( MeshHeader_t* )( ( ( byte* )this ) + sizeof( FileHeader_t ) ) + nMesh;
 	};
 
-	inline void *pTexelBase( int nMesh ) const 
+	inline void* pTexelBase( int nMesh ) const
 	{
-		return (void *)((byte *)this + pMesh( nMesh )->m_nOffset);
+		return ( void* )( ( byte* )this + pMesh( nMesh )->m_nOffset );
 	};
 
 	unsigned int m_nUnused[4];

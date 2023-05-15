@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,11 +26,11 @@ class CTESmoke : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTESmoke, CBaseTempEntity );
 
-					CTESmoke( const char *name );
+	CTESmoke( const char* name );
 	virtual			~CTESmoke( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -41,10 +41,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTESmoke::CTESmoke( const char *name ) :
+CTESmoke::CTESmoke( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -54,16 +54,16 @@ CTESmoke::CTESmoke( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTESmoke::~CTESmoke( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTESmoke::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -72,7 +72,7 @@ void CTESmoke::Test( const Vector& current_origin, const QAngle& current_angles 
 	m_fScale = 5.0;
 	m_nFrameRate = 12;
 	m_vecOrigin = current_origin;
-	
+
 	Vector forward, right;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -88,22 +88,22 @@ void CTESmoke::Test( const Vector& current_origin, const QAngle& current_angles 
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTESmoke, DT_TESmoke)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
-	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTESmoke, DT_TESmoke )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+				SendPropFloat( SENDINFO( m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
+				SendPropInt( SENDINFO( m_nFrameRate ), 8, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TESmoke objects
-static CTESmoke g_TESmoke( "Smoke" );
+				static CTESmoke g_TESmoke( "Smoke" );
 
 void TE_Smoke( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, float scale, int framerate )
+			   const Vector* pos, int modelindex, float scale, int framerate )
 {
 	g_TESmoke.m_vecOrigin	= *pos;
-	g_TESmoke.m_nModelIndex = modelindex;	
+	g_TESmoke.m_nModelIndex = modelindex;
 	g_TESmoke.m_fScale		= scale;
 	g_TESmoke.m_nFrameRate	= framerate;
 

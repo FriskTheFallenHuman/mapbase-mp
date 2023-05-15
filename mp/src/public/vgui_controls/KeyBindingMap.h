@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef KEYBINDINGMAP_H
 #define KEYBINDINGMAP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlvector.h"
@@ -22,7 +22,7 @@ class Panel;
 
 enum
 {
-    MODIFIER_SHIFT		= ( 1 << 0 ),
+	MODIFIER_SHIFT		= ( 1 << 0 ),
 	MODIFIER_CONTROL	= ( 1 << 1 ),
 	MODIFIER_ALT		= ( 1 << 2 ),
 };
@@ -38,7 +38,7 @@ struct BoundKey_t
 	BoundKey_t& operator =( const BoundKey_t& src );
 
 	bool				isbuiltin;		// whether this was by the #DECLARE macros or via code/parsing a config file
-	char const			*bindingname; // what it's bound to
+	char const*			bindingname; // what it's bound to
 	int					keycode;	// vgui keycode
 	int					modifiers;  // which modifiers
 };
@@ -54,10 +54,10 @@ struct KeyBindingMap_t
 	KeyBindingMap_t( const KeyBindingMap_t& src );
 	~KeyBindingMap_t();
 
-	char const				*bindingname; // for the script file
+	char const*				bindingname; // for the script file
 	ALIGN16 MessageFunc_t	func;
-	char const 				*helpstring; // e.g., #KeybindingPasteHelp
-	char const 				*docstring;  // e.g., #KeybindingPasteHelp
+	char const*				 helpstring; // e.g., #KeybindingPasteHelp
+	char const*				 docstring;  // e.g., #KeybindingPasteHelp
 	bool					passive; // dispatch command, but still chain
 };
 
@@ -165,7 +165,7 @@ struct KeyBindingMap_t
 			PanelKBMapFunc_##name::InitVar();			\
 		}												\
 	};													\
-	PanelKBMapFunc_##name m_##name##_register;		
+	PanelKBMapFunc_##name m_##name##_register;
 
 #define _KBBindKeyCommon( name, keycode, modifiers, _classname )	\
 	class PanelKBBindFunc_##_classname; \
@@ -187,7 +187,7 @@ struct KeyBindingMap_t
 			PanelKBBindFunc_##_classname::InitVar();	\
 		}												\
 	};													\
-	PanelKBBindFunc_##_classname m_##_classname##_bindkey_register;	
+	PanelKBBindFunc_##_classname m_##_classname##_bindkey_register;
 
 #define KEYBINDING_FUNC( name, keycode, modifiers, function, help, doc )				_KBMapFuncCommonFunc( name, keycode, modifiers, function, help, doc, false ); virtual void function()
 #define KEYBINDING_FUNC_NODECLARE( name, keycode, modifiers, function, help, doc )		_KBMapFuncCommonFunc( name, keycode, modifiers, function, help, doc, false );
@@ -210,14 +210,14 @@ struct PanelKeyBindingMap
 
 	CUtlVector< KeyBindingMap_t > entries;
 	bool processed;
-	PanelKeyBindingMap *baseMap;
+	PanelKeyBindingMap* baseMap;
 	CUtlVector< BoundKey_t > defaultkeys;
 	CUtlVector< BoundKey_t > boundkeys;
-	char const *(*pfnClassName)( void );
+	char const* ( *pfnClassName )( void );
 };
 
-PanelKeyBindingMap *FindPanelKeyBindingMap( char const *className );
-PanelKeyBindingMap *FindOrAddPanelKeyBindingMap( char const *className );
+PanelKeyBindingMap* FindPanelKeyBindingMap( char const* className );
+PanelKeyBindingMap* FindOrAddPanelKeyBindingMap( char const* className );
 
 } // namespace vgui
 

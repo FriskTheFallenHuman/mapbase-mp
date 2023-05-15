@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -17,7 +17,7 @@
 #include <vgui/ISurface.h>
 
 #if defined( REPLAY_ENABLED )
-#include "replay/ienginereplay.h"
+	#include "replay/ienginereplay.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -31,10 +31,10 @@ const int CHud::HUDPB_VERTICAL = 1;
 const int CHud::HUDPB_HORIZONTAL_INV = 2;
 
 // Called when a ConVar changes value
-static void FovChanged_Callback( IConVar *pConVar, const char *pOldString, float flOldValue )
+static void FovChanged_Callback( IConVar* pConVar, const char* pOldString, float flOldValue )
 {
 	ConVarRef var( pConVar );
-	if ( engine->IsInGame() )
+	if( engine->IsInGame() )
 	{
 		engine->ServerCmd( VarArgs( "fov %f\n", var.GetFloat() ) );
 	}
@@ -45,16 +45,16 @@ static ConVar fov_watcher( "_fov", "0", 0, "Automates fov command to server.", F
 //-----------------------------------------------------------------------------
 // Purpose: Think
 //-----------------------------------------------------------------------------
-void CHud::Think(void)
+void CHud::Think( void )
 {
 #if defined( REPLAY_ENABLED )
 	// Don't draw this
-	extern IEngineClientReplay *g_EngineClientReplay;
+	extern IEngineClientReplay* g_EngineClientReplay;
 	const bool bPlayingReplay = g_pEngineClientReplay && g_pEngineClientReplay->IsPlayingReplayDemo();
 #endif
 
 	// Determine the visibility of all hud elements
-	for ( int i = 0; i < m_HudList.Size(); i++ )
+	for( int i = 0; i < m_HudList.Size(); i++ )
 	{
 		// Visible?
 		bool visible = m_HudList[i]->ShouldDraw();
@@ -66,33 +66,33 @@ void CHud::Think(void)
 		m_HudList[i]->SetActive( visible );
 
 		// If it's a vgui panel, hide/show as appropriate
-		vgui::Panel *pPanel = dynamic_cast<vgui::Panel*>(m_HudList[i]);
-		if ( pPanel && pPanel->IsVisible() != visible )
+		vgui::Panel* pPanel = dynamic_cast<vgui::Panel*>( m_HudList[i] );
+		if( pPanel && pPanel->IsVisible() != visible )
 		{
 			pPanel->SetVisible( visible );
 		}
-		else if ( !pPanel )
+		else if( !pPanel )
 		{
 			// All HUD elements should now derive from vgui!!!
 			Assert( 0 );
 		}
 
-		if ( visible )
+		if( visible )
 		{
 			m_HudList[i]->ProcessInput();
 		}
 	}
 
 	// Let the active weapon at the keybits
-	C_BaseCombatWeapon *pWeapon = GetActiveWeapon();
-	if ( pWeapon )
+	C_BaseCombatWeapon* pWeapon = GetActiveWeapon();
+	if( pWeapon )
 	{
 		pWeapon->HandleInput();
 	}
 
-	if ( ( m_flScreenShotTime > 0 ) && ( m_flScreenShotTime < gpGlobals->curtime ) )
+	if( ( m_flScreenShotTime > 0 ) && ( m_flScreenShotTime < gpGlobals->curtime ) )
 	{
-		if ( !IsX360() )
+		if( !IsX360() )
 		{
 			engine->ClientCmd( "screenshot" );
 		}
@@ -103,13 +103,13 @@ void CHud::Think(void)
 
 //-----------------------------------------------------------------------------
 // Purpose:  The percentage passed in is expected and clamped to 0.0f to 1.0f
-// Input  : x - 
-//			y - 
-//			width - 
-//			height - 
-//			percentage - 
-//			clr - 
-//			type - 
+// Input  : x -
+//			y -
+//			width -
+//			height -
+//			percentage -
+//			clr -
+//			type -
 //-----------------------------------------------------------------------------
 void CHud::DrawProgressBar( int x, int y, int width, int height, float percentage, Color& clr, unsigned char type )
 {
@@ -123,7 +123,7 @@ void CHud::DrawProgressBar( int x, int y, int width, int height, float percentag
 	lowColor[ 2 ] /= 2;
 
 	//Draw a vertical progress bar
-	if ( type == HUDPB_VERTICAL )
+	if( type == HUDPB_VERTICAL )
 	{
 		int	barOfs = height * percentage;
 
@@ -133,7 +133,7 @@ void CHud::DrawProgressBar( int x, int y, int width, int height, float percentag
 		surface()->DrawSetColor( clr );
 		surface()->DrawFilledRect( x, y + barOfs, x + width, y + height );
 	}
-	else if ( type == HUDPB_HORIZONTAL )
+	else if( type == HUDPB_HORIZONTAL )
 	{
 		int	barOfs = width * percentage;
 
@@ -143,7 +143,7 @@ void CHud::DrawProgressBar( int x, int y, int width, int height, float percentag
 		surface()->DrawSetColor( clr );
 		surface()->DrawFilledRect( x + barOfs, y, x + width, y + height );
 	}
-	else if ( type == HUDPB_HORIZONTAL_INV )
+	else if( type == HUDPB_HORIZONTAL_INV )
 	{
 		int	barOfs = width * percentage;
 
@@ -157,17 +157,19 @@ void CHud::DrawProgressBar( int x, int y, int width, int height, float percentag
 
 //-----------------------------------------------------------------------------
 // Purpose:  The percentage passed in is expected and clamped to 0.0f to 1.0f
-// Input  : x - 
-//			y - 
-//			*icon - 
-//			percentage - 
-//			clr - 
-//			type - 
+// Input  : x -
+//			y -
+//			*icon -
+//			percentage -
+//			clr -
+//			type -
 //-----------------------------------------------------------------------------
-void CHud::DrawIconProgressBar( int x, int y, CHudTexture *icon, CHudTexture *icon2, float percentage, Color& clr, int type )
+void CHud::DrawIconProgressBar( int x, int y, CHudTexture* icon, CHudTexture* icon2, float percentage, Color& clr, int type )
 {
-	if ( icon == NULL )
+	if( icon == NULL )
+	{
 		return;
+	}
 
 	//Clamp our percentage
 	percentage = MIN( 1.0f, percentage );
@@ -177,31 +179,31 @@ void CHud::DrawIconProgressBar( int x, int y, CHudTexture *icon, CHudTexture *ic
 	int	width  = icon->Width();
 
 	//Draw a vertical progress bar
-	if ( type == HUDPB_VERTICAL )
+	if( type == HUDPB_VERTICAL )
 	{
 		int	barOfs = height * percentage;
 
-		icon2->DrawSelfCropped( 
+		icon2->DrawSelfCropped(
 			x, y,  // Pos
 			0, 0, width, barOfs, // Cropped subrect
 			clr );
 
-		icon->DrawSelfCropped( 
-			x, y + barOfs, 
+		icon->DrawSelfCropped(
+			x, y + barOfs,
 			0, barOfs, width, height - barOfs, // Cropped subrect
 			clr );
 	}
-	else if ( type == HUDPB_HORIZONTAL )
+	else if( type == HUDPB_HORIZONTAL )
 	{
 		int	barOfs = width * percentage;
 
-		icon2->DrawSelfCropped( 
+		icon2->DrawSelfCropped(
 			x, y,  // Pos
 			0, 0, barOfs, height, // Cropped subrect
 			clr );
 
-		icon->DrawSelfCropped( 
-			x + barOfs, y, 
+		icon->DrawSelfCropped(
+			x + barOfs, y,
 			barOfs, 0, width - barOfs, height, // Cropped subrect
 			clr );
 	}

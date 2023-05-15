@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -19,58 +19,60 @@
 #include "tf_hud_objectivestatus.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointIconPulseable::ApplySchemeSettings( IScheme *pScheme )
+void CControlPointIconPulseable::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	if ( !m_pPulseImage )
+	if( !m_pPulseImage )
 	{
 		m_pPulseImage = scheme()->GetImage( "../sprites/obj_icons/icon_obj_white", true );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointIconPulseable::OnSizeChanged(int newWide, int newTall)
+void CControlPointIconPulseable::OnSizeChanged( int newWide, int newTall )
 {
-	if ( m_pPulseImage )
+	if( m_pPulseImage )
 	{
 		// scaling, force the image size to be our size
-		m_pPulseImage->SetSize(newWide, newTall);
+		m_pPulseImage->SetSize( newWide, newTall );
 	}
-	BaseClass::OnSizeChanged(newWide, newTall);
+	BaseClass::OnSizeChanged( newWide, newTall );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIconPulseable::PaintBackground( void )
 {
-	if ( IsInFreezeCam() == true )
-		return;
-
-	if ( GetImage() )
+	if( IsInFreezeCam() == true )
 	{
-		SetAlpha(255);
+		return;
+	}
+
+	if( GetImage() )
+	{
+		SetAlpha( 255 );
 		BaseClass::PaintBackground();
 	}
 
-	if ( m_flStartCapAnimStart && gpGlobals->curtime > m_flStartCapAnimStart )
+	if( m_flStartCapAnimStart && gpGlobals->curtime > m_flStartCapAnimStart )
 	{
-		float flElapsedTime = (gpGlobals->curtime - m_flStartCapAnimStart);
+		float flElapsedTime = ( gpGlobals->curtime - m_flStartCapAnimStart );
 
 		// Pulse the white over the underlying color
 		float flPulseSpeed = 20;
-		if ( m_bAccelerateOverCapture )
+		if( m_bAccelerateOverCapture )
 		{
 			float flCapPercentage = ObjectiveResource()->GetCPCapPercentage( m_iCPIndex );
 			flPulseSpeed = RemapValClamped( flCapPercentage, 0, 1, 2, 5 );
 		}
 
-		float flPulseMod = fabs(sin( flElapsedTime * flPulseSpeed ));
+		float flPulseMod = fabs( sin( flElapsedTime * flPulseSpeed ) );
 		SetAlpha( 255 * flPulseMod );
 
 		int wide, tall;
@@ -84,7 +86,7 @@ void CControlPointIconPulseable::PaintBackground( void )
 		m_pPulseImage->Paint();
 
 		// Stop if we're only supposed to do this for a short time
-		if ( m_flPulseTime && flElapsedTime >= m_flPulseTime )
+		if( m_flPulseTime && flElapsedTime >= m_flPulseTime )
 		{
 			StopPulsing();
 		}
@@ -92,7 +94,7 @@ void CControlPointIconPulseable::PaintBackground( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIconPulseable::StartPulsing( float flDelay, float flPulseTime, bool bAccelerate )
 {
@@ -102,7 +104,7 @@ void CControlPointIconPulseable::StartPulsing( float flDelay, float flPulseTime,
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIconPulseable::StopPulsing( void )
 {
@@ -110,9 +112,9 @@ void CControlPointIconPulseable::StopPulsing( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CControlPointIcon::CControlPointIcon( Panel *parent, const char *pName, int iIndex ) : vgui::EditablePanel( parent, "ControlPointIcon" ), CHudElement( pName )
+CControlPointIcon::CControlPointIcon( Panel* parent, const char* pName, int iIndex ) : vgui::EditablePanel( parent, "ControlPointIcon" ), CHudElement( pName )
 {
 	SetHiddenBits( HIDEHUD_MISCSTATUS );
 
@@ -141,16 +143,16 @@ CControlPointIcon::CControlPointIcon( Panel *parent, const char *pName, int iInd
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
+void CControlPointIcon::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_cRegularColor = pScheme->GetColor( "TanLight", Color( 235, 226, 202 ) );
 	m_cHighlightColor = pScheme->GetColor( "RedSolid", Color( 192, 28, 0 ) );
 
-	if ( !m_pCapHighlightImage )
+	if( !m_pCapHighlightImage )
 	{
 		m_pCapHighlightImage = new CControlPointIconSwoop( this, "CapHighlightImage" );
 		m_pCapHighlightImage->SetParent( g_pClientMode->GetViewport() );
@@ -158,7 +160,7 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 		m_pCapHighlightImage->SetShouldScaleImage( true );
 	}
 
-	if ( !m_pCapPulseImage )
+	if( !m_pCapPulseImage )
 	{
 		m_pCapPulseImage = new CControlPointIconCapturePulse( this, "CapPulse" );
 		m_pCapPulseImage->SetParent( g_pClientMode->GetViewport() );
@@ -167,33 +169,33 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 		m_pCapPulseImage->SetShouldScaleImage( true );
 	}
 
-	if ( !m_pBaseImage )
+	if( !m_pBaseImage )
 	{
 		m_pBaseImage = new CControlPointIconPulseable( this, "BaseImage", m_iCPIndex );
 		m_pBaseImage->SetShouldScaleImage( true );
 	}
 
-	if ( !m_pCapImage )
+	if( !m_pCapImage )
 	{
 		m_pCapImage = new CControlPointIconCapArrow( this, this, "CapImage" );
 		m_pCapImage->SetZPos( 2 );
 		m_pCapImage->SetVisible( false );
 	}
 
-	if ( !m_pCountdown )
+	if( !m_pCountdown )
 	{
 		m_pCountdown = new CControlPointCountdown( this, "Countdown" );
 		m_pCountdown->SetZPos( 4 );
 		m_pCountdown->SetVisible( true );
 	}
 
-	if ( !m_pCPTimerLabel )
+	if( !m_pCPTimerLabel )
 	{
 		m_pCPTimerLabel = new CExLabel( this, "CPTimerLabel", L"" );
 		m_pCPTimerLabel->SetZPos( 0 );
 	}
 
-	if ( !m_pCPTimerBG )
+	if( !m_pCPTimerBG )
 	{
 		m_pCPTimerBG = new vgui::ImagePanel( this, "CPTimerBG" );
 		m_pCPTimerBG->SetZPos( -1 );
@@ -202,16 +204,16 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 
 	LoadControlSettings( "resource/UI/ControlPointIcon.res" );
 
-	m_pCapPlayerImage = dynamic_cast<vgui::ImagePanel *>( FindChildByName("CapPlayerImage") );
-	m_pCapNumPlayers = dynamic_cast<vgui::Label *>( FindChildByName("CapNumPlayers") );
-	m_pOverlayImage = dynamic_cast<vgui::ImagePanel *>( FindChildByName("OverlayImage") );
+	m_pCapPlayerImage = dynamic_cast<vgui::ImagePanel*>( FindChildByName( "CapPlayerImage" ) );
+	m_pCapNumPlayers = dynamic_cast<vgui::Label*>( FindChildByName( "CapNumPlayers" ) );
+	m_pOverlayImage = dynamic_cast<vgui::ImagePanel*>( FindChildByName( "OverlayImage" ) );
 
-	if ( m_pCPTimerLabel )
+	if( m_pCPTimerLabel )
 	{
 		m_pCPTimerLabel->SetParent( GetParent() );
 	}
 
-	if ( m_pCPTimerBG )
+	if( m_pCPTimerBG )
 	{
 		m_pCPTimerBG->SetParent( GetParent() );
 	}
@@ -221,25 +223,25 @@ void CControlPointIcon::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointIcon::FireGameEvent( IGameEvent *event )
+void CControlPointIcon::FireGameEvent( IGameEvent* event )
 {
-	const char *pszEventName = event->GetName();
+	const char* pszEventName = event->GetName();
 
-	if ( FStrEq( pszEventName, "controlpoint_unlock_updated" ) )
+	if( FStrEq( pszEventName, "controlpoint_unlock_updated" ) )
 	{
 		int iIndex = event->GetInt( "index" );
-		if ( iIndex == m_iCPIndex )
+		if( iIndex == m_iCPIndex )
 		{
 			float flTime = event->GetFloat( "time" );
 			SetUnlockTime( flTime );
 		}
 	}
-	else if ( FStrEq( pszEventName, "controlpoint_timer_updated" ) )
+	else if( FStrEq( pszEventName, "controlpoint_timer_updated" ) )
 	{
 		int iIndex = event->GetInt( "index" );
-		if ( iIndex == m_iCPIndex )
+		if( iIndex == m_iCPIndex )
 		{
 			float flTime = event->GetFloat( "time" );
 			SetTimerTime( flTime );
@@ -248,29 +250,29 @@ void CControlPointIcon::FireGameEvent( IGameEvent *event )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CControlPointIcon::~CControlPointIcon( void )
 {
-	if ( m_pCapHighlightImage )
+	if( m_pCapHighlightImage )
 	{
 		m_pCapHighlightImage->MarkForDeletion();
 		m_pCapHighlightImage = NULL;
 	}
 
-	if ( m_pCapPulseImage )
+	if( m_pCapPulseImage )
 	{
 		m_pCapPulseImage->MarkForDeletion();
 		m_pCapPulseImage = NULL;
 	}
 
-	if ( m_pCPTimerLabel )
+	if( m_pCPTimerLabel )
 	{
 		m_pCPTimerLabel->MarkForDeletion();
 		m_pCPTimerLabel = NULL;
 	}
 
-	if ( m_pCPTimerBG )
+	if( m_pCPTimerBG )
 	{
 		m_pCPTimerBG->MarkForDeletion();
 		m_pCPTimerBG = NULL;
@@ -278,37 +280,39 @@ CControlPointIcon::~CControlPointIcon( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::UpdateImage( void )
 {
-	if ( !ObjectiveResource() )
+	if( !ObjectiveResource() )
+	{
 		return;
+	}
 
 	int iOwner = ObjectiveResource()->GetOwningTeam( m_iCPIndex );
 
-	if ( m_pBaseImage )
+	if( m_pBaseImage )
 	{
 		int iOwnerIcon = ObjectiveResource()->GetCPCurrentOwnerIcon( m_iCPIndex, iOwner );
-		const char *szMatName = GetMaterialNameFromIndex( iOwnerIcon );
+		const char* szMatName = GetMaterialNameFromIndex( iOwnerIcon );
 
-		if ( IsPointLocked() && !IsPointUnlockCountdownRunning() )
+		if( IsPointLocked() && !IsPointUnlockCountdownRunning() )
 		{
-			m_pBaseImage->SetImage( VarArgs("..\\%s_locked", szMatName ) );
+			m_pBaseImage->SetImage( VarArgs( "..\\%s_locked", szMatName ) );
 		}
 		else
 		{
-			m_pBaseImage->SetImage( VarArgs("..\\%s", szMatName ) );
+			m_pBaseImage->SetImage( VarArgs( "..\\%s", szMatName ) );
 		}
 	}
 
-	if ( m_pOverlayImage )
+	if( m_pOverlayImage )
 	{
 		int iOverlayIcon = ObjectiveResource()->GetOverlayForTeam( m_iCPIndex, iOwner );
-		if ( iOverlayIcon )
+		if( iOverlayIcon )
 		{
-			const char *szMatName = GetMaterialNameFromIndex( iOverlayIcon );
-			m_pOverlayImage->SetImage( VarArgs("..\\%s", szMatName ) );
+			const char* szMatName = GetMaterialNameFromIndex( iOverlayIcon );
+			m_pOverlayImage->SetImage( VarArgs( "..\\%s", szMatName ) );
 			m_pOverlayImage->SetVisible( true );
 		}
 		else
@@ -318,42 +322,44 @@ void CControlPointIcon::UpdateImage( void )
 	}
 
 	// Whenever a successful cap occurs, flash the cap point
-	if ( m_pCapPulseImage )
+	if( m_pCapPulseImage )
 	{
-		if ( m_iPrevCappers != 0 && iOwner == m_iPrevCappers )
+		if( m_iPrevCappers != 0 && iOwner == m_iPrevCappers )
 		{
 			m_iPrevCappers = 0;
 
-			if ( ShouldDraw() )
+			if( ShouldDraw() )
 			{
 				m_pCapPulseImage->SetVisible( true );
 				m_pCapPulseImage->StartPulse( gpGlobals->curtime, GetWide() );
 			}
 			m_pBaseImage->StartPulsing( FINISHCAPANIM_SWOOP_LENGTH, 0.5, false );
 		}
-		
+
 	}
 }
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::UpdateCapImage( void )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( m_pCapImage )
+	if( m_pCapImage )
 	{
 		int iCappingTeam = ObjectiveResource()->GetCappingTeam( m_iCPIndex );
 		int iOwningTeam = ObjectiveResource()->GetOwningTeam( m_iCPIndex );
 
-		if ( iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iOwningTeam )
+		if( iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iOwningTeam )
 		{
-			const char *pszCapSwipe = ObjectiveResource()->GetGameSpecificCPCappingSwipe( m_iCPIndex, iCappingTeam );
-			if ( m_bSwipeUp )
+			const char* pszCapSwipe = ObjectiveResource()->GetGameSpecificCPCappingSwipe( m_iCPIndex, iCappingTeam );
+			if( m_bSwipeUp )
 			{
-				m_pCapImage->SetImage( VarArgs("%s_up",pszCapSwipe)  );
+				m_pCapImage->SetImage( VarArgs( "%s_up", pszCapSwipe ) );
 			}
 			else
 			{
@@ -362,9 +368,9 @@ void CControlPointIcon::UpdateCapImage( void )
 			m_pCapImage->SetVisible( true );
 
 			// Tell the cap highlight image to fire up if it's our point being capped
-			if ( m_pCapHighlightImage && pPlayer->GetTeamNumber() != iCappingTeam && pPlayer->GetTeamNumber() > LAST_SHARED_TEAM )
+			if( m_pCapHighlightImage && pPlayer->GetTeamNumber() != iCappingTeam && pPlayer->GetTeamNumber() > LAST_SHARED_TEAM )
 			{
-				if ( ShouldDraw() && GetParent() && GetParent()->IsVisible() )
+				if( ShouldDraw() && GetParent() && GetParent()->IsVisible() )
 				{
 					m_pCapHighlightImage->SetVisible( true );
 					m_pCapHighlightImage->StartSwoop();
@@ -376,7 +382,7 @@ void CControlPointIcon::UpdateCapImage( void )
 				m_pBaseImage->StartPulsing( 0, 0, true );
 			}
 
-			if ( m_pCapPlayerImage )
+			if( m_pCapPlayerImage )
 			{
 				m_pCapPlayerImage->SetVisible( true );
 			}
@@ -388,15 +394,15 @@ void CControlPointIcon::UpdateCapImage( void )
 		{
 			m_pBaseImage->StopPulsing();
 			m_pCapImage->SetVisible( false );
-			if ( m_pCapHighlightImage )
+			if( m_pCapHighlightImage )
 			{
 				m_pCapHighlightImage->SetVisible( false );
 			}
-			if ( m_pCapPlayerImage )
+			if( m_pCapPlayerImage )
 			{
 				m_pCapPlayerImage->SetVisible( false );
 			}
-			if ( m_pCapNumPlayers )
+			if( m_pCapNumPlayers )
 			{
 				m_pCapNumPlayers->SetVisible( false );
 			}
@@ -410,14 +416,14 @@ void CControlPointIcon::UpdateCapImage( void )
 bool CControlPointIcon::IsPointLocked( void )
 {
 	bool bAnyTeamCanCap = false;
-	for ( int gameteam = FIRST_GAME_TEAM; gameteam < GetNumberOfTeams(); gameteam++ )
+	for( int gameteam = FIRST_GAME_TEAM; gameteam < GetNumberOfTeams(); gameteam++ )
 	{
 		// Ignore teams that already own the point
-		if ( ObjectiveResource()->GetOwningTeam(m_iCPIndex) != gameteam )
+		if( ObjectiveResource()->GetOwningTeam( m_iCPIndex ) != gameteam )
 		{
-			if ( (ObjectiveResource()->TeamCanCapPoint( m_iCPIndex, gameteam)) )
+			if( ( ObjectiveResource()->TeamCanCapPoint( m_iCPIndex, gameteam ) ) )
 			{
-				if ( TeamplayGameRules()->TeamMayCapturePoint( gameteam, m_iCPIndex ) )
+				if( TeamplayGameRules()->TeamMayCapturePoint( gameteam, m_iCPIndex ) )
 				{
 					bAnyTeamCanCap = true;
 				}
@@ -433,12 +439,12 @@ bool CControlPointIcon::IsPointLocked( void )
 //-----------------------------------------------------------------------------
 bool CControlPointIcon::IsPointUnlockCountdownRunning( void )
 {
-	if ( m_pCountdown && ( TeamplayRoundBasedRules() && !TeamplayRoundBasedRules()->IsInWaitingForPlayers() ) )
+	if( m_pCountdown && ( TeamplayRoundBasedRules() && !TeamplayRoundBasedRules()->IsInWaitingForPlayers() ) )
 	{
-		if ( m_pCountdown->GetUnlockTime() > 0 )
+		if( m_pCountdown->GetUnlockTime() > 0 )
 		{
 			int nTimeToUnlock = m_pCountdown->GetUnlockTime() - gpGlobals->curtime;
-			if ( nTimeToUnlock < 6 )
+			if( nTimeToUnlock < 6 )
 			{
 				return true;
 			}
@@ -453,7 +459,7 @@ bool CControlPointIcon::IsPointUnlockCountdownRunning( void )
 //-----------------------------------------------------------------------------
 void CControlPointIcon::FakePulse( float flTime )
 {
-	if ( m_pCapPulseImage )
+	if( m_pCapPulseImage )
 	{
 		m_pCapPulseImage->SetVisible( true );
 		m_pCapPulseImage->StartPulse( flTime, GetWide() );
@@ -464,23 +470,25 @@ void CControlPointIcon::FakePulse( float flTime )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CControlPointIcon::IsVisible( void )
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return false;
+	}
 
 	return BaseClass::IsVisible();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::Paint( void )
 {
-	if ( m_bCachedLockedState != IsPointLocked() ||
-		 m_bCachedCountdownState != IsPointUnlockCountdownRunning() )
+	if( m_bCachedLockedState != IsPointLocked() ||
+			m_bCachedCountdownState != IsPointUnlockCountdownRunning() )
 	{
 		UpdateImage();
 	}
@@ -493,42 +501,42 @@ void CControlPointIcon::Paint( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
 	int iBaseXPos, iBaseYPos;
-	ipanel()->GetAbsPos(GetVPanel(), iBaseXPos, iBaseYPos );
+	ipanel()->GetAbsPos( GetVPanel(), iBaseXPos, iBaseYPos );
 
 	m_pBaseImage->SetBounds( 0, 0, GetWide(), GetTall() );
 	m_pCountdown->SetBounds( 0, 0, GetWide(), GetTall() );
-	
-	if ( m_pCapImage->IsVisible() )
+
+	if( m_pCapImage->IsVisible() )
 	{
 		m_pCapImage->SetBounds( 0, 0, GetWide(), GetTall() );
 	}
 
-	if ( m_pCapHighlightImage->IsVisible() )
+	if( m_pCapHighlightImage->IsVisible() )
 	{
 		int iHeight = ScreenHeight() * 0.75;
-		m_pCapHighlightImage->SetBounds( iBaseXPos + CAP_BOX_INDENT_X, iBaseYPos - iHeight, GetWide() - (CAP_BOX_INDENT_X*2), iHeight + GetTall() -CAP_BOX_INDENT_Y );
+		m_pCapHighlightImage->SetBounds( iBaseXPos + CAP_BOX_INDENT_X, iBaseYPos - iHeight, GetWide() - ( CAP_BOX_INDENT_X * 2 ), iHeight + GetTall() - CAP_BOX_INDENT_Y );
 	}
 
 	int iCappingTeam = ObjectiveResource()->GetCappingTeam( m_iCPIndex );
 	int iPlayers = ObjectiveResource()->GetNumPlayersInArea( m_iCPIndex, iCappingTeam );
-	if ( m_pCapPlayerImage && !m_pCapPlayerImage->IsVisible() && iPlayers )
+	if( m_pCapPlayerImage && !m_pCapPlayerImage->IsVisible() && iPlayers )
 	{
-		m_pCapPlayerImage->SetVisible(true);
+		m_pCapPlayerImage->SetVisible( true );
 	}
-	if ( m_pCapPlayerImage && m_pCapPlayerImage->IsVisible() )
+	if( m_pCapPlayerImage && m_pCapPlayerImage->IsVisible() )
 	{
-		if ( !iPlayers )
+		if( !iPlayers )
 		{
 			// We're a deteriorating point
 			m_pCapPlayerImage->SetVisible( false );
-			if ( m_pCapNumPlayers )
+			if( m_pCapNumPlayers )
 			{
 				m_pCapNumPlayers->SetVisible( false );
 			}
@@ -536,33 +544,33 @@ void CControlPointIcon::PerformLayout( void )
 		else
 		{
 			int iXPos, iYPos;
-			if ( ( iPlayers < 2 ) || !m_pCapNumPlayers )
+			if( ( iPlayers < 2 ) || !m_pCapNumPlayers )
 			{
-				iXPos = (GetWide() - m_pCapPlayerImage->GetWide()) * 0.5;
+				iXPos = ( GetWide() - m_pCapPlayerImage->GetWide() ) * 0.5;
 			}
 			else
 			{
-				iXPos = (GetWide() - m_pCapPlayerImage->GetWide()) * 0.5 - XRES(4);
+				iXPos = ( GetWide() - m_pCapPlayerImage->GetWide() ) * 0.5 - XRES( 4 );
 			}
-			iYPos = (GetTall() - m_pCapPlayerImage->GetTall()) * 0.5;
+			iYPos = ( GetTall() - m_pCapPlayerImage->GetTall() ) * 0.5;
 
 			m_pCapPlayerImage->SetPos( iXPos, iYPos );
 
-			if ( m_pCapNumPlayers )
+			if( m_pCapNumPlayers )
 			{
-				m_pCapNumPlayers->SetVisible( (iPlayers>1) );
+				m_pCapNumPlayers->SetVisible( ( iPlayers > 1 ) );
 				SetDialogVariable( "numcappers", iPlayers );
 
-				m_pCapNumPlayers->SetFgColor( Color(0,0,0,255) );
+				m_pCapNumPlayers->SetFgColor( Color( 0, 0, 0, 255 ) );
 			}
 		}
 	}
 
-	if ( m_pCapPulseImage )
+	if( m_pCapPulseImage )
 	{
 		int iSize = GetWide() * 3;
-		int iXpos = iBaseXPos - ((iSize-GetWide()) * 0.5);
-		int iYpos = iBaseYPos - ((iSize-GetTall()) * 0.5);
+		int iXpos = iBaseXPos - ( ( iSize - GetWide() ) * 0.5 );
+		int iYpos = iBaseYPos - ( ( iSize - GetTall() ) * 0.5 );
 		m_pCapPulseImage->SetBounds( iXpos, iYpos, iSize, iSize );
 	}
 
@@ -570,25 +578,29 @@ void CControlPointIcon::PerformLayout( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::OnTick( void )
 {
-	if ( m_flCPTimerTime < 0 )
+	if( m_flCPTimerTime < 0 )
+	{
 		return;
+	}
 
-	if ( !m_pCPTimerLabel || !m_pCPTimerLabel->IsVisible() )
+	if( !m_pCPTimerLabel || !m_pCPTimerLabel->IsVisible() )
+	{
 		return;
+	}
 
 	int nTime = 0;
-	if ( m_flCPTimerTime - gpGlobals->curtime > 0 )
+	if( m_flCPTimerTime - gpGlobals->curtime > 0 )
 	{
 		nTime = ceil( m_flCPTimerTime - gpGlobals->curtime );
 	}
 
-	if ( nTime <= 10 ) // start flashing with 10 seconds left
+	if( nTime <= 10 )  // start flashing with 10 seconds left
 	{
-		if ( m_bRedText )
+		if( m_bRedText )
 		{
 			m_bRedText = false;
 			m_pCPTimerLabel->SetFgColor( m_cRegularColor );
@@ -606,15 +618,15 @@ void CControlPointIcon::OnTick( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIcon::SetTimerTime( float flTime )
 {
 	m_flCPTimerTime = flTime;
 
-	if ( m_pCPTimerBG && m_pCPTimerLabel )
+	if( m_pCPTimerBG && m_pCPTimerLabel )
 	{
-		if ( flTime < 0 )
+		if( flTime < 0 )
 		{
 			m_pCPTimerBG->SetVisible( false );
 			m_pCPTimerLabel->SetVisible( false );
@@ -626,10 +638,10 @@ void CControlPointIcon::SetTimerTime( float flTime )
 
 			m_pCPTimerBG->SetPos( xPos, yPos );
 			m_pCPTimerBG->SetVisible( true );
-	
+
 			m_bRedText = false;
 			m_pCPTimerLabel->SetFgColor( m_cRegularColor ); // reset our color
-			m_pCPTimerLabel->SetPos( xPos + GetWide() - XRES(1), yPos + ( GetTall() / 2 ) - ( m_pCPTimerLabel->GetTall() / 2 ) );
+			m_pCPTimerLabel->SetPos( xPos + GetWide() - XRES( 1 ), yPos + ( GetTall() / 2 ) - ( m_pCPTimerLabel->GetTall() / 2 ) );
 			m_pCPTimerLabel->SetVisible( true );
 			OnTick(); // call this now so our time gets initialized
 		}
@@ -637,15 +649,15 @@ void CControlPointIcon::SetTimerTime( float flTime )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CHudControlPointIcons::CHudControlPointIcons( const char *pName ) : vgui::Panel( NULL, "HudControlPointIcons" ), CHudElement( pName )
+CHudControlPointIcons::CHudControlPointIcons( const char* pName ) : vgui::Panel( NULL, "HudControlPointIcons" ), CHudElement( pName )
 {
 	SetParent( g_pClientMode->GetViewport() );
 	SetHiddenBits( HIDEHUD_MISCSTATUS );
 
 	m_iBackgroundTexture = vgui::surface()->DrawGetTextureId( "vgui/white" );
-	if ( m_iBackgroundTexture == -1 )
+	if( m_iBackgroundTexture == -1 )
 	{
 		m_iBackgroundTexture = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( m_iBackgroundTexture, "vgui/white", true, true );
@@ -669,24 +681,24 @@ CHudControlPointIcons::CHudControlPointIcons( const char *pName ) : vgui::Panel(
 DECLARE_HUDELEMENT( CHudControlPointIcons );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CHudControlPointIcons::~CHudControlPointIcons( void )
 {
 	ShutdownIcons();
 
-	if ( vgui::surface() )
+	if( vgui::surface() )
 	{
 		// Clear out all the texture IDs
 		for( int i = 0; i < ARRAYSIZE( m_iCPTextures ); i++ )
 		{
-			if ( m_iCPTextures[i] != -1 )
+			if( m_iCPTextures[i] != -1 )
 			{
 				vgui::surface()->DestroyTextureID( m_iCPTextures[i] );
 				m_iCPTextures[i] = -1;
 			}
 
-			if ( m_iCPCappingTextures[i] != -1 )
+			if( m_iCPCappingTextures[i] != -1 )
 			{
 				vgui::surface()->DestroyTextureID( m_iCPCappingTextures[i] );
 				m_iCPCappingTextures[i] = -1;
@@ -695,7 +707,7 @@ CHudControlPointIcons::~CHudControlPointIcons( void )
 
 		for( int i = FIRST_GAME_TEAM; i < MAX_TEAMS; i++ )
 		{
-			if ( m_iTeamBaseTextures[i] != -1 )
+			if( m_iTeamBaseTextures[i] != -1 )
 			{
 				vgui::surface()->DestroyTextureID( m_iTeamBaseTextures[i] );
 				m_iTeamBaseTextures[i] = -1;
@@ -705,18 +717,18 @@ CHudControlPointIcons::~CHudControlPointIcons( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::Init( void )
 {
 	for( int i = 0; i < ARRAYSIZE( m_iCPTextures ); i++ )
 	{
-		if ( m_iCPTextures[i] == -1 )
+		if( m_iCPTextures[i] == -1 )
 		{
 			m_iCPTextures[i] = vgui::surface()->CreateNewTextureID();
 		}
-		
-		if ( m_iCPCappingTextures[i] == -1 )
+
+		if( m_iCPCappingTextures[i] == -1 )
 		{
 			m_iCPCappingTextures[i] = vgui::surface()->CreateNewTextureID();
 		}
@@ -724,7 +736,7 @@ void CHudControlPointIcons::Init( void )
 
 	for( int i = FIRST_GAME_TEAM; i < MAX_TEAMS; i++ )
 	{
-		if ( m_iTeamBaseTextures[i] == -1 )
+		if( m_iTeamBaseTextures[i] == -1 )
 		{
 			m_iTeamBaseTextures[i] = vgui::surface()->CreateNewTextureID();
 		}
@@ -744,7 +756,7 @@ void CHudControlPointIcons::Init( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::Reset( void )
 {
@@ -755,21 +767,25 @@ void CHudControlPointIcons::Reset( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CHudControlPointIcons::IsVisible( void )
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return false;
+	}
 
-	if ( CHudElement::ShouldDraw() == false )
+	if( CHudElement::ShouldDraw() == false )
+	{
 		return false;
+	}
 
 	return BaseClass::IsVisible();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::LevelShutdown( void )
 {
@@ -777,27 +793,27 @@ void CHudControlPointIcons::LevelShutdown( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
+void CHudControlPointIcons::FireGameEvent( IGameEvent* event )
 {
-	const char *eventname = event->GetName();
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+	const char* eventname = event->GetName();
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
 
-	if ( FStrEq( "controlpoint_initialized", eventname ) )
+	if( FStrEq( "controlpoint_initialized", eventname ) )
 	{
 		// Create our control points
 		InitIcons();
 		return;
 	}
 
-	if ( FStrEq( "controlpoint_updateimages", eventname ) )
+	if( FStrEq( "controlpoint_updateimages", eventname ) )
 	{
 		// Update the images of our control point icons
 		int iIndex = event->GetInt( "index" );
-		if ( iIndex == -1 )
+		if( iIndex == -1 )
 		{
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
 				m_Icons[i]->UpdateImage();
 			}
@@ -805,9 +821,9 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 		else
 		{
 			// Only invalidate the specified cap point
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				if ( m_Icons[i]->GetCapIndex() == iIndex )
+				if( m_Icons[i]->GetCapIndex() == iIndex )
 				{
 					m_Icons[i]->UpdateImage();
 				}
@@ -817,20 +833,20 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 		return;
 	}
 
-	if ( FStrEq( "controlpoint_updatelayout", eventname ) )
+	if( FStrEq( "controlpoint_updatelayout", eventname ) )
 	{
 		// Update the layout of our control point icons
 		int iIndex = event->GetInt( "index" );
-		if ( iIndex == -1 )
+		if( iIndex == -1 )
 		{
 			InvalidateLayout();
 		}
 		else
 		{
 			// Only invalidate the specified cap point
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				if ( m_Icons[i]->GetCapIndex() == iIndex )
+				if( m_Icons[i]->GetCapIndex() == iIndex )
 				{
 					m_Icons[i]->InvalidateLayout();
 				}
@@ -840,13 +856,13 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 		return;
 	}
 
-	if ( FStrEq( "controlpoint_updatecapping", eventname ) )
+	if( FStrEq( "controlpoint_updatecapping", eventname ) )
 	{
 		// Update the capping status of our control point icons
 		int iIndex = event->GetInt( "index" );
-		if ( iIndex == -1 )
+		if( iIndex == -1 )
 		{
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
 				m_Icons[i]->UpdateCapImage();
 			}
@@ -854,9 +870,9 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 		else
 		{
 			// Only invalidate the specified cap point
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				if ( m_Icons[i]->GetCapIndex() == iIndex )
+				if( m_Icons[i]->GetCapIndex() == iIndex )
 				{
 					m_Icons[i]->UpdateCapImage();
 				}
@@ -867,39 +883,39 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 		return;
 	}
 
-	if ( FStrEq( "controlpoint_starttouch", eventname ) )
+	if( FStrEq( "controlpoint_starttouch", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = event->GetInt( "area" );
 			UpdateProgressBarFor( m_iCurrentCP );
 		}
 	}
-	else if ( FStrEq( "controlpoint_endtouch", eventname ) )
+	else if( FStrEq( "controlpoint_endtouch", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = -1;
 			UpdateProgressBarFor( m_iCurrentCP );
 		}
 	}
-	else if ( FStrEq( "controlpoint_pulse_element", eventname ) )
+	else if( FStrEq( "controlpoint_pulse_element", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				m_Icons[i]->FakePulse( gpGlobals->curtime + (i * PULSE_TIME_PER_ICON) );
+				m_Icons[i]->FakePulse( gpGlobals->curtime + ( i * PULSE_TIME_PER_ICON ) );
 			}
 		}
 	}
-	else if ( FStrEq( "controlpoint_fake_capture", eventname ) )
+	else if( FStrEq( "controlpoint_fake_capture", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = event->GetInt( "int_data" );
 			m_bFakingCapture = true;
@@ -908,10 +924,10 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 			UpdateProgressBarFor( -1 );
 		}
 	}
-	else if ( FStrEq( "controlpoint_fake_capture_mult", eventname ) )
+	else if( FStrEq( "controlpoint_fake_capture_mult", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = event->GetInt( "int_data" );
 			m_bFakingCapture = true;
@@ -920,10 +936,10 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 			UpdateProgressBarFor( -1 );
 		}
 	}
-	else if ( FStrEq( "intro_nextcamera", eventname ) )
+	else if( FStrEq( "intro_nextcamera", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = -1;
 			m_bFakingCapture = false;
@@ -931,10 +947,10 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 			UpdateProgressBarFor( -1 );
 		}
 	}
-	else if ( FStrEq( "intro_finish", eventname ) )
+	else if( FStrEq( "intro_finish", eventname ) )
 	{
 		int iPlayer = event->GetInt( "player" );
-		if ( pPlayer && iPlayer == pPlayer->entindex() )
+		if( pPlayer && iPlayer == pPlayer->entindex() )
 		{
 			m_iCurrentCP = -1;
 			m_flPulseTime = 0;
@@ -947,9 +963,9 @@ void CHudControlPointIcons::FireGameEvent( IGameEvent *event )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudControlPointIcons::ApplySchemeSettings( IScheme *pScheme )
+void CHudControlPointIcons::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -960,37 +976,37 @@ void CHudControlPointIcons::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
 	int iCapPointLines[MAX_CONTROL_POINTS][MAX_CONTROL_POINTS];
-	memset( iCapPointLines, 0, sizeof(int) * MAX_CONTROL_POINTS * MAX_CONTROL_POINTS );
+	memset( iCapPointLines, 0, sizeof( int ) * MAX_CONTROL_POINTS * MAX_CONTROL_POINTS );
 	bool bUseDefaultLines = true;
-	if ( ObjectiveResource() )
+	if( ObjectiveResource() )
 	{
 		// Allow the objective resource to override it
-		const char *pszLayout = ObjectiveResource()->GetCapLayoutInHUD();
-		if ( pszLayout && pszLayout[0] )
+		const char* pszLayout = ObjectiveResource()->GetCapLayoutInHUD();
+		if( pszLayout && pszLayout[0] )
 		{
 			bUseDefaultLines = false;
 
 			// Cap layout is a string with indexes of cap points seperated by ',' to denote
-			// a new line. So "3,1 2" would create a pyramid, with cap point 3 on the 
+			// a new line. So "3,1 2" would create a pyramid, with cap point 3 on the
 			// first line, and caps 1 & 2 on the second line.
 			int iLine = 0;
 			int iCapIndex = 0;
 			char szBuffer[MAX_CAPLAYOUT_LENGTH];
 			Q_strncpy( szBuffer, pszLayout, MAX_CAPLAYOUT_LENGTH );
-			char *pszChar = szBuffer;
-			char *pszLastNumber = pszChar;
-			while ( *pszChar )
+			char* pszChar = szBuffer;
+			char* pszLastNumber = pszChar;
+			while( *pszChar )
 			{
 				pszChar++;
 
-				if ( *pszChar == ' ' || *pszChar == ',' )
+				if( *pszChar == ' ' || *pszChar == ',' )
 				{
 					// Get the number
 					char cOrg = *pszChar;
@@ -998,20 +1014,20 @@ void CHudControlPointIcons::PerformLayout( void )
 
 					int iCPIndex = atoi( pszLastNumber );
 					int iIconIndex = -1;
-					for (int i = 0; i < m_Icons.Count(); i++)
+					for( int i = 0; i < m_Icons.Count(); i++ )
 					{
-						if ( m_Icons[i]->GetCapIndex() == iCPIndex )
+						if( m_Icons[i]->GetCapIndex() == iCPIndex )
 						{
 							iIconIndex = i;
 							break;
 						}
 					}
 
-					if ( iIconIndex != -1 )
+					if( iIconIndex != -1 )
 					{
-						iCapPointLines[iLine][iCapIndex] = iIconIndex+1;
+						iCapPointLines[iLine][iCapIndex] = iIconIndex + 1;
 						*pszChar = cOrg;
-						if ( *pszChar == ',' )
+						if( *pszChar == ',' )
 						{
 							iLine++;
 							iCapIndex = 0;
@@ -1030,24 +1046,24 @@ void CHudControlPointIcons::PerformLayout( void )
 
 			// Now get the trailing number
 			int iCPIndex = atoi( pszLastNumber );
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				if ( m_Icons[i]->GetCapIndex() == iCPIndex )
+				if( m_Icons[i]->GetCapIndex() == iCPIndex )
 				{
-					iCapPointLines[iLine][iCapIndex] = i+1;
+					iCapPointLines[iLine][iCapIndex] = i + 1;
 					break;
 				}
 			}
 		}
 	}
-	
-	if ( bUseDefaultLines )
+
+	if( bUseDefaultLines )
 	{
 		// By default, put all the caps on a single line
 		int iCPIndex = 0;
-		for (int iIcon = 0; iIcon < m_Icons.Count(); iIcon++)
+		for( int iIcon = 0; iIcon < m_Icons.Count(); iIcon++ )
 		{
-			iCapPointLines[0][iCPIndex] = iIcon+1;
+			iCapPointLines[0][iCPIndex] = iIcon + 1;
 			iCPIndex++;
 		}
 	}
@@ -1057,49 +1073,53 @@ void CHudControlPointIcons::PerformLayout( void )
 	int iWidest = m_iIconGapWidth;
 	int iTotalIconsPerLine[MAX_CONTROL_POINTS];
 	int iLineWidth[MAX_CONTROL_POINTS];
-	memset( iTotalIconsPerLine, 0, sizeof(int) * MAX_CONTROL_POINTS );
-	memset( iLineWidth, 0, sizeof(int) * MAX_CONTROL_POINTS );
+	memset( iTotalIconsPerLine, 0, sizeof( int ) * MAX_CONTROL_POINTS );
+	memset( iLineWidth, 0, sizeof( int ) * MAX_CONTROL_POINTS );
 	int iTotalLines = 0;
 
 	// Search through the lines and figure out our overall width & height
-	for ( int iLine = 0; iLine < MAX_CONTROL_POINTS; iLine++ )
+	for( int iLine = 0; iLine < MAX_CONTROL_POINTS; iLine++ )
 	{
 		// If we've hit a line with nothing in it, we're done
-		if ( !iCapPointLines[iLine][0] )
+		if( !iCapPointLines[iLine][0] )
+		{
 			break;
+		}
 
 		iTotalLines++;
 
 		iLineWidth[iLine] = m_iIconGapWidth;
 		int iLineTall = 0;
-		for ( int iPosition = 0; iPosition < MAX_CONTROL_POINTS; iPosition++ )
+		for( int iPosition = 0; iPosition < MAX_CONTROL_POINTS; iPosition++ )
 		{
 			int iIconIndex = iCapPointLines[iLine][iPosition];
-			if ( !iIconIndex )
+			if( !iIconIndex )
+			{
 				break;
+			}
 
 			iIconIndex--;
 
 			// Add the icon dimensions to our counts.
-			if ( iIconIndex >= 0 && iIconIndex < m_Icons.Count() )
+			if( iIconIndex >= 0 && iIconIndex < m_Icons.Count() )
 			{
 				m_Icons[iIconIndex]->PerformLayout();
 				iTotalIconsPerLine[iLine]++;
 
 				iLineWidth[iLine] += m_Icons[iIconIndex]->GetWide() + m_iIconGapWidth;
 				int iHeight = m_Icons[iIconIndex]->GetTall();
-				if ( iHeight > iLineTall )
+				if( iHeight > iLineTall )
 				{
 					iLineTall = iHeight;
 				}
 			}
 		}
 
-		if ( iLineWidth[iLine] > iWidest )
+		if( iLineWidth[iLine] > iWidest )
 		{
 			iWidest = iLineWidth[iLine];
 		}
-		if ( iLineTall > iTallest )
+		if( iLineTall > iTallest )
 		{
 			iTallest = iLineTall;
 		}
@@ -1107,42 +1127,46 @@ void CHudControlPointIcons::PerformLayout( void )
 	}
 
 	// Setup the main panel
-	float flPositionX = (ScreenWidth() - iWidest) * 0.5;
+	float flPositionX = ( ScreenWidth() - iWidest ) * 0.5;
 	float flPositionY = ScreenHeight() - iTall - m_nHeightOffset;
-	if ( ObjectiveResource() )
+	if( ObjectiveResource() )
 	{
 		float flCustomPositionX = -1.f;
 		float flCustomPositionY = -1.f;
 		ObjectiveResource()->GetCapLayoutCustomPosition( flCustomPositionX, flCustomPositionY );
-		if ( flCustomPositionX != -1.f )
+		if( flCustomPositionX != -1.f )
 		{
 			flPositionX = flCustomPositionX * ScreenWidth();
 		}
-		if ( flCustomPositionY != -1.f )
+		if( flCustomPositionY != -1.f )
 		{
 			flPositionY = flCustomPositionY * ScreenHeight();
 		}
 	}
 	SetBounds( flPositionX, flPositionY, iWidest, iTall );
 
-	// Now that we know how wide we are, and how many icons are in each line, 
+	// Now that we know how wide we are, and how many icons are in each line,
 	// we can lay the icons out, centered in the lines.
-	for ( int iLine = 0; iLine < MAX_CONTROL_POINTS; iLine++ )
+	for( int iLine = 0; iLine < MAX_CONTROL_POINTS; iLine++ )
 	{
-		if ( !iTotalIconsPerLine[iLine] )
+		if( !iTotalIconsPerLine[iLine] )
+		{
 			break;
+		}
 
-		int iLineXPos = ((iWidest - iLineWidth[iLine]) * 0.5) + m_iIconGapWidth;
-		int iLineYPos = (iLine * m_iIconGapHeight) + ( iLine * iTallest ) + m_iIconGapHeight;
-		for ( int iPosition = 0; iPosition < MAX_CONTROL_POINTS; iPosition++ )
+		int iLineXPos = ( ( iWidest - iLineWidth[iLine] ) * 0.5 ) + m_iIconGapWidth;
+		int iLineYPos = ( iLine * m_iIconGapHeight ) + ( iLine * iTallest ) + m_iIconGapHeight;
+		for( int iPosition = 0; iPosition < MAX_CONTROL_POINTS; iPosition++ )
 		{
 			int iIconIndex = iCapPointLines[iLine][iPosition];
-			if ( !iIconIndex )
+			if( !iIconIndex )
+			{
 				break;
+			}
 
 			iIconIndex--;
 
-			if ( iIconIndex >= 0 && iIconIndex < m_Icons.Count() )
+			if( iIconIndex >= 0 && iIconIndex < m_Icons.Count() )
 			{
 				m_Icons[iIconIndex]->SetPos( iLineXPos, iLineYPos );
 				iLineXPos += m_Icons[iIconIndex]->GetWide() + m_iIconGapWidth;
@@ -1155,9 +1179,9 @@ void CHudControlPointIcons::PerformLayout( void )
 				//			NW if we're left of the center.
 				//			NE if we're at or right of the center.
 				int iDir = CP_DIR_N;
-				if ( iLine > 0 )
+				if( iLine > 0 )
 				{
-					if ( ((float)(iPosition+1) / (float)iTotalIconsPerLine[iLine]) > 0.5 )
+					if( ( ( float )( iPosition + 1 ) / ( float )iTotalIconsPerLine[iLine] ) > 0.5 )
 					{
 						iDir = CP_DIR_NE;
 					}
@@ -1174,34 +1198,36 @@ void CHudControlPointIcons::PerformLayout( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::UpdateProgressBarFor( int iIndex )
 {
 	// If they tell us to update all progress bars, update only the one we're standing on
-	if ( iIndex == -1 )
+	if( iIndex == -1 )
 	{
 		iIndex = m_iCurrentCP;
 	}
 
 	// Ignore requests to display progress bars for points we're not standing on
-	if ( ( m_iCurrentCP != iIndex ) )
+	if( ( m_iCurrentCP != iIndex ) )
+	{
 		return;
+	}
 
 	// This can happen at level load
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
-	if ( pStatus && pStatus->GetControlPointProgressBar() )
+	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	if( pStatus && pStatus->GetControlPointProgressBar() )
 	{
-		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
-		if ( !IsVisible() || iIndex < 0 || iIndex >= ObjectiveResource()->GetNumControlPoints() )
+		CControlPointProgressBar* pProgressBar = pStatus->GetControlPointProgressBar();
+		if( !IsVisible() || iIndex < 0 || iIndex >= ObjectiveResource()->GetNumControlPoints() )
 		{
 			pProgressBar->SetupForPoint( NULL );
 		}
 		else
 		{
-			for (int i = 0; i < m_Icons.Count(); i++)
+			for( int i = 0; i < m_Icons.Count(); i++ )
 			{
-				if ( m_Icons[i]->GetCapIndex() == iIndex )
+				if( m_Icons[i]->GetCapIndex() == iIndex )
 				{
 					pProgressBar->SetupForPoint( m_Icons[i] );
 					break;
@@ -1218,12 +1244,12 @@ void CHudControlPointIcons::InitIcons( void )
 {
 	ShutdownIcons();
 
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
-	if ( pStatus )
+	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	if( pStatus )
 	{
-		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
+		CControlPointProgressBar* pProgressBar = pStatus->GetControlPointProgressBar();
 
-		if ( pProgressBar )
+		if( pProgressBar )
 		{
 			m_iCurrentCP = -1;
 			pProgressBar->SetupForPoint( NULL );
@@ -1232,12 +1258,12 @@ void CHudControlPointIcons::InitIcons( void )
 
 	// Create an icon for each visible control point in this miniround
 	int iPoints = ObjectiveResource()->GetNumControlPoints();
-	for ( int i = 0; i < iPoints; i++ )
+	for( int i = 0; i < iPoints; i++ )
 	{
-		if ( ObjectiveResource()->IsInMiniRound(i) && ObjectiveResource()->IsCPVisible(i) )
+		if( ObjectiveResource()->IsInMiniRound( i ) && ObjectiveResource()->IsCPVisible( i ) )
 		{
-			CControlPointIcon *pIcon = new CControlPointIcon( this, VarArgs( "ControlPointIcon%d", i ), i );
-			m_Icons.AddToTail( vgui::SETUP_PANEL(pIcon) );
+			CControlPointIcon* pIcon = new CControlPointIcon( this, VarArgs( "ControlPointIcon%d", i ), i );
+			m_Icons.AddToTail( vgui::SETUP_PANEL( pIcon ) );
 		}
 	}
 
@@ -1245,22 +1271,22 @@ void CHudControlPointIcons::InitIcons( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::ShutdownIcons( void )
 {
-	for ( int i = 0; i < m_Icons.Count(); i++ )
+	for( int i = 0; i < m_Icons.Count(); i++ )
 	{
 		m_Icons[i]->MarkForDeletion();
 	}
 	m_Icons.RemoveAll();
 
 	// if we remove all the icons, we need to make sure the progress bar isn't holding onto one
-	CTFHudObjectiveStatus *pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
-	if ( pStatus )
+	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
+	if( pStatus )
 	{
-		CControlPointProgressBar *pProgressBar = pStatus->GetControlPointProgressBar();
-		if ( pProgressBar )
+		CControlPointProgressBar* pProgressBar = pStatus->GetControlPointProgressBar();
+		if( pProgressBar )
 		{
 			m_iCurrentCP = -1;
 			pProgressBar->SetupForPoint( NULL );
@@ -1269,7 +1295,7 @@ void CHudControlPointIcons::ShutdownIcons( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::DrawBackgroundBox( int xpos, int ypos, int nBoxWidth, int nBoxHeight, bool bCutCorner )
 {
@@ -1307,15 +1333,15 @@ bool CHudControlPointIcons::PaintTeamBaseIcon( int index, float flXPos, float fl
 	float uv2 = 1.0f;
 
 	// Find out which team owns the far left
-	for ( int i = 0; i < MAX_TEAMS; i++ )
+	for( int i = 0; i < MAX_TEAMS; i++ )
 	{
-		if ( ObjectiveResource()->GetBaseControlPointForTeam(i) == index )
+		if( ObjectiveResource()->GetBaseControlPointForTeam( i ) == index )
 		{
-			int iTeamBaseIcon = ObjectiveResource()->GetBaseIconForTeam(i);
-			if ( iTeamBaseIcon )
+			int iTeamBaseIcon = ObjectiveResource()->GetBaseIconForTeam( i );
+			if( iTeamBaseIcon )
 			{
 				// Draw the Team's Base texture
-				const char *szMatName = GetMaterialNameFromIndex( iTeamBaseIcon );
+				const char* szMatName = GetMaterialNameFromIndex( iTeamBaseIcon );
 
 				vgui::surface()->DrawSetTextureFile( m_iTeamBaseTextures[i], szMatName, true, false );
 
@@ -1324,13 +1350,13 @@ bool CHudControlPointIcons::PaintTeamBaseIcon( int index, float flXPos, float fl
 				Vector2D uv22( uv2, uv2 );
 				Vector2D uv12( uv1, uv2 );
 
-				vgui::Vertex_t vert[4];	
-				vert[0].Init( Vector2D( flXPos,					flYPos              ), uv11 );
-				vert[1].Init( Vector2D( flXPos + flIconSize,	flYPos              ), uv21 );
-				vert[2].Init( Vector2D( flXPos + flIconSize,	flYPos + flIconSize ), uv22 );				
+				vgui::Vertex_t vert[4];
+				vert[0].Init( Vector2D( flXPos,					flYPos ), uv11 );
+				vert[1].Init( Vector2D( flXPos + flIconSize,	flYPos ), uv21 );
+				vert[2].Init( Vector2D( flXPos + flIconSize,	flYPos + flIconSize ), uv22 );
 				vert[3].Init( Vector2D( flXPos,					flYPos + flIconSize ), uv12 );
 
-				vgui::surface()->DrawSetColor( Color(255,255,255,255) );	
+				vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
 				vgui::surface()->DrawTexturedPolygon( 4, vert );
 
 				return true;
@@ -1342,19 +1368,25 @@ bool CHudControlPointIcons::PaintTeamBaseIcon( int index, float flXPos, float fl
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudControlPointIcons::Paint()
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return;
+	}
 
 	if( !ObjectiveResource() )
+	{
 		return;
+	}
 
 	int num = ObjectiveResource()->GetNumControlPoints();
-	if ( num <= 0 )
-		return; // nothing to draw yet
+	if( num <= 0 )
+	{
+		return;    // nothing to draw yet
+	}
 
 	//DrawBackgroundBox( 0, 0, GetWide(), GetTall(), false );
 	BaseClass::Paint();
@@ -1364,7 +1396,7 @@ void CHudControlPointIcons::Paint()
 //========================================================================================================================
 // CONTROL POINT PROGRESS BAR
 //========================================================================================================================
-CControlPointProgressBar::CControlPointProgressBar(Panel *parent) : vgui::EditablePanel( parent, "ControlPointProgressBar" )
+CControlPointProgressBar::CControlPointProgressBar( Panel* parent ) : vgui::EditablePanel( parent, "ControlPointProgressBar" )
 {
 	m_pAttachedToIcon = NULL;
 	m_pBar = NULL;
@@ -1377,78 +1409,78 @@ CControlPointProgressBar::CControlPointProgressBar(Panel *parent) : vgui::Editab
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointProgressBar::ApplySchemeSettings( IScheme *pScheme )
+void CControlPointProgressBar::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/UI/ControlPointProgressBar.res" );
 
-	m_pBar = dynamic_cast<vgui::CircularProgressBar *>( FindChildByName("ProgressBar") );
-	m_pBarText = dynamic_cast<vgui::Label *>( FindChildByName("ProgressText") );
-	m_pTeardrop = dynamic_cast<CIconPanel *>( FindChildByName("Teardrop") );
-	m_pTeardropSide = dynamic_cast<CIconPanel *>( FindChildByName("TeardropSide") );
-	m_pBlocked = dynamic_cast<CIconPanel *>( FindChildByName("Blocked") );
+	m_pBar = dynamic_cast<vgui::CircularProgressBar*>( FindChildByName( "ProgressBar" ) );
+	m_pBarText = dynamic_cast<vgui::Label*>( FindChildByName( "ProgressText" ) );
+	m_pTeardrop = dynamic_cast<CIconPanel*>( FindChildByName( "Teardrop" ) );
+	m_pTeardropSide = dynamic_cast<CIconPanel*>( FindChildByName( "TeardropSide" ) );
+	m_pBlocked = dynamic_cast<CIconPanel*>( FindChildByName( "Blocked" ) );
 	m_iOrgHeight = GetTall();
 
 	m_iMidGroupIndex = gHUD.LookupRenderGroupIndexByName( "mid" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointProgressBar::PerformLayout( void )
 {
 	BaseClass::PerformLayout();
 
-	if ( m_pAttachedToIcon && m_pTeardrop && m_pTeardropSide && m_pAttachedToIcon->GetVPanel() )
+	if( m_pAttachedToIcon && m_pTeardrop && m_pTeardropSide && m_pAttachedToIcon->GetVPanel() )
 	{
 		int iIconX, iIconY;
-		ipanel()->GetAbsPos(m_pAttachedToIcon->GetVPanel(), iIconX, iIconY );
+		ipanel()->GetAbsPos( m_pAttachedToIcon->GetVPanel(), iIconX, iIconY );
 		int iDir = m_pAttachedToIcon->GetCapProgressDir();
 		int iXPos = 0;
 		int iYPos = 0;
 
-		int iEdgeSpace = (GetWide() - m_pTeardrop->GetWide()) * 0.5;
+		int iEdgeSpace = ( GetWide() - m_pTeardrop->GetWide() ) * 0.5;
 
 		// Line up our middle with the middle of the icon
-		switch ( iDir )
+		switch( iDir )
 		{
-		default:
-		case CP_DIR_N:
-			SetSize( GetWide(), m_iOrgHeight );
-			m_pTeardrop->SetVisible( true );
-			m_pTeardropSide->SetVisible( false );
-			iXPos = iIconX - ((GetWide() - m_pAttachedToIcon->GetWide()) * 0.5);
-			iYPos = iIconY - GetTall();
-			break;
+			default:
+			case CP_DIR_N:
+				SetSize( GetWide(), m_iOrgHeight );
+				m_pTeardrop->SetVisible( true );
+				m_pTeardropSide->SetVisible( false );
+				iXPos = iIconX - ( ( GetWide() - m_pAttachedToIcon->GetWide() ) * 0.5 );
+				iYPos = iIconY - GetTall();
+				break;
 
-		case CP_DIR_NE:
-			SetSize( GetWide(), m_iOrgHeight );
-			m_pTeardropSide->SetIcon( "cappoint_progressbar_teardrop_right" );
-			m_pTeardrop->SetVisible( false );
-			m_pTeardropSide->SetVisible( true );
-			iXPos = iIconX + m_pAttachedToIcon->GetWide() - iEdgeSpace;
-			iYPos = iIconY - GetTall();
-			break;
+			case CP_DIR_NE:
+				SetSize( GetWide(), m_iOrgHeight );
+				m_pTeardropSide->SetIcon( "cappoint_progressbar_teardrop_right" );
+				m_pTeardrop->SetVisible( false );
+				m_pTeardropSide->SetVisible( true );
+				iXPos = iIconX + m_pAttachedToIcon->GetWide() - iEdgeSpace;
+				iYPos = iIconY - GetTall();
+				break;
 
-		case CP_DIR_NW:
-			SetSize( GetWide(), m_iOrgHeight );
-			m_pTeardropSide->SetIcon( "cappoint_progressbar_teardrop_left" );
-			m_pTeardrop->SetVisible( false );
-			m_pTeardropSide->SetVisible( true );
-			iXPos = iIconX - GetWide() + iEdgeSpace;
-			iYPos = iIconY - GetTall();
-			break;
+			case CP_DIR_NW:
+				SetSize( GetWide(), m_iOrgHeight );
+				m_pTeardropSide->SetIcon( "cappoint_progressbar_teardrop_left" );
+				m_pTeardrop->SetVisible( false );
+				m_pTeardropSide->SetVisible( true );
+				iXPos = iIconX - GetWide() + iEdgeSpace;
+				iYPos = iIconY - GetTall();
+				break;
 		}
-		
+
 		SetPos( iXPos, iYPos );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointProgressBar::Reset( void )
 {
@@ -1456,29 +1488,33 @@ void CControlPointProgressBar::Reset( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CControlPointProgressBar::IsVisible( void )
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return false;
+	}
 
-	if ( m_iMidGroupIndex != -1 && gHUD.IsRenderGroupLockedFor( NULL, m_iMidGroupIndex ) )
+	if( m_iMidGroupIndex != -1 && gHUD.IsRenderGroupLockedFor( NULL, m_iMidGroupIndex ) )
+	{
 		return false;
+	}
 
 	return BaseClass::IsVisible();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointProgressBar::Paint( void )
 {
-	if ( m_pAttachedToIcon )
+	if( m_pAttachedToIcon )
 	{
 		int iCP = m_pAttachedToIcon->GetCapIndex();
-		if ( m_pBar && m_pBar->IsVisible() )
-		{						
+		if( m_pBar && m_pBar->IsVisible() )
+		{
 			m_pBar->SetProgress( ObjectiveResource()->GetCPCapPercentage( iCP ) );
 		}
 	}
@@ -1487,19 +1523,21 @@ void CControlPointProgressBar::Paint( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointProgressBar::SetupForPoint( CControlPointIcon *pIcon )
+void CControlPointProgressBar::SetupForPoint( CControlPointIcon* pIcon )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	m_pAttachedToIcon = pIcon;
 
 	bool bInWinState = TeamplayRoundBasedRules() ? TeamplayRoundBasedRules()->RoundHasBeenWon() : false;
 
-	if ( m_pAttachedToIcon && !bInWinState )
+	if( m_pAttachedToIcon && !bInWinState )
 	{
 		SetVisible( true );
 
@@ -1509,7 +1547,7 @@ void CControlPointProgressBar::SetupForPoint( CControlPointIcon *pIcon )
 		int iPlayerTeam = pPlayer->GetTeamNumber();
 		bool bCapBlocked = ObjectiveResource()->CapIsBlocked( iCP );
 
-		if ( !bCapBlocked && iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iOwnerTeam && iCappingTeam == iPlayerTeam )
+		if( !bCapBlocked && iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iOwnerTeam && iCappingTeam == iPlayerTeam )
 		{
 			m_pBar->SetBgImage( ObjectiveResource()->GetGameSpecificCPBarBG( iCP, iCappingTeam ) );
 			m_pBar->SetFgImage( ObjectiveResource()->GetGameSpecificCPBarFG( iCP, iOwnerTeam ) );
@@ -1521,7 +1559,7 @@ void CControlPointProgressBar::SetupForPoint( CControlPointIcon *pIcon )
 		{
 			m_pBar->SetVisible( false );
 			m_pBlocked->SetVisible( true );
-			
+
 			UpdateBarText();
 		}
 
@@ -1534,13 +1572,15 @@ void CControlPointProgressBar::SetupForPoint( CControlPointIcon *pIcon )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointProgressBar::UpdateBarText( void )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer || !m_pBarText || !m_pAttachedToIcon )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer || !m_pBarText || !m_pAttachedToIcon )
+	{
 		return;
+	}
 
 	m_pBarText->SetVisible( true );
 
@@ -1549,39 +1589,39 @@ void CControlPointProgressBar::UpdateBarText( void )
 	int iPlayerTeam = pPlayer->GetTeamNumber();
 	int iOwnerTeam = ObjectiveResource()->GetOwningTeam( iCP );
 
-	if ( !TeamplayGameRules()->PointsMayBeCaptured() )
+	if( !TeamplayGameRules()->PointsMayBeCaptured() )
 	{
 		m_pBarText->SetText( "#Team_Capture_NotNow" );
 		return;
 	}
 
-	if ( ObjectiveResource()->GetCPLocked( iCP ) )
+	if( ObjectiveResource()->GetCPLocked( iCP ) )
 	{
 		m_pBarText->SetText( "#Team_Capture_NotNow" );
 		return;
 	}
 
-	if ( mp_blockstyle.GetInt() == 1 && iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iPlayerTeam )
+	if( mp_blockstyle.GetInt() == 1 && iCappingTeam != TEAM_UNASSIGNED && iCappingTeam != iPlayerTeam )
 	{
-		if ( ObjectiveResource()->IsCPBlocked(iCP) )
+		if( ObjectiveResource()->IsCPBlocked( iCP ) )
 		{
 			m_pBarText->SetText( "#Team_Blocking_Capture" );
 			return;
 		}
-		else if ( iOwnerTeam == TEAM_UNASSIGNED )
+		else if( iOwnerTeam == TEAM_UNASSIGNED )
 		{
 			m_pBarText->SetText( "#Team_Reverting_Capture" );
 			return;
 		}
 	}
 
-	if ( ObjectiveResource()->GetOwningTeam(iCP) == iPlayerTeam )
+	if( ObjectiveResource()->GetOwningTeam( iCP ) == iPlayerTeam )
 	{
 		// If the opponents can never recapture this point back, we use a different string
-		if ( iPlayerTeam != TEAM_UNASSIGNED )
+		if( iPlayerTeam != TEAM_UNASSIGNED )
 		{
 			int iEnemyTeam = ( iPlayerTeam == TF_TEAM_RED ) ? TF_TEAM_BLUE : TF_TEAM_RED;
-			if ( !ObjectiveResource()->TeamCanCapPoint( iCP, iEnemyTeam ) )
+			if( !ObjectiveResource()->TeamCanCapPoint( iCP, iEnemyTeam ) )
 			{
 				m_pBarText->SetText( "#Team_Capture_Owned" );
 				return;
@@ -1592,9 +1632,9 @@ void CControlPointProgressBar::UpdateBarText( void )
 		return;
 	}
 
-	if ( !TeamplayGameRules()->TeamMayCapturePoint( iPlayerTeam, iCP ) )
+	if( !TeamplayGameRules()->TeamMayCapturePoint( iPlayerTeam, iCP ) )
 	{
-		if ( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->IsInArenaMode() == true )
+		if( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->IsInArenaMode() == true )
 		{
 			m_pBarText->SetText( "#Team_Capture_NotNow" );
 		}
@@ -1607,7 +1647,7 @@ void CControlPointProgressBar::UpdateBarText( void )
 	}
 
 	char szReason[256];
-	if ( !TeamplayGameRules()->PlayerMayCapturePoint( pPlayer, iCP, szReason, sizeof(szReason) ) )
+	if( !TeamplayGameRules()->PlayerMayCapturePoint( pPlayer, iCP, szReason, sizeof( szReason ) ) )
 	{
 		m_pBarText->SetText( szReason );
 		return;
@@ -1616,20 +1656,20 @@ void CControlPointProgressBar::UpdateBarText( void )
 	bool bHaveRequiredPlayers = true;
 
 	// In Capstyle 1, more players simply cap faster, no required amounts.
-	if ( mp_capstyle.GetInt() != 1 )
+	if( mp_capstyle.GetInt() != 1 )
 	{
 		int nNumTeammates = ObjectiveResource()->GetNumPlayersInArea( iCP, iPlayerTeam );
 		int nRequiredTeammates = ObjectiveResource()->GetRequiredCappers( iCP, iPlayerTeam );
-		bHaveRequiredPlayers = (nNumTeammates >= nRequiredTeammates);
+		bHaveRequiredPlayers = ( nNumTeammates >= nRequiredTeammates );
 	}
 
-	if ( iCappingTeam == iPlayerTeam && bHaveRequiredPlayers )
+	if( iCappingTeam == iPlayerTeam && bHaveRequiredPlayers )
 	{
 		m_pBarText->SetText( "#Team_Capture_Blocked" );
 		return;
 	}
 
-	if ( !ObjectiveResource()->TeamCanCapPoint( iCP, iPlayerTeam ) )
+	if( !ObjectiveResource()->TeamCanCapPoint( iCP, iPlayerTeam ) )
 	{
 		m_pBarText->SetText( "#Team_Cannot_Capture" );
 		return;
@@ -1642,9 +1682,9 @@ void CControlPointProgressBar::UpdateBarText( void )
 // CONTROL POINT CAPTURE ARROW SWIPE
 //========================================================================================================================
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CControlPointIconCapArrow::CControlPointIconCapArrow( CControlPointIcon *pIcon, Panel *parent, const char *name) 
+CControlPointIconCapArrow::CControlPointIconCapArrow( CControlPointIcon* pIcon, Panel* parent, const char* name )
 	: vgui::Panel( parent, name )
 {
 	m_pArrowMaterial = NULL;
@@ -1654,22 +1694,26 @@ CControlPointIconCapArrow::CControlPointIconCapArrow( CControlPointIcon *pIcon, 
 
 bool CControlPointIconCapArrow::IsVisible( void )
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return false;
+	}
 
 	return BaseClass::IsVisible();
 }
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointIconCapArrow::Paint( void )
 {
-	if ( !m_pArrowMaterial || !m_pAttachedToIcon )
+	if( !m_pArrowMaterial || !m_pAttachedToIcon )
+	{
 		return;
+	}
 
 	int x = 0;
 	int y = 0;
-	ipanel()->GetAbsPos(GetVPanel(), x,y );
+	ipanel()->GetAbsPos( GetVPanel(), x, y );
 	int iWidth = GetWide();
 	int iHeight = GetTall();
 
@@ -1691,14 +1735,14 @@ void CControlPointIconCapArrow::Paint( void )
 	// HACK: The arrow has an arrowhead portion that looks like this: >
 	// We want to start with the arrow entering the image, but we want to keep
 	// going until the arrow is fully off the edge. So we include extra width for it.
-	float flImageSize = (flArrowHeadPixelWidth+flArrowBodyPixelWidth);
-	float flMovementInTextureSpace = ( (flBoxSize+flArrowHeadPixelWidth) / flImageSize );
+	float flImageSize = ( flArrowHeadPixelWidth + flArrowBodyPixelWidth );
+	float flMovementInTextureSpace = ( ( flBoxSize + flArrowHeadPixelWidth ) / flImageSize );
 	float flArrowSizeInTextureSpace = ( flArrowHeadPixelWidth / flImageSize );
 
 	// To help players spot the start & end of a cap, we indent a little on either side.
 	float flIndent = 0.07;
 
-	if ( m_pAttachedToIcon->ShouldSwipeUp() )
+	if( m_pAttachedToIcon->ShouldSwipeUp() )
 	{
 		flYa = RemapVal( flCapPercentage, 0.0, 1.0, -flMovementInTextureSpace - flIndent, flArrowSizeInTextureSpace - flIndent );
 		flYb = RemapVal( flCapPercentage, 0.0, 1.0, flIndent, flMovementInTextureSpace - flIndent );
@@ -1711,7 +1755,7 @@ void CControlPointIconCapArrow::Paint( void )
 		float flEnd = 1.0 + flIndent;
 
 		bool bSwipeLeftToRight = ( iCappingTeam % 2 ) ? false : true;
-		if ( bSwipeLeftToRight )
+		if( bSwipeLeftToRight )
 		{
 			flXa = RemapVal( flCapPercentage, 0.0, 1.0, flStart + flMovementInTextureSpace, flEnd - flArrowSizeInTextureSpace );
 			flXb = RemapVal( flCapPercentage, 0.0, 1.0, flStart, 0.0 );
@@ -1759,9 +1803,9 @@ void CControlPointIconCapArrow::Paint( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CControlPointCountdown::CControlPointCountdown(Panel *parent, const char *name) : vgui::EditablePanel( parent, name )
+CControlPointCountdown::CControlPointCountdown( Panel* parent, const char* name ) : vgui::EditablePanel( parent, name )
 {
 	m_bFire5SecRemain = true;
 	m_bFire4SecRemain = true;
@@ -1779,9 +1823,9 @@ CControlPointCountdown::CControlPointCountdown(Panel *parent, const char *name) 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CControlPointCountdown::ApplySchemeSettings( IScheme *pScheme )
+void CControlPointCountdown::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -1790,23 +1834,23 @@ void CControlPointCountdown::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointCountdown::PerformLayout()
 {
-	CExLabel *pLabel = dynamic_cast<CExLabel *>( FindChildByName( "CapCountdownLabel" ) );
-	if ( pLabel )
+	CExLabel* pLabel = dynamic_cast<CExLabel*>( FindChildByName( "CapCountdownLabel" ) );
+	if( pLabel )
 	{
 		pLabel->SetBounds( 0, 0, GetWide(), GetTall() );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointCountdown::SetUnlockTime( float flTime )
-{ 
-	m_flUnlockTime = flTime; 
+{
+	m_flUnlockTime = flTime;
 
 	float flTimeDiff = m_flUnlockTime - gpGlobals->curtime;
 	m_bFire5SecRemain = ( flTimeDiff >= 5.0f );
@@ -1817,48 +1861,48 @@ void CControlPointCountdown::SetUnlockTime( float flTime )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CControlPointCountdown::OnTick( void )
 {
 	BaseClass::OnTick();
 
-	C_TFPlayer *pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
-	if ( !pLocalPlayer || ( m_flUnlockTime <= 0.0f ) )
+	C_TFPlayer* pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
+	if( !pLocalPlayer || ( m_flUnlockTime <= 0.0f ) )
 	{
-		if ( IsVisible() )
+		if( IsVisible() )
 		{
 			SetVisible( false );
 		}
 		return;
 	}
 
-	if ( TeamplayRoundBasedRules() ) 
+	if( TeamplayRoundBasedRules() )
 	{
-		if ( TeamplayRoundBasedRules()->IsInWaitingForPlayers() || TeamplayRoundBasedRules()->State_Get() != GR_STATE_RND_RUNNING )
+		if( TeamplayRoundBasedRules()->IsInWaitingForPlayers() || TeamplayRoundBasedRules()->State_Get() != GR_STATE_RND_RUNNING )
 		{
 			return;
 		}
 	}
 
 	int iTimeLeft = m_flUnlockTime - gpGlobals->curtime;
-	if ( iTimeLeft > 5 || iTimeLeft <= 0 )
+	if( iTimeLeft > 5 || iTimeLeft <= 0 )
 	{
-		if ( iTimeLeft <= 0 && m_bFire0SecRemain )
+		if( iTimeLeft <= 0 && m_bFire0SecRemain )
 		{
 			m_bFire0SecRemain = false;
 			pLocalPlayer->EmitSound( "Announcer.AM_CapEnabledRandom" );
 			m_flUnlockTime = 0.0f;
 		}
 
-		if ( IsVisible() )
+		if( IsVisible() )
 		{
 			SetVisible( false );
 		}
 		return;
 	}
 
-	if ( !IsVisible() )
+	if( !IsVisible() )
 	{
 		SetVisible( true );
 	}
@@ -1868,27 +1912,27 @@ void CControlPointCountdown::OnTick( void )
 
 	SetDialogVariable( "capturetime", wzTimeLeft );
 
-	if ( iTimeLeft <= 5 && m_bFire5SecRemain )
+	if( iTimeLeft <= 5 && m_bFire5SecRemain )
 	{
 		m_bFire5SecRemain = false;
 		pLocalPlayer->EmitSound( "Announcer.RoundBegins5Seconds" );
 	}
-	else if ( iTimeLeft <= 4 && m_bFire4SecRemain )
+	else if( iTimeLeft <= 4 && m_bFire4SecRemain )
 	{
 		m_bFire4SecRemain = false;
 		pLocalPlayer->EmitSound( "Announcer.RoundBegins4Seconds" );
 	}
-	else if ( iTimeLeft <= 3 && m_bFire3SecRemain )
+	else if( iTimeLeft <= 3 && m_bFire3SecRemain )
 	{
 		m_bFire3SecRemain = false;
 		pLocalPlayer->EmitSound( "Announcer.RoundBegins3Seconds" );
 	}
-	else if ( iTimeLeft <= 2 && m_bFire2SecRemain )
+	else if( iTimeLeft <= 2 && m_bFire2SecRemain )
 	{
 		m_bFire2SecRemain = false;
 		pLocalPlayer->EmitSound( "Announcer.RoundBegins2Seconds" );
 	}
-	else if ( iTimeLeft <= 1 && m_bFire1SecRemain )
+	else if( iTimeLeft <= 1 && m_bFire1SecRemain )
 	{
 		m_bFire1SecRemain = false;
 		m_bFire0SecRemain = true;

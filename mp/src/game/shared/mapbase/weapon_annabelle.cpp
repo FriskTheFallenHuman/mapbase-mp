@@ -30,8 +30,8 @@
 extern ConVar sk_auto_reload_time;
 
 #ifdef MAPBASE
-extern acttable_t *GetShotgunActtable();
-extern int GetShotgunActtableCount();
+	extern acttable_t* GetShotgunActtable();
+	extern int GetShotgunActtableCount();
 #endif
 
 class CWeaponAnnabelle : public CBaseHL2MPCombatWeapon
@@ -50,7 +50,10 @@ private:
 public:
 
 #ifdef GAME_DLL
-	int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
 	virtual const Vector& GetBulletSpread( void )
@@ -59,7 +62,7 @@ public:
 
 #ifdef GAME_DLL
 #ifdef MAPBASE
-		if ( GetOwner() && GetOwner()->OverridingWeaponProficiency() )
+		if( GetOwner() && GetOwner()->OverridingWeaponProficiency() )
 		{
 			// If the owner's weapon proficiency is being overridden, return a more realistic spread
 			static Vector cone2 = VECTOR_CONE_6DEGREES;
@@ -71,8 +74,14 @@ public:
 		return cone;
 	}
 
-	virtual int	GetMinBurst() { return 1; }
-	virtual int	GetMaxBurst() { return 3; }
+	virtual int	GetMinBurst()
+	{
+		return 1;
+	}
+	virtual int	GetMaxBurst()
+	{
+		return 3;
+	}
 
 	void ItemHolsterFrame( void );
 	bool StartReload( void );
@@ -82,26 +91,41 @@ public:
 	void CheckHolsterReload( void );
 	void Pump( void );
 	void DryFire( void );
-	virtual float GetFireRate( void ) { return 1.5; };
-	virtual float GetMinRestTime() { return 1.0; }
-	virtual float GetMaxRestTime() { return 1.5; }
+	virtual float GetFireRate( void )
+	{
+		return 1.5;
+	};
+	virtual float GetMinRestTime()
+	{
+		return 1.0;
+	}
+	virtual float GetMaxRestTime()
+	{
+		return 1.5;
+	}
 
 #ifdef GAME_DLL
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif // GAME_DLL
 
 #ifdef MAPBASE
-	virtual acttable_t		*GetBackupActivityList() { return GetShotgunActtable(); }
-	virtual int				GetBackupActivityListCount() { return GetShotgunActtableCount(); }
+	virtual acttable_t*		GetBackupActivityList()
+	{
+		return GetShotgunActtable();
+	}
+	virtual int				GetBackupActivityListCount()
+	{
+		return GetShotgunActtableCount();
+	}
 #endif
 
 	DECLARE_ACTTABLE();
 
-	CWeaponAnnabelle(void);
+	CWeaponAnnabelle( void );
 
 private:
 
-	CWeaponAnnabelle( const CWeaponAnnabelle & );
+	CWeaponAnnabelle( const CWeaponAnnabelle& );
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponAnnabelle, DT_WeaponAnnabelle )
@@ -119,11 +143,11 @@ BEGIN_NETWORK_TABLE( CWeaponAnnabelle, DT_WeaponAnnabelle )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponAnnabelle )
+	BEGIN_PREDICTION_DATA( CWeaponAnnabelle )
 	DEFINE_PRED_FIELD( m_bNeedPump, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bDelayedFire1, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bDelayedFire2, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_annabelle, CWeaponAnnabelle );
@@ -132,7 +156,7 @@ PRECACHE_WEAPON_REGISTER( weapon_annabelle );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponAnnabelle::m_acttable[] = 
+acttable_t	CWeaponAnnabelle::m_acttable[] =
 {
 #if defined( EXPANDED_HL2_WEAPON_ACTIVITIES ) && AR2_ACTIVITY_FIX == 1
 	{ ACT_IDLE,						ACT_IDLE_AR2,						false },
@@ -206,7 +230,7 @@ IMPLEMENT_ACTTABLE( CWeaponAnnabelle );
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeaponAnnabelle::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponAnnabelle::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
@@ -214,7 +238,7 @@ void CWeaponAnnabelle::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 		{
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition();
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			ASSERT( npc != NULL );
 			WeaponSound( SINGLE_NPC );
 			pOperator->DoMuzzleFlash();
@@ -239,38 +263,46 @@ void CWeaponAnnabelle::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 //-----------------------------------------------------------------------------
 bool CWeaponAnnabelle::StartReload( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	
-	if ( pOwner == NULL )
-		return false;
+	CBaseCombatCharacter* pOwner  = GetOwner();
 
-	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	if( pOwner == NULL )
+	{
 		return false;
+	}
 
-	if ( m_iClip1 >= GetMaxClip1() )
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	{
 		return false;
+	}
+
+	if( m_iClip1 >= GetMaxClip1() )
+	{
+		return false;
+	}
 
 	// If shotgun totally emptied then a pump animation is needed
-	if ( m_iClip1 <= 0 )
+	if( m_iClip1 <= 0 )
 	{
 		m_bNeedPump = true;
 	}
 
-	int j = MIN(1, pOwner->GetAmmoCount(m_iPrimaryAmmoType));
+	int j = MIN( 1, pOwner->GetAmmoCount( m_iPrimaryAmmoType ) );
 
-	if (j <= 0)
+	if( j <= 0 )
+	{
 		return false;
+	}
 
 	SendWeaponAnim( ACT_SHOTGUN_RELOAD_START );
 
 	// Make shotgun shell visible
-	SetBodygroup(1,0);
+	SetBodygroup( 1, 0 );
 
 	pOwner->m_flNextAttack = gpGlobals->curtime;
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 
 #ifdef MAPBASE
-	if ( pOwner->IsPlayer() )
+	if( pOwner->IsPlayer() )
 	{
 		//Tony; BUG BUG BUG!!! shotgun does one shell at a time!!! -- player model only has a single reload!!! so I'm just going to dispatch the singular for now.
 		ToHL2MPPlayer( pOwner )->DoAnimationEvent( PLAYERANIMEVENT_RELOAD );
@@ -289,30 +321,38 @@ bool CWeaponAnnabelle::StartReload( void )
 bool CWeaponAnnabelle::Reload( void )
 {
 	// Check that StartReload was called first
-	if (!m_bInReload)
+	if( !m_bInReload )
 	{
-		Warning("ERROR: Shotgun Reload called incorrectly!\n");
+		Warning( "ERROR: Shotgun Reload called incorrectly!\n" );
 	}
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	
-	if ( pOwner == NULL )
-		return false;
+	CBaseCombatCharacter* pOwner  = GetOwner();
 
-	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+	if( pOwner == NULL )
+	{
 		return false;
+	}
 
-	if (m_iClip1 >= GetMaxClip1())
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	{
 		return false;
+	}
 
-	int j = MIN(1, pOwner->GetAmmoCount(m_iPrimaryAmmoType));
-
-	if (j <= 0)
+	if( m_iClip1 >= GetMaxClip1() )
+	{
 		return false;
+	}
+
+	int j = MIN( 1, pOwner->GetAmmoCount( m_iPrimaryAmmoType ) );
+
+	if( j <= 0 )
+	{
+		return false;
+	}
 
 	FillClip();
 	// Play reload on different channel as otherwise steals channel away from fire sound
-	WeaponSound(RELOAD);
+	WeaponSound( RELOAD );
 	SendWeaponAnim( ACT_VM_RELOAD );
 
 	pOwner->m_flNextAttack = gpGlobals->curtime;
@@ -329,12 +369,14 @@ bool CWeaponAnnabelle::Reload( void )
 void CWeaponAnnabelle::FinishReload( void )
 {
 	// Make shotgun shell invisible
-	SetBodygroup(1,1);
+	SetBodygroup( 1, 1 );
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	
-	if ( pOwner == NULL )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	m_bInReload = false;
 
@@ -352,15 +394,17 @@ void CWeaponAnnabelle::FinishReload( void )
 //-----------------------------------------------------------------------------
 void CWeaponAnnabelle::FillClip( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	
-	if ( pOwner == NULL )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	// Add them to the clip
-	if ( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) > 0 )
 	{
-		if ( Clip1() < GetMaxClip1() )
+		if( Clip1() < GetMaxClip1() )
 		{
 			m_iClip1++;
 			pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
@@ -375,13 +419,15 @@ void CWeaponAnnabelle::FillClip( void )
 //-----------------------------------------------------------------------------
 void CWeaponAnnabelle::Pump( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
+	CBaseCombatCharacter* pOwner  = GetOwner();
 
-	if ( pOwner == NULL )
+	if( pOwner == NULL )
+	{
 		return;
-	
+	}
+
 	m_bNeedPump = false;
-	
+
 	WeaponSound( SPECIAL1 );
 
 	// Finish reload animation
@@ -392,46 +438,54 @@ void CWeaponAnnabelle::Pump( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CWeaponAnnabelle::DryFire( void )
 {
-	WeaponSound(EMPTY);
+	WeaponSound( EMPTY );
 	SendWeaponAnim( ACT_VM_DRYFIRE );
-	
+
 	m_flNextPrimaryAttack = gpGlobals->curtime + SequenceDuration();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponAnnabelle::ItemHolsterFrame( void )
 {
 	// Must be player held
-	if ( GetOwner() && GetOwner()->IsPlayer() == false )
+	if( GetOwner() && GetOwner()->IsPlayer() == false )
+	{
 		return;
+	}
 
 	// We can't be active
-	if ( GetOwner()->GetActiveWeapon() == this )
+	if( GetOwner()->GetActiveWeapon() == this )
+	{
 		return;
+	}
 
 	// If it's been longer than three seconds, reload
-	if ( ( gpGlobals->curtime - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
+	if( ( gpGlobals->curtime - m_flHolsterTime ) > sk_auto_reload_time.GetFloat() )
 	{
 		// Reset the timer
 		m_flHolsterTime = gpGlobals->curtime;
-	
-		if ( GetOwner() == NULL )
-			return;
 
-		if ( m_iClip1 == GetMaxClip1() )
+		if( GetOwner() == NULL )
+		{
 			return;
+		}
+
+		if( m_iClip1 == GetMaxClip1() )
+		{
+			return;
+		}
 
 		// Just load the clip with no animations
-		int ammoFill = MIN( (GetMaxClip1() - m_iClip1), GetOwner()->GetAmmoCount( GetPrimaryAmmoType() ) );
-		
+		int ammoFill = MIN( ( GetMaxClip1() - m_iClip1 ), GetOwner()->GetAmmoCount( GetPrimaryAmmoType() ) );
+
 		GetOwner()->RemoveAmmo( ammoFill, GetPrimaryAmmoType() );
 		m_iClip1 += ammoFill;
 	}

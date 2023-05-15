@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -31,7 +31,7 @@ BitmapImage::BitmapImage()
 	SetViewport( false, 0.0f, 0.0f, 0.0f, 0.0f );
 }
 
-BitmapImage::BitmapImage( vgui::VPANEL parent, const char *filename )
+BitmapImage::BitmapImage( vgui::VPANEL parent, const char* filename )
 {
 	m_nTextureId = -1;
 	m_clr.SetColor( 255, 255, 255, 255 );
@@ -47,7 +47,7 @@ BitmapImage::~BitmapImage()
 
 void BitmapImage::DestroyTexture()
 {
-	if ( m_nTextureId != -1 )
+	if( m_nTextureId != -1 )
 	{
 		vgui::surface()->DestroyTextureID( m_nTextureId );
 		m_nTextureId = -1;
@@ -55,15 +55,15 @@ void BitmapImage::DestroyTexture()
 	}
 }
 
-bool BitmapImage::Init( vgui::VPANEL pParent, const char *pFileName )
+bool BitmapImage::Init( vgui::VPANEL pParent, const char* pFileName )
 {
 	UsePanelRenderSize( pParent );
-	if ( pFileName != NULL )
+	if( pFileName != NULL )
 	{
 		DestroyTexture();
 		m_nTextureId = vgui::surface()->CreateNewTextureID();
 		m_bProcedural = false;
-		vgui::surface()->DrawSetTextureFile( m_nTextureId, pFileName , true, true);
+		vgui::surface()->DrawSetTextureFile( m_nTextureId, pFileName , true, true );
 		GetSize( m_Size[0], m_Size[1] );
 	}
 	return true;
@@ -72,13 +72,17 @@ bool BitmapImage::Init( vgui::VPANEL pParent, const char *pFileName )
 bool BitmapImage::Init( vgui::VPANEL pParent, KeyValues* pInitData )
 {
 	char const* pMaterialName = pInitData->GetString( "material" );
-	if ( !pMaterialName || !pMaterialName[ 0 ] )
+	if( !pMaterialName || !pMaterialName[ 0 ] )
+	{
 		return false;
+	}
 
 	// modulation color
 	Color color;
-	if (!ParseRGBA( pInitData, "color", color ))
+	if( !ParseRGBA( pInitData, "color", color ) )
+	{
 		color.SetColor( 255, 255, 255, 255 );
+	}
 
 	Init( pParent, pMaterialName );
 	SetColor( color );
@@ -106,16 +110,16 @@ bool BitmapImage::Init( vgui::VPANEL pParent, KeyValues* pInitData )
 	return true;
 } */
 
-void BitmapImage::SetImageFile( const char *newImage )
+void BitmapImage::SetImageFile( const char* newImage )
 {
-	if ( m_nTextureId == -1 || m_bProcedural )
+	if( m_nTextureId == -1 || m_bProcedural )
 	{
 		DestroyTexture();
 		m_nTextureId = vgui::surface()->CreateNewTextureID();
 		m_bProcedural = false;
 	}
 
-	vgui::surface()->DrawSetTextureFile( m_nTextureId, newImage , true, true);
+	vgui::surface()->DrawSetTextureFile( m_nTextureId, newImage , true, true );
 }
 
 void BitmapImage::UsePanelRenderSize( vgui::VPANEL pPanel )
@@ -142,21 +146,21 @@ void BitmapImage::DoPaint( int x, int y, int wide, int tall, float yaw, float fl
 	m_clr.GetColor( r, g, b, a );
 	a *= flAlphaModulate;
 	vgui::surface()->DrawSetColor( r, g, b, a );
-	
-	if (yaw == 0)
+
+	if( yaw == 0 )
 	{
-		if ( !m_bUseViewport )
+		if( !m_bUseViewport )
 		{
 			vgui::surface()->DrawTexturedRect( x, y, x + wide, y + tall );
 		}
 		else
 		{
 			vgui::surface()->DrawTexturedSubRect( x, y, x + wide, y + tall,
-				m_rgViewport[ 0 ],
-				m_rgViewport[ 1 ],
-				m_rgViewport[ 2 ],
-				m_rgViewport[ 3 ]
-				);
+												  m_rgViewport[ 0 ],
+												  m_rgViewport[ 1 ],
+												  m_rgViewport[ 2 ],
+												  m_rgViewport[ 3 ]
+												);
 		}
 	}
 	else
@@ -164,13 +168,13 @@ void BitmapImage::DoPaint( int x, int y, int wide, int tall, float yaw, float fl
 		// Rotated version of the bitmap!
 		// Rotate about the center of the bitmap
 		vgui::Vertex_t verts[4];
-		Vector2D center( x + (wide * 0.5f), y + (tall * 0.5f) );
+		Vector2D center( x + ( wide * 0.5f ), y + ( tall * 0.5f ) );
 
 		// Choose a basis...
 		float yawRadians = -yaw * M_PI / 180.0f;
 		Vector2D axis[2];
-		axis[0].x = cos(yawRadians);
-		axis[0].y = sin(yawRadians);
+		axis[0].x = cos( yawRadians );
+		axis[0].y = sin( yawRadians );
 		axis[1].x = -axis[0].y;
 		axis[1].y = axis[0].x;
 
@@ -194,9 +198,9 @@ void BitmapImage::DoPaint( int x, int y, int wide, int tall, float yaw, float fl
 void BitmapImage::DoPaint( vgui::VPANEL pPanel, float yaw, float flAlphaModulate )
 {
 	int wide, tall;
-	if ( pPanel )
+	if( pPanel )
 	{
-		vgui::ipanel()->GetSize(pPanel, wide, tall );
+		vgui::ipanel()->GetSize( pPanel, wide, tall );
 	}
 	else
 	{
@@ -222,9 +226,9 @@ Color BitmapImage::GetColor( )
 	return m_clr;
 }
 
-void BitmapImage::GetColor( int& r,int& g,int& b,int& a )
+void BitmapImage::GetColor( int& r, int& g, int& b, int& a )
 {
-	m_clr.GetColor( r,g,b,a );
+	m_clr.GetColor( r, g, b, a );
 }
 
 void BitmapImage::GetSize( int& wide, int& tall )
@@ -242,14 +246,16 @@ void BitmapImage::SetPos( int x, int y )
 //-----------------------------------------------------------------------------
 // Helper method to initialize a bitmap image from KeyValues data..
 //-----------------------------------------------------------------------------
-bool InitializeImage( KeyValues *pInitData, const char* pSectionName, vgui::Panel *pParent, BitmapImage* pBitmapImage )
+bool InitializeImage( KeyValues* pInitData, const char* pSectionName, vgui::Panel* pParent, BitmapImage* pBitmapImage )
 {
-	KeyValues *pBitmapImageSection;
-	if (pSectionName)
+	KeyValues* pBitmapImageSection;
+	if( pSectionName )
 	{
 		pBitmapImageSection = pInitData->FindKey( pSectionName );
-		if ( !pBitmapImageSection )
+		if( !pBitmapImageSection )
+		{
 			return false;
+		}
 	}
 	else
 	{
@@ -283,12 +289,12 @@ bool InitializeImage( KeyValues *pInitData, const char* pSectionName, vgui::Pane
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : use - 
-//			left - 
-//			top - 
-//			right - 
-//			bottom - 
+// Purpose:
+// Input  : use -
+//			left -
+//			top -
+//			right -
+//			bottom -
 //-----------------------------------------------------------------------------
 void BitmapImage::SetViewport( bool use, float left, float top, float right, float bottom )
 {
@@ -300,9 +306,9 @@ void BitmapImage::SetViewport( bool use, float left, float top, float right, flo
 }
 
 //-----------------------------------------------------------------------------
-void BitmapImage::SetBitmap( const Bitmap_t &bitmap )
+void BitmapImage::SetBitmap( const Bitmap_t& bitmap )
 {
-	if ( m_nTextureId == -1 || !m_bProcedural )
+	if( m_nTextureId == -1 || !m_bProcedural )
 	{
 		DestroyTexture();
 		m_nTextureId = vgui::surface()->CreateNewTextureID( true );
@@ -312,7 +318,7 @@ void BitmapImage::SetBitmap( const Bitmap_t &bitmap )
 	vgui::surface()->DrawSetTextureRGBA( m_nTextureId, bitmap.GetBits(), bitmap.Width(), bitmap.Height(), 1, true );
 
 	// Initialize render size, if we don't already have one
-	if ( m_Size[0] == 0 )
+	if( m_Size[0] == 0 )
 	{
 		m_Size[0] = bitmap.Width();
 		m_Size[1] = bitmap.Height();

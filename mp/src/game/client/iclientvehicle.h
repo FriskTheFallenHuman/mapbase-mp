@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #define ICLIENTVEHICLE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "IVehicle.h"
@@ -22,14 +22,15 @@ class C_BaseEntity;
 //-----------------------------------------------------------------------------
 // Purpose: All client vehicles must implement this interface.
 //-----------------------------------------------------------------------------
-abstract_class IClientVehicle : public IVehicle
+abstract_class IClientVehicle :
+public IVehicle
 {
 public:
 	// When a player is in a vehicle, here's where the camera will be
-	virtual void GetVehicleFOV( float &flFOV ) = 0;
+	virtual void GetVehicleFOV( float & flFOV ) = 0;
 
 	// Allows the vehicle to restrict view angles, blend, etc.
-	virtual void UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd ) = 0;
+	virtual void UpdateViewAngles( C_BasePlayer * pLocalPlayer, CUserCmd * pCmd ) = 0;
 
 	// Hud redraw...
 	virtual void DrawHudElements() = 0;
@@ -38,11 +39,11 @@ public:
 	virtual bool IsPredicted() const = 0;
 
 	// Get the entity associated with the vehicle.
-	virtual C_BaseEntity *GetVehicleEnt() = 0;
+	virtual C_BaseEntity * GetVehicleEnt() = 0;
 
 	// Allows the vehicle to change the near clip plane
-	virtual void GetVehicleClipPlanes( float &flZNear, float &flZFar ) const = 0;
-	
+	virtual void GetVehicleClipPlanes( float & flZNear, float & flZFar ) const = 0;
+
 	// Allows vehicles to choose their own curves for players using joysticks
 	virtual int GetJoystickResponseCurve() const = 0;
 

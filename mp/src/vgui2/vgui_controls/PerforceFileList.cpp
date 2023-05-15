@@ -22,43 +22,47 @@
 using namespace vgui;
 
 
-static int ListFileNameSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
+static int ListFileNameSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2 )
 {
 	NOTE_UNUSED( pPanel );
 
-	bool dir1 = item1.kv->GetInt("directory") == 1;
-	bool dir2 = item2.kv->GetInt("directory") == 1;
+	bool dir1 = item1.kv->GetInt( "directory" ) == 1;
+	bool dir2 = item2.kv->GetInt( "directory" ) == 1;
 
 	// if they're both not directories of files, return if dir1 is a directory (before files)
-	if ( dir1 != dir2 )
+	if( dir1 != dir2 )
 	{
 		return dir1 ? -1 : 1;
 	}
 
-	const char *string1 = item1.kv->GetString("text");
-	const char *string2 = item2.kv->GetString("text");
+	const char* string1 = item1.kv->GetString( "text" );
+	const char* string2 = item2.kv->GetString( "text" );
 
 	// YWB:  Mimic windows behavior where filenames starting with numbers are sorted based on numeric part
 	int num1 = Q_atoi( string1 );
 	int num2 = Q_atoi( string2 );
 
-	if ( num1 != 0 && 
-		 num2 != 0 )
+	if( num1 != 0 &&
+			num2 != 0 )
 	{
-		if ( num1 < num2 )
+		if( num1 < num2 )
+		{
 			return -1;
-		else if ( num1 > num2 )
+		}
+		else if( num1 > num2 )
+		{
 			return 1;
+		}
 	}
 
 	// Push numbers before everything else
-	if ( num1 != 0 )
+	if( num1 != 0 )
 	{
 		return -1;
 	}
-	
+
 	// Push numbers before everything else
-	if ( num2 != 0 )
+	if( num2 != 0 )
 	{
 		return 1;
 	}
@@ -66,21 +70,21 @@ static int ListFileNameSortFunc(ListPanel *pPanel, const ListPanelItem &item1, c
 	return Q_stricmp( string1, string2 );
 }
 
-static int ListBaseStringSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2, char const *fieldName )
+static int ListBaseStringSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2, char const* fieldName )
 {
-	bool dir1 = item1.kv->GetInt("directory") == 1;
-	bool dir2 = item2.kv->GetInt("directory") == 1;
+	bool dir1 = item1.kv->GetInt( "directory" ) == 1;
+	bool dir2 = item2.kv->GetInt( "directory" ) == 1;
 
 	// if they're both not directories of files, return if dir1 is a directory (before files)
-	if (dir1 != dir2)
+	if( dir1 != dir2 )
 	{
 		return -1;
 	}
 
-	const char *string1 = item1.kv->GetString(fieldName);
-	const char *string2 = item2.kv->GetString(fieldName);
-	int cval = Q_stricmp(string1, string2);
-	if ( cval == 0 )
+	const char* string1 = item1.kv->GetString( fieldName );
+	const char* string2 = item2.kv->GetString( fieldName );
+	int cval = Q_stricmp( string1, string2 );
+	if( cval == 0 )
 	{
 		// Use filename to break ties
 		return ListFileNameSortFunc( pPanel, item1, item2 );
@@ -89,20 +93,20 @@ static int ListBaseStringSortFunc(ListPanel *pPanel, const ListPanelItem &item1,
 	return cval;
 }
 
-static int ListBaseIntegerSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2, char const *fieldName )
+static int ListBaseIntegerSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2, char const* fieldName )
 {
-	bool dir1 = item1.kv->GetInt("directory") == 1;
-	bool dir2 = item2.kv->GetInt("directory") == 1;
+	bool dir1 = item1.kv->GetInt( "directory" ) == 1;
+	bool dir2 = item2.kv->GetInt( "directory" ) == 1;
 
 	// if they're both not directories of files, return if dir1 is a directory (before files)
-	if (dir1 != dir2)
+	if( dir1 != dir2 )
 	{
 		return -1;
 	}
 
-	int i1 = item1.kv->GetInt(fieldName);
-	int i2 = item2.kv->GetInt(fieldName);
-	if ( i1 == i2 )
+	int i1 = item1.kv->GetInt( fieldName );
+	int i2 = item2.kv->GetInt( fieldName );
+	if( i1 == i2 )
 	{
 		// Use filename to break ties
 		return ListFileNameSortFunc( pPanel, item1, item2 );
@@ -111,34 +115,34 @@ static int ListBaseIntegerSortFunc(ListPanel *pPanel, const ListPanelItem &item1
 	return ( i1 < i2 ) ? -1 : 1;
 }
 
-static int ListFileSizeSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
+static int ListFileSizeSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2 )
 {
 	return ListBaseIntegerSortFunc( pPanel, item1, item2, "filesizeint" );
 }
 
-static int ListFileAttributesSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
+static int ListFileAttributesSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2 )
 {
 	return ListBaseStringSortFunc( pPanel, item1, item2, "attributes" );
 }
 
-static int ListFileTypeSortFunc(ListPanel *pPanel, const ListPanelItem &item1, const ListPanelItem &item2 )
+static int ListFileTypeSortFunc( ListPanel* pPanel, const ListPanelItem& item1, const ListPanelItem& item2 )
 {
 	return ListBaseStringSortFunc( pPanel, item1, item2, "type" );
 }
 
 
 //-----------------------------------------------------------------------------
-// Dictionary of start dir contexts 
+// Dictionary of start dir contexts
 //-----------------------------------------------------------------------------
 struct ColumnInfo_t
 {
-	char const	*columnName;
-	char const	*columnText;
+	char const*	columnName;
+	char const*	columnText;
 	int			startingWidth;
 	int			minWidth;
 	int			maxWidth;
 	int			flags;
-	SortFunc	*pfnSort;
+	SortFunc*	pfnSort;
 	Label::Alignment alignment;
 };
 
@@ -156,14 +160,14 @@ static ColumnInfo_t g_ColInfo[] =
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-PerforceFileList::PerforceFileList( Panel *pParent, const char *pPanelName ) : 
+PerforceFileList::PerforceFileList( Panel* pParent, const char* pPanelName ) :
 	BaseClass( pParent, pPanelName )
 {
 	SetMultiselectEnabled( false );
 	m_bShowDeletedFiles = false;
 
 	// list panel
-	for ( int i = 0; i < ARRAYSIZE( g_ColInfo ); ++i )
+	for( int i = 0; i < ARRAYSIZE( g_ColInfo ); ++i )
 	{
 		const ColumnInfo_t& info = g_ColInfo[ i ];
 
@@ -187,11 +191,11 @@ PerforceFileList::~PerforceFileList()
 //-----------------------------------------------------------------------------
 // Purpose: Apply scheme settings
 //-----------------------------------------------------------------------------
-void PerforceFileList::ApplySchemeSettings(IScheme *pScheme)
+void PerforceFileList::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	ImageList *pImageList = new ImageList( false );
+	ImageList* pImageList = new ImageList( false );
 	pImageList->AddImage( scheme()->GetImage( "resource/icon_file", false ) );
 	pImageList->AddImage( scheme()->GetImage( "resource/icon_folder", false ) );
 	pImageList->AddImage( scheme()->GetImage( "resource/icon_folder_selected", false ) );
@@ -205,15 +209,17 @@ void PerforceFileList::ApplySchemeSettings(IScheme *pScheme)
 //-----------------------------------------------------------------------------
 void PerforceFileList::ShowDeletedFiles( bool bShowDeletedFiles )
 {
-	if ( m_bShowDeletedFiles != bShowDeletedFiles )
+	if( m_bShowDeletedFiles != bShowDeletedFiles )
 	{
 		m_bShowDeletedFiles = bShowDeletedFiles;
 
-		for ( int i = FirstItem(); i != InvalidItemID(); i = NextItem( i ) )
+		for( int i = FirstItem(); i != InvalidItemID(); i = NextItem( i ) )
 		{
-			KeyValues *pKeyValues = GetItem( i ); 
-			if ( !pKeyValues->GetInt( "deleted", 0 ) )
+			KeyValues* pKeyValues = GetItem( i );
+			if( !pKeyValues->GetInt( "deleted", 0 ) )
+			{
 				continue;
+			}
 
 			SetItemVisible( i, m_bShowDeletedFiles );
 		}
@@ -224,23 +230,23 @@ void PerforceFileList::ShowDeletedFiles( bool bShowDeletedFiles )
 //-----------------------------------------------------------------------------
 // Add a directory to the directory list, returns client spec
 //-----------------------------------------------------------------------------
-void PerforceFileList::AddItemToDirectoryList( const char *pFullPath, int nItemID, bool bIsDirectory )
+void PerforceFileList::AddItemToDirectoryList( const char* pFullPath, int nItemID, bool bIsDirectory )
 {
 	char pDirectoryBuf[MAX_PATH];
-	Q_ExtractFilePath( pFullPath, pDirectoryBuf, sizeof(pDirectoryBuf) );
-	Q_StripTrailingSlash( pDirectoryBuf ); 
+	Q_ExtractFilePath( pFullPath, pDirectoryBuf, sizeof( pDirectoryBuf ) );
+	Q_StripTrailingSlash( pDirectoryBuf );
 	pFullPath = pDirectoryBuf;
 
-	DirectoryInfo_t *pInfo;
+	DirectoryInfo_t* pInfo;
 	UtlSymId_t i = m_Directories.Find( pFullPath );
-	if ( i != m_Directories.InvalidIndex() )
+	if( i != m_Directories.InvalidIndex() )
 	{
 		pInfo = &m_Directories[i];
 	}
 	else
 	{
 		char pClientSpec[MAX_PATH];
-		if ( !p4->GetClientSpecForDirectory( pFullPath, pClientSpec, sizeof(pClientSpec) ) )
+		if( !p4->GetClientSpecForDirectory( pFullPath, pClientSpec, sizeof( pClientSpec ) ) )
 		{
 			pClientSpec[0] = 0;
 		}
@@ -252,26 +258,26 @@ void PerforceFileList::AddItemToDirectoryList( const char *pFullPath, int nItemI
 	pInfo->m_ItemIDs.AddToTail( nItemID );
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Add a file to the file list. 
+// Add a file to the file list.
 //-----------------------------------------------------------------------------
-int PerforceFileList::AddFileToFileList( const char *pFullPath, bool bExistsOnDisk )
+int PerforceFileList::AddFileToFileList( const char* pFullPath, bool bExistsOnDisk )
 {
 	bool bIsFileWriteable = bExistsOnDisk ? g_pFullFileSystem->IsFileWritable( pFullPath, NULL ) : true;
 
 	// add the file to the list
-	KeyValues *kv = new KeyValues("item");
+	KeyValues* kv = new KeyValues( "item" );
 
-	const char *pRelativePath = Q_UnqualifiedFileName( pFullPath );
+	const char* pRelativePath = Q_UnqualifiedFileName( pFullPath );
 	kv->SetString( "text", pRelativePath );
 	kv->SetString( "fullpath", pFullPath );
 	kv->SetInt( "image", 1 );
 
-	IImage *pImage = surface()->GetIconImageForFullPath( pFullPath );
-	if ( pImage )
+	IImage* pImage = surface()->GetIconImageForFullPath( pFullPath );
+	if( pImage )
 	{
-		kv->SetPtr( "iconImage", (void *)pImage );
+		kv->SetPtr( "iconImage", ( void* )pImage );
 	}
 
 	kv->SetInt( "imageSelected", 1 );
@@ -298,16 +304,16 @@ int PerforceFileList::AddFileToFileList( const char *pFullPath, bool bExistsOnDi
 
 
 //-----------------------------------------------------------------------------
-// Add a directory to the file list. 
+// Add a directory to the file list.
 //-----------------------------------------------------------------------------
-int PerforceFileList::AddDirectoryToFileList( const char *pFullPath, bool bExistsOnDisk )
+int PerforceFileList::AddDirectoryToFileList( const char* pFullPath, bool bExistsOnDisk )
 {
-	KeyValues *kv = new KeyValues("item");
+	KeyValues* kv = new KeyValues( "item" );
 
-	const char *pRelativePath = Q_UnqualifiedFileName( pFullPath );
+	const char* pRelativePath = Q_UnqualifiedFileName( pFullPath );
 	kv->SetString( "text", pRelativePath );
 	kv->SetString( "fullpath", pFullPath );
-	kv->SetPtr( "iconImage", (void *)NULL );
+	kv->SetPtr( "iconImage", ( void* )NULL );
 	kv->SetInt( "image", 2 );
 	kv->SetInt( "imageSelected", 3 );
 	kv->SetInt( "directory", 1 );
@@ -321,7 +327,7 @@ int PerforceFileList::AddDirectoryToFileList( const char *pFullPath, bool bExist
 	kv->SetString( "type", "#PerforceFileList_FileType_Folder" );
 	kv->SetString( "attributes", "D" );
 
-	int nItemID = AddItem(kv, 0, false, false);
+	int nItemID = AddItem( kv, 0, false, false );
 	kv->deleteThis();
 
 	AddItemToDirectoryList( pFullPath, nItemID, true );
@@ -330,54 +336,56 @@ int PerforceFileList::AddDirectoryToFileList( const char *pFullPath, bool bExist
 
 
 //-----------------------------------------------------------------------------
-// Add a file or directory to the file list. 
+// Add a file or directory to the file list.
 //-----------------------------------------------------------------------------
-int PerforceFileList::AddFile( const char *pFullPath, int nFileExists, int nIsDirectory )
+int PerforceFileList::AddFile( const char* pFullPath, int nFileExists, int nIsDirectory )
 {
-	if ( !pFullPath )
+	if( !pFullPath )
+	{
 		return InvalidItemID();
+	}
 
-	if ( !Q_IsAbsolutePath( pFullPath ) )
+	if( !Q_IsAbsolutePath( pFullPath ) )
 	{
 		Warning( "Absolute paths required for PerforceFileList::AddFile!\n"
-			"\"%s\" is not an abolute path", pFullPath );
+				 "\"%s\" is not an abolute path", pFullPath );
 		return InvalidItemID();
 	}
 
 	char pFixedPath[MAX_PATH];
-	Q_strncpy( pFixedPath, pFullPath, sizeof(pFixedPath) );
+	Q_strncpy( pFixedPath, pFullPath, sizeof( pFixedPath ) );
 	Q_FixSlashes( pFixedPath );
 
 	// Check to see if the file is on disk
 	int nItemID = -1;
 	bool bFileExists, bIsDirectory;
-	if ( nFileExists < 0 )
+	if( nFileExists < 0 )
 	{
 		bFileExists = g_pFullFileSystem->FileExists( pFixedPath ) ;
 	}
 	else
 	{
-		bFileExists = ( nFileExists != 0 ); 
+		bFileExists = ( nFileExists != 0 );
 	}
 
-	if ( nIsDirectory < 0 )
+	if( nIsDirectory < 0 )
 	{
-		if ( bFileExists )
+		if( bFileExists )
 		{
 			bIsDirectory = g_pFullFileSystem->IsDirectory( pFixedPath );
 		}
 		else
 		{
 			int nLen = Q_strlen( pFixedPath );
-			bIsDirectory = ( pFixedPath[nLen-1] == CORRECT_PATH_SEPARATOR );
+			bIsDirectory = ( pFixedPath[nLen - 1] == CORRECT_PATH_SEPARATOR );
 		}
 	}
 	else
 	{
-		bIsDirectory = ( nIsDirectory != 0 ); 
+		bIsDirectory = ( nIsDirectory != 0 );
 	}
 
-	if ( bIsDirectory )
+	if( bIsDirectory )
 	{
 		nItemID = AddDirectoryToFileList( pFixedPath, bFileExists );
 	}
@@ -403,16 +411,18 @@ void PerforceFileList::RemoveAllFiles()
 //-----------------------------------------------------------------------------
 // Finds a file in the p4 list
 //-----------------------------------------------------------------------------
-static P4File_t *FindFileInPerforceList( const char *pFileName, CUtlVector<P4File_t> &fileList, bool *pFound )
+static P4File_t* FindFileInPerforceList( const char* pFileName, CUtlVector<P4File_t>& fileList, bool* pFound )
 {
 	int nCount = fileList.Count();
-	for ( int i = 0; i < nCount; ++i )
+	for( int i = 0; i < nCount; ++i )
 	{
-		if ( pFound[i] )
+		if( pFound[i] )
+		{
 			continue;
+		}
 
-		const char *pPerforceFileName = p4->String( fileList[i].m_sLocalFile );
-		if ( !Q_stricmp( pPerforceFileName, pFileName ) )
+		const char* pPerforceFileName = p4->String( fileList[i].m_sLocalFile );
+		if( !Q_stricmp( pPerforceFileName, pFileName ) )
 		{
 			pFound[i] = true;
 			return &fileList[i];
@@ -425,15 +435,15 @@ static P4File_t *FindFileInPerforceList( const char *pFileName, CUtlVector<P4Fil
 //-----------------------------------------------------------------------------
 // Refresh perforce information
 //-----------------------------------------------------------------------------
-void PerforceFileList::RefreshPerforceState( int nItemID, bool bFileExists, P4File_t *pFileInfo )
+void PerforceFileList::RefreshPerforceState( int nItemID, bool bFileExists, P4File_t* pFileInfo )
 {
-	KeyValues *kv = GetItem( nItemID );
+	KeyValues* kv = GetItem( nItemID );
 
 	bool bIsSynched = false;
-	bool bIsFileInPerforce = (pFileInfo != NULL);
-	if ( bIsFileInPerforce )
+	bool bIsFileInPerforce = ( pFileInfo != NULL );
+	if( bIsFileInPerforce )
 	{
-		if ( pFileInfo->m_bDeleted != bFileExists )
+		if( pFileInfo->m_bDeleted != bFileExists )
 		{
 			bIsSynched = ( pFileInfo->m_bDeleted || ( pFileInfo->m_iHeadRevision == pFileInfo->m_iHaveRevision ) );
 		}
@@ -448,9 +458,9 @@ void PerforceFileList::RefreshPerforceState( int nItemID, bool bFileExists, P4Fi
 	kv->SetInt( "in_perforce", bIsFileInPerforce );
 	kv->SetInt( "synched", bIsSynched );
 	kv->SetInt( "checked_out", bIsFileInPerforce && ( pFileInfo->m_eOpenState != P4FILE_UNOPENED ) );
-	kv->SetInt( "deleted", bIsDeleted ); 
+	kv->SetInt( "deleted", bIsDeleted );
 
-	if ( bIsDeleted )
+	if( bIsDeleted )
 	{
 		SetItemVisible( nItemID, m_bShowDeletedFiles );
 	}
@@ -477,24 +487,24 @@ void PerforceFileList::Refresh()
 
 	// NOTE: Reducing the # of perforce calls is important for performance
 	int nCount = m_Directories.GetNumStrings();
-	for ( int i = 0; i < nCount; ++i )
+	for( int i = 0; i < nCount; ++i )
 	{
-		const char *pDirectory = m_Directories.String(i);
-		DirectoryInfo_t *pInfo = &m_Directories[i];
+		const char* pDirectory = m_Directories.String( i );
+		DirectoryInfo_t* pInfo = &m_Directories[i];
 
 		// Retrives files, uses faster method to avoid finding clientspec
-		CUtlVector<P4File_t> &fileList = p4->GetFileListUsingClientSpec( pDirectory, pInfo->m_ClientSpec );
+		CUtlVector<P4File_t>& fileList = p4->GetFileListUsingClientSpec( pDirectory, pInfo->m_ClientSpec );
 		int nFileCount = fileList.Count();
-		bool *pFound = (bool*)_alloca( nFileCount * sizeof(bool) );
-		memset( pFound, 0, nFileCount * sizeof(bool) );
+		bool* pFound = ( bool* )_alloca( nFileCount * sizeof( bool ) );
+		memset( pFound, 0, nFileCount * sizeof( bool ) );
 
 		int nItemCount = pInfo->m_ItemIDs.Count();
-		for ( int j = 0; j < nItemCount; ++j )
+		for( int j = 0; j < nItemCount; ++j )
 		{
 			int nItemID = pInfo->m_ItemIDs[j];
-			const char *pFileName = GetFile( nItemID );
+			const char* pFileName = GetFile( nItemID );
 			bool bFileExists = g_pFullFileSystem->FileExists( pFileName );
-			P4File_t *pFileInfo = FindFileInPerforceList( pFileName, fileList, pFound );
+			P4File_t* pFileInfo = FindFileInPerforceList( pFileName, fileList, pFound );
 			RefreshPerforceState( nItemID, bFileExists, pFileInfo );
 		}
 	}
@@ -506,32 +516,34 @@ void PerforceFileList::Refresh()
 //-----------------------------------------------------------------------------
 bool PerforceFileList::IsDirectoryItem( int nItemID )
 {
-	KeyValues *kv = GetItem( nItemID ); 
+	KeyValues* kv = GetItem( nItemID );
 	return kv->GetInt( "directory", 0 ) != 0;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Returns the file associated with a particular item ID
 //-----------------------------------------------------------------------------
-const char *PerforceFileList::GetFile( int nItemID )
+const char* PerforceFileList::GetFile( int nItemID )
 {
-	KeyValues *kv = GetItem( nItemID ); 
+	KeyValues* kv = GetItem( nItemID );
 	Assert( kv );
 	return kv->GetString( "fullpath", "<no file>" );
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Find the item ID associated with a particular file
 //-----------------------------------------------------------------------------
-int PerforceFileList::FindFile( const char *pFullPath )
+int PerforceFileList::FindFile( const char* pFullPath )
 {
-	for ( int i = FirstItem(); i != InvalidItemID(); i = NextItem( i ) )
+	for( int i = FirstItem(); i != InvalidItemID(); i = NextItem( i ) )
 	{
-		const char *pFile = GetFile( i ); 
-		if ( !Q_stricmp( pFile, pFullPath ) )
+		const char* pFile = GetFile( i );
+		if( !Q_stricmp( pFile, pFullPath ) )
+		{
 			return i;
+		}
 	}
 	return InvalidItemID();
 }
@@ -540,7 +552,7 @@ int PerforceFileList::FindFile( const char *pFullPath )
 //-----------------------------------------------------------------------------
 // Is a file already in the list?
 //-----------------------------------------------------------------------------
-bool PerforceFileList::IsFileInList( const char *pFullPath )
+bool PerforceFileList::IsFileInList( const char* pFullPath )
 {
 	return ( FindFile( pFullPath ) != InvalidItemID() );
 }
@@ -551,15 +563,15 @@ bool PerforceFileList::IsFileInList( const char *pFullPath )
 //-----------------------------------------------------------------------------
 void PerforceFileList::OnMouseDoublePressed( MouseCode code )
 {
-	if ( code == MOUSE_LEFT )
+	if( code == MOUSE_LEFT )
 	{
 		// select the item
-		OnMousePressed(code);
+		OnMousePressed( code );
 
 		// post a special message
-		if ( GetSelectedItemsCount() > 0 )
+		if( GetSelectedItemsCount() > 0 )
 		{
-			PostActionSignal( new KeyValues("ItemDoubleClicked" ) );
+			PostActionSignal( new KeyValues( "ItemDoubleClicked" ) );
 		}
 		return;
 	}

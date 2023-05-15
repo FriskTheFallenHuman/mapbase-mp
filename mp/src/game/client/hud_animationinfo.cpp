@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -32,45 +32,45 @@ class CHudAnimationInfo : public CHudElement, public vgui::Panel
 
 public:
 
-	CHudAnimationInfo( const char *pElementName );
+	CHudAnimationInfo( const char* pElementName );
 
 	virtual bool ShouldDraw();
 
 	// vgui::Panel overrides.
 	virtual void Paint( void );
 
-	virtual void ApplySchemeSettings( IScheme *scheme );
+	virtual void ApplySchemeSettings( IScheme* scheme );
 
-	void SetWatch( Panel *element )
+	void SetWatch( Panel* element )
 	{
 		m_pWatch = element;
 	}
 
 protected:
 
-	void PaintMappingInfo( int& x, int& y, Panel *element, PanelAnimationMap *map );
-	void PaintString( int& x, int &y, const char *sz, Color *pLegendColor );
+	void PaintMappingInfo( int& x, int& y, Panel* element, PanelAnimationMap* map );
+	void PaintString( int& x, int& y, const char* sz, Color* pLegendColor );
 
 	CPanelAnimationVar( vgui::HFont, m_LabelFont, "LabelFont", "DebugFixed" );
 	CPanelAnimationVar( vgui::HFont, m_ItemFont, "ItemFont", "DebugFixedSmall" );
 
 	CPanelAnimationVar( Color, m_LabelColor, "LabelColor", "DebugLabel" );
-	CPanelAnimationVar( Color, m_ItemColor, "ItemColor", "DebugText");
+	CPanelAnimationVar( Color, m_ItemColor, "ItemColor", "DebugText" );
 
-	Panel *m_pWatch;
+	Panel* m_pWatch;
 };
 
 DECLARE_HUDELEMENT( CHudAnimationInfo );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pElementName - 
-//			*panelName - 
+// Purpose:
+// Input  : *pElementName -
+//			*panelName -
 //-----------------------------------------------------------------------------
-CHudAnimationInfo::CHudAnimationInfo( const char *pElementName )
- : CHudElement( pElementName ), BaseClass( NULL, "HudAnimationInfo" )
+CHudAnimationInfo::CHudAnimationInfo( const char* pElementName )
+	: CHudElement( pElementName ), BaseClass( NULL, "HudAnimationInfo" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
 	SetActive( true );
@@ -81,15 +81,15 @@ CHudAnimationInfo::CHudAnimationInfo( const char *pElementName )
 	SetZPos( 100 );
 }
 
-void CHudAnimationInfo::ApplySchemeSettings( IScheme *scheme )
+void CHudAnimationInfo::ApplySchemeSettings( IScheme* scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
 	m_LabelFont = scheme->GetFont( "DebugFixed", true );
-	m_ItemFont= scheme->GetFont( "DebugFixedSmall", true );
+	m_ItemFont = scheme->GetFont( "DebugFixedSmall", true );
 
 	m_LabelColor = scheme->GetColor( "DebugLabel", GetFgColor() );
-	m_ItemColor= scheme->GetColor( "DebugText", GetFgColor() );
+	m_ItemColor = scheme->GetColor( "DebugText", GetFgColor() );
 
 	SetPaintBackgroundEnabled( false );
 }
@@ -99,16 +99,16 @@ bool CHudAnimationInfo::ShouldDraw()
 	return ( m_pWatch && CHudElement::ShouldDraw() );
 }
 
-void CHudAnimationInfo::PaintString( int& x, int &y, const char *sz, Color *pLegendColor )
+void CHudAnimationInfo::PaintString( int& x, int& y, const char* sz, Color* pLegendColor )
 {
 	surface()->DrawSetTextFont( m_ItemFont );
 	surface()->DrawSetTextPos( x, y );
 
 	wchar_t szconverted[ 512 ];
 
-	g_pVGuiLocalize->ConvertANSIToUnicode( "O->", szconverted, sizeof(szconverted)  );
-		
-	if ( pLegendColor )
+	g_pVGuiLocalize->ConvertANSIToUnicode( "O->", szconverted, sizeof( szconverted ) );
+
+	if( pLegendColor )
 	{
 		surface()->DrawSetTextColor( *pLegendColor );
 	}
@@ -119,7 +119,7 @@ void CHudAnimationInfo::PaintString( int& x, int &y, const char *sz, Color *pLeg
 
 	surface()->DrawPrintText( szconverted, wcslen( szconverted ) );
 
-	g_pVGuiLocalize->ConvertANSIToUnicode( sz, szconverted, sizeof(szconverted)  );
+	g_pVGuiLocalize->ConvertANSIToUnicode( sz, szconverted, sizeof( szconverted ) );
 
 	surface()->DrawSetTextColor( m_ItemColor );
 	surface()->DrawPrintText( szconverted, wcslen( szconverted ) );
@@ -128,31 +128,33 @@ void CHudAnimationInfo::PaintString( int& x, int &y, const char *sz, Color *pLeg
 
 	y += fontHeight;
 
-	if ( y + fontHeight >= ScreenHeight() )
+	if( y + fontHeight >= ScreenHeight() )
 	{
 		y = ANIM_INFO_START_Y;
 		x += ANIM_INFO_WIDTH;
 	}
 }
 
-void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel *element, PanelAnimationMap *map )
+void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel* element, PanelAnimationMap* map )
 {
-	if ( !map )
+	if( !map )
+	{
 		return;
+	}
 
 	// Draw label
 	surface()->DrawSetTextFont( m_LabelFont );
 	surface()->DrawSetTextColor( m_LabelColor );
 	surface()->DrawSetTextPos( x, y );
 
-	const char *className = "";
-	if ( map->pfnClassName )
+	const char* className = "";
+	if( map->pfnClassName )
 	{
-		className = (*map->pfnClassName)();
+		className = ( *map->pfnClassName )();
 	}
 
-	const char *p = className;
-	while ( *p )
+	const char* p = className;
+	while( *p )
 	{
 		surface()->DrawUnicodeChar( *p );
 		p++;
@@ -164,30 +166,30 @@ void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel *element, PanelA
 
 
 	int c = map->entries.Count();
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		PanelAnimationMapEntry *e = &map->entries[ i ];
+		PanelAnimationMapEntry* e = &map->entries[ i ];
 
 		char sz[ 512 ];
 		char value[ 256 ];
 
 		Color col( 0, 0, 0, 0 );
-		Color  *pColor = NULL;
-		KeyValues *kv = new KeyValues( e->name() );
-		if ( element->RequestInfo( kv ) )
+		Color*  pColor = NULL;
+		KeyValues* kv = new KeyValues( e->name() );
+		if( element->RequestInfo( kv ) )
 		{
-			KeyValues *dat = kv->FindKey(e->name());
-			if ( dat && dat->GetDataType() == KeyValues::TYPE_COLOR )
+			KeyValues* dat = kv->FindKey( e->name() );
+			if( dat && dat->GetDataType() == KeyValues::TYPE_COLOR )
 			{
 				col = dat->GetColor();
 				Q_snprintf( value, sizeof( value ), "%i, %i, %i, %i",
-					col[0], col[1], col[2], col[3] );
+							col[0], col[1], col[2], col[3] );
 				pColor = &col;
 			}
 			else
 			{
 				Q_snprintf( value, sizeof( value ), "%s",
-					dat->GetString() );
+							dat->GetString() );
 			}
 		}
 		else
@@ -196,7 +198,7 @@ void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel *element, PanelA
 		}
 
 		Q_snprintf( sz, sizeof( sz ), "%-30s %-20s (%s)",
-			e->name(), e->type(), value );
+					e->name(), e->type(), value );
 
 		kv->deleteThis();
 
@@ -205,7 +207,7 @@ void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel *element, PanelA
 
 	x -= 10;
 
-	if ( map->baseMap )
+	if( map->baseMap )
 	{
 		PaintMappingInfo( x, y, element, map->baseMap );
 	}
@@ -213,14 +215,18 @@ void CHudAnimationInfo::PaintMappingInfo( int& x, int& y, Panel *element, PanelA
 
 void CHudAnimationInfo::Paint()
 {
-	vgui::Panel *panel = m_pWatch;
-	if ( !panel )
+	vgui::Panel* panel = m_pWatch;
+	if( !panel )
+	{
 		return;
+	}
 
 	// See if it has any animation info registered
-	PanelAnimationMap *map = panel->GetAnimMap();
-	if ( !map )
+	PanelAnimationMap* map = panel->GetAnimMap();
+	if( !map )
+	{
 		return;
+	}
 
 	int x = 15;
 	int y = ANIM_INFO_START_Y;
@@ -240,32 +246,34 @@ void CHudAnimationInfo::Paint()
 }
 
 
-static int HudElementCompletion( const char *partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
+static int HudElementCompletion( const char* partial, char commands[ COMMAND_COMPLETION_MAXITEMS ][ COMMAND_COMPLETION_ITEM_LENGTH ] )
 {
-	const char *cmdname = "cl_animationinfo";
+	const char* cmdname = "cl_animationinfo";
 
-	char *substring = (char *)partial;
-	if ( Q_strstr( partial, cmdname ) )
+	char* substring = ( char* )partial;
+	if( Q_strstr( partial, cmdname ) )
 	{
-		substring = (char *)partial + strlen( cmdname ) + 1;
+		substring = ( char* )partial + strlen( cmdname ) + 1;
 	}
 
 	int current = 0;
 
 	int c = gHUD.m_HudList.Count();
 	int i;
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
-		CHudElement *e = gHUD.m_HudList[ i ];
-		if ( !e )
+		CHudElement* e = gHUD.m_HudList[ i ];
+		if( !e )
+		{
 			continue;
+		}
 
 		bool add = false;
 
 		// Insert into lookup
-		if ( substring[0] )
+		if( substring[0] )
 		{
-			if ( !Q_strncasecmp( e->GetName(), substring, strlen( substring ) ) )
+			if( !Q_strncasecmp( e->GetName(), substring, strlen( substring ) ) )
 			{
 				add = true;
 			}
@@ -275,7 +283,7 @@ static int HudElementCompletion( const char *partial, char commands[ COMMAND_COM
 			add = true;
 		}
 
-		if ( add )
+		if( add )
 		{
 			Q_snprintf( commands[ current ], sizeof( commands[ current ] ), "%s %s", cmdname, e->GetName() );
 			current++;
@@ -287,44 +295,46 @@ static int HudElementCompletion( const char *partial, char commands[ COMMAND_COM
 
 CON_COMMAND_F_COMPLETION( cl_animationinfo, "Hud element to examine.", 0, HudElementCompletion )
 {
-	CHudAnimationInfo *info = GET_HUDELEMENT( CHudAnimationInfo );
+	CHudAnimationInfo* info = GET_HUDELEMENT( CHudAnimationInfo );
 	Assert( info );
-	if ( !info )
+	if( !info )
+	{
 		return;
+	}
 
-	if ( args.ArgC() != 2 )
+	if( args.ArgC() != 2 )
 	{
 		info->SetWatch( NULL );
 		return;
 	}
 
 	// Find it
-	CHudElement *element = NULL;
-	
-	for ( int i = 0; i < gHUD.m_HudList.Size(); i++ )
+	CHudElement* element = NULL;
+
+	for( int i = 0; i < gHUD.m_HudList.Size(); i++ )
 	{
-		if ( stricmp( gHUD.m_HudList[i]->GetName(), args[1]  ) == 0 )
+		if( stricmp( gHUD.m_HudList[i]->GetName(), args[1] ) == 0 )
 		{
 			element = gHUD.m_HudList[i];
 			break;
 		}
 	}
 
-	if ( element )
+	if( element )
 	{
-		info->SetWatch( dynamic_cast< Panel * >( element ) );
+		info->SetWatch( dynamic_cast< Panel* >( element ) );
 	}
-	else 
+	else
 	{
 		VPANEL root = VGui_GetClientDLLRootPanel();
-		vgui::Panel *rootPanel = ipanel()->GetPanel( root, info->GetModuleName() );
-		Panel *panel = NULL;
-		if ( rootPanel )
+		vgui::Panel* rootPanel = ipanel()->GetPanel( root, info->GetModuleName() );
+		Panel* panel = NULL;
+		if( rootPanel )
 		{
 			panel = rootPanel->FindChildByName( args[1], true );
 		}
 
-		if ( panel )
+		if( panel )
 		{
 			info->SetWatch( panel );
 		}

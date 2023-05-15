@@ -16,11 +16,11 @@
 // SPECIAL NOTE #2: This must be the final include in a .cpp or .h file!!!
 
 #if defined(_DEBUG) && !defined(USE_MEM_DEBUG)
-#define USE_MEM_DEBUG 1
+	#define USE_MEM_DEBUG 1
 #endif
 
 #if defined(NO_HOOK_MALLOC)
-#undef USE_MEM_DEBUG
+	#undef USE_MEM_DEBUG
 #endif
 
 // If debug build or ndebug and not already included MS custom alloc files, or already included this file
@@ -28,9 +28,9 @@
 
 #include "basetypes.h"
 #ifdef _WIN32
-#include <tchar.h>
+	#include <tchar.h>
 #else
-#include <wchar.h>
+	#include <wchar.h>
 #endif
 #include <string.h>
 #include <malloc.h>
@@ -39,22 +39,22 @@
 
 #if USE_MEM_DEBUG
 	#if defined( POSIX )
-	
+
 		#define _NORMAL_BLOCK 1
-		
+
 		#include <cstddef>
 		#include <glob.h>
 		#include <new>
 		#include <sys/types.h>
 		#if !defined( DID_THE_OPERATOR_NEW )
-                        #define DID_THE_OPERATOR_NEW
+			#define DID_THE_OPERATOR_NEW
 			// posix doesn't have a new of this form, so we impl our own
-			void* operator new( size_t nSize, int blah, const char *pFileName, int nLine );
-			void* operator new[]( size_t nSize, int blah, const char *pFileName, int nLine );
+			void* operator new( size_t nSize, int blah, const char* pFileName, int nLine );
+			void* operator new[]( size_t nSize, int blah, const char* pFileName, int nLine );
 		#endif
-	
+
 	#else // defined(POSIX)
-	
+
 		// Include crtdbg.h and make sure _DEBUG is set to 1.
 		#if !defined(_DEBUG)
 			#define _DEBUG 1
@@ -63,7 +63,7 @@
 		#else
 			#include <crtdbg.h>
 		#endif // !defined(_DEBUG)
-	
+
 	#endif // defined(POSIX)
 #endif
 
@@ -84,9 +84,9 @@
 #undef _aligned_free
 
 #ifndef MEMDBGON_H
-inline void *MemAlloc_InlineCallocMemset( void *pMem, size_t nCount, size_t nElementSize)
+inline void* MemAlloc_InlineCallocMemset( void* pMem, size_t nCount, size_t nElementSize )
 {
-	memset(pMem, 0, nElementSize * nCount);
+	memset( pMem, 0, nElementSize * nCount );
 	return pMem;
 }
 #endif
@@ -108,13 +108,13 @@ inline void *MemAlloc_InlineCallocMemset( void *pMem, size_t nCount, size_t nEle
 #define _malloc_dbg(s, t, f, l)	WHYCALLINGTHISDIRECTLY(s)
 
 #if !defined( LINUX )
-#if defined(__AFX_H__) && defined(DEBUG_NEW)
-	#define new DEBUG_NEW
-#else
-	#undef new
-	#define MEMALL_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
-	#define new MEMALL_DEBUG_NEW
-#endif
+	#if defined(__AFX_H__) && defined(DEBUG_NEW)
+		#define new DEBUG_NEW
+	#else
+		#undef new
+		#define MEMALL_DEBUG_NEW new(_NORMAL_BLOCK, __FILE__, __LINE__)
+		#define new MEMALL_DEBUG_NEW
+	#endif
 #endif
 
 #undef _strdup
@@ -130,35 +130,39 @@ inline void *MemAlloc_InlineCallocMemset( void *pMem, size_t nCount, size_t nEle
 // Make sure we don't define strdup twice
 #if !defined(MEMDBGON_H)
 
-inline char *MemAlloc_StrDup(const char *pString, const char *pFileName, unsigned nLine)
+inline char* MemAlloc_StrDup( const char* pString, const char* pFileName, unsigned nLine )
 {
-	char *pMemory;
-	
-	if (!pString)
+	char* pMemory;
+
+	if( !pString )
+	{
 		return NULL;
-	
-	size_t len = strlen(pString) + 1;
-	if ((pMemory = (char *)g_pMemAlloc->Alloc(len, pFileName, nLine)) != NULL)
+	}
+
+	size_t len = strlen( pString ) + 1;
+	if( ( pMemory = ( char* )g_pMemAlloc->Alloc( len, pFileName, nLine ) ) != NULL )
 	{
 		return strcpy( pMemory, pString );
 	}
-	
+
 	return NULL;
 }
 
-inline wchar_t *MemAlloc_WcStrDup(const wchar_t *pString, const char *pFileName, unsigned nLine)
+inline wchar_t* MemAlloc_WcStrDup( const wchar_t* pString, const char* pFileName, unsigned nLine )
 {
-	wchar_t *pMemory;
-	
-	if (!pString)
+	wchar_t* pMemory;
+
+	if( !pString )
+	{
 		return NULL;
-	
-	size_t len = (wcslen(pString) + 1);
-	if ((pMemory = (wchar_t *)g_pMemAlloc->Alloc(len * sizeof(wchar_t), pFileName, nLine)) != NULL)
+	}
+
+	size_t len = ( wcslen( pString ) + 1 );
+	if( ( pMemory = ( wchar_t* )g_pMemAlloc->Alloc( len * sizeof( wchar_t ), pFileName, nLine ) ) != NULL )
 	{
 		return wcscpy( pMemory, pString );
 	}
-	
+
 	return NULL;
 }
 
@@ -173,7 +177,7 @@ inline wchar_t *MemAlloc_WcStrDup(const wchar_t *pString, const char *pFileName,
 #define _aligned_malloc( s, a )	MemAlloc_AllocAligned( s, a )
 
 #ifndef _malloc_dbg
-#define _malloc_dbg(s, t, f, l)	WHYCALLINGTHISDIRECTLY(s)
+	#define _malloc_dbg(s, t, f, l)	WHYCALLINGTHISDIRECTLY(s)
 #endif
 
 #undef new
@@ -191,15 +195,17 @@ inline wchar_t *MemAlloc_WcStrDup(const wchar_t *pString, const char *pFileName,
 // Make sure we don't define strdup twice
 #if !defined(MEMDBGON_H)
 
-inline char *MemAlloc_StrDup(const char *pString)
+inline char* MemAlloc_StrDup( const char* pString )
 {
-	char *pMemory;
+	char* pMemory;
 
-	if (!pString)
+	if( !pString )
+	{
 		return NULL;
+	}
 
-	size_t len = strlen(pString) + 1;
-	if ((pMemory = (char *)g_pMemAlloc->Alloc(len)) != NULL)
+	size_t len = strlen( pString ) + 1;
+	if( ( pMemory = ( char* )g_pMemAlloc->Alloc( len ) ) != NULL )
 	{
 		return strcpy( pMemory, pString );
 	}
@@ -207,15 +213,17 @@ inline char *MemAlloc_StrDup(const char *pString)
 	return NULL;
 }
 
-inline wchar_t *MemAlloc_WcStrDup(const wchar_t *pString)
+inline wchar_t* MemAlloc_WcStrDup( const wchar_t* pString )
 {
-	wchar_t *pMemory;
+	wchar_t* pMemory;
 
-	if (!pString)
+	if( !pString )
+	{
 		return NULL;
+	}
 
-	size_t len = (wcslen(pString) + 1);
-	if ((pMemory = (wchar_t *)g_pMemAlloc->Alloc(len * sizeof(wchar_t))) != NULL)
+	size_t len = ( wcslen( pString ) + 1 );
+	if( ( pMemory = ( wchar_t* )g_pMemAlloc->Alloc( len * sizeof( wchar_t ) ) ) != NULL )
 	{
 		return wcscpy( pMemory, pString );
 	}
@@ -232,11 +240,11 @@ inline wchar_t *MemAlloc_WcStrDup(const wchar_t *pString)
 #else
 
 #if USE_MEM_DEBUG
-#ifndef _STATIC_LINKED
-#pragma message ("Note: file includes crtdbg.h directly, therefore will cannot use memdbgon.h in non-debug build")
-#else
-#error "Error: file includes crtdbg.h directly, therefore will cannot use memdbgon.h in non-debug build. Not recoverable in static build"
-#endif
+	#ifndef _STATIC_LINKED
+		#pragma message ("Note: file includes crtdbg.h directly, therefore will cannot use memdbgon.h in non-debug build")
+	#else
+		#error "Error: file includes crtdbg.h directly, therefore will cannot use memdbgon.h in non-debug build. Not recoverable in static build"
+	#endif
 #endif
 #endif // _INC_CRTDBG
 

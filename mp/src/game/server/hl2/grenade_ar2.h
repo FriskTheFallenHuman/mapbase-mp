@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		Projectile shot from the AR2 
+// Purpose:		Projectile shot from the AR2
 //
 // $Workfile:     $
 // $Date:         $
@@ -33,13 +33,13 @@ public:
 
 	void		Spawn( void );
 	void		Precache( void );
-	void 		GrenadeAR2Touch( CBaseEntity *pOther );
+	void 		GrenadeAR2Touch( CBaseEntity* pOther );
 	void		GrenadeAR2Think( void );
-	void		Event_Killed( const CTakeDamageInfo &info );
+	void		Event_Killed( const CTakeDamageInfo& info );
 
 public:
-	void EXPORT				Detonate(void);
-	CGrenadeAR2(void);
+	void EXPORT				Detonate( void );
+	CGrenadeAR2( void );
 
 	DECLARE_DATADESC();
 };

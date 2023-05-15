@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -14,7 +14,7 @@
 #if !defined( FXFLECKS_H )
 #define FXFLECKS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "particles_simple.h"
@@ -43,21 +43,21 @@ class CFleckParticles : public CSimpleEmitter
 {
 public:
 
-							CFleckParticles( const char *pDebugName );
-							~CFleckParticles();
-	static CSmartPtr<CFleckParticles> Create( const char *pDebugName, const Vector &vCenter, const Vector &extents );
+	CFleckParticles( const char* pDebugName );
+	~CFleckParticles();
+	static CSmartPtr<CFleckParticles> Create( const char* pDebugName, const Vector& vCenter, const Vector& extents );
 
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 	//Setup for point emission
-	virtual void		Setup( const Vector &origin, const Vector *direction, float angularSpread, float minSpeed, float maxSpeed, float gravity, float dampen, int flags = 0 );
+	virtual void		Setup( const Vector& origin, const Vector* direction, float angularSpread, float minSpeed, float maxSpeed, float gravity, float dampen, int flags = 0 );
 
 	CParticleCollision m_ParticleCollision;
 
-	CFleckParticles *m_pNextParticleSystem;
+	CFleckParticles* m_pNextParticleSystem;
 private:
-	CFleckParticles( const CFleckParticles & ); // not defined, not accessible
+	CFleckParticles( const CFleckParticles& );  // not defined, not accessible
 };
 
 #endif	//FXFLECKS_H

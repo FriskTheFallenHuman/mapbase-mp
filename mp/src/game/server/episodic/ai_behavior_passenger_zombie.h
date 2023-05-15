@@ -7,7 +7,7 @@
 #ifndef AI_BEHAVIOR_PASSENGER_ZOMBIE_H
 #define AI_BEHAVIOR_PASSENGER_ZOMBIE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior_passenger.h"
@@ -47,18 +47,24 @@ public:
 		NEXT_CONDITION
 	};
 
-	virtual const char *GetName( void ) { return "ZombiePassenger"; }
-	virtual string_t	GetRoleName( void ) { return MAKE_STRING( "passenger_zombie" ); }
+	virtual const char* GetName( void )
+	{
+		return "ZombiePassenger";
+	}
+	virtual string_t	GetRoleName( void )
+	{
+		return MAKE_STRING( "passenger_zombie" );
+	}
 	virtual int			SelectSchedule( void );
 	virtual int			TranslateSchedule( int scheduleType );
 	virtual void		GatherConditions( void );
-	virtual void		Event_Killed( const CTakeDamageInfo &info );
+	virtual void		Event_Killed( const CTakeDamageInfo& info );
 	virtual void		BuildScheduleTestBits( void );
-	virtual void		RunTask( const Task_t *pTask );
-	virtual void		StartTask( const Task_t *pTask );
+	virtual void		RunTask( const Task_t* pTask );
+	virtual void		StartTask( const Task_t* pTask );
 	virtual bool		CanEnterVehicle( void );
 	virtual void		ExitVehicle( void );
-	virtual void		HandleAnimEvent( animevent_t *pEvent );
+	virtual void		HandleAnimEvent( animevent_t* pEvent );
 	virtual Activity	NPC_TranslateActivity( Activity activity );
 
 	virtual	bool		AttachToVehicle( void );
@@ -68,7 +74,7 @@ public:
 	DEFINE_CUSTOM_SCHEDULE_PROVIDER;
 
 protected:
-	
+
 	int					SelectOutsideSchedule( void );
 	int					SelectInsideSchedule( void );
 	virtual	int			FindExitSequence( void );
@@ -80,12 +86,12 @@ protected:
 
 private:
 
-	void				VehicleLeapAttackTouch( CBaseEntity *pOther );
+	void				VehicleLeapAttackTouch( CBaseEntity* pOther );
 	void				VehicleLeapAttack( void );
 	bool				CanBeOnEnemyVehicle( void );
-	float				GetEntryPointCost( const Vector &vecEntryPos );
+	float				GetEntryPointCost( const Vector& vecEntryPos );
 	bool				EnemyInVehicle( void );
-	void				GetAttachmentPoint( Vector *vecPoint );
+	void				GetAttachmentPoint( Vector* vecPoint );
 	bool				CanJumpToAttachToVehicle( void );
 	//bool				WithinAttachRange( void );
 

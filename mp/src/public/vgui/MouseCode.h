@@ -10,7 +10,7 @@
 #define MOUSECODE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "inputsystem/ButtonCode.h"
@@ -19,13 +19,14 @@ namespace vgui
 {
 typedef ButtonCode_t MouseCode;
 
-static inline int MouseButtonBit(MouseCode code)
+static inline int MouseButtonBit( MouseCode code )
 {
-	if (code < MOUSE_FIRST || code > MOUSE_LAST) {
-		Assert(false);
+	if( code < MOUSE_FIRST || code > MOUSE_LAST )
+	{
+		Assert( false );
 		return 0;
 	}
-	return 1 << (code - MOUSE_FIRST);
+	return 1 << ( code - MOUSE_FIRST );
 }
 }
 

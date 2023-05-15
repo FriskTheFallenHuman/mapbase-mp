@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -41,21 +41,21 @@
 
 #define	RPG_SPEED	1500
 
-static ConVar sk_apc_missile_damage("sk_apc_missile_damage", "15");
+static ConVar sk_apc_missile_damage( "sk_apc_missile_damage", "15" );
 ConVar rpg_missle_use_custom_detonators( "rpg_missle_use_custom_detonators", "1" );
 #ifdef MAPBASE
-ConVar weapon_rpg_use_old_behavior( "weapon_rpg_use_old_behavior", "0" );
-ConVar weapon_rpg_fire_rate( "weapon_rpg_fire_rate", "4.0" );
+	ConVar weapon_rpg_use_old_behavior( "weapon_rpg_use_old_behavior", "0" );
+	ConVar weapon_rpg_fire_rate( "weapon_rpg_fire_rate", "4.0" );
 #endif
 
 #define APC_MISSILE_DAMAGE	sk_apc_missile_damage.GetFloat()
 
-const char *g_pLaserDotThink = "LaserThinkContext";
+const char* g_pLaserDotThink = "LaserThinkContext";
 
 //-----------------------------------------------------------------------------
 // Laser Dot
 //-----------------------------------------------------------------------------
-class CLaserDot : public CSprite 
+class CLaserDot : public CSprite
 {
 	DECLARE_CLASS( CLaserDot, CSprite );
 public:
@@ -63,22 +63,34 @@ public:
 	CLaserDot( void );
 	~CLaserDot( void );
 
-	static CLaserDot *Create( const Vector &origin, CBaseEntity *pOwner = NULL, bool bVisibleDot = true );
+	static CLaserDot* Create( const Vector& origin, CBaseEntity* pOwner = NULL, bool bVisibleDot = true );
 
-	void	SetTargetEntity( CBaseEntity *pTarget ) { m_hTargetEnt = pTarget; }
-	CBaseEntity *GetTargetEntity( void ) { return m_hTargetEnt; }
+	void	SetTargetEntity( CBaseEntity* pTarget )
+	{
+		m_hTargetEnt = pTarget;
+	}
+	CBaseEntity* GetTargetEntity( void )
+	{
+		return m_hTargetEnt;
+	}
 
-	void	SetLaserPosition( const Vector &origin, const Vector &normal );
+	void	SetLaserPosition( const Vector& origin, const Vector& normal );
 	Vector	GetChasePosition();
 	void	TurnOn( void );
 	void	TurnOff( void );
-	bool	IsOn() const { return m_bIsOn; }
+	bool	IsOn() const
+	{
+		return m_bIsOn;
+	}
 
 	void	Toggle( void );
 
 	void	LaserThink( void );
 
-	int		ObjectCaps() { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; }
+	int		ObjectCaps()
+	{
+		return ( BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION ) | FCAP_DONT_SAVE;
+	}
 
 	void	MakeInvisible( void );
 
@@ -90,36 +102,36 @@ protected:
 
 	DECLARE_DATADESC();
 public:
-	CLaserDot			*m_pNext;
+	CLaserDot*			m_pNext;
 };
 
 // a list of laser dots to search quickly
 CEntityClassList<CLaserDot> g_LaserDotList;
-template <>  CLaserDot *CEntityClassList<CLaserDot>::m_pClassList = NULL;
-CLaserDot *GetLaserDotList()
+template <>  CLaserDot* CEntityClassList<CLaserDot>::m_pClassList = NULL;
+CLaserDot* GetLaserDotList()
 {
 	return g_LaserDotList.m_pClassList;
 }
 
 BEGIN_DATADESC( CMissile )
 
-	DEFINE_FIELD( m_hOwner,					FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hRocketTrail,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flAugerTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_flMarkDeadTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_flGracePeriodEndsAt,	FIELD_TIME ),
-	DEFINE_FIELD( m_flDamage,				FIELD_FLOAT ),
-	DEFINE_FIELD( m_bCreateDangerSounds,	FIELD_BOOLEAN ),
-	
-	// Function Pointers
-	DEFINE_FUNCTION( MissileTouch ),
-	DEFINE_FUNCTION( AccelerateThink ),
-	DEFINE_FUNCTION( AugerThink ),
-	DEFINE_FUNCTION( IgniteThink ),
-	DEFINE_FUNCTION( SeekThink ),
+DEFINE_FIELD( m_hOwner,					FIELD_EHANDLE ),
+						  DEFINE_FIELD( m_hRocketTrail,			FIELD_EHANDLE ),
+						  DEFINE_FIELD( m_flAugerTime,			FIELD_TIME ),
+						  DEFINE_FIELD( m_flMarkDeadTime,			FIELD_TIME ),
+						  DEFINE_FIELD( m_flGracePeriodEndsAt,	FIELD_TIME ),
+						  DEFINE_FIELD( m_flDamage,				FIELD_FLOAT ),
+						  DEFINE_FIELD( m_bCreateDangerSounds,	FIELD_BOOLEAN ),
 
-END_DATADESC()
-LINK_ENTITY_TO_CLASS( rpg_missile, CMissile );
+						  // Function Pointers
+						  DEFINE_FUNCTION( MissileTouch ),
+						  DEFINE_FUNCTION( AccelerateThink ),
+						  DEFINE_FUNCTION( AugerThink ),
+						  DEFINE_FUNCTION( IgniteThink ),
+						  DEFINE_FUNCTION( SeekThink ),
+
+						  END_DATADESC()
+						  LINK_ENTITY_TO_CLASS( rpg_missile, CMissile );
 
 class CWeaponRPG;
 
@@ -139,7 +151,7 @@ CMissile::~CMissile()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -152,7 +164,7 @@ void CMissile::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -161,14 +173,14 @@ void CMissile::Spawn( void )
 	Precache();
 
 	SetSolid( SOLID_BBOX );
-	SetModel("models/weapons/w_missile_launch.mdl");
-	UTIL_SetSize( this, -Vector(4,4,4), Vector(4,4,4) );
+	SetModel( "models/weapons/w_missile_launch.mdl" );
+	UTIL_SetSize( this, -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ) );
 
 	SetTouch( &CMissile::MissileTouch );
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetThink( &CMissile::IgniteThink );
-	
+
 	SetNextThink( gpGlobals->curtime + 0.3f );
 	SetDamage( 200.0f );
 
@@ -183,7 +195,7 @@ void CMissile::Spawn( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CMissile::Event_Killed( const CTakeDamageInfo &info )
+void CMissile::Event_Killed( const CTakeDamageInfo& info )
 {
 	m_takedamage = DAMAGE_NO;
 
@@ -191,16 +203,18 @@ void CMissile::Event_Killed( const CTakeDamageInfo &info )
 }
 
 unsigned int CMissile::PhysicsSolidMaskForEntity( void ) const
-{ 
+{
 	return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_HITBOX;
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CMissile::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CMissile::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
-	if ( ( info.GetDamageType() & (DMG_MISSILEDEFENSE | DMG_AIRBOAT) ) == false )
+	if( ( info.GetDamageType() & ( DMG_MISSILEDEFENSE | DMG_AIRBOAT ) ) == false )
+	{
 		return 0;
+	}
 
 	bool bIsDamaged;
 	if( m_iHealth <= AugerHealth() )
@@ -213,12 +227,12 @@ int CMissile::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 		// This missile isn't damaged enough to wobble in flight yet
 		bIsDamaged = false;
 	}
-	
+
 	int nRetVal = BaseClass::OnTakeDamage_Alive( info );
 
 	if( !bIsDamaged )
 	{
-		if ( m_iHealth <= AugerHealth() )
+		if( m_iHealth <= AugerHealth() )
 		{
 			ShotDown();
 		}
@@ -236,7 +250,7 @@ void CMissile::DumbFire( void )
 	SetThink( NULL );
 	SetMoveType( MOVETYPE_FLY );
 
-	SetModel("models/weapons/w_missile.mdl");
+	SetModel( "models/weapons/w_missile.mdl" );
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	EmitSound( "Missile.Ignite" );
@@ -246,7 +260,7 @@ void CMissile::DumbFire( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMissile::SetGracePeriod( float flGracePeriod )
 {
@@ -283,13 +297,13 @@ void CMissile::AccelerateThink( void )
 void CMissile::AugerThink( void )
 {
 	// If we've augered long enough, then just explode
-	if ( m_flAugerTime < gpGlobals->curtime )
+	if( m_flAugerTime < gpGlobals->curtime )
 	{
 		Explode();
 		return;
 	}
 
-	if ( m_flMarkDeadTime < gpGlobals->curtime )
+	if( m_flMarkDeadTime < gpGlobals->curtime )
 	{
 		m_lifeState = LIFE_DYING;
 	}
@@ -304,7 +318,7 @@ void CMissile::AugerThink( void )
 	Vector vecForward;
 
 	AngleVectors( GetLocalAngles(), &vecForward );
-	
+
 	SetAbsVelocity( vecForward * 1000.0f );
 
 	SetNextThink( gpGlobals->curtime + 0.05f );
@@ -320,7 +334,7 @@ void CMissile::ShotDown( void )
 
 	DispatchEffect( "RPGShotDown", data );
 
-	if ( m_hRocketTrail != NULL )
+	if( m_hRocketTrail != NULL )
 	{
 		m_hRocketTrail->m_bDamaged = true;
 	}
@@ -331,7 +345,7 @@ void CMissile::ShotDown( void )
 	m_flMarkDeadTime = gpGlobals->curtime + 0.75;
 
 	// Let the RPG start reloading immediately
-	if ( m_hOwner != NULL )
+	if( m_hOwner != NULL )
 	{
 		m_hOwner->NotifyRocketDied();
 		m_hOwner = NULL;
@@ -340,22 +354,22 @@ void CMissile::ShotDown( void )
 
 
 //-----------------------------------------------------------------------------
-// The actual explosion 
+// The actual explosion
 //-----------------------------------------------------------------------------
 void CMissile::DoExplosion( void )
 {
 	// Explode
-	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), CMissile::EXPLOSION_RADIUS, 
-		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this);
+	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity(), GetDamage(), CMissile::EXPLOSION_RADIUS,
+					 SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE, 0.0f, this );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMissile::Explode( void )
 {
-	// Don't explode against the skybox. Just pretend that 
+	// Don't explode against the skybox. Just pretend that
 	// the missile flies off into the distance.
 	Vector forward;
 
@@ -366,18 +380,18 @@ void CMissile::Explode( void )
 
 	m_takedamage = DAMAGE_NO;
 	SetSolid( SOLID_NONE );
-	if( tr.fraction == 1.0 || !(tr.surface.flags & SURF_SKY) )
+	if( tr.fraction == 1.0 || !( tr.surface.flags & SURF_SKY ) )
 	{
 		DoExplosion();
 	}
 
 	if( m_hRocketTrail )
 	{
-		m_hRocketTrail->SetLifetime(0.1f);
+		m_hRocketTrail->SetLifetime( 0.1f );
 		m_hRocketTrail = NULL;
 	}
 
-	if ( m_hOwner != NULL )
+	if( m_hOwner != NULL )
 	{
 		m_hOwner->NotifyRocketDied();
 		m_hOwner = NULL;
@@ -388,34 +402,38 @@ void CMissile::Explode( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOther - 
+// Purpose:
+// Input  : *pOther -
 //-----------------------------------------------------------------------------
-void CMissile::MissileTouch( CBaseEntity *pOther )
+void CMissile::MissileTouch( CBaseEntity* pOther )
 {
 	Assert( pOther );
-	
+
 	// Don't touch triggers (but DO hit weapons)
-	if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER|FSOLID_VOLUME_CONTENTS) && pOther->GetCollisionGroup() != COLLISION_GROUP_WEAPON )
+	if( pOther->IsSolidFlagSet( FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS ) && pOther->GetCollisionGroup() != COLLISION_GROUP_WEAPON )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
-		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		if( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		{
 			return;
+		}
 	}
 
 	Explode();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMissile::CreateSmokeTrail( void )
 {
-	if ( m_hRocketTrail )
+	if( m_hRocketTrail )
+	{
 		return;
+	}
 
 	// Smoke trail.
-	if ( (m_hRocketTrail = RocketTrail::CreateRocketTrail()) != NULL )
+	if( ( m_hRocketTrail = RocketTrail::CreateRocketTrail() ) != NULL )
 	{
 		m_hRocketTrail->m_Opacity = 0.2f;
 		m_hRocketTrail->m_SpawnRate = 100;
@@ -427,7 +445,7 @@ void CMissile::CreateSmokeTrail( void )
 		m_hRocketTrail->m_SpawnRadius = 4;
 		m_hRocketTrail->m_MinSpeed = 2;
 		m_hRocketTrail->m_MaxSpeed = 16;
-		
+
 		m_hRocketTrail->SetLifetime( 999 );
 		m_hRocketTrail->FollowEntity( this, "0" );
 	}
@@ -435,14 +453,14 @@ void CMissile::CreateSmokeTrail( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMissile::IgniteThink( void )
 {
 	SetMoveType( MOVETYPE_FLY );
-	SetModel("models/weapons/w_missile.mdl");
+	SetModel( "models/weapons/w_missile.mdl" );
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
- 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+	RemoveSolidFlags( FSOLID_NOT_SOLID );
 
 	//TODO: Play opening sound
 
@@ -456,13 +474,13 @@ void CMissile::IgniteThink( void )
 	SetThink( &CMissile::SeekThink );
 	SetNextThink( gpGlobals->curtime );
 
-	if ( m_hOwner && m_hOwner->GetOwner() )
+	if( m_hOwner && m_hOwner->GetOwner() )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( m_hOwner->GetOwner() );
+		CBasePlayer* pPlayer = ToBasePlayer( m_hOwner->GetOwner() );
 
-		if ( pPlayer )
+		if( pPlayer )
 		{
-			color32 white = { 255,225,205,64 };
+			color32 white = { 255, 225, 205, 64 };
 			UTIL_ScreenFade( pPlayer, white, 0.1f, 0.0f, FFADE_IN );
 
 			pPlayer->RumbleEffect( RUMBLE_RPG_MISSILE, 0, RUMBLE_FLAG_RESTART );
@@ -474,11 +492,11 @@ void CMissile::IgniteThink( void )
 
 
 //-----------------------------------------------------------------------------
-// Gets the shooting position 
+// Gets the shooting position
 //-----------------------------------------------------------------------------
-void CMissile::GetShootPosition( CLaserDot *pLaserDot, Vector *pShootPosition )
+void CMissile::GetShootPosition( CLaserDot* pLaserDot, Vector* pShootPosition )
 {
-	if ( pLaserDot->GetOwnerEntity() != NULL )
+	if( pLaserDot->GetOwnerEntity() != NULL )
 	{
 		//FIXME: Do we care this isn't exactly the muzzle position?
 		*pShootPosition = pLaserDot->GetOwnerEntity()->WorldSpaceCenter();
@@ -489,16 +507,16 @@ void CMissile::GetShootPosition( CLaserDot *pLaserDot, Vector *pShootPosition )
 	}
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 #define	RPG_HOMING_SPEED	0.125f
 
-void CMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed )
+void CMissile::ComputeActualDotPosition( CLaserDot* pLaserDot, Vector* pActualDotPosition, float* pHomingSpeed )
 {
 	*pHomingSpeed = RPG_HOMING_SPEED;
-	if ( pLaserDot->GetTargetEntity() )
+	if( pLaserDot->GetTargetEntity() )
 	{
 		*pActualDotPosition = pLaserDot->GetChasePosition();
 		return;
@@ -510,20 +528,20 @@ void CMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDo
 	//Get the laser's vector
 	Vector vLaserDir;
 	VectorSubtract( pLaserDot->GetChasePosition(), vLaserStart, vLaserDir );
-	
+
 	//Find the length of the current laser
 	float flLaserLength = VectorNormalize( vLaserDir );
-	
+
 	//Find the length from the missile to the laser's owner
 	float flMissileLength = GetAbsOrigin().DistTo( vLaserStart );
 
 	//Find the length from the missile to the laser's position
 	Vector vecTargetToMissile;
-	VectorSubtract( GetAbsOrigin(), pLaserDot->GetChasePosition(), vecTargetToMissile ); 
+	VectorSubtract( GetAbsOrigin(), pLaserDot->GetChasePosition(), vecTargetToMissile );
 	float flTargetLength = VectorNormalize( vecTargetToMissile );
 
 	// See if we should chase the line segment nearest us
-	if ( ( flMissileLength < flLaserLength ) || ( flTargetLength <= 512.0f ) )
+	if( ( flMissileLength < flLaserLength ) || ( flTargetLength <= 512.0f ) )
 	{
 		*pActualDotPosition = UTIL_PointOnLineNearestPoint( vLaserStart, pLaserDot->GetChasePosition(), GetAbsOrigin() );
 		*pActualDotPosition += ( vLaserDir * 256.0f );
@@ -541,18 +559,18 @@ void CMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDo
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMissile::SeekThink( void )
 {
-	CBaseEntity	*pBestDot	= NULL;
+	CBaseEntity*	pBestDot	= NULL;
 	float		flBestDist	= MAX_TRACE_LENGTH;
 	float		dotDist;
 
 	// If we have a grace period, go solid when it ends
-	if ( m_flGracePeriodEndsAt )
+	if( m_flGracePeriodEndsAt )
 	{
-		if ( m_flGracePeriodEndsAt < gpGlobals->curtime )
+		if( m_flGracePeriodEndsAt < gpGlobals->curtime )
 		{
 			RemoveSolidFlags( FSOLID_NOT_SOLID );
 			m_flGracePeriodEndsAt = 0;
@@ -560,18 +578,22 @@ void CMissile::SeekThink( void )
 	}
 
 	//Search for all dots relevant to us
-	for( CLaserDot *pEnt = GetLaserDotList(); pEnt != NULL; pEnt = pEnt->m_pNext )
+	for( CLaserDot* pEnt = GetLaserDotList(); pEnt != NULL; pEnt = pEnt->m_pNext )
 	{
-		if ( !pEnt->IsOn() )
+		if( !pEnt->IsOn() )
+		{
 			continue;
+		}
 
-		if ( pEnt->GetOwnerEntity() != GetOwnerEntity() )
+		if( pEnt->GetOwnerEntity() != GetOwnerEntity() )
+		{
 			continue;
+		}
 
-		dotDist = (GetAbsOrigin() - pEnt->GetAbsOrigin()).Length();
+		dotDist = ( GetAbsOrigin() - pEnt->GetAbsOrigin() ).Length();
 
 		//Find closest
-		if ( dotDist < flBestDist )
+		if( dotDist < flBestDist )
 		{
 			pBestDot	= pEnt;
 			flBestDist	= dotDist;
@@ -587,23 +609,23 @@ void CMissile::SeekThink( void )
 		}
 	}
 
-	if ( rpg_missle_use_custom_detonators.GetBool() )
+	if( rpg_missle_use_custom_detonators.GetBool() )
 	{
-		for ( int i = gm_CustomDetonators.Count() - 1; i >=0; --i )
+		for( int i = gm_CustomDetonators.Count() - 1; i >= 0; --i )
 		{
-			CustomDetonator_t &detonator = gm_CustomDetonators[i];
-			if ( !detonator.hEntity )
+			CustomDetonator_t& detonator = gm_CustomDetonators[i];
+			if( !detonator.hEntity )
 			{
 				gm_CustomDetonators.FastRemove( i );
 			}
 			else
 			{
-				const Vector &vPos = detonator.hEntity->CollisionProp()->WorldSpaceCenter();
-				if ( detonator.halfHeight > 0 )
+				const Vector& vPos = detonator.hEntity->CollisionProp()->WorldSpaceCenter();
+				if( detonator.halfHeight > 0 )
 				{
-					if ( fabsf( vPos.z - GetAbsOrigin().z ) < detonator.halfHeight )
+					if( fabsf( vPos.z - GetAbsOrigin().z ) < detonator.halfHeight )
 					{
-						if ( ( GetAbsOrigin().AsVector2D() - vPos.AsVector2D() ).LengthSqr() < detonator.radiusSq )
+						if( ( GetAbsOrigin().AsVector2D() - vPos.AsVector2D() ).LengthSqr() < detonator.radiusSq )
 						{
 							Explode();
 							return;
@@ -612,7 +634,7 @@ void CMissile::SeekThink( void )
 				}
 				else
 				{
-					if ( ( GetAbsOrigin() - vPos ).LengthSqr() < detonator.radiusSq )
+					if( ( GetAbsOrigin() - vPos ).LengthSqr() < detonator.radiusSq )
 					{
 						Explode();
 						return;
@@ -623,22 +645,24 @@ void CMissile::SeekThink( void )
 	}
 
 	//If we have a dot target
-	if ( pBestDot == NULL )
+	if( pBestDot == NULL )
 	{
 		//Think as soon as possible
 		SetNextThink( gpGlobals->curtime );
 		return;
 	}
 
-	CLaserDot *pLaserDot = (CLaserDot *)pBestDot;
+	CLaserDot* pLaserDot = ( CLaserDot* )pBestDot;
 	Vector	targetPos;
 
-	float flHomingSpeed; 
+	float flHomingSpeed;
 	Vector vecLaserDotPosition;
 	ComputeActualDotPosition( pLaserDot, &targetPos, &flHomingSpeed );
 
-	if ( IsSimulatingOnAlternateTicks() )
+	if( IsSimulatingOnAlternateTicks() )
+	{
 		flHomingSpeed *= 2;
+	}
 
 	Vector	vTargetDir;
 	VectorSubtract( targetPos, GetAbsOrigin(), vTargetDir );
@@ -657,16 +681,16 @@ void CMissile::SeekThink( void )
 	Vector	vDir	= GetAbsVelocity();
 	float	flSpeed	= VectorNormalize( vDir );
 	Vector	vNewVelocity = vDir;
-	if ( gpGlobals->frametime > 0.0f )
+	if( gpGlobals->frametime > 0.0f )
 	{
-		if ( flSpeed != 0 )
+		if( flSpeed != 0 )
 		{
 			vNewVelocity = ( flHomingSpeed * vTargetDir ) + ( ( 1 - flHomingSpeed ) * vDir );
 
 			// This computation may happen to cancel itself out exactly. If so, slam to targetdir.
-			if ( VectorNormalize( vNewVelocity ) < 1e-3 )
+			if( VectorNormalize( vNewVelocity ) < 1e-3 )
 			{
-				vNewVelocity = (flDist != 0) ? vTargetDir : vDir;
+				vNewVelocity = ( flDist != 0 ) ? vTargetDir : vDir;
 			}
 		}
 		else
@@ -694,7 +718,7 @@ void CMissile::SeekThink( void )
 
 #ifdef HL2_EPISODIC
 
-	if ( m_bCreateDangerSounds == true )
+	if( m_bCreateDangerSounds == true )
 	{
 		trace_t tr;
 		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity() * 0.5, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
@@ -706,26 +730,26 @@ void CMissile::SeekThink( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
-// Input  : &vecOrigin - 
-//			&vecAngles - 
-//			NULL - 
+// Input  : &vecOrigin -
+//			&vecAngles -
+//			NULL -
 //
 // Output : CMissile
 //-----------------------------------------------------------------------------
-CMissile *CMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner = NULL )
+CMissile* CMissile::Create( const Vector& vecOrigin, const QAngle& vecAngles, edict_t* pentOwner = NULL )
 {
 	//CMissile *pMissile = (CMissile *)CreateEntityByName("rpg_missile" );
-	CMissile *pMissile = (CMissile *) CBaseEntity::Create( "rpg_missile", vecOrigin, vecAngles, CBaseEntity::Instance( pentOwner ) );
+	CMissile* pMissile = ( CMissile* ) CBaseEntity::Create( "rpg_missile", vecOrigin, vecAngles, CBaseEntity::Instance( pentOwner ) );
 	pMissile->SetOwnerEntity( Instance( pentOwner ) );
 	pMissile->Spawn();
 	pMissile->AddEffects( EF_NOSHADOW );
-	
+
 	Vector vecForward;
 	AngleVectors( vecAngles, &vecForward );
 
-	pMissile->SetAbsVelocity( vecForward * 300 + Vector( 0,0, 128 ) );
+	pMissile->SetAbsVelocity( vecForward * 300 + Vector( 0, 0, 128 ) );
 
 	return pMissile;
 }
@@ -735,7 +759,7 @@ CMissile *CMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, ed
 //-----------------------------------------------------------------------------
 CUtlVector<CMissile::CustomDetonator_t> CMissile::gm_CustomDetonators;
 
-void CMissile::AddCustomDetonator( CBaseEntity *pEntity, float radius, float height )
+void CMissile::AddCustomDetonator( CBaseEntity* pEntity, float radius, float height )
 {
 	int i = gm_CustomDetonators.AddToTail();
 	gm_CustomDetonators[i].hEntity = pEntity;
@@ -746,11 +770,11 @@ void CMissile::AddCustomDetonator( CBaseEntity *pEntity, float radius, float hei
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CMissile::RemoveCustomDetonator( CBaseEntity *pEntity )
+void CMissile::RemoveCustomDetonator( CBaseEntity* pEntity )
 {
-	for ( int i = 0; i < gm_CustomDetonators.Count(); i++ )
+	for( int i = 0; i < gm_CustomDetonators.Count(); i++ )
 	{
-		if ( gm_CustomDetonators[i].hEntity == pEntity )
+		if( gm_CustomDetonators[i].hEntity == pEntity )
 		{
 			gm_CustomDetonators.FastRemove( i );
 			break;
@@ -761,7 +785,7 @@ void CMissile::RemoveCustomDetonator( CBaseEntity *pEntity )
 
 //-----------------------------------------------------------------------------
 // This entity is used to create little force boxes that the helicopter
-// should avoid. 
+// should avoid.
 //-----------------------------------------------------------------------------
 class CInfoAPCMissileHint : public CBaseEntity
 {
@@ -774,35 +798,35 @@ public:
 	virtual void Activate();
 	virtual void UpdateOnRemove();
 
-	static CBaseEntity *FindAimTarget( CBaseEntity *pMissile, const char *pTargetName, 
-		const Vector &vecCurrentTargetPos, const Vector &vecCurrentTargetVel );
+	static CBaseEntity* FindAimTarget( CBaseEntity* pMissile, const char* pTargetName,
+									   const Vector& vecCurrentTargetPos, const Vector& vecCurrentTargetVel );
 
 private:
 	EHANDLE	m_hTarget;
 
-	typedef CHandle<CInfoAPCMissileHint> APCMissileHintHandle_t;	
-	static CUtlVector< APCMissileHintHandle_t > s_APCMissileHints; 
+	typedef CHandle<CInfoAPCMissileHint> APCMissileHintHandle_t;
+	static CUtlVector< APCMissileHintHandle_t > s_APCMissileHints;
 };
 
 
 //-----------------------------------------------------------------------------
 //
-// This entity is used to create little force boxes that the helicopters should avoid. 
+// This entity is used to create little force boxes that the helicopters should avoid.
 //
 //-----------------------------------------------------------------------------
-CUtlVector< CInfoAPCMissileHint::APCMissileHintHandle_t > CInfoAPCMissileHint::s_APCMissileHints; 
+CUtlVector< CInfoAPCMissileHint::APCMissileHintHandle_t > CInfoAPCMissileHint::s_APCMissileHints;
 
 LINK_ENTITY_TO_CLASS( info_apc_missile_hint, CInfoAPCMissileHint );
 
 BEGIN_DATADESC( CInfoAPCMissileHint )
-	DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
-END_DATADESC()
+DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Spawn, remove
 //-----------------------------------------------------------------------------
-void CInfoAPCMissileHint::Spawn( )
+			  void CInfoAPCMissileHint::Spawn( )
 {
 	SetModel( STRING( GetModelName() ) );
 	SetSolid( SOLID_BSP );
@@ -815,7 +839,7 @@ void CInfoAPCMissileHint::Activate( )
 	BaseClass::Activate();
 
 	m_hTarget = gEntList.FindEntityByName( NULL, m_target );
-	if ( m_hTarget == NULL )
+	if( m_hTarget == NULL )
 	{
 		DevWarning( "%s: Could not find target '%s'!\n", GetClassname(), STRING( m_target ) );
 	}
@@ -837,34 +861,42 @@ void CInfoAPCMissileHint::UpdateOnRemove( )
 //-----------------------------------------------------------------------------
 #define HINT_PREDICTION_TIME 3.0f
 
-CBaseEntity *CInfoAPCMissileHint::FindAimTarget( CBaseEntity *pMissile, const char *pTargetName, 
-	const Vector &vecCurrentEnemyPos, const Vector &vecCurrentEnemyVel )
+CBaseEntity* CInfoAPCMissileHint::FindAimTarget( CBaseEntity* pMissile, const char* pTargetName,
+		const Vector& vecCurrentEnemyPos, const Vector& vecCurrentEnemyVel )
 {
-	if ( !pTargetName )
+	if( !pTargetName )
+	{
 		return NULL;
+	}
 
 	float flOOSpeed = pMissile->GetAbsVelocity().Length();
-	if ( flOOSpeed != 0.0f )
+	if( flOOSpeed != 0.0f )
 	{
 		flOOSpeed = 1.0f / flOOSpeed;
 	}
 
-	for ( int i = s_APCMissileHints.Count(); --i >= 0; )
+	for( int i = s_APCMissileHints.Count(); --i >= 0; )
 	{
-		CInfoAPCMissileHint *pHint = s_APCMissileHints[i];
-		if ( !pHint->NameMatches( pTargetName ) )
+		CInfoAPCMissileHint* pHint = s_APCMissileHints[i];
+		if( !pHint->NameMatches( pTargetName ) )
+		{
 			continue;
+		}
 
-		if ( !pHint->m_hTarget )
+		if( !pHint->m_hTarget )
+		{
 			continue;
+		}
 
 		Vector vecMissileToHint, vecMissileToEnemy;
 		VectorSubtract( pHint->m_hTarget->WorldSpaceCenter(), pMissile->GetAbsOrigin(), vecMissileToHint );
 		VectorSubtract( vecCurrentEnemyPos, pMissile->GetAbsOrigin(), vecMissileToEnemy );
 		float flDistMissileToHint = VectorNormalize( vecMissileToHint );
 		VectorNormalize( vecMissileToEnemy );
-		if ( DotProduct( vecMissileToHint, vecMissileToEnemy ) < 0.866f )
+		if( DotProduct( vecMissileToHint, vecMissileToEnemy ) < 0.866f )
+		{
 			continue;
+		}
 
 		// Determine when the target will be inside the volume.
 		// Project at most 3 seconds in advance
@@ -872,17 +904,19 @@ CBaseEntity *CInfoAPCMissileHint::FindAimTarget( CBaseEntity *pMissile, const ch
 		VectorMultiply( vecCurrentEnemyVel, HINT_PREDICTION_TIME, vecRayDelta );
 
 		BoxTraceInfo_t trace;
-		if ( !IntersectRayWithOBB( vecCurrentEnemyPos, vecRayDelta, pHint->CollisionProp()->CollisionToWorldTransform(),
-			pHint->CollisionProp()->OBBMins(), pHint->CollisionProp()->OBBMaxs(), 0.0f, &trace ))
+		if( !IntersectRayWithOBB( vecCurrentEnemyPos, vecRayDelta, pHint->CollisionProp()->CollisionToWorldTransform(),
+								  pHint->CollisionProp()->OBBMins(), pHint->CollisionProp()->OBBMaxs(), 0.0f, &trace ) )
 		{
 			continue;
 		}
 
 		// Determine the amount of time it would take the missile to reach the target
-		// If we can reach the target within the time it takes for the enemy to reach the 
+		// If we can reach the target within the time it takes for the enemy to reach the
 		float tSqr = flDistMissileToHint * flOOSpeed / HINT_PREDICTION_TIME;
-		if ( (tSqr < (trace.t1 * trace.t1)) || (tSqr > (trace.t2 * trace.t2)) )
+		if( ( tSqr < ( trace.t1 * trace.t1 ) ) || ( tSqr > ( trace.t2 * trace.t2 ) ) )
+		{
 			continue;
+		}
 
 		return pHint->m_hTarget;
 	}
@@ -895,8 +929,8 @@ CBaseEntity *CInfoAPCMissileHint::FindAimTarget( CBaseEntity *pMissile, const ch
 // a list of missiles to search quickly
 //-----------------------------------------------------------------------------
 CEntityClassList<CAPCMissile> g_APCMissileList;
-template <> CAPCMissile *CEntityClassList<CAPCMissile>::m_pClassList = NULL;
-CAPCMissile *GetAPCMissileList()
+template <> CAPCMissile* CEntityClassList<CAPCMissile>::m_pClassList = NULL;
+CAPCMissile* GetAPCMissileList()
 {
 	return g_APCMissileList.m_pClassList;
 }
@@ -904,20 +938,24 @@ CAPCMissile *GetAPCMissileList()
 //-----------------------------------------------------------------------------
 // Finds apc missiles in cone
 //-----------------------------------------------------------------------------
-CAPCMissile *FindAPCMissileInCone( const Vector &vecOrigin, const Vector &vecDirection, float flAngle )
+CAPCMissile* FindAPCMissileInCone( const Vector& vecOrigin, const Vector& vecDirection, float flAngle )
 {
 	float flCosAngle = cos( DEG2RAD( flAngle ) );
-	for( CAPCMissile *pEnt = GetAPCMissileList(); pEnt != NULL; pEnt = pEnt->m_pNext )
+	for( CAPCMissile* pEnt = GetAPCMissileList(); pEnt != NULL; pEnt = pEnt->m_pNext )
 	{
-		if ( !pEnt->IsSolid() )
+		if( !pEnt->IsSolid() )
+		{
 			continue;
+		}
 
 		Vector vecDelta;
 		VectorSubtract( pEnt->GetAbsOrigin(), vecOrigin, vecDelta );
 		VectorNormalize( vecDelta );
 		float flDot = DotProduct( vecDelta, vecDirection );
-		if ( flDot > flCosAngle )
+		if( flDot > flCosAngle )
+		{
 			return pEnt;
+		}
 	}
 
 	return NULL;
@@ -943,28 +981,28 @@ CAPCMissile *FindAPCMissileInCone( const Vector &vecOrigin, const Vector &vecDir
 
 BEGIN_DATADESC( CAPCMissile )
 
-	DEFINE_FIELD( m_flReachedTargetTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_flIgnitionTime,			FIELD_TIME ),
-	DEFINE_FIELD( m_bGuidingDisabled,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hSpecificTarget,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_strHint,				FIELD_STRING ),
-	DEFINE_FIELD( m_flLastHomingSpeed,		FIELD_FLOAT ),
+DEFINE_FIELD( m_flReachedTargetTime,	FIELD_TIME ),
+				 DEFINE_FIELD( m_flIgnitionTime,			FIELD_TIME ),
+				 DEFINE_FIELD( m_bGuidingDisabled,		FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_hSpecificTarget,		FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_strHint,				FIELD_STRING ),
+				 DEFINE_FIELD( m_flLastHomingSpeed,		FIELD_FLOAT ),
 //	DEFINE_FIELD( m_pNext,					FIELD_CLASSPTR ),
 
-	DEFINE_THINKFUNC( BeginSeekThink ),
-	DEFINE_THINKFUNC( AugerStartThink ),
-	DEFINE_THINKFUNC( ExplodeThink ),
-	DEFINE_THINKFUNC( APCSeekThink ),
+				 DEFINE_THINKFUNC( BeginSeekThink ),
+				 DEFINE_THINKFUNC( AugerStartThink ),
+				 DEFINE_THINKFUNC( ExplodeThink ),
+				 DEFINE_THINKFUNC( APCSeekThink ),
 
-	DEFINE_FUNCTION( APCMissileTouch ),
+				 DEFINE_FUNCTION( APCMissileTouch ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( apc_missile, CAPCMissile );
+				 LINK_ENTITY_TO_CLASS( apc_missile, CAPCMissile );
 
-CAPCMissile *CAPCMissile::Create( const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, CBaseEntity *pOwner )
+CAPCMissile* CAPCMissile::Create( const Vector& vecOrigin, const QAngle& vecAngles, const Vector& vecVelocity, CBaseEntity* pOwner )
 {
-	CAPCMissile *pMissile = (CAPCMissile *)CBaseEntity::Create( "apc_missile", vecOrigin, vecAngles, pOwner );
+	CAPCMissile* pMissile = ( CAPCMissile* )CBaseEntity::Create( "apc_missile", vecOrigin, vecAngles, pOwner );
 	pMissile->SetOwnerEntity( pOwner );
 	pMissile->Spawn();
 	pMissile->SetAbsVelocity( vecVelocity );
@@ -994,7 +1032,7 @@ CAPCMissile::~CAPCMissile()
 void CAPCMissile::Init()
 {
 	SetMoveType( MOVETYPE_FLY );
-	SetModel("models/weapons/w_missile.mdl");
+	SetModel( "models/weapons/w_missile.mdl" );
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 	CreateSmokeTrail();
 	SetTouch( &CAPCMissile::APCMissileTouch );
@@ -1012,21 +1050,23 @@ void CAPCMissile::Init()
 //-----------------------------------------------------------------------------
 // For hitting a specific target
 //-----------------------------------------------------------------------------
-void CAPCMissile::AimAtSpecificTarget( CBaseEntity *pTarget )
+void CAPCMissile::AimAtSpecificTarget( CBaseEntity* pTarget )
 {
 	m_hSpecificTarget = pTarget;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOther - 
+// Purpose:
+// Input  : *pOther -
 //-----------------------------------------------------------------------------
-void CAPCMissile::APCMissileTouch( CBaseEntity *pOther )
+void CAPCMissile::APCMissileTouch( CBaseEntity* pOther )
 {
 	Assert( pOther );
-	if ( !pOther->IsSolid() && !pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS) )
+	if( !pOther->IsSolid() && !pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS ) )
+	{
 		return;
+	}
 
 	Explode();
 }
@@ -1056,7 +1096,7 @@ void CAPCMissile::AugerDelay( float flDelay )
 
 void CAPCMissile::AugerStartThink()
 {
-	if ( m_hRocketTrail != NULL )
+	if( m_hRocketTrail != NULL )
 	{
 		m_hRocketTrail->m_bDamaged = true;
 	}
@@ -1077,7 +1117,7 @@ void CAPCMissile::ExplodeDelay( float flDelay )
 
 void CAPCMissile::BeginSeekThink( void )
 {
- 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+	RemoveSolidFlags( FSOLID_NOT_SOLID );
 	SetThink( &CAPCMissile::APCSeekThink );
 	SetNextThink( gpGlobals->curtime );
 }
@@ -1089,21 +1129,25 @@ void CAPCMissile::APCSeekThink( void )
 	bool bFoundDot = false;
 
 	//If we can't find a dot to follow around then just send me wherever I'm facing so I can blow up in peace.
-	for( CLaserDot *pEnt = GetLaserDotList(); pEnt != NULL; pEnt = pEnt->m_pNext )
+	for( CLaserDot* pEnt = GetLaserDotList(); pEnt != NULL; pEnt = pEnt->m_pNext )
 	{
-		if ( !pEnt->IsOn() )
+		if( !pEnt->IsOn() )
+		{
 			continue;
+		}
 
-		if ( pEnt->GetOwnerEntity() != GetOwnerEntity() )
+		if( pEnt->GetOwnerEntity() != GetOwnerEntity() )
+		{
 			continue;
+		}
 
 		bFoundDot = true;
 	}
 
-	if ( bFoundDot == false )
+	if( bFoundDot == false )
 	{
 		Vector	vDir	= GetAbsVelocity();
-		VectorNormalize ( vDir );
+		VectorNormalize( vDir );
 
 		SetAbsVelocity( vDir * 800 );
 
@@ -1124,7 +1168,7 @@ int CAPCMissile::AugerHealth()
 	return m_iMaxHealth - 25;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Health lost at which augering starts
 //-----------------------------------------------------------------------------
@@ -1133,22 +1177,22 @@ void CAPCMissile::DisableGuiding()
 	m_bGuidingDisabled = true;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Guidance hints
 //-----------------------------------------------------------------------------
-void CAPCMissile::SetGuidanceHint( const char *pHintName )
+void CAPCMissile::SetGuidanceHint( const char* pHintName )
 {
 	m_strHint = MAKE_STRING( pHintName );
 }
 
 
 //-----------------------------------------------------------------------------
-// The actual explosion 
+// The actual explosion
 //-----------------------------------------------------------------------------
 void CAPCMissile::DoExplosion( void )
 {
-	if ( GetWaterLevel() != 0 )
+	if( GetWaterLevel() != 0 )
 	{
 		CEffectData data;
 		data.m_vOrigin = WorldSpaceCenter();
@@ -1169,13 +1213,13 @@ void CAPCMissile::DoExplosion( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCMissile::ComputeLeadingPosition( const Vector &vecShootPosition, CBaseEntity *pTarget, Vector *pLeadPosition )
+void CAPCMissile::ComputeLeadingPosition( const Vector& vecShootPosition, CBaseEntity* pTarget, Vector* pLeadPosition )
 {
 	Vector vecTarget = pTarget->BodyTarget( vecShootPosition, false );
 	float flShotSpeed = GetAbsVelocity().Length();
-	if ( flShotSpeed == 0 )
+	if( flShotSpeed == 0 )
 	{
 		*pLeadPosition = vecTarget;
 		return;
@@ -1197,23 +1241,23 @@ void CAPCMissile::ComputeLeadingPosition( const Vector &vecShootPosition, CBaseE
 	float a = flTargetSpeed * flTargetSpeed - flShotSpeed * flShotSpeed;
 	float b = -2.0f * flTargetToShooter * flCosTheta * flTargetSpeed;
 	float c = flTargetToShooter * flTargetToShooter;
-	
-	float flDiscrim = b*b - 4*a*c;
-	if (flDiscrim < 0)
+
+	float flDiscrim = b * b - 4 * a * c;
+	if( flDiscrim < 0 )
 	{
 		*pLeadPosition = vecTarget;
 		return;
 	}
 
-	flDiscrim = sqrt(flDiscrim);
-	float t = (-b + flDiscrim) / (2.0f * a);
-	float t2 = (-b - flDiscrim) / (2.0f * a);
-	if ( t < t2 )
+	flDiscrim = sqrt( flDiscrim );
+	float t = ( -b + flDiscrim ) / ( 2.0f * a );
+	float t2 = ( -b - flDiscrim ) / ( 2.0f * a );
+	if( t < t2 )
 	{
 		t = t2;
 	}
 
-	if ( t <= 0.0f )
+	if( t <= 0.0f )
 	{
 		*pLeadPosition = vecTarget;
 		return;
@@ -1224,11 +1268,11 @@ void CAPCMissile::ComputeLeadingPosition( const Vector &vecShootPosition, CBaseE
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed )
+void CAPCMissile::ComputeActualDotPosition( CLaserDot* pLaserDot, Vector* pActualDotPosition, float* pHomingSpeed )
 {
-	if ( m_bGuidingDisabled )
+	if( m_bGuidingDisabled )
 	{
 		*pActualDotPosition = GetAbsOrigin();
 		*pHomingSpeed = 0.0f;
@@ -1236,11 +1280,11 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 		return;
 	}
 
-	if ( ( m_strHint != NULL_STRING ) && (!m_hSpecificTarget) )
+	if( ( m_strHint != NULL_STRING ) && ( !m_hSpecificTarget ) )
 	{
 		Vector vecOrigin, vecVelocity;
-		CBaseEntity *pTarget = pLaserDot->GetTargetEntity();
-		if ( pTarget )
+		CBaseEntity* pTarget = pLaserDot->GetTargetEntity();
+		if( pTarget )
 		{
 			vecOrigin = pTarget->BodyTarget( GetAbsOrigin(), false );
 			vecVelocity	= pTarget->GetSmoothedVelocity();
@@ -1254,22 +1298,22 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 		m_hSpecificTarget = CInfoAPCMissileHint::FindAimTarget( this, STRING( m_strHint ), vecOrigin, vecVelocity );
 	}
 
-	CBaseEntity *pLaserTarget = m_hSpecificTarget ? m_hSpecificTarget.Get() : pLaserDot->GetTargetEntity();
-	if ( !pLaserTarget )
+	CBaseEntity* pLaserTarget = m_hSpecificTarget ? m_hSpecificTarget.Get() : pLaserDot->GetTargetEntity();
+	if( !pLaserTarget )
 	{
 		BaseClass::ComputeActualDotPosition( pLaserDot, pActualDotPosition, pHomingSpeed );
 		m_flLastHomingSpeed = *pHomingSpeed;
 		return;
 	}
-	
-	if ( pLaserTarget->ClassMatches( "npc_bullseye" ) )
+
+	if( pLaserTarget->ClassMatches( "npc_bullseye" ) )
 	{
-		if ( m_flLastHomingSpeed != RPG_HOMING_SPEED )
+		if( m_flLastHomingSpeed != RPG_HOMING_SPEED )
 		{
-			if (m_flLastHomingSpeed > RPG_HOMING_SPEED)
+			if( m_flLastHomingSpeed > RPG_HOMING_SPEED )
 			{
 				m_flLastHomingSpeed -= HOMING_SPEED_ACCEL * UTIL_GetSimulationInterval();
-				if ( m_flLastHomingSpeed < RPG_HOMING_SPEED )
+				if( m_flLastHomingSpeed < RPG_HOMING_SPEED )
 				{
 					m_flLastHomingSpeed = RPG_HOMING_SPEED;
 				}
@@ -1277,7 +1321,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 			else
 			{
 				m_flLastHomingSpeed += HOMING_SPEED_ACCEL * UTIL_GetSimulationInterval();
-				if ( m_flLastHomingSpeed > RPG_HOMING_SPEED )
+				if( m_flLastHomingSpeed > RPG_HOMING_SPEED )
 				{
 					m_flLastHomingSpeed = RPG_HOMING_SPEED;
 				}
@@ -1300,7 +1344,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 	ComputeLeadingPosition( GetAbsOrigin(), pLaserTarget, &vecLeadPosition );
 
 	Vector vecTargetToMissile, vecTargetToShooter;
-	VectorSubtract( GetAbsOrigin(), vecTargetPosition, vecTargetToMissile ); 
+	VectorSubtract( GetAbsOrigin(), vecTargetPosition, vecTargetToMissile );
 	VectorSubtract( vLaserStart, vecTargetPosition, vecTargetToShooter );
 
 	*pActualDotPosition = vecLeadPosition;
@@ -1308,9 +1352,9 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 	float flMinHomingDistance = MIN_HOMING_DISTANCE;
 	float flMaxHomingDistance = MAX_HOMING_DISTANCE;
 	float flBlendTime = gpGlobals->curtime - m_flIgnitionTime;
-	if ( flBlendTime > DOWNWARD_BLEND_TIME_START )
+	if( flBlendTime > DOWNWARD_BLEND_TIME_START )
 	{
-		if ( m_flReachedTargetTime != 0.0f )
+		if( m_flReachedTargetTime != 0.0f )
 		{
 			*pHomingSpeed = APC_HOMING_SPEED;
 			float flDeltaTime = clamp( gpGlobals->curtime - m_flReachedTargetTime, 0.0f, CORRECTION_TIME );
@@ -1324,7 +1368,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 			flMaxHomingDistance = MAX_NEAR_HOMING_DISTANCE;
 			Vector vecDelta;
 			VectorSubtract( GetAbsOrigin(), *pActualDotPosition, vecDelta );
-			if ( vecDelta.z > MIN_HEIGHT_DIFFERENCE )
+			if( vecDelta.z > MIN_HEIGHT_DIFFERENCE )
 			{
 				float flClampedHeight = clamp( vecDelta.z, MIN_HEIGHT_DIFFERENCE, MAX_HEIGHT_DIFFERENCE );
 				float flHeightAdjustFactor = SimpleSplineRemapVal( flClampedHeight, MIN_HEIGHT_DIFFERENCE, MAX_HEIGHT_DIFFERENCE, 0.0f, 1.0f );
@@ -1333,7 +1377,7 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 				float flDist = VectorNormalize( vecDelta );
 
 				float flForwardOffset = 2000.0f;
-				if ( flDist > flForwardOffset )
+				if( flDist > flForwardOffset )
 				{
 					Vector vecNewPosition;
 					VectorMA( GetAbsOrigin(), -flForwardOffset, vecDelta, vecNewPosition );
@@ -1349,16 +1393,16 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 		}
 
 		// Allows for players right at the edge of rocket range to be threatened
-		if ( flBlendTime > 0.6f )
+		if( flBlendTime > 0.6f )
 		{
 			float flTargetLength = GetAbsOrigin().DistTo( pLaserTarget->WorldSpaceCenter() );
-			flTargetLength = clamp( flTargetLength, flMinHomingDistance, flMaxHomingDistance ); 
+			flTargetLength = clamp( flTargetLength, flMinHomingDistance, flMaxHomingDistance );
 			*pHomingSpeed = SimpleSplineRemapVal( flTargetLength, flMaxHomingDistance, flMinHomingDistance, *pHomingSpeed, 0.01f );
 		}
 	}
 
 	float flDot = DotProduct2D( vecTargetToShooter.AsVector2D(), vecTargetToMissile.AsVector2D() );
-	if ( ( flDot < 0 ) || m_bGuidingDisabled )
+	if( ( flDot < 0 ) || m_bGuidingDisabled )
 	{
 		*pHomingSpeed = 0.0f;
 	}
@@ -1379,24 +1423,24 @@ void CAPCMissile::ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActua
 
 BEGIN_DATADESC( CWeaponRPG )
 
-	DEFINE_FIELD( m_bInitialStateUpdate,FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bGuiding,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecNPCLaserDot,		FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_hLaserDot,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hMissile,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hLaserMuzzleSprite, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hLaserBeam,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bHideGuiding,		FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bInitialStateUpdate, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bGuiding,			FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_vecNPCLaserDot,		FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_hLaserDot,			FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hMissile,			FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hLaserMuzzleSprite, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hLaserBeam,			FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_bHideGuiding,		FIELD_BOOLEAN ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponRPG, DT_WeaponRPG)
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CWeaponRPG, DT_WeaponRPG )
+			  END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
-PRECACHE_WEAPON_REGISTER(weapon_rpg);
+			  LINK_ENTITY_TO_CLASS( weapon_rpg, CWeaponRPG );
+PRECACHE_WEAPON_REGISTER( weapon_rpg );
 
-acttable_t	CWeaponRPG::m_acttable[] = 
+acttable_t	CWeaponRPG::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_RPG, true },
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
@@ -1450,46 +1494,46 @@ acttable_t	CWeaponRPG::m_acttable[] =
 #endif
 };
 
-IMPLEMENT_ACTTABLE(CWeaponRPG);
+IMPLEMENT_ACTTABLE( CWeaponRPG );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponRPG::CWeaponRPG()
 {
 	m_bReloadsSingly = true;
-	m_bInitialStateUpdate= false;
+	m_bInitialStateUpdate = false;
 	m_bHideGuiding = false;
 	m_bGuiding = false;
 
-	m_fMinRange1 = m_fMinRange2 = 40*12;
-	m_fMaxRange1 = m_fMaxRange2 = 500*12;
+	m_fMinRange1 = m_fMinRange2 = 40 * 12;
+	m_fMaxRange1 = m_fMaxRange2 = 500 * 12;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponRPG::~CWeaponRPG()
 {
-	if ( m_hLaserDot != NULL )
+	if( m_hLaserDot != NULL )
 	{
 		UTIL_Remove( m_hLaserDot );
 		m_hLaserDot = NULL;
 	}
 
-	if ( m_hLaserMuzzleSprite )
+	if( m_hLaserMuzzleSprite )
 	{
 		UTIL_Remove( m_hLaserMuzzleSprite );
 	}
 
-	if ( m_hLaserBeam )
+	if( m_hLaserBeam )
 	{
 		UTIL_Remove( m_hLaserBeam );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::Precache( void )
 {
@@ -1508,21 +1552,23 @@ void CWeaponRPG::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::Activate( void )
 {
 	BaseClass::Activate();
 
 	// Restore the laser pointer after transition
-	if ( m_bGuiding )
+	if( m_bGuiding )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-		
-		if ( pOwner == NULL )
-			return;
+		CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-		if ( pOwner->GetActiveWeapon() == this )
+		if( pOwner == NULL )
+		{
+			return;
+		}
+
+		if( pOwner->GetActiveWeapon() == this )
 		{
 			StartGuiding();
 		}
@@ -1531,38 +1577,40 @@ void CWeaponRPG::Activate( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponRPG::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
 		case EVENT_WEAPON_SMG1:
 		{
-			if ( m_hMissile != NULL )
+			if( m_hMissile != NULL )
+			{
 				return;
+			}
 
 			Vector	muzzlePoint;
 			QAngle	vecAngles;
 
 			muzzlePoint = GetOwner()->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			ASSERT( npc != NULL );
 
 			Vector vecShootDir = npc->GetActualShootTrajectory( muzzlePoint );
 
 			// look for a better launch location
 			Vector altLaunchPoint;
-			if (GetAttachment( "missile", altLaunchPoint ))
+			if( GetAttachment( "missile", altLaunchPoint ) )
 			{
 				// check to see if it's relativly free
 				trace_t tr;
-				AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+				AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
 
-				if( tr.fraction == 1.0)
+				if( tr.fraction == 1.0 )
 				{
 					muzzlePoint = altLaunchPoint;
 				}
@@ -1570,7 +1618,7 @@ void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 
 			VectorAngles( vecShootDir, vecAngles );
 
-			m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );		
+			m_hMissile = CMissile::Create( muzzlePoint, vecAngles, GetOwner()->edict() );
 			m_hMissile->m_hOwner = this;
 
 			// NPCs always get a grace period
@@ -1583,7 +1631,7 @@ void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 			// Make sure our laserdot is off
 			m_bGuiding = false;
 
-			if ( m_hLaserDot )
+			if( m_hLaserDot )
 			{
 				m_hLaserDot->TurnOff();
 			}
@@ -1598,12 +1646,14 @@ void CWeaponRPG::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChara
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary )
 {
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return;
+	}
 
 	Vector muzzlePoint, vecShootDir;
 	QAngle	angShootDir;
@@ -1612,13 +1662,13 @@ void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bS
 
 	// look for a better launch location
 	Vector altLaunchPoint;
-	if (GetAttachment( "missile", altLaunchPoint ))
+	if( GetAttachment( "missile", altLaunchPoint ) )
 	{
 		// check to see if it's relativly free
 		trace_t tr;
-		AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+		AI_TraceHull( altLaunchPoint, altLaunchPoint + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
 
-		if( tr.fraction == 1.0)
+		if( tr.fraction == 1.0 )
 		{
 			muzzlePoint = altLaunchPoint;
 		}
@@ -1637,7 +1687,7 @@ void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bS
 	// Make sure our laserdot is off
 	m_bGuiding = false;
 
-	if ( m_hLaserDot )
+	if( m_hLaserDot )
 	{
 		m_hLaserDot->TurnOff();
 	}
@@ -1645,51 +1695,61 @@ void CWeaponRPG::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bS
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::HasAnyAmmo( void )
 {
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return true;
+	}
 
 	return BaseClass::HasAnyAmmo();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::WeaponShouldBeLowered( void )
 {
 	// Lower us if we're out of ammo
-	if ( !HasAnyAmmo() )
+	if( !HasAnyAmmo() )
+	{
 		return true;
-	
+	}
+
 	return BaseClass::WeaponShouldBeLowered();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::PrimaryAttack( void )
 {
 	// Can't have an active missile out
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return;
+	}
 
 	// Can't be reloading
-	if ( GetActivity() == ACT_VM_RELOAD )
+	if( GetActivity() == ACT_VM_RELOAD )
+	{
 		return;
+	}
 
 	Vector vecOrigin;
 	Vector vecForward;
 
 	m_flNextPrimaryAttack = gpGlobals->curtime + 0.5f;
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	Vector	vForward, vRight, vUp;
 
@@ -1707,7 +1767,7 @@ void CWeaponRPG::PrimaryAttack( void )
 	trace_t	tr;
 	Vector vecEye = pOwner->EyePosition();
 	UTIL_TraceLine( vecEye, vecEye + vForward * 128, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-	if ( tr.fraction == 1.0 )
+	if( tr.fraction == 1.0 )
 	{
 		m_hMissile->SetGracePeriod( 0.3 );
 	}
@@ -1733,11 +1793,11 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	// Check to see if we should trigger any RPG firing triggers
 	int iCount = g_hWeaponFireTriggers.Count();
-	for ( int i = 0; i < iCount; i++ )
+	for( int i = 0; i < iCount; i++ )
 	{
-		if ( g_hWeaponFireTriggers[i]->IsTouching( pOwner ) )
+		if( g_hWeaponFireTriggers[i]->IsTouching( pOwner ) )
 		{
-			if ( FClassnameIs( g_hWeaponFireTriggers[i], "trigger_rpgfire" ) )
+			if( FClassnameIs( g_hWeaponFireTriggers[i], "trigger_rpgfire" ) )
 			{
 				g_hWeaponFireTriggers[i]->ActivateMultiTrigger( pOwner );
 			}
@@ -1746,12 +1806,12 @@ void CWeaponRPG::PrimaryAttack( void )
 
 	if( hl2_episodic.GetBool() )
 	{
-		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+		CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
 		int nAIs = g_AI_Manager.NumAIs();
 
 		string_t iszStriderClassname = AllocPooledString( "npc_strider" );
 
-		for ( int i = 0; i < nAIs; i++ )
+		for( int i = 0; i < nAIs; i++ )
 		{
 			if( ppAIs[ i ]->m_iClassname == iszStriderClassname )
 			{
@@ -1762,33 +1822,35 @@ void CWeaponRPG::PrimaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOwner - 
+// Purpose:
+// Input  : *pOwner -
 //-----------------------------------------------------------------------------
-void CWeaponRPG::DecrementAmmo( CBaseCombatCharacter *pOwner )
+void CWeaponRPG::DecrementAmmo( CBaseCombatCharacter* pOwner )
 {
 	// Take away our primary ammo type
 	pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CWeaponRPG::SuppressGuiding( bool state )
 {
 	m_bHideGuiding = state;
 
-	if ( m_hLaserDot == NULL )
+	if( m_hLaserDot == NULL )
 	{
 		StartGuiding();
 
 		//STILL!?
-		if ( m_hLaserDot == NULL )
-			 return;
+		if( m_hLaserDot == NULL )
+		{
+			return;
+		}
 	}
 
-	if ( state )
+	if( state )
 	{
 		m_hLaserDot->TurnOff();
 	}
@@ -1804,33 +1866,37 @@ void CWeaponRPG::SuppressGuiding( bool state )
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::Lower( void )
 {
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return false;
+	}
 
 	return BaseClass::Lower();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::ItemPostFrame( void )
 {
 	BaseClass::ItemPostFrame();
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	//If we're pulling the weapon out for the first time, wait to draw the laser
-	if ( ( m_bInitialStateUpdate ) && ( GetActivity() != ACT_VM_DRAW ) )
+	if( ( m_bInitialStateUpdate ) && ( GetActivity() != ACT_VM_DRAW ) )
 	{
 		StartGuiding();
 		m_bInitialStateUpdate = false;
 	}
 
 	// Supress our guiding effects if we're lowered
-	if ( GetIdealActivity() == ACT_VM_IDLE_LOWERED || GetIdealActivity() == ACT_VM_RELOAD )
+	if( GetIdealActivity() == ACT_VM_IDLE_LOWERED || GetIdealActivity() == ACT_VM_RELOAD )
 	{
 		SuppressGuiding();
 	}
@@ -1841,9 +1907,9 @@ void CWeaponRPG::ItemPostFrame( void )
 
 	//Player has toggled guidance state
 	//Adrian: Players are not allowed to remove the laser guide in single player anymore, bye!
-	if ( g_pGameRules->IsMultiplayer() == true )
+	if( g_pGameRules->IsMultiplayer() == true )
 	{
-		if ( pPlayer->m_afButtonPressed & IN_ATTACK2 )
+		if( pPlayer->m_afButtonPressed & IN_ATTACK2 )
 		{
 			ToggleGuiding();
 		}
@@ -1855,26 +1921,28 @@ void CWeaponRPG::ItemPostFrame( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Vector
 //-----------------------------------------------------------------------------
 Vector CWeaponRPG::GetLaserPosition( void )
 {
 	CreateLaserPointer();
 
-	if ( m_hLaserDot != NULL )
+	if( m_hLaserDot != NULL )
+	{
 		return m_hLaserDot->GetAbsOrigin();
+	}
 
 	//FIXME: The laser dot sprite is not active, this code should not be allowed!
-	assert(0);
+	assert( 0 );
 	return vec3_origin;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: NPC RPG users cheat and directly set the laser pointer's origin
-// Input  : &vecTarget - 
+// Input  : &vecTarget -
 //-----------------------------------------------------------------------------
-void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
+void CWeaponRPG::UpdateNPCLaserPosition( const Vector& vecTarget )
 {
 	CreateLaserPointer();
 	// Turn the laserdot on
@@ -1882,7 +1950,7 @@ void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
 	m_hLaserDot->TurnOn();
 
 	Vector muzzlePoint = GetOwner()->Weapon_ShootPosition();
-	Vector vecDir = (vecTarget - muzzlePoint);
+	Vector vecDir = ( vecTarget - muzzlePoint );
 	VectorNormalize( vecDir );
 	vecDir = muzzlePoint + ( vecDir * MAX_TRACE_LENGTH );
 	UpdateLaserPosition( muzzlePoint, vecDir );
@@ -1891,24 +1959,24 @@ void CWeaponRPG::UpdateNPCLaserPosition( const Vector &vecTarget )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponRPG::SetNPCLaserPosition( const Vector &vecTarget ) 
-{ 
-	m_vecNPCLaserDot = vecTarget; 
+void CWeaponRPG::SetNPCLaserPosition( const Vector& vecTarget )
+{
+	m_vecNPCLaserDot = vecTarget;
 	//NDebugOverlay::Box( m_vecNPCLaserDot, -Vector(10,10,10), Vector(10,10,10), 255,0,0, 8, 3 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const Vector &CWeaponRPG::GetNPCLaserPosition( void )
+const Vector& CWeaponRPG::GetNPCLaserPosition( void )
 {
 	return m_vecNPCLaserDot;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true if the rocket is being guided, false if it's dumb
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::IsGuiding( void )
@@ -1917,7 +1985,7 @@ bool CWeaponRPG::IsGuiding( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::Deploy( void )
@@ -1928,13 +1996,15 @@ bool CWeaponRPG::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponRPG::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponRPG::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	//Can't have an active missile out
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return false;
+	}
 
 	StopGuiding();
 	return BaseClass::Holster( pSwitchingTo );
@@ -1946,12 +2016,14 @@ bool CWeaponRPG::Holster( CBaseCombatWeapon *pSwitchingTo )
 void CWeaponRPG::StartGuiding( void )
 {
 	// Don't start back up if we're overriding this
-	if ( m_bHideGuiding )
+	if( m_bHideGuiding )
+	{
 		return;
+	}
 
 	m_bGuiding = true;
 
-	WeaponSound(SPECIAL1);
+	WeaponSound( SPECIAL1 );
 
 	CreateLaserPointer();
 	StartLaserEffects();
@@ -1969,7 +2041,7 @@ void CWeaponRPG::StopGuiding( void )
 	StopLaserEffects();
 
 	// Kill the dot completely
-	if ( m_hLaserDot != NULL )
+	if( m_hLaserDot != NULL )
 	{
 		m_hLaserDot->TurnOff();
 		UTIL_Remove( m_hLaserDot );
@@ -1982,7 +2054,7 @@ void CWeaponRPG::StopGuiding( void )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::ToggleGuiding( void )
 {
-	if ( IsGuiding() )
+	if( IsGuiding() )
 	{
 		StopGuiding();
 	}
@@ -1993,9 +2065,9 @@ void CWeaponRPG::ToggleGuiding( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponRPG::Drop( const Vector &vecVelocity )
+void CWeaponRPG::Drop( const Vector& vecVelocity )
 {
 	StopGuiding();
 
@@ -2003,22 +2075,24 @@ void CWeaponRPG::Drop( const Vector &vecVelocity )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::UpdateLaserPosition( Vector vecMuzzlePos, Vector vecEndPos )
 {
-	if ( vecMuzzlePos == vec3_origin || vecEndPos == vec3_origin )
+	if( vecMuzzlePos == vec3_origin || vecEndPos == vec3_origin )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-		if ( !pPlayer )
+		CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+		if( !pPlayer )
+		{
 			return;
+		}
 
 		vecMuzzlePos = pPlayer->Weapon_ShootPosition();
 		Vector	forward;
 
 		if( g_pGameRules->GetAutoAimMode() == AUTOAIM_ON_CONSOLE )
 		{
-			forward = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );	
+			forward = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DEFAULT );
 		}
 		else
 		{
@@ -2030,29 +2104,29 @@ void CWeaponRPG::UpdateLaserPosition( Vector vecMuzzlePos, Vector vecEndPos )
 
 	//Move the laser dot, if active
 	trace_t	tr;
-	
+
 	// Trace out for the endpoint
 #ifdef PORTAL
 	g_bBulletPortalTrace = true;
 	Ray_t rayLaser;
 	rayLaser.Init( vecMuzzlePos, vecEndPos );
-	UTIL_Portal_TraceRay( rayLaser, (MASK_SHOT & ~CONTENTS_WINDOW), this, COLLISION_GROUP_NONE, &tr );
+	UTIL_Portal_TraceRay( rayLaser, ( MASK_SHOT & ~CONTENTS_WINDOW ), this, COLLISION_GROUP_NONE, &tr );
 	g_bBulletPortalTrace = false;
 #else
-	UTIL_TraceLine( vecMuzzlePos, vecEndPos, (MASK_SHOT & ~CONTENTS_WINDOW), this, COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceLine( vecMuzzlePos, vecEndPos, ( MASK_SHOT & ~CONTENTS_WINDOW ), this, COLLISION_GROUP_NONE, &tr );
 #endif
 
 	// Move the laser sprite
-	if ( m_hLaserDot != NULL )
+	if( m_hLaserDot != NULL )
 	{
 		Vector	laserPos = tr.endpos;
 		m_hLaserDot->SetLaserPosition( laserPos, tr.plane.normal );
-		
-		if ( tr.DidHitNonWorldEntity() )
-		{
-			CBaseEntity *pHit = tr.m_pEnt;
 
-			if ( ( pHit != NULL ) && ( pHit->m_takedamage ) )
+		if( tr.DidHitNonWorldEntity() )
+		{
+			CBaseEntity* pHit = tr.m_pEnt;
+
+			if( ( pHit != NULL ) && ( pHit->m_takedamage ) )
 			{
 				m_hLaserDot->SetTargetEntity( pHit );
 			}
@@ -2073,8 +2147,10 @@ void CWeaponRPG::UpdateLaserPosition( Vector vecMuzzlePos, Vector vecEndPos )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::CreateLaserPointer( void )
 {
-	if ( m_hLaserDot != NULL )
+	if( m_hLaserDot != NULL )
+	{
 		return;
+	}
 
 	m_hLaserDot = CLaserDot::Create( GetAbsOrigin(), GetOwnerEntity() );
 	m_hLaserDot->TurnOff();
@@ -2083,7 +2159,7 @@ void CWeaponRPG::CreateLaserPointer( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponRPG::NotifyRocketDied( void )
 {
@@ -2093,20 +2169,24 @@ void CWeaponRPG::NotifyRocketDied( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponRPG::Reload( void )
 {
-	CBaseCombatCharacter *pOwner = GetOwner();
-	
-	if ( pOwner == NULL )
-		return false;
+	CBaseCombatCharacter* pOwner = GetOwner();
 
-	if ( pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0 )
+	if( pOwner == NULL )
+	{
 		return false;
+	}
+
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
+	{
+		return false;
+	}
 
 	WeaponSound( RELOAD );
-	
+
 	SendWeaponAnim( ACT_VM_RELOAD );
 
 	return true;
@@ -2114,7 +2194,7 @@ bool CWeaponRPG::Reload( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CWeaponRPG::WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions )
+bool CWeaponRPG::WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
 {
 	bool bResult = BaseClass::WeaponLOSCondition( ownerPos, targetPos, bSetConditions );
 
@@ -2134,21 +2214,23 @@ bool CWeaponRPG::WeaponLOSCondition( const Vector &ownerPos, const Vector &targe
 			// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
 #ifdef MAPBASE
 			// Oh, and don't collide with ourselves or our owner. That would be stupid.
-			if (!weapon_rpg_use_old_behavior.GetBool())
+			if( !weapon_rpg_use_old_behavior.GetBool() )
 			{
 				CTraceFilterSkipTwoEntities pTraceFilter( this, GetOwner(), COLLISION_GROUP_NONE );
-				AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
+				AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
 			}
 			else
 			{
 #endif
-			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+				AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
 #ifdef MAPBASE
 			}
 #endif
 
 			if( tr.fraction != 1.0f )
+			{
 				bResult = false;
+			}
 		}
 	}
 
@@ -2156,34 +2238,40 @@ bool CWeaponRPG::WeaponLOSCondition( const Vector &ownerPos, const Vector &targe
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flDot - 
-//			flDist - 
+// Purpose:
+// Input  : flDot -
+//			flDist -
 // Output : int
 //-----------------------------------------------------------------------------
 int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 {
-	if ( m_hMissile != NULL )
+	if( m_hMissile != NULL )
+	{
 		return 0;
+	}
 
 	// Ignore vertical distance when doing our RPG distance calculations
-	CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
-	if ( pNPC )
+	CAI_BaseNPC* pNPC = GetOwner()->MyNPCPointer();
+	if( pNPC )
 	{
-		CBaseEntity *pEnemy = pNPC->GetEnemy();
-		Vector vecToTarget = (pEnemy->GetAbsOrigin() - pNPC->GetAbsOrigin());
+		CBaseEntity* pEnemy = pNPC->GetEnemy();
+		Vector vecToTarget = ( pEnemy->GetAbsOrigin() - pNPC->GetAbsOrigin() );
 		vecToTarget.z = 0;
 		flDist = vecToTarget.Length();
 	}
 
-	if ( flDist < MIN( m_fMinRange1, m_fMinRange2 ) )
+	if( flDist < MIN( m_fMinRange1, m_fMinRange2 ) )
+	{
 		return COND_TOO_CLOSE_TO_ATTACK;
+	}
 
-	if ( m_flNextPrimaryAttack > gpGlobals->curtime )
+	if( m_flNextPrimaryAttack > gpGlobals->curtime )
+	{
 		return 0;
+	}
 
 	// See if there's anyone in the way!
-	CAI_BaseNPC *pOwner = GetOwner()->MyNPCPointer();
+	CAI_BaseNPC* pOwner = GetOwner()->MyNPCPointer();
 	ASSERT( pOwner != NULL );
 
 	if( pOwner )
@@ -2197,15 +2285,15 @@ int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 		// Make sure I have a good 10 feet of wide clearance in front, or I'll blow my teeth out.
 #ifdef MAPBASE
 		// Oh, and don't collide with ourselves or our owner. That would be stupid.
-		if (!weapon_rpg_use_old_behavior.GetBool())
+		if( !weapon_rpg_use_old_behavior.GetBool() )
 		{
 			CTraceFilterSkipTwoEntities pTraceFilter( this, GetOwner(), COLLISION_GROUP_NONE );
-			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
+			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, &pTraceFilter, &tr );
 		}
 		else
 		{
 #endif
-		AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * (10.0f*12.0f), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
+			AI_TraceHull( vecMuzzle, vecMuzzle + vecShootDir * ( 10.0f * 12.0f ), Vector( -24, -24, -24 ), Vector( 24, 24, 24 ), MASK_NPCSOLID, NULL, &tr );
 #ifdef MAPBASE
 		}
 #endif
@@ -2224,20 +2312,22 @@ int CWeaponRPG::WeaponRangeAttack1Condition( float flDot, float flDist )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::StartLaserEffects( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
-	CBaseViewModel *pBeamEnt = static_cast<CBaseViewModel *>(pOwner->GetViewModel());
+	CBaseViewModel* pBeamEnt = static_cast<CBaseViewModel*>( pOwner->GetViewModel() );
 
-	if ( m_hLaserBeam == NULL )
+	if( m_hLaserBeam == NULL )
 	{
 		m_hLaserBeam = CBeam::BeamCreate( RPG_BEAM_SPRITE, 1.0f );
-		
-		if ( m_hLaserBeam == NULL )
+
+		if( m_hLaserBeam == NULL )
 		{
 			// We were unable to create the beam
-			Assert(0);
+			Assert( 0 );
 			return;
 		}
 
@@ -2266,14 +2356,14 @@ void CWeaponRPG::StartLaserEffects( void )
 		m_hLaserBeam->SetBrightness( 128 );
 	}
 
-	if ( m_hLaserMuzzleSprite == NULL )
+	if( m_hLaserMuzzleSprite == NULL )
 	{
 		m_hLaserMuzzleSprite = CSprite::SpriteCreate( RPG_LASER_SPRITE, GetAbsOrigin(), false );
 
-		if ( m_hLaserMuzzleSprite == NULL )
+		if( m_hLaserMuzzleSprite == NULL )
 		{
 			// We were unable to create the sprite
-			Assert(0);
+			Assert( 0 );
 			return;
 		}
 
@@ -2301,12 +2391,12 @@ void CWeaponRPG::StartLaserEffects( void )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::StopLaserEffects( void )
 {
-	if ( m_hLaserBeam != NULL )
+	if( m_hLaserBeam != NULL )
 	{
 		m_hLaserBeam->SetBrightness( 0 );
 	}
-	
-	if ( m_hLaserMuzzleSprite != NULL )
+
+	if( m_hLaserMuzzleSprite != NULL )
 	{
 		m_hLaserMuzzleSprite->SetScale( 0.01f );
 		m_hLaserMuzzleSprite->SetBrightness( 0, 0.5f );
@@ -2318,15 +2408,17 @@ void CWeaponRPG::StopLaserEffects( void )
 //-----------------------------------------------------------------------------
 void CWeaponRPG::UpdateLaserEffects( void )
 {
-	if ( !m_bGuiding )
+	if( !m_bGuiding )
+	{
 		return;
+	}
 
-	if ( m_hLaserBeam != NULL )
+	if( m_hLaserBeam != NULL )
 	{
 		m_hLaserBeam->SetBrightness( 128 + random->RandomInt( -8, 8 ) );
 	}
 
-	if ( m_hLaserMuzzleSprite != NULL )
+	if( m_hLaserMuzzleSprite != NULL )
 	{
 		m_hLaserMuzzleSprite->SetScale( 0.1f + random->RandomFloat( -0.025f, 0.025f ) );
 	}
@@ -2334,16 +2426,18 @@ void CWeaponRPG::UpdateLaserEffects( void )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponRPG::SupportsBackupActivity(Activity activity)
+bool CWeaponRPG::SupportsBackupActivity( Activity activity )
 {
 	// NPCs shouldn't use their SMG activities to aim and fire RPGs while running.
-	if (activity == ACT_RUN_AIM ||
-		activity == ACT_WALK_AIM ||
-		activity == ACT_RUN_CROUCH_AIM ||
-		activity == ACT_WALK_CROUCH_AIM)
+	if( activity == ACT_RUN_AIM ||
+			activity == ACT_WALK_AIM ||
+			activity == ACT_RUN_CROUCH_AIM ||
+			activity == ACT_WALK_CROUCH_AIM )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -2356,34 +2450,34 @@ bool CWeaponRPG::SupportsBackupActivity(Activity activity)
 LINK_ENTITY_TO_CLASS( env_laserdot, CLaserDot );
 
 BEGIN_DATADESC( CLaserDot )
-	DEFINE_FIELD( m_vecSurfaceNormal,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_hTargetEnt,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bVisibleLaserDot,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIsOn,				FIELD_BOOLEAN ),
+DEFINE_FIELD( m_vecSurfaceNormal,	FIELD_VECTOR ),
+				DEFINE_FIELD( m_hTargetEnt,			FIELD_EHANDLE ),
+				DEFINE_FIELD( m_bVisibleLaserDot,	FIELD_BOOLEAN ),
+				DEFINE_FIELD( m_bIsOn,				FIELD_BOOLEAN ),
 
-	//DEFINE_FIELD( m_pNext, FIELD_CLASSPTR ),	// don't save - regenerated by constructor
-	DEFINE_THINKFUNC( LaserThink ),
-END_DATADESC()
+				//DEFINE_FIELD( m_pNext, FIELD_CLASSPTR ),	// don't save - regenerated by constructor
+				DEFINE_THINKFUNC( LaserThink ),
+				END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Finds missiles in cone
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot )
+				CBaseEntity* CreateLaserDot( const Vector& origin, CBaseEntity* pOwner, bool bVisibleDot )
 {
 	return CLaserDot::Create( origin, pOwner, bVisibleDot );
 }
 
-void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget )
+void SetLaserDotTarget( CBaseEntity* pLaserDot, CBaseEntity* pTarget )
 {
-	CLaserDot *pDot = assert_cast< CLaserDot* >(pLaserDot );
+	CLaserDot* pDot = assert_cast< CLaserDot* >( pLaserDot );
 	pDot->SetTargetEntity( pTarget );
 }
 
-void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable )
+void EnableLaserDot( CBaseEntity* pLaserDot, bool bEnable )
 {
-	CLaserDot *pDot = assert_cast< CLaserDot* >(pLaserDot );
-	if ( bEnable )
+	CLaserDot* pDot = assert_cast< CLaserDot* >( pLaserDot );
+	if( bEnable )
 	{
 		pDot->TurnOn();
 	}
@@ -2407,16 +2501,18 @@ CLaserDot::~CLaserDot( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
+// Purpose:
+// Input  : &origin -
 // Output : CLaserDot
 //-----------------------------------------------------------------------------
-CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot )
+CLaserDot* CLaserDot::Create( const Vector& origin, CBaseEntity* pOwner, bool bVisibleDot )
 {
-	CLaserDot *pLaserDot = (CLaserDot *) CBaseEntity::Create( "env_laserdot", origin, QAngle(0,0,0) );
+	CLaserDot* pLaserDot = ( CLaserDot* ) CBaseEntity::Create( "env_laserdot", origin, QAngle( 0, 0, 0 ) );
 
-	if ( pLaserDot == NULL )
+	if( pLaserDot == NULL )
+	{
 		return NULL;
+	}
 
 	pLaserDot->m_bVisibleLaserDot = bVisibleDot;
 	pLaserDot->SetMoveType( MOVETYPE_NONE );
@@ -2427,7 +2523,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 	//Create the graphic
 	pLaserDot->SpriteInit( "sprites/redglow1.vmt", origin );
 
-	pLaserDot->SetName( AllocPooledString("TEST") );
+	pLaserDot->SetName( AllocPooledString( "TEST" ) );
 
 	pLaserDot->SetTransparency( kRenderGlow, 255, 255, 255, 255, kRenderFxNoDissipation );
 	pLaserDot->SetScale( 0.5f );
@@ -2437,7 +2533,7 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 	pLaserDot->SetContextThink( &CLaserDot::LaserThink, gpGlobals->curtime + 0.1f, g_pLaserDotThink );
 	pLaserDot->SetSimulatedEveryTick( true );
 
-	if ( !bVisibleDot )
+	if( !bVisibleDot )
 	{
 		pLaserDot->MakeInvisible();
 	}
@@ -2446,14 +2542,16 @@ CLaserDot *CLaserDot::Create( const Vector &origin, CBaseEntity *pOwner, bool bV
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLaserDot::LaserThink( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.05f, g_pLaserDotThink );
 
-	if ( GetOwnerEntity() == NULL )
+	if( GetOwnerEntity() == NULL )
+	{
 		return;
+	}
 
 	Vector	viewDir = GetAbsOrigin() - GetOwnerEntity()->GetAbsOrigin();
 	float	dist = VectorNormalize( viewDir );
@@ -2466,7 +2564,7 @@ void CLaserDot::LaserThink( void )
 	SetScale( scale );
 }
 
-void CLaserDot::SetLaserPosition( const Vector &origin, const Vector &normal )
+void CLaserDot::SetLaserPosition( const Vector& origin, const Vector& normal )
 {
 	SetAbsOrigin( origin );
 	m_vecSurfaceNormal = normal;
@@ -2478,12 +2576,12 @@ Vector CLaserDot::GetChasePosition()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLaserDot::TurnOn( void )
 {
 	m_bIsOn = true;
-	if ( m_bVisibleLaserDot )
+	if( m_bVisibleLaserDot )
 	{
 		BaseClass::TurnOn();
 	}
@@ -2491,12 +2589,12 @@ void CLaserDot::TurnOn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLaserDot::TurnOff( void )
 {
 	m_bIsOn = false;
-	if ( m_bVisibleLaserDot )
+	if( m_bVisibleLaserDot )
 	{
 		BaseClass::TurnOff();
 	}
@@ -2504,7 +2602,7 @@ void CLaserDot::TurnOff( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLaserDot::MakeInvisible( void )
 {

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -12,7 +12,7 @@
 #define COMMANDBUFFER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utllinkedlist.h"
@@ -46,17 +46,17 @@ public:
 	CCommandBuffer( );
 	~CCommandBuffer();
 
-    // Inserts text into the command buffer
-	bool AddText( const char *pText, int nTickDelay = 0 );
+	// Inserts text into the command buffer
+	bool AddText( const char* pText, int nTickDelay = 0 );
 
 	// Used to iterate over all commands appropriate for the current time
 	void BeginProcessingCommands( int nDeltaTicks );
 	bool DequeueNextCommand( );
-	int DequeueNextCommand( const char **& ppArgv );
+	int DequeueNextCommand( const char**& ppArgv );
 	int ArgC() const;
-	const char **ArgV() const;
-	const char *ArgS() const;		// All args that occur after the 0th arg, in string form
-	const char *GetCommandString() const;	// The entire command in string form, including the 0th arg
+	const char** ArgV() const;
+	const char* ArgS() const;		// All args that occur after the 0th arg, in string form
+	const char* GetCommandString() const;	// The entire command in string form, including the 0th arg
 	const CCommand& GetCommand() const;
 	void EndProcessingCommands();
 
@@ -75,16 +75,28 @@ public:
 	// most relevantly, to implement a feature where you stream a file
 	// worth of commands into the buffer, where the file size is too large
 	// to entirely contain in the buffer).
-    CommandHandle_t GetNextCommandHandle();
+	CommandHandle_t GetNextCommandHandle();
 
 	// Specifies a max limit of the args buffer. For unittesting. Size == 0 means use default
 	void LimitArgumentBufferSize( int nSize );
 
-	void SetWaitEnabled( bool bEnable )		{ m_bWaitEnabled = bEnable; }
-	bool IsWaitEnabled( void )				{ return m_bWaitEnabled; }
+	void SetWaitEnabled( bool bEnable )
+	{
+		m_bWaitEnabled = bEnable;
+	}
+	bool IsWaitEnabled( void )
+	{
+		return m_bWaitEnabled;
+	}
 
-	int GetArgumentBufferSize() { return m_nArgSBufferSize; }
-	int GetMaxArgumentBufferSize() { return m_nMaxArgSBufferLength; }
+	int GetArgumentBufferSize()
+	{
+		return m_nArgSBufferSize;
+	}
+	int GetMaxArgumentBufferSize()
+	{
+		return m_nMaxArgSBufferLength;
+	}
 
 private:
 	enum
@@ -101,22 +113,22 @@ private:
 
 	// Insert a command into the command queue at the appropriate time
 	void InsertCommandAtAppropriateTime( int hCommand );
-						   
+
 	// Insert a command into the command queue
 	// Only happens if it's inserted while processing other commands
 	void InsertImmediateCommand( int hCommand );
 
 	// Insert a command into the command queue
-	bool InsertCommand( const char *pArgS, int nCommandSize, int nTick );
+	bool InsertCommand( const char* pArgS, int nCommandSize, int nTick );
 
 	// Returns the length of the next command, as well as the offset to the next command
-	void GetNextCommandLength( const char *pText, int nMaxLen, int *pCommandLength, int *pNextCommandOffset );
+	void GetNextCommandLength( const char* pText, int nMaxLen, int* pCommandLength, int* pNextCommandOffset );
 
 	// Compacts the command buffer
 	void Compact();
 
 	// Parses argv0 out of the buffer
-	bool ParseArgV0( CUtlBuffer &buf, char *pArgv0, int nMaxLen, const char **pArgs );
+	bool ParseArgV0( CUtlBuffer& buf, char* pArgv0, int nMaxLen, const char** pArgs );
 
 	char	m_pArgSBuffer[ ARGS_BUFFER_LENGTH ];
 	int		m_nLastUsedArgSSize;
@@ -144,17 +156,17 @@ inline int CCommandBuffer::ArgC() const
 	return m_CurrentCommand.ArgC();
 }
 
-inline const char **CCommandBuffer::ArgV() const
+inline const char** CCommandBuffer::ArgV() const
 {
 	return m_CurrentCommand.ArgV();
 }
 
-inline const char *CCommandBuffer::ArgS() const
+inline const char* CCommandBuffer::ArgS() const
 {
 	return m_CurrentCommand.ArgS();
 }
 
-inline const char *CCommandBuffer::GetCommandString() const
+inline const char* CCommandBuffer::GetCommandString() const
 {
 	return m_CurrentCommand.GetCommandString();
 }

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef BASEHANDLE_H
 #define BASEHANDLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,12 +24,12 @@ class IHandleEntity;
 
 class CBaseHandle
 {
-friend class CBaseEntityList;
+	friend class CBaseEntityList;
 
 public:
 
 	CBaseHandle();
-	CBaseHandle( const CBaseHandle &other );
+	CBaseHandle( const CBaseHandle& other );
 	CBaseHandle( unsigned long value );
 	CBaseHandle( int iEntry, int iSerialNumber );
 
@@ -44,16 +44,16 @@ public:
 	int GetSerialNumber() const;
 
 	int ToInt() const;
-	bool operator !=( const CBaseHandle &other ) const;
-	bool operator ==( const CBaseHandle &other ) const;
+	bool operator !=( const CBaseHandle& other ) const;
+	bool operator ==( const CBaseHandle& other ) const;
 	bool operator ==( const IHandleEntity* pEnt ) const;
 	bool operator !=( const IHandleEntity* pEnt ) const;
-	bool operator <( const CBaseHandle &other ) const;
+	bool operator <( const CBaseHandle& other ) const;
 	bool operator <( const IHandleEntity* pEnt ) const;
 
 	// Assign a value to the handle.
-	const CBaseHandle& operator=( const IHandleEntity *pEntity );
-	const CBaseHandle& Set( const IHandleEntity *pEntity );
+	const CBaseHandle& operator=( const IHandleEntity* pEntity );
+	const CBaseHandle& Set( const IHandleEntity* pEntity );
 
 	// Use this to dereference the handle.
 	// Note: this is implemented in game code (ehandle.h)
@@ -75,7 +75,7 @@ inline CBaseHandle::CBaseHandle()
 	m_Index = INVALID_EHANDLE_INDEX;
 }
 
-inline CBaseHandle::CBaseHandle( const CBaseHandle &other )
+inline CBaseHandle::CBaseHandle( const CBaseHandle& other )
 {
 	m_Index = other.m_Index;
 }
@@ -93,9 +93,9 @@ inline CBaseHandle::CBaseHandle( int iEntry, int iSerialNumber )
 inline void CBaseHandle::Init( int iEntry, int iSerialNumber )
 {
 	Assert( iEntry >= 0 && iEntry < NUM_ENT_ENTRIES );
-	Assert( iSerialNumber >= 0 && iSerialNumber < (1 << NUM_SERIAL_NUM_BITS) );
+	Assert( iSerialNumber >= 0 && iSerialNumber < ( 1 << NUM_SERIAL_NUM_BITS ) );
 
-	m_Index = iEntry | (iSerialNumber << NUM_ENT_ENTRY_BITS);
+	m_Index = iEntry | ( iSerialNumber << NUM_ENT_ENTRY_BITS );
 }
 
 inline void CBaseHandle::Term()
@@ -120,15 +120,15 @@ inline int CBaseHandle::GetSerialNumber() const
 
 inline int CBaseHandle::ToInt() const
 {
-	return (int)m_Index;
+	return ( int )m_Index;
 }
 
-inline bool CBaseHandle::operator !=( const CBaseHandle &other ) const
+inline bool CBaseHandle::operator !=( const CBaseHandle& other ) const
 {
 	return m_Index != other.m_Index;
 }
 
-inline bool CBaseHandle::operator ==( const CBaseHandle &other ) const
+inline bool CBaseHandle::operator ==( const CBaseHandle& other ) const
 {
 	return m_Index == other.m_Index;
 }
@@ -143,25 +143,25 @@ inline bool CBaseHandle::operator !=( const IHandleEntity* pEnt ) const
 	return Get() != pEnt;
 }
 
-inline bool CBaseHandle::operator <( const CBaseHandle &other ) const
+inline bool CBaseHandle::operator <( const CBaseHandle& other ) const
 {
 	return m_Index < other.m_Index;
 }
 
-inline bool CBaseHandle::operator <( const IHandleEntity *pEntity ) const
+inline bool CBaseHandle::operator <( const IHandleEntity* pEntity ) const
 {
-	unsigned long otherIndex = (pEntity) ? pEntity->GetRefEHandle().m_Index : INVALID_EHANDLE_INDEX;
+	unsigned long otherIndex = ( pEntity ) ? pEntity->GetRefEHandle().m_Index : INVALID_EHANDLE_INDEX;
 	return m_Index < otherIndex;
 }
 
-inline const CBaseHandle& CBaseHandle::operator=( const IHandleEntity *pEntity )
+inline const CBaseHandle& CBaseHandle::operator=( const IHandleEntity* pEntity )
 {
 	return Set( pEntity );
 }
 
-inline const CBaseHandle& CBaseHandle::Set( const IHandleEntity *pEntity ) 
-{ 
-	if ( pEntity )
+inline const CBaseHandle& CBaseHandle::Set( const IHandleEntity* pEntity )
+{
+	if( pEntity )
 	{
 		*this = pEntity->GetRefEHandle();
 	}
@@ -169,7 +169,7 @@ inline const CBaseHandle& CBaseHandle::Set( const IHandleEntity *pEntity )
 	{
 		m_Index = INVALID_EHANDLE_INDEX;
 	}
-	
+
 	return *this;
 }
 

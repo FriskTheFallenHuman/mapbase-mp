@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define ENTITYPARTICLETRAIL_SHARED_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -16,9 +16,9 @@
 // For networking this bad boy
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
-EXTERN_RECV_TABLE( DT_EntityParticleTrailInfo );
+	EXTERN_RECV_TABLE( DT_EntityParticleTrailInfo );
 #else
-EXTERN_SEND_TABLE( DT_EntityParticleTrailInfo );
+	EXTERN_SEND_TABLE( DT_EntityParticleTrailInfo );
 #endif
 
 

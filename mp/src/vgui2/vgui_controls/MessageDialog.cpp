@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -15,7 +15,7 @@
 //-----------------------------------------------------------------------------
 // CMessageDialog
 //-----------------------------------------------------------------------------
-CMessageDialog::CMessageDialog( vgui::Panel *pParent, const uint nType, const char *pTitle, const char *pMsg, const char *pCmdA, const char *pCmdB, vgui::Panel *pCreator, bool bShowActivity  ) 
+CMessageDialog::CMessageDialog( vgui::Panel* pParent, const uint nType, const char* pTitle, const char* pMsg, const char* pCmdA, const char* pCmdB, vgui::Panel* pCreator, bool bShowActivity )
 	: BaseClass( pParent, "MessageDialog" )
 {
 	SetSize( 500, 200 );
@@ -34,7 +34,7 @@ CMessageDialog::CMessageDialog( vgui::Panel *pParent, const uint nType, const ch
 
 	m_bShowActivity = bShowActivity;
 
-	if ( nType & MD_SIMPLEFRAME )
+	if( nType & MD_SIMPLEFRAME )
 	{
 		SetPaintBackgroundEnabled( true );
 		m_pBackground = NULL;
@@ -42,30 +42,30 @@ CMessageDialog::CMessageDialog( vgui::Panel *pParent, const uint nType, const ch
 	else
 	{
 		m_pBackground = new vgui::ImagePanel( this, "Background" );
- 		if ( nType & MD_WARNING )
- 		{
- 			m_pBackground->SetName( "WarningBackground" );
- 		}
- 		else if ( nType & MD_ERROR )
- 		{
- 			m_pBackground->SetName( "ErrorBackground" );
- 		}
+		if( nType & MD_WARNING )
+		{
+			m_pBackground->SetName( "WarningBackground" );
+		}
+		else if( nType & MD_ERROR )
+		{
+			m_pBackground->SetName( "ErrorBackground" );
+		}
 	}
 
 	Q_memset( m_pCommands, 0, sizeof( m_pCommands ) );
 	Q_memset( m_Buttons, 0, sizeof( m_Buttons ) );
 
-	if ( pCmdA )
+	if( pCmdA )
 	{
 		const int len = Q_strlen( pCmdA ) + 1;
-		m_pCommands[BTN_A] = (char*)malloc( len );
+		m_pCommands[BTN_A] = ( char* )malloc( len );
 		Q_strncpy( m_pCommands[BTN_A], pCmdA, len );
 	}
 
-	if ( pCmdB )
+	if( pCmdB )
 	{
 		const int len = Q_strlen( pCmdB ) + 1;
-		m_pCommands[BTN_B] = (char*)malloc( len );
+		m_pCommands[BTN_B] = ( char* )malloc( len );
 		Q_strncpy( m_pCommands[BTN_B], pCmdB, len );
 	}
 
@@ -78,18 +78,18 @@ CMessageDialog::CMessageDialog( vgui::Panel *pParent, const uint nType, const ch
 //-----------------------------------------------------------------------------
 CMessageDialog::~CMessageDialog()
 {
-	if ( m_ButtonPressed != BTN_INVALID && ( m_nType & MD_COMMANDAFTERCLOSE ) )
+	if( m_ButtonPressed != BTN_INVALID && ( m_nType & MD_COMMANDAFTERCLOSE ) )
 	{
 		// caller wants the command sent after closure
 		m_pCreator->OnCommand( m_pCommands[m_ButtonPressed] );
 	}
-	else if ( m_nType & MD_COMMANDONFORCECLOSE )
+	else if( m_nType & MD_COMMANDONFORCECLOSE )
 	{
 		// caller wants the command sent after closure
 		m_pCreator->OnCommand( m_pCommands[BTN_A] );
 	}
 
-	for ( int i = 0; i < MAX_BUTTONS; ++i )
+	for( int i = 0; i < MAX_BUTTONS; ++i )
 	{
 		free( m_pCommands[i] );
 		m_pCommands[i] = NULL;
@@ -111,7 +111,7 @@ CMessageDialog::~CMessageDialog()
 //-----------------------------------------------------------------------------
 // Purpose: Set the keyvalues to pass to LoadControlSettings()
 //-----------------------------------------------------------------------------
-void CMessageDialog::SetControlSettingsKeys( KeyValues *pKeys )
+void CMessageDialog::SetControlSettingsKeys( KeyValues* pKeys )
 {
 	m_pControlSettings = pKeys;
 }
@@ -119,7 +119,7 @@ void CMessageDialog::SetControlSettingsKeys( KeyValues *pKeys )
 //-----------------------------------------------------------------------------
 // Purpose: Create a new button
 //-----------------------------------------------------------------------------
-void CMessageDialog::CreateButtonLabel( ButtonLabel_s *pButton, const char *pIcon, const char *pText )
+void CMessageDialog::CreateButtonLabel( ButtonLabel_s* pButton, const char* pIcon, const char* pText )
 {
 	pButton->nWide = m_ButtonIconLabelSpace;
 	pButton->bCreated = true;
@@ -141,7 +141,7 @@ void CMessageDialog::CreateButtonLabel( ButtonLabel_s *pButton, const char *pIco
 //-----------------------------------------------------------------------------
 // Purpose: Create and arrange the panel button labels according to the dialog type
 //-----------------------------------------------------------------------------
-void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CMessageDialog::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -150,20 +150,20 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_hButtonFont = pScheme->GetFont( "GameUIButtons" );
 	m_hTextFont = pScheme->GetFont( "MenuLarge" );
 
-	if ( m_nType & MD_OK )
+	if( m_nType & MD_OK )
 	{
 		CreateButtonLabel( &m_Buttons[BTN_A], "#GameUI_Icons_A_BUTTON", "#GameUI_OK" );
 	}
-	else if ( m_nType & MD_CANCEL )
+	else if( m_nType & MD_CANCEL )
 	{
 		CreateButtonLabel( &m_Buttons[BTN_B], "#GameUI_Icons_B_BUTTON", "#GameUI_Cancel" );
 	}
-	else if ( m_nType & MD_OKCANCEL )
+	else if( m_nType & MD_OKCANCEL )
 	{
 		CreateButtonLabel( &m_Buttons[BTN_A], "#GameUI_Icons_A_BUTTON", "#GameUI_OK" );
 		CreateButtonLabel( &m_Buttons[BTN_B], "#GameUI_Icons_B_BUTTON", "#GameUI_Cancel" );
 	}
-	else if ( m_nType & MD_YESNO )
+	else if( m_nType & MD_YESNO )
 	{
 		CreateButtonLabel( &m_Buttons[BTN_A], "#GameUI_Icons_A_BUTTON", "#GameUI_Yes" );
 		CreateButtonLabel( &m_Buttons[BTN_B], "#GameUI_Icons_B_BUTTON", "#GameUI_No" );
@@ -172,9 +172,9 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	// count the buttons and add up their widths
 	int cButtons = 0;
 	int nTotalWide = 0;
-	for ( int i = 0; i < MAX_BUTTONS; ++i )
+	for( int i = 0; i < MAX_BUTTONS; ++i )
 	{
-		if ( m_Buttons[i].bCreated )
+		if( m_Buttons[i].bCreated )
 		{
 			++cButtons;
 			nTotalWide += m_Buttons[i].nWide;
@@ -190,9 +190,9 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	int xpos = 0;
 	int ypos = GetTall() - max( nButtonTall, nTextTall ) - m_ButtonMargin;
 	int nSpacing = ( GetWide() - nTotalWide ) / ( cButtons + 1 );
-	for ( int i = 0; i < MAX_BUTTONS; ++i )
+	for( int i = 0; i < MAX_BUTTONS; ++i )
 	{
-		if ( m_Buttons[i].bCreated )
+		if( m_Buttons[i].bCreated )
 		{
 			xpos += nSpacing;
 			m_Buttons[i].pIcon->SetPos( xpos, ypos );
@@ -205,11 +205,11 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	m_clrNotSimpleBG = pScheme->GetColor( "MessageDialog.MatchmakingBG", Color( 200, 184, 151, 255 ) );
 	m_clrNotSimpleBGBlack = pScheme->GetColor( "MessageDialog.MatchmakingBGBlack", Color( 52, 48, 55, 255 ) );
 
-	if ( !m_bShowActivity )
+	if( !m_bShowActivity )
 	{
-		if ( m_pAnimatingPanel )
+		if( m_pAnimatingPanel )
 		{
-			if ( m_pAnimatingPanel->IsVisible() )
+			if( m_pAnimatingPanel->IsVisible() )
 			{
 
 				m_pAnimatingPanel->SetVisible( false );
@@ -220,9 +220,9 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 	else
 	{
-		if ( m_pAnimatingPanel )
+		if( m_pAnimatingPanel )
 		{
-			if ( !m_pAnimatingPanel->IsVisible() )
+			if( !m_pAnimatingPanel->IsVisible() )
 			{
 				m_pAnimatingPanel->SetVisible( true );
 			}
@@ -233,15 +233,15 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 	MoveToCenterOfScreen();
 
-	if ( m_bShowActivity && m_ActivityIndent )
+	if( m_bShowActivity && m_ActivityIndent )
 	{
 		// If we're animating, we push our text label in, and reduce its width
-		int iX,iY,iW,iH;
+		int iX, iY, iW, iH;
 		m_pMsg->GetBounds( iX, iY, iW, iH );
-		m_pMsg->SetBounds( iX + m_ActivityIndent, iY, max(0,iW-m_ActivityIndent), iH );
+		m_pMsg->SetBounds( iX + m_ActivityIndent, iY, max( 0, iW - m_ActivityIndent ), iH );
 	}
 
-	// Invalidate the scheme on our message label so that it recalculates 
+	// Invalidate the scheme on our message label so that it recalculates
 	// its line breaks in case it was resized when we loaded our .res file.
 	m_pMsg->InvalidateLayout( false, true );
 }
@@ -249,7 +249,7 @@ void CMessageDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 //-----------------------------------------------------------------------------
 // Purpose: Create and arrange the panel button labels according to the dialog type
 //-----------------------------------------------------------------------------
-void CMessageDialog::ApplySettings( KeyValues *inResourceData )
+void CMessageDialog::ApplySettings( KeyValues* inResourceData )
 {
 	BaseClass::ApplySettings( inResourceData );
 
@@ -266,7 +266,7 @@ void CMessageDialog::ApplySettings( KeyValues *inResourceData )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 uint CMessageDialog::GetType( void )
 {
@@ -274,19 +274,19 @@ uint CMessageDialog::GetType( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMessageDialog::DoCommand( int button )
 {
-	if ( button == BTN_INVALID || ( m_nType & MD_COMMANDONFORCECLOSE ) )
+	if( button == BTN_INVALID || ( m_nType & MD_COMMANDONFORCECLOSE ) )
 	{
 		return;
 	}
 
-	if ( m_pCommands[button] )
+	if( m_pCommands[button] )
 	{
 		m_ButtonPressed = button;
-		if ( !( m_nType & MD_COMMANDAFTERCLOSE ) )
+		if( !( m_nType & MD_COMMANDAFTERCLOSE ) )
 		{
 			// caller wants the command sent before closure
 			m_pCreator->OnCommand( m_pCommands[m_ButtonPressed] );
@@ -297,48 +297,48 @@ void CMessageDialog::DoCommand( int button )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMessageDialog::OnKeyCodePressed( vgui::KeyCode code )
 {
-	if ( m_ButtonPressed != BTN_INVALID || GetAlpha() != 255 )
+	if( m_ButtonPressed != BTN_INVALID || GetAlpha() != 255 )
 	{
 		// inhibit any further key activity or during transitions
 		return;
 	}
 
-	switch ( GetBaseButtonCode( code ) )
+	switch( GetBaseButtonCode( code ) )
 	{
-	case KEY_XBUTTON_A:
-		DoCommand( BTN_A );
-		break;
+		case KEY_XBUTTON_A:
+			DoCommand( BTN_A );
+			break;
 
-	case KEY_XBUTTON_B:
-		DoCommand( BTN_B );
-		break;
+		case KEY_XBUTTON_B:
+			DoCommand( BTN_B );
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMessageDialog::PaintBackground( void )
 {
 	int wide, tall;
 	GetSize( wide, tall );
 
-	if ( !( m_nType & MD_SIMPLEFRAME ) )
+	if( !( m_nType & MD_SIMPLEFRAME ) )
 	{
 		int nAlpha = GetAlpha();
 
 		m_clrNotSimpleBG[3] = nAlpha;
 		m_clrNotSimpleBGBlack[3] = nAlpha;
 
-		DrawBox( 0, 0, wide, tall, m_clrNotSimpleBGBlack, 1.0f );	
-		DrawBox( 0, 0, wide, tall - m_FooterTall, m_clrNotSimpleBG, 1.0f );	
+		DrawBox( 0, 0, wide, tall, m_clrNotSimpleBGBlack, 1.0f );
+		DrawBox( 0, 0, wide, tall - m_FooterTall, m_clrNotSimpleBG, 1.0f );
 
 		return;
 	}
@@ -348,12 +348,12 @@ void CMessageDialog::PaintBackground( void )
 
 	// offset the inset by title
 	int titleX, titleY, titleWide, titleTall;
-	m_pTitle->GetBounds( titleX, titleY, titleWide, titleTall );	
+	m_pTitle->GetBounds( titleX, titleY, titleWide, titleTall );
 	int y = titleY + titleTall;
 
 	// draw an inset
 	Color darkColor;
-	darkColor.SetColor( 0.70f * (float)col.r(), 0.70f * (float)col.g(), 0.70f * (float)col.b(), col.a() );
+	darkColor.SetColor( 0.70f * ( float )col.r(), 0.70f * ( float )col.g(), 0.70f * ( float )col.b(), col.a() );
 	vgui::surface()->DrawSetColor( darkColor );
 	vgui::surface()->DrawFilledRect( 8, y, wide - 8, tall - 8 );
 }

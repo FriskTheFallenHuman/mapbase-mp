@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -16,35 +16,35 @@ extern ConVar cl_pitchup;
 
 
 // ConCommands useful for creating view animations
-CViewAngleAnimation *g_pTestAnimation = NULL;
+CViewAngleAnimation* g_pTestAnimation = NULL;
 
 // create a view animation object to be used for creating an animation. parameter is flags
 CON_COMMAND( viewanim_create, "viewanim_create" )
 {
-	if ( g_pTestAnimation )
+	if( g_pTestAnimation )
 	{
 		delete g_pTestAnimation;
 		g_pTestAnimation = NULL;
 	}
 
 	int flags = 0;
-	if ( args.ArgC() > 1 )
+	if( args.ArgC() > 1 )
 	{
 		flags = atoi( args[1] );
 	}
 
 	g_pTestAnimation = CREATE_ENTITY( CViewAngleAnimation, "viewangleanim" );
 
-	if ( g_pTestAnimation )
+	if( g_pTestAnimation )
 	{
 		g_pTestAnimation->Spawn();
-	}	
+	}
 }
 
 // run the test animation
 void TestViewAnim( void )
 {
-	if ( g_pTestAnimation )
+	if( g_pTestAnimation )
 	{
 		QAngle angles;
 		engine->GetViewAngles( angles );
@@ -52,7 +52,9 @@ void TestViewAnim( void )
 		g_pTestAnimation->RunAnimation( angles );
 	}
 	else
+	{
 		Msg( "No view anim created\n" );
+	}
 }
 ConCommand viewanim_test( "viewanim_test", TestViewAnim, "test view animation" );
 
@@ -68,19 +70,19 @@ ConCommand viewanim_reset( "viewanim_reset", ResetViewAngles, "reset view angles
 // add a key frame to the test animation. first parameter is the time taken to get to this keyframe
 CON_COMMAND_F( viewanim_addkeyframe, "", FCVAR_CHEAT )
 {
-	if ( g_pTestAnimation )
+	if( g_pTestAnimation )
 	{
 		QAngle vecTarget;
 		engine->GetViewAngles( vecTarget );
 
 		float flDelay = 0.2;
-		if (args.ArgC() > 1)
+		if( args.ArgC() > 1 )
 		{
 			flDelay = atof( args[1] );
 		}
 
 		int iFlags = 0;
-		if (args.ArgC() > 1)
+		if( args.ArgC() > 1 )
 		{
 			iFlags = atof( args[2] );
 		}
@@ -88,18 +90,22 @@ CON_COMMAND_F( viewanim_addkeyframe, "", FCVAR_CHEAT )
 		g_pTestAnimation->AddKeyFrame( new CViewAngleKeyFrame( vecTarget, flDelay, iFlags ) );
 	}
 	else
+	{
 		Msg( "No view anim created, use viewanim_create" );
+	}
 }
 
 
 // save the current test anim, pass filename
 CON_COMMAND( viewanim_save, "Save current animation to file" )
 {
-	if (args.ArgC() < 2)
+	if( args.ArgC() < 2 )
+	{
 		return;
+	}
 
-	if ( g_pTestAnimation )
-	{	
+	if( g_pTestAnimation )
+	{
 		g_pTestAnimation->SaveAsAnimFile( args[1] );
 	}
 	else
@@ -111,15 +117,19 @@ CON_COMMAND( viewanim_save, "Save current animation to file" )
 // load a view animation file into the test anim
 CON_COMMAND( viewanim_load, "load animation from file" )
 {
-	if (args.ArgC() < 2)
+	if( args.ArgC() < 2 )
+	{
 		return;
+	}
 
-	if ( g_pTestAnimation )
-	{	
+	if( g_pTestAnimation )
+	{
 		g_pTestAnimation->LoadViewAnimFile( args[1] );
 	}
 	else
+	{
 		Msg( "No view anim created\n" );
+	}
 }
 
 LINK_ENTITY_TO_CLASS( viewangleanim, CViewAngleAnimation );
@@ -137,7 +147,7 @@ void CViewAngleAnimation::Spawn( void )
 {
 	m_iFlags = 0;
 	QAngle angles;
-	engine->GetViewAngles( angles );	
+	engine->GetViewAngles( angles );
 
 	/*
 	if ( m_iFlags & VIEWANIM_RELATIVE )
@@ -164,21 +174,21 @@ void CViewAngleAnimation::DeleteKeyFrames()
 	int i, c;
 
 	c = m_KeyFrames.Count();
-	for ( i = c - 1; i >= 0 ; --i )
+	for( i = c - 1; i >= 0 ; --i )
 	{
 		delete m_KeyFrames[ i ];
 	}
 	m_KeyFrames.RemoveAll();
 }
 
-void CViewAngleAnimation::LoadViewAnimFile( const char *pKeyFrameFileName )
+void CViewAngleAnimation::LoadViewAnimFile( const char* pKeyFrameFileName )
 {
 	DeleteKeyFrames();
 
 	// load keyvalues from this file and stuff them in as keyframes
-	KeyValues *pData = new KeyValues( pKeyFrameFileName );
+	KeyValues* pData = new KeyValues( pKeyFrameFileName );
 
-	if ( false == pData->LoadFromFile( filesystem, pKeyFrameFileName, "GAME" ) )
+	if( false == pData->LoadFromFile( filesystem, pKeyFrameFileName, "GAME" ) )
 	{
 		Warning( "CViewAngleAnimation::LoadViewAnimFile failed to load script %s\n", pKeyFrameFileName );
 		pData->deleteThis();
@@ -189,12 +199,12 @@ void CViewAngleAnimation::LoadViewAnimFile( const char *pKeyFrameFileName )
 	float flTime;
 	int iFlags;
 
-	KeyValues *pKey = pData->GetFirstSubKey();
+	KeyValues* pKey = pData->GetFirstSubKey();
 
-	while ( pKey )
+	while( pKey )
 	{
 		// angles
-		const char *pszAngles = pKey->GetString( "angles", "0 0 0" );
+		const char* pszAngles = pKey->GetString( "angles", "0 0 0" );
 		sscanf( pszAngles, "%f %f %f", &angles[0], &angles[1], &angles[2] );
 
 		// time
@@ -211,25 +221,25 @@ void CViewAngleAnimation::LoadViewAnimFile( const char *pKeyFrameFileName )
 	pData->deleteThis();
 }
 
-void CViewAngleAnimation::SaveAsAnimFile( const char *pKeyFrameFileName )
+void CViewAngleAnimation::SaveAsAnimFile( const char* pKeyFrameFileName )
 {
 	// save all of our keyframes into the file
-	KeyValues *pData = new KeyValues( pKeyFrameFileName );
+	KeyValues* pData = new KeyValues( pKeyFrameFileName );
 
 	pData->SetInt( "flags", m_iFlags );
 
-	KeyValues *pKey = new KeyValues( "keyframe" );
+	KeyValues* pKey = new KeyValues( "keyframe" );
 	int i;
 	int c = m_KeyFrames.Count();
 	char buf[64];
-	for ( i=0;i<c;i++ )
+	for( i = 0; i < c; i++ )
 	{
 		pKey = pData->CreateNewKey();
 
-		Q_snprintf( buf, sizeof(buf), "%f %f %f",
-			m_KeyFrames[i]->m_vecAngles[0],
-			m_KeyFrames[i]->m_vecAngles[1],
-			m_KeyFrames[i]->m_vecAngles[2] );
+		Q_snprintf( buf, sizeof( buf ), "%f %f %f",
+					m_KeyFrames[i]->m_vecAngles[0],
+					m_KeyFrames[i]->m_vecAngles[1],
+					m_KeyFrames[i]->m_vecAngles[2] );
 
 		pKey->SetString( "angles", buf );
 		pKey->SetFloat( "time", m_KeyFrames[i]->m_flTime );
@@ -240,7 +250,7 @@ void CViewAngleAnimation::SaveAsAnimFile( const char *pKeyFrameFileName )
 	pData->deleteThis();
 }
 
-void CViewAngleAnimation::AddKeyFrame( CViewAngleKeyFrame *pKeyFrame )
+void CViewAngleAnimation::AddKeyFrame( CViewAngleKeyFrame* pKeyFrame )
 {
 	pKeyFrame->m_vecAngles -= m_vecBaseAngles;
 	m_KeyFrames.AddToTail( pKeyFrame );
@@ -253,7 +263,7 @@ bool CViewAngleAnimation::IsFinished( void )
 
 void CViewAngleAnimation::RunAnimation( QAngle angles )
 {
-	if ( m_KeyFrames.Count() == 0 )
+	if( m_KeyFrames.Count() == 0 )
 	{
 		Warning( "CViewAngleAnimation::RunAnimation called on an empty view animation\n" );
 		return;
@@ -265,7 +275,7 @@ void CViewAngleAnimation::RunAnimation( QAngle angles )
 
 	m_iFlags = m_KeyFrames[0]->m_iFlags;
 
-	if ( !( m_iFlags & VIEWANIM_RELATIVE ) )
+	if( !( m_iFlags & VIEWANIM_RELATIVE ) )
 	{
 		m_KeyFrames[0]->m_vecAngles = angles;
 	}
@@ -273,21 +283,25 @@ void CViewAngleAnimation::RunAnimation( QAngle angles )
 
 void CViewAngleAnimation::ClientThink()
 {
-	if ( IsFinished() )
+	if( IsFinished() )
+	{
 		return;
+	}
 
 	float flCurrentTime = gpGlobals->curtime - m_flAnimStartTime;
 
-	if ( flCurrentTime < 0 )
+	if( flCurrentTime < 0 )
+	{
 		flCurrentTime = 0.001;
+	}
 
 	// find two nearest points
 	int i, c;
 	c = m_KeyFrames.Count();
 	float flTime = 0;
-	for ( i=0;i<c;i++ )
+	for( i = 0; i < c; i++ )
 	{
-		if ( flTime + m_KeyFrames[i]->m_flTime > flCurrentTime )
+		if( flTime + m_KeyFrames[i]->m_flTime > flCurrentTime )
 		{
 			break;
 		}
@@ -297,15 +311,15 @@ void CViewAngleAnimation::ClientThink()
 
 	Assert( i > 0 );
 
-	if ( i >= c )
+	if( i >= c )
 	{
-		if ( i > 0 )
+		if( i > 0 )
 		{
 			// animation complete, set to end point
-			SetAngles( m_KeyFrames[i-1]->m_vecAngles );
+			SetAngles( m_KeyFrames[i - 1]->m_vecAngles );
 		}
 
-		if ( m_pAnimCompleteCallback )
+		if( m_pAnimCompleteCallback )
 		{
 			m_pAnimCompleteCallback();
 		}
@@ -314,11 +328,11 @@ void CViewAngleAnimation::ClientThink()
 		return;
 	}
 
-	if ( m_KeyFrames[i]->m_iFlags != m_iFlags )
+	if( m_KeyFrames[i]->m_iFlags != m_iFlags )
 	{
-		if ( ( m_KeyFrames[i]->m_iFlags & VIEWANIM_RELATIVE ) && !( m_iFlags & VIEWANIM_RELATIVE ) )
+		if( ( m_KeyFrames[i]->m_iFlags & VIEWANIM_RELATIVE ) && !( m_iFlags & VIEWANIM_RELATIVE ) )
 		{
-            // new relative position is current angles
+			// new relative position is current angles
 			engine->GetViewAngles( m_vecBaseAngles );
 		}
 
@@ -332,25 +346,25 @@ void CViewAngleAnimation::ClientThink()
 
 	Vector v0, v1, v2, v3;
 
-	if ( i-2 <= 0 )
+	if( i - 2 <= 0 )
 	{
-		QAngleToVector( m_KeyFrames[i-1]->m_vecAngles, v0 );
+		QAngleToVector( m_KeyFrames[i - 1]->m_vecAngles, v0 );
 	}
 	else
 	{
-		QAngleToVector( m_KeyFrames[i-2]->m_vecAngles, v0 );
+		QAngleToVector( m_KeyFrames[i - 2]->m_vecAngles, v0 );
 	}
 
-	QAngleToVector( m_KeyFrames[i-1]->m_vecAngles, v1 );
+	QAngleToVector( m_KeyFrames[i - 1]->m_vecAngles, v1 );
 	QAngleToVector( m_KeyFrames[i]->m_vecAngles, v2 );
 
-	if ( i+1 >= c )
+	if( i + 1 >= c )
 	{
 		QAngleToVector( m_KeyFrames[i]->m_vecAngles, v3 );
 	}
 	else
 	{
-		QAngleToVector( m_KeyFrames[i+1]->m_vecAngles, v3 );
+		QAngleToVector( m_KeyFrames[i + 1]->m_vecAngles, v3 );
 	}
 
 	Vector out;
@@ -363,20 +377,28 @@ void CViewAngleAnimation::ClientThink()
 
 void CViewAngleAnimation::SetAngles( QAngle vecCalculatedAngles )
 {
-	if ( m_iFlags & VIEWANIM_RELATIVE )
+	if( m_iFlags & VIEWANIM_RELATIVE )
+	{
 		vecCalculatedAngles += m_vecBaseAngles;
+	}
 
 	QAngle vecViewAngle;
 	engine->GetViewAngles( vecViewAngle );
 
-	if ( !(FBitSet( m_iFlags, VIEWANIM_IGNORE_X ) ) )
+	if( !( FBitSet( m_iFlags, VIEWANIM_IGNORE_X ) ) )
+	{
 		vecViewAngle[PITCH] = vecCalculatedAngles[PITCH];
+	}
 
-	if ( !(FBitSet( m_iFlags, VIEWANIM_IGNORE_Y ) ) )
+	if( !( FBitSet( m_iFlags, VIEWANIM_IGNORE_Y ) ) )
+	{
 		vecViewAngle[YAW] = vecCalculatedAngles[YAW];
+	}
 
-	if ( !(FBitSet( m_iFlags, VIEWANIM_IGNORE_Z ) ) )
+	if( !( FBitSet( m_iFlags, VIEWANIM_IGNORE_Z ) ) )
+	{
 		vecViewAngle[ROLL] = vecCalculatedAngles[ROLL];
+	}
 
 	// clamp pitch
 	vecViewAngle[PITCH] = clamp( vecViewAngle[PITCH], -cl_pitchup.GetFloat(), cl_pitchdown.GetFloat() );

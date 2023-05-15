@@ -41,9 +41,9 @@ public:
 static CAllowMultipleRefractsLogic s_AllowMultipleRefractsLogic;
 #endif
 
-void ViewTransform( const Vector &worldSpace, Vector &viewSpace )
+void ViewTransform( const Vector& worldSpace, Vector& viewSpace )
 {
-	const VMatrix &viewMatrix = engine->WorldToViewMatrix();
+	const VMatrix& viewMatrix = engine->WorldToViewMatrix();
 	Vector3DMultiplyPosition( viewMatrix, worldSpace, viewSpace );
 }
 
@@ -52,7 +52,7 @@ void ViewTransform( const Vector &worldSpace, Vector &viewSpace )
 //-----------------------------------------------------------------------------
 // Purpose: Transforms a world-space position into a 2D position inside a supplied frustum.
 //-----------------------------------------------------------------------------
-int FrustumTransform( const VMatrix &worldToSurface, const Vector& point, Vector& screen )
+int FrustumTransform( const VMatrix& worldToSurface, const Vector& point, Vector& screen )
 {
 	// UNDONE: Clean this up some, handle off-screen vertices
 	float w;
@@ -86,14 +86,14 @@ int FrustumTransform( const VMatrix &worldToSurface, const Vector& point, Vector
 
 //-----------------------------------------------------------------------------
 // Purpose: UNDONE: Clean this up some, handle off-screen vertices
-// Input  : *point - 
-//			*screen - 
+// Input  : *point -
+//			*screen -
 // Output : int
 //-----------------------------------------------------------------------------
 int ScreenTransform( const Vector& point, Vector& screen )
 {
 	// UNDONE: Clean this up some, handle off-screen vertices
-	return FrustumTransform ( engine->WorldToScreenMatrix(), point, screen );
+	return FrustumTransform( engine->WorldToScreenMatrix(), point, screen );
 }
 
 //-----------------------------------------------------------------------------
@@ -102,13 +102,13 @@ int ScreenTransform( const Vector& point, Vector& screen )
 //-----------------------------------------------------------------------------
 int HudTransform( const Vector& point, Vector& screen )
 {
-	if ( UseVR() )
+	if( UseVR() )
 	{
-		return FrustumTransform ( g_ClientVirtualReality.GetHudProjectionFromWorld(), point, screen );
+		return FrustumTransform( g_ClientVirtualReality.GetHudProjectionFromWorld(), point, screen );
 	}
 	else
 	{
-		return FrustumTransform ( engine->WorldToScreenMatrix(), point, screen );
+		return FrustumTransform( engine->WorldToScreenMatrix(), point, screen );
 	}
 }
 
@@ -117,13 +117,15 @@ int HudTransform( const Vector& point, Vector& screen )
 void UpdateFullScreenDepthTexture( void )
 {
 	if( !g_pMaterialSystemHardwareConfig->SupportsPixelShaders_2_b() )
+	{
 		return;
+	}
 
-	ITexture *pDepthTex = GetFullFrameDepthTexture();
+	ITexture* pDepthTex = GetFullFrameDepthTexture();
 	CMatRenderContextPtr pRenderContext( materials );
 
 	if( IsX360() )
-	{	
+	{
 		pRenderContext->CopyRenderTargetToTextureEx( pDepthTex, -1, NULL, NULL );
 	}
 	else
@@ -135,16 +137,16 @@ void UpdateFullScreenDepthTexture( void )
 
 	if( r_depthoverlay.GetBool() )
 	{
-		IMaterial *pMaterial = materials->FindMaterial( "debug/showz", TEXTURE_GROUP_OTHER, true );
+		IMaterial* pMaterial = materials->FindMaterial( "debug/showz", TEXTURE_GROUP_OTHER, true );
 		pMaterial->IncrementReferenceCount();
-		IMaterialVar *BaseTextureVar = pMaterial->FindVar( "$basetexture", NULL, false );
-		IMaterialVar *pDepthInAlpha = NULL;
+		IMaterialVar* BaseTextureVar = pMaterial->FindVar( "$basetexture", NULL, false );
+		IMaterialVar* pDepthInAlpha = NULL;
 		if( IsPC() )
 		{
 			pDepthInAlpha = pMaterial->FindVar( "$ALPHADEPTH", NULL, false );
 			pDepthInAlpha->SetIntValue( 1 );
 		}
-		
+
 		BaseTextureVar->SetTextureValue( pDepthTex );
 
 		pRenderContext->OverrideDepthEnable( true, false ); //don't write to depth, or else we'll never see translucents

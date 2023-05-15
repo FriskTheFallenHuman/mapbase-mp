@@ -12,7 +12,7 @@
 #ifndef C_BASEENTITY_H
 #define C_BASEENTITY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -25,7 +25,7 @@
 #include "iclientunknown.h"
 #include "client_thinklist.h"
 #if !defined( NO_ENTITY_PREDICTION )
-#include "predictableid.h"
+	#include "predictableid.h"
 #endif
 #include "soundflags.h"
 #include "shareddefs.h"
@@ -69,8 +69,8 @@ typedef unsigned int			AimEntsListHandle_t;
 
 #define		INVALID_AIMENTS_LIST_HANDLE		(AimEntsListHandle_t)~0
 
-extern void RecvProxy_IntToColor32( const CRecvProxyData *pData, void *pStruct, void *pOut );
-extern void RecvProxy_LocalVelocity( const CRecvProxyData *pData, void *pStruct, void *pOut );
+extern void RecvProxy_IntToColor32( const CRecvProxyData* pData, void* pStruct, void* pOut );
+extern void RecvProxy_LocalVelocity( const CRecvProxyData* pData, void* pStruct, void* pOut );
 
 enum CollideType_t
 {
@@ -81,14 +81,14 @@ enum CollideType_t
 
 class VarMapEntry_t
 {
-	
+
 
 public:
 	unsigned short		type;
 	unsigned short		m_bNeedsToInterpolate;	// Set to false when this var doesn't
-												// need Interpolate() called on it anymore.
-	void				*data;
-	IInterpolatedVar	*watcher;
+	// need Interpolate() called on it anymore.
+	void*				data;
+	IInterpolatedVar*	watcher;
 };
 
 struct VarMapping_t
@@ -103,7 +103,7 @@ struct VarMapping_t
 	float						m_lastInterpolationTime;
 };
 
-																	
+
 
 #define DECLARE_INTERPOLATION()
 
@@ -116,11 +116,11 @@ struct serialentity_t;
 
 typedef CHandle<C_BaseEntity> EHANDLE; // The client's version of EHANDLE.
 
-typedef void (C_BaseEntity::*BASEPTR)(void);
-typedef void (C_BaseEntity::*ENTITYFUNCPTR)(C_BaseEntity *pOther );
+typedef void ( C_BaseEntity::*BASEPTR )( void );
+typedef void ( C_BaseEntity::*ENTITYFUNCPTR )( C_BaseEntity* pOther );
 
 // For entity creation on the client
-typedef C_BaseEntity* (*DISPATCHFUNCTION)( void );
+typedef C_BaseEntity* ( *DISPATCHFUNCTION )( void );
 
 #include "touchlink.h"
 #include "groundlink.h"
@@ -144,7 +144,7 @@ struct PredictionContext
 	// The command_number of the usercmd which created this entity
 	bool						m_bActive;
 	int							m_nCreationCommandNumber;
-	char const					*m_pszCreationModule;
+	char const*					m_pszCreationModule;
 	int							m_nCreationLineNumber;
 	// The entity to whom we are attached
 	CHandle< C_BaseEntity >		m_hServerEntity;
@@ -190,7 +190,7 @@ class C_BaseEntity : public IClientEntity
 	DECLARE_CLASS_NOBASE( C_BaseEntity );
 
 	friend class CPrediction;
-	friend void cc_cl_interp_all_changed( IConVar *pConVar, const char *pOldString, float flOldValue );
+	friend void cc_cl_interp_all_changed( IConVar* pConVar, const char* pOldString, float flOldValue );
 
 public:
 	DECLARE_DATADESC();
@@ -199,26 +199,29 @@ public:
 	// script description
 	DECLARE_ENT_SCRIPTDESC();
 
-									C_BaseEntity();
+	C_BaseEntity();
 	virtual							~C_BaseEntity();
 
-	static C_BaseEntity				*CreatePredictedEntityByName( const char *classname, const char *module, int line, bool persist = false );
-	
+	static C_BaseEntity*				CreatePredictedEntityByName( const char* classname, const char* module, int line, bool persist = false );
+
 	// FireBullets uses shared code for prediction.
-	virtual void					FireBullets( const FireBulletsInfo_t &info );
+	virtual void					FireBullets( const FireBulletsInfo_t& info );
 	virtual void					ModifyFireBulletsDamage( CTakeDamageInfo* dmgInfo ) {}
 	virtual bool					ShouldDrawUnderwaterBulletBubbles();
-	virtual bool					ShouldDrawWaterImpacts( void ) { return true; }
-	virtual bool					HandleShotImpactingWater( const FireBulletsInfo_t &info, 
-		const Vector &vecEnd, ITraceFilter *pTraceFilter, Vector *pVecTracerDest );
+	virtual bool					ShouldDrawWaterImpacts( void )
+	{
+		return true;
+	}
+	virtual bool					HandleShotImpactingWater( const FireBulletsInfo_t& info,
+			const Vector& vecEnd, ITraceFilter* pTraceFilter, Vector* pVecTracerDest );
 	virtual ITraceFilter*			GetBeamTraceFilter( void );
-	virtual void					DispatchTraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator = NULL );
-	virtual void					TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator = NULL );
-	virtual void					DoImpactEffect( trace_t &tr, int nDamageType );
-	virtual void					MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
+	virtual void					DispatchTraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator = NULL );
+	virtual void					TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator = NULL );
+	virtual void					DoImpactEffect( trace_t& tr, int nDamageType );
+	virtual void					MakeTracer( const Vector& vecTracerSrc, const trace_t& tr, int iTracerType );
 	virtual int						GetTracerAttachment( void );
-	void							ComputeTracerStartPosition( const Vector &vecShotSrc, Vector *pVecTracerStart );
-	void							TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType );
+	void							ComputeTracerStartPosition( const Vector& vecShotSrc, Vector* pVecTracerStart );
+	void							TraceBleed( float flDamage, const Vector& vecDir, trace_t* ptr, int bitsDamageType );
 	virtual int						BloodColor();
 	virtual const char*				GetTracerType();
 
@@ -227,13 +230,13 @@ public:
 	virtual void					Precache( void );
 	virtual void					Activate();
 
-	virtual void					ParseMapData( CEntityMapData *mapData );
-	virtual bool					KeyValue( const char *szKeyName, const char *szValue );
-	virtual bool					KeyValue( const char *szKeyName, float flValue );
-	virtual bool					KeyValue( const char *szKeyName, const Vector &vecValue );
-	virtual bool					GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	virtual void					ParseMapData( CEntityMapData* mapData );
+	virtual bool					KeyValue( const char* szKeyName, const char* szValue );
+	virtual bool					KeyValue( const char* szKeyName, float flValue );
+	virtual bool					KeyValue( const char* szKeyName, const Vector& vecValue );
+	virtual bool					GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 
-		// Entities block Line-Of-Sight for NPCs by default.
+	// Entities block Line-Of-Sight for NPCs by default.
 	// Set this to false if you want to change this behavior.
 	void							SetBlocksLOS( bool bBlocksLOS );
 	bool							BlocksLOS( void );
@@ -241,13 +244,13 @@ public:
 	bool							IsAIWalkable( void );
 
 
-	void							Interp_SetupMappings( VarMapping_t *map );
-	
+	void							Interp_SetupMappings( VarMapping_t* map );
+
 	// Returns 1 if there are no more changes (ie: we could call RemoveFromInterpolationList).
-	int								Interp_Interpolate( VarMapping_t *map, float currentTime );
-	
-	void							Interp_RestoreToLastNetworked( VarMapping_t *map );
-	void							Interp_UpdateInterpolationAmounts( VarMapping_t *map );
+	int								Interp_Interpolate( VarMapping_t* map, float currentTime );
+
+	void							Interp_RestoreToLastNetworked( VarMapping_t* map );
+	void							Interp_UpdateInterpolationAmounts( VarMapping_t* map );
 	void							Interp_HierarchyUpdateInterpolationAmounts();
 
 	// Called by the CLIENTCLASS macros.
@@ -257,17 +260,26 @@ public:
 	void							Term();
 
 	// memory handling, uses calloc so members are zero'd out on instantiation
-    void							*operator new( size_t stAllocateBlock );
-	void							*operator new[]( size_t stAllocateBlock );
-    void							*operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine );
-	void							*operator new[]( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine );
-	void							operator delete( void *pMem );
-	void							operator delete( void *pMem, int nBlockUse, const char *pFileName, int nLine ) { operator delete( pMem ); }
+	void*							operator new( size_t stAllocateBlock );
+	void*							operator new[]( size_t stAllocateBlock );
+	void*							operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine );
+	void*							operator new[]( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine );
+	void							operator delete( void* pMem );
+	void							operator delete( void* pMem, int nBlockUse, const char* pFileName, int nLine )
+	{
+		operator delete( pMem );
+	}
 
 	// This just picks one of the routes to IClientUnknown.
-	IClientUnknown*					GetIClientUnknown()	{ return this; }
-	virtual C_BaseAnimating*		GetBaseAnimating() { return NULL; }
-	virtual void					SetClassname( const char *className );
+	IClientUnknown*					GetIClientUnknown()
+	{
+		return this;
+	}
+	virtual C_BaseAnimating*		GetBaseAnimating()
+	{
+		return NULL;
+	}
+	virtual void					SetClassname( const char* className );
 
 	string_t						m_iClassname;
 
@@ -277,17 +289,20 @@ public:
 	bool CallScriptFunction( const char* pFunctionName, ScriptVariant_t* pFunctionReturn );
 
 	HSCRIPT GetOrCreatePrivateScriptScope();
-	HSCRIPT GetScriptScope() { return m_ScriptScope; }
+	HSCRIPT GetScriptScope()
+	{
+		return m_ScriptScope;
+	}
 
-	HSCRIPT LookupScriptFunction(const char* pFunctionName);
-	bool CallScriptFunctionHandle(HSCRIPT hFunc, ScriptVariant_t* pFunctionReturn);
+	HSCRIPT LookupScriptFunction( const char* pFunctionName );
+	bool CallScriptFunctionHandle( HSCRIPT hFunc, ScriptVariant_t* pFunctionReturn );
 
 	bool RunScriptFile( const char* pScriptFile, bool bUseRootScope = false );
 	bool RunScript( const char* pScriptText, const char* pDebugFilename = "C_BaseEntity::RunScript" );
 #endif
 
 	HSCRIPT					GetScriptOwnerEntity();
-	virtual void			SetScriptOwnerEntity(HSCRIPT pOwner);
+	virtual void			SetScriptOwnerEntity( HSCRIPT pOwner );
 
 	HSCRIPT GetScriptInstance();
 
@@ -303,7 +318,7 @@ public:
 // IClientUnknown overrides.
 public:
 
-	virtual void SetRefEHandle( const CBaseHandle &handle );
+	virtual void SetRefEHandle( const CBaseHandle& handle );
 	virtual const CBaseHandle& GetRefEHandle() const;
 
 	void					SetToolHandle( HTOOLHANDLE handle );
@@ -322,12 +337,30 @@ public:
 	bool					ShouldRecordInTools() const;
 
 	virtual void					Release();
-	virtual ICollideable*			GetCollideable()		{ return &m_Collision; }
-	virtual IClientNetworkable*		GetClientNetworkable()	{ return this; }
-	virtual IClientRenderable*		GetClientRenderable()	{ return this; }
-	virtual IClientEntity*			GetIClientEntity()		{ return this; }
-	virtual C_BaseEntity*			GetBaseEntity()			{ return this; }
-	virtual IClientThinkable*		GetClientThinkable()	{ return this; }
+	virtual ICollideable*			GetCollideable()
+	{
+		return &m_Collision;
+	}
+	virtual IClientNetworkable*		GetClientNetworkable()
+	{
+		return this;
+	}
+	virtual IClientRenderable*		GetClientRenderable()
+	{
+		return this;
+	}
+	virtual IClientEntity*			GetIClientEntity()
+	{
+		return this;
+	}
+	virtual C_BaseEntity*			GetBaseEntity()
+	{
+		return this;
+	}
+	virtual IClientThinkable*		GetClientThinkable()
+	{
+		return this;
+	}
 
 
 // Methods of IClientRenderable
@@ -335,38 +368,44 @@ public:
 
 	virtual const Vector&			GetRenderOrigin( void );
 	virtual const QAngle&			GetRenderAngles( void );
-	virtual Vector					GetObserverCamOrigin( void ) { return GetRenderOrigin(); }	// Return the origin for player observers tracking this target
-	virtual const matrix3x4_t &		RenderableToWorldTransform();
+	virtual Vector					GetObserverCamOrigin( void )
+	{
+		return GetRenderOrigin();    // Return the origin for player observers tracking this target
+	}
+	virtual const matrix3x4_t& 		RenderableToWorldTransform();
 	virtual bool					IsTransparent( void );
 	virtual bool					IsTwoPass( void );
 	virtual bool					UsesPowerOfTwoFrameBufferTexture();
 	virtual bool					UsesFullFrameBufferTexture();
 	virtual bool					IgnoresZBuffer( void ) const;
-	virtual const model_t			*GetModel( void ) const;
+	virtual const model_t*			GetModel( void ) const;
 	virtual int						DrawModel( int flags );
 	virtual void					ComputeFxBlend( void );
 	virtual int						GetFxBlend( void );
-	virtual bool					LODTest() { return true; }   // NOTE: UNUSED
+	virtual bool					LODTest()
+	{
+		return true;    // NOTE: UNUSED
+	}
 	virtual void					GetRenderBounds( Vector& mins, Vector& maxs );
 	virtual IPVSNotify*				GetPVSNotifyInterface();
 	virtual void					GetRenderBoundsWorldspace( Vector& absMins, Vector& absMaxs );
 
-	virtual void					GetShadowRenderBounds( Vector &mins, Vector &maxs, ShadowType_t shadowType );
+	virtual void					GetShadowRenderBounds( Vector& mins, Vector& maxs, ShadowType_t shadowType );
 
 	// Determine the color modulation amount
 	virtual void					GetColorModulation( float* color );
 
 	virtual void OnThreadedDrawSetup() {}
 public:
-	virtual bool					TestCollision( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
-	virtual bool					TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr );
+	virtual bool					TestCollision( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr );
+	virtual bool					TestHitboxes( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr );
 
 	// To mimic server call convention
-	C_BaseEntity					*GetOwnerEntity( void ) const;
-	void							SetOwnerEntity( C_BaseEntity *pOwner );
+	C_BaseEntity*					GetOwnerEntity( void ) const;
+	void							SetOwnerEntity( C_BaseEntity* pOwner );
 
-	C_BaseEntity					*GetEffectEntity( void ) const;
-	void							SetEffectEntity( C_BaseEntity *pEffectEnt );
+	C_BaseEntity*					GetEffectEntity( void ) const;
+	void							SetEffectEntity( C_BaseEntity* pEffectEnt );
 
 	// This function returns a value that scales all damage done by this entity.
 	// Use CDamageModifier to hook in damage modifiers on a guy.
@@ -401,18 +440,21 @@ public:
 	bool							IsMarkedForDeletion( void );
 
 	virtual int						entindex( void ) const;
-	
+
 #ifdef MAPBASE_VSCRIPT
 	// "I don't know why but wrapping entindex() works, while calling it directly crashes."
-	inline int GetEntityIndex() const { return entindex(); }
+	inline int GetEntityIndex() const
+	{
+		return entindex();
+	}
 #endif
-	
+
 	// This works for client-only entities and returns the GetEntryIndex() of the entity's handle,
 	// so the sound system can get an IClientEntity from it.
-	int GetSoundSourceIndex() const;	
+	int GetSoundSourceIndex() const;
 
 	// Server to client message received
-	virtual void					ReceiveMessage( int classID, bf_read &msg );
+	virtual void					ReceiveMessage( int classID, bf_read& msg );
 
 	virtual void*					GetDataTableBasePtr();
 
@@ -427,8 +469,8 @@ public:
 
 public:
 
-	void AddVar( void *data, IInterpolatedVar *watcher, int type, bool bSetup=false );
-	void RemoveVar( void *data, bool bAssert=true );
+	void AddVar( void* data, IInterpolatedVar* watcher, int type, bool bSetup = false );
+	void RemoveVar( void* data, bool bAssert = true );
 	VarMapping_t* GetVarMapping();
 
 	VarMapping_t	m_VarMap;
@@ -436,12 +478,12 @@ public:
 
 public:
 	// An inline version the game code can use
-	CCollisionProperty		*CollisionProp();
-	const CCollisionProperty*CollisionProp() const;
-	CParticleProperty		*ParticleProp();
-	const CParticleProperty *ParticleProp() const;
+	CCollisionProperty*		CollisionProp();
+	const CCollisionProperty* CollisionProp() const;
+	CParticleProperty*		ParticleProp();
+	const CParticleProperty* ParticleProp() const;
 
-	// Simply here for game shared 
+	// Simply here for game shared
 	bool					IsFloating();
 
 	virtual bool					ShouldSavePhysics();
@@ -452,16 +494,16 @@ public:
 	// capabilities for save/restore
 	virtual int						ObjectCaps( void );
 	// only overload these if you have special data to serialize
-	virtual int						Save( ISave &save );
-	virtual int						Restore( IRestore &restore );
+	virtual int						Save( ISave& save );
+	virtual int						Restore( IRestore& restore );
 
 private:
 
-	int SaveDataDescBlock( ISave &save, datamap_t *dmap );
-	int RestoreDataDescBlock( IRestore &restore, datamap_t *dmap );
+	int SaveDataDescBlock( ISave& save, datamap_t* dmap );
+	int RestoreDataDescBlock( IRestore& restore, datamap_t* dmap );
 
 	// Called after restoring data into prediction slots. This function is used in place of proxies
-	// on the variables, so if some variable like m_nModelIndex needs to update other state (like 
+	// on the variables, so if some variable like m_nModelIndex needs to update other state (like
 	// the model pointer), it is done here.
 	void OnPostRestoreData();
 
@@ -472,35 +514,41 @@ public:
 
 	// Convenience routines to init the vphysics simulation for this object.
 	// This creates a static object.  Something that behaves like world geometry - solid, but never moves
-	IPhysicsObject *VPhysicsInitStatic( void );
+	IPhysicsObject* VPhysicsInitStatic( void );
 
 	// This creates a normal vphysics simulated object
-	IPhysicsObject *VPhysicsInitNormal( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t *pSolid = NULL );
+	IPhysicsObject* VPhysicsInitNormal( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t* pSolid = NULL );
 
 	// This creates a vphysics object with a shadow controller that follows the AI
 	// Move the object to where it should be and call UpdatePhysicsShadowToCurrentPosition()
-	IPhysicsObject *VPhysicsInitShadow( bool allowPhysicsMovement, bool allowPhysicsRotation, solid_t *pSolid = NULL );
+	IPhysicsObject* VPhysicsInitShadow( bool allowPhysicsMovement, bool allowPhysicsRotation, solid_t* pSolid = NULL );
 
 private:
 	// called by all vphysics inits
 	bool			VPhysicsInitSetup();
 public:
 
-	void			VPhysicsSetObject( IPhysicsObject *pPhysics );
+	void			VPhysicsSetObject( IPhysicsObject* pPhysics );
 	// destroy and remove the physics object for this entity
 	virtual void	VPhysicsDestroyObject( void );
 
 	// Purpose: My physics object has been updated, react or extract data
-	virtual void					VPhysicsUpdate( IPhysicsObject *pPhysics );
-	inline IPhysicsObject			*VPhysicsGetObject( void ) const { return m_pPhysicsObject; }
-	virtual int						VPhysicsGetObjectList( IPhysicsObject **pList, int listMax );
+	virtual void					VPhysicsUpdate( IPhysicsObject* pPhysics );
+	inline IPhysicsObject*			VPhysicsGetObject( void ) const
+	{
+		return m_pPhysicsObject;
+	}
+	virtual int						VPhysicsGetObjectList( IPhysicsObject** pList, int listMax );
 	virtual bool					VPhysicsIsFlesh( void );
 
 // IClientEntity implementation.
 public:
-	virtual bool					SetupBones( matrix3x4_t *pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
-	virtual void					SetupWeights( const matrix3x4_t *pBoneToWorld, int nFlexWeightCount, float *pFlexWeights, float *pFlexDelayedWeights );
-	virtual bool					UsesFlexDelayedWeights() { return false; }
+	virtual bool					SetupBones( matrix3x4_t* pBoneToWorldOut, int nMaxBones, int boneMask, float currentTime );
+	virtual void					SetupWeights( const matrix3x4_t* pBoneToWorld, int nFlexWeightCount, float* pFlexWeights, float* pFlexDelayedWeights );
+	virtual bool					UsesFlexDelayedWeights()
+	{
+		return false;
+	}
 	virtual void					DoAnimationEvents( void );
 
 	// Add entity to visible entities list?
@@ -528,14 +576,17 @@ public:
 	virtual const Vector&			GetPrevLocalOrigin() const;
 	virtual const QAngle&			GetPrevLocalAngles() const;
 
-	void							SetLocalTransform( const matrix3x4_t &localTransform );
+	void							SetLocalTransform( const matrix3x4_t& localTransform );
 
 	void							SetModelName( string_t name );
 	string_t						GetModelName( void ) const;
 
 	int								GetModelIndex( void ) const;
 	void							SetModelIndex( int index );
-	virtual int						CalcOverrideModelIndex() { return -1; }
+	virtual int						CalcOverrideModelIndex()
+	{
+		return -1;
+	}
 
 	// These methods return a *world-aligned* box relative to the absorigin of the entity.
 	// This is used for collision purposes and is *not* guaranteed
@@ -550,7 +601,7 @@ public:
 	//	SOLID_OBB:		Entity space
 	//	SOLID_BSP:		Entity space
 	//	SOLID_VPHYSICS	Not used
-	void							SetCollisionBounds( const Vector& mins, const Vector &maxs );
+	void							SetCollisionBounds( const Vector& mins, const Vector& maxs );
 
 	// NOTE: These use the collision OBB to compute a reasonable center point for the entity
 	virtual const Vector&			WorldSpaceCenter( ) const;
@@ -559,35 +610,38 @@ public:
 	const Vector&					WorldAlignSize( ) const;
 	bool							IsPointSized() const;
 
-	// Returns a radius of a sphere 
-	// *centered at the world space center* bounding the collision representation 
+	// Returns a radius of a sphere
+	// *centered at the world space center* bounding the collision representation
 	// of the entity. NOTE: The world space center *may* move when the entity rotates.
 	float							BoundingRadius() const;
 
 	// Used when the collision prop is told to ask game code for the world-space surrounding box
-	virtual void					ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
-	virtual float						GetHealthBarHeightOffset() const { return 0.f; }
+	virtual void					ComputeWorldSpaceSurroundingBox( Vector* pVecWorldMins, Vector* pVecWorldMaxs );
+	virtual float						GetHealthBarHeightOffset() const
+	{
+		return 0.f;
+	}
 
 	// Returns the entity-to-world transform
-	matrix3x4_t						&EntityToWorldTransform();
-	const matrix3x4_t				&EntityToWorldTransform() const;
+	matrix3x4_t&						EntityToWorldTransform();
+	const matrix3x4_t&				EntityToWorldTransform() const;
 
 	// Some helper methods that transform a point from entity space to world space + back
-	void							EntityToWorldSpace( const Vector &in, Vector *pOut ) const;
-	void							WorldToEntitySpace( const Vector &in, Vector *pOut ) const;
+	void							EntityToWorldSpace( const Vector& in, Vector* pOut ) const;
+	void							WorldToEntitySpace( const Vector& in, Vector* pOut ) const;
 
 	// This function gets your parent's transform. If you're parented to an attachment,
 	// this calculates the attachment's transform and gives you that.
 	//
-	// You must pass in tempMatrix for scratch space - it may need to fill that in and return it instead of 
+	// You must pass in tempMatrix for scratch space - it may need to fill that in and return it instead of
 	// pointing you right at a variable in your parent.
-	matrix3x4_t&					GetParentToWorldTransform( matrix3x4_t &tempMatrix );
+	matrix3x4_t&					GetParentToWorldTransform( matrix3x4_t& tempMatrix );
 
-	void							GetVectors(Vector* forward, Vector* right, Vector* up) const;
+	void							GetVectors( Vector* forward, Vector* right, Vector* up ) const;
 
 	// Sets abs angles, but also sets local angles to be appropriate
 	void							SetAbsOrigin( const Vector& origin );
- 	void							SetAbsAngles( const QAngle& angles );
+	void							SetAbsAngles( const QAngle& angles );
 
 	void							AddFlag( int flags );
 	void							RemoveFlag( int flagsToRemove );
@@ -606,66 +660,75 @@ public:
 	void							RemoveSolidFlags( int nFlags );
 	bool							IsSolid() const;
 
-	virtual class CMouthInfo		*GetMouth( void );
+	virtual class CMouthInfo*		GetMouth( void );
 
 	// Retrieve sound spatialization info for the specified sound on this entity
 	// Return false to indicate sound is not audible
 	virtual bool					GetSoundSpatialization( SpatializationInfo_t& info );
 
 	// Attachments
-	virtual int						LookupAttachment( const char *pAttachmentName ) { return -1; }
-	virtual bool					GetAttachment( int number, matrix3x4_t &matrix );
-	virtual bool					GetAttachment( int number, Vector &origin );
-	virtual	bool					GetAttachment( int number, Vector &origin, QAngle &angles );
-	virtual bool					GetAttachmentVelocity( int number, Vector &originVel, Quaternion &angleVel );
+	virtual int						LookupAttachment( const char* pAttachmentName )
+	{
+		return -1;
+	}
+	virtual bool					GetAttachment( int number, matrix3x4_t& matrix );
+	virtual bool					GetAttachment( int number, Vector& origin );
+	virtual	bool					GetAttachment( int number, Vector& origin, QAngle& angles );
+	virtual bool					GetAttachmentVelocity( int number, Vector& originVel, Quaternion& angleVel );
 
 	// Team handling
-	virtual C_Team					*GetTeam( void );
+	virtual C_Team*					GetTeam( void );
 	virtual int						GetTeamNumber( void ) const;
 	virtual void					ChangeTeam( int iTeamNum );			// Assign this entity to a team.
 	virtual int						GetRenderTeamNumber( void );
-	virtual bool					InSameTeam( C_BaseEntity *pEntity );	// Returns true if the specified entity is on the same team as this one
+	virtual bool					InSameTeam( C_BaseEntity* pEntity );	// Returns true if the specified entity is on the same team as this one
 	virtual bool					InLocalTeam( void );
 
 	// ID Target handling
-	virtual bool					IsValidIDTarget( void ) { return false; }
-	virtual const char				*GetIDString( void ) { return ""; };
+	virtual bool					IsValidIDTarget( void )
+	{
+		return false;
+	}
+	virtual const char*				GetIDString( void )
+	{
+		return "";
+	};
 
 	// See CSoundEmitterSystem
-	virtual void ModifyEmitSoundParams( EmitSound_t &params );
+	virtual void ModifyEmitSoundParams( EmitSound_t& params );
 
-	void	EmitSound( const char *soundname, float soundtime = 0.0f, float *duration = NULL );  // Override for doing the general case of CPASAttenuationFilter( this ), and EmitSound( filter, entindex(), etc. );
-	void	EmitSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float *duration = NULL );  // Override for doing the general case of CPASAttenuationFilter( this ), and EmitSound( filter, entindex(), etc. );
-	void	StopSound( const char *soundname );
-	void	StopSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
-	void	GenderExpandString( char const *in, char *out, int maxlen );
+	void	EmitSound( const char* soundname, float soundtime = 0.0f, float* duration = NULL );  // Override for doing the general case of CPASAttenuationFilter( this ), and EmitSound( filter, entindex(), etc. );
+	void	EmitSound( const char* soundname, HSOUNDSCRIPTHANDLE& handle, float soundtime = 0.0f, float* duration = NULL );  // Override for doing the general case of CPASAttenuationFilter( this ), and EmitSound( filter, entindex(), etc. );
+	void	StopSound( const char* soundname );
+	void	StopSound( const char* soundname, HSOUNDSCRIPTHANDLE& handle );
+	void	GenderExpandString( char const* in, char* out, int maxlen );
 
-	static float GetSoundDuration( const char *soundname, char const *actormodel );
+	static float GetSoundDuration( const char* soundname, char const* actormodel );
 
-	static bool	GetParametersForSound( const char *soundname, CSoundParameters &params, const char *actormodel );
-	static bool	GetParametersForSound( const char *soundname, HSOUNDSCRIPTHANDLE& handle, CSoundParameters &params, const char *actormodel );
+	static bool	GetParametersForSound( const char* soundname, CSoundParameters& params, const char* actormodel );
+	static bool	GetParametersForSound( const char* soundname, HSOUNDSCRIPTHANDLE& handle, CSoundParameters& params, const char* actormodel );
 
-	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const char *soundname, const Vector *pOrigin = NULL, float soundtime = 0.0f, float *duration = NULL );
-	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const char *soundname, HSOUNDSCRIPTHANDLE& handle, const Vector *pOrigin = NULL, float soundtime = 0.0f, float *duration = NULL );
-	static void StopSound( int iEntIndex, const char *soundname );
-	static soundlevel_t LookupSoundLevel( const char *soundname );
-	static soundlevel_t LookupSoundLevel( const char *soundname, HSOUNDSCRIPTHANDLE& handle );
+	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const char* soundname, const Vector* pOrigin = NULL, float soundtime = 0.0f, float* duration = NULL );
+	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const char* soundname, HSOUNDSCRIPTHANDLE& handle, const Vector* pOrigin = NULL, float soundtime = 0.0f, float* duration = NULL );
+	static void StopSound( int iEntIndex, const char* soundname );
+	static soundlevel_t LookupSoundLevel( const char* soundname );
+	static soundlevel_t LookupSoundLevel( const char* soundname, HSOUNDSCRIPTHANDLE& handle );
 
-	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const EmitSound_t & params );
-	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const EmitSound_t & params, HSOUNDSCRIPTHANDLE& handle );
+	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params );
+	static void EmitSound( IRecipientFilter& filter, int iEntIndex, const EmitSound_t& params, HSOUNDSCRIPTHANDLE& handle );
 
-	static void StopSound( int iEntIndex, int iChannel, const char *pSample );
+	static void StopSound( int iEntIndex, int iChannel, const char* pSample );
 
-	static void EmitAmbientSound( int entindex, const Vector& origin, const char *soundname, int flags = 0, float soundtime = 0.0f, float *duration = NULL );
+	static void EmitAmbientSound( int entindex, const Vector& origin, const char* soundname, int flags = 0, float soundtime = 0.0f, float* duration = NULL );
 
 	// These files need to be listed in scripts/game_sounds_manifest.txt
-	static HSOUNDSCRIPTHANDLE PrecacheScriptSound( const char *soundname );
-	static void PrefetchScriptSound( const char *soundname );
+	static HSOUNDSCRIPTHANDLE PrecacheScriptSound( const char* soundname );
+	static void PrefetchScriptSound( const char* soundname );
 
-	// For each client who appears to be a valid recipient, checks the client has disabled CC and if so, removes them from 
+	// For each client who appears to be a valid recipient, checks the client has disabled CC and if so, removes them from
 	//  the recipient list.
 	static void RemoveRecipientsIfNotCloseCaptioning( C_RecipientFilter& filter );
-	static void EmitCloseCaption( IRecipientFilter& filter, int entindex, char const *token, CUtlVector< Vector >& soundorigins, float duration, bool warnifmissing = false );
+	static void EmitCloseCaption( IRecipientFilter& filter, int entindex, char const* token, CUtlVector< Vector >& soundorigins, float duration, bool warnifmissing = false );
 
 	// Moves all aiments into their correct position for the frame
 	static void	MarkAimEntsDirty();
@@ -683,20 +746,20 @@ public:
 
 	void UpdatePartitionListEntry();
 
-	// This can be used to setup the entity as a client-only entity. 
+	// This can be used to setup the entity as a client-only entity.
 	// Override this to perform per-entity clientside setup
-	virtual bool InitializeAsClientEntity( const char *pszModelName, RenderGroup_t renderGroup );
+	virtual bool InitializeAsClientEntity( const char* pszModelName, RenderGroup_t renderGroup );
 
-	
+
 
 
 
 	// This function gets called on all client entities once per simulation phase.
 	// It dispatches events like OnDataChanged(), and calls the legacy function AddEntity().
-	virtual void					Simulate();	
+	virtual void					Simulate();
 
 
-	// This event is triggered during the simulation phase if an entity's data has changed. It is 
+	// This event is triggered during the simulation phase if an entity's data has changed. It is
 	// better to hook this instead of PostDataUpdate() because in PostDataUpdate(), server entity origins
 	// are incorrect and attachment points can't be used.
 	virtual void					OnDataChanged( DataUpdateType_t type );
@@ -707,38 +770,47 @@ public:
 	bool IsStandable() const;
 	bool IsBSPModel() const;
 
-	
+
 	// If this is a vehicle, returns the vehicle interface
-	virtual IClientVehicle*			GetClientVehicle() { return NULL; }
+	virtual IClientVehicle*			GetClientVehicle()
+	{
+		return NULL;
+	}
 
 	// Returns the aiment render origin + angles
-	virtual void					GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles );
-	
+	virtual void					GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles );
+
 	// get network origin from previous update
 	virtual const Vector&			GetOldOrigin();
 
 	// Methods relating to traversing hierarchy
-	C_BaseEntity *GetMoveParent( void ) const;
-	C_BaseEntity *GetRootMoveParent();
-	C_BaseEntity *FirstMoveChild( void ) const;
-	C_BaseEntity *NextMovePeer( void ) const;
+	C_BaseEntity* GetMoveParent( void ) const;
+	C_BaseEntity* GetRootMoveParent();
+	C_BaseEntity* FirstMoveChild( void ) const;
+	C_BaseEntity* NextMovePeer( void ) const;
 
-	inline ClientEntityHandle_t		GetClientHandle() const	{ return ClientEntityHandle_t( m_RefEHandle ); }
+	inline ClientEntityHandle_t		GetClientHandle() const
+	{
+		return ClientEntityHandle_t( m_RefEHandle );
+	}
 	inline bool						IsServerEntity( void );
 
 	virtual RenderGroup_t			GetRenderGroup();
 
-	virtual void					GetToolRecordingState( KeyValues *msg );
-	virtual void					CleanupToolRecordingState( KeyValues *msg );
+	virtual void					GetToolRecordingState( KeyValues* msg );
+	virtual void					CleanupToolRecordingState( KeyValues* msg );
 
 	// The value returned by here determines whether or not (and how) the entity
 	// is put into the spatial partition.
 	virtual CollideType_t			GetCollideType( void );
 
 	virtual bool					ShouldDraw();
-	inline	bool					IsVisible() const { return m_hRender != INVALID_CLIENT_RENDER_HANDLE; }
+	inline	bool					IsVisible() const
+	{
+		return m_hRender != INVALID_CLIENT_RENDER_HANDLE;
+	}
 	virtual void					UpdateVisibility();
-	
+
 	// Returns true if the entity changes its position every frame on the server but it doesn't
 	// set animtime. In that case, the client returns true here so it copies the server time to
 	// animtime in OnDataChanged and the position history is correct for interpolation.
@@ -750,17 +822,17 @@ public:
 	void							OnStoreLastNetworkedValue();
 
 	// Initialize things given a new model.
-	virtual CStudioHdr				*OnNewModel();
-	virtual void					OnNewParticleEffect( const char *pszParticleName, CNewParticleEffect *pNewParticleEffect );
+	virtual CStudioHdr*				OnNewModel();
+	virtual void					OnNewParticleEffect( const char* pszParticleName, CNewParticleEffect* pNewParticleEffect );
 
 	bool							IsSimulatedEveryTick() const;
 	bool							IsAnimatedEveryTick() const;
 	void							SetSimulatedEveryTick( bool sim );
 	void							SetAnimatedEveryTick( bool anim );
 
-	void							Interp_Reset( VarMapping_t *map );
+	void							Interp_Reset( VarMapping_t* map );
 	virtual void					ResetLatched();
-	
+
 	float							GetInterpolationAmount( int flags );
 	float							GetLastChangeTime( int flags );
 
@@ -791,11 +863,23 @@ public:
 	virtual void					SetNextClientThink( float nextThinkTime );
 
 	// anything that has health can override this...
-	virtual void					SetHealth(int iHealth) {}
-	virtual int						GetHealth() const { return 0; }
-	virtual int						GetMaxHealth() const { return 1; }
-	virtual bool					IsVisibleToTargetID( void ) const { return false; }
-	virtual bool					IsHealthBarVisible( void ) const { return false; }
+	virtual void					SetHealth( int iHealth ) {}
+	virtual int						GetHealth() const
+	{
+		return 0;
+	}
+	virtual int						GetMaxHealth() const
+	{
+		return 1;
+	}
+	virtual bool					IsVisibleToTargetID( void ) const
+	{
+		return false;
+	}
+	virtual bool					IsHealthBarVisible( void ) const
+	{
+		return false;
+	}
 
 	// Returns the health fraction
 	float							HealthFraction() const;
@@ -809,22 +893,22 @@ public:
 	// Shadow-related methods
 	virtual bool IsShadowDirty( );
 	virtual void MarkShadowDirty( bool bDirty );
-	virtual IClientRenderable *GetShadowParent();
-	virtual IClientRenderable *FirstShadowChild();
-	virtual IClientRenderable *NextShadowPeer();
+	virtual IClientRenderable* GetShadowParent();
+	virtual IClientRenderable* FirstShadowChild();
+	virtual IClientRenderable* NextShadowPeer();
 
 	// Sets up a render handle so the leaf system will draw this entity.
 	void							AddToLeafSystem();
 	void							AddToLeafSystem( RenderGroup_t group );
 	// remove entity form leaf system again
-	void							RemoveFromLeafSystem();	
+	void							RemoveFromLeafSystem();
 
 	// A method to apply a decal to an entity
 	virtual void					AddDecal( const Vector& rayStart, const Vector& rayEnd,
-										const Vector& decalCenter, int hitbox, int decalIndex, bool doTrace, trace_t& tr, int maxLODToDecal = ADDDECAL_TO_ALL_LODS );
+			const Vector& decalCenter, int hitbox, int decalIndex, bool doTrace, trace_t& tr, int maxLODToDecal = ADDDECAL_TO_ALL_LODS );
 
 	virtual void					AddColoredDecal( const Vector& rayStart, const Vector& rayEnd,
-		const Vector& decalCenter, int hitbox, int decalIndex, bool doTrace, trace_t& tr, Color cColor, int maxLODToDecal = ADDDECAL_TO_ALL_LODS );
+			const Vector& decalCenter, int hitbox, int decalIndex, bool doTrace, trace_t& tr, Color cColor, int maxLODToDecal = ADDDECAL_TO_ALL_LODS );
 
 	// A method to remove all decals from an entity
 	void							RemoveAllDecals( void );
@@ -833,10 +917,16 @@ public:
 	bool							IsBrushModel() const;
 
 	// A random value 0-1 used by proxies to make sure they're not all in sync
-	float							ProxyRandomValue() const { return m_flProxyRandomValue; }
+	float							ProxyRandomValue() const
+	{
+		return m_flProxyRandomValue;
+	}
 
 	// The spawn time of this entity
-	float							SpawnTime() const { return m_flSpawnTime; }
+	float							SpawnTime() const
+	{
+		return m_flSpawnTime;
+	}
 
 	virtual bool					IsClientCreated( void ) const;
 
@@ -846,14 +936,14 @@ public:
 
 	// Prediction stuff
 	/////////////////
-	void							CheckInitPredictable( const char *context );
+	void							CheckInitPredictable( const char* context );
 
 	void							AllocateIntermediateData( void );
 	void							DestroyIntermediateData( void );
 	void							ShiftIntermediateDataForward( int slots_to_remove, int previous_last_slot );
 
-	void							*GetPredictedFrame( int framenumber );
-	void							*GetOriginalNetworkDataObject( void );
+	void*							GetPredictedFrame( int framenumber );
+	void*							GetOriginalNetworkDataObject( void );
 	bool							IsIntermediateDataAllocated( void ) const;
 
 	void							InitPredictable( void );
@@ -872,28 +962,31 @@ public:
 		SLOT_ORIGINALDATA = -1,
 	};
 
-	int								SaveData( const char *context, int slot, int type );
-	virtual int						RestoreData( const char *context, int slot, int type );
+	int								SaveData( const char* context, int slot, int type );
+	virtual int						RestoreData( const char* context, int slot, int type );
 
-	virtual char const *			DamageDecal( int bitsDamageType, int gameMaterial );
-	virtual void					DecalTrace( trace_t *pTrace, char const *decalName );
-	virtual void					ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
+	virtual char const* 			DamageDecal( int bitsDamageType, int gameMaterial );
+	virtual void					DecalTrace( trace_t* pTrace, char const* decalName );
+	virtual void					ImpactTrace( trace_t* pTrace, int iDamageType, const char* pCustomImpactName );
 
-	virtual bool					ShouldPredict( void ) { return false; };
+	virtual bool					ShouldPredict( void )
+	{
+		return false;
+	};
 	// interface function pointers
-	void							(C_BaseEntity::*m_pfnThink)(void);
+	void	( C_BaseEntity::*m_pfnThink )( void );
 	virtual void					Think( void )
 	{
 		AssertMsg( m_pfnThink != &C_BaseEntity::Think, "Infinite recursion is infinitely bad." );
 
-		if ( m_pfnThink )
+		if( m_pfnThink )
 		{
 			( this->*m_pfnThink )();
 		}
 	}
 
 	void							PhysicsDispatchThink( BASEPTR thinkFunc );
-	
+
 	// Toggle the visualization of the entity's abs/bbox
 	enum
 	{
@@ -907,13 +1000,16 @@ public:
 
 // Methods implemented on both client and server
 public:
-	void							SetSize( const Vector &vecMin, const Vector &vecMax ); // UTIL_SetSize( pev, mins, maxs );
-	char const						*GetClassname( void );
-	char const						*GetDebugName( void );
-	virtual const char				*GetPlayerName() const { return NULL; }
-	static int						PrecacheModel( const char *name ); 
-	static bool						PrecacheSound( const char *name );
-	static void						PrefetchSound( const char *name );
+	void							SetSize( const Vector& vecMin, const Vector& vecMax ); // UTIL_SetSize( pev, mins, maxs );
+	char const*						GetClassname( void );
+	char const*						GetDebugName( void );
+	virtual const char*				GetPlayerName() const
+	{
+		return NULL;
+	}
+	static int						PrecacheModel( const char* name );
+	static bool						PrecacheSound( const char* name );
+	static void						PrefetchSound( const char* name );
 	void							Remove( ); // UTIL_Remove( this );
 
 public:
@@ -927,8 +1023,8 @@ public:
 	void					AddDataObjectType( int type );
 	void					RemoveDataObjectType( int type );
 
-	void					*GetDataObject( int type );
-	void					*CreateDataObject( int type );
+	void*					GetDataObject( int type );
+	void*					CreateDataObject( int type );
 	void					DestroyDataObject( int type );
 	void					DestroyAllDataObjects( void );
 
@@ -937,26 +1033,32 @@ public:
 
 #if !defined( NO_ENTITY_PREDICTION )
 	// The player drives simulation of this entity
-	void					SetPlayerSimulated( C_BasePlayer *pOwner );
+	void					SetPlayerSimulated( C_BasePlayer* pOwner );
 	bool					IsPlayerSimulated( void ) const;
-	CBasePlayer				*GetSimulatingPlayer( void );
+	CBasePlayer*				GetSimulatingPlayer( void );
 	void					UnsetPlayerSimulated( void );
 #endif
 
 	// Sorry folks, here lies TF2-specific stuff that really has no other place to go
-	virtual bool			CanBePoweredUp( void ) { return false; }
-	virtual bool			AttemptToPowerup( int iPowerup, float flTime, float flAmount = 0, C_BaseEntity *pAttacker = NULL, CDamageModifier *pDamageModifier = NULL ) { return false; }
+	virtual bool			CanBePoweredUp( void )
+	{
+		return false;
+	}
+	virtual bool			AttemptToPowerup( int iPowerup, float flTime, float flAmount = 0, C_BaseEntity* pAttacker = NULL, CDamageModifier* pDamageModifier = NULL )
+	{
+		return false;
+	}
 
 	void					SetCheckUntouch( bool check );
 	bool					GetCheckUntouch() const;
 
 	virtual bool			IsCurrentlyTouching( void ) const;
 
-	virtual void			StartTouch( C_BaseEntity *pOther );
-	virtual void			Touch( C_BaseEntity *pOther ); 
-	virtual void			EndTouch( C_BaseEntity *pOther );
+	virtual void			StartTouch( C_BaseEntity* pOther );
+	virtual void			Touch( C_BaseEntity* pOther );
+	virtual void			EndTouch( C_BaseEntity* pOther );
 
-	void (C_BaseEntity ::*m_pfnTouch)( C_BaseEntity *pOther );
+	void ( C_BaseEntity ::*m_pfnTouch )( C_BaseEntity* pOther );
 
 	void					PhysicsStep( void );
 
@@ -964,32 +1066,32 @@ protected:
 	static bool				sm_bDisableTouchFuncs;	// Disables PhysicsTouch and PhysicsStartTouch function calls
 
 public:
-	touchlink_t				*PhysicsMarkEntityAsTouched( C_BaseEntity *other );
-	void					PhysicsTouch( C_BaseEntity *pentOther );
-	void					PhysicsStartTouch( C_BaseEntity *pentOther );
+	touchlink_t*				PhysicsMarkEntityAsTouched( C_BaseEntity* other );
+	void					PhysicsTouch( C_BaseEntity* pentOther );
+	void					PhysicsStartTouch( C_BaseEntity* pentOther );
 
 	// HACKHACK:Get the trace_t from the last physics touch call (replaces the even-hackier global trace vars)
-	static const trace_t	&GetTouchTrace( void );
+	static const trace_t&	GetTouchTrace( void );
 
 	// FIXME: Should be private, but I can't make em private just yet
-	void					PhysicsImpact( C_BaseEntity *other, trace_t &trace );
- 	void					PhysicsMarkEntitiesAsTouching( C_BaseEntity *other, trace_t &trace );
-	void					PhysicsMarkEntitiesAsTouchingEventDriven( C_BaseEntity *other, trace_t &trace );
+	void					PhysicsImpact( C_BaseEntity* other, trace_t& trace );
+	void					PhysicsMarkEntitiesAsTouching( C_BaseEntity* other, trace_t& trace );
+	void					PhysicsMarkEntitiesAsTouchingEventDriven( C_BaseEntity* other, trace_t& trace );
 
 	// Physics helper
-	static void				PhysicsRemoveTouchedList( C_BaseEntity *ent );
-	static void				PhysicsNotifyOtherOfUntouch( C_BaseEntity *ent, C_BaseEntity *other );
-	static void				PhysicsRemoveToucher( C_BaseEntity *other, touchlink_t *link );
+	static void				PhysicsRemoveTouchedList( C_BaseEntity* ent );
+	static void				PhysicsNotifyOtherOfUntouch( C_BaseEntity* ent, C_BaseEntity* other );
+	static void				PhysicsRemoveToucher( C_BaseEntity* other, touchlink_t* link );
 
-	groundlink_t			*AddEntityToGroundList( CBaseEntity *other );
-	void					PhysicsStartGroundContact( CBaseEntity *pentOther );
+	groundlink_t*			AddEntityToGroundList( CBaseEntity* other );
+	void					PhysicsStartGroundContact( CBaseEntity* pentOther );
 
-	static void				PhysicsNotifyOtherOfGroundRemoval( CBaseEntity *ent, CBaseEntity *other );
-	static void				PhysicsRemoveGround( CBaseEntity *other, groundlink_t *link );
-	static void				PhysicsRemoveGroundList( CBaseEntity *ent );
+	static void				PhysicsNotifyOtherOfGroundRemoval( CBaseEntity* ent, CBaseEntity* other );
+	static void				PhysicsRemoveGround( CBaseEntity* other, groundlink_t* link );
+	static void				PhysicsRemoveGroundList( CBaseEntity* ent );
 
-	void					StartGroundContact( CBaseEntity *ground );
-	void					EndGroundContact( CBaseEntity *ground );
+	void					StartGroundContact( CBaseEntity* ground );
+	void					EndGroundContact( CBaseEntity* ground );
 
 	void					SetGroundChangeTime( float flTime );
 	float					GetGroundChangeTime( void );
@@ -1001,21 +1103,21 @@ public:
 	bool					PhysicsCheckWater( void );
 	void					PhysicsCheckVelocity( void );
 	void					PhysicsAddHalfGravity( float timestep );
-	void					PhysicsAddGravityMove( Vector &move );
+	void					PhysicsAddGravityMove( Vector& move );
 
 	virtual unsigned int	PhysicsSolidMaskForEntity( void ) const;
 
-	void					SetGroundEntity( C_BaseEntity *ground );
-	C_BaseEntity			*GetGroundEntity( void );
+	void					SetGroundEntity( C_BaseEntity* ground );
+	C_BaseEntity*			GetGroundEntity( void );
 
-	void					PhysicsPushEntity( const Vector& push, trace_t *pTrace );
+	void					PhysicsPushEntity( const Vector& push, trace_t* pTrace );
 	void					PhysicsCheckWaterTransition( void );
 
 	// Performs the collision resolution for fliers.
-	void					PerformFlyCollisionResolution( trace_t &trace, Vector &move );
-	void					ResolveFlyCollisionBounce( trace_t &trace, Vector &vecVelocity, float flMinTotalElasticity = 0.0f );
-	void					ResolveFlyCollisionSlide( trace_t &trace, Vector &vecVelocity );
-	void					ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity );
+	void					PerformFlyCollisionResolution( trace_t& trace, Vector& move );
+	void					ResolveFlyCollisionBounce( trace_t& trace, Vector& vecVelocity, float flMinTotalElasticity = 0.0f );
+	void					ResolveFlyCollisionSlide( trace_t& trace, Vector& vecVelocity );
+	void					ResolveFlyCollisionCustom( trace_t& trace, Vector& vecVelocity );
 
 	void					PhysicsCheckForEntityUntouch( void );
 
@@ -1026,7 +1128,7 @@ public:
 	void					DestroyShadow();
 
 protected:
-		// think function handling
+	// think function handling
 	enum thinkmethods_t
 	{
 		THINK_FIRE_ALL_FUNCTIONS,
@@ -1037,9 +1139,9 @@ public:
 
 	// Unlinks from hierarchy
 	// Set the movement parent. Your local origin and angles will become relative to this parent.
-	// If iAttachment is a valid attachment on the parent, then your local origin and angles 
+	// If iAttachment is a valid attachment on the parent, then your local origin and angles
 	// are relative to the attachment on this entity.
-	void SetParent( C_BaseEntity *pParentEntity, int iParentAttachment=0 );
+	void SetParent( C_BaseEntity* pParentEntity, int iParentAttachment = 0 );
 
 	bool					PhysicsRunThink( thinkmethods_t thinkMethod = THINK_FIRE_ALL_FUNCTIONS );
 	bool					PhysicsRunSpecificThink( int nContextIndex, BASEPTR thinkFunc );
@@ -1047,42 +1149,85 @@ public:
 	virtual void					PhysicsSimulate( void );
 	virtual bool					IsAlive( void );
 
-	bool							IsInWorld( void ) { return true; }
+	bool							IsInWorld( void )
+	{
+		return true;
+	}
 
-	bool							IsWorld() { return entindex() == 0; }
+	bool							IsWorld()
+	{
+		return entindex() == 0;
+	}
 	/////////////////
 
-	virtual bool					IsPlayer( void ) const { return false; };
-	virtual bool						IsBot( void ) const { return ((GetFlags() & FL_FAKECLIENT) == FL_FAKECLIENT) ? true : false; }
-	virtual bool					IsBaseCombatCharacter( void ) { return false; };
-	virtual C_BaseCombatCharacter	*MyCombatCharacterPointer( void ) { return NULL; }
-	virtual bool					IsNPC( void ) { return false; }
-	C_AI_BaseNPC					*MyNPCPointer( void ); 
-	virtual bool					IsNextBot() { return false; }
+	virtual bool					IsPlayer( void ) const
+	{
+		return false;
+	};
+	virtual bool						IsBot( void ) const
+	{
+		return ( ( GetFlags() & FL_FAKECLIENT ) == FL_FAKECLIENT ) ? true : false;
+	}
+	virtual bool					IsBaseCombatCharacter( void )
+	{
+		return false;
+	};
+	virtual C_BaseCombatCharacter*	MyCombatCharacterPointer( void )
+	{
+		return NULL;
+	}
+	virtual bool					IsNPC( void )
+	{
+		return false;
+	}
+	C_AI_BaseNPC*					MyNPCPointer( void );
+	virtual bool					IsNextBot()
+	{
+		return false;
+	}
 	// TF2 specific
-	virtual bool					IsBaseObject( void ) const { return false; }
-	virtual bool					IsBaseCombatWeapon( void ) const { return false; }
-	virtual class C_BaseCombatWeapon		*MyCombatWeaponPointer() { return NULL; }
-	virtual bool					IsCombatItem( void ) const { return false; }
+	virtual bool					IsBaseObject( void ) const
+	{
+		return false;
+	}
+	virtual bool					IsBaseCombatWeapon( void ) const
+	{
+		return false;
+	}
+	virtual class C_BaseCombatWeapon*		MyCombatWeaponPointer()
+	{
+		return NULL;
+	}
+	virtual bool					IsCombatItem( void ) const
+	{
+		return false;
+	}
 
-	virtual bool					IsBaseTrain( void ) const { return false; }
+	virtual bool					IsBaseTrain( void ) const
+	{
+		return false;
+	}
 
 	// Returns the eye point + angles (used for viewing + shooting)
 	virtual Vector			EyePosition( void );
 	virtual const QAngle&	EyeAngles( void );		// Direction of eyes
 	virtual const QAngle&	LocalEyeAngles( void );	// Direction of eyes in local space (pl.v_angle)
-	
+
 #ifdef MAPBASE
 	// Created for script_intro and info_player_view_proxy
-	virtual void			GetEyePosition( Vector &vecOrigin, QAngle &angAngles ) { vecOrigin = EyePosition(); angAngles = EyeAngles(); }
+	virtual void			GetEyePosition( Vector& vecOrigin, QAngle& angAngles )
+	{
+		vecOrigin = EyePosition();
+		angAngles = EyeAngles();
+	}
 #endif
-	
+
 	// position of ears
 	virtual Vector		EarPosition( void );
 
 	Vector	EyePosition( void ) const;			// position of eyes
-	const QAngle &EyeAngles( void ) const;		// Direction of eyes in world space
-	const QAngle &LocalEyeAngles( void ) const;	// Direction of eyes
+	const QAngle& EyeAngles( void ) const;		// Direction of eyes in world space
+	const QAngle& LocalEyeAngles( void ) const;	// Direction of eyes
 	Vector	EarPosition( void ) const;			// position of ears
 
 	// Called by physics to see if we should avoid a collision test....
@@ -1094,14 +1239,14 @@ public:
 	void				SetGravity( float flGravity );
 	float				GetGravity( void ) const;
 
-	// Sets the model from a model index 
+	// Sets the model from a model index
 	void				SetModelByIndex( int nModelIndex );
 
 	// Set model... (NOTE: Should only be used by client-only entities
 	// Returns false if the model name is bogus or otherwise can't be loaded
-	bool				SetModel( const char *pModelName );
+	bool				SetModel( const char* pModelName );
 
-	void				SetModelPointer( const model_t *pModel );
+	void				SetModelPointer( const model_t* pModel );
 
 
 	// Access movetype and solid.
@@ -1111,18 +1256,18 @@ public:
 
 	// NOTE: Setting the abs velocity in either space will cause a recomputation
 	// in the other space, so setting the abs velocity will also set the local vel
-	void				SetLocalVelocity( const Vector &vecVelocity );
-	void				SetAbsVelocity( const Vector &vecVelocity );
+	void				SetLocalVelocity( const Vector& vecVelocity );
+	void				SetAbsVelocity( const Vector& vecVelocity );
 	const Vector&		GetLocalVelocity() const;
 	const Vector&		GetAbsVelocity( ) const;
 
-	void				ApplyLocalVelocityImpulse( const Vector &vecImpulse );
-	void				ApplyAbsVelocityImpulse( const Vector &vecImpulse );
-	void				ApplyLocalAngularVelocityImpulse( const AngularImpulse &angImpulse );
+	void				ApplyLocalVelocityImpulse( const Vector& vecImpulse );
+	void				ApplyAbsVelocityImpulse( const Vector& vecImpulse );
+	void				ApplyLocalAngularVelocityImpulse( const AngularImpulse& angImpulse );
 
 	// NOTE: Setting the abs velocity in either space will cause a recomputation
 	// in the other space, so setting the abs velocity will also set the local vel
-	void				SetLocalAngularVelocity( const QAngle &vecAngVelocity );
+	void				SetLocalAngularVelocity( const QAngle& vecAngVelocity );
 	const QAngle&		GetLocalAngularVelocity( ) const;
 
 //	void				SetAbsAngularVelocity( const QAngle &vecAngAbsVelocity );
@@ -1131,15 +1276,15 @@ public:
 	const Vector&		GetBaseVelocity() const;
 	void				SetBaseVelocity( const Vector& v );
 
-	virtual const Vector &GetViewOffset() const;
+	virtual const Vector& GetViewOffset() const;
 	virtual void		  SetViewOffset( const Vector& v );
 
 #ifdef SIXENSE
 	const Vector&		GetEyeOffset() const;
 	void				SetEyeOffset( const Vector& v );
 
-	const QAngle &		GetEyeAngleOffset() const;
-	void				SetEyeAngleOffset( const QAngle & qa );
+	const QAngle& 		GetEyeAngleOffset() const;
+	void				SetEyeAngleOffset( const QAngle& qa );
 #endif
 
 	// Invalidates the abs state of all children
@@ -1158,16 +1303,16 @@ public:
 	void				SetEffects( int nEffects );
 
 	// Computes the abs position of a point specified in local space
-	void				ComputeAbsPosition( const Vector &vecLocalPosition, Vector *pAbsPosition );
+	void				ComputeAbsPosition( const Vector& vecLocalPosition, Vector* pAbsPosition );
 
 	// Computes the abs position of a direction specified in local space
-	void				ComputeAbsDirection( const Vector &vecLocalDirection, Vector *pAbsDirection );
+	void				ComputeAbsDirection( const Vector& vecLocalDirection, Vector* pAbsDirection );
 
 	// These methods encapsulate MOVETYPE_FOLLOW, which became obsolete
-	void				FollowEntity( CBaseEntity *pBaseEntity, bool bBoneMerge = true );
+	void				FollowEntity( CBaseEntity* pBaseEntity, bool bBoneMerge = true );
 	void				StopFollowingEntity( );	// will also change to MOVETYPE_NONE
 	bool				IsFollowingEntity();
-	CBaseEntity			*GetFollowedEntity();
+	CBaseEntity*			GetFollowedEntity();
 
 #ifdef MAPBASE_VSCRIPT
 	void ScriptFollowEntity( HSCRIPT hBaseEntity, bool bBoneMerge );
@@ -1175,78 +1320,164 @@ public:
 #endif
 
 	// For shadows rendering the correct body + sequence...
-	virtual int GetBody() { return 0; }
-	virtual int GetSkin() { return 0; }
+	virtual int GetBody()
+	{
+		return 0;
+	}
+	virtual int GetSkin()
+	{
+		return 0;
+	}
 
-	const Vector& ScriptGetForward(void) { static Vector vecForward; GetVectors(&vecForward, NULL, NULL); return vecForward; }
+	const Vector& ScriptGetForward( void )
+	{
+		static Vector vecForward;
+		GetVectors( &vecForward, NULL, NULL );
+		return vecForward;
+	}
 #ifdef MAPBASE_VSCRIPT
-	const Vector& ScriptGetRight(void) { static Vector vecRight; GetVectors(NULL, &vecRight, NULL); return vecRight; }
+	const Vector& ScriptGetRight( void )
+	{
+		static Vector vecRight;
+		GetVectors( NULL, &vecRight, NULL );
+		return vecRight;
+	}
 #endif
-	const Vector& ScriptGetLeft(void)  { static Vector vecRight; GetVectors(NULL, &vecRight, NULL); return vecRight; }
+	const Vector& ScriptGetLeft( void )
+	{
+		static Vector vecRight;
+		GetVectors( NULL, &vecRight, NULL );
+		return vecRight;
+	}
 
-	const Vector& ScriptGetUp(void) { static Vector vecUp; GetVectors(NULL, NULL, &vecUp); return vecUp; }
+	const Vector& ScriptGetUp( void )
+	{
+		static Vector vecUp;
+		GetVectors( NULL, NULL, &vecUp );
+		return vecUp;
+	}
 
 #ifdef MAPBASE_VSCRIPT
-	const char* ScriptGetModelName( void ) const { return STRING(GetModelName()); }
+	const char* ScriptGetModelName( void ) const
+	{
+		return STRING( GetModelName() );
+	}
 
-	void ScriptStopSound(const char* soundname);
-	void ScriptEmitSound(const char* soundname);
-	float ScriptSoundDuration(const char* soundname, const char* actormodel);
+	void ScriptStopSound( const char* soundname );
+	void ScriptEmitSound( const char* soundname );
+	float ScriptSoundDuration( const char* soundname, const char* actormodel );
 
-	void VScriptPrecacheScriptSound(const char* soundname);
+	void VScriptPrecacheScriptSound( const char* soundname );
 
-	const Vector& ScriptEyePosition(void) { static Vector vec; vec = EyePosition(); return vec; }
-	const QAngle& ScriptEyeAngles(void) { static QAngle ang; ang = EyeAngles(); return ang; }
-	void ScriptSetForward( const Vector& v ) { QAngle angles; VectorAngles( v, angles ); SetAbsAngles( angles ); }
+	const Vector& ScriptEyePosition( void )
+	{
+		static Vector vec;
+		vec = EyePosition();
+		return vec;
+	}
+	const QAngle& ScriptEyeAngles( void )
+	{
+		static QAngle ang;
+		ang = EyeAngles();
+		return ang;
+	}
+	void ScriptSetForward( const Vector& v )
+	{
+		QAngle angles;
+		VectorAngles( v, angles );
+		SetAbsAngles( angles );
+	}
 
-	const Vector& ScriptGetBoundingMins( void ) { return m_Collision.OBBMins(); }
-	const Vector& ScriptGetBoundingMaxs( void ) { return m_Collision.OBBMaxs(); }
+	const Vector& ScriptGetBoundingMins( void )
+	{
+		return m_Collision.OBBMins();
+	}
+	const Vector& ScriptGetBoundingMaxs( void )
+	{
+		return m_Collision.OBBMaxs();
+	}
 
 	HSCRIPT ScriptEntityToWorldTransform( void );
 
 	HSCRIPT ScriptGetPhysicsObject( void );
 
-	void ScriptSetParent( HSCRIPT hParent, const char *szAttachment );
+	void ScriptSetParent( HSCRIPT hParent, const char* szAttachment );
 	HSCRIPT ScriptGetMoveParent( void );
 	HSCRIPT ScriptGetRootMoveParent();
 	HSCRIPT ScriptFirstMoveChild( void );
 	HSCRIPT ScriptNextMovePeer( void );
 
 	const Vector& ScriptGetColorVector();
-	int ScriptGetColorR()	{ return m_clrRender.GetR(); }
-	int ScriptGetColorG()	{ return m_clrRender.GetG(); }
-	int ScriptGetColorB()	{ return m_clrRender.GetB(); }
-	int ScriptGetAlpha()	{ return m_clrRender.GetA(); }
+	int ScriptGetColorR()
+	{
+		return m_clrRender.GetR();
+	}
+	int ScriptGetColorG()
+	{
+		return m_clrRender.GetG();
+	}
+	int ScriptGetColorB()
+	{
+		return m_clrRender.GetB();
+	}
+	int ScriptGetAlpha()
+	{
+		return m_clrRender.GetA();
+	}
 	void ScriptSetColorVector( const Vector& vecColor );
 	void ScriptSetColor( int r, int g, int b );
-	void ScriptSetColorR( int iVal )	{ SetRenderColorR( iVal ); }
-	void ScriptSetColorG( int iVal )	{ SetRenderColorG( iVal ); }
-	void ScriptSetColorB( int iVal )	{ SetRenderColorB( iVal ); }
-	void ScriptSetAlpha( int iVal )		{ SetRenderColorA( iVal ); }
+	void ScriptSetColorR( int iVal )
+	{
+		SetRenderColorR( iVal );
+	}
+	void ScriptSetColorG( int iVal )
+	{
+		SetRenderColorG( iVal );
+	}
+	void ScriptSetColorB( int iVal )
+	{
+		SetRenderColorB( iVal );
+	}
+	void ScriptSetAlpha( int iVal )
+	{
+		SetRenderColorA( iVal );
+	}
 
-	int ScriptGetRenderMode() { return GetRenderMode(); }
-	void ScriptSetRenderMode( int nRenderMode ) { SetRenderMode( (RenderMode_t)nRenderMode ); }
+	int ScriptGetRenderMode()
+	{
+		return GetRenderMode();
+	}
+	void ScriptSetRenderMode( int nRenderMode )
+	{
+		SetRenderMode( ( RenderMode_t )nRenderMode );
+	}
 
-	int ScriptGetMoveType() { return GetMoveType(); }
-	void ScriptSetMoveType( int iMoveType ) { SetMoveType( (MoveType_t)iMoveType ); }
+	int ScriptGetMoveType()
+	{
+		return GetMoveType();
+	}
+	void ScriptSetMoveType( int iMoveType )
+	{
+		SetMoveType( ( MoveType_t )iMoveType );
+	}
 #endif
 
 	// Stubs on client
 	void	NetworkStateManualMode( bool activate )		{ }
 	void	NetworkStateChanged()						{ }
-	void	NetworkStateChanged( void *pVar )			{ }
+	void	NetworkStateChanged( void* pVar )			{ }
 	void	NetworkStateSetUpdateInterval( float N )	{ }
 	void	NetworkStateForceUpdate()					{ }
 
 	// Think functions with contexts
-	int		RegisterThinkContext( const char *szContext );
-	BASEPTR	ThinkSet( BASEPTR func, float flNextThinkTime = 0, const char *szContext = NULL );
-	void	SetNextThink( float nextThinkTime, const char *szContext = NULL );
-	float	GetNextThink( const char *szContext = NULL );
-	float	GetLastThink( const char *szContext = NULL );
-	int		GetNextThinkTick( const char *szContext = NULL );
-	int		GetLastThinkTick( const char *szContext = NULL );
-	
+	int		RegisterThinkContext( const char* szContext );
+	BASEPTR	ThinkSet( BASEPTR func, float flNextThinkTime = 0, const char* szContext = NULL );
+	void	SetNextThink( float nextThinkTime, const char* szContext = NULL );
+	float	GetNextThink( const char* szContext = NULL );
+	float	GetLastThink( const char* szContext = NULL );
+	int		GetNextThinkTick( const char* szContext = NULL );
+	int		GetLastThinkTick( const char* szContext = NULL );
+
 	// These set entity flags (EFL_*) to help optimize queries
 	void	CheckHasThinkFunction( bool isThinkingHint = false );
 	void	CheckHasGamePhysicsSimulation();
@@ -1260,28 +1491,43 @@ public:
 	float	GetSimulationTime() const;
 	void	SetSimulationTime( float st );
 
-	float	GetCreateTime()										{ return m_flCreateTime; }
-	void	SetCreateTime( float flCreateTime )					{ m_flCreateTime = flCreateTime; }
+	float	GetCreateTime()
+	{
+		return m_flCreateTime;
+	}
+	void	SetCreateTime( float flCreateTime )
+	{
+		m_flCreateTime = flCreateTime;
+	}
 
 	int		GetCreationTick() const;
 
 #ifdef _DEBUG
-	void FunctionCheck( void *pFunction, const char *name );
+	void FunctionCheck( void* pFunction, const char* name );
 
-	ENTITYFUNCPTR TouchSet( ENTITYFUNCPTR func, const char *name ) 
-	{ 
+	ENTITYFUNCPTR TouchSet( ENTITYFUNCPTR func, const char* name )
+	{
 		//COMPILE_TIME_ASSERT( sizeof(func) == 4 );
-		m_pfnTouch = func; 
-		//FunctionCheck( *(reinterpret_cast<void **>(&m_pfnTouch)), name ); 
+		m_pfnTouch = func;
+		//FunctionCheck( *(reinterpret_cast<void **>(&m_pfnTouch)), name );
 		return func;
 	}
 #endif
 
 	// Gets the model instance + shadow handle
-	virtual ModelInstanceHandle_t GetModelInstance() { return m_ModelInstance; }
-	void SetModelInstance( ModelInstanceHandle_t hInstance) { m_ModelInstance = hInstance; }
-	bool SnatchModelInstance( C_BaseEntity * pToEntity );
-	virtual ClientShadowHandle_t GetShadowHandle() const	{ return m_ShadowHandle; }
+	virtual ModelInstanceHandle_t GetModelInstance()
+	{
+		return m_ModelInstance;
+	}
+	void SetModelInstance( ModelInstanceHandle_t hInstance )
+	{
+		m_ModelInstance = hInstance;
+	}
+	bool SnatchModelInstance( C_BaseEntity* pToEntity );
+	virtual ClientShadowHandle_t GetShadowHandle() const
+	{
+		return m_ShadowHandle;
+	}
 	virtual ClientRenderHandle_t&	RenderHandle();
 
 	void CreateModelInstance();
@@ -1294,11 +1540,14 @@ public:
 	// Which is remarkably slow.
 	// GetAttribInterface( CBaseEntity *pEntity ) in attribute_manager.h uses
 	//  this function, tests for NULL, and Asserts m_pAttributes == dynamic_cast.
-	inline IHasAttributes *GetHasAttributesInterfacePtr() const { return m_pAttributes; }
+	inline IHasAttributes* GetHasAttributesInterfacePtr() const
+	{
+		return m_pAttributes;
+	}
 
 protected:
 	// NOTE: m_pAttributes needs to be set in the leaf class constructor.
-	IHasAttributes *m_pAttributes;
+	IHasAttributes* m_pAttributes;
 
 	// Only meant to be called from subclasses
 	void DestroyModelInstance();
@@ -1315,34 +1564,40 @@ protected:
 	void MarkMessageReceived();
 
 	// Gets the last message time
-	float	GetLastMessageTime() const		{ return m_flLastMessageTime; }
+	float	GetLastMessageTime() const
+	{
+		return m_flLastMessageTime;
+	}
 
 	// For non-players
-	int	PhysicsClipVelocity (const Vector& in, const Vector& normal, Vector& out, float overbounce );
+	int	PhysicsClipVelocity( const Vector& in, const Vector& normal, Vector& out, float overbounce );
 
 	// Allow entities to perform client-side fades
-    virtual unsigned char GetClientSideFade() { return 255; }
+	virtual unsigned char GetClientSideFade()
+	{
+		return 255;
+	}
 
 protected:
 	// Two part guts of Interpolate(). Shared with C_BaseAnimating.
 	enum
 	{
-		INTERPOLATE_STOP=0,
+		INTERPOLATE_STOP = 0,
 		INTERPOLATE_CONTINUE
 	};
 
 	// Returns INTERPOLATE_STOP or INTERPOLATE_CONTINUE.
 	// bNoMoreChanges is set to 1 if you can call RemoveFromInterpolationList on the entity.
-	int BaseInterpolatePart1( float &currentTime, Vector &oldOrigin, QAngle &oldAngles, Vector &oldVel, int &bNoMoreChanges );
-	void BaseInterpolatePart2( Vector &oldOrigin, QAngle &oldAngles, Vector &oldVel, int nChangeFlags );
+	int BaseInterpolatePart1( float& currentTime, Vector& oldOrigin, QAngle& oldAngles, Vector& oldVel, int& bNoMoreChanges );
+	void BaseInterpolatePart2( Vector& oldOrigin, QAngle& oldAngles, Vector& oldVel, int nChangeFlags );
 
 
 public:
 	// Accessors for above
 	static int						GetPredictionRandomSeed( bool bUseUnSyncedServerPlatTime = false );
-	static void						SetPredictionRandomSeed( const CUserCmd *cmd );
-	static C_BasePlayer				*GetPredictionPlayer( void );
-	static void						SetPredictionPlayer( C_BasePlayer *player );
+	static void						SetPredictionRandomSeed( const CUserCmd* cmd );
+	static C_BasePlayer*				GetPredictionPlayer( void );
+	static void						SetPredictionPlayer( C_BasePlayer* player );
 	static void						CheckCLInterpChanged();
 
 	// Collision group accessors
@@ -1350,14 +1605,14 @@ public:
 	void SetCollisionGroup( int collisionGroup );
 	void							CollisionRulesChanged();
 
-	static C_BaseEntity				*Instance( int iEnt );
+	static C_BaseEntity*				Instance( int iEnt );
 	// Doesn't do much, but helps with trace results
-	static C_BaseEntity				*Instance( IClientEntity *ent );
-	static C_BaseEntity				*Instance( CBaseHandle hEnt );
+	static C_BaseEntity*				Instance( IClientEntity* ent );
+	static C_BaseEntity*				Instance( CBaseHandle hEnt );
 	// For debugging shared code
 	static bool						IsServer( void );
 	static bool						IsClient( void );
-	static char const				*GetDLLType( void );
+	static char const*				GetDLLType( void );
 	static void	SetAbsQueriesValid( bool bValid );
 	static bool IsAbsQueriesValid( void );
 
@@ -1365,15 +1620,15 @@ public:
 	static void PushEnableAbsRecomputations( bool bEnable );
 	static void PopEnableAbsRecomputations();
 
-	// This requires the abs recomputation stack to be empty and just sets the global state. 
+	// This requires the abs recomputation stack to be empty and just sets the global state.
 	// It should only be used at the scope of the frame loop.
-	static void EnableAbsRecomputations( bool bEnable );		
-	
+	static void EnableAbsRecomputations( bool bEnable );
+
 	static bool IsAbsRecomputationsEnabled( void );
 
 
 	// Bloat the culling bbox past the parent ent's bbox in local space if EF_BONEMERGE_FASTCULL is set.
-	virtual void BoneMergeFastCullBloat( Vector &localMins, Vector &localMaxs, const Vector &thisEntityMins, const Vector &thisEntityMaxs ) const;
+	virtual void BoneMergeFastCullBloat( Vector& localMins, Vector& localMaxs, const Vector& thisEntityMins, const Vector& thisEntityMaxs ) const;
 
 
 	// Accessors for color.
@@ -1389,10 +1644,10 @@ public:
 	RenderMode_t GetRenderMode() const;
 
 	const char* GetEntityName();
-public:	
+public:
 
 	// Determine what entity this corresponds to
-	int								m_index;	
+	int								m_index;
 
 	// Render information
 	unsigned char					m_nRenderFX;
@@ -1409,9 +1664,9 @@ public:
 #endif
 
 private:
-	
+
 	// Model for rendering
-	const model_t					*m_model;
+	const model_t*					m_model;
 
 public:
 	// Time animation sequence or frame was last changed
@@ -1420,7 +1675,7 @@ public:
 
 	float							m_flSimulationTime;
 	float							m_flOldSimulationTime;
-	
+
 	float							m_flCreateTime;
 
 	byte							m_ubInterpolationFrame;
@@ -1446,7 +1701,7 @@ public:
 	// Should we interpolate this tick?  (Used to be EF_NOINTERP)
 	bool							IsNoInterpolationFrame();
 
-	// 
+	//
 	int								m_nNextThinkTick;
 	int								m_nLastThinkTick;
 
@@ -1471,16 +1726,16 @@ public:
 #if !defined( NO_ENTITY_PREDICTION )
 	// Certain entities (projectiles) can be created on the client
 	CPredictableId					m_PredictableID;
-	PredictionContext				*m_pPredictionContext;
+	PredictionContext*				m_pPredictionContext;
 #endif
 
 	// used so we know when things are no longer touching
-	int								touchStamp;	
+	int								touchStamp;
 
 	// Called after predicted entity has been acknowledged so that no longer needed entity can
 	//  be deleted
 	// Return true to force deletion right now, regardless of isbeingremoved
-	virtual bool					OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity *predicted );
+	virtual bool					OnPredictedEntityRemove( bool isbeingremoved, C_BaseEntity* predicted );
 
 	bool							IsDormantPredictable( void ) const;
 	bool							BecameDormantThisPacket( void ) const;
@@ -1496,14 +1751,17 @@ public:
 	int								GetTextureFrameIndex( void );
 	void							SetTextureFrameIndex( int iIndex );
 
-	virtual bool					GetShadowCastDistance( float *pDist, ShadowType_t shadowType ) const;
-	virtual bool					GetShadowCastDirection( Vector *pDirection, ShadowType_t shadowType ) const;
-	virtual C_BaseEntity 			*GetShadowUseOtherEntity( void ) const;
-	virtual void					SetShadowUseOtherEntity( C_BaseEntity *pEntity );
+	virtual bool					GetShadowCastDistance( float* pDist, ShadowType_t shadowType ) const;
+	virtual bool					GetShadowCastDirection( Vector* pDirection, ShadowType_t shadowType ) const;
+	virtual C_BaseEntity*			 GetShadowUseOtherEntity( void ) const;
+	virtual void					SetShadowUseOtherEntity( C_BaseEntity* pEntity );
 
 	CInterpolatedVar< QAngle >& GetRotationInterpolator();
 	CInterpolatedVar< Vector >& GetOriginInterpolator();
-	virtual bool					AddRagdollToFadeQueue( void ) { return true; }
+	virtual bool					AddRagdollToFadeQueue( void )
+	{
+		return true;
+	}
 
 	// Dirty bits
 	void							MarkRenderHandleDirty();
@@ -1511,9 +1769,15 @@ public:
 	// used by SourceTV since move-parents may be missing when child spawns.
 	void							HierarchyUpdateMoveParent();
 
-	virtual bool					IsDeflectable() { return false; }
+	virtual bool					IsDeflectable()
+	{
+		return false;
+	}
 
-	bool			IsCombatCharacter() { return MyCombatCharacterPointer() == NULL ? false : true; }
+	bool			IsCombatCharacter()
+	{
+		return MyCombatCharacterPointer() == NULL ? false : true;
+	}
 protected:
 	int								m_nFXComputeFrame;
 
@@ -1534,7 +1798,7 @@ private:
 
 protected:
 	// pointer to the entity's physics object (vphysics.dll)
-	IPhysicsObject					*m_pPhysicsObject;	
+	IPhysicsObject*					m_pPhysicsObject;
 
 #if !defined( NO_ENTITY_PREDICTION )
 	bool							m_bPredictionEligible;
@@ -1543,7 +1807,7 @@ protected:
 	int								m_nSimulationTick;
 
 	// Think contexts
-	int								GetIndexForThinkContext( const char *pszContext );
+	int								GetIndexForThinkContext( const char* pszContext );
 	CUtlVector< thinkfunc_t >		m_aThinkFunctions;
 	int								m_iCurrentThinkContext;
 
@@ -1561,10 +1825,13 @@ public:
 
 #if defined(SIXENSE)
 	Vector							m_vecEyeOffset;
-	QAngle							m_EyeAngleOffset;    
+	QAngle							m_EyeAngleOffset;
 #endif
 	// Allow studio models to tell us what their m_nBody value is
-	virtual int						GetStudioBody( void ) { return 0; }
+	virtual int						GetStudioBody( void )
+	{
+		return 0;
+	}
 
 public:
 	// This can be used to setup the entity as a client-only entity. It gets an entity handle,
@@ -1579,7 +1846,7 @@ private:
 	// Figure out the smoothly interpolated origin for all server entities. Happens right before
 	// letting all entities simulate.
 	static void InterpolateServerEntities();
-	
+
 	// Check which entities want to be drawn and add them to the leaf system.
 	static void	AddVisibleEntities();
 
@@ -1609,7 +1876,7 @@ private:
 	void SimulateAngles( float flFrameTime );
 
 	// Implement this if you use MOVETYPE_CUSTOM
-	virtual void PerformCustomPhysics( Vector *pNewPosition, Vector *pNewVelocity, QAngle *pNewAngles, QAngle *pNewAngVelocity );
+	virtual void PerformCustomPhysics( Vector* pNewPosition, Vector* pNewVelocity, QAngle* pNewAngles, QAngle* pNewAngVelocity );
 
 	// methods related to decal adding
 	void AddStudioDecal( const Ray_t& ray, int hitbox, int decalIndex, bool doTrace, trace_t& tr, int maxLODToDecal = ADDDECAL_TO_ALL_LODS );
@@ -1617,23 +1884,23 @@ private:
 	void AddBrushModelDecal( const Ray_t& ray, const Vector& decalCenter, int decalIndex, bool doTrace, trace_t& tr );
 
 	void ComputePackedOffsets( void );
-	int ComputePackedSize_R( datamap_t *map );
+	int ComputePackedSize_R( datamap_t* map );
 	int GetIntermediateDataSize( void );
 
-	void UnlinkChild( C_BaseEntity *pParent, C_BaseEntity *pChild );
-	void LinkChild( C_BaseEntity *pParent, C_BaseEntity *pChild );
-	void HierarchySetParent( C_BaseEntity *pNewParent );
+	void UnlinkChild( C_BaseEntity* pParent, C_BaseEntity* pChild );
+	void LinkChild( C_BaseEntity* pParent, C_BaseEntity* pChild );
+	void HierarchySetParent( C_BaseEntity* pNewParent );
 	void UnlinkFromHierarchy();
 
 	// Computes the water level + type
 	void UpdateWaterState();
 
 	// Checks a sweep without actually performing the move
-	void PhysicsCheckSweep( const Vector& vecAbsStart, const Vector &vecAbsDelta, trace_t *pTrace );
+	void PhysicsCheckSweep( const Vector& vecAbsStart, const Vector& vecAbsDelta, trace_t* pTrace );
 
 	// FIXME: REMOVE!!!
 	void MoveToAimEnt( );
-	
+
 	// Sets/Gets the next think based on context index
 	void SetNextThink( int nContextIndex, float thinkTime );
 	void SetLastThink( int nContextIndex, float thinkTime );
@@ -1667,7 +1934,7 @@ private:
 
 	// Base velocity
 	Vector							m_vecBaseVelocity;
-	
+
 	// Gravity multiplier
 	float							m_flGravity;
 
@@ -1725,7 +1992,7 @@ private:
 
 
 	// Friction.
-	float							m_flFriction;       
+	float							m_flFriction;
 
 	Vector							m_vecAbsOrigin;
 
@@ -1755,8 +2022,8 @@ private:
 
 #if !defined( NO_ENTITY_PREDICTION )
 	// For storing prediction results and pristine network state
-	byte							*m_pIntermediateData[ MULTIPLAYER_BACKUP ];
-	byte							*m_pOriginalData;
+	byte*							m_pIntermediateData[ MULTIPLAYER_BACKUP ];
+	byte*							m_pOriginalData;
 	int								m_nIntermediateDataCount;
 
 	bool							m_bIsPlayerSimulated;
@@ -1784,36 +2051,36 @@ private:
 	// The owner!
 	EHANDLE							m_hOwnerEntity;
 	EHANDLE							m_hEffectEntity;
-	
+
 	char							m_iName[MAX_PATH];
-	
+
 	// This is a random seed used by the networking code to allow client - side prediction code
 	//  randon number generators to spit out the same random numbers on both sides for a particular
 	//  usercmd input.
 	static int						m_nPredictionRandomSeed;
-	static C_BasePlayer				*m_pPredictionPlayer;
+	static C_BasePlayer*				m_pPredictionPlayer;
 	static bool						s_bAbsQueriesValid;
 	static bool						s_bAbsRecomputationEnabled;
 
 	static bool						s_bInterpolate;
-	
+
 	int								m_fDataObjectTypes;
 
 	AimEntsListHandle_t				m_AimEntsListHandle;
 	int								m_nCreationTick;
 
-	
+
 public:
 	float							m_fRenderingClipPlane[4]; //world space clip plane when drawing
 	bool							m_bEnableRenderingClipPlane; //true to use the custom clip plane when drawing
-	float *							GetRenderClipPlane( void ); // Rendering clip plane, should be 4 floats, return value of NULL indicates a disabled render clip plane
+	float* 							GetRenderClipPlane( void ); // Rendering clip plane, should be 4 floats, return value of NULL indicates a disabled render clip plane
 
 protected:
 
 	void AddToInterpolationList();
 	void RemoveFromInterpolationList();
 	unsigned short m_InterpolationListEntry;	// Entry into g_InterpolationList (or g_InterpolationList.InvalidIndex if not in the list).
-	
+
 	void AddToTeleportList();
 	void RemoveFromTeleportList();
 	unsigned short m_TeleportListEntry;
@@ -1825,8 +2092,11 @@ protected:
 	// TF prevents drawing of any entity attached to players that aren't items in the inventory of the player.
 	// This is to prevent servers creating fake cosmetic items and attaching them to players.
 public:
-	virtual bool ValidateEntityAttachedToPlayer( bool &bShouldRetry );
-	bool EntityDeemedInvalid( void ) { return (m_bValidatedOwner && m_bDeemedInvalid); }
+	virtual bool ValidateEntityAttachedToPlayer( bool& bShouldRetry );
+	bool EntityDeemedInvalid( void )
+	{
+		return ( m_bValidatedOwner && m_bDeemedInvalid );
+	}
 protected:
 	bool m_bValidatedOwner;
 	bool m_bDeemedInvalid;
@@ -1836,25 +2106,27 @@ protected:
 #endif
 };
 
-EXTERN_RECV_TABLE(DT_BaseEntity);
+EXTERN_RECV_TABLE( DT_BaseEntity );
 
-inline bool FClassnameIs( C_BaseEntity *pEntity, const char *szClassname )
-{ 
+inline bool FClassnameIs( C_BaseEntity* pEntity, const char* szClassname )
+{
 	Assert( pEntity );
-	if ( pEntity == NULL )
+	if( pEntity == NULL )
+	{
 		return false;
+	}
 
-	return !strcmp( pEntity->GetClassname(), szClassname ) ? true : false; 
+	return !strcmp( pEntity->GetClassname(), szClassname ) ? true : false;
 }
 
 #define SetThink( a ) ThinkSet( static_cast <void (CBaseEntity::*)(void)> (a), 0, NULL )
 #define SetContextThink( a, b, context ) ThinkSet( static_cast <void (CBaseEntity::*)(void)> (a), (b), context )
 
 #ifdef _DEBUG
-#define SetTouch( a ) TouchSet( static_cast <void (C_BaseEntity::*)(C_BaseEntity *)> (a), #a )
+	#define SetTouch( a ) TouchSet( static_cast <void (C_BaseEntity::*)(C_BaseEntity *)> (a), #a )
 
 #else
-#define SetTouch( a ) m_pfnTouch = static_cast <void (C_BaseEntity::*)(C_BaseEntity *)> (a)
+	#define SetTouch( a ) m_pfnTouch = static_cast <void (C_BaseEntity::*)(C_BaseEntity *)> (a)
 
 #endif
 
@@ -1862,12 +2134,12 @@ inline bool FClassnameIs( C_BaseEntity *pEntity, const char *szClassname )
 //-----------------------------------------------------------------------------
 // An inline version the game code can use
 //-----------------------------------------------------------------------------
-inline CCollisionProperty *C_BaseEntity::CollisionProp()
+inline CCollisionProperty* C_BaseEntity::CollisionProp()
 {
 	return &m_Collision;
 }
 
-inline const CCollisionProperty *C_BaseEntity::CollisionProp() const
+inline const CCollisionProperty* C_BaseEntity::CollisionProp() const
 {
 	return &m_Collision;
 }
@@ -1875,12 +2147,12 @@ inline const CCollisionProperty *C_BaseEntity::CollisionProp() const
 //-----------------------------------------------------------------------------
 // An inline version the game code can use
 //-----------------------------------------------------------------------------
-inline CParticleProperty *C_BaseEntity::ParticleProp()
+inline CParticleProperty* C_BaseEntity::ParticleProp()
 {
 	return &m_Particles;
 }
 
-inline const CParticleProperty *C_BaseEntity::ParticleProp() const
+inline const CParticleProperty* C_BaseEntity::ParticleProp() const
 {
 	return &m_Particles;
 }
@@ -1896,18 +2168,18 @@ inline bool C_BaseEntity::IsServerEntity( void )
 //-----------------------------------------------------------------------------
 // Inline methods
 //-----------------------------------------------------------------------------
-inline matrix3x4_t &C_BaseEntity::EntityToWorldTransform()
-{ 
-	Assert( s_bAbsQueriesValid );
-	CalcAbsolutePosition();
-	return m_rgflCoordinateFrame; 
-}
-
-inline const matrix3x4_t &C_BaseEntity::EntityToWorldTransform() const
+inline matrix3x4_t& C_BaseEntity::EntityToWorldTransform()
 {
 	Assert( s_bAbsQueriesValid );
-	const_cast<C_BaseEntity*>(this)->CalcAbsolutePosition();
-	return m_rgflCoordinateFrame; 
+	CalcAbsolutePosition();
+	return m_rgflCoordinateFrame;
+}
+
+inline const matrix3x4_t& C_BaseEntity::EntityToWorldTransform() const
+{
+	Assert( s_bAbsQueriesValid );
+	const_cast<C_BaseEntity*>( this )->CalcAbsolutePosition();
+	return m_rgflCoordinateFrame;
 }
 
 inline const Vector& C_BaseEntity::GetNetworkOrigin() const
@@ -1920,7 +2192,7 @@ inline const QAngle& C_BaseEntity::GetNetworkAngles() const
 	return m_angNetworkAngles;
 }
 
-inline const model_t *C_BaseEntity::GetModel( void ) const
+inline const model_t* C_BaseEntity::GetModel( void ) const
 {
 	return m_model;
 }
@@ -1933,9 +2205,9 @@ inline int C_BaseEntity::GetModelIndex( void ) const
 //-----------------------------------------------------------------------------
 // Some helper methods that transform a point from entity space to world space + back
 //-----------------------------------------------------------------------------
-inline void C_BaseEntity::EntityToWorldSpace( const Vector &in, Vector *pOut ) const
+inline void C_BaseEntity::EntityToWorldSpace( const Vector& in, Vector* pOut ) const
 {
-	if ( GetAbsAngles() == vec3_angle )
+	if( GetAbsAngles() == vec3_angle )
 	{
 		VectorAdd( in, GetAbsOrigin(), *pOut );
 	}
@@ -1945,9 +2217,9 @@ inline void C_BaseEntity::EntityToWorldSpace( const Vector &in, Vector *pOut ) c
 	}
 }
 
-inline void C_BaseEntity::WorldToEntitySpace( const Vector &in, Vector *pOut ) const
+inline void C_BaseEntity::WorldToEntitySpace( const Vector& in, Vector* pOut ) const
 {
-	if ( GetAbsAngles() == vec3_angle )
+	if( GetAbsAngles() == vec3_angle )
 	{
 		VectorSubtract( in, GetAbsOrigin(), *pOut );
 	}
@@ -1957,14 +2229,14 @@ inline void C_BaseEntity::WorldToEntitySpace( const Vector &in, Vector *pOut ) c
 	}
 }
 
-inline const Vector &C_BaseEntity::GetAbsVelocity( ) const
+inline const Vector& C_BaseEntity::GetAbsVelocity( ) const
 {
 	Assert( s_bAbsQueriesValid );
-	const_cast<C_BaseEntity*>(this)->CalcAbsoluteVelocity();
+	const_cast<C_BaseEntity*>( this )->CalcAbsoluteVelocity();
 	return m_vecAbsVelocity;
 }
 
-inline C_BaseEntity	*C_BaseEntity::Instance( IClientEntity *ent )
+inline C_BaseEntity*	C_BaseEntity::Instance( IClientEntity* ent )
 {
 	return ent ? ent->GetBaseEntity() : NULL;
 }
@@ -1980,7 +2252,7 @@ inline bool	C_BaseEntity::IsClient( void )
 	return true;
 }
 
-inline const char *C_BaseEntity::GetDLLType( void )
+inline const char* C_BaseEntity::GetDLLType( void )
 {
 	return "client";
 }
@@ -2029,7 +2301,7 @@ inline SolidType_t C_BaseEntity::GetSolid( ) const
 	return CollisionProp()->GetSolid( );
 }
 
-inline void C_BaseEntity::SetCollisionBounds( const Vector& mins, const Vector &maxs )
+inline void C_BaseEntity::SetCollisionBounds( const Vector& mins, const Vector& maxs )
 {
 	CollisionProp()->SetCollisionBounds( mins, maxs );
 }
@@ -2073,27 +2345,27 @@ inline bool CBaseEntity::IsPointSized() const
 //-----------------------------------------------------------------------------
 // Methods relating to traversing hierarchy
 //-----------------------------------------------------------------------------
-inline C_BaseEntity *C_BaseEntity::GetMoveParent( void ) const
+inline C_BaseEntity* C_BaseEntity::GetMoveParent( void ) const
 {
-	return m_pMoveParent; 
+	return m_pMoveParent;
 }
 
-inline C_BaseEntity *C_BaseEntity::FirstMoveChild( void ) const
+inline C_BaseEntity* C_BaseEntity::FirstMoveChild( void ) const
 {
-	return m_pMoveChild; 
+	return m_pMoveChild;
 }
 
-inline C_BaseEntity *C_BaseEntity::NextMovePeer( void ) const
+inline C_BaseEntity* C_BaseEntity::NextMovePeer( void ) const
 {
-	return m_pMovePeer; 
+	return m_pMovePeer;
 }
 
 //-----------------------------------------------------------------------------
 // Velocity
 //-----------------------------------------------------------------------------
-inline const Vector& C_BaseEntity::GetLocalVelocity() const 
-{ 
-	return m_vecVelocity; 
+inline const Vector& C_BaseEntity::GetLocalVelocity() const
+{
+	return m_vecVelocity;
 }
 
 inline const QAngle& C_BaseEntity::GetLocalAngularVelocity( ) const
@@ -2101,29 +2373,29 @@ inline const QAngle& C_BaseEntity::GetLocalAngularVelocity( ) const
 	return m_vecAngVelocity;
 }
 
-inline const Vector& C_BaseEntity::GetBaseVelocity() const 
-{ 
-	return m_vecBaseVelocity; 
+inline const Vector& C_BaseEntity::GetBaseVelocity() const
+{
+	return m_vecBaseVelocity;
 }
 
-inline void	C_BaseEntity::SetBaseVelocity( const Vector& v ) 
-{ 
-	m_vecBaseVelocity = v; 
+inline void	C_BaseEntity::SetBaseVelocity( const Vector& v )
+{
+	m_vecBaseVelocity = v;
 }
 
-inline void C_BaseEntity::SetFriction( float flFriction ) 
-{ 
-	m_flFriction = flFriction; 
+inline void C_BaseEntity::SetFriction( float flFriction )
+{
+	m_flFriction = flFriction;
 }
 
-inline void C_BaseEntity::SetGravity( float flGravity ) 
-{ 
-	m_flGravity = flGravity; 
+inline void C_BaseEntity::SetGravity( float flGravity )
+{
+	m_flGravity = flGravity;
 }
 
-inline float C_BaseEntity::GetGravity( void ) const 
-{ 
-	return m_flGravity; 
+inline float C_BaseEntity::GetGravity( void ) const
+{
+	return m_flGravity;
 }
 
 inline int C_BaseEntity::GetWaterLevel() const
@@ -2136,9 +2408,9 @@ inline void C_BaseEntity::SetWaterLevel( int nLevel )
 	m_nWaterLevel = nLevel;
 }
 
-inline float C_BaseEntity::GetElasticity( void )	const			
-{ 
-	return m_flElasticity; 
+inline float C_BaseEntity::GetElasticity( void )	const
+{
+	return m_flElasticity;
 }
 
 inline const color32 CBaseEntity::GetRenderColor() const
@@ -2180,15 +2452,15 @@ inline void C_BaseEntity::SetRenderColorA( byte a )
 
 inline RenderMode_t CBaseEntity::GetRenderMode() const
 {
-	return (RenderMode_t)m_nRenderMode;
+	return ( RenderMode_t )m_nRenderMode;
 }
 
 //-----------------------------------------------------------------------------
 // checks to see if the entity is marked for deletion
 //-----------------------------------------------------------------------------
-inline bool C_BaseEntity::IsMarkedForDeletion( void ) 
-{ 
-	return (m_iEFlags & EFL_KILLME); 
+inline bool C_BaseEntity::IsMarkedForDeletion( void )
+{
+	return ( m_iEFlags & EFL_KILLME );
 }
 
 inline void C_BaseEntity::AddEFlags( int nEFlagMask )
@@ -2203,7 +2475,7 @@ inline void C_BaseEntity::RemoveEFlags( int nEFlagMask )
 
 inline bool CBaseEntity::IsEFlagSet( int nEFlagMask ) const
 {
-	return (m_iEFlags & nEFlagMask) != 0;
+	return ( m_iEFlags & nEFlagMask ) != 0;
 }
 
 inline unsigned char CBaseEntity::GetParentAttachment() const
@@ -2211,9 +2483,9 @@ inline unsigned char CBaseEntity::GetParentAttachment() const
 	return m_iParentAttachment;
 }
 
-inline ClientRenderHandle_t CBaseEntity::GetRenderHandle() const 
-{ 
-	return m_hRender; 
+inline ClientRenderHandle_t CBaseEntity::GetRenderHandle() const
+{
+	return m_hRender;
 }
 
 inline ClientRenderHandle_t& CBaseEntity::RenderHandle()
@@ -2223,24 +2495,24 @@ inline ClientRenderHandle_t& CBaseEntity::RenderHandle()
 
 #ifdef SIXENSE
 
-inline const Vector& CBaseEntity::GetEyeOffset() const 
-{ 
-	return m_vecEyeOffset; 
+inline const Vector& CBaseEntity::GetEyeOffset() const
+{
+	return m_vecEyeOffset;
 }
 
-inline void CBaseEntity::SetEyeOffset( const Vector& v ) 
-{ 
-	m_vecEyeOffset = v; 
+inline void CBaseEntity::SetEyeOffset( const Vector& v )
+{
+	m_vecEyeOffset = v;
 }
 
-inline const QAngle & CBaseEntity::GetEyeAngleOffset() const 
-{ 
-	return m_EyeAngleOffset; 
+inline const QAngle& CBaseEntity::GetEyeAngleOffset() const
+{
+	return m_EyeAngleOffset;
 }
 
-inline void CBaseEntity::SetEyeAngleOffset( const QAngle & qa ) 
-{ 
-	m_EyeAngleOffset = qa; 
+inline void CBaseEntity::SetEyeAngleOffset( const QAngle& qa )
+{
+	m_EyeAngleOffset = qa;
 }
 
 #endif
@@ -2250,22 +2522,22 @@ inline void CBaseEntity::SetEyeAngleOffset( const QAngle & qa )
 //-----------------------------------------------------------------------------
 inline Vector C_BaseEntity::EyePosition( void ) const
 {
-	return const_cast<C_BaseEntity*>(this)->EyePosition();
+	return const_cast<C_BaseEntity*>( this )->EyePosition();
 }
 
-inline const QAngle &C_BaseEntity::EyeAngles( void ) const		// Direction of eyes in world space
+inline const QAngle& C_BaseEntity::EyeAngles( void ) const		// Direction of eyes in world space
 {
-	return const_cast<C_BaseEntity*>(this)->EyeAngles();
+	return const_cast<C_BaseEntity*>( this )->EyeAngles();
 }
 
-inline const QAngle &C_BaseEntity::LocalEyeAngles( void ) const	// Direction of eyes
+inline const QAngle& C_BaseEntity::LocalEyeAngles( void ) const	// Direction of eyes
 {
-	return const_cast<C_BaseEntity*>(this)->LocalEyeAngles();
+	return const_cast<C_BaseEntity*>( this )->LocalEyeAngles();
 }
 
 inline Vector	C_BaseEntity::EarPosition( void ) const			// position of ears
 {
-	return const_cast<C_BaseEntity*>(this)->EarPosition();
+	return const_cast<C_BaseEntity*>( this )->EarPosition();
 }
 
 inline VarMapping_t* C_BaseEntity::GetVarMapping()
@@ -2290,8 +2562,8 @@ inline bool C_BaseEntity::IsNoInterpolationFrame()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : handle - 
+// Purpose:
+// Input  : handle -
 // Output : inline void
 //-----------------------------------------------------------------------------
 inline void C_BaseEntity::SetToolHandle( HTOOLHANDLE handle )
@@ -2302,8 +2574,8 @@ inline void C_BaseEntity::SetToolHandle( HTOOLHANDLE handle )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  :  - 
+// Purpose:
+// Input  :  -
 // Output : inline HTOOLHANDLE
 //-----------------------------------------------------------------------------
 inline HTOOLHANDLE C_BaseEntity::GetToolHandle() const
@@ -2311,12 +2583,12 @@ inline HTOOLHANDLE C_BaseEntity::GetToolHandle() const
 #ifndef NO_TOOLFRAMEWORK
 	return m_ToolHandle;
 #else
-	return (HTOOLHANDLE)0;
+	return ( HTOOLHANDLE )0;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 inline bool C_BaseEntity::IsEnabledInToolView() const
 {
@@ -2328,8 +2600,8 @@ inline bool C_BaseEntity::IsEnabledInToolView() const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  :  - 
+// Purpose:
+// Input  :  -
 // Output : inline bool
 //-----------------------------------------------------------------------------
 inline bool C_BaseEntity::ShouldRecordInTools() const
@@ -2341,12 +2613,12 @@ inline bool C_BaseEntity::ShouldRecordInTools() const
 #endif
 }
 
-inline const char *C_BaseEntity::GetEntityName() 
-{ 
-	return m_iName; 
+inline const char* C_BaseEntity::GetEntityName()
+{
+	return m_iName;
 }
 
 
-C_BaseEntity *CreateEntityByName( const char *className );
+C_BaseEntity* CreateEntityByName( const char* className );
 
 #endif // C_BASEENTITY_H

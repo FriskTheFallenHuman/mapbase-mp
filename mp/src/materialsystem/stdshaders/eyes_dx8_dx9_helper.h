@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef EYES_DX8_DX9_HELPER_H
 #define EYES_DX8_DX9_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <string.h>
@@ -27,7 +27,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct Eyes_DX8_DX9_Vars_t
 {
-	Eyes_DX8_DX9_Vars_t() { memset( this, 0xFF, sizeof(Eyes_DX8_DX9_Vars_t) ); }
+	Eyes_DX8_DX9_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( Eyes_DX8_DX9_Vars_t ) );
+	}
 
 	int m_nBaseTexture;
 	int m_nFrame;
@@ -46,9 +49,9 @@ struct Eyes_DX8_DX9_Vars_t
 	int m_nWarpParam;
 };
 
-void InitParamsEyes_DX8_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, Eyes_DX8_DX9_Vars_t &info );
-void InitEyes_DX8_DX9( CBaseVSShader *pShader, IMaterialVar** params, Eyes_DX8_DX9_Vars_t &info );
-void DrawEyes_DX8_DX9( bool bDX9, CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-					  IShaderShadow* pShaderShadow, Eyes_DX8_DX9_Vars_t &info, VertexCompressionType_t vertexCompression );
+void InitParamsEyes_DX8_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, Eyes_DX8_DX9_Vars_t& info );
+void InitEyes_DX8_DX9( CBaseVSShader* pShader, IMaterialVar** params, Eyes_DX8_DX9_Vars_t& info );
+void DrawEyes_DX8_DX9( bool bDX9, CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+					   IShaderShadow* pShaderShadow, Eyes_DX8_DX9_Vars_t& info, VertexCompressionType_t vertexCompression );
 
 #endif // EYES_DX8_DX9_HELPER_H

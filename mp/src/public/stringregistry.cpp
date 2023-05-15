@@ -32,11 +32,11 @@ struct StringTable_t : public CUtlDict<int, unsigned short>
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Add null terminated string to the string registry 
+// Purpose: Add null terminated string to the string registry
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-unsigned short CStringRegistry::AddString(const char *stringText, int stringID)
+unsigned short CStringRegistry::AddString( const char* stringText, int stringID )
 {
 	return m_pStringList->Insert( stringText, stringID );
 }
@@ -46,12 +46,12 @@ unsigned short CStringRegistry::AddString(const char *stringText, int stringID)
 // Input  :	Text of string to find
 // Output : Return string id or -1 if no such string exists
 //-----------------------------------------------------------------------------
-int	CStringRegistry::GetStringID( const char *stringText )
+int	CStringRegistry::GetStringID( const char* stringText )
 {
 	unsigned short index = m_pStringList->Find( stringText );
-	if ( m_pStringList->IsValidIndex( index ) )
+	if( m_pStringList->IsValidIndex( index ) )
 	{
-		return (*m_pStringList)[index];
+		return ( *m_pStringList )[index];
 	}
 
 	return -1;
@@ -62,11 +62,11 @@ int	CStringRegistry::GetStringID( const char *stringText )
 // Input  : ID of string to find
 // Output : Return string text of NULL of no such ID exists
 //-----------------------------------------------------------------------------
-char const *CStringRegistry::GetStringText( int stringID )
+char const* CStringRegistry::GetStringText( int stringID )
 {
 	for( unsigned short index = m_pStringList->First() ; index != m_pStringList->InvalidIndex(); index = m_pStringList->Next( index ) )
 	{
-		if ( (*m_pStringList)[index] == stringID )
+		if( ( *m_pStringList )[index] == stringID )
 		{
 			return m_pStringList->GetElementName( index );
 		}
@@ -79,10 +79,12 @@ char const *CStringRegistry::GetStringText( int stringID )
 //-----------------------------------------------------------------------------
 // Purpose: Given a key return the string text
 //-----------------------------------------------------------------------------
-char const *CStringRegistry::GetStringForKey( unsigned short key )
+char const* CStringRegistry::GetStringForKey( unsigned short key )
 {
-	if ( !m_pStringList->IsValidIndex( key ) )
+	if( !m_pStringList->IsValidIndex( key ) )
+	{
 		return NULL;
+	}
 
 	return m_pStringList->GetElementName( key );
 }
@@ -92,16 +94,18 @@ char const *CStringRegistry::GetStringForKey( unsigned short key )
 //-----------------------------------------------------------------------------
 int CStringRegistry::GetIDForKey( unsigned short key )
 {
-	if ( !m_pStringList->IsValidIndex( key ) )
+	if( !m_pStringList->IsValidIndex( key ) )
+	{
 		return 0;
+	}
 
-	return (*m_pStringList)[key];
+	return ( *m_pStringList )[key];
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Clear all strings from the string registry
 //-----------------------------------------------------------------------------
-void CStringRegistry::ClearStrings(void)
+void CStringRegistry::ClearStrings( void )
 {
 	m_pStringList->RemoveAll();
 }
@@ -111,7 +115,7 @@ void CStringRegistry::ClearStrings(void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CStringRegistry::~CStringRegistry(void)
+CStringRegistry::~CStringRegistry( void )
 {
 	delete m_pStringList;
 }
@@ -121,7 +125,7 @@ CStringRegistry::~CStringRegistry(void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CStringRegistry::CStringRegistry(void)
+CStringRegistry::CStringRegistry( void )
 {
 	m_pStringList = new StringTable_t;
 }

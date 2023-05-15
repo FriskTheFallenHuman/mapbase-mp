@@ -35,9 +35,9 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern CBaseEntity				*g_pLastSpawn;
-void InitBodyQue(void);
-extern void W_Precache(void);
+extern CBaseEntity*				g_pLastSpawn;
+void InitBodyQue( void );
+extern void W_Precache( void );
 extern void ActivityList_Free( void );
 extern CUtlMemoryPool g_EntityListPool;
 
@@ -49,15 +49,15 @@ public:
 	DECLARE_CLASS( CDecal, CPointEntity );
 
 	void	Spawn( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 
 	// Need to apply static decals here to get them into the signon buffer for the server appropriately
 	virtual void Activate();
 
-	void	TriggerDecal( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	TriggerDecal( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	// Input handlers.
-	void	InputActivate( inputdata_t &inputdata );
+	void	InputActivate( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -72,68 +72,68 @@ private:
 
 BEGIN_DATADESC( CDecal )
 
-	DEFINE_FIELD( m_nTexture, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_bLowPriority, FIELD_BOOLEAN, "LowPriority" ), // Don't mark as FDECAL_PERMANENT so not save/restored and will be reused on the client preferentially
+DEFINE_FIELD( m_nTexture, FIELD_INTEGER ),
+			  DEFINE_KEYFIELD( m_bLowPriority, FIELD_BOOLEAN, "LowPriority" ), // Don't mark as FDECAL_PERMANENT so not save/restored and will be reused on the client preferentially
 
-	// Function pointers
-	DEFINE_FUNCTION( StaticDecal ),
-	DEFINE_FUNCTION( TriggerDecal ),
+			  // Function pointers
+			  DEFINE_FUNCTION( StaticDecal ),
+			  DEFINE_FUNCTION( TriggerDecal ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( infodecal, CDecal );
+			  LINK_ENTITY_TO_CLASS( infodecal, CDecal );
 
 // UNDONE:  These won't get sent to joining players in multi-player
 void CDecal::Spawn( void )
 {
-	if ( m_nTexture < 0 || 
-		(gpGlobals->deathmatch && HasSpawnFlags( SF_DECAL_NOTINDEATHMATCH )) )
+	if( m_nTexture < 0 ||
+			( gpGlobals->deathmatch && HasSpawnFlags( SF_DECAL_NOTINDEATHMATCH ) ) )
 	{
 		UTIL_Remove( this );
 		return;
-	} 
+	}
 }
 
 void CDecal::Activate()
 {
 	BaseClass::Activate();
 
-	if ( !GetEntityName() )
+	if( !GetEntityName() )
 	{
 		StaticDecal();
 	}
 	else
 	{
 		// if there IS a targetname, the decal sprays itself on when it is triggered.
-		SetThink ( &CDecal::SUB_DoNothing );
-		SetUse(&CDecal::TriggerDecal);
+		SetThink( &CDecal::SUB_DoNothing );
+		SetUse( &CDecal::TriggerDecal );
 	}
 }
 
-void CDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CDecal::TriggerDecal( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	// this is set up as a USE function for info_decals that have targetnames, so that the
 	// decal doesn't get applied until it is fired. (usually by a scripted sequence)
 	trace_t		trace;
 	int			entityIndex;
 
-	UTIL_TraceLine( GetAbsOrigin() - Vector(5,5,5), GetAbsOrigin() + Vector(5,5,5), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceLine( GetAbsOrigin() - Vector( 5, 5, 5 ), GetAbsOrigin() + Vector( 5, 5, 5 ), MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace );
 
 	entityIndex = trace.m_pEnt ? trace.m_pEnt->entindex() : 0;
 
 	CBroadcastRecipientFilter filter;
 
-	te->BSPDecal( filter, 0.0, 
-		&GetAbsOrigin(), entityIndex, m_nTexture );
+	te->BSPDecal( filter, 0.0,
+				  &GetAbsOrigin(), entityIndex, m_nTexture );
 
 	SetThink( &CDecal::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
 
-void CDecal::InputActivate( inputdata_t &inputdata )
+void CDecal::InputActivate( inputdata_t& inputdata )
 {
 	TriggerDecal( inputdata.pActivator, inputdata.pCaller, USE_ON, 0 );
 }
@@ -144,14 +144,14 @@ void CDecal::StaticDecal( void )
 	class CTraceFilterValidForDecal : public CTraceFilterSimple
 	{
 	public:
-		CTraceFilterValidForDecal(const IHandleEntity *passentity, int collisionGroup )
-		 :	CTraceFilterSimple( passentity, collisionGroup )
+		CTraceFilterValidForDecal( const IHandleEntity* passentity, int collisionGroup )
+			:	CTraceFilterSimple( passentity, collisionGroup )
 		{
 		}
 
-		virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
+		virtual bool ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask )
 		{
-			static const char *ppszIgnoredClasses[] = 
+			static const char* ppszIgnoredClasses[] =
 			{
 				"weapon_*",
 				"item_*",
@@ -162,16 +162,20 @@ void CDecal::StaticDecal( void )
 				"npc_bullseye",  // Tracker 15335
 			};
 
-			CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
+			CBaseEntity* pEntity = EntityFromEntityHandle( pServerEntity );
 
 			// Tracker 15335:  Never impact decals against entities which are not rendering, either.
-			if ( pEntity->IsEffectActive( EF_NODRAW ) )
-				return false;
-
-			for ( int i = 0; i < ARRAYSIZE(ppszIgnoredClasses); i++ )
+			if( pEntity->IsEffectActive( EF_NODRAW ) )
 			{
-				if ( pEntity->ClassMatches( ppszIgnoredClasses[i] ) )
+				return false;
+			}
+
+			for( int i = 0; i < ARRAYSIZE( ppszIgnoredClasses ); i++ )
+			{
+				if( pEntity->ClassMatches( ppszIgnoredClasses[i] ) )
+				{
 					return false;
+				}
 			}
 
 
@@ -184,31 +188,31 @@ void CDecal::StaticDecal( void )
 	int entityIndex, modelIndex = 0;
 
 	Vector position = GetAbsOrigin();
-	UTIL_TraceLine( position - Vector(5,5,5), position + Vector(5,5,5),  MASK_SOLID, &traceFilter, &trace );
+	UTIL_TraceLine( position - Vector( 5, 5, 5 ), position + Vector( 5, 5, 5 ),  MASK_SOLID, &traceFilter, &trace );
 
 	bool canDraw = true;
 
-	entityIndex = trace.m_pEnt ? (short)trace.m_pEnt->entindex() : 0;
-	if ( entityIndex )
+	entityIndex = trace.m_pEnt ? ( short )trace.m_pEnt->entindex() : 0;
+	if( entityIndex )
 	{
-		CBaseEntity *ent = trace.m_pEnt;
-		if ( ent )
+		CBaseEntity* ent = trace.m_pEnt;
+		if( ent )
 		{
 			modelIndex = ent->GetModelIndex();
 			VectorITransform( GetAbsOrigin(), ent->EntityToWorldTransform(), position );
 
 			canDraw = ( modelIndex != 0 );
-			if ( !canDraw )
+			if( !canDraw )
 			{
 				Warning( "Suppressed StaticDecal which would have hit entity %i (class:%s, name:%s) with modelindex = 0\n",
-					ent->entindex(),
-					ent->GetClassname(),
-					STRING( ent->GetEntityName() ) );
+						 ent->entindex(),
+						 ent->GetClassname(),
+						 STRING( ent->GetEntityName() ) );
 			}
 		}
 	}
 
-	if ( canDraw )
+	if( canDraw )
 	{
 		engine->StaticDecal( position, m_nTexture, entityIndex, modelIndex, m_bLowPriority );
 	}
@@ -217,16 +221,18 @@ void CDecal::StaticDecal( void )
 }
 
 
-bool CDecal::KeyValue( const char *szKeyName, const char *szValue )
+bool CDecal::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "texture"))
+	if( FStrEq( szKeyName, "texture" ) )
 	{
 		// FIXME:  should decals all be preloaded?
 		m_nTexture = UTIL_PrecacheDecal( szValue, true );
-		
+
 		// Found
-		if (m_nTexture >= 0 )
+		if( m_nTexture >= 0 )
+		{
 			return true;
+		}
 		Warning( "Can't find decal %s\n", szValue );
 	}
 	else
@@ -246,15 +252,15 @@ public:
 	DECLARE_CLASS( CProjectedDecal, CPointEntity );
 
 	void	Spawn( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 
 	// Need to apply static decals here to get them into the signon buffer for the server appropriately
 	virtual void Activate();
 
-	void	TriggerDecal( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	TriggerDecal( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 	// Input handlers.
-	void	InputActivate( inputdata_t &inputdata );
+	void	InputActivate( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -270,59 +276,59 @@ private:
 
 BEGIN_DATADESC( CProjectedDecal )
 
-	DEFINE_FIELD( m_nTexture, FIELD_INTEGER ),
+DEFINE_FIELD( m_nTexture, FIELD_INTEGER ),
 
-	DEFINE_KEYFIELD( m_flDistance, FIELD_FLOAT, "Distance" ),
+			  DEFINE_KEYFIELD( m_flDistance, FIELD_FLOAT, "Distance" ),
 
-	// Function pointers
-	DEFINE_FUNCTION( StaticDecal ),
-	DEFINE_FUNCTION( TriggerDecal ),
+			  // Function pointers
+			  DEFINE_FUNCTION( StaticDecal ),
+			  DEFINE_FUNCTION( TriggerDecal ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( info_projecteddecal, CProjectedDecal );
+			  LINK_ENTITY_TO_CLASS( info_projecteddecal, CProjectedDecal );
 
 // UNDONE:  These won't get sent to joining players in multi-player
 void CProjectedDecal::Spawn( void )
 {
-	if ( m_nTexture < 0 || 
-		(gpGlobals->deathmatch && HasSpawnFlags( SF_DECAL_NOTINDEATHMATCH )) )
+	if( m_nTexture < 0 ||
+			( gpGlobals->deathmatch && HasSpawnFlags( SF_DECAL_NOTINDEATHMATCH ) ) )
 	{
 		UTIL_Remove( this );
 		return;
-	} 
+	}
 }
 
 void CProjectedDecal::Activate()
 {
 	BaseClass::Activate();
 
-	if ( !GetEntityName() )
+	if( !GetEntityName() )
 	{
 		StaticDecal();
 	}
 	else
 	{
 		// if there IS a targetname, the decal sprays itself on when it is triggered.
-		SetThink ( &CProjectedDecal::SUB_DoNothing );
-		SetUse(&CProjectedDecal::TriggerDecal);
+		SetThink( &CProjectedDecal::SUB_DoNothing );
+		SetUse( &CProjectedDecal::TriggerDecal );
 	}
 }
 
-void CProjectedDecal::InputActivate( inputdata_t &inputdata )
+void CProjectedDecal::InputActivate( inputdata_t& inputdata )
 {
 	TriggerDecal( inputdata.pActivator, inputdata.pCaller, USE_ON, 0 );
 }
 
 void CProjectedDecal::ProjectDecal( CRecipientFilter& filter )
 {
-	te->ProjectDecal( filter, 0.0, 
-		&GetAbsOrigin(), &GetAbsAngles(), m_flDistance, m_nTexture );
+	te->ProjectDecal( filter, 0.0,
+					  &GetAbsOrigin(), &GetAbsAngles(), m_flDistance, m_nTexture );
 }
 
-void CProjectedDecal::TriggerDecal ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CProjectedDecal::TriggerDecal( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	CBroadcastRecipientFilter filter;
 
@@ -343,16 +349,18 @@ void CProjectedDecal::StaticDecal( void )
 }
 
 
-bool CProjectedDecal::KeyValue( const char *szKeyName, const char *szValue )
+bool CProjectedDecal::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "texture"))
+	if( FStrEq( szKeyName, "texture" ) )
 	{
 		// FIXME:  should decals all be preloaded?
 		m_nTexture = UTIL_PrecacheDecal( szValue, true );
-		
+
 		// Found
-		if (m_nTexture >= 0 )
+		if( m_nTexture >= 0 )
+		{
 			return true;
+		}
 		Warning( "Can't find decal %s\n", szValue );
 	}
 	else
@@ -372,17 +380,17 @@ LINK_ENTITY_TO_CLASS( worldspawn, CWorld );
 
 BEGIN_DATADESC( CWorld )
 
-	DEFINE_FIELD( m_flWaveHeight, FIELD_FLOAT ),
+DEFINE_FIELD( m_flWaveHeight, FIELD_FLOAT ),
 
-	// keyvalues are parsed from map, but not saved/loaded
-	DEFINE_KEYFIELD( m_iszChapterTitle, FIELD_STRING, "chaptertitle" ),
+			  // keyvalues are parsed from map, but not saved/loaded
+			  DEFINE_KEYFIELD( m_iszChapterTitle, FIELD_STRING, "chaptertitle" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bChapterTitleNoMessage, FIELD_BOOLEAN, "chaptertitlenomessage" ),
 #endif
-	DEFINE_KEYFIELD( m_bStartDark,		FIELD_BOOLEAN, "startdark" ),
-	DEFINE_KEYFIELD( m_bDisplayTitle,	FIELD_BOOLEAN, "gametitle" ),
-	DEFINE_FIELD( m_WorldMins, FIELD_VECTOR ),
-	DEFINE_FIELD( m_WorldMaxs, FIELD_VECTOR ),
+			  DEFINE_KEYFIELD( m_bStartDark,		FIELD_BOOLEAN, "startdark" ),
+			  DEFINE_KEYFIELD( m_bDisplayTitle,	FIELD_BOOLEAN, "gametitle" ),
+			  DEFINE_FIELD( m_WorldMins, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_WorldMaxs, FIELD_VECTOR ),
 #ifdef _X360
 	DEFINE_KEYFIELD( m_flMaxOccludeeArea, FIELD_FLOAT, "maxoccludeearea_x360" ),
 	DEFINE_KEYFIELD( m_flMinOccluderArea, FIELD_FLOAT, "minoccluderarea_x360" ),
@@ -390,80 +398,82 @@ BEGIN_DATADESC( CWorld )
 	DEFINE_KEYFIELD( m_flMaxOccludeeArea, FIELD_FLOAT, "maxoccludeearea" ),
 	DEFINE_KEYFIELD( m_flMinOccluderArea, FIELD_FLOAT, "minoccluderarea" ),
 #endif
-	DEFINE_KEYFIELD( m_flMaxPropScreenSpaceWidth, FIELD_FLOAT, "maxpropscreenwidth" ),
-	DEFINE_KEYFIELD( m_flMinPropScreenSpaceWidth, FIELD_FLOAT, "minpropscreenwidth" ),
-	DEFINE_KEYFIELD( m_iszDetailSpriteMaterial, FIELD_STRING, "detailmaterial" ),
+			  DEFINE_KEYFIELD( m_flMaxPropScreenSpaceWidth, FIELD_FLOAT, "maxpropscreenwidth" ),
+			  DEFINE_KEYFIELD( m_flMinPropScreenSpaceWidth, FIELD_FLOAT, "minpropscreenwidth" ),
+			  DEFINE_KEYFIELD( m_iszDetailSpriteMaterial, FIELD_STRING, "detailmaterial" ),
 #ifdef MAPBASE_VSCRIPT
 	DEFINE_KEYFIELD( m_iScriptLanguage, FIELD_INTEGER, "vscriptlanguage" ),
 	//DEFINE_KEYFIELD( m_iScriptLanguageClient, FIELD_INTEGER, "vscriptlanguage_client" ),
 #endif
-	DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
+			  DEFINE_KEYFIELD( m_bColdWorld,		FIELD_BOOLEAN, "coldworld" ),
 
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetChapterTitle", InputSetChapterTitle ),
 #endif
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 // SendTable stuff.
-IMPLEMENT_SERVERCLASS_ST(CWorld, DT_WORLD)
-	SendPropFloat	(SENDINFO(m_flWaveHeight), 8, SPROP_ROUNDUP,	0.0f,	8.0f),
-	SendPropVector	(SENDINFO(m_WorldMins),	-1,	SPROP_COORD),
-	SendPropVector	(SENDINFO(m_WorldMaxs),	-1,	SPROP_COORD),
-	SendPropInt		(SENDINFO(m_bStartDark), 1, SPROP_UNSIGNED ),
-	SendPropFloat	(SENDINFO(m_flMaxOccludeeArea), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMinOccluderArea), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMaxPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
-	SendPropFloat	(SENDINFO(m_flMinPropScreenSpaceWidth), 0, SPROP_NOSCALE ),
-	SendPropStringT (SENDINFO(m_iszDetailSpriteMaterial) ),
-	SendPropInt		(SENDINFO(m_bColdWorld), 1, SPROP_UNSIGNED ),
+			  IMPLEMENT_SERVERCLASS_ST( CWorld, DT_WORLD )
+			  SendPropFloat( SENDINFO( m_flWaveHeight ), 8, SPROP_ROUNDUP,	0.0f,	8.0f ),
+			  SendPropVector( SENDINFO( m_WorldMins ),	-1,	SPROP_COORD ),
+			  SendPropVector( SENDINFO( m_WorldMaxs ),	-1,	SPROP_COORD ),
+			  SendPropInt( SENDINFO( m_bStartDark ), 1, SPROP_UNSIGNED ),
+			  SendPropFloat( SENDINFO( m_flMaxOccludeeArea ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flMinOccluderArea ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flMaxPropScreenSpaceWidth ), 0, SPROP_NOSCALE ),
+			  SendPropFloat( SENDINFO( m_flMinPropScreenSpaceWidth ), 0, SPROP_NOSCALE ),
+			  SendPropStringT( SENDINFO( m_iszDetailSpriteMaterial ) ),
+			  SendPropInt( SENDINFO( m_bColdWorld ), 1, SPROP_UNSIGNED ),
 #ifdef MAPBASE
-	SendPropStringT (SENDINFO(m_iszChapterTitle) ),
+	SendPropStringT( SENDINFO( m_iszChapterTitle ) ),
 #endif
-END_SEND_TABLE()
+			  END_SEND_TABLE()
 
 //
 // Just to ignore the "wad" field.
 //
-bool CWorld::KeyValue( const char *szKeyName, const char *szValue )
+			  bool CWorld::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if ( FStrEq(szKeyName, "skyname") )
+	if( FStrEq( szKeyName, "skyname" ) )
 	{
 		// Sent over net now.
 		ConVarRef skyname( "sv_skyname" );
 		skyname.SetValue( szValue );
 	}
-	else if ( FStrEq(szKeyName, "newunit") )
+	else if( FStrEq( szKeyName, "newunit" ) )
 	{
 		// Single player only.  Clear save directory if set
-		if ( atoi(szValue) )
+		if( atoi( szValue ) )
 		{
 			extern void Game_SetOneWayTransition();
 			Game_SetOneWayTransition();
 		}
 	}
-	else if ( FStrEq(szKeyName, "world_mins") )
+	else if( FStrEq( szKeyName, "world_mins" ) )
 	{
 		Vector vec;
 		sscanf(	szValue, "%f %f %f", &vec.x, &vec.y, &vec.z );
 		m_WorldMins = vec;
 	}
-	else if ( FStrEq(szKeyName, "world_maxs") )
+	else if( FStrEq( szKeyName, "world_maxs" ) )
 	{
 		Vector vec;
-		sscanf(	szValue, "%f %f %f", &vec.x, &vec.y, &vec.z ); 
+		sscanf(	szValue, "%f %f %f", &vec.x, &vec.y, &vec.z );
 		m_WorldMaxs = vec;
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
 
 
 extern bool		g_fGameOver;
-CWorld *g_WorldEntity = NULL;
+CWorld* g_WorldEntity = NULL;
 
 CWorld* GetWorldEntity()
 {
@@ -473,10 +483,10 @@ CWorld* GetWorldEntity()
 CWorld::CWorld( )
 {
 	AddEFlags( EFL_NO_AUTO_EDICT_ATTACH | EFL_KEEP_ON_RECREATE_ENTITIES );
-	NetworkProp()->AttachEdict( INDEXENT(RequiredEdictIndex()) );
+	NetworkProp()->AttachEdict( INDEXENT( RequiredEdictIndex() ) );
 	ActivityList_Init();
 	EventList_Init();
-	
+
 	SetSolid( SOLID_BSP );
 	SetMoveType( MOVETYPE_NONE );
 
@@ -492,7 +502,7 @@ CWorld::~CWorld( )
 {
 	EventList_Free();
 	ActivityList_Free();
-	if ( g_pGameRules )
+	if( g_pGameRules )
 	{
 		g_pGameRules->LevelShutdown();
 		delete g_pGameRules;
@@ -507,14 +517,16 @@ CWorld::~CWorld( )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CWorld::DecalTrace( trace_t *pTrace, char const *decalName)
+void CWorld::DecalTrace( trace_t* pTrace, char const* decalName )
 {
 	int index = decalsystem->GetDecalIndexForName( decalName );
-	if ( index < 0 )
+	if( index < 0 )
+	{
 		return;
+	}
 
 	CBroadcastRecipientFilter filter;
-	if ( pTrace->hitbox != 0 )
+	if( pTrace->hitbox != 0 )
 	{
 		te->Decal( filter, 0.0f, &pTrace->endpos, &pTrace->startpos, 0, pTrace->hitbox, index );
 	}
@@ -547,11 +559,11 @@ void CWorld::Spawn( void )
 
 	g_EventQueue.Init();
 	Precache( );
-	GlobalEntity_Add( "is_console", STRING(gpGlobals->mapname), ( IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
-	GlobalEntity_Add( "is_pc", STRING(gpGlobals->mapname), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+	GlobalEntity_Add( "is_console", STRING( gpGlobals->mapname ), ( IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
+	GlobalEntity_Add( "is_pc", STRING( gpGlobals->mapname ), ( !IsConsole() ) ? GLOBAL_ON : GLOBAL_OFF );
 }
 
-static const char *g_DefaultLightstyles[] =
+static const char* g_DefaultLightstyles[] =
 {
 	// 0 normal
 	"m",
@@ -584,9 +596,9 @@ static const char *g_DefaultLightstyles[] =
 };
 
 
-const char *GetDefaultLightstyleString( int styleIndex )
+const char* GetDefaultLightstyleString( int styleIndex )
 {
-	if ( styleIndex < ARRAYSIZE(g_DefaultLightstyles) )
+	if( styleIndex < ARRAYSIZE( g_DefaultLightstyles ) )
 	{
 		return g_DefaultLightstyles[styleIndex];
 	}
@@ -607,7 +619,7 @@ void CWorld::Precache( void )
 
 	// Set up game rules
 	Assert( !g_pGameRules );
-	if (g_pGameRules)
+	if( g_pGameRules )
 	{
 		delete g_pGameRules;
 	}
@@ -646,8 +658,8 @@ void CWorld::Precache( void )
 
 // the area based ambient sounds MUST be the first precache_sounds
 
-// player precaches     
-	W_Precache ();									// get weapon precaches
+// player precaches
+	W_Precache();									// get weapon precaches
 	ClientPrecache();
 	g_pGameRules->Precache();
 	// precache all temp ent stuff
@@ -655,7 +667,7 @@ void CWorld::Precache( void )
 
 	g_Language.SetValue( LANGUAGE_ENGLISH );	// TODO use VGUI to get current language
 
-	if ( g_Language.GetInt() == LANGUAGE_GERMAN )
+	if( g_Language.GetInt() == LANGUAGE_GERMAN )
 	{
 		PrecacheModel( "models/germangibs.mdl" );
 	}
@@ -670,15 +682,15 @@ void CWorld::Precache( void )
 //
 // Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
 //
-	for ( int i = 0; i < ARRAYSIZE(g_DefaultLightstyles); i++ )
+	for( int i = 0; i < ARRAYSIZE( g_DefaultLightstyles ); i++ )
 	{
-		engine->LightStyle( i, GetDefaultLightstyleString(i) );
+		engine->LightStyle( i, GetDefaultLightstyleString( i ) );
 	}
 
 	// styles 32-62 are assigned by the light program for switchable lights
 
 	// 63 testing
-	engine->LightStyle(63, "a");
+	engine->LightStyle( 63, "a" );
 
 	// =================================================
 	//	Load and Init AI Networks
@@ -695,14 +707,14 @@ void CWorld::Precache( void )
 	CBaseCombatCharacter::InitInteractionSystem();
 
 	// Call all registered precachers.
-	CPrecacheRegister::Precache();	
+	CPrecacheRegister::Precache();
 
 #ifdef MAPBASE
-	if ( m_iszChapterTitle.Get() != NULL_STRING && !m_bChapterTitleNoMessage )
+	if( m_iszChapterTitle.Get() != NULL_STRING && !m_bChapterTitleNoMessage )
 	{
-		DevMsg( 2, "Chapter title: %s\n", STRING(m_iszChapterTitle.Get()) );
-		CMessage *pMessage = (CMessage *)CBaseEntity::Create( "env_message", vec3_origin, vec3_angle, NULL );
-		if ( pMessage )
+		DevMsg( 2, "Chapter title: %s\n", STRING( m_iszChapterTitle.Get() ) );
+		CMessage* pMessage = ( CMessage* )CBaseEntity::Create( "env_message", vec3_origin, vec3_angle, NULL );
+		if( pMessage )
 		{
 			pMessage->SetMessage( m_iszChapterTitle.Get() );
 			m_iszChapterTitle.Set( NULL_STRING );
@@ -714,11 +726,11 @@ void CWorld::Precache( void )
 		}
 	}
 #else
-	if ( m_iszChapterTitle != NULL_STRING )
+	if( m_iszChapterTitle != NULL_STRING )
 	{
-		DevMsg( 2, "Chapter title: %s\n", STRING(m_iszChapterTitle) );
-		CMessage *pMessage = (CMessage *)CBaseEntity::Create( "env_message", vec3_origin, vec3_angle, NULL );
-		if ( pMessage )
+		DevMsg( 2, "Chapter title: %s\n", STRING( m_iszChapterTitle ) );
+		CMessage* pMessage = ( CMessage* )CBaseEntity::Create( "env_message", vec3_origin, vec3_angle, NULL );
+		if( pMessage )
 		{
 			pMessage->SetMessage( m_iszChapterTitle );
 			m_iszChapterTitle = NULL_STRING;
@@ -731,11 +743,11 @@ void CWorld::Precache( void )
 	}
 #endif
 
-	g_iszFuncBrushClassname = AllocPooledString("func_brush");
+	g_iszFuncBrushClassname = AllocPooledString( "func_brush" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float GetRealTime()
@@ -770,7 +782,7 @@ bool CWorld::IsColdWorld( void )
 }
 
 #ifdef MAPBASE
-void CWorld::InputSetChapterTitle( inputdata_t &inputdata )
+void CWorld::InputSetChapterTitle( inputdata_t& inputdata )
 {
 	m_iszChapterTitle.Set( inputdata.value.StringID() );
 }

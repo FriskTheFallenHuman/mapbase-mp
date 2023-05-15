@@ -9,7 +9,7 @@
 #ifndef PARTICLES_NEW_H
 #define PARTICLES_NEW_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "particlemgr.h"
@@ -33,12 +33,12 @@ public:
 	friend class CRefCountAccessor;
 
 	// list management
-	CNewParticleEffect *m_pNext;
-	CNewParticleEffect *m_pPrev;
+	CNewParticleEffect* m_pNext;
+	CNewParticleEffect* m_pPrev;
 
 	// Call this before adding a bunch of particles to give it a rough estimate of where
 	// your particles are for sorting amongst other translucent entities.
-	void SetSortOrigin( const Vector &vSortOrigin );
+	void SetSortOrigin( const Vector& vSortOrigin );
 	bool ShouldDraw( void );
 	virtual bool IsTransparent( void );
 	virtual bool IsTwoPass( void );
@@ -50,11 +50,11 @@ public:
 
 	// check if the new bounds of the particle system needs its client-leaf info needs to be updated
 	void DetectChanges( void );
-	const Vector &GetRenderOrigin( void );
-	PMaterialHandle GetPMaterial( const char *name );
+	const Vector& GetRenderOrigin( void );
+	PMaterialHandle GetPMaterial( const char* name );
 	bool RecalculateBoundingBox();
-	Particle* AddParticle( unsigned int particleSize, PMaterialHandle material, const Vector &origin );
-	const char *GetEffectName();
+	Particle* AddParticle( unsigned int particleSize, PMaterialHandle material, const Vector& origin );
+	const char* GetEffectName();
 	void SetDontRemove( bool bSet );
 	void SetDrawn( bool bDrawn );
 	void SetFirstFrameFlag( bool bFirst );
@@ -67,34 +67,46 @@ public:
 	bool GetAutoUpdateBBox( void );
 	bool ShouldPerformCullCheck() const;
 	void MarkShouldPerformCullCheck( bool bEnable );
-	CBaseEntity *GetOwner( void ) { return m_hOwner; }
-	void SetOwner( CBaseEntity *pOwner ) { m_hOwner = pOwner; }
-	CNewParticleEffect* ReplaceWith( const char *pParticleSystemName );
+	CBaseEntity* GetOwner( void )
+	{
+		return m_hOwner;
+	}
+	void SetOwner( CBaseEntity* pOwner )
+	{
+		m_hOwner = pOwner;
+	}
+	CNewParticleEffect* ReplaceWith( const char* pParticleSystemName );
 
-	static CSmartPtr<CNewParticleEffect> Create( CBaseEntity *pOwner, const char *pParticleSystemName,
-												 const char *pDebugName = NULL );
-	static CSmartPtr<CNewParticleEffect> Create( CBaseEntity *pOwner, CParticleSystemDefinition *pDef,
-												 const char *pDebugName = NULL );
+	static CSmartPtr<CNewParticleEffect> Create( CBaseEntity* pOwner, const char* pParticleSystemName,
+			const char* pDebugName = NULL );
+	static CSmartPtr<CNewParticleEffect> Create( CBaseEntity* pOwner, CParticleSystemDefinition* pDef,
+			const char* pDebugName = NULL );
 	virtual int DrawModel( int flags );
 
-	void DebugDrawBbox ( bool bCulled );
+	void DebugDrawBbox( bool bCulled );
 
 	// CParticleCollection overrides
 public:
 	void StopEmission( bool bInfiniteOnly = false, bool bRemoveAllParticles = false, bool bWakeOnStop = false );
 	void SetDormant( bool bDormant );
-	void SetControlPoint( int nWhichPoint, const Vector &v );
-	void SetControlPointEntity( int nWhichPoint, CBaseEntity *pEntity );
-	void SetControlPointOrientation( int nWhichPoint, const Quaternion &q );
-	void SetControlPointOrientation( int nWhichPoint, const Vector &forward, const Vector &right, const Vector &up );
-	void SetControlPointForwardVector( int nWhichPoint, const Vector &v );
-	void SetControlPointUpVector( int nWhichPoint, const Vector &v );
-	void SetControlPointRightVector( int nWhichPoint, const Vector &v );
+	void SetControlPoint( int nWhichPoint, const Vector& v );
+	void SetControlPointEntity( int nWhichPoint, CBaseEntity* pEntity );
+	void SetControlPointOrientation( int nWhichPoint, const Quaternion& q );
+	void SetControlPointOrientation( int nWhichPoint, const Vector& forward, const Vector& right, const Vector& up );
+	void SetControlPointForwardVector( int nWhichPoint, const Vector& v );
+	void SetControlPointUpVector( int nWhichPoint, const Vector& v );
+	void SetControlPointRightVector( int nWhichPoint, const Vector& v );
 
-	void SetIsViewModelEffect ( bool bIsViewModelEffect ) { m_bViewModelEffect = bIsViewModelEffect; }
-	bool GetIsViewModelEffect () { return m_bViewModelEffect; }
+	void SetIsViewModelEffect( bool bIsViewModelEffect )
+	{
+		m_bViewModelEffect = bIsViewModelEffect;
+	}
+	bool GetIsViewModelEffect()
+	{
+		return m_bViewModelEffect;
+	}
 
-	FORCEINLINE EHANDLE const &GetControlPointEntity( int nWhichPoint )
+	FORCEINLINE EHANDLE const& GetControlPointEntity( int nWhichPoint )
 	{
 		return m_hControlPointOwners[ nWhichPoint ];
 	}
@@ -103,16 +115,16 @@ public:
 // IParticleEffect overrides
 public:
 
-	virtual void	SimulateParticles( CParticleSimulateIterator *pIterator )
+	virtual void	SimulateParticles( CParticleSimulateIterator* pIterator )
 	{
 	}
-	virtual void	RenderParticles( CParticleRenderIterator *pIterator )
+	virtual void	RenderParticles( CParticleRenderIterator* pIterator )
 	{
-	}		
+	}
 
 	virtual void				SetParticleCullRadius( float radius );
 	virtual void				NotifyRemove( void );
-	virtual const Vector &		GetSortOrigin( void );
+	virtual const Vector& 		GetSortOrigin( void );
 
 //	virtual void				NotifyDestroyParticle( Particle* pParticle );
 	virtual void				Update( float flTimeDelta );
@@ -121,21 +133,27 @@ public:
 	// when it is removed from the particle manager.
 	void SetDynamicallyAllocated( bool bDynamic = true );
 
-	virtual bool				ShouldSimulate() const { return m_bSimulate; }
-	virtual void				SetShouldSimulate( bool bSim ) { m_bSimulate = bSim; }
+	virtual bool				ShouldSimulate() const
+	{
+		return m_bSimulate;
+	}
+	virtual void				SetShouldSimulate( bool bSim )
+	{
+		m_bSimulate = bSim;
+	}
 
 	int AllocateToolParticleEffectId();
 	int GetToolParticleEffectId() const;
-	CNewParticleEffect( CBaseEntity *pOwner, const char *pEffectName );
-	CNewParticleEffect( CBaseEntity *pOwner, CParticleSystemDefinition *pEffect );
+	CNewParticleEffect( CBaseEntity* pOwner, const char* pEffectName );
+	CNewParticleEffect( CBaseEntity* pOwner, CParticleSystemDefinition* pEffect );
 	virtual ~CNewParticleEffect();
 
 protected:
 	// Returns nonzero if Release() has been called.
 	int		IsReleased();
-	
+
 	// Used to track down bugs.
-	const char	*m_pDebugName;
+	const char*	m_pDebugName;
 
 	bool		m_bDontRemove : 1;
 	bool		m_bRemove : 1;
@@ -164,11 +182,11 @@ private:
 	void		Release();
 	void		RecordControlPointOrientation( int nWhichPoint );
 	void		Construct();
-	
-	int			m_RefCount;		// When this goes to zero and the effect has no more active
-								// particles, (and it's dynamically allocated), it will delete itself.
 
-	CNewParticleEffect( const CNewParticleEffect & ); // not defined, not accessible
+	int			m_RefCount;		// When this goes to zero and the effect has no more active
+	// particles, (and it's dynamically allocated), it will delete itself.
+
+	CNewParticleEffect( const CNewParticleEffect& );  // not defined, not accessible
 };
 
 
@@ -188,12 +206,12 @@ inline int CNewParticleEffect::AllocateToolParticleEffectId()
 
 // Call this before adding a bunch of particles to give it a rough estimate of where
 // your particles are for sorting amongst other translucent entities.
-inline void CNewParticleEffect::SetSortOrigin( const Vector &vSortOrigin )
+inline void CNewParticleEffect::SetSortOrigin( const Vector& vSortOrigin )
 {
 	m_vSortOrigin = vSortOrigin;
 }
 
-inline const Vector &CNewParticleEffect::GetSortOrigin( void )
+inline const Vector& CNewParticleEffect::GetSortOrigin( void )
 {
 	return m_vSortOrigin;
 }
@@ -213,7 +231,7 @@ inline const QAngle& CNewParticleEffect::GetRenderAngles( void )
 	return vec3_angle;
 }
 
-inline const matrix3x4_t &	CNewParticleEffect::RenderableToWorldTransform()
+inline const matrix3x4_t& 	CNewParticleEffect::RenderableToWorldTransform()
 {
 	static matrix3x4_t mat;
 	SetIdentityMatrix( mat );
@@ -221,19 +239,19 @@ inline const matrix3x4_t &	CNewParticleEffect::RenderableToWorldTransform()
 	return mat;
 }
 
-inline Vector const &CNewParticleEffect::GetRenderOrigin( void )
+inline Vector const& CNewParticleEffect::GetRenderOrigin( void )
 {
 	return m_vSortOrigin;
 }
 
-inline PMaterialHandle CNewParticleEffect::GetPMaterial(const char *name)
+inline PMaterialHandle CNewParticleEffect::GetPMaterial( const char* name )
 {
 	//!!
 	Assert( 0 );
 	return NULL;
 }
 
-inline Particle* CNewParticleEffect::AddParticle( unsigned int particleSize, PMaterialHandle material, const Vector &origin )
+inline Particle* CNewParticleEffect::AddParticle( unsigned int particleSize, PMaterialHandle material, const Vector& origin )
 {
 	//!!
 	Assert( 0 );
@@ -241,7 +259,7 @@ inline Particle* CNewParticleEffect::AddParticle( unsigned int particleSize, PMa
 }
 
 
-inline const char *CNewParticleEffect::GetEffectName()
+inline const char* CNewParticleEffect::GetEffectName()
 {
 	return GetName();
 }
@@ -311,17 +329,17 @@ inline void CNewParticleEffect::MarkShouldPerformCullCheck( bool bEnable )
 	m_bShouldPerformCullCheck = bEnable;
 }
 
-inline CSmartPtr<CNewParticleEffect> CNewParticleEffect::Create( CBaseEntity *pOwner, const char *pParticleSystemName, const char *pDebugName )
+inline CSmartPtr<CNewParticleEffect> CNewParticleEffect::Create( CBaseEntity* pOwner, const char* pParticleSystemName, const char* pDebugName )
 {
-	CNewParticleEffect *pRet = new CNewParticleEffect( pOwner, pParticleSystemName );
+	CNewParticleEffect* pRet = new CNewParticleEffect( pOwner, pParticleSystemName );
 	pRet->m_pDebugName = pDebugName ? pDebugName : pParticleSystemName;
 	pRet->SetDynamicallyAllocated( true );
 	return pRet;
 }
 
-inline CSmartPtr<CNewParticleEffect> CNewParticleEffect::Create( CBaseEntity *pOwner, CParticleSystemDefinition *pDef, const char *pDebugName )
+inline CSmartPtr<CNewParticleEffect> CNewParticleEffect::Create( CBaseEntity* pOwner, CParticleSystemDefinition* pDef, const char* pDebugName )
 {
-	CNewParticleEffect *pRet = new CNewParticleEffect( pOwner, pDef );
+	CNewParticleEffect* pRet = new CNewParticleEffect( pOwner, pDef );
 	pRet->m_pDebugName = pDebugName ? pDebugName : pDef->GetName();
 	pRet->SetDynamicallyAllocated( true );
 	return pRet;

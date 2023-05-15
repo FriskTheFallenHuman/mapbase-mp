@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef EP2_GAMESTATS_H
 #define EP2_GAMESTATS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ep1_gamestats.h"
@@ -75,7 +75,7 @@ public:
 	{
 	}
 
-	Ep2LevelStats_t( const Ep2LevelStats_t &other )
+	Ep2LevelStats_t( const Ep2LevelStats_t& other )
 	{
 		m_bInitialized		= other.m_bInitialized;
 		m_flLevelStartTime	= other.m_flLevelStartTime;
@@ -84,11 +84,11 @@ public:
 		Q_memcpy( m_IntCounters, other.m_IntCounters, sizeof( m_IntCounters ) );
 		Q_memcpy( m_FloatCounters, other.m_FloatCounters, sizeof( m_FloatCounters ) );
 		int i;
-		for ( i = other.m_dictEntityDeaths.First(); i != other.m_dictEntityDeaths.InvalidIndex(); i = other.m_dictEntityDeaths.Next( i ) )
+		for( i = other.m_dictEntityDeaths.First(); i != other.m_dictEntityDeaths.InvalidIndex(); i = other.m_dictEntityDeaths.Next( i ) )
 		{
-            m_dictEntityDeaths.Insert( other.m_dictEntityDeaths.GetElementName( i ), other.m_dictEntityDeaths[ i ] );
+			m_dictEntityDeaths.Insert( other.m_dictEntityDeaths.GetElementName( i ), other.m_dictEntityDeaths[ i ] );
 		}
-		for ( i = other.m_dictWeapons.First(); i != other.m_dictWeapons.InvalidIndex(); i = other.m_dictWeapons.Next( i ) )
+		for( i = other.m_dictWeapons.First(); i != other.m_dictWeapons.InvalidIndex(); i = other.m_dictWeapons.Next( i ) )
 		{
 			m_dictWeapons.Insert( other.m_dictWeapons.GetElementName( i ), other.m_dictWeapons[ i ] );
 		}
@@ -96,7 +96,7 @@ public:
 	}
 
 	// Create and destroy.
-	void Init( const char *pszMapName, float flStartTime, char const *pchTag, int nMapVersion )
+	void Init( const char* pszMapName, float flStartTime, char const* pchTag, int nMapVersion )
 	{
 		// Initialize.
 		m_Header.m_iVersion = EP2_GAMESTATS_CURRENT_VERSION;
@@ -115,34 +115,34 @@ public:
 		m_Header.m_flTime = flEndTime - m_flLevelStartTime;
 	}
 
-	void AppendToBuffer( CUtlBuffer &SaveBuffer )
+	void AppendToBuffer( CUtlBuffer& SaveBuffer )
 	{
 		// Always write out as current version
 		m_Header.m_iVersion = EP2_GAMESTATS_CURRENT_VERSION;
 
 		// Write out the lumps.
 		CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_HEADER, 1, sizeof( Ep2LevelStats_t::LevelHeader_t ), static_cast<void*>( &m_Header ) );
-		CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_TAG, 1, sizeof( Ep2LevelStats_t::Tag_t ), static_cast< void * >( &m_Tag ) );
+		CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_TAG, 1, sizeof( Ep2LevelStats_t::Tag_t ), static_cast< void* >( &m_Tag ) );
 		CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_DEATH, m_aPlayerDeaths.Count(), sizeof( Ep2LevelStats_t::PlayerDeathsLump_t ), static_cast<void*>( m_aPlayerDeaths.Base() ) );
 		{
 			CUtlBuffer buf;
-			buf.Put( (const void *)m_IntCounters, sizeof( m_IntCounters ) );
-			buf.Put( (const void *)m_FloatCounters, sizeof( m_FloatCounters ) );
+			buf.Put( ( const void* )m_IntCounters, sizeof( m_IntCounters ) );
+			buf.Put( ( const void* )m_FloatCounters, sizeof( m_FloatCounters ) );
 			buf.PutInt( m_dictEntityDeaths.Count() );
-			for ( int i = m_dictEntityDeaths.First(); i != m_dictEntityDeaths.InvalidIndex(); i = m_dictEntityDeaths.Next( i ) )
+			for( int i = m_dictEntityDeaths.First(); i != m_dictEntityDeaths.InvalidIndex(); i = m_dictEntityDeaths.Next( i ) )
 			{
 				buf.PutString( m_dictEntityDeaths.GetElementName( i ) );
-				buf.Put( (const void *)&m_dictEntityDeaths[ i ], sizeof( Ep2LevelStats_t::EntityDeathsLump_t ) );
+				buf.Put( ( const void* )&m_dictEntityDeaths[ i ], sizeof( Ep2LevelStats_t::EntityDeathsLump_t ) );
 			}
 			CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_NPC, 1, buf.TellPut(), buf.Base() );
 		}
 		{
 			CUtlBuffer buf;
 			buf.PutInt( m_dictWeapons.Count() );
-			for ( int i = m_dictWeapons.First(); i != m_dictWeapons.InvalidIndex(); i = m_dictWeapons.Next( i ) )
+			for( int i = m_dictWeapons.First(); i != m_dictWeapons.InvalidIndex(); i = m_dictWeapons.Next( i ) )
 			{
 				buf.PutString( m_dictWeapons.GetElementName( i ) );
-				buf.Put( (const void *)&m_dictWeapons[ i ], sizeof( Ep2LevelStats_t::WeaponLump_t ) );
+				buf.Put( ( const void* )&m_dictWeapons[ i ], sizeof( Ep2LevelStats_t::WeaponLump_t ) );
 			}
 			CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_WEAPON, 1, buf.TellPut(), buf.Base() );
 		}
@@ -151,9 +151,9 @@ public:
 			buf.PutString( m_SaveGameInfo.m_sCurrentSaveFile.String() );
 			buf.PutInt( m_SaveGameInfo.m_nCurrentSaveFileTime );
 			buf.PutInt( m_SaveGameInfo.m_Records.Count() );
-			for ( int i = 0 ; i < m_SaveGameInfo.m_Records.Count(); ++i )
+			for( int i = 0 ; i < m_SaveGameInfo.m_Records.Count(); ++i )
 			{
-				buf.Put( (const void *)&m_SaveGameInfo.m_Records[ i ], sizeof( Ep2LevelStats_t::SaveGameInfoRecord2_t ) );
+				buf.Put( ( const void* )&m_SaveGameInfo.m_Records[ i ], sizeof( Ep2LevelStats_t::SaveGameInfoRecord2_t ) );
 			}
 			CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_SAVEGAMEINFO, 1, buf.TellPut(), buf.Base() );
 		}
@@ -161,28 +161,28 @@ public:
 			CUtlBuffer buf;
 			buf.PutShort( Ep2LevelStats_t::GenericStatsLump_t::LumpVersion );
 			buf.PutInt( m_dictGeneric.Count() );
-			for ( int i = m_dictGeneric.First(); i != m_dictGeneric.InvalidIndex(); i = m_dictGeneric.Next( i ) )
+			for( int i = m_dictGeneric.First(); i != m_dictGeneric.InvalidIndex(); i = m_dictGeneric.Next( i ) )
 			{
 				buf.PutString( m_dictGeneric.GetElementName( i ) );
-				buf.Put( (const void *)&m_dictGeneric[ i ], sizeof( Ep2LevelStats_t::GenericStatsLump_t ) );
+				buf.Put( ( const void* )&m_dictGeneric[ i ], sizeof( Ep2LevelStats_t::GenericStatsLump_t ) );
 			}
 			CBaseGameStats::AppendLump( EP2_MAX_LUMP_COUNT, SaveBuffer, EP2STATS_LUMP_GENERIC, 1, buf.TellPut(), buf.Base() );
 		}
 	}
 
-	static void LoadData( CUtlDict<Ep2LevelStats_t, unsigned short>& items, CUtlBuffer &LoadBuffer )
+	static void LoadData( CUtlDict<Ep2LevelStats_t, unsigned short>& items, CUtlBuffer& LoadBuffer )
 	{
 		// Read the next lump.
 		unsigned short iLump = 0;
 		unsigned short iLumpCount = 0;
 
-		Ep2LevelStats_t *pItem = NULL;
- 
+		Ep2LevelStats_t* pItem = NULL;
+
 		while( CBaseGameStats::GetLumpHeader( EP2_MAX_LUMP_COUNT, LoadBuffer, iLump, iLumpCount, true ) )
 		{
-			switch ( iLump )
+			switch( iLump )
 			{
-			case EP2STATS_LUMP_HEADER: 
+				case EP2STATS_LUMP_HEADER:
 				{
 					Ep2LevelStats_t::LevelHeader_t header;
 					CBaseGameStats::LoadLump( LoadBuffer, iLumpCount, sizeof( Ep2LevelStats_t::LevelHeader_t ), &header );
@@ -191,27 +191,27 @@ public:
 					pItem->m_Tag.Clear();
 					Assert( pItem );
 				}
-				break; 
-			case EP2STATS_LUMP_TAG:
+				break;
+				case EP2STATS_LUMP_TAG:
 				{
 					Assert( pItem );
 					CBaseGameStats::LoadLump( LoadBuffer, iLumpCount, sizeof( Ep2LevelStats_t::Tag_t ), &pItem->m_Tag );
 				}
 				break;
-			case EP2STATS_LUMP_DEATH:
+				case EP2STATS_LUMP_DEATH:
 				{
 					Assert( pItem );
 					pItem->m_aPlayerDeaths.SetCount( iLumpCount );
 					CBaseGameStats::LoadLump( LoadBuffer, iLumpCount, sizeof( Ep2LevelStats_t::PlayerDeathsLump_t ), static_cast<void*>( pItem->m_aPlayerDeaths.Base() ) );
 				}
 				break;
-			case EP2STATS_LUMP_NPC:
+				case EP2STATS_LUMP_NPC:
 				{
 					Assert( pItem );
-					LoadBuffer.Get( ( void * )pItem->m_IntCounters, sizeof( pItem->m_IntCounters ) );
-					LoadBuffer.Get( ( void * )pItem->m_FloatCounters, sizeof( pItem->m_FloatCounters ) );
+					LoadBuffer.Get( ( void* )pItem->m_IntCounters, sizeof( pItem->m_IntCounters ) );
+					LoadBuffer.Get( ( void* )pItem->m_FloatCounters, sizeof( pItem->m_FloatCounters ) );
 					int c = LoadBuffer.GetInt();
-					for ( int i = 0 ; i < c; ++i )
+					for( int i = 0 ; i < c; ++i )
 					{
 						Ep2LevelStats_t::EntityDeathsLump_t data;
 						char npcName[ 512 ];
@@ -221,11 +221,11 @@ public:
 					}
 				}
 				break;
-			case EP2STATS_LUMP_WEAPON:
+				case EP2STATS_LUMP_WEAPON:
 				{
 					Assert( pItem );
 					int c = LoadBuffer.GetInt();
-					for ( int i = 0 ; i < c; ++i )
+					for( int i = 0 ; i < c; ++i )
 					{
 						Ep2LevelStats_t::WeaponLump_t data;
 						char weaponName[ 512 ];
@@ -235,19 +235,19 @@ public:
 					}
 				}
 				break;
-			case EP2STATS_LUMP_SAVEGAMEINFO:
+				case EP2STATS_LUMP_SAVEGAMEINFO:
 				{
 					Assert( pItem );
-					Ep2LevelStats_t::SaveGameInfo_t *info = &pItem->m_SaveGameInfo;
+					Ep2LevelStats_t::SaveGameInfo_t* info = &pItem->m_SaveGameInfo;
 					char sz[ 512 ];
 					LoadBuffer.GetString( sz, sizeof( sz ) );
 					info->m_sCurrentSaveFile = sz;
 					info->m_nCurrentSaveFileTime = LoadBuffer.GetInt();
 					int c = LoadBuffer.GetInt();
-					for ( int i = 0 ; i < c; ++i )
+					for( int i = 0 ; i < c; ++i )
 					{
 						Ep2LevelStats_t::SaveGameInfoRecord2_t rec;
-						if ( pItem->m_Header.m_iVersion >= EP2_GAMESTATS_FILE_VERSION_02 )
+						if( pItem->m_Header.m_iVersion >= EP2_GAMESTATS_FILE_VERSION_02 )
 						{
 							LoadBuffer.Get( &rec, sizeof( rec ) );
 						}
@@ -259,21 +259,21 @@ public:
 						info->m_Records.AddToTail( rec );
 					}
 					info->m_pCurrentRecord = NULL;
-					if ( info->m_Records.Count() > 0 )
+					if( info->m_Records.Count() > 0 )
 					{
 						info->m_pCurrentRecord = &info->m_Records[ info->m_Records.Count() - 1 ];
 					}
 				}
 				break;
-			case EP2STATS_LUMP_GENERIC:
+				case EP2STATS_LUMP_GENERIC:
 				{
 					Assert( pItem );
 					int version = LoadBuffer.GetShort();
-					if ( version == Ep2LevelStats_t::GenericStatsLump_t::LumpVersion )
+					if( version == Ep2LevelStats_t::GenericStatsLump_t::LumpVersion )
 					{
 						int c = LoadBuffer.GetInt();
 						Assert( c < 2 * 1024 * 1024 );
-						for ( int i = 0 ; i < c; ++i )
+						for( int i = 0 ; i < c; ++i )
 						{
 							Ep2LevelStats_t::GenericStatsLump_t data;
 							char pchStatName[ 512 ];
@@ -305,7 +305,7 @@ public:
 	// Simple "tag" applied to all data in database (e.g., "PLAYTEST")
 	struct Tag_t
 	{
-		static const unsigned short LumpId = EP2STATS_LUMP_TAG;	
+		static const unsigned short LumpId = EP2STATS_LUMP_TAG;
 
 		void Clear()
 		{
@@ -337,7 +337,7 @@ public:
 		{
 		}
 
-		EntityDeathsLump_t( const EntityDeathsLump_t &other )
+		EntityDeathsLump_t( const EntityDeathsLump_t& other )
 		{
 			m_nBodyCount = other.m_nBodyCount;
 			m_nKilledPlayer = other.m_nKilledPlayer;
@@ -358,7 +358,7 @@ public:
 		{
 		}
 
-		WeaponLump_t( const WeaponLump_t &other )
+		WeaponLump_t( const WeaponLump_t& other )
 		{
 			m_nShots = other.m_nShots;
 			m_nHits = other.m_nHits;
@@ -398,8 +398,8 @@ public:
 			TYPE_USERSAVE
 		};
 
-		SaveGameInfoRecord2_t() : 
-			m_SaveType( (byte)TYPE_UNKNOWN )
+		SaveGameInfoRecord2_t() :
+			m_SaveType( ( byte )TYPE_UNKNOWN )
 		{
 		}
 
@@ -417,7 +417,7 @@ public:
 		{
 		}
 
-		void Latch( char const *pchSaveName, unsigned int uFileTime )
+		void Latch( char const* pchSaveName, unsigned int uFileTime )
 		{
 			m_pCurrentRecord = &m_Records[ m_Records.AddToTail() ];
 			m_nCurrentSaveFileTime = uFileTime;
@@ -425,7 +425,7 @@ public:
 		}
 
 		CUtlVector< SaveGameInfoRecord2_t > m_Records;
-		SaveGameInfoRecord2_t				*m_pCurrentRecord;
+		SaveGameInfoRecord2_t*				m_pCurrentRecord;
 		unsigned int						m_nCurrentSaveFileTime;
 		CUtlString							m_sCurrentSaveFile;
 	};
@@ -435,11 +435,11 @@ public:
 		static const unsigned short LumpId = EP2STATS_LUMP_GENERIC;
 		static const unsigned short LumpVersion = 1;
 
-		GenericStatsLump_t() : 
+		GenericStatsLump_t() :
 			m_unCount( 0u ),
-			m_flCurrentValue( 0.0 ) 
-		{ 
-			m_Pos[ 0 ] = m_Pos[ 1 ] = m_Pos[ 2 ] = 0; 
+			m_flCurrentValue( 0.0 )
+		{
+			m_Pos[ 0 ] = m_Pos[ 1 ] = m_Pos[ 2 ] = 0;
 		}
 
 		short						m_Pos[ 3 ];
@@ -473,49 +473,55 @@ public:
 	CEP2GameStats();
 	virtual ~CEP2GameStats();
 
-	virtual CBaseGameStats *OnInit( CBaseGameStats *pCurrentGameStats, char const *gamedir ) { return pCurrentGameStats; }
+	virtual CBaseGameStats* OnInit( CBaseGameStats* pCurrentGameStats, char const* gamedir )
+	{
+		return pCurrentGameStats;
+	}
 
 	virtual bool UserPlayedAllTheMaps( void );
-	virtual const char *GetStatSaveFileName( void );
-	virtual const char *GetStatUploadRegistryKeyName( void );
+	virtual const char* GetStatSaveFileName( void );
+	virtual const char* GetStatUploadRegistryKeyName( void );
 
 	// Buffers.
-	virtual void AppendCustomDataToSaveBuffer( CUtlBuffer &SaveBuffer );
-	virtual void LoadCustomDataFromBuffer( CUtlBuffer &LoadBuffer );
+	virtual void AppendCustomDataToSaveBuffer( CUtlBuffer& SaveBuffer );
+	virtual void LoadCustomDataFromBuffer( CUtlBuffer& LoadBuffer );
 
 	// Events
 	virtual void Event_LevelInit( void );
-	virtual void Event_PlayerKilled( CBasePlayer *pPlayer, const CTakeDamageInfo &info );
-	virtual void Event_PlayerDamage( CBasePlayer *pBasePlayer, const CTakeDamageInfo &info );
-	virtual void Event_PlayerKilledOther( CBasePlayer *pAttacker, CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual void Event_PlayerKilled( CBasePlayer* pPlayer, const CTakeDamageInfo& info );
+	virtual void Event_PlayerDamage( CBasePlayer* pBasePlayer, const CTakeDamageInfo& info );
+	virtual void Event_PlayerKilledOther( CBasePlayer* pAttacker, CBaseEntity* pVictim, const CTakeDamageInfo& info );
 	virtual void Event_CrateSmashed();
-	virtual void Event_Punted( CBaseEntity *pObject );
-	virtual void Event_PlayerTraveled( CBasePlayer *pBasePlayer, float distanceInInches, bool bInVehicle, bool bSprinting );
-	virtual void Event_WeaponFired( CBasePlayer *pShooter, bool bPrimary, char const *pchWeaponName );
-	virtual void Event_WeaponHit( CBasePlayer *pShooter, bool bPrimary, char const *pchWeaponName, const CTakeDamageInfo &info );
+	virtual void Event_Punted( CBaseEntity* pObject );
+	virtual void Event_PlayerTraveled( CBasePlayer* pBasePlayer, float distanceInInches, bool bInVehicle, bool bSprinting );
+	virtual void Event_WeaponFired( CBasePlayer* pShooter, bool bPrimary, char const* pchWeaponName );
+	virtual void Event_WeaponHit( CBasePlayer* pShooter, bool bPrimary, char const* pchWeaponName, const CTakeDamageInfo& info );
 	virtual void Event_SaveGame( void );
 	virtual void Event_LoadGame( void );
-	virtual void Event_FlippedVehicle( CBasePlayer *pDriver, CPropVehicleDriveable *pVehicle );
+	virtual void Event_FlippedVehicle( CBasePlayer* pDriver, CPropVehicleDriveable* pVehicle );
 	// Called before .sav file is actually loaded (player should still be in previous level, if any)
-	virtual void Event_PreSaveGameLoaded( char const *pSaveName, bool bInGame );
-	virtual void Event_PlayerEnteredGodMode( CBasePlayer *pBasePlayer );
-	virtual void Event_PlayerEnteredNoClip( CBasePlayer *pBasePlayer );
-	virtual void Event_DecrementPlayerEnteredNoClip( CBasePlayer *pBasePlayer );
+	virtual void Event_PreSaveGameLoaded( char const* pSaveName, bool bInGame );
+	virtual void Event_PlayerEnteredGodMode( CBasePlayer* pBasePlayer );
+	virtual void Event_PlayerEnteredNoClip( CBasePlayer* pBasePlayer );
+	virtual void Event_DecrementPlayerEnteredNoClip( CBasePlayer* pBasePlayer );
 	// Generic statistics lump
-	virtual void Event_IncrementCountedStatistic( const Vector& vecAbsOrigin, char const *pchStatisticName, float flIncrementAmount );
+	virtual void Event_IncrementCountedStatistic( const Vector& vecAbsOrigin, char const* pchStatisticName, float flIncrementAmount );
 
 public:	//FIXME: temporary used for CC_ListDeaths command
-	Ep2LevelStats_t	*FindOrAddMapStats( const char *szMapName );
-	
+	Ep2LevelStats_t*	FindOrAddMapStats( const char* szMapName );
+
 public:
 
-	Ep2LevelStats_t::EntityDeathsLump_t *FindDeathsLump( char const *npcName );
-	Ep2LevelStats_t::WeaponLump_t *FindWeaponsLump( char const *pchWeaponName, bool bPrimary );
-	Ep2LevelStats_t::GenericStatsLump_t *FindGenericLump( char const *pchStatName );
+	Ep2LevelStats_t::EntityDeathsLump_t* FindDeathsLump( char const* npcName );
+	Ep2LevelStats_t::WeaponLump_t* FindWeaponsLump( char const* pchWeaponName, bool bPrimary );
+	Ep2LevelStats_t::GenericStatsLump_t* FindGenericLump( char const* pchStatName );
 	// Utilities.
-	Ep2LevelStats_t	*GetCurrentMap( void )			{ return m_pCurrentMap; }
+	Ep2LevelStats_t*	GetCurrentMap( void )
+	{
+		return m_pCurrentMap;
+	}
 
-	Ep2LevelStats_t									*m_pCurrentMap;
+	Ep2LevelStats_t*									m_pCurrentMap;
 	CUtlDict<Ep2LevelStats_t, unsigned short>		m_dictMapStats;
 	enum
 	{

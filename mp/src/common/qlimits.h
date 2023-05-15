@@ -9,7 +9,7 @@
 #define QLIMITS_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 // DATA STRUCTURE INFO

@@ -9,14 +9,14 @@
 #define COLORCORRECTIONMGR_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "igamesystem.h"
 
 #ifdef MAPBASE // From Alien Swarm SDK
-class C_ColorCorrection;
-class C_ColorCorrectionVolume;
+	class C_ColorCorrection;
+	class C_ColorCorrectionVolume;
 #endif
 
 //------------------------------------------------------------------------------
@@ -29,22 +29,25 @@ class CColorCorrectionMgr : public CBaseGameSystem
 {
 	// Inherited from IGameSystemPerFrame
 public:
-	virtual char const *Name() { return "Color Correction Mgr"; }
+	virtual char const* Name()
+	{
+		return "Color Correction Mgr";
+	}
 
 	// Other public methods
 public:
 	CColorCorrectionMgr();
 
 	// Create, destroy color correction
-	ClientCCHandle_t AddColorCorrection( const char *pName, const char *pFileName = NULL );
+	ClientCCHandle_t AddColorCorrection( const char* pName, const char* pFileName = NULL );
 	void RemoveColorCorrection( ClientCCHandle_t );
 
 #ifdef MAPBASE // From Alien Swarm SDK
-	ClientCCHandle_t AddColorCorrectionEntity( C_ColorCorrection *pEntity, const char *pName, const char *pFileName = NULL );
-	void RemoveColorCorrectionEntity( C_ColorCorrection *pEntity, ClientCCHandle_t );
+	ClientCCHandle_t AddColorCorrectionEntity( C_ColorCorrection* pEntity, const char* pName, const char* pFileName = NULL );
+	void RemoveColorCorrectionEntity( C_ColorCorrection* pEntity, ClientCCHandle_t );
 
-	ClientCCHandle_t AddColorCorrectionVolume( C_ColorCorrectionVolume *pVolume, const char *pName, const char *pFileName = NULL );
-	void RemoveColorCorrectionVolume( C_ColorCorrectionVolume *pVolume, ClientCCHandle_t );
+	ClientCCHandle_t AddColorCorrectionVolume( C_ColorCorrectionVolume* pVolume, const char* pName, const char* pFileName = NULL );
+	void RemoveColorCorrectionVolume( C_ColorCorrectionVolume* pVolume, ClientCCHandle_t );
 #endif
 
 	// Modify color correction weights
@@ -80,14 +83,14 @@ private:
 };
 
 #ifdef MAPBASE // From Alien Swarm SDK
-void UpdateColorCorrectionEntities( C_BasePlayer *pPlayer, float ccScale, C_ColorCorrection **pList, int listCount );
-void UpdateColorCorrectionVolumes( C_BasePlayer *pPlayer, float ccScale, C_ColorCorrectionVolume **pList, int listCount );
+	void UpdateColorCorrectionEntities( C_BasePlayer* pPlayer, float ccScale, C_ColorCorrection** pList, int listCount );
+	void UpdateColorCorrectionVolumes( C_BasePlayer* pPlayer, float ccScale, C_ColorCorrectionVolume** pList, int listCount );
 #endif
 
 //------------------------------------------------------------------------------
 // Singleton access
 //------------------------------------------------------------------------------
-extern CColorCorrectionMgr *g_pColorCorrectionMgr;
+extern CColorCorrectionMgr* g_pColorCorrectionMgr;
 
 
 #endif // COLORCORRECTIONMGR_H

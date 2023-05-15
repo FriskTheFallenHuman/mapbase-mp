@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef DMELEMENTFACTORYHELPER_H
 #define DMELEMENTFACTORYHELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "datamodel/idatamodel.h"
@@ -36,41 +36,41 @@ class CDmElementFactoryHelper
 {
 public:
 	// Static list of helpers
-	static CDmElementFactoryHelper *s_pHelpers[2];
+	static CDmElementFactoryHelper* s_pHelpers[2];
 
 	// Create all the hud elements
 	static void InstallFactories( );
 
 public:
 	// Construction
-	CDmElementFactoryHelper( const char *pClassName, IDmElementFactoryInternal *pFactory, bool bIsStandardFactory );
+	CDmElementFactoryHelper( const char* pClassName, IDmElementFactoryInternal* pFactory, bool bIsStandardFactory );
 
 	// Accessors
-	CDmElementFactoryHelper *GetNext( void );
+	CDmElementFactoryHelper* GetNext( void );
 
-	const char *GetClassname();
-	IDmElementFactoryInternal *GetFactory();
+	const char* GetClassname();
+	IDmElementFactoryInternal* GetFactory();
 
 private:
 	// Next factory in list
-	CDmElementFactoryHelper	*m_pNext;
+	CDmElementFactoryHelper*	m_pNext;
 	// Creation function to use for this technology
-	IDmElementFactoryInternal *m_pFactory;
-	const char				*m_pszClassname;
+	IDmElementFactoryInternal* m_pFactory;
+	const char*				m_pszClassname;
 };
 
 
 //-----------------------------------------------------------------------------
-// Inline methods 
+// Inline methods
 //-----------------------------------------------------------------------------
-inline const char *CDmElementFactoryHelper::GetClassname() 
-{ 
-	return m_pszClassname; 
+inline const char* CDmElementFactoryHelper::GetClassname()
+{
+	return m_pszClassname;
 }
 
-inline IDmElementFactoryInternal *CDmElementFactoryHelper::GetFactory() 
-{ 
-	return m_pFactory; 
+inline IDmElementFactoryInternal* CDmElementFactoryHelper::GetFactory()
+{
+	return m_pFactory;
 }
 
 
@@ -81,20 +81,20 @@ template <class T >
 class CDmElementFactory : public IDmElementFactoryInternal
 {
 public:
-	CDmElementFactory( const char *pLookupName ) : m_pLookupName( pLookupName ) {}
+	CDmElementFactory( const char* pLookupName ) : m_pLookupName( pLookupName ) {}
 
 	// Creation, destruction
-	virtual CDmElement* Create( DmElementHandle_t handle, const char *pElementType, const char *pElementName, DmFileId_t fileid, const DmObjectId_t &id )
+	virtual CDmElement* Create( DmElementHandle_t handle, const char* pElementType, const char* pElementName, DmFileId_t fileid, const DmObjectId_t& id )
 	{
 		return new T( handle, m_pLookupName, id, pElementName, fileid );
 	}
 
 	virtual void Destroy( DmElementHandle_t hElement )
 	{
-		CDmElement *pElement = g_pDataModel->GetElement( hElement );
-		if ( pElement )
+		CDmElement* pElement = g_pDataModel->GetElement( hElement );
+		if( pElement )
 		{
-			T *pActualElement = static_cast< T* >( pElement );
+			T* pActualElement = static_cast< T* >( pElement );
 			delete pActualElement;
 		}
 	}
@@ -105,10 +105,13 @@ public:
 		T::SetTypeSymbol( sym );
 	}
 
-	virtual bool IsAbstract() const { return false; }
+	virtual bool IsAbstract() const
+	{
+		return false;
+	}
 
 private:
-	const char *m_pLookupName;
+	const char* m_pLookupName;
 };
 
 
@@ -119,7 +122,7 @@ public:
 	CDmAbstractElementFactory() {}
 
 	// Creation, destruction
-	virtual CDmElement* Create( DmElementHandle_t handle, const char *pElementType, const char *pElementName, DmFileId_t fileid, const DmObjectId_t &id )
+	virtual CDmElement* Create( DmElementHandle_t handle, const char* pElementType, const char* pElementName, DmFileId_t fileid, const DmObjectId_t& id )
 	{
 		return NULL;
 	}
@@ -134,14 +137,17 @@ public:
 		T::SetTypeSymbol( sym );
 	}
 
-	virtual bool IsAbstract() const { return true; }
+	virtual bool IsAbstract() const
+	{
+		return true;
+	}
 
 private:
 };
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to create the class factory 
+// Helper macro to create the class factory
 //-----------------------------------------------------------------------------
 #if defined( MOVIEOBJECTS_LIB ) || defined ( DATAMODEL_LIB ) || defined ( DMECONTROLS_LIB )
 

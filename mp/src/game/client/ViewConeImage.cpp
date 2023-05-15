@@ -17,13 +17,15 @@
 //-----------------------------------------------------------------------------
 // initialization
 //-----------------------------------------------------------------------------
-bool CViewConeImage::Init( vgui::Panel *pParent, KeyValues* pInitData )
+bool CViewConeImage::Init( vgui::Panel* pParent, KeyValues* pInitData )
 {
 	Assert( pParent );
 
 	// Load viewcone material
-	if (!m_Image.Init( pParent->GetVPanel(), pInitData ))
+	if( !m_Image.Init( pParent->GetVPanel(), pInitData ) )
+	{
 		return false;
+	}
 
 	// Position the view cone...
 	int viewconesize = pInitData->GetInt( "size", 32 );
@@ -31,7 +33,7 @@ bool CViewConeImage::Init( vgui::Panel *pParent, KeyValues* pInitData )
 
 	int cx, cy;
 	pParent->GetSize( cx, cy );
-	m_Image.SetPos( (cx - viewconesize) / 2, (cy - viewconesize) / 2 );
+	m_Image.SetPos( ( cx - viewconesize ) / 2, ( cy - viewconesize ) / 2 );
 
 	return true;
 }
@@ -63,15 +65,17 @@ void CViewConeImage::SetColor( int r, int g, int b )
 // NOTE: This function looks for the key values 'material' and 'color'
 // and uses them to set up the material + modulation color of the image
 //-----------------------------------------------------------------------------
-bool InitializeViewConeImage( KeyValues *pInitData, const char* pSectionName, 
-	vgui::Panel *pParent, CViewConeImage* pViewConeImage )
+bool InitializeViewConeImage( KeyValues* pInitData, const char* pSectionName,
+							  vgui::Panel* pParent, CViewConeImage* pViewConeImage )
 {
-	KeyValues *pViewConeImageSection;
-	if (pSectionName)
+	KeyValues* pViewConeImageSection;
+	if( pSectionName )
 	{
 		pViewConeImageSection = pInitData->FindKey( pSectionName );
-		if ( !pViewConeImageSection )
+		if( !pViewConeImageSection )
+		{
 			return false;
+		}
 	}
 	else
 	{

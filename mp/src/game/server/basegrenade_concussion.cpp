@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,8 +21,8 @@ public:
 
 	void Spawn( void );
 	void Precache( void );
-	void FallThink(void);
-	void ExplodeConcussion( CBaseEntity *pOther );
+	void FallThink( void );
+	void ExplodeConcussion( CBaseEntity* pOther );
 
 protected:
 	static int m_nTrailSprite;
@@ -34,44 +34,44 @@ LINK_ENTITY_TO_CLASS( npc_concussiongrenade, CBaseGrenadeConcussion );
 
 BEGIN_DATADESC( CBaseGrenadeConcussion )
 
-	DEFINE_THINKFUNC( FallThink ),
-	DEFINE_ENTITYFUNC( ExplodeConcussion ),
+DEFINE_THINKFUNC( FallThink ),
+				  DEFINE_ENTITYFUNC( ExplodeConcussion ),
 
-END_DATADESC()
+				  END_DATADESC()
 
 
-void CBaseGrenadeConcussion::FallThink(void)
+				  void CBaseGrenadeConcussion::FallThink( void )
 {
-	if (!IsInWorld())
+	if( !IsInWorld() )
 	{
 		Remove( );
 		return;
 	}
-	CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, GetAbsVelocity().Length( ), 0.2 );
+	CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, GetAbsVelocity().Length( ), 0.2 );
 
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(0.05, 0.1) );
+	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.05, 0.1 ) );
 
-	if (GetWaterLevel() != 0)
+	if( GetWaterLevel() != 0 )
 	{
 		SetAbsVelocity( GetAbsVelocity() * 0.5 );
 	}
 
-	Vector 	pos = GetAbsOrigin() + Vector(random->RandomFloat(-4, 4), random->RandomFloat(-4, 4), random->RandomFloat(-4, 4));
+	Vector 	pos = GetAbsOrigin() + Vector( random->RandomFloat( -4, 4 ), random->RandomFloat( -4, 4 ), random->RandomFloat( -4, 4 ) );
 
 	CPVSFilter filter( GetAbsOrigin() );
 
 	te->Sprite( filter, 0.0,
-		&pos,
-		m_nTrailSprite,
-		random->RandomFloat(0.5, 0.8),
-		200 );
+				&pos,
+				m_nTrailSprite,
+				random->RandomFloat( 0.5, 0.8 ),
+				200 );
 }
 
 
 //
 // Contact grenade, explode when it touches something
-// 
-void CBaseGrenadeConcussion::ExplodeConcussion( CBaseEntity *pOther )
+//
+void CBaseGrenadeConcussion::ExplodeConcussion( CBaseEntity* pOther )
 {
 	trace_t		tr;
 	Vector		vecSpot;// trace starts here!
@@ -93,25 +93,25 @@ void CBaseGrenadeConcussion::Spawn( void )
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	SetModel( "models/weapons/w_grenade.mdl" );	// BUG: wrong model
 
-	UTIL_SetSize(this, vec3_origin, vec3_origin);
+	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	// contact grenades arc lower
 	SetGravity( UTIL_ScaleForGravity( 400 ) );	// use a lower gravity for grenades to make them easier to see
 	QAngle angles;
-	VectorAngles(GetAbsVelocity(), angles );
+	VectorAngles( GetAbsVelocity(), angles );
 	SetLocalAngles( angles );
 
 	m_nRenderFX = kRenderFxGlowShell;
 	SetRenderColor( 200, 200, 20, 255 );
-	
+
 	// make NPCs afaid of it while in the air
 	SetThink( &CBaseGrenadeConcussion::FallThink );
 	SetNextThink( gpGlobals->curtime );
-	
+
 	// Tumble in air
-	QAngle vecAngVel( random->RandomFloat ( -100, -500 ), 0, 0 );
+	QAngle vecAngVel( random->RandomFloat( -100, -500 ), 0, 0 );
 	SetLocalAngularVelocity( vecAngVel );
-	
+
 	// Explode on contact
 	SetTouch( &CBaseGrenadeConcussion::ExplodeConcussion );
 
@@ -126,6 +126,6 @@ void CBaseGrenadeConcussion::Precache( void )
 {
 	BaseClass::Precache( );
 
-	PrecacheModel("models/weapons/w_grenade.mdl");
-	m_nTrailSprite = PrecacheModel("sprites/twinkle01.vmt");
+	PrecacheModel( "models/weapons/w_grenade.mdl" );
+	m_nTrailSprite = PrecacheModel( "sprites/twinkle01.vmt" );
 }

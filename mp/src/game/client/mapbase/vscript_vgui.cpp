@@ -41,12 +41,12 @@
 //#include <vgui_controls/Tooltip.h>
 
 #if VGUI_TGA_IMAGE_PANEL
-#include "bitmap/tgaloader.h"
+	#include "bitmap/tgaloader.h"
 #endif
 
 #if !defined(NO_STEAM)
-#include "steam/steam_api.h"
-#include "vgui_avatarimage.h"
+	#include "steam/steam_api.h"
+	#include "vgui_avatarimage.h"
 #endif
 
 #include "view.h"
@@ -122,17 +122,17 @@
 
 
 #ifdef _DEBUG
-#define DebugMsg(...) ConColorMsg( Color(196, 196, 156, 255), __VA_ARGS__ )
-#define DebugWarning(...) Warning( __VA_ARGS__ )
-#define DebugDevMsg(...) DevMsg( __VA_ARGS__ )
+	#define DebugMsg(...) ConColorMsg( Color(196, 196, 156, 255), __VA_ARGS__ )
+	#define DebugWarning(...) Warning( __VA_ARGS__ )
+	#define DebugDevMsg(...) DevMsg( __VA_ARGS__ )
 
-#define DBG_PARAM(...) __VA_ARGS__
+	#define DBG_PARAM(...) __VA_ARGS__
 #else
-#define DebugMsg(...) (void)(0)
-#define DebugWarning(...) (void)(0)
-#define DebugDevMsg(...) (void)(0)
+	#define DebugMsg(...) (void)(0)
+	#define DebugWarning(...) (void)(0)
+	#define DebugDevMsg(...) (void)(0)
 
-#define DBG_PARAM(...)
+	#define DBG_PARAM(...)
 #endif
 
 
@@ -144,7 +144,10 @@ class CCopyableUtlVectorConservative : public CUtlVectorConservative< T >
 public:
 	explicit CCopyableUtlVectorConservative( int growSize = 0, int initSize = 0 ) : BaseClass( growSize, initSize ) {}
 	explicit CCopyableUtlVectorConservative( T* pMemory, int numElements ) : BaseClass( pMemory, numElements ) {}
-	CCopyableUtlVectorConservative( CCopyableUtlVectorConservative const& vec ) { this->CopyArray( vec.Base(), vec.Count() ); }
+	CCopyableUtlVectorConservative( CCopyableUtlVectorConservative const& vec )
+	{
+		this->CopyArray( vec.Base(), vec.Count() );
+	}
 };
 
 
@@ -167,9 +170,11 @@ static int g_nFontCount = 0;
 
 static inline HFont IntToFontHandle( int i )
 {
-	if ( i < 0 || i > g_nFontCount )
+	if( i < 0 || i > g_nFontCount )
+	{
 		return INVALID_FONT;
-	return static_cast< unsigned int >(i);
+	}
+	return static_cast< unsigned int >( i );
 }
 
 // vscript does not support unsigned int,
@@ -177,14 +182,14 @@ static inline HFont IntToFontHandle( int i )
 // and these handles are CUtlVector indices
 static inline int HandleToInt( unsigned int i )
 {
-	return static_cast< int >(i);
+	return static_cast< int >( i );
 }
 
 
 struct FontData_t
 {
 	HFont font;
-	char *name;
+	char* name;
 	int tall;
 	int weight;
 	int blur;
@@ -197,10 +202,10 @@ struct FontData_t
 	bool proportional;
 };
 
-static const char *GetFixedFontName( const char *name, bool proportional )
+static const char* GetFixedFontName( const char* name, bool proportional )
 {
 	static char fontName[64];
-	V_snprintf( fontName, sizeof(fontName), "%s-%s", name, proportional ? "p" : "no" );
+	V_snprintf( fontName, sizeof( fontName ), "%s-%s", name, proportional ? "p" : "no" );
 	return fontName;
 }
 
@@ -210,44 +215,48 @@ CON_COMMAND( vgui_spew_fonts_script, "" )
 
 	FOR_EACH_DICT_FAST( g_ScriptFonts, i )
 	{
-		const FontData_t &data = g_ScriptFonts[i].Head();
-		const char *name = surface()->GetFontName( data.font );
-		const char *alias = g_ScriptFonts.GetElementName(i);
+		const FontData_t& data = g_ScriptFonts[i].Head();
+		const char* name = surface()->GetFontName( data.font );
+		const char* alias = g_ScriptFonts.GetElementName( i );
 
 		// Strip off the appendix "-p" / "-no"
-		V_StrLeft( alias, V_strlen(alias) - (data.proportional ? 2 : 3), fontName, sizeof(fontName) );
+		V_StrLeft( alias, V_strlen( alias ) - ( data.proportional ? 2 : 3 ), fontName, sizeof( fontName ) );
 
 		Msg( "  %2d: HFont:0x%8.8lx, %s, %s, font:%s, tall:%d(%d) {%d}\n",
-			i,
-			data.font,
-			fontName,
-			alias,
-			name ? name : "??",
-			surface()->GetFontTall( data.font ),
-			surface()->GetFontTallRequested( data.font ),
-			g_ScriptFonts[i].Count() );
+			 i,
+			 data.font,
+			 fontName,
+			 alias,
+			 name ? name : "??",
+			 surface()->GetFontTall( data.font ),
+			 surface()->GetFontTallRequested( data.font ),
+			 g_ScriptFonts[i].Count() );
 	}
 }
 
-bool LoadFont( const FontData_t &font DBG_PARAM(, const char *fontAlias) )
+bool LoadFont( const FontData_t& font DBG_PARAM( , const char* fontAlias ) )
 {
-	if ( font.yres_min )
+	if( font.yres_min )
 	{
 		int nScreenWide, nScreenTall;
 		surface()->GetScreenSize( nScreenWide, nScreenTall );
 
-		if ( nScreenTall < font.yres_min )
+		if( nScreenTall < font.yres_min )
+		{
 			return false;
+		}
 
-		if ( font.yres_max && nScreenTall > font.yres_max )
+		if( font.yres_max && nScreenTall > font.yres_max )
+		{
 			return false;
+		}
 	}
 
 	int tall = font.tall;
 	int blur = font.blur;
 	int scanlines = font.scanlines;
 
-	if ( font.proportional && !font.yres_min )
+	if( font.proportional && !font.yres_min )
 	{
 		tall = scheme()->GetProportionalScaledValue( tall );
 		blur = scheme()->GetProportionalScaledValue( blur );
@@ -255,21 +264,25 @@ bool LoadFont( const FontData_t &font DBG_PARAM(, const char *fontAlias) )
 	}
 
 	bool bSuccess = surface()->SetFontGlyphSet(
-		font.font,
-		font.name,
-		tall,
-		font.weight,
-		blur,
-		scanlines,
-		font.flags );
+						font.font,
+						font.name,
+						tall,
+						font.weight,
+						blur,
+						scanlines,
+						font.flags );
 
 	NOTE_UNUSED( bSuccess );
-	if ( bSuccess )
+	if( bSuccess )
 	{
-		if ( font.yres_min )
+		if( font.yres_min )
+		{
 			DebugMsg( "Load font [%li]%s [%d %d]\n", font.font, fontAlias, font.yres_min, font.yres_max );
+		}
 		else
+		{
 			DebugMsg( "Load font [%li]%s\n", font.font, fontAlias );
+		}
 	}
 	else
 	{
@@ -282,22 +295,26 @@ bool LoadFont( const FontData_t &font DBG_PARAM(, const char *fontAlias) )
 void ReloadScriptFontGlyphs()
 {
 	// Invalidate cached values
-	if ( g_pScriptVM )
+	if( g_pScriptVM )
+	{
 		g_pScriptVM->Run( "ISurface.__OnScreenSizeChanged()" );
+	}
 
 	FOR_EACH_DICT_FAST( g_ScriptFonts, i )
 	{
-		const fontalias_t &alias = g_ScriptFonts[i];
-		for ( int j = 0; j < alias.Count(); ++j )
+		const fontalias_t& alias = g_ScriptFonts[i];
+		for( int j = 0; j < alias.Count(); ++j )
 		{
-			if ( LoadFont( alias.Element(j) DBG_PARAM(, g_ScriptFonts.GetElementName(i)) ) )
+			if( LoadFont( alias.Element( j ) DBG_PARAM( , g_ScriptFonts.GetElementName( i ) ) ) )
+			{
 				break;
+			}
 		}
 	}
 }
 
 
-static inline void InitRootPanel( Panel *p, VGuiPanel_t parent, const char *name )
+static inline void InitRootPanel( Panel* p, VGuiPanel_t parent, const char* name )
 {
 	int w, h;
 	surface()->GetScreenSize( w, h );
@@ -321,8 +338,10 @@ public:
 
 	void OnTick()
 	{
-		if ( m_nLastFrame == gpGlobals->framecount )
+		if( m_nLastFrame == gpGlobals->framecount )
+		{
 			return;
+		}
 
 		ReloadScriptFontGlyphs();
 		ivgui()->RemoveTickSignal( GetVPanel() );
@@ -339,8 +358,10 @@ public:
 		m_nLastFrame = gpGlobals->framecount;
 
 		// Invalidate cached values
-		if ( g_pScriptVM )
+		if( g_pScriptVM )
+		{
 			g_pScriptVM->Run( "ISurface.__OnScreenSizeChanged()" );
+		}
 
 		Panel::OnScreenSizeChanged( w, t );
 	}
@@ -349,43 +370,43 @@ private:
 	int m_nLastFrame;
 };
 
-CScriptRootPanel *g_pScriptRootPanel = NULL;
+CScriptRootPanel* g_pScriptRootPanel = NULL;
 
 #if SCRIPT_ENGINE_ROOT_PANELS
 class CScriptRootDLLPanel : public Panel
 {
 public:
-	CScriptRootDLLPanel( VGuiPanel_t parent, const char *name )
+	CScriptRootDLLPanel( VGuiPanel_t parent, const char* name )
 	{
 		InitRootPanel( this, parent, name );
 	}
 };
 
 #if ALLOW_CLIENTDLL_ROOT_PARENT
-CScriptRootDLLPanel *g_pScriptClientDLLPanel = NULL;
+	CScriptRootDLLPanel* g_pScriptClientDLLPanel = NULL;
 #endif
 #if ALLOW_GAMEUI_ROOT_PARENT
-CScriptRootDLLPanel *g_pScriptGameUIDLLPanel = NULL;
+	CScriptRootDLLPanel* g_pScriptGameUIDLLPanel = NULL;
 #endif
 #endif
 
 void VGUI_DestroyScriptRootPanels()
 {
-	if ( g_pScriptRootPanel )
+	if( g_pScriptRootPanel )
 	{
 		delete g_pScriptRootPanel;
 		g_pScriptRootPanel = NULL;
 	}
 #if SCRIPT_ENGINE_ROOT_PANELS
 #if ALLOW_CLIENTDLL_ROOT_PARENT
-	if ( g_pScriptClientDLLPanel )
+	if( g_pScriptClientDLLPanel )
 	{
 		delete g_pScriptClientDLLPanel;
 		g_pScriptClientDLLPanel = NULL;
 	}
 #endif
 #if ALLOW_GAMEUI_ROOT_PARENT
-	if ( g_pScriptGameUIDLLPanel )
+	if( g_pScriptGameUIDLLPanel )
 	{
 		delete g_pScriptGameUIDLLPanel;
 		g_pScriptGameUIDLLPanel = NULL;
@@ -397,13 +418,15 @@ void VGUI_DestroyScriptRootPanels()
 VPANEL VGUI_GetScriptRootPanel( VGuiPanel_t type )
 {
 #if SCRIPT_ENGINE_ROOT_PANELS
-	switch ( type )
+	switch( type )
 	{
 		case PANEL_ROOT:
 #if ALLOW_ROOT_PANEL_PARENT
 		{
-			if ( !g_pScriptRootPanel )
+			if( !g_pScriptRootPanel )
+			{
 				g_pScriptRootPanel = new CScriptRootPanel();
+			}
 
 			return g_pScriptRootPanel->GetVPanel();
 		}
@@ -411,8 +434,10 @@ VPANEL VGUI_GetScriptRootPanel( VGuiPanel_t type )
 		case PANEL_CLIENTDLL:
 #if ALLOW_CLIENTDLL_ROOT_PARENT
 		{
-			if ( !g_pScriptClientDLLPanel )
+			if( !g_pScriptClientDLLPanel )
+			{
 				g_pScriptClientDLLPanel = new CScriptRootDLLPanel( PANEL_CLIENTDLL, "VScriptClient" );
+			}
 
 			return g_pScriptClientDLLPanel->GetVPanel();
 		}
@@ -420,16 +445,19 @@ VPANEL VGUI_GetScriptRootPanel( VGuiPanel_t type )
 		case PANEL_GAMEUIDLL:
 #if ALLOW_GAMEUI_ROOT_PARENT
 		{
-			if ( !g_pScriptGameUIDLLPanel )
+			if( !g_pScriptGameUIDLLPanel )
+			{
 				g_pScriptGameUIDLLPanel = new CScriptRootDLLPanel( PANEL_GAMEUIDLL, "VScriptGameUI" );
+			}
 
 			return g_pScriptGameUIDLLPanel->GetVPanel();
 		}
 #endif
-		default: return NULL;
+		default:
+			return NULL;
 	}
 #else
-	return enginevgui->GetPanel(type);
+	return enginevgui->GetPanel( type );
 #endif
 }
 
@@ -437,7 +465,7 @@ VPANEL VGUI_GetScriptRootPanel( VGuiPanel_t type )
 //
 // Escapes "vgui/" prepended to the file name in CSchemeManager::GetImage().
 //
-IImage *vgui_GetImage( const char *imageName, bool hardwareFilter )
+IImage* vgui_GetImage( const char* imageName, bool hardwareFilter )
 {
 	char fileName[MAX_PATH];
 	V_snprintf( fileName, sizeof( fileName ), "../%s", imageName );
@@ -463,7 +491,7 @@ public:
 	void SetTextColor( int r, int g, int b, int a );
 	void SetTextPos( int x, int y );
 	void SetTextFont( int font );
-	void DrawText( const char *text, int drawType/* = FONT_DRAW_DEFAULT*/ );
+	void DrawText( const char* text, int drawType/* = FONT_DRAW_DEFAULT*/ );
 	void DrawUnicodeChar( int ch, int drawType/* = FONT_DRAW_DEFAULT*/ );
 
 	int GetFont( const char* name, bool proportional, const char* schema );
@@ -471,12 +499,12 @@ public:
 	int GetFontTall( int font );
 	int GetCharacterWidth( int font, int ch );
 
-	void CreateFont( const char *customName, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int yresMin, int yresMax, bool proportional );
-	bool AddCustomFontFile( const char *fontFileName );
+	void CreateFont( const char* customName, const char* windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int yresMin, int yresMax, bool proportional );
+	bool AddCustomFontFile( const char* fontFileName );
 
-	int GetTextureID( char const *filename );
-	int ValidateTexture( const char *filename, bool hardwareFilter, bool forceReload, bool procedural );
-	void SetTextureFile( int id, const char *filename, bool hardwareFilter );
+	int GetTextureID( char const* filename );
+	int ValidateTexture( const char* filename, bool hardwareFilter, bool forceReload, bool procedural );
+	void SetTextureFile( int id, const char* filename, bool hardwareFilter );
 	int GetTextureWide( int id );
 	int GetTextureTall( int id );
 	void SetTexture( int id );
@@ -489,56 +517,56 @@ public:
 	// ------------------------------------------------------------
 
 	void DrawTexturedBox( int texture, int x, int y, int wide, int tall, int r, int g, int b, int a );
-	void DrawColoredText( int font, int x, int y, int r, int g, int b, int a, const char *text );
-	void DrawColoredTextRect( int font, int x, int y, int w, int h, int r, int g, int b, int a, const char *text );
+	void DrawColoredText( int font, int x, int y, int r, int g, int b, int a, const char* text );
+	void DrawColoredTextRect( int font, int x, int y, int w, int h, int r, int g, int b, int a, const char* text );
 	void DrawTexturedRectRotated( int x, int y, int w, int t, float yaw );
 
 } script_surface;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptSurface, "ISurface", SCRIPT_SINGLETON )
-	DEFINE_SCRIPTFUNC( PlaySound, "" )
+DEFINE_SCRIPTFUNC( PlaySound, "" )
 
-	DEFINE_SCRIPTFUNC( SetColor, "" )
-	DEFINE_SCRIPTFUNC( DrawFilledRect, "" )
-	DEFINE_SCRIPTFUNC( DrawFilledRectFade, "" )
-	DEFINE_SCRIPTFUNC( DrawOutlinedRect, "" )
-	DEFINE_SCRIPTFUNC( DrawLine, "" )
-	DEFINE_SCRIPTFUNC( DrawOutlinedCircle, "" )
+DEFINE_SCRIPTFUNC( SetColor, "" )
+DEFINE_SCRIPTFUNC( DrawFilledRect, "" )
+DEFINE_SCRIPTFUNC( DrawFilledRectFade, "" )
+DEFINE_SCRIPTFUNC( DrawOutlinedRect, "" )
+DEFINE_SCRIPTFUNC( DrawLine, "" )
+DEFINE_SCRIPTFUNC( DrawOutlinedCircle, "" )
 
-	DEFINE_SCRIPTFUNC( SetTextColor, "" )
-	DEFINE_SCRIPTFUNC( SetTextPos, "" )
-	DEFINE_SCRIPTFUNC( SetTextFont, "" )
-	DEFINE_SCRIPTFUNC( DrawText, "" )
-	DEFINE_SCRIPTFUNC( DrawUnicodeChar, "" )
+DEFINE_SCRIPTFUNC( SetTextColor, "" )
+DEFINE_SCRIPTFUNC( SetTextPos, "" )
+DEFINE_SCRIPTFUNC( SetTextFont, "" )
+DEFINE_SCRIPTFUNC( DrawText, "" )
+DEFINE_SCRIPTFUNC( DrawUnicodeChar, "" )
 
-	DEFINE_SCRIPTFUNC( GetFont, "" )
-	DEFINE_SCRIPTFUNC( GetTextWidth, "" )
-	DEFINE_SCRIPTFUNC( GetFontTall, "" )
-	DEFINE_SCRIPTFUNC( GetCharacterWidth, "" )
+DEFINE_SCRIPTFUNC( GetFont, "" )
+DEFINE_SCRIPTFUNC( GetTextWidth, "" )
+DEFINE_SCRIPTFUNC( GetFontTall, "" )
+DEFINE_SCRIPTFUNC( GetCharacterWidth, "" )
 
-	DEFINE_SCRIPTFUNC( CreateFont, SCRIPT_HIDE )
-	DEFINE_SCRIPTFUNC( AddCustomFontFile, "" )
+DEFINE_SCRIPTFUNC( CreateFont, SCRIPT_HIDE )
+DEFINE_SCRIPTFUNC( AddCustomFontFile, "" )
 
-	DEFINE_SCRIPTFUNC( GetTextureID, "" )
-	DEFINE_SCRIPTFUNC( ValidateTexture, "" )
-	DEFINE_SCRIPTFUNC( SetTextureFile, "" )
-	DEFINE_SCRIPTFUNC( GetTextureWide, "" )
-	DEFINE_SCRIPTFUNC( GetTextureTall, "" )
-	DEFINE_SCRIPTFUNC( SetTexture, "" )
+DEFINE_SCRIPTFUNC( GetTextureID, "" )
+DEFINE_SCRIPTFUNC( ValidateTexture, "" )
+DEFINE_SCRIPTFUNC( SetTextureFile, "" )
+DEFINE_SCRIPTFUNC( GetTextureWide, "" )
+DEFINE_SCRIPTFUNC( GetTextureTall, "" )
+DEFINE_SCRIPTFUNC( SetTexture, "" )
 
-	DEFINE_SCRIPTFUNC( DrawTexturedRect, "" )
-	DEFINE_SCRIPTFUNC( DrawTexturedSubRect, "" )
+DEFINE_SCRIPTFUNC( DrawTexturedRect, "" )
+DEFINE_SCRIPTFUNC( DrawTexturedSubRect, "" )
 
-	DEFINE_SCRIPTFUNC( DrawTexturedBox, "" )
-	DEFINE_SCRIPTFUNC( DrawColoredText, "" )
-	DEFINE_SCRIPTFUNC( DrawColoredTextRect, "" )
-	DEFINE_SCRIPTFUNC( DrawTexturedRectRotated, "" )
+DEFINE_SCRIPTFUNC( DrawTexturedBox, "" )
+DEFINE_SCRIPTFUNC( DrawColoredText, "" )
+DEFINE_SCRIPTFUNC( DrawColoredTextRect, "" )
+DEFINE_SCRIPTFUNC( DrawTexturedRectRotated, "" )
 END_SCRIPTDESC()
 
 
 void CScriptSurface::PlaySound( const char* sound )
 {
-	surface()->PlaySound(sound);
+	surface()->PlaySound( sound );
 }
 
 void CScriptSurface::SetColor( int r, int g, int b, int a )
@@ -575,18 +603,22 @@ void CScriptSurface::DrawLine( int x0, int y0, int x1, int y1 )
 #if 0
 void CScriptSurface::DrawPolyLine( HSCRIPT ax, HSCRIPT ay, int count )
 {
-	if (count < 1)
+	if( count < 1 )
+	{
 		return;
+	}
 
-	if (count > 4096)
+	if( count > 4096 )
+	{
 		count = 4096;
+	}
 
-	int *px = (int*)stackalloc( count * sizeof(int) );
-	int *py = (int*)stackalloc( count * sizeof(int) );
+	int* px = ( int* )stackalloc( count * sizeof( int ) );
+	int* py = ( int* )stackalloc( count * sizeof( int ) );
 	ScriptVariant_t vx, vy;
 
 	int i = count;
-	while ( i-- )
+	while( i-- )
 	{
 		g_pScriptVM->GetValue( ax, i, &vx );
 		g_pScriptVM->GetValue( ay, i, &vy );
@@ -615,29 +647,29 @@ void CScriptSurface::SetTextPos( int x, int y )
 
 void CScriptSurface::SetTextFont( int font )
 {
-	surface()->DrawSetTextFont( IntToFontHandle(font) );
+	surface()->DrawSetTextFont( IntToFontHandle( font ) );
 }
 
-void CScriptSurface::DrawText( const char *text, int drawType )
+void CScriptSurface::DrawText( const char* text, int drawType )
 {
 	wchar_t wcs[512];
-	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof(wcs) );
-	surface()->DrawPrintText( wcs, wcslen(wcs), (FontDrawType_t)drawType );
+	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof( wcs ) );
+	surface()->DrawPrintText( wcs, wcslen( wcs ), ( FontDrawType_t )drawType );
 }
 
 void CScriptSurface::DrawUnicodeChar( int ch, int drawType )
 {
-	surface()->DrawUnicodeChar( (wchar_t)ch, (FontDrawType_t)drawType );
+	surface()->DrawUnicodeChar( ( wchar_t )ch, ( FontDrawType_t )drawType );
 }
 
 int CScriptSurface::GetFont( const char* name, bool proportional, const char* schema )
 {
 	HFont font = INVALID_FONT;
 
-	if ( !schema || !schema[0] )
+	if( !schema || !schema[0] )
 	{
 		int idx = g_ScriptFonts.Find( GetFixedFontName( name, proportional ) );
-		if ( idx != g_ScriptFonts.InvalidIndex() )
+		if( idx != g_ScriptFonts.InvalidIndex() )
 		{
 			font = g_ScriptFonts[idx].Head().font;
 		}
@@ -645,11 +677,13 @@ int CScriptSurface::GetFont( const char* name, bool proportional, const char* sc
 	else
 	{
 		HScheme sch = scheme()->GetScheme( schema );
-		font = scheme()->GetIScheme(sch)->GetFont( name, proportional );
+		font = scheme()->GetIScheme( sch )->GetFont( name, proportional );
 
 		// Update known count
-		if ( font > (unsigned int)g_nFontCount )
+		if( font > ( unsigned int )g_nFontCount )
+		{
 			g_nFontCount = font;
+		}
 	}
 
 	return HandleToInt( font );
@@ -659,41 +693,43 @@ int CScriptSurface::GetTextWidth( int font, const char* text )
 {
 	int w, t;
 	wchar_t wcs[512];
-	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof(wcs) );
-	surface()->GetTextSize( IntToFontHandle(font), wcs, w, t );
+	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof( wcs ) );
+	surface()->GetTextSize( IntToFontHandle( font ), wcs, w, t );
 	return w;
 }
 
 int CScriptSurface::GetFontTall( int font )
 {
-	return surface()->GetFontTall( IntToFontHandle(font) );
+	return surface()->GetFontTall( IntToFontHandle( font ) );
 }
 
 int CScriptSurface::GetCharacterWidth( int font, int ch )
 {
-	return surface()->GetCharacterWidth( IntToFontHandle(font), ch );
+	return surface()->GetCharacterWidth( IntToFontHandle( font ), ch );
 }
 
-void CScriptSurface::CreateFont( const char *customName, const char *windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int yresMin, int yresMax, bool proportional )
+void CScriptSurface::CreateFont( const char* customName, const char* windowsFontName, int tall, int weight, int blur, int scanlines, int flags, int yresMin, int yresMax, bool proportional )
 {
 	// Make sure font invalidation callback is established.
 	// Not necessary if script fonts are reloaded in engine.
-	if ( !g_pScriptRootPanel )
+	if( !g_pScriptRootPanel )
+	{
 		g_pScriptRootPanel = new CScriptRootPanel();
+	}
 
-	if ( flags & ISurface::FONTFLAG_BITMAP )
+	if( flags & ISurface::FONTFLAG_BITMAP )
 	{
 		AssertMsg( 0, "Bitmap fonts are not supported!" );
 		return;
 	}
 
-	if ( proportional && yresMin )
+	if( proportional && yresMin )
 	{
 		AssertMsg( 0, "Resolution cannot be defined on a proportional font!" );
 		return;
 	}
 
-	if ( (yresMin < 0 || yresMax < 0) || (!!yresMin != !!yresMax) )
+	if( ( yresMin < 0 || yresMax < 0 ) || ( !!yresMin != !!yresMax ) )
 	{
 		AssertMsg( 0, "Invalid resolution!" );
 		return;
@@ -701,18 +737,18 @@ void CScriptSurface::CreateFont( const char *customName, const char *windowsFont
 
 #if 0
 	bool bProportionalFallbackFont = false;
-	if ( proportional )
+	if( proportional )
 	{
 		// Find if this is a resolution filtered font alias
-		const char *fontAlias = GetFixedFontName( customName, false );
+		const char* fontAlias = GetFixedFontName( customName, false );
 		int idx = g_ScriptFonts.Find( fontAlias );
-		if ( idx != g_ScriptFonts.InvalidIndex() )
+		if( idx != g_ScriptFonts.InvalidIndex() )
 		{
-			fontalias_t &alias = g_ScriptFonts[idx];
-			for ( int i = 0; i < alias.Count(); ++i )
+			fontalias_t& alias = g_ScriptFonts[idx];
+			for( int i = 0; i < alias.Count(); ++i )
 			{
-				FontData_t &data = alias.Element(i);
-				if ( data.yres_min && data.yres_max )
+				FontData_t& data = alias.Element( i );
+				if( data.yres_min && data.yres_max )
 				{
 					bProportionalFallbackFont = true;
 
@@ -725,15 +761,15 @@ void CScriptSurface::CreateFont( const char *customName, const char *windowsFont
 	}
 #endif
 
-	const char *fontAlias = GetFixedFontName( customName, proportional );
+	const char* fontAlias = GetFixedFontName( customName, proportional );
 
 	int idx = g_ScriptFonts.Find( fontAlias );
-	if ( idx != g_ScriptFonts.InvalidIndex() )
+	if( idx != g_ScriptFonts.InvalidIndex() )
 	{
-		fontalias_t &alias = g_ScriptFonts[idx];
+		fontalias_t& alias = g_ScriptFonts[idx];
 
 #ifdef _DEBUG
-		if ( !yresMin && !yresMax /*&& !bProportionalFallbackFont*/ )
+		if( !yresMin && !yresMax /*&& !bProportionalFallbackFont*/ )
 		{
 			// There must be only one font registered.
 			Assert( alias.Count() == 1 );
@@ -741,31 +777,37 @@ void CScriptSurface::CreateFont( const char *customName, const char *windowsFont
 			HFont font = alias.Head().font;
 			int oldTall = surface()->GetFontTallRequested( font );
 			int newTall = proportional ? scheme()->GetProportionalScaledValue( tall ) : tall;
-			const char *oldName = surface()->GetFontName( font );
+			const char* oldName = surface()->GetFontName( font );
 
 			// Font changes will not be applied.
 			Assert( oldTall == newTall );
-			if ( oldName ) // can be null
+			if( oldName )  // can be null
+			{
 				AssertMsg( !V_stricmp( oldName, windowsFontName ), "'%s' != '%s'", oldName, windowsFontName );
+			}
 		}
 #endif
 
 		// if input resolutions match any of the existing fonts,
 		// then this must be a duplicate call.
-		for ( int i = 0; i < alias.Count(); ++i )
+		for( int i = 0; i < alias.Count(); ++i )
 		{
-			FontData_t &data = alias.Element(i);
+			FontData_t& data = alias.Element( i );
 
-			if ( yresMin == data.yres_min && yresMax == data.yres_max )
+			if( yresMin == data.yres_min && yresMax == data.yres_max )
+			{
 				return;
+			}
 		}
 #if 0
-		if ( bProportionalFallbackFont )
+		if( bProportionalFallbackFont )
+		{
 			proportional = true;
+		}
 #endif
 		DebugMsg( "Create font add '%s' [%d %d]\n", fontAlias, yresMin, yresMax );
 
-		FontData_t &newFont = alias.Element( alias.AddToTail() );
+		FontData_t& newFont = alias.Element( alias.AddToTail() );
 		newFont.font = alias.Head().font;
 		newFont.name = strdup( windowsFontName );
 		newFont.tall = tall;
@@ -783,43 +825,53 @@ void CScriptSurface::CreateFont( const char *customName, const char *windowsFont
 		{
 			static int __cdecl F( const FontData_t* a, const FontData_t* b )
 			{
-				if ( !a->proportional && b->proportional )
+				if( !a->proportional && b->proportional )
+				{
 					return -1;
-				if ( a->proportional && !b->proportional )
+				}
+				if( a->proportional && !b->proportional )
+				{
 					return 1;
+				}
 				return 0;
 			}
 		};
 		alias.Sort( L::F );
 #endif
 
-		LoadFont( newFont DBG_PARAM(, fontAlias) );
+		LoadFont( newFont DBG_PARAM( , fontAlias ) );
 	}
 	else
 	{
 		HFont font = surface()->CreateFont();
 
 		// Sanity check
-		Assert( font > (unsigned int)g_nFontCount && font < INT_MAX );
+		Assert( font > ( unsigned int )g_nFontCount && font < INT_MAX );
 
 		// Update known count
-		if ( font > (unsigned int)g_nFontCount )
+		if( font > ( unsigned int )g_nFontCount )
+		{
 			g_nFontCount = font;
+		}
 
-		if ( yresMax && yresMin > yresMax )
+		if( yresMax && yresMin > yresMax )
 		{
 			int t = yresMin;
 			yresMin = yresMax;
 			yresMax = t;
 		}
 
-		if ( yresMin )
+		if( yresMin )
+		{
 			DebugMsg( "Create font new '%s' [%d %d]\n", fontAlias, yresMin, yresMax );
+		}
 		else
+		{
 			DebugMsg( "Create font new '%s'\n", fontAlias );
+		}
 
-		fontalias_t &alias = g_ScriptFonts.Element( g_ScriptFonts.Insert( fontAlias ) );
-		FontData_t &newFont = alias.Element( alias.AddToTail() );
+		fontalias_t& alias = g_ScriptFonts.Element( g_ScriptFonts.Insert( fontAlias ) );
+		FontData_t& newFont = alias.Element( alias.AddToTail() );
 		newFont.font = font;
 		newFont.name = strdup( windowsFontName );
 		newFont.tall = tall;
@@ -831,25 +883,25 @@ void CScriptSurface::CreateFont( const char *customName, const char *windowsFont
 		newFont.yres_max = yresMax;
 		newFont.proportional = proportional;
 
-		LoadFont( newFont DBG_PARAM(, fontAlias) );
+		LoadFont( newFont DBG_PARAM( , fontAlias ) );
 	}
 }
 
-bool CScriptSurface::AddCustomFontFile( const char *fontFileName )
+bool CScriptSurface::AddCustomFontFile( const char* fontFileName )
 {
 	return surface()->AddCustomFontFile( NULL, fontFileName );
 }
 
-int CScriptSurface::GetTextureID( char const *filename )
+int CScriptSurface::GetTextureID( char const* filename )
 {
 	return surface()->DrawGetTextureId( filename );
 }
 
 // Create texture if it does not already exist
-int CScriptSurface::ValidateTexture( const char *filename, bool hardwareFilter, bool forceReload, bool procedural )
+int CScriptSurface::ValidateTexture( const char* filename, bool hardwareFilter, bool forceReload, bool procedural )
 {
 	int id = surface()->DrawGetTextureId( filename );
-	if ( id <= 0 )
+	if( id <= 0 )
 	{
 		id = surface()->CreateNewTextureID( procedural );
 		g_ScriptTextureIDs.AddToTail( id );
@@ -858,8 +910,8 @@ int CScriptSurface::ValidateTexture( const char *filename, bool hardwareFilter, 
 
 #ifdef _DEBUG
 		char tex[MAX_PATH];
-		surface()->DrawGetTextureFile( id, tex, sizeof(tex)-1 );
-		if ( !V_stricmp( filename, tex ) )
+		surface()->DrawGetTextureFile( id, tex, sizeof( tex ) - 1 );
+		if( !V_stricmp( filename, tex ) )
 		{
 			DebugMsg( "Create texture [%i]%s\n", id, filename );
 		}
@@ -869,7 +921,7 @@ int CScriptSurface::ValidateTexture( const char *filename, bool hardwareFilter, 
 		}
 #endif
 	}
-	else if ( forceReload && g_ScriptTextureIDs.HasElement( id ) )
+	else if( forceReload && g_ScriptTextureIDs.HasElement( id ) )
 	{
 		surface()->DrawSetTextureFile( id, filename, hardwareFilter, forceReload );
 	}
@@ -882,17 +934,17 @@ int CScriptSurface::ValidateTexture( const char *filename, bool hardwareFilter, 
 }
 
 // Replace existing texture
-void CScriptSurface::SetTextureFile( int id, const char *filename, bool hardwareFilter )
+void CScriptSurface::SetTextureFile( int id, const char* filename, bool hardwareFilter )
 {
-	if ( g_ScriptTextureIDs.HasElement(id) )
+	if( g_ScriptTextureIDs.HasElement( id ) )
 	{
-		Assert( surface()->IsTextureIDValid(id) );
+		Assert( surface()->IsTextureIDValid( id ) );
 		surface()->DrawSetTextureFile( id, filename, hardwareFilter, true );
 
 #ifdef _DEBUG
 		char tex[MAX_PATH];
-		surface()->DrawGetTextureFile( id, tex, sizeof(tex)-1 );
-		if ( !V_stricmp( filename, tex ) )
+		surface()->DrawGetTextureFile( id, tex, sizeof( tex ) - 1 );
+		if( !V_stricmp( filename, tex ) )
 		{
 			DebugMsg( "Set texture [%i]%s\n", id, filename );
 		}
@@ -904,12 +956,12 @@ void CScriptSurface::SetTextureFile( int id, const char *filename, bool hardware
 	}
 
 #ifdef _DEBUG
-	if ( !g_ScriptTextureIDs.HasElement(id) && surface()->IsTextureIDValid(id) )
+	if( !g_ScriptTextureIDs.HasElement( id ) && surface()->IsTextureIDValid( id ) )
 	{
 		DebugWarning( "Tried to set non-script created texture! [%i]%s\n", id, filename );
 	}
 
-	if ( !surface()->IsTextureIDValid(id) )
+	if( !surface()->IsTextureIDValid( id ) )
 	{
 		DebugWarning( "Tried to set invalid texture id! [%i]%s\n", id, filename );
 	}
@@ -918,25 +970,27 @@ void CScriptSurface::SetTextureFile( int id, const char *filename, bool hardware
 #if 0
 void CScriptSurface::SetTextureMaterial( int id, HSCRIPT hMaterial )
 {
-	IMaterial *pMaterial = (IMaterial*)HScriptToClass< IScriptMaterial >( hMaterial );
-	if ( !IsValid( pMaterial ) )
-		return;
-
-	if ( g_ScriptTextureIDs.HasElement(id) )
+	IMaterial* pMaterial = ( IMaterial* )HScriptToClass< IScriptMaterial >( hMaterial );
+	if( !IsValid( pMaterial ) )
 	{
-		Assert( surface()->IsTextureIDValid(id) );
+		return;
+	}
+
+	if( g_ScriptTextureIDs.HasElement( id ) )
+	{
+		Assert( surface()->IsTextureIDValid( id ) );
 		MatSystemSurface()->DrawSetTextureMaterial( id, pMaterial );
 
 		DebugMsg( "Set texture [%i]%s\n", id, pMaterial->GetName() );
 	}
 
 #ifdef _DEBUG
-	if ( !g_ScriptTextureIDs.HasElement(id) && surface()->IsTextureIDValid(id) )
+	if( !g_ScriptTextureIDs.HasElement( id ) && surface()->IsTextureIDValid( id ) )
 	{
 		DebugWarning( "Tried to set non-script created texture! [%i]\n", id );
 	}
 
-	if ( !surface()->IsTextureIDValid(id) )
+	if( !surface()->IsTextureIDValid( id ) )
 	{
 		DebugWarning( "Tried to set invalid texture id! [%i]\n", id );
 	}
@@ -1008,20 +1062,20 @@ void CScriptSurface::DrawTexturedBox( int texture, int x, int y, int wide, int t
 	surface()->DrawTexturedRect( x, y, x + wide, y + tall );
 }
 
-void CScriptSurface::DrawColoredText( int font, int x, int y, int r, int g, int b, int a, const char *text )
+void CScriptSurface::DrawColoredText( int font, int x, int y, int r, int g, int b, int a, const char* text )
 {
 	wchar_t wcs[512];
-	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof(wcs) );
+	g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof( wcs ) );
 
-	surface()->DrawSetTextFont( IntToFontHandle(font) );
+	surface()->DrawSetTextFont( IntToFontHandle( font ) );
 	surface()->DrawSetTextColor( r, g, b, a );
 	surface()->DrawSetTextPos( x, y );
-	surface()->DrawPrintText( wcs, wcslen(wcs) );
+	surface()->DrawPrintText( wcs, wcslen( wcs ) );
 }
 
-void CScriptSurface::DrawColoredTextRect( int font, int x, int y, int w, int h, int r, int g, int b, int a, const char *text )
+void CScriptSurface::DrawColoredTextRect( int font, int x, int y, int w, int h, int r, int g, int b, int a, const char* text )
 {
-	MatSystemSurface()->DrawColoredTextRect( IntToFontHandle(font), x, y, w, h, r, g, b, a, text );
+	MatSystemSurface()->DrawColoredTextRect( IntToFontHandle( font ), x, y, w, h, r, g, b, a, text );
 }
 
 
@@ -1167,7 +1221,7 @@ public:
 	virtual ~IScriptVGUIObject() {}
 
 #ifdef _DEBUG
-	virtual const char *GetName() = 0;
+	virtual const char* GetName() = 0;
 #endif
 	//-----------------------------------------------------
 	// Free the VGUI panel and script instance.
@@ -1177,32 +1231,47 @@ public:
 	//-----------------------------------------------------
 	// Create new panel
 	//-----------------------------------------------------
-	virtual void Create( const char *panelName ) = 0;
+	virtual void Create( const char* panelName ) = 0;
 
 public:
-	VPANEL GetVPanel() { return _vpanel; }
-	HSCRIPT GetScriptInstance() { return m_hScriptInstance; }
+	VPANEL GetVPanel()
+	{
+		return _vpanel;
+	}
+	HSCRIPT GetScriptInstance()
+	{
+		return m_hScriptInstance;
+	}
 
 protected:
 	VPANEL _vpanel;
 	HSCRIPT m_hScriptInstance;
 
 	// Called on deletion
-	static void ResolveChildren_r( VPANEL panel DBG_PARAM(, int level) );
+	static void ResolveChildren_r( VPANEL panel DBG_PARAM( , int level ) );
 
 public:
 #if SCRIPT_VGUI_SAVERESTORE
 	IScriptVGUIObject() {}
-	void SetScriptInstance( HSCRIPT h ) { m_hScriptInstance = h; }
+	void SetScriptInstance( HSCRIPT h )
+	{
+		m_hScriptInstance = h;
+	}
 	char m_pszScriptId[16];
 #endif
 
 #ifdef _DEBUG
-	#if SCRIPT_VGUI_SAVERESTORE
-		const char *GetDebugName() { return m_pszScriptId; }
-	#else
-		const char *GetDebugName() { return ""; }
-	#endif
+#if SCRIPT_VGUI_SAVERESTORE
+	const char* GetDebugName()
+	{
+		return m_pszScriptId;
+	}
+#else
+	const char* GetDebugName()
+	{
+		return "";
+	}
+#endif
 #endif
 };
 
@@ -1213,15 +1282,15 @@ END_SCRIPTDESC()
 #if SCRIPT_VGUI_SAVERESTORE
 class CScriptVGUIScriptInstanceHelper : public IScriptInstanceHelper
 {
-	void *BindOnRead( HSCRIPT hInstance, void *pOld, const char *pszId )
+	void* BindOnRead( HSCRIPT hInstance, void* pOld, const char* pszId )
 	{
-		DebugMsg( "BindOnRead (0x%p)   (%s)   (count %d)\n", (uint)hInstance, pszId, g_ScriptPanels.Count() );
+		DebugMsg( "BindOnRead (0x%p)   (%s)   (count %d)\n", ( uint )hInstance, pszId, g_ScriptPanels.Count() );
 
 		FOR_EACH_LL( g_ScriptPanels, i )
 		{
-			IScriptVGUIObject *pPanel = g_ScriptPanels[i];
+			IScriptVGUIObject* pPanel = g_ScriptPanels[i];
 			// DebugMsg( "   cmp                    (%s)\n", pPanel->m_pszScriptId );
-			if ( !V_stricmp( pPanel->m_pszScriptId, pszId ) )
+			if( !V_stricmp( pPanel->m_pszScriptId, pszId ) )
 			{
 				pPanel->SetScriptInstance( hInstance );
 				DebugMsg( "   ret                    (%s)\n", pPanel->m_pszScriptId );
@@ -1241,9 +1310,9 @@ static CScriptVGUIScriptInstanceHelper g_ScriptVGUIScriptInstanceHelper;
 #endif
 
 
-IScriptVGUIObject *ToScriptVGUIObj( HSCRIPT inst )
+IScriptVGUIObject* ToScriptVGUIObj( HSCRIPT inst )
 {
-	return (IScriptVGUIObject *)g_pScriptVM->GetInstanceValue( inst, ::GetScriptDesc( (IScriptVGUIObject *)0 ) );
+	return ( IScriptVGUIObject* )g_pScriptVM->GetInstanceValue( inst, ::GetScriptDesc( ( IScriptVGUIObject* )0 ) );
 }
 
 template < typename T > inline T* AllocScriptPanel()
@@ -1251,12 +1320,12 @@ template < typename T > inline T* AllocScriptPanel()
 	return new T;
 }
 
-inline IScriptVGUIObject *FindInScriptPanels( VPANEL panel, int &I )
+inline IScriptVGUIObject* FindInScriptPanels( VPANEL panel, int& I )
 {
-	for ( int i = g_ScriptPanels.Head(); i != g_ScriptPanels.InvalidIndex(); i = g_ScriptPanels.Next(i) )
+	for( int i = g_ScriptPanels.Head(); i != g_ScriptPanels.InvalidIndex(); i = g_ScriptPanels.Next( i ) )
 	{
-		IScriptVGUIObject *obj = g_ScriptPanels[i];
-		if ( obj->GetVPanel() == panel )
+		IScriptVGUIObject* obj = g_ScriptPanels[i];
+		if( obj->GetVPanel() == panel )
 		{
 			I = i;
 			return obj;
@@ -1265,47 +1334,51 @@ inline IScriptVGUIObject *FindInScriptPanels( VPANEL panel, int &I )
 	return NULL;
 }
 
-void IScriptVGUIObject::ResolveChildren_r( VPANEL panel DBG_PARAM(, int level = 0) )
+void IScriptVGUIObject::ResolveChildren_r( VPANEL panel DBG_PARAM( , int level = 0 ) )
 {
 #ifdef _DEBUG
 	char indent[32];
 
 	int l = level, c = 0;
-	if ( l > 15 )
+	if( l > 15 )
+	{
 		l = 15;
+	}
 
-	while ( l-- )
+	while( l-- )
 	{
 		indent[c++] = ' ';
 		indent[c++] = ' ';
 	}
 	indent[c] = 0;
 
-	if ( level > 15 )
+	if( level > 15 )
 	{
-		indent[c-1] = '.';
-		indent[c-2] = '.';
+		indent[c - 1] = '.';
+		indent[c - 2] = '.';
 	}
 #endif
 
-	CUtlVector< VPANEL > &children = ipanel()->GetChildren( panel );
+	CUtlVector< VPANEL >& children = ipanel()->GetChildren( panel );
 	FOR_EACH_VEC_BACK( children, i )
 	{
 		VPANEL child = children[i];
 		int j;
-		IScriptVGUIObject *obj = FindInScriptPanels( child, j );
-		if ( obj )
+		IScriptVGUIObject* obj = FindInScriptPanels( child, j );
+		if( obj )
 		{
-			if ( ipanel()->IsAutoDeleteSet(child) )
+			if( ipanel()->IsAutoDeleteSet( child ) )
 			{
 				DebugMsg( "    %sResolveChildren: '%s' (autodelete)\n", indent, obj->GetName() );
 
-				if ( g_pScriptVM )
+				if( g_pScriptVM )
+				{
 					g_pScriptVM->RemoveInstance( obj->m_hScriptInstance );
+				}
 				g_ScriptPanels.Remove( j );
 				delete obj;
 
-				ResolveChildren_r( child DBG_PARAM(, level+1) );
+				ResolveChildren_r( child DBG_PARAM( , level + 1 ) );
 			}
 			else
 			{
@@ -1317,7 +1390,7 @@ void IScriptVGUIObject::ResolveChildren_r( VPANEL panel DBG_PARAM(, int level = 
 				// This assert will be hit if a deleted panel has
 				// C++ created and autodelete disabled children who are
 				// also registered to script.
-				Assert(0);
+				Assert( 0 );
 			}
 		}
 	}
@@ -1327,9 +1400,9 @@ template <class T>
 class CScriptVGUIObject : public IScriptVGUIObject
 {
 public:
-	T *_base;
+	T* _base;
 
-	CScriptVGUIObject() : _base(0)
+	CScriptVGUIObject() : _base( 0 )
 	{
 		_vpanel = 0;
 		m_hScriptInstance = 0;
@@ -1337,9 +1410,9 @@ public:
 
 	void Destroy( int i = -1 )
 	{
-		if ( i != -1 )
+		if( i != -1 )
 		{
-			Assert( g_ScriptPanels.IsValidIndex(i) );
+			Assert( g_ScriptPanels.IsValidIndex( i ) );
 			Assert( g_ScriptPanels[i] == this );
 
 			g_ScriptPanels.Remove( i );
@@ -1351,7 +1424,7 @@ public:
 			g_ScriptPanels.FindAndRemove( this );
 		}
 
-		if ( GetVPanel() )
+		if( GetVPanel() )
 		{
 			DebugMsg( "  Destroy panel '%s'   %s\n", _base->GetName(), GetDebugName() );
 			_base->ScriptShutdown();
@@ -1359,17 +1432,19 @@ public:
 			_base->MarkForDeletion();
 		}
 
-		if ( m_hScriptInstance )
+		if( m_hScriptInstance )
 		{
-			if ( g_pScriptVM )
+			if( g_pScriptVM )
+			{
 				g_pScriptVM->RemoveInstance( m_hScriptInstance );
+			}
 		}
 
 		delete this;
 	}
 
 	template <typename CHelper>
-	void CreateFromScript( HSCRIPT parent, const char *panelName, int root )
+	void CreateFromScript( HSCRIPT parent, const char* panelName, int root )
 	{
 		Assert( !_vpanel && !m_hScriptInstance && !g_ScriptPanels.IsValidIndex( g_ScriptPanels.Find( this ) ) );
 
@@ -1378,14 +1453,14 @@ public:
 		m_hScriptInstance = g_pScriptVM->RegisterInstance< CHelper >( static_cast< CHelper* >( this ) );
 
 #if SCRIPT_VGUI_SAVERESTORE
-		g_pScriptVM->GenerateUniqueKey( "", m_pszScriptId, sizeof(m_pszScriptId) );
+		g_pScriptVM->GenerateUniqueKey( "", m_pszScriptId, sizeof( m_pszScriptId ) );
 		g_pScriptVM->SetInstanceUniqeId( m_hScriptInstance, m_pszScriptId );
 #endif
 
-		if ( parent )
+		if( parent )
 		{
-			IScriptVGUIObject *obj = ToScriptVGUIObj( parent );
-			if ( obj )
+			IScriptVGUIObject* obj = ToScriptVGUIObj( parent );
+			if( obj )
 			{
 				// Insert this after the parent to make sure children come after their parents,
 				// and their removal is done inside ResolveChildren_r(), not by individual Destroy() calls from LevelShutdown.
@@ -1416,36 +1491,36 @@ public:
 		// This parameter is hidden in script, and is defined by the return value of dummy functions.
 		VPANEL vparent = 0;
 
-		switch ( root )
+		switch( root )
 		{
-	#if ALLOW_ROOT_PANEL_PARENT
+#if ALLOW_ROOT_PANEL_PARENT
 			case 0:
 				vparent = VGUI_GetScriptRootPanel( PANEL_ROOT );
 				break;
-	#endif
-	#if ALLOW_GAMEUI_ROOT_PARENT
+#endif
+#if ALLOW_GAMEUI_ROOT_PARENT
 			case 1:
 				vparent = VGUI_GetScriptRootPanel( PANEL_GAMEUIDLL );
 				break;
-	#endif
-	#if ALLOW_CLIENTDLL_ROOT_PARENT
+#endif
+#if ALLOW_CLIENTDLL_ROOT_PARENT
 			case 2:
 				vparent = VGUI_GetScriptRootPanel( PANEL_CLIENTDLL );
 				break;
-	#endif
-	#if ALLOW_HUD_VIEWPORT_ROOT_PARENT
+#endif
+#if ALLOW_HUD_VIEWPORT_ROOT_PARENT
 			case 10: // Hud viewport
 				Assert( g_pClientMode && g_pClientMode->GetViewport() );
 				vparent = g_pClientMode->GetViewport()->GetVPanel();
 				break;
-	#endif
+#endif
 			default:
-	#if SCRIPT_ENGINE_ROOT_PANELS
+#if SCRIPT_ENGINE_ROOT_PANELS
 				UNREACHABLE(); // Invalid parent panel
-	#else
+#else
 				// Allow everything defined in vscript_vgui.nut
-				vparent = VGUI_GetScriptRootPanel( (VGuiPanel_t)root );
-	#endif
+				vparent = VGUI_GetScriptRootPanel( ( VGuiPanel_t )root );
+#endif
 		}
 
 		_base->SetParent( vparent );
@@ -1468,7 +1543,7 @@ public:
 		__base()->MakeReadyForUse();
 	}
 
-	const char *GetName()
+	const char* GetName()
 	{
 		return __base()->GetName();
 	}
@@ -1480,8 +1555,8 @@ public:
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
 	void AddActionSignalTarget( HSCRIPT messageTarget )
 	{
-		IScriptVGUIObject *obj = ToScriptVGUIObj( messageTarget );
-		if ( obj )
+		IScriptVGUIObject* obj = ToScriptVGUIObj( messageTarget );
+		if( obj )
 		{
 			__base()->AddActionSignalTarget( obj->GetVPanel() );
 		}
@@ -1493,12 +1568,14 @@ public:
 	HSCRIPT	GetParent()
 	{
 		VPANEL parent = ipanel()->GetParent( this->GetVPanel() );
-		if ( !parent )
+		if( !parent )
+		{
 			return NULL;
+		}
 
 		int i;
 		IScriptVGUIObject* obj = FindInScriptPanels( parent, i );
-		if ( obj )
+		if( obj )
 		{
 			// My parent can't be invalid.
 			Assert( ToScriptVGUIObj( obj->GetScriptInstance() ) );
@@ -1510,33 +1587,35 @@ public:
 		// Is my parent one of the root panels?
 		bool bRootParent = false;
 #if SCRIPT_ENGINE_ROOT_PANELS
-		if ( ( parent == g_pScriptRootPanel->GetVPanel() )
-	#if ALLOW_GAMEUI_ROOT_PARENT
-			|| ( g_pScriptGameUIDLLPanel && parent == g_pScriptGameUIDLLPanel->GetVPanel() )
-	#endif
-	#if ALLOW_CLIENTDLL_ROOT_PARENT
-			|| ( g_pScriptClientDLLPanel && parent == g_pScriptClientDLLPanel->GetVPanel() )
-	#endif
-		)
+		if( ( parent == g_pScriptRootPanel->GetVPanel() )
+#if ALLOW_GAMEUI_ROOT_PARENT
+				|| ( g_pScriptGameUIDLLPanel && parent == g_pScriptGameUIDLLPanel->GetVPanel() )
+#endif
+#if ALLOW_CLIENTDLL_ROOT_PARENT
+				|| ( g_pScriptClientDLLPanel && parent == g_pScriptClientDLLPanel->GetVPanel() )
+#endif
+		  )
 		{
 			bRootParent = true;
 		}
 		else
 #endif
-		for ( int i = PANEL_ROOT; i <= PANEL_CLIENTDLL_TOOLS; ++i )
-		{
-			if ( parent == enginevgui->GetPanel( (VGuiPanel_t)i ) )
+			for( int i = PANEL_ROOT; i <= PANEL_CLIENTDLL_TOOLS; ++i )
 			{
-				bRootParent = true;
-				break;
+				if( parent == enginevgui->GetPanel( ( VGuiPanel_t )i ) )
+				{
+					bRootParent = true;
+					break;
+				}
 			}
-		}
 #if ALLOW_HUD_VIEWPORT_ROOT_PARENT
-		if ( g_pClientMode && g_pClientMode->GetViewport() && ( parent == g_pClientMode->GetViewport()->GetVPanel() ) )
+		if( g_pClientMode && g_pClientMode->GetViewport() && ( parent == g_pClientMode->GetViewport()->GetVPanel() ) )
+		{
 			bRootParent = true;
+		}
 #endif
 		// My parent wasn't registered.
-		AssertMsg1( bRootParent, "'%s'", ipanel()->GetName(parent) );
+		AssertMsg1( bRootParent, "'%s'", ipanel()->GetName( parent ) );
 #endif
 
 		return NULL;
@@ -1547,14 +1626,14 @@ public:
 	//-----------------------------------------------------
 	void SetParent( HSCRIPT parent )
 	{
-		if ( !parent )
+		if( !parent )
 		{
-			__base()->SetParent( (VPANEL)NULL );
+			__base()->SetParent( ( VPANEL )NULL );
 			return;
 		}
 
-		IScriptVGUIObject *obj = ToScriptVGUIObj( parent );
-		if ( obj )
+		IScriptVGUIObject* obj = ToScriptVGUIObj( parent );
+		if( obj )
 		{
 			__base()->SetParent( obj->GetVPanel() );
 			return;
@@ -1565,13 +1644,13 @@ public:
 
 	void GetChildren( HSCRIPT arr )
 	{
-		CUtlVector< VPANEL > &children = ipanel()->GetChildren( this->GetVPanel() );
+		CUtlVector< VPANEL >& children = ipanel()->GetChildren( this->GetVPanel() );
 		FOR_EACH_VEC( children, i )
 		{
 			VPANEL child = children[i];
 			int j;
 			IScriptVGUIObject* obj = FindInScriptPanels( child, j );
-			if ( obj )
+			if( obj )
 			{
 				g_pScriptVM->ArrayAppend( arr, obj->GetScriptInstance() );
 			}
@@ -1659,7 +1738,7 @@ public:
 #if BUILD_GROUPS_ENABLED
 	void SetProportional( bool i )
 	{
-		__base()->SetProportional(i);
+		__base()->SetProportional( i );
 	}
 #endif
 #if 0
@@ -1669,10 +1748,10 @@ public:
 		ipanel()->GetAbsPos( this->GetVPanel(), px, py );
 
 		ScriptVariant_t x, y;
-		g_pScriptVM->GetValue( out, (ScriptVariant_t)0, &x );
+		g_pScriptVM->GetValue( out, ( ScriptVariant_t )0, &x );
 		g_pScriptVM->GetValue( out, 1, &y );
 
-		g_pScriptVM->SetValue( out, (ScriptVariant_t)0, x.m_int + px );
+		g_pScriptVM->SetValue( out, ( ScriptVariant_t )0, x.m_int + px );
 		g_pScriptVM->SetValue( out, 1, y.m_int + py );
 	}
 
@@ -1682,10 +1761,10 @@ public:
 		ipanel()->GetAbsPos( this->GetVPanel(), px, py );
 
 		ScriptVariant_t x, y;
-		g_pScriptVM->GetValue( out, (ScriptVariant_t)0, &x );
+		g_pScriptVM->GetValue( out, ( ScriptVariant_t )0, &x );
 		g_pScriptVM->GetValue( out, 1, &y );
 
-		g_pScriptVM->SetValue( out, (ScriptVariant_t)0, x.m_int - px );
+		g_pScriptVM->SetValue( out, ( ScriptVariant_t )0, x.m_int - px );
 		g_pScriptVM->SetValue( out, 1, y.m_int - py );
 	}
 #endif
@@ -1696,7 +1775,7 @@ public:
 
 	void SetEnabled( bool i )
 	{
-		__base()->SetEnabled(i);
+		__base()->SetEnabled( i );
 	}
 
 	bool IsEnabled()
@@ -1706,28 +1785,28 @@ public:
 
 	void SetPaintEnabled( bool i )
 	{
-		__base()->SetPaintEnabled(i);
+		__base()->SetPaintEnabled( i );
 	}
 
 	void SetPaintBackgroundEnabled( bool i )
 	{
-		__base()->SetPaintBackgroundEnabled(i);
+		__base()->SetPaintBackgroundEnabled( i );
 	}
 
 	void SetPaintBorderEnabled( bool i )
 	{
-		__base()->SetPaintBorderEnabled(i);
+		__base()->SetPaintBorderEnabled( i );
 	}
 
 	void SetPostChildPaintEnabled( bool i )
 	{
-		__base()->SetPostChildPaintEnabled(i);
+		__base()->SetPostChildPaintEnabled( i );
 	}
 
 	// 0 for normal(opaque), 1 for single texture from Texture1, and 2 for rounded box w/ four corner textures
 	void SetPaintBackgroundType( int i )
 	{
-		__base()->SetPaintBackgroundType(i);
+		__base()->SetPaintBackgroundType( i );
 	}
 
 	void SetFgColor( int r, int g, int b, int a )
@@ -1740,7 +1819,7 @@ public:
 		__base()->SetBgColor( Color( r, g, b, a ) );
 	}
 #if 0
-	void SetScheme( const char *tag )
+	void SetScheme( const char* tag )
 	{
 		return __base()->SetScheme( tag );
 	}
@@ -1750,10 +1829,12 @@ public:
 		AssertMsg( cursor >= 0 && cursor < dc_last, "invalid cursor" );
 
 		// do nothing
-		if ( cursor < 0 || cursor >= dc_last )
+		if( cursor < 0 || cursor >= dc_last )
+		{
 			return;
+		}
 
-		return __base()->SetCursor( (HCursor)cursor );
+		return __base()->SetCursor( ( HCursor )cursor );
 	}
 
 	bool IsCursorOver()
@@ -1783,12 +1864,12 @@ public:
 
 	void SetMouseInputEnabled( bool i )
 	{
-		__base()->SetMouseInputEnabled(i);
+		__base()->SetMouseInputEnabled( i );
 	}
 
 	void SetKeyBoardInputEnabled( bool i )
 	{
-		__base()->SetKeyBoardInputEnabled(i);
+		__base()->SetKeyBoardInputEnabled( i );
 	}
 
 	// -----------------------
@@ -1801,12 +1882,12 @@ public:
 
 	void DrawBox( int x, int y, int wide, int tall, int r, int g, int b, int a, bool hollow )
 	{
-		__base()->DrawBox( x, y, wide, tall, Color(r, g, b, a), 1.0f, hollow );
+		__base()->DrawBox( x, y, wide, tall, Color( r, g, b, a ), 1.0f, hollow );
 	}
 
 	void DrawBoxFade( int x, int y, int wide, int tall, int r, int g, int b, int a, int alpha0, int alpha1, bool bHorizontal, bool hollow )
 	{
-		__base()->DrawBoxFade( x, y, wide, tall, Color(r, g, b, a), 1.0f, alpha0, alpha1, bHorizontal, hollow );
+		__base()->DrawBoxFade( x, y, wide, tall, Color( r, g, b, a ), 1.0f, alpha0, alpha1, bHorizontal, hollow );
 	}
 #if 0
 	// -----------------------
@@ -1814,7 +1895,7 @@ public:
 	// -----------------------
 	void SetDragEnabled( bool i )
 	{
-		__base()->SetDragEnabled(i);
+		__base()->SetDragEnabled( i );
 	}
 
 	bool IsDragEnabled()
@@ -1834,7 +1915,7 @@ public:
 
 	void SetShowDragHelper( int i )
 	{
-		__base()->SetShowDragHelper(i);
+		__base()->SetShowDragHelper( i );
 	}
 
 	int GetDragStartTolerance()
@@ -1844,11 +1925,11 @@ public:
 
 	void SetDragStartTolerance( int i )
 	{
-		__base()->SetDragSTartTolerance(i);
+		__base()->SetDragSTartTolerance( i );
 	}
 #endif
 #if 0
-	void SetTooltip( const char *text )
+	void SetTooltip( const char* text )
 	{
 		__base()->GetTooltip()->SetText( text );
 	}
@@ -1929,19 +2010,19 @@ CLASS_HELPER_INTERFACE( EditablePanel, Panel )
 {
 public:
 	// Call on creation or on ApplySchemeSettings()
-	void LoadControlSettings( const char *resName )
+	void LoadControlSettings( const char* resName )
 	{
 		__base()->LoadControlSettings( resName );
 	}
 
-	HSCRIPT FindChildByName( const char *childName )
+	HSCRIPT FindChildByName( const char* childName )
 	{
-		Panel *pPanel = __base()->FindChildByName( childName, false );
-		if ( pPanel )
+		Panel* pPanel = __base()->FindChildByName( childName, false );
+		if( pPanel )
 		{
 			int i;
 			IScriptVGUIObject* obj = FindInScriptPanels( child, i );
-			if ( obj )
+			if( obj )
 			{
 				return obj->GetScriptInstance();
 			}
@@ -1961,36 +2042,36 @@ public:
 CLASS_HELPER_INTERFACE( Label, Panel )
 {
 public:
-	void SetText( const char *text )
+	void SetText( const char* text )
 	{
 		wchar_t wcs[512];
-		g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof(wcs) );
+		g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof( wcs ) );
 		__base()->SetText( wcs );
 	}
 
 	void SetFont( int i )
 	{
-		__base()->SetFont( IntToFontHandle(i) );
+		__base()->SetFont( IntToFontHandle( i ) );
 	}
 
 	void SetAllCaps( bool i )
 	{
-		__base()->SetAllCaps(i);
+		__base()->SetAllCaps( i );
 	}
 
 	void SetWrap( bool i )
 	{
-		__base()->SetWrap(i);
+		__base()->SetWrap( i );
 	}
 
 	void SetCenterWrap( bool i )
 	{
-		__base()->SetCenterWrap(i);
+		__base()->SetCenterWrap( i );
 	}
 
 	void SetContentAlignment( int i )
 	{
-		__base()->SetContentAlignment( (Label::Alignment)i );
+		__base()->SetContentAlignment( ( Label::Alignment )i );
 	}
 
 	void SetTextInset( int x, int y )
@@ -2005,8 +2086,8 @@ public:
 
 	void SetAssociatedControl( HSCRIPT control )
 	{
-		IScriptVGUIObject *obj = ToScriptVGUIObj( control );
-		if ( obj )
+		IScriptVGUIObject* obj = ToScriptVGUIObj( control );
+		if( obj )
 		{
 			__base()->SetAssociatedControl( ipanel()->GetPanel( obj->GetVPanel(), GetControlsModuleName() ) );
 		}
@@ -2027,12 +2108,12 @@ public:
 		__base()->SetTextImageIndex( index );
 	}
 
-	void SetImageAtIndex( int index, const char *imageName, bool hardwareFilter, int offset )
+	void SetImageAtIndex( int index, const char* imageName, bool hardwareFilter, int offset )
 	{
 		return __base()->SetImageAtIndex( index, vgui_GetImage( imageName, hardwareFilter ), offset );
 	}
 
-	int AddImage( const char *imageName, bool hardwareFilter, int offset )
+	int AddImage( const char* imageName, bool hardwareFilter, int offset )
 	{
 		return __base()->AddImage( vgui_GetImage( imageName, hardwareFilter ), offset );
 	}
@@ -2061,13 +2142,13 @@ CLASS_HELPER_INTERFACE( Button, Label )
 public:
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
 	// Sets the command message to send to the action signal target when the button is pressed
-	void SetCommand( const char *command )
+	void SetCommand( const char* command )
 	{
-		if ( !V_strnicmp( command, "url ", 4 ) )
+		if( !V_strnicmp( command, "url ", 4 ) )
 		{
-			__base()->SetCommand( (KeyValues*)NULL );
+			__base()->SetCommand( ( KeyValues* )NULL );
 
-			g_pScriptVM->RaiseException("invalid button command");
+			g_pScriptVM->RaiseException( "invalid button command" );
 			return;
 		}
 
@@ -2076,7 +2157,7 @@ public:
 #endif
 	void SetButtonActivationType( int activationType )
 	{
-		__base()->SetButtonActivationType( (Button::ActivationType_t)activationType );
+		__base()->SetButtonActivationType( ( Button::ActivationType_t )activationType );
 	}
 
 	bool IsArmed()
@@ -2086,7 +2167,7 @@ public:
 
 	void SetArmed( bool state )
 	{
-		__base()->SetArmed(state);
+		__base()->SetArmed( state );
 	}
 
 	bool IsSelected()
@@ -2096,7 +2177,7 @@ public:
 
 	void SetSelected( bool state )
 	{
-		__base()->SetSelected(state);
+		__base()->SetSelected( state );
 	}
 
 	bool IsDepressed()
@@ -2106,50 +2187,50 @@ public:
 
 	void ForceDepressed( bool state )
 	{
-		__base()->ForceDepressed(state);
+		__base()->ForceDepressed( state );
 	}
 
 	void SetMouseClickEnabled( int code, bool state )
 	{
-		__base()->SetMouseClickEnabled( (MouseCode)code, state );
+		__base()->SetMouseClickEnabled( ( MouseCode )code, state );
 	}
 
 	bool IsMouseClickEnabled( int code )
 	{
-		return __base()->IsMouseClickEnabled( (MouseCode)code );
+		return __base()->IsMouseClickEnabled( ( MouseCode )code );
 	}
 
 	void SetDefaultColor( int fr, int fg, int fb, int fa, int br, int bg, int bb, int ba )
 	{
-		__base()->SetDefaultColor( Color(fr, fg, fb, fa), Color(br, bg, bb, ba) );
+		__base()->SetDefaultColor( Color( fr, fg, fb, fa ), Color( br, bg, bb, ba ) );
 	}
 
 	void SetArmedColor( int fr, int fg, int fb, int fa, int br, int bg, int bb, int ba )
 	{
-		__base()->SetArmedColor( Color(fr, fg, fb, fa), Color(br, bg, bb, ba) );
+		__base()->SetArmedColor( Color( fr, fg, fb, fa ), Color( br, bg, bb, ba ) );
 	}
 
 	void SetSelectedColor( int fr, int fg, int fb, int fa, int br, int bg, int bb, int ba )
 	{
-		__base()->SetSelectedColor( Color(fr, fg, fb, fa), Color(br, bg, bb, ba) );
+		__base()->SetSelectedColor( Color( fr, fg, fb, fa ), Color( br, bg, bb, ba ) );
 	}
 
 	void SetDepressedColor( int fr, int fg, int fb, int fa, int br, int bg, int bb, int ba )
 	{
-		__base()->SetDepressedColor( Color(fr, fg, fb, fa), Color(br, bg, bb, ba) );
+		__base()->SetDepressedColor( Color( fr, fg, fb, fa ), Color( br, bg, bb, ba ) );
 	}
 
-	void SetArmedSound( const char *sound )
+	void SetArmedSound( const char* sound )
 	{
 		__base()->SetArmedSound( sound );
 	}
 
-	void SetDepressedSound( const char *sound )
+	void SetDepressedSound( const char* sound )
 	{
 		__base()->SetDepressedSound( sound );
 	}
 
-	void SetReleasedSound( const char *sound )
+	void SetReleasedSound( const char* sound )
 	{
 		__base()->SetReleasedSound( sound );
 	}
@@ -2180,7 +2261,7 @@ public:
 CLASS_HELPER_INTERFACE( ImagePanel, Panel )
 {
 public:
-	void SetImage( const char *imageName, bool hardwareFilter )
+	void SetImage( const char* imageName, bool hardwareFilter )
 	{
 		__base()->EvictImage();
 		__base()->SetImage( vgui_GetImage( imageName, hardwareFilter ) );
@@ -2204,9 +2285,9 @@ public:
 	void SetRotation( int rotation )
 	{
 		Assert( rotation == ROTATED_UNROTATED ||
-			rotation == ROTATED_CLOCKWISE_90 ||
-			rotation == ROTATED_ANTICLOCKWISE_90 ||
-			rotation == ROTATED_FLIPPED );
+				rotation == ROTATED_CLOCKWISE_90 ||
+				rotation == ROTATED_ANTICLOCKWISE_90 ||
+				rotation == ROTATED_FLIPPED );
 
 		__base()->SetRotation( rotation );
 	}
@@ -2297,7 +2378,7 @@ public:
 
 	void SetFont( int font )
 	{
-		__base()->SetFont( IntToFontHandle(font) );
+		__base()->SetFont( IntToFontHandle( font ) );
 	}
 
 	void InsertString( const char* text )
@@ -2369,20 +2450,20 @@ public:
 	void SetText( const char* text )
 	{
 		wchar_t wcs[512];
-		g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof(wcs) );
+		g_pVGuiLocalize->ConvertANSIToUnicode( text, wcs, sizeof( wcs ) );
 		__base()->SetText( wcs );
 	}
 
-	const char *GetText()
+	const char* GetText()
 	{
 		static char sz[512];
-		__base()->GetText( sz, sizeof(sz) );
+		__base()->GetText( sz, sizeof( sz ) );
 		return sz;
 	}
 
 	void SetFont( int font )
 	{
-		__base()->SetFont( IntToFontHandle(font) );
+		__base()->SetFont( IntToFontHandle( font ) );
 	}
 
 	void SetEditable( bool state )
@@ -2489,37 +2570,39 @@ public:
 CLASS_HELPER_INTERFACE( AvatarImage, Panel )
 {
 public:
-	void SetPlayer( const char *steam2id, int eAvatarSize )
+	void SetPlayer( const char* steam2id, int eAvatarSize )
 	{
 		uint32 __SteamInstanceID;
 		uint32 __SteamLocalUserID_Low32Bits;
 		uint32 __SteamLocalUserID_High32Bits;
 
 		int c = sscanf( steam2id, "STEAM_%u:%u:%u",
-			&__SteamInstanceID, &__SteamLocalUserID_High32Bits, &__SteamLocalUserID_Low32Bits );
+						&__SteamInstanceID, &__SteamLocalUserID_High32Bits, &__SteamLocalUserID_Low32Bits );
 
-		if ( c < 3 )
+		if( c < 3 )
+		{
 			return;
+		}
 
 		CSteamID id( __SteamLocalUserID_Low32Bits * 2 + __SteamLocalUserID_High32Bits,
-			k_EUniversePublic,
-			k_EAccountTypeIndividual );
+					 k_EUniversePublic,
+					 k_EAccountTypeIndividual );
 
-		__base()->SetPlayer( id, (EAvatarSize)eAvatarSize );
+		__base()->SetPlayer( id, ( EAvatarSize )eAvatarSize );
 	}
 
 	void SetPlayerByIndex( int entindex, int eAvatarSize )
 	{
-		if ( !entindex )
+		if( !entindex )
 		{
 			__base()->ClearAvatar();
 			return;
 		}
 
-		__base()->SetPlayer( entindex, (EAvatarSize)eAvatarSize );
+		__base()->SetPlayer( entindex, ( EAvatarSize )eAvatarSize );
 	}
 
-	void SetDefaultAvatar( const char *imageName )
+	void SetDefaultAvatar( const char* imageName )
 	{
 		__base()->SetDefaultAvatar( vgui_GetImage( imageName, false ) );
 	}
@@ -2543,7 +2626,7 @@ public:
 CLASS_HELPER_INTERFACE( TGAImage, Panel )
 {
 public:
-	void SetImage( const char *p )
+	void SetImage( const char* p )
 	{
 		__base()->SetTGAImage( p );
 	}
@@ -2571,7 +2654,7 @@ public:
 CLASS_HELPER_INTERFACE( PNGImage, Panel )
 {
 public:
-	void SetImage( const char *p )
+	void SetImage( const char* p )
 	{
 		__base()->SetPNGImage( p );
 	}
@@ -2604,10 +2687,12 @@ public:
 //==============================================================
 
 
-static inline void SetHScript( HSCRIPT &var, HSCRIPT val )
+static inline void SetHScript( HSCRIPT& var, HSCRIPT val )
 {
-	if ( var && g_pScriptVM )
+	if( var && g_pScriptVM )
+	{
 		g_pScriptVM->ReleaseScript( var );
+	}
 	var = val;
 }
 
@@ -2654,31 +2739,31 @@ private:
 #endif
 
 public:
-	CScript_Panel( Panel *parent, const char *name ) :
+	CScript_Panel( Panel* parent, const char* name ) :
 		BaseClass( parent, name ),
 
-		m_hfnPaint(NULL),
-		m_hfnPaintBackground(NULL),
-		m_hfnPostChildPaint(NULL),
+		m_hfnPaint( NULL ),
+		m_hfnPaintBackground( NULL ),
+		m_hfnPostChildPaint( NULL ),
 
-		m_hfnPerformLayout(NULL),
-		m_hfnOnTick(NULL),
-		m_hfnOnScreenSizeChanged(NULL),
+		m_hfnPerformLayout( NULL ),
+		m_hfnOnTick( NULL ),
+		m_hfnOnScreenSizeChanged( NULL ),
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
-		m_hfnOnCommand(NULL),
+		m_hfnOnCommand( NULL ),
 #endif
-		m_hfnOnCursorEntered(NULL),
-		m_hfnOnCursorExited(NULL),
-		m_hfnOnCursorMoved(NULL),
+		m_hfnOnCursorEntered( NULL ),
+		m_hfnOnCursorExited( NULL ),
+		m_hfnOnCursorMoved( NULL ),
 
-		m_hfnOnMousePressed(NULL),
-		m_hfnOnMouseDoublePressed(NULL),
-		m_hfnOnMouseReleased(NULL),
-		m_hfnOnMouseWheeled(NULL),
+		m_hfnOnMousePressed( NULL ),
+		m_hfnOnMouseDoublePressed( NULL ),
+		m_hfnOnMouseReleased( NULL ),
+		m_hfnOnMouseWheeled( NULL ),
 
-		m_hfnOnKeyCodePressed(NULL),
-		m_hfnOnKeyCodeReleased(NULL),
-		m_hfnOnKeyCodeTyped(NULL)
+		m_hfnOnKeyCodePressed( NULL ),
+		m_hfnOnKeyCodeReleased( NULL ),
+		m_hfnOnKeyCodeTyped( NULL )
 	{}
 
 	void ScriptShutdown()
@@ -2719,7 +2804,7 @@ public:
 
 	void PaintBackground()
 	{
-		if ( m_hfnPaintBackground )
+		if( m_hfnPaintBackground )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPaintBackground, NULL, 0, NULL, NULL, true );
 		}
@@ -2738,7 +2823,7 @@ public:
 	{
 		BaseClass::PerformLayout();
 
-		if ( m_hfnPerformLayout )
+		if( m_hfnPerformLayout )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPerformLayout, NULL, 0, NULL, NULL, true );
 		}
@@ -2753,23 +2838,25 @@ public:
 	{
 		BaseClass::OnScreenSizeChanged( oldwide, oldtall );
 
-		if ( m_hfnOnScreenSizeChanged )
+		if( m_hfnOnScreenSizeChanged )
 		{
 			ScriptVariant_t args[2] = { oldwide, oldtall };
 			g_pScriptVM->ExecuteFunction( m_hfnOnScreenSizeChanged, args, 2, NULL, NULL, true );
 		}
 	}
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
-	void OnCommand( const char *command )
+	void OnCommand( const char* command )
 	{
-		if ( m_hfnOnCommand )
+		if( m_hfnOnCommand )
 		{
 			ScriptVariant_t ret, arg = command;
 			g_pScriptVM->ExecuteFunction( m_hfnOnCommand, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnCommand( command );
@@ -2777,7 +2864,7 @@ public:
 #endif
 	void OnCursorEntered()
 	{
-		if ( m_hfnOnCursorEntered )
+		if( m_hfnOnCursorEntered )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorEntered, NULL, 0, NULL, NULL, true );
 		}
@@ -2785,7 +2872,7 @@ public:
 
 	void OnCursorExited()
 	{
-		if ( m_hfnOnCursorExited )
+		if( m_hfnOnCursorExited )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorExited, NULL, 0, NULL, NULL, true );
 		}
@@ -2793,7 +2880,7 @@ public:
 
 	void OnCursorMoved( int x, int y )
 	{
-		if ( m_hfnOnCursorMoved )
+		if( m_hfnOnCursorMoved )
 		{
 			ScriptVariant_t args[2] = { x, y };
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorMoved, args, 2, NULL, NULL, true );
@@ -2806,50 +2893,52 @@ public:
 
 	void OnMousePressed( MouseCode code )
 	{
-		if ( m_hfnOnMousePressed )
+		if( m_hfnOnMousePressed )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMousePressed, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseDoublePressed( MouseCode code )
 	{
-		if ( m_hfnOnMouseDoublePressed )
+		if( m_hfnOnMouseDoublePressed )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseDoublePressed, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseReleased( MouseCode code )
 	{
-		if ( m_hfnOnMouseReleased )
+		if( m_hfnOnMouseReleased )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseReleased, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseWheeled( int delta )
 	{
-		if ( m_hfnOnMouseWheeled )
+		if( m_hfnOnMouseWheeled )
 		{
-			ScriptVariant_t arg = (int)delta;
+			ScriptVariant_t arg = ( int )delta;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseWheeled, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnKeyCodePressed( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodePressed )
+		if( m_hfnOnKeyCodePressed )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodePressed, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnKeyCodePressed( code );
@@ -2857,14 +2946,16 @@ public:
 
 	void OnKeyCodeReleased( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodeReleased )
+		if( m_hfnOnKeyCodeReleased )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodeReleased, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnKeyCodeReleased( code );
@@ -2872,14 +2963,16 @@ public:
 
 	void OnKeyCodeTyped( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodeTyped )
+		if( m_hfnOnKeyCodeTyped )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodeTyped, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnKeyCodeTyped( code );
@@ -2913,7 +3006,7 @@ public:
 		CheckCallback( OnCommand );
 #endif
 
-		g_pScriptVM->RaiseException("invalid callback");
+		g_pScriptVM->RaiseException( "invalid callback" );
 	}
 };
 
@@ -2950,33 +3043,33 @@ private:
 #endif
 
 public:
-	CScript_Frame( Panel *parent, const char *name ) :
+	CScript_Frame( Panel* parent, const char* name ) :
 
 		// Start without popup
 		BaseClass( parent, name, false, false ),
 
-		m_hfnPaint(NULL),
-		m_hfnPaintBackground(NULL),
+		m_hfnPaint( NULL ),
+		m_hfnPaintBackground( NULL ),
 
-		m_hfnPerformLayout(NULL),
-		m_hfnOnTick(NULL),
-		m_hfnOnScreenSizeChanged(NULL),
+		m_hfnPerformLayout( NULL ),
+		m_hfnOnTick( NULL ),
+		m_hfnOnScreenSizeChanged( NULL ),
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
-		m_hfnOnCommand(NULL),
+		m_hfnOnCommand( NULL ),
 #endif
 
-		m_hfnOnCursorEntered(NULL),
-		m_hfnOnCursorExited(NULL),
-		m_hfnOnCursorMoved(NULL),
+		m_hfnOnCursorEntered( NULL ),
+		m_hfnOnCursorExited( NULL ),
+		m_hfnOnCursorMoved( NULL ),
 
-		m_hfnOnMousePressed(NULL),
-		m_hfnOnMouseDoublePressed(NULL),
-		m_hfnOnMouseReleased(NULL),
-		m_hfnOnMouseWheeled(NULL),
+		m_hfnOnMousePressed( NULL ),
+		m_hfnOnMouseDoublePressed( NULL ),
+		m_hfnOnMouseReleased( NULL ),
+		m_hfnOnMouseWheeled( NULL ),
 
-		m_hfnOnKeyCodePressed(NULL),
-		m_hfnOnKeyCodeReleased(NULL),
-		m_hfnOnKeyCodeTyped(NULL)
+		m_hfnOnKeyCodePressed( NULL ),
+		m_hfnOnKeyCodeReleased( NULL ),
+		m_hfnOnKeyCodeTyped( NULL )
 	{
 		SetFadeEffectDisableOverride( true );
 	}
@@ -3014,7 +3107,7 @@ public:
 
 	void PaintBackground()
 	{
-		if ( m_hfnPaintBackground )
+		if( m_hfnPaintBackground )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPaintBackground, NULL, 0, NULL, NULL, true );
 		}
@@ -3028,17 +3121,17 @@ public:
 	{
 		BaseClass::PerformLayout();
 
-		if ( m_hfnPerformLayout )
+		if( m_hfnPerformLayout )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPerformLayout, NULL, 0, NULL, NULL, true );
 		}
 	}
 #if 0
-	void ApplySchemeSettings( IScheme *pScheme )
+	void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
-		if ( m_hfnApplySchemeSettings )
+		if( m_hfnApplySchemeSettings )
 		{
 			ScriptVariant_t arg;
 			g_pScriptVM->ExecuteFunction( m_hfnApplySchemeSettings, &arg, 1, NULL, NULL, true );
@@ -3054,23 +3147,25 @@ public:
 	{
 		BaseClass::OnScreenSizeChanged( oldwide, oldtall );
 
-		if ( m_hfnOnScreenSizeChanged )
+		if( m_hfnOnScreenSizeChanged )
 		{
 			ScriptVariant_t args[2] = { oldwide, oldtall };
 			g_pScriptVM->ExecuteFunction( m_hfnOnScreenSizeChanged, args, 2, NULL, NULL, true );
 		}
 	}
 #if SCRIPT_VGUI_SIGNAL_INTERFACE
-	void OnCommand( const char *command )
+	void OnCommand( const char* command )
 	{
-		if ( m_hfnOnCommand )
+		if( m_hfnOnCommand )
 		{
 			ScriptVariant_t ret, arg = command;
 			g_pScriptVM->ExecuteFunction( m_hfnOnCommand, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnCommand( command );
@@ -3078,7 +3173,7 @@ public:
 #endif
 	void OnCursorEntered()
 	{
-		if ( m_hfnOnCursorEntered )
+		if( m_hfnOnCursorEntered )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorEntered, NULL, 0, NULL, NULL, true );
 		}
@@ -3086,7 +3181,7 @@ public:
 
 	void OnCursorExited()
 	{
-		if ( m_hfnOnCursorExited )
+		if( m_hfnOnCursorExited )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorExited, NULL, 0, NULL, NULL, true );
 		}
@@ -3094,7 +3189,7 @@ public:
 
 	void OnCursorMoved( int x, int y )
 	{
-		if ( m_hfnOnCursorMoved )
+		if( m_hfnOnCursorMoved )
 		{
 			ScriptVariant_t args[2] = { x, y };
 			g_pScriptVM->ExecuteFunction( m_hfnOnCursorMoved, args, 2, NULL, NULL, true );
@@ -3109,50 +3204,52 @@ public:
 	{
 		BaseClass::OnMousePressed( code );
 
-		if ( m_hfnOnMousePressed )
+		if( m_hfnOnMousePressed )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMousePressed, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseDoublePressed( MouseCode code )
 	{
-		if ( m_hfnOnMouseDoublePressed )
+		if( m_hfnOnMouseDoublePressed )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseDoublePressed, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseReleased( MouseCode code )
 	{
-		if ( m_hfnOnMouseReleased )
+		if( m_hfnOnMouseReleased )
 		{
-			ScriptVariant_t arg = (int)code;
+			ScriptVariant_t arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseReleased, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnMouseWheeled( int delta )
 	{
-		if ( m_hfnOnMouseWheeled )
+		if( m_hfnOnMouseWheeled )
 		{
-			ScriptVariant_t arg = (int)delta;
+			ScriptVariant_t arg = ( int )delta;
 			g_pScriptVM->ExecuteFunction( m_hfnOnMouseWheeled, &arg, 1, NULL, NULL, true );
 		}
 	}
 
 	void OnKeyCodePressed( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodePressed )
+		if( m_hfnOnKeyCodePressed )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodePressed, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnKeyCodePressed( code );
@@ -3160,14 +3257,16 @@ public:
 
 	void OnKeyCodeReleased( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodeReleased )
+		if( m_hfnOnKeyCodeReleased )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodeReleased, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 		}
 
 		BaseClass::OnKeyCodeReleased( code );
@@ -3175,17 +3274,19 @@ public:
 
 	void OnKeyCodeTyped( KeyCode code )
 	{
-		if ( m_hfnOnKeyCodeTyped )
+		if( m_hfnOnKeyCodeTyped )
 		{
-			ScriptVariant_t ret, arg = (int)code;
+			ScriptVariant_t ret, arg = ( int )code;
 			g_pScriptVM->ExecuteFunction( m_hfnOnKeyCodeTyped, &arg, 1, &ret, NULL, true );
 
 			// Return true to swallow the CanChainKeysToParent() override check and fallback,
 			// which by default swallows the input.
-			if ( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			if( ret.m_type == FIELD_BOOLEAN && ret.m_bool )
+			{
 				return;
+			}
 
-			if ( CanChainKeysToParent() )
+			if( CanChainKeysToParent() )
 			{
 				BaseClass::OnKeyCodeTyped( code );
 			}
@@ -3223,7 +3324,7 @@ public:
 		CheckCallback( OnCommand );
 #endif
 
-		g_pScriptVM->RaiseException("invalid callback");
+		g_pScriptVM->RaiseException( "invalid callback" );
 	}
 };
 
@@ -3240,13 +3341,13 @@ private:
 	HSCRIPT m_hfnDoClick;
 
 public:
-	CScript_Button( Panel *parent, const char *name, const char *text ) :
+	CScript_Button( Panel* parent, const char* name, const char* text ) :
 		BaseClass( parent, name, text ),
 
-		m_hfnPaint(NULL),
-		m_hfnPaintBackground(NULL),
+		m_hfnPaint( NULL ),
+		m_hfnPaintBackground( NULL ),
 
-		m_hfnDoClick(NULL)
+		m_hfnDoClick( NULL )
 	{}
 
 	void ScriptShutdown()
@@ -3260,7 +3361,7 @@ public:
 public:
 	void Paint()
 	{
-		if ( m_hfnPaint )
+		if( m_hfnPaint )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPaint, NULL, 0, NULL, NULL, true );
 		}
@@ -3272,7 +3373,7 @@ public:
 
 	void PaintBackground()
 	{
-		if ( m_hfnPaintBackground )
+		if( m_hfnPaintBackground )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnPaintBackground, NULL, 0, NULL, NULL, true );
 		}
@@ -3286,7 +3387,7 @@ public:
 	{
 		BaseClass::DoClick();
 
-		if ( m_hfnDoClick )
+		if( m_hfnDoClick )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnDoClick, NULL, 0, NULL, NULL, true );
 		}
@@ -3299,7 +3400,7 @@ public:
 		CheckCallback( PaintBackground );
 		CheckCallback( DoClick );
 
-		g_pScriptVM->RaiseException("invalid callback");
+		g_pScriptVM->RaiseException( "invalid callback" );
 	}
 };
 
@@ -3314,10 +3415,10 @@ private:
 	HSCRIPT m_hfnTextChanged;
 
 public:
-	CScript_TextEntry( Panel *parent, const char *name ) :
+	CScript_TextEntry( Panel* parent, const char* name ) :
 		BaseClass( parent, name ),
 
-		m_hfnTextChanged(NULL)
+		m_hfnTextChanged( NULL )
 	{}
 
 	void ScriptShutdown()
@@ -3334,7 +3435,7 @@ public:
 	{
 		BaseClass::FireActionSignal();
 
-		if ( m_hfnTextChanged )
+		if( m_hfnTextChanged )
 		{
 			g_pScriptVM->ExecuteFunction( m_hfnTextChanged, NULL, 0, NULL, NULL, true );
 		}
@@ -3345,7 +3446,7 @@ public:
 	{
 		CheckCallback( TextChanged );
 
-		g_pScriptVM->RaiseException("invalid callback");
+		g_pScriptVM->RaiseException( "invalid callback" );
 	}
 };
 
@@ -3357,7 +3458,7 @@ class CScript_AvatarImage : public CAvatarImagePanel
 	DECLARE_SCRIPTVGUI_CLASS_EX( CScript_AvatarImage, CAvatarImagePanel );
 
 public:
-	CScript_AvatarImage( Panel *parent, const char *name ) :
+	CScript_AvatarImage( Panel* parent, const char* name ) :
 		BaseClass( parent, name )
 	{
 		SetShouldDrawFriendIcon( false );
@@ -3386,10 +3487,10 @@ private:
 	bool m_bScaleImage;
 
 public:
-	CTGAImagePanel( Panel *parent, const char *name ) :
+	CTGAImagePanel( Panel* parent, const char* name ) :
 		BaseClass( parent, name ),
-		m_iTexture(-1),
-		m_bScaleImage(0),
+		m_iTexture( -1 ),
+		m_bScaleImage( 0 ),
 		m_ImageColor( 255, 255, 255, 255 )
 	{
 		SetPaintBackgroundEnabled( false );
@@ -3399,7 +3500,7 @@ public:
 	{
 		DebugDestructor( CTGAImagePanel );
 
-		if ( m_iTexture != -1 )
+		if( m_iTexture != -1 )
 		{
 			surface()->DestroyTextureID( m_iTexture );
 		}
@@ -3410,12 +3511,12 @@ public:
 public:
 	void Paint()
 	{
-		if ( m_iTexture != -1 )
+		if( m_iTexture != -1 )
 		{
 			surface()->DrawSetColor( m_ImageColor );
 			surface()->DrawSetTexture( m_iTexture );
 
-			if ( m_bScaleImage )
+			if( m_bScaleImage )
 			{
 				int w, t;
 				GetSize( w, t );
@@ -3436,18 +3537,20 @@ public:
 	}
 
 public:
-	void SetTGAImage( const char *fileName )
+	void SetTGAImage( const char* fileName )
 	{
-		const char *ext = V_GetFileExtension( fileName );
+		const char* ext = V_GetFileExtension( fileName );
 
-		if ( ext && V_stricmp( ext, "tga" ) != 0 )
+		if( ext && V_stricmp( ext, "tga" ) != 0 )
+		{
 			return;
+		}
 
 		CUtlMemory< unsigned char > tga;
 
-		if ( TGALoader::LoadRGBA8888( fileName, tga, m_nWidth, m_nHeight ) )
+		if( TGALoader::LoadRGBA8888( fileName, tga, m_nWidth, m_nHeight ) )
 		{
-			if ( m_iTexture == -1 )
+			if( m_iTexture == -1 )
 			{
 				m_iTexture = surface()->CreateNewTextureID( true );
 			}
@@ -3493,72 +3596,84 @@ DEFINE_VGUI_CLASS_EMPTY( RichText )
 //--------------------------------------------------------------
 
 BEGIN_VGUI_HELPER( Panel )
-	void SetCallback( const char *a, HSCRIPT b ) { __base()->SetCallback( a, b ); }
+void SetCallback( const char* a, HSCRIPT b )
+{
+	__base()->SetCallback( a, b );
+}
 END_VGUI_HELPER()
 
 BEGIN_SCRIPTDESC_VGUI( Panel )
-	DEFINE_SCRIPTFUNC( SetCallback, "" )
+DEFINE_SCRIPTFUNC( SetCallback, "" )
 END_SCRIPTDESC()
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
 BEGIN_VGUI_HELPER( Frame )
-	void SetCallback( const char *a, HSCRIPT b ) { __base()->SetCallback( a, b ); }
+void SetCallback( const char* a, HSCRIPT b )
+{
+	__base()->SetCallback( a, b );
+}
 END_VGUI_HELPER()
 
 BEGIN_SCRIPTDESC_VGUI( Frame )
-	DEFINE_SCRIPTFUNC( SetCallback, "" )
+DEFINE_SCRIPTFUNC( SetCallback, "" )
 END_SCRIPTDESC()
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
 BEGIN_VGUI_HELPER_DEFAULT_TEXT( Button )
-	void SetCallback( const char *a, HSCRIPT b ) { __base()->SetCallback( a, b ); }
+void SetCallback( const char* a, HSCRIPT b )
+{
+	__base()->SetCallback( a, b );
+}
 END_VGUI_HELPER()
 
 BEGIN_SCRIPTDESC_VGUI( Button )
-	DEFINE_SCRIPTFUNC( SetCallback, "" )
+DEFINE_SCRIPTFUNC( SetCallback, "" )
 END_SCRIPTDESC()
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 
 BEGIN_VGUI_HELPER( TextEntry )
-	void SetCallback( const char *a, HSCRIPT b ) { __base()->SetCallback( a, b ); }
+void SetCallback( const char* a, HSCRIPT b )
+{
+	__base()->SetCallback( a, b );
+}
 END_VGUI_HELPER()
 
 BEGIN_SCRIPTDESC_VGUI( TextEntry )
-	DEFINE_SCRIPTFUNC( SetCallback, "" )
+DEFINE_SCRIPTFUNC( SetCallback, "" )
 END_SCRIPTDESC()
 
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 #if !defined(NO_STEAM)
-BEGIN_VGUI_HELPER( AvatarImage )
-END_VGUI_HELPER()
+	BEGIN_VGUI_HELPER( AvatarImage )
+	END_VGUI_HELPER()
 
-BEGIN_SCRIPTDESC_VGUI( AvatarImage )
-END_SCRIPTDESC()
+	BEGIN_SCRIPTDESC_VGUI( AvatarImage )
+	END_SCRIPTDESC()
 #endif
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 #if VGUI_TGA_IMAGE_PANEL
-BEGIN_VGUI_HELPER_EX( TGAImage, CTGAImagePanel )
-END_VGUI_HELPER()
+	BEGIN_VGUI_HELPER_EX( TGAImage, CTGAImagePanel )
+	END_VGUI_HELPER()
 
-BEGIN_SCRIPTDESC_VGUI( TGAImage )
-END_SCRIPTDESC()
+	BEGIN_SCRIPTDESC_VGUI( TGAImage )
+	END_SCRIPTDESC()
 #endif
 //--------------------------------------------------------------
 //--------------------------------------------------------------
 #if 0
-BEGIN_VGUI_HELPER_EX( PNGImage, CPNGImagePanel )
-END_VGUI_HELPER()
+	BEGIN_VGUI_HELPER_EX( PNGImage, CPNGImagePanel )
+	END_VGUI_HELPER()
 
-BEGIN_SCRIPTDESC_VGUI( PNGImage )
-END_SCRIPTDESC()
+	BEGIN_SCRIPTDESC_VGUI( PNGImage )
+	END_SCRIPTDESC()
 #endif
 //--------------------------------------------------------------
 //--------------------------------------------------------------
@@ -3596,13 +3711,13 @@ public:
 } script_vgui;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptVGUI, "IVGui", SCRIPT_SINGLETON )
-	DEFINE_SCRIPTFUNC( CreatePanel, SCRIPT_HIDE )
+DEFINE_SCRIPTFUNC( CreatePanel, SCRIPT_HIDE )
 END_SCRIPTDESC()
 
 
 HSCRIPT CScriptVGUI::CreatePanel( const char* panelClass, HSCRIPT parent, const char* panelName, int root )
 {
-	if ( (unsigned)g_ScriptPanels.Count() >= (unsigned)g_ScriptPanels.InvalidIndex()-1 )
+	if( ( unsigned )g_ScriptPanels.Count() >= ( unsigned )g_ScriptPanels.InvalidIndex() - 1 )
 	{
 		Warning( "CScriptVGUI::CreatePanel() exhausted vgui panel storage!\n" );
 		return NULL;
@@ -3631,7 +3746,7 @@ HSCRIPT CScriptVGUI::CreatePanel( const char* panelClass, HSCRIPT parent, const 
 	Check( TGAImage );
 #endif
 
-	g_pScriptVM->RaiseException("invalid vgui class");
+	g_pScriptVM->RaiseException( "invalid vgui class" );
 	return NULL;
 
 #undef Check
@@ -3641,9 +3756,9 @@ void CScriptVGUI::LevelShutdownPostEntity()
 {
 	DebugMsg( "LevelShutdownPostEntity()\n" );
 
-	if ( g_ScriptPanels.Count() )
+	if( g_ScriptPanels.Count() )
 	{
-		while ( g_ScriptPanels.Count() )
+		while( g_ScriptPanels.Count() )
 		{
 			Assert( g_ScriptPanels.Head() != g_ScriptPanels.InvalidIndex() );
 
@@ -3654,13 +3769,13 @@ void CScriptVGUI::LevelShutdownPostEntity()
 		g_ScriptPanels.Purge();
 	}
 
-	if ( int i = g_ScriptTextureIDs.Count() )
+	if( int i = g_ScriptTextureIDs.Count() )
 	{
-		while ( i-- )
+		while( i-- )
 		{
 #ifdef _DEBUG
 			char tex[MAX_PATH];
-			surface()->DrawGetTextureFile( g_ScriptTextureIDs[i], tex, sizeof(tex)-1 );
+			surface()->DrawGetTextureFile( g_ScriptTextureIDs[i], tex, sizeof( tex ) - 1 );
 			DebugMsg( "Destroy texture [%i]%s\n", g_ScriptTextureIDs[i], tex );
 #endif
 			surface()->DestroyTextureID( g_ScriptTextureIDs[i] );
@@ -3672,17 +3787,17 @@ void CScriptVGUI::LevelShutdownPostEntity()
 	//
 	// Reset hud element visibility
 	//
-	if ( m_bHudVisiblityChangedThisLevel )
+	if( m_bHudVisiblityChangedThisLevel )
 	{
 		m_bHudVisiblityChangedThisLevel = false;
 
 		FOR_EACH_VEC( m_HudElementCache, i )
 		{
-			const hudelementcache_t &cache = m_HudElementCache[i];
+			const hudelementcache_t& cache = m_HudElementCache[i];
 			Assert( !cache.name.IsEmpty() );
-			CHudElement *elem = gHUD.FindElement( cache.name );
+			CHudElement* elem = gHUD.FindElement( cache.name );
 			Assert( elem );
-			if ( elem )
+			if( elem )
 			{
 				elem->SetHiddenBits( cache.bits );
 			}
@@ -3696,14 +3811,14 @@ void CScriptVGUI::Shutdown()
 
 	FOR_EACH_DICT_FAST( g_ScriptFonts, i )
 	{
-		fontalias_t &alias = g_ScriptFonts[i];
-		for ( int j = 0; j < alias.Count(); ++j )
+		fontalias_t& alias = g_ScriptFonts[i];
+		for( int j = 0; j < alias.Count(); ++j )
 		{
-			char *pName = alias.Element(j).name;
-			if ( pName )
+			char* pName = alias.Element( j ).name;
+			if( pName )
 			{
 				free( pName );
-				alias.Element(j).name = NULL;
+				alias.Element( j ).name = NULL;
 			}
 		}
 
@@ -3716,31 +3831,35 @@ void CScriptVGUI::Shutdown()
 }
 
 
-void SetHudElementVisible( const char *name, bool state )
+void SetHudElementVisible( const char* name, bool state )
 {
-	CHudElement *elem = gHUD.FindElement( name );
-	if ( !elem )
+	CHudElement* elem = gHUD.FindElement( name );
+	if( !elem )
+	{
 		return;
+	}
 
 	int iOldBits = -2;
 
 	FOR_EACH_VEC( m_HudElementCache, i )
 	{
-		const hudelementcache_t &cache = m_HudElementCache[i];
-		if ( !V_stricmp( cache.name, name ) )
+		const hudelementcache_t& cache = m_HudElementCache[i];
+		if( !V_stricmp( cache.name, name ) )
 		{
 			iOldBits = cache.bits;
 			break;
 		}
 	}
 
-	if ( iOldBits == -2 )
+	if( iOldBits == -2 )
 	{
-		if ( state ) // no change
+		if( state )  // no change
+		{
 			return;
+		}
 
 		// First time setting the visibility of this element, save the original bits
-		hudelementcache_t &cache = m_HudElementCache.Element( m_HudElementCache.AddToTail() );
+		hudelementcache_t& cache = m_HudElementCache.Element( m_HudElementCache.AddToTail() );
 		cache.name.Set( name );
 		cache.bits = elem->GetHiddenBits();
 	}
@@ -3757,19 +3876,22 @@ CON_COMMAND( dump_hud_elements, "" )
 
 	CUtlVector< const char* > list( 0, size );
 
-	for ( int i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		list.AddToTail( gHUD.m_HudList[i]->GetName() );
 	}
 
 	struct _cmp
 	{
-		static int __cdecl fn( const char * const *a, const char * const *b ) { return strcmp( *a, *b ); }
+		static int __cdecl fn( const char* const* a, const char* const* b )
+		{
+			return strcmp( *a, *b );
+		}
 	};
 
 	list.Sort( _cmp::fn );
 
-	for ( int i = 0; i < size; i++ )
+	for( int i = 0; i < size; i++ )
 	{
 		Msg( "%s\n", list[i] );
 	}
@@ -3787,12 +3909,12 @@ public:
 #if 0
 	int GetButtonBits()
 	{
-		return ::input->GetButtonBits(0);
+		return ::input->GetButtonBits( 0 );
 	}
 
 	void ClearInputButton( int i )
 	{
-		return ::input->ClearInputButton(i);
+		return ::input->ClearInputButton( i );
 	}
 #endif
 	void SetCursorPos( int x, int y )
@@ -3804,92 +3926,100 @@ public:
 	{
 		Assert( code >= 0 && code < ANALOG_CODE_LAST );
 
-		if ( code < 0 || code >= ANALOG_CODE_LAST )
+		if( code < 0 || code >= ANALOG_CODE_LAST )
+		{
 			return 0;
+		}
 
-		return inputsystem->GetAnalogValue( (AnalogCode_t)code );
+		return inputsystem->GetAnalogValue( ( AnalogCode_t )code );
 	}
 
 	int GetAnalogDelta( int code )
 	{
 		Assert( code >= 0 && code < ANALOG_CODE_LAST );
 
-		if ( code < 0 || code >= ANALOG_CODE_LAST )
+		if( code < 0 || code >= ANALOG_CODE_LAST )
+		{
 			return 0;
+		}
 
-		return inputsystem->GetAnalogDelta( (AnalogCode_t)code );
+		return inputsystem->GetAnalogDelta( ( AnalogCode_t )code );
 	}
 
 	bool IsButtonDown( int code )
 	{
 		Assert( code >= BUTTON_CODE_NONE && code < BUTTON_CODE_LAST );
 
-		if ( code < BUTTON_CODE_NONE || code >= BUTTON_CODE_LAST )
+		if( code < BUTTON_CODE_NONE || code >= BUTTON_CODE_LAST )
+		{
 			return 0;
+		}
 
-		return inputsystem->IsButtonDown( (ButtonCode_t)code );
+		return inputsystem->IsButtonDown( ( ButtonCode_t )code );
 	}
 
 	// key -> button
-	int StringToButtonCode( const char *key )
+	int StringToButtonCode( const char* key )
 	{
 		return inputsystem->StringToButtonCode( key );
 	}
 
 	// button -> key
-	const char *ButtonCodeToString( int code )
+	const char* ButtonCodeToString( int code )
 	{
 		Assert( code >= BUTTON_CODE_NONE && code < BUTTON_CODE_LAST );
 
-		if ( code < BUTTON_CODE_NONE || code >= BUTTON_CODE_LAST )
+		if( code < BUTTON_CODE_NONE || code >= BUTTON_CODE_LAST )
+		{
 			return 0;
+		}
 
-		return inputsystem->ButtonCodeToString( (ButtonCode_t)code );
+		return inputsystem->ButtonCodeToString( ( ButtonCode_t )code );
 	}
 
 	// bind -> key
-	const char *LookupBinding( const char *bind )
+	const char* LookupBinding( const char* bind )
 	{
 		return engine->Key_LookupBinding( bind );
 	}
 
 	// button -> bind
-	const char *BindingForKey( int code )
+	const char* BindingForKey( int code )
 	{
-		return engine->Key_BindingForKey( (ButtonCode_t)code );
+		return engine->Key_BindingForKey( ( ButtonCode_t )code );
 	}
 #if 0
-	const char *GetIMELanguageShortCode()
+	const char* GetIMELanguageShortCode()
 	{
 		static char ret[5];
 		wchar_t get[5];
 		get[0] = L'\0';
-		vgui::input()->GetIMELanguageShortCode( get, wcslen(get) );
-		g_pVGuiLocalize->ConvertUnicodeToANSI( get, ret, sizeof(ret) );
+		vgui::input()->GetIMELanguageShortCode( get, wcslen( get ) );
+		g_pVGuiLocalize->ConvertUnicodeToANSI( get, ret, sizeof( ret ) );
 		return ret;
 	}
 #endif
 } script_input;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptIInput, "IInput", SCRIPT_SINGLETON )
-	DEFINE_SCRIPTFUNC( MakeWeaponSelection, "" )
+DEFINE_SCRIPTFUNC( MakeWeaponSelection, "" )
 
-	DEFINE_SCRIPTFUNC( SetCursorPos, "" )
+DEFINE_SCRIPTFUNC( SetCursorPos, "" )
 
-	DEFINE_SCRIPTFUNC( GetAnalogValue, "" )
-	DEFINE_SCRIPTFUNC( GetAnalogDelta, "" )
-	DEFINE_SCRIPTFUNC( IsButtonDown, "" )
+DEFINE_SCRIPTFUNC( GetAnalogValue, "" )
+DEFINE_SCRIPTFUNC( GetAnalogDelta, "" )
+DEFINE_SCRIPTFUNC( IsButtonDown, "" )
 
-	DEFINE_SCRIPTFUNC( StringToButtonCode, "" )
-	DEFINE_SCRIPTFUNC( ButtonCodeToString, "" )
-	DEFINE_SCRIPTFUNC( LookupBinding, "" )
-	DEFINE_SCRIPTFUNC( BindingForKey, "" )
+DEFINE_SCRIPTFUNC( StringToButtonCode, "" )
+DEFINE_SCRIPTFUNC( ButtonCodeToString, "" )
+DEFINE_SCRIPTFUNC( LookupBinding, "" )
+DEFINE_SCRIPTFUNC( BindingForKey, "" )
 END_SCRIPTDESC()
 
 
-void SetClipboardText( const char *text )
+void SetClipboardText( const char* text )
 {
-	system()->SetClipboardText( text, V_strlen(text) );
+	system()->SetClipboardText( text, V_strlen( text ) );
 }
 
 //==============================================================
@@ -3899,12 +4029,12 @@ void SetClipboardText( const char *text )
 //-----------------------------------------------------------------------------
 // Get world position in screen space [0,1]. Return true if on screen.
 //-----------------------------------------------------------------------------
-inline bool WorldToScreen( const Vector &pos, int &ix, int &iy )
+inline bool WorldToScreen( const Vector& pos, int& ix, int& iy )
 {
 	int scrw, scrh;
 	surface()->GetScreenSize( scrw, scrh );
 
-	const VMatrix &worldToScreen = engine->WorldToScreenMatrix();
+	const VMatrix& worldToScreen = engine->WorldToScreenMatrix();
 	bool bOnScreen;
 
 	// VMatrix * Vector (position projective)
@@ -3912,7 +4042,7 @@ inline bool WorldToScreen( const Vector &pos, int &ix, int &iy )
 	vec_t fx = worldToScreen[0][0] * pos[0] + worldToScreen[0][1] * pos[1] + worldToScreen[0][2] * pos[2] + worldToScreen[0][3];
 	vec_t fy = worldToScreen[1][0] * pos[0] + worldToScreen[1][1] * pos[1] + worldToScreen[1][2] * pos[2] + worldToScreen[1][3];
 
-	if ( w < 0.001f )
+	if( w < 0.001f )
 	{
 		fx *= 1e5f;
 		fy *= 1e5f;
@@ -3926,8 +4056,8 @@ inline bool WorldToScreen( const Vector &pos, int &ix, int &iy )
 		bOnScreen = true;
 	}
 
-	ix = (int)( scrw * 0.5f * ( 1.0f + fx ) + 0.5f );
-	iy = (int)( scrh * 0.5f * ( 1.0f - fy ) + 0.5f );
+	ix = ( int )( scrw * 0.5f * ( 1.0f + fx ) + 0.5f );
+	iy = ( int )( scrh * 0.5f * ( 1.0f - fy ) + 0.5f );
 
 	return bOnScreen;
 }
@@ -3935,12 +4065,12 @@ inline bool WorldToScreen( const Vector &pos, int &ix, int &iy )
 //-----------------------------------------------------------------------------
 // Get screen pixel position [0,1] in world space.
 //-----------------------------------------------------------------------------
-inline void ScreenToWorld( int x, int y, Vector &out )
+inline void ScreenToWorld( int x, int y, Vector& out )
 {
 	int scrw, scrh;
 	surface()->GetScreenSize( scrw, scrh );
-	float scrx = (float)x / (float)scrw;
-	float scry = (float)y / (float)scrh;
+	float scrx = ( float )x / ( float )scrw;
+	float scry = ( float )y / ( float )scrh;
 
 	vec_t tmp[2];
 	tmp[0] = 2.0f * scrx - 1.0f;
@@ -3959,12 +4089,12 @@ inline void ScreenToWorld( int x, int y, Vector &out )
 }
 
 #if 0
-static bool ScriptWorldToScreen( const Vector &pos, HSCRIPT out )
+static bool ScriptWorldToScreen( const Vector& pos, HSCRIPT out )
 {
 	int ix, iy;
 	bool r = WorldToScreen( pos, ix, iy );
 
-	g_pScriptVM->SetValue( out, (ScriptVariant_t)0, ix );
+	g_pScriptVM->SetValue( out, ( ScriptVariant_t )0, ix );
 	g_pScriptVM->SetValue( out, 1, iy );
 	return r;
 }
@@ -3989,14 +4119,14 @@ static const Vector& ScreenToRay( int x, int y )
 // Get world position normalised in screen space. Return true if on screen.
 //-----------------------------------------------------------------------------
 int ScreenTransform( const Vector& point, Vector& screen );
-static bool ScriptScreenTransform( const Vector &pos, HSCRIPT out )
+static bool ScriptScreenTransform( const Vector& pos, HSCRIPT out )
 {
 	Vector v;
 	bool r = ScreenTransform( pos, v );
 	float x = 0.5f * ( 1.0f + v[0] );
 	float y = 0.5f * ( 1.0f - v[1] );
 
-	g_pScriptVM->SetValue( out, (ScriptVariant_t)0, x );
+	g_pScriptVM->SetValue( out, ( ScriptVariant_t )0, x );
 	g_pScriptVM->SetValue( out, 1, y );
 	return !r;
 }
@@ -4025,15 +4155,15 @@ int ScriptScreenHeight()
 //
 static int ScriptXRES( float x )
 {
-	return x * ( (float)ScriptScreenWidth() / 640.0f );
+	return x * ( ( float )ScriptScreenWidth() / 640.0f );
 }
 
 static int ScriptYRES( float y )
 {
-	return y * ( (float)ScriptScreenHeight() / 480.0f );
+	return y * ( ( float )ScriptScreenHeight() / 480.0f );
 }
 
-vgui::HFont GetScriptFont( const char *name, bool proportional )
+vgui::HFont GetScriptFont( const char* name, bool proportional )
 {
 	return script_surface.GetFont( name, proportional, NULL );
 }

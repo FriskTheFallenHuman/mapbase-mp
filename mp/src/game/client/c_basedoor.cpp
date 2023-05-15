@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -11,14 +11,14 @@
 #include "tier0/memdbgon.h"
 
 #ifdef CBaseDoor
-#undef CBaseDoor
+	#undef CBaseDoor
 #endif
 
-IMPLEMENT_CLIENTCLASS_DT(C_BaseDoor, DT_BaseDoor, CBaseDoor)
-	RecvPropFloat(RECVINFO(m_flWaveHeight)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_BaseDoor, DT_BaseDoor, CBaseDoor )
+RecvPropFloat( RECVINFO( m_flWaveHeight ) ),
+			   END_RECV_TABLE()
 
-C_BaseDoor::C_BaseDoor( void )
+			   C_BaseDoor::C_BaseDoor( void )
 {
 	m_flWaveHeight = 0.0f;
 }

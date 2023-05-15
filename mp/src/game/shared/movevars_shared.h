@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef MOVEVARS_SHARED_H
 #define MOVEVARS_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "convar.h"

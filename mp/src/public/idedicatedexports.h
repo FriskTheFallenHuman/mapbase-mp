@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,17 +8,18 @@
 #ifndef IDEDICATEDEXPORTS_H
 #define IDEDICATEDEXPORTS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
 #include "appframework/IAppSystem.h"
 
 
-abstract_class IDedicatedExports : public IAppSystem
+abstract_class IDedicatedExports :
+public IAppSystem
 {
 public:
-	virtual void Sys_Printf( char *text ) = 0;
+	virtual void Sys_Printf( char* text ) = 0;
 	virtual void RunServer() = 0;
 };
 

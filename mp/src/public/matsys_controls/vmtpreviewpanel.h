@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define VMTPREVIEWPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -34,9 +34,9 @@ class CVMTPreviewPanel : public vgui::Panel
 
 public:
 	// constructor
-	CVMTPreviewPanel( vgui::Panel *pParent, const char *pName );
-	void SetVMT( const char *pMaterialName );
-	const char *GetVMT() const;
+	CVMTPreviewPanel( vgui::Panel* pParent, const char* pName );
+	void SetVMT( const char* pMaterialName );
+	const char* GetVMT() const;
 
 	// Paints the texture
 	virtual void Paint( void );
@@ -54,16 +54,16 @@ private:
 	void SetupOrthoMatrix( int nWidth, int nHeight );
 
 	// Sets the camera to look at the the thing we're spinning around
-	void LookAt( const Vector &vecLookAt, float flRadius );
+	void LookAt( const Vector& vecLookAt, float flRadius );
 
 	// Sets up lighting state
 	void SetupLightingState();
 
 	// Draw a sphere
-	void RenderSphere( const Vector &vCenter, float flRadius, int nTheta, int nPhi );
+	void RenderSphere( const Vector& vCenter, float flRadius, int nTheta, int nPhi );
 
 	// Draw sprite-card based materials
-	void RenderSpriteCard( const Vector &vCenter, float flRadius );
+	void RenderSpriteCard( const Vector& vCenter, float flRadius );
 
 	CUtlString m_VMTName;
 	CMaterialReference m_Material;

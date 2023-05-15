@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,8 +20,8 @@
 //=============================================================================
 #ifdef CSTRIKE_DLL
 
-#include "cs_gamestats.h"
-#include "cs_achievement_constants.h"
+	#include "cs_gamestats.h"
+	#include "cs_achievement_constants.h"
 
 #endif
 //=============================================================================
@@ -31,7 +31,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IPhysicsCollision *physcollision;
+extern IPhysicsCollision* physcollision;
 
 
 //-----------------------------------------------------------------------------
@@ -49,25 +49,25 @@ public:
 
 	// Touch list...
 	virtual void	ResetTouchList( void );
-	virtual bool	AddToTouched( const trace_t &tr, const Vector& impactvelocity );
- 	virtual void	ProcessImpacts( void );
+	virtual bool	AddToTouched( const trace_t& tr, const Vector& impactvelocity );
+	virtual void	ProcessImpacts( void );
 
 	virtual bool	PlayerFallingDamage( void );
 	virtual void	PlayerSetAnimation( PLAYER_ANIM eAnim );
 
 	// Numbered line printf
 	virtual void	Con_NPrintf( int idx, char const* fmt, ... );
-	
+
 	// These have separate server vs client impementations
 	virtual void	StartSound( const Vector& origin, int channel, char const* sample, float volume, soundlevel_t soundlevel, int fFlags, int pitch );
-	virtual void	StartSound( const Vector& origin, const char *soundname ); 
+	virtual void	StartSound( const Vector& origin, const char* soundname );
 
 	virtual void	PlaybackEventFull( int flags, int clientindex, unsigned short eventindex, float delay, Vector& origin, Vector& angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2 );
-	virtual IPhysicsSurfaceProps *GetSurfaceProps( void );
+	virtual IPhysicsSurfaceProps* GetSurfaceProps( void );
 
-	void			SetHost( CBasePlayer *host );
+	void			SetHost( CBasePlayer* host );
 
-	virtual bool IsWorldEntity( const CBaseHandle &handle );
+	virtual bool IsWorldEntity( const CBaseHandle& handle );
 
 private:
 	CBasePlayer*	m_pHostPlayer;
@@ -127,7 +127,7 @@ CMoveHelperServer::~CMoveHelperServer( void )
 // Indicates which player we're going to move
 //-----------------------------------------------------------------------------
 
-void CMoveHelperServer::SetHost( CBasePlayer *host )
+void CMoveHelperServer::SetHost( CBasePlayer* host )
 {
 	m_pHostPlayer = host;
 
@@ -142,27 +142,31 @@ void CMoveHelperServer::SetHost( CBasePlayer *host )
 char const* CMoveHelperServer::GetName( EntityHandle_t handle ) const
 {
 	// This ain't pertickulerly fast, but it's for debugging anyways
-	edict_t* pEdict = GetEdict(handle);
-	CBaseEntity *ent = CBaseEntity::Instance( pEdict );
-	
+	edict_t* pEdict = GetEdict( handle );
+	CBaseEntity* ent = CBaseEntity::Instance( pEdict );
+
 	// Is it the world?
-	if (ENTINDEX(pEdict) == 0)
-		return STRING(gpGlobals->mapname);
+	if( ENTINDEX( pEdict ) == 0 )
+	{
+		return STRING( gpGlobals->mapname );
+	}
 
 	// Is it a model?
-	if ( ent && ent->GetModelName() != NULL_STRING )
+	if( ent && ent->GetModelName() != NULL_STRING )
+	{
 		return STRING( ent->GetModelName() );
+	}
 
-	if ( ent->GetClassname() != NULL )
+	if( ent->GetClassname() != NULL )
 	{
 		return ent->GetClassname();
 	}
 
 	return "?";
-}	
+}
 
 //-----------------------------------------------------------------------------
-// When we do a collision test, we report everything we hit.. 
+// When we do a collision test, we report everything we hit..
 //-----------------------------------------------------------------------------
 
 void CMoveHelperServer::ResetTouchList( void )
@@ -175,29 +179,31 @@ void CMoveHelperServer::ResetTouchList( void )
 // When a collision occurs, we add it to the touched list
 //-----------------------------------------------------------------------------
 
-bool CMoveHelperServer::AddToTouched( const trace_t &tr, const Vector& impactvelocity )
+bool CMoveHelperServer::AddToTouched( const trace_t& tr, const Vector& impactvelocity )
 {
 	Assert( m_pHostPlayer );
 
 	// Trace missed
-	if ( !tr.m_pEnt )
+	if( !tr.m_pEnt )
+	{
 		return false;
+	}
 
-	if ( tr.m_pEnt == m_pHostPlayer )
+	if( tr.m_pEnt == m_pHostPlayer )
 	{
 		Assert( !"CMoveHelperServer::AddToTouched:  Tried to add self to touchlist!!!" );
 		return false;
 	}
 
 	// Check for duplicate entities
-	for ( int j = m_TouchList.Size(); --j >= 0; )
+	for( int j = m_TouchList.Size(); --j >= 0; )
 	{
-		if ( m_TouchList[j].trace.m_pEnt == tr.m_pEnt )
+		if( m_TouchList[j].trace.m_pEnt == tr.m_pEnt )
 		{
 			return false;
 		}
 	}
-	
+
 	int i = m_TouchList.AddToTail();
 	m_TouchList[i].trace = tr;
 	VectorCopy( impactvelocity, m_TouchList[i].deltavelocity );
@@ -218,14 +224,16 @@ void CMoveHelperServer::ProcessImpacts( void )
 	m_pHostPlayer->PhysicsTouchTriggers();
 
 	// Don't bother if the player ain't solid
-	if ( m_pHostPlayer->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
+	if( m_pHostPlayer->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
+	{
 		return;
+	}
 
 	// Save off the velocity, cause we need to temporarily reset it
 	Vector vel = m_pHostPlayer->GetAbsVelocity();
 
 	// Touch other objects that were intersected during the movement.
-	for (int i = 0 ; i < m_TouchList.Size(); i++)
+	for( int i = 0 ; i < m_TouchList.Size(); i++ )
 	{
 		CBaseHandle entindex = m_TouchList[i].trace.m_pEnt->GetRefEHandle();
 
@@ -233,25 +241,31 @@ void CMoveHelperServer::ProcessImpacts( void )
 		Assert( entindex.IsValid() );
 
 		edict_t* ent = GetEdict( entindex );
-		if (!ent)
+		if( !ent )
+		{
 			continue;
+		}
 
 		// Run the impact function as if we had run it during movement.
-		CBaseEntity *entity = GetContainingEntity( ent );
-		if ( !entity )
+		CBaseEntity* entity = GetContainingEntity( ent );
+		if( !entity )
+		{
 			continue;
+		}
 
 		Assert( entity != m_pHostPlayer );
 		// Don't ever collide with self!!!!
-		if ( entity == m_pHostPlayer )
+		if( entity == m_pHostPlayer )
+		{
 			continue;
+		}
 
 		// Reconstruct trace results.
 		m_TouchList[i].trace.m_pEnt = CBaseEntity::Instance( ent );
 
 		// Use the velocity we had when we collided, so boxes will move, etc.
 		m_pHostPlayer->SetAbsVelocity( m_TouchList[i].deltavelocity );
-		
+
 		entity->PhysicsImpact( m_pHostPlayer, m_TouchList[i].trace );
 	}
 
@@ -263,11 +277,11 @@ void CMoveHelperServer::ProcessImpacts( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : origin - 
-//			*soundname - 
+// Purpose:
+// Input  : origin -
+//			*soundname -
 //-----------------------------------------------------------------------------
-void CMoveHelperServer::StartSound( const Vector& origin, const char *soundname )
+void CMoveHelperServer::StartSound( const Vector& origin, const char* soundname )
 {
 	//MDB - Changing this to send to PAS, as the overloaded function below has done.
 	//Also removed the UsePredictionRules, client does not yet play the equivalent sound
@@ -281,14 +295,14 @@ void CMoveHelperServer::StartSound( const Vector& origin, const char *soundname 
 //-----------------------------------------------------------------------------
 // plays a sound
 //-----------------------------------------------------------------------------
-void CMoveHelperServer::StartSound( const Vector& origin, int channel, char const* sample, 
-						float volume, soundlevel_t soundlevel, int fFlags, int pitch )
+void CMoveHelperServer::StartSound( const Vector& origin, int channel, char const* sample,
+									float volume, soundlevel_t soundlevel, int fFlags, int pitch )
 {
 
 	CRecipientFilter filter;
 	filter.AddRecipientsByPAS( origin );
 	// FIXME, these sounds should not go to the host entity ( SND_NOTHOST )
-	if ( gpGlobals->maxClients == 1 )
+	if( gpGlobals->maxClients == 1 )
 	{
 		// Always send sounds down in SP
 
@@ -329,26 +343,26 @@ void CMoveHelperServer::PlaybackEventFull( int flags, int clientindex, unsigned 
 	// FIXME, Redo with new event system parameter stuff
 }
 
-IPhysicsSurfaceProps *CMoveHelperServer::GetSurfaceProps( void )
+IPhysicsSurfaceProps* CMoveHelperServer::GetSurfaceProps( void )
 {
-	extern IPhysicsSurfaceProps *physprops;
+	extern IPhysicsSurfaceProps* physprops;
 	return physprops;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Note that this only works on a listen server (since it requires graphical output)
-//			*pFormat - 
-//			... - 
+//			*pFormat -
+//			... -
 //-----------------------------------------------------------------------------
-void CMoveHelperServer::Con_NPrintf( int idx, char const* pFormat, ...)
+void CMoveHelperServer::Con_NPrintf( int idx, char const* pFormat, ... )
 {
 	va_list marker;
 	char msg[8192];
 
-	va_start(marker, pFormat);
-	Q_vsnprintf(msg, sizeof( msg ), pFormat, marker);
-	va_end(marker);
-	
+	va_start( marker, pFormat );
+	Q_vsnprintf( msg, sizeof( msg ), pFormat, marker );
+	va_end( marker );
+
 	engine->Con_NPrintf( idx, msg );
 }
 
@@ -359,45 +373,45 @@ void CMoveHelperServer::Con_NPrintf( int idx, char const* pFormat, ...)
 //-----------------------------------------------------------------------------
 bool CMoveHelperServer::PlayerFallingDamage( void )
 {
-	float flFallDamage = g_pGameRules->FlPlayerFallDamage( m_pHostPlayer );	
-	if ( flFallDamage > 0 )
+	float flFallDamage = g_pGameRules->FlPlayerFallDamage( m_pHostPlayer );
+	if( flFallDamage > 0 )
 	{
-		m_pHostPlayer->TakeDamage( CTakeDamageInfo( GetContainingEntity(INDEXENT(0)), GetContainingEntity(INDEXENT(0)), flFallDamage, DMG_FALL ) ); 
+		m_pHostPlayer->TakeDamage( CTakeDamageInfo( GetContainingEntity( INDEXENT( 0 ) ), GetContainingEntity( INDEXENT( 0 ) ), flFallDamage, DMG_FALL ) );
 		StartSound( m_pHostPlayer->GetAbsOrigin(), "Player.FallDamage" );
 
-        //=============================================================================
-        // HPE_BEGIN:
-        // [dwenger] Needed for fun-fact implementation
-        //=============================================================================
+		//=============================================================================
+		// HPE_BEGIN:
+		// [dwenger] Needed for fun-fact implementation
+		//=============================================================================
 
 #ifdef CSTRIKE_DLL
 
-        // Increment the stat for fall damage
-        CCSPlayer*  pPlayer = ToCSPlayer(m_pHostPlayer);
+		// Increment the stat for fall damage
+		CCSPlayer*  pPlayer = ToCSPlayer( m_pHostPlayer );
 
-        if ( pPlayer )
-        {
-            CCS_GameStats.IncrementStat( pPlayer, CSSTAT_FALL_DAMAGE, (int)flFallDamage );
-        }
+		if( pPlayer )
+		{
+			CCS_GameStats.IncrementStat( pPlayer, CSSTAT_FALL_DAMAGE, ( int )flFallDamage );
+		}
 
 #endif
-        //=============================================================================
-        // HPE_END
-        //=============================================================================
+		//=============================================================================
+		// HPE_END
+		//=============================================================================
 
-    }
+	}
 
-	if ( m_pHostPlayer->m_iHealth <= 0 )
+	if( m_pHostPlayer->m_iHealth <= 0 )
 	{
-		if ( g_pGameRules->FlPlayerFallDeathDoesScreenFade( m_pHostPlayer ) )
+		if( g_pGameRules->FlPlayerFallDeathDoesScreenFade( m_pHostPlayer ) )
 		{
 			color32 black = {0, 0, 0, 255};
 			UTIL_ScreenFade( m_pHostPlayer, black, 0, 9999, FFADE_OUT | FFADE_STAYOUT );
 		}
-		return(false);
+		return( false );
 	}
 
-	return(true);
+	return( true );
 }
 
 
@@ -410,7 +424,7 @@ void CMoveHelperServer::PlayerSetAnimation( PLAYER_ANIM eAnim )
 	m_pHostPlayer->SetAnimation( eAnim );
 }
 
-bool CMoveHelperServer::IsWorldEntity( const CBaseHandle &handle )
+bool CMoveHelperServer::IsWorldEntity( const CBaseHandle& handle )
 {
 	return handle == CBaseEntity::Instance( 0 );
 }

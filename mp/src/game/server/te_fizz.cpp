@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,7 +24,7 @@ class CTEFizz : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEFizz, CBaseTempEntity );
 
-					CTEFizz( const char *name );
+	CTEFizz( const char* name );
 	virtual			~CTEFizz( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
@@ -41,10 +41,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEFizz::CTEFizz( const char *name ) :
+CTEFizz::CTEFizz( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_nEntity = 0;
@@ -54,16 +54,16 @@ CTEFizz::CTEFizz( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEFizz::~CTEFizz( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEFizz::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -78,7 +78,7 @@ void CTEFizz::Test( const Vector& current_origin, const QAngle& current_angles )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CTEFizz::Precache( void )
 {
@@ -86,24 +86,24 @@ void CTEFizz::Precache( void )
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEFizz, DT_TEFizz)
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nDensity), 8, SPROP_UNSIGNED ),
-	SendPropInt(SENDINFO(m_nCurrent), 16 ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEFizz, DT_TEFizz )
+SendPropInt( SENDINFO( m_nEntity ), MAX_EDICT_BITS, SPROP_UNSIGNED ),
+			 SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+			 SendPropInt( SENDINFO( m_nDensity ), 8, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nCurrent ), 16 ),
+			 END_SEND_TABLE()
 
 
 // Singleton to fire TEFizz objects
-static CTEFizz g_TEFizz( "Fizz" );
+			 static CTEFizz g_TEFizz( "Fizz" );
 
 void TE_Fizz( IRecipientFilter& filter, float delay,
-	const CBaseEntity *entity, int modelindex, int density, int current )
+			  const CBaseEntity* entity, int modelindex, int density, int current )
 {
 	Assert( entity );
 
-	g_TEFizz.m_nEntity		= ENTINDEX( (edict_t *)entity->edict() );
-	g_TEFizz.m_nModelIndex	= modelindex;	
+	g_TEFizz.m_nEntity		= ENTINDEX( ( edict_t* )entity->edict() );
+	g_TEFizz.m_nModelIndex	= modelindex;
 	g_TEFizz.m_nDensity		= density;
 	g_TEFizz.m_nCurrent		= current;
 

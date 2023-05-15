@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -36,7 +36,7 @@
 
 // Verify that coordsize.h and worldsize.h are consistently defined
 #if (MAX_COORD_INTEGER != (1<<COORD_INTEGER_BITS) )
-#error MAX_COORD_INTEGER does not match COORD_INTEGER_BITS
+	#error MAX_COORD_INTEGER does not match COORD_INTEGER_BITS
 #endif
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,7 @@
 //
 //							"Coordinates" = +/-16384.9375	(21 Bits Max)
 //
-// | IntegerFlagBit:1 | FractionFlagBit:1 | SignBit:1 | IntegerField:14 | FractionPart:4 |		Total		
+// | IntegerFlagBit:1 | FractionFlagBit:1 | SignBit:1 | IntegerField:14 | FractionPart:4 |		Total
 // --------------------------------------------------------------------------------------------------
 //			0					0				-				-				-				2
 //			0					1				x				-				xxxx			7
@@ -75,10 +75,10 @@
 //
 //							"Normals" = +/-1.0	(12 Bits Total)
 //
-// The only gotcha here is that normalization occurs so that 
+// The only gotcha here is that normalization occurs so that
 // 011111111111 = +1.0 and 1111111111111 = -1.0
 //
-// | SignBit:1 | FractionPart:11 |		Total		
+// | SignBit:1 | FractionPart:11 |		Total
 // --------------------------------------------------------------------------------------------------
 //			1		xxxxxxxxxxx			12
 //

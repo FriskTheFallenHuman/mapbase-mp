@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -15,7 +15,7 @@
 //=========================================================
 // Multiplayer intermission spots.
 //=========================================================
-class CInfoIntermission:public CPointEntity
+class CInfoIntermission: public CPointEntity
 {
 public:
 	DECLARE_CLASS( CInfoIntermission, CPointEntity );
@@ -32,14 +32,14 @@ void CInfoIntermission::Spawn( void )
 	SetNextThink( gpGlobals->curtime + 2 );// let targets spawn !
 }
 
-void CInfoIntermission::Think ( void )
+void CInfoIntermission::Think( void )
 {
-	CBaseEntity *pTarget;
+	CBaseEntity* pTarget;
 
 	// find my target
 	pTarget = gEntList.FindEntityByName( NULL, m_target );
 
-	if ( pTarget )
+	if( pTarget )
 	{
 		Vector dir = pTarget->GetLocalOrigin() - GetLocalOrigin();
 		VectorNormalize( dir );

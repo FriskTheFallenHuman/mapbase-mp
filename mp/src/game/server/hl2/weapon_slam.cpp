@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -23,36 +23,36 @@
 
 BEGIN_DATADESC( CWeapon_SLAM )
 
-	DEFINE_FIELD( m_tSlamState, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bDetonatorArmed, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bNeedDetonatorDraw, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bNeedDetonatorHolster, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bNeedReload, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bClearReload, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bThrowSatchel, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bAttachSatchel, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bAttachTripmine, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flWallSwitchTime, FIELD_TIME ),
+DEFINE_FIELD( m_tSlamState, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_bDetonatorArmed, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bNeedDetonatorDraw, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bNeedDetonatorHolster, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bNeedReload, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bClearReload, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bThrowSatchel, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bAttachSatchel, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bAttachTripmine, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flWallSwitchTime, FIELD_TIME ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( SLAMThink ),
-	DEFINE_FUNCTION( SlamTouch ),
+			  // Function Pointers
+			  DEFINE_FUNCTION( SLAMThink ),
+			  DEFINE_FUNCTION( SlamTouch ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CWeapon_SLAM, DT_Weapon_SLAM)
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CWeapon_SLAM, DT_Weapon_SLAM )
+			  END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( weapon_slam, CWeapon_SLAM );
-PRECACHE_WEAPON_REGISTER(weapon_slam);
+			  LINK_ENTITY_TO_CLASS( weapon_slam, CWeapon_SLAM );
+PRECACHE_WEAPON_REGISTER( weapon_slam );
 
-acttable_t	CWeapon_SLAM::m_acttable[] = 
+acttable_t	CWeapon_SLAM::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SLAM, true },
 };
 
-IMPLEMENT_ACTTABLE(CWeapon_SLAM);
+IMPLEMENT_ACTTABLE( CWeapon_SLAM );
 
 
 void CWeapon_SLAM::Spawn( )
@@ -61,7 +61,7 @@ void CWeapon_SLAM::Spawn( )
 
 	Precache( );
 
-	UTIL_SetSize(this, Vector(-4,-4,-2),Vector(4,4,2));
+	UTIL_SetSize( this, Vector( -4, -4, -2 ), Vector( 4, 4, 2 ) );
 
 	FallInit();// get ready to fall down
 
@@ -97,7 +97,7 @@ void CWeapon_SLAM::Precache( void )
 //------------------------------------------------------------------------------
 void CWeapon_SLAM::SetPickupTouch( void )
 {
-	SetTouch(SlamTouch);
+	SetTouch( SlamTouch );
 }
 
 //-----------------------------------------------------------------------------
@@ -105,36 +105,38 @@ void CWeapon_SLAM::SetPickupTouch( void )
 // Input  : pOther - the entity that touched me
 // Output :
 //-----------------------------------------------------------------------------
-void CWeapon_SLAM::SlamTouch( CBaseEntity *pOther )
+void CWeapon_SLAM::SlamTouch( CBaseEntity* pOther )
 {
 	CBaseCombatCharacter* pBCC = ToBaseCombatCharacter( pOther );
 
 	// Can I even pick stuff up?
-	if ( pBCC && !pBCC->IsAllowedToPickupWeapons() )
+	if( pBCC && !pBCC->IsAllowedToPickupWeapons() )
+	{
 		return;
+	}
 
 	// ---------------------------------------------------
 	//  First give weapon to touching entity if allowed
 	// ---------------------------------------------------
-	BaseClass::DefaultTouch(pOther);
+	BaseClass::DefaultTouch( pOther );
 
 	// ----------------------------------------------------
 	//  Give slam ammo if touching client
 	// ----------------------------------------------------
-	if (pOther->GetFlags() & FL_CLIENT)
+	if( pOther->GetFlags() & FL_CLIENT )
 	{
 		// ------------------------------------------------
 		//  If already owned weapon of this type remove me
 		// ------------------------------------------------
-		CWeapon_SLAM* oldWeapon = (CWeapon_SLAM*)pBCC->Weapon_OwnsThisType( GetClassname() );
-		if (oldWeapon != this)
+		CWeapon_SLAM* oldWeapon = ( CWeapon_SLAM* )pBCC->Weapon_OwnsThisType( GetClassname() );
+		if( oldWeapon != this )
 		{
 			UTIL_Remove( this );
 		}
 		else
 		{
 			pBCC->GiveAmmo( 1, m_iSecondaryAmmoType );
-			SetThink(NULL);
+			SetThink( NULL );
 		}
 	}
 }
@@ -144,10 +146,10 @@ void CWeapon_SLAM::SlamTouch( CBaseEntity *pOther )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-bool CWeapon_SLAM::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeapon_SLAM::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
-	SetThink(NULL);
-	return BaseClass::Holster(pSwitchingTo);
+	SetThink( NULL );
+	return BaseClass::Holster( pSwitchingTo );
 }
 
 //-----------------------------------------------------------------------------
@@ -168,21 +170,21 @@ bool CWeapon_SLAM::Reload( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::PrimaryAttack( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
-	{ 
-		return;
-	}
-
-	if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return;
 	}
 
-	switch (m_tSlamState)
+	if( pOwner->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 )
+	{
+		return;
+	}
+
+	switch( m_tSlamState )
 	{
 		case SLAM_TRIPMINE_READY:
-			if (CanAttachSLAM())
+			if( CanAttachSLAM() )
 			{
 				StartTripmineAttach();
 			}
@@ -205,31 +207,31 @@ void CWeapon_SLAM::SecondaryAttack( void )
 {
 	return; // Nothin for now. SLAM's just a tripmine.
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return;
 	}
 
-	if (m_bDetonatorArmed)
+	if( m_bDetonatorArmed )
 	{
 		StartSatchelDetonate();
 	}
-	else if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0)
+	else if( pOwner->GetAmmoCount( m_iSecondaryAmmoType ) > 0 )
 	{
-		if (m_tSlamState == SLAM_TRIPMINE_READY)
+		if( m_tSlamState == SLAM_TRIPMINE_READY )
 		{
 			// Play sound for going to throw mode
 			EmitSound( "Weapon_SLAM.ThrowMode" );
 
-			if (CanAttachSLAM())
+			if( CanAttachSLAM() )
 			{
-				SetSlamState(SLAM_SATCHEL_ATTACH);
+				SetSlamState( SLAM_SATCHEL_ATTACH );
 				SendWeaponAnim( ACT_SLAM_TRIPMINE_TO_STICKWALL_ND );
 			}
 			else
 			{
-				SetSlamState(SLAM_SATCHEL_THROW);
+				SetSlamState( SLAM_SATCHEL_THROW );
 				SendWeaponAnim( ACT_SLAM_TRIPMINE_TO_THROW_ND );
 			}
 		}
@@ -238,14 +240,14 @@ void CWeapon_SLAM::SecondaryAttack( void )
 			// Play sound for going to tripmine mode
 			EmitSound( "Weapon_SLAM.TripMineMode" );
 
-			if (m_tSlamState == SLAM_SATCHEL_ATTACH)
+			if( m_tSlamState == SLAM_SATCHEL_ATTACH )
 			{
-				SetSlamState(SLAM_TRIPMINE_READY);
+				SetSlamState( SLAM_TRIPMINE_READY );
 				SendWeaponAnim( ACT_SLAM_STICKWALL_TO_TRIPMINE_ND );
 			}
 			else
 			{
-				SetSlamState(SLAM_TRIPMINE_READY);
+				SetSlamState( SLAM_TRIPMINE_READY );
 				SendWeaponAnim( ACT_SLAM_THROW_TO_TRIPMINE_ND );
 			}
 		}
@@ -260,12 +262,12 @@ void CWeapon_SLAM::SecondaryAttack( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::SatchelDetonate()
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity* pEntity = NULL;
 
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "npc_satchel" )) != NULL)
+	while( ( pEntity = gEntList.FindEntityByClassname( pEntity, "npc_satchel" ) ) != NULL )
 	{
-		CSatchelCharge *pSatchel = dynamic_cast<CSatchelCharge *>(pEntity);
-		if (pSatchel->m_bIsLive && pSatchel->GetThrower() && GetOwner() && pSatchel->GetThrower() == GetOwner())
+		CSatchelCharge* pSatchel = dynamic_cast<CSatchelCharge*>( pEntity );
+		if( pSatchel->m_bIsLive && pSatchel->GetThrower() && GetOwner() && pSatchel->GetThrower() == GetOwner() )
 		{
 			pSatchel->Use( GetOwner(), GetOwner(), USE_ON, 0 );
 		}
@@ -282,14 +284,14 @@ void CWeapon_SLAM::SatchelDetonate()
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-bool CWeapon_SLAM::AnyUndetonatedCharges(void)
+bool CWeapon_SLAM::AnyUndetonatedCharges( void )
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity* pEntity = NULL;
 
-	while ((pEntity = gEntList.FindEntityByClassname( pEntity, "npc_satchel" )) != NULL)
+	while( ( pEntity = gEntList.FindEntityByClassname( pEntity, "npc_satchel" ) ) != NULL )
 	{
-		CSatchelCharge* pSatchel = dynamic_cast<CSatchelCharge *>(pEntity);
-		if (pSatchel->m_bIsLive && pSatchel->GetThrower() && pSatchel->GetThrower() == GetOwner())
+		CSatchelCharge* pSatchel = dynamic_cast<CSatchelCharge*>( pEntity );
+		if( pSatchel->m_bIsLive && pSatchel->GetThrower() && pSatchel->GetThrower() == GetOwner() )
 		{
 			return true;
 		}
@@ -307,17 +309,17 @@ void CWeapon_SLAM::StartSatchelDetonate()
 	// -----------------------------------------
 	//  Play detonate animation
 	// -----------------------------------------
-	if (m_bNeedReload)
+	if( m_bNeedReload )
 	{
-		SendWeaponAnim(ACT_SLAM_DETONATOR_DETONATE);
+		SendWeaponAnim( ACT_SLAM_DETONATOR_DETONATE );
 	}
-	else if (m_tSlamState == SLAM_SATCHEL_ATTACH)
+	else if( m_tSlamState == SLAM_SATCHEL_ATTACH )
 	{
-		SendWeaponAnim(ACT_SLAM_STICKWALL_DETONATE);
+		SendWeaponAnim( ACT_SLAM_STICKWALL_DETONATE );
 	}
-	else if (m_tSlamState == SLAM_SATCHEL_THROW)
+	else if( m_tSlamState == SLAM_SATCHEL_THROW )
 	{
-		SendWeaponAnim(ACT_SLAM_THROW_DETONATE);
+		SendWeaponAnim( ACT_SLAM_THROW_DETONATE );
 	}
 	else
 	{
@@ -336,8 +338,8 @@ void CWeapon_SLAM::StartSatchelDetonate()
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::TripmineAttach( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return;
 	}
@@ -349,20 +351,20 @@ void CWeapon_SLAM::TripmineAttach( void )
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+
+	if( tr.fraction < 1.0 )
 	{
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if (pEntity && !(pEntity->GetFlags() & FL_CONVEYOR))
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 			QAngle angles;
-			VectorAngles(tr.plane.normal, angles);
+			VectorAngles( tr.plane.normal, angles );
 			angles.x += 90;
-			
-			CBaseEntity *pEnt = CBaseEntity::Create( "npc_tripmine", tr.endpos + tr.plane.normal * 3, angles, NULL );
 
-			CTripmineGrenade *pMine = (CTripmineGrenade *)pEnt;
+			CBaseEntity* pEnt = CBaseEntity::Create( "npc_tripmine", tr.endpos + tr.plane.normal * 3, angles, NULL );
+
+			CTripmineGrenade* pMine = ( CTripmineGrenade* )pEnt;
 			pMine->m_hOwner = GetOwner();
 
 			pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
@@ -380,8 +382,8 @@ void CWeapon_SLAM::TripmineAttach( void )
 void CWeapon_SLAM::StartTripmineAttach( void )
 {
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if (!pPlayer)
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
 	{
 		return;
 	}
@@ -391,14 +393,14 @@ void CWeapon_SLAM::StartTripmineAttach( void )
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
+
+	if( tr.fraction < 1.0 )
 	{
 		// ALERT( at_console, "hit %f\n", tr.flFraction );
 
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if (pEntity && !(pEntity->GetFlags() & FL_CONVEYOR))
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 			// player "shoot" animation
 			pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -406,7 +408,7 @@ void CWeapon_SLAM::StartTripmineAttach( void )
 			// -----------------------------------------
 			//  Play attach animation
 			// -----------------------------------------
-			SendWeaponAnim(ACT_SLAM_TRIPMINE_ATTACH);
+			SendWeaponAnim( ACT_SLAM_TRIPMINE_ATTACH );
 
 			m_bNeedReload		= true;
 			m_bAttachTripmine	= true;
@@ -427,12 +429,12 @@ void CWeapon_SLAM::StartTripmineAttach( void )
 // Output :
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::SatchelThrow( void )
-{	
+{
 
 	m_bThrowSatchel = false;
 
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
 	Vector vecSrc	 = pPlayer->WorldSpaceCenter();
 	Vector vecFacing = pPlayer->BodyDirection3D( );
@@ -446,13 +448,13 @@ void CWeapon_SLAM::SatchelThrow( void )
 
 	// Player may have turned to face a wall during the throw anim in which case
 	// we don't want to throw the SLAM into the wall
-	if (CanAttachSLAM())
+	if( CanAttachSLAM() )
 	{
 		vecThrow = vecFacing;
 		vecSrc   = pPlayer->WorldSpaceCenter() + vecFacing * 5.0;
-	}	
+	}
 
-	CSatchelCharge *pSatchel = (CSatchelCharge*)Create( "npc_satchel", vecSrc, vec3_angle, GetOwner() );
+	CSatchelCharge* pSatchel = ( CSatchelCharge* )Create( "npc_satchel", vecSrc, vec3_angle, GetOwner() );
 	pSatchel->SetThrower( GetOwner() );
 	pSatchel->ApplyAbsVelocityImpulse( vecThrow );
 	pSatchel->SetLocalAngularVelocity( QAngle( 0, 400, 0 ) );
@@ -475,20 +477,20 @@ void CWeapon_SLAM::StartSatchelThrow( void )
 	// -----------------------------------------
 	//  Play throw animation
 	// -----------------------------------------
-	if (m_bDetonatorArmed)
+	if( m_bDetonatorArmed )
 	{
-		SendWeaponAnim(ACT_SLAM_THROW_THROW);
+		SendWeaponAnim( ACT_SLAM_THROW_THROW );
 	}
 	else
 	{
-		SendWeaponAnim(ACT_SLAM_THROW_THROW_ND);
-		if (!m_bDetonatorArmed)
+		SendWeaponAnim( ACT_SLAM_THROW_THROW_ND );
+		if( !m_bDetonatorArmed )
 		{
 			m_bDetonatorArmed		= true;
 			m_bNeedDetonatorDraw	= true;
 		}
 	}
-	
+
 	m_bNeedReload		= true;
 	m_bThrowSatchel		= true;
 
@@ -503,8 +505,8 @@ void CWeapon_SLAM::StartSatchelThrow( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::SatchelAttach( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return;
 	}
@@ -516,27 +518,27 @@ void CWeapon_SLAM::SatchelAttach( void )
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+
+	if( tr.fraction < 1.0 )
 	{
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if (pEntity && !(pEntity->GetFlags() & FL_CONVEYOR))
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 			QAngle angles;
-			VectorAngles(tr.plane.normal, angles);
+			VectorAngles( tr.plane.normal, angles );
 			angles.y -= 90;
 			angles.z -= 90;
 			tr.endpos.z -= 6.0f;
 
 			EmitSound( "Weapon_SLAM.SatchelAttach" );
-		
-			CSatchelCharge *pSatchel	= (CSatchelCharge*)CBaseEntity::Create( "npc_satchel", tr.endpos + tr.plane.normal * 3, angles, NULL );
+
+			CSatchelCharge* pSatchel	= ( CSatchelCharge* )CBaseEntity::Create( "npc_satchel", tr.endpos + tr.plane.normal * 3, angles, NULL );
 			pSatchel->SetMoveType( MOVETYPE_FLY ); // no gravity
 			pSatchel->m_bIsAttached		= true;
 			pSatchel->m_bIsLive			= true;
 			pSatchel->SetThrower( GetOwner() );
-			pSatchel->SetOwnerEntity( ((CBaseEntity*)GetOwner()) );
+			pSatchel->SetOwnerEntity( ( ( CBaseEntity* )GetOwner() ) );
 			pSatchel->m_pMyWeaponSLAM	= this;
 
 			pOwner->RemoveAmmo( 1, m_iSecondaryAmmoType );
@@ -551,8 +553,8 @@ void CWeapon_SLAM::SatchelAttach( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::StartSatchelAttach( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return;
 	}
@@ -562,15 +564,15 @@ void CWeapon_SLAM::StartSatchelAttach( void )
 
 	trace_t tr;
 
-	UTIL_TraceLine( vecSrc, vecSrc + (vecAiming * 128), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+	UTIL_TraceLine( vecSrc, vecSrc + ( vecAiming * 128 ), MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
+
+	if( tr.fraction < 1.0 )
 	{
-		CBaseEntity *pEntity = tr.m_pEnt;
-		if (pEntity && !(pEntity->GetFlags() & FL_CONVEYOR))
+		CBaseEntity* pEntity = tr.m_pEnt;
+		if( pEntity && !( pEntity->GetFlags() & FL_CONVEYOR ) )
 		{
 			// Only the player fires this way so we can cast
-			CBasePlayer *pPlayer = ToBasePlayer( pOwner );
+			CBasePlayer* pPlayer = ToBasePlayer( pOwner );
 
 			// player "shoot" animation
 			pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -578,20 +580,20 @@ void CWeapon_SLAM::StartSatchelAttach( void )
 			// -----------------------------------------
 			//  Play attach animation
 			// -----------------------------------------
-			if (m_bDetonatorArmed)
+			if( m_bDetonatorArmed )
 			{
-				SendWeaponAnim(ACT_SLAM_STICKWALL_ATTACH);
+				SendWeaponAnim( ACT_SLAM_STICKWALL_ATTACH );
 			}
 			else
 			{
-				SendWeaponAnim(ACT_SLAM_STICKWALL_ND_ATTACH);
-				if (!m_bDetonatorArmed)
+				SendWeaponAnim( ACT_SLAM_STICKWALL_ND_ATTACH );
+				if( !m_bDetonatorArmed )
 				{
 					m_bDetonatorArmed		= true;
 					m_bNeedDetonatorDraw	= true;
 				}
 			}
-			
+
 			m_bNeedReload		= true;
 			m_bAttachSatchel	= true;
 
@@ -619,19 +621,19 @@ void CWeapon_SLAM::SetSlamState( SlamState_t newState )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::SLAMThink( void )
 {
-	if (m_flWallSwitchTime <= gpGlobals->curtime)
+	if( m_flWallSwitchTime <= gpGlobals->curtime )
 	{
 		// If not in tripmine mode we need to check to see if we are close to
 		// a wall. If we are we go into satchel_attach mode
-		CBaseCombatCharacter *pOwner  = GetOwner();
+		CBaseCombatCharacter* pOwner  = GetOwner();
 
-		if ((m_tSlamState != SLAM_TRIPMINE_READY) && (pOwner && pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0))
-		{	
-			if (CanAttachSLAM())
+		if( ( m_tSlamState != SLAM_TRIPMINE_READY ) && ( pOwner && pOwner->GetAmmoCount( m_iSecondaryAmmoType ) > 0 ) )
+		{
+			if( CanAttachSLAM() )
 			{
-				if (m_tSlamState == SLAM_SATCHEL_THROW)
+				if( m_tSlamState == SLAM_SATCHEL_THROW )
 				{
-					SetSlamState(SLAM_SATCHEL_ATTACH);
+					SetSlamState( SLAM_SATCHEL_ATTACH );
 					int iAnim =	m_bDetonatorArmed ? ACT_SLAM_THROW_TO_STICKWALL : ACT_SLAM_THROW_TO_STICKWALL_ND;
 					SendWeaponAnim( iAnim );
 					m_flWallSwitchTime = gpGlobals->curtime + SequenceDuration();
@@ -639,9 +641,9 @@ void CWeapon_SLAM::SLAMThink( void )
 			}
 			else
 			{
-				if (m_tSlamState == SLAM_SATCHEL_ATTACH)
+				if( m_tSlamState == SLAM_SATCHEL_ATTACH )
 				{
-					SetSlamState(SLAM_SATCHEL_THROW);
+					SetSlamState( SLAM_SATCHEL_THROW );
 					int iAnim =	m_bDetonatorArmed ? ACT_SLAM_STICKWALL_TO_THROW : ACT_SLAM_STICKWALL_TO_THROW_ND;
 					SendWeaponAnim( iAnim );
 					m_flWallSwitchTime = gpGlobals->curtime + SequenceDuration();
@@ -659,8 +661,8 @@ void CWeapon_SLAM::SLAMThink( void )
 //-----------------------------------------------------------------------------
 bool CWeapon_SLAM::CanAttachSLAM( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return false;
 	}
@@ -670,17 +672,17 @@ bool CWeapon_SLAM::CanAttachSLAM( void )
 
 	trace_t tr;
 
-	Vector	vecEnd = vecSrc + (vecAiming * 42);
+	Vector	vecEnd = vecSrc + ( vecAiming * 42 );
 	UTIL_TraceLine( vecSrc, vecEnd, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+
+	if( tr.fraction < 1.0 )
 	{
 		// Don't attach to a living creature
-		if (tr.m_pEnt)
+		if( tr.m_pEnt )
 		{
-			CBaseEntity *pEntity = tr.m_pEnt;
-			CBaseCombatCharacter *pBCC		= ToBaseCombatCharacter( pEntity );
-			if (pBCC)
+			CBaseEntity* pEntity = tr.m_pEnt;
+			CBaseCombatCharacter* pBCC		= ToBaseCombatCharacter( pEntity );
+			if( pBCC )
 			{
 				return false;
 			}
@@ -701,17 +703,17 @@ bool CWeapon_SLAM::CanAttachSLAM( void )
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::ItemPostFrame( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if (!pOwner)
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+	if( !pOwner )
 	{
 		return;
 	}
 
-	if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	if( ( pOwner->m_nButtons & IN_ATTACK2 ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
 	{
 		SecondaryAttack();
 	}
-	else if (!m_bNeedReload && (pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	else if( !m_bNeedReload && ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		PrimaryAttack();
 	}
@@ -719,7 +721,7 @@ void CWeapon_SLAM::ItemPostFrame( void )
 	// -----------------------
 	//  No buttons down
 	// -----------------------
-	else 
+	else
 	{
 		WeaponIdle( );
 		return;
@@ -732,23 +734,23 @@ void CWeapon_SLAM::ItemPostFrame( void )
 // Output :
 //-----------------------------------------------------------------------------
 void CWeapon_SLAM::WeaponSwitch( void )
-{  
+{
 	// Note that we may pick the SLAM again, when we switch
-	// weapons, in which case we have to save and restore the 
+	// weapons, in which case we have to save and restore the
 	// detonator armed state.
 	// The SLAMs may be about to blow up, but haven't done so yet
 	// and the deploy function will find the undetonated charges
 	// and we are armed
 	bool saveState = m_bDetonatorArmed;
-	CBaseCombatCharacter *pOwner  = GetOwner();
+	CBaseCombatCharacter* pOwner  = GetOwner();
 	pOwner->SwitchToNextBestWeapon( pOwner->GetActiveWeapon() );
-	if (pOwner->GetActiveWeapon() == this)
+	if( pOwner->GetActiveWeapon() == this )
 	{
 		m_bDetonatorArmed = saveState;
 	}
 
 	// If not armed and have no ammo
-	if (!m_bDetonatorArmed && pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+	if( !m_bDetonatorArmed && pOwner->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 )
 	{
 		pOwner->ClearActiveWeapon();
 	}
@@ -763,28 +765,28 @@ void CWeapon_SLAM::WeaponSwitch( void )
 void CWeapon_SLAM::WeaponIdle( void )
 {
 	// Ready to switch animations?
- 	if ( HasWeaponIdleTimeElapsed() )
+	if( HasWeaponIdleTimeElapsed() )
 	{
 		// Don't allow throw to attach switch unless in idle
 		m_flWallSwitchTime = gpGlobals->curtime + 50;
 
-		if (m_bClearReload)
+		if( m_bClearReload )
 		{
 			m_bNeedReload  = false;
 			m_bClearReload = false;
 		}
-		CBaseCombatCharacter *pOwner  = GetOwner();
-		if (!pOwner)
+		CBaseCombatCharacter* pOwner  = GetOwner();
+		if( !pOwner )
 		{
 			return;
 		}
 
 		int iAnim = 0;
 
-		if (m_bThrowSatchel)
+		if( m_bThrowSatchel )
 		{
 			SatchelThrow();
-			if (m_bDetonatorArmed && !m_bNeedDetonatorDraw)
+			if( m_bDetonatorArmed && !m_bNeedDetonatorDraw )
 			{
 				iAnim = ACT_SLAM_THROW_THROW2;
 			}
@@ -793,10 +795,10 @@ void CWeapon_SLAM::WeaponIdle( void )
 				iAnim = ACT_SLAM_THROW_THROW_ND2;
 			}
 		}
-		else if (m_bAttachSatchel)
+		else if( m_bAttachSatchel )
 		{
 			SatchelAttach();
-			if (m_bDetonatorArmed && !m_bNeedDetonatorDraw)
+			if( m_bDetonatorArmed && !m_bNeedDetonatorDraw )
 			{
 				iAnim = ACT_SLAM_STICKWALL_ATTACH2;
 			}
@@ -805,64 +807,64 @@ void CWeapon_SLAM::WeaponIdle( void )
 				iAnim = ACT_SLAM_STICKWALL_ND_ATTACH2;
 			}
 		}
-		else if (m_bAttachTripmine)
+		else if( m_bAttachTripmine )
 		{
 			TripmineAttach();
 			iAnim = ACT_SLAM_TRIPMINE_ATTACH2;
-		}	
-		else if (m_bNeedReload)
-		{	
+		}
+		else if( m_bNeedReload )
+		{
 			// If owner had ammo draw the correct SLAM type
-			if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) > 0)
+			if( pOwner->GetAmmoCount( m_iSecondaryAmmoType ) > 0 )
 			{
-				switch( m_tSlamState)
+				switch( m_tSlamState )
 				{
 					case SLAM_TRIPMINE_READY:
-						{
-							iAnim = ACT_SLAM_TRIPMINE_DRAW;
-						}
-						break;
+					{
+						iAnim = ACT_SLAM_TRIPMINE_DRAW;
+					}
+					break;
 					case SLAM_SATCHEL_ATTACH:
+					{
+						if( m_bNeedDetonatorHolster )
 						{
-							if (m_bNeedDetonatorHolster)
-							{
-								iAnim = ACT_SLAM_STICKWALL_DETONATOR_HOLSTER;
-								m_bNeedDetonatorHolster = false;
-							}
-							else if (m_bDetonatorArmed)
-							{
-								iAnim =	m_bNeedDetonatorDraw ? ACT_SLAM_DETONATOR_STICKWALL_DRAW : ACT_SLAM_STICKWALL_DRAW;
-								m_bNeedDetonatorDraw = false;
-							}
-							else
-							{
-								iAnim =	ACT_SLAM_STICKWALL_ND_DRAW;
-							}
+							iAnim = ACT_SLAM_STICKWALL_DETONATOR_HOLSTER;
+							m_bNeedDetonatorHolster = false;
 						}
-						break;
+						else if( m_bDetonatorArmed )
+						{
+							iAnim =	m_bNeedDetonatorDraw ? ACT_SLAM_DETONATOR_STICKWALL_DRAW : ACT_SLAM_STICKWALL_DRAW;
+							m_bNeedDetonatorDraw = false;
+						}
+						else
+						{
+							iAnim =	ACT_SLAM_STICKWALL_ND_DRAW;
+						}
+					}
+					break;
 					case SLAM_SATCHEL_THROW:
+					{
+						if( m_bNeedDetonatorHolster )
 						{
-							if (m_bNeedDetonatorHolster)
-							{
-								iAnim = ACT_SLAM_THROW_DETONATOR_HOLSTER;
-								m_bNeedDetonatorHolster = false;
-							}
-							else if (m_bDetonatorArmed)
-							{
-								iAnim =	m_bNeedDetonatorDraw ? ACT_SLAM_DETONATOR_THROW_DRAW : ACT_SLAM_THROW_DRAW;
-								m_bNeedDetonatorDraw = false;
-							}
-							else
-							{
-								iAnim =	ACT_SLAM_THROW_ND_DRAW;
-							}
+							iAnim = ACT_SLAM_THROW_DETONATOR_HOLSTER;
+							m_bNeedDetonatorHolster = false;
 						}
-						break;
+						else if( m_bDetonatorArmed )
+						{
+							iAnim =	m_bNeedDetonatorDraw ? ACT_SLAM_DETONATOR_THROW_DRAW : ACT_SLAM_THROW_DRAW;
+							m_bNeedDetonatorDraw = false;
+						}
+						else
+						{
+							iAnim =	ACT_SLAM_THROW_ND_DRAW;
+						}
+					}
+					break;
 				}
 				m_bClearReload			= true;
 			}
 			// If no ammo and armed, idle with only the detonator
-			else if (m_bDetonatorArmed)
+			else if( m_bDetonatorArmed )
 			{
 				iAnim =	m_bNeedDetonatorDraw ? ACT_SLAM_DETONATOR_DRAW : ACT_SLAM_DETONATOR_IDLE;
 				m_bNeedDetonatorDraw = false;
@@ -870,53 +872,53 @@ void CWeapon_SLAM::WeaponIdle( void )
 			else
 			{
 				pOwner->Weapon_Drop( this );
-				UTIL_Remove(this);
+				UTIL_Remove( this );
 			}
 		}
-		else if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+		else if( pOwner->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 )
 		{
 			pOwner->Weapon_Drop( this );
-			UTIL_Remove(this);
+			UTIL_Remove( this );
 		}
 
 		// If I don't need to reload just do the appropriate idle
 		else
 		{
-			switch( m_tSlamState)
+			switch( m_tSlamState )
 			{
 				case SLAM_TRIPMINE_READY:
-					{
-						iAnim = ACT_SLAM_TRIPMINE_IDLE;
-					}
-					break;
+				{
+					iAnim = ACT_SLAM_TRIPMINE_IDLE;
+				}
+				break;
 				case SLAM_SATCHEL_THROW:
+				{
+					if( m_bNeedDetonatorHolster )
 					{
-						if (m_bNeedDetonatorHolster)
-						{
-							iAnim = ACT_SLAM_THROW_DETONATOR_HOLSTER;
-							m_bNeedDetonatorHolster = false;
-						}
-						else
-						{
-							iAnim = m_bDetonatorArmed ? ACT_SLAM_THROW_IDLE : ACT_SLAM_THROW_ND_IDLE;
-							m_flWallSwitchTime = 0;
-						}
+						iAnim = ACT_SLAM_THROW_DETONATOR_HOLSTER;
+						m_bNeedDetonatorHolster = false;
 					}
-					break;
+					else
+					{
+						iAnim = m_bDetonatorArmed ? ACT_SLAM_THROW_IDLE : ACT_SLAM_THROW_ND_IDLE;
+						m_flWallSwitchTime = 0;
+					}
+				}
+				break;
 				case SLAM_SATCHEL_ATTACH:
+				{
+					if( m_bNeedDetonatorHolster )
 					{
-						if (m_bNeedDetonatorHolster)
-						{
-							iAnim = ACT_SLAM_STICKWALL_DETONATOR_HOLSTER;
-							m_bNeedDetonatorHolster = false;
-						}
-						else
-						{
-							iAnim = m_bDetonatorArmed ? ACT_SLAM_STICKWALL_IDLE : ACT_SLAM_STICKWALL_ND_IDLE;
-							m_flWallSwitchTime = 0;
-						}
+						iAnim = ACT_SLAM_STICKWALL_DETONATOR_HOLSTER;
+						m_bNeedDetonatorHolster = false;
 					}
-					break;
+					else
+					{
+						iAnim = m_bDetonatorArmed ? ACT_SLAM_STICKWALL_IDLE : ACT_SLAM_STICKWALL_ND_IDLE;
+						m_flWallSwitchTime = 0;
+					}
+				}
+				break;
 			}
 		}
 		SendWeaponAnim( iAnim );
@@ -925,8 +927,8 @@ void CWeapon_SLAM::WeaponIdle( void )
 
 bool CWeapon_SLAM::Deploy( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return false;
 	}
@@ -946,35 +948,35 @@ bool CWeapon_SLAM::Deploy( void )
 
 	// If detonator is already armed
 	m_bNeedReload = false;
-	if (m_bDetonatorArmed)
+	if( m_bDetonatorArmed )
 	{
-		if (pOwner->GetAmmoCount(m_iSecondaryAmmoType) <= 0)
+		if( pOwner->GetAmmoCount( m_iSecondaryAmmoType ) <= 0 )
 		{
 			iActivity = ACT_SLAM_DETONATOR_DRAW;
 			m_bNeedReload = true;
 		}
-		else if (CanAttachSLAM())
+		else if( CanAttachSLAM() )
 		{
-			iActivity = ACT_SLAM_DETONATOR_STICKWALL_DRAW; 
+			iActivity = ACT_SLAM_DETONATOR_STICKWALL_DRAW;
 		}
 		else
 		{
-			iActivity = ACT_SLAM_DETONATOR_THROW_DRAW; 
+			iActivity = ACT_SLAM_DETONATOR_THROW_DRAW;
 		}
 	}
 	else
-	{	
-		if (CanAttachSLAM())
+	{
+		if( CanAttachSLAM() )
 		{
-			iActivity = ACT_SLAM_STICKWALL_ND_DRAW; 
+			iActivity = ACT_SLAM_STICKWALL_ND_DRAW;
 		}
 		else
 		{
-			iActivity = ACT_SLAM_THROW_ND_DRAW; 
+			iActivity = ACT_SLAM_THROW_ND_DRAW;
 		}
 	}
 
-	return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), iActivity, (char*)GetAnimPrefix() );
+	return DefaultDeploy( ( char* )GetViewModel(), ( char* )GetWorldModel(), iActivity, ( char* )GetAnimPrefix() );
 }
 
 //-----------------------------------------------------------------------------
@@ -982,7 +984,7 @@ bool CWeapon_SLAM::Deploy( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-CWeapon_SLAM::CWeapon_SLAM(void)
+CWeapon_SLAM::CWeapon_SLAM( void )
 {
 	m_tSlamState			= SLAM_SATCHEL_THROW;
 	m_bDetonatorArmed		= false;

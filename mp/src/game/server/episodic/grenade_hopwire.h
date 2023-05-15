@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef GRENADE_HOPWIRE_H
 #define GRENADE_HOPWIRE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basegrenade_shared.h"
@@ -28,9 +28,9 @@ public:
 	void	Precache( void );
 	bool	CreateVPhysics( void );
 	void	SetTimer( float timer );
-	void	SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
+	void	SetVelocity( const Vector& velocity, const AngularImpulse& angVelocity );
 	void	Detonate( void );
-	
+
 	void	EndThink( void );		// Last think before going away
 	void	CombatThink( void );	// Makes the main explosion go off
 
@@ -41,6 +41,6 @@ protected:
 	CHandle<CGravityVortexController>	m_hVortexController;
 };
 
-extern CBaseGrenade *HopWire_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const AngularImpulse &angVelocity, CBaseEntity *pOwner, float timer );
+extern CBaseGrenade* HopWire_Create( const Vector& position, const QAngle& angles, const Vector& velocity, const AngularImpulse& angVelocity, CBaseEntity* pOwner, float timer );
 
 #endif // GRENADE_HOPWIRE_H

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef VIEWPORT_PANEL_NAMES_H
 #define VIEWPORT_PANEL_NAMES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 

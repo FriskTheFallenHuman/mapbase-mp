@@ -42,7 +42,7 @@ class	CAI_BaseNPC;
 #define	MAX_AIR_NODE_LINK_DIST_SQ   (MAX_AIR_NODE_LINK_DIST*MAX_AIR_NODE_LINK_DIST)	//   distance allowed to travel to node via local moves
 
 
-	
+
 #define	NODE_HEIGHT			8	// how high to lift nodes off the ground after we drop them all (make stair/ramp mapping easier)
 #define NODE_CLIMB_OFFSET	8
 
@@ -54,24 +54,24 @@ class	CAI_BaseNPC;
 enum NodeType_e
 {
 	NODE_ANY,			// Used to specify any type of node (for search)
-	NODE_DELETED,		// Used in wc_edit mode to remove nodes during runtime     
-	NODE_GROUND,     
-	NODE_AIR,       
-	NODE_CLIMB,  
-	NODE_WATER     
+	NODE_DELETED,		// Used in wc_edit mode to remove nodes during runtime
+	NODE_GROUND,
+	NODE_AIR,
+	NODE_CLIMB,
+	NODE_WATER
 };
 
 enum NodeInfoBits_e
 {
-	bits_NODE_CLIMB_BOTTOM		=	(1 << 0),	// Node at bottom of ladder
-	bits_NODE_CLIMB_ON			=	(1 << 1),	// Node on ladder somewhere
-	bits_NODE_CLIMB_OFF_FORWARD =	(1 << 2),	// Dismount climb by going forward
-	bits_NODE_CLIMB_OFF_LEFT	=	(1 << 3),	// Dismount climb by going left
-	bits_NODE_CLIMB_OFF_RIGHT	=	(1 << 4),	// Dismount climb by going right
+	bits_NODE_CLIMB_BOTTOM		=	( 1 << 0 ),	// Node at bottom of ladder
+	bits_NODE_CLIMB_ON			=	( 1 << 1 ),	// Node on ladder somewhere
+	bits_NODE_CLIMB_OFF_FORWARD =	( 1 << 2 ),	// Dismount climb by going forward
+	bits_NODE_CLIMB_OFF_LEFT	=	( 1 << 3 ),	// Dismount climb by going left
+	bits_NODE_CLIMB_OFF_RIGHT	=	( 1 << 4 ),	// Dismount climb by going right
 
-	bits_NODE_CLIMB_EXIT		=	bits_NODE_CLIMB_OFF_FORWARD| bits_NODE_CLIMB_OFF_LEFT | bits_NODE_CLIMB_OFF_RIGHT,
+	bits_NODE_CLIMB_EXIT		=	bits_NODE_CLIMB_OFF_FORWARD | bits_NODE_CLIMB_OFF_LEFT | bits_NODE_CLIMB_OFF_RIGHT,
 
-	NODE_ENT_FLAGS_SHIFT			= 5, 
+	NODE_ENT_FLAGS_SHIFT			= 5,
 
 	//bits_HUMAN_HULL				5
 	//bits_SMALL_CENTERED_HULL		6
@@ -84,7 +84,7 @@ enum NodeInfoBits_e
 	//bits_LARGE_CENTERED_HULL		13
 
 	bits_DONT_DROP				=	( 1 << 14 ),
-	
+
 	/****** NOTE: will need to change node graph save/load code if exceed 16 bits here ******/
 
 
@@ -105,43 +105,100 @@ class CAI_Node
 {
 public:
 
-	CAI_Node( int id, const Vector &origin, float yaw );
-	
-	CAI_Hint*		GetHint()					{ return m_pHint; }
-	void			SetHint( CAI_Hint *pHint )	{ m_pHint = pHint; }
+	CAI_Node( int id, const Vector& origin, float yaw );
 
-	int				NumLinks() const		{ return m_Links.Count(); }
-	void			ClearLinks()			{ m_Links.Purge(); }
-	CAI_Link *		GetLink( int destNodeId );
-	CAI_Link *		GetLinkByIndex( int i )	{ return m_Links[i]; }
+	CAI_Hint*		GetHint()
+	{
+		return m_pHint;
+	}
+	void			SetHint( CAI_Hint* pHint )
+	{
+		m_pHint = pHint;
+	}
 
-	bool 			IsLocked() const			{ return ( m_flNextUseTime > gpGlobals->curtime ); }
-	void			Lock( float duration )		{ m_flNextUseTime = gpGlobals->curtime + duration; }
-	void			Unlock()					{ m_flNextUseTime = gpGlobals->curtime; }
+	int				NumLinks() const
+	{
+		return m_Links.Count();
+	}
+	void			ClearLinks()
+	{
+		m_Links.Purge();
+	}
+	CAI_Link* 		GetLink( int destNodeId );
+	CAI_Link* 		GetLinkByIndex( int i )
+	{
+		return m_Links[i];
+	}
 
-	int 			GetZone() const			{ return m_zone; }
-	void 			SetZone( int zone )		{ m_zone = zone; }
-	
-	Vector			GetPosition(int hull);		// Hull specific position for a node
-	CAI_Link*		HasLink(int nNodeID);				// Return link to nNodeID or NULL
+	bool 			IsLocked() const
+	{
+		return ( m_flNextUseTime > gpGlobals->curtime );
+	}
+	void			Lock( float duration )
+	{
+		m_flNextUseTime = gpGlobals->curtime + duration;
+	}
+	void			Unlock()
+	{
+		m_flNextUseTime = gpGlobals->curtime;
+	}
 
-	void			ShuffleLinks();						// Called before GetShuffeledLinks to reorder 
-	CAI_Link*		GetShuffeledLink(int nNum);			// Used to get links in different order each time
+	int 			GetZone() const
+	{
+		return m_zone;
+	}
+	void 			SetZone( int zone )
+	{
+		m_zone = zone;
+	}
 
-	int 			GetId() const			{ return m_iID; }
-	
-	const Vector &	GetOrigin() const		{ return m_vOrigin; }
-	Vector &		AccessOrigin()			{ return m_vOrigin; }
-	float			GetYaw() const			{ return m_flYaw;	}
+	Vector			GetPosition( int hull );		// Hull specific position for a node
+	CAI_Link*		HasLink( int nNodeID );				// Return link to nNodeID or NULL
 
-	NodeType_e		SetType( NodeType_e type ) { return ( m_eNodeType = type ); }
-	NodeType_e		GetType() const			{ return m_eNodeType; }
+	void			ShuffleLinks();						// Called before GetShuffeledLinks to reorder
+	CAI_Link*		GetShuffeledLink( int nNum );			// Used to get links in different order each time
 
-	void			SetNeedsRebuild()		{ m_eNodeInfo |= bits_NODE_WC_NEED_REBUILD; }
-	void			ClearNeedsRebuild()		{ m_eNodeInfo &= ~bits_NODE_WC_NEED_REBUILD; }
-	bool			NeedsRebuild() const	{ return ( ( m_eNodeInfo & bits_NODE_WC_NEED_REBUILD ) != 0 ); }
+	int 			GetId() const
+	{
+		return m_iID;
+	}
 
-	void			AddLink(CAI_Link *newLink);
+	const Vector& 	GetOrigin() const
+	{
+		return m_vOrigin;
+	}
+	Vector& 		AccessOrigin()
+	{
+		return m_vOrigin;
+	}
+	float			GetYaw() const
+	{
+		return m_flYaw;
+	}
+
+	NodeType_e		SetType( NodeType_e type )
+	{
+		return ( m_eNodeType = type );
+	}
+	NodeType_e		GetType() const
+	{
+		return m_eNodeType;
+	}
+
+	void			SetNeedsRebuild()
+	{
+		m_eNodeInfo |= bits_NODE_WC_NEED_REBUILD;
+	}
+	void			ClearNeedsRebuild()
+	{
+		m_eNodeInfo &= ~bits_NODE_WC_NEED_REBUILD;
+	}
+	bool			NeedsRebuild() const
+	{
+		return ( ( m_eNodeInfo & bits_NODE_WC_NEED_REBUILD ) != 0 );
+	}
+
+	void			AddLink( CAI_Link* newLink );
 
 	int				m_iID;					// ID for this node
 	Vector			m_vOrigin;				// location of this node in space
@@ -154,7 +211,7 @@ public:
 	int				m_eNodeInfo;			// bits that tell us more about this nodes
 
 	int				m_zone;
-	CUtlVector<CAI_Link *> m_Links;		// growable array of links to this node
+	CUtlVector<CAI_Link*> m_Links;		// growable array of links to this node
 
 	float			m_flNextUseTime;		// When can I be used again?
 	CAI_Hint*		m_pHint;				// hint attached to this node
@@ -162,7 +219,7 @@ public:
 };
 
 
-extern float	GetFloorZ(const Vector &origin);
-extern float	GetFloorDistance(const Vector &origin);
+extern float	GetFloorZ( const Vector& origin );
+extern float	GetFloorDistance( const Vector& origin );
 
 #endif // AI_NODE_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define EFFECTS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,14 +23,14 @@ class Vector;
 abstract_class IRotorWashShooter
 {
 public:
-	virtual CBaseEntity *DoWashPush( float flWashStartTime, const Vector &vecForce ) = 0;
+	virtual CBaseEntity * DoWashPush( float flWashStartTime, const Vector & vecForce ) = 0;
 };
 
 
 //-----------------------------------------------------------------------------
 // Gets at the interface if the entity supports it
 //-----------------------------------------------------------------------------
-IRotorWashShooter *GetRotorWashShooter( CBaseEntity *pEntity );
+IRotorWashShooter* GetRotorWashShooter( CBaseEntity* pEntity );
 
 class CEnvQuadraticBeam : public CPointEntity
 {
@@ -38,7 +38,7 @@ class CEnvQuadraticBeam : public CPointEntity
 
 public:
 	void Spawn();
-	void SetSpline( const Vector &control, const Vector &target )
+	void SetSpline( const Vector& control, const Vector& target )
 	{
 		m_targetPosition = target;
 		m_controlPosition = control;
@@ -62,7 +62,7 @@ private:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 };
-CEnvQuadraticBeam *CreateQuadraticBeam( const char *pSpriteName, const Vector &start, const Vector &control, const Vector &end, float width, CBaseEntity *pOwner );
+CEnvQuadraticBeam* CreateQuadraticBeam( const char* pSpriteName, const Vector& start, const Vector& control, const Vector& end, float width, CBaseEntity* pOwner );
 
 
 #endif // EFFECTS_H

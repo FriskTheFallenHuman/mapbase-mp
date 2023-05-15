@@ -22,12 +22,12 @@ class C_BaseEntity;
 class CFloatInput
 {
 public:
-	bool  Init( IMaterial *pMaterial, KeyValues *pKeyValues, const char *pKeyName, float flDefault = 0.0f );
+	bool  Init( IMaterial* pMaterial, KeyValues* pKeyValues, const char* pKeyName, float flDefault = 0.0f );
 	float GetFloat() const;
 
 private:
 	float m_flValue;
-	IMaterialVar *m_pFloatVar;
+	IMaterialVar* m_pFloatVar;
 	int	m_FloatVecComp;
 };
 
@@ -40,12 +40,15 @@ class CResultProxy : public IMaterialProxy
 public:
 	CResultProxy();
 	virtual ~CResultProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void Release( void ) { delete this; }
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void Release( void )
+	{
+		delete this;
+	}
+	virtual IMaterial* GetMaterial();
 
 protected:
-	C_BaseEntity *BindArgToEntity( void *pArg );
+	C_BaseEntity* BindArgToEntity( void* pArg );
 	void SetFloatResult( float result );
 
 	IMaterialVar* m_pResult;
@@ -61,7 +64,7 @@ class CFunctionProxy : public CResultProxy
 public:
 	CFunctionProxy();
 	virtual ~CFunctionProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
 
 protected:
 	void ComputeResultType( MaterialVarType_t& resultType, int& vecSize );

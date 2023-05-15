@@ -26,18 +26,24 @@
 #include "tier0/memdbgon.h"
 
 // Allocator to pass to LZMA functions
-static void *SzAlloc(void *p, size_t size) { return malloc(size); }
-static void SzFree(void *p, void *address) { free(address); }
+static void* SzAlloc( void* p, size_t size )
+{
+	return malloc( size );
+}
+static void SzFree( void* p, void* address )
+{
+	free( address );
+}
 static ISzAlloc g_Alloc = { SzAlloc, SzFree };
 
 //-----------------------------------------------------------------------------
 // Returns true if buffer is compressed.
 //-----------------------------------------------------------------------------
 /* static */
-bool CLZMA::IsCompressed( unsigned char *pInput )
+bool CLZMA::IsCompressed( unsigned char* pInput )
 {
-	lzma_header_t *pHeader = (lzma_header_t *)pInput;
-	if ( pHeader && pHeader->id == LZMA_ID )
+	lzma_header_t* pHeader = ( lzma_header_t* )pInput;
+	if( pHeader && pHeader->id == LZMA_ID )
 	{
 		return true;
 	}
@@ -51,10 +57,10 @@ bool CLZMA::IsCompressed( unsigned char *pInput )
 // buffer for decompression. Returns 0 if input buffer is not compressed.
 //-----------------------------------------------------------------------------
 /* static */
-unsigned int CLZMA::GetActualSize( unsigned char *pInput )
+unsigned int CLZMA::GetActualSize( unsigned char* pInput )
 {
-	lzma_header_t *pHeader = (lzma_header_t *)pInput;
-	if ( pHeader && pHeader->id == LZMA_ID )
+	lzma_header_t* pHeader = ( lzma_header_t* )pInput;
+	if( pHeader && pHeader->id == LZMA_ID )
 	{
 		return LittleLong( pHeader->actualSize );
 	}
@@ -68,10 +74,10 @@ unsigned int CLZMA::GetActualSize( unsigned char *pInput )
 // adequate sized output buffer or memory corruption will occur.
 //-----------------------------------------------------------------------------
 /* static */
-unsigned int CLZMA::Uncompress( unsigned char *pInput, unsigned char *pOutput )
+unsigned int CLZMA::Uncompress( unsigned char* pInput, unsigned char* pOutput )
 {
-	lzma_header_t *pHeader = (lzma_header_t *)pInput;
-	if ( pHeader->id != LZMA_ID )
+	lzma_header_t* pHeader = ( lzma_header_t* )pInput;
+	if( pHeader->id != LZMA_ID )
 	{
 		// not ours
 		return false;
@@ -79,9 +85,9 @@ unsigned int CLZMA::Uncompress( unsigned char *pInput, unsigned char *pOutput )
 
 	CLzmaDec state;
 
-	LzmaDec_Construct(&state);
+	LzmaDec_Construct( &state );
 
-	if ( LzmaDec_Allocate(&state, pHeader->properties, LZMA_PROPS_SIZE, &g_Alloc) != SZ_OK )
+	if( LzmaDec_Allocate( &state, pHeader->properties, LZMA_PROPS_SIZE, &g_Alloc ) != SZ_OK )
 	{
 		Assert( false );
 		return 0;
@@ -91,13 +97,13 @@ unsigned int CLZMA::Uncompress( unsigned char *pInput, unsigned char *pOutput )
 	SizeT outProcessed = pHeader->actualSize;
 	SizeT inProcessed = pHeader->lzmaSize;
 	ELzmaStatus status;
-	SRes result = LzmaDecode( (Byte *)pOutput, &outProcessed, (Byte *)(pInput + sizeof( lzma_header_t ) ),
-	                          &inProcessed, (Byte *)pHeader->properties, LZMA_PROPS_SIZE, LZMA_FINISH_END, &status, &g_Alloc );
+	SRes result = LzmaDecode( ( Byte* )pOutput, &outProcessed, ( Byte* )( pInput + sizeof( lzma_header_t ) ),
+							  &inProcessed, ( Byte* )pHeader->properties, LZMA_PROPS_SIZE, LZMA_FINISH_END, &status, &g_Alloc );
 
 
-	LzmaDec_Free(&state, &g_Alloc);
+	LzmaDec_Free( &state, &g_Alloc );
 
-	if ( result != SZ_OK || pHeader->actualSize != outProcessed )
+	if( result != SZ_OK || pHeader->actualSize != outProcessed )
 	{
 		Warning( "LZMA Decompression failed (%i)\n", result );
 		return 0;
@@ -109,9 +115,9 @@ unsigned int CLZMA::Uncompress( unsigned char *pInput, unsigned char *pOutput )
 CLZMAStream::CLZMAStream()
 	: m_pDecoderState( NULL ),
 	  m_nActualSize( 0 ),
-	  m_nActualBytesRead ( 0 ),
+	  m_nActualBytesRead( 0 ),
 	  m_nCompressedSize( 0 ),
-	  m_nCompressedBytesRead ( 0 ),
+	  m_nCompressedBytesRead( 0 ),
 	  m_bParsedHeader( false ),
 	  m_bZIPStyleHeader( false )
 {}
@@ -123,16 +129,16 @@ CLZMAStream::~CLZMAStream()
 
 void CLZMAStream::FreeDecoderState()
 {
-	if ( m_pDecoderState )
+	if( m_pDecoderState )
 	{
 		LzmaDec_Free( m_pDecoderState, &g_Alloc );
 		m_pDecoderState = NULL;
 	}
 }
 
-bool CLZMAStream::CreateDecoderState( const unsigned char *pProperties )
+bool CLZMAStream::CreateDecoderState( const unsigned char* pProperties )
 {
-	if ( m_pDecoderState )
+	if( m_pDecoderState )
 	{
 		Assert( !m_pDecoderState );
 		FreeDecoderState();
@@ -141,7 +147,7 @@ bool CLZMAStream::CreateDecoderState( const unsigned char *pProperties )
 	m_pDecoderState = new CLzmaDec();
 
 	LzmaDec_Construct( m_pDecoderState );
-	if ( LzmaDec_Allocate( m_pDecoderState, pProperties, LZMA_PROPS_SIZE, &g_Alloc) != SZ_OK )
+	if( LzmaDec_Allocate( m_pDecoderState, pProperties, LZMA_PROPS_SIZE, &g_Alloc ) != SZ_OK )
 	{
 		AssertMsg( false, "Failed to allocate lzma decoder state" );
 		m_pDecoderState = NULL;
@@ -155,27 +161,27 @@ bool CLZMAStream::CreateDecoderState( const unsigned char *pProperties )
 
 // Attempt to read up to nMaxInputBytes from the compressed stream, writing up to nMaxOutputBytes to pOutput.
 // Returns false if read stops due to an error.
-bool CLZMAStream::Read( unsigned char *pInput, unsigned int nMaxInputBytes,
-                        unsigned char *pOutput, unsigned int nMaxOutputBytes,
-                        /* out */ unsigned int &nCompressedBytesRead,
-                        /* out */ unsigned int &nOutputBytesWritten )
+bool CLZMAStream::Read( unsigned char* pInput, unsigned int nMaxInputBytes,
+						unsigned char* pOutput, unsigned int nMaxOutputBytes,
+						/* out */ unsigned int& nCompressedBytesRead,
+						/* out */ unsigned int& nOutputBytesWritten )
 {
 	nCompressedBytesRead = 0;
 	nOutputBytesWritten = 0;
 	bool bStartedWithHeader = m_bParsedHeader;
 
 	// Check for initial chunk of data
-	if ( !m_bParsedHeader )
+	if( !m_bParsedHeader )
 	{
 		unsigned int nBytesConsumed = 0;
 		eHeaderParse parseResult = TryParseHeader( pInput, nMaxInputBytes, nBytesConsumed );
 
-		if ( parseResult == eHeaderParse_NeedMoreBytes )
+		if( parseResult == eHeaderParse_NeedMoreBytes )
 		{
 			// Not an error, just need more data to continue
 			return true;
 		}
-		else if ( parseResult != eHeaderParse_OK )
+		else if( parseResult != eHeaderParse_OK )
 		{
 			Assert( parseResult == eHeaderParse_Fail );
 			// Invalid header
@@ -191,11 +197,11 @@ bool CLZMAStream::Read( unsigned char *pInput, unsigned int nMaxInputBytes,
 	// These are input ( available size ) *and* output ( size processed ) vars for lzma
 	SizeT expectedInputRemaining = m_nCompressedSize - Min( m_nCompressedBytesRead + nCompressedBytesRead, m_nCompressedSize );
 	SizeT expectedOutputRemaining = m_nActualSize - m_nActualBytesRead;
-	SizeT inSize = Min( (SizeT)nMaxInputBytes, expectedInputRemaining );
-	SizeT outSize = Min( (SizeT)nMaxOutputBytes, expectedOutputRemaining );
+	SizeT inSize = Min( ( SizeT )nMaxInputBytes, expectedInputRemaining );
+	SizeT outSize = Min( ( SizeT )nMaxOutputBytes, expectedOutputRemaining );
 	ELzmaStatus status;
 	ELzmaFinishMode finishMode = LZMA_FINISH_ANY;
-	if ( inSize == expectedInputRemaining && outSize == expectedOutputRemaining )
+	if( inSize == expectedInputRemaining && outSize == expectedOutputRemaining )
 	{
 		// Expect to finish decoding this call.
 		finishMode = LZMA_FINISH_END;
@@ -217,9 +223,9 @@ bool CLZMAStream::Read( unsigned char *pInput, unsigned int nMaxInputBytes,
 	//        this, pInput, nMaxInputBytes, pOutput, nMaxOutputBytes,
 	//        inSize, outSize, result, status, m_nActualSize, m_nActualBytesRead);
 
-	if ( result != SZ_OK )
+	if( result != SZ_OK )
 	{
-		if ( !bStartedWithHeader )
+		if( !bStartedWithHeader )
 		{
 			// If we're returning false, we need to pretend we didn't consume anything.
 			FreeDecoderState();
@@ -238,9 +244,10 @@ bool CLZMAStream::Read( unsigned char *pInput, unsigned int nMaxInputBytes,
 	return true;
 }
 
-bool CLZMAStream::GetExpectedBytesRemaining( /* out */ unsigned int &nBytesRemaining )
+bool CLZMAStream::GetExpectedBytesRemaining( /* out */ unsigned int& nBytesRemaining )
 {
-	if ( !m_bParsedHeader && !m_bZIPStyleHeader ) {
+	if( !m_bParsedHeader && !m_bZIPStyleHeader )
+	{
 		return false;
 	}
 
@@ -251,10 +258,10 @@ bool CLZMAStream::GetExpectedBytesRemaining( /* out */ unsigned int &nBytesRemai
 
 void CLZMAStream::InitZIPHeader( unsigned int nCompressedSize, unsigned int nOriginalSize )
 {
-	if ( m_bParsedHeader || m_bZIPStyleHeader )
+	if( m_bParsedHeader || m_bZIPStyleHeader )
 	{
 		AssertMsg( !m_bParsedHeader && !m_bZIPStyleHeader,
-		           "LZMA Stream: InitZIPHeader() called on stream past header" );
+				   "LZMA Stream: InitZIPHeader() called on stream past header" );
 		return;
 	}
 
@@ -264,24 +271,24 @@ void CLZMAStream::InitZIPHeader( unsigned int nCompressedSize, unsigned int nOri
 	m_bZIPStyleHeader = true;
 }
 
-CLZMAStream::eHeaderParse CLZMAStream::TryParseHeader( unsigned char *pInput, unsigned int nBytesAvailable, /* out */ unsigned int &nBytesConsumed )
+CLZMAStream::eHeaderParse CLZMAStream::TryParseHeader( unsigned char* pInput, unsigned int nBytesAvailable, /* out */ unsigned int& nBytesConsumed )
 {
 	nBytesConsumed = 0;
 
-	if ( m_bParsedHeader  )
+	if( m_bParsedHeader )
 	{
 		AssertMsg( !m_bParsedHeader, "CLZMAStream::ReadSourceHeader called on already initialized stream" );
 		return eHeaderParse_Fail;
 	}
 
-	if ( m_bZIPStyleHeader )
+	if( m_bZIPStyleHeader )
 	{
 		// ZIP Spec, 5.8.8
 		//   LZMA Version Information 2 bytes
 		//   LZMA Properties Size 2 bytes
 		//   LZMA Properties Data variable, defined by "LZMA Properties Size"
 
-		if ( nBytesAvailable < 4 )
+		if( nBytesAvailable < 4 )
 		{
 			// No error, but need more input to continue
 			return eHeaderParse_NeedMoreBytes;
@@ -290,24 +297,24 @@ CLZMAStream::eHeaderParse CLZMAStream::TryParseHeader( unsigned char *pInput, un
 		// Should probably check this
 		// unsigned char nLZMAVer[2] = { pInput[0], pInput[1] };
 
-		uint16 nLZMAPropertiesSize = LittleWord( *(uint16 *)(pInput + 2) );
+		uint16 nLZMAPropertiesSize = LittleWord( *( uint16* )( pInput + 2 ) );
 
 		nBytesConsumed += 4;
 
-		if ( nLZMAPropertiesSize != LZMA_PROPS_SIZE )
+		if( nLZMAPropertiesSize != LZMA_PROPS_SIZE )
 		{
 			Warning( "LZMA stream: Unexpected LZMA properties size: %hu, expecting %u. Version mismatch?\n",
-			         nLZMAPropertiesSize, LZMA_PROPS_SIZE );
+					 nLZMAPropertiesSize, LZMA_PROPS_SIZE );
 			return eHeaderParse_Fail;
 		}
 
-		if ( nBytesAvailable < static_cast<unsigned int>(nLZMAPropertiesSize) + 4 )
+		if( nBytesAvailable < static_cast<unsigned int>( nLZMAPropertiesSize ) + 4 )
 		{
 			return eHeaderParse_NeedMoreBytes;
 		}
 
 		// Looks reasonable, try to parse
-		if ( !CreateDecoderState( (Byte *)pInput + 4 ) )
+		if( !CreateDecoderState( ( Byte* )pInput + 4 ) )
 		{
 			AssertMsg( false, "Failed decoding Lzma properties" );
 			return eHeaderParse_Fail;
@@ -318,7 +325,7 @@ CLZMAStream::eHeaderParse CLZMAStream::TryParseHeader( unsigned char *pInput, un
 	else
 	{
 		// Else native source engine style header
-		if ( nBytesAvailable < sizeof( lzma_header_t ) )
+		if( nBytesAvailable < sizeof( lzma_header_t ) )
 		{
 			// need more input to continue
 			return eHeaderParse_NeedMoreBytes;
@@ -326,20 +333,20 @@ CLZMAStream::eHeaderParse CLZMAStream::TryParseHeader( unsigned char *pInput, un
 
 		m_nActualSize = CLZMA::GetActualSize( pInput );
 
-		if ( !m_nActualSize )
+		if( !m_nActualSize )
 		{
 			// unrecognized
 			Warning( "Unrecognized LZMA data\n" );
 			return eHeaderParse_Fail;
 		}
 
-		if ( !CreateDecoderState( ((lzma_header_t *)pInput)->properties ) )
+		if( !CreateDecoderState( ( ( lzma_header_t* )pInput )->properties ) )
 		{
 			AssertMsg( false, "Failed decoding Lzma properties" );
 			return eHeaderParse_Fail;
 		}
 
-		m_nCompressedSize = LittleLong( ((lzma_header_t *)pInput)->lzmaSize ) + sizeof( lzma_header_t );
+		m_nCompressedSize = LittleLong( ( ( lzma_header_t* )pInput )->lzmaSize ) + sizeof( lzma_header_t );
 		nBytesConsumed += sizeof( lzma_header_t );
 	}
 

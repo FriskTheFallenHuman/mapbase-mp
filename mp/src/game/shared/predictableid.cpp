@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -33,16 +33,18 @@ public:
 	int		AddEntry( int command, int hash )
 	{
 		// Clear list if command number changes
-		if ( command != m_nCurrentCommand )
+		if( command != m_nCurrentCommand )
 		{
 			Reset( command );
 		}
 
-		entry *e = FindOrAddEntry( hash );
-		if ( !e )
+		entry* e = FindOrAddEntry( hash );
+		if( !e )
+		{
 			return 0;
+		}
 		e->count++;
-		return e->count-1;
+		return e->count - 1;
 	}
 
 private:
@@ -58,23 +60,25 @@ private:
 		int		count;
 	};
 
-	entry			*FindOrAddEntry( int hash )
+	entry*			FindOrAddEntry( int hash )
 	{
 		int i;
-		for ( i = 0; i < m_nCount; i++ )
+		for( i = 0; i < m_nCount; i++ )
 		{
-			entry *e = &m_Entries[ i ];
-			if ( e->hash == hash )
+			entry* e = &m_Entries[ i ];
+			if( e->hash == hash )
+			{
 				return e;
+			}
 		}
 
-		if ( m_nCount >= MAX_ENTRIES )
+		if( m_nCount >= MAX_ENTRIES )
 		{
 			// assert( 0 );
 			return NULL;
 		}
 
-		entry *e = &m_Entries[ m_nCount++ ];
+		entry* e = &m_Entries[ m_nCount++ ];
 		e->hash = hash;
 		e->count = 0;
 		return e;
@@ -88,7 +92,7 @@ private:
 static CPredictableIdHelper g_Helper;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CPredictableId::CPredictableId( void )
 {
@@ -96,7 +100,7 @@ CPredictableId::CPredictableId( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPredictableId::ResetInstanceCounters( void )
 {
@@ -109,46 +113,48 @@ void CPredictableId::ResetInstanceCounters( void )
 //-----------------------------------------------------------------------------
 bool CPredictableId::IsActive( void ) const
 {
-	if ( *(const int *)&m_PredictableID == 0 )
+	if( *( const int* )&m_PredictableID == 0 )
+	{
 		return false;
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : playerIndex - 
+// Purpose:
+// Input  : playerIndex -
 //-----------------------------------------------------------------------------
 void CPredictableId::SetPlayer( int playerIndex )
 {
-	m_PredictableID.player = (unsigned int)playerIndex;
+	m_PredictableID.player = ( unsigned int )playerIndex;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CPredictableId::GetPlayer( void ) const
 {
-	return (int)m_PredictableID.player;
+	return ( int )m_PredictableID.player;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CPredictableId::GetCommandNumber( void ) const
 {
-	return (int)m_PredictableID.command;
+	return ( int )m_PredictableID.command;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : commandNumber - 
+// Purpose:
+// Input  : commandNumber -
 //-----------------------------------------------------------------------------
 void CPredictableId::SetCommandNumber( int commandNumber )
 {
-	m_PredictableID.command = (unsigned int)commandNumber;
+	m_PredictableID.command = ( unsigned int )commandNumber;
 }
 
 /*
@@ -162,46 +168,46 @@ bool CPredictableId::IsCommandNumberEqual( int testNumber ) const
 */
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *classname - 
-//			*module - 
-//			line - 
+// Purpose:
+// Input  : *classname -
+//			*module -
+//			line -
 // Output : static int
 //-----------------------------------------------------------------------------
-static int ClassFileLineHash( const char *classname, const char *module, int line )
+static int ClassFileLineHash( const char* classname, const char* module, int line )
 {
 	CRC32_t retval;
 
 	CRC32_Init( &retval );
 
 	char tempbuffer[ 512 ];
-	
+
 	// ACK, have to go lower case due to issues with .dsp having different cases of drive
 	//  letters, etc.!!!
 	Q_strncpy( tempbuffer, classname, sizeof( tempbuffer ) );
 	Q_strlower( tempbuffer );
-	CRC32_ProcessBuffer( &retval, (void *)tempbuffer, Q_strlen( tempbuffer ) );
-	
+	CRC32_ProcessBuffer( &retval, ( void* )tempbuffer, Q_strlen( tempbuffer ) );
+
 	Q_strncpy( tempbuffer, module, sizeof( tempbuffer ) );
 	Q_strlower( tempbuffer );
-	CRC32_ProcessBuffer( &retval, (void *)tempbuffer, Q_strlen( tempbuffer ) );
-	
-	CRC32_ProcessBuffer( &retval, (void *)&line, sizeof( int ) );
+	CRC32_ProcessBuffer( &retval, ( void* )tempbuffer, Q_strlen( tempbuffer ) );
+
+	CRC32_ProcessBuffer( &retval, ( void* )&line, sizeof( int ) );
 
 	CRC32_Final( &retval );
 
-	return (int)retval;
+	return ( int )retval;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Create a predictable id of the specified parameter set
-// Input  : player - 
-//			command - 
-//			*classname - 
-//			*module - 
-//			line - 
+// Input  : player -
+//			command -
+//			*classname -
+//			*module -
+//			line -
 //-----------------------------------------------------------------------------
-void CPredictableId::Init( int player, int command, const char *classname, const char *module, int line )
+void CPredictableId::Init( int player, int command, const char* classname, const char* module, int line )
 {
 	SetPlayer( player );
 	SetCommandNumber( command );
@@ -216,36 +222,36 @@ void CPredictableId::Init( int player, int command, const char *classname, const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CPredictableId::GetHash( void ) const
 {
-	return (int)m_PredictableID.hash;
+	return ( int )m_PredictableID.hash;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : counter - 
+// Purpose:
+// Input  : counter -
 //-----------------------------------------------------------------------------
 void CPredictableId::SetInstanceNumber( int counter )
 {
-	m_PredictableID.instance = (unsigned int)counter;
+	m_PredictableID.instance = ( unsigned int )counter;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CPredictableId::GetInstanceNumber( void ) const
 {
-	return (int)m_PredictableID.instance;
+	return ( int )m_PredictableID.instance;
 }
 
 // Client only
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : ack - 
+// Purpose:
+// Input  : ack -
 //-----------------------------------------------------------------------------
 void CPredictableId::SetAcknowledged( bool ack )
 {
@@ -253,7 +259,7 @@ void CPredictableId::SetAcknowledged( bool ack )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CPredictableId::GetAcknowledged( void ) const
@@ -262,63 +268,73 @@ bool CPredictableId::GetAcknowledged( void ) const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CPredictableId::GetRaw( void ) const
 {
-	return *(int *)&m_PredictableID;
+	return *( int* )&m_PredictableID;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : raw - 
+// Purpose:
+// Input  : raw -
 //-----------------------------------------------------------------------------
 void CPredictableId::SetRaw( int raw )
 {
-	*(int *)&m_PredictableID = raw;
+	*( int* )&m_PredictableID = raw;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Determine if one id is == another, ignores Acknowledged state
-// Input  : other - 
+// Input  : other -
 // Output : bool CPredictableId::operator
 //-----------------------------------------------------------------------------
 bool CPredictableId::operator ==( const CPredictableId& other ) const
 {
-	if ( this == &other )
+	if( this == &other )
+	{
 		return true;
+	}
 
-	if ( GetPlayer() != other.GetPlayer() )
+	if( GetPlayer() != other.GetPlayer() )
+	{
 		return false;
-	if ( GetCommandNumber() != other.GetCommandNumber() )
+	}
+	if( GetCommandNumber() != other.GetCommandNumber() )
+	{
 		return false;
-	if ( GetHash() != other.GetHash() )
+	}
+	if( GetHash() != other.GetHash() )
+	{
 		return false;
-	if ( GetInstanceNumber() != other.GetInstanceNumber() )
+	}
+	if( GetInstanceNumber() != other.GetInstanceNumber() )
+	{
 		return false;
+	}
 	return true;
 }
 
 bool CPredictableId::operator !=( const CPredictableId& other ) const
 {
-	return !(*this == other);
+	return !( *this == other );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : char const
 //-----------------------------------------------------------------------------
-const char *CPredictableId::Describe( void ) const
+const char* CPredictableId::Describe( void ) const
 {
 	static char desc[ 128 ];
 
 	Q_snprintf( desc, sizeof( desc ), "pl(%i) cmd(%i) hash(%i) inst(%i) ack(%s)",
-		GetPlayer(),
-		GetCommandNumber(),
-		GetHash(),
-		GetInstanceNumber() ,
-		GetAcknowledged() ? "true" : "false" );
+				GetPlayer(),
+				GetCommandNumber(),
+				GetHash(),
+				GetInstanceNumber() ,
+				GetAcknowledged() ? "true" : "false" );
 
 	return desc;
 }

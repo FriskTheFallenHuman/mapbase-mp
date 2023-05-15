@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -47,7 +47,7 @@ enum
 //=========================================================
 // Custom tasks
 //=========================================================
-enum 
+enum
 {
 	TASK_CRANE_GET_POSITION_OVER_ENEMY = LAST_VEHICLEDRIVER_TASK,
 	TASK_CRANE_GET_POSITION_OVER_LASTPOSITION,
@@ -59,7 +59,7 @@ enum
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_CraneDriver : public CNPC_VehicleDriver
 {
@@ -70,22 +70,22 @@ public:
 
 	void	Spawn( void );
 	void	Activate( void );
-	
+
 	// AI
 	int		RangeAttack1Conditions( float flDot, float flDist );
 	int		TranslateSchedule( int scheduleType );
 	int		SelectSchedule( void );
-	void	StartTask( const Task_t *pTask );
-	void	RunTask( const Task_t *pTask );
-	void	SetDesiredPosition( const Vector &vecPosition );
+	void	StartTask( const Task_t* pTask );
+	void	RunTask( const Task_t* pTask );
+	void	SetDesiredPosition( const Vector& vecPosition );
 
 	// Driving
 	void	DriveVehicle( void );
 	bool	OverrideMove( float flInterval );
 
 	// Inputs
-	void	InputForcePickup( inputdata_t &inputdata );
-	void	InputForceDrop( inputdata_t &inputdata );
+	void	InputForcePickup( inputdata_t& inputdata );
+	void	InputForceDrop( inputdata_t& inputdata );
 
 protected:
 	CHandle<CPropCrane>	m_hCrane;
@@ -106,28 +106,28 @@ protected:
 };
 
 BEGIN_DATADESC( CNPC_CraneDriver )
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_STRING, "ForcePickup", InputForcePickup ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "ForceDrop", InputForceDrop ),
+// Inputs
+DEFINE_INPUTFUNC( FIELD_STRING, "ForcePickup", InputForcePickup ),
+				  DEFINE_INPUTFUNC( FIELD_STRING, "ForceDrop", InputForceDrop ),
 
-	//DEFINE_FIELD( m_hCrane, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hPickupTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flDistanceToTarget, FIELD_FLOAT ),
-	DEFINE_UTLVECTOR( m_PreviouslyPickedUpObjects, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bForcedPickup, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bForcedDropoff, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flDropWait, FIELD_FLOAT ),
-	DEFINE_KEYFIELD( m_flReleasePause, FIELD_FLOAT, "releasepause" ),
-	DEFINE_FIELD( m_flReleaseAt, FIELD_FLOAT ),
+				  //DEFINE_FIELD( m_hCrane, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_hPickupTarget, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_flDistanceToTarget, FIELD_FLOAT ),
+				  DEFINE_UTLVECTOR( m_PreviouslyPickedUpObjects, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_bForcedPickup, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bForcedDropoff, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_flDropWait, FIELD_FLOAT ),
+				  DEFINE_KEYFIELD( m_flReleasePause, FIELD_FLOAT, "releasepause" ),
+				  DEFINE_FIELD( m_flReleaseAt, FIELD_FLOAT ),
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnPickedUpObject, "OnPickedUpObject" ),
-	DEFINE_OUTPUT( m_OnDroppedObject, "OnDroppedObject" ),
-	DEFINE_OUTPUT( m_OnPausingBeforeDrop, "OnPausingBeforeDrop" ),
+				  // Outputs
+				  DEFINE_OUTPUT( m_OnPickedUpObject, "OnPickedUpObject" ),
+				  DEFINE_OUTPUT( m_OnDroppedObject, "OnDroppedObject" ),
+				  DEFINE_OUTPUT( m_OnPausingBeforeDrop, "OnPausingBeforeDrop" ),
 
-END_DATADESC()
+				  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_cranedriver, CNPC_CraneDriver );
+				  LINK_ENTITY_TO_CLASS( npc_cranedriver, CNPC_CraneDriver );
 
 //------------------------------------------------------------------------------
 // Purpose :
@@ -149,16 +149,16 @@ void CNPC_CraneDriver::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CraneDriver::Activate( void )
 {
 	BaseClass::Activate();
 
-	m_hCrane = dynamic_cast<CPropCrane*>((CBaseEntity*)m_hVehicleEntity);
-	if ( !m_hCrane )
+	m_hCrane = dynamic_cast<CPropCrane*>( ( CBaseEntity* )m_hVehicleEntity );
+	if( !m_hCrane )
 	{
-		Warning( "npc_cranedriver %s couldn't find his crane named %s.\n", STRING(GetEntityName()), STRING(m_iszVehicleName) );
+		Warning( "npc_cranedriver %s couldn't find his crane named %s.\n", STRING( GetEntityName() ), STRING( m_iszVehicleName ) );
 		UTIL_Remove( this );
 		return;
 	}
@@ -171,40 +171,48 @@ void CNPC_CraneDriver::Activate( void )
 //-----------------------------------------------------------------------------
 int CNPC_CraneDriver::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if ( !HasCondition( COND_SEE_ENEMY ) )
+	if( !HasCondition( COND_SEE_ENEMY ) )
+	{
 		return COND_NONE;
+	}
 
 	// Do our distance check in 2D
 	Vector2D vecOrigin2D( m_hCrane->GetAbsOrigin().x, m_hCrane->GetAbsOrigin().y );
 	Vector2D vecEnemy2D( GetEnemy()->GetAbsOrigin().x, GetEnemy()->GetAbsOrigin().y );
-	flDist = (vecOrigin2D - vecEnemy2D).Length();
+	flDist = ( vecOrigin2D - vecEnemy2D ).Length();
 
 	// Maximum & Minimum size of the crane's reach
-	if ( flDist > MAX_CRANE_FLAT_REACH )
+	if( flDist > MAX_CRANE_FLAT_REACH )
+	{
 		return COND_TOO_FAR_TO_ATTACK;
+	}
 
 	// Crane can't reach any closer than this
-	if ( flDist < MIN_CRANE_FLAT_REACH )
+	if( flDist < MIN_CRANE_FLAT_REACH )
+	{
 		return COND_TOO_CLOSE_TO_ATTACK;
+	}
 
 	return COND_CAN_RANGE_ATTACK1;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CNPC_CraneDriver::SelectSchedule( void )
 {
-	if ( HasSpawnFlags(SF_VEHICLEDRIVER_INACTIVE) )
+	if( HasSpawnFlags( SF_VEHICLEDRIVER_INACTIVE ) )
+	{
 		return BaseClass::SelectSchedule();
+	}
 
 	// If we've got an object to pickup, so go get it
-	if ( m_hPickupTarget )
+	if( m_hPickupTarget )
 	{
 		// Only clear the pickup target if we managed to pick something up
-		if ( m_hCrane->GetTotalMassOnCrane() > 0 )
+		if( m_hCrane->GetTotalMassOnCrane() > 0 )
 		{
-			if ( m_bForcedPickup )
+			if( m_bForcedPickup )
 			{
 				m_OnPickedUpObject.FireOutput( m_hPickupTarget, this );
 			}
@@ -215,7 +223,7 @@ int CNPC_CraneDriver::SelectSchedule( void )
 		}
 		else
 		{
-			if ( m_NPCState == NPC_STATE_IDLE )
+			if( m_NPCState == NPC_STATE_IDLE )
 			{
 				SetIdealState( NPC_STATE_ALERT );
 			}
@@ -224,87 +232,95 @@ int CNPC_CraneDriver::SelectSchedule( void )
 	}
 
 	// If we're currently being forced to pickup something, do only that
-	if ( m_bForcedPickup )
+	if( m_bForcedPickup )
 	{
-		if ( m_hPickupTarget )
+		if( m_hPickupTarget )
+		{
 			return SCHED_CRANE_PICKUP_OBJECT;
+		}
 
 		// We've picked up our target, we're waiting to be told where to put it
 		return SCHED_IDLE_STAND;
 	}
 
 	// If we've been told to drop something off, do that
-	if ( m_bForcedDropoff )
-		return SCHED_CRANE_FORCED_DROP;
-
-	switch ( m_NPCState )
+	if( m_bForcedDropoff )
 	{
-	case NPC_STATE_IDLE:
-		break;
+		return SCHED_CRANE_FORCED_DROP;
+	}
 
-	case NPC_STATE_ALERT:
-		break;
+	switch( m_NPCState )
+	{
+		case NPC_STATE_IDLE:
+			break;
 
-	case NPC_STATE_COMBAT:
-		if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
-		{
-			// Do we have anything on the crane? If not, look for something
-			if ( m_hCrane->GetTotalMassOnCrane() == 0 )
+		case NPC_STATE_ALERT:
+			break;
+
+		case NPC_STATE_COMBAT:
+			if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			{
+				// Do we have anything on the crane? If not, look for something
+				if( m_hCrane->GetTotalMassOnCrane() == 0 )
+				{
+					return SCHED_CRANE_FIND_LARGE_OBJECT;
+				}
+
+				// We've got something on the crane, so try and drop it on the enemy
+				return SCHED_CRANE_RANGE_ATTACK1;
+			}
+
+			// We can't attack him, so if we don't have anything on the crane, grab something
+			if( m_hCrane->GetTotalMassOnCrane() == 0 )
+			{
 				return SCHED_CRANE_FIND_LARGE_OBJECT;
-
-			// We've got something on the crane, so try and drop it on the enemy
-			return SCHED_CRANE_RANGE_ATTACK1;
-		}
-
-		// We can't attack him, so if we don't have anything on the crane, grab something
-		if ( m_hCrane->GetTotalMassOnCrane() == 0 )
-			return SCHED_CRANE_FIND_LARGE_OBJECT;
+			}
 	}
 
 	return BaseClass::SelectSchedule();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CNPC_CraneDriver::TranslateSchedule( int scheduleType ) 
+int CNPC_CraneDriver::TranslateSchedule( int scheduleType )
 {
-	switch ( scheduleType )
+	switch( scheduleType )
 	{
-	case SCHED_COMBAT_FACE:
+		case SCHED_COMBAT_FACE:
 			// Vehicles can't rotate, so don't try and face
 			return TranslateSchedule( SCHED_CHASE_ENEMY );
 
-	case SCHED_ALERT_FACE:
+		case SCHED_ALERT_FACE:
 			// Vehicles can't rotate, so don't try and face
 			return SCHED_ALERT_STAND;
 
-	case SCHED_FORCED_GO:
-		return SCHED_CRANE_FORCED_GO;
+		case SCHED_FORCED_GO:
+			return SCHED_CRANE_FORCED_GO;
 
-	case SCHED_CHASE_ENEMY:
-		return SCHED_CRANE_CHASE_ENEMY;
+		case SCHED_CHASE_ENEMY:
+			return SCHED_CRANE_CHASE_ENEMY;
 	}
 
-	return BaseClass::TranslateSchedule(scheduleType);
+	return BaseClass::TranslateSchedule( scheduleType );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTask - 
+// Purpose:
+// Input  : *pTask -
 //-----------------------------------------------------------------------------
-void CNPC_CraneDriver::StartTask( const Task_t *pTask )
+void CNPC_CraneDriver::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_WAIT_FOR_MOVEMENT:
-		break;
+		case TASK_WAIT_FOR_MOVEMENT:
+			break;
 
-	case TASK_CRANE_GET_POSITION_OVER_ENEMY:
+		case TASK_CRANE_GET_POSITION_OVER_ENEMY:
 		{
-			if ( !GetEnemy() )
+			if( !GetEnemy() )
 			{
-				TaskFail(FAIL_NO_ROUTE);
+				TaskFail( FAIL_NO_ROUTE );
 				return;
 			}
 
@@ -313,11 +329,11 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_CRANE_GET_POSITION_OVER_OBJECT:
+		case TASK_CRANE_GET_POSITION_OVER_OBJECT:
 		{
-			if ( !m_hPickupTarget )
+			if( !m_hPickupTarget )
 			{
-				TaskFail("No object to pickup!");
+				TaskFail( "No object to pickup!" );
 				return;
 			}
 
@@ -326,20 +342,20 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_CRANE_GET_POSITION_OVER_LASTPOSITION:
+		case TASK_CRANE_GET_POSITION_OVER_LASTPOSITION:
 		{
 			SetDesiredPosition( m_vecLastPosition );
 			TaskComplete();
 		}
 		break;
 
-	case TASK_CRANE_TURN_MAGNET_OFF:
+		case TASK_CRANE_TURN_MAGNET_OFF:
 		{
 			// If we picked up something, and we were being forced to pick something up, fire our output
-			if ( m_hCrane->GetTotalMassOnCrane() > 0 && m_bForcedDropoff )
+			if( m_hCrane->GetTotalMassOnCrane() > 0 && m_bForcedDropoff )
 			{
 				// Are we supposed to pause first?
-				if ( m_flReleasePause )
+				if( m_flReleasePause )
 				{
 					m_flReleaseAt = gpGlobals->curtime + m_flReleasePause;
 					m_OnPausingBeforeDrop.FireOutput( this, this );
@@ -354,39 +370,45 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_END_FORCED_DROP:
+		case TASK_END_FORCED_DROP:
 		{
 			m_bForcedDropoff = false;
 			TaskComplete();
 		}
 		break;
 
-	case TASK_CRANE_FIND_OBJECT_TO_PICKUP:
+		case TASK_CRANE_FIND_OBJECT_TO_PICKUP:
 		{
 
 			// Find a large physics object within our reach to pickup
 			float flLargestMass = 0;
-			CBaseEntity *pLargestEntity = NULL;
-			
-			CBaseEntity *pList[1024];
-			Vector delta( m_flDistTooFar, m_flDistTooFar, m_flDistTooFar*2 );
+			CBaseEntity* pLargestEntity = NULL;
+
+			CBaseEntity* pList[1024];
+			Vector delta( m_flDistTooFar, m_flDistTooFar, m_flDistTooFar * 2 );
 			int count = UTIL_EntitiesInBox( pList, 1024, m_hCrane->GetAbsOrigin() - delta, m_hCrane->GetAbsOrigin() + delta, 0 );
-			for ( int i = 0; i < count; i++ )
+			for( int i = 0; i < count; i++ )
 			{
-				if ( !pList[i] ) 
+				if( !pList[i] )
+				{
 					continue;
+				}
 				// Ignore the crane & the magnet
-				if ( pList[i] == m_hCrane || pList[i] == m_hCrane->GetMagnet() )
+				if( pList[i] == m_hCrane || pList[i] == m_hCrane->GetMagnet() )
+				{
 					continue;
-				if ( m_PreviouslyPickedUpObjects.Find( pList[i] ) != m_PreviouslyPickedUpObjects.InvalidIndex() )
+				}
+				if( m_PreviouslyPickedUpObjects.Find( pList[i] ) != m_PreviouslyPickedUpObjects.InvalidIndex() )
+				{
 					continue;
+				}
 
 				// Get the VPhysics object
-				IPhysicsObject *pPhysics = pList[i]->VPhysicsGetObject();
-				if ( pPhysics && pList[i]->GetMoveType() == MOVETYPE_VPHYSICS )
+				IPhysicsObject* pPhysics = pList[i]->VPhysicsGetObject();
+				if( pPhysics && pList[i]->GetMoveType() == MOVETYPE_VPHYSICS )
 				{
 					float flMass = pPhysics->GetMass();
-					if ( flMass > flLargestMass && (flMass < MAXIMUM_CRANE_PICKUP_MASS) && (flMass > MINIMUM_CRANE_PICKUP_MASS) )
+					if( flMass > flLargestMass && ( flMass < MAXIMUM_CRANE_PICKUP_MASS ) && ( flMass > MINIMUM_CRANE_PICKUP_MASS ) )
 					{
 						// Biggest one we've found so far
 
@@ -394,12 +416,16 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 						// Do our distance check in 2D
 						Vector2D vecOrigin2D( m_hCrane->GetAbsOrigin().x, m_hCrane->GetAbsOrigin().y );
 						Vector2D vecEnemy2D( pList[i]->GetAbsOrigin().x, pList[i]->GetAbsOrigin().y );
-						float flDist = (vecOrigin2D - vecEnemy2D).Length();
+						float flDist = ( vecOrigin2D - vecEnemy2D ).Length();
 						// Maximum & Minimum size of the crane's reach
-						if ( flDist > MAX_CRANE_FLAT_REACH )
+						if( flDist > MAX_CRANE_FLAT_REACH )
+						{
 							continue;
-						if ( flDist < MIN_CRANE_FLAT_REACH )
+						}
+						if( flDist < MIN_CRANE_FLAT_REACH )
+						{
 							continue;
+						}
 
 						flLargestMass = flMass;
 						pLargestEntity = pList[i];
@@ -408,14 +434,14 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 			}
 
 			// If we didn't find anything new, clear our list of targets
-			if ( !pLargestEntity )
+			if( !pLargestEntity )
 			{
 				m_PreviouslyPickedUpObjects.Purge();
 			}
 
-			if ( !pLargestEntity )
+			if( !pLargestEntity )
 			{
-				TaskFail("Couldn't find anything to pick up!");
+				TaskFail( "Couldn't find anything to pick up!" );
 				return;
 			}
 
@@ -424,7 +450,7 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_CRANE_DROP_MAGNET:
+		case TASK_CRANE_DROP_MAGNET:
 		{
 			// Drop the magnet, but only end the task once the magnet's back up
 			m_pVehicleInterface->NPC_SecondaryFire();
@@ -436,60 +462,60 @@ void CNPC_CraneDriver::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CraneDriver::RunTask( const Task_t *pTask )
+void CNPC_CraneDriver::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_WAIT_FOR_MOVEMENT:
+		case TASK_WAIT_FOR_MOVEMENT:
 		{
 			// Is the magnet over the target, and are we not moving too fast?
 			AngularImpulse angVel;
 			Vector vecVelocity;
-			CBaseEntity *pMagnet = m_hCrane->GetMagnet();
-			IPhysicsObject *pVehiclePhysics = pMagnet->VPhysicsGetObject();
+			CBaseEntity* pMagnet = m_hCrane->GetMagnet();
+			IPhysicsObject* pVehiclePhysics = pMagnet->VPhysicsGetObject();
 			pVehiclePhysics->GetVelocity( &vecVelocity, &angVel );
 			float flVelocity = 100;
 			float flDistance = 90;
 
 			// More accurate on forced drops
-			if ( m_bForcedPickup || m_bForcedDropoff )
+			if( m_bForcedPickup || m_bForcedDropoff )
 			{
 				flVelocity = 10;
 				flDistance = 30;
 			}
 
-			if ( m_flDistanceToTarget < flDistance && m_hCrane->GetTurnRate() < 0.1 && vecVelocity.Length() < flVelocity )
+			if( m_flDistanceToTarget < flDistance && m_hCrane->GetTurnRate() < 0.1 && vecVelocity.Length() < flVelocity )
 			{
 				TaskComplete();
 			}
 		}
 		break;
 
-	case TASK_CRANE_DROP_MAGNET:
+		case TASK_CRANE_DROP_MAGNET:
 		{
 			// Wait for the magnet to get back up
-			if ( m_flDropWait < gpGlobals->curtime && !m_hCrane->IsDropping() )
+			if( m_flDropWait < gpGlobals->curtime && !m_hCrane->IsDropping() )
 			{
 				TaskComplete();
 			}
 		}
 		break;
 
-	case TASK_CRANE_TURN_MAGNET_OFF:
+		case TASK_CRANE_TURN_MAGNET_OFF:
 		{
 			// We're waiting for the pause length before dropping whatever's on our magnet
-			if ( gpGlobals->curtime > m_flReleaseAt )
+			if( gpGlobals->curtime > m_flReleaseAt )
 			{
-				if ( m_bForcedDropoff )
+				if( m_bForcedDropoff )
 				{
 					m_OnDroppedObject.FireOutput( this, this );
 				}
@@ -500,14 +526,14 @@ void CNPC_CraneDriver::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CNPC_CraneDriver::OverrideMove( float flInterval )
 {
@@ -515,9 +541,9 @@ bool CNPC_CraneDriver::OverrideMove( float flInterval )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CraneDriver::SetDesiredPosition( const Vector &vecPosition )
+void CNPC_CraneDriver::SetDesiredPosition( const Vector& vecPosition )
 {
 	m_vecDesiredPosition = vecPosition;
 	m_flDistanceToTarget = 999;
@@ -531,16 +557,18 @@ void CNPC_CraneDriver::SetDesiredPosition( const Vector &vecPosition )
 void CNPC_CraneDriver::DriveVehicle( void )
 {
 	// No targets?
-	if ( !GetEnemy() && m_vecDesiredPosition == vec3_origin )
+	if( !GetEnemy() && m_vecDesiredPosition == vec3_origin )
+	{
 		return;
+	}
 
 	Vector vecTarget = m_vecDesiredPosition;
 	// Track our targets
-	if ( m_hPickupTarget )
+	if( m_hPickupTarget )
 	{
 		vecTarget = m_hPickupTarget->GetAbsOrigin();
 	}
-	else if ( !m_bForcedPickup && !m_bForcedDropoff && GetEnemy() )
+	else if( !m_bForcedPickup && !m_bForcedDropoff && GetEnemy() )
 	{
 		vecTarget = GetEnemy()->GetAbsOrigin();
 	}
@@ -552,30 +580,30 @@ void CNPC_CraneDriver::DriveVehicle( void )
 	Vector2D vecTarget2D( vecTarget.x, vecTarget.y );
 	Vector2D vecOrigin2D( m_hCrane->GetAbsOrigin().x, m_hCrane->GetAbsOrigin().y );
 
-	if ( g_debug_vehicledriver.GetInt() )
+	if( g_debug_vehicledriver.GetInt() )
 	{
-		NDebugOverlay::Box( vecTarget, -Vector(50,50,50), Vector(50,50,50), 0,255,0, true, 0.1 );
-		NDebugOverlay::Box( vecCraneTip, -Vector(2,2,5000), Vector(2,2,5), 0,255,0, true, 0.1 );
-		NDebugOverlay::Box( vecTarget, -Vector(2,2,5), Vector(2,2,5000), 0,255,0, true, 0.1 );
+		NDebugOverlay::Box( vecTarget, -Vector( 50, 50, 50 ), Vector( 50, 50, 50 ), 0, 255, 0, true, 0.1 );
+		NDebugOverlay::Box( vecCraneTip, -Vector( 2, 2, 5000 ), Vector( 2, 2, 5 ), 0, 255, 0, true, 0.1 );
+		NDebugOverlay::Box( vecTarget, -Vector( 2, 2, 5 ), Vector( 2, 2, 5000 ), 0, 255, 0, true, 0.1 );
 	}
 	// Store off the distance to our target
-	m_flDistanceToTarget = (vecTarget2D - vecCraneTip2D).Length();
+	m_flDistanceToTarget = ( vecTarget2D - vecCraneTip2D ).Length();
 
 	// First determine whether we need to extend / retract the arm
-	float flDistToTarget = (vecOrigin2D - vecTarget2D).LengthSqr();
-	float flDistToCurrent = (vecOrigin2D - vecCraneTip2D).LengthSqr();
-	float flDelta = fabs(flDistToTarget - flDistToCurrent);
+	float flDistToTarget = ( vecOrigin2D - vecTarget2D ).LengthSqr();
+	float flDistToCurrent = ( vecOrigin2D - vecCraneTip2D ).LengthSqr();
+	float flDelta = fabs( flDistToTarget - flDistToCurrent );
 	// Slow down as we get closer, but do it based upon our current extension rate
-	float flMinDelta = 50 + (50 * fabs(m_hCrane->GetExtensionRate() / CRANE_EXTENSION_RATE_MAX));
+	float flMinDelta = 50 + ( 50 * fabs( m_hCrane->GetExtensionRate() / CRANE_EXTENSION_RATE_MAX ) );
 	flMinDelta *= flMinDelta;
-	if ( flDelta > flMinDelta )
+	if( flDelta > flMinDelta )
 	{
-		if ( flDistToCurrent > flDistToTarget )
+		if( flDistToCurrent > flDistToTarget )
 		{
 			// Retract
 			m_pVehicleInterface->NPC_ThrottleReverse();
 		}
-		else if ( flDistToCurrent < flDistToTarget )
+		else if( flDistToCurrent < flDistToTarget )
 		{
 			// Extend
 			m_pVehicleInterface->NPC_ThrottleForward();
@@ -600,22 +628,22 @@ void CNPC_CraneDriver::DriveVehicle( void )
 	float flDotForward = DotProduct( vecForward, vecToTarget );
 
 	// Start slowing if we're going to hit the point soon
-	float flTurnInDeg = RAD2DEG( acos(flDotForward) );
-	float flSpeed = m_hCrane->GetMaxTurnRate() * (flTurnInDeg / 15.0);
+	float flTurnInDeg = RAD2DEG( acos( flDotForward ) );
+	float flSpeed = m_hCrane->GetMaxTurnRate() * ( flTurnInDeg / 15.0 );
 	flSpeed = MIN( m_hCrane->GetMaxTurnRate(), flSpeed );
-	if ( fabs(flSpeed) < 0.05 )
+	if( fabs( flSpeed ) < 0.05 )
 	{
 		// We're approaching the target, so stop turning
 		m_pVehicleInterface->NPC_TurnCenter();
 	}
 	else
 	{
-		if ( flDotRight < 0 )
+		if( flDotRight < 0 )
 		{
 			// Turn right
 			m_pVehicleInterface->NPC_TurnRight( flSpeed );
 		}
-		else if ( flDotRight > 0 )
+		else if( flDotRight > 0 )
 		{
 			// Turn left
 			m_pVehicleInterface->NPC_TurnLeft( flSpeed );
@@ -625,12 +653,12 @@ void CNPC_CraneDriver::DriveVehicle( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Force the driver to pickup a specific entity
-// Input  : &inputdata - 
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_CraneDriver::InputForcePickup( inputdata_t &inputdata )
+void CNPC_CraneDriver::InputForcePickup( inputdata_t& inputdata )
 {
 	string_t iszPickupName = inputdata.value.StringID();
-	if ( iszPickupName != NULL_STRING )
+	if( iszPickupName != NULL_STRING )
 	{
 		// Turn the magnet off now to drop anything we might have already on the magnet
 		m_hCrane->TurnMagnetOff();
@@ -644,17 +672,17 @@ void CNPC_CraneDriver::InputForcePickup( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 // Purpose: Force the driver to drop his held entity at a specific point
-// Input  : &inputdata - 
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_CraneDriver::InputForceDrop( inputdata_t &inputdata )
+void CNPC_CraneDriver::InputForceDrop( inputdata_t& inputdata )
 {
 	string_t iszDropName = inputdata.value.StringID();
-	if ( iszDropName != NULL_STRING )
+	if( iszDropName != NULL_STRING )
 	{
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, iszDropName, NULL, inputdata.pActivator, inputdata.pCaller );
-		if ( !pEntity )
+		CBaseEntity* pEntity = gEntList.FindEntityByName( NULL, iszDropName, NULL, inputdata.pActivator, inputdata.pCaller );
+		if( !pEntity )
 		{
-			Warning("Crane couldn't find entity named %s\n", STRING(iszDropName) );
+			Warning( "Crane couldn't find entity named %s\n", STRING( iszDropName ) );
 			return;
 		}
 		m_bForcedPickup = false;
@@ -673,115 +701,115 @@ void CNPC_CraneDriver::InputForceDrop( inputdata_t &inputdata )
 
 AI_BEGIN_CUSTOM_NPC( npc_cranedriver, CNPC_CraneDriver )
 
-	//Tasks
-	DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_ENEMY )
-	DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_LASTPOSITION )
-	DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_OBJECT )
-	DECLARE_TASK( TASK_CRANE_TURN_MAGNET_OFF )
-	DECLARE_TASK( TASK_END_FORCED_DROP )
-	DECLARE_TASK( TASK_CRANE_FIND_OBJECT_TO_PICKUP )
-	DECLARE_TASK( TASK_CRANE_DROP_MAGNET )
+//Tasks
+DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_ENEMY )
+DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_LASTPOSITION )
+DECLARE_TASK( TASK_CRANE_GET_POSITION_OVER_OBJECT )
+DECLARE_TASK( TASK_CRANE_TURN_MAGNET_OFF )
+DECLARE_TASK( TASK_END_FORCED_DROP )
+DECLARE_TASK( TASK_CRANE_FIND_OBJECT_TO_PICKUP )
+DECLARE_TASK( TASK_CRANE_DROP_MAGNET )
 
-	//Schedules
-	//==================================================
-	// SCHED_ANTLION_CHASE_ENEMY_BURROW
-	//==================================================
+//Schedules
+//==================================================
+// SCHED_ANTLION_CHASE_ENEMY_BURROW
+//==================================================
 
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_CRANE_RANGE_ATTACK1,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_CHASE_ENEMY"
-		"		TASK_CRANE_GET_POSITION_OVER_ENEMY	0"
-		"		TASK_WAIT_FOR_MOVEMENT				0"
-		"		TASK_CRANE_TURN_MAGNET_OFF			0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_TOO_FAR"
-		"		COND_PROVOKED"
-	)
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_CHASE_ENEMY"
+	"		TASK_CRANE_GET_POSITION_OVER_ENEMY	0"
+	"		TASK_WAIT_FOR_MOVEMENT				0"
+	"		TASK_CRANE_TURN_MAGNET_OFF			0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_TOO_FAR"
+	"		COND_PROVOKED"
+)
 
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_CRANE_FIND_LARGE_OBJECT,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_CHASE_ENEMY"
-		"		TASK_CRANE_FIND_OBJECT_TO_PICKUP	0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_TOO_FAR"
-	)
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_CHASE_ENEMY"
+	"		TASK_CRANE_FIND_OBJECT_TO_PICKUP	0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_TOO_FAR"
+)
 
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_CRANE_PICKUP_OBJECT,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE					SCHEDULE:SCHED_CHASE_ENEMY"
-		"		TASK_CRANE_GET_POSITION_OVER_OBJECT		0"
-		"		TASK_WAIT_FOR_MOVEMENT					0"
-		"		TASK_CRANE_DROP_MAGNET					0"
-		"	"
-		"	Interrupts"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_ENEMY_TOO_FAR"
-		"		COND_PROVOKED"
-	)
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE					SCHEDULE:SCHED_CHASE_ENEMY"
+	"		TASK_CRANE_GET_POSITION_OVER_OBJECT		0"
+	"		TASK_WAIT_FOR_MOVEMENT					0"
+	"		TASK_CRANE_DROP_MAGNET					0"
+	"	"
+	"	Interrupts"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_ENEMY_TOO_FAR"
+	"		COND_PROVOKED"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_CRANE_FORCED_GO,
+DEFINE_SCHEDULE
+(
+	SCHED_CRANE_FORCED_GO,
 
-		"	Tasks"
-		"		TASK_CRANE_GET_POSITION_OVER_LASTPOSITION	0"
-		"		TASK_WAIT_FOR_MOVEMENT						0"
-		"		TASK_CRANE_TURN_MAGNET_OFF					0"
-		"		TASK_WAIT									2"
-		"	"
-		"	Interrupts"
-	)
+	"	Tasks"
+	"		TASK_CRANE_GET_POSITION_OVER_LASTPOSITION	0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"		TASK_CRANE_TURN_MAGNET_OFF					0"
+	"		TASK_WAIT									2"
+	"	"
+	"	Interrupts"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_CRANE_CHASE_ENEMY,
+DEFINE_SCHEDULE
+(
+	SCHED_CRANE_CHASE_ENEMY,
 
-		"	Tasks"
-		"		TASK_CRANE_GET_POSITION_OVER_ENEMY			0"
-		"		TASK_WAIT_FOR_MOVEMENT						0"
-		"		TASK_WAIT									5"
-		"	"
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-		"		COND_ENEMY_UNREACHABLE"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_TOO_CLOSE_TO_ATTACK"
-		"		COND_TASK_FAILED"
-		"		COND_LOST_ENEMY"
-		"		COND_PROVOKED"
-	)
+	"	Tasks"
+	"		TASK_CRANE_GET_POSITION_OVER_ENEMY			0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"		TASK_WAIT									5"
+	"	"
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_ENEMY_UNREACHABLE"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_TOO_CLOSE_TO_ATTACK"
+	"		COND_TASK_FAILED"
+	"		COND_LOST_ENEMY"
+	"		COND_PROVOKED"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_CRANE_FORCED_DROP,
+DEFINE_SCHEDULE
+(
+	SCHED_CRANE_FORCED_DROP,
 
-		"	Tasks"
-		"		TASK_WAIT_FOR_MOVEMENT						0"
-		"		TASK_CRANE_TURN_MAGNET_OFF					0"
-		"		TASK_END_FORCED_DROP						0"
-		"		TASK_WAIT									2"
-		"	"
-		"	Interrupts"
-	)
-	
+	"	Tasks"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"		TASK_CRANE_TURN_MAGNET_OFF					0"
+	"		TASK_END_FORCED_DROP						0"
+	"		TASK_WAIT									2"
+	"	"
+	"	Interrupts"
+)
+
 AI_END_CUSTOM_NPC()

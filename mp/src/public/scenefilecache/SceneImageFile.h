@@ -7,7 +7,7 @@
 #ifndef SCENE_IMAGE_FILE_H
 #define SCENE_IMAGE_FILE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "commonmacros.h"
@@ -41,17 +41,17 @@ struct SceneImageHeader_t
 	int	nNumStrings;			// number of unique strings in table
 	int nSceneEntryOffset;
 
-	inline const char *String( short iString )
+	inline const char* String( short iString )
 	{
-		if ( iString < 0 || iString >= nNumStrings )
+		if( iString < 0 || iString >= nNumStrings )
 		{
 			Assert( 0 );
 			return NULL;
 		}
 
 		// access string table (after header) to access pool
-		unsigned int *pTable = (unsigned int *)((byte *)this + sizeof( SceneImageHeader_t ));
-		return (char *)this + pTable[iString];
+		unsigned int* pTable = ( unsigned int* )( ( byte* )this + sizeof( SceneImageHeader_t ) );
+		return ( char* )this + pTable[iString];
 	}
 };
 

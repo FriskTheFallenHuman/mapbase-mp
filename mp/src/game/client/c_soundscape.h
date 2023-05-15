@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,24 +8,24 @@
 #ifndef C_SOUNDSCAPE_H
 #define C_SOUNDSCAPE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
 class IGameSystem;
 struct audioparams_t;
 
-extern IGameSystem *ClientSoundscapeSystem();
+extern IGameSystem* ClientSoundscapeSystem();
 
 // call when audio params may have changed
-extern void Soundscape_Update( audioparams_t &audio );
+extern void Soundscape_Update( audioparams_t& audio );
 
 // Called on round restart, otherwise the soundscape system thinks all its
 // sounds are still playing when they're not.
 void Soundscape_OnStopAllSounds();
 
 #ifdef MAPBASE
-void Soundscape_AddFile( const char *szFile );
+	void Soundscape_AddFile( const char* szFile );
 #endif
 
 #endif // C_SOUNDSCAPE_H

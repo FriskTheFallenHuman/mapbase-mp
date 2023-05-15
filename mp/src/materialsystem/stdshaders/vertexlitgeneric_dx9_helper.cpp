@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -18,10 +18,10 @@
 #include "SDK_vertexlit_and_unlit_generic_bump_ps20b.inc"
 
 #ifndef _X360
-#include "SDK_vertexlit_and_unlit_generic_vs30.inc"
-#include "SDK_vertexlit_and_unlit_generic_ps30.inc"
-#include "SDK_vertexlit_and_unlit_generic_bump_vs30.inc"
-#include "SDK_vertexlit_and_unlit_generic_bump_ps30.inc"
+	#include "SDK_vertexlit_and_unlit_generic_vs30.inc"
+	#include "SDK_vertexlit_and_unlit_generic_ps30.inc"
+	#include "SDK_vertexlit_and_unlit_generic_bump_vs30.inc"
+	#include "SDK_vertexlit_and_unlit_generic_bump_ps30.inc"
 #endif
 
 #include "commandbuilder.h"
@@ -30,29 +30,39 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static ConVar mat_fullbright( "mat_fullbright","0", FCVAR_CHEAT );
-static ConVar r_lightwarpidentity( "r_lightwarpidentity","0", FCVAR_CHEAT );
+static ConVar mat_fullbright( "mat_fullbright", "0", FCVAR_CHEAT );
+static ConVar r_lightwarpidentity( "r_lightwarpidentity", "0", FCVAR_CHEAT );
 static ConVar mat_luxels( "mat_luxels", "0", FCVAR_CHEAT );
 
 
-static inline bool WantsSkinShader( IMaterialVar** params, const VertexLitGeneric_DX9_Vars_t &info )
+static inline bool WantsSkinShader( IMaterialVar** params, const VertexLitGeneric_DX9_Vars_t& info )
 {
-	if ( info.m_nPhong == -1)								// Don't use skin without Phong
-		return false;
-	
-	if ( params[info.m_nPhong]->GetIntValue() == 0 )		// Don't use skin without Phong turned on
-		return false;
-
-	if ( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture() ) // If there's Phong and diffuse warp do skin
-		return true;
-
-	if ( ( info.m_nBaseMapAlphaPhongMask != -1 ) && params[info.m_nBaseMapAlphaPhongMask]->GetIntValue() != 1 )
+	if( info.m_nPhong == -1 )								// Don't use skin without Phong
 	{
-		if ( info.m_nBumpmap == -1 )						// Don't use without a bump map
-			return false;
+		return false;
+	}
 
-		if ( !params[info.m_nBumpmap]->IsTexture() )		// Don't use if the texture isn't specified
+	if( params[info.m_nPhong]->GetIntValue() == 0 )		// Don't use skin without Phong turned on
+	{
+		return false;
+	}
+
+	if( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture() )  // If there's Phong and diffuse warp do skin
+	{
+		return true;
+	}
+
+	if( ( info.m_nBaseMapAlphaPhongMask != -1 ) && params[info.m_nBaseMapAlphaPhongMask]->GetIntValue() != 1 )
+	{
+		if( info.m_nBumpmap == -1 )						// Don't use without a bump map
+		{
 			return false;
+		}
+
+		if( !params[info.m_nBumpmap]->IsTexture() )		// Don't use if the texture isn't specified
+		{
+			return false;
+		}
 	}
 
 	return true;
@@ -63,8 +73,8 @@ int g_nSnapShots;
 //-----------------------------------------------------------------------------
 // Initialize shader parameters
 //-----------------------------------------------------------------------------
-void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info )
-{	
+void InitParamsVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info )
+{
 	InitIntParam( info.m_nPhong, params, 0 );
 
 	InitFloatParam( info.m_nAlphaTestReference, params, 0.0f );
@@ -72,12 +82,12 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 
 	InitIntParam( info.m_nFlashlightNoLambert, params, 0 );
 
-	if ( info.m_nDetailTint != -1 && !params[info.m_nDetailTint]->IsDefined() )
+	if( info.m_nDetailTint != -1 && !params[info.m_nDetailTint]->IsDefined() )
 	{
 		params[info.m_nDetailTint]->SetVecValue( 1.0f, 1.0f, 1.0f );
 	}
 
-	if ( info.m_nEnvmapTint != -1 && !params[info.m_nEnvmapTint]->IsDefined() )
+	if( info.m_nEnvmapTint != -1 && !params[info.m_nEnvmapTint]->IsDefined() )
 	{
 		params[info.m_nEnvmapTint]->SetVecValue( 1.0f, 1.0f, 1.0f );
 	}
@@ -89,22 +99,22 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 
 	InitFloatParam( info.m_nDetailScale, params, 4.0f );
 
-	if ( (info.m_nBlendTintByBaseAlpha != -1) && (!params[info.m_nBlendTintByBaseAlpha]->IsDefined()) )
+	if( ( info.m_nBlendTintByBaseAlpha != -1 ) && ( !params[info.m_nBlendTintByBaseAlpha]->IsDefined() ) )
 	{
 		params[info.m_nBlendTintByBaseAlpha]->SetIntValue( 0 );
 	}
 
 	InitFloatParam( info.m_nTintReplacesBaseColor, params, 0 );
 
-	if ( (info.m_nSelfIllumTint != -1) && (!params[info.m_nSelfIllumTint]->IsDefined()) )
+	if( ( info.m_nSelfIllumTint != -1 ) && ( !params[info.m_nSelfIllumTint]->IsDefined() ) )
 	{
 		params[info.m_nSelfIllumTint]->SetVecValue( 1.0f, 1.0f, 1.0f );
 	}
 
 
-	if ( WantsSkinShader( params, info ) )
+	if( WantsSkinShader( params, info ) )
 	{
-		if ( !g_pHardwareConfig->SupportsPixelShaders_2_b() || !g_pConfig->UsePhong() )
+		if( !g_pHardwareConfig->SupportsPixelShaders_2_b() || !g_pConfig->UsePhong() )
 		{
 			params[info.m_nPhong]->SetIntValue( 0 );
 		}
@@ -114,11 +124,11 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 			return;
 		}
 	}
-	
+
 	// FLASHLIGHTFIXME: Do ShaderAPI::BindFlashlightTexture
-	if ( info.m_nFlashlightTexture != -1 )
+	if( info.m_nFlashlightTexture != -1 )
 	{
-		if ( g_pHardwareConfig->SupportsBorderColor() )
+		if( g_pHardwareConfig->SupportsBorderColor() )
 		{
 			params[FLASHLIGHTTEXTURE]->SetStringValue( "effects/flashlight_border" );
 		}
@@ -127,10 +137,10 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 			params[FLASHLIGHTTEXTURE]->SetStringValue( "effects/flashlight001" );
 		}
 	}
-	
+
 	// Write over $basetexture with $info.m_nBumpmap if we are going to be using diffuse normal mapping.
-	if ( info.m_nAlbedo != -1 && g_pConfig->UseBumpmapping() && info.m_nBumpmap != -1 && params[info.m_nBumpmap]->IsDefined() && params[info.m_nAlbedo]->IsDefined() &&
-		params[info.m_nBaseTexture]->IsDefined() )
+	if( info.m_nAlbedo != -1 && g_pConfig->UseBumpmapping() && info.m_nBumpmap != -1 && params[info.m_nBumpmap]->IsDefined() && params[info.m_nAlbedo]->IsDefined() &&
+			params[info.m_nBaseTexture]->IsDefined() )
 	{
 		params[info.m_nBaseTexture]->SetStringValue( params[info.m_nAlbedo]->GetStringValue() );
 	}
@@ -138,7 +148,7 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 	// This shader can be used with hw skinning
 	SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_HW_SKINNING );
 
-	if ( bVertexLitGeneric )
+	if( bVertexLitGeneric )
 	{
 		SET_FLAGS2( MATERIAL_VAR2_LIGHTING_VERTEX_LIT );
 	}
@@ -159,26 +169,26 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 	InitFloatParam( info.m_nOutlineAlpha, params, 1.0 );
 
 	// No texture means no self-illum or env mask in base alpha
-	if ( info.m_nBaseTexture != -1 && !params[info.m_nBaseTexture]->IsDefined() )
+	if( info.m_nBaseTexture != -1 && !params[info.m_nBaseTexture]->IsDefined() )
 	{
 		CLEAR_FLAGS( MATERIAL_VAR_SELFILLUM );
 		CLEAR_FLAGS( MATERIAL_VAR_BASEALPHAENVMAPMASK );
 	}
 
 	// If in decal mode, no debug override...
-	if (IS_FLAG_SET(MATERIAL_VAR_DECAL))
+	if( IS_FLAG_SET( MATERIAL_VAR_DECAL ) )
 	{
 		SET_FLAGS( MATERIAL_VAR_NO_DEBUG_OVERRIDE );
 	}
 
-	if( ( (info.m_nBumpmap != -1) && g_pConfig->UseBumpmapping() && params[info.m_nBumpmap]->IsDefined() ) 
-		// we don't need a tangent space if we have envmap without bumpmap
-		//		|| ( info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() ) 
-		)
+	if( ( ( info.m_nBumpmap != -1 ) && g_pConfig->UseBumpmapping() && params[info.m_nBumpmap]->IsDefined() )
+			// we don't need a tangent space if we have envmap without bumpmap
+			//		|| ( info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() )
+	  )
 	{
 		SET_FLAGS2( MATERIAL_VAR2_NEEDS_TANGENT_SPACES );
 	}
-	else if ( (info.m_nDiffuseWarpTexture != -1) && params[info.m_nDiffuseWarpTexture]->IsDefined() ) // diffuse warp goes down bump path...
+	else if( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsDefined() ) // diffuse warp goes down bump path...
 	{
 		SET_FLAGS2( MATERIAL_VAR2_NEEDS_TANGENT_SPACES );
 	}
@@ -188,24 +198,24 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 	}
 
 	bool hasNormalMapAlphaEnvmapMask = IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
-	if ( hasNormalMapAlphaEnvmapMask )
+	if( hasNormalMapAlphaEnvmapMask )
 	{
 		params[info.m_nEnvmapMask]->SetUndefined();
 		CLEAR_FLAGS( MATERIAL_VAR_BASEALPHAENVMAPMASK );
 	}
 
 #ifndef MAPBASE
-	if ( IS_FLAG_SET( MATERIAL_VAR_BASEALPHAENVMAPMASK ) && info.m_nBumpmap != -1 && 
-		params[info.m_nBumpmap]->IsDefined() && !hasNormalMapAlphaEnvmapMask )
+	if( IS_FLAG_SET( MATERIAL_VAR_BASEALPHAENVMAPMASK ) && info.m_nBumpmap != -1 &&
+			params[info.m_nBumpmap]->IsDefined() && !hasNormalMapAlphaEnvmapMask )
 	{
 		Warning( "material %s has a normal map and $basealphaenvmapmask.  Must use $normalmapalphaenvmapmask to get specular.\n\n", pMaterialName );
 		params[info.m_nEnvmap]->SetUndefined();
 	}
-	
-	if ( info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsDefined() && info.m_nBumpmap != -1 && params[info.m_nBumpmap]->IsDefined() )
+
+	if( info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsDefined() && info.m_nBumpmap != -1 && params[info.m_nBumpmap]->IsDefined() )
 	{
 		params[info.m_nEnvmapMask]->SetUndefined();
-		if ( !hasNormalMapAlphaEnvmapMask )
+		if( !hasNormalMapAlphaEnvmapMask )
 		{
 			Warning( "material %s has a normal map and an envmapmask.  Must use $normalmapalphaenvmapmask.\n\n", pMaterialName );
 			params[info.m_nEnvmap]->SetUndefined();
@@ -214,7 +224,7 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 #endif
 
 	// If mat_specular 0, then get rid of envmap
-	if ( !g_pConfig->UseSpecular() && info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() && params[info.m_nBaseTexture]->IsDefined() )
+	if( !g_pConfig->UseSpecular() && info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() && params[info.m_nBaseTexture]->IsDefined() )
 	{
 		params[info.m_nEnvmap]->SetUndefined();
 	}
@@ -230,18 +240,18 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 #ifdef MAPBASE
 	InitIntParam( info.m_nAllowDiffuseModulation, params, 1 );
 
-	if ( ( info.m_nEnvMapFresnelMinMaxExp != -1 ) && !params[info.m_nEnvMapFresnelMinMaxExp]->IsDefined() )
+	if( ( info.m_nEnvMapFresnelMinMaxExp != -1 ) && !params[info.m_nEnvMapFresnelMinMaxExp]->IsDefined() )
 	{
 		params[info.m_nEnvMapFresnelMinMaxExp]->SetVecValue( 0.0f, 1.0f, 2.0f, 0.0f );
 	}
-	if ( ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 ) && !params[info.m_nBaseAlphaEnvMapMaskMinMaxExp]->IsDefined() )
+	if( ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 ) && !params[info.m_nBaseAlphaEnvMapMaskMinMaxExp]->IsDefined() )
 	{
 		// Default to min: 1 max: 0 exp: 1 so that we default to the legacy behavior for basealphaenvmapmask, which is 1-baseColor.a
 		// These default values translate to a scale of -1, bias of 1 and exponent 1 in the shader.
 		params[info.m_nBaseAlphaEnvMapMaskMinMaxExp]->SetVecValue( 1.0f, 0.0f, 1.0f, 0.0f );
 	}
 #endif
-	
+
 	InitIntParam( info.m_nTreeSway, params, 0 );
 	InitFloatParam( info.m_nTreeSwayHeight, params, 1000.0f );
 	InitFloatParam( info.m_nTreeSwayStartHeight, params, 0.1f );
@@ -264,11 +274,11 @@ void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** para
 // Initialize shader
 //-----------------------------------------------------------------------------
 
-void InitVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info )
+void InitVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info )
 {
 	// both detailed and bumped = needs skin shader (for now)
 	bool bNeedsSkinBecauseOfDetail = false;
-	
+
 	//bool bHasBump = ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsTexture();
 	//if ( bHasBump )
 	//{
@@ -276,40 +286,40 @@ void InitVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, bo
 	//		bNeedsSkinBecauseOfDetail = true;
 	//}
 
-	if ( bNeedsSkinBecauseOfDetail || 
-		 ( info.m_nPhong != -1 && 
-		   params[info.m_nPhong]->GetIntValue() && 
-		 g_pHardwareConfig->SupportsPixelShaders_2_b() ) )
+	if( bNeedsSkinBecauseOfDetail ||
+			( info.m_nPhong != -1 &&
+			  params[info.m_nPhong]->GetIntValue() &&
+			  g_pHardwareConfig->SupportsPixelShaders_2_b() ) )
 	{
 		InitSkin_DX9( pShader, params, info );
 		return;
 	}
 
-	if ( info.m_nFlashlightTexture != -1 )
+	if( info.m_nFlashlightTexture != -1 )
 	{
 		pShader->LoadTexture( info.m_nFlashlightTexture, TEXTUREFLAGS_SRGB );
 	}
-	
+
 	bool bIsBaseTextureTranslucent = false;
-	if ( info.m_nBaseTexture != -1 && params[info.m_nBaseTexture]->IsDefined() )
+	if( info.m_nBaseTexture != -1 && params[info.m_nBaseTexture]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nBaseTexture, ( info.m_nGammaColorRead != -1 ) && ( params[info.m_nGammaColorRead]->GetIntValue() == 1 ) ? 0 : TEXTUREFLAGS_SRGB );
-		
-		if ( params[info.m_nBaseTexture]->GetTextureValue()->IsTranslucent() )
+
+		if( params[info.m_nBaseTexture]->GetTextureValue()->IsTranslucent() )
 		{
 			bIsBaseTextureTranslucent = true;
 		}
 	}
 
-	bool bHasSelfIllumMask = IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && (info.m_nSelfIllumMask != -1) && params[info.m_nSelfIllumMask]->IsDefined();
+	bool bHasSelfIllumMask = IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && ( info.m_nSelfIllumMask != -1 ) && params[info.m_nSelfIllumMask]->IsDefined();
 
 	// No alpha channel in any of the textures? No self illum or envmapmask
-	if ( !bIsBaseTextureTranslucent )
+	if( !bIsBaseTextureTranslucent )
 	{
 		bool bHasSelfIllumFresnel = IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) && ( info.m_nSelfIllumFresnel != -1 ) && ( params[info.m_nSelfIllumFresnel]->GetIntValue() != 0 );
 
 		// Can still be self illum with no base alpha if using one of these alternate modes
-		if ( !bHasSelfIllumFresnel && !bHasSelfIllumMask )
+		if( !bHasSelfIllumFresnel && !bHasSelfIllumMask )
 		{
 			CLEAR_FLAGS( MATERIAL_VAR_SELFILLUM );
 		}
@@ -317,37 +327,41 @@ void InitVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, bo
 		CLEAR_FLAGS( MATERIAL_VAR_BASEALPHAENVMAPMASK );
 	}
 
-	if ( info.m_nDetail != -1 && params[info.m_nDetail]->IsDefined() )
+	if( info.m_nDetail != -1 && params[info.m_nDetail]->IsDefined() )
 	{
 		int nDetailBlendMode = ( info.m_nDetailTextureCombineMode == -1 ) ? 0 : params[info.m_nDetailTextureCombineMode]->GetIntValue();
-		if ( nDetailBlendMode == 0 ) //Mod2X
+		if( nDetailBlendMode == 0 )  //Mod2X
+		{
 			pShader->LoadTexture( info.m_nDetail );
+		}
 		else
+		{
 			pShader->LoadTexture( info.m_nDetail, TEXTUREFLAGS_SRGB );
+		}
 	}
 
-	if ( g_pConfig->UseBumpmapping() )
+	if( g_pConfig->UseBumpmapping() )
 	{
-		if ( (info.m_nBumpmap != -1) && params[info.m_nBumpmap]->IsDefined() )
+		if( ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsDefined() )
 		{
 			pShader->LoadBumpMap( info.m_nBumpmap );
 			SET_FLAGS2( MATERIAL_VAR2_DIFFUSE_BUMPMAPPED_MODEL );
 		}
-		else if ( (info.m_nDiffuseWarpTexture != -1) && params[info.m_nDiffuseWarpTexture]->IsDefined() )
+		else if( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsDefined() )
 		{
 			SET_FLAGS2( MATERIAL_VAR2_DIFFUSE_BUMPMAPPED_MODEL );
 		}
 	}
 
 	// Don't alpha test if the alpha channel is used for other purposes
-	if ( IS_FLAG_SET(MATERIAL_VAR_SELFILLUM) || IS_FLAG_SET(MATERIAL_VAR_BASEALPHAENVMAPMASK) )
+	if( IS_FLAG_SET( MATERIAL_VAR_SELFILLUM ) || IS_FLAG_SET( MATERIAL_VAR_BASEALPHAENVMAPMASK ) )
 	{
 		CLEAR_FLAGS( MATERIAL_VAR_ALPHATEST );
 	}
-	
-	if ( info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() )
+
+	if( info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsDefined() )
 	{
-		if ( !IS_FLAG_SET(MATERIAL_VAR_ENVMAPSPHERE) )
+		if( !IS_FLAG_SET( MATERIAL_VAR_ENVMAPSPHERE ) )
 		{
 			pShader->LoadCubeMap( info.m_nEnvmap, g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE ? TEXTUREFLAGS_SRGB : 0 );
 		}
@@ -355,23 +369,23 @@ void InitVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, bo
 		{
 			pShader->LoadTexture( info.m_nEnvmap, g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE ? TEXTUREFLAGS_SRGB : 0 );
 		}
-		
-		if ( !g_pHardwareConfig->SupportsCubeMaps() )
+
+		if( !g_pHardwareConfig->SupportsCubeMaps() )
 		{
 			SET_FLAGS( MATERIAL_VAR_ENVMAPSPHERE );
 		}
 	}
-	if ( info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsDefined() )
+	if( info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nEnvmapMask );
 	}
 
-	if ( (info.m_nDiffuseWarpTexture != -1) && params[info.m_nDiffuseWarpTexture]->IsDefined() )
+	if( ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nDiffuseWarpTexture );
 	}
 
-	if ( bHasSelfIllumMask )
+	if( bHasSelfIllumMask )
 	{
 		pShader->LoadTexture( info.m_nSelfIllumMask );
 	}
@@ -388,18 +402,18 @@ public:
 //-----------------------------------------------------------------------------
 // Draws the shader
 //-----------------------------------------------------------------------------
-static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterialVar** params,
-											   IShaderDynamicAPI *pShaderAPI,
-											   IShaderShadow* pShaderShadow,
-											   bool bVertexLitGeneric, bool bHasFlashlight, 
-											   VertexLitGeneric_DX9_Vars_t &info,
-											   VertexCompressionType_t vertexCompression,
-											   CBasePerMaterialContextData **pContextDataPtr ) 
+static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader* pShader, IMaterialVar** params,
+		IShaderDynamicAPI* pShaderAPI,
+		IShaderShadow* pShaderShadow,
+		bool bVertexLitGeneric, bool bHasFlashlight,
+		VertexLitGeneric_DX9_Vars_t& info,
+		VertexCompressionType_t vertexCompression,
+		CBasePerMaterialContextData** pContextDataPtr )
 
 {
-	CVertexLitGeneric_DX9_Context *pContextData = reinterpret_cast< CVertexLitGeneric_DX9_Context *> ( *pContextDataPtr );
+	CVertexLitGeneric_DX9_Context* pContextData = reinterpret_cast< CVertexLitGeneric_DX9_Context*>( *pContextDataPtr );
 
-/*^*/ // 	printf("\t\t>DrawVertexLitGeneric_DX9_Internal\n");
+	/*^*/ // 	printf("\t\t>DrawVertexLitGeneric_DX9_Internal\n");
 
 	bool bHasBump = IsTextureSet( info.m_nBumpmap, params );
 #if !defined( _X360 )
@@ -407,21 +421,21 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 #endif
 
 	bool hasDiffuseLighting = bVertexLitGeneric;
-/*^*/ // 	printf("\t\t[%d] bVertexLitGeneric\n",(int)bVertexLitGeneric);
+	/*^*/ // 	printf("\t\t[%d] bVertexLitGeneric\n",(int)bVertexLitGeneric);
 
-	if ( IS_FLAG_SET(MATERIAL_VAR_ENVMAPSPHERE) )
+	if( IS_FLAG_SET( MATERIAL_VAR_ENVMAPSPHERE ) )
 	{
 		bHasFlashlight = false;
 	}
 
 	bool bIsAlphaTested = IS_FLAG_SET( MATERIAL_VAR_ALPHATEST ) != 0;
-	bool bHasDiffuseWarp = (!bHasFlashlight || IsX360() ) && hasDiffuseLighting && (info.m_nDiffuseWarpTexture != -1) && params[info.m_nDiffuseWarpTexture]->IsTexture();
+	bool bHasDiffuseWarp = ( !bHasFlashlight || IsX360() ) && hasDiffuseLighting && ( info.m_nDiffuseWarpTexture != -1 ) && params[info.m_nDiffuseWarpTexture]->IsTexture();
 	bool bHasLightmapTexture = IsTextureSet( info.m_nLightmap, params );
 	bool bHasMatLuxel = bHasLightmapTexture && mat_luxels.GetBool();
 
 	//bool bNoCull = IS_FLAG_SET( MATERIAL_VAR_NOCULL );
 	bool bFlashlightNoLambert = false;
-	if ( ( info.m_nFlashlightNoLambert != -1 ) && params[info.m_nFlashlightNoLambert]->GetIntValue() )
+	if( ( info.m_nFlashlightNoLambert != -1 ) && params[info.m_nFlashlightNoLambert]->GetIntValue() )
 	{
 		bFlashlightNoLambert = true;
 	}
@@ -435,14 +449,16 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 	int nDetailBlendMode = bHasDetailTexture ? GetIntParam( info.m_nDetailTextureCombineMode, params ) : 0;
 	int nDetailTranslucencyTexture = -1;
 
-	if ( bHasDetailTexture )
+	if( bHasDetailTexture )
 	{
-		if ( ( nDetailBlendMode == 6 ) && ( ! (g_pHardwareConfig->SupportsPixelShaders_2_b() ) ) )
+		if( ( nDetailBlendMode == 6 ) && ( !( g_pHardwareConfig->SupportsPixelShaders_2_b() ) ) )
 		{
 			nDetailBlendMode = 5;								// skip fancy threshold blending if ps2.0
 		}
-		if ( ( nDetailBlendMode == 3 ) || ( nDetailBlendMode == 8 ) || ( nDetailBlendMode == 9 ) )
+		if( ( nDetailBlendMode == 3 ) || ( nDetailBlendMode == 8 ) || ( nDetailBlendMode == 9 ) )
+		{
 			nDetailTranslucencyTexture = info.m_nDetail;
+		}
 	}
 
 	bool bBlendTintByBaseAlpha = IsBoolSet( info.m_nBlendTintByBaseAlpha, params );
@@ -450,7 +466,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 	BlendType_t nBlendType;
 	bool bHasBaseTexture = IsTextureSet( info.m_nBaseTexture, params );
-	if ( bHasBaseTexture )
+	if( bHasBaseTexture )
 	{
 		// if base alpha is used for tinting, ignore the base texture for computing translucency
 		nBlendType = pShader->EvaluateBlendRequirements( bBlendTintByBaseAlpha ? -1 : info.m_nBaseTexture, true, nDetailTranslucencyTexture );
@@ -459,24 +475,24 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 	{
 		nBlendType = pShader->EvaluateBlendRequirements( info.m_nEnvmapMask, false );
 	}
-	bool bFullyOpaque = (nBlendType != BT_BLENDADD) && (nBlendType != BT_BLEND) && !bIsAlphaTested && (!bHasFlashlight || IsX360() ); //dest alpha is free for special use
+	bool bFullyOpaque = ( nBlendType != BT_BLENDADD ) && ( nBlendType != BT_BLEND ) && !bIsAlphaTested && ( !bHasFlashlight || IsX360() ); //dest alpha is free for special use
 
-	bool bHasEnvmap = (!bHasFlashlight || IsX360() ) && info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsTexture();
+	bool bHasEnvmap = ( !bHasFlashlight || IsX360() ) && info.m_nEnvmap != -1 && params[info.m_nEnvmap]->IsTexture();
 
-	
+
 	bool bHasVertexColor = bVertexLitGeneric ? false : IS_FLAG_SET( MATERIAL_VAR_VERTEXCOLOR );
 	bool bHasVertexAlpha = bVertexLitGeneric ? false : IS_FLAG_SET( MATERIAL_VAR_VERTEXALPHA );
-/*^*/ // 	printf("\t\t[%d] bHasVertexColor\n",(int)bHasVertexColor);
-/*^*/ // 	printf("\t\t[%d] bHasVertexAlpha\n",(int)bHasVertexAlpha);
-	
-	if ( pShader->IsSnapshotting() || (! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )
+	/*^*/ // 	printf("\t\t[%d] bHasVertexColor\n",(int)bHasVertexColor);
+	/*^*/ // 	printf("\t\t[%d] bHasVertexAlpha\n",(int)bHasVertexAlpha);
+
+	if( pShader->IsSnapshotting() || ( ! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )
 	{
-/*^*/ // 	printf("\t\t[1] snapshotting=%d  pContextData=%08x  pContextData->m_bMaterialVarsChanged=%d \n",(int)pShader->IsSnapshotting(), (int)pContextData, pContextData ? (int)pContextData->m_bMaterialVarsChanged : -1 );
+		/*^*/ // 	printf("\t\t[1] snapshotting=%d  pContextData=%08x  pContextData->m_bMaterialVarsChanged=%d \n",(int)pShader->IsSnapshotting(), (int)pContextData, pContextData ? (int)pContextData->m_bMaterialVarsChanged : -1 );
 		bool bSeamlessBase = IsBoolSet( info.m_nSeamlessBase, params ) && !bTreeSway;
 		bool bSeamlessDetail = IsBoolSet( info.m_nSeamlessDetail, params ) && !bTreeSway;
 		bool bDistanceAlpha = IsBoolSet( info.m_nDistanceAlpha, params );
-		bool bHasSelfIllum = (!bHasFlashlight || IsX360() ) && IS_FLAG_SET( MATERIAL_VAR_SELFILLUM );
-		bool bHasEnvmapMask = (!bHasFlashlight || IsX360() ) && info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsTexture();
+		bool bHasSelfIllum = ( !bHasFlashlight || IsX360() ) && IS_FLAG_SET( MATERIAL_VAR_SELFILLUM );
+		bool bHasEnvmapMask = ( !bHasFlashlight || IsX360() ) && info.m_nEnvmapMask != -1 && params[info.m_nEnvmapMask]->IsTexture();
 		bool bHasSelfIllumFresnel = ( !IsTextureSet( info.m_nDetail, params ) ) && ( bHasSelfIllum ) && ( info.m_nSelfIllumFresnel != -1 ) && ( params[info.m_nSelfIllumFresnel]->GetIntValue() != 0 );
 #ifdef MAPBASE
 		bool bHasEnvMapFresnel = bHasEnvmap && IsBoolSet( info.m_nEnvmapFresnel, params );
@@ -488,15 +504,15 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			( params[info.m_nSelfIllumEnvMapMask_Alpha]->GetFloatValue() != 0.0 ) ;
 
 #ifdef MAPBASE
-		if (!bHasEnvmap)
+		if( !bHasEnvmap )
 		{
 			bHasEnvmapMask = hasSelfIllumInEnvMapMask;
 		}
 #endif
 
-		if  ( pShader->IsSnapshotting() )
+		if( pShader->IsSnapshotting() )
 		{
-/*^*/ // 		printf("\t\t[2] snapshotting...\n");
+			/*^*/ // 		printf("\t\t[2] snapshotting...\n");
 
 #ifdef MAPBASE
 			bool hasBaseAlphaEnvmapMask = bHasEnvmap && IS_FLAG_SET( MATERIAL_VAR_BASEALPHAENVMAPMASK );
@@ -505,27 +521,27 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			bool hasBaseAlphaEnvmapMask = IS_FLAG_SET( MATERIAL_VAR_BASEALPHAENVMAPMASK );
 			bool hasNormalMapAlphaEnvmapMask = IS_FLAG_SET( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
 #endif
-			
-			
-			if ( info.m_nVertexAlphaTest != -1 && params[info.m_nVertexAlphaTest]->GetIntValue() > 0 )
+
+
+			if( info.m_nVertexAlphaTest != -1 && params[info.m_nVertexAlphaTest]->GetIntValue() > 0 )
 			{
 				bHasVertexAlpha = true;
 			}
 
 			// look at color and alphamod stuff.
 			// Unlit generic never uses the flashlight
-			if ( bHasSelfIllumFresnel )
+			if( bHasSelfIllumFresnel )
 			{
 				CLEAR_FLAGS( MATERIAL_VAR_NORMALMAPALPHAENVMAPMASK );
 				hasNormalMapAlphaEnvmapMask = false;
 			}
 
-			bool bHasEnvmap = (!bHasFlashlight || IsX360() ) && ( info.m_nEnvmap != -1 ) && params[info.m_nEnvmap]->IsTexture();
+			bool bHasEnvmap = ( !bHasFlashlight || IsX360() ) && ( info.m_nEnvmap != -1 ) && params[info.m_nEnvmap]->IsTexture();
 #ifndef MAPBASE
-			bool bHasLegacyEnvSphereMap = bHasEnvmap && IS_FLAG_SET(MATERIAL_VAR_ENVMAPSPHERE);
+			bool bHasLegacyEnvSphereMap = bHasEnvmap && IS_FLAG_SET( MATERIAL_VAR_ENVMAPSPHERE );
 #endif
 			bool bHasNormal = bVertexLitGeneric || bHasEnvmap || bHasFlashlight || bSeamlessBase || bSeamlessDetail;
-			if ( IsPC() )
+			if( IsPC() )
 			{
 				// On PC, LIGHTING_PREVIEW requires normals (they won't use much memory - unlitgeneric isn't used on many models)
 				bHasNormal = true;
@@ -535,22 +551,22 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			// Alpha test: FIXME: shouldn't this be handled in CBaseVSShader::SetInitialShadowState
 			pShaderShadow->EnableAlphaTest( bIsAlphaTested );
 
-			if ( info.m_nAlphaTestReference != -1 && params[info.m_nAlphaTestReference]->GetFloatValue() > 0.0f )
+			if( info.m_nAlphaTestReference != -1 && params[info.m_nAlphaTestReference]->GetFloatValue() > 0.0f )
 			{
 				pShaderShadow->AlphaFunc( SHADER_ALPHAFUNC_GEQUAL, params[info.m_nAlphaTestReference]->GetFloatValue() );
 			}
 
 			int nShadowFilterMode = 0;
-			if ( bHasFlashlight )
+			if( bHasFlashlight )
 			{
-				if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+				if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 				{
 					nShadowFilterMode = g_pHardwareConfig->GetShadowFilterMode();	// Based upon vendor and device dependent formats
 				}
 
-				if ( !IsX360() )
+				if( !IsX360() )
 				{
-					if (params[info.m_nBaseTexture]->IsTexture())
+					if( params[info.m_nBaseTexture]->IsTexture() )
 					{
 						pShader->SetAdditiveBlendingShadowState( info.m_nBaseTexture, true );
 					}
@@ -559,9 +575,9 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 						pShader->SetAdditiveBlendingShadowState( info.m_nEnvmapMask, false );
 					}
 
-					if ( bIsAlphaTested )
+					if( bIsAlphaTested )
 					{
-						// disable alpha test and use the zfunc zequals since alpha isn't guaranteed to 
+						// disable alpha test and use the zfunc zequals since alpha isn't guaranteed to
 						// be the same on both the regular pass and the flashlight pass.
 						pShaderShadow->EnableAlphaTest( false );
 						pShaderShadow->DepthFunc( SHADER_DEPTHFUNC_EQUAL );
@@ -582,38 +598,42 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			{
 				pShader->SetBlendingShadowState( nBlendType );
 			}
-		
+
 			unsigned int flags = VERTEX_POSITION;
-			if ( bHasNormal )
+			if( bHasNormal )
 			{
 				flags |= VERTEX_NORMAL;
 			}
-/*^*/ // 	printf("\t\t[%1d] VERTEX_NORMAL\n",(flags&VERTEX_NORMAL)!=0);
+			/*^*/ // 	printf("\t\t[%1d] VERTEX_NORMAL\n",(flags&VERTEX_NORMAL)!=0);
 
 			int userDataSize = 0;
 			bool bSRGBInputAdapter = false;
 
 			// basetexture
 			pShaderShadow->EnableTexture( SHADER_SAMPLER0, true );
-			if ( bHasBaseTexture )
+			if( bHasBaseTexture )
 			{
-				if ( ( info.m_nGammaColorRead != -1 ) && ( params[info.m_nGammaColorRead]->GetIntValue() == 1 ) )
+				if( ( info.m_nGammaColorRead != -1 ) && ( params[info.m_nGammaColorRead]->GetIntValue() == 1 ) )
+				{
 					pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, false );
+				}
 				else
+				{
 					pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );
+				}
 
 				// If we're on OSX GL on a crappy OS which can't do sRGB from render targets, check to see if we're reading from one...
-				if ( IsOSX() && !g_pHardwareConfig->CanDoSRGBReadFromRTs() )
+				if( IsOSX() && !g_pHardwareConfig->CanDoSRGBReadFromRTs() )
 				{
-					ITexture *pBaseTexture = params[info.m_nBaseTexture]->GetTextureValue();
-					if ( pBaseTexture && pBaseTexture->IsRenderTarget() )
+					ITexture* pBaseTexture = params[info.m_nBaseTexture]->GetTextureValue();
+					if( pBaseTexture && pBaseTexture->IsRenderTarget() )
 					{
 						bSRGBInputAdapter = true;
 					}
 				}
 			}
 
-			if ( bHasEnvmap )
+			if( bHasEnvmap )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
 				if( g_pHardwareConfig->GetHDRType() == HDR_TYPE_NONE )
@@ -621,7 +641,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, true );
 				}
 			}
-			if ( bHasFlashlight )
+			if( bHasFlashlight )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER8, true );	// Depth texture
 				pShaderShadow->SetShadowDepthFiltering( SHADER_SAMPLER8 );
@@ -631,43 +651,47 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				userDataSize = 4; // tangent S
 			}
 
-			if ( bHasDetailTexture )
+			if( bHasDetailTexture )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER2, true );
-				if ( nDetailBlendMode != 0 ) //Not Mod2X
+				if( nDetailBlendMode != 0 )  //Not Mod2X
+				{
 					pShaderShadow->EnableSRGBRead( SHADER_SAMPLER2, true );
+				}
 			}
 
-			if ( bHasBump || bHasDiffuseWarp )
+			if( bHasBump || bHasDiffuseWarp )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER3, true );
 				userDataSize = 4; // tangent S
 				// Normalizing cube map
 				pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );
 			}
-			if ( bHasEnvmapMask )
+			if( bHasEnvmapMask )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER4, true );
 			}
 
-			if ( bHasVertexColor || bHasVertexAlpha )
+			if( bHasVertexColor || bHasVertexAlpha )
 			{
 				flags |= VERTEX_COLOR;
 			}
-/*^*/ // 	printf("\t\t[%1d] VERTEX_COLOR\n",(flags&VERTEX_COLOR)!=0);
-/*^*/ // 	printf("\t\t[%1d] VERTEX_COLOR_STREAM_1\n",(flags&VERTEX_COLOR_STREAM_1)!=0);
+			/*^*/ // 	printf("\t\t[%1d] VERTEX_COLOR\n",(flags&VERTEX_COLOR)!=0);
+			/*^*/ // 	printf("\t\t[%1d] VERTEX_COLOR_STREAM_1\n",(flags&VERTEX_COLOR_STREAM_1)!=0);
 
 
-			if( bHasDiffuseWarp && (!bHasFlashlight || IsX360() ) && !bHasSelfIllumFresnel )
+			if( bHasDiffuseWarp && ( !bHasFlashlight || IsX360() ) && !bHasSelfIllumFresnel )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER9, true );	// Diffuse warp texture
 			}
 
-			if ( (info.m_nDepthBlend != -1) && (params[info.m_nDepthBlend]->GetIntValue()) )
+			if( ( info.m_nDepthBlend != -1 ) && ( params[info.m_nDepthBlend]->GetIntValue() ) )
 			{
 				if( bHasBump )
-					Warning( "DEPTHBLEND not supported by bump mapped variations of vertexlitgeneric to avoid shader bloat. Either remove the bump map or convince a graphics programmer that it's worth it.\n"  );
-			
+				{
+					Warning( "DEPTHBLEND not supported by bump mapped variations of vertexlitgeneric to avoid shader bloat. Either remove the bump map or convince a graphics programmer that it's worth it.\n" );
+				}
+
 				pShaderShadow->EnableTexture( SHADER_SAMPLER10, true );
 			}
 
@@ -682,18 +706,18 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			pShaderShadow->EnableTexture( SHADER_SAMPLER12, true );
 
 			bool bSRGBWrite = true;
-			if( (info.m_nLinearWrite != -1) && (params[info.m_nLinearWrite]->GetIntValue() == 1) )
+			if( ( info.m_nLinearWrite != -1 ) && ( params[info.m_nLinearWrite]->GetIntValue() == 1 ) )
 			{
 				bSRGBWrite = false;
 			}
 
 			pShaderShadow->EnableSRGBWrite( bSRGBWrite );
-		
+
 			// texcoord0 : base texcoord
 			int pTexCoordDim[3] = { 2, 2, 3 };
 			int nTexCoordCount = 1;
-		
-			if ( IsBoolSet( info.m_nSeparateDetailUVs, params ) )
+
+			if( IsBoolSet( info.m_nSeparateDetailUVs, params ) )
 			{
 				++nTexCoordCount;
 			}
@@ -703,8 +727,8 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			}
 
 #ifndef _X360
-			// Special morphed decal information 
-			if ( bIsDecal && g_pHardwareConfig->HasFastVertexTextures() )
+			// Special morphed decal information
+			if( bIsDecal && g_pHardwareConfig->HasFastVertexTextures() )
 			{
 				nTexCoordCount = 3;
 			}
@@ -712,47 +736,47 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 			// This shader supports compressed vertices, so OR in that flag:
 			flags |= VERTEX_FORMAT_COMPRESSED;
-/*^*/ // 		printf("\t\t[%1d] VERTEX_FORMAT_COMPRESSED\n",(flags&VERTEX_FORMAT_COMPRESSED)!=0);
+			/*^*/ // 		printf("\t\t[%1d] VERTEX_FORMAT_COMPRESSED\n",(flags&VERTEX_FORMAT_COMPRESSED)!=0);
 
-/*^*/ // 		printf("\t\t      -> CShaderShadowDX8::VertexShaderVertexFormat( flags=%08x, texcount=%d )\n",flags,nTexCoordCount);
+			/*^*/ // 		printf("\t\t      -> CShaderShadowDX8::VertexShaderVertexFormat( flags=%08x, texcount=%d )\n",flags,nTexCoordCount);
 
 
 			pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, pTexCoordDim, userDataSize );
 
-			if ( bHasBump || bHasDiffuseWarp )
+			if( bHasBump || bHasDiffuseWarp )
 			{
 #ifndef _X360
-				if ( !g_pHardwareConfig->SupportsShaderModel_3_0() )
+				if( !g_pHardwareConfig->SupportsShaderModel_3_0() )
 #endif
 				{
 					bool bUseStaticControlFlow = g_pHardwareConfig->SupportsStaticControlFlow();
 
 					DECLARE_STATIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs20 );
-					SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT,  bHalfLambert);
+					SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT,  bHalfLambert );
 					SET_STATIC_VERTEX_SHADER_COMBO( USE_WITH_2B,  1 );
 #ifdef _X360
 					SET_STATIC_VERTEX_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
 #endif
 					SET_STATIC_VERTEX_SHADER_COMBO( USE_STATIC_CONTROL_FLOW, bUseStaticControlFlow );
 					SET_STATIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs20 );
-				
+
 					//if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // Always send GL this way
 					//{
-						DECLARE_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
-						SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
-						SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSELIGHTING,  hasDiffuseLighting );
-						SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, bHasDiffuseWarp && !bHasSelfIllumFresnel );
-						SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  bHasSelfIllum );
-						SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUMFRESNEL, bHasSelfIllumFresnel );
-						SET_STATIC_PIXEL_SHADER_COMBO( NORMALMAPALPHAENVMAPMASK,  hasNormalMapAlphaEnvmapMask && bHasEnvmap );
-						SET_STATIC_PIXEL_SHADER_COMBO( HALFLAMBERT,  bHalfLambert);
-						SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
-						SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
-						SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
-						SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-						SET_STATIC_PIXEL_SHADER_COMBO( BLENDTINTBYBASEALPHA, bBlendTintByBaseAlpha );
-						SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK, bHasEnvmapMask );
-						SET_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
+					DECLARE_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
+					SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
+					SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSELIGHTING,  hasDiffuseLighting );
+					SET_STATIC_PIXEL_SHADER_COMBO( LIGHTWARPTEXTURE, bHasDiffuseWarp && !bHasSelfIllumFresnel );
+					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  bHasSelfIllum );
+					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUMFRESNEL, bHasSelfIllumFresnel );
+					SET_STATIC_PIXEL_SHADER_COMBO( NORMALMAPALPHAENVMAPMASK,  hasNormalMapAlphaEnvmapMask && bHasEnvmap );
+					SET_STATIC_PIXEL_SHADER_COMBO( HALFLAMBERT,  bHalfLambert );
+					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
+					SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
+					SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
+					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
+					SET_STATIC_PIXEL_SHADER_COMBO( BLENDTINTBYBASEALPHA, bBlendTintByBaseAlpha );
+					SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK, bHasEnvmapMask );
+					SET_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
 					//}
 					//else // ps_2_0
 					//{
@@ -777,11 +801,13 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					const bool bFastVertexTextures = g_pHardwareConfig->HasFastVertexTextures();
 
 					// The vertex shader uses the vertex id stream
-					if ( bFastVertexTextures )
+					if( bFastVertexTextures )
+					{
 						SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
+					}
 
 					DECLARE_STATIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs30 );
-					SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT,  bHalfLambert);
+					SET_STATIC_VERTEX_SHADER_COMBO( HALFLAMBERT,  bHalfLambert );
 					SET_STATIC_VERTEX_SHADER_COMBO( USE_WITH_2B,  true );
 					SET_STATIC_VERTEX_SHADER_COMBO( DECAL, bIsDecal );
 					SET_STATIC_VERTEX_SHADER_COMBO( SM30_VERTEXID, bFastVertexTextures );
@@ -794,7 +820,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  bHasSelfIllum );
 					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUMFRESNEL, bHasSelfIllumFresnel );
 					SET_STATIC_PIXEL_SHADER_COMBO( NORMALMAPALPHAENVMAPMASK,  hasNormalMapAlphaEnvmapMask && bHasEnvmap );
-					SET_STATIC_PIXEL_SHADER_COMBO( HALFLAMBERT,  bHalfLambert);
+					SET_STATIC_PIXEL_SHADER_COMBO( HALFLAMBERT,  bHalfLambert );
 					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
 					SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
 					SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
@@ -815,7 +841,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				static ConVarRef mat_reduceparticles( "mat_reduceparticles" );
 				bool bDoDepthBlend = IsBoolSet( info.m_nDepthBlend, params ) && !mat_reduceparticles.GetBool();
 
-				if ( bDistanceAlpha )
+				if( bDistanceAlpha )
 				{
 					bDistanceAlphaFromDetail = IsBoolSet( info.m_nDistanceAlphaFromDetail, params );
 					bSoftMask = IsBoolSet( info.m_nSoftEdges, params );
@@ -824,7 +850,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 
 #ifndef _X360
-				if ( !g_pHardwareConfig->SupportsShaderModel_3_0() )
+				if( !g_pHardwareConfig->SupportsShaderModel_3_0() )
 #endif
 				{
 					bool bUseStaticControlFlow = g_pHardwareConfig->SupportsStaticControlFlow();
@@ -838,38 +864,38 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					SET_STATIC_VERTEX_SHADER_COMBO( SEAMLESS_DETAIL, bSeamlessDetail );
 					SET_STATIC_VERTEX_SHADER_COMBO( SEPARATE_DETAIL_UVS, IsBoolSet( info.m_nSeparateDetailUVs, params ) );
 					SET_STATIC_VERTEX_SHADER_COMBO( USE_STATIC_CONTROL_FLOW, bUseStaticControlFlow );
-					SET_STATIC_VERTEX_SHADER_COMBO( DONT_GAMMA_CONVERT_VERTEX_COLOR, (! bSRGBWrite ) && bHasVertexColor );
+					SET_STATIC_VERTEX_SHADER_COMBO( DONT_GAMMA_CONVERT_VERTEX_COLOR, ( ! bSRGBWrite ) && bHasVertexColor );
 					SET_STATIC_VERTEX_SHADER_COMBO( TREESWAY, bTreeSway ? nTreeSwayMode : 0 );
 					SET_STATIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_vs20 );
 
 					//if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // Always send Gl this way
 					//{
-						DECLARE_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
-						SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM_ENVMAPMASK_ALPHA, ( hasSelfIllumInEnvMapMask && ( bHasEnvmapMask ) ) );
-						SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
+					DECLARE_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
+					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM_ENVMAPMASK_ALPHA, ( hasSelfIllumInEnvMapMask && ( bHasEnvmapMask ) ) );
+					SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP,  bHasEnvmap );
 #ifndef MAPBASE
-						SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP_SPHERE_LEGACY,  bHasLegacyEnvSphereMap );
+					SET_STATIC_PIXEL_SHADER_COMBO( CUBEMAP_SPHERE_LEGACY,  bHasLegacyEnvSphereMap );
 #endif
-						SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSELIGHTING,  hasDiffuseLighting );
-						SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK,  bHasEnvmapMask );
-						SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  hasBaseAlphaEnvmapMask );
-						SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  bHasSelfIllum );
-						SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
-						SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
-						SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
-						SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
-						SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS_BASE, bSeamlessBase );
-						SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS_DETAIL, bSeamlessDetail );
-						SET_STATIC_PIXEL_SHADER_COMBO( DISTANCEALPHA, bDistanceAlpha );
-						SET_STATIC_PIXEL_SHADER_COMBO( DISTANCEALPHAFROMDETAIL, bDistanceAlphaFromDetail );
-						SET_STATIC_PIXEL_SHADER_COMBO( SOFT_MASK, bSoftMask );
-						SET_STATIC_PIXEL_SHADER_COMBO( OUTLINE, bOutline );
-						SET_STATIC_PIXEL_SHADER_COMBO( OUTER_GLOW, bGlow );
-						SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
-						SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDoDepthBlend );
-						SET_STATIC_PIXEL_SHADER_COMBO( SRGB_INPUT_ADAPTER, bSRGBInputAdapter ? 1 : 0 );
-						SET_STATIC_PIXEL_SHADER_COMBO( BLENDTINTBYBASEALPHA, bBlendTintByBaseAlpha );
-						SET_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
+					SET_STATIC_PIXEL_SHADER_COMBO( DIFFUSELIGHTING,  hasDiffuseLighting );
+					SET_STATIC_PIXEL_SHADER_COMBO( ENVMAPMASK,  bHasEnvmapMask );
+					SET_STATIC_PIXEL_SHADER_COMBO( BASEALPHAENVMAPMASK,  hasBaseAlphaEnvmapMask );
+					SET_STATIC_PIXEL_SHADER_COMBO( SELFILLUM,  bHasSelfIllum );
+					SET_STATIC_PIXEL_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor );
+					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHT,  bHasFlashlight );
+					SET_STATIC_PIXEL_SHADER_COMBO( DETAILTEXTURE,  bHasDetailTexture );
+					SET_STATIC_PIXEL_SHADER_COMBO( DETAIL_BLEND_MODE, nDetailBlendMode );
+					SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS_BASE, bSeamlessBase );
+					SET_STATIC_PIXEL_SHADER_COMBO( SEAMLESS_DETAIL, bSeamlessDetail );
+					SET_STATIC_PIXEL_SHADER_COMBO( DISTANCEALPHA, bDistanceAlpha );
+					SET_STATIC_PIXEL_SHADER_COMBO( DISTANCEALPHAFROMDETAIL, bDistanceAlphaFromDetail );
+					SET_STATIC_PIXEL_SHADER_COMBO( SOFT_MASK, bSoftMask );
+					SET_STATIC_PIXEL_SHADER_COMBO( OUTLINE, bOutline );
+					SET_STATIC_PIXEL_SHADER_COMBO( OUTER_GLOW, bGlow );
+					SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
+					SET_STATIC_PIXEL_SHADER_COMBO( DEPTHBLEND, bDoDepthBlend );
+					SET_STATIC_PIXEL_SHADER_COMBO( SRGB_INPUT_ADAPTER, bSRGBInputAdapter ? 1 : 0 );
+					SET_STATIC_PIXEL_SHADER_COMBO( BLENDTINTBYBASEALPHA, bBlendTintByBaseAlpha );
+					SET_STATIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
 					//}
 					//else // ps_2_0
 					//{
@@ -902,8 +928,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					const bool bFastVertexTextures = g_pHardwareConfig->HasFastVertexTextures();
 
 					// The vertex shader uses the vertex id stream
-					if ( bFastVertexTextures )
+					if( bFastVertexTextures )
+					{
 						SET_FLAGS2( MATERIAL_VAR2_USES_VERTEXID );
+					}
 
 					DECLARE_STATIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_vs30 );
 					SET_STATIC_VERTEX_SHADER_COMBO( VERTEXCOLOR,  bHasVertexColor || bHasVertexAlpha );
@@ -951,7 +979,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 #endif
 			}
 
-			if ( bHasFlashlight && !IsX360() )
+			if( bHasFlashlight && !IsX360() )
 			{
 				pShader->FogToBlack();
 			}
@@ -965,10 +993,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			pShaderShadow->EnableAlphaWrites( bFullyOpaque );
 		}
 
-		if ( pShaderAPI && ( (! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) ) )
+		if( pShaderAPI && ( ( ! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) ) )
 		{
-/*^*/ // 		printf("\t\t[3] pShaderAPI && ( (! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )  TRUE \n");
-			if ( ! pContextData )								// make sure allocated
+			/*^*/ // 		printf("\t\t[3] pShaderAPI && ( (! pContextData ) || ( pContextData->m_bMaterialVarsChanged ) )  TRUE \n");
+			if( ! pContextData )								// make sure allocated
 			{
 				++g_nSnapShots;
 				pContextData = new CVertexLitGeneric_DX9_Context;
@@ -976,7 +1004,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			}
 			pContextData->m_SemiStaticCmdsOut.Reset();
 			pContextData->m_SemiStaticCmdsOut.SetPixelShaderFogParams( 21 );
-			if ( bHasBaseTexture )
+			if( bHasBaseTexture )
 			{
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER0, info.m_nBaseTexture, info.m_nBaseTextureFrame );
 			}
@@ -992,13 +1020,13 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER0, TEXTURE_WHITE );
 				}
 			}
-			if ( bHasDetailTexture )
+			if( bHasDetailTexture )
 			{
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER2, info.m_nDetail, info.m_nDetailFrame );
 			}
-			if ( bHasSelfIllum )
+			if( bHasSelfIllum )
 			{
-				if ( bHasSelfIllumMask )												// Separate texture for self illum?
+				if( bHasSelfIllumMask )												// Separate texture for self illum?
 				{
 					pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER11, info.m_nSelfIllumMask, -1 );	// Bind it
 				}
@@ -1008,53 +1036,60 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 			}
 
-			if ( (info.m_nDepthBlend != -1) && (params[info.m_nDepthBlend]->GetIntValue()) )
+			if( ( info.m_nDepthBlend != -1 ) && ( params[info.m_nDepthBlend]->GetIntValue() ) )
 			{
 				pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER10, TEXTURE_FRAME_BUFFER_FULL_DEPTH );
 			}
-			if ( bSeamlessDetail || bSeamlessBase )
+			if( bSeamlessDetail || bSeamlessBase )
 			{
-				float flSeamlessData[4]={ params[info.m_nSeamlessScale]->GetFloatValue(),
-										  0,0,0};
+				float flSeamlessData[4] = { params[info.m_nSeamlessScale]->GetFloatValue(),
+											0, 0, 0
+										  };
 				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_2, flSeamlessData );
 			}
 
-			if ( info.m_nBaseTextureTransform != -1 )
+			if( info.m_nBaseTextureTransform != -1 )
 			{
 				pContextData->m_SemiStaticCmdsOut.SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, info.m_nBaseTextureTransform );
 			}
-			
-			
-			if ( bHasDetailTexture )
+
+
+			if( bHasDetailTexture )
 			{
-				if ( !bTreeSway )
+				if( !bTreeSway )
 				{
-					if ( IS_PARAM_DEFINED( info.m_nDetailTextureTransform ) )
+					if( IS_PARAM_DEFINED( info.m_nDetailTextureTransform ) )
+					{
 						pContextData->m_SemiStaticCmdsOut.SetVertexShaderTextureScaledTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.m_nDetailTextureTransform, info.m_nDetailScale );
+					}
 					else
+					{
 						pContextData->m_SemiStaticCmdsOut.SetVertexShaderTextureScaledTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.m_nBaseTextureTransform, info.m_nDetailScale );
+					}
 				}
 				//Assert( !bHasBump );
-				if ( info.m_nDetailTint  != -1 )
+				if( info.m_nDetailTint  != -1 )
+				{
 					pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstantGammaToLinear( 10, info.m_nDetailTint );
+				}
 				else
 				{
 					pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant4( 10, 1, 1, 1, 1 );
 				}
 			}
 #ifdef MAPBASE
-			else if ( bHasEnvmapMask && info.m_nEnvmapMaskTransform != -1 )
+			else if( bHasEnvmapMask && info.m_nEnvmapMaskTransform != -1 )
 			{
 				// Use $envmapmasktransform when there is no detail texture taking up this space
 				pContextData->m_SemiStaticCmdsOut.SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.m_nEnvmapMaskTransform );
 			}
-			else if ( bHasBump && info.m_nBumpTransform != -1 )
+			else if( bHasBump && info.m_nBumpTransform != -1 )
 			{
 				// Use $bumptransform when there is no detail texture taking up this space
 				pContextData->m_SemiStaticCmdsOut.SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, info.m_nBumpTransform );
 			}
 #endif
-			if ( bDistanceAlpha )
+			if( bDistanceAlpha )
 			{
 				float flSoftStart = GetFloatParam( info.m_nEdgeSoftnessStart, params );
 				float flSoftEnd = GetFloatParam( info.m_nEdgeSoftnessEnd, params );
@@ -1069,21 +1104,21 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				float flOutlineEnd0 = GetFloatParam( info.m_nOutlineEnd0, params );
 				float flOutlineEnd1 = GetFloatParam( info.m_nOutlineEnd1, params );
 
-				if ( bScaleEdges || bScaleOutline )
+				if( bScaleEdges || bScaleOutline )
 				{
 					int nWidth, nHeight;
 					pShaderAPI->GetBackBufferDimensions( nWidth, nHeight );
-					flResScale=max( 0.5, max( 1024.0/nWidth, 768/nHeight ) );
-				
-					if ( bScaleEdges )
+					flResScale = max( 0.5, max( 1024.0 / nWidth, 768 / nHeight ) );
+
+					if( bScaleEdges )
 					{
 						float flMid = 0.5 * ( flSoftStart + flSoftEnd );
 						flSoftStart = clamp( flMid + flResScale * ( flSoftStart - flMid ), 0.05, 0.99 );
 						flSoftEnd = clamp( flMid + flResScale * ( flSoftEnd - flMid ), 0.05, 0.99 );
 					}
-				
 
-					if ( bScaleOutline )
+
+					if( bScaleOutline )
 					{
 						// shrink the soft part of the outline, enlarging hard part
 						float flMidS = 0.5 * ( flOutlineStart1 + flOutlineStart0 );
@@ -1091,24 +1126,25 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 						float flMidE = 0.5 * ( flOutlineEnd1 + flOutlineEnd0 );
 						flOutlineEnd1 = clamp( flMidE + flResScale * ( flOutlineEnd1 - flMidE ), 0.05, 0.99 );
 					}
-					
+
 				}
 
-				float flConsts[]={
+				float flConsts[] =
+				{
 					// c5 - glow values
 					GetFloatParam( info.m_nGlowX, params ),
 					GetFloatParam( info.m_nGlowY, params ),
 					GetFloatParam( info.m_nGlowStart, params ),
 					GetFloatParam( info.m_nGlowEnd, params ),
 					// c6 - glow color
-					0,0,0,										// will be filled in
+					0, 0, 0,										// will be filled in
 					GetFloatParam( info.m_nGlowAlpha, params ),
 					// c7 - mask range parms
 					flSoftStart,
 					flSoftEnd,
-					0,0,
+					0, 0,
 					// c8 - outline color
-					0,0,0,
+					0, 0, 0,
 					GetFloatParam( info.m_nOutlineAlpha, params ),
 					// c9 - outline parms. ordered for optimal ps20 .wzyx swizzling
 					flOutlineStart0,
@@ -1117,16 +1153,16 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 					flOutlineStart1,
 				};
 
-				if ( info.m_nGlowColor != -1 )
+				if( info.m_nGlowColor != -1 )
 				{
-					params[info.m_nGlowColor]->GetVecValue( flConsts+4, 3 );
+					params[info.m_nGlowColor]->GetVecValue( flConsts + 4, 3 );
 				}
-				if ( info.m_nOutlineColor != -1 )
+				if( info.m_nOutlineColor != -1 )
 				{
-					params[info.m_nOutlineColor]->GetVecValue( flConsts+12, 3 );
+					params[info.m_nOutlineColor]->GetVecValue( flConsts + 12, 3 );
 				}
 #ifdef MAPBASE
-				if ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
+				if( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
 				{
 					flConsts[10] = params[ info.m_nBaseAlphaEnvMapMaskMinMaxExp ]->GetVecValue()[0];
 					flConsts[11] = params[ info.m_nBaseAlphaEnvMapMaskMinMaxExp ]->GetVecValue()[1] - flConsts[10];
@@ -1136,69 +1172,71 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 			}
 #ifdef MAPBASE
-			else if ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
+			else if( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
 			{
 				float flConsts[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-				
+
 				flConsts[2] = params[ info.m_nBaseAlphaEnvMapMaskMinMaxExp ]->GetVecValue()[0];
 				flConsts[3] = params[ info.m_nBaseAlphaEnvMapMaskMinMaxExp ]->GetVecValue()[1] - flConsts[2];
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 7, flConsts, 1 );
 			}
 #endif
-			if ( !g_pConfig->m_bFastNoBump )
+			if( !g_pConfig->m_bFastNoBump )
 			{
-				if ( bHasBump )
+				if( bHasBump )
 				{
 					pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER3, info.m_nBumpmap, info.m_nBumpFrame );
 				}
-				else if ( bHasDiffuseWarp )
+				else if( bHasDiffuseWarp )
 				{
 					pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER3, TEXTURE_NORMALMAP_FLAT );
 				}
 			}
 			else
 			{
-				if ( bHasBump )
+				if( bHasBump )
 				{
 					pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER3, TEXTURE_NORMALMAP_FLAT );
 				}
 			}
 			// Setting w to 1 means use separate selfillummask
 			float vEnvMapSaturation_SelfIllumMask[4] = {1.0f, 1.0f, 1.0f, 0.0f};
-			if ( info.m_nEnvmapSaturation != -1 )
+			if( info.m_nEnvmapSaturation != -1 )
+			{
 				params[info.m_nEnvmapSaturation]->GetVecValue( vEnvMapSaturation_SelfIllumMask, 3 );
-			
+			}
+
 			vEnvMapSaturation_SelfIllumMask[3] = bHasSelfIllumMask ? 1.0f : 0.0f;
 			pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 3, vEnvMapSaturation_SelfIllumMask, 1 );
-			if ( bHasEnvmap )
+			if( bHasEnvmap )
 			{
 				pContextData->m_SemiStaticCmdsOut.SetEnvMapTintPixelShaderDynamicStateGammaToLinear( 0, info.m_nEnvmapTint, fTintReplaceFactor );
 			}
 			else
 			{
-				pContextData->m_SemiStaticCmdsOut.SetEnvMapTintPixelShaderDynamicStateGammaToLinear( 0, -1, fTintReplaceFactor);
+				pContextData->m_SemiStaticCmdsOut.SetEnvMapTintPixelShaderDynamicStateGammaToLinear( 0, -1, fTintReplaceFactor );
 			}
 
-			if ( bHasEnvmapMask )
+			if( bHasEnvmapMask )
 			{
 				pContextData->m_SemiStaticCmdsOut.BindTexture( pShader, SHADER_SAMPLER4, info.m_nEnvmapMask, info.m_nEnvmapMaskFrame );
 			}
 
 #ifdef MAPBASE
-			if ( bHasEnvMapFresnel )
+			if( bHasEnvMapFresnel )
 			{
 				float flConsts[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 				params[ info.m_nEnvMapFresnelMinMaxExp ]->GetVecValue( flConsts, 3 );
 				flConsts[1] -= flConsts[0];	// convert max fresnel into scale factor
 
-				if ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
+				if( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
 				{
 					flConsts[3] = params[ info.m_nBaseAlphaEnvMapMaskMinMaxExp ]->GetVecValue()[2];		// basealphaenvmapmask exponent in w
 				}
 
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 14, flConsts, 1 );
 			}
-			else if ( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
+			else if( info.m_nBaseAlphaEnvMapMaskMinMaxExp != -1 )
 			{
 				// still need to set exponent for basealphaenvmapmask
 				float flConsts[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1207,7 +1245,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			}
 #endif
 
-			if ( bHasSelfIllumFresnel && (!bHasFlashlight || IsX360() ) )
+			if( bHasSelfIllumFresnel && ( !bHasFlashlight || IsX360() ) )
 			{
 				float vConstScaleBiasExp[4] = { 1.0f, 0.0f, 1.0f, 0.0f };
 				float flMin = IS_PARAM_DEFINED( info.m_nSelfIllumFresnelMinMaxExp ) ? params[info.m_nSelfIllumFresnelMinMaxExp]->GetVecValue()[0] : 0.0f;
@@ -1222,9 +1260,9 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 11, vConstScaleBiasExp );
 			}
 
-			if( bHasDiffuseWarp && (!bHasFlashlight || IsX360() ) && !bHasSelfIllumFresnel )
+			if( bHasDiffuseWarp && ( !bHasFlashlight || IsX360() ) && !bHasSelfIllumFresnel )
 			{
-				if ( r_lightwarpidentity.GetBool() )
+				if( r_lightwarpidentity.GetBool() )
 				{
 					pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER9, TEXTURE_IDENTITY_LIGHTWARP );
 				}
@@ -1234,11 +1272,11 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				}
 			}
 
-			if ( bHasFlashlight )
+			if( bHasFlashlight )
 			{
 				// Tweaks associated with a given flashlight
 				VMatrix worldToTexture;
-				const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
+				const FlashlightState_t& flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
 				float tweaks[4];
 				tweaks[0] = flashlightState.m_flShadowFilterSize / flashlightState.m_flShadowMapResolution;
 				tweaks[1] = ShadowAttenFromState( flashlightState );
@@ -1249,21 +1287,23 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				float vScreenScale[4] = {1280.0f / 32.0f, 720.0f / 32.0f, 0, 0};
 				int nWidth, nHeight;
 				pShaderAPI->GetBackBufferDimensions( nWidth, nHeight );
-				vScreenScale[0] = (float) nWidth  / 32.0f;
-				vScreenScale[1] = (float) nHeight / 32.0f;
+				vScreenScale[0] = ( float ) nWidth  / 32.0f;
+				vScreenScale[1] = ( float ) nHeight / 32.0f;
 				pShaderAPI->SetPixelShaderConstant( 31, vScreenScale, 1 );
 			}
 
-			if ( ( !bHasFlashlight || IsX360() ) && ( info.m_nEnvmapContrast != -1 ) )
+			if( ( !bHasFlashlight || IsX360() ) && ( info.m_nEnvmapContrast != -1 ) )
+			{
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant( 2, info.m_nEnvmapContrast );
+			}
 
 			// mat_fullbright 2 handling
 			bool bLightingOnly = bVertexLitGeneric && mat_fullbright.GetInt() == 2 && !IS_FLAG_SET( MATERIAL_VAR_NO_DEBUG_OVERRIDE );
 			if( bLightingOnly )
 			{
-				if ( bHasBaseTexture )
+				if( bHasBaseTexture )
 				{
-					if( ( bHasSelfIllum && !hasSelfIllumInEnvMapMask )  )
+					if( ( bHasSelfIllum && !hasSelfIllumInEnvMapMask ) )
 					{
 						pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER0, TEXTURE_GREY_ALPHA_ZERO );
 					}
@@ -1272,13 +1312,13 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 						pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER0, TEXTURE_GREY );
 					}
 				}
-				if ( bHasDetailTexture )
+				if( bHasDetailTexture )
 				{
 					pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER2, TEXTURE_GREY );
 				}
 			}
-			
-			if ( bHasBump || bHasDiffuseWarp )
+
+			if( bHasBump || bHasDiffuseWarp )
 			{
 				pContextData->m_SemiStaticCmdsOut.BindStandardTexture( SHADER_SAMPLER5, TEXTURE_NORMALIZATION_CUBEMAP_SIGNED );
 				pContextData->m_SemiStaticCmdsOut.SetPixelShaderStateAmbientLightCube( 5 );
@@ -1286,8 +1326,8 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			}
 			pContextData->m_SemiStaticCmdsOut.SetPixelShaderConstant_W( 4, info.m_nSelfIllumTint, fBlendFactor );
 			pContextData->m_SemiStaticCmdsOut.SetAmbientCubeDynamicStateVertexShader();
-			
-			if ( bTreeSway )
+
+			if( bTreeSway )
 			{
 				float flParams[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -1315,25 +1355,25 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				flParams[3] = GetFloatParam( info.m_nTreeSwayScrumbleStrength, params, 10.0f );
 				pContextData->m_SemiStaticCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_9, flParams );
 			}
-			
+
 			pContextData->m_SemiStaticCmdsOut.End();
 		}
 	}
-	if ( pShaderAPI )
+	if( pShaderAPI )
 	{
 		CCommandBufferBuilder< CFixedCommandStorageBuffer< 1000 > > DynamicCmdsOut;
 		DynamicCmdsOut.Call( pContextData->m_SemiStaticCmdsOut.Base() );
 
-		if ( bHasEnvmap )
+		if( bHasEnvmap )
 		{
 			DynamicCmdsOut.BindTexture( pShader, SHADER_SAMPLER1, info.m_nEnvmap, info.m_nEnvmapFrame );
 		}
 
 		bool bFlashlightShadows = false;
-		if ( bHasFlashlight )
+		if( bHasFlashlight )
 		{
 			VMatrix worldToTexture;
-			ITexture *pFlashlightDepthTexture;
+			ITexture* pFlashlightDepthTexture;
 			FlashlightState_t state = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
 			bFlashlightShadows = state.m_bEnableShadows && ( pFlashlightDepthTexture != NULL );
 
@@ -1352,21 +1392,21 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 		// Set up light combo state
 		LightState_t lightState = { 0, false, false, false };
-		if ( bVertexLitGeneric && (!bHasFlashlight || IsX360() ) )
+		if( bVertexLitGeneric && ( !bHasFlashlight || IsX360() ) )
 		{
 			pShaderAPI->GetDX9LightState( &lightState );
 		}
 
 		// Override the lighting desired if we have a lightmap set!
-		if ( bHasLightmapTexture )
+		if( bHasLightmapTexture )
 		{
 			lightState.m_bStaticLightVertex = false;
 			lightState.m_bStaticLightTexel = true;
-			
+
 			// Usual case, not debugging.
-			if (!bHasMatLuxel)
+			if( !bHasMatLuxel )
 			{
-				pShader->BindTexture(SHADER_SAMPLER12, info.m_nLightmap);
+				pShader->BindTexture( SHADER_SAMPLER12, info.m_nLightmap );
 			}
 			else
 			{
@@ -1383,11 +1423,11 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 		bool bWriteDepthToAlpha;
 		bool bWriteWaterFogToAlpha;
-		if( bFullyOpaque ) 
+		if( bFullyOpaque )
 		{
 			bWriteDepthToAlpha = pShaderAPI->ShouldWriteDepthToDestAlpha();
-			bWriteWaterFogToAlpha = (fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z);
-			AssertMsg( !(bWriteDepthToAlpha && bWriteWaterFogToAlpha), "Can't write two values to alpha at the same time." );
+			bWriteWaterFogToAlpha = ( fogType == MATERIAL_FOG_LINEAR_BELOW_FOG_Z );
+			AssertMsg( !( bWriteDepthToAlpha && bWriteWaterFogToAlpha ), "Can't write two values to alpha at the same time." );
 		}
 		else
 		{
@@ -1396,10 +1436,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			bWriteWaterFogToAlpha = false;
 		}
 
-		if ( bHasBump || bHasDiffuseWarp )
+		if( bHasBump || bHasDiffuseWarp )
 		{
 #ifndef _X360
-			if ( !g_pHardwareConfig->SupportsShaderModel_3_0() )
+			if( !g_pHardwareConfig->SupportsShaderModel_3_0() )
 #endif
 			{
 				bool bUseStaticControlFlow = g_pHardwareConfig->SupportsStaticControlFlow();
@@ -1407,19 +1447,19 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				DECLARE_DYNAMIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs20 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG,  fogIndex );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  numBones > 0 );
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( NUM_LIGHTS, bUseStaticControlFlow ? 0 : lightState.m_nNumLights );
 				SET_DYNAMIC_VERTEX_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_bump_vs20 );
 
 				// Bind ps_2_b shader so we can get shadow mapping...
 				//if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // Always send GL this way
 				//{
-					DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( AMBIENT_LIGHT, lightState.m_bAmbientLight ? 1 : 0 );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
+				DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( AMBIENT_LIGHT, lightState.m_bAmbientLight ? 1 : 0 );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
 //					SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-					SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_bump_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_bump_ps20b );
 				//}
 				/*else
 				{
@@ -1436,14 +1476,16 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			{
 				const bool bFastVertexTextures = g_pHardwareConfig->HasFastVertexTextures();
 
-				if ( bFastVertexTextures )
+				if( bFastVertexTextures )
+				{
 					pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, VERTEX_SHADER_SHADER_SPECIFIC_CONST_11, SHADER_VERTEXTEXTURE_SAMPLER0 );
+				}
 
 				DECLARE_DYNAMIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs30 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG,  fogIndex );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  numBones > 0 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() && bFastVertexTextures );
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 				SET_DYNAMIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_bump_vs30 );
 
 				DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_bump_ps30 );
@@ -1453,7 +1495,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 //				SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
 				SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_bump_ps30 );
 
-				if ( bFastVertexTextures )
+				if( bFastVertexTextures )
 				{
 					bool bUnusedTexCoords[3] = { false, false, !pShaderAPI->IsHWMorphingEnabled() || !bIsDecal };
 					pShaderAPI->MarkUnusedVertexFields( 0, 3, bUnusedTexCoords );
@@ -1463,7 +1505,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		}
 		else // !( bHasBump || bHasDiffuseWarp )
 		{
-			if ( bAmbientOnly )	// Override selected light combo to be ambient only
+			if( bAmbientOnly )	// Override selected light combo to be ambient only
 			{
 				lightState.m_bAmbientLight = true;
 				lightState.m_bStaticLightVertex = false;
@@ -1471,7 +1513,7 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			}
 
 #ifndef _X360
-			if ( !g_pHardwareConfig->SupportsShaderModel_3_0() )
+			if( !g_pHardwareConfig->SupportsShaderModel_3_0() )
 #endif
 			{
 				bool bUseStaticControlFlow = g_pHardwareConfig->SupportsStaticControlFlow();
@@ -1479,29 +1521,29 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				DECLARE_DYNAMIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_vs20 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT_VERTEX,  lightState.m_bStaticLightVertex  ? 1 : 0 );
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP, lightState.m_bStaticLightTexel ? 1 : 0);
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP, lightState.m_bStaticLightTexel ? 1 : 0 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG,  fogIndex );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  numBones > 0 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO(
-					LIGHTING_PREVIEW, 
-					pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_ENABLE_FIXED_LIGHTING)!=0);
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+					LIGHTING_PREVIEW,
+					pShaderAPI->GetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING ) != 0 );
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( NUM_LIGHTS, bUseStaticControlFlow ? 0 : lightState.m_nNumLights );
 				SET_DYNAMIC_VERTEX_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_vs20 );
 
 				// Bind ps_2_b shader so we can get shadow mapping
 				//if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // Always send GL this way
 				//{
-					DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
+				DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps20b );
 
 //					SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP, lightState.m_bStaticLightTexel ? 1 : 0 );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO( DEBUG_LUXELS, bHasMatLuxel ? 1 : 0 );
-					SET_DYNAMIC_PIXEL_SHADER_COMBO(
-						LIGHTING_PREVIEW,
-						pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_ENABLE_FIXED_LIGHTING) );
-					SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_ps20b );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( FLASHLIGHTSHADOWS, bFlashlightShadows );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP, lightState.m_bStaticLightTexel ? 1 : 0 );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO( DEBUG_LUXELS, bHasMatLuxel ? 1 : 0 );
+				SET_DYNAMIC_PIXEL_SHADER_COMBO(
+					LIGHTING_PREVIEW,
+					pShaderAPI->GetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING ) );
+				SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_ps20b );
 				//}
 				/*else
 				{
@@ -1519,8 +1561,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			{
 				const bool bFastVertexTextures = g_pHardwareConfig->HasFastVertexTextures();
 
-				if ( bFastVertexTextures )
+				if( bFastVertexTextures )
+				{
 					pShader->SetHWMorphVertexShaderState( VERTEX_SHADER_SHADER_SPECIFIC_CONST_10, VERTEX_SHADER_SHADER_SPECIFIC_CONST_11, SHADER_VERTEXTEXTURE_SAMPLER0 );
+				}
 
 				DECLARE_DYNAMIC_VERTEX_SHADER( sdk_vertexlit_and_unlit_generic_vs30 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
@@ -1528,10 +1572,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP,  lightState.m_bStaticLightTexel  ? 1 : 0 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( DOWATERFOG,  fogIndex );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  numBones > 0 );
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( LIGHTING_PREVIEW, 
-					pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_ENABLE_FIXED_LIGHTING)!=0);
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( LIGHTING_PREVIEW,
+												 pShaderAPI->GetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING ) != 0 );
 				SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() && bFastVertexTextures );
-				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+				SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 				SET_DYNAMIC_VERTEX_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_vs30 );
 
 				DECLARE_DYNAMIC_PIXEL_SHADER( sdk_vertexlit_and_unlit_generic_ps30 );
@@ -1540,10 +1584,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( STATIC_LIGHT_LIGHTMAP,  lightState.m_bStaticLightTexel  ? 1 : 0 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( DEBUG_LUXELS, bHasMatLuxel ? 1 : 0 );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO(	LIGHTING_PREVIEW,
-					pShaderAPI->GetIntRenderingParameter(INT_RENDERPARM_ENABLE_FIXED_LIGHTING) );
+												pShaderAPI->GetIntRenderingParameter( INT_RENDERPARM_ENABLE_FIXED_LIGHTING ) );
 				SET_DYNAMIC_PIXEL_SHADER_CMD( DynamicCmdsOut, sdk_vertexlit_and_unlit_generic_ps30 );
 
-				if ( bFastVertexTextures )
+				if( bFastVertexTextures )
 				{
 					bool bUnusedTexCoords[3] = { false, false, !pShaderAPI->IsHWMorphingEnabled() || !bIsDecal };
 					pShaderAPI->MarkUnusedVertexFields( 0, 3, bUnusedTexCoords );
@@ -1554,12 +1598,12 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 #ifdef MAPBASE
 		// material can choose to support per-instance modulation via $allowdiffusemodulation
-		bool bAllowDiffuseModulation = (info.m_nAllowDiffuseModulation == -1) ? true : (params[info.m_nAllowDiffuseModulation]->GetIntValue() != 0);
+		bool bAllowDiffuseModulation = ( info.m_nAllowDiffuseModulation == -1 ) ? true : ( params[info.m_nAllowDiffuseModulation]->GetIntValue() != 0 );
 
-		if (bAllowDiffuseModulation)
+		if( bAllowDiffuseModulation )
 #endif
 		{
-			if ( ( info.m_nHDRColorScale != -1 ) && pShader->IsHDREnabled() )
+			if( ( info.m_nHDRColorScale != -1 ) && pShader->IsHDREnabled() )
 			{
 				pShader->SetModulationPixelShaderDynamicState_LinearColorSpace_LinearScale( 1, params[info.m_nHDRColorScale]->GetFloatValue() );
 			}
@@ -1580,16 +1624,16 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		pShaderAPI->GetWorldSpaceCameraPosition( eyePos );
 		eyePos[3] = pShaderAPI->GetFloatRenderingParameter( FLOAT_RENDERPARM_MINIMUMLIGHTING );
 		DynamicCmdsOut.SetPixelShaderConstant( 20, eyePos );
-		
+
 		// Non-bump case does its own depth feathering work
-		if ( !bHasBump && !bHasDiffuseWarp )
+		if( !bHasBump && !bHasDiffuseWarp )
 		{
 			DynamicCmdsOut.SetDepthFeatheringPixelShaderConstant( 13, GetFloatParam( info.m_nDepthBlendScale, params, 50.0f ) );
 		}
 
 		float fPixelFogType = pShaderAPI->GetPixelFogCombo() == 1 ? 1 : 0;
 		float fWriteDepthToAlpha = bWriteDepthToAlpha && IsPC() ? 1 : 0;
-		float fWriteWaterFogToDestAlpha = (pShaderAPI->GetPixelFogCombo() == 1 && bWriteWaterFogToAlpha) ? 1 : 0;
+		float fWriteWaterFogToDestAlpha = ( pShaderAPI->GetPixelFogCombo() == 1 && bWriteWaterFogToAlpha ) ? 1 : 0;
 		float fVertexAlpha = bHasVertexAlpha ? 1 : 0;
 
 		// Controls for lerp-style paths through shader code (bump and non-bump have use different register)
@@ -1597,10 +1641,10 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 		DynamicCmdsOut.SetPixelShaderConstant( 12, vShaderControls, 1 );
 
 		// flashlightfixme: put this in common code.
-		if ( bHasFlashlight )
+		if( bHasFlashlight )
 		{
 			VMatrix worldToTexture;
-			const FlashlightState_t &flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
+			const FlashlightState_t& flashlightState = pShaderAPI->GetFlashlightState( worldToTexture );
 			SetFlashLightColorFromState( flashlightState, pShaderAPI, 28, bFlashlightNoLambert );
 
 			pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_6, worldToTexture.Base(), 4 );
@@ -1620,12 +1664,12 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 
 			DynamicCmdsOut.SetPixelShaderConstant( 24, worldToTexture.Base(), 4 );
 		}
-		
-		if ( bTreeSway )
+
+		if( bTreeSway )
 		{
 			float fTempConst[4];
 			fTempConst[1] = pShaderAPI->CurrentTime();
-			if ( params[info.m_nTreeSwayStatic]->GetIntValue() == 0 )
+			if( params[info.m_nTreeSwayStatic]->GetIntValue() == 0 )
 			{
 				const Vector& windDir = pShaderAPI->GetVectorRenderingParameter( VECTOR_RENDERPARM_WIND_DIRECTION );
 				fTempConst[2] = windDir.x;
@@ -1634,38 +1678,38 @@ static void DrawVertexLitGeneric_DX9_Internal( CBaseVSShader *pShader, IMaterial
 			else
 			{
 				// Use a static value instead of the env_wind value.
-				params[info.m_nTreeSwayStaticValues]->GetVecValue( fTempConst+2, 2 );
+				params[info.m_nTreeSwayStaticValues]->GetVecValue( fTempConst + 2, 2 );
 			}
 			DynamicCmdsOut.SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_7, fTempConst );
 		}
-		
+
 		DynamicCmdsOut.End();
 		pShaderAPI->ExecuteCommandBuffer( DynamicCmdsOut.Base() );
 	}
 	pShader->Draw();
 
-/*^*/ // 	printf("\t\t<DrawVertexLitGeneric_DX9_Internal\n");
+	/*^*/ // 	printf("\t\t<DrawVertexLitGeneric_DX9_Internal\n");
 }
 
 
-void DrawVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-	IShaderShadow* pShaderShadow, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info, VertexCompressionType_t vertexCompression,
-								CBasePerMaterialContextData **pContextDataPtr )
+void DrawVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+							   IShaderShadow* pShaderShadow, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info, VertexCompressionType_t vertexCompression,
+							   CBasePerMaterialContextData** pContextDataPtr )
 {
-	if ( WantsSkinShader( params, info ) /*&& g_pHardwareConfig->SupportsPixelShaders_2_b()*/ && g_pConfig->UseBumpmapping() && g_pConfig->UsePhong() )
+	if( WantsSkinShader( params, info ) /*&& g_pHardwareConfig->SupportsPixelShaders_2_b()*/ && g_pConfig->UseBumpmapping() && g_pConfig->UsePhong() )
 	{
 		DrawSkin_DX9( pShader, params, pShaderAPI, pShaderShadow, info, vertexCompression, pContextDataPtr );
 		return;
 	}
-	
+
 	bool bReceiveFlashlight = bVertexLitGeneric;
 	bool bNewFlashlight = IsX360();
-	if ( bNewFlashlight )
+	if( bNewFlashlight )
 	{
 		bReceiveFlashlight = bReceiveFlashlight || ( GetIntParam( info.m_nReceiveFlashlight, params ) != 0 );
 	}
 	bool bHasFlashlight = bReceiveFlashlight && pShader->UsingFlashlight( params );
 
 	DrawVertexLitGeneric_DX9_Internal( pShader, params, pShaderAPI,
-		pShaderShadow, bVertexLitGeneric, bHasFlashlight, info, vertexCompression, pContextDataPtr );
+									   pShaderShadow, bVertexLitGeneric, bHasFlashlight, info, vertexCompression, pContextDataPtr );
 }

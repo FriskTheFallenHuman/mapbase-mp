@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -27,11 +27,11 @@ public:
 	DECLARE_CLASS( CTEExplosion, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
 
-					CTEExplosion( const char *name );
+	CTEExplosion( const char* name );
 	virtual			~CTEExplosion( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 
 public:
 	CNetworkVar( int, m_nModelIndex );
@@ -45,10 +45,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEExplosion::CTEExplosion( const char *name ) :
+CTEExplosion::CTEExplosion( const char* name ) :
 	BaseClass( name )
 {
 	m_nModelIndex = 0;
@@ -62,16 +62,16 @@ CTEExplosion::CTEExplosion( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEExplosion::~CTEExplosion( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -81,7 +81,7 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 	m_nFrameRate = 15;
 	m_nFlags = TE_EXPLFLAG_NONE;
 	m_vecOrigin = current_origin;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -96,35 +96,39 @@ void CTEExplosion::Test( const Vector& current_origin, const QAngle& current_ang
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEExplosion, DT_TEExplosion)
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 9, 0, 0.0, 51.2 ),
-	SendPropInt( SENDINFO(m_nFrameRate), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nFlags), 8, SPROP_UNSIGNED ),
-	SendPropVector( SENDINFO(m_vecNormal), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_chMaterialType), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nRadius), 32, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nMagnitude), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEExplosion, DT_TEExplosion )
+SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+					SendPropFloat( SENDINFO( m_fScale ), 9, 0, 0.0, 51.2 ),
+					SendPropInt( SENDINFO( m_nFrameRate ), 8, SPROP_UNSIGNED ),
+					SendPropInt( SENDINFO( m_nFlags ), 8, SPROP_UNSIGNED ),
+					SendPropVector( SENDINFO( m_vecNormal ), -1, SPROP_COORD ),
+					SendPropInt( SENDINFO( m_chMaterialType ), 8, SPROP_UNSIGNED ),
+					SendPropInt( SENDINFO( m_nRadius ), 32, SPROP_UNSIGNED ),
+					SendPropInt( SENDINFO( m_nMagnitude ), 32, SPROP_UNSIGNED ),
+					END_SEND_TABLE()
 
 // Singleton to fire TEExplosion objects
-static CTEExplosion g_TEExplosion( "Explosion" );
+					static CTEExplosion g_TEExplosion( "Explosion" );
 
 void TE_Explosion( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, float scale, int framerate, int flags, int radius, int magnitude, const Vector* normal, unsigned char materialType )
+				   const Vector* pos, int modelindex, float scale, int framerate, int flags, int radius, int magnitude, const Vector* normal, unsigned char materialType )
 {
 	g_TEExplosion.m_vecOrigin		= *pos;
-	g_TEExplosion.m_nModelIndex		= modelindex;	
+	g_TEExplosion.m_nModelIndex		= modelindex;
 	g_TEExplosion.m_fScale			= scale;
 	g_TEExplosion.m_nFrameRate		= framerate;
 	g_TEExplosion.m_nFlags			= flags;
 	g_TEExplosion.m_nRadius			= radius;
 	g_TEExplosion.m_nMagnitude		= magnitude;
 
-	if ( normal )
+	if( normal )
+	{
 		g_TEExplosion.m_vecNormal	= *normal;
-	else 
-		g_TEExplosion.m_vecNormal	= Vector(0,0,1);
+	}
+	else
+	{
+		g_TEExplosion.m_vecNormal	= Vector( 0, 0, 1 );
+	}
 	g_TEExplosion.m_chMaterialType	= materialType;
 
 	// Send it over the wire

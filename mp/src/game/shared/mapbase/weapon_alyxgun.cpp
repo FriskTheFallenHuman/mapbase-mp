@@ -38,7 +38,7 @@ PRECACHE_WEAPON_REGISTER( weapon_alyxgun );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponAlyxGun::m_acttable[] = 
+acttable_t	CWeaponAlyxGun::m_acttable[] =
 {
 	{ ACT_IDLE,						ACT_IDLE_PISTOL,				true },
 	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_PISTOL,			true },
@@ -48,7 +48,7 @@ acttable_t	CWeaponAlyxGun::m_acttable[] =
 	{ ACT_RUN_AIM,					ACT_RUN_AIM_PISTOL,				true },
 	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			true },
 	{ ACT_RANGE_AIM_LOW,			ACT_RANGE_AIM_PISTOL_LOW,		true },
-	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL,true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL, true },
 	{ ACT_RELOAD_LOW,				ACT_RELOAD_PISTOL_LOW,			true },
 	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_PISTOL_LOW,	true },
 	{ ACT_GESTURE_RELOAD,			ACT_GESTURE_RELOAD_PISTOL,		true },
@@ -90,7 +90,7 @@ acttable_t	CWeaponAlyxGun::m_acttable[] =
 	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
 
 	// Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY_PISTOL,			false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
 	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
@@ -108,7 +108,7 @@ acttable_t	CWeaponAlyxGun::m_acttable[] =
 
 	// Crouch activities
 	{ ACT_CROUCHIDLE_STIMULATED,	ACT_CROUCHIDLE_STIMULATED,		false },
-	{ ACT_CROUCHIDLE_AIM_STIMULATED,ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+	{ ACT_CROUCHIDLE_AIM_STIMULATED, ACT_RANGE_AIM_PISTOL_LOW,		false }, //always aims
 	{ ACT_CROUCHIDLE_AGITATED,		ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
 
 	// Readiness translations
@@ -150,7 +150,7 @@ IMPLEMENT_ACTTABLE( CWeaponAlyxGun );
 #define ALYX_TOOCLOSETIMER	1.0f		// Time an enemy must be tooclose before Alyx is allowed to shoot it.
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponAlyxGun::CWeaponAlyxGun( )
 {
@@ -166,7 +166,7 @@ CWeaponAlyxGun::CWeaponAlyxGun( )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponAlyxGun::~CWeaponAlyxGun( )
 {
@@ -176,14 +176,14 @@ CWeaponAlyxGun::~CWeaponAlyxGun( )
 //-----------------------------------------------------------------------------
 // Purpose: Try to encourage Alyx not to use her weapon at point blank range,
 //			but don't prevent her from defending herself if cornered.
-// Input  : flDot - 
-//			flDist - 
+// Input  : flDot -
+//			flDist -
 // Output : int
 //-----------------------------------------------------------------------------
 int CWeaponAlyxGun::WeaponRangeAttack1Condition( float flDot, float flDist )
 {
 #ifdef HL2_EPISODIC
-	
+
 	if( flDist < m_fMinRange1 )
 	{
 		// If Alyx is not able to fire because an enemy is too close, start a timer.
@@ -212,17 +212,17 @@ int CWeaponAlyxGun::WeaponRangeAttack1Condition( float flDot, float flDist )
 
 	int nBaseCondition = BaseClass::WeaponRangeAttack1Condition( flDot, flDist );
 
-	// While in a vehicle, we extend our aiming cone (this relies on COND_NOT_FACING_ATTACK 
+	// While in a vehicle, we extend our aiming cone (this relies on COND_NOT_FACING_ATTACK
 	// TODO: This needs to be rolled in at the animation level
-	if ( GetOwner()->IsInAVehicle() )
+	if( GetOwner()->IsInAVehicle() )
 	{
 		Vector vecRoughDirection = ( GetOwner()->GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter() );
 		Vector vecRight;
 		GetVectors( NULL, &vecRight, NULL );
 		bool bRightSide = ( DotProduct( vecRoughDirection, vecRight ) > 0.0f );
 		float flTargetDot = ( bRightSide ) ? -0.7f : 0.0f;
-		
-		if ( nBaseCondition == COND_NOT_FACING_ATTACK && flDot >= flTargetDot )
+
+		if( nBaseCondition == COND_NOT_FACING_ATTACK && flDot >= flTargetDot )
 		{
 			nBaseCondition = COND_CAN_RANGE_ATTACK1;
 		}
@@ -230,7 +230,7 @@ int CWeaponAlyxGun::WeaponRangeAttack1Condition( float flDot, float flDist )
 
 	return nBaseCondition;
 
-#else 
+#else
 
 	return BaseClass::WeaponRangeAttack1Condition( flDot, flDist );
 
@@ -238,9 +238,9 @@ int CWeaponAlyxGun::WeaponRangeAttack1Condition( float flDot, float flDist )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flDot - 
-//			flDist - 
+// Purpose:
+// Input  : flDot -
+//			flDist -
 // Output : int
 //-----------------------------------------------------------------------------
 int CWeaponAlyxGun::WeaponRangeAttack2Condition( float flDot, float flDist )
@@ -249,22 +249,22 @@ int CWeaponAlyxGun::WeaponRangeAttack2Condition( float flDot, float flDist )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOperator - 
+// Purpose:
+// Input  : *pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponAlyxGun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles )
+void CWeaponAlyxGun::FireNPCPrimaryAttack( CBaseCombatCharacter* pOperator, bool bUseWeaponAngles )
 {
 	Vector vecShootOrigin, vecShootDir;
-	CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+	CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 	ASSERT( npc != NULL );
 
-	if ( bUseWeaponAngles )
+	if( bUseWeaponAngles )
 	{
 		QAngle	angShootDir;
 		GetAttachment( LookupAttachment( "muzzle" ), vecShootOrigin, angShootDir );
 		AngleVectors( angShootDir, &vecShootDir );
 	}
-	else 
+	else
 	{
 		vecShootOrigin = pOperator->Weapon_ShootPosition();
 		vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
@@ -299,15 +299,15 @@ void CWeaponAlyxGun::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponAlyxGun::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+void CWeaponAlyxGun::Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary )
 {
 	// Ensure we have enough rounds in the clip
 	m_iClip1++;
 
 	// HACK: We need the gun to fire its muzzle flash
-	if ( bSecondary == false )
+	if( bSecondary == false )
 	{
 		SetActivity( ACT_RANGE_ATTACK_PISTOL, 0.0f );
 	}
@@ -316,9 +316,9 @@ void CWeaponAlyxGun::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, boo
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponAlyxGun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponAlyxGun::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
@@ -327,7 +327,7 @@ void CWeaponAlyxGun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 			FireNPCPrimaryAttack( pOperator, false );
 			break;
 		}
-		
+
 		default:
 			BaseClass::Operator_HandleAnimEvent( pEvent, pOperator );
 			break;
@@ -339,15 +339,17 @@ void CWeaponAlyxGun::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 //-----------------------------------------------------------------------------
 bool IsAlyxInInjuredMode( void )
 {
-	if ( hl2_episodic.GetBool() == false )
+	if( hl2_episodic.GetBool() == false )
+	{
 		return false;
+	}
 
-	return ( GlobalEntity_GetState("ep2_alyx_injured") == GLOBAL_ON );
+	return ( GlobalEntity_GetState( "ep2_alyx_injured" ) == GLOBAL_ON );
 }
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 const Vector& CWeaponAlyxGun::GetBulletSpread( void )
 {
@@ -355,34 +357,40 @@ const Vector& CWeaponAlyxGun::GetBulletSpread( void )
 	static const Vector injuredCone = VECTOR_CONE_6DEGREES;
 
 #ifdef GAME_DLL
-	if ( IsAlyxInInjuredMode() )
+	if( IsAlyxInInjuredMode() )
+	{
 		return injuredCone;
+	}
 #endif
 
 	return cone;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CWeaponAlyxGun::GetMinRestTime( void )
 {
 #ifdef GAME_DLL
-	if ( IsAlyxInInjuredMode() )
+	if( IsAlyxInInjuredMode() )
+	{
 		return 1.5f;
+	}
 #endif // GAME_DLL
 
 	return BaseClass::GetMinRestTime();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CWeaponAlyxGun::GetMaxRestTime( void )
 {
 #ifdef GAME_DLL
-	if ( IsAlyxInInjuredMode() )
+	if( IsAlyxInInjuredMode() )
+	{
 		return 3.0f;
+	}
 #endif // GAME_DLL
 
 	return BaseClass::GetMaxRestTime();

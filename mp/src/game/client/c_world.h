@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( C_WORLD_H )
 #define C_WORLD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
 
 #if defined( CLIENT_DLL )
-#define CWorld C_World
+	#define CWorld C_World
 #endif
 
 class C_World : public C_BaseEntity
@@ -24,35 +24,44 @@ public:
 
 	C_World( void );
 	~C_World( void );
-	
+
 	// Override the factory create/delete functions since the world is a singleton.
 	virtual bool Init( int entnum, int iSerialNum );
 	virtual void Release();
 
 	virtual void Precache();
 	virtual void Spawn();
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
 	// Don't worry about adding the world to the collision list; it's already there
-	virtual CollideType_t	GetCollideType( void )	{ return ENTITY_SHOULD_NOT_COLLIDE; }
+	virtual CollideType_t	GetCollideType( void )
+	{
+		return ENTITY_SHOULD_NOT_COLLIDE;
+	}
 
 	virtual void OnDataChanged( DataUpdateType_t updateType );
 	virtual void PreDataUpdate( DataUpdateType_t updateType );
 
 	float GetWaveHeight() const;
-	const char *GetDetailSpriteMaterial() const;
+	const char* GetDetailSpriteMaterial() const;
 
 #ifdef MAPBASE
 	// A special function which parses map data for the client world entity before LevelInitPreEntity().
 	// This can be used to access keyvalues early and without transmitting from the server.
-	void ParseWorldMapData( const char *pMapData );
+	void ParseWorldMapData( const char* pMapData );
 #endif
 
 #ifdef MAPBASE_VSCRIPT
-	void ClientThink() { ScriptContextThink(); }
+	void ClientThink()
+	{
+		ScriptContextThink();
+	}
 
 	// -2 = Use server language
-	ScriptLanguage_t GetScriptLanguage() { return (ScriptLanguage_t)(m_iScriptLanguageClient != -2 ? m_iScriptLanguageClient : m_iScriptLanguageServer); }
+	ScriptLanguage_t GetScriptLanguage()
+	{
+		return ( ScriptLanguage_t )( m_iScriptLanguageClient != -2 ? m_iScriptLanguageClient : m_iScriptLanguageServer );
+	}
 #endif
 
 public:
@@ -88,7 +97,7 @@ inline float C_World::GetWaveHeight() const
 	return m_flWaveHeight;
 }
 
-inline const char *C_World::GetDetailSpriteMaterial() const
+inline const char* C_World::GetDetailSpriteMaterial() const
 {
 	return m_iszDetailSpriteMaterial;
 }

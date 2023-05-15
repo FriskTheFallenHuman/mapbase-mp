@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -9,7 +9,7 @@
 #ifndef C_BASEHLCOMBATWEAPON_H
 #define C_BASEHLCOMBATWEAPON_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class C_HLMachineGun : public C_BaseHLCombatWeapon

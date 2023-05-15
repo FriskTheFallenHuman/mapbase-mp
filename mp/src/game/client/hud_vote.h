@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HUD_VOTE_H
 #define HUD_VOTE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -18,20 +18,20 @@
 #include <vgui_controls/Button.h>
 #include <networkstringtabledefs.h>
 
-extern INetworkStringTable *g_pStringTableServerMapCycle;
+extern INetworkStringTable* g_pStringTableServerMapCycle;
 
 #ifdef TF_CLIENT_DLL
-extern INetworkStringTable *g_pStringTableServerPopFiles;
-extern INetworkStringTable *g_pStringTableServerMapCycleMvM;
+	extern INetworkStringTable* g_pStringTableServerPopFiles;
+	extern INetworkStringTable* g_pStringTableServerMapCycleMvM;
 #endif
 
 static const int k_MAX_VOTE_NAME_LENGTH = 256;
 
 namespace vgui
 {
-	class SectionedListPanel;
-	class ComboBox;
-	class ImageList;
+class SectionedListPanel;
+class ComboBox;
+class ImageList;
 };
 
 struct VoteIssue_t
@@ -45,10 +45,10 @@ class VoteBarPanel : public vgui::Panel, public CGameEventListener
 {
 	DECLARE_CLASS_SIMPLE( VoteBarPanel, vgui::Panel );
 
-	VoteBarPanel( vgui::Panel *parent, const char *panelName );
+	VoteBarPanel( vgui::Panel* parent, const char* panelName );
 
 	virtual void Paint( void );
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 private:
 	int m_nVoteOptionCount[MAX_VOTE_OPTIONS];	// Vote options counter
@@ -67,42 +67,42 @@ private:
 
 class CVoteSetupDialog : public vgui::Frame
 {
-	DECLARE_CLASS_SIMPLE( CVoteSetupDialog, vgui::Frame ); 
+	DECLARE_CLASS_SIMPLE( CVoteSetupDialog, vgui::Frame );
 
 public:
-	CVoteSetupDialog( vgui::Panel *parent );
+	CVoteSetupDialog( vgui::Panel* parent );
 	~CVoteSetupDialog();
 
 	virtual void	Activate();
-	virtual void	ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void	PostApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void	ApplySettings(KeyValues *inResourceData);
+	virtual void	ApplySchemeSettings( vgui::IScheme* pScheme );
+	virtual void	PostApplySchemeSettings( vgui::IScheme* pScheme );
+	virtual void	ApplySettings( KeyValues* inResourceData );
 
 	void			InitializeIssueList( void );
 	void			UpdateCurrentMap( void );
-	void			AddVoteIssues( CUtlVector< VoteIssue_t > &m_VoteSetupIssues );
-	void			AddVoteIssueParams_MapCycle( CUtlStringList &m_VoteSetupMapCycle );
+	void			AddVoteIssues( CUtlVector< VoteIssue_t >& m_VoteSetupIssues );
+	void			AddVoteIssueParams_MapCycle( CUtlStringList& m_VoteSetupMapCycle );
 
 #ifdef TF_CLIENT_DLL
-	void			AddVoteIssueParams_PopFiles( CUtlStringList &m_VoteSetupPopFiles );
+	void			AddVoteIssueParams_PopFiles( CUtlStringList& m_VoteSetupPopFiles );
 #endif
 
 private:
 	//MESSAGE_FUNC( OnItemSelected, "ItemSelected" );
 	MESSAGE_FUNC_PTR( OnItemSelected, "ItemSelected", panel );
 
-	virtual void	OnCommand( const char *command );
+	virtual void	OnCommand( const char* command );
 	virtual void	OnClose( void );
 
 	void			RefreshIssueParameters( void );
 	void			ResetData( void );
 
-	vgui::ComboBox				*m_pComboBox;
+	vgui::ComboBox*				m_pComboBox;
 
-	vgui::SectionedListPanel	*m_pVoteSetupList;
-	vgui::SectionedListPanel	*m_pVoteParameterList;
-	vgui::Button				*m_pCallVoteButton;
-	vgui::ImageList				*m_pImageList;
+	vgui::SectionedListPanel*	m_pVoteSetupList;
+	vgui::SectionedListPanel*	m_pVoteParameterList;
+	vgui::Button*				m_pCallVoteButton;
+	vgui::ImageList*				m_pImageList;
 
 	CUtlVector< VoteIssue_t >	m_VoteIssues;
 	CUtlVector<const char*>	m_VoteIssuesMapCycle;
@@ -129,41 +129,47 @@ class CHudVote : public vgui::EditablePanel, public CHudElement
 {
 	DECLARE_CLASS_SIMPLE( CHudVote, vgui::EditablePanel );
 
-	CHudVote( const char *pElementName );
+	CHudVote( const char* pElementName );
 
 	virtual void	LevelInit( void );
 	virtual void	Init( void );
 	virtual bool	ShouldDraw( void );
-	virtual void	ApplySchemeSettings( vgui::IScheme *pScheme );
-	virtual void	FireGameEvent( IGameEvent *event );
+	virtual void	ApplySchemeSettings( vgui::IScheme* pScheme );
+	virtual void	FireGameEvent( IGameEvent* event );
 	virtual void	OnThink();
-	virtual int		KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+	virtual int		KeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
 
 	// NOTE: Any MsgFunc_*() methods added here need to check IsPlayingDemo().
-	void			MsgFunc_CallVoteFailed( bf_read &msg );
-	void			MsgFunc_VoteStart( bf_read &msg );
-	void			MsgFunc_VotePass( bf_read &msg );
-	void			MsgFunc_VoteFailed( bf_read &msg );
-	void			MsgFunc_VoteSetup( bf_read &msg );
+	void			MsgFunc_CallVoteFailed( bf_read& msg );
+	void			MsgFunc_VoteStart( bf_read& msg );
+	void			MsgFunc_VotePass( bf_read& msg );
+	void			MsgFunc_VoteFailed( bf_read& msg );
+	void			MsgFunc_VoteSetup( bf_read& msg );
 
 	void			PropagateOptionParameters( void );
-	void			ShowVoteUI( bool bShow ) { m_bShowVoteActivePanel = bShow; }
+	void			ShowVoteUI( bool bShow )
+	{
+		m_bShowVoteActivePanel = bShow;
+	}
 	bool			IsVoteUIActive( void );
-	bool			IsVoteSystemActive( void ) { return m_bVoteSystemActive; }
+	bool			IsVoteSystemActive( void )
+	{
+		return m_bVoteSystemActive;
+	}
 
 private:
 	bool			IsPlayingDemo() const;
 
-	EditablePanel		*m_pVoteActive;
-	VoteBarPanel		*m_voteBar;
-	EditablePanel		*m_pVoteFailed;
-	EditablePanel		*m_pVotePassed;
-	EditablePanel		*m_pCallVoteFailed;
-	CVoteSetupDialog	*m_pVoteSetupDialog;
+	EditablePanel*		m_pVoteActive;
+	VoteBarPanel*		m_voteBar;
+	EditablePanel*		m_pVoteFailed;
+	EditablePanel*		m_pVotePassed;
+	EditablePanel*		m_pCallVoteFailed;
+	CVoteSetupDialog*	m_pVoteSetupDialog;
 
 	CUtlVector< VoteIssue_t > m_VoteSetupIssues;
 	CUtlStringList		m_VoteSetupMapCycle;
-	
+
 #ifdef TF_CLIENT_DLL
 	CUtlStringList		m_VoteSetupPopFiles;
 #endif

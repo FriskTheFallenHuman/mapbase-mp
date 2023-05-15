@@ -33,27 +33,27 @@ class CAI_DynamicLink : public CServerOnlyEntity
 {
 	DECLARE_CLASS( CAI_DynamicLink, CServerOnlyEntity );
 public:
-	static void					InitDynamicLinks(void);
-	static void					ResetDynamicLinks(void);
-	static void					PurgeDynamicLinks(void);
+	static void					InitDynamicLinks( void );
+	static void					ResetDynamicLinks( void );
+	static void					PurgeDynamicLinks( void );
 	static void 				GenerateControllerLinks();
 
 	static bool					gm_bInitialized;
 
-	static CAI_DynamicLink*		GetDynamicLink(int nSrcID, int nDstID);
+	static CAI_DynamicLink*		GetDynamicLink( int nSrcID, int nDstID );
 
 	static CAI_DynamicLink*		m_pAllDynamicLinks;		// A linked list of all dynamic link
 	CAI_DynamicLink*			m_pNextDynamicLink;		// The next dynamic link in the list of dynamic links
 
 	int							m_nSrcEditID;			// the node that 'owns' this link
-	int							m_nDestEditID;			// the node on the other end of the link. 
+	int							m_nDestEditID;			// the node on the other end of the link.
 
 	int							m_nSrcID;				// the node that 'owns' this link
-	int							m_nDestID;				// the node on the other end of the link. 
-	DynamicLinkState_t			m_nLinkState;			// 
+	int							m_nDestID;				// the node on the other end of the link.
+	DynamicLinkState_t			m_nLinkState;			//
 	string_t					m_strAllowUse;			// Only this entity name or classname may use the link
 	bool						m_bInvertAllow;			// Instead of only allowing the m_strAllowUse entity, exclude only it
-	
+
 	bool						m_bFixedUpIds;
 	bool						m_bNotSaved;
 	int							m_nLinkType;
@@ -61,22 +61,25 @@ public:
 	void						SetLinkState( void );
 	bool						IsLinkValid( void );
 
-	CAI_Link *					FindLink();
+	CAI_Link* 					FindLink();
 
 	int							ObjectCaps();
 
 #ifdef MAPBASE
-	virtual bool				UseAllowed(CAI_BaseNPC *pNPC, bool bFromEnd);
+	virtual bool				UseAllowed( CAI_BaseNPC* pNPC, bool bFromEnd );
 
 	// Called after we know the NPC meets all of the node's criteria
-	virtual bool				FinalUseAllowed(CAI_BaseNPC *pNPC, bool bFromEnd) { return true; }
+	virtual bool				FinalUseAllowed( CAI_BaseNPC* pNPC, bool bFromEnd )
+	{
+		return true;
+	}
 #endif
 
 	// ----------------
 	//	Inputs
 	// ----------------
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
 	DECLARE_DATADESC();
 
 	CAI_DynamicLink();
@@ -98,11 +101,11 @@ public:
 	// ----------------
 	//	Inputs
 	// ----------------
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputSetAllowed( inputdata_t &inputdata );
-	void InputSetInvert( inputdata_t &inputdata );
-	
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputSetAllowed( inputdata_t& inputdata );
+	void InputSetInvert( inputdata_t& inputdata );
+
 	CUtlVector< CHandle<CAI_DynamicLink> > m_ControlledLinks;
 	DynamicLinkState_t			m_nLinkState;
 	string_t					m_strAllowUse;		// Only this entity name or classname may use the link

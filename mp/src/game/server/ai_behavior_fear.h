@@ -15,7 +15,7 @@
 #ifndef AI_BEHAVIOR_FEAR_H
 #define AI_BEHAVIOR_FEAR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior.h"
@@ -33,12 +33,12 @@ public:
 	{
 	}
 
-	void EnableGoal( CAI_BaseNPC *pAI );
-	void DisableGoal( CAI_BaseNPC *pAI );
+	void EnableGoal( CAI_BaseNPC* pAI );
+	void DisableGoal( CAI_BaseNPC* pAI );
 
 	// Inputs
-	virtual void InputActivate( inputdata_t &inputdata );
-	virtual void InputDeactivate( inputdata_t &inputdata );
+	virtual void InputActivate( inputdata_t& inputdata );
+	virtual void InputDeactivate( inputdata_t& inputdata );
 
 	// Note that the outer is the caller in these outputs
 	//COutputEvent	m_OnSeeFearEntity;
@@ -57,18 +57,21 @@ class CAI_FearBehavior : public CAI_SimpleBehavior
 
 public:
 	CAI_FearBehavior();
-	
+
 	void Precache( void );
-	virtual const char *GetName() {	return "Fear"; }
+	virtual const char* GetName()
+	{
+		return "Fear";
+	}
 
 	virtual bool 	CanSelectSchedule();
 	void GatherConditions();
-	
+
 	virtual void BeginScheduleSelection();
 	virtual void EndScheduleSelection();
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
 	//void BuildScheduleTestBits();
 	//int TranslateSchedule( int scheduleType );
@@ -77,13 +80,13 @@ public:
 	//void InitializeBehavior();
 
 	bool EnemyDislikesMe();
-	
+
 	void MarkAsUnsafe();
 	bool IsInASafePlace();
 	void SpoilSafePlace();
 	void ReleaseAllHints();
 
-	CAI_Hint *FindFearWithdrawalDest();
+	CAI_Hint* FindFearWithdrawalDest();
 	void BuildScheduleTestBits();
 	int TranslateSchedule( int scheduleType );
 
@@ -91,17 +94,17 @@ public:
 	virtual Activity	NPC_TranslateActivity( Activity activity );
 
 	virtual void OnRestore();
-	virtual void SetParameters( CAI_FearGoal *pGoal, string_t target );
+	virtual void SetParameters( CAI_FearGoal* pGoal, string_t target );
 	CHandle<CAI_FearGoal> m_hFearGoal;
 
 	// Points to goal's fear target
 	string_t m_iszFearTarget;
 #endif
 
-	
+
 	enum
 	{
-		SCHED_FEAR_MOVE_TO_SAFE_PLACE = BaseClass::NEXT_SCHEDULE,		
+		SCHED_FEAR_MOVE_TO_SAFE_PLACE = BaseClass::NEXT_SCHEDULE,
 		SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY,
 		SCHED_FEAR_STAY_IN_SAFE_PLACE,
 		NEXT_SCHEDULE,

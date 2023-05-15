@@ -15,21 +15,27 @@ static int g_ActiveVoiceMenu = 0;
 void OpenVoiceMenu( int index )
 {
 	// do not show the menu if the player is dead or is an observer
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( !pPlayer->IsAlive() || pPlayer->IsObserver() )
+	if( !pPlayer->IsAlive() || pPlayer->IsObserver() )
+	{
 		return;
+	}
 
-	CHudMenu *pMenu = (CHudMenu *) gHUD.FindElement( "CHudMenu" );
-	if ( !pMenu )
+	CHudMenu* pMenu = ( CHudMenu* ) gHUD.FindElement( "CHudMenu" );
+	if( !pMenu )
+	{
 		return;
+	}
 
 	// if they hit the key again, close the menu
-	if ( g_ActiveVoiceMenu == index )
+	if( g_ActiveVoiceMenu == index )
 	{
-		if ( pMenu->IsMenuOpen() )
+		if( pMenu->IsMenuOpen() )
 		{
 			pMenu->HideMenu();
 			g_ActiveVoiceMenu = 0;
@@ -37,15 +43,15 @@ void OpenVoiceMenu( int index )
 		}
 	}
 
-	if ( index > 0 && index < 9 )
+	if( index > 0 && index < 9 )
 	{
-		KeyValues *pKV = new KeyValues( "MenuItems" );
+		KeyValues* pKV = new KeyValues( "MenuItems" );
 
-		CMultiplayRules *pRules = dynamic_cast< CMultiplayRules * >( GameRules() );
-		if ( pRules )
-		{			
-			if ( !pRules->GetVoiceMenuLabels( index-1, pKV ) )
-			{ 
+		CMultiplayRules* pRules = dynamic_cast< CMultiplayRules* >( GameRules() );
+		if( pRules )
+		{
+			if( !pRules->GetVoiceMenuLabels( index - 1, pKV ) )
+			{
 				pKV->deleteThis();
 				return;
 			}
@@ -84,13 +90,15 @@ ConCommand voice_menu_3( "voice_menu_3", OpenVoiceMenu_3, "Opens voice menu 3" )
 
 CON_COMMAND( menuselect, "menuselect" )
 {
-	if ( args.ArgC() < 2 )
+	if( args.ArgC() < 2 )
+	{
 		return;
+	}
 
 	if( g_ActiveVoiceMenu == 0 )
 	{
 		// if we didn't have a menu open, maybe a plugin did.  send it on to the server.
-		const char *cmd = VarArgs( "menuselect %s", args[1] );
+		const char* cmd = VarArgs( "menuselect %s", args[1] );
 		engine->ServerCmd( cmd );
 		return;
 	}
@@ -99,20 +107,20 @@ CON_COMMAND( menuselect, "menuselect" )
 
 	switch( g_ActiveVoiceMenu )
 	{
-	case 1:
-	case 2:
-	case 3:
+		case 1:
+		case 2:
+		case 3:
 		{
 			char cmd[128];
-			Q_snprintf( cmd, sizeof(cmd), "voicemenu %d %d", g_ActiveVoiceMenu - 1, iSelection - 1 );
+			Q_snprintf( cmd, sizeof( cmd ), "voicemenu %d %d", g_ActiveVoiceMenu - 1, iSelection - 1 );
 			engine->ServerCmd( cmd );
 		}
 		break;
 
-	default:
+		default:
 		{
 			// if we didn't have a menu open, maybe a plugin did.  send it on to the server.
-			const char *cmd = VarArgs( "menuselect %d", iSelection );
+			const char* cmd = VarArgs( "menuselect %d", iSelection );
 			engine->ServerCmd( cmd );
 		}
 		break;

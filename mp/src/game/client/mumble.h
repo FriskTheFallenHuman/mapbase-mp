@@ -10,7 +10,7 @@
 #define MUMBLE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "igamesystem.h"
@@ -26,7 +26,7 @@ public:
 	virtual void	PostRender();
 
 	// Methods of IGameSystem
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 private:
 	char m_szSteamIDCurrentServer[32];
@@ -35,6 +35,6 @@ private:
 	int m_nTeamSetInUniqueId;
 };
 
-IGameSystem *MumbleSystem();
+IGameSystem* MumbleSystem();
 
 #endif // MUMBLE_H

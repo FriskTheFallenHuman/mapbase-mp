@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -14,14 +14,14 @@
 #include "proxyentity.h"
 #include "toolframework_client.h"
 #ifdef MAPBASE
-#include "view.h"
+	#include "view.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 // forward declarations
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 //-----------------------------------------------------------------------------
 // Returns the proximity of the player to the entity
@@ -30,32 +30,38 @@ void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 class CPlayerProximityProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CPlayerProximityProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerProximityProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	m_Factor = pKeyValues->GetFloat( "scale", 0.002 );
 	return true;
 }
 
-void CPlayerProximityProxy::OnBind( void *pC_BaseEntity )
+void CPlayerProximityProxy::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the distance between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	Vector delta;
 	VectorSubtract( pEntity->WorldSpaceCenter(), pPlayer->WorldSpaceCenter(), delta );
@@ -63,7 +69,7 @@ void CPlayerProximityProxy::OnBind( void *pC_BaseEntity )
 	Assert( m_pResult );
 	SetFloatResult( delta.Length() * m_Factor );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -79,35 +85,41 @@ EXPOSE_INTERFACE( CPlayerProximityProxy, IMaterialProxy, "PlayerProximity" IMATE
 class CPlayerTeamMatchProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 };
 
-bool CPlayerTeamMatchProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerTeamMatchProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	return true;
 }
 
-void CPlayerTeamMatchProxy::OnBind( void *pC_BaseEntity )
+void CPlayerTeamMatchProxy::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the distance between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	Assert( m_pResult );
-	SetFloatResult( (pEntity->GetTeamNumber() == pPlayer->GetTeamNumber()) ? 1.0 : 0.0 );
+	SetFloatResult( ( pEntity->GetTeamNumber() == pPlayer->GetTeamNumber() ) ? 1.0 : 0.0 );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -122,32 +134,38 @@ EXPOSE_INTERFACE( CPlayerTeamMatchProxy, IMaterialProxy, "PlayerTeamMatch" IMATE
 class CPlayerViewProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CPlayerViewProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerViewProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	m_Factor = pKeyValues->GetFloat( "scale", 2 );
 	return true;
 }
 
-void CPlayerViewProxy::OnBind( void *pC_BaseEntity )
+void CPlayerViewProxy::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the view angle between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	Vector delta;
 	VectorSubtract( pEntity->WorldSpaceCenter(), pPlayer->WorldSpaceCenter(), delta );
@@ -159,7 +177,7 @@ void CPlayerViewProxy::OnBind( void *pC_BaseEntity )
 	Assert( m_pResult );
 	SetFloatResult( DotProduct( forward, delta ) * m_Factor );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -174,33 +192,37 @@ EXPOSE_INTERFACE( CPlayerViewProxy, IMaterialProxy, "PlayerView" IMATERIAL_PROXY
 class CPlayerSpeedProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CPlayerSpeedProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerSpeedProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	m_Factor = pKeyValues->GetFloat( "scale", 0.005 );
 	return true;
 }
 
-void CPlayerSpeedProxy::OnBind( void *pC_BaseEntity )
+void CPlayerSpeedProxy::OnBind( void* pC_BaseEntity )
 {
 	// Find the player speed....
 	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	Assert( m_pResult );
 	SetFloatResult( pPlayer->GetLocalVelocity().Length() * m_Factor );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -215,36 +237,40 @@ EXPOSE_INTERFACE( CPlayerSpeedProxy, IMaterialProxy, "PlayerSpeed" IMATERIAL_PRO
 class CPlayerPositionProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CPlayerPositionProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerPositionProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
-	  
+	}
+
 	m_Factor = pKeyValues->GetFloat( "scale", 0.005 );
 	return true;
 }
 
-void CPlayerPositionProxy::OnBind( void *pC_BaseEntity )
+void CPlayerPositionProxy::OnBind( void* pC_BaseEntity )
 {
 	// Find the player speed....
 	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// This is actually a vector...
 	Assert( m_pResult );
 	Vector res;
-	VectorMultiply( pPlayer->WorldSpaceCenter(), m_Factor, res ); 
+	VectorMultiply( pPlayer->WorldSpaceCenter(), m_Factor, res );
 	m_pResult->SetVecValue( res.Base(), 3 );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -270,7 +296,7 @@ public:
 	{
 	}
 
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 	{
 		const char* pForward = pKeyValues->GetString( "forward" );
 		const char* pRight = pKeyValues->GetString( "right" );
@@ -278,27 +304,30 @@ public:
 		m_pMaterial = pMaterial;
 		bool found;
 
-		if (pForward && *pForward) {
+		if( pForward && *pForward )
+		{
 			m_pForward = pMaterial->FindVar( pForward, &found, true );
-			if (!found)
+			if( !found )
 			{
 				m_pForward = NULL;
 				return false;
 			}
 		}
 
-		if (pRight && *pRight) {
+		if( pRight && *pRight )
+		{
 			m_pRight = pMaterial->FindVar( pRight, &found, true );
-			if (!found)
+			if( !found )
 			{
 				m_pRight = NULL;
 				return false;
 			}
 		}
 
-		if (pUp && *pUp) {
+		if( pUp && *pUp )
+		{
 			m_pUp = pMaterial->FindVar( pUp, &found, true );
-			if (!found)
+			if( !found )
 			{
 				m_pUp = NULL;
 				return false;
@@ -308,37 +337,37 @@ public:
 		return true;
 	}
 
-	virtual void OnBind( C_BaseEntity *pC_BaseEntity )
+	virtual void OnBind( C_BaseEntity* pC_BaseEntity )
 	{
 		Vector forward, right, up;
 		pC_BaseEntity->GetVectors( &forward, &right, &up );
 
-		if (m_pForward)
+		if( m_pForward )
 		{
 			m_pForward->SetVecValue( forward.x, forward.y, forward.z );
 		}
 
-		if (m_pRight)
+		if( m_pRight )
 		{
 			m_pRight->SetVecValue( right.x, right.y, right.z );
 		}
 
-		if (m_pUp)
+		if( m_pUp )
 		{
 			m_pUp->SetVecValue( up.x, up.y, up.z );
 		}
 	}
 
-	virtual IMaterial *GetMaterial()
+	virtual IMaterial* GetMaterial()
 	{
 		return m_pMaterial;
 	}
 
 protected:
-	IMaterial *m_pMaterial;
-	IMaterialVar *m_pForward;
-	IMaterialVar *m_pRight;
-	IMaterialVar *m_pUp;
+	IMaterial* m_pMaterial;
+	IMaterialVar* m_pForward;
+	IMaterialVar* m_pRight;
+	IMaterialVar* m_pUp;
 };
 
 EXPOSE_INTERFACE( CEntityVectorsProxy, IMaterialProxy, "EntityVectors" IMATERIAL_PROXY_INTERFACE_VERSION );
@@ -349,22 +378,24 @@ EXPOSE_INTERFACE( CEntityVectorsProxy, IMaterialProxy, "EntityVectors" IMATERIAL
 class CEntitySpeedProxy : public CResultProxy
 {
 public:
-	void OnBind( void *pC_BaseEntity );
+	void OnBind( void* pC_BaseEntity );
 };
 
-void CEntitySpeedProxy::OnBind( void *pC_BaseEntity )
+void CEntitySpeedProxy::OnBind( void* pC_BaseEntity )
 {
 	// Find the view angle between the player and this entity....
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the view angle between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 
 	Assert( m_pResult );
 	m_pResult->SetFloatValue( pEntity->GetLocalVelocity().Length() );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -379,37 +410,43 @@ EXPOSE_INTERFACE( CEntitySpeedProxy, IMaterialProxy, "EntitySpeed" IMATERIAL_PRO
 class CEntityRandomProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	CFloatInput	m_Factor;
 };
 
-bool CEntityRandomProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CEntityRandomProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
-	if (!m_Factor.Init( pMaterial, pKeyValues, "scale", 1 ))
+	if( !m_Factor.Init( pMaterial, pKeyValues, "scale", 1 ) )
+	{
 		return false;
+	}
 
 	return true;
 }
 
-void CEntityRandomProxy::OnBind( void *pC_BaseEntity )
+void CEntityRandomProxy::OnBind( void* pC_BaseEntity )
 {
 	// Find the view angle between the player and this entity....
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the view angle between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 
 	Assert( m_pResult );
 	m_pResult->SetFloatValue( pEntity->ProxyRandomValue() * m_Factor.GetFloat() );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -427,20 +464,20 @@ class CPlayerLogoProxy : public IMaterialProxy
 public:
 	CPlayerLogoProxy();
 
-	virtual bool Init( IMaterial* pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pC_BaseEntity );
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pC_BaseEntity );
 	virtual void Release()
 	{
-		if ( m_pDefaultTexture )
+		if( m_pDefaultTexture )
 		{
 			m_pDefaultTexture->DecrementReferenceCount();
 		}
 
 		int c = m_Logos.Count();
 		int i;
-		for ( i = 0; i < c ; i++ )
+		for( i = 0; i < c ; i++ )
 		{
-			PlayerLogo *logo = &m_Logos[ i ];
+			PlayerLogo* logo = &m_Logos[ i ];
 			if( logo->texture )
 			{
 				logo->texture->DecrementReferenceCount();
@@ -450,18 +487,18 @@ public:
 		m_Logos.RemoveAll();
 	}
 
-	virtual IMaterial *GetMaterial();
+	virtual IMaterial* GetMaterial();
 
 protected:
 	virtual void	OnLogoBindInternal( int playerindex );
 
 private:
-	IMaterialVar *m_pBaseTextureVar;
+	IMaterialVar* m_pBaseTextureVar;
 
 	struct PlayerLogo
 	{
 		unsigned int			crc;
-		ITexture			*texture;
+		ITexture*			texture;
 	};
 
 	static bool LogoLessFunc( const PlayerLogo& src1, const PlayerLogo& src2 )
@@ -470,50 +507,60 @@ private:
 	}
 
 	CUtlRBTree< PlayerLogo >	m_Logos;
-	ITexture					*m_pDefaultTexture;
+	ITexture*					m_pDefaultTexture;
 
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CPlayerLogoProxy::CPlayerLogoProxy()
-: m_Logos( 0, 0, LogoLessFunc )
+	: m_Logos( 0, 0, LogoLessFunc )
 {
 	m_pDefaultTexture = NULL;
 }
 
 #define DEFAULT_DECAL_NAME "decals/YBlood1"
 
-bool CPlayerLogoProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CPlayerLogoProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	bool found = false;
 	m_pBaseTextureVar = pMaterial->FindVar( "$basetexture", &found );
-	if ( !found )
+	if( !found )
+	{
 		return false;
+	}
 
 	m_pDefaultTexture = materials->FindTexture( DEFAULT_DECAL_NAME, TEXTURE_GROUP_DECAL );
-	if ( IsErrorTexture( m_pDefaultTexture ) )
+	if( IsErrorTexture( m_pDefaultTexture ) )
+	{
 		return false;
+	}
 
 	m_pDefaultTexture->IncrementReferenceCount();
 
 	return true;
 }
 
-void CPlayerLogoProxy::OnBind( void *pC_BaseEntity )
+void CPlayerLogoProxy::OnBind( void* pC_BaseEntity )
 {
 	// Decal's are bound with the player index as the passed in paramter
-	int playerindex = (int)pC_BaseEntity;
+	int playerindex = ( int )pC_BaseEntity;
 
-	if ( playerindex <= 0 )
+	if( playerindex <= 0 )
+	{
 		return;
+	}
 
-	if ( playerindex > gpGlobals->maxClients )
+	if( playerindex > gpGlobals->maxClients )
+	{
 		return;
+	}
 
-	if ( !m_pBaseTextureVar )
+	if( !m_pBaseTextureVar )
+	{
 		return;
+	}
 
 	OnLogoBindInternal( playerindex );
 }
@@ -524,28 +571,30 @@ void CPlayerLogoProxy::OnLogoBindInternal( int playerindex )
 	player_info_t info;
 	engine->GetPlayerInfo( playerindex, &info );
 
-	if ( !info.customFiles[0] ) 
+	if( !info.customFiles[0] )
+	{
 		return;
+	}
 
 	// So we don't trash this too hard
 
-	ITexture *texture = NULL;
+	ITexture* texture = NULL;
 
 	PlayerLogo logo;
-	logo.crc = (unsigned int)info.customFiles[0];
+	logo.crc = ( unsigned int )info.customFiles[0];
 	logo.texture = NULL;
 
 	int lookup = m_Logos.Find( logo );
-	if ( lookup == m_Logos.InvalidIndex() )
+	if( lookup == m_Logos.InvalidIndex() )
 	{
 		char crcfilename[ 512 ];
 		char logohex[ 16 ];
-		Q_binarytohex( (byte *)&info.customFiles[0], sizeof( info.customFiles[0] ), logohex, sizeof( logohex ) );
+		Q_binarytohex( ( byte* )&info.customFiles[0], sizeof( info.customFiles[0] ), logohex, sizeof( logohex ) );
 
 		Q_snprintf( crcfilename, sizeof( crcfilename ), "temp/%s", logohex );
 
 		texture = materials->FindTexture( crcfilename, TEXTURE_GROUP_DECAL, false );
-		if ( texture )
+		if( texture )
 		{
 			// Make sure it doesn't get flushed
 			texture->IncrementReferenceCount();
@@ -559,22 +608,22 @@ void CPlayerLogoProxy::OnLogoBindInternal( int playerindex )
 		texture = m_Logos[ lookup ].texture;
 	}
 
-	if ( texture )
+	if( texture )
 	{
 		m_pBaseTextureVar->SetTextureValue( texture );
 	}
-	else if ( m_pDefaultTexture )
+	else if( m_pDefaultTexture )
 	{
 		m_pBaseTextureVar->SetTextureValue( m_pDefaultTexture );
 	}
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
 }
 
-IMaterial *CPlayerLogoProxy::GetMaterial()
+IMaterial* CPlayerLogoProxy::GetMaterial()
 {
 	return m_pBaseTextureVar->GetOwningMaterial();
 }
@@ -583,7 +632,7 @@ EXPOSE_INTERFACE( CPlayerLogoProxy, IMaterialProxy, "PlayerLogo" IMATERIAL_PROXY
 
 /* @note Tom Bui: This is here for reference, but we don't want people to use it!
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 class CPlayerLogoOnModelProxy : public CPlayerLogoProxy
 {
@@ -625,29 +674,33 @@ EXPOSE_INTERFACE( CPlayerLogoOnModelProxy, IMaterialProxy, "PlayerLogoOnModel" I
 class CViewProximityProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CViewProximityProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CViewProximityProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	m_Factor = pKeyValues->GetFloat( "scale", 0.002 );
 	return true;
 }
 
-void CViewProximityProxy::OnBind( void *pC_BaseEntity )
+void CViewProximityProxy::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the distance between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 
 	Vector delta;
 	VectorSubtract( pEntity->WorldSpaceCenter(), CurrentViewOrigin(), delta );
@@ -655,7 +708,7 @@ void CViewProximityProxy::OnBind( void *pC_BaseEntity )
 	Assert( m_pResult );
 	SetFloatResult( delta.Length() * m_Factor );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -669,29 +722,33 @@ EXPOSE_INTERFACE( CViewProximityProxy, IMaterialProxy, "ViewProximity" IMATERIAL
 class CViewDirectionProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	float	m_Factor;
 };
 
-bool CViewDirectionProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CViewDirectionProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
 	m_Factor = pKeyValues->GetFloat( "scale", 2 );
 	return true;
 }
 
-void CViewDirectionProxy::OnBind( void *pC_BaseEntity )
+void CViewDirectionProxy::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
 	// Find the view angle between the player and this entity....
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 
 	Vector delta;
 	Vector forward;
@@ -704,7 +761,7 @@ void CViewDirectionProxy::OnBind( void *pC_BaseEntity )
 	Assert( m_pResult );
 	SetFloatResult( DotProduct( forward, delta ) * m_Factor );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}

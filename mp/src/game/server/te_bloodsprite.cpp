@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -27,7 +27,7 @@ class CTEBloodSprite : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEBloodSprite, CBaseTempEntity );
 
-					CTEBloodSprite( const char *name );
+	CTEBloodSprite( const char* name );
 	virtual			~CTEBloodSprite( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
@@ -47,10 +47,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBloodSprite::CTEBloodSprite( const char *name ) :
+CTEBloodSprite::CTEBloodSprite( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -64,16 +64,16 @@ CTEBloodSprite::CTEBloodSprite( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBloodSprite::~CTEBloodSprite( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -84,10 +84,10 @@ void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_a
 	a = 255;
 	m_nSize	= 16;
 	m_vecOrigin = current_origin;
-	
+
 	m_nSprayModel = g_sModelIndexBloodSpray;
 	m_nDropModel = g_sModelIndexBloodDrop;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -102,36 +102,36 @@ void CTEBloodSprite::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEBloodSprite, DT_TEBloodSprite)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(a), 8, SPROP_UNSIGNED ),
-	SendPropModelIndex( SENDINFO(m_nSprayModel) ),
-	SendPropModelIndex( SENDINFO(m_nDropModel) ),
-	SendPropInt( SENDINFO(m_nSize), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEBloodSprite, DT_TEBloodSprite )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecDirection ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( r ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( g ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( b ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( a ), 8, SPROP_UNSIGNED ),
+				SendPropModelIndex( SENDINFO( m_nSprayModel ) ),
+				SendPropModelIndex( SENDINFO( m_nDropModel ) ),
+				SendPropInt( SENDINFO( m_nSize ), 8, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 // Singleton
-static CTEBloodSprite g_TEBloodSprite( "Blood Sprite" );
+				static CTEBloodSprite g_TEBloodSprite( "Blood Sprite" );
 
 //-----------------------------------------------------------------------------
 // Purpose: Public interface
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*org - 
-//			r - 
-//			g - 
-//			b - 
-//			a - 
-//			size - 
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*org -
+//			r -
+//			g -
+//			b -
+//			a -
+//			size -
 //-----------------------------------------------------------------------------
 void TE_BloodSprite( IRecipientFilter& filter, float delay,
-	const Vector *org, const Vector *dir, int r, int g, int b, int a, int size )
+					 const Vector* org, const Vector* dir, int r, int g, int b, int a, int size )
 {
 	// Set up parameters
 	g_TEBloodSprite.m_vecOrigin		= *org;

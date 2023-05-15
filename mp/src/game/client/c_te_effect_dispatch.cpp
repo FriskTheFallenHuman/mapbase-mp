@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -22,9 +22,9 @@
 // CClientEffectRegistration registration
 //-----------------------------------------------------------------------------
 
-CClientEffectRegistration *CClientEffectRegistration::s_pHead = NULL;
+CClientEffectRegistration* CClientEffectRegistration::s_pHead = NULL;
 
-CClientEffectRegistration::CClientEffectRegistration( const char *pEffectName, ClientEffectCallback fn )
+CClientEffectRegistration::CClientEffectRegistration( const char* pEffectName, ClientEffectCallback fn )
 {
 	m_pEffectName = pEffectName;
 	m_pFunction = fn;
@@ -42,7 +42,7 @@ public:
 	DECLARE_CLASS( C_TEEffectDispatch, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEEffectDispatch( void );
+	C_TEEffectDispatch( void );
 	virtual			~C_TEEffectDispatch( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -52,36 +52,36 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEEffectDispatch::C_TEEffectDispatch( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEEffectDispatch::~C_TEEffectDispatch( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void DispatchEffectToCallback( const char *pEffectName, const CEffectData &m_EffectData )
+void DispatchEffectToCallback( const char* pEffectName, const CEffectData& m_EffectData )
 {
 	// Look through all the registered callbacks
-	for ( CClientEffectRegistration *pReg = CClientEffectRegistration::s_pHead; pReg; pReg = pReg->m_pNext )
+	for( CClientEffectRegistration* pReg = CClientEffectRegistration::s_pHead; pReg; pReg = pReg->m_pNext )
 	{
 		// If the name matches, call it
-		if ( Q_stricmp( pReg->m_pEffectName, pEffectName ) == 0 )
+		if( Q_stricmp( pReg->m_pEffectName, pEffectName ) == 0 )
 		{
 			pReg->m_pFunction( m_EffectData );
 			return;
 		}
 	}
 
-	DevMsg("DispatchEffect: effect '%s' not found on client\n", pEffectName );
+	DevMsg( "DispatchEffect: effect '%s' not found on client\n", pEffectName );
 
 }
 
@@ -89,22 +89,24 @@ void DispatchEffectToCallback( const char *pEffectName, const CEffectData &m_Eff
 //-----------------------------------------------------------------------------
 // Record effects
 //-----------------------------------------------------------------------------
-static void RecordEffect( const char *pEffectName, const CEffectData &data )
+static void RecordEffect( const char* pEffectName, const CEffectData& data )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() && ( (data.m_fFlags & EFFECTDATA_NO_RECORD) == 0 ) )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
-		const char *pSurfacePropName = physprops->GetPropName( data.m_nSurfaceProp );
+	if( clienttools->IsInRecordingMode() && ( ( data.m_fFlags & EFFECTDATA_NO_RECORD ) == 0 ) )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		const char* pSurfacePropName = physprops->GetPropName( data.m_nSurfaceProp );
 
 		char pName[1024];
-		Q_snprintf( pName, sizeof(pName), "TE_DispatchEffect %s %s", pEffectName, pSurfacePropName );
+		Q_snprintf( pName, sizeof( pName ), "TE_DispatchEffect %s %s", pEffectName, pSurfacePropName );
 
- 		msg->SetInt( "te", TE_DISPATCH_EFFECT );
- 		msg->SetString( "name", pName );
+		msg->SetInt( "te", TE_DISPATCH_EFFECT );
+		msg->SetString( "name", pName );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", data.m_vOrigin.x );
 		msg->SetFloat( "originy", data.m_vOrigin.y );
@@ -126,13 +128,13 @@ static void RecordEffect( const char *pEffectName, const CEffectData &data )
 		msg->SetInt( "color", data.m_nColor );
 		msg->SetInt( "damagetype", data.m_nDamageType );
 		msg->SetInt( "hitbox", data.m_nHitBox );
- 		msg->SetString( "effectname", pEffectName );
+		msg->SetString( "effectname", pEffectName );
 
 		// FIXME: Need to write the attachment name here
- 		msg->SetInt( "attachmentindex", data.m_nAttachmentIndex );
+		msg->SetInt( "attachmentindex", data.m_nAttachmentIndex );
 
 		// NOTE: Ptrs are our way of indicating it's an entindex
-		msg->SetPtr( "entindex", (void*)data.entindex() );
+		msg->SetPtr( "entindex", ( void* )data.entindex() );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -141,15 +143,15 @@ static void RecordEffect( const char *pEffectName, const CEffectData &data )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEEffectDispatch::PostDataUpdate( DataUpdateType_t updateType )
 {
 	VPROF( "C_TEEffectDispatch::PostDataUpdate" );
 
 	// Find the effect name.
-	const char *pEffectName = g_StringTableEffectDispatch->GetString( m_EffectData.GetEffectNameIndex() );
-	if ( pEffectName )
+	const char* pEffectName = g_StringTableEffectDispatch->GetString( m_EffectData.GetEffectNameIndex() );
+	if( pEffectName )
 	{
 		DispatchEffectToCallback( pEffectName, m_EffectData );
 		RecordEffect( pEffectName, m_EffectData );
@@ -158,28 +160,28 @@ void C_TEEffectDispatch::PostDataUpdate( DataUpdateType_t updateType )
 
 
 IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEEffectDispatch, DT_TEEffectDispatch, CTEEffectDispatch )
-	
-	RecvPropDataTable( RECVINFO_DT( m_EffectData ), 0, &REFERENCE_RECV_TABLE( DT_EffectData ) )
-			
+
+RecvPropDataTable( RECVINFO_DT( m_EffectData ), 0, &REFERENCE_RECV_TABLE( DT_EffectData ) )
+
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: Clientside version
 //-----------------------------------------------------------------------------
-void TE_DispatchEffect( IRecipientFilter& filter, float delay, const Vector &pos, const char *pName, const CEffectData &data )
+void TE_DispatchEffect( IRecipientFilter& filter, float delay, const Vector& pos, const char* pName, const CEffectData& data )
 {
 	DispatchEffectToCallback( pName, data );
 	RecordEffect( pName, data );
 }
 
 // Client version of dispatch effect, for predicted weapons
-void DispatchEffect( const char *pName, const CEffectData &data )
+void DispatchEffect( const char* pName, const CEffectData& data )
 {
 	CPASFilter filter( data.m_vOrigin );
 	te->DispatchEffect( filter, 0.0, data.m_vOrigin, pName, data );
 }
 
-void DispatchEffect( const char *pName, const CEffectData &data, IRecipientFilter &filter )
+void DispatchEffect( const char* pName, const CEffectData& data, IRecipientFilter& filter )
 {
 	te->DispatchEffect( filter, 0.0, data.m_vOrigin, pName, data );
 }
@@ -187,11 +189,11 @@ void DispatchEffect( const char *pName, const CEffectData &data, IRecipientFilte
 //-----------------------------------------------------------------------------
 // Playback
 //-----------------------------------------------------------------------------
-void TE_DispatchEffect( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_DispatchEffect( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	CEffectData data;
 	data.m_nMaterial = 0;
-		  
+
 	data.m_vOrigin.x = pKeyValues->GetFloat( "originx" );
 	data.m_vOrigin.y = pKeyValues->GetFloat( "originy" );
 	data.m_vOrigin.z = pKeyValues->GetFloat( "originz" );
@@ -208,7 +210,7 @@ void TE_DispatchEffect( IRecipientFilter& filter, float delay, KeyValues *pKeyVa
 	data.m_flScale = pKeyValues->GetFloat( "scale" );
 	data.m_flMagnitude = pKeyValues->GetFloat( "magnitude" );
 	data.m_flRadius = pKeyValues->GetFloat( "radius" );
-	const char *pSurfaceProp = pKeyValues->GetString( "surfaceprop" );
+	const char* pSurfaceProp = pKeyValues->GetString( "surfaceprop" );
 	data.m_nSurfaceProp = physprops->GetSurfaceIndex( pSurfaceProp );
 	data.m_nDamageType = pKeyValues->GetInt( "damagetype" );
 	data.m_nHitBox = pKeyValues->GetInt( "hitbox" );
@@ -217,9 +219,9 @@ void TE_DispatchEffect( IRecipientFilter& filter, float delay, KeyValues *pKeyVa
 
 	// NOTE: Ptrs are our way of indicating it's an entindex
 	ClientEntityHandle_t hWorld = ClientEntityList().EntIndexToHandle( 0 );
-	data.m_hEntity = (int)pKeyValues->GetPtr( "entindex", (void*)hWorld.ToInt() );
+	data.m_hEntity = ( int )pKeyValues->GetPtr( "entindex", ( void* )hWorld.ToInt() );
 
-	const char *pEffectName = pKeyValues->GetString( "effectname" );
+	const char* pEffectName = pKeyValues->GetString( "effectname" );
 
 	TE_DispatchEffect( filter, 0.0f, data.m_vOrigin, pEffectName, data );
 }

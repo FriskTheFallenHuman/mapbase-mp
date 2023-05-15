@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef WEAPON_PHYSCANNON_H
 #define WEAPON_PHYSCANNON_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -18,17 +18,17 @@
 bool PlayerHasMegaPhysCannon();
 
 // force the physcannon to drop an object (if carried)
-void PhysCannonForceDrop( CBaseCombatWeapon *pActiveWeapon, CBaseEntity *pOnlyIfHoldingThis );
-void PhysCannonBeginUpgrade( CBaseAnimating *pAnim );
+void PhysCannonForceDrop( CBaseCombatWeapon* pActiveWeapon, CBaseEntity* pOnlyIfHoldingThis );
+void PhysCannonBeginUpgrade( CBaseAnimating* pAnim );
 
-bool PlayerPickupControllerIsHoldingEntity( CBaseEntity *pPickupController, CBaseEntity *pHeldEntity );
-float PlayerPickupGetHeldObjectMass( CBaseEntity *pPickupControllerEntity, IPhysicsObject *pHeldObject );
-float PhysCannonGetHeldObjectMass( CBaseCombatWeapon *pActiveWeapon, IPhysicsObject *pHeldObject );
+bool PlayerPickupControllerIsHoldingEntity( CBaseEntity* pPickupController, CBaseEntity* pHeldEntity );
+float PlayerPickupGetHeldObjectMass( CBaseEntity* pPickupControllerEntity, IPhysicsObject* pHeldObject );
+float PhysCannonGetHeldObjectMass( CBaseCombatWeapon* pActiveWeapon, IPhysicsObject* pHeldObject );
 
-CBaseEntity *PhysCannonGetHeldEntity( CBaseCombatWeapon *pActiveWeapon );
-CBaseEntity *GetPlayerHeldEntity( CBasePlayer *pPlayer );
+CBaseEntity* PhysCannonGetHeldEntity( CBaseCombatWeapon* pActiveWeapon );
+CBaseEntity* GetPlayerHeldEntity( CBasePlayer* pPlayer );
 
-bool PhysCannonAccountableForObject( CBaseCombatWeapon *pPhysCannon, CBaseEntity *pObject );
+bool PhysCannonAccountableForObject( CBaseCombatWeapon* pPhysCannon, CBaseEntity* pObject );
 
 #ifdef MAPBASE // Moved here so point_physics_control can access, datadesc is still in weapon_physcannon.cpp
 struct game_shadowcontrol_params_t : public hlshadowcontrol_params_t

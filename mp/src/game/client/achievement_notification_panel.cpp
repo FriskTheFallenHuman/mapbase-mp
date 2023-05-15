@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -30,17 +30,17 @@ using namespace vgui;
 #define ACHIEVEMENT_NOTIFICATION_DURATION 10.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 
 DECLARE_HUDELEMENT_DEPTH( CAchievementNotificationPanel, 100 );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "AchievementNotificationPanel" )
+CAchievementNotificationPanel::CAchievementNotificationPanel( const char* pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "AchievementNotificationPanel" )
 {
-	Panel *pParent = g_pClientMode->GetViewport();
+	Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
 	m_flHideTime = 0;
@@ -55,7 +55,7 @@ CAchievementNotificationPanel::CAchievementNotificationPanel( const char *pEleme
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::Init()
 {
@@ -63,18 +63,18 @@ void CAchievementNotificationPanel::Init()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAchievementNotificationPanel::ApplySchemeSettings( IScheme *pScheme )
+void CAchievementNotificationPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	// load control settings...
 	LoadControlSettings( "resource/UI/AchievementNotification.res" );
-	
+
 	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::PerformLayout( void )
 {
@@ -85,56 +85,60 @@ void CAchievementNotificationPanel::PerformLayout( void )
 	SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelHeading->SetBgColor( Color( 0, 0, 0, 0 ) );
 	m_pLabelTitle->SetBgColor( Color( 0, 0, 0, 0 ) );
-	m_pPanelBackground->SetBgColor( Color( 62,70,55, 200 ) );
+	m_pPanelBackground->SetBgColor( Color( 62, 70, 55, 200 ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
+void CAchievementNotificationPanel::FireGameEvent( IGameEvent* event )
 {
-	const char *name = event->GetName();
-	if ( 0 == Q_strcmp( name, "achievement_event" ) )
+	const char* name = event->GetName();
+	if( 0 == Q_strcmp( name, "achievement_event" ) )
 	{
-		const char *pchName = event->GetString( "achievement_name" );
+		const char* pchName = event->GetString( "achievement_name" );
 		int iCur = event->GetInt( "cur_val" );
 		int iMax = event->GetInt( "max_val" );
-		wchar_t szLocalizedName[256]=L"";
+		wchar_t szLocalizedName[256] = L"";
 
-		if ( IsPC() )
+		if( IsPC() )
 		{
 			// shouldn't ever get achievement progress if steam not running and user logged in, but check just in case
-			if ( !steamapicontext->SteamUserStats() )
-			{				
+			if( !steamapicontext->SteamUserStats() )
+			{
 				Msg( "Steam not running, achievement progress notification not displayed\n" );
 			}
-			else 
+			else
 			{
 				// use Steam to show achievement progress UI
 				steamapicontext->SteamUserStats()->IndicateAchievementProgress( pchName, iCur, iMax );
 			}
 		}
-		else 
+		else
 		{
 			// on X360 we need to show our own achievement progress UI
 
-			const wchar_t *pchLocalizedName = ACHIEVEMENT_LOCALIZED_NAME_FROM_STR( pchName );
+			const wchar_t* pchLocalizedName = ACHIEVEMENT_LOCALIZED_NAME_FROM_STR( pchName );
 			Assert( pchLocalizedName );
-			if ( !pchLocalizedName || !pchLocalizedName[0] )
+			if( !pchLocalizedName || !pchLocalizedName[0] )
+			{
 				return;
+			}
 			Q_wcsncpy( szLocalizedName, pchLocalizedName, sizeof( szLocalizedName ) );
 
 			// this is achievement progress, compose the message of form: "<name> (<#>/<max>)"
-			wchar_t szFmt[128]=L"";
-			wchar_t szText[512]=L"";
-			wchar_t szNumFound[16]=L"";
-			wchar_t szNumTotal[16]=L"";
+			wchar_t szFmt[128] = L"";
+			wchar_t szText[512] = L"";
+			wchar_t szNumFound[16] = L"";
+			wchar_t szNumTotal[16] = L"";
 			_snwprintf( szNumFound, ARRAYSIZE( szNumFound ), L"%i", iCur );
 			_snwprintf( szNumTotal, ARRAYSIZE( szNumTotal ), L"%i", iMax );
 
-			const wchar_t *pchFmt = g_pVGuiLocalize->Find( "#GameUI_Achievement_Progress_Fmt" );
-			if ( !pchFmt || !pchFmt[0] )
+			const wchar_t* pchFmt = g_pVGuiLocalize->Find( "#GameUI_Achievement_Progress_Fmt" );
+			if( !pchFmt || !pchFmt[0] )
+			{
 				return;
+			}
 			Q_wcsncpy( szFmt, pchFmt, sizeof( szFmt ) );
 
 			g_pVGuiLocalize->ConstructString( szText, sizeof( szText ), szFmt, 3, szLocalizedName, szNumFound, szNumTotal );
@@ -148,7 +152,7 @@ void CAchievementNotificationPanel::FireGameEvent( IGameEvent * event )
 //-----------------------------------------------------------------------------
 void CAchievementNotificationPanel::OnTick( void )
 {
-	if ( ( m_flHideTime > 0 ) && ( m_flHideTime < gpGlobals->curtime ) )
+	if( ( m_flHideTime > 0 ) && ( m_flHideTime < gpGlobals->curtime ) )
 	{
 		m_flHideTime = 0;
 		ShowNextNotification();
@@ -156,7 +160,7 @@ void CAchievementNotificationPanel::OnTick( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CAchievementNotificationPanel::ShouldDraw( void )
 {
@@ -164,19 +168,19 @@ bool CAchievementNotificationPanel::ShouldDraw( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAchievementNotificationPanel::AddNotification( const char *szIconBaseName, const wchar_t *pHeading, const wchar_t *pTitle )
+void CAchievementNotificationPanel::AddNotification( const char* szIconBaseName, const wchar_t* pHeading, const wchar_t* pTitle )
 {
 	// put this notification in our queue
 	int iQueueItem = m_queueNotification.AddToTail();
-	Notification_t &notification = m_queueNotification[iQueueItem];
+	Notification_t& notification = m_queueNotification[iQueueItem];
 	Q_strncpy( notification.szIconBaseName, szIconBaseName, ARRAYSIZE( notification.szIconBaseName ) );
 	Q_wcsncpy( notification.szHeading, pHeading, sizeof( notification.szHeading ) );
 	Q_wcsncpy( notification.szTitle, pTitle, sizeof( notification.szTitle ) );
 
 	// if we are not currently displaying a notification, go ahead and show this one
-	if ( 0 == m_flHideTime )
+	if( 0 == m_flHideTime )
 	{
 		ShowNextNotification();
 	}
@@ -188,21 +192,21 @@ void CAchievementNotificationPanel::AddNotification( const char *szIconBaseName,
 void CAchievementNotificationPanel::ShowNextNotification()
 {
 	// see if we have anything to do
-	if ( 0 == m_queueNotification.Count() )
+	if( 0 == m_queueNotification.Count() )
 	{
 		m_flHideTime = 0;
 		return;
 	}
 
-	Notification_t &notification = m_queueNotification[ m_queueNotification.Head() ];
+	Notification_t& notification = m_queueNotification[ m_queueNotification.Head() ];
 
 	m_flHideTime = gpGlobals->curtime + ACHIEVEMENT_NOTIFICATION_DURATION;
 
 	// set the text and icon in the dialog
 	SetDialogVariable( "heading", notification.szHeading );
 	SetDialogVariable( "title", notification.szTitle );
-	const char *pchIconBaseName = notification.szIconBaseName;
-	if ( pchIconBaseName && pchIconBaseName[0] )
+	const char* pchIconBaseName = notification.szIconBaseName;
+	if( pchIconBaseName && pchIconBaseName[0] )
 	{
 		m_pIcon->SetImage( CFmtStr( "achievements/%s.vmt", pchIconBaseName ) );
 	}
@@ -235,9 +239,9 @@ void CAchievementNotificationPanel::ShowNextNotification()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAchievementNotificationPanel::SetXAndWide( Panel *pPanel, int x, int wide )
+void CAchievementNotificationPanel::SetXAndWide( Panel* pPanel, int x, int wide )
 {
 	int xCur, yCur;
 	pPanel->GetPos( xCur, yCur );
@@ -247,25 +251,25 @@ void CAchievementNotificationPanel::SetXAndWide( Panel *pPanel, int x, int wide 
 
 CON_COMMAND_F( achievement_notification_test, "Test the hud notification UI", FCVAR_CHEAT | FCVAR_DEVELOPMENTONLY )
 {
-	static int iCount=0;
+	static int iCount = 0;
 
-	CAchievementNotificationPanel *pPanel = GET_HUDELEMENT( CAchievementNotificationPanel );
-	if ( pPanel )
-	{		
+	CAchievementNotificationPanel* pPanel = GET_HUDELEMENT( CAchievementNotificationPanel );
+	if( pPanel )
+	{
 		pPanel->AddNotification( "HL2_KILL_ODESSAGUNSHIP", L"Achievement Progress", ( 0 == ( iCount % 2 ) ? L"Test Notification Message A (1/10)" :
-			L"Test Message B" ) );
+								 L"Test Message B" ) );
 	}
 
 #if 0
-	IGameEvent *event = gameeventmanager->CreateEvent( "achievement_event" );
-	if ( event )
+	IGameEvent* event = gameeventmanager->CreateEvent( "achievement_event" );
+	if( event )
 	{
-		const char *szTestStr[] = { "TF_GET_HEADSHOTS", "TF_PLAY_GAME_EVERYMAP", "TF_PLAY_GAME_EVERYCLASS", "TF_GET_HEALPOINTS" };
-		event->SetString( "achievement_name", szTestStr[iCount%ARRAYSIZE(szTestStr)] );
-		event->SetInt( "cur_val", ( iCount%9 ) + 1 );
+		const char* szTestStr[] = { "TF_GET_HEADSHOTS", "TF_PLAY_GAME_EVERYMAP", "TF_PLAY_GAME_EVERYCLASS", "TF_GET_HEALPOINTS" };
+		event->SetString( "achievement_name", szTestStr[iCount % ARRAYSIZE( szTestStr )] );
+		event->SetInt( "cur_val", ( iCount % 9 ) + 1 );
 		event->SetInt( "max_val", 10 );
 		gameeventmanager->FireEvent( event );
-	}	
+	}
 #endif
 
 	iCount++;

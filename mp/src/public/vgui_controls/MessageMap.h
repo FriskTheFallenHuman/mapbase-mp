@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define MESSAGEMAP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlvector.h"
@@ -33,7 +33,7 @@ enum DataType_t
 	DATATYPE_CONSTCHARPTR,
 	DATATYPE_INT,
 	DATATYPE_FLOAT,
-	DATATYPE_PTR,	
+	DATATYPE_PTR,
 	DATATYPE_BOOL,
 	DATATYPE_KEYVALUES,
 	DATATYPE_CONSTWCHARPTR,
@@ -42,13 +42,13 @@ enum DataType_t
 };
 
 #ifdef WIN32
-class __virtual_inheritance Panel;
+	class __virtual_inheritance Panel;
 #else
-class Panel;
+	class Panel;
 #endif
 typedef unsigned int VPANEL;
 
-typedef void (Panel::*MessageFunc_t)(void);
+typedef void ( Panel::*MessageFunc_t )( void );
 
 //-----------------------------------------------------------------------------
 // Purpose: Single item in a message map
@@ -58,7 +58,7 @@ typedef void (Panel::*MessageFunc_t)(void);
 #pragma warning(disable:4121)
 struct MessageMapItem_t
 {
-	const char *name;
+	const char* name;
 	// VC6 aligns this to 16-bytes.  Since some of the code has been compiled with VC6,
 	// we need to enforce the alignment on later compilers to remain compatible.
 	ALIGN16 MessageFunc_t func;
@@ -66,10 +66,10 @@ struct MessageMapItem_t
 	int numParams;
 
 	DataType_t firstParamType;
-	const char *firstParamName;
+	const char* firstParamName;
 
 	DataType_t secondParamType;
-	const char *secondParamName;
+	const char* secondParamName;
 
 	int nameSymbol;
 	int firstParamSymbol;
@@ -129,7 +129,7 @@ struct MessageMapItem_t
 	}
 
 #if !defined( _XBOX )
-#define VGUI_USEKEYBINDINGMAPS	1
+	#define VGUI_USEKEYBINDINGMAPS	1
 #endif
 
 #if defined( VGUI_USEKEYBINDINGMAPS )
@@ -244,17 +244,17 @@ struct PanelMessageMap
 
 	CUtlVector< MessageMapItem_t > entries;
 	bool processed;
-	PanelMessageMap *baseMap;
-	char const *(*pfnClassName)( void );
+	PanelMessageMap* baseMap;
+	char const* ( *pfnClassName )( void );
 };
 
-PanelMessageMap *FindPanelMessageMap( char const *className );
-PanelMessageMap *FindOrAddPanelMessageMap( char const *className );
+PanelMessageMap* FindPanelMessageMap( char const* className );
+PanelMessageMap* FindOrAddPanelMessageMap( char const* className );
 
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-// 
+//
 // OBSELETE MAPPING FUNCTIONS, USE ABOVE
 //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -290,10 +290,10 @@ PanelMessageMap *FindOrAddPanelMessageMap( char const *className );
 //-----------------------------------------------------------------------------
 struct PanelMap_t
 {
-	MessageMapItem_t *dataDesc;
+	MessageMapItem_t* dataDesc;
 	int dataNumFields;
-	const char *dataClassName;
-	PanelMap_t *baseMap;
+	const char* dataClassName;
+	PanelMap_t* baseMap;
 	int processed;
 };
 
@@ -309,7 +309,7 @@ struct PanelMap_t
 	vgui::PanelMap_t derivedClass::m_PanelMap = { derivedClass::m_MessageMap, ARRAYSIZE(derivedClass::m_MessageMap), #derivedClass, &baseClass::m_PanelMap }; \
 	vgui::PanelMap_t *derivedClass::GetPanelMap( void ) { return &m_PanelMap; }
 
-typedef vgui::Panel *( *PANELCREATEFUNC )( void );
+typedef vgui::Panel* ( *PANELCREATEFUNC )( void );
 
 //-----------------------------------------------------------------------------
 // Purpose: Used by DECLARE_BUILD_FACTORY macro to create a linked list of
@@ -319,31 +319,31 @@ class CBuildFactoryHelper
 {
 public:
 	// Static list of helpers
-	static CBuildFactoryHelper *m_sHelpers;
+	static CBuildFactoryHelper* m_sHelpers;
 
 public:
 	// Construction
-	CBuildFactoryHelper( char const *className, PANELCREATEFUNC func );
+	CBuildFactoryHelper( char const* className, PANELCREATEFUNC func );
 
 	// Accessors
-	CBuildFactoryHelper *GetNext( void );
+	CBuildFactoryHelper* GetNext( void );
 
-	char const	*GetClassName() const;
+	char const*	GetClassName() const;
 
-	vgui::Panel *CreatePanel();
+	vgui::Panel* CreatePanel();
 
-	static vgui::Panel *InstancePanel( char const *className );
-	static void GetFactoryNames( CUtlVector< char const * >& list );
+	static vgui::Panel* InstancePanel( char const* className );
+	static void GetFactoryNames( CUtlVector< char const* >& list );
 private:
 
-	static bool HasFactory( char const *className );
+	static bool HasFactory( char const* className );
 
 	// Next factory in list
-	CBuildFactoryHelper	*m_pNext;
+	CBuildFactoryHelper*	m_pNext;
 
 	int					m_Type;
 	PANELCREATEFUNC		m_CreateFunc;
-	char const			*m_pClassName;
+	char const*			m_pClassName;
 };
 
 // This is the macro which implements creation of each type of panel

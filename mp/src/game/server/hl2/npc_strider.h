@@ -15,11 +15,11 @@
 #include "physics_bone_follower.h"
 #include "physics_prop_ragdoll.h"
 #ifdef MAPBASE
-#include "filters.h"
+	#include "filters.h"
 #endif
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/memdbgon.h"
@@ -40,7 +40,7 @@ class CAI_Node;
 struct StriderMinigunViewcone_t;
 struct AI_EnemyInfo_t;
 
-void AdjustStriderNodePosition( CAI_Network *pNetwork, CAI_Node *pNode );
+void AdjustStriderNodePosition( CAI_Network* pNetwork, CAI_Node* pNode );
 
 //-----------------------------------------------------------------------------
 //
@@ -51,16 +51,17 @@ void AdjustStriderNodePosition( CAI_Network *pNetwork, CAI_Node *pNode );
 abstract_class IMinigunHost
 {
 public:
-	virtual void ShootMinigun( const Vector *pTarget, float aimError, const Vector &vecSpread = vec3_origin ) = 0;
-	virtual void UpdateMinigunControls( float &yaw, float &pitch ) = 0;
-	virtual void GetViewCone( StriderMinigunViewcone_t &cone ) = 0;
+	virtual void ShootMinigun( const Vector * pTarget, float aimError, const Vector& vecSpread = vec3_origin ) = 0;
+	virtual void UpdateMinigunControls( float & yaw, float & pitch ) = 0;
+	virtual void GetViewCone( StriderMinigunViewcone_t& cone ) = 0;
 	virtual void NewTarget() = 0;
-	virtual void OnMinigunStartShooting( CBaseEntity *pTarget ) = 0;
-	virtual void OnMinigunStopShooting( CBaseEntity *pTarget ) = 0;
-	virtual CAI_BaseNPC *GetEntity() = 0;
+	virtual void OnMinigunStartShooting( CBaseEntity * pTarget ) = 0;
+	virtual void OnMinigunStopShooting( CBaseEntity * pTarget ) = 0;
+	virtual CAI_BaseNPC * GetEntity() = 0;
 };
 
-abstract_class IStriderMinigunHost : public IMinigunHost
+abstract_class IStriderMinigunHost :
+public IMinigunHost
 {
 public:
 	virtual float GetMinigunRateOfFire() = 0;
@@ -81,7 +82,7 @@ const int NUM_STRIDER_IK_TARGETS = 6;
 //---------------------------------------------------------
 
 class CNPC_Strider : public CAI_BlendingHost<CAI_BaseNPC>,
-					 public IStriderMinigunHost
+	public IStriderMinigunHost
 {
 	DECLARE_CLASS( CNPC_Strider, CAI_BaseNPC );
 	DECLARE_SERVERCLASS();
@@ -103,27 +104,43 @@ public:
 	void			OnRestore();
 
 	Class_T			Classify();
-	bool			ShouldAttractAutoAim( CBaseEntity *pAimingEnt );
+	bool			ShouldAttractAutoAim( CBaseEntity* pAimingEnt );
 
-	virtual float	GetAutoAimRadius() { return 80.0f; }
+	virtual float	GetAutoAimRadius()
+	{
+		return 80.0f;
+	}
 
 	int				DrawDebugTextOverlays();
 
-	void			UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
-	virtual bool	ShouldProbeCollideAgainstEntity( CBaseEntity *pEntity );
+	void			UpdateEfficiency( bool bInPVS )
+	{
+		SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL );
+		SetMoveEfficiency( AIME_NORMAL );
+	}
+	virtual bool	ShouldProbeCollideAgainstEntity( CBaseEntity* pEntity );
 
 	//---------------------------------
 
-	virtual Vector	GetNodeViewOffset()					{ return BaseClass::GetDefaultEyeOffset();		}
+	virtual Vector	GetNodeViewOffset()
+	{
+		return BaseClass::GetDefaultEyeOffset();
+	}
 
 	Vector			EyePosition();
-	const Vector &	GetViewOffset();
-	Vector			EyePositionCrouched() { return GetAbsOrigin() - Vector( 0, 0, 330 ); }
+	const Vector& 	GetViewOffset();
+	Vector			EyePositionCrouched()
+	{
+		return GetAbsOrigin() - Vector( 0, 0, 330 );
+	}
 
 	//---------------------------------
 	// CBaseAnimating
 	void			CalculateIKLocks( float currentTime );
-	float			GetIdealAccel() const { return GetIdealSpeed(); }
+	float			GetIdealAccel() const
+	{
+		return GetIdealSpeed();
+	}
 
 	//---------------------------------
 	// Behavior
@@ -132,134 +149,172 @@ public:
 	void			PrescheduleThink();
 	void			GatherConditions();
 	void			CheckFlinches() {} // Strider handles on own
-	void			GatherHeightConditions( const Vector &vTestPos, CBaseEntity *pEntity );
+	void			GatherHeightConditions( const Vector& vTestPos, CBaseEntity* pEntity );
 	void			OnStateChange( NPC_STATE oldState, NPC_STATE newState );
 	void			BuildScheduleTestBits();
 	int				SelectSchedule();
 	int				TranslateSchedule( int scheduleType );
-	void			StartTask( const Task_t *pTask );
-	void			RunTask( const Task_t *pTask );
-	bool			HandleInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt );
-	void			HandleAnimEvent( animevent_t *pEvent );
+	void			StartTask( const Task_t* pTask );
+	void			RunTask( const Task_t* pTask );
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
+	void			HandleAnimEvent( animevent_t* pEvent );
 
-	Disposition_t	IRelationType( CBaseEntity *pTarget );
-	void			AddEntityRelationship( CBaseEntity *pEntity, Disposition_t nDisposition, int nPriority );
+	Disposition_t	IRelationType( CBaseEntity* pTarget );
+	void			AddEntityRelationship( CBaseEntity* pEntity, Disposition_t nDisposition, int nPriority );
 
-	bool			ScheduledMoveToGoalEntity( int scheduleType, CBaseEntity *pGoalEntity, Activity movementActivity );
-	bool			ScheduledFollowPath( int scheduleType, CBaseEntity *pPathStart, Activity movementActivity );
+	bool			ScheduledMoveToGoalEntity( int scheduleType, CBaseEntity* pGoalEntity, Activity movementActivity );
+	bool			ScheduledFollowPath( int scheduleType, CBaseEntity* pPathStart, Activity movementActivity );
 
 	//---------------------------------
 	// Inputs
 	//---------------------------------
-	void			InputSetMinigunTime( inputdata_t &inputdata );
-	void			InputSetMinigunTarget( inputdata_t &inputdata );
-	void			InputDisableMinigun( inputdata_t &inputdata );
-	void			InputEnableMinigun( inputdata_t &inputdata );
-	void			InputSetCannonTarget( inputdata_t &inputdata );
-	void			InputFlickRagdoll( inputdata_t &inputdata );
-	void			InputDisableCollisionWith( inputdata_t &inputdata ); 
-	void			InputEnableCollisionWith( inputdata_t &inputdata ); 
-	void			InputCrouch( inputdata_t &inputdata );
-	void			InputCrouchInstantly( inputdata_t &inputdata );
-	void			InputStand( inputdata_t &inputdata );
-	void			InputSetHeight( inputdata_t &inputdata );
-	void			InputSetTargetPath( inputdata_t &inputdata );
-	void 			InputClearTargetPath( inputdata_t &inputdata );
-	void			InputDisableCrouchWalk( inputdata_t &inputdata );
-	void			InputEnableCrouchWalk( inputdata_t &inputdata );
-	void			InputEnableAggressiveBehavior( inputdata_t &inputdata );
-	void			InputDisableAggressiveBehavior( inputdata_t &inputdata );
-	void			InputStopShootingMinigunForSeconds( inputdata_t &inputdata );
-	void			InputDisableCrouch( inputdata_t &inputdata );
+	void			InputSetMinigunTime( inputdata_t& inputdata );
+	void			InputSetMinigunTarget( inputdata_t& inputdata );
+	void			InputDisableMinigun( inputdata_t& inputdata );
+	void			InputEnableMinigun( inputdata_t& inputdata );
+	void			InputSetCannonTarget( inputdata_t& inputdata );
+	void			InputFlickRagdoll( inputdata_t& inputdata );
+	void			InputDisableCollisionWith( inputdata_t& inputdata );
+	void			InputEnableCollisionWith( inputdata_t& inputdata );
+	void			InputCrouch( inputdata_t& inputdata );
+	void			InputCrouchInstantly( inputdata_t& inputdata );
+	void			InputStand( inputdata_t& inputdata );
+	void			InputSetHeight( inputdata_t& inputdata );
+	void			InputSetTargetPath( inputdata_t& inputdata );
+	void 			InputClearTargetPath( inputdata_t& inputdata );
+	void			InputDisableCrouchWalk( inputdata_t& inputdata );
+	void			InputEnableCrouchWalk( inputdata_t& inputdata );
+	void			InputEnableAggressiveBehavior( inputdata_t& inputdata );
+	void			InputDisableAggressiveBehavior( inputdata_t& inputdata );
+	void			InputStopShootingMinigunForSeconds( inputdata_t& inputdata );
+	void			InputDisableCrouch( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void			InputEnableCrouch( inputdata_t &inputdata );
+	void			InputEnableCrouch( inputdata_t& inputdata );
 #endif
-	void			InputDisableMoveToLOS( inputdata_t &inputdata );
-	void			InputExplode( inputdata_t &inputdata );
-	void			InputScaleGroundSpeed( inputdata_t &inputdata );
+	void			InputDisableMoveToLOS( inputdata_t& inputdata );
+	void			InputExplode( inputdata_t& inputdata );
+	void			InputScaleGroundSpeed( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void			InputSetStompFilter( inputdata_t &inputdata );
+	void			InputSetStompFilter( inputdata_t& inputdata );
 #endif
 
 	//---------------------------------
 	// Combat
 	//---------------------------------
-	bool			HasPass()	{ return m_PlayerFreePass.HasPass(); }
+	bool			HasPass()
+	{
+		return m_PlayerFreePass.HasPass();
+	}
 
-	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
-	Vector			BodyTarget( const Vector &posSrc, bool bNoisy );
+	bool			FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
+	Vector			BodyTarget( const Vector& posSrc, bool bNoisy );
 
-	bool			IsValidEnemy( CBaseEntity *pTarget );
-	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
-	float			StriderEnemyDistance( CBaseEntity *pEnemy );
+	bool			IsValidEnemy( CBaseEntity* pTarget );
+	bool			UpdateEnemyMemory( CBaseEntity* pEnemy, const Vector& position, CBaseEntity* pInformer = NULL );
+	float			StriderEnemyDistance( CBaseEntity* pEnemy );
 
 	bool			FCanCheckAttacks();
 	int				RangeAttack2Conditions( float flDot, float flDist );
 	int				MeleeAttack1Conditions( float flDot, float flDist );
 	int				MeleeAttack2Conditions( float flDot, float flDist );
-	bool			WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions);
-	bool			CurrentWeaponLOSCondition(const Vector &targetPos, bool bSetConditions);
-	bool			IsValidShootPosition ( const Vector &vecCoverLocation, CAI_Node *pNode, CAI_Hint const *pHint );
-	bool			TestShootPosition(const Vector &vecShootPos, const Vector &targetPos );
+	bool			WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
+	bool			CurrentWeaponLOSCondition( const Vector& targetPos, bool bSetConditions );
+	bool			IsValidShootPosition( const Vector& vecCoverLocation, CAI_Node* pNode, CAI_Hint const* pHint );
+	bool			TestShootPosition( const Vector& vecShootPos, const Vector& targetPos );
 
 	Vector			Weapon_ShootPosition();
 
-	void			MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
-	void			DoImpactEffect( trace_t &tr, int nDamageType );
+	void			MakeTracer( const Vector& vecTracerSrc, const trace_t& tr, int iTracerType );
+	void			DoImpactEffect( trace_t& tr, int nDamageType );
 	void			DoMuzzleFlash( void );
 
-	bool			CanShootThrough( const trace_t &tr, const Vector &vecTarget );
+	bool			CanShootThrough( const trace_t& tr, const Vector& vecTarget );
 
 	void			CreateFocus();
-	CNPC_Bullseye *	GetFocus();
+	CNPC_Bullseye* 	GetFocus();
 
-	bool			GetWeaponLosZ( const Vector &vOrigin, float minZ, float maxZ, float increment, CBaseEntity *pTarget, float *pResult );
+	bool			GetWeaponLosZ( const Vector& vOrigin, float minZ, float maxZ, float increment, CBaseEntity* pTarget, float* pResult );
 
 	//---------------------------------
 	//	Sounds & speech
 	//---------------------------------
 	void			AlertSound();
-	void			PainSound( const CTakeDamageInfo &info );
-	void			DeathSound( const CTakeDamageInfo &info );
+	void			PainSound( const CTakeDamageInfo& info );
+	void			DeathSound( const CTakeDamageInfo& info );
 	void			HuntSound();
 
 	//---------------------------------
 	// Damage handling
 	//---------------------------------
-	void			TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	int				TakeDamageFromCombineBall( const CTakeDamageInfo &info );
-	void			Event_Killed( const CTakeDamageInfo &info );
-	void			RagdollDeathEffect( CRagdollProp *pRagdoll, float flDuration );
-	bool			BecomeRagdoll( const CTakeDamageInfo &info, const Vector &forceVector );
+	void			TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	int				TakeDamageFromCombineBall( const CTakeDamageInfo& info );
+	void			Event_Killed( const CTakeDamageInfo& info );
+	void			RagdollDeathEffect( CRagdollProp* pRagdoll, float flDuration );
+	bool			BecomeRagdoll( const CTakeDamageInfo& info, const Vector& forceVector );
 	void			StartSmoking();
 	void			StopSmoking( float flDelay = 0.1 );
-	bool			IsSmoking() { return m_hSmoke != NULL; }
+	bool			IsSmoking()
+	{
+		return m_hSmoke != NULL;
+	}
 	void			Explode();
-	
+
 	//---------------------------------
 	// Posture
 	//---------------------------------
-	float			GetMaxHeightModel() const	{ return 500.0; }
-	float			GetMaxHeight() const		{ return 490.0; }
-	float			GetMinHeight() const		{ return 200.0; }
-	float			GetHeightRange() const		{ return GetMaxHeight() - GetMinHeight(); }
+	float			GetMaxHeightModel() const
+	{
+		return 500.0;
+	}
+	float			GetMaxHeight() const
+	{
+		return 490.0;
+	}
+	float			GetMinHeight() const
+	{
+		return 200.0;
+	}
+	float			GetHeightRange() const
+	{
+		return GetMaxHeight() - GetMinHeight();
+	}
 	void			SetHeight( float h );
-	float			GetHeight()					{ return GetPoseParameter( gm_BodyHeightPoseParam ); }
+	float			GetHeight()
+	{
+		return GetPoseParameter( gm_BodyHeightPoseParam );
+	}
 	void 			SetIdealHeight( float h );
 	void 			SetAbsIdealHeight( float z );
-	float			GetIdealHeight()			{ return m_idealHeight; }
-	Vector			GetAdjustedOrigin()			{ Vector result = GetAbsOrigin(); result.z -= GetMaxHeightModel() - GetHeight(); return result; }
+	float			GetIdealHeight()
+	{
+		return m_idealHeight;
+	}
+	Vector			GetAdjustedOrigin()
+	{
+		Vector result = GetAbsOrigin();
+		result.z -= GetMaxHeightModel() - GetHeight();
+		return result;
+	}
 
-	bool			IsInCrouchedPosture() { return GetIdealHeight() < GetMaxHeight() * .5; }
-	bool			IsInStandingPosture() { return !IsInCrouchedPosture(); }
+	bool			IsInCrouchedPosture()
+	{
+		return GetIdealHeight() < GetMaxHeight() * .5;
+	}
+	bool			IsInStandingPosture()
+	{
+		return !IsInCrouchedPosture();
+	}
 	bool			IsStriderCrouching();
 	bool			IsStriderStanding();
 	void			SetupGlobalModelData();
 
-	virtual bool	CanBecomeServerRagdoll( void ) { return false;	}
-	
+	virtual bool	CanBecomeServerRagdoll( void )
+	{
+		return false;
+	}
+
 	//---------------------------------
 	// Navigation & Movement
 	//---------------------------------
@@ -267,71 +322,89 @@ public:
 	{
 		typedef CAI_ComponentWithOuter<CNPC_Strider, CAI_Navigator> BaseClass;
 	public:
-		CNavigator( CNPC_Strider *pOuter )
-		 :	BaseClass( pOuter )
+		CNavigator( CNPC_Strider* pOuter )
+			:	BaseClass( pOuter )
 		{
 		}
 
-		void MoveCalcBaseGoal( AILocalMoveGoal_t *pMoveGoal );
-		bool MoveUpdateWaypoint( AIMoveResult_t *pResult );
+		void MoveCalcBaseGoal( AILocalMoveGoal_t* pMoveGoal );
+		bool MoveUpdateWaypoint( AIMoveResult_t* pResult );
 		bool DoFindPathToPos();
-		bool ShouldOptimizeInitialPathSegment( AI_Waypoint_t *pFirstWaypoint );
-		bool GetStoppingPath( CAI_WaypointList *pClippedWaypoints );
+		bool ShouldOptimizeInitialPathSegment( AI_Waypoint_t* pFirstWaypoint );
+		bool GetStoppingPath( CAI_WaypointList* pClippedWaypoints );
 	};
 
 	class CPathfinder : public CAI_Pathfinder
 	{
 		typedef CAI_Pathfinder BaseClass;
 	public:
-		CPathfinder( CNPC_Strider *pOuter ) : BaseClass( pOuter ) {}
-		virtual bool CanUseLocalNavigation() { return false; }
+		CPathfinder( CNPC_Strider* pOuter ) : BaseClass( pOuter ) {}
+		virtual bool CanUseLocalNavigation()
+		{
+			return false;
+		}
 	};
 
 	friend class CNavigator;
-	friend void AdjustStriderNodePosition( CAI_Network *pNetwork, CAI_Node *pNode );
+	friend void AdjustStriderNodePosition( CAI_Network* pNetwork, CAI_Node* pNode );
 
 	bool			OverrideMove( float flInterval );
 	void			MaintainTurnActivity( void );
-	bool			IsUnusableNode(int iNodeID, CAI_Hint *pHint); // Override for special NPC behavior
-	void 			TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition );
+	bool			IsUnusableNode( int iNodeID, CAI_Hint* pHint ); // Override for special NPC behavior
+	void 			TranslateNavGoal( CBaseEntity* pEnemy, Vector& chasePosition );
 	bool			HasPendingTargetPath();
 	void			SetTargetPath();
 	float			GetDefaultNavGoalTolerance();
 	void			OnMovementComplete();
-	float			GetSequenceGroundSpeed( CStudioHdr *pStudioHdr, int iSequence );
+	float			GetSequenceGroundSpeed( CStudioHdr* pStudioHdr, int iSequence );
 
 	float			MaxYawSpeed();
 
-	CAI_Navigator *	CreateNavigator()	{ return new CNavigator( this );	}
-	CAI_Pathfinder *CreatePathfinder()	{ return new CPathfinder( this );	}
+	CAI_Navigator* 	CreateNavigator()
+	{
+		return new CNavigator( this );
+	}
+	CAI_Pathfinder* CreatePathfinder()
+	{
+		return new CPathfinder( this );
+	}
 
 	//---------------------------------
 	// Minigun
 	//---------------------------------
-	void			ShootMinigun( const Vector *pTarget, float aimError, const Vector &vecSpread = vec3_origin );
-	void			UpdateMinigunControls( float &yaw, float &pitch );
-	void			GetViewCone( StriderMinigunViewcone_t &cone );
-	void			NewTarget() { m_flTargetAcquiredTime = gpGlobals->curtime; }
-	void			OnMinigunStartShooting( CBaseEntity *pTarget ) {};
-	void			OnMinigunStopShooting( CBaseEntity *pTarget );
+	void			ShootMinigun( const Vector* pTarget, float aimError, const Vector& vecSpread = vec3_origin );
+	void			UpdateMinigunControls( float& yaw, float& pitch );
+	void			GetViewCone( StriderMinigunViewcone_t& cone );
+	void			NewTarget()
+	{
+		m_flTargetAcquiredTime = gpGlobals->curtime;
+	}
+	void			OnMinigunStartShooting( CBaseEntity* pTarget ) {};
+	void			OnMinigunStopShooting( CBaseEntity* pTarget );
 	float			GetMinigunRateOfFire();
 	float			GetMinigunOnTargetTime();
 	float			GetMinigunShootDuration();
 	float			GetMinigunShootDowntime();
 	float			GetMinigunShootVariation();
 
-	CAI_BaseNPC *	GetEntity() { return this; }
+	CAI_BaseNPC* 	GetEntity()
+	{
+		return this;
+	}
 
-	bool			IsUsingAggressiveBehavior() { return m_bUseAggressiveBehavior; }
+	bool			IsUsingAggressiveBehavior()
+	{
+		return m_bUseAggressiveBehavior;
+	}
 
 	//---------------------------------
 	// Cannon
 	//---------------------------------
 	Vector			CannonPosition();
-	CBaseEntity *	GetCannonTarget();
+	CBaseEntity* 	GetCannonTarget();
 	bool			HasCannonTarget() const;
-	bool			IsCannonTarget( CBaseEntity *pTarget ) const;
-	bool			AimCannonAt( CBaseEntity *pEntity, float flInterval );
+	bool			IsCannonTarget( CBaseEntity* pTarget ) const;
+	bool			AimCannonAt( CBaseEntity* pEntity, float flInterval );
 	void			FireCannon();
 	void			CannonHitThink();
 
@@ -339,15 +412,15 @@ public:
 	// Collision handling
 	//---------------------------------
 
-	void			VPhysicsShadowCollision( int index, gamevcollisionevent_t *pEvent );
-	bool			TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	void			VPhysicsShadowCollision( int index, gamevcollisionevent_t* pEvent );
+	bool			TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 
 	// Conservative collision volumes
 	static float gm_strideLength;
 
 #ifdef HL2_EPISODIC
-	void	StriderBusterAttached( CBaseEntity *pAttached );
-	void	StriderBusterDetached( CBaseEntity *pAttached );
+	void	StriderBusterAttached( CBaseEntity* pAttached );
+	void	StriderBusterDetached( CBaseEntity* pAttached );
 #endif // HL2_EPISODIC
 
 public:
@@ -367,14 +440,14 @@ public:
 	void			StompHit( int followerBoneIndex );
 
 #ifdef MAPBASE
-	CBaseFilter		*GetStompFilter();
+	CBaseFilter*		GetStompFilter();
 #endif
 
-	void			FootFX( const Vector &origin );
-	Vector			CalculateStompHitPosition( CBaseEntity *pEnemy );
-	bool			IsLegBoneFollower( CBoneFollower *pFollower );
-	CBoneFollower	*GetBoneFollowerByIndex( int nIndex );
-	int				GetBoneFollowerIndex( CBoneFollower *pFollower );
+	void			FootFX( const Vector& origin );
+	Vector			CalculateStompHitPosition( CBaseEntity* pEnemy );
+	bool			IsLegBoneFollower( CBoneFollower* pFollower );
+	CBoneFollower*	GetBoneFollowerByIndex( int nIndex );
+	int				GetBoneFollowerIndex( CBoneFollower* pFollower );
 
 protected:
 	// Because the strider is a leaf class, we can use
@@ -389,14 +462,14 @@ protected:
 	virtual void	PopulatePoseParameters( void );
 
 private:
-	
-	bool	ShouldExplodeFromDamage( const CTakeDamageInfo &info );
+
+	bool	ShouldExplodeFromDamage( const CTakeDamageInfo& info );
 	bool	m_bExploding;
-	
+
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
 	//-----------------------------------------------------
-	enum 
+	enum
 	{
 		SCHED_STRIDER_RANGE_ATTACK1 = BaseClass::NEXT_SCHEDULE,
 		SCHED_STRIDER_RANGE_ATTACK2, // Immolator
@@ -445,7 +518,7 @@ private:
 	string_t		m_iszMagnadeClassname;
 	string_t		m_iszHunterClassname;
 
-	CStriderMinigun *m_pMinigun;
+	CStriderMinigun* m_pMinigun;
 	int				m_miniGunAmmo;
 	int				m_miniGunDirectAmmo;
 	float			m_nextShootTime;
@@ -518,7 +591,7 @@ private:
 	CSimpleSimTimer	m_EnemyUpdatedTimer;
 
 	CAI_FreePass m_PlayerFreePass;
-	
+
 #ifdef HL2_EPISODIC
 	CUtlVector< EHANDLE >	m_hAttachedBusters;		// List of busters attached to us
 #endif // HL2_EPISODIC
@@ -595,27 +668,42 @@ public:
 	DECLARE_DATADESC();
 
 	void		Init();
-	void		SetTarget( IStriderMinigunHost *pHost, CBaseEntity *pTarget, bool bOverrideEnemy = false );
-	CBaseEntity *GetTarget()		{ return m_hTarget.Get(); }
-	void		Think( IStriderMinigunHost *pHost, float dt );
+	void		SetTarget( IStriderMinigunHost* pHost, CBaseEntity* pTarget, bool bOverrideEnemy = false );
+	CBaseEntity* GetTarget()
+	{
+		return m_hTarget.Get();
+	}
+	void		Think( IStriderMinigunHost* pHost, float dt );
 	void		SetState( int newState );
-	bool		ShouldFindTarget( IMinigunHost *pHost );
-	void 		AimAtPoint( IStriderMinigunHost *pHost, const Vector &vecPoint, bool bSnap = false );
-	void 		AimAtTarget( IStriderMinigunHost *pHost, CBaseEntity *pTarget, bool bSnap = false );
-	void 		ShootAtTarget( IStriderMinigunHost *pHost, CBaseEntity *pTarget, float shootTime );
-	void 		StartShooting( IStriderMinigunHost *pHost, CBaseEntity *pTarget, float duration );
+	bool		ShouldFindTarget( IMinigunHost* pHost );
+	void 		AimAtPoint( IStriderMinigunHost* pHost, const Vector& vecPoint, bool bSnap = false );
+	void 		AimAtTarget( IStriderMinigunHost* pHost, CBaseEntity* pTarget, bool bSnap = false );
+	void 		ShootAtTarget( IStriderMinigunHost* pHost, CBaseEntity* pTarget, float shootTime );
+	void 		StartShooting( IStriderMinigunHost* pHost, CBaseEntity* pTarget, float duration );
 	void 		ExtendShooting( float timeExtend );
 	void 		SetShootDuration( float duration );
-	void 		StopShootingForSeconds( IStriderMinigunHost *pHost, CBaseEntity *pTarget, float duration );
+	void 		StopShootingForSeconds( IStriderMinigunHost* pHost, CBaseEntity* pTarget, float duration );
 	bool 		IsPegged( int dir = MINIGUN_PEGGED_DONT_CARE );
-	bool 		CanStartShooting( IStriderMinigunHost *pHost, CBaseEntity *pTargetEnt );
-	float 		GetBurstTimeRemaining() { return m_burstTime - gpGlobals->curtime; }
+	bool 		CanStartShooting( IStriderMinigunHost* pHost, CBaseEntity* pTargetEnt );
+	float 		GetBurstTimeRemaining()
+	{
+		return m_burstTime - gpGlobals->curtime;
+	}
 
-	void 		RecordShotOnTarget()			{ m_iOnTargetShots++; }
-	void 		ClearOnTarget()					{ m_iOnTargetShots = 0; }
-	bool		IsOnTarget( int numShots = 0 )	{ return ( numShots == 0 ) ? (m_iOnTargetShots > 0) : (m_iOnTargetShots >= numShots); }
+	void 		RecordShotOnTarget()
+	{
+		m_iOnTargetShots++;
+	}
+	void 		ClearOnTarget()
+	{
+		m_iOnTargetShots = 0;
+	}
+	bool		IsOnTarget( int numShots = 0 )
+	{
+		return ( numShots == 0 ) ? ( m_iOnTargetShots > 0 ) : ( m_iOnTargetShots >= numShots );
+	}
 
-	void		Enable( IMinigunHost *pHost, bool enable );
+	void		Enable( IMinigunHost* pHost, bool enable );
 	float		GetAimError();
 
 	enum minigunstates_t
@@ -624,8 +712,14 @@ public:
 		MINIGUN_SHOOTING = 1,
 	};
 
-	int			GetState()		{ return m_minigunState; }
-	bool		IsShooting()	{ return GetState() == MINIGUN_SHOOTING; }
+	int			GetState()
+	{
+		return m_minigunState;
+	}
+	bool		IsShooting()
+	{
+		return GetState() == MINIGUN_SHOOTING;
+	}
 
 private:
 	bool		m_enable;

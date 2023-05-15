@@ -25,51 +25,57 @@
 
 struct HierarchicalSpawnMapData_t
 {
-	const char	*m_pMapData;
+	const char*	m_pMapData;
 	int			m_iMapDataLength;
 };
 
-static CStringRegistry *g_pClassnameSpawnPriority = NULL;
-extern edict_t *g_pForceAttachEdict;
+static CStringRegistry* g_pClassnameSpawnPriority = NULL;
+extern edict_t* g_pForceAttachEdict;
 
 // creates an entity by string name, but does not spawn it
-CBaseEntity *CreateEntityByName( const char *className, int iForceEdictIndex )
+CBaseEntity* CreateEntityByName( const char* className, int iForceEdictIndex )
 {
-	if ( iForceEdictIndex != -1 )
+	if( iForceEdictIndex != -1 )
 	{
 		g_pForceAttachEdict = engine->CreateEdict( iForceEdictIndex );
-		if ( !g_pForceAttachEdict )
+		if( !g_pForceAttachEdict )
+		{
 			Error( "CreateEntityByName( %s, %d ) - CreateEdict failed.", className, iForceEdictIndex );
+		}
 	}
 
-	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
+	IServerNetworkable* pNetwork = EntityFactoryDictionary()->Create( className );
 	g_pForceAttachEdict = NULL;
 
-	if ( !pNetwork )
+	if( !pNetwork )
+	{
 		return NULL;
+	}
 
-	CBaseEntity *pEntity = pNetwork->GetBaseEntity();
+	CBaseEntity* pEntity = pNetwork->GetBaseEntity();
 	Assert( pEntity );
 	return pEntity;
 }
 
-CBaseNetworkable *CreateNetworkableByName( const char *className )
+CBaseNetworkable* CreateNetworkableByName( const char* className )
 {
-	IServerNetworkable *pNetwork = EntityFactoryDictionary()->Create( className );
-	if ( !pNetwork )
+	IServerNetworkable* pNetwork = EntityFactoryDictionary()->Create( className );
+	if( !pNetwork )
+	{
 		return NULL;
+	}
 
-	CBaseNetworkable *pNetworkable = pNetwork->GetBaseNetworkable();
+	CBaseNetworkable* pNetworkable = pNetwork->GetBaseNetworkable();
 	Assert( pNetworkable );
 	return pNetworkable;
 }
 
-void FreeContainingEntity( edict_t *ed )
+void FreeContainingEntity( edict_t* ed )
 {
-	if ( ed )
+	if( ed )
 	{
-		CBaseEntity *ent = GetContainingEntity( ed );
-		if ( ent )
+		CBaseEntity* ent = GetContainingEntity( ed );
+		if( ent )
 		{
 			ed->SetEdict( NULL, false );
 			CBaseEntity::PhysicsRemoveTouchedList( ent );
@@ -80,41 +86,49 @@ void FreeContainingEntity( edict_t *ed )
 }
 
 // parent name may have a , in it to include an attachment point
-string_t ExtractParentName(string_t parentName)
+string_t ExtractParentName( string_t parentName )
 {
-	if ( !strchr(STRING(parentName), ',') )
+	if( !strchr( STRING( parentName ), ',' ) )
+	{
 		return parentName;
+	}
 
 	char szToken[256];
-	nexttoken(szToken, STRING(parentName), ',', sizeof(szToken));
-	return AllocPooledString(szToken);
+	nexttoken( szToken, STRING( parentName ), ',', sizeof( szToken ) );
+	return AllocPooledString( szToken );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Callback function for qsort, used to sort entities by their depth
 //			in the movement hierarchy.
-// Input  : pEnt1 - 
-//			pEnt2 - 
+// Input  : pEnt1 -
+//			pEnt2 -
 // Output : Returns -1, 0, or 1 per qsort spec.
 //-----------------------------------------------------------------------------
-static int __cdecl CompareSpawnOrder(HierarchicalSpawn_t *pEnt1, HierarchicalSpawn_t *pEnt2)
+static int __cdecl CompareSpawnOrder( HierarchicalSpawn_t* pEnt1, HierarchicalSpawn_t* pEnt2 )
 {
-	if (pEnt1->m_nDepth == pEnt2->m_nDepth)
+	if( pEnt1->m_nDepth == pEnt2->m_nDepth )
 	{
-		if ( g_pClassnameSpawnPriority )
+		if( g_pClassnameSpawnPriority )
 		{
 			int o1 = pEnt1->m_pEntity ? g_pClassnameSpawnPriority->GetStringID( pEnt1->m_pEntity->GetClassname() ) : -1;
 			int o2 = pEnt2->m_pEntity ? g_pClassnameSpawnPriority->GetStringID( pEnt2->m_pEntity->GetClassname() ) : -1;
-			if ( o1 < o2 )
+			if( o1 < o2 )
+			{
 				return 1;
-			if ( o2 < o1 )
+			}
+			if( o2 < o1 )
+			{
 				return -1;
+			}
 		}
 		return 0;
 	}
 
-	if (pEnt1->m_nDepth > pEnt2->m_nDepth)
+	if( pEnt1->m_nDepth > pEnt2->m_nDepth )
+	{
 		return 1;
+	}
 
 	return -1;
 }
@@ -123,19 +137,25 @@ static int __cdecl CompareSpawnOrder(HierarchicalSpawn_t *pEnt1, HierarchicalSpa
 //-----------------------------------------------------------------------------
 // Computes the hierarchical depth of the entities to spawn..
 //-----------------------------------------------------------------------------
-static int ComputeSpawnHierarchyDepth_r( CBaseEntity *pEntity )
+static int ComputeSpawnHierarchyDepth_r( CBaseEntity* pEntity )
 {
-	if ( !pEntity )
+	if( !pEntity )
+	{
 		return 1;
+	}
 
-	if (pEntity->m_iParent == NULL_STRING)
+	if( pEntity->m_iParent == NULL_STRING )
+	{
 		return 1;
+	}
 
-	CBaseEntity *pParent = gEntList.FindEntityByName( NULL, ExtractParentName(pEntity->m_iParent) );
-	if (!pParent)
+	CBaseEntity* pParent = gEntList.FindEntityByName( NULL, ExtractParentName( pEntity->m_iParent ) );
+	if( !pParent )
+	{
 		return 1;
-	
-	if (pParent == pEntity)
+	}
+
+	if( pParent == pEntity )
 	{
 		Warning( "LEVEL DESIGN ERROR: Entity %s is parented to itself!\n", pEntity->GetDebugName() );
 		return 1;
@@ -144,16 +164,16 @@ static int ComputeSpawnHierarchyDepth_r( CBaseEntity *pEntity )
 	return 1 + ComputeSpawnHierarchyDepth_r( pParent );
 }
 
-static void ComputeSpawnHierarchyDepth( int nEntities, HierarchicalSpawn_t *pSpawnList )
+static void ComputeSpawnHierarchyDepth( int nEntities, HierarchicalSpawn_t* pSpawnList )
 {
 	// NOTE: This isn't particularly efficient, but so what? It's at the beginning of time
 	// I did it this way because it simplified the parent setting in hierarchy (basically
 	// eliminated questions about whether you should transform origin from global to local or not)
 	int nEntity;
-	for (nEntity = 0; nEntity < nEntities; nEntity++)
+	for( nEntity = 0; nEntity < nEntities; nEntity++ )
 	{
-		CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
-		if (pEntity && !pEntity->IsDormant())
+		CBaseEntity* pEntity = pSpawnList[nEntity].m_pEntity;
+		if( pEntity && !pEntity->IsDormant() )
 		{
 			pSpawnList[nEntity].m_nDepth = ComputeSpawnHierarchyDepth_r( pEntity );
 		}
@@ -164,7 +184,7 @@ static void ComputeSpawnHierarchyDepth( int nEntities, HierarchicalSpawn_t *pSpa
 	}
 }
 
-static void SortSpawnListByHierarchy( int nEntities, HierarchicalSpawn_t *pSpawnList )
+static void SortSpawnListByHierarchy( int nEntities, HierarchicalSpawn_t* pSpawnList )
 {
 	MEM_ALLOC_CREDIT();
 	g_pClassnameSpawnPriority = new CStringRegistry;
@@ -189,28 +209,28 @@ static void SortSpawnListByHierarchy( int nEntities, HierarchicalSpawn_t *pSpawn
 	// that order. This insures that each entity's parent spawns before it does so that
 	// it can properly set up anything that relies on hierarchy.
 #ifdef _WIN32
-	qsort(&pSpawnList[0], nEntities, sizeof(pSpawnList[0]), (int (__cdecl *)(const void *, const void *))CompareSpawnOrder);
+	qsort( &pSpawnList[0], nEntities, sizeof( pSpawnList[0] ), ( int ( __cdecl* )( const void*, const void* ) )CompareSpawnOrder );
 #elif POSIX
-	qsort(&pSpawnList[0], nEntities, sizeof(pSpawnList[0]), (int (*)(const void *, const void *))CompareSpawnOrder);
+	qsort( &pSpawnList[0], nEntities, sizeof( pSpawnList[0] ), ( int ( * )( const void*, const void* ) )CompareSpawnOrder );
 #endif
 	delete g_pClassnameSpawnPriority;
 	g_pClassnameSpawnPriority = NULL;
 }
 
-void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
+void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t* pSpawnList )
 {
 	int nEntity;
-	for (nEntity = nEntities - 1; nEntity >= 0; nEntity--)
+	for( nEntity = nEntities - 1; nEntity >= 0; nEntity-- )
 	{
-		CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
-		if ( pEntity )
+		CBaseEntity* pEntity = pSpawnList[nEntity].m_pEntity;
+		if( pEntity )
 		{
-			if ( strchr(STRING(pEntity->m_iParent), ',') )
+			if( strchr( STRING( pEntity->m_iParent ), ',' ) )
 			{
 				char szToken[256];
-				const char *pAttachmentName = nexttoken(szToken, STRING(pEntity->m_iParent), ',', sizeof(szToken));
-				pEntity->m_iParent = AllocPooledString(szToken);
-				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
+				const char* pAttachmentName = nexttoken( szToken, STRING( pEntity->m_iParent ), ',', sizeof( szToken ) );
+				pEntity->m_iParent = AllocPooledString( szToken );
+				CBaseEntity* pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
 
 				// setparent in the spawn pass instead - so the model will have been set & loaded
 				pSpawnList[nEntity].m_pDeferredParent = pParent;
@@ -218,11 +238,11 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 			}
 			else
 			{
-				CBaseEntity *pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
+				CBaseEntity* pParent = gEntList.FindEntityByName( NULL, pEntity->m_iParent );
 
-				if ((pParent != NULL) && (pParent->edict() != NULL))
+				if( ( pParent != NULL ) && ( pParent->edict() != NULL ) )
 				{
-					pEntity->SetParent( pParent ); 
+					pEntity->SetParent( pParent );
 				}
 			}
 		}
@@ -230,13 +250,13 @@ void SetupParentsForSpawnList( int nEntities, HierarchicalSpawn_t *pSpawnList )
 }
 
 // this is a hook for edit mode
-void RememberInitialEntityPositions( int nEntities, HierarchicalSpawn_t *pSpawnList )
+void RememberInitialEntityPositions( int nEntities, HierarchicalSpawn_t* pSpawnList )
 {
-	for (int nEntity = 0; nEntity < nEntities; nEntity++)
+	for( int nEntity = 0; nEntity < nEntities; nEntity++ )
 	{
-		CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
+		CBaseEntity* pEntity = pSpawnList[nEntity].m_pEntity;
 
-		if ( pEntity )
+		if( pEntity )
 		{
 			NWCEdit::RememberEntityPosition( pEntity );
 		}
@@ -244,35 +264,35 @@ void RememberInitialEntityPositions( int nEntities, HierarchicalSpawn_t *pSpawnL
 }
 
 
-void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bActivateEntities )
+void SpawnAllEntities( int nEntities, HierarchicalSpawn_t* pSpawnList, bool bActivateEntities )
 {
 	int nEntity;
-	for (nEntity = 0; nEntity < nEntities; nEntity++)
+	for( nEntity = 0; nEntity < nEntities; nEntity++ )
 	{
-		VPROF( "MapEntity_ParseAllEntities_Spawn");
-		CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
+		VPROF( "MapEntity_ParseAllEntities_Spawn" );
+		CBaseEntity* pEntity = pSpawnList[nEntity].m_pEntity;
 
-		if ( pSpawnList[nEntity].m_pDeferredParent )
+		if( pSpawnList[nEntity].m_pDeferredParent )
 		{
 			// UNDONE: Promote this up to the root of this function?
 			MDLCACHE_CRITICAL_SECTION();
-			CBaseEntity *pParent = pSpawnList[nEntity].m_pDeferredParent;
+			CBaseEntity* pParent = pSpawnList[nEntity].m_pDeferredParent;
 			int iAttachment = -1;
-			CBaseAnimating *pAnim = pParent->GetBaseAnimating();
-			if ( pAnim )
+			CBaseAnimating* pAnim = pParent->GetBaseAnimating();
+			if( pAnim )
 			{
-				iAttachment = pAnim->LookupAttachment(pSpawnList[nEntity].m_pDeferredParentAttachment);
+				iAttachment = pAnim->LookupAttachment( pSpawnList[nEntity].m_pDeferredParentAttachment );
 			}
 			pEntity->SetParent( pParent, iAttachment );
 		}
-		if ( pEntity )
+		if( pEntity )
 		{
-			if (DispatchSpawn(pEntity) < 0)
+			if( DispatchSpawn( pEntity ) < 0 )
 			{
-				for ( int i = nEntity+1; i < nEntities; i++ )
+				for( int i = nEntity + 1; i < nEntities; i++ )
 				{
 					// this is a child object that will be deleted now
-					if ( pSpawnList[i].m_pEntity && pSpawnList[i].m_pEntity->IsMarkedForDeletion() )
+					if( pSpawnList[i].m_pEntity && pSpawnList[i].m_pEntity->IsMarkedForDeletion() )
 					{
 						pSpawnList[i].m_pEntity = NULL;
 					}
@@ -285,15 +305,15 @@ void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bAct
 		}
 	}
 
-	if ( bActivateEntities )
+	if( bActivateEntities )
 	{
-		VPROF( "MapEntity_ParseAllEntities_Activate");
+		VPROF( "MapEntity_ParseAllEntities_Activate" );
 		bool bAsyncAnims = mdlcache->SetAsyncLoad( MDLCACHE_ANIMBLOCK, false );
-		for (nEntity = 0; nEntity < nEntities; nEntity++)
+		for( nEntity = 0; nEntity < nEntities; nEntity++ )
 		{
-			CBaseEntity *pEntity = pSpawnList[nEntity].m_pEntity;
+			CBaseEntity* pEntity = pSpawnList[nEntity].m_pEntity;
 
-			if ( pEntity )
+			if( pEntity )
 			{
 				MDLCACHE_CRITICAL_SECTION();
 				pEntity->Activate();
@@ -307,12 +327,12 @@ void SpawnAllEntities( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bAct
 // Purpose: Only called on BSP load. Parses and spawns all the entities in the BSP.
 // Input  : pMapData - Pointer to the entity data block to parse.
 //-----------------------------------------------------------------------------
-void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter, bool bActivateEntities)
+void MapEntity_ParseAllEntities( const char* pMapData, IMapEntityFilter* pFilter, bool bActivateEntities )
 {
-	VPROF("MapEntity_ParseAllEntities");
+	VPROF( "MapEntity_ParseAllEntities" );
 
-	HierarchicalSpawnMapData_t *pSpawnMapData = new HierarchicalSpawnMapData_t[NUM_ENT_ENTRIES];
-	HierarchicalSpawn_t *pSpawnList = new HierarchicalSpawn_t[NUM_ENT_ENTRIES];
+	HierarchicalSpawnMapData_t* pSpawnMapData = new HierarchicalSpawnMapData_t[NUM_ENT_ENTRIES];
+	HierarchicalSpawn_t* pSpawnList = new HierarchicalSpawn_t[NUM_ENT_ENTRIES];
 
 	CUtlVector< CPointTemplate* > pPointTemplates;
 	int nEntities = 0;
@@ -320,13 +340,13 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 	char szTokenBuffer[MAPKEY_MAXLENGTH];
 
 	// Allow the tools to spawn different things
-	if ( serverenginetools )
+	if( serverenginetools )
 	{
 		pMapData = serverenginetools->GetEntityData( pMapData );
 	}
 
 	//  Loop through all entities in the map data, creating each.
-	for ( ; true; pMapData = MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
+	for( ; true; pMapData = MapEntity_SkipToNextEntity( pMapData, szTokenBuffer ) )
 	{
 		//
 		// Parse the opening brace.
@@ -337,52 +357,56 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 		//
 		// Check to see if we've finished or not.
 		//
-		if (!pMapData)
-			break;
-
-		if (token[0] != '{')
+		if( !pMapData )
 		{
-			Error( "MapEntity_ParseAllEntities: found %s when expecting {", token);
+			break;
+		}
+
+		if( token[0] != '{' )
+		{
+			Error( "MapEntity_ParseAllEntities: found %s when expecting {", token );
 			continue;
 		}
 
 		//
 		// Parse the entity and add it to the spawn list.
 		//
-		CBaseEntity *pEntity;
-		const char *pCurMapData = pMapData;
-		pMapData = MapEntity_ParseEntity(pEntity, pMapData, pFilter);
-		if (pEntity == NULL)
+		CBaseEntity* pEntity;
+		const char* pCurMapData = pMapData;
+		pMapData = MapEntity_ParseEntity( pEntity, pMapData, pFilter );
+		if( pEntity == NULL )
+		{
 			continue;
+		}
 
-		if (pEntity->IsTemplate())
+		if( pEntity->IsTemplate() )
 		{
 			// It's a template entity. Squirrel away its keyvalue text so that we can
 			// recreate the entity later via a spawner. pMapData points at the '}'
 			// so we must add one to include it in the string.
-			Templates_Add(pEntity, pCurMapData, (pMapData - pCurMapData) + 2);
+			Templates_Add( pEntity, pCurMapData, ( pMapData - pCurMapData ) + 2 );
 
 			// Remove the template entity so that it does not show up in FindEntityXXX searches.
-			UTIL_Remove(pEntity);
+			UTIL_Remove( pEntity );
 			gEntList.CleanupDeleteList();
 			continue;
 		}
 
-		// To 
-		if ( dynamic_cast<CWorld*>( pEntity ) )
+		// To
+		if( dynamic_cast<CWorld*>( pEntity ) )
 		{
-			VPROF( "MapEntity_ParseAllEntities_SpawnWorld");
+			VPROF( "MapEntity_ParseAllEntities_SpawnWorld" );
 
 			pEntity->m_iParent = NULL_STRING;	// don't allow a parent on the first entity (worldspawn)
 
-			DispatchSpawn(pEntity);
+			DispatchSpawn( pEntity );
 			continue;
 		}
-				
-		CNodeEnt *pNode = dynamic_cast<CNodeEnt*>(pEntity);
-		if ( pNode )
+
+		CNodeEnt* pNode = dynamic_cast<CNodeEnt*>( pEntity );
+		if( pNode )
 		{
-			VPROF( "MapEntity_ParseAllEntities_SpawnTransients");
+			VPROF( "MapEntity_ParseAllEntities_SpawnTransients" );
 
 			// We overflow the max edicts on large maps that have lots of entities.
 			// Nodes & Lights remove themselves immediately on Spawn(), so dispatch their
@@ -392,22 +416,22 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 			// NOTE: Nodes spawn other entities (ai_hint) if they need to have a persistent presence.
 			//		 To ensure keys are copied over into the new entity, we pass the mapdata into the
 			//		 node spawn function.
-			if ( pNode->Spawn( pCurMapData ) < 0 )
+			if( pNode->Spawn( pCurMapData ) < 0 )
 			{
 				gEntList.CleanupDeleteList();
 			}
 			continue;
 		}
 
-		if ( dynamic_cast<CLight*>(pEntity) )
+		if( dynamic_cast<CLight*>( pEntity ) )
 		{
-			VPROF( "MapEntity_ParseAllEntities_SpawnTransients");
+			VPROF( "MapEntity_ParseAllEntities_SpawnTransients" );
 
 			// We overflow the max edicts on large maps that have lots of entities.
 			// Nodes & Lights remove themselves immediately on Spawn(), so dispatch their
 			// spawn now, to free up the slot inside this loop.
 			// NOTE: This solution prevents nodes & lights from being used inside point_templates.
-			if (DispatchSpawn(pEntity) < 0)
+			if( DispatchSpawn( pEntity ) < 0 )
 			{
 				gEntList.CleanupDeleteList();
 			}
@@ -415,8 +439,8 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 		}
 
 		// Build a list of all point_template's so we can spawn them before everything else
-		CPointTemplate *pTemplate = dynamic_cast< CPointTemplate* >(pEntity);
-		if ( pTemplate )
+		CPointTemplate* pTemplate = dynamic_cast< CPointTemplate* >( pEntity );
+		if( pTemplate )
 		{
 			pPointTemplates.AddToTail( pTemplate );
 		}
@@ -429,22 +453,22 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 			pSpawnList[nEntities].m_pDeferredParent = NULL;
 
 			pSpawnMapData[nEntities].m_pMapData = pCurMapData;
-			pSpawnMapData[nEntities].m_iMapDataLength = (pMapData - pCurMapData) + 2;
+			pSpawnMapData[nEntities].m_iMapDataLength = ( pMapData - pCurMapData ) + 2;
 			nEntities++;
 		}
 	}
 
 	// Now loop through all our point_template entities and tell them to make templates of everything they're pointing to
 	int iTemplates = pPointTemplates.Count();
-	for ( int i = 0; i < iTemplates; i++ )
+	for( int i = 0; i < iTemplates; i++ )
 	{
-		VPROF( "MapEntity_ParseAllEntities_SpawnTemplates");
-		CPointTemplate *pPointTemplate = pPointTemplates[i];
+		VPROF( "MapEntity_ParseAllEntities_SpawnTemplates" );
+		CPointTemplate* pPointTemplate = pPointTemplates[i];
 
 		// First, tell the Point template to Spawn
-		if ( DispatchSpawn(pPointTemplate) < 0 )
+		if( DispatchSpawn( pPointTemplate ) < 0 )
 		{
-			UTIL_Remove(pPointTemplate);
+			UTIL_Remove( pPointTemplate );
 			gEntList.CleanupDeleteList();
 			continue;
 		}
@@ -453,21 +477,21 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 
 		// Now go through all it's templates and turn the entities into templates
 		int iNumTemplates = pPointTemplate->GetNumTemplateEntities();
-		for ( int iTemplateNum = 0; iTemplateNum < iNumTemplates; iTemplateNum++ )
+		for( int iTemplateNum = 0; iTemplateNum < iNumTemplates; iTemplateNum++ )
 		{
 			// Find it in the spawn list
-			CBaseEntity *pEntity = pPointTemplate->GetTemplateEntity( iTemplateNum );
-			for ( int iEntNum = 0; iEntNum < nEntities; iEntNum++ )
+			CBaseEntity* pEntity = pPointTemplate->GetTemplateEntity( iTemplateNum );
+			for( int iEntNum = 0; iEntNum < nEntities; iEntNum++ )
 			{
-				if ( pSpawnList[iEntNum].m_pEntity == pEntity )
+				if( pSpawnList[iEntNum].m_pEntity == pEntity )
 				{
 					// Give the point_template the mapdata
 					pPointTemplate->AddTemplate( pEntity, pSpawnMapData[iEntNum].m_pMapData, pSpawnMapData[iEntNum].m_iMapDataLength );
 
-					if ( pPointTemplate->ShouldRemoveTemplateEntities() )
+					if( pPointTemplate->ShouldRemoveTemplateEntities() )
 					{
 						// Remove the template entity so that it does not show up in FindEntityXXX searches.
-						UTIL_Remove(pEntity);
+						UTIL_Remove( pEntity );
 						gEntList.CleanupDeleteList();
 
 						// Remove the entity from the spawn list
@@ -487,7 +511,7 @@ void MapEntity_ParseAllEntities(const char *pMapData, IMapEntityFilter *pFilter,
 	delete [] pSpawnList;
 }
 
-void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t *pSpawnList, bool bActivateEntities )
+void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t* pSpawnList, bool bActivateEntities )
 {
 	// Compute the hierarchical depth of all entities hierarchically attached
 	ComputeSpawnHierarchyDepth( nEntities, pSpawnList );
@@ -498,7 +522,7 @@ void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t *pSpawnList, bool
 	SortSpawnListByHierarchy( nEntities, pSpawnList );
 
 	// save off entity positions if in edit mode
-	if ( engine->IsInEditMode() )
+	if( engine->IsInEditMode() )
 	{
 		RememberInitialEntityPositions( nEntities, pSpawnList );
 	}
@@ -512,28 +536,28 @@ void SpawnHierarchicalList( int nEntities, HierarchicalSpawn_t *pSpawnList, bool
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEntData - 
+// Purpose:
+// Input  : *pEntData -
 //-----------------------------------------------------------------------------
-void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
+void MapEntity_PrecacheEntity( const char* pEntData, int& nStringSize )
 {
-	CEntityMapData entData( (char*)pEntData, nStringSize );
+	CEntityMapData entData( ( char* )pEntData, nStringSize );
 	char className[MAPKEY_MAXLENGTH];
-	
-	if (!entData.ExtractValue("classname", className))
+
+	if( !entData.ExtractValue( "classname", className ) )
 	{
 		Error( "classname missing from entity!\n" );
 	}
 
 	// Construct via the LINK_ENTITY_TO_CLASS factory.
-	CBaseEntity *pEntity = CreateEntityByName(className);
+	CBaseEntity* pEntity = CreateEntityByName( className );
 
 	//
 	// Set up keyvalues, which can set the model name, which is why we don't just do UTIL_PrecacheOther here...
 	//
-	if ( pEntity != NULL )
+	if( pEntity != NULL )
 	{
-		pEntity->ParseMapData(&entData);
+		pEntity->ParseMapData( &entData );
 		pEntity->Precache();
 		UTIL_RemoveImmediate( pEntity );
 	}
@@ -545,37 +569,41 @@ void MapEntity_PrecacheEntity( const char *pEntData, int &nStringSize )
 //			pEntData - Data block to parse to extract entity keys.
 // Output : Returns the current position in the entity data block.
 //-----------------------------------------------------------------------------
-const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, IMapEntityFilter *pFilter)
+const char* MapEntity_ParseEntity( CBaseEntity*& pEntity, const char* pEntData, IMapEntityFilter* pFilter )
 {
-	CEntityMapData entData( (char*)pEntData );
+	CEntityMapData entData( ( char* )pEntData );
 	char className[MAPKEY_MAXLENGTH];
-	
-	if (!entData.ExtractValue("classname", className))
+
+	if( !entData.ExtractValue( "classname", className ) )
 	{
 		Error( "classname missing from entity!\n" );
 	}
 
 	pEntity = NULL;
-	if ( !pFilter || pFilter->ShouldCreateEntity( className ) )
+	if( !pFilter || pFilter->ShouldCreateEntity( className ) )
 	{
 		//
 		// Construct via the LINK_ENTITY_TO_CLASS factory.
 		//
-		if ( pFilter )
+		if( pFilter )
+		{
 			pEntity = pFilter->CreateNextEntity( className );
+		}
 		else
-			pEntity = CreateEntityByName(className);
+		{
+			pEntity = CreateEntityByName( className );
+		}
 
 		//
 		// Set up keyvalues.
 		//
-		if (pEntity != NULL)
+		if( pEntity != NULL )
 		{
-			pEntity->ParseMapData(&entData);
+			pEntity->ParseMapData( &entData );
 		}
 		else
 		{
-			Warning("Can't init %s\n", className);
+			Warning( "Can't init %s\n", className );
 		}
 	}
 	else
@@ -583,12 +611,12 @@ const char *MapEntity_ParseEntity(CBaseEntity *&pEntity, const char *pEntData, I
 		// Just skip past all the keys.
 		char keyName[MAPKEY_MAXLENGTH];
 		char value[MAPKEY_MAXLENGTH];
-		if ( entData.GetFirstKey(keyName, value) )
+		if( entData.GetFirstKey( keyName, value ) )
 		{
-			do 
+			do
 			{
-			} 
-			while ( entData.GetNextKey(keyName, value) );
+			}
+			while( entData.GetNextKey( keyName, value ) );
 		}
 	}
 

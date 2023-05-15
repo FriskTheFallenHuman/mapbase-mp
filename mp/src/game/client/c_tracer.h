@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,18 +23,18 @@ class CMeshBuilder;
 //		[in] float  : The tracer width (CAMERA space)
 //		[in] float* : r, g, b, a (0 - 1)
 //-----------------------------------------------------------------------------
-void Tracer_Draw( ParticleDraw* pDraw, Vector& start, Vector& delta, 
-				 float width, float* color, float startV = 0.0, float endV = 1.0 );
+void Tracer_Draw( ParticleDraw* pDraw, Vector& start, Vector& delta,
+				  float width, float* color, float startV = 0.0, float endV = 1.0 );
 
-void Tracer_Draw( CMeshBuilder *pMeshBuilder, Vector& start, Vector& delta, float width, float* color, float startV = 0.0, float endV = 1.0 );
+void Tracer_Draw( CMeshBuilder* pMeshBuilder, Vector& start, Vector& delta, float width, float* color, float startV = 0.0, float endV = 1.0 );
 
 
 //-----------------------------------------------------------------------------
 // Computes the four verts to draw the tracer with, in the following order:
-//	start vertex left side, start vertex right side 
-//	end vertex left side, end vertex right side 
+//	start vertex left side, start vertex right side
+//	end vertex left side, end vertex right side
 // returne false if the tracer is offscreen
 //-----------------------------------------------------------------------------
-bool Tracer_ComputeVerts( const Vector &start, const Vector &delta, float width, Vector *pVerts );
+bool Tracer_ComputeVerts( const Vector& start, const Vector& delta, float width, Vector* pVerts );
 
 #endif // C_TRACER_H

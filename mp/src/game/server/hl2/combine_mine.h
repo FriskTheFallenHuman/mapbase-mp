@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -10,7 +10,7 @@
 #define COMBINE_MINE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CSoundPatch;
@@ -25,7 +25,7 @@ class CSoundPatch;
 #define BOUNCEBOMB_EXPLODE_DAMAGE	150.0
 #include "player_pickup.h"
 #ifdef MAPBASE
-#include "filters.h"
+	#include "filters.h"
 #endif
 
 class CBounceBomb : public CBaseAnimating, public CDefaultPlayerPickupVPhysics
@@ -34,43 +34,78 @@ class CBounceBomb : public CBaseAnimating, public CDefaultPlayerPickupVPhysics
 
 public:
 #ifdef MAPBASE
-	CBounceBomb() { m_pWarnSound = NULL; m_bPlacedByPlayer = false; m_flExplosionDelay = 0.5f; m_iLOSMask = MASK_SOLID_BRUSHONLY; m_vecPlantOrientation = vec3_invalid; }
+	CBounceBomb()
+	{
+		m_pWarnSound = NULL;
+		m_bPlacedByPlayer = false;
+		m_flExplosionDelay = 0.5f;
+		m_iLOSMask = MASK_SOLID_BRUSHONLY;
+		m_vecPlantOrientation = vec3_invalid;
+	}
 #else
-	CBounceBomb() { m_pWarnSound = NULL; m_bPlacedByPlayer = false; }
+	CBounceBomb()
+	{
+		m_pWarnSound = NULL;
+		m_bPlacedByPlayer = false;
+	}
 #endif
 	void Precache();
 	void Spawn();
 	void OnRestore();
-	int DrawDebugTextOverlays(void);
+	int DrawDebugTextOverlays( void );
 	void SetMineState( int iState );
-	int GetMineState() { return m_iMineState; }
+	int GetMineState()
+	{
+		return m_iMineState;
+	}
 	bool IsValidLocation();
-	void Flip( const Vector &vecForce, const AngularImpulse &torque );
+	void Flip( const Vector& vecForce, const AngularImpulse& torque );
 	void SearchThink();
 	void BounceThink();
 	void SettleThink();
 	void CaptiveThink();
 	void ExplodeThink();
-	void ExplodeTouch( CBaseEntity *pOther );
+	void ExplodeTouch( CBaseEntity* pOther );
 	void CavernBounceThink(); ///< an alternative style of bouncing used for the citizen modded bouncers
-	bool IsAwake() { return m_bAwake; }
+	bool IsAwake()
+	{
+		return m_bAwake;
+	}
 	void Wake( bool bWake );
 	float FindNearestNPC();
-	void SetNearestNPC( CBaseEntity *pNearest ) { m_hNearestNPC.Set( pNearest ); }
-	int OnTakeDamage( const CTakeDamageInfo &info );
-	bool IsFriend( CBaseEntity *pEntity );
+	void SetNearestNPC( CBaseEntity* pNearest )
+	{
+		m_hNearestNPC.Set( pNearest );
+	}
+	int OnTakeDamage( const CTakeDamageInfo& info );
+	bool IsFriend( CBaseEntity* pEntity );
 
 	void UpdateLight( bool bTurnOn, unsigned int r, unsigned int g, unsigned int b, unsigned int a );
-	bool IsLightOn() { return m_hSprite.Get() != NULL; }
+	bool IsLightOn()
+	{
+		return m_hSprite.Get() != NULL;
+	}
 
-	void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason = PICKED_UP_BY_CANNON );
-	void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason );
-	bool ForcePhysgunOpen( CBasePlayer *pPlayer ) { return true; }
-	bool HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer ) { return true; }
-	virtual QAngle	PreferredCarryAngles( void ) { return vec3_angle; }
-	CBasePlayer *HasPhysicsAttacker( float dt );
+	void OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason = PICKED_UP_BY_CANNON );
+	void OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t reason );
+	bool ForcePhysgunOpen( CBasePlayer* pPlayer )
+	{
+		return true;
+	}
+	bool HasPreferredCarryAnglesForPlayer( CBasePlayer* pPlayer )
+	{
+		return true;
+	}
+	virtual QAngle	PreferredCarryAngles( void )
+	{
+		return vec3_angle;
+	}
+	CBasePlayer* HasPhysicsAttacker( float dt );
 
-	bool IsPlayerPlaced() { return m_bPlacedByPlayer; }
+	bool IsPlayerPlaced()
+	{
+		return m_bPlacedByPlayer;
+	}
 
 	// Determines whether companions should treat the mine as a navigation obstacle and avoid it
 	bool ShouldBeAvoidedByCompanions();
@@ -88,7 +123,7 @@ public:
 
 #ifdef MAPBASE
 	// Uses the new CBaseEntity interaction implementation and replaces the dynamic_casting from npc_barnacle
-	bool	HandleInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt );
+	bool	HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	void	UpdateWarnSound( float flVolume, float flDelta );
 	void	SilenceWarnSound( float flDelta );
@@ -114,7 +149,7 @@ private:
 	int		m_iHookS;
 	int		m_iAllHooks;
 
-	CSoundPatch	*m_pWarnSound;
+	CSoundPatch*	m_pWarnSound;
 
 	bool	m_bLockSilently;
 	bool	m_bFoeNearest;
@@ -147,7 +182,7 @@ private:
 	float					m_flLastPhysicsInfluenceTime;
 
 	float					m_flTimeGrabbed;
-	IPhysicsConstraint		*m_pConstraint;
+	IPhysicsConstraint*		m_pConstraint;
 	int						m_iMineState;
 
 #ifdef MAPBASE
@@ -156,20 +191,20 @@ private:
 
 	string_t	m_iszEnemyFilter;
 	CHandle<CBaseFilter>	m_hEnemyFilter;
-	void InputSetEnemyFilter( inputdata_t &inputdata );
+	void InputSetEnemyFilter( inputdata_t& inputdata );
 
 	string_t	m_iszFriendFilter;
 	CHandle<CBaseFilter>	m_hFriendFilter;
-	void InputSetFriendFilter( inputdata_t &inputdata );
+	void InputSetFriendFilter( inputdata_t& inputdata );
 #endif
 
 	COutputEvent	m_OnPulledUp;
-	void InputDisarm( inputdata_t &inputdata );
+	void InputDisarm( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputBounce( inputdata_t &inputdata );
-	void InputBounceAtTarget( inputdata_t &inputdata );
-	void InputSetPlantOrientation( inputdata_t &inputdata );
-	void InputSetPlantOrientationRaw( inputdata_t &inputdata );
+	void InputBounce( inputdata_t& inputdata );
+	void InputBounceAtTarget( inputdata_t& inputdata );
+	void InputSetPlantOrientation( inputdata_t& inputdata );
+	void InputSetPlantOrientationRaw( inputdata_t& inputdata );
 	COutputEvent	m_OnTriggered;
 	COutputEvent	m_OnExplode;
 #endif

@@ -9,7 +9,7 @@
 #define AI_SPEECHCONCEPT_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "responserules/response_types.h"
@@ -19,11 +19,17 @@ class CAI_Concept : public ResponseRules::CRR_Concept
 public:
 	CAI_Concept() {};
 	// construct concept from a string.
-	CAI_Concept(const char *fromString) : CRR_Concept(fromString) {} ;
+	CAI_Concept( const char* fromString ) : CRR_Concept( fromString ) {} ;
 
 	// get/set BS
-	inline EHANDLE GetSpeaker() const { return m_hSpeaker; }
-	inline void SetSpeaker(EHANDLE val) { m_hSpeaker = val; }
+	inline EHANDLE GetSpeaker() const
+	{
+		return m_hSpeaker;
+	}
+	inline void SetSpeaker( EHANDLE val )
+	{
+		m_hSpeaker = val;
+	}
 
 	/*
 	inline EHANDLE GetTarget() const { return m_hTarget; }

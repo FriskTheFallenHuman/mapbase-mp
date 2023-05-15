@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define DIVIDER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -25,10 +25,10 @@ class Divider : public Panel
 	DECLARE_CLASS_SIMPLE( Divider, Panel );
 
 public:
-	Divider(Panel *parent, const char *name);
+	Divider( Panel* parent, const char* name );
 	~Divider();
 
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 };
 
 

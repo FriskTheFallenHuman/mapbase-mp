@@ -6,7 +6,7 @@
 //
 // --------------------------------------------------------------------
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -16,12 +16,12 @@
 #include "triggers.h"
 
 // 0 - eyes fully closed / fully black
-// 1 - nominal 
+// 1 - nominal
 // 16 - eyes wide open / fully white
 
 #ifdef MAPBASE // From Alien Swarm SDK
-// Spawn Flags
-#define SF_TONEMAP_MASTER			0x0001
+	// Spawn Flags
+	#define SF_TONEMAP_MASTER			0x0001
 #endif
 
 //-----------------------------------------------------------------------------
@@ -39,21 +39,24 @@ public:
 	void	UpdateTonemapScaleBlend( void );
 
 #ifdef MAPBASE
-	bool	IsMaster( void ) const					{ return HasSpawnFlags( SF_TONEMAP_MASTER ); } // From Alien Swarm SDK
-	
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	IsMaster( void ) const
+	{
+		return HasSpawnFlags( SF_TONEMAP_MASTER );    // From Alien Swarm SDK
+	}
+
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 #endif
 
 	// Inputs
-	void	InputSetTonemapScale( inputdata_t &inputdata );
-	void	InputBlendTonemapScale( inputdata_t &inputdata );
-	void	InputSetTonemapRate( inputdata_t &inputdata );
-	void	InputSetAutoExposureMin( inputdata_t &inputdata );
-	void	InputSetAutoExposureMax( inputdata_t &inputdata );
-	void	InputUseDefaultAutoExposure( inputdata_t &inputdata );
-	void	InputSetBloomScale( inputdata_t &inputdata );
-	void	InputUseDefaultBloomScale( inputdata_t &inputdata );
-	void	InputSetBloomScaleRange( inputdata_t &inputdata );
+	void	InputSetTonemapScale( inputdata_t& inputdata );
+	void	InputBlendTonemapScale( inputdata_t& inputdata );
+	void	InputSetTonemapRate( inputdata_t& inputdata );
+	void	InputSetAutoExposureMin( inputdata_t& inputdata );
+	void	InputSetAutoExposureMax( inputdata_t& inputdata );
+	void	InputUseDefaultAutoExposure( inputdata_t& inputdata );
+	void	InputSetBloomScale( inputdata_t& inputdata );
+	void	InputUseDefaultBloomScale( inputdata_t& inputdata );
+	void	InputSetBloomScaleRange( inputdata_t& inputdata );
 
 private:
 	float	m_flBlendTonemapStart;		// HDR Tonemap at the start of the blend
@@ -69,8 +72,8 @@ public:
 	CNetworkVar( bool, m_bUseCustomBloomScale );
 	CNetworkVar( float, m_flCustomAutoExposureMin );
 	CNetworkVar( float, m_flCustomAutoExposureMax );
-	CNetworkVar( float, m_flCustomBloomScale);
-	CNetworkVar( float, m_flCustomBloomScaleMinimum);
+	CNetworkVar( float, m_flCustomBloomScale );
+	CNetworkVar( float, m_flCustomBloomScaleMinimum );
 };
 
 #ifdef MAPBASE // From Alien Swarm SDK
@@ -82,10 +85,10 @@ public:
 	DECLARE_DATADESC();
 
 	virtual void Spawn( void );
-	virtual void StartTouch( CBaseEntity *other );
-	virtual void EndTouch( CBaseEntity *other );
+	virtual void StartTouch( CBaseEntity* other );
+	virtual void EndTouch( CBaseEntity* other );
 
-	CBaseEntity *GetTonemapController( void ) const;
+	CBaseEntity* GetTonemapController( void ) const;
 
 private:
 	string_t m_tonemapControllerName;
@@ -94,7 +97,7 @@ private:
 
 
 //--------------------------------------------------------------------------------------------------------
-inline CBaseEntity *CTonemapTrigger::GetTonemapController( void ) const
+inline CBaseEntity* CTonemapTrigger::GetTonemapController( void ) const
 {
 	return m_hTonemapController.Get();
 }
@@ -107,7 +110,7 @@ class CTonemapSystem : public CAutoGameSystem
 public:
 
 	// Creation/Init.
-	CTonemapSystem( char const *name ) : CAutoGameSystem( name ) 
+	CTonemapSystem( char const* name ) : CAutoGameSystem( name )
 	{
 		m_hMasterController = NULL;
 	}
@@ -119,7 +122,7 @@ public:
 
 	virtual void LevelInitPreEntity();
 	virtual void LevelInitPostEntity();
-	CBaseEntity *GetMasterTonemapController( void ) const;
+	CBaseEntity* GetMasterTonemapController( void ) const;
 
 private:
 
@@ -128,13 +131,13 @@ private:
 
 
 //--------------------------------------------------------------------------------------------------------
-inline CBaseEntity *CTonemapSystem::GetMasterTonemapController( void ) const
+inline CBaseEntity* CTonemapSystem::GetMasterTonemapController( void ) const
 {
 	return m_hMasterController.Get();
 }
 
 //--------------------------------------------------------------------------------------------------------
-CTonemapSystem *TheTonemapSystem( void );
+CTonemapSystem* TheTonemapSystem( void );
 #endif
 
 #endif //ENV_TONEMAP_CONTROLLER_H

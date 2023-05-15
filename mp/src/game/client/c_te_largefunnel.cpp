@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -20,7 +20,7 @@ public:
 	DECLARE_CLASS( C_TELargeFunnel, C_TEParticleSystem );
 	DECLARE_CLIENTCLASS();
 
-					C_TELargeFunnel( void );
+	C_TELargeFunnel( void );
 	virtual			~C_TELargeFunnel( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -34,7 +34,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TELargeFunnel::C_TELargeFunnel( void )
 {
@@ -43,7 +43,7 @@ C_TELargeFunnel::C_TELargeFunnel( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TELargeFunnel::~C_TELargeFunnel( void )
 {
@@ -56,7 +56,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 	pSimple->SetSortOrigin( m_vecOrigin );
 
 	int			i, j;
-	SimpleParticle *pParticle;
+	SimpleParticle* pParticle;
 
 	Vector		vecDir;
 	Vector		vecDest;
@@ -71,20 +71,20 @@ void C_TELargeFunnel::CreateFunnel( void )
 	PMaterialHandle hMaterial = pSimple->GetPMaterial( "sprites/flare6" );
 #endif
 
-	for ( i = -256 ; i <= 256 ; i += 24 )	//24 from 32.. little more dense
+	for( i = -256 ; i <= 256 ; i += 24 )	//24 from 32.. little more dense
 	{
-		for ( j = -256 ; j <= 256 ; j += 24 )
+		for( j = -256 ; j <= 256 ; j += 24 )
 		{
-			pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, m_vecOrigin );			
+			pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, m_vecOrigin );
 			if( pParticle )
 			{
-				if ( m_nReversed )
+				if( m_nReversed )
 				{
 					pParticle->m_Pos = m_vecOrigin;
 
 					vecDir[0] = i;
 					vecDir[1] = j;
-					vecDir[2] = random->RandomFloat(100, 800);
+					vecDir[2] = random->RandomFloat( 100, 800 );
 
 					pParticle->m_uchStartAlpha	= 255;
 					pParticle->m_uchEndAlpha	= 0;
@@ -93,7 +93,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 				{
 					pParticle->m_Pos[0] = m_vecOrigin[0] + i;
 					pParticle->m_Pos[1] = m_vecOrigin[1] + j;
-					pParticle->m_Pos[2] = m_vecOrigin[2] + random->RandomFloat(100, 800);
+					pParticle->m_Pos[2] = m_vecOrigin[2] + random->RandomFloat( 100, 800 );
 
 					// send particle heading to org at a random speed
 					vecDir = m_vecOrigin - pParticle->m_Pos;
@@ -104,10 +104,10 @@ void C_TELargeFunnel::CreateFunnel( void )
 
 				vecDir *= ratio;
 
-				pParticle->m_vecVelocity = vecDir;			
+				pParticle->m_vecVelocity = vecDir;
 
 				pParticle->m_flLifetime = 0;
-				pParticle->m_flDieTime = invratio;	
+				pParticle->m_flDieTime = invratio;
 
 				if( random->RandomInt( 0, 10 ) < 5 )
 				{
@@ -115,7 +115,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 					pParticle->m_uchColor[0] = 0;
 					pParticle->m_uchColor[1] = 255;
 					pParticle->m_uchColor[2] = 0;
-				
+
 					pParticle->m_uchStartSize	= 4.0;
 				}
 				else
@@ -124,7 +124,7 @@ void C_TELargeFunnel::CreateFunnel( void )
 					pParticle->m_uchColor[0] = 255;
 					pParticle->m_uchColor[1] = 255;
 					pParticle->m_uchColor[2] = 255;
-				
+
 					pParticle->m_uchStartSize	= 15.0;
 				}
 
@@ -141,21 +141,21 @@ void C_TELargeFunnel::CreateFunnel( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TELargeFunnel::PostDataUpdate( DataUpdateType_t updateType )
 {
 	CreateFunnel();
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TELargeFunnel, DT_TELargeFunnel, CTELargeFunnel)
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nReversed)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TELargeFunnel, DT_TELargeFunnel, CTELargeFunnel )
+RecvPropInt( RECVINFO( m_nModelIndex ) ),
+			 RecvPropInt( RECVINFO( m_nReversed ) ),
+			 END_RECV_TABLE()
 
-void TE_LargeFunnel( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, int reversed )
+			 void TE_LargeFunnel( IRecipientFilter& filter, float delay,
+								  const Vector* pos, int modelindex, int reversed )
 {
 	// Major hack to simulate receiving network message
 	__g_C_TELargeFunnel.m_vecOrigin = *pos;

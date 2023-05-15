@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PLAYERLOCALDATA_H
 #define PLAYERLOCALDATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -16,8 +16,8 @@
 #include "networkvar.h"
 #include "fogcontroller.h"
 #ifdef MAPBASE // From Alien Swarm SDK
-#include "postprocesscontroller.h"
-#include "colorcorrection.h"
+	#include "postprocesscontroller.h"
+	#include "colorcorrection.h"
 #endif
 
 //-----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ public:
 
 	CPlayerLocalData();
 
-	void UpdateAreaBits( CBasePlayer *pl, unsigned char chAreaPortalBits[MAX_AREA_PORTAL_STATE_BYTES] );
+	void UpdateAreaBits( CBasePlayer* pl, unsigned char chAreaPortalBits[MAX_AREA_PORTAL_STATE_BYTES] );
 
 
 public:
@@ -44,9 +44,9 @@ public:
 
 	CNetworkVar( int,	m_iHideHUD );		// bitfields containing sections of the HUD to hide
 	CNetworkVar( float, m_flFOVRate );		// rate at which the FOV changes (defaults to 0)
-		
+
 	Vector				m_vecOverViewpoint;			// Viewpoint overriding the real player's viewpoint
-	
+
 	// Fully ducked
 	CNetworkVar( bool, m_bDucked );
 	// In process of ducking
@@ -64,11 +64,11 @@ public:
 	CNetworkVar( float, m_flFallVelocity );
 	// Previous button state
 	int m_nOldButtons;
-	class CSkyCamera *m_pOldSkyCamera;
-	// Base velocity that was passed in to server physics so 
+	class CSkyCamera* m_pOldSkyCamera;
+	// Base velocity that was passed in to server physics so
 	//  client can predict conveyors correctly.  Server zeroes it, so we need to store here, too.
 	// auto-decaying view angle adjustment
-	CNetworkQAngle( m_vecPunchAngle );		
+	CNetworkQAngle( m_vecPunchAngle );
 	CNetworkQAngle( m_vecPunchAngleVel );
 	// Draw view model for the player
 	CNetworkVar( bool, m_bDrawViewmodel );
@@ -93,7 +93,7 @@ public:
 	CNetworkVar( bool, m_bSlowMovement );
 };
 
-EXTERN_SEND_TABLE(DT_Local);
+EXTERN_SEND_TABLE( DT_Local );
 
 
 #endif // PLAYERLOCALDATA_H

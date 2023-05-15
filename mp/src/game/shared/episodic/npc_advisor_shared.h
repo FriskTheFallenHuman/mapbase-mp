@@ -9,17 +9,17 @@
 #ifndef NPC_ADVISOR_SHARED_H
 #define NPC_ADVISOR_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
-// Set this to 0 to disable the advisor's special AI behavior (all that object chucking), 
+// Set this to 0 to disable the advisor's special AI behavior (all that object chucking),
 // which we did in Ep2 to make him a scripted creature.
 #define NPC_ADVISOR_HAS_BEHAVIOR 0
 
 #if NPC_ADVISOR_HAS_BEHAVIOR
 // Message ID constants used for communciation between client and server.
-enum 
+enum
 {
 	ADVISOR_MSG_START_BEAM = 10,
 	ADVISOR_MSG_STOP_BEAM,

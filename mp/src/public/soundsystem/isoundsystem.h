@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef ISOUNDSYSTEM_H
 #define ISOUNDSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "appframework/iappsystem.h"
@@ -27,7 +27,7 @@ class CAudioMixer;
 typedef unsigned short AudioSourceHandle_t;
 enum
 {
-	AUDIOSOURCEHANDLE_INVALID = (AudioSourceHandle_t)~0
+	AUDIOSOURCEHANDLE_INVALID = ( AudioSourceHandle_t )~0
 };
 
 
@@ -47,22 +47,23 @@ enum FindAudioSourceFlags_t
 //-----------------------------------------------------------------------------
 #define SOUNDSYSTEM_INTERFACE_VERSION "SoundSystem001"
 
-abstract_class ISoundSystem : public IAppSystem
+abstract_class ISoundSystem :
+public IAppSystem
 {
 public:
 	virtual void		Update( float time ) = 0;
 	virtual void		Flush( void ) = 0;
 
-	virtual CAudioSource *FindOrAddSound( const char *filename ) = 0;
-	virtual CAudioSource *LoadSound( const char *wavfile ) = 0;
+	virtual CAudioSource * FindOrAddSound( const char* filename ) = 0;
+	virtual CAudioSource * LoadSound( const char* wavfile ) = 0;
 
-	virtual void		PlaySound( CAudioSource *source, float volume, CAudioMixer **ppMixer ) = 0;
+	virtual void		PlaySound( CAudioSource * source, float volume, CAudioMixer** ppMixer ) = 0;
 
-	virtual bool		IsSoundPlaying( CAudioMixer *pMixer ) = 0;
-	virtual CAudioMixer *FindMixer( CAudioSource *source ) = 0;
+	virtual bool		IsSoundPlaying( CAudioMixer * pMixer ) = 0;
+	virtual CAudioMixer * FindMixer( CAudioSource * source ) = 0;
 
 	virtual void		StopAll( void ) = 0;
-	virtual void		StopSound( CAudioMixer *mixer ) = 0;
+	virtual void		StopSound( CAudioMixer * mixer ) = 0;
 };
 
 

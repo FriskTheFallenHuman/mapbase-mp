@@ -2,7 +2,7 @@
 #ifndef NPC_TURRET_GROUND_H
 #define NPC_TURRET_GROUND_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -25,34 +25,40 @@ public:
 	void PostNPCInit();
 
 	// Damage & Death
-	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void Event_Killed( const CTakeDamageInfo &info );
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void Event_Killed( const CTakeDamageInfo& info );
 	void DeathEffects();
-	bool CanBecomeRagdoll( void ) { return false; }
-	void DeathSound( const CTakeDamageInfo &info );
+	bool CanBecomeRagdoll( void )
+	{
+		return false;
+	}
+	void DeathSound( const CTakeDamageInfo& info );
 
 	// Combat
-	void MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType );
-	Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget )
+	void MakeTracer( const Vector& vecTracerSrc, const trace_t& tr, int iTracerType );
+	Vector GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget )
 	{
 		return VECTOR_CONE_5DEGREES;
 	}
 
 
-	// Sensing 
+	// Sensing
 	void GatherConditions();
 	Vector EyePosition();
-	bool FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker );
-	bool QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC = false );
+	bool FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker );
+	bool QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC = false );
 
 
-	bool IsOpeningOrClosing() { return (GetAbsVelocity().z != 0.0f); }
+	bool IsOpeningOrClosing()
+	{
+		return ( GetAbsVelocity().z != 0.0f );
+	}
 	bool IsEnabled();
 	bool IsOpen();
 
 	// Tasks & Schedules
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 	virtual int SelectSchedule( void );
 	virtual int TranslateSchedule( int scheduleType );
 
@@ -60,14 +66,14 @@ public:
 	Activity			NPC_TranslateActivity( Activity eNewActivity );
 	virtual void		Shoot();
 	virtual void		Scan();
-	void				ProjectBeam( const Vector &vecStart, const Vector &vecDir, int width, int brightness, float duration );
+	void				ProjectBeam( const Vector& vecStart, const Vector& vecDir, int width, int brightness, float duration );
 
 	// Local
 	void SetActive( bool bActive ) {}
 
 	// Inputs
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 	// Outputs
 	COutputEvent	m_OnAreaClear;
@@ -78,7 +84,7 @@ protected:
 	//-----------------------------------------------------
 	// Conditions, Schedules, Tasks
 	//-----------------------------------------------------
-	enum 
+	enum
 	{
 		SCHED_GROUND_TURRET_IDLE = BaseClass::NEXT_SCHEDULE,
 		SCHED_GROUND_TURRET_ATTACK,
@@ -87,7 +93,7 @@ protected:
 	};
 
 	int			m_iAmmoType;
-	SmokeTrail	*m_pSmoke;
+	SmokeTrail*	m_pSmoke;
 
 	bool		m_bEnabled;
 

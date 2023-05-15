@@ -7,13 +7,13 @@
 #ifndef AI_DEFAULT_H
 #define AI_DEFAULT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //=========================================================
 // These are the schedule types
 //=========================================================
-enum 
+enum
 {
 	SCHED_NONE = 0,
 	SCHED_IDLE_STAND,

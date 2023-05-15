@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef IFILELIST_H
 #define IFILELIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -18,7 +18,7 @@
 class IFileList
 {
 public:
-	virtual bool	IsFileInList( const char *pFilename ) = 0;
+	virtual bool	IsFileInList( const char* pFilename ) = 0;
 	virtual void	Release() = 0;
 };
 

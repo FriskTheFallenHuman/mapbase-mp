@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef NPC_CROW_H
 #define NPC_CROW_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define BIRDTYPE_CROW 1
@@ -49,7 +49,7 @@ enum
 //
 // Custom tasks.
 //
-enum 
+enum
 {
 	TASK_CROW_FIND_FLYTO_NODE = LAST_SHARED_TASK,
 	//TASK_CROW_PREPARE_TO_FLY,
@@ -103,53 +103,56 @@ public:
 	virtual void Spawn( void );
 	virtual void Precache( void );
 
-	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy = true );
+	virtual Vector BodyTarget( const Vector& posSrc, bool bNoisy = true );
 
 	virtual int DrawDebugTextOverlays( void );
 
 	//
 	// CBaseCombatCharacter:
 	//
-	virtual int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual bool CorpseGib( const CTakeDamageInfo &info );
-	bool	BecomeRagdollOnClient( const Vector &force );
+	virtual int OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	virtual bool CorpseGib( const CTakeDamageInfo& info );
+	bool	BecomeRagdollOnClient( const Vector& force );
 
 	//
 	// CAI_BaseNPC:
 	//
-	virtual float MaxYawSpeed( void ) { return 120.0f; }
-	
-	virtual Class_T Classify( void );
-	virtual void GatherEnemyConditions( CBaseEntity *pEnemy );
+	virtual float MaxYawSpeed( void )
+	{
+		return 120.0f;
+	}
 
-	virtual void HandleAnimEvent( animevent_t *pEvent );
+	virtual Class_T Classify( void );
+	virtual void GatherEnemyConditions( CBaseEntity* pEnemy );
+
+	virtual void HandleAnimEvent( animevent_t* pEvent );
 	virtual int GetSoundInterests( void );
 	virtual int SelectSchedule( void );
-	virtual void StartTask( const Task_t *pTask );
-	virtual void RunTask( const Task_t *pTask );
+	virtual void StartTask( const Task_t* pTask );
+	virtual void RunTask( const Task_t* pTask );
 
-	virtual bool HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sourceEnt );
+	virtual bool HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	virtual void OnChangeActivity( Activity eNewActivity );
 
 	virtual bool OverrideMove( float flInterval );
 
-	virtual bool FValidateHintType( CAI_Hint *pHint );
+	virtual bool FValidateHintType( CAI_Hint* pHint );
 	virtual Activity GetHintActivity( short sHintType, Activity HintsActivity );
 
-	virtual void PainSound( const CTakeDamageInfo &info );
-	virtual void DeathSound( const CTakeDamageInfo &info );
+	virtual void PainSound( const CTakeDamageInfo& info );
+	virtual void DeathSound( const CTakeDamageInfo& info );
 	virtual void IdleSound( void );
 	virtual void AlertSound( void );
 	virtual void StopLoopingSounds( void );
 	virtual void UpdateEfficiency( bool bInPVS );
 
-	virtual bool QueryHearSound( CSound *pSound );
+	virtual bool QueryHearSound( CSound* pSound );
 
-	void InputFlyAway( inputdata_t &inputdata );
-	
-	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	void StartTargetHandling( CBaseEntity *pTargetEnt );
+	void InputFlyAway( inputdata_t& inputdata );
+
+	void TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	void StartTargetHandling( CBaseEntity* pTargetEnt );
 
 	DEFINE_CUSTOM_AI;
 	DECLARE_DATADESC();
@@ -159,22 +162,28 @@ public:
 
 protected:
 	void SetFlyingState( FlyState_t eState );
-	inline bool IsFlying( void ) const { return GetNavType() == NAV_FLY; }
+	inline bool IsFlying( void ) const
+	{
+		return GetNavType() == NAV_FLY;
+	}
 
-	void Takeoff( const Vector &vGoal );
+	void Takeoff( const Vector& vGoal );
 	void FlapSound( void );
 
 	void MoveCrowFly( float flInterval );
-	bool Probe( const Vector &vecMoveDir, float flSpeed, Vector &vecDeflect );
+	bool Probe( const Vector& vecMoveDir, float flSpeed, Vector& vecDeflect );
 
-	bool IsDeaf() { return m_bIsDeaf; }
+	bool IsDeaf()
+	{
+		return m_bIsDeaf;
+	}
 
 protected:
 	float m_flGroundIdleMoveTime;
 
 	float m_flEnemyDist;		// Distance to GetEnemy(), cached in GatherEnemyConditions.
 	int m_nMorale;				// Used to determine which avoidance schedule to pick. Degrades as I pick avoidance schedules.
-	
+
 	bool m_bReachedMoveGoal;
 
 	float m_flHopStartZ;		// Our Z coordinate when we started a hop. Used to check for accidentally hopping off things.
@@ -189,7 +198,7 @@ private:
 	bool				m_bSoar;
 	Vector				m_vLastStoredOrigin;
 	float				m_flLastStuckCheck;
-	
+
 	float				m_flDangerSoundTime;
 
 	Vector				m_vDesiredTarget;
@@ -206,21 +215,21 @@ class CNPC_Seagull : public CNPC_Crow
 	DECLARE_CLASS( CNPC_Seagull, CNPC_Crow );
 
 public:
-	
+
 	void Spawn( void )
 	{
-		SetModelName( AllocPooledString("models/seagull.mdl") );
+		SetModelName( AllocPooledString( "models/seagull.mdl" ) );
 		BaseClass::Spawn();
 
 		m_iBirdType = BIRDTYPE_SEAGULL;
 	}
 
-	void PainSound( const CTakeDamageInfo &info )
+	void PainSound( const CTakeDamageInfo& info )
 	{
 		EmitSound( "NPC_Seagull.Pain" );
 	}
 
-	void DeathSound( const CTakeDamageInfo &info )
+	void DeathSound( const CTakeDamageInfo& info )
 	{
 		EmitSound( "NPC_Seagull.Pain" );
 	}
@@ -241,7 +250,7 @@ class CNPC_Pigeon : public CNPC_Crow
 public:
 	void Spawn( void )
 	{
-		SetModelName( AllocPooledString("models/pigeon.mdl") );
+		SetModelName( AllocPooledString( "models/pigeon.mdl" ) );
 		BaseClass::Spawn();
 
 		m_iBirdType = BIRDTYPE_PIGEON;

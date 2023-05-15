@@ -9,7 +9,7 @@
 #ifndef LOCKSOUNDS_H
 #define LOCKSOUNDS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "datamap.h"

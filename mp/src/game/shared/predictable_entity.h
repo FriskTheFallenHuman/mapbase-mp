@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PREDICTABLE_ENTITY_H
 #define PREDICTABLE_ENTITY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // For introspection
@@ -17,23 +17,23 @@
 #include "shared_classnames.h"
 
 #ifndef NO_ENTITY_PREDICTION
-#define UsePrediction() 1
+	#define UsePrediction() 1
 #else
-#define UsePrediction() 0
+	#define UsePrediction() 0
 #endif
 
 // CLIENT DLL includes
 #if defined( CLIENT_DLL )
 
-#include "iclassmap.h"
-#include "recvproxy.h"
+	#include "iclassmap.h"
+	#include "recvproxy.h"
 
-class SendTable;
+	class SendTable;
 
-// Game DLL includes
+	// Game DLL includes
 #else
 
-#include "sendproxy.h"
+	#include "sendproxy.h"
 
 #endif  // !CLIENT_DLL
 
@@ -43,7 +43,7 @@ class SendTable;
 		DECLARE_CLIENTCLASS()
 
 #define DECLARE_NETWORKCLASS_NOBASE()									\
-		DECLARE_CLIENTCLASS_NOBASE()							
+		DECLARE_CLIENTCLASS_NOBASE()
 
 #else
 
@@ -51,7 +51,7 @@ class SendTable;
 		DECLARE_SERVERCLASS()
 
 #define DECLARE_NETWORKCLASS_NOBASE()									\
-		DECLARE_SERVERCLASS_NOBASE()	
+		DECLARE_SERVERCLASS_NOBASE()
 
 #endif
 
@@ -131,10 +131,10 @@ class SendTable;
 
 #else
 
-	// nothing, only client has a prediction system
-	#define DECLARE_PREDICTABLE()	
-	#define BEGIN_PREDICTION_DATA( className ) 
-	#define END_PREDICTION_DATA() 
+// nothing, only client has a prediction system
+#define DECLARE_PREDICTABLE()
+#define BEGIN_PREDICTION_DATA( className )
+#define END_PREDICTION_DATA()
 
 #endif
 
@@ -185,19 +185,19 @@ class SendTable;
 #define IMPLEMENT_NETWORKCLASS_DT(className, dataTable)			\
 	IMPLEMENT_SERVERCLASS_ST(className, dataTable)
 
-#endif																	
+#endif
 
 // Interface used by client and server to track predictable entities
 abstract_class IPredictableList
 {
 public:
 	// Get predictables by index
-	virtual CBaseEntity		*GetPredictable( int slot ) = 0;
+	virtual CBaseEntity		* GetPredictable( int slot ) = 0;
 	// Get count of predictables
 	virtual int				GetPredictableCount( void ) = 0;
 };
 
 // Expose interface to rest of .dll
-extern IPredictableList *predictables;
+extern IPredictableList* predictables;
 
 #endif // PREDICTABLE_ENTITY_H

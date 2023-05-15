@@ -13,7 +13,7 @@
 #ifndef C_COLORCORRECTION_H
 #define C_COLORCORRECTION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "colorcorrectionmgr.h"
@@ -31,15 +31,21 @@ public:
 	C_ColorCorrection();
 	virtual ~C_ColorCorrection();
 
-	void OnDataChanged(DataUpdateType_t updateType);
+	void OnDataChanged( DataUpdateType_t updateType );
 	bool ShouldDraw();
 
 #ifdef MAPBASE // From Alien Swarm SDK
-	virtual void Update(C_BasePlayer *pPlayer, float ccScale);
-	
-	bool IsMaster() const { return m_bMaster; }
+	virtual void Update( C_BasePlayer* pPlayer, float ccScale );
+
+	bool IsMaster() const
+	{
+		return m_bMaster;
+	}
 	bool IsClientSide() const;
-	bool IsExclusive() const { return m_bExclusive; }
+	bool IsExclusive() const
+	{
+		return m_bExclusive;
+	}
 
 	void EnableOnClient( bool bEnable, bool bSkipFade = false );
 

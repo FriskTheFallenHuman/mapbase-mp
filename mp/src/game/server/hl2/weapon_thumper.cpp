@@ -33,11 +33,14 @@ class CPortableThumper : public CBaseAnimating
 private:
 
 	void ThumpThink( void );
-	void ThumperUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void ThumperUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	void Precache( void );
 	void Spawn( void );
 
-	int ObjectCaps( void ) { return FCAP_IMPULSE_USE; }
+	int ObjectCaps( void )
+	{
+		return FCAP_IMPULSE_USE;
+	}
 
 	DECLARE_DATADESC();
 };
@@ -75,16 +78,16 @@ void CPortableThumper::Spawn( void )
 	SetNextThink( gpGlobals->curtime + thumpFrequency.GetFloat() );
 }
 
-void CPortableThumper::ThumperUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPortableThumper::ThumperUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	if( !pActivator->IsPlayer() )
 	{
 		return;
 	}
 
-	CBasePlayer *pPlayer;
+	CBasePlayer* pPlayer;
 
-	pPlayer = (CBasePlayer *)pActivator;
+	pPlayer = ( CBasePlayer* )pActivator;
 	pPlayer->GiveNamedItem( "weapon_thumper" );
 
 	UTIL_Remove( this );
@@ -94,7 +97,7 @@ void CPortableThumper::ThumpThink( void )
 {
 	EmitSound( "PortableThumper.ThumpSound" );
 
-	UTIL_RotorWash( GetAbsOrigin() + Vector( 0, 0, 32 ), Vector( 0, 0, -1 ), 512 );	
+	UTIL_RotorWash( GetAbsOrigin() + Vector( 0, 0, 32 ), Vector( 0, 0, -1 ), 512 );
 
 	SetNextThink( gpGlobals->curtime + thumpFrequency.GetFloat() );
 
@@ -103,17 +106,17 @@ void CPortableThumper::ThumpThink( void )
 
 BEGIN_DATADESC( CPortableThumper )
 
-	DEFINE_FUNCTION( ThumpThink ),
-	DEFINE_FUNCTION( ThumperUse ),
+DEFINE_FUNCTION( ThumpThink ),
+				 DEFINE_FUNCTION( ThumperUse ),
 
-END_DATADESC()
-
-
+				 END_DATADESC()
 
 
 
 
-class CWeaponThumper: public CBaseHLCombatWeapon
+
+
+				 class CWeaponThumper: public CBaseHLCombatWeapon
 {
 	DECLARE_CLASS( CWeaponThumper, CBaseHLCombatWeapon );
 public:
@@ -121,17 +124,20 @@ public:
 	void				Spawn( void );
 	void				Precache( void );
 
-	int					CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int					CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 	void				PrimaryAttack( void );
 	bool				Reload( void );
-	void				DecrementAmmo( CBaseCombatCharacter *pOwner );
+	void				DecrementAmmo( CBaseCombatCharacter* pOwner );
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponThumper, DT_WeaponThumper)
+IMPLEMENT_SERVERCLASS_ST( CWeaponThumper, DT_WeaponThumper )
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_thumper, CWeaponThumper );
-PRECACHE_WEAPON_REGISTER(weapon_thumper);
+PRECACHE_WEAPON_REGISTER( weapon_thumper );
 
 void CWeaponThumper::Spawn( )
 {
@@ -139,7 +145,7 @@ void CWeaponThumper::Spawn( )
 
 	Precache( );
 
-	UTIL_SetSize(this, Vector(-4,-4,-2),Vector(4,4,2));
+	UTIL_SetSize( this, Vector( -4, -4, -2 ), Vector( 4, 4, 2 ) );
 
 	FallInit();// get ready to fall down
 }
@@ -161,9 +167,11 @@ bool CWeaponThumper::Reload( void )
 
 void CWeaponThumper::PrimaryAttack( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	DecrementAmmo( pPlayer );
 
@@ -192,14 +200,14 @@ void CWeaponThumper::PrimaryAttack( void )
 }
 
 
-void CWeaponThumper::DecrementAmmo( CBaseCombatCharacter *pOwner )
+void CWeaponThumper::DecrementAmmo( CBaseCombatCharacter* pOwner )
 {
 	pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
-	
-	if (pOwner->GetAmmoCount(m_iPrimaryAmmoType) <= 0)
+
+	if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) <= 0 )
 	{
 		pOwner->Weapon_Drop( this );
-		UTIL_Remove(this);
+		UTIL_Remove( this );
 	}
 }
 
@@ -232,7 +240,7 @@ END_SEND_TABLE()
 LINK_ENTITY_TO_CLASS( weapon_thumper, CWeaponThumper );
 PRECACHE_WEAPON_REGISTER(weapon_thumper);
 
-acttable_t	CWeaponThumper::m_acttable[] = 
+acttable_t	CWeaponThumper::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_AR1, true },
 };

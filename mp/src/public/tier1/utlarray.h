@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,7 +12,7 @@
 #define UTLARRAY_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -28,13 +28,13 @@
 struct base_array_t
 {
 public:
-	static const bool IsUtlArray = true; // Used to match this at compiletime 		
+	static const bool IsUtlArray = true; // Used to match this at compiletime
 };
 
 #if defined( GNUC ) && defined( DEBUG )
-// gcc in debug doesn't optimize away the need for the storage of IsUtlArray so make one here
-//  as this is in a shared header use SELECTANY to make it throw away the dupe symbols
-const bool base_array_t::IsUtlArray SELECTANY;
+	// gcc in debug doesn't optimize away the need for the storage of IsUtlArray so make one here
+	//  as this is in a shared header use SELECTANY to make it throw away the dupe symbols
+	const bool base_array_t::IsUtlArray SELECTANY;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -49,8 +49,8 @@ public:
 	CUtlArray();
 	CUtlArray( T* pMemory, size_t count );
 	~CUtlArray();
-	
-	CUtlArray<T, MAX_SIZE>& operator=( const CUtlArray<T, MAX_SIZE> &other );
+
+	CUtlArray<T, MAX_SIZE>& operator=( const CUtlArray<T, MAX_SIZE>& other );
 	CUtlArray( CUtlArray const& vec );
 
 	// element access
@@ -79,10 +79,10 @@ public:
 	bool IsValidIndex( int i ) const;
 	static int InvalidIndex();
 
-	void CopyArray( const T *pArray, size_t count );
+	void CopyArray( const T* pArray, size_t count );
 
-	void Swap( CUtlArray< T, MAX_SIZE > &vec );
-	
+	void Swap( CUtlArray< T, MAX_SIZE >& vec );
+
 	// Finds an element (element needs operator== defined)
 	int Find( const T& src ) const;
 	void FillWithValue( const T& src );
@@ -92,7 +92,7 @@ public:
 	// calls delete on each element in it.
 	void DeleteElements();
 
-	void Sort( int (__cdecl *pfnCompare)(const T *, const T *) );
+	void Sort( int ( __cdecl* pfnCompare )( const T*, const T* ) );
 
 protected:
 	T m_Memory[ MAX_SIZE ];
@@ -118,11 +118,11 @@ inline CUtlArray<T, MAX_SIZE>::~CUtlArray()
 }
 
 template< typename T, size_t MAX_SIZE >
-inline CUtlArray<T, MAX_SIZE>& CUtlArray<T, MAX_SIZE>::operator=( const CUtlArray<T, MAX_SIZE> &other )
+inline CUtlArray<T, MAX_SIZE>& CUtlArray<T, MAX_SIZE>::operator=( const CUtlArray<T, MAX_SIZE>& other )
 {
-	if ( this != &other )
+	if( this != &other )
 	{
-		for ( size_t n = 0; n < MAX_SIZE; ++n )
+		for( size_t n = 0; n < MAX_SIZE; ++n )
 		{
 			m_Memory[n] = other.m_Memory[n];
 		}
@@ -133,7 +133,7 @@ inline CUtlArray<T, MAX_SIZE>& CUtlArray<T, MAX_SIZE>::operator=( const CUtlArra
 template< typename T, size_t MAX_SIZE >
 inline CUtlArray<T, MAX_SIZE>::CUtlArray( CUtlArray const& vec )
 {
-	for ( size_t n = 0; n < MAX_SIZE; ++n )
+	for( size_t n = 0; n < MAX_SIZE; ++n )
 	{
 		m_Memory[n] = vec.m_Memory[n];
 	}
@@ -141,38 +141,38 @@ inline CUtlArray<T, MAX_SIZE>::CUtlArray( CUtlArray const& vec )
 
 template< typename T, size_t MAX_SIZE >
 typename CUtlArray<T, MAX_SIZE>::iterator CUtlArray<T, MAX_SIZE>::begin()
-{ 
-	return Base(); 
+{
+	return Base();
 }
 
 template< typename T, size_t MAX_SIZE >
 typename CUtlArray<T, MAX_SIZE>::const_iterator CUtlArray<T, MAX_SIZE>::begin() const
-{ 
-	return Base(); 
+{
+	return Base();
 }
 
 template< typename T, size_t MAX_SIZE >
 typename CUtlArray<T, MAX_SIZE>::iterator CUtlArray<T, MAX_SIZE>::end()
-{ 
-	return Base() + Count(); 
+{
+	return Base() + Count();
 }
 
 template< typename T, size_t MAX_SIZE >
 typename CUtlArray<T, MAX_SIZE>::const_iterator CUtlArray<T, MAX_SIZE>::end() const
-{ 
-	return Base() + Count(); 
+{
+	return Base() + Count();
 }
 
 template< typename T, size_t MAX_SIZE >
-inline T *CUtlArray<T, MAX_SIZE>::Base()								
-{ 
-	return &m_Memory[0]; 
+inline T* CUtlArray<T, MAX_SIZE>::Base()
+{
+	return &m_Memory[0];
 }
 
 template< typename T, size_t MAX_SIZE >
-inline const T *CUtlArray<T, MAX_SIZE>::Base() const					
-{ 
-	return &m_Memory[0]; 
+inline const T* CUtlArray<T, MAX_SIZE>::Base() const
+{
+	return &m_Memory[0];
 }
 
 //-----------------------------------------------------------------------------
@@ -227,7 +227,7 @@ inline const T& CUtlArray<T, MAX_SIZE>::Random() const
 template< typename T, size_t MAX_SIZE >
 inline int CUtlArray<T, MAX_SIZE>::Count() const
 {
-	return (int)MAX_SIZE;
+	return ( int )MAX_SIZE;
 }
 
 
@@ -235,7 +235,7 @@ inline int CUtlArray<T, MAX_SIZE>::Count() const
 template< typename T, size_t MAX_SIZE >
 inline int CUtlArray<T, MAX_SIZE>::NumAllocated() const
 {
-	return (int)MAX_SIZE;
+	return ( int )MAX_SIZE;
 }
 
 //-----------------------------------------------------------------------------
@@ -244,9 +244,9 @@ inline int CUtlArray<T, MAX_SIZE>::NumAllocated() const
 template< typename T, size_t MAX_SIZE >
 inline bool CUtlArray<T, MAX_SIZE>::IsValidIndex( int i ) const
 {
-	return (i >= 0) && (i < MAX_SIZE);
+	return ( i >= 0 ) && ( i < MAX_SIZE );
 }
- 
+
 
 //-----------------------------------------------------------------------------
 // Returns in invalid index
@@ -262,30 +262,32 @@ inline int CUtlArray<T, MAX_SIZE>::InvalidIndex()
 // Sorts the vector
 //-----------------------------------------------------------------------------
 template< typename T, size_t MAX_SIZE >
-void CUtlArray<T, MAX_SIZE>::Sort( int (__cdecl *pfnCompare)(const T *, const T *) )
+void CUtlArray<T, MAX_SIZE>::Sort( int ( __cdecl* pfnCompare )( const T*, const T* ) )
 {
-	typedef int (__cdecl *QSortCompareFunc_t)(const void *, const void *);
-	if ( Count() <= 1 )
+	typedef int ( __cdecl * QSortCompareFunc_t )( const void*, const void* );
+	if( Count() <= 1 )
+	{
 		return;
+	}
 
-	qsort( Base(), Count(), sizeof(T), (QSortCompareFunc_t)(pfnCompare) );
+	qsort( Base(), Count(), sizeof( T ), ( QSortCompareFunc_t )( pfnCompare ) );
 }
 
 template< typename T, size_t MAX_SIZE >
-void CUtlArray<T, MAX_SIZE>::CopyArray( const T *pArray, size_t count )
+void CUtlArray<T, MAX_SIZE>::CopyArray( const T* pArray, size_t count )
 {
 	Assert( count < MAX_SIZE );
 
-	for ( size_t n = 0; n < count; ++n )
+	for( size_t n = 0; n < count; ++n )
 	{
 		m_Memory[n] = pArray[n];
 	}
 }
 
 template< typename T, size_t MAX_SIZE >
-void CUtlArray<T, MAX_SIZE>::Swap( CUtlArray< T, MAX_SIZE > &vec )
+void CUtlArray<T, MAX_SIZE>::Swap( CUtlArray< T, MAX_SIZE >& vec )
 {
-	for ( size_t n = 0; n < MAX_SIZE; ++n )
+	for( size_t n = 0; n < MAX_SIZE; ++n )
 	{
 		V_swap( m_Memory[n], vec.m_Memory[n] );
 	}
@@ -297,10 +299,12 @@ void CUtlArray<T, MAX_SIZE>::Swap( CUtlArray< T, MAX_SIZE > &vec )
 template< typename T, size_t MAX_SIZE >
 int CUtlArray<T, MAX_SIZE>::Find( const T& src ) const
 {
-	for ( int i = 0; i < Count(); ++i )
+	for( int i = 0; i < Count(); ++i )
 	{
-		if (Element(i) == src)
+		if( Element( i ) == src )
+		{
 			return i;
+		}
 	}
 	return -1;
 }
@@ -308,24 +312,24 @@ int CUtlArray<T, MAX_SIZE>::Find( const T& src ) const
 template< typename T, size_t MAX_SIZE >
 void CUtlArray<T, MAX_SIZE>::FillWithValue( const T& src )
 {
-	for ( int i = 0; i < Count(); i++ )
+	for( int i = 0; i < Count(); i++ )
 	{
-		Element(i) = src;
+		Element( i ) = src;
 	}
 }
 
 template< typename T, size_t MAX_SIZE >
 bool CUtlArray<T, MAX_SIZE>::HasElement( const T& src ) const
 {
-	return ( Find(src) >= 0 );
+	return ( Find( src ) >= 0 );
 }
 
 template< typename T, size_t MAX_SIZE >
 inline void CUtlArray<T, MAX_SIZE>::DeleteElements()
 {
-	for( int i=0; i < MAX_SIZE; i++ )
+	for( int i = 0; i < MAX_SIZE; i++ )
 	{
-		delete Element(i);
+		delete Element( i );
 	}
 }
 

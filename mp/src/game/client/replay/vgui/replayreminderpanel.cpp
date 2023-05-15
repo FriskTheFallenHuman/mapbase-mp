@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -29,9 +29,9 @@ DECLARE_HUDELEMENT( CReplayReminderPanel );
 
 //-----------------------------------------------------------------------------
 
-CReplayReminderPanel::CReplayReminderPanel( const char *pElementName )
-:	EditablePanel( g_pClientMode->GetViewport(), "ReplayReminder" ),
-	CHudElement( pElementName )
+CReplayReminderPanel::CReplayReminderPanel( const char* pElementName )
+	:	EditablePanel( g_pClientMode->GetViewport(), "ReplayReminder" ),
+	  CHudElement( pElementName )
 {
 	SetScheme( "ClientScheme" );
 
@@ -40,36 +40,36 @@ CReplayReminderPanel::CReplayReminderPanel( const char *pElementName )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::SetupText()
 {
 	// Get current key binding, if any.
-	const char *pBoundKey = engine->Key_LookupBinding( "save_replay" );
-	if ( !pBoundKey || FStrEq( pBoundKey, "(null)" ) )
+	const char* pBoundKey = engine->Key_LookupBinding( "save_replay" );
+	if( !pBoundKey || FStrEq( pBoundKey, "(null)" ) )
 	{
 		pBoundKey = " ";
 	}
 
 	char szKey[16];
-	Q_snprintf( szKey, sizeof(szKey), "%s", pBoundKey );
+	Q_snprintf( szKey, sizeof( szKey ), "%s", pBoundKey );
 
 	wchar_t wKey[16];
 	wchar_t wLabel[256];
 
 	g_pVGuiLocalize->ConvertANSIToUnicode( szKey, wKey, sizeof( wKey ) );
-	g_pVGuiLocalize->ConstructString( wLabel, sizeof( wLabel ), g_pVGuiLocalize->Find("#Replay_freezecam_replay" ), 1, wKey );
+	g_pVGuiLocalize->ConstructString( wLabel, sizeof( wLabel ), g_pVGuiLocalize->Find( "#Replay_freezecam_replay" ), 1, wKey );
 
 	// Set the text
 	SetDialogVariable( "text", wLabel );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CReplayReminderPanel::ApplySchemeSettings( IScheme *pScheme )
+void CReplayReminderPanel::ApplySchemeSettings( IScheme* pScheme )
 {
-	LoadControlSettings("Resource/UI/ReplayReminder.res", "GAME");
+	LoadControlSettings( "Resource/UI/ReplayReminder.res", "GAME" );
 
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -77,7 +77,7 @@ void CReplayReminderPanel::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::Show()
 {
@@ -87,7 +87,7 @@ void CReplayReminderPanel::Show()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::Hide()
 {
@@ -96,13 +96,13 @@ void CReplayReminderPanel::Hide()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CReplayReminderPanel::HudElementKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding )
+int CReplayReminderPanel::HudElementKeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding )
 {
-	if ( ShouldDraw() && pszCurrentBinding )
+	if( ShouldDraw() && pszCurrentBinding )
 	{
-		if ( FStrEq (pszCurrentBinding, "save_replay" ) )
+		if( FStrEq( pszCurrentBinding, "save_replay" ) )
 		{
 			SetVisible( false );
 		}
@@ -112,23 +112,25 @@ int CReplayReminderPanel::HudElementKeyInput( int down, ButtonCode_t keynum, con
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::OnThink()
 {
 	BaseClass::OnThink();
 
-	if ( !IsVisible() )
+	if( !IsVisible() )
+	{
 		return;
-	
+	}
+
 	// If we're displaying the element for some specific duration...
-	if ( m_flShowTime )
+	if( m_flShowTime )
 	{
 		// Get maximum duration
 		ConVarRef replay_postwinreminderduration( "replay_postwinreminderduration" );
 		float flShowLength = replay_postwinreminderduration.IsValid() ? replay_postwinreminderduration.GetFloat() : 5.0f;
 
-		if ( gpGlobals->curtime >= m_flShowTime + flShowLength )
+		if( gpGlobals->curtime >= m_flShowTime + flShowLength )
 		{
 			m_flShowTime = 0;
 			SetVisible( false );
@@ -137,11 +139,11 @@ void CReplayReminderPanel::OnThink()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CReplayReminderPanel::SetVisible( bool bState )
 {
-	if ( bState )
+	if( bState )
 	{
 		SetupText();
 	}
@@ -153,7 +155,7 @@ void CReplayReminderPanel::SetVisible( bool bState )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CReplayReminderPanel::ShouldDraw()
 {

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #pragma once
@@ -17,26 +17,41 @@ public:
 	DECLARE_CLASS( CAI_LookTarget, CPointEntity );
 	DECLARE_DATADESC();
 
-	CAI_LookTarget() { m_flTimeNextAvailable = -1; }
+	CAI_LookTarget()
+	{
+		m_flTimeNextAvailable = -1;
+	}
 
 	// Debugging
-	int DrawDebugTextOverlays(void);
+	int DrawDebugTextOverlays( void );
 
 	// Accessors & Availability
-	bool IsEligible( CBaseEntity *pLooker );
-	bool IsEnabled() { return !m_bDisabled; }
-	bool IsAvailable() { return (gpGlobals->curtime > m_flTimeNextAvailable); }
+	bool IsEligible( CBaseEntity* pLooker );
+	bool IsEnabled()
+	{
+		return !m_bDisabled;
+	}
+	bool IsAvailable()
+	{
+		return ( gpGlobals->curtime > m_flTimeNextAvailable );
+	}
 	void Reserve( float flDuration );
 
 	// Searching
-	static CAI_LookTarget *GetFirstLookTarget();
-	static CAI_LookTarget *GetNextLookTarget( CAI_LookTarget *pCurrentTarget );
+	static CAI_LookTarget* GetFirstLookTarget();
+	static CAI_LookTarget* GetNextLookTarget( CAI_LookTarget* pCurrentTarget );
 
 	int		m_iContext;
 	int		m_iPriority;
 
-	void	Enable()	{ m_bDisabled = false; }
-	void	Disable()	{ m_bDisabled = true; }
+	void	Enable()
+	{
+		m_bDisabled = false;
+	}
+	void	Disable()
+	{
+		m_bDisabled = true;
+	}
 
 private:
 	bool	m_bDisabled;

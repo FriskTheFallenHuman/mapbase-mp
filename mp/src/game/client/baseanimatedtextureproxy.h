@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -21,10 +21,13 @@ public:
 	CBaseAnimatedTextureProxy();
 	virtual ~CBaseAnimatedTextureProxy();
 
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pC_BaseEntity );
-	virtual void Release( void ) { delete this; }
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pC_BaseEntity );
+	virtual void Release( void )
+	{
+		delete this;
+	}
+	virtual IMaterial* GetMaterial();
 
 protected:
 	// derived classes must implement this; it returns the time
@@ -37,9 +40,9 @@ protected:
 
 protected:
 	void Cleanup();
-	
-	IMaterialVar *m_AnimatedTextureVar;
-	IMaterialVar *m_AnimatedTextureFrameNumVar;
+
+	IMaterialVar* m_AnimatedTextureVar;
+	IMaterialVar* m_AnimatedTextureFrameNumVar;
 	float m_FrameRate;
 	bool m_WrapAnimation;
 };

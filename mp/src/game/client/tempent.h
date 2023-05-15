@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -8,7 +8,7 @@
 #if !defined( TEMPENT_H )
 #define TEMPENT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
@@ -54,7 +54,7 @@
 
 class C_LocalTempEntity;
 
-typedef int (*pfnDrawHelper)( C_LocalTempEntity *entity, int flags );
+typedef int ( *pfnDrawHelper )( C_LocalTempEntity* entity, int flags );
 
 //-----------------------------------------------------------------------------
 // Purpose: Should this derive from some other class
@@ -66,7 +66,7 @@ public:
 
 	C_LocalTempEntity();
 
-	virtual void					Prepare( const model_t *pmodel, float time );
+	virtual void					Prepare( const model_t* pmodel, float time );
 
 	virtual bool					IsActive( void );
 	virtual bool					Frame( float frametime, int framenumber );
@@ -75,19 +75,34 @@ public:
 	virtual int						DrawModel( int flags );
 
 	// Sets the velocity
-	void SetVelocity( const Vector &vecVelocity );
-	const Vector &GetVelocity() const { return m_vecTempEntVelocity; }
+	void SetVelocity( const Vector& vecVelocity );
+	const Vector& GetVelocity() const
+	{
+		return m_vecTempEntVelocity;
+	}
 
 	// Set the acceleration
-	void SetAcceleration( const Vector &vecAccel );
-	const Vector &GetAcceleration() const { return m_vecTempEntAcceleration; }
+	void SetAcceleration( const Vector& vecAccel );
+	const Vector& GetAcceleration() const
+	{
+		return m_vecTempEntAcceleration;
+	}
 
-	void							SetDrawHelper( pfnDrawHelper helper ) { m_pfnDrawHelper = helper; }
+	void							SetDrawHelper( pfnDrawHelper helper )
+	{
+		m_pfnDrawHelper = helper;
+	}
 	void							OnRemoveTempEntity();
 
-	void							SetImpactEffect( const char *pszImpactEffect ) { m_pszImpactEffect = pszImpactEffect; }
-	CNewParticleEffect*				AddParticleEffect( const char *pszParticleEffect );
-	void							SetParticleEffect( const char *pszParticleEffect ) { m_pszParticleEffect = pszParticleEffect; }
+	void							SetImpactEffect( const char* pszImpactEffect )
+	{
+		m_pszImpactEffect = pszImpactEffect;
+	}
+	CNewParticleEffect*				AddParticleEffect( const char* pszParticleEffect );
+	void							SetParticleEffect( const char* pszParticleEffect )
+	{
+		m_pszParticleEffect = pszParticleEffect;
+	}
 
 protected:
 
@@ -105,11 +120,11 @@ public:
 	int								priority;
 	// if attached, this is the index of the client to stick to
 	// if COLLIDEALL, this is the index of the client to ignore
-	// TENTS with FTENT_PLYRATTACHMENT MUST set the clientindex! 
-	short							clientIndex;	
+	// TENTS with FTENT_PLYRATTACHMENT MUST set the clientindex!
+	short							clientIndex;
 
 	// if attached, client origin + tentOffset = tent origin.
-	Vector							tentOffset;		
+	Vector							tentOffset;
 
 	// Used by temp entities.
 	QAngle							m_vecTempEntAngVelocity;
@@ -119,21 +134,21 @@ public:
 	float							m_flSpriteScale;
 	int								m_nFlickerFrame;
 
-	// 
+	//
 	float							m_flFrameRate;
 	float							m_flFrame;
 
 	RenderGroup_t					m_RenderGroup;
 
-	const char						*m_pszImpactEffect;
-	const char						*m_pszParticleEffect;
+	const char*						m_pszImpactEffect;
+	const char*						m_pszParticleEffect;
 	bool							m_bParticleCollision;
 
 	int								m_iLastCollisionFrame;
 	Vector							m_vLastCollisionOrigin;
 
 private:
-	C_LocalTempEntity( const C_LocalTempEntity & );
+	C_LocalTempEntity( const C_LocalTempEntity& );
 
 	Vector							m_vecTempEntVelocity;
 	Vector							m_vecPrevLocalOrigin;

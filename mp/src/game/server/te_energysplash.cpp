@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -21,14 +21,14 @@
 //-----------------------------------------------------------------------------
 class CTEEnergySplash : public CBaseTempEntity
 {
-DECLARE_CLASS( CTEEnergySplash, CBaseTempEntity );
+	DECLARE_CLASS( CTEEnergySplash, CBaseTempEntity );
 
 public:
-					CTEEnergySplash( const char *name );
+	CTEEnergySplash( const char* name );
 	virtual			~CTEEnergySplash( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -38,10 +38,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEEnergySplash::CTEEnergySplash( const char *name ) :
+CTEEnergySplash::CTEEnergySplash( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecPos.Init();
@@ -50,24 +50,24 @@ CTEEnergySplash::CTEEnergySplash( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEEnergySplash::~CTEEnergySplash( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEEnergySplash::Test( const Vector& current_origin, const QAngle& current_angles )
 {
 	// Fill in data
 	m_vecPos = current_origin;
-	
+
 	AngleVectors( current_angles, &m_vecDir.GetForModify() );
-	
+
 	Vector forward;
 
 	m_vecPos.GetForModify()[2] += 24;
@@ -82,26 +82,26 @@ void CTEEnergySplash::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEEnergySplash, DT_TEEnergySplash)
-	SendPropVector( SENDINFO(m_vecPos), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDir), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_bExplosive), 1, SPROP_UNSIGNED),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEEnergySplash, DT_TEEnergySplash )
+SendPropVector( SENDINFO( m_vecPos ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecDir ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( m_bExplosive ), 1, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 // Singleton to fire TEEnergySplash objects
-static CTEEnergySplash g_TEEnergySplash( "Energy Splash" );
+				static CTEEnergySplash g_TEEnergySplash( "Energy Splash" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			scale - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			scale -
 //-----------------------------------------------------------------------------
 void TE_EnergySplash( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* dir, bool bExplosive )
+					  const Vector* pos, const Vector* dir, bool bExplosive )
 {
 	g_TEEnergySplash.m_vecPos = *pos;
 	g_TEEnergySplash.m_vecDir = *dir;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -57,7 +57,7 @@ ConVar sk_apc_health( "sk_apc_health", "750" );
 
 
 #define APC_MAX_CHUNKS	3
-static const char *s_pChunkModelName[APC_MAX_CHUNKS] = 
+static const char* s_pChunkModelName[APC_MAX_CHUNKS] =
 {
 	"models/gibs/helicopter_brokenpiece_01.mdl",
 	"models/gibs/helicopter_brokenpiece_02.mdl",
@@ -65,7 +65,7 @@ static const char *s_pChunkModelName[APC_MAX_CHUNKS] =
 };
 
 #define APC_MAX_GIBS	6
-static const char *s_pGibModelName[APC_MAX_GIBS] = 
+static const char* s_pGibModelName[APC_MAX_GIBS] =
 {
 	"models/combine_apc_destroyed_gib01.mdl",
 	"models/combine_apc_destroyed_gib02.mdl",
@@ -81,50 +81,50 @@ LINK_ENTITY_TO_CLASS( prop_vehicle_apc, CPropAPC );
 
 BEGIN_DATADESC( CPropAPC )
 
-	DEFINE_FIELD( m_flDangerSoundTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_flHandbrakeTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_bInitialHandbrake,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_nSmokeTrailCount,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flMachineGunTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_iMachineGunBurstLeft,	FIELD_INTEGER ),
+DEFINE_FIELD( m_flDangerSoundTime,	FIELD_TIME ),
+			   DEFINE_FIELD( m_flHandbrakeTime,	FIELD_TIME ),
+			   DEFINE_FIELD( m_bInitialHandbrake,	FIELD_BOOLEAN ),
+			   DEFINE_FIELD( m_nSmokeTrailCount,	FIELD_INTEGER ),
+			   DEFINE_FIELD( m_flMachineGunTime,		FIELD_TIME ),
+			   DEFINE_FIELD( m_iMachineGunBurstLeft,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nMachineGunMuzzleAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nMachineGunBaseAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_vecBarrelPos,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_bInFiringCone,		FIELD_BOOLEAN ),
+			   DEFINE_FIELD( m_bInFiringCone,		FIELD_BOOLEAN ),
 //	DEFINE_FIELD( m_hLaserDot,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hRocketTarget,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iRocketSalvoLeft,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flRocketTime,		FIELD_TIME ),
+			   DEFINE_FIELD( m_hRocketTarget,			FIELD_EHANDLE ),
+			   DEFINE_FIELD( m_iRocketSalvoLeft,	FIELD_INTEGER ),
+			   DEFINE_FIELD( m_flRocketTime,		FIELD_TIME ),
 //	DEFINE_FIELD( m_nRocketAttachment,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_nRocketSide,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_hSpecificRocketTarget, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_strMissileHint,	FIELD_STRING, "missilehint" ),
+			   DEFINE_FIELD( m_nRocketSide,		FIELD_INTEGER ),
+			   DEFINE_FIELD( m_hSpecificRocketTarget, FIELD_EHANDLE ),
+			   DEFINE_KEYFIELD( m_strMissileHint,	FIELD_STRING, "missilehint" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Destroy", InputDestroy ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "FireMissileAt", InputFireMissileAt ),
+			   DEFINE_INPUTFUNC( FIELD_VOID, "Destroy", InputDestroy ),
+			   DEFINE_INPUTFUNC( FIELD_STRING, "FireMissileAt", InputFireMissileAt ),
 
-	DEFINE_OUTPUT( m_OnDeath,				"OnDeath" ),
-	DEFINE_OUTPUT( m_OnFiredMissile,		"OnFiredMissile" ),
-	DEFINE_OUTPUT( m_OnDamaged,				"OnDamaged" ),
-	DEFINE_OUTPUT( m_OnDamagedByPlayer,		"OnDamagedByPlayer" ),
+			   DEFINE_OUTPUT( m_OnDeath,				"OnDeath" ),
+			   DEFINE_OUTPUT( m_OnFiredMissile,		"OnFiredMissile" ),
+			   DEFINE_OUTPUT( m_OnDamaged,				"OnDamaged" ),
+			   DEFINE_OUTPUT( m_OnDamagedByPlayer,		"OnDamagedByPlayer" ),
 
-END_DATADESC()
+			   END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropAPC::Precache( void )
+			   void CPropAPC::Precache( void )
 {
 	BaseClass::Precache();
 
 	int i;
-	for ( i = 0; i < APC_MAX_CHUNKS; ++i )
+	for( i = 0; i < APC_MAX_CHUNKS; ++i )
 	{
 		PrecacheModel( s_pChunkModelName[i] );
 	}
 
-	for ( i = 0; i < APC_MAX_GIBS; ++i )
+	for( i = 0; i < APC_MAX_GIBS; ++i )
 	{
 		PrecacheModel( s_pGibModelName[i] );
 	}
@@ -171,7 +171,7 @@ void CPropAPC::Spawn( void )
 void CPropAPC::CreateAPCLaserDot( void )
 {
 	// Create a laser if we don't have one
-	if ( m_hLaserDot == NULL )
+	if( m_hLaserDot == NULL )
 	{
 		m_hLaserDot = CreateLaserDot( GetAbsOrigin(), this, false );
 	}
@@ -179,7 +179,7 @@ void CPropAPC::CreateAPCLaserDot( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CPropAPC::ShouldAttractAutoAim( CBaseEntity *pAimingEnt )
+bool CPropAPC::ShouldAttractAutoAim( CBaseEntity* pAimingEnt )
 {
 	if( g_pGameRules->GetAutoAimMode() == AUTOAIM_ON_CONSOLE && pAimingEnt->IsPlayer() && GetDriver() )
 	{
@@ -190,7 +190,7 @@ bool CPropAPC::ShouldAttractAutoAim( CBaseEntity *pAimingEnt )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::Activate()
 {
@@ -212,11 +212,11 @@ void CPropAPC::Activate()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::UpdateOnRemove( void )
 {
-	if ( m_hLaserDot )
+	if( m_hLaserDot )
 	{
 		UTIL_Remove( m_hLaserDot );
 		m_hLaserDot = NULL;
@@ -226,7 +226,7 @@ void CPropAPC::UpdateOnRemove( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::CreateServerVehicle( void )
 {
@@ -237,29 +237,31 @@ void CPropAPC::CreateServerVehicle( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pMoveData - 
+// Purpose:
+// Input  : *pMoveData -
 //-----------------------------------------------------------------------------
-Class_T	CPropAPC::ClassifyPassenger( CBaseCombatCharacter *pPassenger, Class_T defaultClassification )
-{ 
-	return CLASS_COMBINE;	
+Class_T	CPropAPC::ClassifyPassenger( CBaseCombatCharacter* pPassenger, Class_T defaultClassification )
+{
+	return CLASS_COMBINE;
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Damage events as modified for the passenger of the APC, not the APC itself
 //-----------------------------------------------------------------------------
-float CPropAPC::PassengerDamageModifier( const CTakeDamageInfo &info ) 
-{ 
+float CPropAPC::PassengerDamageModifier( const CTakeDamageInfo& info )
+{
 	CTakeDamageInfo DmgInfo = info;
 
 	// bullets, slashing and headbutts don't hurt us in the apc, neither do rockets
-	if( (DmgInfo.GetDamageType() & DMG_BULLET) || (DmgInfo.GetDamageType() & DMG_SLASH) ||
-		(DmgInfo.GetDamageType() & DMG_CLUB) || (DmgInfo.GetDamageType() & DMG_BLAST) )
-		return (0);
+	if( ( DmgInfo.GetDamageType() & DMG_BULLET ) || ( DmgInfo.GetDamageType() & DMG_SLASH ) ||
+			( DmgInfo.GetDamageType() & DMG_CLUB ) || ( DmgInfo.GetDamageType() & DMG_BLAST ) )
+	{
+		return ( 0 );
+	}
 
 	// Accept everything else by default
-	return 1.0; 
+	return 1.0;
 }
 
 
@@ -275,7 +277,7 @@ Vector CPropAPC::EyePosition( )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-Vector CPropAPC::BodyTarget( const Vector &posSrc, bool bNoisy ) 
+Vector CPropAPC::BodyTarget( const Vector& posSrc, bool bNoisy )
 {
 	if( g_pGameRules->GetAutoAimMode() == AUTOAIM_ON_CONSOLE )
 	{
@@ -284,24 +286,28 @@ Vector CPropAPC::BodyTarget( const Vector &posSrc, bool bNoisy )
 
 	return BaseClass::BodyTarget( posSrc, bNoisy );
 }
-	
+
 //-----------------------------------------------------------------------------
 // Add a smoke trail since we've taken more damage
 //-----------------------------------------------------------------------------
-void CPropAPC::AddSmokeTrail( const Vector &vecPos )
+void CPropAPC::AddSmokeTrail( const Vector& vecPos )
 {
 	// Start this trail out with a bang!
-	ExplosionCreate( vecPos, vec3_angle, this, 1000, 500.0f, SF_ENVEXPLOSION_NODAMAGE | 
-		SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE | 
-		SF_ENVEXPLOSION_NOFIREBALLSMOKE, 0 );
+	ExplosionCreate( vecPos, vec3_angle, this, 1000, 500.0f, SF_ENVEXPLOSION_NODAMAGE |
+					 SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE |
+					 SF_ENVEXPLOSION_NOFIREBALLSMOKE, 0 );
 	UTIL_ScreenShake( vecPos, 25.0, 150.0, 1.0, 750.0f, SHAKE_START );
 
-	if ( m_nSmokeTrailCount == MAX_SMOKE_TRAILS )
+	if( m_nSmokeTrailCount == MAX_SMOKE_TRAILS )
+	{
 		return;
+	}
 
-	SmokeTrail *pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
+	SmokeTrail* pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
 	if( !pSmokeTrail )
+	{
 		return;
+	}
 
 	// See if there's an attachment for this smoke trail
 	char buf[32];
@@ -329,7 +335,7 @@ void CPropAPC::AddSmokeTrail( const Vector &vecPos )
 	QAngle angles;
 	VectorAngles( vecForward, angles );
 
-	if ( nAttachment == 0 )
+	if( nAttachment == 0 )
 	{
 		pSmokeTrail->SetAbsOrigin( vecPos );
 		pSmokeTrail->SetAbsAngles( angles );
@@ -347,15 +353,15 @@ void CPropAPC::AddSmokeTrail( const Vector &vecPos )
 //------------------------------------------------------------------------------
 // Pow!
 //------------------------------------------------------------------------------
-void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
+void CPropAPC::ExplodeAndThrowChunk( const Vector& vecExplosionPos )
 {
-	ExplosionCreate( vecExplosionPos, vec3_angle, this, 1000, 500.0f, 
-		SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS	|
-		SF_ENVEXPLOSION_NOSMOKE  | SF_ENVEXPLOSION_NOFIREBALLSMOKE, 0 );
+	ExplosionCreate( vecExplosionPos, vec3_angle, this, 1000, 500.0f,
+					 SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS	|
+					 SF_ENVEXPLOSION_NOSMOKE  | SF_ENVEXPLOSION_NOFIREBALLSMOKE, 0 );
 	UTIL_ScreenShake( vecExplosionPos, 25.0, 150.0, 1.0, 750.0f, SHAKE_START );
 
 	// Drop a flaming, smoking chunk.
-	CGib *pChunk = CREATE_ENTITY( CGib, "gib" );
+	CGib* pChunk = CREATE_ENTITY( CGib, "gib" );
 	pChunk->Spawn( "models/gibs/hgibs.mdl" );
 	pChunk->SetBloodColor( DONT_BLEED );
 
@@ -369,10 +375,10 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 	pChunk->SetOwnerEntity( this );
 	pChunk->m_lifeTime = random->RandomFloat( 6.0f, 8.0f );
 	pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-	IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
-	
+	IPhysicsObject* pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
+
 	// Set the velocity
-	if ( pPhysicsObject )
+	if( pPhysicsObject )
 	{
 		pPhysicsObject->EnableMotion( true );
 		Vector vecVelocity;
@@ -382,7 +388,7 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 		angles.y = random->RandomFloat( 0, 360 );
 		angles.z = 0.0f;
 		AngleVectors( angles, &vecVelocity );
-		
+
 		vecVelocity *= random->RandomFloat( 300, 900 );
 		vecVelocity += GetAbsVelocity();
 
@@ -390,11 +396,11 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 		angImpulse = RandomAngularImpulse( -180, 180 );
 
 		pChunk->SetAbsVelocity( vecVelocity );
-		pPhysicsObject->SetVelocity(&vecVelocity, &angImpulse );
+		pPhysicsObject->SetVelocity( &vecVelocity, &angImpulse );
 	}
 
-	CEntityFlame *pFlame = CEntityFlame::Create( pChunk, false );
-	if ( pFlame != NULL )
+	CEntityFlame* pFlame = CEntityFlame::Create( pChunk, false );
+	if( pFlame != NULL )
 	{
 		pFlame->SetLifetime( pChunk->m_lifeTime );
 	}
@@ -406,16 +412,16 @@ void CPropAPC::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
 //-----------------------------------------------------------------------------
 inline bool CPropAPC::ShouldTriggerDamageEffect( int nPrevHealth, int nEffectCount ) const
 {
-	int nPrevRange = (int)( ((float)nPrevHealth / (float)GetMaxHealth()) * nEffectCount );
-	int nRange = (int)( ((float)GetHealth() / (float)GetMaxHealth()) * nEffectCount );
+	int nPrevRange = ( int )( ( ( float )nPrevHealth / ( float )GetMaxHealth() ) * nEffectCount );
+	int nRange = ( int )( ( ( float )GetHealth() / ( float )GetMaxHealth() ) * nEffectCount );
 	return ( nRange != nPrevRange );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
+void CPropAPC::Event_Killed( const CTakeDamageInfo& info )
 {
 	m_OnDeath.FireOutput( info.GetAttacker(), this );
 
@@ -428,22 +434,22 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 
 	Vector vecAbsPoint;
 	CPASFilter filter( GetAbsOrigin() );
-	for (int i = 0; i < 5; i++)
+	for( int i = 0; i < 5; i++ )
 	{
 		CollisionProp()->RandomPointInBounds( vecNormalizedMins, vecNormalizedMaxs, &vecAbsPoint );
-		te->Explosion( filter, random->RandomFloat( 0.0, 1.0 ),	&vecAbsPoint, 
-			g_sModelIndexFireball, random->RandomInt( 4, 10 ), 
-			random->RandomInt( 8, 15 ), 
-			( i < 2 ) ? TE_EXPLFLAG_NODLIGHTS : TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOFIREBALLSMOKE | TE_EXPLFLAG_NODLIGHTS,
-			100, 0 );
+		te->Explosion( filter, random->RandomFloat( 0.0, 1.0 ),	&vecAbsPoint,
+					   g_sModelIndexFireball, random->RandomInt( 4, 10 ),
+					   random->RandomInt( 8, 15 ),
+					   ( i < 2 ) ? TE_EXPLFLAG_NODLIGHTS : TE_EXPLFLAG_NOPARTICLES | TE_EXPLFLAG_NOFIREBALLSMOKE | TE_EXPLFLAG_NODLIGHTS,
+					   100, 0 );
 	}
 
 	// TODO: make the gibs spawn in sync with the delayed explosions
 	int nGibs = random->RandomInt( 1, 4 );
-	for ( int i = 0; i < nGibs; i++)
+	for( int i = 0; i < nGibs; i++ )
 	{
 		// Throw a flaming, smoking chunk.
-		CGib *pChunk = CREATE_ENTITY( CGib, "gib" );
+		CGib* pChunk = CREATE_ENTITY( CGib, "gib" );
 		pChunk->Spawn( "models/gibs/hgibs.mdl" );
 		pChunk->SetBloodColor( DONT_BLEED );
 
@@ -457,10 +463,10 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 		pChunk->SetOwnerEntity( this );
 		pChunk->m_lifeTime = random->RandomFloat( 6.0f, 8.0f );
 		pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-		IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
-		
+		IPhysicsObject* pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
+
 		// Set the velocity
-		if ( pPhysicsObject )
+		if( pPhysicsObject )
 		{
 			pPhysicsObject->EnableMotion( true );
 			Vector vecVelocity;
@@ -470,7 +476,7 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 			angles.y = random->RandomFloat( 0, 360 );
 			angles.z = 0.0f;
 			AngleVectors( angles, &vecVelocity );
-			
+
 			vecVelocity *= random->RandomFloat( 300, 900 );
 			vecVelocity += GetAbsVelocity();
 
@@ -478,11 +484,11 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 			angImpulse = RandomAngularImpulse( -180, 180 );
 
 			pChunk->SetAbsVelocity( vecVelocity );
-			pPhysicsObject->SetVelocity(&vecVelocity, &angImpulse );
+			pPhysicsObject->SetVelocity( &vecVelocity, &angImpulse );
 		}
 
-		CEntityFlame *pFlame = CEntityFlame::Create( pChunk, false );
-		if ( pFlame != NULL )
+		CEntityFlame* pFlame = CEntityFlame::Create( pChunk, false );
+		if( pFlame != NULL )
 		{
 			pFlame->SetLifetime( pChunk->m_lifeTime );
 		}
@@ -512,7 +518,7 @@ void CPropAPC::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Blows it up!
 //-----------------------------------------------------------------------------
-void CPropAPC::InputDestroy( inputdata_t &inputdata )
+void CPropAPC::InputDestroy( inputdata_t& inputdata )
 {
 	CTakeDamageInfo info( this, this, m_iHealth, DMG_BLAST );
 	info.SetDamagePosition( WorldSpaceCenter() );
@@ -524,11 +530,11 @@ void CPropAPC::InputDestroy( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Aim the next rocket at a specific target
 //-----------------------------------------------------------------------------
-void CPropAPC::InputFireMissileAt( inputdata_t &inputdata )
+void CPropAPC::InputFireMissileAt( inputdata_t& inputdata )
 {
 	string_t strMissileTarget = MAKE_STRING( inputdata.value.String() );
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, strMissileTarget, NULL, inputdata.pActivator, inputdata.pCaller );
-	if ( pTarget == NULL )
+	CBaseEntity* pTarget = gEntList.FindEntityByName( NULL, strMissileTarget, NULL, inputdata.pActivator, inputdata.pCaller );
+	if( pTarget == NULL )
 	{
 		DevWarning( "%s: Could not find target '%s'!\n", GetClassname(), STRING( strMissileTarget ) );
 		return;
@@ -539,31 +545,33 @@ void CPropAPC::InputFireMissileAt( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CPropAPC::OnTakeDamage( const CTakeDamageInfo &info )
+int CPropAPC::OnTakeDamage( const CTakeDamageInfo& info )
 {
-	if ( m_iHealth == 0 )
+	if( m_iHealth == 0 )
+	{
 		return 0;
+	}
 
 	m_OnDamaged.FireOutput( info.GetAttacker(), this );
 
-	if ( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
+	if( info.GetAttacker() && info.GetAttacker()->IsPlayer() )
 	{
 		m_OnDamagedByPlayer.FireOutput( info.GetAttacker(), this );
 	}
 
 	CTakeDamageInfo dmgInfo = info;
-	if ( dmgInfo.GetDamageType() & (DMG_BLAST | DMG_AIRBOAT) )
+	if( dmgInfo.GetDamageType() & ( DMG_BLAST | DMG_AIRBOAT ) )
 	{
 		int nPrevHealth = GetHealth();
 
 		m_iHealth -= dmgInfo.GetDamage();
-		if ( m_iHealth <= 0 )
+		if( m_iHealth <= 0 )
 		{
 #ifdef MAPBASE_VSCRIPT
 			// False = Cheat death
-			if (ScriptDeathHook( const_cast<CTakeDamageInfo*>(&info) ) != false)
+			if( ScriptDeathHook( const_cast<CTakeDamageInfo*>( &info ) ) != false )
 #endif
 			{
 				m_iHealth = 0;
@@ -576,14 +584,14 @@ int CPropAPC::OnTakeDamage( const CTakeDamageInfo &info )
 //		BaseClass::OnTakeDamage( dmgInfo );
 
 		// Spawn damage effects
-		if ( nPrevHealth != GetHealth() )
+		if( nPrevHealth != GetHealth() )
 		{
-			if ( ShouldTriggerDamageEffect( nPrevHealth, MAX_SMOKE_TRAILS ) )
+			if( ShouldTriggerDamageEffect( nPrevHealth, MAX_SMOKE_TRAILS ) )
 			{
 				AddSmokeTrail( dmgInfo.GetDamagePosition() );
 			}
 
-			if ( ShouldTriggerDamageEffect( nPrevHealth, MAX_EXPLOSIONS ) )
+			if( ShouldTriggerDamageEffect( nPrevHealth, MAX_EXPLOSIONS ) )
 			{
 				ExplodeAndThrowChunk( dmgInfo.GetDamagePosition() );
 			}
@@ -594,15 +602,17 @@ int CPropAPC::OnTakeDamage( const CTakeDamageInfo &info )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pMoveData - 
+// Purpose:
+// Input  : *pMoveData -
 //-----------------------------------------------------------------------------
-void CPropAPC::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
+void CPropAPC::ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData )
 {
 	BaseClass::ProcessMovement( pPlayer, pMoveData );
 
-	if ( m_flDangerSoundTime > gpGlobals->curtime )
+	if( m_flDangerSoundTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	QAngle vehicleAngles = GetLocalAngles();
 	Vector vecStart = GetAbsOrigin();
@@ -618,7 +628,7 @@ void CPropAPC::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
 	vecSpot = vecStart + vecDir * 600;
 	CSoundEnt::InsertSound( SOUND_DANGER, vecSpot, 400, 0.1, this );
 
-	// put sounds a bit to left and right but slightly closer to APC to make a "cone" of sound 
+	// put sounds a bit to left and right but slightly closer to APC to make a "cone" of sound
 	// in front of it
 	QAngle leftAngles = vehicleAngles;
 	leftAngles[YAW] += 20;
@@ -632,14 +642,14 @@ void CPropAPC::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
 	VehicleAngleVectors( rightAngles, &vecRightDir, NULL, NULL );
 	vecSpot = vecStart + vecRightDir * 400;
 	UTIL_TraceLine( vecStart, vecSpot, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-	CSoundEnt::InsertSound( SOUND_DANGER, vecSpot, 400, 0.1, this);
+	CSoundEnt::InsertSound( SOUND_DANGER, vecSpot, 400, 0.1, this );
 
 	m_flDangerSoundTime = gpGlobals->curtime + 0.3;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::Think( void )
 {
@@ -647,7 +657,7 @@ void CPropAPC::Think( void )
 
 	SetNextThink( gpGlobals->curtime );
 
-	if ( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
+	if( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
 	{
 		m_bInitialHandbrake = true;
 		m_VehiclePhysics.SetHandbrake( true );
@@ -656,10 +666,10 @@ void CPropAPC::Think( void )
 
 	StudioFrameAdvance();
 
-	if ( IsSequenceFinished() )
+	if( IsSequenceFinished() )
 	{
 		int iSequence = SelectWeightedSequence( ACT_IDLE );
-		if ( iSequence > ACTIVITY_NOT_AVAILABLE )
+		if( iSequence > ACTIVITY_NOT_AVAILABLE )
 		{
 			SetCycle( 0 );
 			m_flAnimTime = gpGlobals->curtime;
@@ -668,7 +678,7 @@ void CPropAPC::Think( void )
 		}
 	}
 
-	if (m_debugOverlays & OVERLAY_NPC_KILL_BIT)
+	if( m_debugOverlays & OVERLAY_NPC_KILL_BIT )
 	{
 		CTakeDamageInfo info( this, this, m_iHealth, DMG_BLAST );
 		info.SetDamagePosition( WorldSpaceCenter() );
@@ -679,16 +689,16 @@ void CPropAPC::Think( void )
 
 
 //-----------------------------------------------------------------------------
-// Aims the secondary weapon at a target 
+// Aims the secondary weapon at a target
 //-----------------------------------------------------------------------------
-void CPropAPC::AimSecondaryWeaponAt( CBaseEntity *pTarget )
+void CPropAPC::AimSecondaryWeaponAt( CBaseEntity* pTarget )
 {
 	m_hRocketTarget = pTarget;
 
 	// Update the rocket target
 	CreateAPCLaserDot();
 
-	if ( m_hRocketTarget )
+	if( m_hRocketTarget )
 	{
 		m_hLaserDot->SetAbsOrigin( m_hRocketTarget->BodyTarget( WorldSpaceCenter(), false ) );
 	}
@@ -696,83 +706,83 @@ void CPropAPC::AimSecondaryWeaponAt( CBaseEntity *pTarget )
 	EnableLaserDot( m_hLaserDot, m_hRocketTarget != NULL );
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropAPC::DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased )
+void CPropAPC::DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButtonsDown, int iButtonsReleased )
 {
 	switch( m_lifeState )
 	{
-	case LIFE_ALIVE:
+		case LIFE_ALIVE:
 		{
 			int iButtons = ucmd->buttons;
-			if ( iButtons & IN_ATTACK )
+			if( iButtons & IN_ATTACK )
 			{
 				FireMachineGun();
 			}
-			else if ( iButtons & IN_ATTACK2 )
+			else if( iButtons & IN_ATTACK2 )
 			{
 				FireRocket();
 			}
 		}
 		break;
 
-	case LIFE_DYING:
-		FireDying( );
-		break;
+		case LIFE_DYING:
+			FireDying( );
+			break;
 
-	case LIFE_DEAD:
-		return;
+		case LIFE_DEAD:
+			return;
 	}
 
 	BaseClass::DriveVehicle( flFrameTime, ucmd, iButtonsDown, iButtonsReleased );
 }
 
-void CPropAPC::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPropAPC::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	BaseClass::Use( pActivator, pCaller, useType, value );
 
-	if ( pActivator->IsPlayer() )
+	if( pActivator->IsPlayer() )
 	{
-		 EmitSound ( "combine.door_lock" );
+		EmitSound( "combine.door_lock" );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Primary gun 
+// Primary gun
 //-----------------------------------------------------------------------------
-void CPropAPC::AimPrimaryWeapon( const Vector &vecWorldTarget ) 
+void CPropAPC::AimPrimaryWeapon( const Vector& vecWorldTarget )
 {
 	EntityMatrix parentMatrix;
 	parentMatrix.InitFromEntity( this, m_nMachineGunBaseAttachment );
-	Vector target = parentMatrix.WorldToLocal( vecWorldTarget ); 
+	Vector target = parentMatrix.WorldToLocal( vecWorldTarget );
 
 	float quadTarget = target.LengthSqr();
-	float quadTargetXY = target.x*target.x + target.y*target.y;
+	float quadTargetXY = target.x * target.x + target.y * target.y;
 
 	// Target is too close!  Can't aim at it
-	if ( quadTarget > m_vecBarrelPos.LengthSqr() )
+	if( quadTarget > m_vecBarrelPos.LengthSqr() )
 	{
 		// We're trying to aim the offset barrel at an arbitrary point.
-		// To calculate this, I think of the target as being on a sphere with 
+		// To calculate this, I think of the target as being on a sphere with
 		// it's center at the origin of the gun.
-		// The rotation we need is the opposite of the rotation that moves the target 
+		// The rotation we need is the opposite of the rotation that moves the target
 		// along the surface of that sphere to intersect with the gun's shooting direction
-		// To calculate that rotation, we simply calculate the intersection of the ray 
+		// To calculate that rotation, we simply calculate the intersection of the ray
 		// coming out of the barrel with the target sphere (that's the new target position)
 		// and use atan2() to get angles
 
 		// angles from target pos to center
 		float targetToCenterYaw = atan2( target.y, target.x );
-		float centerToGunYaw = atan2( m_vecBarrelPos.y, sqrt( quadTarget - (m_vecBarrelPos.y*m_vecBarrelPos.y) ) );
+		float centerToGunYaw = atan2( m_vecBarrelPos.y, sqrt( quadTarget - ( m_vecBarrelPos.y * m_vecBarrelPos.y ) ) );
 
 		float targetToCenterPitch = atan2( target.z, sqrt( quadTargetXY ) );
-		float centerToGunPitch = atan2( -m_vecBarrelPos.z, sqrt( quadTarget - (m_vecBarrelPos.z*m_vecBarrelPos.z) ) );
+		float centerToGunPitch = atan2( -m_vecBarrelPos.z, sqrt( quadTarget - ( m_vecBarrelPos.z * m_vecBarrelPos.z ) ) );
 
 		QAngle angles;
-		angles.Init( -RAD2DEG(targetToCenterPitch+centerToGunPitch), RAD2DEG( targetToCenterYaw + centerToGunYaw ), 0 );
+		angles.Init( -RAD2DEG( targetToCenterPitch + centerToGunPitch ), RAD2DEG( targetToCenterYaw + centerToGunYaw ), 0 );
 
 		SetPoseParameter( "vehicle_weapon_yaw", angles.y );
 		SetPoseParameter( "vehicle_weapon_pitch", angles.x );
@@ -780,7 +790,7 @@ void CPropAPC::AimPrimaryWeapon( const Vector &vecWorldTarget )
 
 		float curPitch = GetPoseParameter( "vehicle_weapon_pitch" );
 		float curYaw = GetPoseParameter( "vehicle_weapon_yaw" );
-		m_bInFiringCone = (fabs(curPitch - angles.x) < 1e-3) && (fabs(curYaw - angles.y) < 1e-3);
+		m_bInFiringCone = ( fabs( curPitch - angles.x ) < 1e-3 ) && ( fabs( curYaw - angles.y ) < 1e-3 );
 	}
 	else
 	{
@@ -790,25 +800,25 @@ void CPropAPC::AimPrimaryWeapon( const Vector &vecWorldTarget )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CPropAPC::GetTracerType( void ) 
+const char* CPropAPC::GetTracerType( void )
 {
-	return "HelicopterTracer"; 
+	return "HelicopterTracer";
 }
 
 
 //-----------------------------------------------------------------------------
 // Allows the shooter to change the impact effect of his bullets
 //-----------------------------------------------------------------------------
-void CPropAPC::DoImpactEffect( trace_t &tr, int nDamageType )
+void CPropAPC::DoImpactEffect( trace_t& tr, int nDamageType )
 {
 	UTIL_ImpactTrace( &tr, nDamageType, "HelicopterImpact" );
-} 
+}
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::DoMuzzleFlash( void )
 {
@@ -823,16 +833,18 @@ void CPropAPC::DoMuzzleFlash( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::FireMachineGun( void )
 {
-	if ( m_flMachineGunTime > gpGlobals->curtime )
+	if( m_flMachineGunTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// If we're still firing the salvo, fire quickly
 	m_iMachineGunBurstLeft--;
-	if ( m_iMachineGunBurstLeft > 0 )
+	if( m_iMachineGunBurstLeft > 0 )
 	{
 		m_flMachineGunTime = gpGlobals->curtime + MACHINE_GUN_BURST_TIME;
 	}
@@ -846,9 +858,9 @@ void CPropAPC::FireMachineGun( void )
 	Vector vecMachineGunShootPos;
 	Vector vecMachineGunDir;
 	GetAttachment( m_nMachineGunMuzzleAttachment, vecMachineGunShootPos, &vecMachineGunDir );
-	
+
 	// Fire the round
-	int	bulletType = GetAmmoDef()->Index("AR2");
+	int	bulletType = GetAmmoDef()->Index( "AR2" );
 	FireBullets( 1, vecMachineGunShootPos, vecMachineGunDir, VECTOR_CONE_8DEGREES, MAX_TRACE_LENGTH, bulletType, 1 );
 	DoMuzzleFlash();
 
@@ -857,24 +869,24 @@ void CPropAPC::FireMachineGun( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropAPC::GetRocketShootPosition( Vector *pPosition )
+void CPropAPC::GetRocketShootPosition( Vector* pPosition )
 {
 	GetAttachment( m_nRocketAttachment, *pPosition );
 }
 
 
 //-----------------------------------------------------------------------------
-// Create a corpse 
+// Create a corpse
 //-----------------------------------------------------------------------------
 void CPropAPC::CreateCorpse( )
 {
 	m_lifeState = LIFE_DEAD;
 
-	for ( int i = 0; i < APC_MAX_GIBS; ++i )
+	for( int i = 0; i < APC_MAX_GIBS; ++i )
 	{
-		CPhysicsProp *pGib = assert_cast<CPhysicsProp*>(CreateEntityByName( "prop_physics" ));
+		CPhysicsProp* pGib = assert_cast<CPhysicsProp*>( CreateEntityByName( "prop_physics" ) );
 		pGib->SetAbsOrigin( GetAbsOrigin() );
 		pGib->SetAbsAngles( GetAbsAngles() );
 		pGib->SetAbsVelocity( GetAbsVelocity() );
@@ -883,27 +895,27 @@ void CPropAPC::CreateCorpse( )
 		pGib->SetMoveType( MOVETYPE_VPHYSICS );
 
 		float flMass = pGib->GetMass();
-		if ( flMass < 200 )
+		if( flMass < 200 )
 		{
 			Vector vecVelocity;
 			pGib->GetMassCenter( &vecVelocity );
 			vecVelocity -= WorldSpaceCenter();
-			vecVelocity.z = fabs(vecVelocity.z);
+			vecVelocity.z = fabs( vecVelocity.z );
 			VectorNormalize( vecVelocity );
 
 			// Apply a force that would make a 100kg mass travel 150 - 300 m/s
 			float flRandomVel = random->RandomFloat( 150, 300 );
-			vecVelocity *= (100 * flRandomVel) / flMass;
+			vecVelocity *= ( 100 * flRandomVel ) / flMass;
 			vecVelocity.z += 100.0f;
 			AngularImpulse angImpulse = RandomAngularImpulse( -500, 500 );
-			
-			IPhysicsObject *pObj = pGib->VPhysicsGetObject();
-			if ( pObj != NULL )
+
+			IPhysicsObject* pObj = pGib->VPhysicsGetObject();
+			if( pObj != NULL )
 			{
 				pObj->AddVelocity( &vecVelocity, &angImpulse );
 			}
 			pGib->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-		}	
+		}
 		if( hl2_episodic.GetBool() )
 		{
 			// EP1 perf hit
@@ -922,19 +934,21 @@ void CPropAPC::CreateCorpse( )
 
 
 //-----------------------------------------------------------------------------
-// Death volley 
+// Death volley
 //-----------------------------------------------------------------------------
 void CPropAPC::FireDying( )
 {
-	if ( m_flRocketTime > gpGlobals->curtime )
+	if( m_flRocketTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	Vector vecRocketOrigin;
 	GetRocketShootPosition(	&vecRocketOrigin );
 
 	Vector vecDir;
 	vecDir.Random( -1.0f, 1.0f );
-	if ( vecDir.z < 0.0f )
+	if( vecDir.z < 0.0f )
 	{
 		vecDir.z *= -1.0f;
 	}
@@ -947,9 +961,9 @@ void CPropAPC::FireDying( )
 	QAngle angles;
 	VectorAngles( vecDir, angles );
 
-	CAPCMissile *pRocket = (CAPCMissile *) CAPCMissile::Create( vecRocketOrigin, angles, vecVelocity, this );
+	CAPCMissile* pRocket = ( CAPCMissile* ) CAPCMissile::Create( vecRocketOrigin, angles, vecVelocity, this );
 	float flDeathTime = random->RandomFloat( 0.3f, 0.5f );
-	if ( random->RandomFloat( 0.0f, 1.0f ) < 0.3f )
+	if( random->RandomFloat( 0.0f, 1.0f ) < 0.3f )
 	{
 		pRocket->ExplodeDelay( flDeathTime );
 	}
@@ -960,7 +974,7 @@ void CPropAPC::FireDying( )
 
 	// Make erratic firing
 	m_flRocketTime = gpGlobals->curtime + random->RandomFloat( DEATH_VOLLEY_MIN_FIRE_TIME, DEATH_VOLLEY_MAX_FIRE_TIME );
-	if ( --m_iRocketSalvoLeft <= 0 )
+	if( --m_iRocketSalvoLeft <= 0 )
 	{
 		CreateCorpse();
 	}
@@ -968,16 +982,18 @@ void CPropAPC::FireDying( )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::FireRocket( void )
 {
-	if ( m_flRocketTime > gpGlobals->curtime )
+	if( m_flRocketTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// If we're still firing the salvo, fire quickly
 	m_iRocketSalvoLeft--;
-	if ( m_iRocketSalvoLeft > 0 )
+	if( m_iRocketSalvoLeft > 0 )
 	{
 		m_flRocketTime = gpGlobals->curtime + ROCKET_DELAY_TIME;
 	}
@@ -1001,7 +1017,7 @@ void CPropAPC::FireRocket( void )
 	vecDir.z = 1.0f;
 	vecDir.x *= s_pSide[m_nRocketSide];
 	vecDir.y *= s_pSide[m_nRocketSide];
-	if ( ++m_nRocketSide >= 6 )
+	if( ++m_nRocketSide >= 6 )
 	{
 		m_nRocketSide = 0;
 	}
@@ -1014,15 +1030,15 @@ void CPropAPC::FireRocket( void )
 	QAngle angles;
 	VectorAngles( vecDir, angles );
 
-	CAPCMissile *pRocket = (CAPCMissile *)CAPCMissile::Create( vecRocketOrigin, angles, vecVelocity, this );
+	CAPCMissile* pRocket = ( CAPCMissile* )CAPCMissile::Create( vecRocketOrigin, angles, vecVelocity, this );
 	pRocket->IgniteDelay();
 
-	if ( m_hSpecificRocketTarget )
+	if( m_hSpecificRocketTarget )
 	{
 		pRocket->AimAtSpecificTarget( m_hSpecificRocketTarget );
 		m_hSpecificRocketTarget = NULL;
 	}
-	else if ( m_strMissileHint != NULL_STRING )
+	else if( m_strMissileHint != NULL_STRING )
 	{
 		pRocket->SetGuidanceHint( STRING( m_strMissileHint ) );
 	}
@@ -1030,10 +1046,10 @@ void CPropAPC::FireRocket( void )
 	EmitSound( "PropAPC.FireRocket" );
 	m_OnFiredMissile.FireOutput( this, this );
 }
-									 
+
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CPropAPC::MaxAttackRange() const
 {
@@ -1041,12 +1057,12 @@ float CPropAPC::MaxAttackRange() const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropAPC::OnRestore( void )
 {
-	IServerVehicle *pServerVehicle = GetServerVehicle();
-	if ( pServerVehicle != NULL )
+	IServerVehicle* pServerVehicle = GetServerVehicle();
+	if( pServerVehicle != NULL )
 	{
 		// Restore the passenger information we're holding on to
 		pServerVehicle->RestorePassengerInfo();
@@ -1057,16 +1073,16 @@ void CPropAPC::OnRestore( void )
 // APC FOUR WHEEL PHYSICS VEHICLE SERVER VEHICLE
 //========================================================================================================================================
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAPCFourWheelServerVehicle::NPC_AimPrimaryWeapon( Vector vecTarget )
 {
-	CPropAPC *pAPC = ((CPropAPC*)m_pVehicle);
+	CPropAPC* pAPC = ( ( CPropAPC* )m_pVehicle );
 	pAPC->AimPrimaryWeapon( vecTarget );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAPCFourWheelServerVehicle::NPC_AimSecondaryWeapon( Vector vecTarget )
 {
@@ -1076,18 +1092,18 @@ void CAPCFourWheelServerVehicle::NPC_AimSecondaryWeapon( Vector vecTarget )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCFourWheelServerVehicle::Weapon_PrimaryRanges( float *flMinRange, float *flMaxRange )
+void CAPCFourWheelServerVehicle::Weapon_PrimaryRanges( float* flMinRange, float* flMaxRange )
 {
 	*flMinRange = MACHINE_GUN_ATTACK_RANGE_MIN;
 	*flMaxRange = MACHINE_GUN_ATTACK_RANGE_MAX;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCFourWheelServerVehicle::Weapon_SecondaryRanges( float *flMinRange, float *flMaxRange )
+void CAPCFourWheelServerVehicle::Weapon_SecondaryRanges( float* flMinRange, float* flMaxRange )
 {
 	*flMinRange = ROCKET_ATTACK_RANGE_MIN;
 	*flMaxRange = ROCKET_ATTACK_RANGE_MAX;
@@ -1098,7 +1114,7 @@ void CAPCFourWheelServerVehicle::Weapon_SecondaryRanges( float *flMinRange, floa
 //-----------------------------------------------------------------------------
 float CAPCFourWheelServerVehicle::Weapon_PrimaryCanFireAt( void )
 {
-	return ((CPropAPC*)m_pVehicle)->PrimaryWeaponFireTime();
+	return ( ( CPropAPC* )m_pVehicle )->PrimaryWeaponFireTime();
 }
 
 //-----------------------------------------------------------------------------
@@ -1106,6 +1122,6 @@ float CAPCFourWheelServerVehicle::Weapon_PrimaryCanFireAt( void )
 //-----------------------------------------------------------------------------
 float CAPCFourWheelServerVehicle::Weapon_SecondaryCanFireAt( void )
 {
-	return ((CPropAPC*)m_pVehicle)->SecondaryWeaponFireTime();
+	return ( ( CPropAPC* )m_pVehicle )->SecondaryWeaponFireTime();
 }
 

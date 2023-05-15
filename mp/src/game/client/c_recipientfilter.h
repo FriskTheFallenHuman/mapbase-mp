@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_RECIPIENTFILTER_H
 #define C_RECIPIENTFILTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "irecipientfilter.h"
@@ -21,12 +21,12 @@ class C_BasePlayer;
 class C_Team;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_RecipientFilter : public IRecipientFilter
 {
 public:
-					C_RecipientFilter();
+	C_RecipientFilter();
 	virtual			~C_RecipientFilter();
 
 	virtual bool	IsReliable( void ) const;
@@ -34,7 +34,10 @@ public:
 	virtual int		GetRecipientCount( void ) const;
 	virtual int		GetRecipientIndex( int slot ) const;
 
-	virtual bool	IsInitMessage( void ) const { return false; };
+	virtual bool	IsInitMessage( void ) const
+	{
+		return false;
+	};
 
 public:
 
@@ -43,14 +46,14 @@ public:
 	void			Reset( void );
 
 	void			MakeReliable( void );
-		
+
 	void			AddAllPlayers( void );
 	void			AddRecipientsByPVS( const Vector& origin );
 	void			AddRecipientsByPAS( const Vector& origin );
-	void			AddRecipient( C_BasePlayer *player );
-	void			RemoveRecipient( C_BasePlayer *player );
-	void			AddRecipientsByTeam( C_Team *team );
-	void			RemoveRecipientsByTeam( C_Team *team );
+	void			AddRecipient( C_BasePlayer* player );
+	void			RemoveRecipient( C_BasePlayer* player );
+	void			AddRecipientsByTeam( C_Team* team );
+	void			RemoveRecipientsByTeam( C_Team* team );
 
 	void			UsePredictionRules( void );
 	bool			IsUsingPredictionRules( void ) const;
@@ -78,7 +81,7 @@ public:
 class CSingleUserRecipientFilter : public C_RecipientFilter
 {
 public:
-	CSingleUserRecipientFilter( C_BasePlayer *player )
+	CSingleUserRecipientFilter( C_BasePlayer* player )
 	{
 		AddRecipient( player );
 	}
@@ -121,12 +124,12 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPASAttenuationFilter : public CPASFilter
 {
 public:
-	CPASAttenuationFilter( C_BaseEntity *entity, float attenuation = ATTN_NORM ) :
+	CPASAttenuationFilter( C_BaseEntity* entity, float attenuation = ATTN_NORM ) :
 		CPASFilter( entity->GetAbsOrigin() )
 	{
 	}
@@ -136,22 +139,22 @@ public:
 	{
 	}
 
-	CPASAttenuationFilter( C_BaseEntity *entity, const char *lookupSound ) :
+	CPASAttenuationFilter( C_BaseEntity* entity, const char* lookupSound ) :
 		CPASFilter( entity->GetAbsOrigin() )
 	{
 	}
 
-	CPASAttenuationFilter( const Vector& origin, const char *lookupSound ) :
+	CPASAttenuationFilter( const Vector& origin, const char* lookupSound ) :
 		CPASFilter( origin )
 	{
 	}
 
-	CPASAttenuationFilter( C_BaseEntity *entity, const char *lookupSound, HSOUNDSCRIPTHANDLE& handle ) :
+	CPASAttenuationFilter( C_BaseEntity* entity, const char* lookupSound, HSOUNDSCRIPTHANDLE& handle ) :
 		CPASFilter( entity->GetAbsOrigin() )
 	{
 	}
 
-	CPASAttenuationFilter( const Vector& origin, const char *lookupSound, HSOUNDSCRIPTHANDLE& handle ) :
+	CPASAttenuationFilter( const Vector& origin, const char* lookupSound, HSOUNDSCRIPTHANDLE& handle ) :
 		CPASFilter( origin )
 	{
 	}

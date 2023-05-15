@@ -9,16 +9,16 @@
 #define AI_NAVGOALTYPE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 // =======================================
-//  Movement goals 
+//  Movement goals
 //		Used both to store the current
 //		movment goal in m_routeGoalType
 //		and to or/and with route
 // =======================================
-enum GoalType_t 
+enum GoalType_t
 {
 	GOALTYPE_NONE,
 	GOALTYPE_TARGETENT,
@@ -28,7 +28,7 @@ enum GoalType_t
 	GOALTYPE_LOCATION_NEAREST_NODE,
 	GOALTYPE_FLANK,
 	GOALTYPE_COVER,
-	
+
 	GOALTYPE_INVALID
 };
 

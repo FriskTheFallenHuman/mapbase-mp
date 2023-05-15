@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,13 +25,15 @@ CFXLine
 ==================================================
 */
 
-CFXDiscreetLine::CFXDiscreetLine( const char *name, const Vector& start, const Vector& direction, 
-	float velocity, float length, float clipLength, float scale, float life, const char *shader )
-: CClientSideEffect( name )
+CFXDiscreetLine::CFXDiscreetLine( const char* name, const Vector& start, const Vector& direction,
+								  float velocity, float length, float clipLength, float scale, float life, const char* shader )
+	: CClientSideEffect( name )
 {
 	assert( materials );
-	if ( materials == NULL )
+	if( materials == NULL )
+	{
 		return;
+	}
 
 	// Create a material...
 	m_pMaterial = materials->FindMaterial( shader, TEXTURE_GROUP_CLIENT_EFFECTS );
@@ -74,16 +76,18 @@ void CFXDiscreetLine::Draw( double frametime )
 	// Calculate our distance along our path
 	float	sDistance = m_fVelocity * m_fStartTime;
 	float	eDistance = sDistance - m_fLength;
-	
+
 	//Clip to start
 	sDistance = MAX( 0.0f, sDistance );
 	eDistance = MAX( 0.0f, eDistance );
 
-	if ( ( sDistance == 0.0f ) && ( eDistance == 0.0f ) )
+	if( ( sDistance == 0.0f ) && ( eDistance == 0.0f ) )
+	{
 		return;
+	}
 
 	// Clip it
-	if ( m_fClipLength != 0.0f )
+	if( m_fClipLength != 0.0f )
 	{
 		sDistance = MIN( sDistance, m_fClipLength );
 		eDistance = MIN( eDistance, m_fClipLength );
@@ -101,28 +105,28 @@ void CFXDiscreetLine::Draw( double frametime )
 	//Setup our info for drawing the line
 	VectorSubtract( vecEnd, vecStart, lineDir );
 	VectorSubtract( vecEnd, CurrentViewOrigin(), viewDir );
-	
+
 	cross = lineDir.Cross( viewDir );
 	VectorNormalize( cross );
 
 	CMeshBuilder meshBuilder;
-	IMesh *pMesh;
+	IMesh* pMesh;
 
 	CMatRenderContextPtr pRenderContext( materials );
-		
+
 	// Better, more visible tracers
-	if ( tracer_extra.GetBool() )
+	if( tracer_extra.GetBool() )
 	{
 		float flScreenWidth = ScreenWidth();
 		float flHalfScreenWidth = flScreenWidth * 0.5f;
-		
+
 		float zCoord = CurrentViewForward().Dot( vecStart - CurrentViewOrigin() );
 		float flScreenSpaceWidth = m_fScale * flHalfScreenWidth / zCoord;
 
 		float flAlpha;
 		float flScale;
 
-		if ( flScreenSpaceWidth < 0.5f )
+		if( flScreenSpaceWidth < 0.5f )
 		{
 			flAlpha = RemapVal( flScreenSpaceWidth, 0.25f, 2.0f, 0.3f, 1.0f );
 			flAlpha = clamp( flAlpha, 0.25f, 1.0f );
@@ -139,7 +143,7 @@ void CFXDiscreetLine::Draw( double frametime )
 
 		meshBuilder.Begin( pMesh, MATERIAL_QUADS, 2 );
 
-		float color = (int) 255.0f * flAlpha;
+		float color = ( int ) 255.0f * flAlpha;
 
 		//FIXME: for now no coloration
 		VectorMA( vecStart, -flScale, cross, tmp );
@@ -171,7 +175,7 @@ void CFXDiscreetLine::Draw( double frametime )
 		meshBuilder.AdvanceVertex();
 
 		flScale = flScale * 2.0f;
-		color = (int) 64.0f * flAlpha;
+		color = ( int ) 64.0f * flAlpha;
 
 		// Soft outline
 		VectorMA( vecStart, -flScale, cross, tmp );
@@ -263,7 +267,7 @@ Destroy
 void CFXDiscreetLine::Destroy( void )
 {
 	//Release the material
-	if ( m_pMaterial != NULL )
+	if( m_pMaterial != NULL )
 	{
 		m_pMaterial->DecrementReferenceCount();
 		m_pMaterial = NULL;

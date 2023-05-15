@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -22,7 +22,7 @@ public:
 	virtual ~CEnvDetailController();
 
 #ifndef CLIENT_DLL
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 #endif // !CLIENT_DLL
 
 	CNetworkVar( float, m_flFadeStartDist );
@@ -32,4 +32,4 @@ public:
 	virtual int UpdateTransmitState( void );
 };
 
-CEnvDetailController * GetDetailController();
+CEnvDetailController* GetDetailController();

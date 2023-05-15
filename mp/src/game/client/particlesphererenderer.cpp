@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -23,24 +23,28 @@ CParticleSphereRenderer::CParticleSphereRenderer()
 }
 
 
-void CParticleSphereRenderer::Init( CParticleMgr *pParticleMgr, IMaterial *pMaterial )
+void CParticleSphereRenderer::Init( CParticleMgr* pParticleMgr, IMaterial* pMaterial )
 {
 	m_pParticleMgr = pParticleMgr;
 
 	// Figure out how we need to draw.
 	bool bFound = false;
-	IMaterialVar *pVar = pMaterial->FindVar( "$USINGPIXELSHADER", &bFound, false );
+	IMaterialVar* pVar = pMaterial->FindVar( "$USINGPIXELSHADER", &bFound, false );
 	if( bFound && pVar && pVar->GetIntValue() )
+	{
 		m_bUsingPixelShaders = true;
+	}
 	else
+	{
 		m_bUsingPixelShaders = false;
+	}
 }
 
 
-void CParticleSphereRenderer::StartRender( VMatrix &effectMatrix )
+void CParticleSphereRenderer::StartRender( VMatrix& effectMatrix )
 {
 	// We're about to be rendered.. set our directional lighting parameters for this particle system.
-	if ( m_pParticleMgr )
+	if( m_pParticleMgr )
 	{
 		m_pParticleMgr->SetDirectionalLightInfo( m_DirectionalLight );
 	}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	CLoadingDiscPanel( vgui::VPANEL parent );
 	~CLoadingDiscPanel();
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme )
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -34,8 +34,8 @@ public:
 		w = ScreenWidth();
 		h = ScreenHeight();
 
-		if ( w != m_ScreenSize[ 0 ] || 
-			 h != m_ScreenSize[ 1 ] )
+		if( w != m_ScreenSize[ 0 ] ||
+				h != m_ScreenSize[ 1 ] )
 		{
 			m_ScreenSize[ 0 ] = w;
 			m_ScreenSize[ 1 ] = h;
@@ -52,18 +52,18 @@ public:
 
 	virtual void PaintBackground()
 	{
-		SetBgColor( Color(0, 0, 0, 128) );
+		SetBgColor( Color( 0, 0, 0, 128 ) );
 		SetPaintBackgroundType( 2 );
 		BaseClass::PaintBackground();
 	}
 
-	virtual void SetText( const char *text )
+	virtual void SetText( const char* text )
 	{
 		m_pLoadingLabel->SetText( text );
 	}
 
 private:
-	vgui::Label *m_pLoadingLabel;
+	vgui::Label* m_pLoadingLabel;
 	int			m_ScreenSize[ 2 ];
 };
 
@@ -82,7 +82,7 @@ CLoadingDiscPanel::CLoadingDiscPanel( vgui::VPANEL parent ) : BaseClass( NULL, "
 	SetVisible( false );
 	SetCursor( NULL );
 
-	m_pLoadingLabel = vgui::SETUP_PANEL(new vgui::Label( this, "LoadingLabel", "" ));
+	m_pLoadingLabel = vgui::SETUP_PANEL( new vgui::Label( this, "LoadingLabel", "" ) );
 	m_pLoadingLabel->SetPaintBackgroundEnabled( false );
 
 	LoadControlSettings( "resource/LoadingDiscPanel.res" );
@@ -106,8 +106,8 @@ CLoadingDiscPanel::~CLoadingDiscPanel()
 class CLoadingDisc : public ILoadingDisc
 {
 private:
-	CLoadingDiscPanel *loadingDiscPanel;
-	CLoadingDiscPanel *m_pPauseDiscPanel;
+	CLoadingDiscPanel* loadingDiscPanel;
+	CLoadingDiscPanel* m_pPauseDiscPanel;
 	vgui::VPANEL m_hParent;
 
 public:
@@ -125,16 +125,16 @@ public:
 
 	void Destroy( void )
 	{
-		if ( loadingDiscPanel )
+		if( loadingDiscPanel )
 		{
-			loadingDiscPanel->SetParent( (vgui::Panel *)NULL );
+			loadingDiscPanel->SetParent( ( vgui::Panel* )NULL );
 			loadingDiscPanel->MarkForDeletion();
 			loadingDiscPanel = NULL;
 		}
 
-		if ( m_pPauseDiscPanel )
+		if( m_pPauseDiscPanel )
 		{
-			m_pPauseDiscPanel->SetParent( (vgui::Panel *)NULL );
+			m_pPauseDiscPanel->SetParent( ( vgui::Panel* )NULL );
 			m_pPauseDiscPanel->MarkForDeletion();
 			m_pPauseDiscPanel = NULL;
 		}
@@ -145,12 +145,12 @@ public:
 	void SetLoadingVisible( bool bVisible )
 	{
 		// demand-create the dialog
-		if ( bVisible && !loadingDiscPanel )
+		if( bVisible && !loadingDiscPanel )
 		{
-			loadingDiscPanel = vgui::SETUP_PANEL(new CLoadingDiscPanel( m_hParent ) );
+			loadingDiscPanel = vgui::SETUP_PANEL( new CLoadingDiscPanel( m_hParent ) );
 		}
 
-		if ( loadingDiscPanel )
+		if( loadingDiscPanel )
 		{
 			loadingDiscPanel->SetVisible( bVisible );
 		}
@@ -159,13 +159,13 @@ public:
 
 	void SetPausedVisible( bool bVisible )
 	{
-		if ( bVisible && !m_pPauseDiscPanel )
+		if( bVisible && !m_pPauseDiscPanel )
 		{
-			m_pPauseDiscPanel = vgui::SETUP_PANEL(new CLoadingDiscPanel( m_hParent ) );
+			m_pPauseDiscPanel = vgui::SETUP_PANEL( new CLoadingDiscPanel( m_hParent ) );
 			m_pPauseDiscPanel->SetText( "#gameui_paused" );
 		}
 
-		if ( m_pPauseDiscPanel )
+		if( m_pPauseDiscPanel )
 		{
 			m_pPauseDiscPanel->SetVisible( bVisible );
 		}
@@ -173,4 +173,4 @@ public:
 };
 
 static CLoadingDisc g_LoadingDisc;
-ILoadingDisc *loadingdisc = ( ILoadingDisc * )&g_LoadingDisc;
+ILoadingDisc* loadingdisc = ( ILoadingDisc* )& g_LoadingDisc;

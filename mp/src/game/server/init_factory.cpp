@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -13,13 +13,13 @@
 static factorylist_t s_factories;
 
 // Store off the factories
-void FactoryList_Store( const factorylist_t &sourceData )
+void FactoryList_Store( const factorylist_t& sourceData )
 {
 	s_factories = sourceData;
 }
 
 // retrieve the stored factories
-void FactoryList_Retrieve( factorylist_t &destData )
+void FactoryList_Retrieve( factorylist_t& destData )
 {
 	destData = s_factories;
 }

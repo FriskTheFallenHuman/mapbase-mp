@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -21,13 +21,13 @@ class CConPanel;
 class CConsole : public IConsole
 {
 private:
-	CConPanel *conPanel;
+	CConPanel* conPanel;
 public:
 	CConsole( void )
 	{
 		conPanel = NULL;
 	}
-	
+
 	void Create( vgui::VPANEL parent )
 	{
 		/*
@@ -48,4 +48,4 @@ public:
 };
 
 static CConsole g_Console;
-IConsole *console = ( IConsole * )&g_Console;
+IConsole* console = ( IConsole* )& g_Console;

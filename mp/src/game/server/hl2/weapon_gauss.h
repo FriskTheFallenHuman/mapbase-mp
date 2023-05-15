@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -9,7 +9,7 @@
 #ifndef WEAPON_GAUSS_H
 #define WEAPON_GAUSS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 

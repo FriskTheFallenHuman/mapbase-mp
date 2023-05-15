@@ -14,7 +14,7 @@
 
 #include <vgui_controls/Panel.h>
 
-enum 
+enum
 {
 	HISTSLOT_EMPTY,
 	HISTSLOT_AMMO,
@@ -25,7 +25,7 @@ enum
 
 namespace vgui
 {
-	class IScheme;
+class IScheme;
 }
 
 class C_BaseCombatWeapon;
@@ -37,13 +37,13 @@ class CHudHistoryResource : public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CHudHistoryResource, vgui::Panel );
 private:
-	struct HIST_ITEM 
+	struct HIST_ITEM
 	{
-		HIST_ITEM() 
-		{ 
+		HIST_ITEM()
+		{
 			// init this here, because the code that overwrites previous history items will use this
 			// to check to see if the item is empty
-			DisplayTime = 0.0f; 
+			DisplayTime = 0.0f;
 		}
 		int type;
 		float DisplayTime;  // the time at which this item should be removed from the history
@@ -51,14 +51,14 @@ private:
 		int iId;
 		CHandle< C_BaseCombatWeapon > m_hWeapon;
 
-		CHudTexture *icon;
+		CHudTexture* icon;
 	};
 
 	CUtlVector<HIST_ITEM> m_PickupHistory;
 
 public:
 
-	CHudHistoryResource( const char *pElementName );
+	CHudHistoryResource( const char* pElementName );
 
 	// CHudElement overrides
 	virtual void Init( void );
@@ -66,17 +66,17 @@ public:
 	virtual bool ShouldDraw( void );
 	virtual void Paint( void );
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 	void	AddToHistory( int iType, int iId, int iCount = 0 );
-	void	AddToHistory( int iType, const char *szName, int iCount = 0 );
-	void	AddToHistory( C_BaseCombatWeapon *weapon );
-	void	MsgFunc_ItemPickup( bf_read &msg );
-	void	MsgFunc_AmmoDenied( bf_read &msg );
-	
+	void	AddToHistory( int iType, const char* szName, int iCount = 0 );
+	void	AddToHistory( C_BaseCombatWeapon* weapon );
+	void	MsgFunc_ItemPickup( bf_read& msg );
+	void	MsgFunc_AmmoDenied( bf_read& msg );
+
 	void	CheckClearHistory( void );
 	void	SetHistoryGap( int iNewHistoryGap );
-	void	AddIconToHistory( int iType, int iId, C_BaseCombatWeapon *weapon, int iCount, CHudTexture *icon );
+	void	AddIconToHistory( int iType, int iId, C_BaseCombatWeapon* weapon, int iCount, CHudTexture* icon );
 
 private:
 	// these vars are for hl1-port compatibility

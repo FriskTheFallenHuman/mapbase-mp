@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -26,31 +26,31 @@
 
 extern ConVar sv_footsteps;
 
-const char *g_ppszPlayerSoundPrefixNames[PLAYER_SOUNDS_MAX] =
+const char* g_ppszPlayerSoundPrefixNames[PLAYER_SOUNDS_MAX] =
 {
 	"NPC_Citizen",
 	"NPC_CombineS",
 	"NPC_MetroPolice",
 };
 
-const char *CHL2MP_Player::GetPlayerModelSoundPrefix( void )
+const char* CHL2MP_Player::GetPlayerModelSoundPrefix( void )
 {
 	return g_ppszPlayerSoundPrefixNames[m_iPlayerSoundType];
 }
 
-extern void SpawnBlood( Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage );
+extern void SpawnBlood( Vector vecSpot, const Vector& vecDir, int bloodColor, float flDamage );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHL2MP_Player::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CHL2MP_Player::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	Vector vecOrigin = ptr->endpos - vecDir * 4;
 
-	if ( m_takedamage )
+	if( m_takedamage )
 	{
 #ifdef GAME_DLL
-		if ( pAccumulator )
+		if( pAccumulator )
 		{
 			pAccumulator->AccumulateMultiDamage( info, this );
 		}
@@ -62,17 +62,19 @@ void CHL2MP_Player::TraceAttack( const CTakeDamageInfo &info, const Vector &vecD
 
 		int blood = BloodColor();
 
-		CBaseEntity *pAttacker = info.GetAttacker();
-		if ( pAttacker )
+		CBaseEntity* pAttacker = info.GetAttacker();
+		if( pAttacker )
 		{
-			if ( HL2MPRules()->IsTeamplay() && pAttacker->InSameTeam( this ) == true )
+			if( HL2MPRules()->IsTeamplay() && pAttacker->InSameTeam( this ) == true )
+			{
 				return;
+			}
 		}
-		
+
 #if defined(MAPBASE) && defined(GAME_DLL)
-		if ( blood != DONT_BLEED && DamageFilterAllowsBlood( info ) )
+		if( blood != DONT_BLEED && DamageFilterAllowsBlood( info ) )
 #else
-		if ( blood != DONT_BLEED )
+		if( blood != DONT_BLEED )
 #endif
 		{
 			SpawnBlood( vecOrigin, vecDir, blood, info.GetDamage() );// a little surface blood.
@@ -82,11 +84,11 @@ void CHL2MP_Player::TraceAttack( const CTakeDamageInfo &info, const Vector &vecD
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHL2MP_Player::DoImpactEffect( trace_t &tr, int nDamageType )
+void CHL2MP_Player::DoImpactEffect( trace_t& tr, int nDamageType )
 {
-	if ( GetActiveWeapon() )
+	if( GetActiveWeapon() )
 	{
 		GetActiveWeapon()->DoImpactEffect( tr, nDamageType );
 		return;
@@ -96,19 +98,21 @@ void CHL2MP_Player::DoImpactEffect( trace_t &tr, int nDamageType )
 }
 
 #ifndef CLIENT_DLL
-void TE_PlayerAnimEvent( CBasePlayer* pPlayer, PlayerAnimEvent_t playerAnim, int nData );
+	void TE_PlayerAnimEvent( CBasePlayer* pPlayer, PlayerAnimEvent_t playerAnim, int nData );
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHL2MP_Player::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 {
 #ifdef CLIENT_DLL
-	if ( IsLocalPlayer() )
+	if( IsLocalPlayer() )
 	{
-		if ( ( prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
+		if( ( prediction->InPrediction() && !prediction->IsFirstTimePredicted() ) )
+		{
 			return;
+		}
 	}
 
 	MDLCACHE_CRITICAL_SECTION();
@@ -122,19 +126,21 @@ void CHL2MP_Player::DoAnimationEvent( PlayerAnimEvent_t event, int nData )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CStudioHdr *CHL2MP_Player::OnNewModel( void )
+CStudioHdr* CHL2MP_Player::OnNewModel( void )
 {
-	CStudioHdr *hdr = BaseClass::OnNewModel();
+	CStudioHdr* hdr = BaseClass::OnNewModel();
 
 #ifdef CLIENT_DLL
 	InitializePoseParams();
 #endif
 
 	// Reset the players animation states, gestures
-	if ( m_PlayerAnimState )
+	if( m_PlayerAnimState )
+	{
 		m_PlayerAnimState->OnNewModel();
+	}
 
 	return hdr;
 }
@@ -144,11 +150,13 @@ CStudioHdr *CHL2MP_Player::OnNewModel( void )
 // the weapon, and the status of the target. Use this information to determine
 // how accurately to shoot at the target.
 //-----------------------------------------------------------------------------
-Vector CHL2MP_Player::GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget )
+Vector CHL2MP_Player::GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget )
 {
-	if ( pWeapon )
+	if( pWeapon )
+	{
 		return pWeapon->GetBulletSpread( WEAPON_PROFICIENCY_PERFECT );
-	
+	}
+
 	return VECTOR_CONE_15DEGREES;
 }
 
@@ -164,50 +172,60 @@ Vector CHL2MP_Player::GetAutoaimVector( float flScale )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : step - 
-//			fvol - 
+// Purpose:
+// Input  : step -
+//			fvol -
 //			force - force sound to play
 //-----------------------------------------------------------------------------
-void CHL2MP_Player::PlayStepSound( Vector &vecOrigin, surfacedata_t *psurface, float fvol, bool force )
+void CHL2MP_Player::PlayStepSound( Vector& vecOrigin, surfacedata_t* psurface, float fvol, bool force )
 {
-	if ( gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat() )
+	if( gpGlobals->maxClients > 1 && !sv_footsteps.GetFloat() )
+	{
 		return;
+	}
 
 #if defined( CLIENT_DLL )
 	// during prediction play footstep sounds only once
-	if ( !prediction->IsFirstTimePredicted() )
+	if( !prediction->IsFirstTimePredicted() )
+	{
 		return;
+	}
 #endif
 
-	if ( GetFlags() & FL_DUCKING )
+	if( GetFlags() & FL_DUCKING )
+	{
 		return;
+	}
 
 	BaseClass::PlayStepSound( vecOrigin, psurface, fvol, force );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : collisionGroup - 
+// Purpose:
+// Input  : collisionGroup -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CHL2MP_Player::ShouldCollide( int collisionGroup, int contentsMask ) const
 {
-	if ( HL2MPRules()->IsTeamplay() )
+	if( HL2MPRules()->IsTeamplay() )
 	{
-		if ( collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT || collisionGroup == COLLISION_GROUP_PROJECTILE )
+		if( collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT || collisionGroup == COLLISION_GROUP_PROJECTILE )
 		{
 			switch( GetTeamNumber() )
 			{
-			case TEAM_REBELS:
-				if ( !( contentsMask & CONTENTS_TEAM2 ) )
-					return false;
-				break;
+				case TEAM_REBELS:
+					if( !( contentsMask & CONTENTS_TEAM2 ) )
+					{
+						return false;
+					}
+					break;
 
-			case TEAM_COMBINE:
-				if ( !( contentsMask & CONTENTS_TEAM1 ) )
-					return false;
-				break;
+				case TEAM_COMBINE:
+					if( !( contentsMask & CONTENTS_TEAM1 ) )
+					{
+						return false;
+					}
+					break;
 			}
 		}
 	}
@@ -216,23 +234,23 @@ bool CHL2MP_Player::ShouldCollide( int collisionGroup, int contentsMask ) const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : eyeOrigin - 
-//			eyeAngles - 
-//			zNear - 
-//			zFar - 
-//			fov - 
+// Purpose:
+// Input  : eyeOrigin -
+//			eyeAngles -
+//			zNear -
+//			zFar -
+//			fov -
 //-----------------------------------------------------------------------------
-void CHL2MP_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear, float &zFar, float &fov )
+void CHL2MP_Player::CalcView( Vector& eyeOrigin, QAngle& eyeAngles, float& zNear, float& zFar, float& fov )
 {
 #ifdef CLIENT_DLL
-	if ( m_lifeState != LIFE_ALIVE && !IsObserver() )
+	if( m_lifeState != LIFE_ALIVE && !IsObserver() )
 	{
-		Vector origin = EyePosition();			
+		Vector origin = EyePosition();
 
-		IRagdoll *pRagdoll = GetRepresentativeRagdoll();
+		IRagdoll* pRagdoll = GetRepresentativeRagdoll();
 
-		if ( pRagdoll )
+		if( pRagdoll )
 		{
 			origin = pRagdoll->GetRagdollOrigin();
 			origin.z += VEC_DEAD_VIEWHEIGHT_SCALED( this ).z; // look over ragdoll, not through
@@ -241,8 +259,8 @@ void CHL2MP_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear
 		BaseClass::CalcView( eyeOrigin, eyeAngles, zNear, zFar, fov );
 
 		eyeOrigin = origin;
-		
-		Vector vForward; 
+
+		Vector vForward;
 		AngleVectors( eyeAngles, &vForward );
 
 		VectorNormalize( vForward );
@@ -256,11 +274,11 @@ void CHL2MP_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear
 		UTIL_TraceHull( origin, eyeOrigin, WALL_MIN, WALL_MAX, MASK_SOLID_BRUSHONLY, this, COLLISION_GROUP_NONE, &trace );
 		C_BaseEntity::PopEnableAbsRecomputations();
 
-		if (trace.fraction < 1.0)
+		if( trace.fraction < 1.0 )
 		{
 			eyeOrigin = trace.endpos;
 		}
-		
+
 		return;
 	}
 #endif // CLIENT_DLL
@@ -269,7 +287,7 @@ void CHL2MP_Player::CalcView( Vector &eyeOrigin, QAngle &eyeAngles, float &zNear
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHL2MP_Player::FireBullets( const FireBulletsInfo_t& info )
 {

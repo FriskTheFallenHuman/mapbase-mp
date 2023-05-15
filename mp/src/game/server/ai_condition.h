@@ -16,19 +16,19 @@
 
 // NOTE: Changing this constant will break save files!!! (changes type of CAI_ScheduleBits)
 #ifndef MAX_CONDITIONS
-#define	MAX_CONDITIONS 32*8
+	#define	MAX_CONDITIONS 32*8
 #endif
 
 //=========================================================
 // These are the default shared conditions
 //=========================================================
-enum SCOND_t 
+enum SCOND_t
 {
 	COND_NONE,				// A way for a function to return no condition to get
-	
+
 	COND_IN_PVS,
 	COND_IDLE_INTERRUPT,	// The schedule in question is a low priority idle, and therefore a candidate for translation into something else
-	
+
 	COND_LOW_PRIMARY_AMMO,
 	COND_NO_PRIMARY_AMMO,
 	COND_NO_SECONDARY_AMMO,
@@ -109,13 +109,13 @@ enum SCOND_t
 	// This is a talker condition, but done here because we need to handle it in base AI
 	// due to it's interaction with behaviors.
 	COND_TALKER_RESPOND_TO_QUESTION,
-	
+
 	COND_NO_CUSTOM_INTERRUPTS,		// Don't call BuildScheduleTestBits for this schedule. Used for schedules that must strictly control their interruptibility.
 
 	// ======================================
 	// IMPORTANT: This must be the last enum
 	// ======================================
-	LAST_SHARED_CONDITION	
+	LAST_SHARED_CONDITION
 };
 
 #endif	//CONDITION_H

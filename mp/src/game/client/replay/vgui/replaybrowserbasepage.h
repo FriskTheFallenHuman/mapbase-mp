@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef REPLAYBROWSER_BASEPAGE_H
 #define REPLAYBROWSER_BASEPAGE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/PropertyPage.h"
@@ -25,13 +25,13 @@ class CExLabel;
 class CReplayDetailsPanel;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CReplayBrowserBasePage : public PropertyPage
 {
 	DECLARE_CLASS_SIMPLE( CReplayBrowserBasePage, PropertyPage );
 public:
-	CReplayBrowserBasePage( Panel *pParent );
+	CReplayBrowserBasePage( Panel* pParent );
 	virtual ~CReplayBrowserBasePage();
 
 	void DeleteDetailsPanelAndShowReplayList();
@@ -40,9 +40,9 @@ public:
 
 	// Movie-only stuff
 	void FreeDetailsPanelMovieLock();
-	
-	virtual void ApplySchemeSettings( IScheme *pScheme );
-	virtual void OnCommand( const char *pCommand );
+
+	virtual void ApplySchemeSettings( IScheme* pScheme );
+	virtual void OnCommand( const char* pCommand );
 	virtual void PerformLayout();
 
 	MESSAGE_FUNC( OnPageShow, "PageShow" );
@@ -59,8 +59,8 @@ public:
 
 	virtual void CleanupUIForReplayItem( ReplayItemHandle_t hReplayItem );
 
-	vgui::TextEntry				*m_pSearchTextEntry;
-	CReplayListPanel			*m_pReplayList;
+	vgui::TextEntry*				m_pSearchTextEntry;
+	CReplayListPanel*			m_pReplayList;
 	DHANDLE< CReplayDetailsPanel >		m_hReplayDetailsPanel;
 };
 

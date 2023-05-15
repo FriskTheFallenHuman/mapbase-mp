@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef HUD_BASETIMER_H
 #define HUD_BASETIMER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hud_numericdisplay.h"
@@ -21,7 +21,7 @@ class CHudBaseTimer : public CHudNumericDisplay
 	DECLARE_CLASS_SIMPLE( CHudBaseTimer, CHudNumericDisplay );
 
 public:
-	CHudBaseTimer(vgui::Panel *parent, const char *name);
+	CHudBaseTimer( vgui::Panel* parent, const char* name );
 
 	void SetMinutes( int minutes );
 	void SetSeconds( int seconds );
@@ -34,7 +34,7 @@ protected:
 	void SetToSecondaryColor();
 
 private:
-	void PaintTime(vgui::HFont font, int xpos, int ypos, int mins, int secs);
+	void PaintTime( vgui::HFont font, int xpos, int ypos, int mins, int secs );
 
 	int m_iMinutes;
 	int m_iSeconds;

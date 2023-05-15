@@ -17,7 +17,7 @@
 #define SF_HUDHINT_ALLPLAYERS			0x0001
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CEnvHudHint : public CPointEntity
 {
@@ -28,12 +28,15 @@ public:
 	void	Precache( void );
 
 private:
-	inline	bool	AllPlayers( void ) { return (m_spawnflags & SF_HUDHINT_ALLPLAYERS) != 0; }
+	inline	bool	AllPlayers( void )
+	{
+		return ( m_spawnflags & SF_HUDHINT_ALLPLAYERS ) != 0;
+	}
 
-	void InputShowHudHint( inputdata_t &inputdata );
-	void InputHideHudHint( inputdata_t &inputdata );
+	void InputShowHudHint( inputdata_t& inputdata );
+	void InputHideHudHint( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetHudHint( inputdata_t &inputdata );
+	void InputSetHudHint( inputdata_t& inputdata );
 #endif
 	string_t m_iszMessage;
 	DECLARE_DATADESC();
@@ -43,21 +46,21 @@ LINK_ENTITY_TO_CLASS( env_hudhint, CEnvHudHint );
 
 BEGIN_DATADESC( CEnvHudHint )
 
-	DEFINE_KEYFIELD( m_iszMessage, FIELD_STRING, "message" ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ShowHudHint", InputShowHudHint ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "HideHudHint", InputHideHudHint ),
+DEFINE_KEYFIELD( m_iszMessage, FIELD_STRING, "message" ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "ShowHudHint", InputShowHudHint ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "HideHudHint", InputHideHudHint ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetHudHint", InputSetHudHint ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvHudHint::Spawn( void )
+				 void CEnvHudHint::Spawn( void )
 {
 	Precache();
 
@@ -67,7 +70,7 @@ void CEnvHudHint::Spawn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvHudHint::Precache( void )
 {
@@ -76,20 +79,20 @@ void CEnvHudHint::Precache( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for showing the message and/or playing the sound.
 //-----------------------------------------------------------------------------
-void CEnvHudHint::InputShowHudHint( inputdata_t &inputdata )
+void CEnvHudHint::InputShowHudHint( inputdata_t& inputdata )
 {
-	if ( AllPlayers() )
+	if( AllPlayers() )
 	{
 		CReliableBroadcastRecipientFilter user;
 		UserMessageBegin( user, "KeyHintText" );
 		WRITE_BYTE( 1 );	// one message
-		WRITE_STRING( STRING(m_iszMessage) );
+		WRITE_STRING( STRING( m_iszMessage ) );
 		MessageEnd();
 	}
 	else
 	{
-		CBaseEntity *pPlayer = NULL;
-		if ( inputdata.pActivator && inputdata.pActivator->IsPlayer() )
+		CBaseEntity* pPlayer = NULL;
+		if( inputdata.pActivator && inputdata.pActivator->IsPlayer() )
 		{
 			pPlayer = inputdata.pActivator;
 		}
@@ -98,35 +101,37 @@ void CEnvHudHint::InputShowHudHint( inputdata_t &inputdata )
 			pPlayer = UTIL_GetLocalPlayer();
 		}
 
-		if ( !pPlayer || !pPlayer->IsNetClient() )
+		if( !pPlayer || !pPlayer->IsNetClient() )
+		{
 			return;
+		}
 
-		CSingleUserRecipientFilter user( (CBasePlayer *)pPlayer );
+		CSingleUserRecipientFilter user( ( CBasePlayer* )pPlayer );
 		user.MakeReliable();
 		UserMessageBegin( user, "KeyHintText" );
-			WRITE_BYTE( 1 );	// one message
-			WRITE_STRING( STRING(m_iszMessage) );
+		WRITE_BYTE( 1 );	// one message
+		WRITE_STRING( STRING( m_iszMessage ) );
 		MessageEnd();
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvHudHint::InputHideHudHint( inputdata_t &inputdata )
+void CEnvHudHint::InputHideHudHint( inputdata_t& inputdata )
 {
-	if ( AllPlayers() )
+	if( AllPlayers() )
 	{
 		CReliableBroadcastRecipientFilter user;
 		UserMessageBegin( user, "KeyHintText" );
 		WRITE_BYTE( 1 );	// one message
-		WRITE_STRING( STRING(NULL_STRING) );
+		WRITE_STRING( STRING( NULL_STRING ) );
 		MessageEnd();
 	}
 	else
 	{
-		CBaseEntity *pPlayer = NULL;
+		CBaseEntity* pPlayer = NULL;
 
-		if ( inputdata.pActivator && inputdata.pActivator->IsPlayer() )
+		if( inputdata.pActivator && inputdata.pActivator->IsPlayer() )
 		{
 			pPlayer = inputdata.pActivator;
 		}
@@ -135,14 +140,16 @@ void CEnvHudHint::InputHideHudHint( inputdata_t &inputdata )
 			pPlayer = UTIL_GetLocalPlayer();
 		}
 
-		if ( !pPlayer || !pPlayer->IsNetClient() )
+		if( !pPlayer || !pPlayer->IsNetClient() )
+		{
 			return;
+		}
 
-		CSingleUserRecipientFilter user( (CBasePlayer *)pPlayer );
+		CSingleUserRecipientFilter user( ( CBasePlayer* )pPlayer );
 		user.MakeReliable();
 		UserMessageBegin( user, "KeyHintText" );
 		WRITE_BYTE( 1 );	// one message
-		WRITE_STRING( STRING(NULL_STRING) );
+		WRITE_STRING( STRING( NULL_STRING ) );
 		MessageEnd();
 	}
 }
@@ -150,7 +157,7 @@ void CEnvHudHint::InputHideHudHint( inputdata_t &inputdata )
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvHudHint::InputSetHudHint( inputdata_t &inputdata )
+void CEnvHudHint::InputSetHudHint( inputdata_t& inputdata )
 {
 	m_iszMessage = inputdata.value.StringID();
 }

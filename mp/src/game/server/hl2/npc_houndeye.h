@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -27,30 +27,30 @@ class CNPC_Houndeye : public CAI_BaseNPC
 public:
 	void			Spawn( void );
 	void			Precache( void );
-	Class_T			Classify ( void );
-	void			HandleAnimEvent( animevent_t *pEvent );
-	float			MaxYawSpeed ( void );
-	void			WarmUpSound ( void );
+	Class_T			Classify( void );
+	void			HandleAnimEvent( animevent_t* pEvent );
+	float			MaxYawSpeed( void );
+	void			WarmUpSound( void );
 	void			AlertSound( void );
-	void			DeathSound( const CTakeDamageInfo &info );
+	void			DeathSound( const CTakeDamageInfo& info );
 	void			WarnSound( void );
-	void			PainSound( const CTakeDamageInfo &info );
+	void			PainSound( const CTakeDamageInfo& info );
 	void			IdleSound( void );
-	void			StartTask( const Task_t *pTask );
-	void			RunTask( const Task_t *pTask );
+	void			StartTask( const Task_t* pTask );
+	void			RunTask( const Task_t* pTask );
 	int				GetSoundInterests( void );
 	void			SonicAttack( void );
 	void			PrescheduleThink( void );
-	void			WriteBeamColor ( void );
-	int				RangeAttack1Conditions ( float flDot, float flDist );
-	bool			FCanActiveIdle ( void );
+	void			WriteBeamColor( void );
+	int				RangeAttack1Conditions( float flDot, float flDist );
+	bool			FCanActiveIdle( void );
 	virtual int		TranslateSchedule( int scheduleType );
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 	virtual int		SelectSchedule( void );
-	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
-	void			NPCThink(void);
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void			Event_Killed( const CTakeDamageInfo &info );
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
+	void			NPCThink( void );
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void			Event_Killed( const CTakeDamageInfo& info );
 	bool			IsAnyoneInSquadAttacking( void );
 	void			SpeakSentence( int sentenceType );
 
@@ -64,7 +64,7 @@ public:
 	bool			m_fDontBlink;// don't try to open/close eye if this bit is set!
 
 	DEFINE_CUSTOM_AI;
-	
+
 	DECLARE_DATADESC();
 };
 

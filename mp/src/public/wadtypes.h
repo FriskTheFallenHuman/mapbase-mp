@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -13,7 +13,7 @@
 
 // ---------------------------------------------------------
 //
-// This should include ONLY types (no function prototypes) 
+// This should include ONLY types (no function prototypes)
 // in or related to WADs that are shared among the engine
 // and tools
 //
@@ -59,7 +59,7 @@ typedef struct wadinfo_s
 } wadinfo_t;
 
 #ifndef TEXTURE_NAME_LENGTH
-#define TEXTURE_NAME_LENGTH	128
+	#define TEXTURE_NAME_LENGTH	128
 #endif
 
 typedef struct lumpinfo_s

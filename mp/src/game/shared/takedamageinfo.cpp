@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -15,24 +15,24 @@
 ConVar phys_pushscale( "phys_pushscale", "1", FCVAR_REPLICATED );
 
 BEGIN_SIMPLE_DATADESC( CTakeDamageInfo )
-	DEFINE_FIELD( m_vecDamageForce, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecDamagePosition, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_vecReportedPosition, FIELD_POSITION_VECTOR),
-	DEFINE_FIELD( m_hInflictor, FIELD_EHANDLE),
-	DEFINE_FIELD( m_hAttacker, FIELD_EHANDLE),
-	DEFINE_FIELD( m_hWeapon, FIELD_EHANDLE),
-	DEFINE_FIELD( m_flDamage, FIELD_FLOAT),
-	DEFINE_FIELD( m_flMaxDamage, FIELD_FLOAT),
-	DEFINE_FIELD( m_flBaseDamage, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bitsDamageType, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamageCustom, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamageStats, FIELD_INTEGER),
-	DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER),
-	DEFINE_FIELD( m_iDamagedOtherPlayers, FIELD_INTEGER),
-END_DATADESC()
+DEFINE_FIELD( m_vecDamageForce, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecDamagePosition, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_vecReportedPosition, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_hInflictor, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hAttacker, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hWeapon, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flDamage, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flMaxDamage, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flBaseDamage, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_bitsDamageType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iDamageCustom, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iDamageStats, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iDamagedOtherPlayers, FIELD_INTEGER ),
+			  END_DATADESC()
 
 #ifdef MAPBASE_VSCRIPT
-BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
+	BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetInflictor, "GetInflictor", "Gets the inflictor." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptSetInflictor, "SetInflictor", "Sets the inflictor." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetWeapon, "GetWeapon", "Gets the weapon." )
@@ -99,13 +99,13 @@ BEGIN_SCRIPTDESC_ROOT( CTakeDamageInfo, "Damage information handler." )
 	DEFINE_SCRIPTFUNC( CopyDamageToBaseDamage, "Copy the damage dealth to the base damage." )
 
 	//DEFINE_SCRIPTFUNC_NAMED( ScriptDebugGetDamageTypeString, "DebugGetDamageTypeString", "Debug utility to get the damage type has a string." )
-END_SCRIPTDESC();
+	END_SCRIPTDESC();
 #endif
 
-void CTakeDamageInfo::Init( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int bitsDamageType, int iCustomDamage )
+			  void CTakeDamageInfo::Init( CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, const Vector& damageForce, const Vector& damagePosition, const Vector& reportedPosition, float flDamage, int bitsDamageType, int iCustomDamage )
 {
 	m_hInflictor = pInflictor;
-	if ( pAttacker )
+	if( pAttacker )
 	{
 		m_hAttacker = pAttacker;
 	}
@@ -140,45 +140,45 @@ CTakeDamageInfo::CTakeDamageInfo()
 	Init( NULL, NULL, NULL, vec3_origin, vec3_origin, vec3_origin, 0, 0, 0 );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType, int iKillType )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity* pInflictor, CBaseEntity* pAttacker, float flDamage, int bitsDamageType, int iKillType )
 {
 	Set( pInflictor, pAttacker, flDamage, bitsDamageType, iKillType );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int bitsDamageType, int iKillType )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, float flDamage, int bitsDamageType, int iKillType )
 {
 	Set( pInflictor, pAttacker, pWeapon, flDamage, bitsDamageType, iKillType );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity* pInflictor, CBaseEntity* pAttacker, const Vector& damageForce, const Vector& damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector* reportedPosition )
 {
 	Set( pInflictor, pAttacker, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-CTakeDamageInfo::CTakeDamageInfo( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+CTakeDamageInfo::CTakeDamageInfo( CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, const Vector& damageForce, const Vector& damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector* reportedPosition )
 {
 	Set( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, float flDamage, int bitsDamageType, int iKillType )
+void CTakeDamageInfo::Set( CBaseEntity* pInflictor, CBaseEntity* pAttacker, float flDamage, int bitsDamageType, int iKillType )
 {
 	Init( pInflictor, pAttacker, NULL, vec3_origin, vec3_origin, vec3_origin, flDamage, bitsDamageType, iKillType );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, float flDamage, int bitsDamageType, int iKillType )
+void CTakeDamageInfo::Set( CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, float flDamage, int bitsDamageType, int iKillType )
 {
 	Init( pInflictor, pAttacker, pWeapon, vec3_origin, vec3_origin, vec3_origin, flDamage, bitsDamageType, iKillType );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+void CTakeDamageInfo::Set( CBaseEntity* pInflictor, CBaseEntity* pAttacker, const Vector& damageForce, const Vector& damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector* reportedPosition )
 {
 	Set( pInflictor, pAttacker, NULL, damageForce, damagePosition, flDamage, bitsDamageType, iKillType, reportedPosition );
 }
 
-void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector *reportedPosition )
+void CTakeDamageInfo::Set( CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, const Vector& damageForce, const Vector& damagePosition, float flDamage, int bitsDamageType, int iKillType, Vector* reportedPosition )
 {
 	Vector vecReported = vec3_origin;
-	if ( reportedPosition )
+	if( reportedPosition )
 	{
 		vecReported = *reportedPosition;
 	}
@@ -186,14 +186,14 @@ void CTakeDamageInfo::Set( CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBas
 }
 
 //-----------------------------------------------------------------------------
-// Squirrel the damage value away as BaseDamage, which will later be used to 
-// calculate damage force. 
+// Squirrel the damage value away as BaseDamage, which will later be used to
+// calculate damage force.
 //-----------------------------------------------------------------------------
 void CTakeDamageInfo::AdjustPlayerDamageInflictedForSkillLevel()
 {
 #ifndef CLIENT_DLL
 	CopyDamageToBaseDamage();
-	SetDamage( g_pGameRules->AdjustPlayerDamageInflicted(GetDamage()) );
+	SetDamage( g_pGameRules->AdjustPlayerDamageInflicted( GetDamage() ) );
 #endif
 }
 
@@ -203,7 +203,7 @@ void CTakeDamageInfo::AdjustPlayerDamageTakenForSkillLevel()
 {
 #ifndef CLIENT_DLL
 	CopyDamageToBaseDamage();
-	g_pGameRules->AdjustPlayerDamageTaken(this);
+	g_pGameRules->AdjustPlayerDamageTaken( this );
 #endif
 }
 
@@ -211,21 +211,21 @@ void CTakeDamageInfo::AdjustPlayerDamageTakenForSkillLevel()
 // Purpose: get the name of the ammo that caused damage
 // Note: returns the ammo name, or the classname of the object, or the model name in the case of physgun ammo.
 //-----------------------------------------------------------------------------
-const char *CTakeDamageInfo::GetAmmoName() const
+const char* CTakeDamageInfo::GetAmmoName() const
 {
-	const char *pszAmmoType;
+	const char* pszAmmoType;
 
-	if ( m_iAmmoType >= 0 )
+	if( m_iAmmoType >= 0 )
 	{
 		pszAmmoType = GetAmmoDef()->GetAmmoOfIndex( m_iAmmoType )->pName;
 	}
 	// no ammoType, so get the ammo name from the inflictor
-	else if ( m_hInflictor != NULL )
+	else if( m_hInflictor != NULL )
 	{
 		pszAmmoType = m_hInflictor->GetClassname();
 
 		// check for physgun ammo.  unfortunate that this is in game_shared.
-		if ( Q_strcmp( pszAmmoType, "prop_physics" ) == 0 )
+		if( Q_strcmp( pszAmmoType, "prop_physics" ) == 0 )
 		{
 			pszAmmoType = STRING( m_hInflictor->GetModelName() );
 		}
@@ -309,7 +309,7 @@ void CTakeDamageInfo::ScriptSetDamageBonusProvider( HSCRIPT pProvider )
 // Collects multiple small damages into a single damage
 // -------------------------------------------------------------------------------------------------- //
 BEGIN_SIMPLE_DATADESC_( CMultiDamage, CTakeDamageInfo )
-	DEFINE_FIELD( m_hTarget, FIELD_EHANDLE),
+DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
 END_DATADESC()
 
 CMultiDamage g_MultiDamage;
@@ -320,9 +320,9 @@ CMultiDamage::CMultiDamage()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CMultiDamage::Init( CBaseEntity *pTarget, CBaseEntity *pInflictor, CBaseEntity *pAttacker, CBaseEntity *pWeapon, const Vector &damageForce, const Vector &damagePosition, const Vector &reportedPosition, float flDamage, int bitsDamageType, int iKillType )
+void CMultiDamage::Init( CBaseEntity* pTarget, CBaseEntity* pInflictor, CBaseEntity* pAttacker, CBaseEntity* pWeapon, const Vector& damageForce, const Vector& damagePosition, const Vector& reportedPosition, float flDamage, int bitsDamageType, int iKillType )
 {
 	m_hTarget = pTarget;
 	BaseClass::Init( pInflictor, pAttacker, pWeapon, damageForce, damagePosition, reportedPosition, flDamage, bitsDamageType, iKillType );
@@ -345,16 +345,18 @@ void ApplyMultiDamage( void )
 	Vector		vecDir;//direction blood should go
 	trace_t		tr;
 
-	if ( !g_MultiDamage.GetTarget() )
+	if( !g_MultiDamage.GetTarget() )
+	{
 		return;
+	}
 
 #ifndef CLIENT_DLL
-	const CBaseEntity *host = te->GetSuppressHost();
+	const CBaseEntity* host = te->GetSuppressHost();
 	te->SetSuppressHost( NULL );
-		
+
 	g_MultiDamage.GetTarget()->TakeDamage( g_MultiDamage );
 
-	te->SetSuppressHost( (CBaseEntity*)host );
+	te->SetSuppressHost( ( CBaseEntity* )host );
 #endif
 
 	// Damage is done, clear it out
@@ -364,12 +366,14 @@ void ApplyMultiDamage( void )
 //-----------------------------------------------------------------------------
 // Purpose: Add damage to the existing multidamage, and apply if it won't fit
 //-----------------------------------------------------------------------------
-void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity )
+void AddMultiDamage( const CTakeDamageInfo& info, CBaseEntity* pEntity )
 {
-	if ( !pEntity )
+	if( !pEntity )
+	{
 		return;
+	}
 
-	if ( pEntity != g_MultiDamage.GetTarget() )
+	if( pEntity != g_MultiDamage.GetTarget() )
 	{
 		ApplyMultiDamage();
 		g_MultiDamage.Init( pEntity, info.GetInflictor(), info.GetAttacker(), info.GetWeapon(), vec3_origin, vec3_origin, vec3_origin, 0.0, info.GetDamageType(), info.GetDamageCustom() );
@@ -383,31 +387,31 @@ void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity )
 	g_MultiDamage.SetMaxDamage( MAX( g_MultiDamage.GetMaxDamage(), info.GetDamage() ) );
 	g_MultiDamage.SetAmmoType( info.GetAmmoType() );
 
-	if ( g_MultiDamage.GetPlayerPenetrationCount() == 0 )
+	if( g_MultiDamage.GetPlayerPenetrationCount() == 0 )
 	{
 		g_MultiDamage.SetPlayerPenetrationCount( info.GetPlayerPenetrationCount() );
 	}
 
 	bool bHasPhysicsForceDamage = !g_pGameRules->Damage_NoPhysicsForce( info.GetDamageType() );
-	if ( bHasPhysicsForceDamage && g_MultiDamage.GetDamageType() != DMG_GENERIC )
+	if( bHasPhysicsForceDamage && g_MultiDamage.GetDamageType() != DMG_GENERIC )
 	{
 		// If you hit this assert, you've called TakeDamage with a damage type that requires a physics damage
-		// force & position without specifying one or both of them. Decide whether your damage that's causing 
-		// this is something you believe should impart physics force on the receiver. If it is, you need to 
+		// force & position without specifying one or both of them. Decide whether your damage that's causing
+		// this is something you believe should impart physics force on the receiver. If it is, you need to
 		// setup the damage force & position inside the CTakeDamageInfo (Utility functions for this are in
-		// takedamageinfo.cpp. If you think the damage shouldn't cause force (unlikely!) then you can set the 
+		// takedamageinfo.cpp. If you think the damage shouldn't cause force (unlikely!) then you can set the
 		// damage type to DMG_GENERIC, or | DMG_CRUSH if you need to preserve the damage type for purposes of HUD display.
-		if ( g_MultiDamage.GetDamageForce() == vec3_origin || g_MultiDamage.GetDamagePosition() == vec3_origin )
+		if( g_MultiDamage.GetDamageForce() == vec3_origin || g_MultiDamage.GetDamagePosition() == vec3_origin )
 		{
 			static int warningCount = 0;
-			if ( ++warningCount < 10 )
+			if( ++warningCount < 10 )
 			{
-				if ( g_MultiDamage.GetDamageForce() == vec3_origin )
+				if( g_MultiDamage.GetDamageForce() == vec3_origin )
 				{
 					Warning( "AddMultiDamage:  g_MultiDamage.GetDamageForce() == vec3_origin\n" );
 				}
 
-				if ( g_MultiDamage.GetDamagePosition() == vec3_origin)
+				if( g_MultiDamage.GetDamagePosition() == vec3_origin )
 				{
 					Warning( "AddMultiDamage:  g_MultiDamage.GetDamagePosition() == vec3_origin\n" );
 				}
@@ -418,7 +422,7 @@ void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity )
 
 
 //============================================================================================================
-// Utility functions for physics damage force calculation 
+// Utility functions for physics damage force calculation
 //============================================================================================================
 //-----------------------------------------------------------------------------
 // Purpose: Returns an impulse scale required to push an object.
@@ -427,13 +431,13 @@ void AddMultiDamage( const CTakeDamageInfo &info, CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 float ImpulseScale( float flTargetMass, float flDesiredSpeed )
 {
-	return (flTargetMass * flDesiredSpeed);
+	return ( flTargetMass * flDesiredSpeed );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Fill out a takedamageinfo with a damage force for an explosive
 //-----------------------------------------------------------------------------
-void CalculateExplosiveDamageForce( CTakeDamageInfo *info, const Vector &vecDir, const Vector &vecForceOrigin, float flScale )
+void CalculateExplosiveDamageForce( CTakeDamageInfo* info, const Vector& vecDir, const Vector& vecForceOrigin, float flScale )
 {
 	info->SetDamagePosition( vecForceOrigin );
 
@@ -443,10 +447,12 @@ void CalculateExplosiveDamageForce( CTakeDamageInfo *info, const Vector &vecDir,
 	float flForceScale = info->GetBaseDamage() * ImpulseScale( 75, 4 );
 
 	if( flForceScale > flClampForce )
+	{
 		flForceScale = flClampForce;
+	}
 
 	// Fudge blast forces a little bit, so that each
-	// victim gets a slightly different trajectory. 
+	// victim gets a slightly different trajectory.
 	// This simulates features that usually vary from
 	// person-to-person variables such as bodyweight,
 	// which are all indentical for characters using the same model.
@@ -464,7 +470,7 @@ void CalculateExplosiveDamageForce( CTakeDamageInfo *info, const Vector &vecDir,
 //-----------------------------------------------------------------------------
 // Purpose: Fill out a takedamageinfo with a damage force for a bullet impact
 //-----------------------------------------------------------------------------
-void CalculateBulletDamageForce( CTakeDamageInfo *info, int iBulletType, const Vector &vecBulletDir, const Vector &vecForceOrigin, float flScale )
+void CalculateBulletDamageForce( CTakeDamageInfo* info, int iBulletType, const Vector& vecBulletDir, const Vector& vecForceOrigin, float flScale )
 {
 	info->SetDamagePosition( vecForceOrigin );
 	Vector vecForce = vecBulletDir;
@@ -473,13 +479,13 @@ void CalculateBulletDamageForce( CTakeDamageInfo *info, int iBulletType, const V
 	vecForce *= phys_pushscale.GetFloat();
 	vecForce *= flScale;
 	info->SetDamageForce( vecForce );
-	Assert(vecForce!=vec3_origin);
+	Assert( vecForce != vec3_origin );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Fill out a takedamageinfo with a damage force for a melee impact
 //-----------------------------------------------------------------------------
-void CalculateMeleeDamageForce( CTakeDamageInfo *info, const Vector &vecMeleeDir, const Vector &vecForceOrigin, float flScale )
+void CalculateMeleeDamageForce( CTakeDamageInfo* info, const Vector& vecMeleeDir, const Vector& vecForceOrigin, float flScale )
 {
 	info->SetDamagePosition( vecForceOrigin );
 
@@ -498,13 +504,13 @@ void CalculateMeleeDamageForce( CTakeDamageInfo *info, const Vector &vecMeleeDir
 //			This shouldn't be used for any damage where the damage force is unknown.
 //			i.e. only use it for mapmaker specified damages.
 //-----------------------------------------------------------------------------
-void GuessDamageForce( CTakeDamageInfo *info, const Vector &vecForceDir, const Vector &vecForceOrigin, float flScale )
+void GuessDamageForce( CTakeDamageInfo* info, const Vector& vecForceDir, const Vector& vecForceOrigin, float flScale )
 {
-	if ( info->GetDamageType() & DMG_BULLET )
+	if( info->GetDamageType() & DMG_BULLET )
 	{
-		CalculateBulletDamageForce( info, GetAmmoDef()->Index("SMG1"), vecForceDir, vecForceOrigin, flScale );
+		CalculateBulletDamageForce( info, GetAmmoDef()->Index( "SMG1" ), vecForceDir, vecForceOrigin, flScale );
 	}
-	else if ( info->GetDamageType() & DMG_BLAST )
+	else if( info->GetDamageType() & DMG_BLAST )
 	{
 		CalculateExplosiveDamageForce( info, vecForceDir, vecForceOrigin, flScale );
 	}
@@ -517,10 +523,10 @@ void GuessDamageForce( CTakeDamageInfo *info, const Vector &vecForceDir, const V
 
 // Debug functions for printing out damage types
 
-// This table maps the DMG_* defines to their strings such that 
+// This table maps the DMG_* defines to their strings such that
 // for DMG_XXX = i << x  then table[i] = string for DMG_XXX
 
-static const char * const s_DamageTypeToStrTable[] =
+static const char* const s_DamageTypeToStrTable[] =
 {
 	"GENERIC",
 	"CRUSH",
@@ -556,30 +562,30 @@ static const char * const s_DamageTypeToStrTable[] =
 };
 #define DAMAGE_TYPE_STR_TABLE_ENTRIES 31 // number of entries in table above
 
-void CTakeDamageInfo::DebugGetDamageTypeString(unsigned int damageType, char *outbuf, int outbuflength )
+void CTakeDamageInfo::DebugGetDamageTypeString( unsigned int damageType, char* outbuf, int outbuflength )
 {
-	Assert(outbuflength > 0);
+	Assert( outbuflength > 0 );
 
 	// we need to use snprintf to actually copy out the strings here because that's the only function that returns
 	// how much text was output
-	if ( damageType == 0 )
+	if( damageType == 0 )
 	{
-		int charsWrit = Q_snprintf(outbuf, outbuflength, "%s", s_DamageTypeToStrTable[0]);
-		
+		int charsWrit = Q_snprintf( outbuf, outbuflength, "%s", s_DamageTypeToStrTable[0] );
+
 		outbuflength -= charsWrit;
 		outbuf += charsWrit; // advance the output pointer (now it sits on the null terminator)
 	}
 
 	// loop through the other entries in the table
-	for (int i = 0;
-		 outbuflength > 0 && i < (DAMAGE_TYPE_STR_TABLE_ENTRIES - 1);
-		 ++i )
+	for( int i = 0;
+			outbuflength > 0 && i < ( DAMAGE_TYPE_STR_TABLE_ENTRIES - 1 );
+			++i )
 	{
-		if ( damageType & (1 << i) )
+		if( damageType & ( 1 << i ) )
 		{
 			// this bit was set. Print the corresponding entry from the table
 			// (the index is +1 because entry 1 in the table corresponds to 1 << 0)
-			int charsWrit = Q_snprintf(outbuf, outbuflength, "%s ", s_DamageTypeToStrTable[i + 1]); 
+			int charsWrit = Q_snprintf( outbuf, outbuflength, "%s ", s_DamageTypeToStrTable[i + 1] );
 
 			outbuflength -= charsWrit; // reduce the chars left
 			outbuf += charsWrit; // advance the output pointer (now it sits on the null terminator)
@@ -601,7 +607,7 @@ void CTakeDamageInfo::ScriptDebugGetDamageTypeString( unsigned int damageType, c
 // instant damage
 
 #define DMG_GENERIC			0			// generic damage was done
-#define DMG_CRUSH			(1 << 0)	// crushed by falling or moving object. 
+#define DMG_CRUSH			(1 << 0)	// crushed by falling or moving object.
 // NOTE: It's assumed crush damage is occurring as a result of physics collision, so no extra physics force is generated by crush damage.
 // DON'T use DMG_CRUSH when damaging entities unless it's the result of a physics collision. You probably want DMG_CLUB instead.
 #define DMG_BULLET			(1 << 1)	// shot
@@ -613,8 +619,8 @@ void CTakeDamageInfo::ScriptDebugGetDamageTypeString( unsigned int damageType, c
 #define DMG_CLUB			(1 << 7)	// crowbar, punch, headbutt
 #define DMG_SHOCK			(1 << 8)	// electric shock
 #define DMG_SONIC			(1 << 9)	// sound pulse shockwave
-#define DMG_ENERGYBEAM		(1 << 10)	// laser or other high energy beam 
-#define DMG_PREVENT_PHYSICS_FORCE		(1 << 11)	// Prevent a physics force 
+#define DMG_ENERGYBEAM		(1 << 10)	// laser or other high energy beam
+#define DMG_PREVENT_PHYSICS_FORCE		(1 << 11)	// Prevent a physics force
 #define DMG_NEVERGIB		(1 << 12)	// with this bit OR'd in, no damage type will be able to gib victims upon death
 #define DMG_ALWAYSGIB		(1 << 13)	// with this bit OR'd in, any damage type can be made to gib victims upon death.
 #define DMG_DROWN			(1 << 14)	// Drowning

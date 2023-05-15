@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -19,34 +19,34 @@ static unsigned short g_PatchIterationKey = 0;
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool SampleData_CompareFunc( SampleData_t const &src1, SampleData_t const &src2 )
+bool SampleData_CompareFunc( SampleData_t const& src1, SampleData_t const& src2 )
 {
 	return ( ( src1.x == src2.x ) &&
-		     ( src1.y == src2.y ) &&
+			 ( src1.y == src2.y ) &&
 			 ( src1.z == src2.z ) );
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-unsigned int SampleData_KeyFunc( SampleData_t const &src )
+unsigned int SampleData_KeyFunc( SampleData_t const& src )
 {
 	return ( src.x + src.y + src.z );
 }
 
 
-CUtlHash<SampleData_t> g_SampleHashTable( SAMPLEHASH_NUM_BUCKETS, 
-										  SAMPLEHASH_GROW_SIZE, 
-										  SAMPLEHASH_INIT_SIZE, 
-										  SampleData_CompareFunc, SampleData_KeyFunc );
+CUtlHash<SampleData_t> g_SampleHashTable( SAMPLEHASH_NUM_BUCKETS,
+		SAMPLEHASH_GROW_SIZE,
+		SAMPLEHASH_INIT_SIZE,
+		SampleData_CompareFunc, SampleData_KeyFunc );
 
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-UtlHashHandle_t SampleData_Find( sample_t *pSample )
+UtlHashHandle_t SampleData_Find( sample_t* pSample )
 {
-	SampleData_t sampleData;	
+	SampleData_t sampleData;
 	sampleData.x = ( int )( pSample->pos.x / SAMPLEHASH_VOXEL_SIZE ) * 100;
 	sampleData.y = ( int )( pSample->pos.y / SAMPLEHASH_VOXEL_SIZE ) * 10;
 	sampleData.z = ( int )( pSample->pos.z / SAMPLEHASH_VOXEL_SIZE );
@@ -57,7 +57,7 @@ UtlHashHandle_t SampleData_Find( sample_t *pSample )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-UtlHashHandle_t SampleData_InsertIntoHashTable( sample_t *pSample, SampleHandle_t sampleHandle )
+UtlHashHandle_t SampleData_InsertIntoHashTable( sample_t* pSample, SampleHandle_t sampleHandle )
 {
 	SampleData_t sampleData;
 	sampleData.x = ( int )( pSample->pos.x / SAMPLEHASH_VOXEL_SIZE ) * 100;
@@ -66,7 +66,7 @@ UtlHashHandle_t SampleData_InsertIntoHashTable( sample_t *pSample, SampleHandle_
 
 	UtlHashHandle_t handle = g_SampleHashTable.AllocEntryFromKey( sampleData );
 
-	SampleData_t *pSampleData = &g_SampleHashTable.Element( handle );
+	SampleData_t* pSampleData = &g_SampleHashTable.Element( handle );
 	pSampleData->x = sampleData.x;
 	pSampleData->y = sampleData.y;
 	pSampleData->z = sampleData.z;
@@ -80,7 +80,7 @@ UtlHashHandle_t SampleData_InsertIntoHashTable( sample_t *pSample, SampleHandle_
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-UtlHashHandle_t SampleData_AddSample( sample_t *pSample, SampleHandle_t sampleHandle )
+UtlHashHandle_t SampleData_AddSample( sample_t* pSample, SampleHandle_t sampleHandle )
 {
 
 	// find the key -- if it doesn't exist add new sample data to the
@@ -92,7 +92,7 @@ UtlHashHandle_t SampleData_AddSample( sample_t *pSample, SampleHandle_t sampleHa
 	}
 	else
 	{
-		SampleData_t *pSampleData = &g_SampleHashTable.Element( handle );
+		SampleData_t* pSampleData = &g_SampleHashTable.Element( handle );
 		pSampleData->m_Samples.AddToTail( sampleHandle );
 
 		samplesAdded++;
@@ -123,28 +123,28 @@ void SampleData_Log( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool PatchSampleData_CompareFunc( PatchSampleData_t const &src1, PatchSampleData_t const &src2 )
+bool PatchSampleData_CompareFunc( PatchSampleData_t const& src1, PatchSampleData_t const& src2 )
 {
 	return ( ( src1.x == src2.x ) &&
-		     ( src1.y == src2.y ) &&
+			 ( src1.y == src2.y ) &&
 			 ( src1.z == src2.z ) );
 }
 
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-unsigned int PatchSampleData_KeyFunc( PatchSampleData_t const &src )
+unsigned int PatchSampleData_KeyFunc( PatchSampleData_t const& src )
 {
 	return ( src.x + src.y + src.z );
 }
 
 
 CUtlHash<PatchSampleData_t>	g_PatchSampleHashTable( SAMPLEHASH_NUM_BUCKETS,
-												    SAMPLEHASH_GROW_SIZE,
-													SAMPLEHASH_INIT_SIZE,
-													PatchSampleData_CompareFunc, PatchSampleData_KeyFunc );
+		SAMPLEHASH_GROW_SIZE,
+		SAMPLEHASH_INIT_SIZE,
+		PatchSampleData_CompareFunc, PatchSampleData_KeyFunc );
 
-void GetPatchSampleHashXYZ( const Vector &vOrigin, int &x, int &y, int &z )
+void GetPatchSampleHashXYZ( const Vector& vOrigin, int& x, int& y, int& z )
 {
 	x = ( int )( vOrigin.x / SAMPLEHASH_VOXEL_SIZE );
 	y = ( int )( vOrigin.y / SAMPLEHASH_VOXEL_SIZE );
@@ -154,11 +154,13 @@ void GetPatchSampleHashXYZ( const Vector &vOrigin, int &x, int &y, int &z )
 
 unsigned short IncrementPatchIterationKey()
 {
-	if ( g_PatchIterationKey == 0xFFFF )
+	if( g_PatchIterationKey == 0xFFFF )
 	{
 		g_PatchIterationKey = 1;
-		for ( int i=0; i < g_Patches.Count(); i++ )
+		for( int i = 0; i < g_Patches.Count(); i++ )
+		{
 			g_Patches[i].m_IterationKey = 0;
+		}
 	}
 	else
 	{
@@ -170,7 +172,7 @@ unsigned short IncrementPatchIterationKey()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void PatchSampleData_AddSample( CPatch *pPatch, int ndxPatch )
+void PatchSampleData_AddSample( CPatch* pPatch, int ndxPatch )
 {
 	int patchSampleMins[3], patchSampleMaxs[3];
 
@@ -182,19 +184,19 @@ void PatchSampleData_AddSample( CPatch *pPatch, int ndxPatch )
 	GetPatchSampleHashXYZ( pPatch->origin, patchSampleMins[0], patchSampleMins[1], patchSampleMins[2] );
 	memcpy( patchSampleMaxs, patchSampleMins, sizeof( patchSampleMaxs ) );
 #endif
-	
+
 	// Make sure mins are smaller than maxs so we don't iterate for 4 bil.
 	Assert( patchSampleMins[0] <= patchSampleMaxs[0] && patchSampleMins[1] <= patchSampleMaxs[1] && patchSampleMins[2] <= patchSampleMaxs[2] );
 	patchSampleMins[0] = min( patchSampleMins[0], patchSampleMaxs[0] );
 	patchSampleMins[1] = min( patchSampleMins[1], patchSampleMaxs[1] );
 	patchSampleMins[2] = min( patchSampleMins[2], patchSampleMaxs[2] );
-	
+
 	int iterateCoords[3];
-	for ( iterateCoords[0]=patchSampleMins[0]; iterateCoords[0] <= patchSampleMaxs[0]; iterateCoords[0]++ )
+	for( iterateCoords[0] = patchSampleMins[0]; iterateCoords[0] <= patchSampleMaxs[0]; iterateCoords[0]++ )
 	{
-		for ( iterateCoords[1]=patchSampleMins[1]; iterateCoords[1] <= patchSampleMaxs[1]; iterateCoords[1]++ )
+		for( iterateCoords[1] = patchSampleMins[1]; iterateCoords[1] <= patchSampleMaxs[1]; iterateCoords[1]++ )
 		{
-			for ( iterateCoords[2]=patchSampleMins[2]; iterateCoords[2] <= patchSampleMaxs[2]; iterateCoords[2]++ )
+			for( iterateCoords[2] = patchSampleMins[2]; iterateCoords[2] <= patchSampleMaxs[2]; iterateCoords[2]++ )
 			{
 				// find the key -- if it doesn't exist add new sample data to the
 				// hash table
@@ -208,7 +210,7 @@ void PatchSampleData_AddSample( CPatch *pPatch, int ndxPatch )
 				{
 					handle = g_PatchSampleHashTable.AllocEntryFromKey( iteratePatch );
 
-					PatchSampleData_t *pPatchData = &g_PatchSampleHashTable.Element( handle );
+					PatchSampleData_t* pPatchData = &g_PatchSampleHashTable.Element( handle );
 					pPatchData->x = iteratePatch.x;
 					pPatchData->y = iteratePatch.y;
 					pPatchData->z = iteratePatch.z;
@@ -218,7 +220,7 @@ void PatchSampleData_AddSample( CPatch *pPatch, int ndxPatch )
 				}
 				else
 				{
-					PatchSampleData_t *pPatchData = &g_PatchSampleHashTable.Element( handle );
+					PatchSampleData_t* pPatchData = &g_PatchSampleHashTable.Element( handle );
 					pPatchData->m_ndxPatches.AddToTail( ndxPatch );
 
 					patchSamplesAdded++;

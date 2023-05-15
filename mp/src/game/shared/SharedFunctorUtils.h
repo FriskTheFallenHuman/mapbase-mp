@@ -4,7 +4,7 @@
 
 //--------------------------------------------------------------------------------------------------------
 /**
-* NOTE: The functors in this file should ideally be game-independant, 
+* NOTE: The functors in this file should ideally be game-independant,
 * and work for any Source based game
 */
 //--------------------------------------------------------------------------------------------------------
@@ -17,14 +17,14 @@
 //--------------------------------------------------------------------------------------------------------
 /**
  * Finds visible player on given team that we are pointing at.
- * "team" can be TEAM_ANY 
+ * "team" can be TEAM_ANY
  * Use with ForEachPlayer()
  */
 template < class PlayerType >
 class TargetScan
 {
 public:
-	TargetScan( PlayerType *me, int team, float aimTolerance = 0.01f, float maxRange = 2000.0f, float closestPointTestDistance = 50.0f, bool debug = false )
+	TargetScan( PlayerType* me, int team, float aimTolerance = 0.01f, float maxRange = 2000.0f, float closestPointTestDistance = 50.0f, bool debug = false )
 	{
 		m_me = me;
 		AngleVectors( m_me->EyeAngles(), &m_viewForward );
@@ -38,13 +38,13 @@ public:
 	}
 
 
-	virtual bool operator() ( PlayerType *them )
+	virtual bool operator()( PlayerType* them )
 	{
 		VPROF( "TargetScan()" );
-		if ( them != m_me && 
-			 them->IsAlive() && 
-			 (m_team == TEAM_ANY || them->GetTeamNumber() == m_team) &&
-			 IsPotentialTarget( them ) )
+		if( them != m_me &&
+				them->IsAlive() &&
+				( m_team == TEAM_ANY || them->GetTeamNumber() == m_team ) &&
+				IsPotentialTarget( them ) )
 		{
 			// move the start point out for determining closestPos, to help with close-in checks (healing, etc)
 			Vector closestPos;
@@ -57,7 +57,7 @@ public:
 			end = start;
 			end.z += them->CollisionProp()->OBBMaxs().z;
 			CalcClosestPointOnLineSegment( testPos, start, end, closestPos );
-			if ( m_debug )
+			if( m_debug )
 			{
 				NDebugOverlay::Cross3D( closestPos, 1, 255, 255, 255, true, -1.0f );
 				NDebugOverlay::Line( end, start, 255, 0, 0, true, -1.0f );
@@ -71,19 +71,19 @@ public:
 			them->CollisionProp()->CalcNearestPoint( meRangePoint, &themRangePoint );
 			float range = meRangePoint.DistTo( themRangePoint );
 
-			if ( range > m_maxRange )
+			if( range > m_maxRange )
 			{
 				// too far away
 				return true;
 			}
 
 			float dot = ViewDot( to );
-			if ( dot > m_closeDot )
+			if( dot > m_closeDot )
 			{
 				// target is within angle cone, check visibility
-				if ( IsTargetVisible( them ) )
+				if( IsTargetVisible( them ) )
 				{
-					if ( dot >= m_bestDot )
+					if( dot >= m_bestDot )
 					{
 						m_target = them;
 						m_bestDot = dot;
@@ -97,12 +97,12 @@ public:
 		return true;
 	}
 
-	PlayerType *GetTarget( void ) const
+	PlayerType* GetTarget( void ) const
 	{
 		return m_target;
 	}
 
-	const CUtlVector< PlayerType * > &GetAllTargets( void ) const
+	const CUtlVector< PlayerType* >& GetAllTargets( void ) const
 	{
 		return m_allTargets;
 	}
@@ -116,7 +116,7 @@ protected:
 	/**
 	 * Is the point in our FOV?
 	 */
-	virtual float ViewDot( const Vector &dir ) const
+	virtual float ViewDot( const Vector& dir ) const
 	{
 		return DotProduct( m_viewForward, dir );
 	}
@@ -124,7 +124,7 @@ protected:
 	/**
 	 * Is the given actor a visible target?
 	 */
-	virtual bool IsTargetVisible( PlayerType *them ) const
+	virtual bool IsTargetVisible( PlayerType* them ) const
 	{
 		// The default check is a straight-up IsAbleToSee
 		return m_me->IsAbleToSee( them, CBaseCombatCharacter::DISREGARD_FOV ); // already have a dot product checking FOV
@@ -133,12 +133,12 @@ protected:
 	/**
 	 * Is the given player a possible target at all?
 	 */
-	virtual bool IsPotentialTarget( PlayerType *them ) const
+	virtual bool IsPotentialTarget( PlayerType* them ) const
 	{
 		return true;
 	}
 
-	PlayerType *m_me;	
+	PlayerType* m_me;
 	Vector m_viewForward;
 	int m_team;
 
@@ -148,8 +148,8 @@ protected:
 	float m_closestPointTestDistance;
 	bool m_debug;
 
-	PlayerType *m_target;
-	CUtlVector< PlayerType * > m_allTargets;
+	PlayerType* m_target;
+	CUtlVector< PlayerType* > m_allTargets;
 };
 
 

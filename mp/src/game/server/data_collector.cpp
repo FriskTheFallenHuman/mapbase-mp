@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,12 +12,12 @@
 #include "cbase.h"
 #include "data_collector.h"
 
-static CDataCollector *collector = NULL;
+static CDataCollector* collector = NULL;
 
 //----------------------------------------------------------------------------------------------------------------------
 void StartDataCollection( void )
 {
-	if (collector)
+	if( collector )
 	{
 		// already collecting
 		return;
@@ -32,7 +32,7 @@ ConCommand data_collection_start( "data_collection_start", StartDataCollection, 
 //----------------------------------------------------------------------------------------------------------------------
 void StopDataCollection( void )
 {
-	if (collector)
+	if( collector )
 	{
 		delete collector;
 		collector = NULL;
@@ -60,7 +60,7 @@ CDataCollector::~CDataCollector()
 /**
  * This is invoked for each event that occurs in the game
  */
-void CDataCollector::FireGameEvent( KeyValues *event )
+void CDataCollector::FireGameEvent( KeyValues* event )
 {
 	DevMsg( "Collected event '%s'\n", event->GetName() );
 }

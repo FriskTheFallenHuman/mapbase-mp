@@ -28,13 +28,13 @@ public:
 	void	MoveThink( void );
 
 	// Inputs
-	void InputInvertOn( inputdata_t &inputdata );
-	void InputInvertOff( inputdata_t &inputdata );
+	void InputInvertOn( inputdata_t& inputdata );
+	void InputInvertOff( inputdata_t& inputdata );
 
 	float	m_flProximityDistance;	// How far before I start reacting
-	float	m_flProximityOffset;	
+	float	m_flProximityOffset;
 	float	m_flFieldOfView;
-	
+
 	EHANDLE	m_hLooker;				// Who is looking
 
 	DECLARE_DATADESC();
@@ -48,69 +48,69 @@ public:
 
 	void	LookThink( void );
 	EHANDLE	m_hLookDoor;				// Who owns me
-	
+
 	DECLARE_DATADESC();
 };
 
 
 BEGIN_DATADESC( CLookDoorThinker )
 
-	DEFINE_FIELD( m_hLookDoor, FIELD_EHANDLE ),
+DEFINE_FIELD( m_hLookDoor, FIELD_EHANDLE ),
 
-	// Function Pointers
-	DEFINE_FUNCTION(LookThink),
+			  // Function Pointers
+			  DEFINE_FUNCTION( LookThink ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( lookdoorthinker, CLookDoorThinker );
+			  LINK_ENTITY_TO_CLASS( lookdoorthinker, CLookDoorThinker );
 
 
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CLookDoorThinker::LookThink(void)
+void CLookDoorThinker::LookThink( void )
 {
-	if (m_hLookDoor)
+	if( m_hLookDoor )
 	{
-		((CLookDoor*)(CBaseEntity*)m_hLookDoor)->MoveThink();
+		( ( CLookDoor* )( CBaseEntity* )m_hLookDoor )->MoveThink();
 		SetNextThink( gpGlobals->curtime + 0.01f );
 	}
 	else
 	{
-		UTIL_Remove(this);
+		UTIL_Remove( this );
 	}
 }
 
 
 BEGIN_DATADESC( CLookDoor )
 
-	DEFINE_KEYFIELD( m_flProximityDistance,	FIELD_FLOAT, "ProximityDistance"),
-	DEFINE_KEYFIELD( m_flProximityOffset,	FIELD_FLOAT, "ProximityOffset"),
-	DEFINE_KEYFIELD( m_flFieldOfView,		FIELD_FLOAT, "FieldOfView" ),
-	DEFINE_FIELD(m_hLooker,				FIELD_EHANDLE),
+DEFINE_KEYFIELD( m_flProximityDistance,	FIELD_FLOAT, "ProximityDistance" ),
+				 DEFINE_KEYFIELD( m_flProximityOffset,	FIELD_FLOAT, "ProximityOffset" ),
+				 DEFINE_KEYFIELD( m_flFieldOfView,		FIELD_FLOAT, "FieldOfView" ),
+				 DEFINE_FIELD( m_hLooker,				FIELD_EHANDLE ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID,		"InvertOn",		InputInvertOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID,		"InvertOff",	InputInvertOff ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID,		"InvertOn",		InputInvertOn ),
+				 DEFINE_INPUTFUNC( FIELD_VOID,		"InvertOff",	InputInvertOff ),
 
-	// Function Pointers
-	DEFINE_FUNCTION(MoveThink),
+				 // Function Pointers
+				 DEFINE_FUNCTION( MoveThink ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( func_lookdoor, CLookDoor );
+				 LINK_ENTITY_TO_CLASS( func_lookdoor, CLookDoor );
 
 
 //------------------------------------------------------------------------------
 // Purpose : Input handlers.
 //------------------------------------------------------------------------------
-void CLookDoor::InputInvertOn( inputdata_t &inputdata )
+void CLookDoor::InputInvertOn( inputdata_t& inputdata )
 {
 	m_spawnflags |= SF_LDOOR_INVERT;
 }
 
-void CLookDoor::InputInvertOff( inputdata_t &inputdata )
+void CLookDoor::InputInvertOff( inputdata_t& inputdata )
 {
 	m_spawnflags &= ~SF_LDOOR_INVERT;
 }
@@ -119,19 +119,19 @@ void CLookDoor::InputInvertOff( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CLookDoor::Spawn(void)
+void CLookDoor::Spawn( void )
 {
 	BaseClass::Spawn();
 
-	if (m_target == NULL_STRING)
+	if( m_target == NULL_STRING )
 	{
-		Warning( "ERROR: DoorLook (%s) given no target.  Rejecting spawn.\n",GetDebugName());
+		Warning( "ERROR: DoorLook (%s) given no target.  Rejecting spawn.\n", GetDebugName() );
 		return;
 	}
-	CLookDoorThinker* pLookThinker = (CLookDoorThinker*)CreateEntityByName("lookdoorthinker");
-	if (pLookThinker)
+	CLookDoorThinker* pLookThinker = ( CLookDoorThinker* )CreateEntityByName( "lookdoorthinker" );
+	if( pLookThinker )
 	{
-		pLookThinker->SetThink(&CLookDoorThinker::LookThink);
+		pLookThinker->SetThink( &CLookDoorThinker::LookThink );
 		pLookThinker->m_hLookDoor = this;
 		pLookThinker->SetNextThink( gpGlobals->curtime + 0.1f );
 	}
@@ -141,16 +141,16 @@ void CLookDoor::Spawn(void)
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CLookDoor::MoveThink(void)
+void CLookDoor::MoveThink( void )
 {
 	// --------------------------------
 	// Make sure we have a looker
 	// --------------------------------
-	if (m_hLooker == NULL)
+	if( m_hLooker == NULL )
 	{
-		m_hLooker = (CBaseEntity*)gEntList.FindEntityByName( NULL, m_target );
+		m_hLooker = ( CBaseEntity* )gEntList.FindEntityByName( NULL, m_target );
 
-		if (m_hLooker == NULL)
+		if( m_hLooker == NULL )
 		{
 			return;
 		}
@@ -163,7 +163,7 @@ void CLookDoor::MoveThink(void)
 
 	// If FROM_OPEN flag is set, door proximity is measured
 	// from the open and not the closed position
-	if (FBitSet (m_spawnflags, SF_LDOOR_FROM_OPEN))
+	if( FBitSet( m_spawnflags, SF_LDOOR_FROM_OPEN ) )
 	{
 		vOrigin += m_vecPosition2;
 	}
@@ -172,20 +172,23 @@ void CLookDoor::MoveThink(void)
 	//  First add movement based on proximity
 	// ------------------------------------------------------
 	float flProxMove = 0;
-	if (m_flProximityDistance > 0)
+	if( m_flProximityDistance > 0 )
 	{
-		float flDist = (m_hLooker->GetAbsOrigin() - vOrigin).Length()-m_flProximityOffset;
-		if (flDist < 0) flDist = 0;
-
-		if (flDist < m_flProximityDistance)
+		float flDist = ( m_hLooker->GetAbsOrigin() - vOrigin ).Length() - m_flProximityOffset;
+		if( flDist < 0 )
 		{
-			if (FBitSet (m_spawnflags, SF_LDOOR_THRESHOLD))
+			flDist = 0;
+		}
+
+		if( flDist < m_flProximityDistance )
+		{
+			if( FBitSet( m_spawnflags, SF_LDOOR_THRESHOLD ) )
 			{
 				flProxMove = 1.0;
 			}
 			else
 			{
-				flProxMove = 1-flDist/m_flProximityDistance;
+				flProxMove = 1 - flDist / m_flProximityDistance;
 			}
 		}
 	}
@@ -194,25 +197,25 @@ void CLookDoor::MoveThink(void)
 	//  Then add movement based on view angle
 	// ------------------------------------------------------
 	float flViewMove = 0;
-	if (m_flFieldOfView > 0)
+	if( m_flFieldOfView > 0 )
 	{
 		// ----------------------------------------
 		// Check that toucher is facing the target
 		// ----------------------------------------
 		Assert( dynamic_cast< CBaseCombatCharacter* >( m_hLooker.Get() ) );
-		CBaseCombatCharacter* pBCC = (CBaseCombatCharacter*)m_hLooker.Get();
+		CBaseCombatCharacter* pBCC = ( CBaseCombatCharacter* )m_hLooker.Get();
 		Vector vTouchDir = pBCC->EyeDirection3D( );
 		Vector vTargetDir =  vOrigin - pBCC->EyePosition();
-		VectorNormalize(vTargetDir);
+		VectorNormalize( vTargetDir );
 
-		float flDotPr = DotProduct(vTouchDir,vTargetDir);
-		if (flDotPr < m_flFieldOfView)
+		float flDotPr = DotProduct( vTouchDir, vTargetDir );
+		if( flDotPr < m_flFieldOfView )
 		{
 			flViewMove = 0.0;
 		}
 		else
 		{
-			flViewMove = (flDotPr-m_flFieldOfView)/(1.0 - m_flFieldOfView);
+			flViewMove = ( flDotPr - m_flFieldOfView ) / ( 1.0 - m_flFieldOfView );
 		}
 	}
 
@@ -220,15 +223,15 @@ void CLookDoor::MoveThink(void)
 	// Summate the two moves
 	//---------------------------------------
 	float flMove = flProxMove + flViewMove;
-	if (flMove > 1.0)
+	if( flMove > 1.0 )
 	{
 		flMove = 1.0;
 	}
 
 	// If behavior is inverted do the reverse
-	if (FBitSet (m_spawnflags, SF_LDOOR_INVERT))
+	if( FBitSet( m_spawnflags, SF_LDOOR_INVERT ) )
 	{
-		flMove = 1-flMove;
+		flMove = 1 - flMove;
 	}
 
 	// Move the door

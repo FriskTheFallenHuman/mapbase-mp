@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef AI_BEHAVIOR_ASSAULT_H
 #define AI_BEHAVIOR_ASSAULT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "simtimer.h"
@@ -52,18 +52,18 @@ enum
 
 //=============================================================================
 //=============================================================================
-class CRallyPoint : public CPointEntity 
+class CRallyPoint : public CPointEntity
 {
 	DECLARE_CLASS( CRallyPoint, CPointEntity );
 
 public:
 	CRallyPoint()
 	{
-		m_hLockedBy.Set(NULL);
+		m_hLockedBy.Set( NULL );
 		m_sExclusivity = RALLY_EXCLUSIVE_NOT_EVALUATED;
 	}
 
-	bool Lock( CBaseEntity *pLocker )
+	bool Lock( CBaseEntity* pLocker )
 	{
 		if( IsLocked() )
 		{
@@ -75,7 +75,7 @@ public:
 		return true;
 	}
 
-	bool Unlock( CBaseEntity *pUnlocker )
+	bool Unlock( CBaseEntity* pUnlocker )
 	{
 		if( IsLocked() )
 		{
@@ -90,7 +90,10 @@ public:
 		return true;
 	}
 
-	bool IsLocked( void ) { return (m_hLockedBy.Get() != NULL); }
+	bool IsLocked( void )
+	{
+		return ( m_hLockedBy.Get() != NULL );
+	}
 
 	int DrawDebugTextOverlays();
 	bool IsExclusive();
@@ -121,30 +124,30 @@ private:
 
 //=============================================================================
 //=============================================================================
-class CAssaultPoint : public CPointEntity 
+class CAssaultPoint : public CPointEntity
 {
 	DECLARE_CLASS( CAssaultPoint, CPointEntity );
 
 public:
 	CAssaultPoint()
 	{
-		// This used to be a constant in code. Now it's a keyfield in hammer. 
+		// This used to be a constant in code. Now it's a keyfield in hammer.
 		// So in the constructor, we set this value to the former constant
 		// default value, for legacy maps. (sjb)
 		m_flAssaultPointTolerance = CUE_POINT_TOLERANCE;
 	}
 
-	void 			InputSetClearOnContact( inputdata_t &inputdata )
+	void 			InputSetClearOnContact( inputdata_t& inputdata )
 	{
 		m_bClearOnContact = inputdata.value.Bool();
 	}
 
-	void 			InputSetAllowDiversion( inputdata_t &inputdata )
+	void 			InputSetAllowDiversion( inputdata_t& inputdata )
 	{
 		m_bAllowDiversion = inputdata.value.Bool();
 	}
 
-	void 			InputSetForceClear( inputdata_t &inputdata )
+	void 			InputSetForceClear( inputdata_t& inputdata )
 	{
 		m_bInputForcedClear = inputdata.value.Bool();
 	}
@@ -178,8 +181,11 @@ class CAI_AssaultBehavior : public CAI_SimpleBehavior
 
 public:
 	CAI_AssaultBehavior();
-	
-	virtual const char *GetName() {	return "Assault"; }
+
+	virtual const char* GetName()
+	{
+		return "Assault";
+	}
 	virtual int	DrawDebugTextOverlays( int text_offset );
 
 	virtual void OnRestore();
@@ -189,34 +195,43 @@ public:
 	virtual bool 	CanSelectSchedule();
 	virtual void	BeginScheduleSelection();
 	virtual void	EndScheduleSelection();
-	
-	bool HasHitRallyPoint() { return m_bHitRallyPoint; }
-	bool HasHitAssaultPoint() { return m_bHitAssaultPoint; }
+
+	bool HasHitRallyPoint()
+	{
+		return m_bHitRallyPoint;
+	}
+	bool HasHitAssaultPoint()
+	{
+		return m_bHitAssaultPoint;
+	}
 
 	void ClearAssaultPoint( void );
 	void OnHitAssaultPoint( void );
 	bool PollAssaultCue( void );
 	void ReceiveAssaultCue( AssaultCue_t cue );
-	bool HasAssaultCue( void ) { return m_AssaultCue != CUE_NO_ASSAULT; }
+	bool HasAssaultCue( void )
+	{
+		return m_AssaultCue != CUE_NO_ASSAULT;
+	}
 	bool AssaultHasBegun();
 
-	CAssaultPoint *FindAssaultPoint( string_t iszAssaultPointName );
-	void SetAssaultPoint( CAssaultPoint *pAssaultPoint );
+	CAssaultPoint* FindAssaultPoint( string_t iszAssaultPointName );
+	void SetAssaultPoint( CAssaultPoint* pAssaultPoint );
 
 	void GatherConditions( void );
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 	void BuildScheduleTestBits();
 	int TranslateSchedule( int scheduleType );
 	void OnStartSchedule( int scheduleType );
-	void ClearSchedule( const char *szReason );
+	void ClearSchedule( const char* szReason );
 
 	void InitializeBehavior();
 	void SetParameters( string_t rallypointname, AssaultCue_t assaultcue, int rallySelectMethod );
-	void SetParameters( CBaseEntity *pRallyEnt, AssaultCue_t assaultcue );
+	void SetParameters( CBaseEntity* pRallyEnt, AssaultCue_t assaultcue );
 
 	bool IsAllowedToDivert( void );
-	bool IsValidShootPosition( const Vector &vLocation, CAI_Node *pNode, CAI_Hint const *pHint );
+	bool IsValidShootPosition( const Vector& vLocation, CAI_Node* pNode, CAI_Hint const* pHint );
 	float GetMaxTacticalLateralMovement( void );
 
 	void UpdateOnRemove();
@@ -226,9 +241,14 @@ public:
 	bool IsForcingCrouch( void );
 	bool IsUrgent( void );
 
-	CRallyPoint *FindBestRallyPointInRadius( const Vector &vecCenter, float flRadius );;
+	CRallyPoint* FindBestRallyPointInRadius( const Vector& vecCenter, float flRadius );;
 
-	void Disable( void ) { m_AssaultCue = CUE_NO_ASSAULT; m_bHitRallyPoint = false; m_bHitAssaultPoint = false; }
+	void Disable( void )
+	{
+		m_AssaultCue = CUE_NO_ASSAULT;
+		m_bHitRallyPoint = false;
+		m_bHitAssaultPoint = false;
+	}
 
 	enum
 	{
@@ -258,10 +278,10 @@ public:
 		TASK_ASSAULT_DEFER_SCHEDULE_SELECTION,
 		NEXT_TASK,
 
-/*
-		COND_PUT_CONDITIONS_HERE = BaseClass::NEXT_CONDITION,
-		NEXT_CONDITION,
-*/
+		/*
+				COND_PUT_CONDITIONS_HERE = BaseClass::NEXT_CONDITION,
+				NEXT_CONDITION,
+		*/
 	};
 
 	DEFINE_CUSTOM_SCHEDULE_PROVIDER;
@@ -292,7 +312,7 @@ private:
 	string_t		m_AssaultPointName;
 
 	//---------------------------------
-	
+
 	DECLARE_DATADESC();
 };
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,7 +13,7 @@
 #if !defined( CLIENT_CLASS_H )
 #define CLIENT_CLASS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
@@ -37,11 +37,11 @@ class CMouthInfo;
 
 class ClientClass;
 // Linked list of all known client classes
-extern ClientClass *g_pClientClassHead;
+extern ClientClass* g_pClientClassHead;
 
 // The serial number that gets passed in is used for ehandles.
-typedef IClientNetworkable*	(*CreateClientClassFn)( int entnum, int serialNum );
-typedef IClientNetworkable*	(*CreateEventFn)();
+typedef IClientNetworkable*	( *CreateClientClassFn )( int entnum, int serialNum );
+typedef IClientNetworkable*	( *CreateEventFn )();
 
 //-----------------------------------------------------------------------------
 // Purpose: Client side class definition
@@ -49,13 +49,13 @@ typedef IClientNetworkable*	(*CreateEventFn)();
 class ClientClass
 {
 public:
-	ClientClass( const char *pNetworkName, CreateClientClassFn createFn, CreateEventFn createEventFn, RecvTable *pRecvTable )
+	ClientClass( const char* pNetworkName, CreateClientClassFn createFn, CreateEventFn createEventFn, RecvTable* pRecvTable )
 	{
 		m_pNetworkName	= pNetworkName;
 		m_pCreateFn		= createFn;
-		m_pCreateEventFn= createEventFn;
+		m_pCreateEventFn = createEventFn;
 		m_pRecvTable	= pRecvTable;
-		
+
 		// Link it in
 		m_pNext				= g_pClientClassHead;
 		g_pClientClassHead	= this;
@@ -69,9 +69,9 @@ public:
 public:
 	CreateClientClassFn		m_pCreateFn;
 	CreateEventFn			m_pCreateEventFn;	// Only called for event objects.
-	const char				*m_pNetworkName;
-	RecvTable				*m_pRecvTable;
-	ClientClass				*m_pNext;
+	const char*				m_pNetworkName;
+	RecvTable*				m_pRecvTable;
+	ClientClass*				m_pNext;
 	int						m_ClassID;	// Managed by the engine.
 };
 
@@ -88,7 +88,7 @@ public:
 
 
 #define DECLARE_CLIENTCLASS_NOBASE ALLOW_DATATABLES_PRIVATE_ACCESS
-	
+
 // This macro adds a ClientClass to the linked list in g_pClientClassHead (so
 // the list can be given to the engine).
 // Use this macro to expose your client class to the engine.
@@ -125,7 +125,7 @@ public:
 #define IMPLEMENT_CLIENTCLASS_DT_NOBASE(clientClassName, dataTable, serverClassName)\
 	IMPLEMENT_CLIENTCLASS(clientClassName, dataTable, serverClassName)\
 	BEGIN_RECV_TABLE_NOBASE(clientClassName, dataTable)
-	
+
 
 // Using IMPLEMENT_CLIENTCLASS_EVENT means the engine thinks the entity is an event so the entity
 // is responsible for freeing itself.

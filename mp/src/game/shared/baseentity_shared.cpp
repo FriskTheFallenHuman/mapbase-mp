@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -30,18 +30,18 @@
 	#include "waterbullet.h"
 	#include "func_break.h"
 
-#ifdef HL2MP
-	#include "te_hl2mp_shotgun_shot.h"
-#endif
+	#ifdef HL2MP
+		#include "te_hl2mp_shotgun_shot.h"
+	#endif
 
 	#include "gamestats.h"
 
 #endif
 
 #ifdef HL2_EPISODIC
-ConVar hl2_episodic( "hl2_episodic", "1", FCVAR_REPLICATED );
+	ConVar hl2_episodic( "hl2_episodic", "1", FCVAR_REPLICATED );
 #else
-ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED );
+	ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED );
 #endif//HL2_EPISODIC
 
 #ifdef PORTAL
@@ -49,12 +49,12 @@ ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED );
 #endif
 
 #ifdef TF_DLL
-#include "tf_gamerules.h"
-#include "tf_weaponbase.h"
+	#include "tf_gamerules.h"
+	#include "tf_weaponbase.h"
 #endif // TF_DLL
 
 #ifdef MAPBASE_VSCRIPT
-#include "mapbase/vscript_funcs_shared.h"
+	#include "mapbase/vscript_funcs_shared.h"
 #endif
 
 #include "rumble_shared.h"
@@ -64,8 +64,8 @@ ConVar hl2_episodic( "hl2_episodic", "0", FCVAR_REPLICATED );
 
 #ifdef GAME_DLL
 	ConVar ent_debugkeys( "ent_debugkeys", "" );
-	extern bool ParseKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, const char *szValue );
-	extern bool ExtractKeyvalue( void *pObject, typedescription_t *pFields, int iNumFields, const char *szKeyName, char *szValue, int iMaxLen );
+	extern bool ParseKeyvalue( void* pObject, typedescription_t* pFields, int iNumFields, const char* szKeyName, const char* szValue );
+	extern bool ExtractKeyvalue( void* pObject, typedescription_t* pFields, int iNumFields, const char* szKeyName, char* szValue, int iMaxLen );
 #endif
 
 bool CBaseEntity::m_bAllowPrecache = false;
@@ -90,7 +90,7 @@ bool CheckEmitReasonablePhysicsSpew()
 
 	// Reported recently?
 	double now = Plat_FloatTime();
-	if ( now >= s_LastEntityReasonableEmitTime && now < s_LastEntityReasonableEmitTime + 5.0 )
+	if( now >= s_LastEntityReasonableEmitTime && now < s_LastEntityReasonableEmitTime + 5.0 )
 	{
 		// Already reported recently
 		return false;
@@ -105,16 +105,16 @@ bool CheckEmitReasonablePhysicsSpew()
 //-----------------------------------------------------------------------------
 // Purpose: Spawn some blood particles
 //-----------------------------------------------------------------------------
-void SpawnBlood(Vector vecSpot, const Vector &vecDir, int bloodColor, float flDamage)
+void SpawnBlood( Vector vecSpot, const Vector& vecDir, int bloodColor, float flDamage )
 {
-	UTIL_BloodDrips( vecSpot, vecDir, bloodColor, (int)flDamage );
+	UTIL_BloodDrips( vecSpot, vecDir, bloodColor, ( int )flDamage );
 }
 
 #if !defined( NO_ENTITY_PREDICTION )
 //-----------------------------------------------------------------------------
 // The player drives simulation of this entity
 //-----------------------------------------------------------------------------
-void CBaseEntity::SetPlayerSimulated( CBasePlayer *pOwner )
+void CBaseEntity::SetPlayerSimulated( CBasePlayer* pOwner )
 {
 	m_bIsPlayerSimulated = true;
 	pOwner->AddToPlayerSimulationList( this );
@@ -123,7 +123,7 @@ void CBaseEntity::SetPlayerSimulated( CBasePlayer *pOwner )
 
 void CBaseEntity::UnsetPlayerSimulated( void )
 {
-	if ( m_hPlayerSimulationOwner != NULL )
+	if( m_hPlayerSimulationOwner != NULL )
 	{
 		m_hPlayerSimulationOwner->RemoveFromPlayerSimulationList( this );
 	}
@@ -134,49 +134,49 @@ void CBaseEntity::UnsetPlayerSimulated( void )
 
 // position of eyes
 Vector CBaseEntity::EyePosition( void )
-{ 
-	return GetAbsOrigin() + GetViewOffset(); 
+{
+	return GetAbsOrigin() + GetViewOffset();
 }
 
-const QAngle &CBaseEntity::EyeAngles( void )
+const QAngle& CBaseEntity::EyeAngles( void )
 {
 	return GetAbsAngles();
 }
 
-const QAngle &CBaseEntity::LocalEyeAngles( void )
+const QAngle& CBaseEntity::LocalEyeAngles( void )
 {
 	return GetLocalAngles();
 }
 
 // position of ears
 Vector CBaseEntity::EarPosition( void )
-{ 
-	return EyePosition(); 
+{
+	return EyePosition();
 }
 
-void CBaseEntity::SetViewOffset( const Vector& v ) 
-{ 
-	m_vecViewOffset = v; 
+void CBaseEntity::SetViewOffset( const Vector& v )
+{
+	m_vecViewOffset = v;
 }
 
-const Vector& CBaseEntity::GetViewOffset() const 
-{ 
-	return m_vecViewOffset; 
+const Vector& CBaseEntity::GetViewOffset() const
+{
+	return m_vecViewOffset;
 }
 
 
 //-----------------------------------------------------------------------------
 // center point of entity
 //-----------------------------------------------------------------------------
-const Vector &CBaseEntity::WorldSpaceCenter( ) const 
+const Vector& CBaseEntity::WorldSpaceCenter( ) const
 {
 	return CollisionProp()->WorldSpaceCenter();
 }
 
 #if !defined( CLIENT_DLL )
-#define CHANGE_FLAGS(flags,newFlags) { unsigned int old = flags; flags = (newFlags); gEntList.ReportEntityFlagsChanged( this, old, flags ); }
+	#define CHANGE_FLAGS(flags,newFlags) { unsigned int old = flags; flags = (newFlags); gEntList.ReportEntityFlagsChanged( this, old, flags ); }
 #else
-#define CHANGE_FLAGS(flags,newFlags) (flags = (newFlags))
+	#define CHANGE_FLAGS(flags,newFlags) (flags = (newFlags))
 #endif
 
 void CBaseEntity::AddFlag( int flags )
@@ -201,18 +201,18 @@ void CBaseEntity::ToggleFlag( int flagToToggle )
 
 void CBaseEntity::SetEffects( int nEffects )
 {
-	if ( nEffects != m_fEffects )
+	if( nEffects != m_fEffects )
 	{
 #if !defined( CLIENT_DLL )
 #ifdef HL2_EPISODIC
 		// Hack for now, to avoid player emitting radius with his flashlight
-		if ( !IsPlayer() )
+		if( !IsPlayer() )
 		{
-			if ( (nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) && !(m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) )
+			if( ( nEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) && !( m_fEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) )
 			{
 				AddEntityToDarknessCheck( this );
 			}
-			else if ( !(nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) && (m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) )
+			else if( !( nEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) && ( m_fEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) )
 			{
 				RemoveEntityFromDarknessCheck( this );
 			}
@@ -230,14 +230,14 @@ void CBaseEntity::SetEffects( int nEffects )
 	}
 }
 
-void CBaseEntity::AddEffects( int nEffects ) 
-{ 
+void CBaseEntity::AddEffects( int nEffects )
+{
 #if !defined( CLIENT_DLL )
 #ifdef HL2_EPISODIC
-	if ( (nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) && !(m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT)) )
+	if( ( nEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) && !( m_fEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) ) )
 	{
 		// Hack for now, to avoid player emitting radius with his flashlight
-		if ( !IsPlayer() )
+		if( !IsPlayer() )
 		{
 			AddEntityToDarknessCheck( this );
 		}
@@ -245,9 +245,9 @@ void CBaseEntity::AddEffects( int nEffects )
 #endif // HL2_EPISODIC
 #endif // !CLIENT_DLL
 
-	m_fEffects |= nEffects; 
+	m_fEffects |= nEffects;
 
-	if ( nEffects & EF_NODRAW)
+	if( nEffects & EF_NODRAW )
 	{
 #ifndef CLIENT_DLL
 		DispatchUpdateTransmitState();
@@ -259,7 +259,7 @@ void CBaseEntity::AddEffects( int nEffects )
 
 void CBaseEntity::SetBlocksLOS( bool bBlocksLOS )
 {
-	if ( bBlocksLOS )
+	if( bBlocksLOS )
 	{
 		RemoveEFlags( EFL_DONTBLOCKLOS );
 	}
@@ -269,14 +269,14 @@ void CBaseEntity::SetBlocksLOS( bool bBlocksLOS )
 	}
 }
 
-bool CBaseEntity::BlocksLOS( void ) 
-{ 
-	return !IsEFlagSet(EFL_DONTBLOCKLOS); 
+bool CBaseEntity::BlocksLOS( void )
+{
+	return !IsEFlagSet( EFL_DONTBLOCKLOS );
 }
 
 void CBaseEntity::SetAIWalkable( bool bBlocksLOS )
 {
-	if ( bBlocksLOS )
+	if( bBlocksLOS )
 	{
 		RemoveEFlags( EFL_DONTWALKON );
 	}
@@ -286,9 +286,9 @@ void CBaseEntity::SetAIWalkable( bool bBlocksLOS )
 	}
 }
 
-bool CBaseEntity::IsAIWalkable( void ) 
-{ 
-	return !IsEFlagSet(EFL_DONTWALKON);
+bool CBaseEntity::IsAIWalkable( void )
+{
+	return !IsEFlagSet( EFL_DONTWALKON );
 }
 
 
@@ -296,42 +296,42 @@ bool CBaseEntity::IsAIWalkable( void )
 // Purpose: Handles keys and outputs from the BSP.
 // Input  : mapData - Text block of keys and values from the BSP.
 //-----------------------------------------------------------------------------
-void CBaseEntity::ParseMapData( CEntityMapData *mapData )
+void CBaseEntity::ParseMapData( CEntityMapData* mapData )
 {
 	char keyName[MAPKEY_MAXLENGTH];
 	char value[MAPKEY_MAXLENGTH];
 
-	#ifdef _DEBUG
-	#ifdef GAME_DLL
+#ifdef _DEBUG
+#ifdef GAME_DLL
 	ValidateDataDescription();
-	#endif // GAME_DLL
-	#endif // _DEBUG
+#endif // GAME_DLL
+#endif // _DEBUG
 
 	// loop through all keys in the data block and pass the info back into the object
-	if ( mapData->GetFirstKey(keyName, value) )
+	if( mapData->GetFirstKey( keyName, value ) )
 	{
-		do 
+		do
 		{
 			KeyValue( keyName, value );
-		} 
-		while ( mapData->GetNextKey(keyName, value) );
+		}
+		while( mapData->GetNextKey( keyName, value ) );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Parse data from a map file
 //-----------------------------------------------------------------------------
-bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue ) 
+bool CBaseEntity::KeyValue( const char* szKeyName, const char* szValue )
 {
 	//!! temp hack, until worldcraft is fixed
 	// strip the # tokens from (duplicate) key names
-	char *s = (char *)strchr( szKeyName, '#' );
-	if ( s )
+	char* s = ( char* )strchr( szKeyName, '#' );
+	if( s )
 	{
 		*s = '\0';
 	}
 
-	if ( FStrEq( szKeyName, "rendercolor" ) || FStrEq( szKeyName, "rendercolor32" ))
+	if( FStrEq( szKeyName, "rendercolor" ) || FStrEq( szKeyName, "rendercolor32" ) )
 	{
 		color32 tmp;
 		UTIL_StringToColor32( &tmp, szValue );
@@ -339,24 +339,24 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 		// don't copy alpha, legacy support uses renderamt
 		return true;
 	}
-	
-	if ( FStrEq( szKeyName, "renderamt" ) )
+
+	if( FStrEq( szKeyName, "renderamt" ) )
 	{
 		SetRenderColorA( atoi( szValue ) );
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "disableshadows" ))
+	if( FStrEq( szKeyName, "disableshadows" ) )
 	{
 		int val = atoi( szValue );
-		if (val)
+		if( val )
 		{
 			AddEffects( EF_NOSHADOW );
 		}
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "mins" ))
+	if( FStrEq( szKeyName, "mins" ) )
 	{
 		Vector mins;
 		UTIL_StringToVector( mins.Base(), szValue );
@@ -364,7 +364,7 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "maxs" ))
+	if( FStrEq( szKeyName, "maxs" ) )
 	{
 		Vector maxs;
 		UTIL_StringToVector( maxs.Base(), szValue );
@@ -372,20 +372,20 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "disablereceiveshadows" ))
+	if( FStrEq( szKeyName, "disablereceiveshadows" ) )
 	{
 		int val = atoi( szValue );
-		if (val)
+		if( val )
 		{
 			AddEffects( EF_NORECEIVESHADOW );
 		}
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "nodamageforces" ))
+	if( FStrEq( szKeyName, "nodamageforces" ) )
 	{
 		int val = atoi( szValue );
-		if (val)
+		if( val )
 		{
 			AddEFlags( EFL_NO_DAMAGE_FORCES );
 		}
@@ -398,17 +398,17 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 		static char szBuf[64];
 
 		float y = atof( szValue );
-		if (y >= 0)
+		if( y >= 0 )
 		{
-			Q_snprintf( szBuf,sizeof(szBuf), "%f %f %f", GetLocalAngles()[0], y, GetLocalAngles()[2] );
+			Q_snprintf( szBuf, sizeof( szBuf ), "%f %f %f", GetLocalAngles()[0], y, GetLocalAngles()[2] );
 		}
-		else if ((int)y == -1)
+		else if( ( int )y == -1 )
 		{
-			Q_strncpy( szBuf, "-90 0 0", sizeof(szBuf) );
+			Q_strncpy( szBuf, "-90 0 0", sizeof( szBuf ) );
 		}
 		else
 		{
-			Q_strncpy( szBuf, "90 0 0", sizeof(szBuf) );
+			Q_strncpy( szBuf, "90 0 0", sizeof( szBuf ) );
 		}
 
 		// Do this so inherited classes looking for 'angles' don't have to bother with 'angle'
@@ -427,7 +427,7 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 
 		// If you're hitting this assert, it's probably because you're
 		// calling SetLocalAngles from within a KeyValues method.. use SetAbsAngles instead!
-		Assert( (GetMoveParent() == NULL) && !IsEFlagSet( EFL_DIRTY_ABSTRANSFORM ) );
+		Assert( ( GetMoveParent() == NULL ) && !IsEFlagSet( EFL_DIRTY_ABSTRANSFORM ) );
 		SetAbsAngles( angles );
 		return true;
 	}
@@ -439,13 +439,13 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 
 		// If you're hitting this assert, it's probably because you're
 		// calling SetLocalOrigin from within a KeyValues method.. use SetAbsOrigin instead!
-		Assert( (GetMoveParent() == NULL) && !IsEFlagSet( EFL_DIRTY_ABSTRANSFORM ) );
+		Assert( ( GetMoveParent() == NULL ) && !IsEFlagSet( EFL_DIRTY_ABSTRANSFORM ) );
 		SetAbsOrigin( vecOrigin );
 		return true;
 	}
 
 #ifdef MAPBASE
-	if ( FStrEq( szKeyName, "eflags" ) )
+	if( FStrEq( szKeyName, "eflags" ) )
 	{
 		// Can't use DEFINE_KEYFIELD since eflags might be set before KV are parsed
 		AddEFlags( atoi( szValue ) );
@@ -453,57 +453,63 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 	}
 #endif
 
-#ifdef GAME_DLL	
-	
-	if ( FStrEq( szKeyName, "targetname" ) )
+#ifdef GAME_DLL
+
+	if( FStrEq( szKeyName, "targetname" ) )
 	{
 		m_iName = AllocPooledString( szValue );
 		return true;
 	}
 
 	// loop through the data description, and try and place the keys in
-	if ( !*ent_debugkeys.GetString() )
+	if( !*ent_debugkeys.GetString() )
 	{
-		for ( datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
+		for( datamap_t* dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
 		{
-			if ( ::ParseKeyvalue(this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue) )
+			if( ::ParseKeyvalue( this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue ) )
+			{
 				return true;
+			}
 		}
 	}
 	else
 	{
 		// debug version - can be used to see what keys have been parsed in
 		bool printKeyHits = false;
-		const char *debugName = "";
+		const char* debugName = "";
 
-		if ( *ent_debugkeys.GetString() && !Q_stricmp(ent_debugkeys.GetString(), STRING(m_iClassname)) )
+		if( *ent_debugkeys.GetString() && !Q_stricmp( ent_debugkeys.GetString(), STRING( m_iClassname ) ) )
 		{
 			// Msg( "-- found entity of type %s\n", STRING(m_iClassname) );
 			printKeyHits = true;
-			debugName = STRING(m_iClassname);
+			debugName = STRING( m_iClassname );
 		}
 
 		// loop through the data description, and try and place the keys in
-		for ( datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
+		for( datamap_t* dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
 		{
-			if ( !printKeyHits && *ent_debugkeys.GetString() && !Q_stricmp(dmap->dataClassName, ent_debugkeys.GetString()) )
+			if( !printKeyHits && *ent_debugkeys.GetString() && !Q_stricmp( dmap->dataClassName, ent_debugkeys.GetString() ) )
 			{
 				// Msg( "-- found class of type %s\n", dmap->dataClassName );
 				printKeyHits = true;
 				debugName = dmap->dataClassName;
 			}
 
-			if ( ::ParseKeyvalue(this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue) )
+			if( ::ParseKeyvalue( this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue ) )
 			{
-				if ( printKeyHits )
+				if( printKeyHits )
+				{
 					Msg( "(%s) key: %-16s value: %s\n", debugName, szKeyName, szValue );
-				
+				}
+
 				return true;
 			}
 		}
 
-		if ( printKeyHits )
-			Msg( "!! (%s) key not handled: \"%s\" \"%s\"\n", STRING(m_iClassname), szKeyName, szValue );
+		if( printKeyHits )
+		{
+			Msg( "!! (%s) key not handled: \"%s\" \"%s\"\n", STRING( m_iClassname ), szKeyName, szValue );
+		}
 	}
 
 #endif
@@ -512,71 +518,71 @@ bool CBaseEntity::KeyValue( const char *szKeyName, const char *szValue )
 	return false;
 }
 
-bool CBaseEntity::KeyValue( const char *szKeyName, float flValue ) 
+bool CBaseEntity::KeyValue( const char* szKeyName, float flValue )
 {
 	char	string[256];
 
-	Q_snprintf(string,sizeof(string), "%f", flValue );
+	Q_snprintf( string, sizeof( string ), "%f", flValue );
 
 	return KeyValue( szKeyName, string );
 }
 
-bool CBaseEntity::KeyValue( const char *szKeyName, const Vector &vecValue ) 
+bool CBaseEntity::KeyValue( const char* szKeyName, const Vector& vecValue )
 {
 	char	string[256];
 
-	Q_snprintf(string,sizeof(string), "%f %f %f", vecValue.x, vecValue.y, vecValue.z );
+	Q_snprintf( string, sizeof( string ), "%f %f %f", vecValue.x, vecValue.y, vecValue.z );
 
 	return KeyValue( szKeyName, string );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
 
-bool CBaseEntity::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen )
+bool CBaseEntity::GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen )
 {
-	if ( FStrEq( szKeyName, "rendercolor" ) || FStrEq( szKeyName, "rendercolor32" ))
+	if( FStrEq( szKeyName, "rendercolor" ) || FStrEq( szKeyName, "rendercolor32" ) )
 	{
 		color32 tmp = GetRenderColor();
 		Q_snprintf( szValue, iMaxLen, "%d %d %d %d", tmp.r, tmp.g, tmp.b, tmp.a );
 		return true;
 	}
-	
-	if ( FStrEq( szKeyName, "renderamt" ) )
+
+	if( FStrEq( szKeyName, "renderamt" ) )
 	{
 		color32 tmp = GetRenderColor();
 		Q_snprintf( szValue, iMaxLen, "%d", tmp.a );
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "disableshadows" ))
+	if( FStrEq( szKeyName, "disableshadows" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%d", IsEffectActive( EF_NOSHADOW ) );
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "mins" ))
+	if( FStrEq( szKeyName, "mins" ) )
 	{
 		Assert( 0 );
 		return false;
 	}
 
-	if ( FStrEq( szKeyName, "maxs" ))
+	if( FStrEq( szKeyName, "maxs" ) )
 	{
 		Assert( 0 );
 		return false;
 	}
 
-	if ( FStrEq( szKeyName, "disablereceiveshadows" ))
+	if( FStrEq( szKeyName, "disablereceiveshadows" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%d", IsEffectActive( EF_NORECEIVESHADOW ) );
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "nodamageforces" ))
+	if( FStrEq( szKeyName, "nodamageforces" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%d", IsEffectActive( EFL_NO_DAMAGE_FORCES ) );
 		return true;
@@ -604,24 +610,26 @@ bool CBaseEntity::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen
 		return true;
 	}
 
-#ifdef GAME_DLL	
-	
-	if ( FStrEq( szKeyName, "targetname" ) )
+#ifdef GAME_DLL
+
+	if( FStrEq( szKeyName, "targetname" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%s", STRING( GetEntityName() ) );
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "classname" ) )
+	if( FStrEq( szKeyName, "classname" ) )
 	{
 		Q_snprintf( szValue, iMaxLen, "%s", GetClassname() );
 		return true;
 	}
 
-	for ( datamap_t *dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
+	for( datamap_t* dmap = GetDataDescMap(); dmap != NULL; dmap = dmap->baseMap )
 	{
-		if ( ::ExtractKeyvalue( this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue, iMaxLen ) )
+		if( ::ExtractKeyvalue( this, dmap->dataDesc, dmap->dataNumFields, szKeyName, szValue, iMaxLen ) )
+		{
 			return true;
+		}
 	}
 #endif
 
@@ -629,28 +637,30 @@ bool CBaseEntity::GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : collisionGroup - 
+// Purpose:
+// Input  : collisionGroup -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CBaseEntity::ShouldCollide( int collisionGroup, int contentsMask ) const
 {
-	if ( m_CollisionGroup == COLLISION_GROUP_DEBRIS )
+	if( m_CollisionGroup == COLLISION_GROUP_DEBRIS )
 	{
-		if ( ! (contentsMask & CONTENTS_DEBRIS) )
+		if( !( contentsMask & CONTENTS_DEBRIS ) )
+		{
 			return false;
+		}
 	}
 	return true;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : seed - 
+// Purpose:
+// Input  : seed -
 //-----------------------------------------------------------------------------
-void CBaseEntity::SetPredictionRandomSeed( const CUserCmd *cmd )
+void CBaseEntity::SetPredictionRandomSeed( const CUserCmd* cmd )
 {
-	if ( !cmd )
+	if( !cmd )
 	{
 		m_nPredictionRandomSeed = -1;
 #ifdef GAME_DLL
@@ -670,29 +680,31 @@ void CBaseEntity::SetPredictionRandomSeed( const CUserCmd *cmd )
 //------------------------------------------------------------------------------
 // Purpose : Base implimentation for entity handling decals
 //------------------------------------------------------------------------------
-void CBaseEntity::DecalTrace( trace_t *pTrace, char const *decalName )
+void CBaseEntity::DecalTrace( trace_t* pTrace, char const* decalName )
 {
 	int index = decalsystem->GetDecalIndexForName( decalName );
-	if ( index < 0 )
+	if( index < 0 )
+	{
 		return;
+	}
 
 	Assert( pTrace->m_pEnt );
 
 	CBroadcastRecipientFilter filter;
 	te->Decal( filter, 0.0, &pTrace->endpos, &pTrace->startpos,
-		pTrace->GetEntityIndex(), pTrace->hitbox, index );
+			   pTrace->GetEntityIndex(), pTrace->hitbox, index );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Base handling for impacts against entities
 //-----------------------------------------------------------------------------
-void CBaseEntity::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName )
+void CBaseEntity::ImpactTrace( trace_t* pTrace, int iDamageType, const char* pCustomImpactName )
 {
 	VPROF( "CBaseEntity::ImpactTrace" );
 	Assert( pTrace->m_pEnt );
 
-	CBaseEntity *pEntity = pTrace->m_pEnt;
- 
+	CBaseEntity* pEntity = pTrace->m_pEnt;
+
 	// Build the impact data
 	CEffectData data;
 	data.m_vOrigin = pTrace->endpos;
@@ -707,7 +719,7 @@ void CBaseEntity::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCu
 #endif
 
 	// Send it on its way
-	if ( !pCustomImpactName )
+	if( !pCustomImpactName )
 	{
 		DispatchEffect( "Impact", data );
 	}
@@ -722,30 +734,38 @@ void CBaseEntity::ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCu
 // Input  : bitsDamageType - the damage type
 // Output : the index of the damage decal to use
 //-----------------------------------------------------------------------------
-char const *CBaseEntity::DamageDecal( int bitsDamageType, int gameMaterial )
+char const* CBaseEntity::DamageDecal( int bitsDamageType, int gameMaterial )
 {
-	if ( m_nRenderMode == kRenderTransAlpha )
+	if( m_nRenderMode == kRenderTransAlpha )
+	{
 		return "";
+	}
 
-	if ( m_nRenderMode != kRenderNormal && gameMaterial == 'G' )
+	if( m_nRenderMode != kRenderNormal && gameMaterial == 'G' )
+	{
 		return "BulletProof";
+	}
 
-	if ( bitsDamageType == DMG_SLASH )
+	if( bitsDamageType == DMG_SLASH )
+	{
 		return "ManhackCut";
+	}
 
 	// This will get translated at a lower layer based on game material
 	return "Impact.Concrete";
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int	CBaseEntity::GetIndexForThinkContext( const char *pszContext )
+int	CBaseEntity::GetIndexForThinkContext( const char* pszContext )
 {
-	for ( int i = 0; i < m_aThinkFunctions.Size(); i++ )
+	for( int i = 0; i < m_aThinkFunctions.Size(); i++ )
 	{
-		if ( !Q_strncmp( STRING( m_aThinkFunctions[i].m_iszContext ), pszContext, MAX_CONTEXT_LENGTH ) )
+		if( !Q_strncmp( STRING( m_aThinkFunctions[i].m_iszContext ), pszContext, MAX_CONTEXT_LENGTH ) )
+		{
 			return i;
+		}
 	}
 
 	return NO_THINK_CONTEXT;
@@ -754,45 +774,47 @@ int	CBaseEntity::GetIndexForThinkContext( const char *pszContext )
 //-----------------------------------------------------------------------------
 // Purpose: Get a fresh think context for this entity
 //-----------------------------------------------------------------------------
-int CBaseEntity::RegisterThinkContext( const char *szContext )
+int CBaseEntity::RegisterThinkContext( const char* szContext )
 {
 	int iIndex = GetIndexForThinkContext( szContext );
-	if ( iIndex != NO_THINK_CONTEXT )
+	if( iIndex != NO_THINK_CONTEXT )
+	{
 		return iIndex;
+	}
 
 	// Make a new think func
 	thinkfunc_t sNewFunc;
 	Q_memset( &sNewFunc, 0, sizeof( sNewFunc ) );
 	sNewFunc.m_pfnThink = NULL;
 	sNewFunc.m_nNextThinkTick = 0;
-	sNewFunc.m_iszContext = AllocPooledString(szContext);
+	sNewFunc.m_iszContext = AllocPooledString( szContext );
 
 	// Insert it into our list
 	return m_aThinkFunctions.AddToTail( sNewFunc );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char *szContext )
+BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char* szContext )
 {
 #if !defined( CLIENT_DLL )
 #ifdef _DEBUG
 #ifdef GNUC
-	COMPILE_TIME_ASSERT( sizeof(func) == 8 );
+	COMPILE_TIME_ASSERT( sizeof( func ) == 8 );
 #else
-	COMPILE_TIME_ASSERT( sizeof(func) == 4 );
+	COMPILE_TIME_ASSERT( sizeof( func ) == 4 );
 #endif
 #endif
 #endif
 
 	// Old system?
-	if ( !szContext )
+	if( !szContext )
 	{
 		m_pfnThink = func;
 #if !defined( CLIENT_DLL )
 #ifdef _DEBUG
-		FunctionCheck( *(reinterpret_cast<void **>(&m_pfnThink)), "BaseThinkFunc" ); 
+		FunctionCheck( *( reinterpret_cast<void**>( &m_pfnThink ) ), "BaseThinkFunc" );
 #endif
 #endif
 		return m_pfnThink;
@@ -800,7 +822,7 @@ BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char *szCont
 
 	// Find the think function in our list, and if we couldn't find it, register it
 	int iIndex = GetIndexForThinkContext( szContext );
-	if ( iIndex == NO_THINK_CONTEXT )
+	if( iIndex == NO_THINK_CONTEXT )
 	{
 		iIndex = RegisterThinkContext( szContext );
 	}
@@ -808,11 +830,11 @@ BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char *szCont
 	m_aThinkFunctions[ iIndex ].m_pfnThink = func;
 #if !defined( CLIENT_DLL )
 #ifdef _DEBUG
-	FunctionCheck( *(reinterpret_cast<void **>(&m_aThinkFunctions[ iIndex ].m_pfnThink)), szContext ); 
+	FunctionCheck( *( reinterpret_cast<void**>( &m_aThinkFunctions[ iIndex ].m_pfnThink ) ), szContext );
 #endif
 #endif
 
-	if ( thinkTime != 0 )
+	if( thinkTime != 0 )
 	{
 		int thinkTick = ( thinkTime == TICK_NEVER_THINK ) ? TICK_NEVER_THINK : TIME_TO_TICKS( thinkTime );
 		m_aThinkFunctions[ iIndex ].m_nNextThinkTick = thinkTick;
@@ -822,20 +844,20 @@ BASEPTR	CBaseEntity::ThinkSet( BASEPTR func, float thinkTime, const char *szCont
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CBaseEntity::SetNextThink( float thinkTime, const char *szContext )
+void CBaseEntity::SetNextThink( float thinkTime, const char* szContext )
 {
 	int thinkTick = ( thinkTime == TICK_NEVER_THINK ) ? TICK_NEVER_THINK : TIME_TO_TICKS( thinkTime );
 
 	// Are we currently in a think function with a context?
 	int iIndex = 0;
-	if ( !szContext )
+	if( !szContext )
 	{
 #ifdef _DEBUG
-		if ( m_iCurrentThinkContext != NO_THINK_CONTEXT )
+		if( m_iCurrentThinkContext != NO_THINK_CONTEXT )
 		{
-			Msg( "Warning: Setting base think function within think context %s\n", STRING(m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext) );
+			Msg( "Warning: Setting base think function within think context %s\n", STRING( m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext ) );
 		}
 #endif
 
@@ -848,7 +870,7 @@ void CBaseEntity::SetNextThink( float thinkTime, const char *szContext )
 	{
 		// Find the think function in our list, and if we couldn't find it, register it
 		iIndex = GetIndexForThinkContext( szContext );
-		if ( iIndex == NO_THINK_CONTEXT )
+		if( iIndex == NO_THINK_CONTEXT )
 		{
 			iIndex = RegisterThinkContext( szContext );
 		}
@@ -860,26 +882,28 @@ void CBaseEntity::SetNextThink( float thinkTime, const char *szContext )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-float CBaseEntity::GetNextThink( const char *szContext )
+float CBaseEntity::GetNextThink( const char* szContext )
 {
 	// Are we currently in a think function with a context?
 	int iIndex = 0;
-	if ( !szContext )
+	if( !szContext )
 	{
 #ifdef _DEBUG
-		if ( m_iCurrentThinkContext != NO_THINK_CONTEXT )
+		if( m_iCurrentThinkContext != NO_THINK_CONTEXT )
 		{
-			Msg( "Warning: Getting base nextthink time within think context %s\n", STRING(m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext) );
+			Msg( "Warning: Getting base nextthink time within think context %s\n", STRING( m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext ) );
 		}
 #endif
 
-		if ( m_nNextThinkTick == TICK_NEVER_THINK )
+		if( m_nNextThinkTick == TICK_NEVER_THINK )
+		{
 			return TICK_NEVER_THINK;
+		}
 
 		// Old system
-		return TICK_INTERVAL * (m_nNextThinkTick );
+		return TICK_INTERVAL * ( m_nNextThinkTick );
 	}
 	else
 	{
@@ -887,31 +911,35 @@ float CBaseEntity::GetNextThink( const char *szContext )
 		iIndex = GetIndexForThinkContext( szContext );
 	}
 
-	if ( iIndex == m_aThinkFunctions.InvalidIndex() )
-		return TICK_NEVER_THINK;
-
-	if ( m_aThinkFunctions[ iIndex ].m_nNextThinkTick == TICK_NEVER_THINK )
+	if( iIndex == m_aThinkFunctions.InvalidIndex() )
 	{
 		return TICK_NEVER_THINK;
 	}
-	return TICK_INTERVAL * (m_aThinkFunctions[ iIndex ].m_nNextThinkTick );
+
+	if( m_aThinkFunctions[ iIndex ].m_nNextThinkTick == TICK_NEVER_THINK )
+	{
+		return TICK_NEVER_THINK;
+	}
+	return TICK_INTERVAL * ( m_aThinkFunctions[ iIndex ].m_nNextThinkTick );
 }
 
-int	CBaseEntity::GetNextThinkTick( const char *szContext /*= NULL*/ )
+int	CBaseEntity::GetNextThinkTick( const char* szContext /*= NULL*/ )
 {
 	// Are we currently in a think function with a context?
 	int iIndex = 0;
-	if ( !szContext )
+	if( !szContext )
 	{
 #ifdef _DEBUG
-		if ( m_iCurrentThinkContext != NO_THINK_CONTEXT )
+		if( m_iCurrentThinkContext != NO_THINK_CONTEXT )
 		{
-			Msg( "Warning: Getting base nextthink time within think context %s\n", STRING(m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext) );
+			Msg( "Warning: Getting base nextthink time within think context %s\n", STRING( m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext ) );
 		}
 #endif
 
-		if ( m_nNextThinkTick == TICK_NEVER_THINK )
+		if( m_nNextThinkTick == TICK_NEVER_THINK )
+		{
 			return TICK_NEVER_THINK;
+		}
 
 		// Old system
 		return m_nNextThinkTick;
@@ -925,7 +953,7 @@ int	CBaseEntity::GetNextThinkTick( const char *szContext /*= NULL*/ )
 		Assert( iIndex != -1 );
 	}
 
-	if ( ( iIndex == -1 ) || ( m_aThinkFunctions[ iIndex ].m_nNextThinkTick == TICK_NEVER_THINK ) )
+	if( ( iIndex == -1 ) || ( m_aThinkFunctions[ iIndex ].m_nNextThinkTick == TICK_NEVER_THINK ) )
 	{
 		return TICK_NEVER_THINK;
 	}
@@ -934,18 +962,18 @@ int	CBaseEntity::GetNextThinkTick( const char *szContext /*= NULL*/ )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-float CBaseEntity::GetLastThink( const char *szContext )
+float CBaseEntity::GetLastThink( const char* szContext )
 {
 	// Are we currently in a think function with a context?
 	int iIndex = 0;
-	if ( !szContext )
+	if( !szContext )
 	{
 #ifdef _DEBUG
-		if ( m_iCurrentThinkContext != NO_THINK_CONTEXT )
+		if( m_iCurrentThinkContext != NO_THINK_CONTEXT )
 		{
-			Msg( "Warning: Getting base lastthink time within think context %s\n", STRING(m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext) );
+			Msg( "Warning: Getting base lastthink time within think context %s\n", STRING( m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext ) );
 		}
 #endif
 		// Old system
@@ -959,17 +987,17 @@ float CBaseEntity::GetLastThink( const char *szContext )
 
 	return m_aThinkFunctions[ iIndex ].m_nLastThinkTick * TICK_INTERVAL;
 }
-	
-int CBaseEntity::GetLastThinkTick( const char *szContext /*= NULL*/ )
+
+int CBaseEntity::GetLastThinkTick( const char* szContext /*= NULL*/ )
 {
 	// Are we currently in a think function with a context?
 	int iIndex = 0;
-	if ( !szContext )
+	if( !szContext )
 	{
 #ifdef _DEBUG
-		if ( m_iCurrentThinkContext != NO_THINK_CONTEXT )
+		if( m_iCurrentThinkContext != NO_THINK_CONTEXT )
 		{
-			Msg( "Warning: Getting base lastthink time within think context %s\n", STRING(m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext) );
+			Msg( "Warning: Getting base lastthink time within think context %s\n", STRING( m_aThinkFunctions[m_iCurrentThinkContext].m_iszContext ) );
 		}
 #endif
 		// Old system
@@ -986,13 +1014,17 @@ int CBaseEntity::GetLastThinkTick( const char *szContext /*= NULL*/ )
 
 bool CBaseEntity::WillThink()
 {
-	if ( m_nNextThinkTick > 0 )
-		return true;
-
-	for ( int i = 0; i < m_aThinkFunctions.Count(); i++ )
+	if( m_nNextThinkTick > 0 )
 	{
-		if ( m_aThinkFunctions[i].m_nNextThinkTick > 0 )
+		return true;
+	}
+
+	for( int i = 0; i < m_aThinkFunctions.Count(); i++ )
+	{
+		if( m_aThinkFunctions[i].m_nNextThinkTick > 0 )
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -1003,17 +1035,17 @@ bool CBaseEntity::WillThink()
 int CBaseEntity::GetFirstThinkTick()
 {
 	int minTick = TICK_NEVER_THINK;
-	if ( m_nNextThinkTick > 0 )
+	if( m_nNextThinkTick > 0 )
 	{
 		minTick = m_nNextThinkTick;
 	}
 
-	for ( int i = 0; i < m_aThinkFunctions.Count(); i++ )
+	for( int i = 0; i < m_aThinkFunctions.Count(); i++ )
 	{
 		int next = m_aThinkFunctions[i].m_nNextThinkTick;
-		if ( next > 0 )
+		if( next > 0 )
 		{
-			if ( next < minTick || minTick == TICK_NEVER_THINK )
+			if( next < minTick || minTick == TICK_NEVER_THINK )
 			{
 				minTick = next;
 			}
@@ -1025,11 +1057,11 @@ int CBaseEntity::GetFirstThinkTick()
 // NOTE: pass in the isThinking hint so we have to search the think functions less
 void CBaseEntity::CheckHasThinkFunction( bool isThinking )
 {
-	if ( IsEFlagSet( EFL_NO_THINK_FUNCTION ) && isThinking )
+	if( IsEFlagSet( EFL_NO_THINK_FUNCTION ) && isThinking )
 	{
 		RemoveEFlags( EFL_NO_THINK_FUNCTION );
 	}
-	else if ( !isThinking && !IsEFlagSet( EFL_NO_THINK_FUNCTION ) && !WillThink() )
+	else if( !isThinking && !IsEFlagSet( EFL_NO_THINK_FUNCTION ) && !WillThink() )
 	{
 		AddEFlags( EFL_NO_THINK_FUNCTION );
 	}
@@ -1041,17 +1073,21 @@ void CBaseEntity::CheckHasThinkFunction( bool isThinking )
 bool CBaseEntity::WillSimulateGamePhysics()
 {
 	// players always simulate game physics
-	if ( !IsPlayer() )
+	if( !IsPlayer() )
 	{
 		MoveType_t movetype = GetMoveType();
-		
-		if ( movetype == MOVETYPE_NONE || movetype == MOVETYPE_VPHYSICS )
+
+		if( movetype == MOVETYPE_NONE || movetype == MOVETYPE_VPHYSICS )
+		{
 			return false;
+		}
 
 #if !defined( CLIENT_DLL )
 		// MOVETYPE_PUSH not supported on the client
-		if ( movetype == MOVETYPE_PUSH && GetMoveDoneTime() <= 0 )
+		if( movetype == MOVETYPE_PUSH && GetMoveDoneTime() <= 0 )
+		{
 			return false;
+		}
 #endif
 	}
 
@@ -1061,9 +1097,11 @@ bool CBaseEntity::WillSimulateGamePhysics()
 void CBaseEntity::CheckHasGamePhysicsSimulation()
 {
 	bool isSimulating = WillSimulateGamePhysics();
-	if ( isSimulating != IsEFlagSet(EFL_NO_GAME_PHYSICS_SIMULATION) )
+	if( isSimulating != IsEFlagSet( EFL_NO_GAME_PHYSICS_SIMULATION ) )
+	{
 		return;
-	if ( isSimulating )
+	}
+	if( isSimulating )
 	{
 		RemoveEFlags( EFL_NO_GAME_PHYSICS_SIMULATION );
 	}
@@ -1083,7 +1121,7 @@ void CBaseEntity::SetNextThink( int nContextIndex, float thinkTime )
 {
 	int thinkTick = ( thinkTime == TICK_NEVER_THINK ) ? TICK_NEVER_THINK : TIME_TO_TICKS( thinkTime );
 
-	if (nContextIndex < 0)
+	if( nContextIndex < 0 )
 	{
 		SetNextThink( thinkTime );
 	}
@@ -1098,7 +1136,7 @@ void CBaseEntity::SetLastThink( int nContextIndex, float thinkTime )
 {
 	int thinkTick = ( thinkTime == TICK_NEVER_THINK ) ? TICK_NEVER_THINK : TIME_TO_TICKS( thinkTime );
 
-	if (nContextIndex < 0)
+	if( nContextIndex < 0 )
 	{
 		m_nLastThinkTick = thinkTick;
 	}
@@ -1110,34 +1148,38 @@ void CBaseEntity::SetLastThink( int nContextIndex, float thinkTime )
 
 float CBaseEntity::GetNextThink( int nContextIndex ) const
 {
-	if (nContextIndex < 0)
+	if( nContextIndex < 0 )
+	{
 		return m_nNextThinkTick * TICK_INTERVAL;
+	}
 
-	return m_aThinkFunctions[nContextIndex].m_nNextThinkTick * TICK_INTERVAL; 
+	return m_aThinkFunctions[nContextIndex].m_nNextThinkTick * TICK_INTERVAL;
 }
 
 int	CBaseEntity::GetNextThinkTick( int nContextIndex ) const
 {
-	if (nContextIndex < 0)
+	if( nContextIndex < 0 )
+	{
 		return m_nNextThinkTick;
+	}
 
-	return m_aThinkFunctions[nContextIndex].m_nNextThinkTick; 
+	return m_aThinkFunctions[nContextIndex].m_nNextThinkTick;
 }
 
 
-int CheckEntityVelocity( Vector &v )
+int CheckEntityVelocity( Vector& v )
 {
 	float r = k_flMaxEntitySpeed;
-	if (
+	if(
 		v.x > -r && v.x < r &&
 		v.y > -r && v.y < r &&
-		v.z > -r && v.z < r)
+		v.z > -r && v.z < r )
 	{
 		// The usual case.  It's totally reasonable
 		return 1;
 	}
 	float speed = v.Length();
-	if ( speed < k_flMaxEntitySpeed * 100.0f )
+	if( speed < k_flMaxEntitySpeed * 100.0f )
 	{
 		// Sort of suspicious.  Clamp it
 		v *= k_flMaxEntitySpeed / speed;
@@ -1151,15 +1193,15 @@ int CheckEntityVelocity( Vector &v )
 //-----------------------------------------------------------------------------
 // Purpose: My physics object has been updated, react or extract data
 //-----------------------------------------------------------------------------
-void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
+void CBaseEntity::VPhysicsUpdate( IPhysicsObject* pPhysics )
 {
 	switch( GetMoveType() )
 	{
-	case MOVETYPE_VPHYSICS:
+		case MOVETYPE_VPHYSICS:
 		{
-			if ( GetMoveParent() )
+			if( GetMoveParent() )
 			{
-				DevWarning("Updating physics on object in hierarchy %s!\n", GetClassname());
+				DevWarning( "Updating physics on object in hierarchy %s!\n", GetClassname() );
 				return;
 			}
 			Vector origin;
@@ -1167,74 +1209,76 @@ void CBaseEntity::VPhysicsUpdate( IPhysicsObject *pPhysics )
 
 			pPhysics->GetPosition( &origin, &angles );
 
-			if ( !IsEntityQAngleReasonable( angles ) )
+			if( !IsEntityQAngleReasonable( angles ) )
 			{
-				if ( CheckEmitReasonablePhysicsSpew() )
+				if( CheckEmitReasonablePhysicsSpew() )
 				{
 					Warning( "Ignoring bogus angles (%f,%f,%f) from vphysics! (entity %s)\n", angles.x, angles.y, angles.z, GetDebugName() );
 				}
 				angles = vec3_angle;
 			}
-#ifndef CLIENT_DLL 
+#ifndef CLIENT_DLL
 			Vector prevOrigin = GetAbsOrigin();
 #endif
 
-			if ( IsEntityPositionReasonable( origin ) )
+			if( IsEntityPositionReasonable( origin ) )
 			{
 				SetAbsOrigin( origin );
 			}
 			else
 			{
-				if ( CheckEmitReasonablePhysicsSpew() )
+				if( CheckEmitReasonablePhysicsSpew() )
 				{
 					Warning( "Ignoring unreasonable position (%f,%f,%f) from vphysics! (entity %s)\n", origin.x, origin.y, origin.z, GetDebugName() );
 				}
 			}
 
-			for ( int i = 0; i < 3; ++i )
+			for( int i = 0; i < 3; ++i )
 			{
 				angles[ i ] = AngleNormalize( angles[ i ] );
 			}
 			SetAbsAngles( angles );
 
 			// Interactive debris converts back to debris when it comes to rest
-			if ( pPhysics->IsAsleep() && GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
+			if( pPhysics->IsAsleep() && GetCollisionGroup() == COLLISION_GROUP_INTERACTIVE_DEBRIS )
 			{
 				SetCollisionGroup( COLLISION_GROUP_DEBRIS );
 			}
 
-#ifndef CLIENT_DLL 
+#ifndef CLIENT_DLL
 			PhysicsTouchTriggers( &prevOrigin );
-			PhysicsRelinkChildren(gpGlobals->frametime);
+			PhysicsRelinkChildren( gpGlobals->frametime );
 #endif
 		}
-	break;
-
-	case MOVETYPE_STEP:
 		break;
 
-	case MOVETYPE_PUSH:
+		case MOVETYPE_STEP:
+			break;
+
+		case MOVETYPE_PUSH:
 #ifndef CLIENT_DLL
-		VPhysicsUpdatePusher( pPhysics );
+			VPhysicsUpdatePusher( pPhysics );
 #endif
-	break;
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Init this object's physics as a static
 //-----------------------------------------------------------------------------
-IPhysicsObject *CBaseEntity::VPhysicsInitStatic( void )
+IPhysicsObject* CBaseEntity::VPhysicsInitStatic( void )
 {
-	if ( !VPhysicsInitSetup() )
+	if( !VPhysicsInitSetup() )
+	{
 		return NULL;
+	}
 
 #ifndef CLIENT_DLL
 	// If this entity has a move parent, it needs to be shadow, not static
-	if ( GetMoveParent() )
+	if( GetMoveParent() )
 	{
 		// must be SOLID_VPHYSICS if in hierarchy to solve collisions correctly
-		if ( GetSolid() == SOLID_BSP && GetRootMoveParent()->GetSolid() != SOLID_BSP )
+		if( GetSolid() == SOLID_BSP && GetRootMoveParent()->GetSolid() != SOLID_BSP )
 		{
 			SetSolid( SOLID_VPHYSICS );
 		}
@@ -1244,12 +1288,14 @@ IPhysicsObject *CBaseEntity::VPhysicsInitStatic( void )
 #endif
 
 	// No physics
-	if ( GetSolid() == SOLID_NONE )
+	if( GetSolid() == SOLID_NONE )
+	{
 		return NULL;
+	}
 
 	// create a static physics objct
-	IPhysicsObject *pPhysicsObject = NULL;
-	if ( GetSolid() == SOLID_BBOX )
+	IPhysicsObject* pPhysicsObject = NULL;
+	if( GetSolid() == SOLID_BBOX )
 	{
 		pPhysicsObject = PhysModelCreateBox( this, WorldAlignMins(), WorldAlignMaxs(), GetAbsOrigin(), true );
 	}
@@ -1262,28 +1308,28 @@ IPhysicsObject *CBaseEntity::VPhysicsInitStatic( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPhysics - 
+// Purpose:
+// Input  : *pPhysics -
 //-----------------------------------------------------------------------------
-void CBaseEntity::VPhysicsSetObject( IPhysicsObject *pPhysics )
+void CBaseEntity::VPhysicsSetObject( IPhysicsObject* pPhysics )
 {
-	if ( m_pPhysicsObject && pPhysics )
+	if( m_pPhysicsObject && pPhysics )
 	{
 		Warning( "Overwriting physics object for %s\n", GetClassname() );
 	}
 	m_pPhysicsObject = pPhysics;
-	if ( pPhysics && !m_pPhysicsObject )
+	if( pPhysics && !m_pPhysicsObject )
 	{
 		CollisionRulesChanged();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBaseEntity::VPhysicsDestroyObject( void )
 {
-	if ( m_pPhysicsObject )
+	if( m_pPhysicsObject )
 	{
 #ifndef CLIENT_DLL
 		PhysRemoveShadow( this );
@@ -1294,18 +1340,20 @@ void CBaseEntity::VPhysicsDestroyObject( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CBaseEntity::VPhysicsInitSetup()
 {
 #ifndef CLIENT_DLL
 	// don't support logical ents
-	if ( !edict() || IsMarkedForDeletion() )
+	if( !edict() || IsMarkedForDeletion() )
+	{
 		return false;
+	}
 #endif
 
 	// If this entity already has a physics object, then it should have been deleted prior to making this call.
-	Assert(!m_pPhysicsObject);
+	Assert( !m_pPhysicsObject );
 	VPhysicsDestroyObject();
 
 	// make sure absorigin / absangles are correct
@@ -1317,10 +1365,12 @@ bool CBaseEntity::VPhysicsInitSetup()
 //			physics alone determines where it goes (gravity, friction, etc)
 //			and the entity receives updates from vphysics.  SetAbsOrigin(), etc do not affect the object!
 //-----------------------------------------------------------------------------
-IPhysicsObject *CBaseEntity::VPhysicsInitNormal( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t *pSolid )
+IPhysicsObject* CBaseEntity::VPhysicsInitNormal( SolidType_t solidType, int nSolidFlags, bool createAsleep, solid_t* pSolid )
 {
-	if ( !VPhysicsInitSetup() )
+	if( !VPhysicsInitSetup() )
+	{
 		return NULL;
+	}
 
 	// NOTE: This has to occur before PhysModelCreate because that call will
 	// call back into ShouldCollide(), which uses solidtype for rules.
@@ -1328,19 +1378,19 @@ IPhysicsObject *CBaseEntity::VPhysicsInitNormal( SolidType_t solidType, int nSol
 	SetSolidFlags( nSolidFlags );
 
 	// No physics
-	if ( solidType == SOLID_NONE )
+	if( solidType == SOLID_NONE )
 	{
 		return NULL;
 	}
 
 	// create a normal physics object
-	IPhysicsObject *pPhysicsObject = PhysModelCreate( this, GetModelIndex(), GetAbsOrigin(), GetAbsAngles(), pSolid );
-	if ( pPhysicsObject )
+	IPhysicsObject* pPhysicsObject = PhysModelCreate( this, GetModelIndex(), GetAbsOrigin(), GetAbsAngles(), pSolid );
+	if( pPhysicsObject )
 	{
 		VPhysicsSetObject( pPhysicsObject );
 		SetMoveType( MOVETYPE_VPHYSICS );
 
-		if ( !createAsleep )
+		if( !createAsleep )
 		{
 			pPhysicsObject->Wake();
 		}
@@ -1350,30 +1400,34 @@ IPhysicsObject *CBaseEntity::VPhysicsInitNormal( SolidType_t solidType, int nSol
 }
 
 // This creates a vphysics object with a shadow controller that follows the AI
-IPhysicsObject *CBaseEntity::VPhysicsInitShadow( bool allowPhysicsMovement, bool allowPhysicsRotation, solid_t *pSolid )
+IPhysicsObject* CBaseEntity::VPhysicsInitShadow( bool allowPhysicsMovement, bool allowPhysicsRotation, solid_t* pSolid )
 {
-	if ( !VPhysicsInitSetup() )
+	if( !VPhysicsInitSetup() )
+	{
 		return NULL;
+	}
 
 	// No physics
-	if ( GetSolid() == SOLID_NONE )
+	if( GetSolid() == SOLID_NONE )
+	{
 		return NULL;
+	}
 
-	const Vector &origin = GetAbsOrigin();
+	const Vector& origin = GetAbsOrigin();
 	QAngle angles = GetAbsAngles();
-	IPhysicsObject *pPhysicsObject = NULL;
+	IPhysicsObject* pPhysicsObject = NULL;
 
-	if ( GetSolid() == SOLID_BBOX )
+	if( GetSolid() == SOLID_BBOX )
 	{
 		// adjust these so the game tracing epsilons match the physics minimum separation distance
 		// this will shrink the vphysics version of the model by the difference in epsilons
 		float radius = 0.25f - DIST_EPSILON;
-		Vector mins = WorldAlignMins() + Vector(radius, radius, radius);
-		Vector maxs = WorldAlignMaxs() - Vector(radius, radius, radius);
+		Vector mins = WorldAlignMins() + Vector( radius, radius, radius );
+		Vector maxs = WorldAlignMaxs() - Vector( radius, radius, radius );
 		pPhysicsObject = PhysModelCreateBox( this, mins, maxs, origin, false );
 		angles = vec3_angle;
 	}
-	else if ( GetSolid() == SOLID_OBB )
+	else if( GetSolid() == SOLID_OBB )
 	{
 		pPhysicsObject = PhysModelCreateOBB( this, CollisionProp()->OBBMins(), CollisionProp()->OBBMaxs(), origin, angles, false );
 	}
@@ -1381,8 +1435,10 @@ IPhysicsObject *CBaseEntity::VPhysicsInitShadow( bool allowPhysicsMovement, bool
 	{
 		pPhysicsObject = PhysModelCreate( this, GetModelIndex(), origin, angles, pSolid );
 	}
-	if ( !pPhysicsObject )
+	if( !pPhysicsObject )
+	{
 		return NULL;
+	}
 
 	VPhysicsSetObject( pPhysicsObject );
 	// UNDONE: Tune these speeds!!!
@@ -1393,7 +1449,7 @@ IPhysicsObject *CBaseEntity::VPhysicsInitShadow( bool allowPhysicsMovement, bool
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CBaseEntity::CreateVPhysics()
 {
@@ -1402,24 +1458,32 @@ bool CBaseEntity::CreateVPhysics()
 
 bool CBaseEntity::IsStandable() const
 {
-	if (GetSolidFlags() & FSOLID_NOT_STANDABLE) 
+	if( GetSolidFlags() & FSOLID_NOT_STANDABLE )
+	{
 		return false;
+	}
 
-	if ( GetSolid() == SOLID_BSP || GetSolid() == SOLID_VPHYSICS || GetSolid() == SOLID_BBOX )
+	if( GetSolid() == SOLID_BSP || GetSolid() == SOLID_VPHYSICS || GetSolid() == SOLID_BBOX )
+	{
 		return true;
+	}
 
-	return IsBSPModel( ); 
+	return IsBSPModel( );
 }
 
 bool CBaseEntity::IsBSPModel() const
 {
-	if ( GetSolid() == SOLID_BSP )
+	if( GetSolid() == SOLID_BSP )
+	{
 		return true;
-	
-	const model_t *model = modelinfo->GetModel( GetModelIndex() );
+	}
 
-	if ( GetSolid() == SOLID_VPHYSICS && modelinfo->GetModelType( model ) == mod_brush )
+	const model_t* model = modelinfo->GetModel( GetModelIndex() );
+
+	if( GetSolid() == SOLID_VPHYSICS && modelinfo->GetModelType( model ) == mod_brush )
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -1431,10 +1495,10 @@ bool CBaseEntity::IsBSPModel() const
 void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 {
 	// Main entry point for dirty flag setting for the 90% case
-	// 1) If the origin changes, then we have to update abstransform, Shadow projection, PVS, KD-tree, 
+	// 1) If the origin changes, then we have to update abstransform, Shadow projection, PVS, KD-tree,
 	//    client-leaf system.
 	// 2) If the angles change, then we have to update abstransform, Shadow projection,
-	//    shadow render-to-texture, client-leaf system, and surrounding bounds. 
+	//    shadow render-to-texture, client-leaf system, and surrounding bounds.
 	//	  Children have to additionally update absvelocity, KD-tree, and PVS.
 	//	  If the surrounding bounds actually update, when we also need to update the KD-tree and the PVS.
 	// 3) If it's due to attachment, then all children who are attached to an attachment point
@@ -1442,15 +1506,15 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 
 	// Other stuff:
 	// 1) Marking the surrounding bounds dirty will automatically mark KD tree + PVS dirty.
-	
+
 	int nDirtyFlags = 0;
 
-	if ( nChangeFlags & VELOCITY_CHANGED )
+	if( nChangeFlags & VELOCITY_CHANGED )
 	{
 		nDirtyFlags |= EFL_DIRTY_ABSVELOCITY;
 	}
 
-	if ( nChangeFlags & POSITION_CHANGED )
+	if( nChangeFlags & POSITION_CHANGED )
 	{
 		nDirtyFlags |= EFL_DIRTY_ABSTRANSFORM;
 
@@ -1464,10 +1528,10 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 
 	// NOTE: This has to be done after velocity + position are changed
 	// because we change the nChangeFlags for the child entities
-	if ( nChangeFlags & ANGLES_CHANGED )
+	if( nChangeFlags & ANGLES_CHANGED )
 	{
 		nDirtyFlags |= EFL_DIRTY_ABSTRANSFORM;
-		if ( CollisionProp()->DoesRotationInvalidateSurroundingBox() )
+		if( CollisionProp()->DoesRotationInvalidateSurroundingBox() )
 		{
 			// NOTE: This will handle the KD-tree, surrounding bounds, PVS
 			// render-to-texture shadow, shadow projection, and client leaf dirty
@@ -1491,7 +1555,7 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 
 	// Set flags for children
 	bool bOnlyDueToAttachment = false;
-	if ( nChangeFlags & ANIMATION_CHANGED )
+	if( nChangeFlags & ANIMATION_CHANGED )
 	{
 #ifdef CLIENT_DLL
 		g_pClientShadowMgr->MarkRenderToTextureShadowDirty( GetShadowHandle() );
@@ -1499,7 +1563,7 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 
 		// Only set this flag if the only thing that changed us was the animation.
 		// If position or something else changed us, then we must tell all children.
-		if ( !( nChangeFlags & (POSITION_CHANGED | VELOCITY_CHANGED | ANGLES_CHANGED) ) )
+		if( !( nChangeFlags & ( POSITION_CHANGED | VELOCITY_CHANGED | ANGLES_CHANGED ) ) )
 		{
 			bOnlyDueToAttachment = true;
 		}
@@ -1507,18 +1571,22 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 		nChangeFlags = POSITION_CHANGED | ANGLES_CHANGED | VELOCITY_CHANGED;
 	}
 
-	for (CBaseEntity *pChild = FirstMoveChild(); pChild; pChild = pChild->NextMovePeer())
+	for( CBaseEntity* pChild = FirstMoveChild(); pChild; pChild = pChild->NextMovePeer() )
 	{
 		// If this is due to the parent animating, only invalidate children that are parented to an attachment
 		// Entities that are following also access attachments points on parents and must be invalidated.
-		if ( bOnlyDueToAttachment )
+		if( bOnlyDueToAttachment )
 		{
 #ifdef CLIENT_DLL
-			if ( (pChild->GetParentAttachment() == 0) && !pChild->IsFollowingEntity() )
+			if( ( pChild->GetParentAttachment() == 0 ) && !pChild->IsFollowingEntity() )
+			{
 				continue;
+			}
 #else
-			if ( pChild->GetParentAttachment() == 0 )
+			if( pChild->GetParentAttachment() == 0 )
+			{
 				continue;
+			}
 #endif
 		}
 		pChild->InvalidatePhysicsRecursive( nChangeFlags );
@@ -1540,7 +1608,7 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 	//	{
 	//		C_BaseAnimating *pAnim = GetBaseAnimating();
 	//		if ( pAnim )
-	//			pAnim->InvalidateBoneCache();		
+	//			pAnim->InvalidateBoneCache();
 	//	}
 	//#endif
 }
@@ -1550,11 +1618,11 @@ void CBaseEntity::InvalidatePhysicsRecursive( int nChangeFlags )
 //-----------------------------------------------------------------------------
 // Returns the highest parent of an entity
 //-----------------------------------------------------------------------------
-CBaseEntity *CBaseEntity::GetRootMoveParent()
+CBaseEntity* CBaseEntity::GetRootMoveParent()
 {
-	CBaseEntity *pEntity = this;
-	CBaseEntity *pParent = this->GetMoveParent();
-	while ( pParent )
+	CBaseEntity* pEntity = this;
+	CBaseEntity* pParent = this->GetMoveParent();
+	while( pParent )
 	{
 		pEntity = pParent;
 		pParent = pEntity->GetMoveParent();
@@ -1574,7 +1642,7 @@ bool CBaseEntity::IsPrecacheAllowed()
 
 //-----------------------------------------------------------------------------
 // Purpose: static method
-// Input  : allow - 
+// Input  : allow -
 //-----------------------------------------------------------------------------
 void CBaseEntity::SetAllowPrecache( bool allow )
 {
@@ -1595,15 +1663,15 @@ class CBulletsTraceFilter : public CTraceFilterSimpleList
 public:
 	CBulletsTraceFilter( int collisionGroup ) : CTraceFilterSimpleList( collisionGroup ) {}
 
-	bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
+	bool ShouldHitEntity( IHandleEntity* pHandleEntity, int contentsMask )
 	{
-		if ( m_PassEntities.Count() )
+		if( m_PassEntities.Count() )
 		{
-			CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
-			CBaseEntity *pPassEntity = EntityFromEntityHandle( m_PassEntities[0] );
-			if ( pEntity && pPassEntity && pEntity->GetOwnerEntity() == pPassEntity && 
-				pPassEntity->IsSolidFlagSet(FSOLID_NOT_SOLID) && pPassEntity->IsSolidFlagSet( FSOLID_CUSTOMBOXTEST ) && 
-				pPassEntity->IsSolidFlagSet( FSOLID_CUSTOMRAYTEST ) )
+			CBaseEntity* pEntity = EntityFromEntityHandle( pHandleEntity );
+			CBaseEntity* pPassEntity = EntityFromEntityHandle( m_PassEntities[0] );
+			if( pEntity && pPassEntity && pEntity->GetOwnerEntity() == pPassEntity &&
+					pPassEntity->IsSolidFlagSet( FSOLID_NOT_SOLID ) && pPassEntity->IsSolidFlagSet( FSOLID_CUSTOMBOXTEST ) &&
+					pPassEntity->IsSolidFlagSet( FSOLID_CUSTOMRAYTEST ) )
 			{
 				// It's a bone follower of the entity to ignore (toml 8/3/2007)
 				return false;
@@ -1617,19 +1685,21 @@ public:
 typedef CTraceFilterSimpleList CBulletsTraceFilter;
 #endif
 
-void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
+void CBaseEntity::FireBullets( const FireBulletsInfo_t& info )
 {
 #if defined(MAPBASE_VSCRIPT) && defined(GAME_DLL)
-	if ( m_ScriptScope.IsInitialized() && g_Hook_FireBullets.CanRunInScope( m_ScriptScope ) )
+	if( m_ScriptScope.IsInitialized() && g_Hook_FireBullets.CanRunInScope( m_ScriptScope ) )
 	{
-		HSCRIPT hInfo = g_pScriptVM->RegisterInstance( const_cast<FireBulletsInfo_t*>(&info) );
+		HSCRIPT hInfo = g_pScriptVM->RegisterInstance( const_cast<FireBulletsInfo_t*>( &info ) );
 
 		ScriptVariant_t functionReturn;
 		ScriptVariant_t args[] = { hInfo };
-		if (g_Hook_FireBullets.Call( m_ScriptScope, &functionReturn, args ))
+		if( g_Hook_FireBullets.Call( m_ScriptScope, &functionReturn, args ) )
 		{
-			if (!functionReturn.m_bool)
+			if( !functionReturn.m_bool )
+			{
 				return;
+			}
 		}
 
 		g_pScriptVM->RemoveInstance( hInfo );
@@ -1639,9 +1709,9 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 	static int	tracerCount;
 	trace_t		tr;
 	CAmmoDef*	pAmmoDef	= GetAmmoDef();
-	int			nDamageType	= pAmmoDef->DamageType(info.m_iAmmoType);
-	int			nAmmoFlags	= pAmmoDef->Flags(info.m_iAmmoType);
-	
+	int			nDamageType	= pAmmoDef->DamageType( info.m_iAmmoType );
+	int			nAmmoFlags	= pAmmoDef->Flags( info.m_iAmmoType );
+
 	bool bDoServerEffects = true;
 
 #if defined( HL2MP ) && defined( GAME_DLL )
@@ -1651,7 +1721,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #if defined( GAME_DLL )
 	if( IsPlayer() )
 	{
-		CBasePlayer *pPlayer = dynamic_cast<CBasePlayer*>(this);
+		CBasePlayer* pPlayer = dynamic_cast<CBasePlayer*>( this );
 
 		int rumbleEffect = pPlayer->GetActiveWeapon()->GetRumbleEffect();
 
@@ -1672,29 +1742,29 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #endif// GAME_DLL
 
 	int iPlayerDamage = info.m_iPlayerDamage;
-	if ( iPlayerDamage == 0 )
+	if( iPlayerDamage == 0 )
 	{
-		if ( nAmmoFlags & AMMO_INTERPRET_PLRDAMAGE_AS_DAMAGE_TO_PLAYER )
+		if( nAmmoFlags & AMMO_INTERPRET_PLRDAMAGE_AS_DAMAGE_TO_PLAYER )
 		{
 			iPlayerDamage = pAmmoDef->PlrDamage( info.m_iAmmoType );
 		}
 	}
 
 	// the default attacker is ourselves
-	CBaseEntity *pAttacker = info.m_pAttacker ? info.m_pAttacker : this;
+	CBaseEntity* pAttacker = info.m_pAttacker ? info.m_pAttacker : this;
 
 	// Make sure we don't have a dangling damage target from a recursive call
-	if ( g_MultiDamage.GetTarget() != NULL )
+	if( g_MultiDamage.GetTarget() != NULL )
 	{
 		ApplyMultiDamage();
 	}
-	  
+
 	ClearMultiDamage();
 	g_MultiDamage.SetDamageType( nDamageType | DMG_NEVERGIB );
 
 	Vector vecDir;
 	Vector vecEnd;
-	
+
 	// Skip multiple entities when tracing
 	CBulletsTraceFilter traceFilter( COLLISION_GROUP_NONE );
 	traceFilter.SetPassEntity( this ); // Standard pass entity for THIS so that it can be easily removed from the list after passing through a portal
@@ -1703,20 +1773,20 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #if defined( HL2_EPISODIC ) && defined( GAME_DLL )
 	// FIXME: We need to emulate this same behavior on the client as well -- jdw
 	// Also ignore a vehicle we're a passenger in
-	if ( MyCombatCharacterPointer() != NULL && MyCombatCharacterPointer()->IsInAVehicle() )
+	if( MyCombatCharacterPointer() != NULL && MyCombatCharacterPointer()->IsInAVehicle() )
 	{
 		traceFilter.AddEntityToIgnore( MyCombatCharacterPointer()->GetVehicleEntity() );
 	}
 #endif // SERVER_DLL
 
 #ifdef MAPBASE
-	if (info.m_pIgnoreEntList != NULL)
+	if( info.m_pIgnoreEntList != NULL )
 	{
-		for (int i = 0; i < info.m_pIgnoreEntList->Count(); i++)
+		for( int i = 0; i < info.m_pIgnoreEntList->Count(); i++ )
 		{
-			if (info.m_pIgnoreEntList->Element(i))
+			if( info.m_pIgnoreEntList->Element( i ) )
 			{
-				traceFilter.AddEntityToIgnore(info.m_pIgnoreEntList->Element(i));
+				traceFilter.AddEntityToIgnore( info.m_pIgnoreEntList->Element( i ) );
 			}
 		}
 	}
@@ -1724,14 +1794,14 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 	bool bUnderwaterBullets = ShouldDrawUnderwaterBulletBubbles();
 	bool bStartedInWater = false;
-	if ( bUnderwaterBullets )
+	if( bUnderwaterBullets )
 	{
-		bStartedInWater = ( enginetrace->GetPointContents( info.m_vecSrc ) & (CONTENTS_WATER|CONTENTS_SLIME) ) != 0;
+		bStartedInWater = ( enginetrace->GetPointContents( info.m_vecSrc ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) != 0;
 	}
 
 	// Prediction is only usable on players
 	int iSeed = 0;
-	if ( IsPlayer() )
+	if( IsPlayer() )
 	{
 		iSeed = CBaseEntity::GetPredictionRandomSeed( info.m_bUseServerRandomSeed ) & 255;
 	}
@@ -1746,22 +1816,22 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 	bool bDoImpacts = false;
 	bool bDoTracers = false;
-	
+
 	float flCumulativeDamage = 0.0f;
 
-	for (int iShot = 0; iShot < info.m_iShots; iShot++)
+	for( int iShot = 0; iShot < info.m_iShots; iShot++ )
 	{
 		bool bHitWater = false;
 		bool bHitGlass = false;
 
 		// Prediction is only usable on players
-		if ( IsPlayer() )
+		if( IsPlayer() )
 		{
 			RandomSeed( iSeed );	// init random system with this seed
 		}
 
 		// If we're firing multiple shots, and the first shot has to be bang on target, ignore spread
-		if ( iShot == 0 && info.m_iShots > 1 && (info.m_nFlags & FIRE_BULLETS_FIRST_SHOT_ACCURATE) )
+		if( iShot == 0 && info.m_iShots > 1 && ( info.m_nFlags & FIRE_BULLETS_FIRST_SHOT_ACCURATE ) )
 		{
 			vecDir = Manipulator.GetShotDirection();
 		}
@@ -1775,7 +1845,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 		vecEnd = info.m_vecSrc + vecDir * info.m_flDistance;
 
 #ifdef PORTAL
-		CProp_Portal *pShootThroughPortal = NULL;
+		CProp_Portal* pShootThroughPortal = NULL;
 		float fPortalFraction = 2.0f;
 #endif
 
@@ -1787,7 +1857,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 			Ray_t rayBullet;
 			rayBullet.Init( info.m_vecSrc, vecEnd );
 			pShootThroughPortal = UTIL_Portal_FirstAlongRay( rayBullet, fPortalFraction );
-			if ( !UTIL_Portal_TraceRay_Bullets( pShootThroughPortal, rayBullet, MASK_SHOT, &traceFilter, &tr ) )
+			if( !UTIL_Portal_TraceRay_Bullets( pShootThroughPortal, rayBullet, MASK_SHOT, &traceFilter, &tr ) )
 			{
 				pShootThroughPortal = NULL;
 			}
@@ -1801,40 +1871,40 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 			Ray_t rayBullet;
 			rayBullet.Init( info.m_vecSrc, vecEnd );
 			pShootThroughPortal = UTIL_Portal_FirstAlongRay( rayBullet, fPortalFraction );
-			if ( !UTIL_Portal_TraceRay_Bullets( pShootThroughPortal, rayBullet, MASK_SHOT, &traceFilter, &tr ) )
+			if( !UTIL_Portal_TraceRay_Bullets( pShootThroughPortal, rayBullet, MASK_SHOT, &traceFilter, &tr ) )
 			{
 				pShootThroughPortal = NULL;
 			}
 #elif TF_DLL
 			CTraceFilterIgnoreFriendlyCombatItems traceFilterCombatItem( this, COLLISION_GROUP_NONE, GetTeamNumber() );
-			if ( TFGameRules() && TFGameRules()->GameModeUsesUpgrades() )
+			if( TFGameRules() && TFGameRules()->GameModeUsesUpgrades() )
 			{
 				CTraceFilterChain traceFilterChain( &traceFilter, &traceFilterCombatItem );
-				AI_TraceLine(info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilterChain, &tr);
+				AI_TraceLine( info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilterChain, &tr );
 			}
 			else
 			{
-				AI_TraceLine(info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilter, &tr);
+				AI_TraceLine( info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilter, &tr );
 			}
 #else
-			AI_TraceLine(info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilter, &tr);
+			AI_TraceLine( info.m_vecSrc, vecEnd, MASK_SHOT, &traceFilter, &tr );
 #endif //#ifdef PORTAL
 		}
 
 		// Tracker 70354/63250:  ywb 8/2/07
 		// Fixes bug where trace from turret with attachment point outside of Vcollide
-		//  starts solid so doesn't hit anything else in the world and the final coord 
+		//  starts solid so doesn't hit anything else in the world and the final coord
 		//  is outside of the MAX_COORD_FLOAT range.  This cause trying to send the end pos
 		//  of the tracer down to the client with an origin which is out-of-range for networking
-		if ( tr.startsolid )
+		if( tr.startsolid )
 		{
 			tr.endpos = tr.startpos;
 			tr.fraction = 0.0f;
 		}
 
-	// bullet's final direction can be changed by passing through a portal
+		// bullet's final direction can be changed by passing through a portal
 #ifdef PORTAL
-		if ( !tr.startsolid )
+		if( !tr.startsolid )
 		{
 			vecDir = tr.endpos - tr.startpos;
 			VectorNormalize( vecDir );
@@ -1842,27 +1912,29 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #endif
 
 #ifdef GAME_DLL
-		if ( ai_debug_shoot_positions.GetBool() )
-			NDebugOverlay::Line(info.m_vecSrc, vecEnd, 255, 255, 255, false, .1 );
+		if( ai_debug_shoot_positions.GetBool() )
+		{
+			NDebugOverlay::Line( info.m_vecSrc, vecEnd, 255, 255, 255, false, .1 );
+		}
 #endif
 
-		if ( bStartedInWater )
+		if( bStartedInWater )
 		{
 #ifdef GAME_DLL
 			Vector vBubbleStart = info.m_vecSrc;
 			Vector vBubbleEnd = tr.endpos;
 
 #ifdef PORTAL
-			if ( pShootThroughPortal )
+			if( pShootThroughPortal )
 			{
 				vBubbleEnd = info.m_vecSrc + ( vecEnd - info.m_vecSrc ) * fPortalFraction;
 			}
 #endif //#ifdef PORTAL
 
 			CreateBubbleTrailTracer( vBubbleStart, vBubbleEnd, vecDir );
-			
+
 #ifdef PORTAL
-			if ( pShootThroughPortal )
+			if( pShootThroughPortal )
 			{
 				Vector vTransformedIntersection;
 				UTIL_Portal_PointTransform( pShootThroughPortal->MatrixThisToLinked(), vBubbleEnd, vTransformedIntersection );
@@ -1886,28 +1958,28 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #endif
 
 		// Make sure given a valid bullet type
-		if (info.m_iAmmoType == -1)
+		if( info.m_iAmmoType == -1 )
 		{
-			DevMsg("ERROR: Undefined ammo type!\n");
+			DevMsg( "ERROR: Undefined ammo type!\n" );
 			return;
 		}
 
 		Vector vecTracerDest = tr.endpos;
 
 		// do damage, paint decals
-		if (tr.fraction != 1.0)
+		if( tr.fraction != 1.0 )
 		{
 #ifdef GAME_DLL
 			UpdateShotStatistics( tr );
 
 			// For shots that don't need persistance
-			int soundEntChannel = ( info.m_nFlags&FIRE_BULLETS_TEMPORARY_DANGER_SOUND ) ? SOUNDENT_CHANNEL_BULLET_IMPACT : SOUNDENT_CHANNEL_UNSPECIFIED;
+			int soundEntChannel = ( info.m_nFlags & FIRE_BULLETS_TEMPORARY_DANGER_SOUND ) ? SOUNDENT_CHANNEL_BULLET_IMPACT : SOUNDENT_CHANNEL_UNSPECIFIED;
 
 			CSoundEnt::InsertSound( SOUND_BULLET_IMPACT, tr.endpos, 200, 0.5, this, soundEntChannel );
 #endif
 
 			// See if the bullet ended up underwater + started out of the water
-			if ( !bHitWater && ( enginetrace->GetPointContents( tr.endpos ) & (CONTENTS_WATER|CONTENTS_SLIME) ) )
+			if( !bHitWater && ( enginetrace->GetPointContents( tr.endpos ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) )
 			{
 				bHitWater = HandleShotImpactingWater( info, vecEnd, &traceFilter, &vecTracerDest );
 			}
@@ -1916,16 +1988,16 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 			// If we hit a player, and we have player damage specified, use that instead
 			// Adrian: Make sure to use the currect value if we hit a vehicle the player is currently driving.
-			if ( iPlayerDamage )
+			if( iPlayerDamage )
 			{
-				if ( tr.m_pEnt->IsPlayer() )
+				if( tr.m_pEnt->IsPlayer() )
 				{
 					flActualDamage = iPlayerDamage;
 				}
 #ifdef GAME_DLL
-				else if ( tr.m_pEnt->GetServerVehicle() )
+				else if( tr.m_pEnt->GetServerVehicle() )
 				{
-					if ( tr.m_pEnt->GetServerVehicle()->GetPassenger() && tr.m_pEnt->GetServerVehicle()->GetPassenger()->IsPlayer() )
+					if( tr.m_pEnt->GetServerVehicle()->GetPassenger() && tr.m_pEnt->GetServerVehicle()->GetPassenger()->IsPlayer() )
 					{
 						flActualDamage = iPlayerDamage;
 					}
@@ -1934,20 +2006,20 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 			}
 
 			int nActualDamageType = nDamageType;
-			if ( flActualDamage == 0.0 )
+			if( flActualDamage == 0.0 )
 			{
 				flActualDamage = g_pGameRules->GetAmmoDamage( pAttacker, tr.m_pEnt, info.m_iAmmoType );
 			}
 #ifdef MAPBASE
-			else if ((info.m_nFlags & FIRE_BULLETS_NO_AUTO_GIB_TYPE) == 0)
+			else if( ( info.m_nFlags & FIRE_BULLETS_NO_AUTO_GIB_TYPE ) == 0 )
 #else
 			else
 #endif
 			{
-				nActualDamageType = nDamageType | ((flActualDamage > 16) ? DMG_ALWAYSGIB : DMG_NEVERGIB );
+				nActualDamageType = nDamageType | ( ( flActualDamage > 16 ) ? DMG_ALWAYSGIB : DMG_NEVERGIB );
 			}
 
-			if ( !bHitWater || ((info.m_nFlags & FIRE_BULLETS_DONT_HIT_UNDERWATER) == 0) )
+			if( !bHitWater || ( ( info.m_nFlags & FIRE_BULLETS_DONT_HIT_UNDERWATER ) == 0 ) )
 			{
 				// Damage specified by function parameter
 				CTakeDamageInfo dmgInfo( this, pAttacker, flActualDamage, nActualDamageType );
@@ -1956,15 +2028,15 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 				dmgInfo.ScaleDamageForce( info.m_flDamageForceScale );
 				dmgInfo.SetAmmoType( info.m_iAmmoType );
 				tr.m_pEnt->DispatchTraceAttack( dmgInfo, vecDir, &tr );
-			
-				if ( ToBaseCombatCharacter( tr.m_pEnt ) )
+
+				if( ToBaseCombatCharacter( tr.m_pEnt ) )
 				{
 					flCumulativeDamage += dmgInfo.GetDamage();
 				}
 
-				if ( bStartedInWater || !bHitWater || (info.m_nFlags & FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS) )
+				if( bStartedInWater || !bHitWater || ( info.m_nFlags & FIRE_BULLETS_ALLOW_WATER_SURFACE_IMPACTS ) )
 				{
-					if ( bDoServerEffects == true )
+					if( bDoServerEffects == true )
 					{
 						DoImpactEffect( tr, nDamageType );
 					}
@@ -1980,29 +2052,29 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 					data.m_vStart = tr.startpos;
 					data.m_vOrigin = tr.endpos;
 					data.m_nDamageType = nDamageType;
-					
+
 					DispatchEffect( "RagdollImpact", data );
 				}
-	
+
 #ifdef GAME_DLL
-				if ( nAmmoFlags & AMMO_FORCE_DROP_IF_CARRIED )
+				if( nAmmoFlags & AMMO_FORCE_DROP_IF_CARRIED )
 				{
 					// Make sure if the player is holding this, he drops it
-					Pickup_ForcePlayerToDropThisObject( tr.m_pEnt );		
+					Pickup_ForcePlayerToDropThisObject( tr.m_pEnt );
 				}
 #endif
 			}
 		}
 
 		// See if we hit glass
-		if ( tr.m_pEnt != NULL )
+		if( tr.m_pEnt != NULL )
 		{
 #ifdef GAME_DLL
-			surfacedata_t *psurf = physprops->GetSurfaceData( tr.surface.surfaceProps );
-			if ( ( psurf != NULL ) && ( psurf->game.material == CHAR_TEX_GLASS ) && ( tr.m_pEnt->ClassMatches( "func_breakable" ) ) )
+			surfacedata_t* psurf = physprops->GetSurfaceData( tr.surface.surfaceProps );
+			if( ( psurf != NULL ) && ( psurf->game.material == CHAR_TEX_GLASS ) && ( tr.m_pEnt->ClassMatches( "func_breakable" ) ) )
 			{
 				// Query the func_breakable for whether it wants to allow for bullet penetration
-				if ( tr.m_pEnt->HasSpawnFlags( SF_BREAK_NO_BULLET_PENETRATION ) == false )
+				if( tr.m_pEnt->HasSpawnFlags( SF_BREAK_NO_BULLET_PENETRATION ) == false )
 				{
 					bHitGlass = true;
 				}
@@ -2010,9 +2082,9 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #endif
 		}
 
-		if ( ( info.m_iTracerFreq != 0 ) && ( tracerCount++ % info.m_iTracerFreq ) == 0 && ( bHitGlass == false ) )
+		if( ( info.m_iTracerFreq != 0 ) && ( tracerCount++ % info.m_iTracerFreq ) == 0 && ( bHitGlass == false ) )
 		{
-			if ( bDoServerEffects == true )
+			if( bDoServerEffects == true )
 			{
 				Vector vecTracerSrc = vec3_origin;
 				ComputeTracerStartPosition( info.m_vecSrc, &vecTracerSrc );
@@ -2022,16 +2094,16 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 				Tracer.endpos = vecTracerDest;
 
 #ifdef PORTAL
-				if ( pShootThroughPortal )
+				if( pShootThroughPortal )
 				{
 					Tracer.endpos = info.m_vecSrc + ( vecEnd - info.m_vecSrc ) * fPortalFraction;
 				}
 #endif //#ifdef PORTAL
 
-				MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+				MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
 
 #ifdef PORTAL
-				if ( pShootThroughPortal )
+				if( pShootThroughPortal )
 				{
 					Vector vTransformedIntersection;
 					UTIL_Portal_PointTransform( pShootThroughPortal->MatrixThisToLinked(), Tracer.endpos, vTransformedIntersection );
@@ -2039,17 +2111,17 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 					Tracer.endpos = vecTracerDest;
 
-					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType(info.m_iAmmoType) );
+					MakeTracer( vecTracerSrc, Tracer, pAmmoDef->TracerType( info.m_iAmmoType ) );
 
 					// Shooting through a portal, the damage direction is translated through the passed-through portal
 					// so the damage indicator hud animation is correct
 					Vector vDmgOriginThroughPortal;
 					UTIL_Portal_PointTransform( pShootThroughPortal->MatrixThisToLinked(), info.m_vecSrc, vDmgOriginThroughPortal );
-					g_MultiDamage.SetDamagePosition ( vDmgOriginThroughPortal );
+					g_MultiDamage.SetDamagePosition( vDmgOriginThroughPortal );
 				}
 				else
 				{
-					g_MultiDamage.SetDamagePosition ( info.m_vecSrc );
+					g_MultiDamage.SetDamagePosition( info.m_vecSrc );
 				}
 #endif //#ifdef PORTAL
 			}
@@ -2063,7 +2135,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 
 		// See if we should pass through glass
 #ifdef GAME_DLL
-		if ( bHitGlass )
+		if( bHitGlass )
 		{
 			HandleShotImpactingGlass( info, tr, vecDir, &traceFilter );
 		}
@@ -2073,7 +2145,7 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 	}
 
 #if defined( HL2MP ) && defined( GAME_DLL )
-	if ( bDoServerEffects == false )
+	if( bDoServerEffects == false )
 	{
 		TE_HL2MPFireBullets( entindex(), tr.startpos, info.m_vecDirShooting, info.m_iAmmoType, iEffectSeed, info.m_iShots, info.m_vecSpread.x, bDoTracers, bDoImpacts );
 	}
@@ -2082,9 +2154,9 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 #ifdef GAME_DLL
 	ApplyMultiDamage();
 
-	if ( IsPlayer() && flCumulativeDamage > 0.0f )
+	if( IsPlayer() && flCumulativeDamage > 0.0f )
 	{
-		CBasePlayer *pPlayer = static_cast< CBasePlayer * >( this );
+		CBasePlayer* pPlayer = static_cast< CBasePlayer* >( this );
 		CTakeDamageInfo dmgInfo( this, pAttacker, flCumulativeDamage, nDamageType );
 		gamestats->Event_WeaponHit( pPlayer, info.m_bPrimaryAttack, pPlayer->GetActiveWeapon()->GetClassname(), dmgInfo );
 	}
@@ -2098,8 +2170,8 @@ void CBaseEntity::FireBullets( const FireBulletsInfo_t &info )
 bool CBaseEntity::ShouldDrawUnderwaterBulletBubbles()
 {
 #if defined( HL2_DLL ) && defined( GAME_DLL )
-	CBaseEntity *pPlayer = ( gpGlobals->maxClients == 1 ) ? UTIL_GetLocalPlayer() : NULL;
-	return pPlayer && (pPlayer->GetWaterLevel() == 3);
+	CBaseEntity* pPlayer = ( gpGlobals->maxClients == 1 ) ? UTIL_GetLocalPlayer() : NULL;
+	return pPlayer && ( pPlayer->GetWaterLevel() == 3 );
 #else
 	return false;
 #endif
@@ -2109,28 +2181,30 @@ bool CBaseEntity::ShouldDrawUnderwaterBulletBubbles()
 //-----------------------------------------------------------------------------
 // Handle shot entering water
 //-----------------------------------------------------------------------------
-bool CBaseEntity::HandleShotImpactingWater( const FireBulletsInfo_t &info, 
-	const Vector &vecEnd, ITraceFilter *pTraceFilter, Vector *pVecTracerDest )
+bool CBaseEntity::HandleShotImpactingWater( const FireBulletsInfo_t& info,
+		const Vector& vecEnd, ITraceFilter* pTraceFilter, Vector* pVecTracerDest )
 {
 	trace_t	waterTrace;
 
 	// Trace again with water enabled
-	AI_TraceLine( info.m_vecSrc, vecEnd, (MASK_SHOT|CONTENTS_WATER|CONTENTS_SLIME), pTraceFilter, &waterTrace );
-	
-	// See if this is the point we entered
-	if ( ( enginetrace->GetPointContents( waterTrace.endpos - Vector(0,0,0.1f) ) & (CONTENTS_WATER|CONTENTS_SLIME) ) == 0 )
-		return false;
+	AI_TraceLine( info.m_vecSrc, vecEnd, ( MASK_SHOT | CONTENTS_WATER | CONTENTS_SLIME ), pTraceFilter, &waterTrace );
 
-	if ( ShouldDrawWaterImpacts() )
+	// See if this is the point we entered
+	if( ( enginetrace->GetPointContents( waterTrace.endpos - Vector( 0, 0, 0.1f ) ) & ( CONTENTS_WATER | CONTENTS_SLIME ) ) == 0 )
 	{
-		int	nMinSplashSize = GetAmmoDef()->MinSplashSize(info.m_iAmmoType);
-		int	nMaxSplashSize = GetAmmoDef()->MaxSplashSize(info.m_iAmmoType);
+		return false;
+	}
+
+	if( ShouldDrawWaterImpacts() )
+	{
+		int	nMinSplashSize = GetAmmoDef()->MinSplashSize( info.m_iAmmoType );
+		int	nMaxSplashSize = GetAmmoDef()->MaxSplashSize( info.m_iAmmoType );
 
 		CEffectData	data;
 		data.m_vOrigin = waterTrace.endpos;
 		data.m_vNormal = waterTrace.plane.normal;
 		data.m_flScale = random->RandomFloat( nMinSplashSize, nMaxSplashSize );
-		if ( waterTrace.contents & CONTENTS_SLIME )
+		if( waterTrace.contents & CONTENTS_SLIME )
 		{
 			data.m_fFlags |= FX_WATER_IN_SLIME;
 		}
@@ -2138,13 +2212,13 @@ bool CBaseEntity::HandleShotImpactingWater( const FireBulletsInfo_t &info,
 	}
 
 #ifdef GAME_DLL
-	if ( ShouldDrawUnderwaterBulletBubbles() )
+	if( ShouldDrawUnderwaterBulletBubbles() )
 	{
-		CWaterBullet *pWaterBullet = ( CWaterBullet * )CreateEntityByName( "waterbullet" );
-		if ( pWaterBullet )
+		CWaterBullet* pWaterBullet = ( CWaterBullet* )CreateEntityByName( "waterbullet" );
+		if( pWaterBullet )
 		{
 			pWaterBullet->Spawn( waterTrace.endpos, info.m_vecDirShooting );
-					 
+
 			CEffectData tracerData;
 			tracerData.m_vStart = waterTrace.endpos;
 			tracerData.m_vOrigin = waterTrace.endpos + info.m_vecDirShooting * 400.0f;
@@ -2164,11 +2238,11 @@ ITraceFilter* CBaseEntity::GetBeamTraceFilter( void )
 	return NULL;
 }
 
-void CBaseEntity::DispatchTraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CBaseEntity::DispatchTraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 #ifdef GAME_DLL
 	// Make sure our damage filter allows the damage.
-	if ( !PassesDamageFilter( info ))
+	if( !PassesDamageFilter( info ) )
 	{
 		return;
 	}
@@ -2177,14 +2251,14 @@ void CBaseEntity::DispatchTraceAttack( const CTakeDamageInfo &info, const Vector
 	TraceAttack( info, vecDir, ptr, pAccumulator );
 }
 
-void CBaseEntity::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CBaseEntity::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	Vector vecOrigin = ptr->endpos - vecDir * 4;
 
-	if ( m_takedamage )
+	if( m_takedamage )
 	{
 #ifdef GAME_DLL
-		if ( pAccumulator )
+		if( pAccumulator )
 		{
 			pAccumulator->AccumulateMultiDamage( info, this );
 		}
@@ -2195,11 +2269,11 @@ void CBaseEntity::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 		}
 
 		int blood = BloodColor();
-		
+
 #if defined(MAPBASE) && defined(GAME_DLL)
-		if ( blood != DONT_BLEED && DamageFilterAllowsBlood( info ) )
+		if( blood != DONT_BLEED && DamageFilterAllowsBlood( info ) )
 #else
-		if ( blood != DONT_BLEED )
+		if( blood != DONT_BLEED )
 #endif
 		{
 			SpawnBlood( vecOrigin, vecDir, blood, info.GetDamage() );// a little surface blood.
@@ -2212,20 +2286,20 @@ void CBaseEntity::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 //-----------------------------------------------------------------------------
 // Allows the shooter to change the impact effect of his bullets
 //-----------------------------------------------------------------------------
-void CBaseEntity::DoImpactEffect( trace_t &tr, int nDamageType )
+void CBaseEntity::DoImpactEffect( trace_t& tr, int nDamageType )
 {
 	// give shooter a chance to do a custom impact.
 	UTIL_ImpactTrace( &tr, nDamageType );
-} 
+}
 
 
 //-----------------------------------------------------------------------------
 // Computes the tracer start position
 //-----------------------------------------------------------------------------
-void CBaseEntity::ComputeTracerStartPosition( const Vector &vecShotSrc, Vector *pVecTracerStart )
+void CBaseEntity::ComputeTracerStartPosition( const Vector& vecShotSrc, Vector* pVecTracerStart )
 {
 #ifndef HL2MP
-	if ( g_pGameRules->IsMultiplayer() )
+	if( g_pGameRules->IsMultiplayer() )
 	{
 		// NOTE: we do this because in MakeTracer, we force it to use the attachment position
 		// in multiplayer, so the results from this function should never actually get used.
@@ -2233,30 +2307,30 @@ void CBaseEntity::ComputeTracerStartPosition( const Vector &vecShotSrc, Vector *
 		return;
 	}
 #endif
-	
-	if ( IsPlayer() )
+
+	if( IsPlayer() )
 	{
 		// adjust tracer position for player
 		Vector forward, right;
-		CBasePlayer *pPlayer = ToBasePlayer( this );
+		CBasePlayer* pPlayer = ToBasePlayer( this );
 		pPlayer->EyeVectors( &forward, &right, NULL );
-		*pVecTracerStart = vecShotSrc + Vector ( 0 , 0 , -4 ) + right * 2 + forward * 16;
+		*pVecTracerStart = vecShotSrc + Vector( 0 , 0 , -4 ) + right * 2 + forward * 16;
 	}
 	else
 	{
 		*pVecTracerStart = vecShotSrc;
 
-		CBaseCombatCharacter *pBCC = MyCombatCharacterPointer();
-		if ( pBCC != NULL )
+		CBaseCombatCharacter* pBCC = MyCombatCharacterPointer();
+		if( pBCC != NULL )
 		{
-			CBaseCombatWeapon *pWeapon = pBCC->GetActiveWeapon();
+			CBaseCombatWeapon* pWeapon = pBCC->GetActiveWeapon();
 
-			if ( pWeapon != NULL )
+			if( pWeapon != NULL )
 			{
 				Vector vecMuzzle;
 				QAngle vecMuzzleAngles;
 
-				if ( pWeapon->GetAttachment( 1, vecMuzzle, vecMuzzleAngles ) )
+				if( pWeapon->GetAttachment( 1, vecMuzzle, vecMuzzleAngles ) )
 				{
 					*pVecTracerStart = vecMuzzle;
 				}
@@ -2277,23 +2351,23 @@ void CBaseEntity::ComputeTracerStartPosition( const Vector &vecShotSrc, Vector *
 //
 // Output :
 //-----------------------------------------------------------------------------
-void CBaseEntity::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void CBaseEntity::MakeTracer( const Vector& vecTracerSrc, const trace_t& tr, int iTracerType )
 {
-	const char *pszTracerName = GetTracerType();
+	const char* pszTracerName = GetTracerType();
 
 	Vector vNewSrc = vecTracerSrc;
 
 	int iAttachment = GetTracerAttachment();
 
-	switch ( iTracerType )
+	switch( iTracerType )
 	{
-	case TRACER_LINE:
-		UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, false, pszTracerName );
-		break;
+		case TRACER_LINE:
+			UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, false, pszTracerName );
+			break;
 
-	case TRACER_LINE_AND_WHIZ:
-		UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, true, pszTracerName );
-		break;
+		case TRACER_LINE_AND_WHIZ:
+			UTIL_Tracer( vNewSrc, tr.endpos, entindex(), iAttachment, 0.0f, true, pszTracerName );
+			break;
 	}
 }
 
@@ -2304,7 +2378,7 @@ int CBaseEntity::GetTracerAttachment( void )
 {
 	int iAttachment = TRACER_DONT_USE_ATTACHMENT;
 
-	if ( g_pGameRules->IsMultiplayer() )
+	if( g_pGameRules->IsMultiplayer() )
 	{
 		iAttachment = 1;
 	}
@@ -2314,8 +2388,10 @@ int CBaseEntity::GetTracerAttachment( void )
 
 float CBaseEntity::HealthFraction() const
 {
-	if ( GetMaxHealth() == 0 )
+	if( GetMaxHealth() == 0 )
+	{
 		return 1.0f;
+	}
 
 	float flFraction = ( float )GetHealth() / ( float )GetMaxHealth();
 	flFraction = clamp( flFraction, 0.0f, 1.0f );
@@ -2324,22 +2400,26 @@ float CBaseEntity::HealthFraction() const
 
 int CBaseEntity::BloodColor()
 {
-	return DONT_BLEED; 
+	return DONT_BLEED;
 }
 
 
-void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType )
+void CBaseEntity::TraceBleed( float flDamage, const Vector& vecDir, trace_t* ptr, int bitsDamageType )
 {
-	if ((BloodColor() == DONT_BLEED) || (BloodColor() == BLOOD_COLOR_MECH))
+	if( ( BloodColor() == DONT_BLEED ) || ( BloodColor() == BLOOD_COLOR_MECH ) )
 	{
 		return;
 	}
 
-	if (flDamage == 0)
+	if( flDamage == 0 )
+	{
 		return;
+	}
 
-	if (! (bitsDamageType & (DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_AIRBOAT)))
+	if( !( bitsDamageType & ( DMG_CRUSH | DMG_BULLET | DMG_SLASH | DMG_BLAST | DMG_CLUB | DMG_AIRBOAT ) ) )
+	{
 		return;
+	}
 
 	// make blood decal on the wall!
 	trace_t Bloodtr;
@@ -2349,10 +2429,10 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 	int i;
 
 #ifdef GAME_DLL
-	if ( !IsAlive() )
+	if( !IsAlive() )
 	{
 		// dealing with a dead npc.
-		if ( GetMaxHealth() <= 0 )
+		if( GetMaxHealth() <= 0 )
 		{
 			// no blood decal for a npc that has already decalled its limit.
 			return;
@@ -2364,12 +2444,12 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 	}
 #endif
 
-	if (flDamage < 10)
+	if( flDamage < 10 )
 	{
 		flNoise = 0.1;
 		cCount = 1;
 	}
-	else if (flDamage < 25)
+	else if( flDamage < 25 )
 	{
 		flNoise = 0.2;
 		cCount = 2;
@@ -2380,8 +2460,8 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 		cCount = 4;
 	}
 
-	float flTraceDist = (bitsDamageType & DMG_AIRBOAT) ? 384 : 172;
-	for ( i = 0 ; i < cCount ; i++ )
+	float flTraceDist = ( bitsDamageType & DMG_AIRBOAT ) ? 384 : 172;
+	for( i = 0 ; i < cCount ; i++ )
 	{
 		vecTraceDir = vecDir * -1;// trace in the opposite direction the shot came from (the direction the shot is going)
 
@@ -2390,9 +2470,9 @@ void CBaseEntity::TraceBleed( float flDamage, const Vector &vecDir, trace_t *ptr
 		vecTraceDir.z += random->RandomFloat( -flNoise, flNoise );
 
 		// Don't bleed on grates.
-		AI_TraceLine( ptr->endpos, ptr->endpos + vecTraceDir * -flTraceDist, MASK_SOLID_BRUSHONLY & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr);
+		AI_TraceLine( ptr->endpos, ptr->endpos + vecTraceDir * -flTraceDist, MASK_SOLID_BRUSHONLY & ~CONTENTS_GRATE, this, COLLISION_GROUP_NONE, &Bloodtr );
 
-		if ( Bloodtr.fraction != 1.0 )
+		if( Bloodtr.fraction != 1.0 )
 		{
 			UTIL_BloodDecalTrace( &Bloodtr, BloodColor() );
 		}
@@ -2405,19 +2485,19 @@ const char* CBaseEntity::GetTracerType()
 	return NULL;
 }
 
-void CBaseEntity::ModifyEmitSoundParams( EmitSound_t &params )
+void CBaseEntity::ModifyEmitSoundParams( EmitSound_t& params )
 {
 #ifdef CLIENT_DLL
-	if ( GameRules() )
+	if( GameRules() )
 	{
 		params.m_pSoundName = GameRules()->TranslateEffectForVisionFilter( "sounds", params.m_pSoundName );
 	}
 #endif
 
 #ifdef MAPBASE_VSCRIPT
-	if (m_ScriptScope.IsInitialized() && g_Hook_ModifyEmitSoundParams.CanRunInScope( m_ScriptScope ))
+	if( m_ScriptScope.IsInitialized() && g_Hook_ModifyEmitSoundParams.CanRunInScope( m_ScriptScope ) )
 	{
-		HSCRIPT hParams = g_pScriptVM->RegisterInstance( reinterpret_cast<ScriptEmitSound_t*>(&params) );
+		HSCRIPT hParams = g_pScriptVM->RegisterInstance( reinterpret_cast<ScriptEmitSound_t*>( &params ) );
 
 		// params
 		ScriptVariant_t functionReturn;
@@ -2430,11 +2510,11 @@ void CBaseEntity::ModifyEmitSoundParams( EmitSound_t &params )
 }
 
 #if defined(MAPBASE) && defined(GAME_DLL)
-void CBaseEntity::ModifySentenceParams( int &iSentenceIndex, int &iChannel, float &flVolume, soundlevel_t &iSoundlevel, int &iFlags, int &iPitch,
-	const Vector **pOrigin, const Vector **pDirection, bool &bUpdatePositions, float &soundtime, int &iSpecialDSP, int &iSpeakerIndex )
+void CBaseEntity::ModifySentenceParams( int& iSentenceIndex, int& iChannel, float& flVolume, soundlevel_t& iSoundlevel, int& iFlags, int& iPitch,
+										const Vector** pOrigin, const Vector** pDirection, bool& bUpdatePositions, float& soundtime, int& iSpecialDSP, int& iSpeakerIndex )
 {
 #ifdef MAPBASE_VSCRIPT
-	if (m_ScriptScope.IsInitialized() && g_Hook_ModifySentenceParams.CanRunInScope( m_ScriptScope ))
+	if( m_ScriptScope.IsInitialized() && g_Hook_ModifySentenceParams.CanRunInScope( m_ScriptScope ) )
 	{
 		// This is a bit of a hack, but for consistency with ModifyEmitSoundParams, put them into an EmitSound_t params
 		ScriptEmitSound_t params;
@@ -2454,7 +2534,7 @@ void CBaseEntity::ModifySentenceParams( int &iSentenceIndex, int &iChannel, floa
 		// params
 		ScriptVariant_t functionReturn;
 		ScriptVariant_t args[] = { ScriptVariant_t( hParams ) };
-		if (g_Hook_ModifySentenceParams.Call( m_ScriptScope, &functionReturn, args ))
+		if( g_Hook_ModifySentenceParams.Call( m_ScriptScope, &functionReturn, args ) )
 		{
 			iSentenceIndex = engine->SentenceIndexFromName( params.m_pSoundName );
 			iChannel = params.m_nChannel;
@@ -2477,15 +2557,17 @@ void CBaseEntity::ModifySentenceParams( int &iSentenceIndex, int &iChannel, floa
 //-----------------------------------------------------------------------------
 // These methods encapsulate MOVETYPE_FOLLOW, which became obsolete
 //-----------------------------------------------------------------------------
-void CBaseEntity::FollowEntity( CBaseEntity *pBaseEntity, bool bBoneMerge )
+void CBaseEntity::FollowEntity( CBaseEntity* pBaseEntity, bool bBoneMerge )
 {
-	if (pBaseEntity)
+	if( pBaseEntity )
 	{
 		SetParent( pBaseEntity );
 		SetMoveType( MOVETYPE_NONE );
-		
-		if ( bBoneMerge )
+
+		if( bBoneMerge )
+		{
 			AddEffects( EF_BONEMERGE );
+		}
 
 		AddSolidFlags( FSOLID_NOT_SOLID );
 		SetLocalOrigin( vec3_origin );
@@ -2509,39 +2591,39 @@ HSCRIPT CBaseEntity::ScriptGetFollowedEntity()
 }
 #endif
 
-void CBaseEntity::SetEffectEntity( CBaseEntity *pEffectEnt )
+void CBaseEntity::SetEffectEntity( CBaseEntity* pEffectEnt )
 {
-	if ( m_hEffectEntity.Get() != pEffectEnt )
+	if( m_hEffectEntity.Get() != pEffectEnt )
 	{
 		m_hEffectEntity = pEffectEnt;
 	}
 }
 
-void CBaseEntity::ApplyLocalVelocityImpulse( const Vector &inVecImpulse )
+void CBaseEntity::ApplyLocalVelocityImpulse( const Vector& inVecImpulse )
 {
 	// NOTE: Don't have to use GetVelocity here because local values
-	// are always guaranteed to be correct, unlike abs values which may 
+	// are always guaranteed to be correct, unlike abs values which may
 	// require recomputation
-	if ( inVecImpulse != vec3_origin )
+	if( inVecImpulse != vec3_origin )
 	{
 		Vector vecImpulse = inVecImpulse;
 
 		// Safety check against receive a huge impulse, which can explode physics
-		switch ( CheckEntityVelocity( vecImpulse ) )
+		switch( CheckEntityVelocity( vecImpulse ) )
 		{
 			case -1:
 				Warning( "Discarding ApplyLocalVelocityImpulse(%f,%f,%f) on %s\n", vecImpulse.x, vecImpulse.y, vecImpulse.z, GetDebugName() );
 				Assert( false );
 				return;
 			case 0:
-				if ( CheckEmitReasonablePhysicsSpew() )
+				if( CheckEmitReasonablePhysicsSpew() )
 				{
 					Warning( "Clamping ApplyLocalVelocityImpulse(%f,%f,%f) on %s\n", inVecImpulse.x, inVecImpulse.y, inVecImpulse.z, GetDebugName() );
 				}
 				break;
 		}
 
-		if ( GetMoveType() == MOVETYPE_VPHYSICS )
+		if( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
 			Vector worldVel;
 			VPhysicsGetObject()->LocalToWorld( &worldVel, vecImpulse );
@@ -2555,28 +2637,28 @@ void CBaseEntity::ApplyLocalVelocityImpulse( const Vector &inVecImpulse )
 	}
 }
 
-void CBaseEntity::ApplyAbsVelocityImpulse( const Vector &inVecImpulse )
+void CBaseEntity::ApplyAbsVelocityImpulse( const Vector& inVecImpulse )
 {
-	if ( inVecImpulse != vec3_origin )
+	if( inVecImpulse != vec3_origin )
 	{
 		Vector vecImpulse = inVecImpulse;
 
 		// Safety check against receive a huge impulse, which can explode physics
-		switch ( CheckEntityVelocity( vecImpulse ) )
+		switch( CheckEntityVelocity( vecImpulse ) )
 		{
 			case -1:
 				Warning( "Discarding ApplyAbsVelocityImpulse(%f,%f,%f) on %s\n", vecImpulse.x, vecImpulse.y, vecImpulse.z, GetDebugName() );
 				Assert( false );
 				return;
 			case 0:
-				if ( CheckEmitReasonablePhysicsSpew() )
+				if( CheckEmitReasonablePhysicsSpew() )
 				{
 					Warning( "Clamping ApplyAbsVelocityImpulse(%f,%f,%f) on %s\n", inVecImpulse.x, inVecImpulse.y, inVecImpulse.z, GetDebugName() );
 				}
 				break;
 		}
 
-		if ( GetMoveType() == MOVETYPE_VPHYSICS )
+		if( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
 			VPhysicsGetObject()->AddVelocity( &vecImpulse, NULL );
 		}
@@ -2590,19 +2672,19 @@ void CBaseEntity::ApplyAbsVelocityImpulse( const Vector &inVecImpulse )
 	}
 }
 
-void CBaseEntity::ApplyLocalAngularVelocityImpulse( const AngularImpulse &angImpulse )
+void CBaseEntity::ApplyLocalAngularVelocityImpulse( const AngularImpulse& angImpulse )
 {
-	if (angImpulse != vec3_origin )
+	if( angImpulse != vec3_origin )
 	{
 		// Safety check against receive a huge impulse, which can explode physics
-		if ( !IsEntityAngularVelocityReasonable( angImpulse ) )
+		if( !IsEntityAngularVelocityReasonable( angImpulse ) )
 		{
 			Warning( "Bad ApplyLocalAngularVelocityImpulse(%f,%f,%f) on %s\n", angImpulse.x, angImpulse.y, angImpulse.z, GetDebugName() );
 			Assert( false );
 			return;
 		}
 
-		if ( GetMoveType() == MOVETYPE_VPHYSICS )
+		if( GetMoveType() == MOVETYPE_VPHYSICS )
 		{
 			VPhysicsGetObject()->AddVelocity( NULL, &angImpulse );
 		}
@@ -2618,7 +2700,7 @@ void CBaseEntity::ApplyLocalAngularVelocityImpulse( const AngularImpulse &angImp
 
 void CBaseEntity::SetCollisionGroup( int collisionGroup )
 {
-	if ( (int)m_CollisionGroup != collisionGroup )
+	if( ( int )m_CollisionGroup != collisionGroup )
 	{
 		m_CollisionGroup = collisionGroup;
 		CollisionRulesChanged();
@@ -2630,20 +2712,22 @@ void CBaseEntity::CollisionRulesChanged()
 {
 	// ivp maintains state based on recent return values from the collision filter, so anything
 	// that can change the state that a collision filter will return (like m_Solid) needs to call RecheckCollisionFilter.
-	if ( VPhysicsGetObject() )
+	if( VPhysicsGetObject() )
 	{
 		extern bool PhysIsInCallback();
-		if ( PhysIsInCallback() )
+		if( PhysIsInCallback() )
 		{
-			Warning("Changing collision rules within a callback is likely to cause crashes!\n");
-			Assert(0);
+			Warning( "Changing collision rules within a callback is likely to cause crashes!\n" );
+			Assert( 0 );
 		}
-		IPhysicsObject *pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-		int count = VPhysicsGetObjectList( pList, ARRAYSIZE(pList) );
-		for ( int i = 0; i < count; i++ )
+		IPhysicsObject* pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
+		int count = VPhysicsGetObjectList( pList, ARRAYSIZE( pList ) );
+		for( int i = 0; i < count; i++ )
 		{
-			if ( pList[i] != NULL ) //this really shouldn't happen, but it does >_<
+			if( pList[i] != NULL )  //this really shouldn't happen, but it does >_<
+			{
 				pList[i]->RecheckCollisionFilter();
+			}
 		}
 	}
 }
@@ -2651,31 +2735,39 @@ void CBaseEntity::CollisionRulesChanged()
 int CBaseEntity::GetWaterType() const
 {
 	int out = 0;
-	if ( m_nWaterType & 1 )
+	if( m_nWaterType & 1 )
+	{
 		out |= CONTENTS_WATER;
-	if ( m_nWaterType & 2 )
+	}
+	if( m_nWaterType & 2 )
+	{
 		out |= CONTENTS_SLIME;
+	}
 	return out;
 }
 
 void CBaseEntity::SetWaterType( int nType )
 {
 	m_nWaterType = 0;
-	if ( nType & CONTENTS_WATER )
+	if( nType & CONTENTS_WATER )
+	{
 		m_nWaterType |= 1;
-	if ( nType & CONTENTS_SLIME )
+	}
+	if( nType & CONTENTS_SLIME )
+	{
 		m_nWaterType |= 2;
+	}
 }
 
 ConVar	sv_alternateticks( "sv_alternateticks", ( IsX360() ) ? "1" : "0", FCVAR_SPONLY, "If set, server only simulates entities on even numbered ticks.\n" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CBaseEntity::IsSimulatingOnAlternateTicks()
 {
-	if ( gpGlobals->maxClients != 1 )
+	if( gpGlobals->maxClients != 1 )
 	{
 		return false;
 	}
@@ -2685,8 +2777,8 @@ bool CBaseEntity::IsSimulatingOnAlternateTicks()
 
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  :  - 
+// Purpose:
+// Input  :  -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CBaseEntity::IsToolRecording() const
@@ -2708,48 +2800,48 @@ HSCRIPT CBaseEntity::GetOrCreatePrivateScriptScope()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CBaseEntity::ScriptSetParent(HSCRIPT hParent, const char *szAttachment)
+void CBaseEntity::ScriptSetParent( HSCRIPT hParent, const char* szAttachment )
 {
-	CBaseEntity *pParent = ToEnt(hParent);
-	if ( !pParent )
+	CBaseEntity* pParent = ToEnt( hParent );
+	if( !pParent )
 	{
-		SetParent(NULL);
+		SetParent( NULL );
 		return;
 	}
 
 	// if an attachment is specified, the parent needs to be CBaseAnimating
-	if ( szAttachment && szAttachment[0] != '\0' )
+	if( szAttachment && szAttachment[0] != '\0' )
 	{
-		CBaseAnimating *pAnimating = pParent->GetBaseAnimating();
-		if ( !pAnimating )
+		CBaseAnimating* pAnimating = pParent->GetBaseAnimating();
+		if( !pAnimating )
 		{
-			Warning("ERROR: Tried to set parent for entity %s (%s), but its parent has no model.\n", GetClassname(), GetDebugName());
-			return;
-		}
-		
-		int iAttachment = pAnimating->LookupAttachment(szAttachment);
-		if ( iAttachment <= 0 )
-		{
-			Warning("ERROR: Tried to set parent for entity %s (%s), but it has no attachment named %s.\n", GetClassname(), GetDebugName(), szAttachment);
+			Warning( "ERROR: Tried to set parent for entity %s (%s), but its parent has no model.\n", GetClassname(), GetDebugName() );
 			return;
 		}
 
-		SetParent(pParent, iAttachment);
-		SetMoveType(MOVETYPE_NONE);
+		int iAttachment = pAnimating->LookupAttachment( szAttachment );
+		if( iAttachment <= 0 )
+		{
+			Warning( "ERROR: Tried to set parent for entity %s (%s), but it has no attachment named %s.\n", GetClassname(), GetDebugName(), szAttachment );
+			return;
+		}
+
+		SetParent( pParent, iAttachment );
+		SetMoveType( MOVETYPE_NONE );
 		return;
 	}
-	
-	SetParent(pParent);
+
+	SetParent( pParent );
 }
 
 HSCRIPT	CBaseEntity::GetScriptOwnerEntity()
 {
-	return ToHScript(GetOwnerEntity());
+	return ToHScript( GetOwnerEntity() );
 }
 
-void CBaseEntity::SetScriptOwnerEntity(HSCRIPT pOwner)
+void CBaseEntity::SetScriptOwnerEntity( HSCRIPT pOwner )
 {
-	SetOwnerEntity(ToEnt(pOwner));
+	SetOwnerEntity( ToEnt( pOwner ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -2786,20 +2878,24 @@ HSCRIPT CBaseEntity::ScriptEntityToWorldTransform( void )
 //-----------------------------------------------------------------------------
 HSCRIPT CBaseEntity::ScriptGetPhysicsObject( void )
 {
-	if (VPhysicsGetObject())
+	if( VPhysicsGetObject() )
+	{
 		return g_pScriptVM->RegisterInstance( VPhysicsGetObject() );
+	}
 	else
+	{
 		return NULL;
+	}
 }
 
 
 #ifdef GAME_DLL
-#define SCRIPT_NEVER_THINK TICK_NEVER_THINK
+	#define SCRIPT_NEVER_THINK TICK_NEVER_THINK
 #else
-#define SCRIPT_NEVER_THINK CLIENT_THINK_NEVER
+	#define SCRIPT_NEVER_THINK CLIENT_THINK_NEVER
 #endif
 
-static inline void ScriptStopContextThink( scriptthinkfunc_t *context )
+static inline void ScriptStopContextThink( scriptthinkfunc_t* context )
 {
 	Assert( context->m_hfnThink );
 	Assert( context->m_flNextThink == SCRIPT_NEVER_THINK );
@@ -2818,18 +2914,18 @@ void CBaseEntity::ScriptContextThink()
 
 	ScriptVariant_t arg = m_hScriptInstance;
 
-	for ( int i = 0; i < m_ScriptThinkFuncs.Count(); ++i )
+	for( int i = 0; i < m_ScriptThinkFuncs.Count(); ++i )
 	{
-		scriptthinkfunc_t *cur = m_ScriptThinkFuncs[i];
+		scriptthinkfunc_t* cur = m_ScriptThinkFuncs[i];
 
-		if ( cur->m_flNextThink == SCRIPT_NEVER_THINK )
+		if( cur->m_flNextThink == SCRIPT_NEVER_THINK )
 		{
 			continue;
 		}
 
-		if ( cur->m_flNextThink > gpGlobals->curtime )
+		if( cur->m_flNextThink > gpGlobals->curtime )
 		{
-			if ( ( flScheduled == 0.0f ) || ( flScheduled > cur->m_flNextThink ) )
+			if( ( flScheduled == 0.0f ) || ( flScheduled > cur->m_flNextThink ) )
 			{
 				flScheduled = cur->m_flNextThink;
 			}
@@ -2844,7 +2940,7 @@ void CBaseEntity::ScriptContextThink()
 		ScriptVariant_t varReturn;
 
 #ifndef CLIENT_DLL
-		if ( !cur->m_bNoParam )
+		if( !cur->m_bNoParam )
 		{
 #endif
 			g_pScriptVM->ExecuteFunction( cur->m_hfnThink, &arg, 1, &varReturn, NULL, true );
@@ -2856,27 +2952,27 @@ void CBaseEntity::ScriptContextThink()
 		}
 #endif
 
-		if ( cur->m_flNextThink == SCRIPT_NEVER_THINK )
+		if( cur->m_flNextThink == SCRIPT_NEVER_THINK )
 		{
 			// stopped from script while thinking
 			continue;
 		}
 
 		float flReturn;
-		if ( !varReturn.AssignTo( &flReturn ) )
+		if( !varReturn.AssignTo( &flReturn ) )
 		{
 			varReturn.Free();
 			cur->m_flNextThink = SCRIPT_NEVER_THINK;
 			continue;
 		}
 
-		if ( flReturn < 0.0f )
+		if( flReturn < 0.0f )
 		{
 			cur->m_flNextThink = SCRIPT_NEVER_THINK;
 			continue;
 		}
 
-		if ( flReturn < flNextThink )
+		if( flReturn < flNextThink )
 		{
 			flNextThink = flReturn;
 		}
@@ -2885,21 +2981,24 @@ void CBaseEntity::ScriptContextThink()
 	}
 
 	// deferred safe removal
-	for ( int i = 0; i < m_ScriptThinkFuncs.Count(); )
+	for( int i = 0; i < m_ScriptThinkFuncs.Count(); )
 	{
-		scriptthinkfunc_t *cur = m_ScriptThinkFuncs[i];
-		if ( cur->m_flNextThink == SCRIPT_NEVER_THINK )
+		scriptthinkfunc_t* cur = m_ScriptThinkFuncs[i];
+		if( cur->m_flNextThink == SCRIPT_NEVER_THINK )
 		{
 			ScriptStopContextThink( cur );
 			delete cur;
-			m_ScriptThinkFuncs.Remove(i);
+			m_ScriptThinkFuncs.Remove( i );
 		}
-		else ++i;
+		else
+		{
+			++i;
+		}
 	}
 
-	if ( flNextThink < FLT_MAX )
+	if( flNextThink < FLT_MAX )
 	{
-		if ( flScheduled > 0.0f )
+		if( flScheduled > 0.0f )
 		{
 			flNextThink = min( gpGlobals->curtime + flNextThink, flScheduled );
 		}
@@ -2910,7 +3009,7 @@ void CBaseEntity::ScriptContextThink()
 	}
 	else
 	{
-		if ( flScheduled > 0.0f )
+		if( flScheduled > 0.0f )
 		{
 			flNextThink = flScheduled;
 		}
@@ -2922,17 +3021,21 @@ void CBaseEntity::ScriptContextThink()
 
 #ifdef _DEBUG
 #ifdef GAME_DLL
-	int nNextThinkTick = GetNextThinkTick("ScriptContextThink");
-	float flNextThinkTime = TICKS_TO_TIME(nNextThinkTick);
+	int nNextThinkTick = GetNextThinkTick( "ScriptContextThink" );
+	float flNextThinkTime = TICKS_TO_TIME( nNextThinkTick );
 
 	// If internal next think tick is earlier than what we have here with flNextThink,
 	// whoever set that think may fail. In worst case scenario the entity may stop thinking.
-	if ( nNextThinkTick > gpGlobals->tickcount )
+	if( nNextThinkTick > gpGlobals->tickcount )
 	{
-		if ( flNextThink == SCRIPT_NEVER_THINK )
-			Assert(0);
-		if ( flNextThinkTime < flNextThink )
-			Assert(0);
+		if( flNextThink == SCRIPT_NEVER_THINK )
+		{
+			Assert( 0 );
+		}
+		if( flNextThinkTime < flNextThink )
+		{
+			Assert( 0 );
+		}
 	}
 #endif
 #endif
@@ -2945,8 +3048,8 @@ void CBaseEntity::ScriptContextThink()
 }
 
 #ifndef CLIENT_DLL
-// see ScriptSetThink
-static bool s_bScriptContextThinkNoParam = false;
+	// see ScriptSetThink
+	static bool s_bScriptContextThinkNoParam = false;
 #endif
 
 //-----------------------------------------------------------------------------
@@ -2957,34 +3060,34 @@ void CBaseEntity::ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, f
 #ifdef CLIENT_DLL
 	// Context thinking is not yet supported on client, entities can only have 1 think function.
 	// C_World does not have one by default, so it is safe to set its.
-	if ( !IsWorld() )
+	if( !IsWorld() )
 	{
-		g_pScriptVM->RaiseException("SetContextThink is only supported on C_World");
+		g_pScriptVM->RaiseException( "SetContextThink is only supported on C_World" );
 		return;
 	}
 #endif
 
-	scriptthinkfunc_t *pf = NULL;
+	scriptthinkfunc_t* pf = NULL;
 	unsigned hash = szContext ? HashString( szContext ) : 0;
 
 	FOR_EACH_VEC( m_ScriptThinkFuncs, i )
 	{
-		scriptthinkfunc_t *f = m_ScriptThinkFuncs[i];
-		if ( hash == f->m_iContextHash )
+		scriptthinkfunc_t* f = m_ScriptThinkFuncs[i];
+		if( hash == f->m_iContextHash )
 		{
 			pf = f;
 			break;
 		}
 	}
 
-	if ( hFunc )
+	if( hFunc )
 	{
 		// add new
-		if ( !pf )
+		if( !pf )
 		{
 			pf = new scriptthinkfunc_t;
 
-			m_ScriptThinkFuncs.SetGrowSize(1);
+			m_ScriptThinkFuncs.SetGrowSize( 1 );
 			m_ScriptThinkFuncs.AddToTail( pf );
 
 			pf->m_iContextHash = hash;
@@ -2996,9 +3099,9 @@ void CBaseEntity::ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, f
 		else
 		{
 #ifdef _DEBUG
-			if ( pf->m_flNextThink == 0 )
+			if( pf->m_flNextThink == 0 )
 			{
-				Warning("Script think ('%s') was changed while it was thinking!\n", szContext);
+				Warning( "Script think ('%s') was changed while it was thinking!\n", szContext );
 			}
 #endif
 			g_pScriptVM->ReleaseScript( pf->m_hfnThink );
@@ -3011,7 +3114,7 @@ void CBaseEntity::ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, f
 
 #ifdef GAME_DLL
 		int nexttick = GetNextThinkTick( RegisterThinkContext( "ScriptContextThink" ) );
-		if ( nexttick <= 0 || TICKS_TO_TIME(nexttick) > nextthink )
+		if( nexttick <= 0 || TICKS_TO_TIME( nexttick ) > nextthink )
 		{
 			SetContextThink( &CBaseEntity::ScriptContextThink, nextthink, "ScriptContextThink" );
 		}
@@ -3023,7 +3126,7 @@ void CBaseEntity::ScriptSetContextThink( const char* szContext, HSCRIPT hFunc, f
 #endif
 	}
 	// null func input, think exists
-	else if ( pf )
+	else if( pf )
 	{
 		pf->m_flNextThink = SCRIPT_NEVER_THINK;
 	}

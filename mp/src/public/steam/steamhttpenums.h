@@ -8,7 +8,7 @@
 #ifndef STEAMHTTPENUMS_H
 #define STEAMHTTPENUMS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // HTTP related types
@@ -24,7 +24,7 @@ enum EHTTPMethod
 	k_EHTTPMethodDELETE,
 	k_EHTTPMethodOPTIONS,
 
-	// The remaining HTTP methods are not yet supported, per rfc2616 section 5.1.1 only GET and HEAD are required for 
+	// The remaining HTTP methods are not yet supported, per rfc2616 section 5.1.1 only GET and HEAD are required for
 	// a compliant general purpose server.  We'll likely add more as we find uses for them.
 
 	// k_EHTTPMethodTRACE,

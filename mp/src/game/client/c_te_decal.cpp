@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS( C_TEDecal, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEDecal( void );
+	C_TEDecal( void );
 	virtual			~C_TEDecal( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -45,19 +45,19 @@ public:
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEDecal, DT_TEDecal, CTEDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecStart)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nHitbox)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEDecal, DT_TEDecal, CTEDecal )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecStart ) ),
+				RecvPropInt( RECVINFO( m_nEntity ) ),
+				RecvPropInt( RECVINFO( m_nHitbox ) ),
+				RecvPropInt( RECVINFO( m_nIndex ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TEDecal::C_TEDecal( void )
+				C_TEDecal::C_TEDecal( void )
 {
 	m_vecOrigin.Init();
 	m_vecStart.Init();
@@ -68,38 +68,42 @@ C_TEDecal::C_TEDecal( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEDecal::~C_TEDecal( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEDecal::Precache( void )
-{											 
+{
 }
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordDecal( const Vector &pos, const Vector &start, 
-	int entity, int hitbox, int index )
+static inline void RecordDecal( const Vector& pos, const Vector& start,
+								int entity, int hitbox, int index )
 {
-	if ( !ToolsEnabled() )
+	if( !ToolsEnabled() )
+	{
 		return;
+	}
 
-	if ( clienttools->IsInRecordingMode() )
+	if( clienttools->IsInRecordingMode() )
 	{
 		// FIXME: Can't record on entities yet
-		if ( entity != 0 )
+		if( entity != 0 )
+		{
 			return;
+		}
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
 
- 		msg->SetInt( "te", TE_DECAL );
- 		msg->SetString( "name", "TE_Decal" );
+		msg->SetInt( "te", TE_DECAL );
+		msg->SetString( "name", "TE_Decal" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", pos.x );
 		msg->SetFloat( "originy", pos.y );
@@ -111,24 +115,24 @@ static inline void RecordDecal( const Vector &pos, const Vector &start,
 		msg->SetString( "decalname", effects->Draw_DecalNameFromIndex( index ) );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
-		
+
 		msg->deleteThis();
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Tempent 
+// Tempent
 //-----------------------------------------------------------------------------
 void TE_Decal( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* start, int entity, int hitbox, int index )
+			   const Vector* pos, const Vector* start, int entity, int hitbox, int index )
 {
 	RecordDecal( *pos, *start, entity, hitbox, index );
 
 	trace_t tr;
 
 	// Special case for world entity with hitbox:
-	if ( (entity == 0) && (hitbox != 0) )
+	if( ( entity == 0 ) && ( hitbox != 0 ) )
 	{
 		Ray_t ray;
 		ray.Init( *start, *pos );
@@ -139,17 +143,19 @@ void TE_Decal( IRecipientFilter& filter, float delay,
 		// Only decal the world + brush models
 		// Here we deal with decals on entities.
 		C_BaseEntity* ent;
-		if ( ( ent = cl_entitylist->GetEnt( entity ) ) == NULL )
+		if( ( ent = cl_entitylist->GetEnt( entity ) ) == NULL )
+		{
 			return;
+		}
 
-		ent->AddDecal( *start, *pos, *pos, hitbox, 
-			index, false, tr );
+		ent->AddDecal( *start, *pos, *pos, hitbox,
+					   index, false, tr );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEDecal::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -163,7 +169,7 @@ void C_TEDecal::PostDataUpdate( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 // Playback
 //-----------------------------------------------------------------------------
-void TE_Decal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_Decal( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecStart;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );
@@ -173,7 +179,7 @@ void TE_Decal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
 	vecStart.y = pKeyValues->GetFloat( "starty" );
 	vecStart.z = pKeyValues->GetFloat( "startz" );
 	int nHitbox = pKeyValues->GetInt( "hitbox" );
-	const char *pDecalName = pKeyValues->GetString( "decalname" );
+	const char* pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_Decal( filter, 0.0f, &vecOrigin, &vecStart, 0, nHitbox, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_Decal( filter, 0.0f, &vecOrigin, &vecStart, 0, nHitbox, effects->Draw_DecalIndexFromName( ( char* )pDecalName ) );
 }

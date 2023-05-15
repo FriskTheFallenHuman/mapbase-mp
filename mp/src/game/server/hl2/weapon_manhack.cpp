@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -36,22 +36,22 @@ public:
 	float			m_flBladeYaw;
 };
 
-IMPLEMENT_SERVERCLASS_ST( CWeapon_Manhack, DT_Weapon_Manhack)
+IMPLEMENT_SERVERCLASS_ST( CWeapon_Manhack, DT_Weapon_Manhack )
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( weapon_manhack, CWeapon_Manhack );
-PRECACHE_WEAPON_REGISTER(weapon_manhack);
+PRECACHE_WEAPON_REGISTER( weapon_manhack );
 
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CWeapon_Manhack )
 
-	DEFINE_FIELD( m_flBladeYaw,			FIELD_FLOAT ),
+DEFINE_FIELD( m_flBladeYaw,			FIELD_FLOAT ),
 
-END_DATADESC()
+					END_DATADESC()
 
-void CWeapon_Manhack::Spawn( )
+					void CWeapon_Manhack::Spawn( )
 {
 	// Call base class first
 	BaseClass::Spawn();

@@ -9,7 +9,7 @@
 #define PERFORCEFILELIST_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlstring.h"
@@ -24,7 +24,7 @@ struct P4File_t;
 
 namespace vgui
 {
-	class ListPanel;
+class ListPanel;
 }
 
 
@@ -40,7 +40,7 @@ class PerforceFileList : public vgui::ListPanel
 
 public:
 	// The context keyvalues are added to all messages sent by this dialog if they are specified
-	PerforceFileList( Panel *parent, const char *pPanelName );
+	PerforceFileList( Panel* parent, const char* pPanelName );
 	~PerforceFileList();
 
 	// Add a file to the file list. Note that this file may exist on disk or not
@@ -50,13 +50,13 @@ public:
 	// This function returns the itemID of the added file
 	// If you already know the file exists or is a directory (or not), specify that in the call.
 	// -1 means autodetect whether the file exists or is a directory
-	int AddFile( const char *pFullPath, int nFileExists = -1, int nIsDirectory = -1 );
+	int AddFile( const char* pFullPath, int nFileExists = -1, int nIsDirectory = -1 );
 
 	// Is a file already in the list?
-	bool IsFileInList( const char *pFullPath );
+	bool IsFileInList( const char* pFullPath );
 
 	// Find the item ID associated with a particular file
-	int FindFile( const char *pFullPath );
+	int FindFile( const char* pFullPath );
 
 	// Remove all files from the list
 	void RemoveAllFiles();
@@ -65,19 +65,19 @@ public:
 	void Refresh();
 
 	// Refresh perforce information manually
-	void RefreshPerforceState( int nItemID, bool bFileExists, P4File_t *pFileInfo );
+	void RefreshPerforceState( int nItemID, bool bFileExists, P4File_t* pFileInfo );
 
 	// Is a particular list item a directory?
 	bool IsDirectoryItem( int nItemID );
 
 	// Returns the file associated with a particular item ID
-	const char *GetFile( int nItemID );
+	const char* GetFile( int nItemID );
 
 	// Toggle showing deleted files or not
 	void ShowDeletedFiles( bool bShowDeletedFiles );
 
 	// Inherited from vgui::EditablePanel
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void OnMouseDoublePressed( MouseCode code );
 
 	/*
@@ -92,14 +92,14 @@ protected:
 		CUtlVector< int > m_ItemIDs;
 	};
 
-	// Add a file to the file list. 
-	int AddFileToFileList( const char *pFullPath, bool bExistsOnDisk );
+	// Add a file to the file list.
+	int AddFileToFileList( const char* pFullPath, bool bExistsOnDisk );
 
-	// Add a directory to the file list. 
-	int AddDirectoryToFileList( const char *pFullPath, bool bExistsOnDisk );
+	// Add a directory to the file list.
+	int AddDirectoryToFileList( const char* pFullPath, bool bExistsOnDisk );
 
 	// Add a directory to the directory list, returns client spec
-	void AddItemToDirectoryList( const char *pFullPath, int nItemID, bool bIsDirectory );
+	void AddItemToDirectoryList( const char* pFullPath, int nItemID, bool bIsDirectory );
 
 	// Used to look up directories -> client specs
 	CUtlStringMap< DirectoryInfo_t > m_Directories;

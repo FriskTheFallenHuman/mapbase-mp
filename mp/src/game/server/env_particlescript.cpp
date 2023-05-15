@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -17,7 +17,7 @@
 #define CL_EVENT_SPRITEGROUP_CREATE		6002
 
 //-----------------------------------------------------------------------------
-// An entity which emits other entities at points 
+// An entity which emits other entities at points
 //-----------------------------------------------------------------------------
 class CEnvParticleScript : public CBaseAnimating
 {
@@ -33,7 +33,7 @@ public:
 	virtual void Activate();
 	virtual int  UpdateTransmitState();
 
-	void InputSetSequence( inputdata_t &inputdata );
+	void InputSetSequence( inputdata_t& inputdata );
 
 private:
 
@@ -44,32 +44,32 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Save/load 
+// Save/load
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CEnvParticleScript )
 
-	DEFINE_FIELD( m_flSequenceScale, FIELD_FLOAT ),
-	
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
+DEFINE_FIELD( m_flSequenceScale, FIELD_FLOAT ),
 
-END_DATADESC()
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
 
-LINK_ENTITY_TO_CLASS( env_particlescript, CEnvParticleScript );
+			  END_DATADESC()
+
+			  LINK_ENTITY_TO_CLASS( env_particlescript, CEnvParticleScript );
 
 
 //-----------------------------------------------------------------------------
 // Datatable
 //-----------------------------------------------------------------------------
 IMPLEMENT_SERVERCLASS_ST( CEnvParticleScript, DT_EnvParticleScript )
-	SendPropFloat(SENDINFO(m_flSequenceScale), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+SendPropFloat( SENDINFO( m_flSequenceScale ), 0, SPROP_NOSCALE ),
+			   END_SEND_TABLE()
 
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CEnvParticleScript::CEnvParticleScript()
+			   CEnvParticleScript::CEnvParticleScript()
 {
 	UseClientSideAnimation();
 }
@@ -77,23 +77,23 @@ CEnvParticleScript::CEnvParticleScript()
 
 void CEnvParticleScript::PrecacheAnimationEventMaterials()
 {
-	CStudioHdr *hdr = GetModelPtr();
-	if ( hdr )
+	CStudioHdr* hdr = GetModelPtr();
+	if( hdr )
 	{
 		int numseq = hdr->GetNumSeq();
-		for ( int i = 0; i < numseq; ++i )
+		for( int i = 0; i < numseq; ++i )
 		{
 			mstudioseqdesc_t& seqdesc = hdr->pSeqdesc( i );
 			int ecount = seqdesc.numevents;
-			for ( int j = 0 ; j < ecount; ++j )
+			for( int j = 0 ; j < ecount; ++j )
 			{
 				const mstudioevent_t* event = seqdesc.pEvent( j );
-				if ( event->event == CL_EVENT_SPRITEGROUP_CREATE )
+				if( event->event == CL_EVENT_SPRITEGROUP_CREATE )
 				{
 					char pAttachmentName[256];
 					char pSpriteName[256];
 					int nArgs = sscanf( event->pszOptions(), "%255s %255s", pAttachmentName, pSpriteName );
-					if ( nArgs == 2 )
+					if( nArgs == 2 )
 					{
 						PrecacheMaterial( pSpriteName );
 					}
@@ -110,7 +110,7 @@ void CEnvParticleScript::Precache()
 {
 	BaseClass::Precache();
 	PrecacheModel( STRING( GetModelName() ) );
-	
+
 	// We need a model for its animation sequences even though we don't render it
 	SetModel( STRING( GetModelName() ) );
 
@@ -139,11 +139,11 @@ void CEnvParticleScript::Activate()
 	BaseClass::Activate();
 
 	DetectInSkybox();
-	CSkyCamera *pCamera = GetEntitySkybox();
-	if ( pCamera )
+	CSkyCamera* pCamera = GetEntitySkybox();
+	if( pCamera )
 	{
 		float flSkyboxScale = pCamera->m_skyboxData.scale;
-		if ( flSkyboxScale == 0.0f )
+		if( flSkyboxScale == 0.0f )
 		{
 			flSkyboxScale = 1.0f;
 		}
@@ -163,12 +163,12 @@ void CEnvParticleScript::Activate()
 //-----------------------------------------------------------------------------
 int CEnvParticleScript::UpdateTransmitState()
 {
-	if ( IsEffectActive( EF_NODRAW ) )
+	if( IsEffectActive( EF_NODRAW ) )
 	{
 		return SetTransmitState( FL_EDICT_DONTSEND );
 	}
 
-	if ( IsEFlagSet( EFL_IN_SKYBOX ) )
+	if( IsEFlagSet( EFL_IN_SKYBOX ) )
 	{
 		return SetTransmitState( FL_EDICT_ALWAYS );
 	}
@@ -180,12 +180,12 @@ int CEnvParticleScript::UpdateTransmitState()
 //-----------------------------------------------------------------------------
 // Purpose: Input that sets the sequence of the entity
 //-----------------------------------------------------------------------------
-void CEnvParticleScript::InputSetSequence( inputdata_t &inputdata )
+void CEnvParticleScript::InputSetSequence( inputdata_t& inputdata )
 {
-	if ( inputdata.value.StringID() != NULL_STRING )
+	if( inputdata.value.StringID() != NULL_STRING )
 	{
 		int nSequence = LookupSequence( STRING( inputdata.value.StringID() ) );
-		if ( nSequence != ACT_INVALID )
+		if( nSequence != ACT_INVALID )
 		{
 			SetSequence( nSequence );
 		}

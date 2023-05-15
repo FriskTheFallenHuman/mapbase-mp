@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef VMPI_DEFS_H
 #define VMPI_DEFS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,8 +24,8 @@
 
 // Known packet IDs in various systems.
 #define VMPI_PACKETID_FILESYSTEM	0	// The file system reserves this packet ID.
-										// All application traffic must set its first byte to something other
-										// than this value.
+// All application traffic must set its first byte to something other
+// than this value.
 #define VMPI_SHARED_PACKET_ID		10
 
 
@@ -60,14 +60,14 @@
 #define VMPI_SERVICE_TO_UI_STATE			1	// Updates state reflecting whether it's idle, busy, etc.
 #define VMPI_SERVICE_TO_UI_PATCHING			2	// Updates state reflecting whether it's idle, busy, etc.
 #define VMPI_SERVICE_TO_UI_EXIT				3	// Updates state reflecting whether it's idle, busy, etc.
-	
-	// Application state.. these are communicated between the service and the UI.
-	enum
-	{
-		VMPI_SERVICE_STATE_IDLE=0,
-		VMPI_SERVICE_STATE_BUSY,
-		VMPI_SERVICE_STATE_DISABLED
-	};
+
+// Application state.. these are communicated between the service and the UI.
+enum
+{
+	VMPI_SERVICE_STATE_IDLE = 0,
+	VMPI_SERVICE_STATE_BUSY,
+	VMPI_SERVICE_STATE_DISABLED
+};
 #define VMPI_SERVICE_DISABLE			2	// Stop waiting for jobs..
 #define VMPI_SERVICE_ENABLE				3
 #define VMPI_SERVICE_UPDATE_PASSWORD	4	// New password.
@@ -84,7 +84,7 @@
 #define VMPI_WORKER_PORT_FIRST		22340
 #define VMPI_WORKER_PORT_LAST		22350
 
-// The VMPI service downloader is still a worker but it uses this port range so the 
+// The VMPI service downloader is still a worker but it uses this port range so the
 // master knows it's just downloading the exes.
 #define VMPI_SERVICE_DOWNLOADER_PORT_FIRST		22351
 #define VMPI_SERVICE_DOWNLOADER_PORT_LAST		22360

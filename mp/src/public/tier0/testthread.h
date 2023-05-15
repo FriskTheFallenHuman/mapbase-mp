@@ -7,16 +7,16 @@
 #ifndef TESTTHREAD_H
 #define TESTTHREAD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/dbg.h"
 
 // test callback
-typedef void (STDCALL *TestFunc)(void *pv);
+typedef void ( STDCALL* TestFunc )( void* pv );
 
 // runs the test function
-DBG_INTERFACE void Test_RunTest(TestFunc func, void *pvArg);
+DBG_INTERFACE void Test_RunTest( TestFunc func, void* pvArg );
 
 // call to give the test thread a chance to run
 // calling thread will block until the test thread yields

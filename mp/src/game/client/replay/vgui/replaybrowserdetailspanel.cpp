@@ -45,9 +45,9 @@
 
 //-----------------------------------------------------------------------------
 
-extern IClientReplayContext *g_pClientReplayContext;
-extern IReplayMovieManager *g_pReplayMovieManager;
-extern IReplayPerformanceManager *g_pReplayPerformanceManager;
+extern IClientReplayContext* g_pClientReplayContext;
+extern IReplayMovieManager* g_pReplayMovieManager;
+extern IReplayPerformanceManager* g_pReplayPerformanceManager;
 
 //-----------------------------------------------------------------------------
 
@@ -65,15 +65,18 @@ class CConfirmDisconnectFromServerDialog : public CConfirmDialog
 {
 	DECLARE_CLASS_SIMPLE( CConfirmDisconnectFromServerDialog, CConfirmDialog );
 public:
-	CConfirmDisconnectFromServerDialog( Panel *pParent )
-	:	BaseClass( pParent )
+	CConfirmDisconnectFromServerDialog( Panel* pParent )
+		:	BaseClass( pParent )
 	{
 		surface()->PlaySound( "replay\\replaydialog_warn.wav" );
 	}
 
-	const wchar_t *GetText() { return g_pVGuiLocalize->Find( "#Replay_ConfirmDisconnectFromServer" ); }
+	const wchar_t* GetText()
+	{
+		return g_pVGuiLocalize->Find( "#Replay_ConfirmDisconnectFromServer" );
+	}
 
-	void ApplySchemeSettings( vgui::IScheme *pScheme )
+	void ApplySchemeSettings( vgui::IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -83,8 +86,8 @@ public:
 
 //-----------------------------------------------------------------------------
 
-CKeyValueLabelPanel::CKeyValueLabelPanel( Panel *pParent, const char *pKey, const char *pValue )
-:	EditablePanel( pParent, "KeyValueLabelPanel" )
+CKeyValueLabelPanel::CKeyValueLabelPanel( Panel* pParent, const char* pKey, const char* pValue )
+	:	EditablePanel( pParent, "KeyValueLabelPanel" )
 {
 	SetScheme( "ClientScheme" );
 
@@ -92,8 +95,8 @@ CKeyValueLabelPanel::CKeyValueLabelPanel( Panel *pParent, const char *pKey, cons
 	m_pLabels[ 1 ] = new CExLabel( this, "ValueLabel", pValue );
 }
 
-CKeyValueLabelPanel::CKeyValueLabelPanel( Panel *pParent, const char *pKey, const wchar_t *pValue )
-:	EditablePanel( pParent, "KeyValueLabelPanel" )
+CKeyValueLabelPanel::CKeyValueLabelPanel( Panel* pParent, const char* pKey, const wchar_t* pValue )
+	:	EditablePanel( pParent, "KeyValueLabelPanel" )
 {
 	SetScheme( "ClientScheme" );
 
@@ -101,7 +104,7 @@ CKeyValueLabelPanel::CKeyValueLabelPanel( Panel *pParent, const char *pKey, cons
 	m_pLabels[ 1 ] = new CExLabel( this, "ValueLabel", pValue );
 }
 
-void CKeyValueLabelPanel::ApplySchemeSettings( IScheme *pScheme )
+void CKeyValueLabelPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -142,7 +145,7 @@ int CKeyValueLabelPanel::GetValueHeight() const
 	return nHeight;
 }
 
-void CKeyValueLabelPanel::SetValue( const wchar_t *pValue )
+void CKeyValueLabelPanel::SetValue( const wchar_t* pValue )
 {
 	m_pLabels[ 1 ]->SetText( pValue );
 	InvalidateLayout();
@@ -150,22 +153,22 @@ void CKeyValueLabelPanel::SetValue( const wchar_t *pValue )
 
 //-----------------------------------------------------------------------------
 
-CBaseDetailsPanel::CBaseDetailsPanel( Panel *pParent, const char *pName, ReplayHandle_t hReplay )
-:	EditablePanel( pParent, pName ),
-	m_hReplay( hReplay ),
-	m_bShouldShow( true )
+CBaseDetailsPanel::CBaseDetailsPanel( Panel* pParent, const char* pName, ReplayHandle_t hReplay )
+	:	EditablePanel( pParent, pName ),
+	  m_hReplay( hReplay ),
+	  m_bShouldShow( true )
 {
 	SetScheme( "ClientScheme" );
 
 	m_pInsetPanel = new EditablePanel( this, "InsetPanel" );
 }
 
-void CBaseDetailsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CBaseDetailsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetBorder( pScheme->GetBorder( "ReplayStatsBorder" ) );
-	SetBgColor( Color( 0,0,0, 255 ) );
+	SetBgColor( Color( 0, 0, 0, 255 ) );
 }
 
 void CBaseDetailsPanel::PerformLayout()
@@ -174,23 +177,23 @@ void CBaseDetailsPanel::PerformLayout()
 
 	// Setup inset panel bounds
 	const int n = GetMarginSize();
-	m_pInsetPanel->SetBounds( n, n, GetWide() - 2*n, GetTall() - 2*n );
+	m_pInsetPanel->SetBounds( n, n, GetWide() - 2 * n, GetTall() - 2 * n );
 }
 
 //-----------------------------------------------------------------------------
 
-CRecordsPanel::CRecordsPanel( Panel *pParent, ReplayHandle_t hReplay )
-:	CBaseDetailsPanel( pParent, "RecordsPanel", hReplay )
+CRecordsPanel::CRecordsPanel( Panel* pParent, ReplayHandle_t hReplay )
+	:	CBaseDetailsPanel( pParent, "RecordsPanel", hReplay )
 {
 	m_pClassImage = new ImagePanel( this, "ClassImage" );
 }
 
-void CRecordsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CRecordsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetBorder( pScheme->GetBorder( "ReplayDefaultBorder" ) );
-	SetBgColor( Color( 0,0,0,0 ) );
+	SetBgColor( Color( 0, 0, 0, 0 ) );
 }
 
 void CRecordsPanel::PerformLayout()
@@ -199,14 +202,14 @@ void CRecordsPanel::PerformLayout()
 
 	// Figure out the class image name
 	char szImage[MAX_OSPATH];
-	const CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	const CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 	V_snprintf( szImage, sizeof( szImage ), "class_sel_sm_%s_%s", pReplay->GetMaterialFriendlyPlayerClass(), pReplay->GetPlayerTeam() );	// Cause default image to display
 
 	int nHeight = 0;
 
 	// Get the image
-	IImage *pImage = scheme()->GetImage( szImage, true );
-	if ( pImage )
+	IImage* pImage = scheme()->GetImage( szImage, true );
+	if( pImage )
 	{
 		// Get image dimensions
 		int nImageWidth, nImageHeight;
@@ -236,20 +239,20 @@ void CRecordsPanel::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CStatsPanel::CStatsPanel( Panel *pParent, ReplayHandle_t hReplay )
-:	CBaseDetailsPanel( pParent, "StatsPanel", hReplay )
+CStatsPanel::CStatsPanel( Panel* pParent, ReplayHandle_t hReplay )
+	:	CBaseDetailsPanel( pParent, "StatsPanel", hReplay )
 {
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( hReplay );
 
 	// Don't show the panel unless there are stats to display
 	m_bShouldShow = false;
 
 	// Create all stat labels
-	RoundStats_t const &stats = pReplay->GetStats();
-	for ( int i = 0; i < REPLAY_MAX_DISPLAY_GAMESTATS; ++i )
+	RoundStats_t const& stats = pReplay->GetStats();
+	for( int i = 0; i < REPLAY_MAX_DISPLAY_GAMESTATS; ++i )
 	{
 		const int nCurStat = stats.Get( g_pReplayDisplayGameStats[i].m_nStat );
-		if ( !nCurStat )
+		if( !nCurStat )
 		{
 			m_paStatLabels[ i ] = NULL;
 			continue;
@@ -267,7 +270,7 @@ CStatsPanel::CStatsPanel( Panel *pParent, ReplayHandle_t hReplay )
 	}
 }
 
-void CStatsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CStatsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 }
@@ -277,13 +280,13 @@ void CStatsPanel::PerformLayout()
 	BaseClass::PerformLayout();
 
 	int nY = 0;
-	for ( int i = 0; i < REPLAY_MAX_DISPLAY_GAMESTATS; ++i )
+	for( int i = 0; i < REPLAY_MAX_DISPLAY_GAMESTATS; ++i )
 	{
-		CKeyValueLabelPanel *pCurStatLabels = m_paStatLabels[ i ];
-		if ( pCurStatLabels )
+		CKeyValueLabelPanel* pCurStatLabels = m_paStatLabels[ i ];
+		if( pCurStatLabels )
 		{
-			pCurStatLabels->SetBounds( 0, nY, GetInset()->GetWide(), YRES(13) );
-			nY += YRES(13);
+			pCurStatLabels->SetBounds( 0, nY, GetInset()->GetWide(), YRES( 13 ) );
+			nY += YRES( 13 );
 		}
 	}
 
@@ -292,10 +295,10 @@ void CStatsPanel::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CDominationsPanel::CDominationsPanel( Panel *pParent, ReplayHandle_t hReplay )
-:	CBaseDetailsPanel( pParent, "DominationsPanel", hReplay )
+CDominationsPanel::CDominationsPanel( Panel* pParent, ReplayHandle_t hReplay )
+	:	CBaseDetailsPanel( pParent, "DominationsPanel", hReplay )
 {
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( hReplay );
 
 	m_pNumDominationsImage = new ImagePanel( GetInset(), "NumDominations" );
 
@@ -305,19 +308,19 @@ CDominationsPanel::CDominationsPanel( Panel *pParent, ReplayHandle_t hReplay )
 	// Setup the # of dominations image
 	V_snprintf( szImage, sizeof( szImage ), "../hud/leaderboard_dom%i", nNumDominations );
 	m_pNumDominationsImage->SetImage( szImage );
-	
+
 	// Add avatars for each person dominated
-	if ( steamapicontext && steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->GetConnectedUniverse() )
+	if( steamapicontext && steamapicontext->SteamUtils() && steamapicontext->SteamUtils()->GetConnectedUniverse() )
 	{
-		for ( int i = 0; i < nNumDominations; ++i )
+		for( int i = 0; i < nNumDominations; ++i )
 		{
-			CAvatarImage *pAvatar = new CAvatarImage();
+			CAvatarImage* pAvatar = new CAvatarImage();
 			CSteamID id( pReplay->GetDomination( i )->m_nVictimFriendId, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
 			pAvatar->SetAvatarSteamID( id );
 			pAvatar->SetAvatarSize( 32, 32 );
 			pAvatar->UpdateFriendStatus();
 
-			ImagePanel *pImagePanel = new ImagePanel( GetInset(), "DominationImage" );
+			ImagePanel* pImagePanel = new ImagePanel( GetInset(), "DominationImage" );
 			pImagePanel->SetImage( pAvatar );
 			pImagePanel->SetShouldScaleImage( false );
 
@@ -326,7 +329,7 @@ CDominationsPanel::CDominationsPanel( Panel *pParent, ReplayHandle_t hReplay )
 	}
 }
 
-void CDominationsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CDominationsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 }
@@ -340,17 +343,17 @@ void CDominationsPanel::PerformLayout()
 	int nImageWidth, nImageHeight;
 	m_pNumDominationsImage->GetImage()->GetSize( nImageWidth, nImageHeight );
 	m_pNumDominationsImage->SetBounds( 0, 0, nImageWidth, nImageHeight );
-	int nX = nImageWidth + 2*nBuffer;
+	int nX = nImageWidth + 2 * nBuffer;
 	int nY = 0;
-	
-	for ( int i = 0; i < m_vecDominationImages.Count(); ++i )
+
+	for( int i = 0; i < m_vecDominationImages.Count(); ++i )
 	{
-		ImagePanel *pImagePanel = m_vecDominationImages[ i ];
+		ImagePanel* pImagePanel = m_vecDominationImages[ i ];
 		pImagePanel->GetImage()->GetSize( nImageWidth, nImageHeight );
 		m_vecDominationImages[ i ]->SetBounds( nX, nY, nImageWidth, nImageHeight );
 
 		nX += nImageWidth + nBuffer;
-		if ( nX + nImageWidth > GetInset()->GetWide() )
+		if( nX + nImageWidth > GetInset()->GetWide() )
 		{
 			nX = 0;
 			nY += nImageHeight + nBuffer;
@@ -362,26 +365,26 @@ void CDominationsPanel::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CKillsPanel::CKillsPanel( Panel *pParent, ReplayHandle_t hReplay )
-:	CBaseDetailsPanel( pParent, "KillsPanel", hReplay )
+CKillsPanel::CKillsPanel( Panel* pParent, ReplayHandle_t hReplay )
+	:	CBaseDetailsPanel( pParent, "KillsPanel", hReplay )
 {
 	// Get the replay from the handle and add all kills
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( hReplay );
 	char szKillCount[64] = "0";
-	if ( pReplay )
+	if( pReplay )
 	{
-		for ( int i = 0; i < pReplay->GetKillCount(); ++i )
+		for( int i = 0; i < pReplay->GetKillCount(); ++i )
 		{
 			// Construct path for image
 			char szImgPath[MAX_OSPATH] = "";
 
 #if defined( TF_CLIENT_DLL )
 			// Get the kill info
-			const CGenericClassBasedReplay::KillData_t *pKill = pReplay->GetKill( i );
+			const CGenericClassBasedReplay::KillData_t* pKill = pReplay->GetKill( i );
 
-			char const *pClass = pKill->m_nPlayerClass == TF_CLASS_DEMOMAN
-				? "demo"
-				: g_aPlayerClassNames_NonLocalized[ pKill->m_nPlayerClass ];
+			char const* pClass = pKill->m_nPlayerClass == TF_CLASS_DEMOMAN
+								 ? "demo"
+								 : g_aPlayerClassNames_NonLocalized[ pKill->m_nPlayerClass ];
 
 			V_snprintf( szImgPath, sizeof( szImgPath ), "../hud/leaderboard_class_%s", pClass );
 #elif defined( CSTRIKE_DLL )
@@ -389,10 +392,10 @@ CKillsPanel::CKillsPanel( Panel *pParent, ReplayHandle_t hReplay )
 #endif
 
 			// Get the image
-			IImage *pImage = scheme()->GetImage( szImgPath, true );
+			IImage* pImage = scheme()->GetImage( szImgPath, true );
 
 			// Create new image panel
-			ImagePanel *pImgPanel = new ImagePanel( GetInset(), "img" );
+			ImagePanel* pImgPanel = new ImagePanel( GetInset(), "img" );
 			pImgPanel->SetImage( pImage );
 
 			// Cache for later
@@ -418,11 +421,13 @@ void CKillsPanel::PerformLayout()
 	int nY = m_pKillLabels->GetHeight() + nBuffer * 2;
 	int nImageY = nY;
 	int nImageX = 0;
-	for ( int i = 0; i < m_vecKillImages.Count(); ++i )
+	for( int i = 0; i < m_vecKillImages.Count(); ++i )
 	{
-		IImage *pCurImage = m_vecKillImages[ i ]->GetImage();
-		if ( !pCurImage )
+		IImage* pCurImage = m_vecKillImages[ i ]->GetImage();
+		if( !pCurImage )
+		{
 			continue;
+		}
 
 		int nImageWidth, nImageHeight;
 		pCurImage->GetSize( nImageWidth, nImageHeight );
@@ -430,12 +435,12 @@ void CKillsPanel::PerformLayout()
 
 		nImageX += nImageWidth + nBuffer;
 
-		if ( i == 0 )
+		if( i == 0 )
 		{
 			nY += nImageHeight;
 		}
 
-		if ( nImageX + nImageWidth > GetInset()->GetWide() )
+		if( nImageX + nImageWidth > GetInset()->GetWide() )
 		{
 			nImageX = 0;
 			nImageY += nImageHeight + nBuffer;
@@ -447,26 +452,26 @@ void CKillsPanel::PerformLayout()
 	SetTall( nY + GetMarginSize() * 2 );
 }
 
-void CKillsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CKillsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 }
 
 //-----------------------------------------------------------------------------
 
-extern const char *GetMapDisplayName( const char *mapName );
+extern const char* GetMapDisplayName( const char* mapName );
 
-CBasicLifeInfoPanel::CBasicLifeInfoPanel( Panel *pParent, ReplayHandle_t hReplay )
-:	CBaseDetailsPanel( pParent, "BasicLifeInfo", hReplay )
+CBasicLifeInfoPanel::CBasicLifeInfoPanel( Panel* pParent, ReplayHandle_t hReplay )
+	:	CBaseDetailsPanel( pParent, "BasicLifeInfo", hReplay )
 {
 	// Create labels
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( hReplay );
 	m_pKilledByLabels = new CKeyValueLabelPanel( GetInset(), "#Replay_StatKilledBy", pReplay->WasKilled() ? pReplay->GetKillerName() : "#Replay_None" );
 	m_pMapLabels = new CKeyValueLabelPanel( GetInset(), "#Replay_OnMap", GetMapDisplayName( pReplay->m_szMapName ) );
-	m_pLifeLabels = new CKeyValueLabelPanel( GetInset(), "#Replay_Life", CReplayTime::FormatTimeString( (int)pReplay->m_flLength ) );
+	m_pLifeLabels = new CKeyValueLabelPanel( GetInset(), "#Replay_Life", CReplayTime::FormatTimeString( ( int )pReplay->m_flLength ) );
 }
 
-void CBasicLifeInfoPanel::ApplySchemeSettings( IScheme *pScheme )
+void CBasicLifeInfoPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 }
@@ -487,9 +492,9 @@ void CBasicLifeInfoPanel::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CYouTubeInfoPanel::CYouTubeInfoPanel( Panel *pParent )
-								 :	CBaseDetailsPanel( pParent, "YouTubeInfo", NULL ),
-								 m_pLabels( NULL )
+CYouTubeInfoPanel::CYouTubeInfoPanel( Panel* pParent )
+	:	CBaseDetailsPanel( pParent, "YouTubeInfo", NULL ),
+	  m_pLabels( NULL )
 {
 	m_pLabels = new CKeyValueLabelPanel( GetInset(), "#Replay_YouTube", g_pVGuiLocalize->Find( "YouTube_NoStats" ) );
 }
@@ -503,23 +508,23 @@ void CYouTubeInfoPanel::PerformLayout()
 	SetTall( m_pLabels->GetTall() + GetMarginSize() * 2 );
 }
 
-void CYouTubeInfoPanel::SetInfo( const wchar_t *pInfo )
+void CYouTubeInfoPanel::SetInfo( const wchar_t* pInfo )
 {
 	m_pLabels->SetValue( pInfo );
 	InvalidateLayout();
 }
 
 //-----------------------------------------------------------------------------
-	
-CTitleEditPanel::CTitleEditPanel( Panel *pParent, QueryableReplayItemHandle_t hReplayItem, IReplayItemManager *pItemManager )
-:	EditablePanel( pParent, "TitleEditPanel" ),
-	m_hReplayItem( hReplayItem ),
-	m_pItemManager( pItemManager ),
-	m_bMouseOver( false ),
-	m_pTitleEntry( NULL ),
-	m_pHeaderLine( NULL ),
-	m_pClickToEditLabel( NULL ),
-	m_pCaratLabel( NULL )
+
+CTitleEditPanel::CTitleEditPanel( Panel* pParent, QueryableReplayItemHandle_t hReplayItem, IReplayItemManager* pItemManager )
+	:	EditablePanel( pParent, "TitleEditPanel" ),
+	  m_hReplayItem( hReplayItem ),
+	  m_pItemManager( pItemManager ),
+	  m_bMouseOver( false ),
+	  m_pTitleEntry( NULL ),
+	  m_pHeaderLine( NULL ),
+	  m_pClickToEditLabel( NULL ),
+	  m_pCaratLabel( NULL )
 {
 	ivgui()->AddTickSignal( GetVPanel(), 10 );
 }
@@ -529,33 +534,33 @@ CTitleEditPanel::~CTitleEditPanel()
 	ivgui()->RemoveTickSignal( GetVPanel() );
 }
 
-void CTitleEditPanel::ApplySchemeSettings( IScheme *pScheme )
+void CTitleEditPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/ui/replaybrowser/titleeditpanel.res", "GAME" );
-	
+
 	// Get ptr to carat label
-	m_pCaratLabel = dynamic_cast< CExLabel * >( FindChildByName( "CaratLabel" ) );
+	m_pCaratLabel = dynamic_cast< CExLabel* >( FindChildByName( "CaratLabel" ) );
 
 	// Get ptr to "click to edit" label
-	m_pClickToEditLabel = dynamic_cast< CExLabel * >( FindChildByName( "ClickToEditLabel" ) );
+	m_pClickToEditLabel = dynamic_cast< CExLabel* >( FindChildByName( "ClickToEditLabel" ) );
 
 	// Setup title entry
-	m_pTitleEntry = dynamic_cast< TextEntry * >( FindChildByName( "TitleInput" ) );
+	m_pTitleEntry = dynamic_cast< TextEntry* >( FindChildByName( "TitleInput" ) );
 	m_pTitleEntry->SelectAllOnFocusAlways( true );
-	
+
 #if !defined( TF_CLIENT_DLL )
 	m_pTitleEntry->SetPaintBorderEnabled( false );
 #endif
 
 	// Setup title entry text
-	IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-	const wchar_t *pTitle = pReplayItem->GetItemTitle();
+	IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+	const wchar_t* pTitle = pReplayItem->GetItemTitle();
 	m_pTitleEntry->SetText( pTitle[0] ? pTitle : L"#Replay_DefaultDetailsTitle" );
 
 	// Cache pointer to the image
-	m_pHeaderLine = dynamic_cast< ImagePanel * >( FindChildByName( "HeaderLine" ) );
+	m_pHeaderLine = dynamic_cast< ImagePanel* >( FindChildByName( "HeaderLine" ) );
 }
 
 void CTitleEditPanel::PerformLayout()
@@ -608,7 +613,7 @@ void CTitleEditPanel::PaintBackground()
 	m_pClickToEditLabel->SetVisible( m_bMouseOver && !bEditing );
 
 	// Draw border if necessary
-	if ( bDrawExtraStuff )
+	if( bDrawExtraStuff )
 	{
 		// Use the game UI panel here, since using this panel's vpanel (PushMakeCurrent() is set in
 		// Panel::PaintTraverse(), the function that calls PaintBackground()) causes dimmed top and
@@ -626,16 +631,16 @@ void CTitleEditPanel::PaintBackground()
 
 		surface()->PushMakeCurrent( vGameUI, false );
 
-			// Draw background
-			surface()->DrawSetColor( Color( 29, 28, 26, 255 ) );
-			surface()->DrawFilledRect( aTitleRect[0], aTitleRect[1], aTitleRect[2], aTitleRect[3] );
+		// Draw background
+		surface()->DrawSetColor( Color( 29, 28, 26, 255 ) );
+		surface()->DrawFilledRect( aTitleRect[0], aTitleRect[1], aTitleRect[2], aTitleRect[3] );
 
-			// Draw stroke
-			surface()->DrawSetColor( Color( 202, 190, 164, 255 ) );
-			surface()->DrawLine( aTitleRect[0], aTitleRect[1], aTitleRect[2], aTitleRect[1] );	// Top
-			surface()->DrawLine( aTitleRect[0], aTitleRect[1], aTitleRect[0], aTitleRect[3] );	// Left
-			surface()->DrawLine( aTitleRect[0], aTitleRect[3], aTitleRect[2], aTitleRect[3] );	// Bottom
-			surface()->DrawLine( aTitleRect[2], aTitleRect[1], aTitleRect[2], aTitleRect[3] );	// Right
+		// Draw stroke
+		surface()->DrawSetColor( Color( 202, 190, 164, 255 ) );
+		surface()->DrawLine( aTitleRect[0], aTitleRect[1], aTitleRect[2], aTitleRect[1] );	// Top
+		surface()->DrawLine( aTitleRect[0], aTitleRect[1], aTitleRect[0], aTitleRect[3] );	// Left
+		surface()->DrawLine( aTitleRect[0], aTitleRect[3], aTitleRect[2], aTitleRect[3] );	// Bottom
+		surface()->DrawLine( aTitleRect[2], aTitleRect[1], aTitleRect[2], aTitleRect[3] );	// Right
 
 		surface()->PopMakeCurrent( vGameUI );
 	}
@@ -643,13 +648,13 @@ void CTitleEditPanel::PaintBackground()
 
 void CTitleEditPanel::OnKeyCodeTyped( KeyCode code )
 {
-	IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+	IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
 
-	const wchar_t *pTitle = pReplayItem->GetItemTitle();
+	const wchar_t* pTitle = pReplayItem->GetItemTitle();
 
-	if ( m_pTitleEntry->HasFocus() && pReplayItem )
+	if( m_pTitleEntry->HasFocus() && pReplayItem )
 	{
-		if ( code == KEY_ESCAPE )
+		if( code == KEY_ESCAPE )
 		{
 			// Get replay text and reset it
 			m_pTitleEntry->SetText( pTitle );
@@ -657,10 +662,10 @@ void CTitleEditPanel::OnKeyCodeTyped( KeyCode code )
 			// Remove focus
 			GetParent()->GetParent()->RequestFocus();
 		}
-		else if ( code == KEY_ENTER )
+		else if( code == KEY_ENTER )
 		{
 			// If text is empty, reset to old title
-			if ( m_pTitleEntry->GetTextLength() == 0 )
+			if( m_pTitleEntry->GetTextLength() == 0 )
 			{
 				m_pTitleEntry->SetText( pTitle );
 			}
@@ -676,10 +681,10 @@ void CTitleEditPanel::OnKeyCodeTyped( KeyCode code )
 				g_pReplayManager->FlagReplayForFlush( pReplayItem->GetItemReplay(), true );
 
 				// Notify the thumbnail
-				void *pUserData = pReplayItem->GetUserData();
-				if ( pUserData )
+				void* pUserData = pReplayItem->GetUserData();
+				if( pUserData )
 				{
-					CReplayBrowserThumbnail *pThumbnail = (CReplayBrowserThumbnail*)pUserData;
+					CReplayBrowserThumbnail* pThumbnail = ( CReplayBrowserThumbnail* )pUserData;
 					pThumbnail->UpdateTitleText();
 				}
 			}
@@ -695,8 +700,8 @@ void CTitleEditPanel::OnKeyCodeTyped( KeyCode code )
 
 //-----------------------------------------------------------------------------
 
-CPlaybackPanel::CPlaybackPanel( Panel *pParent )
-:	EditablePanel( pParent, "PlaybackPanel" )
+CPlaybackPanel::CPlaybackPanel( Panel* pParent )
+	:	EditablePanel( pParent, "PlaybackPanel" )
 {
 }
 
@@ -705,7 +710,7 @@ CPlaybackPanel::~CPlaybackPanel()
 	ivgui()->RemoveTickSignal( GetVPanel() );
 }
 
-void CPlaybackPanel::ApplySchemeSettings( IScheme *pScheme )
+void CPlaybackPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -719,27 +724,29 @@ void CPlaybackPanel::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CPlaybackPanelSlideshow::CPlaybackPanelSlideshow( Panel *pParent, ReplayHandle_t hReplay )
-:	CPlaybackPanel( pParent ),
-	m_hReplay( hReplay )
+CPlaybackPanelSlideshow::CPlaybackPanelSlideshow( Panel* pParent, ReplayHandle_t hReplay )
+	:	CPlaybackPanel( pParent ),
+	  m_hReplay( hReplay )
 {
 	m_pScreenshotImage = new CReplayScreenshotSlideshowPanel( this, "Screenshot", hReplay );
 }
 
-void CPlaybackPanelSlideshow::ApplySchemeSettings( IScheme *pScheme )
+void CPlaybackPanelSlideshow::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/ui/replaybrowser/playbackpanelslideshow.res", "GAME" );
 
-	m_pNoScreenshotLabel = dynamic_cast< CExLabel * >( FindChildByName( "NoScreenshotLabel" ) );
+	m_pNoScreenshotLabel = dynamic_cast< CExLabel* >( FindChildByName( "NoScreenshotLabel" ) );
 
 	// Check to see if there's a screenshot
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
-	if ( !pReplay )
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
+	if( !pReplay )
+	{
 		return;
-	
-	if ( !pReplay->GetScreenshotCount() && m_pNoScreenshotLabel )	// Show no-screenshot label
+	}
+
+	if( !pReplay->GetScreenshotCount() && m_pNoScreenshotLabel )	// Show no-screenshot label
 	{
 		m_pNoScreenshotLabel->SetVisible( true );
 	}
@@ -749,16 +756,16 @@ void CPlaybackPanelSlideshow::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 
 	int nMarginWidth = GetMarginSize();
 	int nScreenshotWidth = GetViewWidth();
-	if ( m_pScreenshotImage )
+	if( m_pScreenshotImage )
 	{
-		m_pScreenshotImage->SetBounds( nMarginWidth, nMarginWidth, nScreenshotWidth, GetTall() - 2*nMarginWidth );
+		m_pScreenshotImage->SetBounds( nMarginWidth, nMarginWidth, nScreenshotWidth, GetTall() - 2 * nMarginWidth );
 
 		// Setup screenshot scale based on width of first screenshot (if there are any screenshots at all) - otherwise don't scale
-		float flScale = pReplay->GetScreenshotCount() == 0 ? 1.0f : ( (float)nScreenshotWidth / ( .95f * pReplay->GetScreenshot( 0 )->m_nWidth ) );
+		float flScale = pReplay->GetScreenshotCount() == 0 ? 1.0f : ( ( float )nScreenshotWidth / ( .95f * pReplay->GetScreenshot( 0 )->m_nWidth ) );
 		m_pScreenshotImage->GetImagePanel()->SetScaleAmount( flScale );
 		m_pScreenshotImage->GetImagePanel()->SetShouldScaleImage( true );
 	}
@@ -771,10 +778,10 @@ void CPlaybackPanelSlideshow::PerformLayout()
 
 //-----------------------------------------------------------------------------
 
-CPlaybackPanelMovie::CPlaybackPanelMovie( Panel *pParent, ReplayHandle_t hMovie )
-:	CPlaybackPanel( pParent )
+CPlaybackPanelMovie::CPlaybackPanelMovie( Panel* pParent, ReplayHandle_t hMovie )
+	:	CPlaybackPanel( pParent )
 {
-	IReplayMovie *pMovie = g_pReplayMovieManager->GetMovie( hMovie );
+	IReplayMovie* pMovie = g_pReplayMovieManager->GetMovie( hMovie );
 	m_pMoviePlayerPanel = new CMoviePlayerPanel( this, "MoviePlayer", pMovie->GetMovieFilename() );
 
 	m_pMoviePlayerPanel->SetLooping( true );
@@ -783,7 +790,7 @@ CPlaybackPanelMovie::CPlaybackPanelMovie( Panel *pParent, ReplayHandle_t hMovie 
 	m_pMoviePlayerPanel->Play();
 }
 
-void CPlaybackPanelMovie::ApplySchemeSettings( IScheme *pScheme )
+void CPlaybackPanelMovie::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 }
@@ -805,9 +812,9 @@ void CPlaybackPanelMovie::FreeMovieMaterial()
 
 //-----------------------------------------------------------------------------
 
-CCutImagePanel::CCutImagePanel( Panel *pParent, const char *pName )
-:	BaseClass( pParent, pName, "" ),
-	m_pSelectedBorder( NULL )
+CCutImagePanel::CCutImagePanel( Panel* pParent, const char* pName )
+	:	BaseClass( pParent, pName, "" ),
+	  m_pSelectedBorder( NULL )
 {
 }
 
@@ -816,9 +823,9 @@ void CCutImagePanel::SetSelected( bool bState )
 	BaseClass::SetSelected( bState );
 }
 
-IBorder *CCutImagePanel::GetBorder( bool bDepressed, bool bArmed, bool bSelected, bool bKeyFocus )
+IBorder* CCutImagePanel::GetBorder( bool bDepressed, bool bArmed, bool bSelected, bool bKeyFocus )
 {
-	if ( bSelected )
+	if( bSelected )
 	{
 		return m_pSelectedBorder;
 	}
@@ -826,7 +833,7 @@ IBorder *CCutImagePanel::GetBorder( bool bDepressed, bool bArmed, bool bSelected
 	return BaseClass::GetBorder( bDepressed, bArmed, bSelected, bKeyFocus );
 }
 
-void CCutImagePanel::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CCutImagePanel::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -836,23 +843,23 @@ void CCutImagePanel::ApplySchemeSettings( vgui::IScheme *pScheme )
 
 #define FOR_EACH_BUTTON( _i )	for ( int _i = 0; _i < BUTTONS_PER_PAGE; ++_i )
 
-CCutsPanel::CCutsPanel( Panel *pParent, ReplayHandle_t hReplay, int iSelectedPerformance )
-:	BaseClass( pParent, "CutsPanel", hReplay ),
-	m_iPage( 0 ),
-	m_nVisibleButtons( 0 ),
-	m_pVerticalLine( NULL ),
-	m_pNoCutsLabel( NULL ),
-	m_pOriginalLabel( NULL ),
-	m_pCutsLabel( NULL )
+CCutsPanel::CCutsPanel( Panel* pParent, ReplayHandle_t hReplay, int iSelectedPerformance )
+	:	BaseClass( pParent, "CutsPanel", hReplay ),
+	  m_iPage( 0 ),
+	  m_nVisibleButtons( 0 ),
+	  m_pVerticalLine( NULL ),
+	  m_pNoCutsLabel( NULL ),
+	  m_pOriginalLabel( NULL ),
+	  m_pCutsLabel( NULL )
 {
-	m_hDetailsPanel = dynamic_cast< CReplayDetailsPanel * >( pParent->GetParent() );
+	m_hDetailsPanel = dynamic_cast< CReplayDetailsPanel* >( pParent->GetParent() );
 
 	FOR_EACH_BUTTON( i )
 	{
 		const int iButton = i;
 		CFmtStr fmtName( "CutButton%i", iButton );
 
-		CExImageButton *pNewButton = new CExImageButton( this, fmtName.Access(), "" );
+		CExImageButton* pNewButton = new CExImageButton( this, fmtName.Access(), "" );
 		CFmtStr fmtCommand( "select_%i", iButton );
 		pNewButton->SetCommand( fmtCommand.Access() );
 		pNewButton->InvalidateLayout( true, true );
@@ -866,7 +873,7 @@ CCutsPanel::CCutsPanel( Panel *pParent, ReplayHandle_t hReplay, int iSelectedPer
 		m_aButtons[ i ].m_pButton = pNewButton;
 		m_aButtons[ i ].m_iPerformance = iPerformance;
 
-		CExButton *pAddToRenderQueueButton = new CExButton( pNewButton, "AddToRenderQueue", "+", this );
+		CExButton* pAddToRenderQueueButton = new CExButton( pNewButton, "AddToRenderQueue", "+", this );
 		m_aButtons[ i ].m_pAddToRenderQueueButton = pAddToRenderQueueButton;
 	}
 
@@ -887,23 +894,23 @@ CCutsPanel::~CCutsPanel()
 	ivgui()->RemoveTickSignal( GetVPanel() );
 }
 
-void CCutsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CCutsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/ui/replaybrowser/cutspanel.res", "GAME" );
 
-	m_pVerticalLine = dynamic_cast< EditablePanel * >( FindChildByName( "VerticalLine" ) );
-	m_pNoCutsLabel = dynamic_cast< CExLabel * >( FindChildByName( "NoCutsLabel" ) );
-	m_pOriginalLabel = dynamic_cast< CExLabel * >( FindChildByName( "OriginalLabel" ) );
-	m_pCutsLabel = dynamic_cast< CExLabel * >( FindChildByName( "CutsLabel" ) );
-	m_pNameLabel = dynamic_cast< CExLabel * >( FindChildByName( "NameLabel" ) );
-	m_pPrevButton = dynamic_cast< CExButton * >( FindChildByName( "PrevButton" ) );
-	m_pNextButton = dynamic_cast< CExButton * >( FindChildByName( "NextButton" ) );
+	m_pVerticalLine = dynamic_cast< EditablePanel* >( FindChildByName( "VerticalLine" ) );
+	m_pNoCutsLabel = dynamic_cast< CExLabel* >( FindChildByName( "NoCutsLabel" ) );
+	m_pOriginalLabel = dynamic_cast< CExLabel* >( FindChildByName( "OriginalLabel" ) );
+	m_pCutsLabel = dynamic_cast< CExLabel* >( FindChildByName( "CutsLabel" ) );
+	m_pNameLabel = dynamic_cast< CExLabel* >( FindChildByName( "NameLabel" ) );
+	m_pPrevButton = dynamic_cast< CExButton* >( FindChildByName( "PrevButton" ) );
+	m_pNextButton = dynamic_cast< CExButton* >( FindChildByName( "NextButton" ) );
 
 	FOR_EACH_BUTTON( i )
 	{
-		CExImageButton *pCurButton = m_aButtons[ i ].m_pButton;
+		CExImageButton* pCurButton = m_aButtons[ i ].m_pButton;
 #if !defined( TF_CLIENT_DLL )
 		pCurButton->SetPaintBorderEnabled( false );
 #endif
@@ -911,26 +918,26 @@ void CCutsPanel::ApplySchemeSettings( IScheme *pScheme )
 	}
 }
 
-void CCutsPanel::ApplySettings( KeyValues *pInResourceData )
+void CCutsPanel::ApplySettings( KeyValues* pInResourceData )
 {
 	BaseClass::ApplySettings( pInResourceData );
 
-	KeyValues *pButtonSettings = pInResourceData->FindKey( "button_settings" );
-	if ( pButtonSettings )
+	KeyValues* pButtonSettings = pInResourceData->FindKey( "button_settings" );
+	if( pButtonSettings )
 	{
-		KeyValues *pAddToRenderQueueButtonSettings = pButtonSettings->FindKey( "addtorenderqueuebutton_settings" );
+		KeyValues* pAddToRenderQueueButtonSettings = pButtonSettings->FindKey( "addtorenderqueuebutton_settings" );
 
-		CReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+		CReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 		FOR_EACH_BUTTON( i )
 		{
-			CExImageButton *pCurButton = m_aButtons[ i ].m_pButton;
+			CExImageButton* pCurButton = m_aButtons[ i ].m_pButton;
 
 			pCurButton->ApplySettings( pButtonSettings );
 
 			// Set screenshot as image
-			if ( pReplay && pReplay->GetScreenshotCount() )
+			if( pReplay && pReplay->GetScreenshotCount() )
 			{
-				const float flScale = (float)m_nCutButtonHeight / pReplay->GetScreenshot( 0 )->m_nHeight;
+				const float flScale = ( float )m_nCutButtonHeight / pReplay->GetScreenshot( 0 )->m_nHeight;
 				int nImageWidth = m_nCutButtonWidth - 2 * m_nCutButtonBuffer;
 				int nImageHeight = m_nCutButtonHeight - 2 * m_nCutButtonBuffer;
 
@@ -940,9 +947,9 @@ void CCutsPanel::ApplySettings( KeyValues *pInResourceData )
 				pCurButton->GetImage()->SetBounds( m_nCutButtonBuffer, m_nCutButtonBuffer, nImageWidth, nImageHeight );
 			}
 
-			if ( pAddToRenderQueueButtonSettings )
+			if( pAddToRenderQueueButtonSettings )
 			{
-				CExButton *pAddToQueueButton = m_aButtons[ i ].m_pAddToRenderQueueButton;
+				CExButton* pAddToQueueButton = m_aButtons[ i ].m_pAddToRenderQueueButton;
 				pAddToQueueButton->ApplySettings( pAddToRenderQueueButtonSettings );
 				pAddToQueueButton->AddActionSignalTarget( this );
 			}
@@ -954,7 +961,7 @@ void CCutsPanel::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	CReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	CReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 	const int nNumCuts = pReplay->GetPerformanceCount();
 
 	int nX = m_iPage > 0 ? m_pPrevButton->GetWide() + m_nCutButtonSpace : 0;
@@ -963,12 +970,12 @@ void CCutsPanel::PerformLayout()
 
 	FOR_EACH_BUTTON( i )
 	{
-		CExImageButton *pCurButton = m_aButtons[ i ].m_pButton;
+		CExImageButton* pCurButton = m_aButtons[ i ].m_pButton;
 		const bool bVisible = ButtonToPerformance( i ) < nNumCuts;
 
 		pCurButton->SetVisible( bVisible );
 
-		if ( bVisible )
+		if( bVisible )
 		{
 			++m_nVisibleButtons;
 		}
@@ -976,7 +983,7 @@ void CCutsPanel::PerformLayout()
 		pCurButton->SetBounds( nX, m_nButtonStartY, m_nCutButtonWidth, m_nCutButtonHeight );
 		nX += m_nCutButtonWidth;
 
-		if ( i == 0 && m_iPage == 0 )
+		if( i == 0 && m_iPage == 0 )
 		{
 			nX += 2 * m_nCutButtonSpaceWide + m_pVerticalLine->GetWide();
 		}
@@ -986,7 +993,7 @@ void CCutsPanel::PerformLayout()
 		}
 	}
 
-	if ( m_pVerticalLine )
+	if( m_pVerticalLine )
 	{
 		m_pVerticalLine->SetVisible( m_nVisibleButtons > 0 && m_iPage == 0 );
 		m_pVerticalLine->SetPos( m_nCutButtonWidth + m_nCutButtonSpaceWide, 0 );
@@ -995,7 +1002,7 @@ void CCutsPanel::PerformLayout()
 
 	const int nRightOfVerticalLineX = m_nCutButtonWidth + m_nCutButtonSpaceWide * 2 + m_pVerticalLine->GetWide();
 
-	if ( m_pNoCutsLabel )
+	if( m_pNoCutsLabel )
 	{
 		m_pNoCutsLabel->SetVisible( m_nVisibleButtons == 1 && m_iPage == 0 );
 
@@ -1003,12 +1010,12 @@ void CCutsPanel::PerformLayout()
 		m_pNoCutsLabel->SetPos( nRightOfVerticalLineX, nY );
 	}
 
-	if ( m_pOriginalLabel )
+	if( m_pOriginalLabel )
 	{
 		m_pOriginalLabel->SetVisible( m_iPage == 0 );
 	}
 
-	if ( m_pCutsLabel )
+	if( m_pCutsLabel )
 	{
 		m_pCutsLabel->SetVisible( m_nVisibleButtons > 1 && m_iPage == 0 );
 		m_pCutsLabel->SetPos( m_nCutButtonWidth + 2 * m_nCutButtonSpaceWide + m_pVerticalLine->GetWide(), 0 );
@@ -1025,35 +1032,39 @@ void CCutsPanel::PerformLayout()
 
 void CCutsPanel::OnTick()
 {
-	if ( !TFModalStack()->IsEmpty() )
+	if( !TFModalStack()->IsEmpty() )
+	{
 		return;
+	}
 
 	int nMouseX, nMouseY;
 	input()->GetCursorPos( nMouseX, nMouseY );
 
 	// Early-out if not within the cuts panel at all.
-	if ( !IsWithin( nMouseX, nMouseY ) )
+	if( !IsWithin( nMouseX, nMouseY ) )
+	{
 		return;
+	}
 
 	int iHoverPerformance = -2;
 	bool bFoundHoverButton = false;
 	FOR_EACH_BUTTON( i )
 	{
-		CExImageButton *pCurButton = m_aButtons[ i ].m_pButton;
+		CExImageButton* pCurButton = m_aButtons[ i ].m_pButton;
 		bool bIsHoverButton = false;
-		if ( !bFoundHoverButton && pCurButton->IsWithin( nMouseX, nMouseY ) && pCurButton->IsVisible() )
+		if( !bFoundHoverButton && pCurButton->IsWithin( nMouseX, nMouseY ) && pCurButton->IsVisible() )
 		{
 			iHoverPerformance = ButtonToPerformance( i );
 			bFoundHoverButton = true;
 			bIsHoverButton = true;
 		}
 
-		CExButton *pAddToRenderQueueButton = m_aButtons[ i ].m_pAddToRenderQueueButton;
-		if ( pAddToRenderQueueButton )
+		CExButton* pAddToRenderQueueButton = m_aButtons[ i ].m_pAddToRenderQueueButton;
+		if( pAddToRenderQueueButton )
 		{
 			pAddToRenderQueueButton->SetVisible( bIsHoverButton );
-			
-			if ( iHoverPerformance >= -1 )
+
+			if( iHoverPerformance >= -1 )
 			{
 				// Set the text and command based on whether or not the take's already been queued
 				const bool bInQueue = g_pClientReplayContext->GetRenderQueue()->IsInQueue( m_hReplay, iHoverPerformance );
@@ -1066,7 +1077,7 @@ void CCutsPanel::OnTick()
 
 	// If the mouse is over a performance button, use that, otherwise use the selected
 	// performance.
-	if ( m_hDetailsPanel.Get() )
+	if( m_hDetailsPanel.Get() )
 	{
 		int iSelectedPerformance = m_hDetailsPanel->m_iSelectedPerformance;
 		UpdateNameLabel( iHoverPerformance >= 0 ? iHoverPerformance : iSelectedPerformance >= 0 ? iSelectedPerformance : -1 );
@@ -1078,39 +1089,39 @@ int CCutsPanel::ButtonToPerformance( int iButton ) const
 	return -1 + m_iPage * BUTTONS_PER_PAGE + iButton;
 }
 
-void CCutsPanel::OnCommand( const char *pCommand )
+void CCutsPanel::OnCommand( const char* pCommand )
 {
-	if ( !V_strnicmp( pCommand, "select_", 7 ) )
+	if( !V_strnicmp( pCommand, "select_", 7 ) )
 	{
 		const int iButton = atoi( pCommand + 7 );
 		SelectButtonFromPerformance( ButtonToPerformance( iButton ) );
 	}
-	else if ( !V_stricmp( pCommand, "prevpage" ) )
+	else if( !V_stricmp( pCommand, "prevpage" ) )
 	{
 		SetPage( m_iPage - 1 );
 	}
-	else if ( !V_stricmp( pCommand, "nextpage" ) )
+	else if( !V_stricmp( pCommand, "nextpage" ) )
 	{
 		SetPage( m_iPage + 1 );
 	}
-	else if ( !V_strnicmp( pCommand, "addtorenderqueue_", 17 ) )
+	else if( !V_strnicmp( pCommand, "addtorenderqueue_", 17 ) )
 	{
-		if ( !replay_renderqueue_first_add.GetInt() )
+		if( !replay_renderqueue_first_add.GetInt() )
 		{
 			ShowMessageBox( "#Replay_FirstRenderQueueAddTitle", "#Replay_FirstRenderQueueAddMsg", "#GameUI_OK" );
 			replay_renderqueue_first_add.SetValue( 1 );
 		}
 
 		const int iPerformance = atoi( pCommand + 17 );
-		if ( iPerformance >= -1 )
+		if( iPerformance >= -1 )
 		{
 			g_pClientReplayContext->GetRenderQueue()->Add( m_hReplay, iPerformance );
 		}
 	}
-	else if ( !V_strnicmp( pCommand, "removefromrenderqueue_", 22 ) )
+	else if( !V_strnicmp( pCommand, "removefromrenderqueue_", 22 ) )
 	{
 		const int iPerformance = atoi( pCommand + 22 );
-		if ( iPerformance >= -1 )
+		if( iPerformance >= -1 )
 		{
 			g_pClientReplayContext->GetRenderQueue()->Remove( m_hReplay, iPerformance );
 		}
@@ -1123,7 +1134,7 @@ void CCutsPanel::SetPage( int iPage, int iButtonToSelect )
 
 	FOR_EACH_BUTTON( i )
 	{
-		ButtonInfo_t *pCurButtonInfo = &m_aButtons[ i ];
+		ButtonInfo_t* pCurButtonInfo = &m_aButtons[ i ];
 		const int iPerformance = ButtonToPerformance( i );
 		pCurButtonInfo->m_iPerformance = iPerformance;
 	}
@@ -1132,11 +1143,13 @@ void CCutsPanel::SetPage( int iPage, int iButtonToSelect )
 	SelectButtonFromPerformance( ButtonToPerformance( iButtonToSelect ) );
 }
 
-const CReplayPerformance *CCutsPanel::GetPerformance( int iPerformance ) const
+const CReplayPerformance* CCutsPanel::GetPerformance( int iPerformance ) const
 {
-	const CReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
-	if ( !pReplay )
+	const CReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
+	if( !pReplay )
+	{
 		return NULL;
+	}
 
 	return iPerformance >= 0 ? pReplay->GetPerformance( iPerformance ) : NULL;
 }
@@ -1145,14 +1158,14 @@ void CCutsPanel::SelectButtonFromPerformance( int iPerformance )
 {
 	FOR_EACH_BUTTON( i )
 	{
-		const ButtonInfo_t *pCurButtonInfo = &m_aButtons[ i ];
-		CExImageButton *pCurButton = pCurButtonInfo->m_pButton;
+		const ButtonInfo_t* pCurButtonInfo = &m_aButtons[ i ];
+		CExImageButton* pCurButton = pCurButtonInfo->m_pButton;
 		pCurButton->SetSelected( pCurButtonInfo->m_iPerformance == iPerformance );
 		pCurButton->InvalidateLayout( true, true );
 	}
 
 	// Cache which performance to use in the details panel
-	if ( m_hDetailsPanel.Get() )
+	if( m_hDetailsPanel.Get() )
 	{
 		m_hDetailsPanel->m_iSelectedPerformance = iPerformance;
 	}
@@ -1164,7 +1177,7 @@ int CCutsPanel::PerformanceToButton( int iPerformance ) const
 {
 	FOR_EACH_BUTTON( i )
 	{
-		if ( m_aButtons[ i ].m_iPerformance == iPerformance )
+		if( m_aButtons[ i ].m_iPerformance == iPerformance )
 		{
 			return i;
 		}
@@ -1175,8 +1188,8 @@ int CCutsPanel::PerformanceToButton( int iPerformance ) const
 
 void CCutsPanel::UpdateNameLabel( int iPerformance )
 {
-	const CReplayPerformance *pPerformance = GetPerformance( iPerformance );
-	m_pNameLabel->SetText( pPerformance ? pPerformance->m_wszTitle : L"" );	
+	const CReplayPerformance* pPerformance = GetPerformance( iPerformance );
+	m_pNameLabel->SetText( pPerformance ? pPerformance->m_wszTitle : L"" );
 
 	// Get the button (in the range [0,BUTTONS_PER_PAGE]).
 	const int iPerformanceButton = PerformanceToButton( iPerformance );	// Not necessarily the selected button - can be hover button
@@ -1185,7 +1198,7 @@ void CCutsPanel::UpdateNameLabel( int iPerformance )
 	int aSelectedButtonPos[2];
 	m_aButtons[ iPerformanceButton ].m_pButton->GetPos( aSelectedButtonPos[0], aSelectedButtonPos[1] );
 
-	if ( m_pNameLabel )
+	if( m_pNameLabel )
 	{
 		const int nNameLabelX = aSelectedButtonPos[0];
 		const int nNameLabelY = m_nButtonStartY + m_nCutButtonHeight + m_nNameLabelTopMargin;
@@ -1201,13 +1214,15 @@ void CCutsPanel::UpdateNameLabel( int iPerformance )
 void CCutsPanel::OnPerformanceDeleted( int iPerformance )
 {
 	int iButton = PerformanceToButton( iPerformance );
-	if ( iButton < 0 )
+	if( iButton < 0 )
+	{
 		return;
+	}
 
 	// Deleted last performance on page?
-	CReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	CReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 	const int nNumCuts = pReplay->GetPerformanceCount();
-	if ( iPerformance == m_aButtons[ 0 ].m_iPerformance && iPerformance == nNumCuts )
+	if( iPerformance == m_aButtons[ 0 ].m_iPerformance && iPerformance == nNumCuts )
 	{
 		SetPage( m_iPage - 1, BUTTONS_PER_PAGE - 1 );
 	}
@@ -1224,21 +1239,21 @@ void CCutsPanel::OnPerformanceDeleted( int iPerformance )
 
 //-----------------------------------------------------------------------------
 
-static void ConfirmUploadMovie( bool bConfirmed, void *pContext )
+static void ConfirmUploadMovie( bool bConfirmed, void* pContext )
 {
-	if ( bConfirmed )
+	if( bConfirmed )
 	{
-		CReplayDetailsPanel *pPanel = (CReplayDetailsPanel*)pContext;
-		IQueryableReplayItem *pReplayItem = pPanel->m_pItemManager->GetItem( pPanel->m_hReplayItem );
-		if ( pReplayItem && pReplayItem->IsItemAMovie() )
+		CReplayDetailsPanel* pPanel = ( CReplayDetailsPanel* )pContext;
+		IQueryableReplayItem* pReplayItem = pPanel->m_pItemManager->GetItem( pPanel->m_hReplayItem );
+		if( pReplayItem && pReplayItem->IsItemAMovie() )
 		{
-			IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
-			if ( YouTube_GetLoginStatus() != kYouTubeLogin_LoggedIn )
+			IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
+			if( YouTube_GetLoginStatus() != kYouTubeLogin_LoggedIn )
 			{
 				YouTube_ShowLoginDialog( pMovie, pPanel );
 			}
 			else
-			{	
+			{
 				YouTube_ShowUploadDialog( pMovie, pPanel );
 			}
 		}
@@ -1248,30 +1263,30 @@ static void ConfirmUploadMovie( bool bConfirmed, void *pContext )
 class CYouTubeGetStatsHandler : public CYouTubeResponseHandler
 {
 public:
-	CYouTubeGetStatsHandler( CReplayDetailsPanel *pPanel )
+	CYouTubeGetStatsHandler( CReplayDetailsPanel* pPanel )
 		: m_pPanel( pPanel )
 		, m_handle( NULL )
-		{
-		}
+	{
+	}
 
 	virtual ~CYouTubeGetStatsHandler()
 	{
-		if ( m_handle != NULL )
+		if( m_handle != NULL )
 		{
 			YouTube_CancelGetVideoInfo( m_handle );
 		}
 	}
 
-	static bool GetEmptyElementTagContents( const char *pXML, const char *pTag, CUtlString &strTagContents )
+	static bool GetEmptyElementTagContents( const char* pXML, const char* pTag, CUtlString& strTagContents )
 	{
 		CFmtStr1024 kLinkTagStart( "<%s ", pTag );
-		const char *kLinkTagEnd = "/>";
-		const char *pStart = strstr( pXML, kLinkTagStart.Access() );
-		if ( pStart != NULL )
+		const char* kLinkTagEnd = "/>";
+		const char* pStart = strstr( pXML, kLinkTagStart.Access() );
+		if( pStart != NULL )
 		{
 			pStart += kLinkTagStart.Length();
-			const char *pEnd = strstr( pStart, kLinkTagEnd );
-			if ( pEnd != NULL )
+			const char* pEnd = strstr( pStart, kLinkTagEnd );
+			if( pEnd != NULL )
 			{
 				strTagContents.SetDirect( pStart, pEnd - pStart );
 				return true;
@@ -1280,16 +1295,16 @@ public:
 		return false;
 	}
 
-	static bool GetEmptyTagValue( const char *pTagContents, const char *pKeyName, CUtlString &value )
+	static bool GetEmptyTagValue( const char* pTagContents, const char* pKeyName, CUtlString& value )
 	{
 		CFmtStr1024 kStart( "%s='", pKeyName );
-		const char *kEnd = "'";
-		const char *pStart = strstr( pTagContents, kStart.Access() );
-		if ( pStart != NULL )
+		const char* kEnd = "'";
+		const char* pStart = strstr( pTagContents, kStart.Access() );
+		if( pStart != NULL )
 		{
 			pStart += kStart.Length();
-			const char *pEnd = strstr( pStart, kEnd );
-			if ( pEnd != NULL )
+			const char* pEnd = strstr( pStart, kEnd );
+			if( pEnd != NULL )
 			{
 				value.SetDirect( pStart, pEnd - pStart );
 				return true;
@@ -1298,11 +1313,11 @@ public:
 		return false;
 	}
 
-	virtual void HandleResponse( long responseCode, const char *pResponse )
+	virtual void HandleResponse( long responseCode, const char* pResponse )
 	{
 		// @note tom bui: wish I had an XML parser
 
-		if ( strstr( pResponse, "<internalReason>Private video</internalReason>" ) != NULL )
+		if( strstr( pResponse, "<internalReason>Private video</internalReason>" ) != NULL )
 		{
 			m_pPanel->m_pYouTubeInfoPanel->SetInfo( g_pVGuiLocalize->Find( "#YouTube_PrivateVideo" ) );
 			m_pPanel->SetYouTubeStatus( CReplayDetailsPanel::kYouTubeStatus_Private );
@@ -1317,7 +1332,7 @@ public:
 		wchar_t wszViews[256] = L"0";
 
 		CUtlString strTagStatistics;
-		if ( GetEmptyElementTagContents( pResponse, "yt:statistics", strTagStatistics ) )
+		if( GetEmptyElementTagContents( pResponse, "yt:statistics", strTagStatistics ) )
 		{
 			CUtlString favoriteCount;
 			CUtlString viewCount;
@@ -1326,14 +1341,14 @@ public:
 
 			iNumFavorited = Q_atoi( favoriteCount.Get() );
 			iNumViews = Q_atoi( viewCount.Get() );
-			
+
 			g_pVGuiLocalize->ConvertANSIToUnicode( favoriteCount.Get(), wszFavorited, sizeof( wszFavorited ) );
 			g_pVGuiLocalize->ConvertANSIToUnicode( viewCount.Get(), wszViews, sizeof( wszViews ) );
 		}
 
 		wchar_t wszLikes[256] = L"0";
 		CUtlString strTagRating;
-		if ( GetEmptyElementTagContents( pResponse, "yt:rating", strTagRating ) )
+		if( GetEmptyElementTagContents( pResponse, "yt:rating", strTagRating ) )
 		{
 			CUtlString likes;
 			GetEmptyTagValue( strTagRating, "numLikes", likes );
@@ -1343,25 +1358,25 @@ public:
 
 		//const char *kLinkStartTag = "<link rel='alternate' type='text/html' href='";
 		CUtlString strTagLink;
-		if ( GetEmptyElementTagContents( pResponse, "link rel='alternate'", strTagLink ) )
+		if( GetEmptyElementTagContents( pResponse, "link rel='alternate'", strTagLink ) )
 		{
 			GetEmptyTagValue( strTagLink, "href", m_strVideoURL );
 		}
 
 		wchar_t wszStats[256] = L"";
-		g_pVGuiLocalize->ConstructString( wszStats,sizeof( wszStats ), g_pVGuiLocalize->Find( "#YouTube_Stats" ), 3, 
-			wszFavorited,
-			wszViews,
-			wszLikes );
+		g_pVGuiLocalize->ConstructString( wszStats, sizeof( wszStats ), g_pVGuiLocalize->Find( "#YouTube_Stats" ), 3,
+										  wszFavorited,
+										  wszViews,
+										  wszLikes );
 
-		if ( m_strVideoURL.IsEmpty() == false )
+		if( m_strVideoURL.IsEmpty() == false )
 		{
 			m_pPanel->m_pYouTubeInfoPanel->SetInfo( wszStats );
 			m_pPanel->SetYouTubeStatus( CReplayDetailsPanel::kYouTubeStatus_RetrievedInfo );
 			m_pPanel->InvalidateLayout();
 
-			IGameEvent *event = gameeventmanager->CreateEvent( "replay_youtube_stats" );
-			if ( event )
+			IGameEvent* event = gameeventmanager->CreateEvent( "replay_youtube_stats" );
+			if( event )
 			{
 				event->SetInt( "views", iNumViews );
 				event->SetInt( "likes", iNumLikes );
@@ -1376,24 +1391,24 @@ public:
 		}
 	}
 
-	CReplayDetailsPanel *m_pPanel;
+	CReplayDetailsPanel* m_pPanel;
 	YouTubeInfoHandle_t m_handle;
 	CUtlString			m_strVideoURL;
 };
 
-CReplayDetailsPanel::CReplayDetailsPanel( Panel *pParent, QueryableReplayItemHandle_t hReplayItem,
-										  int iPerformance, IReplayItemManager *pItemManager )
-:	EditablePanel( pParent, "DetailsPanel" ),
-	m_hReplayItem( hReplayItem ),
-	m_pItemManager( pItemManager ),
-	m_pCutsPanel( NULL ),
-	m_iSelectedPerformance( iPerformance ),
-	m_pYouTubeResponseHandler( NULL ),
-	m_hExportMovieDialog( NULL )
+CReplayDetailsPanel::CReplayDetailsPanel( Panel* pParent, QueryableReplayItemHandle_t hReplayItem,
+		int iPerformance, IReplayItemManager* pItemManager )
+	:	EditablePanel( pParent, "DetailsPanel" ),
+	  m_hReplayItem( hReplayItem ),
+	  m_pItemManager( pItemManager ),
+	  m_pCutsPanel( NULL ),
+	  m_iSelectedPerformance( iPerformance ),
+	  m_pYouTubeResponseHandler( NULL ),
+	  m_hExportMovieDialog( NULL )
 {
 	m_hReplay = pItemManager->GetItem( hReplayItem )->GetItemReplayHandle();
 
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 
 	m_pInsetPanel = new EditablePanel( this, "InsetPanel" );
 	m_pTitleEditPanel = new CTitleEditPanel( GetInset(), m_hReplayItem, m_pItemManager );
@@ -1404,29 +1419,29 @@ CReplayDetailsPanel::CReplayDetailsPanel( Panel *pParent, QueryableReplayItemHan
 	m_pScrollPanel = new vgui::ScrollableEditablePanel( GetInset(), m_pInfoPanel, "StatsScroller" );
 	m_pScrollPanel->GetScrollbar()->SetAutohideButtons( true );
 #if !defined( TF_CLIENT_DLL )
-	for ( int i = 0; i < 2; ++i )
+	for( int i = 0; i < 2; ++i )
 	{
 		m_pScrollPanel->GetScrollbar()->GetButton( i )->SetPaintBorderEnabled( false );
 	}
 #endif
-	
+
 	m_pBasicInfoPanel = new CBasicLifeInfoPanel( m_pInfoPanel, m_hReplay );
 	m_pStatsPanel = new CStatsPanel( m_pInfoPanel, m_hReplay );
 	m_pKillsPanel = new CKillsPanel( m_pInfoPanel, m_hReplay );
 
 	const bool bIsMoviePanel = pItemManager->AreItemsMovies();
-	if ( bIsMoviePanel )
+	if( bIsMoviePanel )
 	{
 		m_pYouTubeInfoPanel = new CYouTubeInfoPanel( m_pInfoPanel );
 	}
 	else
 	{
 		m_pCutsPanel = new CCutsPanel( GetInset(), m_hReplay, m_iSelectedPerformance );
-	}	
+	}
 
 	// Add info panels to a list
 
-	if ( pReplay->GetDominationCount() )
+	if( pReplay->GetDominationCount() )
 	{
 		m_pDominationsPanel = new CDominationsPanel( m_pInfoPanel, m_hReplay );
 		m_vecInfoPanels.AddToTail( m_pDominationsPanel );
@@ -1436,7 +1451,7 @@ CReplayDetailsPanel::CReplayDetailsPanel( Panel *pParent, QueryableReplayItemHan
 	m_vecInfoPanels.AddToTail( m_pStatsPanel );
 	m_vecInfoPanels.AddToTail( m_pKillsPanel );
 
-	if ( bIsMoviePanel )
+	if( bIsMoviePanel )
 	{
 		m_vecInfoPanels.AddToTail( m_pYouTubeInfoPanel );
 	}
@@ -1454,22 +1469,22 @@ CReplayDetailsPanel::~CReplayDetailsPanel()
 	delete m_pYouTubeResponseHandler;
 }
 
-void CReplayDetailsPanel::ApplySchemeSettings( IScheme *pScheme )
+void CReplayDetailsPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	LoadControlSettings( "resource/ui/replaybrowser/detailspanel.res", "GAME" );
 
-	m_pExportMovie = dynamic_cast< CExButton * >( FindChildByName( "ExportMovieButton" ) );
-	m_pDeleteButton = dynamic_cast< CExButton * >( FindChildByName( "DeleteButton" ) );
-	m_pRenderButton = dynamic_cast< CExButton * >( FindChildByName( "RenderButton" ) );
-	m_pPlayButton = dynamic_cast< CExButton * >( FindChildByName( "PlayButton" ) );
-	m_pYouTubeUpload = dynamic_cast< CExButton * >( FindChildByName( "YouTubeUploadButton" ) );
-	m_pYouTubeView = dynamic_cast< CExButton * >( FindChildByName( "ViewYouTubeButton" ) );
-	m_pYouTubeShareURL = dynamic_cast< CExButton * >( FindChildByName( "ShareYouTubeURLButton" ) );
-	m_pShowRenderInfoButton = dynamic_cast< CExImageButton * >( FindChildByName( "ShowRenderInfoButton") );
+	m_pExportMovie = dynamic_cast< CExButton* >( FindChildByName( "ExportMovieButton" ) );
+	m_pDeleteButton = dynamic_cast< CExButton* >( FindChildByName( "DeleteButton" ) );
+	m_pRenderButton = dynamic_cast< CExButton* >( FindChildByName( "RenderButton" ) );
+	m_pPlayButton = dynamic_cast< CExButton* >( FindChildByName( "PlayButton" ) );
+	m_pYouTubeUpload = dynamic_cast< CExButton* >( FindChildByName( "YouTubeUploadButton" ) );
+	m_pYouTubeView = dynamic_cast< CExButton* >( FindChildByName( "ViewYouTubeButton" ) );
+	m_pYouTubeShareURL = dynamic_cast< CExButton* >( FindChildByName( "ShareYouTubeURLButton" ) );
+	m_pShowRenderInfoButton = dynamic_cast< CExImageButton* >( FindChildByName( "ShowRenderInfoButton" ) );
 
-	if ( m_pDeleteButton )
+	if( m_pDeleteButton )
 	{
 		SetXToRed( m_pDeleteButton );
 	}
@@ -1505,10 +1520,10 @@ void CReplayDetailsPanel::PerformLayout()
 	m_pPlaybackPanel->GetPos( aPlaybackPos[0], aPlaybackPos[1] );
 	int nInfoPanelsStartY = aPlaybackPos[1];
 	int nInfoPanelsCurrentY = nInfoPanelsStartY;
-	int nRightColumnWidth = nInsetWidth - nScreenshotWidth - nLeftRightBuffer - XRES(20);
+	int nRightColumnWidth = nInsetWidth - nScreenshotWidth - nLeftRightBuffer - XRES( 20 );
 
 #if defined( TF_CLIENT_DLL )
-	if ( m_pRecordsPanel->ShouldShow() )
+	if( m_pRecordsPanel->ShouldShow() )
 	{
 		m_pRecordsPanel->SetPos( nScreenshotWidth + nLeftRightBuffer, nInfoPanelsStartY );
 		m_pRecordsPanel->SetWide( nRightColumnWidth );
@@ -1525,16 +1540,16 @@ void CReplayDetailsPanel::PerformLayout()
 	int insetX, insetY;
 	GetInset()->GetPos( insetX, insetY );
 	m_pScrollPanel->SetPos( nScreenshotWidth + nLeftRightBuffer, nInfoPanelsCurrentY );
-	m_pScrollPanel->SetWide( nRightColumnWidth + XRES(20) );
+	m_pScrollPanel->SetWide( nRightColumnWidth + XRES( 20 ) );
 	m_pScrollPanel->SetTall( GetTall() - insetY - nInfoPanelsCurrentY );
-	m_pInfoPanel->SetWide( nRightColumnWidth );	
+	m_pInfoPanel->SetWide( nRightColumnWidth );
 
 	int nCurrentY = 0;
-	for ( int i = 0; i < m_vecInfoPanels.Count(); ++i )
+	for( int i = 0; i < m_vecInfoPanels.Count(); ++i )
 	{
-		CBaseDetailsPanel *pPanel = m_vecInfoPanels[ i ];
+		CBaseDetailsPanel* pPanel = m_vecInfoPanels[ i ];
 
-		if ( pPanel->ShouldShow() )
+		if( pPanel->ShouldShow() )
 		{
 			// Set the width since these panel's PerformLayout()'s depend on it
 			pPanel->SetWide( nRightColumnWidth );
@@ -1563,10 +1578,10 @@ void CReplayDetailsPanel::PerformLayout()
 
 	// @note Tom Bui: set the positions AGAIN now that we've invalidated, cause VGUI hates me
 	nCurrentY = 0;
-	for ( int i = 0; i < m_vecInfoPanels.Count(); ++i )
+	for( int i = 0; i < m_vecInfoPanels.Count(); ++i )
 	{
-		CBaseDetailsPanel *pPanel = m_vecInfoPanels[ i ];
-		if ( pPanel->ShouldShow() )
+		CBaseDetailsPanel* pPanel = m_vecInfoPanels[ i ];
+		if( pPanel->ShouldShow() )
 		{
 			pPanel->SetPos( 0, nCurrentY );
 			nCurrentY += pPanel->GetTall() + nBuffer;
@@ -1574,20 +1589,20 @@ void CReplayDetailsPanel::PerformLayout()
 	}
 
 	// Setup playback panel based on dimensions of first screenshot
-	CGenericClassBasedReplay *pReplay = GetGenericClassBasedReplay( m_hReplay );
+	CGenericClassBasedReplay* pReplay = GetGenericClassBasedReplay( m_hReplay );
 	float flAspectRatio;
-	if ( pReplay->GetScreenshotCount() )
+	if( pReplay->GetScreenshotCount() )
 	{
-		const CReplayScreenshot *pScreenshot = pReplay->GetScreenshot( 0 );
-		flAspectRatio = (float)pScreenshot->m_nWidth / pScreenshot->m_nHeight;
+		const CReplayScreenshot* pScreenshot = pReplay->GetScreenshot( 0 );
+		flAspectRatio = ( float )pScreenshot->m_nWidth / pScreenshot->m_nHeight;
 	}
 	else
 	{
 		// Default to 4:3 if there are no screenshots
-		flAspectRatio = 4.0f/3;
+		flAspectRatio = 4.0f / 3;
 	}
 
-	if ( m_pItemManager->AreItemsMovies() )
+	if( m_pItemManager->AreItemsMovies() )
 	{
 		m_pRenderButton->SetVisible( false );
 		m_pPlayButton->SetVisible( false );
@@ -1599,7 +1614,7 @@ void CReplayDetailsPanel::PerformLayout()
 		m_pYouTubeUpload->SetPos( nButtonX, nButtonY );
 		m_pYouTubeView->SetPos( nButtonX, nButtonY );
 		nButtonX += m_pYouTubeUpload->GetWide() + XRES( 5 );
-		
+
 		m_pYouTubeShareURL->SetPos( nButtonX, nButtonY );
 		nButtonX += m_pYouTubeShareURL->GetWide() + XRES( 5 );
 
@@ -1617,13 +1632,13 @@ void CReplayDetailsPanel::PerformLayout()
 		);
 
 		// retrieve stats
-		if ( m_pYouTubeResponseHandler->m_handle == NULL )
+		if( m_pYouTubeResponseHandler->m_handle == NULL )
 		{
-			IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-			if ( pReplayItem && pReplayItem->IsItemAMovie() )
+			IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+			if( pReplayItem && pReplayItem->IsItemAMovie() )
 			{
-				IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
-				if ( pMovie->IsUploaded() )
+				IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
+				if( pMovie->IsUploaded() )
 				{
 					m_pYouTubeResponseHandler->m_handle = YouTube_GetVideoInfo( pMovie->GetUploadURL(), *m_pYouTubeResponseHandler );
 					SetYouTubeStatus( kYouTubeStatus_RetrievingInfo );
@@ -1649,55 +1664,55 @@ void CReplayDetailsPanel::PerformLayout()
 	}
 }
 
-/*static*/ void CReplayDetailsPanel::OnPlayerWarningDlgConfirm( bool bConfirmed, void *pContext )
+/*static*/ void CReplayDetailsPanel::OnPlayerWarningDlgConfirm( bool bConfirmed, void* pContext )
 {
-	CReplayDetailsPanel *pPanel = (CReplayDetailsPanel*)pContext;
+	CReplayDetailsPanel* pPanel = ( CReplayDetailsPanel* )pContext;
 	pPanel->ShowExportDialog();
 }
 
 void CReplayDetailsPanel::ShowExportDialog()
 {
-	IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-	if ( pReplayItem && pReplayItem->IsItemAMovie() )
+	IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+	if( pReplayItem && pReplayItem->IsItemAMovie() )
 	{
-		IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
+		IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
 		CFmtStr srcMovieFullFilename( "%s%s", g_pReplayMovieManager->GetRenderDir(), pMovie->GetMovieFilename() );
-		if ( !g_pFullFileSystem->FileExists( srcMovieFullFilename.Access() ) )
+		if( !g_pFullFileSystem->FileExists( srcMovieFullFilename.Access() ) )
 		{
 			ShowMessageBox( "#Replay_ExportMovieError_Title", "#Replay_ExportMovieNoFile_Text", "#GameUI_OK" );
 			return;
 		}
 	}
 
-	if ( m_hExportMovieDialog == NULL )
+	if( m_hExportMovieDialog == NULL )
 	{
-		m_hExportMovieDialog = new FileOpenDialog(NULL, "#Replay_FindExportMovieLocation", FOD_SAVE );
+		m_hExportMovieDialog = new FileOpenDialog( NULL, "#Replay_FindExportMovieLocation", FOD_SAVE );
 #ifdef USE_WEBM_FOR_REPLAY
-		m_hExportMovieDialog->AddFilter("*.webm", "#Replay_WebMMovieFiles", true );
+		m_hExportMovieDialog->AddFilter( "*.webm", "#Replay_WebMMovieFiles", true );
 #else
-		m_hExportMovieDialog->AddFilter("*.mov", "#Replay_MovieFiles", true );
+		m_hExportMovieDialog->AddFilter( "*.mov", "#Replay_MovieFiles", true );
 #endif
 		m_hExportMovieDialog->AddActionSignalTarget( this );
-		if ( !FStrEq( replay_movie_export_last_dir.GetString(), "" ) )
+		if( !FStrEq( replay_movie_export_last_dir.GetString(), "" ) )
 		{
 			m_hExportMovieDialog->SetStartDirectory( replay_movie_export_last_dir.GetString() );
 		}
 	}
-	m_hExportMovieDialog->DoModal(false);
+	m_hExportMovieDialog->DoModal( false );
 	m_hExportMovieDialog->Activate();
 }
 
-void CReplayDetailsPanel::OnFileSelected( const char *fullpath )
+void CReplayDetailsPanel::OnFileSelected( const char* fullpath )
 {
 	// this can take a while, put up a waiting cursor
-	surface()->SetCursor(dc_hourglass);
+	surface()->SetCursor( dc_hourglass );
 
-	IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-	if ( pReplayItem && pReplayItem->IsItemAMovie() )
+	IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+	if( pReplayItem && pReplayItem->IsItemAMovie() )
 	{
-		IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
+		IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
 		CFmtStr srcMovieFullFilename( "%s%s", g_pReplayMovieManager->GetRenderDir(), pMovie->GetMovieFilename() );
-		if ( !engine->CopyLocalFile( srcMovieFullFilename.Access(), fullpath ) )
+		if( !engine->CopyLocalFile( srcMovieFullFilename.Access(), fullpath ) )
 		{
 			ShowMessageBox( "#Replay_ExportMovieError_Title", "#Replay_ExportMovieError_Text", "#GameUI_OK" );
 		}
@@ -1711,26 +1726,26 @@ void CReplayDetailsPanel::OnFileSelected( const char *fullpath )
 	}
 
 	// change the cursor back to normal
-	surface()->SetCursor(dc_user);
+	surface()->SetCursor( dc_user );
 }
 
-void CReplayDetailsPanel::OnCommand( const char *pCommand )
+void CReplayDetailsPanel::OnCommand( const char* pCommand )
 {
-	if ( FStrEq( pCommand, "delete_replayitem" ) )
+	if( FStrEq( pCommand, "delete_replayitem" ) )
 	{
 		ReplayUI_GetBrowserPanel()->AttemptToDeleteReplayItem( this, m_hReplayItem, m_pItemManager, m_iSelectedPerformance );
 		return;
 	}
 
-	else if ( FStrEq( pCommand, "render_replay_dlg" ) )
+	else if( FStrEq( pCommand, "render_replay_dlg" ) )
 	{
 		ShowRenderDialog();
 		return;
 	}
 
-	else if ( FStrEq( pCommand, "play" ) )
+	else if( FStrEq( pCommand, "play" ) )
 	{
-		if ( engine->IsInGame() )
+		if( engine->IsInGame() )
 		{
 			ShowPlayConfirmationDialog();
 		}
@@ -1741,27 +1756,31 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 		return;
 	}
 
-	else if ( FStrEq( pCommand, "exportmovie" ) )
+	else if( FStrEq( pCommand, "exportmovie" ) )
 	{
-		IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-		if ( !pReplayItem || !pReplayItem->IsItemAMovie() )
+		IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+		if( !pReplayItem || !pReplayItem->IsItemAMovie() )
+		{
 			return;
+		}
 
-		IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
-		if ( !pMovie )
+		IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
+		if( !pMovie )
+		{
 			return;
+		}
 
-		if ( replay_movie_reveal_warning.GetBool() )
+		if( replay_movie_reveal_warning.GetBool() )
 		{
 #ifdef USE_WEBM_FOR_REPLAY
-			CTFMessageBoxDialog *pDialog = ShowMessageBox( "#Replay_Tip", "#Replay_UseVLCPlayer", "#Replay_ThanksIWill",  OnPlayerWarningDlgConfirm );			
+			CTFMessageBoxDialog* pDialog = ShowMessageBox( "#Replay_Tip", "#Replay_UseVLCPlayer", "#Replay_ThanksIWill",  OnPlayerWarningDlgConfirm );
 #else
-			CTFMessageBoxDialog *pDialog = ShowMessageBox( "#Replay_Tip", "#Replay_UseQuickTimePlayer", "#Replay_ThanksIWill",  OnPlayerWarningDlgConfirm );
+			CTFMessageBoxDialog* pDialog = ShowMessageBox( "#Replay_Tip", "#Replay_UseQuickTimePlayer", "#Replay_ThanksIWill",  OnPlayerWarningDlgConfirm );
 #endif
 			pDialog->SetContext( this );
 			replay_movie_reveal_warning.SetValue( 0 );
 		}
-		else if ( pMovie->GetRenderSettings().m_bRaw )
+		else if( pMovie->GetRenderSettings().m_bRaw )
 		{
 			ShowMessageBox( "#Replay_CantExport", "#YouTube_Upload_MovieIsRaw", "#GameUI_OK" );
 		}
@@ -1771,16 +1790,18 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 		}
 	}
 
-	else if ( FStrEq( pCommand, "youtubeupload" ) )
+	else if( FStrEq( pCommand, "youtubeupload" ) )
 	{
-		IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-		if ( pReplayItem && pReplayItem->IsItemAMovie() )
+		IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+		if( pReplayItem && pReplayItem->IsItemAMovie() )
 		{
-			IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
-			if ( !pMovie )
+			IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
+			if( !pMovie )
+			{
 				return;
+			}
 
-			if ( pMovie->GetRenderSettings().m_bRaw )
+			if( pMovie->GetRenderSettings().m_bRaw )
 			{
 				ShowMessageBox( "#Replay_CantUpload", "#YouTube_Upload_MovieIsRaw", "#GameUI_OK" );
 				return;
@@ -1788,14 +1809,14 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 
 			// Movie already exists?
 			CFmtStr srcMovieFullFilename( "%s%s", g_pReplayMovieManager->GetRenderDir(), pMovie->GetMovieFilename() );
-			if ( !g_pFullFileSystem->FileExists( srcMovieFullFilename.Access() ) )
+			if( !g_pFullFileSystem->FileExists( srcMovieFullFilename.Access() ) )
 			{
 				ShowMessageBox( "#YouTube_Upload_Title", "#YouTube_Upload_MissingFile", "#GameUI_OK" );
 				return;
 			}
-			else if ( pMovie->IsUploaded() )
+			else if( pMovie->IsUploaded() )
 			{
-				CTFGenericConfirmDialog *pDialog = ShowConfirmDialog( "#YouTube_Upload_Title", "#YouTube_FileAlreadyUploaded", "#GameUI_OK", "#GameuI_CancelBold", &ConfirmUploadMovie, this );
+				CTFGenericConfirmDialog* pDialog = ShowConfirmDialog( "#YouTube_Upload_Title", "#YouTube_FileAlreadyUploaded", "#GameUI_OK", "#GameuI_CancelBold", &ConfirmUploadMovie, this );
 				pDialog->SetContext( this );
 			}
 			else
@@ -1805,21 +1826,21 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 		}
 	}
 
-	else if ( FStrEq( pCommand, "viewyoutube" ) )
+	else if( FStrEq( pCommand, "viewyoutube" ) )
 	{
-		if ( steamapicontext && steamapicontext->SteamFriends() && m_pYouTubeResponseHandler->m_strVideoURL.IsEmpty() == false )
+		if( steamapicontext && steamapicontext->SteamFriends() && m_pYouTubeResponseHandler->m_strVideoURL.IsEmpty() == false )
 		{
 			steamapicontext->SteamFriends()->ActivateGameOverlayToWebPage( m_pYouTubeResponseHandler->m_strVideoURL.Get() );
 		}
 	}
 
-	else if ( FStrEq( pCommand, "shareyoutubeurl" ) )
+	else if( FStrEq( pCommand, "shareyoutubeurl" ) )
 	{
 		system()->SetClipboardText( m_pYouTubeResponseHandler->m_strVideoURL.Get(), m_pYouTubeResponseHandler->m_strVideoURL.Length() );
 		ShowMessageBox( "#Replay_CopyURL_Title", "#Replay_CopyURL_Text", "#GameUI_OK" );
-	}	
+	}
 
-	else if ( FStrEq( pCommand, "showrenderinfo" ) )
+	else if( FStrEq( pCommand, "showrenderinfo" ) )
 	{
 		ShowRenderInfo();
 	}
@@ -1832,15 +1853,17 @@ void CReplayDetailsPanel::OnCommand( const char *pCommand )
 
 void CReplayDetailsPanel::ShowRenderInfo()
 {
-	IQueryableReplayItem *pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
-	if ( !pReplayItem || !pReplayItem->IsItemAMovie() )
+	IQueryableReplayItem* pReplayItem = m_pItemManager->GetItem( m_hReplayItem );
+	if( !pReplayItem || !pReplayItem->IsItemAMovie() )
+	{
 		return;
+	}
 
-	IReplayMovie *pMovie = static_cast< IReplayMovie * >( pReplayItem );
-	const ReplayRenderSettings_t &Settings = pMovie->GetRenderSettings();
-	const wchar_t *pCodecName = g_pVideo ? g_pVideo->GetCodecName( Settings.m_Codec ) : L"?";
-	wchar_t *pAAEnabled = g_pVGuiLocalize->Find( Settings.m_bAAEnabled ? "#Replay_Enabled" : "#Replay_Disabled" );
-	wchar_t *pRaw = g_pVGuiLocalize->Find( Settings.m_bRaw ? "#Replay_Yes" : "#Replay_No" );
+	IReplayMovie* pMovie = static_cast< IReplayMovie* >( pReplayItem );
+	const ReplayRenderSettings_t& Settings = pMovie->GetRenderSettings();
+	const wchar_t* pCodecName = g_pVideo ? g_pVideo->GetCodecName( Settings.m_Codec ) : L"?";
+	wchar_t* pAAEnabled = g_pVGuiLocalize->Find( Settings.m_bAAEnabled ? "#Replay_Enabled" : "#Replay_Disabled" );
+	wchar_t* pRaw = g_pVGuiLocalize->Find( Settings.m_bRaw ? "#Replay_Yes" : "#Replay_No" );
 	CFmtStr fmtRes( "%ix%i", Settings.m_nWidth, Settings.m_nHeight );
 	CFmtStr fmtFramerate( "%.3f", Settings.m_FPS.GetFPS() );
 
@@ -1873,16 +1896,16 @@ void CReplayDetailsPanel::GoBack()
 
 void CReplayDetailsPanel::ShowPlayConfirmationDialog()
 {
-	CConfirmDisconnectFromServerDialog *pConfirm = SETUP_PANEL( new CConfirmDisconnectFromServerDialog( this ) );
-	if ( pConfirm )
+	CConfirmDisconnectFromServerDialog* pConfirm = SETUP_PANEL( new CConfirmDisconnectFromServerDialog( this ) );
+	if( pConfirm )
 	{
 		pConfirm->Show();
 	}
 }
 
-void CReplayDetailsPanel::OnConfirmDisconnect( KeyValues *pParams )
+void CReplayDetailsPanel::OnConfirmDisconnect( KeyValues* pParams )
 {
-	if ( pParams->GetBool( "confirmed" ) )
+	if( pParams->GetBool( "confirmed" ) )
 	{
 		g_pClientReplayContext->PlayReplay( m_hReplay, m_iSelectedPerformance, true );
 	}
@@ -1890,12 +1913,12 @@ void CReplayDetailsPanel::OnConfirmDisconnect( KeyValues *pParams )
 
 void CReplayDetailsPanel::OnMessage( const KeyValues* pParams, VPANEL hFromPanel )
 {
-	if ( FStrEq( pParams->GetName(), "ReplayItemDeleted" ) )
+	if( FStrEq( pParams->GetName(), "ReplayItemDeleted" ) )
 	{
-		const int iPerformance = const_cast< KeyValues * >( pParams )->GetInt( "perf", -1 );
-		if ( iPerformance >= 0 )
+		const int iPerformance = const_cast< KeyValues* >( pParams )->GetInt( "perf", -1 );
+		if( iPerformance >= 0 )
 		{
-			CReplayPerformance *pPerformance = GetGenericClassBasedReplay( m_hReplay )->GetPerformance( m_iSelectedPerformance );
+			CReplayPerformance* pPerformance = GetGenericClassBasedReplay( m_hReplay )->GetPerformance( m_iSelectedPerformance );
 			g_pReplayPerformanceManager->DeletePerformance( pPerformance );
 			m_pCutsPanel->InvalidateLayout( true, false );	// Without this, m_nVisibleButtons will be wrong.
 			m_pCutsPanel->OnPerformanceDeleted( m_iSelectedPerformance );
@@ -1931,7 +1954,7 @@ void CReplayDetailsPanel::SetYouTubeStatus( eYouTubeStatus status )
 
 void CReplayDetailsPanel::OnMousePressed( MouseCode code )
 {
-	if ( code == MOUSE_LEFT )
+	if( code == MOUSE_LEFT )
 	{
 		RequestFocus();
 	}
@@ -1939,7 +1962,7 @@ void CReplayDetailsPanel::OnMousePressed( MouseCode code )
 
 void CReplayDetailsPanel::OnKeyCodeTyped( KeyCode code )
 {
-	if ( code == KEY_DELETE )
+	if( code == KEY_DELETE )
 	{
 		OnCommand( "delete_replayitem" );
 	}

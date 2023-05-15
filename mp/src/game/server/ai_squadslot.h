@@ -22,7 +22,8 @@
 // NOTE: If you add a new squad slot here, make sure you
 // update GetSquadSlotDebugName()
 //=========================================================
-enum SQUAD_SLOT_t {
+enum SQUAD_SLOT_t
+{
 
 	// Currently there are no shared squad slots
 	SQUAD_SLOT_NONE = -1,
@@ -33,7 +34,7 @@ enum SQUAD_SLOT_t {
 	SQUAD_SLOT_INVESTIGATE_SOUND,
 
 	SQUAD_SLOT_EXCLUSIVE_HANDSIGN,	// only one person in a squad should do this!
-	SQUAD_SLOT_EXCLUSIVE_RELOAD,	
+	SQUAD_SLOT_EXCLUSIVE_RELOAD,
 
 	SQUAD_SLOT_PICKUP_WEAPON1,
 	SQUAD_SLOT_PICKUP_WEAPON2,
@@ -43,7 +44,7 @@ enum SQUAD_SLOT_t {
 	// ======================================
 	// IMPORTANT: This must be the last enum
 	// ======================================
-	LAST_SHARED_SQUADSLOT,		
+	LAST_SHARED_SQUADSLOT,
 };
 
 

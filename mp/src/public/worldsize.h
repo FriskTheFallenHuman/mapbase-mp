@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -29,7 +29,7 @@
 
 // Maximum traceable distance ( assumes cubic world and trace from one corner to opposite )
 // COORD_EXTENT * sqrt(3)
-#define MAX_TRACE_LENGTH			( 1.732050807569 * COORD_EXTENT )		
+#define MAX_TRACE_LENGTH			( 1.732050807569 * COORD_EXTENT )
 
 // This value is the LONGEST possible range (limited by max valid coordinate number, not 2x)
 #define MAX_COORD_RANGE				(MAX_COORD_INTEGER)

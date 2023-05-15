@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define SPLITTER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/EditablePanel.h>
@@ -38,23 +38,26 @@ public:
 	// nCount is the number of splitters to create.
 	// NOTE: The constructor here will create (nCount+1) EditablePanel children
 	// and name them child0...childN for .res file purposes.
-	Splitter( Panel *parent, const char *name, SplitterMode_t mode, int nCount );
+	Splitter( Panel* parent, const char* name, SplitterMode_t mode, int nCount );
 	~Splitter();
 
 	// Evenly respace all splitters
 	void EvenlyRespaceSplitters();
 
 	// respace splitters using given fractions (must sum to 1)
-	void RespaceSplitters( float *flFractions );
+	void RespaceSplitters( float* flFractions );
 
 	// Inherited from Panel
-	virtual void ApplySettings(KeyValues *inResourceData);
-	virtual void GetSettings( KeyValues *outResourceData );
+	virtual void ApplySettings( KeyValues* inResourceData );
+	virtual void GetSettings( KeyValues* outResourceData );
 	virtual void PerformLayout();
-	virtual void OnSizeChanged(int newWide, int newTall);
-	virtual void ApplyUserConfigSettings(KeyValues *userConfig);
-	virtual void GetUserConfigSettings(KeyValues *userConfig);
-	virtual bool HasUserConfigSettings() { return true; }
+	virtual void OnSizeChanged( int newWide, int newTall );
+	virtual void ApplyUserConfigSettings( KeyValues* userConfig );
+	virtual void GetUserConfigSettings( KeyValues* userConfig );
+	virtual bool HasUserConfigSettings()
+	{
+		return true;
+	}
 
 	// Sets the splitter color
 	void SetSplitterColor( Color c );
@@ -71,8 +74,8 @@ private:
 
 	struct SplitterInfo_t
 	{
-		SplitterChildPanel *m_pPanel;	// This panel is to the left or above the handle
-		SplitterHandle *m_pHandle;
+		SplitterChildPanel* m_pPanel;	// This panel is to the left or above the handle
+		SplitterHandle* m_pHandle;
 		float m_flPos;
 		bool m_bLocked;
 		int m_nLockedSize;

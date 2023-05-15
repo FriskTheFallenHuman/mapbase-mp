@@ -9,7 +9,7 @@
 #define PERFORCEFILEEXPLORER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -37,11 +37,11 @@ class PerforceFileExplorer : public vgui::Frame
 
 public:
 	// The context keyvalues are added to all messages sent by this dialog if they are specified
-	PerforceFileExplorer( Panel *parent, const char *pPanelName );
+	PerforceFileExplorer( Panel* parent, const char* pPanelName );
 	~PerforceFileExplorer();
 
 	// Inherited from Frame
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void PerformLayout();
 
 protected:
@@ -53,11 +53,11 @@ protected:
 	void PopulateDriveList();
 
 	// Returns the current directory
-	void SetCurrentDirectory( const char *pCurrentDirectory );
+	void SetCurrentDirectory( const char* pCurrentDirectory );
 
-	Button *m_pFolderUpButton;
-	ComboBox *m_pFullPathCombo;
-	PerforceFileList *m_pFileList;
+	Button* m_pFolderUpButton;
+	ComboBox* m_pFullPathCombo;
+	PerforceFileList* m_pFileList;
 	CUtlString m_CurrentDirectory;
 };
 

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef AI_BEHAVIOR_PASSENGER_H
 #define AI_BEHAVIOR_PASSENGER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_speech.h"
@@ -108,48 +108,63 @@ public:
 		NEXT_CONDITION
 	};
 
-			bool	ForceVehicleInteraction( const char *lpszInteractionName, CBaseCombatCharacter *pOther );
+	bool	ForceVehicleInteraction( const char* lpszInteractionName, CBaseCombatCharacter* pOther );
 
 	virtual bool	CanSelectSchedule( void );
 	virtual int		SelectSchedule( void );
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
-	virtual void	RunTask( const Task_t *pTask );
-	virtual void	StartTask( const Task_t *pTask );
+	virtual void	RunTask( const Task_t* pTask );
+	virtual void	StartTask( const Task_t* pTask );
 	virtual	void	BuildScheduleTestBits( void );
 	virtual int		TranslateSchedule( int scheduleType );
-	virtual void	GetEntryTarget( Vector *vecOrigin, QAngle *vecAngles );
+	virtual void	GetEntryTarget( Vector* vecOrigin, QAngle* vecAngles );
 	virtual void	GatherConditions( void );
 	virtual void	ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet );
-	virtual void	Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity );
-	virtual void	ClearSchedule( const char *szReason );
+	virtual void	Teleport( const Vector* newPosition, const QAngle* newAngles, const Vector* newVelocity );
+	virtual void	ClearSchedule( const char* szReason );
 	virtual bool	IsInterruptable( void );
 	virtual void	PrescheduleThink( void );
 	virtual void	CancelEnterVehicle( void );
 
-	virtual const char *GetName( void ) { return "Passenger"; }
-	virtual string_t GetRoleName( void ) { return MAKE_STRING( "passenger" ); }
+	virtual const char* GetName( void )
+	{
+		return "Passenger";
+	}
+	virtual string_t GetRoleName( void )
+	{
+		return MAKE_STRING( "passenger" );
+	}
 
 	// Enable/disable code
-	void	Enable( CPropJeepEpisodic *pVehicle, bool bImmediateEntrance = false );
+	void	Enable( CPropJeepEpisodic* pVehicle, bool bImmediateEntrance = false );
 	void	Disable( void );
-	bool	IsEnabled( void ) const { return m_bEnabled; }
+	bool	IsEnabled( void ) const
+	{
+		return m_bEnabled;
+	}
 
 	virtual void	EnterVehicle( void );
 	virtual void	ExitVehicle( void );
 
 	void	AddPhysicsPush( float force );
 
-	CPropVehicleDriveable *GetTargetVehicle( void ) const { return m_hVehicle; }
+	CPropVehicleDriveable* GetTargetVehicle( void ) const
+	{
+		return m_hVehicle;
+	}
 
-	PassengerState_e	GetPassengerState( void ) const { return m_PassengerState; }
-	
+	PassengerState_e	GetPassengerState( void ) const
+	{
+		return m_PassengerState;
+	}
+
 	virtual void OnRestore();
 
 protected:
-	
+
 	virtual int		SelectTransitionSchedule( void );
 
-	bool			SpeakIfAllowed( AIConcept_t concept, const char *modifiers = NULL, bool bRespondingToPlayer = false, char *pszOutResponseChosen = NULL, size_t bufsize = 0 );
+	bool			SpeakIfAllowed( AIConcept_t concept, const char* modifiers = NULL, bool bRespondingToPlayer = false, char* pszOutResponseChosen = NULL, size_t bufsize = 0 );
 
 	bool			CanExitVehicle( void );
 	void			SetTransitionSequence( int nSequence );
@@ -161,32 +176,35 @@ protected:
 	// ------------------------------------------
 	//  Entry/exit transition code
 	// ------------------------------------------
-	
+
 	virtual void	FinishEnterVehicle( void );
 	virtual void	FinishExitVehicle( void );
 
 	void	DetachFromVehicle( void );
-	void	DrawDebugTransitionInfo( const Vector &vecIdealPos, const QAngle &vecIdealAngles, const Vector &vecAnimPos, const QAngle &vecAnimAngles );
-	bool	GetEntryPoint( int nSequence, Vector *vecEntryPoint, QAngle *vecEntryAngles = NULL );
-	bool	GetExitPoint( int nSequence, Vector *vecExitPoint, QAngle *vecExitAngles = NULL );
-	bool	PointIsNavigable( const Vector &vecTargetPos );
+	void	DrawDebugTransitionInfo( const Vector& vecIdealPos, const QAngle& vecIdealAngles, const Vector& vecAnimPos, const QAngle& vecAnimAngles );
+	bool	GetEntryPoint( int nSequence, Vector* vecEntryPoint, QAngle* vecEntryAngles = NULL );
+	bool	GetExitPoint( int nSequence, Vector* vecExitPoint, QAngle* vecExitAngles = NULL );
+	bool	PointIsNavigable( const Vector& vecTargetPos );
 	bool	ReserveEntryPoint( VehicleSeatQuery_e eSeatSearchType );
 	bool	ReserveExitPoint( void );
-	bool	FindGroundAtPosition( const Vector &in, float flUpDelta, float flDownDelta, Vector *out );
+	bool	FindGroundAtPosition( const Vector& in, float flUpDelta, float flDownDelta, Vector* out );
 	bool	DoTransitionMovement( void );
-	bool	GetSequenceBlendAmount( float flCycle, float *posBlend, float *angBlend );
-	bool	LocalIntervalMovement( float flInterval, bool &bMoveSeqFinished, Vector &newPosition, QAngle &newAngles );
-	void	GetTransitionAnimationIdeal( float flCycle, const Vector &vecTargetPos, const QAngle &vecTargetAngles, Vector *idealOrigin, QAngle *idealAngles );
+	bool	GetSequenceBlendAmount( float flCycle, float* posBlend, float* angBlend );
+	bool	LocalIntervalMovement( float flInterval, bool& bMoveSeqFinished, Vector& newPosition, QAngle& newAngles );
+	void	GetTransitionAnimationIdeal( float flCycle, const Vector& vecTargetPos, const QAngle& vecTargetAngles, Vector* idealOrigin, QAngle* idealAngles );
 	float	GetNextCycleForInterval( int nSequence, float flInterval );
-	void	GetLocalVehicleVelocity( Vector *pOut  );
+	void	GetLocalVehicleVelocity( Vector* pOut );
 	void	CacheBlendTargets( void );
 
 	void	InitVehicleState( void );
 	int		FindEntrySequence( bool bNearest = false );
 	int		FindExitSequence( void );
-	bool	IsValidTransitionPoint( const Vector &vecStartPos, const Vector &vecEndPos );
+	bool	IsValidTransitionPoint( const Vector& vecStartPos, const Vector& vecEndPos );
 
-	void	SetPassengerState( PassengerState_e state ) { m_PassengerState = state; }
+	void	SetPassengerState( PassengerState_e state )
+	{
+		m_PassengerState = state;
+	}
 
 	PassengerState_e	m_PassengerState;	// State we're in, for the vehicle
 
@@ -218,23 +236,25 @@ class CTraceFilterVehicleTransition : public CTraceFilterSkipTwoEntities
 public:
 	DECLARE_CLASS( CTraceFilterVehicleTransition, CTraceFilterSkipTwoEntities );
 
-	CTraceFilterVehicleTransition( const IHandleEntity *passentity, const IHandleEntity *passentity2, int collisionGroup ) : 
-	CTraceFilterSkipTwoEntities( passentity, passentity2, collisionGroup ) {}
+	CTraceFilterVehicleTransition( const IHandleEntity* passentity, const IHandleEntity* passentity2, int collisionGroup ) :
+		CTraceFilterSkipTwoEntities( passentity, passentity2, collisionGroup ) {}
 
-	bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
+	bool ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask )
 	{
 		bool bRet = BaseClass::ShouldHitEntity( pServerEntity, contentsMask );
 
-		CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
-		if ( pEntity )
+		CBaseEntity* pEntity = EntityFromEntityHandle( pServerEntity );
+		if( pEntity )
 		{
-			IPhysicsObject *pPhys = pEntity->VPhysicsGetObject();
-			if ( pPhys )
+			IPhysicsObject* pPhys = pEntity->VPhysicsGetObject();
+			if( pPhys )
 			{
 				// Ignore physics objects
 				// TODO: This will have to be fleshed out more as cases arise
-				if ( pPhys->IsMoveable() && pPhys->GetMass() < 80.0f )
+				if( pPhys->IsMoveable() && pPhys->GetMass() < 80.0f )
+				{
 					return false;
+				}
 			}
 		}
 

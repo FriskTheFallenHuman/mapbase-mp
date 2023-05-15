@@ -8,7 +8,7 @@
 #ifndef L4D_HUD_LOCATOR_H
 #define L4D_HUD_LOCATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -49,7 +49,7 @@ public:
 	Vector		m_vecOrigin;			// The location in the world to draw on the locator
 
 	// ONLY the locator panel should fiddle with these fields.
-	bool		m_isActive;		
+	bool		m_isActive;
 	int			m_serialNumber;
 	int			m_frameLastUpdated;
 	bool		m_bOnscreen;
@@ -57,13 +57,13 @@ public:
 	bool		m_bVisible;
 	bool		m_bIsDrawing;
 	float		m_distFromPlayer;
-	CHudTexture	*m_pIcon_onscreen;
-	CHudTexture	*m_pIcon_offscreen;
+	CHudTexture*	m_pIcon_onscreen;
+	CHudTexture*	m_pIcon_offscreen;
 	int			m_iBindingTick;
 	float		m_flNextBindingTick;
 	float		m_flNextOcclusionTest;
 	int			m_iBindingChoicesCount;
-	const char	*(m_pchBindingChoices[ MAX_LOCATOR_BINDINGS_SHOWN ]);
+	const char*	( m_pchBindingChoices[ MAX_LOCATOR_BINDINGS_SHOWN ] );
 	int			m_iBindChoicesOriginalToken[ MAX_LOCATOR_BINDINGS_SHOWN ];
 
 	// Fields for drawing
@@ -76,7 +76,7 @@ public:
 	int			m_wide;					// draw width of icon (may be different from frame to frame as the icon's size animates, for instance)
 	int			m_tall;					// draw height of icon  ''			''
 	float		m_widthScale_onscreen;	// for icons that are wider than standard
-	int			m_alpha;				// 
+	int			m_alpha;				//
 	float		m_fadeStart;			// time stamp when fade out started
 	float		m_lerpStart;			// time stamp when lerping started
 	float		m_pulseStart;			// time stamp when pulsing started
@@ -106,11 +106,23 @@ public:
 	int GetIconWidth( void );
 	int GetIconHeight( void );
 
-	void AddIconEffects( int add )			{ m_iEffectsFlags |= add; }
-	void RemoveIconEffects( int remove )	{ m_iEffectsFlags &= ~remove; }
-	int GetIconEffectsFlags()				{ return m_iEffectsFlags; }
-	void SetCaptionColor( Color col )		{ m_captionColor = col; }
-	void SetCaptionColor( const char *pszCaptionColor );
+	void AddIconEffects( int add )
+	{
+		m_iEffectsFlags |= add;
+	}
+	void RemoveIconEffects( int remove )
+	{
+		m_iEffectsFlags &= ~remove;
+	}
+	int GetIconEffectsFlags()
+	{
+		return m_iEffectsFlags;
+	}
+	void SetCaptionColor( Color col )
+	{
+		m_captionColor = col;
+	}
+	void SetCaptionColor( const char* pszCaptionColor );
 	bool IsStatic();
 	bool IsPresenting();
 	void StartTimedLerp();
@@ -118,38 +130,80 @@ public:
 	void EndPresent();
 
 	void UpdateVguiTarget( void );
-	vgui::Panel *GetVguiTarget( void );
-	void SetVguiTargetName( const char *pchVguiTargetName );
-	const char *GetVguiTargetName( void ) { return m_szVguiTargetName.String(); }
-	void SetVguiTargetLookup( const char *pchVguiTargetLookup );
-	const char *GetVguiTargetLookup( void ) { return m_szVguiTargetLookup.String(); }
+	vgui::Panel* GetVguiTarget( void );
+	void SetVguiTargetName( const char* pchVguiTargetName );
+	const char* GetVguiTargetName( void )
+	{
+		return m_szVguiTargetName.String();
+	}
+	void SetVguiTargetLookup( const char* pchVguiTargetLookup );
+	const char* GetVguiTargetLookup( void )
+	{
+		return m_szVguiTargetLookup.String();
+	}
 	void SetVguiTargetEdge( int nVguiEdge );
-	int GetVguiTargetEdge( void ) const { return m_nVguiTargetEdge; }
+	int GetVguiTargetEdge( void ) const
+	{
+		return m_nVguiTargetEdge;
+	}
 
-	void SetOnscreenIconTextureName( const char *pszTexture );
-	void SetOffscreenIconTextureName( const char *pszTexture );
-	void SetBinding( const char *pszBinding );
-	const char *UseBindingImage( char *pchIconTextureName, size_t bufSize );
+	void SetOnscreenIconTextureName( const char* pszTexture );
+	void SetOffscreenIconTextureName( const char* pszTexture );
+	void SetBinding( const char* pszBinding );
+	const char* UseBindingImage( char* pchIconTextureName, size_t bufSize );
 
-	const char *GetOnscreenIconTextureName()	{ return m_szOnscreenTexture.String(); }
-	const char *GetOffscreenIconTextureName()	{ return m_szOffscreenTexture.String(); }
-	const char *GetBinding()			{ return m_szBinding.String(); }
+	const char* GetOnscreenIconTextureName()
+	{
+		return m_szOnscreenTexture.String();
+	}
+	const char* GetOffscreenIconTextureName()
+	{
+		return m_szOffscreenTexture.String();
+	}
+	const char* GetBinding()
+	{
+		return m_szBinding.String();
+	}
 
 	void SetVisible( bool bVisible );
 	bool IsVisible( void );
 
-	void SetCaptionText( const char *pszText, const char *pszParam );
-	const wchar_t *GetCaptionText( void )	{ return (const wchar_t *)m_wszCaption.Base(); }
-	bool HasCaptionText( void )			{ return m_wszCaption.Count() > 1; }
+	void SetCaptionText( const char* pszText, const char* pszParam );
+	const wchar_t* GetCaptionText( void )
+	{
+		return ( const wchar_t* )m_wszCaption.Base();
+	}
+	bool HasCaptionText( void )
+	{
+		return m_wszCaption.Count() > 1;
+	}
 
-	void DrawBindingName( const char *pchDrawName )		{ m_pchDrawBindingName = pchDrawName; }
-	void DrawBindingNameOffscreen( const char *pchDrawName )	{ m_pchDrawBindingNameOffscreen = pchDrawName; }
+	void DrawBindingName( const char* pchDrawName )
+	{
+		m_pchDrawBindingName = pchDrawName;
+	}
+	void DrawBindingNameOffscreen( const char* pchDrawName )
+	{
+		m_pchDrawBindingNameOffscreen = pchDrawName;
+	}
 
-	const char *DrawBindingName( void )				{ return m_pchDrawBindingName; }
-	const char *DrawBindingNameOffscreen( void )	{ return m_pchDrawBindingNameOffscreen; }
+	const char* DrawBindingName( void )
+	{
+		return m_pchDrawBindingName;
+	}
+	const char* DrawBindingNameOffscreen( void )
+	{
+		return m_pchDrawBindingNameOffscreen;
+	}
 
-	bool IsOnScreen()	{ return m_bOnscreen; }
-	bool IsOccluded()	{ return m_bOccluded; }
+	bool IsOnScreen()
+	{
+		return m_bOnscreen;
+	}
+	bool IsOccluded()
+	{
+		return m_bOccluded;
+	}
 
 
 private:
@@ -163,8 +217,8 @@ private:
 	CGameInstructorSymbol	m_szBinding;
 
 	bool		m_bWasControllerLast;
-	const char	*m_pchDrawBindingName;
-	const char	*m_pchDrawBindingNameOffscreen;
+	const char*	m_pchDrawBindingName;
+	const char*	m_pchDrawBindingNameOffscreen;
 	int			m_iEffectsFlags;
 	CUtlVector< wchar_t > m_wszCaption;
 
@@ -177,7 +231,7 @@ public:
 
 extern int Locator_AddTarget();
 extern void Locator_RemoveTarget( int hTarget );
-CLocatorTarget *Locator_GetTargetFromHandle( int hTarget );
+CLocatorTarget* Locator_GetTargetFromHandle( int hTarget );
 void Locator_ComputeTargetIconPositionFromHandle( int hTarget );
 
 

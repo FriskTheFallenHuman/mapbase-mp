@@ -5,7 +5,7 @@
 #ifndef REPLAYMESSAGEPANEL_H
 #define REPLAYMESSAGEPANEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/EditablePanel.h"
@@ -32,21 +32,21 @@ class CReplayMessageDlg : public EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CReplayMessageDlg, EditablePanel );
 public:
-	CReplayMessageDlg( const char *pText );
+	CReplayMessageDlg( const char* pText );
 	~CReplayMessageDlg();
 
-	virtual void	ApplySchemeSettings( IScheme *pScheme );
+	virtual void	ApplySchemeSettings( IScheme* pScheme );
 	virtual void	PerformLayout();
 
 	virtual void	OnKeyCodeTyped( KeyCode nCode );
-	virtual void	OnCommand( const char *pCommand );
+	virtual void	OnCommand( const char* pCommand );
 
 private:
 	void			Close();
 
-	Panel			*m_pDlg;
-	CExLabel		*m_pMsgLabel;
-	CExButton		*m_pOKButton;
+	Panel*			m_pDlg;
+	CExLabel*		m_pMsgLabel;
+	CExButton*		m_pOKButton;
 };
 
 //----------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ class CReplayMessagePanel : public EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CReplayMessagePanel, EditablePanel );
 public:
-	CReplayMessagePanel( const char *pLocalizeName, float flDuration, bool bUrgent );
+	CReplayMessagePanel( const char* pLocalizeName, float flDuration, bool bUrgent );
 	virtual ~CReplayMessagePanel();
 
 	void Show();
@@ -66,13 +66,13 @@ public:
 	static void	RemoveAll();
 
 private:
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void PerformLayout();
 
 
-	CExLabel	*m_pMessageLabel;
-	CExLabel	*m_pReplayLabel;
-	ImagePanel	*m_pIcon;
+	CExLabel*	m_pMessageLabel;
+	CExLabel*	m_pReplayLabel;
+	ImagePanel*	m_pIcon;
 	float		m_flShowStartTime;
 	float		m_flShowDuration;
 	bool		m_bUrgent;

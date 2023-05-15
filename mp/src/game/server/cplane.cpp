@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -14,39 +14,39 @@
 //=========================================================
 // Plane
 //=========================================================
-CPlane::CPlane ( void )
+CPlane::CPlane( void )
 {
 	m_fInitialized = FALSE;
 }
 
 //=========================================================
 // InitializePlane - Takes a normal for the plane and a
-// point on the plane and 
+// point on the plane and
 //=========================================================
-void CPlane::InitializePlane ( const Vector &vecNormal, const Vector &vecPoint )
+void CPlane::InitializePlane( const Vector& vecNormal, const Vector& vecPoint )
 {
 	m_vecNormal = vecNormal;
-	m_flDist = DotProduct ( m_vecNormal, vecPoint );
+	m_flDist = DotProduct( m_vecNormal, vecPoint );
 	m_fInitialized = TRUE;
 }
 
 
 //=========================================================
-// PointInFront - determines whether the given vector is 
-// in front of the plane. 
+// PointInFront - determines whether the given vector is
+// in front of the plane.
 //=========================================================
-bool CPlane::PointInFront ( const Vector &vecPoint )
+bool CPlane::PointInFront( const Vector& vecPoint )
 {
 	float flFace;
 
-	if ( !m_fInitialized )
+	if( !m_fInitialized )
 	{
 		return FALSE;
 	}
 
-	flFace = DotProduct ( m_vecNormal, vecPoint ) - m_flDist;
+	flFace = DotProduct( m_vecNormal, vecPoint ) - m_flDist;
 
-	if ( flFace >= 0 )
+	if( flFace >= 0 )
 	{
 		return TRUE;
 	}
@@ -56,16 +56,16 @@ bool CPlane::PointInFront ( const Vector &vecPoint )
 
 //=========================================================
 //=========================================================
-float CPlane::PointDist ( const Vector &vecPoint )
+float CPlane::PointDist( const Vector& vecPoint )
 {
 	float flDist;
 
-	if ( !m_fInitialized )
+	if( !m_fInitialized )
 	{
 		return FALSE;
 	}
 
-	flDist = DotProduct ( m_vecNormal, vecPoint ) - m_flDist;
+	flDist = DotProduct( m_vecNormal, vecPoint ) - m_flDist;
 
 	return flDist;
 }

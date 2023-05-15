@@ -25,8 +25,8 @@ class CAI_BlendedMotor : public CAI_Motor
 {
 	typedef CAI_Motor BaseClass;
 public:
-	CAI_BlendedMotor( CAI_BaseNPC *pOuter )
-	 :	BaseClass( pOuter )
+	CAI_BlendedMotor( CAI_BaseNPC* pOuter )
+		:	BaseClass( pOuter )
 	{
 		m_iPrimaryLayer = -1;
 		m_nPrimarySequence = ACT_INVALID;
@@ -58,8 +58,8 @@ public:
 		m_flNextTurnAct = 0.0f;
 	}
 
-	void 	MoveClimbStart( const Vector &climbDest, const Vector &climbDir, float climbDist, float yaw );
-	void 	MoveJumpStart( const Vector &velocity );
+	void 	MoveClimbStart( const Vector& climbDest, const Vector& climbDir, float climbDist, float yaw );
+	void 	MoveJumpStart( const Vector& velocity );
 
 	void	ResetMoveCalculations();
 	void	MoveStart();
@@ -70,9 +70,12 @@ public:
 
 	float	OverrideMaxYawSpeed( Activity activity );
 	void	UpdateYaw( int speed );
-	void	RecalculateYawSpeed(); 
+	void	RecalculateYawSpeed();
 
-	bool	IsDeceleratingToGoal() const	{ return m_bDeceleratingToGoal; }
+	bool	IsDeceleratingToGoal() const
+	{
+		return m_bDeceleratingToGoal;
+	}
 	float	GetMoveScriptTotalTime();
 
 	void	MaintainTurnActivity( void );
@@ -80,34 +83,58 @@ public:
 
 
 private:
-	AIMotorMoveResult_t MoveGroundExecute( const AILocalMoveGoal_t &move, AIMoveTrace_t *pTraceResult );
-	AIMotorMoveResult_t MoveFlyExecute( const AILocalMoveGoal_t &move, AIMoveTrace_t *pTraceResult );
+	AIMotorMoveResult_t MoveGroundExecute( const AILocalMoveGoal_t& move, AIMoveTrace_t* pTraceResult );
+	AIMotorMoveResult_t MoveFlyExecute( const AILocalMoveGoal_t& move, AIMoveTrace_t* pTraceResult );
 
 
 	// --------------------------------
 
-	void	BuildMoveScript(  const AILocalMoveGoal_t &move, AIMoveTrace_t *pTraceResult );
+	void	BuildMoveScript( const AILocalMoveGoal_t& move, AIMoveTrace_t* pTraceResult );
 
-	void	BuildVelocityScript( const AILocalMoveGoal_t &move );
+	void	BuildVelocityScript( const AILocalMoveGoal_t& move );
 	void	InsertSlowdown( float distToObstruction, float idealAccel, bool bAlwaysSlowdown );
 
 	int		BuildTurnScript( int i, int j );
-	void	BuildTurnScript( const AILocalMoveGoal_t &move );
+	void	BuildTurnScript( const AILocalMoveGoal_t& move );
 	int 	BuildInsertNode( int i, float flTime );
 
 	Activity GetTransitionActivity( void );
-	
+
 	// --------------------------------
 
 	// helpers to simplify code
-	float	GetCycle()														{ return GetOuter()->GetCycle();								}
-	int		AddLayeredSequence( int sequence, int iPriority )				{ return GetOuter()->AddLayeredSequence( sequence, iPriority ); }
-	void	SetLayerWeight( int iLayer, float flWeight )					{ GetOuter()->SetLayerWeight( iLayer, flWeight );				}
-	void	SetLayerPlaybackRate( int iLayer, float flPlaybackRate )		{ GetOuter()->SetLayerPlaybackRate( iLayer, flPlaybackRate );	}
-	void	SetLayerNoRestore( int iLayer, bool bNoRestore )				{ GetOuter()->SetLayerNoRestore( iLayer, bNoRestore );			}
-	void	SetLayerCycle( int iLayer, float flCycle )						{ GetOuter()->SetLayerCycle( iLayer, flCycle );					}
-	void	SetLayerCycle( int iLayer, float flCycle, float flPrevCycle )	{ GetOuter()->SetLayerCycle( iLayer, flCycle, flPrevCycle );	}
-	void	RemoveLayer( int iLayer, float flKillRate, float flKillDelay )	{ GetOuter()->RemoveLayer( iLayer, flKillRate, flKillDelay );	}
+	float	GetCycle()
+	{
+		return GetOuter()->GetCycle();
+	}
+	int		AddLayeredSequence( int sequence, int iPriority )
+	{
+		return GetOuter()->AddLayeredSequence( sequence, iPriority );
+	}
+	void	SetLayerWeight( int iLayer, float flWeight )
+	{
+		GetOuter()->SetLayerWeight( iLayer, flWeight );
+	}
+	void	SetLayerPlaybackRate( int iLayer, float flPlaybackRate )
+	{
+		GetOuter()->SetLayerPlaybackRate( iLayer, flPlaybackRate );
+	}
+	void	SetLayerNoRestore( int iLayer, bool bNoRestore )
+	{
+		GetOuter()->SetLayerNoRestore( iLayer, bNoRestore );
+	}
+	void	SetLayerCycle( int iLayer, float flCycle )
+	{
+		GetOuter()->SetLayerCycle( iLayer, flCycle );
+	}
+	void	SetLayerCycle( int iLayer, float flCycle, float flPrevCycle )
+	{
+		GetOuter()->SetLayerCycle( iLayer, flCycle, flPrevCycle );
+	}
+	void	RemoveLayer( int iLayer, float flKillRate, float flKillDelay )
+	{
+		GetOuter()->RemoveLayer( iLayer, flKillRate, flKillDelay );
+	}
 
 	// --------------------------------
 
@@ -121,7 +148,7 @@ private:
 
 		void Init( void )
 		{
-			memset( this, 0, sizeof(*this) );
+			memset( this, 0, sizeof( *this ) );
 		};
 
 		float	flTime;			// time till next entry
@@ -139,16 +166,16 @@ private:
 		bool	bLooping;
 		int		nFlags;
 
-		AI_Waypoint_t *pWaypoint;
+		AI_Waypoint_t* pWaypoint;
 
 	public:
-		AI_Movementscript_t *pNext;
-		AI_Movementscript_t *pPrev;
+		AI_Movementscript_t* pNext;
+		AI_Movementscript_t* pPrev;
 
 		Vector	vecLocation;
 
 	};
-	
+
 	//---------------------------------
 
 	CUtlVector<AI_Movementscript_t>	m_scriptMove;
@@ -176,7 +203,7 @@ private:
 
 	float			m_flCurrRate;
 
-	float			m_flPredictiveSpeedAdjust;		// predictive speed adjust from probing slope 
+	float			m_flPredictiveSpeedAdjust;		// predictive speed adjust from probing slope
 	float			m_flReactiveSpeedAdjust;		// reactive speed adjust when slope movement detected
 	Vector			m_vecPrevOrigin1;
 	Vector			m_vecPrevOrigin2;
@@ -192,8 +219,8 @@ private:
 	float			m_doRight;
 	float			m_flNextTurnAct;		// next time for small turn gesture
 
-	
-	float	GetMoveScriptDist( float &flNewSpeed );
+
+	float	GetMoveScriptDist( float& flNewSpeed );
 	float	GetMoveScriptYaw( void );
 	void	SetMoveScriptAnim( float flNewSpeed );
 
@@ -214,18 +241,24 @@ class CAI_BlendingHost : public BASE_NPC
 {
 	DECLARE_CLASS_NOFRIEND( CAI_BlendingHost, BASE_NPC );
 public:
-	const CAI_BlendedMotor *GetBlendedMotor() const { return assert_cast<const CAI_BlendedMotor *>(this->GetMotor()); }
-	CAI_BlendedMotor *		GetBlendedMotor()		{ return assert_cast<CAI_BlendedMotor *>(this->GetMotor()); }
+	const CAI_BlendedMotor* GetBlendedMotor() const
+	{
+		return assert_cast<const CAI_BlendedMotor*>( this->GetMotor() );
+	}
+	CAI_BlendedMotor* 		GetBlendedMotor()
+	{
+		return assert_cast<CAI_BlendedMotor*>( this->GetMotor() );
+	}
 
-	CAI_Motor *CreateMotor()
+	CAI_Motor* CreateMotor()
 	{
 		MEM_ALLOC_CREDIT();
 		return new CAI_BlendedMotor( this );
 	}
 
-	CAI_Navigator *CreateNavigator()
+	CAI_Navigator* CreateNavigator()
 	{
-		CAI_Navigator *pNavigator = BaseClass::CreateNavigator();
+		CAI_Navigator* pNavigator = BaseClass::CreateNavigator();
 		pNavigator->SetValidateActivitySpeed( false );
 		return pNavigator;
 	}
@@ -233,16 +266,20 @@ public:
 	float MaxYawSpeed( void )
 	{
 		float override = GetBlendedMotor()->OverrideMaxYawSpeed( this->GetActivity() );
-		if ( override != -1 )
+		if( override != -1 )
+		{
 			return override;
+		}
 		return BaseClass::MaxYawSpeed();
 	}
 
 	float GetTimeToNavGoal()
 	{
 		float result = GetBlendedMotor()->GetMoveScriptTotalTime();
-		if ( result != -1 )
+		if( result != -1 )
+		{
 			return result;
+		}
 		return BaseClass::GetTimeToNavGoal();
 	}
 
@@ -255,6 +292,6 @@ class CAI_BlendedNPC : public CAI_BlendingHost<CAI_BaseNPC>
 	DECLARE_CLASS( CAI_BlendedNPC, CAI_BlendingHost<CAI_BaseNPC> );
 };
 
-//-----------------------------------------------------------------------------	
+//-----------------------------------------------------------------------------
 
 #endif

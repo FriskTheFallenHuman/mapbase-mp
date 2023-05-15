@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -13,7 +13,7 @@
 #include "npc_manhack.h"
 #include "npc_metropolice.h"
 #ifndef MAPBASE_MP
-#include "weapon_stunstick.h"
+	#include "weapon_stunstick.h"
 #endif
 #include "basegrenade_shared.h"
 #include "ai_route.h"
@@ -22,8 +22,8 @@
 #include "items.h"
 #include "hl2_gamerules.h"
 #ifdef MAPBASE
-#include "grenade_frag.h"
-#include "mapbase/GlobalStrings.h"
+	#include "grenade_frag.h"
+	#include "mapbase/GlobalStrings.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -71,7 +71,7 @@ enum
 	METROPOLICE_SENTENCE_FREEZE			= 0,
 	METROPOLICE_SENTENCE_HES_OVER_HERE	= 1,
 	METROPOLICE_SENTENCE_HES_RUNNING	= 2,
-	METROPOLICE_SENTENCE_TAKE_HIM_DOWN	= 3,	
+	METROPOLICE_SENTENCE_TAKE_HIM_DOWN	= 3,
 	METROPOLICE_SENTENCE_ARREST_IN_POSITION	= 4,
 	METROPOLICE_SENTENCE_DEPLOY_MANHACK	= 5,
 	METROPOLICE_SENTENCE_MOVE_INTO_POSITION	= 6,
@@ -110,23 +110,23 @@ int g_interactionMetrocopClearSentenceQueues = 0;
 
 extern int g_interactionHitByPlayerThrownPhysObj;
 
-ConVar	sk_metropolice_stitch_reaction( "sk_metropolice_stitch_reaction","1.0");
-ConVar	sk_metropolice_stitch_tight_hitcount( "sk_metropolice_stitch_tight_hitcount","2");
-ConVar	sk_metropolice_stitch_at_hitcount( "sk_metropolice_stitch_at_hitcount","1");
-ConVar	sk_metropolice_stitch_behind_hitcount( "sk_metropolice_stitch_behind_hitcount","3");
-ConVar	sk_metropolice_stitch_along_hitcount( "sk_metropolice_stitch_along_hitcount","2");
+ConVar	sk_metropolice_stitch_reaction( "sk_metropolice_stitch_reaction", "1.0" );
+ConVar	sk_metropolice_stitch_tight_hitcount( "sk_metropolice_stitch_tight_hitcount", "2" );
+ConVar	sk_metropolice_stitch_at_hitcount( "sk_metropolice_stitch_at_hitcount", "1" );
+ConVar	sk_metropolice_stitch_behind_hitcount( "sk_metropolice_stitch_behind_hitcount", "3" );
+ConVar	sk_metropolice_stitch_along_hitcount( "sk_metropolice_stitch_along_hitcount", "2" );
 
 
-ConVar	sk_metropolice_health( "sk_metropolice_health","0");
-ConVar	sk_metropolice_simple_health( "sk_metropolice_simple_health","26");
-ConVar	sk_metropolice_stitch_distance( "sk_metropolice_stitch_distance","1000");
+ConVar	sk_metropolice_health( "sk_metropolice_health", "0" );
+ConVar	sk_metropolice_simple_health( "sk_metropolice_simple_health", "26" );
+ConVar	sk_metropolice_stitch_distance( "sk_metropolice_stitch_distance", "1000" );
 
 ConVar	metropolice_chase_use_follow( "metropolice_chase_use_follow", "0" );
-ConVar  metropolice_move_and_melee("metropolice_move_and_melee", "1" );
-ConVar  metropolice_charge("metropolice_charge", "1" );
+ConVar  metropolice_move_and_melee( "metropolice_move_and_melee", "1" );
+ConVar  metropolice_charge( "metropolice_charge", "1" );
 
 #ifdef MAPBASE
-ConVar	metropolice_new_component_behavior("metropolice_new_component_behavior", "1");
+	ConVar	metropolice_new_component_behavior( "metropolice_new_component_behavior", "1" );
 #endif
 
 // How many clips of pistol ammo a metropolice carries.
@@ -169,92 +169,92 @@ int	ACT_PUSH_PLAYER;
 int ACT_MELEE_ATTACK_THRUST;
 int ACT_ACTIVATE_BATON;
 int ACT_DEACTIVATE_BATON;
- 
+
 LINK_ENTITY_TO_CLASS( npc_metropolice, CNPC_MetroPolice );
 
 BEGIN_DATADESC( CNPC_MetroPolice )
 
-	DEFINE_EMBEDDED( m_BatonSwingTimer ),	
-	DEFINE_EMBEDDED( m_NextChargeTimer ),
-	DEFINE_FIELD( m_flBatonDebounceTime, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bShouldActivateBaton, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iPistolClips, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_fWeaponDrawn, FIELD_BOOLEAN, "weapondrawn" ),
-	DEFINE_FIELD( m_LastShootSlot, FIELD_INTEGER ),
-	DEFINE_EMBEDDED( m_TimeYieldShootSlot ),
+DEFINE_EMBEDDED( m_BatonSwingTimer ),
+				 DEFINE_EMBEDDED( m_NextChargeTimer ),
+				 DEFINE_FIELD( m_flBatonDebounceTime, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_bShouldActivateBaton, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_iPistolClips, FIELD_INTEGER ),
+				 DEFINE_KEYFIELD( m_fWeaponDrawn, FIELD_BOOLEAN, "weapondrawn" ),
+				 DEFINE_FIELD( m_LastShootSlot, FIELD_INTEGER ),
+				 DEFINE_EMBEDDED( m_TimeYieldShootSlot ),
 #ifndef METROPOLICE_USES_RESPONSE_SYSTEM
 	DEFINE_EMBEDDED( m_Sentences ),
 #endif
-	DEFINE_FIELD( m_bPlayerIsNear, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_bPlayerIsNear, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_vecBurstTargetPos, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecBurstDelta, FIELD_VECTOR ),
-	DEFINE_FIELD( m_nBurstHits, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nMaxBurstHits, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flBurstPredictTime, FIELD_TIME ),
-	DEFINE_FIELD( m_nBurstReloadCount, FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecBurstLineOfDeathDelta, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecBurstLineOfDeathOrigin, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_flBurstSteerDistance, FIELD_FLOAT ),
-	DEFINE_FIELD( m_nBurstMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_nBurstSteerMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_vecBurstPredictedVelocityDir, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecBurstPredictedSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flValidStitchTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextLedgeCheckTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flTaskCompletionTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flLastPhysicsFlinchTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flLastDamageFlinchTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_vecBurstTargetPos, FIELD_POSITION_VECTOR ),
+				 DEFINE_FIELD( m_vecBurstDelta, FIELD_VECTOR ),
+				 DEFINE_FIELD( m_nBurstHits, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_nMaxBurstHits, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_flBurstPredictTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_nBurstReloadCount, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_vecBurstLineOfDeathDelta, FIELD_VECTOR ),
+				 DEFINE_FIELD( m_vecBurstLineOfDeathOrigin, FIELD_POSITION_VECTOR ),
+				 DEFINE_FIELD( m_flBurstSteerDistance, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_nBurstMode, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_nBurstSteerMode, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_vecBurstPredictedVelocityDir, FIELD_VECTOR ),
+				 DEFINE_FIELD( m_vecBurstPredictedSpeed, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flValidStitchTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flNextLedgeCheckTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flTaskCompletionTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flLastPhysicsFlinchTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flLastDamageFlinchTime, FIELD_TIME ),
 
-	DEFINE_FIELD( m_hManhack, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hBlockingProp, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hManhack, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hBlockingProp, FIELD_EHANDLE ),
 
-	DEFINE_FIELD( m_nRecentDamage, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flRecentDamageTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_nRecentDamage, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_flRecentDamageTime, FIELD_TIME ),
 
-	DEFINE_FIELD( m_flNextPainSoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextLostSoundTime, FIELD_TIME ),
-	DEFINE_FIELD( m_nIdleChatterType, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_flNextPainSoundTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_flNextLostSoundTime, FIELD_TIME ),
+				 DEFINE_FIELD( m_nIdleChatterType, FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_bSimpleCops, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flLastHitYaw, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_bSimpleCops, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_flLastHitYaw, FIELD_FLOAT ),
 
-	DEFINE_FIELD( m_bPlayerTooClose,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bKeepFacingPlayer,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flChasePlayerTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_vecPreChaseOrigin,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_flPreChaseYaw,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_nNumWarnings,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_iNumPlayerHits,		FIELD_INTEGER ),
+				 DEFINE_FIELD( m_bPlayerTooClose,	FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_bKeepFacingPlayer,	FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_flChasePlayerTime,	FIELD_TIME ),
+				 DEFINE_FIELD( m_vecPreChaseOrigin,	FIELD_VECTOR ),
+				 DEFINE_FIELD( m_flPreChaseYaw,		FIELD_FLOAT ),
+				 DEFINE_FIELD( m_nNumWarnings,		FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iNumPlayerHits,		FIELD_INTEGER ),
 
-	//								m_ActBusyBehavior (auto saved by AI)
-	//								m_StandoffBehavior (auto saved by AI)
-	//								m_AssaultBehavior (auto saved by AI)
-	//								m_FuncTankBehavior (auto saved by AI)
-	//								m_RappelBehavior (auto saved by AI)
-	//								m_PolicingBehavior (auto saved by AI)
-	//								m_FollowBehavior (auto saved by AI)
+				 //								m_ActBusyBehavior (auto saved by AI)
+				 //								m_StandoffBehavior (auto saved by AI)
+				 //								m_AssaultBehavior (auto saved by AI)
+				 //								m_FuncTankBehavior (auto saved by AI)
+				 //								m_RappelBehavior (auto saved by AI)
+				 //								m_PolicingBehavior (auto saved by AI)
+				 //								m_FollowBehavior (auto saved by AI)
 
-	DEFINE_KEYFIELD( m_iManhacks, FIELD_INTEGER, "manhacks" ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableManhackToss", InputEnableManhackToss ),
+				 DEFINE_KEYFIELD( m_iManhacks, FIELD_INTEGER, "manhacks" ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "EnableManhackToss", InputEnableManhackToss ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "DisableManhackToss", InputDisableManhackToss ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "DeployManhack", InputDeployManhack ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddManhacks", InputAddManhacks ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetManhacks", InputSetManhacks ),
 #endif
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetPoliceGoal", InputSetPoliceGoal ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ActivateBaton", InputActivateBaton ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "SetPoliceGoal", InputSetPoliceGoal ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "ActivateBaton", InputActivateBaton ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "AdministerJustice", InputAdministerJustice ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddWarnings", InputAddWarnings ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetWarnings", InputSetWarnings ),
 #endif
-	
-	DEFINE_USEFUNC( PrecriminalUse ),
 
-	DEFINE_OUTPUT( m_OnStunnedPlayer,	"OnStunnedPlayer" ),
-	DEFINE_OUTPUT( m_OnCupCopped, "OnCupCopped" ),
+				 DEFINE_USEFUNC( PrecriminalUse ),
+
+				 DEFINE_OUTPUT( m_OnStunnedPlayer,	"OnStunnedPlayer" ),
+				 DEFINE_OUTPUT( m_OnCupCopped, "OnCupCopped" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnHitByPhysicsObject, "OnHitByPhysicsObject" ),
 	DEFINE_OUTPUT( m_OutManhack, "OutManhack" ),
@@ -266,16 +266,16 @@ BEGIN_DATADESC( CNPC_MetroPolice )
 	DEFINE_INPUT( m_iGrenadeDropCapabilities, FIELD_INTEGER, "SetGrenadeDropCapabilities" ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 //------------------------------------------------------------------------------
 
-float CNPC_MetroPolice::gm_flTimeLastSpokePeek;
+				 float CNPC_MetroPolice::gm_flTimeLastSpokePeek;
 
 //------------------------------------------------------------------------------
-// Purpose 
+// Purpose
 //------------------------------------------------------------------------------
-CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( float flDist, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float forceScale, bool bDamageAnyNPC )
+CBaseEntity* CNPC_MetroPolice::CheckTraceHullAttack( float flDist, const Vector& mins, const Vector& maxs, int iDamage, int iDmgType, float forceScale, bool bDamageAnyNPC )
 {
 	// If only a length is given assume we want to trace in our facing direction
 	Vector forward;
@@ -283,7 +283,7 @@ CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( float flDist, const Vector 
 	Vector vStart = GetAbsOrigin();
 
 	// The ideal place to start the trace is in the center of the attacker's bounding box.
-	// however, we need to make sure there's enough clearance. Some of the smaller monsters aren't 
+	// however, we need to make sure there's enough clearance. Some of the smaller monsters aren't
 	// as big as the hull we try to trace with. (SJB)
 	float flVerticalOffset = WorldAlignSize().z * 0.5;
 
@@ -295,7 +295,7 @@ CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( float flDist, const Vector 
 	}
 
 	vStart.z += flVerticalOffset;
-	Vector vEnd = vStart + (forward * flDist );
+	Vector vEnd = vStart + ( forward * flDist );
 	return CheckTraceHullAttack( vStart, vEnd, mins, maxs, iDamage, iDmgType, forceScale, bDamageAnyNPC );
 }
 
@@ -307,77 +307,87 @@ class CTraceFilterMetroPolice : public CTraceFilterEntitiesOnly
 public:
 	// It does have a base, but we'll never network anything below here..
 	DECLARE_CLASS_NOBASE( CTraceFilterMetroPolice );
-	
-	CTraceFilterMetroPolice( const IHandleEntity *passentity, int collisionGroup, CTakeDamageInfo *dmgInfo, float flForceScale, bool bDamageAnyNPC )
-		: m_pPassEnt(passentity), m_collisionGroup(collisionGroup), m_dmgInfo(dmgInfo), m_pHit(NULL), m_flForceScale(flForceScale), m_bDamageAnyNPC(bDamageAnyNPC)
+
+	CTraceFilterMetroPolice( const IHandleEntity* passentity, int collisionGroup, CTakeDamageInfo* dmgInfo, float flForceScale, bool bDamageAnyNPC )
+		: m_pPassEnt( passentity ), m_collisionGroup( collisionGroup ), m_dmgInfo( dmgInfo ), m_pHit( NULL ), m_flForceScale( flForceScale ), m_bDamageAnyNPC( bDamageAnyNPC )
 	{
 	}
-	
-	virtual bool ShouldHitEntity( IHandleEntity *pHandleEntity, int contentsMask )
-	{
-		if ( !StandardFilterRules( pHandleEntity, contentsMask ) )
-			return false;
 
-		if ( !PassServerEntityFilter( pHandleEntity, m_pPassEnt ) )
+	virtual bool ShouldHitEntity( IHandleEntity* pHandleEntity, int contentsMask )
+	{
+		if( !StandardFilterRules( pHandleEntity, contentsMask ) )
+		{
 			return false;
+		}
+
+		if( !PassServerEntityFilter( pHandleEntity, m_pPassEnt ) )
+		{
+			return false;
+		}
 
 		// Don't test if the game code tells us we should ignore this collision...
-		CBaseEntity *pEntity = EntityFromEntityHandle( pHandleEntity );
-		
-		if ( pEntity )
-		{
-			if ( !pEntity->ShouldCollide( m_collisionGroup, contentsMask ) )
-				return false;
-			
-			if ( !g_pGameRules->ShouldCollide( m_collisionGroup, pEntity->GetCollisionGroup() ) )
-				return false;
+		CBaseEntity* pEntity = EntityFromEntityHandle( pHandleEntity );
 
-			if ( pEntity->m_takedamage == DAMAGE_NO )
+		if( pEntity )
+		{
+			if( !pEntity->ShouldCollide( m_collisionGroup, contentsMask ) )
+			{
 				return false;
+			}
+
+			if( !g_pGameRules->ShouldCollide( m_collisionGroup, pEntity->GetCollisionGroup() ) )
+			{
+				return false;
+			}
+
+			if( pEntity->m_takedamage == DAMAGE_NO )
+			{
+				return false;
+			}
 
 			// Translate the vehicle into its driver for damage
-			if ( pEntity->GetServerVehicle() != NULL )
+			if( pEntity->GetServerVehicle() != NULL )
 			{
-				CBaseEntity *pDriver = pEntity->GetServerVehicle()->GetPassenger();
+				CBaseEntity* pDriver = pEntity->GetServerVehicle()->GetPassenger();
 
-				if ( pDriver != NULL )
+				if( pDriver != NULL )
 				{
 					pEntity = pDriver;
 				}
 			}
-	
+
 			Vector	attackDir = pEntity->WorldSpaceCenter() - m_dmgInfo->GetAttacker()->WorldSpaceCenter();
 			VectorNormalize( attackDir );
 
-			CTakeDamageInfo info = (*m_dmgInfo);				
+			CTakeDamageInfo info = ( *m_dmgInfo );
 			CalculateMeleeDamageForce( &info, attackDir, info.GetAttacker()->WorldSpaceCenter(), m_flForceScale );
 
-			if( !(pEntity->GetFlags() & FL_ONGROUND) )
+			if( !( pEntity->GetFlags() & FL_ONGROUND ) )
 			{
 				// Don't hit airborne entities so hard. They fly farther since
 				// there's no friction with the ground.
 				info.ScaleDamageForce( 0.001 );
 			}
 
-			CBaseCombatCharacter *pBCC = info.GetAttacker()->MyCombatCharacterPointer();
-			CBaseCombatCharacter *pVictimBCC = pEntity->MyCombatCharacterPointer();
+			CBaseCombatCharacter* pBCC = info.GetAttacker()->MyCombatCharacterPointer();
+			CBaseCombatCharacter* pVictimBCC = pEntity->MyCombatCharacterPointer();
 
 			// Only do these comparisons between NPCs
-			if ( pBCC && pVictimBCC )
+			if( pBCC && pVictimBCC )
 			{
 				// Can only damage other NPCs that we hate
 #ifdef MAPBASE
-				if ( m_bDamageAnyNPC || pBCC->IRelationType( pEntity ) <= D_FR || pEntity->IsPlayer() )
+				if( m_bDamageAnyNPC || pBCC->IRelationType( pEntity ) <= D_FR || pEntity->IsPlayer() )
 #else
-				if ( m_bDamageAnyNPC || pBCC->IRelationType( pEntity ) == D_HT || pEntity->IsPlayer() )
+				if( m_bDamageAnyNPC || pBCC->IRelationType( pEntity ) == D_HT || pEntity->IsPlayer() )
 #endif
 				{
-					if ( info.GetDamage() )
+					if( info.GetDamage() )
 					{
 						// If gordon's a criminal, do damage now
-						if ( !pEntity->IsPlayer() || GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_OFF )
+						if( !pEntity->IsPlayer() || GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_OFF )
 						{
-							if ( pEntity->IsPlayer() && ((CBasePlayer *)pEntity)->IsSuitEquipped() )
+							if( pEntity->IsPlayer() && ( ( CBasePlayer* )pEntity )->IsSuitEquipped() )
 							{
 								info.ScaleDamage( .25 );
 								info.ScaleDamageForce( .25 );
@@ -386,7 +396,7 @@ public:
 							pEntity->TakeDamage( info );
 						}
 					}
-					
+
 					m_pHit = pEntity;
 					return true;
 				}
@@ -397,7 +407,7 @@ public:
 				Pickup_ForcePlayerToDropThisObject( pEntity );
 
 				// Otherwise just damage passive objects in our way
-				if ( info.GetDamage() )
+				if( info.GetDamage() )
 				{
 					pEntity->TakeDamage( info );
 				}
@@ -408,16 +418,16 @@ public:
 	}
 
 public:
-	const IHandleEntity *m_pPassEnt;
+	const IHandleEntity* m_pPassEnt;
 	int					m_collisionGroup;
-	CTakeDamageInfo		*m_dmgInfo;
-	CBaseEntity			*m_pHit;
+	CTakeDamageInfo*		m_dmgInfo;
+	CBaseEntity*			m_pHit;
 	float				m_flForceScale;
 	bool				m_bDamageAnyNPC;
 };
 
 //------------------------------------------------------------------------------
-// Purpose :	start and end trace position, amount 
+// Purpose :	start and end trace position, amount
 //				of damage to do, and damage type. Returns a pointer to
 //				the damaged entity in case the NPC wishes to do
 //				other stuff to the victim (punchangle, etc)
@@ -426,11 +436,11 @@ public:
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( const Vector &vStart, const Vector &vEnd, const Vector &mins, const Vector &maxs, int iDamage, int iDmgType, float flForceScale, bool bDamageAnyNPC )
+CBaseEntity* CNPC_MetroPolice::CheckTraceHullAttack( const Vector& vStart, const Vector& vEnd, const Vector& mins, const Vector& maxs, int iDamage, int iDmgType, float flForceScale, bool bDamageAnyNPC )
 {
 
 	CTakeDamageInfo	dmgInfo( this, this, iDamage, DMG_SLASH );
-	
+
 	CTraceFilterMetroPolice traceFilter( this, COLLISION_GROUP_NONE, &dmgInfo, flForceScale, bDamageAnyNPC );
 
 	Ray_t ray;
@@ -439,9 +449,9 @@ CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( const Vector &vStart, const
 	trace_t tr;
 	enginetrace->TraceRay( ray, MASK_SHOT, &traceFilter, &tr );
 
-	CBaseEntity *pEntity = traceFilter.m_pHit;
-	
-	if ( pEntity == NULL )
+	CBaseEntity* pEntity = traceFilter.m_pHit;
+
+	if( pEntity == NULL )
 	{
 		// See if perhaps I'm trying to claw/bash someone who is standing on my head.
 		Vector vecTopCenter;
@@ -454,7 +464,7 @@ CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( const Vector &vStart, const
 		vecTopCenter.z = vecMaxs.z + 1.0f;
 		vecEnd = vecTopCenter;
 		vecEnd.z += 2.0f;
-		
+
 		ray.Init( vecTopCenter, vEnd, mins, maxs );
 		enginetrace->TraceRay( ray, MASK_SHOT_HULL, &traceFilter, &tr );
 
@@ -469,41 +479,43 @@ CBaseEntity *CNPC_MetroPolice::CheckTraceHullAttack( const Vector &vStart, const
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::NotifyDeadFriend( CBaseEntity* pFriend )
 {
-	BaseClass::NotifyDeadFriend(pFriend);
+	BaseClass::NotifyDeadFriend( pFriend );
 
 #ifdef MAPBASE
 	// m_hManhack is set to NULL after it's finished deploying, which means this has no chance of playing unless the manhack
 	// was still being deployed. This is thought to be an unintended oversight.
 	// Mapbase stores the metrocop thrower as the manhack's owner entity, so this code is now able to check that instead.
-	if ( pFriend->GetOwnerEntity() == this )
+	if( pFriend->GetOwnerEntity() == this )
 #else
-	if ( pFriend == m_hManhack )
+	if( pFriend == m_hManhack )
 #endif
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-		SpeakIfAllowed(TLK_COP_MANHACKKILLED, "my_manhack:1", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+		SpeakIfAllowed( TLK_COP_MANHACKKILLED, "my_manhack:1", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #else
 		m_Sentences.Speak( "METROPOLICE_MANHACK_KILLED", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #endif
-		DevMsg("My manhack died!\n");
+		DevMsg( "My manhack died!\n" );
 		m_hManhack = NULL;
 		return;
 	}
 
 	// No notifications for squadmates' dead manhacks
-	if ( FClassnameIs( pFriend, "npc_manhack" ) )
+	if( FClassnameIs( pFriend, "npc_manhack" ) )
+	{
 		return;
+	}
 
 	// Reset idle chatter, we may never get a response back
-	if ( m_nIdleChatterType == METROPOLICE_CHATTER_WAIT_FOR_RESPONSE )
+	if( m_nIdleChatterType == METROPOLICE_CHATTER_WAIT_FOR_RESPONSE )
 	{
 		m_nIdleChatterType = METROPOLICE_CHATTER_ASK_QUESTION;
 	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	SpeakIfAllowed(TLK_COP_MANDOWN, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL);
+	SpeakIfAllowed( TLK_COP_MANDOWN, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #else
-	if ( GetSquad()->NumMembers() < 2 )
+	if( GetSquad()->NumMembers() < 2 )
 	{
 		m_Sentences.Speak( "METROPOLICE_LAST_OF_SQUAD", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 		return;
@@ -521,22 +533,22 @@ CNPC_MetroPolice::CNPC_MetroPolice()
 #ifdef MAPBASE
 	m_iGrenadeCapabilities = GRENCAP_GRENADE;
 
-	if (ai_grenade_always_drop.GetBool())
+	if( ai_grenade_always_drop.GetBool() )
 	{
-		m_iGrenadeDropCapabilities = (eGrenadeDropCapabilities)(GRENDROPCAP_GRENADE | GRENDROPCAP_ALTFIRE | GRENDROPCAP_INTERRUPTED);
+		m_iGrenadeDropCapabilities = ( eGrenadeDropCapabilities )( GRENDROPCAP_GRENADE | GRENDROPCAP_ALTFIRE | GRENDROPCAP_INTERRUPTED );
 	}
 #endif
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnScheduleChange()
 {
 	BaseClass::OnScheduleChange();
 
-	if ( GetEnemy() && HasCondition( COND_ENEMY_DEAD ) )
+	if( GetEnemy() && HasCondition( COND_ENEMY_DEAD ) )
 	{
 		AnnounceEnemyKill( GetEnemy() );
 	}
@@ -544,7 +556,7 @@ void CNPC_MetroPolice::OnScheduleChange()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::PrescheduleThink( void )
 {
@@ -557,25 +569,25 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 
 	// Look at near players, always
 	m_bPlayerIsNear = false;
-	if ( PlayerIsCriminal() == false )
+	if( PlayerIsCriminal() == false )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
-		
-		if ( pPlayer && ( pPlayer->WorldSpaceCenter() - WorldSpaceCenter() ).LengthSqr() < (128*128) )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( 1 );
+
+		if( pPlayer && ( pPlayer->WorldSpaceCenter() - WorldSpaceCenter() ).LengthSqr() < ( 128 * 128 ) )
 		{
 			m_bPlayerIsNear = true;
 			AddLookTarget( pPlayer, 0.75f, 5.0f );
-			
-			if ( ( m_PolicingBehavior.IsEnabled() == false ) && ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS ) )
+
+			if( ( m_PolicingBehavior.IsEnabled() == false ) && ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS ) )
 			{
 				m_flBatonDebounceTime = gpGlobals->curtime + random->RandomFloat( 2.5f, 4.0f );
 				SetTarget( pPlayer );
 				SetBatonState( true );
 			}
 		}
-		else 
+		else
 		{
-			if ( m_PolicingBehavior.IsEnabled() == false && gpGlobals->curtime > m_flBatonDebounceTime )
+			if( m_PolicingBehavior.IsEnabled() == false && gpGlobals->curtime > m_flBatonDebounceTime )
 			{
 				SetBatonState( false );
 			}
@@ -593,7 +605,7 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 		ClearCondition( COND_METROPOLICE_ON_FIRE );
 	}
 
-	if (gpGlobals->curtime > m_flRecentDamageTime + RECENT_DAMAGE_INTERVAL)
+	if( gpGlobals->curtime > m_flRecentDamageTime + RECENT_DAMAGE_INTERVAL )
 	{
 		m_nRecentDamage = 0;
 		m_flRecentDamageTime = 0;
@@ -601,22 +613,24 @@ void CNPC_MetroPolice::PrescheduleThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &move - 
-//			flInterval - 
+// Purpose:
+// Input  : &move -
+//			flInterval -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval )
+bool CNPC_MetroPolice::OverrideMoveFacing( const AILocalMoveGoal_t& move, float flInterval )
 {
 	// Don't do this if we're scripted
-	if ( IsInAScript() )
+	if( IsInAScript() )
+	{
 		return BaseClass::OverrideMoveFacing( move, flInterval );
-  	
+	}
+
 	// ROBIN: Disabled at request of mapmakers for now
 	/*
-  	// If we're moving during a police sequence, always face our target
+	// If we're moving during a police sequence, always face our target
 	if ( m_PolicingBehavior.IsEnabled() )
-  	{	
+	{
 		CBaseEntity *pTarget = m_PolicingBehavior.GetGoalTarget();
 
 		if ( pTarget )
@@ -630,23 +644,23 @@ bool CNPC_MetroPolice::OverrideMoveFacing( const AILocalMoveGoal_t &move, float 
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::Precache( void )
 {
 #ifdef MAPBASE
 	// It doesn't matter if we can't find models/police.mdl in the string pool because then we know this NPC doesn't have that model.
-	if ( GetModelName() == NULL_STRING || GetModelName() == FindPooledString("models/police.mdl") )
+	if( GetModelName() == NULL_STRING || GetModelName() == FindPooledString( "models/police.mdl" ) )
 	{
 #endif
-	if ( HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
-	{
-		SetModelName( AllocPooledString("models/police_cheaple.mdl" ) );
-	}
-	else
-	{
-		SetModelName( AllocPooledString("models/police.mdl") );
-	}
+		if( HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
+		{
+			SetModelName( AllocPooledString( "models/police_cheaple.mdl" ) );
+		}
+		else
+		{
+			SetModelName( AllocPooledString( "models/police.mdl" ) );
+		}
 #ifdef MAPBASE
 	}
 #endif
@@ -669,8 +683,10 @@ void CNPC_MetroPolice::Precache( void )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::CreateComponents()
 {
-	if ( !BaseClass::CreateComponents() )
+	if( !BaseClass::CreateComponents() )
+	{
 		return false;
+	}
 
 #ifndef METROPOLICE_USES_RESPONSE_SYSTEM
 	m_Sentences.Init( this, "NPC_Metropolice.SentenceParameters" );
@@ -680,7 +696,7 @@ bool CNPC_MetroPolice::CreateComponents()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -695,21 +711,21 @@ void CNPC_MetroPolice::Spawn( void )
 
 	SetModel( STRING( GetModelName() ) );
 
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 	SetMoveType( MOVETYPE_STEP );
 	SetBloodColor( BLOOD_COLOR_RED );
-	m_nIdleChatterType = METROPOLICE_CHATTER_ASK_QUESTION; 
+	m_nIdleChatterType = METROPOLICE_CHATTER_ASK_QUESTION;
 	m_bSimpleCops = HasSpawnFlags( SF_METROPOLICE_SIMPLE_VERSION );
-	if ( HasSpawnFlags( SF_METROPOLICE_NOCHATTER ) )
+	if( HasSpawnFlags( SF_METROPOLICE_NOCHATTER ) )
 	{
 		AddSpawnFlags( SF_NPC_GAG );
 	}
 
-	if (!m_bSimpleCops)
+	if( !m_bSimpleCops )
 	{
 		m_iHealth = sk_metropolice_health.GetFloat();
 	}
@@ -720,7 +736,7 @@ void CNPC_MetroPolice::Spawn( void )
 
 	m_flFieldOfView		= -0.2;// indicates the width of this NPC's forward view cone ( as a dotproduct result )
 	m_NPCState			= NPC_STATE_NONE;
-	if ( !HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
+	if( !HasSpawnFlags( SF_NPC_START_EFFICIENT ) )
 	{
 		CapabilitiesAdd( bits_CAP_TURN_HEAD | bits_CAP_ANIMATEDFACE );
 		CapabilitiesAdd( bits_CAP_AIM_GUN | bits_CAP_MOVE_SHOOT );
@@ -732,14 +748,14 @@ void CNPC_MetroPolice::Spawn( void )
 	CapabilitiesAdd( bits_CAP_USE_SHOT_REGULATOR );
 
 	m_nBurstHits = 0;
-	m_HackedGunPos = Vector ( 0, 0, 55 );
+	m_HackedGunPos = Vector( 0, 0, 55 );
 
 	m_iPistolClips = METROPOLICE_NUM_CLIPS;
 
 	NPCInit();
 
 	// NOTE: This must occur *after* init, since init sets default dist look
-	if ( HasSpawnFlags( SF_METROPOLICE_MID_RANGE_ATTACK ) )
+	if( HasSpawnFlags( SF_METROPOLICE_MID_RANGE_ATTACK ) )
 	{
 		m_flDistTooFar = METROPOLICE_MID_RANGE_ATTACK_RANGE;
 		SetDistLook( METROPOLICE_MID_RANGE_ATTACK_RANGE );
@@ -747,22 +763,22 @@ void CNPC_MetroPolice::Spawn( void )
 
 	m_hManhack = NULL;
 
-	if ( GetActiveWeapon() )
+	if( GetActiveWeapon() )
 	{
-		CBaseCombatWeapon *pWeapon;
+		CBaseCombatWeapon* pWeapon;
 
 		pWeapon = GetActiveWeapon();
 
 #ifdef MAPBASE
-		if (!EntIsClass(pWeapon, gm_isz_class_Pistol) && !EntIsClass(pWeapon, gm_isz_class_357))
+		if( !EntIsClass( pWeapon, gm_isz_class_Pistol ) && !EntIsClass( pWeapon, gm_isz_class_357 ) )
 #else
 		if( !FClassnameIs( pWeapon, "weapon_pistol" ) )
 #endif
 		{
 			m_fWeaponDrawn = true;
 		}
-		
-		if( !m_fWeaponDrawn ) 
+
+		if( !m_fWeaponDrawn )
 		{
 			GetActiveWeapon()->AddEffects( EF_NODRAW );
 		}
@@ -783,9 +799,9 @@ void CNPC_MetroPolice::Spawn( void )
 	if( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
 	{
 #ifdef MAPBASE
-		if ( !Weapon_OwnsThisType( STRING(gm_isz_class_SMG1) ) )
+		if( !Weapon_OwnsThisType( STRING( gm_isz_class_SMG1 ) ) )
 #else
-		if ( !Weapon_OwnsThisType( "weapon_smg1" ) )
+		if( !Weapon_OwnsThisType( "weapon_smg1" ) )
 #endif
 		{
 			Warning( "Warning! Metrocop is trying to use the stitch behavior but he has no smg1!\n" );
@@ -803,7 +819,7 @@ void CNPC_MetroPolice::Spawn( void )
 	SetUse( &CNPC_MetroPolice::PrecriminalUse );
 
 	// Start us with a visible manhack if we have one
-	if ( m_iManhacks )
+	if( m_iManhacks )
 	{
 		SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, true );
 	}
@@ -813,11 +829,11 @@ void CNPC_MetroPolice::Spawn( void )
 //-----------------------------------------------------------------------------
 // Update weapon ranges
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::Weapon_Equip( CBaseCombatWeapon *pWeapon )
+void CNPC_MetroPolice::Weapon_Equip( CBaseCombatWeapon* pWeapon )
 {
 	BaseClass::Weapon_Equip( pWeapon );
 
-	if ( HasSpawnFlags(SF_METROPOLICE_MID_RANGE_ATTACK) && GetActiveWeapon() )
+	if( HasSpawnFlags( SF_METROPOLICE_MID_RANGE_ATTACK ) && GetActiveWeapon() )
 	{
 		GetActiveWeapon()->m_fMaxRange1 = METROPOLICE_MID_RANGE_ATTACK_RANGE;
 		GetActiveWeapon()->m_fMaxRange2 = METROPOLICE_MID_RANGE_ATTACK_RANGE;
@@ -830,40 +846,40 @@ void CNPC_MetroPolice::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SpeakFuncTankSentence( int nSentenceType )
 {
-	switch ( nSentenceType )
+	switch( nSentenceType )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	case FUNCTANK_SENTENCE_MOVE_TO_MOUNT:
-		SpeakIfAllowed( TLK_COP_FT_APPROACH, SENTENCE_PRIORITY_MEDIUM );
-		break;
+		case FUNCTANK_SENTENCE_MOVE_TO_MOUNT:
+			SpeakIfAllowed( TLK_COP_FT_APPROACH, SENTENCE_PRIORITY_MEDIUM );
+			break;
 
-	case FUNCTANK_SENTENCE_JUST_MOUNTED:
-		SpeakIfAllowed( TLK_COP_FT_MOUNT, SENTENCE_PRIORITY_HIGH );
-		break;
+		case FUNCTANK_SENTENCE_JUST_MOUNTED:
+			SpeakIfAllowed( TLK_COP_FT_MOUNT, SENTENCE_PRIORITY_HIGH );
+			break;
 
-	case FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES:
-		SpeakIfAllowed( TLK_COP_FT_SCAN, SENTENCE_PRIORITY_NORMAL );
-		break;
+		case FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES:
+			SpeakIfAllowed( TLK_COP_FT_SCAN, SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case FUNCTANK_SENTENCE_DISMOUNTING:
-		SpeakIfAllowed( TLK_COP_FT_DISMOUNT, SENTENCE_PRIORITY_HIGH );
-		break;
+		case FUNCTANK_SENTENCE_DISMOUNTING:
+			SpeakIfAllowed( TLK_COP_FT_DISMOUNT, SENTENCE_PRIORITY_HIGH );
+			break;
 #else
-	case FUNCTANK_SENTENCE_MOVE_TO_MOUNT:
-		m_Sentences.Speak( "METROPOLICE_FT_APPROACH", SENTENCE_PRIORITY_MEDIUM );
-		break;
+		case FUNCTANK_SENTENCE_MOVE_TO_MOUNT:
+			m_Sentences.Speak( "METROPOLICE_FT_APPROACH", SENTENCE_PRIORITY_MEDIUM );
+			break;
 
-	case FUNCTANK_SENTENCE_JUST_MOUNTED:
-		m_Sentences.Speak( "METROPOLICE_FT_MOUNT", SENTENCE_PRIORITY_HIGH );
-		break;
+		case FUNCTANK_SENTENCE_JUST_MOUNTED:
+			m_Sentences.Speak( "METROPOLICE_FT_MOUNT", SENTENCE_PRIORITY_HIGH );
+			break;
 
-	case FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES:
-		m_Sentences.Speak( "METROPOLICE_FT_SCAN", SENTENCE_PRIORITY_NORMAL );
-		break;
+		case FUNCTANK_SENTENCE_SCAN_FOR_ENEMIES:
+			m_Sentences.Speak( "METROPOLICE_FT_SCAN", SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case FUNCTANK_SENTENCE_DISMOUNTING:
-		m_Sentences.Speak( "METROPOLICE_FT_DISMOUNT", SENTENCE_PRIORITY_HIGH );
-		break;
+		case FUNCTANK_SENTENCE_DISMOUNTING:
+			m_Sentences.Speak( "METROPOLICE_FT_DISMOUNT", SENTENCE_PRIORITY_HIGH );
+			break;
 #endif
 	}
 }
@@ -874,56 +890,56 @@ void CNPC_MetroPolice::SpeakFuncTankSentence( int nSentenceType )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SpeakStandoffSentence( int nSentenceType )
 {
-	switch ( nSentenceType )
+	switch( nSentenceType )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	case STANDOFF_SENTENCE_BEGIN_STANDOFF:
-		SpeakIfAllowed( TLK_COP_SO_BEGIN, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
-		break;
+		case STANDOFF_SENTENCE_BEGIN_STANDOFF:
+			SpeakIfAllowed( TLK_COP_SO_BEGIN, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
+			break;
 
-	case STANDOFF_SENTENCE_END_STANDOFF:
-		SpeakIfAllowed( TLK_COP_SO_END, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
-		break;
+		case STANDOFF_SENTENCE_END_STANDOFF:
+			SpeakIfAllowed( TLK_COP_SO_END, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
+			break;
 
-	case STANDOFF_SENTENCE_OUT_OF_AMMO:
-		AnnounceOutOfAmmo( );
-		break;
+		case STANDOFF_SENTENCE_OUT_OF_AMMO:
+			AnnounceOutOfAmmo( );
+			break;
 
-	case STANDOFF_SENTENCE_FORCED_TAKE_COVER:
-		SpeakIfAllowed( TLK_COP_SO_FORCE_COVER );
-		break;
+		case STANDOFF_SENTENCE_FORCED_TAKE_COVER:
+			SpeakIfAllowed( TLK_COP_SO_FORCE_COVER );
+			break;
 
-	case STANDOFF_SENTENCE_STAND_CHECK_TARGET:
-		if ( gm_flTimeLastSpokePeek != 0 && gpGlobals->curtime - gm_flTimeLastSpokePeek > 20 )
-		{
-			SpeakIfAllowed( TLK_COP_SO_PEEK );
-			gm_flTimeLastSpokePeek = gpGlobals->curtime;
-		}
-		break;
+		case STANDOFF_SENTENCE_STAND_CHECK_TARGET:
+			if( gm_flTimeLastSpokePeek != 0 && gpGlobals->curtime - gm_flTimeLastSpokePeek > 20 )
+			{
+				SpeakIfAllowed( TLK_COP_SO_PEEK );
+				gm_flTimeLastSpokePeek = gpGlobals->curtime;
+			}
+			break;
 #else
-	case STANDOFF_SENTENCE_BEGIN_STANDOFF:
-		m_Sentences.Speak( "METROPOLICE_SO_BEGIN", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
-		break;
+		case STANDOFF_SENTENCE_BEGIN_STANDOFF:
+			m_Sentences.Speak( "METROPOLICE_SO_BEGIN", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
+			break;
 
-	case STANDOFF_SENTENCE_END_STANDOFF:
-		m_Sentences.Speak( "METROPOLICE_SO_END", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
-		break;
+		case STANDOFF_SENTENCE_END_STANDOFF:
+			m_Sentences.Speak( "METROPOLICE_SO_END", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_SQUAD_LEADER );
+			break;
 
-	case STANDOFF_SENTENCE_OUT_OF_AMMO:
-		AnnounceOutOfAmmo( );
-		break;
+		case STANDOFF_SENTENCE_OUT_OF_AMMO:
+			AnnounceOutOfAmmo( );
+			break;
 
-	case STANDOFF_SENTENCE_FORCED_TAKE_COVER:
-		m_Sentences.Speak( "METROPOLICE_SO_FORCE_COVER" );
-		break;
+		case STANDOFF_SENTENCE_FORCED_TAKE_COVER:
+			m_Sentences.Speak( "METROPOLICE_SO_FORCE_COVER" );
+			break;
 
-	case STANDOFF_SENTENCE_STAND_CHECK_TARGET:
-		if ( gm_flTimeLastSpokePeek != 0 && gpGlobals->curtime - gm_flTimeLastSpokePeek > 20 )
-		{
-			m_Sentences.Speak( "METROPOLICE_SO_PEEK" );
-			gm_flTimeLastSpokePeek = gpGlobals->curtime;
-		}
-		break;
+		case STANDOFF_SENTENCE_STAND_CHECK_TARGET:
+			if( gm_flTimeLastSpokePeek != 0 && gpGlobals->curtime - gm_flTimeLastSpokePeek > 20 )
+			{
+				m_Sentences.Speak( "METROPOLICE_SO_PEEK" );
+				gm_flTimeLastSpokePeek = gpGlobals->curtime;
+			}
+			break;
 #endif
 	}
 }
@@ -933,68 +949,68 @@ void CNPC_MetroPolice::SpeakStandoffSentence( int nSentenceType )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SpeakAssaultSentence( int nSentenceType )
 {
-	switch ( nSentenceType )
+	switch( nSentenceType )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	case ASSAULT_SENTENCE_HIT_RALLY_POINT:
-		SpeakIfAllowed( TLK_COP_AS_HIT_RALLY, SENTENCE_PRIORITY_NORMAL );
-		break;
+		case ASSAULT_SENTENCE_HIT_RALLY_POINT:
+			SpeakIfAllowed( TLK_COP_AS_HIT_RALLY, SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case ASSAULT_SENTENCE_HIT_ASSAULT_POINT:
-		SpeakIfAllowed( TLK_COP_AS_HIT_ASSAULT, SENTENCE_PRIORITY_NORMAL );
-		break;
+		case ASSAULT_SENTENCE_HIT_ASSAULT_POINT:
+			SpeakIfAllowed( TLK_COP_AS_HIT_ASSAULT, SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_RALLY:
-		if ( SpeakIfAllowed( TLK_COP_AS_ADV_RALLY, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) )
-		{
-			GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
-		}
-		break;
+		case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_RALLY:
+			if( SpeakIfAllowed( TLK_COP_AS_ADV_RALLY, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) )
+			{
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
+			}
+			break;
 
-	case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_ASSAULT:
-		if ( SpeakIfAllowed( TLK_COP_AS_ADV_ASSAULT, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) )
-		{
-			GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
-		}
-		break;
+		case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_ASSAULT:
+			if( SpeakIfAllowed( TLK_COP_AS_ADV_ASSAULT, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) )
+			{
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
+			}
+			break;
 
-	case ASSAULT_SENTENCE_COVER_NO_AMMO:
-		AnnounceOutOfAmmo( );
-		break;
+		case ASSAULT_SENTENCE_COVER_NO_AMMO:
+			AnnounceOutOfAmmo( );
+			break;
 
-	case ASSAULT_SENTENCE_UNDER_ATTACK:
-		SpeakIfAllowed( TLK_COP_GO_ALERT );
-		break;
+		case ASSAULT_SENTENCE_UNDER_ATTACK:
+			SpeakIfAllowed( TLK_COP_GO_ALERT );
+			break;
 #else
-	case ASSAULT_SENTENCE_HIT_RALLY_POINT:
-		m_Sentences.SpeakQueued( "METROPOLICE_AS_HIT_RALLY", SENTENCE_PRIORITY_NORMAL );
-		break;
+		case ASSAULT_SENTENCE_HIT_RALLY_POINT:
+			m_Sentences.SpeakQueued( "METROPOLICE_AS_HIT_RALLY", SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case ASSAULT_SENTENCE_HIT_ASSAULT_POINT:
-		m_Sentences.SpeakQueued( "METROPOLICE_AS_HIT_ASSAULT", SENTENCE_PRIORITY_NORMAL );
-		break;
+		case ASSAULT_SENTENCE_HIT_ASSAULT_POINT:
+			m_Sentences.SpeakQueued( "METROPOLICE_AS_HIT_ASSAULT", SENTENCE_PRIORITY_NORMAL );
+			break;
 
-	case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_RALLY:
-		if ( m_Sentences.Speak( "METROPOLICE_AS_ADV_RALLY", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) >= 0 )
-		{
-			GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
-		}
-		break;
+		case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_RALLY:
+			if( m_Sentences.Speak( "METROPOLICE_AS_ADV_RALLY", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) >= 0 )
+			{
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
+			}
+			break;
 
-	case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_ASSAULT:
-		if ( m_Sentences.Speak( "METROPOLICE_AS_ADV_ASSAULT", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) >= 0 )
-		{
-			GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
-		}
-		break;
+		case ASSAULT_SENTENCE_SQUAD_ADVANCE_TO_ASSAULT:
+			if( m_Sentences.Speak( "METROPOLICE_AS_ADV_ASSAULT", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_SQUAD_LEADER ) >= 0 )
+			{
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopClearSentenceQueues, NULL );
+			}
+			break;
 
-	case ASSAULT_SENTENCE_COVER_NO_AMMO:
-		AnnounceOutOfAmmo( );
-		break;
+		case ASSAULT_SENTENCE_COVER_NO_AMMO:
+			AnnounceOutOfAmmo( );
+			break;
 
-	case ASSAULT_SENTENCE_UNDER_ATTACK:
-		m_Sentences.Speak( "METROPOLICE_GO_ALERT" );
-		break;
+		case ASSAULT_SENTENCE_UNDER_ATTACK:
+			m_Sentences.Speak( "METROPOLICE_GO_ALERT" );
+			break;
 #endif
 	}
 }
@@ -1005,12 +1021,14 @@ void CNPC_MetroPolice::SpeakAssaultSentence( int nSentenceType )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 {
-	if ( !PlayerIsCriminal() )
-		return;
-
-	if ( nSentenceType >= SENTENCE_BASE_BEHAVIOR_INDEX )
+	if( !PlayerIsCriminal() )
 	{
-		if ( GetRunningBehavior() == &m_FuncTankBehavior )
+		return;
+	}
+
+	if( nSentenceType >= SENTENCE_BASE_BEHAVIOR_INDEX )
+	{
+		if( GetRunningBehavior() == &m_FuncTankBehavior )
 		{
 			SpeakFuncTankSentence( nSentenceType );
 			return;
@@ -1018,74 +1036,76 @@ void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 
 #ifdef MAPBASE
 		// Fixed issues with standoff sentences not playing when they should
-		if ( m_StandoffBehavior.IsActive() )
+		if( m_StandoffBehavior.IsActive() )
 #else
-		if ( GetRunningBehavior() == &m_StandoffBehavior )
+		if( GetRunningBehavior() == &m_StandoffBehavior )
 #endif
 		{
 			SpeakStandoffSentence( nSentenceType );
 			return;
 		}
 
-		if ( GetRunningBehavior() == &m_AssaultBehavior )
+		if( GetRunningBehavior() == &m_AssaultBehavior )
 		{
 			SpeakAssaultSentence( nSentenceType );
 			return;
 		}
 	}
 
-	switch ( nSentenceType )
+	switch( nSentenceType )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	case METROPOLICE_SENTENCE_FREEZE:
-		SpeakIfAllowed( TLK_COP_FREEZE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_FREEZE:
+			SpeakIfAllowed( TLK_COP_FREEZE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_HES_OVER_HERE:
-		SpeakIfAllowed( TLK_COP_OVER_HERE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_HES_OVER_HERE:
+			SpeakIfAllowed( TLK_COP_OVER_HERE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_HES_RUNNING:
-		SpeakIfAllowed( TLK_COP_HES_RUNNING, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_HES_RUNNING:
+			SpeakIfAllowed( TLK_COP_HES_RUNNING, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_TAKE_HIM_DOWN:
-		SpeakIfAllowed( TLK_COP_TAKE_HIM_DOWN, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_TAKE_HIM_DOWN:
+			SpeakIfAllowed( TLK_COP_TAKE_HIM_DOWN, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_ARREST_IN_POSITION:
-		SpeakIfAllowed( TLK_COP_ARREST_IN_POS, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_ARREST_IN_POSITION:
+			SpeakIfAllowed( TLK_COP_ARREST_IN_POS, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_DEPLOY_MANHACK:
-		SpeakIfAllowed( TLK_COP_DEPLOY_MANHACK );
-		break;
+		case METROPOLICE_SENTENCE_DEPLOY_MANHACK:
+			SpeakIfAllowed( TLK_COP_DEPLOY_MANHACK );
+			break;
 
-	case METROPOLICE_SENTENCE_MOVE_INTO_POSITION:
+		case METROPOLICE_SENTENCE_MOVE_INTO_POSITION:
 		{
-			CBaseEntity *pEntity = GetEnemy();
-			
+			CBaseEntity* pEntity = GetEnemy();
+
 			// NOTE: This is a good time to check to see if the player is hurt.
 			// Have the cops notice this and call out
-			if ( pEntity && !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+			if( pEntity && !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
 			{
-				if ( pEntity->IsPlayer() && (pEntity->GetHealth() <= 20) )
+				if( pEntity->IsPlayer() && ( pEntity->GetHealth() <= 20 ) )
 				{
-					if ( !HasMemory(bits_MEMORY_PLAYER_HURT) ) 
+					if( !HasMemory( bits_MEMORY_PLAYER_HURT ) )
 					{
-						if ( SpeakIfAllowed( TLK_COP_PLAYERHIT, SENTENCE_PRIORITY_HIGH ) )
+						if( SpeakIfAllowed( TLK_COP_PLAYERHIT, SENTENCE_PRIORITY_HIGH ) )
 						{
 #ifdef MAPBASE
-							if (GetSquad())
-								GetSquad()->SquadRemember(bits_MEMORY_PLAYER_HURT);
+							if( GetSquad() )
+							{
+								GetSquad()->SquadRemember( bits_MEMORY_PLAYER_HURT );
+							}
 #else
-							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
+							m_pSquad->SquadRemember( bits_MEMORY_PLAYER_HURT );
 #endif
 						}
 					}
 				}
 
-				if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
+				if( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 				{
 					SpeakIfAllowed( TLK_COP_FLANK );
 				}
@@ -1093,57 +1113,57 @@ void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 		}
 		break;
 
-	case METROPOLICE_SENTENCE_HEARD_SOMETHING:
-		if ( ( GetState() == NPC_STATE_ALERT ) || ( GetState() == NPC_STATE_IDLE ) )
-		{
-			SpeakIfAllowed( TLK_COP_HEARD_SOMETHING, SENTENCE_PRIORITY_MEDIUM );
-		}
-		break;
+		case METROPOLICE_SENTENCE_HEARD_SOMETHING:
+			if( ( GetState() == NPC_STATE_ALERT ) || ( GetState() == NPC_STATE_IDLE ) )
+			{
+				SpeakIfAllowed( TLK_COP_HEARD_SOMETHING, SENTENCE_PRIORITY_MEDIUM );
+			}
+			break;
 #else
-	case METROPOLICE_SENTENCE_FREEZE:
-		m_Sentences.Speak( "METROPOLICE_FREEZE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_FREEZE:
+			m_Sentences.Speak( "METROPOLICE_FREEZE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_HES_OVER_HERE:
-		m_Sentences.Speak( "METROPOLICE_OVER_HERE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_HES_OVER_HERE:
+			m_Sentences.Speak( "METROPOLICE_OVER_HERE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_HES_RUNNING:
-		m_Sentences.Speak( "METROPOLICE_HES_RUNNING", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_HES_RUNNING:
+			m_Sentences.Speak( "METROPOLICE_HES_RUNNING", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_TAKE_HIM_DOWN:
-		m_Sentences.Speak( "METROPOLICE_TAKE_HIM_DOWN", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_TAKE_HIM_DOWN:
+			m_Sentences.Speak( "METROPOLICE_TAKE_HIM_DOWN", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_ARREST_IN_POSITION:
-		m_Sentences.Speak( "METROPOLICE_ARREST_IN_POS", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
-		break;
+		case METROPOLICE_SENTENCE_ARREST_IN_POSITION:
+			m_Sentences.Speak( "METROPOLICE_ARREST_IN_POS", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+			break;
 
-	case METROPOLICE_SENTENCE_DEPLOY_MANHACK:
-		m_Sentences.Speak( "METROPOLICE_DEPLOY_MANHACK" );
-		break;
+		case METROPOLICE_SENTENCE_DEPLOY_MANHACK:
+			m_Sentences.Speak( "METROPOLICE_DEPLOY_MANHACK" );
+			break;
 
-	case METROPOLICE_SENTENCE_MOVE_INTO_POSITION:
+		case METROPOLICE_SENTENCE_MOVE_INTO_POSITION:
 		{
-			CBaseEntity *pEntity = GetEnemy();
-			
+			CBaseEntity* pEntity = GetEnemy();
+
 			// NOTE: This is a good time to check to see if the player is hurt.
 			// Have the cops notice this and call out
-			if ( pEntity && !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+			if( pEntity && !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
 			{
-				if ( pEntity->IsPlayer() && (pEntity->GetHealth() <= 20) )
+				if( pEntity->IsPlayer() && ( pEntity->GetHealth() <= 20 ) )
 				{
-					if ( !HasMemory(bits_MEMORY_PLAYER_HURT) ) 
+					if( !HasMemory( bits_MEMORY_PLAYER_HURT ) )
 					{
-						if ( m_Sentences.Speak( "METROPOLICE_PLAYERHIT", SENTENCE_PRIORITY_HIGH ) >= 0 )
+						if( m_Sentences.Speak( "METROPOLICE_PLAYERHIT", SENTENCE_PRIORITY_HIGH ) >= 0 )
 						{
-							m_pSquad->SquadRemember(bits_MEMORY_PLAYER_HURT);
+							m_pSquad->SquadRemember( bits_MEMORY_PLAYER_HURT );
 						}
 					}
 				}
 
-				if ( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
+				if( GetNavigator()->GetPath()->GetPathLength() > 20 * 12.0f )
 				{
 					m_Sentences.Speak( "METROPOLICE_FLANK" );
 				}
@@ -1151,12 +1171,12 @@ void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 		}
 		break;
 
-	case METROPOLICE_SENTENCE_HEARD_SOMETHING:
-		if ( ( GetState() == NPC_STATE_ALERT ) || ( GetState() == NPC_STATE_IDLE ) )
-		{
-			m_Sentences.Speak( "METROPOLICE_HEARD_SOMETHING", SENTENCE_PRIORITY_MEDIUM );
-		}
-		break;
+		case METROPOLICE_SENTENCE_HEARD_SOMETHING:
+			if( ( GetState() == NPC_STATE_ALERT ) || ( GetState() == NPC_STATE_IDLE ) )
+			{
+				m_Sentences.Speak( "METROPOLICE_HEARD_SOMETHING", SENTENCE_PRIORITY_MEDIUM );
+			}
+			break;
 #endif
 	}
 }
@@ -1164,15 +1184,15 @@ void CNPC_MetroPolice::SpeakSentence( int nSentenceType )
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 //=========================================================
 //=========================================================
-bool CNPC_MetroPolice::SpeakIfAllowed( const char *concept, const char *modifiers, SentencePriority_t sentencepriority, SentenceCriteria_t sentencecriteria )
+bool CNPC_MetroPolice::SpeakIfAllowed( const char* concept, const char* modifiers, SentencePriority_t sentencepriority, SentenceCriteria_t sentencecriteria )
 {
 	AI_CriteriaSet set;
-	if (modifiers)
+	if( modifiers )
 	{
 #ifdef NEW_RESPONSE_SYSTEM
 		GatherCriteria( &set, concept, modifiers );
 #else
-		GetExpresser()->MergeModifiers(set, modifiers);
+		GetExpresser()->MergeModifiers( set, modifiers );
 #endif
 	}
 	return SpeakIfAllowed( concept, set, sentencepriority, sentencecriteria );
@@ -1180,15 +1200,19 @@ bool CNPC_MetroPolice::SpeakIfAllowed( const char *concept, const char *modifier
 
 //=========================================================
 //=========================================================
-bool CNPC_MetroPolice::SpeakIfAllowed( const char *concept, AI_CriteriaSet& modifiers, SentencePriority_t sentencepriority, SentenceCriteria_t sentencecriteria )
+bool CNPC_MetroPolice::SpeakIfAllowed( const char* concept, AI_CriteriaSet& modifiers, SentencePriority_t sentencepriority, SentenceCriteria_t sentencecriteria )
 {
-	if ( sentencepriority != SENTENCE_PRIORITY_INVALID && !FOkToMakeSound( sentencepriority ) )
+	if( sentencepriority != SENTENCE_PRIORITY_INVALID && !FOkToMakeSound( sentencepriority ) )
+	{
 		return false;
+	}
 
-	if ( !GetExpresser()->CanSpeakConcept( concept ) )
+	if( !GetExpresser()->CanSpeakConcept( concept ) )
+	{
 		return false;
+	}
 
-	if ( Speak( concept, modifiers ) )
+	if( Speak( concept, modifiers ) )
 	{
 		JustMadeSound( sentencepriority, 2.0f /*GetTimeSpeechComplete()*/ );
 		return true;
@@ -1203,7 +1227,7 @@ void CNPC_MetroPolice::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 {
 	BaseClass::ModifyOrAppendCriteria( set );
 
-	set.AppendCriteria( "numwarnings", UTIL_VarArgs("%d", m_nNumWarnings) );
+	set.AppendCriteria( "numwarnings", UTIL_VarArgs( "%d", m_nNumWarnings ) );
 }
 #endif
 
@@ -1211,30 +1235,36 @@ void CNPC_MetroPolice::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 //-----------------------------------------------------------------------------
 // Speaking
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
+void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity* pEnemy )
 {
-	if ( !pEnemy || !m_pSquad )
+	if( !pEnemy || !m_pSquad )
+	{
 		return;
+	}
 
 	// Don't announce enemies when the player isn't a criminal
-	if ( !PlayerIsCriminal() )
+	if( !PlayerIsCriminal() )
+	{
 		return;
+	}
 
 	// Don't announce enemies when I'm in arrest behavior
-	if ( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	{
 		return;
+	}
 
-	if ( m_pSquad->IsLeader( this ) || ( m_pSquad->GetLeader() && m_pSquad->GetLeader()->GetEnemy() != GetEnemy() ) )
+	if( m_pSquad->IsLeader( this ) || ( m_pSquad->GetLeader() && m_pSquad->GetLeader()->GetEnemy() != GetEnemy() ) )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 		// First contact, and I'm the squad leader.
 		bool bEnemyInVehicle = false;
-		switch ( pEnemy->Classify() )
+		switch( pEnemy->Classify() )
 		{
-		case CLASS_PLAYER:
+			case CLASS_PLAYER:
 			{
-				CBasePlayer *pPlayer = assert_cast<CBasePlayer*>( pEnemy );
-				if ( pPlayer && pPlayer->IsInAVehicle() )
+				CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pEnemy );
+				if( pPlayer && pPlayer->IsInAVehicle() )
 				{
 					bEnemyInVehicle = true;
 				}
@@ -1242,16 +1272,16 @@ void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
 			break;
 		}
 
-		SpeakIfAllowed( TLK_COP_ENEMY, UTIL_VarArgs("enemy_in_vehicle:%d", bEnemyInVehicle), SENTENCE_PRIORITY_HIGH );
+		SpeakIfAllowed( TLK_COP_ENEMY, UTIL_VarArgs( "enemy_in_vehicle:%d", bEnemyInVehicle ), SENTENCE_PRIORITY_HIGH );
 #else
 		// First contact, and I'm the squad leader.
-		const char *pSentenceName = "METROPOLICE_MONST";
-		switch ( pEnemy->Classify() )
+		const char* pSentenceName = "METROPOLICE_MONST";
+		switch( pEnemy->Classify() )
 		{
-		case CLASS_PLAYER:
+			case CLASS_PLAYER:
 			{
-				CBasePlayer *pPlayer = assert_cast<CBasePlayer*>( pEnemy );
-				if ( pPlayer && pPlayer->IsInAVehicle() )
+				CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pEnemy );
+				if( pPlayer && pPlayer->IsInAVehicle() )
 				{
 					pSentenceName = "METROPOLICE_MONST_PLAYER_VEHICLE";
 				}
@@ -1262,29 +1292,29 @@ void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
 			}
 			break;
 
-		case CLASS_PLAYER_ALLY:
-		case CLASS_CITIZEN_REBEL:
-		case CLASS_CITIZEN_PASSIVE:
-		case CLASS_VORTIGAUNT:
-			pSentenceName = "METROPOLICE_MONST_CITIZENS";
-			break;
+			case CLASS_PLAYER_ALLY:
+			case CLASS_CITIZEN_REBEL:
+			case CLASS_CITIZEN_PASSIVE:
+			case CLASS_VORTIGAUNT:
+				pSentenceName = "METROPOLICE_MONST_CITIZENS";
+				break;
 
-		case CLASS_PLAYER_ALLY_VITAL:
-			pSentenceName = "METROPOLICE_MONST_CHARACTER";
-			break;
+			case CLASS_PLAYER_ALLY_VITAL:
+				pSentenceName = "METROPOLICE_MONST_CHARACTER";
+				break;
 
-		case CLASS_ANTLION:
-			pSentenceName = "METROPOLICE_MONST_BUGS";
-			break;
+			case CLASS_ANTLION:
+				pSentenceName = "METROPOLICE_MONST_BUGS";
+				break;
 
-		case CLASS_ZOMBIE:
-			pSentenceName = "METROPOLICE_MONST_ZOMBIES";
-			break;
+			case CLASS_ZOMBIE:
+				pSentenceName = "METROPOLICE_MONST_ZOMBIES";
+				break;
 
-		case CLASS_HEADCRAB:
-		case CLASS_BARNACLE:
-			pSentenceName = "METROPOLICE_MONST_PARASITES";
-			break;
+			case CLASS_HEADCRAB:
+			case CLASS_BARNACLE:
+				pSentenceName = "METROPOLICE_MONST_PARASITES";
+				break;
 		}
 
 		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
@@ -1292,10 +1322,10 @@ void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
 	}
 	else
 	{
-		if ( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ) )
+		if( m_pSquad->GetLeader() && FOkToMakeSound( SENTENCE_PRIORITY_MEDIUM ) )
 		{
 			// squelch anything that isn't high priority so the leader can speak
-			JustMadeSound( SENTENCE_PRIORITY_MEDIUM );	
+			JustMadeSound( SENTENCE_PRIORITY_MEDIUM );
 		}
 	}
 
@@ -1305,47 +1335,49 @@ void CNPC_MetroPolice::AnnounceEnemyType( CBaseEntity *pEnemy )
 //-----------------------------------------------------------------------------
 // Speaking
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::AnnounceEnemyKill( CBaseEntity *pEnemy )
+void CNPC_MetroPolice::AnnounceEnemyKill( CBaseEntity* pEnemy )
 {
-	if ( !pEnemy )
+	if( !pEnemy )
+	{
 		return;
+	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 	AI_CriteriaSet set;
-	ModifyOrAppendEnemyCriteria(set, pEnemy);
+	ModifyOrAppendEnemyCriteria( set, pEnemy );
 	SpeakIfAllowed( TLK_COP_KILLENEMY, set, SENTENCE_PRIORITY_HIGH );
 #else
-	const char *pSentenceName = "METROPOLICE_KILL_MONST";
-	switch ( pEnemy->Classify() )
+	const char* pSentenceName = "METROPOLICE_KILL_MONST";
+	switch( pEnemy->Classify() )
 	{
-	case CLASS_PLAYER:
-		pSentenceName = "METROPOLICE_KILL_PLAYER";
-		break;
+		case CLASS_PLAYER:
+			pSentenceName = "METROPOLICE_KILL_PLAYER";
+			break;
 
-	// no sentences for these guys yet
-	case CLASS_PLAYER_ALLY:
-	case CLASS_CITIZEN_REBEL:
-	case CLASS_CITIZEN_PASSIVE:
-	case CLASS_VORTIGAUNT:
-		pSentenceName = "METROPOLICE_KILL_CITIZENS";
-		break;
+		// no sentences for these guys yet
+		case CLASS_PLAYER_ALLY:
+		case CLASS_CITIZEN_REBEL:
+		case CLASS_CITIZEN_PASSIVE:
+		case CLASS_VORTIGAUNT:
+			pSentenceName = "METROPOLICE_KILL_CITIZENS";
+			break;
 
-	case CLASS_PLAYER_ALLY_VITAL:
-		pSentenceName = "METROPOLICE_KILL_CHARACTER";
-		break;
+		case CLASS_PLAYER_ALLY_VITAL:
+			pSentenceName = "METROPOLICE_KILL_CHARACTER";
+			break;
 
-	case CLASS_ANTLION:
-		pSentenceName = "METROPOLICE_KILL_BUGS";
-		break;
+		case CLASS_ANTLION:
+			pSentenceName = "METROPOLICE_KILL_BUGS";
+			break;
 
-	case CLASS_ZOMBIE:
-		pSentenceName = "METROPOLICE_KILL_ZOMBIES";
-		break;
+		case CLASS_ZOMBIE:
+			pSentenceName = "METROPOLICE_KILL_ZOMBIES";
+			break;
 
-	case CLASS_HEADCRAB:
-	case CLASS_BARNACLE:
-		pSentenceName = "METROPOLICE_KILL_PARASITES";
-		break;
+		case CLASS_HEADCRAB:
+		case CLASS_BARNACLE:
+			pSentenceName = "METROPOLICE_KILL_PARASITES";
+			break;
 	}
 
 	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH );
@@ -1359,7 +1391,7 @@ void CNPC_MetroPolice::AnnounceEnemyKill( CBaseEntity *pEnemy )
 void CNPC_MetroPolice::AnnounceOutOfAmmo( )
 {
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	if ( HasCondition( COND_NO_PRIMARY_AMMO ) )
+	if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
 		SpeakIfAllowed( TLK_COP_NOAMMO );
 	}
@@ -1368,7 +1400,7 @@ void CNPC_MetroPolice::AnnounceOutOfAmmo( )
 		SpeakIfAllowed( TLK_COP_LOWAMMO );
 	}
 #else
-	if ( HasCondition( COND_NO_PRIMARY_AMMO ) )
+	if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
 		m_Sentences.Speak( "METROPOLICE_COVER_NO_AMMO" );
 	}
@@ -1382,47 +1414,47 @@ void CNPC_MetroPolice::AnnounceOutOfAmmo( )
 //-----------------------------------------------------------------------------
 // We're taking cover from danger
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::AnnounceTakeCoverFromDanger( CSound *pSound )
+void CNPC_MetroPolice::AnnounceTakeCoverFromDanger( CSound* pSound )
 {
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 	bool bGrenade = false;
 	bool bVehicle = false;
 	bool bManhack = false;
 
-	CBaseEntity *pSoundOwner = pSound->m_hOwner;
-	if ( pSoundOwner )
+	CBaseEntity* pSoundOwner = pSound->m_hOwner;
+	if( pSoundOwner )
 	{
-		CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pSoundOwner);
-		if ( pGrenade )
+		CBaseGrenade* pGrenade = dynamic_cast<CBaseGrenade*>( pSoundOwner );
+		if( pGrenade )
 		{
-			if ( IRelationType( pGrenade->GetThrower() ) != D_LI )
+			if( IRelationType( pGrenade->GetThrower() ) != D_LI )
 			{
 				// special case call out for enemy grenades
 				bGrenade = true;
 			}
 		}
-		else if ( pSoundOwner->GetServerVehicle() )
+		else if( pSoundOwner->GetServerVehicle() )
 		{
 			bVehicle = true;
 		}
-		else if ( FClassnameIs( pSoundOwner, "npc_manhack" ) )
+		else if( FClassnameIs( pSoundOwner, "npc_manhack" ) )
 		{
-			if ( pSoundOwner->HasPhysicsAttacker( 1.0f ) )
+			if( pSoundOwner->HasPhysicsAttacker( 1.0f ) )
 			{
 				bManhack = true;
 			}
 		}
 	}
 
-	SpeakIfAllowed(TLK_COP_DANGER, UTIL_VarArgs("grenade:%d,vehicle:%d,manhack:%d", bGrenade, bVehicle, bManhack), SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL);
+	SpeakIfAllowed( TLK_COP_DANGER, UTIL_VarArgs( "grenade:%d,vehicle:%d,manhack:%d", bGrenade, bVehicle, bManhack ), SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
 #else
-	CBaseEntity *pSoundOwner = pSound->m_hOwner;
-	if ( pSoundOwner )
+	CBaseEntity* pSoundOwner = pSound->m_hOwner;
+	if( pSoundOwner )
 	{
-		CBaseGrenade *pGrenade = dynamic_cast<CBaseGrenade *>(pSoundOwner);
-		if ( pGrenade )
+		CBaseGrenade* pGrenade = dynamic_cast<CBaseGrenade*>( pSoundOwner );
+		if( pGrenade )
 		{
-			if ( IRelationType( pGrenade->GetThrower() ) != D_LI )
+			if( IRelationType( pGrenade->GetThrower() ) != D_LI )
 			{
 				// special case call out for enemy grenades
 				m_Sentences.Speak( "METROPOLICE_DANGER_GREN", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
@@ -1430,15 +1462,15 @@ void CNPC_MetroPolice::AnnounceTakeCoverFromDanger( CSound *pSound )
 			return;
 		}
 
-		if ( pSoundOwner->GetServerVehicle() )
+		if( pSoundOwner->GetServerVehicle() )
 		{
 			m_Sentences.Speak( "METROPOLICE_DANGER_VEHICLE", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
 			return;
 		}
 
-		if ( FClassnameIs( pSoundOwner, "npc_manhack" ) )
+		if( FClassnameIs( pSoundOwner, "npc_manhack" ) )
 		{
-			if ( pSoundOwner->HasPhysicsAttacker( 1.0f ) )
+			if( pSoundOwner->HasPhysicsAttacker( 1.0f ) )
 			{
 				m_Sentences.Speak( "METROPOLICE_DANGER_MANHACK", SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
 			}
@@ -1448,19 +1480,19 @@ void CNPC_MetroPolice::AnnounceTakeCoverFromDanger( CSound *pSound )
 
 	// I hear something dangerous, probably need to take cover.
 	// dangerous sound nearby!, call it out
-	const char *pSentenceName = "METROPOLICE_DANGER";
+	const char* pSentenceName = "METROPOLICE_DANGER";
 	m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_HIGH, SENTENCE_CRITERIA_NORMAL );
 #endif
 }
 
 
-				
+
 //-----------------------------------------------------------------------------
 // Are we currently firing a burst?
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::IsCurrentlyFiringBurst() const
 {
-	return (m_nBurstMode != BURST_NOT_ACTIVE);
+	return ( m_nBurstMode != BURST_NOT_ACTIVE );
 }
 
 
@@ -1470,12 +1502,16 @@ bool CNPC_MetroPolice::IsCurrentlyFiringBurst() const
 bool CNPC_MetroPolice::IsEnemyInAnAirboat() const
 {
 	// Should this be a condition??
-	if ( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	if( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	{
 		return false;
+	}
 
-	CBaseEntity *pVehicle = static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity(); 
-	if ( !pVehicle )
+	CBaseEntity* pVehicle = static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity();
+	if( !pVehicle )
+	{
 		return false;
+	}
 
 	// NOTE: Could just return true if in a vehicle maybe
 	return FClassnameIs( pVehicle, "prop_vehicle_airboat" );
@@ -1485,27 +1521,31 @@ bool CNPC_MetroPolice::IsEnemyInAnAirboat() const
 //-----------------------------------------------------------------------------
 // Returns the airboat
 //-----------------------------------------------------------------------------
-CBaseEntity *CNPC_MetroPolice::GetEnemyAirboat() const
+CBaseEntity* CNPC_MetroPolice::GetEnemyAirboat() const
 {
 	// Should this be a condition??
-	if ( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	if( !GetEnemy() || !GetEnemy()->IsPlayer() )
+	{
 		return NULL;
+	}
 
-	return static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity(); 
+	return static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity();
 }
 
 
 //-----------------------------------------------------------------------------
 // Which entity are we actually trying to shoot at?
 //-----------------------------------------------------------------------------
-CBaseEntity *CNPC_MetroPolice::GetShootTarget()
+CBaseEntity* CNPC_MetroPolice::GetShootTarget()
 {
 	// Should this be a condition??
-	CBaseEntity *pEnemy = GetEnemy();
-	if ( !pEnemy || !pEnemy->IsPlayer() )
+	CBaseEntity* pEnemy = GetEnemy();
+	if( !pEnemy || !pEnemy->IsPlayer() )
+	{
 		return pEnemy;
+	}
 
-	CBaseEntity *pVehicle = static_cast<CBasePlayer*>( pEnemy )->GetVehicleEntity(); 
+	CBaseEntity* pVehicle = static_cast<CBasePlayer*>( pEnemy )->GetVehicleEntity();
 	return pVehicle ? pVehicle : pEnemy;
 }
 
@@ -1538,35 +1578,35 @@ void CNPC_MetroPolice::OnUpdateShotRegulator( )
 {
 	BaseClass::OnUpdateShotRegulator();
 
-	// FIXME: This code (except the burst interval) could be used for all weapon types 
+	// FIXME: This code (except the burst interval) could be used for all weapon types
 #ifdef MAPBASE
 	// Only if we actually have the pistol out
-	if ( GetActiveWeapon() && EntIsClass( GetActiveWeapon(), gm_isz_class_Pistol ) )
+	if( GetActiveWeapon() && EntIsClass( GetActiveWeapon(), gm_isz_class_Pistol ) )
 #else
 	if( Weapon_OwnsThisType( "weapon_pistol" ) )
 #endif
 	{
-		if ( m_nBurstMode == BURST_NOT_ACTIVE )
+		if( m_nBurstMode == BURST_NOT_ACTIVE )
 		{
-			if ( GetEnemy() )
+			if( GetEnemy() )
 			{
 				float dist = WorldSpaceCenter().DistTo( GetEnemy()->WorldSpaceCenter() );
-				
+
 				dist = clamp( dist, MIN_PISTOL_MODIFY_DIST, MAX_PISTOL_MODIFY_DIST );
-				
-				float factor = (dist - MIN_PISTOL_MODIFY_DIST) / (MAX_PISTOL_MODIFY_DIST - MIN_PISTOL_MODIFY_DIST);
-				
-				int		nMinBurst			= MIN_MIN_PISTOL_BURST + ( MAX_MIN_PISTOL_BURST - MIN_MIN_PISTOL_BURST ) * (1.0 - factor);
-				int		nMaxBurst			= MIN_MAX_PISTOL_BURST + ( MAX_MAX_PISTOL_BURST - MIN_MAX_PISTOL_BURST ) * (1.0 - factor);
+
+				float factor = ( dist - MIN_PISTOL_MODIFY_DIST ) / ( MAX_PISTOL_MODIFY_DIST - MIN_PISTOL_MODIFY_DIST );
+
+				int		nMinBurst			= MIN_MIN_PISTOL_BURST + ( MAX_MIN_PISTOL_BURST - MIN_MIN_PISTOL_BURST ) * ( 1.0 - factor );
+				int		nMaxBurst			= MIN_MAX_PISTOL_BURST + ( MAX_MAX_PISTOL_BURST - MIN_MAX_PISTOL_BURST ) * ( 1.0 - factor );
 				float	flMinRestInterval	= MIN_MIN_PISTOL_REST_INTERVAL + ( MAX_MIN_PISTOL_REST_INTERVAL - MIN_MIN_PISTOL_REST_INTERVAL ) * factor;
 				float	flMaxRestInterval	= MIN_MAX_PISTOL_REST_INTERVAL + ( MAX_MAX_PISTOL_REST_INTERVAL - MIN_MAX_PISTOL_REST_INTERVAL ) * factor;
-				
+
 				GetShotRegulator()->SetRestInterval( flMinRestInterval, flMaxRestInterval );
 				GetShotRegulator()->SetBurstShotCountRange( nMinBurst, nMaxBurst );
 			}
 			else
 			{
-				GetShotRegulator()->SetBurstShotCountRange(GetActiveWeapon()->GetMinBurst(), GetActiveWeapon()->GetMaxBurst() );
+				GetShotRegulator()->SetBurstShotCountRange( GetActiveWeapon()->GetMinBurst(), GetActiveWeapon()->GetMaxBurst() );
 				GetShotRegulator()->SetRestInterval( 0.6, 1.4 );
 			}
 		}
@@ -1585,10 +1625,10 @@ void CNPC_MetroPolice::SetBurstMode( bool bEnable )
 	int nOldBurstMode = m_nBurstMode;
 	m_nBurstSteerMode = BURST_STEER_NONE;
 	m_flBurstPredictTime = gpGlobals->curtime - 1.0f;
-	if ( GetActiveWeapon() )
+	if( GetActiveWeapon() )
 	{
 		m_nBurstMode = bEnable ? BURST_ACTIVE : BURST_NOT_ACTIVE;
-		if ( bEnable )
+		if( bEnable )
 		{
 			m_nBurstHits = 0;
 		}
@@ -1598,15 +1638,15 @@ void CNPC_MetroPolice::SetBurstMode( bool bEnable )
 		m_nBurstMode = BURST_NOT_ACTIVE;
 	}
 
-	if ( m_nBurstMode != nOldBurstMode )
+	if( m_nBurstMode != nOldBurstMode )
 	{
 		OnUpdateShotRegulator();
-		if ( m_nBurstMode == BURST_NOT_ACTIVE )
+		if( m_nBurstMode == BURST_NOT_ACTIVE )
 		{
 			// Check for inconsistency...
 			int nMinBurstCount, nMaxBurstCount;
 			GetShotRegulator()->GetBurstShotCountRange( &nMinBurstCount, &nMaxBurstCount );
-			if ( GetShotRegulator()->GetBurstShotsRemaining() > nMaxBurstCount )
+			if( GetShotRegulator()->GetBurstShotsRemaining() > nMaxBurstCount )
 			{
 				GetShotRegulator()->SetBurstShotsRemaining( nMaxBurstCount );
 			}
@@ -1620,17 +1660,23 @@ void CNPC_MetroPolice::SetBurstMode( bool bEnable )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::ShouldAttemptToStitch()
 {
-	if ( IsEnemyInAnAirboat() )
+	if( IsEnemyInAnAirboat() )
+	{
 		return true;
+	}
 
-	if ( !GetShootTarget() )
+	if( !GetShootTarget() )
+	{
 		return false;
+	}
 
-	if ( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
 	{
 		// Don't stitch if the player is at the same level or higher
-		if ( GetEnemy()->GetAbsOrigin().z - GetAbsOrigin().z > -36 )
+		if( GetEnemy()->GetAbsOrigin().z - GetAbsOrigin().z > -36 )
+		{
 			return false;
+		}
 
 		return true;
 	}
@@ -1642,43 +1688,49 @@ bool CNPC_MetroPolice::ShouldAttemptToStitch()
 //-----------------------------------------------------------------------------
 // position to shoot at
 //-----------------------------------------------------------------------------
-Vector CNPC_MetroPolice::StitchAimTarget( const Vector &posSrc, bool bNoisy ) 
+Vector CNPC_MetroPolice::StitchAimTarget( const Vector& posSrc, bool bNoisy )
 {
 #ifdef MAPBASE
-	if ( !GetEnemy() )
+	if( !GetEnemy() )
+	{
 		return vec3_origin;
+	}
 #endif
 
 	// This will make us aim a stitch at the feet of the player so we can see it
-	if ( !GetEnemy()->IsPlayer() )
+	if( !GetEnemy()->IsPlayer() )
+	{
 		return GetShootTarget()->BodyTarget( posSrc, bNoisy );
+	}
 
-	if ( !IsEnemyInAnAirboat() )
+	if( !IsEnemyInAnAirboat() )
 	{
 		Vector vecBodyTarget;
-		if ( ( GetEnemy()->GetWaterLevel() == 0 ) && ( GetEnemy()->GetFlags() & FL_ONGROUND ) )
+		if( ( GetEnemy()->GetWaterLevel() == 0 ) && ( GetEnemy()->GetFlags() & FL_ONGROUND ) )
 		{
 			GetEnemy()->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 0.08f ), &vecBodyTarget );
 			return vecBodyTarget;
 		}
 
 		// Underwater? Just use the normal thing
-		if ( GetEnemy()->GetWaterLevel() == 3 )
+		if( GetEnemy()->GetWaterLevel() == 3 )
+		{
 			return GetShootTarget()->BodyTarget( posSrc, bNoisy );
+		}
 
 		// Trace down...
 		trace_t	trace;
 		GetEnemy()->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 1.0f ), &vecBodyTarget );
 		float flHeight = GetEnemy()->WorldAlignSize().z;
-		UTIL_TraceLine( vecBodyTarget, vecBodyTarget + Vector( 0, 0, -flHeight -80 ), 
-			(MASK_SOLID_BRUSHONLY | MASK_WATER), NULL, COLLISION_GROUP_NONE, &trace );
+		UTIL_TraceLine( vecBodyTarget, vecBodyTarget + Vector( 0, 0, -flHeight - 80 ),
+						( MASK_SOLID_BRUSHONLY | MASK_WATER ), NULL, COLLISION_GROUP_NONE, &trace );
 		return trace.endpos;
 	}
 
 	// NOTE: HACK! Ths 0.08 is where the water level happens to be.
 	// We probably want to find the exact water level and use that as the z position.
 	Vector vecBodyTarget;
-	if ( !bNoisy )
+	if( !bNoisy )
 	{
 		GetShootTarget()->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 0.08f ), &vecBodyTarget );
 	}
@@ -1696,8 +1748,10 @@ Vector CNPC_MetroPolice::StitchAimTarget( const Vector &posSrc, bool bNoisy )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AimBurstRandomly( int nMinCount, int nMaxCount, float flMinDelay, float flMaxDelay )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	GetShotRegulator()->SetParameters( nMinCount, nMaxCount, flMinDelay, flMaxDelay );
 	GetShotRegulator()->Reset( true );
@@ -1711,8 +1765,8 @@ void CNPC_MetroPolice::AimBurstRandomly( int nMinCount, int nMaxCount, float flM
 	Vector vecRight, vecUp;
 	VectorVectors( vecDelta, vecRight, vecUp );
 	float flAngle = random->RandomFloat( 0.0f, 2 * M_PI );
-	VectorMultiply( vecRight, cos(flAngle), m_vecBurstDelta );
-	VectorMA( m_vecBurstDelta, sin(flAngle), vecUp, m_vecBurstDelta );
+	VectorMultiply( vecRight, cos( flAngle ), m_vecBurstDelta );
+	VectorMA( m_vecBurstDelta, sin( flAngle ), vecUp, m_vecBurstDelta );
 
 	// The size of this determines the cone angle
 	m_vecBurstDelta *= 0.4f;
@@ -1720,20 +1774,20 @@ void CNPC_MetroPolice::AimBurstRandomly( int nMinCount, int nMaxCount, float flM
 	VectorMA( vecDelta, -0.5f, m_vecBurstDelta, m_vecBurstTargetPos );
 	m_vecBurstTargetPos += Weapon_ShootPosition();
 
-	m_vecBurstDelta /= (nShotCount - 1);
+	m_vecBurstDelta /= ( nShotCount - 1 );
 }
 
 
 //-----------------------------------------------------------------------------
 // Choose a random vector somewhere between the two specified vectors
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector &vecStart, const Vector &vecEnd, Vector *pResult )
+void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector& vecStart, const Vector& vecEnd, Vector* pResult )
 {
 	Assert( fabs( vecStart.Length() - 1.0f ) < 1e-3 );
 	Assert( fabs( vecEnd.Length() - 1.0f ) < 1e-3 );
 
 	float flCosAngle = DotProduct( vecStart, vecEnd );
-	if ( fabs( flCosAngle - 1.0f ) < 1e-3 )
+	if( fabs( flCosAngle - 1.0f ) < 1e-3 )
 	{
 		*pResult = vecStart;
 		return;
@@ -1742,7 +1796,7 @@ void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector &vecStart, co
 	Vector vecNormal;
 	CrossProduct( vecStart, vecEnd, vecNormal );
 	float flLength = VectorNormalize( vecNormal );
-	if ( flLength < 1e-3 )
+	if( flLength < 1e-3 )
 	{
 		// This is wrong for anti-parallel vectors. so what?
 		*pResult = vecStart;
@@ -1750,7 +1804,7 @@ void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector &vecStart, co
 	}
 
 	// Rotate the starting angle the specified amount
-	float flAngle = acos(flCosAngle) * random->RandomFloat( 0.0f, 1.0f );
+	float flAngle = acos( flCosAngle ) * random->RandomFloat( 0.0f, 1.0f );
 	VMatrix rotationMatrix;
 	MatrixBuildRotationAboutAxis( rotationMatrix, vecNormal, flAngle );
 	Vector3DMultiply( rotationMatrix, vecStart, *pResult );
@@ -1760,15 +1814,15 @@ void CNPC_MetroPolice::RandomDirectionBetweenVectors( const Vector &vecStart, co
 //-----------------------------------------------------------------------------
 // Compute a predicted shoot target position n seconds into the future
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMinLeadDist, float flAddVelocity, Vector *pVecTarget, Vector *pVecTargetVelocity )
+void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMinLeadDist, float flAddVelocity, Vector* pVecTarget, Vector* pVecTargetVelocity )
 {
-	CBaseEntity *pShootTarget = GetShootTarget();
+	CBaseEntity* pShootTarget = GetShootTarget();
 	*pVecTarget = StitchAimTarget( GetAbsOrigin(), true );
 
 	Vector vecSmoothedVel = pShootTarget->GetSmoothedVelocity();
 
 	// When we're in the air, don't predict vertical motion
-	if( (pShootTarget->GetFlags() & FL_ONGROUND) == 0 )
+	if( ( pShootTarget->GetFlags() & FL_ONGROUND ) == 0 )
 	{
 		vecSmoothedVel.z = 0.0f;
 	}
@@ -1781,7 +1835,7 @@ void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMi
 	VMatrix rotationMatrix;
 	float flAngVel = VectorNormalize( angImpulse );
 	flAngVel -= 30.0f;
-	if ( flAngVel > 0.0f )
+	if( flAngVel > 0.0f )
 	{
 		MatrixBuildRotationAboutAxis( rotationMatrix, angImpulse, flAngVel * flDeltaTime * 0.333f );
 		Vector3DMultiply( rotationMatrix, vecSmoothedVel, vecLeadVector );
@@ -1791,7 +1845,7 @@ void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMi
 		vecLeadVector = vecSmoothedVel;
 	}
 
-	if ( flAddVelocity != 0.0f )
+	if( flAddVelocity != 0.0f )
 	{
 		Vector vecForward;
 		pShootTarget->GetVectors( &vecForward, NULL, NULL );
@@ -1799,8 +1853,8 @@ void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMi
 	}
 
 	*pVecTargetVelocity = vecLeadVector;
-	
-	if ( (vecLeadVector.LengthSqr() * flDeltaTime * flDeltaTime) < flMinLeadDist * flMinLeadDist )
+
+	if( ( vecLeadVector.LengthSqr() * flDeltaTime * flDeltaTime ) < flMinLeadDist * flMinLeadDist )
 	{
 		VectorNormalize( vecLeadVector );
 		vecLeadVector *= flMinLeadDist;
@@ -1817,7 +1871,7 @@ void CNPC_MetroPolice::PredictShootTargetPosition( float flDeltaTime, float flMi
 //-----------------------------------------------------------------------------
 // Compute a predicted velocity n seconds into the future (given a known acceleration rate)
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::PredictShootTargetVelocity( float flDeltaTime, Vector *pVecTargetVel )
+void CNPC_MetroPolice::PredictShootTargetVelocity( float flDeltaTime, Vector* pVecTargetVel )
 {
 	*pVecTargetVel = GetShootTarget()->GetSmoothedVelocity();
 
@@ -1841,7 +1895,7 @@ void CNPC_MetroPolice::PredictShootTargetVelocity( float flDeltaTime, Vector *pV
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::CountShotsInTime( float flDeltaTime ) const
 {
-	return (int)(flDeltaTime / GetActiveWeapon()->GetFireRate() + 0.5f);
+	return ( int )( flDeltaTime / GetActiveWeapon()->GetFireRate() + 0.5f );
 }
 
 float CNPC_MetroPolice::GetTimeForShots( int nShotCount ) const
@@ -1853,10 +1907,10 @@ float CNPC_MetroPolice::GetTimeForShots( int nShotCount ) const
 //-----------------------------------------------------------------------------
 // Visualize stitch
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::VisualizeStitch( const Vector &vecStart, const Vector &vecEnd )
+void CNPC_MetroPolice::VisualizeStitch( const Vector& vecStart, const Vector& vecEnd )
 {
-	NDebugOverlay::Cross3D( vecStart, -Vector(32,32,32), Vector(32,32,32), 255, 0, 0, false, 5.0f );
-	NDebugOverlay::Cross3D( vecEnd, -Vector(32,32,32), Vector(32,32,32), 0, 255, 0, false, 5.0f );
+	NDebugOverlay::Cross3D( vecStart, -Vector( 32, 32, 32 ), Vector( 32, 32, 32 ), 255, 0, 0, false, 5.0f );
+	NDebugOverlay::Cross3D( vecEnd, -Vector( 32, 32, 32 ), Vector( 32, 32, 32 ), 0, 255, 0, false, 5.0f );
 	NDebugOverlay::Line( vecStart, vecEnd, 0, 255, 0, true, 5.0f );
 }
 
@@ -1895,20 +1949,20 @@ void CNPC_MetroPolice::VisualizeLineOfDeath( )
 //-----------------------------------------------------------------------------
 float CNPC_MetroPolice::ComputeDistanceStitchModifier( float flDistanceToTarget ) const
 {
-	if ( flDistanceToTarget < AIM_AT_NEAR_DISTANCE_MIN )
+	if( flDistanceToTarget < AIM_AT_NEAR_DISTANCE_MIN )
 	{
 		return AIM_AT_NEAR_DISTANCE_BONUS;
 	}
 
-	if ( flDistanceToTarget < AIM_AT_NEAR_DISTANCE_MAX )
+	if( flDistanceToTarget < AIM_AT_NEAR_DISTANCE_MAX )
 	{
-		float flFraction = 1.0f - ((flDistanceToTarget - AIM_AT_NEAR_DISTANCE_MIN) / AIM_AT_NEAR_DISTANCE_DELTA);
+		float flFraction = 1.0f - ( ( flDistanceToTarget - AIM_AT_NEAR_DISTANCE_MIN ) / AIM_AT_NEAR_DISTANCE_DELTA );
 		return flFraction * AIM_AT_NEAR_DISTANCE_BONUS;
 	}
 
-	if ( flDistanceToTarget > AIM_AT_FAR_DISTANCE_MIN )
+	if( flDistanceToTarget > AIM_AT_FAR_DISTANCE_MIN )
 	{
-		float flFactor = (flDistanceToTarget - AIM_AT_FAR_DISTANCE_MIN) / AIM_AT_FAR_DISTANCE_BONUS_DISTANCE;
+		float flFactor = ( flDistanceToTarget - AIM_AT_FAR_DISTANCE_MIN ) / AIM_AT_FAR_DISTANCE_BONUS_DISTANCE;
 		return flFactor * AIM_AT_FAR_DISTANCE_BONUS;
 	}
 
@@ -1940,8 +1994,10 @@ int CNPC_MetroPolice::SetupBurstShotRegulator( float flReactionTime )
 
 void CNPC_MetroPolice::AimBurstTightGrouping( float flShotTime )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	// We want a certain amount of reaction time before the shots hit the boat
 	SetupBurstShotRegulator( flShotTime );
@@ -1954,8 +2010,8 @@ void CNPC_MetroPolice::AimBurstTightGrouping( float flShotTime )
 
 	Vector vecTargetVel;
 	GetShootTarget()->GetVelocity( &vecTargetVel, NULL );
-	if (( flDistToTargetSqr > TIGHT_GROUP_MIN_DIST*TIGHT_GROUP_MIN_DIST ) || 
-		( vecTargetVel.LengthSqr() > TIGHT_GROUP_MIN_SPEED * TIGHT_GROUP_MIN_SPEED ))
+	if( ( flDistToTargetSqr > TIGHT_GROUP_MIN_DIST * TIGHT_GROUP_MIN_DIST ) ||
+			( vecTargetVel.LengthSqr() > TIGHT_GROUP_MIN_SPEED * TIGHT_GROUP_MIN_SPEED ) )
 	{
 		m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
 	}
@@ -1995,25 +2051,25 @@ float CNPC_MetroPolice::AimBurstAtReactionTime( float flReactionTime, float flDi
 {
 	flReactionTime *= sk_metropolice_stitch_reaction.GetFloat();
 
-	if ( IsEnemyInAnAirboat() )
+	if( IsEnemyInAnAirboat() )
 	{
 		float u = flCurrentSpeed / AIM_AT_TIME_DELTA_SPEED;
 		float v = flDistToTarget / AIM_AT_TIME_DELTA_DIST;
-		int nu = (int)u;
-		int nv = (int)v;
-		if (( nu < AIM_AT_TIME_SPEED_COUNT - 1 ) && ( nv < AIM_AT_TIME_DIST_COUNT - 1 ))
+		int nu = ( int )u;
+		int nv = ( int )v;
+		if( ( nu < AIM_AT_TIME_SPEED_COUNT - 1 ) && ( nv < AIM_AT_TIME_DIST_COUNT - 1 ) )
 		{
 			float fu = u - nu;
 			float fv = v - nv;
-			float flReactionFactor = s_pReactionFraction[nv][nu] * (1.0f - fu) * (1.0f - fv);
-			flReactionFactor += s_pReactionFraction[nv+1][nu] * (1.0f - fu) * fv;
-			flReactionFactor += s_pReactionFraction[nv][nu+1] * fu * (1.0f - fv);
-			flReactionFactor += s_pReactionFraction[nv+1][nu+1] * fu * fv;
+			float flReactionFactor = s_pReactionFraction[nv][nu] * ( 1.0f - fu ) * ( 1.0f - fv );
+			flReactionFactor += s_pReactionFraction[nv + 1][nu] * ( 1.0f - fu ) * fv;
+			flReactionFactor += s_pReactionFraction[nv][nu + 1] * fu * ( 1.0f - fv );
+			flReactionFactor += s_pReactionFraction[nv + 1][nu + 1] * fu * fv;
 
 			flReactionTime *= flReactionFactor;
 		}
 	}
-	
+
 	return flReactionTime;
 }
 
@@ -2042,20 +2098,20 @@ int CNPC_MetroPolice::AimBurstAtSetupHitCount( float flDistToTarget, float flCur
 	int nHitCount = sk_metropolice_stitch_at_hitcount.GetInt();
 	m_nMaxBurstHits = random->RandomInt( nHitCount, nHitCount + 1 );
 
-	if ( IsEnemyInAnAirboat() )
+	if( IsEnemyInAnAirboat() )
 	{
 		float u = flCurrentSpeed / AIM_AT_SHOT_DELTA_SPEED;
 		float v = flDistToTarget / AIM_AT_SHOT_DELTA_DIST;
-		int nu = (int)u;
-		int nv = (int)v;
-		if (( nu < AIM_AT_SHOT_SPEED_COUNT - 1 ) && ( nv < AIM_AT_SHOT_DIST_COUNT - 1 ))
+		int nu = ( int )u;
+		int nv = ( int )v;
+		if( ( nu < AIM_AT_SHOT_SPEED_COUNT - 1 ) && ( nv < AIM_AT_SHOT_DIST_COUNT - 1 ) )
 		{
 			float fu = u - nu;
 			float fv = v - nv;
-			float flShotFactor = s_pShotCountFraction[nv][nu] * (1.0f - fu) * (1.0f - fv);
-			flShotFactor += s_pShotCountFraction[nv+1][nu] * (1.0f - fu) * fv;
-			flShotFactor += s_pShotCountFraction[nv][nu+1] * fu * (1.0f - fv);
-			flShotFactor += s_pShotCountFraction[nv+1][nu+1] * fu * fv;
+			float flShotFactor = s_pShotCountFraction[nv][nu] * ( 1.0f - fu ) * ( 1.0f - fv );
+			flShotFactor += s_pShotCountFraction[nv + 1][nu] * ( 1.0f - fu ) * fv;
+			flShotFactor += s_pShotCountFraction[nv][nu + 1] * fu * ( 1.0f - fv );
+			flShotFactor += s_pShotCountFraction[nv + 1][nu + 1] * fu * fv;
 
 			int nExtraShots = nHitCount * flShotFactor;
 			m_nMaxBurstHits += random->RandomInt( nExtraShots, nExtraShots + 1 );
@@ -2078,14 +2134,16 @@ int CNPC_MetroPolice::AimBurstAtSetupHitCount( float flDistToTarget, float flCur
 
 void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	Vector vecVelocity;
 	GetShootTarget()->GetVelocity( &vecVelocity, NULL );
 	float flCurrentSpeed = vecVelocity.Length();
 	float flDistToTargetSqr = GetShootTarget()->WorldSpaceCenter().AsVector2D().DistToSqr( Weapon_ShootPosition().AsVector2D() );
-	float flDistToTarget = sqrt(flDistToTargetSqr);
+	float flDistToTarget = sqrt( flDistToTargetSqr );
 
 	flReactionTime = AimBurstAtReactionTime( flReactionTime, flDistToTarget, flCurrentSpeed );
 
@@ -2093,7 +2151,7 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 	int nShotCount = SetupBurstShotRegulator( flReactionTime );
 
 	bool bIsInVehicle = IsEnemyInAnAirboat();
-	if ( bIsInVehicle )
+	if( bIsInVehicle )
 	{
 		m_nBurstMode = BURST_LOCK_ON_AFTER_HIT;
 		m_flBurstSteerDistance = AIM_AT_STEER_DISTANCE;
@@ -2107,9 +2165,9 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 
 	// Max number of times we can hit the enemy
 	int nExtraShots = AimBurstAtSetupHitCount( flDistToTarget, flCurrentSpeed );
-	float flExtraTime = GetTimeForShots( nExtraShots ) + (1.0f - AIM_AT_REACTION_TIME_FRACTION) * flReactionTime;
+	float flExtraTime = GetTimeForShots( nExtraShots ) + ( 1.0f - AIM_AT_REACTION_TIME_FRACTION ) * flReactionTime;
 	float flReactionFraction = 1.0f - flExtraTime / flReactionTime;
-	if ( flReactionFraction < 0.5f )
+	if( flReactionFraction < 0.5f )
 	{
 		flReactionFraction = 0.5f;
 	}
@@ -2129,7 +2187,7 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 	// the airboat so much that he ends up shooting behind himself
 	float flMaxStitchDistance = VectorNormalize( vecDelta );
 	flMaxStitchDistance -= 50.0f;
-	if ( flMaxStitchDistance < 0 )
+	if( flMaxStitchDistance < 0 )
 	{
 		flMaxStitchDistance = 0.0f;
 	}
@@ -2139,11 +2197,11 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 	// Modify the stitch length based on distance from the shooter
 	flStitchLength += ComputeDistanceStitchModifier( flDistanceToTarget );
 
-	if ( bIsInVehicle )
+	if( bIsInVehicle )
 	{
 		// Make longer stitches if the enemy is going faster
 		Vector vecEnemyVelocity = GetShootTarget()->GetSmoothedVelocity();
-		if( (GetShootTarget()->GetFlags() & FL_ONGROUND) == 0 )
+		if( ( GetShootTarget()->GetFlags() & FL_ONGROUND ) == 0 )
 		{
 			vecEnemyVelocity.z = 0.0f;
 		}
@@ -2156,10 +2214,10 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 		Vector vecAcross;
 		CrossProduct( vecEnemyVelocity, Vector( 0, 0, 1 ), vecAcross );
 		VectorNormalize( vecAcross );
-		
+
 		Vector eyeForward;
 		AngleVectors( GetEnemy()->EyeAngles(), &eyeForward );
-		if ( DotProduct( vecAcross, eyeForward ) < 0.0f )
+		if( DotProduct( vecAcross, eyeForward ) < 0.0f )
 		{
 			vecAcross *= -1.0f;
 		}
@@ -2171,18 +2229,18 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 	// Compute the distance along the stitch direction to the cop. we don't want to cross that line
 	Vector vecStitchStart, vecStitchEnd;
 	VectorMA( vecShootAt, -MIN( flStitchLength * flReactionFraction, flMaxStitchDistance ), vecDelta, vecStitchStart );
-	VectorMA( vecShootAt, flStitchLength * (1.0f - flReactionFraction), vecDelta, vecStitchEnd );
-	
+	VectorMA( vecShootAt, flStitchLength * ( 1.0f - flReactionFraction ), vecDelta, vecStitchEnd );
+
 	// Trace down a bit to hit the ground if we're above the ground...
 	trace_t	trace;
-	UTIL_TraceLine( vecStitchStart, vecStitchStart + Vector( 0, 0, -512 ), (MASK_SOLID_BRUSHONLY | MASK_WATER), NULL, COLLISION_GROUP_NONE, &trace );
+	UTIL_TraceLine( vecStitchStart, vecStitchStart + Vector( 0, 0, -512 ), ( MASK_SOLID_BRUSHONLY | MASK_WATER ), NULL, COLLISION_GROUP_NONE, &trace );
 	m_vecBurstTargetPos = trace.endpos;
 	VectorSubtract( vecStitchEnd, m_vecBurstTargetPos, m_vecBurstDelta );
 
 	m_vecBurstLineOfDeathOrigin = m_vecBurstTargetPos;
 	m_vecBurstLineOfDeathDelta = m_vecBurstDelta;
 
-	m_vecBurstDelta /= (nShotCount - 1);
+	m_vecBurstDelta /= ( nShotCount - 1 );
 
 //	VisualizeStitch( m_vecBurstTargetPos, vecStitchEnd );
 //	VisualizeLineOfDeath();
@@ -2201,8 +2259,10 @@ void CNPC_MetroPolice::AimBurstAtEnemy( float flReactionTime )
 
 void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	flReactionTime *= sk_metropolice_stitch_reaction.GetFloat();
 
@@ -2217,8 +2277,8 @@ void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 	// The goal here is to slow him down. Choose a target position such that we predict
 	// where he'd be in he accelerated by N over the reaction time. Prevent him from getting there.
 	Vector vecShootAt, vecShootAtVel, vecAcross;
-	PredictShootTargetPosition( flReactionTime * AIM_IN_FRONT_REACTION_FRACTION, 
-		AIM_IN_FRONT_OF_MINIMUM_DISTANCE, 0.0f, &vecShootAt, &vecShootAtVel );
+	PredictShootTargetPosition( flReactionTime * AIM_IN_FRONT_REACTION_FRACTION,
+								AIM_IN_FRONT_OF_MINIMUM_DISTANCE, 0.0f, &vecShootAt, &vecShootAtVel );
 
 	// Now add in some extra vel in a random direction + try to prevent that....
 	Vector vecTargetToGun, vecExtraDistance;
@@ -2238,7 +2298,7 @@ void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 	VectorSubtract( Weapon_ShootPosition(), StitchAimTarget( GetAbsOrigin(), false ), vecTargetToGun );
 	float flSign = ( DotProduct( vecAcross, vecTargetToGun ) >= 0.0f ) ? 1.0f : -1.0f;
 	VectorMA( vecShootAt, flSign * flStitchLength * AIM_IN_FRONT_REACTION_FRACTION, vecAcross, vecEndPoint1 );
-	VectorMA( vecShootAt, -flSign * flStitchLength * (1.0f - AIM_IN_FRONT_REACTION_FRACTION), vecAcross, vecEndPoint2 );
+	VectorMA( vecShootAt, -flSign * flStitchLength * ( 1.0f - AIM_IN_FRONT_REACTION_FRACTION ), vecAcross, vecEndPoint2 );
 
 	m_vecBurstTargetPos = vecEndPoint1;
 	VectorSubtract( vecEndPoint2, vecEndPoint1, m_vecBurstDelta );
@@ -2250,7 +2310,7 @@ void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 
 	// Make the visual representation of the line of death lie closest to the boat.
 	VectorMA( m_vecBurstTargetPos, -AIM_IN_FRONT_STEER_DISTANCE, vecShootAtVel, m_vecBurstTargetPos );
-	m_vecBurstDelta /= (nShotCount - 1);
+	m_vecBurstDelta /= ( nShotCount - 1 );
 
 //	VisualizeStitch( m_vecBurstTargetPos, m_vecBurstTargetPos + m_vecBurstDelta * (nShotCount - 1) );
 //	VisualizeLineOfDeath();
@@ -2262,8 +2322,10 @@ void CNPC_MetroPolice::AimBurstInFrontOfEnemy( float flReactionTime )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	flShotTime *= sk_metropolice_stitch_reaction.GetFloat();
 
@@ -2285,7 +2347,7 @@ void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 	VectorSubtract( Weapon_ShootPosition(), vecShootAt, vecDelta );
 	vecDelta.z = 0.0f;
 	float flDistTo = VectorNormalize( vecDelta );
-	if ( flDistTo > AIM_BEHIND_MINIMUM_DISTANCE )
+	if( flDistTo > AIM_BEHIND_MINIMUM_DISTANCE )
 	{
 		flDistTo = AIM_BEHIND_MINIMUM_DISTANCE;
 	}
@@ -2297,7 +2359,7 @@ void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 	Vector vecEndPoint1, vecEndPoint2;
 	VectorMA( vecShootAt, -flStitchLength * 0.5f, vecAcross, vecEndPoint1 );
 	VectorMA( vecShootAt, flStitchLength * 0.5f, vecAcross, vecEndPoint2 );
-	
+
 	m_vecBurstTargetPos = vecEndPoint1;
 	VectorSubtract( vecEndPoint2, vecEndPoint1, m_vecBurstDelta );
 
@@ -2308,7 +2370,7 @@ void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 
 	// Make the visual representation of the line of death lie closest to the boat.
 	VectorMA( m_vecBurstTargetPos, -AIM_BEHIND_STEER_DISTANCE, vecDelta, m_vecBurstTargetPos );
-	m_vecBurstDelta /= (nShotCount - 1);
+	m_vecBurstDelta /= ( nShotCount - 1 );
 
 //	VisualizeStitch( m_vecBurstTargetPos, m_vecBurstTargetPos + m_vecBurstDelta * (nShotCount - 1) );
 //	VisualizeLineOfDeath();
@@ -2320,8 +2382,10 @@ void CNPC_MetroPolice::AimBurstBehindEnemy( float flShotTime )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 {
-	if ( !IsCurrentlyFiringBurst() )
+	if( !IsCurrentlyFiringBurst() )
+	{
 		return;
+	}
 
 	flFollowTime *= sk_metropolice_stitch_reaction.GetFloat();
 
@@ -2340,7 +2404,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 	VectorNormalize( vecAcross );
 
 	// Choose the side of the vehicle which is closer to the shooter
-	Vector vecSidePoint;		
+	Vector vecSidePoint;
 	Vector vecTargetToGun;
 	VectorSubtract( Weapon_ShootPosition(), vecShootAt, vecTargetToGun );
 	float flSign = ( DotProduct( vecTargetToGun, vecAcross ) > 0.0f ) ? 1.0f : -1.0f;
@@ -2358,7 +2422,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 	// Pull the endpoint a little toward the NPC firing it...
 	float flExtraDist = random->RandomFloat( 25.0f, 50.0f );
 	VectorNormalize( vecTargetToGun );
-	if ( flSign * DotProduct( vecTargetToGun, vecShootAtVel ) < 0.1f )
+	if( flSign * DotProduct( vecTargetToGun, vecShootAtVel ) < 0.1f )
 	{
 		flExtraDist += 100.0f;
 	}
@@ -2370,7 +2434,7 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 
 	// Make the visual representation of the line of death lie closest to the boat.
 	VectorMA( m_vecBurstTargetPos, -flSign * AIM_ALONG_SIDE_STEER_DISTANCE, vecAcross, m_vecBurstTargetPos );
-	m_vecBurstDelta /= (nShotCount - 1);
+	m_vecBurstDelta /= ( nShotCount - 1 );
 
 //	VisualizeStitch( m_vecBurstTargetPos, m_vecBurstTargetPos + m_vecBurstDelta * (nShotCount - 1) );
 //	VisualizeLineOfDeath();
@@ -2380,22 +2444,22 @@ void CNPC_MetroPolice::AimBurstAlongSideOfEnemy( float flFollowTime )
 //-----------------------------------------------------------------------------
 // Different burst steering modes
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::SteerBurstTowardTargetUseSpeedOnly( const Vector &vecShootAt, 
-	const Vector &vecShootAtVelocity, float flPredictTime, int nShotsTillPredict )
+void CNPC_MetroPolice::SteerBurstTowardTargetUseSpeedOnly( const Vector& vecShootAt,
+		const Vector& vecShootAtVelocity, float flPredictTime, int nShotsTillPredict )
 {
 	// Only account for changes in *speed*; ignore all changes in velocity direction, etc.
 	// This one only hits the player if there is *no* steering, just acceleration or decceleration
 	Vector vecBurstDir = m_vecBurstPredictedVelocityDir;
 	float flActualSpeed = DotProduct( vecShootAtVelocity, vecBurstDir );
 
-	vecBurstDir *= (flActualSpeed - m_vecBurstPredictedSpeed) * flPredictTime;
-	vecBurstDir /= (nShotsTillPredict - 1);
+	vecBurstDir *= ( flActualSpeed - m_vecBurstPredictedSpeed ) * flPredictTime;
+	vecBurstDir /= ( nShotsTillPredict - 1 );
 
-	m_vecBurstPredictedSpeed = flActualSpeed; 
+	m_vecBurstPredictedSpeed = flActualSpeed;
 	m_vecBurstDelta += vecBurstDir;
 }
 
-void CNPC_MetroPolice::SteerBurstTowardTargetUseVelocity( const Vector &vecShootAt, const Vector &vecShootAtVelocity, int nShotsTillPredict )
+void CNPC_MetroPolice::SteerBurstTowardTargetUseVelocity( const Vector& vecShootAt, const Vector& vecShootAtVelocity, int nShotsTillPredict )
 {
 	// Only account for all velocity changes
 	// This one looks scary in that it always gets near to the player,
@@ -2403,20 +2467,20 @@ void CNPC_MetroPolice::SteerBurstTowardTargetUseVelocity( const Vector &vecShoot
 	Vector vecBurstDir = m_vecBurstLineOfDeathDelta;
 	m_vecBurstLineOfDeathDelta = vecShootAtVelocity;
 	vecBurstDir = vecShootAtVelocity - vecBurstDir;
-	vecBurstDir /= (nShotsTillPredict - 1);
+	vecBurstDir /= ( nShotsTillPredict - 1 );
 
 	m_vecBurstDelta += vecBurstDir;
 }
 
-void CNPC_MetroPolice::SteerBurstTowardTargetUsePosition( const Vector &vecShootAt, const Vector &vecShootAtVelocity, int nShotsTillPredict )
+void CNPC_MetroPolice::SteerBurstTowardTargetUsePosition( const Vector& vecShootAt, const Vector& vecShootAtVelocity, int nShotsTillPredict )
 {
 	// Account for velocity + position changes
 	// This method *always* hits
 	VectorSubtract( vecShootAt, m_vecBurstTargetPos, m_vecBurstDelta );
-	m_vecBurstDelta /= (nShotsTillPredict - 1);
+	m_vecBurstDelta /= ( nShotsTillPredict - 1 );
 }
 
-void CNPC_MetroPolice::SteerBurstTowardPredictedPoint( const Vector &vecShootAt, const Vector &vecShootAtVelocity, int nShotsTillPredict )
+void CNPC_MetroPolice::SteerBurstTowardPredictedPoint( const Vector& vecShootAt, const Vector& vecShootAtVelocity, int nShotsTillPredict )
 {
 	// Account for velocity + position changes, but only within a constrained cylinder
 	Vector vecConstrainedShootPosition;
@@ -2424,7 +2488,7 @@ void CNPC_MetroPolice::SteerBurstTowardPredictedPoint( const Vector &vecShootAt,
 
 	Vector vecDelta;
 	VectorSubtract( vecShootAt, vecConstrainedShootPosition, vecDelta );
-	if ( vecDelta.LengthSqr( ) <= m_flBurstSteerDistance * m_flBurstSteerDistance )
+	if( vecDelta.LengthSqr( ) <= m_flBurstSteerDistance * m_flBurstSteerDistance )
 	{
 		vecConstrainedShootPosition = vecShootAt;
 	}
@@ -2436,9 +2500,9 @@ void CNPC_MetroPolice::SteerBurstTowardPredictedPoint( const Vector &vecShootAt,
 
 	// This method *always* hits if the entity is within the cylinder
 	VectorSubtract( vecConstrainedShootPosition, m_vecBurstTargetPos, m_vecBurstDelta );
-	if ( nShotsTillPredict >= 2 )
+	if( nShotsTillPredict >= 2 )
 	{
-		m_vecBurstDelta /= (nShotsTillPredict - 1);
+		m_vecBurstDelta /= ( nShotsTillPredict - 1 );
 	}
 }
 
@@ -2457,10 +2521,10 @@ void CNPC_MetroPolice::SteerBurstWithinLineOfDeath( )
 
 	Vector vecDelta;
 	VectorSubtract( vecShootAt, vecPointOnLineOfDeath, vecDelta );
-	if ( vecDelta.LengthSqr( ) <= m_flBurstSteerDistance * m_flBurstSteerDistance )
+	if( vecDelta.LengthSqr( ) <= m_flBurstSteerDistance * m_flBurstSteerDistance )
 	{
 		VectorSubtract( vecShootAt, m_vecBurstTargetPos, m_vecBurstDelta );
-		if ( m_vecBurstDelta.LengthSqr() > (STEER_LINE_OF_DEATH_MAX_DISTANCE * STEER_LINE_OF_DEATH_MAX_DISTANCE) )
+		if( m_vecBurstDelta.LengthSqr() > ( STEER_LINE_OF_DEATH_MAX_DISTANCE * STEER_LINE_OF_DEATH_MAX_DISTANCE ) )
 		{
 			VectorNormalize( m_vecBurstDelta );
 			m_vecBurstDelta *= STEER_LINE_OF_DEATH_MAX_DISTANCE;
@@ -2473,7 +2537,7 @@ void CNPC_MetroPolice::SteerBurstWithinLineOfDeath( )
 
 		float t;
 		CalcClosestPointOnLine( vecNext, m_vecBurstLineOfDeathOrigin, m_vecBurstLineOfDeathOrigin + m_vecBurstLineOfDeathDelta, vecPointOnLineOfDeath, &t );
-		if (( t < -0.1f ) || ( t > 1.1f ))
+		if( ( t < -0.1f ) || ( t > 1.1f ) )
 		{
 			m_vecBurstDelta *= -1.0f;
 
@@ -2493,26 +2557,30 @@ void CNPC_MetroPolice::SteerBurstWithinLineOfDeath( )
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SteerBurstTowardTarget( )
 {
-	switch ( m_nBurstSteerMode )
+	switch( m_nBurstSteerMode )
 	{
-	case BURST_STEER_NONE:
-		return;
+		case BURST_STEER_NONE:
+			return;
 
-	case BURST_STEER_EXACTLY_TOWARD_TARGET:
-		// Necessary to get the cop looking at the target
-		m_vecBurstTargetPos = GetEnemy()->WorldSpaceCenter();
-		return;
- 
-	case BURST_STEER_ADJUST_FOR_SPEED_CHANGES:
+		case BURST_STEER_EXACTLY_TOWARD_TARGET:
+			// Necessary to get the cop looking at the target
+			m_vecBurstTargetPos = GetEnemy()->WorldSpaceCenter();
+			return;
+
+		case BURST_STEER_ADJUST_FOR_SPEED_CHANGES:
 		{
 			// Predict the airboat position at the point where we were expecting to hit them
-			if ( m_flBurstPredictTime <= gpGlobals->curtime )
+			if( m_flBurstPredictTime <= gpGlobals->curtime )
+			{
 				return;
+			}
 
 			float flPredictTime = m_flBurstPredictTime - gpGlobals->curtime;
 			int nShotsTillPredict = CountShotsInTime( flPredictTime );
-			if ( nShotsTillPredict <= 1 )
+			if( nShotsTillPredict <= 1 )
+			{
 				return;
+			}
 
 			Vector vecShootAt, vecShootAtVelocity;
 			PredictShootTargetPosition( flPredictTime, 0.0f, 0.0f, &vecShootAt, &vecShootAtVelocity );
@@ -2520,15 +2588,17 @@ void CNPC_MetroPolice::SteerBurstTowardTarget( )
 		}
 		break;
 
-	case BURST_STEER_TOWARD_PREDICTED_POINT:
-		// Don't course-correct until the predicted time
-		if ( m_flBurstPredictTime >= gpGlobals->curtime )
-			return;
+		case BURST_STEER_TOWARD_PREDICTED_POINT:
+			// Don't course-correct until the predicted time
+			if( m_flBurstPredictTime >= gpGlobals->curtime )
+			{
+				return;
+			}
 
 		// fall through!
 
-	case BURST_STEER_WITHIN_LINE_OF_DEATH:
-		break;
+		case BURST_STEER_WITHIN_LINE_OF_DEATH:
+			break;
 	}
 
 	SteerBurstWithinLineOfDeath( );
@@ -2538,7 +2608,7 @@ void CNPC_MetroPolice::SteerBurstTowardTarget( )
 //-----------------------------------------------------------------------------
 // Various burst trajectory methods
 //-----------------------------------------------------------------------------
-Vector CNPC_MetroPolice::ComputeBurstLockOnTrajectory( const Vector &shootOrigin )
+Vector CNPC_MetroPolice::ComputeBurstLockOnTrajectory( const Vector& shootOrigin )
 {
 	Vector vecTrajectory;
 	VectorSubtract( GetEnemy()->WorldSpaceCenter(), shootOrigin, vecTrajectory );
@@ -2546,7 +2616,7 @@ Vector CNPC_MetroPolice::ComputeBurstLockOnTrajectory( const Vector &shootOrigin
 	return vecTrajectory;
 }
 
-Vector CNPC_MetroPolice::ComputeBurstDeliberatelyMissTrajectory( const Vector &shootOrigin )
+Vector CNPC_MetroPolice::ComputeBurstDeliberatelyMissTrajectory( const Vector& shootOrigin )
 {
 	m_vecBurstTargetPos.z += 8.0f;
 
@@ -2556,23 +2626,23 @@ Vector CNPC_MetroPolice::ComputeBurstDeliberatelyMissTrajectory( const Vector &s
 	return vecTrajectory;
 }
 
-Vector CNPC_MetroPolice::ComputeBurstTrajectory( const Vector &shootOrigin )
+Vector CNPC_MetroPolice::ComputeBurstTrajectory( const Vector& shootOrigin )
 {
 	// Perform the stitch
 	Vector vecPos = m_vecBurstTargetPos;
 
 	// For players, don't let them jump over the burst.
-	CBaseEntity *pEnemy = GetEnemy();
+	CBaseEntity* pEnemy = GetEnemy();
 	bool bIsPlayerOnFoot = pEnemy && pEnemy->IsPlayer() && !IsEnemyInAnAirboat();
-	if ( bIsPlayerOnFoot )
+	if( bIsPlayerOnFoot )
 	{
 		Vector vecNormalizedPt;
 		pEnemy->CollisionProp()->WorldToNormalizedSpace( vecPos, &vecNormalizedPt );
-		if ( (vecNormalizedPt.x >= -0.1f) && (vecNormalizedPt.x <= 1.1f) &&
-			(vecNormalizedPt.y >= -0.1f) && (vecNormalizedPt.y <= 1.1f) &&
-			(vecNormalizedPt.z >= -0.7f) && (vecNormalizedPt.z < 1.1f) )
+		if( ( vecNormalizedPt.x >= -0.1f ) && ( vecNormalizedPt.x <= 1.1f ) &&
+				( vecNormalizedPt.y >= -0.1f ) && ( vecNormalizedPt.y <= 1.1f ) &&
+				( vecNormalizedPt.z >= -0.7f ) && ( vecNormalizedPt.z < 1.1f ) )
 		{
- 			vecPos.z = pEnemy->WorldSpaceCenter().z;
+			vecPos.z = pEnemy->WorldSpaceCenter().z;
 		}
 	}
 
@@ -2596,10 +2666,10 @@ Vector CNPC_MetroPolice::ComputeBurstTrajectory( const Vector &shootOrigin )
 		// Allow for steering towards the target.
 		SteerBurstTowardTarget();
 	}
-	
+
 	// Update the burst target position
 	m_vecBurstTargetPos += m_vecBurstDelta;
-	
+
 //	NDebugOverlay::Cross3D( m_vecBurstTargetPos, -Vector(32,32,32), Vector(32,32,32), 255, 0, 255, false, 1.0f );
 
 	return vecPos;
@@ -2609,13 +2679,13 @@ Vector CNPC_MetroPolice::ComputeBurstTrajectory( const Vector &shootOrigin )
 //-----------------------------------------------------------------------------
 // Deliberately aims as close as possible w/o hitting
 //-----------------------------------------------------------------------------
-Vector CNPC_MetroPolice::AimCloseToTargetButMiss( CBaseEntity *pTarget, const Vector &shootOrigin )
+Vector CNPC_MetroPolice::AimCloseToTargetButMiss( CBaseEntity* pTarget, const Vector& shootOrigin )
 {
 	Vector vecNormalizedSpace;
 	pTarget->CollisionProp()->WorldToNormalizedSpace( shootOrigin, &vecNormalizedSpace );
 	vecNormalizedSpace -= Vector( 0.5f, 0.5f, 0.5f );
 	float flDist = VectorNormalize( vecNormalizedSpace );
-	float flMinRadius = flDist * sqrt(3.0) / sqrt( flDist * flDist - 3 );
+	float flMinRadius = flDist * sqrt( 3.0 ) / sqrt( flDist * flDist - 3 );
 
 	// Choose random points in a plane perpendicular to the shoot origin.
 	Vector vecRandomDir;
@@ -2640,16 +2710,16 @@ Vector CNPC_MetroPolice::AimCloseToTargetButMiss( CBaseEntity *pTarget, const Ve
 #define MIN_TIGHT_BURST_DIST 1000.0f
 #define MAX_TIGHT_BURST_DIST 2000.0f
 
-Vector CNPC_MetroPolice::ComputeTightBurstTrajectory( const Vector &shootOrigin )
+Vector CNPC_MetroPolice::ComputeTightBurstTrajectory( const Vector& shootOrigin )
 {
-	CBaseEntity *pEnemy = GetEnemy();
-	if ( !pEnemy )
+	CBaseEntity* pEnemy = GetEnemy();
+	if( !pEnemy )
 	{
 		return BaseClass::GetActualShootTrajectory( shootOrigin );
 	}
 
 	// Aim around the player...
-	if ( m_nBurstHits >= m_nMaxBurstHits )
+	if( m_nBurstHits >= m_nMaxBurstHits )
 	{
 		return AimCloseToTargetButMiss( pEnemy, shootOrigin );
 	}
@@ -2657,7 +2727,7 @@ Vector CNPC_MetroPolice::ComputeTightBurstTrajectory( const Vector &shootOrigin 
 	float flDist = shootOrigin.DistTo( pEnemy->WorldSpaceCenter() );
 	float flMin = -0.2f;
 	float flMax = 1.2f;
-	if ( flDist > MIN_TIGHT_BURST_DIST )
+	if( flDist > MIN_TIGHT_BURST_DIST )
 	{
 		flDist = clamp( flDist, MIN_TIGHT_BURST_DIST, MAX_TIGHT_BURST_DIST );
 		flMin = SimpleSplineRemapVal( flDist, MIN_TIGHT_BURST_DIST, MAX_TIGHT_BURST_DIST, -0.2f, -0.7f );
@@ -2676,52 +2746,52 @@ Vector CNPC_MetroPolice::ComputeTightBurstTrajectory( const Vector &shootOrigin 
 //-----------------------------------------------------------------------------
 // Burst mode!
 //-----------------------------------------------------------------------------
-Vector CNPC_MetroPolice::GetActualShootTrajectory( const Vector &shootOrigin )
+Vector CNPC_MetroPolice::GetActualShootTrajectory( const Vector& shootOrigin )
 {
-	switch ( m_nBurstMode )
+	switch( m_nBurstMode )
 	{
-	case BURST_NOT_ACTIVE:
-		return BaseClass::GetActualShootTrajectory( shootOrigin );
+		case BURST_NOT_ACTIVE:
+			return BaseClass::GetActualShootTrajectory( shootOrigin );
 
-	case BURST_LOCKED_ON:
-		if ( m_nBurstHits < m_nMaxBurstHits )
-		{
-			return ComputeBurstLockOnTrajectory( shootOrigin );
-		}
+		case BURST_LOCKED_ON:
+			if( m_nBurstHits < m_nMaxBurstHits )
+			{
+				return ComputeBurstLockOnTrajectory( shootOrigin );
+			}
 
-		// Start shooting over the head of the enemy
-		GetShootTarget()->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 1.0f ), &m_vecBurstTargetPos );
-		m_nBurstMode = BURST_DELIBERATELY_MISS;
+			// Start shooting over the head of the enemy
+			GetShootTarget()->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 1.0f ), &m_vecBurstTargetPos );
+			m_nBurstMode = BURST_DELIBERATELY_MISS;
 		// NOTE: Fall through to BURST_DELIBERATELY_MISS!!
 
-	case BURST_DELIBERATELY_MISS:
-		return ComputeBurstDeliberatelyMissTrajectory( shootOrigin );
+		case BURST_DELIBERATELY_MISS:
+			return ComputeBurstDeliberatelyMissTrajectory( shootOrigin );
 
-	case BURST_LOCK_ON_AFTER_HIT:
-		// See if our target is within the bounds of the enemy
-		if ( GetShootTarget()->CollisionProp()->IsPointInBounds( m_vecBurstTargetPos ) )
-		{
-			// Now raytrace against only the world + (good for cops on bridges)
-			trace_t tr;
-			CTraceFilterWorldOnly traceFilter;
-			UTIL_TraceLine( Weapon_ShootPosition(), m_vecBurstTargetPos, MASK_SOLID, &traceFilter, &tr );
-			if ( tr.fraction == 1.0f )
+		case BURST_LOCK_ON_AFTER_HIT:
+			// See if our target is within the bounds of the enemy
+			if( GetShootTarget()->CollisionProp()->IsPointInBounds( m_vecBurstTargetPos ) )
 			{
-				m_nBurstMode = BURST_LOCKED_ON;
+				// Now raytrace against only the world + (good for cops on bridges)
+				trace_t tr;
+				CTraceFilterWorldOnly traceFilter;
+				UTIL_TraceLine( Weapon_ShootPosition(), m_vecBurstTargetPos, MASK_SOLID, &traceFilter, &tr );
+				if( tr.fraction == 1.0f )
+				{
+					m_nBurstMode = BURST_LOCKED_ON;
+				}
 			}
-		}
 		// NOTE: Fall through to BURST_ACTIVE!
 
-	case BURST_ACTIVE:
-		// Stitch toward the target, we haven't hit it yet
-		return ComputeBurstTrajectory( shootOrigin );
+		case BURST_ACTIVE:
+			// Stitch toward the target, we haven't hit it yet
+			return ComputeBurstTrajectory( shootOrigin );
 
-	case BURST_TIGHT_GROUPING:
-		// This one goes right at the enemy
-		return ComputeTightBurstTrajectory( shootOrigin );
+		case BURST_TIGHT_GROUPING:
+			// This one goes right at the enemy
+			return ComputeTightBurstTrajectory( shootOrigin );
 	}
 
-	Assert(0);
+	Assert( 0 );
 	return vec3_origin;
 }
 
@@ -2729,20 +2799,20 @@ Vector CNPC_MetroPolice::GetActualShootTrajectory( const Vector &shootOrigin )
 //-----------------------------------------------------------------------------
 // Burst mode!
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::FireBullets( const FireBulletsInfo_t &info )
+void CNPC_MetroPolice::FireBullets( const FireBulletsInfo_t& info )
 {
-	CBaseEntity *pEnemy = GetEnemy();
+	CBaseEntity* pEnemy = GetEnemy();
 	bool bIsPlayer = pEnemy && pEnemy->IsPlayer();
-	if ( bIsPlayer && IsCurrentlyFiringBurst() )
+	if( bIsPlayer && IsCurrentlyFiringBurst() )
 	{
 		FireBulletsInfo_t actualInfo = info;
-		if ( m_nBurstHits < m_nMaxBurstHits )
+		if( m_nBurstHits < m_nMaxBurstHits )
 		{
-			CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(pEnemy);
+			CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pEnemy );
 
-			// This makes it so that if the player gets hit underwater, 
+			// This makes it so that if the player gets hit underwater,
 			// he won't take damage if his viewpoint is above water.
-			if ( !IsEnemyInAnAirboat() && ( pPlayer->GetWaterLevel() != 3 ) )
+			if( !IsEnemyInAnAirboat() && ( pPlayer->GetWaterLevel() != 3 ) )
 			{
 				actualInfo.m_nFlags |= FIRE_BULLETS_DONT_HIT_UNDERWATER;
 			}
@@ -2753,7 +2823,7 @@ void CNPC_MetroPolice::FireBullets( const FireBulletsInfo_t &info )
 
 			BaseClass::FireBullets( actualInfo );
 
-			if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
+			if( ( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ) )
 			{
 				++m_nBurstHits;
 			}
@@ -2761,7 +2831,7 @@ void CNPC_MetroPolice::FireBullets( const FireBulletsInfo_t &info )
 		else
 		{
 			actualInfo.m_pAdditionalIgnoreEnt = pEnemy;
-			BaseClass::FireBullets( actualInfo ); 
+			BaseClass::FireBullets( actualInfo );
 		}
 	}
 	else
@@ -2783,77 +2853,77 @@ bool CNPC_MetroPolice::CreateBehaviors()
 	AddBehavior( &m_AssaultBehavior );
 	AddBehavior( &m_StandoffBehavior );
 	AddBehavior( &m_FuncTankBehavior );
-	
+
 	return BaseClass::CreateBehaviors();
 }
 
-void CNPC_MetroPolice::InputEnableManhackToss( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputEnableManhackToss( inputdata_t& inputdata )
 {
-	if ( HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
 	{
 		RemoveSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY );
 	}
 }
 
 #ifdef MAPBASE
-void CNPC_MetroPolice::InputDisableManhackToss( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputDisableManhackToss( inputdata_t& inputdata )
 {
-	if ( !HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
+	if( !HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
 	{
 		AddSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY );
 	}
 }
 
-void CNPC_MetroPolice::InputDeployManhack( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputDeployManhack( inputdata_t& inputdata )
 {
 	// I am aware this bypasses regular deployment conditions, but the mapper wants us to deploy a manhack, damn it!
 	// We do have to have one, though.
-	if ( m_iManhacks > 0 )
+	if( m_iManhacks > 0 )
 	{
-		SetSchedule(SCHED_METROPOLICE_DEPLOY_MANHACK);
+		SetSchedule( SCHED_METROPOLICE_DEPLOY_MANHACK );
 	}
 }
 
-void CNPC_MetroPolice::InputAddManhacks( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputAddManhacks( inputdata_t& inputdata )
 {
 	m_iManhacks += inputdata.value.Int();
 
-	SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, (m_iManhacks > 0) );
+	SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, ( m_iManhacks > 0 ) );
 }
 
-void CNPC_MetroPolice::InputSetManhacks( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputSetManhacks( inputdata_t& inputdata )
 {
 	m_iManhacks = inputdata.value.Int();
 
-	SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, (m_iManhacks > 0) );
+	SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, ( m_iManhacks > 0 ) );
 }
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::InputSetPoliceGoal( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputSetPoliceGoal( inputdata_t& inputdata )
 {
 #ifdef MAPBASE
-	if (/*!inputdata.value.String() ||*/ inputdata.value.String()[0] == 0)
+	if( /*!inputdata.value.String() ||*/ inputdata.value.String()[0] == 0 )
 	{
 		m_PolicingBehavior.Disable();
 		return;
 	}
 #endif
 
-	CBaseEntity *pGoal = gEntList.FindEntityByName( NULL, inputdata.value.String() );
+	CBaseEntity* pGoal = gEntList.FindEntityByName( NULL, inputdata.value.String() );
 
-	if ( pGoal == NULL )
+	if( pGoal == NULL )
 	{
 		DevMsg( "SetPoliceGoal: %s (%s) unable to find ai_goal_police: %s\n", GetClassname(), GetDebugName(), inputdata.value.String() );
 		return;
 	}
 
-	CAI_PoliceGoal *pPoliceGoal = dynamic_cast<CAI_PoliceGoal *>(pGoal);
+	CAI_PoliceGoal* pPoliceGoal = dynamic_cast<CAI_PoliceGoal*>( pGoal );
 
-	if ( pPoliceGoal == NULL )
+	if( pPoliceGoal == NULL )
 	{
 		DevMsg( "SetPoliceGoal: %s (%s)'s target %s is not an ai_goal_police entity!\n", GetClassname(), GetDebugName(), inputdata.value.String() );
 		return;
@@ -2863,38 +2933,38 @@ void CNPC_MetroPolice::InputSetPoliceGoal( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::InputActivateBaton( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputActivateBaton( inputdata_t& inputdata )
 {
 	SetBatonState( inputdata.value.Bool() );
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::InputAdministerJustice( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputAdministerJustice( inputdata_t& inputdata )
 {
 	AdministerJustice();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::InputAddWarnings( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputAddWarnings( inputdata_t& inputdata )
 {
 	m_nNumWarnings += inputdata.value.Int();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::InputSetWarnings( inputdata_t &inputdata )
+void CNPC_MetroPolice::InputSetWarnings( inputdata_t& inputdata )
 {
 	m_nNumWarnings = inputdata.value.Int();
 }
@@ -2902,7 +2972,7 @@ void CNPC_MetroPolice::InputSetWarnings( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AlertSound( void )
@@ -2916,17 +2986,19 @@ void CNPC_MetroPolice::AlertSound( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo &info )
+void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo& info )
 {
-	if ( IsOnFire() )
+	if( IsOnFire() )
+	{
 		return;
+	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 	AI_CriteriaSet set;
-	ModifyOrAppendDamageCriteria(set, info);
+	ModifyOrAppendDamageCriteria( set, info );
 	SpeakIfAllowed( TLK_COP_DIE, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 #else
 	m_Sentences.Speak( "METROPOLICE_DIE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
@@ -2940,34 +3012,38 @@ void CNPC_MetroPolice::DeathSound( const CTakeDamageInfo &info )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::LostEnemySound( void)
+void CNPC_MetroPolice::LostEnemySound( void )
 {
 	// Don't announce enemies when the player isn't a criminal
-	if ( !PlayerIsCriminal() )
+	if( !PlayerIsCriminal() )
+	{
 		return;
+	}
 
-	if ( gpGlobals->curtime <= m_flNextLostSoundTime )
+	if( gpGlobals->curtime <= m_flNextLostSoundTime )
+	{
 		return;
+	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	if (SpeakIfAllowed(TLK_COP_LOSTENEMY))
+	if( SpeakIfAllowed( TLK_COP_LOSTENEMY ) )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat( 5.0, 15.0 );
 	}
 #else
-	const char *pSentence;
-	if (!(CBaseEntity*)GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10)
+	const char* pSentence;
+	if( !( CBaseEntity* )GetEnemy() || gpGlobals->curtime - GetEnemyLastTimeSeen() > 10 )
 	{
-		pSentence = "METROPOLICE_LOST_LONG"; 
+		pSentence = "METROPOLICE_LOST_LONG";
 	}
 	else
 	{
 		pSentence = "METROPOLICE_LOST_SHORT";
 	}
 
-	if ( m_Sentences.Speak( pSentence ) >= 0 )
+	if( m_Sentences.Speak( pSentence ) >= 0 )
 	{
-		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat(5.0,15.0);
+		m_flNextLostSoundTime = gpGlobals->curtime + random->RandomFloat( 5.0, 15.0 );
 	}
 #endif
 }
@@ -2979,11 +3055,13 @@ void CNPC_MetroPolice::LostEnemySound( void)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::FoundEnemySound( void)
+void CNPC_MetroPolice::FoundEnemySound( void )
 {
 	// Don't announce enemies when I'm in arrest behavior
-	if ( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	{
 		return;
+	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 	SpeakIfAllowed( TLK_COP_REFINDENEMY, SENTENCE_PRIORITY_HIGH );
@@ -2999,10 +3077,12 @@ void CNPC_MetroPolice::FoundEnemySound( void)
 bool CNPC_MetroPolice::ShouldPlayIdleSound( void )
 {
 	// If someone is waiting for a response, then respond!
-	if ( ( m_NPCState == NPC_STATE_IDLE ) || ( m_NPCState == NPC_STATE_ALERT ) )
+	if( ( m_NPCState == NPC_STATE_IDLE ) || ( m_NPCState == NPC_STATE_ALERT ) )
 	{
-		if ( m_nIdleChatterType >= METROPOLICE_CHATTER_RESPONSE )
+		if( m_nIdleChatterType >= METROPOLICE_CHATTER_RESPONSE )
+		{
 			return FOkToMakeSound();
+		}
 	}
 
 	return BaseClass::ShouldPlayIdleSound();
@@ -3010,7 +3090,7 @@ bool CNPC_MetroPolice::ShouldPlayIdleSound( void )
 
 
 //-----------------------------------------------------------------------------
-// IdleSound 
+// IdleSound
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::IdleSound( void )
 {
@@ -3018,49 +3098,51 @@ void CNPC_MetroPolice::IdleSound( void )
 	// This happens when the NPC is waiting for his buddies to respond to him
 	switch( m_nIdleChatterType )
 	{
-	case METROPOLICE_CHATTER_WAIT_FOR_RESPONSE:
-		break;
+		case METROPOLICE_CHATTER_WAIT_FOR_RESPONSE:
+			break;
 
-	case METROPOLICE_CHATTER_ASK_QUESTION:
+		case METROPOLICE_CHATTER_ASK_QUESTION:
 		{
-			if ( m_bPlayerIsNear && !HasMemory(bits_MEMORY_PLAYER_HARASSED) )
+			if( m_bPlayerIsNear && !HasMemory( bits_MEMORY_PLAYER_HARASSED ) )
 			{
-				if ( SpeakIfAllowed( TLK_COP_HARASS, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL ) )
+				if( SpeakIfAllowed( TLK_COP_HARASS, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL ) )
 				{
 					Remember( bits_MEMORY_PLAYER_HARASSED );
-					if ( GetSquad() )
+					if( GetSquad() )
 					{
-						GetSquad()->SquadRemember(bits_MEMORY_PLAYER_HARASSED);
+						GetSquad()->SquadRemember( bits_MEMORY_PLAYER_HARASSED );
 					}
 				}
 				return;
 			}
 
-			if ( !random->RandomInt(0,1) )
-				break;
-
-			int nQuestionType = random->RandomInt( 0, METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT );
-			if ( !IsInSquad() || ( nQuestionType == METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT ) )
+			if( !random->RandomInt( 0, 1 ) )
 			{
-				SpeakIfAllowed(TLK_COP_IDLE);
 				break;
 			}
 
-			if ( SpeakIfAllowed( TLK_COP_QUESTION, UTIL_VarArgs("combinequestion:%d", nQuestionType) ) )
+			int nQuestionType = random->RandomInt( 0, METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT );
+			if( !IsInSquad() || ( nQuestionType == METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT ) )
 			{
-				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, (void*)(METROPOLICE_CHATTER_RESPONSE + nQuestionType), this );
+				SpeakIfAllowed( TLK_COP_IDLE );
+				break;
+			}
+
+			if( SpeakIfAllowed( TLK_COP_QUESTION, UTIL_VarArgs( "combinequestion:%d", nQuestionType ) ) )
+			{
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, ( void* )( METROPOLICE_CHATTER_RESPONSE + nQuestionType ), this );
 				m_nIdleChatterType = METROPOLICE_CHATTER_WAIT_FOR_RESPONSE;
 			}
 		}
 		break;
 
-	default:
+		default:
 		{
 			int nResponseType = m_nIdleChatterType - METROPOLICE_CHATTER_RESPONSE;
 
-			if ( SpeakIfAllowed( TLK_COP_ANSWER, UTIL_VarArgs("combinequestion:%d", nResponseType) ) )
+			if( SpeakIfAllowed( TLK_COP_ANSWER, UTIL_VarArgs( "combinequestion:%d", nResponseType ) ) )
 			{
-				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, (void*)(METROPOLICE_CHATTER_ASK_QUESTION), this );
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, ( void* )( METROPOLICE_CHATTER_ASK_QUESTION ), this );
 				m_nIdleChatterType = METROPOLICE_CHATTER_ASK_QUESTION;
 			}
 		}
@@ -3072,61 +3154,63 @@ void CNPC_MetroPolice::IdleSound( void )
 	// This happens when the NPC is waiting for his buddies to respond to him
 	switch( m_nIdleChatterType )
 	{
-	case METROPOLICE_CHATTER_WAIT_FOR_RESPONSE:
-		break;
+		case METROPOLICE_CHATTER_WAIT_FOR_RESPONSE:
+			break;
 
-	case METROPOLICE_CHATTER_ASK_QUESTION:
+		case METROPOLICE_CHATTER_ASK_QUESTION:
 		{
-			if ( m_bPlayerIsNear && !HasMemory(bits_MEMORY_PLAYER_HARASSED) )
+			if( m_bPlayerIsNear && !HasMemory( bits_MEMORY_PLAYER_HARASSED ) )
 			{
-				if ( m_Sentences.Speak( "METROPOLICE_IDLE_HARASS_PLAYER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL ) >= 0 )
+				if( m_Sentences.Speak( "METROPOLICE_IDLE_HARASS_PLAYER", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL ) >= 0 )
 				{
 					Remember( bits_MEMORY_PLAYER_HARASSED );
-					if ( GetSquad() )
+					if( GetSquad() )
 					{
-						GetSquad()->SquadRemember(bits_MEMORY_PLAYER_HARASSED);
+						GetSquad()->SquadRemember( bits_MEMORY_PLAYER_HARASSED );
 					}
 				}
 				return;
 			}
 
-			if ( !random->RandomInt(0,1) )
+			if( !random->RandomInt( 0, 1 ) )
+			{
 				break;
+			}
 
 			int nQuestionType = random->RandomInt( 0, METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT );
-			if ( !IsInSquad() || ( nQuestionType == METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT ) )
+			if( !IsInSquad() || ( nQuestionType == METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT ) )
 			{
 				m_Sentences.Speak( bIsCriminal ? "METROPOLICE_IDLE_CR" : "METROPOLICE_IDLE" );
 				break;
 			}
 
-			static const char *pQuestion[2][METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT] = 
+			static const char* pQuestion[2][METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT] =
 			{
 				{ "METROPOLICE_IDLE_CHECK",		"METROPOLICE_IDLE_QUEST" },
 				{ "METROPOLICE_IDLE_CHECK_CR",	"METROPOLICE_IDLE_QUEST_CR" },
 			};
 
-			if ( m_Sentences.Speak( pQuestion[bIsCriminal][nQuestionType] ) >= 0 )
+			if( m_Sentences.Speak( pQuestion[bIsCriminal][nQuestionType] ) >= 0 )
 			{
-				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, (void*)(METROPOLICE_CHATTER_RESPONSE + nQuestionType), this );
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, ( void* )( METROPOLICE_CHATTER_RESPONSE + nQuestionType ), this );
 				m_nIdleChatterType = METROPOLICE_CHATTER_WAIT_FOR_RESPONSE;
 			}
 		}
 		break;
 
-	default:
+		default:
 		{
 			int nResponseType = m_nIdleChatterType - METROPOLICE_CHATTER_RESPONSE;
 
-			static const char *pResponse[2][METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT] = 
+			static const char* pResponse[2][METROPOLICE_CHATTER_RESPONSE_TYPE_COUNT] =
 			{
 				{ "METROPOLICE_IDLE_CLEAR",		"METROPOLICE_IDLE_ANSWER" },
 				{ "METROPOLICE_IDLE_CLEAR_CR",	"METROPOLICE_IDLE_ANSWER_CR" },
 			};
 
-			if ( m_Sentences.Speak( pResponse[bIsCriminal][nResponseType] ) >= 0 )
+			if( m_Sentences.Speak( pResponse[bIsCriminal][nResponseType] ) >= 0 )
 			{
-				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, (void*)(METROPOLICE_CHATTER_ASK_QUESTION), this );
+				GetSquad()->BroadcastInteraction( g_interactionMetrocopIdleChatter, ( void* )( METROPOLICE_CHATTER_ASK_QUESTION ), this );
 				m_nIdleChatterType = METROPOLICE_CHATTER_ASK_QUESTION;
 			}
 		}
@@ -3137,38 +3221,42 @@ void CNPC_MetroPolice::IdleSound( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::PainSound( const CTakeDamageInfo &info )
+void CNPC_MetroPolice::PainSound( const CTakeDamageInfo& info )
 {
-	if ( gpGlobals->curtime < m_flNextPainSoundTime )
+	if( gpGlobals->curtime < m_flNextPainSoundTime )
+	{
 		return;
+	}
 
 	// Don't make pain sounds if I'm on fire. The looping sound will take care of that for us.
-	if ( IsOnFire() )
+	if( IsOnFire() )
+	{
 		return;
+	}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 	AI_CriteriaSet set;
-	ModifyOrAppendDamageCriteria(set, info);
-	SpeakIfAllowed(TLK_COP_PAIN, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+	ModifyOrAppendDamageCriteria( set, info );
+	SpeakIfAllowed( TLK_COP_PAIN, set, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 	m_flNextPainSoundTime = gpGlobals->curtime + 1;
 #else
-	float healthRatio = (float)GetHealth() / (float)GetMaxHealth();
-	if ( healthRatio > 0.0f )
+	float healthRatio = ( float )GetHealth() / ( float )GetMaxHealth();
+	if( healthRatio > 0.0f )
 	{
-		const char *pSentenceName = "METROPOLICE_PAIN";
-		if ( !HasMemory(bits_MEMORY_PAIN_HEAVY_SOUND) && (healthRatio < 0.25f) )
+		const char* pSentenceName = "METROPOLICE_PAIN";
+		if( !HasMemory( bits_MEMORY_PAIN_HEAVY_SOUND ) && ( healthRatio < 0.25f ) )
 		{
 			Remember( bits_MEMORY_PAIN_HEAVY_SOUND | bits_MEMORY_PAIN_LIGHT_SOUND );
 			pSentenceName = "METROPOLICE_PAIN_HEAVY";
 		}
-		else if ( !HasMemory(bits_MEMORY_PAIN_LIGHT_SOUND) && healthRatio > 0.8f )
+		else if( !HasMemory( bits_MEMORY_PAIN_LIGHT_SOUND ) && healthRatio > 0.8f )
 		{
 			Remember( bits_MEMORY_PAIN_LIGHT_SOUND );
 			pSentenceName = "METROPOLICE_PAIN_LIGHT";
 		}
-		
+
 		// This causes it to speak it no matter what; doesn't bother with setting sounds.
 		m_Sentences.Speak( pSentenceName, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 		m_flNextPainSoundTime = gpGlobals->curtime + 1;
@@ -3177,61 +3265,65 @@ void CNPC_MetroPolice::PainSound( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::GetSoundInterests( void )
 {
-	return SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_PLAYER_VEHICLE | SOUND_DANGER | 
-		SOUND_PHYSICS_DANGER | SOUND_BULLET_IMPACT | SOUND_MOVE_AWAY;
+	return SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_PLAYER_VEHICLE | SOUND_DANGER |
+		   SOUND_PHYSICS_DANGER | SOUND_BULLET_IMPACT | SOUND_MOVE_AWAY;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CNPC_MetroPolice::MaxYawSpeed( void )
 {
 	switch( GetActivity() )
 	{
-	case ACT_TURN_LEFT:
-	case ACT_TURN_RIGHT:
-		return 120;
+		case ACT_TURN_LEFT:
+		case ACT_TURN_RIGHT:
+			return 120;
 
-	case ACT_RUN:
-	case ACT_RUN_HURT:
-		return 15;
+		case ACT_RUN:
+		case ACT_RUN_HURT:
+			return 15;
 
-	case ACT_WALK:
-	case ACT_WALK_CROUCH:
-	case ACT_RUN_CROUCH:
-		return 25;
+		case ACT_WALK:
+		case ACT_WALK_CROUCH:
+		case ACT_RUN_CROUCH:
+			return 25;
 
-	default:
-		return 45;
+		default:
+			return 45;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
-Class_T	CNPC_MetroPolice::Classify ( void )
+Class_T	CNPC_MetroPolice::Classify( void )
 {
 	return CLASS_METROPOLICE;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::PlayerIsCriminal( void )
 {
-	if ( m_PolicingBehavior.IsEnabled() && m_PolicingBehavior.TargetIsHostile() )
+	if( m_PolicingBehavior.IsEnabled() && m_PolicingBehavior.TargetIsHostile() )
+	{
 		return true;
+	}
 
-	if ( GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_ON )
+	if( GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_ON )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -3241,21 +3333,25 @@ bool CNPC_MetroPolice::PlayerIsCriminal( void )
 // Input  : pTarget - Entity with which to determine relationship.
 // Output : Returns relationship value.
 //-----------------------------------------------------------------------------
-Disposition_t CNPC_MetroPolice::IRelationType(CBaseEntity *pTarget)
+Disposition_t CNPC_MetroPolice::IRelationType( CBaseEntity* pTarget )
 {
-	Disposition_t disp = BaseClass::IRelationType(pTarget);
+	Disposition_t disp = BaseClass::IRelationType( pTarget );
 
-	if ( pTarget == NULL )
+	if( pTarget == NULL )
+	{
 		return disp;
+	}
 
 	// If the player's not a criminal, then we don't necessary hate him
-	if ( pTarget->Classify() == CLASS_PLAYER )
+	if( pTarget->Classify() == CLASS_PLAYER )
 	{
-		if ( !PlayerIsCriminal() && (disp == D_HT) )
+		if( !PlayerIsCriminal() && ( disp == D_HT ) )
 		{
 			// If we're pissed at the player, we're allowed to hate them.
-			if ( m_flChasePlayerTime && m_flChasePlayerTime > gpGlobals->curtime )
+			if( m_flChasePlayerTime && m_flChasePlayerTime > gpGlobals->curtime )
+			{
 				return D_HT;
+			}
 			return D_NU;
 		}
 	}
@@ -3264,14 +3360,14 @@ Disposition_t CNPC_MetroPolice::IRelationType(CBaseEntity *pTarget)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
+// Purpose:
+// Input  : *pEvent -
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 {
 	Assert( m_iManhacks );
-	
-	if ( m_iManhacks <= 0 )
+
+	if( m_iManhacks <= 0 )
 	{
 		CGMsg( 1, CON_GROUP_NPC_AI, "Error: Throwing manhack but out of manhacks!\n" );
 		return;
@@ -3280,14 +3376,14 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	m_iManhacks--;
 
 	// Turn off the manhack on our body
-	if ( m_iManhacks <= 0 )
+	if( m_iManhacks <= 0 )
 	{
 		SetBodygroup( METROPOLICE_BODYGROUP_MANHACK, false );
 	}
 
 	// Create the manhack to throw
-	CNPC_Manhack *pManhack = (CNPC_Manhack *)CreateEntityByName( "npc_manhack" );
-	
+	CNPC_Manhack* pManhack = ( CNPC_Manhack* )CreateEntityByName( "npc_manhack" );
+
 	Vector	vecOrigin;
 	QAngle	vecAngles;
 
@@ -3296,10 +3392,10 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 
 	pManhack->SetLocalOrigin( vecOrigin );
 	pManhack->SetLocalAngles( vecAngles );
-	pManhack->AddSpawnFlags( (SF_MANHACK_PACKED_UP|SF_MANHACK_CARRIED|SF_NPC_WAIT_FOR_SCRIPT) );
-	
+	pManhack->AddSpawnFlags( ( SF_MANHACK_PACKED_UP | SF_MANHACK_CARRIED | SF_NPC_WAIT_FOR_SCRIPT ) );
+
 	// Also fade if our parent is marked to do it
-	if ( HasSpawnFlags( SF_NPC_FADE_CORPSE ) )
+	if( HasSpawnFlags( SF_NPC_FADE_CORPSE ) )
 	{
 		pManhack->AddSpawnFlags( SF_NPC_FADE_CORPSE );
 	}
@@ -3312,14 +3408,14 @@ void CNPC_MetroPolice::OnAnimEventStartDeployManhack( void )
 	m_hManhack = pManhack;
 
 #ifdef MAPBASE
-	m_OutManhack.Set(m_hManhack, pManhack, this);
+	m_OutManhack.Set( m_hManhack, pManhack, this );
 #endif
 }
 
 //-----------------------------------------------------------------------------
 // Anim event handlers
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t *pEvent )
+void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t* pEvent )
 {
 	// Let it go
 	ReleaseManhack();
@@ -3327,9 +3423,9 @@ void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t *pEvent )
 	Vector forward, right;
 	GetVectors( &forward, &right, NULL );
 
-	IPhysicsObject *pPhysObj = m_hManhack->VPhysicsGetObject();
+	IPhysicsObject* pPhysObj = m_hManhack->VPhysicsGetObject();
 
-	if ( pPhysObj )
+	if( pPhysObj )
 	{
 		Vector	yawOff = right * random->RandomFloat( -1.0f, 1.0f );
 
@@ -3345,25 +3441,25 @@ void CNPC_MetroPolice::OnAnimEventDeployManhack( animevent_t *pEvent )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventShove( void )
 {
-	CBaseEntity *pHurt = CheckTraceHullAttack( 16, Vector(-16,-16,-16), Vector(16,16,16), 15, DMG_CLUB, 1.0f, false );
+	CBaseEntity* pHurt = CheckTraceHullAttack( 16, Vector( -16, -16, -16 ), Vector( 16, 16, 16 ), 15, DMG_CLUB, 1.0f, false );
 
-	if ( pHurt )
+	if( pHurt )
 	{
 		Vector vecForceDir = ( pHurt->WorldSpaceCenter() - WorldSpaceCenter() );
 
-		CBasePlayer *pPlayer = ToBasePlayer( pHurt );
+		CBasePlayer* pPlayer = ToBasePlayer( pHurt );
 
-		if ( pPlayer != NULL )
+		if( pPlayer != NULL )
 		{
 			//Kick the player angles
 			pPlayer->ViewPunch( QAngle( 8, 14, 0 ) );
 
 			Vector	dir = pHurt->GetAbsOrigin() - GetAbsOrigin();
-			VectorNormalize(dir);
+			VectorNormalize( dir );
 
 			QAngle angles;
 			VectorAngles( dir, angles );
@@ -3371,8 +3467,10 @@ void CNPC_MetroPolice::OnAnimEventShove( void )
 			AngleVectors( angles, &forward, &right, NULL );
 
 			//If not on ground, then don't make them fly!
-			if ( !(pHurt->GetFlags() & FL_ONGROUND ) )
-				  forward.z = 0.0f;
+			if( !( pHurt->GetFlags() & FL_ONGROUND ) )
+			{
+				forward.z = 0.0f;
+			}
 
 			//Push the target back
 			pHurt->ApplyAbsVelocityImpulse( forward * 250.0f );
@@ -3387,15 +3485,15 @@ void CNPC_MetroPolice::OnAnimEventShove( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventBatonOn( void )
 {
 #if !defined(HL2MP) && defined(MAPBASE)
 
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
+	CWeaponStunStick* pStick = dynamic_cast<CWeaponStunStick*>( GetActiveWeapon() );
 
-	if ( pStick )
+	if( pStick )
 	{
 		pStick->SetStunState( true );
 	}
@@ -3404,15 +3502,15 @@ void CNPC_MetroPolice::OnAnimEventBatonOn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::OnAnimEventBatonOff( void )
 {
 #if !defined(HL2MP) && defined(MAPBASE)
 
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
-	
-	if ( pStick )
+	CWeaponStunStick* pStick = dynamic_cast<CWeaponStunStick*>( GetActiveWeapon() );
+
+	if( pStick )
 	{
 		pStick->SetStunState( false );
 	}
@@ -3420,39 +3518,39 @@ void CNPC_MetroPolice::OnAnimEventBatonOff( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
-// Input  : *pEvent - 
+// Input  : *pEvent -
 //
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_MetroPolice::HandleAnimEvent( animevent_t* pEvent )
 {
 	// Shove!
-	if ( pEvent->event == AE_METROPOLICE_SHOVE )
+	if( pEvent->event == AE_METROPOLICE_SHOVE )
 	{
 		OnAnimEventShove();
 		return;
 	}
 
-	if ( pEvent->event == AE_METROPOLICE_BATON_ON )
+	if( pEvent->event == AE_METROPOLICE_BATON_ON )
 	{
 		OnAnimEventBatonOn();
 		return;
 	}
 
-	if ( pEvent->event == AE_METROPOLICE_BATON_OFF )
+	if( pEvent->event == AE_METROPOLICE_BATON_OFF )
 	{
 		OnAnimEventBatonOff();
 		return;
 	}
 
-	if ( pEvent->event == AE_METROPOLICE_START_DEPLOY )
+	if( pEvent->event == AE_METROPOLICE_START_DEPLOY )
 	{
 		OnAnimEventStartDeployManhack();
 		return;
 	}
 
-	if ( pEvent->event == AE_METROPOLICE_DRAW_PISTOL )
+	if( pEvent->event == AE_METROPOLICE_DRAW_PISTOL )
 	{
 		m_fWeaponDrawn = true;
 		if( GetActiveWeapon() )
@@ -3462,7 +3560,7 @@ void CNPC_MetroPolice::HandleAnimEvent( animevent_t *pEvent )
 		return;
 	}
 
-	if ( pEvent->event == AE_METROPOLICE_DEPLOY_MANHACK )
+	if( pEvent->event == AE_METROPOLICE_DEPLOY_MANHACK )
 	{
 		OnAnimEventDeployManhack( pEvent );
 		return;
@@ -3480,34 +3578,34 @@ void CNPC_MetroPolice::HandleAnimEvent( animevent_t *pEvent )
 // Output :	 true  - if sub-class has a response for the interaction
 //			 false - if sub-class has no response
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
+bool CNPC_MetroPolice::HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt )
 {
-	if ( interactionType == g_interactionMetrocopStartedStitch )
+	if( interactionType == g_interactionMetrocopStartedStitch )
 	{
 		// If anybody in our squad started a stitch, we can't for a little while
 		m_flValidStitchTime = gpGlobals->curtime + random->RandomFloat( METROPOLICE_SQUAD_STITCH_MIN_INTERVAL, METROPOLICE_SQUAD_STITCH_MAX_INTERVAL );
 		return true;
 	}
 
-	if ( interactionType == g_interactionMetrocopIdleChatter )
+	if( interactionType == g_interactionMetrocopIdleChatter )
 	{
-		m_nIdleChatterType = (int)data;
+		m_nIdleChatterType = ( int )data;
 		return true;
 	}
 
-	if ( interactionType == g_interactionMetrocopClearSentenceQueues )
+	if( interactionType == g_interactionMetrocopClearSentenceQueues )
 	{
 #ifndef METROPOLICE_USES_RESPONSE_SYSTEM
-			m_Sentences.ClearQueue();
+		m_Sentences.ClearQueue();
 #endif
-			return true;
+		return true;
 	}
 
 	// React to being hit by physics objects
-	if ( interactionType == g_interactionHitByPlayerThrownPhysObj )
+	if( interactionType == g_interactionHitByPlayerThrownPhysObj )
 	{
 		// Ignore if I'm in scripted state
-		if ( !IsInAScript() && (m_NPCState != NPC_STATE_SCRIPT) )
+		if( !IsInAScript() && ( m_NPCState != NPC_STATE_SCRIPT ) )
 		{
 			SetCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT );
 		}
@@ -3517,17 +3615,21 @@ bool CNPC_MetroPolice::HandleInteraction(int interactionType, void *data, CBaseC
 		}
 
 		// See if the object is the cupcop can. If so, fire the output (for x360 achievement)
-		CBaseProp *pProp = (CBaseProp*)data;
+		CBaseProp* pProp = ( CBaseProp* )data;
 		if( pProp != NULL )
 		{
 #ifdef MAPBASE
-			if( pProp->NameMatches("cupcop_can") )
+			if( pProp->NameMatches( "cupcop_can" ) )
+			{
 				m_OnCupCopped.FireOutput( sourceEnt, this );
+			}
 
-			m_OnHitByPhysicsObject.Set(pProp, sourceEnt, this);
+			m_OnHitByPhysicsObject.Set( pProp, sourceEnt, this );
 #else
-			if( pProp->NameMatches("cupcop_can") )
+			if( pProp->NameMatches( "cupcop_can" ) )
+			{
 				m_OnCupCopped.FireOutput( this, NULL );
+			}
 #endif
 		}
 
@@ -3548,12 +3650,12 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 	}
 
 	// If we're shoving, see if we should be more forceful in doing so
-	if ( newActivity == ACT_PUSH_PLAYER )
+	if( newActivity == ACT_PUSH_PLAYER )
 	{
 #ifdef MAPBASE
-		if ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS && Weapon_TranslateActivity( ACT_MELEE_ATTACK1, NULL ) == ACT_MELEE_ATTACK_SWING )
+		if( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS && Weapon_TranslateActivity( ACT_MELEE_ATTACK1, NULL ) == ACT_MELEE_ATTACK_SWING )
 #else
-		if ( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS )
+		if( m_nNumWarnings >= METROPOLICE_MAX_WARNINGS )
 #endif
 			return ACT_MELEE_ATTACK1;
 	}
@@ -3561,14 +3663,14 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 	newActivity = BaseClass::NPC_TranslateActivity( newActivity );
 
 	// This will put him into an angry idle, which will then be translated
-	// by the weapon to the appropriate type. 
-	if ( m_fWeaponDrawn && newActivity == ACT_IDLE && ( GetState() == NPC_STATE_COMBAT || BatonActive() ) )
+	// by the weapon to the appropriate type.
+	if( m_fWeaponDrawn && newActivity == ACT_IDLE && ( GetState() == NPC_STATE_COMBAT || BatonActive() ) )
 	{
 		newActivity = ACT_IDLE_ANGRY;
 	}
 
 #ifdef MAPBASE
-	if (newActivity == ACT_RANGE_ATTACK2)
+	if( newActivity == ACT_RANGE_ATTACK2 )
 	{
 		return ACT_COMBINE_THROW_GRENADE;
 	}
@@ -3578,18 +3680,21 @@ Activity CNPC_MetroPolice::NPC_TranslateActivity( Activity newActivity )
 }
 
 #ifdef MAPBASE
-Activity CNPC_MetroPolice::Weapon_TranslateActivity( Activity baseAct, bool *pRequired )
+Activity CNPC_MetroPolice::Weapon_TranslateActivity( Activity baseAct, bool* pRequired )
 {
-	Activity translated = BaseClass::Weapon_TranslateActivity(baseAct, pRequired);
+	Activity translated = BaseClass::Weapon_TranslateActivity( baseAct, pRequired );
 
-	if (!m_fWeaponDrawn)
+	if( !m_fWeaponDrawn )
 	{
 		// If our pistol is holstered, don't act like we have one in our hands.
-		switch (translated)
+		switch( translated )
 		{
-			case ACT_WALK_PISTOL:	return ACT_WALK;
-			case ACT_RUN_PISTOL:	return ACT_RUN;
-			case ACT_IDLE_PISTOL:	return ACT_IDLE;
+			case ACT_WALK_PISTOL:
+				return ACT_WALK;
+			case ACT_RUN_PISTOL:
+				return ACT_RUN;
+			case ACT_IDLE_PISTOL:
+				return ACT_IDLE;
 		}
 	}
 
@@ -3599,17 +3704,21 @@ Activity CNPC_MetroPolice::Weapon_TranslateActivity( Activity baseAct, bool *pRe
 int CNPC_MetroPolice::UnholsterWeapon()
 {
 #if 0
-	if (!m_fWeaponDrawn && (!IsCurSchedule(SCHED_METROPOLICE_DRAW_PISTOL)))
-		SetSchedule(SCHED_METROPOLICE_DRAW_PISTOL);
+	if( !m_fWeaponDrawn && ( !IsCurSchedule( SCHED_METROPOLICE_DRAW_PISTOL ) ) )
+	{
+		SetSchedule( SCHED_METROPOLICE_DRAW_PISTOL );
+	}
 
 	return -1;
 #else
 	// Remain compatible with the original behavior
-	if (IsCurSchedule(SCHED_METROPOLICE_DRAW_PISTOL))
-		return -1;
-	else if (!m_fWeaponDrawn)
+	if( IsCurSchedule( SCHED_METROPOLICE_DRAW_PISTOL ) )
 	{
-		SetSchedule(SCHED_METROPOLICE_DRAW_PISTOL);
+		return -1;
+	}
+	else if( !m_fWeaponDrawn )
+	{
+		SetSchedule( SCHED_METROPOLICE_DRAW_PISTOL );
 		return -1;
 	}
 
@@ -3617,12 +3726,12 @@ int CNPC_MetroPolice::UnholsterWeapon()
 #endif
 }
 
-void CNPC_MetroPolice::OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior )
+void CNPC_MetroPolice::OnChangeRunningBehavior( CAI_BehaviorBase* pOldBehavior,  CAI_BehaviorBase* pNewBehavior )
 {
 	BaseClass::OnChangeRunningBehavior( pOldBehavior,  pNewBehavior );
 
 	// Fix the npc_metropolice using an invisible gun
-	if (!m_fWeaponDrawn)
+	if( !m_fWeaponDrawn )
 	{
 		// We can't just stop and draw, so fall back to gesture unholstering.
 		// Our implementation of UnholsterWeapon() just handles stopping and drawing, which we can skip in this case.
@@ -3651,15 +3760,15 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 	// Make us active
 	m_hManhack->RemoveSpawnFlags( SF_NPC_WAIT_FOR_SCRIPT );
 	m_hManhack->ClearSchedule( "Manhack released by metropolice" );
-	
+
 #ifdef MAPBASE
 	// FSOLID_COLLIDE_WITH_OWNER allows us to be remembered as the manhack's owner without making us invulnerable to it
 	m_hManhack->SetOwnerEntity( this );
 	m_hManhack->AddSolidFlags( FSOLID_COLLIDE_WITH_OWNER );
 #endif
-	
+
 	// Start him with knowledge of our current enemy
-	if ( GetEnemy() )
+	if( GetEnemy() )
 	{
 		m_hManhack->SetEnemy( GetEnemy() );
 		m_hManhack->SetState( NPC_STATE_COMBAT );
@@ -3668,34 +3777,34 @@ void CNPC_MetroPolice::ReleaseManhack( void )
 	}
 
 	// Place him into our squad so we can communicate
-	if ( m_pSquad )
+	if( m_pSquad )
 	{
 		m_pSquad->AddToSquad( m_hManhack );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo& info )
 {
 	// Release the manhack if we're in the middle of deploying him
-	if ( m_hManhack && m_hManhack->IsAlive() )
+	if( m_hManhack && m_hManhack->IsAlive() )
 	{
 		ReleaseManhack();
 		m_hManhack = NULL;
 	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( info.GetAttacker() );
+	CBasePlayer* pPlayer = ToBasePlayer( info.GetAttacker() );
 
-	if ( pPlayer != NULL )
+	if( pPlayer != NULL )
 	{
-		CHalfLife2 *pHL2GameRules = static_cast<CHalfLife2 *>(g_pGameRules);
+		CHalfLife2* pHL2GameRules = static_cast<CHalfLife2*>( g_pGameRules );
 
 		// Attempt to drop health
-		if ( pHL2GameRules->NPC_ShouldDropHealth( pPlayer ) )
+		if( pHL2GameRules->NPC_ShouldDropHealth( pPlayer ) )
 		{
-			DropItem( "item_healthvial", WorldSpaceCenter()+RandomVector(-4,4), RandomAngle(0,360) );
+			DropItem( "item_healthvial", WorldSpaceCenter() + RandomVector( -4, 4 ), RandomAngle( 0, 360 ) );
 			pHL2GameRules->NPC_DroppedHealth();
 		}
 
@@ -3709,16 +3818,16 @@ void CNPC_MetroPolice::Event_Killed( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Try to enter a slot where we shoot a pistol 
+// Try to enter a slot where we shoot a pistol
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::TryToEnterPistolSlot( int nSquadSlot )
 {
 	// This logic here will not allow us to occupy the a squad slot
 	// too soon after we already were in it.
-	if ( ( m_LastShootSlot != nSquadSlot || !m_TimeYieldShootSlot.Expired() ) &&
+	if( ( m_LastShootSlot != nSquadSlot || !m_TimeYieldShootSlot.Expired() ) &&
 			OccupyStrategySlot( nSquadSlot ) )
 	{
-		if ( m_LastShootSlot != nSquadSlot )
+		if( m_LastShootSlot != nSquadSlot )
 		{
 			m_TimeYieldShootSlot.Reset();
 			m_LastShootSlot = nSquadSlot;
@@ -3731,21 +3840,25 @@ bool CNPC_MetroPolice::TryToEnterPistolSlot( int nSquadSlot )
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectRangeAttackSchedule()
 {
-	if ( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ALWAYS_STITCH ) )
 	{
 		int nSched = SelectMoveToLedgeSchedule();
-		if ( nSched != SCHED_NONE )
+		if( nSched != SCHED_NONE )
+		{
 			return nSched;
+		}
 	}
 
 	// Range attack if we're able
-	if( TryToEnterPistolSlot( SQUAD_SLOT_ATTACK1 ) || TryToEnterPistolSlot( SQUAD_SLOT_ATTACK2 ))
+	if( TryToEnterPistolSlot( SQUAD_SLOT_ATTACK1 ) || TryToEnterPistolSlot( SQUAD_SLOT_ATTACK2 ) )
+	{
 		return SCHED_RANGE_ATTACK1;
-	
+	}
+
 	// We're not in a shoot slot... so we've allowed someone else to grab it
 	m_LastShootSlot = SQUAD_SLOT_NONE;
 
@@ -3756,9 +3869,9 @@ int CNPC_MetroPolice::SelectRangeAttackSchedule()
 
 #ifdef MAPBASE
 	// Throw a grenade if not allowed to engage with weapon.
-	if ( CanGrenadeEnemy() )
+	if( CanGrenadeEnemy() )
 	{
-		if ( OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+		if( OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
 		{
 			return SCHED_METROPOLICE_RANGE_ATTACK2;
 		}
@@ -3777,11 +3890,11 @@ int CNPC_MetroPolice::SquadArrestCount()
 	int nCount = 0;
 
 	AISquadIter_t iter;
-	CAI_BaseNPC *pSquadmate = m_pSquad->GetFirstMember( &iter );
-	while ( pSquadmate )
+	CAI_BaseNPC* pSquadmate = m_pSquad->GetFirstMember( &iter );
+	while( pSquadmate )
 	{
-		if ( pSquadmate->IsCurSchedule(	SCHED_METROPOLICE_ARREST_ENEMY ) ||
-			pSquadmate->IsCurSchedule( SCHED_METROPOLICE_WARN_AND_ARREST_ENEMY ) )
+		if( pSquadmate->IsCurSchedule(	SCHED_METROPOLICE_ARREST_ENEMY ) ||
+				pSquadmate->IsCurSchedule( SCHED_METROPOLICE_WARN_AND_ARREST_ENEMY ) )
 		{
 			++nCount;
 		}
@@ -3794,22 +3907,30 @@ int CNPC_MetroPolice::SquadArrestCount()
 
 
 //-----------------------------------------------------------------------------
-// Arrest schedule selection 
+// Arrest schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectScheduleArrestEnemy()
 {
-	if ( !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) || !IsInSquad() )
+	if( !HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) || !IsInSquad() )
+	{
 		return SCHED_NONE;
+	}
 
-	if ( !HasCondition( COND_SEE_ENEMY ) )
+	if( !HasCondition( COND_SEE_ENEMY ) )
+	{
 		return SCHED_NONE;
+	}
 
-	if ( !m_fWeaponDrawn )
+	if( !m_fWeaponDrawn )
+	{
 		return SCHED_METROPOLICE_DRAW_PISTOL;
+	}
 
 	// First guy that sees the enemy will tell him to freeze
-	if ( OccupyStrategySlot( SQUAD_SLOT_POLICE_ARREST_ENEMY ) )
+	if( OccupyStrategySlot( SQUAD_SLOT_POLICE_ARREST_ENEMY ) )
+	{
 		return SCHED_METROPOLICE_WARN_AND_ARREST_ENEMY;
+	}
 
 	// Squad members 1 -> n will simply gain a line of sight
 	return SCHED_METROPOLICE_ARREST_ENEMY;
@@ -3817,27 +3938,33 @@ int CNPC_MetroPolice::SelectScheduleArrestEnemy()
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectScheduleNewEnemy()
 {
 	int nSched = SelectScheduleArrestEnemy();
-	if ( nSched != SCHED_NONE )
+	if( nSched != SCHED_NONE )
+	{
 		return nSched;
+	}
 
-	if ( HasCondition( COND_NEW_ENEMY ) )
+	if( HasCondition( COND_NEW_ENEMY ) )
 	{
 		m_flNextLedgeCheckTime = gpGlobals->curtime;
 
 		if( CanDeployManhack() && OccupyStrategySlot( SQUAD_SLOT_POLICE_DEPLOY_MANHACK ) )
+		{
 			return SCHED_METROPOLICE_DEPLOY_MANHACK;
+		}
 	}
 
-	if ( !m_fWeaponDrawn )
+	if( !m_fWeaponDrawn )
+	{
 		return SCHED_METROPOLICE_DRAW_PISTOL;
+	}
 
 	// Switch our baton on, if it's not already
-	if ( HasBaton() && BatonActive() == false && IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) == false )
+	if( HasBaton() && BatonActive() == false && IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) == false )
 	{
 		SetTarget( GetEnemy() );
 		SetBatonState( true );
@@ -3850,17 +3977,17 @@ int CNPC_MetroPolice::SelectScheduleNewEnemy()
 
 
 //-----------------------------------------------------------------------------
-// Sound investigation 
+// Sound investigation
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectScheduleInvestigateSound()
 {
 	// SEE_ENEMY is set if LOS is available *and* we're looking the right way
 	// Don't investigate if the player's not a criminal.
-	if ( PlayerIsCriminal() && !HasCondition( COND_SEE_ENEMY ) )
+	if( PlayerIsCriminal() && !HasCondition( COND_SEE_ENEMY ) )
 	{
-		if ( HasCondition( COND_HEAR_COMBAT ) || HasCondition( COND_HEAR_PLAYER ) )
+		if( HasCondition( COND_HEAR_COMBAT ) || HasCondition( COND_HEAR_PLAYER ) )
 		{
-			if ( m_pSquad && OccupyStrategySlot( SQUAD_SLOT_INVESTIGATE_SOUND ) )
+			if( m_pSquad && OccupyStrategySlot( SQUAD_SLOT_INVESTIGATE_SOUND ) )
 			{
 				return SCHED_METROPOLICE_INVESTIGATE_SOUND;
 			}
@@ -3872,15 +3999,15 @@ int CNPC_MetroPolice::SelectScheduleInvestigateSound()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult )
+bool CNPC_MetroPolice::OnObstructionPreSteer( AILocalMoveGoal_t* pMoveGoal, float distClear, AIMoveResult_t* pResult )
 {
-	if ( pMoveGoal->directTrace.pObstruction )
+	if( pMoveGoal->directTrace.pObstruction )
 	{
 		// Is it a physics prop? Store it off as the last thing to block me
-		CPhysicsProp *pProp = dynamic_cast<CPhysicsProp*>( pMoveGoal->directTrace.pObstruction );
-		if ( pProp && pProp->GetHealth() )
+		CPhysicsProp* pProp = dynamic_cast<CPhysicsProp*>( pMoveGoal->directTrace.pObstruction );
+		if( pProp && pProp->GetHealth() )
 		{
 			m_hBlockingProp = pProp;
 		}
@@ -3894,16 +4021,18 @@ bool CNPC_MetroPolice::OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, floa
 }
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectScheduleNoDirectEnemy()
 {
 	// If you can't attack, but you can deploy a manhack, do it!
 	if( CanDeployManhack() && OccupyStrategySlot( SQUAD_SLOT_POLICE_DEPLOY_MANHACK ) )
+	{
 		return SCHED_METROPOLICE_DEPLOY_MANHACK;
+	}
 
 	// If you can't attack, but you have a baton & there's a physics object in front of you, swat it
-	if ( m_hBlockingProp && HasBaton() )
+	if( m_hBlockingProp && HasBaton() )
 	{
 		SetTarget( m_hBlockingProp );
 		m_hBlockingProp = NULL;
@@ -3913,7 +4042,7 @@ int CNPC_MetroPolice::SelectScheduleNoDirectEnemy()
 #ifdef MAPBASE
 	// If you see your enemy and you're still arming yourself, wait and don't just charge in
 	// (if your weapon is holstered, you're probably about to arm yourself)
-	if ( HasCondition( COND_SEE_ENEMY ) && GetWeapon(0) && (IsWeaponHolstered() || FindGestureLayer( TranslateActivity( ACT_ARM ) ) != -1) )
+	if( HasCondition( COND_SEE_ENEMY ) && GetWeapon( 0 ) && ( IsWeaponHolstered() || FindGestureLayer( TranslateActivity( ACT_ARM ) ) != -1 ) )
 	{
 		return SCHED_COMBAT_FACE;
 	}
@@ -3924,31 +4053,33 @@ int CNPC_MetroPolice::SelectScheduleNoDirectEnemy()
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectCombatSchedule()
 {
 	// Announce a new enemy
-	if ( HasCondition( COND_NEW_ENEMY ) )
+	if( HasCondition( COND_NEW_ENEMY ) )
 	{
 		AnnounceEnemyType( GetEnemy() );
 	}
 
 	int nResult = SelectScheduleNewEnemy();
-	if ( nResult != SCHED_NONE )
+	if( nResult != SCHED_NONE )
+	{
 		return nResult;
+	}
 
 	if( !m_fWeaponDrawn )
 	{
 		return SCHED_METROPOLICE_DRAW_PISTOL;
 	}
 
-	if (!HasBaton() && ((float)m_nRecentDamage / (float)GetMaxHealth()) > RECENT_DAMAGE_THRESHOLD)
+	if( !HasBaton() && ( ( float )m_nRecentDamage / ( float )GetMaxHealth() ) > RECENT_DAMAGE_THRESHOLD )
 	{
 		m_nRecentDamage = 0;
 		m_flRecentDamageTime = 0;
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-		SpeakIfAllowed(TLK_COP_COVER_HEAVY_DAMAGE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL);
+		SpeakIfAllowed( TLK_COP_COVER_HEAVY_DAMAGE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #else
 		m_Sentences.Speak( "METROPOLICE_COVER_HEAVY_DAMAGE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #endif
@@ -3956,17 +4087,21 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 		return SCHED_TAKE_COVER_FROM_ENEMY;
 	}
 
-	if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+	if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 	{
-		if ( !GetShotRegulator()->IsInRestInterval() )
+		if( !GetShotRegulator()->IsInRestInterval() )
+		{
 			return SelectRangeAttackSchedule();
+		}
 		else
+		{
 			return SCHED_METROPOLICE_ADVANCE;
+		}
 	}
 
-	if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
+	if( HasCondition( COND_CAN_MELEE_ATTACK1 ) )
 	{
-		if ( m_BatonSwingTimer.Expired() )
+		if( m_BatonSwingTimer.Expired() )
 		{
 			// Stop chasing the player now that we've taken a swing at them
 			m_flChasePlayerTime = 0;
@@ -3974,28 +4109,30 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 			return SCHED_MELEE_ATTACK1;
 		}
 		else
+		{
 			return SCHED_COMBAT_FACE;
+		}
 	}
 
-	if ( HasCondition( COND_TOO_CLOSE_TO_ATTACK ) )
+	if( HasCondition( COND_TOO_CLOSE_TO_ATTACK ) )
 	{
 		return SCHED_BACK_AWAY_FROM_ENEMY;
 	}
-	
-	if ( HasCondition( COND_LOW_PRIMARY_AMMO ) || HasCondition( COND_NO_PRIMARY_AMMO ) )
+
+	if( HasCondition( COND_LOW_PRIMARY_AMMO ) || HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
 		AnnounceOutOfAmmo( );
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
-	if ( HasCondition(COND_WEAPON_SIGHT_OCCLUDED) && !HasBaton() )
+	if( HasCondition( COND_WEAPON_SIGHT_OCCLUDED ) && !HasBaton() )
 	{
 		// If they are hiding behind something that we can destroy, start shooting at it.
-		CBaseEntity *pBlocker = GetEnemyOccluder();
-		if ( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
+		CBaseEntity* pBlocker = GetEnemyOccluder();
+		if( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
 		{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-			SpeakIfAllowed(TLK_COP_SHOOTCOVER);
+			SpeakIfAllowed( TLK_COP_SHOOTCOVER );
 #else
 			m_Sentences.Speak( "METROPOLICE_SHOOT_COVER" );
 #endif
@@ -4003,15 +4140,15 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 		}
 	}
 
-	if (HasCondition(COND_ENEMY_OCCLUDED))
+	if( HasCondition( COND_ENEMY_OCCLUDED ) )
 	{
-		if ( GetEnemy() && !(GetEnemy()->GetFlags() & FL_NOTARGET) )
+		if( GetEnemy() && !( GetEnemy()->GetFlags() & FL_NOTARGET ) )
 		{
 #ifdef MAPBASE
-			if ( HasGrenades() )
+			if( HasGrenades() )
 			{
 				// We don't see our enemy. If it hasn't been long since I last saw him,
-				// and he's pretty close to the last place I saw him, throw a grenade in 
+				// and he's pretty close to the last place I saw him, throw a grenade in
 				// to flush him out. A wee bit of cheating here...
 
 				float flTime;
@@ -4021,7 +4158,7 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 				flDist = ( GetEnemy()->GetAbsOrigin() - GetEnemies()->LastSeenPosition( GetEnemy() ) ).Length();
 
 				//Msg("Time: %f   Dist: %f\n", flTime, flDist );
-				if ( flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+				if( flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
 				{
 					return SCHED_METROPOLICE_RANGE_ATTACK2;
 				}
@@ -4034,8 +4171,10 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 	}
 
 	nResult = SelectScheduleNoDirectEnemy();
-	if ( nResult != SCHED_NONE )
+	if( nResult != SCHED_NONE )
+	{
 		return nResult;
+	}
 
 	return SCHED_NONE;
 }
@@ -4044,10 +4183,12 @@ int CNPC_MetroPolice::SelectCombatSchedule()
 // Purpose: This is a bridge between stunstick, NPC and its behavior
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::ShouldKnockOutTarget( CBaseEntity *pTarget )
+bool CNPC_MetroPolice::ShouldKnockOutTarget( CBaseEntity* pTarget )
 {
-	if ( m_PolicingBehavior.IsEnabled() && m_PolicingBehavior.ShouldKnockOutTarget( pTarget ) )
+	if( m_PolicingBehavior.IsEnabled() && m_PolicingBehavior.ShouldKnockOutTarget( pTarget ) )
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -4055,22 +4196,22 @@ bool CNPC_MetroPolice::ShouldKnockOutTarget( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 // Purpose: This is a bridge between stunstick, NPC and its behavior
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::KnockOutTarget( CBaseEntity *pTarget )
+void CNPC_MetroPolice::KnockOutTarget( CBaseEntity* pTarget )
 {
-	if ( m_PolicingBehavior.IsEnabled() )
+	if( m_PolicingBehavior.IsEnabled() )
 	{
 		m_PolicingBehavior.KnockOutTarget( pTarget );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Can me enemy see me? 
+// Can me enemy see me?
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::CanEnemySeeMe( )
 {
-	if ( GetEnemy()->IsPlayer() )
+	if( GetEnemy()->IsPlayer() )
 	{
-		if ( static_cast<CBasePlayer*>(GetEnemy())->FInViewCone( this ) )
+		if( static_cast<CBasePlayer*>( GetEnemy() )->FInViewCone( this ) )
 		{
 			return true;
 		}
@@ -4080,7 +4221,7 @@ bool CNPC_MetroPolice::CanEnemySeeMe( )
 
 
 //-----------------------------------------------------------------------------
-// Choose weights about where we can use particular stitching behaviors 
+// Choose weights about where we can use particular stitching behaviors
 //-----------------------------------------------------------------------------
 #define STITCH_MIN_DISTANCE 1000.0f
 #define STITCH_MIN_DISTANCE_SLOW 1250.0f
@@ -4090,23 +4231,31 @@ bool CNPC_MetroPolice::CanEnemySeeMe( )
 #define STITCH_AT_CONE_WHEN_VISIBLE_MIN	0.707f	// cos(45)
 #define STITCH_AT_COS_MIN_SPIN_ANGLE	0.2f
 
-float CNPC_MetroPolice::StitchAtWeight( float flDist, float flSpeed, float flDot, float flReactionTime, const Vector &vecTargetToGun )
+float CNPC_MetroPolice::StitchAtWeight( float flDist, float flSpeed, float flDot, float flReactionTime, const Vector& vecTargetToGun )
 {
 	// Can't do an 'attacking' stitch if it's too soon
-	if ( m_flValidStitchTime > gpGlobals->curtime )
+	if( m_flValidStitchTime > gpGlobals->curtime )
+	{
 		return 0.0f;
+	}
 
 	// No squad slots? no way.
 	if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+	{
 		return false;
+	}
 
 	// Don't do it if the player doesn't have enough time to react
-	if ( flDist < STITCH_MIN_DISTANCE )
+	if( flDist < STITCH_MIN_DISTANCE )
+	{
 		return 0.0f;
+	}
 
 	// Don't do it if the player is farther but really slow
-	if ( ( flDist < STITCH_MIN_DISTANCE_SLOW ) && ( flSpeed < 150.0f ) )
+	if( ( flDist < STITCH_MIN_DISTANCE_SLOW ) && ( flSpeed < 150.0f ) )
+	{
 		return 0.0f;
+	}
 
 	// Does the predicted stitch position cross the plane from me to the target's initial position?
 	// If so, it'll look really dumb. Disallow that.
@@ -4119,12 +4268,14 @@ float CNPC_MetroPolice::StitchAtWeight( float flDist, float flSpeed, float flDot
 	Vector2D vecGunToTarget;
 	Vector2DMultiply( vecTargetToGun.AsVector2D(), -1.0f, vecGunToTarget );
 	Vector2DNormalize( vecGunToTarget );
-	if ( DotProduct2D( vecGunToTarget, vecGunToPredictedTarget.AsVector2D() ) <= STITCH_AT_COS_MIN_SPIN_ANGLE )
+	if( DotProduct2D( vecGunToTarget, vecGunToPredictedTarget.AsVector2D() ) <= STITCH_AT_COS_MIN_SPIN_ANGLE )
+	{
 		return 0.0f;
+	}
 
-	// If the cop is in the view cone, then up the cone in which the stitch will occur 
+	// If the cop is in the view cone, then up the cone in which the stitch will occur
 	float flConeAngle = STITCH_AT_CONE;
-	if ( CanEnemySeeMe() )
+	if( CanEnemySeeMe() )
 	{
 		flDist = clamp( flDist, 1500.0f, 2500.0f );
 		flConeAngle = RemapVal( flDist, 1500.0f, 2500.0f, STITCH_AT_CONE_WHEN_VISIBLE_MIN, STITCH_AT_CONE_WHEN_VISIBLE_MAX );
@@ -4142,23 +4293,33 @@ float CNPC_MetroPolice::StitchAcrossWeight( float flDist, float flSpeed, float f
 	return 0.0f;
 
 	// Can't do an 'attacking' stitch if it's too soon
-	if ( m_flValidStitchTime > gpGlobals->curtime )
+	if( m_flValidStitchTime > gpGlobals->curtime )
+	{
 		return 0.0f;
+	}
 
 	// No squad slots? no way.
 	if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+	{
 		return 0.0f;
+	}
 
-	if ( flDist < STITCH_MIN_DISTANCE )
+	if( flDist < STITCH_MIN_DISTANCE )
+	{
 		return 0.0f;
+	}
 
 	// Don't do it if the player doesn't have enough time to react
-	if ( flDist < flSpeed * flReactionTime )
+	if( flDist < flSpeed * flReactionTime )
+	{
 		return 0.0f;
+	}
 
 	// We want to stitch across if we're within the stitch across cone
-	if ( flDot < STITCH_ACROSS_CONE )
+	if( flDot < STITCH_ACROSS_CONE )
+	{
 		return 0.0f;
+	}
 
 	return 1.0f;
 }
@@ -4173,25 +4334,33 @@ float CNPC_MetroPolice::StitchAlongSideWeight( float flDist, float flSpeed, floa
 {
 	// No squad slots? no way.
 	if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) &&
-		IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
+			IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
+	{
 		return 0.0f;
+	}
 
-	if ( flDist < (AIM_ALONG_SIDE_LINE_OF_DEATH_DISTANCE + AIM_ALONG_SIDE_STEER_DISTANCE + 100.0f) )
+	if( flDist < ( AIM_ALONG_SIDE_LINE_OF_DEATH_DISTANCE + AIM_ALONG_SIDE_STEER_DISTANCE + 100.0f ) )
+	{
 		return 0.0f;
+	}
 
-	if ( flSpeed < STITCH_ALONG_MIN_SPEED )
+	if( flSpeed < STITCH_ALONG_MIN_SPEED )
+	{
 		return 0.0f;
+	}
 
 	// We want to stitch across if we're within the stitch across cone
 	float flMinConeAngle = STITCH_ALONG_MIN_CONE;
 	bool bCanEnemySeeMe = CanEnemySeeMe( );
-	if ( bCanEnemySeeMe )
+	if( bCanEnemySeeMe )
 	{
 		flMinConeAngle = STITCH_ALONG_MIN_CONE_WHEN_VISIBLE;
 	}
 
-	if (( flDot > flMinConeAngle ) || ( flDot < STITCH_ALONG_MAX_CONE ))
+	if( ( flDot > flMinConeAngle ) || ( flDot < STITCH_ALONG_MAX_CONE ) )
+	{
 		return 0.0f;
+	}
 
 	return bCanEnemySeeMe ? 1.0f : 2.0f;
 }
@@ -4204,18 +4373,24 @@ float CNPC_MetroPolice::StitchBehindWeight( float flDist, float flSpeed, float f
 
 	// No squad slots? no way.
 	if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) &&
-		IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
+			IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
+	{
 		return 0.0f;
+	}
 
-	if ( flDist < AIM_BEHIND_MINIMUM_DISTANCE )
+	if( flDist < AIM_BEHIND_MINIMUM_DISTANCE )
+	{
 		return 0.0f;
+	}
 
 	// We want to stitch across if we're within the stitch across cone
-	if ( flDot > STITCH_BEHIND_MIN_CONE )
+	if( flDot > STITCH_BEHIND_MIN_CONE )
+	{
 		return 0.0f;
+	}
 
 	// If we're close, reduce the chances of this if we're also slow
-	if ( flDist < STITCH_MIN_DISTANCE )
+	if( flDist < STITCH_MIN_DISTANCE )
 	{
 		flSpeed = clamp( flSpeed, 300.0f, 450.0f );
 		float flWeight = RemapVal( flSpeed, 300.0f, 450.0f, 0.0f, 1.0f );
@@ -4225,17 +4400,21 @@ float CNPC_MetroPolice::StitchBehindWeight( float flDist, float flSpeed, float f
 	return 1.0f;
 }
 
-float CNPC_MetroPolice::StitchTightWeight( float flDist, float flSpeed, const Vector &vecTargetToGun, const Vector &vecVelocity )
+float CNPC_MetroPolice::StitchTightWeight( float flDist, float flSpeed, const Vector& vecTargetToGun, const Vector& vecVelocity )
 {
 	// No squad slots? no way.
 	if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) &&
-		IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
-		return 0.0f;
-
-	if ( flDist > STITCH_MIN_DISTANCE )
+			IsStrategySlotRangeOccupied( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
 	{
-		if ( flDist > 2000.0f )
+		return 0.0f;
+	}
+
+	if( flDist > STITCH_MIN_DISTANCE )
+	{
+		if( flDist > 2000.0f )
+		{
 			return 0.0f;
+		}
 
 		// We can stitch tight if they are close and no other rules apply.
 		return 0.0001f;
@@ -4247,12 +4426,16 @@ float CNPC_MetroPolice::StitchTightWeight( float flDist, float flSpeed, const Ve
 	VectorNormalize( vecTargetToGunDir );
 	VectorNormalize( vecVelocityDir );
 
-	if ( DotProduct( vecTargetToGunDir, vecVelocityDir ) > 0.95f )
+	if( DotProduct( vecTargetToGunDir, vecVelocityDir ) > 0.95f )
+	{
 		return 8.0f;
+	}
 
 	// If we're on the same level, fire at him!
-	if ( ( fabs(vecTargetToGun.z) < 50.0f ) && ( flDist < STITCH_MIN_DISTANCE ) )
+	if( ( fabs( vecTargetToGun.z ) < 50.0f ) && ( flDist < STITCH_MIN_DISTANCE ) )
+	{
 		return 1.0f;
+	}
 
 	flSpeed = clamp( flSpeed, 300.0f, 450.0f );
 	float flWeight = RemapVal( flSpeed, 300.0f, 450.0f, 1.0f, 0.0f );
@@ -4261,7 +4444,7 @@ float CNPC_MetroPolice::StitchTightWeight( float flDist, float flSpeed, const Ve
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 #define STITCH_REACTION_TIME 2.0f
 #define STITCH_SCHEDULE_COUNT 5
@@ -4277,10 +4460,12 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 	Vector2D vecTargetToGun2D = vecTargetToGun.AsVector2D();
 	float flDist = Vector2DNormalize( vecTargetToGun2D );
 
-	if ( HasSpawnFlags( SF_METROPOLICE_NO_FAR_STITCH ) )
+	if( HasSpawnFlags( SF_METROPOLICE_NO_FAR_STITCH ) )
 	{
-		if ( flDist > 6000.0f )
+		if( flDist > 6000.0f )
+		{
 			return SCHED_NONE;
+		}
 	}
 
 	float flReactionTime = STITCH_REACTION_TIME * sk_metropolice_stitch_reaction.GetFloat();
@@ -4298,8 +4483,10 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 	flWeight[3] = flWeight[2] + StitchAlongSideWeight( flDist, flSpeed, flDot );
 	flWeight[4] = flWeight[3] + StitchBehindWeight( flDist, flSpeed, flDot );
 
-	if ( flWeight[STITCH_SCHEDULE_COUNT - 1] == 0.0f )
+	if( flWeight[STITCH_SCHEDULE_COUNT - 1] == 0.0f )
+	{
 		return SCHED_NONE;
+	}
 
 	int pSched[STITCH_SCHEDULE_COUNT] =
 	{
@@ -4312,14 +4499,16 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 
 	int i;
 	float flRand = random->RandomFloat( 0.0f, flWeight[STITCH_SCHEDULE_COUNT - 1] );
-	for ( i = 0; i < STITCH_SCHEDULE_COUNT; ++i )
+	for( i = 0; i < STITCH_SCHEDULE_COUNT; ++i )
 	{
-		if ( flRand <= flWeight[i] )
+		if( flRand <= flWeight[i] )
+		{
 			break;
+		}
 	}
 
 	// If we're basically a covering activity, take up that slot
-	if ( i >= 3 )
+	if( i >= 3 )
 	{
 		if( OccupyStrategySlotRange( SQUAD_SLOT_POLICE_COVERING_FIRE1, SQUAD_SLOT_POLICE_COVERING_FIRE2 ) )
 		{
@@ -4329,7 +4518,7 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 
 	if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
 	{
-		if ( IsInSquad() && (i < 2) )
+		if( IsInSquad() && ( i < 2 ) )
 		{
 			GetSquad()->BroadcastInteraction( g_interactionMetrocopStartedStitch, NULL );
 		}
@@ -4342,17 +4531,19 @@ int CNPC_MetroPolice::SelectStitchSchedule()
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectMoveToLedgeSchedule()
 {
 	// Prevent a bunch of unnecessary raycasts.
-	if ( m_flNextLedgeCheckTime > gpGlobals->curtime )
+	if( m_flNextLedgeCheckTime > gpGlobals->curtime )
+	{
 		return SCHED_NONE;
+	}
 
 	// If the NPC is above the airboat (say, on a bridge), make sure he
 	// goes to the closest ledge. (may need a spawnflag for this)
-	if ( (GetAbsOrigin().z - GetShootTarget()->GetAbsOrigin().z) >= 150.0f )
+	if( ( GetAbsOrigin().z - GetShootTarget()->GetAbsOrigin().z ) >= 150.0f )
 	{
 		m_flNextLedgeCheckTime = gpGlobals->curtime + 3.0f;
 
@@ -4370,28 +4561,32 @@ int CNPC_MetroPolice::SelectMoveToLedgeSchedule()
 		CTraceFilterWorldOnly traceFilter;
 		UTIL_TraceLine( Weapon_ShootPosition(), Weapon_ShootPosition() + vecDelta, MASK_SOLID, &traceFilter, &tr );
 
-		if (tr.endpos.z >= GetAbsOrigin().z - 25.0f )
+		if( tr.endpos.z >= GetAbsOrigin().z - 25.0f )
+		{
 			return SCHED_METROPOLICE_ESTABLISH_STITCH_LINE_OF_FIRE;
+		}
 	}
-	
+
 	return SCHED_NONE;
 }
 
 
 //-----------------------------------------------------------------------------
-// Combat schedule selection 
+// Combat schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectAirboatRangeAttackSchedule()
 {
 	// Move to a ledge, if we need to.
 	int nSched = SelectMoveToLedgeSchedule();
-	if ( nSched != SCHED_NONE )
+	if( nSched != SCHED_NONE )
+	{
 		return nSched;
+	}
 
-	if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+	if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 	{
 		nSched = SelectStitchSchedule();
-		if ( nSched != SCHED_NONE )
+		if( nSched != SCHED_NONE )
 		{
 			m_LastShootSlot = SQUAD_SLOT_NONE;
 			return nSched;
@@ -4413,31 +4608,35 @@ int CNPC_MetroPolice::SelectAirboatRangeAttackSchedule()
 int CNPC_MetroPolice::SelectAirboatCombatSchedule()
 {
 	int nResult = SelectScheduleNewEnemy();
-	if ( nResult != SCHED_NONE )
+	if( nResult != SCHED_NONE )
+	{
 		return nResult;
+	}
 
 	// We're assuming here that the cops who attack airboats have SMGs
 //	Assert( Weapon_OwnsThisType( "weapon_smg1" ) );
 
-	if ( HasCondition( COND_SEE_ENEMY ) )
+	if( HasCondition( COND_SEE_ENEMY ) )
 	{
 		return SelectAirboatRangeAttackSchedule();
 	}
-	
-	if ( HasCondition( COND_WEAPON_SIGHT_OCCLUDED ) )
+
+	if( HasCondition( COND_WEAPON_SIGHT_OCCLUDED ) )
 	{
 		// If they are hiding behind something also attack. Don't bother
 		// shooting the destroyable thing; it'll happen anyways with the SMG
-		CBaseEntity *pBlocker = GetEnemyOccluder();
-		if ( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
+		CBaseEntity* pBlocker = GetEnemyOccluder();
+		if( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
 		{
 			return SelectAirboatRangeAttackSchedule();
 		}
 	}
 
 	nResult = SelectScheduleNoDirectEnemy();
-	if ( nResult != SCHED_NONE )
+	if( nResult != SCHED_NONE )
+	{
 		return nResult;
+	}
 
 	return SCHED_NONE;
 }
@@ -4445,26 +4644,28 @@ int CNPC_MetroPolice::SelectAirboatCombatSchedule()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Standoff schedule selection 
+// Standoff schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectBehaviorOverrideSchedule()
 {
 	// Announce a new enemy
-	if ( HasCondition( COND_NEW_ENEMY ) )
+	if( HasCondition( COND_NEW_ENEMY ) )
 	{
 		AnnounceEnemyType( GetEnemy() );
 	}
 
 	int nResult = SelectScheduleNewEnemy();
-	if ( nResult != SCHED_NONE )
+	if( nResult != SCHED_NONE )
+	{
 		return nResult;
+	}
 
-	if (!HasBaton() && ((float)m_nRecentDamage / (float)GetMaxHealth()) > RECENT_DAMAGE_THRESHOLD)
+	if( !HasBaton() && ( ( float )m_nRecentDamage / ( float )GetMaxHealth() ) > RECENT_DAMAGE_THRESHOLD )
 	{
 		m_nRecentDamage = 0;
 		m_flRecentDamageTime = 0;
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-		SpeakIfAllowed(TLK_COP_COVER_HEAVY_DAMAGE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL);
+		SpeakIfAllowed( TLK_COP_COVER_HEAVY_DAMAGE, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #else
 		m_Sentences.Speak( "METROPOLICE_COVER_HEAVY_DAMAGE", SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #endif
@@ -4472,32 +4673,34 @@ int CNPC_MetroPolice::SelectBehaviorOverrideSchedule()
 		return SCHED_TAKE_COVER_FROM_ENEMY;
 	}
 
-	if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+	if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
 	{
 		nResult = SelectRangeAttackSchedule();
-		if ( !GetShotRegulator()->IsInRestInterval() && nResult != SCHED_METROPOLICE_ADVANCE && nResult != SCHED_RANGE_ATTACK1 )
+		if( !GetShotRegulator()->IsInRestInterval() && nResult != SCHED_METROPOLICE_ADVANCE && nResult != SCHED_RANGE_ATTACK1 )
+		{
 			return nResult;
+		}
 	}
 
-	if ( HasCondition( COND_TOO_CLOSE_TO_ATTACK ) )
+	if( HasCondition( COND_TOO_CLOSE_TO_ATTACK ) )
 	{
 		return SCHED_BACK_AWAY_FROM_ENEMY;
 	}
-	
-	if ( HasCondition( COND_LOW_PRIMARY_AMMO ) || HasCondition( COND_NO_PRIMARY_AMMO ) )
+
+	if( HasCondition( COND_LOW_PRIMARY_AMMO ) || HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
 		AnnounceOutOfAmmo( );
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
-	if ( HasCondition(COND_WEAPON_SIGHT_OCCLUDED) && !HasBaton() )
+	if( HasCondition( COND_WEAPON_SIGHT_OCCLUDED ) && !HasBaton() )
 	{
 		// If they are hiding behind something that we can destroy, start shooting at it.
-		CBaseEntity *pBlocker = GetEnemyOccluder();
-		if ( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
+		CBaseEntity* pBlocker = GetEnemyOccluder();
+		if( pBlocker && pBlocker->GetHealth() > 0 && OccupyStrategySlotRange( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1, SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 ) )
 		{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-			SpeakIfAllowed(TLK_COP_SHOOTCOVER);
+			SpeakIfAllowed( TLK_COP_SHOOTCOVER );
 #else
 			m_Sentences.Speak( "METROPOLICE_SHOOT_COVER" );
 #endif
@@ -4505,14 +4708,14 @@ int CNPC_MetroPolice::SelectBehaviorOverrideSchedule()
 		}
 	}
 
-	if (HasCondition(COND_ENEMY_OCCLUDED))
+	if( HasCondition( COND_ENEMY_OCCLUDED ) )
 	{
-		if ( GetEnemy() && !(GetEnemy()->GetFlags() & FL_NOTARGET) )
+		if( GetEnemy() && !( GetEnemy()->GetFlags() & FL_NOTARGET ) )
 		{
-			if ( HasGrenades() )
+			if( HasGrenades() )
 			{
 				// We don't see our enemy. If it hasn't been long since I last saw him,
-				// and he's pretty close to the last place I saw him, throw a grenade in 
+				// and he's pretty close to the last place I saw him, throw a grenade in
 				// to flush him out. A wee bit of cheating here...
 
 				float flTime;
@@ -4522,7 +4725,7 @@ int CNPC_MetroPolice::SelectBehaviorOverrideSchedule()
 				flDist = ( GetEnemy()->GetAbsOrigin() - GetEnemies()->LastSeenPosition( GetEnemy() ) ).Length();
 
 				//Msg("Time: %f   Dist: %f\n", flTime, flDist );
-				if ( flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+				if( flTime <= COMBINE_GRENADE_FLUSH_TIME && flDist <= COMBINE_GRENADE_FLUSH_DIST && CanGrenadeEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
 				{
 					return SCHED_METROPOLICE_RANGE_ATTACK2;
 				}
@@ -4532,13 +4735,15 @@ int CNPC_MetroPolice::SelectBehaviorOverrideSchedule()
 
 	// If you can't attack, but you can deploy a manhack, do it!
 	if( CanDeployManhack() && OccupyStrategySlot( SQUAD_SLOT_POLICE_DEPLOY_MANHACK ) )
+	{
 		return SCHED_METROPOLICE_DEPLOY_MANHACK;
+	}
 
 	return SCHED_NONE;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::IsCrouchedActivity( Activity activity )
 {
@@ -4546,28 +4751,32 @@ bool CNPC_MetroPolice::IsCrouchedActivity( Activity activity )
 }
 
 //-----------------------------------------------------------------------------
-// Standoff schedule selection 
+// Standoff schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::CMetroPoliceStandoffBehavior::SelectScheduleAttack()
 {
 	int result = metropolice_new_component_behavior.GetBool() ? GetOuter()->SelectBehaviorOverrideSchedule() : SCHED_NONE;
-	if (result == SCHED_NONE)
+	if( result == SCHED_NONE )
+	{
 		result = BaseClass::SelectScheduleAttack();
+	}
 	return result;
 }
 #endif
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &info - 
+// Purpose:
+// Input  : &info -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::IsHeavyDamage( const CTakeDamageInfo &info )
+bool CNPC_MetroPolice::IsHeavyDamage( const CTakeDamageInfo& info )
 {
 	// Metropolice considers bullet fire heavy damage
-	if ( info.GetDamageType() & DMG_BULLET )
+	if( info.GetDamageType() & DMG_BULLET )
+	{
 		return true;
+	}
 
 	return BaseClass::IsHeavyDamage( info );
 }
@@ -4575,13 +4784,13 @@ bool CNPC_MetroPolice::IsHeavyDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // TraceAttack
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CNPC_MetroPolice::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	// This is needed so we can keep track of the direction of the shot
 	// because we're going to use it to choose the flinch animation
-	if ( m_bSimpleCops )
+	if( m_bSimpleCops )
 	{
-		if ( m_takedamage == DAMAGE_YES )
+		if( m_takedamage == DAMAGE_YES )
 		{
 			Vector vecLastHitDirection;
 			VectorIRotate( vecDir, EntityToWorldTransform(), vecLastHitDirection );
@@ -4603,23 +4812,27 @@ void CNPC_MetroPolice::TraceAttack( const CTakeDamageInfo &info, const Vector &v
 //-----------------------------------------------------------------------------
 Activity CNPC_MetroPolice::GetFlinchActivity( bool bHeavyDamage, bool bGesture )
 {
-	if ( !bGesture && m_bSimpleCops )
+	if( !bGesture && m_bSimpleCops )
 	{
 		// Version for getting shot from behind
-		if ( ( m_flLastHitYaw > 90 ) && ( m_flLastHitYaw < 270 ) )
+		if( ( m_flLastHitYaw > 90 ) && ( m_flLastHitYaw < 270 ) )
 		{
-			Activity flinchActivity = (Activity)ACT_METROPOLICE_FLINCH_BEHIND;
-			if ( SelectWeightedSequence ( flinchActivity ) != ACTIVITY_NOT_AVAILABLE )
+			Activity flinchActivity = ( Activity )ACT_METROPOLICE_FLINCH_BEHIND;
+			if( SelectWeightedSequence( flinchActivity ) != ACTIVITY_NOT_AVAILABLE )
+			{
 				return flinchActivity;
+			}
 		}
 
-		if ( ( LastHitGroup() == HITGROUP_CHEST ) ||
-			( LastHitGroup() == HITGROUP_LEFTLEG ) ||
-			( LastHitGroup() == HITGROUP_RIGHTLEG ) )
+		if( ( LastHitGroup() == HITGROUP_CHEST ) ||
+				( LastHitGroup() == HITGROUP_LEFTLEG ) ||
+				( LastHitGroup() == HITGROUP_RIGHTLEG ) )
 		{
 			Activity flinchActivity = ACT_FLINCH_STOMACH;
-			if ( SelectWeightedSequence ( ACT_FLINCH_STOMACH ) != ACTIVITY_NOT_AVAILABLE )
+			if( SelectWeightedSequence( ACT_FLINCH_STOMACH ) != ACTIVITY_NOT_AVAILABLE )
+			{
 				return flinchActivity;
+			}
 		}
 	}
 
@@ -4627,7 +4840,7 @@ Activity CNPC_MetroPolice::GetFlinchActivity( bool bHeavyDamage, bool bGesture )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::PlayFlinchGesture( void )
 {
@@ -4643,36 +4856,36 @@ void CNPC_MetroPolice::PlayFlinchGesture( void )
 void CNPC_MetroPolice::AnnounceHarrassment( void )
 {
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-	SpeakIfAllowed(TLK_COP_BACK_UP, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL);
+	SpeakIfAllowed( TLK_COP_BACK_UP, SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #else
-	static const char *pWarnings[3] = 
+	static const char* pWarnings[3] =
 	{
 		"METROPOLICE_BACK_UP_A",
 		"METROPOLICE_BACK_UP_B",
 		"METROPOLICE_BACK_UP_C",
 	};
 
-	m_Sentences.Speak( pWarnings[ random->RandomInt( 0, ARRAYSIZE(pWarnings)-1 ) ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
+	m_Sentences.Speak( pWarnings[ random->RandomInt( 0, ARRAYSIZE( pWarnings ) - 1 ) ], SENTENCE_PRIORITY_MEDIUM, SENTENCE_CRITERIA_NORMAL );
 #endif
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::IncrementPlayerCriminalStatus( void )
 {
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+	CBasePlayer* pPlayer = UTIL_PlayerByIndex( 1 );
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		AddLookTarget( pPlayer, 0.8f, 5.0f );
 
-		if ( m_nNumWarnings < METROPOLICE_MAX_WARNINGS )
+		if( m_nNumWarnings < METROPOLICE_MAX_WARNINGS )
 		{
 			m_nNumWarnings++;
 		}
 
-		if ( m_nNumWarnings >= (METROPOLICE_MAX_WARNINGS-1) )
+		if( m_nNumWarnings >= ( METROPOLICE_MAX_WARNINGS - 1 ) )
 		{
 			SetTarget( pPlayer );
 			SetBatonState( true );
@@ -4687,7 +4900,7 @@ void CNPC_MetroPolice::IncrementPlayerCriminalStatus( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectShoveSchedule( void )
@@ -4700,7 +4913,7 @@ int CNPC_MetroPolice::SelectShoveSchedule( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : float
 //-----------------------------------------------------------------------------
 float CNPC_MetroPolice::GetIdealAccel( void ) const
@@ -4713,13 +4926,15 @@ float CNPC_MetroPolice::GetIdealAccel( void ) const
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::AdministerJustice( void )
 {
-	if ( !AI_IsSinglePlayer() )
+	if( !AI_IsSinglePlayer() )
+	{
 		return;
+	}
 
 	// If we're allowed to chase the player, do so. Otherwise, just threaten.
-	if ( !IsInAScript() && (m_NPCState != NPC_STATE_SCRIPT) && HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
+	if( !IsInAScript() && ( m_NPCState != NPC_STATE_SCRIPT ) && HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
 	{
-		if ( m_vecPreChaseOrigin == vec3_origin )
+		if( m_vecPreChaseOrigin == vec3_origin )
 		{
 			m_vecPreChaseOrigin = GetAbsOrigin();
 			m_flPreChaseYaw = GetAbsAngles().y;
@@ -4727,7 +4942,7 @@ void CNPC_MetroPolice::AdministerJustice( void )
 		m_flChasePlayerTime = gpGlobals->curtime + RandomFloat( 3, 7 );
 
 		// Attack the target
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( 1 );
 		SetEnemy( pPlayer );
 		SetState( NPC_STATE_COMBAT );
 		UpdateEnemyMemory( pPlayer, pPlayer->GetAbsOrigin() );
@@ -4738,21 +4953,23 @@ void CNPC_MetroPolice::AdministerJustice( void )
 		m_bKeepFacingPlayer = true;
 
 		// Try and find a nearby cop to administer justice
-		CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
+		CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
 		int nAIs = g_AI_Manager.NumAIs();
-		for ( int i = 0; i < nAIs; i++ )
+		for( int i = 0; i < nAIs; i++ )
 		{
-			if ( ppAIs[i] == this )
-				continue;
-
-			if ( ppAIs[i]->Classify() == CLASS_METROPOLICE && FClassnameIs( ppAIs[i], "npc_metropolice" ) )
+			if( ppAIs[i] == this )
 			{
-				CNPC_MetroPolice *pNPC = assert_cast<CNPC_MetroPolice*>(ppAIs[i]);
-				if ( pNPC->HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
+				continue;
+			}
+
+			if( ppAIs[i]->Classify() == CLASS_METROPOLICE && FClassnameIs( ppAIs[i], "npc_metropolice" ) )
+			{
+				CNPC_MetroPolice* pNPC = assert_cast<CNPC_MetroPolice*>( ppAIs[i] );
+				if( pNPC->HasSpawnFlags( SF_METROPOLICE_ALLOWED_TO_RESPOND ) )
 				{
 					// Is he within site & range?
-					if ( FVisible(pNPC) && pNPC->FVisible( UTIL_PlayerByIndex(1) ) && 
-						UTIL_DistApprox( WorldSpaceCenter(), pNPC->WorldSpaceCenter() ) < 512 )
+					if( FVisible( pNPC ) && pNPC->FVisible( UTIL_PlayerByIndex( 1 ) ) &&
+							UTIL_DistApprox( WorldSpaceCenter(), pNPC->WorldSpaceCenter() ) < 512 )
 					{
 						pNPC->AdministerJustice();
 						break;
@@ -4764,19 +4981,19 @@ void CNPC_MetroPolice::AdministerJustice( void )
 }
 
 //-----------------------------------------------------------------------------
-// Schedule selection 
+// Schedule selection
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectSchedule( void )
 {
-	if ( !GetEnemy() && HasCondition( COND_IN_PVS ) && AI_GetSinglePlayer() && !AI_GetSinglePlayer()->IsAlive() )
+	if( !GetEnemy() && HasCondition( COND_IN_PVS ) && AI_GetSinglePlayer() && !AI_GetSinglePlayer()->IsAlive() )
 	{
 		return SCHED_PATROL_WALK;
 	}
 
-	if ( HasCondition(COND_METROPOLICE_ON_FIRE) )
+	if( HasCondition( COND_METROPOLICE_ON_FIRE ) )
 	{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-		SpeakIfAllowed(TLK_COP_ON_FIRE, "hurt_by_fire:1", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS);
+		SpeakIfAllowed( TLK_COP_ON_FIRE, "hurt_by_fire:1", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 #else
 		m_Sentences.Speak( "METROPOLICE_ON_FIRE", SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
 #endif
@@ -4784,12 +5001,12 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 	// React to being struck by a physics object
-	if ( HasCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT ) )
+	if( HasCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT ) )
 	{
 		ClearCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT );
 
 		// See which state our player relationship is in
-		if ( PlayerIsCriminal() == false )
+		if( PlayerIsCriminal() == false )
 		{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 			SpeakIfAllowed( TLK_COP_HIT_BY_PHYSOBJ, SENTENCE_PRIORITY_INVALID, SENTENCE_CRITERIA_ALWAYS );
@@ -4799,7 +5016,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 			m_nNumWarnings = METROPOLICE_MAX_WARNINGS;
 			AdministerJustice();
 		}
-		else if ( GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_ON )
+		else if( GlobalEntity_GetState( "gordon_precriminal" ) == GLOBAL_ON )
 		{
 			// We're not allowed to respond, but warn them
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
@@ -4811,21 +5028,21 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 #ifdef MAPBASE
-	if ( m_hForcedGrenadeTarget )
+	if( m_hForcedGrenadeTarget )
 	{
-		if ( m_flNextGrenadeCheck < gpGlobals->curtime )
+		if( m_flNextGrenadeCheck < gpGlobals->curtime )
 		{
 			Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 
 			// The fact we have a forced grenade target overrides whether we're marked as "capable".
 			// If we're *only* alt-fire capable, use an energy ball. If not, throw a grenade.
-			if (!IsAltFireCapable() || IsGrenadeCapable())
+			if( !IsAltFireCapable() || IsGrenadeCapable() )
 			{
 				Vector vecTarget = m_hForcedGrenadeTarget->WorldSpaceCenter();
 				{
-					// If we can, throw a grenade at the target. 
+					// If we can, throw a grenade at the target.
 					// Ignore grenade count / distance / etc
-					if ( CheckCanThrowGrenade( vecTarget ) )
+					if( CheckCanThrowGrenade( vecTarget ) )
 					{
 						m_hForcedGrenadeTarget = NULL;
 						return SCHED_METROPOLICE_FORCED_GRENADE_THROW;
@@ -4834,7 +5051,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 			}
 			else
 			{
-				if ( FVisible( m_hForcedGrenadeTarget ) )
+				if( FVisible( m_hForcedGrenadeTarget ) )
 				{
 					m_vecAltFireTarget = vecTarget;
 					m_hForcedGrenadeTarget = NULL;
@@ -4844,7 +5061,7 @@ int CNPC_MetroPolice::SelectSchedule( void )
 		}
 
 		// Can't throw at the target, so lets try moving to somewhere where I can see it
-		if ( !FVisible( m_hForcedGrenadeTarget ) )
+		if( !FVisible( m_hForcedGrenadeTarget ) )
 		{
 			return SCHED_METROPOLICE_MOVE_TO_FORCED_GREN_LOS;
 		}
@@ -4852,17 +5069,23 @@ int CNPC_MetroPolice::SelectSchedule( void )
 #endif
 
 	int nSched = SelectFlinchSchedule();
-	if ( nSched != SCHED_NONE )
+	if( nSched != SCHED_NONE )
+	{
 		return nSched;
+	}
 
-	if ( HasBaton() )
+	if( HasBaton() )
 	{
 		// See if we're being told to activate our baton
-		if ( m_bShouldActivateBaton && BatonActive() == false && IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) == false )
+		if( m_bShouldActivateBaton && BatonActive() == false && IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) == false )
+		{
 			return SCHED_METROPOLICE_ACTIVATE_BATON;
+		}
 
-		if ( m_bShouldActivateBaton == false && BatonActive() && IsCurSchedule( SCHED_METROPOLICE_DEACTIVATE_BATON ) == false )
+		if( m_bShouldActivateBaton == false && BatonActive() && IsCurSchedule( SCHED_METROPOLICE_DEACTIVATE_BATON ) == false )
+		{
 			return SCHED_METROPOLICE_DEACTIVATE_BATON;
+		}
 
 		if( metropolice_chase_use_follow.GetBool() )
 		{
@@ -4877,25 +5100,25 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 	// See if the player is in our face (unless we're scripting)
-	if ( PlayerIsCriminal() == false )
+	if( PlayerIsCriminal() == false )
 	{
-		if ( !IsInAScript() && (HasCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE ) || m_bPlayerTooClose) )
+		if( !IsInAScript() && ( HasCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE ) || m_bPlayerTooClose ) )
 		{
 			// Don't hit the player too many times in a row, unless he's trying to push a cop who hasn't moved
-			if ( m_iNumPlayerHits < 3 || m_vecPreChaseOrigin == vec3_origin )
+			if( m_iNumPlayerHits < 3 || m_vecPreChaseOrigin == vec3_origin )
 			{
 				ClearCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 				m_bPlayerTooClose = false;
-				
+
 				return SelectShoveSchedule();
 			}
 		}
-		else if ( m_iNumPlayerHits )
+		else if( m_iNumPlayerHits )
 		{
 			// If we're not in combat, and we've got a pre-chase origin, move back to it
-			if ( ( m_NPCState != NPC_STATE_COMBAT ) && 
-				 ( m_vecPreChaseOrigin != vec3_origin ) && 
-				 ( m_flChasePlayerTime < gpGlobals->curtime ) )
+			if( ( m_NPCState != NPC_STATE_COMBAT ) &&
+					( m_vecPreChaseOrigin != vec3_origin ) &&
+					( m_flChasePlayerTime < gpGlobals->curtime ) )
 			{
 				return SCHED_METROPOLICE_RETURN_TO_PRECHASE;
 			}
@@ -4903,9 +5126,9 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 	// Cower when physics objects are thrown at me
-	if ( HasCondition( COND_HEAR_PHYSICS_DANGER ) )
+	if( HasCondition( COND_HEAR_PHYSICS_DANGER ) )
 	{
-		if ( m_flLastPhysicsFlinchTime + 4.0f <= gpGlobals->curtime )
+		if( m_flLastPhysicsFlinchTime + 4.0f <= gpGlobals->curtime )
 		{
 			m_flLastPhysicsFlinchTime = gpGlobals->curtime;
 			return SCHED_FLINCH_PHYSICS;
@@ -4913,36 +5136,36 @@ int CNPC_MetroPolice::SelectSchedule( void )
 	}
 
 	// Always run for cover from danger sounds
-	if ( HasCondition(COND_HEAR_DANGER) )
+	if( HasCondition( COND_HEAR_DANGER ) )
 	{
-		CSound *pSound;
+		CSound* pSound;
 		pSound = GetBestSound();
 
 		Assert( pSound != NULL );
-		if ( pSound )
+		if( pSound )
 		{
-			if (pSound->m_iType & SOUND_DANGER)
+			if( pSound->m_iType & SOUND_DANGER )
 			{
 				AnnounceTakeCoverFromDanger( pSound );
 				return SCHED_TAKE_COVER_FROM_BEST_SOUND;
 			}
-			if (!HasCondition( COND_SEE_ENEMY ) && ( pSound->m_iType & (SOUND_PLAYER | SOUND_PLAYER_VEHICLE | SOUND_COMBAT) ))
+			if( !HasCondition( COND_SEE_ENEMY ) && ( pSound->m_iType & ( SOUND_PLAYER | SOUND_PLAYER_VEHICLE | SOUND_COMBAT ) ) )
 			{
 				GetMotor()->SetIdealYawToTarget( pSound->GetSoundReactOrigin() );
 			}
 		}
 	}
 
-	bool bHighHealth = ((float)GetHealth() / (float)GetMaxHealth() > 0.75f);
+	bool bHighHealth = ( ( float )GetHealth() / ( float )GetMaxHealth() > 0.75f );
 
 	// This will cause the cops to run backwards + shoot at the same time
-	if ( !bHighHealth && !HasBaton() )
+	if( !bHighHealth && !HasBaton() )
 	{
 #ifdef MAPBASE
 		// Don't do this with low-capacity weapons or weapons which don't use clips
-		if ( GetActiveWeapon() && GetActiveWeapon()->UsesClipsForAmmo1() && GetActiveWeapon()->GetMaxClip1() > 10 && (GetActiveWeapon()->m_iClip1 <= 5) )
+		if( GetActiveWeapon() && GetActiveWeapon()->UsesClipsForAmmo1() && GetActiveWeapon()->GetMaxClip1() > 10 && ( GetActiveWeapon()->m_iClip1 <= 5 ) )
 #else
-		if ( GetActiveWeapon() && (GetActiveWeapon()->m_iClip1 <= 5) )
+		if( GetActiveWeapon() && ( GetActiveWeapon()->m_iClip1 <= 5 ) )
 #endif
 		{
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
@@ -4956,66 +5179,80 @@ int CNPC_MetroPolice::SelectSchedule( void )
 
 	if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 	{
-		if ( bHighHealth )
+		if( bHighHealth )
+		{
 			return SCHED_RELOAD;
+		}
 
 		AnnounceOutOfAmmo( );
 		return SCHED_HIDE_AND_RELOAD;
 	}
 
 	// If we're clubbing someone who threw something at us. chase them
-	if ( m_NPCState == NPC_STATE_COMBAT && m_flChasePlayerTime > gpGlobals->curtime )
+	if( m_NPCState == NPC_STATE_COMBAT && m_flChasePlayerTime > gpGlobals->curtime )
+	{
 		return SCHED_CHASE_ENEMY;
+	}
 
-	if ( !BehaviorSelectSchedule() )
+	if( !BehaviorSelectSchedule() )
 	{
 		// If we've warned the player at all, watch him like a hawk
-		if ( m_bKeepFacingPlayer && !PlayerIsCriminal() )
+		if( m_bKeepFacingPlayer && !PlayerIsCriminal() )
+		{
 			return SCHED_TARGET_FACE;
+		}
 
 		switch( m_NPCState )
 		{
-		case NPC_STATE_IDLE:
+			case NPC_STATE_IDLE:
 			{
 				nSched = SelectScheduleInvestigateSound();
-				if ( nSched != SCHED_NONE )
+				if( nSched != SCHED_NONE )
+				{
 					return nSched;
+				}
 				break;
 			}
 
-		case NPC_STATE_ALERT:
+			case NPC_STATE_ALERT:
 			{
 				nSched = SelectScheduleInvestigateSound();
-				if ( nSched != SCHED_NONE )
+				if( nSched != SCHED_NONE )
+				{
 					return nSched;
+				}
 			}
 			break;
 
-		case NPC_STATE_COMBAT:
+			case NPC_STATE_COMBAT:
 #ifdef MAPBASE
-			if (!IsEnemyInAnAirboat() || !GetActiveWeapon() || !EntIsClass(GetActiveWeapon(), gm_isz_class_SMG1))
+				if( !IsEnemyInAnAirboat() || !GetActiveWeapon() || !EntIsClass( GetActiveWeapon(), gm_isz_class_SMG1 ) )
 #else
-			if (!IsEnemyInAnAirboat() || !Weapon_OwnsThisType( "weapon_smg1" ) )
+				if( !IsEnemyInAnAirboat() || !Weapon_OwnsThisType( "weapon_smg1" ) )
 #endif
-			{
-				int nResult = SelectCombatSchedule();
-				if ( nResult != SCHED_NONE )
-					return nResult;
-			}
-			else
-			{
-				int nResult = SelectAirboatCombatSchedule();
-				if ( nResult != SCHED_NONE )
-					return nResult;
-			}
-			break;
+				{
+					int nResult = SelectCombatSchedule();
+					if( nResult != SCHED_NONE )
+					{
+						return nResult;
+					}
+				}
+				else
+				{
+					int nResult = SelectAirboatCombatSchedule();
+					if( nResult != SCHED_NONE )
+					{
+						return nResult;
+					}
+				}
+				break;
 		}
 	}
 
 	// If we're not in combat, and we've got a pre-chase origin, move back to it
-	if ( ( m_NPCState != NPC_STATE_COMBAT ) && 
-		 ( m_vecPreChaseOrigin != vec3_origin ) && 
-		 ( m_flChasePlayerTime < gpGlobals->curtime ) )
+	if( ( m_NPCState != NPC_STATE_COMBAT ) &&
+			( m_vecPreChaseOrigin != vec3_origin ) &&
+			( m_flChasePlayerTime < gpGlobals->curtime ) )
 	{
 		return SCHED_METROPOLICE_RETURN_TO_PRECHASE;
 	}
@@ -5025,15 +5262,15 @@ int CNPC_MetroPolice::SelectSchedule( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : failedSchedule - 
-//			failedTask - 
-//			taskFailCode - 
+// Purpose:
+// Input  : failedSchedule -
+//			failedTask -
+//			taskFailCode -
 // Output : int
 //-----------------------------------------------------------------------------
 int CNPC_MetroPolice::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode )
 {
-	if ( failedSchedule == SCHED_METROPOLICE_CHASE_ENEMY )
+	if( failedSchedule == SCHED_METROPOLICE_CHASE_ENEMY )
 	{
 		return SCHED_METROPOLICE_ESTABLISH_LINE_OF_FIRE;
 	}
@@ -5048,118 +5285,126 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_ALERT_FACE_BESTSOUND:
-		if ( !IsCurSchedule( SCHED_METROPOLICE_ALERT_FACE_BESTSOUND, false ) )
-		{
-			return SCHED_METROPOLICE_ALERT_FACE_BESTSOUND;
-		}
-		return SCHED_ALERT_FACE_BESTSOUND;
-
-	case SCHED_CHASE_ENEMY:
-		
-		if ( !IsRunningBehavior() )
-		{
-			return SCHED_METROPOLICE_CHASE_ENEMY;
-		}
-		
-		break;
-
-	case SCHED_ESTABLISH_LINE_OF_FIRE:
-	case SCHED_METROPOLICE_ESTABLISH_LINE_OF_FIRE:
-		if ( IsEnemyInAnAirboat() )
-		{
-			int nSched = SelectMoveToLedgeSchedule();
-			if ( nSched != SCHED_NONE )
-				return nSched;
-		}
-#ifdef MAPBASE
-		if ( CanAltFireEnemy(false) && OccupyStrategySlot(SQUAD_SLOT_SPECIAL_ATTACK) )
-		{
-			// If this metrocop has the balls to alt-fire the enemy's last known position,
-			// do so!
-			return SCHED_METROPOLICE_AR2_ALTFIRE;
-		}
-#endif
-		return SCHED_METROPOLICE_ESTABLISH_LINE_OF_FIRE;		
-		
-	case SCHED_WAKE_ANGRY:
-		return SCHED_METROPOLICE_WAKE_ANGRY;
-
-	case SCHED_FAIL_TAKE_COVER:
-		
-		if ( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
-		{
-			// Must be able to shoot now
-			if( TryToEnterPistolSlot( SQUAD_SLOT_ATTACK1 ) || TryToEnterPistolSlot( SQUAD_SLOT_ATTACK2 ) )
-				return SCHED_RANGE_ATTACK1;
-		}
-
-		if ( HasCondition( COND_NO_PRIMARY_AMMO ) )
-			return SCHED_RELOAD;
-		return SCHED_RUN_RANDOM;
-
-	case SCHED_RANGE_ATTACK1:
-		Assert( !HasCondition( COND_NO_PRIMARY_AMMO ) );
-
-		if( !m_fWeaponDrawn )
-		{
-			return SCHED_METROPOLICE_DRAW_PISTOL;
-		}
-
-#ifdef MAPBASE
-		if (CanAltFireEnemy( true ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ))
-		{
-			// Since I'm holding this squadslot, no one else can try right now. If I die before the shot 
-			// goes off, I won't have affected anyone else's ability to use this attack at their nearest
-			// convenience.
-			return SCHED_METROPOLICE_AR2_ALTFIRE;
-		}
-#endif
-
-#ifdef MAPBASE
-		if (GetActiveWeapon() && EntIsClass(GetActiveWeapon(), gm_isz_class_SMG1))
-#else
-		if( Weapon_OwnsThisType( "weapon_smg1" ) )
-#endif
-		{
-			if ( IsEnemyInAnAirboat() )
+		case SCHED_ALERT_FACE_BESTSOUND:
+			if( !IsCurSchedule( SCHED_METROPOLICE_ALERT_FACE_BESTSOUND, false ) )
 			{
-				int nSched = SelectStitchSchedule();
-				if ( nSched != SCHED_NONE )
+				return SCHED_METROPOLICE_ALERT_FACE_BESTSOUND;
+			}
+			return SCHED_ALERT_FACE_BESTSOUND;
+
+		case SCHED_CHASE_ENEMY:
+
+			if( !IsRunningBehavior() )
+			{
+				return SCHED_METROPOLICE_CHASE_ENEMY;
+			}
+
+			break;
+
+		case SCHED_ESTABLISH_LINE_OF_FIRE:
+		case SCHED_METROPOLICE_ESTABLISH_LINE_OF_FIRE:
+			if( IsEnemyInAnAirboat() )
+			{
+				int nSched = SelectMoveToLedgeSchedule();
+				if( nSched != SCHED_NONE )
+				{
 					return nSched;
+				}
+			}
+#ifdef MAPBASE
+			if( CanAltFireEnemy( false ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+			{
+				// If this metrocop has the balls to alt-fire the enemy's last known position,
+				// do so!
+				return SCHED_METROPOLICE_AR2_ALTFIRE;
+			}
+#endif
+			return SCHED_METROPOLICE_ESTABLISH_LINE_OF_FIRE;
+
+		case SCHED_WAKE_ANGRY:
+			return SCHED_METROPOLICE_WAKE_ANGRY;
+
+		case SCHED_FAIL_TAKE_COVER:
+
+			if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			{
+				// Must be able to shoot now
+				if( TryToEnterPistolSlot( SQUAD_SLOT_ATTACK1 ) || TryToEnterPistolSlot( SQUAD_SLOT_ATTACK2 ) )
+				{
+					return SCHED_RANGE_ATTACK1;
+				}
 			}
 
-			if ( ShouldAttemptToStitch() )
+			if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 			{
-				return SCHED_METROPOLICE_SMG_BURST_ATTACK;
+				return SCHED_RELOAD;
 			}
-			else
+			return SCHED_RUN_RANDOM;
+
+		case SCHED_RANGE_ATTACK1:
+			Assert( !HasCondition( COND_NO_PRIMARY_AMMO ) );
+
+			if( !m_fWeaponDrawn )
 			{
-				return SCHED_METROPOLICE_SMG_NORMAL_ATTACK;
+				return SCHED_METROPOLICE_DRAW_PISTOL;
 			}
-		}
-		break;
+
 #ifdef MAPBASE
-	case SCHED_TAKE_COVER_FROM_ENEMY:
+			if( CanAltFireEnemy( true ) && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+			{
+				// Since I'm holding this squadslot, no one else can try right now. If I die before the shot
+				// goes off, I won't have affected anyone else's ability to use this attack at their nearest
+				// convenience.
+				return SCHED_METROPOLICE_AR2_ALTFIRE;
+			}
+#endif
+
+#ifdef MAPBASE
+			if( GetActiveWeapon() && EntIsClass( GetActiveWeapon(), gm_isz_class_SMG1 ) )
+#else
+			if( Weapon_OwnsThisType( "weapon_smg1" ) )
+#endif
+			{
+				if( IsEnemyInAnAirboat() )
+				{
+					int nSched = SelectStitchSchedule();
+					if( nSched != SCHED_NONE )
+					{
+						return nSched;
+					}
+				}
+
+				if( ShouldAttemptToStitch() )
+				{
+					return SCHED_METROPOLICE_SMG_BURST_ATTACK;
+				}
+				else
+				{
+					return SCHED_METROPOLICE_SMG_NORMAL_ATTACK;
+				}
+			}
+			break;
+#ifdef MAPBASE
+		case SCHED_TAKE_COVER_FROM_ENEMY:
 		{
-			if ( m_pSquad )
+			if( m_pSquad )
 			{
 				// Have to explicitly check innate range attack condition as may have weapon with range attack 2
-				if (	g_pGameRules->IsSkillLevel( SKILL_HARD )	&& 
-					HasCondition(COND_CAN_RANGE_ATTACK2)		&&
-					OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
+				if(	g_pGameRules->IsSkillLevel( SKILL_HARD )	&&
+						HasCondition( COND_CAN_RANGE_ATTACK2 )		&&
+						OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) )
 				{
-	#ifdef METROPOLICE_USES_RESPONSE_SYSTEM
+#ifdef METROPOLICE_USES_RESPONSE_SYSTEM
 					SpeakIfAllowed( TLK_COP_THROWGRENADE );
-	#else
+#else
 					m_Sentences.Speak( "COMBINE_THROW_GRENADE" );
-	#endif
+#endif
 					return SCHED_METROPOLICE_RANGE_ATTACK2;
 				}
 			}
 		}
 		break;
-	case SCHED_HIDE_AND_RELOAD:
+		case SCHED_HIDE_AND_RELOAD:
 		{
 			if( CanGrenadeEnemy() && OccupyStrategySlot( SQUAD_SLOT_SPECIAL_ATTACK ) && random->RandomInt( 0, 100 ) < 20 )
 			{
@@ -5169,30 +5414,30 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 		}
 		break;
 #endif
-	case SCHED_METROPOLICE_ADVANCE:
-		if ( m_NextChargeTimer.Expired() && metropolice_charge.GetBool() )
-		{	
-#ifdef MAPBASE
-			if (GetActiveWeapon() && EntIsClass(GetActiveWeapon(), gm_isz_class_Pistol))
-#else
-			if ( Weapon_OwnsThisType( "weapon_pistol" ) )
-#endif
+		case SCHED_METROPOLICE_ADVANCE:
+			if( m_NextChargeTimer.Expired() && metropolice_charge.GetBool() )
 			{
-				if (  GetEnemy() && GetEnemy()->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) > 300*300 )
+#ifdef MAPBASE
+				if( GetActiveWeapon() && EntIsClass( GetActiveWeapon(), gm_isz_class_Pistol ) )
+#else
+				if( Weapon_OwnsThisType( "weapon_pistol" ) )
+#endif
 				{
-					if ( OccupyStrategySlot( SQUAD_SLOT_POLICE_CHARGE_ENEMY ) )
+					if( GetEnemy() && GetEnemy()->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) > 300 * 300 )
 					{
-						m_NextChargeTimer.Set( 3, 7 );
-						return SCHED_METROPOLICE_CHARGE;
+						if( OccupyStrategySlot( SQUAD_SLOT_POLICE_CHARGE_ENEMY ) )
+						{
+							m_NextChargeTimer.Set( 3, 7 );
+							return SCHED_METROPOLICE_CHARGE;
+						}
 					}
 				}
+				else
+				{
+					m_NextChargeTimer.Set( 99999 );
+				}
 			}
-			else
-			{
-				m_NextChargeTimer.Set( 99999 );
-			}
-		}
-		break;
+			break;
 	}
 
 
@@ -5205,11 +5450,15 @@ int CNPC_MetroPolice::TranslateSchedule( int scheduleType )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::ShouldMoveAndShoot()
 {
-	if ( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	{
 		return false;
+	}
 
-	if ( ShouldAttemptToStitch() )
+	if( ShouldAttemptToStitch() )
+	{
 		return false;
+	}
 
 	return BaseClass::ShouldMoveAndShoot();
 }
@@ -5220,13 +5469,17 @@ bool CNPC_MetroPolice::ShouldMoveAndShoot()
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::OnBeginMoveAndShoot()
 {
-	if ( BaseClass::OnBeginMoveAndShoot() )
+	if( BaseClass::OnBeginMoveAndShoot() )
 	{
 		if( HasStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
-			return true; // already have the slot I need
+		{
+			return true;    // already have the slot I need
+		}
 
 		if( OccupyStrategySlotRange( SQUAD_SLOT_ATTACK1, SQUAD_SLOT_ATTACK2 ) )
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -5242,26 +5495,26 @@ void CNPC_MetroPolice::OnEndMoveAndShoot()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pTask - 
+// Purpose:
+// Input  : pTask -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::StartTask( const Task_t *pTask )
+void CNPC_MetroPolice::StartTask( const Task_t* pTask )
 {
-	switch (pTask->iTask)
+	switch( pTask->iTask )
 	{
-	case TASK_METROPOLICE_WAIT_FOR_SENTENCE:
+		case TASK_METROPOLICE_WAIT_FOR_SENTENCE:
 		{
-			if ( FOkToMakeSound( pTask->flTaskData ) )
+			if( FOkToMakeSound( pTask->flTaskData ) )
 			{
 				TaskComplete();
 			}
 		}
 		break;
 
-	case TASK_METROPOLICE_GET_PATH_TO_PRECHASE:
+		case TASK_METROPOLICE_GET_PATH_TO_PRECHASE:
 		{
 			Assert( m_vecPreChaseOrigin != vec3_origin );
-			if ( GetNavigator()->SetGoal( m_vecPreChaseOrigin ) )
+			if( GetNavigator()->SetGoal( m_vecPreChaseOrigin ) )
 			{
 				QAngle vecAngles( 0, m_flPreChaseYaw, 0 );
 				GetNavigator()->SetArrivalDirection( vecAngles );
@@ -5274,7 +5527,7 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 			break;
 		}
 
-	case TASK_METROPOLICE_CLEAR_PRECHASE:
+		case TASK_METROPOLICE_CLEAR_PRECHASE:
 		{
 			m_vecPreChaseOrigin = vec3_origin;
 			m_flPreChaseYaw = 0;
@@ -5282,10 +5535,10 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 			break;
 		}
 
-	case TASK_METROPOLICE_ACTIVATE_BATON:
+		case TASK_METROPOLICE_ACTIVATE_BATON:
 		{
 			// Simply early out if we're in here without a baton
-			if ( HasBaton() == false )
+			if( HasBaton() == false )
 			{
 				TaskComplete();
 				break;
@@ -5293,40 +5546,40 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 
 			bool activate = ( pTask->flTaskData != 0 );
 
-			if ( activate )
+			if( activate )
 			{
-				if ( BatonActive() || m_bShouldActivateBaton == false )
+				if( BatonActive() || m_bShouldActivateBaton == false )
 				{
 					TaskComplete();
 					break;
 				}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-				SpeakIfAllowed(TLK_COP_ACTIVATE_BATON, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+				SpeakIfAllowed( TLK_COP_ACTIVATE_BATON, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #else
 				m_Sentences.Speak( "METROPOLICE_ACTIVATE_BATON", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #endif
-				SetIdealActivity( (Activity) ACT_ACTIVATE_BATON );
+				SetIdealActivity( ( Activity ) ACT_ACTIVATE_BATON );
 			}
 			else
 			{
-				if ( BatonActive() == false || m_bShouldActivateBaton )
+				if( BatonActive() == false || m_bShouldActivateBaton )
 				{
 					TaskComplete();
 					break;
 				}
 
 #ifdef METROPOLICE_USES_RESPONSE_SYSTEM
-				SpeakIfAllowed(TLK_COP_DEACTIVATE_BATON, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL);
+				SpeakIfAllowed( TLK_COP_DEACTIVATE_BATON, SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #else
 				m_Sentences.Speak( "METROPOLICE_DEACTIVATE_BATON", SENTENCE_PRIORITY_NORMAL, SENTENCE_CRITERIA_NORMAL );
 #endif
-				SetIdealActivity( (Activity) ACT_DEACTIVATE_BATON );
+				SetIdealActivity( ( Activity ) ACT_DEACTIVATE_BATON );
 			}
 		}
 		break;
 
-	case TASK_METROPOLICE_DIE_INSTANTLY:
+		case TASK_METROPOLICE_DIE_INSTANTLY:
 		{
 			CTakeDamageInfo info;
 
@@ -5342,41 +5595,41 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_METROPOLICE_RESET_LEDGE_CHECK_TIME:
-		m_flNextLedgeCheckTime = gpGlobals->curtime;
-		TaskComplete();
-		break;
+		case TASK_METROPOLICE_RESET_LEDGE_CHECK_TIME:
+			m_flNextLedgeCheckTime = gpGlobals->curtime;
+			TaskComplete();
+			break;
 
-	case TASK_METROPOLICE_LEAD_ARREST_ENEMY:
-	case TASK_METROPOLICE_ARREST_ENEMY:
-		m_flTaskCompletionTime = gpGlobals->curtime + pTask->flTaskData;
-		break;
+		case TASK_METROPOLICE_LEAD_ARREST_ENEMY:
+		case TASK_METROPOLICE_ARREST_ENEMY:
+			m_flTaskCompletionTime = gpGlobals->curtime + pTask->flTaskData;
+			break;
 
-	case TASK_METROPOLICE_SIGNAL_FIRING_TIME:
-		EnemyResistingArrest();
-		TaskComplete();
-		break;
+		case TASK_METROPOLICE_SIGNAL_FIRING_TIME:
+			EnemyResistingArrest();
+			TaskComplete();
+			break;
 
 #ifdef MAPBASE
-	case TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS:
-		StartTask_GetPathToForced( pTask );
-		break;
+		case TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS:
+			StartTask_GetPathToForced( pTask );
+			break;
 
-	case TASK_METROPOLICE_DEFER_SQUAD_GRENADES:
-		StartTask_DeferSquad( pTask );
-		break;
+		case TASK_METROPOLICE_DEFER_SQUAD_GRENADES:
+			StartTask_DeferSquad( pTask );
+			break;
 
-	case TASK_METROPOLICE_FACE_TOSS_DIR:
-		break;
+		case TASK_METROPOLICE_FACE_TOSS_DIR:
+			break;
 
-	case TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
-		StartTask_FaceAltFireTarget( pTask );
-		break;
+		case TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
+			StartTask_FaceAltFireTarget( pTask );
+			break;
 #endif
 
-	case TASK_METROPOLICE_GET_PATH_TO_STITCH:
+		case TASK_METROPOLICE_GET_PATH_TO_STITCH:
 		{
-			if ( !ShouldAttemptToStitch() )
+			if( !ShouldAttemptToStitch() )
 			{
 				TaskFail( FAIL_NO_ROUTE );
 				break;
@@ -5388,7 +5641,7 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 			vecTarget -= GetAbsOrigin();
 			vecTarget.z = 0.0f;
 			float flDist = VectorNormalize( vecTarget );
-			if ( GetNavigator()->SetVectorGoal( vecTarget, flDist ) )
+			if( GetNavigator()->SetVectorGoal( vecTarget, flDist ) )
 			{
 				TaskComplete();
 			}
@@ -5399,83 +5652,83 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	// Stitching aiming
-	case TASK_METROPOLICE_AIM_STITCH_TIGHTLY:
-		SetBurstMode( true );
-		AimBurstTightGrouping( pTask->flTaskData );
-		TaskComplete();
-		break;
+		// Stitching aiming
+		case TASK_METROPOLICE_AIM_STITCH_TIGHTLY:
+			SetBurstMode( true );
+			AimBurstTightGrouping( pTask->flTaskData );
+			TaskComplete();
+			break;
 
-	case TASK_METROPOLICE_AIM_STITCH_AT_PLAYER:
-		SetBurstMode( true );
-		AimBurstAtEnemy( pTask->flTaskData );
-		TaskComplete();
-		break;
-
-	case TASK_METROPOLICE_AIM_STITCH_AT_AIRBOAT:
-		if ( IsEnemyInAnAirboat() )
-		{
+		case TASK_METROPOLICE_AIM_STITCH_AT_PLAYER:
 			SetBurstMode( true );
 			AimBurstAtEnemy( pTask->flTaskData );
 			TaskComplete();
-		}
-		else
-		{
-			TaskFail(FAIL_NO_TARGET);
-		}
-		break;
+			break;
 
-	case TASK_METROPOLICE_AIM_STITCH_IN_FRONT_OF_AIRBOAT:
-		if ( IsEnemyInAnAirboat() )
-		{
-			SetBurstMode( true );
-			AimBurstInFrontOfEnemy( pTask->flTaskData );
-			TaskComplete();
-		}
-		else
-		{
-			TaskFail(FAIL_NO_TARGET);
-		}
-		break;
+		case TASK_METROPOLICE_AIM_STITCH_AT_AIRBOAT:
+			if( IsEnemyInAnAirboat() )
+			{
+				SetBurstMode( true );
+				AimBurstAtEnemy( pTask->flTaskData );
+				TaskComplete();
+			}
+			else
+			{
+				TaskFail( FAIL_NO_TARGET );
+			}
+			break;
 
-	case TASK_METROPOLICE_AIM_STITCH_ALONG_SIDE_OF_AIRBOAT:
-		if ( IsEnemyInAnAirboat() )
-		{
-			SetBurstMode( true );
-			AimBurstAlongSideOfEnemy( pTask->flTaskData );
-			TaskComplete();
-		}
-		else
-		{
-			TaskFail(FAIL_NO_TARGET);
-		}
-		break;
+		case TASK_METROPOLICE_AIM_STITCH_IN_FRONT_OF_AIRBOAT:
+			if( IsEnemyInAnAirboat() )
+			{
+				SetBurstMode( true );
+				AimBurstInFrontOfEnemy( pTask->flTaskData );
+				TaskComplete();
+			}
+			else
+			{
+				TaskFail( FAIL_NO_TARGET );
+			}
+			break;
 
-	case TASK_METROPOLICE_AIM_STITCH_BEHIND_AIRBOAT:
-		if ( IsEnemyInAnAirboat() )
-		{
-			SetBurstMode( true );
-			AimBurstBehindEnemy( pTask->flTaskData );
-			TaskComplete();
-		}
-		else
-		{
-			TaskFail(FAIL_NO_TARGET);
-		}
-		break;
+		case TASK_METROPOLICE_AIM_STITCH_ALONG_SIDE_OF_AIRBOAT:
+			if( IsEnemyInAnAirboat() )
+			{
+				SetBurstMode( true );
+				AimBurstAlongSideOfEnemy( pTask->flTaskData );
+				TaskComplete();
+			}
+			else
+			{
+				TaskFail( FAIL_NO_TARGET );
+			}
+			break;
 
-	case TASK_METROPOLICE_BURST_ATTACK:
-		ResetIdealActivity( ACT_RANGE_ATTACK1 );
-		break;
+		case TASK_METROPOLICE_AIM_STITCH_BEHIND_AIRBOAT:
+			if( IsEnemyInAnAirboat() )
+			{
+				SetBurstMode( true );
+				AimBurstBehindEnemy( pTask->flTaskData );
+				TaskComplete();
+			}
+			else
+			{
+				TaskFail( FAIL_NO_TARGET );
+			}
+			break;
 
-	case TASK_METROPOLICE_STOP_FIRE_BURST:
+		case TASK_METROPOLICE_BURST_ATTACK:
+			ResetIdealActivity( ACT_RANGE_ATTACK1 );
+			break;
+
+		case TASK_METROPOLICE_STOP_FIRE_BURST:
 		{
 			SetBurstMode( false );
 			TaskComplete();
 		}
 		break;
 
-	case TASK_METROPOLICE_HARASS:
+		case TASK_METROPOLICE_HARASS:
 		{
 			if( !( m_spawnflags & SF_METROPOLICE_NOCHATTER ) )
 			{
@@ -5493,24 +5746,24 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_METROPOLICE_RELOAD_FOR_BURST:
+		case TASK_METROPOLICE_RELOAD_FOR_BURST:
 		{
-			if (GetActiveWeapon())
+			if( GetActiveWeapon() )
 			{
 				int nDesiredShotCount = CountShotsInTime( pTask->flTaskData );
 
 				// Do our fake reload to simulate a bigger clip without having to change the SMG1
 				int nAddCount = nDesiredShotCount - GetActiveWeapon()->Clip1();
-				if ( nAddCount > 0 )
+				if( nAddCount > 0 )
 				{
-					if ( m_nBurstReloadCount >= nAddCount )
+					if( m_nBurstReloadCount >= nAddCount )
 					{
 						GetActiveWeapon()->m_iClip1 += nAddCount;
 						m_nBurstReloadCount -= nAddCount;
 					}
 				}
 
-				if ( nDesiredShotCount <= GetActiveWeapon()->Clip1() )
+				if( nDesiredShotCount <= GetActiveWeapon()->Clip1() )
 				{
 					TaskComplete();
 					break;
@@ -5525,19 +5778,19 @@ void CNPC_MetroPolice::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_RELOAD:
-		m_nBurstReloadCount = METROPOLICE_BURST_RELOAD_COUNT;
-		BaseClass::StartTask( pTask );
-		break;
+		case TASK_RELOAD:
+			m_nBurstReloadCount = METROPOLICE_BURST_RELOAD_COUNT;
+			BaseClass::StartTask( pTask );
+			break;
 
-	case TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS:
+		case TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS:
 		{
 		}
 		break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
@@ -5556,12 +5809,12 @@ void CNPC_MetroPolice::EnemyResistingArrest()
 {
 	// Prevent any other arrest from being made in this squad
 	// and tell them all that the player is resisting arrest!
-	
-	if ( m_pSquad != NULL )
+
+	if( m_pSquad != NULL )
 	{
 		AISquadIter_t iter;
-		CAI_BaseNPC *pSquadmate = m_pSquad->GetFirstMember( &iter );
-		while ( pSquadmate )
+		CAI_BaseNPC* pSquadmate = m_pSquad->GetFirstMember( &iter );
+		while( pSquadmate )
 		{
 			pSquadmate->RemoveSpawnFlags( SF_METROPOLICE_ARREST_ENEMY );
 			pSquadmate->SetCondition( COND_METROPOLICE_ENEMY_RESISTING_ARREST );
@@ -5572,47 +5825,47 @@ void CNPC_MetroPolice::EnemyResistingArrest()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pTask - 
+// Purpose:
+// Input  : pTask -
 //-----------------------------------------------------------------------------
 #define FLEEING_DISTANCE_SQR (100 * 100)
 
-void CNPC_MetroPolice::RunTask( const Task_t *pTask )
+void CNPC_MetroPolice::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_WAIT_FOR_MOVEMENT:
-		BaseClass::RunTask( pTask );
-		break;
+		case TASK_WAIT_FOR_MOVEMENT:
+			BaseClass::RunTask( pTask );
+			break;
 
-	case TASK_METROPOLICE_WAIT_FOR_SENTENCE:
+		case TASK_METROPOLICE_WAIT_FOR_SENTENCE:
 		{
-			if ( FOkToMakeSound( pTask->flTaskData ) )
+			if( FOkToMakeSound( pTask->flTaskData ) )
 			{
 				TaskComplete();
 			}
 		}
 		break;
 
-	case TASK_METROPOLICE_ACTIVATE_BATON:
-		AutoMovement();
-		
-		if ( IsActivityFinished() )
-		{
-			TaskComplete();
-		}	
-		break;
+		case TASK_METROPOLICE_ACTIVATE_BATON:
+			AutoMovement();
 
-	case TASK_METROPOLICE_BURST_ATTACK:
+			if( IsActivityFinished() )
+			{
+				TaskComplete();
+			}
+			break;
+
+		case TASK_METROPOLICE_BURST_ATTACK:
 		{
 			AutoMovement( );
 
 			Vector vecAimPoint;
 			GetMotor()->SetIdealYawToTargetAndUpdate( m_vecBurstTargetPos, AI_KEEP_YAW_SPEED );
 
-			if ( IsActivityFinished() )
+			if( IsActivityFinished() )
 			{
-				if ( GetShotRegulator()->IsInRestInterval() )
+				if( GetShotRegulator()->IsInRestInterval() )
 				{
 					TaskComplete();
 				}
@@ -5625,7 +5878,7 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_METROPOLICE_RELOAD_FOR_BURST:
+		case TASK_METROPOLICE_RELOAD_FOR_BURST:
 		{
 			// Fake a TASK_RELOAD
 			Task_t reloadTask;
@@ -5635,16 +5888,16 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_METROPOLICE_LEAD_ARREST_ENEMY:
-	case TASK_METROPOLICE_ARREST_ENEMY:
+		case TASK_METROPOLICE_LEAD_ARREST_ENEMY:
+		case TASK_METROPOLICE_ARREST_ENEMY:
 		{
-			if ( !GetEnemy() )
+			if( !GetEnemy() )
 			{
 				TaskComplete();
 				break;
 			}
 
-			if ( gpGlobals->curtime >= m_flTaskCompletionTime )
+			if( gpGlobals->curtime >= m_flTaskCompletionTime )
 			{
 				TaskComplete();
 				break;
@@ -5652,10 +5905,10 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 
 			// Complete the arrest after the last squad member has a bead on the enemy
 			// But only if you're the first guy who saw him
-			if ( pTask->iTask == TASK_METROPOLICE_LEAD_ARREST_ENEMY )
+			if( pTask->iTask == TASK_METROPOLICE_LEAD_ARREST_ENEMY )
 			{
 				int nArrestCount = SquadArrestCount();
-				if ( nArrestCount == m_pSquad->NumMembers() )
+				if( nArrestCount == m_pSquad->NumMembers() )
 				{
 					TaskComplete();
 					break;
@@ -5663,7 +5916,7 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 
 				// Do a distance check of the enemy from his initial position.
 				// Shoot if he gets too far.
-				if ( m_vSavePosition.DistToSqr( GetEnemy()->GetAbsOrigin() ) > FLEEING_DISTANCE_SQR )
+				if( m_vSavePosition.DistToSqr( GetEnemy()->GetAbsOrigin() ) > FLEEING_DISTANCE_SQR )
 				{
 					SpeakSentence( METROPOLICE_SENTENCE_HES_RUNNING );
 					EnemyResistingArrest();
@@ -5672,42 +5925,42 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 			}
 
 			// Keep aiming at the enemy
-			if ( GetEnemy() && FacingIdeal() )
+			if( GetEnemy() && FacingIdeal() )
 			{
 				float flNewIdealYaw = CalcIdealYaw( GetEnemy()->EyePosition() );
-				if ( fabs(UTIL_AngleDiff( GetMotor()->GetIdealYaw(), flNewIdealYaw )) >= 45.0f )
+				if( fabs( UTIL_AngleDiff( GetMotor()->GetIdealYaw(), flNewIdealYaw ) ) >= 45.0f )
 				{
 					GetMotor()->SetIdealYawToTarget( GetEnemy()->EyePosition() );
-					SetTurnActivity(); 
+					SetTurnActivity();
 				}
 			}
 			GetMotor()->UpdateYaw();
 		}
 		break;
 
-	case TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS:
+		case TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS:
 		{
 			switch( GetTaskInterrupt() )
 			{
-			case 0:
+				case 0:
 				{
-					CSound *pSound = GetBestSound();
-					if (!pSound)
+					CSound* pSound = GetBestSound();
+					if( !pSound )
 					{
-						TaskFail(FAIL_NO_SOUND);
+						TaskFail( FAIL_NO_SOUND );
 					}
 					else
 					{
 						float flMaxRange = 2000;
 						float flMinRange = 0;
-						if ( GetActiveWeapon() )
+						if( GetActiveWeapon() )
 						{
 							flMaxRange = MAX( GetActiveWeapon()->m_fMaxRange1, GetActiveWeapon()->m_fMaxRange2 );
 							flMinRange = MIN( GetActiveWeapon()->m_fMinRange1, GetActiveWeapon()->m_fMinRange2 );
 						}
 
 						// Check against NPC's max range
-						if (flMaxRange > m_flDistTooFar)
+						if( flMaxRange > m_flDistTooFar )
 						{
 							flMaxRange = m_flDistTooFar;
 						}
@@ -5715,19 +5968,19 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 						// Why not doing lateral LOS first?
 
 						Vector losTarget = pSound->GetSoundReactOrigin();
-						if ( GetTacticalServices()->FindLos( pSound->GetSoundReactOrigin(), losTarget, flMinRange, flMaxRange, 1.0, &m_vInterruptSavePosition ) )
+						if( GetTacticalServices()->FindLos( pSound->GetSoundReactOrigin(), losTarget, flMinRange, flMaxRange, 1.0, &m_vInterruptSavePosition ) )
 						{
 							TaskInterrupt();
 						}
 						else
 						{
-							TaskFail(FAIL_NO_SHOOT);
+							TaskFail( FAIL_NO_SHOOT );
 						}
 					}
 				}
 				break;
 
-			case 1:
+				case 1:
 				{
 					AI_NavGoal_t goal( m_vInterruptSavePosition, ACT_RUN, AIN_HULL_TOLERANCE );
 					GetNavigator()->SetGoal( goal );
@@ -5738,40 +5991,40 @@ void CNPC_MetroPolice::RunTask( const Task_t *pTask )
 		break;
 
 #ifdef MAPBASE
-	case TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
-		RunTask_FaceAltFireTarget( pTask );
-		break;
+		case TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET:
+			RunTask_FaceAltFireTarget( pTask );
+			break;
 
-	case TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS:
-		RunTask_GetPathToForced( pTask );
-		break;
+		case TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS:
+			RunTask_GetPathToForced( pTask );
+			break;
 
-	case TASK_METROPOLICE_FACE_TOSS_DIR:
-		RunTask_FaceTossDir( pTask );
-		break;
+		case TASK_METROPOLICE_FACE_TOSS_DIR:
+			RunTask_FaceTossDir( pTask );
+			break;
 #endif
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 
-		
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pevInflictor - 
-//			pAttacker - 
-//			flDamage - 
-//			bitsDamageType - 
+// Purpose:
+// Input  : pevInflictor -
+//			pAttacker -
+//			flDamage -
+//			bitsDamageType -
 // Output : int
 //-----------------------------------------------------------------------------
-int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
+int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo& inputInfo )
 {
 	CTakeDamageInfo info = inputInfo;
 
-	if ( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_ARREST_ENEMY ) )
 	{
 		EnemyResistingArrest();
 	}
@@ -5784,7 +6037,7 @@ int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 	}
 #endif //0
 
-	if (info.GetAttacker() == GetEnemy())
+	if( info.GetAttacker() == GetEnemy() )
 	{
 		// Keep track of recent damage by my attacker. If it seems like we're
 		// being killed, consider running off and hiding.
@@ -5792,7 +6045,7 @@ int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 		m_flRecentDamageTime = gpGlobals->curtime;
 	}
 
-	return BaseClass::OnTakeDamage_Alive( info ); 
+	return BaseClass::OnTakeDamage_Alive( info );
 }
 
 
@@ -5801,20 +6054,26 @@ int CNPC_MetroPolice::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::CanDeployManhack( void )
 {
-	if ( HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
+	if( HasSpawnFlags( SF_METROPOLICE_NO_MANHACK_DEPLOY ) )
+	{
 		return false;
+	}
 
 	// Nope, already have one out.
 	if( m_hManhack != NULL )
+	{
 		return false;
+	}
 
 	// Nope, don't have any!
 	if( m_iManhacks < 1 )
+	{
 		return false;
+	}
 
 	return true;
 }
- 
+
 //-----------------------------------------------------------------------------
 // Purpose: Allows for modification of the interrupt mask for the current schedule.
 //			In the most cases the base implementation should be called first.
@@ -5823,56 +6082,56 @@ void CNPC_MetroPolice::BuildScheduleTestBits( void )
 {
 	BaseClass::BuildScheduleTestBits();
 
-	if ( PlayerIsCriminal() == false )
+	if( PlayerIsCriminal() == false )
 	{
 		SetCustomInterruptCondition( COND_METROPOLICE_PHYSOBJECT_ASSAULT );
 	}
 
 	//FIXME: Always interrupt for now
-	if ( !IsInAScript() && 
-		 !IsCurSchedule( SCHED_METROPOLICE_SHOVE ) &&
-		 !IsCurSchedule( SCHED_MELEE_ATTACK1 ) &&
-		 !IsCurSchedule( SCHED_RELOAD ) && 
-		 !IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) )
+	if( !IsInAScript() &&
+			!IsCurSchedule( SCHED_METROPOLICE_SHOVE ) &&
+			!IsCurSchedule( SCHED_MELEE_ATTACK1 ) &&
+			!IsCurSchedule( SCHED_RELOAD ) &&
+			!IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) )
 	{
 		SetCustomInterruptCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 	}
 
-	if ( !IsCurSchedule( SCHED_METROPOLICE_BURNING_RUN ) && !IsCurSchedule( SCHED_METROPOLICE_BURNING_STAND ) && !IsMoving() )
+	if( !IsCurSchedule( SCHED_METROPOLICE_BURNING_RUN ) && !IsCurSchedule( SCHED_METROPOLICE_BURNING_STAND ) && !IsMoving() )
 	{
 		SetCustomInterruptCondition( COND_METROPOLICE_ON_FIRE );
 	}
 
-	if (IsCurSchedule(SCHED_TAKE_COVER_FROM_ENEMY))
+	if( IsCurSchedule( SCHED_TAKE_COVER_FROM_ENEMY ) )
 	{
 		ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
 	}
 
-	if ( !IsCurSchedule( SCHED_CHASE_ENEMY ) &&
-		 !IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) &&
-		 !IsCurSchedule( SCHED_METROPOLICE_DEACTIVATE_BATON ) &&
-		 !IsCurSchedule( SCHED_METROPOLICE_SHOVE ) && 
-		 !IsCurSchedule( SCHED_METROPOLICE_RETURN_TO_PRECHASE ) )
+	if( !IsCurSchedule( SCHED_CHASE_ENEMY ) &&
+			!IsCurSchedule( SCHED_METROPOLICE_ACTIVATE_BATON ) &&
+			!IsCurSchedule( SCHED_METROPOLICE_DEACTIVATE_BATON ) &&
+			!IsCurSchedule( SCHED_METROPOLICE_SHOVE ) &&
+			!IsCurSchedule( SCHED_METROPOLICE_RETURN_TO_PRECHASE ) )
 	{
 		SetCustomInterruptCondition( COND_METROPOLICE_CHANGE_BATON_STATE );
 	}
 
-	if ( IsCurSchedule( SCHED_MELEE_ATTACK1 ) )
+	if( IsCurSchedule( SCHED_MELEE_ATTACK1 ) )
 	{
-		if ( gpGlobals->curtime - m_flLastDamageFlinchTime < 10.0 )
+		if( gpGlobals->curtime - m_flLastDamageFlinchTime < 10.0 )
 		{
 			ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 			ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
 		}
 	}
-	else if ( HasBaton() && IsCurSchedule( SCHED_COMBAT_FACE ) && !m_BatonSwingTimer.Expired() )
+	else if( HasBaton() && IsCurSchedule( SCHED_COMBAT_FACE ) && !m_BatonSwingTimer.Expired() )
 	{
 		ClearCustomInterruptCondition( COND_CAN_MELEE_ATTACK1 );
 	}
 
 #ifdef MAPBASE
-	if (gpGlobals->curtime < m_flNextAttack)
+	if( gpGlobals->curtime < m_flNextAttack )
 	{
 		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK1 );
 		ClearCustomInterruptCondition( COND_CAN_RANGE_ATTACK2 );
@@ -5882,10 +6141,10 @@ void CNPC_MetroPolice::BuildScheduleTestBits( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-WeaponProficiency_t CNPC_MetroPolice::CalcWeaponProficiency( CBaseCombatWeapon *pWeapon )
+WeaponProficiency_t CNPC_MetroPolice::CalcWeaponProficiency( CBaseCombatWeapon* pWeapon )
 {
 #ifdef MAPBASE
-	if (EntIsClass(pWeapon, gm_isz_class_Pistol))
+	if( EntIsClass( pWeapon, gm_isz_class_Pistol ) )
 #else
 	if( FClassnameIs( pWeapon, "weapon_pistol" ) )
 #endif
@@ -5894,7 +6153,7 @@ WeaponProficiency_t CNPC_MetroPolice::CalcWeaponProficiency( CBaseCombatWeapon *
 	}
 
 #ifdef MAPBASE
-	if (EntIsClass(pWeapon, gm_isz_class_SMG1))
+	if( EntIsClass( pWeapon, gm_isz_class_SMG1 ) )
 #else
 	if( FClassnameIs( pWeapon, "weapon_smg1" ) )
 #endif
@@ -5906,36 +6165,38 @@ WeaponProficiency_t CNPC_MetroPolice::CalcWeaponProficiency( CBaseCombatWeapon *
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::GatherConditions( void )
 {
 	BaseClass::GatherConditions();
 
-	if ( m_bPlayerTooClose == false )
+	if( m_bPlayerTooClose == false )
 	{
 		ClearCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 	}
 
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
-	
+	CBasePlayer* pPlayer = UTIL_PlayerByIndex( 1 );
+
 	// FIXME: Player can be NULL here during level transitions.
-	if ( !pPlayer )
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	float distToPlayerSqr = ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).LengthSqr();
-	
+
 	// See if we're too close
-	if ( pPlayer->GetGroundEntity() == this )
+	if( pPlayer->GetGroundEntity() == this )
 	{
 		// Always beat a player on our head
 		m_iNumPlayerHits = 0;
 		SetCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 	}
-	else if ( (distToPlayerSqr < (42.0f*42.0f) && FVisible(pPlayer)) )
+	else if( ( distToPlayerSqr < ( 42.0f * 42.0f ) && FVisible( pPlayer ) ) )
 	{
 		// Ignore the player if we've been beating him, but not if we haven't moved
-		if ( m_iNumPlayerHits < 3 || m_vecPreChaseOrigin == vec3_origin )
+		if( m_iNumPlayerHits < 3 || m_vecPreChaseOrigin == vec3_origin )
 		{
 			SetCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 		}
@@ -5946,7 +6207,7 @@ void CNPC_MetroPolice::GatherConditions( void )
 
 		// Don't clear out the player hit count for a few seconds after we last hit him
 		// This avoids states where two metropolice have the player pinned between them.
-		if ( (gpGlobals->curtime - GetLastAttackTime()) > 3 )
+		if( ( gpGlobals->curtime - GetLastAttackTime() ) > 3 )
 		{
 			m_iNumPlayerHits = 0;
 		}
@@ -5956,9 +6217,9 @@ void CNPC_MetroPolice::GatherConditions( void )
 
 	if( metropolice_move_and_melee.GetBool() )
 	{
-		if( IsMoving() && HasCondition(COND_CAN_MELEE_ATTACK1) && HasBaton() )
+		if( IsMoving() && HasCondition( COND_CAN_MELEE_ATTACK1 ) && HasBaton() )
 		{
-			if ( m_BatonSwingTimer.Expired() )
+			if( m_BatonSwingTimer.Expired() )
 			{
 				m_BatonSwingTimer.Set( 1.0, 1.75 );
 
@@ -5971,16 +6232,16 @@ void CNPC_MetroPolice::GatherConditions( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::HasBaton( void )
 {
-	CBaseCombatWeapon *pWeapon = GetActiveWeapon();
+	CBaseCombatWeapon* pWeapon = GetActiveWeapon();
 
-	if ( pWeapon )
+	if( pWeapon )
 #ifdef MAPBASE
-		return EntIsClass(pWeapon, gm_isz_class_Stunstick);
+		return EntIsClass( pWeapon, gm_isz_class_Stunstick );
 #else
 		return FClassnameIs( pWeapon, "weapon_stunstick" );
 #endif
@@ -5989,32 +6250,36 @@ bool CNPC_MetroPolice::HasBaton( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_MetroPolice::BatonActive( void )
 {
 #if !defined(HL2MP) && defined(MAPBASE)
 
-	CWeaponStunStick *pStick = dynamic_cast<CWeaponStunStick *>(GetActiveWeapon());
+	CWeaponStunStick* pStick = dynamic_cast<CWeaponStunStick*>( GetActiveWeapon() );
 
-	if ( pStick )
+	if( pStick )
+	{
 		return pStick->GetStunState();
+	}
 #endif
 
 	return false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CNPC_MetroPolice::SetBatonState( bool state )
 {
-	if ( !HasBaton() )
+	if( !HasBaton() )
+	{
 		return;
+	}
 
-	if ( m_bShouldActivateBaton != state )
+	if( m_bShouldActivateBaton != state )
 	{
 		m_bShouldActivateBaton = state;
 		SetCondition( COND_METROPOLICE_CHANGE_BATON_STATE );
@@ -6022,46 +6287,48 @@ void CNPC_MetroPolice::SetBatonState( bool state )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pSound - 
+// Purpose:
+// Input  : *pSound -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_MetroPolice::QueryHearSound( CSound *pSound )
+bool CNPC_MetroPolice::QueryHearSound( CSound* pSound )
 {
 	// Only behave differently if the player is pre-criminal
-	if ( PlayerIsCriminal() == false )
+	if( PlayerIsCriminal() == false )
 	{
 		// If the person making the sound was a friend, don't respond
-		if ( pSound->IsSoundType( SOUND_DANGER ) && pSound->m_hOwner && IRelationType( pSound->m_hOwner ) == D_NU )
+		if( pSound->IsSoundType( SOUND_DANGER ) && pSound->m_hOwner && IRelationType( pSound->m_hOwner ) == D_NU )
+		{
 			return false;
+		}
 	}
 
 	return BaseClass::QueryHearSound( pSound );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : index - 
-//			*pEvent - 
+// Purpose:
+// Input  : index -
+//			*pEvent -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CNPC_MetroPolice::VPhysicsCollision( int index, gamevcollisionevent_t* pEvent )
 {
 	BaseClass::VPhysicsCollision( index, pEvent );
 
 	int otherIndex = !index;
-	
-	CBaseEntity *pHitEntity = pEvent->pEntities[otherIndex];
 
-	if ( pEvent->pObjects[otherIndex]->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
+	CBaseEntity* pHitEntity = pEvent->pEntities[otherIndex];
+
+	if( pEvent->pObjects[otherIndex]->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-		CHL2_Player *pPlayer = dynamic_cast<CHL2_Player *>(UTIL_PlayerByIndex( 1 ));
+		CHL2_Player* pPlayer = dynamic_cast<CHL2_Player*>( UTIL_PlayerByIndex( 1 ) );
 
 		// See if it's being held by the player
-		if ( pPlayer != NULL && pPlayer->IsHoldingEntity( pHitEntity ) )
+		if( pPlayer != NULL && pPlayer->IsHoldingEntity( pHitEntity ) )
 		{
 			//TODO: Play an angry sentence, "Get that outta here!"
 
-			if ( IsCurSchedule( SCHED_METROPOLICE_SHOVE ) == false )
+			if( IsCurSchedule( SCHED_METROPOLICE_SHOVE ) == false )
 			{
 				SetCondition( COND_METROPOLICE_PLAYER_TOO_CLOSE );
 				m_bPlayerTooClose = true;
@@ -6071,14 +6338,14 @@ void CNPC_MetroPolice::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTarget - 
+// Purpose:
+// Input  : *pTarget -
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::StunnedTarget( CBaseEntity *pTarget )
+void CNPC_MetroPolice::StunnedTarget( CBaseEntity* pTarget )
 {
 	SetLastAttackTime( gpGlobals->curtime );
 
-	if ( pTarget && pTarget->IsPlayer() )
+	if( pTarget && pTarget->IsPlayer() )
 	{
 		m_OnStunnedPlayer.FireOutput( this, this );
 		m_iNumPlayerHits++;
@@ -6088,21 +6355,27 @@ void CNPC_MetroPolice::StunnedTarget( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 // Purpose: Use response for when the player is pre-criminal
 //-----------------------------------------------------------------------------
-void CNPC_MetroPolice::PrecriminalUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CNPC_MetroPolice::PrecriminalUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	if ( IsInAScript() )
+	if( IsInAScript() )
+	{
 		return;
+	}
 	// Don't respond if I'm busy hating the player
-	if ( IRelationType( pActivator ) == D_HT || ((GetState() != NPC_STATE_ALERT) && (GetState() != NPC_STATE_IDLE)) )
+	if( IRelationType( pActivator ) == D_HT || ( ( GetState() != NPC_STATE_ALERT ) && ( GetState() != NPC_STATE_IDLE ) ) )
+	{
 		return;
-	if ( PlayerIsCriminal() )
+	}
+	if( PlayerIsCriminal() )
+	{
 		return;
+	}
 
 	// Treat it like the player's bothered the cop
 	IncrementPlayerCriminalStatus();
 
 	// If we've hit max warnings, and we're allowed to chase, go for it
-	if ( m_nNumWarnings == METROPOLICE_MAX_WARNINGS )
+	if( m_nNumWarnings == METROPOLICE_MAX_WARNINGS )
 	{
 		AdministerJustice();
 	}
@@ -6115,65 +6388,65 @@ void CNPC_MetroPolice::PrecriminalUse( CBaseEntity *pActivator, CBaseEntity *pCa
 //-----------------------------------------------------------------------------
 AI_BEGIN_CUSTOM_NPC( npc_metropolice, CNPC_MetroPolice )
 
-	gm_flTimeLastSpokePeek = 0;
+gm_flTimeLastSpokePeek = 0;
 
-	DECLARE_ANIMEVENT( AE_METROPOLICE_BATON_ON );
-	DECLARE_ANIMEVENT( AE_METROPOLICE_BATON_OFF );
-	DECLARE_ANIMEVENT( AE_METROPOLICE_SHOVE );
-	DECLARE_ANIMEVENT( AE_METROPOLICE_START_DEPLOY );
-	DECLARE_ANIMEVENT( AE_METROPOLICE_DRAW_PISTOL );
-	DECLARE_ANIMEVENT( AE_METROPOLICE_DEPLOY_MANHACK );
+DECLARE_ANIMEVENT( AE_METROPOLICE_BATON_ON );
+DECLARE_ANIMEVENT( AE_METROPOLICE_BATON_OFF );
+DECLARE_ANIMEVENT( AE_METROPOLICE_SHOVE );
+DECLARE_ANIMEVENT( AE_METROPOLICE_START_DEPLOY );
+DECLARE_ANIMEVENT( AE_METROPOLICE_DRAW_PISTOL );
+DECLARE_ANIMEVENT( AE_METROPOLICE_DEPLOY_MANHACK );
 #ifdef MAPBASE
 	DECLARE_ANIMEVENT( COMBINE_AE_BEGIN_ALTFIRE )
 	DECLARE_ANIMEVENT( COMBINE_AE_ALTFIRE )
 #endif
 
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_CHARGE_ENEMY );
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_HARASS );
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_DEPLOY_MANHACK );
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1 );
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_CHARGE_ENEMY );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_HARASS );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_DEPLOY_MANHACK );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER1 );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ATTACK_OCCLUDER2 );
 #ifdef MAPBASE
 	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_COVERING_FIRE1 );
 	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_COVERING_FIRE2 );
 #endif
-	DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ARREST_ENEMY );
+DECLARE_SQUADSLOT( SQUAD_SLOT_POLICE_ARREST_ENEMY );
 
-	DECLARE_ACTIVITY( ACT_METROPOLICE_DRAW_PISTOL );
-	DECLARE_ACTIVITY( ACT_METROPOLICE_DEPLOY_MANHACK );
-	DECLARE_ACTIVITY( ACT_METROPOLICE_FLINCH_BEHIND );
-	DECLARE_ACTIVITY( ACT_PUSH_PLAYER );
-	DECLARE_ACTIVITY( ACT_MELEE_ATTACK_THRUST );
-	DECLARE_ACTIVITY( ACT_ACTIVATE_BATON );
-	DECLARE_ACTIVITY( ACT_DEACTIVATE_BATON );
-	DECLARE_ACTIVITY( ACT_WALK_BATON );
-	DECLARE_ACTIVITY( ACT_IDLE_ANGRY_BATON );
+DECLARE_ACTIVITY( ACT_METROPOLICE_DRAW_PISTOL );
+DECLARE_ACTIVITY( ACT_METROPOLICE_DEPLOY_MANHACK );
+DECLARE_ACTIVITY( ACT_METROPOLICE_FLINCH_BEHIND );
+DECLARE_ACTIVITY( ACT_PUSH_PLAYER );
+DECLARE_ACTIVITY( ACT_MELEE_ATTACK_THRUST );
+DECLARE_ACTIVITY( ACT_ACTIVATE_BATON );
+DECLARE_ACTIVITY( ACT_DEACTIVATE_BATON );
+DECLARE_ACTIVITY( ACT_WALK_BATON );
+DECLARE_ACTIVITY( ACT_IDLE_ANGRY_BATON );
 
-	DECLARE_INTERACTION( g_interactionMetrocopStartedStitch );	
-	DECLARE_INTERACTION( g_interactionMetrocopIdleChatter );	
-	DECLARE_INTERACTION( g_interactionMetrocopClearSentenceQueues );
+DECLARE_INTERACTION( g_interactionMetrocopStartedStitch );
+DECLARE_INTERACTION( g_interactionMetrocopIdleChatter );
+DECLARE_INTERACTION( g_interactionMetrocopClearSentenceQueues );
 
-	DECLARE_TASK( TASK_METROPOLICE_HARASS );
-	DECLARE_TASK( TASK_METROPOLICE_DIE_INSTANTLY );
-	DECLARE_TASK( TASK_METROPOLICE_BURST_ATTACK );
-	DECLARE_TASK( TASK_METROPOLICE_STOP_FIRE_BURST );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_AT_PLAYER );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_AT_AIRBOAT );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_IN_FRONT_OF_AIRBOAT );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_TIGHTLY );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_ALONG_SIDE_OF_AIRBOAT );
-	DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_BEHIND_AIRBOAT );
-	DECLARE_TASK( TASK_METROPOLICE_RELOAD_FOR_BURST );
-	DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_STITCH );
-	DECLARE_TASK( TASK_METROPOLICE_RESET_LEDGE_CHECK_TIME );
-	DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS );
-	DECLARE_TASK( TASK_METROPOLICE_ARREST_ENEMY );
-	DECLARE_TASK( TASK_METROPOLICE_LEAD_ARREST_ENEMY );
-	DECLARE_TASK( TASK_METROPOLICE_SIGNAL_FIRING_TIME );
-	DECLARE_TASK( TASK_METROPOLICE_ACTIVATE_BATON );
-	DECLARE_TASK( TASK_METROPOLICE_WAIT_FOR_SENTENCE );
-	DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_PRECHASE );
-	DECLARE_TASK( TASK_METROPOLICE_CLEAR_PRECHASE );
+DECLARE_TASK( TASK_METROPOLICE_HARASS );
+DECLARE_TASK( TASK_METROPOLICE_DIE_INSTANTLY );
+DECLARE_TASK( TASK_METROPOLICE_BURST_ATTACK );
+DECLARE_TASK( TASK_METROPOLICE_STOP_FIRE_BURST );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_AT_PLAYER );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_AT_AIRBOAT );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_IN_FRONT_OF_AIRBOAT );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_TIGHTLY );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_ALONG_SIDE_OF_AIRBOAT );
+DECLARE_TASK( TASK_METROPOLICE_AIM_STITCH_BEHIND_AIRBOAT );
+DECLARE_TASK( TASK_METROPOLICE_RELOAD_FOR_BURST );
+DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_STITCH );
+DECLARE_TASK( TASK_METROPOLICE_RESET_LEDGE_CHECK_TIME );
+DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_BESTSOUND_LOS );
+DECLARE_TASK( TASK_METROPOLICE_ARREST_ENEMY );
+DECLARE_TASK( TASK_METROPOLICE_LEAD_ARREST_ENEMY );
+DECLARE_TASK( TASK_METROPOLICE_SIGNAL_FIRING_TIME );
+DECLARE_TASK( TASK_METROPOLICE_ACTIVATE_BATON );
+DECLARE_TASK( TASK_METROPOLICE_WAIT_FOR_SENTENCE );
+DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_PRECHASE );
+DECLARE_TASK( TASK_METROPOLICE_CLEAR_PRECHASE );
 #ifdef MAPBASE
 	DECLARE_TASK( TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS )
 	DECLARE_TASK( TASK_METROPOLICE_DEFER_SQUAD_GRENADES )
@@ -6181,15 +6454,15 @@ AI_BEGIN_CUSTOM_NPC( npc_metropolice, CNPC_MetroPolice )
 	DECLARE_TASK( TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET )
 #endif
 
-	DECLARE_CONDITION( COND_METROPOLICE_ON_FIRE );
-	DECLARE_CONDITION( COND_METROPOLICE_ENEMY_RESISTING_ARREST );
+DECLARE_CONDITION( COND_METROPOLICE_ON_FIRE );
+DECLARE_CONDITION( COND_METROPOLICE_ENEMY_RESISTING_ARREST );
 //	DECLARE_CONDITION( COND_METROPOLICE_START_POLICING );
-	DECLARE_CONDITION( COND_METROPOLICE_PLAYER_TOO_CLOSE );
-	DECLARE_CONDITION( COND_METROPOLICE_CHANGE_BATON_STATE );
-	DECLARE_CONDITION( COND_METROPOLICE_PHYSOBJECT_ASSAULT );
+DECLARE_CONDITION( COND_METROPOLICE_PLAYER_TOO_CLOSE );
+DECLARE_CONDITION( COND_METROPOLICE_CHANGE_BATON_STATE );
+DECLARE_CONDITION( COND_METROPOLICE_PHYSOBJECT_ASSAULT );
 
 
-	//=========================================================
+//=========================================================
 //=========================================================
 DEFINE_SCHEDULE
 (
@@ -6360,7 +6633,7 @@ DEFINE_SCHEDULE
 
 
 //=========================================================
-// The uninterruptible portion of this behavior, whereupon 
+// The uninterruptible portion of this behavior, whereupon
 // the police actually releases the manhack.
 //=========================================================
 DEFINE_SCHEDULE
@@ -6388,7 +6661,7 @@ DEFINE_SCHEDULE
 	"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE_ANGRY"
 	"		TASK_FACE_ENEMY						0"
 	"		TASK_WAIT_FACE_ENEMY				1" // give the guy some time to come out on his own
-	"		TASK_WAIT_FACE_ENEMY_RANDOM			3" 
+	"		TASK_WAIT_FACE_ENEMY_RANDOM			3"
 	"		TASK_GET_PATH_TO_ENEMY_LOS			0"
 	"		TASK_RUN_PATH						0"
 	"		TASK_WAIT_FOR_MOVEMENT				0"
@@ -6438,7 +6711,7 @@ DEFINE_SCHEDULE
 	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_METROPOLICE_BURNING_STAND"
 	"		TASK_SET_TOLERANCE_DISTANCE		24"
 	"		TASK_GET_PATH_TO_ENEMY			0"
-	"		TASK_RUN_PATH_TIMED				10"	
+	"		TASK_RUN_PATH_TIMED				10"
 	"		TASK_METROPOLICE_DIE_INSTANTLY	0"
 	"	"
 	"	Interrupts"
@@ -6801,82 +7074,82 @@ DEFINE_SCHEDULE
 
 #ifdef MAPBASE
 //=========================================================
- // Mapmaker forced grenade throw
- //=========================================================
- DEFINE_SCHEDULE
- (
- SCHED_METROPOLICE_FORCED_GRENADE_THROW,
+// Mapmaker forced grenade throw
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_METROPOLICE_FORCED_GRENADE_THROW,
 
- "	Tasks"
- "		TASK_STOP_MOVING					0"
- "		TASK_METROPOLICE_FACE_TOSS_DIR			0"
- "		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
- "		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_RANGE_ATTACK2"
- "		TASK_METROPOLICE_DEFER_SQUAD_GRENADES	0"
- ""
- "	Interrupts"
- )
+	"	Tasks"
+	"		TASK_STOP_MOVING					0"
+	"		TASK_METROPOLICE_FACE_TOSS_DIR			0"
+	"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+	"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_RANGE_ATTACK2"
+	"		TASK_METROPOLICE_DEFER_SQUAD_GRENADES	0"
+	""
+	"	Interrupts"
+)
 
- //=========================================================
- // Move to LOS of the mapmaker's forced grenade throw target
- //=========================================================
- DEFINE_SCHEDULE
- (
- SCHED_METROPOLICE_MOVE_TO_FORCED_GREN_LOS,
+//=========================================================
+// Move to LOS of the mapmaker's forced grenade throw target
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_METROPOLICE_MOVE_TO_FORCED_GREN_LOS,
 
- "	Tasks "
- "		TASK_SET_TOLERANCE_DISTANCE					48"
- "		TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS	0"
- "		TASK_SPEAK_SENTENCE							1"
- "		TASK_RUN_PATH								0"
- "		TASK_WAIT_FOR_MOVEMENT						0"
- "	"
- "	Interrupts "
- "		COND_NEW_ENEMY"
- "		COND_ENEMY_DEAD"
- "		COND_CAN_MELEE_ATTACK1"
- "		COND_CAN_MELEE_ATTACK2"
- "		COND_HEAR_DANGER"
- "		COND_HEAR_MOVE_AWAY"
- "		COND_HEAVY_DAMAGE"
- )
+	"	Tasks "
+	"		TASK_SET_TOLERANCE_DISTANCE					48"
+	"		TASK_METROPOLICE_GET_PATH_TO_FORCED_GREN_LOS	0"
+	"		TASK_SPEAK_SENTENCE							1"
+	"		TASK_RUN_PATH								0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"	"
+	"	Interrupts "
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+	"		COND_CAN_MELEE_ATTACK1"
+	"		COND_CAN_MELEE_ATTACK2"
+	"		COND_HEAR_DANGER"
+	"		COND_HEAR_MOVE_AWAY"
+	"		COND_HEAVY_DAMAGE"
+)
 
- //=========================================================
- // 	SCHED_METROPOLICE_RANGE_ATTACK2	
- //
- //	secondary range attack. Overriden because base class stops attacking when the enemy is occluded.
- //	combines's grenade toss requires the enemy be occluded.
- //=========================================================
- DEFINE_SCHEDULE
- (
- SCHED_METROPOLICE_RANGE_ATTACK2,
+//=========================================================
+// 	SCHED_METROPOLICE_RANGE_ATTACK2
+//
+//	secondary range attack. Overriden because base class stops attacking when the enemy is occluded.
+//	combines's grenade toss requires the enemy be occluded.
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_METROPOLICE_RANGE_ATTACK2,
 
- "	Tasks"
- "		TASK_STOP_MOVING					0"
- "		TASK_METROPOLICE_FACE_TOSS_DIR			0"
- "		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
- "		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_RANGE_ATTACK2"
- "		TASK_METROPOLICE_DEFER_SQUAD_GRENADES	0"
- "		TASK_SET_SCHEDULE					SCHEDULE:SCHED_HIDE_AND_RELOAD"	// don't run immediately after throwing grenade.
- ""
- "	Interrupts"
- )
+	"	Tasks"
+	"		TASK_STOP_MOVING					0"
+	"		TASK_METROPOLICE_FACE_TOSS_DIR			0"
+	"		TASK_ANNOUNCE_ATTACK				2"	// 2 = grenade
+	"		TASK_PLAY_SEQUENCE					ACTIVITY:ACT_RANGE_ATTACK2"
+	"		TASK_METROPOLICE_DEFER_SQUAD_GRENADES	0"
+	"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_HIDE_AND_RELOAD"	// don't run immediately after throwing grenade.
+	""
+	"	Interrupts"
+)
 
- //=========================================================
- // AR2 Alt Fire Attack
- //=========================================================
- DEFINE_SCHEDULE
- (
- SCHED_METROPOLICE_AR2_ALTFIRE,
+//=========================================================
+// AR2 Alt Fire Attack
+//=========================================================
+DEFINE_SCHEDULE
+(
+	SCHED_METROPOLICE_AR2_ALTFIRE,
 
- "	Tasks"
- "		TASK_STOP_MOVING									0"
- "		TASK_ANNOUNCE_ATTACK								1"
- "		TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
- ""
- "	Interrupts"
- "		COND_TOO_CLOSE_TO_ATTACK"
- )
+	"	Tasks"
+	"		TASK_STOP_MOVING									0"
+	"		TASK_ANNOUNCE_ATTACK								1"
+	"		TASK_METROPOLICE_PLAY_SEQUENCE_FACE_ALTFIRE_TARGET		ACTIVITY:ACT_COMBINE_AR2_ALTFIRE"
+	""
+	"	Interrupts"
+	"		COND_TOO_CLOSE_TO_ATTACK"
+)
 #endif
 
 AI_END_CUSTOM_NPC()

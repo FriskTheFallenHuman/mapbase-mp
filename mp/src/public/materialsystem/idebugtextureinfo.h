@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef IDEBUGTEXTUREINFO_H
 #define IDEBUGTEXTUREINFO_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,11 +21,11 @@ class KeyValues;
 abstract_class IDebugTextureInfo
 {
 public:
-	
+
 	// Use this to turn on the mode where it builds the debug texture list.
 	// At the end of the next frame, GetDebugTextureList() will return a valid list of the textures.
 	virtual void EnableDebugTextureList( bool bEnable ) = 0;
-	
+
 	// If this is on, then it will return all textures that exist, not just the ones that were bound in the last frame.
 	// It is required to enable debug texture list to get this.
 	virtual void EnableGetAllTextures( bool bEnable ) = 0;
@@ -39,7 +39,7 @@ public:
 	//    Width  - Width of the texture
 	//    Height - Height of the texture
 	// It is required to enable debug texture list to get this.
-	virtual KeyValues* GetDebugTextureList() = 0;
+	virtual KeyValues * GetDebugTextureList() = 0;
 
 	// Texture memory usage
 	enum TextureMemoryType

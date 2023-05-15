@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -13,7 +13,7 @@
 #include "builddisp.h"
 #include "bitvec.h"
 #ifdef ENGINE_DLL
-#include "../engine/zone.h"
+	#include "../engine/zone.h"
 #endif
 
 #ifdef ENGINE_DLL
@@ -23,7 +23,7 @@ class CDispVector : public CUtlVector<T, CHunkMemory<T> >
 };
 #else
 template<typename T>
-class CDispVector : public CUtlVector<T, CUtlMemoryAligned<T,16> >
+class CDispVector : public CUtlVector<T, CUtlMemoryAligned<T, 16> >
 {
 };
 #endif
@@ -50,7 +50,7 @@ struct RayDispOutput_t
 
 // Assumptions:
 //	Max patch is 17x17, therefore 9 bits needed to represent a triangle index
-// 
+//
 
 //=============================================================================
 //	Displacement Collision Triangle
@@ -63,11 +63,11 @@ class CDispCollTri
 		{
 			struct
 			{
-				unsigned short uiVert:9;
-				unsigned short uiMin:2;
-				unsigned short uiMax:2;
+				unsigned short uiVert: 9;
+				unsigned short uiMin: 2;
+				unsigned short uiMax: 2;
 			} m_Index;
-			
+
 			unsigned short m_IndexDummy;
 		};
 	};
@@ -75,26 +75,53 @@ class CDispCollTri
 	index_t				m_TriData[3];
 
 public:
-	unsigned short		m_ucSignBits:3;			// Plane test.
-	unsigned short		m_ucPlaneType:3;		// Axial test?
-	unsigned short		m_uiFlags:5;			// Uses 5-bits - maybe look into merging it with something?
+	unsigned short		m_ucSignBits: 3;			// Plane test.
+	unsigned short		m_ucPlaneType: 3;		// Axial test?
+	unsigned short		m_uiFlags: 5;			// Uses 5-bits - maybe look into merging it with something?
 
 	Vector				m_vecNormal;			// Triangle normal (plane normal).
 	float				m_flDist;				// Triangle plane dist.
 
 	// Creation.
-	     CDispCollTri();
+	CDispCollTri();
 	void Init( void );
-	void CalcPlane( CDispVector<Vector> &m_aVerts );
-	void FindMinMax( CDispVector<Vector> &m_aVerts );
+	void CalcPlane( CDispVector<Vector>& m_aVerts );
+	void FindMinMax( CDispVector<Vector>& m_aVerts );
 
 	// Triangle data.
-	inline void SetVert( int iPos, int iVert )			{ Assert( ( iPos >= 0 ) && ( iPos < 3 ) ); Assert( ( iVert >= 0 ) && ( iVert < ( 1 << 9 ) ) ); m_TriData[iPos].m_Index.uiVert = iVert; }
-	inline int  GetVert( int iPos ) const				{ Assert( ( iPos >= 0 ) && ( iPos < 3 ) ); return m_TriData[iPos].m_Index.uiVert; }
-	inline void SetMin( int iAxis, int iMin )			{ Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) ); Assert( ( iMin >= 0 ) && ( iMin < 3 ) ); m_TriData[iAxis].m_Index.uiMin = iMin; }
-	inline int  GetMin( int iAxis )	const				{ Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) ); return m_TriData[iAxis].m_Index.uiMin; }
-	inline void SetMax( int iAxis, int iMax )			{ Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) ); Assert( ( iMax >= 0 ) && ( iMax < 3 ) ); m_TriData[iAxis].m_Index.uiMax = iMax; }
-	inline int  GetMax( int iAxis ) const				{ Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) ); return m_TriData[iAxis].m_Index.uiMax; }
+	inline void SetVert( int iPos, int iVert )
+	{
+		Assert( ( iPos >= 0 ) && ( iPos < 3 ) );
+		Assert( ( iVert >= 0 ) && ( iVert < ( 1 << 9 ) ) );
+		m_TriData[iPos].m_Index.uiVert = iVert;
+	}
+	inline int  GetVert( int iPos ) const
+	{
+		Assert( ( iPos >= 0 ) && ( iPos < 3 ) );
+		return m_TriData[iPos].m_Index.uiVert;
+	}
+	inline void SetMin( int iAxis, int iMin )
+	{
+		Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) );
+		Assert( ( iMin >= 0 ) && ( iMin < 3 ) );
+		m_TriData[iAxis].m_Index.uiMin = iMin;
+	}
+	inline int  GetMin( int iAxis )	const
+	{
+		Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) );
+		return m_TriData[iAxis].m_Index.uiMin;
+	}
+	inline void SetMax( int iAxis, int iMax )
+	{
+		Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) );
+		Assert( ( iMax >= 0 ) && ( iMax < 3 ) );
+		m_TriData[iAxis].m_Index.uiMax = iMax;
+	}
+	inline int  GetMax( int iAxis ) const
+	{
+		Assert( ( iAxis >= 0 ) && ( iAxis < 3 ) );
+		return m_TriData[iAxis].m_Index.uiMax;
+	}
 };
 
 //=============================================================================
@@ -159,54 +186,107 @@ public:
 	// Creation/Destruction.
 	CDispCollTree();
 	~CDispCollTree();
-	virtual bool Create( CCoreDispInfo *pDisp );
+	virtual bool Create( CCoreDispInfo* pDisp );
 
 	// Raycasts.
 	// NOTE: These assume you've precalculated invDelta as well as culled to the bounds of this disp
-	bool AABBTree_Ray( const Ray_t &ray, const Vector &invDelta, CBaseTrace *pTrace, bool bSide = true );
-	bool AABBTree_Ray( const Ray_t &ray, const Vector &invDelta, RayDispOutput_t &output );
+	bool AABBTree_Ray( const Ray_t& ray, const Vector& invDelta, CBaseTrace* pTrace, bool bSide = true );
+	bool AABBTree_Ray( const Ray_t& ray, const Vector& invDelta, RayDispOutput_t& output );
 	// NOTE: Lower perf helper function, should not be used in the game runtime
-	bool AABBTree_Ray( const Ray_t &ray, RayDispOutput_t &output );
+	bool AABBTree_Ray( const Ray_t& ray, RayDispOutput_t& output );
 
 	// Hull Sweeps.
 	// NOTE: These assume you've precalculated invDelta as well as culled to the bounds of this disp
-	bool AABBTree_SweepAABB( const Ray_t &ray, const Vector &invDelta, CBaseTrace *pTrace );
+	bool AABBTree_SweepAABB( const Ray_t& ray, const Vector& invDelta, CBaseTrace* pTrace );
 
 	// Hull Intersection.
-	bool AABBTree_IntersectAABB( const Vector &absMins, const Vector &absMaxs );
+	bool AABBTree_IntersectAABB( const Vector& absMins, const Vector& absMaxs );
 
 	// Point/Box vs. Bounds.
-	bool PointInBounds( Vector const &vecBoxCenter, Vector const &vecBoxMin, Vector const &vecBoxMax, bool bPoint );
+	bool PointInBounds( Vector const& vecBoxCenter, Vector const& vecBoxMin, Vector const& vecBoxMax, bool bPoint );
 
 	// Utility.
-	inline void SetPower( int power )								{ m_nPower = power; }
-	inline int GetPower( void )										{ return m_nPower; }
+	inline void SetPower( int power )
+	{
+		m_nPower = power;
+	}
+	inline int GetPower( void )
+	{
+		return m_nPower;
+	}
 
-	inline int	GetFlags( void )									{ return m_nFlags; }
-	inline void SetFlags( int nFlags )								{ m_nFlags = nFlags; }
-	inline bool CheckFlags( int nFlags )							{ return ( ( nFlags & GetFlags() ) != 0 ) ? true : false; }
+	inline int	GetFlags( void )
+	{
+		return m_nFlags;
+	}
+	inline void SetFlags( int nFlags )
+	{
+		m_nFlags = nFlags;
+	}
+	inline bool CheckFlags( int nFlags )
+	{
+		return ( ( nFlags & GetFlags() ) != 0 ) ? true : false;
+	}
 
-	inline int GetWidth( void )										{ return ( ( 1 << m_nPower ) + 1 ); }
-	inline int GetHeight( void )									{ return ( ( 1 << m_nPower ) + 1 ); }
-	inline int GetSize( void )										{ return ( ( 1 << m_nPower ) + 1 ) * ( ( 1 << m_nPower ) + 1 ); }
-	inline int GetTriSize( void )									{ return ( ( 1 << m_nPower ) * ( 1 << m_nPower ) * 2 ); }
+	inline int GetWidth( void )
+	{
+		return ( ( 1 << m_nPower ) + 1 );
+	}
+	inline int GetHeight( void )
+	{
+		return ( ( 1 << m_nPower ) + 1 );
+	}
+	inline int GetSize( void )
+	{
+		return ( ( 1 << m_nPower ) + 1 ) * ( ( 1 << m_nPower ) + 1 );
+	}
+	inline int GetTriSize( void )
+	{
+		return ( ( 1 << m_nPower ) * ( 1 << m_nPower ) * 2 );
+	}
 
 //	inline void SetTriFlags( short iTri, unsigned short nFlags )	{ m_aTris[iTri].m_uiFlags = nFlags; }
 
-	inline void GetStabDirection( Vector &vecDir )					{ vecDir = m_vecStabDir; }
+	inline void GetStabDirection( Vector& vecDir )
+	{
+		vecDir = m_vecStabDir;
+	}
 
-	inline void GetBounds( Vector &vecBoxMin, Vector &vecBoxMax )	{ vecBoxMin = m_mins; vecBoxMax = m_maxs; }
-	inline int GetContents( void )									{ return m_nContents; }
-	inline void SetSurfaceProps( int iProp, short nSurfProp )		{ Assert( ( iProp >= 0 ) && ( iProp < 2 ) ); m_nSurfaceProps[iProp] = nSurfProp; }
-	inline short GetSurfaceProps( int iProp )						{ return m_nSurfaceProps[iProp]; }
+	inline void GetBounds( Vector& vecBoxMin, Vector& vecBoxMax )
+	{
+		vecBoxMin = m_mins;
+		vecBoxMax = m_maxs;
+	}
+	inline int GetContents( void )
+	{
+		return m_nContents;
+	}
+	inline void SetSurfaceProps( int iProp, short nSurfProp )
+	{
+		Assert( ( iProp >= 0 ) && ( iProp < 2 ) );
+		m_nSurfaceProps[iProp] = nSurfProp;
+	}
+	inline short GetSurfaceProps( int iProp )
+	{
+		return m_nSurfaceProps[iProp];
+	}
 
-	inline unsigned int GetMemorySize( void )						{ return m_nSize; }
-	inline unsigned int GetCacheMemorySize( void )					{ return ( m_aTrisCache.Count() * sizeof(CDispCollTriCache) + m_aEdgePlanes.Count() * sizeof(Vector) ); }
+	inline unsigned int GetMemorySize( void )
+	{
+		return m_nSize;
+	}
+	inline unsigned int GetCacheMemorySize( void )
+	{
+		return ( m_aTrisCache.Count() * sizeof( CDispCollTriCache ) + m_aEdgePlanes.Count() * sizeof( Vector ) );
+	}
 
-	inline bool IsCached( void )									{ return m_aTrisCache.Count() == m_aTris.Count(); }
+	inline bool IsCached( void )
+	{
+		return m_aTrisCache.Count() == m_aTris.Count();
+	}
 
-	void GetVirtualMeshList( struct virtualmeshlist_t *pList );
-	int AABBTree_GetTrisInSphere( const Vector &center, float radius, unsigned short *pIndexOut, int indexMax );
+	void GetVirtualMeshList( struct virtualmeshlist_t* pList );
+	int AABBTree_GetTrisInSphere( const Vector& center, float radius, unsigned short* pIndexOut, int indexMax );
 
 public:
 
@@ -219,16 +299,20 @@ public:
 	void LockCache();
 	void UnlockCache();
 	void Cache( void );
-	void Uncache()	{ m_aTrisCache.Purge(); m_aEdgePlanes.Purge(); }
+	void Uncache()
+	{
+		m_aTrisCache.Purge();
+		m_aEdgePlanes.Purge();
+	}
 
 #ifdef ENGINE_DLL
 	// Data manager methods
-	static size_t EstimatedSize( CDispCollTree *pTree )
+	static size_t EstimatedSize( CDispCollTree* pTree )
 	{
 		return pTree->GetCacheMemorySize();
 	}
 
-	static CDispCollTree *CreateResource( CDispCollTree *pTree )
+	static CDispCollTree* CreateResource( CDispCollTree* pTree )
 	{
 		// Created ahead of time
 		return pTree;
@@ -253,54 +337,54 @@ public:
 
 protected:
 
-	bool AABBTree_Create( CCoreDispInfo *pDisp );
-	void AABBTree_CopyDispData( CCoreDispInfo *pDisp );
+	bool AABBTree_Create( CCoreDispInfo* pDisp );
+	void AABBTree_CopyDispData( CCoreDispInfo* pDisp );
 	void AABBTree_CreateLeafs( void );
-	void AABBTree_GenerateBoxes_r( int nodeIndex, Vector *pMins, Vector *pMaxs );
+	void AABBTree_GenerateBoxes_r( int nodeIndex, Vector* pMins, Vector* pMaxs );
 	void AABBTree_CalcBounds( void );
 
-	int AABBTree_BuildTreeTrisInSphere_r( const Vector &center, float radius, int iNode, unsigned short *pIndexOut, unsigned short indexMax );
+	int AABBTree_BuildTreeTrisInSphere_r( const Vector& center, float radius, int iNode, unsigned short* pIndexOut, unsigned short indexMax );
 
-	void AABBTree_TreeTrisRayTest( const Ray_t &ray, const Vector &vecInvDelta, int iNode, CBaseTrace *pTrace, bool bSide, CDispCollTri **pImpactTri );
-	void AABBTree_TreeTrisRayBarycentricTest( const Ray_t &ray, const Vector &vecInvDelta, int iNode, RayDispOutput_t &output, CDispCollTri **pImpactTri );
+	void AABBTree_TreeTrisRayTest( const Ray_t& ray, const Vector& vecInvDelta, int iNode, CBaseTrace* pTrace, bool bSide, CDispCollTri** pImpactTri );
+	void AABBTree_TreeTrisRayBarycentricTest( const Ray_t& ray, const Vector& vecInvDelta, int iNode, RayDispOutput_t& output, CDispCollTri** pImpactTri );
 
-	int FORCEINLINE BuildRayLeafList( int iNode, rayleaflist_t &list );
+	int FORCEINLINE BuildRayLeafList( int iNode, rayleaflist_t& list );
 
 	struct AABBTree_TreeTrisSweepTest_Args_t
 	{
-		AABBTree_TreeTrisSweepTest_Args_t( const Ray_t &ray, const Vector &vecInvDelta, const Vector &rayDir, CBaseTrace *pTrace )
+		AABBTree_TreeTrisSweepTest_Args_t( const Ray_t& ray, const Vector& vecInvDelta, const Vector& rayDir, CBaseTrace* pTrace )
 			: ray( ray ), vecInvDelta( vecInvDelta ), rayDir( rayDir ), pTrace( pTrace ) {}
-		const Ray_t &ray;
-		const Vector &vecInvDelta;
-		const Vector &rayDir;
-		CBaseTrace *pTrace;
+		const Ray_t& ray;
+		const Vector& vecInvDelta;
+		const Vector& rayDir;
+		CBaseTrace* pTrace;
 	};
 
 protected:
 
-	void SweepAABBTriIntersect( const Ray_t &ray, const Vector &rayDir, int iTri, CDispCollTri *pTri, CBaseTrace *pTrace );
+	void SweepAABBTriIntersect( const Ray_t& ray, const Vector& rayDir, int iTri, CDispCollTri* pTri, CBaseTrace* pTrace );
 
-	void Cache_Create( CDispCollTri *pTri, int iTri );		// Testing!
-	bool Cache_EdgeCrossAxisX( const Vector &vecEdge, const Vector &vecOnEdge, const Vector &vecOffEdge, CDispCollTri *pTri, unsigned short &iPlane );
-	bool Cache_EdgeCrossAxisY( const Vector &vecEdge, const Vector &vecOnEdge, const Vector &vecOffEdge, CDispCollTri *pTri, unsigned short &iPlane );
-	bool Cache_EdgeCrossAxisZ( const Vector &vecEdge, const Vector &vecOnEdge, const Vector &vecOffEdge, CDispCollTri *pTri, unsigned short &iPlane );
+	void Cache_Create( CDispCollTri* pTri, int iTri );		// Testing!
+	bool Cache_EdgeCrossAxisX( const Vector& vecEdge, const Vector& vecOnEdge, const Vector& vecOffEdge, CDispCollTri* pTri, unsigned short& iPlane );
+	bool Cache_EdgeCrossAxisY( const Vector& vecEdge, const Vector& vecOnEdge, const Vector& vecOffEdge, CDispCollTri* pTri, unsigned short& iPlane );
+	bool Cache_EdgeCrossAxisZ( const Vector& vecEdge, const Vector& vecOnEdge, const Vector& vecOffEdge, CDispCollTri* pTri, unsigned short& iPlane );
 
-	inline bool FacePlane( const Ray_t &ray, const Vector &rayDir, CDispCollTri *pTri, CDispCollHelper *pHelper );
-	bool FORCEINLINE AxisPlanesXYZ( const Ray_t &ray, CDispCollTri *pTri, CDispCollHelper *pHelper );
-	inline bool EdgeCrossAxisX( const Ray_t &ray, unsigned short iPlane, CDispCollHelper *pHelper );
-	inline bool EdgeCrossAxisY( const Ray_t &ray, unsigned short iPlane, CDispCollHelper *pHelper );
-	inline bool EdgeCrossAxisZ( const Ray_t &ray, unsigned short iPlane, CDispCollHelper *pHelper );
+	inline bool FacePlane( const Ray_t& ray, const Vector& rayDir, CDispCollTri* pTri, CDispCollHelper* pHelper );
+	bool FORCEINLINE AxisPlanesXYZ( const Ray_t& ray, CDispCollTri* pTri, CDispCollHelper* pHelper );
+	inline bool EdgeCrossAxisX( const Ray_t& ray, unsigned short iPlane, CDispCollHelper* pHelper );
+	inline bool EdgeCrossAxisY( const Ray_t& ray, unsigned short iPlane, CDispCollHelper* pHelper );
+	inline bool EdgeCrossAxisZ( const Ray_t& ray, unsigned short iPlane, CDispCollHelper* pHelper );
 
-	bool ResolveRayPlaneIntersect( float flStart, float flEnd, const Vector &vecNormal, float flDist, CDispCollHelper *pHelper );
-	template <int AXIS> bool FORCEINLINE TestOneAxisPlaneMin( const Ray_t &ray, CDispCollTri *pTri );
-	template <int AXIS> bool FORCEINLINE TestOneAxisPlaneMax( const Ray_t &ray, CDispCollTri *pTri );
-	template <int AXIS>	bool EdgeCrossAxis( const Ray_t &ray, unsigned short iPlane, CDispCollHelper *pHelper );
+	bool ResolveRayPlaneIntersect( float flStart, float flEnd, const Vector& vecNormal, float flDist, CDispCollHelper* pHelper );
+	template <int AXIS> bool FORCEINLINE TestOneAxisPlaneMin( const Ray_t& ray, CDispCollTri* pTri );
+	template <int AXIS> bool FORCEINLINE TestOneAxisPlaneMax( const Ray_t& ray, CDispCollTri* pTri );
+	template <int AXIS>	bool EdgeCrossAxis( const Ray_t& ray, unsigned short iPlane, CDispCollHelper* pHelper );
 
 	// Utility
-	inline void CalcClosestBoxPoint( const Vector &vecPlaneNormal, const Vector &vecBoxStart, const Vector &vecBoxExtents, Vector &vecBoxPoint );
-	inline void CalcClosestExtents( const Vector &vecPlaneNormal, const Vector &vecBoxExtents, Vector &vecBoxPoint );
-	int AddPlane( const Vector &vecNormal );
-	bool FORCEINLINE IsLeafNode(int iNode);
+	inline void CalcClosestBoxPoint( const Vector& vecPlaneNormal, const Vector& vecBoxStart, const Vector& vecBoxExtents, Vector& vecBoxPoint );
+	inline void CalcClosestExtents( const Vector& vecPlaneNormal, const Vector& vecBoxExtents, Vector& vecBoxPoint );
+	int AddPlane( const Vector& vecNormal );
+	bool FORCEINLINE IsLeafNode( int iNode );
 public:
 	Vector							m_mins;									// Bounding box of the displacement surface and base face
 	int								m_iCounter;
@@ -335,9 +419,9 @@ protected:
 
 };
 
-FORCEINLINE bool CDispCollTree::IsLeafNode(int iNode) 
-{ 
-	return iNode >= m_nodes.Count() ? true : false; 
+FORCEINLINE bool CDispCollTree::IsLeafNode( int iNode )
+{
+	return iNode >= m_nodes.Count() ? true : false;
 }
 
 //-----------------------------------------------------------------------------
@@ -353,19 +437,19 @@ inline int CDispCollTree::Nodes_GetChild( int iNode, int nDirection )
 	Assert( iNode >= 0 );
 	Assert( iNode < m_nodes.Count() );
 
-    // ( node index * 4 ) + ( direction + 1 )
-    return ( ( iNode << 2 ) + ( nDirection + 1 ) );	
+	// ( node index * 4 ) + ( direction + 1 )
+	return ( ( iNode << 2 ) + ( nDirection + 1 ) );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
 inline int CDispCollTree::Nodes_CalcCount( int nPower )
-{ 
+{
 	Assert( nPower >= 1 );
 	Assert( nPower <= 4 );
 
-	return ( ( 1 << ( ( nPower + 1 ) << 1 ) ) / 3 ); 
+	return ( ( 1 << ( ( nPower + 1 ) << 1 ) ) / 3 );
 }
 
 //-----------------------------------------------------------------------------
@@ -394,11 +478,26 @@ inline int CDispCollTree::Nodes_GetLevel( int iNode )
 	Assert( iNode < m_nodes.Count() );
 
 	// level = 2^n + 1
-	if ( iNode == 0 )  { return 1; }
-	if ( iNode < 5 )   { return 2; }
-	if ( iNode < 21 )  { return 3; }
-	if ( iNode < 85 )  { return 4; }
-	if ( iNode < 341 ) { return 5; }
+	if( iNode == 0 )
+	{
+		return 1;
+	}
+	if( iNode < 5 )
+	{
+		return 2;
+	}
+	if( iNode < 21 )
+	{
+		return 3;
+	}
+	if( iNode < 85 )
+	{
+		return 4;
+	}
+	if( iNode < 341 )
+	{
+		return 5;
+	}
 
 	return -1;
 }
@@ -428,8 +527,8 @@ inline int CDispCollTree::Nodes_GetIndexFromComponents( int x, int y )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-inline void CDispCollTree::CalcClosestBoxPoint( const Vector &vecPlaneNormal, const Vector &vecBoxStart, 
-											    const Vector &vecBoxExtents, Vector &vecBoxPoint )
+inline void CDispCollTree::CalcClosestBoxPoint( const Vector& vecPlaneNormal, const Vector& vecBoxStart,
+		const Vector& vecBoxExtents, Vector& vecBoxPoint )
 {
 	vecBoxPoint = vecBoxStart;
 	( vecPlaneNormal[0] < 0.0f ) ? vecBoxPoint[0] += vecBoxExtents[0] : vecBoxPoint[0] -= vecBoxExtents[0];
@@ -440,8 +539,8 @@ inline void CDispCollTree::CalcClosestBoxPoint( const Vector &vecPlaneNormal, co
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-inline void CDispCollTree::CalcClosestExtents( const Vector &vecPlaneNormal, const Vector &vecBoxExtents, 
-											   Vector &vecBoxPoint )
+inline void CDispCollTree::CalcClosestExtents( const Vector& vecPlaneNormal, const Vector& vecBoxExtents,
+		Vector& vecBoxPoint )
 {
 	( vecPlaneNormal[0] < 0.0f ) ? vecBoxPoint[0] = vecBoxExtents[0] : vecBoxPoint[0] = -vecBoxExtents[0];
 	( vecPlaneNormal[1] < 0.0f ) ? vecBoxPoint[1] = vecBoxExtents[1] : vecBoxPoint[1] = -vecBoxExtents[1];
@@ -450,7 +549,7 @@ inline void CDispCollTree::CalcClosestExtents( const Vector &vecPlaneNormal, con
 
 //=============================================================================
 // Global Helper Functions
-CDispCollTree *DispCollTrees_Alloc( int count );
-void DispCollTrees_Free( CDispCollTree *pTrees );
+CDispCollTree* DispCollTrees_Alloc( int count );
+void DispCollTrees_Free( CDispCollTree* pTrees );
 
 #endif // DISPCOLL_COMMON_H

@@ -8,7 +8,7 @@
 #define SAVERESTORE_UTLCLASS_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-------------------------------------
@@ -18,19 +18,19 @@ class CTypedescDeducer
 {
 public:
 	template <class UTLCLASS>
-	static datamap_t *Deduce( UTLCLASS *p )
+	static datamap_t* Deduce( UTLCLASS* p )
 	{
 		return NULL;
 	}
 
 };
 
-template<> 
+template<>
 class CTypedescDeducer<FIELD_EMBEDDED>
 {
 public:
 	template <class UTLCLASS>
-	static datamap_t *Deduce( UTLCLASS *p )
+	static datamap_t* Deduce( UTLCLASS* p )
 	{
 		return &UTLCLASS::ElemType_t::m_DataMap;
 	}

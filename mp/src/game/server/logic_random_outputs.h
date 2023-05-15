@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,18 +24,18 @@ public:
 
 	void Activate();
 	void Think();
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 #ifdef MAPBASE
-	virtual bool GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	virtual bool GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 #endif
 
 	// Input handlers
-	void InputEnable( inputdata_t &inputdata );
-	void InputEnableRefire( inputdata_t &inputdata );  // Private input handler, not in FGD
-	void InputDisable( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
-	void InputTrigger( inputdata_t &inputdata );
-	void InputCancelPending( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputEnableRefire( inputdata_t& inputdata );  // Private input handler, not in FGD
+	void InputDisable( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
+	void InputTrigger( inputdata_t& inputdata );
+	void InputCancelPending( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -44,7 +44,7 @@ public:
 	COutputEvent m_OnSpawn;
 
 	float m_flOnTriggerChance[ NUM_RANDOM_OUTPUTS ];
-	
+
 private:
 
 	bool m_bDisabled;

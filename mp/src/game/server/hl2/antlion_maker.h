@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ANTLION_MAKER_H
 #define ANTLION_MAKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "npc_antlion.h"
@@ -26,64 +26,73 @@
 
 class CAntlionTemplateMaker : public CTemplateNPCMaker
 {
-	public:
+public:
 
 	DECLARE_CLASS( CAntlionTemplateMaker, CTemplateNPCMaker );
 
-			CAntlionTemplateMaker( void );
-			~CAntlionTemplateMaker( void );
+	CAntlionTemplateMaker( void );
+	~CAntlionTemplateMaker( void );
 
 	virtual int DrawDebugTextOverlays( void );
 	virtual void DrawDebugGeometryOverlays( void );
 
 	void	MakeNPC( void );
-	void	ChildPreSpawn( CAI_BaseNPC *pChild );
-	void	ChildPostSpawn( CAI_BaseNPC *pChild );
+	void	ChildPreSpawn( CAI_BaseNPC* pChild );
+	void	ChildPostSpawn( CAI_BaseNPC* pChild );
 
-	void	InputSetFightTarget( inputdata_t &inputdata );
-	void	InputSetFollowTarget( inputdata_t &inputdata );
-	void	InputClearFightTarget( inputdata_t &inputdata );
-	void	InputClearFollowTarget( inputdata_t &inputdata );
-	void	InputSetSpawnRadius( inputdata_t &inputdata );
-	void	InputAddToPool( inputdata_t &inputdata );
-	void	InputSetMaxPool( inputdata_t &inputdata );
-	void	InputSetPoolRegenAmount( inputdata_t &inputdata );
-	void	InputSetPoolRegenTime( inputdata_t &inputdata );
-	void	InputChangeDestinationGroup( inputdata_t &inputdata );
+	void	InputSetFightTarget( inputdata_t& inputdata );
+	void	InputSetFollowTarget( inputdata_t& inputdata );
+	void	InputClearFightTarget( inputdata_t& inputdata );
+	void	InputClearFollowTarget( inputdata_t& inputdata );
+	void	InputSetSpawnRadius( inputdata_t& inputdata );
+	void	InputAddToPool( inputdata_t& inputdata );
+	void	InputSetMaxPool( inputdata_t& inputdata );
+	void	InputSetPoolRegenAmount( inputdata_t& inputdata );
+	void	InputSetPoolRegenTime( inputdata_t& inputdata );
+	void	InputChangeDestinationGroup( inputdata_t& inputdata );
 
 	void	Activate( void );
-	
-	// Do not transition
-	int		ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
-	
-	bool	CanMakeNPC( bool bIgnoreSolidEntities = false );
-	bool	ShouldAlwaysThink( void ) { return true; }
 
-	void	AddChild( CNPC_Antlion *pAnt );
-	void	RemoveChild( CNPC_Antlion *pAnt );
+	// Do not transition
+	int		ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION );
+	}
+
+	bool	CanMakeNPC( bool bIgnoreSolidEntities = false );
+	bool	ShouldAlwaysThink( void )
+	{
+		return true;
+	}
+
+	void	AddChild( CNPC_Antlion* pAnt );
+	void	RemoveChild( CNPC_Antlion* pAnt );
 
 	void	FixupOrphans( void );
 	void	UpdateChildren( void );
 
-	void	CreateProxyTarget( const Vector &position );
+	void	CreateProxyTarget( const Vector& position );
 	void	DestroyProxyTarget( void );
 
-	void	SetFightTarget( string_t strTarget, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
-	void	SetFightTarget( CBaseEntity *pEntity );
-	void	SetFightTarget( const Vector &position );
-	
-	void	SetFollowTarget( string_t strTarget, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
-	void	SetFollowTarget( CBaseEntity *pEntity );
+	void	SetFightTarget( string_t strTarget, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
+	void	SetFightTarget( CBaseEntity* pEntity );
+	void	SetFightTarget( const Vector& position );
+
+	void	SetFollowTarget( string_t strTarget, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
+	void	SetFollowTarget( CBaseEntity* pEntity );
 
 	void	SetChildMoveState( AntlionMoveState_e state );
 
-	void	DeathNotice( CBaseEntity *pVictim );
+	void	DeathNotice( CBaseEntity* pVictim );
 	bool	IsDepleted( void );
 
-	bool	ShouldHearBugbait( void ) { return (m_bIgnoreBugbait==false); }
+	bool	ShouldHearBugbait( void )
+	{
+		return ( m_bIgnoreBugbait == false );
+	}
 
-	CBaseEntity	*GetFightTarget( void );
-	CBaseEntity *GetFollowTarget( void );
+	CBaseEntity*	GetFightTarget( void );
+	CBaseEntity* GetFollowTarget( void );
 
 	virtual void Enable( void );
 	virtual void Disable( void );
@@ -91,9 +100,9 @@ class CAntlionTemplateMaker : public CTemplateNPCMaker
 
 	void	BlockedCheckFunc( void );
 	void	FindNodesCloseToPlayer( void );
-	void	DoBlockedEffects( CBaseEntity *pBlocker, Vector vOrigin );
+	void	DoBlockedEffects( CBaseEntity* pBlocker, Vector vOrigin );
 
-	CBaseEntity	*AllHintsFromClusterBlocked( CAI_Hint *pNode, bool &bChosenHintBlocked );
+	CBaseEntity*	AllHintsFromClusterBlocked( CAI_Hint* pNode, bool& bChosenHintBlocked );
 
 	void	ActivateAllSpores( void );
 	void	ActivateSpore( const char* sporename, Vector vOrigin );
@@ -102,15 +111,15 @@ class CAntlionTemplateMaker : public CTemplateNPCMaker
 
 protected:
 
-	void		PrecacheTemplateEntity( CBaseEntity *pEntity );
+	void		PrecacheTemplateEntity( CBaseEntity* pEntity );
 
-	bool		FindHintSpawnPosition( const Vector &origin, float radius, string_t hintGroupName, CAI_Hint **pHint, bool bRandom = false );
-	bool		FindNearTargetSpawnPosition( Vector &origin, float radius, CBaseEntity *pTarget );
+	bool		FindHintSpawnPosition( const Vector& origin, float radius, string_t hintGroupName, CAI_Hint** pHint, bool bRandom = false );
+	bool		FindNearTargetSpawnPosition( Vector& origin, float radius, CBaseEntity* pTarget );
 
 	//These are used by FindNearTargetSpawnPosition
-	bool		FindPositionOnFoot( Vector &origin, float radius, CBaseEntity *pTarget );
-	bool		FindPositionOnVehicle( Vector &origin, float radius, CBaseEntity *pTarget );
-	bool		ValidateSpawnPosition( Vector &vOrigin, CBaseEntity *pTarget = NULL );
+	bool		FindPositionOnFoot( Vector& origin, float radius, CBaseEntity* pTarget );
+	bool		FindPositionOnVehicle( Vector& origin, float radius, CBaseEntity* pTarget );
+	bool		ValidateSpawnPosition( Vector& vOrigin, CBaseEntity* pTarget = NULL );
 
 	// Pool behavior for coast
 	void		PoolAdd( int iNumToAdd );
@@ -122,17 +131,17 @@ protected:
 	string_t	m_strSpawnTarget;	// name of target to spawn near
 	float		m_flSpawnRadius;	// radius around target to attempt to spawn in
 	float		m_flWorkerSpawnRate;	// Percentage chance of spawning a worker when we spawn an antlion [0..1].
-	
+
 	string_t	m_strFightTarget;	// target entity name that all children will be told to fight to
 	string_t	m_strFollowTarget;	// entity name that all children will follow
 
 	bool		m_bIgnoreBugbait;		// Whether or not to ignore bugbait
-	
+
 	AntlionMoveState_e	m_nChildMoveState;
 
 	EHANDLE		m_hFightTarget;		// A normal entity pointer for fight position
 	EHANDLE		m_hProxyTarget;		// This is a self-held target that is created and used when a vector is passed in as a fight
-									// goal, instead of an entity
+	// goal, instead of an entity
 	EHANDLE		m_hFollowTarget;	// Target to follow
 
 	CUtlVector< CHandle< CNPC_Antlion > >	m_Children;
@@ -144,7 +153,7 @@ protected:
 	float		m_flPoolRegenTime;
 
 	float		m_flVehicleSpawnDistance;
-	
+
 	int			m_iSkinCount;
 
 	float		m_flBlockedBumpTime;
@@ -153,7 +162,7 @@ protected:
 	COutputEvent m_OnAllBlocked;
 
 	bool		m_bCreateSpores;
-		
+
 	DECLARE_DATADESC();
 };
 
@@ -164,18 +173,18 @@ protected:
 class CAntlionMakerManager : public CAutoGameSystem
 {
 public:
-	CAntlionMakerManager( char const *name ) : CAutoGameSystem( name )
+	CAntlionMakerManager( char const* name ) : CAutoGameSystem( name )
 	{
 	}
 
 	void	LevelInitPostEntity( void );
 
-	void	BroadcastFightGoal( const Vector &vFightGoal );
-	void	BroadcastFightGoal( CBaseEntity *pFightGoal );
-	void	BroadcastFollowGoal( CBaseEntity *pFollowGoal );
+	void	BroadcastFightGoal( const Vector& vFightGoal );
+	void	BroadcastFightGoal( CBaseEntity* pFightGoal );
+	void	BroadcastFollowGoal( CBaseEntity* pFollowGoal );
 
 protected:
-	
+
 	void	GatherMakers( void );
 
 	CUtlVector< CHandle< CAntlionTemplateMaker > >	m_Makers;

@@ -7,7 +7,7 @@
 #ifndef HUD_LCD_H
 #define HUD_LCD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlvector.h"
@@ -40,7 +40,7 @@ enum
 class CLCDItem
 {
 public:
-	CLCDItem() : 
+	CLCDItem() :
 		m_bActive( true ),
 		m_nSubPage( 0 ),
 		m_Type( LCDITEM_UNKNOWN ),
@@ -54,17 +54,17 @@ public:
 
 	virtual ~CLCDItem() {}
 
-	virtual void Create( IG15 *lcd ) = 0;
-	virtual void Wipe( IG15 *lcd );
+	virtual void Create( IG15* lcd ) = 0;
+	virtual void Wipe( IG15* lcd );
 
 	bool		m_bActive;
 	int			m_Type;
-	void		*m_Handle;
+	void*		m_Handle;
 	int			x, y, w, h;
 
 	int			m_nSubPage;
 
-	CUtlVector< CLCDItem * >	m_Children;
+	CUtlVector< CLCDItem* >	m_Children;
 };
 
 class CLCDItemText : public CLCDItem
@@ -79,7 +79,7 @@ public:
 		m_Type = LCDITEM_TEXT;
 	}
 
-	virtual void Create( IG15 *lcd );
+	virtual void Create( IG15* lcd );
 
 	CUtlString	m_OriginalText;
 	bool		m_bHasWildcard;
@@ -92,16 +92,16 @@ class CLCDItemIcon : public CLCDItem
 	typedef CLCDItem BaseClass;
 
 public:
-	CLCDItemIcon() : 
-	  m_icon( NULL )
+	CLCDItemIcon() :
+		m_icon( NULL )
 	{
 		m_Type = LCDITEM_ICON;
 	}
 
-	virtual void Create( IG15 *lcd );
+	virtual void Create( IG15* lcd );
 
 	CUtlString	m_IconName;
-	void		*m_icon;
+	void*		m_icon;
 };
 
 class CLCDItemAggregate : public CLCDItem
@@ -109,7 +109,7 @@ class CLCDItemAggregate : public CLCDItem
 	typedef CLCDItem BaseClass;
 
 public:
-	CLCDItemAggregate() : 
+	CLCDItemAggregate() :
 		m_AggType( AGGTYPE_UNKNOWN ),
 		m_dwNextUpdateTime( 0 ),
 		m_yincrement( 0 )
@@ -117,28 +117,28 @@ public:
 		m_Type = LCDITEM_AGGREGATE;
 	}
 
-	virtual void Create( IG15 *lcd );
-	virtual void Wipe( IG15 *lcd );
+	virtual void Create( IG15* lcd );
+	virtual void Wipe( IG15* lcd );
 
-	void WipeChildrenOnly( IG15 *lcd );
+	void WipeChildrenOnly( IG15* lcd );
 
 	unsigned int				m_dwNextUpdateTime;
 	int							m_AggType;
-	
+
 	int							m_yincrement;
 
 	// Representative row
-	CUtlVector< CLCDItem * >	m_Definition;
+	CUtlVector< CLCDItem* >	m_Definition;
 };
 
 class CLCDPage : public CLCDItem
 {
 public:
 	CLCDPage() :
-	  m_bSubItem( false ),
-	  m_bTitlePage( false ),
-	  m_bRequiresPlayer( false ),
-	  m_nSubPageCount( 1 )
+		m_bSubItem( false ),
+		m_bTitlePage( false ),
+		m_bRequiresPlayer( false ),
+		m_nSubPageCount( 1 )
 	{
 		m_Type = LCDITEM_PAGE;
 	}
@@ -147,33 +147,33 @@ public:
 	{
 	}
 
-	virtual void Create( IG15 *lcd )
+	virtual void Create( IG15* lcd )
 	{
 	}
 
-	CLCDItem *Alloc( int type )
+	CLCDItem* Alloc( int type )
 	{
-		CLCDItem *item = NULL;
+		CLCDItem* item = NULL;
 
-		switch ( type )
+		switch( type )
 		{
-		default:
-			break;
-		case LCDITEM_PAGE:
-			// This shouldn't occur
-			break;
-		case LCDITEM_TEXT:
-			item = new CLCDItemText();
-			break;
-		case LCDITEM_ICON:
-			item = new CLCDItemIcon();
-			break;
-		case LCDITEM_AGGREGATE:
-			item = new CLCDItemAggregate();
-			break;
+			default:
+				break;
+			case LCDITEM_PAGE:
+				// This shouldn't occur
+				break;
+			case LCDITEM_TEXT:
+				item = new CLCDItemText();
+				break;
+			case LCDITEM_ICON:
+				item = new CLCDItemIcon();
+				break;
+			case LCDITEM_AGGREGATE:
+				item = new CLCDItemAggregate();
+				break;
 		}
 
-		if ( item )
+		if( item )
 		{
 			return item;
 		}
@@ -182,7 +182,7 @@ public:
 		return NULL;
 	}
 
-	void InitFromKeyValues( KeyValues *kv );
+	void InitFromKeyValues( KeyValues* kv );
 
 	bool						m_bSubItem;
 	bool						m_bTitlePage;
@@ -196,12 +196,12 @@ public:
 class CLCD : public IHudLCD
 {
 public:
-						CLCD();
-						~CLCD();
+	CLCD();
+	~CLCD();
 
 	// Implement IHudLCD
-	virtual void	SetGlobalStat( char const *name, char const *value );
-	virtual void	AddChatLine( char const *txt );
+	virtual void	SetGlobalStat( char const* name, char const* value );
+	virtual void	AddChatLine( char const* txt );
 
 	// Exposed as a ConCommand
 	void				Reload();
@@ -210,51 +210,51 @@ public:
 public:
 
 	// Init's called when the HUD's created at DLL load
-	void				Init( void );	
+	void				Init( void );
 	void				Shutdown();
 	void				Update( void );
 	bool				IsConnected() const;
 
 private:
 
-	CLCDItemIcon		*ParseItemIcon( CLCDPage *page, bool bCreateHandles, KeyValues *sub );
-	CLCDItemText		*ParseItemText( CLCDPage *page, bool bCreateHandles, KeyValues *sub );
-	void				ParseItems_R( CLCDPage *page, bool bCreateHandles, KeyValues *kv, CUtlVector< CLCDItem * >& list );
+	CLCDItemIcon*		ParseItemIcon( CLCDPage* page, bool bCreateHandles, KeyValues* sub );
+	CLCDItemText*		ParseItemText( CLCDPage* page, bool bCreateHandles, KeyValues* sub );
+	void				ParseItems_R( CLCDPage* page, bool bCreateHandles, KeyValues* kv, CUtlVector< CLCDItem* >& list );
 
-	void				ParsePage( KeyValues *kv );
-	void				ParseIconMappings( KeyValues *kv );
-	void				ParseReplacements( KeyValues *kv );
+	void				ParsePage( KeyValues* kv );
+	void				ParseIconMappings( KeyValues* kv );
+	void				ParseReplacements( KeyValues* kv );
 	void				DisplayCurrentPage( unsigned int dwCurTime );
 
-	void				ShowItems_R( CLCDPage *page, unsigned int dwCurTime, CUtlVector< CLCDItem * >& list, bool show );
+	void				ShowItems_R( CLCDPage* page, unsigned int dwCurTime, CUtlVector< CLCDItem* >& list, bool show );
 
 	int					FindTitlePage();
-	void				BuildUpdatedText( char const *in, CUtlString& out );
-	void				LookupToken( char const *token, CUtlString& value );
-	bool				ExtractArrayIndex( char *str, size_t bufsize, int *index );
+	void				BuildUpdatedText( char const* in, CUtlString& out );
+	void				LookupToken( char const* token, CUtlString& value );
+	bool				ExtractArrayIndex( char* str, size_t bufsize, int* index );
 
-	bool				Replace( CUtlString& str, char const *search, char const *replace );
+	bool				Replace( CUtlString& str, char const* search, char const* replace );
 	void				DoGlobalReplacements( CUtlString& str );
 	void				ReduceParentheses( CUtlString& str );
 
-	bool				IsPageValid( int currentPage, C_BasePlayer *player );
+	bool				IsPageValid( int currentPage, C_BasePlayer* player );
 	void				UpdateChat();
 
-	IG15					*m_lcd ;
+	IG15*					m_lcd ;
 
 	CUtlString				m_Title;
 	int						m_Size[ 2 ];
-	CUtlVector< CLCDPage * >	m_Pages;
+	CUtlVector< CLCDPage* >	m_Pages;
 	int						m_nCurrentPage;
 	int						m_nSubPage;
 	int						m_nMaxChatHistory;
 
 	CUtlDict< int, int >	m_TextSizes;
 	CUtlDict< int, int >	m_TextAlignments;
-	
+
 	struct IconInfo_t
 	{
-		void	*m_handle;
+		void*	m_handle;
 	};
 
 	CUtlDict< IconInfo_t, int >	m_Icons;
@@ -264,7 +264,7 @@ private:
 	CUtlVector< CUtlString >		m_ChatHistory;
 
 	unsigned int			m_dwNextUpdateTime;
-	CSysModule				*m_pG15Module;
+	CSysModule*				m_pG15Module;
 	CreateInterfaceFn		m_G15Factory;
 };
 

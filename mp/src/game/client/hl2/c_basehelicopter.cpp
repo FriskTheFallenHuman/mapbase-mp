@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -15,11 +15,11 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT( C_BaseHelicopter, DT_BaseHelicopter, CBaseHelicopter )
-	RecvPropTime( RECVINFO( m_flStartupTime ) ),
-END_RECV_TABLE()
+RecvPropTime( RECVINFO( m_flStartupTime ) ),
+			  END_RECV_TABLE()
 
 
-C_BaseHelicopter::C_BaseHelicopter()
+			  C_BaseHelicopter::C_BaseHelicopter()
 {
 }
 
@@ -36,18 +36,21 @@ C_BaseHelicopter::C_BaseHelicopter()
 class CHeliBladeMaterialProxy : public CEntityMaterialProxy
 {
 public:
-	CHeliBladeMaterialProxy() { m_AlphaVar = NULL; }
+	CHeliBladeMaterialProxy()
+	{
+		m_AlphaVar = NULL;
+	}
 	virtual ~CHeliBladeMaterialProxy() {}
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( C_BaseEntity *pEntity );
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( C_BaseEntity* pEntity );
+	virtual IMaterial* GetMaterial();
 
 private:
-	IMaterialVar *m_AlphaVar;
+	IMaterialVar* m_AlphaVar;
 	bool m_bFadeOut;
 };
 
-bool CHeliBladeMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CHeliBladeMaterialProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	bool foundVar;
 	m_AlphaVar = pMaterial->FindVar( "$alpha", &foundVar, false );
@@ -55,18 +58,20 @@ bool CHeliBladeMaterialProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues 
 	return foundVar;
 }
 
-void CHeliBladeMaterialProxy::OnBind( C_BaseEntity *pEnt )
+void CHeliBladeMaterialProxy::OnBind( C_BaseEntity* pEnt )
 {
-	if (!m_AlphaVar)
+	if( !m_AlphaVar )
+	{
 		return;
+	}
 
-	C_BaseHelicopter *pHeli = dynamic_cast<C_BaseHelicopter*>( pEnt );
-	if ( pHeli )
+	C_BaseHelicopter* pHeli = dynamic_cast<C_BaseHelicopter*>( pEnt );
+	if( pHeli )
 	{
 		float dt = gpGlobals->curtime  - pHeli->StartupTime();
 		dt /= FADE_IN_TIME;
 		dt = clamp( dt, 0.0f, 1.0f );
-		if ( m_bFadeOut ) 
+		if( m_bFadeOut )
 		{
 			dt = 1.0f - dt;
 		}
@@ -79,10 +84,12 @@ void CHeliBladeMaterialProxy::OnBind( C_BaseEntity *pEnt )
 	}
 }
 
-IMaterial *CHeliBladeMaterialProxy::GetMaterial()
+IMaterial* CHeliBladeMaterialProxy::GetMaterial()
 {
-	if ( !m_AlphaVar )
+	if( !m_AlphaVar )
+	{
 		return NULL;
+	}
 
 	return m_AlphaVar->GetOwningMaterial();
 }

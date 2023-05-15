@@ -1,15 +1,15 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
 //=============================================================================//
 #include "cbase.h"
 
-PrototypeEffectLink *g_pPrototypeEffects = 0;
+PrototypeEffectLink* g_pPrototypeEffects = 0;
 
-PrototypeEffectLink::PrototypeEffectLink(PrototypeEffectCreateFn fn, const char *pName)
+PrototypeEffectLink::PrototypeEffectLink( PrototypeEffectCreateFn fn, const char* pName )
 {
 	m_CreateFn = fn;
 	m_pEffectName = pName;

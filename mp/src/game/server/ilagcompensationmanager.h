@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ILAGCOMPENSATIONMANAGER_H
 #define ILAGCOMPENSATIONMANAGER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CBasePlayer;
@@ -21,11 +21,11 @@ abstract_class ILagCompensationManager
 {
 public:
 	// Called during player movement to set up/restore after lag compensation
-	virtual void	StartLagCompensation( CBasePlayer *player, CUserCmd *cmd ) = 0;
-	virtual void	FinishLagCompensation( CBasePlayer *player ) = 0;
+	virtual void	StartLagCompensation( CBasePlayer * player, CUserCmd * cmd ) = 0;
+	virtual void	FinishLagCompensation( CBasePlayer * player ) = 0;
 	virtual bool	IsCurrentlyDoingLagCompensation() const = 0;
 };
 
-extern ILagCompensationManager *lagcompensation;
+extern ILagCompensationManager* lagcompensation;
 
 #endif // ILAGCOMPENSATIONMANAGER_H

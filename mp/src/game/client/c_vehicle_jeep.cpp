@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -27,18 +27,18 @@ ConVar r_JeepViewBlendToTime( "r_JeepViewBlendToTime", "1.5", FCVAR_CHEAT );
 #define JEEP_HEADLIGHT_DISTANCE 1000
 
 IMPLEMENT_CLIENTCLASS_DT( C_PropJeep, DT_PropJeep, CPropJeep )
-	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
+			  END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-C_PropJeep::C_PropJeep()
+			  C_PropJeep::C_PropJeep()
 {
 	m_vecEyeSpeed.Init();
 	m_flViewAngleDeltaTime = 0.0f;
 	m_pHeadlight = NULL;
-	
+
 	ConVarRef r_JeepFOV( "r_JeepFOV" );
 	m_ViewSmoothingData.flFOV = r_JeepFOV.GetFloat();
 }
@@ -48,7 +48,7 @@ C_PropJeep::C_PropJeep()
 //-----------------------------------------------------------------------------
 C_PropJeep::~C_PropJeep()
 {
-	if ( m_pHeadlight )
+	if( m_pHeadlight )
 	{
 		delete m_pHeadlight;
 	}
@@ -57,15 +57,17 @@ C_PropJeep::~C_PropJeep()
 void C_PropJeep::Simulate( void )
 {
 	// The dim light is the flashlight.
-	if ( m_bHeadlightIsOn )
+	if( m_bHeadlightIsOn )
 	{
-		if ( m_pHeadlight == NULL )
+		if( m_pHeadlight == NULL )
 		{
 			// Turned on the headlight; create it.
 			m_pHeadlight = new CHeadlightEffect;
 
-			if ( m_pHeadlight == NULL )
+			if( m_pHeadlight == NULL )
+			{
 				return;
+			}
 
 			m_pHeadlight->TurnOn();
 		}
@@ -76,15 +78,15 @@ void C_PropJeep::Simulate( void )
 
 		int iAttachment = LookupAttachment( "headlight" );
 
-		if ( iAttachment != INVALID_PARTICLE_ATTACHMENT )
+		if( iAttachment != INVALID_PARTICLE_ATTACHMENT )
 		{
 			GetAttachment( iAttachment, vVector, vAngle );
 			AngleVectors( vAngle, &vecForward, &vecRight, &vecUp );
-		
+
 			m_pHeadlight->UpdateLight( vVector, vecForward, vecRight, vecUp, JEEP_HEADLIGHT_DISTANCE );
 		}
 	}
-	else if ( m_pHeadlight )
+	else if( m_pHeadlight )
 	{
 		// Turned off the flashlight; delete it.
 		delete m_pHeadlight;
@@ -97,12 +99,12 @@ void C_PropJeep::Simulate( void )
 //-----------------------------------------------------------------------------
 // Purpose: Blend view angles.
 //-----------------------------------------------------------------------------
-void C_PropJeep::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
+void C_PropJeep::UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd )
 {
-	if ( r_JeepViewBlendTo.GetInt() )
+	if( r_JeepViewBlendTo.GetInt() )
 	{
 		// Check to see if the mouse has been touched in a bit or that we are not throttling.
-		if ( ( pCmd->mousedx != 0 || pCmd->mousedy != 0 ) || ( fabsf( m_flThrottle ) < 0.01f ) )
+		if( ( pCmd->mousedx != 0 || pCmd->mousedy != 0 ) || ( fabsf( m_flThrottle ) < 0.01f ) )
 		{
 			m_flViewAngleDeltaTime = 0.0f;
 		}
@@ -111,14 +113,14 @@ void C_PropJeep::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
 			m_flViewAngleDeltaTime += gpGlobals->frametime;
 		}
 
-		if ( m_flViewAngleDeltaTime > r_JeepViewBlendToTime.GetFloat() )
+		if( m_flViewAngleDeltaTime > r_JeepViewBlendToTime.GetFloat() )
 		{
 			// Blend the view angles.
 			int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 			Vector vehicleEyeOrigin;
 			QAngle vehicleEyeAngles;
 			GetAttachmentLocal( eyeAttachmentIndex, vehicleEyeOrigin, vehicleEyeAngles );
-			
+
 			QAngle outAngles;
 			InterpolateAngles( pCmd->viewangles, vehicleEyeAngles, outAngles, r_JeepViewBlendToScale.GetFloat() );
 			pCmd->viewangles = outAngles;
@@ -131,13 +133,13 @@ void C_PropJeep::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropJeep::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles )
+void C_PropJeep::DampenEyePosition( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles )
 {
 #ifdef HL2_CLIENT_DLL
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
 	float flFrameTime = gpGlobals->frametime;
 
-	if ( flFrameTime < JEEP_FRAMETIME_MIN )
+	if( flFrameTime < JEEP_FRAMETIME_MIN )
 	{
 		vecVehicleEyePos = m_vecLastEyePos;
 		DampenUpMotion( vecVehicleEyePos, vecVehicleEyeAngles, 0.0f );
@@ -158,9 +160,9 @@ void C_PropJeep::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicle
 // Use the controller as follows:
 // speed += ( pCoefficientsOut[0] * ( targetPos - currentPos ) + pCoefficientsOut[1] * ( targetSpeed - currentSpeed ) ) * flDeltaTime;
 //-----------------------------------------------------------------------------
-void C_PropJeep::ComputePDControllerCoefficients( float *pCoefficientsOut,
-												  float flFrequency, float flDampening,
-												  float flDeltaTime )
+void C_PropJeep::ComputePDControllerCoefficients( float* pCoefficientsOut,
+		float flFrequency, float flDampening,
+		float flDeltaTime )
 {
 	float flKs = 9.0f * flFrequency * flFrequency;
 	float flKd = 4.5f * flFrequency * flDampening;
@@ -170,11 +172,11 @@ void C_PropJeep::ComputePDControllerCoefficients( float *pCoefficientsOut,
 	pCoefficientsOut[0] = flKs * flScale;
 	pCoefficientsOut[1] = ( flKd + flKs * flDeltaTime ) * flScale;
 }
- 
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropJeep::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime )
+void C_PropJeep::DampenForwardMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime )
 {
 	// vecVehicleEyePos = real eye position this frame
 
@@ -189,8 +191,10 @@ void C_PropJeep::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehic
 	// Calculate the approximate speed based on the current vehicle eye position and the eye position last frame.
 	Vector vecVehicleEyeSpeed = ( vecVehicleEyePos - m_vecLastEyeTarget ) / flFrameTime;
 	m_vecLastEyeTarget = vecVehicleEyePos;
-	if (vecVehicleEyeSpeed.Length() == 0.0)
+	if( vecVehicleEyeSpeed.Length() == 0.0 )
+	{
 		return;
+	}
 
 	// Calculate the delta between the predicted eye position and speed and the current eye position and speed.
 	Vector vecDeltaSpeed = vecVehicleEyeSpeed - vecPredEyeSpeed;
@@ -201,11 +205,11 @@ void C_PropJeep::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehic
 	AngleVectors( vecVehicleEyeAngles, &vecForward );
 
 	float flDeltaLength = vecDeltaPos.Length();
-	if ( flDeltaLength > JEEP_DELTA_LENGTH_MAX )
+	if( flDeltaLength > JEEP_DELTA_LENGTH_MAX )
 	{
 		// Clamp.
 		float flDelta = flDeltaLength - JEEP_DELTA_LENGTH_MAX;
-		if ( flDelta > 40.0f )
+		if( flDelta > 40.0f )
 		{
 			// This part is a bit of a hack to get rid of large deltas (at level load, etc.).
 			m_vecLastEyePos = vecVehicleEyePos;
@@ -233,10 +237,10 @@ void C_PropJeep::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehic
 		float flCoefficients[2];
 		ComputePDControllerCoefficients( flCoefficients, r_JeepViewDampenFreq.GetFloat(), r_JeepViewDampenDamp.GetFloat(), flFrameTime );
 		m_vecEyeSpeed += ( ( flCoefficients[0] * vecDeltaPos + flCoefficients[1] * vecDeltaSpeed ) * flFrameTime );
-		
+
 		// Save off data for next frame.
 		m_vecLastEyePos = vecPredEyePos;
-		
+
 		// Move eye forward/backward.
 		Vector vecForwardOffset = vecForward * ( vecForward.Dot( vecDeltaPos ) );
 		vecVehicleEyePos -= vecForwardOffset;
@@ -246,7 +250,7 @@ void C_PropJeep::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehic
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropJeep::DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime )
+void C_PropJeep::DampenUpMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime )
 {
 	// Get up vector.
 	Vector vecUp;
@@ -258,9 +262,9 @@ void C_PropJeep::DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEye
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_PropJeep::OnEnteredVehicle( C_BasePlayer *pPlayer )
+void C_PropJeep::OnEnteredVehicle( C_BasePlayer* pPlayer )
 {
 	int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 	Vector vehicleEyeOrigin;
@@ -273,48 +277,48 @@ void C_PropJeep::OnEnteredVehicle( C_BasePlayer *pPlayer )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void WheelDustCallback( const CEffectData &data )
+void WheelDustCallback( const CEffectData& data )
 {
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "dust" );
 	pSimple->SetSortOrigin( data.m_vOrigin );
 	pSimple->SetNearClip( 32, 64 );
 
-	SimpleParticle	*pParticle;
+	SimpleParticle*	pParticle;
 
 	Vector	offset;
 
 	//FIXME: Better sampling area
 	offset = data.m_vOrigin + ( data.m_vNormal * data.m_flScale );
-	
+
 	//Find area ambient light color and use it to tint smoke
 	Vector	worldLight = WorldGetLightForPoint( offset, true );
 
 	//Throw puffs
-	offset.Random( -(data.m_flScale*16.0f), data.m_flScale*16.0f );
+	offset.Random( -( data.m_flScale * 16.0f ), data.m_flScale * 16.0f );
 	offset.z = 0.0f;
 	offset += data.m_vOrigin + ( data.m_vNormal * data.m_flScale );
 
-	pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof(SimpleParticle), g_Mat_DustPuff[0], offset );
+	pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[0], offset );
 
-	if ( pParticle != NULL )
-	{			
+	if( pParticle != NULL )
+	{
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= random->RandomFloat( 0.25f, 0.5f );
-		
+
 		pParticle->m_vecVelocity = RandomVector( -1.0f, 1.0f );
 		VectorNormalize( pParticle->m_vecVelocity );
-		pParticle->m_vecVelocity[2] += random->RandomFloat( 16.0f, 32.0f ) * (data.m_flScale*2.0f);
+		pParticle->m_vecVelocity[2] += random->RandomFloat( 16.0f, 32.0f ) * ( data.m_flScale * 2.0f );
 
 		int	color = random->RandomInt( 100, 150 );
 
-		pParticle->m_uchColor[0] = 16 + ( worldLight[0] * (float) color );
-		pParticle->m_uchColor[1] = 8 + ( worldLight[1] * (float) color );
-		pParticle->m_uchColor[2] = ( worldLight[2] * (float) color );
+		pParticle->m_uchColor[0] = 16 + ( worldLight[0] * ( float ) color );
+		pParticle->m_uchColor[1] = 8 + ( worldLight[1] * ( float ) color );
+		pParticle->m_uchColor[2] = ( worldLight[2] * ( float ) color );
 
-		pParticle->m_uchStartAlpha	= random->RandomInt( 64.0f*data.m_flScale, 128.0f*data.m_flScale );
+		pParticle->m_uchStartAlpha	= random->RandomInt( 64.0f * data.m_flScale, 128.0f * data.m_flScale );
 		pParticle->m_uchEndAlpha	= 0;
 		pParticle->m_uchStartSize	= random->RandomInt( 16, 24 ) * data.m_flScale;
 		pParticle->m_uchEndSize		= random->RandomInt( 32, 48 ) * data.m_flScale;

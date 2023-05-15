@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -15,7 +15,7 @@
 
 #include "crtmemdebug.h"
 #ifdef USECRTMEMDEBUG
-#include <crtdbg.h>
+	#include <crtdbg.h>
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -33,11 +33,11 @@ void CheckHeap( void )
 void InitCRTMemDebug( void )
 {
 #ifdef USECRTMEMDEBUG
-	_CrtSetDbgFlag( 
-//	_CRTDBG_ALLOC_MEM_DF  | 
-	_CRTDBG_CHECK_ALWAYS_DF |
-	_CRTDBG_CHECK_CRT_DF | 
-	_CRTDBG_DELAY_FREE_MEM_DF );
+	_CrtSetDbgFlag(
+//	_CRTDBG_ALLOC_MEM_DF  |
+		_CRTDBG_CHECK_ALWAYS_DF |
+		_CRTDBG_CHECK_CRT_DF |
+		_CRTDBG_DELAY_FREE_MEM_DF );
 #endif
 }
 

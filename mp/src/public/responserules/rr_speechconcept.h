@@ -9,7 +9,7 @@
 #define RR_SPEECHCONCEPT_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "utlsymbol.h"
@@ -30,26 +30,32 @@ public: // local typedefs
 public:
 	CRR_Concept() {};
 	// construct concept from a string.
-	CRR_Concept(const char *fromString);
+	CRR_Concept( const char* fromString );
 
 	// Return as a string
-	const char *GetStringConcept() const;
-	static const char *GetStringForGenericId(tGenericId genericId);
+	const char* GetStringConcept() const;
+	static const char* GetStringForGenericId( tGenericId genericId );
 
-	operator tGenericId() const { return m_iConcept; }
-	operator const char *() const { return GetStringConcept(); }
-	inline bool operator==(const CRR_Concept &other) // default is compare by concept ids
+	operator tGenericId() const
+	{
+		return m_iConcept;
+	}
+	operator const char* () const
+	{
+		return GetStringConcept();
+	}
+	inline bool operator==( const CRR_Concept& other ) // default is compare by concept ids
 	{
 		return m_iConcept == other.m_iConcept;
 	}
-	bool operator==(const char *pszConcept);
+	bool operator==( const char* pszConcept );
 
 protected:
 
 private:
 	// dupe a concept
 	// CRR_Concept& operator=(CRR_Concept &other);
-	CRR_Concept& operator=(const char *fromString);
+	CRR_Concept& operator=( const char* fromString );
 };
 };
 

@@ -16,7 +16,7 @@
 #include "ai_hint.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ struct AI_StandoffParams_t
 	int 					oddsCover;
 	bool					fStayAtCover;
 	float					flAbandonTimeLimit;
-	
+
 	DECLARE_SIMPLE_DATADESC();
 };
 
@@ -70,15 +70,15 @@ class CAI_MappedActivityBehavior_Temporary : public CAI_SimpleBehavior
 {
 	DECLARE_CLASS( CAI_MappedActivityBehavior_Temporary, CAI_SimpleBehavior );
 public:
-	CAI_MappedActivityBehavior_Temporary( CAI_BaseNPC *pOuter = NULL ) 
-	 :	CAI_SimpleBehavior(pOuter)
+	CAI_MappedActivityBehavior_Temporary( CAI_BaseNPC* pOuter = NULL )
+		:	CAI_SimpleBehavior( pOuter )
 	{
 		SetDefLessFunc( m_ActivityMap );
 	}
 
 protected:
 	Activity GetMappedActivity( AI_Posture_t posture, Activity activity );
-	void OnChangeActiveWeapon( CBaseCombatWeapon *pOldWeapon, CBaseCombatWeapon *pNewWeapon );
+	void OnChangeActiveWeapon( CBaseCombatWeapon* pOldWeapon, CBaseCombatWeapon* pNewWeapon );
 
 	virtual void UpdateTranslateActivityMap();
 
@@ -90,24 +90,30 @@ class CAI_StandoffBehavior : public CAI_MappedActivityBehavior_Temporary
 {
 	DECLARE_CLASS( CAI_StandoffBehavior, CAI_MappedActivityBehavior_Temporary );
 public:
-	CAI_StandoffBehavior( CAI_BaseNPC *pOuter = NULL );
+	CAI_StandoffBehavior( CAI_BaseNPC* pOuter = NULL );
 
-	virtual const char *GetName() {	return "Standoff"; }
+	virtual const char* GetName()
+	{
+		return "Standoff";
+	}
 
 	void		SetActive( bool fActive );
-	void		SetParameters( const AI_StandoffParams_t &params, CAI_GoalEntity *pGoalEntity = NULL );
+	void		SetParameters( const AI_StandoffParams_t& params, CAI_GoalEntity* pGoalEntity = NULL );
 
 	Vector		GetStandoffGoalPosition();
-	void		SetStandoffGoalPosition( const Vector &vecPos );
+	void		SetStandoffGoalPosition( const Vector& vecPos );
 	void		ClearStandoffGoalPosition();
 
 	AI_Posture_t GetPosture();
 
-	bool		IsActive( void ) { return m_fActive; }
+	bool		IsActive( void )
+	{
+		return m_fActive;
+	}
 	void 		OnChangeTacticalConstraints();
 
 	bool 		CanSelectSchedule();
-	bool		IsBehindBattleLines( const Vector &point );
+	bool		IsBehindBattleLines( const Vector& point );
 
 protected:
 	void 		Spawn();
@@ -117,28 +123,28 @@ protected:
 	void		GatherConditions();
 	int 		SelectSchedule();
 	int			TranslateSchedule( int scheduleType );
-	void 		StartTask( const Task_t *pTask );
+	void 		StartTask( const Task_t* pTask );
 	void		BuildScheduleTestBits();
 	virtual void OnUpdateShotRegulator();
 
 	Activity 	NPC_TranslateActivity( Activity eNewActivity );
-	
-	bool		IsValidCover( const Vector &vecCoverLocation, CAI_Hint const *pHint );
-	bool		IsValidShootPosition( const Vector &vecCoverLocation, CAI_Node *pNode, CAI_Hint const *pHint );
+
+	bool		IsValidCover( const Vector& vecCoverLocation, CAI_Hint const* pHint );
+	bool		IsValidShootPosition( const Vector& vecCoverLocation, CAI_Node* pNode, CAI_Hint const* pHint );
 
 	void		SetPosture( AI_Posture_t posture );
-	
+
 	void		OnChangeHintGroup( string_t oldGroup, string_t newGroup );
 
 	virtual int SelectScheduleUpdateWeapon();
 	virtual int SelectScheduleCheckCover();
 	virtual int SelectScheduleEstablishAim();
 	virtual int SelectScheduleAttack();
-	
+
 	bool 		PlayerIsLeading();
-	CBaseEntity *GetPlayerLeader();
-	bool		GetDirectionOfStandoff( Vector *pDir );
-			
+	CBaseEntity* GetPlayerLeader();
+	bool		GetDirectionOfStandoff( Vector* pDir );
+
 	void UpdateBattleLines();
 
 	Hint_e GetHintType();
@@ -151,18 +157,27 @@ protected:
 	void UpdateTranslateActivityMap();
 
 	// Standoff overrides base AI crouch handling
-	bool		IsCrouching( void ) { return false; }
+	bool		IsCrouching( void )
+	{
+		return false;
+	}
 
 #ifdef MAPBASE
 	// Standoff overrides base cover activity translation
-	bool		CanTranslateCrouchActivity( void ) { return false; }
+	bool		CanTranslateCrouchActivity( void )
+	{
+		return false;
+	}
 
 	// Don't do death poses while crouching
-	bool		ShouldPickADeathPose( void ) { return (GetPosture() != AIP_CROUCHING && GetPosture() != AIP_PEEKING) && BaseClass::ShouldPickADeathPose(); }
+	bool		ShouldPickADeathPose( void )
+	{
+		return ( GetPosture() != AIP_CROUCHING && GetPosture() != AIP_PEEKING ) && BaseClass::ShouldPickADeathPose();
+	}
 #endif
-	
+
 private:
-	
+
 	//----------------------------
 
 	enum
@@ -176,7 +191,7 @@ private:
 	};
 
 	DEFINE_CUSTOM_SCHEDULE_PROVIDER;
-	
+
 	//---------------------------------
 	// @TODO (toml 07-30-03): replace all these booleans with a singe 32 bit unsigned & bit flags
 
@@ -184,17 +199,17 @@ private:
 	bool			m_fTestNoDamage;
 
 	Vector			m_vecStandoffGoalPosition;
-	
+
 	AI_Posture_t	m_posture;
-	
+
 	AI_StandoffParams_t m_params;
 	EHANDLE			m_hStandoffGoal;
-	
+
 	bool 			m_fTakeCover;
 	float			m_SavedDistTooFar;
 	bool			m_fForceNewEnemy;
 	CAI_MoveMonitor m_PlayerMoveMonitor;
-	
+
 	CSimTimer		m_TimeForceCoverHint;
 	CSimTimer		m_TimePreventForceNewEnemy;
 	CRandSimTimer	m_RandomCoverChangeTimer;
@@ -204,7 +219,7 @@ private:
 	float m_flSavedMinRest, m_flSavedMaxRest;
 
 	//---------------------------------
-	
+
 	struct BattleLine_t
 	{
 		Vector point;
@@ -216,11 +231,11 @@ private:
 	bool					 m_fIgnoreFronts;
 
 	//---------------------------------
-	
+
 	bool						m_bHasLowCoverActivity;
 
 	//---------------------------------
-	
+
 	DECLARE_DATADESC();
 };
 

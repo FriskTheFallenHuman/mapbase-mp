@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef EXPRESSIONSAMPLE_H
 #define EXPRESSIONSAMPLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interpolatortypes.h"
@@ -20,7 +20,7 @@ class IChoreoStringPool;
 #pragma pack(1)
 struct EdgeInfo_t
 {
-	EdgeInfo_t() : 
+	EdgeInfo_t() :
 		m_bActive( false ),
 		m_CurveType( CURVE_DEFAULT ),
 		m_flZeroPos( 0.0f )
@@ -69,7 +69,7 @@ private:
 class ICurveDataAccessor
 {
 public:
-	virtual ~ICurveDataAccessor(){}
+	virtual ~ICurveDataAccessor() {}
 	virtual float	GetDuration() = 0;
 	virtual bool	CurveHasEndTime() = 0; // only matters for events
 	virtual int		GetDefaultCurveType() = 0;
@@ -83,13 +83,13 @@ class CCurveData
 {
 public:
 	int				GetCount( void );
-	CExpressionSample *Get( int index );
-	CExpressionSample *Add( float time, float value, bool selected );
+	CExpressionSample* Get( int index );
+	CExpressionSample* Add( float time, float value, bool selected );
 	void			Delete( int index );
 	void			Clear( void );
-	void			Resort( ICurveDataAccessor *data );
+	void			Resort( ICurveDataAccessor* data );
 
-	EdgeInfo_t			*GetEdgeInfo( int idx );
+	EdgeInfo_t*			GetEdgeInfo( int idx );
 
 	void				SetEdgeInfo( bool leftEdge, int curveType, float zero );
 	void				GetEdgeInfo( bool leftEdge, int& curveType, float& zero ) const;
@@ -97,26 +97,26 @@ public:
 	bool				IsEdgeActive( bool leftEdge ) const;
 	int					GetEdgeCurveType( bool leftEdge ) const;
 	float				GetEdgeZeroValue( bool leftEdge ) const;
-	void				RemoveOutOfRangeSamples( ICurveDataAccessor *data );
+	void				RemoveOutOfRangeSamples( ICurveDataAccessor* data );
 
-	void				SaveToBuffer( CUtlBuffer& buf, IChoreoStringPool *pStringPool );
-	bool				RestoreFromBuffer( CUtlBuffer& buf, IChoreoStringPool *pStringPool );
+	void				SaveToBuffer( CUtlBuffer& buf, IChoreoStringPool* pStringPool );
+	bool				RestoreFromBuffer( CUtlBuffer& buf, IChoreoStringPool* pStringPool );
 
-	void				Parse( ISceneTokenProcessor *tokenizer, ICurveDataAccessor *data );
-	void				FileSave( CUtlBuffer& buf, int level, const char *name );
+	void				Parse( ISceneTokenProcessor* tokenizer, ICurveDataAccessor* data );
+	void				FileSave( CUtlBuffer& buf, int level, const char* name );
 
-	float	GetIntensity( ICurveDataAccessor *data, float time );
-	CExpressionSample *GetBoundedSample( ICurveDataAccessor *data, int number, bool& bClamped );
+	float	GetIntensity( ICurveDataAccessor* data, float time );
+	CExpressionSample* GetBoundedSample( ICurveDataAccessor* data, int number, bool& bClamped );
 
-	CCurveData & operator = (const CCurveData &src) 
+	CCurveData& operator = ( const CCurveData& src )
 	{
 		// Copy ramp over
 		m_Ramp.RemoveAll();
 		int i;
-		for ( i = 0; i < src.m_Ramp.Count(); i++ )
+		for( i = 0; i < src.m_Ramp.Count(); i++ )
 		{
 			CExpressionSample sample = src.m_Ramp[ i ];
-			CExpressionSample *newSample = Add( sample.time, sample.value, sample.selected );
+			CExpressionSample* newSample = Add( sample.time, sample.value, sample.selected );
 			newSample->SetCurveType( sample.GetCurveType() );
 		}
 		m_RampEdgeInfo[ 0 ] = src.m_RampEdgeInfo[ 0 ];
@@ -131,10 +131,10 @@ private:
 	EdgeInfo_t		m_RampEdgeInfo[ 2 ];
 
 public:
-	float	GetIntensityArea( ICurveDataAccessor *data, float time );
+	float	GetIntensityArea( ICurveDataAccessor* data, float time );
 
 private:
-	void	UpdateIntensityArea( ICurveDataAccessor *data );
+	void	UpdateIntensityArea( ICurveDataAccessor* data );
 	CUtlVector< float > m_RampAccumulator;
 };
 

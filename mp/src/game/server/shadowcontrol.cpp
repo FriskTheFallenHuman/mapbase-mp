@@ -26,11 +26,14 @@ public:
 	CShadowControl();
 
 	void Spawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 	int  UpdateTransmitState();
-	void InputSetAngles( inputdata_t &inputdata );
+	void InputSetAngles( inputdata_t& inputdata );
 
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
@@ -45,47 +48,47 @@ private:
 #endif
 };
 
-LINK_ENTITY_TO_CLASS(shadow_control, CShadowControl);
+LINK_ENTITY_TO_CLASS( shadow_control, CShadowControl );
 
 BEGIN_DATADESC( CShadowControl )
 
-	DEFINE_KEYFIELD( m_flShadowMaxDist, FIELD_FLOAT, "distance" ),
-	DEFINE_KEYFIELD( m_bDisableShadows, FIELD_BOOLEAN, "disableallshadows" ),
+DEFINE_KEYFIELD( m_flShadowMaxDist, FIELD_FLOAT, "distance" ),
+				 DEFINE_KEYFIELD( m_bDisableShadows, FIELD_BOOLEAN, "disableallshadows" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bEnableLocalLightShadows, FIELD_BOOLEAN, "enableshadowsfromlocallights" ),
 #endif
 
-	// Inputs
-	DEFINE_INPUT( m_shadowColor,		FIELD_COLOR32, "color" ),
-	DEFINE_INPUT( m_shadowDirection,	FIELD_VECTOR, "direction" ),
-	DEFINE_INPUT( m_flShadowMaxDist,	FIELD_FLOAT, "SetDistance" ),
-	DEFINE_INPUT( m_bDisableShadows,	FIELD_BOOLEAN, "SetShadowsDisabled" ),
+				 // Inputs
+				 DEFINE_INPUT( m_shadowColor,		FIELD_COLOR32, "color" ),
+				 DEFINE_INPUT( m_shadowDirection,	FIELD_VECTOR, "direction" ),
+				 DEFINE_INPUT( m_flShadowMaxDist,	FIELD_FLOAT, "SetDistance" ),
+				 DEFINE_INPUT( m_bDisableShadows,	FIELD_BOOLEAN, "SetShadowsDisabled" ),
 #ifdef MAPBASE
 	DEFINE_INPUT( m_bEnableLocalLightShadows,	FIELD_BOOLEAN, "SetShadowsFromLocalLightsEnabled" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetAngles", InputSetAngles ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "SetAngles", InputSetAngles ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CShadowControl, DT_ShadowControl)
-	SendPropVector(SENDINFO(m_shadowDirection), -1,  SPROP_NOSCALE ),
+				 IMPLEMENT_SERVERCLASS_ST_NOBASE( CShadowControl, DT_ShadowControl )
+				 SendPropVector( SENDINFO( m_shadowDirection ), -1,  SPROP_NOSCALE ),
 #ifdef MAPBASE
 	/*SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt32 ),*/
-	SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
+	SendPropInt( SENDINFO( m_shadowColor ),	32, SPROP_UNSIGNED, SendProxy_Color32ToInt ),
 #else
-	SendPropInt(SENDINFO(m_shadowColor),	32, SPROP_UNSIGNED),
+	SendPropInt( SENDINFO( m_shadowColor ),	32, SPROP_UNSIGNED ),
 #endif
-	SendPropFloat(SENDINFO(m_flShadowMaxDist), 0, SPROP_NOSCALE ),
-	SendPropBool(SENDINFO(m_bDisableShadows)),
+				 SendPropFloat( SENDINFO( m_flShadowMaxDist ), 0, SPROP_NOSCALE ),
+				 SendPropBool( SENDINFO( m_bDisableShadows ) ),
 #ifdef MAPBASE
-	SendPropBool(SENDINFO(m_bEnableLocalLightShadows)),
+	SendPropBool( SENDINFO( m_bEnableLocalLightShadows ) ),
 #endif
-END_SEND_TABLE()
+				 END_SEND_TABLE()
 
 
-CShadowControl::CShadowControl()
+				 CShadowControl::CShadowControl()
 {
 	m_shadowDirection.Init( 0.2, 0.2, -2 );
 	m_flShadowMaxDist = 50.0f;
@@ -107,9 +110,9 @@ int CShadowControl::UpdateTransmitState()
 }
 
 
-bool CShadowControl::KeyValue( const char *szKeyName, const char *szValue )
+bool CShadowControl::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if ( FStrEq( szKeyName, "color" ) )
+	if( FStrEq( szKeyName, "color" ) )
 	{
 		color32 tmp;
 		UTIL_StringToColor32( &tmp, szValue );
@@ -117,11 +120,11 @@ bool CShadowControl::KeyValue( const char *szKeyName, const char *szValue )
 		return true;
 	}
 
-	if ( FStrEq( szKeyName, "angles" ) )
+	if( FStrEq( szKeyName, "angles" ) )
 	{
 		QAngle angles;
 		UTIL_StringToVector( angles.Base(), szValue );
-		if (angles == vec3_angle)
+		if( angles == vec3_angle )
 		{
 			angles.Init( 80, 30, 0 );
 		}
@@ -132,10 +135,10 @@ bool CShadowControl::KeyValue( const char *szKeyName, const char *szValue )
 	}
 
 	// For backward compatibility...
-	if ( FStrEq( szKeyName, "direction" ) )
+	if( FStrEq( szKeyName, "direction" ) )
 	{
 		// Only use this if angles haven't been set...
-		if ( fabs(m_shadowDirection->LengthSqr() - 1.0f) > 1e-3 )
+		if( fabs( m_shadowDirection->LengthSqr() - 1.0f ) > 1e-3 )
 		{
 			Vector vTemp;
 			UTIL_StringToVector( vTemp.Base(), szValue );
@@ -159,9 +162,9 @@ void CShadowControl::Spawn( void )
 //------------------------------------------------------------------------------
 // Input values
 //------------------------------------------------------------------------------
-void CShadowControl::InputSetAngles( inputdata_t &inputdata )
+void CShadowControl::InputSetAngles( inputdata_t& inputdata )
 {
-	const char *pAngles = inputdata.value.String();
+	const char* pAngles = inputdata.value.String();
 
 	QAngle angles;
 	UTIL_StringToVector( angles.Base(), pAngles );

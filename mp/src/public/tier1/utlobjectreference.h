@@ -8,7 +8,7 @@
 #define UTLOBJECTREFERENCE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlintrusivelist.h"
@@ -34,64 +34,64 @@
 template<class T> class CUtlReference
 {
 public:
-	FORCEINLINE CUtlReference(void)
+	FORCEINLINE CUtlReference( void )
 	{
 		m_pNext = m_pPrev = NULL;
 		m_pObject = NULL;
 	}
-  
-	FORCEINLINE CUtlReference(T *pObj)
+
+	FORCEINLINE CUtlReference( T* pObj )
 	{
 		m_pNext = m_pPrev = NULL;
 		AddRef( pObj );
 	}
 
-	FORCEINLINE ~CUtlReference(void)
+	FORCEINLINE ~CUtlReference( void )
 	{
 		KillRef();
 	}
-  
-	FORCEINLINE void Set(T *pObj)
+
+	FORCEINLINE void Set( T* pObj )
 	{
-		if ( m_pObject != pObj )
+		if( m_pObject != pObj )
 		{
 			KillRef();
 			AddRef( pObj );
 		}
 	}
-  
-	FORCEINLINE T * operator()(void) const
+
+	FORCEINLINE T* operator()( void ) const
 	{
 		return m_pObject;
 	}
 
-	FORCEINLINE operator T*()
+	FORCEINLINE operator T* ()
 	{
 		return m_pObject;
 	}
 
-	FORCEINLINE operator const T*() const
+	FORCEINLINE operator const T* () const
 	{
 		return m_pObject;
 	}
 
 	FORCEINLINE T* operator->()
-	{ 
-		return m_pObject; 
+	{
+		return m_pObject;
 	}
 
 	FORCEINLINE const T* operator->() const
-	{ 
-		return m_pObject; 
+	{
+		return m_pObject;
 	}
 
-	FORCEINLINE CUtlReference &operator=( const CUtlReference& otherRef )
+	FORCEINLINE CUtlReference& operator=( const CUtlReference& otherRef )
 	{
 		Set( otherRef.m_pObject );
 		return *this;
 	}
 
-	FORCEINLINE CUtlReference &operator=( T *pObj )
+	FORCEINLINE CUtlReference& operator=( T* pObj )
 	{
 		Set( pObj );
 		return *this;
@@ -101,26 +101,26 @@ public:
 	FORCEINLINE bool operator==( const CUtlReference& o ) const
 	{
 		return ( o.m_pObject == m_pObject );
-	}	
+	}
 
 public:
-	CUtlReference *m_pNext;
-	CUtlReference *m_pPrev;
+	CUtlReference* m_pNext;
+	CUtlReference* m_pPrev;
 
-	T *m_pObject;
+	T* m_pObject;
 
-	FORCEINLINE void AddRef( T *pObj )
+	FORCEINLINE void AddRef( T* pObj )
 	{
 		m_pObject = pObj;
-		if ( pObj )
+		if( pObj )
 		{
 			pObj->m_References.AddToHead( this );
 		}
 	}
 
-	FORCEINLINE void KillRef(void)
+	FORCEINLINE void KillRef( void )
 	{
-		if ( m_pObject )
+		if( m_pObject )
 		{
 			m_pObject->m_References.RemoveNode( this );
 			m_pObject = NULL;
@@ -134,10 +134,10 @@ template<class T> class CUtlReferenceList : public CUtlIntrusiveDList< CUtlRefer
 public:
 	~CUtlReferenceList( void )
 	{
-		CUtlReference<T> *i = CUtlIntrusiveDList<CUtlReference<T> >::m_pHead;
+		CUtlReference<T>* i = CUtlIntrusiveDList<CUtlReference<T> >::m_pHead;
 		while( i )
 		{
-			CUtlReference<T> *n = i->m_pNext;
+			CUtlReference<T>* n = i->m_pNext;
 			i->m_pNext = NULL;
 			i->m_pPrev = NULL;
 			i->m_pObject = NULL;

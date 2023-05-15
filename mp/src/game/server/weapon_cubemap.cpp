@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -17,7 +17,10 @@ public:
 
 	void	Precache( void );
 
-	bool	HasAnyAmmo( void )	{ return true; }
+	bool	HasAnyAmmo( void )
+	{
+		return true;
+	}
 
 	void	Spawn( void );
 
@@ -30,7 +33,7 @@ IMPLEMENT_SERVERCLASS_ST( CWeaponCubemap, DT_WeaponCubemap )
 END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCubemap::Precache( void )
 {

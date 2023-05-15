@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -8,7 +8,7 @@
 #define ICOLORCORRECTION_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/interface.h"
@@ -25,7 +25,7 @@ public:
 	virtual void Init() = 0;
 	virtual void Shutdown() = 0;
 
-	virtual ColorCorrectionHandle_t AddLookup( const char *pName ) = 0;
+	virtual ColorCorrectionHandle_t AddLookup( const char* pName ) = 0;
 	virtual bool RemoveLookup( ColorCorrectionHandle_t handle ) = 0;
 
 	virtual void  SetLookupWeight( ColorCorrectionHandle_t handle, float flWeight ) = 0;
@@ -44,11 +44,11 @@ public:
 	virtual color24 GetLookup( RGBX5551_t inColor ) = 0;
 	virtual color24 GetLookup( ColorCorrectionHandle_t handle, RGBX5551_t inColor ) = 0;
 
-	virtual void LoadLookup( const char *pLookupName ) = 0;
-	virtual void LoadLookup( ColorCorrectionHandle_t handle, const char *pLookupName ) = 0;
+	virtual void LoadLookup( const char* pLookupName ) = 0;
+	virtual void LoadLookup( ColorCorrectionHandle_t handle, const char* pLookupName ) = 0;
 
-	virtual void CopyLookup( const color24 *pSrcColorCorrection ) = 0;
-	virtual void CopyLookup( ColorCorrectionHandle_t handle, const color24 *pSrcColorCorrection ) = 0;
+	virtual void CopyLookup( const color24 * pSrcColorCorrection ) = 0;
+	virtual void CopyLookup( ColorCorrectionHandle_t handle, const color24 * pSrcColorCorrection ) = 0;
 
 	virtual void ResetLookup( ColorCorrectionHandle_t handle ) = 0;
 	virtual void ResetLookup( ) = 0;

@@ -1,18 +1,18 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef SCENEENTITY_SHARED_H
 #define SCENEENTITY_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if defined( CLIENT_DLL )
-#define CBaseFlex C_BaseFlex
-#define CSceneEntity C_SceneEntity
+	#define CBaseFlex C_BaseFlex
+	#define CSceneEntity C_SceneEntity
 #endif
 
 #include "iscenetokenprocessor.h"
@@ -33,36 +33,36 @@ class CSceneEventInfo
 public:
 	CSceneEventInfo()
 		:
-	m_pEvent( 0 ),
-	m_pScene( 0 ),
-	m_pActor( 0 ),
-	m_hSceneEntity(0),
-	m_bStarted( false ),
-	m_iLayer( -1 ),
-	m_iPriority( 0 ),
-	m_nSequence( 0 ),
-	m_bIsGesture( false ),
-	m_flWeight( 0.0f ),
-	m_hTarget(),
-	m_bIsMoving( false ),
-	m_bHasArrived( false ),
-	m_flInitialYaw( 0.0f ),
-	m_flTargetYaw( 0.0f ),
-	m_flFacingYaw( 0.0f ),
-	m_nType( 0 ),
-	m_flNext( 0.0f ),
-	m_bClientSide( false )
+		m_pEvent( 0 ),
+		m_pScene( 0 ),
+		m_pActor( 0 ),
+		m_hSceneEntity( 0 ),
+		m_bStarted( false ),
+		m_iLayer( -1 ),
+		m_iPriority( 0 ),
+		m_nSequence( 0 ),
+		m_bIsGesture( false ),
+		m_flWeight( 0.0f ),
+		m_hTarget(),
+		m_bIsMoving( false ),
+		m_bHasArrived( false ),
+		m_flInitialYaw( 0.0f ),
+		m_flTargetYaw( 0.0f ),
+		m_flFacingYaw( 0.0f ),
+		m_nType( 0 ),
+		m_flNext( 0.0f ),
+		m_bClientSide( false )
 	{
 	}
 
 	// The event handle of the current scene event
-	CChoreoEvent	*m_pEvent;
+	CChoreoEvent*	m_pEvent;
 
 	// Current Scene
-	CChoreoScene	*m_pScene;
+	CChoreoScene*	m_pScene;
 
 	// Current actor
-	CChoreoActor	*m_pActor;
+	CChoreoActor*	m_pActor;
 
 	CHandle< CSceneEntity >	m_hSceneEntity;
 
@@ -93,10 +93,10 @@ public:
 	float					m_flNext;
 
 	// is this event only client side?
-	bool					m_bClientSide; 
+	bool					m_bClientSide;
 
-	void					InitWeight( CBaseFlex *pActor );
-	float					UpdateWeight( CBaseFlex *pActor );
+	void					InitWeight( CBaseFlex* pActor );
+	float					UpdateWeight( CBaseFlex* pActor );
 };
 
 //-----------------------------------------------------------------------------
@@ -105,19 +105,19 @@ public:
 class CSceneTokenProcessor : public ISceneTokenProcessor
 {
 public:
-	const char	*CurrentToken( void );
+	const char*	CurrentToken( void );
 	bool		GetToken( bool crossline );
 	bool		TokenAvailable( void );
-	void		Error( PRINTF_FORMAT_STRING const char *fmt, ... );
-	void		SetBuffer( char *buffer );
+	void		Error( PRINTF_FORMAT_STRING const char* fmt, ... );
+	void		SetBuffer( char* buffer );
 private:
-	const char	*m_pBuffer;
+	const char*	m_pBuffer;
 	char		m_szToken[ 1024 ];
 };
 
 extern CSceneTokenProcessor g_TokenProcessor;
 
-void Scene_Printf( PRINTF_FORMAT_STRING const char *pFormat, ... );
+void Scene_Printf( PRINTF_FORMAT_STRING const char* pFormat, ... );
 extern ConVar scene_clientflex;
 
 #endif // SCENEENTITY_SHARED_H

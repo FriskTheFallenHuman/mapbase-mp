@@ -14,7 +14,7 @@
 #ifndef	GRENADEMOLOTOV_H
 #define	GRENADEMOLOTOV_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif // _WIN32
 
 
@@ -39,13 +39,13 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual void MolotovTouch( CBaseEntity *pOther );
+	virtual void MolotovTouch( CBaseEntity* pOther );
 	virtual void MolotovThink( void );
-	virtual void Event_Killed( const CTakeDamageInfo &info );
+	virtual void Event_Killed( const CTakeDamageInfo& info );
 
 public:
-	void EXPORT				Detonate(void);
-	CGrenade_Molotov(void);
+	void EXPORT				Detonate( void );
+	CGrenade_Molotov( void );
 
 	DECLARE_DATADESC();
 };

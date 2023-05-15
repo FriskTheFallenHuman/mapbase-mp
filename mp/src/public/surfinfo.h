@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #ifndef SURFINFO_H
 #define SURFINFO_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vplane.h"
@@ -25,7 +25,7 @@ public:
 	VPlane			m_Plane;
 
 	// For engine use only..
-	void			*m_pEngineData;
+	void*			m_pEngineData;
 };
 
 #endif // SURFINFO_H

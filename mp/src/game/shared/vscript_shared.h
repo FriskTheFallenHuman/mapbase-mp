@@ -10,14 +10,17 @@
 #include "vscript/ivscript.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-extern IScriptVM * g_pScriptVM;
+extern IScriptVM* g_pScriptVM;
 
-HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing = false );
-bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMissing = false );
-inline bool VScriptRunScript( const char *pszScriptName, bool bWarnMissing = false ) { return VScriptRunScript( pszScriptName, NULL, bWarnMissing ); }
+HSCRIPT VScriptCompileScript( const char* pszScriptName, bool bWarnMissing = false );
+bool VScriptRunScript( const char* pszScriptName, HSCRIPT hScope, bool bWarnMissing = false );
+inline bool VScriptRunScript( const char* pszScriptName, bool bWarnMissing = false )
+{
+	return VScriptRunScript( pszScriptName, NULL, bWarnMissing );
+}
 
 #define DECLARE_ENT_SCRIPTDESC()													ALLOW_SCRIPT_ACCESS(); virtual ScriptClassDesc_t *GetScriptDesc()
 
@@ -26,27 +29,27 @@ inline bool VScriptRunScript( const char *pszScriptName, bool bWarnMissing = fal
 #define BEGIN_ENT_SCRIPTDESC_NAMED( className, baseClass, scriptName, description )	_IMPLEMENT_ENT_SCRIPTDESC_ACCESSOR( className ); BEGIN_SCRIPTDESC_NAMED( className, baseClass, scriptName, description )
 #define BEGIN_ENT_SCRIPTDESC_ROOT_NAMED( className, scriptName, description )		_IMPLEMENT_ENT_SCRIPTDESC_ACCESSOR( className ); BEGIN_SCRIPTDESC_ROOT_NAMED( className, scriptName, description )
 
-#define _IMPLEMENT_ENT_SCRIPTDESC_ACCESSOR( className )					template <> ScriptClassDesc_t * GetScriptDesc<className>( className * ); ScriptClassDesc_t *className::GetScriptDesc()  { return ::GetScriptDesc( this ); }		
+#define _IMPLEMENT_ENT_SCRIPTDESC_ACCESSOR( className )					template <> ScriptClassDesc_t * GetScriptDesc<className>( className * ); ScriptClassDesc_t *className::GetScriptDesc()  { return ::GetScriptDesc( this ); }
 
 // Only allow scripts to create entities during map initialization
 bool IsEntityCreationAllowedInScripts( void );
 
 class ISaveRestoreBlockHandler;
-ISaveRestoreBlockHandler *GetVScriptSaveRestoreBlockHandler();
+ISaveRestoreBlockHandler* GetVScriptSaveRestoreBlockHandler();
 
 class CBaseEntityScriptInstanceHelper : public IScriptInstanceHelper
 {
-	bool ToString( void *p, char *pBuf, int bufSize );
-	void *BindOnRead( HSCRIPT hInstance, void *pOld, const char *pszId );
+	bool ToString( void* p, char* pBuf, int bufSize );
+	void* BindOnRead( HSCRIPT hInstance, void* pOld, const char* pszId );
 };
 
 extern CBaseEntityScriptInstanceHelper g_BaseEntityScriptInstanceHelper;
 
 #ifdef MAPBASE_VSCRIPT
-void RegisterSharedScriptConstants();
-void RegisterSharedScriptFunctions();
+	void RegisterSharedScriptConstants();
+	void RegisterSharedScriptFunctions();
 
-void RunAddonScripts();
+	void RunAddonScripts();
 #endif
 
 #endif // VSCRIPT_SHARED_H

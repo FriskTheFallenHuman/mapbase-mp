@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,14 +9,14 @@
 #if !defined( IVIEWRENDER_H )
 #define IVIEWRENDER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
 #include "ivrenderview.h"
 
 
-// These are set as it draws reflections, refractions, etc, so certain effects can avoid 
+// These are set as it draws reflections, refractions, etc, so certain effects can avoid
 // drawing themselves in reflections.
 enum DrawFlags_t
 {
@@ -75,15 +75,15 @@ public:
 	virtual void		Shutdown( void ) = 0;
 
 	// RENDERING
-	// Called right before simulation. It must setup the view model origins and angles here so 
-	// the correct attachment points can be used during simulation.	
+	// Called right before simulation. It must setup the view model origins and angles here so
+	// the correct attachment points can be used during simulation.
 	virtual void		OnRenderStart() = 0;
 
 	// Called to render the entire scene
-	virtual	void		Render( vrect_t *rect ) = 0;
+	virtual	void		Render( vrect_t* rect ) = 0;
 
 	// Called to render just a particular setup ( for timerefresh and envmap creation )
-	virtual void		RenderView( const CViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
+	virtual void		RenderView( const CViewSetup & view, int nClearFlags, int whatToDraw ) = 0;
 
 	// What are we currently rendering? Returns a combination of DF_ flags.
 	virtual int GetDrawFlags() = 0;
@@ -94,12 +94,12 @@ public:
 	virtual void		StopPitchDrift( void ) = 0;
 
 	// This can only be called during rendering (while within RenderView).
-	virtual VPlane*		GetFrustum() = 0;
+	virtual VPlane *		GetFrustum() = 0;
 
 	virtual bool		ShouldDrawBrushModels( void ) = 0;
 
-	virtual const CViewSetup *GetPlayerViewSetup( void ) const = 0;
-	virtual const CViewSetup *GetViewSetup( void ) const = 0;
+	virtual const CViewSetup * GetPlayerViewSetup( void ) const = 0;
+	virtual const CViewSetup * GetViewSetup( void ) const = 0;
 
 	virtual void		DisableVis( void ) = 0;
 
@@ -108,45 +108,45 @@ public:
 	virtual void		SetCheapWaterStartDistance( float flCheapWaterStartDistance ) = 0;
 	virtual void		SetCheapWaterEndDistance( float flCheapWaterEndDistance ) = 0;
 
-	virtual void		GetWaterLODParams( float &flCheapWaterStartDistance, float &flCheapWaterEndDistance ) = 0;
+	virtual void		GetWaterLODParams( float & flCheapWaterStartDistance, float & flCheapWaterEndDistance ) = 0;
 
-	virtual void		DriftPitch (void) = 0;
+	virtual void		DriftPitch( void ) = 0;
 
-	virtual void		SetScreenOverlayMaterial( IMaterial *pMaterial ) = 0;
-	virtual IMaterial	*GetScreenOverlayMaterial( ) = 0;
+	virtual void		SetScreenOverlayMaterial( IMaterial * pMaterial ) = 0;
+	virtual IMaterial	* GetScreenOverlayMaterial( ) = 0;
 
 #ifdef MAPBASE
-	virtual void		SetIndexedScreenOverlayMaterial( int i, IMaterial *pMaterial ) = 0;
-	virtual IMaterial	*GetIndexedScreenOverlayMaterial( int i ) = 0;
+	virtual void		SetIndexedScreenOverlayMaterial( int i, IMaterial * pMaterial ) = 0;
+	virtual IMaterial	* GetIndexedScreenOverlayMaterial( int i ) = 0;
 	virtual void		ResetIndexedScreenOverlays() = 0;
 	virtual int			GetMaxIndexedScreenOverlays() const = 0;
 #endif
 
-	virtual void		WriteSaveGameScreenshot( const char *pFilename ) = 0;
-	virtual void		WriteSaveGameScreenshotOfSize( const char *pFilename, int width, int height, bool bCreatePowerOf2Padded = false, bool bWriteVTF = false ) = 0;
+	virtual void		WriteSaveGameScreenshot( const char* pFilename ) = 0;
+	virtual void		WriteSaveGameScreenshotOfSize( const char* pFilename, int width, int height, bool bCreatePowerOf2Padded = false, bool bWriteVTF = false ) = 0;
 
-	virtual void		WriteReplayScreenshot( WriteReplayScreenshotParams_t &params ) = 0;
+	virtual void		WriteReplayScreenshot( WriteReplayScreenshotParams_t& params ) = 0;
 	virtual void		UpdateReplayScreenshotCache() = 0;
 
 	// Draws another rendering over the top of the screen
-	virtual void		QueueOverlayRenderView( const CViewSetup &view, int nClearFlags, int whatToDraw ) = 0;
+	virtual void		QueueOverlayRenderView( const CViewSetup & view, int nClearFlags, int whatToDraw ) = 0;
 
 	// Returns znear and zfar
 	virtual float		GetZNear() = 0;
 	virtual float		GetZFar() = 0;
 
-	virtual void		GetScreenFadeDistances( float *min, float *max ) = 0;
+	virtual void		GetScreenFadeDistances( float * min, float * max ) = 0;
 
-	virtual C_BaseEntity *GetCurrentlyDrawingEntity() = 0;
-	virtual void		SetCurrentlyDrawingEntity( C_BaseEntity *pEnt ) = 0;
+	virtual C_BaseEntity * GetCurrentlyDrawingEntity() = 0;
+	virtual void		SetCurrentlyDrawingEntity( C_BaseEntity * pEnt ) = 0;
 
-	virtual bool		UpdateShadowDepthTexture( ITexture *pRenderTarget, ITexture *pDepthTexture, const CViewSetup &shadowView ) = 0;
+	virtual bool		UpdateShadowDepthTexture( ITexture * pRenderTarget, ITexture * pDepthTexture, const CViewSetup & shadowView ) = 0;
 
 	virtual void		FreezeFrame( float flFreezeTime ) = 0;
 
-	virtual IReplayScreenshotSystem *GetReplayScreenshotSystem() = 0;
+	virtual IReplayScreenshotSystem * GetReplayScreenshotSystem() = 0;
 };
 
-extern IViewRender *g_pView;
+extern IViewRender* g_pView;
 
 #endif // IVIEWRENDER_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define BUTTONCODE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "inputsystem/InputEnums.h"
@@ -159,7 +159,7 @@ enum ButtonCode_t
 	MOUSE_MIDDLE,
 	MOUSE_4,
 	MOUSE_5,
-	MOUSE_WHEEL_UP,		// A fake button which is 'pressed' and 'released' when the wheel is moved up 
+	MOUSE_WHEEL_UP,		// A fake button which is 'pressed' and 'released' when the wheel is moved up
 	MOUSE_WHEEL_DOWN,	// A fake button which is 'pressed' and 'released' when the wheel is moved down
 
 	MOUSE_LAST = MOUSE_WHEEL_DOWN,
@@ -169,17 +169,17 @@ enum ButtonCode_t
 	JOYSTICK_FIRST = MOUSE_LAST + 1,
 
 	JOYSTICK_FIRST_BUTTON = JOYSTICK_FIRST,
-	JOYSTICK_LAST_BUTTON = JOYSTICK_BUTTON_INTERNAL( MAX_JOYSTICKS-1, JOYSTICK_MAX_BUTTON_COUNT-1 ),
+	JOYSTICK_LAST_BUTTON = JOYSTICK_BUTTON_INTERNAL( MAX_JOYSTICKS - 1, JOYSTICK_MAX_BUTTON_COUNT - 1 ),
 	JOYSTICK_FIRST_POV_BUTTON,
-	JOYSTICK_LAST_POV_BUTTON = JOYSTICK_POV_BUTTON_INTERNAL( MAX_JOYSTICKS-1, JOYSTICK_POV_BUTTON_COUNT-1 ),
+	JOYSTICK_LAST_POV_BUTTON = JOYSTICK_POV_BUTTON_INTERNAL( MAX_JOYSTICKS - 1, JOYSTICK_POV_BUTTON_COUNT - 1 ),
 	JOYSTICK_FIRST_AXIS_BUTTON,
-	JOYSTICK_LAST_AXIS_BUTTON = JOYSTICK_AXIS_BUTTON_INTERNAL( MAX_JOYSTICKS-1, JOYSTICK_AXIS_BUTTON_COUNT-1 ),
+	JOYSTICK_LAST_AXIS_BUTTON = JOYSTICK_AXIS_BUTTON_INTERNAL( MAX_JOYSTICKS - 1, JOYSTICK_AXIS_BUTTON_COUNT - 1 ),
 
 	JOYSTICK_LAST = JOYSTICK_LAST_AXIS_BUTTON,
 
 #if !defined ( _X360 )
 	NOVINT_FIRST = JOYSTICK_LAST + 2, // plus 1 missing key. +1 seems to cause issues on the first button.
-	
+
 	NOVINT_LOGO_0 = NOVINT_FIRST,
 	NOVINT_TRIANGLE_0,
 	NOVINT_BOLT_0,
@@ -188,7 +188,7 @@ enum ButtonCode_t
 	NOVINT_TRIANGLE_1,
 	NOVINT_BOLT_1,
 	NOVINT_PLUS_1,
-	
+
 	NOVINT_LAST = NOVINT_PLUS_1,
 #endif
 
@@ -299,22 +299,22 @@ inline bool IsJoystickAxisCode( ButtonCode_t code )
 
 inline ButtonCode_t GetBaseButtonCode( ButtonCode_t code )
 {
-	if ( IsJoystickButtonCode( code ) )
+	if( IsJoystickButtonCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_BUTTON ) % JOYSTICK_MAX_BUTTON_COUNT;
-		return (ButtonCode_t)( JOYSTICK_FIRST_BUTTON + offset );
+		return ( ButtonCode_t )( JOYSTICK_FIRST_BUTTON + offset );
 	}
 
-	if ( IsJoystickPOVCode( code ) )
+	if( IsJoystickPOVCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_POV_BUTTON ) % JOYSTICK_POV_BUTTON_COUNT;
-		return (ButtonCode_t)( JOYSTICK_FIRST_POV_BUTTON + offset );
+		return ( ButtonCode_t )( JOYSTICK_FIRST_POV_BUTTON + offset );
 	}
 
-	if ( IsJoystickAxisCode( code ) )
+	if( IsJoystickAxisCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_AXIS_BUTTON ) % JOYSTICK_AXIS_BUTTON_COUNT;
-		return (ButtonCode_t)( JOYSTICK_FIRST_AXIS_BUTTON + offset );
+		return ( ButtonCode_t )( JOYSTICK_FIRST_AXIS_BUTTON + offset );
 	}
 
 	return code;
@@ -322,20 +322,22 @@ inline ButtonCode_t GetBaseButtonCode( ButtonCode_t code )
 
 inline int GetJoystickForCode( ButtonCode_t code )
 {
-	if ( !IsJoystickCode( code ) )
+	if( !IsJoystickCode( code ) )
+	{
 		return 0;
+	}
 
-	if ( IsJoystickButtonCode( code ) )
+	if( IsJoystickButtonCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_BUTTON ) / JOYSTICK_MAX_BUTTON_COUNT;
 		return offset;
 	}
-	if ( IsJoystickPOVCode( code ) )
+	if( IsJoystickPOVCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_POV_BUTTON ) / JOYSTICK_POV_BUTTON_COUNT;
 		return offset;
 	}
-	if ( IsJoystickAxisCode( code ) )
+	if( IsJoystickAxisCode( code ) )
 	{
 		int offset = ( code - JOYSTICK_FIRST_AXIS_BUTTON ) / JOYSTICK_AXIS_BUTTON_COUNT;
 		return offset;
@@ -346,27 +348,29 @@ inline int GetJoystickForCode( ButtonCode_t code )
 
 inline ButtonCode_t ButtonCodeToJoystickButtonCode( ButtonCode_t code, int nDesiredJoystick )
 {
-	if ( !IsJoystickCode( code ) || nDesiredJoystick == 0 )
+	if( !IsJoystickCode( code ) || nDesiredJoystick == 0 )
+	{
 		return code;
+	}
 
 	nDesiredJoystick = ::clamp<int>( nDesiredJoystick, 0, MAX_JOYSTICKS - 1 );
 
 	code = GetBaseButtonCode( code );
 
 	// Now upsample it
-	if ( IsJoystickButtonCode( code ) )
+	if( IsJoystickButtonCode( code ) )
 	{
 		int nOffset = code - JOYSTICK_FIRST_BUTTON;
 		return JOYSTICK_BUTTON( nDesiredJoystick, nOffset );
 	}
 
-	if ( IsJoystickPOVCode( code ) )
+	if( IsJoystickPOVCode( code ) )
 	{
 		int nOffset = code - JOYSTICK_FIRST_POV_BUTTON;
 		return JOYSTICK_POV_BUTTON( nDesiredJoystick, nOffset );
 	}
 
-	if ( IsJoystickAxisCode( code ) )
+	if( IsJoystickAxisCode( code ) )
 	{
 		int nOffset = code - JOYSTICK_FIRST_AXIS_BUTTON;
 		return JOYSTICK_AXIS_BUTTON( nDesiredJoystick, nOffset );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PLAYERNET_VARS_H
 #define PLAYERNET_VARS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shared_classnames.h"
@@ -46,9 +46,9 @@ struct fogparams_t
 	CNetworkVar( bool, blend );
 };
 
-// Crappy. Needs to be here because it wants to use 
+// Crappy. Needs to be here because it wants to use
 #ifdef CLIENT_DLL
-#define CFogController C_FogController
+	#define CFogController C_FogController
 #endif
 
 class CFogController;

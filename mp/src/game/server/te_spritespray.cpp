@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,11 +26,11 @@ class CTESpriteSpray : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTESpriteSpray, CBaseTempEntity );
 
-					CTESpriteSpray( const char *name );
+	CTESpriteSpray( const char* name );
 	virtual			~CTESpriteSpray( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -43,10 +43,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTESpriteSpray::CTESpriteSpray( const char *name ) :
+CTESpriteSpray::CTESpriteSpray( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -58,16 +58,16 @@ CTESpriteSpray::CTESpriteSpray( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTESpriteSpray::~CTESpriteSpray( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -77,7 +77,7 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 	m_nCount = 5;
 	m_nSpeed = 30;
 	m_vecOrigin = current_origin;
-	
+
 	Vector forward, right;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -95,38 +95,38 @@ void CTESpriteSpray::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTESpriteSpray, DT_TESpriteSpray)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecDirection), -1, SPROP_COORD),
-	SendPropModelIndex(SENDINFO(m_nModelIndex)),
-	SendPropFloat( SENDINFO(m_fNoise ), 8, SPROP_ROUNDDOWN, 0.0, 2.56 ),
-	SendPropInt( SENDINFO(m_nSpeed ), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nCount), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTESpriteSpray, DT_TESpriteSpray )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecDirection ), -1, SPROP_COORD ),
+				SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+				SendPropFloat( SENDINFO( m_fNoise ), 8, SPROP_ROUNDDOWN, 0.0, 2.56 ),
+				SendPropInt( SENDINFO( m_nSpeed ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_nCount ), 8, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TESpriteSpray objects
-static CTESpriteSpray g_TESpriteSpray( "Sprite Spray" );
+				static CTESpriteSpray g_TESpriteSpray( "Sprite Spray" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			*dir - 
-//			modelindex - 
-//			speed - 
-//			noise - 
-//			count - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			*dir -
+//			modelindex -
+//			speed -
+//			noise -
+//			count -
 //-----------------------------------------------------------------------------
 void TE_SpriteSpray( IRecipientFilter& filter, float delay,
-	const Vector *pos, const Vector *dir, int modelindex, int speed, float noise, int count )
+					 const Vector* pos, const Vector* dir, int modelindex, int speed, float noise, int count )
 {
 	g_TESpriteSpray.m_vecOrigin		= *pos;
 	g_TESpriteSpray.m_vecDirection	= *dir;
-	g_TESpriteSpray.m_nModelIndex	= modelindex;	
+	g_TESpriteSpray.m_nModelIndex	= modelindex;
 	g_TESpriteSpray.m_nSpeed		= speed;
 	g_TESpriteSpray.m_fNoise		= noise;
 	g_TESpriteSpray.m_nCount		= count;

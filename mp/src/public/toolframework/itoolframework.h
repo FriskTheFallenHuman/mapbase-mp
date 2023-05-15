@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef ITOOLFRAMEWORK_H
 #define ITOOLFRAMEWORK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "appframework/IAppSystem.h"
@@ -31,7 +31,7 @@ class CBoneList;
 //-----------------------------------------------------------------------------
 struct BaseEntityRecordingState_t
 {
-	BaseEntityRecordingState_t() :	
+	BaseEntityRecordingState_t() :
 		m_flTime( 0.0f ),
 		m_pModelName( 0 ),
 		m_nOwner( -1 ),
@@ -44,7 +44,7 @@ struct BaseEntityRecordingState_t
 	}
 
 	float m_flTime;
-	const char *m_pModelName;
+	const char* m_pModelName;
 	int m_nOwner;
 	int m_nEffects;
 	bool m_bVisible : 1;
@@ -68,13 +68,13 @@ struct BaseAnimatingRecordingState_t
 	int m_nSkin;
 	int m_nBody;
 	int m_nSequence;
-	CBoneList *m_pBoneList;
+	CBoneList* m_pBoneList;
 };
 
 struct BaseFlexRecordingState_t
 {
 	int m_nFlexCount;
-	float *m_pDestWeight;
+	float* m_pDestWeight;
 	Vector m_vecViewTarget;
 };
 
@@ -118,7 +118,7 @@ struct PortalRecordingState_t
 struct ParticleSystemCreatedState_t
 {
 	int				m_nParticleSystemId;
-	const char *	m_pName;
+	const char* 	m_pName;
 	float			m_flTime;
 	int				m_nOwner;
 };
@@ -162,13 +162,13 @@ struct ParticleSystemSetControlPointOrientationState_t
 
 
 //-----------------------------------------------------------------------------
-// Purpose: This interface lives in the engine and handles loading up/unloading all 
+// Purpose: This interface lives in the engine and handles loading up/unloading all
 //  available tools
 //-----------------------------------------------------------------------------
 class IToolFrameworkInternal : public IAppSystem
 {
 public: // Client Hooks
-	virtual bool	ClientInit( CreateInterfaceFn clientFactory ) = 0; 
+	virtual bool	ClientInit( CreateInterfaceFn clientFactory ) = 0;
 	virtual void	ClientShutdown() = 0;
 
 	// Level init, shutdown
@@ -191,7 +191,7 @@ public: // Client Hooks
 
 public:  // Server Hooks
 	// Level init, shutdown
-	virtual bool	ServerInit( CreateInterfaceFn serverFactory ) = 0; 
+	virtual bool	ServerInit( CreateInterfaceFn serverFactory ) = 0;
 	virtual void	ServerShutdown() = 0;
 
 	virtual void	ServerLevelInitPreEntityAllTools() = 0;
@@ -221,7 +221,7 @@ public:  // Other Hooks
 
 	virtual void	Think( bool finalTick ) = 0;
 
-	virtual void	PostMessage( KeyValues *msg ) = 0;
+	virtual void	PostMessage( KeyValues* msg ) = 0;
 
 	virtual bool	GetSoundSpatialization( int iUserData, int guid, SpatializationInfo_t& info ) = 0;
 
@@ -244,20 +244,20 @@ public:  // Other Hooks
 	// Should the game be allowed to render the world?
 	virtual bool	ShouldGameRenderView() = 0;
 
-	virtual IMaterialProxy *LookupProxy( const char *proxyName ) = 0;
+	virtual IMaterialProxy* LookupProxy( const char* proxyName ) = 0;
 
 public:  // general framework hooks
 	virtual int			GetToolCount() = 0;
-	virtual char const	*GetToolName( int index ) = 0;
+	virtual char const*	GetToolName( int index ) = 0;
 	virtual void		SwitchToTool( int index ) = 0;
-	virtual IToolSystem *SwitchToTool( const char *pToolName ) = 0;
-	virtual bool		IsTopmostTool( const IToolSystem *sys ) = 0;
-	virtual const IToolSystem *GetToolSystem( int index ) const = 0;
-	virtual IToolSystem *GetTopmostTool() = 0;
+	virtual IToolSystem* SwitchToTool( const char* pToolName ) = 0;
+	virtual bool		IsTopmostTool( const IToolSystem* sys ) = 0;
+	virtual const IToolSystem* GetToolSystem( int index ) const = 0;
+	virtual IToolSystem* GetTopmostTool() = 0;
 };
 
 // Expose to rest of engine as a singleton
-extern IToolFrameworkInternal *toolframework;
+extern IToolFrameworkInternal* toolframework;
 
 // Exposed to launcher to automatically add AppSystemGroup hooks
 #define VTOOLFRAMEWORK_INTERFACE_VERSION  "VTOOLFRAMEWORKVERSION002"

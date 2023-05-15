@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -18,7 +18,7 @@ public:
 	DECLARE_CLASS( C_Func_LOD, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_Func_LOD();
+	C_Func_LOD();
 
 // C_BaseEntity overrides.
 public:
@@ -36,7 +36,7 @@ public:
 };
 
 
-ConVar lod_TransitionDist("lod_TransitionDist", "800");
+ConVar lod_TransitionDist( "lod_TransitionDist", "800" );
 
 
 // ------------------------------------------------------------------------- //
@@ -44,12 +44,12 @@ ConVar lod_TransitionDist("lod_TransitionDist", "800");
 // ------------------------------------------------------------------------- //
 
 // Datatable..
-IMPLEMENT_CLIENTCLASS_DT(C_Func_LOD, DT_Func_LOD, CFunc_LOD)
-	RecvPropFloat(RECVINFO(m_fDisappearDist)),
+IMPLEMENT_CLIENTCLASS_DT( C_Func_LOD, DT_Func_LOD, CFunc_LOD )
+RecvPropFloat( RECVINFO( m_fDisappearDist ) ),
 #ifdef MAPBASE
-	RecvPropFloat(RECVINFO(m_fDisappearMaxDist)),
+	RecvPropFloat( RECVINFO( m_fDisappearMaxDist ) ),
 #endif
-END_RECV_TABLE()
+			   END_RECV_TABLE()
 
 
 
@@ -57,7 +57,7 @@ END_RECV_TABLE()
 // C_Func_LOD implementation.
 // ------------------------------------------------------------------------- //
 
-C_Func_LOD::C_Func_LOD()
+			   C_Func_LOD::C_Func_LOD()
 {
 	m_fDisappearDist = 5000.0f;
 #ifdef MAPBASE
@@ -71,7 +71,7 @@ C_Func_LOD::C_Func_LOD()
 unsigned char C_Func_LOD::GetClientSideFade()
 {
 #ifdef MAPBASE
-	return UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + (m_fDisappearMaxDist != 0 ? m_fDisappearMaxDist : lod_TransitionDist.GetFloat()), 1.0f );
+	return UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + ( m_fDisappearMaxDist != 0 ? m_fDisappearMaxDist : lod_TransitionDist.GetFloat() ), 1.0f );
 #else
 	return UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + lod_TransitionDist.GetFloat(), 1.0f );
 #endif

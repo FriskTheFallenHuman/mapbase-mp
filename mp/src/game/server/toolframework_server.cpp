@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -33,12 +33,12 @@ public:
 	virtual void PreSetupVisibility();
 
 
-	IServerEngineTools	*m_pTools;
+	IServerEngineTools*	m_pTools;
 };
 
 // Singleton
 static CToolFrameworkServer g_ToolFrameworkServer;
-IToolFrameworkServer *g_pToolFrameworkServer = &g_ToolFrameworkServer;
+IToolFrameworkServer* g_pToolFrameworkServer = &g_ToolFrameworkServer;
 
 #ifndef NO_TOOLFRAMEWORK
 
@@ -55,9 +55,9 @@ bool CToolFrameworkServer::Init()
 	FactoryList_Retrieve( list );
 
 	// Latch onto internal interface
-	m_pTools = ( IServerEngineTools * )list.engineFactory( VSERVERENGINETOOLS_INTERFACE_VERSION, NULL );
+	m_pTools = ( IServerEngineTools* )list.engineFactory( VSERVERENGINETOOLS_INTERFACE_VERSION, NULL );
 
-	if ( !m_pTools && !engine->IsDedicatedServer() )
+	if( !m_pTools && !engine->IsDedicatedServer() )
 	{
 		return false;
 	}
@@ -67,7 +67,7 @@ bool CToolFrameworkServer::Init()
 
 void CToolFrameworkServer::LevelInitPreEntity()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -76,7 +76,7 @@ void CToolFrameworkServer::LevelInitPreEntity()
 
 void CToolFrameworkServer::LevelInitPostEntity()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -85,7 +85,7 @@ void CToolFrameworkServer::LevelInitPostEntity()
 
 void CToolFrameworkServer::LevelShutdownPreEntity()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -94,7 +94,7 @@ void CToolFrameworkServer::LevelShutdownPreEntity()
 
 void CToolFrameworkServer::LevelShutdownPostEntity()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -103,7 +103,7 @@ void CToolFrameworkServer::LevelShutdownPostEntity()
 
 void CToolFrameworkServer::FrameUpdatePreEntityThink()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -112,7 +112,7 @@ void CToolFrameworkServer::FrameUpdatePreEntityThink()
 
 void CToolFrameworkServer::FrameUpdatePostEntityThink()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -121,7 +121,7 @@ void CToolFrameworkServer::FrameUpdatePostEntityThink()
 
 void CToolFrameworkServer::PreClientUpdate()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}
@@ -130,7 +130,7 @@ void CToolFrameworkServer::PreClientUpdate()
 
 void CToolFrameworkServer::PreSetupVisibility()
 {
-	if ( !m_pTools )
+	if( !m_pTools )
 	{
 		return;
 	}

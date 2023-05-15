@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -27,7 +27,7 @@ DECLARE_BUILD_FACTORY( AnimatingImagePanel );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-AnimatingImagePanel::AnimatingImagePanel(Panel *parent, const char *name) : Panel(parent, name)
+AnimatingImagePanel::AnimatingImagePanel( Panel* parent, const char* name ) : Panel( parent, name )
 {
 	m_iCurrentImage = 0;
 	m_iFrameTimeMillis = 100;	// 10Hz frame rate
@@ -36,7 +36,7 @@ AnimatingImagePanel::AnimatingImagePanel(Panel *parent, const char *name) : Pane
 	m_bFiltered = false;
 	m_bScaleImage = false;
 	m_bAnimating = false;
-	ivgui()->AddTickSignal(GetVPanel());
+	ivgui()->AddTickSignal( GetVPanel() );
 }
 
 //-----------------------------------------------------------------------------
@@ -51,33 +51,33 @@ void AnimatingImagePanel::PerformLayout()
 //-----------------------------------------------------------------------------
 // Purpose: Add an image to the end of the list of animations
 //-----------------------------------------------------------------------------
-void AnimatingImagePanel::AddImage(IImage *image)
+void AnimatingImagePanel::AddImage( IImage* image )
 {
-	m_Frames.AddToTail(image);
+	m_Frames.AddToTail( image );
 
-	if ( !m_bScaleImage && image != NULL )
+	if( !m_bScaleImage && image != NULL )
 	{
-		int wide,tall;
-		image->GetSize(wide,tall);
-		SetSize(wide,tall);
+		int wide, tall;
+		image->GetSize( wide, tall );
+		SetSize( wide, tall );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Load a set of animations by name.
-// Input: 
-//		baseName: is the name of the animations without their frame number or 
+// Input:
+//		baseName: is the name of the animations without their frame number or
 //			file extension, (e.g. c1.tga becomes just c.)
 //		framecount: number of frames in the animation
 //-----------------------------------------------------------------------------
-void AnimatingImagePanel::LoadAnimation(const char *baseName, int frameCount)
+void AnimatingImagePanel::LoadAnimation( const char* baseName, int frameCount )
 {
 	m_Frames.RemoveAll();
-	for (int i = 1; i <= frameCount; i++)
+	for( int i = 1; i <= frameCount; i++ )
 	{
 		char imageName[512];
-		Q_snprintf(imageName, sizeof( imageName ), "%s%d", baseName, i);
-		AddImage(scheme()->GetImage(imageName, m_bFiltered));
+		Q_snprintf( imageName, sizeof( imageName ), "%s%d", baseName, i );
+		AddImage( scheme()->GetImage( imageName, m_bFiltered ) );
 	}
 }
 
@@ -86,14 +86,14 @@ void AnimatingImagePanel::LoadAnimation(const char *baseName, int frameCount)
 //-----------------------------------------------------------------------------
 void AnimatingImagePanel::PaintBackground()
 {
-	if ( m_Frames.IsValidIndex( m_iCurrentImage ) && m_Frames[m_iCurrentImage] != NULL )
+	if( m_Frames.IsValidIndex( m_iCurrentImage ) && m_Frames[m_iCurrentImage] != NULL )
 	{
-		IImage *pImage = m_Frames[m_iCurrentImage];
+		IImage* pImage = m_Frames[m_iCurrentImage];
 
 		surface()->DrawSetColor( 255, 255, 255, 255 );
-		pImage->SetPos(0, 0);
-		
-		if ( m_bScaleImage )
+		pImage->SetPos( 0, 0 );
+
+		if( m_bScaleImage )
 		{
 			// Image size is stored in the bitmap, so temporarily set its size
 			// to our panel size and then restore after we draw it.
@@ -105,7 +105,7 @@ void AnimatingImagePanel::PaintBackground()
 			GetSize( wide, tall );
 			pImage->SetSize( wide, tall );
 
-			pImage->SetColor( Color( 255,255,255,255 ) );
+			pImage->SetColor( Color( 255, 255, 255, 255 ) );
 			pImage->Paint();
 
 			pImage->SetSize( imageWide, imageTall );
@@ -122,11 +122,11 @@ void AnimatingImagePanel::PaintBackground()
 //-----------------------------------------------------------------------------
 void AnimatingImagePanel::OnTick()
 {
-	if (m_bAnimating && system()->GetTimeMillis() >= m_iNextFrameTime)
+	if( m_bAnimating && system()->GetTimeMillis() >= m_iNextFrameTime )
 	{
 		m_iNextFrameTime = system()->GetTimeMillis() + m_iFrameTimeMillis;
 		m_iCurrentImage++;
-		if (!m_Frames.IsValidIndex(m_iCurrentImage))
+		if( !m_Frames.IsValidIndex( m_iCurrentImage ) )
 		{
 			m_iCurrentImage = 0;
 		}
@@ -138,34 +138,34 @@ void AnimatingImagePanel::OnTick()
 // Purpose: Get control settings for editing
 // Output: outResourceData- a set of keyvalues of imagenames.
 //-----------------------------------------------------------------------------
-void AnimatingImagePanel::GetSettings(KeyValues *outResourceData)
+void AnimatingImagePanel::GetSettings( KeyValues* outResourceData )
 {
-	BaseClass::GetSettings(outResourceData);
-	if (m_pImageName)
+	BaseClass::GetSettings( outResourceData );
+	if( m_pImageName )
 	{
-		outResourceData->SetString("image", m_pImageName);
+		outResourceData->SetString( "image", m_pImageName );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Applies resource settings
 //-----------------------------------------------------------------------------
-void AnimatingImagePanel::ApplySettings(KeyValues *inResourceData)
+void AnimatingImagePanel::ApplySettings( KeyValues* inResourceData )
 {
-	BaseClass::ApplySettings(inResourceData);
+	BaseClass::ApplySettings( inResourceData );
 
-	const char *imageName = inResourceData->GetString("image", NULL);
-	if (imageName)
+	const char* imageName = inResourceData->GetString( "image", NULL );
+	if( imageName )
 	{
 		m_bScaleImage = ( inResourceData->GetInt( "scaleImage", 0 ) == 1 );
 
 		delete [] m_pImageName;
-		int len = Q_strlen(imageName) + 1;
+		int len = Q_strlen( imageName ) + 1;
 		m_pImageName = new char[len];
-		Q_strncpy(m_pImageName, imageName, len);
+		Q_strncpy( m_pImageName, imageName, len );
 
 		// add in the command
-		LoadAnimation(m_pImageName, inResourceData->GetInt("frames"));
+		LoadAnimation( m_pImageName, inResourceData->GetInt( "frames" ) );
 	}
 
 	m_iFrameTimeMillis = inResourceData->GetInt( "anim_framerate", 100 );
@@ -174,10 +174,10 @@ void AnimatingImagePanel::ApplySettings(KeyValues *inResourceData)
 //-----------------------------------------------------------------------------
 // Purpose: Get editing details
 //-----------------------------------------------------------------------------
-const char *AnimatingImagePanel::GetDescription()
+const char* AnimatingImagePanel::GetDescription()
 {
 	static char buf[1024];
-	Q_snprintf(buf, sizeof(buf), "%s, string image", BaseClass::GetDescription());
+	Q_snprintf( buf, sizeof( buf ), "%s, string image", BaseClass::GetDescription() );
 	return buf;
 }
 
@@ -202,9 +202,9 @@ void AnimatingImagePanel::StopAnimation()
 //-----------------------------------------------------------------------------
 // Purpose: Resets the animation to the start of the sequence.
 //-----------------------------------------------------------------------------
-void AnimatingImagePanel::ResetAnimation(int frame)
+void AnimatingImagePanel::ResetAnimation( int frame )
 {
-	if(m_Frames.IsValidIndex(frame))
+	if( m_Frames.IsValidIndex( frame ) )
 	{
 		m_iCurrentImage = frame;
 	}

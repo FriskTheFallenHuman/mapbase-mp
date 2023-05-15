@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -29,7 +29,7 @@ public:
 	DECLARE_CLASS( C_TEProjectedDecal, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEProjectedDecal( void );
+	C_TEProjectedDecal( void );
 	virtual			~C_TEProjectedDecal( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -47,18 +47,18 @@ public:
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEProjectedDecal, DT_TEProjectedDecal, CTEProjectedDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropQAngles( RECVINFO( m_angRotation )),
-	RecvPropFloat( RECVINFO(m_flDistance)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEProjectedDecal, DT_TEProjectedDecal, CTEProjectedDecal )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropQAngles( RECVINFO( m_angRotation ) ),
+				RecvPropFloat( RECVINFO( m_flDistance ) ),
+				RecvPropInt( RECVINFO( m_nIndex ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TEProjectedDecal::C_TEProjectedDecal( void )
+				C_TEProjectedDecal::C_TEProjectedDecal( void )
 {
 	m_vecOrigin.Init();
 	m_angRotation.Init();
@@ -67,14 +67,14 @@ C_TEProjectedDecal::C_TEProjectedDecal( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEProjectedDecal::~C_TEProjectedDecal( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEProjectedDecal::Precache( void )
 {
@@ -82,20 +82,22 @@ void C_TEProjectedDecal::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordProjectDecal( const Vector &pos, const QAngle &angles, 
-	float flDistance, int index )
+static inline void RecordProjectDecal( const Vector& pos, const QAngle& angles,
+									   float flDistance, int index )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_PROJECT_DECAL );
- 		msg->SetString( "name", "TE_ProjectDecal" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_PROJECT_DECAL );
+		msg->SetString( "name", "TE_ProjectDecal" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", pos.x );
 		msg->SetFloat( "originy", pos.y );
@@ -112,7 +114,7 @@ static inline void RecordProjectDecal( const Vector &pos, const QAngle &angles,
 }
 
 void TE_ProjectDecal( IRecipientFilter& filter, float delay,
-	const Vector* pos, const QAngle *angles, float distance, int index )
+					  const Vector* pos, const QAngle* angles, float distance, int index )
 {
 	RecordProjectDecal( *pos, *angles, distance, index );
 
@@ -127,7 +129,7 @@ void TE_ProjectDecal( IRecipientFilter& filter, float delay,
 	CTraceFilterHitAll traceFilter;
 	UTIL_TraceLine( *pos, endpos, MASK_ALL, &traceFilter, &tr );
 
-	if ( tr.fraction == 1.0f )
+	if( tr.fraction == 1.0f )
 	{
 		return;
 	}
@@ -137,20 +139,20 @@ void TE_ProjectDecal( IRecipientFilter& filter, float delay,
 
 	int hitbox = tr.hitbox;
 
-	if ( tr.hitbox != 0 )
+	if( tr.hitbox != 0 )
 	{
 		staticpropmgr->AddDecalToStaticProp( *pos, endpos, hitbox - 1, index, false, tr );
 	}
 	else
 	{
 		// Only decal the world + brush models
-		ent->AddDecal( *pos, endpos, endpos, hitbox, 
-			index, false, tr );
+		ent->AddDecal( *pos, endpos, endpos, hitbox,
+					   index, false, tr );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEProjectedDecal::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -164,7 +166,7 @@ void C_TEProjectedDecal::PostDataUpdate( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 // Playback
 //-----------------------------------------------------------------------------
-void TE_ProjectDecal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_ProjectDecal( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin;
 	QAngle angles;
@@ -175,8 +177,8 @@ void TE_ProjectDecal( IRecipientFilter& filter, float delay, KeyValues *pKeyValu
 	angles.y = pKeyValues->GetFloat( "anglesy" );
 	angles.z = pKeyValues->GetFloat( "anglesz" );
 	float flDistance = pKeyValues->GetFloat( "distance" );
-	const char *pDecalName = pKeyValues->GetString( "decalname" );
+	const char* pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_ProjectDecal( filter, 0.0f, &vecOrigin, &angles, flDistance, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_ProjectDecal( filter, 0.0f, &vecOrigin, &angles, flDistance, effects->Draw_DecalIndexFromName( ( char* )pDecalName ) );
 }
 

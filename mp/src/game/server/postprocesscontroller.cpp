@@ -22,7 +22,7 @@ CPostProcessSystem s_PostProcessSystem( "PostProcessSystem" );
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CPostProcessSystem *PostProcessSystem()
+CPostProcessSystem* PostProcessSystem()
 {
 	return &s_PostProcessSystem;
 }
@@ -31,41 +31,41 @@ CPostProcessSystem *PostProcessSystem()
 LINK_ENTITY_TO_CLASS( postprocess_controller, CPostProcessController );
 
 BEGIN_DATADESC( CPostProcessController )
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FADE_TIME ], FIELD_FLOAT,	"fadetime" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_LOCAL_CONTRAST_STRENGTH ], FIELD_FLOAT,	"localcontraststrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_LOCAL_CONTRAST_EDGE_STRENGTH ], FIELD_FLOAT,	"localcontrastedgestrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_START ], FIELD_TIME,	"vignettestart" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_END ], FIELD_TIME,	"vignetteend" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_BLUR_STRENGTH ], FIELD_FLOAT,	"vignetteblurstrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FADE_TO_BLACK_STRENGTH ], FIELD_FLOAT,	"fadetoblackstrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_DEPTH_BLUR_FOCAL_DISTANCE ], FIELD_FLOAT, "depthblurfocaldistance" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_DEPTH_BLUR_STRENGTH ], FIELD_FLOAT, "depthblurstrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_SCREEN_BLUR_STRENGTH ], FIELD_FLOAT, "screenblurstrength" ),
-	DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FILM_GRAIN_STRENGTH ], FIELD_FLOAT, "filmgrainstrength" ),
+DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FADE_TIME ], FIELD_FLOAT,	"fadetime" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_LOCAL_CONTRAST_STRENGTH ], FIELD_FLOAT,	"localcontraststrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_LOCAL_CONTRAST_EDGE_STRENGTH ], FIELD_FLOAT,	"localcontrastedgestrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_START ], FIELD_TIME,	"vignettestart" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_END ], FIELD_TIME,	"vignetteend" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_VIGNETTE_BLUR_STRENGTH ], FIELD_FLOAT,	"vignetteblurstrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FADE_TO_BLACK_STRENGTH ], FIELD_FLOAT,	"fadetoblackstrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_DEPTH_BLUR_FOCAL_DISTANCE ], FIELD_FLOAT, "depthblurfocaldistance" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_DEPTH_BLUR_STRENGTH ], FIELD_FLOAT, "depthblurstrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_SCREEN_BLUR_STRENGTH ], FIELD_FLOAT, "screenblurstrength" ),
+				  DEFINE_KEYFIELD( m_flPostProcessParameters[ PPPN_FILM_GRAIN_STRENGTH ], FIELD_FLOAT, "filmgrainstrength" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFadeTime", InputSetFadeTime ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetLocalContrastStrength", InputSetLocalContrastStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetLocalContrastEdgeStrength", InputSetLocalContrastEdgeStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteStart", InputSetVignetteStart ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteEnd", InputSetVignetteEnd ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteBlurStrength", InputSetVignetteBlurStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFadeToBlackStrength", InputSetFadeToBlackStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDepthBlurFocalDistance", InputSetDepthBlurFocalDistance),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDepthBlurStrength", InputSetDepthBlurStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetScreenBlurStrength", InputSetScreenBlurStrength ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFilmGrainStrength", InputSetFilmGrainStrength ),
-END_DATADESC()
+				  // Inputs
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFadeTime", InputSetFadeTime ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetLocalContrastStrength", InputSetLocalContrastStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetLocalContrastEdgeStrength", InputSetLocalContrastEdgeStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteStart", InputSetVignetteStart ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteEnd", InputSetVignetteEnd ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVignetteBlurStrength", InputSetVignetteBlurStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFadeToBlackStrength", InputSetFadeToBlackStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDepthBlurFocalDistance", InputSetDepthBlurFocalDistance ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetDepthBlurStrength", InputSetDepthBlurStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetScreenBlurStrength", InputSetScreenBlurStrength ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFilmGrainStrength", InputSetFilmGrainStrength ),
+				  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPostProcessController, DT_PostProcessController )
-	SendPropArray3( SENDINFO_ARRAY3( m_flPostProcessParameters ), SendPropFloat( SENDINFO_ARRAY( m_flPostProcessParameters ) ) ),
-	SendPropBool( SENDINFO(m_bMaster) ),
-END_SEND_TABLE()
+				  IMPLEMENT_SERVERCLASS_ST( CPostProcessController, DT_PostProcessController )
+				  SendPropArray3( SENDINFO_ARRAY3( m_flPostProcessParameters ), SendPropFloat( SENDINFO_ARRAY( m_flPostProcessParameters ) ) ),
+				  SendPropBool( SENDINFO( m_bMaster ) ),
+				  END_SEND_TABLE()
 
 
-CPostProcessController::CPostProcessController()
-{	
-    m_bMaster = false;
+				  CPostProcessController::CPostProcessController()
+{
+	m_bMaster = false;
 }
 
 CPostProcessController::~CPostProcessController()
@@ -84,57 +84,57 @@ int CPostProcessController::UpdateTransmitState()
 	return SetTransmitState( FL_EDICT_ALWAYS );
 }
 
-void CPostProcessController::InputSetFadeTime( inputdata_t &inputdata )
+void CPostProcessController::InputSetFadeTime( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_FADE_TIME, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetLocalContrastStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetLocalContrastStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_LOCAL_CONTRAST_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetLocalContrastEdgeStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetLocalContrastEdgeStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_LOCAL_CONTRAST_EDGE_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetVignetteStart( inputdata_t &inputdata )
+void CPostProcessController::InputSetVignetteStart( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_VIGNETTE_START, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetVignetteEnd( inputdata_t &inputdata )
+void CPostProcessController::InputSetVignetteEnd( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_VIGNETTE_END, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetVignetteBlurStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetVignetteBlurStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_VIGNETTE_BLUR_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetFadeToBlackStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetFadeToBlackStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_FADE_TO_BLACK_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetDepthBlurFocalDistance( inputdata_t &inputdata )
+void CPostProcessController::InputSetDepthBlurFocalDistance( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_DEPTH_BLUR_FOCAL_DISTANCE, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetDepthBlurStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetDepthBlurStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_DEPTH_BLUR_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetScreenBlurStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetScreenBlurStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_SCREEN_BLUR_STRENGTH, inputdata.value.Float() );
 }
 
-void CPostProcessController::InputSetFilmGrainStrength( inputdata_t &inputdata )
+void CPostProcessController::InputSetFilmGrainStrength( inputdata_t& inputdata )
 {
 	m_flPostProcessParameters.Set( PPPN_FILM_GRAIN_STRENGTH, inputdata.value.Float() );
 }
@@ -149,43 +149,44 @@ void CPostProcessSystem::LevelInitPreEntity()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Find the master controller.  If no controller is 
+// Purpose: Find the master controller.  If no controller is
 //			set as Master, use the first controller found.
 //-----------------------------------------------------------------------------
 void CPostProcessSystem::InitMasterController()
 {
-	CPostProcessController *pPostProcessController = nullptr;
+	CPostProcessController* pPostProcessController = nullptr;
 
 	do
 	{
 		pPostProcessController = dynamic_cast<CPostProcessController*>( gEntList.FindEntityByClassname( pPostProcessController, "postprocess_controller" ) );
-		if ( pPostProcessController )
+		if( pPostProcessController )
 		{
-			if ( m_hMasterController.Get() == nullptr )
+			if( m_hMasterController.Get() == nullptr )
 			{
 				m_hMasterController = pPostProcessController;
 			}
 			else
 			{
-				if ( pPostProcessController->IsMaster() )
+				if( pPostProcessController->IsMaster() )
 				{
 					m_hMasterController = pPostProcessController;
 				}
 			}
 		}
-	} while ( pPostProcessController );
+	}
+	while( pPostProcessController );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: On a multiplayer map restart, re-find the master controller.
 //-----------------------------------------------------------------------------
-void CPostProcessSystem::FireGameEvent( IGameEvent *pEvent )
+void CPostProcessSystem::FireGameEvent( IGameEvent* pEvent )
 {
 	InitMasterController();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: On level load find the master PostProcess controller.  If no controller is 
+// Purpose: On level load find the master PostProcess controller.  If no controller is
 //			set as Master, use the first PostProcess controller found.
 //-----------------------------------------------------------------------------
 void CPostProcessSystem::LevelInitPostEntity()
@@ -196,10 +197,10 @@ void CPostProcessSystem::LevelInitPostEntity()
 	// CBasePlayer::Activate is called before this is called so that's too soon to set up the PostProcess controller.
 	// We don't have a hook similar to Activate that happens after LevelInitPostEntity
 	// is called, or we could just do this in the player itself.
-	if ( gpGlobals->maxClients == 1 )
+	if( gpGlobals->maxClients == 1 )
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-		if ( pPlayer && ( pPlayer->m_hPostProcessCtrl.Get() == nullptr ) )
+		CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+		if( pPlayer && ( pPlayer->m_hPostProcessCtrl.Get() == nullptr ) )
 		{
 			pPlayer->InitPostProcessController();
 		}

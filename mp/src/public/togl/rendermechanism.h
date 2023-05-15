@@ -27,29 +27,29 @@
 
 #if defined(DX_TO_GL_ABSTRACTION)
 
-#undef PROTECTED_THINGS_ENABLE
+	#undef PROTECTED_THINGS_ENABLE
 
-#include <GL/gl.h>
-#include <GL/glext.h>
+	#include <GL/gl.h>
+	#include <GL/glext.h>
 
-#include "tier0/basetypes.h"
-#include "tier0/platform.h"
+	#include "tier0/basetypes.h"
+	#include "tier0/platform.h"
 
-#include "togl/linuxwin/glmdebug.h"
-#include "togl/linuxwin/glbase.h"
-#include "togl/linuxwin/glentrypoints.h"
-#include "togl/linuxwin/glmdisplay.h"
-#include "togl/linuxwin/glmdisplaydb.h"
-#include "togl/linuxwin/glmgrbasics.h"
-#include "togl/linuxwin/glmgrext.h"
-#include "togl/linuxwin/cglmbuffer.h"
-#include "togl/linuxwin/cglmtex.h"
-#include "togl/linuxwin/cglmfbo.h"
-#include "togl/linuxwin/cglmprogram.h"
-#include "togl/linuxwin/cglmquery.h"
-#include "togl/linuxwin/glmgr.h"
-#include "togl/linuxwin/dxabstract_types.h"
-#include "togl/linuxwin/dxabstract.h"
+	#include "togl/linuxwin/glmdebug.h"
+	#include "togl/linuxwin/glbase.h"
+	#include "togl/linuxwin/glentrypoints.h"
+	#include "togl/linuxwin/glmdisplay.h"
+	#include "togl/linuxwin/glmdisplaydb.h"
+	#include "togl/linuxwin/glmgrbasics.h"
+	#include "togl/linuxwin/glmgrext.h"
+	#include "togl/linuxwin/cglmbuffer.h"
+	#include "togl/linuxwin/cglmtex.h"
+	#include "togl/linuxwin/cglmfbo.h"
+	#include "togl/linuxwin/cglmprogram.h"
+	#include "togl/linuxwin/cglmquery.h"
+	#include "togl/linuxwin/glmgr.h"
+	#include "togl/linuxwin/dxabstract_types.h"
+	#include "togl/linuxwin/dxabstract.h"
 
 #else
 	//USE_ACTUAL_DX
@@ -65,7 +65,7 @@
 		typedef HWND VD3DHWND;
 	#endif
 
-	#define	GLMPRINTF(args)	
+	#define	GLMPRINTF(args)
 	#define	GLMPRINTSTR(args)
 	#define	GLMPRINTTEXT(args)
 #endif // defined(DX_TO_GL_ABSTRACTION)

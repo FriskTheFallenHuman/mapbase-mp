@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: The various ammo types for HL2	
+// Purpose: The various ammo types for HL2
 //
 //=============================================================================//
 
@@ -18,7 +18,7 @@
 #ifdef MAPBASE
 // ========================================================================
 //	>> CItemAmmo
-// 
+//
 // All ammo items now derive from this for multiplier purposes.
 // ========================================================================
 class CItemAmmo : public CItem
@@ -27,16 +27,16 @@ public:
 	DECLARE_CLASS( CItemAmmo, CItem );
 	DECLARE_DATADESC();
 
-	int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName, bool bSuppressSound = false )
+	int ITEM_GiveAmmo( CBasePlayer* pPlayer, float flCount, const char* pszAmmoName, bool bSuppressSound = false )
 	{
-		int iAmmoType = GetAmmoDef()->Index(pszAmmoName);
-		if (iAmmoType == -1)
+		int iAmmoType = GetAmmoDef()->Index( pszAmmoName );
+		if( iAmmoType == -1 )
 		{
-			Msg("ERROR: Attempting to give unknown ammo type (%s)\n",pszAmmoName);
+			Msg( "ERROR: Attempting to give unknown ammo type (%s)\n", pszAmmoName );
 			return 0;
 		}
 
-		flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
+		flCount *= g_pGameRules->GetAmmoQuantityScale( iAmmoType );
 
 		// Don't give out less than 1 of anything.
 		flCount = MAX( 1.0f, flCount );
@@ -44,29 +44,36 @@ public:
 		// Mapper-specific ammo multiplier.
 		// If it results in 0, the ammo will simply be ignored.
 		// If the ammo multiplier is negative, assume it's actually a direct number to override with.
-		if (m_flAmmoMultiplier != 1.0f)
+		if( m_flAmmoMultiplier != 1.0f )
 		{
-			if (m_flAmmoMultiplier >= 0)
+			if( m_flAmmoMultiplier >= 0 )
+			{
 				flCount *= m_flAmmoMultiplier;
+			}
 			else
+			{
 				flCount = -m_flAmmoMultiplier;
+			}
 		}
 
 		return pPlayer->GiveAmmo( flCount, iAmmoType, bSuppressSound );
 	}
 
-	void	InputSetAmmoMultiplier( inputdata_t &inputdata ) { m_flAmmoMultiplier = inputdata.value.Float(); }
+	void	InputSetAmmoMultiplier( inputdata_t& inputdata )
+	{
+		m_flAmmoMultiplier = inputdata.value.Float();
+	}
 
 	float m_flAmmoMultiplier = 1.0f;
 };
 
 BEGIN_DATADESC( CItemAmmo )
 
-	DEFINE_KEYFIELD( m_flAmmoMultiplier,	FIELD_FLOAT, "AmmoMultiplier" ),
+DEFINE_KEYFIELD( m_flAmmoMultiplier,	FIELD_FLOAT, "AmmoMultiplier" ),
 
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAmmoMultiplier", InputSetAmmoMultiplier ),
+					DEFINE_INPUTFUNC( FIELD_FLOAT, "SetAmmoMultiplier", InputSetAmmoMultiplier ),
 
-END_DATADESC()
+					END_DATADESC()
 
 // Almost all instances of CItem below are for declaring the base class, which is now CItemAmmo.
 // This is here so we don't have to #ifdef all of them.
@@ -76,16 +83,16 @@ END_DATADESC()
 //---------------------------------------------------------
 // Applies ammo quantity scale.
 //---------------------------------------------------------
-int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName, bool bSuppressSound = false )
+int ITEM_GiveAmmo( CBasePlayer* pPlayer, float flCount, const char* pszAmmoName, bool bSuppressSound = false )
 {
-	int iAmmoType = GetAmmoDef()->Index(pszAmmoName);
-	if (iAmmoType == -1)
+	int iAmmoType = GetAmmoDef()->Index( pszAmmoName );
+	if( iAmmoType == -1 )
 	{
-		Msg("ERROR: Attempting to give unknown ammo type (%s)\n",pszAmmoName);
+		Msg( "ERROR: Attempting to give unknown ammo type (%s)\n", pszAmmoName );
 		return 0;
 	}
 
-	flCount *= g_pGameRules->GetAmmoQuantityScale(iAmmoType);
+	flCount *= g_pGameRules->GetAmmoQuantityScale( iAmmoType );
 
 	// Don't give out less than 1 of anything.
 	flCount = MAX( 1.0f, flCount );
@@ -97,28 +104,28 @@ int ITEM_GiveAmmo( CBasePlayer *pPlayer, float flCount, const char *pszAmmoName,
 // ========================================================================
 //	>> BoxSRounds
 // ========================================================================
-class CItem_BoxSRounds : public CItem
+					class CItem_BoxSRounds : public CItem
 {
 public:
 	DECLARE_CLASS( CItem_BoxSRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
 		SetModel( "models/items/boxsrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxsrounds.mdl");
+		PrecacheModel( "models/items/boxsrounds.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_PISTOL, "Pistol"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_PISTOL, "Pistol" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 
 			return true;
@@ -126,8 +133,8 @@ public:
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_srounds, CItem_BoxSRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_pistol, CItem_BoxSRounds);
+LINK_ENTITY_TO_CLASS( item_box_srounds, CItem_BoxSRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_pistol, CItem_BoxSRounds );
 
 // ========================================================================
 //	>> LargeBoxSRounds
@@ -138,30 +145,30 @@ public:
 	DECLARE_CLASS( CItem_LargeBoxSRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
 		SetModel( "models/items/boxsrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxsrounds.mdl");
+		PrecacheModel( "models/items/boxsrounds.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_PISTOL_LARGE, "Pistol"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_PISTOL_LARGE, "Pistol" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_large_box_srounds, CItem_LargeBoxSRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_pistol_large, CItem_LargeBoxSRounds);
+LINK_ENTITY_TO_CLASS( item_large_box_srounds, CItem_LargeBoxSRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_pistol_large, CItem_LargeBoxSRounds );
 
 // ========================================================================
 //	>> BoxMRounds
@@ -172,30 +179,30 @@ public:
 	DECLARE_CLASS( CItem_BoxMRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/boxmrounds.mdl");
+		SetModel( "models/items/boxmrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxmrounds.mdl");
+		PrecacheModel( "models/items/boxmrounds.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1, "SMG1"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1, "SMG1" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_mrounds, CItem_BoxMRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_smg1, CItem_BoxMRounds);
+LINK_ENTITY_TO_CLASS( item_box_mrounds, CItem_BoxMRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_smg1, CItem_BoxMRounds );
 
 // ========================================================================
 //	>> LargeBoxMRounds
@@ -206,30 +213,30 @@ public:
 	DECLARE_CLASS( CItem_LargeBoxMRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/boxmrounds.mdl");
+		SetModel( "models/items/boxmrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxmrounds.mdl");
+		PrecacheModel( "models/items/boxmrounds.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1_LARGE, "SMG1"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1_LARGE, "SMG1" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_large_box_mrounds, CItem_LargeBoxMRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_smg1_large, CItem_LargeBoxMRounds);
+LINK_ENTITY_TO_CLASS( item_large_box_mrounds, CItem_LargeBoxMRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_smg1_large, CItem_LargeBoxMRounds );
 
 // ========================================================================
 //	>> BoxLRounds
@@ -240,30 +247,30 @@ public:
 	DECLARE_CLASS( CItem_BoxLRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/combine_rifle_cartridge01.mdl");
+		SetModel( "models/items/combine_rifle_cartridge01.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/combine_rifle_cartridge01.mdl");
+		PrecacheModel( "models/items/combine_rifle_cartridge01.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2, "AR2"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2, "AR2" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_lrounds, CItem_BoxLRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_ar2, CItem_BoxLRounds);
+LINK_ENTITY_TO_CLASS( item_box_lrounds, CItem_BoxLRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_ar2, CItem_BoxLRounds );
 
 // ========================================================================
 //	>> LargeBoxLRounds
@@ -274,30 +281,30 @@ public:
 	DECLARE_CLASS( CItem_LargeBoxLRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/combine_rifle_cartridge01.mdl");
+		SetModel( "models/items/combine_rifle_cartridge01.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/combine_rifle_cartridge01.mdl");
+		PrecacheModel( "models/items/combine_rifle_cartridge01.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2_LARGE, "AR2"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2_LARGE, "AR2" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_large_box_lrounds, CItem_LargeBoxLRounds);
-LINK_ENTITY_TO_CLASS(item_ammo_ar2_large, CItem_LargeBoxLRounds);
+LINK_ENTITY_TO_CLASS( item_large_box_lrounds, CItem_LargeBoxLRounds );
+LINK_ENTITY_TO_CLASS( item_ammo_ar2_large, CItem_LargeBoxLRounds );
 
 
 // ========================================================================
@@ -310,29 +317,29 @@ public:
 
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/357ammo.mdl");
+		PrecacheModel( "models/items/357ammo.mdl" );
 	}
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/357ammo.mdl");
+		SetModel( "models/items/357ammo.mdl" );
 		BaseClass::Spawn( );
 	}
 
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_357, "357"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_357, "357" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_ammo_357, CItem_Box357Rounds);
+LINK_ENTITY_TO_CLASS( item_ammo_357, CItem_Box357Rounds );
 
 
 // ========================================================================
@@ -345,29 +352,29 @@ public:
 
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/357ammobox.mdl");
+		PrecacheModel( "models/items/357ammobox.mdl" );
 	}
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/357ammobox.mdl");
+		SetModel( "models/items/357ammobox.mdl" );
 		BaseClass::Spawn( );
 	}
 
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_357_LARGE, "357"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_357_LARGE, "357" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_ammo_357_large, CItem_LargeBox357Rounds);
+LINK_ENTITY_TO_CLASS( item_ammo_357_large, CItem_LargeBox357Rounds );
 
 
 // ========================================================================
@@ -380,30 +387,30 @@ public:
 
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/crossbowrounds.mdl");
+		PrecacheModel( "models/items/crossbowrounds.mdl" );
 	}
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/crossbowrounds.mdl");
+		SetModel( "models/items/crossbowrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_CROSSBOW, "XBowBolt" ))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_CROSSBOW, "XBowBolt" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_ammo_crossbow, CItem_BoxXBowRounds);
+LINK_ENTITY_TO_CLASS( item_ammo_crossbow, CItem_BoxXBowRounds );
 
 
 // ========================================================================
@@ -415,29 +422,29 @@ public:
 	DECLARE_CLASS( CItem_FlareRound, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/flare.mdl");
+		SetModel( "models/items/flare.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/flare.mdl");
+		PrecacheModel( "models/items/flare.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, 1, "FlareRound"))
+		if( ITEM_GiveAmmo( pPlayer, 1, "FlareRound" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_flare_round, CItem_FlareRound);
+LINK_ENTITY_TO_CLASS( item_flare_round, CItem_FlareRound );
 
 // ========================================================================
 //	>> BoxFlareRounds
@@ -450,29 +457,29 @@ public:
 	DECLARE_CLASS( CItem_BoxFlareRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/boxflares.mdl");
+		SetModel( "models/items/boxflares.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxflares.mdl");
+		PrecacheModel( "models/items/boxflares.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_BOX_FLARE_ROUNDS, "FlareRound"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_BOX_FLARE_ROUNDS, "FlareRound" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_flare_rounds, CItem_BoxFlareRounds);
+LINK_ENTITY_TO_CLASS( item_box_flare_rounds, CItem_BoxFlareRounds );
 
 // ========================================================================
 // RPG Round
@@ -483,23 +490,23 @@ public:
 	DECLARE_CLASS( CItem_RPG_Round, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/weapons/w_missile_closed.mdl");
+		SetModel( "models/weapons/w_missile_closed.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/weapons/w_missile_closed.mdl");
+		PrecacheModel( "models/weapons/w_missile_closed.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_RPG_ROUND, "RPG_Round"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_RPG_ROUND, "RPG_Round" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
@@ -517,30 +524,30 @@ public:
 	DECLARE_CLASS( CItem_AR2_Grenade, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/ar2_grenade.mdl");
+		SetModel( "models/items/ar2_grenade.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/ar2_grenade.mdl");
+		PrecacheModel( "models/items/ar2_grenade.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1_GRENADE, "SMG1_Grenade"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_SMG1_GRENADE, "SMG1_Grenade" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_ar2_grenade, CItem_AR2_Grenade);
-LINK_ENTITY_TO_CLASS(item_ammo_smg1_grenade, CItem_AR2_Grenade);
+LINK_ENTITY_TO_CLASS( item_ar2_grenade, CItem_AR2_Grenade );
+LINK_ENTITY_TO_CLASS( item_ammo_smg1_grenade, CItem_AR2_Grenade );
 
 // ========================================================================
 //	>> BoxSniperRounds
@@ -553,29 +560,29 @@ public:
 	DECLARE_CLASS( CItem_BoxSniperRounds, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/boxsniperrounds.mdl");
+		SetModel( "models/items/boxsniperrounds.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxsniperrounds.mdl");
+		PrecacheModel( "models/items/boxsniperrounds.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_BOX_SNIPER_ROUNDS, "SniperRound"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_BOX_SNIPER_ROUNDS, "SniperRound" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
-			}	
+				UTIL_Remove( this );
+			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_sniper_rounds, CItem_BoxSniperRounds);
+LINK_ENTITY_TO_CLASS( item_box_sniper_rounds, CItem_BoxSniperRounds );
 
 
 // ========================================================================
@@ -587,29 +594,29 @@ public:
 	DECLARE_CLASS( CItem_BoxBuckshot, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/boxbuckshot.mdl");
+		SetModel( "models/items/boxbuckshot.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/items/boxbuckshot.mdl");
+		PrecacheModel( "models/items/boxbuckshot.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_BUCKSHOT, "Buckshot"))
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_BUCKSHOT, "Buckshot" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
 		return false;
 	}
 };
-LINK_ENTITY_TO_CLASS(item_box_buckshot, CItem_BoxBuckshot);
+LINK_ENTITY_TO_CLASS( item_box_buckshot, CItem_BoxBuckshot );
 
 // ========================================================================
 //	>> CItem_AR2AltFireRound
@@ -622,23 +629,23 @@ public:
 	void Precache( void )
 	{
 		PrecacheParticleSystem( "combineball" );
-		PrecacheModel ("models/items/combine_rifle_ammo01.mdl");
+		PrecacheModel( "models/items/combine_rifle_ammo01.mdl" );
 	}
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
-		SetModel( "models/items/combine_rifle_ammo01.mdl");
+		SetModel( "models/items/combine_rifle_ammo01.mdl" );
 		BaseClass::Spawn( );
 	}
 
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if (ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2_ALTFIRE, "AR2AltFire" ) )
+		if( ITEM_GiveAmmo( pPlayer, SIZE_AMMO_AR2_ALTFIRE, "AR2AltFire" ) )
 		{
-			if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
+			if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_NO )
 			{
-				UTIL_Remove(this);	
+				UTIL_Remove( this );
 			}
 			return true;
 		}
@@ -683,29 +690,32 @@ public:
 	void	Precache( void );
 	bool	CreateVPhysics( void );
 
-	virtual void HandleAnimEvent( animevent_t *pEvent );
+	virtual void HandleAnimEvent( animevent_t* pEvent );
 
 	void	SetupCrate( void );
 	void	OnRestore( void );
 
 	//FIXME: May not want to have this used in a radius
-	int		ObjectCaps( void ) { return (BaseClass::ObjectCaps() | (FCAP_IMPULSE_USE|FCAP_USE_IN_RADIUS)); };
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	int		ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() | ( FCAP_IMPULSE_USE | FCAP_USE_IN_RADIUS ) );
+	};
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	void	InputKill( inputdata_t &data );
+	void	InputKill( inputdata_t& data );
 	void	CrateThink( void );
-	
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
+
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
 
 protected:
 
 	int		m_nAmmoType;
 	int		m_nAmmoIndex;
 
-	static const char *m_lpzModelNames[NUM_AMMO_CRATE_TYPES];
-	static const char *m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES];
+	static const char* m_lpzModelNames[NUM_AMMO_CRATE_TYPES];
+	static const char* m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES];
 	static int m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES];
-	static const char *m_pGiveWeapon[NUM_AMMO_CRATE_TYPES];
+	static const char* m_pGiveWeapon[NUM_AMMO_CRATE_TYPES];
 
 	float	m_flCloseTime;
 	COutputEvent	m_OnUsed;
@@ -722,35 +732,35 @@ LINK_ENTITY_TO_CLASS( item_ammo_crate, CItem_AmmoCrate );
 
 BEGIN_DATADESC( CItem_AmmoCrate )
 
-	DEFINE_KEYFIELD( m_nAmmoType,	FIELD_INTEGER, "AmmoType" ),	
+DEFINE_KEYFIELD( m_nAmmoType,	FIELD_INTEGER, "AmmoType" ),
 
-	DEFINE_FIELD( m_flCloseTime, FIELD_FLOAT ),
-	DEFINE_FIELD( m_hActivator, FIELD_EHANDLE ),
+				   DEFINE_FIELD( m_flCloseTime, FIELD_FLOAT ),
+				   DEFINE_FIELD( m_hActivator, FIELD_EHANDLE ),
 
-	// These can be recreated
-	//DEFINE_FIELD( m_nAmmoIndex,		FIELD_INTEGER ),
-	//DEFINE_FIELD( m_lpzModelNames,	FIELD_ ),
-	//DEFINE_FIELD( m_lpzAmmoNames,	FIELD_ ),
-	//DEFINE_FIELD( m_nAmmoAmounts,	FIELD_INTEGER ),
+				   // These can be recreated
+				   //DEFINE_FIELD( m_nAmmoIndex,		FIELD_INTEGER ),
+				   //DEFINE_FIELD( m_lpzModelNames,	FIELD_ ),
+				   //DEFINE_FIELD( m_lpzAmmoNames,	FIELD_ ),
+				   //DEFINE_FIELD( m_nAmmoAmounts,	FIELD_INTEGER ),
 
-	DEFINE_OUTPUT( m_OnUsed, "OnUsed" ),
+				   DEFINE_OUTPUT( m_OnUsed, "OnUsed" ),
 
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnAmmoTaken, "OnAmmoTaken" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "Kill", InputKill ),
 
-	DEFINE_THINKFUNC( CrateThink ),
+				   DEFINE_THINKFUNC( CrateThink ),
 
-END_DATADESC()
+				   END_DATADESC()
 
 //-----------------------------------------------------------------------------
 // Animation events.
 //-----------------------------------------------------------------------------
 
 // Models names
-const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
+				   const char* CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 {
 	"models/items/ammocrate_pistol.mdl",	// Small rounds
 	"models/items/ammocrate_smg1.mdl",		// Medium rounds
@@ -761,13 +771,13 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 #ifdef MAPBASE
 	"models/items/ammocrate_357.mdl",		// 357
 	"models/items/ammocrate_xbow.mdl",		// Crossbow
-	"models/items/ammocrate_ar2alt.mdl",	// Combine Ball 
+	"models/items/ammocrate_ar2alt.mdl",	// Combine Ball
 #else
 	"models/items/ammocrate_smg1.mdl",		// 357
 	"models/items/ammocrate_smg1.mdl",	// Crossbow
-	
+
 	//FIXME: This model is incorrect!
-	"models/items/ammocrate_ar2.mdl",		// Combine Ball 
+	"models/items/ammocrate_ar2.mdl",		// Combine Ball
 #endif
 	"models/items/ammocrate_smg2.mdl",	    // smg grenade
 #ifdef MAPBASE
@@ -777,13 +787,13 @@ const char *CItem_AmmoCrate::m_lpzModelNames[NUM_AMMO_CRATE_TYPES] =
 };
 
 // Ammo type names
-const char *CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
+const char* CItem_AmmoCrate::m_lpzAmmoNames[NUM_AMMO_CRATE_TYPES] =
 {
-	"Pistol",		
-	"SMG1",			
-	"AR2",			
-	"RPG_Round",	
-	"Buckshot",		
+	"Pistol",
+	"SMG1",
+	"AR2",
+	"RPG_Round",
+	"Buckshot",
 	"Grenade",
 	"357",
 	"XBowBolt",
@@ -814,7 +824,7 @@ int CItem_AmmoCrate::m_nAmmoAmounts[NUM_AMMO_CRATE_TYPES] =
 #endif
 };
 
-const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
+const char* CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 {
 	NULL,	// Pistol
 	NULL,	// SMG1
@@ -835,7 +845,7 @@ const char *CItem_AmmoCrate::m_pGiveWeapon[NUM_AMMO_CRATE_TYPES] =
 #define	AMMO_CRATE_CLOSE_DELAY	1.5f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::Spawn( void )
 {
@@ -869,7 +879,7 @@ bool CItem_AmmoCrate::CreateVPhysics( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::Precache( void )
 {
@@ -881,21 +891,21 @@ void CItem_AmmoCrate::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::SetupCrate( void )
 {
 #ifdef MAPBASE
 	// Custom models might be desired on, say, empty crates with custom textures
-	if (GetModelName() == NULL_STRING)
+	if( GetModelName() == NULL_STRING )
 #endif
-	SetModelName( AllocPooledString( m_lpzModelNames[m_nAmmoType] ) );
-	
+		SetModelName( AllocPooledString( m_lpzModelNames[m_nAmmoType] ) );
+
 	m_nAmmoIndex = GetAmmoDef()->Index( m_lpzAmmoNames[m_nAmmoType] );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::OnRestore( void )
 {
@@ -906,25 +916,27 @@ void CItem_AmmoCrate::OnRestore( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pActivator - 
-//			*pCaller - 
-//			useType - 
-//			value - 
+// Purpose:
+// Input  : *pActivator -
+//			*pCaller -
+//			useType -
+//			value -
 //-----------------------------------------------------------------------------
-void CItem_AmmoCrate::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CItem_AmmoCrate::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
+	CBasePlayer* pPlayer = ToBasePlayer( pActivator );
 
-	if ( pPlayer == NULL )
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	m_OnUsed.FireOutput( pActivator, this );
 
 	int iSequence = LookupSequence( "Open" );
 
 	// See if we're not opening already
-	if ( GetSequence() != iSequence )
+	if( GetSequence() != iSequence )
 	{
 		Vector mins, maxs;
 		trace_t tr;
@@ -933,15 +945,17 @@ void CItem_AmmoCrate::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 
 		Vector vOrigin = GetAbsOrigin();
 		vOrigin.z += ( maxs.z - mins.z );
-		mins = (mins - GetAbsOrigin()) * 0.2f;
-		maxs = (maxs - GetAbsOrigin()) * 0.2f;
-		mins.z = ( GetAbsOrigin().z - vOrigin.z );  
-		
+		mins = ( mins - GetAbsOrigin() ) * 0.2f;
+		maxs = ( maxs - GetAbsOrigin() ) * 0.2f;
+		mins.z = ( GetAbsOrigin().z - vOrigin.z );
+
 		UTIL_TraceHull( vOrigin, vOrigin, mins, maxs, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 
-		if ( tr.startsolid || tr.allsolid )
-			 return;
-			
+		if( tr.startsolid || tr.allsolid )
+		{
+			return;
+		}
+
 		m_hActivator = pPlayer;
 
 		// Animate!
@@ -963,20 +977,20 @@ void CItem_AmmoCrate::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TY
 //-----------------------------------------------------------------------------
 // Purpose: allows the crate to open up when hit by a crowbar
 //-----------------------------------------------------------------------------
-int CItem_AmmoCrate::OnTakeDamage( const CTakeDamageInfo &info )
+int CItem_AmmoCrate::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	// if it's the player hitting us with a crowbar, open up
-	CBasePlayer *player = ToBasePlayer(info.GetAttacker());
-	if (player)
+	CBasePlayer* player = ToBasePlayer( info.GetAttacker() );
+	if( player )
 	{
-		CBaseCombatWeapon *weapon = player->GetActiveWeapon();
+		CBaseCombatWeapon* weapon = player->GetActiveWeapon();
 
-		if (weapon && !stricmp(weapon->GetName(), "weapon_crowbar"))
+		if( weapon && !stricmp( weapon->GetName(), "weapon_crowbar" ) )
 		{
 			// play the normal use sound
 			player->EmitSound( "HL2Player.Use" );
 			// open the crate
-			Use(info.GetAttacker(), info.GetAttacker(), USE_TOGGLE, 0.0f);
+			Use( info.GetAttacker(), info.GetAttacker(), USE_TOGGLE, 0.0f );
 		}
 	}
 
@@ -988,32 +1002,32 @@ int CItem_AmmoCrate::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Catches the monster-specific messages that occur when tagged
 //			animation frames are played.
-// Input  : *pEvent - 
+// Input  : *pEvent -
 //-----------------------------------------------------------------------------
-void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
+void CItem_AmmoCrate::HandleAnimEvent( animevent_t* pEvent )
 {
-	if ( pEvent->event == AE_AMMOCRATE_PICKUP_AMMO )
+	if( pEvent->event == AE_AMMOCRATE_PICKUP_AMMO )
 	{
-		if ( m_hActivator )
+		if( m_hActivator )
 		{
-			if ( m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
+			if( m_pGiveWeapon[m_nAmmoType] && !m_hActivator->Weapon_OwnsThisType( m_pGiveWeapon[m_nAmmoType] ) )
 			{
-				CBaseEntity *pEntity = CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
-				CBaseCombatWeapon *pWeapon = dynamic_cast<CBaseCombatWeapon*>(pEntity);
-				if ( pWeapon )
+				CBaseEntity* pEntity = CreateEntityByName( m_pGiveWeapon[m_nAmmoType] );
+				CBaseCombatWeapon* pWeapon = dynamic_cast<CBaseCombatWeapon*>( pEntity );
+				if( pWeapon )
 				{
 					pWeapon->SetAbsOrigin( m_hActivator->GetAbsOrigin() );
 					pWeapon->m_iPrimaryAmmoType = 0;
 					pWeapon->m_iSecondaryAmmoType = 0;
 					pWeapon->Spawn();
-					if ( !m_hActivator->BumpWeapon( pWeapon ) )
+					if( !m_hActivator->BumpWeapon( pWeapon ) )
 					{
 						UTIL_Remove( pEntity );
 					}
 					else
 					{
 #ifdef MAPBASE
-						m_OnAmmoTaken.FireOutput(m_hActivator, this);
+						m_OnAmmoTaken.FireOutput( m_hActivator, this );
 #endif
 						SetBodygroup( 1, false );
 					}
@@ -1022,13 +1036,13 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 
 #ifdef MAPBASE
 			// Empty ammo crates should still fire OnAmmoTaken
-			if ( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 || m_nAmmoType == AMMOCRATE_EMPTY )
+			if( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 || m_nAmmoType == AMMOCRATE_EMPTY )
 #else
-			if ( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 )
+			if( m_hActivator->GiveAmmo( m_nAmmoAmounts[m_nAmmoType], m_nAmmoIndex ) != 0 )
 #endif
 			{
 #ifdef MAPBASE
-				m_OnAmmoTaken.FireOutput(m_hActivator, this);
+				m_OnAmmoTaken.FireOutput( m_hActivator, this );
 #endif
 				SetBodygroup( 1, false );
 			}
@@ -1040,9 +1054,9 @@ void CItem_AmmoCrate::HandleAnimEvent( animevent_t *pEvent )
 	BaseClass::HandleAnimEvent( pEvent );
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem_AmmoCrate::CrateThink( void )
 {
@@ -1052,10 +1066,10 @@ void CItem_AmmoCrate::CrateThink( void )
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	// Start closing if we're not already
-	if ( GetSequence() != LookupSequence( "Close" ) )
+	if( GetSequence() != LookupSequence( "Close" ) )
 	{
 		// Not ready to close?
-		if ( m_flCloseTime <= gpGlobals->curtime )
+		if( m_flCloseTime <= gpGlobals->curtime )
 		{
 			m_hActivator = NULL;
 
@@ -1065,7 +1079,7 @@ void CItem_AmmoCrate::CrateThink( void )
 	else
 	{
 		// See if we're fully closed
-		if ( IsSequenceFinished() )
+		if( IsSequenceFinished() )
 		{
 			// Stop thinking
 			SetThink( NULL );
@@ -1082,10 +1096,10 @@ void CItem_AmmoCrate::CrateThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void CItem_AmmoCrate::InputKill( inputdata_t &data )
+void CItem_AmmoCrate::InputKill( inputdata_t& data )
 {
 #ifdef MAPBASE
 	// Why is this its own function?

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -35,29 +35,35 @@
 class CWeaponSMG2 : public CHL2MPSelectFireMachineGun
 {
 public:
-	DECLARE_CLASS(CWeaponSMG2, CHL2MPSelectFireMachineGun);
+	DECLARE_CLASS( CWeaponSMG2, CHL2MPSelectFireMachineGun );
 
 	CWeaponSMG2();
 
 	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
-	const Vector& GetBulletSpread(void);
+	const Vector& GetBulletSpread( void );
 
-	virtual void Precache(void);
-	virtual void AddViewKick(void);
+	virtual void Precache( void );
+	virtual void AddViewKick( void );
 #ifdef GAME_DLL
-	virtual void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	virtual void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif // GAME_DLL
-	virtual float GetFireRate( void ) { return 0.1f; }
+	virtual float GetFireRate( void )
+	{
+		return 0.1f;
+	}
 #ifdef GAME_DLL
-	virtual int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	virtual int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
 	DECLARE_ACTTABLE();
 
 private:
-	CWeaponSMG2( const CWeaponSMG2 & );
+	CWeaponSMG2( const CWeaponSMG2& );
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponSMG2, DT_WeaponSMG2 )
@@ -74,7 +80,7 @@ PRECACHE_WEAPON_REGISTER( weapon_smg2 );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponSMG2::m_acttable[] = 
+acttable_t	CWeaponSMG2::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_SMG2, true },
 
@@ -99,7 +105,7 @@ acttable_t	CWeaponSMG2::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_SMG2,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG2_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG2_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_SMG2_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG2,			false },//always aims
 
@@ -162,7 +168,7 @@ acttable_t	CWeaponSMG2::m_acttable[] =
 IMPLEMENT_ACTTABLE( CWeaponSMG2 );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponSMG2::CWeaponSMG2( )
 {
@@ -173,7 +179,7 @@ CWeaponSMG2::CWeaponSMG2( )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponSMG2::Precache( void )
 {
@@ -181,9 +187,9 @@ void CWeaponSMG2::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const Vector &CWeaponSMG2::GetBulletSpread( void )
+const Vector& CWeaponSMG2::GetBulletSpread( void )
 {
 	static const Vector cone = VECTOR_CONE_10DEGREES;
 	return cone;
@@ -191,9 +197,9 @@ const Vector &CWeaponSMG2::GetBulletSpread( void )
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponSMG2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponSMG2::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
@@ -202,7 +208,7 @@ void CWeaponSMG2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition( );
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			ASSERT( npc != NULL );
 			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
 
@@ -220,19 +226,21 @@ void CWeaponSMG2::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponSMG2::AddViewKick( void )
 {
-	#define	EASY_DAMPEN			0.5f
-	#define	MAX_VERTICAL_KICK	2.0f	//Degrees
-	#define	SLIDE_LIMIT			1.0f	//Seconds
-	
-	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+#define	EASY_DAMPEN			0.5f
+#define	MAX_VERTICAL_KICK	2.0f	//Degrees
+#define	SLIDE_LIMIT			1.0f	//Seconds
 
-	if (!pPlayer)
+	//Get the view kick
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	DoMachineGunKick( pPlayer, EASY_DAMPEN, MAX_VERTICAL_KICK, m_fFireDuration, SLIDE_LIMIT );
 }

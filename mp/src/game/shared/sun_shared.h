@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SUN_SHARED_H
 #define SUN_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //FIXME: It strikes me that the usefulness of this header file is now diminished

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -16,7 +16,7 @@ class CAchievementEp1KillAntlionsWithCar : public CBaseAchievement
 {
 protected:
 
-	void Init() 
+	void Init()
 	{
 		SetFlags( ACH_LISTEN_PLAYER_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME );
 		SetInflictorFilter( "prop_physics" );
@@ -24,12 +24,12 @@ protected:
 		SetGameDirFilter( "episodic" );
 		SetGoal( 15 );
 	}
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
+	virtual void Event_EntityKilled( CBaseEntity* pVictim, CBaseEntity* pAttacker, CBaseEntity* pInflictor, IGameEvent* event )
 	{
 		// any model that passed previous filters and begins with "props_vehicles" is a physics car
-		const char *pszName = GetModelName( pInflictor );
+		const char* pszName = GetModelName( pInflictor );
 		const char szPrefix[] = "props_vehicles";
-		if ( 0 == Q_strncmp( pszName, szPrefix, ARRAYSIZE( szPrefix ) - 1 ) )
+		if( 0 == Q_strncmp( pszName, szPrefix, ARRAYSIZE( szPrefix ) - 1 ) )
 		{
 			IncrementCount();
 		}
@@ -41,7 +41,7 @@ class CAchievementEp1KillEnemiesWithSniperAlyx : public CBaseAchievement
 {
 protected:
 
-	void Init() 
+	void Init()
 	{
 		SetFlags( ACH_LISTEN_KILL_ENEMY_EVENTS | ACH_SAVE_WITH_GAME );
 		SetInflictorEntityNameFilter( "sniper_alyx" );
@@ -55,7 +55,7 @@ class CAchievementEp1BeatCitizenEscortNoCitizenDeaths : public CFailableAchievem
 {
 protected:
 
-	void Init() 
+	void Init()
 	{
 		SetFlags( ACH_LISTEN_MAP_EVENTS | ACH_LISTEN_KILL_EVENTS | ACH_SAVE_WITH_GAME );
 		SetGameDirFilter( "episodic" );
@@ -63,16 +63,22 @@ protected:
 		SetVictimFilter( "npc_citizen" );
 	}
 
-	virtual void Event_EntityKilled( CBaseEntity *pVictim, CBaseEntity *pAttacker, CBaseEntity *pInflictor, IGameEvent *event ) 
+	virtual void Event_EntityKilled( CBaseEntity* pVictim, CBaseEntity* pAttacker, CBaseEntity* pInflictor, IGameEvent* event )
 	{
 		// if any citizens die while this achievement is active, achievement fails
 		SetFailed();
 	}
 
 	// map event where achievement is activated
-	virtual const char *GetActivationEventName() { return "EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS_START"; }
+	virtual const char* GetActivationEventName()
+	{
+		return "EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS_START";
+	}
 	// map event where achievement is evaluated for success
-	virtual const char *GetEvaluationEventName() { return "EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS_END"; }
+	virtual const char* GetEvaluationEventName()
+	{
+		return "EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS_END";
+	}
 };
 DECLARE_ACHIEVEMENT( CAchievementEp1BeatCitizenEscortNoCitizenDeaths, ACHIEVEMENT_EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS, "EP1_BEAT_CITIZENESCORT_NOCITIZENDEATHS", 15 );
 
@@ -83,7 +89,7 @@ class CAchievementEp1BeatGameOneBullet : public CFailableAchievement
 	DECLARE_CLASS( CAchievementEp1BeatGameOneBullet, CFailableAchievement );
 protected:
 
-	void Init() 
+	void Init()
 	{
 		SetFlags( ACH_LISTEN_MAP_EVENTS | ACH_SAVE_WITH_GAME );
 		SetGameDirFilter( "episodic" );
@@ -95,7 +101,7 @@ protected:
 		// get # of attacks w/bullet weapons
 		int iBulletAttackCount = CalcPlayerAttacks( true );
 		// if more than 1 bullet fired, fail
-		if ( iBulletAttackCount > 1 )
+		if( iBulletAttackCount > 1 )
 		{
 			SetFailed();
 		}
@@ -103,14 +109,20 @@ protected:
 	}
 
 	// map event where achievement is activated
-	virtual const char *GetActivationEventName() { return "EP1_START_GAME"; }
+	virtual const char* GetActivationEventName()
+	{
+		return "EP1_START_GAME";
+	}
 	// map event where achievement is evaluated for success
-	virtual const char *GetEvaluationEventName() { return "EP1_BEAT_GAME"; }
+	virtual const char* GetEvaluationEventName()
+	{
+		return "EP1_BEAT_GAME";
+	}
 
 	// additional status for debugging
 	virtual void PrintAdditionalStatus()
 	{
-		if ( m_bActivated )
+		if( m_bActivated )
 		{
 			Msg( "Player bullet attacks: %d\n", CalcPlayerAttacks( true ) );
 		}

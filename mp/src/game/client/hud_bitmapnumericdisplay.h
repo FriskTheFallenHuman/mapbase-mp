@@ -1,35 +1,35 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef HUD_BITMAPNUMERICDISPLAY_H
 #define HUD_BITMAPNUMERICDISPLAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hud_numericdisplay.h"
 
 class CHudBitmapNumericDisplay : public vgui::Panel
-{	
+{
 	DECLARE_CLASS_SIMPLE( CHudBitmapNumericDisplay, vgui::Panel );
 
 public:
-	CHudBitmapNumericDisplay(vgui::Panel *parent, const char *name);
+	CHudBitmapNumericDisplay( vgui::Panel* parent, const char* name );
 
-	void SetDisplayValue(int value);
-	void SetShouldDisplayValue(bool state);
+	void SetDisplayValue( int value );
+	void SetShouldDisplayValue( bool state );
 
 protected:
 	// vgui overrides
 	virtual void PaintBackground( void );
 	virtual void Paint();
-	void PaintNumbers(int xpos, int ypos, int value, Color col, int numSigDigits);
-	virtual void PaintNumbers(int xpos, int ypos, int value, Color col)
+	void PaintNumbers( int xpos, int ypos, int value, Color col, int numSigDigits );
+	virtual void PaintNumbers( int xpos, int ypos, int value, Color col )
 	{
-		PaintNumbers(xpos, ypos, value, col, 1);
+		PaintNumbers( xpos, ypos, value, col, 1 );
 	}
 
 	CPanelAnimationVar( float, m_flAlphaOverride, "Alpha", "255" );
@@ -42,7 +42,7 @@ protected:
 
 private:
 
-	CHudTexture *m_pNumbers[10];
+	CHudTexture* m_pNumbers[10];
 
 	int m_iValue;
 	bool m_bDisplayValue;

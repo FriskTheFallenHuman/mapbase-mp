@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,7 +16,7 @@ static bool g_bPacifierSuppressed = false;
 
 #define clamp(a,b,c) ( (a) > (c) ? (c) : ( (a) < (b) ? (b) : (a) ) )
 
-void StartPacifier( char const *pPrefix )
+void StartPacifier( char const* pPrefix )
 {
 	Msg( "%s", pPrefix );
 	g_LastPacifierDrawn = -1;
@@ -25,36 +25,38 @@ void StartPacifier( char const *pPrefix )
 
 void UpdatePacifier( float flPercent )
 {
-	int iCur = (int)(flPercent * 40.0f);
+	int iCur = ( int )( flPercent * 40.0f );
 	iCur = clamp( iCur, g_LastPacifierDrawn, 40 );
-	
+
 	if( iCur != g_LastPacifierDrawn && !g_bPacifierSuppressed )
 	{
-		for( int i=g_LastPacifierDrawn+1; i <= iCur; i++ )
+		for( int i = g_LastPacifierDrawn + 1; i <= iCur; i++ )
 		{
-			if ( !( i % 4 ) )
+			if( !( i % 4 ) )
 			{
-				Msg("%d", i/4);
+				Msg( "%d", i / 4 );
 			}
 			else
 			{
 				if( i != 40 )
 				{
-					Msg(".");
+					Msg( "." );
 				}
 			}
 		}
-		
+
 		g_LastPacifierDrawn = iCur;
 	}
 }
 
 void EndPacifier( bool bCarriageReturn )
 {
-	UpdatePacifier(1);
-	
+	UpdatePacifier( 1 );
+
 	if( bCarriageReturn && !g_bPacifierSuppressed )
-		Msg("\n");
+	{
+		Msg( "\n" );
+	}
 }
 
 void SuppressPacifier( bool bSuppress )

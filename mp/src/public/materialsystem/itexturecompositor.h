@@ -1,7 +1,7 @@
 //========= Copyright Valve Corporation, All rights reserved. ================================== //
 //
-// Purpose: Defines a texture compositor infterface which uses simple operations and shaders to 
-// create complex procedural textures. 
+// Purpose: Defines a texture compositor infterface which uses simple operations and shaders to
+// create complex procedural textures.
 //
 //============================================================================================== //
 
@@ -39,7 +39,7 @@ public:
 	virtual int GetRefCount() const = 0;
 
 	virtual void Update() = 0;
-	virtual ITexture* GetResultTexture() const = 0;
+	virtual ITexture * GetResultTexture() const = 0;
 	virtual ECompositeResolveStatus GetResolveStatus() const = 0;
 	virtual void ScheduleResolve() = 0;
 protected:

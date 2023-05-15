@@ -6,7 +6,7 @@
 #define AFX_QC_EYESDLG_H__9130E22D_05ED_4851_960C_38D90DA94967__INCLUDED_
 
 #if _MSC_VER > 1000
-#pragma once
+	#pragma once
 #endif // _MSC_VER > 1000
 
 class CDialogParams
@@ -25,7 +25,7 @@ public:
 	float m_flLeftLowerLidRaised;
 	float m_flLeftLowerLidNeutral;
 	float m_flLeftLowerLidLowered;
-	
+
 	float m_flRightUpperLidRaised;
 	float m_flRightUpperLidNeutral;
 	float m_flRightUpperLidLowered;
@@ -33,7 +33,7 @@ public:
 	float m_flRightLowerLidRaised;
 	float m_flRightLowerLidNeutral;
 	float m_flRightLowerLidLowered;
-	
+
 	char m_ReferenceFilename[1024];
 	char m_ExpressionsFilename[1024];
 	char m_ModelFilename[1024];
@@ -49,7 +49,7 @@ class CQC_EyesDlg : public CDialog
 {
 // Construction
 public:
-	CQC_EyesDlg(CWnd* pParent = NULL);	// standard constructor
+	CQC_EyesDlg( CWnd* pParent = NULL );	// standard constructor
 
 // Dialog Data
 	//{{AFX_DATA(CQC_EyesDlg)
@@ -60,8 +60,8 @@ public:
 
 	// ClassWizard generated virtual function overrides
 	//{{AFX_VIRTUAL(CQC_EyesDlg)
-	protected:
-	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV support
+protected:
+	virtual void DoDataExchange( CDataExchange* pDX );	// DDX/DDV support
 	//}}AFX_VIRTUAL
 
 // Implementation
@@ -69,29 +69,29 @@ protected:
 	HICON m_hIcon;
 
 	void GenerateQCText();
-	void AddText( const char *pFormat, ... );
+	void AddText( const char* pFormat, ... );
 	bool IsOptionChecked( UINT option );
 	float GetDlgItemFloat( UINT id );
-	void GetDialogParams( CDialogParams &p );
-	void SetupBitmapLabel( UINT iBitmapResourceID, const char *pString, ... );
+	void GetDialogParams( CDialogParams& p );
+	void SetupBitmapLabel( UINT iBitmapResourceID, const char* pString, ... );
 
 	HWND m_hOutputText;
 
-	
+
 	// Cached list of bitmaps.
 	class CBitmapRef
 	{
 	public:
 		UINT m_iResource;
 		HBITMAP m_hBitmap;
-		CBitmapRef *m_pNext;
+		CBitmapRef* m_pNext;
 	};
-	CBitmapRef *m_pBitmapHead;
+	CBitmapRef* m_pBitmapHead;
 	HBITMAP GetCachedBitmap( UINT id );
 
 
 	size_t m_BufSize;
-	char *m_Buf;
+	char* m_Buf;
 	bool IsIndependentLeftLidControlEnabled();
 
 	bool CheckNumericInputs();

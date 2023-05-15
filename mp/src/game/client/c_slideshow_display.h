@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -35,13 +35,25 @@ public:
 
 	void ClientThink( void );
 
-	bool IsEnabled( void ) { return m_bEnabled; }
+	bool IsEnabled( void )
+	{
+		return m_bEnabled;
+	}
 
-	void GetDisplayText( char *pchText ) { Q_strcpy( pchText, m_szDisplayText ); }
-	int CurrentMaterialIndex( void ) { return m_iCurrentMaterialIndex; }
+	void GetDisplayText( char* pchText )
+	{
+		Q_strcpy( pchText, m_szDisplayText );
+	}
+	int CurrentMaterialIndex( void )
+	{
+		return m_iCurrentMaterialIndex;
+	}
 	int GetMaterialIndex( int iSlideIndex );
 	int NumMaterials( void );
-	int CurrentSlideIndex( void ) { return m_iCurrentSlideIndex; }
+	int CurrentSlideIndex( void )
+	{
+		return m_iCurrentSlideIndex;
+	}
 
 private:
 

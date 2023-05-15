@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( MODEL_TYPES_H )
 #define MODEL_TYPES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define STUDIO_NONE						0x00000000
@@ -38,9 +38,9 @@
 
 enum modtype_t
 {
-	mod_bad = 0, 
-	mod_brush, 
-	mod_sprite, 
+	mod_bad = 0,
+	mod_brush,
+	mod_sprite,
 	mod_studio
 };
 

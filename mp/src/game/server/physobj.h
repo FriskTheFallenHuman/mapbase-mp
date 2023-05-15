@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,11 +8,11 @@
 #ifndef PHYSOBJ_H
 #define PHYSOBJ_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifndef PHYSICS_H
-#include "physics.h"
+	#include "physics.h"
 #endif
 
 #include "entityoutput.h"
@@ -38,53 +38,56 @@
 #define SF_PHYSBOX_NEVER_PUNT				0x400000		// Physcannon will never be able to punt this object.
 #define SF_PHYSBOX_PREVENT_PLAYER_TOUCH_ENABLE 0x800000		// If set, the player will not cause the object to enable its motion when bumped into
 #ifdef MAPBASE
-#define SF_PHYSBOX_RADIUS_PICKUP			0x1000000		// Allows this object to be picked up in a radius, useful for smaller objects. Based on the prop_physics input
+	#define SF_PHYSBOX_RADIUS_PICKUP			0x1000000		// Allows this object to be picked up in a radius, useful for smaller objects. Based on the prop_physics input
 #endif
 
 // UNDONE: Hook collisions into the physics system to generate touch functions and take damage on falls
 // UNDONE: Base class PhysBrush
 class CPhysBox : public CBreakable
 {
-DECLARE_CLASS( CPhysBox, CBreakable );
+	DECLARE_CLASS( CPhysBox, CBreakable );
 
 public:
 	DECLARE_SERVERCLASS();
 
-	void	Spawn ( void );
+	void	Spawn( void );
 	bool	CreateVPhysics();
-	void	Move( const Vector &force );
+	void	Move( const Vector& force );
 	virtual int ObjectCaps();
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	
-	virtual int DrawDebugTextOverlays(void);
+	virtual void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
-	int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual int DrawDebugTextOverlays( void );
+
+	virtual void VPhysicsUpdate( IPhysicsObject* pPhysics );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
+	int		OnTakeDamage( const CTakeDamageInfo& info );
 	void		 EnableMotion( void );
 
 	bool CanBePickedUpByPhyscannon();
 
 	// IPlayerPickupVPhysics
-	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason );
 
-	bool		 HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer );
-	virtual QAngle PreferredCarryAngles( void ) { return m_angPreferredCarryAngles; }
+	bool		 HasPreferredCarryAnglesForPlayer( CBasePlayer* pPlayer );
+	virtual QAngle PreferredCarryAngles( void )
+	{
+		return m_angPreferredCarryAngles;
+	}
 
 	// inputs
-	void InputWake( inputdata_t &inputdata );
-	void InputSleep( inputdata_t &inputdata );
-	void InputEnableMotion( inputdata_t &inputdata );
-	void InputDisableMotion( inputdata_t &inputdata );
-	void InputForceDrop( inputdata_t &inputdata );
-	void InputDisableFloating( inputdata_t &inputdata );
+	void InputWake( inputdata_t& inputdata );
+	void InputSleep( inputdata_t& inputdata );
+	void InputEnableMotion( inputdata_t& inputdata );
+	void InputDisableMotion( inputdata_t& inputdata );
+	void InputForceDrop( inputdata_t& inputdata );
+	void InputDisableFloating( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetDebris( inputdata_t &inputdata );
+	void InputSetDebris( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
-	
+
 protected:
 	int				m_damageType;
 	float			m_massScale;
@@ -117,30 +120,30 @@ class CPhysExplosion : public CPointEntity
 public:
 	DECLARE_CLASS( CPhysExplosion, CPointEntity );
 
-	void	Spawn ( void );
-	void	Explode( CBaseEntity *pActivator, CBaseEntity *pCaller );
+	void	Spawn( void );
+	void	Explode( CBaseEntity* pActivator, CBaseEntity* pCaller );
 
-	CBaseEntity *FindEntity( CBaseEntity *pEntity, CBaseEntity *pActivator, CBaseEntity *pCaller );
+	CBaseEntity* FindEntity( CBaseEntity* pEntity, CBaseEntity* pActivator, CBaseEntity* pCaller );
 
-	int DrawDebugTextOverlays(void);
+	int DrawDebugTextOverlays( void );
 
 	// Input handlers
-	void InputExplode( inputdata_t &inputdata );
+	void InputExplode( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputExplodeAndRemove( inputdata_t &inputdata );
+	void InputExplodeAndRemove( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
 private:
-	
+
 	float		GetRadius( void );
 
 	float		m_damage;
 	float		m_radius;
 	string_t	m_targetEntityName;
 	float		m_flInnerRadius;
-	
-	COutputEvent	m_OnPushedPlayer;	
+
+	COutputEvent	m_OnPushedPlayer;
 };
 
 
@@ -157,7 +160,7 @@ public:
 	//void		Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void		Activate( void );
 
-	void		InputImpact( inputdata_t &inputdata );
+	void		InputImpact( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -171,12 +174,12 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: A magnet that creates constraints between itself and anything it touches 
+// Purpose: A magnet that creates constraints between itself and anything it touches
 //-----------------------------------------------------------------------------
 
 struct magnetted_objects_t
 {
-	IPhysicsConstraint *pConstraint;
+	IPhysicsConstraint* pConstraint;
 	EHANDLE			   hEntity;
 
 	DECLARE_SIMPLE_DATADESC();
@@ -194,36 +197,45 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	void	Touch( CBaseEntity *pOther );
-	void	VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
+	void	Touch( CBaseEntity* pOther );
+	void	VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
 #ifdef MAPBASE
 	bool	CanBePickedUpByPhyscannon( void );
 #endif
-	void	DoMagnetSuck( CBaseEntity *pOther );
-	void	SetConstraintGroup( IPhysicsConstraintGroup *pGroup );
+	void	DoMagnetSuck( CBaseEntity* pOther );
+	void	SetConstraintGroup( IPhysicsConstraintGroup* pGroup );
 
-	bool	IsOn( void ) { return m_bActive; }
+	bool	IsOn( void )
+	{
+		return m_bActive;
+	}
 	int		GetNumAttachedObjects( void );
 	float	GetTotalMassAttachedObjects( void );
-	CBaseEntity *GetAttachedObject( int iIndex );
+	CBaseEntity* GetAttachedObject( int iIndex );
 
 	// Checking for hitting something
-	void	ResetHasHitSomething( void ) { m_bHasHitSomething = false; }
-	bool	HasHitSomething( void ) { return m_bHasHitSomething; }
+	void	ResetHasHitSomething( void )
+	{
+		m_bHasHitSomething = false;
+	}
+	bool	HasHitSomething( void )
+	{
+		return m_bHasHitSomething;
+	}
 
 	// Inputs
-	void	InputToggle( inputdata_t &inputdata );
-	void	InputTurnOn( inputdata_t &inputdata );
-	void	InputTurnOff( inputdata_t &inputdata );
+	void	InputToggle( inputdata_t& inputdata );
+	void	InputTurnOn( inputdata_t& inputdata );
+	void	InputTurnOff( inputdata_t& inputdata );
 
-	void	InputConstraintBroken( inputdata_t &inputdata );
+	void	InputConstraintBroken( inputdata_t& inputdata );
 
 	void	DetachAll( void );
 
 // IPhysicsConstraintEvent
 public:
-	void	ConstraintBroken( IPhysicsConstraint *pConstraint );
-	
+	void	ConstraintBroken( IPhysicsConstraint* pConstraint );
+
 protected:
 	// Outputs
 	COutputEvent	m_OnMagnetAttach;
@@ -236,7 +248,7 @@ protected:
 	float			m_torqueLimit;
 
 	CUtlVector< magnetted_objects_t >	m_MagnettedEntities;
-	IPhysicsConstraintGroup				*m_pConstraintGroup;
+	IPhysicsConstraintGroup*				m_pConstraintGroup;
 
 	bool			m_bActive;
 	bool			m_bHasHitSomething;

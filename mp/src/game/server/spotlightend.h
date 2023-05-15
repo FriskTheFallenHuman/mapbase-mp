@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		Dynamic light at the end of a spotlight 
+// Purpose:		Dynamic light at the end of a spotlight
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define	SPOTLIGHTEND_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -28,7 +28,7 @@ public:
 	int					ObjectCaps( void )
 	{
 		// Don't save and don't go across transitions
-		return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION) | FCAP_DONT_SAVE; 
+		return ( BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION ) | FCAP_DONT_SAVE;
 	}
 
 	DECLARE_SERVERCLASS();

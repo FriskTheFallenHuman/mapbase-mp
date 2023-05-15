@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef BASEENTITY_SHARED_H
 #define BASEENTITY_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -57,14 +57,14 @@ enum InvalidatePhysicsBits_t
 
 
 #if defined( CLIENT_DLL )
-#include "c_baseentity.h"
-#include "c_baseanimating.h"
+	#include "c_baseentity.h"
+	#include "c_baseanimating.h"
 #else
-#include "baseentity.h"
+	#include "baseentity.h"
 
-#ifdef HL2_EPISODIC
-	#include "info_darknessmode_lightsource.h"
-#endif // HL2_EPISODIC
+	#ifdef HL2_EPISODIC
+		#include "info_darknessmode_lightsource.h"
+	#endif // HL2_EPISODIC
 
 #endif
 
@@ -78,7 +78,7 @@ inline bool CBaseEntity::IsPlayerSimulated( void ) const
 	return m_bIsPlayerSimulated;
 }
 
-inline CBasePlayer *CBaseEntity::GetSimulatingPlayer( void )
+inline CBasePlayer* CBaseEntity::GetSimulatingPlayer( void )
 {
 	return m_hPlayerSimulationOwner;
 }
@@ -86,12 +86,12 @@ inline CBasePlayer *CBaseEntity::GetSimulatingPlayer( void )
 
 inline MoveType_t CBaseEntity::GetMoveType() const
 {
-	return (MoveType_t)(unsigned char)m_MoveType;
+	return ( MoveType_t )( unsigned char )m_MoveType;
 }
 
 inline MoveCollide_t CBaseEntity::GetMoveCollide() const
 {
-	return (MoveCollide_t)(unsigned char)m_MoveCollide;
+	return ( MoveCollide_t )( unsigned char )m_MoveCollide;
 }
 
 //-----------------------------------------------------------------------------
@@ -109,15 +109,15 @@ inline int	CBaseEntity::GetFlags( void ) const
 
 inline bool CBaseEntity::IsAlive( void )
 {
-	return m_lifeState == LIFE_ALIVE; 
+	return m_lifeState == LIFE_ALIVE;
 }
 
-inline CBaseEntity	*CBaseEntity::GetOwnerEntity() const
+inline CBaseEntity*	CBaseEntity::GetOwnerEntity() const
 {
 	return m_hOwnerEntity.Get();
 }
 
-inline CBaseEntity	*CBaseEntity::GetEffectEntity() const
+inline CBaseEntity*	CBaseEntity::GetEffectEntity() const
 {
 	return m_hEffectEntity.Get();
 }
@@ -131,12 +131,12 @@ inline int CBaseEntity::GetPredictionRandomSeed( bool bUseUnSyncedServerPlatTime
 #endif
 }
 
-inline CBasePlayer *CBaseEntity::GetPredictionPlayer( void )
+inline CBasePlayer* CBaseEntity::GetPredictionPlayer( void )
 {
 	return m_pPredictionPlayer;
 }
 
-inline void CBaseEntity::SetPredictionPlayer( CBasePlayer *player )
+inline void CBaseEntity::SetPredictionPlayer( CBasePlayer* player )
 {
 	m_pPredictionPlayer = player;
 }
@@ -154,7 +154,7 @@ inline bool CBaseEntity::IsAnimatedEveryTick() const
 
 inline void CBaseEntity::SetSimulatedEveryTick( bool sim )
 {
-	if ( m_bSimulatedEveryTick != sim )
+	if( m_bSimulatedEveryTick != sim )
 	{
 		m_bSimulatedEveryTick = sim;
 #ifdef CLIENT_DLL
@@ -165,7 +165,7 @@ inline void CBaseEntity::SetSimulatedEveryTick( bool sim )
 
 inline void CBaseEntity::SetAnimatedEveryTick( bool anim )
 {
-	if ( m_bAnimatedEveryTick != anim )
+	if( m_bAnimatedEveryTick != anim )
 	{
 		m_bAnimatedEveryTick = anim;
 #ifdef CLIENT_DLL
@@ -195,18 +195,18 @@ inline void CBaseEntity::SetSimulationTime( float st )
 }
 
 inline int CBaseEntity::GetEffects( void ) const
-{ 
-	return m_fEffects; 
+{
+	return m_fEffects;
 }
 
-inline void CBaseEntity::RemoveEffects( int nEffects ) 
-{ 
+inline void CBaseEntity::RemoveEffects( int nEffects )
+{
 #if !defined( CLIENT_DLL )
 #ifdef HL2_EPISODIC
-	if ( nEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT) )
+	if( nEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) )
 	{
 		// Hack for now, to avoid player emitting radius with his flashlight
-		if ( !IsPlayer() )
+		if( !IsPlayer() )
 		{
 			RemoveEntityFromDarknessCheck( this );
 		}
@@ -215,7 +215,7 @@ inline void CBaseEntity::RemoveEffects( int nEffects )
 #endif // !CLIENT_DLL
 
 	m_fEffects &= ~nEffects;
-	if ( nEffects & EF_NODRAW )
+	if( nEffects & EF_NODRAW )
 	{
 #ifndef CLIENT_DLL
 		NetworkProp()->MarkPVSInformationDirty();
@@ -226,14 +226,14 @@ inline void CBaseEntity::RemoveEffects( int nEffects )
 	}
 }
 
-inline void CBaseEntity::ClearEffects( void ) 
-{ 
+inline void CBaseEntity::ClearEffects( void )
+{
 #if !defined( CLIENT_DLL )
 #ifdef HL2_EPISODIC
-	if ( m_fEffects & (EF_BRIGHTLIGHT|EF_DIMLIGHT) )
+	if( m_fEffects & ( EF_BRIGHTLIGHT | EF_DIMLIGHT ) )
 	{
 		// Hack for now, to avoid player emitting radius with his flashlight
-		if ( !IsPlayer() )
+		if( !IsPlayer() )
 		{
 			RemoveEntityFromDarknessCheck( this );
 		}
@@ -243,26 +243,26 @@ inline void CBaseEntity::ClearEffects( void )
 
 	m_fEffects = 0;
 #ifndef CLIENT_DLL
-		DispatchUpdateTransmitState();
+	DispatchUpdateTransmitState();
 #else
-		UpdateVisibility();
+	UpdateVisibility();
 #endif
 }
 
 inline bool CBaseEntity::IsEffectActive( int nEffects ) const
-{ 
-	return (m_fEffects & nEffects) != 0; 
+{
+	return ( m_fEffects & nEffects ) != 0;
 }
 
-inline HSCRIPT ToHScript(CBaseEntity* pEnt)
+inline HSCRIPT ToHScript( CBaseEntity* pEnt )
 {
-	return (pEnt) ? pEnt->GetScriptInstance() : NULL;
+	return ( pEnt ) ? pEnt->GetScriptInstance() : NULL;
 }
 
-template <> ScriptClassDesc_t* GetScriptDesc<CBaseEntity>(CBaseEntity*);
-inline CBaseEntity* ToEnt(HSCRIPT hScript)
+template <> ScriptClassDesc_t* GetScriptDesc<CBaseEntity>( CBaseEntity* );
+inline CBaseEntity* ToEnt( HSCRIPT hScript )
 {
-	return (hScript) ? (CBaseEntity*)g_pScriptVM->GetInstanceValue(hScript, GetScriptDescForClass(CBaseEntity)) : NULL;
+	return ( hScript ) ? ( CBaseEntity* )g_pScriptVM->GetInstanceValue( hScript, GetScriptDescForClass( CBaseEntity ) ) : NULL;
 }
 
 // Shared EntityMessage between game and client .dlls
@@ -273,13 +273,13 @@ extern float k_flMaxEntityEulerAngle;
 extern float k_flMaxEntitySpeed;
 extern float k_flMaxEntitySpinRate;
 
-inline bool IsEntityCoordinateReasonable ( const vec_t c )
+inline bool IsEntityCoordinateReasonable( const vec_t c )
 {
 	float r = k_flMaxEntityPosCoord;
 	return c > -r && c < r;
 }
 
-inline bool IsEntityPositionReasonable( const Vector &v )
+inline bool IsEntityPositionReasonable( const Vector& v )
 {
 	float r = k_flMaxEntityPosCoord;
 	return
@@ -292,9 +292,9 @@ inline bool IsEntityPositionReasonable( const Vector &v )
 //   -1 - velocity is really, REALLY bad and probably should be rejected.
 //   0  - velocity was suspicious and clamped.
 //   1  - velocity was OK and not modified
-extern int CheckEntityVelocity( Vector &v );
+extern int CheckEntityVelocity( Vector& v );
 
-inline bool IsEntityQAngleReasonable( const QAngle &q )
+inline bool IsEntityQAngleReasonable( const QAngle& q )
 {
 	float r = k_flMaxEntityEulerAngle;
 	return
@@ -304,7 +304,7 @@ inline bool IsEntityQAngleReasonable( const QAngle &q )
 }
 
 // Angular velocity in exponential map form
-inline bool IsEntityAngularVelocityReasonable( const Vector &q )
+inline bool IsEntityAngularVelocityReasonable( const Vector& q )
 {
 	float r = k_flMaxEntitySpinRate;
 	return
@@ -314,7 +314,7 @@ inline bool IsEntityAngularVelocityReasonable( const Vector &q )
 }
 
 // Angular velocity of each Euler angle.
-inline bool IsEntityQAngleVelReasonable( const QAngle &q )
+inline bool IsEntityQAngleVelReasonable( const QAngle& q )
 {
 	float r = k_flMaxEntitySpinRate;
 	return

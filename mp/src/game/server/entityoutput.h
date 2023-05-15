@@ -10,7 +10,7 @@
 #define ENTITYOUTPUT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,14 +21,14 @@
 
 
 //-----------------------------------------------------------------------------
-// Purpose: A COutputEvent consists of an array of these CEventActions. 
-//			Each CEventAction holds the information to fire a single input in 
+// Purpose: A COutputEvent consists of an array of these CEventActions.
+//			Each CEventAction holds the information to fire a single input in
 //			a target entity, after a specific delay.
 //-----------------------------------------------------------------------------
 class CEventAction
 {
 public:
-	CEventAction( const char *ActionData = NULL );
+	CEventAction( const char* ActionData = NULL );
 
 	string_t m_iTarget; // name of the entity(s) to cause the action in
 	string_t m_iTargetInput; // the name of the action to fire
@@ -40,13 +40,16 @@ public:
 
 	static int s_iNextIDStamp;
 
-	CEventAction *m_pNext; 
+	CEventAction* m_pNext;
 
 	// allocates memory from engine.MPool/g_EntityListPool
-	static void *operator new( size_t stAllocateBlock );
-	static void *operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine );
-	static void operator delete( void *pMem );
-	static void operator delete( void *pMem , int nBlockUse, const char *pFileName, int nLine ) { operator delete(pMem); }
+	static void* operator new( size_t stAllocateBlock );
+	static void* operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine );
+	static void operator delete( void* pMem );
+	static void operator delete( void* pMem , int nBlockUse, const char* pFileName, int nLine )
+	{
+		operator delete( pMem );
+	}
 
 	DECLARE_SIMPLE_DATADESC();
 };
@@ -61,33 +64,42 @@ class CBaseEntityOutput
 public:
 	~CBaseEntityOutput();
 
-	void ParseEventAction( const char *EventData );
-	void AddEventAction( CEventAction *pEventAction );
-	void RemoveEventAction( CEventAction *pEventAction );
+	void ParseEventAction( const char* EventData );
+	void AddEventAction( CEventAction* pEventAction );
+	void RemoveEventAction( CEventAction* pEventAction );
 
-	int Save( ISave &save );
-	int Restore( IRestore &restore, int elementCount );
+	int Save( ISave& save );
+	int Restore( IRestore& restore, int elementCount );
 
 	int NumberOfElements( void );
 
 	float GetMaxDelay( void );
 
-	fieldtype_t ValueFieldType() { return m_Value.FieldType(); }
+	fieldtype_t ValueFieldType()
+	{
+		return m_Value.FieldType();
+	}
 
-	void FireOutput( variant_t Value, CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay = 0 );
+	void FireOutput( variant_t Value, CBaseEntity* pActivator, CBaseEntity* pCaller, float fDelay = 0 );
 
-	/// Delete every single action in the action list. 
+	/// Delete every single action in the action list.
 	void DeleteAllElements( void ) ;
 
 #ifdef MAPBASE
 	// Needed for ReplaceOutput, hopefully not bad
-	CEventAction *GetActionList() { return m_ActionList; }
-	void SetActionList(CEventAction *newlist) { m_ActionList = newlist; }
+	CEventAction* GetActionList()
+	{
+		return m_ActionList;
+	}
+	void SetActionList( CEventAction* newlist )
+	{
+		m_ActionList = newlist;
+	}
 #endif
 
 protected:
 	variant_t m_Value;
-	CEventAction *m_ActionList;
+	CEventAction* m_ActionList;
 	DECLARE_SIMPLE_DATADESC();
 
 	CBaseEntityOutput() {} // this class cannot be created, only it's children
@@ -107,7 +119,7 @@ public:
 	//
 	// Sets an initial value without firing the output.
 	//
-	void Init( Type value ) 
+	void Init( Type value )
 	{
 		m_Value.Set( fieldType, &value );
 	}
@@ -115,7 +127,7 @@ public:
 	//
 	// Sets a value and fires the output.
 	//
-	void Set( Type value, CBaseEntity *pActivator, CBaseEntity *pCaller ) 
+	void Set( Type value, CBaseEntity* pActivator, CBaseEntity* pCaller )
 	{
 		m_Value.Set( fieldType, &value );
 		FireOutput( m_Value, pActivator, pCaller );
@@ -126,7 +138,7 @@ public:
 	//
 	Type Get( void )
 	{
-		return *((Type*)&m_Value);
+		return *( ( Type* )&m_Value );
 	}
 };
 
@@ -136,69 +148,69 @@ public:
 //
 template<>
 class CEntityOutputTemplate<class Vector, FIELD_VECTOR> : public CBaseEntityOutput
-{
-public:
-	void Init( const Vector &value )
 	{
-		m_Value.SetVector3D( value );
-	}
+	public:
+		void Init( const Vector& value )
+		{
+			m_Value.SetVector3D( value );
+		}
 
-	void Set( const Vector &value, CBaseEntity *pActivator, CBaseEntity *pCaller )
-	{
-		m_Value.SetVector3D( value );
-		FireOutput( m_Value, pActivator, pCaller );
-	}
+		void Set( const Vector& value, CBaseEntity* pActivator, CBaseEntity* pCaller )
+		{
+			m_Value.SetVector3D( value );
+			FireOutput( m_Value, pActivator, pCaller );
+		}
 
-	void Get( Vector &vec )
-	{
-		m_Value.Vector3D(vec);
-	}
+		void Get( Vector& vec )
+		{
+			m_Value.Vector3D( vec );
+		}
 
 #ifdef MAPBASE
-	// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
-	void Init( const QAngle &value )
-	{
-		// reinterpret_cast<const Vector&>(value)
-		m_Value.SetAngle3D( value );
-	}
+		// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
+		void Init( const QAngle& value )
+		{
+			// reinterpret_cast<const Vector&>(value)
+			m_Value.SetAngle3D( value );
+		}
 
-	// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
-	void Set( const QAngle &value, CBaseEntity *pActivator, CBaseEntity *pCaller )
-	{
-		// reinterpret_cast<const Vector&>(value)
-		m_Value.SetAngle3D( value );
-		FireOutput( m_Value, pActivator, pCaller );
-	}
+		// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
+		void Set( const QAngle& value, CBaseEntity* pActivator, CBaseEntity* pCaller )
+		{
+			// reinterpret_cast<const Vector&>(value)
+			m_Value.SetAngle3D( value );
+			FireOutput( m_Value, pActivator, pCaller );
+		}
 
-	// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
-	void Get( QAngle &ang )
-	{
-		m_Value.Angle3D(ang);
-	}
+		// Shortcut to using QAngles in Vector outputs, makes it look cleaner and allows easy modification
+		void Get( QAngle& ang )
+		{
+			m_Value.Angle3D( ang );
+		}
 #endif
-};
+	};
 
 
 template<>
 class CEntityOutputTemplate<class Vector, FIELD_POSITION_VECTOR> : public CBaseEntityOutput
-{
-public:
-	void Init( const Vector &value )
 	{
-		m_Value.SetPositionVector3D( value );
-	}
+	public:
+		void Init( const Vector& value )
+		{
+			m_Value.SetPositionVector3D( value );
+		}
 
-	void Set( const Vector &value, CBaseEntity *pActivator, CBaseEntity *pCaller )
-	{
-		m_Value.SetPositionVector3D( value );
-		FireOutput( m_Value, pActivator, pCaller );
-	}
+		void Set( const Vector& value, CBaseEntity* pActivator, CBaseEntity* pCaller )
+		{
+			m_Value.SetPositionVector3D( value );
+			FireOutput( m_Value, pActivator, pCaller );
+		}
 
-	void Get( Vector &vec )
-	{
-		m_Value.Vector3D(vec);
-	}
-};
+		void Get( Vector& vec )
+		{
+			m_Value.Vector3D( vec );
+		}
+	};
 
 
 //-----------------------------------------------------------------------------
@@ -208,18 +220,18 @@ class COutputEvent : public CBaseEntityOutput
 {
 public:
 	// void Firing, no parameter
-	void FireOutput( CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay = 0 );
+	void FireOutput( CBaseEntity* pActivator, CBaseEntity* pCaller, float fDelay = 0 );
 };
 
 
 // useful typedefs for allowed output data types
-typedef CEntityOutputTemplate<variant_t,FIELD_INPUT>		COutputVariant;
-typedef CEntityOutputTemplate<int,FIELD_INTEGER>			COutputInt;
-typedef CEntityOutputTemplate<float,FIELD_FLOAT>			COutputFloat;
-typedef CEntityOutputTemplate<string_t,FIELD_STRING>		COutputString;
-typedef CEntityOutputTemplate<EHANDLE,FIELD_EHANDLE>		COutputEHANDLE;
-typedef CEntityOutputTemplate<Vector,FIELD_VECTOR>			COutputVector;
-typedef CEntityOutputTemplate<Vector,FIELD_POSITION_VECTOR>	COutputPositionVector;
-typedef CEntityOutputTemplate<color32,FIELD_COLOR32>		COutputColor32;
+typedef CEntityOutputTemplate<variant_t, FIELD_INPUT>		COutputVariant;
+typedef CEntityOutputTemplate<int, FIELD_INTEGER>			COutputInt;
+typedef CEntityOutputTemplate<float, FIELD_FLOAT>			COutputFloat;
+typedef CEntityOutputTemplate<string_t, FIELD_STRING>		COutputString;
+typedef CEntityOutputTemplate<EHANDLE, FIELD_EHANDLE>		COutputEHANDLE;
+typedef CEntityOutputTemplate<Vector, FIELD_VECTOR>			COutputVector;
+typedef CEntityOutputTemplate<Vector, FIELD_POSITION_VECTOR>	COutputPositionVector;
+typedef CEntityOutputTemplate<color32, FIELD_COLOR32>		COutputColor32;
 
 #endif // ENTITYOUTPUT_H

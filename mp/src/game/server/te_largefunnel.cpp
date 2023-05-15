@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -27,21 +27,21 @@ public:
 	DECLARE_CLASS( CTELargeFunnel, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
 
-					CTELargeFunnel( const char *name );
+	CTELargeFunnel( const char* name );
 	virtual			~CTELargeFunnel( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 public:
 	CNetworkVar( int, m_nModelIndex );
 	CNetworkVar( int, m_nReversed );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTELargeFunnel::CTELargeFunnel( const char *name ) :
+CTELargeFunnel::CTELargeFunnel( const char* name ) :
 	BaseClass( name )
 {
 	m_nModelIndex = 0;
@@ -49,16 +49,16 @@ CTELargeFunnel::CTELargeFunnel( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTELargeFunnel::~CTELargeFunnel( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -66,7 +66,7 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 	m_nModelIndex = g_sModelIndexSmoke;
 	m_nReversed = 0;
 	m_vecOrigin = current_origin;
-	
+
 	Vector forward, right;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -82,20 +82,20 @@ void CTELargeFunnel::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTELargeFunnel, DT_TELargeFunnel)
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_nReversed), 2, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTELargeFunnel, DT_TELargeFunnel )
+SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+					SendPropInt( SENDINFO( m_nReversed ), 2, SPROP_UNSIGNED ),
+					END_SEND_TABLE()
 
 
 // Singleton to fire TELargeFunnel objects
-static CTELargeFunnel g_TELargeFunnel( "Large Funnel" );
+					static CTELargeFunnel g_TELargeFunnel( "Large Funnel" );
 
 void TE_LargeFunnel( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, int reversed )
+					 const Vector* pos, int modelindex, int reversed )
 {
 	g_TELargeFunnel.m_vecOrigin		= *pos;
-	g_TELargeFunnel.m_nModelIndex	= modelindex;	
+	g_TELargeFunnel.m_nModelIndex	= modelindex;
 	g_TELargeFunnel.m_nReversed		= reversed;
 
 	// Send it over the wire

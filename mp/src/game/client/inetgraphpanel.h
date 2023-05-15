@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -10,14 +10,14 @@
 #if !defined( INETGRAPHPANEL_H )
 #define INETGRAPHPANEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 abstract_class INetGraphPanel
@@ -27,6 +27,6 @@ public:
 	virtual void			Destroy( void ) = 0;
 };
 
-extern INetGraphPanel *netgraphpanel;
+extern INetGraphPanel* netgraphpanel;
 
 #endif // INETGRAPHPANEL_H

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef IHANDLEENTITY_H
 #define IHANDLEENTITY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -19,7 +19,7 @@ class IHandleEntity
 {
 public:
 	virtual ~IHandleEntity() {}
-	virtual void SetRefEHandle( const CBaseHandle &handle ) = 0;
+	virtual void SetRefEHandle( const CBaseHandle& handle ) = 0;
 	virtual const CBaseHandle& GetRefEHandle() const = 0;
 };
 

@@ -36,14 +36,14 @@ CAI_BaseNPCFlyerNew::CAI_BaseNPCFlyerNew()
 void CAI_BaseNPCFlyerNew::SpawnFlyer()
 {
 	SetNavType( NAV_FLY );
-	AddFlag(  FL_FLY );
-	SetMoveType( MOVETYPE_STEP );			
+	AddFlag( FL_FLY );
+	SetMoveType( MOVETYPE_STEP );
 	CapabilitiesAdd( bits_CAP_MOVE_FLY );
 }
 
 
 /*
-void CAI_BaseNPCFlyerNew::InitCustomSchedules(void) 
+void CAI_BaseNPCFlyerNew::InitCustomSchedules(void)
 {
 	INIT_CUSTOM_AI(CAI_BaseNPCFlyerNew);
 
@@ -53,9 +53,9 @@ void CAI_BaseNPCFlyerNew::InitCustomSchedules(void)
 */
 
 //------------------------------------------------------------------------------
-// Should be called during Select Schedule (BLEAH!) 
+// Should be called during Select Schedule (BLEAH!)
 //------------------------------------------------------------------------------
-void CAI_BaseNPCFlyerNew::ClearFlyerConditions(void)
+void CAI_BaseNPCFlyerNew::ClearFlyerConditions( void )
 {
 //	ClearCondition( COND_FLYER_MOVE_BLOCKED );
 //	ClearCondition( COND_FLYER_MOVE_IMPOSSIBLE );
@@ -68,14 +68,14 @@ void CAI_BaseNPCFlyerNew::ClearFlyerConditions(void)
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-float CAI_BaseNPCFlyerNew::MinGroundDist(void)
+float CAI_BaseNPCFlyerNew::MinGroundDist( void )
 {
 	return 0;
 }
 
 
 //-----------------------------------------------------------------------------
-// Sets the ground speed appropriately: 
+// Sets the ground speed appropriately:
 //-----------------------------------------------------------------------------
 float CAI_BaseNPCFlyerNew::GetIdealSpeed( )	const
 {
@@ -88,14 +88,14 @@ float CAI_BaseNPCFlyerNew::GetIdealSpeed( )	const
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CAI_BaseNPCFlyerNew::StartTask( const Task_t *pTask )
+void CAI_BaseNPCFlyerNew::StartTask( const Task_t* pTask )
 {
-	switch (pTask->iTask)
-	{	
+	switch( pTask->iTask )
+	{
 		// Activity is just idle (have no run)
 		case TASK_RUN_PATH:
 		{
-			GetNavigator()->SetMovementActivity(ACT_IDLE);
+			GetNavigator()->SetMovementActivity( ACT_IDLE );
 			TaskComplete();
 			break;
 		}
@@ -104,15 +104,15 @@ void CAI_BaseNPCFlyerNew::StartTask( const Task_t *pTask )
 		case TASK_SCRIPT_RUN_TO_TARGET:
 		case TASK_SCRIPT_WALK_TO_TARGET:
 		{
-			if (GetTarget() == NULL)
+			if( GetTarget() == NULL )
 			{
-				TaskFail(FAIL_NO_TARGET);
+				TaskFail( FAIL_NO_TARGET );
 			}
-			else 
+			else
 			{
-				if (!GetNavigator()->SetGoal( GOALTYPE_TARGETENT ) )
+				if( !GetNavigator()->SetGoal( GOALTYPE_TARGETENT ) )
 				{
-					TaskFail(FAIL_NO_ROUTE);
+					TaskFail( FAIL_NO_ROUTE );
 					GetNavigator()->ClearGoal();
 				}
 			}
@@ -122,7 +122,7 @@ void CAI_BaseNPCFlyerNew::StartTask( const Task_t *pTask )
 
 		default:
 		{
-			BaseClass::StartTask(pTask);
+			BaseClass::StartTask( pTask );
 		}
 		break;
 	}
@@ -130,11 +130,11 @@ void CAI_BaseNPCFlyerNew::StartTask( const Task_t *pTask )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAI_BaseNPCFlyerNew::RunTask( const Task_t *pTask )
+void CAI_BaseNPCFlyerNew::RunTask( const Task_t* pTask )
 {
-	BaseClass::RunTask(pTask);
+	BaseClass::RunTask( pTask );
 }
 
 

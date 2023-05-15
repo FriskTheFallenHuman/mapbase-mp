@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -22,7 +22,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct WorldVertexTransition_DX6_Vars_t
 {
-	WorldVertexTransition_DX6_Vars_t() { memset( this, 0xFF, sizeof(WorldVertexTransition_DX6_Vars_t) ); }
+	WorldVertexTransition_DX6_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( WorldVertexTransition_DX6_Vars_t ) );
+	}
 
 	int m_nBaseTextureVar;
 	int m_nBaseTextureFrameVar;
@@ -30,10 +33,10 @@ struct WorldVertexTransition_DX6_Vars_t
 	int m_nFlashlightTextureVar;
 };
 
-void InitParamsWorldVertexTransition_DX6( IMaterialVar** params, WorldVertexTransition_DX6_Vars_t &info );
-void InitWorldVertexTransition_DX6( CBaseShader *pShader, IMaterialVar** params, WorldVertexTransition_DX6_Vars_t &info );
-void DrawWorldVertexTransition_DX6( CBaseShader *pShader, IMaterialVar** params, 
-	IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow, WorldVertexTransition_DX6_Vars_t &info );
+void InitParamsWorldVertexTransition_DX6( IMaterialVar** params, WorldVertexTransition_DX6_Vars_t& info );
+void InitWorldVertexTransition_DX6( CBaseShader* pShader, IMaterialVar** params, WorldVertexTransition_DX6_Vars_t& info );
+void DrawWorldVertexTransition_DX6( CBaseShader* pShader, IMaterialVar** params,
+									IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow, WorldVertexTransition_DX6_Vars_t& info );
 
 
 #endif // WORLDVERTEXTRANSITION_DX6_HELPER_H

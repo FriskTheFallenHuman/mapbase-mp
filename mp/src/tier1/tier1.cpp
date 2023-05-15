@@ -16,14 +16,14 @@
 // It is hoped that setting this, and using this library will be the common mechanism for
 // allowing link libraries to access tier1 library interfaces
 //-----------------------------------------------------------------------------
-ICvar *cvar = 0;
-ICvar *g_pCVar = 0;
-IProcessUtils *g_pProcessUtils = 0;
+ICvar* cvar = 0;
+ICvar* g_pCVar = 0;
+IProcessUtils* g_pProcessUtils = 0;
 static bool s_bConnected = false;
 
 // for utlsortvector.h
 #ifndef _WIN32
-	void *g_pUtlSortVectorQSortContext = NULL;
+	void* g_pUtlSortVectorQSortContext = NULL;
 #endif
 
 
@@ -31,31 +31,35 @@ static bool s_bConnected = false;
 // Call this to connect to all tier 1 libraries.
 // It's up to the caller to check the globals it cares about to see if ones are missing
 //-----------------------------------------------------------------------------
-void ConnectTier1Libraries( CreateInterfaceFn *pFactoryList, int nFactoryCount )
+void ConnectTier1Libraries( CreateInterfaceFn* pFactoryList, int nFactoryCount )
 {
 	// Don't connect twice..
-	if ( s_bConnected )
+	if( s_bConnected )
+	{
 		return;
+	}
 
 	s_bConnected = true;
 
-	for ( int i = 0; i < nFactoryCount; ++i )
+	for( int i = 0; i < nFactoryCount; ++i )
 	{
-		if ( !g_pCVar )
+		if( !g_pCVar )
 		{
-			cvar = g_pCVar = ( ICvar * )pFactoryList[i]( CVAR_INTERFACE_VERSION, NULL );
+			cvar = g_pCVar = ( ICvar* )pFactoryList[i]( CVAR_INTERFACE_VERSION, NULL );
 		}
-		if ( !g_pProcessUtils )
+		if( !g_pProcessUtils )
 		{
-			g_pProcessUtils = ( IProcessUtils * )pFactoryList[i]( PROCESS_UTILS_INTERFACE_VERSION, NULL );
+			g_pProcessUtils = ( IProcessUtils* )pFactoryList[i]( PROCESS_UTILS_INTERFACE_VERSION, NULL );
 		}
 	}
 }
 
 void DisconnectTier1Libraries()
 {
-	if ( !s_bConnected )
+	if( !s_bConnected )
+	{
 		return;
+	}
 
 	g_pCVar = cvar = 0;
 	g_pProcessUtils = NULL;

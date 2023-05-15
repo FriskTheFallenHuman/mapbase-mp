@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		TRIPWIRE 
+// Purpose:		TRIPWIRE
 //
 // $Workfile:     $
 // $Date:         $
@@ -38,22 +38,25 @@ public:
 	void				Spawn( void );
 	void				Precache( void );
 
-	int					CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int					CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 	void				PrimaryAttack( void );
 	void				SecondaryAttack( void );
 	void				WeaponIdle( void );
 	void				WeaponSwitch( void );
-	
+
 	void				SetPickupTouch( void );
-	void				TripwireTouch( CBaseEntity *pOther );	// default weapon touch
-	void				ItemPostFrame( void );	
+	void				TripwireTouch( CBaseEntity* pOther );	// default weapon touch
+	void				ItemPostFrame( void );
 	bool				Reload( void );
-	bool				CanAttachTripwire(void);		// In position where can attach TRIPWIRE?
+	bool				CanAttachTripwire( void );		// In position where can attach TRIPWIRE?
 	void				StartTripwireAttach( void );
 	void				TripwireAttach( void );
 
 	bool				Deploy( void );
-	bool				Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool				Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 
 
 	CWeapon_Tripwire();

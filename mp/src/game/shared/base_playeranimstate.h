@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef BASE_PLAYERANIMSTATE_H
 #define BASE_PLAYERANIMSTATE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,13 +23,13 @@
 #endif
 
 // If a guy is moving slower than this, then he's considered to not be moving
-// (so he goes to his idle animation at full playback rate rather than his walk 
+// (so he goes to his idle animation at full playback rate rather than his walk
 // animation at low playback rate).
 #define MOVING_MINIMUM_SPEED 0.5f
 
 
 #define MAIN_IDLE_SEQUENCE_LAYER 0	// For 8-way blended models, this layer blends an idle on top of the run/walk animation to simulate a 9-way blend.
-									// For 9-way blended models, we don't use this layer.
+// For 9-way blended models, we don't use this layer.
 
 #define AIMSEQUENCE_LAYER		1	// Aim sequence uses layers 0 and 1 for the weapon idle animation (needs 2 layers so it can blend).
 #define NUM_AIMSEQUENCE_LAYERS	4	// Then it uses layers 2 and 3 to blend in the weapon run/walk/crouchwalk animation.
@@ -56,7 +56,8 @@ public:
 // CBasePlayerAnimState declaration.
 // ------------------------------------------------------------------------------------------------ //
 
-abstract_class CBasePlayerAnimState : virtual public IPlayerAnimState
+abstract_class CBasePlayerAnimState :
+virtual public IPlayerAnimState
 {
 public:
 	DECLARE_CLASS_NOBASE( CBasePlayerAnimState );
@@ -68,10 +69,10 @@ public:
 		TURN_RIGHT
 	};
 
-						CBasePlayerAnimState();
+	CBasePlayerAnimState();
 	virtual ~CBasePlayerAnimState();
 
-	void Init( CBaseAnimatingOverlay *pPlayer, const CModAnimConfig &config );
+	void Init( CBaseAnimatingOverlay * pPlayer, const CModAnimConfig & config );
 	virtual void Release();
 
 	// Update() and DoAnimationEvent() together maintain the entire player's animation state.
@@ -93,7 +94,7 @@ public:
 
 	// The client uses this to figure out what angles to render the entity with (since as the guy turns,
 	// it will change his body_yaw pose parameter before changing his rendered angle).
-	virtual const QAngle& GetRenderAngles();
+	virtual const QAngle & GetRenderAngles();
 
 
 // Overrideables.
@@ -104,15 +105,15 @@ public:
 	// This is called near the start of each frame.
 	// The base class figures out the main sequence and the aim sequence, and derived
 	// classes can overlay whatever other animations they want.
-	virtual void ComputeSequences( CStudioHdr *pStudioHdr );
+	virtual void ComputeSequences( CStudioHdr * pStudioHdr );
 
-	// This is called to figure out what the main activity is. The mod-specific class 
+	// This is called to figure out what the main activity is. The mod-specific class
 	// overrides this to handle events like jumping, firing, etc.
 	virtual Activity CalcMainActivity() = 0;
 
-	// This is called to calculate the aim layer sequence. It usually figures out the 
+	// This is called to calculate the aim layer sequence. It usually figures out the
 	// animation prefixes and suffixes and calls CalcSequenceIndex().
-	virtual int CalcAimLayerSequence( float *flCycle, float *flAimSequenceWeight, bool bForceIdle ) = 0;
+	virtual int CalcAimLayerSequence( float * flCycle, float * flAimSequenceWeight, bool bForceIdle ) = 0;
 
 	// This lets server-controlled idle sequences to play unchanged on the client
 	virtual bool ShouldChangeSequences( void ) const;
@@ -141,24 +142,27 @@ public:
 	void DebugShowAnimStateFull( int iStartLine );
 
 	virtual void DebugShowAnimState( int iStartLine );
-	void AnimStatePrintf( int iLine, PRINTF_FORMAT_STRING const char *pMsg, ... );
-	void AnimStateLog( PRINTF_FORMAT_STRING const char *pMsg, ... );
+	void AnimStatePrintf( int iLine, PRINTF_FORMAT_STRING const char* pMsg, ... );
+	void AnimStateLog( PRINTF_FORMAT_STRING const char* pMsg, ... );
 
 	// Calculate the playback rate for movement layer
-	virtual float CalcMovementPlaybackRate( bool *bIsMoving );
+	virtual float CalcMovementPlaybackRate( bool * bIsMoving );
 
 	// Allow inheriting classes to translate their desired activity, while keeping all
 	// internal ACT comparisons using the base activity
-	virtual Activity TranslateActivity( Activity actDesired ) { return actDesired; }
+	virtual Activity TranslateActivity( Activity actDesired )
+	{
+		return actDesired;
+	}
 
 	// Allow inheriting classes to override SelectWeightedSequence
 	virtual int SelectWeightedSequence( Activity activity );
 
 public:
-	
-	void				GetPoseParameters( CStudioHdr *pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] );
 
-	CBaseAnimatingOverlay	*GetOuter() const;
+	void				GetPoseParameters( CStudioHdr * pStudioHdr, float poseParameter[MAXSTUDIOPOSEPARAM] );
+
+	CBaseAnimatingOverlay	* GetOuter() const;
 
 	void				RestartMainSequence();
 
@@ -166,13 +170,13 @@ public:
 // Helpers for the derived classes to use.
 protected:
 
-	// Sets up the string you specify, looks for that sequence and returns the index. 
+	// Sets up the string you specify, looks for that sequence and returns the index.
 	// Complains in the console and returns 0 if it can't find it.
-	virtual int CalcSequenceIndex( PRINTF_FORMAT_STRING const char *pBaseName, ... );
+	virtual int CalcSequenceIndex( PRINTF_FORMAT_STRING const char* pBaseName, ... );
 
 	Activity GetCurrentMainSequenceActivity() const;
 
-	void				GetOuterAbsVelocity( Vector& vel ) const;
+	void				GetOuterAbsVelocity( Vector & vel ) const;
 	float				GetOuterXYSpeed() const;
 
 	// How long has it been since we cleared the animation state?
@@ -181,14 +185,14 @@ protected:
 	float				GetEyeYaw() const { return m_flEyeYaw; }
 
 protected:
-	
+
 	CModAnimConfig		m_AnimConfig;
-	CBaseAnimatingOverlay	*m_pOuter;
+	CBaseAnimatingOverlay*	m_pOuter;
 
 protected:
-	int					ConvergeAngles( float goal,float maxrate, float maxgap, float dt, float& current );
-	virtual void		ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr );
-	virtual void		ComputePoseParam_BodyPitch( CStudioHdr *pStudioHdr );
+	int					ConvergeAngles( float goal, float maxrate, float maxgap, float dt, float & current );
+	virtual void		ComputePoseParam_MoveYaw( CStudioHdr * pStudioHdr );
+	virtual void		ComputePoseParam_BodyPitch( CStudioHdr * pStudioHdr );
 	virtual void		ComputePoseParam_BodyYaw();
 
 	virtual void		ResetGroundSpeed( void );
@@ -244,18 +248,18 @@ private:
 	float GetInterpolatedGroundSpeed();
 
 private:
-	
+
 	float m_flMaxGroundSpeed;
 
 	float m_flLastAnimationStateClearTime;
 
-	// If he's using 8-way blending, then we blend to this idle 
+	// If he's using 8-way blending, then we blend to this idle
 	int m_iCurrent8WayIdleSequence;
 	int m_iCurrent8WayCrouchIdleSequence;
 
 	// Last activity we've used on the lower body. Used to determine if animations should restart.
-	Activity m_eCurrentMainSequenceActivity;	
-												
+	Activity m_eCurrentMainSequenceActivity;
+
 	float				m_flGaitYaw;
 	float				m_flStoredCycle;
 
@@ -265,9 +269,9 @@ private:
 		float flCycle,
 		int iFirstLayer,
 		bool bForceIdle,
-		CSequenceTransitioner *pTransitioner,
+		CSequenceTransitioner * pTransitioner,
 		float flWeightScale
-		);
+	);
 
 	void OptimizeLayerWeights( int iFirstLayer, int nLayers );
 

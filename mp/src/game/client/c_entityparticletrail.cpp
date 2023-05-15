@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -32,15 +32,15 @@ public:
 
 // IParticleEffect
 	void Update( float fTimeDelta );
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 private:
 
-	C_EntityParticleTrail( const C_EntityParticleTrail & ); // not defined, not accessible
+	C_EntityParticleTrail( const C_EntityParticleTrail& );  // not defined, not accessible
 
 	void Start( );
-	void AddParticle( float flInitialDeltaTime, const Vector &vecMins, const Vector &vecMaxs, const matrix3x4_t &boxToWorld );
+	void AddParticle( float flInitialDeltaTime, const Vector& vecMins, const Vector& vecMaxs, const matrix3x4_t& boxToWorld );
 
 	int		m_iMaterialName;
 	EntityParticleTrailInfo_t	m_Info;
@@ -55,16 +55,16 @@ private:
 // Networking
 //-----------------------------------------------------------------------------
 IMPLEMENT_CLIENTCLASS_DT( C_EntityParticleTrail, DT_EntityParticleTrail, CEntityParticleTrail )
-	RecvPropInt(RECVINFO(m_iMaterialName)),
-	RecvPropDataTable( RECVINFO_DT( m_Info ), 0, &REFERENCE_RECV_TABLE(DT_EntityParticleTrailInfo) ),
-	RecvPropEHandle(RECVINFO(m_hConstraintEntity)),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_iMaterialName ) ),
+			 RecvPropDataTable( RECVINFO_DT( m_Info ), 0, &REFERENCE_RECV_TABLE( DT_EntityParticleTrailInfo ) ),
+			 RecvPropEHandle( RECVINFO( m_hConstraintEntity ) ),
+			 END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_EntityParticleTrail::C_EntityParticleTrail( void )
+			 C_EntityParticleTrail::C_EntityParticleTrail( void )
 {
 }
 
@@ -81,7 +81,7 @@ C_EntityParticleTrail::~C_EntityParticleTrail()
 void C_EntityParticleTrail::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( );
 	}
@@ -89,28 +89,32 @@ void C_EntityParticleTrail::OnDataChanged( DataUpdateType_t updateType )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
 void C_EntityParticleTrail::Start( )
 {
 	if( ParticleMgr()->AddEffect( &m_ParticleEffect, this ) == false )
+	{
 		return;
+	}
 
-	const char *pMaterialName = GetMaterialNameFromIndex( m_iMaterialName );
-	if ( !pMaterialName )
+	const char* pMaterialName = GetMaterialNameFromIndex( m_iMaterialName );
+	if( !pMaterialName )
+	{
 		return;
+	}
 
-	m_hMaterial	= ParticleMgr()->GetPMaterial( pMaterialName );	
+	m_hMaterial	= ParticleMgr()->GetPMaterial( pMaterialName );
 	m_teParticleSpawn.Init( 150 );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_EntityParticleTrail::AddParticle( float flInitialDeltaTime, const Vector &vecMins, const Vector &vecMaxs, const matrix3x4_t &boxToWorld )
+void C_EntityParticleTrail::AddParticle( float flInitialDeltaTime, const Vector& vecMins, const Vector& vecMaxs, const matrix3x4_t& boxToWorld )
 {
 	// Select a random point somewhere in the hitboxes of the entity.
 	Vector vecLocalPosition, vecWorldPosition;
@@ -120,21 +124,25 @@ void C_EntityParticleTrail::AddParticle( float flInitialDeltaTime, const Vector 
 	VectorTransform( vecLocalPosition, boxToWorld, vecWorldPosition );
 
 	// Don't emit the particle unless it's inside the model
-	if ( m_hConstraintEntity.Get() )
+	if( m_hConstraintEntity.Get() )
 	{
 		Ray_t ray;
 		trace_t tr;
 		ray.Init( vecWorldPosition, vecWorldPosition );
 		enginetrace->ClipRayToEntity( ray, MASK_ALL, m_hConstraintEntity, &tr );
-		
-		if ( !tr.startsolid )
+
+		if( !tr.startsolid )
+		{
 			return;
+		}
 	}
 
 	// Make a new particle
-	SimpleParticle *pParticle = (SimpleParticle *)m_ParticleEffect.AddParticle( sizeof(SimpleParticle), m_hMaterial );
-	if ( pParticle == NULL )
+	SimpleParticle* pParticle = ( SimpleParticle* )m_ParticleEffect.AddParticle( sizeof( SimpleParticle ), m_hMaterial );
+	if( pParticle == NULL )
+	{
 		return;
+	}
 
 	pParticle->m_Pos			= vecWorldPosition;
 	pParticle->m_flRoll			= Helper_RandomInt( 0, 360 );
@@ -153,62 +161,72 @@ void C_EntityParticleTrail::AddParticle( float flInitialDeltaTime, const Vector 
 	pParticle->m_uchEndSize		= m_Info.m_flEndSize;
 
 	pParticle->m_vecVelocity	= vec3_origin;
-	VectorMA( pParticle->m_Pos, flInitialDeltaTime, pParticle->m_vecVelocity, pParticle->m_Pos );  
+	VectorMA( pParticle->m_Pos, flInitialDeltaTime, pParticle->m_vecVelocity, pParticle->m_Pos );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_EntityParticleTrail::Update( float fTimeDelta )
 {
 	float tempDelta = fTimeDelta;
-	studiohdr_t *pStudioHdr;
-	mstudiohitboxset_t *set;
-	matrix3x4_t	*hitboxbones[MAXSTUDIOBONES];
+	studiohdr_t* pStudioHdr;
+	mstudiohitboxset_t* set;
+	matrix3x4_t*	hitboxbones[MAXSTUDIOBONES];
 
-	C_BaseEntity *pMoveParent = GetMoveParent();
-	if ( !pMoveParent )
+	C_BaseEntity* pMoveParent = GetMoveParent();
+	if( !pMoveParent )
+	{
 		return;
+	}
 
-	C_BaseAnimating *pAnimating = pMoveParent->GetBaseAnimating();
-	if (!pAnimating)
+	C_BaseAnimating* pAnimating = pMoveParent->GetBaseAnimating();
+	if( !pAnimating )
+	{
 		goto trailNoHitboxes;
+	}
 
-	if ( !pAnimating->HitboxToWorldTransforms( hitboxbones ) )
+	if( !pAnimating->HitboxToWorldTransforms( hitboxbones ) )
+	{
 		goto trailNoHitboxes;
+	}
 
 	pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
-	if (!pStudioHdr)
+	if( !pStudioHdr )
+	{
 		goto trailNoHitboxes;
+	}
 
 	set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
-	if ( !set )
+	if( !set )
+	{
 		goto trailNoHitboxes;
+	}
 
 	//Add new particles
-	while ( m_teParticleSpawn.NextEvent( tempDelta ) )
+	while( m_teParticleSpawn.NextEvent( tempDelta ) )
 	{
 		int nHitbox = random->RandomInt( 0, set->numhitboxes - 1 );
-		mstudiobbox_t *pBox = set->pHitbox(nHitbox);
+		mstudiobbox_t* pBox = set->pHitbox( nHitbox );
 
 		AddParticle( tempDelta, pBox->bbmin, pBox->bbmax, *hitboxbones[pBox->bone] );
 	}
 	return;
 
 trailNoHitboxes:
-	while ( m_teParticleSpawn.NextEvent( tempDelta ) )
+	while( m_teParticleSpawn.NextEvent( tempDelta ) )
 	{
 		AddParticle( tempDelta, pMoveParent->CollisionProp()->OBBMins(), pMoveParent->CollisionProp()->OBBMaxs(), pMoveParent->EntityToWorldTransform() );
 	}
 }
 
 
-inline void C_EntityParticleTrail::RenderParticles( CParticleRenderIterator *pIterator )
+inline void C_EntityParticleTrail::RenderParticles( CParticleRenderIterator* pIterator )
 {
-	const SimpleParticle *pParticle = (const SimpleParticle*)pIterator->GetFirst();
-	while ( pParticle )
+	const SimpleParticle* pParticle = ( const SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		float t = pParticle->m_flLifetime / pParticle->m_flDieTime;
 
@@ -223,16 +241,16 @@ inline void C_EntityParticleTrail::RenderParticles( CParticleRenderIterator *pIt
 
 		// Render it
 		RenderParticle_ColorSize( pIterator->GetParticleDraw(), tPos, color, alpha, flSize );
-		
-		pParticle = (const SimpleParticle*)pIterator->GetNext( sortKey );
+
+		pParticle = ( const SimpleParticle* )pIterator->GetNext( sortKey );
 	}
 }
 
 
-inline void C_EntityParticleTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
+inline void C_EntityParticleTrail::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
-	SimpleParticle *pParticle = (SimpleParticle*)pIterator->GetFirst();
-	while ( pParticle )
+	SimpleParticle* pParticle = ( SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		// Update position
 		float flTimeDelta = pIterator->GetTimeDelta();
@@ -241,10 +259,12 @@ inline void C_EntityParticleTrail::SimulateParticles( CParticleSimulateIterator 
 		// NOTE: I'm overloading "die time" to be the actual start time.
 		pParticle->m_flLifetime += flTimeDelta;
 
-		if ( pParticle->m_flLifetime >= pParticle->m_flDieTime )
+		if( pParticle->m_flLifetime >= pParticle->m_flDieTime )
+		{
 			pIterator->RemoveParticle( pParticle );
+		}
 
-		pParticle = (SimpleParticle*)pIterator->GetNext();
+		pParticle = ( SimpleParticle* )pIterator->GetNext();
 	}
 }
 

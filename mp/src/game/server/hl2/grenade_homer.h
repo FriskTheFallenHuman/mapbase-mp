@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		Projectile shot by city scanner 
+// Purpose:		Projectile shot by city scanner
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define	GRENADEHOMER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basegrenade_shared.h"
@@ -30,13 +30,13 @@ class CGrenadeHomer : public CBaseGrenade
 public:
 	DECLARE_CLASS( CGrenadeHomer, CBaseGrenade );
 
-	static CGrenadeHomer* CreateGrenadeHomer(  string_t nModelName, string_t sFlySound, const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner );
+	static CGrenadeHomer* CreateGrenadeHomer( string_t nModelName, string_t sFlySound, const Vector& vecOrigin, const QAngle& vecAngles, edict_t* pentOwner );
 
 	virtual void Precache( void );
 	void		Spawn( void );
-	void		Launch( CBaseEntity *pOwner, CBaseEntity *pTarget, const Vector &vInitVelocity, float m_flHomingSpeed, float fFallSpeed, int nRocketTrailType);
-	void		SetSpin(float flSpinMagnitude, float flSpinSpeed);
-	void		SetHoming(float flStrength, float flDelay, float flRampUp, float flDuration, float flRampDown);
+	void		Launch( CBaseEntity* pOwner, CBaseEntity* pTarget, const Vector& vInitVelocity, float m_flHomingSpeed, float fFallSpeed, int nRocketTrailType );
+	void		SetSpin( float flSpinMagnitude, float flSpinSpeed );
+	void		SetHoming( float flStrength, float flDelay, float flRampUp, float flDuration, float flRampDown );
 
 	CHandle<RocketTrail>	m_hRocketTrail[3];
 
@@ -65,17 +65,17 @@ private:
 	EHANDLE		m_hTarget;
 
 	void		AimThink( void );
-	void		StartRocketTrail(void);
-	void		UpdateRocketTrail(float fScale);
-	void		StopRocketTrail(void);
+	void		StartRocketTrail( void );
+	void		UpdateRocketTrail( float fScale );
+	void		StopRocketTrail( void );
 	void		PlayFlySound( void );
-	void 		GrenadeHomerTouch( CBaseEntity *pOther );
-	void		Event_Killed( const CTakeDamageInfo &info );
-	int			OnTakeDamage( const CTakeDamageInfo &info );
+	void 		GrenadeHomerTouch( CBaseEntity* pOther );
+	void		Event_Killed( const CTakeDamageInfo& info );
+	int			OnTakeDamage( const CTakeDamageInfo& info );
 
 public:
-	void EXPORT				Detonate(void);
-	CGrenadeHomer(void);
+	void EXPORT				Detonate( void );
+	CGrenadeHomer( void );
 
 	DECLARE_DATADESC();
 };

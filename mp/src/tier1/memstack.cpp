@@ -5,13 +5,13 @@
 //=============================================================================//
 
 #if defined( _WIN32 ) && !defined( _X360 )
-#define WIN_32_LEAN_AND_MEAN
-#include <windows.h>
-#define VA_COMMIT_FLAGS MEM_COMMIT
-#define VA_RESERVE_FLAGS MEM_RESERVE
+	#define WIN_32_LEAN_AND_MEAN
+	#include <windows.h>
+	#define VA_COMMIT_FLAGS MEM_COMMIT
+	#define VA_RESERVE_FLAGS MEM_RESERVE
 #elif defined( _X360 )
-#define VA_COMMIT_FLAGS (MEM_COMMIT|MEM_NOZERO|MEM_LARGE_PAGES)
-#define VA_RESERVE_FLAGS (MEM_RESERVE|MEM_LARGE_PAGES)
+	#define VA_COMMIT_FLAGS (MEM_COMMIT|MEM_NOZERO|MEM_LARGE_PAGES)
+	#define VA_RESERVE_FLAGS (MEM_RESERVE|MEM_LARGE_PAGES)
 #endif
 
 #include "tier0/dbg.h"
@@ -20,36 +20,38 @@
 #include "tier0/memdbgon.h"
 
 #ifdef _WIN32
-#pragma warning(disable:4073)
-#pragma init_seg(lib)
+	#pragma warning(disable:4073)
+	#pragma init_seg(lib)
 #endif
 
 //-----------------------------------------------------------------------------
 
-MEMALLOC_DEFINE_EXTERNAL_TRACKING(CMemoryStack);
+MEMALLOC_DEFINE_EXTERNAL_TRACKING( CMemoryStack );
 
 //-----------------------------------------------------------------------------
 
 CMemoryStack::CMemoryStack()
- : 	m_pBase( NULL ),
-	m_pNextAlloc( NULL ),
-	m_pAllocLimit( NULL ),
-	m_pCommitLimit( NULL ),
-	m_alignment( 16 ),
+	: 	m_pBase( NULL ),
+	   m_pNextAlloc( NULL ),
+	   m_pAllocLimit( NULL ),
+	   m_pCommitLimit( NULL ),
+	   m_alignment( 16 ),
 #if defined(_WIN32)
- 	m_commitSize( 0 ),
-	m_minCommit( 0 ),
+	   m_commitSize( 0 ),
+	   m_minCommit( 0 ),
 #endif
- 	m_maxSize( 0 )
+	   m_maxSize( 0 )
 {
 }
-	
+
 //-------------------------------------
 
 CMemoryStack::~CMemoryStack()
 {
-	if ( m_pBase )
+	if( m_pBase )
+	{
 		Term();
+	}
 }
 
 //-------------------------------------
@@ -69,7 +71,7 @@ bool CMemoryStack::Init( unsigned maxSize, unsigned commitSize, unsigned initial
 	Assert( m_maxSize > 0 );
 
 #if defined(_WIN32)
-	if ( commitSize != 0 )
+	if( commitSize != 0 )
 	{
 		m_commitSize = commitSize;
 	}
@@ -79,13 +81,13 @@ bool CMemoryStack::Init( unsigned maxSize, unsigned commitSize, unsigned initial
 #ifndef _X360
 	SYSTEM_INFO sysInfo;
 	GetSystemInfo( &sysInfo );
-	Assert( !( sysInfo.dwPageSize & (sysInfo.dwPageSize-1)) );
+	Assert( !( sysInfo.dwPageSize & ( sysInfo.dwPageSize - 1 ) ) );
 	pageSize = sysInfo.dwPageSize;
 #else
-	pageSize = 64*1024;
+	pageSize = 64 * 1024;
 #endif
 
-	if ( m_commitSize == 0 )
+	if( m_commitSize == 0 )
 	{
 		m_commitSize = pageSize;
 	}
@@ -95,26 +97,28 @@ bool CMemoryStack::Init( unsigned maxSize, unsigned commitSize, unsigned initial
 	}
 
 	m_maxSize = AlignValue( m_maxSize, m_commitSize );
-	
+
 	Assert( m_maxSize % pageSize == 0 && m_commitSize % pageSize == 0 && m_commitSize <= m_maxSize );
 
-	m_pBase = (unsigned char *)VirtualAlloc( NULL, m_maxSize, VA_RESERVE_FLAGS, PAGE_NOACCESS );
+	m_pBase = ( unsigned char* )VirtualAlloc( NULL, m_maxSize, VA_RESERVE_FLAGS, PAGE_NOACCESS );
 	Assert( m_pBase );
 	m_pCommitLimit = m_pNextAlloc = m_pBase;
 
-	if ( initialCommit )
+	if( initialCommit )
 	{
 		initialCommit = AlignValue( initialCommit, m_commitSize );
 		Assert( initialCommit < m_maxSize );
-		if ( !VirtualAlloc( m_pCommitLimit, initialCommit, VA_COMMIT_FLAGS, PAGE_READWRITE ) )
+		if( !VirtualAlloc( m_pCommitLimit, initialCommit, VA_COMMIT_FLAGS, PAGE_READWRITE ) )
+		{
 			return false;
+		}
 		m_minCommit = initialCommit;
 		m_pCommitLimit += initialCommit;
 		MemAlloc_RegisterExternalAllocation( CMemoryStack, GetBase(), GetSize() );
 	}
 
 #else
-	m_pBase = (byte *)MemAlloc_AllocAligned( m_maxSize, alignment ? alignment : 1 );
+	m_pBase = ( byte* )MemAlloc_AllocAligned( m_maxSize, alignment ? alignment : 1 );
 	m_pNextAlloc = m_pBase;
 	m_pCommitLimit = m_pBase + m_maxSize;
 #endif
@@ -135,7 +139,7 @@ bool CMemoryStack::InitPhysical( unsigned size, unsigned alignment )
 	m_alignment = AlignValue( alignment, 4 );
 
 	int flags = PAGE_READWRITE;
-	if ( size >= 16*1024*1024 )
+	if( size >= 16 * 1024 * 1024 )
 	{
 		flags |= MEM_16MB_PAGES;
 	}
@@ -143,7 +147,7 @@ bool CMemoryStack::InitPhysical( unsigned size, unsigned alignment )
 	{
 		flags |= MEM_LARGE_PAGES;
 	}
-	m_pBase = (unsigned char *)XPhysicalAlloc( m_maxSize, MAXULONG_PTR, 4096, flags );
+	m_pBase = ( unsigned char* )XPhysicalAlloc( m_maxSize, MAXULONG_PTR, 4096, flags );
 	Assert( m_pBase );
 	m_pNextAlloc = m_pBase;
 	m_pCommitLimit = m_pBase + m_maxSize;
@@ -159,7 +163,7 @@ bool CMemoryStack::InitPhysical( unsigned size, unsigned alignment )
 void CMemoryStack::Term()
 {
 	FreeAll();
-	if ( m_pBase )
+	if( m_pBase )
 	{
 #if defined(_WIN32)
 		VirtualFree( m_pBase, 0, MEM_RELEASE );
@@ -173,9 +177,9 @@ void CMemoryStack::Term()
 //-------------------------------------
 
 int CMemoryStack::GetSize()
-{ 
+{
 #ifdef _WIN32
-	return m_pCommitLimit - m_pBase; 
+	return m_pCommitLimit - m_pBase;
 #else
 	return m_maxSize;
 #endif
@@ -184,35 +188,39 @@ int CMemoryStack::GetSize()
 
 //-------------------------------------
 
-bool CMemoryStack::CommitTo( byte *pNextAlloc ) RESTRICT
+bool CMemoryStack::CommitTo( byte* pNextAlloc ) RESTRICT
 {
 #ifdef _X360
-	if ( m_bPhysical )
+	if( m_bPhysical )
 	{
 		return NULL;
 	}
 #endif
 #if defined(_WIN32)
-	unsigned char *	pNewCommitLimit = AlignValue( pNextAlloc, m_commitSize );
+	unsigned char* 	pNewCommitLimit = AlignValue( pNextAlloc, m_commitSize );
 	unsigned 		commitSize 		= pNewCommitLimit - m_pCommitLimit;
-	
-	if ( GetSize() )
+
+	if( GetSize() )
+	{
 		MemAlloc_RegisterExternalDeallocation( CMemoryStack, GetBase(), GetSize() );
+	}
 
 	if( m_pCommitLimit + commitSize > m_pAllocLimit )
 	{
 		return false;
 	}
 
-	if ( !VirtualAlloc( m_pCommitLimit, commitSize, VA_COMMIT_FLAGS, PAGE_READWRITE ) )
+	if( !VirtualAlloc( m_pCommitLimit, commitSize, VA_COMMIT_FLAGS, PAGE_READWRITE ) )
 	{
 		Assert( 0 );
 		return false;
 	}
 	m_pCommitLimit = pNewCommitLimit;
 
-	if ( GetSize() )
+	if( GetSize() )
+	{
 		MemAlloc_RegisterExternalAllocation( CMemoryStack, GetBase(), GetSize() );
+	}
 	return true;
 #else
 	Assert( 0 );
@@ -224,38 +232,38 @@ bool CMemoryStack::CommitTo( byte *pNextAlloc ) RESTRICT
 
 void CMemoryStack::FreeToAllocPoint( MemoryStackMark_t mark, bool bDecommit )
 {
-	void *pAllocPoint = m_pBase + mark;
+	void* pAllocPoint = m_pBase + mark;
 	Assert( pAllocPoint >= m_pBase && pAllocPoint <= m_pNextAlloc );
-	
-	if ( pAllocPoint >= m_pBase && pAllocPoint < m_pNextAlloc )
+
+	if( pAllocPoint >= m_pBase && pAllocPoint < m_pNextAlloc )
 	{
-		if ( bDecommit )
+		if( bDecommit )
 		{
 #if defined(_WIN32)
-			unsigned char *pDecommitPoint = AlignValue( (unsigned char *)pAllocPoint, m_commitSize );
+			unsigned char* pDecommitPoint = AlignValue( ( unsigned char* )pAllocPoint, m_commitSize );
 
-			if ( pDecommitPoint < m_pBase + m_minCommit )
+			if( pDecommitPoint < m_pBase + m_minCommit )
 			{
 				pDecommitPoint = m_pBase + m_minCommit;
 			}
 
 			unsigned decommitSize = m_pCommitLimit - pDecommitPoint;
 
-			if ( decommitSize > 0 )
+			if( decommitSize > 0 )
 			{
 				MemAlloc_RegisterExternalDeallocation( CMemoryStack, GetBase(), GetSize() );
 
 				VirtualFree( pDecommitPoint, decommitSize, MEM_DECOMMIT );
 				m_pCommitLimit = pDecommitPoint;
 
-				if ( mark > 0 )
+				if( mark > 0 )
 				{
 					MemAlloc_RegisterExternalAllocation( CMemoryStack, GetBase(), GetSize() );
 				}
 			}
 #endif
 		}
-		m_pNextAlloc = (unsigned char *)pAllocPoint;
+		m_pNextAlloc = ( unsigned char* )pAllocPoint;
 	}
 }
 
@@ -263,9 +271,9 @@ void CMemoryStack::FreeToAllocPoint( MemoryStackMark_t mark, bool bDecommit )
 
 void CMemoryStack::FreeAll( bool bDecommit )
 {
-	if ( m_pBase && m_pCommitLimit - m_pBase > 0 )
+	if( m_pBase && m_pCommitLimit - m_pBase > 0 )
 	{
-		if ( bDecommit )
+		if( bDecommit )
 		{
 #if defined(_WIN32)
 			MemAlloc_RegisterExternalDeallocation( CMemoryStack, GetBase(), GetSize() );
@@ -280,10 +288,10 @@ void CMemoryStack::FreeAll( bool bDecommit )
 
 //-------------------------------------
 
-void CMemoryStack::Access( void **ppRegion, unsigned *pBytes )
+void CMemoryStack::Access( void** ppRegion, unsigned* pBytes )
 {
 	*ppRegion = m_pBase;
-	*pBytes = ( m_pNextAlloc - m_pBase);
+	*pBytes = ( m_pNextAlloc - m_pBase );
 }
 
 //-------------------------------------

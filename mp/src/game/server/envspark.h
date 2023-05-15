@@ -8,7 +8,7 @@
 #ifndef ENVSPARK_H
 #define ENVSPARK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CEnvSpark : public CPointEntity
@@ -26,13 +26,16 @@ public:
 	void	StopSpark( void );
 
 	// Input handlers
-	void InputStartSpark( inputdata_t &inputdata );
-	void InputStopSpark( inputdata_t &inputdata );
-	void InputToggleSpark( inputdata_t &inputdata );
-	void InputSparkOnce( inputdata_t &inputdata );
+	void InputStartSpark( inputdata_t& inputdata );
+	void InputStopSpark( inputdata_t& inputdata );
+	void InputToggleSpark( inputdata_t& inputdata );
+	void InputSparkOnce( inputdata_t& inputdata );
 
-	bool IsSparking( void ){ return ( GetNextThink() != TICK_NEVER_THINK ); }
-	
+	bool IsSparking( void )
+	{
+		return ( GetNextThink() != TICK_NEVER_THINK );
+	}
+
 	DECLARE_DATADESC();
 
 	float			m_flDelay;

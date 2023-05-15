@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -43,24 +43,36 @@ public:
 
 	void Spawn( void );
 	void Precache( void );
-	
-	void Event_Killed( const CTakeDamageInfo &info );
+
+	void Event_Killed( const CTakeDamageInfo& info );
 	void StopLoopingSounds();
 
-	int  BloodColor( void ) { return DONT_BLEED; }
+	int  BloodColor( void )
+	{
+		return DONT_BLEED;
+	}
 	void GibMonster( void );
 
-	Class_T Classify ( void ) { return CLASS_HUMAN_MILITARY; }
+	Class_T Classify( void )
+	{
+		return CLASS_HUMAN_MILITARY;
+	}
 
-	void CallDyingThink( void ) { DyingThink(); }
+	void CallDyingThink( void )
+	{
+		DyingThink();
+	}
 
-	bool HasEnemy( void ) { return GetEnemy() != NULL; }
-	void CheckEnemy( CBaseEntity *pEnemy );
+	bool HasEnemy( void )
+	{
+		return GetEnemy() != NULL;
+	}
+	void CheckEnemy( CBaseEntity* pEnemy );
 	virtual bool ChooseEnemy( void );
 	virtual void HelicopterThink( void );
 	virtual void HelicopterPostThink( void ) { };
-	virtual void FlyTouch( CBaseEntity *pOther );
-	virtual void CrashTouch( CBaseEntity *pOther );
+	virtual void FlyTouch( CBaseEntity* pOther );
+	virtual void CrashTouch( CBaseEntity* pOther );
 	virtual void DyingThink( void );
 	virtual void Startup( void );
 	virtual void NullThink( void );
@@ -74,30 +86,39 @@ public:
 
 	virtual void Hunt( void );
 
-	virtual bool IsCrashing( void ) { return m_lifeState != LIFE_ALIVE; }
-	virtual float GetAcceleration( void ) { return 5; }
-	virtual bool HasReachedTarget( void ); 
-	virtual void OnReachedTarget( CBaseEntity *pTarget ) {};
+	virtual bool IsCrashing( void )
+	{
+		return m_lifeState != LIFE_ALIVE;
+	}
+	virtual float GetAcceleration( void )
+	{
+		return 5;
+	}
+	virtual bool HasReachedTarget( void );
+	virtual void OnReachedTarget( CBaseEntity* pTarget ) {};
 
-	virtual void ApplySidewaysDrag( const Vector &vecRight );
+	virtual void ApplySidewaysDrag( const Vector& vecRight );
 	virtual void ApplyGeneralDrag( void );
 
 
-	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	int		OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 
 	virtual bool FireGun( void );
 
-	virtual float GetRotorVolume( void ) { return 1.0; }
+	virtual float GetRotorVolume( void )
+	{
+		return 1.0;
+	}
 	virtual void InitializeRotorSound( void );
 	virtual void UpdateRotorSoundPitch( int iPitch );
 
-	virtual void AimRocketGun(void) {};
-	virtual void FireRocket(  Vector vLaunchPos, Vector vLaunchDir  ) {};
+	virtual void AimRocketGun( void ) {};
+	virtual void FireRocket( Vector vLaunchPos, Vector vLaunchDir ) {};
 
-	void	DrawDebugGeometryOverlays(void);
+	void	DrawDebugGeometryOverlays( void );
 
-	CSoundPatch *m_pRotorSound;
+	CSoundPatch* m_pRotorSound;
 
 	float			m_flForce;
 	int				m_fHelicopterFlags;
@@ -122,11 +143,11 @@ public:
 	float			m_flInitialSpeed;
 	float			m_angleVelocity;
 
-	void ChangePathCorner( const char *pszName );
+	void ChangePathCorner( const char* pszName );
 
 	// Inputs
-	void InputChangePathCorner( inputdata_t &inputdata );
-	void InputActivate( inputdata_t &inputdata );
+	void InputChangePathCorner( inputdata_t& inputdata );
+	void InputActivate( inputdata_t& inputdata );
 
 	// Outputs
 	COutputEvent	m_AtTarget;			// Fired when pathcorner has been reached

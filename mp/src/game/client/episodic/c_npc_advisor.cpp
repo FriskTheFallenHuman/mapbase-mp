@@ -26,9 +26,9 @@
 //-----------------------------------------------------------------------------
 // Purpose: unpack a networked entity index into a basehandle.
 //-----------------------------------------------------------------------------
-inline C_BaseEntity *IndexToEntity( int eindex )
+inline C_BaseEntity* IndexToEntity( int eindex )
 {
-	return ClientEntityList().GetBaseEntityFromHandle(ClientEntityList().EntIndexToHandle(eindex));
+	return ClientEntityList().GetBaseEntityFromHandle( ClientEntityList().EntIndexToHandle( eindex ) );
 }
 
 
@@ -36,8 +36,8 @@ inline C_BaseEntity *IndexToEntity( int eindex )
 #define ADVISOR_ELIGHT_CVARS 1  // enable/disable tuning advisor elight with console variables
 
 #if ADVISOR_ELIGHT_CVARS
-ConVar advisor_elight_e("advisor_elight_e","3");
-ConVar advisor_elight_rfeet("advisor_elight_rfeet","52");
+	ConVar advisor_elight_e( "advisor_elight_e", "3" );
+	ConVar advisor_elight_rfeet( "advisor_elight_rfeet", "52" );
 #endif
 
 
@@ -50,7 +50,7 @@ class C_NPC_Advisor : public C_AI_BaseNPC
 
 public:
 	// Server to client message received
-	virtual void	ReceiveMessage( int classID, bf_read &msg );
+	virtual void	ReceiveMessage( int classID, bf_read& msg );
 	virtual void	ClientThink( void );
 
 private:
@@ -60,8 +60,8 @@ private:
 	*/
 
 	// start/stop beam particle effect from me to a pelting object
-	void StartBeamFX( C_BaseEntity *pOnEntity );
-	void StopBeamFX( C_BaseEntity *pOnEntity );
+	void StartBeamFX( C_BaseEntity* pOnEntity );
+	void StopBeamFX( C_BaseEntity* pOnEntity );
 
 	void StartElight();
 	void StopElight();
@@ -75,9 +75,9 @@ IMPLEMENT_CLIENTCLASS_DT( C_NPC_Advisor, DT_NPC_Advisor, CNPC_Advisor )
 END_RECV_TABLE()
 
 // Server to client message received
-void C_NPC_Advisor::ReceiveMessage( int classID, bf_read &msg )
+void C_NPC_Advisor::ReceiveMessage( int classID, bf_read& msg )
 {
-	if ( classID != GetClientClass()->m_ClassID )
+	if( classID != GetClientClass()->m_ClassID )
 	{
 		// message is for subclass
 		BaseClass::ReceiveMessage( classID, msg );
@@ -87,39 +87,39 @@ void C_NPC_Advisor::ReceiveMessage( int classID, bf_read &msg )
 	int messageType = msg.ReadByte();
 	switch( messageType )
 	{
-	case ADVISOR_MSG_START_BEAM:
+		case ADVISOR_MSG_START_BEAM:
 		{
 			int eindex = msg.ReadLong();
-			StartBeamFX(IndexToEntity(eindex));
+			StartBeamFX( IndexToEntity( eindex ) );
 		}
 		break;
 
-	case ADVISOR_MSG_STOP_BEAM:
+		case ADVISOR_MSG_STOP_BEAM:
 		{
 			int eindex = msg.ReadLong();
-			StopBeamFX(IndexToEntity(eindex));
+			StopBeamFX( IndexToEntity( eindex ) );
 
 		}
 		break;
 
-	case ADVISOR_MSG_STOP_ALL_BEAMS:
+		case ADVISOR_MSG_STOP_ALL_BEAMS:
 		{
 			ParticleProp()->StopEmission();
 		}
 		break;
-	case ADVISOR_MSG_START_ELIGHT:
+		case ADVISOR_MSG_START_ELIGHT:
 		{
 			StartElight();
 		}
 		break;
-	case ADVISOR_MSG_STOP_ELIGHT:
+		case ADVISOR_MSG_STOP_ELIGHT:
 		{
 			StopElight();
 		}
 		break;
 
-	default:
-		AssertMsg1( false, "Received unknown message %d", messageType);
+		default:
+			AssertMsg1( false, "Received unknown message %d", messageType );
 	}
 }
 
@@ -127,15 +127,15 @@ void C_NPC_Advisor::ReceiveMessage( int classID, bf_read &msg )
 void C_NPC_Advisor::ClientThink( void )
 {
 	// if the elight has gone away, bail out
-	if (m_ElightKey == 0)
+	if( m_ElightKey == 0 )
 	{
 		SetNextClientThink( CLIENT_THINK_NEVER );
 		return;
 	}
 
 	// get the elight
-	dlight_t * el = effects->GetElightByKey(m_ElightKey);
-	if (!el)
+	dlight_t* el = effects->GetElightByKey( m_ElightKey );
+	if( !el )
 	{
 		// the elight has been invalidated. bail out.
 		m_ElightKey = 0;
@@ -158,16 +158,21 @@ void C_NPC_Advisor::ClientThink( void )
 // Create a telekinetic beam effect from my head to an object
 // TODO: use a point attachment.
 //-----------------------------------------------------------------------------
-void C_NPC_Advisor::StartBeamFX( C_BaseEntity *pOnEntity )
+void C_NPC_Advisor::StartBeamFX( C_BaseEntity* pOnEntity )
 {
-	Assert(pOnEntity);
-	if (!pOnEntity)
+	Assert( pOnEntity );
+	if( !pOnEntity )
+	{
 		return;
+	}
 
-	CNewParticleEffect *pEffect = ParticleProp()->Create( "Advisor_Psychic_Beam", PATTACH_ABSORIGIN_FOLLOW );
+	CNewParticleEffect* pEffect = ParticleProp()->Create( "Advisor_Psychic_Beam", PATTACH_ABSORIGIN_FOLLOW );
 
-	Assert(pEffect); 
-	if (!pEffect) return;
+	Assert( pEffect );
+	if( !pEffect )
+	{
+		return;
+	}
 
 	ParticleProp()->AddControlPoint( pEffect, 1, pOnEntity, PATTACH_ABSORIGIN_FOLLOW );
 }
@@ -176,11 +181,13 @@ void C_NPC_Advisor::StartBeamFX( C_BaseEntity *pOnEntity )
 //-----------------------------------------------------------------------------
 // terminate a telekinetic beam effect from my head to an object
 //-----------------------------------------------------------------------------
-void C_NPC_Advisor::StopBeamFX( C_BaseEntity *pOnEntity )
+void C_NPC_Advisor::StopBeamFX( C_BaseEntity* pOnEntity )
 {
-	Assert(pOnEntity);
-	if (!pOnEntity)
+	Assert( pOnEntity );
+	if( !pOnEntity )
+	{
 		return;
+	}
 
 	ParticleProp()->StopParticlesInvolving( pOnEntity );
 }
@@ -192,17 +199,17 @@ void C_NPC_Advisor::StopBeamFX( C_BaseEntity *pOnEntity )
 
 void C_NPC_Advisor::StartElight()
 {
-	AssertMsg(m_ElightKey == 0 , "Advisor trying to create new elight on top of old one!");
-	if ( m_ElightKey != 0 )
+	AssertMsg( m_ElightKey == 0 , "Advisor trying to create new elight on top of old one!" );
+	if( m_ElightKey != 0 )
 	{
-		Warning("Advisor tried to start his elight when it was already one.\n");
+		Warning( "Advisor tried to start his elight when it was already one.\n" );
 	}
 	else
 	{
 		m_ElightKey = LIGHT_INDEX_TE_DYNAMIC + this->entindex();
-		dlight_t * el = effects->CL_AllocElight( m_ElightKey );
+		dlight_t* el = effects->CL_AllocElight( m_ElightKey );
 
-		if ( el )
+		if( el )
 		{
 			// create an elight on top of me
 			el->origin	= this->WorldSpaceCenter();
@@ -212,14 +219,15 @@ void C_NPC_Advisor::StartElight()
 			el->color.b = 255;
 			el->color.exponent = 3;
 
-			el->radius	= 52*12;
+			el->radius	= 52 * 12;
 			el->decay	= 0.0f;
 			el->die = gpGlobals->curtime + 2000.0f; // 1000 just means " a long time "
 
 			SetNextClientThink( CLIENT_THINK_ALWAYS );
 		}
 		else
-		{	// null out the light value
+		{
+			// null out the light value
 			m_ElightKey = 0;
 		}
 	}
@@ -227,12 +235,12 @@ void C_NPC_Advisor::StartElight()
 
 void C_NPC_Advisor::StopElight()
 {
-	AssertMsg( m_ElightKey != 0, "Advisor tried to stop elight when none existed!");
-	dlight_t * el;
+	AssertMsg( m_ElightKey != 0, "Advisor tried to stop elight when none existed!" );
+	dlight_t* el;
 	// note: the following conditional sets el if not short-circuited
-	if ( m_ElightKey == 0 || (el = effects->GetElightByKey(m_ElightKey)) == NULL ) 
+	if( m_ElightKey == 0 || ( el = effects->GetElightByKey( m_ElightKey ) ) == NULL )
 	{
-		Warning("Advisor tried to stop its elight when it had none.\n");
+		Warning( "Advisor tried to stop its elight when it had none.\n" );
 	}
 	else
 	{

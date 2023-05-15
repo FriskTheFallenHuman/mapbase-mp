@@ -30,7 +30,7 @@ class CEntityImagePanel : public CEntityPanel
 
 public:
 	// constructor
-	CEntityImagePanel( vgui::Panel* pParent, const char *panelName );
+	CEntityImagePanel( vgui::Panel* pParent, const char* panelName );
 	~CEntityImagePanel();
 
 	// initialization
@@ -43,7 +43,7 @@ public:
 
 private:
 	// The bitmap to render
-	BitmapImage *m_pImage;
+	BitmapImage* m_pImage;
 
 protected:
 	int m_r, m_g, m_b, m_a;
@@ -59,7 +59,7 @@ class CEntityTeamImagePanel : public CEntityImagePanel
 	DECLARE_CLASS( CEntityTeamImagePanel, CEntityImagePanel );
 
 public:
-	CEntityTeamImagePanel( vgui::Panel* pParent, const char *panelName );
+	CEntityTeamImagePanel( vgui::Panel* pParent, const char* panelName );
 	~CEntityTeamImagePanel( void );
 	// initialization
 	virtual bool Init( KeyValues* pInitData, C_BaseEntity* pEntity );
@@ -69,7 +69,7 @@ public:
 private:
 	struct TEAMIMAGE
 	{
-		BitmapImage *m_pImage;
+		BitmapImage* m_pImage;
 		int m_r, m_g, m_b, m_a;
 	};
 

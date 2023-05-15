@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,11 +8,11 @@
 #ifndef SCRIPTEDTARGET_H
 #define SCRIPTEDTARGET_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifndef SCRIPTEVENT_H
-#include "scriptevent.h"
+	#include "scriptevent.h"
 #endif
 
 #include "ai_basenpc.h"
@@ -24,29 +24,38 @@ public:
 	DECLARE_DATADESC();
 
 	void				Spawn( void );
-	virtual int			ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	virtual int			ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION );
+	}
 
 
 	void				ScriptThink( void );
 	CBaseEntity*		FindEntity( void );
 
-	void TurnOn(void);
-	void TurnOff(void);
+	void TurnOn( void );
+	void TurnOff( void );
 
 	// Input handlers
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
-	CScriptedTarget*	NextScriptedTarget(void);
-	float				MoveSpeed(void)			{ return m_nMoveSpeed; };
-	float				EffectDuration(void)	{ return m_flEffectDuration; };
+	CScriptedTarget*	NextScriptedTarget( void );
+	float				MoveSpeed( void )
+	{
+		return m_nMoveSpeed;
+	};
+	float				EffectDuration( void )
+	{
+		return m_flEffectDuration;
+	};
 
-	int					DrawDebugTextOverlays(void);
-	void				DrawDebugGeometryOverlays(void);
-	float				PercentComplete(void);
+	int					DrawDebugTextOverlays( void );
+	void				DrawDebugGeometryOverlays( void );
+	float				PercentComplete( void );
 
 	Vector				m_vLastPosition;	// Last position that's been reached
-	
+
 private:
 	int					m_iDisabled;		// Initial state
 	string_t			m_iszEntity;		// entity that is wanted for this script

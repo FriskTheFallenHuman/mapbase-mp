@@ -1,12 +1,12 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 #ifndef WEAPON_CITIZENPACKAGE_H
 #define WEAPON_CITIZENPACKAGE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
@@ -28,7 +28,10 @@ public:
 	DECLARE_PREDICTABLE();
 	DECLARE_ACTTABLE();
 
-	virtual void ItemPostFrame( void ) { /* Do Nothing */ }
+	virtual void ItemPostFrame( void )
+	{
+		/* Do Nothing */
+	}
 };
 
 //-----------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -8,7 +8,7 @@
 #define TOOLFRAMEWORK_CLIENT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "toolframework/itoolentity.h"
@@ -24,7 +24,7 @@ struct AudioState_t;
 //-----------------------------------------------------------------------------
 // Posts a message to all tools
 //-----------------------------------------------------------------------------
-void ToolFramework_PostToolMessage( HTOOLHANDLE hEntity, KeyValues *msg );
+void ToolFramework_PostToolMessage( HTOOLHANDLE hEntity, KeyValues* msg );
 
 
 //-----------------------------------------------------------------------------
@@ -34,12 +34,12 @@ bool ToolFramework_IsThirdPersonCamera( );
 
 
 //-----------------------------------------------------------------------------
-// Are tools enabled? 
+// Are tools enabled?
 //-----------------------------------------------------------------------------
 #ifndef NO_TOOLFRAMEWORK
-bool ToolsEnabled();
+	bool ToolsEnabled();
 #else
-#define ToolsEnabled() 0
+	#define ToolsEnabled() 0
 #endif
 
 
@@ -47,13 +47,13 @@ bool ToolsEnabled();
 // View manipulation
 //-----------------------------------------------------------------------------
 void ToolFramework_AdjustEngineViewport( int& x, int& y, int& width, int& height );
-bool ToolFramework_SetupEngineView( Vector &origin, QAngle &angles, float &fov );
-bool ToolFramework_SetupAudioState( AudioState_t &audioState );
+bool ToolFramework_SetupEngineView( Vector& origin, QAngle& angles, float& fov );
+bool ToolFramework_SetupAudioState( AudioState_t& audioState );
 
 //-----------------------------------------------------------------------------
 // material recording - primarily for proxy materials
 //-----------------------------------------------------------------------------
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 //-----------------------------------------------------------------------------
 // Recorded temp entity structures
@@ -91,7 +91,7 @@ enum TERecordingType_t
 class CRecordEffectOwner
 {
 public:
-	CRecordEffectOwner( C_BaseEntity *pEntity, bool bIsViewModel = false );
+	CRecordEffectOwner( C_BaseEntity* pEntity, bool bIsViewModel = false );
 	~CRecordEffectOwner();
 
 private:

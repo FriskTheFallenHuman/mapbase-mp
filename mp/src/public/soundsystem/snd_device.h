@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define SND_DEVICE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -70,7 +70,7 @@ public:
 	virtual void		Shutdown( void ) = 0;
 
 	// device parameters
-	virtual const char *DeviceName( void ) const = 0;
+	virtual const char* DeviceName( void ) const = 0;
 	virtual int			DeviceChannels( void ) const = 0;		// 1 = mono, 2 = stereo
 	virtual int			DeviceSampleBits( void ) const = 0;	// bits per sample (8 or 16)
 	virtual int			DeviceSampleBytes( void ) const = 0;	// above / 8
@@ -81,16 +81,16 @@ public:
 	virtual void MixBegin( void ) = 0;
 
 	// Main mixing routines
-	virtual void Mix8Mono( channel_t *pChannel, char *pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
-	virtual void Mix8Stereo( channel_t *pChannel, char *pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
-	virtual void Mix16Mono( channel_t *pChannel, short *pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
-	virtual void Mix16Stereo( channel_t *pChannel, short *pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
+	virtual void Mix8Mono( channel_t* pChannel, char* pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
+	virtual void Mix8Stereo( channel_t* pChannel, char* pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
+	virtual void Mix16Mono( channel_t* pChannel, short * pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
+	virtual void Mix16Stereo( channel_t* pChannel, short * pData, int outputOffset, int inputOffset, fixedint rateScaleFix, int outCount, int timecompress, bool forward = true ) = 0;
 
 	// Size of the paint buffer in samples
 	virtual int PaintBufferSampleCount( void ) const = 0;
 
 	// Adds a mixer to be mixed
-	virtual void			AddSource( CAudioMixer *pSource ) = 0;
+	virtual void			AddSource( CAudioMixer * pSource ) = 0;
 
 	// Stops all sounds
 	virtual void			StopSounds( void ) = 0;
@@ -101,8 +101,8 @@ public:
 	// Resets the device
 	virtual void			Flush( void ) = 0;
 
-	virtual int				FindSourceIndex( CAudioMixer *pSource ) = 0;
-	virtual CAudioMixer		*GetMixerForSource( CAudioSource *source ) = 0;
+	virtual int				FindSourceIndex( CAudioMixer * pSource ) = 0;
+	virtual CAudioMixer		* GetMixerForSource( CAudioSource * source ) = 0;
 	virtual void			FreeChannel( int channelIndex ) = 0;
 };
 

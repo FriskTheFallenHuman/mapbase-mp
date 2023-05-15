@@ -15,20 +15,20 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-void SendProxy_Color32ToInt( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_Color32ToInt( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID )
 {
-	color32 *pIn = (color32*)pData;
-	*((unsigned int*)&pOut->m_Int) = ((unsigned int)pIn->r << 24) | ((unsigned int)pIn->g << 16) | ((unsigned int)pIn->b << 8) | ((unsigned int)pIn->a);
+	color32* pIn = ( color32* )pData;
+	*( ( unsigned int* )&pOut->m_Int ) = ( ( unsigned int )pIn->r << 24 ) | ( ( unsigned int )pIn->g << 16 ) | ( ( unsigned int )pIn->b << 8 ) | ( ( unsigned int )pIn->a );
 }
 
-void SendProxy_EHandleToInt( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
+void SendProxy_EHandleToInt( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
-	CBaseHandle *pHandle = (CBaseHandle*)pVarData;
+	CBaseHandle* pHandle = ( CBaseHandle* )pVarData;
 
-	if ( pHandle && pHandle->Get() )
+	if( pHandle && pHandle->Get() )
 	{
-		int iSerialNum = pHandle->GetSerialNumber() & ( (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1 );
-		pOut->m_Int = pHandle->GetEntryIndex() | (iSerialNum << MAX_EDICT_BITS);
+		int iSerialNum = pHandle->GetSerialNumber() & ( ( 1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS ) - 1 );
+		pOut->m_Int = pHandle->GetEntryIndex() | ( iSerialNum << MAX_EDICT_BITS );
 	}
 	else
 	{
@@ -36,22 +36,22 @@ void SendProxy_EHandleToInt( const SendProp *pProp, const void *pStruct, const v
 	}
 }
 
-void SendProxy_IntAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
+void SendProxy_IntAddOne( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
-	int *pInt = (int *)pVarData;
+	int* pInt = ( int* )pVarData;
 
-	pOut->m_Int = (*pInt) + 1;
+	pOut->m_Int = ( *pInt ) + 1;
 }
 
-void SendProxy_ShortAddOne( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID)
+void SendProxy_ShortAddOne( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
-	short *pInt = (short *)pVarData;
+	short* pInt = ( short* )pVarData;
 
-	pOut->m_Int = (*pInt) + 1;
+	pOut->m_Int = ( *pInt ) + 1;
 }
 
 SendProp SendPropBool(
-	const char *pVarName,
+	const char* pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -61,41 +61,43 @@ SendProp SendPropBool(
 
 
 SendProp SendPropEHandle(
-	const char *pVarName,
+	const char* pVarName,
 	int offset,
 	int sizeofVar,
 	int flags,
 	SendVarProxyFn proxyFn )
 {
-	return SendPropInt( pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED|flags, proxyFn );
+	return SendPropInt( pVarName, offset, sizeofVar, NUM_NETWORKED_EHANDLE_BITS, SPROP_UNSIGNED | flags, proxyFn );
 }
 
-SendProp SendPropIntWithMinusOneFlag( const char *pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
+SendProp SendPropIntWithMinusOneFlag( const char* pVarName, int offset, int sizeofVar, int nBits, SendVarProxyFn proxyFn )
 {
 	return SendPropInt( pVarName, offset, sizeofVar, nBits, SPROP_UNSIGNED, proxyFn );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Proxy that only sends data to team members
-// Input  : *pStruct - 
-//			*pData - 
-//			*pOut - 
-//			objectID - 
+// Input  : *pStruct -
+//			*pData -
+//			*pOut -
+//			objectID -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-void* SendProxy_OnlyToTeam( const SendProp *pProp, const void *pStruct, const void *pVarData, CSendProxyRecipients *pRecipients, int objectID )
+void* SendProxy_OnlyToTeam( const SendProp* pProp, const void* pStruct, const void* pVarData, CSendProxyRecipients* pRecipients, int objectID )
 {
-	CBaseEntity *pEntity = (CBaseEntity*)pStruct;
-	if ( pEntity )
+	CBaseEntity* pEntity = ( CBaseEntity* )pStruct;
+	if( pEntity )
 	{
-		CTeam *pTeam = pEntity->GetTeam();
-		if ( pTeam )
+		CTeam* pTeam = pEntity->GetTeam();
+		if( pTeam )
 		{
 			pRecipients->ClearAllRecipients();
-			for ( int i=0; i < pTeam->GetNumPlayers(); i++ )
+			for( int i = 0; i < pTeam->GetNumPlayers(); i++ )
+			{
 				pRecipients->SetRecipient( pTeam->GetPlayer( i )->GetClientIndex() );
-		
-			return (void*)pVarData;
+			}
+
+			return ( void* )pVarData;
 		}
 	}
 
@@ -107,14 +109,14 @@ REGISTER_SEND_PROXY_NON_MODIFIED_POINTER( SendProxy_OnlyToTeam );
 
 // This table encodes edict data.
 #if 0
-static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
+static void SendProxy_Time( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
 	float clock_base = floor( gpGlobals->curtime );
-	float t = *( float * )pVarData;
+	float t = *( float* )pVarData;
 	float dt = t - clock_base;
 	int addt = Floor2Int( 1000.0f * dt + 0.5f );
 	// TIME_BITS bits gives us TIME_BITS-1 bits plus sign bit
-	int maxoffset = 1 << ( TIME_BITS - 1);
+	int maxoffset = 1 << ( TIME_BITS - 1 );
 
 	addt = clamp( addt, -maxoffset, maxoffset );
 
@@ -123,15 +125,15 @@ static void SendProxy_Time( const SendProp *pProp, const void *pStruct, const vo
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pVarName - 
-//			sizeofVar - 
-//			flags - 
-//			pId - 
+// Purpose:
+// Input  : *pVarName -
+//			sizeofVar -
+//			flags -
+//			pId -
 // Output : SendProp
 //-----------------------------------------------------------------------------
 SendProp SendPropTime(
-	const char *pVarName,
+	const char* pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -146,16 +148,16 @@ SendProp SendPropTime(
 
 //-----------------------------------------------------------------------------
 // Purpose: Converts a predictable Id to an integer
-// Input  : *pStruct - 
-//			*pVarData - 
-//			*pOut - 
-//			iElement - 
-//			objectID - 
+// Input  : *pStruct -
+//			*pVarData -
+//			*pOut -
+//			iElement -
+//			objectID -
 //-----------------------------------------------------------------------------
-static void SendProxy_PredictableIdToInt( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
+static void SendProxy_PredictableIdToInt( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
-	CPredictableId* pId = ( CPredictableId * )pVarData;
-	if ( pId )
+	CPredictableId* pId = ( CPredictableId* )pVarData;
+	if( pId )
 	{
 		pOut->m_Int = pId->GetRaw();
 	}
@@ -166,15 +168,15 @@ static void SendProxy_PredictableIdToInt( const SendProp *pProp, const void *pSt
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pVarName - 
-//			sizeofVar - 
-//			flags - 
-//			pId - 
+// Purpose:
+// Input  : *pVarName -
+//			sizeofVar -
+//			flags -
+//			pId -
 // Output : SendProp
 //-----------------------------------------------------------------------------
 SendProp SendPropPredictableId(
-	const char *pVarName,
+	const char* pVarName,
 	int offset,
 	int sizeofVar )
 {
@@ -183,14 +185,14 @@ SendProp SendPropPredictableId(
 
 #endif
 
-void SendProxy_StringT_To_String( const SendProp *pProp, const void *pStruct, const void *pVarData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_StringT_To_String( const SendProp* pProp, const void* pStruct, const void* pVarData, DVariant* pOut, int iElement, int objectID )
 {
-	string_t &str = *((string_t*)pVarData);
-	pOut->m_pString = (char*)STRING( str );
+	string_t& str = *( ( string_t* )pVarData );
+	pOut->m_pString = ( char* )STRING( str );
 }
 
 
-SendProp SendPropStringT( const char *pVarName, int offset, int sizeofVar )
+SendProp SendPropStringT( const char* pVarName, int offset, int sizeofVar )
 {
 	// Make sure it's the right type.
 	Assert( sizeofVar == sizeof( string_t ) );

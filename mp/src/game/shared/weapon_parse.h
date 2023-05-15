@@ -8,7 +8,7 @@
 #ifndef WEAPON_PARSE_H
 #define WEAPON_PARSE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shareddefs.h"
@@ -22,7 +22,8 @@ typedef unsigned short WEAPON_FILE_INFO_HANDLE;
 // Used to play sounds defined in the weapon's classname.txt file
 // This needs to match pWeaponSoundCategories in weapon_parse.cpp
 // ------------------------------------------------------------
-typedef enum {
+typedef enum
+{
 	EMPTY,
 	SINGLE,
 	SINGLE_NPC,
@@ -45,7 +46,7 @@ typedef enum {
 	NUM_SHOOT_SOUND_TYPES,
 } WeaponSound_t;
 
-int GetWeaponSoundFromString( const char *pszString );
+int GetWeaponSoundFromString( const char* pszString );
 
 #define MAX_SHOOT_SOUNDS	16			// Maximum number of shoot sounds per shoot type
 
@@ -59,7 +60,7 @@ class CHudTexture;
 class KeyValues;
 
 //-----------------------------------------------------------------------------
-// Purpose: Contains the data read from the weapon's script file. 
+// Purpose: Contains the data read from the weapon's script file.
 // It's cached so we only read each weapon's script file once.
 // Each game provides a CreateWeaponInfo function so it can have game-specific
 // data (like CS move speeds) in the weapon script.
@@ -69,12 +70,12 @@ class FileWeaponInfo_t
 public:
 
 	FileWeaponInfo_t();
-	
-	// Each game can override this to get whatever values it wants from the script.
-	virtual void Parse( KeyValues *pKeyValuesData, const char *szWeaponName );
 
-	
-public:	
+	// Each game can override this to get whatever values it wants from the script.
+	virtual void Parse( KeyValues* pKeyValuesData, const char* szWeaponName );
+
+
+public:
 	bool					bParsedScript;
 	bool					bLoadedHudElements;
 #ifdef MAPBASE
@@ -104,7 +105,7 @@ public:
 	char					szAmmo2[MAX_WEAPON_AMMO_NAME];			// "secondary" ammo type
 
 	// Sound blocks
-	char					aShootSounds[NUM_SHOOT_SOUND_TYPES][MAX_WEAPON_STRING];	
+	char					aShootSounds[NUM_SHOOT_SOUND_TYPES][MAX_WEAPON_STRING];
 
 	int						iAmmoType;
 	int						iAmmo2Type;
@@ -114,7 +115,7 @@ public:
 	// This helps cl_righthand make the decision about whether to flip the model or not.
 	bool					m_bBuiltRightHanded;
 	bool					m_bAllowFlipping;	// False to disallow flipping the model, regardless of whether
-												// it is built left or right handed.
+	// it is built left or right handed.
 
 #ifdef MAPBASE
 	float					m_flViewmodelFOV;
@@ -130,15 +131,15 @@ public:
 // CLIENT DLL
 	// Sprite data, read from the data file
 	int						iSpriteCount;
-	CHudTexture						*iconActive;
-	CHudTexture	 					*iconInactive;
-	CHudTexture 					*iconAmmo;
-	CHudTexture 					*iconAmmo2;
-	CHudTexture 					*iconCrosshair;
-	CHudTexture 					*iconAutoaim;
-	CHudTexture 					*iconZoomedCrosshair;
-	CHudTexture 					*iconZoomedAutoaim;
-	CHudTexture						*iconSmall;
+	CHudTexture*						iconActive;
+	CHudTexture* 						iconInactive;
+	CHudTexture*					 iconAmmo;
+	CHudTexture*					 iconAmmo2;
+	CHudTexture*					 iconCrosshair;
+	CHudTexture*					 iconAutoaim;
+	CHudTexture*					 iconZoomedCrosshair;
+	CHudTexture*					 iconZoomedAutoaim;
+	CHudTexture*						iconSmall;
 
 // TF2 specific
 	bool					bShowUsageHint;							// if true, then when you receive the weapon, show a hint about it
@@ -148,31 +149,31 @@ public:
 };
 
 // The weapon parse function
-bool ReadWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *szWeaponName, 
-	WEAPON_FILE_INFO_HANDLE *phandle, const unsigned char *pICEKey = NULL );
+bool ReadWeaponDataFromFileForSlot( IFileSystem* filesystem, const char* szWeaponName,
+									WEAPON_FILE_INFO_HANDLE* phandle, const unsigned char* pICEKey = NULL );
 
 #ifdef MAPBASE
 // For map-specific weapon data
-bool ReadCustomWeaponDataFromFileForSlot( IFileSystem* filesystem, const char *szWeaponName,
-	WEAPON_FILE_INFO_HANDLE *phandle, const unsigned char *pICEKey = NULL );
+bool ReadCustomWeaponDataFromFileForSlot( IFileSystem* filesystem, const char* szWeaponName,
+		WEAPON_FILE_INFO_HANDLE* phandle, const unsigned char* pICEKey = NULL );
 #endif
 
 // If weapon info has been loaded for the specified class name, this returns it.
-WEAPON_FILE_INFO_HANDLE LookupWeaponInfoSlot( const char *name );
+WEAPON_FILE_INFO_HANDLE LookupWeaponInfoSlot( const char* name );
 
-FileWeaponInfo_t *GetFileWeaponInfoFromHandle( WEAPON_FILE_INFO_HANDLE handle );
+FileWeaponInfo_t* GetFileWeaponInfoFromHandle( WEAPON_FILE_INFO_HANDLE handle );
 WEAPON_FILE_INFO_HANDLE GetInvalidWeaponInfoHandle( void );
-void PrecacheFileWeaponInfoDatabase( IFileSystem *filesystem, const unsigned char *pICEKey );
+void PrecacheFileWeaponInfoDatabase( IFileSystem* filesystem, const unsigned char* pICEKey );
 
 
-// 
-// Read a possibly-encrypted KeyValues file in. 
+//
+// Read a possibly-encrypted KeyValues file in.
 // If pICEKey is NULL, then it appends .txt to the filename and loads it as an unencrypted file.
 // If pICEKey is non-NULL, then it appends .ctx to the filename and loads it as an encrypted file.
 //
 // (This should be moved into a more appropriate place).
 //
-KeyValues* ReadEncryptedKVFile( IFileSystem *filesystem, const char *szFilenameWithoutExtension, const unsigned char *pICEKey, bool bForceReadEncryptedFile = false );
+KeyValues* ReadEncryptedKVFile( IFileSystem* filesystem, const char* szFilenameWithoutExtension, const unsigned char* pICEKey, bool bForceReadEncryptedFile = false );
 
 
 // Each game implements this. It can return a derived class and override Parse() if it wants.

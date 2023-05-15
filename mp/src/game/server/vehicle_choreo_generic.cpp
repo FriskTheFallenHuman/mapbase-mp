@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -29,27 +29,27 @@
 #define CHOREO_VEHICLE_VIEW_YAW_MIN	-60
 #define CHOREO_VEHICLE_VIEW_YAW_MAX	60
 #define CHOREO_VEHICLE_VIEW_PITCH_MIN	-90
-#define CHOREO_VEHICLE_VIEW_PITCH_MAX	38	
+#define CHOREO_VEHICLE_VIEW_PITCH_MAX	38
 
 BEGIN_DATADESC_NO_BASE( vehicleview_t )
-	DEFINE_FIELD( bClampEyeAngles, FIELD_BOOLEAN ),
-	DEFINE_FIELD( flPitchCurveZero, FIELD_FLOAT ),
-	DEFINE_FIELD( flPitchCurveLinear, FIELD_FLOAT ),
-	DEFINE_FIELD( flRollCurveZero, FIELD_FLOAT ),
-	DEFINE_FIELD( flRollCurveLinear, FIELD_FLOAT ),
-	DEFINE_FIELD( flFOV, FIELD_FLOAT ),
-	DEFINE_FIELD( flYawMin, FIELD_FLOAT ),
-	DEFINE_FIELD( flYawMax, FIELD_FLOAT ),
-	DEFINE_FIELD( flPitchMin, FIELD_FLOAT ),
-	DEFINE_FIELD( flPitchMax, FIELD_FLOAT ),
-END_DATADESC()
+DEFINE_FIELD( bClampEyeAngles, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( flPitchCurveZero, FIELD_FLOAT ),
+			  DEFINE_FIELD( flPitchCurveLinear, FIELD_FLOAT ),
+			  DEFINE_FIELD( flRollCurveZero, FIELD_FLOAT ),
+			  DEFINE_FIELD( flRollCurveLinear, FIELD_FLOAT ),
+			  DEFINE_FIELD( flFOV, FIELD_FLOAT ),
+			  DEFINE_FIELD( flYawMin, FIELD_FLOAT ),
+			  DEFINE_FIELD( flYawMax, FIELD_FLOAT ),
+			  DEFINE_FIELD( flPitchMin, FIELD_FLOAT ),
+			  DEFINE_FIELD( flPitchMax, FIELD_FLOAT ),
+			  END_DATADESC()
 
 //
 // Anim events.
 //
-enum
+			  enum
 {
-	AE_CHOREO_VEHICLE_OPEN = 1,	
+	AE_CHOREO_VEHICLE_OPEN = 1,
 	AE_CHOREO_VEHICLE_CLOSE = 2,
 };
 
@@ -59,7 +59,7 @@ extern ConVar g_debug_vehicledriver;
 
 class CPropVehicleChoreoGeneric;
 
-static const char *pChoreoGenericFollowerBoneNames[] =
+static const char* pChoreoGenericFollowerBoneNames[] =
 {
 	"base",
 };
@@ -74,12 +74,12 @@ public:
 	CVehicleChoreoViewParser( void );
 
 private:
-	virtual void ParseKeyValue( void *pData, const char *pKey, const char *pValue );
-	virtual void SetDefaults( void *pData );
+	virtual void ParseKeyValue( void* pData, const char* pKey, const char* pValue );
+	virtual void SetDefaults( void* pData );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CChoreoGenericServerVehicle : public CBaseServerVehicle
 {
@@ -87,17 +87,17 @@ class CChoreoGenericServerVehicle : public CBaseServerVehicle
 
 // IServerVehicle
 public:
-	void GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV = NULL );
-	virtual void ItemPostFrame( CBasePlayer *pPlayer );
+	void GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV = NULL );
+	virtual void ItemPostFrame( CBasePlayer* pPlayer );
 
 protected:
 
-	CPropVehicleChoreoGeneric *GetVehicle( void );
+	CPropVehicleChoreoGeneric* GetVehicle( void );
 };
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPropVehicleChoreoGeneric : public CDynamicProp, public IDrivableVehicle
 {
@@ -121,51 +121,69 @@ public:
 	// CBaseEntity
 	virtual void	Precache( void );
 	void			Spawn( void );
-	void			Think(void);
-	virtual int		ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
-	virtual void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void			Think( void );
+	virtual int		ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
+	};
+	virtual void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	virtual void	DrawDebugGeometryOverlays( void );
 
-	virtual Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual Vector	BodyTarget( const Vector& posSrc, bool bNoisy = true );
+	virtual void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
 
-	void			PlayerControlInit( CBasePlayer *pPlayer );
+	void			PlayerControlInit( CBasePlayer* pPlayer );
 	void			PlayerControlShutdown( void );
-	void			ResetUseKey( CBasePlayer *pPlayer );
+	void			ResetUseKey( CBasePlayer* pPlayer );
 
-	virtual bool OverridePropdata() { return true; }
+	virtual bool OverridePropdata()
+	{
+		return true;
+	}
 
-	bool			ParseViewParams( const char *pScriptName );
+	bool			ParseViewParams( const char* pScriptName );
 
-	void			GetVectors(Vector* pForward, Vector* pRight, Vector* pUp) const;
+	void			GetVectors( Vector* pForward, Vector* pRight, Vector* pUp ) const;
 
 	bool CreateVPhysics()
 	{
-		SetSolid(SOLID_VPHYSICS);
-		SetMoveType(MOVETYPE_NONE);
+		SetSolid( SOLID_VPHYSICS );
+		SetMoveType( MOVETYPE_NONE );
 		return true;
 	}
-	bool ShouldForceExit() { return m_bForcedExit; }
-	void ClearForcedExit() { m_bForcedExit = false; }
+	bool ShouldForceExit()
+	{
+		return m_bForcedExit;
+	}
+	void ClearForcedExit()
+	{
+		m_bForcedExit = false;
+	}
 
 	// CBaseAnimating
-	void HandleAnimEvent( animevent_t *pEvent );
+	void HandleAnimEvent( animevent_t* pEvent );
 
 	// Inputs
-	void InputEnterVehicleImmediate( inputdata_t &inputdata );
-	void InputEnterVehicle( inputdata_t &inputdata );
-	void InputExitVehicle( inputdata_t &inputdata );
-	void InputLock( inputdata_t &inputdata );
-	void InputUnlock( inputdata_t &inputdata );
-	void InputOpen( inputdata_t &inputdata );
-	void InputClose( inputdata_t &inputdata );
-	void InputViewlock( inputdata_t &inputdata );
+	void InputEnterVehicleImmediate( inputdata_t& inputdata );
+	void InputEnterVehicle( inputdata_t& inputdata );
+	void InputExitVehicle( inputdata_t& inputdata );
+	void InputLock( inputdata_t& inputdata );
+	void InputUnlock( inputdata_t& inputdata );
+	void InputOpen( inputdata_t& inputdata );
+	void InputClose( inputdata_t& inputdata );
+	void InputViewlock( inputdata_t& inputdata );
 
-	bool ShouldIgnoreParent( void ) { return m_bIgnoreMoveParent; }
+	bool ShouldIgnoreParent( void )
+	{
+		return m_bIgnoreMoveParent;
+	}
 
 	// Tuned to match HL2s definition, but this should probably return false in all cases
-	virtual bool	PassengerShouldReceiveDamage( CTakeDamageInfo &info ) { return (info.GetDamageType() & (DMG_BLAST|DMG_RADIATION)) == 0; }
+	virtual bool	PassengerShouldReceiveDamage( CTakeDamageInfo& info )
+	{
+		return ( info.GetDamageType() & ( DMG_BLAST | DMG_RADIATION ) ) == 0;
+	}
 
 	CNetworkHandle( CBasePlayer, m_hPlayer );
 
@@ -176,29 +194,57 @@ private:
 // IDrivableVehicle
 public:
 
-	virtual CBaseEntity *GetDriver( void );
-	virtual void ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) { return; }
-	virtual void FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move ) { return; }
-	virtual bool CanEnterVehicle( CBaseEntity *pEntity );
-	virtual bool CanExitVehicle( CBaseEntity *pEntity );
+	virtual CBaseEntity* GetDriver( void );
+	virtual void ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData )
+	{
+		return;
+	}
+	virtual void FinishMove( CBasePlayer* player, CUserCmd* ucmd, CMoveData* move )
+	{
+		return;
+	}
+	virtual bool CanEnterVehicle( CBaseEntity* pEntity );
+	virtual bool CanExitVehicle( CBaseEntity* pEntity );
 	virtual void SetVehicleEntryAnim( bool bOn );
-	virtual void SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint ) { m_bExitAnimOn = bOn; if ( bOn ) m_vecEyeExitEndpoint = vecEyeExitEndpoint; }
-	virtual void EnterVehicle( CBaseCombatCharacter *pPassenger );
+	virtual void SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint )
+	{
+		m_bExitAnimOn = bOn;
+		if( bOn )
+		{
+			m_vecEyeExitEndpoint = vecEyeExitEndpoint;
+		}
+	}
+	virtual void EnterVehicle( CBaseCombatCharacter* pPassenger );
 
-	virtual bool AllowBlockedExit( CBaseCombatCharacter *pPassenger, int nRole ) { return true; }
-	virtual bool AllowMidairExit( CBaseCombatCharacter *pPassenger, int nRole ) { return true; }
-	virtual void PreExitVehicle( CBaseCombatCharacter *pPassenger, int nRole ) {}
+	virtual bool AllowBlockedExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return true;
+	}
+	virtual bool AllowMidairExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return true;
+	}
+	virtual void PreExitVehicle( CBaseCombatCharacter* pPassenger, int nRole ) {}
 	virtual void ExitVehicle( int nRole );
 
-	virtual void ItemPostFrame( CBasePlayer *pPlayer ) {}
-	virtual void SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) {}
-	virtual string_t GetVehicleScriptName() { return m_vehicleScript; }
+	virtual void ItemPostFrame( CBasePlayer* pPlayer ) {}
+	virtual void SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move ) {}
+	virtual string_t GetVehicleScriptName()
+	{
+		return m_vehicleScript;
+	}
 
 	// If this is a vehicle, returns the vehicle interface
-	virtual IServerVehicle *GetServerVehicle() { return &m_ServerVehicle; }
+	virtual IServerVehicle* GetServerVehicle()
+	{
+		return &m_ServerVehicle;
+	}
 
 #ifdef MAPBASE
-	virtual bool IsPassengerUsingStandardWeapons( int nRole = VEHICLE_ROLE_DRIVER ) { return m_bAllowStandardWeapons; }
+	virtual bool IsPassengerUsingStandardWeapons( int nRole = VEHICLE_ROLE_DRIVER )
+	{
+		return m_bAllowStandardWeapons;
+	}
 	CNetworkVar( bool, m_bAllowStandardWeapons );
 #endif
 
@@ -217,7 +263,7 @@ private:
 	bool				m_bLocked;
 	CNetworkVar( bool,	m_bEnterAnimOn );
 	CNetworkVar( bool,	m_bExitAnimOn );
-	CNetworkVector(		m_vecEyeExitEndpoint );
+	CNetworkVector(	m_vecEyeExitEndpoint );
 	bool				m_bForcedExit;
 	bool				m_bIgnoreMoveParent;
 	bool				m_bIgnorePlayerCollisions;
@@ -235,86 +281,96 @@ LINK_ENTITY_TO_CLASS( prop_vehicle_choreo_generic, CPropVehicleChoreoGeneric );
 
 BEGIN_DATADESC( CPropVehicleChoreoGeneric )
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Lock",	InputLock ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Unlock",	InputUnlock ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnterVehicle", InputEnterVehicle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnterVehicleImmediate", InputEnterVehicleImmediate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ExitVehicle", InputExitVehicle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Open", InputOpen ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Close", InputClose ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "Viewlock", InputViewlock ),
+// Inputs
+DEFINE_INPUTFUNC( FIELD_VOID, "Lock",	InputLock ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "Unlock",	InputUnlock ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "EnterVehicle", InputEnterVehicle ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "EnterVehicleImmediate", InputEnterVehicleImmediate ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "ExitVehicle", InputExitVehicle ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "Open", InputOpen ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "Close", InputClose ),
+					DEFINE_INPUTFUNC( FIELD_BOOLEAN, "Viewlock", InputViewlock ),
 
-	// Keys
-	DEFINE_EMBEDDED( m_ServerVehicle ),
+					// Keys
+					DEFINE_EMBEDDED( m_ServerVehicle ),
 
-	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bEnterAnimOn, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bExitAnimOn, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bForcedExit, FIELD_BOOLEAN ),
- 	DEFINE_FIELD( m_vecEyeExitEndpoint, FIELD_POSITION_VECTOR ),
+					DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
+					DEFINE_FIELD( m_bEnterAnimOn, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_bExitAnimOn, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_bForcedExit, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_vecEyeExitEndpoint, FIELD_POSITION_VECTOR ),
 
-	DEFINE_KEYFIELD( m_vehicleScript, FIELD_STRING, "vehiclescript" ),
-	DEFINE_KEYFIELD( m_bLocked, FIELD_BOOLEAN, "vehiclelocked" ),
+					DEFINE_KEYFIELD( m_vehicleScript, FIELD_STRING, "vehiclescript" ),
+					DEFINE_KEYFIELD( m_bLocked, FIELD_BOOLEAN, "vehiclelocked" ),
 
-	DEFINE_KEYFIELD( m_bIgnoreMoveParent, FIELD_BOOLEAN, "ignoremoveparent" ),
-	DEFINE_KEYFIELD( m_bIgnorePlayerCollisions, FIELD_BOOLEAN, "ignoreplayer" ),
-	DEFINE_KEYFIELD( m_bForcePlayerEyePoint, FIELD_BOOLEAN, "useplayereyes" ),
+					DEFINE_KEYFIELD( m_bIgnoreMoveParent, FIELD_BOOLEAN, "ignoremoveparent" ),
+					DEFINE_KEYFIELD( m_bIgnorePlayerCollisions, FIELD_BOOLEAN, "ignoreplayer" ),
+					DEFINE_KEYFIELD( m_bForcePlayerEyePoint, FIELD_BOOLEAN, "useplayereyes" ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bAllowStandardWeapons, FIELD_BOOLEAN, "AllowStandardWeapons" ),
 #endif
 
-	DEFINE_OUTPUT( m_playerOn, "PlayerOn" ),
-	DEFINE_OUTPUT( m_playerOff, "PlayerOff" ),
-	DEFINE_OUTPUT( m_OnOpen, "OnOpen" ),
-	DEFINE_OUTPUT( m_OnClose, "OnClose" ),
+					DEFINE_OUTPUT( m_playerOn, "PlayerOn" ),
+					DEFINE_OUTPUT( m_playerOff, "PlayerOff" ),
+					DEFINE_OUTPUT( m_OnOpen, "OnOpen" ),
+					DEFINE_OUTPUT( m_OnClose, "OnClose" ),
 
-	DEFINE_EMBEDDED( m_vehicleView ),
-	DEFINE_EMBEDDED( m_savedVehicleView ),
+					DEFINE_EMBEDDED( m_vehicleView ),
+					DEFINE_EMBEDDED( m_savedVehicleView ),
 
-END_DATADESC()
+					END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST(CPropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric)
-	SendPropEHandle(SENDINFO(m_hPlayer)),
-	SendPropBool(SENDINFO(m_bEnterAnimOn)),
-	SendPropBool(SENDINFO(m_bExitAnimOn)),
-	SendPropVector(SENDINFO(m_vecEyeExitEndpoint), -1, SPROP_COORD),
-	SendPropBool( SENDINFO_STRUCTELEM( m_vehicleView.bClampEyeAngles ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveZero ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveLinear ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveZero ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveLinear ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flFOV ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMin ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMax ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMin ) ),
-	SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMax ) ),
+					IMPLEMENT_SERVERCLASS_ST( CPropVehicleChoreoGeneric, DT_PropVehicleChoreoGeneric )
+					SendPropEHandle( SENDINFO( m_hPlayer ) ),
+					SendPropBool( SENDINFO( m_bEnterAnimOn ) ),
+					SendPropBool( SENDINFO( m_bExitAnimOn ) ),
+					SendPropVector( SENDINFO( m_vecEyeExitEndpoint ), -1, SPROP_COORD ),
+					SendPropBool( SENDINFO_STRUCTELEM( m_vehicleView.bClampEyeAngles ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveZero ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchCurveLinear ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveZero ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flRollCurveLinear ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flFOV ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMin ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flYawMax ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMin ) ),
+					SendPropFloat( SENDINFO_STRUCTELEM( m_vehicleView.flPitchMax ) ),
 #ifdef MAPBASE
 	SendPropBool( SENDINFO( m_bAllowStandardWeapons ) ),
 #endif
-END_SEND_TABLE();
+					END_SEND_TABLE();
 
 
-bool ShouldVehicleIgnoreEntity( CBaseEntity *pVehicle, CBaseEntity *pCollide )
+bool ShouldVehicleIgnoreEntity( CBaseEntity* pVehicle, CBaseEntity* pCollide )
 {
-	if ( pCollide->GetParent() == pVehicle )
+	if( pCollide->GetParent() == pVehicle )
+	{
 		return true;
+	}
 
-	CPropVehicleChoreoGeneric *pChoreoVehicle = dynamic_cast <CPropVehicleChoreoGeneric *>( pVehicle );
+	CPropVehicleChoreoGeneric* pChoreoVehicle = dynamic_cast <CPropVehicleChoreoGeneric*>( pVehicle );
 
-	if ( pChoreoVehicle == NULL )
+	if( pChoreoVehicle == NULL )
+	{
 		return false;
+	}
 
-	if ( pCollide == NULL )
+	if( pCollide == NULL )
+	{
 		return false;
+	}
 
-	if ( pChoreoVehicle->ShouldIgnoreParent() == false )
+	if( pChoreoVehicle->ShouldIgnoreParent() == false )
+	{
 		return false;
+	}
 
-	if ( pChoreoVehicle->GetMoveParent() == pCollide )
+	if( pChoreoVehicle->GetMoveParent() == pCollide )
+	{
 		return true;
-		
+	}
+
 	return false;
 }
 
@@ -326,7 +382,7 @@ void CPropVehicleChoreoGeneric::Precache( void )
 {
 	BaseClass::Precache();
 
-	m_ServerVehicle.Initialize( STRING(m_vehicleScript) );
+	m_ServerVehicle.Initialize( STRING( m_vehicleScript ) );
 	m_ServerVehicle.UseLegacyExitChecks( true );
 }
 
@@ -340,7 +396,7 @@ void CPropVehicleChoreoGeneric::Spawn( void )
 	SetModel( STRING( GetModelName() ) );
 	SetCollisionGroup( COLLISION_GROUP_VEHICLE );
 
-	if ( GetSolid() != SOLID_NONE )
+	if( GetSolid() != SOLID_NONE )
 	{
 		BaseClass::Spawn();
 	}
@@ -349,18 +405,18 @@ void CPropVehicleChoreoGeneric::Spawn( void )
 
 	SetNextThink( gpGlobals->curtime );
 
-	ParseViewParams( STRING(m_vehicleScript) );
+	ParseViewParams( STRING( m_vehicleScript ) );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CPropVehicleChoreoGeneric::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr )
 {
-	if ( ptr->hitbox == VEHICLE_HITBOX_DRIVER )
+	if( ptr->hitbox == VEHICLE_HITBOX_DRIVER )
 	{
-		if ( m_hPlayer != NULL )
+		if( m_hPlayer != NULL )
 		{
 			m_hPlayer->TakeDamage( info );
 		}
@@ -369,9 +425,9 @@ void CPropVehicleChoreoGeneric::TraceAttack( const CTakeDamageInfo &info, const 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CPropVehicleChoreoGeneric::OnTakeDamage( const CTakeDamageInfo &inputInfo )
+int CPropVehicleChoreoGeneric::OnTakeDamage( const CTakeDamageInfo& inputInfo )
 {
 	CTakeDamageInfo info = inputInfo;
 	info.ScaleDamage( 25 );
@@ -380,11 +436,13 @@ int CPropVehicleChoreoGeneric::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 	info.SetDamage( inputInfo.GetDamage() );
 
 	// Check to do damage to prisoner
-	if ( m_hPlayer != NULL )
+	if( m_hPlayer != NULL )
 	{
 		// Take no damage from physics damages
-		if ( info.GetDamageType() & DMG_CRUSH )
+		if( info.GetDamageType() & DMG_CRUSH )
+		{
 			return 0;
+		}
 
 		// Take the damage
 		m_hPlayer->TakeDamage( info );
@@ -395,16 +453,16 @@ int CPropVehicleChoreoGeneric::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-Vector CPropVehicleChoreoGeneric::BodyTarget( const Vector &posSrc, bool bNoisy )
+Vector CPropVehicleChoreoGeneric::BodyTarget( const Vector& posSrc, bool bNoisy )
 {
 	Vector	shotPos;
 
-	int eyeAttachmentIndex = LookupAttachment("vehicle_driver_eyes");
+	int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 	GetAttachment( eyeAttachmentIndex, shotPos );
 
-	if ( bNoisy )
+	if( bNoisy )
 	{
 		shotPos[0] += random->RandomFloat( -8.0f, 8.0f );
 		shotPos[1] += random->RandomFloat( -8.0f, 8.0f );
@@ -416,18 +474,18 @@ Vector CPropVehicleChoreoGeneric::BodyTarget( const Vector &posSrc, bool bNoisy 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::Think(void)
+void CPropVehicleChoreoGeneric::Think( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.1 );
 
-	if ( GetDriver() )
+	if( GetDriver() )
 	{
 		BaseClass::Think();
-		
+
 		// If the enter or exit animation has finished, tell the server vehicle
-		if ( IsSequenceFinished() && (m_bExitAnimOn || m_bEnterAnimOn) )
+		if( IsSequenceFinished() && ( m_bExitAnimOn || m_bEnterAnimOn ) )
 		{
 			GetServerVehicle()->HandleEntryExitFinish( m_bExitAnimOn, true );
 		}
@@ -441,12 +499,12 @@ void CPropVehicleChoreoGeneric::Think(void)
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputOpen( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputOpen( inputdata_t& inputdata )
 {
 	int nSequence = LookupSequence( "open" );
 
 	// Set to the desired anim, or default anim if the desired is not present
-	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
+	if( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
 		m_flAnimTime = gpGlobals->curtime;
@@ -465,15 +523,17 @@ void CPropVehicleChoreoGeneric::InputOpen( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputClose( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputClose( inputdata_t& inputdata )
 {
-	if ( m_bLocked || m_bEnterAnimOn )
+	if( m_bLocked || m_bEnterAnimOn )
+	{
 		return;
+	}
 
 	int nSequence = LookupSequence( "close" );
 
 	// Set to the desired anim, or default anim if the desired is not present
-	if ( nSequence > ACTIVITY_NOT_AVAILABLE )
+	if( nSequence > ACTIVITY_NOT_AVAILABLE )
 	{
 		SetCycle( 0 );
 		m_flAnimTime = gpGlobals->curtime;
@@ -493,29 +553,30 @@ void CPropVehicleChoreoGeneric::InputClose( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputViewlock( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputViewlock( inputdata_t& inputdata )
 {
-	if (inputdata.value.Bool()) // lock
+	if( inputdata.value.Bool() ) // lock
 	{
-		if (m_savedVehicleView.flFOV == 0) // not already locked
+		if( m_savedVehicleView.flFOV == 0 ) // not already locked
 		{
 			m_savedVehicleView = m_vehicleView;
 			m_vehicleView.flYawMax = m_vehicleView.flYawMin =  m_vehicleView.flPitchMin = m_vehicleView.flPitchMax = 0.0f;
 		}
 	}
 	else
-	{	//unlock
-		Assert(m_savedVehicleView.flFOV); // is nonzero if something is saved, is zero if nothing was saved.
-		if (m_savedVehicleView.flFOV)
+	{
+		//unlock
+		Assert( m_savedVehicleView.flFOV ); // is nonzero if something is saved, is zero if nothing was saved.
+		if( m_savedVehicleView.flFOV )
 		{
 			// m_vehicleView = m_savedVehicleView;
 			m_savedVehicleView.flFOV = 0;
 
 
-			m_vehicleView.flYawMax.Set(  m_savedVehicleView.flYawMax);
-			m_vehicleView.flYawMin.Set(  m_savedVehicleView.flYawMin);
-			m_vehicleView.flPitchMin.Set(m_savedVehicleView.flPitchMin);
-			m_vehicleView.flPitchMax.Set(m_savedVehicleView.flPitchMax);
+			m_vehicleView.flYawMax.Set( m_savedVehicleView.flYawMax );
+			m_vehicleView.flYawMin.Set( m_savedVehicleView.flYawMin );
+			m_vehicleView.flPitchMin.Set( m_savedVehicleView.flPitchMin );
+			m_vehicleView.flPitchMax.Set( m_savedVehicleView.flPitchMax );
 
 			/* // note: the straight assignments, as in the lower two lines below, do not call the = overload and thus are never transmitted!
 			m_vehicleView.flYawMax = 50;  // m_savedVehicleView.flYawMax;
@@ -531,16 +592,16 @@ void CPropVehicleChoreoGeneric::InputViewlock( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::HandleAnimEvent( animevent_t *pEvent )
+void CPropVehicleChoreoGeneric::HandleAnimEvent( animevent_t* pEvent )
 {
-	if ( pEvent->event == AE_CHOREO_VEHICLE_OPEN )
+	if( pEvent->event == AE_CHOREO_VEHICLE_OPEN )
 	{
 		m_OnOpen.FireOutput( this, this );
 		m_bLocked = false;
 	}
-	else if ( pEvent->event == AE_CHOREO_VEHICLE_CLOSE )
+	else if( pEvent->event == AE_CHOREO_VEHICLE_CLOSE )
 	{
 		m_OnClose.FireOutput( this, this );
 		m_bLocked = true;
@@ -549,28 +610,32 @@ void CPropVehicleChoreoGeneric::HandleAnimEvent( animevent_t *pEvent )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPropVehicleChoreoGeneric::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( pActivator );
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	ResetUseKey( pPlayer );
 
-	GetServerVehicle()->HandlePassengerEntry( pPlayer, (value > 0) );
+	GetServerVehicle()->HandlePassengerEntry( pPlayer, ( value > 0 ) );
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Return true of the player's allowed to enter / exit the vehicle
 //-----------------------------------------------------------------------------
-bool CPropVehicleChoreoGeneric::CanEnterVehicle( CBaseEntity *pEntity )
+bool CPropVehicleChoreoGeneric::CanEnterVehicle( CBaseEntity* pEntity )
 {
 	// Prevent entering if the vehicle's being driven by an NPC
-	if ( GetDriver() && GetDriver() != pEntity )
+	if( GetDriver() && GetDriver() != pEntity )
+	{
 		return false;
+	}
 
 	// Prevent entering if the vehicle's locked
 	return !m_bLocked;
@@ -580,20 +645,20 @@ bool CPropVehicleChoreoGeneric::CanEnterVehicle( CBaseEntity *pEntity )
 //-----------------------------------------------------------------------------
 // Purpose: Return true of the player is allowed to exit the vehicle.
 //-----------------------------------------------------------------------------
-bool CPropVehicleChoreoGeneric::CanExitVehicle( CBaseEntity *pEntity )
+bool CPropVehicleChoreoGeneric::CanExitVehicle( CBaseEntity* pEntity )
 {
 	// Prevent exiting if the vehicle's locked, rotating, or playing an entry/exit anim.
-	return ( !m_bLocked && (GetLocalAngularVelocity() == vec3_angle) && !m_bEnterAnimOn && !m_bExitAnimOn );
+	return ( !m_bLocked && ( GetLocalAngularVelocity() == vec3_angle ) && !m_bEnterAnimOn && !m_bExitAnimOn );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Override base class to add display 
+// Purpose: Override base class to add display
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::DrawDebugGeometryOverlays(void) 
+void CPropVehicleChoreoGeneric::DrawDebugGeometryOverlays( void )
 {
 	// Draw if BBOX is on
-	if ( m_debugOverlays & OVERLAY_BBOX_BIT )
+	if( m_debugOverlays & OVERLAY_BBOX_BIT )
 	{
 	}
 
@@ -602,18 +667,20 @@ void CPropVehicleChoreoGeneric::DrawDebugGeometryOverlays(void)
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::EnterVehicle( CBaseCombatCharacter *pPassenger )
+void CPropVehicleChoreoGeneric::EnterVehicle( CBaseCombatCharacter* pPassenger )
 {
-	if ( pPassenger == NULL )
+	if( pPassenger == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( pPassenger );
-	if ( pPlayer != NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( pPassenger );
+	if( pPlayer != NULL )
 	{
 		// Remove any player who may be in the vehicle at the moment
-		if ( m_hPlayer )
+		if( m_hPlayer )
 		{
 			ExitVehicle( VEHICLE_ROLE_DRIVER );
 		}
@@ -632,7 +699,7 @@ void CPropVehicleChoreoGeneric::EnterVehicle( CBaseCombatCharacter *pPassenger )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropVehicleChoreoGeneric::SetVehicleEntryAnim( bool bOn )
 {
@@ -641,13 +708,15 @@ void CPropVehicleChoreoGeneric::SetVehicleEntryAnim( bool bOn )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropVehicleChoreoGeneric::ExitVehicle( int nRole )
 {
-	CBasePlayer *pPlayer = m_hPlayer;
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = m_hPlayer;
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	m_hPlayer = NULL;
 	ResetUseKey( pPlayer );
@@ -660,9 +729,9 @@ void CPropVehicleChoreoGeneric::ExitVehicle( int nRole )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::ResetUseKey( CBasePlayer *pPlayer )
+void CPropVehicleChoreoGeneric::ResetUseKey( CBasePlayer* pPlayer )
 {
 	pPlayer->m_afButtonPressed &= ~IN_USE;
 }
@@ -671,40 +740,40 @@ void CPropVehicleChoreoGeneric::ResetUseKey( CBasePlayer *pPlayer )
 //-----------------------------------------------------------------------------
 // Purpose: Vehicles are permanently oriented off angle for vphysics.
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::GetVectors(Vector* pForward, Vector* pRight, Vector* pUp) const
+void CPropVehicleChoreoGeneric::GetVectors( Vector* pForward, Vector* pRight, Vector* pUp ) const
 {
 	// This call is necessary to cause m_rgflCoordinateFrame to be recomputed
-	const matrix3x4_t &entityToWorld = EntityToWorldTransform();
+	const matrix3x4_t& entityToWorld = EntityToWorldTransform();
 
-	if (pForward != NULL)
+	if( pForward != NULL )
 	{
-		MatrixGetColumn( entityToWorld, 1, *pForward ); 
+		MatrixGetColumn( entityToWorld, 1, *pForward );
 	}
 
-	if (pRight != NULL)
+	if( pRight != NULL )
 	{
-		MatrixGetColumn( entityToWorld, 0, *pRight ); 
+		MatrixGetColumn( entityToWorld, 0, *pRight );
 	}
 
-	if (pUp != NULL)
+	if( pUp != NULL )
 	{
-		MatrixGetColumn( entityToWorld, 2, *pUp ); 
+		MatrixGetColumn( entityToWorld, 2, *pUp );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CPropVehicleChoreoGeneric::GetDriver( void ) 
-{ 
-	return m_hPlayer; 
+CBaseEntity* CPropVehicleChoreoGeneric::GetDriver( void )
+{
+	return m_hPlayer;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Prevent the player from entering / exiting the vehicle
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputLock( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputLock( inputdata_t& inputdata )
 {
 	m_bLocked = true;
 }
@@ -713,7 +782,7 @@ void CPropVehicleChoreoGeneric::InputLock( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Allow the player to enter / exit the vehicle
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputUnlock( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputUnlock( inputdata_t& inputdata )
 {
 	m_bLocked = false;
 }
@@ -722,19 +791,23 @@ void CPropVehicleChoreoGeneric::InputUnlock( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Force the player to enter the vehicle.
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputEnterVehicle( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputEnterVehicle( inputdata_t& inputdata )
 {
-	if ( m_bEnterAnimOn )
+	if( m_bEnterAnimOn )
+	{
 		return;
+	}
 
 	// Try the activator first & use them if they are a player.
-	CBasePlayer *pPlayer = ToBasePlayer( inputdata.pActivator );
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( inputdata.pActivator );
+	if( pPlayer == NULL )
 	{
 		// Activator was not a player, just grab the single-player player.
 		pPlayer = AI_GetSinglePlayer();
-		if ( pPlayer == NULL )
+		if( pPlayer == NULL )
+		{
 			return;
+		}
 	}
 
 	// Force us to drop anything we're holding
@@ -749,30 +822,34 @@ void CPropVehicleChoreoGeneric::InputEnterVehicle( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputEnterVehicleImmediate( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputEnterVehicleImmediate( inputdata_t& inputdata )
 {
-	if ( m_bEnterAnimOn )
+	if( m_bEnterAnimOn )
+	{
 		return;
+	}
 
 	// Try the activator first & use them if they are a player.
-	CBasePlayer *pPlayer = ToBasePlayer( inputdata.pActivator );
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( inputdata.pActivator );
+	if( pPlayer == NULL )
 	{
 		// Activator was not a player, just grab the singleplayer player.
 		pPlayer = AI_GetSinglePlayer();
-		if ( pPlayer == NULL )
+		if( pPlayer == NULL )
+		{
 			return;
+		}
 	}
 
-	if ( pPlayer->IsInAVehicle() )
+	if( pPlayer->IsInAVehicle() )
 	{
 		// Force the player out of whatever vehicle they are in.
 		pPlayer->LeaveVehicle();
 	}
-	
+
 	// Force us to drop anything we're holding
 	pPlayer->ForceDropOfCarriedPhysObjects();
 
@@ -782,7 +859,7 @@ void CPropVehicleChoreoGeneric::InputEnterVehicleImmediate( inputdata_t &inputda
 //-----------------------------------------------------------------------------
 // Purpose: Force the player to exit the vehicle.
 //-----------------------------------------------------------------------------
-void CPropVehicleChoreoGeneric::InputExitVehicle( inputdata_t &inputdata )
+void CPropVehicleChoreoGeneric::InputExitVehicle( inputdata_t& inputdata )
 {
 	m_bForcedExit = true;
 }
@@ -790,18 +867,20 @@ void CPropVehicleChoreoGeneric::InputExitVehicle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Parses the vehicle's script for the vehicle view parameters
 //-----------------------------------------------------------------------------
-bool CPropVehicleChoreoGeneric::ParseViewParams( const char *pScriptName )
+bool CPropVehicleChoreoGeneric::ParseViewParams( const char* pScriptName )
 {
-	byte *pFile = UTIL_LoadFileForMe( pScriptName, NULL );
-	if ( !pFile )
-		return false;
-
-	IVPhysicsKeyParser *pParse = physcollision->VPhysicsKeyParserCreate( (char *)pFile );
-	CVehicleChoreoViewParser viewParser;
-	while ( !pParse->Finished() )
+	byte* pFile = UTIL_LoadFileForMe( pScriptName, NULL );
+	if( !pFile )
 	{
-		const char *pBlock = pParse->GetCurrentBlockName();
-		if ( !strcmpi( pBlock, "vehicle_view" ) )
+		return false;
+	}
+
+	IVPhysicsKeyParser* pParse = physcollision->VPhysicsKeyParserCreate( ( char* )pFile );
+	CVehicleChoreoViewParser viewParser;
+	while( !pParse->Finished() )
+	{
+		const char* pBlock = pParse->GetCurrentBlockName();
+		if( !strcmpi( pBlock, "vehicle_view" ) )
 		{
 			pParse->ParseCustom( &m_vehicleView, &viewParser );
 		}
@@ -821,29 +900,29 @@ bool CPropVehicleChoreoGeneric::ParseViewParams( const char *pScriptName )
 //========================================================================================================================================
 // CRANE VEHICLE SERVER VEHICLE
 //========================================================================================================================================
-CPropVehicleChoreoGeneric *CChoreoGenericServerVehicle::GetVehicle( void )
+CPropVehicleChoreoGeneric* CChoreoGenericServerVehicle::GetVehicle( void )
 {
-	return (CPropVehicleChoreoGeneric *)GetDrivableVehicle();
+	return ( CPropVehicleChoreoGeneric* )GetDrivableVehicle();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pPlayer - 
+// Purpose:
+// Input  : pPlayer -
 //-----------------------------------------------------------------------------
-void CChoreoGenericServerVehicle::ItemPostFrame( CBasePlayer *player )
+void CChoreoGenericServerVehicle::ItemPostFrame( CBasePlayer* player )
 {
 	Assert( player == GetDriver() );
 
 	GetDrivableVehicle()->ItemPostFrame( player );
 
-	if (( player->m_afButtonPressed & IN_USE ) || GetVehicle()->ShouldForceExit() )
+	if( ( player->m_afButtonPressed & IN_USE ) || GetVehicle()->ShouldForceExit() )
 	{
 		GetVehicle()->ClearForcedExit();
-		if ( GetDrivableVehicle()->CanExitVehicle(player) )
+		if( GetDrivableVehicle()->CanExitVehicle( player ) )
 		{
 			// Let the vehicle try to play the exit animation
-			if ( !HandlePassengerExit( player ) && ( player != NULL ) )
+			if( !HandlePassengerExit( player ) && ( player != NULL ) )
 			{
 				player->PlayUseDenySound();
 			}
@@ -853,21 +932,21 @@ void CChoreoGenericServerVehicle::ItemPostFrame( CBasePlayer *player )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CChoreoGenericServerVehicle::GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV /*= NULL*/ )
+void CChoreoGenericServerVehicle::GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV /*= NULL*/ )
 {
 	// FIXME: This needs to be reconciled with the other versions of this function!
 	Assert( nRole == VEHICLE_ROLE_DRIVER );
-	CBasePlayer *pPlayer = ToBasePlayer( GetDrivableVehicle()->GetDriver() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetDrivableVehicle()->GetDriver() );
 	Assert( pPlayer );
 
 	// Use the player's eyes instead of the attachment point
-	if ( GetVehicle()->m_bForcePlayerEyePoint )
+	if( GetVehicle()->m_bForcePlayerEyePoint )
 	{
 		// Call to BaseClass because CBasePlayer::EyePosition calls this function.
-	  *pAbsOrigin = pPlayer->CBaseCombatCharacter::EyePosition();
-	  *pAbsAngles = pPlayer->CBaseCombatCharacter::EyeAngles();
+		*pAbsOrigin = pPlayer->CBaseCombatCharacter::EyePosition();
+		*pAbsAngles = pPlayer->CBaseCombatCharacter::EyeAngles();
 		return;
 	}
 
@@ -909,10 +988,12 @@ void CChoreoGenericServerVehicle::GetVehicleViewPosition( int nRole, Vector *pAb
 
 bool CPropVehicleChoreoGeneric::ShouldCollide( int collisionGroup, int contentsMask ) const
 {
-	if ( m_bIgnorePlayerCollisions == true )
+	if( m_bIgnorePlayerCollisions == true )
 	{
-		if ( collisionGroup == COLLISION_GROUP_PLAYER || collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT )
+		if( collisionGroup == COLLISION_GROUP_PLAYER || collisionGroup == COLLISION_GROUP_PLAYER_MOVEMENT )
+		{
 			return false;
+		}
 	}
 
 	return BaseClass::ShouldCollide( collisionGroup, contentsMask );
@@ -925,60 +1006,60 @@ CVehicleChoreoViewParser::CVehicleChoreoViewParser( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CVehicleChoreoViewParser::ParseKeyValue( void *pData, const char *pKey, const char *pValue )
+void CVehicleChoreoViewParser::ParseKeyValue( void* pData, const char* pKey, const char* pValue )
 {
-	vehicleview_t *pView = (vehicleview_t *)pData;
+	vehicleview_t* pView = ( vehicleview_t* )pData;
 	// New gear?
-	if ( !strcmpi( pKey, "clamp" ) )
+	if( !strcmpi( pKey, "clamp" ) )
 	{
 		pView->bClampEyeAngles = !!atoi( pValue );
 	}
-	else if ( !strcmpi( pKey, "pitchcurvezero" ) )
+	else if( !strcmpi( pKey, "pitchcurvezero" ) )
 	{
 		pView->flPitchCurveZero = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "pitchcurvelinear" ) )
+	else if( !strcmpi( pKey, "pitchcurvelinear" ) )
 	{
 		pView->flPitchCurveLinear = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "rollcurvezero" ) )
+	else if( !strcmpi( pKey, "rollcurvezero" ) )
 	{
 		pView->flRollCurveZero = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "rollcurvelinear" ) )
+	else if( !strcmpi( pKey, "rollcurvelinear" ) )
 	{
 		pView->flRollCurveLinear = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "yawmin" ) )
+	else if( !strcmpi( pKey, "yawmin" ) )
 	{
 		pView->flYawMin = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "yawmax" ) )
+	else if( !strcmpi( pKey, "yawmax" ) )
 	{
 		pView->flYawMax = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "pitchmin" ) )
+	else if( !strcmpi( pKey, "pitchmin" ) )
 	{
 		pView->flPitchMin = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "pitchmax" ) )
+	else if( !strcmpi( pKey, "pitchmax" ) )
 	{
 		pView->flPitchMax = atof( pValue );
 	}
-	else if ( !strcmpi( pKey, "fov" ) )
+	else if( !strcmpi( pKey, "fov" ) )
 	{
 		pView->flFOV = atof( pValue );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CVehicleChoreoViewParser::SetDefaults( void *pData ) 
+void CVehicleChoreoViewParser::SetDefaults( void* pData )
 {
-	vehicleview_t *pView = (vehicleview_t *)pData;
+	vehicleview_t* pView = ( vehicleview_t* )pData;
 
 	pView->bClampEyeAngles = true;
 

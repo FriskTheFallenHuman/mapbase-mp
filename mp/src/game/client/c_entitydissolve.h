@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -24,21 +24,33 @@ public:
 	// Inherited from C_BaseEntity
 	virtual void	GetRenderBounds( Vector& theMins, Vector& theMaxs );
 	virtual int		DrawModel( int flags );
-	virtual bool	ShouldDraw() { return true; }
+	virtual bool	ShouldDraw()
+	{
+		return true;
+	}
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 	virtual void	UpdateOnRemove( void );
 
-	virtual Vector	GetEffectColor( void ) { return m_vEffectColor; }
-	virtual void	SetEffectColor( Vector v ) { m_vEffectColor = v; }
+	virtual Vector	GetEffectColor( void )
+	{
+		return m_vEffectColor;
+	}
+	virtual void	SetEffectColor( Vector v )
+	{
+		m_vEffectColor = v;
+	}
 
 	// Inherited from IMotionEvent
-	virtual simresult_e	Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
-	
+	virtual simresult_e	Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular );
+
 	void			SetupEmitter( void );
 
 	void			ClientThink( void );
 
-	void			SetServerLinkState( bool state ) { m_bLinkedToServerEnt = state; }
+	void			SetServerLinkState( bool state )
+	{
+		m_bLinkedToServerEnt = state;
+	}
 
 	float	m_flStartTime;
 	float	m_flFadeOutStart;
@@ -64,18 +76,18 @@ protected:
 	float GetModelFadeOutPercentage( void );// Mode fade out amount
 
 	// Compute the bounding box's center, size, and basis
-	void ComputeRenderInfo( mstudiobbox_t *pHitBox, const matrix3x4_t &hitboxToWorld, 
-								Vector *pVecAbsOrigin, Vector *pXVec, Vector *pYVec );
-	void BuildTeslaEffect( mstudiobbox_t *pHitBox, const matrix3x4_t &hitboxToWorld, bool bRandom, float flYawOffset );
+	void ComputeRenderInfo( mstudiobbox_t* pHitBox, const matrix3x4_t& hitboxToWorld,
+							Vector* pVecAbsOrigin, Vector* pXVec, Vector* pYVec );
+	void BuildTeslaEffect( mstudiobbox_t* pHitBox, const matrix3x4_t& hitboxToWorld, bool bRandom, float flYawOffset );
 
-	void DoSparks( mstudiohitboxset_t *set, matrix3x4_t *hitboxbones[MAXSTUDIOBONES] );
+	void DoSparks( mstudiohitboxset_t* set, matrix3x4_t* hitboxbones[MAXSTUDIOBONES] );
 
 private:
 
 	CSmartPtr<CSimpleEmitter>	m_pEmitter;
 
 	bool	m_bLinkedToServerEnt;
-	IPhysicsMotionController	*m_pController;
+	IPhysicsMotionController*	m_pController;
 };
 
 #endif // C_ENTITY_DISSOLVE_H

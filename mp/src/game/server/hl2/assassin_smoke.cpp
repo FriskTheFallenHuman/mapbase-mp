@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -14,19 +14,19 @@
 #define ASSASSINSMOKE_ENTITYNAME	"env_assassinsmoke"
 
 
-IMPLEMENT_SERVERCLASS_ST(CAssassinSmoke, DT_AssassinSmoke)
+IMPLEMENT_SERVERCLASS_ST( CAssassinSmoke, DT_AssassinSmoke )
 END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS(env_assassinsmoke, CAssassinSmoke);
+LINK_ENTITY_TO_CLASS( env_assassinsmoke, CAssassinSmoke );
 
 
-CAssassinSmoke* CAssassinSmoke::CreateAssassinSmoke(const Vector &pos)
+CAssassinSmoke* CAssassinSmoke::CreateAssassinSmoke( const Vector& pos )
 {
-	CBaseEntity *pEnt = CreateEntityByName(ASSASSINSMOKE_ENTITYNAME);
-	if(pEnt)
+	CBaseEntity* pEnt = CreateEntityByName( ASSASSINSMOKE_ENTITYNAME );
+	if( pEnt )
 	{
-		CAssassinSmoke *pEffect = dynamic_cast<CAssassinSmoke*>(pEnt);
-		if (pEffect && pEffect->edict())
+		CAssassinSmoke* pEffect = dynamic_cast<CAssassinSmoke*>( pEnt );
+		if( pEffect && pEffect->edict() )
 		{
 			pEffect->SetLocalOrigin( pos );
 			pEffect->Activate();
@@ -34,7 +34,7 @@ CAssassinSmoke* CAssassinSmoke::CreateAssassinSmoke(const Vector &pos)
 		}
 		else
 		{
-			UTIL_Remove(pEnt);
+			UTIL_Remove( pEnt );
 		}
 	}
 

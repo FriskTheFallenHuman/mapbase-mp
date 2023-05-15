@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,7 +13,7 @@
 #if !defined( INETMSGHANDLER_H )
 #define INETMSGHANDLER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class	INetChannel;
@@ -24,23 +24,23 @@ class INetChannelHandler
 public:
 	virtual	~INetChannelHandler( void ) {};
 
-	virtual void ConnectionStart(INetChannel *chan) = 0;	// called first time network channel is established
+	virtual void ConnectionStart( INetChannel* chan ) = 0;	// called first time network channel is established
 
-	virtual void ConnectionClosing(const char *reason) = 0; // network channel is being closed by remote site
+	virtual void ConnectionClosing( const char* reason ) = 0; // network channel is being closed by remote site
 
-	virtual void ConnectionCrashed(const char *reason) = 0; // network error occured
+	virtual void ConnectionCrashed( const char* reason ) = 0; // network error occured
 
-	virtual void PacketStart(int incoming_sequence, int outgoing_acknowledged) = 0;	// called each time a new packet arrived
+	virtual void PacketStart( int incoming_sequence, int outgoing_acknowledged ) = 0;	// called each time a new packet arrived
 
 	virtual void PacketEnd( void ) = 0; // all messages has been parsed
 
-	virtual void FileRequested(const char *fileName, unsigned int transferID ) = 0; // other side request a file for download
+	virtual void FileRequested( const char* fileName, unsigned int transferID ) = 0; // other side request a file for download
 
-	virtual void FileReceived(const char *fileName, unsigned int transferID ) = 0; // we received a file
-	
-	virtual void FileDenied(const char *fileName, unsigned int transferID ) = 0;	// a file request was denied by other side
+	virtual void FileReceived( const char* fileName, unsigned int transferID ) = 0; // we received a file
 
-	virtual void FileSent(const char *fileName, unsigned int transferID ) = 0;	// we sent a file
+	virtual void FileDenied( const char* fileName, unsigned int transferID ) = 0;	// a file request was denied by other side
+
+	virtual void FileSent( const char* fileName, unsigned int transferID ) = 0;	// we sent a file
 };
 
 #define PROCESS_NET_MESSAGE( name )	\
@@ -82,7 +82,7 @@ class NET_SetConVar;
 class NET_SignonState;
 
 
-class INetMessageHandler 
+class INetMessageHandler
 {
 public:
 	virtual ~INetMessageHandler( void ) {};
@@ -201,7 +201,7 @@ public:
 	PROCESS_MM_MESSAGE( RegisterResponse ) = 0;
 	PROCESS_MM_MESSAGE( Migrate ) = 0;
 	PROCESS_MM_MESSAGE( Mutelist ) = 0;
-	PROCESS_MM_MESSAGE( Checkpoint) = 0;
+	PROCESS_MM_MESSAGE( Checkpoint ) = 0;
 };
 
 class IConnectionlessPacketHandler
@@ -209,7 +209,7 @@ class IConnectionlessPacketHandler
 public:
 	virtual	~IConnectionlessPacketHandler( void ) {};
 
-	virtual bool ProcessConnectionlessPacket( netpacket_t *packet ) = 0;	// process a connectionless packet
+	virtual bool ProcessConnectionlessPacket( netpacket_t* packet ) = 0;	// process a connectionless packet
 };
 
 

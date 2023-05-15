@@ -8,7 +8,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPointCopySize : public CLogicalEntity
 {
@@ -22,15 +22,23 @@ private:
 
 	float m_flScale;
 
-	void CopySize(CBaseEntity *pSource, CBaseEntity *pTarget);
+	void CopySize( CBaseEntity* pSource, CBaseEntity* pTarget );
 
 	// Inputs
-	void InputCopySize( inputdata_t &inputdata );
-	void InputCopySizeToEntity( inputdata_t &inputdata );
-	void InputCopySizeFromEntity( inputdata_t &inputdata );
+	void InputCopySize( inputdata_t& inputdata );
+	void InputCopySizeToEntity( inputdata_t& inputdata );
+	void InputCopySizeFromEntity( inputdata_t& inputdata );
 
-	void InputSetTarget( inputdata_t &inputdata ) { BaseClass::InputSetTarget(inputdata); m_hTarget = NULL; }
-	void InputSetSource( inputdata_t &inputdata ) { m_iszSizeSource = inputdata.value.StringID(); m_hSizeSource = NULL; }
+	void InputSetTarget( inputdata_t& inputdata )
+	{
+		BaseClass::InputSetTarget( inputdata );
+		m_hTarget = NULL;
+	}
+	void InputSetSource( inputdata_t& inputdata )
+	{
+		m_iszSizeSource = inputdata.value.StringID();
+		m_hSizeSource = NULL;
+	}
 
 	// Outputs
 	COutputEvent m_OnCopy;
@@ -38,106 +46,118 @@ private:
 	DECLARE_DATADESC();
 };
 
-LINK_ENTITY_TO_CLASS(point_copy_size, CPointCopySize);
+LINK_ENTITY_TO_CLASS( point_copy_size, CPointCopySize );
 
 
 BEGIN_DATADESC( CPointCopySize )
 
-	// Keys
-	DEFINE_KEYFIELD(m_iszSizeSource, FIELD_STRING, "source"),
-	DEFINE_FIELD(m_hSizeSource, FIELD_EHANDLE),
-	DEFINE_FIELD(m_hTarget, FIELD_EHANDLE),
+// Keys
+DEFINE_KEYFIELD( m_iszSizeSource, FIELD_STRING, "source" ),
+				 DEFINE_FIELD( m_hSizeSource, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
 
-	DEFINE_INPUT(m_flScale, FIELD_FLOAT, "SetScale"),
+				 DEFINE_INPUT( m_flScale, FIELD_FLOAT, "SetScale" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "CopySize", InputCopySize ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "CopySizeToEntity", InputCopySizeToEntity ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "CopySizeFromEntity", InputCopySizeFromEntity ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID, "CopySize", InputCopySize ),
+				 DEFINE_INPUTFUNC( FIELD_EHANDLE, "CopySizeToEntity", InputCopySizeToEntity ),
+				 DEFINE_INPUTFUNC( FIELD_EHANDLE, "CopySizeFromEntity", InputCopySizeFromEntity ),
 
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetSource", InputSetSource ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "SetSource", InputSetSource ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnCopy, "OnCopy"),
+				 // Outputs
+				 DEFINE_OUTPUT( m_OnCopy, "OnCopy" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCopySize::CopySize(CBaseEntity *pSource, CBaseEntity *pTarget)
+				 void CPointCopySize::CopySize( CBaseEntity* pSource, CBaseEntity* pTarget )
 {
 	const Vector cvecAlignMins = pSource->WorldAlignMins();
 	const Vector cvecAlignMaxs = pSource->WorldAlignMaxs();
 
-	Vector vecAlignMins = Vector(cvecAlignMins);
-	Vector vecAlignMaxs = Vector(cvecAlignMaxs);
+	Vector vecAlignMins = Vector( cvecAlignMins );
+	Vector vecAlignMaxs = Vector( cvecAlignMaxs );
 
-	if (m_flScale != 0.0f && m_flScale != 1.0f)
+	if( m_flScale != 0.0f && m_flScale != 1.0f )
 	{
 		vecAlignMins *= m_flScale;
 		vecAlignMaxs *= m_flScale;
 	}
 
-	pTarget->SetCollisionBounds(vecAlignMins, vecAlignMins);
-	m_OnCopy.FireOutput(pTarget, this);
+	pTarget->SetCollisionBounds( vecAlignMins, vecAlignMins );
+	m_OnCopy.FireOutput( pTarget, this );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCopySize::InputCopySize( inputdata_t &inputdata )
+void CPointCopySize::InputCopySize( inputdata_t& inputdata )
 {
-	if (!m_hSizeSource)
-		m_hSizeSource = gEntList.FindEntityByName(NULL, STRING(m_iszSizeSource), this, inputdata.pActivator, inputdata.pCaller);
-	if (!m_hTarget)
-		m_hTarget = gEntList.FindEntityByName(NULL, STRING(m_target), this, inputdata.pActivator, inputdata.pCaller);
-
-	if (!m_hSizeSource || !m_hTarget)
+	if( !m_hSizeSource )
 	{
-		Warning("%s (%s): Could not find %s\n", GetClassname(), GetDebugName(), !m_hSizeSource ? "size source" : "target to copy size to");
+		m_hSizeSource = gEntList.FindEntityByName( NULL, STRING( m_iszSizeSource ), this, inputdata.pActivator, inputdata.pCaller );
+	}
+	if( !m_hTarget )
+	{
+		m_hTarget = gEntList.FindEntityByName( NULL, STRING( m_target ), this, inputdata.pActivator, inputdata.pCaller );
+	}
+
+	if( !m_hSizeSource || !m_hTarget )
+	{
+		Warning( "%s (%s): Could not find %s\n", GetClassname(), GetDebugName(), !m_hSizeSource ? "size source" : "target to copy size to" );
 		return;
 	}
 
-	CopySize(m_hSizeSource, m_hTarget);
+	CopySize( m_hSizeSource, m_hTarget );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCopySize::InputCopySizeToEntity( inputdata_t &inputdata )
+void CPointCopySize::InputCopySizeToEntity( inputdata_t& inputdata )
 {
-	if (!m_hSizeSource)
-		m_hSizeSource = gEntList.FindEntityByName(NULL, STRING(m_iszSizeSource), this, inputdata.pActivator, inputdata.pCaller);
-
-	if (!m_hSizeSource)
+	if( !m_hSizeSource )
 	{
-		Warning("%s (%s): Could not find size source\n", GetClassname(), GetDebugName());
+		m_hSizeSource = gEntList.FindEntityByName( NULL, STRING( m_iszSizeSource ), this, inputdata.pActivator, inputdata.pCaller );
+	}
+
+	if( !m_hSizeSource )
+	{
+		Warning( "%s (%s): Could not find size source\n", GetClassname(), GetDebugName() );
 		return;
 	}
 
-	if (!inputdata.value.Entity())
+	if( !inputdata.value.Entity() )
+	{
 		return;
+	}
 
-	CopySize(m_hSizeSource, inputdata.value.Entity());
+	CopySize( m_hSizeSource, inputdata.value.Entity() );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCopySize::InputCopySizeFromEntity( inputdata_t &inputdata )
+void CPointCopySize::InputCopySizeFromEntity( inputdata_t& inputdata )
 {
-	if (!m_hTarget)
-		m_hTarget = gEntList.FindEntityByName(NULL, STRING(m_target), this, inputdata.pActivator, inputdata.pCaller);
-
-	if (!m_hTarget)
+	if( !m_hTarget )
 	{
-		Warning("%s (%s): Could not find target to copy size to\n", GetClassname(), GetDebugName());
+		m_hTarget = gEntList.FindEntityByName( NULL, STRING( m_target ), this, inputdata.pActivator, inputdata.pCaller );
+	}
+
+	if( !m_hTarget )
+	{
+		Warning( "%s (%s): Could not find target to copy size to\n", GetClassname(), GetDebugName() );
 		return;
 	}
 
-	if (!inputdata.value.Entity())
+	if( !inputdata.value.Entity() )
+	{
 		return;
+	}
 
-	CopySize(inputdata.value.Entity(), m_hTarget);
+	CopySize( inputdata.value.Entity(), m_hTarget );
 }

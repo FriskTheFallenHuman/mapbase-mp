@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef TEAM_CONTROL_POINT_H
 #define TEAM_CONTROL_POINT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basemultiplayerplayer.h"
@@ -20,7 +20,7 @@
 #define SF_CAP_POINT_NO_ANNOUNCER	(1<<4)
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CTeamControlPoint : public CBaseAnimating
 {
@@ -33,45 +33,78 @@ public:
 	// Derived, game-specific control points must override these functions
 public:
 	// Used to find game specific entities
-	virtual const char *GetControlPointMasterName( void ) { return "team_control_point_master"; }
+	virtual const char* GetControlPointMasterName( void )
+	{
+		return "team_control_point_master";
+	}
 
 public:
 	virtual void Spawn( void );
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 	virtual void Precache( void );
 	virtual int  DrawDebugTextOverlays( void );
 
 	//Inputs
-	inline void Enable( inputdata_t &input )	{ SetActive( false ); }
-	inline void Disable( inputdata_t &input )	{ SetActive( true ); }
-	void		InputReset( inputdata_t &input );
-	void		InputSetOwner( inputdata_t &input );
-	void		InputShowModel( inputdata_t &input );
-	void		InputHideModel( inputdata_t &input );
-	void		InputRoundActivate( inputdata_t &inputdata );
-	void		InputSetLocked( inputdata_t &inputdata );
-	void		InputSetUnlockTime( inputdata_t &inputdata );
+	inline void Enable( inputdata_t& input )
+	{
+		SetActive( false );
+	}
+	inline void Disable( inputdata_t& input )
+	{
+		SetActive( true );
+	}
+	void		InputReset( inputdata_t& input );
+	void		InputSetOwner( inputdata_t& input );
+	void		InputShowModel( inputdata_t& input );
+	void		InputHideModel( inputdata_t& input );
+	void		InputRoundActivate( inputdata_t& inputdata );
+	void		InputSetLocked( inputdata_t& inputdata );
+	void		InputSetUnlockTime( inputdata_t& inputdata );
 
 	// Owner handling
 	void		ForceOwner( int iTeam ); // used when selecting a specific round to play
-	void		SetOwner( int iCapTeam, bool bMakeSound = true, int iNumCappers = 0, int *iCappingPlayers = NULL );
+	void		SetOwner( int iCapTeam, bool bMakeSound = true, int iNumCappers = 0, int* iCappingPlayers = NULL );
 	int			GetOwner( void ) const;
 	int			GetDefaultOwner( void ) const;
-	bool		RandomOwnerOnRestart( void ){ return m_bRandomOwnerOnRestart; }
+	bool		RandomOwnerOnRestart( void )
+	{
+		return m_bRandomOwnerOnRestart;
+	}
 
 	void		SetActive( bool active );
-	inline bool	IsActive( void ) { return m_bActive; }
+	inline bool	IsActive( void )
+	{
+		return m_bActive;
+	}
 	void		AnimThink( void );
 
-	bool		PointIsVisible( void ) { return !( FBitSet( m_spawnflags, SF_CAP_POINT_HIDEFLAG ) ); }
+	bool		PointIsVisible( void )
+	{
+		return !( FBitSet( m_spawnflags, SF_CAP_POINT_HIDEFLAG ) );
+	}
 
-	inline const char *GetName( void ) { return STRING(m_iszPrintName); }
+	inline const char* GetName( void )
+	{
+		return STRING( m_iszPrintName );
+	}
 	int			GetCPGroup( void );
-	int			GetPointIndex( void ) { return m_iPointIndex; }
-	void		SetPointIndex( int index ) { m_iPointIndex = index; }
+	int			GetPointIndex( void )
+	{
+		return m_iPointIndex;
+	}
+	void		SetPointIndex( int index )
+	{
+		m_iPointIndex = index;
+	}
 
-	int			GetWarnOnCap( void ) { return m_iWarnOnCap; }
-	string_t	GetWarnSound( void ) { return m_iszWarnSound; }
+	int			GetWarnOnCap( void )
+	{
+		return m_iWarnOnCap;
+	}
+	string_t	GetWarnSound( void )
+	{
+		return m_iszWarnSound;
+	}
 
 	int			GetTeamIcon( int iTeam );
 
@@ -82,7 +115,7 @@ public:
 
 	void		SetCappersRequiredForTeam( int iGameTeam, int iCappers );
 
-	void		CaptureBlocked( CBaseMultiplayerPlayer *pPlayer, CBaseMultiplayerPlayer *pVictim );
+	void		CaptureBlocked( CBaseMultiplayerPlayer* pPlayer, CBaseMultiplayerPlayer* pVictim );
 
 	int			PointValue( void );
 
@@ -94,28 +127,31 @@ public:
 	float		GetTeamCapPercentage( int iTeam );
 
 	// The specified player took part in capping this point.
-	virtual void PlayerCapped( CBaseMultiplayerPlayer *pPlayer );
+	virtual void PlayerCapped( CBaseMultiplayerPlayer* pPlayer );
 
 	// The specified player blocked the enemy team from capping this point.
-	virtual void PlayerBlocked( CBaseMultiplayerPlayer *pPlayer );
+	virtual void PlayerBlocked( CBaseMultiplayerPlayer* pPlayer );
 
 	void		CaptureEnd( void );
-	void		CaptureStart( int iCapTeam, int iNumCappingPlayers, int *pCappingPlayers );
+	void		CaptureStart( int iCapTeam, int iNumCappingPlayers, int* pCappingPlayers );
 	void		CaptureInterrupted( bool bBlocked );
 
 	virtual void StopLoopingSounds( void );
 
-	bool		IsLocked( void ){ return m_bLocked; }
+	bool		IsLocked( void )
+	{
+		return m_bLocked;
+	}
 
 	void EXPORT UnlockThink( void );
 
 private:
-	void		SendCapString( int iCapTeam, int iNumCappingPlayers, int *pCappingPlayers );
-	void		InternalSetOwner( int iCapTeam, bool bMakeSound = true, int iNumCappers = 0, int *iCappingPlayers = NULL );
+	void		SendCapString( int iCapTeam, int iNumCappingPlayers, int* pCappingPlayers );
+	void		InternalSetOwner( int iCapTeam, bool bMakeSound = true, int iNumCappers = 0, int* iCappingPlayers = NULL );
 	void		HandleScoring( int iTeam );
 	void		InternalSetLocked( bool bLocked );
 
-	int			m_iTeam;			
+	int			m_iTeam;
 	int			m_iDefaultOwner;			// Team that initially owns the cap point
 	int			m_iIndex;					// The index of this point in the controlpointArray
 	int			m_iWarnOnCap;				// Warn the team that owns the control point when the opposing team starts to capture it.
@@ -139,7 +175,7 @@ private:
 			iszOverlay = NULL_STRING;
 			iPlayersRequired = 0;
 			iTimedPoints = 0;
-			for ( int i = 0; i < MAX_PREVIOUS_POINTS; i++ )
+			for( int i = 0; i < MAX_PREVIOUS_POINTS; i++ )
 			{
 				iszPreviousPoint[i] = NULL_STRING;
 			}
@@ -185,7 +221,7 @@ private:
 
 	float		m_flLastContestedAt;
 
-	CSoundPatch *m_pCaptureInProgressSound;
+	CSoundPatch* m_pCaptureInProgressSound;
 	string_t	m_iszCaptureStartSound;
 	string_t	m_iszCaptureEndSound;
 	string_t	m_iszCaptureInProgress;

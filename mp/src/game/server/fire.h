@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef FIRE_H
 #define FIRE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "entityoutput.h"
@@ -43,10 +43,10 @@ enum fireType_e
 //==================================================
 // FireSystem
 //==================================================
-bool FireSystem_StartFire( const Vector &position, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type = FIRE_NATURAL);
-void FireSystem_ExtinguishInRadius( const Vector &origin, float radius, float rate );
-void FireSystem_AddHeatInRadius( const Vector &origin, float radius, float heat );
+bool FireSystem_StartFire( const Vector& position, float fireHeight, float attack, float fuel, int flags, CBaseEntity* owner, fireType_e type = FIRE_NATURAL );
+void FireSystem_ExtinguishInRadius( const Vector& origin, float radius, float rate );
+void FireSystem_AddHeatInRadius( const Vector& origin, float radius, float heat );
 
-bool FireSystem_GetFireDamageDimensions( CBaseEntity *pFire, Vector *pFireMins, Vector *pFireMaxs );
+bool FireSystem_GetFireDamageDimensions( CBaseEntity* pFire, Vector* pFireMins, Vector* pFireMaxs );
 
 #endif // FIRE_H

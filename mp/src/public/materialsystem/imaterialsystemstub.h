@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef IMATERIALSYSTEMSTUB_H
 #define IMATERIALSYSTEMSTUB_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,9 +22,9 @@
 class IMaterialSystemStub : public IMaterialSystem
 {
 public:
-	// If this is called, then the stub will call through to the real material 
+	// If this is called, then the stub will call through to the real material
 	// system in some functions.
-	virtual void	SetRealMaterialSystem( IMaterialSystem *pSys ) = 0;
+	virtual void	SetRealMaterialSystem( IMaterialSystem* pSys ) = 0;
 };
 
 

@@ -8,7 +8,7 @@
 #define SOUNDUTILS_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "tier2/riff.h"
@@ -17,14 +17,14 @@
 //-----------------------------------------------------------------------------
 // RIFF reader/writers that use the file system
 //-----------------------------------------------------------------------------
-extern IFileReadBinary *g_pFSIOReadBinary;
-extern IFileWriteBinary *g_pFSIOWriteBinary;
+extern IFileReadBinary* g_pFSIOReadBinary;
+extern IFileWriteBinary* g_pFSIOWriteBinary;
 
 
 //-----------------------------------------------------------------------------
 // Returns the duration of a wav file
 //-----------------------------------------------------------------------------
-float GetWavSoundDuration( const char *pWavFile );
+float GetWavSoundDuration( const char* pWavFile );
 
 
 #endif // SOUNDUTILS_H

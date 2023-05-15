@@ -1,11 +1,11 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
 //=============================================================================//
-// Soundent.h - the entity that spawns when the world 
+// Soundent.h - the entity that spawns when the world
 // spawns, and handles the world's active and free sound
 // lists.
 
@@ -13,7 +13,7 @@
 #define SOUNDENT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 enum
@@ -75,7 +75,7 @@ enum
 
 };
 
-// Make as many of these as you want. 
+// Make as many of these as you want.
 enum
 {
 	SOUNDENT_CHANNEL_UNSPECIFIED = 0,
@@ -120,8 +120,14 @@ class CSound
 public:
 	bool	DoesSoundExpire() const;
 	float	SoundExpirationTime() const;
-	void	SetSoundOrigin( const Vector &vecOrigin ) { m_vecOrigin = vecOrigin; }
-	const	Vector& GetSoundOrigin( void ) { return m_vecOrigin; }
+	void	SetSoundOrigin( const Vector& vecOrigin )
+	{
+		m_vecOrigin = vecOrigin;
+	}
+	const	Vector& GetSoundOrigin( void )
+	{
+		return m_vecOrigin;
+	}
 	const	Vector& GetSoundReactOrigin( void );
 	bool	FIsSound( void );
 	bool	FIsScent( void );
@@ -130,16 +136,25 @@ public:
 	int		SoundContext() const;
 	int		SoundTypeNoContext( ) const;
 	int		Volume( ) const;
-	float	OccludedVolume() { return m_iVolume * m_flOcclusionScale; }
+	float	OccludedVolume()
+	{
+		return m_iVolume * m_flOcclusionScale;
+	}
 	int		NextSound() const;
-	void	Reset ( void );
+	void	Reset( void );
 	int		SoundChannel( void ) const;
 	bool	ValidateOwner() const;
 
 #ifdef MAPBASE_VSCRIPT
 	// For VScript functions
-	HSCRIPT	ScriptGetOwner() const { return ToHScript( m_hOwner ); }
-	HSCRIPT	ScriptGetTarget() const { return ToHScript( m_hTarget ); }
+	HSCRIPT	ScriptGetOwner() const
+	{
+		return ToHScript( m_hOwner );
+	}
+	HSCRIPT	ScriptGetTarget() const
+	{
+		return ToHScript( m_hTarget );
+	}
 #endif
 
 	EHANDLE	m_hOwner;				// sound's owner
@@ -150,7 +165,7 @@ public:
 	int		m_iNextAudible;			// temporary link that NPCs use to build a list of audible sounds
 
 private:
-	void	Clear ( void );
+	void	Clear( void );
 
 	float	m_flExpireTime;	// when the sound should be purged from the list
 	short	m_iNext;		// index of next sound in this list ( Active or Free )
@@ -180,7 +195,7 @@ inline float CSound::SoundExpirationTime() const
 
 inline bool CSound::IsSoundType( int nSoundFlags ) const
 {
-	return (m_iType & nSoundFlags) != 0;
+	return ( m_iType & nSoundFlags ) != 0;
 }
 
 inline int CSound::SoundType( ) const
@@ -218,12 +233,12 @@ inline int CSound::SoundChannel( void ) const
 //		-The sound was assigned an owner and that owner still exists
 inline bool CSound::ValidateOwner( void ) const
 {
-	return ( !m_bHasOwner || (m_hOwner.Get() != NULL) );
+	return ( !m_bHasOwner || ( m_hOwner.Get() != NULL ) );
 }
 
 //=========================================================
 // CSoundEnt - a single instance of this entity spawns when
-// the world spawns. The SoundEnt's job is to update the 
+// the world spawns. The SoundEnt's job is to update the
 // world's Free and Active sound lists.
 //=========================================================
 class CSoundEnt : public CPointEntity
@@ -241,25 +256,28 @@ public:
 	virtual ~CSoundEnt();
 
 	virtual void OnRestore();
-	void Precache ( void );
+	void Precache( void );
 	void Spawn( void );
 	void Think( void );
-	void Initialize ( void );
-	int ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	void Initialize( void );
+	int ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
-	static void		InsertSound ( int iType, const Vector &vecOrigin, int iVolume, float flDuration, CBaseEntity *pOwner = NULL, int soundChannelIndex = SOUNDENT_CHANNEL_UNSPECIFIED, CBaseEntity *pSoundTarget = NULL );
-	static void		FreeSound ( int iSound, int iPrevious );
+	static void		InsertSound( int iType, const Vector& vecOrigin, int iVolume, float flDuration, CBaseEntity* pOwner = NULL, int soundChannelIndex = SOUNDENT_CHANNEL_UNSPECIFIED, CBaseEntity* pSoundTarget = NULL );
+	static void		FreeSound( int iSound, int iPrevious );
 	static int		ActiveList( void );// return the head of the active list
 	static int		FreeList( void );// return the head of the free list
 	static CSound*	SoundPointerForIndex( int iIndex );// return a pointer for this index in the sound list
-	static CSound*	GetLoudestSoundOfType( int iType, const Vector &vecEarPosition );
-	static int		ClientSoundIndex ( edict_t *pClient );
+	static CSound*	GetLoudestSoundOfType( int iType, const Vector& vecEarPosition );
+	static int		ClientSoundIndex( edict_t* pClient );
 
 	bool	IsEmpty( void );
-	int		ISoundsInList ( int iListType );
-	int		IAllocSound ( void );
-	int		FindOrAllocateSound( CBaseEntity *pOwner, int soundChannelIndex );
-	
+	int		ISoundsInList( int iListType );
+	int		IAllocSound( void );
+	int		FindOrAllocateSound( CBaseEntity* pOwner, int soundChannelIndex );
+
 private:
 	int		m_iFreeSound;	// index of the first sound in the free sound list
 	int		m_iActiveSound; // indes of the first sound in the active sound list
@@ -271,9 +289,9 @@ private:
 //-----------------------------------------------------------------------------
 // Inline methods
 //-----------------------------------------------------------------------------
-inline bool CSoundEnt::IsEmpty( void ) 
-{ 
-	return m_iActiveSound == SOUNDLIST_EMPTY; 
+inline bool CSoundEnt::IsEmpty( void )
+{
+	return m_iActiveSound == SOUNDLIST_EMPTY;
 }
 
 

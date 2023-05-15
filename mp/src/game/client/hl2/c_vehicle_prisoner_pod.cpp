@@ -1,12 +1,12 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #include "cbase.h"
-#include "hud.h"		
-#include "c_physicsprop.h"		
+#include "hud.h"
+#include "c_physicsprop.h"
 #include "iclientvehicle.h"
 #include <vgui_controls/Controls.h>
 #include <Color.h>
@@ -23,7 +23,7 @@ extern float RemapAngleRange( float startInterval, float endInterval, float valu
 
 #define PITCH_CURVE_ZERO		10	// pitch less than this is clamped to zero
 #define PITCH_CURVE_LINEAR		45	// pitch greater than this is copied out
-									// spline in between
+// spline in between
 
 #define POD_VIEW_FOV		90
 #define POD_VIEW_YAW_MIN	-60
@@ -33,7 +33,7 @@ extern float RemapAngleRange( float startInterval, float endInterval, float valu
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_PropVehiclePrisonerPod : public C_PhysicsProp, public IClientVehicle
 {
@@ -45,41 +45,71 @@ public:
 	DECLARE_DATADESC();
 
 	C_PropVehiclePrisonerPod();
-	
+
 	void PreDataUpdate( DataUpdateType_t updateType );
 	void PostDataUpdate( DataUpdateType_t updateType );
 
 public:
 
 	// IClientVehicle overrides.
-	virtual void GetVehicleViewPosition( int nRole, Vector *pOrigin, QAngle *pAngles, float *pFOV = NULL );
-	virtual void GetVehicleFOV( float &flFOV )
+	virtual void GetVehicleViewPosition( int nRole, Vector* pOrigin, QAngle* pAngles, float* pFOV = NULL );
+	virtual void GetVehicleFOV( float& flFOV )
 	{
 		flFOV = m_flFOV;
 	}
 	virtual void DrawHudElements();
-	virtual bool IsPassengerUsingStandardWeapons( int nRole = VEHICLE_ROLE_DRIVER ) { return false; }
-	virtual void UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd );
+	virtual bool IsPassengerUsingStandardWeapons( int nRole = VEHICLE_ROLE_DRIVER )
+	{
+		return false;
+	}
+	virtual void UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd );
 	virtual C_BaseCombatCharacter* GetPassenger( int nRole );
-	virtual int	GetPassengerRole( C_BaseCombatCharacter *pEnt );
-	virtual void GetVehicleClipPlanes( float &flZNear, float &flZFar ) const;
-	virtual int GetPrimaryAmmoType() const { return -1; }
-	virtual int GetPrimaryAmmoCount() const { return -1; }
-	virtual int GetPrimaryAmmoClip() const  { return -1; }
-	virtual bool PrimaryAmmoUsesClips() const { return false; }
-	virtual int GetJoystickResponseCurve() const { return 0; }
+	virtual int	GetPassengerRole( C_BaseCombatCharacter* pEnt );
+	virtual void GetVehicleClipPlanes( float& flZNear, float& flZFar ) const;
+	virtual int GetPrimaryAmmoType() const
+	{
+		return -1;
+	}
+	virtual int GetPrimaryAmmoCount() const
+	{
+		return -1;
+	}
+	virtual int GetPrimaryAmmoClip() const
+	{
+		return -1;
+	}
+	virtual bool PrimaryAmmoUsesClips() const
+	{
+		return false;
+	}
+	virtual int GetJoystickResponseCurve() const
+	{
+		return 0;
+	}
 
 public:
 
 	// C_BaseEntity overrides.
-	virtual IClientVehicle*	GetClientVehicle() { return this; }
-	virtual C_BaseEntity	*GetVehicleEnt() { return this; }
-	virtual void SetupMove( C_BasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move ) {}
-	virtual void ProcessMovement( C_BasePlayer *pPlayer, CMoveData *pMoveData ) {}
-	virtual void FinishMove( C_BasePlayer *player, CUserCmd *ucmd, CMoveData *move ) {}
-	virtual bool IsPredicted() const { return false; }
-	virtual void ItemPostFrame( C_BasePlayer *pPlayer ) {}
-	virtual bool IsSelfAnimating() { return false; };
+	virtual IClientVehicle*	GetClientVehicle()
+	{
+		return this;
+	}
+	virtual C_BaseEntity*	GetVehicleEnt()
+	{
+		return this;
+	}
+	virtual void SetupMove( C_BasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move ) {}
+	virtual void ProcessMovement( C_BasePlayer* pPlayer, CMoveData* pMoveData ) {}
+	virtual void FinishMove( C_BasePlayer* player, CUserCmd* ucmd, CMoveData* move ) {}
+	virtual bool IsPredicted() const
+	{
+		return false;
+	}
+	virtual void ItemPostFrame( C_BasePlayer* pPlayer ) {}
+	virtual bool IsSelfAnimating()
+	{
+		return false;
+	};
 
 private:
 
@@ -95,23 +125,23 @@ private:
 };
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_PropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, CPropVehiclePrisonerPod)
-	RecvPropEHandle( RECVINFO(m_hPlayer) ),
-	RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
-	RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
-	RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_PropVehiclePrisonerPod, DT_PropVehiclePrisonerPod, CPropVehiclePrisonerPod )
+RecvPropEHandle( RECVINFO( m_hPlayer ) ),
+				 RecvPropBool( RECVINFO( m_bEnterAnimOn ) ),
+				 RecvPropBool( RECVINFO( m_bExitAnimOn ) ),
+				 RecvPropVector( RECVINFO( m_vecEyeExitEndpoint ) ),
+				 END_RECV_TABLE()
 
 
-BEGIN_DATADESC( C_PropVehiclePrisonerPod )
-	DEFINE_EMBEDDED( m_ViewSmoothingData ),
-END_DATADESC()
+				 BEGIN_DATADESC( C_PropVehiclePrisonerPod )
+				 DEFINE_EMBEDDED( m_ViewSmoothingData ),
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_PropVehiclePrisonerPod::C_PropVehiclePrisonerPod( void )
+				 C_PropVehiclePrisonerPod::C_PropVehiclePrisonerPod( void )
 {
 	memset( &m_ViewSmoothingData, 0, sizeof( m_ViewSmoothingData ) );
 
@@ -127,8 +157,8 @@ C_PropVehiclePrisonerPod::C_PropVehiclePrisonerPod( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
 void C_PropVehiclePrisonerPod::PreDataUpdate( DataUpdateType_t updateType )
 {
@@ -138,13 +168,13 @@ void C_PropVehiclePrisonerPod::PreDataUpdate( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PropVehiclePrisonerPod::PostDataUpdate( DataUpdateType_t updateType )
 {
 	BaseClass::PostDataUpdate( updateType );
 
-	if ( !m_hPlayer && m_hPrevPlayer )
+	if( !m_hPlayer && m_hPrevPlayer )
 	{
 		// They have just exited the vehicle.
 		// Sometimes we never reach the end of our exit anim, such as if the
@@ -156,12 +186,14 @@ void C_PropVehiclePrisonerPod::PostDataUpdate( DataUpdateType_t updateType )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_BaseCombatCharacter *C_PropVehiclePrisonerPod::GetPassenger( int nRole )
+C_BaseCombatCharacter* C_PropVehiclePrisonerPod::GetPassenger( int nRole )
 {
-	if ( nRole == VEHICLE_ROLE_DRIVER )
+	if( nRole == VEHICLE_ROLE_DRIVER )
+	{
 		return m_hPlayer.Get();
+	}
 
 	return NULL;
 }
@@ -170,10 +202,12 @@ C_BaseCombatCharacter *C_PropVehiclePrisonerPod::GetPassenger( int nRole )
 //-----------------------------------------------------------------------------
 // Returns the role of the passenger
 //-----------------------------------------------------------------------------
-int	C_PropVehiclePrisonerPod::GetPassengerRole( C_BaseCombatCharacter *pPassenger )
+int	C_PropVehiclePrisonerPod::GetPassengerRole( C_BaseCombatCharacter* pPassenger )
 {
-	if ( m_hPlayer.Get() == pPassenger )
+	if( m_hPlayer.Get() == pPassenger )
+	{
 		return VEHICLE_ROLE_DRIVER;
+	}
 
 	return VEHICLE_ROLE_NONE;
 }
@@ -182,23 +216,23 @@ int	C_PropVehiclePrisonerPod::GetPassengerRole( C_BaseCombatCharacter *pPassenge
 //-----------------------------------------------------------------------------
 // Purpose: Modify the player view/camera while in a vehicle
 //-----------------------------------------------------------------------------
-void C_PropVehiclePrisonerPod::GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV /*=NULL*/ )
+void C_PropVehiclePrisonerPod::GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV /*=NULL*/ )
 {
-	SharedVehicleViewSmoothing( m_hPlayer, 
-								pAbsOrigin, pAbsAngles, 
-								m_bEnterAnimOn, m_bExitAnimOn, 
-								m_vecEyeExitEndpoint, 
-								&m_ViewSmoothingData, 
+	SharedVehicleViewSmoothing( m_hPlayer,
+								pAbsOrigin, pAbsAngles,
+								m_bEnterAnimOn, m_bExitAnimOn,
+								m_vecEyeExitEndpoint,
+								&m_ViewSmoothingData,
 								pFOV );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pLocalPlayer - 
-//			pCmd - 
+// Purpose:
+// Input  : pLocalPlayer -
+//			pCmd -
 //-----------------------------------------------------------------------------
-void C_PropVehiclePrisonerPod::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
+void C_PropVehiclePrisonerPod::UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd )
 {
 	int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 	Vector vehicleEyeOrigin;
@@ -220,13 +254,13 @@ void C_PropVehiclePrisonerPod::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUs
 //-----------------------------------------------------------------------------
 // Futzes with the clip planes
 //-----------------------------------------------------------------------------
-void C_PropVehiclePrisonerPod::GetVehicleClipPlanes( float &flZNear, float &flZFar ) const
+void C_PropVehiclePrisonerPod::GetVehicleClipPlanes( float& flZNear, float& flZFar ) const
 {
 	// Pod doesn't need to adjust the clip planes.
 	//flZNear = 6;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Renders hud elements
 //-----------------------------------------------------------------------------

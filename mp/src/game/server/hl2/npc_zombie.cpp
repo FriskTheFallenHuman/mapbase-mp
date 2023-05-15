@@ -18,8 +18,8 @@
 #include "engine/IEngineSound.h"
 #include "ammodef.h"
 #ifdef MAPBASE
-#include "AI_ResponseSystem.h"
-#include "ai_speech.h"
+	#include "AI_ResponseSystem.h"
+	#include "ai_speech.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -28,67 +28,78 @@
 // ACT_FLINCH_PHYSICS
 
 
-ConVar	sk_zombie_health( "sk_zombie_health","0");
+ConVar	sk_zombie_health( "sk_zombie_health", "0" );
 
 envelopePoint_t envZombieMoanVolumeFast[] =
 {
-	{	7.0f, 7.0f,
+	{
+		7.0f, 7.0f,
 		0.1f, 0.1f,
 	},
-	{	0.0f, 0.0f,
+	{
+		0.0f, 0.0f,
 		0.2f, 0.3f,
 	},
 };
 
 envelopePoint_t envZombieMoanVolume[] =
 {
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		0.1f, 0.1f,
 	},
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		0.2f, 0.2f,
 	},
-	{	0.0f, 0.0f,
+	{
+		0.0f, 0.0f,
 		0.3f, 0.4f,
 	},
 };
 
 envelopePoint_t envZombieMoanVolumeLong[] =
 {
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		0.3f, 0.5f,
 	},
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		0.6f, 1.0f,
 	},
-	{	0.0f, 0.0f,
+	{
+		0.0f, 0.0f,
 		0.3f, 0.4f,
 	},
 };
 
 envelopePoint_t envZombieMoanIgnited[] =
 {
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		0.5f, 1.0f,
 	},
-	{	1.0f, 1.0f,
+	{
+		1.0f, 1.0f,
 		30.0f, 30.0f,
 	},
-	{	0.0f, 0.0f,
+	{
+		0.0f, 0.0f,
 		0.5f, 1.0f,
 	},
 };
 
 #ifdef MAPBASE
-//------------------------------------------------------------------------------
-// Move these to CNPC_BaseZombie if other zombies end up using the response system
-//------------------------------------------------------------------------------
-#define TLK_ZOMBIE_PAIN "TLK_WOUND"
-#define TLK_ZOMBIE_DEATH "TLK_DEATH"
-#define TLK_ZOMBIE_ALERT "TLK_STARTCOMBAT"
-#define TLK_ZOMBIE_IDLE "TLK_QUESTION"
-#define TLK_ZOMBIE_ATTACK "TLK_MELEE"
-#define TLK_ZOMBIE_MOAN "TLK_MOAN"
+	//------------------------------------------------------------------------------
+	// Move these to CNPC_BaseZombie if other zombies end up using the response system
+	//------------------------------------------------------------------------------
+	#define TLK_ZOMBIE_PAIN "TLK_WOUND"
+	#define TLK_ZOMBIE_DEATH "TLK_DEATH"
+	#define TLK_ZOMBIE_ALERT "TLK_STARTCOMBAT"
+	#define TLK_ZOMBIE_IDLE "TLK_QUESTION"
+	#define TLK_ZOMBIE_ATTACK "TLK_MELEE"
+	#define TLK_ZOMBIE_MOAN "TLK_MOAN"
 #endif
 
 
@@ -102,8 +113,8 @@ class CZombie : public CAI_BlendingHost<CNPC_BaseZombie>
 
 public:
 	CZombie()
-	 : m_DurationDoorBash( 2, 6),
-	   m_NextTimeToStartDoorBash( 3.0 )
+		: m_DurationDoorBash( 2, 6 ),
+		  m_NextTimeToStartDoorBash( 3.0 )
 	{
 	}
 
@@ -111,9 +122,12 @@ public:
 	void Precache( void );
 
 	void SetZombieModel( void );
-	void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
-	bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
-	bool CanBecomeLiveTorso() { return !m_fIsHeadless; }
+	void MoanSound( envelopePoint_t* pEnvelope, int iEnvelopeSize );
+	bool ShouldBecomeTorso( const CTakeDamageInfo& info, float flDamageThreshold );
+	bool CanBecomeLiveTorso()
+	{
+		return !m_fIsHeadless;
+	}
 
 	void GatherConditions( void );
 
@@ -128,33 +142,33 @@ public:
 
 	void OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
+	virtual const char* GetLegsModel( void );
+	virtual const char* GetTorsoModel( void );
+	virtual const char* GetHeadcrabClassname( void );
+	virtual const char* GetHeadcrabModel( void );
 
-	virtual bool OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, 
-								 CBaseDoor *pDoor,
-								 float distClear, 
-								 AIMoveResult_t *pResult );
+	virtual bool OnObstructingDoor( AILocalMoveGoal_t* pMoveGoal,
+									CBaseDoor* pDoor,
+									float distClear,
+									AIMoveResult_t* pResult );
 
 	Activity SelectDoorBash();
 
 	void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
 	void Extinguish();
-	int OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo );
-	bool IsHeavyDamage( const CTakeDamageInfo &info );
-	bool IsSquashed( const CTakeDamageInfo &info );
+	int OnTakeDamage_Alive( const CTakeDamageInfo& inputInfo );
+	bool IsHeavyDamage( const CTakeDamageInfo& info );
+	bool IsSquashed( const CTakeDamageInfo& info );
 	void BuildScheduleTestBits( void );
 
 	void PrescheduleThink( void );
-	int SelectSchedule ( void );
+	int SelectSchedule( void );
 
-	void PainSound( const CTakeDamageInfo &info );
-	void DeathSound( const CTakeDamageInfo &info );
+	void PainSound( const CTakeDamageInfo& info );
+	void DeathSound( const CTakeDamageInfo& info );
 	void AlertSound( void );
 	void IdleSound( void );
 	void AttackSound( void );
@@ -163,19 +177,19 @@ public:
 	void FootstepSound( bool fRightFoot );
 	void FootscuffSound( bool fRightFoot );
 
-	const char *GetMoanSound( int nSound );
-	
+	const char* GetMoanSound( int nSound );
+
 public:
 	DEFINE_CUSTOM_AI;
 
 protected:
-	static const char *pMoanSounds[];
+	static const char* pMoanSounds[];
 
 
 private:
 	CHandle< CBaseDoor > m_hBlockingDoor;
 	float				 m_flDoorBashYaw;
-	
+
 	CRandSimTimer 		 m_DurationDoorBash;
 	CSimTimer 	  		 m_NextTimeToStartDoorBash;
 
@@ -187,12 +201,12 @@ LINK_ENTITY_TO_CLASS( npc_zombie_torso, CZombie );
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-const char *CZombie::pMoanSounds[] =
+const char* CZombie::pMoanSounds[] =
 {
-	 "NPC_BaseZombie.Moan1",
-	 "NPC_BaseZombie.Moan2",
-	 "NPC_BaseZombie.Moan3",
-	 "NPC_BaseZombie.Moan4",
+	"NPC_BaseZombie.Moan1",
+	"NPC_BaseZombie.Moan2",
+	"NPC_BaseZombie.Moan3",
+	"NPC_BaseZombie.Moan4",
 };
 
 //=========================================================
@@ -234,19 +248,19 @@ int ACT_ZOMBIE_WALLPOUND;
 
 BEGIN_DATADESC( CZombie )
 
-	DEFINE_FIELD( m_hBlockingDoor, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flDoorBashYaw, FIELD_FLOAT ),
-	DEFINE_EMBEDDED( m_DurationDoorBash ),
-	DEFINE_EMBEDDED( m_NextTimeToStartDoorBash ),
-	DEFINE_FIELD( m_vPositionCharged, FIELD_POSITION_VECTOR ),
+DEFINE_FIELD( m_hBlockingDoor, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flDoorBashYaw, FIELD_FLOAT ),
+			  DEFINE_EMBEDDED( m_DurationDoorBash ),
+			  DEFINE_EMBEDDED( m_NextTimeToStartDoorBash ),
+			  DEFINE_FIELD( m_vPositionCharged, FIELD_POSITION_VECTOR ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CZombie::Precache( void )
+			  void CZombie::Precache( void )
 {
 	BaseClass::Precache();
 
@@ -325,27 +339,27 @@ void CZombie::Spawn( void )
 //-----------------------------------------------------------------------------
 void CZombie::PrescheduleThink( void )
 {
-  	if( gpGlobals->curtime > m_flNextMoanSound )
-  	{
-  		if( CanPlayMoanSound() )
-  		{
+	if( gpGlobals->curtime > m_flNextMoanSound )
+	{
+		if( CanPlayMoanSound() )
+		{
 			// Classic guy idles instead of moans.
 			IdleSound();
 
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 5.0 );
-  		}
-  		else
- 		{
-  			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 2.0 );
-  		}
-  	}
+			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 2.0, 5.0 );
+		}
+		else
+		{
+			m_flNextMoanSound = gpGlobals->curtime + random->RandomFloat( 1.0, 2.0 );
+		}
+	}
 
 	BaseClass::PrescheduleThink();
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-int CZombie::SelectSchedule ( void )
+int CZombie::SelectSchedule( void )
 {
 	if( HasCondition( COND_PHYSICS_DAMAGE ) && !m_ActBusyBehavior.IsActive() )
 	{
@@ -362,7 +376,7 @@ void CZombie::FootstepSound( bool fRightFoot )
 {
 	if( fRightFoot )
 	{
-		EmitSound(  "Zombie.FootstepRight" );
+		EmitSound( "Zombie.FootstepRight" );
 	}
 	else
 	{
@@ -403,12 +417,12 @@ void CZombie::AttackMissSound( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CZombie::PainSound( const CTakeDamageInfo &info )
+void CZombie::PainSound( const CTakeDamageInfo& info )
 {
 	// We're constantly taking damage when we are on fire. Don't make all those noises!
-	if ( IsOnFire() )
+	if( IsOnFire() )
 	{
 		return;
 	}
@@ -418,13 +432,13 @@ void CZombie::PainSound( const CTakeDamageInfo &info )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CZombie::DeathSound( const CTakeDamageInfo &info ) 
+void CZombie::DeathSound( const CTakeDamageInfo& info )
 {
 	EmitSound( "Zombie.Die" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CZombie::AlertSound( void )
 {
@@ -437,7 +451,7 @@ void CZombie::AlertSound( void )
 //-----------------------------------------------------------------------------
 // Purpose: Returns a moan sound for this class of zombie.
 //-----------------------------------------------------------------------------
-const char *CZombie::GetMoanSound( int nSound )
+const char* CZombie::GetMoanSound( int nSound )
 {
 	return pMoanSounds[ nSound % ARRAYSIZE( pMoanSounds ) ];
 }
@@ -474,29 +488,29 @@ void CZombie::AttackSound( void )
 //-----------------------------------------------------------------------------
 // Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
 //-----------------------------------------------------------------------------
-const char *CZombie::GetHeadcrabClassname( void )
+const char* CZombie::GetHeadcrabClassname( void )
 {
 	return "npc_headcrab";
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-const char *CZombie::GetHeadcrabModel( void )
+const char* CZombie::GetHeadcrabModel( void )
 {
 	return "models/headcrabclassic.mdl";
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CZombie::GetLegsModel( void )
+const char* CZombie::GetLegsModel( void )
 {
 	return "models/zombie/classic_legs.mdl";
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-const char *CZombie::GetTorsoModel( void )
+const char* CZombie::GetTorsoModel( void )
 {
 	return "models/zombie/classic_torso.mdl";
 }
@@ -508,7 +522,7 @@ void CZombie::SetZombieModel( void )
 {
 	Hull_t lastHull = GetHullType();
 
-	if ( m_fIsTorso )
+	if( m_fIsTorso )
 	{
 		SetModel( "models/zombie/classic_torso.mdl" );
 		SetHullType( HULL_TINY );
@@ -528,9 +542,9 @@ void CZombie::SetZombieModel( void )
 	// hull changed size, notify vphysics
 	// UNDONE: Solve this generally, systematically so other
 	// NPCs can change size
-	if ( lastHull != GetHullType() )
+	if( lastHull != GetHullType() )
 	{
-		if ( VPhysicsGetObject() )
+		if( VPhysicsGetObject() )
 		{
 			SetupVPhysicsHull();
 		}
@@ -540,7 +554,7 @@ void CZombie::SetZombieModel( void )
 //---------------------------------------------------------
 // Classic zombie only uses moan sound if on fire.
 //---------------------------------------------------------
-void CZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
+void CZombie::MoanSound( envelopePoint_t* pEnvelope, int iEnvelopeSize )
 {
 	if( IsOnFire() )
 	{
@@ -550,14 +564,14 @@ void CZombie::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CZombie::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold )
+bool CZombie::ShouldBecomeTorso( const CTakeDamageInfo& info, float flDamageThreshold )
 {
-	if( IsSlumped() ) 
+	if( IsSlumped() )
 	{
 		// Never break apart a slouched zombie. This is because the most fun
 		// slouched zombies to kill are ones sleeping leaning against explosive
 		// barrels. If you break them in half in the blast, the force of being
-		// so close to the explosion makes the body pieces fly at ridiculous 
+		// so close to the explosion makes the body pieces fly at ridiculous
 		// velocities because the pieces weigh less than the whole.
 		return false;
 	}
@@ -571,7 +585,7 @@ void CZombie::GatherConditions( void )
 {
 	BaseClass::GatherConditions();
 
-	static int conditionsToClear[] = 
+	static int conditionsToClear[] =
 	{
 		COND_BLOCKED_BY_DOOR,
 		COND_DOOR_OPENED,
@@ -580,31 +594,33 @@ void CZombie::GatherConditions( void )
 
 	ClearConditions( conditionsToClear, ARRAYSIZE( conditionsToClear ) );
 
-	if ( m_hBlockingDoor == NULL || 
-		 ( m_hBlockingDoor->m_toggle_state == TS_AT_TOP || 
-		   m_hBlockingDoor->m_toggle_state == TS_GOING_UP )  )
+	if( m_hBlockingDoor == NULL ||
+			( m_hBlockingDoor->m_toggle_state == TS_AT_TOP ||
+			  m_hBlockingDoor->m_toggle_state == TS_GOING_UP ) )
 	{
 		ClearCondition( COND_BLOCKED_BY_DOOR );
-		if ( m_hBlockingDoor != NULL )
+		if( m_hBlockingDoor != NULL )
 		{
 			SetCondition( COND_DOOR_OPENED );
 			m_hBlockingDoor = NULL;
 		}
 	}
 	else
-		SetCondition( COND_BLOCKED_BY_DOOR );
-
-	if ( ConditionInterruptsCurSchedule( COND_ZOMBIE_CHARGE_TARGET_MOVED ) )
 	{
-		if ( GetNavigator()->IsGoalActive() )
+		SetCondition( COND_BLOCKED_BY_DOOR );
+	}
+
+	if( ConditionInterruptsCurSchedule( COND_ZOMBIE_CHARGE_TARGET_MOVED ) )
+	{
+		if( GetNavigator()->IsGoalActive() )
 		{
 			const float CHARGE_RESET_TOLERANCE = 60.0;
-			if ( !GetEnemy() ||
-				 ( m_vPositionCharged - GetEnemyLKP()  ).Length() > CHARGE_RESET_TOLERANCE )
+			if( !GetEnemy() ||
+					( m_vPositionCharged - GetEnemyLKP() ).Length() > CHARGE_RESET_TOLERANCE )
 			{
 				SetCondition( COND_ZOMBIE_CHARGE_TARGET_MOVED );
 			}
-				 
+
 		}
 	}
 }
@@ -614,24 +630,26 @@ void CZombie::GatherConditions( void )
 
 int CZombie::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode )
 {
-	if ( HasCondition( COND_BLOCKED_BY_DOOR ) && m_hBlockingDoor != NULL )
+	if( HasCondition( COND_BLOCKED_BY_DOOR ) && m_hBlockingDoor != NULL )
 	{
 		ClearCondition( COND_BLOCKED_BY_DOOR );
-		if ( m_NextTimeToStartDoorBash.Expired() && failedSchedule != SCHED_ZOMBIE_BASH_DOOR )
+		if( m_NextTimeToStartDoorBash.Expired() && failedSchedule != SCHED_ZOMBIE_BASH_DOOR )
+		{
 			return SCHED_ZOMBIE_BASH_DOOR;
+		}
 		m_hBlockingDoor = NULL;
 	}
 
-	if ( failedSchedule != SCHED_ZOMBIE_CHARGE_ENEMY && 
-		 IsPathTaskFailure( taskFailCode ) &&
-		 random->RandomInt( 1, 100 ) < 50 )
+	if( failedSchedule != SCHED_ZOMBIE_CHARGE_ENEMY &&
+			IsPathTaskFailure( taskFailCode ) &&
+			random->RandomInt( 1, 100 ) < 50 )
 	{
 		return SCHED_ZOMBIE_CHARGE_ENEMY;
 	}
 
-	if ( failedSchedule != SCHED_ZOMBIE_WANDER_ANGRILY &&
-		 ( failedSchedule == SCHED_TAKE_COVER_FROM_ENEMY || 
-		   failedSchedule == SCHED_CHASE_ENEMY_FAILED ) )
+	if( failedSchedule != SCHED_ZOMBIE_WANDER_ANGRILY &&
+			( failedSchedule == SCHED_TAKE_COVER_FROM_ENEMY ||
+			  failedSchedule == SCHED_CHASE_ENEMY_FAILED ) )
 	{
 		return SCHED_ZOMBIE_WANDER_ANGRILY;
 	}
@@ -644,11 +662,15 @@ int CZombie::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFail
 
 int CZombie::TranslateSchedule( int scheduleType )
 {
-	if ( scheduleType == SCHED_COMBAT_FACE && IsUnreachable( GetEnemy() ) )
+	if( scheduleType == SCHED_COMBAT_FACE && IsUnreachable( GetEnemy() ) )
+	{
 		return SCHED_TAKE_COVER_FROM_ENEMY;
+	}
 
-	if ( !m_fIsTorso && scheduleType == SCHED_FAIL )
+	if( !m_fIsTorso && scheduleType == SCHED_FAIL )
+	{
 		return SCHED_ZOMBIE_FAIL;
+	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
 }
@@ -659,11 +681,15 @@ Activity CZombie::NPC_TranslateActivity( Activity newActivity )
 {
 	newActivity = BaseClass::NPC_TranslateActivity( newActivity );
 
-	if ( newActivity == ACT_RUN )
+	if( newActivity == ACT_RUN )
+	{
 		return ACT_WALK;
-		
-	if ( m_fIsTorso && ( newActivity == ACT_ZOMBIE_TANTRUM ) )
+	}
+
+	if( m_fIsTorso && ( newActivity == ACT_ZOMBIE_TANTRUM ) )
+	{
 		return ACT_IDLE;
+	}
 
 	return newActivity;
 }
@@ -678,15 +704,15 @@ void CZombie::OnStateChange( NPC_STATE OldState, NPC_STATE NewState )
 //---------------------------------------------------------
 //---------------------------------------------------------
 
-void CZombie::StartTask( const Task_t *pTask )
+void CZombie::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_ZOMBIE_EXPRESS_ANGER:
+		case TASK_ZOMBIE_EXPRESS_ANGER:
 		{
-			if ( random->RandomInt( 1, 4 ) == 2 )
+			if( random->RandomInt( 1, 4 ) == 2 )
 			{
-				SetIdealActivity( (Activity)ACT_ZOMBIE_TANTRUM );
+				SetIdealActivity( ( Activity )ACT_ZOMBIE_TANTRUM );
 			}
 			else
 			{
@@ -696,10 +722,10 @@ void CZombie::StartTask( const Task_t *pTask )
 			break;
 		}
 
-	case TASK_ZOMBIE_YAW_TO_DOOR:
+		case TASK_ZOMBIE_YAW_TO_DOOR:
 		{
 			AssertMsg( m_hBlockingDoor != NULL, "Expected condition handling to break schedule before landing here" );
-			if ( m_hBlockingDoor != NULL )
+			if( m_hBlockingDoor != NULL )
 			{
 				GetMotor()->SetIdealYaw( m_flDoorBashYaw );
 			}
@@ -707,87 +733,93 @@ void CZombie::StartTask( const Task_t *pTask )
 			break;
 		}
 
-	case TASK_ZOMBIE_ATTACK_DOOR:
+		case TASK_ZOMBIE_ATTACK_DOOR:
 		{
-		 	m_DurationDoorBash.Reset();
+			m_DurationDoorBash.Reset();
 			SetIdealActivity( SelectDoorBash() );
 			break;
 		}
 
-	case TASK_ZOMBIE_CHARGE_ENEMY:
+		case TASK_ZOMBIE_CHARGE_ENEMY:
 		{
-			if ( !GetEnemy() )
+			if( !GetEnemy() )
+			{
 				TaskFail( FAIL_NO_ENEMY );
-			else if ( GetNavigator()->SetVectorGoalFromTarget( GetEnemy()->GetLocalOrigin() ) )
+			}
+			else if( GetNavigator()->SetVectorGoalFromTarget( GetEnemy()->GetLocalOrigin() ) )
 			{
 				m_vPositionCharged = GetEnemy()->GetLocalOrigin();
 				TaskComplete();
 			}
 			else
+			{
 				TaskFail( FAIL_NO_ROUTE );
+			}
 			break;
 		}
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 
-void CZombie::RunTask( const Task_t *pTask )
+void CZombie::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_ZOMBIE_ATTACK_DOOR:
+		case TASK_ZOMBIE_ATTACK_DOOR:
 		{
-			if ( IsActivityFinished() )
+			if( IsActivityFinished() )
 			{
-				if ( m_DurationDoorBash.Expired() )
+				if( m_DurationDoorBash.Expired() )
 				{
 					TaskComplete();
 					m_NextTimeToStartDoorBash.Reset();
 				}
 				else
+				{
 					ResetIdealActivity( SelectDoorBash() );
+				}
 			}
 			break;
 		}
 
-	case TASK_ZOMBIE_CHARGE_ENEMY:
+		case TASK_ZOMBIE_CHARGE_ENEMY:
 		{
 			break;
 		}
 
-	case TASK_ZOMBIE_EXPRESS_ANGER:
+		case TASK_ZOMBIE_EXPRESS_ANGER:
 		{
-			if ( IsActivityFinished() )
+			if( IsActivityFinished() )
 			{
 				TaskComplete();
 			}
 			break;
 		}
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 
-bool CZombie::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, CBaseDoor *pDoor, 
-							  float distClear, AIMoveResult_t *pResult )
+bool CZombie::OnObstructingDoor( AILocalMoveGoal_t* pMoveGoal, CBaseDoor* pDoor,
+								 float distClear, AIMoveResult_t* pResult )
 {
-	if ( BaseClass::OnObstructingDoor( pMoveGoal, pDoor, distClear, pResult ) )
+	if( BaseClass::OnObstructingDoor( pMoveGoal, pDoor, distClear, pResult ) )
 	{
-		if  ( IsMoveBlocked( *pResult ) && pMoveGoal->directTrace.vHitNormal != vec3_origin )
+		if( IsMoveBlocked( *pResult ) && pMoveGoal->directTrace.vHitNormal != vec3_origin )
 		{
 			m_hBlockingDoor = pDoor;
-			m_flDoorBashYaw = UTIL_VecToYaw( pMoveGoal->directTrace.vHitNormal * -1 );	
+			m_flDoorBashYaw = UTIL_VecToYaw( pMoveGoal->directTrace.vHitNormal * -1 );
 		}
 		return true;
 	}
@@ -800,9 +832,11 @@ bool CZombie::OnObstructingDoor( AILocalMoveGoal_t *pMoveGoal, CBaseDoor *pDoor,
 
 Activity CZombie::SelectDoorBash()
 {
-	if ( random->RandomInt( 1, 3 ) == 1 )
+	if( random->RandomInt( 1, 3 ) == 1 )
+	{
 		return ACT_MELEE_ATTACK1;
-	return (Activity)ACT_ZOMBIE_WALLPOUND;
+	}
+	return ( Activity )ACT_ZOMBIE_WALLPOUND;
 }
 
 //---------------------------------------------------------
@@ -811,17 +845,17 @@ Activity CZombie::SelectDoorBash()
 //---------------------------------------------------------
 void CZombie::Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
 {
- 	if( !IsOnFire() && IsAlive() )
+	if( !IsOnFire() && IsAlive() )
 	{
 		BaseClass::Ignite( flFlameLifetime, bNPCOnly, flSize, bCalledByLevelDesigner );
 
-		if ( !UTIL_IsLowViolence() )
+		if( !UTIL_IsLowViolence() )
 		{
 			RemoveSpawnFlags( SF_NPC_GAG );
 
 			MoanSound( envZombieMoanIgnited, ARRAYSIZE( envZombieMoanIgnited ) );
 
-			if ( m_pMoanSound )
+			if( m_pMoanSound )
 			{
 				ENVELOPE_CONTROLLER.SoundChangePitch( m_pMoanSound, 120, 1.0 );
 				ENVELOPE_CONTROLLER.SoundChangeVolume( m_pMoanSound, 1, 1.0 );
@@ -847,12 +881,12 @@ void CZombie::Extinguish()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
+int CZombie::OnTakeDamage_Alive( const CTakeDamageInfo& inputInfo )
 {
 #ifndef HL2_EPISODIC
-	if ( inputInfo.GetDamageType() & DMG_BUCKSHOT )
+	if( inputInfo.GetDamageType() & DMG_BUCKSHOT )
 	{
-		if( !m_fIsTorso && inputInfo.GetDamage() > (m_iMaxHealth/3) )
+		if( !m_fIsTorso && inputInfo.GetDamage() > ( m_iMaxHealth / 3 ) )
 		{
 			// Always flinch if damaged a lot by buckshot, even if not shot in the head.
 			// The reason for making sure we did at least 1/3rd of the zombie's max health
@@ -868,26 +902,28 @@ int CZombie::OnTakeDamage_Alive( const CTakeDamageInfo &inputInfo )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CZombie::IsHeavyDamage( const CTakeDamageInfo &info )
+bool CZombie::IsHeavyDamage( const CTakeDamageInfo& info )
 {
 #ifdef HL2_EPISODIC
-	if ( info.GetDamageType() & DMG_BUCKSHOT )
+	if( info.GetDamageType() & DMG_BUCKSHOT )
 	{
-		if ( !m_fIsTorso && info.GetDamage() > (m_iMaxHealth/3) )
+		if( !m_fIsTorso && info.GetDamage() > ( m_iMaxHealth / 3 ) )
+		{
 			return true;
+		}
 	}
 
 	// Randomly treat all damage as heavy
-	if ( info.GetDamageType() & (DMG_BULLET | DMG_BUCKSHOT) )
+	if( info.GetDamageType() & ( DMG_BULLET | DMG_BUCKSHOT ) )
 	{
 		// Don't randomly flinch if I'm melee attacking
-		if ( !HasCondition(COND_CAN_MELEE_ATTACK1) && (RandomFloat() > 0.5) )
+		if( !HasCondition( COND_CAN_MELEE_ATTACK1 ) && ( RandomFloat() > 0.5 ) )
 		{
 			// Randomly forget I've flinched, so that I'll be forced to play a big flinch
 			// If this doesn't happen, it means I may not fully flinch if I recently flinched
-			if ( RandomFloat() > 0.75 )
+			if( RandomFloat() > 0.75 )
 			{
-				Forget(bits_MEMORY_FLINCHED);
+				Forget( bits_MEMORY_FLINCHED );
 			}
 
 			return true;
@@ -895,13 +931,13 @@ bool CZombie::IsHeavyDamage( const CTakeDamageInfo &info )
 	}
 #endif // HL2_EPISODIC
 
-	return BaseClass::IsHeavyDamage(info);
+	return BaseClass::IsHeavyDamage( info );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 #define ZOMBIE_SQUASH_MASS	300.0f  // Anything this heavy or heavier squashes a zombie good. (show special fx)
-bool CZombie::IsSquashed( const CTakeDamageInfo &info )
+bool CZombie::IsSquashed( const CTakeDamageInfo& info )
 {
 	if( GetHealth() > 0 )
 	{
@@ -910,7 +946,7 @@ bool CZombie::IsSquashed( const CTakeDamageInfo &info )
 
 	if( info.GetDamageType() & DMG_CRUSH && info.GetInflictor() ) // Mapbase - Fixes a crash with inflictor-less crush damage
 	{
-		IPhysicsObject *pCrusher = info.GetInflictor()->VPhysicsGetObject();
+		IPhysicsObject* pCrusher = info.GetInflictor()->VPhysicsGetObject();
 		if( pCrusher && pCrusher->GetMass() >= ZOMBIE_SQUASH_MASS && info.GetInflictor()->WorldSpaceCenter().z > EyePosition().z )
 		{
 			// This heuristic detects when a zombie has been squashed from above by a heavy
@@ -935,94 +971,94 @@ void CZombie::BuildScheduleTestBits( void )
 	}
 }
 
-	
+
 //=============================================================================
 
 AI_BEGIN_CUSTOM_NPC( npc_zombie, CZombie )
 
-	DECLARE_CONDITION( COND_BLOCKED_BY_DOOR )
-	DECLARE_CONDITION( COND_DOOR_OPENED )
-	DECLARE_CONDITION( COND_ZOMBIE_CHARGE_TARGET_MOVED )
+DECLARE_CONDITION( COND_BLOCKED_BY_DOOR )
+DECLARE_CONDITION( COND_DOOR_OPENED )
+DECLARE_CONDITION( COND_ZOMBIE_CHARGE_TARGET_MOVED )
 
-	DECLARE_TASK( TASK_ZOMBIE_EXPRESS_ANGER )
-	DECLARE_TASK( TASK_ZOMBIE_YAW_TO_DOOR )
-	DECLARE_TASK( TASK_ZOMBIE_ATTACK_DOOR )
-	DECLARE_TASK( TASK_ZOMBIE_CHARGE_ENEMY )
-	
-	DECLARE_ACTIVITY( ACT_ZOMBIE_TANTRUM );
-	DECLARE_ACTIVITY( ACT_ZOMBIE_WALLPOUND );
+DECLARE_TASK( TASK_ZOMBIE_EXPRESS_ANGER )
+DECLARE_TASK( TASK_ZOMBIE_YAW_TO_DOOR )
+DECLARE_TASK( TASK_ZOMBIE_ATTACK_DOOR )
+DECLARE_TASK( TASK_ZOMBIE_CHARGE_ENEMY )
 
-	DEFINE_SCHEDULE
-	( 
-		SCHED_ZOMBIE_BASH_DOOR,
+DECLARE_ACTIVITY( ACT_ZOMBIE_TANTRUM );
+DECLARE_ACTIVITY( ACT_ZOMBIE_WALLPOUND );
 
-		"	Tasks"
-		"		TASK_SET_ACTIVITY				ACTIVITY:ACT_ZOMBIE_TANTRUM"
-		"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
-		"		TASK_ZOMBIE_YAW_TO_DOOR			0"
-		"		TASK_FACE_IDEAL					0"
-		"		TASK_ZOMBIE_ATTACK_DOOR			0"
-		""
-		"	Interrupts"
-		"		COND_ZOMBIE_RELEASECRAB"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_DOOR_OPENED"
-	)
+DEFINE_SCHEDULE
+(
+	SCHED_ZOMBIE_BASH_DOOR,
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_ZOMBIE_WANDER_ANGRILY,
+	"	Tasks"
+	"		TASK_SET_ACTIVITY				ACTIVITY:ACT_ZOMBIE_TANTRUM"
+	"		TASK_SET_FAIL_SCHEDULE			SCHEDULE:SCHED_TAKE_COVER_FROM_ENEMY"
+	"		TASK_ZOMBIE_YAW_TO_DOOR			0"
+	"		TASK_FACE_IDEAL					0"
+	"		TASK_ZOMBIE_ATTACK_DOOR			0"
+	""
+	"	Interrupts"
+	"		COND_ZOMBIE_RELEASECRAB"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_DOOR_OPENED"
+)
 
-		"	Tasks"
-		"		TASK_WANDER						480240" // 48 units to 240 units.
-		"		TASK_WALK_PATH					0"
-		"		TASK_WAIT_FOR_MOVEMENT			4"
-		""
-		"	Interrupts"
-		"		COND_ZOMBIE_RELEASECRAB"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_DOOR_OPENED"
-	)
+DEFINE_SCHEDULE
+(
+	SCHED_ZOMBIE_WANDER_ANGRILY,
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_ZOMBIE_CHARGE_ENEMY,
+	"	Tasks"
+	"		TASK_WANDER						480240" // 48 units to 240 units.
+	"		TASK_WALK_PATH					0"
+	"		TASK_WAIT_FOR_MOVEMENT			4"
+	""
+	"	Interrupts"
+	"		COND_ZOMBIE_RELEASECRAB"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_DOOR_OPENED"
+)
+
+DEFINE_SCHEDULE
+(
+	SCHED_ZOMBIE_CHARGE_ENEMY,
 
 
-		"	Tasks"
-		"		TASK_ZOMBIE_CHARGE_ENEMY		0"
-		"		TASK_WALK_PATH					0"
-		"		TASK_WAIT_FOR_MOVEMENT			0"
-		"		TASK_PLAY_SEQUENCE				ACTIVITY:ACT_ZOMBIE_TANTRUM" /* placeholder until frustration/rage/fence shake animation available */
-		""
-		"	Interrupts"
-		"		COND_ZOMBIE_RELEASECRAB"
-		"		COND_ENEMY_DEAD"
-		"		COND_NEW_ENEMY"
-		"		COND_DOOR_OPENED"
-		"		COND_ZOMBIE_CHARGE_TARGET_MOVED"
-	)
+	"	Tasks"
+	"		TASK_ZOMBIE_CHARGE_ENEMY		0"
+	"		TASK_WALK_PATH					0"
+	"		TASK_WAIT_FOR_MOVEMENT			0"
+	"		TASK_PLAY_SEQUENCE				ACTIVITY:ACT_ZOMBIE_TANTRUM" /* placeholder until frustration/rage/fence shake animation available */
+	""
+	"	Interrupts"
+	"		COND_ZOMBIE_RELEASECRAB"
+	"		COND_ENEMY_DEAD"
+	"		COND_NEW_ENEMY"
+	"		COND_DOOR_OPENED"
+	"		COND_ZOMBIE_CHARGE_TARGET_MOVED"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_ZOMBIE_FAIL,
+DEFINE_SCHEDULE
+(
+	SCHED_ZOMBIE_FAIL,
 
-		"	Tasks"
-		"		TASK_STOP_MOVING		0"
-		"		TASK_SET_ACTIVITY		ACTIVITY:ACT_ZOMBIE_TANTRUM"
-		"		TASK_WAIT				1"
-		"		TASK_WAIT_PVS			0"
-		""
-		"	Interrupts"
-		"		COND_CAN_RANGE_ATTACK1 "
-		"		COND_CAN_RANGE_ATTACK2 "
-		"		COND_CAN_MELEE_ATTACK1 "
-		"		COND_CAN_MELEE_ATTACK2"
-		"		COND_GIVE_WAY"
-		"		COND_DOOR_OPENED"
-	)
+	"	Tasks"
+	"		TASK_STOP_MOVING		0"
+	"		TASK_SET_ACTIVITY		ACTIVITY:ACT_ZOMBIE_TANTRUM"
+	"		TASK_WAIT				1"
+	"		TASK_WAIT_PVS			0"
+	""
+	"	Interrupts"
+	"		COND_CAN_RANGE_ATTACK1 "
+	"		COND_CAN_RANGE_ATTACK2 "
+	"		COND_CAN_MELEE_ATTACK1 "
+	"		COND_CAN_MELEE_ATTACK2"
+	"		COND_GIVE_WAY"
+	"		COND_DOOR_OPENED"
+)
 
 AI_END_CUSTOM_NPC()
 
@@ -1040,50 +1076,65 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
-	void SpeakIfAllowed( const char *concept, AI_CriteriaSet *modifiers = NULL );
+	void SpeakIfAllowed( const char* concept, AI_CriteriaSet* modifiers = NULL );
 	void ModifyOrAppendCriteria( AI_CriteriaSet& set );
-	virtual CAI_Expresser *CreateExpresser( void );
-	virtual CAI_Expresser *GetExpresser() { return m_pExpresser; }
-	virtual void		PostConstructor( const char *szClassname );
+	virtual CAI_Expresser* CreateExpresser( void );
+	virtual CAI_Expresser* GetExpresser()
+	{
+		return m_pExpresser;
+	}
+	virtual void		PostConstructor( const char* szClassname );
 
-	void PainSound( const CTakeDamageInfo &info );
-	void DeathSound( const CTakeDamageInfo &info );
+	void PainSound( const CTakeDamageInfo& info );
+	void DeathSound( const CTakeDamageInfo& info );
 	void AlertSound( void );
 	void IdleSound( void );
 	void AttackSound( void );
 
-	const char *GetMoanSound( int nSound );
+	const char* GetMoanSound( int nSound );
 
 	void SetZombieModel( void );
 
-	virtual const char *GetLegsModel( void ) { return STRING(m_iszLegsModel); }
-	virtual const char *GetTorsoModel( void ) { return STRING(m_iszTorsoModel); }
-	virtual const char *GetHeadcrabClassname( void ) { return STRING(m_iszHeadcrabClassname); }
-	virtual const char *GetHeadcrabModel( void ) { return STRING(m_iszHeadcrabModel); }
+	virtual const char* GetLegsModel( void )
+	{
+		return STRING( m_iszLegsModel );
+	}
+	virtual const char* GetTorsoModel( void )
+	{
+		return STRING( m_iszTorsoModel );
+	}
+	virtual const char* GetHeadcrabClassname( void )
+	{
+		return STRING( m_iszHeadcrabClassname );
+	}
+	virtual const char* GetHeadcrabModel( void )
+	{
+		return STRING( m_iszHeadcrabModel );
+	}
 
 	string_t m_iszLegsModel;
 	string_t m_iszTorsoModel;
 	string_t m_iszHeadcrabClassname;
 	string_t m_iszHeadcrabModel;
 
-	CAI_Expresser *m_pExpresser;
+	CAI_Expresser* m_pExpresser;
 };
 
 BEGIN_DATADESC( CZombieCustom )
 
-	DEFINE_KEYFIELD( m_iszLegsModel, FIELD_STRING, "LegsModel" ),
-	DEFINE_KEYFIELD( m_iszTorsoModel, FIELD_STRING, "TorsoModel" ),
-	DEFINE_KEYFIELD( m_iszHeadcrabClassname, FIELD_STRING, "HeadcrabClassname" ),
-	DEFINE_KEYFIELD( m_iszHeadcrabModel, FIELD_STRING, "HeadcrabModel" ),
+DEFINE_KEYFIELD( m_iszLegsModel, FIELD_STRING, "LegsModel" ),
+				 DEFINE_KEYFIELD( m_iszTorsoModel, FIELD_STRING, "TorsoModel" ),
+				 DEFINE_KEYFIELD( m_iszHeadcrabClassname, FIELD_STRING, "HeadcrabClassname" ),
+				 DEFINE_KEYFIELD( m_iszHeadcrabModel, FIELD_STRING, "HeadcrabModel" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_zombie_custom, CZombieCustom );
+				 LINK_ENTITY_TO_CLASS( npc_zombie_custom, CZombieCustom );
 LINK_ENTITY_TO_CLASS( npc_zombie_custom_torso, CZombieCustom );
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CZombieCustom::CZombieCustom()
 {
@@ -1092,11 +1143,11 @@ CZombieCustom::CZombieCustom()
 	m_iszHeadcrabClassname = AllocPooledString( CZombie::GetHeadcrabClassname() );
 	m_iszHeadcrabModel = AllocPooledString( CZombie::GetHeadcrabModel() );
 
-	SetModelName( AllocPooledString("models/zombie/classic.mdl") );
+	SetModelName( AllocPooledString( "models/zombie/classic.mdl" ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CZombieCustom::Spawn( void )
 {
@@ -1104,7 +1155,7 @@ void CZombieCustom::Spawn( void )
 
 	BaseClass::Spawn();
 
-	if (iHealth > 0)
+	if( iHealth > 0 )
 	{
 		m_iMaxHealth = iHealth;
 		m_iHealth = iHealth;
@@ -1112,42 +1163,50 @@ void CZombieCustom::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CZombieCustom::Precache( void )
 {
 	BaseClass::Precache();
 
-	PrecacheModel(STRING(GetModelName()));
+	PrecacheModel( STRING( GetModelName() ) );
 
-	if (m_iszLegsModel != NULL_STRING)
-		PrecacheModel( STRING(m_iszLegsModel) );
+	if( m_iszLegsModel != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_iszLegsModel ) );
+	}
 
-	if (m_iszTorsoModel != NULL_STRING)
-		PrecacheModel( STRING(m_iszTorsoModel) );
+	if( m_iszTorsoModel != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_iszTorsoModel ) );
+	}
 
-	if (m_iszHeadcrabClassname != NULL_STRING)
-		UTIL_PrecacheOther( STRING(m_iszHeadcrabClassname) );
+	if( m_iszHeadcrabClassname != NULL_STRING )
+	{
+		UTIL_PrecacheOther( STRING( m_iszHeadcrabClassname ) );
+	}
 
-	if (m_iszHeadcrabModel != NULL_STRING)
-		PrecacheModel( STRING(m_iszHeadcrabModel) );
+	if( m_iszHeadcrabModel != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_iszHeadcrabModel ) );
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CZombieCustom::SetZombieModel( void )
 {
 	Hull_t lastHull = GetHullType();
 
-	if ( m_fIsTorso )
+	if( m_fIsTorso )
 	{
 		SetModel( GetTorsoModel() );
 		SetHullType( HULL_TINY );
 	}
 	else
 	{
-		SetModel( STRING(GetModelName()) );
+		SetModel( STRING( GetModelName() ) );
 		SetHullType( HULL_HUMAN );
 	}
 
@@ -1160,9 +1219,9 @@ void CZombieCustom::SetZombieModel( void )
 	// hull changed size, notify vphysics
 	// UNDONE: Solve this generally, systematically so other
 	// NPCs can change size
-	if ( lastHull != GetHullType() )
+	if( lastHull != GetHullType() )
 	{
-		if ( VPhysicsGetObject() )
+		if( VPhysicsGetObject() )
 		{
 			SetupVPhysicsHull();
 		}
@@ -1170,9 +1229,9 @@ void CZombieCustom::SetZombieModel( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CZombieCustom::PainSound( const CTakeDamageInfo &info )
+void CZombieCustom::PainSound( const CTakeDamageInfo& info )
 {
 	AI_CriteriaSet modifiers;
 	ModifyOrAppendDamageCriteria( modifiers, info );
@@ -1180,9 +1239,9 @@ void CZombieCustom::PainSound( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CZombieCustom::DeathSound( const CTakeDamageInfo &info ) 
+void CZombieCustom::DeathSound( const CTakeDamageInfo& info )
 {
 	AI_CriteriaSet modifiers;
 	ModifyOrAppendDamageCriteria( modifiers, info );
@@ -1190,7 +1249,7 @@ void CZombieCustom::DeathSound( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CZombieCustom::AlertSound( void )
 {
@@ -1203,32 +1262,36 @@ void CZombieCustom::AlertSound( void )
 //-----------------------------------------------------------------------------
 // Purpose: Returns a moan sound for this class of zombie.
 //-----------------------------------------------------------------------------
-const char *CZombieCustom::GetMoanSound( int nSound )
+const char* CZombieCustom::GetMoanSound( int nSound )
 {
 	AI_CriteriaSet modifiers;
 
 	// We could probably do this through the response system alone now, but whatever.
-	modifiers.AppendCriteria( "moansound", UTIL_VarArgs("%i", nSound & 4) );
+	modifiers.AppendCriteria( "moansound", UTIL_VarArgs( "%i", nSound & 4 ) );
 
 #ifdef NEW_RESPONSE_SYSTEM
 	AI_Response response;
 	CAI_Concept concept = "TLK_ZOMBIE_MOAN";
 	concept.SetSpeaker( this );
-	if (!FindResponse( response, concept, &modifiers ))
+	if( !FindResponse( response, concept, &modifiers ) )
+	{
 		return "NPC_BaseZombie.Moan1";
+	}
 #else
-	AI_Response *response = SpeakFindResponse(TLK_ZOMBIE_MOAN, modifiers);
+	AI_Response* response = SpeakFindResponse( TLK_ZOMBIE_MOAN, modifiers );
 
-	if ( !response )
+	if( !response )
+	{
 		return "NPC_BaseZombie.Moan1";
+	}
 #endif
 
 	// Must be static so it could be returned
 	static char szSound[128];
 #ifdef NEW_RESPONSE_SYSTEM
-	response.GetName(szSound, sizeof(szSound));
+	response.GetName( szSound, sizeof( szSound ) );
 #else
-	response->GetName(szSound, sizeof(szSound));
+	response->GetName( szSound, sizeof( szSound ) );
 	delete response;
 #endif
 
@@ -1261,7 +1324,7 @@ void CZombieCustom::AttackSound( void )
 //-----------------------------------------------------------------------------
 // Purpose: Speak concept
 //-----------------------------------------------------------------------------
-void CZombieCustom::SpeakIfAllowed(const char *concept, AI_CriteriaSet *modifiers)
+void CZombieCustom::SpeakIfAllowed( const char* concept, AI_CriteriaSet* modifiers )
 {
 	AI_CriteriaSet empty;
 	Speak( concept, modifiers ? *modifiers : empty );
@@ -1284,24 +1347,26 @@ void CZombieCustom::ModifyOrAppendCriteria( AI_CriteriaSet& set )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CAI_Expresser *CZombieCustom::CreateExpresser( void )
+CAI_Expresser* CZombieCustom::CreateExpresser( void )
 {
-	m_pExpresser = new CAI_Expresser(this);
-	if (!m_pExpresser)
+	m_pExpresser = new CAI_Expresser( this );
+	if( !m_pExpresser )
+	{
 		return NULL;
+	}
 
-	m_pExpresser->Connect(this);
+	m_pExpresser->Connect( this );
 	return m_pExpresser;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CZombieCustom::PostConstructor(const char *szClassname)
+void CZombieCustom::PostConstructor( const char* szClassname )
 {
-	BaseClass::PostConstructor(szClassname);
+	BaseClass::PostConstructor( szClassname );
 	CreateExpresser();
 }
 #endif

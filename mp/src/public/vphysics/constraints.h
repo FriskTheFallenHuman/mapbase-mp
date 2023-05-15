@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef CONSTRAINTS_H
 #define CONSTRAINTS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vphysics_interface.h"
@@ -30,11 +30,11 @@ struct constraint_groupparams_t
 };
 
 // Breakable constraints;
-// 
+//
 //	forceLimit	- kg * in / s limit (N * conversion(in/m))
 //	torqueLimit - kg * in^2 / s (Nm * conversion(in^2/m^2))
 
-// 
+//
 // strength 0 - 1
 struct constraint_breakableparams_t
 {
@@ -74,13 +74,13 @@ struct constraint_axislimit_t
 	}
 	inline void Defaults()
 	{
-		SetAxisFriction(0,0,0);
+		SetAxisFriction( 0, 0, 0 );
 	}
 };
 
-// Builds a transform which maps points in the input object's local space 
+// Builds a transform which maps points in the input object's local space
 // to the output object's local space
-inline void BuildObjectRelativeXform( IPhysicsObject *pOutputSpace, IPhysicsObject *pInputSpace, matrix3x4_t &xformInToOut )
+inline void BuildObjectRelativeXform( IPhysicsObject* pOutputSpace, IPhysicsObject* pInputSpace, matrix3x4_t& xformInToOut )
 {
 	matrix3x4_t outInv, tmp, input;
 	pOutputSpace->GetPositionMatrix( &tmp );
@@ -101,7 +101,7 @@ struct constraint_ragdollparams_t
 	matrix3x4_t			constraintToAttached;	// xform constraint space to attached object space
 	int					parentIndex;				// NOTE: only used for parsing.  NEED NOT BE SET for create
 	int					childIndex;					// NOTE: only used for parsing.  NEED NOT BE SET for create
-	
+
 	constraint_axislimit_t	axes[3];
 	bool				onlyAngularLimits;			// only angular limits (not translation as well?)
 	bool				isActive;
@@ -149,9 +149,9 @@ struct constraint_limitedhingeparams_t : public constraint_hingeparams_t
 	Vector							attachedPerpAxisDirection;		// unit direction vector vector perpendicular to the hinge axis in world space
 
 	constraint_limitedhingeparams_t() {}
-	constraint_limitedhingeparams_t( const constraint_hingeparams_t &hinge )
+	constraint_limitedhingeparams_t( const constraint_hingeparams_t& hinge )
 	{
-		static_cast<constraint_hingeparams_t &>(*this) = hinge;
+		static_cast<constraint_hingeparams_t&>( *this ) = hinge;
 		referencePerpAxisDirection.Init();
 		attachedPerpAxisDirection.Init();
 	}
@@ -172,8 +172,8 @@ struct constraint_fixedparams_t
 {
 	matrix3x4_t						attachedRefXform;	// xform attached object space to ref object space
 	constraint_breakableparams_t	constraint;
-	
-	inline void InitWithCurrentObjectState( IPhysicsObject *pRef, IPhysicsObject *pAttached )
+
+	inline void InitWithCurrentObjectState( IPhysicsObject* pRef, IPhysicsObject* pAttached )
 	{
 		BuildObjectRelativeXform( pRef, pAttached, attachedRefXform );
 	}
@@ -191,7 +191,7 @@ struct constraint_fixedparams_t
 //-----------------------------------------------------------------------------
 struct constraint_ballsocketparams_t
 {
-	Vector							constraintPosition[2];		// position of the constraint in each object's space 
+	Vector							constraintPosition[2];		// position of the constraint in each object's space
 	constraint_breakableparams_t	constraint;
 	inline void Defaults()
 	{
@@ -200,7 +200,7 @@ struct constraint_ballsocketparams_t
 		constraintPosition[1].Init();
 	}
 
-	void InitWithCurrentObjectState( IPhysicsObject *pRef, IPhysicsObject *pAttached, const Vector &ballsocketOrigin )
+	void InitWithCurrentObjectState( IPhysicsObject* pRef, IPhysicsObject* pAttached, const Vector& ballsocketOrigin )
 	{
 		pRef->WorldToLocal( &constraintPosition[0], ballsocketOrigin );
 		pAttached->WorldToLocal( &constraintPosition[1], ballsocketOrigin );
@@ -240,7 +240,7 @@ struct constraint_slidingparams_t
 		velocity = inputVelocity;
 	}
 
-	inline void InitWithCurrentObjectState( IPhysicsObject *pRef, IPhysicsObject *pAttached, const Vector &slideDirWorldspace )
+	inline void InitWithCurrentObjectState( IPhysicsObject* pRef, IPhysicsObject* pAttached, const Vector& slideDirWorldspace )
 	{
 		BuildObjectRelativeXform( pRef, pAttached, attachedRefXform );
 		matrix3x4_t tmp;
@@ -279,11 +279,11 @@ struct constraint_lengthparams_t
 	float	totalLength;		// Length of rope/spring/constraint.  Distance to maintain
 	float	minLength;			// if rigid, objects are not allowed to move closer than totalLength either
 
-	void InitWorldspace( IPhysicsObject *pRef, IPhysicsObject *pAttached, const Vector &refPosition, const Vector &attachedPosition, bool rigid = false )
+	void InitWorldspace( IPhysicsObject* pRef, IPhysicsObject* pAttached, const Vector& refPosition, const Vector& attachedPosition, bool rigid = false )
 	{
 		pRef->WorldToLocal( &objectPosition[0], refPosition );
 		pAttached->WorldToLocal( &objectPosition[1], attachedPosition );
-		totalLength = (refPosition - attachedPosition).Length();
+		totalLength = ( refPosition - attachedPosition ).Length();
 		minLength = rigid ? totalLength : 0;
 	}
 
@@ -301,29 +301,29 @@ class IPhysicsConstraint
 {
 public:
 	virtual ~IPhysicsConstraint( void ) {}
-	
+
 	// NOTE: Constraints are active when created.  You can temporarily enable/disable them with these functions
 	virtual void			Activate( void ) = 0;
 	virtual void			Deactivate( void ) = 0;
 
 	// set a pointer to the game object
-	virtual void SetGameData( void *gameData ) = 0;
+	virtual void SetGameData( void* gameData ) = 0;
 
 	// get a pointer to the game object
-	virtual void *GetGameData( void ) const = 0;
+	virtual void* GetGameData( void ) const = 0;
 
 	// Get the parent/referenced object
-	virtual IPhysicsObject *GetReferenceObject( void ) const = 0;
+	virtual IPhysicsObject* GetReferenceObject( void ) const = 0;
 
 	// Get the attached object
-	virtual IPhysicsObject *GetAttachedObject( void ) const = 0;
+	virtual IPhysicsObject* GetAttachedObject( void ) const = 0;
 
 	virtual void			SetLinearMotor( float speed, float maxLinearImpulse ) = 0;
 	virtual void			SetAngularMotor( float rotSpeed, float maxAngularImpulse ) = 0;
 
-	virtual void			UpdateRagdollTransforms( const matrix3x4_t &constraintToReference, const matrix3x4_t &constraintToAttached ) = 0;
-	virtual bool			GetConstraintTransform( matrix3x4_t *pConstraintToReference, matrix3x4_t *pConstraintToAttached ) const = 0;
-	virtual bool			GetConstraintParams( constraint_breakableparams_t *pParams ) const = 0;
+	virtual void			UpdateRagdollTransforms( const matrix3x4_t& constraintToReference, const matrix3x4_t& constraintToAttached ) = 0;
+	virtual bool			GetConstraintTransform( matrix3x4_t* pConstraintToReference, matrix3x4_t* pConstraintToAttached ) const = 0;
+	virtual bool			GetConstraintParams( constraint_breakableparams_t* pParams ) const = 0;
 
 	virtual void			OutputDebugInfo() = 0;
 };
@@ -336,9 +336,9 @@ public:
 	virtual void Activate() = 0;
 	virtual bool IsInErrorState() = 0;
 	virtual void ClearErrorState() = 0;
-	virtual void GetErrorParams( constraint_groupparams_t *pParams ) = 0;
-	virtual void SetErrorParams( const constraint_groupparams_t &params ) = 0;
-	virtual void SolvePenetration( IPhysicsObject *pObj0, IPhysicsObject *pObj1 ) = 0;
+	virtual void GetErrorParams( constraint_groupparams_t* pParams ) = 0;
+	virtual void SetErrorParams( const constraint_groupparams_t& params ) = 0;
+	virtual void SolvePenetration( IPhysicsObject* pObj0, IPhysicsObject* pObj1 ) = 0;
 };
 
 

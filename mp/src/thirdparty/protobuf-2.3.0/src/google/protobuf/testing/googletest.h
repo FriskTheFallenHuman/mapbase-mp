@@ -37,8 +37,10 @@
 #include <vector>
 #include <google/protobuf/stubs/common.h>
 
-namespace google {
-namespace protobuf {
+namespace google
+{
+namespace protobuf
+{
 
 // When running unittests, get the directory containing the source code.
 string TestSourceDir();
@@ -69,27 +71,28 @@ static const LogLevel ERROR = LOGLEVEL_ERROR;
 //   }  // destructor unregisters object as a log sink
 // This is a dummy implementation which covers only what is used by protocol
 // buffer unit tests.
-class ScopedMemoryLog {
- public:
-  ScopedMemoryLog();
-  virtual ~ScopedMemoryLog();
+class ScopedMemoryLog
+{
+public:
+	ScopedMemoryLog();
+	virtual ~ScopedMemoryLog();
 
-  // Fetches all messages logged.  The internal version of this class
-  // would only fetch messages at the given security level, but the protobuf
-  // open source version ignores the argument since we always pass ERROR
-  // anyway.
-  const vector<string>& GetMessages(LogLevel dummy) const;
+	// Fetches all messages logged.  The internal version of this class
+	// would only fetch messages at the given security level, but the protobuf
+	// open source version ignores the argument since we always pass ERROR
+	// anyway.
+	const vector<string>& GetMessages( LogLevel dummy ) const;
 
- private:
-  vector<string> messages_;
-  LogHandler* old_handler_;
+private:
+	vector<string> messages_;
+	LogHandler* old_handler_;
 
-  static void HandleLog(LogLevel level, const char* filename, int line,
-                        const string& message);
+	static void HandleLog( LogLevel level, const char* filename, int line,
+						   const string& message );
 
-  static ScopedMemoryLog* active_log_;
+	static ScopedMemoryLog* active_log_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ScopedMemoryLog);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( ScopedMemoryLog );
 };
 
 }  // namespace protobuf

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #pragma warning(push, 1)
@@ -31,7 +31,7 @@ class KeyValues;
 //enum TEXTUREFORMAT;
 
 
-typedef void (*GameDataMessageFunc_t)(int level, PRINTF_FORMAT_STRING const char *fmt, ...);
+typedef void ( *GameDataMessageFunc_t )( int level, PRINTF_FORMAT_STRING const char* fmt, ... );
 
 // FGD-based AutoMaterialExclusion data
 
@@ -63,64 +63,64 @@ struct FGDAutoVisGroups_s
 //-----------------------------------------------------------------------------
 class GameData
 {
-	public:
-		typedef enum
-		{
-			NAME_FIXUP_PREFIX = 0,
-			NAME_FIXUP_POSTFIX,
-			NAME_FIXUP_NONE
-		} TNameFixup;
+public:
+	typedef enum
+	{
+		NAME_FIXUP_PREFIX = 0,
+		NAME_FIXUP_POSTFIX,
+		NAME_FIXUP_NONE
+	} TNameFixup;
 
-		GameData();
-		~GameData();
+	GameData();
+	~GameData();
 
-		BOOL Load(const char *pszFilename);
+	BOOL Load( const char* pszFilename );
 
-		GDclass *ClassForName(const char *pszName, int *piIndex = NULL);
+	GDclass* ClassForName( const char* pszName, int* piIndex = NULL );
 
-		void ClearData();
+	void ClearData();
 
-		inline int GetMaxMapCoord(void);
-		inline int GetMinMapCoord(void);
+	inline int GetMaxMapCoord( void );
+	inline int GetMinMapCoord( void );
 
-		inline int GetClassCount();
-		inline GDclass *GetClass(int nIndex);
+	inline int GetClassCount();
+	inline GDclass* GetClass( int nIndex );
 
-		GDclass *BeginInstanceRemap( const char *pszClassName, const char *pszInstancePrefix, Vector &Origin, QAngle &Angle );
-		bool	RemapKeyValue( const char *pszKey, const char *pszInValue, char *pszOutValue, TNameFixup NameFixup );
-		bool	RemapNameField( const char *pszInValue, char *pszOutValue, TNameFixup NameFixup );
-		bool	LoadFGDMaterialExclusions( TokenReader &tr );
-		bool	LoadFGDAutoVisGroups( TokenReader &tr );
-		
+	GDclass* BeginInstanceRemap( const char* pszClassName, const char* pszInstancePrefix, Vector& Origin, QAngle& Angle );
+	bool	RemapKeyValue( const char* pszKey, const char* pszInValue, char* pszOutValue, TNameFixup NameFixup );
+	bool	RemapNameField( const char* pszInValue, char* pszOutValue, TNameFixup NameFixup );
+	bool	LoadFGDMaterialExclusions( TokenReader& tr );
+	bool	LoadFGDAutoVisGroups( TokenReader& tr );
+
 #ifdef MAPBASE
-		// Sets up for additional instance remap fixes from Mapbase
-		void	SetupInstanceRemapParams( int iStartNodes, int iStartBrushSide, bool bRemapVecLines );
+	// Sets up for additional instance remap fixes from Mapbase
+	void	SetupInstanceRemapParams( int iStartNodes, int iStartBrushSide, bool bRemapVecLines );
 #endif
-		
 
-		CUtlVector< FGDMatExlcusions_s >	m_FGDMaterialExclusions;
 
-		CUtlVector< FGDAutoVisGroups_s >	m_FGDAutoVisGroups;
+	CUtlVector< FGDMatExlcusions_s >	m_FGDMaterialExclusions;
 
-	private:
+	CUtlVector< FGDAutoVisGroups_s >	m_FGDAutoVisGroups;
 
-		bool ParseMapSize(TokenReader &tr);
+private:
 
-		CUtlVector<GDclass *> m_Classes;
+	bool ParseMapSize( TokenReader& tr );
 
-		int m_nMinMapCoord;		// Min & max map bounds as defined by the FGD.
-		int m_nMaxMapCoord;
+	CUtlVector<GDclass*> m_Classes;
 
-		// Instance Remapping
-		Vector		m_InstanceOrigin;			// the origin offset of the instance
-		QAngle		m_InstanceAngle;			// the rotation of the the instance
-		matrix3x4_t	m_InstanceMat;				// matrix of the origin and rotation of rendering
-		char		m_InstancePrefix[ 128 ];	// the prefix used for the instance name remapping
-		GDclass		*m_InstanceClass;			// the entity class that is being remapped
+	int m_nMinMapCoord;		// Min & max map bounds as defined by the FGD.
+	int m_nMaxMapCoord;
+
+	// Instance Remapping
+	Vector		m_InstanceOrigin;			// the origin offset of the instance
+	QAngle		m_InstanceAngle;			// the rotation of the the instance
+	matrix3x4_t	m_InstanceMat;				// matrix of the origin and rotation of rendering
+	char		m_InstancePrefix[ 128 ];	// the prefix used for the instance name remapping
+	GDclass*		m_InstanceClass;			// the entity class that is being remapped
 #ifdef MAPBASE
-		int			m_InstanceStartAINodes;		// the number of AI nodes in the level (for AI node remapping)
-		int			m_InstanceStartSide;		// the number of brush sides in the level (for brush side remapping)
-		bool		m_bRemapVecLines;			// allows ivVecLine to be remapped
+	int			m_InstanceStartAINodes;		// the number of AI nodes in the level (for AI node remapping)
+	int			m_InstanceStartSide;		// the number of brush sides in the level (for brush side remapping)
+	bool		m_bRemapVecLines;			// allows ivVecLine to be remapped
 #endif
 };
 
@@ -135,38 +135,40 @@ inline int GameData::GetClassCount()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-inline GDclass *GameData::GetClass(int nIndex)
+inline GDclass* GameData::GetClass( int nIndex )
 {
-	if (nIndex >= m_Classes.Count())
+	if( nIndex >= m_Classes.Count() )
+	{
 		return NULL;
-		
-	return m_Classes.Element(nIndex);
+	}
+
+	return m_Classes.Element( nIndex );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int GameData::GetMinMapCoord(void)
+int GameData::GetMinMapCoord( void )
 {
 	return m_nMinMapCoord;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int GameData::GetMaxMapCoord(void)
+int GameData::GetMaxMapCoord( void )
 {
 	return m_nMaxMapCoord;
 }
 
 
-void GDSetMessageFunc(GameDataMessageFunc_t pFunc);
-bool GDError(TokenReader &tr, PRINTF_FORMAT_STRING const char *error, ...);
-bool GDSkipToken(TokenReader &tr, trtoken_t ttexpecting = TOKENNONE, const char *pszExpecting = NULL);
-bool GDGetToken(TokenReader &tr, char *pszStore, int nSize, trtoken_t ttexpecting = TOKENNONE, const char *pszExpecting = NULL);
-bool GDGetTokenDynamic(TokenReader &tr, char **pszStore, trtoken_t ttexpecting, const char *pszExpecting = NULL);
+void GDSetMessageFunc( GameDataMessageFunc_t pFunc );
+bool GDError( TokenReader& tr, PRINTF_FORMAT_STRING const char* error, ... );
+bool GDSkipToken( TokenReader& tr, trtoken_t ttexpecting = TOKENNONE, const char* pszExpecting = NULL );
+bool GDGetToken( TokenReader& tr, char* pszStore, int nSize, trtoken_t ttexpecting = TOKENNONE, const char* pszExpecting = NULL );
+bool GDGetTokenDynamic( TokenReader& tr, char** pszStore, trtoken_t ttexpecting, const char* pszExpecting = NULL );
 
 
 #endif // GAMEDATA_H

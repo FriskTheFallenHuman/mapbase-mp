@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -16,19 +16,19 @@
 //---------------------------------------------------------
 BEGIN_DATADESC( CBaseFire )
 
-	DEFINE_FIELD( m_flStartScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flScaleTime, FIELD_TIME ),
-	DEFINE_FIELD( m_nFlags, FIELD_INTEGER ),
+DEFINE_FIELD( m_flStartScale, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flScale, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flScaleTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_nFlags, FIELD_INTEGER ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //==================================================
 // CBaseFire
 //==================================================
 
-CBaseFire::CBaseFire( void )
+			  CBaseFire::CBaseFire( void )
 {
 	m_flStartScale		= 0.0f;
 	m_flScale			= 0.0f;
@@ -67,12 +67,12 @@ void CBaseFire::Scale( float start, float size, float time )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CBaseFire::Enable( int state )
 {
-	if ( state )
+	if( state )
 	{
 		m_nFlags |= bitsFIRE_ACTIVE;
 	}
@@ -91,31 +91,31 @@ LINK_ENTITY_TO_CLASS( _firesmoke, CFireSmoke );
 
 //Send datatable
 IMPLEMENT_SERVERCLASS_ST( CFireSmoke, DT_FireSmoke )
-	SendPropFloat(  SENDINFO( m_flStartScale ), 0,	SPROP_NOSCALE),
-	SendPropFloat(	SENDINFO( m_flScale ),		0,	SPROP_NOSCALE),
-	SendPropFloat(	SENDINFO( m_flScaleTime ),	0,	SPROP_NOSCALE),
-	SendPropInt(	SENDINFO( m_nFlags ),		8,  SPROP_UNSIGNED ),
-	SendPropModelIndex(	SENDINFO( m_nFlameModelIndex ) ),
-	SendPropModelIndex(	SENDINFO( m_nFlameFromAboveModelIndex ) ),
-END_SEND_TABLE()
+SendPropFloat( SENDINFO( m_flStartScale ), 0,	SPROP_NOSCALE ),
+				 SendPropFloat(	SENDINFO( m_flScale ),		0,	SPROP_NOSCALE ),
+				 SendPropFloat(	SENDINFO( m_flScaleTime ),	0,	SPROP_NOSCALE ),
+				 SendPropInt(	SENDINFO( m_nFlags ),		8,  SPROP_UNSIGNED ),
+				 SendPropModelIndex(	SENDINFO( m_nFlameModelIndex ) ),
+				 SendPropModelIndex(	SENDINFO( m_nFlameFromAboveModelIndex ) ),
+				 END_SEND_TABLE()
 
-//Data description 
-BEGIN_DATADESC( CFireSmoke )
+//Data description
+				 BEGIN_DATADESC( CFireSmoke )
 
-	DEFINE_FIELD( m_flStartScale,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_flScale,			FIELD_FLOAT ),
-	DEFINE_FIELD( m_flScaleTime,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_nFlags,				FIELD_INTEGER ),
-	DEFINE_FIELD( m_nFlameModelIndex,	FIELD_MODELINDEX ),
-	DEFINE_FIELD( m_nFlameFromAboveModelIndex,	FIELD_MODELINDEX ),
+				 DEFINE_FIELD( m_flStartScale,		FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flScale,			FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flScaleTime,		FIELD_FLOAT ),
+				 DEFINE_FIELD( m_nFlags,				FIELD_INTEGER ),
+				 DEFINE_FIELD( m_nFlameModelIndex,	FIELD_MODELINDEX ),
+				 DEFINE_FIELD( m_nFlameFromAboveModelIndex,	FIELD_MODELINDEX ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CFireSmoke::CFireSmoke( void ) 
+				 CFireSmoke::CFireSmoke( void )
 {
 	//Client-side
 	m_flScale			= 0.0f;
@@ -127,14 +127,14 @@ CFireSmoke::CFireSmoke( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CFireSmoke::~CFireSmoke( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFireSmoke::Precache()
 {
@@ -147,12 +147,12 @@ void CFireSmoke::Spawn()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CFireSmoke::EnableSmoke( int state )
 {
-	if ( state )
+	if( state )
 	{
 		m_nFlags |= bitsFIRESMOKE_SMOKE;
 	}
@@ -163,12 +163,12 @@ void CFireSmoke::EnableSmoke( int state )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : state - 
+// Purpose:
+// Input  : state -
 //-----------------------------------------------------------------------------
 void CFireSmoke::EnableGlow( int state )
 {
-	if ( state )
+	if( state )
 	{
 		m_nFlags |= bitsFIRESMOKE_GLOW;
 	}
@@ -180,7 +180,7 @@ void CFireSmoke::EnableGlow( int state )
 
 void CFireSmoke::EnableVisibleFromAbove( int state )
 {
-	if ( state )
+	if( state )
 	{
 		m_nFlags |= bitsFIRESMOKE_VISIBLE_FROM_ABOVE;
 	}

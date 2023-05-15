@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef ASSETPICKER_H
 #define ASSETPICKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "matsys_controls/baseassetpicker.h"
@@ -18,7 +18,7 @@
 //-----------------------------------------------------------------------------
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 
@@ -30,8 +30,8 @@ class CAssetPicker : public CBaseAssetPicker
 	DECLARE_CLASS_SIMPLE( CAssetPicker, CBaseAssetPicker );
 
 public:
-	CAssetPicker( vgui::Panel *pParent, const char *pAssetType, 
-		const char *pExt, const char *pSubDir, const char *pTextType );
+	CAssetPicker( vgui::Panel* pParent, const char* pAssetType,
+				  const char* pExt, const char* pSubDir, const char* pTextType );
 };
 
 
@@ -43,8 +43,8 @@ class CAssetPickerFrame : public CBaseAssetPickerFrame
 	DECLARE_CLASS_SIMPLE( CAssetPickerFrame, CBaseAssetPickerFrame );
 
 public:
-	CAssetPickerFrame( vgui::Panel *pParent, const char *pTitle, 
-		const char *pAssetType, const char *pExt, const char *pSubDir, const char *pTextType );
+	CAssetPickerFrame( vgui::Panel* pParent, const char* pTitle,
+					   const char* pAssetType, const char* pExt, const char* pSubDir, const char* pTextType );
 };
 
 

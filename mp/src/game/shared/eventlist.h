@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef EVENTLIST_H
 #define EVENTLIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define AE_TYPE_SERVER			( 1 << 0 )
@@ -41,7 +41,7 @@ typedef enum
 	AE_NPC_DRAW,
 	AE_NPC_WEAPON_FIRE,
 
-	AE_CL_PLAYSOUND, // #define CL_EVENT_SOUND				5004	// Emit a sound 
+	AE_CL_PLAYSOUND, // #define CL_EVENT_SOUND				5004	// Emit a sound
 	AE_SV_PLAYSOUND,
 	AE_CL_STOPSOUND,
 
@@ -49,10 +49,10 @@ typedef enum
 	AE_STOP_SCRIPTED_EFFECT,
 
 	AE_CLIENT_EFFECT_ATTACH,
-	
+
 	AE_MUZZLEFLASH,			// Muzzle flash from weapons held by the player
 	AE_NPC_MUZZLEFLASH,		// Muzzle flash from weapons held by NPCs
-	
+
 	AE_THUMPER_THUMP,		//Thumper Thump!
 	AE_AMMOCRATE_PICKUP_AMMO,	//Ammo crate pick up ammo!
 
@@ -105,11 +105,11 @@ typedef struct evententry_s evententry_t;
 //=========================================================
 extern void EventList_Init( void );
 extern void EventList_Free( void );
-extern bool EventList_RegisterSharedEvent( const char *pszEventName, int iEventIndex, int iType = 0 );
-extern Animevent EventList_RegisterPrivateEvent( const char *pszEventName );
-extern int EventList_IndexForName( const char *pszEventName );
-extern const char *EventList_NameForIndex( int iEventIndex );
-Animevent EventList_RegisterPrivateEvent( const char *pszEventName );
+extern bool EventList_RegisterSharedEvent( const char* pszEventName, int iEventIndex, int iType = 0 );
+extern Animevent EventList_RegisterPrivateEvent( const char* pszEventName );
+extern int EventList_IndexForName( const char* pszEventName );
+extern const char* EventList_NameForIndex( int iEventIndex );
+Animevent EventList_RegisterPrivateEvent( const char* pszEventName );
 
 // This macro guarantees that the names of each event and the constant used to
 // reference it in the code are identical.

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -17,24 +17,24 @@
 
 using namespace vgui;
 
-ScrollableEditablePanel::ScrollableEditablePanel( vgui::Panel *pParent, vgui::EditablePanel *pChild, const char *pName ) :
+ScrollableEditablePanel::ScrollableEditablePanel( vgui::Panel* pParent, vgui::EditablePanel* pChild, const char* pName ) :
 	BaseClass( pParent, pName )
 {
 	m_pChild = pChild;
 	m_pChild->SetParent( this );
 
-	m_pScrollBar = new vgui::ScrollBar( this, "VerticalScrollBar", true ); 
+	m_pScrollBar = new vgui::ScrollBar( this, "VerticalScrollBar", true );
 	m_pScrollBar->SetWide( 16 );
 	m_pScrollBar->SetAutoResize( PIN_TOPRIGHT, AUTORESIZE_DOWN, 0, 0, -16, 0 );
 	m_pScrollBar->AddActionSignalTarget( this );
 }
 
-void ScrollableEditablePanel::ApplySettings( KeyValues *pInResourceData )
+void ScrollableEditablePanel::ApplySettings( KeyValues* pInResourceData )
 {
 	BaseClass::ApplySettings( pInResourceData );
 
-	KeyValues *pScrollbarKV = pInResourceData->FindKey( "Scrollbar" );
-	if ( pScrollbarKV )
+	KeyValues* pScrollbarKV = pInResourceData->FindKey( "Scrollbar" );
+	if( pScrollbarKV )
 	{
 		m_pScrollBar->ApplySettings( pScrollbarKV );
 	}
@@ -48,17 +48,17 @@ void ScrollableEditablePanel::PerformLayout()
 	m_pScrollBar->SetRange( 0, m_pChild->GetTall() );
 	m_pScrollBar->SetRangeWindow( GetTall() );
 
-	if ( m_pScrollBar->GetSlider() )
+	if( m_pScrollBar->GetSlider() )
 	{
 		m_pScrollBar->GetSlider()->SetFgColor( GetFgColor() );
 	}
-	if ( m_pScrollBar->GetButton(0) )
+	if( m_pScrollBar->GetButton( 0 ) )
 	{
-		m_pScrollBar->GetButton(0)->SetFgColor( GetFgColor() );
+		m_pScrollBar->GetButton( 0 )->SetFgColor( GetFgColor() );
 	}
-	if ( m_pScrollBar->GetButton(1) )
+	if( m_pScrollBar->GetButton( 1 ) )
 	{
-		m_pScrollBar->GetButton(1)->SetFgColor( GetFgColor() );
+		m_pScrollBar->GetButton( 1 )->SetFgColor( GetFgColor() );
 	}
 }
 
@@ -71,16 +71,16 @@ void ScrollableEditablePanel::OnScrollBarSliderMoved()
 	InvalidateLayout();
 
 	int nScrollAmount = m_pScrollBar->GetValue();
-	m_pChild->SetPos( 0, -nScrollAmount ); 
+	m_pChild->SetPos( 0, -nScrollAmount );
 }
 
 //-----------------------------------------------------------------------------
 // respond to mouse wheel events
 //-----------------------------------------------------------------------------
-void ScrollableEditablePanel::OnMouseWheeled(int delta)
+void ScrollableEditablePanel::OnMouseWheeled( int delta )
 {
 	int val = m_pScrollBar->GetValue();
-	val -= (delta * 50);
+	val -= ( delta * 50 );
 	m_pScrollBar->SetValue( val );
 }
 

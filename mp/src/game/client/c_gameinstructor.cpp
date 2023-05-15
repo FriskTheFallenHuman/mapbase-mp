@@ -27,13 +27,13 @@
 
 // Game instructor auto game system instantiation
 C_GameInstructor g_GameInstructor;
-C_GameInstructor &GetGameInstructor()
+C_GameInstructor& GetGameInstructor()
 {
 	return g_GameInstructor;
 }
 
-void GameInstructorEnable_ChangeCallback( IConVar *var, const char *pOldValue, float flOldValue );
-void SVGameInstructorDisable_ChangeCallback( IConVar *var, const char *pOldValue, float flOldValue );
+void GameInstructorEnable_ChangeCallback( IConVar* var, const char* pOldValue, float flOldValue );
+void SVGameInstructorDisable_ChangeCallback( IConVar* var, const char* pOldValue, float flOldValue );
 
 extern ConVar sv_gameinstructor_disable;
 
@@ -41,9 +41,9 @@ extern ConVar sv_gameinstructor_disable;
 // Comandos de consola
 //=========================================================
 
-ConVar gameinstructor_verbose("gameinstructor_verbose", "0", FCVAR_CHEAT, "Set to 1 for standard debugging or 2 (in combo with gameinstructor_verbose_lesson) to show update actions.");
-ConVar gameinstructor_verbose_lesson("gameinstructor_verbose_lesson", "", FCVAR_CHEAT, "Display more verbose information for lessons have this name." );
-ConVar gameinstructor_find_errors("gameinstructor_find_errors", "1", FCVAR_CHEAT, "Set to 1 and the game instructor will run EVERY scripted command to uncover errors." );
+ConVar gameinstructor_verbose( "gameinstructor_verbose", "0", FCVAR_CHEAT, "Set to 1 for standard debugging or 2 (in combo with gameinstructor_verbose_lesson) to show update actions." );
+ConVar gameinstructor_verbose_lesson( "gameinstructor_verbose_lesson", "", FCVAR_CHEAT, "Display more verbose information for lessons have this name." );
+ConVar gameinstructor_find_errors( "gameinstructor_find_errors", "1", FCVAR_CHEAT, "Set to 1 and the game instructor will run EVERY scripted command to uncover errors." );
 
 ConVar gameinstructor_enable( "gameinstructor_enable", "1", FCVAR_CLIENTDLL | FCVAR_ARCHIVE, "Display in game lessons that teach new players.", GameInstructorEnable_ChangeCallback );
 ConVar gameinstructor_start_sound_cooldown( "gameinstructor_start_sound_cooldown", "4.0", FCVAR_NONE, "Number of seconds forced between similar lesson start sounds." );
@@ -58,28 +58,36 @@ void EnableDisableInstructor()
 	bool bEnabled = ( !sv_gameinstructor_disable.GetBool() && gameinstructor_enable.GetBool() );
 
 	// Game instructor has been enabled, so init it!
-	if ( bEnabled )
+	if( bEnabled )
+	{
 		GetGameInstructor().Init();
+	}
 
 	// Game instructor has been disabled, so shut it down!
-	else 
+	else
+	{
 		GetGameInstructor().Shutdown();
+	}
 }
 
 //=========================================================
 //=========================================================
-void GameInstructorEnable_ChangeCallback( IConVar *var, const char *pOldValue, float flOldValue )
+void GameInstructorEnable_ChangeCallback( IConVar* var, const char* pOldValue, float flOldValue )
 {
-	if ( ( flOldValue != 0.0f ) != gameinstructor_enable.GetBool() )
+	if( ( flOldValue != 0.0f ) != gameinstructor_enable.GetBool() )
+	{
 		EnableDisableInstructor();
+	}
 }
 
 //=========================================================
 //=========================================================
-void SVGameInstructorDisable_ChangeCallback( IConVar *var, const char *pOldValue, float flOldValue )
+void SVGameInstructorDisable_ChangeCallback( IConVar* var, const char* pOldValue, float flOldValue )
 {
-	if ( !engine )
+	if( !engine )
+	{
 		return;
+	}
 
 	EnableDisableInstructor();
 }
@@ -94,10 +102,12 @@ bool C_GameInstructor::Init()
 	//	return true;
 
 	// Instructor deactivated, don't initialize.
-	if ( !gameinstructor_enable.GetBool() || sv_gameinstructor_disable.GetBool() )
+	if( !gameinstructor_enable.GetBool() || sv_gameinstructor_disable.GetBool() )
+	{
 		return true;
+	}
 
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Initializing...\n" );
@@ -119,17 +129,17 @@ bool C_GameInstructor::Init()
 	InitLessonPrerequisites();
 	ReadSaveData();
 
-	ListenForGameEvent("gameinstructor_draw");
-	ListenForGameEvent("gameinstructor_nodraw");
+	ListenForGameEvent( "gameinstructor_draw" );
+	ListenForGameEvent( "gameinstructor_nodraw" );
 
-	ListenForGameEvent("round_end");
-	ListenForGameEvent("round_start");
-	ListenForGameEvent("player_death");
-	ListenForGameEvent("player_team");
-	ListenForGameEvent("player_disconnect");
-	ListenForGameEvent("map_transition");
-	ListenForGameEvent("game_newmap");
-	ListenForGameEvent("set_instructor_group_enabled");
+	ListenForGameEvent( "round_end" );
+	ListenForGameEvent( "round_start" );
+	ListenForGameEvent( "player_death" );
+	ListenForGameEvent( "player_team" );
+	ListenForGameEvent( "player_disconnect" );
+	ListenForGameEvent( "map_transition" );
+	ListenForGameEvent( "game_newmap" );
+	ListenForGameEvent( "set_instructor_group_enabled" );
 
 	EvaluateLessonsForGameRules();
 	return true;
@@ -140,7 +150,7 @@ bool C_GameInstructor::Init()
 //=========================================================
 void C_GameInstructor::Shutdown()
 {
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Shutting down...\n" );
@@ -150,9 +160,9 @@ void C_GameInstructor::Shutdown()
 	WriteSaveData();
 
 	// Removemos todas las lecciones.
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
-		if ( m_Lessons[ i ] )
+		if( m_Lessons[ i ] )
 		{
 			m_Lessons[ i ]->StopListeningForAllEvents();
 			delete m_Lessons[ i ];
@@ -174,8 +184,10 @@ void C_GameInstructor::UpdateHiddenByOtherElements()
 	//bool bHidden = Mod_HiddenByOtherElements();
 	bool bHidden = false;
 
-	if ( bHidden && !m_bHiddenDueToOtherElements )
+	if( bHidden && !m_bHiddenDueToOtherElements )
+	{
 		StopAllLessons();
+	}
 
 	m_bHiddenDueToOtherElements = bHidden;
 }
@@ -189,35 +201,41 @@ void C_GameInstructor::Update( float frametime )
 	UpdateHiddenByOtherElements();
 
 	// Instructor deactivated.
-	if ( !gameinstructor_enable.GetBool() || m_bNoDraw || m_bHiddenDueToOtherElements )
-		return;
-
-	if ( gameinstructor_find_errors.GetBool() )
+	if( !gameinstructor_enable.GetBool() || m_bNoDraw || m_bHiddenDueToOtherElements )
 	{
-		FindErrors();
-		gameinstructor_find_errors.SetValue(0);
+		return;
 	}
 
-	if ( IsConsole() )
+	if( gameinstructor_find_errors.GetBool() )
+	{
+		FindErrors();
+		gameinstructor_find_errors.SetValue( 0 );
+	}
+
+	if( IsConsole() )
 	{
 		// On X360 we want to save when they're not connected
 		// They aren't in game
-		if ( !engine->IsInGame() )
+		if( !engine->IsInGame() )
+		{
 			WriteSaveData();
+		}
 		else
 		{
-			const char *levelName = engine->GetLevelName();
+			const char* levelName = engine->GetLevelName();
 
 			// The are in game, but it's a background map
-			if ( levelName && levelName[0] && engine->IsLevelMainMenuBackground() )
+			if( levelName && levelName[0] && engine->IsLevelMainMenuBackground() )
+			{
 				WriteSaveData();
+			}
 		}
 	}
 
-	if ( m_bSpectatedPlayerChanged )
+	if( m_bSpectatedPlayerChanged )
 	{
 		// Safe spot to clean out stale lessons if spectator changed
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Spectated player changed...\n" );
@@ -228,49 +246,53 @@ void C_GameInstructor::Update( float frametime )
 	}
 
 	// Loop through all the lesson roots and reset their active status
-	for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+	for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 	{
-		CBaseLesson *pLesson		= m_OpenOpportunities[ i ];
-		CBaseLesson *pRootLesson	= pLesson->GetRoot();
+		CBaseLesson* pLesson		= m_OpenOpportunities[ i ];
+		CBaseLesson* pRootLesson	= pLesson->GetRoot();
 
-		if ( pRootLesson->InstanceType() == LESSON_INSTANCE_SINGLE_ACTIVE )
-			pRootLesson->SetInstanceActive(false);
+		if( pRootLesson->InstanceType() == LESSON_INSTANCE_SINGLE_ACTIVE )
+		{
+			pRootLesson->SetInstanceActive( false );
+		}
 	}
 
 	int iCurrentPriority = 0;
 
 	// Loop through all the open lessons
-	for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+	for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 	{
-		CBaseLesson *pLesson = m_OpenOpportunities[ i ];
+		CBaseLesson* pLesson = m_OpenOpportunities[ i ];
 
 		// This opportunity has closed
-		if ( !pLesson->IsOpenOpportunity() || pLesson->IsTimedOut() )
+		if( !pLesson->IsOpenOpportunity() || pLesson->IsTimedOut() )
 		{
 			CloseOpportunity( pLesson );
 			continue;
 		}
 
 		// Lesson should be displayed, so it can affect priority
-		CBaseLesson *pRootLesson	= pLesson->GetRoot();
+		CBaseLesson* pRootLesson	= pLesson->GetRoot();
 		bool bShouldDisplay			= pLesson->ShouldDisplay();
 		bool bIsLocked				= pLesson->IsLocked();
 
-		if ( ( bShouldDisplay || bIsLocked ) && 
-			 ( pLesson->GetPriority() >= m_iCurrentPriority || pLesson->NoPriority() || bIsLocked ) && 
-			 ( pRootLesson && ( pRootLesson->InstanceType() != LESSON_INSTANCE_SINGLE_ACTIVE || !pRootLesson->IsInstanceActive() ) ) )
+		if( ( bShouldDisplay || bIsLocked ) &&
+				( pLesson->GetPriority() >= m_iCurrentPriority || pLesson->NoPriority() || bIsLocked ) &&
+				( pRootLesson && ( pRootLesson->InstanceType() != LESSON_INSTANCE_SINGLE_ACTIVE || !pRootLesson->IsInstanceActive() ) ) )
 		{
 			// Lesson is at the highest priority level, isn't violating instance rules, and has met all the prerequisites
-			if ( UpdateActiveLesson( pLesson, pRootLesson ) || pRootLesson->IsLearned() )
+			if( UpdateActiveLesson( pLesson, pRootLesson ) || pRootLesson->IsLearned() )
 			{
 				// Lesson is active
-				if ( pLesson->IsVisible() || pRootLesson->IsLearned() )
+				if( pLesson->IsVisible() || pRootLesson->IsLearned() )
 				{
 					pRootLesson->SetInstanceActive( true );
 
 					// This active or learned lesson has the highest priority so far
-					if ( iCurrentPriority < pLesson->GetPriority() && !pLesson->NoPriority() )
+					if( iCurrentPriority < pLesson->GetPriority() && !pLesson->NoPriority() )
+					{
 						iCurrentPriority = pLesson->GetPriority();
+					}
 				}
 			}
 			else
@@ -287,7 +309,7 @@ void C_GameInstructor::Update( float frametime )
 	}
 
 	// Set the priority for next frame
-	if ( gameinstructor_verbose.GetInt() > 1 && m_iCurrentPriority != iCurrentPriority )
+	if( gameinstructor_verbose.GetInt() > 1 && m_iCurrentPriority != iCurrentPriority )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Priority changed from " );
@@ -302,16 +324,16 @@ void C_GameInstructor::Update( float frametime )
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::FireGameEvent( IGameEvent *event )
+void C_GameInstructor::FireGameEvent( IGameEvent* event )
 {
 	VPROF_BUDGET( "C_GameInstructor::FireGameEvent", "GameInstructor" );
-	const char *name = event->GetName();
+	const char* name = event->GetName();
 
-	if ( Q_strcmp( name, "gameinstructor_draw" ) == 0 )
+	if( Q_strcmp( name, "gameinstructor_draw" ) == 0 )
 	{
-		if ( m_bNoDraw )
+		if( m_bNoDraw )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Set to draw...\n" );
@@ -320,11 +342,11 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 			m_bNoDraw = false;
 		}
 	}
-	else if ( Q_strcmp( name, "gameinstructor_nodraw" ) == 0 )
+	else if( Q_strcmp( name, "gameinstructor_nodraw" ) == 0 )
 	{
-		if ( !m_bNoDraw )
+		if( !m_bNoDraw )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Set to not draw...\n" );
@@ -334,9 +356,9 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 			StopAllLessons();
 		}
 	}
-	else if ( Q_strcmp( name, "round_end" ) == 0 )
+	else if( Q_strcmp( name, "round_end" ) == 0 )
 	{
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Round ended...\n" );
@@ -344,15 +366,15 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 
 		CloseAllOpenOpportunities();
 
-		if ( IsPC() )
+		if( IsPC() )
 		{
 			// Good place to backup our counts
 			WriteSaveData();
 		}
 	}
-	else if ( Q_strcmp( name, "round_start" ) == 0 )
+	else if( Q_strcmp( name, "round_start" ) == 0 )
 	{
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Round started...\n" );
@@ -362,41 +384,43 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 
 		EvaluateLessonsForGameRules();
 	}
-	else if ( Q_strcmp( name, "player_death" ) == 0 )
+	else if( Q_strcmp( name, "player_death" ) == 0 )
 	{
-		#if !defined(NO_STEAM) && defined(USE_CEG)
-				Steamworks_TestSecret(); 
-				Steamworks_SelfCheck(); 
-		#endif
+#if !defined(NO_STEAM) && defined(USE_CEG)
+		Steamworks_TestSecret();
+		Steamworks_SelfCheck();
+#endif
 
-		C_BasePlayer *pLocalPlayer = GetLocalPlayer();
+		C_BasePlayer* pLocalPlayer = GetLocalPlayer();
 
-		if ( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) )
+		if( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Local player died...\n" );
 			}
 
-			for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+			for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 			{
-				CBaseLesson *pLesson		= m_OpenOpportunities[ i ];
-				CBaseLesson *pRootLesson	= pLesson->GetRoot();
+				CBaseLesson* pLesson		= m_OpenOpportunities[ i ];
+				CBaseLesson* pRootLesson	= pLesson->GetRoot();
 
-				if ( !pRootLesson->CanOpenWhenDead() )
+				if( !pRootLesson->CanOpenWhenDead() )
+				{
 					CloseOpportunity( pLesson );
+				}
 			}
 		}
 	}
-	else if ( Q_strcmp( name, "player_team" ) == 0 )
+	else if( Q_strcmp( name, "player_team" ) == 0 )
 	{
-		C_BasePlayer *pLocalPlayer = GetLocalPlayer();
+		C_BasePlayer* pLocalPlayer = GetLocalPlayer();
 
-		if ( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) && 
-			 ( event->GetInt( "team" ) != event->GetInt( "oldteam" ) || event->GetBool( "disconnect" ) ) )
+		if( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) &&
+				( event->GetInt( "team" ) != event->GetInt( "oldteam" ) || event->GetBool( "disconnect" ) ) )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Local player changed team (or disconnected)...\n" );
@@ -407,12 +431,12 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 
 		EvaluateLessonsForGameRules();
 	}
-	else if ( Q_strcmp( name, "player_disconnect" ) == 0 )
+	else if( Q_strcmp( name, "player_disconnect" ) == 0 )
 	{
-		C_BasePlayer *pLocalPlayer = GetLocalPlayer();
-		if ( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) )
+		C_BasePlayer* pLocalPlayer = GetLocalPlayer();
+		if( pLocalPlayer && pLocalPlayer == UTIL_PlayerByUserId( event->GetInt( "userid" ) ) )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Local player disconnected...\n" );
@@ -421,9 +445,9 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 			CloseAllOpenOpportunities();
 		}
 	}
-	else if ( Q_strcmp( name, "map_transition" ) == 0 )
+	else if( Q_strcmp( name, "map_transition" ) == 0 )
 	{
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Map transition...\n" );
@@ -431,9 +455,9 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 
 		CloseAllOpenOpportunities();
 
-		if ( m_bNoDraw )
+		if( m_bNoDraw )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( Color( 255, 128, 64, 255 ), "[INSTRUCTOR]: " );
 				ConColorMsg( Color( 64, 128, 255, 255 ), "Set to draw...\n" );
@@ -442,15 +466,15 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 			m_bNoDraw = false;
 		}
 
-		if ( IsPC() )
+		if( IsPC() )
 		{
 			// Good place to backup our counts
 			WriteSaveData();
 		}
 	}
-	else if ( Q_strcmp( name, "game_newmap" ) == 0 )
+	else if( Q_strcmp( name, "game_newmap" ) == 0 )
 	{
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "New map...\n" );
@@ -458,9 +482,9 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 
 		CloseAllOpenOpportunities();
 
-		if ( m_bNoDraw )
+		if( m_bNoDraw )
 		{
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( Color( 255, 128, 64, 255 ), "[INSTRUCTOR]: " );
 				ConColorMsg( Color( 64, 128, 255, 255 ), "Set to draw...\n" );
@@ -469,28 +493,30 @@ void C_GameInstructor::FireGameEvent( IGameEvent *event )
 			m_bNoDraw = false;
 		}
 
-		if ( IsPC() )
+		if( IsPC() )
 		{
 			// Good place to backup our counts
 			WriteSaveData();
 		}
 	}
 
-	else if ( Q_strcmp( name, "set_instructor_group_enabled" ) == 0 )
+	else if( Q_strcmp( name, "set_instructor_group_enabled" ) == 0 )
 	{
-		const char *pszGroup	= event->GetString( "group" );
+		const char* pszGroup	= event->GetString( "group" );
 		bool bEnabled			= event->GetInt( "enabled" ) != 0;
 
-		if ( pszGroup && pszGroup[0] )
-			SetLessonGroupEnabled(pszGroup, bEnabled);
+		if( pszGroup && pszGroup[0] )
+		{
+			SetLessonGroupEnabled( pszGroup, bEnabled );
+		}
 	}
 }
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::DefineLesson( CBaseLesson *pLesson )
+void C_GameInstructor::DefineLesson( CBaseLesson* pLesson )
 {
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Lesson " );
@@ -503,21 +529,23 @@ void C_GameInstructor::DefineLesson( CBaseLesson *pLesson )
 
 //=========================================================
 //=========================================================
-const CBaseLesson * C_GameInstructor::GetLesson( const char *pchLessonName )
+const CBaseLesson* C_GameInstructor::GetLesson( const char* pchLessonName )
 {
 	return GetLesson_Internal( pchLessonName );
 }
 
 //=========================================================
 //=========================================================
-bool C_GameInstructor::IsLessonOfSameTypeOpen( const CBaseLesson *pLesson ) const
+bool C_GameInstructor::IsLessonOfSameTypeOpen( const CBaseLesson* pLesson ) const
 {
-	for ( int i = 0; i < m_OpenOpportunities.Count(); ++i )
+	for( int i = 0; i < m_OpenOpportunities.Count(); ++i )
 	{
-		CBaseLesson *pOpenOpportunity = m_OpenOpportunities[ i ];
+		CBaseLesson* pOpenOpportunity = m_OpenOpportunities[ i ];
 
-		if ( pOpenOpportunity->GetNameSymbol() == pLesson->GetNameSymbol() )
+		if( pOpenOpportunity->GetNameSymbol() == pLesson->GetNameSymbol() )
+		{
 			return true;
+		}
 	}
 
 	return false;
@@ -528,12 +556,16 @@ bool C_GameInstructor::IsLessonOfSameTypeOpen( const CBaseLesson *pLesson ) cons
 bool C_GameInstructor::ReadSaveData()
 {
 	// for external playtests, don't ever read in persisted instructor state, always start fresh
-	if ( CommandLine()->FindParm( "-playtest" ) )
+	if( CommandLine()->FindParm( "-playtest" ) )
+	{
 		return true;
+	}
 
-	if ( m_bHasLoadedSaveData )
+	if( m_bHasLoadedSaveData )
+	{
 		return true;
-	
+	}
+
 	// Always reset state first in case storage device
 	// was declined or ends up in faulty state
 	ResetDisplaysAndSuccesses();
@@ -543,29 +575,35 @@ bool C_GameInstructor::ReadSaveData()
 #ifdef _X360
 	DevMsg( "Read Game Instructor for splitscreen slot %d\n", m_nSplitScreenSlot );
 
-	if ( m_nSplitScreenSlot < 0 )
+	if( m_nSplitScreenSlot < 0 )
+	{
 		return false;
+	}
 
-	if ( m_nSplitScreenSlot >= (int) XBX_GetNumGameUsers() )
+	if( m_nSplitScreenSlot >= ( int ) XBX_GetNumGameUsers() )
+	{
 		return false;
+	}
 
 	int iController = XBX_GetUserId( m_nSplitScreenSlot );
 
-	if ( iController < 0 || XBX_GetUserIsGuest( iController ) )
+	if( iController < 0 || XBX_GetUserIsGuest( iController ) )
 	{
 		// Can't read data for guests
 		return false;
 	}
 
 	DWORD nStorageDevice = XBX_GetStorageDeviceId( iController );
-	if ( !XBX_DescribeStorageDevice( nStorageDevice ) )
+	if( !XBX_DescribeStorageDevice( nStorageDevice ) )
+	{
 		return false;
+	}
 #endif
 
 	char szFilename[_MAX_PATH];
 
 #ifdef _X360
-	if ( IsX360() )
+	if( IsX360() )
 	{
 		XBX_MakeStorageContainerRoot( iController, XBX_USER_SETTINGS_CONTAINER_DRIVE, szFilename, sizeof( szFilename ) );
 		int nLen = strlen( szFilename );
@@ -577,31 +615,31 @@ bool C_GameInstructor::ReadSaveData()
 		Q_snprintf( szFilename, sizeof( szFilename ), "save/game_instructor_counts.txt" );
 	}
 
-	KeyValues *data = new KeyValues( "Game Instructor Counts" );
-	KeyValues::AutoDelete autoDelete(data);
+	KeyValues* data = new KeyValues( "Game Instructor Counts" );
+	KeyValues::AutoDelete autoDelete( data );
 
-	if ( data->LoadFromFile( g_pFullFileSystem, szFilename, NULL ) )
+	if( data->LoadFromFile( g_pFullFileSystem, szFilename, NULL ) )
 	{
 		int nVersion = 0;
 
-		for ( KeyValues *pKey = data->GetFirstSubKey(); pKey; pKey = pKey->GetNextTrueSubKey() )
+		for( KeyValues* pKey = data->GetFirstSubKey(); pKey; pKey = pKey->GetNextTrueSubKey() )
 		{
-			CBaseLesson *pLesson = GetLesson_Internal( pKey->GetName() );
+			CBaseLesson* pLesson = GetLesson_Internal( pKey->GetName() );
 
-			if ( pLesson )
+			if( pLesson )
 			{
 				pLesson->SetDisplayCount( pKey->GetInt( "display", 0 ) );
 				pLesson->SetSuccessCount( pKey->GetInt( "success", 0 ) );
 
-				if ( Q_strcmp( pKey->GetName(), "version number" ) == 0 )
+				if( Q_strcmp( pKey->GetName(), "version number" ) == 0 )
 				{
 					nVersion = pLesson->GetSuccessCount();
 				}
 			}
 		}
 
-		CBaseLesson *pLessonVersionNumber = GetLesson_Internal( "version number" );
-		if ( pLessonVersionNumber && !pLessonVersionNumber->IsLearned() )
+		CBaseLesson* pLessonVersionNumber = GetLesson_Internal( "version number" );
+		if( pLessonVersionNumber && !pLessonVersionNumber->IsLearned() )
 		{
 			ResetDisplaysAndSuccesses();
 			pLessonVersionNumber->SetSuccessCount( pLessonVersionNumber->GetSuccessLimit() );
@@ -620,20 +658,24 @@ bool C_GameInstructor::ReadSaveData()
 //=========================================================
 bool C_GameInstructor::WriteSaveData()
 {
-	if ( engine->IsPlayingDemo() )
+	if( engine->IsPlayingDemo() )
+	{
 		return false;
+	}
 
-	if ( !m_bDirtySaveData )
+	if( !m_bDirtySaveData )
+	{
 		return true;
+	}
 
 #ifdef _X360
 	float flPlatTime = Plat_FloatTime();
 
 	static ConVarRef host_write_last_time( "host_write_last_time" );
-	if ( host_write_last_time.IsValid() )
+	if( host_write_last_time.IsValid() )
 	{
 		float flTimeSinceLastWrite = flPlatTime - host_write_last_time.GetFloat();
-		if ( flTimeSinceLastWrite < 3.5f )
+		if( flTimeSinceLastWrite < 3.5f )
 		{
 			// Prevent writing to the same storage device twice in less than 3 second succession for TCR success!
 			// This happens after leaving a game in splitscreen.
@@ -651,46 +693,56 @@ bool C_GameInstructor::WriteSaveData()
 #ifdef _X360
 	DevMsg( "Write Game Instructor for splitscreen slot %d at time: %.1f\n", m_nSplitScreenSlot, flPlatTime );
 
-	if ( m_nSplitScreenSlot < 0 )
+	if( m_nSplitScreenSlot < 0 )
+	{
 		return false;
+	}
 
-	if ( m_nSplitScreenSlot >= (int) XBX_GetNumGameUsers() )
+	if( m_nSplitScreenSlot >= ( int ) XBX_GetNumGameUsers() )
+	{
 		return false;
+	}
 
 	int iController = XBX_GetUserId( m_nSplitScreenSlot );
 
-	if ( iController < 0 || XBX_GetUserIsGuest( iController ) )
+	if( iController < 0 || XBX_GetUserIsGuest( iController ) )
 	{
 		// Can't save data for guests
 		return false;
 	}
 
 	DWORD nStorageDevice = XBX_GetStorageDeviceId( iController );
-	if ( !XBX_DescribeStorageDevice( nStorageDevice ) )
+	if( !XBX_DescribeStorageDevice( nStorageDevice ) )
+	{
 		return false;
+	}
 #endif
 
 	// Build key value data to save
-	KeyValues *data = new KeyValues( "Game Instructor Counts" );
-	KeyValues::AutoDelete autoDelete(data);
+	KeyValues* data = new KeyValues( "Game Instructor Counts" );
+	KeyValues::AutoDelete autoDelete( data );
 
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
-		CBaseLesson *pLesson = m_Lessons[i];
-		
+		CBaseLesson* pLesson = m_Lessons[i];
+
 		int iDisplayCount = pLesson->GetDisplayCount();
 		int iSuccessCount = pLesson->GetSuccessCount();
 
-		if ( iDisplayCount || iSuccessCount )
+		if( iDisplayCount || iSuccessCount )
 		{
 			// We've got some data worth saving
-			KeyValues *pKVData = new KeyValues( pLesson->GetName() );
+			KeyValues* pKVData = new KeyValues( pLesson->GetName() );
 
-			if ( iDisplayCount )
+			if( iDisplayCount )
+			{
 				pKVData->SetInt( "display", iDisplayCount );
+			}
 
-			if ( iSuccessCount )
+			if( iSuccessCount )
+			{
 				pKVData->SetInt( "success", iSuccessCount );
+			}
 
 			data->AddSubKey( pKVData );
 		}
@@ -704,7 +756,7 @@ bool C_GameInstructor::WriteSaveData()
 	char	szFilename[_MAX_PATH];
 
 #ifdef _X360
-	if ( IsX360() )
+	if( IsX360() )
 	{
 		XBX_MakeStorageContainerRoot( iController, XBX_USER_SETTINGS_CONTAINER_DRIVE, szFilename, sizeof( szFilename ) );
 		int nLen = strlen( szFilename );
@@ -720,7 +772,7 @@ bool C_GameInstructor::WriteSaveData()
 	bool bWriteSuccess = filesystem->WriteFile( szFilename, MOD_DIR, buf );
 
 #ifdef _X360
-	if ( xboxsystem )
+	if( xboxsystem )
 	{
 		xboxsystem->FinishContainerWrites( iController );
 	}
@@ -741,13 +793,13 @@ void C_GameInstructor::RefreshDisplaysAndSuccesses()
 //=========================================================
 void C_GameInstructor::ResetDisplaysAndSuccesses()
 {
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Reset all lesson display and success counts.\n" );
 	}
 
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
 		m_Lessons[ i ]->ResetDisplaysAndSuccesses();
 	}
@@ -757,14 +809,16 @@ void C_GameInstructor::ResetDisplaysAndSuccesses()
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::MarkDisplayed( const char *pchLessonName )
+void C_GameInstructor::MarkDisplayed( const char* pchLessonName )
 {
-	CBaseLesson *pLesson = GetLesson_Internal(pchLessonName);
+	CBaseLesson* pLesson = GetLesson_Internal( pchLessonName );
 
-	if ( !pLesson )
+	if( !pLesson )
+	{
 		return;
+	}
 
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Lesson " );
@@ -772,20 +826,24 @@ void C_GameInstructor::MarkDisplayed( const char *pchLessonName )
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "marked as displayed.\n" );
 	}
 
-	if ( pLesson->IncDisplayCount() )
+	if( pLesson->IncDisplayCount() )
+	{
 		m_bDirtySaveData = true;
+	}
 }
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::MarkSucceeded(const char *pchLessonName)
+void C_GameInstructor::MarkSucceeded( const char* pchLessonName )
 {
-	CBaseLesson *pLesson = GetLesson_Internal(pchLessonName);
+	CBaseLesson* pLesson = GetLesson_Internal( pchLessonName );
 
-	if ( !pLesson )
+	if( !pLesson )
+	{
 		return;
+	}
 
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Lesson " );
@@ -793,27 +851,29 @@ void C_GameInstructor::MarkSucceeded(const char *pchLessonName)
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "marked as succeeded.\n" );
 	}
 
-	if ( pLesson->IncSuccessCount() )
+	if( pLesson->IncSuccessCount() )
+	{
 		m_bDirtySaveData = true;
+	}
 }
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::PlaySound( const char *pchSoundName )
+void C_GameInstructor::PlaySound( const char* pchSoundName )
 {
 	// emit alert sound
-	C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
 
-	if ( pLocalPlayer )
+	if( pLocalPlayer )
 	{
 		// Local player exists
-		if ( pchSoundName[ 0 ] != '\0' && Q_strcmp( m_szPreviousStartSound, pchSoundName ) != 0 )
+		if( pchSoundName[ 0 ] != '\0' && Q_strcmp( m_szPreviousStartSound, pchSoundName ) != 0 )
 		{
 			Q_strcpy( m_szPreviousStartSound, pchSoundName );
 			m_fNextStartSoundTime = 0.0f;
 		}
 
-		if ( gpGlobals->curtime >= m_fNextStartSoundTime && pchSoundName[ 0 ] != '\0' )
+		if( gpGlobals->curtime >= m_fNextStartSoundTime && pchSoundName[ 0 ] != '\0' )
 		{
 			// A sound was specified, so play it!
 			pLocalPlayer->EmitSound( pchSoundName );
@@ -824,14 +884,14 @@ void C_GameInstructor::PlaySound( const char *pchSoundName )
 
 //=========================================================
 //=========================================================
-bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
+bool C_GameInstructor::OpenOpportunity( CBaseLesson* pLesson )
 {
 	// Get the root lesson
-	CBaseLesson *pRootLesson = pLesson->GetRoot();
+	CBaseLesson* pRootLesson = pLesson->GetRoot();
 
-	if ( !pRootLesson )
+	if( !pRootLesson )
 	{
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -843,12 +903,12 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 		return false;
 	}
 
-	C_BasePlayer *pLocalPlayer = GetLocalPlayer();
+	C_BasePlayer* pLocalPlayer = GetLocalPlayer();
 
-	if ( !pRootLesson->CanOpenWhenDead() && ( !pLocalPlayer || !pLocalPlayer->IsAlive() ) )
+	if( !pRootLesson->CanOpenWhenDead() && ( !pLocalPlayer || !pLocalPlayer->IsAlive() ) )
 	{
 		// If the player is dead don't allow lessons that can't be opened when dead
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -860,10 +920,10 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 		return false;
 	}
 
-	if ( !pRootLesson->PrerequisitesHaveBeenMet() )
+	if( !pRootLesson->PrerequisitesHaveBeenMet() )
 	{
 		// If the prereqs haven't been met, don't open it
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "[INSTRUCTOR]: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -875,26 +935,26 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 		return false;
 	}
 
-	if ( pRootLesson->InstanceType() == LESSON_INSTANCE_FIXED_REPLACE )
+	if( pRootLesson->InstanceType() == LESSON_INSTANCE_FIXED_REPLACE )
 	{
-		CBaseLesson *pLessonToReplace = NULL;
-		CBaseLesson *pLastReplacableLesson = NULL;
+		CBaseLesson* pLessonToReplace = NULL;
+		CBaseLesson* pLastReplacableLesson = NULL;
 
 		int iInstanceCount = 0;
 
 		// Check how many are already open
-		for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+		for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 		{
-			CBaseLesson *pOpenOpportunity = m_OpenOpportunities[ i ];
+			CBaseLesson* pOpenOpportunity = m_OpenOpportunities[ i ];
 
-			if ( pOpenOpportunity->GetNameSymbol() == pLesson->GetNameSymbol() && 
-				 pOpenOpportunity->GetReplaceKeySymbol() == pLesson->GetReplaceKeySymbol() )
+			if( pOpenOpportunity->GetNameSymbol() == pLesson->GetNameSymbol() &&
+					pOpenOpportunity->GetReplaceKeySymbol() == pLesson->GetReplaceKeySymbol() )
 			{
 				iInstanceCount++;
 
-				if ( pRootLesson->ShouldReplaceOnlyWhenStopped() )
+				if( pRootLesson->ShouldReplaceOnlyWhenStopped() )
 				{
-					if ( !pOpenOpportunity->IsInstructing() )
+					if( !pOpenOpportunity->IsInstructing() )
 					{
 						pLastReplacableLesson = pOpenOpportunity;
 					}
@@ -904,7 +964,7 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 					pLastReplacableLesson = pOpenOpportunity;
 				}
 
-				if ( iInstanceCount >= pRootLesson->GetFixedInstancesMax() )
+				if( iInstanceCount >= pRootLesson->GetFixedInstancesMax() )
 				{
 					pLessonToReplace = pLastReplacableLesson;
 					break;
@@ -912,10 +972,10 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 			}
 		}
 
-		if ( pLessonToReplace )
+		if( pLessonToReplace )
 		{
 			// Take the place of the previous instance
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -926,10 +986,10 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 			pLesson->TakePlaceOf( pLessonToReplace );
 			CloseOpportunity( pLessonToReplace );
 		}
-		else if ( iInstanceCount >= pRootLesson->GetFixedInstancesMax() )
+		else if( iInstanceCount >= pRootLesson->GetFixedInstancesMax() )
 		{
 			// Don't add another lesson of this type
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -942,7 +1002,7 @@ bool C_GameInstructor::OpenOpportunity( CBaseLesson *pLesson )
 		}
 	}
 
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -962,19 +1022,19 @@ void C_GameInstructor::DumpOpenOpportunities()
 	ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 	ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Open lessons...\n" );
 
-	for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+	for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 	{
-		CBaseLesson *pLesson = m_OpenOpportunities[ i ];
-		CBaseLesson *pRootLesson = pLesson->GetRoot();
+		CBaseLesson* pLesson = m_OpenOpportunities[ i ];
+		CBaseLesson* pRootLesson = pLesson->GetRoot();
 
 		Color color;
 
-		if ( pLesson->IsInstructing() )
+		if( pLesson->IsInstructing() )
 		{
 			// Green
 			color = CBaseLesson::m_rgbaVerboseOpen;
 		}
-		else if ( pRootLesson->IsLearned() && pLesson->GetPriority() >= m_iCurrentPriority )
+		else if( pRootLesson->IsLearned() && pLesson->GetPriority() >= m_iCurrentPriority )
 		{
 			// Yellow
 			color = CBaseLesson::m_rgbaVerboseSuccess;
@@ -991,32 +1051,38 @@ void C_GameInstructor::DumpOpenOpportunities()
 
 //=========================================================
 //=========================================================
-KeyValues * C_GameInstructor::GetScriptKeys()
+KeyValues* C_GameInstructor::GetScriptKeys()
 {
 	return m_pScriptKeys;
 }
 
 //=========================================================
 //=========================================================
-C_BasePlayer * C_GameInstructor::GetLocalPlayer()
+C_BasePlayer* C_GameInstructor::GetLocalPlayer()
 {
-	C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
 
 	// If we're not a developer, don't do the special spectator hook ups
-	if ( !developer.GetBool() )
+	if( !developer.GetBool() )
+	{
 		return pLocalPlayer;
+	}
 
 	// If there is no local player and we're not spectating, just return that
-	if ( !pLocalPlayer || pLocalPlayer->GetTeamNumber() != TEAM_SPECTATOR )
+	if( !pLocalPlayer || pLocalPlayer->GetTeamNumber() != TEAM_SPECTATOR )
+	{
 		return pLocalPlayer;
+	}
 
 	// We're purely a spectator let's get lessons of the person we're spectating
-	C_BasePlayer *pSpectatedPlayer = NULL;
+	C_BasePlayer* pSpectatedPlayer = NULL;
 
-	if ( pLocalPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pLocalPlayer->GetObserverMode() == OBS_MODE_CHASE )
+	if( pLocalPlayer->GetObserverMode() == OBS_MODE_IN_EYE || pLocalPlayer->GetObserverMode() == OBS_MODE_CHASE )
+	{
 		pSpectatedPlayer = ToBasePlayer( pLocalPlayer->GetObserverTarget() );
+	}
 
-	if ( m_hLastSpectatedPlayer != pSpectatedPlayer )
+	if( m_hLastSpectatedPlayer != pSpectatedPlayer )
 	{
 		// We're spectating someone new! Close all the stale lessons!
 		m_bSpectatedPlayerChanged = true;
@@ -1031,30 +1097,36 @@ C_BasePlayer * C_GameInstructor::GetLocalPlayer()
 void C_GameInstructor::EvaluateLessonsForGameRules()
 {
 	// Enable everything by default
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
-		m_Lessons[ i ]->SetEnabled(true);
+	for( int i = 0; i < m_Lessons.Count(); ++i )
+	{
+		m_Lessons[ i ]->SetEnabled( true );
+	}
 
 	// Then see if we should disable anything
-	for ( int nConVar = 0; nConVar < m_LessonGroupConVarToggles.Count(); ++nConVar )
+	for( int nConVar = 0; nConVar < m_LessonGroupConVarToggles.Count(); ++nConVar )
 	{
-		LessonGroupConVarToggle_t *pLessonGroupConVarToggle = &(m_LessonGroupConVarToggles[ nConVar ]);
+		LessonGroupConVarToggle_t* pLessonGroupConVarToggle = &( m_LessonGroupConVarToggles[ nConVar ] );
 
-		if ( pLessonGroupConVarToggle->var.IsValid() )
+		if( pLessonGroupConVarToggle->var.IsValid() )
 		{
-			if ( pLessonGroupConVarToggle->var.GetBool() )
+			if( pLessonGroupConVarToggle->var.GetBool() )
+			{
 				SetLessonGroupEnabled( pLessonGroupConVarToggle->szLessonGroupName, false );
+			}
 		}
 	}
 }
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::SetLessonGroupEnabled( const char *pszGroup, bool bEnabled )
+void C_GameInstructor::SetLessonGroupEnabled( const char* pszGroup, bool bEnabled )
 {
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
-		if ( !Q_stricmp(pszGroup, m_Lessons[i]->GetGroup()) )
+		if( !Q_stricmp( pszGroup, m_Lessons[i]->GetGroup() ) )
+		{
 			m_Lessons[i]->SetEnabled( bEnabled );
+		}
 	}
 }
 
@@ -1063,44 +1135,44 @@ void C_GameInstructor::SetLessonGroupEnabled( const char *pszGroup, bool bEnable
 void C_GameInstructor::FindErrors()
 {
 	// Loop through all the lesson and run all their scripted actions
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
-		CScriptedIconLesson *pLesson = dynamic_cast<CScriptedIconLesson *>( m_Lessons[ i ] );
-		if ( pLesson )
+		CScriptedIconLesson* pLesson = dynamic_cast<CScriptedIconLesson*>( m_Lessons[ i ] );
+		if( pLesson )
 		{
 			// Process all open events
-			for ( int iLessonEvent = 0; iLessonEvent < pLesson->GetOpenEvents().Count(); ++iLessonEvent )
+			for( int iLessonEvent = 0; iLessonEvent < pLesson->GetOpenEvents().Count(); ++iLessonEvent )
 			{
-				const LessonEvent_t *pLessonEvent = &(pLesson->GetOpenEvents()[ iLessonEvent ]);
-				pLesson->ProcessElements( NULL, &(pLessonEvent->elements) );
+				const LessonEvent_t* pLessonEvent = &( pLesson->GetOpenEvents()[ iLessonEvent ] );
+				pLesson->ProcessElements( NULL, &( pLessonEvent->elements ) );
 			}
 
 			// Process all close events
-			for ( int iLessonEvent = 0; iLessonEvent < pLesson->GetCloseEvents().Count(); ++iLessonEvent )
+			for( int iLessonEvent = 0; iLessonEvent < pLesson->GetCloseEvents().Count(); ++iLessonEvent )
 			{
-				const LessonEvent_t *pLessonEvent = &(pLesson->GetCloseEvents()[ iLessonEvent ]);
-				pLesson->ProcessElements( NULL, &(pLessonEvent->elements) );
+				const LessonEvent_t* pLessonEvent = &( pLesson->GetCloseEvents()[ iLessonEvent ] );
+				pLesson->ProcessElements( NULL, &( pLessonEvent->elements ) );
 			}
 
 			// Process all success events
-			for ( int iLessonEvent = 0; iLessonEvent < pLesson->GetSuccessEvents().Count(); ++iLessonEvent )
+			for( int iLessonEvent = 0; iLessonEvent < pLesson->GetSuccessEvents().Count(); ++iLessonEvent )
 			{
-				const LessonEvent_t *pLessonEvent = &(pLesson->GetSuccessEvents()[ iLessonEvent ]);
-				pLesson->ProcessElements( NULL, &(pLessonEvent->elements) );
+				const LessonEvent_t* pLessonEvent = &( pLesson->GetSuccessEvents()[ iLessonEvent ] );
+				pLesson->ProcessElements( NULL, &( pLessonEvent->elements ) );
 			}
 
 			// Process all on open events
-			for ( int iLessonEvent = 0; iLessonEvent < pLesson->GetOnOpenEvents().Count(); ++iLessonEvent )
+			for( int iLessonEvent = 0; iLessonEvent < pLesson->GetOnOpenEvents().Count(); ++iLessonEvent )
 			{
-				const LessonEvent_t *pLessonEvent = &(pLesson->GetOnOpenEvents()[ iLessonEvent ]);
-				pLesson->ProcessElements( NULL, &(pLessonEvent->elements) );
+				const LessonEvent_t* pLessonEvent = &( pLesson->GetOnOpenEvents()[ iLessonEvent ] );
+				pLesson->ProcessElements( NULL, &( pLessonEvent->elements ) );
 			}
 
 			// Process all update events
-			for ( int iLessonEvent = 0; iLessonEvent < pLesson->GetUpdateEvents().Count(); ++iLessonEvent )
+			for( int iLessonEvent = 0; iLessonEvent < pLesson->GetUpdateEvents().Count(); ++iLessonEvent )
 			{
-				const LessonEvent_t *pLessonEvent = &(pLesson->GetUpdateEvents()[ iLessonEvent ]);
-				pLesson->ProcessElements( NULL, &(pLessonEvent->elements) );
+				const LessonEvent_t* pLessonEvent = &( pLesson->GetUpdateEvents()[ iLessonEvent ] );
+				pLesson->ProcessElements( NULL, &( pLessonEvent->elements ) );
 			}
 		}
 	}
@@ -1108,13 +1180,13 @@ void C_GameInstructor::FindErrors()
 
 //=========================================================
 //=========================================================
-bool C_GameInstructor::UpdateActiveLesson( CBaseLesson *pLesson, const CBaseLesson *pRootLesson )
+bool C_GameInstructor::UpdateActiveLesson( CBaseLesson* pLesson, const CBaseLesson* pRootLesson )
 {
 	VPROF_BUDGET( "C_GameInstructor::UpdateActiveLesson", "GameInstructor" );
 
 	bool bIsOpen = pLesson->IsInstructing();
 
-	if ( !bIsOpen && !pRootLesson->IsLearned() )
+	if( !bIsOpen && !pRootLesson->IsLearned() )
 	{
 		pLesson->SetStartTime();
 		pLesson->Start();
@@ -1122,10 +1194,10 @@ bool C_GameInstructor::UpdateActiveLesson( CBaseLesson *pLesson, const CBaseLess
 		// Check to see if it successfully started
 		bIsOpen = ( pLesson->IsOpenOpportunity() && pLesson->ShouldDisplay() );
 
-		if ( bIsOpen )
+		if( bIsOpen )
 		{
 			// Lesson hasn't been started and hasn't been learned
-			if ( gameinstructor_verbose.GetInt() > 0 )
+			if( gameinstructor_verbose.GetInt() > 0 )
 			{
 				ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 				ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Started lesson " );
@@ -1140,7 +1212,7 @@ bool C_GameInstructor::UpdateActiveLesson( CBaseLesson *pLesson, const CBaseLess
 		}
 	}
 
-	if ( bIsOpen )
+	if( bIsOpen )
 	{
 		// Update the running lesson
 		pLesson->Update();
@@ -1155,14 +1227,14 @@ bool C_GameInstructor::UpdateActiveLesson( CBaseLesson *pLesson, const CBaseLess
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::UpdateInactiveLesson( CBaseLesson *pLesson )
+void C_GameInstructor::UpdateInactiveLesson( CBaseLesson* pLesson )
 {
 	VPROF_BUDGET( "C_GameInstructor::UpdateInactiveLesson", "GameInstructor" );
 
-	if ( pLesson->IsInstructing() )
+	if( pLesson->IsInstructing() )
 	{
 		// Lesson hasn't been stopped
-		if ( gameinstructor_verbose.GetInt() > 0 )
+		if( gameinstructor_verbose.GetInt() > 0 )
 		{
 			ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 			ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Stopped lesson " );
@@ -1179,13 +1251,13 @@ void C_GameInstructor::UpdateInactiveLesson( CBaseLesson *pLesson )
 
 //=========================================================
 //=========================================================
-CBaseLesson * C_GameInstructor::GetLesson_Internal( const char *pchLessonName )
+CBaseLesson* C_GameInstructor::GetLesson_Internal( const char* pchLessonName )
 {
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
 	{
-		CBaseLesson *pLesson = m_Lessons[ i ];
+		CBaseLesson* pLesson = m_Lessons[ i ];
 
-		if ( Q_strcmp( pLesson->GetName(), pchLessonName ) == 0 )
+		if( Q_strcmp( pLesson->GetName(), pchLessonName ) == 0 )
 		{
 			return pLesson;
 		}
@@ -1199,9 +1271,9 @@ CBaseLesson * C_GameInstructor::GetLesson_Internal( const char *pchLessonName )
 void C_GameInstructor::StopAllLessons()
 {
 	// Stop all the current lessons
-	for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+	for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 	{
-		CBaseLesson *pLesson = m_OpenOpportunities[ i ];
+		CBaseLesson* pLesson = m_OpenOpportunities[ i ];
 		UpdateInactiveLesson( pLesson );
 	}
 }
@@ -1211,9 +1283,9 @@ void C_GameInstructor::StopAllLessons()
 void C_GameInstructor::CloseAllOpenOpportunities()
 {
 	// Clear out all the open opportunities
-	for ( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
+	for( int i = m_OpenOpportunities.Count() - 1; i >= 0; --i )
 	{
-		CBaseLesson *pLesson = m_OpenOpportunities[ i ];
+		CBaseLesson* pLesson = m_OpenOpportunities[ i ];
 		CloseOpportunity( pLesson );
 	}
 
@@ -1222,14 +1294,16 @@ void C_GameInstructor::CloseAllOpenOpportunities()
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::CloseOpportunity( CBaseLesson *pLesson )
+void C_GameInstructor::CloseOpportunity( CBaseLesson* pLesson )
 {
 	UpdateInactiveLesson( pLesson );
 
-	if ( pLesson->WasDisplayed() )
+	if( pLesson->WasDisplayed() )
+	{
 		MarkDisplayed( pLesson->GetName() );
+	}
 
-	if ( gameinstructor_verbose.GetInt() > 0 )
+	if( gameinstructor_verbose.GetInt() > 0 )
 	{
 		ConColorMsg( CBaseLesson::m_rgbaVerboseHeader, "GAME INSTRUCTOR: " );
 		ConColorMsg( CBaseLesson::m_rgbaVerbosePlain, "Opportunity " );
@@ -1246,38 +1320,38 @@ void C_GameInstructor::CloseOpportunity( CBaseLesson *pLesson )
 
 //=========================================================
 //=========================================================
-void C_GameInstructor::ReadLessonsFromFile( const char *pchFileName )
+void C_GameInstructor::ReadLessonsFromFile( const char* pchFileName )
 {
 	// Static init function
 	CScriptedIconLesson::PreReadLessonsFromFile();
 	MEM_ALLOC_CREDIT();
-	
-	KeyValues *pLessonKeys = new KeyValues("instructor_lessons");
-	KeyValues::AutoDelete autoDelete(pLessonKeys);
 
-	pLessonKeys->LoadFromFile(g_pFullFileSystem, pchFileName, NULL);
+	KeyValues* pLessonKeys = new KeyValues( "instructor_lessons" );
+	KeyValues::AutoDelete autoDelete( pLessonKeys );
 
-	for ( m_pScriptKeys = pLessonKeys->GetFirstTrueSubKey(); m_pScriptKeys; m_pScriptKeys = m_pScriptKeys->GetNextTrueSubKey() )
+	pLessonKeys->LoadFromFile( g_pFullFileSystem, pchFileName, NULL );
+
+	for( m_pScriptKeys = pLessonKeys->GetFirstTrueSubKey(); m_pScriptKeys; m_pScriptKeys = m_pScriptKeys->GetNextTrueSubKey() )
 	{
-		if ( Q_stricmp(m_pScriptKeys->GetName(), "GroupConVarToggle") == 0 )
+		if( Q_stricmp( m_pScriptKeys->GetName(), "GroupConVarToggle" ) == 0 )
 		{
 			// Add convar group toggler to the list
 			int nLessonGroupConVarToggle							= m_LessonGroupConVarToggles.AddToTail( LessonGroupConVarToggle_t( m_pScriptKeys->GetString( "convar" ) ) );
-			LessonGroupConVarToggle_t *pLessonGroupConVarToggle		= &(m_LessonGroupConVarToggles[nLessonGroupConVarToggle]);
+			LessonGroupConVarToggle_t* pLessonGroupConVarToggle		= &( m_LessonGroupConVarToggles[nLessonGroupConVarToggle] );
 
-			Q_strcpy( pLessonGroupConVarToggle->szLessonGroupName, m_pScriptKeys->GetString("group") );
+			Q_strcpy( pLessonGroupConVarToggle->szLessonGroupName, m_pScriptKeys->GetString( "group" ) );
 			continue;
 		}
 
 		// Ensure that lessons aren't added twice
-		if ( GetLesson_Internal(m_pScriptKeys->GetName()) )
+		if( GetLesson_Internal( m_pScriptKeys->GetName() ) )
 		{
-			DevWarning("Lesson \"%s\" defined twice!\n", m_pScriptKeys->GetName());
+			DevWarning( "Lesson \"%s\" defined twice!\n", m_pScriptKeys->GetName() );
 			continue;
 		}
 
-		CScriptedIconLesson *pNewLesson = new CScriptedIconLesson(m_pScriptKeys->GetName(), false, false);
-		GetGameInstructor().DefineLesson(pNewLesson);
+		CScriptedIconLesson* pNewLesson = new CScriptedIconLesson( m_pScriptKeys->GetName(), false, false );
+		GetGameInstructor().DefineLesson( pNewLesson );
 	}
 
 	m_pScriptKeys = NULL;
@@ -1287,8 +1361,10 @@ void C_GameInstructor::ReadLessonsFromFile( const char *pchFileName )
 //=========================================================
 void C_GameInstructor::InitLessonPrerequisites()
 {
-	for ( int i = 0; i < m_Lessons.Count(); ++i )
+	for( int i = 0; i < m_Lessons.Count(); ++i )
+	{
 		m_Lessons[ i ]->InitPrerequisites();
+	}
 }
 
 //=========================================================

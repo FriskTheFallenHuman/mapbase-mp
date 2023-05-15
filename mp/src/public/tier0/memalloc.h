@@ -11,20 +11,20 @@
 #define TIER0_MEMALLOC_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // These memory debugging switches aren't relevant under Linux builds since memoverride.cpp
 // isn't built into Linux projects
 #ifndef POSIX
-// Define this in release to get memory tracking even in release builds
-//#define USE_MEM_DEBUG 1
+	// Define this in release to get memory tracking even in release builds
+	//#define USE_MEM_DEBUG 1
 #endif
 
 #if defined( _MEMTEST )
-#ifdef _WIN32
-#define USE_MEM_DEBUG 1
-#endif
+	#ifdef _WIN32
+		#define USE_MEM_DEBUG 1
+	#endif
 #endif
 
 // Undefine this if using a compiler lacking threadsafe RTTI (like vc6)
@@ -32,7 +32,7 @@
 
 #include <stddef.h>
 #if defined( OSX )
-#include <malloc/malloc.h>
+	#include <malloc/malloc.h>
 #endif
 
 #include "tier0/mem.h"
@@ -43,7 +43,7 @@ struct _CrtMemState;
 
 #define MEMALLOC_VERSION 1
 
-typedef size_t (*MemAllocFailHandler_t)( size_t );
+typedef size_t ( *MemAllocFailHandler_t )( size_t );
 
 //-----------------------------------------------------------------------------
 // NOTE! This should never be called directly from leaf code
@@ -53,51 +53,51 @@ abstract_class IMemAlloc
 {
 public:
 	// Release versions
-	virtual void *Alloc( size_t nSize ) = 0;
-	virtual void *Realloc( void *pMem, size_t nSize ) = 0;
-	virtual void Free( void *pMem ) = 0;
-    virtual void *Expand_NoLongerSupported( void *pMem, size_t nSize ) = 0;
+	virtual void* Alloc( size_t nSize ) = 0;
+	virtual void* Realloc( void* pMem, size_t nSize ) = 0;
+	virtual void Free( void* pMem ) = 0;
+	virtual void* Expand_NoLongerSupported( void* pMem, size_t nSize ) = 0;
 
 	// Debug versions
-    virtual void *Alloc( size_t nSize, const char *pFileName, int nLine ) = 0;
-    virtual void *Realloc( void *pMem, size_t nSize, const char *pFileName, int nLine ) = 0;
-    virtual void  Free( void *pMem, const char *pFileName, int nLine ) = 0;
-    virtual void *Expand_NoLongerSupported( void *pMem, size_t nSize, const char *pFileName, int nLine ) = 0;
+	virtual void* Alloc( size_t nSize, const char* pFileName, int nLine ) = 0;
+	virtual void* Realloc( void* pMem, size_t nSize, const char* pFileName, int nLine ) = 0;
+	virtual void  Free( void* pMem, const char* pFileName, int nLine ) = 0;
+	virtual void* Expand_NoLongerSupported( void* pMem, size_t nSize, const char* pFileName, int nLine ) = 0;
 
 	// Returns size of a particular allocation
-	virtual size_t GetSize( void *pMem ) = 0;
+	virtual size_t GetSize( void* pMem ) = 0;
 
-    // Force file + line information for an allocation
-    virtual void PushAllocDbgInfo( const char *pFileName, int nLine ) = 0;
-    virtual void PopAllocDbgInfo() = 0;
+	// Force file + line information for an allocation
+	virtual void PushAllocDbgInfo( const char* pFileName, int nLine ) = 0;
+	virtual void PopAllocDbgInfo() = 0;
 
 	// FIXME: Remove when we have our own allocator
 	// these methods of the Crt debug code is used in our codebase currently
 	virtual long CrtSetBreakAlloc( long lNewBreakAlloc ) = 0;
 	virtual	int CrtSetReportMode( int nReportType, int nReportMode ) = 0;
-	virtual int CrtIsValidHeapPointer( const void *pMem ) = 0;
-	virtual int CrtIsValidPointer( const void *pMem, unsigned int size, int access ) = 0;
+	virtual int CrtIsValidHeapPointer( const void* pMem ) = 0;
+	virtual int CrtIsValidPointer( const void* pMem, unsigned int size, int access ) = 0;
 	virtual int CrtCheckMemory( void ) = 0;
 	virtual int CrtSetDbgFlag( int nNewFlag ) = 0;
-	virtual void CrtMemCheckpoint( _CrtMemState *pState ) = 0;
+	virtual void CrtMemCheckpoint( _CrtMemState * pState ) = 0;
 
 	// FIXME: Make a better stats interface
 	virtual void DumpStats() = 0;
-	virtual void DumpStatsFileBase( char const *pchFileBase ) = 0;
+	virtual void DumpStatsFileBase( char const * pchFileBase ) = 0;
 
 	// FIXME: Remove when we have our own allocator
 	virtual void* CrtSetReportFile( int nRptType, void* hFile ) = 0;
 	virtual void* CrtSetReportHook( void* pfnNewHook ) = 0;
-	virtual int CrtDbgReport( int nRptType, const char * szFile,
-			int nLine, const char * szModule, const char * pMsg ) = 0;
+	virtual int CrtDbgReport( int nRptType, const char* szFile,
+	int nLine, const char* szModule, const char* pMsg ) = 0;
 
 	virtual int heapchk() = 0;
 
 	virtual bool IsDebugHeap() = 0;
 
-	virtual void GetActualDbgInfo( const char *&pFileName, int &nLine ) = 0;
-	virtual void RegisterAllocation( const char *pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
-	virtual void RegisterDeallocation( const char *pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
+	virtual void GetActualDbgInfo( const char*& pFileName, int& nLine ) = 0;
+	virtual void RegisterAllocation( const char* pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
+	virtual void RegisterDeallocation( const char* pFileName, int nLine, int nLogicalSize, int nActualSize, unsigned nTime ) = 0;
 
 	virtual int GetVersion() = 0;
 
@@ -106,10 +106,10 @@ public:
 	// Function called when malloc fails or memory limits hit to attempt to free up memory (can come in any thread)
 	virtual MemAllocFailHandler_t SetAllocFailHandler( MemAllocFailHandler_t pfnMemAllocFailHandler ) = 0;
 
-	virtual void DumpBlockStats( void * ) = 0;
+	virtual void DumpBlockStats( void* ) = 0;
 
-#if defined( _MEMTEST )	
-	virtual void SetStatsExtraInfo( const char *pMapName, const char *pComment ) = 0;
+#if defined( _MEMTEST )
+	virtual void SetStatsExtraInfo( const char* pMapName, const char* pComment ) = 0;
 #endif
 
 	// Returns 0 if no failure, otherwise the size_t of the last requested chunk
@@ -118,51 +118,51 @@ public:
 
 	// handles storing allocation info for coroutines
 	virtual uint32 GetDebugInfoSize() = 0;
-	virtual void SaveDebugInfo( void *pvDebugInfo ) = 0;
-	virtual void RestoreDebugInfo( const void *pvDebugInfo ) = 0;	
-	virtual void InitDebugInfo( void *pvDebugInfo, const char *pchRootFileName, int nLine ) = 0;
+	virtual void SaveDebugInfo( void* pvDebugInfo ) = 0;
+	virtual void RestoreDebugInfo( const void* pvDebugInfo ) = 0;
+	virtual void InitDebugInfo( void* pvDebugInfo, const char* pchRootFileName, int nLine ) = 0;
 
 	// Replacement for ::GlobalMemoryStatus which accounts for unused memory in our system
-	virtual void GlobalMemoryStatus( size_t *pUsedMemory, size_t *pFreeMemory ) = 0;
+	virtual void GlobalMemoryStatus( size_t* pUsedMemory, size_t* pFreeMemory ) = 0;
 };
 
 //-----------------------------------------------------------------------------
 // Singleton interface
 //-----------------------------------------------------------------------------
-MEM_INTERFACE IMemAlloc *g_pMemAlloc;
+MEM_INTERFACE IMemAlloc* g_pMemAlloc;
 
 //-----------------------------------------------------------------------------
 
 #ifdef MEMALLOC_REGIONS
 #ifndef MEMALLOC_REGION
-#define MEMALLOC_REGION 0
+	#define MEMALLOC_REGION 0
 #endif
-inline void *MemAlloc_Alloc( size_t nSize )
-{ 
+inline void* MemAlloc_Alloc( size_t nSize )
+{
 	return g_pMemAlloc->RegionAlloc( MEMALLOC_REGION, nSize );
 }
 
-inline void *MemAlloc_Alloc( size_t nSize, const char *pFileName, int nLine )
-{ 
+inline void* MemAlloc_Alloc( size_t nSize, const char* pFileName, int nLine )
+{
 	return g_pMemAlloc->RegionAlloc( MEMALLOC_REGION, nSize, pFileName, nLine );
 }
 #else
 #undef MEMALLOC_REGION
-inline void *MemAlloc_Alloc( size_t nSize )
-{ 
+inline void* MemAlloc_Alloc( size_t nSize )
+{
 	return g_pMemAlloc->Alloc( nSize );
 }
 
-inline void *MemAlloc_Alloc( size_t nSize, const char *pFileName, int nLine )
-{ 
+inline void* MemAlloc_Alloc( size_t nSize, const char* pFileName, int nLine )
+{
 	return g_pMemAlloc->Alloc( nSize, pFileName, nLine );
 }
 #endif
-inline void MemAlloc_Free( void *ptr )
+inline void MemAlloc_Free( void* ptr )
 {
 	g_pMemAlloc->Free( ptr );
 }
-inline void MemAlloc_Free( void *ptr, const char *pFileName, int nLine )
+inline void MemAlloc_Free( void* ptr, const char* pFileName, int nLine )
 {
 	g_pMemAlloc->Free( ptr, pFileName, nLine );
 }
@@ -171,105 +171,129 @@ inline void MemAlloc_Free( void *ptr, const char *pFileName, int nLine )
 
 inline bool ValueIsPowerOfTwo( size_t value )			// don't clash with mathlib definition
 {
-	return (value & ( value - 1 )) == 0;
+	return ( value & ( value - 1 ) ) == 0;
 }
 
-inline void *MemAlloc_AllocAligned( size_t size, size_t align )
+inline void* MemAlloc_AllocAligned( size_t size, size_t align )
 {
-	unsigned char *pAlloc, *pResult;
+	unsigned char* pAlloc, *pResult;
 
-	if (!IsPowerOfTwo(align))
+	if( !IsPowerOfTwo( align ) )
+	{
 		return NULL;
+	}
 
-	align = (align > sizeof(void *) ? align : sizeof(void *)) - 1;
+	align = ( align > sizeof( void* ) ? align : sizeof( void* ) ) - 1;
 
-	if ( (pAlloc = (unsigned char*)g_pMemAlloc->Alloc( sizeof(void *) + align + size ) ) == (unsigned char*)NULL)
+	if( ( pAlloc = ( unsigned char* )g_pMemAlloc->Alloc( sizeof( void* ) + align + size ) ) == ( unsigned char* )NULL )
+	{
 		return NULL;
+	}
 
-	pResult = (unsigned char*)( (size_t)(pAlloc + sizeof(void *) + align ) & ~align );
-	((unsigned char**)(pResult))[-1] = pAlloc;
+	pResult = ( unsigned char* )( ( size_t )( pAlloc + sizeof( void* ) + align ) & ~align );
+	( ( unsigned char** )( pResult ) )[-1] = pAlloc;
 
-	return (void *)pResult;
+	return ( void* )pResult;
 }
 
-inline void *MemAlloc_AllocAligned( size_t size, size_t align, const char *pszFile, int nLine )
+inline void* MemAlloc_AllocAligned( size_t size, size_t align, const char* pszFile, int nLine )
 {
-	unsigned char *pAlloc, *pResult;
+	unsigned char* pAlloc, *pResult;
 
-	if (!IsPowerOfTwo(align))
+	if( !IsPowerOfTwo( align ) )
+	{
 		return NULL;
+	}
 
-	align = (align > sizeof(void *) ? align : sizeof(void *)) - 1;
+	align = ( align > sizeof( void* ) ? align : sizeof( void* ) ) - 1;
 
-	if ( (pAlloc = (unsigned char*)g_pMemAlloc->Alloc( sizeof(void *) + align + size, pszFile, nLine ) ) == (unsigned char*)NULL)
+	if( ( pAlloc = ( unsigned char* )g_pMemAlloc->Alloc( sizeof( void* ) + align + size, pszFile, nLine ) ) == ( unsigned char* )NULL )
+	{
 		return NULL;
+	}
 
-	pResult = (unsigned char*)( (size_t)(pAlloc + sizeof(void *) + align ) & ~align );
-	((unsigned char**)(pResult))[-1] = pAlloc;
+	pResult = ( unsigned char* )( ( size_t )( pAlloc + sizeof( void* ) + align ) & ~align );
+	( ( unsigned char** )( pResult ) )[-1] = pAlloc;
 
-	return (void *)pResult;
+	return ( void* )pResult;
 }
 
-inline void *MemAlloc_AllocAlignedUnattributed( size_t size, size_t align )
+inline void* MemAlloc_AllocAlignedUnattributed( size_t size, size_t align )
 {
-	unsigned char *pAlloc, *pResult;
+	unsigned char* pAlloc, *pResult;
 
-	if (!ValueIsPowerOfTwo(align))
+	if( !ValueIsPowerOfTwo( align ) )
+	{
 		return NULL;
+	}
 
-	align = (align > sizeof(void *) ? align : sizeof(void *)) - 1;
+	align = ( align > sizeof( void* ) ? align : sizeof( void* ) ) - 1;
 
-	if ( (pAlloc = (unsigned char*)MemAlloc_Alloc( sizeof(void *) + align + size ) ) == (unsigned char*)NULL)
+	if( ( pAlloc = ( unsigned char* )MemAlloc_Alloc( sizeof( void* ) + align + size ) ) == ( unsigned char* )NULL )
+	{
 		return NULL;
+	}
 
-	pResult = (unsigned char*)( (size_t)(pAlloc + sizeof(void *) + align ) & ~align );
-	((unsigned char**)(pResult))[-1] = pAlloc;
+	pResult = ( unsigned char* )( ( size_t )( pAlloc + sizeof( void* ) + align ) & ~align );
+	( ( unsigned char** )( pResult ) )[-1] = pAlloc;
 
-	return (void *)pResult;
+	return ( void* )pResult;
 }
 
-inline void *MemAlloc_AllocAlignedFileLine( size_t size, size_t align, const char *pszFile, int nLine )
+inline void* MemAlloc_AllocAlignedFileLine( size_t size, size_t align, const char* pszFile, int nLine )
 {
-	unsigned char *pAlloc, *pResult;
+	unsigned char* pAlloc, *pResult;
 
-	if (!ValueIsPowerOfTwo(align))
+	if( !ValueIsPowerOfTwo( align ) )
+	{
 		return NULL;
+	}
 
-	align = (align > sizeof(void *) ? align : sizeof(void *)) - 1;
+	align = ( align > sizeof( void* ) ? align : sizeof( void* ) ) - 1;
 
-	if ( (pAlloc = (unsigned char*)MemAlloc_Alloc( sizeof(void *) + align + size, pszFile, nLine ) ) == (unsigned char*)NULL)
+	if( ( pAlloc = ( unsigned char* )MemAlloc_Alloc( sizeof( void* ) + align + size, pszFile, nLine ) ) == ( unsigned char* )NULL )
+	{
 		return NULL;
+	}
 
-	pResult = (unsigned char*)( (size_t)(pAlloc + sizeof(void *) + align ) & ~align );
-	((unsigned char**)(pResult))[-1] = pAlloc;
+	pResult = ( unsigned char* )( ( size_t )( pAlloc + sizeof( void* ) + align ) & ~align );
+	( ( unsigned char** )( pResult ) )[-1] = pAlloc;
 
-	return (void *)pResult;
+	return ( void* )pResult;
 }
 
-inline void *MemAlloc_ReallocAligned( void *ptr, size_t size, size_t align )
+inline void* MemAlloc_ReallocAligned( void* ptr, size_t size, size_t align )
 {
-	if ( !IsPowerOfTwo( align ) )
+	if( !IsPowerOfTwo( align ) )
+	{
 		return NULL;
+	}
 
 	// Don't change alignment between allocation + reallocation.
-	if ( ( (size_t)ptr & ( align - 1 ) ) != 0 )
+	if( ( ( size_t )ptr & ( align - 1 ) ) != 0 )
+	{
 		return NULL;
+	}
 
-	if ( !ptr )
+	if( !ptr )
+	{
 		return MemAlloc_AllocAligned( size, align );
+	}
 
-	void *pAlloc, *pResult;
+	void* pAlloc, *pResult;
 
 	// Figure out the actual allocation point
 	pAlloc = ptr;
-	pAlloc = (void *)(((size_t)pAlloc & ~( sizeof(void *) - 1 ) ) - sizeof(void *));
-	pAlloc = *( (void **)pAlloc );
+	pAlloc = ( void* )( ( ( size_t )pAlloc & ~( sizeof( void* ) - 1 ) ) - sizeof( void* ) );
+	pAlloc = *( ( void** )pAlloc );
 
 	// See if we have enough space
-	size_t nOffset = (size_t)ptr - (size_t)pAlloc;
+	size_t nOffset = ( size_t )ptr - ( size_t )pAlloc;
 	size_t nOldSize = g_pMemAlloc->GetSize( pAlloc );
-	if ( nOldSize >= size + nOffset )
+	if( nOldSize >= size + nOffset )
+	{
 		return ptr;
+	}
 
 	pResult = MemAlloc_AllocAligned( size, align );
 	memcpy( pResult, ptr, nOldSize - nOffset );
@@ -277,71 +301,77 @@ inline void *MemAlloc_ReallocAligned( void *ptr, size_t size, size_t align )
 	return pResult;
 }
 
-inline void MemAlloc_FreeAligned( void *pMemBlock )
+inline void MemAlloc_FreeAligned( void* pMemBlock )
 {
-	void *pAlloc;
+	void* pAlloc;
 
-	if ( pMemBlock == NULL )
+	if( pMemBlock == NULL )
+	{
 		return;
+	}
 
 	pAlloc = pMemBlock;
 
 	// pAlloc points to the pointer to starting of the memory block
-	pAlloc = (void *)(((size_t)pAlloc & ~( sizeof(void *) - 1 ) ) - sizeof(void *));
+	pAlloc = ( void* )( ( ( size_t )pAlloc & ~( sizeof( void* ) - 1 ) ) - sizeof( void* ) );
 
 	// pAlloc is the pointer to the start of memory block
-	pAlloc = *( (void **)pAlloc );
+	pAlloc = *( ( void** )pAlloc );
 	g_pMemAlloc->Free( pAlloc );
 }
 
-inline void MemAlloc_FreeAligned( void *pMemBlock, const char *pFileName, int nLine )
+inline void MemAlloc_FreeAligned( void* pMemBlock, const char* pFileName, int nLine )
 {
-	void *pAlloc;
+	void* pAlloc;
 
-	if ( pMemBlock == NULL )
+	if( pMemBlock == NULL )
+	{
 		return;
+	}
 
 	pAlloc = pMemBlock;
 
 	// pAlloc points to the pointer to starting of the memory block
-	pAlloc = (void *)(((size_t)pAlloc & ~( sizeof(void *) - 1 ) ) - sizeof(void *));
+	pAlloc = ( void* )( ( ( size_t )pAlloc & ~( sizeof( void* ) - 1 ) ) - sizeof( void* ) );
 
 	// pAlloc is the pointer to the start of memory block
-	pAlloc = *( (void **)pAlloc );
+	pAlloc = *( ( void** )pAlloc );
 	g_pMemAlloc->Free( pAlloc, pFileName, nLine );
 }
 
-inline size_t MemAlloc_GetSizeAligned( void *pMemBlock )
+inline size_t MemAlloc_GetSizeAligned( void* pMemBlock )
 {
-	void *pAlloc;
+	void* pAlloc;
 
-	if ( pMemBlock == NULL )
+	if( pMemBlock == NULL )
+	{
 		return 0;
+	}
 
 	pAlloc = pMemBlock;
 
 	// pAlloc points to the pointer to starting of the memory block
-	pAlloc = (void *)(((size_t)pAlloc & ~( sizeof(void *) - 1 ) ) - sizeof(void *));
+	pAlloc = ( void* )( ( ( size_t )pAlloc & ~( sizeof( void* ) - 1 ) ) - sizeof( void* ) );
 
 	// pAlloc is the pointer to the start of memory block
-	pAlloc = *((void **)pAlloc );
-	return g_pMemAlloc->GetSize( pAlloc ) - ( (byte *)pMemBlock - (byte *)pAlloc );
+	pAlloc = *( ( void** )pAlloc );
+	return g_pMemAlloc->GetSize( pAlloc ) - ( ( byte* )pMemBlock - ( byte* )pAlloc );
 }
 
 //-----------------------------------------------------------------------------
 
 #if (defined(_DEBUG) || defined(USE_MEM_DEBUG))
-#define MEM_ALLOC_CREDIT_(tag)	CMemAllocAttributeAlloction memAllocAttributeAlloction( tag, __LINE__ )
-#define MemAlloc_PushAllocDbgInfo( pszFile, line ) g_pMemAlloc->PushAllocDbgInfo( pszFile, line )
-#define MemAlloc_PopAllocDbgInfo() g_pMemAlloc->PopAllocDbgInfo()
-#define MemAlloc_RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) g_pMemAlloc->RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime )
-#define MemAlloc_RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) g_pMemAlloc->RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime )
+	#define MEM_ALLOC_CREDIT_(tag)	CMemAllocAttributeAlloction memAllocAttributeAlloction( tag, __LINE__ )
+	#define MemAlloc_PushAllocDbgInfo( pszFile, line ) g_pMemAlloc->PushAllocDbgInfo( pszFile, line )
+	#define MemAlloc_PopAllocDbgInfo() g_pMemAlloc->PopAllocDbgInfo()
+	#define MemAlloc_RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) g_pMemAlloc->RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime )
+	#define MemAlloc_RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) g_pMemAlloc->RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime )
 #else
-#define MEM_ALLOC_CREDIT_(tag)	((void)0)
-#define MemAlloc_PushAllocDbgInfo( pszFile, line ) ((void)0)
-#define MemAlloc_PopAllocDbgInfo() ((void)0)
-#define MemAlloc_RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) ((void)0)
-#define MemAlloc_RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) ((void)0)
+	#define MEM_ALLOC_CREDIT_(tag)	((void)0)
+	#define MemAlloc_PushAllocDbgInfo( pszFile, line ) ((void)0)
+	#define MemAlloc_PopAllocDbgInfo() ((void)0)
+	#define MemAlloc_RegisterAllocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) ((void)0)
+	#define MemAlloc_RegisterDeallocation( pFileName, nLine, nLogicalSize, nActualSize, nTime ) ((void)0)
 #endif
 
 #define MemAlloc_DumpStats() g_pMemAlloc->DumpStats()
@@ -363,11 +393,11 @@ inline size_t MemAlloc_GetSizeAligned( void *pMemBlock )
 class CMemAllocAttributeAlloction
 {
 public:
-	CMemAllocAttributeAlloction( const char *pszFile, int line ) 
+	CMemAllocAttributeAlloction( const char* pszFile, int line )
 	{
 		MemAlloc_PushAllocDbgInfo( pszFile, line );
 	}
-	
+
 	~CMemAllocAttributeAlloction()
 	{
 		MemAlloc_PopAllocDbgInfo();
@@ -383,11 +413,11 @@ public:
 	#pragma warning(disable:4290)
 	#pragma warning(push)
 
-#if _MSC_VER < 1900
-	#include <typeinfo.h>
-#else
-	#include <typeinfo>
-#endif
+	#if _MSC_VER < 1900
+		#include <typeinfo.h>
+	#else
+		#include <typeinfo>
+	#endif
 
 	// MEM_DEBUG_CLASSNAME is opt-in.
 	// Note: typeid().name() is not threadsafe, so if the project needs to access it in multiple threads
@@ -411,7 +441,7 @@ public:
 #else
 	#define MEM_ALLOC_CREDIT_CLASS()
 	#define MEM_ALLOC_CLASSNAME(type) NULL
-	#define MEM_ALLOC_CREDIT_FUNCTION() 
+	#define MEM_ALLOC_CREDIT_FUNCTION()
 #endif
 
 //-----------------------------------------------------------------------------
@@ -419,7 +449,7 @@ public:
 #if (defined(_DEBUG) || defined(USE_MEM_DEBUG))
 struct MemAllocFileLine_t
 {
-	const char *pszFile;
+	const char* pszFile;
 	int line;
 };
 
@@ -473,28 +503,60 @@ struct MemAllocFileLine_t
 #if defined( OSX )
 // Mac always aligns allocs, don't need to call posix_memalign which doesn't exist in 10.5.8 which TF2 still needs to run on
 //inline void *memalign(size_t alignment, size_t size) {void *pTmp=NULL; posix_memalign(&pTmp, alignment, size); return pTmp;}
-inline void *memalign(size_t alignment, size_t size) {void *pTmp=NULL; pTmp = malloc(size); return pTmp;}
+inline void* memalign( size_t alignment, size_t size )
+{
+	void* pTmp = NULL;
+	pTmp = malloc( size );
+	return pTmp;
+}
 #endif
 
-inline void *_aligned_malloc( size_t nSize, size_t align )															{ return memalign( align, nSize ); }
-inline void _aligned_free( void *ptr )																				{ free( ptr ); }
+inline void* _aligned_malloc( size_t nSize, size_t align )
+{
+	return memalign( align, nSize );
+}
+inline void _aligned_free( void* ptr )
+{
+	free( ptr );
+}
 
-inline void *MemAlloc_Alloc( size_t nSize, const char *pFileName = NULL, int nLine = 0 )							{ return malloc( nSize ); }
-inline void MemAlloc_Free( void *ptr, const char *pFileName = NULL, int nLine = 0 )									{ free( ptr ); }
+inline void* MemAlloc_Alloc( size_t nSize, const char* pFileName = NULL, int nLine = 0 )
+{
+	return malloc( nSize );
+}
+inline void MemAlloc_Free( void* ptr, const char* pFileName = NULL, int nLine = 0 )
+{
+	free( ptr );
+}
 
-inline void *MemAlloc_AllocAligned( size_t size, size_t align, const char *pszFile = NULL, int nLine = 0  )	        { return memalign( align, size ); }
-inline void *MemAlloc_AllocAlignedFileLine( size_t size, size_t align, const char *pszFile = NULL, int nLine = 0 )	{ return memalign( align, size ); }
-inline void MemAlloc_FreeAligned( void *pMemBlock, const char *pszFile = NULL, int nLine = 0 ) 						{ free( pMemBlock ); }
+inline void* MemAlloc_AllocAligned( size_t size, size_t align, const char* pszFile = NULL, int nLine = 0 )
+{
+	return memalign( align, size );
+}
+inline void* MemAlloc_AllocAlignedFileLine( size_t size, size_t align, const char* pszFile = NULL, int nLine = 0 )
+{
+	return memalign( align, size );
+}
+inline void MemAlloc_FreeAligned( void* pMemBlock, const char* pszFile = NULL, int nLine = 0 )
+{
+	free( pMemBlock );
+}
 
 #if defined( OSX )
-inline size_t _msize( void *ptr )																					{ return malloc_size( ptr ); }
+inline size_t _msize( void* ptr )
+{
+	return malloc_size( ptr );
+}
 #else
-inline size_t _msize( void *ptr )																					{ return malloc_usable_size( ptr ); }
+inline size_t _msize( void* ptr )
+{
+	return malloc_usable_size( ptr );
+}
 #endif
 
-inline void *MemAlloc_ReallocAligned( void *ptr, size_t size, size_t align )
+inline void* MemAlloc_ReallocAligned( void* ptr, size_t size, size_t align )
 {
-	void *ptr_new_aligned = memalign( align, size );
+	void* ptr_new_aligned = memalign( align, size );
 
 	if( ptr_new_aligned )
 	{
@@ -534,8 +596,11 @@ inline void *MemAlloc_ReallocAligned( void *ptr, size_t size, size_t align )
 #define MemAlloc_OutOfMemory() ((void)0)
 #define MemAlloc_CompactIncremental() ((void)0)
 #define MemAlloc_DumpStatsFileBase( _filename ) ((void)0)
-inline bool MemAlloc_CrtCheckMemory() { return true; }
-inline void MemAlloc_GlobalMemoryStatus( size_t *pusedMemory, size_t *pfreeMemory )
+inline bool MemAlloc_CrtCheckMemory()
+{
+	return true;
+}
+inline void MemAlloc_GlobalMemoryStatus( size_t* pusedMemory, size_t* pfreeMemory )
 {
 	*pusedMemory = 0;
 	*pfreeMemory = 0;
@@ -560,7 +625,7 @@ inline void MemAlloc_GlobalMemoryStatus( size_t *pusedMemory, size_t *pfreeMemor
 
 // linux memory tracking via hooks.
 #if defined( POSIX ) && !defined( NO_HOOK_MALLOC )
-PLATFORM_INTERFACE void MemoryLogMessage( char const *s );						// throw a message into the memory log
+PLATFORM_INTERFACE void MemoryLogMessage( char const* s );						// throw a message into the memory log
 PLATFORM_INTERFACE void EnableMemoryLogging( bool bOnOff );
 PLATFORM_INTERFACE void DumpMemoryLog( int nThresh );
 PLATFORM_INTERFACE void DumpMemorySummary( void );
@@ -568,7 +633,7 @@ PLATFORM_INTERFACE void SetMemoryMark( void );
 PLATFORM_INTERFACE void DumpChangedMemory( int nThresh );
 
 #else
-FORCEINLINE void MemoryLogMessage( char const *s )
+FORCEINLINE void MemoryLogMessage( char const* s )
 {
 }
 
@@ -628,27 +693,27 @@ public:
 	allocated. This problem is now mostly theoretical because this class is mostly
 	obsolete.
 	*/
-	void *operator new( size_t nSize )
+	void* operator new( size_t nSize )
 	{
 		return MemAlloc_AllocAligned( nSize, bytesAlignment );
 	}
 
-	void* operator new( size_t nSize, int nBlockUse, const char *pFileName, int nLine )
+	void* operator new( size_t nSize, int nBlockUse, const char* pFileName, int nLine )
 	{
 		return MemAlloc_AllocAlignedFileLine( nSize, bytesAlignment, pFileName, nLine );
 	}
 
-	void operator delete(void *pData)
+	void operator delete( void* pData )
 	{
-		if ( pData )
+		if( pData )
 		{
 			MemAlloc_FreeAligned( pData );
 		}
 	}
 
-	void operator delete( void* pData, int nBlockUse, const char *pFileName, int nLine )
+	void operator delete( void* pData, int nBlockUse, const char* pFileName, int nLine )
 	{
-		if ( pData )
+		if( pData )
 		{
 			MemAlloc_FreeAligned( pData, pFileName, nLine );
 		}

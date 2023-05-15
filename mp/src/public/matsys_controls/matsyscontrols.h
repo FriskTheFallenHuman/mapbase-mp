@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define MATSYSCONTROLS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/interface.h"
@@ -33,7 +33,7 @@ namespace vgui
 // interfaces (listed below) are first attempted to be loaded from primaryProvider, then secondaryProvider
 // moduleName should be the name of the module that this instance of the vgui_controls has been compiled into
 //-----------------------------------------------------------------------------
-bool VGui_InitMatSysInterfacesList( const char *moduleName, CreateInterfaceFn *factoryList, int numFactories );
+bool VGui_InitMatSysInterfacesList( const char* moduleName, CreateInterfaceFn* factoryList, int numFactories );
 
 
 //-----------------------------------------------------------------------------
@@ -42,19 +42,19 @@ bool VGui_InitMatSysInterfacesList( const char *moduleName, CreateInterfaceFn *f
 //-----------------------------------------------------------------------------
 
 // #include <materialsystem/imaterialsystem.h>
-IMaterialSystem *MaterialSystem();
+IMaterialSystem* MaterialSystem();
 
 // #include <datacache/imdlcache.h>
-IMDLCache *MDLCache();
+IMDLCache* MDLCache();
 
 // #include <VGuiMatSurface/IMatSystemSurface.h>
-IMatSystemSurface *MatSystemSurface();
+IMatSystemSurface* MatSystemSurface();
 
 // #include <istudiorender.h"
-IStudioRender *StudioRender();
+IStudioRender* StudioRender();
 
 // #include <materialsystem/imaterialsystemhardwareconfig.h>
-IMaterialSystemHardwareConfig *MaterialSystemHardwareConfig();
+IMaterialSystemHardwareConfig* MaterialSystemHardwareConfig();
 
 } // end namespace vgui
 

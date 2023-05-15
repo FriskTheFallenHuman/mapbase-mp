@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_FUNC_DUST_H
 #define C_FUNC_DUST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -38,15 +38,15 @@ public:
 class CDustEffect : public CParticleEffect
 {
 public:
-	CDustEffect( const char *pDebugName ) : CParticleEffect( pDebugName ) {}
+	CDustEffect( const char* pDebugName ) : CParticleEffect( pDebugName ) {}
 
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
-	C_Func_Dust		*m_pDust;
+	C_Func_Dust*		m_pDust;
 
 private:
-	CDustEffect( const CDustEffect & ); // not defined, not accessible
+	CDustEffect( const CDustEffect& );  // not defined, not accessible
 };
 
 
@@ -60,7 +60,7 @@ public:
 	DECLARE_CLASS( C_Func_Dust, C_BaseEntity );
 	DECLARE_CLIENTCLASS();
 
-						C_Func_Dust();
+	C_Func_Dust();
 	virtual				~C_Func_Dust();
 	virtual void		OnDataChanged( DataUpdateType_t updateType );
 	virtual void		ClientThink();
@@ -78,7 +78,7 @@ public:
 
 	color32			m_Color;
 	int				m_SpawnRate;
-	
+
 	float			m_flSizeMin;
 	float			m_flSizeMax;
 
@@ -104,7 +104,7 @@ public:
 	TimedEvent			m_Spawner;
 
 private:
-	C_Func_Dust( const C_Func_Dust & ); // not defined, not accessible
+	C_Func_Dust( const C_Func_Dust& );  // not defined, not accessible
 };
 
 

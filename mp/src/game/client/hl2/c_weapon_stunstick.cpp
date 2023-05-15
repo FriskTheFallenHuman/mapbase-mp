@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -30,7 +30,7 @@ public:
 	{
 		//FIXME: This sucks, but I can't easily create temp ents...
 
-		if ( m_bActive )
+		if( m_bActive )
 		{
 			Vector	vecOrigin;
 			QAngle	vecAngles;
@@ -45,7 +45,7 @@ public:
 
 			Vector vEnd = vecOrigin - vForward * 1.0f;
 
-			IMaterial *pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
+			IMaterial* pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
 
 			CMatRenderContextPtr pRenderContext( materials );
 			pRenderContext->Bind( pMaterial );
@@ -63,9 +63,9 @@ public:
 	void ClientThink( void )
 	{
 		// Update our effects
-		if ( m_bActive && 
-			gpGlobals->frametime != 0.0f &&
-			( random->RandomInt( 0, 5 ) == 0 ) )
+		if( m_bActive &&
+				gpGlobals->frametime != 0.0f &&
+				( random->RandomInt( 0, 5 ) == 0 ) )
 		{
 			Vector	vecOrigin;
 			QAngle	vecAngles;
@@ -83,14 +83,14 @@ public:
 			beamInfo.m_vecStart = vEnd;
 			Vector	offset = RandomVector( -6, 2 );
 
-			offset += Vector(2,2,2);
+			offset += Vector( 2, 2, 2 );
 			beamInfo.m_vecEnd = vecOrigin + offset;
 
-			beamInfo.m_pStartEnt= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
+			beamInfo.m_pStartEnt = cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
 			beamInfo.m_pEndEnt	= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
 			beamInfo.m_nStartAttachment = 1;
 			beamInfo.m_nEndAttachment = 2;
-			
+
 			beamInfo.m_nType = TE_BEAMTESLA;
 			beamInfo.m_pszModelName = "sprites/physbeam.vmt";
 			beamInfo.m_flHaloScale = 0.0f;
@@ -108,8 +108,8 @@ public:
 			beamInfo.m_flBlue = 255.0f;
 			beamInfo.m_nSegments = 8;
 			beamInfo.m_bRenderable = true;
-			beamInfo.m_nFlags = (FBEAM_ONLYNOISEONCE|FBEAM_SHADEOUT);
-			
+			beamInfo.m_nFlags = ( FBEAM_ONLYNOISEONCE | FBEAM_SHADEOUT );
+
 			beams->CreateBeamPoints( beamInfo );
 		}
 	}
@@ -117,14 +117,14 @@ public:
 	void OnDataChanged( DataUpdateType_t updateType )
 	{
 		BaseClass::OnDataChanged( updateType );
-		if ( updateType == DATA_UPDATE_CREATED )
+		if( updateType == DATA_UPDATE_CREATED )
 		{
 			SetNextClientThink( CLIENT_THINK_ALWAYS );
 		}
 	}
-	
+
 	//-----------------------------------------------------------------------------
-	// Purpose: 
+	// Purpose:
 	//-----------------------------------------------------------------------------
 	void StartStunEffect( void )
 	{
@@ -132,7 +132,7 @@ public:
 	}
 
 	//-----------------------------------------------------------------------------
-	// Purpose: 
+	// Purpose:
 	//-----------------------------------------------------------------------------
 	void StopStunEffect( void )
 	{
@@ -140,7 +140,7 @@ public:
 	}
 
 	//-----------------------------------------------------------------------------
-	// Purpose: 
+	// Purpose:
 	// Output : RenderGroup_t
 	//-----------------------------------------------------------------------------
 	RenderGroup_t GetRenderGroup( void )
@@ -154,18 +154,18 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pData - 
-//			*pStruct - 
-//			*pOut - 
+// Purpose:
+// Input  : *pData -
+//			*pStruct -
+//			*pOut -
 //-----------------------------------------------------------------------------
-void RecvProxy_StunActive( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void RecvProxy_StunActive( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	bool state = *((bool *)&pData->m_Value.m_Int);
+	bool state = *( ( bool* )&pData->m_Value.m_Int );
 
-	C_WeaponStunStick *pWeapon = (C_WeaponStunStick *) pStruct;
+	C_WeaponStunStick* pWeapon = ( C_WeaponStunStick* ) pStruct;
 
-	if ( state )
+	if( state )
 	{
 		// Turn on the effect
 		pWeapon->StartStunEffect();
@@ -176,12 +176,12 @@ void RecvProxy_StunActive( const CRecvProxyData *pData, void *pStruct, void *pOu
 		pWeapon->StopStunEffect();
 	}
 
-	*(bool *)pOut = state;
+	*( bool* )pOut = state;
 }
 
 STUB_WEAPON_CLASS_IMPLEMENT( weapon_stunstick, C_WeaponStunStick );
 
 IMPLEMENT_CLIENTCLASS_DT( C_WeaponStunStick, DT_WeaponStunStick, CWeaponStunStick )
-	RecvPropInt( RECVINFO(m_bActive), 0, RecvProxy_StunActive ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_bActive ), 0, RecvProxy_StunActive ),
+			 END_RECV_TABLE()
 

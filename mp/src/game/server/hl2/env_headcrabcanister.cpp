@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -55,7 +55,7 @@ enum
 //-----------------------------------------------------------------------------
 // Headcrab types
 //-----------------------------------------------------------------------------
-static const char *s_pHeadcrabClass[] = 
+static const char* s_pHeadcrabClass[] =
 {
 	"npc_headcrab",
 	"npc_headcrab_fast",
@@ -66,8 +66,8 @@ static const char *s_pHeadcrabClass[] =
 //-----------------------------------------------------------------------------
 // Context think
 //-----------------------------------------------------------------------------
-static const char *s_pOpenThinkContext = "OpenThink";
-static const char *s_pHeadcrabThinkContext = "HeadcrabThink";
+static const char* s_pOpenThinkContext = "OpenThink";
+static const char* s_pHeadcrabThinkContext = "HeadcrabThink";
 
 
 //-----------------------------------------------------------------------------
@@ -88,15 +88,15 @@ public:
 	virtual void		Spawn( void );
 	virtual void		UpdateOnRemove();
 
-	virtual void		SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+	virtual void		SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
 
 private:
-	void				InputFireCanister( inputdata_t &inputdata );
-	void				InputOpenCanister( inputdata_t &inputdata );
-	void				InputSpawnHeadcrabs( inputdata_t &inputdata );
-	void				InputStopSmoke( inputdata_t &inputdata );
+	void				InputFireCanister( inputdata_t& inputdata );
+	void				InputOpenCanister( inputdata_t& inputdata );
+	void				InputSpawnHeadcrabs( inputdata_t& inputdata );
+	void				InputStopSmoke( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void				InputStopHissing( inputdata_t &inputdata );
+	void				InputStopHissing( inputdata_t& inputdata );
 #endif
 
 	// Think(s)
@@ -111,11 +111,11 @@ private:
 	CSkyCamera*			PlaceCanisterInWorld();
 
 	// Check for impacts
-	void				TestForCollisionsAgainstEntities( const Vector &vecEndPosition );
-	void				TestForCollisionsAgainstWorld( const Vector &vecEndPosition );
+	void				TestForCollisionsAgainstEntities( const Vector& vecEndPosition );
+	void				TestForCollisionsAgainstWorld( const Vector& vecEndPosition );
 
 	// Figure out where we enter the world
-	void				ComputeWorldEntryPoint( Vector *pStartPosition, QAngle *pStartAngles, Vector *pStartDirection );
+	void				ComputeWorldEntryPoint( Vector* pStartPosition, QAngle* pStartAngles, Vector* pStartDirection );
 
 	// Blows up!
 	void				Detonate( void );
@@ -175,65 +175,65 @@ LINK_ENTITY_TO_CLASS( env_headcrabcanister, CEnvHeadcrabCanister );
 
 BEGIN_DATADESC( CEnvHeadcrabCanister )
 
-	DEFINE_FIELD( m_bLanded,							FIELD_BOOLEAN ),
-	DEFINE_EMBEDDED( m_Shared ),
-	DEFINE_FIELD( m_hTrail,								FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hSmokeTrail,						FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_nHeadcrabType,					FIELD_INTEGER,	"HeadcrabType" ),
-	DEFINE_KEYFIELD( m_nHeadcrabCount,					FIELD_INTEGER,	"HeadcrabCount" ),
-	DEFINE_KEYFIELD( m_flSmokeLifetime,					FIELD_FLOAT, "SmokeLifetime" ),
-	DEFINE_KEYFIELD( m_iszLaunchPositionName,			FIELD_STRING, "LaunchPositionName" ),
-	DEFINE_FIELD( m_vecImpactPosition,					FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_bIncomingSoundStarted,				FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bHasDetonated,						FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bLaunched,							FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bOpened,							FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_flMinRefireTime,					FIELD_FLOAT,	"MinSkyboxRefireTime" ),
-	DEFINE_KEYFIELD( m_flMaxRefireTime,					FIELD_FLOAT,	"MaxSkyboxRefireTime" ),
-	DEFINE_KEYFIELD( m_nSkyboxCannisterCount,			FIELD_INTEGER,	"SkyboxCannisterCount" ),
-	DEFINE_KEYFIELD( m_flDamageRadius,					FIELD_FLOAT,	"DamageRadius" ),
-	DEFINE_KEYFIELD( m_flDamage,						FIELD_FLOAT,	"Damage" ),
+DEFINE_FIELD( m_bLanded,							FIELD_BOOLEAN ),
+								   DEFINE_EMBEDDED( m_Shared ),
+								   DEFINE_FIELD( m_hTrail,								FIELD_EHANDLE ),
+								   DEFINE_FIELD( m_hSmokeTrail,						FIELD_EHANDLE ),
+								   DEFINE_KEYFIELD( m_nHeadcrabType,					FIELD_INTEGER,	"HeadcrabType" ),
+								   DEFINE_KEYFIELD( m_nHeadcrabCount,					FIELD_INTEGER,	"HeadcrabCount" ),
+								   DEFINE_KEYFIELD( m_flSmokeLifetime,					FIELD_FLOAT, "SmokeLifetime" ),
+								   DEFINE_KEYFIELD( m_iszLaunchPositionName,			FIELD_STRING, "LaunchPositionName" ),
+								   DEFINE_FIELD( m_vecImpactPosition,					FIELD_POSITION_VECTOR ),
+								   DEFINE_FIELD( m_bIncomingSoundStarted,				FIELD_BOOLEAN ),
+								   DEFINE_FIELD( m_bHasDetonated,						FIELD_BOOLEAN ),
+								   DEFINE_FIELD( m_bLaunched,							FIELD_BOOLEAN ),
+								   DEFINE_FIELD( m_bOpened,							FIELD_BOOLEAN ),
+								   DEFINE_KEYFIELD( m_flMinRefireTime,					FIELD_FLOAT,	"MinSkyboxRefireTime" ),
+								   DEFINE_KEYFIELD( m_flMaxRefireTime,					FIELD_FLOAT,	"MaxSkyboxRefireTime" ),
+								   DEFINE_KEYFIELD( m_nSkyboxCannisterCount,			FIELD_INTEGER,	"SkyboxCannisterCount" ),
+								   DEFINE_KEYFIELD( m_flDamageRadius,					FIELD_FLOAT,	"DamageRadius" ),
+								   DEFINE_KEYFIELD( m_flDamage,						FIELD_FLOAT,	"Damage" ),
 
-	// Function Pointers.
-	DEFINE_FUNCTION( HeadcrabCanisterSkyboxThink ),
-	DEFINE_FUNCTION( HeadcrabCanisterWorldThink ),
-	DEFINE_FUNCTION( HeadcrabCanisterSpawnHeadcrabThink ),
-	DEFINE_FUNCTION( WaitForOpenSequenceThink ),
-	DEFINE_FUNCTION( HeadcrabCanisterSkyboxOnlyThink ),
-	DEFINE_FUNCTION( HeadcrabCanisterSkyboxRestartThink ),
+								   // Function Pointers.
+								   DEFINE_FUNCTION( HeadcrabCanisterSkyboxThink ),
+								   DEFINE_FUNCTION( HeadcrabCanisterWorldThink ),
+								   DEFINE_FUNCTION( HeadcrabCanisterSpawnHeadcrabThink ),
+								   DEFINE_FUNCTION( WaitForOpenSequenceThink ),
+								   DEFINE_FUNCTION( HeadcrabCanisterSkyboxOnlyThink ),
+								   DEFINE_FUNCTION( HeadcrabCanisterSkyboxRestartThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "FireCanister", InputFireCanister ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "OpenCanister", InputOpenCanister ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "SpawnHeadcrabs", InputSpawnHeadcrabs ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StopSmoke", InputStopSmoke ),
+								   // Inputs
+								   DEFINE_INPUTFUNC( FIELD_VOID, "FireCanister", InputFireCanister ),
+								   DEFINE_INPUTFUNC( FIELD_VOID, "OpenCanister", InputOpenCanister ),
+								   DEFINE_INPUTFUNC( FIELD_VOID, "SpawnHeadcrabs", InputSpawnHeadcrabs ),
+								   DEFINE_INPUTFUNC( FIELD_VOID, "StopSmoke", InputStopSmoke ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopHissing", InputStopHissing ),
 #endif
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnLaunched, "OnLaunched" ),
-	DEFINE_OUTPUT( m_OnImpacted, "OnImpacted" ),
-	DEFINE_OUTPUT( m_OnOpened, "OnOpened" ),
+								   // Outputs
+								   DEFINE_OUTPUT( m_OnLaunched, "OnLaunched" ),
+								   DEFINE_OUTPUT( m_OnImpacted, "OnImpacted" ),
+								   DEFINE_OUTPUT( m_OnOpened, "OnOpened" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnCrab, "OnCrab" ),
 #endif
 
-END_DATADESC()
+								   END_DATADESC()
 
 
-EXTERN_SEND_TABLE(DT_EnvHeadcrabCanisterShared);
+								   EXTERN_SEND_TABLE( DT_EnvHeadcrabCanisterShared );
 
 IMPLEMENT_SERVERCLASS_ST( CEnvHeadcrabCanister, DT_EnvHeadcrabCanister )
-	SendPropDataTable( SENDINFO_DT( m_Shared ), &REFERENCE_SEND_TABLE(DT_EnvHeadcrabCanisterShared) ),
-	SendPropBool( SENDINFO( m_bLanded ) ),
-END_SEND_TABLE()
+SendPropDataTable( SENDINFO_DT( m_Shared ), &REFERENCE_SEND_TABLE( DT_EnvHeadcrabCanisterShared ) ),
+				   SendPropBool( SENDINFO( m_bLanded ) ),
+				   END_SEND_TABLE()
 
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CEnvHeadcrabCanister::CEnvHeadcrabCanister()
+				   CEnvHeadcrabCanister::CEnvHeadcrabCanister()
 {
 	m_flMinRefireTime = -1.0f;
 	m_flMaxRefireTime = -1.0f;
@@ -249,7 +249,7 @@ void CEnvHeadcrabCanister::Precache( void )
 	PrecacheModel( ENV_HEADCRABCANISTER_MODEL );
 	PrecacheModel( ENV_HEADCRABCANISTER_BROKEN_MODEL );
 	PrecacheModel( ENV_HEADCRABCANISTER_SKYBOX_MODEL );
-	PrecacheModel("sprites/smoke.vmt");
+	PrecacheModel( "sprites/smoke.vmt" );
 
 	PrecacheScriptSound( "HeadcrabCanister.LaunchSound" );
 	PrecacheScriptSound( "HeadcrabCanister.AfterLanding" );
@@ -271,7 +271,7 @@ void CEnvHeadcrabCanister::Spawn( void )
 	BaseClass::Spawn();
 
 	// Do we have a position to launch from?
-	if ( m_iszLaunchPositionName != NULL_STRING )
+	if( m_iszLaunchPositionName != NULL_STRING )
 	{
 		// It doesn't have any real presence at first.
 		SetSolid( SOLID_NONE );
@@ -282,20 +282,20 @@ void CEnvHeadcrabCanister::Spawn( void )
 		m_bHasDetonated = false;
 		m_bOpened = false;
 	}
-	else if ( !HasSpawnFlags( SF_START_IMPACTED ) )
+	else if( !HasSpawnFlags( SF_START_IMPACTED ) )
 	{
 		// It doesn't have any real presence at first.
 		SetSolid( SOLID_NONE );
 
-		if ( !HasSpawnFlags( SF_LAND_AT_INITIAL_POSITION ) )
+		if( !HasSpawnFlags( SF_LAND_AT_INITIAL_POSITION ) )
 		{
 			Vector vecForward;
 			GetVectors( &vecForward, NULL, NULL );
 			vecForward *= -1.0f;
 
 			trace_t trace;
-			UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + vecForward * 10000, MASK_NPCWORLDSTATIC, 
-				this, COLLISION_GROUP_NONE, &trace );
+			UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + vecForward * 10000, MASK_NPCWORLDSTATIC,
+							this, COLLISION_GROUP_NONE, &trace );
 
 			m_vecImpactPosition = trace.endpos;
 		}
@@ -327,18 +327,18 @@ void CEnvHeadcrabCanister::UpdateOnRemove()
 {
 	BaseClass::UpdateOnRemove();
 
-	if ( m_bLanded || m_bOpened )
+	if( m_bLanded || m_bOpened )
 	{
 		StopSound( "HeadcrabCanister.AfterLanding" );
 	}
 
-	if ( m_hTrail )
+	if( m_hTrail )
 	{
 		UTIL_Remove( m_hTrail );
 		m_hTrail = NULL;
 	}
 
-	if ( m_hSmokeTrail )
+	if( m_hSmokeTrail )
 	{
 		UTIL_Remove( m_hSmokeTrail );
 		m_hSmokeTrail = NULL;
@@ -365,7 +365,7 @@ void CEnvHeadcrabCanister::SetupWorldModel()
 //-----------------------------------------------------------------------------
 // Figure out where we enter the world
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::ComputeWorldEntryPoint( Vector *pStartPosition, QAngle *pStartAngles, Vector *pStartDirection )
+void CEnvHeadcrabCanister::ComputeWorldEntryPoint( Vector* pStartPosition, QAngle* pStartAngles, Vector* pStartDirection )
 {
 	SetupWorldModel();
 
@@ -377,7 +377,7 @@ void CEnvHeadcrabCanister::ComputeWorldEntryPoint( Vector *pStartPosition, QAngl
 	trace_t tr;
 	CTraceFilterWorldOnly filter;
 	UTIL_TraceLine( GetAbsOrigin() + vecForward * 100, GetAbsOrigin() + vecForward * 10000,
-		CONTENTS_SOLID, &filter, &tr );
+					CONTENTS_SOLID, &filter, &tr );
 
 	*pStartPosition = tr.endpos;
 	*pStartAngles = GetAbsAngles();
@@ -388,18 +388,18 @@ void CEnvHeadcrabCanister::ComputeWorldEntryPoint( Vector *pStartPosition, QAngl
 //-----------------------------------------------------------------------------
 // Place the canister in the world
 //-----------------------------------------------------------------------------
-CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
+CSkyCamera* CEnvHeadcrabCanister::PlaceCanisterInWorld()
 {
-	CSkyCamera *pCamera = NULL;
+	CSkyCamera* pCamera = NULL;
 
 	// Are we launching from a point? If so, use that point.
-	if ( m_iszLaunchPositionName != NULL_STRING )
+	if( m_iszLaunchPositionName != NULL_STRING )
 	{
 		// Get the launch position entity
-		CBaseEntity *pLaunchPos = gEntList.FindEntityByName( NULL, m_iszLaunchPositionName );
-		if ( !pLaunchPos )
+		CBaseEntity* pLaunchPos = gEntList.FindEntityByName( NULL, m_iszLaunchPositionName );
+		if( !pLaunchPos )
 		{
-			Warning("%s (%s) could not find an entity matching LaunchPositionName of '%s'\n", GetEntityName().ToCStr(), GetDebugName(), STRING(m_iszLaunchPositionName) );
+			Warning( "%s (%s) could not find an entity matching LaunchPositionName of '%s'\n", GetEntityName().ToCStr(), GetDebugName(), STRING( m_iszLaunchPositionName ) );
 			SUB_Remove();
 		}
 		else
@@ -410,13 +410,13 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 			GetVectors( &vecForward, NULL, NULL );
 			VectorMultiply( vecForward, -1.0f, vecImpactDirection );
 
-			m_Shared.InitInWorld( gpGlobals->curtime, pLaunchPos->GetAbsOrigin(), GetAbsAngles(), 
-				vecImpactDirection, m_vecImpactPosition, true );
+			m_Shared.InitInWorld( gpGlobals->curtime, pLaunchPos->GetAbsOrigin(), GetAbsAngles(),
+								  vecImpactDirection, m_vecImpactPosition, true );
 			SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
 			SetNextThink( gpGlobals->curtime );
 		}
 	}
-	else if ( DetectInSkybox() )
+	else if( DetectInSkybox() )
 	{
 		pCamera = GetEntitySkybox();
 
@@ -427,8 +427,8 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 		GetVectors( &vecForward, NULL, NULL );
 		vecForward *= -1.0f;
 
-		m_Shared.InitInSkybox( gpGlobals->curtime, m_vecImpactPosition, GetAbsAngles(), vecForward, 
-			m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
+		m_Shared.InitInSkybox( gpGlobals->curtime, m_vecImpactPosition, GetAbsAngles(), vecForward,
+							   m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
 		AddEFlags( EFL_IN_SKYBOX );
 		SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink );
 		SetNextThink( gpGlobals->curtime + m_Shared.GetEnterWorldTime() + TICK_INTERVAL );
@@ -437,16 +437,16 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 	{
 		Vector vecStartPosition, vecDirection;
 		QAngle vecStartAngles;
-		ComputeWorldEntryPoint( &vecStartPosition, &vecStartAngles, &vecDirection ); 
+		ComputeWorldEntryPoint( &vecStartPosition, &vecStartAngles, &vecDirection );
 
 		// Figure out which skybox to place the entity in.
 		pCamera = GetCurrentSkyCamera();
-		if ( pCamera )
+		if( pCamera )
 		{
-			m_Shared.InitInSkybox( gpGlobals->curtime, vecStartPosition, vecStartAngles, vecDirection, 
-				m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
+			m_Shared.InitInSkybox( gpGlobals->curtime, vecStartPosition, vecStartAngles, vecDirection,
+								   m_vecImpactPosition, pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
 
-			if ( m_Shared.IsInSkybox() )
+			if( m_Shared.IsInSkybox() )
 			{
 				SetModel( ENV_HEADCRABCANISTER_SKYBOX_MODEL );
 				SetSolid( SOLID_NONE );
@@ -462,8 +462,8 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 		}
 		else
 		{
-			m_Shared.InitInWorld( gpGlobals->curtime, vecStartPosition, vecStartAngles, 
-				vecDirection, m_vecImpactPosition );
+			m_Shared.InitInWorld( gpGlobals->curtime, vecStartPosition, vecStartAngles,
+								  vecDirection, m_vecImpactPosition );
 			SetThink( &CEnvHeadcrabCanister::HeadcrabCanisterWorldThink );
 			SetNextThink( gpGlobals->curtime );
 		}
@@ -478,18 +478,20 @@ CSkyCamera *CEnvHeadcrabCanister::PlaceCanisterInWorld()
 	return pCamera;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Fires the canister!
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::InputFireCanister( inputdata_t &inputdata )
+void CEnvHeadcrabCanister::InputFireCanister( inputdata_t& inputdata )
 {
-	if (m_bLaunched)
+	if( m_bLaunched )
+	{
 		return;
+	}
 
 	m_bLaunched = true;
 
-	if ( HasSpawnFlags( SF_START_IMPACTED ) )
+	if( HasSpawnFlags( SF_START_IMPACTED ) )
 	{
 		StartSpawningHeadcrabs( 0.01f );
 		return;
@@ -498,13 +500,13 @@ void CEnvHeadcrabCanister::InputFireCanister( inputdata_t &inputdata )
 	// Play a firing sound
 	CPASAttenuationFilter filter( this, ATTN_NONE );
 
-	if ( !HasSpawnFlags( SF_NO_LAUNCH_SOUND ) )
+	if( !HasSpawnFlags( SF_NO_LAUNCH_SOUND ) )
 	{
 		EmitSound( filter, entindex(), "HeadcrabCanister.LaunchSound" );
 	}
 
 	// Place the canister
-	CSkyCamera *pCamera = PlaceCanisterInWorld();
+	CSkyCamera* pCamera = PlaceCanisterInWorld();
 
 	// Hook up a smoke trail
 	m_hTrail = CSpriteTrail::SpriteTrailCreate( "sprites/smoke.vmt", GetAbsOrigin(), true );
@@ -517,7 +519,7 @@ void CEnvHeadcrabCanister::InputFireCanister( inputdata_t &inputdata )
 	m_hTrail->SetLifeTime( ENV_HEADCRABCANISTER_TRAIL_TIME );
 	m_hTrail->SetMinFadeLength( 1000.0f );
 
-	if ( pCamera && m_Shared.IsInSkybox() )
+	if( pCamera && m_Shared.IsInSkybox() )
 	{
 		m_hTrail->SetSkybox( pCamera->m_skyboxData.origin, pCamera->m_skyboxData.scale );
 	}
@@ -530,9 +532,9 @@ void CEnvHeadcrabCanister::InputFireCanister( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Opens the canister!
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::InputOpenCanister( inputdata_t &inputdata )
+void CEnvHeadcrabCanister::InputOpenCanister( inputdata_t& inputdata )
 {
-	if ( m_bLanded && !m_bOpened && HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_OPEN ) )
+	if( m_bLanded && !m_bOpened && HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_OPEN ) )
 	{
 		OpenCanister();
 	}
@@ -542,21 +544,21 @@ void CEnvHeadcrabCanister::InputOpenCanister( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Spawns headcrabs
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::InputSpawnHeadcrabs( inputdata_t &inputdata )
+void CEnvHeadcrabCanister::InputSpawnHeadcrabs( inputdata_t& inputdata )
 {
-	if ( m_bLanded && m_bOpened && HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_SPAWN_HEADCRABS ) )
+	if( m_bLanded && m_bOpened && HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_SPAWN_HEADCRABS ) )
 	{
 		StartSpawningHeadcrabs( 0.01f );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::InputStopSmoke( inputdata_t &inputdata )
+void CEnvHeadcrabCanister::InputStopSmoke( inputdata_t& inputdata )
 {
-	if ( m_hSmokeTrail != NULL )
+	if( m_hSmokeTrail != NULL )
 	{
 		UTIL_Remove( m_hSmokeTrail );
 		m_hSmokeTrail = NULL;
@@ -565,10 +567,10 @@ void CEnvHeadcrabCanister::InputStopSmoke( inputdata_t &inputdata )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::InputStopHissing( inputdata_t &inputdata )
+void CEnvHeadcrabCanister::InputStopHissing( inputdata_t& inputdata )
 {
 	StopSound( "HeadcrabCanister.AfterLanding" );
 }
@@ -581,23 +583,25 @@ void CEnvHeadcrabCanister::InputStopHissing( inputdata_t &inputdata )
 class CCollideList : public IEntityEnumerator
 {
 public:
-	CCollideList( Ray_t *pRay, CBaseEntity* pIgnoreEntity, int nContentsMask ) : 
+	CCollideList( Ray_t* pRay, CBaseEntity* pIgnoreEntity, int nContentsMask ) :
 		m_Entities( 0, 32 ), m_pIgnoreEntity( pIgnoreEntity ),
-		m_nContentsMask( nContentsMask ), m_pRay(pRay) {}
+		m_nContentsMask( nContentsMask ), m_pRay( pRay ) {}
 
-	virtual bool EnumEntity( IHandleEntity *pHandleEntity )
+	virtual bool EnumEntity( IHandleEntity* pHandleEntity )
 	{
 		// Don't bother with the ignore entity.
-		if ( pHandleEntity == m_pIgnoreEntity )
+		if( pHandleEntity == m_pIgnoreEntity )
+		{
 			return true;
+		}
 
 		Assert( pHandleEntity );
 
 		trace_t tr;
 		enginetrace->ClipRayToEntity( *m_pRay, m_nContentsMask, pHandleEntity, &tr );
-		if (( tr.fraction < 1.0f ) || (tr.startsolid) || (tr.allsolid))
+		if( ( tr.fraction < 1.0f ) || ( tr.startsolid ) || ( tr.allsolid ) )
 		{
-			CBaseEntity *pEntity = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+			CBaseEntity* pEntity = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
 			m_Entities.AddToTail( pEntity );
 		}
 
@@ -607,16 +611,16 @@ public:
 	CUtlVector<CBaseEntity*>	m_Entities;
 
 private:
-	CBaseEntity		*m_pIgnoreEntity;
+	CBaseEntity*		m_pIgnoreEntity;
 	int				m_nContentsMask;
-	Ray_t			*m_pRay;
+	Ray_t*			m_pRay;
 };
 
 
 //-----------------------------------------------------------------------------
 // Test for impact!
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::TestForCollisionsAgainstEntities( const Vector &vecEndPosition )
+void CEnvHeadcrabCanister::TestForCollisionsAgainstEntities( const Vector& vecEndPosition )
 {
 	// Debugging!!
 //	NDebugOverlay::Box( GetAbsOrigin(), m_vecMin * 0.5f, m_vecMax * 0.5f, 255, 255, 0, 0, 5 );
@@ -637,19 +641,19 @@ void CEnvHeadcrabCanister::TestForCollisionsAgainstEntities( const Vector &vecEn
 	// Now get each entity and react accordinly!
 	for( int iEntity = collideList.m_Entities.Count(); --iEntity >= 0; )
 	{
-		CBaseEntity *pEntity = collideList.m_Entities[iEntity];
+		CBaseEntity* pEntity = collideList.m_Entities[iEntity];
 		Vector vecForceDir = m_Shared.m_vecDirection;
 
 		// Check for a physics object and apply force!
-		IPhysicsObject *pPhysObject = pEntity->VPhysicsGetObject();
-		if ( pPhysObject )
+		IPhysicsObject* pPhysObject = pEntity->VPhysicsGetObject();
+		if( pPhysObject )
 		{
 			float flMass = PhysGetEntityMass( pEntity );
 			vecForceDir *= flMass * 750;
 			pPhysObject->ApplyForceCenter( vecForceDir );
 		}
 
-		if ( pEntity->m_takedamage && ( m_flDamage != 0.0f ) )
+		if( pEntity->m_takedamage && ( m_flDamage != 0.0f ) )
 		{
 			CTakeDamageInfo info( this, this, flDamage, DMG_BLAST );
 			CalculateExplosiveDamageForce( &info, vecForceDir, pEntity->GetAbsOrigin() );
@@ -664,40 +668,44 @@ void CEnvHeadcrabCanister::TestForCollisionsAgainstEntities( const Vector &vecEn
 //-----------------------------------------------------------------------------
 #define INNER_RADIUS_FRACTION 0.25f
 
-void CEnvHeadcrabCanister::TestForCollisionsAgainstWorld( const Vector &vecEndPosition )
+void CEnvHeadcrabCanister::TestForCollisionsAgainstWorld( const Vector& vecEndPosition )
 {
 	// Splash damage!
 	// Iterate on all entities in the vicinity.
 	float flDamageRadius = m_flDamageRadius;
 	float flDamage = m_flDamage;
 
-	CBaseEntity *pEntity;
-	for ( CEntitySphereQuery sphere( vecEndPosition, flDamageRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
+	CBaseEntity* pEntity;
+	for( CEntitySphereQuery sphere( vecEndPosition, flDamageRadius ); ( pEntity = sphere.GetCurrentEntity() ) != NULL; sphere.NextEntity() )
 	{
-		if ( pEntity == this )
+		if( pEntity == this )
+		{
 			continue;
+		}
 
-		if ( !pEntity->IsSolid() )
+		if( !pEntity->IsSolid() )
+		{
 			continue;
+		}
 
 		// Get distance to object and use it as a scale value.
 		Vector vecSegment;
-		VectorSubtract( pEntity->GetAbsOrigin(), vecEndPosition, vecSegment ); 
+		VectorSubtract( pEntity->GetAbsOrigin(), vecEndPosition, vecSegment );
 		float flDistance = VectorNormalize( vecSegment );
 
-		float flFactor = 1.0f / ( flDamageRadius * (INNER_RADIUS_FRACTION - 1) );
+		float flFactor = 1.0f / ( flDamageRadius * ( INNER_RADIUS_FRACTION - 1 ) );
 		flFactor *= flFactor;
 		float flScale = flDistance - flDamageRadius;
 		flScale *= flScale * flFactor;
-		if ( flScale > 1.0f ) 
-		{ 
-			flScale = 1.0f; 
+		if( flScale > 1.0f )
+		{
+			flScale = 1.0f;
 		}
-		
+
 		// Check for a physics object and apply force!
 		Vector vecForceDir = vecSegment;
-		IPhysicsObject *pPhysObject = pEntity->VPhysicsGetObject();
-		if ( pPhysObject )
+		IPhysicsObject* pPhysObject = pEntity->VPhysicsGetObject();
+		if( pPhysObject )
 		{
 			// Send it flying!!!
 			float flMass = PhysGetEntityMass( pEntity );
@@ -705,19 +713,19 @@ void CEnvHeadcrabCanister::TestForCollisionsAgainstWorld( const Vector &vecEndPo
 			pPhysObject->ApplyForceCenter( vecForceDir );
 		}
 
-		if ( pEntity->m_takedamage && ( m_flDamage != 0.0f ) )
+		if( pEntity->m_takedamage && ( m_flDamage != 0.0f ) )
 		{
 			CTakeDamageInfo info( this, this, flDamage * flScale, DMG_BLAST );
 			CalculateExplosiveDamageForce( &info, vecSegment, pEntity->GetAbsOrigin() );
 			pEntity->TakeDamage( info );
 		}
 
-		if ( pEntity->IsPlayer() && !(static_cast<CBasePlayer*>(pEntity)->IsInAVehicle()) )
+		if( pEntity->IsPlayer() && !( static_cast<CBasePlayer*>( pEntity )->IsInAVehicle() ) )
 		{
-			if (vecSegment.z < 0.1f)
+			if( vecSegment.z < 0.1f )
 			{
 				vecSegment.z = 0.1f;
-				VectorNormalize( vecSegment );					
+				VectorNormalize( vecSegment );
 			}
 			float flAmount = SimpleSplineRemapVal( flScale, 0.0f, 1.0f, 250.0f, 1000.0f );
 			pEntity->ApplyAbsVelocityImpulse( vecSegment * flAmount );
@@ -737,10 +745,10 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 	--m_nHeadcrabCount;
 
 	int nHeadCrabAttachment = LookupAttachment( "headcrab" );
-	if ( GetAttachment( nHeadCrabAttachment, vecSpawnPosition, vecSpawnAngles ) )
+	if( GetAttachment( nHeadCrabAttachment, vecSpawnPosition, vecSpawnAngles ) )
 	{
-		CBaseEntity *pEnt = CreateEntityByName( s_pHeadcrabClass[m_nHeadcrabType] );
-		CBaseHeadcrab *pHeadCrab = assert_cast<CBaseHeadcrab*>(pEnt);
+		CBaseEntity* pEnt = CreateEntityByName( s_pHeadcrabClass[m_nHeadcrabType] );
+		CBaseHeadcrab* pHeadCrab = assert_cast<CBaseHeadcrab*>( pEnt );
 
 		// Necessary to get it to eject properly (don't allow the NPC
 		// to override the spawn position specified).
@@ -756,11 +764,11 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 		pHeadCrab->CrawlFromCanister();
 
 #ifdef MAPBASE
-		m_OnCrab.Set(pHeadCrab, pHeadCrab, this);
+		m_OnCrab.Set( pHeadCrab, pHeadCrab, this );
 #endif
 	}
 
-	if ( m_nHeadcrabCount != 0 )
+	if( m_nHeadcrabCount != 0 )
 	{
 		float flWaitTime = random->RandomFloat( 1.0f, 2.0f );
 		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flWaitTime, s_pHeadcrabThinkContext );
@@ -777,10 +785,12 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink()
 //-----------------------------------------------------------------------------
 void CEnvHeadcrabCanister::StartSpawningHeadcrabs( float flDelay )
 {
-	if ( !m_bLanded || !m_bOpened || m_nHeadcrabCount == 0 )
+	if( !m_bLanded || !m_bOpened || m_nHeadcrabCount == 0 )
+	{
 		return;
+	}
 
-	if ( m_nHeadcrabCount != 0 )
+	if( m_nHeadcrabCount != 0 )
 	{
 		SetContextThink( &CEnvHeadcrabCanister::HeadcrabCanisterSpawnHeadcrabThink, gpGlobals->curtime + flDelay, s_pHeadcrabThinkContext );
 	}
@@ -797,9 +807,9 @@ void CEnvHeadcrabCanister::CanisterFinishedOpening( void )
 	m_bOpened = true;
 	SetContextThink( NULL, gpGlobals->curtime, s_pOpenThinkContext );
 
-	if ( !HasSpawnFlags( SF_START_IMPACTED ) )
+	if( !HasSpawnFlags( SF_START_IMPACTED ) )
 	{
-		if ( !HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_SPAWN_HEADCRABS ) )
+		if( !HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_SPAWN_HEADCRABS ) )
 		{
 			StartSpawningHeadcrabs( 3.0f );
 		}
@@ -813,7 +823,7 @@ void CEnvHeadcrabCanister::CanisterFinishedOpening( void )
 void CEnvHeadcrabCanister::WaitForOpenSequenceThink()
 {
 	StudioFrameAdvance();
-	if ( ( GetSequence() == LookupSequence( "open" ) ) && IsSequenceFinished() )
+	if( ( GetSequence() == LookupSequence( "open" ) ) && IsSequenceFinished() )
 	{
 		CanisterFinishedOpening();
 	}
@@ -829,11 +839,13 @@ void CEnvHeadcrabCanister::WaitForOpenSequenceThink()
 //-----------------------------------------------------------------------------
 void CEnvHeadcrabCanister::OpenCanister( void )
 {
-	if ( m_bOpened )
+	if( m_bOpened )
+	{
 		return;
+	}
 
 	int nOpenSequence = LookupSequence( "open" );
-	if ( nOpenSequence != ACT_INVALID )
+	if( nOpenSequence != ACT_INVALID )
 	{
 		EmitSound( "HeadcrabCanister.Open" );
 
@@ -847,7 +859,7 @@ void CEnvHeadcrabCanister::OpenCanister( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvHeadcrabCanister::SetLanded( void )
 {
@@ -856,7 +868,7 @@ void CEnvHeadcrabCanister::SetLanded( void )
 	SetMoveType( MOVETYPE_NONE );
 	SetSolid( SOLID_VPHYSICS );
 	VPhysicsInitStatic();
-	
+
 	IncrementInterpolationFrame();
 	m_bLanded = true;
 }
@@ -873,13 +885,13 @@ void CEnvHeadcrabCanister::Landed( void )
 
 	// Hook the follow trail to the lead of the canister (which should be buried)
 	// to hide problems with the edge of the follow trail
-	if (m_hTrail)
+	if( m_hTrail )
 	{
-		m_hTrail->SetAttachment( this, LookupAttachment("trail") );
+		m_hTrail->SetAttachment( this, LookupAttachment( "trail" ) );
 	}
 
 	// Start smoke, unless we don't want it
-	if ( !HasSpawnFlags( SF_NO_SMOKE ) )
+	if( !HasSpawnFlags( SF_NO_SMOKE ) )
 	{
 		// Create the smoke trail to obscure the headcrabs
 		m_hSmokeTrail = SmokeTrail::CreateSmokeTrail();
@@ -893,7 +905,7 @@ void CEnvHeadcrabCanister::Landed( void )
 
 		m_hSmokeTrail->m_StartSize	= 32;
 		m_hSmokeTrail->m_EndSize	= 64;
-		m_hSmokeTrail->m_SpawnRadius= 8;
+		m_hSmokeTrail->m_SpawnRadius = 8;
 		m_hSmokeTrail->m_MinSpeed	= 0;
 		m_hSmokeTrail->m_MaxSpeed	= 8;
 		m_hSmokeTrail->m_MinDirectedSpeed	= 32;
@@ -905,9 +917,9 @@ void CEnvHeadcrabCanister::Landed( void )
 
 	SetThink( NULL );
 
-	if ( !HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_OPEN ) )
+	if( !HasSpawnFlags( SF_WAIT_FOR_INPUT_TO_OPEN ) )
 	{
-		if ( HasSpawnFlags( SF_START_IMPACTED ) )
+		if( HasSpawnFlags( SF_START_IMPACTED ) )
 		{
 			CanisterFinishedOpening( );
 		}
@@ -927,21 +939,21 @@ void CEnvHeadcrabCanister::Detonate( )
 	// Send the impact output
 	m_OnImpacted.FireOutput( this, this, 0 );
 
-	if ( !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
+	if( !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
 	{
 		StopSound( "HeadcrabCanister.IncomingSound" );
 		EmitSound( "HeadcrabCanister.Explosion" );
 	}
 
 	// If we're supposed to be removed, do that now
-	if ( HasSpawnFlags( SF_REMOVE_ON_IMPACT ) )
+	if( HasSpawnFlags( SF_REMOVE_ON_IMPACT ) )
 	{
 		SetAbsOrigin( m_vecImpactPosition );
 		SetModel( ENV_HEADCRABCANISTER_BROKEN_MODEL );
 		SetMoveType( MOVETYPE_NONE );
 		IncrementInterpolationFrame();
 		m_bLanded = true;
-		
+
 		// Become invisible so our trail can finish up
 		AddEffects( EF_NODRAW );
 		SetSolidFlags( FSOLID_NOT_SOLID );
@@ -956,9 +968,9 @@ void CEnvHeadcrabCanister::Detonate( )
 	TestForCollisionsAgainstWorld( m_vecImpactPosition );
 
 	// Shake the screen unless flagged otherwise
-	if ( !HasSpawnFlags( SF_NO_SHAKE ) )
+	if( !HasSpawnFlags( SF_NO_SHAKE ) )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( 1 );
 
 		// If the player is on foot, then do a more limited shake
 		float shakeRadius = ( pPlayer && pPlayer->IsInAVehicle() ) ? sk_env_headcrabcanister_shake_radius_vehicle.GetFloat() : sk_env_headcrabcanister_shake_radius.GetFloat();
@@ -967,18 +979,18 @@ void CEnvHeadcrabCanister::Detonate( )
 	}
 
 	// Do explosion effects
-	if ( !HasSpawnFlags( SF_NO_IMPACT_EFFECTS ) )
+	if( !HasSpawnFlags( SF_NO_IMPACT_EFFECTS ) )
 	{
 		// Normal explosion
-		ExplosionCreate( m_vecImpactPosition, GetAbsAngles(), this, 50.0f, 500.0f, 
-			SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSOUND, 1300.0f );
-			
+		ExplosionCreate( m_vecImpactPosition, GetAbsAngles(), this, 50.0f, 500.0f,
+						 SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODAMAGE | SF_ENVEXPLOSION_NOSOUND, 1300.0f );
+
 		// Dust explosion
-		AR2Explosion *pExplosion = AR2Explosion::CreateAR2Explosion( m_vecImpactPosition );
-		
+		AR2Explosion* pExplosion = AR2Explosion::CreateAR2Explosion( m_vecImpactPosition );
+
 		if( pExplosion )
 		{
-			pExplosion->SetLifetime(10);
+			pExplosion->SetLifetime( 10 );
 		}
 	}
 }
@@ -1000,11 +1012,11 @@ void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 	QAngle vecEndAngles;
 	m_Shared.GetPositionAtTime( flTime, vecEndPosition, vecEndAngles );
 
-	if ( !m_bIncomingSoundStarted && !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
+	if( !m_bIncomingSoundStarted && !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
 	{
 		float flDistSq = ENV_HEADCRABCANISTER_INCOMING_SOUND_TIME * m_Shared.m_flFlightSpeed;
 		flDistSq *= flDistSq;
-		if ( vecEndPosition.DistToSqr(m_vecImpactPosition) <= flDistSq )
+		if( vecEndPosition.DistToSqr( m_vecImpactPosition ) <= flDistSq )
 		{
 			// Figure out if we're close enough to play the incoming sound
 			EmitSound( "HeadcrabCanister.IncomingSound" );
@@ -1013,22 +1025,22 @@ void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 	}
 
 	TestForCollisionsAgainstEntities( vecEndPosition );
-	if ( m_Shared.DidImpact( flTime ) )
+	if( m_Shared.DidImpact( flTime ) )
 	{
-		if ( !m_bHasDetonated )
+		if( !m_bHasDetonated )
 		{
 			Detonate();
 			m_bHasDetonated = true;
 		}
-		
-		if ( !HasSpawnFlags( SF_REMOVE_ON_IMPACT ) )
+
+		if( !HasSpawnFlags( SF_REMOVE_ON_IMPACT ) )
 		{
 			Landed();
 		}
 
 		return;
 	}
-		   
+
 	// Always move full movement.
 	SetAbsOrigin( vecEndPosition );
 
@@ -1038,9 +1050,9 @@ void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 	SetNextThink( gpGlobals->curtime + 0.2f );
 	SetAbsAngles( vecEndAngles );
 
-	if ( !m_bHasDetonated )
+	if( !m_bHasDetonated )
 	{
-		if ( vecEndPosition.DistToSqr( m_vecImpactPosition ) < BoundingRadius() * BoundingRadius() )
+		if( vecEndPosition.DistToSqr( m_vecImpactPosition ) < BoundingRadius() * BoundingRadius() )
 		{
 			Detonate();
 			m_bHasDetonated = true;
@@ -1050,7 +1062,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterWorldThink( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: This think function should be called at the time when the HeadcrabCanister 
+// Purpose: This think function should be called at the time when the HeadcrabCanister
 //          will be leaving the skybox and entering the world.
 //-----------------------------------------------------------------------------
 void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxThink( void )
@@ -1088,15 +1100,15 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink( void )
 	UTIL_SetOrigin( this, vecEndPosition );
 	SetAbsAngles( vecEndAngles );
 
-	if ( !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
-	{	
+	if( !HasSpawnFlags( SF_NO_IMPACT_SOUND ) )
+	{
 		CPASAttenuationFilter filter( this, ATTN_NONE );
 		EmitSound( filter, entindex(), "HeadcrabCanister.SkyboxExplosion" );
 	}
 
-	if ( m_nSkyboxCannisterCount != 0 )
+	if( m_nSkyboxCannisterCount != 0 )
 	{
-		if ( --m_nSkyboxCannisterCount <= 0 )
+		if( --m_nSkyboxCannisterCount <= 0 )
 		{
 			SetThink( NULL );
 			return;
@@ -1114,7 +1126,7 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxOnlyThink( void )
 //-----------------------------------------------------------------------------
 void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxRestartThink( void )
 {
-	if ( m_hTrail )
+	if( m_hTrail )
 	{
 		UTIL_Remove( m_hTrail );
 		m_hTrail = NULL;
@@ -1127,20 +1139,22 @@ void CEnvHeadcrabCanister::HeadcrabCanisterSkyboxRestartThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pInfo - 
-//			bAlways - 
+// Purpose:
+// Input  : *pInfo -
+//			bAlways -
 //-----------------------------------------------------------------------------
-void CEnvHeadcrabCanister::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
+void CEnvHeadcrabCanister::SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	{
 		return;
+	}
 
 	BaseClass::SetTransmit( pInfo, bAlways );
-	
+
 	// Make our smoke trail always come with us
-	if ( m_hSmokeTrail )
+	if( m_hSmokeTrail )
 	{
 		m_hSmokeTrail->SetTransmit( pInfo, bAlways );
 	}

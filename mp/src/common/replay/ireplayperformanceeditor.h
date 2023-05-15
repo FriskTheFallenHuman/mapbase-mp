@@ -5,7 +5,7 @@
 #ifndef IREPLAYPERFORMANCEEDITOR_H
 #define IREPLAYPERFORMANCEEDITOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -24,7 +24,7 @@ class CReplay;
 class IReplayPerformanceEditor : public IBaseInterface
 {
 public:
-	virtual CReplay *GetReplay() = 0;
+	virtual CReplay* GetReplay() = 0;
 	virtual void	OnRewindComplete() = 0;
 };
 

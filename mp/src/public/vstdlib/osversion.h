@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -51,10 +51,10 @@ enum EOSType
 	k_eOSTypeMax = k_eWinMAX + 11 // win types + other ifdef'd types
 };
 
-VSTDLIB_INTERFACE const char *GetNameFromOSType( EOSType eOSType );
-VSTDLIB_INTERFACE const char *GetOSDetailString( char *pchOutBuf, int cchOutBuf );
+VSTDLIB_INTERFACE const char* GetNameFromOSType( EOSType eOSType );
+VSTDLIB_INTERFACE const char* GetOSDetailString( char* pchOutBuf, int cchOutBuf );
 VSTDLIB_INTERFACE EOSType GetOSType();
 VSTDLIB_INTERFACE bool OSTypesAreCompatible( EOSType eOSTypeDetected, EOSType eOSTypeRequired );
-VSTDLIB_INTERFACE const char *GetPlatformName( bool *pbIs64Bit );
+VSTDLIB_INTERFACE const char* GetPlatformName( bool* pbIs64Bit );
 
 #endif // OSVERSION_H

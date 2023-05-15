@@ -11,7 +11,7 @@
 #include "isaverestore.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-------------------------------------
@@ -25,20 +25,22 @@ public:
 	}
 
 	// save data type interface
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
 	{
-		BITSTRING *pBitString = (BITSTRING *)fieldInfo.pField;
+		BITSTRING* pBitString = ( BITSTRING* )fieldInfo.pField;
 		int numBits = pBitString->GetNumBits();
 		pSave->WriteInt( &numBits );
 		pSave->WriteInt( pBitString->Base(), pBitString->GetNumDWords() );
 	}
-	
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		BITSTRING *pBitString = (BITSTRING *)fieldInfo.pField;
+		BITSTRING* pBitString = ( BITSTRING* )fieldInfo.pField;
 		int numBits = pRestore->ReadInt();
-		if ( !pBitString->IsFixedSize() )
+		if( !pBitString->IsFixedSize() )
+		{
 			pBitString->Resize( numBits );
+		}
 		else
 		{
 			Assert( pBitString->GetNumBits() >= numBits );
@@ -49,22 +51,22 @@ public:
 		pRestore->ReadInt( pBitString->Base(), numIntsInStream );
 
 		numIntsInStream -= readSize;
-		while ( numIntsInStream-- > 0 )
+		while( numIntsInStream-- > 0 )
 		{
 			int ignored;
 			pRestore->ReadInt( &ignored, 1 );
 		}
 	}
-	
-	virtual void MakeEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+
+	virtual void MakeEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		BITSTRING *pBitString = (BITSTRING *)fieldInfo.pField;
+		BITSTRING* pBitString = ( BITSTRING* )fieldInfo.pField;
 		pBitString->ClearAll();
 	}
 
-	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual bool IsEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		BITSTRING *pBitString = (BITSTRING *)fieldInfo.pField;
+		BITSTRING* pBitString = ( BITSTRING* )fieldInfo.pField;
 		return pBitString->IsAllClear();
 	}
 };
@@ -72,7 +74,7 @@ public:
 //-------------------------------------
 
 template <class BITSTRING>
-ISaveRestoreOps *GetBitstringDataOps(BITSTRING *)
+ISaveRestoreOps* GetBitstringDataOps( BITSTRING* )
 {
 	static CVarBitVecSaveRestoreOps<BITSTRING> ops;
 	return &ops;

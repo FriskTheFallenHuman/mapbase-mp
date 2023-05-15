@@ -27,26 +27,26 @@ class CSaveDocumentQuery : public vgui::Frame
 	DECLARE_CLASS_SIMPLE( CSaveDocumentQuery, vgui::Frame );
 
 public:
-	CSaveDocumentQuery(	vgui::Panel *pParent, const char *filename, const char *pFileType, int nContext, 
-		vgui::Panel *pActionSignalTarget = 0, KeyValues *pKeyValues = 0 );
+	CSaveDocumentQuery(	vgui::Panel* pParent, const char* filename, const char* pFileType, int nContext,
+						vgui::Panel* pActionSignalTarget = 0, KeyValues* pKeyValues = 0 );
 	~CSaveDocumentQuery();
 
 	// Inherited from vgui::Frame
-	virtual void		OnCommand( char const *cmd );
-	virtual void		ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void		OnCommand( char const* cmd );
+	virtual void		ApplySchemeSettings( vgui::IScheme* pScheme );
 
 	// Put the message box into a modal state
 	void				DoModal();
 
 private:
 	// Posts commands to the action signal target
-	void				PostCommand( const char *pCommand );
+	void				PostCommand( const char* pCommand );
 
-	vgui::Label			*m_pMessageLabel;
-	vgui::Button		*m_pYesButton;
-	vgui::Button		*m_pNoButton;
-	vgui::Button		*m_pCancelButton;
-	vgui::Panel			*m_pActionSignalTarget;
+	vgui::Label*			m_pMessageLabel;
+	vgui::Button*		m_pYesButton;
+	vgui::Button*		m_pNoButton;
+	vgui::Button*		m_pCancelButton;
+	vgui::Panel*			m_pActionSignalTarget;
 
 	char				m_szFileName[ 256 ];
 	char				m_szFileType[ 256 ];
@@ -58,9 +58,9 @@ private:
 //-----------------------------------------------------------------------------
 // Show the save document query dialog
 //-----------------------------------------------------------------------------
-void ShowSaveDocumentQuery( vgui::Panel *pParent, const char *pFileName, const char *pFileType, int nContext, vgui::Panel *pActionSignalTarget, KeyValues *pPostSaveCommand )
+void ShowSaveDocumentQuery( vgui::Panel* pParent, const char* pFileName, const char* pFileType, int nContext, vgui::Panel* pActionSignalTarget, KeyValues* pPostSaveCommand )
 {
-	CSaveDocumentQuery *query = new CSaveDocumentQuery( pParent, pFileName, pFileType, nContext, pActionSignalTarget, pPostSaveCommand );
+	CSaveDocumentQuery* query = new CSaveDocumentQuery( pParent, pFileName, pFileType, nContext, pActionSignalTarget, pPostSaveCommand );
 	query->SetSmallCaption( true );
 	query->DoModal();
 }
@@ -69,12 +69,12 @@ void ShowSaveDocumentQuery( vgui::Panel *pParent, const char *pFileName, const c
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CSaveDocumentQuery::CSaveDocumentQuery( vgui::Panel *pParent, char const *pFileName, const char *pFileType, int nContext, vgui::Panel *pActionSignalTarget, KeyValues *pPostSaveCommand ) :
+CSaveDocumentQuery::CSaveDocumentQuery( vgui::Panel* pParent, char const* pFileName, const char* pFileType, int nContext, vgui::Panel* pActionSignalTarget, KeyValues* pPostSaveCommand ) :
 	BaseClass( pParent, "SaveDocumentQuery" ),
-	m_nContext( nContext ), 
+	m_nContext( nContext ),
 	m_pActionSignalTarget( pActionSignalTarget )
 {
-	if ( !pFileName || !pFileName[0] )
+	if( !pFileName || !pFileName[0] )
 	{
 		pFileName = "<untitled>";
 	}
@@ -82,12 +82,12 @@ CSaveDocumentQuery::CSaveDocumentQuery( vgui::Panel *pParent, char const *pFileN
 	Q_strncpy( m_szFileType, pFileType, sizeof( m_szFileType ) );
 	m_pPostSaveKeyValues = pPostSaveCommand;
 
-	SetDeleteSelfOnClose(true);
+	SetDeleteSelfOnClose( true );
 
-	SetMenuButtonResponsive(false);
-	SetMinimizeButtonVisible(false);
-	SetCloseButtonVisible(false);
-	SetSizeable(false);
+	SetMenuButtonResponsive( false );
+	SetMinimizeButtonVisible( false );
+	SetCloseButtonVisible( false );
+	SetSizeable( false );
 
 	SetTitle( "Save Changes", true );
 
@@ -104,7 +104,7 @@ CSaveDocumentQuery::CSaveDocumentQuery( vgui::Panel *pParent, char const *pFileN
 
 CSaveDocumentQuery::~CSaveDocumentQuery()
 {
-	if ( m_pPostSaveKeyValues )
+	if( m_pPostSaveKeyValues )
 	{
 		m_pPostSaveKeyValues->deleteThis();
 		m_pPostSaveKeyValues = NULL;
@@ -115,9 +115,9 @@ CSaveDocumentQuery::~CSaveDocumentQuery()
 //-----------------------------------------------------------------------------
 // Posts commands to the action signal target
 //-----------------------------------------------------------------------------
-void CSaveDocumentQuery::PostCommand( const char *pCommand )
+void CSaveDocumentQuery::PostCommand( const char* pCommand )
 {
-	KeyValues *kv = new KeyValues( pCommand );
+	KeyValues* kv = new KeyValues( pCommand );
 	vgui::ivgui()->PostMessage( m_pActionSignalTarget->GetVPanel(), kv, 0 );
 }
 
@@ -125,32 +125,32 @@ void CSaveDocumentQuery::PostCommand( const char *pCommand )
 //-----------------------------------------------------------------------------
 // Process commands
 //-----------------------------------------------------------------------------
-void CSaveDocumentQuery::OnCommand( char const *cmd )
+void CSaveDocumentQuery::OnCommand( char const* cmd )
 {
-	if ( !Q_stricmp( cmd, "yes" ) )
+	if( !Q_stricmp( cmd, "yes" ) )
 	{
-		KeyValues *kv = new KeyValues( "OnSaveFile" );
+		KeyValues* kv = new KeyValues( "OnSaveFile" );
 		kv->SetString( "filename", m_szFileName );
 		kv->SetString( "filetype", m_szFileType );
 		kv->SetInt( "context", m_nContext );
 		kv->SetPtr( "actionTarget", m_pActionSignalTarget );
-		if ( m_pPostSaveKeyValues )
+		if( m_pPostSaveKeyValues )
 		{
 			kv->AddSubKey( m_pPostSaveKeyValues->MakeCopy() );
 		}
 		vgui::ivgui()->PostMessage( m_pActionSignalTarget->GetVPanel(), kv, 0 );
 		MarkForDeletion();
 	}
-	else if ( !Q_stricmp( cmd, "no" ) )
+	else if( !Q_stricmp( cmd, "no" ) )
 	{
 		PostCommand( "OnMarkNotDirty" );
-		if ( m_pPostSaveKeyValues )
+		if( m_pPostSaveKeyValues )
 		{
 			vgui::ivgui()->PostMessage( m_pActionSignalTarget->GetVPanel(), m_pPostSaveKeyValues->MakeCopy(), 0 );
 		}
 		MarkForDeletion();
 	}
-	else if ( !Q_stricmp( cmd, "cancel" ) )
+	else if( !Q_stricmp( cmd, "cancel" ) )
 	{
 		PostCommand( "OnCancelSaveDocument" );
 		MarkForDeletion();
@@ -165,18 +165,18 @@ void CSaveDocumentQuery::OnCommand( char const *cmd )
 //-----------------------------------------------------------------------------
 // Deal with scheme
 //-----------------------------------------------------------------------------
-void CSaveDocumentQuery::ApplySchemeSettings(IScheme *pScheme)
+void CSaveDocumentQuery::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
 	int wide, tall;
 	GetSize( wide, tall );
 
 	int swide, stall;
-	surface()->GetScreenSize(swide, stall);
+	surface()->GetScreenSize( swide, stall );
 
 	// put the dialog in the middle of the screen
-	SetPos((swide - wide) / 2, (stall - tall) / 2);
+	SetPos( ( swide - wide ) / 2, ( stall - tall ) / 2 );
 }
 
 

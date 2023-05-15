@@ -1,7 +1,7 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Bullseyes act as targets for other NPC's to attack and to trigger
-//			events 
+//			events
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -39,29 +39,39 @@ public:
 
 	void	Precache( void );
 	void	Spawn( void );
-	void	StartNPC ( void );
+	void	StartNPC( void );
 	void	PrescheduleThink();
 	bool 	ShouldAlwaysThink();
-	void	UpdateEfficiency( bool bInPVS )	{ SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL ); SetMoveEfficiency( AIME_NORMAL ); }
+	void	UpdateEfficiency( bool bInPVS )
+	{
+		SetEfficiency( ( GetSleepState() != AISS_AWAKE ) ? AIE_DORMANT : AIE_NORMAL );
+		SetMoveEfficiency( AIME_NORMAL );
+	}
 	void	GatherConditions( void );
 	bool	ShouldChooseNewEnemy();
-	bool	IsValidEnemy( CBaseEntity *pTarget );
-	bool	CanBeAnEnemyOf( CBaseEntity *pEnemy ) { return HasSpawnFlags( SF_ENEMY_FINDER_ENEMY_ALLOWED ); }
-	bool	FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker );
+	bool	IsValidEnemy( CBaseEntity* pTarget );
+	bool	CanBeAnEnemyOf( CBaseEntity* pEnemy )
+	{
+		return HasSpawnFlags( SF_ENEMY_FINDER_ENEMY_ALLOWED );
+	}
+	bool	FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker );
 	Class_T Classify( void );
-	bool CanBeSeenBy( CAI_BaseNPC *pNPC ) { return CanBeAnEnemyOf( pNPC ); } // allows entities to be 'invisible' to NPC senses.
+	bool CanBeSeenBy( CAI_BaseNPC* pNPC )
+	{
+		return CanBeAnEnemyOf( pNPC );    // allows entities to be 'invisible' to NPC senses.
+	}
 
 	virtual int	SelectSchedule( void );
 	virtual void DrawDebugGeometryOverlays( void );
 
 	// Input handlers.
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
 
 	virtual	void Wake( bool bFireOutput = true );
 #ifdef MAPBASE
 	// A version of Wake() that takes an activator
-	virtual	void		Wake(CBaseEntity* pActivator);
+	virtual	void		Wake( CBaseEntity* pActivator );
 #endif
 
 private:
@@ -100,33 +110,33 @@ IMPLEMENT_CUSTOM_AI( npc_enemyfinder, CNPC_EnemyFinder );
 
 BEGIN_DATADESC( CNPC_EnemyFinder )
 
-	DEFINE_EMBEDDED( m_PlayerFreePass ),
-	DEFINE_EMBEDDED( m_ChooseEnemyTimer ),
+DEFINE_EMBEDDED( m_PlayerFreePass ),
+				 DEFINE_EMBEDDED( m_ChooseEnemyTimer ),
 
-	// Inputs
-	DEFINE_INPUT( m_nStartOn,			FIELD_INTEGER,	"StartOn" ),
-	DEFINE_INPUT( m_flFieldOfView,	FIELD_FLOAT,	"FieldOfView" ),
-	DEFINE_INPUT( m_flMinSearchDist,	FIELD_FLOAT,	"MinSearchDist" ),
-	DEFINE_INPUT( m_flMaxSearchDist,	FIELD_FLOAT,	"MaxSearchDist" ),
+				 // Inputs
+				 DEFINE_INPUT( m_nStartOn,			FIELD_INTEGER,	"StartOn" ),
+				 DEFINE_INPUT( m_flFieldOfView,	FIELD_FLOAT,	"FieldOfView" ),
+				 DEFINE_INPUT( m_flMinSearchDist,	FIELD_FLOAT,	"MinSearchDist" ),
+				 DEFINE_INPUT( m_flMaxSearchDist,	FIELD_FLOAT,	"MaxSearchDist" ),
 
-	DEFINE_FIELD( m_bEnemyStatus, FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_bEnemyStatus, FIELD_BOOLEAN ),
 
 #ifdef MAPBASE
 	DEFINE_INPUT( m_iClassify, FIELD_INTEGER, "SetClassify" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
 
-	DEFINE_OUTPUT( m_OnLostEnemies, "OnLostEnemies"),
-	DEFINE_OUTPUT( m_OnAcquireEnemies, "OnAcquireEnemies"),
+				 DEFINE_OUTPUT( m_OnLostEnemies, "OnLostEnemies" ),
+				 DEFINE_OUTPUT( m_OnAcquireEnemies, "OnAcquireEnemies" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinder::InitCustomSchedules( void )
+				 void CNPC_EnemyFinder::InitCustomSchedules( void )
 {
 	INIT_CUSTOM_AI( CNPC_EnemyFinder );
 
@@ -138,7 +148,7 @@ void CNPC_EnemyFinder::InitCustomSchedules( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for turning the enemy finder on.
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinder::InputTurnOn( inputdata_t &inputdata )
+void CNPC_EnemyFinder::InputTurnOn( inputdata_t& inputdata )
 {
 	SetThink( &CNPC_EnemyFinder::CallNPCThink );
 	SetNextThink( gpGlobals->curtime );
@@ -148,14 +158,14 @@ void CNPC_EnemyFinder::InputTurnOn( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for turning the enemy finder off.
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinder::InputTurnOff( inputdata_t &inputdata )
+void CNPC_EnemyFinder::InputTurnOff( inputdata_t& inputdata )
 {
-	SetThink(NULL);
+	SetThink( NULL );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_EnemyFinder::Precache( void )
 {
@@ -164,7 +174,7 @@ void CNPC_EnemyFinder::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -174,30 +184,30 @@ void CNPC_EnemyFinder::Spawn( void )
 
 	SetModel( "models/player.mdl" );
 	// This is a dummy model that is never used!
-	UTIL_SetSize(this, vec3_origin, vec3_origin);
+	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	SetMoveType( MOVETYPE_NONE );
 	SetBloodColor( DONT_BLEED );
 	SetGravity( 0.0 );
 	m_iHealth			= 1;
-	
+
 	AddFlag( FL_NPC );
 
 	SetSolid( SOLID_NONE );
 
 	m_bEnemyStatus = false;
 
-	if (m_flFieldOfView < -1.0)
+	if( m_flFieldOfView < -1.0 )
 	{
-		DevMsg("ERROR: EnemyFinder field of view must be between -1.0 and 1.0\n");
+		DevMsg( "ERROR: EnemyFinder field of view must be between -1.0 and 1.0\n" );
 		m_flFieldOfView		= 0.5;
 	}
-	else if (m_flFieldOfView > 1.0)
+	else if( m_flFieldOfView > 1.0 )
 	{
-		DevMsg("ERROR: EnemyFinder field of view must be between -1.0 and 1.0\n");
+		DevMsg( "ERROR: EnemyFinder field of view must be between -1.0 and 1.0\n" );
 		m_flFieldOfView		= 1.0;
 	}
-	CapabilitiesAdd	( bits_CAP_SQUAD );
+	CapabilitiesAdd( bits_CAP_SQUAD );
 
 	NPCInit();
 
@@ -207,20 +217,20 @@ void CNPC_EnemyFinder::Spawn( void )
 	m_NPCState		= NPC_STATE_ALERT;	// always alert
 
 	SetViewOffset( vec3_origin );
-	if ( m_flMaxSearchDist )
+	if( m_flMaxSearchDist )
 	{
 		SetDistLook( m_flMaxSearchDist );
 	}
 
-	if ( HasSpawnFlags( SF_ENEMY_FINDER_SHORT_MEMORY ) )
+	if( HasSpawnFlags( SF_ENEMY_FINDER_SHORT_MEMORY ) )
 	{
 		GetEnemies()->SetEnemyDiscardTime( 0.2 );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 int CNPC_EnemyFinder::SelectSchedule( void )
 {
@@ -239,36 +249,44 @@ void CNPC_EnemyFinder::Wake( bool bFireOutput )
 }
 
 #ifdef MAPBASE
-void CNPC_EnemyFinder::Wake(CBaseEntity* pActivator)
+void CNPC_EnemyFinder::Wake( CBaseEntity* pActivator )
 {
-	BaseClass::Wake(pActivator);
+	BaseClass::Wake( pActivator );
 
 	//Enemy finder is not allowed to become visible.
-	AddEffects(EF_NODRAW);
+	AddEffects( EF_NODRAW );
 }
 #endif // MAPBASE
 
 //------------------------------------------------------------------------------
 //
 //------------------------------------------------------------------------------
-bool CNPC_EnemyFinder::FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_EnemyFinder::FVisible( CBaseEntity* pTarget, int traceMask, CBaseEntity** ppBlocker )
 {
 	float flTargetDist = GetAbsOrigin().DistTo( pTarget->GetAbsOrigin() );
-	if ( flTargetDist < m_flMinSearchDist)
+	if( flTargetDist < m_flMinSearchDist )
+	{
 		return false;
+	}
 
-	if ( m_flMaxSearchDist && flTargetDist > m_flMaxSearchDist)
+	if( m_flMaxSearchDist && flTargetDist > m_flMaxSearchDist )
+	{
 		return false;
+	}
 
-	if ( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS) )
+	if( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS ) )
+	{
 		return true;
+	}
 
-	if ( !HasSpawnFlags(SF_ENEMY_FINDER_APC_VIS) )
+	if( !HasSpawnFlags( SF_ENEMY_FINDER_APC_VIS ) )
 	{
 		bool bIsVisible = BaseClass::FVisible( pTarget, traceMask, ppBlocker );
-		
-		if ( bIsVisible && pTarget == m_PlayerFreePass.GetPassTarget() )
+
+		if( bIsVisible && pTarget == m_PlayerFreePass.GetPassTarget() )
+		{
 			bIsVisible = m_PlayerFreePass.ShouldAllowFVisible( bIsVisible );
+		}
 
 		return bIsVisible;
 	}
@@ -276,32 +294,32 @@ bool CNPC_EnemyFinder::FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntit
 	// Make sure I can see the target from my position
 	trace_t tr;
 
-	// Trace from launch position to target position.  
+	// Trace from launch position to target position.
 	// Use position above actual barral based on vertical launch speed
 	Vector vStartPos = GetAbsOrigin();
 	Vector vEndPos	 = pTarget->EyePosition();
 
-	CBaseEntity *pVehicle = NULL;
-	if ( pTarget->IsPlayer() )
+	CBaseEntity* pVehicle = NULL;
+	if( pTarget->IsPlayer() )
 	{
-		CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(pTarget);
+		CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pTarget );
 		pVehicle = pPlayer->GetVehicleEntity();
 	}
 
 	CTraceFilterSkipTwoEntities traceFilter( pTarget, pVehicle, COLLISION_GROUP_NONE );
 	AI_TraceLine( vStartPos, vEndPos, MASK_SHOT, &traceFilter, &tr );
-	if ( ppBlocker )
+	if( ppBlocker )
 	{
 		*ppBlocker = tr.m_pEnt;
 	}
-	return (tr.fraction == 1.0);
+	return ( tr.fraction == 1.0 );
 }
 
 
 //------------------------------------------------------------------------------
 bool CNPC_EnemyFinder::ShouldChooseNewEnemy()
 {
-	if ( m_ChooseEnemyTimer.Expired() )
+	if( m_ChooseEnemyTimer.Expired() )
 	{
 		m_ChooseEnemyTimer.Set( 0.3 );
 		return true;
@@ -314,22 +332,30 @@ bool CNPC_EnemyFinder::ShouldChooseNewEnemy()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-bool CNPC_EnemyFinder::IsValidEnemy( CBaseEntity *pTarget )
+bool CNPC_EnemyFinder::IsValidEnemy( CBaseEntity* pTarget )
 {
 	float flTargetDist = GetAbsOrigin().DistTo( pTarget->GetAbsOrigin() );
-	if (flTargetDist < m_flMinSearchDist)
+	if( flTargetDist < m_flMinSearchDist )
+	{
 		return false;
+	}
 
-	if ( m_flMaxSearchDist && flTargetDist > m_flMaxSearchDist)
+	if( m_flMaxSearchDist && flTargetDist > m_flMaxSearchDist )
+	{
 		return false;
+	}
 
-	if ( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS) )
+	if( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS ) )
+	{
 		return true;
+	}
 
-	if ( GetSenses()->DidSeeEntity( pTarget ) )
+	if( GetSenses()->DidSeeEntity( pTarget ) )
+	{
 		return true;
+	}
 
-	// Trace from launch position to target position.  
+	// Trace from launch position to target position.
 	// Use position above actual barral based on vertical launch speed
 	Vector vStartPos = GetAbsOrigin();
 	Vector vEndPos	 = pTarget->EyePosition();
@@ -339,16 +365,20 @@ bool CNPC_EnemyFinder::IsValidEnemy( CBaseEntity *pTarget )
 	AI_TraceLOS( vStartPos, vEndPos, this, &tr );
 
 	// If the player is in a vehicle, see if we can see that instead
-	if ( pTarget->IsPlayer() )
+	if( pTarget->IsPlayer() )
 	{
-		CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(pTarget);
-		if ( tr.m_pEnt == pPlayer->GetVehicleEntity() )
+		CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pTarget );
+		if( tr.m_pEnt == pPlayer->GetVehicleEntity() )
+		{
 			return true;
+		}
 	}
 
 	// Line must be clear
-	if ( tr.fraction == 1.0f || tr.m_pEnt == pTarget )
+	if( tr.fraction == 1.0f || tr.m_pEnt == pTarget )
+	{
 		return true;
+	}
 
 	// Otherwise we can't see anything
 	return false;
@@ -360,15 +390,15 @@ bool CNPC_EnemyFinder::IsValidEnemy( CBaseEntity *pTarget )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CNPC_EnemyFinder::StartNPC ( void )
+void CNPC_EnemyFinder::StartNPC( void )
 {
-	AddSpawnFlags(SF_NPC_FALL_TO_GROUND);	// this prevents CAI_BaseNPC from slamming the finder to 
-											// the ground just because it's not MOVETYPE_FLY
+	AddSpawnFlags( SF_NPC_FALL_TO_GROUND );	// this prevents CAI_BaseNPC from slamming the finder to
+	// the ground just because it's not MOVETYPE_FLY
 	BaseClass::StartNPC();
 
-	if ( AI_IsSinglePlayer() && m_PlayerFreePass.GetParams().duration > 0.1 )
+	if( AI_IsSinglePlayer() && m_PlayerFreePass.GetParams().duration > 0.1 )
 	{
-		m_PlayerFreePass.SetPassTarget( UTIL_PlayerByIndex(1) );
+		m_PlayerFreePass.SetPassTarget( UTIL_PlayerByIndex( 1 ) );
 
 		AI_FreePassParams_t freePassParams = m_PlayerFreePass.GetParams();
 
@@ -379,9 +409,9 @@ void CNPC_EnemyFinder::StartNPC ( void )
 		m_PlayerFreePass.SetParams( freePassParams );
 	}
 
-	if (!m_nStartOn)
+	if( !m_nStartOn )
 	{
-		SetThink(NULL);
+		SetThink( NULL );
 	}
 }
 
@@ -391,19 +421,19 @@ void CNPC_EnemyFinder::PrescheduleThink()
 	BaseClass::PrescheduleThink();
 
 	bool bHasEnemies = GetEnemies()->NumEnemies() > 0;
-	
-	if ( GetEnemies()->NumEnemies() > 0 )
+
+	if( GetEnemies()->NumEnemies() > 0 )
 	{
 		//If I haven't seen my enemy in half a second then we'll assume he's gone.
-		if ( gpGlobals->curtime - GetEnemyLastTimeSeen() >= 0.5f )
+		if( gpGlobals->curtime - GetEnemyLastTimeSeen() >= 0.5f )
 		{
 			bHasEnemies = false;
 		}
 	}
 
-	if ( m_bEnemyStatus != bHasEnemies )
+	if( m_bEnemyStatus != bHasEnemies )
 	{
-		if ( bHasEnemies )
+		if( bHasEnemies )
 		{
 			m_OnAcquireEnemies.FireOutput( this, this );
 		}
@@ -411,7 +441,7 @@ void CNPC_EnemyFinder::PrescheduleThink()
 		{
 			m_OnLostEnemies.FireOutput( this, this );
 		}
-		
+
 		m_bEnemyStatus = bHasEnemies;
 	}
 
@@ -422,8 +452,8 @@ void CNPC_EnemyFinder::PrescheduleThink()
 		if( IsInSquad() && GetSquad()->NumMembers() > 1 )
 		{
 			AISquadIter_t iter;
-			CAI_BaseNPC *pSquadmate = m_pSquad ? m_pSquad->GetFirstMember( &iter ) : NULL;
-			while ( pSquadmate )
+			CAI_BaseNPC* pSquadmate = m_pSquad ? m_pSquad->GetFirstMember( &iter ) : NULL;
+			while( pSquadmate )
 			{
 				NDebugOverlay::Line( WorldSpaceCenter(), pSquadmate->EyePosition(), 255, 255, 0, false, 0.1f );
 				pSquadmate = m_pSquad->GetNextMember( &iter );
@@ -435,28 +465,34 @@ void CNPC_EnemyFinder::PrescheduleThink()
 //------------------------------------------------------------------------------
 bool CNPC_EnemyFinder::ShouldAlwaysThink()
 {
-	if ( BaseClass::ShouldAlwaysThink() )
+	if( BaseClass::ShouldAlwaysThink() )
+	{
 		return true;
-		
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	}
+
+	CBasePlayer* pPlayer = AI_GetSinglePlayer();
 #ifdef MAPBASE
-	if ( pPlayer && IRelationType( pPlayer ) <= D_FR )
+	if( pPlayer && IRelationType( pPlayer ) <= D_FR )
 #else
-	if ( pPlayer && IRelationType( pPlayer ) == D_HT )
+	if( pPlayer && IRelationType( pPlayer ) == D_HT )
 #endif
 	{
 		float playerDistSqr = GetAbsOrigin().DistToSqr( pPlayer->GetAbsOrigin() );
 
-		if ( !m_flMaxSearchDist || playerDistSqr <= Square(m_flMaxSearchDist) )
+		if( !m_flMaxSearchDist || playerDistSqr <= Square( m_flMaxSearchDist ) )
 		{
-			if ( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS) )
+			if( !FBitSet( m_spawnflags, SF_ENEMY_FINDER_CHECK_VIS ) )
+			{
 				return true;
-				
-			if ( playerDistSqr <= Square( 50 * 12 ) )
+			}
+
+			if( playerDistSqr <= Square( 50 * 12 ) )
+			{
 				return true;
+			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -473,25 +509,27 @@ void CNPC_EnemyFinder::GatherConditions()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNPC_EnemyFinder::Classify( void )
 {
 #ifdef MAPBASE
-	if (m_iClassify != CLASS_NONE)
+	if( m_iClassify != CLASS_NONE )
+	{
 		return m_iClassify;
+	}
 #endif
 
-	if ( GetSquad() )
+	if( GetSquad() )
 	{
 		AISquadIter_t iter;
-		CAI_BaseNPC *pSquadmate = GetSquad()->GetFirstMember( &iter );
-		while ( pSquadmate )
+		CAI_BaseNPC* pSquadmate = GetSquad()->GetFirstMember( &iter );
+		while( pSquadmate )
 		{
-			if ( pSquadmate != this && !pSquadmate->ClassMatches( GetClassname() ) )
+			if( pSquadmate != this && !pSquadmate->ClassMatches( GetClassname() ) )
 			{
 				return pSquadmate->Classify();
 			}
@@ -509,7 +547,7 @@ void CNPC_EnemyFinder::DrawDebugGeometryOverlays( void )
 {
 	// Turn on npc_relationships if we're displaying text
 	int oldDebugOverlays = m_debugOverlays;
-	if ( m_debugOverlays & OVERLAY_TEXT_BIT )
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		m_debugOverlays |= OVERLAY_NPC_RELATION_BIT;
 	}
@@ -525,7 +563,7 @@ ConVar  ai_ef_hate_npc_frequency( "ai_ef_hate_npc_frequency", "5" );
 ConVar  ai_ef_hate_npc_duration( "ai_ef_hate_npc_duration", "1.5" );
 
 //-----------------------------------------------------------------------------
-// Derived class with a few changes that make the Combine Cannon behave the 
+// Derived class with a few changes that make the Combine Cannon behave the
 // way we want.
 //-----------------------------------------------------------------------------
 #define EF_COMBINE_CANNON_HATE_TIME_INVALID -1
@@ -547,11 +585,11 @@ public:
 	void	Spawn();
 	void	Activate();
 	void	UpdateOnRemove();
-	bool	FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker );
-	bool	IsValidEnemy( CBaseEntity *pTarget );
+	bool	FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker );
+	bool	IsValidEnemy( CBaseEntity* pTarget );
 	void	GatherConditions();
 
-	void	InputSetWideFOVForSeconds( inputdata_t &inputdata );
+	void	InputSetWideFOVForSeconds( inputdata_t& inputdata );
 
 public:
 	float		m_flTimeNextHateNPC;
@@ -564,16 +602,16 @@ LINK_ENTITY_TO_CLASS( npc_enemyfinder_combinecannon, CNPC_EnemyFinderCombineCann
 
 BEGIN_DATADESC( CNPC_EnemyFinderCombineCannon )
 DEFINE_FIELD( m_flTimeNextHateNPC, FIELD_TIME ),
-DEFINE_FIELD( m_flTimeStopHateNPC, FIELD_TIME ),
-DEFINE_FIELD( m_flOriginalFOV, FIELD_FLOAT ),
-DEFINE_FIELD( m_flTimeWideFOV, FIELD_TIME ),
-DEFINE_KEYFIELD( m_iszSnapToEnt, FIELD_STRING, "snaptoent" ),
-DEFINE_INPUTFUNC( FIELD_FLOAT, "SetWideFOVForSeconds", InputSetWideFOVForSeconds ),
-END_DATADESC()
+			  DEFINE_FIELD( m_flTimeStopHateNPC, FIELD_TIME ),
+			  DEFINE_FIELD( m_flOriginalFOV, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flTimeWideFOV, FIELD_TIME ),
+			  DEFINE_KEYFIELD( m_iszSnapToEnt, FIELD_STRING, "snaptoent" ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetWideFOVForSeconds", InputSetWideFOVForSeconds ),
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinderCombineCannon::Spawn()
+			  void CNPC_EnemyFinderCombineCannon::Spawn()
 {
 	BaseClass::Spawn();
 	m_flOriginalFOV = m_flFieldOfView;
@@ -581,60 +619,60 @@ void CNPC_EnemyFinderCombineCannon::Spawn()
 
 	if( m_iszSnapToEnt != NULL_STRING )
 	{
-		CBaseEntity *pSnapToEnt = gEntList.FindEntityByName( NULL, m_iszSnapToEnt );
+		CBaseEntity* pSnapToEnt = gEntList.FindEntityByName( NULL, m_iszSnapToEnt );
 
 		if( pSnapToEnt != NULL )
 		{
-			//!!!HACKHACK - this eight-inch offset puts this enemyfinder perfectly on-bore 
+			//!!!HACKHACK - this eight-inch offset puts this enemyfinder perfectly on-bore
 			// with the prefab for a func_tank_combinecannon
-			UTIL_SetOrigin( this, pSnapToEnt->WorldSpaceCenter() + Vector( 0, 0, 8) );
+			UTIL_SetOrigin( this, pSnapToEnt->WorldSpaceCenter() + Vector( 0, 0, 8 ) );
 		}
 		else
 		{
-			DevMsg( this, "Enemyfinder %s can't snap to %s because it doesn't exist\n", GetDebugName(), STRING(m_iszSnapToEnt) );
+			DevMsg( this, "Enemyfinder %s can't snap to %s because it doesn't exist\n", GetDebugName(), STRING( m_iszSnapToEnt ) );
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinderCombineCannon::Activate() 
+void CNPC_EnemyFinderCombineCannon::Activate()
 {
 	BaseClass::Activate();
 
 	// See if I'm in the list of Combine enemyfinders
 	// If not, add me.
-	if( s_ListEnemyfinders.Find(this) == -1 )
+	if( s_ListEnemyfinders.Find( this ) == -1 )
 	{
-		s_ListEnemyfinders.AddToTail(this);
+		s_ListEnemyfinders.AddToTail( this );
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinderCombineCannon::UpdateOnRemove() 
+void CNPC_EnemyFinderCombineCannon::UpdateOnRemove()
 {
 	BaseClass::UpdateOnRemove();
 
 	// See if I'm in the list of Combine enemyfinders
-	int index = s_ListEnemyfinders.Find(this);
+	int index = s_ListEnemyfinders.Find( this );
 	if( index != -1 )
 	{
-		s_ListEnemyfinders.Remove(index);
+		s_ListEnemyfinders.Remove( index );
 	}
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_EnemyFinderCombineCannon::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_EnemyFinderCombineCannon::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
 #if 1
-	CBaseEntity *pBlocker = NULL;
+	CBaseEntity* pBlocker = NULL;
 	bool result;
 
-	if(ppBlocker == NULL)
+	if( ppBlocker == NULL )
 	{
-		// Whoever called this didn't care about the blocker, but we do. 
+		// Whoever called this didn't care about the blocker, but we do.
 		// So substitute our local pBlocker pointer and don't disturb ppBlocker
 		result = BaseClass::FVisible( pEntity, traceMask, &pBlocker );
 	}
@@ -643,20 +681,20 @@ bool CNPC_EnemyFinderCombineCannon::FVisible( CBaseEntity *pEntity, int traceMas
 		// Copy the ppBlocker to our local pBlocker pointer, but do not
 		// disturb the ppBlocker that was passed to us.
 		result = BaseClass::FVisible( pEntity, traceMask, ppBlocker );
-		pBlocker = (*ppBlocker);
+		pBlocker = ( *ppBlocker );
 	}
 
-	if(pEntity->IsPlayer() && result == false)
+	if( pEntity->IsPlayer() && result == false )
 	{
-		// IF we are trying to see the player, but we don't, examine the blocker 
+		// IF we are trying to see the player, but we don't, examine the blocker
 		// and see the player anyway if we can hurt the blocker.
-		if(pBlocker != NULL)
+		if( pBlocker != NULL )
 		{
 			if( pBlocker->m_takedamage >= DAMAGE_YES ) // also DAMAGE_AIM
 			{
 				// Anytime the line of sight is blocked by something I can hurt, I have line of sight.
-				// This will make the func_tank_combinecannon shoot the blocking object. This will 
-				// continue until the gun bores through to the player or clears all interposing breakables 
+				// This will make the func_tank_combinecannon shoot the blocking object. This will
+				// continue until the gun bores through to the player or clears all interposing breakables
 				// and finds its progress impeded by something truly solid. So lie, and say we CAN see the player.
 				result = true;
 			}
@@ -672,9 +710,9 @@ bool CNPC_EnemyFinderCombineCannon::FVisible( CBaseEntity *pEntity, int traceMas
 //			Go through short periods of time where NPCs may distract me
 //
 //			ALSO- ignore NPC's (focus only on the player) when I'm in
-//			wide viewcone mode. 
+//			wide viewcone mode.
 //-----------------------------------------------------------------------------
-bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
+bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity* pTarget )
 {
 	if( m_flTimeWideFOV > gpGlobals->curtime && !pTarget->IsPlayer() )
 	{
@@ -696,10 +734,14 @@ bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
 		for( i = 0 ; i < s_ListEnemyfinders.Count() ; i++ )
 		{
 			if( s_ListEnemyfinders[i] == this )
+			{
 				continue;
+			}
 
 			if( s_ListEnemyfinders[i]->GetEnemy() == pTarget )
-				return false;// someone else is already busy with this target.
+			{
+				return false;    // someone else is already busy with this target.
+			}
 		}
 	}
 
@@ -721,8 +763,8 @@ bool CNPC_EnemyFinderCombineCannon::IsValidEnemy( CBaseEntity *pTarget )
 		}
 
 		// The base class wants to call this a valid enemy. We may choose to interfere
-		// If the player is in my viewcone. That means that my func_tank could potentially 
-		// harass the player. This means I should meter the time I spend shooting at npcs 
+		// If the player is in my viewcone. That means that my func_tank could potentially
+		// harass the player. This means I should meter the time I spend shooting at npcs
 		// NPCs so that I can focus on the player.
 		if( m_flTimeStopHateNPC != EF_COMBINE_CANNON_HATE_TIME_INVALID )
 		{
@@ -778,7 +820,7 @@ void CNPC_EnemyFinderCombineCannon::GatherConditions()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_EnemyFinderCombineCannon::InputSetWideFOVForSeconds( inputdata_t &inputdata )
+void CNPC_EnemyFinderCombineCannon::InputSetWideFOVForSeconds( inputdata_t& inputdata )
 {
 	m_flTimeWideFOV	= gpGlobals->curtime + inputdata.value.Float();
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -11,16 +11,16 @@
 #include "view_shared.h"
 #include "viewrender.h"
 #ifdef MAPBASE
-#include "c_point_camera.h"
+	#include "c_point_camera.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IntroData_t *g_pIntroData;
+extern IntroData_t* g_pIntroData;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_ScriptIntro : public C_BaseEntity
 {
@@ -72,38 +72,38 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_ScriptIntro, DT_ScriptIntro, CScriptIntro )
-	RecvPropVector( RECVINFO( m_vecCameraView ) ),
-	RecvPropVector( RECVINFO( m_vecCameraViewAngles ) ),
-	RecvPropInt( RECVINFO( m_iBlendMode ) ),
-	RecvPropInt( RECVINFO( m_iNextBlendMode ) ),
-	RecvPropFloat( RECVINFO( m_flNextBlendTime ) ),
-	RecvPropFloat( RECVINFO( m_flBlendStartTime ) ),
-	RecvPropBool( RECVINFO( m_bActive ) ),
+RecvPropVector( RECVINFO( m_vecCameraView ) ),
+				RecvPropVector( RECVINFO( m_vecCameraViewAngles ) ),
+				RecvPropInt( RECVINFO( m_iBlendMode ) ),
+				RecvPropInt( RECVINFO( m_iNextBlendMode ) ),
+				RecvPropFloat( RECVINFO( m_flNextBlendTime ) ),
+				RecvPropFloat( RECVINFO( m_flBlendStartTime ) ),
+				RecvPropBool( RECVINFO( m_bActive ) ),
 #ifdef MAPBASE
 	RecvPropBool( RECVINFO( m_bDrawSky ) ),
 	RecvPropBool( RECVINFO( m_bDrawSky2 ) ),
 	RecvPropBool( RECVINFO( m_bUseEyePosition ) ),
 #endif
-	
-	// Fov & fov blends 
-	RecvPropInt( RECVINFO( m_iFOV ) ),
-	RecvPropInt( RECVINFO( m_iNextFOV ) ),
-	RecvPropInt( RECVINFO( m_iStartFOV ) ),
-	RecvPropFloat( RECVINFO( m_flNextFOVBlendTime ) ),
-	RecvPropFloat( RECVINFO( m_flFOVBlendStartTime ) ),
-	RecvPropBool( RECVINFO( m_bAlternateFOV ) ),
 
-	// Fades
-	RecvPropFloat( RECVINFO( m_flFadeAlpha ) ),
-	RecvPropArray( RecvPropFloat( RECVINFO( m_flFadeColor[0] ) ), m_flFadeColor ),
-	RecvPropFloat( RECVINFO( m_flFadeDuration ) ),
-	RecvPropEHandle(RECVINFO(m_hCameraEntity)),
-END_RECV_TABLE()
+				// Fov & fov blends
+				RecvPropInt( RECVINFO( m_iFOV ) ),
+				RecvPropInt( RECVINFO( m_iNextFOV ) ),
+				RecvPropInt( RECVINFO( m_iStartFOV ) ),
+				RecvPropFloat( RECVINFO( m_flNextFOVBlendTime ) ),
+				RecvPropFloat( RECVINFO( m_flFOVBlendStartTime ) ),
+				RecvPropBool( RECVINFO( m_bAlternateFOV ) ),
+
+				// Fades
+				RecvPropFloat( RECVINFO( m_flFadeAlpha ) ),
+				RecvPropArray( RecvPropFloat( RECVINFO( m_flFadeColor[0] ) ), m_flFadeColor ),
+				RecvPropFloat( RECVINFO( m_flFadeDuration ) ),
+				RecvPropEHandle( RECVINFO( m_hCameraEntity ) ),
+				END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_ScriptIntro::C_ScriptIntro( void )
+				C_ScriptIntro::C_ScriptIntro( void )
 {
 	m_bActive = false;
 	m_vecCameraView = vec3_origin;
@@ -132,7 +132,7 @@ C_ScriptIntro::C_ScriptIntro( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_ScriptIntro::~C_ScriptIntro( void )
 {
@@ -140,7 +140,7 @@ C_ScriptIntro::~C_ScriptIntro( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -158,8 +158,8 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 #endif
 
 	// Find/Create our first pass
-	IntroDataBlendPass_t *pass1;
-	if ( m_IntroData.m_Passes.Count() == 0 )
+	IntroDataBlendPass_t* pass1;
+	if( m_IntroData.m_Passes.Count() == 0 )
 	{
 		pass1 = &m_IntroData.m_Passes[m_IntroData.m_Passes.AddToTail()];
 	}
@@ -167,11 +167,11 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	{
 		pass1 = &m_IntroData.m_Passes[0];
 	}
-	Assert(pass1);
+	Assert( pass1 );
 	pass1->m_BlendMode = m_iBlendMode;
 	pass1->m_Alpha = 1.0f;
 
-	if ( m_vecCameraView == vec3_origin )
+	if( m_vecCameraView == vec3_origin )
 	{
 		m_IntroData.m_bDrawPrimary = false;
 	}
@@ -183,10 +183,10 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 
 		// If it's a point_camera and it's ortho, send it to the intro data
 		// Change this code if the purpose of m_hCameraEntity in intro data ever goes beyond ortho
-		if ( m_hCameraEntity && Q_strncmp(m_hCameraEntity->GetClassname(), "point_camera", 12) == 0 )
+		if( m_hCameraEntity && Q_strncmp( m_hCameraEntity->GetClassname(), "point_camera", 12 ) == 0 )
 		{
-			C_PointCamera *pCamera = dynamic_cast<C_PointCamera*>(m_hCameraEntity.Get());
-			if (pCamera && pCamera->IsOrtho())
+			C_PointCamera* pCamera = dynamic_cast<C_PointCamera*>( m_hCameraEntity.Get() );
+			if( pCamera && pCamera->IsOrtho() )
 			{
 				m_IntroData.m_hCameraEntity = m_hCameraEntity;
 			}
@@ -195,10 +195,10 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	}
 
 	// If we're currently blending to a new mode, set the second pass
-	if ( m_flNextBlendTime > gpGlobals->curtime )
+	if( m_flNextBlendTime > gpGlobals->curtime )
 	{
-		IntroDataBlendPass_t *pass2;
-		if ( m_IntroData.m_Passes.Count() < 2 )
+		IntroDataBlendPass_t* pass2;
+		if( m_IntroData.m_Passes.Count() < 2 )
 		{
 			pass2 = &m_IntroData.m_Passes[m_IntroData.m_Passes.AddToTail()];
 
@@ -210,26 +210,28 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 
 			Assert( pass2->m_BlendMode == m_iNextBlendMode );
 		}
-		Assert(pass2);
+		Assert( pass2 );
 		pass2->m_BlendMode = m_iNextBlendMode;
 		pass2->m_Alpha = 0.0f;
 	}
-	else if ( m_IntroData.m_Passes.Count() == 2 )
+	else if( m_IntroData.m_Passes.Count() == 2 )
 	{
-		C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-		if ( !player )
+		C_BasePlayer* player = C_BasePlayer::GetLocalPlayer();
+		if( !player )
+		{
 			return;
+		}
 
 		//Msg("FINISHED BLEND.\n");
-		m_IntroData.m_Passes.Remove(1);
+		m_IntroData.m_Passes.Remove( 1 );
 	}
 
 	// Set the introdata our data chunk
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		g_pIntroData = &m_IntroData;
 	}
-	else if ( g_pIntroData == &m_IntroData )
+	else if( g_pIntroData == &m_IntroData )
 	{
 		g_pIntroData = NULL;
 	}
@@ -240,13 +242,13 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 	m_IntroData.m_flCurrentFadeColor[2] = m_flFadeColor[2];
 
 	// Started fading?
-	if ( m_flFadeAlpha != m_flPrevServerFadeAlpha )
+	if( m_flFadeAlpha != m_flPrevServerFadeAlpha )
 	{
 		m_flFadeTimeStartedAt = gpGlobals->curtime;
 		m_flFadeAlphaStartedAt = m_IntroData.m_flCurrentFadeColor[3];
 		m_flPrevServerFadeAlpha = m_flFadeAlpha;
 
-		if ( !m_flFadeDuration )
+		if( !m_flFadeDuration )
 		{
 			m_flFadeDuration = 0.01;
 		}
@@ -254,7 +256,7 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 		//Msg("STARTING NEW FADE: alpha %.2f, duration %.2f.\n", m_flFadeAlpha, m_flFadeDuration );
 	}
 
-	if ( m_iPrevFOV != m_iFOV )
+	if( m_iPrevFOV != m_iFOV )
 	{
 		m_IntroData.m_playerViewFOV = m_iFOV;
 		m_iPrevFOV = m_iFOV;
@@ -262,16 +264,16 @@ void C_ScriptIntro::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ScriptIntro::ClientThink( void )
 {
 	Assert( m_IntroData.m_Passes.Count() <= 2 );
 
-	if ( m_hCameraEntity )
+	if( m_hCameraEntity )
 	{
 #ifdef MAPBASE
-		if ( m_bUseEyePosition )
+		if( m_bUseEyePosition )
 		{
 			m_hCameraEntity->GetEyePosition( m_IntroData.m_vecCameraView, m_IntroData.m_vecCameraViewAngles );
 		}
@@ -287,24 +289,24 @@ void C_ScriptIntro::ClientThink( void )
 	}
 
 	CalculateFOV();
-	CalculateAlpha();	
+	CalculateAlpha();
 
 	// Calculate the blend levels of each pass
 	float flPerc = 1.0;
-	if ( (m_flNextBlendTime - m_flBlendStartTime) != 0 )
+	if( ( m_flNextBlendTime - m_flBlendStartTime ) != 0 )
 	{
-		flPerc = clamp( (gpGlobals->curtime - m_flBlendStartTime) / (m_flNextBlendTime - m_flBlendStartTime), 0, 1 );
+		flPerc = clamp( ( gpGlobals->curtime - m_flBlendStartTime ) / ( m_flNextBlendTime - m_flBlendStartTime ), 0, 1 );
 	}
 
 	// Detect when we're finished blending
-	if ( flPerc >= 1.0 )
+	if( flPerc >= 1.0 )
 	{
-		if ( m_IntroData.m_Passes.Count() == 2 )
+		if( m_IntroData.m_Passes.Count() == 2 )
 		{
 			// We're done blending
 			m_IntroData.m_Passes[0].m_BlendMode = m_IntroData.m_Passes[1].m_BlendMode;
 			m_IntroData.m_Passes[0].m_Alpha = 1.0;
-			m_IntroData.m_Passes.Remove(1);
+			m_IntroData.m_Passes.Remove( 1 );
 
 			//Msg("FINISHED BLEND.\n");
 		}
@@ -324,7 +326,7 @@ void C_ScriptIntro::ClientThink( void )
 	}
 	*/
 
-	if ( m_IntroData.m_Passes.Count() == 2 )
+	if( m_IntroData.m_Passes.Count() == 2 )
 	{
 		m_IntroData.m_Passes[0].m_Alpha = 1.0 - flPerc;
 		m_IntroData.m_Passes[1].m_Alpha = flPerc;
@@ -338,12 +340,12 @@ void C_ScriptIntro::ClientThink( void )
 extern float ScriptInfo_CalculateFOV( float flFOVBlendStartTime, float flNextFOVBlendTime, int nFOV, int nNextFOV, bool bSplineRamp );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ScriptIntro::CalculateFOV( void )
 {
 	// We're past our blending time so we're at our target
-	if ( m_flNextFOVBlendTime >= gpGlobals->curtime )
+	if( m_flNextFOVBlendTime >= gpGlobals->curtime )
 	{
 		// Calculate where we're at
 		m_IntroData.m_playerViewFOV = ScriptInfo_CalculateFOV( m_flFOVBlendStartTime, m_flNextFOVBlendTime, m_iStartFOV, m_iNextFOV, m_bAlternateFOV );
@@ -351,7 +353,7 @@ void C_ScriptIntro::CalculateFOV( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ScriptIntro::CalculateAlpha( void )
 {
@@ -370,7 +372,7 @@ void C_ScriptIntro::CalculateAlpha( void )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_PlayerViewProxy : public C_BaseEntity
 {
@@ -379,15 +381,21 @@ public:
 	DECLARE_CLIENTCLASS();
 
 	Vector	EyePosition( void );			// position of eyes
-	const QAngle &EyeAngles( void );		// Direction of eyes in world space
-	void GetEyePosition( Vector &vecOrigin, QAngle &angAngles );
-	const QAngle &LocalEyeAngles( void );	// Direction of eyes
+	const QAngle& EyeAngles( void );		// Direction of eyes in world space
+	void GetEyePosition( Vector& vecOrigin, QAngle& angAngles );
+	const QAngle& LocalEyeAngles( void );	// Direction of eyes
 	Vector	EarPosition( void );			// position of ears
 
 #ifdef MAPBASE_MP
-	C_BasePlayer	*GetPlayer() { return m_bEnabled ? (m_hPlayer.Get() ? m_hPlayer.Get() : C_BasePlayer::GetLocalPlayer()) : NULL; }
+	C_BasePlayer*	GetPlayer()
+	{
+		return m_bEnabled ? ( m_hPlayer.Get() ? m_hPlayer.Get() : C_BasePlayer::GetLocalPlayer() ) : NULL;
+	}
 #else
-	C_BasePlayer	*GetPlayer() { return m_bEnabled ? C_BasePlayer::GetLocalPlayer() : NULL; }
+	C_BasePlayer*	GetPlayer()
+	{
+		return m_bEnabled ? C_BasePlayer::GetLocalPlayer() : NULL;
+	}
 #endif
 
 public:
@@ -402,16 +410,16 @@ IMPLEMENT_CLIENTCLASS_DT( C_PlayerViewProxy, DT_PlayerViewProxy, CPlayerViewProx
 #ifdef MAPBASE_MP
 	RecvPropEHandle( RECVINFO( m_hPlayer ) ),
 #endif
-	RecvPropBool( RECVINFO( m_bEnabled ) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bEnabled ) ),
+			  END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-Vector C_PlayerViewProxy::EyePosition( void )
+			  Vector C_PlayerViewProxy::EyePosition( void )
 {
-	C_BasePlayer *pPlayer = GetPlayer();
-	if (pPlayer)
+	C_BasePlayer* pPlayer = GetPlayer();
+	if( pPlayer )
 	{
 		//Vector vecPlayerOffset = m_hPlayer.Get()->EyePosition() - m_hPlayer.Get()->GetAbsOrigin();
 		//return GetAbsOrigin() + vecPlayerOffset;
@@ -421,47 +429,51 @@ Vector C_PlayerViewProxy::EyePosition( void )
 		float fldummy;
 		pPlayer->CalcView( vecOrigin, angAngles, fldummy, fldummy, fldummy );
 
-		return GetAbsOrigin() + (vecOrigin - pPlayer->GetAbsOrigin());
+		return GetAbsOrigin() + ( vecOrigin - pPlayer->GetAbsOrigin() );
 	}
 	else
+	{
 		return BaseClass::EyePosition();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const QAngle &C_PlayerViewProxy::EyeAngles( void )
+const QAngle& C_PlayerViewProxy::EyeAngles( void )
 {
-	C_BasePlayer *pPlayer = GetPlayer();
-	if (pPlayer)
+	C_BasePlayer* pPlayer = GetPlayer();
+	if( pPlayer )
 	{
 		Vector vecOrigin;
 		static QAngle angAngles;
 		float fldummy;
 		pPlayer->CalcView( vecOrigin, angAngles, fldummy, fldummy, fldummy );
 
-		angAngles = GetAbsAngles() + (angAngles - pPlayer->GetAbsAngles());
+		angAngles = GetAbsAngles() + ( angAngles - pPlayer->GetAbsAngles() );
 		return angAngles;
 
 		//return m_hPlayer.Get()->EyeAngles();
 	}
 	else
+	{
 		return BaseClass::EyeAngles();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_PlayerViewProxy::GetEyePosition( Vector &vecOrigin, QAngle &angAngles )
+void C_PlayerViewProxy::GetEyePosition( Vector& vecOrigin, QAngle& angAngles )
 {
-	C_BasePlayer *pPlayer = GetPlayer();
-	if (pPlayer)
+	C_BasePlayer* pPlayer = GetPlayer();
+	if( pPlayer )
 	{
 		float fldummy;
 		pPlayer->CalcView( vecOrigin, angAngles, fldummy, fldummy, fldummy );
 
-		vecOrigin = GetAbsOrigin() + (vecOrigin - pPlayer->GetAbsOrigin());
-		angAngles = GetAbsAngles() + (angAngles - pPlayer->GetAbsAngles());
+		vecOrigin = GetAbsOrigin() + ( vecOrigin - pPlayer->GetAbsOrigin() );
+		angAngles = GetAbsAngles() + ( angAngles - pPlayer->GetAbsAngles() );
 	}
 	else
 	{
@@ -470,33 +482,38 @@ void C_PlayerViewProxy::GetEyePosition( Vector &vecOrigin, QAngle &angAngles )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const QAngle &C_PlayerViewProxy::LocalEyeAngles( void )
+const QAngle& C_PlayerViewProxy::LocalEyeAngles( void )
 {
-	C_BasePlayer *pPlayer = GetPlayer();
-	if (pPlayer) {
+	C_BasePlayer* pPlayer = GetPlayer();
+	if( pPlayer )
+	{
 		static QAngle angAngles;
-		angAngles = GetAbsAngles() + (pPlayer->LocalEyeAngles() - pPlayer->GetAbsAngles());
+		angAngles = GetAbsAngles() + ( pPlayer->LocalEyeAngles() - pPlayer->GetAbsAngles() );
 		return angAngles;
 	}
 	else
+	{
 		return BaseClass::LocalEyeAngles();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector C_PlayerViewProxy::EarPosition( void )
 {
-	C_BasePlayer *pPlayer = GetPlayer();
-	if (pPlayer)
+	C_BasePlayer* pPlayer = GetPlayer();
+	if( pPlayer )
 	{
 		Vector vecPlayerOffset = pPlayer->GetAbsOrigin() - pPlayer->EarPosition();
 		return GetAbsOrigin() + vecPlayerOffset;
 	}
 	else
+	{
 		return BaseClass::EarPosition();
+	}
 }
 #endif
 

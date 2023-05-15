@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( C_TE_BASEBEAM_H )
 #define C_TE_BASEBEAM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_basetempentity.h"
@@ -27,7 +27,7 @@ private:
 
 public:
 
-					C_TEBaseBeam( void );
+	C_TEBaseBeam( void );
 	virtual			~C_TEBaseBeam( void );
 
 	virtual void	PreDataUpdate( DataUpdateType_t updateType );
@@ -48,6 +48,6 @@ public:
 	int				m_nFlags;
 };
 
-EXTERN_RECV_TABLE(DT_BaseBeam);
+EXTERN_RECV_TABLE( DT_BaseBeam );
 
 #endif // C_TE_BASEBEAM_H

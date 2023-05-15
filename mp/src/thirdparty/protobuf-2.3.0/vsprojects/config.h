@@ -10,9 +10,9 @@
 //   http://blogs.msdn.com/vcblog/archive/2009/05/25/stl-breaking-changes-in-visual-studio-2010-beta-1.aspx
 // TODO(kenton):  Use unordered_map instead, which is available in MSVC 2010.
 #if _MSC_VER < 1310 || _MSC_VER >= 1600
-#define HASH_NAMESPACE std
+	#define HASH_NAMESPACE std
 #else
-#define HASH_NAMESPACE stdext
+	#define HASH_NAMESPACE stdext
 #endif
 
 /* the location of <hash_set> */

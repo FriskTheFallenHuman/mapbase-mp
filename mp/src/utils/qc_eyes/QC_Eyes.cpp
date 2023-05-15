@@ -7,20 +7,20 @@
 #include "QC_EyesDlg.h"
 
 #ifdef _DEBUG
-#define new DEBUG_NEW
-#undef THIS_FILE
-static char THIS_FILE[] = __FILE__;
+	#define new DEBUG_NEW
+	#undef THIS_FILE
+	static char THIS_FILE[] = __FILE__;
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
 // CQC_EyesApp
 
-BEGIN_MESSAGE_MAP(CQC_EyesApp, CWinApp)
+BEGIN_MESSAGE_MAP( CQC_EyesApp, CWinApp )
 	//{{AFX_MSG_MAP(CQC_EyesApp)
-		// NOTE - the ClassWizard will add and remove mapping macros here.
-		//    DO NOT EDIT what you see in these blocks of generated code!
+	// NOTE - the ClassWizard will add and remove mapping macros here.
+	//    DO NOT EDIT what you see in these blocks of generated code!
 	//}}AFX_MSG
-	ON_COMMAND(ID_HELP, CWinApp::OnHelp)
+	ON_COMMAND( ID_HELP, CWinApp::OnHelp )
 END_MESSAGE_MAP()
 
 /////////////////////////////////////////////////////////////////////////////
@@ -56,12 +56,12 @@ BOOL CQC_EyesApp::InitInstance()
 	CQC_EyesDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
-	if (nResponse == IDOK)
+	if( nResponse == IDOK )
 	{
 		// TODO: Place code here to handle when the dialog is
 		//  dismissed with OK
 	}
-	else if (nResponse == IDCANCEL)
+	else if( nResponse == IDCANCEL )
 	{
 		// TODO: Place code here to handle when the dialog is
 		//  dismissed with Cancel

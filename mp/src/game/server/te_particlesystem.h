@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef TE_PARTICLESYSTEM_H
 #define TE_PARTICLESYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,7 +21,7 @@ public:
 	DECLARE_CLASS( CTEParticleSystem, CBaseTempEntity );
 	DECLARE_SERVERCLASS();
 
-	CTEParticleSystem(const char *pName) : BaseClass(pName)
+	CTEParticleSystem( const char* pName ) : BaseClass( pName )
 	{
 		m_vecOrigin.GetForModify().Init();
 	}

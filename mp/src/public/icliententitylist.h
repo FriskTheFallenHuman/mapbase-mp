@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -10,7 +10,7 @@
 #define ICLIENTENTITYLIST_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
@@ -29,14 +29,14 @@ abstract_class IClientEntityList
 {
 public:
 	// Get IClientNetworkable interface for specified entity
-	virtual IClientNetworkable*	GetClientNetworkable( int entnum ) = 0;
-	virtual IClientNetworkable*	GetClientNetworkableFromHandle( CBaseHandle hEnt ) = 0;
-	virtual IClientUnknown*		GetClientUnknownFromHandle( CBaseHandle hEnt ) = 0;
+	virtual IClientNetworkable *	GetClientNetworkable( int entnum ) = 0;
+	virtual IClientNetworkable *	GetClientNetworkableFromHandle( CBaseHandle hEnt ) = 0;
+	virtual IClientUnknown *		GetClientUnknownFromHandle( CBaseHandle hEnt ) = 0;
 
 	// NOTE: This function is only a convenience wrapper.
 	// It returns GetClientNetworkable( entnum )->GetIClientEntity().
-	virtual IClientEntity*		GetClientEntity( int entnum ) = 0;
-	virtual IClientEntity*		GetClientEntityFromHandle( CBaseHandle hEnt ) = 0;
+	virtual IClientEntity *		GetClientEntity( int entnum ) = 0;
+	virtual IClientEntity *		GetClientEntityFromHandle( CBaseHandle hEnt ) = 0;
 
 	// Returns number of entities currently in use
 	virtual int					NumberOfEntities( bool bIncludeNonNetworkable ) = 0;
@@ -49,7 +49,7 @@ public:
 	virtual int					GetMaxEntities( ) = 0;
 };
 
-extern IClientEntityList *entitylist;
+extern IClientEntityList* entitylist;
 
 #define VCLIENTENTITYLIST_INTERFACE_VERSION	"VClientEntityList003"
 

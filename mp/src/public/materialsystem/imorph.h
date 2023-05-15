@@ -15,7 +15,7 @@
 #define IMORPH_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -68,10 +68,10 @@ public:
 	virtual void Lock( float flFloatToFixedScale = 1.0f ) = 0;
 
 	// Adds a morph
-	virtual void AddMorph( const MorphVertexInfo_t &info ) = 0;
+	virtual void AddMorph( const MorphVertexInfo_t& info ) = 0;
 
 	// Unlocks the morph
-	virtual void Unlock(  ) = 0;
+	virtual void Unlock( ) = 0;
 };
 
 
@@ -85,18 +85,18 @@ public:
 	~CMorphBuilder();
 
 	// Start building the morph
-	void Begin( IMorph *pMorph, float flFloatToFixedScale = 1.0f );
+	void Begin( IMorph* pMorph, float flFloatToFixedScale = 1.0f );
 
 	// End building the morph
 	void End();
 
-	void PositionDelta3fv( const float *pDelta );
+	void PositionDelta3fv( const float* pDelta );
 	void PositionDelta3f( float dx, float dy, float dz );
-	void PositionDelta3( const Vector &vec );
+	void PositionDelta3( const Vector& vec );
 
-	void NormalDelta3fv( const float *pDelta );
+	void NormalDelta3fv( const float* pDelta );
 	void NormalDelta3f( float dx, float dy, float dz );
-	void NormalDelta3( const Vector &vec );
+	void NormalDelta3( const Vector& vec );
 
 	void WrinkleDelta1f( float flWrinkle );
 
@@ -110,7 +110,7 @@ public:
 
 private:
 	MorphVertexInfo_t m_Info;
-	IMorph *m_pMorph;
+	IMorph* m_pMorph;
 };
 
 
@@ -132,7 +132,7 @@ inline CMorphBuilder::~CMorphBuilder()
 //-----------------------------------------------------------------------------
 // Start building the morph
 //-----------------------------------------------------------------------------
-inline void CMorphBuilder::Begin( IMorph *pMorph, float flFloatToFixedScale )
+inline void CMorphBuilder::Begin( IMorph* pMorph, float flFloatToFixedScale )
 {
 	Assert( pMorph && !m_pMorph );
 	m_pMorph = pMorph;
@@ -159,7 +159,7 @@ inline void CMorphBuilder::End()
 //-----------------------------------------------------------------------------
 // Set position delta
 //-----------------------------------------------------------------------------
-inline void CMorphBuilder::PositionDelta3fv( const float *pDelta )
+inline void CMorphBuilder::PositionDelta3fv( const float* pDelta )
 {
 	Assert( m_pMorph );
 	m_Info.m_PositionDelta.Init( pDelta[0], pDelta[1], pDelta[2] );
@@ -171,7 +171,7 @@ inline void CMorphBuilder::PositionDelta3f( float dx, float dy, float dz )
 	m_Info.m_PositionDelta.Init( dx, dy, dz );
 }
 
-inline void CMorphBuilder::PositionDelta3( const Vector &vec )
+inline void CMorphBuilder::PositionDelta3( const Vector& vec )
 {
 	Assert( m_pMorph );
 	m_Info.m_PositionDelta = vec;
@@ -181,7 +181,7 @@ inline void CMorphBuilder::PositionDelta3( const Vector &vec )
 //-----------------------------------------------------------------------------
 // Set normal delta
 //-----------------------------------------------------------------------------
-inline void CMorphBuilder::NormalDelta3fv( const float *pDelta )
+inline void CMorphBuilder::NormalDelta3fv( const float* pDelta )
 {
 	Assert( m_pMorph );
 	m_Info.m_NormalDelta.Init( pDelta[0], pDelta[1], pDelta[2] );
@@ -193,7 +193,7 @@ inline void CMorphBuilder::NormalDelta3f( float dx, float dy, float dz )
 	m_Info.m_NormalDelta.Init( dx, dy, dz );
 }
 
-inline void CMorphBuilder::NormalDelta3( const Vector &vec )
+inline void CMorphBuilder::NormalDelta3( const Vector& vec )
 {
 	Assert( m_pMorph );
 	m_Info.m_NormalDelta = vec;

@@ -1,39 +1,39 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef LIGHTS_H
 #define LIGHTS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CLight : public CPointEntity
 {
 public:
 	DECLARE_CLASS( CLight, CPointEntity );
 
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 	void	Spawn( void );
 	void	FadeThink( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
+
 	void	TurnOn( void );
 	void	TurnOff( void );
 	void	Toggle( void );
 
 	// Input handlers
-	void	InputSetPattern( inputdata_t &inputdata );
-	void	InputFadeToPattern( inputdata_t &inputdata );
+	void	InputSetPattern( inputdata_t& inputdata );
+	void	InputFadeToPattern( inputdata_t& inputdata );
 
-	void	InputToggle( inputdata_t &inputdata );
-	void	InputTurnOn( inputdata_t &inputdata );
-	void	InputTurnOff( inputdata_t &inputdata );
+	void	InputToggle( inputdata_t& inputdata );
+	void	InputTurnOn( inputdata_t& inputdata );
+	void	InputTurnOff( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef PROPS_SHARED_H
 #define PROPS_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "igamesystem.h"
@@ -33,7 +33,7 @@
 #define SF_PHYSPROP_NO_COLLISIONS				0x200000		// Don't enable collisions on spawn
 #define SF_PHYSPROP_IS_GIB						0x400000		// Limit # of active gibs
 #ifdef MAPBASE
-#define SF_PHYSPROP_NO_ZOMBIE_SWAT				0x800000		// Zombies are not allowed to swat this
+	#define SF_PHYSPROP_NO_ZOMBIE_SWAT				0x800000		// Zombies are not allowed to swat this
 #endif
 
 // Any barrel farther away than this is ignited rather than exploded.
@@ -69,7 +69,7 @@ enum propdata_interactions_t
 	PROPINTER_PHYSGUN_ALLOW_OVERHEAD,	// "allow_overhead"	"yes"
 
 	PROPINTER_WORLD_BLOODSPLAT,			// "onworldimpact", "bloodsplat"
-	
+
 	PROPINTER_PHYSGUN_NOTIFY_CHILDREN,	// "onfirstimpact" cause attached flechettes to explode
 
 	// If we get more than 32 of these, we'll need a different system
@@ -155,7 +155,7 @@ public:
 	virtual bool		HasInteraction( propdata_interactions_t Interaction ) = 0;
 
 	// Multiplayer physics mode
-	virtual void		SetPhysicsMode(int iMode) = 0;
+	virtual void		SetPhysicsMode( int iMode ) = 0;
 	virtual int			GetPhysicsMode() = 0;
 
 	// Multiplayer breakable spawn behavior
@@ -183,16 +183,16 @@ public:
 	void ParsePropDataFile( void );
 
 	// Parse a keyvalues section into the prop
-	int ParsePropFromKV( CBaseEntity *pProp, KeyValues *pSection, KeyValues *pInteractionSection );
+	int ParsePropFromKV( CBaseEntity* pProp, KeyValues* pSection, KeyValues* pInteractionSection );
 
 	// Fill out a prop's with base data parsed from the propdata file
-	int ParsePropFromBase( CBaseEntity *pProp, const char *pszPropData );
+	int ParsePropFromBase( CBaseEntity* pProp, const char* pszPropData );
 
 	// Get a random chunk in the specified breakable section
-	const char *GetRandomChunkModel( const char *pszBreakableSection, int iMaxSize = -1 );
+	const char* GetRandomChunkModel( const char* pszBreakableSection, int iMaxSize = -1 );
 
 protected:
-	KeyValues	*m_pKVPropData;
+	KeyValues*	m_pKVPropData;
 	bool		m_bPropDataLoaded;
 
 	struct propdata_breakablechunk_t
@@ -225,8 +225,8 @@ struct breakmodel_t
 
 struct breakablepropparams_t
 {
-	breakablepropparams_t( const Vector &_origin, const QAngle &_angles, const Vector &_velocity, const AngularImpulse &_angularVelocity )
-		: origin(_origin), angles(_angles), velocity(_velocity), angularVelocity(_angularVelocity)
+	breakablepropparams_t( const Vector& _origin, const QAngle& _angles, const Vector& _velocity, const AngularImpulse& _angularVelocity )
+		: origin( _origin ), angles( _angles ), velocity( _velocity ), angularVelocity( _angularVelocity )
 	{
 		impactEnergyScale = 0;
 		defBurstScale = 0;
@@ -234,27 +234,27 @@ struct breakablepropparams_t
 		nDefaultSkin = 0;
 	}
 
-	const Vector &origin;
-	const QAngle &angles;
-	const Vector &velocity;
-	const AngularImpulse &angularVelocity;
+	const Vector& origin;
+	const QAngle& angles;
+	const Vector& velocity;
+	const AngularImpulse& angularVelocity;
 	float impactEnergyScale;
 	float defBurstScale;
 	int defCollisionGroup;
 	int nDefaultSkin;
 };
 
-const char *GetMassEquivalent(float flMass);
+const char* GetMassEquivalent( float flMass );
 int  GetAutoMultiplayerPhysicsMode( Vector size, float mass );
-void BuildPropList( const char *pszBlockName, CUtlVector<breakmodel_t> &list, int modelindex, float defBurstScale, int defCollisionGroup );
-void BreakModelList( CUtlVector<breakmodel_t> &list, int modelindex, float defBurstScale, int defCollisionGroup );
-void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const breakablepropparams_t &params, CBaseEntity *pEntity, int iPrecomputedBreakableCount, bool bIgnoreGibLImit, bool defaultLocation = true );
-void PropBreakableCreateAll( int modelindex, IPhysicsObject *pPhysics, const Vector &origin, const QAngle &angles, const Vector &velocity, const AngularImpulse &angularVelocity, float impactEnergyScale, float burstScale, int collisionGroup, CBaseEntity *pEntity = NULL, bool defaultLocation = true );
+void BuildPropList( const char* pszBlockName, CUtlVector<breakmodel_t>& list, int modelindex, float defBurstScale, int defCollisionGroup );
+void BreakModelList( CUtlVector<breakmodel_t>& list, int modelindex, float defBurstScale, int defCollisionGroup );
+void PropBreakableCreateAll( int modelindex, IPhysicsObject* pPhysics, const breakablepropparams_t& params, CBaseEntity* pEntity, int iPrecomputedBreakableCount, bool bIgnoreGibLImit, bool defaultLocation = true );
+void PropBreakableCreateAll( int modelindex, IPhysicsObject* pPhysics, const Vector& origin, const QAngle& angles, const Vector& velocity, const AngularImpulse& angularVelocity, float impactEnergyScale, float burstScale, int collisionGroup, CBaseEntity* pEntity = NULL, bool defaultLocation = true );
 
 // Player gibs.
-void PrecachePropsForModel( int iModel, const char *pszBlockName );
+void PrecachePropsForModel( int iModel, const char* pszBlockName );
 void PrecacheGibsForModel( int iModel );
-void BuildGibList( CUtlVector<breakmodel_t> &list, int modelindex, float defBurstScale, int defCollisionGroup );
-CBaseEntity *CreateGibsFromList( CUtlVector<breakmodel_t> &list, int modelindex, IPhysicsObject *pPhysics, const breakablepropparams_t &params, CBaseEntity *pEntity, int iPrecomputedBreakableCount, bool bIgnoreGibLImit, bool defaultLocation = true, CUtlVector<EHANDLE> *pGibList = NULL, bool bBurning = false );
+void BuildGibList( CUtlVector<breakmodel_t>& list, int modelindex, float defBurstScale, int defCollisionGroup );
+CBaseEntity* CreateGibsFromList( CUtlVector<breakmodel_t>& list, int modelindex, IPhysicsObject* pPhysics, const breakablepropparams_t& params, CBaseEntity* pEntity, int iPrecomputedBreakableCount, bool bIgnoreGibLImit, bool defaultLocation = true, CUtlVector<EHANDLE>* pGibList = NULL, bool bBurning = false );
 
 #endif // PROPS_SHARED_H

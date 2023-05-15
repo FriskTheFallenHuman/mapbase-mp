@@ -9,7 +9,7 @@
 #ifndef CLIENTVIRTUALREALITY_H
 #define CLIENTVIRTUALREALITY_H
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "tier3/tier3.h"
@@ -58,7 +58,7 @@ public:
 	//
 	virtual bool							Connect( CreateInterfaceFn factory );
 	virtual void							Disconnect();
-	virtual void *							QueryInterface( const char *pInterfaceName );
+	virtual void* 							QueryInterface( const char* pInterfaceName );
 
 	// these will come from the engine
 	virtual InitReturnVal_t					Init();
@@ -76,27 +76,30 @@ public:
 	//---------------------------------------------------------
 	// VR utilities for use in the client
 	//---------------------------------------------------------
-	bool OverrideView ( CViewSetup *pViewMiddle, Vector *pViewModelOrigin, QAngle *pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride );
-	bool OverrideStereoView( CViewSetup *pViewMiddle, CViewSetup *pViewLeft, CViewSetup *pViewRight );
-	bool OverridePlayerMotion( float flInputSampleFrametime, const QAngle &oldAngles, const QAngle &curAngles, const Vector &curMotion, QAngle *pNewAngles, Vector *pNewMotion );
-	bool OverrideWeaponHudAimVectors ( Vector *pAimOrigin, Vector *pAimDirection );
+	bool OverrideView( CViewSetup* pViewMiddle, Vector* pViewModelOrigin, QAngle* pViewModelAngles, HeadtrackMovementMode_t hmmMovementOverride );
+	bool OverrideStereoView( CViewSetup* pViewMiddle, CViewSetup* pViewLeft, CViewSetup* pViewRight );
+	bool OverridePlayerMotion( float flInputSampleFrametime, const QAngle& oldAngles, const QAngle& curAngles, const Vector& curMotion, QAngle* pNewAngles, Vector* pNewMotion );
+	bool OverrideWeaponHudAimVectors( Vector* pAimOrigin, Vector* pAimDirection );
 	bool CurrentlyZoomed();
-	void OverrideTorsoTransform( const Vector & position, const QAngle & angles ) ;
+	void OverrideTorsoTransform( const Vector& position, const QAngle& angles ) ;
 	void CancelTorsoTransformOverride( ) ;
 	bool CanOverlayHudQuad();
-	void GetHUDBounds( Vector *pViewer, Vector *pUL, Vector *pUR, Vector *pLL, Vector *pLR );
+	void GetHUDBounds( Vector* pViewer, Vector* pUL, Vector* pUR, Vector* pLL, Vector* pLR );
 	void RenderHUDQuad( bool bBlackout, bool bTranslucent );
 	float GetZoomedModeMagnification();
 	bool ProcessCurrentTrackingState( float fGameFOV );
-	const VMatrix &GetHudProjectionFromWorld();
-	void GetTorsoRelativeAim( Vector *pPosition, QAngle *pAngles );
+	const VMatrix& GetHudProjectionFromWorld();
+	void GetTorsoRelativeAim( Vector* pPosition, QAngle* pAngles );
 	float GetHUDDistance();
 	bool ShouldRenderHUDInWorld();
-	const VMatrix & GetWorldFromMidEye() const { return m_WorldFromMidEyeNoDebugCam; }
-	void OverrideViewModelTransform( Vector & vmorigin, QAngle & vmangles, bool bUseLargeOverride );
+	const VMatrix& GetWorldFromMidEye() const
+	{
+		return m_WorldFromMidEyeNoDebugCam;
+	}
+	void OverrideViewModelTransform( Vector& vmorigin, QAngle& vmangles, bool bUseLargeOverride );
 	void AlignTorsoAndViewToWeapon();
 	void PostProcessFrame( StereoEye_t eEye );
-	void OverlayHUDQuadWithUndistort( const CViewSetup &view, bool bDoUndistort, bool bBlackout, bool bTranslucent );
+	void OverlayHUDQuadWithUndistort( const CViewSetup& view, bool bDoUndistort, bool bBlackout, bool bTranslucent );
 
 	//---------------------------------------------------------
 	// Enter/leave VR mode
@@ -155,9 +158,9 @@ private:
 	int m_nNonVRWidth;
 	int m_nNonVRHeight;
 #if defined( USE_SDL )
-    int m_nNonVRSDLDisplayIndex;
+	int m_nNonVRSDLDisplayIndex;
 #endif
-    bool m_bNonVRRawInput;
+	bool m_bNonVRRawInput;
 };
 
 extern CClientVirtualReality g_ClientVirtualReality;

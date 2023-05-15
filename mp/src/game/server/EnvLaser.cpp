@@ -17,33 +17,33 @@ LINK_ENTITY_TO_CLASS( env_laser, CEnvLaser );
 
 BEGIN_DATADESC( CEnvLaser )
 
-	DEFINE_KEYFIELD( m_iszLaserTarget, FIELD_STRING, "LaserTarget" ),
-	DEFINE_FIELD( m_pSprite, FIELD_CLASSPTR ),
-	DEFINE_KEYFIELD( m_iszSpriteName, FIELD_STRING, "EndSprite" ),
-	DEFINE_FIELD( m_firePosition, FIELD_VECTOR ),
-	DEFINE_KEYFIELD( m_flStartFrame, FIELD_FLOAT, "framestart" ),
+DEFINE_KEYFIELD( m_iszLaserTarget, FIELD_STRING, "LaserTarget" ),
+				 DEFINE_FIELD( m_pSprite, FIELD_CLASSPTR ),
+				 DEFINE_KEYFIELD( m_iszSpriteName, FIELD_STRING, "EndSprite" ),
+				 DEFINE_FIELD( m_firePosition, FIELD_VECTOR ),
+				 DEFINE_KEYFIELD( m_flStartFrame, FIELD_FLOAT, "framestart" ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( StrikeThink ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( StrikeThink ),
 
-	// Input functions
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				 // Input functions
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
 
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OnTouchedByEntity, "OnTouchedByEntity" ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvLaser::Spawn( void )
+				 void CEnvLaser::Spawn( void )
 {
-	if ( !GetModelName() )
+	if( !GetModelName() )
 	{
 		SetThink( &CEnvLaser::SUB_Remove );
 		return;
@@ -58,22 +58,22 @@ void CEnvLaser::Spawn( void )
 
 	Precache( );
 
-	if ( !m_pSprite && m_iszSpriteName != NULL_STRING )
+	if( !m_pSprite && m_iszSpriteName != NULL_STRING )
 	{
-		m_pSprite = CSprite::SpriteCreate( STRING(m_iszSpriteName), GetAbsOrigin(), TRUE );
+		m_pSprite = CSprite::SpriteCreate( STRING( m_iszSpriteName ), GetAbsOrigin(), TRUE );
 	}
 	else
 	{
 		m_pSprite = NULL;
 	}
 
-	if ( m_pSprite )
+	if( m_pSprite )
 	{
 		m_pSprite->SetParent( GetMoveParent() );
 		m_pSprite->SetTransparency( kRenderGlow, m_clrRender->r, m_clrRender->g, m_clrRender->b, m_clrRender->a, m_nRenderFX );
 	}
 
-	if ( GetEntityName() != NULL_STRING && !(m_spawnflags & SF_BEAM_STARTON) )
+	if( GetEntityName() != NULL_STRING && !( m_spawnflags & SF_BEAM_STARTON ) )
 	{
 		TurnOff();
 	}
@@ -85,36 +85,38 @@ void CEnvLaser::Spawn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvLaser::Precache( void )
 {
 	SetModelIndex( PrecacheModel( STRING( GetModelName() ) ) );
-	if ( m_iszSpriteName != NULL_STRING )
-		PrecacheModel( STRING(m_iszSpriteName) );
+	if( m_iszSpriteName != NULL_STRING )
+	{
+		PrecacheModel( STRING( m_iszSpriteName ) );
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CEnvLaser::KeyValue( const char *szKeyName, const char *szValue )
+bool CEnvLaser::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "width"))
+	if( FStrEq( szKeyName, "width" ) )
 	{
-		SetWidth( atof(szValue) );
+		SetWidth( atof( szValue ) );
 	}
-	else if (FStrEq(szKeyName, "NoiseAmplitude"))
+	else if( FStrEq( szKeyName, "NoiseAmplitude" ) )
 	{
-		SetNoise( atoi(szValue) );
+		SetNoise( atoi( szValue ) );
 	}
-	else if (FStrEq(szKeyName, "TextureScroll"))
+	else if( FStrEq( szKeyName, "TextureScroll" ) )
 	{
-		SetScrollRate( atoi(szValue) );
+		SetScrollRate( atoi( szValue ) );
 	}
-	else if (FStrEq(szKeyName, "texture"))
+	else if( FStrEq( szKeyName, "texture" ) )
 	{
-		SetModelName( AllocPooledString(szValue) );
+		SetModelName( AllocPooledString( szValue ) );
 	}
 	else
 	{
@@ -130,18 +132,20 @@ bool CEnvLaser::KeyValue( const char *szKeyName, const char *szValue )
 //-----------------------------------------------------------------------------
 int CEnvLaser::IsOn( void )
 {
-	if ( IsEffectActive( EF_NODRAW ) )
+	if( IsEffectActive( EF_NODRAW ) )
+	{
 		return 0;
+	}
 	return 1;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvLaser::InputTurnOn( inputdata_t &inputdata )
+void CEnvLaser::InputTurnOn( inputdata_t& inputdata )
 {
-	if (!IsOn())
+	if( !IsOn() )
 	{
 		TurnOn();
 	}
@@ -149,11 +153,11 @@ void CEnvLaser::InputTurnOn( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvLaser::InputTurnOff( inputdata_t &inputdata )
+void CEnvLaser::InputTurnOff( inputdata_t& inputdata )
 {
-	if (IsOn())
+	if( IsOn() )
 	{
 		TurnOff();
 	}
@@ -161,11 +165,11 @@ void CEnvLaser::InputTurnOff( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvLaser::InputToggle( inputdata_t &inputdata )
+void CEnvLaser::InputToggle( inputdata_t& inputdata )
 {
-	if ( IsOn() )
+	if( IsOn() )
 	{
 		TurnOff();
 	}
@@ -177,13 +181,15 @@ void CEnvLaser::InputToggle( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvLaser::TurnOff( void )
 {
 	AddEffects( EF_NODRAW );
-	if ( m_pSprite )
+	if( m_pSprite )
+	{
 		m_pSprite->TurnOff();
+	}
 
 	SetNextThink( TICK_NEVER_THINK );
 	SetThink( NULL );
@@ -191,13 +197,15 @@ void CEnvLaser::TurnOff( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvLaser::TurnOn( void )
 {
 	RemoveEffects( EF_NODRAW );
-	if ( m_pSprite )
+	if( m_pSprite )
+	{
 		m_pSprite->TurnOn();
+	}
 
 	m_flFireTime = gpGlobals->curtime;
 
@@ -212,21 +220,21 @@ void CEnvLaser::TurnOn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvLaser::FireAtPoint( trace_t &tr )
+void CEnvLaser::FireAtPoint( trace_t& tr )
 {
 	SetAbsEndPos( tr.endpos );
-	if ( m_pSprite )
+	if( m_pSprite )
 	{
 		UTIL_SetOrigin( m_pSprite, tr.endpos );
 	}
 
 	// Apply damage and do sparks every 1/10th of a second.
-	if ( gpGlobals->curtime >= m_flFireTime + 0.1 )
+	if( gpGlobals->curtime >= m_flFireTime + 0.1 )
 	{
 #ifdef MAPBASE
-		if ( tr.fraction != 1.0 && tr.m_pEnt && !tr.m_pEnt->IsWorld() )
+		if( tr.fraction != 1.0 && tr.m_pEnt && !tr.m_pEnt->IsWorld() )
 		{
 			m_OnTouchedByEntity.FireOutput( tr.m_pEnt, this );
 		}
@@ -238,14 +246,14 @@ void CEnvLaser::FireAtPoint( trace_t &tr )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvLaser::StrikeThink( void )
 {
-	CBaseEntity *pEnd = RandomTargetname( STRING( m_iszLaserTarget ) );
+	CBaseEntity* pEnd = RandomTargetname( STRING( m_iszLaserTarget ) );
 
 	Vector vecFireAt = GetAbsEndPos();
-	if ( pEnd )
+	if( pEnd )
 	{
 		vecFireAt = pEnd->GetAbsOrigin();
 	}

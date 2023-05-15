@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef FONTABC_H
 #define FONTABC_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 typedef struct

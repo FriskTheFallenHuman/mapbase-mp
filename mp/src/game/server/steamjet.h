@@ -33,9 +33,9 @@ public:
 protected:
 
 	// Input handlers.
-	void InputTurnOn(inputdata_t &data);
-	void InputTurnOff(inputdata_t &data);
-	void InputToggle(inputdata_t &data);
+	void InputTurnOn( inputdata_t& data );
+	void InputTurnOff( inputdata_t& data );
+	void InputToggle( inputdata_t& data );
 
 // Stuff from the datatable.
 public:
@@ -53,7 +53,7 @@ public:
 	CNetworkVar( int, m_nType );		// Type of steam (normal, heatwave)
 	CNetworkVar( float, m_flRollSpeed );
 
-	virtual void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	virtual void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 };
 
 #endif // STEAMJET_H

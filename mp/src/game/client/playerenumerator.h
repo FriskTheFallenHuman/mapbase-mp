@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PLAYERENUMERATOR_H
 #define PLAYERENUMERATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -29,29 +29,40 @@ public:
 		m_Objects.RemoveAll();
 	}
 
-	int	GetObjectCount() { return m_Objects.Size(); }
-
-	C_BaseEntity *GetObject( int index )
+	int	GetObjectCount()
 	{
-		if ( index < 0 || index >= GetObjectCount() )
+		return m_Objects.Size();
+	}
+
+	C_BaseEntity* GetObject( int index )
+	{
+		if( index < 0 || index >= GetObjectCount() )
+		{
 			return NULL;
+		}
 
 		return m_Objects[ index ];
 	}
 
 	//Actual work code
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity )
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity )
 	{
-		C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
-		if ( pEnt == NULL )
+		C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
+		if( pEnt == NULL )
+		{
 			return ITERATION_CONTINUE;
+		}
 
-		if ( !pEnt->IsPlayer() )
+		if( !pEnt->IsPlayer() )
+		{
 			return ITERATION_CONTINUE;
+		}
 
 		Vector	deltaPos = pEnt->GetAbsOrigin() - m_vecOrigin;
-		if ( deltaPos.LengthSqr() > m_flRadiusSquared )
+		if( deltaPos.LengthSqr() > m_flRadiusSquared )
+		{
 			return ITERATION_CONTINUE;
+		}
 
 		CHandle< C_BaseEntity > h;
 		h = pEnt;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_WEAPON__STUBS_H
 #define C_WEAPON__STUBS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "client_class.h"

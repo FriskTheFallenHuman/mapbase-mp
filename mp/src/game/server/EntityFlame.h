@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ENTITYFLAME_H
 #define ENTITYFLAME_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define FLAME_DAMAGE_INTERVAL			0.2f // How often to deal damage.
@@ -19,7 +19,7 @@
 
 #define FLAME_MAX_LIFETIME_ON_DEAD_NPCS	10.0f
 
-class CEntityFlame : public CBaseEntity 
+class CEntityFlame : public CBaseEntity
 {
 public:
 	DECLARE_SERVERCLASS();
@@ -27,9 +27,9 @@ public:
 
 	CEntityFlame( void );
 
-	static CEntityFlame	*Create( CBaseEntity *pTarget, bool useHitboxes = true );
+	static CEntityFlame*	Create( CBaseEntity* pTarget, bool useHitboxes = true );
 
-	void	AttachToEntity( CBaseEntity *pTarget );
+	void	AttachToEntity( CBaseEntity* pTarget );
 	void	SetLifetime( float lifetime );
 	void	SetUseHitboxes( bool use );
 	void	SetNumHitboxFires( int iNumHitBoxFires );
@@ -42,13 +42,16 @@ public:
 	virtual void Precache();
 	virtual void UpdateOnRemove();
 
-	void	SetSize( float size ) { m_flSize = size; }
+	void	SetSize( float size )
+	{
+		m_flSize = size;
+	}
 
 	DECLARE_DATADESC();
 
 protected:
 
-	void InputIgnite( inputdata_t &inputdata );
+	void InputIgnite( inputdata_t& inputdata );
 
 	void	FlameThink( void );
 

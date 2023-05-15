@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -31,25 +31,25 @@ public:
 	CFish( void );
 	virtual ~CFish();
 
-	void Initialize( CFishPool *pool, unsigned int id );
-	
+	void Initialize( CFishPool* pool, unsigned int id );
+
 	virtual void Spawn( void );
 
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual void Touch( CBaseEntity *other );			///< in contact with "other"
+	virtual void Event_Killed( const CTakeDamageInfo& info );
+	virtual void Touch( CBaseEntity* other );			///< in contact with "other"
 
 	void Update( float deltaT );						///< invoked each server tick
 
-	void FlockTo( CFish *other, float amount );			///< influence my motion to flock with other nearby fish
+	void FlockTo( CFish* other, float amount );			///< influence my motion to flock with other nearby fish
 	float Avoid( void );
 	void Panic( void );									///< panic for awhile
 
 	void ResetVisible( void );							///< zero the visible vector
-	void AddVisible( CFish *fish );						///< add this fish to our visible vector
+	void AddVisible( CFish* fish );						///< add this fish to our visible vector
 
 private:
-	friend void SendProxy_FishOriginX( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
-	friend void SendProxy_FishOriginY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID );
+	friend void SendProxy_FishOriginX( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID );
+	friend void SendProxy_FishOriginY( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID );
 
 	CHandle<CFishPool> m_pool;							///< the pool we are in
 	unsigned int m_id;									///< our unique ID
@@ -76,13 +76,13 @@ private:
 
 	CountdownTimer m_turnTimer;							///< every so often our turn preference changes
 	bool m_turnClockwise;								///< if true this fish prefers to turn clockwise, else CCW
-	
+
 	CountdownTimer m_goTimer;							///< start the fish moving when timer elapses
 	CountdownTimer m_moveTimer;							///< dont decay speed while we are moving
 	CountdownTimer m_panicTimer;						///< if active, fish is panicked
 	CountdownTimer m_disperseTimer;						///< initial non-flocking time
 
-	CUtlVector< CFish * > m_visible;					///< vector of fish that we can see
+	CUtlVector< CFish* > m_visible;					///< vector of fish that we can see
 };
 
 
@@ -100,9 +100,9 @@ public:
 
 	virtual void Spawn();
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 	void Update( void );					///< invoked each server tick
 
@@ -110,9 +110,9 @@ public:
 	float GetMaxRange( void ) const;		///< return how far a fish is allowed to wander
 
 #ifdef MAPBASE
-	void	InputSpawnFish( inputdata_t &inputdata );
-	void	InputPanicLoudFromPoint( inputdata_t &inputdata );
-	void	InputPanicQuietFromPoint( inputdata_t &inputdata );
+	void	InputSpawnFish( inputdata_t& inputdata );
+	void	InputPanicLoudFromPoint( inputdata_t& inputdata );
+	void	InputPanicQuietFromPoint( inputdata_t& inputdata );
 #endif
 
 private:

@@ -7,7 +7,7 @@
 #ifndef HL2_GAMERULES_H
 #define HL2_GAMERULES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/UtlStringMap.h"
@@ -27,7 +27,7 @@
 #endif
 
 #if MAPBASE && GAME_DLL
-#define FRIENDLY_FIRE_GLOBALNAME "friendly_fire_override"
+	#define FRIENDLY_FIRE_GLOBALNAME "friendly_fire_override"
 #endif
 
 
@@ -38,25 +38,25 @@ public:
 	DECLARE_NETWORKCLASS();
 
 #if defined(MAPBASE) && defined(GAME_DLL)
-	bool KeyValue( const char *szKeyName, const char *szValue );
-	bool GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	bool KeyValue( const char* szKeyName, const char* szValue );
+	bool GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 
-	virtual int	Save( ISave &save );
-	virtual int	Restore( IRestore &restore );
+	virtual int	Save( ISave& save );
+	virtual int	Restore( IRestore& restore );
 	virtual void UpdateOnRemove();
 
 	// Inputs
-	void InputEpisodicOn( inputdata_t &inputdata );
-	void InputEpisodicOff( inputdata_t &inputdata );
-	void InputSetFriendlyFire( inputdata_t &inputdata );
-	void InputSetDefaultCitizenType( inputdata_t &inputdata );
-	void InputSetLegacyFlashlight( inputdata_t &inputdata );
-	void InputSetPlayerSquadAutosummon( inputdata_t &inputdata );
-	void InputSetStunstickPickupBehavior( inputdata_t &inputdata );
+	void InputEpisodicOn( inputdata_t& inputdata );
+	void InputEpisodicOff( inputdata_t& inputdata );
+	void InputSetFriendlyFire( inputdata_t& inputdata );
+	void InputSetDefaultCitizenType( inputdata_t& inputdata );
+	void InputSetLegacyFlashlight( inputdata_t& inputdata );
+	void InputSetPlayerSquadAutosummon( inputdata_t& inputdata );
+	void InputSetStunstickPickupBehavior( inputdata_t& inputdata );
 #ifdef MAPBASE_MP
-	void InputSetAllowRespawning(inputdata_t& inputdata);
+	void InputSetAllowRespawning( inputdata_t& inputdata );
 #else
-	void InputSetAllowSPRespawn( inputdata_t &inputdata );
+	void InputSetAllowSPRespawn( inputdata_t& inputdata );
 #endif
 
 	// Gamerules classes don't seem to support datadescs, so the hl2_gamerules entity takes the current values
@@ -82,12 +82,12 @@ public:
 	virtual bool			Damage_IsTimeBased( int iDmgType );
 	// TEMP:
 	virtual int				Damage_GetTimeBased( void );
-	
+
 	virtual bool			ShouldCollide( int collisionGroup0, int collisionGroup1 );
-	virtual bool			ShouldUseRobustRadiusDamage(CBaseEntity *pEntity);
+	virtual bool			ShouldUseRobustRadiusDamage( CBaseEntity* pEntity );
 #ifndef CLIENT_DLL
-	virtual bool			ShouldAutoAim( CBasePlayer *pPlayer, edict_t *target );
-	virtual float			GetAutoAimScale( CBasePlayer *pPlayer );
+	virtual bool			ShouldAutoAim( CBasePlayer* pPlayer, edict_t* target );
+	virtual float			GetAutoAimScale( CBasePlayer* pPlayer );
 	virtual float			GetAmmoQuantityScale( int iAmmoIndex );
 	virtual void			LevelInitPreEntity();
 #endif
@@ -96,7 +96,7 @@ public:
 	CUtlStringMap<string_t> m_SavedConvars;
 	bool			HaveSavedConvar( ConVarRef const& cvar );
 	void			SaveConvar( ConVarRef const& cvar );
-	void			RevertSingleConvar( ConVarRef &cvar );
+	void			RevertSingleConvar( ConVarRef& cvar );
 	void			RevertSavedConvars();
 #endif // MAPBASE_MP
 
@@ -126,42 +126,48 @@ private:
 
 	virtual void			Think( void );
 
-	virtual bool			ClientCommand( CBaseEntity *pEdict, const CCommand &args );
-	virtual void			PlayerSpawn( CBasePlayer *pPlayer );
+	virtual bool			ClientCommand( CBaseEntity* pEdict, const CCommand& args );
+	virtual void			PlayerSpawn( CBasePlayer* pPlayer );
 
 	virtual void			InitDefaultAIRelationships( void );
-	virtual const char*		AIClassText(int classType);
-	virtual const char *GetGameDescription( void ) { return "Half-Life 2"; }
+	virtual const char*		AIClassText( int classType );
+	virtual const char* GetGameDescription( void )
+	{
+		return "Half-Life 2";
+	}
 
 	// Ammo
-	virtual void			PlayerThink( CBasePlayer *pPlayer );
-	virtual float			GetAmmoDamage( CBaseEntity *pAttacker, CBaseEntity *pVictim, int nAmmoType );
+	virtual void			PlayerThink( CBasePlayer* pPlayer );
+	virtual float			GetAmmoDamage( CBaseEntity* pAttacker, CBaseEntity* pVictim, int nAmmoType );
 
 	virtual bool			ShouldBurningPropsEmitLight();
 public:
 
-	bool AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	bool AllowDamage( CBaseEntity* pVictim, const CTakeDamageInfo& info );
 
-	bool	NPC_ShouldDropGrenade( CBasePlayer *pRecipient );
-	bool	NPC_ShouldDropHealth( CBasePlayer *pRecipient );
+	bool	NPC_ShouldDropGrenade( CBasePlayer* pRecipient );
+	bool	NPC_ShouldDropHealth( CBasePlayer* pRecipient );
 	void	NPC_DroppedHealth( void );
 	void	NPC_DroppedGrenade( void );
-	bool	MegaPhyscannonActive( void ) { return m_bMegaPhysgun;	}
-	
+	bool	MegaPhyscannonActive( void )
+	{
+		return m_bMegaPhysgun;
+	}
+
 	virtual bool IsAlyxInDarknessMode();
 
 #ifdef MAPBASE
 	int				GetDefaultCitizenType();
-	void			SetDefaultCitizenType(int val);
+	void			SetDefaultCitizenType( int val );
 
 	ThreeState_t	GlobalFriendlyFire();
-	void			SetGlobalFriendlyFire(ThreeState_t val);
+	void			SetGlobalFriendlyFire( ThreeState_t val );
 
 	bool			AutosummonDisabled();
-	void			SetAutosummonDisabled(bool toggle);
+	void			SetAutosummonDisabled( bool toggle );
 
 	int				GetStunstickPickupBehavior();
-	void			SetStunstickPickupBehavior(int val);
+	void			SetStunstickPickupBehavior( int val );
 
 #ifdef MAPBASE_MP
 	virtual bool	AllowRespawning();
@@ -184,10 +190,13 @@ private:
 	bool	m_bAllowSPRespawn;
 #endif
 
-	void AdjustPlayerDamageTaken( CTakeDamageInfo *pInfo );
+	void AdjustPlayerDamageTaken( CTakeDamageInfo* pInfo );
 	float AdjustPlayerDamageInflicted( float damage );
 
-	int						DefaultFOV( void ) { return 75; }
+	int						DefaultFOV( void )
+	{
+		return 75;
+	}
 #endif
 };
 
@@ -201,7 +210,7 @@ inline CHalfLife2* HL2GameRules()
 	Assert( 0 );	// g_pGameRules is NOT an instance of CHalfLife2 and bad things happen
 #endif
 
-	return static_cast<CHalfLife2*>(g_pGameRules);
+	return static_cast<CHalfLife2*>( g_pGameRules );
 }
 
 

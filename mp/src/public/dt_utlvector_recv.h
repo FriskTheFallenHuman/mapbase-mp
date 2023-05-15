@@ -45,7 +45,7 @@
 //	RecvPropUtlVector( RECVINFO_UTLVECTOR( m_FloatArray ), 16, RecvPropFloat(NULL,0,0) )
 //
 RecvProp RecvPropUtlVector(
-	const char *pVarName,		// Use RECVINFO_UTLVECTOR to generate these first 5 parameters.
+	const char* pVarName,		// Use RECVINFO_UTLVECTOR to generate these first 5 parameters.
 	int offset,
 	int sizeofVar,
 	ResizeUtlVectorFn fn,
@@ -53,8 +53,8 @@ RecvProp RecvPropUtlVector(
 
 	int nMaxElements,	// Max # of elements in the array. Keep this as low as possible.
 	RecvProp pArrayProp	// The definition of the property you're receiving into.
-						// You can leave all of its parameters at 0 (name, offset, size, etc).
-	);
+	// You can leave all of its parameters at 0 (name, offset, size, etc).
+);
 
 
 #endif // DT_UTLVECTOR_RECV_H

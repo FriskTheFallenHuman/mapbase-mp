@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: A panel "metaclass" is a name given to a particular type of 
+// Purpose: A panel "metaclass" is a name given to a particular type of
 // panel with particular instance data. Such panels tend to be dynamically
 // added and removed from their parent panels.
 //
@@ -21,17 +21,19 @@
 //-----------------------------------------------------------------------------
 // Helper KeyValue parsing methods
 //-----------------------------------------------------------------------------
-bool ParseRGBA( KeyValues *pValues, const char* pFieldName, int& r, int& g, int& b, int& a )
+bool ParseRGBA( KeyValues* pValues, const char* pFieldName, int& r, int& g, int& b, int& a )
 {
 	r = g = b = a = 255;
-	const char *pColorString = pValues->GetString( pFieldName, "255 255 255 255" );
-	if ( !pColorString || !pColorString[ 0 ] )
+	const char* pColorString = pValues->GetString( pFieldName, "255 255 255 255" );
+	if( !pColorString || !pColorString[ 0 ] )
+	{
 		return false;
+	}
 
 	// Try and scan them in
 	int scanned;
 	scanned = sscanf( pColorString, "%i %i %i %i", &r, &g, &b, &a );
-	if ( scanned != 4 )
+	if( scanned != 4 )
 	{
 		Warning( "Couldn't scan four color values from %s\n", pColorString );
 		return false;
@@ -43,8 +45,10 @@ bool ParseRGBA( KeyValues *pValues, const char* pFieldName, int& r, int& g, int&
 bool ParseRGBA( KeyValues* pValues, const char* pFieldName, Color& c )
 {
 	int r, g, b, a;
-	if (!ParseRGBA( pValues, pFieldName, r, g, b, a ))
+	if( !ParseRGBA( pValues, pFieldName, r, g, b, a ) )
+	{
 		return false;
+	}
 
 	c.SetColor( r, g, b, a );
 	return true;
@@ -83,17 +87,19 @@ bool ParseRGBA( KeyValues* pValues, const char* pFieldName, Color& c )
 } */
 
 
-bool ParseCoord( KeyValues *pValues, const char* pFieldName, int& x, int& y )
+bool ParseCoord( KeyValues* pValues, const char* pFieldName, int& x, int& y )
 {
 	x = y = 0;
-	const char *pCoordString = pValues->GetString( pFieldName, "0 0" );
-	if ( !pCoordString || !pCoordString[ 0 ] )
+	const char* pCoordString = pValues->GetString( pFieldName, "0 0" );
+	if( !pCoordString || !pCoordString[ 0 ] )
+	{
 		return false;
+	}
 
 	// Try and scan them in
 	int scanned;
 	scanned = sscanf( pCoordString, "%i %i", &x, &y );
-	if ( scanned != 2 )
+	if( scanned != 2 )
 	{
 		Warning( "Couldn't scan 2d coordinate values from %s\n", pCoordString );
 		return false;
@@ -106,17 +112,19 @@ bool ParseCoord( KeyValues *pValues, const char* pFieldName, int& x, int& y )
 	return true;
 }
 
-bool ParseRect( KeyValues *pValues, const char* pFieldName, int& x, int& y, int& w, int& h )
+bool ParseRect( KeyValues* pValues, const char* pFieldName, int& x, int& y, int& w, int& h )
 {
 	x = y = w = h = 0;
-	const char *pRectString = pValues->GetString( pFieldName, "0 0 0 0" );
-	if ( !pRectString || !pRectString[ 0 ] )
+	const char* pRectString = pValues->GetString( pFieldName, "0 0 0 0" );
+	if( !pRectString || !pRectString[ 0 ] )
+	{
 		return false;
+	}
 
 	// Try and scan them in
 	int scanned;
 	scanned = sscanf( pRectString, "%i %i %i %i", &x, &y, &w, &h );
-	if ( scanned != 4 )
+	if( scanned != 4 )
 	{
 		Warning( "Couldn't scan rectangle values from %s\n", pRectString );
 		return false;
@@ -135,7 +143,7 @@ bool ParseRect( KeyValues *pValues, const char* pFieldName, int& x, int& y, int&
 //-----------------------------------------------------------------------------
 // Helper class to make meta class panels (for use in entities, so they autocleanup)
 //-----------------------------------------------------------------------------
-CPanelWrapper::CPanelWrapper() : m_pPanel(NULL)
+CPanelWrapper::CPanelWrapper() : m_pPanel( NULL )
 {
 }
 
@@ -144,9 +152,9 @@ CPanelWrapper::~CPanelWrapper()
 	Deactivate();
 }
 
-void CPanelWrapper::Activate( char const* pMetaClassName, vgui::Panel *pParent, int sortorder, void *pVoidInitData )
+void CPanelWrapper::Activate( char const* pMetaClassName, vgui::Panel* pParent, int sortorder, void* pVoidInitData )
 {
-	if ( m_pPanel )
+	if( m_pPanel )
 	{
 		Deactivate();
 	}
@@ -156,21 +164,21 @@ void CPanelWrapper::Activate( char const* pMetaClassName, vgui::Panel *pParent, 
 
 void CPanelWrapper::Deactivate( void )
 {
-	if ( m_pPanel )
+	if( m_pPanel )
 	{
 		PanelMetaClassMgr()->DestroyPanelMetaClass( m_pPanel );
 		m_pPanel = NULL;
 	}
 }
 
-vgui::Panel *CPanelWrapper::GetPanel( )
+vgui::Panel* CPanelWrapper::GetPanel( )
 {
 	return m_pPanel;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Singleton class responsible for managing metaclass panels 
+// Purpose: Singleton class responsible for managing metaclass panels
 //-----------------------------------------------------------------------------
 class CPanelMetaClassMgrImp : public IPanelMetaClassMgr
 {
@@ -182,9 +190,9 @@ public:
 	// Members of IPanelMetaClassMgr
 	virtual void LoadMetaClassDefinitionFile( const char* pLevelName );
 	virtual void InstallPanelType( const char* pPanelName, IPanelFactory* pFactory );
-	virtual vgui::Panel *CreatePanelMetaClass( const char* pMetaClassName,
-		int sortorder, void *pInitData, vgui::Panel *pParent, const char *pChainName );
-	virtual void DestroyPanelMetaClass( vgui::Panel *pPanel );
+	virtual vgui::Panel* CreatePanelMetaClass( const char* pMetaClassName,
+			int sortorder, void* pInitData, vgui::Panel* pParent, const char* pChainName );
+	virtual void DestroyPanelMetaClass( vgui::Panel* pPanel );
 
 private:
 	struct MetaClassDict_t
@@ -196,11 +204,11 @@ private:
 
 	// various parsing helper methods
 	bool ParseSingleMetaClass( const char* pFileName, const char* pInstanceName,
-		KeyValues* pMetaClass, int keyValueIndex );
+							   KeyValues* pMetaClass, int keyValueIndex );
 	bool ParseMetaClassList( const char* pFileName, KeyValues* pKeyValues, int keyValueIndex );
 
 	// No copy constructor
-	CPanelMetaClassMgrImp( const CPanelMetaClassMgrImp & );
+	CPanelMetaClassMgrImp( const CPanelMetaClassMgrImp& );
 
 	// List of panel types...
 	CUtlDict< IPanelFactory*, unsigned short > m_PanelTypeDict;
@@ -243,10 +251,10 @@ CPanelMetaClassMgrImp::~CPanelMetaClassMgrImp()
 void CPanelMetaClassMgrImp::InstallPanelType( const char* pPanelName, IPanelFactory* pFactory )
 {
 	Assert( pPanelName && pFactory );
-	
+
 	// convert to lowercase
-	int len = Q_strlen(pPanelName) + 1;
-	char* pTemp = (char*)stackalloc( len );
+	int len = Q_strlen( pPanelName ) + 1;
+	char* pTemp = ( char* )stackalloc( len );
 	Q_strncpy( pTemp, pPanelName, len );
 	Q_strnlwr( pTemp, len );
 
@@ -260,10 +268,10 @@ void CPanelMetaClassMgrImp::InstallPanelType( const char* pPanelName, IPanelFact
 // Parse a single metaclass
 //-----------------------------------------------------------------------------
 bool CPanelMetaClassMgrImp::ParseSingleMetaClass( const char* pFileName,
-	const char* pMetaClassName, KeyValues* pMetaClassValues, int keyValueIndex )
+		const char* pMetaClassName, KeyValues* pMetaClassValues, int keyValueIndex )
 {
 	// Complain about duplicately defined metaclass names...
-	if ( m_MetaClassDict.Find( pMetaClassName ) != m_MetaClassDict.InvalidIndex() )
+	if( m_MetaClassDict.Find( pMetaClassName ) != m_MetaClassDict.InvalidIndex() )
 	{
 		Warning( "Meta class %s duplicately defined (file %s)\n", pMetaClassName, pFileName );
 		return false;
@@ -271,17 +279,17 @@ bool CPanelMetaClassMgrImp::ParseSingleMetaClass( const char* pFileName,
 
 	// find the type...
 	const char* pPanelType = pMetaClassValues->GetString( "type" );
-	if (!pPanelType || !pPanelType[0])
+	if( !pPanelType || !pPanelType[0] )
 	{
 		Warning( "Unable to find type of meta class %s in file %s\n", pMetaClassName, pFileName );
 		return false;
 	}
 
 	unsigned short i = m_PanelTypeDict.Find( pPanelType );
-	if (i == m_PanelTypeDict.InvalidIndex())
+	if( i == m_PanelTypeDict.InvalidIndex() )
 	{
 		Warning( "Type %s of meta class %s undefined!\n", pPanelType, pMetaClassName );
-		stackfree(pLwrMetaClass);
+		stackfree( pLwrMetaClass );
 		return false;
 	}
 
@@ -299,16 +307,16 @@ bool CPanelMetaClassMgrImp::ParseSingleMetaClass( const char* pFileName,
 //-----------------------------------------------------------------------------
 // Parse the metaclass list
 //-----------------------------------------------------------------------------
-bool CPanelMetaClassMgrImp::ParseMetaClassList( const char* pFileName, 
-												  KeyValues* pKeyValues, int keyValueIdx )
+bool CPanelMetaClassMgrImp::ParseMetaClassList( const char* pFileName,
+		KeyValues* pKeyValues, int keyValueIdx )
 {
 	// Iterate over all metaclasses...
 	KeyValues* pIter = pKeyValues->GetFirstSubKey();
 	while( pIter )
 	{
-		if (!ParseSingleMetaClass( pFileName, pIter->GetName(), pIter, keyValueIdx ))
+		if( !ParseSingleMetaClass( pFileName, pIter->GetName(), pIter, keyValueIdx ) )
 		{
-		//	return false;
+			//	return false;
 			Warning( "MetaClass missing for %s\n", pIter->GetName() );
 		}
 		pIter = pIter->GetNextKey();
@@ -321,49 +329,49 @@ bool CPanelMetaClassMgrImp::ParseMetaClassList( const char* pFileName,
 //-----------------------------------------------------------------------------
 // Loads up a file containing metaclass definitions
 //-----------------------------------------------------------------------------
-void CPanelMetaClassMgrImp::LoadMetaClassDefinitionFile( const char *pFileName )
+void CPanelMetaClassMgrImp::LoadMetaClassDefinitionFile( const char* pFileName )
 {
 	MEM_ALLOC_CREDIT();
 
 	// Blat out previous metaclass definitions read in from this file...
 	int i = m_MetaClassKeyValues.Find( pFileName );
-	if (i != m_MetaClassKeyValues.InvalidIndex() )
+	if( i != m_MetaClassKeyValues.InvalidIndex() )
 	{
 		// Blow away the previous keyvalues	from that file
 		unsigned short j = m_MetaClassDict.First();
-		while ( j != m_MetaClassDict.InvalidIndex() )
+		while( j != m_MetaClassDict.InvalidIndex() )
 		{
-			unsigned short next = m_MetaClassDict.Next(j);
-			if ( m_MetaClassDict[j].m_KeyValueIndex == i)
+			unsigned short next = m_MetaClassDict.Next( j );
+			if( m_MetaClassDict[j].m_KeyValueIndex == i )
 			{
-				m_MetaClassDict.RemoveAt(j);
+				m_MetaClassDict.RemoveAt( j );
 			}
 
 			j = next;
 		}
 
 		m_MetaClassKeyValues[i]->deleteThis();
-		m_MetaClassKeyValues.RemoveAt(i); 
+		m_MetaClassKeyValues.RemoveAt( i );
 	}
 
 	// Create a new keyvalues entry
-	KeyValues* pKeyValues = new KeyValues(pFileName);
+	KeyValues* pKeyValues = new KeyValues( pFileName );
 	int idx = m_MetaClassKeyValues.Insert( pFileName, pKeyValues );
 
 	// Read in all metaclass definitions...
 
 	// Load the file
-	if ( !pKeyValues->LoadFromFile( filesystem, pFileName ) )
+	if( !pKeyValues->LoadFromFile( filesystem, pFileName ) )
 	{
 		Warning( "Couldn't find metaclass definition file %s\n", pFileName );
 		pKeyValues->deleteThis();
-		m_MetaClassKeyValues.RemoveAt(idx);
+		m_MetaClassKeyValues.RemoveAt( idx );
 		return;
 	}
 	else
 	{
 		// Go ahead and parse the data now
-		if ( !ParseMetaClassList( pFileName, pKeyValues, idx ) )
+		if( !ParseMetaClassList( pFileName, pKeyValues, idx ) )
 		{
 			Warning( "Detected one or more errors parsing %s\n", pFileName );
 		}
@@ -374,21 +382,23 @@ void CPanelMetaClassMgrImp::LoadMetaClassDefinitionFile( const char *pFileName )
 //-----------------------------------------------------------------------------
 // Performs key value chaining
 //-----------------------------------------------------------------------------
-static void KeyValueChainRecursive( KeyValues* pKeyValues, const char *pSectionName )
+static void KeyValueChainRecursive( KeyValues* pKeyValues, const char* pSectionName )
 {
 	KeyValues* pSection = pKeyValues->FindKey( pSectionName );
 
-	if (pSection)
+	if( pSection )
 	{
 		pKeyValues->ChainKeyValue( pSection );
 	}
 
 	KeyValues* pIter = pKeyValues->GetFirstSubKey();
-	while (pIter)
+	while( pIter )
 	{
 		// Don't both setting up links on a keyvalue that has no children
-		if (pIter->GetFirstSubKey())
+		if( pIter->GetFirstSubKey() )
+		{
 			KeyValueChainRecursive( pIter, pSectionName );
+		}
 
 		pIter = pIter->GetNextKey();
 	}
@@ -398,28 +408,30 @@ static void KeyValueChainRecursive( KeyValues* pKeyValues, const char *pSectionN
 //-----------------------------------------------------------------------------
 // Create, destroy panel...
 //-----------------------------------------------------------------------------
-vgui::Panel *CPanelMetaClassMgrImp::CreatePanelMetaClass( const char* pMetaClassName,
-	int sortorder, void *pInitData, vgui::Panel *pParent, const char *pChainName )
+vgui::Panel* CPanelMetaClassMgrImp::CreatePanelMetaClass( const char* pMetaClassName,
+		int sortorder, void* pInitData, vgui::Panel* pParent, const char* pChainName )
 {
 	// Search for the metaclass name
 	int i = m_MetaClassDict.Find( pMetaClassName );
-	if (i == m_MetaClassDict.InvalidIndex())
-		return NULL; 
+	if( i == m_MetaClassDict.InvalidIndex() )
+	{
+		return NULL;
+	}
 
 	// Now that we've got the metaclass, we can figure out what kind of
 	// panel to instantiate...
-	MetaClassDict_t &metaClass = m_MetaClassDict[i];
+	MetaClassDict_t& metaClass = m_MetaClassDict[i];
 	IPanelFactory* pFactory = m_PanelTypeDict[metaClass.m_TypeIndex];
 
 	// Set up the key values for use in initialization
-	if (pChainName)
+	if( pChainName )
 	{
 		KeyValueChainRecursive( metaClass.m_pKeyValues, pChainName );
 	}
 
 	// Create and initialize the panel
-	vgui::Panel *pPanel = pFactory->Create( pMetaClassName, metaClass.m_pKeyValues, pInitData, pParent );
-	if ( pPanel )
+	vgui::Panel* pPanel = pFactory->Create( pMetaClassName, metaClass.m_pKeyValues, pInitData, pParent );
+	if( pPanel )
 	{
 		pPanel->SetZPos( sortorder );
 	}
@@ -427,7 +439,7 @@ vgui::Panel *CPanelMetaClassMgrImp::CreatePanelMetaClass( const char* pMetaClass
 	return pPanel;
 }
 
-void CPanelMetaClassMgrImp::DestroyPanelMetaClass( vgui::Panel *pPanel )
+void CPanelMetaClassMgrImp::DestroyPanelMetaClass( vgui::Panel* pPanel )
 {
 //	if ( pPanel )
 //		pPanel->MarkForDeletion();

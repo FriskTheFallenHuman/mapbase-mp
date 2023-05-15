@@ -24,17 +24,29 @@ struct undefined_t;
 
 // CTypeSelect<sel,A,B>::type is a typedef of A if sel is nonzero, else B
 template <int sel, typename A, typename B>
-struct CTypeSelect { typedef A type; };
+struct CTypeSelect
+{
+	typedef A type;
+};
 
 template <typename A, typename B>
-struct CTypeSelect<0, A, B> { typedef B type; };
+struct CTypeSelect<0, A, B>
+{
+	typedef B type;
+};
 
 // CTypeEquals<A, B>::value is nonzero if A and B are the same type
 template <typename A, typename B, bool bIgnoreConstVolatile = false, bool bIgnoreReference = false>
-struct CTypeEquals { enum { value = 0 }; };
+struct CTypeEquals
+{
+	enum { value = 0 };
+};
 
 template <typename Same>
-struct CTypeEquals<Same, Same, false, false> { enum { value = 1 }; };
+struct CTypeEquals<Same, Same, false, false>
+{
+	enum { value = 1 };
+};
 
 template <typename A, typename B>
 struct CTypeEquals<A, B, true, true> : CTypeEquals< const volatile A&, const volatile B& > {};
@@ -60,13 +72,19 @@ public:
 	CUtlKeyValuePair() {}
 
 	template < typename KInit >
-	explicit CUtlKeyValuePair( const KInit &k ) : m_key( k ) {}
+	explicit CUtlKeyValuePair( const KInit& k ) : m_key( k ) {}
 
 	template < typename KInit, typename VInit >
-	CUtlKeyValuePair( const KInit &k, const VInit &v ) : m_key( k ), m_value( v ) {}
+	CUtlKeyValuePair( const KInit& k, const VInit& v ) : m_key( k ), m_value( v ) {}
 
-	V &GetValue() { return m_value; }
-	const V &GetValue() const { return m_value; }
+	V& GetValue()
+	{
+		return m_value;
+	}
+	const V& GetValue() const
+	{
+		return m_value;
+	}
 };
 
 template <typename K>
@@ -79,13 +97,16 @@ public:
 	CUtlKeyValuePair() {}
 
 	template < typename KInit >
-	explicit CUtlKeyValuePair( const KInit &k ) : m_key( k ) {}
+	explicit CUtlKeyValuePair( const KInit& k ) : m_key( k ) {}
 
 	template < typename KInit >
-	CUtlKeyValuePair( const KInit &k, empty_t ) : m_key( k ) {}
+	CUtlKeyValuePair( const KInit& k, empty_t ) : m_key( k ) {}
 
-	CUtlKeyValuePair( const K &k, const empty_t& ) : m_key( k ) {}
-	const K &GetValue() const { return m_key; }
+	CUtlKeyValuePair( const K& k, const empty_t& ) : m_key( k ) {}
+	const K& GetValue() const
+	{
+		return m_key;
+	}
 };
 
 
@@ -102,7 +123,7 @@ template <typename T> struct DefaultEqualFunctor;
 // are reasonably well-distributed across the entire 32-bit range.
 //  http://en.wikipedia.org/wiki/Avalanche_effect
 //  http://home.comcast.net/~bretm/hash/5.html
-// 
+//
 template <typename T> struct DefaultHashFunctor;
 
 // Argument type information. Struct currently contains one or two typedefs:
@@ -116,35 +137,104 @@ template <typename T> struct ArgumentTypeInfo;
 
 
 // Some fundamental building-block functors...
-struct StringLessFunctor { bool operator()( const char *a, const char *b ) const { return Q_strcmp( a, b ) < 0; } };
-struct StringEqualFunctor { bool operator()( const char *a, const char *b ) const { return Q_strcmp( a, b ) == 0; } };
-struct CaselessStringLessFunctor { bool operator()( const char *a, const char *b ) const { return Q_strcasecmp( a, b ) < 0; } };
-struct CaselessStringEqualFunctor { bool operator()( const char *a, const char *b ) const { return Q_strcasecmp( a, b ) == 0; } };
+struct StringLessFunctor
+{
+	bool operator()( const char* a, const char* b ) const
+	{
+		return Q_strcmp( a, b ) < 0;
+	}
+};
+struct StringEqualFunctor
+{
+	bool operator()( const char* a, const char* b ) const
+	{
+		return Q_strcmp( a, b ) == 0;
+	}
+};
+struct CaselessStringLessFunctor
+{
+	bool operator()( const char* a, const char* b ) const
+	{
+		return Q_strcasecmp( a, b ) < 0;
+	}
+};
+struct CaselessStringEqualFunctor
+{
+	bool operator()( const char* a, const char* b ) const
+	{
+		return Q_strcasecmp( a, b ) == 0;
+	}
+};
 
-struct Mix32HashFunctor { unsigned int operator()( uint32 s ) const; };
-struct StringHashFunctor { unsigned int operator()( const char* s ) const; };
-struct CaselessStringHashFunctor { unsigned int operator()( const char* s ) const; };
+struct Mix32HashFunctor
+{
+	unsigned int operator()( uint32 s ) const;
+};
+struct StringHashFunctor
+{
+	unsigned int operator()( const char* s ) const;
+};
+struct CaselessStringHashFunctor
+{
+	unsigned int operator()( const char* s ) const;
+};
 
-struct PointerLessFunctor { bool operator()( const void *a, const void *b ) const { return a < b; } };
-struct PointerEqualFunctor { bool operator()( const void *a, const void *b ) const { return a == b; } };
-struct PointerHashFunctor { unsigned int operator()( const void* s ) const { return Mix32HashFunctor()((uint32)POINTER_TO_INT(s)); } };
+struct PointerLessFunctor
+{
+	bool operator()( const void* a, const void* b ) const
+	{
+		return a < b;
+	}
+};
+struct PointerEqualFunctor
+{
+	bool operator()( const void* a, const void* b ) const
+	{
+		return a == b;
+	}
+};
+struct PointerHashFunctor
+{
+	unsigned int operator()( const void* s ) const
+	{
+		return Mix32HashFunctor()( ( uint32 )POINTER_TO_INT( s ) );
+	}
+};
 
 
 // Generic implementation of Less and Equal functors
 template < typename T >
 struct DefaultLessFunctor
 {
-	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const { return a < b; }
-	bool operator()( typename ArgumentTypeInfo< T >::Alt_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const { return a < b; }
-	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Alt_t b ) const { return a < b; }
+	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const
+	{
+		return a < b;
+	}
+	bool operator()( typename ArgumentTypeInfo< T >::Alt_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const
+	{
+		return a < b;
+	}
+	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Alt_t b ) const
+	{
+		return a < b;
+	}
 };
 
 template < typename T >
 struct DefaultEqualFunctor
 {
-	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const { return a == b; }
-	bool operator()( typename ArgumentTypeInfo< T >::Alt_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const { return a == b; }
-	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Alt_t b ) const { return a == b; }
+	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const
+	{
+		return a == b;
+	}
+	bool operator()( typename ArgumentTypeInfo< T >::Alt_t a, typename ArgumentTypeInfo< T >::Arg_t b ) const
+	{
+		return a == b;
+	}
+	bool operator()( typename ArgumentTypeInfo< T >::Arg_t a, typename ArgumentTypeInfo< T >::Alt_t b ) const
+	{
+		return a == b;
+	}
 };
 
 // Hashes for basic types
@@ -194,10 +284,16 @@ struct HasClassAltArgumentType
 };
 
 template < typename T, bool = HasClassAltArgumentType< T >::value >
-struct GetClassAltArgumentType { typedef typename T::AltArgumentType_t Result_t; };
+struct GetClassAltArgumentType
+{
+	typedef typename T::AltArgumentType_t Result_t;
+};
 
 template < typename T >
-struct GetClassAltArgumentType< T, false > { typedef undefined_t Result_t; };
+struct GetClassAltArgumentType< T, false >
+{
+	typedef undefined_t Result_t;
+};
 
 // Unwrap references; reference types don't have member typedefs.
 template < typename T >
@@ -281,7 +377,7 @@ template <typename T> struct DefaultHashFunctor<T&> : DefaultHashFunctor<T> { };
 
 
 // Hash all pointer types as raw pointers by default
-template <typename T> struct DefaultHashFunctor< T * > : PointerHashFunctor { };
+template <typename T> struct DefaultHashFunctor< T* > : PointerHashFunctor { };
 
 
 // Here follow the useful implementations.
@@ -318,27 +414,27 @@ inline unsigned int Mix32HashFunctor::operator()( uint32 n ) const
 inline unsigned int StringHashFunctor::operator()( const char* s ) const
 {
 	uint32 h = 2166136261u;
-	for ( ; *s; ++s )
+	for( ; *s; ++s )
 	{
-		uint32 c = (unsigned char) *s;
-		h = (h ^ c) * 16777619;
+		uint32 c = ( unsigned char ) * s;
+		h = ( h ^ c ) * 16777619;
 	}
-	return (h ^ (h << 17)) + (h >> 21);
+	return ( h ^ ( h << 17 ) ) + ( h >> 21 );
 }
 
 // Equivalent to StringHashFunctor on lower-case strings.
 inline unsigned int CaselessStringHashFunctor::operator()( const char* s ) const
 {
 	uint32 h = 2166136261u;
-	for ( ; *s; ++s )
+	for( ; *s; ++s )
 	{
-		uint32 c = (unsigned char) *s;
+		uint32 c = ( unsigned char ) * s;
 		// Brutally fast branchless ASCII tolower():
 		// if ((c >= 'A') && (c <= 'Z')) c += ('a' - 'A');
-		c += (((('A'-1) - c) & (c - ('Z'+1))) >> 26) & 32;
-		h = (h ^ c) * 16777619;
+		c += ( ( ( ( 'A' - 1 ) - c ) & ( c - ( 'Z' + 1 ) ) ) >> 26 ) & 32;
+		h = ( h ^ c ) * 16777619;
 	}
-	return (h ^ (h << 17)) + (h >> 21);
+	return ( h ^ ( h << 17 ) ) + ( h >> 21 );
 }
 
 

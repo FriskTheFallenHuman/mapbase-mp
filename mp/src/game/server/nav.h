@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,9 +23,9 @@ const float GenerationStepSize = 25.0f;			// (30) was 20, but bots can't fit alw
 const float JumpHeight = 41.8f;					// if delta Z is less than this, we can jump up on it
 
 #if defined(CSTRIKE_DLL)
-const float JumpCrouchHeight = 58.0f;			// (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
+	const float JumpCrouchHeight = 58.0f;			// (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
 #else
-const float JumpCrouchHeight = 64.0f;			// (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
+	const float JumpCrouchHeight = 64.0f;			// (48) if delta Z is less than or equal to this, we can jumpcrouch up on it
 #endif
 
 // There are 3 different definitions of StepHeight throughout the code, waiting to produce bugs if the 18.0 is ever changed.
@@ -33,15 +33,15 @@ const float StepHeight = 18.0f;					// if delta Z is greater than this, we have 
 
 // TERROR: Increased DeathDrop from 200, since zombies don't take falling damage
 #if defined(CSTRIKE_DLL)
-const float DeathDrop = 200.0f;					// (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
+	const float DeathDrop = 200.0f;					// (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
 #else
-const float DeathDrop = 400.0f;					// (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
+	const float DeathDrop = 400.0f;					// (300) distance at which we will die if we fall - should be about 600, and pay attention to fall damage during pathfind
 #endif
 
 #if defined(CSTRIKE_DLL)
-const float ClimbUpHeight = JumpCrouchHeight;	// CSBots assume all jump up links are reachable
+	const float ClimbUpHeight = JumpCrouchHeight;	// CSBots assume all jump up links are reachable
 #else
-const float ClimbUpHeight = 200.0f;				// height to check for climbing up
+	const float ClimbUpHeight = 200.0f;				// height to check for climbing up
 #endif
 
 const float CliffHeight = 300.0f;				// height which we consider a significant cliff which we would not want to fall off of
@@ -103,7 +103,7 @@ enum NavAttributeType
 	NAV_MESH_NAV_BLOCKER	= 0x80000000				// area is blocked by nav blocker ( Alas, needed to hijack a bit in the attributes to get within a cache line [7/24/2008 tom])
 };
 
-extern NavAttributeType NameToNavAttribute( const char *name );
+extern NavAttributeType NameToNavAttribute( const char* name );
 
 enum NavDirType
 {
@@ -167,26 +167,38 @@ struct Extent
 		hi.Init();
 	}
 
-	void Init( CBaseEntity *entity )
+	void Init( CBaseEntity* entity )
 	{
 		entity->CollisionProp()->WorldSpaceSurroundingBounds( &lo, &hi );
 	}
 
-	float SizeX( void ) const	{ return hi.x - lo.x; }
-	float SizeY( void ) const	{ return hi.y - lo.y; }
-	float SizeZ( void ) const	{ return hi.z - lo.z; }
-	float Area( void ) const	{ return SizeX() * SizeY(); }
+	float SizeX( void ) const
+	{
+		return hi.x - lo.x;
+	}
+	float SizeY( void ) const
+	{
+		return hi.y - lo.y;
+	}
+	float SizeZ( void ) const
+	{
+		return hi.z - lo.z;
+	}
+	float Area( void ) const
+	{
+		return SizeX() * SizeY();
+	}
 
 	// Increase bounds to contain the given point
-	void Encompass( const Vector &pos )
+	void Encompass( const Vector& pos )
 	{
-		for ( int i=0; i<3; ++i )
+		for( int i = 0; i < 3; ++i )
 		{
-			if ( pos[i] < lo[i] )
+			if( pos[i] < lo[i] )
 			{
 				lo[i] = pos[i];
 			}
-			else if ( pos[i] > hi[i] )
+			else if( pos[i] > hi[i] )
 			{
 				hi[i] = pos[i];
 			}
@@ -194,34 +206,34 @@ struct Extent
 	}
 
 	// Increase bounds to contain the given extent
-	void Encompass( const Extent &extent )
+	void Encompass( const Extent& extent )
 	{
 		Encompass( extent.lo );
 		Encompass( extent.hi );
 	}
 
 	// return true if 'pos' is inside of this extent
-	bool Contains( const Vector &pos ) const
+	bool Contains( const Vector& pos ) const
 	{
-		return (pos.x >= lo.x && pos.x <= hi.x &&
-				pos.y >= lo.y && pos.y <= hi.y &&
-				pos.z >= lo.z && pos.z <= hi.z);
+		return ( pos.x >= lo.x && pos.x <= hi.x &&
+				 pos.y >= lo.y && pos.y <= hi.y &&
+				 pos.z >= lo.z && pos.z <= hi.z );
 	}
-	
+
 	// return true if this extent overlaps the given one
-	bool IsOverlapping( const Extent &other ) const
+	bool IsOverlapping( const Extent& other ) const
 	{
-		return (lo.x <= other.hi.x && hi.x >= other.lo.x &&
-				lo.y <= other.hi.y && hi.y >= other.lo.y &&
-				lo.z <= other.hi.z && hi.z >= other.lo.z);
+		return ( lo.x <= other.hi.x && hi.x >= other.lo.x &&
+				 lo.y <= other.hi.y && hi.y >= other.lo.y &&
+				 lo.z <= other.hi.z && hi.z >= other.lo.z );
 	}
 
 	// return true if this extent completely contains the given one
-	bool IsEncompassing( const Extent &other, float tolerance = 0.0f ) const
+	bool IsEncompassing( const Extent& other, float tolerance = 0.0f ) const
 	{
-		return (lo.x <= other.lo.x + tolerance && hi.x >= other.hi.x - tolerance &&
-				lo.y <= other.lo.y + tolerance && hi.y >= other.hi.y - tolerance &&
-				lo.z <= other.lo.z + tolerance && hi.z >= other.hi.z - tolerance);
+		return ( lo.x <= other.lo.x + tolerance && hi.x >= other.hi.x - tolerance &&
+				 lo.y <= other.lo.y + tolerance && hi.y >= other.hi.y - tolerance &&
+				 lo.z <= other.lo.z + tolerance && hi.z >= other.hi.z - tolerance );
 	}
 };
 
@@ -240,11 +252,16 @@ inline NavDirType OppositeDirection( NavDirType dir )
 {
 	switch( dir )
 	{
-		case NORTH: return SOUTH;
-		case SOUTH: return NORTH;
-		case EAST:	return WEST;
-		case WEST:	return EAST;
-		default: break;
+		case NORTH:
+			return SOUTH;
+		case SOUTH:
+			return NORTH;
+		case EAST:
+			return WEST;
+		case WEST:
+			return EAST;
+		default:
+			break;
 	}
 
 	return NORTH;
@@ -255,11 +272,16 @@ inline NavDirType DirectionLeft( NavDirType dir )
 {
 	switch( dir )
 	{
-		case NORTH: return WEST;
-		case SOUTH: return EAST;
-		case EAST:	return NORTH;
-		case WEST:	return SOUTH;
-		default: break;
+		case NORTH:
+			return WEST;
+		case SOUTH:
+			return EAST;
+		case EAST:
+			return NORTH;
+		case WEST:
+			return SOUTH;
+		default:
+			break;
 	}
 
 	return NORTH;
@@ -270,26 +292,40 @@ inline NavDirType DirectionRight( NavDirType dir )
 {
 	switch( dir )
 	{
-		case NORTH: return EAST;
-		case SOUTH: return WEST;
-		case EAST:	return SOUTH;
-		case WEST:	return NORTH;
-		default: break;
+		case NORTH:
+			return EAST;
+		case SOUTH:
+			return WEST;
+		case EAST:
+			return SOUTH;
+		case WEST:
+			return NORTH;
+		default:
+			break;
 	}
 
 	return NORTH;
 }
 
 //--------------------------------------------------------------------------------------------------------------
-inline void AddDirectionVector( Vector *v, NavDirType dir, float amount )
+inline void AddDirectionVector( Vector* v, NavDirType dir, float amount )
 {
 	switch( dir )
 	{
-		case NORTH: v->y -= amount; return;
-		case SOUTH: v->y += amount; return;
-		case EAST:  v->x += amount; return;
-		case WEST:  v->x -= amount; return;
-		default: break;
+		case NORTH:
+			v->y -= amount;
+			return;
+		case SOUTH:
+			v->y += amount;
+			return;
+		case EAST:
+			v->x += amount;
+			return;
+		case WEST:
+			v->x -= amount;
+			return;
+		default:
+			break;
 	}
 }
 
@@ -298,11 +334,16 @@ inline float DirectionToAngle( NavDirType dir )
 {
 	switch( dir )
 	{
-		case NORTH:	return 270.0f;
-		case SOUTH:	return 90.0f;
-		case EAST:	return 0.0f;
-		case WEST:	return 180.0f;
-		default: break;
+		case NORTH:
+			return 270.0f;
+		case SOUTH:
+			return 90.0f;
+		case EAST:
+			return 0.0f;
+		case WEST:
+			return 180.0f;
+		default:
+			break;
 	}
 
 	return 0.0f;
@@ -312,47 +353,83 @@ inline float DirectionToAngle( NavDirType dir )
 inline NavDirType AngleToDirection( float angle )
 {
 	while( angle < 0.0f )
+	{
 		angle += 360.0f;
+	}
 
 	while( angle > 360.0f )
+	{
 		angle -= 360.0f;
+	}
 
-	if (angle < 45 || angle > 315)
+	if( angle < 45 || angle > 315 )
+	{
 		return EAST;
+	}
 
-	if (angle >= 45 && angle < 135)
+	if( angle >= 45 && angle < 135 )
+	{
 		return SOUTH;
+	}
 
-	if (angle >= 135 && angle < 225)
+	if( angle >= 135 && angle < 225 )
+	{
 		return WEST;
+	}
 
 	return NORTH;
 }
 
 //--------------------------------------------------------------------------------------------------------------
-inline void DirectionToVector2D( NavDirType dir, Vector2D *v )
+inline void DirectionToVector2D( NavDirType dir, Vector2D* v )
 {
 	switch( dir )
 	{
-		default: Assert(0);
-		case NORTH: v->x =  0.0f; v->y = -1.0f; break;
-		case SOUTH: v->x =  0.0f; v->y =  1.0f; break;
-		case EAST:  v->x =  1.0f; v->y =  0.0f; break;
-		case WEST:  v->x = -1.0f; v->y =  0.0f; break;
+		default:
+			Assert( 0 );
+		case NORTH:
+			v->x =  0.0f;
+			v->y = -1.0f;
+			break;
+		case SOUTH:
+			v->x =  0.0f;
+			v->y =  1.0f;
+			break;
+		case EAST:
+			v->x =  1.0f;
+			v->y =  0.0f;
+			break;
+		case WEST:
+			v->x = -1.0f;
+			v->y =  0.0f;
+			break;
 	}
 }
 
 
 //--------------------------------------------------------------------------------------------------------------
-inline void CornerToVector2D( NavCornerType dir, Vector2D *v )
+inline void CornerToVector2D( NavCornerType dir, Vector2D* v )
 {
 	switch( dir )
 	{
-		default: Assert(0);
-		case NORTH_WEST: v->x = -1.0f; v->y = -1.0f; break;
-		case NORTH_EAST: v->x =  1.0f; v->y = -1.0f; break;
-		case SOUTH_EAST: v->x =  1.0f; v->y =  1.0f; break;
-		case SOUTH_WEST: v->x = -1.0f; v->y =  1.0f; break;
+		default:
+			Assert( 0 );
+		case NORTH_WEST:
+			v->x = -1.0f;
+			v->y = -1.0f;
+			break;
+		case NORTH_EAST:
+			v->x =  1.0f;
+			v->y = -1.0f;
+			break;
+		case SOUTH_EAST:
+			v->x =  1.0f;
+			v->y =  1.0f;
+			break;
+		case SOUTH_WEST:
+			v->x = -1.0f;
+			v->y =  1.0f;
+			break;
 	}
 
 	v->NormalizeInPlace();
@@ -361,28 +438,28 @@ inline void CornerToVector2D( NavCornerType dir, Vector2D *v )
 
 //--------------------------------------------------------------------------------------------------------------
 // Gets the corner types that surround the given direction
-inline void GetCornerTypesInDirection( NavDirType dir, NavCornerType *first, NavCornerType *second )
+inline void GetCornerTypesInDirection( NavDirType dir, NavCornerType* first, NavCornerType* second )
 {
-	switch ( dir )
+	switch( dir )
 	{
-	default:
-		Assert(0);
-	case NORTH:
-		*first = NORTH_WEST;
-		*second = NORTH_EAST;
-		break;
-	case SOUTH:
-		*first = SOUTH_WEST;
-		*second = SOUTH_EAST;
-		break;
-	case EAST:
-		*first = NORTH_EAST;
-		*second = SOUTH_EAST;
-		break;
-	case WEST:
-		*first = NORTH_WEST;
-		*second = SOUTH_WEST;
-		break;
+		default:
+			Assert( 0 );
+		case NORTH:
+			*first = NORTH_WEST;
+			*second = NORTH_EAST;
+			break;
+		case SOUTH:
+			*first = SOUTH_WEST;
+			*second = SOUTH_EAST;
+			break;
+		case EAST:
+			*first = NORTH_EAST;
+			*second = SOUTH_EAST;
+			break;
+		case WEST:
+			*first = NORTH_WEST;
+			*second = SOUTH_WEST;
+			break;
 	}
 }
 
@@ -390,8 +467,8 @@ inline void GetCornerTypesInDirection( NavDirType dir, NavCornerType *first, Nav
 //--------------------------------------------------------------------------------------------------------------
 inline float RoundToUnits( float val, float unit )
 {
-	val = val + ((val < 0.0f) ? -unit*0.5f : unit*0.5f);
-	return (float)( unit * ( ((int)val) / (int)unit ) );
+	val = val + ( ( val < 0.0f ) ? -unit * 0.5f : unit * 0.5f );
+	return ( float )( unit * ( ( ( int )val ) / ( int )unit ) );
 }
 
 
@@ -406,61 +483,73 @@ inline float RoundToUnits( float val, float unit )
 #define WALK_THRU_TOGGLE_BRUSHES	0x08
 #define WALK_THRU_EVERYTHING		(WALK_THRU_DOORS | WALK_THRU_BREAKABLES | WALK_THRU_TOGGLE_BRUSHES)
 extern ConVar nav_solid_props;
-inline bool IsEntityWalkable( CBaseEntity *entity, unsigned int flags )
+inline bool IsEntityWalkable( CBaseEntity* entity, unsigned int flags )
 {
-	if (FClassnameIs( entity, "worldspawn" ))
+	if( FClassnameIs( entity, "worldspawn" ) )
+	{
 		return false;
+	}
 
-	if (FClassnameIs( entity, "player" ))
+	if( FClassnameIs( entity, "player" ) )
+	{
 		return false;
+	}
 
 	// if we hit a door, assume its walkable because it will open when we touch it
-	if (FClassnameIs( entity, "func_door*" ))
+	if( FClassnameIs( entity, "func_door*" ) )
 	{
 #ifdef PROBLEMATIC	// cp_dustbowl doors dont open by touch - they use surrounding triggers
-		if ( !entity->HasSpawnFlags( SF_DOOR_PTOUCH ) )
+		if( !entity->HasSpawnFlags( SF_DOOR_PTOUCH ) )
 		{
 			// this door is not opened by touching it, if it is closed, the area is blocked
-			CBaseDoor *door = (CBaseDoor *)entity;
+			CBaseDoor* door = ( CBaseDoor* )entity;
 			return door->m_toggle_state == TS_AT_TOP;
 		}
 #endif // _DEBUG
 
-		return (flags & WALK_THRU_FUNC_DOORS) ? true : false;
+		return ( flags & WALK_THRU_FUNC_DOORS ) ? true : false;
 	}
 
-	if (FClassnameIs( entity, "prop_door*" ))
+	if( FClassnameIs( entity, "prop_door*" ) )
 	{
-		return (flags & WALK_THRU_PROP_DOORS) ? true : false;
+		return ( flags & WALK_THRU_PROP_DOORS ) ? true : false;
 	}
 
 	// if we hit a clip brush, ignore it if it is not BRUSHSOLID_ALWAYS
-	if (FClassnameIs( entity, "func_brush" ))
+	if( FClassnameIs( entity, "func_brush" ) )
 	{
-		CFuncBrush *brush = (CFuncBrush *)entity;
-		switch ( brush->m_iSolidity )
+		CFuncBrush* brush = ( CFuncBrush* )entity;
+		switch( brush->m_iSolidity )
 		{
-		case CFuncBrush::BRUSHSOLID_ALWAYS:
-			return false;
-		case CFuncBrush::BRUSHSOLID_NEVER:
-			return true;
-		case CFuncBrush::BRUSHSOLID_TOGGLE:
-			return (flags & WALK_THRU_TOGGLE_BRUSHES) ? true : false;
+			case CFuncBrush::BRUSHSOLID_ALWAYS:
+				return false;
+			case CFuncBrush::BRUSHSOLID_NEVER:
+				return true;
+			case CFuncBrush::BRUSHSOLID_TOGGLE:
+				return ( flags & WALK_THRU_TOGGLE_BRUSHES ) ? true : false;
 		}
 	}
 
 	// if we hit a breakable object, assume its walkable because we will shoot it when we touch it
-	if (FClassnameIs( entity, "func_breakable" ) && entity->GetHealth() && entity->m_takedamage == DAMAGE_YES)
-		return (flags & WALK_THRU_BREAKABLES) ? true : false;
+	if( FClassnameIs( entity, "func_breakable" ) && entity->GetHealth() && entity->m_takedamage == DAMAGE_YES )
+	{
+		return ( flags & WALK_THRU_BREAKABLES ) ? true : false;
+	}
 
-	if (FClassnameIs( entity, "func_breakable_surf" ) && entity->m_takedamage == DAMAGE_YES)
-		return (flags & WALK_THRU_BREAKABLES) ? true : false;
+	if( FClassnameIs( entity, "func_breakable_surf" ) && entity->m_takedamage == DAMAGE_YES )
+	{
+		return ( flags & WALK_THRU_BREAKABLES ) ? true : false;
+	}
 
-	if ( FClassnameIs( entity, "func_playerinfected_clip" ) == true )
+	if( FClassnameIs( entity, "func_playerinfected_clip" ) == true )
+	{
 		return true;
+	}
 
-	if ( nav_solid_props.GetBool() && FClassnameIs( entity, "prop_*" ) )
+	if( nav_solid_props.GetBool() && FClassnameIs( entity, "prop_*" ) )
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -473,16 +562,16 @@ inline bool IsEntityWalkable( CBaseEntity *entity, unsigned int flags )
 class CTraceFilterWalkableEntities : public CTraceFilterNoNPCsOrPlayer
 {
 public:
-	CTraceFilterWalkableEntities( const IHandleEntity *passentity, int collisionGroup, unsigned int flags )
+	CTraceFilterWalkableEntities( const IHandleEntity* passentity, int collisionGroup, unsigned int flags )
 		: CTraceFilterNoNPCsOrPlayer( passentity, collisionGroup ), m_flags( flags )
 	{
 	}
 
-	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
+	virtual bool ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask )
 	{
-		if ( CTraceFilterNoNPCsOrPlayer::ShouldHitEntity(pServerEntity, contentsMask) )
+		if( CTraceFilterNoNPCsOrPlayer::ShouldHitEntity( pServerEntity, contentsMask ) )
 		{
-			CBaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
+			CBaseEntity* pEntity = EntityFromEntityHandle( pServerEntity );
 			return ( !IsEntityWalkable( pEntity, m_flags ) );
 		}
 		return false;
@@ -493,6 +582,6 @@ private:
 };
 
 
-extern bool IsWalkableTraceLineClear( const Vector &from, const Vector &to, unsigned int flags = 0 );
+extern bool IsWalkableTraceLineClear( const Vector& from, const Vector& to, unsigned int flags = 0 );
 
 #endif // _NAV_H_

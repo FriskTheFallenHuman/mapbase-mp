@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -27,9 +27,9 @@
 ConVar	g_debug_turret_ceiling( "g_debug_turret_ceiling", "0" );
 
 #ifdef MAPBASE
-#define CEILING_TURRET_MODEL		GetTurretModel()
+	#define CEILING_TURRET_MODEL		GetTurretModel()
 #else
-#define	CEILING_TURRET_MODEL		"models/combine_turrets/ceiling_turret.mdl"
+	#define	CEILING_TURRET_MODEL		"models/combine_turrets/ceiling_turret.mdl"
 #endif
 #define CEILING_TURRET_GLOW_SPRITE	"sprites/glow1.vmt"
 /* // we now inherit these from the ai_basenpc baseclass
@@ -54,7 +54,7 @@ ConVar	g_debug_turret_ceiling( "g_debug_turret_ceiling", "0" );
 #define SF_CEILING_TURRET_NEVERRETIRE		0x00000080
 #define SF_CEILING_TURRET_OUT_OF_AMMO		0x00000100
 #ifdef MAPBASE
-#define SF_CEILING_TURRET_NO_SPRITE			0x00000400
+	#define SF_CEILING_TURRET_NO_SPRITE			0x00000400
 #endif
 
 //Heights
@@ -98,7 +98,7 @@ class CNPC_CeilingTurret : public CAI_BaseNPC
 {
 	DECLARE_CLASS( CNPC_CeilingTurret, CAI_BaseNPC );
 public:
-	
+
 	CNPC_CeilingTurret( void );
 	~CNPC_CeilingTurret( void );
 
@@ -114,82 +114,123 @@ public:
 	void	DeathThink( void );
 
 	// Inputs
-	void	InputToggle( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
+	void	InputToggle( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void	InputDepleteAmmo( inputdata_t &inputdata );
-	void	InputRestoreAmmo( inputdata_t &inputdata );
-	void	InputCreateSprite( inputdata_t &inputdata );
-	void	InputDestroySprite( inputdata_t &inputdata );
+	void	InputDepleteAmmo( inputdata_t& inputdata );
+	void	InputRestoreAmmo( inputdata_t& inputdata );
+	void	InputCreateSprite( inputdata_t& inputdata );
+	void	InputDestroySprite( inputdata_t& inputdata );
 
-	virtual void	StopLoopingSounds( void ) { StopSound(GetMoveSound()); }
+	virtual void	StopLoopingSounds( void )
+	{
+		StopSound( GetMoveSound() );
+	}
 #endif
 
 	void	SetLastSightTime();
-	
+
 	float	MaxYawSpeed( void );
 
-	int		OnTakeDamage( const CTakeDamageInfo &inputInfo );
+	int		OnTakeDamage( const CTakeDamageInfo& inputInfo );
 
-	virtual bool CanBeAnEnemyOf( CBaseEntity *pEnemy );
+	virtual bool CanBeAnEnemyOf( CBaseEntity* pEnemy );
 
-	Class_T	Classify( void ) 
+	Class_T	Classify( void )
 	{
-		if( m_bEnabled ) 
+		if( m_bEnabled )
+		{
 			return CLASS_COMBINE;
+		}
 
 		return CLASS_NONE;
 	}
-	
-	bool	FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
 
-	Vector	EyeOffset( Activity nActivity ) 
+	bool	FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
+
+	Vector	EyeOffset( Activity nActivity )
 	{
-		Vector vecEyeOffset(0,0,-64);
+		Vector vecEyeOffset( 0, 0, -64 );
 		GetEyePosition( GetModelPtr(), vecEyeOffset );
 		return vecEyeOffset;
 	}
 
 	Vector	EyePosition( void )
 	{
-		return GetAbsOrigin() + EyeOffset(GetActivity());
+		return GetAbsOrigin() + EyeOffset( GetActivity() );
 	}
 
-	Vector	GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget ) 
+	Vector	GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget )
 	{
-		return VECTOR_CONE_5DEGREES * ((CBaseHLCombatWeapon::GetDefaultProficiencyValues())[ WEAPON_PROFICIENCY_PERFECT ].spreadscale);
+		return VECTOR_CONE_5DEGREES * ( ( CBaseHLCombatWeapon::GetDefaultProficiencyValues() )[ WEAPON_PROFICIENCY_PERFECT ].spreadscale );
 	}
 
 protected:
-	
+
 #ifdef MAPBASE
-	virtual const char *GetTurretModel() { return "models/combine_turrets/ceiling_turret.mdl"; }
+	virtual const char* GetTurretModel()
+	{
+		return "models/combine_turrets/ceiling_turret.mdl";
+	}
 
-	virtual const char *GetRetireSound()	{ return "NPC_CeilingTurret.Retire"; }
-	virtual const char *GetDeploySound()	{ return "NPC_CeilingTurret.Deploy"; }
-	virtual const char *GetMoveSound()		{ return "NPC_CeilingTurret.Move"; }
-	virtual const char *GetActiveSound()	{ return "NPC_CeilingTurret.Active"; }
-	virtual const char *GetAlertSound()		{ return "NPC_CeilingTurret.Alert"; }
-	virtual const char *GetShootSound()		{ return "NPC_CeilingTurret.ShotSounds"; }
-	virtual const char *GetPingSound()		{ return "NPC_CeilingTurret.Ping"; }
-	virtual const char *GetDieSound()		{ return "NPC_CeilingTurret.Die"; }
+	virtual const char* GetRetireSound()
+	{
+		return "NPC_CeilingTurret.Retire";
+	}
+	virtual const char* GetDeploySound()
+	{
+		return "NPC_CeilingTurret.Deploy";
+	}
+	virtual const char* GetMoveSound()
+	{
+		return "NPC_CeilingTurret.Move";
+	}
+	virtual const char* GetActiveSound()
+	{
+		return "NPC_CeilingTurret.Active";
+	}
+	virtual const char* GetAlertSound()
+	{
+		return "NPC_CeilingTurret.Alert";
+	}
+	virtual const char* GetShootSound()
+	{
+		return "NPC_CeilingTurret.ShotSounds";
+	}
+	virtual const char* GetPingSound()
+	{
+		return "NPC_CeilingTurret.Ping";
+	}
+	virtual const char* GetDieSound()
+	{
+		return "NPC_CeilingTurret.Die";
+	}
 
-	virtual float		GetFireRate(bool bFightingPlayer = false)		{ return bFightingPlayer ? 0.5f : 0.1f; }
+	virtual float		GetFireRate( bool bFightingPlayer = false )
+	{
+		return bFightingPlayer ? 0.5f : 0.1f;
+	}
 
-	virtual void		SetIdleGoalAngles()		{ m_vecGoalAngles = GetAbsAngles(); }
+	virtual void		SetIdleGoalAngles()
+	{
+		m_vecGoalAngles = GetAbsAngles();
+	}
 #endif
-	
+
 #ifdef MAPBASE
 	virtual bool	PreThink( turretState_e state );
 	void	DryFire( void );
-	const char *GetTracerType( void ) { return "AR2Tracer"; }
+	const char* GetTracerType( void )
+	{
+		return "AR2Tracer";
+	}
 #else
 	bool	PreThink( turretState_e state );
 #endif
-	void	Shoot( const Vector &vecSrc, const Vector &vecDirToEnemy );
+	void	Shoot( const Vector& vecSrc, const Vector& vecDirToEnemy );
 	void	SetEyeState( eyeState_t state );
-	void	Ping( void );	
+	void	Ping( void );
 	void	Toggle( void );
 	void	Enable( void );
 	void	Disable( void );
@@ -212,14 +253,14 @@ protected:
 	bool	m_bActive;		//Denotes the turret is deployed and looking for targets
 	bool	m_bBlinkState;
 	bool	m_bEnabled;		//Denotes whether the turret is able to deploy or not
-	
+
 	float	m_flShotTime;
 	float	m_flLastSight;
 	float	m_flPingTime;
 
 	QAngle	m_vecGoalAngles;
 
-	CSprite	*m_pEyeGlow;
+	CSprite*	m_pEyeGlow;
 
 	COutputEvent m_OnDeploy;
 	COutputEvent m_OnRetire;
@@ -233,32 +274,32 @@ protected:
 //Datatable
 BEGIN_DATADESC( CNPC_CeilingTurret )
 
-	DEFINE_FIELD( m_iAmmoType,		FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
-	DEFINE_FIELD( m_bAutoStart,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bActive,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bBlinkState,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bEnabled,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flShotTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_flLastSight,	FIELD_TIME ),
-	DEFINE_FIELD( m_flPingTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_vecGoalAngles,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_pEyeGlow,		FIELD_CLASSPTR ),
+DEFINE_FIELD( m_iAmmoType,		FIELD_INTEGER ),
+				  DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
+				  DEFINE_FIELD( m_bAutoStart,		FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bActive,		FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bBlinkState,	FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bEnabled,		FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_flShotTime,		FIELD_TIME ),
+				  DEFINE_FIELD( m_flLastSight,	FIELD_TIME ),
+				  DEFINE_FIELD( m_flPingTime,		FIELD_TIME ),
+				  DEFINE_FIELD( m_vecGoalAngles,	FIELD_VECTOR ),
+				  DEFINE_FIELD( m_pEyeGlow,		FIELD_CLASSPTR ),
 #ifdef MAPBASE
 	DEFINE_INPUT( m_flFieldOfView,	FIELD_FLOAT, "FieldOfView" ),
 #endif
 
-	DEFINE_THINKFUNC( Retire ),
-	DEFINE_THINKFUNC( Deploy ),
-	DEFINE_THINKFUNC( ActiveThink ),
-	DEFINE_THINKFUNC( SearchThink ),
-	DEFINE_THINKFUNC( AutoSearchThink ),
-	DEFINE_THINKFUNC( DeathThink ),
+				  DEFINE_THINKFUNC( Retire ),
+				  DEFINE_THINKFUNC( Deploy ),
+				  DEFINE_THINKFUNC( ActiveThink ),
+				  DEFINE_THINKFUNC( SearchThink ),
+				  DEFINE_THINKFUNC( AutoSearchThink ),
+				  DEFINE_THINKFUNC( DeathThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				  // Inputs
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "DepleteAmmo", InputDepleteAmmo ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "RestoreAmmo", InputRestoreAmmo ),
@@ -266,15 +307,15 @@ BEGIN_DATADESC( CNPC_CeilingTurret )
 	DEFINE_INPUTFUNC( FIELD_VOID, "DestroySprite", InputDestroySprite ),
 #endif
 
-	DEFINE_OUTPUT( m_OnDeploy, "OnDeploy" ),
-	DEFINE_OUTPUT( m_OnRetire, "OnRetire" ),
+				  DEFINE_OUTPUT( m_OnDeploy, "OnDeploy" ),
+				  DEFINE_OUTPUT( m_OnRetire, "OnRetire" ),
 #ifndef MAPBASE
 	DEFINE_OUTPUT( m_OnTipped, "OnTipped" ),
 #endif
 
-END_DATADESC()
+				  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_turret_ceiling, CNPC_CeilingTurret );
+				  LINK_ENTITY_TO_CLASS( npc_turret_ceiling, CNPC_CeilingTurret );
 
 //-----------------------------------------------------------------------------
 // Constructor
@@ -304,7 +345,7 @@ CNPC_CeilingTurret::~CNPC_CeilingTurret( void )
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::Precache( void )
 {
-	PrecacheModel( DefaultOrCustomModel( CEILING_TURRET_MODEL ) );	
+	PrecacheModel( DefaultOrCustomModel( CEILING_TURRET_MODEL ) );
 	PrecacheModel( CEILING_TURRET_GLOW_SPRITE );
 
 	// Activities
@@ -336,7 +377,7 @@ void CNPC_CeilingTurret::Precache( void )
 #endif
 
 	PrecacheScriptSound( "NPC_FloorTurret.DryFire" );
-	
+
 	BaseClass::Precache();
 }
 
@@ -344,11 +385,11 @@ void CNPC_CeilingTurret::Precache( void )
 // Purpose: Spawn the entity
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::Spawn( void )
-{ 
+{
 	Precache();
 
 	SetModel( DefaultOrCustomModel( CEILING_TURRET_MODEL ) );
-	
+
 	BaseClass::Spawn();
 
 	m_HackedGunPos	= Vector( 0, 0, 12.75 );
@@ -358,13 +399,15 @@ void CNPC_CeilingTurret::Spawn( void )
 #endif
 	m_takedamage	= DAMAGE_YES;
 #ifdef MAPBASE
-	if (m_iHealth == 0)
+	if( m_iHealth == 0 )
+	{
 		m_iHealth = 1000;
+	}
 #else
 	m_iHealth		= 1000;
 #endif
 	m_bloodColor	= BLOOD_COLOR_MECH;
-	
+
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
@@ -380,12 +423,12 @@ void CNPC_CeilingTurret::Spawn( void )
 
 	//Create our eye sprite
 #ifdef MAPBASE
-	if (!HasSpawnFlags(SF_CEILING_TURRET_NO_SPRITE))
+	if( !HasSpawnFlags( SF_CEILING_TURRET_NO_SPRITE ) )
 	{
 #endif
-	m_pEyeGlow = CSprite::SpriteCreate( CEILING_TURRET_GLOW_SPRITE, GetLocalOrigin(), false );
-	m_pEyeGlow->SetTransparency( kRenderTransAdd, 255, 0, 0, 128, kRenderFxNoDissipation );
-	m_pEyeGlow->SetAttachment( this, 2 );
+		m_pEyeGlow = CSprite::SpriteCreate( CEILING_TURRET_GLOW_SPRITE, GetLocalOrigin(), false );
+		m_pEyeGlow->SetTransparency( kRenderTransAdd, 255, 0, 0, 128, kRenderFxNoDissipation );
+		m_pEyeGlow->SetAttachment( this, 2 );
 #ifdef MAPBASE
 	}
 #endif
@@ -395,7 +438,7 @@ void CNPC_CeilingTurret::Spawn( void )
 	m_bEnabled	 = ( ( m_spawnflags & SF_CEILING_TURRET_STARTINACTIVE ) == false );
 
 	//Do we start active?
-	if ( m_bAutoStart && m_bEnabled )
+	if( m_bAutoStart && m_bEnabled )
 	{
 		SetThink( &CNPC_CeilingTurret::AutoSearchThink );
 		SetEyeState( TURRET_EYE_DORMANT );
@@ -413,25 +456,31 @@ void CNPC_CeilingTurret::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CNPC_CeilingTurret::OnTakeDamage( const CTakeDamageInfo &inputInfo )
+int CNPC_CeilingTurret::OnTakeDamage( const CTakeDamageInfo& inputInfo )
 {
-	if ( !m_takedamage )
+	if( !m_takedamage )
+	{
 		return 0;
+	}
 
 	CTakeDamageInfo info = inputInfo;
 
-	if ( m_bActive == false )
+	if( m_bActive == false )
+	{
 		info.ScaleDamage( 0.1f );
+	}
 
 	// If attacker can't do at least the min required damage to us, don't take any damage from them
-	if ( info.GetDamage() < m_iMinHealthDmg )
+	if( info.GetDamage() < m_iMinHealthDmg )
+	{
 		return 0;
+	}
 
 	m_iHealth -= info.GetDamage();
 
-	if ( m_iHealth <= 0 )
+	if( m_iHealth <= 0 )
 	{
 		m_iHealth = 0;
 		m_takedamage = DAMAGE_NO;
@@ -464,25 +513,27 @@ int CNPC_CeilingTurret::OnTakeDamage( const CTakeDamageInfo &inputInfo )
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::Retire( void )
 {
-	if ( PreThink( TURRET_RETIRING ) )
+	if( PreThink( TURRET_RETIRING ) )
+	{
 		return;
+	}
 
 	//Level out the turret
 	m_vecGoalAngles = GetAbsAngles();
 	SetNextThink( gpGlobals->curtime );
 
 	//Set ourselves to close
-	if ( GetActivity() != ACT_CEILING_TURRET_CLOSE )
+	if( GetActivity() != ACT_CEILING_TURRET_CLOSE )
 	{
 		//Set our visible state to dormant
 		SetEyeState( TURRET_EYE_DORMANT );
 
-		SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
-		
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_OPEN_IDLE );
+
 		//If we're done moving to our desired facing, close up
-		if ( UpdateFacing() == false )
+		if( UpdateFacing() == false )
 		{
-			SetActivity( (Activity) ACT_CEILING_TURRET_CLOSE );
+			SetActivity( ( Activity ) ACT_CEILING_TURRET_CLOSE );
 #ifdef MAPBASE
 			EmitSound( GetRetireSound() );
 #else
@@ -493,17 +544,17 @@ void CNPC_CeilingTurret::Retire( void )
 			m_OnRetire.FireOutput( NULL, this );
 		}
 	}
-	else if ( IsActivityFinished() )
-	{	
+	else if( IsActivityFinished() )
+	{
 		SetHeight( CEILING_TURRET_RETRACT_HEIGHT );
 
 		m_bActive		= false;
 		m_flLastSight	= 0;
 
-		SetActivity( (Activity) ACT_CEILING_TURRET_CLOSED_IDLE );
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_CLOSED_IDLE );
 
 		//Go back to auto searching
-		if ( m_bAutoStart )
+		if( m_bAutoStart )
 		{
 			SetThink( &CNPC_CeilingTurret::AutoSearchThink );
 			SetNextThink( gpGlobals->curtime + 0.05f );
@@ -526,8 +577,10 @@ void CNPC_CeilingTurret::Retire( void )
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::Deploy( void )
 {
-	if ( PreThink( TURRET_DEPLOYING ) )
+	if( PreThink( TURRET_DEPLOYING ) )
+	{
 		return;
+	}
 
 	m_vecGoalAngles = GetAbsAngles();
 
@@ -537,10 +590,10 @@ void CNPC_CeilingTurret::Deploy( void )
 	SetEyeState( TURRET_EYE_SEE_TARGET );
 
 	//Open if we're not already
-	if ( GetActivity() != ACT_CEILING_TURRET_OPEN )
+	if( GetActivity() != ACT_CEILING_TURRET_OPEN )
 	{
 		m_bActive = true;
-		SetActivity( (Activity) ACT_CEILING_TURRET_OPEN );
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_OPEN );
 #ifdef MAPBASE
 		EmitSound( GetDeploySound() );
 #else
@@ -556,11 +609,11 @@ void CNPC_CeilingTurret::Deploy( void )
 	}
 
 	//If we're done, then start searching
-	if ( IsActivityFinished() )
+	if( IsActivityFinished() )
 	{
 		SetHeight( CEILING_TURRET_DEPLOY_HEIGHT );
 
-		SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_OPEN_IDLE );
 
 		m_flShotTime  = gpGlobals->curtime + 1.0f;
 
@@ -587,7 +640,7 @@ void CNPC_CeilingTurret::SetLastSightTime()
 	}
 	else
 	{
-		m_flLastSight = gpGlobals->curtime + CEILING_TURRET_MAX_WAIT;	
+		m_flLastSight = gpGlobals->curtime + CEILING_TURRET_MAX_WAIT;
 	}
 }
 
@@ -607,7 +660,7 @@ bool CNPC_CeilingTurret::UpdateFacing( void )
 {
 	bool  bMoved = false;
 	matrix3x4_t localToWorld;
-	
+
 	GetAttachment( LookupAttachment( "eyes" ), localToWorld );
 
 	Vector vecGoalDir;
@@ -616,7 +669,7 @@ bool CNPC_CeilingTurret::UpdateFacing( void )
 	Vector vecGoalLocalDir;
 	VectorIRotate( vecGoalDir, localToWorld, vecGoalLocalDir );
 
-	if ( g_debug_turret_ceiling.GetBool() )
+	if( g_debug_turret_ceiling.GetBool() )
 	{
 		Vector	vecMuzzle, vecMuzzleDir;
 		QAngle	vecMuzzleAng;
@@ -624,34 +677,34 @@ bool CNPC_CeilingTurret::UpdateFacing( void )
 		GetAttachment( "eyes", vecMuzzle, vecMuzzleAng );
 		AngleVectors( vecMuzzleAng, &vecMuzzleDir );
 
-		NDebugOverlay::Cross3D( vecMuzzle, -Vector(2,2,2), Vector(2,2,2), 255, 255, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( vecMuzzle+(vecMuzzleDir*256), -Vector(2,2,2), Vector(2,2,2), 255, 255, 0, false, 0.05 );
-		NDebugOverlay::Line( vecMuzzle, vecMuzzle+(vecMuzzleDir*256), 255, 255, 0, false, 0.05 );
-		
-		NDebugOverlay::Cross3D( vecMuzzle, -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( vecMuzzle+(vecGoalDir*256), -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, false, 0.05 );
-		NDebugOverlay::Line( vecMuzzle, vecMuzzle+(vecGoalDir*256), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle + ( vecMuzzleDir * 256 ), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 255, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMuzzle, vecMuzzle + ( vecMuzzleDir * 256 ), 255, 255, 0, false, 0.05 );
+
+		NDebugOverlay::Cross3D( vecMuzzle, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle + ( vecGoalDir * 256 ), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMuzzle, vecMuzzle + ( vecGoalDir * 256 ), 255, 0, 0, false, 0.05 );
 	}
 
 	QAngle vecGoalLocalAngles;
 	VectorAngles( vecGoalLocalDir, vecGoalLocalAngles );
 
 	// Update pitch
-	float flDiff = AngleNormalize( UTIL_ApproachAngle(  vecGoalLocalAngles.x, 0.0, 0.1f * MaxYawSpeed() ) );
-	
+	float flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.x, 0.0, 0.1f * MaxYawSpeed() ) );
+
 	SetPoseParameter( m_poseAim_Pitch, GetPoseParameter( m_poseAim_Pitch ) + ( flDiff / 1.5f ) );
 
-	if ( fabs( flDiff ) > 0.1f )
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
 
 	// Update yaw
-	flDiff = AngleNormalize( UTIL_ApproachAngle(  vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed() ) );
+	flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed() ) );
 
 	SetPoseParameter( m_poseAim_Yaw, GetPoseParameter( m_poseAim_Yaw ) + ( flDiff / 1.5f ) );
 
-	if ( fabs( flDiff ) > 0.1f )
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
@@ -662,28 +715,30 @@ bool CNPC_CeilingTurret::UpdateFacing( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEntity - 
+// Purpose:
+// Input  : *pEntity -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_CeilingTurret::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_CeilingTurret::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
-	CBaseEntity	*pHitEntity = NULL;
-	if ( BaseClass::FVisible( pEntity, traceMask, &pHitEntity ) )
+	CBaseEntity*	pHitEntity = NULL;
+	if( BaseClass::FVisible( pEntity, traceMask, &pHitEntity ) )
+	{
 		return true;
+	}
 
 	// If we hit something that's okay to hit anyway, still fire
-	if ( pHitEntity && pHitEntity->MyCombatCharacterPointer() )
+	if( pHitEntity && pHitEntity->MyCombatCharacterPointer() )
 	{
 #ifdef MAPBASE
-		if (IRelationType(pHitEntity) <= D_FR)
+		if( IRelationType( pHitEntity ) <= D_FR )
 #else
-		if (IRelationType(pHitEntity) == D_HT)
+		if( IRelationType( pHitEntity ) == D_HT )
 #endif
 			return true;
 	}
 
-	if (ppBlocker)
+	if( ppBlocker )
 	{
 		*ppBlocker = pHitEntity;
 	}
@@ -697,14 +752,16 @@ bool CNPC_CeilingTurret::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEnt
 void CNPC_CeilingTurret::ActiveThink( void )
 {
 	//Allow descended classes a chance to do something before the think function
-	if ( PreThink( TURRET_ACTIVE ) )
+	if( PreThink( TURRET_ACTIVE ) )
+	{
 		return;
+	}
 
 	//Update our think time
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	//If we've become inactive, go back to searching
-	if ( ( m_bActive == false ) || ( GetEnemy() == NULL ) )
+	if( ( m_bActive == false ) || ( GetEnemy() == NULL ) )
 	{
 		SetEnemy( NULL );
 		SetLastSightTime();
@@ -712,7 +769,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 		m_vecGoalAngles = GetAbsAngles();
 		return;
 	}
-	
+
 	//Get our shot positions
 	Vector vecMid = EyePosition();
 	Vector vecMidEnemy = GetEnemy()->GetAbsOrigin();
@@ -724,7 +781,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 	bool bEnemyVisible = FInViewCone( GetEnemy() ) && FVisible( GetEnemy() ) && GetEnemy()->IsAlive();
 
 	//Calculate dir and dist to enemy
-	Vector	vecDirToEnemy = vecMidEnemy - vecMid;	
+	Vector	vecDirToEnemy = vecMidEnemy - vecMid;
 	float	flDistToEnemy = VectorNormalize( vecDirToEnemy );
 
 	//We want to look at the enemy's eyes so we don't jitter
@@ -735,25 +792,25 @@ void CNPC_CeilingTurret::ActiveThink( void )
 	VectorAngles( vecDirToEnemyEyes, vecAnglesToEnemy );
 
 	//Draw debug info
-	if ( g_debug_turret_ceiling.GetBool() )
+	if( g_debug_turret_ceiling.GetBool() )
 	{
-		NDebugOverlay::Cross3D( vecMid, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( GetEnemy()->WorldSpaceCenter(), -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMid, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( GetEnemy()->WorldSpaceCenter(), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
 		NDebugOverlay::Line( vecMid, GetEnemy()->WorldSpaceCenter(), 0, 255, 0, false, 0.05 );
 
-		NDebugOverlay::Cross3D( vecMid, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( vecMidEnemy, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMid, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMidEnemy, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
 		NDebugOverlay::Line( vecMid, vecMidEnemy, 0, 255, 0, false, 0.05f );
 	}
 
 	//Current enemy is not visible
-	if ( ( bEnemyVisible == false ) || ( flDistToEnemy > CEILING_TURRET_RANGE ))
+	if( ( bEnemyVisible == false ) || ( flDistToEnemy > CEILING_TURRET_RANGE ) )
 	{
-		if ( m_flLastSight )
+		if( m_flLastSight )
 		{
 			m_flLastSight = gpGlobals->curtime + 0.5f;
 		}
-		else if ( gpGlobals->curtime > m_flLastSight )
+		else if( gpGlobals->curtime > m_flLastSight )
 		{
 			// Should we look for a new target?
 			ClearEnemyMemory();
@@ -761,7 +818,7 @@ void CNPC_CeilingTurret::ActiveThink( void )
 			SetLastSightTime();
 			SetThink( &CNPC_CeilingTurret::SearchThink );
 			m_vecGoalAngles = GetAbsAngles();
-			
+
 			SpinDown();
 
 			return;
@@ -772,50 +829,50 @@ void CNPC_CeilingTurret::ActiveThink( void )
 
 	Vector vecMuzzle, vecMuzzleDir;
 	QAngle vecMuzzleAng;
-	
+
 	GetAttachment( "eyes", vecMuzzle, vecMuzzleAng );
 	AngleVectors( vecMuzzleAng, &vecMuzzleDir );
-	
-	if ( m_flShotTime < gpGlobals->curtime )
+
+	if( m_flShotTime < gpGlobals->curtime )
 	{
 		//Fire the gun
-		if ( DotProduct( vecDirToEnemy, vecMuzzleDir ) >= 0.9848 ) // 10 degree slop
+		if( DotProduct( vecDirToEnemy, vecMuzzleDir ) >= 0.9848 )  // 10 degree slop
 		{
 #ifdef MAPBASE
-			if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
+			if( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 			{
 				ResetActivity();
-				SetActivity( (Activity) ACT_CEILING_TURRET_DRYFIRE );
+				SetActivity( ( Activity ) ACT_CEILING_TURRET_DRYFIRE );
 				DryFire();
 			}
 			else
 			{
 				ResetActivity();
-				SetActivity( (Activity) ACT_CEILING_TURRET_FIRE );
+				SetActivity( ( Activity ) ACT_CEILING_TURRET_FIRE );
 				Shoot( vecMuzzle, vecMuzzleDir );
 			}
 #else
-			if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
+			if( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 			{
-				SetActivity( (Activity) ACT_CEILING_TURRET_DRYFIRE );
+				SetActivity( ( Activity ) ACT_CEILING_TURRET_DRYFIRE );
 			}
 			else
 			{
-				SetActivity( (Activity) ACT_CEILING_TURRET_FIRE );
+				SetActivity( ( Activity ) ACT_CEILING_TURRET_FIRE );
 			}
-			
+
 			//Fire the weapon
 			Shoot( vecMuzzle, vecMuzzleDir );
 #endif
-		} 
+		}
 	}
 	else
 	{
-		SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_OPEN_IDLE );
 	}
 
 	//If we can see our enemy, face it
-	if ( bEnemyVisible )
+	if( bEnemyVisible )
 	{
 		m_vecGoalAngles.y = vecAnglesToEnemy.y;
 		m_vecGoalAngles.x = vecAnglesToEnemy.x;
@@ -831,38 +888,40 @@ void CNPC_CeilingTurret::ActiveThink( void )
 void CNPC_CeilingTurret::SearchThink( void )
 {
 	//Allow descended classes a chance to do something before the think function
-	if ( PreThink( TURRET_SEARCHING ) )
+	if( PreThink( TURRET_SEARCHING ) )
+	{
 		return;
+	}
 
 	SetNextThink( gpGlobals->curtime + 0.05f );
 
-	SetActivity( (Activity) ACT_CEILING_TURRET_OPEN_IDLE );
+	SetActivity( ( Activity ) ACT_CEILING_TURRET_OPEN_IDLE );
 
 	//If our enemy has died, pick a new enemy
-	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
+	if( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
 	{
 		SetEnemy( NULL );
 	}
 
 	//Acquire the target
- 	if ( GetEnemy() == NULL )
+	if( GetEnemy() == NULL )
 	{
 		GetSenses()->Look( CEILING_TURRET_RANGE );
-		CBaseEntity *pEnemy = BestEnemy();
-		if ( pEnemy )
+		CBaseEntity* pEnemy = BestEnemy();
+		if( pEnemy )
 		{
 			SetEnemy( pEnemy );
 		}
 	}
 
 	//If we've found a target, spin up the barrel and start to attack
-	if ( GetEnemy() != NULL )
+	if( GetEnemy() != NULL )
 	{
 #ifdef MAPBASE
 		m_flShotTime = gpGlobals->curtime + GetFireRate( GetEnemy()->IsPlayer() );
 #else
 		//Give players a grace period
-		if ( GetEnemy()->IsPlayer() )
+		if( GetEnemy()->IsPlayer() )
 		{
 			m_flShotTime  = gpGlobals->curtime + 0.5f;
 		}
@@ -886,14 +945,14 @@ void CNPC_CeilingTurret::SearchThink( void )
 	}
 
 	//Are we out of time and need to retract?
- 	if ( gpGlobals->curtime > m_flLastSight )
+	if( gpGlobals->curtime > m_flLastSight )
 	{
 		//Before we retrace, make sure that we are spun down.
 		m_flLastSight = 0;
 		SetThink( &CNPC_CeilingTurret::Retire );
 		return;
 	}
-	
+
 	//Display that we're scanning
 	m_vecGoalAngles.x = 15.0f;
 	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->curtime * 2.0f ) * 45.0f );
@@ -909,27 +968,29 @@ void CNPC_CeilingTurret::SearchThink( void )
 void CNPC_CeilingTurret::AutoSearchThink( void )
 {
 	//Allow descended classes a chance to do something before the think function
-	if ( PreThink( TURRET_AUTO_SEARCHING ) )
+	if( PreThink( TURRET_AUTO_SEARCHING ) )
+	{
 		return;
+	}
 
 	//Spread out our thinking
 	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.2f, 0.4f ) );
 
 	//If the enemy is dead, find a new one
-	if ( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
+	if( ( GetEnemy() != NULL ) && ( GetEnemy()->IsAlive() == false ) )
 	{
 		SetEnemy( NULL );
 	}
 
 	//Acquire Target
-	if ( GetEnemy() == NULL )
+	if( GetEnemy() == NULL )
 	{
 		GetSenses()->Look( CEILING_TURRET_RANGE );
 		SetEnemy( BestEnemy() );
 	}
 
 	//Deploy if we've got an active target
-	if ( GetEnemy() != NULL )
+	if( GetEnemy() != NULL )
 	{
 		SetThink( &CNPC_CeilingTurret::Deploy );
 #ifdef MAPBASE
@@ -946,10 +1007,10 @@ void CNPC_CeilingTurret::AutoSearchThink( void )
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::DryFire( void )
 {
-	EmitSound( "NPC_FloorTurret.DryFire");
+	EmitSound( "NPC_FloorTurret.DryFire" );
 	EmitSound( GetActiveSound() );
 
-  	if ( RandomFloat( 0, 1 ) > 0.7 )
+	if( RandomFloat( 0, 1 ) > 0.7 )
 	{
 		m_flShotTime = gpGlobals->curtime + random->RandomFloat( 0.5, 1.5 );
 	}
@@ -962,11 +1023,11 @@ void CNPC_CeilingTurret::DryFire( void )
 //-----------------------------------------------------------------------------
 // Purpose: Fire!
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnemy )
+void CNPC_CeilingTurret::Shoot( const Vector& vecSrc, const Vector& vecDirToEnemy )
 {
 	FireBulletsInfo_t info;
 
-	if ( GetEnemy() != NULL )
+	if( GetEnemy() != NULL )
 	{
 		Vector vecDir = GetActualShootTrajectory( vecSrc );
 
@@ -982,7 +1043,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 	else
 	{
 		// Just shoot where you're facing!
-		
+
 		info.m_vecSrc = vecSrc;
 		info.m_vecDirShooting = vecDirToEnemy;
 		info.m_iTracerFreq = 1;
@@ -1005,14 +1066,14 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 //-----------------------------------------------------------------------------
 // Purpose: Fire!
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnemy )
+void CNPC_CeilingTurret::Shoot( const Vector& vecSrc, const Vector& vecDirToEnemy )
 {
-	if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
+	if( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 	{
-		EmitSound( "NPC_FloorTurret.DryFire");
+		EmitSound( "NPC_FloorTurret.DryFire" );
 		EmitSound( "NPC_CeilingTurret.Activate" );
 
-  		if ( RandomFloat( 0, 1 ) > 0.7 )
+		if( RandomFloat( 0, 1 ) > 0.7 )
 		{
 			m_flShotTime = gpGlobals->curtime + random->RandomFloat( 0.5, 1.5 );
 		}
@@ -1025,7 +1086,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 
 	FireBulletsInfo_t info;
 
-	if ( GetEnemy() != NULL )
+	if( GetEnemy() != NULL )
 	{
 		Vector vecDir = GetActualShootTrajectory( vecSrc );
 
@@ -1043,7 +1104,7 @@ void CNPC_CeilingTurret::Shoot( const Vector &vecSrc, const Vector &vecDirToEnem
 		// Just shoot where you're facing!
 		Vector vecMuzzle, vecMuzzleDir;
 		QAngle vecMuzzleAng;
-		
+
 		info.m_vecSrc = vecSrc;
 		info.m_vecDirShooting = vecDirToEnemy;
 		info.m_iTracerFreq = 1;
@@ -1082,57 +1143,59 @@ bool CNPC_CeilingTurret::PreThink( turretState_e state )
 void CNPC_CeilingTurret::SetEyeState( eyeState_t state )
 {
 	//Must have a valid eye to affect
-	if ( m_pEyeGlow == NULL )
+	if( m_pEyeGlow == NULL )
+	{
 		return;
+	}
 
 	//Set the state
 	switch( state )
 	{
-	default:
-	case TURRET_EYE_SEE_TARGET: //Fade in and scale up
-		m_pEyeGlow->SetColor( 255, 0, 0 );
-		m_pEyeGlow->SetBrightness( 164, 0.1f );
-		m_pEyeGlow->SetScale( 0.4f, 0.1f );
-		break;
-
-	case TURRET_EYE_SEEKING_TARGET: //Ping-pongs
-		
-		//Toggle our state
-		m_bBlinkState = !m_bBlinkState;
-		m_pEyeGlow->SetColor( 255, 128, 0 );
-
-		if ( m_bBlinkState )
-		{
-			//Fade up and scale up
-			m_pEyeGlow->SetScale( 0.25f, 0.1f );
+		default:
+		case TURRET_EYE_SEE_TARGET: //Fade in and scale up
+			m_pEyeGlow->SetColor( 255, 0, 0 );
 			m_pEyeGlow->SetBrightness( 164, 0.1f );
-		}
-		else
-		{
-			//Fade down and scale down
-			m_pEyeGlow->SetScale( 0.2f, 0.1f );
-			m_pEyeGlow->SetBrightness( 64, 0.1f );
-		}
+			m_pEyeGlow->SetScale( 0.4f, 0.1f );
+			break;
 
-		break;
+		case TURRET_EYE_SEEKING_TARGET: //Ping-pongs
 
-	case TURRET_EYE_DORMANT: //Fade out and scale down
-		m_pEyeGlow->SetColor( 0, 255, 0 );
-		m_pEyeGlow->SetScale( 0.1f, 0.5f );
-		m_pEyeGlow->SetBrightness( 64, 0.5f );
-		break;
+			//Toggle our state
+			m_bBlinkState = !m_bBlinkState;
+			m_pEyeGlow->SetColor( 255, 128, 0 );
 
-	case TURRET_EYE_DEAD: //Fade out slowly
-		m_pEyeGlow->SetColor( 255, 0, 0 );
-		m_pEyeGlow->SetScale( 0.1f, 3.0f );
-		m_pEyeGlow->SetBrightness( 0, 3.0f );
-		break;
+			if( m_bBlinkState )
+			{
+				//Fade up and scale up
+				m_pEyeGlow->SetScale( 0.25f, 0.1f );
+				m_pEyeGlow->SetBrightness( 164, 0.1f );
+			}
+			else
+			{
+				//Fade down and scale down
+				m_pEyeGlow->SetScale( 0.2f, 0.1f );
+				m_pEyeGlow->SetBrightness( 64, 0.1f );
+			}
 
-	case TURRET_EYE_DISABLED:
-		m_pEyeGlow->SetColor( 0, 255, 0 );
-		m_pEyeGlow->SetScale( 0.1f, 1.0f );
-		m_pEyeGlow->SetBrightness( 0, 1.0f );
-		break;
+			break;
+
+		case TURRET_EYE_DORMANT: //Fade out and scale down
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 0.5f );
+			m_pEyeGlow->SetBrightness( 64, 0.5f );
+			break;
+
+		case TURRET_EYE_DEAD: //Fade out slowly
+			m_pEyeGlow->SetColor( 255, 0, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 3.0f );
+			m_pEyeGlow->SetBrightness( 0, 3.0f );
+			break;
+
+		case TURRET_EYE_DISABLED:
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 1.0f );
+			m_pEyeGlow->SetBrightness( 0, 1.0f );
+			break;
 	}
 }
 
@@ -1142,8 +1205,10 @@ void CNPC_CeilingTurret::SetEyeState( eyeState_t state )
 void CNPC_CeilingTurret::Ping( void )
 {
 	//See if it's time to ping again
-	if ( m_flPingTime > gpGlobals->curtime )
+	if( m_flPingTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	//Ping!
 #ifdef MAPBASE
@@ -1163,11 +1228,11 @@ void CNPC_CeilingTurret::Ping( void )
 void CNPC_CeilingTurret::Toggle( void )
 {
 	//Toggle the state
-	if ( m_bEnabled )
+	if( m_bEnabled )
 	{
 		Disable();
 	}
-	else 
+	else
 	{
 		Enable();
 	}
@@ -1181,7 +1246,7 @@ void CNPC_CeilingTurret::Enable( void )
 	m_bEnabled = true;
 
 	// if the turret is flagged as an autoactivate turret, re-enable its ability open self.
-	if ( m_spawnflags & SF_CEILING_TURRET_AUTOACTIVATE )
+	if( m_spawnflags & SF_CEILING_TURRET_AUTOACTIVATE )
 	{
 		m_bAutoStart = true;
 	}
@@ -1206,23 +1271,23 @@ void CNPC_CeilingTurret::Disable( void )
 //-----------------------------------------------------------------------------
 // Purpose: Toggle the turret's state via input function
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputToggle( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputToggle( inputdata_t& inputdata )
 {
 	Toggle();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputEnable( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputEnable( inputdata_t& inputdata )
 {
 	Enable();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputDisable( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputDisable( inputdata_t& inputdata )
 {
 	Disable();
 }
@@ -1231,7 +1296,7 @@ void CNPC_CeilingTurret::InputDisable( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Stops the turret from firing live rounds (still attempts to though)
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputDepleteAmmo( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputDepleteAmmo( inputdata_t& inputdata )
 {
 	AddSpawnFlags( SF_CEILING_TURRET_OUT_OF_AMMO );
 }
@@ -1239,7 +1304,7 @@ void CNPC_CeilingTurret::InputDepleteAmmo( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Allows the turret to fire live rounds again
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputRestoreAmmo( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputRestoreAmmo( inputdata_t& inputdata )
 {
 	RemoveSpawnFlags( SF_CEILING_TURRET_OUT_OF_AMMO );
 }
@@ -1247,34 +1312,38 @@ void CNPC_CeilingTurret::InputRestoreAmmo( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Creates the sprite if it has been destroyed
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputCreateSprite( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputCreateSprite( inputdata_t& inputdata )
 {
-	if (m_pEyeGlow)
+	if( m_pEyeGlow )
+	{
 		return;
+	}
 
 	m_pEyeGlow = CSprite::SpriteCreate( CEILING_TURRET_GLOW_SPRITE, GetLocalOrigin(), false );
 	m_pEyeGlow->SetTransparency( kRenderTransAdd, 255, 0, 0, 128, kRenderFxNoDissipation );
 	m_pEyeGlow->SetAttachment( this, 2 );
 
-	RemoveSpawnFlags(SF_CEILING_TURRET_NO_SPRITE);
+	RemoveSpawnFlags( SF_CEILING_TURRET_NO_SPRITE );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Destroys the sprite
 //-----------------------------------------------------------------------------
-void CNPC_CeilingTurret::InputDestroySprite( inputdata_t &inputdata )
+void CNPC_CeilingTurret::InputDestroySprite( inputdata_t& inputdata )
 {
-	if (!m_pEyeGlow)
+	if( !m_pEyeGlow )
+	{
 		return;
+	}
 
-	UTIL_Remove(m_pEyeGlow);
+	UTIL_Remove( m_pEyeGlow );
 	m_pEyeGlow = NULL;
-	AddSpawnFlags(SF_CEILING_TURRET_NO_SPRITE);
+	AddSpawnFlags( SF_CEILING_TURRET_NO_SPRITE );
 }
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::SpinUp( void )
 {
@@ -1283,19 +1352,21 @@ void CNPC_CeilingTurret::SpinUp( void )
 #define	CEILING_TURRET_MIN_SPIN_DOWN	1.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::SpinDown( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::DeathThink( void )
 {
-	if ( PreThink( TURRET_DEAD ) )
+	if( PreThink( TURRET_DEAD ) )
+	{
 		return;
+	}
 
 	//Level out our angles
 #ifdef MAPBASE
@@ -1305,7 +1376,7 @@ void CNPC_CeilingTurret::DeathThink( void )
 #endif
 	SetNextThink( gpGlobals->curtime );
 
-	if ( m_lifeState != LIFE_DEAD )
+	if( m_lifeState != LIFE_DEAD )
 	{
 		m_lifeState = LIFE_DEAD;
 
@@ -1319,20 +1390,20 @@ void CNPC_CeilingTurret::DeathThink( void )
 		EmitSound( "NPC_CeilingTurret.Die" );
 #endif
 
-		SetActivity( (Activity) ACT_CEILING_TURRET_CLOSE );
+		SetActivity( ( Activity ) ACT_CEILING_TURRET_CLOSE );
 	}
 
 	// lots of smoke
 	Vector pos;
 	CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &pos );
-	
+
 	CBroadcastRecipientFilter filter;
-	
+
 	te->Smoke( filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10 );
-	
+
 	g_pEffects->Sparks( pos );
 
-	if ( IsActivityFinished() && ( UpdateFacing() == false ) )
+	if( IsActivityFinished() && ( UpdateFacing() == false ) )
 	{
 		SetHeight( CEILING_TURRET_RETRACT_HEIGHT );
 
@@ -1342,8 +1413,8 @@ void CNPC_CeilingTurret::DeathThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : height - 
+// Purpose:
+// Input  : height -
 //-----------------------------------------------------------------------------
 void CNPC_CeilingTurret::SetHeight( float height )
 {
@@ -1353,17 +1424,17 @@ void CNPC_CeilingTurret::SetHeight( float height )
 	Vector mins = ( forward * -16.0f ) + ( right * -16.0f );
 	Vector maxs = ( forward *  16.0f ) + ( right *  16.0f ) + ( up * -height );
 
-	if ( mins.x > maxs.x )
+	if( mins.x > maxs.x )
 	{
 		V_swap( mins.x, maxs.x );
 	}
 
-	if ( mins.y > maxs.y )
+	if( mins.y > maxs.y )
 	{
 		V_swap( mins.y, maxs.y );
 	}
 
-	if ( mins.z > maxs.z )
+	if( mins.z > maxs.z )
 	{
 		V_swap( mins.z, maxs.z );
 	}
@@ -1372,18 +1443,20 @@ void CNPC_CeilingTurret::SetHeight( float height )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEnemy - 
+// Purpose:
+// Input  : *pEnemy -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_CeilingTurret::CanBeAnEnemyOf( CBaseEntity *pEnemy )
+bool CNPC_CeilingTurret::CanBeAnEnemyOf( CBaseEntity* pEnemy )
 {
 	// If we're out of ammo, make friendly companions ignore us
-	if ( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
+	if( m_spawnflags & SF_CEILING_TURRET_OUT_OF_AMMO )
 	{
-		if ( pEnemy->Classify() == CLASS_PLAYER_ALLY_VITAL )
+		if( pEnemy->Classify() == CLASS_PLAYER_ALLY_VITAL )
+		{
 			return false;
-	} 
+		}
+	}
 
 	return BaseClass::CanBeAnEnemyOf( pEnemy );
 }
@@ -1407,15 +1480,20 @@ class CNPC_LabTurret : public CNPC_CeilingTurret
 public:
 	CNPC_LabTurret();
 
-	Class_T	Classify( void ) 
+	Class_T	Classify( void )
 	{
-		if( m_bEnabled ) 
+		if( m_bEnabled )
+		{
 			return CLASS_PLAYER_ALLY;
+		}
 
 		return CLASS_NONE;
 	}
 
-	const char *GetTracerType( void ) { return "Tracer"; }
+	const char* GetTracerType( void )
+	{
+		return "Tracer";
+	}
 	bool		PreThink( turretState_e state );
 
 	void		SetIdleGoalAngles();
@@ -1428,27 +1506,63 @@ public:
 	void		SetArmYaw( float flYaw );
 	void		ArmYawThink();
 
-	void		InputSetArmYaw( inputdata_t &inputdata );
+	void		InputSetArmYaw( inputdata_t& inputdata );
 #else
-	inline void	SetArmYaw( float flYaw ) { SetPoseParameter( m_poseMove_Yaw, flYaw ); }
+	inline void	SetArmYaw( float flYaw )
+	{
+		SetPoseParameter( m_poseMove_Yaw, flYaw );
+	}
 #endif
 
-	void		StopLoopingSounds( void ) { StopSound(GetMoveSound()); }
+	void		StopLoopingSounds( void )
+	{
+		StopSound( GetMoveSound() );
+	}
 
 protected:
 
-	const char *GetTurretModel()	{ return "models/props_lab/labturret_npc.mdl"; }
+	const char* GetTurretModel()
+	{
+		return "models/props_lab/labturret_npc.mdl";
+	}
 
-	const char *GetRetireSound()	{ return "NPC_LabTurret.Retire"; }
-	const char *GetDeploySound()	{ return "NPC_LabTurret.Deploy"; }
-	const char *GetMoveSound()		{ return "NPC_LabTurret.Move"; }
-	const char *GetActiveSound()	{ return "NPC_LabTurret.Active"; }
-	const char *GetAlertSound()		{ return "NPC_LabTurret.Alert"; }
-	const char *GetShootSound()		{ return "NPC_LabTurret.ShotSounds"; }
-	const char *GetPingSound()		{ return "NPC_LabTurret.Ping"; }
-	const char *GetDieSound()		{ return "NPC_LabTurret.Die"; }
+	const char* GetRetireSound()
+	{
+		return "NPC_LabTurret.Retire";
+	}
+	const char* GetDeploySound()
+	{
+		return "NPC_LabTurret.Deploy";
+	}
+	const char* GetMoveSound()
+	{
+		return "NPC_LabTurret.Move";
+	}
+	const char* GetActiveSound()
+	{
+		return "NPC_LabTurret.Active";
+	}
+	const char* GetAlertSound()
+	{
+		return "NPC_LabTurret.Alert";
+	}
+	const char* GetShootSound()
+	{
+		return "NPC_LabTurret.ShotSounds";
+	}
+	const char* GetPingSound()
+	{
+		return "NPC_LabTurret.Ping";
+	}
+	const char* GetDieSound()
+	{
+		return "NPC_LabTurret.Die";
+	}
 
-	float		GetFireRate(bool bFightingPlayer = false)		{ return 1.0f; }
+	float		GetFireRate( bool bFightingPlayer = false )
+	{
+		return 1.0f;
+	}
 
 	void		SetHeight( float height );
 
@@ -1469,28 +1583,28 @@ protected:
 
 BEGIN_DATADESC( CNPC_LabTurret )
 
-	DEFINE_KEYFIELD( m_bManualArmYaw, FIELD_BOOLEAN, "ManualArmYaw" ),
+DEFINE_KEYFIELD( m_bManualArmYaw, FIELD_BOOLEAN, "ManualArmYaw" ),
 #ifdef LAB_TURRET_MANUAL_YAW
 	DEFINE_KEYFIELD( m_flStoredArmYaw, FIELD_FLOAT, "ArmYaw" ),
 	DEFINE_FIELD( m_flGoalArmYaw, FIELD_FLOAT ),
 #endif
-	DEFINE_KEYFIELD( m_bMirrored, FIELD_BOOLEAN, "Mirrored" ),
+				 DEFINE_KEYFIELD( m_bMirrored, FIELD_BOOLEAN, "Mirrored" ),
 
 #ifdef LAB_TURRET_MANUAL_YAW
 	DEFINE_THINKFUNC( ArmYawThink ),
 #endif
 
-	// Inputs
+				 // Inputs
 #ifdef LAB_TURRET_MANUAL_YAW
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetArmYaw", InputSetArmYaw ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_turret_lab, CNPC_LabTurret );
+				 LINK_ENTITY_TO_CLASS( npc_turret_lab, CNPC_LabTurret );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CNPC_LabTurret::CNPC_LabTurret()
 {
@@ -1512,7 +1626,7 @@ void CNPC_LabTurret::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_LabTurret::Spawn( void )
 {
@@ -1520,8 +1634,10 @@ void CNPC_LabTurret::Spawn( void )
 
 	m_iAmmoType = GetAmmoDef()->Index( "SMG1" );
 
-	if (m_bMirrored)
-		SetActivity((Activity)ACT_CEILING_TURRET_MIRROR_CLOSED_IDLE);
+	if( m_bMirrored )
+	{
+		SetActivity( ( Activity )ACT_CEILING_TURRET_MIRROR_CLOSED_IDLE );
+	}
 
 	SetPoseParameter( m_poseMove_Yaw, 0 );
 }
@@ -1531,52 +1647,62 @@ void CNPC_LabTurret::Spawn( void )
 //-----------------------------------------------------------------------------
 Activity CNPC_LabTurret::NPC_TranslateActivity( Activity activity )
 {
-	if (m_bMirrored)
+	if( m_bMirrored )
 	{
-		if (activity == ACT_CEILING_TURRET_CLOSED_IDLE)
-			return (Activity)ACT_CEILING_TURRET_MIRROR_CLOSED_IDLE;
-		if (activity == ACT_CEILING_TURRET_OPEN)
-			return (Activity)ACT_CEILING_TURRET_MIRROR_OPEN;
-		if (activity == ACT_CEILING_TURRET_CLOSE)
-			return (Activity)ACT_CEILING_TURRET_MIRROR_CLOSE;
+		if( activity == ACT_CEILING_TURRET_CLOSED_IDLE )
+		{
+			return ( Activity )ACT_CEILING_TURRET_MIRROR_CLOSED_IDLE;
+		}
+		if( activity == ACT_CEILING_TURRET_OPEN )
+		{
+			return ( Activity )ACT_CEILING_TURRET_MIRROR_OPEN;
+		}
+		if( activity == ACT_CEILING_TURRET_CLOSE )
+		{
+			return ( Activity )ACT_CEILING_TURRET_MIRROR_CLOSE;
+		}
 	}
 
-	return BaseClass::NPC_TranslateActivity(activity);
+	return BaseClass::NPC_TranslateActivity( activity );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CNPC_LabTurret::PreThink( turretState_e state )
 {
-	if (state == TURRET_RETIRING || state == TURRET_DEAD)
+	if( state == TURRET_RETIRING || state == TURRET_DEAD )
 	{
 #ifdef LAB_TURRET_MANUAL_YAW
-		if (m_bManualArmYaw)
-			m_flStoredArmYaw = GetPoseParameter(m_poseMove_Yaw);
+		if( m_bManualArmYaw )
+		{
+			m_flStoredArmYaw = GetPoseParameter( m_poseMove_Yaw );
+		}
 #endif
 
 		SetArmYaw( 0 );
 	}
 #ifdef LAB_TURRET_MANUAL_YAW
-	else if (state == TURRET_DEPLOYING)
+	else if( state == TURRET_DEPLOYING )
 	{
-		if (m_bManualArmYaw)
+		if( m_bManualArmYaw )
+		{
 			SetArmYaw( m_flStoredArmYaw );
+		}
 	}
 #endif
 
-	return BaseClass::PreThink(state);
+	return BaseClass::PreThink( state );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_LabTurret::SetIdleGoalAngles( void )
 {
 	m_vecGoalAngles = GetAbsAngles();
 
-	if (m_bMirrored)
+	if( m_bMirrored )
 	{
 		//m_vecGoalAngles.x = AngleNormalize( m_vecGoalAngles.x + 90 );
 		m_vecGoalAngles.y = AngleNormalize( m_vecGoalAngles.y + 270 );
@@ -1589,8 +1715,8 @@ void CNPC_LabTurret::SetIdleGoalAngles( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : height - 
+// Purpose:
+// Input  : height -
 //-----------------------------------------------------------------------------
 void CNPC_LabTurret::SetHeight( float height )
 {
@@ -1602,17 +1728,17 @@ void CNPC_LabTurret::SetHeight( float height )
 	Vector mins = ( forward * -8.0f ) + ( right * -height ) + ( up * -8.0f );
 	Vector maxs = ( forward *  height ) + ( right *  height ) + ( up * CEILING_TURRET_RETRACT_HEIGHT );
 
-	if ( mins.x > maxs.x )
+	if( mins.x > maxs.x )
 	{
 		V_swap( mins.x, maxs.x );
 	}
 
-	if ( mins.y > maxs.y )
+	if( mins.y > maxs.y )
 	{
 		V_swap( mins.y, maxs.y );
 	}
 
-	if ( mins.z > maxs.z )
+	if( mins.z > maxs.z )
 	{
 		V_swap( mins.z, maxs.z );
 	}
@@ -1628,7 +1754,7 @@ bool CNPC_LabTurret::UpdateFacing( void )
 	bool  bMoved = false;
 
 	matrix3x4_t localToWorld;
-	
+
 	GetAttachment( LookupAttachment( "eyes" ), localToWorld );
 
 	Vector vecGoalDir;
@@ -1637,7 +1763,7 @@ bool CNPC_LabTurret::UpdateFacing( void )
 	Vector vecGoalLocalDir;
 	VectorIRotate( vecGoalDir, localToWorld, vecGoalLocalDir );
 
-	if ( g_debug_turret_ceiling.GetBool() )
+	if( g_debug_turret_ceiling.GetBool() )
 	{
 		Vector	vecMuzzle, vecMuzzleDir;
 		QAngle	vecMuzzleAng;
@@ -1645,22 +1771,22 @@ bool CNPC_LabTurret::UpdateFacing( void )
 		GetAttachment( "eyes", vecMuzzle, vecMuzzleAng );
 		AngleVectors( vecMuzzleAng, &vecMuzzleDir );
 
-		NDebugOverlay::Cross3D( vecMuzzle, -Vector(2,2,2), Vector(2,2,2), 255, 255, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( vecMuzzle+(vecMuzzleDir*256), -Vector(2,2,2), Vector(2,2,2), 255, 255, 0, false, 0.05 );
-		NDebugOverlay::Line( vecMuzzle, vecMuzzle+(vecMuzzleDir*256), 255, 255, 0, false, 0.05 );
-		
-		NDebugOverlay::Cross3D( vecMuzzle, -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, false, 0.05 );
-		NDebugOverlay::Cross3D( vecMuzzle+(vecGoalDir*256), -Vector(2,2,2), Vector(2,2,2), 255, 0, 0, false, 0.05 );
-		NDebugOverlay::Line( vecMuzzle, vecMuzzle+(vecGoalDir*256), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle + ( vecMuzzleDir * 256 ), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 255, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMuzzle, vecMuzzle + ( vecMuzzleDir * 256 ), 255, 255, 0, false, 0.05 );
+
+		NDebugOverlay::Cross3D( vecMuzzle, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMuzzle + ( vecGoalDir * 256 ), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 0, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMuzzle, vecMuzzle + ( vecGoalDir * 256 ), 255, 0, 0, false, 0.05 );
 	}
 
 	QAngle vecGoalLocalAngles;
 	VectorAngles( vecGoalLocalDir, vecGoalLocalAngles );
 
 #ifdef LAB_TURRET_MANUAL_YAW
-	if ( !m_bManualArmYaw && m_flGoalArmYaw == 0.0f )
+	if( !m_bManualArmYaw && m_flGoalArmYaw == 0.0f )
 #else
-	if ( !m_bManualArmYaw )
+	if( !m_bManualArmYaw )
 #endif
 	{
 		// Update yaw
@@ -1673,7 +1799,7 @@ bool CNPC_LabTurret::UpdateFacing( void )
 		VectorIRotate( vecGoalDir, localToWorld, vecGoalLocalDir );
 		VectorAngles( vecGoalLocalDir, vecGoalLocalAngles );
 
-		if ( fabs( flDiff ) > 0.1f )
+		if( fabs( flDiff ) > 0.1f )
 		{
 			bMoved = true;
 		}
@@ -1681,21 +1807,21 @@ bool CNPC_LabTurret::UpdateFacing( void )
 
 	// Update pitch
 	// Pitch is faster than the others, but it also kind of jiggles when targetting.
-	float flDiff = AngleNormalize( UTIL_ApproachAngle(  vecGoalLocalAngles.x, 0.0, (GetActivity() != ACT_CEILING_TURRET_CLOSE ? 0.15f : 0.1f) * MaxYawSpeed() ) );
-	
+	float flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.x, 0.0, ( GetActivity() != ACT_CEILING_TURRET_CLOSE ? 0.15f : 0.1f ) * MaxYawSpeed() ) );
+
 	SetPoseParameter( m_poseAim_Pitch, GetPoseParameter( m_poseAim_Pitch ) + ( flDiff * 2.0f ) );
 
-	if ( fabs( flDiff ) > 0.1f )
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
 
 	// Update yaw
-	flDiff = AngleNormalize( UTIL_ApproachAngle(  vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed() ) );
+	flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed() ) );
 
 	SetPoseParameter( m_poseAim_Yaw, GetPoseParameter( m_poseAim_Yaw ) + ( flDiff / 1.5f ) );
 
-	if ( fabs( flDiff ) > 0.1f )
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
@@ -1713,7 +1839,7 @@ void CNPC_LabTurret::SetArmYaw( float flYaw )
 {
 	m_flGoalArmYaw = flYaw;
 
-	SetContextThink(&CNPC_LabTurret::ArmYawThink, gpGlobals->curtime, "SetArmYaw");
+	SetContextThink( &CNPC_LabTurret::ArmYawThink, gpGlobals->curtime, "SetArmYaw" );
 }
 
 //-----------------------------------------------------------------------------
@@ -1730,21 +1856,21 @@ void CNPC_LabTurret::ArmYawThink()
 
 	InvalidateBoneCache();
 
-	if ( fabs( flDiff ) > 0.1f )
+	if( fabs( flDiff ) > 0.1f )
 	{
-		SetNextThink(gpGlobals->curtime, "SetArmYaw");
+		SetNextThink( gpGlobals->curtime, "SetArmYaw" );
 	}
 	else
 	{
 		m_flGoalArmYaw = 0.0f;
-		SetContextThink(NULL, gpGlobals->curtime, "SetArmYaw");
+		SetContextThink( NULL, gpGlobals->curtime, "SetArmYaw" );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Change move yaw
 //-----------------------------------------------------------------------------
-void CNPC_LabTurret::InputSetArmYaw( inputdata_t &inputdata )
+void CNPC_LabTurret::InputSetArmYaw( inputdata_t& inputdata )
 {
 	SetArmYaw( inputdata.value.Float() );
 }

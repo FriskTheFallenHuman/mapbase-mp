@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef C_USER_MESSAGE_REGISTER_H
 #define C_USER_MESSAGE_REGISTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,19 +23,19 @@
 class CUserMessageRegister
 {
 public:
-	CUserMessageRegister( const char *pMessageName, pfnUserMsgHook pHookFn );
+	CUserMessageRegister( const char* pMessageName, pfnUserMsgHook pHookFn );
 
 	// This is called at startup to register all the user messages.
 	static void RegisterAll();
 
 
 private:
-	const char *m_pMessageName;
+	const char* m_pMessageName;
 	pfnUserMsgHook m_pHookFn;
 
 	// Linked list of all the CUserMessageRegisters.
-	static CUserMessageRegister *s_pHead;
-	CUserMessageRegister *m_pNext;
+	static CUserMessageRegister* s_pHead;
+	CUserMessageRegister* m_pNext;
 };
 
 

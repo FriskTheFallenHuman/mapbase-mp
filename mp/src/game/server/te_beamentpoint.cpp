@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -28,11 +28,11 @@ public:
 	DECLARE_CLASS( CTEBeamEntPoint, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
 
-					CTEBeamEntPoint( const char *name );
+	CTEBeamEntPoint( const char* name );
 	virtual			~CTEBeamEntPoint( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 
 public:
 	CNetworkVar( int, m_nStartEntity );
@@ -42,10 +42,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBeamEntPoint::CTEBeamEntPoint( const char *name ) :
+CTEBeamEntPoint::CTEBeamEntPoint( const char* name ) :
 	CTEBaseBeam( name )
 {
 	m_nStartEntity	= 0;
@@ -55,16 +55,16 @@ CTEBeamEntPoint::CTEBeamEntPoint( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBeamEntPoint::~CTEBeamEntPoint( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBeamEntPoint::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -83,7 +83,7 @@ void CTEBeamEntPoint::Test( const Vector& current_origin, const QAngle& current_
 	m_nSpeed		= 1;
 
 	m_vecEndPoint = current_origin;
-	
+
 	Vector forward, right;
 
 	m_vecEndPoint += Vector( 0, 0, 24 );
@@ -98,40 +98,40 @@ void CTEBeamEntPoint::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBeamEntPoint, DT_TEBeamEntPoint)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-	SendPropVector( SENDINFO(m_vecStartPoint), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO(m_vecEndPoint), -1, SPROP_COORD ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEBeamEntPoint, DT_TEBeamEntPoint )
+SendPropInt( SENDINFO( m_nStartEntity ), 24, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nEndEntity ), 24, SPROP_UNSIGNED ),
+			 SendPropVector( SENDINFO( m_vecStartPoint ), -1, SPROP_COORD ),
+			 SendPropVector( SENDINFO( m_vecEndPoint ), -1, SPROP_COORD ),
+			 END_SEND_TABLE()
 
 
 // Singleton to fire TEBeamEntPoint objects
-static CTEBeamEntPoint g_TEBeamEntPoint( "BeamEntPoint" );
+			 static CTEBeamEntPoint g_TEBeamEntPoint( "BeamEntPoint" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//				int	start - 
-//			*end - 
-//			modelindex - 
-//			startframe - 
-//			framerate - 
-//			msg_dest - 
-//			delay - 
-//			origin - 
-//			recipient - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//				int	start -
+//			*end -
+//			modelindex -
+//			startframe -
+//			framerate -
+//			msg_dest -
+//			delay -
+//			origin -
+//			recipient -
 //-----------------------------------------------------------------------------
 void TE_BeamEntPoint( IRecipientFilter& filter, float delay,
-	int	nStartEntity, const Vector *start, int nEndEntity, const Vector* end, 
-	int modelindex, int haloindex, int startframe, int framerate,
-	float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
+					  int	nStartEntity, const Vector* start, int nEndEntity, const Vector* end,
+					  int modelindex, int haloindex, int startframe, int framerate,
+					  float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
 {
-	g_TEBeamEntPoint.m_nStartEntity = (nStartEntity > 0) ? (nStartEntity & 0x0FFF) | ((1 & 0xF)<<12) : 0;
-	g_TEBeamEntPoint.m_nEndEntity	= (nEndEntity > 0) ? (nEndEntity & 0x0FFF) | ((1 & 0xF)<<12) : 0;
+	g_TEBeamEntPoint.m_nStartEntity = ( nStartEntity > 0 ) ? ( nStartEntity & 0x0FFF ) | ( ( 1 & 0xF ) << 12 ) : 0;
+	g_TEBeamEntPoint.m_nEndEntity	= ( nEndEntity > 0 ) ? ( nEndEntity & 0x0FFF ) | ( ( 1 & 0xF ) << 12 ) : 0;
 	g_TEBeamEntPoint.m_vecStartPoint = start ? *start : vec3_origin;
 	g_TEBeamEntPoint.m_vecEndPoint	= end ? *end : vec3_origin;
 	g_TEBeamEntPoint.m_nModelIndex	= modelindex;

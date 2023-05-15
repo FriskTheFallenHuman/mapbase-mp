@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HUD_BASE_ACCOUNT_H
 #define HUD_BASE_ACCOUNT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -21,29 +21,36 @@ class CHudBaseAccount : public CHudElement, public CHudNumericDisplay
 public:
 	DECLARE_CLASS_SIMPLE( CHudBaseAccount, CHudNumericDisplay );
 
-	CHudBaseAccount( const char *name );
+	CHudBaseAccount( const char* name );
 
-	virtual bool ShouldDraw();	
+	virtual bool ShouldDraw();
 	virtual void Paint();
 	virtual void LevelInit( void );
 	virtual void Reset( void );
 
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
-	int GetNumberWidth(HFont font, int number);
+	int GetNumberWidth( HFont font, int number );
 
 	// How much money does the player have
-	virtual int	GetPlayerAccount( void ) { return 0; }
+	virtual int	GetPlayerAccount( void )
+	{
+		return 0;
+	}
 
 	// Requires game-specific g_pClientMode call, push to derived class
-	virtual vgui::AnimationController *GetAnimationController( void ) { Assert( 0 ); return NULL; }
+	virtual vgui::AnimationController* GetAnimationController( void )
+	{
+		Assert( 0 );
+		return NULL;
+	}
 
 private:
 	int m_iPreviousAccount;
 	int m_iPreviousDelta;
-	CHudTexture *m_pAccountIcon;
-	CHudTexture *m_pMinusIcon;
-	CHudTexture *m_pPlusIcon;
+	CHudTexture* m_pAccountIcon;
+	CHudTexture* m_pMinusIcon;
+	CHudTexture* m_pPlusIcon;
 
 	Color m_clrRed;
 	Color m_clrGreen;
@@ -63,8 +70,8 @@ private:
 	CPanelAnimationVar( vgui::HFont, m_hNumberFont, "NumberFont", "HudNumbers" );
 
 	float m_flLastAnimationEnd;
-	const char *m_pszLastAnimationName;
-	const char *m_pszQueuedAnimationName;
+	const char* m_pszLastAnimationName;
+	const char* m_pszQueuedAnimationName;
 
 	float icon_tall;
 	float icon_wide;

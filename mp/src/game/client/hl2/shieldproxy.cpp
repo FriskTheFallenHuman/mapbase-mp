@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,13 +20,13 @@ class CShieldProxy : public CEntityMaterialProxy
 public:
 	CShieldProxy();
 	virtual ~CShieldProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( C_BaseEntity *pC_BaseEntity );
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( C_BaseEntity* pC_BaseEntity );
+	virtual IMaterial* GetMaterial();
 
 private:
-	IMaterialVar *m_AlphaVar;
-	IMaterialVar *m_pTextureScrollVar;
+	IMaterialVar* m_AlphaVar;
+	IMaterialVar* m_pTextureScrollVar;
 	float m_ScrollRate;
 	float m_ScrollAngle;
 };
@@ -44,30 +44,36 @@ CShieldProxy::~CShieldProxy()
 }
 
 
-bool CShieldProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CShieldProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	bool foundVar;
 
 	m_AlphaVar = pMaterial->FindVar( "$translucency", &foundVar, false );
 	if( !foundVar )
+	{
 		return false;
+	}
 
 	char const* pScrollVarName = pKeyValues->GetString( "textureScrollVar" );
-	if (!pScrollVarName)
+	if( !pScrollVarName )
+	{
 		return false;
+	}
 
 	m_pTextureScrollVar = pMaterial->FindVar( pScrollVarName, &foundVar, false );
 	if( !foundVar )
+	{
 		return false;
+	}
 
 	m_ScrollRate = pKeyValues->GetFloat( "textureScrollRate", 1 );
 	m_ScrollAngle = pKeyValues->GetFloat( "textureScrollAngle", 0 );
 	return true;
 }
 
-void CShieldProxy::OnBind( C_BaseEntity *pEnt )
+void CShieldProxy::OnBind( C_BaseEntity* pEnt )
 {
-	if (m_AlphaVar)
+	if( m_AlphaVar )
 	{
 		m_AlphaVar->SetFloatValue( pEnt->m_clrRender->a );
 	}
@@ -76,9 +82,9 @@ void CShieldProxy::OnBind( C_BaseEntity *pEnt )
 	{
 		return;
 	}
-	
+
 	float sOffset, tOffset;
-	
+
 	sOffset = gpGlobals->curtime * sin( m_ScrollAngle * ( M_PI / 180.0f ) ) * m_ScrollRate;
 	tOffset = gpGlobals->curtime * cos( m_ScrollAngle * ( M_PI / 180.0f ) ) * m_ScrollRate;
 
@@ -91,18 +97,20 @@ void CShieldProxy::OnBind( C_BaseEntity *pEnt )
 	{
 		tOffset += 1.0f + -( int )tOffset;
 	}
-	
+
 	// make sure that we are in a [0,1] range
 	sOffset = sOffset - ( int )sOffset;
 	tOffset = tOffset - ( int )tOffset;
-	
+
 	m_pTextureScrollVar->SetVecValue( sOffset, tOffset, 0.0f );
 }
 
-IMaterial *CShieldProxy::GetMaterial()
+IMaterial* CShieldProxy::GetMaterial()
 {
-	if ( !m_AlphaVar )
+	if( !m_AlphaVar )
+	{
 		return NULL;
+	}
 
 	return m_AlphaVar->GetOwningMaterial();
 }

@@ -14,7 +14,7 @@
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 class C_BaseEntity;
@@ -27,7 +27,7 @@ class CViewConeImage
 {
 public:
 	// initialization
-	bool Init( vgui::Panel *pParent, KeyValues* pInitData );
+	bool Init( vgui::Panel* pParent, KeyValues* pInitData );
 
 	// Paint the sucka
 	void Paint( float yaw );
@@ -49,8 +49,8 @@ private:
 // NOTE: This function looks for the key values 'material' and 'color'
 // and uses them to set up the material + modulation color of the image
 //-----------------------------------------------------------------------------
-bool InitializeViewConeImage( KeyValues *pInitData, const char* pSectionName, 
-	vgui::Panel *pParent, CViewConeImage* pViewConeImage );
+bool InitializeViewConeImage( KeyValues* pInitData, const char* pSectionName,
+							  vgui::Panel* pParent, CViewConeImage* pViewConeImage );
 
 
 #endif //  VIEWCONEIMAGE_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -17,21 +17,21 @@
 ConVar default_fov( "default_fov", "75", FCVAR_CHEAT );
 
 // The current client mode. Always ClientModeNormal in HL.
-IClientMode *g_pClientMode = NULL;
+IClientMode* g_pClientMode = NULL;
 
 #define SCREEN_FILE		"scripts/vgui_screens.txt"
 
 class CHLModeManager : public IVModeManager
 {
 public:
-				CHLModeManager( void );
+	CHLModeManager( void );
 	virtual		~CHLModeManager( void );
 
 	virtual void	Init( void );
 	virtual void	SwitchMode( bool commander, bool force );
-	virtual void	OverrideView( CViewSetup *pSetup );
-	virtual void	CreateMove( float flInputSampleTime, CUserCmd *cmd );
-	virtual void	LevelInit( const char *newmap );
+	virtual void	OverrideView( CViewSetup* pSetup );
+	virtual void	CreateMove( float flInputSampleTime, CUserCmd* cmd );
+	virtual void	LevelInit( const char* newmap );
 	virtual void	LevelShutdown( void );
 };
 
@@ -53,15 +53,15 @@ void CHLModeManager::SwitchMode( bool commander, bool force )
 {
 }
 
-void CHLModeManager::OverrideView( CViewSetup *pSetup )
+void CHLModeManager::OverrideView( CViewSetup* pSetup )
 {
 }
 
-void CHLModeManager::CreateMove( float flInputSampleTime, CUserCmd *cmd )
+void CHLModeManager::CreateMove( float flInputSampleTime, CUserCmd* cmd )
 {
 }
 
-void CHLModeManager::LevelInit( const char *newmap )
+void CHLModeManager::LevelInit( const char* newmap )
 {
 	g_pClientMode->LevelInit( newmap );
 }
@@ -73,5 +73,5 @@ void CHLModeManager::LevelShutdown( void )
 
 
 static CHLModeManager g_HLModeManager;
-IVModeManager *modemanager = &g_HLModeManager;
+IVModeManager* modemanager = &g_HLModeManager;
 

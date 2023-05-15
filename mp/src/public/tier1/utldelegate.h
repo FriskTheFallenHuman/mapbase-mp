@@ -11,7 +11,7 @@
 #define UTLDELEGATE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -35,7 +35,7 @@
 //-----------------------------------------------------------------------------
 
 // First, define the functions you wish to call.
-int Test1( char *pString, float x );
+int Test1( char* pString, float x );
 class CTestClass
 {
 public:
@@ -53,7 +53,7 @@ void Test()
 	// There are a couple ways to hook up a delegate. One is in a constructor
 	// Note that the template parameter of CUtlFastDelegate looks like the
 	// function type: first, you have the return type, then ( parameter list )
-	CUtlDelegate< int ( char *, float ) > delegate1( &Test1 );
+	CUtlDelegate< int ( char*, float ) > delegate1( &Test1 );
 
 	// Another way is to use the UtlMakeDelegate method, allowing you to
 	// define the delegate later. Note that UtlMakeDelegate does *not* do a heap allocation
@@ -74,16 +74,16 @@ void Test()
 	delegate1.Clear();
 
 	// You can use operator! or IsEmpty() to see if a delegate is bound
-	if ( !delegate1.IsEmpty() )
+	if( !delegate1.IsEmpty() )
 	{
 		delegate1( "hello2" );
 	}
 
 	// Delegates maintain an internal non-templatized representation of the
 	// functions they are bound to called CUtlAbstractDelegate. These are
-	// useful when keeping a list of untyped delegates or when passing 
+	// useful when keeping a list of untyped delegates or when passing
 	// delegates across interface boundaries.
-	const CUtlAbstractDelegate &abstractDelegate3 = delegate3.GetAbstractDelegate();
+	const CUtlAbstractDelegate& abstractDelegate3 = delegate3.GetAbstractDelegate();
 	CUtlDelegate< float ( int ) > delegate4;
 	delegate4.SetAbstractDelegate( abstractDelegate3 );
 	delegate4( 10 );

@@ -18,7 +18,7 @@
 #include "tier0/memdbgon.h"
 
 #ifdef MAPBASE
-ConVar explosion_sparks("explosion_sparks", "0", FCVAR_NONE);
+	ConVar explosion_sparks( "explosion_sparks", "0", FCVAR_NONE );
 #endif
 
 //-----------------------------------------------------------------------------
@@ -31,8 +31,11 @@ public:
 
 	void Spawn( void );
 	void Think( void );
-	void Touch( CBaseEntity *pOther );
-	int ObjectCaps( void ) { return FCAP_DONT_SAVE; }
+	void Touch( CBaseEntity* pOther );
+	int ObjectCaps( void )
+	{
+		return FCAP_DONT_SAVE;
+	}
 };
 
 LINK_ENTITY_TO_CLASS( spark_shower, CShower );
@@ -45,19 +48,23 @@ void CShower::Spawn( void )
 
 	Vector vecNewVelocity;
 	vecNewVelocity = random->RandomFloat( 200, 300 ) * vecForward;
-	vecNewVelocity.x += random->RandomFloat(-100.f,100.f);
-	vecNewVelocity.y += random->RandomFloat(-100.f,100.f);
-	if ( vecNewVelocity.z >= 0 )
+	vecNewVelocity.x += random->RandomFloat( -100.f, 100.f );
+	vecNewVelocity.y += random->RandomFloat( -100.f, 100.f );
+	if( vecNewVelocity.z >= 0 )
+	{
 		vecNewVelocity.z += 200;
+	}
 	else
+	{
 		vecNewVelocity.z -= 200;
+	}
 	SetAbsVelocity( vecNewVelocity );
 
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_FLY_BOUNCE );
 	SetGravity( UTIL_ScaleForGravity( 400 ) ); // fall a bit more slowly than normal
 	SetNextThink( gpGlobals->curtime + 0.1f );
 	SetSolid( SOLID_NONE );
-	UTIL_SetSize(this, vec3_origin, vec3_origin );
+	UTIL_SetSize( this, vec3_origin, vec3_origin );
 	AddEffects( EF_NODRAW );
 	m_flSpeed = random->RandomFloat( 0.5, 1.5 );
 
@@ -70,25 +77,35 @@ void CShower::Think( void )
 	g_pEffects->Sparks( GetAbsOrigin() );
 
 	m_flSpeed -= 0.1;
-	if ( m_flSpeed > 0 )
+	if( m_flSpeed > 0 )
+	{
 		SetNextThink( gpGlobals->curtime + 0.1f );
+	}
 	else
+	{
 		UTIL_Remove( this );
+	}
 	SetGroundEntity( NULL );
 }
 
 
-void CShower::Touch( CBaseEntity *pOther )
+void CShower::Touch( CBaseEntity* pOther )
 {
 	Vector vecNewVelocity = GetAbsVelocity();
 
-	if ( GetFlags() & FL_ONGROUND )
+	if( GetFlags() & FL_ONGROUND )
+	{
 		vecNewVelocity *= 0.1;
+	}
 	else
+	{
 		vecNewVelocity *= 0.6;
+	}
 
-	if ( (vecNewVelocity.x*vecNewVelocity.x+vecNewVelocity.y*vecNewVelocity.y) < 10.0 )
+	if( ( vecNewVelocity.x * vecNewVelocity.x + vecNewVelocity.y * vecNewVelocity.y ) < 10.0 )
+	{
 		m_flSpeed = 0;
+	}
 
 	SetAbsVelocity( vecNewVelocity );
 }
@@ -107,23 +124,26 @@ public:
 
 	void Precache( void );
 	void Spawn( );
-	void Smoke ( void );
-	void SetCustomDamageType( int iType ) { m_iCustomDamageType = iType; }
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	void Smoke( void );
+	void SetCustomDamageType( int iType )
+	{
+		m_iCustomDamageType = iType;
+	}
+	bool KeyValue( const char* szKeyName, const char* szValue );
 
-	int DrawDebugTextOverlays(void);
+	int DrawDebugTextOverlays( void );
 
 	// Input handlers
-	void InputExplode( inputdata_t &inputdata );
+	void InputExplode( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetIgnoredEntity( inputdata_t &inputdata );
+	void InputSetIgnoredEntity( inputdata_t& inputdata );
 #endif
 
 	DECLARE_DATADESC();
 
 	int m_iMagnitude;// how large is the fireball? how much damage?
 	int m_iRadiusOverride;// For use when m_iMagnitude results in larger radius than designer desires.
-	int m_spriteScale; // what's the exact fireball sprite scale? 
+	int m_spriteScale; // what's the exact fireball sprite scale?
 	float m_flDamageForce;	// How much damage force should we use?
 	string_t m_iszFireballSprite;
 	short m_sFireballSprite;
@@ -140,33 +160,33 @@ LINK_ENTITY_TO_CLASS( env_explosion, CEnvExplosion );
 
 BEGIN_DATADESC( CEnvExplosion )
 
-	DEFINE_KEYFIELD( m_iMagnitude, FIELD_INTEGER, "iMagnitude" ),
-	DEFINE_KEYFIELD( m_iRadiusOverride, FIELD_INTEGER, "iRadiusOverride" ),
-	DEFINE_FIELD( m_spriteScale, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_flDamageForce, FIELD_FLOAT, "DamageForce" ),
-	DEFINE_FIELD( m_iszFireballSprite, FIELD_STRING ),
-	DEFINE_FIELD( m_sFireballSprite, FIELD_SHORT ),
-	DEFINE_FIELD( m_hInflictor, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iCustomDamageType, FIELD_INTEGER ),
+DEFINE_KEYFIELD( m_iMagnitude, FIELD_INTEGER, "iMagnitude" ),
+				 DEFINE_KEYFIELD( m_iRadiusOverride, FIELD_INTEGER, "iRadiusOverride" ),
+				 DEFINE_FIELD( m_spriteScale, FIELD_INTEGER ),
+				 DEFINE_KEYFIELD( m_flDamageForce, FIELD_FLOAT, "DamageForce" ),
+				 DEFINE_FIELD( m_iszFireballSprite, FIELD_STRING ),
+				 DEFINE_FIELD( m_sFireballSprite, FIELD_SHORT ),
+				 DEFINE_FIELD( m_hInflictor, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_iCustomDamageType, FIELD_INTEGER ),
 
-	DEFINE_FIELD( m_iClassIgnore, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_hEntityIgnore, FIELD_EHANDLE, "ignoredEntity" ),
+				 DEFINE_FIELD( m_iClassIgnore, FIELD_INTEGER ),
+				 DEFINE_KEYFIELD( m_hEntityIgnore, FIELD_EHANDLE, "ignoredEntity" ),
 
-	// Function Pointers
-	DEFINE_THINKFUNC( Smoke ),
+				 // Function Pointers
+				 DEFINE_THINKFUNC( Smoke ),
 
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "Explode", InputExplode),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Explode", InputExplode ),
 #ifdef MAPBASE
-	DEFINE_INPUTFUNC(FIELD_EHANDLE, "SetIgnoredEntity", InputSetIgnoredEntity),
+	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetIgnoredEntity", InputSetIgnoredEntity ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 
-bool CEnvExplosion::KeyValue( const char *szKeyName, const char *szValue )
+				 bool CEnvExplosion::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "fireballsprite"))
+	if( FStrEq( szKeyName, "fireballsprite" ) )
 	{
 		m_iszFireballSprite = AllocPooledString( szValue );
 	}
@@ -180,14 +200,14 @@ bool CEnvExplosion::KeyValue( const char *szKeyName, const char *szValue )
 
 void CEnvExplosion::Precache( void )
 {
-	if ( m_iszFireballSprite != NULL_STRING )
+	if( m_iszFireballSprite != NULL_STRING )
 	{
 		m_sFireballSprite = PrecacheModel( STRING( m_iszFireballSprite ) );
 	}
 }
 
 void CEnvExplosion::Spawn( void )
-{ 
+{
 	Precache();
 
 	SetSolid( SOLID_NONE );
@@ -202,20 +222,20 @@ void CEnvExplosion::Spawn( void )
 	*/
 
 	float flSpriteScale;
-	flSpriteScale = ( m_iMagnitude - 50) * 0.6;
+	flSpriteScale = ( m_iMagnitude - 50 ) * 0.6;
 
 	// Control the clamping of the fireball sprite
 	if( m_spawnflags & SF_ENVEXPLOSION_NOCLAMPMIN )
 	{
 		// Don't inhibit clamping altogether. Just relax it a bit.
-		if ( flSpriteScale < 1 )
+		if( flSpriteScale < 1 )
 		{
 			flSpriteScale = 1;
 		}
 	}
 	else
 	{
-		if ( flSpriteScale < 10 )
+		if( flSpriteScale < 10 )
 		{
 			flSpriteScale = 10;
 		}
@@ -224,20 +244,20 @@ void CEnvExplosion::Spawn( void )
 	if( m_spawnflags & SF_ENVEXPLOSION_NOCLAMPMAX )
 	{
 		// We may need to adjust this to suit designers' needs.
-		if ( flSpriteScale > 200 )
+		if( flSpriteScale > 200 )
 		{
 			flSpriteScale = 200;
 		}
 	}
 	else
 	{
-		if ( flSpriteScale > 50 )
+		if( flSpriteScale > 50 )
 		{
 			flSpriteScale = 50;
 		}
 	}
 
-	m_spriteScale = (int)flSpriteScale;
+	m_spriteScale = ( int )flSpriteScale;
 	m_iCustomDamageType = -1;
 }
 
@@ -245,28 +265,28 @@ void CEnvExplosion::Spawn( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for making the explosion explode.
 //-----------------------------------------------------------------------------
-void CEnvExplosion::InputExplode( inputdata_t &inputdata )
-{ 
+void CEnvExplosion::InputExplode( inputdata_t& inputdata )
+{
 	trace_t tr;
 
 	SetModelName( NULL_STRING );//invisible
 	SetSolid( SOLID_NONE );// intangible
 
 	Vector vecSpot = GetAbsOrigin() + Vector( 0 , 0 , 8 );
-	UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), (MASK_SOLID_BRUSHONLY | MASK_WATER), this, COLLISION_GROUP_NONE, &tr );
-	
+	UTIL_TraceLine( vecSpot, vecSpot + Vector( 0, 0, -40 ), ( MASK_SOLID_BRUSHONLY | MASK_WATER ), this, COLLISION_GROUP_NONE, &tr );
+
 	// Pull out of the wall a bit. We used to move the explosion origin itself, but that seems unnecessary, not to mention a
 	// little weird when you consider that it might be in hierarchy. Instead we just calculate a new virtual position at
 	// which to place the explosion. We don't use that new position to calculate radius damage because according to Steve's
 	// comment, that adversely affects the force vector imparted on explosion victims when they ragdoll.
 	Vector vecExplodeOrigin = GetAbsOrigin();
-	if ( tr.fraction != 1.0 )
+	if( tr.fraction != 1.0 )
 	{
-		vecExplodeOrigin = tr.endpos + (tr.plane.normal * 24 );
+		vecExplodeOrigin = tr.endpos + ( tr.plane.normal * 24 );
 	}
 
 	// draw decal
-	if (! ( m_spawnflags & SF_ENVEXPLOSION_NODECAL))
+	if( !( m_spawnflags & SF_ENVEXPLOSION_NODECAL ) )
 	{
 		UTIL_DecalTrace( &tr, "Scorch" );
 	}
@@ -281,22 +301,22 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 	{
 		nFlags |= TE_EXPLFLAG_NOFIREBALL;
 	}
-	
+
 	if( m_spawnflags & SF_ENVEXPLOSION_NOSOUND )
 	{
 		nFlags |= TE_EXPLFLAG_NOSOUND;
 	}
-	
-	if ( m_spawnflags & SF_ENVEXPLOSION_RND_ORIENT )
+
+	if( m_spawnflags & SF_ENVEXPLOSION_RND_ORIENT )
 	{
 		nFlags |= TE_EXPLFLAG_ROTATE;
 	}
 
-	if ( m_nRenderMode == kRenderTransAlpha )
+	if( m_nRenderMode == kRenderTransAlpha )
 	{
 		nFlags |= TE_EXPLFLAG_DRAWALPHA;
 	}
-	else if ( m_nRenderMode != kRenderTransAdd )
+	else if( m_nRenderMode != kRenderTransAdd )
 	{
 		nFlags |= TE_EXPLFLAG_NOADDITIVE;
 	}
@@ -311,7 +331,7 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 		nFlags |= TE_EXPLFLAG_NODLIGHTS;
 	}
 
-	if ( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALLSMOKE )
+	if( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALLSMOKE )
 	{
 		nFlags |= TE_EXPLFLAG_NOFIREBALLSMOKE;
 	}
@@ -321,22 +341,22 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 
 	CPASFilter filter( vecExplodeOrigin );
 	te->Explosion( filter, 0.0,
-		&vecExplodeOrigin, 
-		( m_sFireballSprite < 1 ) ? g_sModelIndexFireball : m_sFireballSprite,
-		!( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALL ) ? ( m_spriteScale / 10.0 ) : 0.0,
-		15,
-		nFlags,
-		iRadius,
-		m_iMagnitude );
+				   &vecExplodeOrigin,
+				   ( m_sFireballSprite < 1 ) ? g_sModelIndexFireball : m_sFireballSprite,
+				   !( m_spawnflags & SF_ENVEXPLOSION_NOFIREBALL ) ? ( m_spriteScale / 10.0 ) : 0.0,
+				   15,
+				   nFlags,
+				   iRadius,
+				   m_iMagnitude );
 
 	// do damage
-	if ( !( m_spawnflags & SF_ENVEXPLOSION_NODAMAGE ) )
+	if( !( m_spawnflags & SF_ENVEXPLOSION_NODAMAGE ) )
 	{
-		CBaseEntity *pAttacker = GetOwnerEntity() ? GetOwnerEntity() : this;
+		CBaseEntity* pAttacker = GetOwnerEntity() ? GetOwnerEntity() : this;
 
 		// Only calculate damage type if we didn't get a custom one passed in
 		int iDamageType = m_iCustomDamageType;
-		if ( iDamageType == -1 )
+		if( iDamageType == -1 )
 		{
 			iDamageType = HasSpawnFlags( SF_ENVEXPLOSION_GENERIC_DAMAGE ) ? DMG_GENERIC : DMG_BLAST;
 		}
@@ -348,7 +368,7 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 			info.AddDamageType( DMG_BLAST_SURFACE );
 		}
 
-		if ( m_flDamageForce )
+		if( m_flDamageForce )
 		{
 			// Not the right direction, but it'll be fixed up by RadiusDamage.
 			info.SetDamagePosition( GetAbsOrigin() );
@@ -359,7 +379,7 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 	}
 
 #ifdef MAPBASE
-	if ( !( m_spawnflags & SF_ENVEXPLOSION_NODLIGHTS ) )
+	if( !( m_spawnflags & SF_ENVEXPLOSION_NODLIGHTS ) )
 	{
 		CBroadcastRecipientFilter filter2;
 		te->DynamicLight( filter2, 0.0, &GetAbsOrigin(), 255, 173, 41, 0, 200, 0.15, 0 );
@@ -371,17 +391,17 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 
 	// Only do these effects if we're not submerged
 #ifdef MAPBASE
-	if ( explosion_sparks.GetBool() && !(UTIL_PointContents( GetAbsOrigin() ) & CONTENTS_WATER) )
+	if( explosion_sparks.GetBool() && !( UTIL_PointContents( GetAbsOrigin() ) & CONTENTS_WATER ) )
 #else
-	if ( UTIL_PointContents( GetAbsOrigin() ) & CONTENTS_WATER )
+	if( UTIL_PointContents( GetAbsOrigin() ) & CONTENTS_WATER )
 #endif
 	{
 		// draw sparks
-		if ( !( m_spawnflags & SF_ENVEXPLOSION_NOSPARKS ) )
+		if( !( m_spawnflags & SF_ENVEXPLOSION_NOSPARKS ) )
 		{
-			int sparkCount = random->RandomInt(0,3);
+			int sparkCount = random->RandomInt( 0, 3 );
 
-			for ( int i = 0; i < sparkCount; i++ )
+			for( int i = 0; i < sparkCount; i++ )
 			{
 				QAngle angles;
 				VectorAngles( tr.plane.normal, angles );
@@ -395,7 +415,7 @@ void CEnvExplosion::InputExplode( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting the ignored entity.
 //-----------------------------------------------------------------------------
-void CEnvExplosion::InputSetIgnoredEntity( inputdata_t &inputdata )
+void CEnvExplosion::InputSetIgnoredEntity( inputdata_t& inputdata )
 {
 	m_hEntityIgnore = inputdata.value.Entity();
 }
@@ -404,7 +424,7 @@ void CEnvExplosion::InputSetIgnoredEntity( inputdata_t &inputdata )
 
 void CEnvExplosion::Smoke( void )
 {
-	if ( !(m_spawnflags & SF_ENVEXPLOSION_REPEATABLE) )
+	if( !( m_spawnflags & SF_ENVEXPLOSION_REPEATABLE ) )
 	{
 		UTIL_Remove( this );
 	}
@@ -412,29 +432,29 @@ void CEnvExplosion::Smoke( void )
 
 
 // HACKHACK -- create one of these and fake a keyvalue to get the right explosion setup
-void ExplosionCreate( const Vector &center, const QAngle &angles, 
-	CBaseEntity *pOwner, int magnitude, int radius, int nSpawnFlags, float flExplosionForce, CBaseEntity *pInflictor, int iCustomDamageType,
-	const EHANDLE *ignoredEntity , Class_T ignoredClass )
+void ExplosionCreate( const Vector& center, const QAngle& angles,
+					  CBaseEntity* pOwner, int magnitude, int radius, int nSpawnFlags, float flExplosionForce, CBaseEntity* pInflictor, int iCustomDamageType,
+					  const EHANDLE* ignoredEntity , Class_T ignoredClass )
 {
 	char			buf[128];
 
-	CEnvExplosion *pExplosion = (CEnvExplosion*)CBaseEntity::Create( "env_explosion", center, angles, pOwner );
-	Q_snprintf( buf,sizeof(buf), "%3d", magnitude );
-	const char *szKeyName = "iMagnitude";
-	char *szValue = buf;
+	CEnvExplosion* pExplosion = ( CEnvExplosion* )CBaseEntity::Create( "env_explosion", center, angles, pOwner );
+	Q_snprintf( buf, sizeof( buf ), "%3d", magnitude );
+	const char* szKeyName = "iMagnitude";
+	char* szValue = buf;
 	pExplosion->KeyValue( szKeyName, szValue );
 
 	pExplosion->AddSpawnFlags( nSpawnFlags );
 
-	if ( radius )
+	if( radius )
 	{
-		Q_snprintf( buf,sizeof(buf), "%d", radius );
+		Q_snprintf( buf, sizeof( buf ), "%d", radius );
 		pExplosion->KeyValue( "iRadiusOverride", buf );
 	}
 
-	if ( flExplosionForce != 0.0f )
+	if( flExplosionForce != 0.0f )
 	{
-		Q_snprintf( buf,sizeof(buf), "%.3f", flExplosionForce );
+		Q_snprintf( buf, sizeof( buf ), "%.3f", flExplosionForce );
 		pExplosion->KeyValue( "DamageForce", buf );
 	}
 
@@ -444,7 +464,7 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 	pExplosion->Spawn();
 	pExplosion->m_hInflictor = pInflictor;
 	pExplosion->SetCustomDamageType( iCustomDamageType );
-	if (ignoredEntity)
+	if( ignoredEntity )
 	{
 		pExplosion->m_hEntityIgnore = *ignoredEntity;
 	}
@@ -454,12 +474,12 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 }
 
 
-void ExplosionCreate( const Vector &center, const QAngle &angles, 
-	CBaseEntity *pOwner, int magnitude, int radius, bool doDamage, float flExplosionForce, bool bSurfaceOnly, bool bSilent, int iCustomDamageType )
+void ExplosionCreate( const Vector& center, const QAngle& angles,
+					  CBaseEntity* pOwner, int magnitude, int radius, bool doDamage, float flExplosionForce, bool bSurfaceOnly, bool bSilent, int iCustomDamageType )
 {
 	// For E3, no sparks
 	int nFlags = SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE;
-	if ( !doDamage )
+	if( !doDamage )
 	{
 		nFlags |= SF_ENVEXPLOSION_NODAMAGE;
 	}
@@ -478,14 +498,14 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 }
 
 // this version lets you specify classes or entities to be ignored
-void ExplosionCreate( const Vector &center, const QAngle &angles, 
-					 CBaseEntity *pOwner, int magnitude, int radius, bool doDamage, 
-					 const EHANDLE *ignoredEntity, Class_T ignoredClass,
-					 float flExplosionForce , bool bSurfaceOnly , bool bSilent , int iCustomDamageType )
+void ExplosionCreate( const Vector& center, const QAngle& angles,
+					  CBaseEntity* pOwner, int magnitude, int radius, bool doDamage,
+					  const EHANDLE* ignoredEntity, Class_T ignoredClass,
+					  float flExplosionForce , bool bSurfaceOnly , bool bSilent , int iCustomDamageType )
 {
 	// For E3, no sparks
 	int nFlags = SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NOSMOKE;
-	if ( !doDamage )
+	if( !doDamage )
 	{
 		nFlags |= SF_ENVEXPLOSION_NODAMAGE;
 	}
@@ -507,16 +527,16 @@ void ExplosionCreate( const Vector &center, const QAngle &angles,
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CEnvExplosion::DrawDebugTextOverlays( void ) 
+int CEnvExplosion::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
 
-		Q_snprintf(tempstr,sizeof(tempstr),"    magnitude: %i", m_iMagnitude);
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "    magnitude: %i", m_iMagnitude );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;

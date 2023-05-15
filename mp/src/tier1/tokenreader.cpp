@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -14,9 +14,9 @@
 #include "tier0/dbg.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-TokenReader::TokenReader(void)
+TokenReader::TokenReader( void )
 {
 	m_szFilename[0] = '\0';
 	m_nLine = 1;
@@ -26,23 +26,23 @@ TokenReader::TokenReader(void)
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pszFilename - 
+// Purpose:
+// Input  : *pszFilename -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool TokenReader::Open(const char *pszFilename)
+bool TokenReader::Open( const char* pszFilename )
 {
-	open(pszFilename, std::ios::in | std::ios::binary );
-	Q_strncpy(m_szFilename, pszFilename, sizeof( m_szFilename ) );
+	open( pszFilename, std::ios::in | std::ios::binary );
+	Q_strncpy( m_szFilename, pszFilename, sizeof( m_szFilename ) );
 	m_nLine = 1;
 	m_nErrorCount = 0;
 	m_bStuffed = false;
-	return(is_open() != 0);
+	return( is_open() != 0 );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void TokenReader::Close()
 {
@@ -51,29 +51,29 @@ void TokenReader::Close()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *error - 
+// Purpose:
+// Input  : *error -
 // Output : const char
 //-----------------------------------------------------------------------------
-const char *TokenReader::Error(char *error, ...)
+const char* TokenReader::Error( char* error, ... )
 {
 	static char szErrorBuf[256];
-	Q_snprintf(szErrorBuf, sizeof( szErrorBuf ), "File %s, line %d: ", m_szFilename, m_nLine);
-	Q_strncat(szErrorBuf, error, sizeof( szErrorBuf ), COPY_ALL_CHARACTERS );
+	Q_snprintf( szErrorBuf, sizeof( szErrorBuf ), "File %s, line %d: ", m_szFilename, m_nLine );
+	Q_strncat( szErrorBuf, error, sizeof( szErrorBuf ), COPY_ALL_CHARACTERS );
 	m_nErrorCount++;
-	return(szErrorBuf);
+	return( szErrorBuf );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pszStore - 
-//			nSize - 
+// Purpose:
+// Input  : pszStore -
+//			nSize -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-trtoken_t TokenReader::GetString(char *pszStore, int nSize)
+trtoken_t TokenReader::GetString( char* pszStore, int nSize )
 {
-	if (nSize <= 0)
+	if( nSize <= 0 )
 	{
 		return TOKENERROR;
 	}
@@ -84,18 +84,18 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 	// Until we reach the end of this string or run out of room in
 	// the destination buffer...
 	//
-	while (true)
+	while( true )
 	{
 		//
 		// Fetch the next batch of text from the file.
 		//
-		get(szBuf, sizeof(szBuf), '\"');
-		if (eof())
+		get( szBuf, sizeof( szBuf ), '\"' );
+		if( eof() )
 		{
 			return TOKENEOF;
 		}
 
-		if (fail())
+		if( fail() )
 		{
 			// Just means nothing was read (empty string probably "")
 			clear();
@@ -104,10 +104,10 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 		//
 		// Transfer the text to the destination buffer.
 		//
-		char *pszSrc = szBuf;
-		while ((*pszSrc != '\0') && (nSize > 1))
+		char* pszSrc = szBuf;
+		while( ( *pszSrc != '\0' ) && ( nSize > 1 ) )
 		{
-			if (*pszSrc == 0x0d)
+			if( *pszSrc == 0x0d )
 			{
 				//
 				// Newline encountered before closing quote -- unterminated string.
@@ -115,7 +115,7 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 				*pszStore = '\0';
 				return TOKENSTRINGTOOLONG;
 			}
-			else if (*pszSrc != '\\')
+			else if( *pszSrc != '\\' )
 			{
 				*pszStore = *pszSrc;
 				pszSrc++;
@@ -127,7 +127,7 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 				//
 				pszSrc++;
 
-				if (*pszSrc == 'n')
+				if( *pszSrc == 'n' )
 				{
 					*pszStore = '\n';
 				}
@@ -139,21 +139,21 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 			nSize--;
 		}
 
-		if (*pszSrc != '\0')
+		if( *pszSrc != '\0' )
 		{
 			//
 			// Ran out of room in the destination buffer. Skip to the close-quote,
 			// terminate the string, and exit.
 			//
-			ignore(1024, '\"');
+			ignore( 1024, '\"' );
 			*pszStore = '\0';
-			return TOKENSTRINGTOOLONG; 
+			return TOKENSTRINGTOOLONG;
 		}
 
 		//
 		// Check for closing quote.
 		//
-		if (peek() == '\"')
+		if( peek() == '\"' )
 		{
 			//
 			// Eat the close quote and any whitespace.
@@ -166,7 +166,7 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 			// Combine consecutive quoted strings if the combine strings character was
 			// encountered between the two strings.
 			//
-			if (bCombineStrings && (peek() == '\"'))
+			if( bCombineStrings && ( peek() == '\"' ) )
 			{
 				//
 				// Eat the open quote and keep parsing this string.
@@ -192,17 +192,17 @@ trtoken_t TokenReader::GetString(char *pszStore, int nSize)
 // Input  : pszStore - Pointer to a string that will be allocated.
 // Output : Returns the type of token that was read, or TOKENERROR.
 //-----------------------------------------------------------------------------
-trtoken_t TokenReader::NextTokenDynamic(char **ppszStore)
+trtoken_t TokenReader::NextTokenDynamic( char** ppszStore )
 {
 	char szTempBuffer[8192];
-	trtoken_t eType = NextToken(szTempBuffer, sizeof(szTempBuffer));
+	trtoken_t eType = NextToken( szTempBuffer, sizeof( szTempBuffer ) );
 
-	int len = Q_strlen(szTempBuffer) + 1;
+	int len = Q_strlen( szTempBuffer ) + 1;
 	*ppszStore = new char [len];
 	Assert( *ppszStore );
-	Q_strncpy(*ppszStore, szTempBuffer, len );
+	Q_strncpy( *ppszStore, szTempBuffer, len );
 
-	return(eType);
+	return( eType );
 }
 
 
@@ -211,11 +211,11 @@ trtoken_t TokenReader::NextTokenDynamic(char **ppszStore)
 // Input  : pszStore - Pointer to a string that will receive the token.
 // Output : Returns the type of token that was read, or TOKENERROR.
 //-----------------------------------------------------------------------------
-trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
+trtoken_t TokenReader::NextToken( char* pszStore, int nSize )
 {
-	char *pStart = pszStore;
+	char* pStart = pszStore;
 
-	if (!is_open())
+	if( !is_open() )
 	{
 		return TOKENEOF;
 	}
@@ -223,21 +223,21 @@ trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
 	//
 	// If they stuffed a token, return that token.
 	//
-	if (m_bStuffed)
+	if( m_bStuffed )
 	{
 		m_bStuffed = false;
 		Q_strncpy( pszStore, m_szStuffed, nSize );
 		return m_eStuffed;
 	}
-	
+
 	SkipWhiteSpace();
 
-	if (eof())
+	if( eof() )
 	{
 		return TOKENEOF;
 	}
 
-	if (fail())
+	if( fail() )
 	{
 		return TOKENEOF;
 	}
@@ -247,7 +247,7 @@ trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
 	//
 	// Look for all the valid operators.
 	//
-	switch (ch)
+	switch( ch )
 	{
 		case '@':
 		case ',':
@@ -276,35 +276,36 @@ trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
 	//
 	// Look for the start of a quoted string.
 	//
-	if (ch == '\"')
+	if( ch == '\"' )
 	{
-		return GetString(pszStore, nSize);
+		return GetString( pszStore, nSize );
 	}
 
 	//
 	// Integers consist of numbers with an optional leading minus sign.
 	//
-	if (isdigit(ch) || (ch == '-'))
+	if( isdigit( ch ) || ( ch == '-' ) )
 	{
 		do
 		{
-			if ( (pszStore - pStart + 1) < nSize )
+			if( ( pszStore - pStart + 1 ) < nSize )
 			{
 				*pszStore = ch;
 				pszStore++;
 			}
 
 			ch = get();
-			if (ch == '-')
+			if( ch == '-' )
 			{
 				return TOKENERROR;
 			}
-		} while (isdigit(ch));
-		
+		}
+		while( isdigit( ch ) );
+
 		//
 		// No identifier characters are allowed contiguous with numbers.
 		//
-		if (isalpha(ch) || (ch == '_'))
+		if( isalpha( ch ) || ( ch == '_' ) )
 		{
 			return TOKENERROR;
 		}
@@ -312,18 +313,18 @@ trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
 		//
 		// Put back the non-numeric character for the next call.
 		//
-		putback(ch);
+		putback( ch );
 		*pszStore = '\0';
 		return INTEGER;
 	}
- 
+
 	//
 	// Identifiers consist of a consecutive string of alphanumeric
 	// characters and underscores.
 	//
-	while ( isalpha(ch) || isdigit(ch) || (ch == '_') )
+	while( isalpha( ch ) || isdigit( ch ) || ( ch == '_' ) )
 	{
-		if ( (pszStore - pStart + 1) < nSize )
+		if( ( pszStore - pStart + 1 ) < nSize )
 		{
 			*pszStore = ch;
 			pszStore++;
@@ -335,32 +336,34 @@ trtoken_t TokenReader::NextToken(char *pszStore, int nSize)
 	//
 	// Put back the non-identifier character for the next call.
 	//
-	putback(ch);
+	putback( ch );
 	*pszStore = '\0';
 	return IDENT;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : ttype - 
-//			*pszToken - 
+// Purpose:
+// Input  : ttype -
+//			*pszToken -
 //-----------------------------------------------------------------------------
-void TokenReader::IgnoreTill(trtoken_t ttype, const char *pszToken)
+void TokenReader::IgnoreTill( trtoken_t ttype, const char* pszToken )
 {
 	trtoken_t _ttype;
 	char szBuf[1024];
 
-	while(1)
+	while( 1 )
 	{
-		_ttype = NextToken(szBuf, sizeof(szBuf));
-		if(_ttype == TOKENEOF)
-			return;
-		if(_ttype == ttype)
+		_ttype = NextToken( szBuf, sizeof( szBuf ) );
+		if( _ttype == TOKENEOF )
 		{
-			if(IsToken(pszToken, szBuf))
+			return;
+		}
+		if( _ttype == ttype )
+		{
+			if( IsToken( pszToken, szBuf ) )
 			{
-				Stuff(ttype, pszToken);
+				Stuff( ttype, pszToken );
 				return;
 			}
 		}
@@ -369,28 +372,28 @@ void TokenReader::IgnoreTill(trtoken_t ttype, const char *pszToken)
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : ttype - 
-//			pszToken - 
+// Purpose:
+// Input  : ttype -
+//			pszToken -
 //-----------------------------------------------------------------------------
-void TokenReader::Stuff(trtoken_t eType, const char *pszToken)
+void TokenReader::Stuff( trtoken_t eType, const char* pszToken )
 {
 	m_eStuffed = eType;
-	Q_strncpy(m_szStuffed, pszToken, sizeof( m_szStuffed ) );
+	Q_strncpy( m_szStuffed, pszToken, sizeof( m_szStuffed ) );
 	m_bStuffed = true;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : ttype - 
-//			pszToken - 
+// Purpose:
+// Input  : ttype -
+//			pszToken -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool TokenReader::Expecting(trtoken_t ttype, const char *pszToken)
+bool TokenReader::Expecting( trtoken_t ttype, const char* pszToken )
 {
 	char szBuf[1024];
-	if (NextToken(szBuf, sizeof(szBuf)) != ttype || !IsToken(pszToken, szBuf))
+	if( NextToken( szBuf, sizeof( szBuf ) ) != ttype || !IsToken( pszToken, szBuf ) )
 	{
 		return false;
 	}
@@ -399,24 +402,24 @@ bool TokenReader::Expecting(trtoken_t ttype, const char *pszToken)
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pszStore - 
-// Output : 
+// Purpose:
+// Input  : pszStore -
+// Output :
 //-----------------------------------------------------------------------------
-trtoken_t TokenReader::PeekTokenType(char *pszStore, int maxlen )
+trtoken_t TokenReader::PeekTokenType( char* pszStore, int maxlen )
 {
-	if (!m_bStuffed)
+	if( !m_bStuffed )
 	{
-		m_eStuffed = NextToken(m_szStuffed, sizeof(m_szStuffed));
+		m_eStuffed = NextToken( m_szStuffed, sizeof( m_szStuffed ) );
 		m_bStuffed = true;
 	}
-	
-	if (pszStore)
+
+	if( pszStore )
 	{
-		Q_strncpy(pszStore, m_szStuffed, maxlen );
+		Q_strncpy( pszStore, m_szStuffed, maxlen );
 	}
 
-	return(m_eStuffed);
+	return( m_eStuffed );
 }
 
 
@@ -426,44 +429,44 @@ trtoken_t TokenReader::PeekTokenType(char *pszStore, int maxlen )
 // Output : Returns true if the whitespace contained the combine strings
 //			character '\', which is used to merge consecutive quoted strings.
 //-----------------------------------------------------------------------------
-bool TokenReader::SkipWhiteSpace(void)
+bool TokenReader::SkipWhiteSpace( void )
 {
 	bool bCombineStrings = false;
 
-	while (true)
+	while( true )
 	{
 		char ch = get();
 
-		if ((ch == ' ') || (ch == '\t') || (ch == '\r') || (ch == 0))
+		if( ( ch == ' ' ) || ( ch == '\t' ) || ( ch == '\r' ) || ( ch == 0 ) )
 		{
 			continue;
 		}
 
-		if (ch == '+')
+		if( ch == '+' )
 		{
 			bCombineStrings = true;
 			continue;
 		}
 
-		if (ch == '\n')
+		if( ch == '\n' )
 		{
 			m_nLine++;
 			continue;
 		}
 
-		if (eof())
+		if( eof() )
 		{
-			return(bCombineStrings);
+			return( bCombineStrings );
 		}
 
 		//
 		// Check for the start of a comment.
 		//
-		if (ch == '/')
+		if( ch == '/' )
 		{
-			if (peek() == '/')
+			if( peek() == '/' )
 			{
-				ignore(1024, '\n');
+				ignore( 1024, '\n' );
 				m_nLine++;
 			}
 		}
@@ -472,8 +475,8 @@ bool TokenReader::SkipWhiteSpace(void)
 			//
 			// It is a worthy character. Put it back.
 			//
-			putback(ch);
-			return(bCombineStrings);
+			putback( ch );
+			return( bCombineStrings );
 		}
 	}
 }

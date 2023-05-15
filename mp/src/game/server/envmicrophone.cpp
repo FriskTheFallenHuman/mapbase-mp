@@ -20,7 +20,7 @@
 #include "engine/IEngineSound.h"
 #include "filters.h"
 #ifdef MAPBASE
-#include "fmtstr.h"
+	#include "fmtstr.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -31,59 +31,59 @@
 const float MICROPHONE_SETTLE_EPSILON = 0.005;
 
 #ifdef MAPBASE
-static ConVar sv_microphones_always_pickup_sentences( "sv_microphones_always_pickup_sentences", "0", FCVAR_NONE, "Allows env_microphones to always detect and play back sentences, regardless of their keyvalues." );
+	static ConVar sv_microphones_always_pickup_sentences( "sv_microphones_always_pickup_sentences", "0", FCVAR_NONE, "Allows env_microphones to always detect and play back sentences, regardless of their keyvalues." );
 #endif
 
 // List of env_microphones who want to be told whenever a sound is started
 static CUtlVector< CHandle<CEnvMicrophone> > s_Microphones;
 
 
-LINK_ENTITY_TO_CLASS(env_microphone, CEnvMicrophone);
+LINK_ENTITY_TO_CLASS( env_microphone, CEnvMicrophone );
 
 BEGIN_DATADESC( CEnvMicrophone )
 
-	DEFINE_KEYFIELD(m_bDisabled, FIELD_BOOLEAN, "StartDisabled"),
-	DEFINE_FIELD(m_hMeasureTarget, FIELD_EHANDLE),
-	DEFINE_KEYFIELD(m_nSoundMask, FIELD_INTEGER, "SoundMask"),
-	DEFINE_KEYFIELD(m_flSensitivity, FIELD_FLOAT, "Sensitivity"),
-	DEFINE_KEYFIELD(m_flSmoothFactor, FIELD_FLOAT, "SmoothFactor"),
-	DEFINE_KEYFIELD(m_iszSpeakerName, FIELD_STRING, "SpeakerName"),
-	DEFINE_KEYFIELD(m_iszListenFilter, FIELD_STRING, "ListenFilter"),
-	DEFINE_FIELD(m_hListenFilter, FIELD_EHANDLE),
-	DEFINE_FIELD(m_hSpeaker, FIELD_EHANDLE),
+DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "StartDisabled" ),
+				 DEFINE_FIELD( m_hMeasureTarget, FIELD_EHANDLE ),
+				 DEFINE_KEYFIELD( m_nSoundMask, FIELD_INTEGER, "SoundMask" ),
+				 DEFINE_KEYFIELD( m_flSensitivity, FIELD_FLOAT, "Sensitivity" ),
+				 DEFINE_KEYFIELD( m_flSmoothFactor, FIELD_FLOAT, "SmoothFactor" ),
+				 DEFINE_KEYFIELD( m_iszSpeakerName, FIELD_STRING, "SpeakerName" ),
+				 DEFINE_KEYFIELD( m_iszListenFilter, FIELD_STRING, "ListenFilter" ),
+				 DEFINE_FIELD( m_hListenFilter, FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hSpeaker, FIELD_EHANDLE ),
 #ifdef MAPBASE
-	DEFINE_KEYFIELD(m_iszLandmarkName, FIELD_STRING, "landmark"),
-	DEFINE_FIELD(m_hLandmark, FIELD_EHANDLE),
-	DEFINE_KEYFIELD(m_flPitchScale, FIELD_FLOAT, "PitchScale"),
-	DEFINE_KEYFIELD(m_flVolumeScale, FIELD_FLOAT, "VolumeScale"),
-	DEFINE_KEYFIELD(m_nChannel, FIELD_INTEGER, "channel"),
+	DEFINE_KEYFIELD( m_iszLandmarkName, FIELD_STRING, "landmark" ),
+	DEFINE_FIELD( m_hLandmark, FIELD_EHANDLE ),
+	DEFINE_KEYFIELD( m_flPitchScale, FIELD_FLOAT, "PitchScale" ),
+	DEFINE_KEYFIELD( m_flVolumeScale, FIELD_FLOAT, "VolumeScale" ),
+	DEFINE_KEYFIELD( m_nChannel, FIELD_INTEGER, "channel" ),
 #endif
-	// DEFINE_FIELD(m_bAvoidFeedback, FIELD_BOOLEAN),	// DONT SAVE
-	DEFINE_KEYFIELD(m_iSpeakerDSPPreset, FIELD_INTEGER, "speaker_dsp_preset" ),
-	DEFINE_KEYFIELD(m_flMaxRange, FIELD_FLOAT, "MaxRange"),
-	DEFINE_AUTO_ARRAY(m_szLastSound, FIELD_CHARACTER),
+				 // DEFINE_FIELD(m_bAvoidFeedback, FIELD_BOOLEAN),	// DONT SAVE
+				 DEFINE_KEYFIELD( m_iSpeakerDSPPreset, FIELD_INTEGER, "speaker_dsp_preset" ),
+				 DEFINE_KEYFIELD( m_flMaxRange, FIELD_FLOAT, "MaxRange" ),
+				 DEFINE_AUTO_ARRAY( m_szLastSound, FIELD_CHARACTER ),
 
-	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
-	DEFINE_INPUTFUNC(FIELD_STRING, "SetSpeakerName", InputSetSpeakerName),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "SetSpeakerName", InputSetSpeakerName ),
 #ifdef MAPBASE
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetDSPPreset", InputSetDSPPreset),
+	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetDSPPreset", InputSetDSPPreset ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPitchScale", InputSetPitchScale ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetVolumeScale", InputSetVolumeScale ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetChannel", InputSetChannel ),
 #endif
 
-	DEFINE_OUTPUT(m_SoundLevel, "SoundLevel"),
-	DEFINE_OUTPUT(m_OnRoutedSound, "OnRoutedSound" ),
-	DEFINE_OUTPUT(m_OnHeardSound, "OnHeardSound" ),
+				 DEFINE_OUTPUT( m_SoundLevel, "SoundLevel" ),
+				 DEFINE_OUTPUT( m_OnRoutedSound, "OnRoutedSound" ),
+				 DEFINE_OUTPUT( m_OnHeardSound, "OnHeardSound" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CEnvMicrophone::~CEnvMicrophone( void )
+				 CEnvMicrophone::~CEnvMicrophone( void )
 {
 	s_Microphones.FindAndRemove( this );
 }
@@ -91,7 +91,7 @@ CEnvMicrophone::~CEnvMicrophone( void )
 //-----------------------------------------------------------------------------
 // Purpose: Called before spawning, after keyvalues have been handled.
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::Spawn(void)
+void CEnvMicrophone::Spawn( void )
 {
 	//
 	// Build our sound type mask from our spawnflags.
@@ -105,29 +105,29 @@ void CEnvMicrophone::Spawn(void)
 		{ SF_MICROPHONE_SOUND_EXPLOSION,		SOUND_CONTEXT_EXPLOSION },
 	};
 
-	for (int i = 0; i < sizeof(nFlags) / sizeof(nFlags[0]); i++)
+	for( int i = 0; i < sizeof( nFlags ) / sizeof( nFlags[0] ); i++ )
 	{
-		if (m_spawnflags & nFlags[i][0])
+		if( m_spawnflags & nFlags[i][0] )
 		{
 			m_nSoundMask |= nFlags[i][1];
 		}
 	}
 
-	if (m_flSensitivity == 0)
+	if( m_flSensitivity == 0 )
 	{
 		//
 		// Avoid a divide by zero in CanHearSound.
 		//
 		m_flSensitivity = 1;
 	}
-	else if (m_flSensitivity > 10)
+	else if( m_flSensitivity > 10 )
 	{
 		m_flSensitivity = 10;
 	}
 
-	m_flSmoothFactor = clamp(m_flSmoothFactor, 0.f, 0.9f);
+	m_flSmoothFactor = clamp( m_flSmoothFactor, 0.f, 0.9f );
 
-	if (!m_bDisabled)
+	if( !m_bDisabled )
 	{
 		SetNextThink( gpGlobals->curtime + 0.1f );
 	}
@@ -137,24 +137,24 @@ void CEnvMicrophone::Spawn(void)
 // Purpose: Called after all entities have spawned and after a load game.
 //			Finds the reference point at which to measure sound level.
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::Activate(void)
+void CEnvMicrophone::Activate( void )
 {
 	BaseClass::Activate();
 
 	// Get a handle to my filter entity if there is one
-	if (m_iszListenFilter != NULL_STRING)
+	if( m_iszListenFilter != NULL_STRING )
 	{
-		m_hListenFilter = dynamic_cast<CBaseFilter *>(gEntList.FindEntityByName( NULL, m_iszListenFilter ));
+		m_hListenFilter = dynamic_cast<CBaseFilter*>( gEntList.FindEntityByName( NULL, m_iszListenFilter ) );
 	}
 
-	if (m_target != NULL_STRING)
+	if( m_target != NULL_STRING )
 	{
-		m_hMeasureTarget = gEntList.FindEntityByName(NULL, STRING(m_target) );
+		m_hMeasureTarget = gEntList.FindEntityByName( NULL, STRING( m_target ) );
 
 		//
 		// If we were given a bad measure target, just measure sound where we are.
 		//
-		if ((m_hMeasureTarget == NULL) || (m_hMeasureTarget->edict() == NULL))
+		if( ( m_hMeasureTarget == NULL ) || ( m_hMeasureTarget->edict() == NULL ) )
 		{
 			// We've decided to disable this warning since this seems to be the 90% case.
 			//Warning( "EnvMicrophone - Measure target not found or measure target with no origin. Using Self.!\n");
@@ -170,7 +170,7 @@ void CEnvMicrophone::Activate(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvMicrophone::OnRestore( void )
 {
@@ -185,36 +185,36 @@ void CEnvMicrophone::OnRestore( void )
 void CEnvMicrophone::ActivateSpeaker( void )
 {
 	// If we're enabled, set the dsp_speaker preset to my specified one
-	if ( !m_bDisabled )
+	if( !m_bDisabled )
 	{
 		ConVarRef dsp_speaker( "dsp_speaker" );
-		if ( dsp_speaker.IsValid() )
+		if( dsp_speaker.IsValid() )
 		{
 			int iDSPPreset = m_iSpeakerDSPPreset;
-			if ( !iDSPPreset )
+			if( !iDSPPreset )
 			{
 				// Reset it to the default
 				iDSPPreset = atoi( dsp_speaker.GetDefault() );
 			}
-			DevMsg( 2, "Microphone %s set dsp_speaker to %d.\n", STRING(GetEntityName()), iDSPPreset);
+			DevMsg( 2, "Microphone %s set dsp_speaker to %d.\n", STRING( GetEntityName() ), iDSPPreset );
 			dsp_speaker.SetValue( m_iSpeakerDSPPreset );
 		}
 	}
 
-	if ( m_iszSpeakerName != NULL_STRING )
+	if( m_iszSpeakerName != NULL_STRING )
 	{
-		// We've got a speaker to play heard sounds through. To do this, we need to add ourselves 
+		// We've got a speaker to play heard sounds through. To do this, we need to add ourselves
 		// to the list of microphones who want to be told whenever a sound is played.
-		if ( s_Microphones.Find(this) == -1 )
+		if( s_Microphones.Find( this ) == -1 )
 		{
 			s_Microphones.AddToTail( this );
 		}
 	}
 
 #ifdef MAPBASE
-	if (m_iszLandmarkName != NULL_STRING)
+	if( m_iszLandmarkName != NULL_STRING )
 	{
-		m_hLandmark = gEntList.FindEntityByName(NULL, m_iszLandmarkName, this, NULL, NULL);
+		m_hLandmark = gEntList.FindEntityByName( NULL, m_iszLandmarkName, this, NULL, NULL );
 	}
 #endif
 }
@@ -223,9 +223,9 @@ void CEnvMicrophone::ActivateSpeaker( void )
 // Purpose: Stops the microphone from sampling the sound level and firing the
 //			SoundLevel output.
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputEnable( inputdata_t &inputdata )
+void CEnvMicrophone::InputEnable( inputdata_t& inputdata )
 {
-	if (m_bDisabled)
+	if( m_bDisabled )
 	{
 		m_bDisabled = false;
 		SetNextThink( gpGlobals->curtime + 0.1f );
@@ -238,10 +238,10 @@ void CEnvMicrophone::InputEnable( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Resumes sampling the sound level and firing the SoundLevel output.
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputDisable( inputdata_t &inputdata )
+void CEnvMicrophone::InputDisable( inputdata_t& inputdata )
 {
 	m_bDisabled = true;
-	if ( m_hSpeaker )
+	if( m_hSpeaker )
 	{
 #ifdef MAPBASE
 		CBaseEntity::StopSound( m_hSpeaker->entindex(), m_nChannel, m_szLastSound );
@@ -257,48 +257,48 @@ void CEnvMicrophone::InputDisable( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputSetSpeakerName( inputdata_t &inputdata )
+void CEnvMicrophone::InputSetSpeakerName( inputdata_t& inputdata )
 {
 	SetSpeakerName( inputdata.value.StringID() );
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputSetDSPPreset( inputdata_t &inputdata )
+void CEnvMicrophone::InputSetDSPPreset( inputdata_t& inputdata )
 {
 	m_iSpeakerDSPPreset = inputdata.value.Int();
 	ActivateSpeaker();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputSetPitchScale( inputdata_t &inputdata )
+void CEnvMicrophone::InputSetPitchScale( inputdata_t& inputdata )
 {
 	m_flPitchScale = inputdata.value.Float();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputSetVolumeScale( inputdata_t &inputdata )
+void CEnvMicrophone::InputSetVolumeScale( inputdata_t& inputdata )
 {
 	m_flVolumeScale = inputdata.value.Float();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::InputSetChannel( inputdata_t &inputdata )
+void CEnvMicrophone::InputSetChannel( inputdata_t& inputdata )
 {
 	m_nChannel = inputdata.value.Int();
 }
@@ -311,44 +311,44 @@ void CEnvMicrophone::InputSetChannel( inputdata_t &inputdata )
 //			flVolume - Returns with the relative sound volume from 0 - 1.
 // Output : Returns true if the sound could be heard at the sample point, false if not.
 //-----------------------------------------------------------------------------
-bool CEnvMicrophone::CanHearSound(CSound *pSound, float &flVolume)
+bool CEnvMicrophone::CanHearSound( CSound* pSound, float& flVolume )
 {
 	flVolume = 0;
 
-	if ( m_bDisabled )
+	if( m_bDisabled )
 	{
 		return false;
 	}
 
 	// Cull out sounds except from specific entities
-	CBaseFilter *pFilter = m_hListenFilter.Get();
-	if ( pFilter )
+	CBaseFilter* pFilter = m_hListenFilter.Get();
+	if( pFilter )
 	{
-		CBaseEntity *pSoundOwner = pSound->m_hOwner.Get();
-		if ( !pSoundOwner || !pFilter->PassesFilter( this, pSoundOwner ) )
+		CBaseEntity* pSoundOwner = pSound->m_hOwner.Get();
+		if( !pSoundOwner || !pFilter->PassesFilter( this, pSoundOwner ) )
 		{
 			return false;
 		}
 	}
 
-	float flDistance = (pSound->GetSoundOrigin() - m_hMeasureTarget->GetAbsOrigin()).Length();
+	float flDistance = ( pSound->GetSoundOrigin() - m_hMeasureTarget->GetAbsOrigin() ).Length();
 
-	if (flDistance == 0)
+	if( flDistance == 0 )
 	{
 		flVolume = 1.0;
 		return true;
 	}
 
 	// Over our max range?
-	if ( m_flMaxRange && flDistance > m_flMaxRange )
+	if( m_flMaxRange && flDistance > m_flMaxRange )
 	{
 		return false;
 	}
 
-	if (flDistance <= pSound->Volume() * m_flSensitivity)
+	if( flDistance <= pSound->Volume() * m_flSensitivity )
 	{
-		flVolume = 1 - (flDistance / (pSound->Volume() * m_flSensitivity));
-		flVolume = clamp(flVolume, 0.f, 1.f);
+		flVolume = 1 - ( flDistance / ( pSound->Volume() * m_flSensitivity ) );
+		flVolume = clamp( flVolume, 0.f, 1.f );
 		return true;
 	}
 
@@ -358,31 +358,31 @@ bool CEnvMicrophone::CanHearSound(CSound *pSound, float &flVolume)
 //-----------------------------------------------------------------------------
 // Purpose: Return true if the microphone can hear the specified sound
 //-----------------------------------------------------------------------------
-bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float &flVolume, const Vector *pOrigin )
+bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float& flVolume, const Vector* pOrigin )
 {
-	if ( m_bDisabled )
+	if( m_bDisabled )
 	{
 		flVolume = 0;
 		return false;
 	}
 
-	if ( ( m_spawnflags & SF_MICROPHONE_IGNORE_NONATTENUATED ) && soundlevel == SNDLVL_NONE )
+	if( ( m_spawnflags & SF_MICROPHONE_IGNORE_NONATTENUATED ) && soundlevel == SNDLVL_NONE )
 	{
 		return false;
 	}
 
 	// Sound might be coming from an origin or from an entity.
-	CBaseEntity *pEntity = NULL;
-	if ( entindex )
+	CBaseEntity* pEntity = NULL;
+	if( entindex )
 	{
-		pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex(entindex) );
+		pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex( entindex ) );
 	}
-			    
+
 	// Cull out sounds except from specific entities
-	CBaseFilter *pFilter = m_hListenFilter.Get();
-	if ( pFilter )
+	CBaseFilter* pFilter = m_hListenFilter.Get();
+	if( pFilter )
 	{
-		if ( !pEntity || !pFilter->PassesFilter( this, pEntity ) )
+		if( !pEntity || !pFilter->PassesFilter( this, pEntity ) )
 		{
 			flVolume = 0;
 			return false;
@@ -390,26 +390,26 @@ bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float 
 	}
 
 	float flDistance = 0;
-	if ( pOrigin )
+	if( pOrigin )
 	{
 		flDistance = pOrigin->DistTo( m_hMeasureTarget->GetAbsOrigin() );
 	}
-	else if ( pEntity )
+	else if( pEntity )
 	{
 		flDistance = pEntity->WorldSpaceCenter().DistTo( m_hMeasureTarget->GetAbsOrigin() );
 	}
 
 	// Over our max range?
-	if ( m_flMaxRange && flDistance > m_flMaxRange )
+	if( m_flMaxRange && flDistance > m_flMaxRange )
 	{
 #ifdef DEBUG_MICROPHONE
-		Msg("OUT OF RANGE.\n" );
+		Msg( "OUT OF RANGE.\n" );
 #endif
 		return false;
 	}
 
 #ifdef DEBUG_MICROPHONE
-	Msg(" flVolume %f ", flVolume );
+	Msg( " flVolume %f ", flVolume );
 #endif
 
 	// Reduce the volume by the amount it fell to get to the microphone
@@ -417,14 +417,14 @@ bool CEnvMicrophone::CanHearSound( int entindex, soundlevel_t soundlevel, float 
 	flVolume *= gain;
 
 #ifdef DEBUG_MICROPHONE
-	Msg("dist %2f, soundlevel %d: gain %f", flDistance, (int)soundlevel, gain );
-	if ( !flVolume )
+	Msg( "dist %2f, soundlevel %d: gain %f", flDistance, ( int )soundlevel, gain );
+	if( !flVolume )
 	{
-		Msg(" : REJECTED\n" );
+		Msg( " : REJECTED\n" );
 	}
 	else
 	{
-		Msg(" : SENT\n" );
+		Msg( " : SENT\n" );
 	}
 #endif
 
@@ -448,26 +448,26 @@ void CEnvMicrophone::SetSpeakerName( string_t iszSpeakerName )
 //-----------------------------------------------------------------------------
 // Purpose: Listens for sounds and updates the value of the SoundLevel output.
 //-----------------------------------------------------------------------------
-void CEnvMicrophone::Think(void)
+void CEnvMicrophone::Think( void )
 {
 	int nSound = CSoundEnt::ActiveList();
 	bool fHearSound = false;
 
 	float flMaxVolume = 0;
-	
+
 	//
 	// Find the loudest sound that this microphone cares about.
 	//
-	while (nSound != SOUNDLIST_EMPTY)
+	while( nSound != SOUNDLIST_EMPTY )
 	{
-		CSound *pCurrentSound = CSoundEnt::SoundPointerForIndex(nSound);
+		CSound* pCurrentSound = CSoundEnt::SoundPointerForIndex( nSound );
 
-		if (pCurrentSound)
+		if( pCurrentSound )
 		{
-			if (m_nSoundMask & pCurrentSound->SoundType())
+			if( m_nSoundMask & pCurrentSound->SoundType() )
 			{
 				float flVolume = 0;
-				if (CanHearSound(pCurrentSound, flVolume) && (flVolume > flMaxVolume))
+				if( CanHearSound( pCurrentSound, flVolume ) && ( flVolume > flMaxVolume ) )
 				{
 					flMaxVolume = flVolume;
 					fHearSound = true;
@@ -477,7 +477,9 @@ void CEnvMicrophone::Think(void)
 			nSound = pCurrentSound->NextSound();
 		}
 		else
+		{
 			break;
+		}
 	}
 
 	if( fHearSound )
@@ -485,19 +487,19 @@ void CEnvMicrophone::Think(void)
 		m_OnHeardSound.FireOutput( this, this );
 	}
 
-	if (flMaxVolume != m_SoundLevel.Get())
+	if( flMaxVolume != m_SoundLevel.Get() )
 	{
 		//
 		// Don't smooth if we are within an epsilon. This allows the output to stop firing
 		// much more quickly.
 		//
-		if (fabs(flMaxVolume - m_SoundLevel.Get()) < MICROPHONE_SETTLE_EPSILON)
+		if( fabs( flMaxVolume - m_SoundLevel.Get() ) < MICROPHONE_SETTLE_EPSILON )
 		{
-			m_SoundLevel.Set(flMaxVolume, this, this);
+			m_SoundLevel.Set( flMaxVolume, this, this );
 		}
 		else
 		{
-			m_SoundLevel.Set(flMaxVolume * (1 - m_flSmoothFactor) + m_SoundLevel.Get() * m_flSmoothFactor, this, this);
+			m_SoundLevel.Set( flMaxVolume * ( 1 - m_flSmoothFactor ) + m_SoundLevel.Get() * m_flSmoothFactor, this, this );
 		}
 	}
 
@@ -507,39 +509,45 @@ void CEnvMicrophone::Think(void)
 //-----------------------------------------------------------------------------
 // Purpose: Hook for the sound system to tell us when a sound's been played
 //-----------------------------------------------------------------------------
-MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char *soundname, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
+MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char* soundname, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
 {
-	if ( m_bAvoidFeedback )
+	if( m_bAvoidFeedback )
+	{
 		return MicrophoneResult_Ok;
+	}
 
 	// Don't hear sounds that have already been heard by a microphone to avoid feedback!
-	if ( iFlags & SND_SPEAKER )
+	if( iFlags & SND_SPEAKER )
+	{
 		return MicrophoneResult_Ok;
+	}
 
 #ifdef DEBUG_MICROPHONE
-	Msg("%s heard %s: ", STRING(GetEntityName()), soundname );
+	Msg( "%s heard %s: ", STRING( GetEntityName() ), soundname );
 #endif
 
-	if ( !CanHearSound( entindex, soundlevel, flVolume, pOrigin ) )
+	if( !CanHearSound( entindex, soundlevel, flVolume, pOrigin ) )
+	{
 		return MicrophoneResult_Ok;
+	}
 
 	// We've heard it. Play it out our speaker. If our speaker's gone away, we're done.
-	if ( !m_hSpeaker )
+	if( !m_hSpeaker )
 	{
 		// First time, find our speaker. Done here, because finding it in Activate() wouldn't
 		// find players, and we need to be able to specify !player for a speaker.
-		if ( m_iszSpeakerName != NULL_STRING )
+		if( m_iszSpeakerName != NULL_STRING )
 		{
-			m_hSpeaker = gEntList.FindEntityByName(NULL, STRING(m_iszSpeakerName) );
+			m_hSpeaker = gEntList.FindEntityByName( NULL, STRING( m_iszSpeakerName ) );
 
-			if ( !m_hSpeaker )
+			if( !m_hSpeaker )
 			{
-				Warning( "EnvMicrophone %s specifies a non-existent speaker name: %s\n", STRING(GetEntityName()), STRING(m_iszSpeakerName) );
+				Warning( "EnvMicrophone %s specifies a non-existent speaker name: %s\n", STRING( GetEntityName() ), STRING( m_iszSpeakerName ) );
 				m_iszSpeakerName = NULL_STRING;
 			}
 		}
 
-		if ( !m_hSpeaker )
+		if( !m_hSpeaker )
 		{
 			return MicrophoneResult_Remove;
 		}
@@ -548,15 +556,19 @@ MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char *soundn
 #ifdef MAPBASE
 	// Something similar to trigger_teleport landmarks for sounds transmitting to speaker
 	Vector vecOrigin = m_hSpeaker->GetAbsOrigin();
-	if (m_hLandmark)
+	if( m_hLandmark )
 	{
 		Vector vecSoundPos;
-		if (pOrigin)
+		if( pOrigin )
+		{
 			vecSoundPos = *pOrigin;
-		else if (CBaseEntity *pEntity = CBaseEntity::Instance(engine->PEntityOfEntIndex(entindex)))
+		}
+		else if( CBaseEntity* pEntity = CBaseEntity::Instance( engine->PEntityOfEntIndex( entindex ) ) )
+		{
 			vecSoundPos = pEntity->GetAbsOrigin();
+		}
 
-		vecOrigin += (vecSoundPos - m_hLandmark->GetAbsOrigin());
+		vecOrigin += ( vecSoundPos - m_hLandmark->GetAbsOrigin() );
 	}
 #endif
 
@@ -569,53 +581,61 @@ MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char *soundn
 	EmitSound_t ep;
 
 #ifdef MAPBASE
-	if (m_bHearingSentence)
+	if( m_bHearingSentence )
 	{
-		CBaseEntity::EmitSentenceByIndex( filter, m_hSpeaker->entindex(), m_nChannel, atoi(soundname), flVolume, soundlevel, 0, iPitch, &vecOrigin, NULL, true, soundtime,
-			m_iSpeakerDSPPreset, entindex );
+		CBaseEntity::EmitSentenceByIndex( filter, m_hSpeaker->entindex(), m_nChannel, atoi( soundname ), flVolume, soundlevel, 0, iPitch, &vecOrigin, NULL, true, soundtime,
+										  m_iSpeakerDSPPreset, entindex );
 	}
 	else
 #endif
 	{
 #ifdef MAPBASE
 		ep.m_nChannel = m_nChannel;
-		if (m_flVolumeScale != 1.0f)
-			ep.m_flVolume = (flVolume * m_flVolumeScale);
+		if( m_flVolumeScale != 1.0f )
+		{
+			ep.m_flVolume = ( flVolume * m_flVolumeScale );
+		}
 		else
+		{
 			ep.m_flVolume = flVolume;
-		if (m_flPitchScale != 1.0f)
-			ep.m_nPitch = (int)((float)iPitch * m_flPitchScale);
+		}
+		if( m_flPitchScale != 1.0f )
+		{
+			ep.m_nPitch = ( int )( ( float )iPitch * m_flPitchScale );
+		}
 		else
+		{
 			ep.m_nPitch = iPitch;
+		}
 		ep.m_pOrigin = &vecOrigin;
 #else
-	ep.m_nChannel = CHAN_STATIC;
-	ep.m_flVolume = flVolume;
-	ep.m_nPitch = iPitch;
-	ep.m_pOrigin = &m_hSpeaker->GetAbsOrigin();
+		ep.m_nChannel = CHAN_STATIC;
+		ep.m_flVolume = flVolume;
+		ep.m_nPitch = iPitch;
+		ep.m_pOrigin = &m_hSpeaker->GetAbsOrigin();
 #endif
 		ep.m_pSoundName = soundname;
 		ep.m_SoundLevel = soundlevel;
 		ep.m_nFlags = iFlags;
-	ep.m_flSoundTime = soundtime;
-	ep.m_nSpeakerEntity = entindex;
+		ep.m_flSoundTime = soundtime;
+		ep.m_nSpeakerEntity = entindex;
 
-	CBaseEntity::EmitSound( filter, m_hSpeaker->entindex(), ep );
+		CBaseEntity::EmitSound( filter, m_hSpeaker->entindex(), ep );
 	}
 
-	Q_strncpy( m_szLastSound, soundname, sizeof(m_szLastSound) );
+	Q_strncpy( m_szLastSound, soundname, sizeof( m_szLastSound ) );
 	m_OnRoutedSound.FireOutput( this, this, 0 );
 
 	m_bAvoidFeedback = false;
 
 	// Copy emitted origin to soundorigins array
-	for ( int i = 0; i < ep.m_UtlVecSoundOrigin.Count(); ++i )
+	for( int i = 0; i < ep.m_UtlVecSoundOrigin.Count(); ++i )
 	{
 		soundorigins.AddToTail( ep.m_UtlVecSoundOrigin[ i ] );
 	}
 
 	// Do we want to allow the original sound to play?
-	if ( m_spawnflags & SF_MICROPHONE_SWALLOW_ROUTED_SOUNDS )
+	if( m_spawnflags & SF_MICROPHONE_SWALLOW_ROUTED_SOUNDS )
 	{
 		return MicrophoneResult_Swallow;
 	}
@@ -630,36 +650,36 @@ MicrophoneResult_t CEnvMicrophone::SoundPlayed( int entindex, const char *soundn
 // Output : Returns whether or not the sound was swallowed by the microphone.
 //			Swallowed sounds should not be played by the sound system.
 //-----------------------------------------------------------------------------
-bool CEnvMicrophone::OnSoundPlayed( int entindex, const char *soundname, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
+bool CEnvMicrophone::OnSoundPlayed( int entindex, const char* soundname, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
 {
 	bool bSwallowed = false;
 
 	// Loop through all registered microphones and tell them the sound was just played
 	int iCount = s_Microphones.Count();
-	if ( iCount > 0 )
+	if( iCount > 0 )
 	{
 		// Iterate backwards because we might be deleting microphones.
-		for ( int i = iCount - 1; i >= 0; i-- )
+		for( int i = iCount - 1; i >= 0; i-- )
 		{
-			if ( s_Microphones[i] )
+			if( s_Microphones[i] )
 			{
 				MicrophoneResult_t eResult = s_Microphones[i]->SoundPlayed(
-					entindex, 
-					soundname, 
-					soundlevel, 
-					flVolume, 
-					iFlags, 
-					iPitch, 
-					pOrigin, 
-					soundtime,
-					soundorigins );
+												 entindex,
+												 soundname,
+												 soundlevel,
+												 flVolume,
+												 iFlags,
+												 iPitch,
+												 pOrigin,
+												 soundtime,
+												 soundorigins );
 
-				if ( eResult == MicrophoneResult_Swallow )
+				if( eResult == MicrophoneResult_Swallow )
 				{
 					// Microphone told us to swallow it
 					bSwallowed = true;
 				}
-				else if ( eResult == MicrophoneResult_Remove )
+				else if( eResult == MicrophoneResult_Remove )
 				{
 					s_Microphones.FastRemove( i );
 				}
@@ -677,41 +697,41 @@ bool CEnvMicrophone::OnSoundPlayed( int entindex, const char *soundname, soundle
 // Output : Returns whether or not the sentence was swallowed by the microphone.
 //			Swallowed sentences should not be played by the sound system.
 //-----------------------------------------------------------------------------
-bool CEnvMicrophone::OnSentencePlayed( int entindex, int sentenceIndex, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector *pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
+bool CEnvMicrophone::OnSentencePlayed( int entindex, int sentenceIndex, soundlevel_t soundlevel, float flVolume, int iFlags, int iPitch, const Vector* pOrigin, float soundtime, CUtlVector< Vector >& soundorigins )
 {
 	bool bSwallowed = false;
 
 	// Loop through all registered microphones and tell them the sound was just played
 	int iCount = s_Microphones.Count();
-	if ( iCount > 0 )
+	if( iCount > 0 )
 	{
 		CNumStr szSentenceStr( sentenceIndex );
 
 		// Iterate backwards because we might be deleting microphones.
-		for ( int i = iCount - 1; i >= 0; i-- )
+		for( int i = iCount - 1; i >= 0; i-- )
 		{
-			if ( s_Microphones[i] && (s_Microphones[i]->ShouldHearSentences() || sv_microphones_always_pickup_sentences.GetBool()) )
+			if( s_Microphones[i] && ( s_Microphones[i]->ShouldHearSentences() || sv_microphones_always_pickup_sentences.GetBool() ) )
 			{
 				// HACKHACK: Don't want to duplicate all of the code, so just use the same function with a new member variable
 				s_Microphones[i]->ToggleHearingSentence( true );
 				MicrophoneResult_t eResult = s_Microphones[i]->SoundPlayed(
-					entindex, 
-					szSentenceStr,
-					soundlevel, 
-					flVolume, 
-					iFlags, 
-					iPitch, 
-					pOrigin, 
-					soundtime,
-					soundorigins );
+												 entindex,
+												 szSentenceStr,
+												 soundlevel,
+												 flVolume,
+												 iFlags,
+												 iPitch,
+												 pOrigin,
+												 soundtime,
+												 soundorigins );
 				s_Microphones[i]->ToggleHearingSentence( false );
 
-				if ( eResult == MicrophoneResult_Swallow )
+				if( eResult == MicrophoneResult_Swallow )
 				{
 					// Microphone told us to swallow it
 					bSwallowed = true;
 				}
-				else if ( eResult == MicrophoneResult_Remove )
+				else if( eResult == MicrophoneResult_Remove )
 				{
 					s_Microphones.FastRemove( i );
 				}

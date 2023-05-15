@@ -37,7 +37,7 @@
 #include "c_baseplayer.h"
 #include "c_weapon__stubs.h"		//Tony; add stubs
 #ifdef MAPBASE
-#include "cam_thirdperson.h"
+	#include "cam_thirdperson.h"
 #endif // MAPBASE
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -80,20 +80,20 @@ extern ConVar cl_detail_avoid_recover_speed;
 void CHL2MPModeManager::Init()
 {
 	g_pClientMode = GetClientModeNormal();
-	
+
 	PanelMetaClassMgr()->LoadMetaClassDefinitionFile( SCREEN_FILE );
 }
 
-void CHL2MPModeManager::LevelInit( const char *newmap )
+void CHL2MPModeManager::LevelInit( const char* newmap )
 {
 	g_pClientMode->LevelInit( newmap );
 
 	// HACK: the detail sway convars are archive, and default to 0.  Existing CS:S players thus have no detail
 	// prop sway.  We'll force them to DoD's default values for now.
-	if ( !cl_detail_max_sway.GetFloat() &&
-		!cl_detail_avoid_radius.GetFloat() &&
-		!cl_detail_avoid_force.GetFloat() &&
-		!cl_detail_avoid_recover_speed.GetFloat() )
+	if( !cl_detail_max_sway.GetFloat() &&
+			!cl_detail_avoid_radius.GetFloat() &&
+			!cl_detail_avoid_force.GetFloat() &&
+			!cl_detail_avoid_recover_speed.GetFloat() )
 	{
 		cl_detail_max_sway.SetValue( "5" );
 		cl_detail_avoid_radius.SetValue( "64" );
@@ -102,7 +102,7 @@ void CHL2MPModeManager::LevelInit( const char *newmap )
 	}
 
 	ConVarRef voice_steal( "voice_steal" );
-	if ( voice_steal.IsValid() )
+	if( voice_steal.IsValid() )
 	{
 		voice_steal.SetValue( 1 );
 	}
@@ -118,33 +118,33 @@ void CHL2MPModeManager::LevelShutdown( void )
 }
 
 static CHL2MPModeManager g_ModeManager;
-IVModeManager* modemanager = (IVModeManager*)&g_ModeManager;
+IVModeManager* modemanager = ( IVModeManager* )& g_ModeManager;
 
 // --------------------------------------------------------------------------------- //
 // CHudViewport implementation.
 // --------------------------------------------------------------------------------- //
-IViewPortPanel* CHudViewport::CreatePanelByName( const char *szPanelName )
+IViewPortPanel* CHudViewport::CreatePanelByName( const char* szPanelName )
 {
 	IViewPortPanel* newpanel = NULL;
 
-	if ( Q_strcmp( PANEL_SCOREBOARD, szPanelName) == 0 )
+	if( Q_strcmp( PANEL_SCOREBOARD, szPanelName ) == 0 )
 	{
 		newpanel = new CHL2MPClientScoreBoardDialog( this );
 		return newpanel;
 	}
-	else if ( Q_strcmp(PANEL_INFO, szPanelName) == 0 )
+	else if( Q_strcmp( PANEL_INFO, szPanelName ) == 0 )
 	{
 		newpanel = new CHL2MPTextWindow( this );
 		return newpanel;
 	}
-	else if ( Q_strcmp(PANEL_SPECGUI, szPanelName) == 0 )
+	else if( Q_strcmp( PANEL_SPECGUI, szPanelName ) == 0 )
 	{
-		newpanel = new CHL2MPSpectatorGUI( this );	
+		newpanel = new CHL2MPSpectatorGUI( this );
 		return newpanel;
 	}
 
-	
-	return BaseClass::CreatePanelByName( szPanelName ); 
+
+	return BaseClass::CreatePanelByName( szPanelName );
 }
 
 //-----------------------------------------------------------------------------
@@ -158,7 +158,7 @@ ClientModeHL2MPNormal::ClientModeHL2MPNormal()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 ClientModeHL2MPNormal::~ClientModeHL2MPNormal()
 {
@@ -166,7 +166,7 @@ ClientModeHL2MPNormal::~ClientModeHL2MPNormal()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void ClientModeHL2MPNormal::Init()
 {
@@ -174,14 +174,14 @@ void ClientModeHL2MPNormal::Init()
 
 	// Load up the combine control panel scheme
 	g_hVGuiCombineScheme = vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/CombinePanelScheme.res", "CombineScheme" );
-	if (!g_hVGuiCombineScheme)
+	if( !g_hVGuiCombineScheme )
 	{
 		Warning( "Couldn't load combine panel scheme!\n" );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int ClientModeHL2MPNormal::GetDeathMessageStartHeight( void )
 {
@@ -189,29 +189,33 @@ int ClientModeHL2MPNormal::GetDeathMessageStartHeight( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void ClientModeHL2MPNormal::PostRenderVGui()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool ClientModeHL2MPNormal::CanRecordDemo( char *errorMsg, int length ) const
+bool ClientModeHL2MPNormal::CanRecordDemo( char* errorMsg, int length ) const
 {
-	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-	if ( !player )
+	C_BasePlayer* player = C_BasePlayer::GetLocalPlayer();
+	if( !player )
+	{
 		return true;
+	}
 
-	if ( !player->IsAlive() )
+	if( !player->IsAlive() )
+	{
 		return true;
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool ClientModeHL2MPNormal::ShouldDrawCrosshair( void )
 {
@@ -219,25 +223,27 @@ bool ClientModeHL2MPNormal::ShouldDrawCrosshair( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ClientModeHL2MPNormal::OverrideView( CViewSetup *pSetup )
+void ClientModeHL2MPNormal::OverrideView( CViewSetup* pSetup )
 {
 	QAngle camAngles;
 
 	// Let the player override the view.
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	pPlayer->OverrideView( pSetup );
 
-	if ( ::input->CAM_IsThirdPerson() )
+	if( ::input->CAM_IsThirdPerson() )
 	{
 		const Vector& cam_ofs = g_ThirdPersonManager.GetCameraOffsetAngles();
 		Vector cam_ofs_distance;
 
-		if ( g_ThirdPersonManager.IsOverridingThirdPerson() )
+		if( g_ThirdPersonManager.IsOverridingThirdPerson() )
 		{
 			cam_ofs_distance = g_ThirdPersonManager.GetDesiredCameraOffset();
 		}
@@ -253,16 +259,16 @@ void ClientModeHL2MPNormal::OverrideView( CViewSetup *pSetup )
 		camAngles[ ROLL ] = 0;
 
 		Vector camForward, camRight, camUp;
-		
 
-		if ( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
+
+		if( g_ThirdPersonManager.IsOverridingThirdPerson() == false )
 		{
 			engine->GetViewAngles( camAngles );
 		}
-			
+
 		// get the forward vector
 		AngleVectors( camAngles, &camForward, &camRight, &camUp );
-	
+
 		VectorMA( pSetup->origin, -cam_ofs_distance[0], camForward, pSetup->origin );
 		VectorMA( pSetup->origin, cam_ofs_distance[1], camRight, pSetup->origin );
 		VectorMA( pSetup->origin, cam_ofs_distance[2], camUp, pSetup->origin );
@@ -270,7 +276,7 @@ void ClientModeHL2MPNormal::OverrideView( CViewSetup *pSetup )
 		// Override angles from third person camera
 		VectorCopy( camAngles, pSetup->angles );
 	}
-	else if (::input->CAM_IsOrthographic())
+	else if( ::input->CAM_IsOrthographic() )
 	{
 		pSetup->m_bOrtho = true;
 		float w, h;
@@ -285,7 +291,7 @@ void ClientModeHL2MPNormal::OverrideView( CViewSetup *pSetup )
 }
 
 // Instance the singleton and expose the interface to it.
-IClientMode *GetClientModeNormal()
+IClientMode* GetClientModeNormal()
 {
 	static ClientModeHL2MPNormal g_ClientModeNormal;
 	return &g_ClientModeNormal;

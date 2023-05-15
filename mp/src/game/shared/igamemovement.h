@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define IGAMEMOVEMENT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -51,7 +51,7 @@ public:
 	float			m_flForwardMove;
 	float			m_flSideMove;
 	float			m_flUpMove;
-	
+
 	float			m_flMaxSpeed;
 	float			m_flClientMaxSpeed;
 
@@ -60,10 +60,10 @@ public:
 	Vector			m_vecVelocity;		// edict::velocity		// Current movement direction.
 	QAngle			m_vecAngles;		// edict::angles
 	QAngle			m_vecOldAngles;
-	
+
 // Output only
 	float			m_outStepHeight;	// how much you climbed this move
-	Vector			m_outWishVel;		// This is where you tried 
+	Vector			m_outWishVel;		// This is where you tried
 	Vector			m_outJumpVel;		// This is your jump velocity
 
 	// Movement constraints	(radius 0 means no constraint)
@@ -72,22 +72,22 @@ public:
 	float			m_flConstraintWidth;
 	float			m_flConstraintSpeedFactor;
 
-	void			SetAbsOrigin( const Vector &vec );
-	const Vector	&GetAbsOrigin() const;
+	void			SetAbsOrigin( const Vector& vec );
+	const Vector&	GetAbsOrigin() const;
 
 private:
 	Vector			m_vecAbsOrigin;		// edict::origin
 };
 
-inline const Vector &CMoveData::GetAbsOrigin() const
+inline const Vector& CMoveData::GetAbsOrigin() const
 {
 	return m_vecAbsOrigin;
 }
 
 #if !defined( CLIENT_DLL ) && defined( _DEBUG )
-// We only ever want this code path on the server side in a debug build
-//  and you have to uncomment the code below and rebuild to have the test operate.
-//#define PLAYER_GETTING_STUCK_TESTING
+	// We only ever want this code path on the server side in a debug build
+	//  and you have to uncomment the code below and rebuild to have the test operate.
+	//#define PLAYER_GETTING_STUCK_TESTING
 
 #endif
 
@@ -95,7 +95,7 @@ inline const Vector &CMoveData::GetAbsOrigin() const
 
 // This is implemented with a more exhaustive test in gamemovement.cpp.  We check if the origin being requested is
 //  inside solid, which it never should be
-inline void CMoveData::SetAbsOrigin( const Vector &vec )
+inline void CMoveData::SetAbsOrigin( const Vector& vec )
 {
 	m_vecAbsOrigin = vec;
 }
@@ -111,12 +111,12 @@ abstract_class IGameMovement
 {
 public:
 	virtual			~IGameMovement( void ) {}
-	
+
 	// Process the current movement command
-	virtual void	ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMove ) = 0;		
-	virtual void	StartTrackPredictionErrors( CBasePlayer *pPlayer ) = 0;
-	virtual void	FinishTrackPredictionErrors( CBasePlayer *pPlayer ) = 0;
-	virtual void	DiffPrint( PRINTF_FORMAT_STRING char const *fmt, ... ) = 0;
+	virtual void	ProcessMovement( CBasePlayer * pPlayer, CMoveData * pMove ) = 0;
+	virtual void	StartTrackPredictionErrors( CBasePlayer * pPlayer ) = 0;
+	virtual void	FinishTrackPredictionErrors( CBasePlayer * pPlayer ) = 0;
+	virtual void	DiffPrint( PRINTF_FORMAT_STRING char const * fmt, ... ) = 0;
 
 	// Allows other parts of the engine to find out the normal and ducked player bbox sizes
 	virtual Vector	GetPlayerMins( bool ducked ) const = 0;

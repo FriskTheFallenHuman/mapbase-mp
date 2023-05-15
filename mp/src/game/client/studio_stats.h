@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,12 +8,12 @@
 #define __STUDIO_STATS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
-void StudioStats_FindClosestEntity( CClientRenderablesList *pClientRenderablesList );
+void StudioStats_FindClosestEntity( CClientRenderablesList* pClientRenderablesList );
 
-extern IClientRenderable	*g_pStudioStatsEntity;
+extern IClientRenderable*	g_pStudioStatsEntity;
 
 
 #endif // __STUDIO_STATS_H

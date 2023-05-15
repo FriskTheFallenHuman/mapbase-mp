@@ -15,7 +15,7 @@
 #define TIER2APP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -39,7 +39,7 @@ public:
 		ConnectTier1Libraries( &factory, 1 );
 		ConVar_Register( 0 );
 		ConnectTier2Libraries( &factory, 1 );
-		return true;			
+		return true;
 	}
 
 	virtual void PostShutdown()
@@ -62,12 +62,16 @@ public:
 	// Methods of IApplication
 	virtual bool PreInit()
 	{
-		if ( !BaseClass::PreInit() )
+		if( !BaseClass::PreInit() )
+		{
 			return false;
+		}
 
 		CreateInterfaceFn factory = GetFactory();
-		if ( !ConnectDataModel( factory ) )
+		if( !ConnectDataModel( factory ) )
+		{
 			return false;
+		}
 
 		InitReturnVal_t nRetVal = InitDataModel();
 		return ( nRetVal == INIT_OK );

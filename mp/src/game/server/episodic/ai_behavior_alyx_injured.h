@@ -7,7 +7,7 @@
 #ifndef AI_BEHAVIOR_ALYX_INJURED_H
 #define AI_BEHAVIOR_ALYX_INJURED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlmap.h"
@@ -24,8 +24,8 @@ class CAI_InjuredFollowGoal : public CAI_FollowGoal
 
 public:
 
-	virtual void EnableGoal( CAI_BaseNPC *pAI );
-	virtual void DisableGoal( CAI_BaseNPC *pAI );
+	virtual void EnableGoal( CAI_BaseNPC* pAI );
+	virtual void DisableGoal( CAI_BaseNPC* pAI );
 
 	DECLARE_DATADESC();
 };
@@ -40,14 +40,17 @@ class CAI_BehaviorAlyxInjured : public CAI_FollowBehavior
 	DECLARE_DATADESC();
 
 public:
-						CAI_BehaviorAlyxInjured( void );
+	CAI_BehaviorAlyxInjured( void );
 
-	virtual const char *GetName( void ) { return "AlyxInjuredFollow"; }
+	virtual const char* GetName( void )
+	{
+		return "AlyxInjuredFollow";
+	}
 	virtual	Activity	NPC_TranslateActivity( Activity nActivity );
 	virtual int			TranslateSchedule( int scheduleType );
 	virtual void		Spawn( void );
 	virtual void		OnRestore( void );
-	virtual void		StartTask( const Task_t *pTask );
+	virtual void		StartTask( const Task_t* pTask );
 	virtual int			SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	virtual	void		GatherConditions( void );
 	virtual Activity	GetFlinchActivity( bool bHeavyDamage, bool bGesture );
@@ -69,8 +72,11 @@ public:
 		COND_INJURED_OVERWHELMED,
 		NEXT_CONDITION
 	};
-	
-	bool	IsReadinessCapable( void ) { return ( IsInjured() == false ); }	// Never use the readiness system when injured
+
+	bool	IsReadinessCapable( void )
+	{
+		return ( IsInjured() == false );    // Never use the readiness system when injured
+	}
 	bool	IsInjured( void ) const;
 
 private:
@@ -78,12 +84,12 @@ private:
 	void	SpeakIfAllowed( AIConcept_t concept );
 	bool	ShouldRunToCover( void );
 	bool	ShouldRunToFollowGoal( void );
-	bool	FindThreatDirection2D( const Vector &vecSource, Vector *vecOut );
-	bool	FindCoverFromEnemyBehindTarget( CBaseEntity *pTarget, float flRadius, Vector *vecOut );
+	bool	FindThreatDirection2D( const Vector& vecSource, Vector* vecOut );
+	bool	FindCoverFromEnemyBehindTarget( CBaseEntity* pTarget, float flRadius, Vector* vecOut );
 	void	PopulateActivityMap( void );
-	int		NumKnownEnemiesInRadius( const Vector &vecSource, float flRadius );
+	int		NumKnownEnemiesInRadius( const Vector& vecSource, float flRadius );
 
-	CUtlMap<Activity,Activity>	m_ActivityMap;
+	CUtlMap<Activity, Activity>	m_ActivityMap;
 
 	float	m_flNextWarnTime;
 

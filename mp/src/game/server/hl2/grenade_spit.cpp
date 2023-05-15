@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,27 +24,27 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar    sk_antlion_worker_spit_grenade_dmg		  ( "sk_antlion_worker_spit_grenade_dmg", "20", FCVAR_NONE, "Total damage done by an individual antlion worker loogie.");
-ConVar	  sk_antlion_worker_spit_grenade_radius		  ( "sk_antlion_worker_spit_grenade_radius","40", FCVAR_NONE, "Radius of effect for an antlion worker spit grenade.");
-ConVar	  sk_antlion_worker_spit_grenade_poison_ratio ( "sk_antlion_worker_spit_grenade_poison_ratio","0.3", FCVAR_NONE, "Percentage of an antlion worker's spit damage done as poison (which regenerates)"); 
+ConVar    sk_antlion_worker_spit_grenade_dmg( "sk_antlion_worker_spit_grenade_dmg", "20", FCVAR_NONE, "Total damage done by an individual antlion worker loogie." );
+ConVar	  sk_antlion_worker_spit_grenade_radius( "sk_antlion_worker_spit_grenade_radius", "40", FCVAR_NONE, "Radius of effect for an antlion worker spit grenade." );
+ConVar	  sk_antlion_worker_spit_grenade_poison_ratio( "sk_antlion_worker_spit_grenade_poison_ratio", "0.3", FCVAR_NONE, "Percentage of an antlion worker's spit damage done as poison (which regenerates)" );
 
 LINK_ENTITY_TO_CLASS( grenade_spit, CGrenadeSpit );
 
 BEGIN_DATADESC( CGrenadeSpit )
 
-	DEFINE_FIELD( m_bPlaySound, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bPlaySound, FIELD_BOOLEAN ),
 
-	// Function pointers
-	DEFINE_ENTITYFUNC( GrenadeSpitTouch ),
+			  // Function pointers
+			  DEFINE_ENTITYFUNC( GrenadeSpitTouch ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-CGrenadeSpit::CGrenadeSpit( void ) : m_bPlaySound( true ), m_pHissSound( NULL )
+			  CGrenadeSpit::CGrenadeSpit( void ) : m_bPlaySound( true ), m_pHissSound( NULL )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CGrenadeSpit::Spawn( void )
 {
@@ -73,11 +73,11 @@ void CGrenadeSpit::Spawn( void )
 	AddEFlags( EFL_FORCE_CHECK_TRANSMIT );
 
 	// We're self-illuminating, so we don't take or give shadows
-	AddEffects( EF_NOSHADOW|EF_NORECEIVESHADOW );
+	AddEffects( EF_NOSHADOW | EF_NORECEIVESHADOW );
 
 	// Create the dust effect in place
-	m_hSpitEffect = (CParticleSystem *) CreateEntityByName( "info_particle_system" );
-	if ( m_hSpitEffect != NULL )
+	m_hSpitEffect = ( CParticleSystem* ) CreateEntityByName( "info_particle_system" );
+	if( m_hSpitEffect != NULL )
 	{
 		// Setup our basic parameters
 		m_hSpitEffect->KeyValue( "start_active", "1" );
@@ -85,15 +85,17 @@ void CGrenadeSpit::Spawn( void )
 		m_hSpitEffect->SetParent( this );
 		m_hSpitEffect->SetLocalOrigin( vec3_origin );
 		DispatchSpawn( m_hSpitEffect );
-		if ( gpGlobals->curtime > 0.5f )
+		if( gpGlobals->curtime > 0.5f )
+		{
 			m_hSpitEffect->Activate();
+		}
 	}
 }
 
 
 void CGrenadeSpit::SetSpitSize( int nSize )
 {
-	switch (nSize)
+	switch( nSize )
 	{
 		case SPIT_LARGE:
 		{
@@ -118,7 +120,7 @@ void CGrenadeSpit::SetSpitSize( int nSize )
 	}
 }
 
-void CGrenadeSpit::Event_Killed( const CTakeDamageInfo &info )
+void CGrenadeSpit::Event_Killed( const CTakeDamageInfo& info )
 {
 	Detonate( );
 }
@@ -126,42 +128,44 @@ void CGrenadeSpit::Event_Killed( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Handle spitting
 //-----------------------------------------------------------------------------
-void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity *pOther )
+void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity* pOther )
 {
-	if ( pOther->IsSolidFlagSet(FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER) )
+	if( pOther->IsSolidFlagSet( FSOLID_VOLUME_CONTENTS | FSOLID_TRIGGER ) )
 	{
 		// Some NPCs are triggers that can take damage (like antlion grubs). We should hit them.
 #ifdef MAPBASE
 		// But some physics objects that are also triggers (like weapons) shouldn't go through this check.
-		// 
+		//
 		// Note: rpg_missile has the same code, except it properly accounts for weapons in a different way.
 		// This was discovered after I implemented this and both work fine, but if this ever causes problems,
 		// use rpg_missile's implementation:
-		// 
+		//
 		// if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER|FSOLID_VOLUME_CONTENTS) && pOther->GetCollisionGroup() != COLLISION_GROUP_WEAPON )
-		// 
-		if ( pOther->GetMoveType() == MOVETYPE_NONE && (( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY )) )
+		//
+		if( pOther->GetMoveType() == MOVETYPE_NONE && ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) ) )
 #else
-		if ( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
+		if( ( pOther->m_takedamage == DAMAGE_NO ) || ( pOther->m_takedamage == DAMAGE_EVENTS_ONLY ) )
 #endif
 			return;
 	}
 
 	// Don't hit other spit
-	if ( pOther->GetCollisionGroup() == HL2COLLISION_GROUP_SPIT )
+	if( pOther->GetCollisionGroup() == HL2COLLISION_GROUP_SPIT )
+	{
 		return;
+	}
 
 	// We want to collide with water
-	const trace_t *pTrace = &CBaseEntity::GetTouchTrace();
+	const trace_t* pTrace = &CBaseEntity::GetTouchTrace();
 
 	// copy out some important things about this trace, because the first TakeDamage
 	// call below may cause another trace that overwrites the one global pTrace points
 	// at.
 	bool bHitWater = ( ( pTrace->contents & CONTENTS_WATER ) != 0 );
-	CBaseEntity *const pTraceEnt = pTrace->m_pEnt;
+	CBaseEntity* const pTraceEnt = pTrace->m_pEnt;
 	const Vector tracePlaneNormal = pTrace->plane.normal;
 
-	if ( bHitWater )
+	if( bHitWater )
 	{
 		// Splash!
 		CEffectData data;
@@ -175,7 +179,7 @@ void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity *pOther )
 	else
 	{
 		// Make a splat decal
-		trace_t *pNewTrace = const_cast<trace_t*>( pTrace );
+		trace_t* pNewTrace = const_cast<trace_t*>( pTrace );
 		UTIL_DecalTrace( pNewTrace, "BeerSplash" );
 	}
 
@@ -184,9 +188,9 @@ void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity *pOther )
 
 	// Take direct damage if hit
 	// NOTE: assume that pTrace is invalidated from this line forward!
-	if ( pTraceEnt )
+	if( pTraceEnt )
 	{
-		pTraceEnt->TakeDamage( CTakeDamageInfo( this, GetThrower(), m_flDamage * (1.0f-poisonratio), DMG_ACID ) );
+		pTraceEnt->TakeDamage( CTakeDamageInfo( this, GetThrower(), m_flDamage * ( 1.0f - poisonratio ), DMG_ACID ) );
 		pTraceEnt->TakeDamage( CTakeDamageInfo( this, GetThrower(), m_flDamage * poisonratio, DMG_POISON ) );
 	}
 
@@ -194,8 +198,8 @@ void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity *pOther )
 
 	QAngle vecAngles;
 	VectorAngles( tracePlaneNormal, vecAngles );
-	
-	if ( pOther->IsPlayer() || bHitWater )
+
+	if( pOther->IsPlayer() || bHitWater )
 	{
 		// Do a lighter-weight effect if we just hit a player
 		DispatchParticleEffect( "antlion_spit_player", GetAbsOrigin(), vecAngles );
@@ -208,20 +212,20 @@ void CGrenadeSpit::GrenadeSpitTouch( CBaseEntity *pOther )
 	Detonate();
 }
 
-void CGrenadeSpit::Detonate(void)
+void CGrenadeSpit::Detonate( void )
 {
 	m_takedamage = DAMAGE_NO;
 
-	EmitSound( "GrenadeSpit.Hit" );	
+	EmitSound( "GrenadeSpit.Hit" );
 
 	// Stop our hissing sound
-	if ( m_pHissSound != NULL )
+	if( m_pHissSound != NULL )
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pHissSound );
 		m_pHissSound = NULL;
 	}
 
-	if ( m_hSpitEffect )
+	if( m_hSpitEffect )
 	{
 		UTIL_Remove( m_hSpitEffect );
 	}
@@ -231,11 +235,13 @@ void CGrenadeSpit::Detonate(void)
 
 void CGrenadeSpit::InitHissSound( void )
 {
-	if ( m_bPlaySound == false )
+	if( m_bPlaySound == false )
+	{
 		return;
+	}
 
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
-	if ( m_pHissSound == NULL )
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
+	if( m_pHissSound == NULL )
 	{
 		CPASAttenuationFilter filter( this );
 		m_pHissSound = controller.SoundCreate( filter, entindex(), "NPC_Antlion.PoisonBall" );
@@ -246,29 +252,31 @@ void CGrenadeSpit::InitHissSound( void )
 void CGrenadeSpit::Think( void )
 {
 	InitHissSound();
-	if ( m_pHissSound == NULL )
+	if( m_pHissSound == NULL )
+	{
 		return;
-	
+	}
+
 	// Add a doppler effect to the balls as they travel
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
-	if ( pPlayer != NULL )
+	CBaseEntity* pPlayer = AI_GetSinglePlayer();
+	if( pPlayer != NULL )
 	{
 		Vector dir;
 		VectorSubtract( pPlayer->GetAbsOrigin(), GetAbsOrigin(), dir );
-		VectorNormalize(dir);
+		VectorNormalize( dir );
 
 		float velReceiver = DotProduct( pPlayer->GetAbsVelocity(), dir );
 		float velTransmitter = -DotProduct( GetAbsVelocity(), dir );
-		
+
 		// speed of sound == 13049in/s
-		int iPitch = 100 * ((1 - velReceiver / 13049) / (1 + velTransmitter / 13049));
+		int iPitch = 100 * ( ( 1 - velReceiver / 13049 ) / ( 1 + velTransmitter / 13049 ) );
 
 		// clamp pitch shifts
-		if ( iPitch > 250 )
+		if( iPitch > 250 )
 		{
 			iPitch = 250;
 		}
-		if ( iPitch < 50 )
+		if( iPitch < 50 )
 		{
 			iPitch = 50;
 		}
@@ -285,9 +293,9 @@ void CGrenadeSpit::Precache( void )
 {
 	// m_nSquidSpitSprite = PrecacheModel("sprites/greenglow1.vmt");// client side spittle.
 
-	PrecacheModel( "models/spitball_large.mdl" ); 
-	PrecacheModel("models/spitball_medium.mdl"); 
-	PrecacheModel("models/spitball_small.mdl"); 
+	PrecacheModel( "models/spitball_large.mdl" );
+	PrecacheModel( "models/spitball_medium.mdl" );
+	PrecacheModel( "models/spitball_small.mdl" );
 
 	PrecacheScriptSound( "GrenadeSpit.Hit" );
 

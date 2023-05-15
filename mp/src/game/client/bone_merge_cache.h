@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef BONE_MERGE_CACHE_H
 #define BONE_MERGE_CACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,13 +23,13 @@ class CBoneMergeCache
 public:
 
 	CBoneMergeCache();
-	
-	void Init( C_BaseAnimating *pOwner );
+
+	void Init( C_BaseAnimating* pOwner );
 
 	// Updates the lookups that let it merge bones quickly.
 	void UpdateCache();
-	
-	// This copies the transform from all bones in the followed entity that have 
+
+	// This copies the transform from all bones in the followed entity that have
 	// names that match our bones.
 	void MergeMatchingBones( int boneMask );
 
@@ -41,21 +41,21 @@ public:
 	int IsBoneMerged( int iBone ) const;
 
 	// Gets the origin for the first merge bone on the parent.
-	bool GetAimEntOrigin( Vector *pAbsOrigin, QAngle *pAbsAngles );
+	bool GetAimEntOrigin( Vector* pAbsOrigin, QAngle* pAbsAngles );
 
-	bool GetRootBone( matrix3x4_t &rootBone );
+	bool GetRootBone( matrix3x4_t& rootBone );
 
 private:
 
 	// This is the entity that we're keeping the cache updated for.
-	C_BaseAnimating *m_pOwner;
+	C_BaseAnimating* m_pOwner;
 
 	// All the cache data is based off these. When they change, the cache data is regenerated.
 	// These are either all valid pointers or all NULL.
-	C_BaseAnimating *m_pFollow;
-	CStudioHdr		*m_pFollowHdr;
-	const studiohdr_t	*m_pFollowRenderHdr;
-	CStudioHdr		*m_pOwnerHdr;
+	C_BaseAnimating* m_pFollow;
+	CStudioHdr*		m_pFollowHdr;
+	const studiohdr_t*	m_pFollowRenderHdr;
+	CStudioHdr*		m_pOwnerHdr;
 
 	// This is the mask we need to use to set up bones on the followed entity to do the bone merge
 	int				m_nFollowBoneSetupMask;
@@ -75,10 +75,14 @@ private:
 
 inline int CBoneMergeCache::IsBoneMerged( int iBone ) const
 {
-	if ( m_pOwnerHdr )
+	if( m_pOwnerHdr )
+	{
 		return m_BoneMergeBits[iBone >> 3] & ( 1 << ( iBone & 7 ) );
+	}
 	else
+	{
 		return 0;
+	}
 }
 
 

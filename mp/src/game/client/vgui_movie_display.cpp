@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2009, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=====================================================================================//
 
@@ -26,28 +26,28 @@ using namespace vgui;
 
 struct VideoPlaybackInfo_t
 {
-	VideoPlaybackInfo_t( void ) : 
-		m_pMaterial ( NULL ), 
-		m_nSourceHeight(0), m_nSourceWidth(0),
-		m_flU(0.0f),m_flV(0.0f) {}
+	VideoPlaybackInfo_t( void ) :
+		m_pMaterial( NULL ),
+		m_nSourceHeight( 0 ), m_nSourceWidth( 0 ),
+		m_flU( 0.0f ), m_flV( 0.0f ) {}
 
-	IMaterial		*m_pMaterial;
+	IMaterial*		m_pMaterial;
 	int				m_nSourceHeight, m_nSourceWidth;		// Source movie's dimensions
 	float			m_flU, m_flV;							// U,V ranges for video on its sheet
 };
 
 //-----------------------------------------------------------------------------
-// Control screen 
+// Control screen
 //-----------------------------------------------------------------------------
 class CMovieDisplayScreen : public CVGuiScreenPanel
 {
 	DECLARE_CLASS( CMovieDisplayScreen, CVGuiScreenPanel );
 
 public:
-	CMovieDisplayScreen( vgui::Panel *parent, const char *panelName );
+	CMovieDisplayScreen( vgui::Panel* parent, const char* panelName );
 	~CMovieDisplayScreen( void );
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 
 	virtual bool Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pInitData );
 	virtual void OnTick( void );
@@ -58,23 +58,23 @@ private:
 
 	void	SetupMovie( void );
 	void	UpdateMovie( void );
-	bool	BeginPlayback( const char *pFilename );
+	bool	BeginPlayback( const char* pFilename );
 	void	CalculatePlaybackDimensions( int nSrcWidth, int nSrcHeight );
 
-	inline void GetPanelPos( int &xpos, int &ypos )
+	inline void GetPanelPos( int& xpos, int& ypos )
 	{
-		xpos = ( (float) ( GetWide() - m_nPlaybackWidth ) / 2 );
-		ypos = ( (float) ( GetTall() - m_nPlaybackHeight ) / 2 );
+		xpos = ( ( float )( GetWide() - m_nPlaybackWidth ) / 2 );
+		ypos = ( ( float )( GetTall() - m_nPlaybackHeight ) / 2 );
 	}
 
 private:
 
 	// BINK playback info
-	IVideoMaterial			*m_VideoMaterial;
+	IVideoMaterial*			m_VideoMaterial;
 	VideoPlaybackInfo_t		m_playbackInfo;
 	CHandle<C_VGuiScreen>	m_hVGUIScreen;
 	CHandle<C_MovieDisplay>	m_hScreenEntity;
-	
+
 	int				m_nTextureId;
 	int				m_nPlaybackHeight;		// Playback dimensions (proper ration adjustments)
 	int				m_nPlaybackWidth;
@@ -84,7 +84,7 @@ private:
 	bool			m_bLastActiveState;		// HACK: I'd rather get a real callback...
 
 	// VGUI specifics
-	Label			*m_pDisplayTextLabel;
+	Label*			m_pDisplayTextLabel;
 
 	Color			m_cDefault;
 	Color			m_cInvisible;
@@ -94,15 +94,15 @@ private:
 
 DECLARE_VGUI_SCREEN_FACTORY( CMovieDisplayScreen, "movie_display_screen" );
 
-CUtlVector <CMovieDisplayScreen *>	g_MovieDisplays;
+CUtlVector <CMovieDisplayScreen*>	g_MovieDisplays;
 
 //-----------------------------------------------------------------------------
-// Constructor: 
+// Constructor:
 //-----------------------------------------------------------------------------
-CMovieDisplayScreen::CMovieDisplayScreen( vgui::Panel *parent, const char *panelName )
-: BaseClass( parent, "CMovieDisplayScreen", vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/MovieDisplayScreen.res", "MovieDisplayScreen" ) ) 
+CMovieDisplayScreen::CMovieDisplayScreen( vgui::Panel* parent, const char* panelName )
+	: BaseClass( parent, "CMovieDisplayScreen", vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/MovieDisplayScreen.res", "MovieDisplayScreen" ) )
 {
-	m_pDisplayTextLabel = new vgui::Label( this, "NumberDisplay", "testing!");
+	m_pDisplayTextLabel = new vgui::Label( this, "NumberDisplay", "testing!" );
 
 	m_VideoMaterial = NULL;
 	m_nTextureId = -1;
@@ -120,7 +120,7 @@ CMovieDisplayScreen::CMovieDisplayScreen( vgui::Panel *parent, const char *panel
 //-----------------------------------------------------------------------------
 CMovieDisplayScreen::~CMovieDisplayScreen( void )
 {
-	if ( g_pVideo != NULL && m_VideoMaterial != NULL )
+	if( g_pVideo != NULL && m_VideoMaterial != NULL )
 	{
 		g_pVideo->DestroyVideoMaterial( m_VideoMaterial );
 		m_VideoMaterial = NULL;
@@ -136,12 +136,12 @@ CMovieDisplayScreen::~CMovieDisplayScreen( void )
 //-----------------------------------------------------------------------------
 // Purpose: Setup our scheme
 //-----------------------------------------------------------------------------
-void CMovieDisplayScreen::ApplySchemeSettings( IScheme *pScheme )
+void CMovieDisplayScreen::ApplySchemeSettings( IScheme* pScheme )
 {
 	assert( pScheme );
 
 	m_cDefault = Color( 255, 255, 255, 255 );
-	m_cInvisible = Color( 0, 0, 0, 0 );	
+	m_cInvisible = Color( 0, 0, 0, 0 );
 
 	m_pDisplayTextLabel->SetFgColor( m_cDefault );
 	m_pDisplayTextLabel->SetText( "" );
@@ -149,22 +149,24 @@ void CMovieDisplayScreen::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Initialization 
+// Initialization
 //-----------------------------------------------------------------------------
 bool CMovieDisplayScreen::Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pInitData )
 {
 	// Make sure we get ticked...
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 
-	if ( !BaseClass::Init( pKeyValues, pInitData ) )
+	if( !BaseClass::Init( pKeyValues, pInitData ) )
+	{
 		return false;
+	}
 
 	// Save this for simplicity later on
-	m_hVGUIScreen = dynamic_cast<C_VGuiScreen *>( GetEntity() );
-	if ( m_hVGUIScreen != NULL )
+	m_hVGUIScreen = dynamic_cast<C_VGuiScreen*>( GetEntity() );
+	if( m_hVGUIScreen != NULL )
 	{
 		// Also get the associated entity
-		m_hScreenEntity = dynamic_cast<C_MovieDisplay *>(m_hVGUIScreen->GetOwnerEntity());
+		m_hScreenEntity = dynamic_cast<C_MovieDisplay*>( m_hVGUIScreen->GetOwnerEntity() );
 	}
 
 	return true;
@@ -176,7 +178,7 @@ bool CMovieDisplayScreen::Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pIn
 bool CMovieDisplayScreen::IsActive( void )
 {
 	bool bScreenActive = false;
-	if ( m_hVGUIScreen != NULL )
+	if( m_hVGUIScreen != NULL )
 	{
 		bScreenActive = m_hVGUIScreen->IsActive();
 	}
@@ -190,34 +192,44 @@ bool CMovieDisplayScreen::IsActive( void )
 void CMovieDisplayScreen::SetupMovie( void )
 {
 	// Only bother if we haven't been setup yet
-	if ( m_bInitialized )
+	if( m_bInitialized )
+	{
 		return;
+	}
 
-	const char *szGroupName = m_hScreenEntity->GetGroupName();
+	const char* szGroupName = m_hScreenEntity->GetGroupName();
 
-	CMovieDisplayScreen *pMasterScreen = NULL;
-	for ( int i = 0; i < g_MovieDisplays.Count(); i++ )
+	CMovieDisplayScreen* pMasterScreen = NULL;
+	for( int i = 0; i < g_MovieDisplays.Count(); i++ )
 	{
 		// Must be valid and not us
-		if ( g_MovieDisplays[i] == NULL || g_MovieDisplays[i] == this )
+		if( g_MovieDisplays[i] == NULL || g_MovieDisplays[i] == this )
+		{
 			continue;
+		}
 
 		// Must have an associated movie entity
-		if ( g_MovieDisplays[i]->m_hScreenEntity == NULL )
+		if( g_MovieDisplays[i]->m_hScreenEntity == NULL )
+		{
 			continue;
+		}
 
 		// Must have a group name to care
-		if ( szGroupName[0] == NULL )
+		if( szGroupName[0] == NULL )
+		{
 			continue;
+		}
 
 		// Group names must match!
 		// FIXME: Use an ID instead?
-		const char *szTestGroupName = g_MovieDisplays[i]->m_hScreenEntity->GetGroupName();
-		if ( Q_strnicmp( szTestGroupName, szGroupName, 128 ) )
+		const char* szTestGroupName = g_MovieDisplays[i]->m_hScreenEntity->GetGroupName();
+		if( Q_strnicmp( szTestGroupName, szGroupName, 128 ) )
+		{
 			continue;
+		}
 
 		// See if we've found a master display
-		if ( g_MovieDisplays[i]->m_bInitialized && g_MovieDisplays[i]->m_bSlaved == false )
+		if( g_MovieDisplays[i]->m_bInitialized && g_MovieDisplays[i]->m_bSlaved == false )
 		{
 			m_bSlaved = true;
 
@@ -238,13 +250,15 @@ void CMovieDisplayScreen::SetupMovie( void )
 	}
 
 	// We need to try again, we have no screen entity!
-	if ( m_hScreenEntity == NULL )
+	if( m_hScreenEntity == NULL )
+	{
 		return;
+	}
 
 	// No master found, become one
-	if ( pMasterScreen == NULL )
+	if( pMasterScreen == NULL )
 	{
-		const char *szFilename = m_hScreenEntity->GetMovieFilename();
+		const char* szFilename = m_hScreenEntity->GetMovieFilename();
 		BeginPlayback( szFilename );
 		m_bSlaved = false;
 	}
@@ -259,23 +273,27 @@ void CMovieDisplayScreen::SetupMovie( void )
 void CMovieDisplayScreen::UpdateMovie( void )
 {
 	// Only the master in a group updates the bink file
-	if ( m_bSlaved )
+	if( m_bSlaved )
+	{
 		return;
+	}
 
-	if ( m_VideoMaterial == NULL )
+	if( m_VideoMaterial == NULL )
+	{
 		return;
+	}
 
 	// Get the current activity state of the screen
 	bool bScreenActive = IsActive();
 
 	// Pause if the game has paused
-	if ( engine->IsPaused() || engine->Con_IsVisible() )
+	if( engine->IsPaused() || engine->Con_IsVisible() )
 	{
 		bScreenActive = false;
 	}
 
 	// See if we've changed our activity state
-	if ( bScreenActive != m_bLastActiveState )
+	if( bScreenActive != m_bLastActiveState )
 	{
 		m_VideoMaterial->SetPaused( !bScreenActive );
 	}
@@ -284,19 +302,19 @@ void CMovieDisplayScreen::UpdateMovie( void )
 	m_bLastActiveState = bScreenActive;
 
 	// Update the frame if we're currently enabled
-	if ( bScreenActive  )
+	if( bScreenActive )
 	{
 		// Update our frame
-		if ( m_VideoMaterial->Update() == false )
+		if( m_VideoMaterial->Update() == false )
 		{
 			// Issue a close command
 			// OnVideoOver();
 			// StopPlayback();
 		}
 
-		if (!m_hScreenEntity->IsMuted())
+		if( !m_hScreenEntity->IsMuted() )
 		{
-			m_VideoMaterial->SetMuted(false);
+			m_VideoMaterial->SetMuted( false );
 		}
 	}
 }
@@ -320,15 +338,15 @@ void CMovieDisplayScreen::OnTick()
 //-----------------------------------------------------------------------------
 void CMovieDisplayScreen::CalculatePlaybackDimensions( int nSrcWidth, int nSrcHeight )
 {
-	float flFrameRatio = ( (float) GetWide() / (float) GetTall() );
-	float flVideoRatio = ( (float) nSrcWidth / (float) nSrcHeight );
+	float flFrameRatio = ( ( float ) GetWide() / ( float ) GetTall() );
+	float flVideoRatio = ( ( float ) nSrcWidth / ( float ) nSrcHeight );
 
-	if ( flVideoRatio > flFrameRatio )
+	if( flVideoRatio > flFrameRatio )
 	{
 		m_nPlaybackWidth = GetWide();
 		m_nPlaybackHeight = ( GetWide() / flVideoRatio );
 	}
-	else if ( flVideoRatio < flFrameRatio )
+	else if( flVideoRatio < flFrameRatio )
 	{
 		m_nPlaybackWidth = ( GetTall() * flVideoRatio );
 		m_nPlaybackHeight = GetTall();
@@ -344,14 +362,16 @@ void CMovieDisplayScreen::CalculatePlaybackDimensions( int nSrcWidth, int nSrcHe
 // Purpose: Begins playback of a movie
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CMovieDisplayScreen::BeginPlayback( const char *pFilename )
+bool CMovieDisplayScreen::BeginPlayback( const char* pFilename )
 {
 	// need working video services
-	if ( g_pVideo == NULL )
+	if( g_pVideo == NULL )
+	{
 		return false;
+	}
 
 	// Create a new video material
-	if ( m_VideoMaterial != NULL )
+	if( m_VideoMaterial != NULL )
 	{
 		g_pVideo->DestroyVideoMaterial( m_VideoMaterial );
 		m_VideoMaterial = NULL;
@@ -359,36 +379,38 @@ bool CMovieDisplayScreen::BeginPlayback( const char *pFilename )
 
 	// Create a globally unique name for this material
 	char szMaterialName[256];
-	
+
 	// Append our group name if we have one
-	const char *szGroupName = m_hScreenEntity->GetGroupName();
-	if ( szGroupName[0] != NULL )
+	const char* szGroupName = m_hScreenEntity->GetGroupName();
+	if( szGroupName[0] != NULL )
 	{
-		Q_snprintf( szMaterialName, sizeof(szMaterialName), "%s_%s", pFilename, szGroupName );
+		Q_snprintf( szMaterialName, sizeof( szMaterialName ), "%s_%s", pFilename, szGroupName );
 	}
 	else
 	{
-		Q_snprintf( szMaterialName, sizeof(szMaterialName), "%s_%s", pFilename, m_hScreenEntity->GetEntityName() );
+		Q_snprintf( szMaterialName, sizeof( szMaterialName ), "%s_%s", pFilename, m_hScreenEntity->GetEntityName() );
 	}
 
 	m_VideoMaterial = g_pVideo->CreateVideoMaterial( szMaterialName, pFilename, "GAME",
-													VideoPlaybackFlags::DEFAULT_MATERIAL_OPTIONS,
-													VideoSystem::DETERMINE_FROM_FILE_EXTENSION/*, m_bAllowAlternateMedia*/ );
+					  VideoPlaybackFlags::DEFAULT_MATERIAL_OPTIONS,
+					  VideoSystem::DETERMINE_FROM_FILE_EXTENSION/*, m_bAllowAlternateMedia*/ );
 
-	if ( m_VideoMaterial == NULL )
+	if( m_VideoMaterial == NULL )
+	{
 		return false;
+	}
 
-	
-	
-		m_VideoMaterial->SetMuted(true); // FIXME: Allow?
-	
 
-	if ( m_hScreenEntity->IsLooping() )
+
+	m_VideoMaterial->SetMuted( true ); // FIXME: Allow?
+
+
+	if( m_hScreenEntity->IsLooping() )
 	{
 		m_VideoMaterial->SetLooping( true );
 	}
 
-	if ( m_VideoMaterial->HasAudio())
+	if( m_VideoMaterial->HasAudio() )
 	{
 		// We want to be the sole audio source
 		enginesound->NotifyBeginMoviePlayback();
@@ -401,7 +423,7 @@ bool CMovieDisplayScreen::BeginPlayback( const char *pFilename )
 
 	// Get our playback dimensions
 	CalculatePlaybackDimensions( m_playbackInfo.m_nSourceWidth, m_playbackInfo.m_nSourceHeight );
-	
+
 	// Bind our texture
 	m_nTextureId = surface()->CreateNewTextureID( true );
 	g_pMatSystemSurface->DrawSetTextureMaterial( m_nTextureId, m_playbackInfo.m_pMaterial );
@@ -415,7 +437,7 @@ bool CMovieDisplayScreen::BeginPlayback( const char *pFilename )
 void CMovieDisplayScreen::Paint( void )
 {
 	// Masters must keep the video updated
-	if ( m_bSlaved == false && m_VideoMaterial == NULL )
+	if( m_bSlaved == false && m_VideoMaterial == NULL )
 	{
 		BaseClass::Paint();
 		return;
@@ -426,17 +448,17 @@ void CMovieDisplayScreen::Paint( void )
 	GetPanelPos( xpos, ypos );
 
 	// Black out the background (we could omit drawing under the video surface, but this is straight-forward)
-	if ( m_bBlackBackground )
+	if( m_bBlackBackground )
 	{
-		surface()->DrawSetColor(  0, 0, 0, 255 );
+		surface()->DrawSetColor( 0, 0, 0, 255 );
 		surface()->DrawFilledRect( 0, 0, GetWide(), GetTall() );
 	}
 
 	// Draw it
 	surface()->DrawSetTexture( m_nTextureId );
-	surface()->DrawSetColor(  255, 255, 255, 255 );
-	surface()->DrawTexturedSubRect( xpos, ypos, xpos+m_nPlaybackWidth, ypos+m_nPlaybackHeight, 0.0f, 0.0f, m_playbackInfo.m_flU, m_playbackInfo.m_flV );
-	
+	surface()->DrawSetColor( 255, 255, 255, 255 );
+	surface()->DrawTexturedSubRect( xpos, ypos, xpos + m_nPlaybackWidth, ypos + m_nPlaybackHeight, 0.0f, 0.0f, m_playbackInfo.m_flU, m_playbackInfo.m_flV );
+
 	// Parent's turn
 	BaseClass::Paint();
 }

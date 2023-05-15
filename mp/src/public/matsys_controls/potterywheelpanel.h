@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define POTTERYWHEELPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -28,7 +28,7 @@ class CDmxElement;
 
 namespace vgui
 {
-	class IScheme;
+class IScheme;
 }
 
 
@@ -41,17 +41,17 @@ class CPotteryWheelPanel : public vgui::EditablePanel
 
 public:
 	// constructor, destructor
-	CPotteryWheelPanel( vgui::Panel *pParent, const char *pName );
+	CPotteryWheelPanel( vgui::Panel* pParent, const char* pName );
 	virtual ~CPotteryWheelPanel();
 
 	// Overriden methods of vgui::Panel
-	virtual void ApplySettings( KeyValues *inResourceData );
+	virtual void ApplySettings( KeyValues* inResourceData );
 	virtual void Init( int x, int y, int wide, int tall );
 	virtual void Paint();
 
-	virtual void OnKeyCodePressed ( vgui::KeyCode code );
+	virtual void OnKeyCodePressed( vgui::KeyCode code );
 	virtual void OnKeyCodeReleased( vgui::KeyCode code );
-	virtual void OnMousePressed ( vgui::MouseCode code );
+	virtual void OnMousePressed( vgui::MouseCode code );
 	virtual void OnMouseReleased( vgui::MouseCode code );
 	virtual void OnCursorMoved( int x, int y );
 	virtual void OnMouseWheeled( int delta );
@@ -60,27 +60,27 @@ public:
 	virtual void OnMouseCaptureLost();
 
 	// Sets the camera to look at the the thing we're spinning around
-	void LookAt( const Vector &vecCenter, float flRadius );
+	void LookAt( const Vector& vecCenter, float flRadius );
 	void LookAt( float flRadius );
 
-	void ComputePanelPosition( const Vector &vecPosition, Vector2D *pPanelPos );
+	void ComputePanelPosition( const Vector& vecPosition, Vector2D* pPanelPos );
 
 	void SetBackgroundColor( int r, int g, int b );
 	void SetBackgroundColor( const Color& c );
 	const Color& GetBackgroundColor() const;
 
 	// Light probe
-	void SetLightProbe( CDmxElement *pLightProbe );
+	void SetLightProbe( CDmxElement* pLightProbe );
 
 	// Camera.
 	int	 GetCameraFOV( void );
 	void SetCameraFOV( float flFOV );
-	void SetCameraPositionAndAngles( const Vector &vecPos, const QAngle &angDir, bool syncManipulators = true );
-	void GetCameraPositionAndAngles( Vector &vecPos, QAngle &angDir );
-	void SetCameraOffset( const Vector &vecOffset );
-	void GetCameraOffset( Vector &vecOffset );
+	void SetCameraPositionAndAngles( const Vector& vecPos, const QAngle& angDir, bool syncManipulators = true );
+	void GetCameraPositionAndAngles( Vector& vecPos, QAngle& angDir );
+	void SetCameraOffset( const Vector& vecOffset );
+	void GetCameraOffset( Vector& vecOffset );
 	void ResetCameraPivot( void );
-	void ComputeCameraTransform( matrix3x4_t *pWorldToCamera );
+	void ComputeCameraTransform( matrix3x4_t* pWorldToCamera );
 	void UpdateCameraTransform();
 
 private:
@@ -93,7 +93,7 @@ protected:
 	{
 		MAX_LIGHT_COUNT = 4
 	};
-	
+
 	struct LightInfo_t
 	{
 		LightDesc_t m_Desc;
@@ -102,7 +102,7 @@ protected:
 
 
 
-	enum ManipulationMode_t 
+	enum ManipulationMode_t
 	{
 		CAMERA_ROTATE,
 		CAMERA_TRANSLATE,
@@ -115,8 +115,8 @@ protected:
 	void AcceptManipulation( bool bReleaseMouseCapture = true );
 	void CancelManipulation();
 	void EnableMouseCapture( bool enable, vgui::MouseCode code = vgui::MouseCode( -1 ) );
-	bool WarpMouse( int &x, int &y );
-	IManipulator		*m_pCurrentManip;
+	bool WarpMouse( int& x, int& y );
+	IManipulator*		m_pCurrentManip;
 	int m_nManipStartX, m_nManipStartY;
 	int m_nClickStartX, m_nClickStartY;
 
@@ -127,7 +127,7 @@ protected:
 	void SyncManipulation();
 
 	bool HasLightProbe() const;
-	ITexture *GetLightProbeCubemap( bool bHDR );
+	ITexture* GetLightProbeCubemap( bool bHDR );
 	void DrawGrid();
 	CMaterialReference	m_Wireframe;
 
@@ -138,7 +138,7 @@ protected:
 private:
 	void CreateDefaultLights();
 	void DestroyLights();
-	void ParseLightsFromKV( KeyValues *pLightsKV );
+	void ParseLightsFromKV( KeyValues* pLightsKV );
 
 	CMaterialReference m_LightProbeBackground;
 	CMaterialReference m_LightProbeHDRBackground;
@@ -153,10 +153,10 @@ private:
 
 	Color m_ClearColor;
 	Vector					m_vecCameraOffset;
-	CTransformManipulator	*m_pCameraRotate;
-	CTransformManipulator	*m_pCameraTranslate;
-	CBaseManipulator		*m_pCameraZoom;
-	CPotteryWheelManip		*m_pLightManip;
+	CTransformManipulator*	m_pCameraRotate;
+	CTransformManipulator*	m_pCameraTranslate;
+	CBaseManipulator*		m_pCameraZoom;
+	CPotteryWheelManip*		m_pLightManip;
 	vgui::MouseCode			m_nCaptureMouseCode;
 
 	int m_xoffset, m_yoffset;

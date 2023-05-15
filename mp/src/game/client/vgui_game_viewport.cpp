@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -22,8 +22,14 @@ public:
 	{
 	}
 
-	virtual char const *Name() { return "CViewportClientSystem"; }
-	virtual bool IsPerFrame() { return false; }
+	virtual char const* Name()
+	{
+		return "CViewportClientSystem";
+	}
+	virtual bool IsPerFrame()
+	{
+		return false;
+	}
 
 	// Init, shutdown
 	virtual bool Init()
@@ -46,7 +52,7 @@ public:
 
 static CViewportClientSystem g_ViewportClientSystem;
 
-IGameSystem *ViewportClientSystem()
+IGameSystem* ViewportClientSystem()
 {
 	return &g_ViewportClientSystem;
 }

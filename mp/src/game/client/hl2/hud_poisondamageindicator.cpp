@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -34,14 +34,14 @@ class CHudPoisonDamageIndicator : public CHudElement, public vgui::Panel
 	DECLARE_CLASS_SIMPLE( CHudPoisonDamageIndicator, vgui::Panel );
 
 public:
-	CHudPoisonDamageIndicator( const char *pElementName );
+	CHudPoisonDamageIndicator( const char* pElementName );
 	void Reset( void );
 	virtual bool ShouldDraw( void );
 
 private:
 	virtual void OnThink();
 	virtual void Paint();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 private:
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
@@ -58,16 +58,16 @@ DECLARE_HUDELEMENT( CHudPoisonDamageIndicator );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudPoisonDamageIndicator::CHudPoisonDamageIndicator( const char *pElementName ) : CHudElement( pElementName ), BaseClass(NULL, "HudPoisonDamageIndicator")
+CHudPoisonDamageIndicator::CHudPoisonDamageIndicator( const char* pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "HudPoisonDamageIndicator" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
-	
+
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudPoisonDamageIndicator::Reset( void )
 {
@@ -77,14 +77,16 @@ void CHudPoisonDamageIndicator::Reset( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Save CPU cycles by letting the HUD system early cull
-// costly traversal.  Called per frame, return true if thinking and 
+// costly traversal.  Called per frame, return true if thinking and
 // painting need to occur.
 //-----------------------------------------------------------------------------
 bool CHudPoisonDamageIndicator::ShouldDraw( void )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return false;
+	}
 
 	bool bNeedsDraw = ( ( pPlayer->IsPoisoned() != m_bDamageIndicatorVisible ) || ( GetAlpha() > 0 ) );
 
@@ -96,21 +98,25 @@ bool CHudPoisonDamageIndicator::ShouldDraw( void )
 //-----------------------------------------------------------------------------
 void CHudPoisonDamageIndicator::OnThink()
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// update poison damage indicator
 	bool bShouldIndicatorBeVisible = pPlayer->IsPoisoned();
-	if (bShouldIndicatorBeVisible == m_bDamageIndicatorVisible)
+	if( bShouldIndicatorBeVisible == m_bDamageIndicatorVisible )
+	{
 		return;
+	}
 
 	// state change
 	m_bDamageIndicatorVisible = bShouldIndicatorBeVisible;
 
-	if (m_bDamageIndicatorVisible)
+	if( m_bDamageIndicatorVisible )
 	{
-		SetVisible(true);
+		SetVisible( true );
 		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "PoisonDamageTaken" );
 	}
 	else
@@ -127,21 +133,21 @@ void CHudPoisonDamageIndicator::Paint()
 	// draw the text
 	surface()->DrawSetTextFont( m_hTextFont );
 	surface()->DrawSetTextColor( m_TextColor );
-	surface()->DrawSetTextPos(text_xpos, text_ypos);
+	surface()->DrawSetTextPos( text_xpos, text_ypos );
 	int ypos = text_ypos;
 
-	const wchar_t *labelText = g_pVGuiLocalize->Find("Valve_HudPoisonDamage");
+	const wchar_t* labelText = g_pVGuiLocalize->Find( "Valve_HudPoisonDamage" );
 	Assert( labelText );
-	for (const wchar_t *wch = labelText; wch && *wch != 0; wch++)
+	for( const wchar_t* wch = labelText; wch && *wch != 0; wch++ )
 	{
-		if (*wch == '\n')
+		if( *wch == '\n' )
 		{
 			ypos += text_ygap;
-			surface()->DrawSetTextPos(text_xpos, ypos);
+			surface()->DrawSetTextPos( text_xpos, ypos );
 		}
 		else
 		{
-			surface()->DrawUnicodeChar(*wch);
+			surface()->DrawUnicodeChar( *wch );
 		}
 	}
 }
@@ -149,7 +155,7 @@ void CHudPoisonDamageIndicator::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: hud scheme settings
 //-----------------------------------------------------------------------------
-void CHudPoisonDamageIndicator::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudPoisonDamageIndicator::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 }

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef IINPUTSYSTEM_H
 #define IINPUTSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -21,7 +21,8 @@
 // Main interface for input. This is a low-level interface
 //-----------------------------------------------------------------------------
 #define INPUTSYSTEM_INTERFACE_VERSION	"InputSystemVersion001"
-abstract_class IInputSystem : public IAppSystem
+abstract_class IInputSystem :
+public IAppSystem
 {
 public:
 	// Attach, detach input system from a particular window
@@ -30,7 +31,7 @@ public:
 	virtual void AttachToWindow( void* hWnd ) = 0;
 	virtual void DetachFromWindow( ) = 0;
 
-	// Enables/disables input. PollInputState will not update current 
+	// Enables/disables input. PollInputState will not update current
 	// button/analog states when it is called if the system is disabled.
 	virtual void EnableInput( bool bEnable ) = 0;
 
@@ -65,7 +66,7 @@ public:
 
 	// Posts a user-defined event into the event queue; this is expected
 	// to be called in overridden wndprocs connected to the root panel.
-	virtual void PostUserEvent( const InputEvent_t &event ) = 0;
+	virtual void PostUserEvent( const InputEvent_t& event ) = 0;
 
 	// Returns the number of joysticks
 	virtual int GetJoystickCount() const = 0;
@@ -90,10 +91,10 @@ public:
 	virtual void SetPrimaryUserId( int userId ) = 0;
 
 	// Convert back + forth between ButtonCode/AnalogCode + strings
-	virtual const char *ButtonCodeToString( ButtonCode_t code ) const = 0;
-	virtual const char *AnalogCodeToString( AnalogCode_t code ) const = 0;
-	virtual ButtonCode_t StringToButtonCode( const char *pString ) const = 0;
-	virtual AnalogCode_t StringToAnalogCode( const char *pString ) const = 0;
+	virtual const char* ButtonCodeToString( ButtonCode_t code ) const = 0;
+	virtual const char* AnalogCodeToString( AnalogCode_t code ) const = 0;
+	virtual ButtonCode_t StringToButtonCode( const char* pString ) const = 0;
+	virtual AnalogCode_t StringToAnalogCode( const char* pString ) const = 0;
 
 	// Sleeps until input happens. Pass a negative number to sleep infinitely
 	virtual void SleepUntilInput( int nMaxSleepTimeMS = -1 ) = 0;
@@ -111,7 +112,7 @@ public:
 	virtual void SetCursorPosition( int x, int y ) = 0;
 
 	// NVNT get address to haptics interface
-	virtual void *GetHapticsInterfaceAddress() const = 0;
+	virtual void* GetHapticsInterfaceAddress() const = 0;
 
 	virtual void SetNovintPure( bool bPure ) = 0;
 

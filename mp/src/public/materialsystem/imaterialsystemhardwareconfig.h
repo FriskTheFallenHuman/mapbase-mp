@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Header: $
 // $NoKeywords: $
@@ -10,7 +10,7 @@
 #define IMATERIALSYSTEMHARDWARECONFIG_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -131,7 +131,7 @@ public:
 	// This here should be the major item looked at when checking for compat
 	// from anywhere other than the material system	shaders
 	DEFCONFIGMETHOD( int, GetDXSupportLevel(), 98 );
-	virtual const char *GetShaderDLLName() const = 0;
+	virtual const char* GetShaderDLLName() const = 0;
 
 	virtual bool ReadPixelsFromFrontBuffer() const = 0;
 
@@ -148,7 +148,7 @@ public:
 	virtual bool SupportsColorOnSecondStream() const = 0;
 	virtual bool SupportsStaticPlusDynamicLighting() const = 0;
 
-	// Does our card have a hard time with fillrate 
+	// Does our card have a hard time with fillrate
 	// relative to other cards w/ the same dx level?
 	virtual bool PreferReducedFillrate() const = 0;
 
@@ -205,8 +205,14 @@ public:
 	virtual bool SupportsBorderColor( void ) const = 0;
 	virtual bool SupportsFetch4( void ) const = 0;
 
-	inline bool ShouldAlwaysUseShaderModel2bShaders() const { return IsOpenGL(); }
-	inline bool PlatformRequiresNonNullPixelShaders() const { return IsOpenGL(); }
+	inline bool ShouldAlwaysUseShaderModel2bShaders() const
+	{
+		return IsOpenGL();
+	}
+	inline bool PlatformRequiresNonNullPixelShaders() const
+	{
+		return IsOpenGL();
+	}
 };
 
 #endif // IMATERIALSYSTEMHARDWARECONFIG_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define ISHADERSHADOW_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shaderapi/shareddefs.h"
@@ -22,14 +22,14 @@
 //-----------------------------------------------------------------------------
 class CMeshBuilder;
 class IMaterialVar;
-struct LightDesc_t; 
+struct LightDesc_t;
 
 
 //-----------------------------------------------------------------------------
 // important enumerations
 //-----------------------------------------------------------------------------
-enum ShaderDepthFunc_t 
-{ 
+enum ShaderDepthFunc_t
+{
 	SHADER_DEPTHFUNC_NEVER,
 	SHADER_DEPTHFUNC_NEARER,
 	SHADER_DEPTHFUNC_EQUAL,
@@ -76,8 +76,8 @@ enum ShaderAlphaFunc_t
 	SHADER_ALPHAFUNC_ALWAYS
 };
 
-enum ShaderStencilFunc_t 
-{ 
+enum ShaderStencilFunc_t
+{
 	SHADER_STENCILFUNC_NEVER = 0,
 	SHADER_STENCILFUNC_LESS,
 	SHADER_STENCILFUNC_EQUAL,
@@ -88,8 +88,8 @@ enum ShaderStencilFunc_t
 	SHADER_STENCILFUNC_ALWAYS
 };
 
-enum ShaderStencilOp_t 
-{ 
+enum ShaderStencilOp_t
+{
 	SHADER_STENCILOP_KEEP = 0,
 	SHADER_STENCILOP_ZERO,
 	SHADER_STENCILOP_SET_TO_REFERENCE,
@@ -189,18 +189,18 @@ enum ShaderDrawBitField_t
 	SHADER_DRAW_SECONDARY_TEXCOORD2	= 0x4000,
 	SHADER_DRAW_SECONDARY_TEXCOORD3	= 0x8000,
 
-	SHADER_TEXCOORD_MASK = SHADER_DRAW_TEXCOORD0 | SHADER_DRAW_TEXCOORD1 | 
-							SHADER_DRAW_TEXCOORD2 | SHADER_DRAW_TEXCOORD3,
+	SHADER_TEXCOORD_MASK = SHADER_DRAW_TEXCOORD0 | SHADER_DRAW_TEXCOORD1 |
+						   SHADER_DRAW_TEXCOORD2 | SHADER_DRAW_TEXCOORD3,
 
-	SHADER_LIGHTMAP_TEXCOORD_MASK = SHADER_DRAW_LIGHTMAP_TEXCOORD0 | 
-									SHADER_DRAW_LIGHTMAP_TEXCOORD1 | 
-									SHADER_DRAW_LIGHTMAP_TEXCOORD2 | 
+	SHADER_LIGHTMAP_TEXCOORD_MASK = SHADER_DRAW_LIGHTMAP_TEXCOORD0 |
+									SHADER_DRAW_LIGHTMAP_TEXCOORD1 |
+									SHADER_DRAW_LIGHTMAP_TEXCOORD2 |
 									SHADER_DRAW_LIGHTMAP_TEXCOORD3,
 
-	SHADER_SECONDARY_TEXCOORD_MASK = SHADER_DRAW_SECONDARY_TEXCOORD0 | 
-									SHADER_DRAW_SECONDARY_TEXCOORD1 | 
-									SHADER_DRAW_SECONDARY_TEXCOORD2 | 
-									SHADER_DRAW_SECONDARY_TEXCOORD3,
+	SHADER_SECONDARY_TEXCOORD_MASK = SHADER_DRAW_SECONDARY_TEXCOORD0 |
+									 SHADER_DRAW_SECONDARY_TEXCOORD1 |
+									 SHADER_DRAW_SECONDARY_TEXCOORD2 |
+									 SHADER_DRAW_SECONDARY_TEXCOORD3,
 };
 
 
@@ -266,7 +266,7 @@ public:
 	virtual void StencilMask( int nMask ) = 0;
 	virtual void StencilWriteMask( int nMask ) = 0;
 
-	// Suppresses/activates color writing 
+	// Suppresses/activates color writing
 	virtual void EnableColorWrites( bool bEnable ) = 0;
 	virtual void EnableAlphaWrites( bool bEnable ) = 0;
 
@@ -292,8 +292,8 @@ public:
 	// The flags to pass in here come from the VertexFormatFlags_t enum
 	// If pTexCoordDimensions is *not* specified, we assume all coordinates
 	// are 2-dimensional
-	virtual void VertexShaderVertexFormat( unsigned int nFlags, 
-			int nTexCoordCount, int* pTexCoordDimensions, int nUserDataSize ) = 0;
+	virtual void VertexShaderVertexFormat( unsigned int nFlags,
+	int nTexCoordCount, int* pTexCoordDimensions, int nUserDataSize ) = 0;
 
 	// Pixel and vertex shader methods
 	virtual void SetVertexShader( const char* pFileName, int nStaticVshIndex ) = 0;
@@ -326,8 +326,8 @@ public:
 	// Can be used to specify different operation per channel (alpha/color)...
 	virtual void EnableCustomPixelPipe( bool bEnable ) = 0;
 	virtual void CustomTextureStages( int stageCount ) = 0;
-	virtual void CustomTextureOperation( TextureStage_t stage, ShaderTexChannel_t channel, 
-		ShaderTexOp_t op, ShaderTexArg_t arg1, ShaderTexArg_t arg2 ) = 0;
+	virtual void CustomTextureOperation( TextureStage_t stage, ShaderTexChannel_t channel,
+	ShaderTexOp_t op, ShaderTexArg_t arg1, ShaderTexArg_t arg2 ) = 0;
 
 	// indicates what per-vertex data we're providing
 	virtual void DrawFlags( unsigned int drawFlags ) = 0;

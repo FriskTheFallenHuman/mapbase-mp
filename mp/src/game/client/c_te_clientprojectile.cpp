@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 #include "cbase.h"
@@ -34,7 +34,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEClientProjectile::C_TEClientProjectile( void )
 {
@@ -46,21 +46,21 @@ C_TEClientProjectile::C_TEClientProjectile( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEClientProjectile::~C_TEClientProjectile( void )
 {
 }
 
 void TE_ClientProjectile( IRecipientFilter& filter, float delay,
-					const Vector* vecOrigin, const Vector* vecVelocity, int modelindex, int lifetime, CBaseEntity *pOwner )
+						  const Vector* vecOrigin, const Vector* vecVelocity, int modelindex, int lifetime, CBaseEntity* pOwner )
 {
 	tempents->ClientProjectile( *vecOrigin, *vecVelocity, vec3_origin, modelindex, lifetime, pOwner );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEClientProjectile::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -69,10 +69,10 @@ void C_TEClientProjectile::PostDataUpdate( DataUpdateType_t updateType )
 	tempents->ClientProjectile( m_vecOrigin, m_vecVelocity, vec3_origin, m_nModelIndex, m_nLifeTime, m_hOwner );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEClientProjectile, DT_TEClientProjectile, CTEClientProjectile)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nLifeTime)),
-	RecvPropEHandle( RECVINFO(m_hOwner)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEClientProjectile, DT_TEClientProjectile, CTEClientProjectile )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecVelocity ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropInt( RECVINFO( m_nLifeTime ) ),
+				RecvPropEHandle( RECVINFO( m_hOwner ) ),
+				END_RECV_TABLE()

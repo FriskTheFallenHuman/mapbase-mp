@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,7 +13,7 @@
 #define ICONVAR_H
 
 #if _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/dbg.h"
@@ -32,7 +32,7 @@ class CCommand;
 // ConVar flags
 //-----------------------------------------------------------------------------
 // The default, no flags at all
-#define FCVAR_NONE				0 
+#define FCVAR_NONE				0
 
 // Command to ConVars and ConCommands
 // ConVar Systems
@@ -74,7 +74,7 @@ class CCommand;
 #define FCVAR_SERVER_CAN_EXECUTE	(1<<28)// the server is allowed to execute this command on clients via ClientCommand/NET_StringCmd/CBaseClientState::ProcessStringCmd.
 #define FCVAR_SERVER_CANNOT_QUERY	(1<<29)// If this is set, then the server is not allowed to query this cvar's value (via IServerPluginHelpers::StartQueryCvarValue).
 #define FCVAR_CLIENTCMD_CAN_EXECUTE	(1<<30)	// IVEngineClient::ClientCmd is allowed to execute this command. 
-											// Note: IVEngineClient::ClientCmd_Unrestricted can run any client command.
+// Note: IVEngineClient::ClientCmd_Unrestricted can run any client command.
 
 // #define FCVAR_AVAILABLE			(1<<15)
 // #define FCVAR_AVAILABLE			(1<<18)
@@ -86,13 +86,13 @@ class CCommand;
 // #define FCVAR_AVAILABLE			(1<<27)
 // #define FCVAR_AVAILABLE			(1<<31)
 
-#define FCVAR_MATERIAL_THREAD_MASK ( FCVAR_RELOAD_MATERIALS | FCVAR_RELOAD_TEXTURES | FCVAR_MATERIAL_SYSTEM_THREAD )	
+#define FCVAR_MATERIAL_THREAD_MASK ( FCVAR_RELOAD_MATERIALS | FCVAR_RELOAD_TEXTURES | FCVAR_MATERIAL_SYSTEM_THREAD )
 
 //-----------------------------------------------------------------------------
 // Called when a ConVar changes value
 // NOTE: For FCVAR_NEVER_AS_STRING ConVars, pOldValue == NULL
 //-----------------------------------------------------------------------------
-typedef void ( *FnChangeCallback_t )( IConVar *var, const char *pOldValue, float flOldValue );
+typedef void ( *FnChangeCallback_t )( IConVar* var, const char* pOldValue, float flOldValue );
 
 
 //-----------------------------------------------------------------------------
@@ -102,12 +102,12 @@ abstract_class IConVar
 {
 public:
 	// Value set
-	virtual void SetValue( const char *pValue ) = 0;
+	virtual void SetValue( const char* pValue ) = 0;
 	virtual void SetValue( float flValue ) = 0;
 	virtual void SetValue( int nValue ) = 0;
 
 	// Return name of command
-	virtual const char *GetName( void ) const = 0;
+	virtual const char* GetName( void ) const = 0;
 
 	// Accessors.. not as efficient as using GetState()/GetInfo()
 	// if you call these methods multiple times on the same IConVar

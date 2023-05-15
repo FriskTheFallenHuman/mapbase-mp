@@ -24,7 +24,7 @@ public:
 
 	DECLARE_CLIENTCLASS();
 
-	void OnDataChanged(DataUpdateType_t updateType);
+	void OnDataChanged( DataUpdateType_t updateType );
 	bool ShouldDraw();
 
 private:
@@ -37,20 +37,20 @@ private:
 #endif
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_ShadowControl, DT_ShadowControl, CShadowControl)
-	RecvPropVector(RECVINFO(m_shadowDirection)),
+IMPLEMENT_CLIENTCLASS_DT( C_ShadowControl, DT_ShadowControl, CShadowControl )
+RecvPropVector( RECVINFO( m_shadowDirection ) ),
 #ifdef MAPBASE
 	/*RecvPropInt(RECVINFO(m_shadowColor), 0, RecvProxy_Int32ToColor32),*/
-	RecvPropInt(RECVINFO(m_shadowColor), 0, RecvProxy_IntToColor32),
+	RecvPropInt( RECVINFO( m_shadowColor ), 0, RecvProxy_IntToColor32 ),
 #else
-	RecvPropInt(RECVINFO(m_shadowColor)),
+	RecvPropInt( RECVINFO( m_shadowColor ) ),
 #endif
-	RecvPropFloat(RECVINFO(m_flShadowMaxDist)),
-	RecvPropBool(RECVINFO(m_bDisableShadows)),
+				RecvPropFloat( RECVINFO( m_flShadowMaxDist ) ),
+				RecvPropBool( RECVINFO( m_bDisableShadows ) ),
 #ifdef MAPBASE
-	RecvPropBool(RECVINFO(m_bEnableLocalLightShadows)),
+	RecvPropBool( RECVINFO( m_bEnableLocalLightShadows ) ),
 #endif
-END_RECV_TABLE()
+				END_RECV_TABLE()
 
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ END_RECV_TABLE()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_ShadowControl::OnDataChanged(DataUpdateType_t updateType)
+				void C_ShadowControl::OnDataChanged( DataUpdateType_t updateType )
 {
 	// Set the color, direction, distance...
 	g_pClientShadowMgr->SetShadowDirection( m_shadowDirection );

@@ -21,14 +21,17 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
-	CMovieDisplay() { m_bMuted = true; }
+	CMovieDisplay()
+	{
+		m_bMuted = true;
+	}
 
 	virtual ~CMovieDisplay();
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
 	virtual int  UpdateTransmitState();
-	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+	virtual void SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
@@ -39,23 +42,23 @@ public:
 	void	Disable( void );
 	void	Enable( void );
 
-	void	InputDisable( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
+	void	InputDisable( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
 
-	void	InputSetDisplayText( inputdata_t &inputdata );
+	void	InputSetDisplayText( inputdata_t& inputdata );
 
 private:
 
 	// Control panel
-	void GetControlPanelInfo( int nPanelIndex, const char *&pPanelName );
-	void GetControlPanelClassName( int nPanelIndex, const char *&pPanelName );
+	void GetControlPanelInfo( int nPanelIndex, const char*& pPanelName );
+	void GetControlPanelClassName( int nPanelIndex, const char*& pPanelName );
 	void SpawnControlPanels( void );
 	void RestoreControlPanels( void );
 
 private:
 	CNetworkVar( bool, m_bEnabled );
 	CNetworkVar( bool, m_bLooping );
-	CNetworkVar( bool, m_bMuted);
+	CNetworkVar( bool, m_bMuted );
 
 	CNetworkString( m_szDisplayText, 128 );
 
@@ -79,45 +82,45 @@ private:
 LINK_ENTITY_TO_CLASS( vgui_movie_display, CMovieDisplay );
 
 //-----------------------------------------------------------------------------
-// Save/load 
+// Save/load
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CMovieDisplay )
 
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
 
-	DEFINE_AUTO_ARRAY_KEYFIELD( m_szDisplayText, FIELD_CHARACTER, "displaytext" ),
+			  DEFINE_AUTO_ARRAY_KEYFIELD( m_szDisplayText, FIELD_CHARACTER, "displaytext" ),
 
-	DEFINE_AUTO_ARRAY( m_szMovieFilename, FIELD_CHARACTER ),
-	DEFINE_KEYFIELD( m_strMovieFilename, FIELD_STRING, "moviefilename" ),
+			  DEFINE_AUTO_ARRAY( m_szMovieFilename, FIELD_CHARACTER ),
+			  DEFINE_KEYFIELD( m_strMovieFilename, FIELD_STRING, "moviefilename" ),
 
-	DEFINE_AUTO_ARRAY( m_szGroupName, FIELD_CHARACTER ),
-	DEFINE_KEYFIELD( m_strGroupName, FIELD_STRING, "groupname" ),
+			  DEFINE_AUTO_ARRAY( m_szGroupName, FIELD_CHARACTER ),
+			  DEFINE_KEYFIELD( m_strGroupName, FIELD_STRING, "groupname" ),
 
-	DEFINE_KEYFIELD( m_iScreenWidth, FIELD_INTEGER, "width" ),
-	DEFINE_KEYFIELD( m_iScreenHeight, FIELD_INTEGER, "height" ),
-	DEFINE_KEYFIELD( m_bLooping, FIELD_BOOLEAN, "looping" ),
-	DEFINE_KEYFIELD( m_bMuted, FIELD_BOOLEAN, "muted"),
+			  DEFINE_KEYFIELD( m_iScreenWidth, FIELD_INTEGER, "width" ),
+			  DEFINE_KEYFIELD( m_iScreenHeight, FIELD_INTEGER, "height" ),
+			  DEFINE_KEYFIELD( m_bLooping, FIELD_BOOLEAN, "looping" ),
+			  DEFINE_KEYFIELD( m_bMuted, FIELD_BOOLEAN, "muted" ),
 
-	DEFINE_FIELD( m_bDoFullTransmit, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bDoFullTransmit, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_hScreen, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hScreen, FIELD_EHANDLE ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetDisplayText", InputSetDisplayText ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetDisplayText", InputSetDisplayText ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CMovieDisplay, DT_MovieDisplay )
-	SendPropBool( SENDINFO( m_bEnabled ) ),
-	SendPropBool( SENDINFO( m_bLooping ) ),
-	SendPropBool( SENDINFO(	m_bMuted ) ),
-	SendPropString( SENDINFO( m_szMovieFilename ) ),
-	SendPropString( SENDINFO( m_szGroupName ) ),
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CMovieDisplay, DT_MovieDisplay )
+			  SendPropBool( SENDINFO( m_bEnabled ) ),
+			  SendPropBool( SENDINFO( m_bLooping ) ),
+			  SendPropBool( SENDINFO(	m_bMuted ) ),
+			  SendPropString( SENDINFO( m_szMovieFilename ) ),
+			  SendPropString( SENDINFO( m_szGroupName ) ),
+			  END_SEND_TABLE()
 
-CMovieDisplay::~CMovieDisplay()
+			  CMovieDisplay::~CMovieDisplay()
 {
 	DestroyVGuiScreen( m_hScreen.Get() );
 }
@@ -126,7 +129,7 @@ CMovieDisplay::~CMovieDisplay()
 // Read in Hammer data
 //-----------------------------------------------------------------------------
 
-bool CMovieDisplay::KeyValue( const char *szKeyName, const char *szValue ) 
+bool CMovieDisplay::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// NOTE: Have to do these separate because they set two values instead of one
 	if( FStrEq( szKeyName, "angles" ) )
@@ -153,11 +156,11 @@ bool CMovieDisplay::KeyValue( const char *szKeyName, const char *szValue )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 int CMovieDisplay::UpdateTransmitState()
 {
-	if ( m_bDoFullTransmit )
+	if( m_bDoFullTransmit )
 	{
 		m_bDoFullTransmit = false;
 		return SetTransmitState( FL_EDICT_ALWAYS );
@@ -167,13 +170,15 @@ int CMovieDisplay::UpdateTransmitState()
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
+void CMovieDisplay::SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	{
 		return;
+	}
 
 	BaseClass::SetTransmit( pInfo, bAlways );
 
@@ -182,7 +187,7 @@ void CMovieDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::Spawn( void )
 {
@@ -204,7 +209,7 @@ void CMovieDisplay::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::Precache( void )
 {
@@ -214,7 +219,7 @@ void CMovieDisplay::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::OnRestore( void )
 {
@@ -226,14 +231,14 @@ void CMovieDisplay::OnRestore( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::ScreenVisible( bool bVisible )
 {
 	// Set its active state
 	m_hScreen->SetActive( bVisible );
 
-	if ( bVisible )
+	if( bVisible )
 	{
 		m_hScreen->RemoveEffects( EF_NODRAW );
 	}
@@ -244,12 +249,14 @@ void CMovieDisplay::ScreenVisible( bool bVisible )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::Disable( void )
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = false;
 
@@ -257,12 +264,14 @@ void CMovieDisplay::Disable( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::Enable( void )
 {
-	if ( m_bEnabled )
+	if( m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = true;
 
@@ -270,41 +279,41 @@ void CMovieDisplay::Enable( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::InputDisable( inputdata_t &inputdata )
+void CMovieDisplay::InputDisable( inputdata_t& inputdata )
 {
 	Disable();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::InputEnable( inputdata_t &inputdata )
+void CMovieDisplay::InputEnable( inputdata_t& inputdata )
 {
 	Enable();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::InputSetDisplayText( inputdata_t &inputdata )
+void CMovieDisplay::InputSetDisplayText( inputdata_t& inputdata )
 {
 	Q_strcpy( m_szDisplayText.GetForModify(), inputdata.value.String() );
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::GetControlPanelInfo( int nPanelIndex, const char *&pPanelName )
+void CMovieDisplay::GetControlPanelInfo( int nPanelIndex, const char*& pPanelName )
 {
 	pPanelName = "movie_display_screen";
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CMovieDisplay::GetControlPanelClassName( int nPanelIndex, const char *&pPanelName )
+void CMovieDisplay::GetControlPanelClassName( int nPanelIndex, const char*& pPanelName )
 {
 	pPanelName = "vgui_screen";
 }
@@ -315,22 +324,26 @@ void CMovieDisplay::GetControlPanelClassName( int nPanelIndex, const char *&pPan
 void CMovieDisplay::SpawnControlPanels()
 {
 	int nPanel;
-	for ( nPanel = 0; true; ++nPanel )
+	for( nPanel = 0; true; ++nPanel )
 	{
-		const char *pScreenName;
+		const char* pScreenName;
 		GetControlPanelInfo( nPanel, pScreenName );
-		if (!pScreenName)
+		if( !pScreenName )
+		{
 			continue;
+		}
 
-		const char *pScreenClassname;
+		const char* pScreenClassname;
 		GetControlPanelClassName( nPanel, pScreenClassname );
-		if ( !pScreenClassname )
+		if( !pScreenClassname )
+		{
 			continue;
+		}
 
 		float flWidth = m_iScreenWidth;
 		float flHeight = m_iScreenHeight;
 
-		CVGuiScreen *pScreen = CreateVGuiScreen( pScreenClassname, pScreenName, this, this, 0 );
+		CVGuiScreen* pScreen = CreateVGuiScreen( pScreenClassname, pScreenName, this, this, 0 );
 		pScreen->ChangeTeam( GetTeamNumber() );
 		pScreen->SetActualSize( flWidth, flHeight );
 		pScreen->SetActive( true );
@@ -343,31 +356,35 @@ void CMovieDisplay::SpawnControlPanels()
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CMovieDisplay::RestoreControlPanels( void )
 {
 	int nPanel;
-	for ( nPanel = 0; true; ++nPanel )
+	for( nPanel = 0; true; ++nPanel )
 	{
-		const char *pScreenName;
+		const char* pScreenName;
 		GetControlPanelInfo( nPanel, pScreenName );
-		if (!pScreenName)
-			continue;
-
-		const char *pScreenClassname;
-		GetControlPanelClassName( nPanel, pScreenClassname );
-		if ( !pScreenClassname )
-			continue;
-
-		CVGuiScreen *pScreen = (CVGuiScreen *)gEntList.FindEntityByClassname( NULL, pScreenClassname );
-
-		while ( ( pScreen && pScreen->GetOwnerEntity() != this ) || Q_strcmp( pScreen->GetPanelName(), pScreenName ) != 0 )
+		if( !pScreenName )
 		{
-			pScreen = (CVGuiScreen *)gEntList.FindEntityByClassname( pScreen, pScreenClassname );
+			continue;
 		}
 
-		if ( pScreen )
+		const char* pScreenClassname;
+		GetControlPanelClassName( nPanel, pScreenClassname );
+		if( !pScreenClassname )
+		{
+			continue;
+		}
+
+		CVGuiScreen* pScreen = ( CVGuiScreen* )gEntList.FindEntityByClassname( NULL, pScreenClassname );
+
+		while( ( pScreen && pScreen->GetOwnerEntity() != this ) || Q_strcmp( pScreen->GetPanelName(), pScreenName ) != 0 )
+		{
+			pScreen = ( CVGuiScreen* )gEntList.FindEntityByClassname( pScreen, pScreenClassname );
+		}
+
+		if( pScreen )
 		{
 			m_hScreen = pScreen;
 			m_hScreen->SetActive( true );

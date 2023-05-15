@@ -35,7 +35,7 @@ ConVar func_break_max_pieces( "func_break_max_pieces", "15", FCVAR_ARCHIVE | FCV
 ConVar func_break_reduction_factor( "func_break_reduction_factor", ".5" );
 
 #ifdef HL1_DLL
-extern void PlayerPickupObject( CBasePlayer *pPlayer, CBaseEntity *pObject );
+	extern void PlayerPickupObject( CBasePlayer* pPlayer, CBaseEntity* pObject );
 #endif
 
 extern Vector		g_vecAttackDir;
@@ -45,66 +45,66 @@ extern Vector		g_vecAttackDir;
 // be spawned, and still remain fairly flexible
 
 #ifndef HL1_DLL
-	const char *CBreakable::pSpawnObjects[] =
-	{
-		NULL,						// 0
-		"item_battery",				// 1
-		"item_healthkit",			// 2
-		"item_ammo_pistol",			// 3
-		"item_ammo_pistol_large",	// 4
-		"item_ammo_smg1",			// 5
-		"item_ammo_smg1_large",		// 6
-		"item_ammo_ar2",			// 7
-		"item_ammo_ar2_large",		// 8
-		"item_box_buckshot",		// 9
-		"item_flare_round",			// 10
-		"item_box_flare_rounds",	// 11
-		"item_rpg_round",			// 12
-		"unused (item_smg1_grenade) 13",// 13
-		"item_box_sniper_rounds",	// 14
-		"unused (???"") 15",		// 15 - split into two strings to avoid trigraph warning 
-		"weapon_stunstick",			// 16
-		"unused (weapon_ar1) 17",	// 17
-		"weapon_ar2",				// 18
-		"unused (???"") 19",		// 19 - split into two strings to avoid trigraph warning 
-		"weapon_rpg",				// 20
-		"weapon_smg1",				// 21
-		"unused (weapon_smg2) 22",	// 22
-		"unused (weapon_slam) 23",	// 23
-		"weapon_shotgun",			// 24
-		"unused (weapon_molotov) 25",// 25
-		"item_dynamic_resupply",	// 26
-	};
+const char* CBreakable::pSpawnObjects[] =
+{
+	NULL,						// 0
+	"item_battery",				// 1
+	"item_healthkit",			// 2
+	"item_ammo_pistol",			// 3
+	"item_ammo_pistol_large",	// 4
+	"item_ammo_smg1",			// 5
+	"item_ammo_smg1_large",		// 6
+	"item_ammo_ar2",			// 7
+	"item_ammo_ar2_large",		// 8
+	"item_box_buckshot",		// 9
+	"item_flare_round",			// 10
+	"item_box_flare_rounds",	// 11
+	"item_rpg_round",			// 12
+	"unused (item_smg1_grenade) 13",// 13
+	"item_box_sniper_rounds",	// 14
+	"unused (???"") 15",		// 15 - split into two strings to avoid trigraph warning
+	"weapon_stunstick",			// 16
+	"unused (weapon_ar1) 17",	// 17
+	"weapon_ar2",				// 18
+	"unused (???"") 19",		// 19 - split into two strings to avoid trigraph warning
+	"weapon_rpg",				// 20
+	"weapon_smg1",				// 21
+	"unused (weapon_smg2) 22",	// 22
+	"unused (weapon_slam) 23",	// 23
+	"weapon_shotgun",			// 24
+	"unused (weapon_molotov) 25",// 25
+	"item_dynamic_resupply",	// 26
+};
 #else
-	// Half-Life 1 spawn objects!
-	const char *CBreakable::pSpawnObjects[] =
-	{
-		NULL,				// 0
-		"item_battery",		// 1
-		"item_healthkit",	// 2
-		"weapon_glock",		// 3
-		"ammo_9mmclip",		// 4
-		"weapon_mp5",		// 5
-		"ammo_9mmAR",		// 6
-		"ammo_ARgrenades",	// 7
-		"weapon_shotgun",	// 8
-		"ammo_buckshot",	// 9
-		"weapon_crossbow",	// 10
-		"ammo_crossbow",	// 11
-		"weapon_357",		// 12
-		"ammo_357",			// 13
-		"weapon_rpg",		// 14
-		"ammo_rpgclip",		// 15
-		"ammo_gaussclip",	// 16
-		"weapon_handgrenade",// 17
-		"weapon_tripmine",	// 18
-		"weapon_satchel",	// 19
-		"weapon_snark",		// 20
-		"weapon_hornetgun",	// 21
-	};
+// Half-Life 1 spawn objects!
+const char* CBreakable::pSpawnObjects[] =
+{
+	NULL,				// 0
+	"item_battery",		// 1
+	"item_healthkit",	// 2
+	"weapon_glock",		// 3
+	"ammo_9mmclip",		// 4
+	"weapon_mp5",		// 5
+	"ammo_9mmAR",		// 6
+	"ammo_ARgrenades",	// 7
+	"weapon_shotgun",	// 8
+	"ammo_buckshot",	// 9
+	"weapon_crossbow",	// 10
+	"ammo_crossbow",	// 11
+	"weapon_357",		// 12
+	"ammo_357",			// 13
+	"weapon_rpg",		// 14
+	"ammo_rpgclip",		// 15
+	"ammo_gaussclip",	// 16
+	"weapon_handgrenade",// 17
+	"weapon_tripmine",	// 18
+	"weapon_satchel",	// 19
+	"weapon_snark",		// 20
+	"weapon_hornetgun",	// 21
+};
 #endif
 
-const char *pFGDPropData[] =
+const char* pFGDPropData[] =
 {
 	NULL,
 	"Wooden.Tiny",
@@ -136,125 +136,137 @@ const char *pFGDPropData[] =
 LINK_ENTITY_TO_CLASS( func_breakable, CBreakable );
 BEGIN_DATADESC( CBreakable )
 
-	DEFINE_FIELD( m_Material, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_Explosion, FIELD_INTEGER, "explosion" ),
-	DEFINE_KEYFIELD( m_GibDir, FIELD_VECTOR, "gibdir" ),
-	DEFINE_FIELD( m_hBreaker, FIELD_EHANDLE ),
+DEFINE_FIELD( m_Material, FIELD_INTEGER ),
+			  DEFINE_KEYFIELD( m_Explosion, FIELD_INTEGER, "explosion" ),
+			  DEFINE_KEYFIELD( m_GibDir, FIELD_VECTOR, "gibdir" ),
+			  DEFINE_FIELD( m_hBreaker, FIELD_EHANDLE ),
 
-	// Don't need to save/restore these because we precache after restore
-	//DEFINE_FIELD( m_idShard, FIELD_INTEGER ),
-	DEFINE_FIELD( m_angle, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszGibModel, FIELD_STRING ),
-	DEFINE_FIELD( m_iszSpawnObject, FIELD_STRING ),
-	DEFINE_KEYFIELD( m_ExplosionMagnitude, FIELD_INTEGER, "explodemagnitude" ),
-	DEFINE_KEYFIELD( m_flPressureDelay, FIELD_FLOAT, "PressureDelay" ),
-	DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
-	DEFINE_FIELD( m_bTookPhysicsDamage, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iszPropData, FIELD_STRING ),
-	DEFINE_INPUT( m_impactEnergyScale, FIELD_FLOAT, "physdamagescale" ),
-	DEFINE_KEYFIELD( m_PerformanceMode, FIELD_INTEGER, "PerformanceMode" ),
+			  // Don't need to save/restore these because we precache after restore
+			  //DEFINE_FIELD( m_idShard, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_angle, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_iszGibModel, FIELD_STRING ),
+			  DEFINE_FIELD( m_iszSpawnObject, FIELD_STRING ),
+			  DEFINE_KEYFIELD( m_ExplosionMagnitude, FIELD_INTEGER, "explodemagnitude" ),
+			  DEFINE_KEYFIELD( m_flPressureDelay, FIELD_FLOAT, "PressureDelay" ),
+			  DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
+			  DEFINE_FIELD( m_bTookPhysicsDamage, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iszPropData, FIELD_STRING ),
+			  DEFINE_INPUT( m_impactEnergyScale, FIELD_FLOAT, "physdamagescale" ),
+			  DEFINE_KEYFIELD( m_PerformanceMode, FIELD_INTEGER, "PerformanceMode" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Break", InputBreak ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetHealth", InputSetHealth ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "AddHealth", InputAddHealth ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "RemoveHealth", InputRemoveHealth ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetMass", InputSetMass ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Break", InputBreak ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetHealth", InputSetHealth ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "AddHealth", InputAddHealth ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "RemoveHealth", InputRemoveHealth ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetMass", InputSetMass ),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( BreakTouch ),
-	DEFINE_THINKFUNC( Die ),
+			  // Function Pointers
+			  DEFINE_ENTITYFUNC( BreakTouch ),
+			  DEFINE_THINKFUNC( Die ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnBreak, "OnBreak"),
-	DEFINE_OUTPUT(m_OnHealthChanged, "OnHealthChanged"),
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnBreak, "OnBreak" ),
+			  DEFINE_OUTPUT( m_OnHealthChanged, "OnHealthChanged" ),
 
-	DEFINE_FIELD( m_flDmgModBullet, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDmgModClub, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDmgModExplosive, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszPhysicsDamageTableName, FIELD_STRING ),
-	DEFINE_FIELD( m_iszBreakableModel, FIELD_STRING ),
-	DEFINE_FIELD( m_iBreakableSkin, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iBreakableCount, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iMaxBreakableSize, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iszBasePropData, FIELD_STRING ),
-	DEFINE_FIELD( m_iInteractions, FIELD_INTEGER ),
-	DEFINE_FIELD( m_explodeRadius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_iszModelName, FIELD_STRING ),
-	
-	// Physics Influence
-	DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flDmgModBullet, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flDmgModClub, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flDmgModExplosive, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_iszPhysicsDamageTableName, FIELD_STRING ),
+			  DEFINE_FIELD( m_iszBreakableModel, FIELD_STRING ),
+			  DEFINE_FIELD( m_iBreakableSkin, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iBreakableCount, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iMaxBreakableSize, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iszBasePropData, FIELD_STRING ),
+			  DEFINE_FIELD( m_iInteractions, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_explodeRadius, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_iszModelName, FIELD_STRING ),
 
-END_DATADESC()
+			  // Physics Influence
+			  DEFINE_FIELD( m_hPhysicsAttacker, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flLastPhysicsInfluenceTime, FIELD_TIME ),
+
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CBreakable::KeyValue( const char *szKeyName, const char *szValue )
+			  bool CBreakable::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// UNDONE_WC: explicitly ignoring these fields, but they shouldn't be in the map file!
-	if (FStrEq(szKeyName, "material"))
+	if( FStrEq( szKeyName, "material" ) )
 	{
-		int i = atoi( szValue);
+		int i = atoi( szValue );
 
 		// 0:glass, 1:metal, 2:flesh, 3:wood
 
-		if ((i < 0) || (i >= matLastMaterial))
+		if( ( i < 0 ) || ( i >= matLastMaterial ) )
+		{
 			m_Material = matWood;
+		}
 		else
-			m_Material = (Materials)i;
+		{
+			m_Material = ( Materials )i;
+		}
 	}
-	else if (FStrEq(szKeyName, "deadmodel"))
+	else if( FStrEq( szKeyName, "deadmodel" ) )
 	{
 	}
-	else if (FStrEq(szKeyName, "shards"))
+	else if( FStrEq( szKeyName, "shards" ) )
 	{
 //			m_iShards = atof(szValue);
 	}
-	else if (FStrEq(szKeyName, "gibmodel") )
+	else if( FStrEq( szKeyName, "gibmodel" ) )
 	{
-		m_iszGibModel = AllocPooledString(szValue);
+		m_iszGibModel = AllocPooledString( szValue );
 	}
-	else if (FStrEq(szKeyName, "spawnobject") )
+	else if( FStrEq( szKeyName, "spawnobject" ) )
 	{
 		int object = atoi( szValue );
-		if ( object > 0 && object < ARRAYSIZE(pSpawnObjects) )
+		if( object > 0 && object < ARRAYSIZE( pSpawnObjects ) )
+		{
 			m_iszSpawnObject = MAKE_STRING( pSpawnObjects[object] );
+		}
 #ifdef MAPBASE
 		// "0" is the default value of a "choices" field in Hammer, representing nothing selected
 		// atoi() returning 0 may also indicate a failed conversion, so check szValue directly
-		else if ( FStrEq( szValue, "0" ) )
+		else if( FStrEq( szValue, "0" ) )
+		{
 			m_iszSpawnObject = NULL_STRING;
+		}
 		else
-			m_iszSpawnObject = AllocPooledString(szValue);
+		{
+			m_iszSpawnObject = AllocPooledString( szValue );
+		}
 #endif
 	}
-	else if (FStrEq(szKeyName, "propdata") )
+	else if( FStrEq( szKeyName, "propdata" ) )
 	{
 		int pdata = atoi( szValue );
-		if ( pdata > 0 && pdata < ARRAYSIZE(pFGDPropData) )
+		if( pdata > 0 && pdata < ARRAYSIZE( pFGDPropData ) )
 		{
 			m_iszPropData = MAKE_STRING( pFGDPropData[pdata] );
 		}
-		else if ( pdata )
+		else if( pdata )
 		{
 			// If you've hit this warning, it's probably because someone's added a new
 			// propdata field to func_breakables in the .fgd, and not added it to the
 			// pFGDPropData list.
-			Warning("func_breakable with invalid propdata %d.\n", pdata );
+			Warning( "func_breakable with invalid propdata %d.\n", pdata );
 		}
 	}
-	else if (FStrEq(szKeyName, "lip") )
+	else if( FStrEq( szKeyName, "lip" ) )
 	{
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CBreakable::Spawn( void )
 {
@@ -265,12 +277,12 @@ void CBreakable::Spawn( void )
 
 	ParsePropData();
 
-    Precache( );    
+	Precache( );
 
-	if ( !m_iHealth || FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )
+	if( !m_iHealth || FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )
 	{
 		// This allows people to shoot at the glass (since it's penetrable)
-		if ( m_Material == matGlass )
+		if( m_Material == matGlass )
 		{
 			m_iHealth = 1;
 		}
@@ -283,27 +295,29 @@ void CBreakable::Spawn( void )
 	}
 
 	m_iMaxHealth = ( m_iHealth > 0 ) ? m_iHealth : 1;
-  
+
 	SetSolid( SOLID_BSP );
-    SetMoveType( MOVETYPE_PUSH );
-	
+	SetMoveType( MOVETYPE_PUSH );
+
 	// this is a hack to shoot the gibs in a specific yaw/direction
 	m_angle = GetLocalAngles().y;
 	SetLocalAngles( vec3_angle );
-	
+
 	SetModel( STRING( GetModelName() ) );//set size and link into world.
 
 	SetTouch( &CBreakable::BreakTouch );
-	if ( FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )		// Only break on trigger
+	if( FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )		// Only break on trigger
 	{
 		SetTouch( NULL );
 	}
 
 	// Flag unbreakable glass as "worldbrush" so it will block ALL tracelines
-	if ( !IsBreakable() && m_nRenderMode != kRenderNormal )
+	if( !IsBreakable() && m_nRenderMode != kRenderNormal )
+	{
 		AddFlag( FL_WORLDBRUSH );
+	}
 
-	if ( m_impactEnergyScale == 0 )
+	if( m_impactEnergyScale == 0 )
 	{
 		m_impactEnergyScale = 1.0;
 	}
@@ -317,17 +331,21 @@ void CBreakable::Spawn( void )
 //-----------------------------------------------------------------------------
 void CBreakable::ParsePropData( void )
 {
-	if ( m_iszPropData == NULL_STRING )
+	if( m_iszPropData == NULL_STRING )
+	{
 		return;
+	}
 
-	if ( !Q_strncmp( STRING(m_iszPropData), "None", 4 ) )
+	if( !Q_strncmp( STRING( m_iszPropData ), "None", 4 ) )
+	{
 		return;
+	}
 
-	g_PropDataSystem.ParsePropFromBase( this, STRING(m_iszPropData) );
+	g_PropDataSystem.ParsePropFromBase( this, STRING( m_iszPropData ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CBreakable::CreateVPhysics( void )
 {
@@ -336,31 +354,31 @@ bool CBreakable::CreateVPhysics( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CBreakable::MaterialSound( Materials precacheMaterial )
+const char* CBreakable::MaterialSound( Materials precacheMaterial )
 {
-    switch ( precacheMaterial ) 
+	switch( precacheMaterial )
 	{
-	case matWood:
-		return "Breakable.MatWood";
-	case matFlesh:
-	case matWeb:
-		return "Breakable.MatFlesh";
-	case matComputer:
-		return "Breakable.Computer";
-	case matUnbreakableGlass:
-	case matGlass:
-		return "Breakable.MatGlass";
-	case matMetal:
-		return "Breakable.MatMetal";
-	case matCinderBlock:
-	case matRocks:
-		return "Breakable.MatConcrete";
-	case matCeilingTile:
-	case matNone:
-	default:
-		break;
+		case matWood:
+			return "Breakable.MatWood";
+		case matFlesh:
+		case matWeb:
+			return "Breakable.MatFlesh";
+		case matComputer:
+			return "Breakable.Computer";
+		case matUnbreakableGlass:
+		case matGlass:
+			return "Breakable.MatGlass";
+		case matMetal:
+			return "Breakable.MatMetal";
+		case matCinderBlock:
+		case matRocks:
+			return "Breakable.MatConcrete";
+		case matCeilingTile:
+		case matNone:
+		default:
+			break;
 	}
 
 	return NULL;
@@ -369,14 +387,18 @@ const char *CBreakable::MaterialSound( Materials precacheMaterial )
 
 void CBreakable::MaterialSoundRandom( int entindex, Materials soundMaterial, float volume )
 {
-	const char	*soundname;
+	const char*	soundname;
 	soundname = MaterialSound( soundMaterial );
-	if ( !soundname )
+	if( !soundname )
+	{
 		return;
+	}
 
 	CSoundParameters params;
-	if ( !GetParametersForSound( soundname, params, NULL ) )
+	if( !GetParametersForSound( soundname, params, NULL ) )
+	{
 		return;
+	}
 
 	CPASAttenuationFilter filter( CBaseEntity::Instance( entindex ), params.soundlevel );
 
@@ -393,70 +415,70 @@ void CBreakable::MaterialSoundRandom( int entindex, Materials soundMaterial, flo
 
 void CBreakable::Precache( void )
 {
-	const char *pGibName = "WoodChunks";
+	const char* pGibName = "WoodChunks";
 
-    switch (m_Material) 
+	switch( m_Material )
 	{
-	case matWood:
-		pGibName = "WoodChunks";
-		break;
+		case matWood:
+			pGibName = "WoodChunks";
+			break;
 
-	case matUnbreakableGlass:
-	case matGlass:
-		pGibName = "GlassChunks";
-		break;
+		case matUnbreakableGlass:
+		case matGlass:
+			pGibName = "GlassChunks";
+			break;
 
-	case matMetal:
-		pGibName = "MetalChunks";
-		break;
+		case matMetal:
+			pGibName = "MetalChunks";
+			break;
 
-	case matRocks:
-		pGibName = "ConcreteChunks";
-		break;
+		case matRocks:
+			pGibName = "ConcreteChunks";
+			break;
 
 #ifdef HL1_DLL
-	case matComputer:
-		pGibName = "ComputerGibs";
-		break;
+		case matComputer:
+			pGibName = "ComputerGibs";
+			break;
 
-	case matCeilingTile:
-		pGibName = "CeilingTile";
-		break;
+		case matCeilingTile:
+			pGibName = "CeilingTile";
+			break;
 
-	case matFlesh:
-		pGibName = "FleshGibs";
-		break;
+		case matFlesh:
+			pGibName = "FleshGibs";
+			break;
 
-	case matCinderBlock:
-		pGibName = "CinderBlocks";
-		break;
+		case matCinderBlock:
+			pGibName = "CinderBlocks";
+			break;
 
-	case matWeb:
-		pGibName = "WebGibs";
-		break;
+		case matWeb:
+			pGibName = "WebGibs";
+			break;
 #else
 
-	case matCinderBlock:
-		pGibName = "ConcreteChunks";
-		break;
+		case matCinderBlock:
+			pGibName = "ConcreteChunks";
+			break;
 
 #endif
 
-#if HL2_EPISODIC || MAPBASE 
-	case matNone:
-		pGibName = "";
-		break;
+#if HL2_EPISODIC || MAPBASE
+		case matNone:
+			pGibName = "";
+			break;
 #endif
 
-	default:
-		Warning("%s (%s) at (%.3f %.3f %.3f) using obsolete or unknown material type.\n", GetClassname(), GetDebugName(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
-		pGibName = "WoodChunks";
-		break;
+		default:
+			Warning( "%s (%s) at (%.3f %.3f %.3f) using obsolete or unknown material type.\n", GetClassname(), GetDebugName(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
+			pGibName = "WoodChunks";
+			break;
 	}
 
-	if ( m_iszGibModel != NULL_STRING )
+	if( m_iszGibModel != NULL_STRING )
 	{
-		pGibName = STRING(m_iszGibModel);
+		pGibName = STRING( m_iszGibModel );
 
 #ifdef HL1_DLL
 		PrecacheModel( pGibName );
@@ -466,9 +488,9 @@ void CBreakable::Precache( void )
 	m_iszModelName = MAKE_STRING( pGibName );
 
 	// Precache the spawn item's data
-	if ( !CommandLine()->CheckParm("-makereslists"))
+	if( !CommandLine()->CheckParm( "-makereslists" ) )
 	{
-		if ( m_iszSpawnObject != NULL_STRING )
+		if( m_iszSpawnObject != NULL_STRING )
 		{
 			UTIL_PrecacheOther( STRING( m_iszSpawnObject ) );
 		}
@@ -476,16 +498,20 @@ void CBreakable::Precache( void )
 	else
 	{
 		// Actually, precache all possible objects...
-		for ( int i = 0; i < ARRAYSIZE(pSpawnObjects) ; ++i )
+		for( int i = 0; i < ARRAYSIZE( pSpawnObjects ) ; ++i )
 		{
-			if ( !pSpawnObjects[ i ] )
+			if( !pSpawnObjects[ i ] )
+			{
 				continue;
+			}
 
-			if ( !Q_strnicmp( pSpawnObjects[ i ], "unused", Q_strlen( "unused" ) ) )
+			if( !Q_strnicmp( pSpawnObjects[ i ], "unused", Q_strlen( "unused" ) ) )
+			{
 				continue;
+			}
 
 			UTIL_PrecacheOther( pSpawnObjects[ i ] );
-		}	
+		}
 	}
 
 	PrecacheScriptSound( "Breakable.MatGlass" );
@@ -510,57 +536,57 @@ void CBreakable::DamageSound( void )
 {
 	int pitch;
 	float fvol;
-	const char *soundname = NULL;
+	const char* soundname = NULL;
 	int material = m_Material;
 
-	if (random->RandomInt(0,2))
+	if( random->RandomInt( 0, 2 ) )
 	{
 		pitch = PITCH_NORM;
 	}
 	else
 	{
-		pitch = 95 + random->RandomInt(0,34);
+		pitch = 95 + random->RandomInt( 0, 34 );
 	}
 
-	fvol = random->RandomFloat(0.75, 1.0);
+	fvol = random->RandomFloat( 0.75, 1.0 );
 
-	if (material == matComputer && random->RandomInt(0,1))
+	if( material == matComputer && random->RandomInt( 0, 1 ) )
 	{
 		material = matMetal;
 	}
 
-	switch (material)
+	switch( material )
 	{
-	case matGlass:
-	case matUnbreakableGlass:
-		soundname = "Breakable.MatGlass";
-		break;
+		case matGlass:
+		case matUnbreakableGlass:
+			soundname = "Breakable.MatGlass";
+			break;
 
-	case matWood:
-		soundname = "Breakable.MatWood";
-		break;
+		case matWood:
+			soundname = "Breakable.MatWood";
+			break;
 
-	case matMetal:
-		soundname = "Breakable.MatMetal";
-		break;
+		case matMetal:
+			soundname = "Breakable.MatMetal";
+			break;
 
-	case matRocks:
-	case matCinderBlock:
-		soundname = "Breakable.MatConcrete";
-		break;
+		case matRocks:
+		case matCinderBlock:
+			soundname = "Breakable.MatConcrete";
+			break;
 
-	case matComputer:
-		soundname = "Breakable.Computer";
-		break;
+		case matComputer:
+			soundname = "Breakable.Computer";
+			break;
 
-	default:
-		break;
+		default:
+			break;
 	}
 
-	if ( soundname )
+	if( soundname )
 	{
 		CSoundParameters params;
-		if ( GetParametersForSound( soundname, params, NULL ) )
+		if( GetParametersForSound( soundname, params, NULL ) )
 		{
 			CPASAttenuationFilter filter( this );
 
@@ -576,22 +602,22 @@ void CBreakable::DamageSound( void )
 	}
 }
 
-void CBreakable::BreakTouch( CBaseEntity *pOther )
+void CBreakable::BreakTouch( CBaseEntity* pOther )
 {
 	float flDamage;
-	
+
 	// only players can break these right now
-	if ( !pOther->IsPlayer() || !IsBreakable() )
+	if( !pOther->IsPlayer() || !IsBreakable() )
 	{
-        return;
+		return;
 	}
 
 	// can I be broken when run into?
-	if ( HasSpawnFlags( SF_BREAK_TOUCH ) )
+	if( HasSpawnFlags( SF_BREAK_TOUCH ) )
 	{
 		flDamage = pOther->GetSmoothedVelocity().Length() * 0.01;
 
-		if (flDamage >= m_iHealth)
+		if( flDamage >= m_iHealth )
 		{
 			m_takedamage = DAMAGE_YES;
 
@@ -599,24 +625,24 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 			OnTakeDamage( CTakeDamageInfo( pOther, pOther, flDamage, DMG_CRUSH ) );
 
 			// do a little damage to player if we broke glass or computer
-			CTakeDamageInfo info( pOther, pOther, flDamage/4, DMG_SLASH );
-			CalculateMeleeDamageForce( &info, (pOther->GetAbsOrigin() - GetAbsOrigin()), GetAbsOrigin() );
+			CTakeDamageInfo info( pOther, pOther, flDamage / 4, DMG_SLASH );
+			CalculateMeleeDamageForce( &info, ( pOther->GetAbsOrigin() - GetAbsOrigin() ), GetAbsOrigin() );
 			pOther->TakeDamage( info );
 		}
 	}
 
 	// can I be broken when stood upon?
-	if ( HasSpawnFlags( SF_BREAK_PRESSURE ) && pOther->GetGroundEntity() == this )
+	if( HasSpawnFlags( SF_BREAK_PRESSURE ) && pOther->GetGroundEntity() == this )
 	{
 		// play creaking sound here.
 		DamageSound();
 
 		m_hBreaker = pOther;
 
-		SetThink ( &CBreakable::Die );
+		SetThink( &CBreakable::Die );
 		SetTouch( NULL );
-		
-		// Add optional delay 
+
+		// Add optional delay
 		SetNextThink( gpGlobals->curtime + m_flPressureDelay );
 
 	}
@@ -627,7 +653,7 @@ void CBreakable::BreakTouch( CBaseEntity *pOther )
 // Purpose: Input handler for adding to the breakable's health.
 // Input  : Integer health points to add.
 //-----------------------------------------------------------------------------
-void CBreakable::InputAddHealth( inputdata_t &inputdata )
+void CBreakable::InputAddHealth( inputdata_t& inputdata )
 {
 	UpdateHealth( m_iHealth + inputdata.value.Int(), inputdata.pActivator );
 }
@@ -636,7 +662,7 @@ void CBreakable::InputAddHealth( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for breaking the breakable immediately.
 //-----------------------------------------------------------------------------
-void CBreakable::InputBreak( inputdata_t &inputdata )
+void CBreakable::InputBreak( inputdata_t& inputdata )
 {
 	Break( inputdata.pActivator );
 }
@@ -646,7 +672,7 @@ void CBreakable::InputBreak( inputdata_t &inputdata )
 // Purpose: Input handler for removing health from the breakable.
 // Input  : Integer health points to remove.
 //-----------------------------------------------------------------------------
-void CBreakable::InputRemoveHealth( inputdata_t &inputdata )
+void CBreakable::InputRemoveHealth( inputdata_t& inputdata )
 {
 	UpdateHealth( m_iHealth - inputdata.value.Int(), inputdata.pActivator );
 }
@@ -655,7 +681,7 @@ void CBreakable::InputRemoveHealth( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting the breakable's health.
 //-----------------------------------------------------------------------------
-void CBreakable::InputSetHealth( inputdata_t &inputdata )
+void CBreakable::InputSetHealth( inputdata_t& inputdata )
 {
 	UpdateHealth( inputdata.value.Int(), inputdata.pActivator );
 }
@@ -664,13 +690,13 @@ void CBreakable::InputSetHealth( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for setting the breakable's mass.
 //-----------------------------------------------------------------------------
-void CBreakable::InputSetMass( inputdata_t &inputdata )
+void CBreakable::InputSetMass( inputdata_t& inputdata )
 {
-	IPhysicsObject * vPhys = VPhysicsGetObject();
-	if ( vPhys )
+	IPhysicsObject* vPhys = VPhysicsGetObject();
+	if( vPhys )
 	{
 		float toMass = inputdata.value.Float();
-		Assert(toMass > 0);
+		Assert( toMass > 0 );
 		vPhys->SetMass( toMass );
 	}
 	else
@@ -682,34 +708,34 @@ void CBreakable::InputSetMass( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 // Purpose: Choke point for changes to breakable health. Ensures outputs are fired.
-// Input  : iNewHealth - 
-//			pActivator - 
+// Input  : iNewHealth -
+//			pActivator -
 // Output : Returns true if the breakable survived, false if it died (broke).
 //-----------------------------------------------------------------------------
-bool CBreakable::UpdateHealth( int iNewHealth, CBaseEntity *pActivator )
+bool CBreakable::UpdateHealth( int iNewHealth, CBaseEntity* pActivator )
 {
-	if ( iNewHealth != m_iHealth )
+	if( iNewHealth != m_iHealth )
 	{
 		m_iHealth = iNewHealth;
 
-		if ( m_iMaxHealth == 0 )
+		if( m_iMaxHealth == 0 )
 		{
 			Assert( false );
 			m_iMaxHealth = 1;
 		}
 
 		// Output the new health as a percentage of max health [0..1]
-		float flRatio = clamp( (float)m_iHealth / (float)m_iMaxHealth, 0.f, 1.f );
+		float flRatio = clamp( ( float )m_iHealth / ( float )m_iMaxHealth, 0.f, 1.f );
 		m_OnHealthChanged.Set( flRatio, pActivator, this );
 
-		if ( m_iHealth <= 0 )
+		if( m_iHealth <= 0 )
 		{
 			Break( pActivator );
 			return false;
 		}
 		else
 		{
-			if ( FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )
+			if( FBitSet( m_spawnflags, SF_BREAK_TRIGGER_ONLY ) )
 			{
 				m_takedamage = DAMAGE_NO;
 			}
@@ -729,9 +755,9 @@ bool CBreakable::UpdateHealth( int iNewHealth, CBaseEntity *pActivator )
 // Input  : pBreaker - The entity that caused us to break, either via an input,
 //				by shooting us, or by touching us.
 //-----------------------------------------------------------------------------
-void CBreakable::Break( CBaseEntity *pBreaker )
+void CBreakable::Break( CBaseEntity* pBreaker )
 {
-	if ( IsBreakable() )
+	if( IsBreakable() )
 	{
 		QAngle angles = GetLocalAngles();
 		angles.y = m_angle;
@@ -742,10 +768,10 @@ void CBreakable::Break( CBaseEntity *pBreaker )
 }
 
 
-void CBreakable::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CBreakable::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	// random spark if this is a 'computer' object
-	if (random->RandomInt(0,1) )
+	if( random->RandomInt( 0, 1 ) )
 	{
 		switch( m_Material )
 		{
@@ -756,10 +782,10 @@ void CBreakable::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir,
 				EmitSound( "Breakable.Computer" );
 			}
 			break;
-			
+
 			case matUnbreakableGlass:
-				g_pEffects->Ricochet( ptr->endpos, (vecDir*-1.0f) );
-			break;
+				g_pEffects->Ricochet( ptr->endpos, ( vecDir * -1.0f ) );
+				break;
 		}
 	}
 
@@ -770,14 +796,14 @@ void CBreakable::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir,
 //-----------------------------------------------------------------------------
 // Purpose: Allows us to take damage from physics objects
 //-----------------------------------------------------------------------------
-void CBreakable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CBreakable::VPhysicsCollision( int index, gamevcollisionevent_t* pEvent )
 {
 	BaseClass::VPhysicsCollision( index, pEvent );
 
 	Vector damagePos;
 	pEvent->pInternalData->GetContactPoint( damagePos );
 	Vector damageForce = pEvent->postVelocity[index] * pEvent->pObjects[index]->GetMass();
-	if ( damageForce == vec3_origin )
+	if( damageForce == vec3_origin )
 	{
 		// This can happen if this entity is a func_breakable, and can't move.
 		// Use the velocity of the entity that hit us instead.
@@ -785,33 +811,33 @@ void CBreakable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 	}
 
 	// If we're supposed to explode on collision, do so
-	if ( HasSpawnFlags( SF_BREAK_PHYSICS_BREAK_IMMEDIATELY ) )
+	if( HasSpawnFlags( SF_BREAK_PHYSICS_BREAK_IMMEDIATELY ) )
 	{
 		// We're toast
 		m_bTookPhysicsDamage = true;
-		CBaseEntity *pHitEntity = pEvent->pEntities[!index];
+		CBaseEntity* pHitEntity = pEvent->pEntities[!index];
 
 		// HACKHACK: Reset mass to get correct collision response for the object breaking this glass
-		if ( m_Material == matGlass )
+		if( m_Material == matGlass )
 		{
 			pEvent->pObjects[index]->SetMass( 2.0f );
 		}
-		CTakeDamageInfo dmgInfo( pHitEntity, pHitEntity, damageForce, damagePos, (m_iHealth + 1), DMG_CRUSH );
+		CTakeDamageInfo dmgInfo( pHitEntity, pHitEntity, damageForce, damagePos, ( m_iHealth + 1 ), DMG_CRUSH );
 		PhysCallbackDamage( this, dmgInfo, *pEvent, index );
 	}
-	else if ( !HasSpawnFlags( SF_BREAK_DONT_TAKE_PHYSICS_DAMAGE ) )
+	else if( !HasSpawnFlags( SF_BREAK_DONT_TAKE_PHYSICS_DAMAGE ) )
 	{
 		int otherIndex = !index;
-		CBaseEntity *pOther = pEvent->pEntities[otherIndex];
+		CBaseEntity* pOther = pEvent->pEntities[otherIndex];
 
 		// We're to take normal damage from this
 		int damageType;
-		IBreakableWithPropData *pBreakableInterface = assert_cast<IBreakableWithPropData*>(this);
+		IBreakableWithPropData* pBreakableInterface = assert_cast<IBreakableWithPropData*>( this );
 		float damage = CalculateDefaultPhysicsDamage( index, pEvent, m_impactEnergyScale, true, damageType, pBreakableInterface->GetPhysicsDamageTable() );
-		if ( damage > 0 )
+		if( damage > 0 )
 		{
 			// HACKHACK: Reset mass to get correct collision response for the object breaking this glass
-			if ( m_Material == matGlass )
+			if( m_Material == matGlass )
 			{
 				pEvent->pObjects[index]->SetMass( 2.0f );
 			}
@@ -824,42 +850,48 @@ void CBreakable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
 //-----------------------------------------------------------------------------
 // Purpose: Allows us to make damage exceptions that are breakable-specific.
 //-----------------------------------------------------------------------------
-int CBreakable::OnTakeDamage( const CTakeDamageInfo &info )
+int CBreakable::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	CTakeDamageInfo subInfo = info;
 
 	// If attacker can't do at least the min required damage to us, don't take any damage from them
-	if ( m_takedamage == DAMAGE_NO || info.GetDamage() < m_iMinHealthDmg )
+	if( m_takedamage == DAMAGE_NO || info.GetDamage() < m_iMinHealthDmg )
+	{
 		return 0;
+	}
 
 	// Check our damage filter
-	if ( !PassesDamageFilter(subInfo) )
+	if( !PassesDamageFilter( subInfo ) )
 	{
 		m_bTookPhysicsDamage = false;
 		return 1;
 	}
 
-	if (!IsBreakable())
+	if( !IsBreakable() )
+	{
 		return 0;
+	}
 
-	float flPropDamage = GetBreakableDamage( subInfo, assert_cast<IBreakableWithPropData*>(this) );
+	float flPropDamage = GetBreakableDamage( subInfo, assert_cast<IBreakableWithPropData*>( this ) );
 	subInfo.SetDamage( flPropDamage );
-	
+
 	int iPrevHealth = m_iHealth;
 	BaseClass::OnTakeDamage( subInfo );
 
 	// HACK: slam health back to what it was so UpdateHealth can do its thing
 	int iNewHealth = m_iHealth;
 	m_iHealth = iPrevHealth;
-	if ( !UpdateHealth( iNewHealth, info.GetAttacker() ) )
+	if( !UpdateHealth( iNewHealth, info.GetAttacker() ) )
+	{
 		return 1;
+	}
 
 	// Make a shard noise each time func breakable is hit, if it's capable of taking damage
-	if ( m_takedamage == DAMAGE_YES )
+	if( m_takedamage == DAMAGE_YES )
 	{
 		// Don't play shard noise if being burned.
 		// Don't play shard noise if cbreakable actually died.
-		if ( ( subInfo.GetDamageType() & DMG_BURN ) == false )
+		if( ( subInfo.GetDamageType() & DMG_BURN ) == false )
 		{
 			DamageSound();
 		}
@@ -874,7 +906,7 @@ int CBreakable::OnTakeDamage( const CTakeDamageInfo &info )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CBreakable::ResetOnGroundFlags(void)
+void CBreakable::ResetOnGroundFlags( void )
 {
 	// !!! HACK  This should work!
 	// Build a box above the entity that looks like an 9 inch high sheet
@@ -884,13 +916,13 @@ void CBreakable::ResetOnGroundFlags(void)
 	maxs.z += 8;
 
 	// BUGBUG -- can only find 256 entities on a breakable -- should be enough
-	CBaseEntity *pList[256];
+	CBaseEntity* pList[256];
 	int count = UTIL_EntitiesInBox( pList, 256, mins, maxs, FL_ONGROUND );
-	if ( count )
+	if( count )
 	{
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			pList[i]->SetGroundEntity( (CBaseEntity *)NULL );
+			pList[i]->SetGroundEntity( ( CBaseEntity* )NULL );
 		}
 	}
 
@@ -906,10 +938,10 @@ void CBreakable::ResetOnGroundFlags(void)
 		Vector vBoxCenter = ( vMin + vMax ) * 0.5f;
 		Vector vBoxExtents = ( vMax - vMin ) * 0.5f;
 
-		CProp_Portal **pPortals = CProp_Portal_Shared::AllPortals.Base();
+		CProp_Portal** pPortals = CProp_Portal_Shared::AllPortals.Base();
 		for( int i = 0; i != iPortalCount; ++i )
 		{
-			CProp_Portal *pTempPortal = pPortals[i];
+			CProp_Portal* pTempPortal = pPortals[i];
 			if( UTIL_IsBoxIntersectingPortal( vBoxCenter, vBoxExtents, pTempPortal ) )
 			{
 				pTempPortal->DoFizzleEffect( PORTAL_FIZZLE_KILLED, false );
@@ -930,10 +962,10 @@ void CBreakable::Die( void )
 	char cFlag = 0;
 	int pitch;
 	float fvol;
-	
-	pitch = 95 + random->RandomInt(0,29);
 
-	if (pitch > 97 && pitch < 103)
+	pitch = 95 + random->RandomInt( 0, 29 );
+
+	if( pitch > 97 && pitch < 103 )
 	{
 		pitch = 100;
 	}
@@ -941,62 +973,62 @@ void CBreakable::Die( void )
 	// The more negative m_iHealth, the louder
 	// the sound should be.
 
-	fvol = random->RandomFloat(0.85, 1.0) + (abs(m_iHealth) / 100.0);
-	if (fvol > 1.0)
+	fvol = random->RandomFloat( 0.85, 1.0 ) + ( abs( m_iHealth ) / 100.0 );
+	if( fvol > 1.0 )
 	{
 		fvol = 1.0;
 	}
 
-	const char *soundname = NULL;
+	const char* soundname = NULL;
 
-	switch (m_Material)
+	switch( m_Material )
 	{
-	default:
-		break;
+		default:
+			break;
 
-	case matGlass:
-		soundname = "Breakable.Glass";
-		cFlag = BREAK_GLASS;
-		break;
+		case matGlass:
+			soundname = "Breakable.Glass";
+			cFlag = BREAK_GLASS;
+			break;
 
-	case matWood:
-		soundname = "Breakable.Crate";
-		cFlag = BREAK_WOOD;
-		break;
+		case matWood:
+			soundname = "Breakable.Crate";
+			cFlag = BREAK_WOOD;
+			break;
 
-	case matComputer:
-		soundname = "Breakable.Computer";
-		cFlag = BREAK_METAL;
-		break;
+		case matComputer:
+			soundname = "Breakable.Computer";
+			cFlag = BREAK_METAL;
+			break;
 
-	case matMetal:
-		soundname = "Breakable.Metal";
-		cFlag = BREAK_METAL;
-		break;
+		case matMetal:
+			soundname = "Breakable.Metal";
+			cFlag = BREAK_METAL;
+			break;
 
-	case matFlesh:
-	case matWeb:
-		soundname = "Breakable.Flesh";
-		cFlag = BREAK_FLESH;
-		break;
+		case matFlesh:
+		case matWeb:
+			soundname = "Breakable.Flesh";
+			cFlag = BREAK_FLESH;
+			break;
 
-	case matRocks:
-	case matCinderBlock:
-		soundname = "Breakable.Concrete";
-		cFlag = BREAK_CONCRETE;
-		break;
+		case matRocks:
+		case matCinderBlock:
+			soundname = "Breakable.Concrete";
+			cFlag = BREAK_CONCRETE;
+			break;
 
-	case matCeilingTile:
-		soundname = "Breakable.Ceiling";
-		break;
+		case matCeilingTile:
+			soundname = "Breakable.Ceiling";
+			break;
 	}
-    
-	if ( soundname )
+
+	if( soundname )
 	{
-		if ( m_hBreaker && m_hBreaker->IsPlayer() )
+		if( m_hBreaker && m_hBreaker->IsPlayer() )
 		{
-			IGameEvent * event = gameeventmanager->CreateEvent( "break_breakable" );
-			if ( event )
+			IGameEvent* event = gameeventmanager->CreateEvent( "break_breakable" );
+			if( event )
 			{
 				event->SetInt( "userid", ToBasePlayer( m_hBreaker )->GetUserID() );
 				event->SetInt( "entindex", entindex() );
@@ -1006,7 +1038,7 @@ void CBreakable::Die( void )
 		}
 
 		CSoundParameters params;
-		if ( GetParametersForSound( soundname, params, NULL ) )
+		if( GetParametersForSound( soundname, params, NULL ) )
 		{
 			CPASAttenuationFilter filter( this );
 
@@ -1017,91 +1049,91 @@ void CBreakable::Die( void )
 			ep.m_SoundLevel = params.soundlevel;
 			ep.m_nPitch = pitch;
 
-			EmitSound( filter, entindex(), ep );	
+			EmitSound( filter, entindex(), ep );
 		}
 	}
-		
+
 	switch( m_Explosion )
 	{
-	case expDirected:
-		vecVelocity = g_vecAttackDir * -200;
-		break;
+		case expDirected:
+			vecVelocity = g_vecAttackDir * -200;
+			break;
 
-	case expUsePrecise:
+		case expUsePrecise:
 		{
 			AngleVectors( m_GibDir, &vecVelocity, NULL, NULL );
 			vecVelocity *= 200;
 		}
 		break;
 
-	case expRandom:
-		vecVelocity.x = 0;
-		vecVelocity.y = 0;
-		vecVelocity.z = 0;
-		break;
+		case expRandom:
+			vecVelocity.x = 0;
+			vecVelocity.y = 0;
+			vecVelocity.z = 0;
+			break;
 
-	default:
-		DevMsg("**ERROR - Unspecified gib dir method in func_breakable!\n");
-		break;
+		default:
+			DevMsg( "**ERROR - Unspecified gib dir method in func_breakable!\n" );
+			break;
 	}
 
 	Vector vecSpot = WorldSpaceCenter();
 	CPVSFilter filter2( vecSpot );
 
 	int iModelIndex = 0;
-	CCollisionProperty *pCollisionProp = CollisionProp();
+	CCollisionProperty* pCollisionProp = CollisionProp();
 
 	Vector vSize = pCollisionProp->OBBSize();
 	int iCount = ( vSize[0] * vSize[1] + vSize[1] * vSize[2] + vSize[2] * vSize[0] ) / ( 3 * 12 * 12 );
 
-	if ( iCount > func_break_max_pieces.GetInt() )
+	if( iCount > func_break_max_pieces.GetInt() )
 	{
 		iCount = func_break_max_pieces.GetInt();
 	}
 
 	ConVarRef breakable_disable_gib_limit( "breakable_disable_gib_limit" );
-	if ( !breakable_disable_gib_limit.GetBool() && iCount )
+	if( !breakable_disable_gib_limit.GetBool() && iCount )
 	{
-		if ( m_PerformanceMode == PM_NO_GIBS )
+		if( m_PerformanceMode == PM_NO_GIBS )
 		{
 			iCount = 0;
 		}
-		else if ( m_PerformanceMode == PM_REDUCED_GIBS )
+		else if( m_PerformanceMode == PM_REDUCED_GIBS )
 		{
 			int iNewCount = iCount * func_break_reduction_factor.GetFloat();
 			iCount = MAX( iNewCount, 1 );
 		}
 	}
 
-	if ( m_iszModelName != NULL_STRING )
+	if( m_iszModelName != NULL_STRING )
 	{
-		for ( int i = 0; i < iCount; i++ )
+		for( int i = 0; i < iCount; i++ )
 		{
 
-	#ifdef HL1_DLL
+#ifdef HL1_DLL
 			// Use the passed model instead of the propdata type
-			const char *modelName = STRING( m_iszModelName );
-			
+			const char* modelName = STRING( m_iszModelName );
+
 			// if the map specifies a model by name
 			if( strstr( modelName, ".mdl" ) != NULL )
 			{
 				iModelIndex = modelinfo->GetModelIndex( modelName );
 			}
 			else	// do the hl2 / normal way
-	#endif
+#endif
 
-			iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel(  STRING( m_iszModelName ) ) );
+				iModelIndex = modelinfo->GetModelIndex( g_PropDataSystem.GetRandomChunkModel( STRING( m_iszModelName ) ) );
 
 			// All objects except the first one in this run are marked as slaves...
 			int slaveFlag = 0;
-			if ( i != 0 )
+			if( i != 0 )
 			{
 				slaveFlag = BREAK_SLAVE;
 			}
 
-			te->BreakModel( filter2, 0.0, 
-				vecSpot, pCollisionProp->GetCollisionAngles(), vSize, 
-				vecVelocity, iModelIndex, 100, 1, 2.5, cFlag | slaveFlag );
+			te->BreakModel( filter2, 0.0,
+							vecSpot, pCollisionProp->GetCollisionAngles(), vSize,
+							vecVelocity, iModelIndex, 100, 1, 2.5, cFlag | slaveFlag );
 		}
 	}
 
@@ -1111,19 +1143,19 @@ void CBreakable::Die( void )
 	SetName( NULL_STRING );
 
 	AddSolidFlags( FSOLID_NOT_SOLID );
-	
+
 	// Fire targets on break
 	m_OnBreak.FireOutput( m_hBreaker, this );
 
 	VPhysicsDestroyObject();
 	SetThink( &CBreakable::SUB_Remove );
 	SetNextThink( gpGlobals->curtime + 0.1f );
-	if ( m_iszSpawnObject != NULL_STRING )
+	if( m_iszSpawnObject != NULL_STRING )
 	{
-		CBaseEntity::Create( STRING(m_iszSpawnObject), vecSpot, pCollisionProp->GetCollisionAngles(), this );
+		CBaseEntity::Create( STRING( m_iszSpawnObject ), vecSpot, pCollisionProp->GetCollisionAngles(), this );
 	}
 
-	if ( Explodable() )
+	if( Explodable() )
 	{
 		ExplosionCreate( vecSpot, pCollisionProp->GetCollisionAngles(), this, GetExplosiveDamage(), GetExplosiveRadius(), true );
 	}
@@ -1133,21 +1165,25 @@ void CBreakable::Die( void )
 //-----------------------------------------------------------------------------
 // Purpose: Returns whether this object can be broken.
 //-----------------------------------------------------------------------------
-bool CBreakable::IsBreakable( void ) 
-{ 
+bool CBreakable::IsBreakable( void )
+{
 	return m_Material != matUnbreakableGlass;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-char const *CBreakable::DamageDecal( int bitsDamageType, int gameMaterial )
+char const* CBreakable::DamageDecal( int bitsDamageType, int gameMaterial )
 {
-	if ( m_Material == matGlass  )
+	if( m_Material == matGlass )
+	{
 		return "GlassBreak";
+	}
 
-	if ( m_Material == matUnbreakableGlass )
+	if( m_Material == matUnbreakableGlass )
+	{
 		return "BulletProof";
+	}
 
 	return BaseClass::DamageDecal( bitsDamageType, gameMaterial );
 }
@@ -1156,25 +1192,25 @@ char const *CBreakable::DamageDecal( int bitsDamageType, int gameMaterial )
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CBreakable::DrawDebugTextOverlays(void) 
+int CBreakable::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
-		if ( GetMaxHealth() )
+		if( GetMaxHealth() )
 		{
 			char tempstr[512];
-			Q_snprintf(tempstr,sizeof(tempstr),"Health: %i",GetHealth());
-			EntityText(text_offset,tempstr,0);
+			Q_snprintf( tempstr, sizeof( tempstr ), "Health: %i", GetHealth() );
+			EntityText( text_offset, tempstr, 0 );
 			text_offset++;
 		}
 
-		if ( m_iszBasePropData != NULL_STRING )
+		if( m_iszBasePropData != NULL_STRING )
 		{
 			char tempstr[512];
-			Q_snprintf(tempstr, sizeof(tempstr),"Base PropData: %s", STRING(m_iszBasePropData) );
-			EntityText( text_offset, tempstr, 0);
+			Q_snprintf( tempstr, sizeof( tempstr ), "Base PropData: %s", STRING( m_iszBasePropData ) );
+			EntityText( text_offset, tempstr, 0 );
 			text_offset++;
 		}
 	}
@@ -1187,21 +1223,21 @@ int CBreakable::DrawDebugTextOverlays(void)
 // Purpose: Keep track of physgun influence
 //-----------------------------------------------------------------------------
 
-void CBreakable::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CBreakable::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 }
 
-void CBreakable::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason )
+void CBreakable::OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t reason )
 {
 	m_hPhysicsAttacker = pPhysGunUser;
 	m_flLastPhysicsInfluenceTime = gpGlobals->curtime;
 }
 
-CBasePlayer *CBreakable::HasPhysicsAttacker( float dt )
+CBasePlayer* CBreakable::HasPhysicsAttacker( float dt )
 {
-	if (gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime)
+	if( gpGlobals->curtime - dt <= m_flLastPhysicsInfluenceTime )
 	{
 		return m_hPhysicsAttacker;
 	}
@@ -1214,23 +1250,29 @@ CBasePlayer *CBreakable::HasPhysicsAttacker( float dt )
 //=============================================================================================================================
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPushable : public CBreakable
 {
 public:
 	DECLARE_CLASS( CPushable, CBreakable );
 
-	void	Spawn ( void );
+	void	Spawn( void );
 	bool	CreateVPhysics( void );
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_ONOFF_USE; }
+	virtual int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() | FCAP_ONOFF_USE;
+	}
 
 	// breakables use an overridden takedamage
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
-	unsigned int PhysicsSolidMaskForEntity( void ) const { return MASK_PLAYERSOLID; }
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
+	unsigned int PhysicsSolidMaskForEntity( void ) const
+	{
+		return MASK_PLAYERSOLID;
+	}
 };
 
 
@@ -1239,7 +1281,7 @@ LINK_ENTITY_TO_CLASS( func_pushable, CPushable );
 
 void CPushable::Spawn( void )
 {
-	if ( HasSpawnFlags( SF_PUSH_BREAKABLE ) )
+	if( HasSpawnFlags( SF_PUSH_BREAKABLE ) )
 	{
 		BaseClass::Spawn();
 	}
@@ -1265,8 +1307,8 @@ void CPushable::Spawn( void )
 bool CPushable::CreateVPhysics( void )
 {
 	VPhysicsInitNormal( SOLID_VPHYSICS, 0, false );
-	IPhysicsObject *pPhysObj = VPhysicsGetObject();
-	if ( pPhysObj )
+	IPhysicsObject* pPhysObj = VPhysicsGetObject();
+	if( pPhysObj )
 	{
 		pPhysObj->SetMass( 30 );
 //		Vector vecInertia = Vector(800, 800, 800);
@@ -1277,17 +1319,19 @@ bool CPushable::CreateVPhysics( void )
 }
 
 // Pull the func_pushable
-void CPushable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CPushable::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 #ifdef HL1_DLL
 	if( m_spawnflags & SF_PUSH_NO_USE )
+	{
 		return;
+	}
 
 	// Allow pushables to be dragged by player
-	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
-	if ( pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( pActivator );
+	if( pPlayer )
 	{
-		if ( useType == USE_ON )
+		if( useType == USE_ON )
 		{
 			PlayerPickupObject( pPlayer, this );
 		}
@@ -1298,10 +1342,12 @@ void CPushable::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE use
 }
 
 
-int CPushable::OnTakeDamage( const CTakeDamageInfo &info )
+int CPushable::OnTakeDamage( const CTakeDamageInfo& info )
 {
-	if ( m_spawnflags & SF_PUSH_BREAKABLE )
+	if( m_spawnflags & SF_PUSH_BREAKABLE )
+	{
 		return BaseClass::OnTakeDamage( info );
+	}
 
 	return 1;
 }
@@ -1309,11 +1355,11 @@ int CPushable::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Allows us to take damage from physics objects
 //-----------------------------------------------------------------------------
-void CPushable::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CPushable::VPhysicsCollision( int index, gamevcollisionevent_t* pEvent )
 {
 	int otherIndex = !index;
-	CBaseEntity *pOther = pEvent->pEntities[otherIndex];
-	if ( pOther->IsPlayer() )
+	CBaseEntity* pOther = pEvent->pEntities[otherIndex];
+	if( pOther->IsPlayer() )
 	{
 		// Pushables don't take damage from impacts with the player
 		// We call all the way back to the baseclass to get the physics effects.

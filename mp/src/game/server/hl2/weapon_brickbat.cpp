@@ -19,7 +19,7 @@
 #include "grenade_brickbat.h"
 #include "ammodef.h"
 #include "in_buttons.h"
-#include "game.h"			
+#include "game.h"
 #include "IEffects.h"
 #include "vstdlib/random.h"
 #include "baseviewmodel.h"
@@ -33,11 +33,11 @@ extern ConVar sk_plr_dmg_brickbat;
 
 struct BrickbatAmmo_s
 {
-	const char	*m_sClassName;
+	const char*	m_sClassName;
 	int			m_nAmmoType;
 	int			m_nMaxCarry;
-	const char	*m_sViewModel;
-	const char	*m_sWorldModel;
+	const char*	m_sViewModel;
+	const char*	m_sWorldModel;
 };
 
 BrickbatAmmo_s	BrickBatAmmoArray[NUM_BRICKBAT_AMMO_TYPES] =
@@ -46,49 +46,49 @@ BrickbatAmmo_s	BrickBatAmmoArray[NUM_BRICKBAT_AMMO_TYPES] =
 	{ "grenade_beerbottle",		BRICKBAT_BOTTLE,		3,	"models/weapons/v_bb_bottle.mdl",		"models/weapons/w_bb_bottle.mdl" },
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponBrickbat, DT_WeaponBrickbat)
+IMPLEMENT_SERVERCLASS_ST( CWeaponBrickbat, DT_WeaponBrickbat )
 END_SEND_TABLE()
 
 //LINK_ENTITY_TO_CLASS( weapon_brickbat, CWeaponBrickbat );
 //PRECACHE_WEAPON_REGISTER(weapon_brickbat);
 
-acttable_t	CWeaponBrickbat::m_acttable[] = 
+acttable_t	CWeaponBrickbat::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1, ACT_RANGE_ATTACK_THROW, true },
 };
-IMPLEMENT_ACTTABLE(CWeaponBrickbat);
+IMPLEMENT_ACTTABLE( CWeaponBrickbat );
 
 
 
 BEGIN_DATADESC( CWeaponBrickbat )
 
-	DEFINE_FIELD( m_bNeedDraw, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bNeedThrow, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iThrowBits, FIELD_INTEGER ),
-	DEFINE_FIELD( m_fNextThrowCheck, FIELD_TIME ),
-	DEFINE_FIELD( m_vecTossVelocity, FIELD_VECTOR ),
-	DEFINE_ARRAY( m_nAmmoCount, FIELD_INTEGER, NUM_BRICKBAT_AMMO_TYPES ),
-	DEFINE_KEYFIELD( m_iCurrentAmmoType, FIELD_INTEGER, "BrickbatType" ),
+DEFINE_FIELD( m_bNeedDraw, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bNeedThrow, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iThrowBits, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_fNextThrowCheck, FIELD_TIME ),
+			  DEFINE_FIELD( m_vecTossVelocity, FIELD_VECTOR ),
+			  DEFINE_ARRAY( m_nAmmoCount, FIELD_INTEGER, NUM_BRICKBAT_AMMO_TYPES ),
+			  DEFINE_KEYFIELD( m_iCurrentAmmoType, FIELD_INTEGER, "BrickbatType" ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( BrickbatTouch ),
+			  // Function Pointers
+			  DEFINE_FUNCTION( BrickbatTouch ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //------------------------------------------------------------------------------
 // Purpose :
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CWeaponBrickbat::Precache( void )
+			  void CWeaponBrickbat::Precache( void )
 {
-	for (int i=0;i<ARRAYSIZE(BrickBatAmmoArray);i++)
+	for( int i = 0; i < ARRAYSIZE( BrickBatAmmoArray ); i++ )
 	{
-		PrecacheModel(BrickBatAmmoArray[i].m_sWorldModel);
-		PrecacheModel(BrickBatAmmoArray[i].m_sViewModel);
+		PrecacheModel( BrickBatAmmoArray[i].m_sWorldModel );
+		PrecacheModel( BrickBatAmmoArray[i].m_sViewModel );
 	}
 
-	UTIL_PrecacheOther("grenade_molotov");
+	UTIL_PrecacheOther( "grenade_molotov" );
 
 	BaseClass::Precache();
 }
@@ -98,7 +98,7 @@ void CWeaponBrickbat::Spawn( void )
 	m_bNeedDraw		= true;
 	m_bNeedThrow	= false;
 
-	for (int i=0;i<NUM_BRICKBAT_AMMO_TYPES;i++)
+	for( int i = 0; i < NUM_BRICKBAT_AMMO_TYPES; i++ )
 	{
 		m_nAmmoCount[i] = 0;
 	}
@@ -111,17 +111,17 @@ void CWeaponBrickbat::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CWeaponBrickbat::GetViewModel( int viewmodelindex /*=0*/ )
+const char* CWeaponBrickbat::GetViewModel( int viewmodelindex /*=0*/ )
 {
 	return BrickBatAmmoArray[m_iCurrentAmmoType].m_sViewModel;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CWeaponBrickbat::GetWorldModel( void )
+const char* CWeaponBrickbat::GetWorldModel( void )
 {
 	return BrickBatAmmoArray[m_iCurrentAmmoType].m_sWorldModel;
 }
@@ -136,7 +136,7 @@ bool CWeaponBrickbat::Deploy( void )
 	SetModel( GetViewModel() );
 	m_bNeedDraw		= false;
 	m_bNeedThrow	= false;
-	return DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), ACT_VM_DRAW, (char*)GetAnimPrefix() );
+	return DefaultDeploy( ( char* )GetViewModel(), ( char* )GetWorldModel(), ACT_VM_DRAW, ( char* )GetAnimPrefix() );
 }
 
 //------------------------------------------------------------------------------
@@ -155,14 +155,14 @@ void CWeaponBrickbat::SetPickupTouch( void )
 // Input  : pOther - the entity that touched me
 // Output :
 //-----------------------------------------------------------------------------
-void CWeaponBrickbat::BrickbatTouch( CBaseEntity *pOther )
+void CWeaponBrickbat::BrickbatTouch( CBaseEntity* pOther )
 {
 	// ---------------------------------------------------
 	//  First give weapon to touching entity if allowed
 	//  Skip ammo given portion by setting clips to zero
 	//  and handle ammo giving here
 	// ---------------------------------------------------
-	BaseClass::DefaultTouch(pOther);
+	BaseClass::DefaultTouch( pOther );
 
 	//FIXME: This ammo handling code is a bit bogus, need a real solution if brickbats are going to live
 
@@ -182,7 +182,7 @@ void CWeaponBrickbat::BrickbatTouch( CBaseEntity *pOther )
 		//  If already owned weapon of this type remove me
 		// ------------------------------------------------
 		CWeaponBrickbat* oldWeapon = (CWeaponBrickbat*)pBCC->Weapon_OwnsThisType( GetClassname() );
-		
+
 		// Remove physics object if is one
 		VPhysicsDestroyObject();
 
@@ -192,7 +192,7 @@ void CWeaponBrickbat::BrickbatTouch( CBaseEntity *pOther )
 			if (oldWeapon->m_nAmmoCount[m_iCurrentAmmoType] < BrickBatAmmoArray[m_iCurrentAmmoType].m_nMaxCarry)
 			{
 				oldWeapon->m_nAmmoCount[m_iCurrentAmmoType]++;
-				pBCC->GiveAmmo( 1, oldWeapon->m_iPrimaryAmmoType ); 
+				pBCC->GiveAmmo( 1, oldWeapon->m_iPrimaryAmmoType );
 				UTIL_Remove( this );
 			}
 		}
@@ -202,7 +202,7 @@ void CWeaponBrickbat::BrickbatTouch( CBaseEntity *pOther )
 			if (m_nAmmoCount[m_iCurrentAmmoType] < BrickBatAmmoArray[m_iCurrentAmmoType].m_nMaxCarry)
 			{
 				m_nAmmoCount[m_iCurrentAmmoType]++;
-				pBCC->GiveAmmo( 1, m_iPrimaryAmmoType ); 
+				pBCC->GiveAmmo( 1, m_iPrimaryAmmoType );
 
 				SetThink (NULL);
 			}
@@ -225,15 +225,15 @@ void CWeaponBrickbat::BrickbatTouch( CBaseEntity *pOther )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeaponBrickbat::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponBrickbat::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
 		case EVENT_WEAPON_THROW:
 		{
-			CAI_BaseNPC *pNPC = GetOwner()->MyNPCPointer();
+			CAI_BaseNPC* pNPC = GetOwner()->MyNPCPointer();
 
-			if (!pNPC)
+			if( !pNPC )
 			{
 				return;
 			}
@@ -245,20 +245,22 @@ void CWeaponBrickbat::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 			// -----------------------------------------------------
 			// If owner has a hand, set position to the hand bone position
 			Vector launchPos;
-			int iBIndex = pNPC->LookupBone("Bip01 R Hand");
-			if (iBIndex != -1) {
+			int iBIndex = pNPC->LookupBone( "Bip01 R Hand" );
+			if( iBIndex != -1 )
+			{
 				Vector origin;
 				QAngle angles;
-				pNPC->GetBonePosition( iBIndex, launchPos, angles);
+				pNPC->GetBonePosition( iBIndex, launchPos, angles );
 			}
 			// Otherwise just set to in front of the owner
-			else {
+			else
+			{
 				Vector vFacingDir = pNPC->BodyDirection2D( );
-				vFacingDir = vFacingDir * 60.0; 
-				launchPos = pNPC->GetLocalOrigin()+vFacingDir;
+				vFacingDir = vFacingDir * 60.0;
+				launchPos = pNPC->GetLocalOrigin() + vFacingDir;
 			}
 
-			ThrowBrickbat( launchPos, m_vecTossVelocity, sk_npc_dmg_brickbat.GetFloat());
+			ThrowBrickbat( launchPos, m_vecTossVelocity, sk_npc_dmg_brickbat.GetFloat() );
 
 			// Drop the weapon and remove as no more ammo
 			pNPC->Weapon_Drop( this );
@@ -279,8 +281,8 @@ void CWeaponBrickbat::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombat
 //-----------------------------------------------------------------------------
 bool CWeaponBrickbat::ObjectInWay( void )
 {
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if (!pOwner)
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( !pOwner )
 	{
 		return false;
 	}
@@ -290,17 +292,17 @@ bool CWeaponBrickbat::ObjectInWay( void )
 
 	trace_t tr;
 
-	Vector	vecEnd = vecSrc + (vecAiming * 32);
+	Vector	vecEnd = vecSrc + ( vecAiming * 32 );
 	UTIL_TraceLine( vecSrc, vecEnd, MASK_SOLID, pOwner, COLLISION_GROUP_NONE, &tr );
-	
-	if (tr.fraction < 1.0)
+
+	if( tr.fraction < 1.0 )
 	{
 		// Don't block on a living creature
-		if (tr.m_pEnt)
+		if( tr.m_pEnt )
 		{
-			CBaseEntity *pEntity = tr.m_pEnt;
-			CBaseCombatCharacter *pBCC		= ToBaseCombatCharacter( pEntity );
-			if (pBCC)
+			CBaseEntity* pEntity = tr.m_pEnt;
+			CBaseCombatCharacter* pBCC		= ToBaseCombatCharacter( pEntity );
+			if( pBCC )
 			{
 				return false;
 			}
@@ -318,7 +320,7 @@ bool CWeaponBrickbat::ObjectInWay( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-bool CWeaponBrickbat::WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos,bool bSetConditions)
+bool CWeaponBrickbat::WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
 {
 	// <<TODO>> should test if can throw from present location here...
 	return true;
@@ -333,42 +335,42 @@ int CWeaponBrickbat::WeaponRangeAttack1Condition( float flDot, float flDist )
 {
 	// If things haven't changed too much since last time
 	// just return that previously calculated value
-	if (gpGlobals->curtime < m_fNextThrowCheck )
+	if( gpGlobals->curtime < m_fNextThrowCheck )
 	{
 		return m_iThrowBits;
 	}
-	
-	if ( flDist < m_fMinRange1) 
+
+	if( flDist < m_fMinRange1 )
 	{
 		m_iThrowBits = COND_TOO_CLOSE_TO_ATTACK;
 	}
-	else if (flDist > m_fMaxRange1) 
+	else if( flDist > m_fMaxRange1 )
 	{
 		m_iThrowBits = COND_TOO_FAR_TO_ATTACK;
 	}
-	else if (flDot < 0.5) 
+	else if( flDot < 0.5 )
 	{
 		m_iThrowBits = COND_NOT_FACING_ATTACK;
 	}
 
 	// If moving, can't throw.
-	else if ( m_flGroundSpeed != 0 )
+	else if( m_flGroundSpeed != 0 )
 	{
 		m_iThrowBits = COND_NONE;
 	}
-	else 
+	else
 	{
 		// Ok we should check again as some time has passed
 		// This function is only used by NPC's so we can cast to a Base Monster
-		CAI_BaseNPC *pNPC	= GetOwner()->MyNPCPointer();
-		CBaseEntity *pEnemy = pNPC->GetEnemy();
+		CAI_BaseNPC* pNPC	= GetOwner()->MyNPCPointer();
+		CBaseEntity* pEnemy = pNPC->GetEnemy();
 
-		if (!pEnemy)
+		if( !pEnemy )
 		{
 			return COND_NONE;
 		}
 
-		// Get Enemy Position 
+		// Get Enemy Position
 		Vector vecTarget;
 		pEnemy->CollisionProp()->NormalizedToWorldSpace( Vector( 0.5f, 0.5f, 0.0f ), &vecTarget );
 
@@ -376,12 +378,12 @@ int CWeaponBrickbat::WeaponRangeAttack1Condition( float flDot, float flDist )
 		Vector			throwStart  = pNPC->Weapon_ShootPosition();
 		Vector			vecToss;
 		CBaseEntity*	pBlocker	= NULL;
-		float			throwDist	= (throwStart - vecTarget).Length();
-		float			fGravity	= GetCurrentGravity(); 
-		float			throwLimit	= pNPC->ThrowLimit(throwStart, vecTarget, fGravity, 35, WorldAlignMins(), WorldAlignMaxs(), pEnemy, &vecToss, &pBlocker);
+		float			throwDist	= ( throwStart - vecTarget ).Length();
+		float			fGravity	= GetCurrentGravity();
+		float			throwLimit	= pNPC->ThrowLimit( throwStart, vecTarget, fGravity, 35, WorldAlignMins(), WorldAlignMaxs(), pEnemy, &vecToss, &pBlocker );
 
 		// If I can make the throw (or most of the throw)
-		if (!throwLimit || (throwLimit != throwDist && throwLimit > 0.8*throwDist))
+		if( !throwLimit || ( throwLimit != throwDist && throwLimit > 0.8 * throwDist ) )
 		{
 			m_vecTossVelocity = vecToss;
 			m_iThrowBits = COND_CAN_RANGE_ATTACK1;
@@ -400,29 +402,29 @@ int CWeaponBrickbat::WeaponRangeAttack1Condition( float flDot, float flDist )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
-void CWeaponBrickbat::ThrowBrickbat( Vector vecSrc, Vector vecVelocity, float damage)
+void CWeaponBrickbat::ThrowBrickbat( Vector vecSrc, Vector vecVelocity, float damage )
 {
-	CGrenade_Brickbat *pBrickbat = (CGrenade_Brickbat*)Create( BrickBatAmmoArray[m_iCurrentAmmoType].m_sClassName, vecSrc, vec3_angle, GetOwner() );
+	CGrenade_Brickbat* pBrickbat = ( CGrenade_Brickbat* )Create( BrickBatAmmoArray[m_iCurrentAmmoType].m_sClassName, vecSrc, vec3_angle, GetOwner() );
 
-	if (!pBrickbat)
+	if( !pBrickbat )
 	{
-		Msg("Brickbat type (%s) not defined!\n",BrickBatAmmoArray[m_iCurrentAmmoType].m_sClassName);
+		Msg( "Brickbat type (%s) not defined!\n", BrickBatAmmoArray[m_iCurrentAmmoType].m_sClassName );
 		return;
 	}
 
 	AngularImpulse vecAngVel;
 	// Tumble through the air
-	vecAngVel.x = random->RandomFloat ( -100, -500 );
-	vecAngVel.z = random->RandomFloat ( -100, -500 );
-	vecAngVel.y = random->RandomFloat ( -100, -500 );
+	vecAngVel.x = random->RandomFloat( -100, -500 );
+	vecAngVel.z = random->RandomFloat( -100, -500 );
+	vecAngVel.y = random->RandomFloat( -100, -500 );
 
 	// If physically simulated
-	IPhysicsObject *pPhysicsObject = pBrickbat->VPhysicsGetObject();
-	if ( pPhysicsObject )
+	IPhysicsObject* pPhysicsObject = pBrickbat->VPhysicsGetObject();
+	if( pPhysicsObject )
 	{
 		pPhysicsObject->AddVelocity( &vecVelocity, &vecAngVel );
 	}
@@ -437,8 +439,8 @@ void CWeaponBrickbat::ThrowBrickbat( Vector vecSrc, Vector vecVelocity, float da
 	}
 
 	pBrickbat->SetThrower( GetOwner() );
-	pBrickbat->SetOwnerEntity( ((CBaseEntity*)GetOwner()) );
-	pBrickbat->SetDamage(damage);
+	pBrickbat->SetOwnerEntity( ( ( CBaseEntity* )GetOwner() ) );
+	pBrickbat->SetDamage( damage );
 
 	m_nAmmoCount[m_iCurrentAmmoType]--;
 
@@ -446,22 +448,22 @@ void CWeaponBrickbat::ThrowBrickbat( Vector vecSrc, Vector vecVelocity, float da
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CWeaponBrickbat::PrimaryAttack( void )
 {
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
-	if (!pPlayer)
+	if( !pPlayer )
 	{
 		return;
 	}
 
-	SendWeaponAnim(ACT_VM_PULLBACK);
-	
+	SendWeaponAnim( ACT_VM_PULLBACK );
+
 	// Don't fire again until fire animation has completed
 	float flSequenceEndTime = gpGlobals->curtime + SequenceDuration();
 	pPlayer->m_flNextAttack = m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSequenceEndTime;
@@ -470,16 +472,16 @@ void CWeaponBrickbat::PrimaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CWeaponBrickbat::Throw( void )
 {
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
-	if (!pPlayer)
+	if( !pPlayer )
 	{
 		return;
 	}
@@ -491,7 +493,7 @@ void CWeaponBrickbat::Throw( void )
 
 	// Player may have turned to face a wall during the throw anim in which case
 	// we don't want to throw the SLAM into the wall
-	if (ObjectInWay())
+	if( ObjectInWay() )
 	{
 		vecSrc = pPlayer->WorldSpaceCenter() + vecFacing * 5.0;
 	}
@@ -499,11 +501,11 @@ void CWeaponBrickbat::Throw( void )
 	Vector vecAiming = pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	vecAiming.z += 0.20; // Raise up so passes through reticle
 
-	ThrowBrickbat(vecSrc, vecAiming*800, sk_plr_dmg_brickbat.GetFloat());
+	ThrowBrickbat( vecSrc, vecAiming * 800, sk_plr_dmg_brickbat.GetFloat() );
 	pPlayer->RemoveAmmo( 1, m_iPrimaryAmmoType );
 
-	SendWeaponAnim(ACT_VM_THROW);
-	
+	SendWeaponAnim( ACT_VM_THROW );
+
 	// Don't fire again until fire animation has completed
 	float flSequenceEndTime = gpGlobals->curtime + SequenceDuration();
 	pPlayer->m_flNextAttack = m_flNextPrimaryAttack = m_flNextSecondaryAttack = flSequenceEndTime;
@@ -512,19 +514,19 @@ void CWeaponBrickbat::Throw( void )
 	m_bNeedDraw	 = true;
 }
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CWeaponBrickbat::SecondaryAttack( void )
 {
 	int counter = 0;
-	while (counter < NUM_BRICKBAT_AMMO_TYPES)
+	while( counter < NUM_BRICKBAT_AMMO_TYPES )
 	{
-		m_iCurrentAmmoType = ((++m_iCurrentAmmoType)%NUM_BRICKBAT_AMMO_TYPES);
+		m_iCurrentAmmoType = ( ( ++m_iCurrentAmmoType ) % NUM_BRICKBAT_AMMO_TYPES );
 
 		// If I've found a category with ammo stop looking
-		if (m_nAmmoCount[m_iCurrentAmmoType] > 0)
+		if( m_nAmmoCount[m_iCurrentAmmoType] > 0 )
 		{
 			DrawAmmo();
 			return;
@@ -535,36 +537,36 @@ void CWeaponBrickbat::SecondaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
 void CWeaponBrickbat::DrawAmmo( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
 	// -------------------------------------------
 	// Make sure I have ammo of the current type
 	// -------------------------------------------
 	int counter = 0;
-	while (m_nAmmoCount[m_iCurrentAmmoType] <=0)
+	while( m_nAmmoCount[m_iCurrentAmmoType] <= 0 )
 	{
-		m_iCurrentAmmoType = ((++m_iCurrentAmmoType)%NUM_BRICKBAT_AMMO_TYPES);
+		m_iCurrentAmmoType = ( ( ++m_iCurrentAmmoType ) % NUM_BRICKBAT_AMMO_TYPES );
 		counter++;
 
 		// ----------------------------------------------------
 		// No ammo of any types so drop the weapon and destroy
 		// ----------------------------------------------------
-		if (counter >= NUM_BRICKBAT_AMMO_TYPES)
+		if( counter >= NUM_BRICKBAT_AMMO_TYPES )
 		{
 			pOwner->Weapon_Drop( this, NULL, NULL );
-			UTIL_Remove(this);
+			UTIL_Remove( this );
 			return;
 		}
 	}
-	SetModel( BrickBatAmmoArray[m_iCurrentAmmoType].m_sViewModel);
-	CBaseViewModel *vm = pOwner->GetViewModel();
-	if ( vm )
+	SetModel( BrickBatAmmoArray[m_iCurrentAmmoType].m_sViewModel );
+	CBaseViewModel* vm = pOwner->GetViewModel();
+	if( vm )
 	{
 		vm->SetModel( BrickBatAmmoArray[m_iCurrentAmmoType].m_sViewModel );
 	}
@@ -572,7 +574,7 @@ void CWeaponBrickbat::DrawAmmo( void )
 	//Msg("Drawing %s...\n",BrickBatAmmoArray[m_iCurrentAmmoType].m_sClassName);
 	m_bNeedDraw = false;
 
-	SendWeaponAnim(ACT_VM_DRAW);
+	SendWeaponAnim( ACT_VM_DRAW );
 
 	// Don't fire again until fire animation has completed
 	float flSequenceEndTime = gpGlobals->curtime + SequenceDuration();
@@ -598,30 +600,30 @@ void CWeaponBrickbat::ItemPostFrame( void )
 	}
 	*/
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	if (!pOwner)
+	if( !pOwner )
 	{
 		return;
 	}
 
-	if (m_bNeedThrow)
+	if( m_bNeedThrow )
 	{
 		Throw();
 	}
-	else if ((pOwner->m_nButtons & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->curtime))
+	else if( ( pOwner->m_nButtons & IN_ATTACK2 ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
 	{
 		SecondaryAttack();
 	}
-	else if ((pOwner->m_nButtons & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->curtime))
+	else if( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		// Uses secondary ammo only
-		if (pOwner->GetAmmoCount(m_iPrimaryAmmoType))
+		if( pOwner->GetAmmoCount( m_iPrimaryAmmoType ) )
 		{
 			PrimaryAttack();
 		}
 	}
-	else if (m_bNeedDraw)
+	else if( m_bNeedDraw )
 	{
 		DrawAmmo();
 	}
@@ -637,14 +639,14 @@ void CWeaponBrickbat::ItemPostFrame( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeaponBrickbat::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CWeaponBrickbat::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr )
 {
-	if ( info.GetDamageType() & DMG_BULLET)
+	if( info.GetDamageType() & DMG_BULLET )
 	{
-		if ( BrickBatAmmoArray[m_iCurrentAmmoType].m_nAmmoType == BRICKBAT_ROCK )
+		if( BrickBatAmmoArray[m_iCurrentAmmoType].m_nAmmoType == BRICKBAT_ROCK )
 		{
-			g_pEffects->Ricochet(ptr->endpos,ptr->plane.normal);
-		}	
+			g_pEffects->Ricochet( ptr->endpos, ptr->plane.normal );
+		}
 	}
 	BaseClass::TraceAttack( info, vecDir, ptr );
 }

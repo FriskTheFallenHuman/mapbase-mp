@@ -4,12 +4,12 @@
 #if !defined( RENAMED_RECVTABLE_COMPAT_H )
 #define RENAMED_RECVTABLE_COMPAT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CRenamedRecvTableInfo;
 
-extern CRenamedRecvTableInfo *g_pRenamedRecvTableInfoHead;
+extern CRenamedRecvTableInfo* g_pRenamedRecvTableInfoHead;
 
 //-----------------------------------------------------------------------------
 // Purpose: Used by NOTE_RENAMED_RECVTABLE() macro.
@@ -17,18 +17,18 @@ extern CRenamedRecvTableInfo *g_pRenamedRecvTableInfoHead;
 class CRenamedRecvTableInfo
 {
 public:
-	CRenamedRecvTableInfo( const char *pOldName, const char *pNewName )
-	:	m_pOldName( pOldName ),
-		m_pNewName( pNewName )
+	CRenamedRecvTableInfo( const char* pOldName, const char* pNewName )
+		:	m_pOldName( pOldName ),
+		  m_pNewName( pNewName )
 	{
 		m_pNext						= g_pRenamedRecvTableInfoHead;
 		g_pRenamedRecvTableInfoHead = this;
 	}
 
 public:
-	const char				*m_pOldName;
-	const char				*m_pNewName;
-	CRenamedRecvTableInfo	*m_pNext;
+	const char*				m_pOldName;
+	const char*				m_pNewName;
+	CRenamedRecvTableInfo*	m_pNext;
 };
 
 //-----------------------------------------------------------------------------

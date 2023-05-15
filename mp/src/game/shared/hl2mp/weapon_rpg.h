@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define WEAPON_RPG_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
@@ -30,7 +30,7 @@ class CMissile;
 class CWeaponRPG;
 class CLaserDot;
 class RocketTrail;
- 
+
 //###########################################################################
 //	>> CMissile		(missile launcher class is below this one!)
 //###########################################################################
@@ -45,14 +45,20 @@ public:
 	~CMissile();
 
 #ifdef HL1_DLL
-	Class_T Classify( void ) { return CLASS_NONE; }
+	Class_T Classify( void )
+	{
+		return CLASS_NONE;
+	}
 #else
-	Class_T Classify( void ) { return CLASS_MISSILE; }
+	Class_T Classify( void )
+	{
+		return CLASS_MISSILE;
+	}
 #endif
-	
+
 	void	Spawn( void );
 	void	Precache( void );
-	void	MissileTouch( CBaseEntity *pOther );
+	void	MissileTouch( CBaseEntity* pOther );
 	void	Explode( void );
 	void	ShotDown( void );
 	void	AccelerateThink( void );
@@ -62,33 +68,45 @@ public:
 	void	DumbFire( void );
 	void	SetGracePeriod( float flGracePeriod );
 
-	int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void	Event_Killed( const CTakeDamageInfo &info );
-	
-	virtual float	GetDamage() { return m_flDamage; }
-	virtual void	SetDamage(float flDamage) { m_flDamage = flDamage; }
+	int		OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void	Event_Killed( const CTakeDamageInfo& info );
+
+	virtual float	GetDamage()
+	{
+		return m_flDamage;
+	}
+	virtual void	SetDamage( float flDamage )
+	{
+		m_flDamage = flDamage;
+	}
 
 	unsigned int PhysicsSolidMaskForEntity( void ) const;
 
 	CHandle<CWeaponRPG>		m_hOwner;
 
-	static CMissile *Create( const Vector &vecOrigin, const QAngle &vecAngles, edict_t *pentOwner );
+	static CMissile* Create( const Vector& vecOrigin, const QAngle& vecAngles, edict_t* pentOwner );
 
-	void CreateDangerSounds( bool bState ){ m_bCreateDangerSounds = bState; }
+	void CreateDangerSounds( bool bState )
+	{
+		m_bCreateDangerSounds = bState;
+	}
 
-	static void AddCustomDetonator( CBaseEntity *pEntity, float radius, float height = -1 );
-	static void RemoveCustomDetonator( CBaseEntity *pEntity );
+	static void AddCustomDetonator( CBaseEntity* pEntity, float radius, float height = -1 );
+	static void RemoveCustomDetonator( CBaseEntity* pEntity );
 
 protected:
-	virtual void DoExplosion();	
-	virtual void ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed );
-	virtual int AugerHealth() { return m_iMaxHealth - 20; }
+	virtual void DoExplosion();
+	virtual void ComputeActualDotPosition( CLaserDot* pLaserDot, Vector* pActualDotPosition, float* pHomingSpeed );
+	virtual int AugerHealth()
+	{
+		return m_iMaxHealth - 20;
+	}
 
 	// Creates the smoke trail
 	void CreateSmokeTrail( void );
 
-	// Gets the shooting position 
-	void GetShootPosition( CLaserDot *pLaserDot, Vector *pShootPosition );
+	// Gets the shooting position
+	void GetShootPosition( CLaserDot* pLaserDot, Vector* pShootPosition );
 
 	CHandle<RocketTrail>	m_hRocketTrail;
 	float					m_flAugerTime;		// Amount of time to auger before blowing up anyway
@@ -115,9 +133,9 @@ private:
 //-----------------------------------------------------------------------------
 // Laser dot control
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateLaserDot( const Vector &origin, CBaseEntity *pOwner, bool bVisibleDot );
-void SetLaserDotTarget( CBaseEntity *pLaserDot, CBaseEntity *pTarget );
-void EnableLaserDot( CBaseEntity *pLaserDot, bool bEnable );
+CBaseEntity* CreateLaserDot( const Vector& origin, CBaseEntity* pOwner, bool bVisibleDot );
+void SetLaserDotTarget( CBaseEntity* pLaserDot, CBaseEntity* pTarget );
+void EnableLaserDot( CBaseEntity* pLaserDot, bool bEnable );
 
 
 //-----------------------------------------------------------------------------
@@ -129,7 +147,7 @@ class CAPCMissile : public CMissile
 	DECLARE_DATADESC();
 
 public:
-	static CAPCMissile *Create( const Vector &vecOrigin, const QAngle &vecAngles, const Vector &vecVelocity, CBaseEntity *pOwner );
+	static CAPCMissile* Create( const Vector& vecOrigin, const QAngle& vecAngles, const Vector& vecVelocity, CBaseEntity* pOwner );
 
 	CAPCMissile();
 	~CAPCMissile();
@@ -138,28 +156,31 @@ public:
 	void	ExplodeDelay( float flDelayTime );
 	void	DisableGuiding();
 #if defined( HL2_DLL )
-	virtual Class_T Classify ( void ) { return CLASS_COMBINE; }
+	virtual Class_T Classify( void )
+	{
+		return CLASS_COMBINE;
+	}
 #endif
 
-	void	AimAtSpecificTarget( CBaseEntity *pTarget );
-	void	SetGuidanceHint( const char *pHintName );
+	void	AimAtSpecificTarget( CBaseEntity* pTarget );
+	void	SetGuidanceHint( const char* pHintName );
 
 	void	APCSeekThink( void );
 
-	CAPCMissile			*m_pNext;
+	CAPCMissile*			m_pNext;
 
 protected:
-	virtual void DoExplosion();	
-	virtual void ComputeActualDotPosition( CLaserDot *pLaserDot, Vector *pActualDotPosition, float *pHomingSpeed );
+	virtual void DoExplosion();
+	virtual void ComputeActualDotPosition( CLaserDot* pLaserDot, Vector* pActualDotPosition, float* pHomingSpeed );
 	virtual int AugerHealth();
 
 private:
 	void Init();
-	void ComputeLeadingPosition( const Vector &vecShootPosition, CBaseEntity *pTarget, Vector *pLeadPosition );
+	void ComputeLeadingPosition( const Vector& vecShootPosition, CBaseEntity* pTarget, Vector* pLeadPosition );
 	void BeginSeekThink();
 	void AugerStartThink();
 	void ExplodeThink();
-	void APCMissileTouch( CBaseEntity *pOther );
+	void APCMissileTouch( CBaseEntity* pOther );
 
 	float	m_flReachedTargetTime;
 	float	m_flIgnitionTime;
@@ -173,7 +194,7 @@ private:
 //-----------------------------------------------------------------------------
 // Finds apc missiles in cone
 //-----------------------------------------------------------------------------
-CAPCMissile *FindAPCMissileInCone( const Vector &vecOrigin, const Vector &vecDirection, float flAngle );
+CAPCMissile* FindAPCMissileInCone( const Vector& vecOrigin, const Vector& vecDirection, float flAngle );
 
 #endif
 
@@ -182,7 +203,7 @@ CAPCMissile *FindAPCMissileInCone( const Vector &vecOrigin, const Vector &vecDir
 //-----------------------------------------------------------------------------
 
 #ifdef CLIENT_DLL
-#define CWeaponRPG C_WeaponRPG
+	#define CWeaponRPG C_WeaponRPG
 #endif
 
 class CWeaponRPG : public CBaseHL2MPCombatWeapon
@@ -193,48 +214,67 @@ public:
 	CWeaponRPG();
 	~CWeaponRPG();
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 	void	Precache( void );
 
 	void	PrimaryAttack( void );
 #ifdef MAPBASE
-	virtual float GetFireRate( void ) { ConVarRef g_weapon_rpg_fire_rate( "g_weapon_rpg_fire_rate" ); return g_weapon_rpg_fire_rate.GetFloat(); };
+	virtual float GetFireRate( void )
+	{
+		ConVarRef g_weapon_rpg_fire_rate( "g_weapon_rpg_fire_rate" );
+		return g_weapon_rpg_fire_rate.GetFloat();
+	};
 #else
-	virtual float GetFireRate( void ) { return 1; };
+	virtual float GetFireRate( void )
+	{
+		return 1;
+	};
 #endif
 	void	ItemPostFrame( void );
 
 	void	Activate( void );
-	void	DecrementAmmo( CBaseCombatCharacter *pOwner );
+	void	DecrementAmmo( CBaseCombatCharacter* pOwner );
 
 	bool	Deploy( void );
-	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool	Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 	bool	Reload( void );
 	bool	WeaponShouldBeLowered( void );
 	bool	Lower( void );
 
 	//bool	CanHolster( void );
 
-	virtual void Drop( const Vector &vecVelocity );
+	virtual void Drop( const Vector& vecVelocity );
 
 #ifdef MAPBASE
 	bool	SupportsBackupActivity( Activity activity );
 #endif
 
-	int		GetMinBurst() { return 1; }
-	int		GetMaxBurst() { return 1; }
-	float	GetMinRestTime() { return 4.0; }
-	float	GetMaxRestTime() { return 4.0; }
+	int		GetMinBurst()
+	{
+		return 1;
+	}
+	int		GetMaxBurst()
+	{
+		return 1;
+	}
+	float	GetMinRestTime()
+	{
+		return 4.0;
+	}
+	float	GetMaxRestTime()
+	{
+		return 4.0;
+	}
 
 #ifdef GAME_DLL
-	bool	WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	bool	WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
 	int		WeaponRangeAttack1Condition( float flDot, float flDist );
 
-	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void	Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #ifdef MAPBASE
-	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
+	void	Operator_ForceNPCFire( CBaseCombatCharacter*  pOperator, bool bSecondary );
 #endif
 #endif // GAME_DLL
 
@@ -254,47 +294,56 @@ public:
 	Vector	GetLaserPosition( void );
 
 	// NPC RPG users cheat and directly set the laser pointer's origin
-	void	UpdateNPCLaserPosition( const Vector &vecTarget );
-	void	SetNPCLaserPosition( const Vector &vecTarget );
-	const Vector &GetNPCLaserPosition( void );
+	void	UpdateNPCLaserPosition( const Vector& vecTarget );
+	void	SetNPCLaserPosition( const Vector& vecTarget );
+	const Vector& GetNPCLaserPosition( void );
 
 #ifdef GAME_DLL
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int		CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
 	virtual const Vector& GetBulletSpread( void )
 	{
 		static Vector cone = VECTOR_CONE_3DEGREES;
 		return cone;
-	}	
+	}
 #ifdef CLIENT_DLL
 
 	// We need to render opaque and translucent pieces
-	virtual RenderGroup_t	GetRenderGroup( void ) {	return RENDER_GROUP_TWOPASS;	}
+	virtual RenderGroup_t	GetRenderGroup( void )
+	{
+		return RENDER_GROUP_TWOPASS;
+	}
 
 	virtual void	NotifyShouldTransmit( ShouldTransmitState_t state );
 	virtual int		DrawModel( int flags );
-	virtual void	ViewModelDrawn( C_BaseViewModel *pBaseViewModel );
+	virtual void	ViewModelDrawn( C_BaseViewModel* pBaseViewModel );
 	virtual bool	IsTranslucent( void );
 
 	void			InitBeam( void );
-	void			GetWeaponAttachment( int attachmentId, Vector &outVector, Vector *dir = NULL );
+	void			GetWeaponAttachment( int attachmentId, Vector& outVector, Vector* dir = NULL );
 	void			DrawEffects( void );
 //	void			DrawLaserDot( void );
 
 	CMaterialReference	m_hSpriteMaterial;	// Used for the laser glint
 	CMaterialReference	m_hBeamMaterial;	// Used for the laser beam
-	Beam_t				*m_pBeam;			// Laser beam temp entity
+	Beam_t*				m_pBeam;			// Laser beam temp entity
 
 	//Tony; third person check thing, to destroy/reinitialize the beam ( swapping first -> third or back, etc )
 	virtual void			ThirdPersonSwitch( bool bThirdPerson );
 
 #endif	//CLIENT_DLL
 
-	CBaseEntity *GetMissile( void ) { return m_hMissile; }
+	CBaseEntity* GetMissile( void )
+	{
+		return m_hMissile;
+	}
 
 	DECLARE_ACTTABLE();
-	
+
 protected:
 
 	CNetworkVar( bool, m_bInitialStateUpdate );
@@ -311,8 +360,8 @@ protected:
 #endif
 
 private:
-	
-	CWeaponRPG( const CWeaponRPG & );
+
+	CWeaponRPG( const CWeaponRPG& );
 };
 
 #endif // WEAPON_RPG_H

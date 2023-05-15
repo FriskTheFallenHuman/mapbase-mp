@@ -14,19 +14,19 @@
 #include "SDK_eye_refract_ps20b.inc"
 
 #ifndef _X360
-#include "SDK_eye_refract_vs30.inc"
-#include "SDK_eye_refract_ps30.inc"
+	#include "SDK_eye_refract_vs30.inc"
+	#include "SDK_eye_refract_ps30.inc"
 #endif
 
 #include "convar.h"
 
-static ConVar r_lightwarpidentity( "r_lightwarpidentity","0", FCVAR_CHEAT );
+static ConVar r_lightwarpidentity( "r_lightwarpidentity", "0", FCVAR_CHEAT );
 
-void InitParams_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, Eye_Refract_Vars_t &info )
+void InitParams_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, Eye_Refract_Vars_t& info )
 {
 	// FLASHLIGHTFIXME
 
-	if ( g_pHardwareConfig->SupportsBorderColor() )
+	if( g_pHardwareConfig->SupportsBorderColor() )
 	{
 		params[FLASHLIGHTTEXTURE]->SetStringValue( "effects/flashlight_border" );
 	}
@@ -41,60 +41,60 @@ void InitParams_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, con
 	SET_FLAGS2( MATERIAL_VAR2_LIGHTING_VERTEX_LIT );
 
 	// Set material parameter default values
-	if ( ( info.m_nIntro >= 0 ) && ( !params[info.m_nIntro]->IsDefined() ) )
+	if( ( info.m_nIntro >= 0 ) && ( !params[info.m_nIntro]->IsDefined() ) )
 	{
 		params[info.m_nIntro]->SetIntValue( kDefaultIntro );
 	}
 
-	if ( ( info.m_nDilation >= 0 ) && ( !params[info.m_nDilation]->IsDefined() ) )
+	if( ( info.m_nDilation >= 0 ) && ( !params[info.m_nDilation]->IsDefined() ) )
 	{
 		params[info.m_nDilation]->SetFloatValue( kDefaultDilation );
 	}
 
-	if ( ( info.m_nGlossiness >= 0 ) && ( !params[info.m_nGlossiness]->IsDefined() ) )
+	if( ( info.m_nGlossiness >= 0 ) && ( !params[info.m_nGlossiness]->IsDefined() ) )
 	{
 		params[info.m_nGlossiness]->SetFloatValue( kDefaultGlossiness );
 	}
 
-	if ( ( info.m_nSphereTexKillCombo >= 0 ) && ( !params[info.m_nSphereTexKillCombo]->IsDefined() ) )
+	if( ( info.m_nSphereTexKillCombo >= 0 ) && ( !params[info.m_nSphereTexKillCombo]->IsDefined() ) )
 	{
 		params[info.m_nSphereTexKillCombo]->SetIntValue( kDefaultSphereTexKillCombo );
 	}
 
-	if ( ( info.m_nRaytraceSphere >= 0 ) && ( !params[info.m_nRaytraceSphere]->IsDefined() ) )
+	if( ( info.m_nRaytraceSphere >= 0 ) && ( !params[info.m_nRaytraceSphere]->IsDefined() ) )
 	{
 		params[info.m_nRaytraceSphere]->SetIntValue( kDefaultRaytraceSphere );
 	}
 
-	if ( ( info.m_nAmbientOcclColor >= 0 ) && ( !params[info.m_nAmbientOcclColor]->IsDefined() ) )
+	if( ( info.m_nAmbientOcclColor >= 0 ) && ( !params[info.m_nAmbientOcclColor]->IsDefined() ) )
 	{
 		params[info.m_nAmbientOcclColor]->SetVecValue( kDefaultAmbientOcclColor, 4 );
 	}
 
-	if ( ( info.m_nEyeballRadius >= 0 ) && ( !params[info.m_nEyeballRadius]->IsDefined() ) )
+	if( ( info.m_nEyeballRadius >= 0 ) && ( !params[info.m_nEyeballRadius]->IsDefined() ) )
 	{
 		params[info.m_nEyeballRadius]->SetFloatValue( kDefaultEyeballRadius );
 	}
 
-	if ( ( info.m_nParallaxStrength >= 0 ) && ( !params[info.m_nParallaxStrength]->IsDefined() ) )
+	if( ( info.m_nParallaxStrength >= 0 ) && ( !params[info.m_nParallaxStrength]->IsDefined() ) )
 	{
 		params[info.m_nParallaxStrength]->SetFloatValue( kDefaultParallaxStrength );
 	}
 
-	if ( ( info.m_nCorneaBumpStrength >= 0 ) && ( !params[info.m_nCorneaBumpStrength]->IsDefined() ) )
+	if( ( info.m_nCorneaBumpStrength >= 0 ) && ( !params[info.m_nCorneaBumpStrength]->IsDefined() ) )
 	{
 		params[info.m_nCorneaBumpStrength]->SetFloatValue( kDefaultCorneaBumpStrength );
 	}
 }
 
-void Init_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, Eye_Refract_Vars_t &info )
+void Init_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, Eye_Refract_Vars_t& info )
 {
 	pShader->LoadTexture( info.m_nCorneaTexture );								// SHADER_SAMPLER0  (this is a normal, hence not sRGB)
 	pShader->LoadTexture( info.m_nIris, TEXTUREFLAGS_SRGB );					// SHADER_SAMPLER1
 	pShader->LoadCubeMap( info.m_nEnvmap, TEXTUREFLAGS_SRGB );					// SHADER_SAMPLER2
 	pShader->LoadTexture( info.m_nAmbientOcclTexture, TEXTUREFLAGS_SRGB );		// SHADER_SAMPLER3
 
-	if ( IS_PARAM_DEFINED( info.m_nDiffuseWarpTexture ) )
+	if( IS_PARAM_DEFINED( info.m_nDiffuseWarpTexture ) )
 	{
 		pShader->LoadTexture( info.m_nDiffuseWarpTexture );						// SHADER_SAMPLER4
 	}
@@ -102,8 +102,8 @@ void Init_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, Eye_Refra
 	pShader->LoadTexture( FLASHLIGHTTEXTURE, TEXTUREFLAGS_SRGB );				// SHADER_SAMPLER5
 }
 
-void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-	IShaderShadow* pShaderShadow, bool bDrawFlashlightAdditivePass, Eye_Refract_Vars_t &info, VertexCompressionType_t vertexCompression )
+void Draw_Eyes_Refract_Internal( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+								 IShaderShadow* pShaderShadow, bool bDrawFlashlightAdditivePass, Eye_Refract_Vars_t& info, VertexCompressionType_t vertexCompression )
 {
 	bool bDiffuseWarp = IS_PARAM_DEFINED( info.m_nDiffuseWarpTexture );
 	bool bIntro = IS_PARAM_DEFINED( info.m_nIntro ) ? ( params[info.m_nIntro]->GetIntValue() ? true : false ) : false;
@@ -123,26 +123,26 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		int userDataSize = 0;
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
 
-		if ( bDiffuseWarp )
+		if( bDiffuseWarp )
 		{
 			pShaderShadow->EnableTexture( SHADER_SAMPLER4, true );	// Light warp
 		}
 
 		int nShadowFilterMode = 0;
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
 				nShadowFilterMode = g_pHardwareConfig->GetShadowFilterMode();	// Based upon vendor and device dependent formats
 			}
 
 			pShaderShadow->EnableDepthWrites( false );
-			pShader->EnableAlphaBlending( SHADER_BLEND_ONE, SHADER_BLEND_ONE ); // Write over the eyes that were already there 
+			pShader->EnableAlphaBlending( SHADER_BLEND_ONE, SHADER_BLEND_ONE ); // Write over the eyes that were already there
 			pShaderShadow->EnableTexture( SHADER_SAMPLER5, true );	// Flashlight cookie
 		}
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			DECLARE_STATIC_VERTEX_SHADER( sdk_eye_refract_vs20 );
@@ -152,7 +152,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			SET_STATIC_VERTEX_SHADER_COMBO( LIGHTWARPTEXTURE, bDiffuseWarp ? 1 : 0 );
 			SET_STATIC_VERTEX_SHADER( sdk_eye_refract_vs20 );
 
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
 				bool bSphereTexKillCombo = IS_PARAM_DEFINED( info.m_nSphereTexKillCombo ) ? ( params[info.m_nSphereTexKillCombo]->GetIntValue() ? true : false ) : ( kDefaultSphereTexKillCombo ? true : false );
 				bool bRayTraceSphere = IS_PARAM_DEFINED( info.m_nRaytraceSphere ) ? ( params[info.m_nRaytraceSphere]->GetIntValue() ? true : false ) : ( kDefaultRaytraceSphere ? true : false );
@@ -165,7 +165,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 				SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
 				SET_STATIC_PIXEL_SHADER( sdk_eye_refract_ps20b );
 
-				if ( bDrawFlashlightAdditivePass == true )
+				if( bDrawFlashlightAdditivePass == true )
 				{
 					pShaderShadow->EnableTexture( SHADER_SAMPLER6, true );	// Shadow depth map
 					pShaderShadow->SetShadowDepthFiltering( SHADER_SAMPLER6 );
@@ -204,7 +204,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			SET_STATIC_PIXEL_SHADER_COMBO( FLASHLIGHTDEPTHFILTERMODE, nShadowFilterMode );
 			SET_STATIC_PIXEL_SHADER( sdk_eye_refract_ps30 );
 
-			if ( bDrawFlashlightAdditivePass == true )
+			if( bDrawFlashlightAdditivePass == true )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER6, true );	// Shadow depth map
 				pShaderShadow->EnableTexture( SHADER_SAMPLER7, true );	// Noise map
@@ -218,13 +218,13 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER3, true );			// Ambient occlusion
 		pShaderShadow->EnableSRGBWrite( true );
 
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER5, true );		// Flashlight cookie
 		}
 
 		// Fog
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
 			pShader->FogToBlack();
 		}
@@ -236,10 +236,10 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 	DYNAMIC_STATE
 	{
 		VMatrix worldToTexture;
-		ITexture *pFlashlightDepthTexture = NULL;
+		ITexture* pFlashlightDepthTexture = NULL;
 		FlashlightState_t flashlightState;
 		bool bFlashlightShadows = false;
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
 			flashlightState = pShaderAPI->GetFlashlightStateEx( worldToTexture, &pFlashlightDepthTexture );
 			bFlashlightShadows = flashlightState.m_bEnableShadows && ( pFlashlightDepthTexture != NULL );
@@ -249,10 +249,10 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		pShader->BindTexture( SHADER_SAMPLER1, info.m_nIris, info.m_nIrisFrame );
 		pShader->BindTexture( SHADER_SAMPLER2, info.m_nEnvmap );
 		pShader->BindTexture( SHADER_SAMPLER3, info.m_nAmbientOcclTexture );
-	
-		if ( bDiffuseWarp )
+
+		if( bDiffuseWarp )
 		{
-			if ( r_lightwarpidentity.GetBool() )
+			if( r_lightwarpidentity.GetBool() )
 			{
 				pShaderAPI->BindStandardTexture( SHADER_SAMPLER4, TEXTURE_IDENTITY_LIGHTWARP );
 			}
@@ -262,8 +262,10 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			}
 		}
 
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
+		{
 			pShader->BindTexture( SHADER_SAMPLER5, flashlightState.m_pSpotlightTexture, flashlightState.m_nSpotlightTextureFrame );
+		}
 
 		pShader->SetAmbientCubeDynamicStateVertexShader();
 
@@ -271,17 +273,19 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		pShader->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_2, info.m_nIrisU );
 		pShader->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_3, info.m_nIrisV );
 
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
+		{
 			pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_4, flashlightState.m_vecLightOrigin.Base(), 1 );
+		}
 
 		LightState_t lightState = { 0, false, false };
-		if ( bDrawFlashlightAdditivePass == false )
+		if( bDrawFlashlightAdditivePass == false )
 		{
 			pShaderAPI->GetDX9LightState( &lightState );
 		}
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			DECLARE_DYNAMIC_VERTEX_SHADER( sdk_eye_refract_vs20 );
@@ -290,7 +294,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( DYNAMIC_LIGHT, lightState.HasDynamicLight() );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT, lightState.m_bStaticLightVertex ? 1 : 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_eye_refract_vs20 );
 		}
 #ifndef _X360
@@ -305,13 +309,13 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( STATIC_LIGHT, lightState.m_bStaticLightVertex ? 1 : 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_eye_refract_vs30 );
 		}
 #endif
 
 		// Get luminance of ambient cube and saturate it
-		float fAverageAmbient = max(0.0f, min( pShaderAPI->GetAmbientLightCubeLuminance(), 1.0f ) );
+		float fAverageAmbient = max( 0.0f, min( pShaderAPI->GetAmbientLightCubeLuminance(), 1.0f ) );
 
 		// Special constant for DX9 eyes: { Dilation, Glossiness, x, x };
 		float vPSConst[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -343,11 +347,11 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		float vShaderControls[4] = { fPixelFogType, 0, 0, 0 };
 		pShaderAPI->SetPixelShaderConstant( 10, vShaderControls, 1 );
 
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
 			SetFlashLightColorFromState( flashlightState, pShaderAPI );
 
-			if ( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )
+			if( pFlashlightDepthTexture && g_pConfig->ShadowDepthTexture() && flashlightState.m_bEnableShadows )
 			{
 				pShader->BindTexture( SHADER_SAMPLER6, pFlashlightDepthTexture, 0 );
 				pShaderAPI->BindStandardTexture( SHADER_SAMPLER7, TEXTURE_SHADOW_NOISE_2D );
@@ -356,10 +360,10 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 
 		// Flashlight tax
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
-			if ( g_pHardwareConfig->SupportsPixelShaders_2_b() )
+			if( g_pHardwareConfig->SupportsPixelShaders_2_b() )
 			{
 				DECLARE_DYNAMIC_PIXEL_SHADER( sdk_eye_refract_ps20b );
 				SET_DYNAMIC_PIXEL_SHADER_COMBO( NUM_LIGHTS, lightState.m_nNumLights );
@@ -385,7 +389,7 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 
 		pShaderAPI->SetPixelShaderFogParams( PSREG_FOG_PARAMS );
 
-		if ( bDrawFlashlightAdditivePass == true )
+		if( bDrawFlashlightAdditivePass == true )
 		{
 			float atten[4], pos[4], tweaks[4];
 			atten[0] = flashlightState.m_fConstantAtten;		// Set the flashlight attenuation factors
@@ -419,8 +423,8 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 			float vScreenScale[4] = {1280.0f / 32.0f, 720.0f / 32.0f, 0, 0};
 			int nWidth, nHeight;
 			pShaderAPI->GetBackBufferDimensions( nWidth, nHeight );
-			vScreenScale[0] = (float) nWidth  / 32.0f;
-			vScreenScale[1] = (float) nHeight / 32.0f;
+			vScreenScale[0] = ( float ) nWidth  / 32.0f;
+			vScreenScale[1] = ( float ) nHeight / 32.0f;
 			pShaderAPI->SetPixelShaderConstant( PSREG_FLASHLIGHT_SCREEN_SCALE, vScreenScale, 1 );
 		}
 		else // Lighting constants when not drawing flashlight
@@ -429,11 +433,11 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 		}
 
 		// Intro tax
-		if ( bIntro )
+		if( bIntro )
 		{
 			float curTime = params[info.m_nWarpParam]->GetFloatValue();
 			float timeVec[4] = { 0.0f, 0.0f, 0.0f, curTime };
-			if ( IS_PARAM_DEFINED( info.m_nEntityOrigin ) )
+			if( IS_PARAM_DEFINED( info.m_nEntityOrigin ) )
 			{
 				params[info.m_nEntityOrigin]->GetVecValue( timeVec, 3 );
 			}
@@ -445,14 +449,14 @@ void Draw_Eyes_Refract_Internal( CBaseVSShader *pShader, IMaterialVar** params, 
 
 
 extern ConVar r_flashlight_version2;
-void Draw_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-	IShaderShadow* pShaderShadow, Eye_Refract_Vars_t &info, VertexCompressionType_t vertexCompression )
+void Draw_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+						IShaderShadow* pShaderShadow, Eye_Refract_Vars_t& info, VertexCompressionType_t vertexCompression )
 {
 	bool bHasFlashlight = pShader->UsingFlashlight( params );
 	if( bHasFlashlight && ( IsX360() || r_flashlight_version2.GetInt() ) )
 	{
 		Draw_Eyes_Refract_Internal( pShader, params, pShaderAPI, pShaderShadow, false, info, vertexCompression );
-		if ( pShaderShadow )
+		if( pShaderShadow )
 		{
 			pShader->SetInitialShadowState( );
 		}

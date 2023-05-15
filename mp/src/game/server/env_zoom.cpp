@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #include "env_zoom.h"
 
 #ifdef HL2_DLL
-#include "hl2_player.h"
+	#include "hl2_player.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -21,15 +21,21 @@ class CEnvZoom : public CPointEntity
 public:
 	DECLARE_CLASS( CEnvZoom, CPointEntity );
 
-	void	InputZoom( inputdata_t &inputdata );
-	void	InputUnZoom( inputdata_t &inputdata );
+	void	InputZoom( inputdata_t& inputdata );
+	void	InputUnZoom( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void	InputUnZoomWithRate( inputdata_t &inputdata );
-	void	InputSetZoomRate( inputdata_t &inputdata );
+	void	InputUnZoomWithRate( inputdata_t& inputdata );
+	void	InputSetZoomRate( inputdata_t& inputdata );
 #endif
 
-	int	GetFOV( void ) { return m_nFOV;	}
-	float GetSpeed( void ) { return m_flSpeed;	}
+	int	GetFOV( void )
+	{
+		return m_nFOV;
+	}
+	float GetSpeed( void )
+	{
+		return m_flSpeed;
+	}
 private:
 
 	float	m_flSpeed;
@@ -42,33 +48,35 @@ LINK_ENTITY_TO_CLASS( env_zoom, CEnvZoom );
 
 BEGIN_DATADESC( CEnvZoom )
 
-	DEFINE_KEYFIELD( m_flSpeed, FIELD_FLOAT, "Rate" ),
-	DEFINE_KEYFIELD( m_nFOV, FIELD_INTEGER, "FOV" ),
+DEFINE_KEYFIELD( m_flSpeed, FIELD_FLOAT, "Rate" ),
+				 DEFINE_KEYFIELD( m_nFOV, FIELD_INTEGER, "FOV" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Zoom", InputZoom ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "UnZoom", InputUnZoom ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Zoom", InputZoom ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "UnZoom", InputUnZoom ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "UnZoomWithRate", InputUnZoomWithRate ),
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetZoomRate", InputSetZoomRate ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
-bool CanOverrideEnvZoomOwner( CBaseEntity *pZoomOwner )
+				 bool CanOverrideEnvZoomOwner( CBaseEntity* pZoomOwner )
 {
-	CEnvZoom *pZoom = dynamic_cast<CEnvZoom*>(pZoomOwner );
+	CEnvZoom* pZoom = dynamic_cast<CEnvZoom*>( pZoomOwner );
 
-	if ( pZoom == NULL || ( pZoom && pZoom->HasSpawnFlags( ENV_ZOOM_OVERRIDE ) == false ) )
-		 return false;
+	if( pZoom == NULL || ( pZoom && pZoom->HasSpawnFlags( ENV_ZOOM_OVERRIDE ) == false ) )
+	{
+		return false;
+	}
 
 	return true;
 }
 
-float GetZoomOwnerDesiredFOV( CBaseEntity *pZoomOwner )
+float GetZoomOwnerDesiredFOV( CBaseEntity* pZoomOwner )
 {
-	if ( CanOverrideEnvZoomOwner( pZoomOwner ) )
+	if( CanOverrideEnvZoomOwner( pZoomOwner ) )
 	{
-		CEnvZoom *pZoom = dynamic_cast<CEnvZoom*>( pZoomOwner );
+		CEnvZoom* pZoom = dynamic_cast<CEnvZoom*>( pZoomOwner );
 
 		return pZoom->GetFOV();
 	}
@@ -77,27 +85,27 @@ float GetZoomOwnerDesiredFOV( CBaseEntity *pZoomOwner )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvZoom::InputZoom( inputdata_t &inputdata )
+void CEnvZoom::InputZoom( inputdata_t& inputdata )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
 
 #ifdef HL2_DLL
-		if ( pPlayer == pPlayer->GetFOVOwner() )
+		if( pPlayer == pPlayer->GetFOVOwner() )
 		{
-			CHL2_Player *pHLPlayer = static_cast<CHL2_Player*>( pPlayer );
+			CHL2_Player* pHLPlayer = static_cast<CHL2_Player*>( pPlayer );
 
 			pHLPlayer->StopZooming();
 		}
 #endif
 
 		// If the player's already holding a fov from another env_zoom, we're allowed to overwrite it
-		if ( pPlayer->GetFOVOwner() && FClassnameIs( pPlayer->GetFOVOwner(), "env_zoom" ) )
+		if( pPlayer->GetFOVOwner() && FClassnameIs( pPlayer->GetFOVOwner(), "env_zoom" ) )
 		{
 			pPlayer->ClearZoomOwner();
 		}
@@ -108,14 +116,14 @@ void CEnvZoom::InputZoom( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvZoom::InputUnZoom( inputdata_t &inputdata )
+void CEnvZoom::InputUnZoom( inputdata_t& inputdata )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		// Stuff the values
 		pPlayer->SetFOV( this, 0 );
@@ -124,14 +132,14 @@ void CEnvZoom::InputUnZoom( inputdata_t &inputdata )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvZoom::InputUnZoomWithRate( inputdata_t &inputdata )
+void CEnvZoom::InputUnZoomWithRate( inputdata_t& inputdata )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		// Stuff the values
 		pPlayer->SetFOV( this, 0, m_flSpeed, m_nFOV );
@@ -139,10 +147,10 @@ void CEnvZoom::InputUnZoomWithRate( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CEnvZoom::InputSetZoomRate( inputdata_t &inputdata )
+void CEnvZoom::InputSetZoomRate( inputdata_t& inputdata )
 {
 	m_flSpeed = inputdata.value.Float();
 }

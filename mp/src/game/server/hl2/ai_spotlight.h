@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define AI_SPOTLIGHT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_component.h"
@@ -37,30 +37,30 @@ public:
 	CAI_Spotlight();
 	~CAI_Spotlight();
 
-	void Init( CAI_BaseNPC *pOuter, int nFlags, float flConstraintAngle, float flMaxLength );
+	void Init( CAI_BaseNPC* pOuter, int nFlags, float flConstraintAngle, float flMaxLength );
 
 	// Create, destroy the spotlight
-	void SpotlightCreate( int nAttachment, const Vector &vecInitialDir );
-	void SpotlightDestroy(void);
+	void SpotlightCreate( int nAttachment, const Vector& vecInitialDir );
+	void SpotlightDestroy( void );
 
 	// Controls the spotlight target position + direction
-	void SetSpotlightTargetPos( const Vector &vSpotlightTargetPos );
-	void SetSpotlightTargetDirection( const Vector &vSpotlightTargetDir );
+	void SetSpotlightTargetPos( const Vector& vSpotlightTargetPos );
+	void SetSpotlightTargetDirection( const Vector& vSpotlightTargetDir );
 
 	// Updates the spotlight. Call every frame!
-	void Update(void);
+	void Update( void );
 
 private:
-	void Precache(void);
+	void Precache( void );
 	void CreateSpotlightEntities( void );
 	void UpdateSpotlightDirection( void );
 	void UpdateSpotlightEndpoint( void );
 
 	// Constrain to cone, returns true if it was constrained
-	bool ConstrainToCone( Vector *pDirection );
+	bool ConstrainToCone( Vector* pDirection );
 
 	// Computes the spotlight endpoint
-	void ComputeEndpoint( const Vector &vecStartPoint, Vector *pEndPoint );
+	void ComputeEndpoint( const Vector& vecStartPoint, Vector* pEndPoint );
 
 private:
 	CHandle<CBeam>	m_hSpotlight;

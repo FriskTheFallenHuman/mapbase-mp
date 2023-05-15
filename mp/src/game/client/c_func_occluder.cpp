@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -28,12 +28,12 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_FuncOccluder, DT_FuncOccluder, CFuncOccluder )
-	RecvPropBool( RECVINFO( m_bActive ) ),
-	RecvPropInt( RECVINFO(m_nOccluderIndex) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bActive ) ),
+			  RecvPropInt( RECVINFO( m_nOccluderIndex ) ),
+			  END_RECV_TABLE()
 
 
-void C_FuncOccluder::OnDataChanged( DataUpdateType_t updateType )
+			  void C_FuncOccluder::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 	engine->ActivateOccluder( m_nOccluderIndex, m_bActive );
@@ -46,6 +46,6 @@ bool C_FuncOccluder::ShouldDraw()
 
 int C_FuncOccluder::DrawModel( int flags )
 {
-	Assert(0);
+	Assert( 0 );
 	return 0;
 }

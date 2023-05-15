@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef MAP_SHARED_H
 #define MAP_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -18,7 +18,7 @@
 
 struct LoadEntity_t
 {
-	entity_t *pEntity;
+	entity_t* pEntity;
 	int nID;
 	int nBaseFlags;
 	int nBaseContents;
@@ -39,7 +39,7 @@ public:
 		m_sideIndex = side;
 	}
 
-	void TextureState( const char *pTextureName )
+	void TextureState( const char* pTextureName )
 	{
 		Q_strncpy( m_textureName, pTextureName, sizeof( m_textureName ) );
 	}
@@ -53,18 +53,18 @@ public:
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Hook the map parse errors and report brush/ent/texture state
-	// Input  : *pErrorString - 
+	// Input  : *pErrorString -
 	//-----------------------------------------------------------------------------
-	void ReportError( const char *pErrorString )
+	void ReportError( const char* pErrorString )
 	{
 		Error( "Brush %i: %s\nSide %i\nTexture: %s\n", m_brushID, pErrorString, m_sideIndex, m_textureName );
 	}
 
 	//-----------------------------------------------------------------------------
 	// Purpose: Hook the map parse errors and report brush/ent/texture state without exiting.
-	// Input  : pWarningString - 
+	// Input  : pWarningString -
 	//-----------------------------------------------------------------------------
-	void ReportWarning( const char *pWarningString )
+	void ReportWarning( const char* pWarningString )
 	{
 		printf( "Brush %i, Side %i: %s\n", m_brushID, m_sideIndex, pWarningString );
 	}
@@ -82,10 +82,10 @@ extern int g_nMapFileVersion;
 
 
 // Shared mapload code.
-ChunkFileResult_t LoadEntityKeyCallback( const char *szKey, const char *szValue, LoadEntity_t *pLoadEntity );
+ChunkFileResult_t LoadEntityKeyCallback( const char* szKey, const char* szValue, LoadEntity_t* pLoadEntity );
 
 // Used by VRAD incremental lighting - only load ents from the file and
 // fill in the global entities/num_entities array.
-bool LoadEntsFromMapFile( char const *pFilename );
+bool LoadEntsFromMapFile( char const* pFilename );
 
 #endif // MAP_SHARED_H

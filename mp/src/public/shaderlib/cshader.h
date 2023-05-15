@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,8 +8,8 @@
 #ifndef CSHADER_H
 #define CSHADER_H
 
-#ifdef _WIN32		   
-#pragma once
+#ifdef _WIN32
+	#pragma once
 #endif
 
 // uncomment this if you want to build for nv3x
@@ -37,8 +37,8 @@
 //-----------------------------------------------------------------------------
 // Global interfaces
 //-----------------------------------------------------------------------------
-extern IMaterialSystemHardwareConfig *g_pHardwareConfig;
-extern const MaterialSystem_Config_t *g_pConfig;
+extern IMaterialSystemHardwareConfig* g_pHardwareConfig;
+extern const MaterialSystem_Config_t* g_pConfig;
 extern bool g_shaderConfigDumpEnable;
 
 // Helper method
@@ -60,14 +60,14 @@ bool IsUsingGraphics();
 	virtual char const* GetFallbackShader( IMaterialVar** params ) const
 
 // Typesafe flag setting
-inline void CShader_SetFlags( IMaterialVar **params, MaterialVarFlags_t _flag )
+inline void CShader_SetFlags( IMaterialVar** params, MaterialVarFlags_t _flag )
 {
-	params[FLAGS]->SetIntValue( params[FLAGS]->GetIntValue() | (_flag) );
+	params[FLAGS]->SetIntValue( params[FLAGS]->GetIntValue() | ( _flag ) );
 }
 
-inline bool CShader_IsFlagSet( IMaterialVar **params, MaterialVarFlags_t _flag )
+inline bool CShader_IsFlagSet( IMaterialVar** params, MaterialVarFlags_t _flag )
 {
-	return ((params[FLAGS]->GetIntValue() & (_flag) ) != 0);
+	return ( ( params[FLAGS]->GetIntValue() & ( _flag ) ) != 0 );
 }
 
 #define SET_FLAGS( _flag )		CShader_SetFlags( params, _flag )
@@ -102,14 +102,14 @@ inline bool CShader_IsFlagSet( IMaterialVar **params, MaterialVarFlags_t _flag )
 	}
 
 // Typesafe flag setting
-inline void CShader_SetFlags2( IMaterialVar **params, MaterialVarFlags2_t _flag )
+inline void CShader_SetFlags2( IMaterialVar** params, MaterialVarFlags2_t _flag )
 {
-	params[FLAGS2]->SetIntValue( params[FLAGS2]->GetIntValue() | (_flag) );
+	params[FLAGS2]->SetIntValue( params[FLAGS2]->GetIntValue() | ( _flag ) );
 }
 
-inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag )
+inline bool CShader_IsFlag2Set( IMaterialVar** params, MaterialVarFlags2_t _flag )
 {
-	return ((params[FLAGS2]->GetIntValue() & (_flag) ) != 0);
+	return ( ( params[FLAGS2]->GetIntValue() & ( _flag ) ) != 0 );
 }
 
 #define SET_FLAGS2( _flag )		CShader_SetFlags2( params, _flag )
@@ -194,21 +194,21 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 #define SHADER_PARAM_OVERRIDE( param, paramtype, paramdefault, paramhelp, flags ) \
 	static CShaderParam param( (ShaderMaterialVars_t) ::param, paramtype, paramdefault, paramhelp, flags );
 
-	// regarding the macro above: the "::" was added to the first argument in order to disambiguate it for GCC.
-	// for example, in cloak.cpp, this usage appears:
-	// 		SHADER_PARAM_OVERRIDE( COLOR, SHADER_PARAM_TYPE_COLOR, "{255 255 255}", "unused", SHADER_PARAM_NOT_EDITABLE )
-	// which in turn tries to ask the compiler to instantiate an object like so:
-	// 		static CShaderParam COLOR( (ShaderMaterialVars_t)COLOR, SHADER_PARAM_TYPE_COLOR, "{255 255 255}", "unused", SHADER_PARAM_NOT_EDITABLE )
-	// and GCC thinks that the reference to COLOR in the arg list is actually a reference to the object we're in the middle of making.
-	// and you get --> error: invalid cast from type ‘Cloak_DX90::CShaderParam’ to type ‘ShaderMaterialVars_t’
-	// Resolved: add the "::" so compiler knows that reference is to the enum, not to the name of the object being made.
-	
-	
+// regarding the macro above: the "::" was added to the first argument in order to disambiguate it for GCC.
+// for example, in cloak.cpp, this usage appears:
+// 		SHADER_PARAM_OVERRIDE( COLOR, SHADER_PARAM_TYPE_COLOR, "{255 255 255}", "unused", SHADER_PARAM_NOT_EDITABLE )
+// which in turn tries to ask the compiler to instantiate an object like so:
+// 		static CShaderParam COLOR( (ShaderMaterialVars_t)COLOR, SHADER_PARAM_TYPE_COLOR, "{255 255 255}", "unused", SHADER_PARAM_NOT_EDITABLE )
+// and GCC thinks that the reference to COLOR in the arg list is actually a reference to the object we're in the middle of making.
+// and you get --> error: invalid cast from type ‘Cloak_DX90::CShaderParam’ to type ‘ShaderMaterialVars_t’
+// Resolved: add the "::" so compiler knows that reference is to the enum, not to the name of the object being made.
+
+
 #define END_SHADER_PARAMS \
 	class CShader : public CBaseClass\
 	{\
 	public:
-			
+
 #define END_SHADER }; \
 	static CShader s_ShaderInstance;\
 } // namespace
@@ -309,7 +309,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 // Used to easily define a shader which inherits from another shader
 //-----------------------------------------------------------------------------
 
-// FIXME: There's a compiler bug preventing this from working. 
+// FIXME: There's a compiler bug preventing this from working.
 // Maybe it'll work under VC7!
 
 /*
@@ -374,7 +374,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 
 
 // psh_forgot_to_set_dynamic_ ## var is used to make sure that you set all
-// all combos.  If you don't, you will get an undefined variable used error 
+// all combos.  If you don't, you will get an undefined variable used error
 // in the SET_DYNAMIC_PIXEL_SHADER block.
 #define SET_DYNAMIC_PIXEL_SHADER_COMBO( var, val ) \
 	_pshIndex.Set ## var( ( val ) ); \
@@ -385,7 +385,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 
 
 // vsh_forgot_to_set_dynamic_ ## var is used to make sure that you set all
-// all combos.  If you don't, you will get an undefined variable used error 
+// all combos.  If you don't, you will get an undefined variable used error
 // in the SET_DYNAMIC_VERTEX_SHADER block.
 #define SET_DYNAMIC_VERTEX_SHADER_COMBO( var, val ) \
 	_vshIndex.Set ## var( ( val ) ); \
@@ -396,7 +396,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 
 
 // psh_forgot_to_set_static_ ## var is used to make sure that you set all
-// all combos.  If you don't, you will get an undefined variable used error 
+// all combos.  If you don't, you will get an undefined variable used error
 // in the SET_STATIC_PIXEL_SHADER block.
 #define SET_STATIC_PIXEL_SHADER_COMBO( var, val ) \
 	_pshIndex.Set ## var( ( val ) ); \
@@ -407,7 +407,7 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 
 
 // vsh_forgot_to_set_static_ ## var is used to make sure that you set all
-// all combos.  If you don't, you will get an undefined variable used error 
+// all combos.  If you don't, you will get an undefined variable used error
 // in the SET_STATIC_VERTEX_SHADER block.
 #define SET_STATIC_VERTEX_SHADER_COMBO( var, val ) \
 	_vshIndex.Set ## var( ( val ) ); \
@@ -417,10 +417,10 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	_vshIndex.Set ## var( ( val ) );
 
 
-// psh_testAllCombos adds up all of the psh_forgot_to_set_dynamic_ ## var's from 
+// psh_testAllCombos adds up all of the psh_forgot_to_set_dynamic_ ## var's from
 // SET_DYNAMIC_PIXEL_SHADER_COMBO so that an error is generated if they aren't set.
 // psh_testAllCombos is set to itself to avoid an unused variable warning.
-// psh ## shader being set to itself ensures that DECLARE_DYNAMIC_PIXEL_SHADER 
+// psh ## shader being set to itself ensures that DECLARE_DYNAMIC_PIXEL_SHADER
 // was called for this particular shader.
 #define SET_DYNAMIC_PIXEL_SHADER( shader ) \
 	static_assert( ( shaderDynamicTest_ ## shader ) != 0, "Missing combo!" ); \
@@ -433,10 +433,10 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	cmdstream.SetPixelShaderIndex( _pshIndex.GetIndex() )
 
 
-// vsh_testAllCombos adds up all of the vsh_forgot_to_set_dynamic_ ## var's from 
+// vsh_testAllCombos adds up all of the vsh_forgot_to_set_dynamic_ ## var's from
 // SET_DYNAMIC_VERTEX_SHADER_COMBO so that an error is generated if they aren't set.
 // vsh_testAllCombos is set to itself to avoid an unused variable warning.
-// vsh ## shader being set to itself ensures that DECLARE_DYNAMIC_VERTEX_SHADER 
+// vsh ## shader being set to itself ensures that DECLARE_DYNAMIC_VERTEX_SHADER
 // was called for this particular shader.
 #define SET_DYNAMIC_VERTEX_SHADER( shader ) \
 	static_assert( ( shaderDynamicTest_ ## shader ) != 0, "Missing combo!" ); \
@@ -449,20 +449,20 @@ inline bool CShader_IsFlag2Set( IMaterialVar **params, MaterialVarFlags2_t _flag
 	cmdstream.SetVertexShaderIndex( _vshIndex.GetIndex() )
 
 
-// psh_testAllCombos adds up all of the psh_forgot_to_set_static_ ## var's from 
+// psh_testAllCombos adds up all of the psh_forgot_to_set_static_ ## var's from
 // SET_STATIC_PIXEL_SHADER_COMBO so that an error is generated if they aren't set.
 // psh_testAllCombos is set to itself to avoid an unused variable warning.
-// psh ## shader being set to itself ensures that DECLARE_STATIC_PIXEL_SHADER 
+// psh ## shader being set to itself ensures that DECLARE_STATIC_PIXEL_SHADER
 // was called for this particular shader.
 #define SET_STATIC_PIXEL_SHADER( shader ) \
 	static_assert( ( shaderStaticTest_ ## shader ) != 0, "Missing combo!" ); \
 	static_assert( psh ## shader != 0, "Not pixel shader!" ); \
 	pShaderShadow->SetPixelShader( #shader, _pshIndex.GetIndex() )
 
-// vsh_testAllCombos adds up all of the vsh_forgot_to_set_static_ ## var's from 
+// vsh_testAllCombos adds up all of the vsh_forgot_to_set_static_ ## var's from
 // SET_STATIC_VERTEX_SHADER_COMBO so that an error is generated if they aren't set.
 // vsh_testAllCombos is set to itself to avoid an unused variable warning.
-// vsh ## shader being set to itself ensures that DECLARE_STATIC_VERTEX_SHADER 
+// vsh ## shader being set to itself ensures that DECLARE_STATIC_VERTEX_SHADER
 // was called for this particular shader.
 #define SET_STATIC_VERTEX_SHADER( shader ) \
 	static_assert( shaderStaticTest_ ## shader != 0, "Missing combo!" ); \

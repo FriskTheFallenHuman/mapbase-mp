@@ -27,15 +27,15 @@ struct DrawWater_params_t
 	float3 vWorldPos;
 };
 
-void DrawWater( in DrawWater_params_t i, 
+void DrawWater( in DrawWater_params_t i,
 #if BASETEXTURE
-				in sampler BaseTextureSampler,
-			    in sampler LightmapSampler,
+	in sampler BaseTextureSampler,
+	in sampler LightmapSampler,
 #endif
 				in sampler NormalSampler,
-			    in sampler RefractSampler,
-			    in sampler ReflectSampler,
-			    out float4 result, out float fogFactor )
+				in sampler RefractSampler,
+				in sampler ReflectSampler,
+				out float4 result, out float fogFactor )
 {
 	bool bReflect = REFLECT ? true : false;
 	bool bRefract = REFRACT ? true : false;
@@ -48,7 +48,7 @@ void DrawWater( in DrawWater_params_t i,
 
 #if ( NORMAL_DECODE_MODE == NORM_DECODE_ATI2N )
 	vNormal.xy = vNormal.xy * 2.0f - 1.0f;
-	vNormal.z = sqrt( 1.0f - dot(vNormal.xy, vNormal.xy) );
+	vNormal.z = sqrt( 1.0f - dot( vNormal.xy, vNormal.xy ) );
 	vNormal.a = 1.0f;
 #else
 	vNormal.xyz = 2.0 * vNormal.xyz - 1.0;
@@ -66,7 +66,7 @@ void DrawWater( in DrawWater_params_t i,
 #if ABOVEWATER
 	float waterFogDepthValue = tex2D( RefractSampler, unwarpedRefractTexCoord ).a;
 #else
-	// We don't actually have valid depth values in alpha when we are underwater looking out, so 
+	// We don't actually have valid depth values in alpha when we are underwater looking out, so
 	// just set to farthest value.
 	float waterFogDepthValue = 1.0f;
 #endif
@@ -95,19 +95,19 @@ void DrawWater( in DrawWater_params_t i,
 	HALF4 vReflectColor = tex2D( ReflectSampler, vReflectTexCoord );
 #if BLURRY_REFRACT
 	// Sample reflection and refraction
-	float2 ddx1=float2(0.005,0);
-	float2 ddy1=float2(0,0.005);
-	float4 vRefractColor=float4(0,0,0,0);
+	float2 ddx1 = float2( 0.005, 0 );
+	float2 ddy1 = float2( 0, 0.005 );
+	float4 vRefractColor = float4( 0, 0, 0, 0 );
 
 #if 0
-	float sumweights=0;
-	for(int ix=-2;ix<=2;ix++)
+	float sumweights = 0;
+	for( int ix = -2; ix <= 2; ix++ )
 	{
-		for(int iy=-2;iy<=2;iy++)
+		for( int iy = -2; iy <= 2; iy++ )
 		{
-			float weight=1; ///(1+abs(ix)+abs(iy));
-			vRefractColor += weight*tex2D( RefractSampler, vRefractTexCoord+ix*ddx1+iy*ddy1);
-			sumweights+=weight;
+			float weight = 1; ///(1+abs(ix)+abs(iy));
+			vRefractColor += weight * tex2D( RefractSampler, vRefractTexCoord + ix * ddx1 + iy * ddy1 );
+			sumweights += weight;
 		}
 	}
 #else
@@ -143,14 +143,14 @@ void DrawWater( in DrawWater_params_t i,
 	// NOTE: end of generated code.
 #endif
 
-	vRefractColor *= (1.0/sumweights);
+	vRefractColor *= ( 1.0 / sumweights );
 	vReflectColor *= i.fReflectOverbright;
 	vReflectColor *= i.vReflectTint;
 	vRefractColor *= i.vRefractTint;
 #	if ABOVEWATER
-		// Don't mess with this in the underwater case since we don't really have
-		// depth values there.
-		// get the blurred depth value to be used for fog.
+	// Don't mess with this in the underwater case since we don't really have
+	// depth values there.
+	// get the blurred depth value to be used for fog.
 	waterFogDepthValue = vRefractColor.a;
 #	endif
 #else
@@ -191,7 +191,7 @@ void DrawWater( in DrawWater_params_t i,
 	HALF2 bumpCoord2;
 	HALF2 bumpCoord3;
 	ComputeBumpedLightmapCoordinates( i.lightmapTexCoord1And2, i.lightmapTexCoord3.xy,
-		bumpCoord1, bumpCoord2, bumpCoord3 );
+									  bumpCoord1, bumpCoord2, bumpCoord3 );
 
 	HALF4 lightmapSample1 = tex2D( LightmapSampler, bumpCoord1 );
 	HALF3 lightmapColor1 = lightmapSample1.rgb;
@@ -205,8 +205,8 @@ void DrawWater( in DrawWater_params_t i,
 	dp *= dp;
 
 	float3 diffuseLighting = dp.x * lightmapColor1 +
-		dp.y * lightmapColor2 +
-		dp.z * lightmapColor3;
+							 dp.y * lightmapColor2 +
+							 dp.z * lightmapColor3;
 	float sum = dot( dp, float3( 1.0f, 1.0f, 1.0f ) );
 	diffuseLighting *= LIGHT_MAP_SCALE / sum;
 	HALF3 diffuseComponent = baseSample.rgb * diffuseLighting;

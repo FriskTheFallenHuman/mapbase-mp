@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 #include "keyvaluescompiler.h"
 #include "filesystem.h"
 #include "tier1/KeyValues.h"
 
-extern IFileSystem *g_pFullFileSystem;
+extern IFileSystem* g_pFullFileSystem;
 
 bool CRunTimeKeyValuesStringTable::ReadStringTable( int numStrings, CUtlBuffer& buf )
 {
@@ -16,19 +16,19 @@ bool CRunTimeKeyValuesStringTable::ReadStringTable( int numStrings, CUtlBuffer& 
 	CUtlVector< int > offsets;
 	offsets.EnsureCapacity( numStrings );
 
-	offsets.CopyArray( (int *)( buf.PeekGet() ), numStrings );
+	offsets.CopyArray( ( int* )( buf.PeekGet() ), numStrings );
 
 	// Skip over data
 	buf.SeekGet( CUtlBuffer::SEEK_HEAD, buf.TellGet() + numStrings * sizeof( int ) );
 
 	int stringSize = buf.GetInt();
-	
+
 	// Read in the string table
 	m_Strings.EnsureCapacity( numStrings );
 	int i;
-	for ( i = 0 ; i < numStrings; ++i )
+	for( i = 0 ; i < numStrings; ++i )
 	{
-		m_Strings.AddToTail( (const char *)buf.PeekGet( offsets[ i ] ) );
+		m_Strings.AddToTail( ( const char* )buf.PeekGet( offsets[ i ] ) );
 	}
 
 	buf.SeekGet( CUtlBuffer::SEEK_HEAD, buf.TellGet() + stringSize );
@@ -36,7 +36,7 @@ bool CRunTimeKeyValuesStringTable::ReadStringTable( int numStrings, CUtlBuffer& 
 	return true;
 }
 
-void CCompiledKeyValuesWriter::BuildKVData_R( KeyValues *kv, int parent )
+void CCompiledKeyValuesWriter::BuildKVData_R( KeyValues* kv, int parent )
 {
 	// Add self
 	KVInfo_t info;
@@ -49,15 +49,15 @@ void CCompiledKeyValuesWriter::BuildKVData_R( KeyValues *kv, int parent )
 	int newParent = m_Data.AddToTail( info );
 
 	// Then add children
-	for ( KeyValues *sub = kv->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
+	for( KeyValues* sub = kv->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
 	{
 		BuildKVData_R( sub, newParent );
 	}
 
 	// Then add peers
-	if ( parent == -1 )
+	if( parent == -1 )
 	{
-		if ( kv->GetNextKey() )
+		if( kv->GetNextKey() )
 		{
 			BuildKVData_R( kv->GetNextKey(), parent );
 		}
@@ -69,35 +69,35 @@ void CCompiledKeyValuesWriter::Describe( const KVFile_t& file )
 	Msg( "file( %s )\n", m_StringTable.String( file.filename ) );
 
 	int c = file.numElements;
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		KVInfo_t &info = m_Data[ file.firstElement + i ];
-		if ( info.IsSubTree() )
+		KVInfo_t& info = m_Data[ file.firstElement + i ];
+		if( info.IsSubTree() )
 		{
 			Msg( "%d:  %s -> subtree at parent %i\n",
-				file.firstElement + i,
-				m_StringTable.String( info.key ),
-				info.GetParent() );
+				 file.firstElement + i,
+				 m_StringTable.String( info.key ),
+				 info.GetParent() );
 		}
 		else
 		{
 			Msg( "%d:  %s -> %s at parent %i\n",
-				file.firstElement + i,
-				m_StringTable.String( info.key ),
-				m_StringTable.String( info.value ),
-				info.GetParent() );
+				 file.firstElement + i,
+				 m_StringTable.String( info.key ),
+				 m_StringTable.String( info.value ),
+				 info.GetParent() );
 		}
 	}
 }
 
-void CCompiledKeyValuesWriter::AppendKeyValuesFile( char const *filename )
+void CCompiledKeyValuesWriter::AppendKeyValuesFile( char const* filename )
 {
 	KVFile_t kvf;
 	kvf.filename = m_StringTable.AddString( filename );
 	kvf.firstElement = m_Data.Count();
 
-	KeyValues *kv = new KeyValues( filename );
-	if ( kv->LoadFromFile( g_pFullFileSystem, filename ) )
+	KeyValues* kv = new KeyValues( filename );
+	if( kv->LoadFromFile( g_pFullFileSystem, filename ) )
 	{
 		// Add to dictionary
 		// do a depth first traversal of the keyvalues
@@ -116,9 +116,9 @@ void CCompiledKeyValuesWriter::WriteData( CUtlBuffer& buf )
 {
 	int c = m_Data.Count();
 	buf.PutInt( c );
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		KVInfo_t &info = m_Data[ i ];
+		KVInfo_t& info = m_Data[ i ];
 		buf.PutShort( info.key );
 		buf.PutShort( info.value );
 		buf.PutShort( info.GetParent() );
@@ -126,13 +126,13 @@ void CCompiledKeyValuesWriter::WriteData( CUtlBuffer& buf )
 	}
 }
 
-void CCompiledKeyValuesWriter::WriteFiles( CUtlBuffer &buf )
+void CCompiledKeyValuesWriter::WriteFiles( CUtlBuffer& buf )
 {
 	int c = m_Files.Count();
 	buf.PutInt( c );
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		KVFile_t &file = m_Files[ i ];
+		KVFile_t& file = m_Files[ i ];
 		buf.PutShort( file.filename );
 		buf.PutShort( file.firstElement );
 		buf.PutShort( file.numElements );
@@ -151,7 +151,7 @@ void CCompiledKeyValuesWriter::WriteStringTable( CUtlBuffer& buf )
 	stringBuffer.PutString( "" );
 	// save all the rest
 	int c = m_StringTable.GetNumStrings();
-	for ( i = 1; i < c; i++)
+	for( i = 1; i < c; i++ )
 	{
 		offsets.AddToTail( stringBuffer.TellPut() );
 		stringBuffer.PutString( m_StringTable.String( i ) );
@@ -163,7 +163,7 @@ void CCompiledKeyValuesWriter::WriteStringTable( CUtlBuffer& buf )
 	buf.Put( stringBuffer.Base(), stringBuffer.TellPut() );
 }
 
-void CCompiledKeyValuesWriter::WriteFile( char const *outfile )
+void CCompiledKeyValuesWriter::WriteFile( char const* outfile )
 {
 	CUtlBuffer buf;
 
@@ -202,7 +202,7 @@ int CCompiledKeyValuesReader::InvalidIndex() const
 	return m_Dict.InvalidIndex();
 }
 
-void CCompiledKeyValuesReader::GetFileName( int index, char *buf, size_t bufsize )
+void CCompiledKeyValuesReader::GetFileName( int index, char* buf, size_t bufsize )
 {
 	Assert( buf );
 	buf[ 0 ] = 0;
@@ -210,7 +210,7 @@ void CCompiledKeyValuesReader::GetFileName( int index, char *buf, size_t bufsize
 	g_pFullFileSystem->String( handle, buf, bufsize );
 }
 
-bool CCompiledKeyValuesReader::LoadFile( char const *filename )
+bool CCompiledKeyValuesReader::LoadFile( char const* filename )
 {
 	int i;
 	m_LoadBuffer.Purge();
@@ -220,17 +220,17 @@ bool CCompiledKeyValuesReader::LoadFile( char const *filename )
 	KVHeader_t header;
 	m_LoadBuffer.Get( &header, sizeof( header ) );
 
-	if ( header.fileid != COMPILED_KEYVALUES_ID )
+	if( header.fileid != COMPILED_KEYVALUES_ID )
 	{
 		return false;
 	}
 
-	if ( header.version != COMPILED_KEYVALUES_VERSION )
+	if( header.version != COMPILED_KEYVALUES_VERSION )
 	{
 		return false;
 	}
 
-	if ( !m_StringTable.ReadStringTable( header.numStrings, m_LoadBuffer ) )
+	if( !m_StringTable.ReadStringTable( header.numStrings, m_LoadBuffer ) )
 	{
 		return false;
 	}
@@ -238,7 +238,7 @@ bool CCompiledKeyValuesReader::LoadFile( char const *filename )
 	// Now parse the data
 	int dataCount = m_LoadBuffer.GetInt();
 	m_Data.EnsureCapacity( dataCount );
-	for ( i = 0; i < dataCount; ++i )
+	for( i = 0; i < dataCount; ++i )
 	{
 		KVInfo_t info;
 		info.key = m_LoadBuffer.GetShort();
@@ -249,7 +249,7 @@ bool CCompiledKeyValuesReader::LoadFile( char const *filename )
 	}
 
 	int fileCount = m_LoadBuffer.GetInt();
-	for ( i = 0; i < fileCount; ++i )
+	for( i = 0; i < fileCount; ++i )
 	{
 		FileInfo_t kvf;
 		short fileNameString	= m_LoadBuffer.GetShort();
@@ -267,8 +267,8 @@ bool CCompiledKeyValuesReader::LoadFile( char const *filename )
 struct CreateHelper_t
 {
 	int			index;
-	KeyValues	*kv;
-	KeyValues	*tail;
+	KeyValues*	kv;
+	KeyValues*	tail;
 
 	static bool Less( const CreateHelper_t& lhs, const CreateHelper_t& rhs )
 	{
@@ -276,10 +276,10 @@ struct CreateHelper_t
 	}
 };
 
-KeyValues *CCompiledKeyValuesReader::CreateFromData( const FileInfo_t& info )
+KeyValues* CCompiledKeyValuesReader::CreateFromData( const FileInfo_t& info )
 {
-	KeyValues *head = new KeyValues( "" );
-	if ( CreateInPlaceFromData( *head, info ) )
+	KeyValues* head = new KeyValues( "" );
+	if( CreateInPlaceFromData( *head, info ) )
 	{
 		return head;
 	}
@@ -295,43 +295,43 @@ bool CCompiledKeyValuesReader::CreateInPlaceFromData( KeyValues& head, const Fil
 	int first = info.nFirstIndex;
 	int num = info.nCount;
 
-	KeyValues *root = NULL;
-	KeyValues *tail = NULL;
+	KeyValues* root = NULL;
+	KeyValues* tail = NULL;
 
 	CUtlRBTree< CreateHelper_t, int >	helper( 0, 0, CreateHelper_t::Less );
 
-	for ( int i = 0; i < num; ++i )
+	for( int i = 0; i < num; ++i )
 	{
 		int offset = first + i;
 		KVInfo_t& info = m_Data[ offset ];
 
-		if ( info.GetParent() != -1 )
+		if( info.GetParent() != -1 )
 		{
 			CreateHelper_t search;
 			search.index = info.GetParent();
 			int idx = helper.Find( search );
-			if ( idx == helper.InvalidIndex() )
+			if( idx == helper.InvalidIndex() )
 			{
 				return NULL;
 			}
 
-			KeyValues *parent = helper[ idx ].kv;
+			KeyValues* parent = helper[ idx ].kv;
 			Assert( parent );
 
-			KeyValues *sub = new KeyValues( m_StringTable.Lookup( info.key ) );
+			KeyValues* sub = new KeyValues( m_StringTable.Lookup( info.key ) );
 
-			if ( !info.IsSubTree() )
+			if( !info.IsSubTree() )
 			{
-				sub->SetStringValue(m_StringTable.Lookup( info.value ) );
+				sub->SetStringValue( m_StringTable.Lookup( info.value ) );
 			}
 
-			if ( !parent->GetFirstSubKey() )
+			if( !parent->GetFirstSubKey() )
 			{
 				parent->AddSubKey( sub );
 			}
 			else
 			{
-				KeyValues *last = helper[ idx ].tail;
+				KeyValues* last = helper[ idx ].tail;
 				last->SetNextKey( sub );
 			}
 
@@ -345,7 +345,7 @@ bool CCompiledKeyValuesReader::CreateInPlaceFromData( KeyValues& head, const Fil
 		}
 		else
 		{
-			if ( !root )
+			if( !root )
 			{
 				root = &head;
 				root->SetName( m_StringTable.Lookup( info.key ) );
@@ -374,7 +374,7 @@ bool CCompiledKeyValuesReader::CreateInPlaceFromData( KeyValues& head, const Fil
 }
 
 
-bool CCompiledKeyValuesReader::InstanceInPlace( KeyValues& head, char const *kvfilename )
+bool CCompiledKeyValuesReader::InstanceInPlace( KeyValues& head, char const* kvfilename )
 {
 	char sz[ 512 ];
 	Q_strncpy( sz, kvfilename, sizeof( sz ) );
@@ -384,7 +384,7 @@ bool CCompiledKeyValuesReader::InstanceInPlace( KeyValues& head, char const *kvf
 	search.hFile = g_pFullFileSystem->FindOrAddFileName( sz );
 
 	int idx = m_Dict.Find( search );
-	if ( idx == m_Dict.InvalidIndex() )
+	if( idx == m_Dict.InvalidIndex() )
 	{
 		return false;
 	}
@@ -394,7 +394,7 @@ bool CCompiledKeyValuesReader::InstanceInPlace( KeyValues& head, char const *kvf
 	return CreateInPlaceFromData( head, info );
 }
 
-KeyValues *CCompiledKeyValuesReader::Instance( char const *kvfilename )
+KeyValues* CCompiledKeyValuesReader::Instance( char const* kvfilename )
 {
 	char sz[ 512 ];
 	Q_strncpy( sz, kvfilename, sizeof( sz ) );
@@ -404,7 +404,7 @@ KeyValues *CCompiledKeyValuesReader::Instance( char const *kvfilename )
 	search.hFile = g_pFullFileSystem->FindOrAddFileName( sz );
 
 	int idx = m_Dict.Find( search );
-	if ( idx == m_Dict.InvalidIndex() )
+	if( idx == m_Dict.InvalidIndex() )
 	{
 		return NULL;
 	}
@@ -414,7 +414,7 @@ KeyValues *CCompiledKeyValuesReader::Instance( char const *kvfilename )
 	return CreateFromData( info );
 }
 
-bool CCompiledKeyValuesReader::LookupKeyValuesRootKeyName( char const *kvfilename, char *outbuf, size_t bufsize )
+bool CCompiledKeyValuesReader::LookupKeyValuesRootKeyName( char const* kvfilename, char* outbuf, size_t bufsize )
 {
 	char sz[ 512 ];
 	Q_strncpy( sz, kvfilename, sizeof( sz ) );
@@ -424,7 +424,7 @@ bool CCompiledKeyValuesReader::LookupKeyValuesRootKeyName( char const *kvfilenam
 	search.hFile = g_pFullFileSystem->FindOrAddFileName( sz );
 
 	int idx = m_Dict.Find( search );
-	if ( idx == m_Dict.InvalidIndex() )
+	if( idx == m_Dict.InvalidIndex() )
 	{
 		return false;
 	}

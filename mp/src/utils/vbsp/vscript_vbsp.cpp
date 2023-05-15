@@ -18,24 +18,24 @@
 #include "vscript_funcs_vmfs.h"
 #include "vscript_funcs_vis.h"
 
-IScriptVM *g_pScriptVM;
-IScriptManager *scriptmanager = NULL;
+IScriptVM* g_pScriptVM;
+IScriptManager* scriptmanager = NULL;
 
 extern ScriptLanguage_t	g_iScripting;
 
-extern ScriptClassDesc_t * GetScriptDesc( CBaseEntity * );
+extern ScriptClassDesc_t* GetScriptDesc( CBaseEntity* );
 
 // #define VMPROFILE 1
 
 #ifdef VMPROFILE
 
-#define VMPROF_START float debugStartTime = Plat_FloatTime();
-#define VMPROF_SHOW( funcname, funcdesc  ) DevMsg("***VSCRIPT PROFILE***: %s %s: %6.4f milliseconds\n", (##funcname), (##funcdesc), (Plat_FloatTime() - debugStartTime)*1000.0 );
+	#define VMPROF_START float debugStartTime = Plat_FloatTime();
+	#define VMPROF_SHOW( funcname, funcdesc  ) DevMsg("***VSCRIPT PROFILE***: %s %s: %6.4f milliseconds\n", (##funcname), (##funcdesc), (Plat_FloatTime() - debugStartTime)*1000.0 );
 
 #else // !VMPROFILE
 
-#define VMPROF_START
-#define VMPROF_SHOW
+	#define VMPROF_START
+	#define VMPROF_SHOW
 
 #endif // VMPROFILE
 
@@ -46,14 +46,14 @@ int vscript_token_hack = vscript_token;
 // HACKHACK: VScript library relies on developer convar existing
 ConVar developer( "developer", "1", 0, "Set developer message level." ); // developer mode
 
-HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing )
+HSCRIPT VScriptCompileScript( const char* pszScriptName, bool bWarnMissing )
 {
-	if ( !g_pScriptVM )
+	if( !g_pScriptVM )
 	{
 		return NULL;
 	}
 
-	static const char *pszExtensions[] =
+	static const char* pszExtensions[] =
 	{
 		"",		// SL_NONE
 		".gm",	// SL_GAMEMONKEY
@@ -62,28 +62,28 @@ HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing )
 		".py",  // SL_PYTHON
 	};
 
-	const char *pszVMExtension = pszExtensions[g_pScriptVM->GetLanguage()];
-	const char *pszIncomingExtension = V_strrchr( pszScriptName , '.' );
-	if ( pszIncomingExtension && V_strcmp( pszIncomingExtension, pszVMExtension ) != 0 )
+	const char* pszVMExtension = pszExtensions[g_pScriptVM->GetLanguage()];
+	const char* pszIncomingExtension = V_strrchr( pszScriptName , '.' );
+	if( pszIncomingExtension && V_strcmp( pszIncomingExtension, pszVMExtension ) != 0 )
 	{
 		Warning( "Script file type does not match VM type\n" );
 		return NULL;
 	}
 
 	CFmtStr scriptPath;
-	if ( pszIncomingExtension )
+	if( pszIncomingExtension )
 	{
 		scriptPath = pszScriptName;
 	}
 	else
-	{	
+	{
 		scriptPath.sprintf( "%s%s", pszScriptName,  pszVMExtension );
 	}
 
-	const char *pBase;
+	const char* pBase;
 	CUtlBuffer bufferScript;
 
-	if ( g_pScriptVM->GetLanguage() == SL_PYTHON )
+	if( g_pScriptVM->GetLanguage() == SL_PYTHON )
 	{
 		// python auto-loads raw or precompiled modules - don't load data here
 		pBase = NULL;
@@ -105,27 +105,27 @@ HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing )
 
 		bool bResult = g_pFullFileSystem->ReadFile( scriptPath, NULL, bufferScript );
 
-		if ( !bResult && bWarnMissing )
+		if( !bResult && bWarnMissing )
 		{
-			Warning( "Script not found (%s) \n", scriptPath.operator const char *() );
+			Warning( "Script not found (%s) \n", scriptPath.operator const char* () );
 			Assert( "Error running script" );
 		}
 
-		pBase = (const char *) bufferScript.Base();
+		pBase = ( const char* ) bufferScript.Base();
 
-		if ( !pBase || !*pBase )
+		if( !pBase || !*pBase )
 		{
 			return NULL;
 		}
 	}
 
 
-	const char *pszFilename = V_strrchr( scriptPath, '\\' );
+	const char* pszFilename = V_strrchr( scriptPath, '\\' );
 	pszFilename++;
 	HSCRIPT hScript = g_pScriptVM->CompileScript( pBase, pszFilename );
-	if ( !hScript )
+	if( !hScript )
 	{
-		Warning( "FAILED to compile and execute script file named %s\n", scriptPath.operator const char *() );
+		Warning( "FAILED to compile and execute script file named %s\n", scriptPath.operator const char* () );
 		Assert( "Error running script" );
 	}
 	return hScript;
@@ -133,21 +133,21 @@ HSCRIPT VScriptCompileScript( const char *pszScriptName, bool bWarnMissing )
 
 static int g_ScriptVBSPRunScriptDepth;
 
-bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMissing )
+bool VScriptRunScript( const char* pszScriptName, HSCRIPT hScope, bool bWarnMissing )
 {
-	if ( !g_pScriptVM )
+	if( !g_pScriptVM )
 	{
 		return false;
 	}
 
-	if ( !pszScriptName || !*pszScriptName )
+	if( !pszScriptName || !*pszScriptName )
 	{
 		Warning( "Cannot run script: NULL script name\n" );
 		return false;
 	}
 
 	// Prevent infinite recursion in VM
-	if ( g_ScriptVBSPRunScriptDepth > 16 )
+	if( g_ScriptVBSPRunScriptDepth > 16 )
 	{
 		Warning( "IncludeScript stack overflow\n" );
 		return false;
@@ -156,10 +156,10 @@ bool VScriptRunScript( const char *pszScriptName, HSCRIPT hScope, bool bWarnMiss
 	g_ScriptVBSPRunScriptDepth++;
 	HSCRIPT	hScript = VScriptCompileScript( pszScriptName, bWarnMissing );
 	bool bSuccess = false;
-	if ( hScript )
+	if( hScript )
 	{
 		bSuccess = ( g_pScriptVM->Run( hScript, hScope ) != SCRIPT_ERROR );
-		if ( !bSuccess )
+		if( !bSuccess )
 		{
 			Warning( "Error running script named %s\n", pszScriptName );
 			Assert( "Error running script" );
@@ -173,55 +173,61 @@ ScriptHook_t	CMapFile::g_Hook_OnMapLoaded;
 
 BEGIN_SCRIPTDESC_ROOT( CMapFile, "Map file" )
 
-	DEFINE_SCRIPTFUNC( GetMins, "Get the map's mins." )
-	DEFINE_SCRIPTFUNC( GetMaxs, "Get the map's maxs." )
+DEFINE_SCRIPTFUNC( GetMins, "Get the map's mins." )
+DEFINE_SCRIPTFUNC( GetMaxs, "Get the map's maxs." )
 
-	DEFINE_SCRIPTFUNC( GetEntityOrigin, "Get the origin of the entity with the specified index." )
-	DEFINE_SCRIPTFUNC( GetEntityFirstBrush, "Get the first brush ID of the entity with the specified index." )
-	DEFINE_SCRIPTFUNC( GetEntityNumBrushes, "Get the number of brushes in the entity with the specified index." )
+DEFINE_SCRIPTFUNC( GetEntityOrigin, "Get the origin of the entity with the specified index." )
+DEFINE_SCRIPTFUNC( GetEntityFirstBrush, "Get the first brush ID of the entity with the specified index." )
+DEFINE_SCRIPTFUNC( GetEntityNumBrushes, "Get the number of brushes in the entity with the specified index." )
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptGetEntityKeyValues, "GetEntityKeyValues", "Export an entity's keyvalues to two arrays." )
+DEFINE_SCRIPTFUNC_NAMED( ScriptGetEntityKeyValues, "GetEntityKeyValues", "Export an entity's keyvalues to two arrays." )
 
-	DEFINE_SCRIPTFUNC_NAMED( ScriptAddSimpleEntityKV, "AddSimpleEntityKV", "Add a simple entity from a keyvalue table." )
-	DEFINE_SCRIPTFUNC_NAMED( ScriptAddInstance, "AddInstance", "Add an instance to the map." )
+DEFINE_SCRIPTFUNC_NAMED( ScriptAddSimpleEntityKV, "AddSimpleEntityKV", "Add a simple entity from a keyvalue table." )
+DEFINE_SCRIPTFUNC_NAMED( ScriptAddInstance, "AddInstance", "Add an instance to the map." )
 
-	DEFINE_SCRIPTFUNC( GetNumEntities, "Get the number of entities in the map." )
+DEFINE_SCRIPTFUNC( GetNumEntities, "Get the number of entities in the map." )
 
-	// 
-	// Hooks
-	// 
-	DEFINE_SIMPLE_SCRIPTHOOK( CMapFile::g_Hook_OnMapLoaded, "OnMapLoaded", FIELD_VOID, "Called when the NPC is deciding whether to hear a CSound or not." )
+//
+// Hooks
+//
+DEFINE_SIMPLE_SCRIPTHOOK( CMapFile::g_Hook_OnMapLoaded, "OnMapLoaded", FIELD_VOID, "Called when the NPC is deciding whether to hear a CSound or not." )
 
 END_SCRIPTDESC();
 
 
 static float cvar_getf( const char* sz )
 {
-	ConVarRef cvar(sz);
-	if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+	ConVarRef cvar( sz );
+	if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+	{
 		return NULL;
+	}
 	return cvar.GetFloat();
 }
 
 static bool cvar_setf( const char* sz, float val )
 {
-	ConVarRef cvar(sz);
-	if ( !cvar.IsValid() )
+	ConVarRef cvar( sz );
+	if( !cvar.IsValid() )
+	{
 		return false;
+	}
 
-	if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+	if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+	{
 		return false;
+	}
 
-	cvar.SetValue(val);
+	cvar.SetValue( val );
 	return true;
 }
 
-static const char *GetSource()
+static const char* GetSource()
 {
 	return g_source;
 }
 
-static const char *GetMapBase()
+static const char* GetMapBase()
 {
 	return g_mapbase;
 }
@@ -236,16 +242,16 @@ static HSCRIPT GetLoadingMap()
 	return g_LoadingMap ? g_LoadingMap->GetScriptInstance() : NULL;
 }
 
-static const char *DoUniqueString( const char *pszBase )
+static const char* DoUniqueString( const char* pszBase )
 {
 	static char szBuf[512];
-	g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE(szBuf) );
+	g_pScriptVM->GenerateUniqueKey( pszBase, szBuf, ARRAYSIZE( szBuf ) );
 	return szBuf;
 }
 
-bool DoIncludeScript( const char *pszScript, HSCRIPT hScope )
+bool DoIncludeScript( const char* pszScript, HSCRIPT hScope )
 {
-	if ( !VScriptRunScript( pszScript, hScope, true ) )
+	if( !VScriptRunScript( pszScript, hScope, true ) )
 	{
 		g_pScriptVM->RaiseException( CFmtStr( "Failed to include script \"%s\"", ( pszScript ) ? pszScript : "unknown" ) );
 		return false;
@@ -270,8 +276,10 @@ bool VScriptVBSPInit()
 
 	if( g_iScripting != SL_NONE && scriptmanager != NULL )
 	{
-		if ( g_pScriptVM == NULL )
+		if( g_pScriptVM == NULL )
+		{
 			g_pScriptVM = scriptmanager->CreateVM( g_iScripting );
+		}
 
 		if( g_pScriptVM )
 		{
@@ -326,7 +334,7 @@ bool VScriptVBSPInit()
 			ScriptRegisterConstant( g_pScriptVM, g_bSkyboxCubemaps, "" );
 			ScriptRegisterConstant( g_pScriptVM, g_iDefaultCubemapSize, "" );
 
-			if (g_iScripting == SL_SQUIRREL)
+			if( g_iScripting == SL_SQUIRREL )
 			{
 				g_pScriptVM->Run( g_Script_vscript_vbsp );
 			}
@@ -335,7 +343,7 @@ bool VScriptVBSPInit()
 
 			// Run the map's script
 			char script[96];
-			Q_snprintf( script, sizeof(script), "%s_vbsp", g_source );
+			Q_snprintf( script, sizeof( script ), "%s_vbsp", g_source );
 			//Msg("VBSP script: \"%s\"\n", script);
 			VScriptRunScript( script, true );
 
@@ -345,7 +353,7 @@ bool VScriptVBSPInit()
 		}
 		else
 		{
-			DevWarning("VM Did not start!\n");
+			DevWarning( "VM Did not start!\n" );
 		}
 	}
 	else

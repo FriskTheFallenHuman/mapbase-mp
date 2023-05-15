@@ -1,21 +1,21 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SOUNDSCAPE_H
 #define SOUNDSCAPE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CEnvSoundscape;
 
 struct ss_update_t
 {
-	CBasePlayer *pPlayer;
-	CEnvSoundscape	*pCurrentSoundscape;
+	CBasePlayer* pPlayer;
+	CEnvSoundscape*	pCurrentSoundscape;
 	Vector		playerPosition;
 	float		currentDistance;
 	int			traceCount;
@@ -31,20 +31,23 @@ public:
 	CEnvSoundscape();
 	~CEnvSoundscape();
 
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 	void Spawn( void );
 	void Precache( void );
-	void UpdateForPlayer( ss_update_t &update );
-	void WriteAudioParamsTo( audioparams_t &audio );
+	void UpdateForPlayer( ss_update_t& update );
+	void WriteAudioParamsTo( audioparams_t& audio );
 	virtual int UpdateTransmitState();
-	bool InRangeOfPlayer( CBasePlayer *pPlayer );
+	bool InRangeOfPlayer( CBasePlayer* pPlayer );
 	void DrawDebugGeometryOverlays( void );
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
-	void InputToggleEnabled( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
+	void InputToggleEnabled( inputdata_t& inputdata );
 
-	string_t GetSoundscapeName() const {return m_soundscapeName;}
+	string_t GetSoundscapeName() const
+	{
+		return m_soundscapeName;
+	}
 
 
 private:
@@ -61,7 +64,7 @@ public:
 	int		m_soundscapeIndex;
 	int		m_soundscapeEntityId;
 	string_t m_positionNames[NUM_AUDIO_LOCAL_SOUNDS];
-	
+
 	// If this is set, then this soundscape ignores all its parameters and uses
 	// those of this soundscape.
 	CHandle<CEnvSoundscape> m_hProxySoundscape;
@@ -84,7 +87,10 @@ public:
 
 	// Here just to stop it falling back to CEnvSoundscape's, and
 	// printing bogus errors about missing soundscapes.
-	virtual void Precache() { return; }
+	virtual void Precache()
+	{
+		return;
+	}
 
 private:
 	string_t m_MainSoundscapeName;
@@ -93,14 +99,14 @@ private:
 
 class CEnvSoundscapeTriggerable : public CEnvSoundscape
 {
-friend class CTriggerSoundscape;
+	friend class CTriggerSoundscape;
 
 public:
 	DECLARE_CLASS( CEnvSoundscapeTriggerable, CEnvSoundscape );
 	DECLARE_DATADESC();
 
 	CEnvSoundscapeTriggerable();
-	
+
 	// Overrides the base class's think and prevents it from running at all.
 	virtual void Think();
 
@@ -108,8 +114,8 @@ public:
 private:
 
 	// Passed through from CTriggerSoundscape.
-	void DelegateStartTouch( CBaseEntity *pEnt );
-	void DelegateEndTouch( CBaseEntity *pEnt );
+	void DelegateStartTouch( CBaseEntity* pEnt );
+	void DelegateEndTouch( CBaseEntity* pEnt );
 };
 
 

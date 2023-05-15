@@ -9,13 +9,13 @@
 //=============================================================================//
 
 #include "cbase.h"
-#include <vgui_controls/Controls.h> 
+#include <vgui_controls/Controls.h>
 #include <vgui/ILocalize.h>
 #include "ammodef.h"
 #include "tier1/utlcommon.h"
 
 #ifndef CLIENT_DLL
-#include "ai_squad.h"
+	#include "ai_squad.h"
 #endif // !CLIENT_DLL
 
 #include "usermessages.h"
@@ -24,16 +24,16 @@
 #include "engine/ivdebugoverlay.h"
 
 #ifdef CLIENT_DLL
-#include "IEffects.h"
-#include "fx.h"
-#include "itempents.h"
-#include "c_te_legacytempents.h"
-#include "iefx.h"
-#include "dlight.h"
+	#include "IEffects.h"
+	#include "fx.h"
+	#include "itempents.h"
+	#include "c_te_legacytempents.h"
+	#include "iefx.h"
+	#include "dlight.h"
 
-#if !defined(NO_STEAM)
-#include "steam/steam_api.h"
-#endif
+	#if !defined(NO_STEAM)
+		#include "steam/steam_api.h"
+	#endif
 #endif
 
 #include "vscript_singletons.h"
@@ -41,7 +41,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern IScriptManager *scriptmanager;
+extern IScriptManager* scriptmanager;
 
 //=============================================================================
 // Net Prop Manager
@@ -52,29 +52,33 @@ class CScriptNetPropManager
 public:
 
 #ifdef CLIENT_DLL
-	RecvProp *RecurseTable( RecvTable *pTable, const char *pszPropName )
+	RecvProp* RecurseTable( RecvTable* pTable, const char* pszPropName )
 #else
-	SendProp *RecurseTable( SendTable *pTable, const char *pszPropName )
+	SendProp* RecurseTable( SendTable* pTable, const char* pszPropName )
 #endif
 	{
 #ifdef CLIENT_DLL
-		RecvProp *pProp = NULL;
+		RecvProp* pProp = NULL;
 #else
-		SendProp *pProp = NULL;
+		SendProp* pProp = NULL;
 #endif
-		for (int i = 0; i < pTable->GetNumProps(); i++)
+		for( int i = 0; i < pTable->GetNumProps(); i++ )
 		{
 			pProp = pTable->GetProp( i );
-			if (pProp->GetType() == DPT_DataTable)
+			if( pProp->GetType() == DPT_DataTable )
 			{
-				pProp = RecurseTable(pProp->GetDataTable(), pszPropName);
-				if (pProp)
+				pProp = RecurseTable( pProp->GetDataTable(), pszPropName );
+				if( pProp )
+				{
 					return pProp;
+				}
 			}
 			else
 			{
-				if (FStrEq( pProp->GetName(), pszPropName ))
+				if( FStrEq( pProp->GetName(), pszPropName ) )
+				{
 					return pProp;
+				}
 			}
 		}
 
@@ -82,29 +86,35 @@ public:
 	}
 
 #ifdef CLIENT_DLL
-	RecvProp *RecurseNetworkClass( ClientClass *pClass, const char *pszPropName )
+	RecvProp* RecurseNetworkClass( ClientClass* pClass, const char* pszPropName )
 #else
-	SendProp *RecurseNetworkClass( ServerClass *pClass, const char *pszPropName )
+	SendProp* RecurseNetworkClass( ServerClass* pClass, const char* pszPropName )
 #endif
 	{
 #ifdef CLIENT_DLL
-		RecvProp *pProp = RecurseTable( pClass->m_pRecvTable, pszPropName );
+		RecvProp* pProp = RecurseTable( pClass->m_pRecvTable, pszPropName );
 #else
-		SendProp *pProp = RecurseTable( pClass->m_pTable, pszPropName );
+		SendProp* pProp = RecurseTable( pClass->m_pTable, pszPropName );
 #endif
-		if (pProp)
+		if( pProp )
+		{
 			return pProp;
+		}
 
-		if (pClass->m_pNext)
+		if( pClass->m_pNext )
+		{
 			return RecurseNetworkClass( pClass->m_pNext, pszPropName );
+		}
 		else
+		{
 			return NULL;
+		}
 	}
 
 #ifdef CLIENT_DLL
-	RecvProp *GetPropByName( CBaseEntity *pEnt, const char *pszPropName )
+	RecvProp* GetPropByName( CBaseEntity* pEnt, const char* pszPropName )
 	{
-		if (pEnt)
+		if( pEnt )
 		{
 			return RecurseNetworkClass( pEnt->GetClientClass(), pszPropName );
 		}
@@ -112,9 +122,9 @@ public:
 		return NULL;
 	}
 #else
-	SendProp *GetPropByName( CBaseEntity *pEnt, const char *pszPropName )
+	SendProp* GetPropByName( CBaseEntity* pEnt, const char* pszPropName )
 	{
-		if (pEnt)
+		if( pEnt )
 		{
 			return RecurseNetworkClass( pEnt->GetServerClass(), pszPropName );
 		}
@@ -123,11 +133,11 @@ public:
 	}
 #endif
 
-	int GetPropArraySize( HSCRIPT hEnt, const char *pszPropName )
+	int GetPropArraySize( HSCRIPT hEnt, const char* pszPropName )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp )
 		{
 			// TODO: Is this what this function wants?
 			return pProp->GetNumElements();
@@ -136,7 +146,7 @@ public:
 		return -1;
 	}
 
-	#define GetPropFunc( name, varType, propType, defaultval ) \
+#define GetPropFunc( name, varType, propType, defaultval ) \
 	varType name( HSCRIPT hEnt, const char *pszPropName ) \
 	{ \
 		CBaseEntity *pEnt = ToEnt( hEnt ); \
@@ -148,7 +158,7 @@ public:
 		return defaultval; \
 	} \
 
-	#define GetPropFuncArray( name, varType, propType, defaultval ) \
+#define GetPropFuncArray( name, varType, propType, defaultval ) \
 	varType name( HSCRIPT hEnt, const char *pszPropName, int iArrayElement ) \
 	{ \
 		CBaseEntity *pEnt = ToEnt( hEnt ); \
@@ -167,82 +177,89 @@ public:
 	GetPropFunc( GetPropVector, Vector, DPT_Vector, vec3_invalid );
 	GetPropFuncArray( GetPropVectorArray, Vector, DPT_Vector, vec3_invalid );
 
-	HSCRIPT GetPropEntity( HSCRIPT hEnt, const char *pszPropName )
+	HSCRIPT GetPropEntity( HSCRIPT hEnt, const char* pszPropName )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			return ToHScript( *(CHandle<CBaseEntity>*)((char *)pEnt + pProp->GetOffset()) );
+			return ToHScript( *( CHandle<CBaseEntity>* )( ( char* )pEnt + pProp->GetOffset() ) );
 		}
 
 		return NULL;
 	}
 
-	HSCRIPT GetPropEntityArray( HSCRIPT hEnt, const char *pszPropName, int iArrayElement )
+	HSCRIPT GetPropEntityArray( HSCRIPT hEnt, const char* pszPropName, int iArrayElement )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			return ToHScript( ((CHandle<CBaseEntity>*)((char *)pEnt + pProp->GetOffset()))[iArrayElement] );
+			return ToHScript( ( ( CHandle<CBaseEntity>* )( ( char* )pEnt + pProp->GetOffset() ) )[iArrayElement] );
 		}
 
 		return NULL;
 	}
 
-	const char *GetPropString( HSCRIPT hEnt, const char *pszPropName )
+	const char* GetPropString( HSCRIPT hEnt, const char* pszPropName )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			return (const char*)((char *)pEnt + pProp->GetOffset());
+			return ( const char* )( ( char* )pEnt + pProp->GetOffset() );
 		}
 
 		return NULL;
 	}
 
-	const char *GetPropStringArray( HSCRIPT hEnt, const char *pszPropName, int iArrayElement )
+	const char* GetPropStringArray( HSCRIPT hEnt, const char* pszPropName, int iArrayElement )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			return ((const char**)((char *)pEnt + pProp->GetOffset()))[iArrayElement];
+			return ( ( const char** )( ( char* )pEnt + pProp->GetOffset() ) )[iArrayElement];
 		}
 
 		return NULL;
 	}
 
-	const char *GetPropType( HSCRIPT hEnt, const char *pszPropName )
+	const char* GetPropType( HSCRIPT hEnt, const char* pszPropName )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp )
 		{
-			switch (pProp->GetType())
+			switch( pProp->GetType() )
 			{
-			case DPT_Int:		return "integer";
-			case DPT_Float:		return "float";
-			case DPT_Vector:	return "vector";
-			case DPT_VectorXY:	return "vector2d";
-			case DPT_String:	return "string";
-			case DPT_Array:		return "array";
-			case DPT_DataTable:	return "datatable";
+				case DPT_Int:
+					return "integer";
+				case DPT_Float:
+					return "float";
+				case DPT_Vector:
+					return "vector";
+				case DPT_VectorXY:
+					return "vector2d";
+				case DPT_String:
+					return "string";
+				case DPT_Array:
+					return "array";
+				case DPT_DataTable:
+					return "datatable";
 			}
 		}
 
 		return NULL;
 	}
 
-	bool HasProp( HSCRIPT hEnt, const char *pszPropName )
+	bool HasProp( HSCRIPT hEnt, const char* pszPropName )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
+		CBaseEntity* pEnt = ToEnt( hEnt );
 		return GetPropByName( pEnt, pszPropName ) != NULL;
 	}
 
-	#define SetPropFunc( name, varType, propType ) \
+#define SetPropFunc( name, varType, propType ) \
 	void name( HSCRIPT hEnt, const char *pszPropName, varType value ) \
 	{ \
 		CBaseEntity *pEnt = ToEnt( hEnt ); \
@@ -253,7 +270,7 @@ public:
 		} \
 	} \
 
-	#define SetPropFuncArray( name, varType, propType ) \
+#define SetPropFuncArray( name, varType, propType ) \
 	void name( HSCRIPT hEnt, const char *pszPropName, varType value, int iArrayElement ) \
 	{ \
 		CBaseEntity *pEnt = ToEnt( hEnt ); \
@@ -273,23 +290,23 @@ public:
 	SetPropFunc( SetPropString, const char*, DPT_String );
 	SetPropFuncArray( SetPropStringArray, const char*, DPT_String );
 
-	void SetPropEntity( HSCRIPT hEnt, const char *pszPropName, HSCRIPT value )
+	void SetPropEntity( HSCRIPT hEnt, const char* pszPropName, HSCRIPT value )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			*((CHandle<CBaseEntity>*)((char *)pEnt + pProp->GetOffset())) = ToEnt(value);
+			*( ( CHandle<CBaseEntity>* )( ( char* )pEnt + pProp->GetOffset() ) ) = ToEnt( value );
 		}
 	}
 
-	HSCRIPT SetPropEntityArray( HSCRIPT hEnt, const char *pszPropName, HSCRIPT value, int iArrayElement )
+	HSCRIPT SetPropEntityArray( HSCRIPT hEnt, const char* pszPropName, HSCRIPT value, int iArrayElement )
 	{
-		CBaseEntity *pEnt = ToEnt( hEnt );
-		auto *pProp = GetPropByName( pEnt, pszPropName );
-		if (pProp && pProp->GetType() == DPT_Int)
+		CBaseEntity* pEnt = ToEnt( hEnt );
+		auto* pProp = GetPropByName( pEnt, pszPropName );
+		if( pProp && pProp->GetType() == DPT_Int )
 		{
-			((CHandle<CBaseEntity>*)((char *)pEnt + pProp->GetOffset()))[iArrayElement] = ToEnt(value);
+			( ( CHandle<CBaseEntity>* )( ( char* )pEnt + pProp->GetOffset() ) )[iArrayElement] = ToEnt( value );
 		}
 
 		return NULL;
@@ -299,29 +316,29 @@ private:
 } g_ScriptNetPropManager;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptNetPropManager, "CNetPropManager", SCRIPT_SINGLETON "Allows reading and updating the network properties of an entity." )
-	DEFINE_SCRIPTFUNC( GetPropArraySize, "Returns the size of an netprop array, or -1." )
-	DEFINE_SCRIPTFUNC( GetPropEntity, "Reads an EHANDLE valued netprop (21 bit integer). Returns the script handle of the entity." )
-	DEFINE_SCRIPTFUNC( GetPropEntityArray, "Reads an EHANDLE valued netprop (21 bit integer) from an array. Returns the script handle of the entity." )
-	DEFINE_SCRIPTFUNC( GetPropFloat, "Reads a float valued netprop." )
-	DEFINE_SCRIPTFUNC( GetPropFloatArray, "Reads a float valued netprop from an array." )
-	DEFINE_SCRIPTFUNC( GetPropInt, "Reads an integer valued netprop." )
-	DEFINE_SCRIPTFUNC( GetPropIntArray, "Reads an integer valued netprop from an array." )
-	DEFINE_SCRIPTFUNC( GetPropString, "Reads a string valued netprop." )
-	DEFINE_SCRIPTFUNC( GetPropStringArray, "Reads a string valued netprop from an array." )
-	DEFINE_SCRIPTFUNC( GetPropVector, "Reads a 3D vector valued netprop." )
-	DEFINE_SCRIPTFUNC( GetPropVectorArray, "Reads a 3D vector valued netprop from an array." )
-	DEFINE_SCRIPTFUNC( GetPropType, "Returns the name of the netprop type as a string." )
-	DEFINE_SCRIPTFUNC( HasProp, "Checks if a netprop exists." )
-	DEFINE_SCRIPTFUNC( SetPropEntity, "Sets an EHANDLE valued netprop (21 bit integer) to reference the specified entity." )
-	DEFINE_SCRIPTFUNC( SetPropEntityArray, "Sets an EHANDLE valued netprop (21 bit integer) from an array to reference the specified entity." )
-	DEFINE_SCRIPTFUNC( SetPropFloat, "Sets a netprop to the specified float." )
-	DEFINE_SCRIPTFUNC( SetPropFloatArray, "Sets a netprop from an array to the specified float." )
-	DEFINE_SCRIPTFUNC( SetPropInt, "Sets a netprop to the specified integer." )
-	DEFINE_SCRIPTFUNC( SetPropIntArray, "Sets a netprop from an array to the specified integer." )
-	DEFINE_SCRIPTFUNC( SetPropString, "Sets a netprop to the specified string." )
-	DEFINE_SCRIPTFUNC( SetPropStringArray, "Sets a netprop from an array to the specified string." )
-	DEFINE_SCRIPTFUNC( SetPropVector, "Sets a netprop to the specified vector." )
-	DEFINE_SCRIPTFUNC( SetPropVectorArray, "Sets a netprop from an array to the specified vector." )
+DEFINE_SCRIPTFUNC( GetPropArraySize, "Returns the size of an netprop array, or -1." )
+DEFINE_SCRIPTFUNC( GetPropEntity, "Reads an EHANDLE valued netprop (21 bit integer). Returns the script handle of the entity." )
+DEFINE_SCRIPTFUNC( GetPropEntityArray, "Reads an EHANDLE valued netprop (21 bit integer) from an array. Returns the script handle of the entity." )
+DEFINE_SCRIPTFUNC( GetPropFloat, "Reads a float valued netprop." )
+DEFINE_SCRIPTFUNC( GetPropFloatArray, "Reads a float valued netprop from an array." )
+DEFINE_SCRIPTFUNC( GetPropInt, "Reads an integer valued netprop." )
+DEFINE_SCRIPTFUNC( GetPropIntArray, "Reads an integer valued netprop from an array." )
+DEFINE_SCRIPTFUNC( GetPropString, "Reads a string valued netprop." )
+DEFINE_SCRIPTFUNC( GetPropStringArray, "Reads a string valued netprop from an array." )
+DEFINE_SCRIPTFUNC( GetPropVector, "Reads a 3D vector valued netprop." )
+DEFINE_SCRIPTFUNC( GetPropVectorArray, "Reads a 3D vector valued netprop from an array." )
+DEFINE_SCRIPTFUNC( GetPropType, "Returns the name of the netprop type as a string." )
+DEFINE_SCRIPTFUNC( HasProp, "Checks if a netprop exists." )
+DEFINE_SCRIPTFUNC( SetPropEntity, "Sets an EHANDLE valued netprop (21 bit integer) to reference the specified entity." )
+DEFINE_SCRIPTFUNC( SetPropEntityArray, "Sets an EHANDLE valued netprop (21 bit integer) from an array to reference the specified entity." )
+DEFINE_SCRIPTFUNC( SetPropFloat, "Sets a netprop to the specified float." )
+DEFINE_SCRIPTFUNC( SetPropFloatArray, "Sets a netprop from an array to the specified float." )
+DEFINE_SCRIPTFUNC( SetPropInt, "Sets a netprop to the specified integer." )
+DEFINE_SCRIPTFUNC( SetPropIntArray, "Sets a netprop from an array to the specified integer." )
+DEFINE_SCRIPTFUNC( SetPropString, "Sets a netprop to the specified string." )
+DEFINE_SCRIPTFUNC( SetPropStringArray, "Sets a netprop from an array to the specified string." )
+DEFINE_SCRIPTFUNC( SetPropVector, "Sets a netprop to the specified vector." )
+DEFINE_SCRIPTFUNC( SetPropVectorArray, "Sets a netprop from an array to the specified vector." )
 END_SCRIPTDESC();
 
 //=============================================================================
@@ -332,10 +349,10 @@ class CScriptLocalize
 {
 public:
 
-	const char *GetTokenAsUTF8( const char *pszToken )
+	const char* GetTokenAsUTF8( const char* pszToken )
 	{
-		const char *pText = g_pVGuiLocalize->FindAsUTF8( pszToken );
-		if ( pText )
+		const char* pText = g_pVGuiLocalize->FindAsUTF8( pszToken );
+		if( pText )
 		{
 			return pText;
 		}
@@ -343,10 +360,10 @@ public:
 		return NULL;
 	}
 
-	void AddStringAsUTF8( const char *pszToken, const char *pszString )
+	void AddStringAsUTF8( const char* pszToken, const char* pszString )
 	{
 		wchar_t wpszString[256];
-		g_pVGuiLocalize->ConvertANSIToUnicode( pszString, wpszString, sizeof(wpszString) );
+		g_pVGuiLocalize->ConvertANSIToUnicode( pszString, wpszString, sizeof( wpszString ) );
 
 		// TODO: This is a fake file name! Should "fileName" mean anything?
 		g_pVGuiLocalize->AddString( pszToken, wpszString, "resource/vscript_localization.txt" );
@@ -357,9 +374,9 @@ private:
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptLocalize, "CLocalize", SCRIPT_SINGLETON "Accesses functions related to localization strings." )
 
-	DEFINE_SCRIPTFUNC( GetTokenAsUTF8, "Gets the current language's token as a UTF-8 string (not Unicode)." )
+DEFINE_SCRIPTFUNC( GetTokenAsUTF8, "Gets the current language's token as a UTF-8 string (not Unicode)." )
 
-	DEFINE_SCRIPTFUNC( AddStringAsUTF8, "Adds a new localized token as a UTF-8 string (not Unicode)." )
+DEFINE_SCRIPTFUNC( AddStringAsUTF8, "Adds a new localized token as a UTF-8 string (not Unicode)." )
 
 END_SCRIPTDESC();
 
@@ -380,7 +397,7 @@ END_SCRIPTDESC();
 class CScriptGameEventListener : public IGameEventListener2, public CAutoGameSystem
 {
 public:
-	CScriptGameEventListener() : m_bActive(false)
+	CScriptGameEventListener() : m_bActive( false )
 	{
 #ifdef _DEBUG
 		m_nEventTick = 0;
@@ -400,7 +417,7 @@ public:
 	static void StopListeningToAllGameEvents( const char* szContext );
 
 public:
-	void FireGameEvent( IGameEvent *event );
+	void FireGameEvent( IGameEvent* event );
 	void LevelShutdownPreEntity();
 
 private:
@@ -413,12 +430,15 @@ private:
 #endif
 
 	static StringHashFunctor Hash;
-	static inline unsigned int HashContext( const char* c ) { return c ? Hash(c) : 0; }
+	static inline unsigned int HashContext( const char* c )
+	{
+		return c ? Hash( c ) : 0;
+	}
 
 	inline int GetIndex()
 	{
-		Assert( sizeof(CScriptGameEventListener*) == sizeof(int) );
-		return reinterpret_cast<intptr_t>(this);
+		Assert( sizeof( CScriptGameEventListener* ) == sizeof( int ) );
+		return reinterpret_cast<intptr_t>( this );
 	}
 
 public:
@@ -432,11 +452,11 @@ public:
 		TYPE_BYTE   = 5,
 		TYPE_BOOL   = 6
 	};
-	static void WriteEventData( IGameEvent *event, HSCRIPT hTable );
+	static void WriteEventData( IGameEvent* event, HSCRIPT hTable );
 
 #ifdef USE_OLD_EVENT_DESCRIPTORS
 	static void LoadAllEvents();
-	static void LoadEventsFromFile( const char *filename, const char *pathID = NULL );
+	static void LoadEventsFromFile( const char* filename, const char* pathID = NULL );
 	static CUtlMap< unsigned int, KeyValues* > s_GameEvents;
 	static CUtlVector< KeyValues* > s_LoadedFiles;
 #endif
@@ -454,8 +474,8 @@ CUtlVectorAutoPurge< CScriptGameEventListener* > CScriptGameEventListener::s_Lis
 StringHashFunctor CScriptGameEventListener::Hash;
 
 #ifdef USE_OLD_EVENT_DESCRIPTORS
-CUtlMap< unsigned int, KeyValues* > CScriptGameEventListener::s_GameEvents( DefLessFunc(unsigned int) );
-CUtlVector< KeyValues* > CScriptGameEventListener::s_LoadedFiles;
+	CUtlMap< unsigned int, KeyValues* > CScriptGameEventListener::s_GameEvents( DefLessFunc( unsigned int ) );
+	CUtlVector< KeyValues* > CScriptGameEventListener::s_LoadedFiles;
 #endif
 
 
@@ -481,7 +501,7 @@ CON_COMMAND_F( dump_script_game_event_listeners, "Dump all game event listeners 
 void CScriptGameEventListener::LoadAllEvents()
 {
 	// Listed in the same order they are loaded in GameEventManager
-	const char *filenames[] =
+	const char* filenames[] =
 	{
 		"resource/serverevents.res",
 		"resource/gameevents.res",
@@ -489,23 +509,25 @@ void CScriptGameEventListener::LoadAllEvents()
 		"resource/modevents.res"
 	};
 
-	const char *pathlist[] =
+	const char* pathlist[] =
 	{
 		"GAME",
 		"MOD"
 	};
 
 	// Destroy old KeyValues
-	if ( s_LoadedFiles.Count() )
+	if( s_LoadedFiles.Count() )
 	{
-		for ( int i = s_LoadedFiles.Count(); i--; )
+		for( int i = s_LoadedFiles.Count(); i--; )
+		{
 			s_LoadedFiles[i]->deleteThis();
+		}
 		s_LoadedFiles.Purge();
 		s_GameEvents.Purge();
 	}
 
-	for ( int j = 0; j < ARRAYSIZE(pathlist); ++j )
-		for ( int i = 0; i < ARRAYSIZE(filenames); ++i )
+	for( int j = 0; j < ARRAYSIZE( pathlist ); ++j )
+		for( int i = 0; i < ARRAYSIZE( filenames ); ++i )
 		{
 			LoadEventsFromFile( filenames[i], pathlist[j] );
 		}
@@ -514,11 +536,11 @@ void CScriptGameEventListener::LoadAllEvents()
 //-----------------------------------------------------------------------------
 // Load event files into a lookup array to be able to return the event data to the VM.
 //-----------------------------------------------------------------------------
-void CScriptGameEventListener::LoadEventsFromFile( const char *filename, const char *pathID )
+void CScriptGameEventListener::LoadEventsFromFile( const char* filename, const char* pathID )
 {
-	KeyValues *pKV = new KeyValues("GameEvents");
+	KeyValues* pKV = new KeyValues( "GameEvents" );
 
-	if ( !pKV->LoadFromFile( filesystem, filename, pathID ) )
+	if( !pKV->LoadFromFile( filesystem, filename, pathID ) )
 	{
 		// CGMsg( 1, CON_GROUP_VSCRIPT, "CScriptGameEventListener::LoadEventsFromFile: Failed to load file [%s]%s\n", pathID, filename );
 		pKV->deleteThis();
@@ -527,34 +549,34 @@ void CScriptGameEventListener::LoadEventsFromFile( const char *filename, const c
 
 	int count = 0;
 
-	for ( KeyValues *key = pKV->GetFirstSubKey(); key; key = key->GetNextKey() )
+	for( KeyValues* key = pKV->GetFirstSubKey(); key; key = key->GetNextKey() )
 	{
-		for ( KeyValues *sub = key->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
+		for( KeyValues* sub = key->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
 		{
-			if ( sub->GetDataType() == KeyValues::TYPE_STRING )
+			if( sub->GetDataType() == KeyValues::TYPE_STRING )
 			{
-				const char *szVal = sub->GetString();
-				if ( !V_stricmp( szVal, "string" ) )
+				const char* szVal = sub->GetString();
+				if( !V_stricmp( szVal, "string" ) )
 				{
 					sub->SetInt( NULL, TYPE_STRING );
 				}
-				else if ( !V_stricmp( szVal, "bool" ) )
+				else if( !V_stricmp( szVal, "bool" ) )
 				{
 					sub->SetInt( NULL, TYPE_BOOL );
 				}
-				else if ( !V_stricmp( szVal, "byte" ) )
+				else if( !V_stricmp( szVal, "byte" ) )
 				{
 					sub->SetInt( NULL, TYPE_BYTE );
 				}
-				else if ( !V_stricmp( szVal, "short" ) )
+				else if( !V_stricmp( szVal, "short" ) )
 				{
 					sub->SetInt( NULL, TYPE_SHORT );
 				}
-				else if ( !V_stricmp( szVal, "long" ) )
+				else if( !V_stricmp( szVal, "long" ) )
 				{
 					sub->SetInt( NULL, TYPE_LONG );
 				}
-				else if ( !V_stricmp( szVal, "float" ) )
+				else if( !V_stricmp( szVal, "float" ) )
 				{
 					sub->SetInt( NULL, TYPE_FLOAT );
 				}
@@ -590,8 +612,8 @@ void CScriptGameEventListener::DumpEventListeners()
 	FOR_EACH_VEC( s_Listeners, i )
 	{
 		CGMsg( 0, CON_GROUP_VSCRIPT, " %d : %d : %u\n", i,
-										s_Listeners[i]->GetIndex(),
-										s_Listeners[i]->m_iContextHash );
+			   s_Listeners[i]->GetIndex(),
+			   s_Listeners[i]->m_iContextHash );
 	}
 	CGMsg( 0, CON_GROUP_VSCRIPT, "--- Script game event listener dump end\n" );
 }
@@ -599,11 +621,11 @@ void CScriptGameEventListener::DumpEventListeners()
 
 void CScriptGameEventListener::LevelShutdownPreEntity()
 {
-	s_Listeners.FindAndFastRemove(this);
+	s_Listeners.FindAndFastRemove( this );
 	delete this;
 }
 
-void CScriptGameEventListener::FireGameEvent( IGameEvent *event )
+void CScriptGameEventListener::FireGameEvent( IGameEvent* event )
 {
 #ifdef _DEBUG
 	m_nEventTick = gpGlobals->tickcount;
@@ -620,7 +642,7 @@ void CScriptGameEventListener::FireGameEvent( IGameEvent *event )
 struct CGameEventDescriptor
 {
 	byte _0[36];
-	KeyValues *m_pEventKeys;
+	KeyValues* m_pEventKeys;
 	//byte _1[22];
 };
 
@@ -628,20 +650,22 @@ class CGameEvent__// : public IGameEvent
 {
 public:
 	virtual ~CGameEvent__();				// [0]
-	CGameEventDescriptor *m_pDescriptor;	// 0x04
+	CGameEventDescriptor* m_pDescriptor;	// 0x04
 	//KeyValues *m_pEventData;				// 0x08
 };
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CScriptGameEventListener::WriteEventData( IGameEvent *event, HSCRIPT hTable )
+void CScriptGameEventListener::WriteEventData( IGameEvent* event, HSCRIPT hTable )
 {
 #ifdef USE_OLD_EVENT_DESCRIPTORS
 	int i = s_GameEvents.Find( Hash( event->GetName() ) );
-	if ( i == s_GameEvents.InvalidIndex() )
+	if( i == s_GameEvents.InvalidIndex() )
+	{
 		return;
-	KeyValues *pKV = s_GameEvents[i];
+	}
+	KeyValues* pKV = s_GameEvents[i];
 #endif
 
 #if defined(_DEBUG) && !defined(USE_OLD_EVENT_DESCRIPTORS)
@@ -650,27 +674,34 @@ void CScriptGameEventListener::WriteEventData( IGameEvent *event, HSCRIPT hTable
 #endif
 
 #if !defined(USE_OLD_EVENT_DESCRIPTORS)
-	KeyValues *pKV = reinterpret_cast< CGameEvent__* >(event)->m_pDescriptor->m_pEventKeys;
+		KeyValues* pKV = reinterpret_cast< CGameEvent__* >( event )->m_pDescriptor->m_pEventKeys;
 #endif
 
-	for ( KeyValues *sub = pKV->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
-	{
-		const char *szKey = sub->GetName();
-		switch ( sub->GetInt() )
+		for( KeyValues* sub = pKV->GetFirstSubKey(); sub; sub = sub->GetNextKey() )
 		{
-			case TYPE_LOCAL:
-			case TYPE_STRING: g_pScriptVM->SetValue( hTable, szKey, event->GetString( szKey ) ); break;
-			case TYPE_FLOAT:  g_pScriptVM->SetValue( hTable, szKey, event->GetFloat ( szKey ) ); break;
-			case TYPE_BOOL:   g_pScriptVM->SetValue( hTable, szKey, event->GetBool  ( szKey ) ); break;
-			default:          g_pScriptVM->SetValue( hTable, szKey, event->GetInt   ( szKey ) );
+			const char* szKey = sub->GetName();
+			switch( sub->GetInt() )
+			{
+				case TYPE_LOCAL:
+				case TYPE_STRING:
+					g_pScriptVM->SetValue( hTable, szKey, event->GetString( szKey ) );
+					break;
+				case TYPE_FLOAT:
+					g_pScriptVM->SetValue( hTable, szKey, event->GetFloat( szKey ) );
+					break;
+				case TYPE_BOOL:
+					g_pScriptVM->SetValue( hTable, szKey, event->GetBool( szKey ) );
+					break;
+				default:
+					g_pScriptVM->SetValue( hTable, szKey, event->GetInt( szKey ) );
+			}
 		}
-	}
 
 #if defined(_DEBUG) && !defined(USE_OLD_EVENT_DESCRIPTORS)
-	// Access a bunch of KeyValues functions to validate it is the correct address.
-	// This may not always throw an exception when it is incorrect, but eventually it will.
+		// Access a bunch of KeyValues functions to validate it is the correct address.
+		// This may not always throw an exception when it is incorrect, but eventually it will.
 	}
-	catch (...)
+	catch( ... )
 	{
 		// CGameEvent or CGameEventDescriptor offsets did not match!
 		// This should mean these were modified in engine.dll.
@@ -682,8 +713,8 @@ void CScriptGameEventListener::WriteEventData( IGameEvent *event, HSCRIPT hTable
 		//
 		// Finally assign it to pKV above.
 
-		Warning("CScriptGameEventListener::WriteEventData internal error\n");
-		Assert(0);
+		Warning( "CScriptGameEventListener::WriteEventData internal error\n" );
+		Assert( 0 );
 	}
 #endif
 }
@@ -695,15 +726,18 @@ int CScriptGameEventListener::ListenToGameEvent( const char* szEvent, HSCRIPT hF
 {
 	bool bValid;
 
-	if ( gameeventmanager && hFunc )
+	if( gameeventmanager && hFunc )
 #ifdef CLIENT_DLL
 		bValid = gameeventmanager->AddListener( this, szEvent, false );
 #else
 		bValid = gameeventmanager->AddListener( this, szEvent, true );
 #endif
-	else bValid = false;
+	else
+	{
+		bValid = false;
+	}
 
-	if ( bValid )
+	if( bValid )
 	{
 		m_iContextHash = HashContext( szContext );
 		m_hCallback = hFunc;
@@ -725,17 +759,23 @@ int CScriptGameEventListener::ListenToGameEvent( const char* szEvent, HSCRIPT hF
 //-----------------------------------------------------------------------------
 void CScriptGameEventListener::StopListeningForEvent()
 {
-	if ( !m_bActive )
+	if( !m_bActive )
+	{
 		return;
+	}
 
-	if ( g_pScriptVM )
+	if( g_pScriptVM )
+	{
 		g_pScriptVM->ReleaseScript( m_hCallback );
+	}
 
 	m_hCallback = NULL;
 	m_bActive = false;
 
-	if ( gameeventmanager )
+	if( gameeventmanager )
+	{
 		gameeventmanager->RemoveListener( this );
+	}
 
 #ifdef _DEBUG
 	// Event listeners are iterated forwards in the game event manager,
@@ -745,9 +785,9 @@ void CScriptGameEventListener::StopListeningForEvent()
 	// changing event exeuction order to tail->head,
 	// changing listener removal to tail->head,
 	// changing listener addition to head
-	if ( m_nEventTick == gpGlobals->tickcount )
+	if( m_nEventTick == gpGlobals->tickcount )
 	{
-		Warning("CScriptGameEventListener stopped in the same frame it was fired. This will break other event listeners!\n");
+		Warning( "CScriptGameEventListener stopped in the same frame it was fired. This will break other event listeners!\n" );
 	}
 #endif
 }
@@ -757,10 +797,10 @@ void CScriptGameEventListener::StopListeningForEvent()
 //-----------------------------------------------------------------------------
 bool CScriptGameEventListener::StopListeningToGameEvent( int listener )
 {
-	CScriptGameEventListener *p = reinterpret_cast<CScriptGameEventListener*>(listener); // INT_TO_POINTER	
+	CScriptGameEventListener* p = reinterpret_cast<CScriptGameEventListener*>( listener ); // INT_TO_POINTER
 
-	bool bRemoved = s_Listeners.FindAndFastRemove(p);
-	if ( bRemoved )
+	bool bRemoved = s_Listeners.FindAndFastRemove( p );
+	if( bRemoved )
 	{
 		delete p;
 	}
@@ -774,12 +814,12 @@ bool CScriptGameEventListener::StopListeningToGameEvent( int listener )
 void CScriptGameEventListener::StopListeningToAllGameEvents( const char* szContext )
 {
 	unsigned int hash = HashContext( szContext );
-	for ( int i = s_Listeners.Count(); i--; )
+	for( int i = s_Listeners.Count(); i--; )
 	{
-		CScriptGameEventListener *pCur = s_Listeners[i];
-		if ( pCur->m_iContextHash == hash )
+		CScriptGameEventListener* pCur = s_Listeners[i];
+		if( pCur->m_iContextHash == hash )
 		{
-			s_Listeners.FastRemove(i);
+			s_Listeners.FastRemove( i );
 			delete pCur;
 		}
 	}
@@ -790,7 +830,7 @@ void CScriptGameEventListener::StopListeningToAllGameEvents( const char* szConte
 
 static int ListenToGameEvent( const char* szEvent, HSCRIPT hFunc, const char* szContext )
 {
-	CScriptGameEventListener *p = new CScriptGameEventListener();
+	CScriptGameEventListener* p = new CScriptGameEventListener();
 	return p->ListenToGameEvent( szEvent, hFunc, szContext );
 }
 
@@ -799,29 +839,37 @@ static int ListenToGameEvent( const char* szEvent, HSCRIPT hFunc, const char* sz
 //-----------------------------------------------------------------------------
 static void FireGameEvent( const char* szEvent, HSCRIPT hTable )
 {
-	IGameEvent *event = gameeventmanager->CreateEvent( szEvent );
-	if ( event )
+	IGameEvent* event = gameeventmanager->CreateEvent( szEvent );
+	if( event )
 	{
 		ScriptVariant_t key, val;
 		int nIterator = -1;
-		while ( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
+		while( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
 		{
-			switch ( val.m_type )
+			switch( val.m_type )
 			{
-				case FIELD_FLOAT:   event->SetFloat ( key.m_pszString, val.m_float     ); break;
-				case FIELD_INTEGER: event->SetInt   ( key.m_pszString, val.m_int       ); break;
-				case FIELD_BOOLEAN: event->SetBool  ( key.m_pszString, val.m_bool      ); break;
-				case FIELD_CSTRING: event->SetString( key.m_pszString, val.m_pszString ); break;
+				case FIELD_FLOAT:
+					event->SetFloat( key.m_pszString, val.m_float );
+					break;
+				case FIELD_INTEGER:
+					event->SetInt( key.m_pszString, val.m_int );
+					break;
+				case FIELD_BOOLEAN:
+					event->SetBool( key.m_pszString, val.m_bool );
+					break;
+				case FIELD_CSTRING:
+					event->SetString( key.m_pszString, val.m_pszString );
+					break;
 			}
 
-			g_pScriptVM->ReleaseValue(key);
-			g_pScriptVM->ReleaseValue(val);
+			g_pScriptVM->ReleaseValue( key );
+			g_pScriptVM->ReleaseValue( val );
 		}
 
 #ifdef CLIENT_DLL
-		gameeventmanager->FireEventClientSide(event);
+		gameeventmanager->FireEventClientSide( event );
 #else
-		gameeventmanager->FireEvent(event);
+		gameeventmanager->FireEvent( event );
 #endif
 	}
 }
@@ -832,26 +880,34 @@ static void FireGameEvent( const char* szEvent, HSCRIPT hTable )
 //-----------------------------------------------------------------------------
 static void FireGameEventLocal( const char* szEvent, HSCRIPT hTable )
 {
-	IGameEvent *event = gameeventmanager->CreateEvent( szEvent );
-	if ( event )
+	IGameEvent* event = gameeventmanager->CreateEvent( szEvent );
+	if( event )
 	{
 		ScriptVariant_t key, val;
 		int nIterator = -1;
-		while ( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
+		while( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
 		{
-			switch ( val.m_type )
+			switch( val.m_type )
 			{
-				case FIELD_FLOAT:   event->SetFloat ( key.m_pszString, val.m_float     ); break;
-				case FIELD_INTEGER: event->SetInt   ( key.m_pszString, val.m_int       ); break;
-				case FIELD_BOOLEAN: event->SetBool  ( key.m_pszString, val.m_bool      ); break;
-				case FIELD_CSTRING: event->SetString( key.m_pszString, val.m_pszString ); break;
+				case FIELD_FLOAT:
+					event->SetFloat( key.m_pszString, val.m_float );
+					break;
+				case FIELD_INTEGER:
+					event->SetInt( key.m_pszString, val.m_int );
+					break;
+				case FIELD_BOOLEAN:
+					event->SetBool( key.m_pszString, val.m_bool );
+					break;
+				case FIELD_CSTRING:
+					event->SetString( key.m_pszString, val.m_pszString );
+					break;
 			}
 
-			g_pScriptVM->ReleaseValue(key);
-			g_pScriptVM->ReleaseValue(val);
+			g_pScriptVM->ReleaseValue( key );
+			g_pScriptVM->ReleaseValue( val );
 		}
 
-		gameeventmanager->FireEvent(event,true);
+		gameeventmanager->FireEvent( event, true );
 	}
 }
 #endif // !CLIENT_DLL
@@ -866,22 +922,24 @@ static ScriptHook_t g_Hook_OnRestore;
 class CScriptSaveRestoreUtil : public CAutoGameSystem
 {
 public:
-	static void SaveTable( const char *szId, HSCRIPT hTable );
-	static void RestoreTable( const char *szId, HSCRIPT hTable );
-	static void ClearSavedTable( const char *szId );
+	static void SaveTable( const char* szId, HSCRIPT hTable );
+	static void RestoreTable( const char* szId, HSCRIPT hTable );
+	static void ClearSavedTable( const char* szId );
 
 public: // IGameSystem
 
 	void OnSave()
 	{
-		if ( g_pScriptVM )
+		if( g_pScriptVM )
 		{
-			if ( GetScriptHookManager().IsEventHooked( "OnSave" ) )
+			if( GetScriptHookManager().IsEventHooked( "OnSave" ) )
+			{
 				g_Hook_OnSave.Call( NULL, NULL, NULL );
+			}
 
 			// Legacy hook
 			HSCRIPT hFunc = g_pScriptVM->LookupFunction( "OnSave" );
-			if ( hFunc )
+			if( hFunc )
 			{
 				g_pScriptVM->Call( hFunc );
 				g_pScriptVM->ReleaseScript( hFunc );
@@ -896,14 +954,16 @@ public: // IGameSystem
 	void OnRestore()
 #endif
 	{
-		if ( g_pScriptVM )
+		if( g_pScriptVM )
 		{
-			if ( GetScriptHookManager().IsEventHooked( "OnRestore" ) )
+			if( GetScriptHookManager().IsEventHooked( "OnRestore" ) )
+			{
 				g_Hook_OnRestore.Call( NULL, NULL, NULL );
+			}
 
 			// Legacy hook
 			HSCRIPT hFunc = g_pScriptVM->LookupFunction( "OnRestore" );
-			if ( hFunc )
+			if( hFunc )
 			{
 				g_pScriptVM->Call( hFunc );
 				g_pScriptVM->ReleaseScript( hFunc );
@@ -914,7 +974,7 @@ public: // IGameSystem
 	void Shutdown()
 	{
 		FOR_EACH_MAP_FAST( m_Lookup, i )
-			m_Lookup[i]->deleteThis();
+		m_Lookup[i]->deleteThis();
 		m_Lookup.Purge();
 	}
 
@@ -931,22 +991,22 @@ void VScriptSaveRestoreUtil_OnVMRestore()
 }
 #endif
 
-CUtlMap< unsigned int, KeyValues* > CScriptSaveRestoreUtil::m_Lookup( DefLessFunc(unsigned int) );
+CUtlMap< unsigned int, KeyValues* > CScriptSaveRestoreUtil::m_Lookup( DefLessFunc( unsigned int ) );
 StringHashFunctor CScriptSaveRestoreUtil::Hash;
 
 //-----------------------------------------------------------------------------
 // Store a table with primitive values that will persist across level transitions and save loads.
 // Case sensitive
 //-----------------------------------------------------------------------------
-void CScriptSaveRestoreUtil::SaveTable( const char *szId, HSCRIPT hTable )
+void CScriptSaveRestoreUtil::SaveTable( const char* szId, HSCRIPT hTable )
 {
-	KeyValues *pKV;
-	unsigned int hash = Hash(szId);
+	KeyValues* pKV;
+	unsigned int hash = Hash( szId );
 
 	int idx = m_Lookup.Find( hash );
-	if ( idx == m_Lookup.InvalidIndex() )
+	if( idx == m_Lookup.InvalidIndex() )
 	{
-		pKV = new KeyValues("ScriptSavedTable");
+		pKV = new KeyValues( "ScriptSavedTable" );
 		m_Lookup.Insert( hash, pKV );
 	}
 	else
@@ -957,41 +1017,55 @@ void CScriptSaveRestoreUtil::SaveTable( const char *szId, HSCRIPT hTable )
 
 	ScriptVariant_t key, val;
 	int nIterator = -1;
-	while ( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
+	while( ( nIterator = g_pScriptVM->GetKeyValue( hTable, nIterator, &key, &val ) ) != -1 )
 	{
-		switch ( val.m_type )
+		switch( val.m_type )
 		{
-			case FIELD_FLOAT:   pKV->SetFloat ( key.m_pszString, val.m_float     ); break;
-			case FIELD_INTEGER: pKV->SetInt   ( key.m_pszString, val.m_int       ); break;
-			case FIELD_BOOLEAN: pKV->SetBool  ( key.m_pszString, val.m_bool      ); break;
-			case FIELD_CSTRING: pKV->SetString( key.m_pszString, val.m_pszString ); break;
+			case FIELD_FLOAT:
+				pKV->SetFloat( key.m_pszString, val.m_float );
+				break;
+			case FIELD_INTEGER:
+				pKV->SetInt( key.m_pszString, val.m_int );
+				break;
+			case FIELD_BOOLEAN:
+				pKV->SetBool( key.m_pszString, val.m_bool );
+				break;
+			case FIELD_CSTRING:
+				pKV->SetString( key.m_pszString, val.m_pszString );
+				break;
 		}
 
-		g_pScriptVM->ReleaseValue(key);
-		g_pScriptVM->ReleaseValue(val);
+		g_pScriptVM->ReleaseValue( key );
+		g_pScriptVM->ReleaseValue( val );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Retrieves a table from storage. Write into input table.
 //-----------------------------------------------------------------------------
-void CScriptSaveRestoreUtil::RestoreTable( const char *szId, HSCRIPT hTable )
+void CScriptSaveRestoreUtil::RestoreTable( const char* szId, HSCRIPT hTable )
 {
-	int idx = m_Lookup.Find( Hash(szId) );
-	if ( idx == m_Lookup.InvalidIndex() )
+	int idx = m_Lookup.Find( Hash( szId ) );
+	if( idx == m_Lookup.InvalidIndex() )
 	{
 		// DevWarning( 2, "RestoreTable could not find saved table with context '%s'\n", szId );
 		return;
 	}
 
-	KeyValues *pKV = m_Lookup[idx];
+	KeyValues* pKV = m_Lookup[idx];
 	FOR_EACH_SUBKEY( pKV, key )
 	{
-		switch ( key->GetDataType() )
+		switch( key->GetDataType() )
 		{
-			case KeyValues::TYPE_STRING: g_pScriptVM->SetValue( hTable, key->GetName(), key->GetString() ); break;
-			case KeyValues::TYPE_INT:    g_pScriptVM->SetValue( hTable, key->GetName(), key->GetInt()    ); break;
-			case KeyValues::TYPE_FLOAT:  g_pScriptVM->SetValue( hTable, key->GetName(), key->GetFloat()  ); break;
+			case KeyValues::TYPE_STRING:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetString() );
+				break;
+			case KeyValues::TYPE_INT:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetInt() );
+				break;
+			case KeyValues::TYPE_FLOAT:
+				g_pScriptVM->SetValue( hTable, key->GetName(), key->GetFloat() );
+				break;
 		}
 	}
 }
@@ -999,10 +1073,10 @@ void CScriptSaveRestoreUtil::RestoreTable( const char *szId, HSCRIPT hTable )
 //-----------------------------------------------------------------------------
 // Remove a saved table.
 //-----------------------------------------------------------------------------
-void CScriptSaveRestoreUtil::ClearSavedTable( const char *szId )
+void CScriptSaveRestoreUtil::ClearSavedTable( const char* szId )
 {
-	int idx = m_Lookup.Find( Hash(szId) );
-	if ( idx != m_Lookup.InvalidIndex() )
+	int idx = m_Lookup.Find( Hash( szId ) );
+	if( idx != m_Lookup.InvalidIndex() )
 	{
 		m_Lookup[idx]->deleteThis();
 		m_Lookup.RemoveAt( idx );
@@ -1027,17 +1101,17 @@ class CScriptReadWriteFile : public CAutoGameSystem
 	// A singleton class with all static members is used to be able to free the read string on level shutdown,
 	// and register script funcs directly. Same reason applies to CScriptSaveRestoreUtil
 public:
-	static bool FileWrite( const char *szFile, const char *szInput );
-	static const char *FileRead( const char *szFile );
-	static bool FileExists( const char *szFile );
+	static bool FileWrite( const char* szFile, const char* szInput );
+	static const char* FileRead( const char* szFile );
+	static bool FileExists( const char* szFile );
 
 	// NOTE: These two functions are new with Mapbase and have no Valve equivalent
-	static bool KeyValuesWrite( const char *szFile, HSCRIPT hInput );
-	static HSCRIPT KeyValuesRead( const char *szFile );
+	static bool KeyValuesWrite( const char* szFile, HSCRIPT hInput );
+	static HSCRIPT KeyValuesRead( const char* szFile );
 
 	void LevelShutdownPostEntity()
 	{
-		if ( m_pszReturnReadFile )
+		if( m_pszReturnReadFile )
 		{
 			delete[] m_pszReturnReadFile;
 			m_pszReturnReadFile = NULL;
@@ -1045,38 +1119,38 @@ public:
 	}
 
 private:
-	static char *m_pszReturnReadFile;
+	static char* m_pszReturnReadFile;
 
 } g_ScriptReadWrite;
 
-char *CScriptReadWriteFile::m_pszReturnReadFile = NULL;
+char* CScriptReadWriteFile::m_pszReturnReadFile = NULL;
 
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CScriptReadWriteFile::FileWrite( const char *szFile, const char *szInput )
+bool CScriptReadWriteFile::FileWrite( const char* szFile, const char* szInput )
 {
-	size_t len = strlen(szInput);
-	if ( len > SCRIPT_MAX_FILE_WRITE_SIZE )
+	size_t len = strlen( szInput );
+	if( len > SCRIPT_MAX_FILE_WRITE_SIZE )
 	{
-		DevWarning( 2, "Input is too large for a ScriptFileWrite ( %s / %d MB )\n", V_pretifymem(len,2,true), (SCRIPT_MAX_FILE_WRITE_SIZE >> 20) );
+		DevWarning( 2, "Input is too large for a ScriptFileWrite ( %s / %d MB )\n", V_pretifymem( len, 2, true ), ( SCRIPT_MAX_FILE_WRITE_SIZE >> 20 ) );
 		return false;
 	}
 
 	char pszFullName[MAX_PATH];
-	V_snprintf( pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile );
+	V_snprintf( pszFullName, sizeof( pszFullName ), SCRIPT_RW_FULL_PATH_FMT, szFile );
 
-	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
+	if( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
 	{
 		DevWarning( 2, "Invalid file location : %s\n", szFile );
 		return false;
 	}
 
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
-	buf.PutString(szInput);
+	buf.PutString( szInput );
 
-	int nSize = V_strlen(pszFullName) + 1;
-	char *pszDir = (char*)stackalloc(nSize);
+	int nSize = V_strlen( pszFullName ) + 1;
+	char* pszDir = ( char* )stackalloc( nSize );
 	V_memcpy( pszDir, pszFullName, nSize );
 	V_StripFilename( pszDir );
 
@@ -1089,41 +1163,43 @@ bool CScriptReadWriteFile::FileWrite( const char *szFile, const char *szInput )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-const char *CScriptReadWriteFile::FileRead( const char *szFile )
+const char* CScriptReadWriteFile::FileRead( const char* szFile )
 {
 	char pszFullName[MAX_PATH];
-	V_snprintf( pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile );
+	V_snprintf( pszFullName, sizeof( pszFullName ), SCRIPT_RW_FULL_PATH_FMT, szFile );
 
-	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
+	if( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
 	{
 		DevWarning( 2, "Invalid file location : %s\n", szFile );
 		return NULL;
 	}
 
 	unsigned int size = g_pFullFileSystem->Size( pszFullName, SCRIPT_RW_PATH_ID );
-	if ( size >= SCRIPT_MAX_FILE_READ_SIZE )
+	if( size >= SCRIPT_MAX_FILE_READ_SIZE )
 	{
-		DevWarning( 2, "File '%s' (from '%s') is too large for a ScriptFileRead ( %s / %u bytes )\n", pszFullName, szFile, V_pretifymem(size,2,true), SCRIPT_MAX_FILE_READ_SIZE );
+		DevWarning( 2, "File '%s' (from '%s') is too large for a ScriptFileRead ( %s / %u bytes )\n", pszFullName, szFile, V_pretifymem( size, 2, true ), SCRIPT_MAX_FILE_READ_SIZE );
 		return NULL;
 	}
 
 	FileHandle_t file = g_pFullFileSystem->Open( pszFullName, "rb", SCRIPT_RW_PATH_ID );
-	if ( !file )
+	if( !file )
 	{
 		return NULL;
 	}
 
 	// Close the previous buffer
-	if (m_pszReturnReadFile)
+	if( m_pszReturnReadFile )
+	{
 		g_pFullFileSystem->FreeOptimalReadBuffer( m_pszReturnReadFile );
+	}
 
 	unsigned bufSize = g_pFullFileSystem->GetOptimalReadSize( file, size + 2 );
-	m_pszReturnReadFile = (char*)g_pFullFileSystem->AllocOptimalReadBuffer( file, bufSize );
+	m_pszReturnReadFile = ( char* )g_pFullFileSystem->AllocOptimalReadBuffer( file, bufSize );
 
 	bool bRetOK = ( g_pFullFileSystem->ReadEx( m_pszReturnReadFile, bufSize, size, file ) != 0 );
 	g_pFullFileSystem->Close( file );	// close file after reading
 
-	if ( bRetOK )
+	if( bRetOK )
 	{
 		m_pszReturnReadFile[size] = 0; // null terminate file as EOF
 		//buffer[size+1] = 0; // double NULL terminating in case this is a unicode file
@@ -1138,12 +1214,12 @@ const char *CScriptReadWriteFile::FileRead( const char *szFile )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CScriptReadWriteFile::FileExists( const char *szFile )
+bool CScriptReadWriteFile::FileExists( const char* szFile )
 {
 	char pszFullName[MAX_PATH];
-	V_snprintf( pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile );
+	V_snprintf( pszFullName, sizeof( pszFullName ), SCRIPT_RW_FULL_PATH_FMT, szFile );
 
-	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
+	if( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
 	{
 		DevWarning( 2, "Invalid file location : %s\n", szFile );
 		return NULL;
@@ -1177,10 +1253,10 @@ const char *CScriptReadWriteFile::CRC32_Checksum( const char *szFilename )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-bool CScriptReadWriteFile::KeyValuesWrite( const char *szFile, HSCRIPT hInput )
+bool CScriptReadWriteFile::KeyValuesWrite( const char* szFile, HSCRIPT hInput )
 {
-	KeyValues *pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hInput );
-	if (!pKV)
+	KeyValues* pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hInput );
+	if( !pKV )
 	{
 		return false;
 	}
@@ -1188,25 +1264,25 @@ bool CScriptReadWriteFile::KeyValuesWrite( const char *szFile, HSCRIPT hInput )
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
 	pKV->RecursiveSaveToFile( buf, 0 );
 
-	if ( buf.Size() > SCRIPT_MAX_FILE_WRITE_SIZE )
+	if( buf.Size() > SCRIPT_MAX_FILE_WRITE_SIZE )
 	{
-		DevWarning( 2, "Input is too large for a ScriptKeyValuesWrite ( %s / %d MB )\n", V_pretifymem(buf.Size(),2,true), (SCRIPT_MAX_FILE_WRITE_SIZE >> 20) );
+		DevWarning( 2, "Input is too large for a ScriptKeyValuesWrite ( %s / %d MB )\n", V_pretifymem( buf.Size(), 2, true ), ( SCRIPT_MAX_FILE_WRITE_SIZE >> 20 ) );
 		buf.Purge();
 		return false;
 	}
 
 	char pszFullName[MAX_PATH];
-	V_snprintf( pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile );
+	V_snprintf( pszFullName, sizeof( pszFullName ), SCRIPT_RW_FULL_PATH_FMT, szFile );
 
-	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
+	if( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
 	{
 		DevWarning( 2, "Invalid file location : %s\n", szFile );
 		buf.Purge();
 		return false;
 	}
 
-	int nSize = V_strlen(pszFullName) + 1;
-	char *pszDir = (char*)stackalloc(nSize);
+	int nSize = V_strlen( pszFullName ) + 1;
+	char* pszDir = ( char* )stackalloc( nSize );
 	V_memcpy( pszDir, pszFullName, nSize );
 	V_StripFilename( pszDir );
 
@@ -1219,26 +1295,26 @@ bool CScriptReadWriteFile::KeyValuesWrite( const char *szFile, HSCRIPT hInput )
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-HSCRIPT CScriptReadWriteFile::KeyValuesRead( const char *szFile )
+HSCRIPT CScriptReadWriteFile::KeyValuesRead( const char* szFile )
 {
 	char pszFullName[MAX_PATH];
-	V_snprintf( pszFullName, sizeof(pszFullName), SCRIPT_RW_FULL_PATH_FMT, szFile );
+	V_snprintf( pszFullName, sizeof( pszFullName ), SCRIPT_RW_FULL_PATH_FMT, szFile );
 
-	if ( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
+	if( !V_RemoveDotSlashes( pszFullName, CORRECT_PATH_SEPARATOR, true ) )
 	{
 		DevWarning( 2, "Invalid file location : %s\n", szFile );
 		return NULL;
 	}
 
 	unsigned int size = g_pFullFileSystem->Size( pszFullName, SCRIPT_RW_PATH_ID );
-	if ( size >= SCRIPT_MAX_FILE_READ_SIZE )
+	if( size >= SCRIPT_MAX_FILE_READ_SIZE )
 	{
-		DevWarning( 2, "File '%s' (from '%s') is too large for a ScriptKeyValuesRead ( %s / %u bytes )\n", pszFullName, szFile, V_pretifymem(size,2,true), SCRIPT_MAX_FILE_READ_SIZE );
+		DevWarning( 2, "File '%s' (from '%s') is too large for a ScriptKeyValuesRead ( %s / %u bytes )\n", pszFullName, szFile, V_pretifymem( size, 2, true ), SCRIPT_MAX_FILE_READ_SIZE );
 		return NULL;
 	}
 
-	KeyValues *pKV = new KeyValues( szFile );
-	if ( !pKV->LoadFromFile( g_pFullFileSystem, pszFullName, SCRIPT_RW_PATH_ID ) )
+	KeyValues* pKV = new KeyValues( szFile );
+	if( !pKV->LoadFromFile( g_pFullFileSystem, pszFullName, SCRIPT_RW_PATH_ID ) )
 	{
 		pKV->deleteThis();
 		return NULL;
@@ -1259,34 +1335,34 @@ HSCRIPT CScriptReadWriteFile::KeyValuesRead( const char *szFile )
 //=============================================================================
 
 static CNetMsgScriptHelper scriptnetmsg;
-CNetMsgScriptHelper *g_ScriptNetMsg = &scriptnetmsg;
+CNetMsgScriptHelper* g_ScriptNetMsg = &scriptnetmsg;
 
 #ifdef GAME_DLL
-#define m_MsgIn_() m_MsgIn->
-#define DLL_LOC_STR "[Server]"
+	#define m_MsgIn_() m_MsgIn->
+	#define DLL_LOC_STR "[Server]"
 #else
-#define m_MsgIn_() m_MsgIn.
-#define DLL_LOC_STR "[Client]"
+	#define m_MsgIn_() m_MsgIn.
+	#define DLL_LOC_STR "[Client]"
 #endif
 
 #ifdef GAME_DLL
-#define SCRIPT_NETMSG_WRITE_FUNC
+	#define SCRIPT_NETMSG_WRITE_FUNC
 #else
-#define SCRIPT_NETMSG_WRITE_FUNC if ( m_bWriteIgnore ) { return; }
+	#define SCRIPT_NETMSG_WRITE_FUNC if ( m_bWriteIgnore ) { return; }
 #endif
 
 #ifdef _DEBUG
-#ifdef GAME_DLL
-ConVar script_net_debug("script_net_debug", "0");
-#define DebugNetMsg( l, ... ) do { if (script_net_debug.GetInt() >= l) ConColorMsg( Color(100, 225, 255, 255), __VA_ARGS__ ); } while (0);
+	#ifdef GAME_DLL
+		ConVar script_net_debug( "script_net_debug", "0" );
+		#define DebugNetMsg( l, ... ) do { if (script_net_debug.GetInt() >= l) ConColorMsg( Color(100, 225, 255, 255), __VA_ARGS__ ); } while (0);
+	#else
+		ConVar script_net_debug( "script_net_debug_client", "0" );
+		#define DebugNetMsg( l, ... ) do { if (script_net_debug.GetInt() >= l) ConColorMsg( Color(100, 225, 175, 255), __VA_ARGS__ ); } while (0);
+	#endif
+	#define DebugWarning(...) Warning( __VA_ARGS__ )
 #else
-ConVar script_net_debug("script_net_debug_client", "0");
-#define DebugNetMsg( l, ... ) do { if (script_net_debug.GetInt() >= l) ConColorMsg( Color(100, 225, 175, 255), __VA_ARGS__ ); } while (0);
-#endif
-#define DebugWarning(...) Warning( __VA_ARGS__ )
-#else
-#define DebugNetMsg(...) (void)(0)
-#define DebugWarning(...) (void)(0)
+	#define DebugNetMsg(...) (void)(0)
+	#define DebugWarning(...) (void)(0)
 #endif
 
 
@@ -1294,10 +1370,10 @@ ConVar script_net_debug("script_net_debug_client", "0");
 #ifdef _DEBUG
 struct NetMsgHook_t
 {
-	void Set( const char *s )
+	void Set( const char* s )
 	{
 		hash = CNetMsgScriptHelper::Hash( s );
-		name = strdup(s);
+		name = strdup( s );
 	}
 
 	~NetMsgHook_t()
@@ -1306,26 +1382,28 @@ struct NetMsgHook_t
 	}
 
 	int hash;
-	char *name;
+	char* name;
 };
 
 CUtlVector< NetMsgHook_t > g_NetMsgHooks;
 
-static const char *GetNetMsgName( int hash )
+static const char* GetNetMsgName( int hash )
 {
 	FOR_EACH_VEC( g_NetMsgHooks, i )
 	{
-		if ( g_NetMsgHooks[i].hash == hash )
+		if( g_NetMsgHooks[i].hash == hash )
+		{
 			return g_NetMsgHooks[i].name;
+		}
 	}
 	return 0;
 }
 
-static const char *HasNetMsgCollision( int hash, const char *ignore )
+static const char* HasNetMsgCollision( int hash, const char* ignore )
 {
 	FOR_EACH_VEC( g_NetMsgHooks, i )
 	{
-		if ( g_NetMsgHooks[i].hash == hash && V_strcmp( g_NetMsgHooks[i].name, ignore ) != 0 )
+		if( g_NetMsgHooks[i].hash == hash && V_strcmp( g_NetMsgHooks[i].name, ignore ) != 0 )
 		{
 			return g_NetMsgHooks[i].name;
 		}
@@ -1336,20 +1414,20 @@ static const char *HasNetMsgCollision( int hash, const char *ignore )
 
 
 
-inline int CNetMsgScriptHelper::Hash( const char *key )
+inline int CNetMsgScriptHelper::Hash( const char* key )
 {
 	int hash = CaselessStringHashFunctor()( key );
 	return hash;
 }
 
-void CNetMsgScriptHelper::WriteToBuffer( bf_write *bf )
+void CNetMsgScriptHelper::WriteToBuffer( bf_write* bf )
 {
 #ifdef CLIENT_DLL
 	Assert( m_nQueueCount < ( 1 << SCRIPT_NETMSG_QUEUE_BITS ) );
 	bf->WriteUBitLong( m_nQueueCount, SCRIPT_NETMSG_QUEUE_BITS );
 
 	DebugNetMsg( 2, DLL_LOC_STR " CNetMsgScriptHelper::WriteToBuffer() count(%d) size(%d)\n",
-		m_nQueueCount, m_MsgOut.GetNumBitsWritten() + SCRIPT_NETMSG_QUEUE_BITS );
+				 m_nQueueCount, m_MsgOut.GetNumBitsWritten() + SCRIPT_NETMSG_QUEUE_BITS );
 #endif
 
 	bf->WriteBits( m_MsgOut.GetData(), m_MsgOut.GetNumBitsWritten() );
@@ -1360,7 +1438,7 @@ void CNetMsgScriptHelper::WriteToBuffer( bf_write *bf )
 //-----------------------------------------------------------------------------
 void CNetMsgScriptHelper::Reset()
 {
-	m_MsgOut.StartWriting( m_MsgData, sizeof(m_MsgData), 0 );
+	m_MsgOut.StartWriting( m_MsgData, sizeof( m_MsgData ), 0 );
 #ifdef GAME_DLL
 	m_filter.Reset();
 #else
@@ -1376,14 +1454,16 @@ void CNetMsgScriptHelper::InitPostVM()
 {
 	ScriptVariant_t hHooks;
 	g_pScriptVM->CreateTable( hHooks );
-	m_Hooks = (HSCRIPT)hHooks;
+	m_Hooks = ( HSCRIPT )hHooks;
 }
 
 void CNetMsgScriptHelper::LevelShutdownPreVM()
 {
 	Reset();
-	if ( m_Hooks )
+	if( m_Hooks )
+	{
 		g_pScriptVM->ReleaseScript( m_Hooks );
+	}
 	m_Hooks = NULL;
 
 #ifdef CLIENT_DLL
@@ -1409,7 +1489,7 @@ bool CNetMsgScriptHelper::Init() // IGameSystem
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CNetMsgScriptHelper::__MsgFunc_ScriptMsg( bf_read &msg )
+void CNetMsgScriptHelper::__MsgFunc_ScriptMsg( bf_read& msg )
 {
 	g_ScriptNetMsg->ReceiveMessage( msg );
 }
@@ -1420,11 +1500,11 @@ void CNetMsgScriptHelper::__MsgFunc_ScriptMsg( bf_read &msg )
 //
 //-----------------------------------------------------------------------------
 #ifdef GAME_DLL
-void CNetMsgScriptHelper::ReceiveMessage( bf_read *msg, CBaseEntity *pPlayer )
+void CNetMsgScriptHelper::ReceiveMessage( bf_read* msg, CBaseEntity* pPlayer )
 {
 	m_MsgIn = msg;
 #else
-void CNetMsgScriptHelper::ReceiveMessage( bf_read &msg )
+void CNetMsgScriptHelper::ReceiveMessage( bf_read& msg )
 {
 	m_MsgIn.StartReading( msg.m_pData, msg.m_nDataBytes );
 #endif
@@ -1432,7 +1512,7 @@ void CNetMsgScriptHelper::ReceiveMessage( bf_read &msg )
 	DebugNetMsg( 2, DLL_LOC_STR " %s()\n", __FUNCTION__ );
 
 	// Don't do anything if there's no VM here. This can happen if a message from the server goes to a VM-less client, or vice versa.
-	if ( !g_pScriptVM )
+	if( !g_pScriptVM )
 	{
 		CGWarning( 0, CON_GROUP_VSCRIPT, DLL_LOC_STR " CNetMsgScriptHelper: No VM on receiving side\n" );
 		return;
@@ -1441,23 +1521,23 @@ void CNetMsgScriptHelper::ReceiveMessage( bf_read &msg )
 #ifdef GAME_DLL
 	int count = m_MsgIn_()ReadUBitLong( SCRIPT_NETMSG_QUEUE_BITS );
 	DebugNetMsg( 2, "  msg count %d\n", count );
-	while ( count-- )
+	while( count-- )
 #endif
 	{
 		int hash = m_MsgIn_()ReadUBitLong( SCRIPT_NETMSG_HEADER_BITS );
 
 #ifdef _DEBUG
-		const char *msgName = GetNetMsgName( hash );
+		const char* msgName = GetNetMsgName( hash );
 		DebugNetMsg( 2, "  -- begin msg [%d]%s\n", hash, msgName );
 #endif
 
 		ScriptVariant_t hfn;
-		if ( g_pScriptVM->GetValue( m_Hooks, hash, &hfn ) )
+		if( g_pScriptVM->GetValue( m_Hooks, hash, &hfn ) )
 		{
 #ifdef GAME_DLL
-			if ( g_pScriptVM->Call( hfn, NULL, true, NULL, pPlayer->m_hScriptInstance ) == SCRIPT_ERROR )
+			if( g_pScriptVM->Call( hfn, NULL, true, NULL, pPlayer->m_hScriptInstance ) == SCRIPT_ERROR )
 #else
-			if ( g_pScriptVM->ExecuteFunction( hfn, NULL, 0, NULL, NULL, true ) == SCRIPT_ERROR )
+			if( g_pScriptVM->ExecuteFunction( hfn, NULL, 0, NULL, NULL, true ) == SCRIPT_ERROR )
 #endif
 			{
 #ifdef _DEBUG
@@ -1480,9 +1560,9 @@ void CNetMsgScriptHelper::ReceiveMessage( bf_read &msg )
 //-----------------------------------------------------------------------------
 // Start writing new custom network message
 //-----------------------------------------------------------------------------
-void CNetMsgScriptHelper::Start( const char *msg )
+void CNetMsgScriptHelper::Start( const char* msg )
 {
-	if ( !msg || !msg[0] )
+	if( !msg || !msg[0] )
 	{
 		g_pScriptVM->RaiseException( DLL_LOC_STR "NetMsg: invalid message name" );
 		return;
@@ -1494,13 +1574,13 @@ void CNetMsgScriptHelper::Start( const char *msg )
 	// Client can write multiple messages in a frame before the usercmd is sent,
 	// this queue system ensures client messages are written to the cmd all at once.
 	// NOTE: All messages share the same buffer.
-	if ( !m_bWriteReady )
+	if( !m_bWriteReady )
 	{
 		Reset();
 		m_nQueueCount = 0;
 		m_bWriteIgnore = false;
 	}
-	else if ( m_nQueueCount == ((1<<SCRIPT_NETMSG_QUEUE_BITS)-1) )
+	else if( m_nQueueCount == ( ( 1 << SCRIPT_NETMSG_QUEUE_BITS ) - 1 ) )
 	{
 		Warning( DLL_LOC_STR " NetMsg queue is full, cannot write '%s'!\n", msg );
 
@@ -1526,13 +1606,13 @@ void CNetMsgScriptHelper::Send( HSCRIPT player, bool bReliable )
 {
 	DebugNetMsg( 1, DLL_LOC_STR " %s() size(%d)\n", __FUNCTION__, GetNumBitsWritten() );
 
-	CBaseEntity *pPlayer = ToEnt(player);
-	if ( pPlayer )
+	CBaseEntity* pPlayer = ToEnt( player );
+	if( pPlayer )
 	{
-		m_filter.AddRecipient( (CBasePlayer*)pPlayer );
+		m_filter.AddRecipient( ( CBasePlayer* )pPlayer );
 	}
 
-	if ( bReliable )
+	if( bReliable )
 	{
 		m_filter.MakeReliable();
 	}
@@ -1558,9 +1638,9 @@ void CNetMsgScriptHelper::Send()
 //-----------------------------------------------------------------------------
 //
 //-----------------------------------------------------------------------------
-void CNetMsgScriptHelper::Receive( const char *msg, HSCRIPT func )
+void CNetMsgScriptHelper::Receive( const char* msg, HSCRIPT func )
 {
-	if ( !msg || !msg[0] )
+	if( !msg || !msg[0] )
 	{
 		g_pScriptVM->RaiseException( DLL_LOC_STR "NetMsg: invalid message name" );
 		return;
@@ -1569,14 +1649,14 @@ void CNetMsgScriptHelper::Receive( const char *msg, HSCRIPT func )
 #ifdef _DEBUG
 	int hash = Hash( msg );
 
-	const char *psz = HasNetMsgCollision( hash, msg );
+	const char* psz = HasNetMsgCollision( hash, msg );
 	AssertMsg3( !psz, DLL_LOC_STR " NetMsg hash collision! [%d] '%s', '%s'\n", hash, msg, psz );
 
-	NetMsgHook_t &hook = g_NetMsgHooks[ g_NetMsgHooks.AddToTail() ];
+	NetMsgHook_t& hook = g_NetMsgHooks[ g_NetMsgHooks.AddToTail() ];
 	hook.Set( msg );
 #endif
 
-	if ( func )
+	if( func )
 	{
 		g_pScriptVM->SetValue( m_Hooks, Hash( msg ), func );
 	}
@@ -1587,13 +1667,13 @@ void CNetMsgScriptHelper::Receive( const char *msg, HSCRIPT func )
 }
 
 #ifdef GAME_DLL
-void CNetMsgScriptHelper::DoSendUserMsg( CRecipientFilter *filter, int type )
+void CNetMsgScriptHelper::DoSendUserMsg( CRecipientFilter* filter, int type )
 {
 	WriteToBuffer( engine->UserMessageBegin( filter, type ) );
 	engine->MessageEnd();
 }
 
-void CNetMsgScriptHelper::DoSendEntityMsg( CBaseEntity *entity, bool reliable )
+void CNetMsgScriptHelper::DoSendEntityMsg( CBaseEntity* entity, bool reliable )
 {
 	WriteToBuffer( engine->EntityMessageBegin( entity->entindex(), entity->GetServerClass(), reliable ) );
 	engine->MessageEnd();
@@ -1602,22 +1682,22 @@ void CNetMsgScriptHelper::DoSendEntityMsg( CBaseEntity *entity, bool reliable )
 //-----------------------------------------------------------------------------
 // Send a usermessage from the server to the client
 //-----------------------------------------------------------------------------
-void CNetMsgScriptHelper::SendUserMessage( HSCRIPT hPlayer, const char *msg, bool bReliable )
+void CNetMsgScriptHelper::SendUserMessage( HSCRIPT hPlayer, const char* msg, bool bReliable )
 {
-	int msg_type = usermessages->LookupUserMessage(msg);
-	if ( msg_type == -1 )
+	int msg_type = usermessages->LookupUserMessage( msg );
+	if( msg_type == -1 )
 	{
-		g_pScriptVM->RaiseException( UTIL_VarArgs("SendUserMessage: Unregistered message '%s'", msg) );
+		g_pScriptVM->RaiseException( UTIL_VarArgs( "SendUserMessage: Unregistered message '%s'", msg ) );
 		return;
 	}
 
-	CBaseEntity *pPlayer = ToEnt(hPlayer);
-	if ( pPlayer )
+	CBaseEntity* pPlayer = ToEnt( hPlayer );
+	if( pPlayer )
 	{
-		m_filter.AddRecipient( (CBasePlayer*)pPlayer );
+		m_filter.AddRecipient( ( CBasePlayer* )pPlayer );
 	}
 
-	if ( bReliable )
+	if( bReliable )
 	{
 		m_filter.MakeReliable();
 	}
@@ -1630,10 +1710,10 @@ void CNetMsgScriptHelper::SendUserMessage( HSCRIPT hPlayer, const char *msg, boo
 //-----------------------------------------------------------------------------
 void CNetMsgScriptHelper::SendEntityMessage( HSCRIPT hEnt, bool bReliable )
 {
-	CBaseEntity *entity = ToEnt(hEnt);
-	if ( !entity )
+	CBaseEntity* entity = ToEnt( hEnt );
+	if( !entity )
 	{
-		g_pScriptVM->RaiseException("SendEntityMessage: invalid entity");
+		g_pScriptVM->RaiseException( "SendEntityMessage: invalid entity" );
 		return;
 	}
 
@@ -1643,10 +1723,10 @@ void CNetMsgScriptHelper::SendEntityMessage( HSCRIPT hEnt, bool bReliable )
 //-----------------------------------------------------------------------------
 // Dispatch a usermessage on client
 //-----------------------------------------------------------------------------
-void CNetMsgScriptHelper::DispatchUserMessage( const char *msg )
+void CNetMsgScriptHelper::DispatchUserMessage( const char* msg )
 {
 	bf_read buffer( m_MsgOut.GetData(), m_MsgOut.GetNumBytesWritten() );
-	usermessages->DispatchUserMessage( usermessages->LookupUserMessage(msg), buffer );
+	usermessages->DispatchUserMessage( usermessages->LookupUserMessage( msg ), buffer );
 }
 #endif // GAME_DLL
 
@@ -1734,12 +1814,12 @@ void CNetMsgScriptHelper::WriteAngles( const QAngle& rgflValue )
 	m_MsgOut.WriteBitAngles( rgflValue );
 }
 
-void CNetMsgScriptHelper::WriteString( const char *sz )
+void CNetMsgScriptHelper::WriteString( const char* sz )
 {
 	SCRIPT_NETMSG_WRITE_FUNC
 
 	// Larger strings can be written but cannot be read
-	Assert( V_strlen(sz) < SCRIPT_NETMSG_STRING_SIZE );
+	Assert( V_strlen( sz ) < SCRIPT_NETMSG_STRING_SIZE );
 
 	m_MsgOut.WriteString( sz );
 }
@@ -1753,7 +1833,7 @@ void CNetMsgScriptHelper::WriteBool( bool bValue )
 void CNetMsgScriptHelper::WriteEntity( HSCRIPT hEnt )
 {
 	SCRIPT_NETMSG_WRITE_FUNC
-	CBaseEntity *p = ToEnt(hEnt);
+	CBaseEntity* p = ToEnt( hEnt );
 	int i = p ? p->entindex() : 0;
 	m_MsgOut.WriteUBitLong( i, MAX_EDICT_BITS );
 }
@@ -1761,13 +1841,13 @@ void CNetMsgScriptHelper::WriteEntity( HSCRIPT hEnt )
 void CNetMsgScriptHelper::WriteEHandle( HSCRIPT hEnt )
 {
 	SCRIPT_NETMSG_WRITE_FUNC
-	CBaseEntity *pEnt = ToEnt( hEnt );
+	CBaseEntity* pEnt = ToEnt( hEnt );
 	long iEncodedEHandle;
-	if ( pEnt )
+	if( pEnt )
 	{
 		EHANDLE hEnt = pEnt;
-		int iSerialNum = hEnt.GetSerialNumber() & (1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS) - 1;
-		iEncodedEHandle = hEnt.GetEntryIndex() | (iSerialNum << MAX_EDICT_BITS);
+		int iSerialNum = hEnt.GetSerialNumber() & ( 1 << NUM_NETWORKED_EHANDLE_SERIAL_NUMBER_BITS ) - 1;
+		iEncodedEHandle = hEnt.GetEntryIndex() | ( iSerialNum << MAX_EDICT_BITS );
 	}
 	else
 	{
@@ -1778,12 +1858,12 @@ void CNetMsgScriptHelper::WriteEHandle( HSCRIPT hEnt )
 
 int CNetMsgScriptHelper::ReadInt( int bits )
 {
-	return m_MsgIn_()ReadSBitLong(bits);
+	return m_MsgIn_()ReadSBitLong( bits );
 }
 
 int CNetMsgScriptHelper::ReadUInt( int bits )
 {
-	return m_MsgIn_()ReadUBitLong(bits);
+	return m_MsgIn_()ReadUBitLong( bits );
 }
 
 int CNetMsgScriptHelper::ReadByte()
@@ -1834,28 +1914,28 @@ float CNetMsgScriptHelper::ReadCoord()
 const Vector& CNetMsgScriptHelper::ReadVec3Coord()
 {
 	static Vector vec3;
-	m_MsgIn_()ReadBitVec3Coord(vec3);
+	m_MsgIn_()ReadBitVec3Coord( vec3 );
 	return vec3;
 }
 
 const Vector& CNetMsgScriptHelper::ReadVec3Normal()
 {
 	static Vector vec3;
-	m_MsgIn_()ReadBitVec3Normal(vec3);
+	m_MsgIn_()ReadBitVec3Normal( vec3 );
 	return vec3;
 }
 
 const QAngle& CNetMsgScriptHelper::ReadAngles()
 {
 	static QAngle vec3;
-	m_MsgIn_()ReadBitAngles(vec3);
+	m_MsgIn_()ReadBitAngles( vec3 );
 	return vec3;
 }
 
 const char* CNetMsgScriptHelper::ReadString()
 {
 	static char buf[ SCRIPT_NETMSG_STRING_SIZE ];
-	m_MsgIn_()ReadString( buf, sizeof(buf) );
+	m_MsgIn_()ReadString( buf, sizeof( buf ) );
 	return buf;
 }
 
@@ -1868,19 +1948,21 @@ HSCRIPT CNetMsgScriptHelper::ReadEntity()
 {
 	int index = m_MsgIn_()ReadUBitLong( MAX_EDICT_BITS );
 
-	if ( !index )
+	if( !index )
+	{
 		return NULL;
+	}
 
 #ifdef GAME_DLL
-	edict_t *e = INDEXENT(index);
-	if ( e && !e->IsFree() )
+	edict_t* e = INDEXENT( index );
+	if( e && !e->IsFree() )
 	{
-		return ToHScript( GetContainingEntity(e) );
+		return ToHScript( GetContainingEntity( e ) );
 	}
 #else // CLIENT_DLL
-	if ( index < NUM_ENT_ENTRIES )
+	if( index < NUM_ENT_ENTRIES )
 	{
-		return ToHScript( CBaseEntity::Instance(index) );
+		return ToHScript( CBaseEntity::Instance( index ) );
 	}
 #endif
 	return NULL;
@@ -1889,9 +1971,11 @@ HSCRIPT CNetMsgScriptHelper::ReadEntity()
 HSCRIPT CNetMsgScriptHelper::ReadEHandle()
 {
 	int iEncodedEHandle = m_MsgIn_()ReadLong();
-	if ( iEncodedEHandle == INVALID_NETWORKED_EHANDLE_VALUE )
+	if( iEncodedEHandle == INVALID_NETWORKED_EHANDLE_VALUE )
+	{
 		return NULL;
-	int iEntry = iEncodedEHandle & ( (1 << MAX_EDICT_BITS) - 1 );
+	}
+	int iEntry = iEncodedEHandle & ( ( 1 << MAX_EDICT_BITS ) - 1 );
 	int iSerialNum = iEncodedEHandle >> MAX_EDICT_BITS;
 	return ToHScript( EHANDLE( iEntry, iSerialNum ) );
 }
@@ -1917,55 +2001,55 @@ BEGIN_SCRIPTDESC_ROOT_NAMED( CNetMsgScriptHelper, "CNetMsg", SCRIPT_SINGLETON "N
 	DEFINE_SCRIPTFUNC( DispatchUserMessage, "Dispatch a usermessage on client" )
 #endif
 
-	DEFINE_SCRIPTFUNC( Reset, "Reset the current network message buffer" )
-	DEFINE_SCRIPTFUNC( Start, "Start writing new custom network message" )
-	DEFINE_SCRIPTFUNC( Receive, "Set custom network message callback" )
-	DEFINE_SCRIPTFUNC_NAMED( Receive, "Recieve", SCRIPT_HIDE ) // This was a typo until v6.3
+DEFINE_SCRIPTFUNC( Reset, "Reset the current network message buffer" )
+DEFINE_SCRIPTFUNC( Start, "Start writing new custom network message" )
+DEFINE_SCRIPTFUNC( Receive, "Set custom network message callback" )
+DEFINE_SCRIPTFUNC_NAMED( Receive, "Recieve", SCRIPT_HIDE ) // This was a typo until v6.3
 #ifdef GAME_DLL
 	DEFINE_SCRIPTFUNC( Send, "Send a custom network message from the server to the client (max 251 bytes)" )
 #else
 	DEFINE_SCRIPTFUNC( Send, "Send a custom network message from the client to the server (max 2044 bytes)" )
 #endif
 
-	DEFINE_SCRIPTFUNC( WriteInt, "variable bit signed int" )
-	DEFINE_SCRIPTFUNC( WriteUInt, "variable bit unsigned int" )
-	DEFINE_SCRIPTFUNC( WriteByte, "8 bit unsigned char" )
-	DEFINE_SCRIPTFUNC( WriteChar, "8 bit char" )
-	DEFINE_SCRIPTFUNC( WriteShort, "16 bit short" )
-	DEFINE_SCRIPTFUNC( WriteWord, "16 bit unsigned short" )
-	DEFINE_SCRIPTFUNC( WriteLong, "32 bit long" )
-	DEFINE_SCRIPTFUNC( WriteFloat, "32 bit float" )
-	DEFINE_SCRIPTFUNC( WriteNormal, "12 bit" )
-	DEFINE_SCRIPTFUNC( WriteAngle, "8 bit unsigned char" )
-	DEFINE_SCRIPTFUNC( WriteCoord, "" )
-	DEFINE_SCRIPTFUNC( WriteVec3Coord, "" )
-	DEFINE_SCRIPTFUNC( WriteVec3Normal, "27 bit" )
-	DEFINE_SCRIPTFUNC( WriteAngles, "" )
-	DEFINE_SCRIPTFUNC( WriteString, "max 512 bytes at once" )
-	DEFINE_SCRIPTFUNC( WriteBool, "1 bit" )
-	DEFINE_SCRIPTFUNC( WriteEntity, "11 bit (entindex)" )
-	DEFINE_SCRIPTFUNC( WriteEHandle, "32 bit long" )
+DEFINE_SCRIPTFUNC( WriteInt, "variable bit signed int" )
+DEFINE_SCRIPTFUNC( WriteUInt, "variable bit unsigned int" )
+DEFINE_SCRIPTFUNC( WriteByte, "8 bit unsigned char" )
+DEFINE_SCRIPTFUNC( WriteChar, "8 bit char" )
+DEFINE_SCRIPTFUNC( WriteShort, "16 bit short" )
+DEFINE_SCRIPTFUNC( WriteWord, "16 bit unsigned short" )
+DEFINE_SCRIPTFUNC( WriteLong, "32 bit long" )
+DEFINE_SCRIPTFUNC( WriteFloat, "32 bit float" )
+DEFINE_SCRIPTFUNC( WriteNormal, "12 bit" )
+DEFINE_SCRIPTFUNC( WriteAngle, "8 bit unsigned char" )
+DEFINE_SCRIPTFUNC( WriteCoord, "" )
+DEFINE_SCRIPTFUNC( WriteVec3Coord, "" )
+DEFINE_SCRIPTFUNC( WriteVec3Normal, "27 bit" )
+DEFINE_SCRIPTFUNC( WriteAngles, "" )
+DEFINE_SCRIPTFUNC( WriteString, "max 512 bytes at once" )
+DEFINE_SCRIPTFUNC( WriteBool, "1 bit" )
+DEFINE_SCRIPTFUNC( WriteEntity, "11 bit (entindex)" )
+DEFINE_SCRIPTFUNC( WriteEHandle, "32 bit long" )
 
-	DEFINE_SCRIPTFUNC( ReadInt, "" )
-	DEFINE_SCRIPTFUNC( ReadUInt, "" )
-	DEFINE_SCRIPTFUNC( ReadByte, "" )
-	DEFINE_SCRIPTFUNC( ReadChar, "" )
-	DEFINE_SCRIPTFUNC( ReadShort, "" )
-	DEFINE_SCRIPTFUNC( ReadWord, "" )
-	DEFINE_SCRIPTFUNC( ReadLong, "" )
-	DEFINE_SCRIPTFUNC( ReadFloat, "" )
-	DEFINE_SCRIPTFUNC( ReadNormal, "" )
-	DEFINE_SCRIPTFUNC( ReadAngle, "" )
-	DEFINE_SCRIPTFUNC( ReadCoord, "" )
-	DEFINE_SCRIPTFUNC( ReadVec3Coord, "" )
-	DEFINE_SCRIPTFUNC( ReadVec3Normal, "" )
-	DEFINE_SCRIPTFUNC( ReadAngles, "" )
-	DEFINE_SCRIPTFUNC( ReadString, "" )
-	DEFINE_SCRIPTFUNC( ReadBool, "" )
-	DEFINE_SCRIPTFUNC( ReadEntity, "" )
-	DEFINE_SCRIPTFUNC( ReadEHandle, "" )
+DEFINE_SCRIPTFUNC( ReadInt, "" )
+DEFINE_SCRIPTFUNC( ReadUInt, "" )
+DEFINE_SCRIPTFUNC( ReadByte, "" )
+DEFINE_SCRIPTFUNC( ReadChar, "" )
+DEFINE_SCRIPTFUNC( ReadShort, "" )
+DEFINE_SCRIPTFUNC( ReadWord, "" )
+DEFINE_SCRIPTFUNC( ReadLong, "" )
+DEFINE_SCRIPTFUNC( ReadFloat, "" )
+DEFINE_SCRIPTFUNC( ReadNormal, "" )
+DEFINE_SCRIPTFUNC( ReadAngle, "" )
+DEFINE_SCRIPTFUNC( ReadCoord, "" )
+DEFINE_SCRIPTFUNC( ReadVec3Coord, "" )
+DEFINE_SCRIPTFUNC( ReadVec3Normal, "" )
+DEFINE_SCRIPTFUNC( ReadAngles, "" )
+DEFINE_SCRIPTFUNC( ReadString, "" )
+DEFINE_SCRIPTFUNC( ReadBool, "" )
+DEFINE_SCRIPTFUNC( ReadEntity, "" )
+DEFINE_SCRIPTFUNC( ReadEHandle, "" )
 
-	DEFINE_SCRIPTFUNC( GetNumBitsWritten, "" )
+DEFINE_SCRIPTFUNC( GetNumBitsWritten, "" )
 
 END_SCRIPTDESC();
 
@@ -1978,97 +2062,99 @@ class CDebugOverlayScriptHelper
 {
 public:
 
-	void Box( const Vector &origin, const Vector &mins, const Vector &maxs, int r, int g, int b, int a, float flDuration )
+	void Box( const Vector& origin, const Vector& mins, const Vector& maxs, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddBoxOverlay(origin, mins, maxs, vec3_angle, r, g, b, a, flDuration);
+		debugoverlay->AddBoxOverlay( origin, mins, maxs, vec3_angle, r, g, b, a, flDuration );
 	}
-	void BoxDirection( const Vector &origin, const Vector &mins, const Vector &maxs, const Vector &forward, int r, int g, int b, int a, float flDuration )
+	void BoxDirection( const Vector& origin, const Vector& mins, const Vector& maxs, const Vector& forward, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
 		QAngle f_angles = vec3_angle;
-		f_angles.y = UTIL_VecToYaw(forward);
+		f_angles.y = UTIL_VecToYaw( forward );
 
-		debugoverlay->AddBoxOverlay(origin, mins, maxs, f_angles, r, g, b, a, flDuration);
+		debugoverlay->AddBoxOverlay( origin, mins, maxs, f_angles, r, g, b, a, flDuration );
 	}
-	void BoxAngles( const Vector &origin, const Vector &mins, const Vector &maxs, const QAngle &angles, int r, int g, int b, int a, float flDuration )
+	void BoxAngles( const Vector& origin, const Vector& mins, const Vector& maxs, const QAngle& angles, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddBoxOverlay(origin, mins, maxs, angles, r, g, b, a, flDuration);
+		debugoverlay->AddBoxOverlay( origin, mins, maxs, angles, r, g, b, a, flDuration );
 	}
-	void SweptBox( const Vector& start, const Vector& end, const Vector& mins, const Vector& maxs, const QAngle & angles, int r, int g, int b, int a, float flDuration )
+	void SweptBox( const Vector& start, const Vector& end, const Vector& mins, const Vector& maxs, const QAngle& angles, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddSweptBoxOverlay(start, end, mins, maxs, angles, r, g, b, a, flDuration);
+		debugoverlay->AddSweptBoxOverlay( start, end, mins, maxs, angles, r, g, b, a, flDuration );
 	}
 	void EntityBounds( HSCRIPT pEntity, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		CBaseEntity *pEnt = ToEnt(pEntity);
-		if (!pEnt)
+		CBaseEntity* pEnt = ToEnt( pEntity );
+		if( !pEnt )
+		{
 			return;
+		}
 
-		const CCollisionProperty *pCollide = pEnt->CollisionProp();
-		debugoverlay->AddBoxOverlay(pCollide->GetCollisionOrigin(), pCollide->OBBMins(), pCollide->OBBMaxs(), pCollide->GetCollisionAngles(), r, g, b, a, flDuration);
+		const CCollisionProperty* pCollide = pEnt->CollisionProp();
+		debugoverlay->AddBoxOverlay( pCollide->GetCollisionOrigin(), pCollide->OBBMins(), pCollide->OBBMaxs(), pCollide->GetCollisionAngles(), r, g, b, a, flDuration );
 	}
-	void Line( const Vector &origin, const Vector &target, int r, int g, int b, bool noDepthTest, float flDuration )
+	void Line( const Vector& origin, const Vector& target, int r, int g, int b, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddLineOverlay(origin, target, r, g, b, noDepthTest, flDuration);
+		debugoverlay->AddLineOverlay( origin, target, r, g, b, noDepthTest, flDuration );
 	}
-	void Triangle( const Vector &p1, const Vector &p2, const Vector &p3, int r, int g, int b, int a, bool noDepthTest, float duration )
+	void Triangle( const Vector& p1, const Vector& p2, const Vector& p3, int r, int g, int b, int a, bool noDepthTest, float duration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddTriangleOverlay(p1, p2, p3, r, g, b, a, noDepthTest, duration);
+		debugoverlay->AddTriangleOverlay( p1, p2, p3, r, g, b, a, noDepthTest, duration );
 	}
-	void EntityText( int entityID, int text_offset, const char *text, float flDuration, int r, int g, int b, int a )
+	void EntityText( int entityID, int text_offset, const char* text, float flDuration, int r, int g, int b, int a )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddEntityTextOverlay(entityID, text_offset, flDuration,
-				(int)clamp(r * 255.f, 0.f, 255.f), (int)clamp(g * 255.f, 0.f, 255.f), (int)clamp(b * 255.f, 0.f, 255.f),
-				(int)clamp(a * 255.f, 0.f, 255.f), text);
+		debugoverlay->AddEntityTextOverlay( entityID, text_offset, flDuration,
+											( int )clamp( r * 255.f, 0.f, 255.f ), ( int )clamp( g * 255.f, 0.f, 255.f ), ( int )clamp( b * 255.f, 0.f, 255.f ),
+											( int )clamp( a * 255.f, 0.f, 255.f ), text );
 	}
-	void EntityTextAtPosition( const Vector &origin, int text_offset, const char *text, float flDuration, int r, int g, int b, int a )
+	void EntityTextAtPosition( const Vector& origin, int text_offset, const char* text, float flDuration, int r, int g, int b, int a )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddTextOverlayRGB(origin, text_offset, flDuration, r, g, b, a, "%s", text);
+		debugoverlay->AddTextOverlayRGB( origin, text_offset, flDuration, r, g, b, a, "%s", text );
 	}
-	void Grid( const Vector &vPosition )
+	void Grid( const Vector& vPosition )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddGridOverlay(vPosition);
+		debugoverlay->AddGridOverlay( vPosition );
 	}
-	void Text( const Vector &origin, const char *text, float flDuration )
+	void Text( const Vector& origin, const char* text, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddTextOverlay(origin, flDuration, "%s", text);
+		debugoverlay->AddTextOverlay( origin, flDuration, "%s", text );
 	}
-	void ScreenText( float fXpos, float fYpos, const char *text, int r, int g, int b, int a, float flDuration )
+	void ScreenText( float fXpos, float fYpos, const char* text, int r, int g, int b, int a, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		debugoverlay->AddScreenTextOverlay(fXpos, fYpos, flDuration, r, g, b, a, text);
+		debugoverlay->AddScreenTextOverlay( fXpos, fYpos, flDuration, r, g, b, a, text );
 	}
-	void Cross3D( const Vector &position, float size, int r, int g, int b, bool noDepthTest, float flDuration )
+	void Cross3D( const Vector& position, float size, int r, int g, int b, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		Line( position + Vector(size,0,0), position - Vector(size,0,0), r, g, b, noDepthTest, flDuration );
-		Line( position + Vector(0,size,0), position - Vector(0,size,0), r, g, b, noDepthTest, flDuration );
-		Line( position + Vector(0,0,size), position - Vector(0,0,size), r, g, b, noDepthTest, flDuration );
+		Line( position + Vector( size, 0, 0 ), position - Vector( size, 0, 0 ), r, g, b, noDepthTest, flDuration );
+		Line( position + Vector( 0, size, 0 ), position - Vector( 0, size, 0 ), r, g, b, noDepthTest, flDuration );
+		Line( position + Vector( 0, 0, size ), position - Vector( 0, 0, size ), r, g, b, noDepthTest, flDuration );
 	}
-	void Cross3DOriented( const Vector &position, const QAngle &angles, float size, int r, int g, int b, bool noDepthTest, float flDuration )
+	void Cross3DOriented( const Vector& position, const QAngle& angles, float size, int r, int g, int b, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
@@ -2083,58 +2169,58 @@ public:
 		Line( position + forward, position - forward, r, g, b, noDepthTest, flDuration );
 		Line( position + up, position - up, r, g, b, noDepthTest, flDuration );
 	}
-	void DrawTickMarkedLine( const Vector &startPos, const Vector &endPos, float tickDist, int tickTextDist, int r, int g, int b, bool noDepthTest, float flDuration )
+	void DrawTickMarkedLine( const Vector& startPos, const Vector& endPos, float tickDist, int tickTextDist, int r, int g, int b, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		Vector	lineDir = (endPos - startPos);
-		float	lineDist = VectorNormalize(lineDir);
+		Vector	lineDir = ( endPos - startPos );
+		float	lineDist = VectorNormalize( lineDir );
 		int		numTicks = lineDist / tickDist;
 
-		Vector  upVec = Vector(0,0,4);
+		Vector  upVec = Vector( 0, 0, 4 );
 		Vector	sideDir;
 		Vector	tickPos = startPos;
 		int		tickTextCnt = 0;
 
-		CrossProduct(lineDir, upVec, sideDir);
+		CrossProduct( lineDir, upVec, sideDir );
 
-		Line(startPos, endPos, r, g, b, noDepthTest, flDuration);
+		Line( startPos, endPos, r, g, b, noDepthTest, flDuration );
 
-		for (int i = 0; i<numTicks + 1; i++)
+		for( int i = 0; i < numTicks + 1; i++ )
 		{
 			Vector tickLeft = tickPos - sideDir;
 			Vector tickRight = tickPos + sideDir;
 
-			if (tickTextCnt == tickTextDist)
+			if( tickTextCnt == tickTextDist )
 			{
 				char text[25];
-				Q_snprintf(text, sizeof(text), "%i", i);
-				Vector textPos = tickLeft + Vector(0, 0, 8);
-				Line(tickLeft, tickRight, 255, 255, 255, noDepthTest, flDuration);
-				Text(textPos, text, flDuration);
+				Q_snprintf( text, sizeof( text ), "%i", i );
+				Vector textPos = tickLeft + Vector( 0, 0, 8 );
+				Line( tickLeft, tickRight, 255, 255, 255, noDepthTest, flDuration );
+				Text( textPos, text, flDuration );
 				tickTextCnt = 0;
 			}
 			else
 			{
-				Line(tickLeft, tickRight, r, g, b, noDepthTest, flDuration);
+				Line( tickLeft, tickRight, r, g, b, noDepthTest, flDuration );
 			}
 
 			tickTextCnt++;
 
-			tickPos = tickPos + (tickDist * lineDir);
+			tickPos = tickPos + ( tickDist * lineDir );
 		}
 	}
-	void HorzArrow( const Vector &startPos, const Vector &endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
+	void HorzArrow( const Vector& startPos, const Vector& endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		Vector	lineDir		= (endPos - startPos);
+		Vector	lineDir		= ( endPos - startPos );
 		VectorNormalize( lineDir );
 		Vector  upVec		= Vector( 0, 0, 1 );
 		Vector	sideDir;
 		float   radius		= width / 2.0;
 
-		CrossProduct(lineDir, upVec, sideDir);
+		CrossProduct( lineDir, upVec, sideDir );
 
 		Vector p1 =	startPos - sideDir * radius;
 		Vector p2 = endPos - lineDir * width - sideDir * radius;
@@ -2144,14 +2230,14 @@ public:
 		Vector p6 = endPos - lineDir * width + sideDir * radius;
 		Vector p7 =	startPos + sideDir * radius;
 
-		Line(p1, p2, r,g,b,noDepthTest,flDuration);
-		Line(p2, p3, r,g,b,noDepthTest,flDuration);
-		Line(p3, p4, r,g,b,noDepthTest,flDuration);
-		Line(p4, p5, r,g,b,noDepthTest,flDuration);
-		Line(p5, p6, r,g,b,noDepthTest,flDuration);
-		Line(p6, p7, r,g,b,noDepthTest,flDuration);
+		Line( p1, p2, r, g, b, noDepthTest, flDuration );
+		Line( p2, p3, r, g, b, noDepthTest, flDuration );
+		Line( p3, p4, r, g, b, noDepthTest, flDuration );
+		Line( p4, p5, r, g, b, noDepthTest, flDuration );
+		Line( p5, p6, r, g, b, noDepthTest, flDuration );
+		Line( p6, p7, r, g, b, noDepthTest, flDuration );
 
-		if ( a > 0 )
+		if( a > 0 )
 		{
 			Triangle( p5, p4, p3, r, g, b, a, noDepthTest, flDuration );
 			Triangle( p1, p7, p6, r, g, b, a, noDepthTest, flDuration );
@@ -2162,18 +2248,18 @@ public:
 			Triangle( p1, p2, p6, r, g, b, a, noDepthTest, flDuration );
 		}
 	}
-	void YawArrow( const Vector &startPos, float yaw, float length, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
+	void YawArrow( const Vector& startPos, float yaw, float length, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
 		Vector forward = UTIL_YawToVector( yaw );
 		HorzArrow( startPos, startPos + forward * length, width, r, g, b, a, noDepthTest, flDuration );
 	}
-	void VertArrow( const Vector &startPos, const Vector &endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
+	void VertArrow( const Vector& startPos, const Vector& endPos, float width, int r, int g, int b, int a, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
-		Vector	lineDir		= (endPos - startPos);
+		Vector	lineDir		= ( endPos - startPos );
 		VectorNormalize( lineDir );
 		Vector  upVec;
 		Vector	sideDir;
@@ -2189,14 +2275,14 @@ public:
 		Vector p6 = endPos - lineDir * width + upVec * radius;
 		Vector p7 =	startPos + upVec * radius;
 
-		Line(p1, p2, r,g,b,noDepthTest,flDuration);
-		Line(p2, p3, r,g,b,noDepthTest,flDuration);
-		Line(p3, p4, r,g,b,noDepthTest,flDuration);
-		Line(p4, p5, r,g,b,noDepthTest,flDuration);
-		Line(p5, p6, r,g,b,noDepthTest,flDuration);
-		Line(p6, p7, r,g,b,noDepthTest,flDuration);
+		Line( p1, p2, r, g, b, noDepthTest, flDuration );
+		Line( p2, p3, r, g, b, noDepthTest, flDuration );
+		Line( p3, p4, r, g, b, noDepthTest, flDuration );
+		Line( p4, p5, r, g, b, noDepthTest, flDuration );
+		Line( p5, p6, r, g, b, noDepthTest, flDuration );
+		Line( p6, p7, r, g, b, noDepthTest, flDuration );
 
-		if ( a > 0 )
+		if( a > 0 )
 		{
 			Triangle( p5, p4, p3, r, g, b, a, noDepthTest, flDuration );
 			Triangle( p1, p7, p6, r, g, b, a, noDepthTest, flDuration );
@@ -2207,22 +2293,22 @@ public:
 			Triangle( p1, p2, p6, r, g, b, a, noDepthTest, flDuration );
 		}
 	}
-	void Axis( const Vector &position, const QAngle &angles, float size, bool noDepthTest, float flDuration )
+	void Axis( const Vector& position, const QAngle& angles, float size, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
 		Vector xvec, yvec, zvec;
 		AngleVectors( angles, &xvec, &yvec, &zvec );
 
-		xvec = position + (size * xvec);
-		yvec = position - (size * yvec);
-		zvec = position + (size * zvec);
+		xvec = position + ( size * xvec );
+		yvec = position - ( size * yvec );
+		zvec = position + ( size * zvec );
 
 		Line( position, xvec, 255, 0, 0, noDepthTest, flDuration );
 		Line( position, yvec, 0, 255, 0, noDepthTest, flDuration );
 		Line( position, zvec, 0, 0, 255, noDepthTest, flDuration );
 	}
-	void Sphere( const Vector &center, float radius, int r, int g, int b, bool noDepthTest, float flDuration )
+	void Sphere( const Vector& center, float radius, int r, int g, int b, bool noDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
@@ -2235,7 +2321,7 @@ public:
 
 		lastEdge = Vector( radius + center.x, center.y, center.z );
 		float angle;
-		for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+		for( angle = 0.0f; angle <= 360.0f; angle += 22.5f )
 		{
 			edge.x = radius * cosf( angle / 180.0f * M_PI ) + center.x;
 			edge.y = center.y;
@@ -2247,7 +2333,7 @@ public:
 		}
 
 		lastEdge = Vector( center.x, radius + center.y, center.z );
-		for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+		for( angle = 0.0f; angle <= 360.0f; angle += 22.5f )
 		{
 			edge.x = center.x;
 			edge.y = radius * cosf( angle / 180.0f * M_PI ) + center.y;
@@ -2259,7 +2345,7 @@ public:
 		}
 
 		lastEdge = Vector( center.x, radius + center.y, center.z );
-		for( angle=0.0f; angle <= 360.0f; angle += 22.5f )
+		for( angle = 0.0f; angle <= 360.0f; angle += 22.5f )
 		{
 			edge.x = radius * cosf( angle / 180.0f * M_PI ) + center.x;
 			edge.y = radius * sinf( angle / 180.0f * M_PI ) + center.y;
@@ -2270,40 +2356,40 @@ public:
 			lastEdge = edge;
 		}
 	}
-	void CircleOriented( const Vector &position, const QAngle &angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration )
+	void CircleOriented( const Vector& position, const QAngle& angles, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
 		matrix3x4_t xform;
-		AngleMatrix(angles, position, xform);
+		AngleMatrix( angles, position, xform );
 		Vector xAxis, yAxis;
-		MatrixGetColumn(xform, 2, xAxis);
-		MatrixGetColumn(xform, 1, yAxis);
-		Circle(position, xAxis, yAxis, radius, r, g, b, a, bNoDepthTest, flDuration);
+		MatrixGetColumn( xform, 2, xAxis );
+		MatrixGetColumn( xform, 1, yAxis );
+		Circle( position, xAxis, yAxis, radius, r, g, b, a, bNoDepthTest, flDuration );
 	}
-	void Circle( const Vector &position, const Vector &xAxis, const Vector &yAxis, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration )
+	void Circle( const Vector& position, const Vector& xAxis, const Vector& yAxis, float radius, int r, int g, int b, int a, bool bNoDepthTest, float flDuration )
 	{
 		RETURN_IF_CANNOT_DRAW_OVERLAY
 
 		const unsigned int nSegments = 16;
-		const float flRadStep = (M_PI*2.0f) / (float) nSegments;
+		const float flRadStep = ( M_PI * 2.0f ) / ( float ) nSegments;
 
 		Vector vecLastPosition;
 		Vector vecStart = position + xAxis * radius;
 		Vector vecPosition = vecStart;
 
-		for ( int i = 1; i <= nSegments; i++ )
+		for( int i = 1; i <= nSegments; i++ )
 		{
 			vecLastPosition = vecPosition;
 
 			float flSin, flCos;
-			SinCos( flRadStep*i, &flSin, &flCos );
-			vecPosition = position + (xAxis * flCos * radius) + (yAxis * flSin * radius);
+			SinCos( flRadStep * i, &flSin, &flCos );
+			vecPosition = position + ( xAxis * flCos * radius ) + ( yAxis * flSin * radius );
 
 			Line( vecLastPosition, vecPosition, r, g, b, bNoDepthTest, flDuration );
 
-			if ( a && i > 1 )
-			{		
+			if( a && i > 1 )
+			{
 				debugoverlay->AddTriangleOverlay( vecStart, vecLastPosition, vecPosition, r, g, b, a, bNoDepthTest, flDuration );
 			}
 		}
@@ -2311,11 +2397,13 @@ public:
 #ifndef CLIENT_DLL
 	void SetDebugBits( HSCRIPT hEntity, int bit ) // DebugOverlayBits_t
 	{
-		CBaseEntity *pEnt = ToEnt(hEntity);
-		if (!pEnt)
+		CBaseEntity* pEnt = ToEnt( hEntity );
+		if( !pEnt )
+		{
 			return;
+		}
 
-		if (pEnt->m_debugOverlays & bit)
+		if( pEnt->m_debugOverlays & bit )
 		{
 			pEnt->m_debugOverlays &= ~bit;
 		}
@@ -2324,7 +2412,7 @@ public:
 			pEnt->m_debugOverlays |= bit;
 
 #ifdef AI_MONITOR_FOR_OSCILLATION
-			if (pEnt->IsNPC())
+			if( pEnt->IsNPC() )
 			{
 				pEnt->MyNPCPointer()->m_ScheduleHistory.RemoveAll();
 			}
@@ -2336,7 +2424,7 @@ public:
 	{
 #ifndef CLIENT_DLL
 		// Clear all entities of their debug overlays
-		for (CBaseEntity *pEntity = gEntList.FirstEnt(); pEntity; pEntity = gEntList.NextEnt(pEntity))
+		for( CBaseEntity* pEntity = gEntList.FirstEnt(); pEntity; pEntity = gEntList.NextEnt( pEntity ) )
 		{
 			pEntity->m_debugOverlays = 0;
 		}
@@ -2349,32 +2437,32 @@ private:
 } g_ScriptDebugOverlay;
 
 BEGIN_SCRIPTDESC_ROOT( CDebugOverlayScriptHelper, SCRIPT_SINGLETON "CDebugOverlayScriptHelper" )
-	DEFINE_SCRIPTFUNC( Box, "Draws a world-space axis-aligned box. Specify bounds in world space." )
-	DEFINE_SCRIPTFUNC( BoxDirection, "Draw box oriented to a Vector direction" )
-	DEFINE_SCRIPTFUNC( BoxAngles, "Draws an oriented box at the origin. Specify bounds in local space." )
-	DEFINE_SCRIPTFUNC( SweptBox, "Draws a swept box. Specify endpoints in world space and the bounds in local space." )
-	DEFINE_SCRIPTFUNC( EntityBounds, "Draws bounds of an entity" )
-	DEFINE_SCRIPTFUNC( Line, "Draws a line between two points" )
-	DEFINE_SCRIPTFUNC( Triangle, "Draws a filled triangle. Specify vertices in world space." )
-	DEFINE_SCRIPTFUNC( EntityText, "Draws text on an entity" )
-	DEFINE_SCRIPTFUNC( EntityTextAtPosition, "Draw entity text overlay at a specific position" )
-	DEFINE_SCRIPTFUNC( Grid, "Add grid overlay" )
-	DEFINE_SCRIPTFUNC( Text, "Draws 2D text. Specify origin in world space." )
-	DEFINE_SCRIPTFUNC( ScreenText, "Draws 2D text. Specify coordinates in screen space." )
-	DEFINE_SCRIPTFUNC( Cross3D, "Draws a world-aligned cross. Specify origin in world space." )
-	DEFINE_SCRIPTFUNC( Cross3DOriented, "Draws an oriented cross. Specify origin in world space." )
-	DEFINE_SCRIPTFUNC( DrawTickMarkedLine, "Draws a dashed line. Specify endpoints in world space." )
-	DEFINE_SCRIPTFUNC( HorzArrow, "Draws a horizontal arrow. Specify endpoints in world space." )
-	DEFINE_SCRIPTFUNC( YawArrow, "Draws a arrow associated with a specific yaw. Specify endpoints in world space." )
-	DEFINE_SCRIPTFUNC( VertArrow, "Draws a vertical arrow. Specify endpoints in world space." )
-	DEFINE_SCRIPTFUNC( Axis, "Draws an axis. Specify origin + orientation in world space." )
-	DEFINE_SCRIPTFUNC( Sphere, "Draws a wireframe sphere. Specify center in world space." )
-	DEFINE_SCRIPTFUNC( CircleOriented, "Draws a circle oriented. Specify center in world space." )
-	DEFINE_SCRIPTFUNC( Circle, "Draws a circle. Specify center in world space." )
+DEFINE_SCRIPTFUNC( Box, "Draws a world-space axis-aligned box. Specify bounds in world space." )
+DEFINE_SCRIPTFUNC( BoxDirection, "Draw box oriented to a Vector direction" )
+DEFINE_SCRIPTFUNC( BoxAngles, "Draws an oriented box at the origin. Specify bounds in local space." )
+DEFINE_SCRIPTFUNC( SweptBox, "Draws a swept box. Specify endpoints in world space and the bounds in local space." )
+DEFINE_SCRIPTFUNC( EntityBounds, "Draws bounds of an entity" )
+DEFINE_SCRIPTFUNC( Line, "Draws a line between two points" )
+DEFINE_SCRIPTFUNC( Triangle, "Draws a filled triangle. Specify vertices in world space." )
+DEFINE_SCRIPTFUNC( EntityText, "Draws text on an entity" )
+DEFINE_SCRIPTFUNC( EntityTextAtPosition, "Draw entity text overlay at a specific position" )
+DEFINE_SCRIPTFUNC( Grid, "Add grid overlay" )
+DEFINE_SCRIPTFUNC( Text, "Draws 2D text. Specify origin in world space." )
+DEFINE_SCRIPTFUNC( ScreenText, "Draws 2D text. Specify coordinates in screen space." )
+DEFINE_SCRIPTFUNC( Cross3D, "Draws a world-aligned cross. Specify origin in world space." )
+DEFINE_SCRIPTFUNC( Cross3DOriented, "Draws an oriented cross. Specify origin in world space." )
+DEFINE_SCRIPTFUNC( DrawTickMarkedLine, "Draws a dashed line. Specify endpoints in world space." )
+DEFINE_SCRIPTFUNC( HorzArrow, "Draws a horizontal arrow. Specify endpoints in world space." )
+DEFINE_SCRIPTFUNC( YawArrow, "Draws a arrow associated with a specific yaw. Specify endpoints in world space." )
+DEFINE_SCRIPTFUNC( VertArrow, "Draws a vertical arrow. Specify endpoints in world space." )
+DEFINE_SCRIPTFUNC( Axis, "Draws an axis. Specify origin + orientation in world space." )
+DEFINE_SCRIPTFUNC( Sphere, "Draws a wireframe sphere. Specify center in world space." )
+DEFINE_SCRIPTFUNC( CircleOriented, "Draws a circle oriented. Specify center in world space." )
+DEFINE_SCRIPTFUNC( Circle, "Draws a circle. Specify center in world space." )
 #ifndef CLIENT_DLL
 	DEFINE_SCRIPTFUNC( SetDebugBits, "Set debug bits on entity" )
 #endif
-	DEFINE_SCRIPTFUNC( ClearAllOverlays, "Clear all debug overlays at once" )
+DEFINE_SCRIPTFUNC( ClearAllOverlays, "Clear all debug overlays at once" )
 END_SCRIPTDESC();
 
 
@@ -2392,36 +2480,36 @@ public:
 		Unregister();
 	}
 
-	CScriptConCommand( const char *name, HSCRIPT fn, const char *helpString, int flags, ConCommand *pLinked = NULL )
+	CScriptConCommand( const char* name, HSCRIPT fn, const char* helpString, int flags, ConCommand* pLinked = NULL )
 		: BaseClass( name, this, helpString, flags, 0 ),
-		m_pLinked(pLinked),
-		m_hCallback(fn),
-		m_hCompletionCallback(NULL)
+		  m_pLinked( pLinked ),
+		  m_hCallback( fn ),
+		  m_hCompletionCallback( NULL )
 	{
-		m_nCmdNameLen = V_strlen(name) + 1;
+		m_nCmdNameLen = V_strlen( name ) + 1;
 		Assert( m_nCmdNameLen - 1 <= 128 );
 	}
 
-	void CommandCallback( const CCommand &command )
+	void CommandCallback( const CCommand& command )
 	{
 		int count = command.ArgC();
-		ScriptVariant_t *vArgv = (ScriptVariant_t*)stackalloc( sizeof(ScriptVariant_t) * count );
-		for ( int i = 0; i < count; ++i )
+		ScriptVariant_t* vArgv = ( ScriptVariant_t* )stackalloc( sizeof( ScriptVariant_t ) * count );
+		for( int i = 0; i < count; ++i )
 		{
 			vArgv[i] = command[i];
 		}
 		ScriptVariant_t ret;
-		if ( g_pScriptVM->ExecuteFunction( m_hCallback, vArgv, count, &ret, NULL, true ) == SCRIPT_ERROR )
+		if( g_pScriptVM->ExecuteFunction( m_hCallback, vArgv, count, &ret, NULL, true ) == SCRIPT_ERROR )
 		{
 			DevWarning( 1, "CScriptConCommand: invalid callback for '%s'\n", command[0] );
 		}
-		if ( m_pLinked && (ret.m_type == FIELD_BOOLEAN) && ret.m_bool )
+		if( m_pLinked && ( ret.m_type == FIELD_BOOLEAN ) && ret.m_bool )
 		{
 			m_pLinked->Dispatch( command );
 		}
 	}
 
-	int CommandCompletionCallback( const char *partial, CUtlVector< CUtlString > &commands )
+	int CommandCompletionCallback( const char* partial, CUtlVector< CUtlString >& commands )
 	{
 		Assert( g_pScriptVM );
 		Assert( m_hCompletionCallback );
@@ -2430,15 +2518,15 @@ public:
 		g_pScriptVM->CreateArray( hArray );
 
 		// split command name from partial, pass both separately to the script function
-		char *cmdname = (char*)stackalloc( m_nCmdNameLen );
+		char* cmdname = ( char* )stackalloc( m_nCmdNameLen );
 		V_memcpy( cmdname, partial, m_nCmdNameLen - 1 );
 		cmdname[ m_nCmdNameLen - 1 ] = 0;
 
 		char argPartial[256];
-		V_StrRight( partial, V_strlen(partial) - m_nCmdNameLen, argPartial, sizeof(argPartial) );
+		V_StrRight( partial, V_strlen( partial ) - m_nCmdNameLen, argPartial, sizeof( argPartial ) );
 
 		ScriptVariant_t args[3] = { cmdname, argPartial, hArray };
-		if ( g_pScriptVM->ExecuteFunction( m_hCompletionCallback, args, 3, NULL, NULL, true ) == SCRIPT_ERROR )
+		if( g_pScriptVM->ExecuteFunction( m_hCompletionCallback, args, 3, NULL, NULL, true ) == SCRIPT_ERROR )
 		{
 			DevWarning( 1, "CScriptConCommand: invalid command completion callback for '%s'\n", cmdname );
 			g_pScriptVM->ReleaseScript( hArray );
@@ -2448,14 +2536,14 @@ public:
 		int count = 0;
 		ScriptVariant_t val;
 		int it = -1;
-		while ( ( it = g_pScriptVM->GetKeyValue( hArray, it, NULL, &val ) ) != -1 )
+		while( ( it = g_pScriptVM->GetKeyValue( hArray, it, NULL, &val ) ) != -1 )
 		{
-			if ( val.m_type == FIELD_CSTRING )
+			if( val.m_type == FIELD_CSTRING )
 			{
-				CUtlString &s = commands.Element( commands.AddToTail() );
+				CUtlString& s = commands.Element( commands.AddToTail() );
 				int len = V_strlen( val.m_pszString );
 
-				if ( len <= COMMAND_COMPLETION_ITEM_LENGTH - 1 )
+				if( len <= COMMAND_COMPLETION_ITEM_LENGTH - 1 )
 				{
 					s.Set( val.m_pszString );
 				}
@@ -2466,10 +2554,12 @@ public:
 
 				++count;
 			}
-			g_pScriptVM->ReleaseValue(val);
+			g_pScriptVM->ReleaseValue( val );
 
-			if ( count == COMMAND_COMPLETION_MAXITEMS )
+			if( count == COMMAND_COMPLETION_MAXITEMS )
+			{
 				break;
+			}
 		}
 		g_pScriptVM->ReleaseScript( hArray );
 		return count;
@@ -2477,13 +2567,17 @@ public:
 
 	void SetCompletionCallback( HSCRIPT fn )
 	{
-		if ( m_hCompletionCallback )
-			g_pScriptVM->ReleaseScript( m_hCompletionCallback );
-
-		if (fn)
+		if( m_hCompletionCallback )
 		{
-			if ( !BaseClass::IsRegistered() )
+			g_pScriptVM->ReleaseScript( m_hCompletionCallback );
+		}
+
+		if( fn )
+		{
+			if( !BaseClass::IsRegistered() )
+			{
 				return;
+			}
 
 			BaseClass::m_pCommandCompletionCallback = this;
 			BaseClass::m_bHasCompletionCallback = true;
@@ -2499,13 +2593,17 @@ public:
 
 	void SetCallback( HSCRIPT fn )
 	{
-		if (fn)
+		if( fn )
 		{
-			if ( !BaseClass::IsRegistered() )
+			if( !BaseClass::IsRegistered() )
+			{
 				Register();
+			}
 
-			if ( m_hCallback )
+			if( m_hCallback )
+			{
 				g_pScriptVM->ReleaseScript( m_hCallback );
+			}
 			m_hCallback = fn;
 		}
 		else
@@ -2516,12 +2614,14 @@ public:
 
 	inline void Unregister()
 	{
-		if ( g_pCVar && BaseClass::IsRegistered() )
-			g_pCVar->UnregisterConCommand( this );
-
-		if ( g_pScriptVM )
+		if( g_pCVar && BaseClass::IsRegistered() )
 		{
-			if ( m_hCallback )
+			g_pCVar->UnregisterConCommand( this );
+		}
+
+		if( g_pScriptVM )
+		{
+			if( m_hCallback )
 			{
 				g_pScriptVM->ReleaseScript( m_hCallback );
 				m_hCallback = NULL;
@@ -2533,12 +2633,14 @@ public:
 
 	inline void Register()
 	{
-		if ( g_pCVar )
+		if( g_pCVar )
+		{
 			g_pCVar->RegisterConCommand( this );
+		}
 	}
 
 	HSCRIPT m_hCallback;
-	ConCommand *m_pLinked;
+	ConCommand* m_pLinked;
 	HSCRIPT m_hCompletionCallback;
 	int m_nCmdNameLen;
 };
@@ -2553,22 +2655,24 @@ public:
 		Unregister();
 	}
 
-	CScriptConVar( const char *pName, const char *pDefaultValue, const char *pHelpString, int flags/*, float fMin, float fMax*/ )
+	CScriptConVar( const char* pName, const char* pDefaultValue, const char* pHelpString, int flags/*, float fMin, float fMax*/ )
 		: BaseClass( pName, pDefaultValue, flags, pHelpString ),
-		m_hCallback(NULL)
+		  m_hCallback( NULL )
 	{}
 
 	void SetChangeCallback( HSCRIPT fn )
 	{
 		void ScriptConVarCallback( IConVar*, const char*, float );
 
-		if ( m_hCallback )
+		if( m_hCallback )
+		{
 			g_pScriptVM->ReleaseScript( m_hCallback );
+		}
 
-		if (fn)
+		if( fn )
 		{
 			m_hCallback = fn;
-			BaseClass::InstallChangeCallback( (FnChangeCallback_t)ScriptConVarCallback );
+			BaseClass::InstallChangeCallback( ( FnChangeCallback_t )ScriptConVarCallback );
 		}
 		else
 		{
@@ -2579,10 +2683,12 @@ public:
 
 	inline void Unregister()
 	{
-		if ( g_pCVar && BaseClass::IsRegistered() )
+		if( g_pCVar && BaseClass::IsRegistered() )
+		{
 			g_pCVar->UnregisterConCommand( this );
+		}
 
-		if ( g_pScriptVM )
+		if( g_pScriptVM )
 		{
 			SetChangeCallback( NULL );
 		}
@@ -2591,21 +2697,24 @@ public:
 	HSCRIPT m_hCallback;
 };
 
-static CUtlMap< unsigned int, bool > g_ConVarsBlocked( DefLessFunc(unsigned int) );
-static CUtlMap< unsigned int, bool > g_ConCommandsOverridable( DefLessFunc(unsigned int) );
-static CUtlMap< unsigned int, CScriptConCommand* > g_ScriptConCommands( DefLessFunc(unsigned int) );
-static CUtlMap< unsigned int, CScriptConVar* > g_ScriptConVars( DefLessFunc(unsigned int) );
+static CUtlMap< unsigned int, bool > g_ConVarsBlocked( DefLessFunc( unsigned int ) );
+static CUtlMap< unsigned int, bool > g_ConCommandsOverridable( DefLessFunc( unsigned int ) );
+static CUtlMap< unsigned int, CScriptConCommand* > g_ScriptConCommands( DefLessFunc( unsigned int ) );
+static CUtlMap< unsigned int, CScriptConVar* > g_ScriptConVars( DefLessFunc( unsigned int ) );
 
 
 class CScriptConvarAccessor : public CAutoGameSystem
 {
 public:
-	static inline unsigned int Hash( const char*sz ){ return HashStringCaseless(sz); }
+	static inline unsigned int Hash( const char* sz )
+	{
+		return HashStringCaseless( sz );
+	}
 
 public:
-	inline void AddOverridable( const char *name )
+	inline void AddOverridable( const char* name )
 	{
-		g_ConCommandsOverridable.InsertOrReplace( Hash(name), true );
+		g_ConCommandsOverridable.InsertOrReplace( Hash( name ), true );
 	}
 
 	inline bool IsOverridable( unsigned int hash )
@@ -2614,23 +2723,23 @@ public:
 		return ( idx != g_ConCommandsOverridable.InvalidIndex() );
 	}
 
-	inline void AddBlockedConVar( const char *name )
+	inline void AddBlockedConVar( const char* name )
 	{
-		g_ConVarsBlocked.InsertOrReplace( Hash(name), true );
+		g_ConVarsBlocked.InsertOrReplace( Hash( name ), true );
 	}
 
-	inline bool IsBlockedConvar( const char *name )
+	inline bool IsBlockedConvar( const char* name )
 	{
-		int idx = g_ConVarsBlocked.Find( Hash(name) );
+		int idx = g_ConVarsBlocked.Find( Hash( name ) );
 		return ( idx != g_ConVarsBlocked.InvalidIndex() );
 	}
 
 public:
-	void RegisterCommand( const char *name, HSCRIPT fn, const char *helpString, int flags );
-	void SetCompletionCallback( const char *name, HSCRIPT fn );
-	void UnregisterCommand( const char *name );
-	void RegisterConvar( const char *name, const char *pDefaultValue, const char *helpString, int flags );
-	void SetChangeCallback( const char *name, HSCRIPT fn );
+	void RegisterCommand( const char* name, HSCRIPT fn, const char* helpString, int flags );
+	void SetCompletionCallback( const char* name, HSCRIPT fn );
+	void UnregisterCommand( const char* name );
+	void RegisterConvar( const char* name, const char* pDefaultValue, const char* helpString, int flags );
+	void SetChangeCallback( const char* name, HSCRIPT fn );
 
 	HSCRIPT GetCommandClient()
 	{
@@ -2641,7 +2750,7 @@ public:
 #endif
 	}
 #ifdef GAME_DLL
-	const char *GetClientConvarValue( int index, const char* cvar )
+	const char* GetClientConvarValue( int index, const char* cvar )
 	{
 		return engine->GetClientConVarValue( index, cvar );
 	}
@@ -2656,82 +2765,96 @@ public:
 	}
 
 public:
-	float GetFloat( const char *pszConVar )
+	float GetFloat( const char* pszConVar )
 	{
 		ConVarRef cvar( pszConVar );
-		if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		{
 			return NULL;
+		}
 		return cvar.GetFloat();
 	}
 
-	int GetInt( const char *pszConVar )
+	int GetInt( const char* pszConVar )
 	{
 		ConVarRef cvar( pszConVar );
-		if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		{
 			return NULL;
+		}
 		return cvar.GetInt();
 	}
 
-	bool GetBool( const char *pszConVar )
+	bool GetBool( const char* pszConVar )
 	{
 		ConVarRef cvar( pszConVar );
-		if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		{
 			return NULL;
+		}
 		return cvar.GetBool();
 	}
 
-	const char *GetStr( const char *pszConVar )
+	const char* GetStr( const char* pszConVar )
 	{
 		ConVarRef cvar( pszConVar );
-		if ( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		if( cvar.IsFlagSet( FCVAR_SERVER_CANNOT_QUERY ) )
+		{
 			return NULL;
+		}
 		return cvar.GetString();
 	}
 
-	const char *GetDefaultValue( const char *pszConVar )
+	const char* GetDefaultValue( const char* pszConVar )
 	{
 		ConVarRef cvar( pszConVar );
 		return cvar.GetDefault();
 	}
 
-	bool IsFlagSet( const char *pszConVar, int nFlags )
+	bool IsFlagSet( const char* pszConVar, int nFlags )
 	{
 		ConVarRef cvar( pszConVar );
 		return cvar.IsFlagSet( nFlags );
 	}
 
-	void SetFloat( const char *pszConVar, float value )
+	void SetFloat( const char* pszConVar, float value )
 	{
 		SetValue( pszConVar, value );
 	}
 
-	void SetInt( const char *pszConVar, int value )
+	void SetInt( const char* pszConVar, int value )
 	{
 		SetValue( pszConVar, value );
 	}
 
-	void SetBool( const char *pszConVar, bool value )
+	void SetBool( const char* pszConVar, bool value )
 	{
 		SetValue( pszConVar, value );
 	}
 
-	void SetStr( const char *pszConVar, const char *value )
+	void SetStr( const char* pszConVar, const char* value )
 	{
 		SetValue( pszConVar, value );
 	}
 
 	template <typename T>
-	void SetValue( const char *pszConVar, T value )
+	void SetValue( const char* pszConVar, T value )
 	{
 		ConVarRef cvar( pszConVar );
-		if ( !cvar.IsValid() )
+		if( !cvar.IsValid() )
+		{
 			return;
+		}
 
-		if ( cvar.IsFlagSet( FCVAR_NOT_CONNECTED | FCVAR_SERVER_CANNOT_QUERY ) )
+		if( cvar.IsFlagSet( FCVAR_NOT_CONNECTED | FCVAR_SERVER_CANNOT_QUERY ) )
+		{
 			return;
+		}
 
-		if ( IsBlockedConvar( pszConVar ) )
+		if( IsBlockedConvar( pszConVar ) )
+		{
 			return;
+		}
 
 		cvar.SetValue( value );
 	}
@@ -2739,72 +2862,74 @@ public:
 } g_ScriptConvarAccessor;
 
 
-void CScriptConvarAccessor::RegisterCommand( const char *name, HSCRIPT fn, const char *helpString, int flags )
+void CScriptConvarAccessor::RegisterCommand( const char* name, HSCRIPT fn, const char* helpString, int flags )
 {
 #if CLIENT_DLL
 	// FIXME: This crashes in engine when used as a hook (dispatched from CScriptConCommand::CommandCallback())
 	Assert( V_stricmp( name, "load" ) != 0 );
 #endif
 
-	unsigned int hash = Hash(name);
-	int idx = g_ScriptConCommands.Find(hash);
-	if ( idx == g_ScriptConCommands.InvalidIndex() )
+	unsigned int hash = Hash( name );
+	int idx = g_ScriptConCommands.Find( hash );
+	if( idx == g_ScriptConCommands.InvalidIndex() )
 	{
-		ConCommandBase *pBase = g_pCVar->FindCommandBase(name);
-		if ( pBase && ( !pBase->IsCommand() || !IsOverridable(hash) ) )
+		ConCommandBase* pBase = g_pCVar->FindCommandBase( name );
+		if( pBase && ( !pBase->IsCommand() || !IsOverridable( hash ) ) )
 		{
 			DevWarning( 1, "CScriptConvarAccessor::RegisterCommand unable to register blocked ConCommand: %s\n", name );
 			return;
 		}
 
-		if ( !fn )
+		if( !fn )
+		{
 			return;
+		}
 
-		CScriptConCommand *p = new CScriptConCommand( name, fn, helpString, flags, static_cast< ConCommand* >(pBase) );
+		CScriptConCommand* p = new CScriptConCommand( name, fn, helpString, flags, static_cast< ConCommand* >( pBase ) );
 		g_ScriptConCommands.Insert( hash, p );
 	}
 	else
 	{
-		CScriptConCommand *pCmd = g_ScriptConCommands[idx];
+		CScriptConCommand* pCmd = g_ScriptConCommands[idx];
 		pCmd->SetCallback( fn );
 		//CGMsg( 1, CON_GROUP_VSCRIPT, "CScriptConvarAccessor::RegisterCommand replacing command already registered: %s\n", name );
 	}
 }
 
-void CScriptConvarAccessor::SetCompletionCallback( const char *name, HSCRIPT fn )
+void CScriptConvarAccessor::SetCompletionCallback( const char* name, HSCRIPT fn )
 {
-	unsigned int hash = Hash(name);
-	int idx = g_ScriptConCommands.Find(hash);
-	if ( idx != g_ScriptConCommands.InvalidIndex() )
+	unsigned int hash = Hash( name );
+	int idx = g_ScriptConCommands.Find( hash );
+	if( idx != g_ScriptConCommands.InvalidIndex() )
 	{
 		g_ScriptConCommands[idx]->SetCompletionCallback( fn );
 	}
 }
 
-void CScriptConvarAccessor::UnregisterCommand( const char *name )
+void CScriptConvarAccessor::UnregisterCommand( const char* name )
 {
-	unsigned int hash = Hash(name);
-	int idx = g_ScriptConCommands.Find(hash);
-	if ( idx != g_ScriptConCommands.InvalidIndex() )
+	unsigned int hash = Hash( name );
+	int idx = g_ScriptConCommands.Find( hash );
+	if( idx != g_ScriptConCommands.InvalidIndex() )
 	{
 		g_ScriptConCommands[idx]->Unregister();
 	}
 }
 
-void CScriptConvarAccessor::RegisterConvar( const char *name, const char *pDefaultValue, const char *helpString, int flags )
+void CScriptConvarAccessor::RegisterConvar( const char* name, const char* pDefaultValue, const char* helpString, int flags )
 {
 	Assert( g_pCVar );
-	unsigned int hash = Hash(name);
-	int idx = g_ScriptConVars.Find(hash);
-	if ( idx == g_ScriptConVars.InvalidIndex() )
+	unsigned int hash = Hash( name );
+	int idx = g_ScriptConVars.Find( hash );
+	if( idx == g_ScriptConVars.InvalidIndex() )
 	{
-		if ( g_pCVar->FindCommandBase(name) )
+		if( g_pCVar->FindCommandBase( name ) )
 		{
 			DevWarning( 1, "CScriptConvarAccessor::RegisterConvar unable to register blocked ConCommand: %s\n", name );
 			return;
 		}
 
-		CScriptConVar *p = new CScriptConVar( name, pDefaultValue, helpString, flags );
+		CScriptConVar* p = new CScriptConVar( name, pDefaultValue, helpString, flags );
 		g_ScriptConVars.Insert( hash, p );
 	}
 	else
@@ -2813,28 +2938,28 @@ void CScriptConvarAccessor::RegisterConvar( const char *name, const char *pDefau
 	}
 }
 
-void CScriptConvarAccessor::SetChangeCallback( const char *name, HSCRIPT fn )
+void CScriptConvarAccessor::SetChangeCallback( const char* name, HSCRIPT fn )
 {
-	unsigned int hash = Hash(name);
-	int idx = g_ScriptConVars.Find(hash);
-	if ( idx != g_ScriptConVars.InvalidIndex() )
+	unsigned int hash = Hash( name );
+	int idx = g_ScriptConVars.Find( hash );
+	if( idx != g_ScriptConVars.InvalidIndex() )
 	{
 		g_ScriptConVars[idx]->SetChangeCallback( fn );
 	}
 }
 
-void ScriptConVarCallback( IConVar *var, const char* pszOldValue, float flOldValue )
+void ScriptConVarCallback( IConVar* var, const char* pszOldValue, float flOldValue )
 {
-	ConVar *cvar = (ConVar*)var;
-	const char *name = cvar->GetName();
+	ConVar* cvar = ( ConVar* )var;
+	const char* name = cvar->GetName();
 	unsigned int hash = CScriptConvarAccessor::Hash( name );
-	int idx = g_ScriptConVars.Find(hash);
-	if ( idx != g_ScriptConVars.InvalidIndex() )
+	int idx = g_ScriptConVars.Find( hash );
+	if( idx != g_ScriptConVars.InvalidIndex() )
 	{
 		Assert( g_ScriptConVars[idx]->m_hCallback );
 
 		ScriptVariant_t args[5] = { name, pszOldValue, flOldValue, cvar->GetString(), cvar->GetFloat() };
-		if ( g_pScriptVM->ExecuteFunction( g_ScriptConVars[idx]->m_hCallback, args, 5, NULL, NULL, true ) == SCRIPT_ERROR )
+		if( g_pScriptVM->ExecuteFunction( g_ScriptConVars[idx]->m_hCallback, args, 5, NULL, NULL, true ) == SCRIPT_ERROR )
 		{
 			DevWarning( 1, "CScriptConVar: invalid change callback for '%s'\n", name );
 		}
@@ -2845,8 +2970,10 @@ void ScriptConVarCallback( IConVar *var, const char* pszOldValue, float flOldVal
 bool CScriptConvarAccessor::Init()
 {
 	static bool bExecOnce = false;
-	if ( bExecOnce )
+	if( bExecOnce )
+	{
 		return true;
+	}
 	bExecOnce = true;
 
 	AddOverridable( "+attack" );
@@ -2928,25 +3055,25 @@ bool CScriptConvarAccessor::Init()
 }
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptConvarAccessor, "CConvars", SCRIPT_SINGLETON "Provides an interface to convars." )
-	DEFINE_SCRIPTFUNC( RegisterConvar, "register a new console variable." )
-	DEFINE_SCRIPTFUNC( RegisterCommand, "register a console command." )
-	DEFINE_SCRIPTFUNC( SetCompletionCallback, "callback is called with 3 parameters (cmd, partial, commands), user strings must be appended to 'commands' array" )
-	DEFINE_SCRIPTFUNC( SetChangeCallback, "callback is called with 5 parameters (var, szOldValue, flOldValue, szNewValue, flNewValue)" )
-	DEFINE_SCRIPTFUNC( UnregisterCommand, "unregister a console command." )
-	DEFINE_SCRIPTFUNC( GetCommandClient, "returns the player who issued this console command." )
+DEFINE_SCRIPTFUNC( RegisterConvar, "register a new console variable." )
+DEFINE_SCRIPTFUNC( RegisterCommand, "register a console command." )
+DEFINE_SCRIPTFUNC( SetCompletionCallback, "callback is called with 3 parameters (cmd, partial, commands), user strings must be appended to 'commands' array" )
+DEFINE_SCRIPTFUNC( SetChangeCallback, "callback is called with 5 parameters (var, szOldValue, flOldValue, szNewValue, flNewValue)" )
+DEFINE_SCRIPTFUNC( UnregisterCommand, "unregister a console command." )
+DEFINE_SCRIPTFUNC( GetCommandClient, "returns the player who issued this console command." )
 #ifdef GAME_DLL
 	DEFINE_SCRIPTFUNC( GetClientConvarValue, "Get a convar keyvalue for a specified client" )
 #endif
-	DEFINE_SCRIPTFUNC( GetFloat, "Returns the convar as a float. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetInt, "Returns the convar as an int. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetBool, "Returns the convar as a bool. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetStr, "Returns the convar as a string. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( GetDefaultValue, "Returns the convar's default value as a string. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( IsFlagSet, "Returns the convar's flags. May return null if no such convar." )
-	DEFINE_SCRIPTFUNC( SetFloat, "Sets the value of the convar as a float." )
-	DEFINE_SCRIPTFUNC( SetInt, "Sets the value of the convar as an int." )
-	DEFINE_SCRIPTFUNC( SetBool, "Sets the value of the convar as a bool." )
-	DEFINE_SCRIPTFUNC( SetStr, "Sets the value of the convar as a string." )
+DEFINE_SCRIPTFUNC( GetFloat, "Returns the convar as a float. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetInt, "Returns the convar as an int. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetBool, "Returns the convar as a bool. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetStr, "Returns the convar as a string. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( GetDefaultValue, "Returns the convar's default value as a string. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( IsFlagSet, "Returns the convar's flags. May return null if no such convar." )
+DEFINE_SCRIPTFUNC( SetFloat, "Sets the value of the convar as a float." )
+DEFINE_SCRIPTFUNC( SetInt, "Sets the value of the convar as an int." )
+DEFINE_SCRIPTFUNC( SetBool, "Sets the value of the convar as a bool." )
+DEFINE_SCRIPTFUNC( SetStr, "Sets the value of the convar as a string." )
 END_SCRIPTDESC();
 
 
@@ -2970,10 +3097,10 @@ class CEffectsScriptHelper
 {
 public:
 	void DynamicLight( int index, const Vector& origin, int r, int g, int b, int exponent,
-		float radius, float die, float decay, int style = 0, int flags = 0 )
+					   float radius, float die, float decay, int style = 0, int flags = 0 )
 	{
 		//te->DynamicLight( filter, delay, &origin, r, g, b, exponent, radius, die, decay );
-		dlight_t *dl = effects->CL_AllocDlight( index );
+		dlight_t* dl = effects->CL_AllocDlight( index );
 		dl->origin = origin;
 		dl->color.r = r;
 		dl->color.g = g;
@@ -3040,14 +3167,14 @@ public:
 //		g_pEffects->Smoke( pos, g_sModelIndexSmoke, scale, framerate );
 //	}
 
-	void Dust( const Vector &pos, const Vector &dir, float size, float speed )
+	void Dust( const Vector& pos, const Vector& dir, float size, float speed )
 	{
 		//te->Dust( filter, delay, pos, dir, size, speed );
 		//g_pEffects->Dust( pos, dir, size, speed );
 		FX_Dust( pos, dir, size, speed );
 	}
 
-	void Bubbles( const Vector &mins, const Vector &maxs, float height, int modelindex, int count, float speed )
+	void Bubbles( const Vector& mins, const Vector& maxs, float height, int modelindex, int count, float speed )
 	{
 		//int bubbles = modelinfo->GetModelIndex( "sprites/bubble.vmt" );
 		//te->Bubbles( filter, delay, &mins, &maxs, height, modelindex, count, speed );
@@ -3060,11 +3187,11 @@ public:
 //		//tempents->FizzEffect( ToEnt(ent), modelindex, density, current );
 //	}
 
-	void Sprite( const Vector &pos, const Vector &dir, float scale, int modelIndex, int rendermode,
-		int renderfx, int brightness, float life, int flags  )
+	void Sprite( const Vector& pos, const Vector& dir, float scale, int modelIndex, int rendermode,
+				 int renderfx, int brightness, float life, int flags )
 	{
 		//te->Sprite( filter, delay, &pos, modelindex, size, brightness );
-		float a = (1.0 / 255.0) * brightness;
+		float a = ( 1.0 / 255.0 ) * brightness;
 		tempents->TempSprite( pos, dir, scale, modelIndex, rendermode, renderfx, a, life, flags );
 	}
 
@@ -3076,27 +3203,31 @@ public:
 //	}
 
 	void ClientProjectile( const Vector& vecOrigin, const Vector& vecVelocity, const Vector& vecAccel, int modelindex,
-		int lifetime, HSCRIPT pOwner, const char *pszImpactEffect = NULL, const char *pszParticleEffect = NULL )
+						   int lifetime, HSCRIPT pOwner, const char* pszImpactEffect = NULL, const char* pszParticleEffect = NULL )
 	{
 		//te->ClientProjectile( filter, delay, &vecOrigin, &vecVelocity, modelindex, lifetime, ToEnt(pOwner) );
-		if ( pszImpactEffect && !(*pszImpactEffect) )
+		if( pszImpactEffect && !( *pszImpactEffect ) )
+		{
 			pszImpactEffect = NULL;
-		if ( pszParticleEffect && !(*pszParticleEffect) )
+		}
+		if( pszParticleEffect && !( *pszParticleEffect ) )
+		{
 			pszParticleEffect = NULL;
-		tempents->ClientProjectile( vecOrigin, vecVelocity, vecAccel, modelindex, lifetime, ToEnt(pOwner), pszImpactEffect, pszParticleEffect );
+		}
+		tempents->ClientProjectile( vecOrigin, vecVelocity, vecAccel, modelindex, lifetime, ToEnt( pOwner ), pszImpactEffect, pszParticleEffect );
 	}
 
 } g_ScriptEffectsHelper;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CEffectsScriptHelper, "CEffects", SCRIPT_SINGLETON "" )
-	DEFINE_SCRIPTFUNC( DynamicLight, "" )
-	DEFINE_SCRIPTFUNC( Explosion, "" )
-	DEFINE_SCRIPTFUNC( Sparks, "" )
-	DEFINE_SCRIPTFUNC( MetalSparks, "" )
-	DEFINE_SCRIPTFUNC( Dust, "" )
-	DEFINE_SCRIPTFUNC( Bubbles, "" )
-	DEFINE_SCRIPTFUNC( Sprite, "" )
-	DEFINE_SCRIPTFUNC( ClientProjectile, "" )
+DEFINE_SCRIPTFUNC( DynamicLight, "" )
+DEFINE_SCRIPTFUNC( Explosion, "" )
+DEFINE_SCRIPTFUNC( Sparks, "" )
+DEFINE_SCRIPTFUNC( MetalSparks, "" )
+DEFINE_SCRIPTFUNC( Dust, "" )
+DEFINE_SCRIPTFUNC( Bubbles, "" )
+DEFINE_SCRIPTFUNC( Sprite, "" )
+DEFINE_SCRIPTFUNC( ClientProjectile, "" )
 END_SCRIPTDESC();
 
 
@@ -3114,7 +3245,7 @@ public:
 	void LevelShutdownPostEntity()
 	{
 		FOR_EACH_VEC( m_RegisteredObjects, i )
-			g_GlowObjectManager.UnregisterGlowObject( m_RegisteredObjects[i] );
+		g_GlowObjectManager.UnregisterGlowObject( m_RegisteredObjects[i] );
 		m_RegisteredObjects.Purge();
 	}
 
@@ -3126,22 +3257,24 @@ public:
 		vGlowColor.y = g * ( 1.0f / 255.0f );
 		vGlowColor.z = b * ( 1.0f / 255.0f );
 		float flGlowAlpha = a * ( 1.0f / 255.0f );
-		int idx = g_GlowObjectManager.RegisterGlowObject( ToEnt(hEntity), vGlowColor, flGlowAlpha, bRenderWhenOccluded, bRenderWhenUnoccluded, -1 );
+		int idx = g_GlowObjectManager.RegisterGlowObject( ToEnt( hEntity ), vGlowColor, flGlowAlpha, bRenderWhenOccluded, bRenderWhenUnoccluded, -1 );
 		m_RegisteredObjects.AddToTail( idx );
 		return idx;
 	}
 
 	void Unregister( int nGlowObjectHandle )
 	{
-		if ( (nGlowObjectHandle < 0) || (nGlowObjectHandle >= g_GlowObjectManager.m_GlowObjectDefinitions.Count()) )
+		if( ( nGlowObjectHandle < 0 ) || ( nGlowObjectHandle >= g_GlowObjectManager.m_GlowObjectDefinitions.Count() ) )
+		{
 			return;
+		}
 		g_GlowObjectManager.UnregisterGlowObject( nGlowObjectHandle );
 		m_RegisteredObjects.FindAndFastRemove( nGlowObjectHandle );
 	}
 
 	void SetEntity( int nGlowObjectHandle, HSCRIPT hEntity )
 	{
-		g_GlowObjectManager.SetEntity( nGlowObjectHandle, ToEnt(hEntity) );
+		g_GlowObjectManager.SetEntity( nGlowObjectHandle, ToEnt( hEntity ) );
 	}
 
 	void SetColor( int nGlowObjectHandle, int r, int g, int b )
@@ -3167,12 +3300,12 @@ public:
 } g_ScriptGlowObjectManager;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptGlowObjectManager, "CGlowObjectManager", SCRIPT_SINGLETON "" )
-	DEFINE_SCRIPTFUNC( Register, "( HSCRIPT hEntity, int r, int g, int b, int a, bool bRenderWhenOccluded, bool bRenderWhenUnoccluded )" )
-	DEFINE_SCRIPTFUNC( Unregister, "" )
-	DEFINE_SCRIPTFUNC( SetEntity, "" )
-	DEFINE_SCRIPTFUNC( SetColor, "" )
-	DEFINE_SCRIPTFUNC( SetAlpha, "" )
-	DEFINE_SCRIPTFUNC( SetRenderFlags, "" )
+DEFINE_SCRIPTFUNC( Register, "( HSCRIPT hEntity, int r, int g, int b, int a, bool bRenderWhenOccluded, bool bRenderWhenUnoccluded )" )
+DEFINE_SCRIPTFUNC( Unregister, "" )
+DEFINE_SCRIPTFUNC( SetEntity, "" )
+DEFINE_SCRIPTFUNC( SetColor, "" )
+DEFINE_SCRIPTFUNC( SetAlpha, "" )
+DEFINE_SCRIPTFUNC( SetRenderFlags, "" )
 END_SCRIPTDESC();
 
 
@@ -3184,10 +3317,12 @@ END_SCRIPTDESC();
 class CScriptSteamAPI
 {
 public:
-	const char *GetSteam2ID()
+	const char* GetSteam2ID()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamUser() )
+		if( !steamapicontext || !steamapicontext->SteamUser() )
+		{
 			return NULL;
+		}
 
 		CSteamID id = steamapicontext->SteamUser()->GetSteamID();
 
@@ -3197,34 +3332,42 @@ public:
 		uint32 low32bits = accountID / 2;
 
 		static char ret[48];
-		V_snprintf( ret, sizeof(ret), "STEAM_%u:%u:%u", steamInstanceID, high32bits, low32bits );
+		V_snprintf( ret, sizeof( ret ), "STEAM_%u:%u:%u", steamInstanceID, high32bits, low32bits );
 		return ret;
 	}
 
 	int GetSecondsSinceComputerActive()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamUtils() )
+		if( !steamapicontext || !steamapicontext->SteamUtils() )
+		{
 			return 0;
+		}
 
 		return steamapicontext->SteamUtils()->GetSecondsSinceComputerActive();
 	}
 
 	int GetCurrentBatteryPower()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamUtils() )
+		if( !steamapicontext || !steamapicontext->SteamUtils() )
+		{
 			return 0;
+		}
 
 		return steamapicontext->SteamUtils()->GetCurrentBatteryPower();
 	}
 #if 0
-	const char *GetIPCountry()
+	const char* GetIPCountry()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamUtils() )
+		if( !steamapicontext || !steamapicontext->SteamUtils() )
+		{
 			return NULL;
+		}
 
-		const char *get = steamapicontext->SteamUtils()->GetIPCountry();
-		if ( !get )
+		const char* get = steamapicontext->SteamUtils()->GetIPCountry();
+		if( !get )
+		{
 			return NULL;
+		}
 
 		static char ret[3];
 		V_strncpy( ret, get, 3 );
@@ -3232,24 +3375,30 @@ public:
 		return ret;
 	}
 #endif
-	const char *GetCurrentGameLanguage()
+	const char* GetCurrentGameLanguage()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamApps() )
+		if( !steamapicontext || !steamapicontext->SteamApps() )
+		{
 			return NULL;
+		}
 
-		const char *lang = steamapicontext->SteamApps()->GetCurrentGameLanguage();
-		if ( !lang )
+		const char* lang = steamapicontext->SteamApps()->GetCurrentGameLanguage();
+		if( !lang )
+		{
 			return NULL;
+		}
 
 		static char ret[16];
-		V_strncpy( ret, lang, sizeof(ret) );
+		V_strncpy( ret, lang, sizeof( ret ) );
 
 		return ret;
 	}
-	const char *GetCurrentBetaName()
+	const char* GetCurrentBetaName()
 	{
-		if ( !steamapicontext || !steamapicontext->SteamApps() )
+		if( !steamapicontext || !steamapicontext->SteamApps() )
+		{
 			return NULL;
+		}
 
 		static char ret[16];
 		steamapicontext->SteamApps()->GetCurrentBetaName( ret, sizeof( ret ) );
@@ -3258,16 +3407,20 @@ public:
 #if 0
 	bool IsSubscribedApp( int nAppID )
 	{
-		if ( !steamapicontext || !steamapicontext->SteamApps() )
+		if( !steamapicontext || !steamapicontext->SteamApps() )
+		{
 			return false;
+		}
 
 		return steamapicontext->SteamApps()->BIsSubscribedApp( nAppID );
 	}
 #endif
 	bool IsAppInstalled( int nAppID )
 	{
-		if ( !steamapicontext || !steamapicontext->SteamApps() )
+		if( !steamapicontext || !steamapicontext->SteamApps() )
+		{
 			return false;
+		}
 
 		return steamapicontext->SteamApps()->BIsAppInstalled( nAppID );
 	}
@@ -3275,15 +3428,15 @@ public:
 } g_ScriptSteamAPI;
 
 BEGIN_SCRIPTDESC_ROOT_NAMED( CScriptSteamAPI, "CSteamAPI", SCRIPT_SINGLETON "" )
-	DEFINE_SCRIPTFUNC( GetSteam2ID, "" )
-	//DEFINE_SCRIPTFUNC( IsVACBanned, "" )
-	DEFINE_SCRIPTFUNC( GetSecondsSinceComputerActive, "Returns the number of seconds since the user last moved the mouse." )
-	DEFINE_SCRIPTFUNC( GetCurrentBatteryPower, "Return the amount of battery power left in the current system in % [0..100], 255 for being on AC power" )
-	//DEFINE_SCRIPTFUNC( GetIPCountry, "Returns the 2 digit ISO 3166-1-alpha-2 format country code this client is running in (as looked up via an IP-to-location database)" )
-	DEFINE_SCRIPTFUNC( GetCurrentGameLanguage, "Gets the current language that the user has set as API language code. This falls back to the Steam UI language if the user hasn't explicitly picked a language for the title." )
-	DEFINE_SCRIPTFUNC( GetCurrentBetaName, "Gets the name of the user's current beta branch. In Source SDK Base 2013 Singleplayer, this will usually return 'upcoming'." )
-	//DEFINE_SCRIPTFUNC( IsSubscribedApp, "Returns true if the user is subscribed to the specified app ID." )
-	DEFINE_SCRIPTFUNC( IsAppInstalled, "Returns true if the user has the specified app ID installed on their computer." )
+DEFINE_SCRIPTFUNC( GetSteam2ID, "" )
+//DEFINE_SCRIPTFUNC( IsVACBanned, "" )
+DEFINE_SCRIPTFUNC( GetSecondsSinceComputerActive, "Returns the number of seconds since the user last moved the mouse." )
+DEFINE_SCRIPTFUNC( GetCurrentBatteryPower, "Return the amount of battery power left in the current system in % [0..100], 255 for being on AC power" )
+//DEFINE_SCRIPTFUNC( GetIPCountry, "Returns the 2 digit ISO 3166-1-alpha-2 format country code this client is running in (as looked up via an IP-to-location database)" )
+DEFINE_SCRIPTFUNC( GetCurrentGameLanguage, "Gets the current language that the user has set as API language code. This falls back to the Steam UI language if the user hasn't explicitly picked a language for the title." )
+DEFINE_SCRIPTFUNC( GetCurrentBetaName, "Gets the name of the user's current beta branch. In Source SDK Base 2013 Singleplayer, this will usually return 'upcoming'." )
+//DEFINE_SCRIPTFUNC( IsSubscribedApp, "Returns true if the user is subscribed to the specified app ID." )
+DEFINE_SCRIPTFUNC( IsAppInstalled, "Returns true if the user has the specified app ID installed on their computer." )
 END_SCRIPTDESC();
 #endif // !NO_STEAM
 

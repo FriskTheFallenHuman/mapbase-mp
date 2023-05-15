@@ -1,18 +1,18 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef FUNC_LADDER_H
 #define FUNC_LADDER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if defined( CLIENT_DLL )
-#define CFuncLadder C_FuncLadder
-#define CInfoLadderDismount C_InfoLadderDismount
+	#define CFuncLadder C_FuncLadder
+	#define CInfoLadderDismount C_InfoLadderDismount
 #endif
 
 class CInfoLadderDismount : public CBaseEntity
@@ -45,10 +45,10 @@ public:
 
 	virtual void Spawn();
 
-	virtual void DrawDebugGeometryOverlays(void);
+	virtual void DrawDebugGeometryOverlays( void );
 
 	int					GetDismountCount() const;
-	CInfoLadderDismount	*GetDismount( int index );
+	CInfoLadderDismount*	GetDismount( int index );
 
 	void	GetTopPosition( Vector& org );
 	void	GetBottomPosition( Vector& org );
@@ -56,30 +56,30 @@ public:
 
 	void	SetEndPoints( const Vector& p1, const Vector& p2 );
 
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void	InputForcePlayerOn( inputdata_t &inputdata );
-	void	InputCheckPlayerOn( inputdata_t &inputdata );
+	void	InputForcePlayerOn( inputdata_t& inputdata );
+	void	InputCheckPlayerOn( inputdata_t& inputdata );
 #endif
 
 	bool	IsEnabled() const;
 
-	void	PlayerGotOn( CBasePlayer *pPlayer );
-	void	PlayerGotOff( CBasePlayer *pPlayer );
+	void	PlayerGotOn( CBasePlayer* pPlayer );
+	void	PlayerGotOff( CBasePlayer* pPlayer );
 
 	virtual void Activate();
 
 	bool	DontGetOnLadder( void ) const;
 
 	static int GetLadderCount();
-	static CFuncLadder *GetLadder( int index );
-	static CUtlVector< CFuncLadder * >	s_Ladders;
+	static CFuncLadder* GetLadder( int index );
+	static CUtlVector< CFuncLadder* >	s_Ladders;
 public:
 
 	void FindNearbyDismountPoints( const Vector& origin, float radius, CUtlVector< CInfoLadderDismountHandle >& list );
-	const char *GetSurfacePropName();
+	const char* GetSurfacePropName();
 
 private:
 
@@ -116,6 +116,6 @@ inline bool CFuncLadder::IsEnabled() const
 	return !m_bDisabled;
 }
 
-const char *FuncLadder_GetSurfaceprops(CBaseEntity *pLadderEntity);
+const char* FuncLadder_GetSurfaceprops( CBaseEntity* pLadderEntity );
 
 #endif // FUNC_LADDER_H

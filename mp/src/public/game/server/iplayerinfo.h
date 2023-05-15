@@ -6,7 +6,7 @@
 #ifndef IPLAYERINFO_H
 #define IPLAYERINFO_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -43,8 +43,10 @@ public:
 
 	CBotCmd& operator =( const CBotCmd& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		command_number		= src.command_number;
 		tick_count			= src.tick_count;
@@ -65,25 +67,25 @@ public:
 
 	// For matching server and client commands for debugging
 	int		command_number;
-	
+
 	// the tick the client created this command
 	int		tick_count;
-	
+
 	// Player instantaneous view angles.
-	QAngle	viewangles;     
+	QAngle	viewangles;
 	// Intended velocities
 	//	forward velocity.
-	float	forwardmove;   
+	float	forwardmove;
 	//  sideways velocity.
-	float	sidemove;      
+	float	sidemove;
 	//  upward velocity.
-	float	upmove;         
+	float	upmove;
 	// Attack button states
-	int		buttons;		
+	int		buttons;
 	// Impulse command issued.
-	byte    impulse;        
+	byte    impulse;
 	// Current weapon id
-	int		weaponselect;	
+	int		weaponselect;
 	int		weaponsubtype;
 
 	int		random_seed;	// For shared random functions
@@ -102,11 +104,11 @@ abstract_class IPlayerInfo
 {
 public:
 	// returns the players name (UTF-8 encoded)
-	virtual const char *GetName() = 0;
+	virtual const char* GetName() = 0;
 	// returns the userid (slot number)
 	virtual int		GetUserID() = 0;
 	// returns the string of their network (i.e Steam) ID
-	virtual const char *GetNetworkIDString() = 0;
+	virtual const char* GetNetworkIDString() = 0;
 	// returns the team the player is on
 	virtual int GetTeamIndex() = 0;
 	// changes the player to a new team (if the game dll logic allows it)
@@ -136,9 +138,9 @@ public:
 	virtual const Vector GetPlayerMins() = 0;
 	virtual const Vector GetPlayerMaxs() = 0;
 	// the name of the weapon currently being carried
-	virtual const char *GetWeaponName() = 0;
+	virtual const char* GetWeaponName() = 0;
 	// the name of the player model in use
-	virtual const char *GetModelName() = 0;
+	virtual const char* GetModelName() = 0;
 	// current player health
 	virtual const int GetHealth() = 0;
 	// max health value
@@ -154,8 +156,8 @@ public:
 abstract_class IPlayerInfoManager
 {
 public:
-	virtual IPlayerInfo *GetPlayerInfo( edict_t *pEdict ) = 0;
-	virtual CGlobalVars *GetGlobalVars() = 0;
+	virtual IPlayerInfo * GetPlayerInfo( edict_t* pEdict ) = 0;
+	virtual CGlobalVars * GetGlobalVars() = 0;
 };
 
 
@@ -167,19 +169,19 @@ public:
 	// change the bots position
 	virtual void SetAbsOrigin( Vector & vec ) = 0;
 	virtual void SetAbsAngles( QAngle & ang ) = 0;
-	virtual void SetLocalOrigin( const Vector& origin ) = 0;
+	virtual void SetLocalOrigin( const Vector & origin ) = 0;
 	virtual const Vector GetLocalOrigin( void ) = 0;
-	virtual void SetLocalAngles( const QAngle& angles ) = 0;
+	virtual void SetLocalAngles( const QAngle & angles ) = 0;
 	virtual const QAngle GetLocalAngles( void ) = 0;
 
 	// strip them of weapons, etc
 	virtual void RemoveAllItems( bool removeSuit ) = 0;
 	// give them a weapon
-	virtual void SetActiveWeapon( const char *WeaponName ) = 0;
+	virtual void SetActiveWeapon( const char* WeaponName ) = 0;
 	// check various effect flags
 	virtual bool IsEFlagSet( int nEFlagMask ) = 0;
 	// fire a virtual move command to the bot
-	virtual void RunPlayerMove( CBotCmd *ucmd ) = 0;
+	virtual void RunPlayerMove( CBotCmd * ucmd ) = 0;
 };
 
 
@@ -187,9 +189,9 @@ public:
 abstract_class IBotManager
 {
 public:
-	virtual IBotController *GetBotController( edict_t *pEdict ) = 0;
+	virtual IBotController * GetBotController( edict_t* pEdict ) = 0;
 	// create a new bot and spawn it into the server
-	virtual edict_t *CreateBot( const char *botname ) = 0;
+	virtual edict_t* CreateBot( const char* botname ) = 0;
 };
 
 #endif // IPLAYERINFO_H

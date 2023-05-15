@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -36,7 +36,7 @@
 
 #define BARNEY_MODEL "models/barney.mdl"
 
-ConVar	sk_barney_health( "sk_barney_health","0");
+ConVar	sk_barney_health( "sk_barney_health", "0" );
 
 //=========================================================
 // Barney activities
@@ -69,23 +69,32 @@ public:
 	void	Spawn( void );
 	void	SelectModel();
 	Class_T Classify( void );
-	void	Weapon_Equip( CBaseCombatWeapon *pWeapon );
+	void	Weapon_Equip( CBaseCombatWeapon* pWeapon );
 
 	bool CreateBehaviors( void );
 
-	void HandleAnimEvent( animevent_t *pEvent );
+	void HandleAnimEvent( animevent_t* pEvent );
 
-	bool ShouldLookForBetterWeapon() { return false; }
+	bool ShouldLookForBetterWeapon()
+	{
+		return false;
+	}
 
-	void OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior );
+	void OnChangeRunningBehavior( CAI_BehaviorBase* pOldBehavior,  CAI_BehaviorBase* pNewBehavior );
 
-	void DeathSound( const CTakeDamageInfo &info );
+	void DeathSound( const CTakeDamageInfo& info );
 	void GatherConditions();
-	void UseFunc( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void UseFunc( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 #ifdef MAPBASE
 	// Use Barney's default subtitle color (215,255,255)
-	bool	GetGameTextSpeechParams( hudtextparms_t &params ) { params.r1 = 215; params.g1 = 255; params.b1 = 255; return BaseClass::GetGameTextSpeechParams( params ); }
+	bool	GetGameTextSpeechParams( hudtextparms_t& params )
+	{
+		params.r1 = 215;
+		params.g1 = 255;
+		params.b1 = 255;
+		return BaseClass::GetGameTextSpeechParams( params );
+	}
 #endif
 
 	CAI_FuncTankBehavior		m_FuncTankBehavior;
@@ -98,9 +107,9 @@ public:
 LINK_ENTITY_TO_CLASS( npc_barney, CNPC_Barney );
 
 //---------------------------------------------------------
-// 
+//
 //---------------------------------------------------------
-IMPLEMENT_SERVERCLASS_ST(CNPC_Barney, DT_NPC_Barney)
+IMPLEMENT_SERVERCLASS_ST( CNPC_Barney, DT_NPC_Barney )
 END_SEND_TABLE()
 
 
@@ -109,23 +118,23 @@ END_SEND_TABLE()
 //---------------------------------------------------------
 BEGIN_DATADESC( CNPC_Barney )
 //						m_FuncTankBehavior
-	DEFINE_OUTPUT( m_OnPlayerUse, "OnPlayerUse" ),
-	DEFINE_USEFUNC( UseFunc ),
-END_DATADESC()
+DEFINE_OUTPUT( m_OnPlayerUse, "OnPlayerUse" ),
+			   DEFINE_USEFUNC( UseFunc ),
+			   END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_Barney::SelectModel()
+			   void CNPC_Barney::SelectModel()
 {
 #ifdef MAPBASE
-	if (GetModelName() == NULL_STRING)
+	if( GetModelName() == NULL_STRING )
 #endif
-	SetModelName( AllocPooledString( BARNEY_MODEL ) );
+		SetModelName( AllocPooledString( BARNEY_MODEL ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Barney::Spawn( void )
 {
@@ -137,9 +146,9 @@ void CNPC_Barney::Spawn( void )
 	m_iHealth = 80;
 #endif
 
-	m_iszIdleExpression = MAKE_STRING("scenes/Expressions/BarneyIdle.vcd");
-	m_iszAlertExpression = MAKE_STRING("scenes/Expressions/BarneyAlert.vcd");
-	m_iszCombatExpression = MAKE_STRING("scenes/Expressions/BarneyCombat.vcd");
+	m_iszIdleExpression = MAKE_STRING( "scenes/Expressions/BarneyIdle.vcd" );
+	m_iszAlertExpression = MAKE_STRING( "scenes/Expressions/BarneyAlert.vcd" );
+	m_iszCombatExpression = MAKE_STRING( "scenes/Expressions/BarneyCombat.vcd" );
 
 	BaseClass::Spawn();
 
@@ -151,8 +160,8 @@ void CNPC_Barney::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Barney::Classify( void )
 {
@@ -161,7 +170,7 @@ Class_T	CNPC_Barney::Classify( void )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Barney::Weapon_Equip( CBaseCombatWeapon *pWeapon )
+void CNPC_Barney::Weapon_Equip( CBaseCombatWeapon* pWeapon )
 {
 	BaseClass::Weapon_Equip( pWeapon );
 
@@ -174,30 +183,30 @@ void CNPC_Barney::Weapon_Equip( CBaseCombatWeapon *pWeapon )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Barney::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Barney::HandleAnimEvent( animevent_t* pEvent )
 {
 	switch( pEvent->event )
 	{
-	case NPC_EVENT_LEFTFOOT:
+		case NPC_EVENT_LEFTFOOT:
 		{
 			EmitSound( "NPC_Barney.FootstepLeft", pEvent->eventtime );
 		}
 		break;
-	case NPC_EVENT_RIGHTFOOT:
+		case NPC_EVENT_RIGHTFOOT:
 		{
 			EmitSound( "NPC_Barney.FootstepRight", pEvent->eventtime );
 		}
 		break;
 
-	default:
-		BaseClass::HandleAnimEvent( pEvent );
-		break;
+		default:
+			BaseClass::HandleAnimEvent( pEvent );
+			break;
 	}
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_Barney::DeathSound( const CTakeDamageInfo &info )
+void CNPC_Barney::DeathSound( const CTakeDamageInfo& info )
 {
 	// Sentences don't play on dead NPCs
 	SentenceStop();
@@ -214,13 +223,13 @@ bool CNPC_Barney::CreateBehaviors( void )
 	return true;
 }
 
-void CNPC_Barney::OnChangeRunningBehavior( CAI_BehaviorBase *pOldBehavior,  CAI_BehaviorBase *pNewBehavior )
+void CNPC_Barney::OnChangeRunningBehavior( CAI_BehaviorBase* pOldBehavior,  CAI_BehaviorBase* pNewBehavior )
 {
-	if ( pNewBehavior == &m_FuncTankBehavior )
+	if( pNewBehavior == &m_FuncTankBehavior )
 	{
 		m_bReadinessCapable = false;
 	}
-	else if ( pOldBehavior == &m_FuncTankBehavior )
+	else if( pOldBehavior == &m_FuncTankBehavior )
 	{
 		m_bReadinessCapable = IsReadinessCapable();
 	}
@@ -235,8 +244,8 @@ void CNPC_Barney::GatherConditions()
 	BaseClass::GatherConditions();
 
 	// Handle speech AI. Don't do AI speech if we're in scripts unless permitted by the EnableSpeakWhileScripting input.
-	if ( m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT || m_NPCState == NPC_STATE_COMBAT ||
-		( ( m_NPCState == NPC_STATE_SCRIPT ) && CanSpeakWhileScripting() ) )
+	if( m_NPCState == NPC_STATE_IDLE || m_NPCState == NPC_STATE_ALERT || m_NPCState == NPC_STATE_COMBAT ||
+			( ( m_NPCState == NPC_STATE_SCRIPT ) && CanSpeakWhileScripting() ) )
 	{
 		DoCustomSpeechAI();
 	}
@@ -244,7 +253,7 @@ void CNPC_Barney::GatherConditions()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Barney::UseFunc( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CNPC_Barney::UseFunc( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	m_bDontUseSemaphore = true;
 	SpeakIfAllowed( TLK_USE );

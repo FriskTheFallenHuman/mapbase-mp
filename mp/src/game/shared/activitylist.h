@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ACTIVITYLIST_H
 #define ACTIVITYLIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <KeyValues.h>
@@ -24,19 +24,22 @@ public:
 		pExtraBlock = NULL;
 	}
 
-	void SetExtraKeyValueBlock ( KeyValues *pKVBlock )
+	void SetExtraKeyValueBlock( KeyValues* pKVBlock )
 	{
 		pExtraBlock = pKVBlock;
 	}
 
-	KeyValues *GetExtraKeyValueBlock ( void ) { return pExtraBlock; }
+	KeyValues* GetExtraKeyValueBlock( void )
+	{
+		return pExtraBlock;
+	}
 
 	Activity 		activity;
 	Activity		mappedActivity;
 
 private:
 
-	KeyValues		*pExtraBlock;
+	KeyValues*		pExtraBlock;
 };
 
 
@@ -51,7 +54,7 @@ public:
 	CActivityRemapCache( const CActivityRemapCache& src )
 	{
 		int c = src.m_cachedActivityRemaps.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			m_cachedActivityRemaps.AddToTail( src.m_cachedActivityRemaps[ i ] );
 		}
@@ -59,11 +62,13 @@ public:
 
 	CActivityRemapCache& operator = ( const CActivityRemapCache& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		int c = src.m_cachedActivityRemaps.Count();
-		for ( int i = 0; i < c; i++ )
+		for( int i = 0; i < c; i++ )
 		{
 			m_cachedActivityRemaps.AddToTail( src.m_cachedActivityRemaps[ i ] );
 		}
@@ -74,16 +79,16 @@ public:
 	CUtlVector< CActivityRemap > m_cachedActivityRemaps;
 };
 
-void UTIL_LoadActivityRemapFile( const char *filename, const char *section, CUtlVector <CActivityRemap> &entries );
+void UTIL_LoadActivityRemapFile( const char* filename, const char* section, CUtlVector <CActivityRemap>& entries );
 
 //=========================================================
 //=========================================================
 extern void ActivityList_Init( void );
 extern void ActivityList_Free( void );
-extern bool ActivityList_RegisterSharedActivity( const char *pszActivityName, int iActivityIndex );
-extern Activity ActivityList_RegisterPrivateActivity( const char *pszActivityName );
-extern int ActivityList_IndexForName( const char *pszActivityName );
-extern const char *ActivityList_NameForIndex( int iActivityIndex );
+extern bool ActivityList_RegisterSharedActivity( const char* pszActivityName, int iActivityIndex );
+extern Activity ActivityList_RegisterPrivateActivity( const char* pszActivityName );
+extern int ActivityList_IndexForName( const char* pszActivityName );
+extern const char* ActivityList_NameForIndex( int iActivityIndex );
 extern int ActivityList_HighestIndex();
 
 // This macro guarantees that the names of each activity and the constant used to

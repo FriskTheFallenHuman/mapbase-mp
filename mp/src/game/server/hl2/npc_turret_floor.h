@@ -2,7 +2,7 @@
 #ifndef NPC_TURRET_FLOOR_H
 #define NPC_TURRET_FLOOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -44,7 +44,7 @@ enum eyeState_t
 #define SF_FLOOR_TURRET_OUT_OF_AMMO			0x00000100
 #define SF_FLOOR_TURRET_CITIZEN				0x00000200	// Citizen modified turret
 #ifdef MAPBASE
-#define SF_FLOOR_TURRET_NO_SPRITE			0x00000400
+	#define SF_FLOOR_TURRET_NO_SPRITE			0x00000400
 #endif
 
 class CTurretTipController;
@@ -66,28 +66,40 @@ public:
 	virtual void	Activate( void );
 	virtual bool	CreateVPhysics( void );
 	virtual void	UpdateOnRemove( void );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
 	virtual void	PlayerPenetratingVPhysics( void );
-	virtual int		VPhysicsTakeDamage( const CTakeDamageInfo &info );
-	virtual bool	CanBecomeServerRagdoll( void ) { return false; }
+	virtual int		VPhysicsTakeDamage( const CTakeDamageInfo& info );
+	virtual bool	CanBecomeServerRagdoll( void )
+	{
+		return false;
+	}
 
 #ifdef HL2_EPISODIC
 	// We don't want to be NPCSOLID because we'll collide with NPC clips
-	virtual unsigned int PhysicsSolidMaskForEntity( void ) const { return MASK_SOLID; } 
+	virtual unsigned int PhysicsSolidMaskForEntity( void ) const
+	{
+		return MASK_SOLID;
+	}
 #endif	// HL2_EPISODIC
 
 	// Player pickup
-	virtual void	OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void	OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason );
-	virtual bool	HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer );
+	virtual void	OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	virtual void	OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason );
+	virtual bool	HasPreferredCarryAnglesForPlayer( CBasePlayer* pPlayer );
 	virtual QAngle	PreferredCarryAngles( void );
-	virtual bool	OnAttemptPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
+	virtual bool	OnAttemptPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
 
-	const char *GetTracerType( void ) { return "AR2Tracer"; }
+	const char* GetTracerType( void )
+	{
+		return "AR2Tracer";
+	}
 
-	bool	ShouldSavePhysics() { return true; }
+	bool	ShouldSavePhysics()
+	{
+		return true;
+	}
 
-	bool	HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sourceEnt );
+	bool	HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	// Think functions
 	virtual void	Retire( void );
@@ -103,49 +115,61 @@ public:
 	virtual void	BreakThink( void );
 	virtual void	HackFindEnemy( void );
 
-	virtual float	GetAttackDamageScale( CBaseEntity *pVictim );
-	virtual Vector	GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget );
+	virtual float	GetAttackDamageScale( CBaseEntity* pVictim );
+	virtual Vector	GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget );
 
 	// Do we have a physics attacker?
-	CBasePlayer *HasPhysicsAttacker( float dt );
-	bool IsHeldByPhyscannon( )	{ return VPhysicsGetObject() && (VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD); }
+	CBasePlayer* HasPhysicsAttacker( float dt );
+	bool IsHeldByPhyscannon( )
+	{
+		return VPhysicsGetObject() && ( VPhysicsGetObject()->GetGameFlags() & FVPHYSICS_PLAYER_HELD );
+	}
 
 	// Use functions
-	void	ToggleUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void	ToggleUse( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	int ObjectCaps() 
-	{ 
+	int ObjectCaps()
+	{
 		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
 	}
 
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( pActivator );
-		if ( pPlayer )
+		CBasePlayer* pPlayer = ToBasePlayer( pActivator );
+		if( pPlayer )
 		{
 			pPlayer->PickupObject( this, false );
 		}
 	}
 
 	// Inputs
-	void	InputToggle( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
-	void	InputDepleteAmmo( inputdata_t &inputdata );
-	void	InputRestoreAmmo( inputdata_t &inputdata );
-	void	InputSelfDestruct( inputdata_t &inputdata );
+	void	InputToggle( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
+	void	InputDepleteAmmo( inputdata_t& inputdata );
+	void	InputRestoreAmmo( inputdata_t& inputdata );
+	void	InputSelfDestruct( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void	InputCreateSprite( inputdata_t &inputdata );
-	void	InputDestroySprite( inputdata_t &inputdata );
-	void	InputPowerdown( inputdata_t &inputdata ) { InputSelfDestruct(inputdata); }
+	void	InputCreateSprite( inputdata_t& inputdata );
+	void	InputDestroySprite( inputdata_t& inputdata );
+	void	InputPowerdown( inputdata_t& inputdata )
+	{
+		InputSelfDestruct( inputdata );
+	}
 #endif
 
-	virtual bool	IsValidEnemy( CBaseEntity *pEnemy );
-	bool			CanBeAnEnemyOf( CBaseEntity *pEnemy );
-	bool			IsBeingCarriedByPlayer( void ) { return m_bCarriedByPlayer; }
+	virtual bool	IsValidEnemy( CBaseEntity* pEnemy );
+	bool			CanBeAnEnemyOf( CBaseEntity* pEnemy );
+	bool			IsBeingCarriedByPlayer( void )
+	{
+		return m_bCarriedByPlayer;
+	}
 	bool			WasJustDroppedByPlayer( void );
 
-	int		BloodColor( void ) { return DONT_BLEED; }
+	int		BloodColor( void )
+	{
+		return DONT_BLEED;
+	}
 	float	MaxYawSpeed( void );
 
 	virtual Class_T	Classify( void );
@@ -153,13 +177,13 @@ public:
 	Vector EyePosition( void )
 	{
 		UpdateMuzzleMatrix();
-		
+
 		Vector vecOrigin;
 		MatrixGetColumn( m_muzzleToWorld, 3, vecOrigin );
-		
+
 		Vector vecForward;
 		MatrixGetColumn( m_muzzleToWorld, 0, vecForward );
-		
+
 		// Note: We back up into the model to avoid an edge case where the eyes clip out of the world and
 		//		 cause problems with the PVS calculations -- jdw
 
@@ -168,7 +192,10 @@ public:
 		return vecOrigin;
 	}
 
-	Vector	EyeOffset( Activity nActivity ) { return Vector( 0, 0, 58 ); }
+	Vector	EyeOffset( Activity nActivity )
+	{
+		return Vector( 0, 0, 58 );
+	}
 
 	// Restore the turret to working operation after falling over
 	void	ReturnToLife( void );
@@ -177,18 +204,24 @@ public:
 
 	// INPCInteractive Functions
 #ifdef MAPBASE
-	virtual bool	CanInteractWith( CAI_BaseNPC *pUser );
+	virtual bool	CanInteractWith( CAI_BaseNPC* pUser );
 #else
-	virtual bool	CanInteractWith( CAI_BaseNPC *pUser ) { return false; } // Disabled for now (sjb)
+	virtual bool	CanInteractWith( CAI_BaseNPC* pUser )
+	{
+		return false;    // Disabled for now (sjb)
+	}
 #endif
-	virtual	bool	HasBeenInteractedWith()	{ return m_bHackedByAlyx; }
-	virtual void	NotifyInteraction( CAI_BaseNPC *pUser )
+	virtual	bool	HasBeenInteractedWith()
+	{
+		return m_bHackedByAlyx;
+	}
+	virtual void	NotifyInteraction( CAI_BaseNPC* pUser )
 	{
 		// For now, turn green so we can tell who is hacked.
 		SetRenderColor( 0, 255, 0 );
-		m_bHackedByAlyx = true; 
+		m_bHackedByAlyx = true;
 #ifdef MAPBASE
-		m_OnHacked.FireOutput(pUser, this);
+		m_OnHacked.FireOutput( pUser, this );
 #endif
 	}
 
@@ -198,9 +231,9 @@ public:
 protected:
 
 	virtual bool	PreThink( turretState_e state );
-	virtual void	Shoot( const Vector &vecSrc, const Vector &vecDirToEnemy, bool bStrict = false );
+	virtual void	Shoot( const Vector& vecSrc, const Vector& vecDirToEnemy, bool bStrict = false );
 	virtual void	SetEyeState( eyeState_t state );
-	void			Ping( void );	
+	void			Ping( void );
 	void			Toggle( void );
 	void			Enable( void );
 	void			Disable( void );
@@ -209,7 +242,10 @@ protected:
 
 	virtual bool	OnSide( void );
 
-	bool	IsCitizenTurret( void ) { return HasSpawnFlags( SF_FLOOR_TURRET_CITIZEN ); }
+	bool	IsCitizenTurret( void )
+	{
+		return HasSpawnFlags( SF_FLOOR_TURRET_CITIZEN );
+	}
 	bool	UpdateFacing( void );
 	void	DryFire( void );
 	void	UpdateMuzzleMatrix();
@@ -258,7 +294,7 @@ protected:
 	CHandle<CBasePlayer>	m_hPhysicsAttacker;
 	float					m_flLastPhysicsInfluenceTime;
 
-	static const char		*m_pShotSounds[];
+	static const char*		m_pShotSounds[];
 
 	COutputEvent m_OnDeploy;
 	COutputEvent m_OnRetire;
@@ -293,14 +329,16 @@ public:
 
 	bool Enabled( void );
 
-	static CTurretTipController	*CreateTipController( CNPC_FloorTurret *pOwner )
+	static CTurretTipController*	CreateTipController( CNPC_FloorTurret* pOwner )
 	{
-		if ( pOwner == NULL )
+		if( pOwner == NULL )
+		{
 			return NULL;
+		}
 
-		CTurretTipController *pController = (CTurretTipController *) Create( "floorturret_tipcontroller", pOwner->GetAbsOrigin(), pOwner->GetAbsAngles() );
+		CTurretTipController* pController = ( CTurretTipController* ) Create( "floorturret_tipcontroller", pOwner->GetAbsOrigin(), pOwner->GetAbsAngles() );
 
-		if ( pController != NULL )
+		if( pController != NULL )
 		{
 			pController->m_pParentTurret = pOwner;
 		}
@@ -309,16 +347,16 @@ public:
 	}
 
 	// IMotionEvent
-	virtual simresult_e	Simulate( IPhysicsMotionController *pController, IPhysicsObject *pObject, float deltaTime, Vector &linear, AngularImpulse &angular );
+	virtual simresult_e	Simulate( IPhysicsMotionController* pController, IPhysicsObject* pObject, float deltaTime, Vector& linear, AngularImpulse& angular );
 
 private:
 	bool						m_bEnabled;
 	float						m_flSuspendTime;
 	Vector						m_worldGoalAxis;
 	Vector						m_localTestAxis;
-	IPhysicsMotionController	*m_pController;
+	IPhysicsMotionController*	m_pController;
 	float						m_angularLimit;
-	CNPC_FloorTurret			*m_pParentTurret;
+	CNPC_FloorTurret*			m_pParentTurret;
 };
 
 #endif //#ifndef NPC_TURRET_FLOOR_H

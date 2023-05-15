@@ -22,22 +22,22 @@ public:
 	FourVectors origin;
 	FourVectors direction;
 
-	inline void Check(void) const
+	inline void Check( void ) const
 	{
 		// in order to be valid to trace as a group, all four rays must have the same signs in all
 		// of their direction components
 #ifndef NDEBUG
-		for(int c=1;c<4;c++)
+		for( int c = 1; c < 4; c++ )
 		{
-			Assert(direction.X(0)*direction.X(c)>=0);
-			Assert(direction.Y(0)*direction.Y(c)>=0);
-			Assert(direction.Z(0)*direction.Z(c)>=0);
+			Assert( direction.X( 0 )*direction.X( c ) >= 0 );
+			Assert( direction.Y( 0 )*direction.Y( c ) >= 0 );
+			Assert( direction.Z( 0 )*direction.Z( c ) >= 0 );
 		}
 #endif
 	}
 	// returns direction sign mask for 4 rays. returns -1 if the rays can not be traced as a
 	// bundle.
-	int CalculateDirectionSignMask(void) const;
+	int CalculateDirectionSignMask( void ) const;
 
 };
 
@@ -62,15 +62,15 @@ struct TriIntersectData_t
 	int32 m_nTriangleID;									// id of the triangle.
 
 	float m_ProjectedEdgeEquations[6];						// A,B,C for each edge equation.  a
-															// point is inside the triangle if
-															// a*c1+b*c2+c is negative for all 3
-															// edges.
+	// point is inside the triangle if
+	// a*c1+b*c2+c is negative for all 3
+	// edges.
 
-	uint8 m_nCoordSelect0,m_nCoordSelect1;					// the triangle is projected onto a 2d
-	                                                        // plane for edge testing. These are
-	                                                        // the indices (0..2) of the
-	                                                        // coordinates preserved in the
-	                                                        // projection
+	uint8 m_nCoordSelect0, m_nCoordSelect1;					// the triangle is projected onto a 2d
+	// plane for edge testing. These are
+	// the indices (0..2) of the
+	// coordinates preserved in the
+	// projection
 
 	uint8 m_nFlags;											// triangle flags
 	uint8 m_unused0;										// no longer used
@@ -89,9 +89,9 @@ struct TriGeometryData_t
 
 
 	// accessors to get around union annoyance
-	FORCEINLINE Vector &Vertex(int idx)
+	FORCEINLINE Vector& Vertex( int idx )
 	{
-		return * ( reinterpret_cast<Vector *> (  m_VertexCoordData+3*idx ) );
+		return * ( reinterpret_cast<Vector*>( m_VertexCoordData + 3 * idx ) );
 	}
 
 };
@@ -107,21 +107,21 @@ struct CacheOptimizedTriangle
 	} m_Data;
 
 	// accessors to get around union annoyance
-	FORCEINLINE Vector &Vertex(int idx)
+	FORCEINLINE Vector& Vertex( int idx )
 	{
-		return * ( reinterpret_cast<Vector *> (m_Data.m_GeometryData.m_VertexCoordData+3*idx ) );
+		return * ( reinterpret_cast<Vector*>( m_Data.m_GeometryData.m_VertexCoordData + 3 * idx ) );
 	}
 
-	FORCEINLINE const Vector &Vertex(int idx) const
+	FORCEINLINE const Vector& Vertex( int idx ) const
 	{
-		return * ( reinterpret_cast<const Vector *> (m_Data.m_GeometryData.m_VertexCoordData+3*idx ) );
+		return * ( reinterpret_cast<const Vector*>( m_Data.m_GeometryData.m_VertexCoordData + 3 * idx ) );
 	}
 
-	void ChangeIntoIntersectionFormat(void);				// change information storage format for
-	                                                        // computing intersections.
+	void ChangeIntoIntersectionFormat( void );				// change information storage format for
+	// computing intersections.
 
-	int ClassifyAgainstAxisSplit(int split_plane, float split_value); // PLANECHECK_xxx below
-	
+	int ClassifyAgainstAxisSplit( int split_plane, float split_value ); // PLANECHECK_xxx below
+
 };
 
 #define PLANECHECK_POSITIVE 1
@@ -145,46 +145,46 @@ struct CacheOptimizedKDNode
 
 	int32 Children;											// child idx, or'ed with flags above
 	float SplittingPlaneValue;								// for non-leaf nodes, the nodes on the
-	                                                        // "high" side of the splitting plane
-	                                                        // are on the right
+	// "high" side of the splitting plane
+	// are on the right
 
 #ifdef DEBUG_RAYTRACE
 	Vector vecMins;
 	Vector vecMaxs;
 #endif
 
-	inline int NodeType(void) const
+	inline int NodeType( void ) const
 
 	{
 		return Children & 3;
 	}
 
-	inline int32 TriangleIndexStart(void) const
+	inline int32 TriangleIndexStart( void ) const
 	{
-		assert(NodeType()==KDNODE_STATE_LEAF);
-		return Children>>2;
+		assert( NodeType() == KDNODE_STATE_LEAF );
+		return Children >> 2;
 	}
 
-	inline int LeftChild(void) const
+	inline int LeftChild( void ) const
 	{
-		assert(NodeType()!=KDNODE_STATE_LEAF);
-		return Children>>2;
+		assert( NodeType() != KDNODE_STATE_LEAF );
+		return Children >> 2;
 	}
 
-	inline int RightChild(void) const
+	inline int RightChild( void ) const
 	{
-		return LeftChild()+1;
+		return LeftChild() + 1;
 	}
 
-	inline int NumberOfTrianglesInLeaf(void) const
+	inline int NumberOfTrianglesInLeaf( void ) const
 	{
-		assert(NodeType()==KDNODE_STATE_LEAF);
-		return *((int32 *) &SplittingPlaneValue);
+		assert( NodeType() == KDNODE_STATE_LEAF );
+		return *( ( int32* ) &SplittingPlaneValue );
 	}
 
-	inline void SetNumberOfTrianglesInLeafNode(int n)
+	inline void SetNumberOfTrianglesInLeafNode( int n )
 	{
-		*((int32 *) &SplittingPlaneValue)=n;
+		*( ( int32* ) &SplittingPlaneValue ) = n;
 	}
 
 protected:
@@ -221,7 +221,8 @@ public:
 #define RTE_FLAGS_DONT_STORE_TRIANGLE_COLORS 2				// saves memory if not needed
 #define RTE_FLAGS_DONT_STORE_TRIANGLE_MATERIALS 4
 
-enum RayTraceLightingMode_t {
+enum RayTraceLightingMode_t
+{
 	DIRECT_LIGHTING,										// just dot product lighting
 	DIRECT_LIGHTING_WITH_SHADOWS,						// with shadows
 	GLOBAL_LIGHTING										// global light w/ shadows
@@ -232,14 +233,14 @@ class RayStream
 {
 	friend class RayTracingEnvironment;
 
-	RayTracingSingleResult *PendingStreamOutputs[8][4];
+	RayTracingSingleResult* PendingStreamOutputs[8][4];
 	int n_in_stream[8];
 	FourRays PendingRays[8];
 
 public:
-	RayStream(void)
+	RayStream( void )
 	{
-		memset(n_in_stream,0,sizeof(n_in_stream));
+		memset( n_in_stream, 0, sizeof( n_in_stream ) );
 	}
 };
 
@@ -250,7 +251,7 @@ public:
 class ITransparentTriangleCallback
 {
 public:
-	virtual bool VisitTriangle_ShouldContinue( const TriIntersectData_t &triangle, const FourRays &rays, fltx4 *hitMask, fltx4 *b0, fltx4 *b1, fltx4 *b2, int32 hitID ) = 0;
+	virtual bool VisitTriangle_ShouldContinue( const TriIntersectData_t& triangle, const FourRays& rays, fltx4* hitMask, fltx4* b0, fltx4* b1, fltx4* b2, int32 hitID ) = 0;
 };
 
 class RayTracingEnvironment
@@ -271,105 +272,105 @@ public:
 public:
 	RayTracingEnvironment() : OptimizedTriangleList( 1024 )
 	{
-		BackgroundColor.DuplicateVector(Vector(1,0,0));		// red
-		Flags=0;
+		BackgroundColor.DuplicateVector( Vector( 1, 0, 0 ) );		// red
+		Flags = 0;
 	}
 
 
 	// call AddTriangle to set up the world
-	void AddTriangle(int32 id, const Vector &v1, const Vector &v2, const Vector &v3,
-					 const Vector &color);
+	void AddTriangle( int32 id, const Vector& v1, const Vector& v2, const Vector& v3,
+					  const Vector& color );
 
 	// Adds a triangle with flags & material
-	void AddTriangle(int32 id, const Vector &v1, const Vector &v2, const Vector &v3,
-								const Vector &color, uint16 flags, int32 materialIndex);
+	void AddTriangle( int32 id, const Vector& v1, const Vector& v2, const Vector& v3,
+					  const Vector& color, uint16 flags, int32 materialIndex );
 
 
-	void AddQuad(int32 id, const Vector &v1, const Vector &v2, const Vector &v3,
-				 const Vector &v4,							// specify vertices in cw or ccw order
-				 const Vector &color);
+	void AddQuad( int32 id, const Vector& v1, const Vector& v2, const Vector& v3,
+				  const Vector& v4,							// specify vertices in cw or ccw order
+				  const Vector& color );
 
-	// for ease of testing. 
-	void AddAxisAlignedRectangularSolid(int id,Vector mincoord, Vector Maxcoord, 
-										const Vector &color);
+	// for ease of testing.
+	void AddAxisAlignedRectangularSolid( int id, Vector mincoord, Vector Maxcoord,
+										 const Vector& color );
 
 
 	// SetupAccelerationStructure to prepare for tracing
-	void SetupAccelerationStructure(void);
+	void SetupAccelerationStructure( void );
 
 
 	// lowest level intersection routine - fire 4 rays through the scene. all 4 rays must pass the
 	// Check() function, and t extents must be initialized. skipid can be set to exclude a
 	// particular id (such as the origin surface). This function finds the closest intersection.
-	void Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 TMax,int DirectionSignMask,
-					RayTracingResult *rslt_out,
-					int32 skip_id=-1, ITransparentTriangleCallback *pCallback = NULL);
+	void Trace4Rays( const FourRays& rays, fltx4 TMin, fltx4 TMax, int DirectionSignMask,
+					 RayTracingResult* rslt_out,
+					 int32 skip_id = -1, ITransparentTriangleCallback* pCallback = NULL );
 
 	// higher level intersection routine that handles computing the mask and handling rays which do not match in direciton sign
-	void Trace4Rays(const FourRays &rays, fltx4 TMin, fltx4 TMax,
-					RayTracingResult *rslt_out,
-					int32 skip_id=-1, ITransparentTriangleCallback *pCallback = NULL);
+	void Trace4Rays( const FourRays& rays, fltx4 TMin, fltx4 TMax,
+					 RayTracingResult* rslt_out,
+					 int32 skip_id = -1, ITransparentTriangleCallback* pCallback = NULL );
 
 	// compute virtual light sources to model inter-reflection
-	void ComputeVirtualLightSources(void);
+	void ComputeVirtualLightSources( void );
 
 
 	// high level interface - pass viewing parameters, rendering flags, and a destination frame
 	// buffer, and get a ray traced scene in 32-bit rgba format
-	void RenderScene(int width, int height,					// width and height of desired rendering
-					 int stride,							// actual width in pixels of target buffer
-					 uint32 *output_buffer,					// pointer to destination 
-					 Vector CameraOrigin,					// eye position
-					 Vector ULCorner,						// word space coordinates of upper left
-															// monitor corner
-					 Vector URCorner,						// top right corner
-					 Vector LLCorner,						// lower left
-					 Vector LRCorner,						// lower right
-					 RayTraceLightingMode_t lightmode=DIRECT_LIGHTING);
+	void RenderScene( int width, int height,					// width and height of desired rendering
+					  int stride,							// actual width in pixels of target buffer
+					  uint32* output_buffer,					// pointer to destination
+					  Vector CameraOrigin,					// eye position
+					  Vector ULCorner,						// word space coordinates of upper left
+					  // monitor corner
+					  Vector URCorner,						// top right corner
+					  Vector LLCorner,						// lower left
+					  Vector LRCorner,						// lower right
+					  RayTraceLightingMode_t lightmode = DIRECT_LIGHTING );
 
-					 
+
 	/// raytracing stream - lets you trace an array of rays by feeding them to this function.
 	/// results will not be returned until FinishStream is called. This function handles sorting
 	/// the rays by direction, tracing them 4 at a time, and de-interleaving the results.
 
-	void AddToRayStream(RayStream &s,
-						Vector const &start,Vector const &end,RayTracingSingleResult *rslt_out);
+	void AddToRayStream( RayStream& s,
+						 Vector const& start, Vector const& end, RayTracingSingleResult* rslt_out );
 
-	inline void FlushStreamEntry(RayStream &s,int msk);
+	inline void FlushStreamEntry( RayStream& s, int msk );
 
 	/// call this when you are done. handles all cleanup. After this is called, all rslt ptrs
 	/// previously passed to AddToRaySteam will have been filled in.
-	void FinishRayStream(RayStream &s);
+	void FinishRayStream( RayStream& s );
 
 
-	int MakeLeafNode(int first_tri, int last_tri);
+	int MakeLeafNode( int first_tri, int last_tri );
 
 
 	float CalculateCostsOfSplit(
-		int split_plane,int32 const *tri_list,int ntris,
-		Vector MinBound,Vector MaxBound, float &split_value,
-		int &nleft, int &nright, int &nboth);
-		
-	void RefineNode(int node_number,int32 const *tri_list,int ntris,
-						 Vector MinBound,Vector MaxBound, int depth);
-	
-	void CalculateTriangleListBounds(int32 const *tris,int ntris,
-									 Vector &minout, Vector &maxout);
+		int split_plane, int32 const* tri_list, int ntris,
+		Vector MinBound, Vector MaxBound, float& split_value,
+		int& nleft, int& nright, int& nboth );
 
-	void AddInfinitePointLight(Vector position,				// light center
-							   Vector intensity);			// rgb amount
+	void RefineNode( int node_number, int32 const* tri_list, int ntris,
+					 Vector MinBound, Vector MaxBound, int depth );
+
+	void CalculateTriangleListBounds( int32 const* tris, int ntris,
+									  Vector& minout, Vector& maxout );
+
+	void AddInfinitePointLight( Vector position,				// light center
+								Vector intensity );			// rgb amount
 
 	// use the global variables set by LoadBSPFile to populated the RayTracingEnvironment with
 	// faces.
-	void InitializeFromLoadedBSP(void);
+	void InitializeFromLoadedBSP( void );
 
-	void AddBSPFace(int id,dface_t const &face);
+	void AddBSPFace( int id, dface_t const& face );
 
 	// MakeRoomForTriangles - a hint telling it how many triangles we are going to add so that
 	// the utl vectors used can be pre-allocated
 	void MakeRoomForTriangles( int ntriangles );
 
-	const CacheOptimizedTriangle &GetTriangle( int32 triID )
+	const CacheOptimizedTriangle& GetTriangle( int32 triID )
 	{
 		return OptimizedTriangleList[triID];
 	}
@@ -378,7 +379,7 @@ public:
 	{
 		return TriangleMaterials[triID];
 	}
-	const Vector &GetTriangleColor( int triID )
+	const Vector& GetTriangleColor( int triID )
 	{
 		return TriangleColors[triID];
 	}

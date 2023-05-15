@@ -9,7 +9,7 @@
 #define FILEOPENSTATEMACHINE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/Panel.h"
@@ -30,13 +30,13 @@ abstract_class IFileOpenStateMachineClient
 {
 public:
 	// Called by to allow clients to set up the save dialog
-	virtual void SetupFileOpenDialog( vgui::FileOpenDialog *pDialog, bool bOpenFile, const char *pFileFormat, KeyValues *pContextKeyValues ) = 0;
+	virtual void SetupFileOpenDialog( vgui::FileOpenDialog * pDialog, bool bOpenFile, const char* pFileFormat, KeyValues * pContextKeyValues ) = 0;
 
 	// Called by to allow clients to actually read the file in
-	virtual bool OnReadFileFromDisk( const char *pFileName, const char *pFileFormat, KeyValues *pContextKeyValues ) = 0;
+	virtual bool OnReadFileFromDisk( const char* pFileName, const char* pFileFormat, KeyValues * pContextKeyValues ) = 0;
 
 	// Called by to allow clients to actually write the file out
-	virtual bool OnWriteFileToDisk( const char *pFileName, const char *pFileFormat, KeyValues *pContextKeyValues ) = 0;
+	virtual bool OnWriteFileToDisk( const char* pFileName, const char* pFileFormat, KeyValues * pContextKeyValues ) = 0;
 };
 
 
@@ -69,18 +69,18 @@ public:
 		ERROR_READING_FILE,				// Error occurred reading the file in
 	};
 
-	FileOpenStateMachine( vgui::Panel *pParent, IFileOpenStateMachineClient *pClient );
+	FileOpenStateMachine( vgui::Panel* pParent, IFileOpenStateMachineClient* pClient );
 	virtual ~FileOpenStateMachine();
 
 	// Opens a file, saves an existing one if necessary
-	void OpenFile( const char *pOpenFileType, KeyValues *pContextKeyValues, const char *pSaveFileName = NULL, const char *pSaveFileType = NULL, int nFlags = 0 );
+	void OpenFile( const char* pOpenFileType, KeyValues* pContextKeyValues, const char* pSaveFileName = NULL, const char* pSaveFileType = NULL, int nFlags = 0 );
 
 	// Version of OpenFile that skips browsing for a particular file to open
-	void OpenFile( const char *pOpenFileName, const char *pOpenFileType, KeyValues *pContextKeyValues, const char *pSaveFileName = NULL, const char *pSaveFileType = NULL, int nFlags = 0 );
+	void OpenFile( const char* pOpenFileName, const char* pOpenFileType, KeyValues* pContextKeyValues, const char* pSaveFileName = NULL, const char* pSaveFileType = NULL, int nFlags = 0 );
 
 	// Used to save a specified file, and deal with all the lovely dialogs
 	// Pass in NULL to get a dialog to choose a filename to save
-	void SaveFile( KeyValues *pContextKeyValues, const char *pFileName, const char *pFileType, int nFlags = FOSM_SHOW_PERFORCE_DIALOGS );
+	void SaveFile( KeyValues* pContextKeyValues, const char* pFileName, const char* pFileType, int nFlags = FOSM_SHOW_PERFORCE_DIALOGS );
 
 	// Returns the state machine completion state
 	CompletionState_t GetCompletionState();
@@ -92,7 +92,7 @@ public:
 			"fullPath" - Indicates the full path of the file read for OpenFile or written for SaveFile
 			"fileType" - Indicates the file type of the file read for OpenFile or written for SaveFile
 			Use GetFirstTrueSubKey() to get the context passed into the OpenFile/SaveFile methods
-	*/									  
+	*/
 
 private:
 	enum FOSMState_t
@@ -151,8 +151,8 @@ private:
 	// Reads the file in
 	void ReadFile();
 
-	IFileOpenStateMachineClient *m_pClient;
-	KeyValues *m_pContextKeyValues;
+	IFileOpenStateMachineClient* m_pClient;
+	KeyValues* m_pContextKeyValues;
 	FOSMState_t m_CurrentState;
 	CompletionState_t m_CompletionState;
 	CUtlString m_FileName;

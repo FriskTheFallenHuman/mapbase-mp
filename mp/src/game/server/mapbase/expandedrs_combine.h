@@ -8,24 +8,24 @@
 #define EXPANDEDRS_COMBINE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #if 0
-#include "ai_component.h"
-#include "ai_basenpc.h"
-#include "ai_sentence.h"
+	#include "ai_component.h"
+	#include "ai_basenpc.h"
+	#include "ai_sentence.h"
 #endif
 
-// 
+//
 // Concepts
-// 
+//
 // These should be consistent with player allies and each other.
-// 
+//
 
-// 
+//
 // Combine Soldiers
-// 
+//
 #define TLK_CMB_ANNOUNCE "TLK_ANNOUNCE"
 #define TLK_CMB_THROWGRENADE "TLK_THROWGRENADE"
 #define TLK_CMB_PLAYERHIT "TLK_PLAYERHIT"
@@ -45,9 +45,9 @@
 #define TLK_CMB_QUESTION "TLK_QUESTION"
 #define TLK_CMB_ANSWER "TLK_ANSWER"
 
-// 
+//
 // Metrocops
-// 
+//
 #define TLK_COP_MANHACKKILLED "TLK_ALLY_KILLED"
 #define TLK_COP_MANDOWN "TLK_ALLY_KILLED"
 #define TLK_COP_GO_ALERT "TLK_GOALERT"
@@ -97,22 +97,22 @@
 #define TLK_COP_AS_ADV_RALLY "TLK_AS_ADV_RALLY"
 #define TLK_COP_AS_ADV_ASSAULT "TLK_AS_ADV_ASSAULT"
 
-// 
+//
 // Snipers
-// 
+//
 #define TLK_SNIPER_DIE "TLK_DEATH"
 #define TLK_SNIPER_TARGETDESTROYED "TLK_ENEMY_DEAD"
 #define TLK_SNIPER_DANGER "TLK_DANGER"
 
 
 #if 0
-static void FixupSentence(const char **ppSentence, const char **ppPrefix);
+static void FixupSentence( const char** ppSentence, const char** ppPrefix );
 
 //-----------------------------------------------------------------------------
 // This is the met of the class
 //-----------------------------------------------------------------------------
 template< class NPC_CLASS >
-class CAI_SentenceTalker : public CAI_Component 
+class CAI_SentenceTalker : public CAI_Component
 {
 	DECLARE_CLASS_NOBASE( CAI_SentenceTalker );
 	DECLARE_SIMPLE_DATADESC();
@@ -120,14 +120,14 @@ class CAI_SentenceTalker : public CAI_Component
 public:
 	//CAI_SentenceTalker();
 
-	void Init( NPC_CLASS *pOuter, const char *pGameSound = NULL );
+	void Init( NPC_CLASS* pOuter, const char* pGameSound = NULL );
 
 	// Check for queued-up-sentences + speak them
 	//void UpdateSentenceQueue();
 
 	// Returns the sentence index played, which can be used to determine
 	// the sentence length of time using engine->SentenceLength
-	int Speak( const char *pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
+	int Speak( const char* pSentence, SentencePriority_t nSoundPriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t nCriteria = SENTENCE_CRITERIA_IN_SQUAD );
 
 	// Returns the sentence index played, which can be used to determine
 	// the sentence length of time using engine->SentenceLength. If the sentence
@@ -150,7 +150,7 @@ private:
 	//int PlaySentence( const char *pSentence );
 
 	// Debug output
-	void SentenceMsg( const char *pStatus, const char *pSentence );
+	void SentenceMsg( const char* pStatus, const char* pSentence );
 
 	int		m_voicePitch;
 	int		m_nQueuedSentenceIndex;
@@ -164,7 +164,7 @@ public:
 };
 
 template< class NPC_CLASS >
-void CAI_SentenceTalker< NPC_CLASS >::Init( NPC_CLASS *pOuter, const char *pGameSound )
+void CAI_SentenceTalker< NPC_CLASS >::Init( NPC_CLASS* pOuter, const char* pGameSound )
 {
 	SetOuter( pOuter );
 }

@@ -7,7 +7,7 @@
 #ifndef ISTEAMGAMESERVERSTATS_H
 #define ISTEAMGAMESERVERSTATS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "isteamclient.h"
@@ -26,24 +26,24 @@ public:
 	virtual SteamAPICall_t RequestUserStats( CSteamID steamIDUser ) = 0;
 
 	// requests stat information for a user, usable after a successful call to RequestUserStats()
-	virtual bool GetUserStat( CSteamID steamIDUser, const char *pchName, int32 *pData ) = 0;
-	virtual bool GetUserStat( CSteamID steamIDUser, const char *pchName, float *pData ) = 0;
-	virtual bool GetUserAchievement( CSteamID steamIDUser, const char *pchName, bool *pbAchieved ) = 0;
+	virtual bool GetUserStat( CSteamID steamIDUser, const char* pchName, int32* pData ) = 0;
+	virtual bool GetUserStat( CSteamID steamIDUser, const char* pchName, float* pData ) = 0;
+	virtual bool GetUserAchievement( CSteamID steamIDUser, const char* pchName, bool* pbAchieved ) = 0;
 
-	// Set / update stats and achievements. 
-	// Note: These updates will work only on stats game servers are allowed to edit and only for 
-	// game servers that have been declared as officially controlled by the game creators. 
+	// Set / update stats and achievements.
+	// Note: These updates will work only on stats game servers are allowed to edit and only for
+	// game servers that have been declared as officially controlled by the game creators.
 	// Set the IP range of your official servers on the Steamworks page
-	virtual bool SetUserStat( CSteamID steamIDUser, const char *pchName, int32 nData ) = 0;
-	virtual bool SetUserStat( CSteamID steamIDUser, const char *pchName, float fData ) = 0;
-	virtual bool UpdateUserAvgRateStat( CSteamID steamIDUser, const char *pchName, float flCountThisSession, double dSessionLength ) = 0;
+	virtual bool SetUserStat( CSteamID steamIDUser, const char* pchName, int32 nData ) = 0;
+	virtual bool SetUserStat( CSteamID steamIDUser, const char* pchName, float fData ) = 0;
+	virtual bool UpdateUserAvgRateStat( CSteamID steamIDUser, const char* pchName, float flCountThisSession, double dSessionLength ) = 0;
 
-	virtual bool SetUserAchievement( CSteamID steamIDUser, const char *pchName ) = 0;
-	virtual bool ClearUserAchievement( CSteamID steamIDUser, const char *pchName ) = 0;
+	virtual bool SetUserAchievement( CSteamID steamIDUser, const char* pchName ) = 0;
+	virtual bool ClearUserAchievement( CSteamID steamIDUser, const char* pchName ) = 0;
 
 	// Store the current data on the server, will get a GSStatsStored_t callback when set.
 	//
-	// If the callback has a result of k_EResultInvalidParam, one or more stats 
+	// If the callback has a result of k_EResultInvalidParam, one or more stats
 	// uploaded has been rejected, either because they broke constraints
 	// or were out of date. In this case the server sends back updated values.
 	// The stats should be re-iterated to keep in sync.
@@ -54,12 +54,12 @@ public:
 
 // callbacks
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-#pragma pack( push, 4 )
+	#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-#pragma pack( push, 8 )
+	#pragma pack( push, 8 )
 #else
-#error isteamclient.h must be included
-#endif 
+	#error isteamclient.h must be included
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: called when the latests stats and achievements have been received

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -10,25 +10,25 @@
 
 #if defined( CLIENT_DLL ) && defined( _DEBUG )
 
-	void CBoneAccessor::SanityCheckBone( int iBone, bool bReadable ) const
+void CBoneAccessor::SanityCheckBone( int iBone, bool bReadable ) const
+{
+	if( m_pAnimating )
 	{
-		if ( m_pAnimating )
+		CStudioHdr* pHdr = m_pAnimating->GetModelPtr();
+		if( pHdr )
 		{
-			CStudioHdr *pHdr = m_pAnimating->GetModelPtr();
-			if ( pHdr )
+			mstudiobone_t* pBone = pHdr->pBone( iBone );
+			if( bReadable )
 			{
-				mstudiobone_t *pBone = pHdr->pBone( iBone );
-				if ( bReadable )
-				{
-					AssertOnce( pBone->flags & m_ReadableBones );
-				}
-				else
-				{
-					AssertOnce( pBone->flags & m_WritableBones );
-				}
+				AssertOnce( pBone->flags & m_ReadableBones );
+			}
+			else
+			{
+				AssertOnce( pBone->flags & m_WritableBones );
 			}
 		}
 	}
+}
 
 #endif
 

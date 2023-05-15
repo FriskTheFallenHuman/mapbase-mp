@@ -17,7 +17,7 @@
 #endif
 
 #ifdef CLIENT_DLL
-	
+
 	#include "iviewrender_beams.h"
 	#include "beam_shared.h"
 	#include "materialsystem/imaterial.h"
@@ -27,8 +27,8 @@
 	#include "fx.h"
 	#include "input.h"
 
-	extern void DrawHalo( IMaterial* pMaterial, const Vector &source, float scale, float const *color, float flHDRColorScale );
-	extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
+	extern void DrawHalo( IMaterial* pMaterial, const Vector& source, float scale, float const* color, float flHDRColorScale );
+	extern void FormatViewModelAttachment( Vector& vOrigin, bool bInverse );
 
 #endif
 
@@ -36,8 +36,8 @@
 #include "tier0/memdbgon.h"
 
 #ifdef GAME_DLL
-ConVar    sk_plr_dmg_stunstick	( "sk_plr_dmg_stunstick","0");
-ConVar    sk_npc_dmg_stunstick	( "sk_npc_dmg_stunstick","0");
+	ConVar    sk_plr_dmg_stunstick( "sk_plr_dmg_stunstick", "0" );
+	ConVar    sk_npc_dmg_stunstick( "sk_npc_dmg_stunstick", "0" );
 #endif // GAME_DLL
 
 extern ConVar metropolice_move_and_melee;
@@ -50,18 +50,18 @@ extern ConVar metropolice_move_and_melee;
 #define STUNSTICK_GLOW_MATERIAL_NOZ	"sprites/light_glow02_add_noz"
 
 #ifdef CLIENT_DLL
-#define CWeaponStunStick C_WeaponStunStick
+	#define CWeaponStunStick C_WeaponStunStick
 #endif
 
 class CWeaponStunStick : public CBaseHL2MPBludgeonWeapon
 {
 	DECLARE_CLASS( CWeaponStunStick, CBaseHL2MPBludgeonWeapon );
-	
+
 public:
 
 	CWeaponStunStick();
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 	DECLARE_ACTTABLE();
 
@@ -70,46 +70,58 @@ public:
 	virtual void			ClientThink( void );
 	virtual void			OnDataChanged( DataUpdateType_t updateType );
 	virtual RenderGroup_t	GetRenderGroup( void );
-	virtual void			ViewModelDrawn( C_BaseViewModel *pBaseViewModel );
-	
+	virtual void			ViewModelDrawn( C_BaseViewModel* pBaseViewModel );
+
 #endif
 
 	virtual void Precache();
 
 	void		Spawn();
 
-	float		GetRange( void )		{ return STUNSTICK_RANGE; }
-	float		GetFireRate( void )		{ return STUNSTICK_REFIRE; }
+	float		GetRange( void )
+	{
+		return STUNSTICK_RANGE;
+	}
+	float		GetFireRate( void )
+	{
+		return STUNSTICK_REFIRE;
+	}
 
 
 	bool		Deploy( void );
-	bool		Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
-	
-	void		Drop( const Vector &vecVelocity );
-	void		ImpactEffect( trace_t &traceHit );
+	bool		Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
+
+	void		Drop( const Vector& vecVelocity );
+	void		ImpactEffect( trace_t& traceHit );
 	void		SecondaryAttack( void )	{}
 	void		SetStunState( bool state );
 	bool		GetStunState( void );
 
 #ifdef GAME_DLL
-	void		Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void		Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 	int			WeaponMeleeAttack1Condition( float flDot, float flDist );
 	float		GetDamageForActivity( Activity hitActivity );
 #endif
-	
+
 #ifdef MAPBASE
 	// Don't use backup activities
-	acttable_t		*GetBackupActivityList() { return NULL; }
-	int				GetBackupActivityListCount() { return 0; }
+	acttable_t*		GetBackupActivityList()
+	{
+		return NULL;
+	}
+	int				GetBackupActivityListCount()
+	{
+		return 0;
+	}
 #endif
 
-	CWeaponStunStick( const CWeaponStunStick & );
+	CWeaponStunStick( const CWeaponStunStick& );
 
 private:
 
 #ifdef CLIENT_DLL
 
-	#define	NUM_BEAM_ATTACHMENTS	9
+#define	NUM_BEAM_ATTACHMENTS	9
 
 	struct stunstickBeamInfo_t
 	{
@@ -130,7 +142,7 @@ private:
 
 	bool	m_bSwungLastFrame;
 
-	#define	FADE_DURATION	0.25f
+#define	FADE_DURATION	0.25f
 
 	float	m_flFadeTime;
 
@@ -165,7 +177,7 @@ PRECACHE_WEAPON_REGISTER( weapon_stunstick );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponStunStick::m_acttable[] = 
+acttable_t	CWeaponStunStick::m_acttable[] =
 {
 	{ ACT_MELEE_ATTACK1,				ACT_MELEE_ATTACK_SWING,	true },
 	{ ACT_IDLE_ANGRY,					ACT_IDLE_ANGRY_MELEE,	true },
@@ -198,7 +210,7 @@ acttable_t	CWeaponStunStick::m_acttable[] =
 	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_MELEE,					false },
 };
 
-IMPLEMENT_ACTTABLE(CWeaponStunStick);
+IMPLEMENT_ACTTABLE( CWeaponStunStick );
 
 
 //-----------------------------------------------------------------------------
@@ -244,9 +256,11 @@ void CWeaponStunStick::Precache()
 //-----------------------------------------------------------------------------
 float CWeaponStunStick::GetDamageForActivity( Activity hitActivity )
 {
-	if ( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
+	if( ( GetOwner() != NULL ) && ( GetOwner()->IsPlayer() ) )
+	{
 		return sk_plr_dmg_stunstick.GetFloat();
-	
+	}
+
 	return sk_npc_dmg_stunstick.GetFloat();
 }
 #endif
@@ -257,13 +271,13 @@ float CWeaponStunStick::GetDamageForActivity( Activity hitActivity )
 extern ConVar sk_crowbar_lead_time;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponStunStick::ImpactEffect( trace_t &traceHit )
+void CWeaponStunStick::ImpactEffect( trace_t& traceHit )
 {
-	
+
 //#ifndef CLIENT_DLL
-	
+
 	CEffectData	data;
 
 	data.m_vNormal = traceHit.plane.normal;
@@ -286,10 +300,12 @@ extern ConVar sk_crowbar_lead_time;
 int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 {
 	// Attempt to lead the target (needed because citizens can't hit manhacks with the crowbar!)
-	CAI_BaseNPC *pNPC	= GetOwner()->MyNPCPointer();
-	CBaseEntity *pEnemy = pNPC->GetEnemy();
-	if (!pEnemy)
+	CAI_BaseNPC* pNPC	= GetOwner()->MyNPCPointer();
+	CBaseEntity* pEnemy = pNPC->GetEnemy();
+	if( !pEnemy )
+	{
 		return COND_NONE;
+	}
 
 	Vector vecVelocity;
 	AngularImpulse angVelocity;
@@ -298,8 +314,10 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 	// Project where the enemy will be in a little while, add some randomness so he doesn't always hit
 	float dt = sk_crowbar_lead_time.GetFloat();
 	dt += random->RandomFloat( -0.3f, 0.2f );
-	if ( dt < 0.0f )
+	if( dt < 0.0f )
+	{
 		dt = 0.0f;
+	}
 
 	Vector vecExtrapolatedPos;
 	VectorMA( pEnemy->WorldSpaceCenter(), dt, vecVelocity, vecExtrapolatedPos );
@@ -307,7 +325,7 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 	Vector vecDelta;
 	VectorSubtract( vecExtrapolatedPos, pNPC->WorldSpaceCenter(), vecDelta );
 
-	if ( fabs( vecDelta.z ) > 70 )
+	if( fabs( vecDelta.z ) > 70 )
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}
@@ -315,7 +333,7 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 	Vector vecForward = pNPC->BodyDirection2D( );
 	vecDelta.z = 0.0f;
 	float flExtrapolatedDot = DotProduct2D( vecDelta.AsVector2D(), vecForward.AsVector2D() );
-	if ((flDot < 0.7) && (flExtrapolatedDot < 0.7))
+	if( ( flDot < 0.7 ) && ( flExtrapolatedDot < 0.7 ) )
 	{
 		return COND_NOT_FACING_ATTACK;
 	}
@@ -328,25 +346,25 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 		//float flSpeed = VectorNormalize( vecDir );
 
 		// If player will be in front of me in one-half second, clock his arse.
-		Vector vecProjectEnemy = pEnemy->GetAbsOrigin() + (pEnemy->GetAbsVelocity() * 0.35);
+		Vector vecProjectEnemy = pEnemy->GetAbsOrigin() + ( pEnemy->GetAbsVelocity() * 0.35 );
 		Vector vecProjectMe = GetAbsOrigin();
 
-		if( (vecProjectMe - vecProjectEnemy).Length2D() <= 48.0f )
+		if( ( vecProjectMe - vecProjectEnemy ).Length2D() <= 48.0f )
 		{
 			return COND_CAN_MELEE_ATTACK1;
 		}
 	}
-/*
-	if( metropolice_move_and_melee.GetBool() )
-	{
-		if( pNPC->IsMoving() )
+	/*
+		if( metropolice_move_and_melee.GetBool() )
 		{
-			flTargetDist *= 1.5f;
+			if( pNPC->IsMoving() )
+			{
+				flTargetDist *= 1.5f;
+			}
 		}
-	}
-*/
+	*/
 	float flTargetDist = 48.0f;
-	if ((flDist > flTargetDist) && (flExtrapolatedDist > flTargetDist))
+	if( ( flDist > flTargetDist ) && ( flExtrapolatedDist > flTargetDist ) )
 	{
 		return COND_TOO_FAR_TO_ATTACK;
 	}
@@ -355,7 +373,7 @@ int CWeaponStunStick::WeaponMeleeAttack1Condition( float flDot, float flDist )
 }
 
 
-void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
@@ -366,16 +384,16 @@ void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 			Vector vecDirection;
 			AngleVectors( GetAbsAngles(), &vecDirection );
 
-			CBaseEntity *pEnemy = pOperator->MyNPCPointer() ? pOperator->MyNPCPointer()->GetEnemy() : NULL;
-			if ( pEnemy )
+			CBaseEntity* pEnemy = pOperator->MyNPCPointer() ? pOperator->MyNPCPointer()->GetEnemy() : NULL;
+			if( pEnemy )
 			{
 				Vector vecDelta;
 				VectorSubtract( pEnemy->WorldSpaceCenter(), pOperator->Weapon_ShootPosition(), vecDelta );
 				VectorNormalize( vecDelta );
-				
+
 				Vector2D vecDelta2D = vecDelta.AsVector2D();
 				Vector2DNormalize( vecDelta2D );
-				if ( DotProduct2D( vecDelta2D, vecDirection.AsVector2D() ) > 0.8f )
+				if( DotProduct2D( vecDelta2D, vecDirection.AsVector2D() ) > 0.8f )
 				{
 					vecDirection = vecDelta;
 				}
@@ -384,34 +402,34 @@ void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 			Vector vecEnd;
 			VectorMA( pOperator->Weapon_ShootPosition(), 32, vecDirection, vecEnd );
 			// Stretch the swing box down to catch low level physics objects
-			CBaseEntity *pHurt = pOperator->CheckTraceHullAttack( pOperator->Weapon_ShootPosition(), vecEnd, 
-				Vector(-16,-16,-40), Vector(16,16,16), GetDamageForActivity( GetActivity() ), DMG_CLUB, 0.5f, false );
-			
+			CBaseEntity* pHurt = pOperator->CheckTraceHullAttack( pOperator->Weapon_ShootPosition(), vecEnd,
+								 Vector( -16, -16, -40 ), Vector( 16, 16, 16 ), GetDamageForActivity( GetActivity() ), DMG_CLUB, 0.5f, false );
+
 			// did I hit someone?
-			if ( pHurt )
+			if( pHurt )
 			{
 				// play sound
 				WeaponSound( MELEE_HIT );
 
-				CBasePlayer *pPlayer = ToBasePlayer( pHurt );
+				CBasePlayer* pPlayer = ToBasePlayer( pHurt );
 
-				CNPC_MetroPolice *pCop = dynamic_cast<CNPC_MetroPolice *>(pOperator);
+				CNPC_MetroPolice* pCop = dynamic_cast<CNPC_MetroPolice*>( pOperator );
 				bool bFlashed = false;
 
-				if ( pCop != NULL && pPlayer != NULL )
+				if( pCop != NULL && pPlayer != NULL )
 				{
 					// See if we need to knock out this target
-					if ( pCop->ShouldKnockOutTarget( pHurt ) )
+					if( pCop->ShouldKnockOutTarget( pHurt ) )
 					{
 						float yawKick = random->RandomFloat( -48, -24 );
 
 						//Kick the player angles
 						pPlayer->ViewPunch( QAngle( -16, yawKick, 2 ) );
 
-						color32 white = {255,255,255,255};
-						UTIL_ScreenFade( pPlayer, white, 0.2f, 1.0f, FFADE_OUT|FFADE_PURGE|FFADE_STAYOUT );
+						color32 white = {255, 255, 255, 255};
+						UTIL_ScreenFade( pPlayer, white, 0.2f, 1.0f, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT );
 						bFlashed = true;
-						
+
 						pCop->KnockOutTarget( pHurt );
 
 						break;
@@ -422,9 +440,9 @@ void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 						pCop->StunnedTarget( pHurt );
 					}
 				}
-				
+
 				// Punch angles
-				if ( pPlayer != NULL && !(pPlayer->GetFlags() & FL_GODMODE) )
+				if( pPlayer != NULL && !( pPlayer->GetFlags() & FL_GODMODE ) )
 				{
 					float yawKick = random->RandomFloat( -48, -24 );
 
@@ -434,33 +452,35 @@ void CWeaponStunStick::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseComba
 					Vector	dir = pHurt->GetAbsOrigin() - GetAbsOrigin();
 
 					// If the player's on my head, don't knock him up
-					if ( pPlayer->GetGroundEntity() == pOperator )
+					if( pPlayer->GetGroundEntity() == pOperator )
 					{
 						dir = vecDirection;
 						dir.z = 0;
 					}
 
-					VectorNormalize(dir);
+					VectorNormalize( dir );
 
 					dir *= 500.0f;
 
 					//If not on ground, then don't make them fly!
-					if ( !(pPlayer->GetFlags() & FL_ONGROUND ) )
-						 dir.z = 0.0f;
+					if( !( pPlayer->GetFlags() & FL_ONGROUND ) )
+					{
+						dir.z = 0.0f;
+					}
 
 					//Push the target back
 					pHurt->ApplyAbsVelocityImpulse( dir );
 
-					if ( !bFlashed )
+					if( !bFlashed )
 					{
-						color32 red = {128,0,0,128};
+						color32 red = {128, 0, 0, 128};
 						UTIL_ScreenFade( pPlayer, red, 0.5f, 0.1f, FFADE_IN );
 					}
-					
+
 					// Force the player to drop anyting they were holding
 					pPlayer->ForceDropOfCarriedPhysObjects();
 				}
-				
+
 				// do effect?
 			}
 			else
@@ -484,7 +504,7 @@ void CWeaponStunStick::SetStunState( bool state )
 {
 	m_bActive = state;
 
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		//FIXME: START - Move to client-side
 
@@ -505,7 +525,7 @@ void CWeaponStunStick::SetStunState( bool state )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponStunStick::Deploy( void )
@@ -520,12 +540,14 @@ bool CWeaponStunStick::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponStunStick::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponStunStick::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
-	if ( BaseClass::Holster( pSwitchingTo ) == false )
+	if( BaseClass::Holster( pSwitchingTo ) == false )
+	{
 		return false;
+	}
 
 	SetStunState( false );
 	SetWeaponVisible( false );
@@ -534,10 +556,10 @@ bool CWeaponStunStick::Holster( CBaseCombatWeapon *pSwitchingTo )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &vecVelocity - 
+// Purpose:
+// Input  : &vecVelocity -
 //-----------------------------------------------------------------------------
-void CWeaponStunStick::Drop( const Vector &vecVelocity )
+void CWeaponStunStick::Drop( const Vector& vecVelocity )
 {
 	SetStunState( false );
 
@@ -545,7 +567,7 @@ void CWeaponStunStick::Drop( const Vector &vecVelocity )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponStunStick::GetStunState( void )
@@ -558,18 +580,18 @@ bool CWeaponStunStick::GetStunState( void )
 //-----------------------------------------------------------------------------
 // Purpose: Get the attachment point on a viewmodel that a base weapon is using
 //-----------------------------------------------------------------------------
-bool UTIL_GetWeaponAttachment( C_BaseCombatWeapon *pWeapon, int attachmentID, Vector &absOrigin, QAngle &absAngles )
+bool UTIL_GetWeaponAttachment( C_BaseCombatWeapon* pWeapon, int attachmentID, Vector& absOrigin, QAngle& absAngles )
 {
 	// Other players & third person
-	if ( pWeapon && (!pWeapon->IsCarriedByLocalPlayer() || ::input->CAM_IsThirdPerson()))
+	if( pWeapon && ( !pWeapon->IsCarriedByLocalPlayer() || ::input->CAM_IsThirdPerson() ) )
 	{
 		return pWeapon->GetAttachment( attachmentID, absOrigin, absAngles );
 	}
 
 	// Otherwise we need to translate the attachment to the viewmodel's version and reformat it
-	CBasePlayer *pOwner = ToBasePlayer( pWeapon->GetOwner() );
-	
-	if ( pOwner != NULL )
+	CBasePlayer* pOwner = ToBasePlayer( pWeapon->GetOwner() );
+
+	if( pOwner != NULL )
 	{
 		int ret = pOwner->GetViewModel()->GetAttachment( attachmentID, absOrigin, absAngles );
 		FormatViewModelAttachment( absOrigin, true );
@@ -589,24 +611,24 @@ bool UTIL_GetWeaponAttachment( C_BaseCombatWeapon *pWeapon, int attachmentID, Ve
 void C_WeaponStunStick::SetupAttachmentPoints( void )
 {
 	// Setup points for both types of views
-	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson())
+	if( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
-		const char *szBeamAttachNamesTop[NUM_BEAM_ATTACHMENTS] =
+		const char* szBeamAttachNamesTop[NUM_BEAM_ATTACHMENTS] =
 		{
-			"spark1a","spark2a","spark3a","spark4a",
-			"spark5a","spark6a","spark7a","spark8a",
+			"spark1a", "spark2a", "spark3a", "spark4a",
+			"spark5a", "spark6a", "spark7a", "spark8a",
 			"spark9a",
 		};
 
-		const char *szBeamAttachNamesBottom[NUM_BEAM_ATTACHMENTS] =
+		const char* szBeamAttachNamesBottom[NUM_BEAM_ATTACHMENTS] =
 		{
-			"spark1b","spark2b","spark3b","spark4b",
-			"spark5b","spark6b","spark7b","spark8b",
+			"spark1b", "spark2b", "spark3b", "spark4b",
+			"spark5b", "spark6b", "spark7b", "spark8b",
 			"spark9b",
 		};
-		
+
 		// Lookup and store all connections
-		for ( int i = 0; i < NUM_BEAM_ATTACHMENTS; i++ )
+		for( int i = 0; i < NUM_BEAM_ATTACHMENTS; i++ )
 		{
 			m_BeamAttachments[i].IDs[0] = LookupAttachment( szBeamAttachNamesTop[i] );
 			m_BeamAttachments[i].IDs[1] = LookupAttachment( szBeamAttachNamesBottom[i] );
@@ -627,14 +649,16 @@ void C_WeaponStunStick::SetupAttachmentPoints( void )
 //-----------------------------------------------------------------------------
 int C_WeaponStunStick::DrawModel( int flags )
 {
-	if ( ShouldDraw() == false )
+	if( ShouldDraw() == false )
+	{
 		return 0;
+	}
 
 	// Only render these on the transparent pass
 #ifdef MAPBASE
-	if ( m_bActive && flags & STUDIO_TRANSPARENCY )
+	if( m_bActive && flags & STUDIO_TRANSPARENCY )
 #else
-	if ( flags & STUDIO_TRANSPARENCY )
+	if( flags & STUDIO_TRANSPARENCY )
 #endif
 	{
 		DrawEffects();
@@ -649,9 +673,9 @@ int C_WeaponStunStick::DrawModel( int flags )
 //-----------------------------------------------------------------------------
 void C_WeaponStunStick::ClientThink( void )
 {
-	if ( InSwing() == false )
+	if( InSwing() == false )
 	{
-		if ( m_bSwungLastFrame )
+		if( m_bSwungLastFrame )
 		{
 			// Start fading
 			m_flFadeTime = gpGlobals->curtime;
@@ -664,14 +688,16 @@ void C_WeaponStunStick::ClientThink( void )
 	// Remember if we were swinging last frame
 	m_bSwungLastFrame = InSwing();
 
-	if ( IsEffectActive( EF_NODRAW ) )
+	if( IsEffectActive( EF_NODRAW ) )
+	{
 		return;
+	}
 
-	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson())
+	if( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
 	{
 		// Update our effects
-		if ( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 3 ) == 0 ) )
-		{		
+		if( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 3 ) == 0 ) )
+		{
 			Vector	vecOrigin;
 			QAngle	vecAngles;
 
@@ -683,11 +709,11 @@ void C_WeaponStunStick::ClientThink( void )
 			UTIL_GetWeaponAttachment( this, attachment, vecOrigin, vecAngles );
 			::FormatViewModelAttachment( vecOrigin, false );
 
-			CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-			CBaseEntity *pBeamEnt = pOwner->GetViewModel();
+			CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+			CBaseEntity* pBeamEnt = pOwner->GetViewModel();
 
 			beamInfo.m_vecStart = vec3_origin;
-			beamInfo.m_pStartEnt= pBeamEnt;
+			beamInfo.m_pStartEnt = pBeamEnt;
 			beamInfo.m_nStartAttachment = attachment;
 
 			beamInfo.m_pEndEnt	= NULL;
@@ -711,7 +737,7 @@ void C_WeaponStunStick::ClientThink( void )
 			beamInfo.m_nSegments = 16;
 			beamInfo.m_bRenderable = true;
 			beamInfo.m_nFlags = 0;
-			
+
 			beams->CreateBeamEntPoint( beamInfo );
 		}
 	}
@@ -723,7 +749,7 @@ void C_WeaponStunStick::ClientThink( void )
 void C_WeaponStunStick::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 		SetupAttachmentPoints();
@@ -746,15 +772,19 @@ bool C_WeaponStunStick::InSwing( void )
 	int activity = GetActivity();
 
 	// FIXME: This is needed until the actual animation works
-	if ( IsCarriedByLocalPlayer() == false || ::input->CAM_IsThirdPerson())
+	if( IsCarriedByLocalPlayer() == false || ::input->CAM_IsThirdPerson() )
+	{
 		return true;
+	}
 
 	// These are the swing activities this weapon can play
-	if ( activity == GetPrimaryAttackActivity() || 
-		 activity == GetSecondaryAttackActivity() ||
-		 activity == ACT_VM_MISSCENTER ||
-		 activity == ACT_VM_MISSCENTER2 )
+	if( activity == GetPrimaryAttackActivity() ||
+			activity == GetSecondaryAttackActivity() ||
+			activity == ACT_VM_MISSCENTER ||
+			activity == ACT_VM_MISSCENTER2 )
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -770,11 +800,11 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 	float	scale;
 
 	CMatRenderContextPtr pRenderContext( materials );
-	IMaterial *pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL, NULL, false );
+	IMaterial* pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL, NULL, false );
 	pRenderContext->Bind( pMaterial );
 
 	// Get bright when swung
-	if ( InSwing() )
+	if( InSwing() )
 	{
 		color[0] = color[1] = color[2] = 0.4f;
 		scale = 22.0f;
@@ -784,12 +814,12 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 		color[0] = color[1] = color[2] = 0.1f;
 		scale = 20.0f;
 	}
-	
+
 	// Draw an all encompassing glow around the entire head
 	UTIL_GetWeaponAttachment( this, m_BeamCenterAttachment, vecOrigin, vecAngles );
 	DrawHalo( pMaterial, vecOrigin, scale, color );
 
-	if ( InSwing() )
+	if( InSwing() )
 	{
 		pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL2, NULL, false );
 		pRenderContext->Bind( pMaterial );
@@ -802,7 +832,7 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 		DrawHalo( pMaterial, vecOrigin, scale, color );
 
 		// Update our effects
-		if ( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 5 ) == 0 ) )
+		if( gpGlobals->frametime != 0.0f && ( random->RandomInt( 0, 5 ) == 0 ) )
 		{
 			Vector	vecBeamOrigin;
 			QAngle	vecBeamAngles;
@@ -820,14 +850,14 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 			beamInfo.m_vecStart = vEnd;
 			Vector	offset = RandomVector( -12, 8 );
 
-			offset += Vector(4,4,4);
+			offset += Vector( 4, 4, 4 );
 			beamInfo.m_vecEnd = vecBeamOrigin + offset;
 
-			beamInfo.m_pStartEnt= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
+			beamInfo.m_pStartEnt = cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
 			beamInfo.m_pEndEnt	= cl_entitylist->GetEnt( BEAMENT_ENTITY( entindex() ) );
 			beamInfo.m_nStartAttachment = 1;
 			beamInfo.m_nEndAttachment = -1;
-			
+
 			beamInfo.m_nType = TE_BEAMTESLA;
 			beamInfo.m_pszModelName = STUNSTICK_BEAM_MATERIAL;
 			beamInfo.m_flHaloScale = 0.0f;
@@ -846,7 +876,7 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 			beamInfo.m_nSegments = 16;
 			beamInfo.m_bRenderable = true;
 			beamInfo.m_nFlags = FBEAM_SHADEOUT;
-			
+
 			beams->CreateBeamPoints( beamInfo );
 		}
 	}
@@ -858,7 +888,7 @@ void C_WeaponStunStick::DrawThirdPersonEffects( void )
 //-----------------------------------------------------------------------------
 void C_WeaponStunStick::DrawNPCEffects( void )
 {
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		Vector	vecOrigin;
 		QAngle	vecAngles;
@@ -873,7 +903,7 @@ void C_WeaponStunStick::DrawNPCEffects( void )
 
 		Vector vEnd = vecOrigin - vForward * 1.0f;
 
-		IMaterial *pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
+		IMaterial* pMaterial = materials->FindMaterial( "effects/stunstick", NULL, false );
 
 		CMatRenderContextPtr pRenderContext( materials );
 		pRenderContext->Bind( pMaterial );
@@ -897,7 +927,7 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 	float	scale;
 
 	CMatRenderContextPtr pRenderContext( materials );
-	IMaterial *pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL_NOZ, NULL, false );
+	IMaterial* pMaterial = materials->FindMaterial( STUNSTICK_GLOW_MATERIAL_NOZ, NULL, false );
 	// FIXME: Needs to work with new IMaterial system!
 	pRenderContext->Bind( pMaterial );
 
@@ -905,7 +935,7 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 	float fadeAmount = RemapValClamped( gpGlobals->curtime, m_flFadeTime, m_flFadeTime + FADE_DURATION, 1.0f, 0.1f );
 
 	// Get bright when swung
-	if ( InSwing() )
+	if( InSwing() )
 	{
 		color[0] = color[1] = color[2] = 0.4f;
 		scale = 22.0f;
@@ -915,8 +945,8 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 		color[0] = color[1] = color[2] = 0.4f * fadeAmount;
 		scale = 20.0f;
 	}
-	
-	if ( color[0] > 0.0f )
+
+	if( color[0] > 0.0f )
 	{
 		// Draw an all encompassing glow around the entire head
 		UTIL_GetWeaponAttachment( this, m_BeamCenterAttachment, vecOrigin, vecAngles );
@@ -924,9 +954,9 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 	}
 
 	// Draw bright points at each attachment location
-	for ( int i = 0; i < (NUM_BEAM_ATTACHMENTS*2)+1; i++ )
+	for( int i = 0; i < ( NUM_BEAM_ATTACHMENTS * 2 ) + 1; i++ )
 	{
-		if ( InSwing() )
+		if( InSwing() )
 		{
 			color[0] = color[1] = color[2] = random->RandomFloat( 0.05f, 0.5f );
 			scale = random->RandomFloat( 4.0f, 5.0f );
@@ -937,7 +967,7 @@ void C_WeaponStunStick::DrawFirstPersonEffects( void )
 			scale = random->RandomFloat( 4.0f, 5.0f ) * fadeAmount;
 		}
 
-		if ( color[0] > 0.0f )
+		if( color[0] > 0.0f )
 		{
 			UTIL_GetWeaponAttachment( this, i, vecOrigin, vecAngles );
 			DrawHalo( pMaterial, vecOrigin, scale, color );
@@ -956,23 +986,29 @@ void C_WeaponStunStick::ThirdPersonSwitch( bool bThirdPerson )
 void C_WeaponStunStick::DrawEffects( void )
 {
 
-	if ( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
+	if( IsCarriedByLocalPlayer() && !::input->CAM_IsThirdPerson() )
+	{
 		DrawFirstPersonEffects();
+	}
 #ifdef MAPBASE
-	else if ( GetOwner() && GetOwner()->IsNPC() )
-		DrawNPCEffects();	// Original HL2 stunstick FX
+	else if( GetOwner() && GetOwner()->IsNPC() )
+	{
+		DrawNPCEffects();    // Original HL2 stunstick FX
+	}
 #endif
 	else
+	{
 		DrawThirdPersonEffects();
+	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Viewmodel was drawn
 //-----------------------------------------------------------------------------
-void C_WeaponStunStick::ViewModelDrawn( C_BaseViewModel *pBaseViewModel )
+void C_WeaponStunStick::ViewModelDrawn( C_BaseViewModel* pBaseViewModel )
 {
 	// Don't bother when we're not deployed
-	if ( IsWeaponVisible() )
+	if( IsWeaponVisible() )
 	{
 		// Do all our special effects
 		DrawEffects();
@@ -984,22 +1020,22 @@ void C_WeaponStunStick::ViewModelDrawn( C_BaseViewModel *pBaseViewModel )
 //-----------------------------------------------------------------------------
 // Purpose: Draw a cheap glow quad at our impact point (with sparks)
 //-----------------------------------------------------------------------------
-void StunstickImpactCallback( const CEffectData &data )
+void StunstickImpactCallback( const CEffectData& data )
 {
 	float scale = random->RandomFloat( 16, 32 );
 
-	FX_AddQuad( data.m_vOrigin, 
-				data.m_vNormal, 
+	FX_AddQuad( data.m_vOrigin,
+				data.m_vNormal,
 				scale,
-				scale*2.0f,
-				1.0f, 
+				scale * 2.0f,
+				1.0f,
 				1.0f,
 				0.0f,
 				0.0f,
-				random->RandomInt( 0, 360 ), 
+				random->RandomInt( 0, 360 ),
 				0,
-				Vector( 1.0f, 1.0f, 1.0f ), 
-				0.1f, 
+				Vector( 1.0f, 1.0f, 1.0f ),
+				0.1f,
 				"sprites/light_glow02_add",
 				0 );
 

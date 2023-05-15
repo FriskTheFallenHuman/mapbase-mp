@@ -26,7 +26,7 @@
 
 #include "tier0/platform.h"
 #if defined( OSX )
-#include <stdarg.h>
+	#include <stdarg.h>
 #endif
 
 // include this anywhere you need to be able to compile-out code related specifically to GLM debugging.
@@ -44,7 +44,7 @@
 		#else
 			// #define GLMDEBUG 2			// don't check this in enabled..
 		#endif
-		
+
 		#ifndef GLMDEBUG
 			#define GLMDEBUG 0
 		#endif
@@ -68,15 +68,15 @@ enum EGLMDebugChannel
 
 #if GLMDEBUG
 	// make all these prototypes disappear in non GLMDEBUG
-	void	GLMDebugInitialize( bool forceReinit=false );
+	void	GLMDebugInitialize( bool forceReinit = false );
 
 	bool	GLMDetectOGLP( void );
 	bool	GLMDetectGDB( void );
 	uint	GLMDetectAvailableChannels( void );
 
-	uint	GLMDebugChannelMask( uint *newValue = NULL );
-		// note that GDB and OGLP can both come and go during run - forceCheck will allow that to be detected.
-		// mask returned is in form of 1<<n, n from EGLMDebugChannel
+	uint	GLMDebugChannelMask( uint* newValue = NULL );
+	// note that GDB and OGLP can both come and go during run - forceCheck will allow that to be detected.
+	// mask returned is in form of 1<<n, n from EGLMDebugChannel
 #endif
 
 //===============================================================================
@@ -97,28 +97,28 @@ enum EGLMDebugFlavor
 	eDefaultFlavor,		// not specified (no marker)
 	eFlavorCount
 };
-uint	GLMDebugFlavorMask( uint *newValue = NULL );
+uint	GLMDebugFlavorMask( uint* newValue = NULL );
 
 // make all these prototypes disappear in non GLMDEBUG
 #if GLMDEBUG
-		// these are unconditional outputs, they don't interrogate the string
-	void	GLMStringOut( const char *string );
-	void	GLMStringOutIndented( const char *string, int indentColumns );
+	// these are unconditional outputs, they don't interrogate the string
+	void	GLMStringOut( const char* string );
+	void	GLMStringOutIndented( const char* string, int indentColumns );
 
 	#ifdef TOGL_DLL_EXPORT
-			// these will look at the string to guess its flavor: <, >, ---, -M-, -S- 
-		DLL_EXPORT void	GLMPrintfVA( const char *fmt, va_list vargs );
-		DLL_EXPORT void	GLMPrintf( const char *fmt, ... );
+		// these will look at the string to guess its flavor: <, >, ---, -M-, -S-
+		DLL_EXPORT void	GLMPrintfVA( const char* fmt, va_list vargs );
+		DLL_EXPORT void	GLMPrintf( const char* fmt, ... );
 	#else
-		DLL_IMPORT void	GLMPrintfVA( const char *fmt, va_list vargs );
-		DLL_IMPORT void	GLMPrintf( const char *fmt, ... );
+		DLL_IMPORT void	GLMPrintfVA( const char* fmt, va_list vargs );
+		DLL_IMPORT void	GLMPrintf( const char* fmt, ... );
 	#endif
 
-		// these take an explicit flavor with a default value
-	void	GLMPrintStr( const char *str, EGLMDebugFlavor flavor = eDefaultFlavor );
+	// these take an explicit flavor with a default value
+	void	GLMPrintStr( const char* str, EGLMDebugFlavor flavor = eDefaultFlavor );
 
 	#define	GLMPRINTTEXT_NUMBEREDLINES	0x80000000
-	void	GLMPrintText( const char *str, EGLMDebugFlavor flavor = eDefaultFlavor, uint options=0  );			// indent each newline
+	void	GLMPrintText( const char* str, EGLMDebugFlavor flavor = eDefaultFlavor, uint options = 0 );			// indent each newline
 
 	int		GLMIncIndent( int indentDelta );
 	int		GLMGetIndent( void );
@@ -132,7 +132,7 @@ uint	GLMDebugFlavorMask( uint *newValue = NULL );
 	#define	GLMPRINTSTR(args)		GLMPrintStr args
 	#define	GLMPRINTTEXT(args)		GLMPrintText args
 #else
-	#define	GLMPRINTF(args)	
+	#define	GLMPRINTF(args)
 	#define	GLMPRINTSTR(args)
 	#define	GLMPRINTTEXT(args)
 #endif
@@ -141,11 +141,11 @@ uint	GLMDebugFlavorMask( uint *newValue = NULL );
 //===============================================================================
 // knob twiddling
 #ifdef TOGL_DLL_EXPORT
-	DLL_EXPORT float	GLMKnob( char *knobname, float *setvalue );	// Pass NULL to not-set the knob value
-	DLL_EXPORT float	GLMKnobToggle( char *knobname );
+	DLL_EXPORT float	GLMKnob( char* knobname, float* setvalue );	// Pass NULL to not-set the knob value
+	DLL_EXPORT float	GLMKnobToggle( char* knobname );
 #else
-	DLL_IMPORT float	GLMKnob( char *knobname, float *setvalue );	// Pass NULL to not-set the knob value
-	DLL_IMPORT float	GLMKnobToggle( char *knobname );
+	DLL_IMPORT float	GLMKnob( char* knobname, float* setvalue );	// Pass NULL to not-set the knob value
+	DLL_IMPORT float	GLMKnobToggle( char* knobname );
 #endif
 
 //===============================================================================
@@ -155,18 +155,18 @@ uint	GLMDebugFlavorMask( uint *newValue = NULL );
 void GLMTriggerDebuggerBreak();
 inline void GLMDebugger( void )
 {
-	if (GLMDebugChannelMask() & (1<<eDebugger))
+	if( GLMDebugChannelMask() & ( 1 << eDebugger ) )
 	{
 		DebuggerBreak();
 	}
-	
-	if (GLMDebugChannelMask() & (1<<eGLProfiler))
+
+	if( GLMDebugChannelMask() & ( 1 << eGLProfiler ) )
 	{
 		GLMTriggerDebuggerBreak();
 	}
 }
 #else
-	#define	GLMDebugger() do { } while(0)
+#define	GLMDebugger() do { } while(0)
 #endif
 
 // helpers for CGLSetOption - no op if no profiler

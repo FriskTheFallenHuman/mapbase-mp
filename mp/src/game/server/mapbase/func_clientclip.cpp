@@ -30,9 +30,9 @@ public:
 	void TurnOn( void );
 
 	// Input handlers
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
 
 	CNetworkVar( bool, m_bDisabled );
 
@@ -50,19 +50,19 @@ LINK_ENTITY_TO_CLASS( func_clip_client, CFuncClientClip );
 
 BEGIN_DATADESC( CFuncClientClip )
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
-	DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "StartDisabled" ),
+DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputTurnOn ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputTurnOff ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				  DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "StartDisabled" ),
 
-END_DATADESC()
+				  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CFuncClientClip, DT_FuncClientClip )
-	SendPropBool( SENDINFO( m_bDisabled ) ),
-END_SEND_TABLE()
+				  IMPLEMENT_SERVERCLASS_ST( CFuncClientClip, DT_FuncClientClip )
+				  SendPropBool( SENDINFO( m_bDisabled ) ),
+				  END_SEND_TABLE()
 
 
-void CFuncClientClip::Spawn( void )
+				  void CFuncClientClip::Spawn( void )
 {
 	SetMoveType( MOVETYPE_PUSH );  // so it doesn't get pushed by anything
 
@@ -73,12 +73,16 @@ void CFuncClientClip::Spawn( void )
 
 	SetModel( STRING( GetModelName() ) );
 
-	if ( m_bDisabled )
+	if( m_bDisabled )
+	{
 		TurnOff();
-	
+	}
+
 	// If it can't move/go away, it's really part of the world
-	if ( !GetEntityName() || !m_iParent )
+	if( !GetEntityName() || !m_iParent )
+	{
 		AddFlag( FL_WORLDBRUSH );
+	}
 
 	CreateVPhysics();
 }
@@ -90,11 +94,11 @@ bool CFuncClientClip::CreateVPhysics( void )
 	// NOTE: Don't init this static.  It's pretty common for these to be constrained
 	// and dynamically parented.  Initing shadow avoids having to destroy the physics
 	// object later and lose the constraints.
-	IPhysicsObject *pPhys = VPhysicsInitShadow(false, false);
-	if ( pPhys )
+	IPhysicsObject* pPhys = VPhysicsInitShadow( false, false );
+	if( pPhys )
 	{
 		int contents = modelinfo->GetModelContents( GetModelIndex() );
-		if ( ! (contents & (MASK_SOLID|MASK_PLAYERSOLID|MASK_NPCSOLID)) )
+		if( !( contents & ( MASK_SOLID | MASK_PLAYERSOLID | MASK_NPCSOLID ) ) )
 		{
 			// leave the physics shadow there in case it has crap constrained to it
 			// but disable collisions with it
@@ -105,21 +109,21 @@ bool CFuncClientClip::CreateVPhysics( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CFuncClientClip::DrawDebugTextOverlays( void )
 {
 	int nOffset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
-		Q_snprintf( tempstr,sizeof(tempstr), "angles: %g %g %g", (double)GetLocalAngles()[PITCH], (double)GetLocalAngles()[YAW], (double)GetLocalAngles()[ROLL] );
+		Q_snprintf( tempstr, sizeof( tempstr ), "angles: %g %g %g", ( double )GetLocalAngles()[PITCH], ( double )GetLocalAngles()[YAW], ( double )GetLocalAngles()[ROLL] );
 		EntityText( nOffset, tempstr, 0 );
 		nOffset++;
 
-		Q_snprintf(tempstr, sizeof(tempstr), "	enabled: %d", !m_bDisabled);
-		EntityText(nOffset, tempstr, 0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "	enabled: %d", !m_bDisabled );
+		EntityText( nOffset, tempstr, 0 );
 		nOffset++;
 	}
 
@@ -130,9 +134,9 @@ int CFuncClientClip::DrawDebugTextOverlays( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for toggling the hidden/shown state of the brush.
 //-----------------------------------------------------------------------------
-void CFuncClientClip::InputToggle( inputdata_t &inputdata )
+void CFuncClientClip::InputToggle( inputdata_t& inputdata )
 {
-	if ( IsOn() )
+	if( IsOn() )
 	{
 		TurnOff();
 		return;
@@ -145,7 +149,7 @@ void CFuncClientClip::InputToggle( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for hiding the brush.
 //-----------------------------------------------------------------------------
-void CFuncClientClip::InputTurnOff( inputdata_t &inputdata )
+void CFuncClientClip::InputTurnOff( inputdata_t& inputdata )
 {
 	TurnOff();
 }
@@ -154,7 +158,7 @@ void CFuncClientClip::InputTurnOff( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for showing the brush.
 //-----------------------------------------------------------------------------
-void CFuncClientClip::InputTurnOn( inputdata_t &inputdata )
+void CFuncClientClip::InputTurnOn( inputdata_t& inputdata )
 {
 	TurnOn();
 }
@@ -164,8 +168,10 @@ void CFuncClientClip::InputTurnOn( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CFuncClientClip::TurnOff( void )
 {
-	if ( !IsOn() )
+	if( !IsOn() )
+	{
 		return;
+	}
 
 	AddEffects( EF_NODRAW );
 	m_bDisabled = true;
@@ -177,8 +183,10 @@ void CFuncClientClip::TurnOff( void )
 //-----------------------------------------------------------------------------
 void CFuncClientClip::TurnOn( void )
 {
-	if ( IsOn() )
+	if( IsOn() )
+	{
 		return;
+	}
 
 	RemoveEffects( EF_NODRAW );
 	m_bDisabled = false;

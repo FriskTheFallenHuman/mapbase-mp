@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define PROPERTYPAGE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/EditablePanel.h>
@@ -26,7 +26,7 @@ class PropertyPage : public EditablePanel
 	DECLARE_CLASS_SIMPLE( PropertyPage, EditablePanel );
 
 public:
-	PropertyPage(Panel *parent, const char *panelName);
+	PropertyPage( Panel* parent, const char* panelName );
 	~PropertyPage();
 
 	// Called when page is loaded.  Data should be reloaded from document into controls.
@@ -39,10 +39,13 @@ public:
 	MESSAGE_FUNC( OnPageShow, "PageShow" );
 	MESSAGE_FUNC( OnPageHide, "PageHide" );
 
-	virtual void OnKeyCodeTyped(KeyCode code);
-	virtual bool HasUserConfigSettings() { return true; }
+	virtual void OnKeyCodeTyped( KeyCode code );
+	virtual bool HasUserConfigSettings()
+	{
+		return true;
+	}
 
-	virtual void SetVisible(bool state);
+	virtual void SetVisible( bool state );
 
 protected:
 	// called to be notified of the tab button used to Activate this page

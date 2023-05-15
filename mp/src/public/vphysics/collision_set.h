@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,7 +9,7 @@
 #ifndef COLLISION_SET_H
 #define COLLISION_SET_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // A set of collision rules

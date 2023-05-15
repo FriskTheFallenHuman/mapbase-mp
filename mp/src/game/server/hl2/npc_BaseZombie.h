@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NPC_BASEZOMBIE_H
 #define NPC_BASEZOMBIE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -42,18 +42,18 @@ extern int AE_ZOMBIE_POUND;
 #define ZOMBIE_BLOOD_RIGHT_HAND		1
 #define ZOMBIE_BLOOD_BOTH_HANDS		2
 #define ZOMBIE_BLOOD_BITE			3
-	
+
 #ifdef MAPBASE
-#define SF_ZOMBIE_NO_TORSO ( 1 << 15 )
+	#define SF_ZOMBIE_NO_TORSO ( 1 << 15 )
 #endif
-	
+
 
 enum HeadcrabRelease_t
 {
 	RELEASE_NO,
 	RELEASE_IMMEDIATE,		// release the headcrab right now!
 	RELEASE_SCHEDULED,		// release the headcrab through the AI schedule.
-	RELEASE_VAPORIZE,		// just destroy the crab.	
+	RELEASE_VAPORIZE,		// just destroy the crab.
 	RELEASE_RAGDOLL,		// release a dead crab
 	RELEASE_RAGDOLL_SLICED_OFF	// toss the crab up a bit
 };
@@ -83,7 +83,7 @@ enum
 //=========================================================
 // tasks
 //=========================================================
-enum 
+enum
 {
 	TASK_ZOMBIE_DELAY_SWAT = LAST_SHARED_TASK,
 	TASK_ZOMBIE_GET_PATH_TO_PHYSOBJ,
@@ -114,7 +114,8 @@ typedef CAI_BlendingHost< CAI_BehaviorHost<CAI_BaseNPC> > CAI_BaseZombieBase;
 
 //=========================================================
 //=========================================================
-abstract_class CNPC_BaseZombie : public CAI_BaseZombieBase
+abstract_class CNPC_BaseZombie :
+public CAI_BaseZombieBase
 {
 	DECLARE_CLASS( CNPC_BaseZombie, CAI_BaseZombieBase );
 
@@ -124,13 +125,13 @@ public:
 
 	void Spawn( void );
 	void Precache( void );
-	void StartTouch( CBaseEntity *pOther );
+	void StartTouch( CBaseEntity * pOther );
 	bool CreateBehaviors();
 	float MaxYawSpeed( void );
-	bool OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
+	bool OverrideMoveFacing( const AILocalMoveGoal_t& move, float flInterval );
 	Class_T Classify( void );
-	Disposition_t IRelationType( CBaseEntity *pTarget );
-	void HandleAnimEvent( animevent_t *pEvent );
+	Disposition_t IRelationType( CBaseEntity * pTarget );
+	void HandleAnimEvent( animevent_t* pEvent );
 
 	void OnStateChange( NPC_STATE OldState, NPC_STATE NewState );
 
@@ -140,57 +141,69 @@ public:
 		OnTakeDamage( CTakeDamageInfo( this, this, m_iHealth * 2, DMG_GENERIC ) );
 	}
 
-	int MeleeAttack1Conditions ( float flDot, float flDist );
+	int MeleeAttack1Conditions( float flDot, float flDist );
 	virtual float GetClawAttackRange() const { return ZOMBIE_MELEE_REACH; }
 
 	// No range attacks
-	int RangeAttack1Conditions ( float flDot, float flDist ) { return( 0 ); }
-	
-	virtual float GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo &info );
-	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual float	GetReactionDelay( CBaseEntity *pEnemy ) { return 0.0; }
+	int RangeAttack1Conditions( float flDot, float flDist )
+	{
+		return( 0 );
+	}
 
-	virtual int SelectSchedule ( void );
+	virtual float GetHitgroupDamageMultiplier( int iHitGroup, const CTakeDamageInfo & info );
+	void TraceAttack( const CTakeDamageInfo & info, const Vector & vecDir, trace_t* ptr, CDmgAccumulator * pAccumulator );
+	int OnTakeDamage_Alive( const CTakeDamageInfo & info );
+	virtual float	GetReactionDelay( CBaseEntity * pEnemy )
+	{
+		return 0.0;
+	}
+
+	virtual int SelectSchedule( void );
 	virtual int	SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	virtual void BuildScheduleTestBits( void );
 
 	virtual int TranslateSchedule( int scheduleType );
 	virtual Activity NPC_TranslateActivity( Activity baseAct );
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
 	void GatherConditions( void );
 	void PrescheduleThink( void );
 
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual bool BecomeRagdoll( const CTakeDamageInfo &info, const Vector &forceVector );
+	virtual void Event_Killed( const CTakeDamageInfo & info );
+	virtual bool BecomeRagdoll( const CTakeDamageInfo & info, const Vector & forceVector );
 	void StopLoopingSounds();
 	virtual void OnScheduleChange( void );
 
 	virtual void PoundSound();
 
-	// Custom damage/death 
-	bool ShouldIgnite( const CTakeDamageInfo &info );
+	// Custom damage/death
+	bool ShouldIgnite( const CTakeDamageInfo & info );
 	bool ShouldIgniteZombieGib( void );
-	virtual bool IsChopped( const CTakeDamageInfo &info );
-	virtual bool IsSquashed( const CTakeDamageInfo &info ) { return false; }
-	virtual void DieChopped( const CTakeDamageInfo &info );
+	virtual bool IsChopped( const CTakeDamageInfo & info );
+	virtual bool IsSquashed( const CTakeDamageInfo & info )
+	{
+		return false;
+	}
+	virtual void DieChopped( const CTakeDamageInfo & info );
 	virtual void Ignite( float flFlameLifetime, bool bNPCOnly = true, float flSize = 0.0f, bool bCalledByLevelDesigner = false );
-	void CopyRenderColorTo( CBaseEntity *pOther );
+	void CopyRenderColorTo( CBaseEntity * pOther );
 
-	virtual bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
-	virtual HeadcrabRelease_t ShouldReleaseHeadcrab( const CTakeDamageInfo &info, float flDamageThreshold );
+	virtual bool ShouldBecomeTorso( const CTakeDamageInfo & info, float flDamageThreshold );
+	virtual HeadcrabRelease_t ShouldReleaseHeadcrab( const CTakeDamageInfo & info, float flDamageThreshold );
 
 	// Headcrab releasing/breaking apart
 	void RemoveHead( void );
 	virtual void SetZombieModel( void ) { };
-	virtual void BecomeTorso( const Vector &vecTorsoForce, const Vector &vecLegsForce );
-	virtual bool CanBecomeLiveTorso() { return false; }
-	virtual bool HeadcrabFits( CBaseAnimating *pCrab );
-	void ReleaseHeadcrab( const Vector &vecOrigin, const Vector &vecVelocity, bool fRemoveHead, bool fRagdollBody, bool fRagdollCrab = false );
-	void SetHeadcrabSpawnLocation( int iCrabAttachment, CBaseAnimating *pCrab );
+	virtual void BecomeTorso( const Vector & vecTorsoForce, const Vector & vecLegsForce );
+	virtual bool CanBecomeLiveTorso()
+	{
+		return false;
+	}
+	virtual bool HeadcrabFits( CBaseAnimating * pCrab );
+	void ReleaseHeadcrab( const Vector & vecOrigin, const Vector & vecVelocity, bool fRemoveHead, bool fRagdollBody, bool fRagdollCrab = false );
+	void SetHeadcrabSpawnLocation( int iCrabAttachment, CBaseAnimating * pCrab );
 
 	// Slumping/sleeping
 	bool IsSlumped( void );
@@ -200,16 +213,22 @@ public:
 	int GetSwatActivity( void );
 	bool FindNearestPhysicsObject( int iMaxMass );
 	float DistToPhysicsEnt( void );
-	virtual bool CanSwatPhysicsObjects( void ) { return true; }
+	virtual bool CanSwatPhysicsObjects( void )
+	{
+		return true;
+	}
 
 	// Returns whether we must be very near our enemy to attack them.
-	virtual bool MustCloseToAttack(void) { return true; }
+	virtual bool MustCloseToAttack( void )
+	{
+		return true;
+	}
 
-	virtual CBaseEntity *ClawAttack( float flDist, int iDamage, QAngle &qaViewPunch, Vector &vecVelocityPunch, int BloodOrigin );
+	virtual CBaseEntity * ClawAttack( float flDist, int iDamage, QAngle & qaViewPunch, Vector & vecVelocityPunch, int BloodOrigin );
 
 	// Sounds & sound envelope
 	virtual bool ShouldPlayFootstepMoan( void );
-	virtual void PainSound( const CTakeDamageInfo &info ) = 0;
+	virtual void PainSound( const CTakeDamageInfo & info ) = 0;
 	virtual void AlertSound( void ) = 0;
 	virtual void IdleSound( void ) = 0;
 	virtual void AttackSound( void ) = 0;
@@ -222,23 +241,29 @@ public:
 	void		 MakeAISpookySound( float volume, float duration = 0.5 );
 
 	virtual bool CanPlayMoanSound();
-	virtual void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
-	bool ShouldPlayIdleSound( void ) { return false; }
+	virtual void MoanSound( envelopePoint_t* pEnvelope, int iEnvelopeSize );
+	bool ShouldPlayIdleSound( void )
+	{
+		return false;
+	}
 
-	virtual const char *GetMoanSound( int nSound ) = 0;
-	virtual const char *GetHeadcrabClassname( void ) = 0;
-	virtual const char *GetLegsModel( void ) = 0;
-	virtual const char *GetTorsoModel( void ) = 0;
-	virtual const char *GetHeadcrabModel( void ) = 0;
+	virtual const char* GetMoanSound( int nSound ) = 0;
+	virtual const char* GetHeadcrabClassname( void ) = 0;
+	virtual const char* GetLegsModel( void ) = 0;
+	virtual const char* GetTorsoModel( void ) = 0;
+	virtual const char* GetHeadcrabModel( void ) = 0;
 
-	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy );
-	virtual Vector HeadTarget( const Vector &posSrc );
+	virtual Vector BodyTarget( const Vector & posSrc, bool bNoisy );
+	virtual Vector HeadTarget( const Vector & posSrc );
 	virtual float  GetAutoAimRadius();
-	virtual void TranslateNavGoal( CBaseEntity *pEnemy, Vector &chasePosition );
+	virtual void TranslateNavGoal( CBaseEntity * pEnemy, Vector & chasePosition );
 
-	bool OnInsufficientStopDist( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
+	bool OnInsufficientStopDist( AILocalMoveGoal_t* pMoveGoal, float distClear, AIMoveResult_t* pResult );
 
-	virtual	bool		AllowedToIgnite( void ) { return true; }
+	virtual	bool		AllowedToIgnite( void )
+	{
+		return true;
+	}
 
 public:
 	CAI_ActBusyBehavior		m_ActBusyBehavior;
@@ -247,7 +272,7 @@ public:
 
 protected:
 
-	CSoundPatch	*m_pMoanSound;
+	CSoundPatch*	m_pMoanSound;
 
 	bool	m_fIsTorso;			// is this is a half-zombie?
 	bool	m_fIsHeadless;		// is this zombie headless

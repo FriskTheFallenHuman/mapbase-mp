@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -11,7 +11,7 @@
 #define UTLSTREAMBUFFER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlbuffer.h"
@@ -28,11 +28,11 @@ class CUtlStreamBuffer : public CUtlBuffer
 public:
 	// See CUtlBuffer::BufferFlags_t for flags
 	CUtlStreamBuffer( );
-	CUtlStreamBuffer( const char *pFileName, const char *pPath, int nFlags = 0, bool bDelayOpen = false );
+	CUtlStreamBuffer( const char* pFileName, const char* pPath, int nFlags = 0, bool bDelayOpen = false );
 	~CUtlStreamBuffer();
 
 	// Open the file. normally done in constructor
-	void Open( const char *pFileName, const char *pPath, int nFlags );
+	void Open( const char* pFileName, const char* pPath, int nFlags );
 
 	// close the file. normally done in destructor
 	void Close();
@@ -58,12 +58,12 @@ private:
 	// Reads bytes from the file; fixes up maxput if necessary and null terminates
 	int ReadBytesFromFile( int nBytesToRead, int nReadOffset );
 
-	FileHandle_t OpenFile( const char *pFileName, const char *pPath );
+	FileHandle_t OpenFile( const char* pFileName, const char* pPath );
 
 	FileHandle_t m_hFileHandle;
 
-	char *m_pFileName;
-	char *m_pPath;
+	char* m_pFileName;
+	char* m_pPath;
 };
 
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -33,26 +33,26 @@ extern ConVar    sk_plr_dmg_smg1_grenade;
 extern ConVar    sk_npc_dmg_smg1_grenade;
 extern ConVar    sk_max_smg1_grenade;
 
-ConVar	  sk_smg1_grenade_radius		( "sk_smg1_grenade_radius","0");
+ConVar	  sk_smg1_grenade_radius( "sk_smg1_grenade_radius", "0" );
 #ifdef MAPBASE
-ConVar	g_grenade_credit_transfer( "g_smg_grenade_credit_transfer", "1" );
+	ConVar	g_grenade_credit_transfer( "g_smg_grenade_credit_transfer", "1" );
 #endif
 
-ConVar g_CV_SmokeTrail("smoke_trail", "1", 0); // temporary dust explosion switch
+ConVar g_CV_SmokeTrail( "smoke_trail", "1", 0 ); // temporary dust explosion switch
 
 BEGIN_DATADESC( CGrenadeAR2 )
 
-	DEFINE_FIELD( m_hSmokeTrail, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_fSpawnTime, FIELD_TIME ),
-	DEFINE_FIELD( m_fDangerRadius, FIELD_FLOAT ),
+DEFINE_FIELD( m_hSmokeTrail, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_fSpawnTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_fDangerRadius, FIELD_FLOAT ),
 
-	// Function pointers
-	DEFINE_ENTITYFUNC( GrenadeAR2Touch ),
-	DEFINE_THINKFUNC( GrenadeAR2Think ),
+			  // Function pointers
+			  DEFINE_ENTITYFUNC( GrenadeAR2Touch ),
+			  DEFINE_THINKFUNC( GrenadeAR2Think ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( grenade_ar2, CGrenadeAR2 );
+			  LINK_ENTITY_TO_CLASS( grenade_ar2, CGrenadeAR2 );
 
 void CGrenadeAR2::Spawn( void )
 {
@@ -63,8 +63,8 @@ void CGrenadeAR2::Spawn( void )
 	// Hits everything but debris
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 
-	SetModel( "models/Weapons/ar2_grenade.mdl");
-	UTIL_SetSize(this, Vector(-3, -3, -3), Vector(3, 3, 3));
+	SetModel( "models/Weapons/ar2_grenade.mdl" );
+	UTIL_SetSize( this, Vector( -3, -3, -3 ), Vector( 3, 3, 3 ) );
 //	UTIL_SetSize(this, Vector(0, 0, 0), Vector(0, 0, 0));
 
 	SetUse( &CGrenadeAR2::DetonateUse );
@@ -100,13 +100,13 @@ void CGrenadeAR2::Spawn( void )
 	if( g_CV_SmokeTrail.GetInt() && !IsXbox() )
 	{
 		m_hSmokeTrail = SmokeTrail::CreateSmokeTrail();
-		
+
 		if( m_hSmokeTrail )
 		{
 			m_hSmokeTrail->m_SpawnRate = 48;
 			m_hSmokeTrail->m_ParticleLifetime = 1;
-			m_hSmokeTrail->m_StartColor.Init(0.1f, 0.1f, 0.1f);
-			m_hSmokeTrail->m_EndColor.Init(0,0,0);
+			m_hSmokeTrail->m_StartColor.Init( 0.1f, 0.1f, 0.1f );
+			m_hSmokeTrail->m_EndColor.Init( 0, 0, 0 );
 			m_hSmokeTrail->m_StartSize = 12;
 			m_hSmokeTrail->m_EndSize = m_hSmokeTrail->m_StartSize * 4;
 			m_hSmokeTrail->m_SpawnRadius = 4;
@@ -114,8 +114,8 @@ void CGrenadeAR2::Spawn( void )
 			m_hSmokeTrail->m_MaxSpeed = 24;
 			m_hSmokeTrail->m_Opacity = 0.2f;
 
-			m_hSmokeTrail->SetLifetime(10.0f);
-			m_hSmokeTrail->FollowEntity(this);
+			m_hSmokeTrail->SetLifetime( 10.0f );
+			m_hSmokeTrail->FollowEntity( this );
 		}
 	}
 }
@@ -131,21 +131,21 @@ void CGrenadeAR2::GrenadeAR2Think( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.05f );
 
-	if (!m_bIsLive)
+	if( !m_bIsLive )
 	{
 		// Go live after a short delay
-		if (m_fSpawnTime + MAX_AR2_NO_COLLIDE_TIME < gpGlobals->curtime)
+		if( m_fSpawnTime + MAX_AR2_NO_COLLIDE_TIME < gpGlobals->curtime )
 		{
 			m_bIsLive  = true;
 		}
 	}
-	
+
 	// If I just went solid and my velocity is zero, it means I'm resting on
 	// the floor already when I went solid so blow up
-	if (m_bIsLive)
+	if( m_bIsLive )
 	{
-		if (GetAbsVelocity().Length() == 0.0 ||
-			GetGroundEntity() != NULL )
+		if( GetAbsVelocity().Length() == 0.0 ||
+				GetGroundEntity() != NULL )
 		{
 			Detonate();
 		}
@@ -162,12 +162,12 @@ void CGrenadeAR2::GrenadeAR2Think( void )
 	CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin() + GetAbsVelocity() * 0.5, m_fDangerRadius, 0.2, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
 }
 
-void CGrenadeAR2::Event_Killed( const CTakeDamageInfo &info )
+void CGrenadeAR2::Event_Killed( const CTakeDamageInfo& info )
 {
 #ifdef MAPBASE
-	if ( g_grenade_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer() )
+	if( g_grenade_credit_transfer.GetBool() && info.GetAttacker()->MyCombatCharacterPointer() )
 	{
-		CBaseCombatCharacter *pBCC = info.GetAttacker()->MyCombatCharacterPointer();
+		CBaseCombatCharacter* pBCC = info.GetAttacker()->MyCombatCharacterPointer();
 		SetThrower( pBCC );
 		SetOwnerEntity( pBCC );
 	}
@@ -175,14 +175,16 @@ void CGrenadeAR2::Event_Killed( const CTakeDamageInfo &info )
 	Detonate( );
 }
 
-void CGrenadeAR2::GrenadeAR2Touch( CBaseEntity *pOther )
+void CGrenadeAR2::GrenadeAR2Touch( CBaseEntity* pOther )
 {
 	Assert( pOther );
-	if ( !pOther->IsSolid() )
+	if( !pOther->IsSolid() )
+	{
 		return;
+	}
 
 	// If I'm live go ahead and blow up
-	if (m_bIsLive)
+	if( m_bIsLive )
 	{
 		Detonate();
 	}
@@ -190,8 +192,8 @@ void CGrenadeAR2::GrenadeAR2Touch( CBaseEntity *pOther )
 	{
 		// If I'm not live, only blow up if I'm hitting an chacter that
 		// is not the owner of the weapon
-		CBaseCombatCharacter *pBCC = ToBaseCombatCharacter( pOther );
-		if (pBCC && GetThrower() != pBCC)
+		CBaseCombatCharacter* pBCC = ToBaseCombatCharacter( pOther );
+		if( pBCC && GetThrower() != pBCC )
 		{
 			m_bIsLive = true;
 			Detonate();
@@ -199,40 +201,40 @@ void CGrenadeAR2::GrenadeAR2Touch( CBaseEntity *pOther )
 	}
 }
 
-void CGrenadeAR2::Detonate(void)
+void CGrenadeAR2::Detonate( void )
 {
-	if (!m_bIsLive)
+	if( !m_bIsLive )
 	{
 		return;
 	}
 	m_bIsLive		= false;
 	m_takedamage	= DAMAGE_NO;
 
-	if(m_hSmokeTrail)
+	if( m_hSmokeTrail )
 	{
-		UTIL_Remove(m_hSmokeTrail);
+		UTIL_Remove( m_hSmokeTrail );
 		m_hSmokeTrail = NULL;
 	}
 
 	CPASFilter filter( GetAbsOrigin() );
 
 	te->Explosion( filter, 0.0,
-		&GetAbsOrigin(), 
-		g_sModelIndexFireball,
-		2.0, 
-		15,
-		TE_EXPLFLAG_NONE,
-		m_DmgRadius,
-		m_flDamage );
+				   &GetAbsOrigin(),
+				   g_sModelIndexFireball,
+				   2.0,
+				   15,
+				   TE_EXPLFLAG_NONE,
+				   m_DmgRadius,
+				   m_flDamage );
 
 	Vector vecForward = GetAbsVelocity();
-	VectorNormalize(vecForward);
+	VectorNormalize( vecForward );
 	trace_t		tr;
-	UTIL_TraceLine ( GetAbsOrigin(), GetAbsOrigin() + 60*vecForward, MASK_SHOT, 
-		this, COLLISION_GROUP_NONE, &tr);
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + 60 * vecForward, MASK_SHOT,
+					this, COLLISION_GROUP_NONE, &tr );
 
 
-	if ((tr.m_pEnt != GetWorldEntity()) || (tr.hitbox != 0))
+	if( ( tr.m_pEnt != GetWorldEntity() ) || ( tr.hitbox != 0 ) )
 	{
 		// non-world needs smaller decals
 		if( tr.m_pEnt && !tr.m_pEnt->IsNPC() )
@@ -247,18 +249,18 @@ void CGrenadeAR2::Detonate(void)
 
 	UTIL_ScreenShake( GetAbsOrigin(), 25.0, 150.0, 1.0, 750, SHAKE_START );
 
-	RadiusDamage ( CTakeDamageInfo( this, GetThrower(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
+	RadiusDamage( CTakeDamageInfo( this, GetThrower(), m_flDamage, DMG_BLAST ), GetAbsOrigin(), m_DmgRadius, CLASS_NONE, NULL );
 
 	UTIL_Remove( this );
 }
 
 void CGrenadeAR2::Precache( void )
 {
-	PrecacheModel("models/Weapons/ar2_grenade.mdl"); 
+	PrecacheModel( "models/Weapons/ar2_grenade.mdl" );
 }
 
 
-CGrenadeAR2::CGrenadeAR2(void)
+CGrenadeAR2::CGrenadeAR2( void )
 {
 	m_hSmokeTrail  = NULL;
 }

@@ -13,27 +13,27 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-LINK_ENTITY_TO_CLASS(spotlight_end, CSpotlightEnd);
+LINK_ENTITY_TO_CLASS( spotlight_end, CSpotlightEnd );
 
-IMPLEMENT_SERVERCLASS_ST(CSpotlightEnd, DT_SpotlightEnd)
-	SendPropFloat(SENDINFO(m_flLightScale), 0, SPROP_NOSCALE),
-	SendPropFloat(SENDINFO(m_Radius), 0, SPROP_NOSCALE),
+IMPLEMENT_SERVERCLASS_ST( CSpotlightEnd, DT_SpotlightEnd )
+SendPropFloat( SENDINFO( m_flLightScale ), 0, SPROP_NOSCALE ),
+			   SendPropFloat( SENDINFO( m_Radius ), 0, SPROP_NOSCALE ),
 //	SendPropVector(SENDINFO(m_vSpotlightDir), -1, SPROP_NORMAL),
 //	SendPropVector(SENDINFO(m_vSpotlightOrg), -1, SPROP_COORD),
-END_SEND_TABLE()
+			   END_SEND_TABLE()
 
 
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
-BEGIN_DATADESC( CSpotlightEnd )
+			   BEGIN_DATADESC( CSpotlightEnd )
 
-	DEFINE_FIELD( m_flLightScale, FIELD_FLOAT ),
-	DEFINE_FIELD( m_Radius, FIELD_FLOAT ),
-	DEFINE_FIELD( m_vSpotlightDir, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vSpotlightOrg, FIELD_POSITION_VECTOR ),
+			   DEFINE_FIELD( m_flLightScale, FIELD_FLOAT ),
+			   DEFINE_FIELD( m_Radius, FIELD_FLOAT ),
+			   DEFINE_FIELD( m_vSpotlightDir, FIELD_VECTOR ),
+			   DEFINE_FIELD( m_vSpotlightOrg, FIELD_POSITION_VECTOR ),
 
-END_DATADESC()
+			   END_DATADESC()
 
 
 //------------------------------------------------------------------------------
@@ -41,7 +41,7 @@ END_DATADESC()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void CSpotlightEnd::Spawn( void )
+			   void CSpotlightEnd::Spawn( void )
 {
 	Precache();
 	m_flLightScale  = 100;

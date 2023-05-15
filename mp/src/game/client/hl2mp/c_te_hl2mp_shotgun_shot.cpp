@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -37,12 +37,12 @@ public:
 class CTraceFilterSkipPlayerAndViewModelOnly : public CTraceFilter
 {
 public:
-	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
+	virtual bool ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask )
 	{
-		C_BaseEntity *pEntity = EntityFromEntityHandle( pServerEntity );
+		C_BaseEntity* pEntity = EntityFromEntityHandle( pServerEntity );
 		if( pEntity &&
-			( ( dynamic_cast<C_BaseViewModel *>( pEntity ) != NULL ) ||
-			( dynamic_cast<C_BasePlayer *>( pEntity ) != NULL ) ) )
+				( ( dynamic_cast<C_BaseViewModel*>( pEntity ) != NULL ) ||
+				  ( dynamic_cast<C_BasePlayer*>( pEntity ) != NULL ) ) )
 		{
 			return false;
 		}
@@ -57,26 +57,28 @@ void C_TEHL2MPFireBullets::CreateEffects( void )
 {
 	CAmmoDef*	pAmmoDef	= GetAmmoDef();
 
-	if ( pAmmoDef == NULL )
-		 return;
-
-	C_BaseEntity *pEnt = ClientEntityList().GetEnt( m_iPlayer );
-
-	if ( pEnt )
+	if( pAmmoDef == NULL )
 	{
-		C_BasePlayer *pPlayer = dynamic_cast<C_BasePlayer *>(pEnt);
+		return;
+	}
 
-		if ( pPlayer && pPlayer->GetActiveWeapon() )
+	C_BaseEntity* pEnt = ClientEntityList().GetEnt( m_iPlayer );
+
+	if( pEnt )
+	{
+		C_BasePlayer* pPlayer = dynamic_cast<C_BasePlayer*>( pEnt );
+
+		if( pPlayer && pPlayer->GetActiveWeapon() )
 		{
-			C_BaseCombatWeapon *pWpn = dynamic_cast<C_BaseCombatWeapon *>( pPlayer->GetActiveWeapon() );
+			C_BaseCombatWeapon* pWpn = dynamic_cast<C_BaseCombatWeapon*>( pPlayer->GetActiveWeapon() );
 
-			if ( pWpn )
+			if( pWpn )
 			{
 				int iSeed = m_iSeed;
-					
+
 				CShotManipulator Manipulator( m_vecDir );
 
-				for (int iShot = 0; iShot < m_iShots; iShot++)
+				for( int iShot = 0; iShot < m_iShots; iShot++ )
 				{
 					RandomSeed( iSeed );	// init random system with this seed
 
@@ -93,12 +95,12 @@ void C_TEHL2MPFireBullets::CreateEffects( void )
 					}
 					else
 					{
-						UTIL_TraceLine( m_vecOrigin, vecEnd, MASK_SHOT, &traceFilter, &tr);
+						UTIL_TraceLine( m_vecOrigin, vecEnd, MASK_SHOT, &traceFilter, &tr );
 					}
 
-					if ( m_bDoTracers )
+					if( m_bDoTracers )
 					{
-						const char *pTracerName = pWpn->GetTracerType();
+						const char* pTracerName = pWpn->GetTracerType();
 
 						CEffectData data;
 						data.m_vStart = tr.startpos;
@@ -109,7 +111,7 @@ void C_TEHL2MPFireBullets::CreateEffects( void )
 						// Stomp the start, since it's not going to be used anyway
 						data.m_nAttachmentIndex = 1;
 
-						if ( pTracerName )
+						if( pTracerName )
 						{
 							DispatchEffect( pTracerName, data );
 						}
@@ -118,8 +120,8 @@ void C_TEHL2MPFireBullets::CreateEffects( void )
 							DispatchEffect( "Tracer", data );
 						}
 					}
-					
-					if ( m_bDoImpacts )
+
+					if( m_bDoImpacts )
 					{
 						pWpn->DoImpactEffect( tr, pAmmoDef->DamageType( m_iAmmoID ) );
 					}
@@ -134,7 +136,7 @@ void C_TEHL2MPFireBullets::CreateEffects( void )
 
 void C_TEHL2MPFireBullets::PostDataUpdate( DataUpdateType_t updateType )
 {
-	if ( m_bDoTracers || m_bDoImpacts )
+	if( m_bDoTracers || m_bDoImpacts )
 	{
 		CreateEffects();
 	}
@@ -144,17 +146,17 @@ void C_TEHL2MPFireBullets::PostDataUpdate( DataUpdateType_t updateType )
 IMPLEMENT_CLIENTCLASS_EVENT( C_TEHL2MPFireBullets, DT_TEHL2MPFireBullets, CTEHL2MPFireBullets );
 
 
-BEGIN_RECV_TABLE_NOBASE(C_TEHL2MPFireBullets, DT_TEHL2MPFireBullets )
-	RecvPropVector( RECVINFO( m_vecOrigin ) ),
-	RecvPropVector( RECVINFO( m_vecDir ) ),
-	RecvPropInt( RECVINFO( m_iAmmoID ) ),
-	RecvPropInt( RECVINFO( m_iSeed ) ),
-	RecvPropInt( RECVINFO( m_iShots ) ),
-	RecvPropInt( RECVINFO( m_iPlayer ) ),
-	RecvPropInt( RECVINFO( m_iWeaponIndex ) ),
-	RecvPropFloat( RECVINFO( m_flSpread ) ),
-	RecvPropBool( RECVINFO( m_bDoImpacts ) ),
-	RecvPropBool( RECVINFO( m_bDoTracers ) ),
-END_RECV_TABLE()
+BEGIN_RECV_TABLE_NOBASE( C_TEHL2MPFireBullets, DT_TEHL2MPFireBullets )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecDir ) ),
+				RecvPropInt( RECVINFO( m_iAmmoID ) ),
+				RecvPropInt( RECVINFO( m_iSeed ) ),
+				RecvPropInt( RECVINFO( m_iShots ) ),
+				RecvPropInt( RECVINFO( m_iPlayer ) ),
+				RecvPropInt( RECVINFO( m_iWeaponIndex ) ),
+				RecvPropFloat( RECVINFO( m_flSpread ) ),
+				RecvPropBool( RECVINFO( m_bDoImpacts ) ),
+				RecvPropBool( RECVINFO( m_bDoTracers ) ),
+				END_RECV_TABLE()
 
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define IBORDER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -32,14 +32,14 @@ public:
 	IBorder() {}
 	virtual ~IBorder() {}
 
-	virtual void Paint(VPANEL panel) = 0;
-	virtual void Paint(int x0, int y0, int x1, int y1) = 0;
-	virtual void Paint(int x0, int y0, int x1, int y1, int breakSide, int breakStart, int breakStop) = 0;
-	virtual void SetInset(int left, int top, int right, int bottom) = 0;
-	virtual void GetInset(int &left, int &top, int &right, int &bottom) = 0;
-	virtual void ApplySchemeSettings(IScheme *pScheme, KeyValues *inResourceData) = 0;
-	virtual const char *GetName() = 0;
-	virtual void SetName(const char *name) = 0;
+	virtual void Paint( VPANEL panel ) = 0;
+	virtual void Paint( int x0, int y0, int x1, int y1 ) = 0;
+	virtual void Paint( int x0, int y0, int x1, int y1, int breakSide, int breakStart, int breakStop ) = 0;
+	virtual void SetInset( int left, int top, int right, int bottom ) = 0;
+	virtual void GetInset( int& left, int& top, int& right, int& bottom ) = 0;
+	virtual void ApplySchemeSettings( IScheme* pScheme, KeyValues* inResourceData ) = 0;
+	virtual const char* GetName() = 0;
+	virtual void SetName( const char* name ) = 0;
 
 	enum backgroundtype_e
 	{

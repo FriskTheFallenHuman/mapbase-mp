@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef MODELENTITIES_H
 #define MODELENTITIES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //!! replace this with generic start enabled/disabled
@@ -28,7 +28,10 @@ public:
 	virtual void Spawn( void );
 	bool CreateVPhysics( void );
 
-	virtual int	ObjectCaps( void ) { return HasSpawnFlags(SF_IGNORE_PLAYERUSE) ? BaseClass::ObjectCaps() : BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; }
+	virtual int	ObjectCaps( void )
+	{
+		return HasSpawnFlags( SF_IGNORE_PLAYERUSE ) ? BaseClass::ObjectCaps() : BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
+	}
 
 	virtual int DrawDebugTextOverlays( void );
 
@@ -36,13 +39,14 @@ public:
 	virtual void TurnOn( void );
 
 	// Input handlers
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
-	void InputSetExcluded( inputdata_t &inputdata );
-	void InputSetInvert( inputdata_t &inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
+	void InputSetExcluded( inputdata_t& inputdata );
+	void InputSetInvert( inputdata_t& inputdata );
 
-	enum BrushSolidities_e {
+	enum BrushSolidities_e
+	{
 		BRUSHSOLID_TOGGLE = 0,
 		BRUSHSOLID_NEVER  = 1,
 		BRUSHSOLID_ALWAYS = 2,

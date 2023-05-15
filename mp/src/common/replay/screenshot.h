@@ -5,7 +5,7 @@
 #ifndef SCREENSHOT_H
 #define SCREENSHOT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -24,19 +24,19 @@
 class CReplayScreenshot : public CBaseReplaySerializeable
 {
 public:
-	inline CReplayScreenshot( int nWidth = 0, int nHeight = 0, const char *pBaseFilename = NULL )
-	:	m_nWidth( nWidth ), m_nHeight( nHeight )
+	inline CReplayScreenshot( int nWidth = 0, int nHeight = 0, const char* pBaseFilename = NULL )
+		:	m_nWidth( nWidth ), m_nHeight( nHeight )
 	{
-		if ( pBaseFilename )
+		if( pBaseFilename )
 		{
 			V_strncpy( m_szBaseFilename, pBaseFilename, sizeof( m_szBaseFilename ) );
 		}
 	}
 
-	virtual bool		Read( KeyValues *pIn );
-	virtual void		Write( KeyValues *pOut );
-	virtual const char	*GetSubKeyTitle() const;
-	virtual const char	*GetPath() const;
+	virtual bool		Read( KeyValues* pIn );
+	virtual void		Write( KeyValues* pOut );
+	virtual const char*	GetSubKeyTitle() const;
+	virtual const char*	GetPath() const;
 
 	int		m_nWidth;				// Screenshot width (does not include power-of-2 padding)
 	int		m_nHeight;				// Screenshot height (does not include power-of-2 padding)
@@ -60,11 +60,11 @@ struct CaptureScreenshotParams_t	// To be passed from the client into IReplayHis
 
 struct WriteReplayScreenshotParams_t	// Passed from the engine into the client to take a screenshot
 {
-	const char	*m_pFilename;
+	const char*	m_pFilename;
 	int			m_nWidth;
 	int			m_nHeight;
-	Vector		*m_pOrigin;		// Perspective origin from which to render.  Can be NULL
-	QAngle		*m_pAngles;		// Perspective angles from which to render.  Can be NULL
+	Vector*		m_pOrigin;		// Perspective origin from which to render.  Can be NULL
+	QAngle*		m_pAngles;		// Perspective angles from which to render.  Can be NULL
 };
 
 //----------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -18,8 +18,8 @@
 #include "collisionutils.h"
 #include "tier0/vprof.h"
 #ifdef MAPBASE
-#include "weapon_flaregun.h"
-#include "mapbase/GlobalStrings.h"
+	#include "weapon_flaregun.h"
+	#include "mapbase/GlobalStrings.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -27,30 +27,30 @@
 
 
 #ifndef MAPBASE
-/********************************************************************
- NOTE: if you are looking at this file becase you would like flares 
- to be considered as fires (and thereby trigger gas traps), be aware 
- that the env_flare class is actually found in weapon_flaregun.cpp 
- and is really a repurposed piece of ammunition. (env_flare isn't the 
- rod-like safety flare prop, but rather the bit of flame on the end.)
+	/********************************************************************
+	NOTE: if you are looking at this file becase you would like flares
+	to be considered as fires (and thereby trigger gas traps), be aware
+	that the env_flare class is actually found in weapon_flaregun.cpp
+	and is really a repurposed piece of ammunition. (env_flare isn't the
+	rod-like safety flare prop, but rather the bit of flame on the end.)
 
- You will have some difficulty making it work here, because CFlare 
- does not inherit from CFire and will thus not be enumerated by 
- CFireSphere::EnumElement(). In order to have flares be detected and 
- used by this system, you will need to promote certain member functions 
- of CFire into an interface class from which both CFire and CFlare 
- inherit. You will also need to modify CFireSphere::EnumElement so that
- it properly disambiguates between fires and flares.
+	You will have some difficulty making it work here, because CFlare
+	does not inherit from CFire and will thus not be enumerated by
+	CFireSphere::EnumElement(). In order to have flares be detected and
+	used by this system, you will need to promote certain member functions
+	of CFire into an interface class from which both CFire and CFlare
+	inherit. You will also need to modify CFireSphere::EnumElement so that
+	it properly disambiguates between fires and flares.
 
- For some partial work towards this end, see changelist 192474.
+	For some partial work towards this end, see changelist 192474.
 
- ********************************************************************/
+	********************************************************************/
 #else
-// ================================================================ //
-// env_firesensors now have the ability to sense flares, toggled via spawnflag.
-// This is different from integrating it with the greater fire system and easily preserves original behavior.
-// You could try treating flares as real fires yourself if you think it's an issue.
-// ================================================================ //
+	// ================================================================ //
+	// env_firesensors now have the ability to sense flares, toggled via spawnflag.
+	// This is different from integrating it with the greater fire system and easily preserves original behavior.
+	// You could try treating flares as real fires yourself if you think it's an issue.
+	// ================================================================ //
 #endif
 
 
@@ -75,8 +75,8 @@
 
 ConVar fire_maxabsorb( "fire_maxabsorb", "50" );
 ConVar fire_absorbrate( "fire_absorbrate", "3" );
-ConVar fire_extscale("fire_extscale", "12");
-ConVar fire_extabsorb("fire_extabsorb", "5");
+ConVar fire_extscale( "fire_extscale", "12" );
+ConVar fire_extabsorb( "fire_extabsorb", "5" );
 ConVar fire_heatscale( "fire_heatscale", "1.0" );
 ConVar fire_incomingheatscale( "fire_incomingheatscale", "0.1" );
 ConVar fire_dmgscale( "fire_dmgscale", "0.1" );
@@ -90,31 +90,34 @@ class CFire : public CBaseEntity
 {
 public:
 	DECLARE_CLASS( CFire, CBaseEntity );
-	
-	int DrawDebugTextOverlays(void);
+
+	int DrawDebugTextOverlays( void );
 
 	CFire( void );
-	
+
 	virtual void UpdateOnRemove( void );
 
 	void	Precache( void );
-	void	Init( const Vector &position, float scale, float attackTime, float fuel, int flags, int fireType );
+	void	Init( const Vector& position, float scale, float attackTime, float fuel, int flags, int fireType );
 	bool	GoOut();
-	
+
 	void	BurnThink();
 	void	GoOutThink();
 	void	GoOutInSeconds( float seconds );
 
-	void	SetOwner( CBaseEntity *hOwner ) { m_hOwner = hOwner; }
-	
+	void	SetOwner( CBaseEntity* hOwner )
+	{
+		m_hOwner = hOwner;
+	}
+
 	void	Scale( float end, float time );
 	void	AddHeat( float heat, bool selfHeat = false );
-	int		OnTakeDamage( const CTakeDamageInfo &info );
+	int		OnTakeDamage( const CTakeDamageInfo& info );
 
 	bool	IsBurning( void ) const;
 
-	bool	GetFireDimensions( Vector *pFireMins, Vector *pFireMaxs );
-	
+	bool	GetFireDimensions( Vector* pFireMins, Vector* pFireMaxs );
+
 	void	Extinguish( float heat );
 	void	DestroyEffect();
 
@@ -126,35 +129,38 @@ public:
 	void	Start();
 	void	SetToOutSize()
 	{
-		UTIL_SetSize( this, Vector(-8,-8,0), Vector(8,8,8) );
+		UTIL_SetSize( this, Vector( -8, -8, 0 ), Vector( 8, 8, 8 ) );
 	}
 
-	float	GetHeatLevel()	{ return m_flHeatLevel; }
+	float	GetHeatLevel()
+	{
+		return m_flHeatLevel;
+	}
 
 	virtual int UpdateTransmitState();
 
-	void DrawDebugGeometryOverlays(void) 
+	void DrawDebugGeometryOverlays( void )
 	{
-		if (m_debugOverlays & OVERLAY_BBOX_BIT) 
-		{	
-			if ( m_lastDamage > gpGlobals->curtime && m_flHeatAbsorb > 0 )
+		if( m_debugOverlays & OVERLAY_BBOX_BIT )
+		{
+			if( m_lastDamage > gpGlobals->curtime && m_flHeatAbsorb > 0 )
 			{
-				NDebugOverlay::EntityBounds(this, 88, 255, 128, 0 ,0);
+				NDebugOverlay::EntityBounds( this, 88, 255, 128, 0 , 0 );
 				char tempstr[512];
-				Q_snprintf( tempstr, sizeof(tempstr), "Heat: %.1f", m_flHeatAbsorb );
-				EntityText(1,tempstr, 0);
+				Q_snprintf( tempstr, sizeof( tempstr ), "Heat: %.1f", m_flHeatAbsorb );
+				EntityText( 1, tempstr, 0 );
 			}
-			else if ( !IsBurning() )
+			else if( !IsBurning() )
 			{
-				NDebugOverlay::EntityBounds(this, 88, 88, 128, 0 ,0);
+				NDebugOverlay::EntityBounds( this, 88, 88, 128, 0 , 0 );
 			}
 
-			if ( IsBurning() )
+			if( IsBurning() )
 			{
 				Vector mins, maxs;
-				if ( GetFireDimensions( &mins, &maxs ) )
+				if( GetFireDimensions( &mins, &maxs ) )
 				{
-					NDebugOverlay::Box(GetAbsOrigin(), mins, maxs, 128, 0, 0, 10, 0);
+					NDebugOverlay::Box( GetAbsOrigin(), mins, maxs, 128, 0, 0, 10, 0 );
 				}
 			}
 
@@ -166,20 +172,20 @@ public:
 	void Disable();
 
 	//Inputs
-	void	InputStartFire( inputdata_t &inputdata );
-	void	InputExtinguish( inputdata_t &inputdata );
-	void	InputExtinguishTemporary( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
+	void	InputStartFire( inputdata_t& inputdata );
+	void	InputExtinguish( inputdata_t& inputdata );
+	void	InputExtinguishTemporary( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
 
 protected:
-	
+
 	void	Spread( void );
 	void	SpawnEffect( fireType_e type, float scale );
 
 	CHandle<CBaseFire>	m_hEffect;
 	EHANDLE		m_hOwner;
-	
+
 	int		m_nFireType;
 
 	float	m_flFuel;
@@ -211,24 +217,27 @@ protected:
 class CFireSphere : public IPartitionEnumerator
 {
 public:
-	CFireSphere( CFire **pList, int listMax, bool onlyActiveFires, const Vector &origin, float radius );
+	CFireSphere( CFire** pList, int listMax, bool onlyActiveFires, const Vector& origin, float radius );
 	// This gets called	by the enumeration methods with each element
 	// that passes the test.
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity );
-	
-	int GetCount() { return m_count; }
-	bool AddToList( CFire *pEntity );
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity );
+
+	int GetCount()
+	{
+		return m_count;
+	}
+	bool AddToList( CFire* pEntity );
 
 private:
 	Vector			m_origin;
 	float			m_radiusSqr;
-	CFire			**m_pList;
+	CFire**			m_pList;
 	int				m_listMax;
 	int				m_count;
 	bool			m_onlyActiveFires;
 };
 
-CFireSphere::CFireSphere( CFire **pList, int listMax, bool onlyActiveFires, const Vector &origin, float radius )
+CFireSphere::CFireSphere( CFire** pList, int listMax, bool onlyActiveFires, const Vector& origin, float radius )
 {
 	m_pList = pList;
 	m_listMax = listMax;
@@ -238,38 +247,42 @@ CFireSphere::CFireSphere( CFire **pList, int listMax, bool onlyActiveFires, cons
 	m_radiusSqr = radius * radius;
 }
 
-bool CFireSphere::AddToList( CFire *pFire )
+bool CFireSphere::AddToList( CFire* pFire )
 {
-	if ( m_count >= m_listMax )
+	if( m_count >= m_listMax )
+	{
 		return false;
+	}
 	m_pList[m_count] = pFire;
 	m_count++;
 	return true;
 }
 
-IterationRetval_t CFireSphere::EnumElement( IHandleEntity *pHandleEntity )
+IterationRetval_t CFireSphere::EnumElement( IHandleEntity* pHandleEntity )
 {
-	CBaseEntity *pEntity = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
-	if ( pEntity )
+	CBaseEntity* pEntity = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+	if( pEntity )
 	{
 		// UNDONE: Measure which of these is faster
 //		CFire *pFire = dynamic_cast<CFire *>(pEntity);
 #ifdef MAPBASE
-		if ( !EntIsClass( pEntity, gm_isz_class_EnvFire ) )
+		if( !EntIsClass( pEntity, gm_isz_class_EnvFire ) )
 #else
-		if ( !FClassnameIs( pEntity, "env_fire" ) )
+		if( !FClassnameIs( pEntity, "env_fire" ) )
 #endif
 			return ITERATION_CONTINUE;
 
-		CFire *pFire = static_cast<CFire *>(pEntity);
-		if ( pFire )
+		CFire* pFire = static_cast<CFire*>( pEntity );
+		if( pFire )
 		{
-			if ( !m_onlyActiveFires || pFire->IsBurning() )
+			if( !m_onlyActiveFires || pFire->IsBurning() )
 			{
-				if ( (m_origin - pFire->GetAbsOrigin()).LengthSqr() < m_radiusSqr )
+				if( ( m_origin - pFire->GetAbsOrigin() ).LengthSqr() < m_radiusSqr )
 				{
-					if ( !AddToList( pFire ) )
+					if( !AddToList( pFire ) )
+					{
 						return ITERATION_STOP;
+					}
 				}
 			}
 		}
@@ -279,7 +292,7 @@ IterationRetval_t CFireSphere::EnumElement( IHandleEntity *pHandleEntity )
 }
 
 
-int FireSystem_GetFiresInSphere( CFire **pList, int listMax, bool onlyActiveFires, const Vector &origin, float radius )
+int FireSystem_GetFiresInSphere( CFire** pList, int listMax, bool onlyActiveFires, const Vector& origin, float radius )
 {
 	CFireSphere sphereEnum( pList, listMax, onlyActiveFires, origin, radius );
 	partition->EnumerateElementsInSphere( PARTITION_ENGINE_NON_STATIC_EDICTS, origin, radius, false, &sphereEnum );
@@ -288,12 +301,14 @@ int FireSystem_GetFiresInSphere( CFire **pList, int listMax, bool onlyActiveFire
 }
 
 
-bool FireSystem_IsValidFirePosition( const Vector &position, float testRadius )
+bool FireSystem_IsValidFirePosition( const Vector& position, float testRadius )
 {
-	CFire *pList[1];
-	int count = FireSystem_GetFiresInSphere( pList, ARRAYSIZE(pList), true, position, testRadius );
-	if ( count > 0 )
+	CFire* pList[1];
+	int count = FireSystem_GetFiresInSphere( pList, ARRAYSIZE( pList ), true, position, testRadius );
+	if( count > 0 )
+	{
 		return false;
+	}
 	return true;
 }
 
@@ -303,15 +318,17 @@ bool FireSystem_IsValidFirePosition( const Vector &position, float testRadius )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-bool FireSystem_IsFireInWall( Vector &position, fireType_e type )
+bool FireSystem_IsFireInWall( Vector& position, fireType_e type )
 {
 	// Don't check natural fire against walls
-	if (type == FIRE_NATURAL)
+	if( type == FIRE_NATURAL )
+	{
 		return false;
+	}
 
 	trace_t tr;
-	UTIL_TraceHull( position, position+Vector(0,0,0.1), FIRE_MINS,FIRE_MAXS,MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
-	if (tr.fraction != 1.0 || tr.startsolid)
+	UTIL_TraceHull( position, position + Vector( 0, 0, 0.1 ), FIRE_MINS, FIRE_MAXS, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
+	if( tr.fraction != 1.0 || tr.startsolid )
 	{
 		//NDebugOverlay::Box(position,FIRE_MINS,FIRE_MAXS,255,0,0,50,10);
 		return true;
@@ -327,14 +344,16 @@ bool FireSystem_IsFireInWall( Vector &position, fireType_e type )
 //			separationRadius - the maximum distance fires must be apart from one another
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool FireSystem_CanAddFire( Vector *position, float separationRadius, fireType_e type, int flags )
+bool FireSystem_CanAddFire( Vector* position, float separationRadius, fireType_e type, int flags )
 {
 	//See if we found a fire inside the sphere
-	if ( !FireSystem_IsValidFirePosition( *position, separationRadius ) )
+	if( !FireSystem_IsValidFirePosition( *position, separationRadius ) )
+	{
 		return false;
+	}
 
 	// Unless our fire is floating, make sure were not too high
-	if (!(flags & SF_FIRE_DONT_DROP))
+	if( !( flags & SF_FIRE_DONT_DROP ) )
 	{
 		trace_t	tr;
 		Vector	startpos = *position;
@@ -345,16 +364,16 @@ bool FireSystem_CanAddFire( Vector *position, float separationRadius, fireType_e
 
 		UTIL_TraceLine( startpos, endpos, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &tr );
 
-		//See if we're floating too high 
-		if ( ( tr.allsolid ) || ( tr.startsolid) || ( tr.fraction == 1.0f ) )
+		//See if we're floating too high
+		if( ( tr.allsolid ) || ( tr.startsolid ) || ( tr.fraction == 1.0f ) )
 		{
 			return false;
 		}
 
 		//TODO: If we've hit an entity here, start it on fire
-		CBaseEntity *pEntity = tr.m_pEnt;
+		CBaseEntity* pEntity = tr.m_pEnt;
 
-		if ( ENTINDEX( pEntity->edict() ) != 0 )
+		if( ENTINDEX( pEntity->edict() ) != 0 )
 		{
 			return false;
 		}
@@ -363,29 +382,29 @@ bool FireSystem_CanAddFire( Vector *position, float separationRadius, fireType_e
 
 
 	// Check if fire is in a wall, if so try shifting around a bit
-	if (FireSystem_IsFireInWall( *position, type ))
+	if( FireSystem_IsFireInWall( *position, type ) )
 	{
 		Vector vTestPos = *position;
 		vTestPos.x		+= 10;
-		if (FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ))
+		if( FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ) )
 		{
 			*position = vTestPos;
 			return true;
 		}
 		vTestPos.y		+= 10;
-		if (FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ))
+		if( FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ) )
 		{
 			*position = vTestPos;
 			return true;
 		}
 		vTestPos.y		-= 20;
-		if (FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ))
+		if( FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ) )
 		{
 			*position = vTestPos;
 			return true;
 		}
 		vTestPos.x		-= 20;
-		if (FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ))
+		if( FireSystem_IsValidFirePosition( vTestPos, separationRadius ) && !FireSystem_IsFireInWall( vTestPos, type ) )
 		{
 			*position = vTestPos;
 			return true;
@@ -402,17 +421,17 @@ bool FireSystem_CanAddFire( Vector *position, float separationRadius, fireType_e
 // Input  : &position - position to start the fire at
 //			flags - any special modifiers
 //-----------------------------------------------------------------------------
-bool FireSystem_StartFire( const Vector &position, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type )
+bool FireSystem_StartFire( const Vector& position, float fireHeight, float attack, float fuel, int flags, CBaseEntity* owner, fireType_e type )
 {
 	VPROF_FIRE( "FireSystem_StartFire1" );
 
 	Vector testPos = position;
 	//Must be okay to add fire here
-	if ( FireSystem_CanAddFire( &testPos, 16.0f, type, flags ) == false )
+	if( FireSystem_CanAddFire( &testPos, 16.0f, type, flags ) == false )
 	{
-		CFire *pFires[16];
-		int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), true, position, 16.0f );
-		for ( int i = 0; i < fireCount; i++ )
+		CFire* pFires[16];
+		int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), true, position, 16.0f );
+		for( int i = 0; i < fireCount; i++ )
 		{
 			// add to this fire
 			pFires[i]->AddHeat( fireHeight, false );
@@ -422,10 +441,12 @@ bool FireSystem_StartFire( const Vector &position, float fireHeight, float attac
 	}
 
 	//Create a new fire entity
-	CFire *fire = (CFire *) CreateEntityByName( "env_fire" );
-	
-	if ( fire == NULL )
+	CFire* fire = ( CFire* ) CreateEntityByName( "env_fire" );
+
+	if( fire == NULL )
+	{
 		return false;
+	}
 
 	//Spawn the fire
 	// Fires not placed by a designer should be cleaned up automatically (not catch fire again)
@@ -442,15 +463,15 @@ bool FireSystem_StartFire( const Vector &position, float fireHeight, float attac
 //-----------------------------------------------------------------------------
 // Purpose: Starts a fire on a specified model.
 // Input  : pEntity - The model entity to catch on fire.
-//			fireHeight - 
-//			attack - 
-//			fuel - 
-//			flags - 
-//			owner - 
-//			type - 
+//			fireHeight -
+//			attack -
+//			fuel -
+//			flags -
+//			owner -
+//			type -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool FireSystem_StartFire( CBaseAnimating *pEntity, float fireHeight, float attack, float fuel, int flags, CBaseEntity *owner, fireType_e type )
+bool FireSystem_StartFire( CBaseAnimating* pEntity, float fireHeight, float attack, float fuel, int flags, CBaseEntity* owner, fireType_e type )
 {
 	VPROF_FIRE( "FireSystem_StartFire2" );
 
@@ -458,12 +479,12 @@ bool FireSystem_StartFire( CBaseAnimating *pEntity, float fireHeight, float atta
 	Vector testPos = position;
 
 	// Make sure its a valid position for fire (not in a wall, etc)
-	if ( FireSystem_CanAddFire( &testPos, 16.0f, type, flags ) == false )
+	if( FireSystem_CanAddFire( &testPos, 16.0f, type, flags ) == false )
 	{
 		// Contribute heat to all fires within 16 units of this fire.
-		CFire *pFires[16];
-		int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), true, position, 16.0f );
-		for ( int i = 0; i < fireCount; i++ )
+		CFire* pFires[16];
+		int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), true, position, 16.0f );
+		for( int i = 0; i < fireCount; i++ )
 		{
 			pFires[i]->AddHeat( fireHeight, false );
 		}
@@ -472,8 +493,8 @@ bool FireSystem_StartFire( CBaseAnimating *pEntity, float fireHeight, float atta
 	}
 
 	// Create a new fire entity
-	CFire *fire = (CFire *) CreateEntityByName( "env_fire" );
-	if ( fire == NULL )
+	CFire* fire = ( CFire* ) CreateEntityByName( "env_fire" );
+	if( fire == NULL )
 	{
 		return false;
 	}
@@ -490,33 +511,33 @@ bool FireSystem_StartFire( CBaseAnimating *pEntity, float fireHeight, float atta
 }
 
 
-void FireSystem_ExtinguishInRadius( const Vector &origin, float radius, float rate )
+void FireSystem_ExtinguishInRadius( const Vector& origin, float radius, float rate )
 {
 	// UNDONE: pass this instead of percent
-	float heat = (1-rate) * fire_extscale.GetFloat();
+	float heat = ( 1 - rate ) * fire_extscale.GetFloat();
 
-	CFire *pFires[32];
-	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), false, origin, radius );
-	for ( int i = 0; i < fireCount; i++ )
+	CFire* pFires[32];
+	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), false, origin, radius );
+	for( int i = 0; i < fireCount; i++ )
 	{
 		pFires[i]->Extinguish( heat );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			radius - 
-//			heat - 
+// Purpose:
+// Input  : &origin -
+//			radius -
+//			heat -
 //-----------------------------------------------------------------------------
-void FireSystem_AddHeatInRadius( const Vector &origin, float radius, float heat )
+void FireSystem_AddHeatInRadius( const Vector& origin, float radius, float heat )
 {
 	VPROF_FIRE( "FireSystem_AddHeatInRadius" );
 
-	CFire *pFires[32];
+	CFire* pFires[32];
 
-	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), false, origin, radius );
-	for ( int i = 0; i < fireCount; i++ )
+	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), false, origin, radius );
+	for( int i = 0; i < fireCount; i++ )
 	{
 		pFires[i]->AddHeat( heat );
 	}
@@ -524,11 +545,11 @@ void FireSystem_AddHeatInRadius( const Vector &origin, float radius, float heat 
 
 //-----------------------------------------------------------------------------
 
-bool FireSystem_GetFireDamageDimensions( CBaseEntity *pEntity, Vector *pFireMins, Vector *pFireMaxs )
+bool FireSystem_GetFireDamageDimensions( CBaseEntity* pEntity, Vector* pFireMins, Vector* pFireMaxs )
 {
-	CFire *pFire = dynamic_cast<CFire *>(pEntity);
+	CFire* pFire = dynamic_cast<CFire*>( pEntity );
 
-	if ( pFire && pFire->GetFireDimensions( pFireMins, pFireMaxs ) )
+	if( pFire && pFire->GetFireDimensions( pFireMins, pFireMaxs ) )
 	{
 		*pFireMins /= FIRE_SPREAD_DAMAGE_MULTIPLIER;
 		*pFireMaxs /= FIRE_SPREAD_DAMAGE_MULTIPLIER;
@@ -545,45 +566,45 @@ bool FireSystem_GetFireDamageDimensions( CBaseEntity *pEntity, Vector *pFireMins
 //==================================================
 BEGIN_DATADESC( CFire )
 
-	DEFINE_FIELD( m_hEffect, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_nFireType,	FIELD_INTEGER, "firetype" ),
+DEFINE_FIELD( m_hEffect, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hOwner, FIELD_EHANDLE ),
+			  DEFINE_KEYFIELD( m_nFireType,	FIELD_INTEGER, "firetype" ),
 
-	DEFINE_FIELD( m_flFuel, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flDamageTime, FIELD_TIME ),
-	DEFINE_FIELD( m_lastDamage, FIELD_TIME ),
-	DEFINE_KEYFIELD( m_flFireSize,	FIELD_FLOAT, "firesize" ),
+			  DEFINE_FIELD( m_flFuel, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flDamageTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_lastDamage, FIELD_TIME ),
+			  DEFINE_KEYFIELD( m_flFireSize,	FIELD_FLOAT, "firesize" ),
 
-	DEFINE_KEYFIELD( m_flHeatLevel,	FIELD_FLOAT,	"ignitionpoint" ),
-	DEFINE_FIELD( m_flHeatAbsorb, FIELD_FLOAT ),
-	DEFINE_KEYFIELD( m_flDamageScale,FIELD_FLOAT,	"damagescale" ),
+			  DEFINE_KEYFIELD( m_flHeatLevel,	FIELD_FLOAT,	"ignitionpoint" ),
+			  DEFINE_FIELD( m_flHeatAbsorb, FIELD_FLOAT ),
+			  DEFINE_KEYFIELD( m_flDamageScale, FIELD_FLOAT,	"damagescale" ),
 
-	DEFINE_FIELD( m_flMaxHeat, FIELD_FLOAT ),
-	//DEFINE_FIELD( m_flLastHeatLevel,	FIELD_FLOAT  ),
+			  DEFINE_FIELD( m_flMaxHeat, FIELD_FLOAT ),
+			  //DEFINE_FIELD( m_flLastHeatLevel,	FIELD_FLOAT  ),
 
-	DEFINE_KEYFIELD( m_flAttackTime, FIELD_FLOAT, "fireattack" ),
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_bStartDisabled, FIELD_BOOLEAN, "StartDisabled" ),
-	DEFINE_FIELD( m_bDidActivate, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_flAttackTime, FIELD_FLOAT, "fireattack" ),
+			  DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_bStartDisabled, FIELD_BOOLEAN, "StartDisabled" ),
+			  DEFINE_FIELD( m_bDidActivate, FIELD_BOOLEAN ),
 
-	DEFINE_FUNCTION( BurnThink ),
-	DEFINE_FUNCTION( GoOutThink ),
+			  DEFINE_FUNCTION( BurnThink ),
+			  DEFINE_FUNCTION( GoOutThink ),
 
 
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartFire", InputStartFire ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "Extinguish", InputExtinguish ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "ExtinguishTemporary", InputExtinguishTemporary ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "StartFire", InputStartFire ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "Extinguish", InputExtinguish ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "ExtinguishTemporary", InputExtinguishTemporary ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	
-	DEFINE_OUTPUT( m_OnIgnited, "OnIgnited" ),
-	DEFINE_OUTPUT( m_OnExtinguished, "OnExtinguished" ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
-END_DATADESC()
+			  DEFINE_OUTPUT( m_OnIgnited, "OnIgnited" ),
+			  DEFINE_OUTPUT( m_OnExtinguished, "OnExtinguished" ),
 
-LINK_ENTITY_TO_CLASS( env_fire, CFire );
+			  END_DATADESC()
+
+			  LINK_ENTITY_TO_CLASS( env_fire, CFire );
 
 //==================================================
 // CFire
@@ -621,15 +642,15 @@ void CFire::UpdateOnRemove( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFire::Precache( void )
 {
-	if ( m_nFireType == FIRE_NATURAL )
+	if( m_nFireType == FIRE_NATURAL )
 	{
-		UTIL_PrecacheOther("_firesmoke");
-		
-		if ( m_spawnflags & SF_FIRE_SMOKELESS )
+		UTIL_PrecacheOther( "_firesmoke" );
+
+		if( m_spawnflags & SF_FIRE_SMOKELESS )
 		{
 			PrecacheParticleSystem( "env_fire_tiny" );
 			PrecacheParticleSystem( "env_fire_small" );
@@ -645,9 +666,9 @@ void CFire::Precache( void )
 		}
 	}
 
-	if ( m_nFireType == FIRE_PLASMA )
+	if( m_nFireType == FIRE_PLASMA )
 	{
-		UTIL_PrecacheOther("_plasma");
+		UTIL_PrecacheOther( "_plasma" );
 	}
 
 	PrecacheScriptSound( "Fire.Plasma" );
@@ -656,48 +677,50 @@ void CFire::Precache( void )
 //------------------------------------------------------------------------------
 // Purpose : Input handler for starting the fire.
 //------------------------------------------------------------------------------
-void CFire::InputStartFire( inputdata_t &inputdata )
+void CFire::InputStartFire( inputdata_t& inputdata )
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	StartFire();
 }
 
-void CFire::InputEnable( inputdata_t &inputdata )
+void CFire::InputEnable( inputdata_t& inputdata )
 {
 	m_bEnabled = true;
 }
 
-void CFire::InputDisable( inputdata_t &inputdata )
+void CFire::InputDisable( inputdata_t& inputdata )
 {
 	Disable();
 }
 
-void CFire::Disable() 
+void CFire::Disable()
 {
 	m_bEnabled = false;
-	if ( IsBurning() )
+	if( IsBurning() )
 	{
 		GoOut();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CFire::InputExtinguish( inputdata_t &inputdata )
+void CFire::InputExtinguish( inputdata_t& inputdata )
 {
 	m_spawnflags &= ~SF_FIRE_INFINITE;
 	GoOutInSeconds( inputdata.value.Float() );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CFire::InputExtinguishTemporary( inputdata_t &inputdata )
+void CFire::InputExtinguishTemporary( inputdata_t& inputdata )
 {
 	GoOutInSeconds( inputdata.value.Float() );
 }
@@ -707,13 +730,15 @@ void CFire::InputExtinguishTemporary( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CFire::StartFire( void )
 {
-	if ( m_hEffect != NULL )
+	if( m_hEffect != NULL )
+	{
 		return;
+	}
 
 	// Trace down and start a fire there. Nothing fancy yet.
 	Vector vFirePos;
 	trace_t tr;
-	if ( m_spawnflags & SF_FIRE_DONT_DROP )
+	if( m_spawnflags & SF_FIRE_DONT_DROP )
 	{
 		vFirePos = GetAbsOrigin();
 	}
@@ -725,13 +750,13 @@ void CFire::StartFire( void )
 
 	int spawnflags = m_spawnflags;
 	m_spawnflags |= SF_FIRE_START_ON;
-	Init( vFirePos, m_flFireSize, m_flAttackTime, GetHealth(), m_spawnflags, (fireType_e) m_nFireType );
+	Init( vFirePos, m_flFireSize, m_flAttackTime, GetHealth(), m_spawnflags, ( fireType_e ) m_nFireType );
 	Start();
 	m_spawnflags = spawnflags;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFire::Spawn( void )
 {
@@ -749,7 +774,7 @@ void CFire::Spawn( void )
 	m_flHeatAbsorb = m_flHeatLevel * 0.05;
 	m_flHeatLevel = 0;
 	Init( GetAbsOrigin(), m_flFireSize, m_flAttackTime, m_flFuel, m_spawnflags, m_nFireType );
-	
+
 	if( m_bStartDisabled )
 	{
 		Disable();
@@ -767,14 +792,14 @@ int CFire::UpdateTransmitState()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFire::Activate( void )
 {
 	BaseClass::Activate();
-	
+
 	//See if we should start active
-	if ( !m_bDidActivate && ( m_spawnflags & SF_FIRE_START_ON ) )
+	if( !m_bDidActivate && ( m_spawnflags & SF_FIRE_START_ON ) )
 	{
 		m_flHeatLevel = m_flMaxHeat;
 
@@ -785,32 +810,32 @@ void CFire::Activate( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFire::SpawnEffect( fireType_e type, float scale )
 {
-	CBaseFire *pEffect = NULL;
-	switch ( type )
+	CBaseFire* pEffect = NULL;
+	switch( type )
 	{
-	default:
-	case FIRE_NATURAL:
+		default:
+		case FIRE_NATURAL:
 		{
-			CFireSmoke	*fireSmoke = (CFireSmoke *) CreateEntityByName( "_firesmoke" );
-			fireSmoke->EnableSmoke( ( m_spawnflags & SF_FIRE_SMOKELESS )==false );
-			fireSmoke->EnableGlow( ( m_spawnflags & SF_FIRE_NO_GLOW )==false );
-			fireSmoke->EnableVisibleFromAbove( ( m_spawnflags & SF_FIRE_VISIBLE_FROM_ABOVE )!=false );
-			
+			CFireSmoke*	fireSmoke = ( CFireSmoke* ) CreateEntityByName( "_firesmoke" );
+			fireSmoke->EnableSmoke( ( m_spawnflags & SF_FIRE_SMOKELESS ) == false );
+			fireSmoke->EnableGlow( ( m_spawnflags & SF_FIRE_NO_GLOW ) == false );
+			fireSmoke->EnableVisibleFromAbove( ( m_spawnflags & SF_FIRE_VISIBLE_FROM_ABOVE ) != false );
+
 			pEffect			= fireSmoke;
 			m_nFireType		= FIRE_NATURAL;
 			m_takedamage	= DAMAGE_YES;
 		}
 		break;
 
-	case FIRE_PLASMA:
+		case FIRE_PLASMA:
 		{
-			CPlasma	*plasma = (CPlasma *) CreateEntityByName( "_plasma" );
+			CPlasma*	plasma = ( CPlasma* ) CreateEntityByName( "_plasma" );
 			plasma->EnableSmoke( true );
-		
+
 			pEffect			= plasma;
 			m_nFireType		= FIRE_PLASMA;
 			m_takedamage	= DAMAGE_YES;
@@ -833,27 +858,27 @@ void CFire::SpawnEffect( fireType_e type, float scale )
 //-----------------------------------------------------------------------------
 // Purpose: Spawn and initialize the fire
 // Input  : &position - where the fire resides
-//			lifetime - 
+//			lifetime -
 //-----------------------------------------------------------------------------
-void CFire::Init( const Vector &position, float scale, float attackTime, float fuel, int flags, int fireType )
+void CFire::Init( const Vector& position, float scale, float attackTime, float fuel, int flags, int fireType )
 {
 	m_flAttackTime = attackTime;
-	
+
 	m_spawnflags = flags;
 	m_nFireType = fireType;
 
-	if ( flags & SF_FIRE_INFINITE )
+	if( flags & SF_FIRE_INFINITE )
 	{
 		fuel = 0;
 	}
 	m_flFuel = fuel;
-	if ( m_flFuel )
+	if( m_flFuel )
 	{
 		m_spawnflags |= SF_FIRE_DIE_PERMANENT;
 	}
 
 	Vector localOrigin = position;
-	if ( GetMoveParent() )
+	if( GetMoveParent() )
 	{
 		EntityMatrix parentMatrix;
 		parentMatrix.InitFromEntity( GetMoveParent() );
@@ -863,9 +888,9 @@ void CFire::Init( const Vector &position, float scale, float attackTime, float f
 
 	SetSolid( SOLID_NONE );
 	m_flFireSize = scale;
-	m_flMaxHeat = FIRE_MAX_HEAT_LEVEL * FIRE_SCALE_FROM_SIZE(scale);
+	m_flMaxHeat = FIRE_MAX_HEAT_LEVEL * FIRE_SCALE_FROM_SIZE( scale );
 	//See if we should start on
-	if ( m_spawnflags & SF_FIRE_START_FULL )
+	if( m_spawnflags & SF_FIRE_START_FULL )
 	{
 		m_flHeatLevel = m_flMaxHeat;
 	}
@@ -875,11 +900,11 @@ void CFire::Init( const Vector &position, float scale, float attackTime, float f
 
 void CFire::Start()
 {
-	float boxWidth = (m_flFireSize * (FIRE_WIDTH/FIRE_HEIGHT))*0.5f;
-	UTIL_SetSize(this, Vector(-boxWidth,-boxWidth,0),Vector(boxWidth,boxWidth,m_flFireSize));
+	float boxWidth = ( m_flFireSize * ( FIRE_WIDTH / FIRE_HEIGHT ) ) * 0.5f;
+	UTIL_SetSize( this, Vector( -boxWidth, -boxWidth, 0 ), Vector( boxWidth, boxWidth, m_flFireSize ) );
 
 	//Spawn the client-side effect
-	SpawnEffect( (fireType_e)m_nFireType, FIRE_SCALE_FROM_SIZE(m_flFireSize) );
+	SpawnEffect( ( fireType_e )m_nFireType, FIRE_SCALE_FROM_SIZE( m_flFireSize ) );
 	m_OnIgnited.FireOutput( this, this );
 	SetThink( &CFire::BurnThink );
 	m_flDamageTime = 0;
@@ -893,8 +918,10 @@ void CFire::Start()
 //-----------------------------------------------------------------------------
 bool CFire::IsBurning( void ) const
 {
-	if ( m_flHeatLevel > 0 )
+	if( m_flHeatLevel > 0 )
+	{
 		return true;
+	}
 
 	return false;
 }
@@ -903,9 +930,9 @@ bool CFire::IsBurning( void ) const
 //-----------------------------------------------------------------------------
 // Purpose: Get the damage box of the fire
 //-----------------------------------------------------------------------------
-bool CFire::GetFireDimensions( Vector *pFireMins, Vector *pFireMaxs )
+bool CFire::GetFireDimensions( Vector* pFireMins, Vector* pFireMaxs )
 {
-	if ( m_flHeatLevel <= 0 )
+	if( m_flHeatLevel <= 0 )
 	{
 		pFireMins->Init();
 		pFireMaxs->Init();
@@ -913,17 +940,17 @@ bool CFire::GetFireDimensions( Vector *pFireMins, Vector *pFireMaxs )
 	}
 
 	float scale = m_flHeatLevel / m_flMaxHeat;
-	float damageRadius = scale * m_flFireSize * FIRE_WIDTH / FIRE_HEIGHT * 0.5;	
+	float damageRadius = scale * m_flFireSize * FIRE_WIDTH / FIRE_HEIGHT * 0.5;
 
 	damageRadius *= FIRE_SPREAD_DAMAGE_MULTIPLIER; //FIXME: Trying slightly larger radius for burning
 
-	if ( damageRadius < 16 )
+	if( damageRadius < 16 )
 	{
 		damageRadius = 16;
 	}
 
-	pFireMins->Init(-damageRadius,-damageRadius,0);
-	pFireMaxs->Init(damageRadius,damageRadius,m_flFireSize*scale);
+	pFireMins->Init( -damageRadius, -damageRadius, 0 );
+	pFireMaxs->Init( damageRadius, damageRadius, m_flFireSize * scale );
 
 	return true;
 }
@@ -935,10 +962,10 @@ void CFire::Update( float simTime )
 {
 	VPROF_FIRE( "CFire::Update" );
 
-	if ( m_flFuel != 0 )
+	if( m_flFuel != 0 )
 	{
 		m_flFuel -= simTime;
-		if ( m_flFuel <= 0 )
+		if( m_flFuel <= 0 )
 		{
 			GoOutInSeconds( 1 );
 			return;
@@ -946,14 +973,14 @@ void CFire::Update( float simTime )
 	}
 
 	float strength = m_flHeatLevel / FIRE_MAX_HEAT_LEVEL;
-	if ( m_flHeatLevel != m_flLastHeatLevel )
+	if( m_flHeatLevel != m_flLastHeatLevel )
 	{
 		m_flLastHeatLevel = m_flHeatLevel;
 		// Make the effect the appropriate size given the heat level
-		m_hEffect->Scale( strength, 0.5f );		
+		m_hEffect->Scale( strength, 0.5f );
 	}
 	// add heat to myself (grow)
-	float addedHeat = (m_flAttackTime > 0) ? m_flMaxHeat / m_flAttackTime : m_flMaxHeat;
+	float addedHeat = ( m_flAttackTime > 0 ) ? m_flMaxHeat / m_flAttackTime : m_flMaxHeat;
 	addedHeat *= simTime * fire_growthrate.GetFloat();
 	AddHeat( addedHeat, true );
 
@@ -967,7 +994,7 @@ void CFire::Update( float simTime )
 
 	GetFireDimensions( &fireMins, &fireMaxs );
 
-	if ( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 ) // if set to 1.0, optimizer will remove this code
+	if( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 )  // if set to 1.0, optimizer will remove this code
 	{
 		fireEntityDamageMins = fireMins / FIRE_SPREAD_DAMAGE_MULTIPLIER;
 		fireEntityDamageMaxs = fireMaxs / FIRE_SPREAD_DAMAGE_MULTIPLIER;
@@ -977,80 +1004,82 @@ void CFire::Update( float simTime )
 	fireMins += GetAbsOrigin();
 	fireMaxs += GetAbsOrigin();
 
-	if ( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 )
+	if( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 )
 	{
 		fireEntityDamageMins += GetAbsOrigin();
 		fireEntityDamageMaxs += GetAbsOrigin();
 	}
 
-	CBaseEntity *pNearby[256];
-	CFire *pFires[16];
-	int nearbyCount = UTIL_EntitiesInBox( pNearby, ARRAYSIZE(pNearby), fireMins, fireMaxs, 0 );
+	CBaseEntity* pNearby[256];
+	CFire* pFires[16];
+	int nearbyCount = UTIL_EntitiesInBox( pNearby, ARRAYSIZE( pNearby ), fireMins, fireMaxs, 0 );
 	int fireCount = 0;
 	int i;
 
 	// is it time to do damage?
 	bool damage = false;
 	int outputDamage = 0;
-	if ( m_flDamageTime <= gpGlobals->curtime )
+	if( m_flDamageTime <= gpGlobals->curtime )
 	{
 		m_flDamageTime = gpGlobals->curtime + fire_dmginterval.GetFloat();
-		outputDamage = (fire_dmgbase.GetFloat() + outputHeat * fire_dmgscale.GetFloat() * m_flDamageScale) * fire_dmginterval.GetFloat();
-		if ( outputDamage )
+		outputDamage = ( fire_dmgbase.GetFloat() + outputHeat * fire_dmgscale.GetFloat() * m_flDamageScale ) * fire_dmginterval.GetFloat();
+		if( outputDamage )
 		{
 			damage = true;
 		}
 	}
-	int damageFlags = (m_nFireType == FIRE_NATURAL) ? DMG_BURN : DMG_PLASMA;
-	for ( i = 0; i < nearbyCount; i++ )
+	int damageFlags = ( m_nFireType == FIRE_NATURAL ) ? DMG_BURN : DMG_PLASMA;
+	for( i = 0; i < nearbyCount; i++ )
 	{
-		CBaseEntity *pOther = pNearby[i];
+		CBaseEntity* pOther = pNearby[i];
 
-		if ( pOther )
+		if( pOther )
 		{
-			if ( pOther == this )
+			if( pOther == this )
 			{
 				continue;
 			}
 #ifdef MAPBASE
-			else if ( EntIsClass( pOther, gm_isz_class_EnvFire ) )
+			else if( EntIsClass( pOther, gm_isz_class_EnvFire ) )
 #else
-			else if ( FClassnameIs( pOther, "env_fire" ) )
+			else if( FClassnameIs( pOther, "env_fire" ) )
 #endif
 			{
-				if ( fireCount < ARRAYSIZE( pFires ) )
+				if( fireCount < ARRAYSIZE( pFires ) )
 				{
-					pFires[fireCount] = (CFire *)pOther;
+					pFires[fireCount] = ( CFire* )pOther;
 					fireCount++;
 				}
 				continue;
 			}
-			else if ( pOther->m_takedamage == DAMAGE_NO )
+			else if( pOther->m_takedamage == DAMAGE_NO )
 			{
 				pNearby[i] = NULL;
 			}
-			else if ( damage )
+			else if( damage )
 			{
 				bool bDoDamage;
 
-				if ( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 && !pOther->IsPlayer() ) // if set to 1.0, optimizer will remove this code
+				if( FIRE_SPREAD_DAMAGE_MULTIPLIER != 1.0 && !pOther->IsPlayer() )  // if set to 1.0, optimizer will remove this code
 				{
 					Vector otherMins, otherMaxs;
 					pOther->CollisionProp()->WorldSpaceAABB( &otherMins, &otherMaxs );
 					bDoDamage = IsBoxIntersectingBox( otherMins, otherMaxs,
-						fireEntityDamageMins, fireEntityDamageMaxs );
+													  fireEntityDamageMins, fireEntityDamageMaxs );
 
 				}
 				else
+				{
 					bDoDamage = true;
+				}
 
-				if ( bDoDamage )
+				if( bDoDamage )
 				{
 					// Make sure can actually see entity (don't damage through walls)
 					trace_t tr;
 					UTIL_TraceLine( this->WorldSpaceCenter(), pOther->WorldSpaceCenter(), MASK_FIRE_SOLID, pOther, COLLISION_GROUP_NONE, &tr );
 
-					if ( tr.fraction == 1.0 && !tr.startsolid )
+					if( tr.fraction == 1.0 && !tr.startsolid )
 					{
 						pOther->TakeDamage( CTakeDamageInfo( this, this, outputDamage, damageFlags ) );
 					}
@@ -1061,10 +1090,10 @@ void CFire::Update( float simTime )
 
 	outputHeat *= fire_heatscale.GetFloat() * simTime;
 
-	if ( fireCount > 0 )
+	if( fireCount > 0 )
 	{
 		outputHeat /= fireCount;
-		for ( i = 0; i < fireCount; i++ )
+		for( i = 0; i < fireCount; i++ )
 		{
 			pFires[i]->AddHeat( outputHeat, false );
 		}
@@ -1074,8 +1103,8 @@ void CFire::Update( float simTime )
 // Destroy any effect I have
 void CFire::DestroyEffect()
 {
-	CBaseFire *pEffect = m_hEffect;
-	if ( pEffect != NULL )
+	CBaseFire* pEffect = m_hEffect;
+	if( pEffect != NULL )
 	{
 		//disable the graphics and remove the entity
 		pEffect->Enable( false );
@@ -1100,7 +1129,7 @@ void CFire::GoOutThink()
 void CFire::GoOutInSeconds( float seconds )
 {
 	Scale( 0.0f, seconds );
-	
+
 	SetThink( &CFire::GoOutThink );
 	SetNextThink( gpGlobals->curtime + seconds );
 }
@@ -1110,18 +1139,18 @@ void CFire::GoOutInSeconds( float seconds )
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-int CFire::OnTakeDamage( const CTakeDamageInfo &info )
+int CFire::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	return 0;
 }
 
 void CFire::AddHeat( float heat, bool selfHeat )
 {
-	if ( m_bEnabled )
+	if( m_bEnabled )
 	{
-		if ( !selfHeat )
+		if( !selfHeat )
 		{
-			if ( IsBurning() )
+			if( IsBurning() )
 			{
 				// scale back the incoming heat from surrounding fires
 				// if I've already ignited
@@ -1130,10 +1159,10 @@ void CFire::AddHeat( float heat, bool selfHeat )
 		}
 		m_lastDamage = gpGlobals->curtime + 0.5;
 		bool start = m_flHeatLevel <= 0 ? true : false;
-		if ( m_flHeatAbsorb > 0 )
+		if( m_flHeatAbsorb > 0 )
 		{
 			float absorbDamage = heat * fire_absorbrate.GetFloat();
-			if ( absorbDamage > m_flHeatAbsorb )
+			if( absorbDamage > m_flHeatAbsorb )
 			{
 				heat -= m_flHeatAbsorb / fire_absorbrate.GetFloat();
 				m_flHeatAbsorb = 0;
@@ -1146,25 +1175,27 @@ void CFire::AddHeat( float heat, bool selfHeat )
 		}
 
 		m_flHeatLevel += heat;
-		if ( start && m_flHeatLevel > 0 && m_hEffect == NULL )
+		if( start && m_flHeatLevel > 0 && m_hEffect == NULL )
 		{
 			StartFire();
 		}
-		if ( m_flHeatLevel > m_flMaxHeat )
+		if( m_flHeatLevel > m_flMaxHeat )
+		{
 			m_flHeatLevel = m_flMaxHeat;
+		}
 	}
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : end - 
-//			time - 
+// Purpose:
+// Input  : end -
+//			time -
 //-----------------------------------------------------------------------------
 void CFire::Scale( float end, float time )
 {
-	CBaseFire *pEffect = m_hEffect;
-	if ( pEffect )
+	CBaseFire* pEffect = m_hEffect;
+	if( pEffect )
 	{
 		pEffect->Scale( end, time );
 	}
@@ -1172,35 +1203,37 @@ void CFire::Scale( float end, float time )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : time - 
+// Purpose:
+// Input  : time -
 //-----------------------------------------------------------------------------
 void CFire::Extinguish( float heat )
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	m_lastDamage = gpGlobals->curtime + 0.5;
 	bool out = m_flHeatLevel > 0 ? true : false;
 
 	m_flHeatLevel -= heat;
 	m_flHeatAbsorb += fire_extabsorb.GetFloat() * heat;
-	if ( m_flHeatAbsorb > fire_maxabsorb.GetFloat() )
+	if( m_flHeatAbsorb > fire_maxabsorb.GetFloat() )
 	{
 		m_flHeatAbsorb = fire_maxabsorb.GetFloat();
 	}
 
 	// drift toward the average attack time after being sprayed
-	// some fires are heavily scripted so their attack looks weird 
-	// once interacted with.  Basically, this blends out the scripting 
+	// some fires are heavily scripted so their attack looks weird
+	// once interacted with.  Basically, this blends out the scripting
 	// as the fire is sprayed with the extinguisher.
-	float averageAttackTime = m_flMaxHeat * (FIRE_NORMAL_ATTACK_TIME/FIRE_MAX_HEAT_LEVEL);
+	float averageAttackTime = m_flMaxHeat * ( FIRE_NORMAL_ATTACK_TIME / FIRE_MAX_HEAT_LEVEL );
 	m_flAttackTime = Approach( averageAttackTime, m_flAttackTime, 2 * gpGlobals->frametime );
 
-	if ( m_flHeatLevel <= 0 )
+	if( m_flHeatLevel <= 0 )
 	{
 		m_flHeatLevel = 0;
-		if ( out )
+		if( out )
 		{
 			GoOut();
 		}
@@ -1214,24 +1247,26 @@ bool CFire::GoOut()
 
 	DestroyEffect();
 	m_flHeatLevel -= 20;
-	if ( m_flHeatLevel > 0 )
+	if( m_flHeatLevel > 0 )
+	{
 		m_flHeatLevel = 0;
+	}
 
-	m_flLastHeatLevel = m_flHeatLevel; 
-	SetThink(NULL);
+	m_flLastHeatLevel = m_flHeatLevel;
+	SetThink( NULL );
 	SetNextThink( TICK_NEVER_THINK );
-	if ( m_spawnflags & SF_FIRE_DIE_PERMANENT )
+	if( m_spawnflags & SF_FIRE_DIE_PERMANENT )
 	{
 		UTIL_Remove( this );
 		return true;
 	}
 	SetToOutSize();
-	
+
 	return false;
 }
 
 //==================================================
-// CEnvFireSource is a source of heat that the player 
+// CEnvFireSource is a source of heat that the player
 // cannot put out
 //==================================================
 
@@ -1247,8 +1282,8 @@ public:
 	void Think();
 	void TurnOn();
 	void TurnOff();
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -1260,21 +1295,21 @@ private:
 
 BEGIN_DATADESC( CEnvFireSource )
 
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_radius,	FIELD_FLOAT, "fireradius" ),
-	DEFINE_KEYFIELD( m_damage,FIELD_FLOAT, "firedamage" ),
+DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_radius,	FIELD_FLOAT, "fireradius" ),
+			  DEFINE_KEYFIELD( m_damage, FIELD_FLOAT, "firedamage" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( env_firesource, CEnvFireSource );
+			  LINK_ENTITY_TO_CLASS( env_firesource, CEnvFireSource );
 
 void CEnvFireSource::Spawn()
 {
-	if ( m_spawnflags & SF_FIRESOURCE_START_ON )
+	if( m_spawnflags & SF_FIRESOURCE_START_ON )
 	{
 		TurnOn();
 	}
@@ -1286,14 +1321,16 @@ void CEnvFireSource::Spawn()
 
 void CEnvFireSource::Think()
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 	SetNextThink( gpGlobals->curtime + FIRESOURCE_THINK_TIME );
 
-	CFire *pFires[128];
-	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), false, GetAbsOrigin(), m_radius );
+	CFire* pFires[128];
+	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), false, GetAbsOrigin(), m_radius );
 
-	for ( int i = 0; i < fireCount; i++ )
+	for( int i = 0; i < fireCount; i++ )
 	{
 		pFires[i]->AddHeat( m_damage * FIRESOURCE_THINK_TIME );
 	}
@@ -1301,8 +1338,10 @@ void CEnvFireSource::Think()
 
 void CEnvFireSource::TurnOn()
 {
-	if ( m_bEnabled )
+	if( m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = true;
 	SetNextThink( gpGlobals->curtime );
@@ -1310,17 +1349,19 @@ void CEnvFireSource::TurnOn()
 
 void CEnvFireSource::TurnOff()
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = false;
 	SetNextThink( TICK_NEVER_THINK );
 }
-void CEnvFireSource::InputEnable( inputdata_t &inputdata )
+void CEnvFireSource::InputEnable( inputdata_t& inputdata )
 {
 	TurnOn();
 }
-void CEnvFireSource::InputDisable( inputdata_t &inputdata )
+void CEnvFireSource::InputDisable( inputdata_t& inputdata )
 {
 	TurnOff();
 }
@@ -1330,7 +1371,7 @@ void CEnvFireSource::InputDisable( inputdata_t &inputdata )
 //==================================================
 #define SF_FIRESENSOR_START_ON	1
 #ifdef MAPBASE
-#define SF_FIRESENSOR_ACCEPT_FLARES 2
+	#define SF_FIRESENSOR_ACCEPT_FLARES 2
 #endif
 
 class CEnvFireSensor : public CBaseEntity
@@ -1341,10 +1382,10 @@ public:
 	void Think();
 	void TurnOn();
 	void TurnOff();
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 #ifdef MAPBASE
-	int DrawDebugTextOverlays(void);
+	int DrawDebugTextOverlays( void );
 #endif
 
 	DECLARE_DATADESC();
@@ -1367,27 +1408,27 @@ private:
 
 BEGIN_DATADESC( CEnvFireSensor )
 
-	DEFINE_KEYFIELD( m_radius,	FIELD_FLOAT, "fireradius" ),
-	DEFINE_KEYFIELD( m_targetLevel, FIELD_FLOAT, "heatlevel" ),
-	DEFINE_KEYFIELD( m_targetTime, FIELD_FLOAT, "heattime" ),
+DEFINE_KEYFIELD( m_radius,	FIELD_FLOAT, "fireradius" ),
+				  DEFINE_KEYFIELD( m_targetLevel, FIELD_FLOAT, "heatlevel" ),
+				  DEFINE_KEYFIELD( m_targetTime, FIELD_FLOAT, "heattime" ),
 
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bHeatAtLevel, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_levelTime, FIELD_FLOAT ),
-	
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				  DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_bHeatAtLevel, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_levelTime, FIELD_FLOAT ),
 
-	DEFINE_OUTPUT( m_OnHeatLevelStart, "OnHeatLevelStart"),
-	DEFINE_OUTPUT( m_OnHeatLevelEnd, "OnHeatLevelEnd"),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
-END_DATADESC()
+				  DEFINE_OUTPUT( m_OnHeatLevelStart, "OnHeatLevelStart" ),
+				  DEFINE_OUTPUT( m_OnHeatLevelEnd, "OnHeatLevelEnd" ),
 
-LINK_ENTITY_TO_CLASS( env_firesensor, CEnvFireSensor );
+				  END_DATADESC()
+
+				  LINK_ENTITY_TO_CLASS( env_firesensor, CEnvFireSensor );
 
 void CEnvFireSensor::Spawn()
 {
-	if ( m_spawnflags & SF_FIRESENSOR_START_ON )
+	if( m_spawnflags & SF_FIRESENSOR_START_ON )
 	{
 		TurnOn();
 	}
@@ -1399,35 +1440,37 @@ void CEnvFireSensor::Spawn()
 
 void CEnvFireSensor::Think()
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	float time = m_targetTime * 0.25;
-	if ( time < 0.1 )
+	if( time < 0.1 )
 	{
 		time = 0.1;
 	}
 	SetNextThink( gpGlobals->curtime + time );
 
 	float heat = 0;
-	CFire *pFires[128];
-	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE(pFires), true, GetAbsOrigin(), m_radius );
-	for ( int i = 0; i < fireCount; i++ )
+	CFire* pFires[128];
+	int fireCount = FireSystem_GetFiresInSphere( pFires, ARRAYSIZE( pFires ), true, GetAbsOrigin(), m_radius );
+	for( int i = 0; i < fireCount; i++ )
 	{
 		heat += pFires[i]->GetHeatLevel();
 	}
 
 #ifdef MAPBASE
-	if (HasSpawnFlags(SF_FIRESENSOR_ACCEPT_FLARES))
+	if( HasSpawnFlags( SF_FIRESENSOR_ACCEPT_FLARES ) )
 	{
 		// Also look for nearby flares
-		CBaseEntity *pEntity = gEntList.FindEntityByClassnameWithin( NULL, "env_flare", GetAbsOrigin(), m_radius );
-		while (pEntity)
+		CBaseEntity* pEntity = gEntList.FindEntityByClassnameWithin( NULL, "env_flare", GetAbsOrigin(), m_radius );
+		while( pEntity )
 		{
-			CFlare *pFlare = static_cast<CFlare*>(pEntity);
-			if (pFlare)
+			CFlare* pFlare = static_cast<CFlare*>( pEntity );
+			if( pFlare )
 			{
-				heat += (pFlare->m_flTimeBurnOut > -1.0 ? (pFlare->m_flTimeBurnOut - gpGlobals->curtime) : 32);
+				heat += ( pFlare->m_flTimeBurnOut > -1.0 ? ( pFlare->m_flTimeBurnOut - gpGlobals->curtime ) : 32 );
 			}
 
 			pEntity = gEntList.FindEntityByClassnameWithin( pEntity, "env_flare", GetAbsOrigin(), m_radius );
@@ -1439,12 +1482,12 @@ void CEnvFireSensor::Think()
 	m_curheat = heat;
 #endif
 
-	if ( heat >= m_targetLevel )
+	if( heat >= m_targetLevel )
 	{
 		m_levelTime += time;
-		if ( m_levelTime >= m_targetTime )
+		if( m_levelTime >= m_targetTime )
 		{
-			if ( !m_bHeatAtLevel )
+			if( !m_bHeatAtLevel )
 			{
 				m_bHeatAtLevel = true;
 				m_OnHeatLevelStart.FireOutput( this, this );
@@ -1454,7 +1497,7 @@ void CEnvFireSensor::Think()
 	else
 	{
 		m_levelTime = 0;
-		if ( m_bHeatAtLevel )
+		if( m_bHeatAtLevel )
 		{
 			m_bHeatAtLevel = false;
 			m_OnHeatLevelEnd.FireOutput( this, this );
@@ -1464,8 +1507,10 @@ void CEnvFireSensor::Think()
 
 void CEnvFireSensor::TurnOn()
 {
-	if ( m_bEnabled )
+	if( m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = true;
 	SetNextThink( gpGlobals->curtime );
@@ -1475,23 +1520,25 @@ void CEnvFireSensor::TurnOn()
 
 void CEnvFireSensor::TurnOff()
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = false;
 	SetNextThink( TICK_NEVER_THINK );
-	if ( m_bHeatAtLevel )
+	if( m_bHeatAtLevel )
 	{
 		m_bHeatAtLevel = false;
 		m_OnHeatLevelEnd.FireOutput( this, this );
 	}
 
 }
-void CEnvFireSensor::InputEnable( inputdata_t &inputdata )
+void CEnvFireSensor::InputEnable( inputdata_t& inputdata )
 {
 	TurnOn();
 }
-void CEnvFireSensor::InputDisable( inputdata_t &inputdata )
+void CEnvFireSensor::InputDisable( inputdata_t& inputdata )
 {
 	TurnOff();
 }
@@ -1501,17 +1548,17 @@ void CEnvFireSensor::InputDisable( inputdata_t &inputdata )
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CEnvFireSensor::DrawDebugTextOverlays( void ) 
+int CEnvFireSensor::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
 
 		// print flame size
-		Q_snprintf(tempstr, sizeof(tempstr), "    Current Heat: %f", m_curheat);
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "    Current Heat: %f", m_curheat );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;
@@ -1522,17 +1569,17 @@ int CEnvFireSensor::DrawDebugTextOverlays( void )
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CFire::DrawDebugTextOverlays( void ) 
+int CFire::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
 
 		// print flame size
-		Q_snprintf(tempstr,sizeof(tempstr),"    size: %f", m_flFireSize);
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "    size: %f", m_flFireSize );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef FX_BLOOD_H
 #define FX_BLOOD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/memdbgon.h"
@@ -15,10 +15,10 @@
 class CBloodSprayEmitter : public CSimpleEmitter
 {
 public:
-	
-	CBloodSprayEmitter( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
-	
-	static CBloodSprayEmitter *Create( const char *pDebugName )
+
+	CBloodSprayEmitter( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
+
+	static CBloodSprayEmitter* Create( const char* pDebugName )
 	{
 		return new CBloodSprayEmitter( pDebugName );
 	}
@@ -28,10 +28,10 @@ public:
 		m_flGravity = flGravity;
 	}
 
-	virtual	float UpdateRoll( SimpleParticle *pParticle, float timeDelta )
+	virtual	float UpdateRoll( SimpleParticle* pParticle, float timeDelta )
 	{
 		pParticle->m_flRoll += pParticle->m_flRollDelta * timeDelta;
-		
+
 		pParticle->m_flRollDelta += pParticle->m_flRollDelta * ( timeDelta * -4.0f );
 
 		//Cap the minimum roll
@@ -45,15 +45,15 @@ public:
 		return pParticle->m_flRoll;
 	}
 
-	virtual void UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
+	virtual void UpdateVelocity( SimpleParticle* pParticle, float timeDelta )
 	{
-		if ( !( pParticle->m_iFlags & SIMPLE_PARTICLE_FLAG_NO_VEL_DECAY ) )
+		if( !( pParticle->m_iFlags & SIMPLE_PARTICLE_FLAG_NO_VEL_DECAY ) )
 		{
 			//Decelerate
 			static float dtime;
 			static float decay;
 
-			if ( dtime != timeDelta )
+			if( dtime != timeDelta )
 			{
 				decay = ExponentialDecay( 0.1, 0.4f, dtime );
 				dtime = timeDelta;
@@ -68,7 +68,7 @@ private:
 
 	float m_flGravity;
 
-	CBloodSprayEmitter( const CBloodSprayEmitter & );
+	CBloodSprayEmitter( const CBloodSprayEmitter& );
 };
 
 #include "tier0/memdbgoff.h"

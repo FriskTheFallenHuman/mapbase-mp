@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -21,14 +21,14 @@ which various subsystems can iterate the data.
 In it's implementation, each entity has to have:
 
 	typedescription_t CBaseEntity::m_DataDesc[] = { ... }
-	
+
 in which all it's data is defined (see below), followed by:
 
 
 which implements the functions necessary for iterating through an entities data desc.
 
 There are several types of data:
-	
+
 	FIELD		: this is a variable which gets saved & loaded from disk
 	KEY			: this variable can be read in from the map file
 	GLOBAL		: a global field is actually local; it is saved/restored, but is actually
@@ -85,8 +85,8 @@ OUTPUTS:
 #include "datacache/imdlcache.h"
 #include "env_debughistory.h"
 #ifdef MAPBASE
-#include "mapbase/variant_tools.h"
-#include "mapbase/matchers.h"
+	#include "mapbase/variant_tools.h"
+	#include "mapbase/matchers.h"
 #endif
 
 #include "tier0/vprof.h"
@@ -94,30 +94,30 @@ OUTPUTS:
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-extern ISaveRestoreOps *variantFuncs;	// function pointer set for save/restoring variants
+extern ISaveRestoreOps* variantFuncs;	// function pointer set for save/restoring variants
 
 BEGIN_SIMPLE_DATADESC( CEventAction )
-	DEFINE_FIELD( m_iTarget, FIELD_STRING ),
-	DEFINE_FIELD( m_iTargetInput, FIELD_STRING ),
-	DEFINE_FIELD( m_iParameter, FIELD_STRING ),
-	DEFINE_FIELD( m_flDelay, FIELD_FLOAT ),
-	DEFINE_FIELD( m_nTimesToFire, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iIDStamp, FIELD_INTEGER ),
+DEFINE_FIELD( m_iTarget, FIELD_STRING ),
+			  DEFINE_FIELD( m_iTargetInput, FIELD_STRING ),
+			  DEFINE_FIELD( m_iParameter, FIELD_STRING ),
+			  DEFINE_FIELD( m_flDelay, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_nTimesToFire, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iIDStamp, FIELD_INTEGER ),
 
-	// This is dealt with by the Restore method
-	// DEFINE_FIELD( m_pNext, CEventAction ),
-END_DATADESC()
+			  // This is dealt with by the Restore method
+			  // DEFINE_FIELD( m_pNext, CEventAction ),
+			  END_DATADESC()
 
 
 // ID Stamp used to uniquely identify every output
-int CEventAction::s_iNextIDStamp = 0;
+			  int CEventAction::s_iNextIDStamp = 0;
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Creates an event action and assigns it an unique ID stamp.
 // Input  : ActionData - the map file data block descibing the event action.
 //-----------------------------------------------------------------------------
-CEventAction::CEventAction( const char *ActionData )
+CEventAction::CEventAction( const char* ActionData )
 {
 	m_pNext = NULL;
 	m_iIDStamp = ++s_iNextIDStamp;
@@ -128,59 +128,61 @@ CEventAction::CEventAction( const char *ActionData )
 	m_iTargetInput = NULL_STRING;
 	m_nTimesToFire = EVENT_FIRE_ALWAYS;
 
-	if (ActionData == NULL)
+	if( ActionData == NULL )
+	{
 		return;
+	}
 
 	char szToken[256];
 
 	//
 	// Parse the target name.
 	//
-	const char *psz = nexttoken(szToken, ActionData, ',', sizeof(szToken));
-	if (szToken[0] != '\0')
+	const char* psz = nexttoken( szToken, ActionData, ',', sizeof( szToken ) );
+	if( szToken[0] != '\0' )
 	{
-		m_iTarget = AllocPooledString(szToken);
+		m_iTarget = AllocPooledString( szToken );
 	}
 
 	//
 	// Parse the input name.
 	//
-	psz = nexttoken(szToken, psz, ',', sizeof(szToken));
-	if (szToken[0] != '\0')
+	psz = nexttoken( szToken, psz, ',', sizeof( szToken ) );
+	if( szToken[0] != '\0' )
 	{
-		m_iTargetInput = AllocPooledString(szToken);
+		m_iTargetInput = AllocPooledString( szToken );
 	}
 	else
 	{
-		m_iTargetInput = AllocPooledString("Use");
+		m_iTargetInput = AllocPooledString( "Use" );
 	}
 
 	//
 	// Parse the parameter override.
 	//
-	psz = nexttoken(szToken, psz, ',', sizeof(szToken));
-	if (szToken[0] != '\0')
+	psz = nexttoken( szToken, psz, ',', sizeof( szToken ) );
+	if( szToken[0] != '\0' )
 	{
-		m_iParameter = AllocPooledString(szToken);
+		m_iParameter = AllocPooledString( szToken );
 	}
 
 	//
 	// Parse the delay.
 	//
-	psz = nexttoken(szToken, psz, ',', sizeof(szToken));
-	if (szToken[0] != '\0')
+	psz = nexttoken( szToken, psz, ',', sizeof( szToken ) );
+	if( szToken[0] != '\0' )
 	{
-		m_flDelay = atof(szToken);
+		m_flDelay = atof( szToken );
 	}
 
 	//
 	// Parse the number of times to fire.
 	//
-	nexttoken(szToken, psz, ',', sizeof(szToken));
-	if (szToken[0] != '\0')
+	nexttoken( szToken, psz, ',', sizeof( szToken ) );
+	if( szToken[0] != '\0' )
 	{
-		m_nTimesToFire = atoi(szToken);
-		if (m_nTimesToFire == 0)
+		m_nTimesToFire = atoi( szToken );
+		if( m_nTimesToFire == 0 )
 		{
 			m_nTimesToFire = EVENT_FIRE_ALWAYS;
 		}
@@ -190,21 +192,21 @@ CEventAction::CEventAction( const char *ActionData )
 
 // this memory pool stores blocks around the size of CEventAction/inputitem_t structs
 // can be used for other blocks; will error if to big a block is tried to be allocated
-CUtlMemoryPool g_EntityListPool( MAX(sizeof(CEventAction),sizeof(CMultiInputVar::inputitem_t)), 512, CUtlMemoryPool::GROW_FAST, "g_EntityListPool" );
+CUtlMemoryPool g_EntityListPool( MAX( sizeof( CEventAction ), sizeof( CMultiInputVar::inputitem_t ) ), 512, CUtlMemoryPool::GROW_FAST, "g_EntityListPool" );
 
 #include "tier0/memdbgoff.h"
 
-void *CEventAction::operator new( size_t stAllocateBlock )
+void* CEventAction::operator new( size_t stAllocateBlock )
 {
 	return g_EntityListPool.Alloc( stAllocateBlock );
 }
 
-void *CEventAction::operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
+void* CEventAction::operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine )
 {
 	return g_EntityListPool.Alloc( stAllocateBlock );
 }
 
-void CEventAction::operator delete( void *pMem )
+void CEventAction::operator delete( void* pMem )
 {
 	g_EntityListPool.Free( pMem );
 }
@@ -214,21 +216,21 @@ void CEventAction::operator delete( void *pMem )
 //-----------------------------------------------------------------------------
 // Purpose: Returns the highest-valued delay in our list of event actions.
 //-----------------------------------------------------------------------------
-float CBaseEntityOutput::GetMaxDelay(void)
+float CBaseEntityOutput::GetMaxDelay( void )
 {
 	float flMaxDelay = 0;
-	CEventAction *ev = m_ActionList;
+	CEventAction* ev = m_ActionList;
 
-	while (ev != NULL)
+	while( ev != NULL )
 	{
-		if (ev->m_flDelay > flMaxDelay)
+		if( ev->m_flDelay > flMaxDelay )
 		{
 			flMaxDelay = ev->m_flDelay;
 		}
 		ev = ev->m_pNext;
 	}
 
-	return(flMaxDelay);
+	return( flMaxDelay );
 }
 
 
@@ -237,10 +239,10 @@ float CBaseEntityOutput::GetMaxDelay(void)
 //-----------------------------------------------------------------------------
 CBaseEntityOutput::~CBaseEntityOutput()
 {
-	CEventAction *ev = m_ActionList;
-	while (ev != NULL)
+	CEventAction* ev = m_ActionList;
+	while( ev != NULL )
 	{
-		CEventAction *pNext = ev->m_pNext;	
+		CEventAction* pNext = ev->m_pNext;
 		delete ev;
 		ev = pNext;
 	}
@@ -252,22 +254,22 @@ CBaseEntityOutput::~CBaseEntityOutput()
 // Input  : pActivator - Entity that initiated this sequence of actions.
 //			pCaller - Entity that is actually causing the event.
 //-----------------------------------------------------------------------------
-void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay)
+void CBaseEntityOutput::FireOutput( variant_t Value, CBaseEntity* pActivator, CBaseEntity* pCaller, float fDelay )
 {
 	//
 	// Iterate through all eventactions and fire them off.
 	//
-	CEventAction *ev = m_ActionList;
-	CEventAction *prev = NULL;
-	
-	while (ev != NULL)
+	CEventAction* ev = m_ActionList;
+	CEventAction* prev = NULL;
+
+	while( ev != NULL )
 	{
-		if (ev->m_iParameter == NULL_STRING)
+		if( ev->m_iParameter == NULL_STRING )
 		{
 			//
 			// Post the event with the default parameter.
 			//
-			g_EventQueue.AddEvent( STRING(ev->m_iTarget), STRING(ev->m_iTargetInput), Value, ev->m_flDelay + fDelay, pActivator, pCaller, ev->m_iIDStamp );
+			g_EventQueue.AddEvent( STRING( ev->m_iTarget ), STRING( ev->m_iTargetInput ), Value, ev->m_flDelay + fDelay, pActivator, pCaller, ev->m_iIDStamp );
 		}
 		else
 		{
@@ -278,29 +280,29 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 			ValueOverride.SetString( ev->m_iParameter );
 #ifdef MAPBASE
 			// I found this while making point_advanced_finder. FireOutput()'s own delay parameter doesn't work with...uh...parameters.
-			g_EventQueue.AddEvent( STRING(ev->m_iTarget), STRING(ev->m_iTargetInput), ValueOverride, ev->m_flDelay + fDelay, pActivator, pCaller, ev->m_iIDStamp );
+			g_EventQueue.AddEvent( STRING( ev->m_iTarget ), STRING( ev->m_iTargetInput ), ValueOverride, ev->m_flDelay + fDelay, pActivator, pCaller, ev->m_iIDStamp );
 #else
-			g_EventQueue.AddEvent( STRING(ev->m_iTarget), STRING(ev->m_iTargetInput), ValueOverride, ev->m_flDelay, pActivator, pCaller, ev->m_iIDStamp );
+			g_EventQueue.AddEvent( STRING( ev->m_iTarget ), STRING( ev->m_iTargetInput ), ValueOverride, ev->m_flDelay, pActivator, pCaller, ev->m_iIDStamp );
 #endif
 		}
 
-		if ( ev->m_flDelay )
+		if( ev->m_flDelay )
 		{
 			char szBuffer[256];
 			Q_snprintf( szBuffer,
-						sizeof(szBuffer),
+						sizeof( szBuffer ),
 						"(%0.2f) output: (%s,%s) -> (%s,%s,%.1f)(%s)\n",
 #ifdef TF_DLL
 						engine->GetServerTime(),
 #else
 						gpGlobals->curtime,
 #endif
-						pCaller ? STRING(pCaller->m_iClassname) : "NULL",
-						pCaller ? STRING(pCaller->GetEntityName()) : "NULL",
-						STRING(ev->m_iTarget),
-						STRING(ev->m_iTargetInput),
+						pCaller ? STRING( pCaller->m_iClassname ) : "NULL",
+						pCaller ? STRING( pCaller->GetEntityName() ) : "NULL",
+						STRING( ev->m_iTarget ),
+						STRING( ev->m_iTargetInput ),
 						ev->m_flDelay,
-						STRING(ev->m_iParameter) );
+						STRING( ev->m_iParameter ) );
 
 #ifdef MAPBASE
 			CGMsg( 2, CON_GROUP_IO_SYSTEM, "%s", szBuffer );
@@ -313,17 +315,17 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 		{
 			char szBuffer[256];
 			Q_snprintf( szBuffer,
-						sizeof(szBuffer),
+						sizeof( szBuffer ),
 						"(%0.2f) output: (%s,%s) -> (%s,%s)(%s)\n",
 #ifdef TF_DLL
 						engine->GetServerTime(),
 #else
 						gpGlobals->curtime,
 #endif
-						pCaller ? STRING(pCaller->m_iClassname) : "NULL",
-						pCaller ? STRING(pCaller->GetEntityName()) : "NULL", STRING(ev->m_iTarget),
-						STRING(ev->m_iTargetInput),
-						STRING(ev->m_iParameter) );
+						pCaller ? STRING( pCaller->m_iClassname ) : "NULL",
+						pCaller ? STRING( pCaller->GetEntityName() ) : "NULL", STRING( ev->m_iTarget ),
+						STRING( ev->m_iTargetInput ),
+						STRING( ev->m_iParameter ) );
 
 #ifdef MAPBASE
 			CGMsg( 2, CON_GROUP_IO_SYSTEM, "%s", szBuffer );
@@ -333,9 +335,9 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 			ADD_DEBUG_HISTORY( HISTORY_ENTITY_IO, szBuffer );
 		}
 
-		if ( pCaller && pCaller->m_debugOverlays & OVERLAY_MESSAGE_BIT)
+		if( pCaller && pCaller->m_debugOverlays & OVERLAY_MESSAGE_BIT )
 		{
-			pCaller->DrawOutputOverlay(ev);
+			pCaller->DrawOutputOverlay( ev );
 		}
 
 		//
@@ -343,13 +345,13 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 		// number of times (and has been).
 		//
 		bool bRemove = false;
-		if (ev->m_nTimesToFire != EVENT_FIRE_ALWAYS)
+		if( ev->m_nTimesToFire != EVENT_FIRE_ALWAYS )
 		{
 			ev->m_nTimesToFire--;
-			if (ev->m_nTimesToFire == 0)
+			if( ev->m_nTimesToFire == 0 )
 			{
 				char szBuffer[256];
-				Q_snprintf( szBuffer, sizeof(szBuffer), "Removing from action list: (%s,%s) -> (%s,%s)\n", pCaller ? STRING(pCaller->m_iClassname) : "NULL", pCaller ? STRING(pCaller->GetEntityName()) : "NULL", STRING(ev->m_iTarget), STRING(ev->m_iTargetInput));
+				Q_snprintf( szBuffer, sizeof( szBuffer ), "Removing from action list: (%s,%s) -> (%s,%s)\n", pCaller ? STRING( pCaller->m_iClassname ) : "NULL", pCaller ? STRING( pCaller->GetEntityName() ) : "NULL", STRING( ev->m_iTarget ), STRING( ev->m_iTargetInput ) );
 
 #ifdef MAPBASE
 				CGMsg( 2, CON_GROUP_IO_SYSTEM, "%s", szBuffer );
@@ -361,14 +363,14 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 			}
 		}
 
-		if (!bRemove)
+		if( !bRemove )
 		{
 			prev = ev;
 			ev = ev->m_pNext;
 		}
 		else
 		{
-			if (prev != NULL)
+			if( prev != NULL )
 			{
 				prev->m_pNext = ev->m_pNext;
 			}
@@ -377,7 +379,7 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 				m_ActionList = ev->m_pNext;
 			}
 
-			CEventAction *next = ev->m_pNext;
+			CEventAction* next = ev->m_pNext;
 			delete ev;
 			ev = next;
 		}
@@ -387,37 +389,37 @@ void CBaseEntityOutput::FireOutput(variant_t Value, CBaseEntity *pActivator, CBa
 
 //-----------------------------------------------------------------------------
 // Purpose: Parameterless firing of an event
-// Input  : pActivator - 
-//			pCaller - 
+// Input  : pActivator -
+//			pCaller -
 //-----------------------------------------------------------------------------
-void COutputEvent::FireOutput(CBaseEntity *pActivator, CBaseEntity *pCaller, float fDelay)
+void COutputEvent::FireOutput( CBaseEntity* pActivator, CBaseEntity* pCaller, float fDelay )
 {
 	variant_t Val;
 	Val.Set( FIELD_VOID, NULL );
-	CBaseEntityOutput::FireOutput(Val, pActivator, pCaller, fDelay);
+	CBaseEntityOutput::FireOutput( Val, pActivator, pCaller, fDelay );
 }
 
 
-void CBaseEntityOutput::ParseEventAction( const char *EventData )
+void CBaseEntityOutput::ParseEventAction( const char* EventData )
 {
 	AddEventAction( new CEventAction( EventData ) );
 }
 
-void CBaseEntityOutput::AddEventAction( CEventAction *pEventAction )
+void CBaseEntityOutput::AddEventAction( CEventAction* pEventAction )
 {
 	pEventAction->m_pNext = m_ActionList;
 	m_ActionList = pEventAction;
 }
 
-void CBaseEntityOutput::RemoveEventAction( CEventAction *pEventAction )
+void CBaseEntityOutput::RemoveEventAction( CEventAction* pEventAction )
 {
-	CEventAction *pAction = GetActionList();
-	CEventAction *pPrevAction = NULL;
-	while ( pAction )
+	CEventAction* pAction = GetActionList();
+	CEventAction* pPrevAction = NULL;
+	while( pAction )
 	{
-		if ( pAction == pEventAction )
+		if( pAction == pEventAction )
 		{
-			if ( !pPrevAction )
+			if( !pPrevAction )
 			{
 				m_ActionList = NULL;
 			}
@@ -435,47 +437,55 @@ void CBaseEntityOutput::RemoveEventAction( CEventAction *pEventAction )
 // save data description for the event queue
 BEGIN_SIMPLE_DATADESC( CBaseEntityOutput )
 
-	DEFINE_CUSTOM_FIELD( m_Value, variantFuncs ),
+DEFINE_CUSTOM_FIELD( m_Value, variantFuncs ),
 
-	// This is saved manually by CBaseEntityOutput::Save
-	// DEFINE_FIELD( m_ActionList, CEventAction ),
-END_DATADESC()
+					 // This is saved manually by CBaseEntityOutput::Save
+					 // DEFINE_FIELD( m_ActionList, CEventAction ),
+					 END_DATADESC()
 
 
-int CBaseEntityOutput::Save( ISave &save )
+					 int CBaseEntityOutput::Save( ISave& save )
 {
 	// save that value out to disk, so we know how many to restore
-	if ( !save.WriteFields( "Value", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
-		return 0;
-
-	for ( CEventAction *ev = m_ActionList; ev != NULL; ev = ev->m_pNext )
+	if( !save.WriteFields( "Value", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
 	{
-		if ( !save.WriteFields( "EntityOutput", ev, NULL, ev->m_DataMap.dataDesc, ev->m_DataMap.dataNumFields ) )
+		return 0;
+	}
+
+	for( CEventAction* ev = m_ActionList; ev != NULL; ev = ev->m_pNext )
+	{
+		if( !save.WriteFields( "EntityOutput", ev, NULL, ev->m_DataMap.dataDesc, ev->m_DataMap.dataNumFields ) )
+		{
 			return 0;
+		}
 	}
 
 	return 1;
 }
 
-int CBaseEntityOutput::Restore( IRestore &restore, int elementCount )
+int CBaseEntityOutput::Restore( IRestore& restore, int elementCount )
 {
 	// load the number of items saved
-	if ( !restore.ReadFields( "Value", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
+	if( !restore.ReadFields( "Value", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
+	{
 		return 0;
+	}
 
 	m_ActionList = NULL;
 
 	// read in all the fields
-	CEventAction *lastEv = NULL;
-	for ( int i = 0; i < elementCount; i++ )
+	CEventAction* lastEv = NULL;
+	for( int i = 0; i < elementCount; i++ )
 	{
-		CEventAction *ev = new CEventAction(NULL);
+		CEventAction* ev = new CEventAction( NULL );
 
-		if ( !restore.ReadFields( "EntityOutput", ev, NULL, ev->m_DataMap.dataDesc, ev->m_DataMap.dataNumFields ) )
+		if( !restore.ReadFields( "EntityOutput", ev, NULL, ev->m_DataMap.dataDesc, ev->m_DataMap.dataNumFields ) )
+		{
 			return 0;
+		}
 
 		// add it to the list in the same order it was saved in
-		if ( lastEv )
+		if( lastEv )
 		{
 			lastEv->m_pNext = ev;
 		}
@@ -493,25 +503,25 @@ int CBaseEntityOutput::Restore( IRestore &restore, int elementCount )
 int CBaseEntityOutput::NumberOfElements( void )
 {
 	int count = 0;
-	for ( CEventAction *ev = m_ActionList; ev != NULL; ev = ev->m_pNext )
+	for( CEventAction* ev = m_ActionList; ev != NULL; ev = ev->m_pNext )
 	{
 		count++;
 	}
 	return count;
 }
 
-/// Delete every single action in the action list. 
-void CBaseEntityOutput::DeleteAllElements( void ) 
+/// Delete every single action in the action list.
+void CBaseEntityOutput::DeleteAllElements( void )
 {
 	// walk front to back, deleting as we go. We needn't fix up pointers because
 	// EVERYTHING will die.
 
-	CEventAction *pNext = m_ActionList;
+	CEventAction* pNext = m_ActionList;
 	// wipe out the head
 	m_ActionList = NULL;
-	while (pNext)
+	while( pNext )
 	{
-		CEventAction *strikeThis = pNext;
+		CEventAction* strikeThis = pNext;
 		pNext = pNext->m_pNext;
 		delete strikeThis;
 	}
@@ -522,13 +532,13 @@ void CBaseEntityOutput::DeleteAllElements( void )
 
 class CEventsSaveDataOps : public ISaveRestoreOps
 {
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
 	{
-		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays");
+		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays" );
 
-		CBaseEntityOutput *ev = (CBaseEntityOutput*)fieldInfo.pField;
+		CBaseEntityOutput* ev = ( CBaseEntityOutput* )fieldInfo.pField;
 		const int fieldSize = fieldInfo.pTypeDesc->fieldSize;
- 		for ( int i = 0; i < fieldSize; i++, ev++ )
+		for( int i = 0; i < fieldSize; i++, ev++ )
 		{
 			// save out the number of fields
 			int numElements = ev->NumberOfElements();
@@ -539,56 +549,58 @@ class CEventsSaveDataOps : public ISaveRestoreOps
 		}
 	}
 
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays");
+		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays" );
 
-		CBaseEntityOutput *ev = (CBaseEntityOutput*)fieldInfo.pField;
+		CBaseEntityOutput* ev = ( CBaseEntityOutput* )fieldInfo.pField;
 		const int fieldSize = fieldInfo.pTypeDesc->fieldSize;
-		for ( int i = 0; i < fieldSize; i++, ev++ )
+		for( int i = 0; i < fieldSize; i++, ev++ )
 		{
 			int nElements = pRestore->ReadInt();
-			
+
 			Assert( nElements < 100 );
 
 			ev->Restore( *pRestore, nElements );
 		}
 	}
 
-	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual bool IsEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays");
-		
+		AssertMsg( fieldInfo.pTypeDesc->fieldSize == 1, "CEventsSaveDataOps does not support arrays" );
+
 		// check all the elements of the array (usually only 1)
-		CBaseEntityOutput *ev = (CBaseEntityOutput*)fieldInfo.pField;
+		CBaseEntityOutput* ev = ( CBaseEntityOutput* )fieldInfo.pField;
 		const int fieldSize = fieldInfo.pTypeDesc->fieldSize;
-		for ( int i = 0; i < fieldSize; i++, ev++ )
+		for( int i = 0; i < fieldSize; i++, ev++ )
 		{
 			// It's not empty if it has events or if it has a non-void variant value
-			if (( ev->NumberOfElements() != 0 ) || ( ev->ValueFieldType() != FIELD_VOID ))
+			if( ( ev->NumberOfElements() != 0 ) || ( ev->ValueFieldType() != FIELD_VOID ) )
+			{
 				return 0;
+			}
 		}
 
 		// variant has no data
 		return 1;
 	}
 
-	virtual void MakeEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual void MakeEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
 		// Don't no how to. This is okay, since objects of this type
 		// are always born clean before restore, and not reused
 	}
 
-	virtual bool Parse( const SaveRestoreFieldInfo_t &fieldInfo, char const* szValue )
+	virtual bool Parse( const SaveRestoreFieldInfo_t& fieldInfo, char const* szValue )
 	{
-		CBaseEntityOutput *ev = (CBaseEntityOutput*)fieldInfo.pField;
+		CBaseEntityOutput* ev = ( CBaseEntityOutput* )fieldInfo.pField;
 		ev->ParseEventAction( szValue );
 		return true;
 	}
 };
 
 CEventsSaveDataOps g_EventsSaveDataOps;
-ISaveRestoreOps *eventFuncs = &g_EventsSaveDataOps;
+ISaveRestoreOps* eventFuncs = &g_EventsSaveDataOps;
 
 //-----------------------------------------------------------------------------
 //			CMultiInputVar implementation
@@ -603,11 +615,11 @@ ISaveRestoreOps *eventFuncs = &g_EventsSaveDataOps;
 //-----------------------------------------------------------------------------
 CMultiInputVar::~CMultiInputVar()
 {
-	if ( m_InputList )
+	if( m_InputList )
 	{
-		while ( m_InputList->next != NULL )
+		while( m_InputList->next != NULL )
 		{
-			inputitem_t *input = m_InputList->next;
+			inputitem_t* input = m_InputList->next;
 			m_InputList->next = input->next;
 			delete input;
 		}
@@ -623,11 +635,11 @@ CMultiInputVar::~CMultiInputVar()
 void CMultiInputVar::AddValue( variant_t newVal, int outputID )
 {
 	// see if it's already in the list
-	inputitem_t *inp;
-	for ( inp = m_InputList; inp != NULL; inp = inp->next )
+	inputitem_t* inp;
+	for( inp = m_InputList; inp != NULL; inp = inp->next )
 	{
 		// already in list, so just update this link
-		if ( inp->outputID == outputID )
+		if( inp->outputID == outputID )
 		{
 			inp->value = newVal;
 			return;
@@ -638,7 +650,7 @@ void CMultiInputVar::AddValue( variant_t newVal, int outputID )
 	inp = new inputitem_t;
 	inp->value = newVal;
 	inp->outputID = outputID;
-	if ( !m_InputList )
+	if( !m_InputList )
 	{
 		m_InputList = inp;
 		inp->next = NULL;
@@ -656,12 +668,12 @@ void CMultiInputVar::AddValue( variant_t newVal, int outputID )
 //-----------------------------------------------------------------------------
 // Purpose: allocates memory from the entitylist pool
 //-----------------------------------------------------------------------------
-void *CMultiInputVar::inputitem_t::operator new( size_t stAllocateBlock )
+void* CMultiInputVar::inputitem_t::operator new( size_t stAllocateBlock )
 {
 	return g_EntityListPool.Alloc( stAllocateBlock );
 }
 
-void *CMultiInputVar::inputitem_t::operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
+void* CMultiInputVar::inputitem_t::operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine )
 {
 	return g_EntityListPool.Alloc( stAllocateBlock );
 }
@@ -669,7 +681,7 @@ void *CMultiInputVar::inputitem_t::operator new( size_t stAllocateBlock, int nBl
 //-----------------------------------------------------------------------------
 // Purpose: frees memory from the entitylist pool
 //-----------------------------------------------------------------------------
-void CMultiInputVar::inputitem_t::operator delete( void *pMem )
+void CMultiInputVar::inputitem_t::operator delete( void* pMem )
 {
 	g_EntityListPool.Free( pMem );
 }
@@ -704,20 +716,24 @@ class CEventQueueSaveLoadProxy : public CLogicalEntity
 {
 	DECLARE_CLASS( CEventQueueSaveLoadProxy, CLogicalEntity );
 
-	int Save( ISave &save )
+	int Save( ISave& save )
 	{
-		if ( !BaseClass::Save(save) )
+		if( !BaseClass::Save( save ) )
+		{
 			return 0;
+		}
 
 		// save out the message queue
 		return g_EventQueue.Save( save );
 	}
 
 
-	int Restore( IRestore &restore )
+	int Restore( IRestore& restore )
 	{
-		if ( !BaseClass::Restore(restore) )
+		if( !BaseClass::Restore( restore ) )
+		{
 			return 0;
+		}
 
 		// restore the event queue
 		int iReturn = g_EventQueue.Restore( restore );
@@ -730,7 +746,7 @@ class CEventQueueSaveLoadProxy : public CLogicalEntity
 	}
 };
 
-LINK_ENTITY_TO_CLASS(event_queue_saveload_proxy, CEventQueueSaveLoadProxy);
+LINK_ENTITY_TO_CLASS( event_queue_saveload_proxy, CEventQueueSaveLoadProxy );
 
 //-----------------------------------------------------------------------------
 // EVENT QUEUE SAVE / RESTORE
@@ -740,28 +756,28 @@ static short EVENTQUEUE_SAVE_RESTORE_VERSION = 1;
 class CEventQueue_SaveRestoreBlockHandler : public CDefSaveRestoreBlockHandler
 {
 public:
-	const char *GetBlockName()
+	const char* GetBlockName()
 	{
 		return "EventQueue";
 	}
 
 	//---------------------------------
 
-	void Save( ISave *pSave )
+	void Save( ISave* pSave )
 	{
 		g_EventQueue.Save( *pSave );
 	}
 
 	//---------------------------------
 
-	void WriteSaveHeaders( ISave *pSave )
+	void WriteSaveHeaders( ISave* pSave )
 	{
 		pSave->WriteShort( &EVENTQUEUE_SAVE_RESTORE_VERSION );
 	}
 
 	//---------------------------------
 
-	void ReadRestoreHeaders( IRestore *pRestore )
+	void ReadRestoreHeaders( IRestore* pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
 		short version;
@@ -771,9 +787,9 @@ public:
 
 	//---------------------------------
 
-	void Restore( IRestore *pRestore, bool createPlayers )
+	void Restore( IRestore* pRestore, bool createPlayers )
 	{
-		if ( m_fDoLoad )
+		if( m_fDoLoad )
 		{
 			g_EventQueue.Restore( *pRestore );
 		}
@@ -789,7 +805,7 @@ CEventQueue_SaveRestoreBlockHandler g_EventQueue_SaveRestoreBlockHandler;
 
 //-------------------------------------
 
-ISaveRestoreBlockHandler *GetEventQueueSaveRestoreBlockHandler()
+ISaveRestoreBlockHandler* GetEventQueueSaveRestoreBlockHandler()
 {
 	return &g_EventQueue_SaveRestoreBlockHandler;
 }
@@ -803,11 +819,11 @@ void CEventQueue::Init( void )
 void CEventQueue::Clear( void )
 {
 	// delete all the events in the queue
-	EventQueuePrioritizedEvent_t *pe = m_Events.m_pNext;
-	
-	while ( pe != NULL )
+	EventQueuePrioritizedEvent_t* pe = m_Events.m_pNext;
+
+	while( pe != NULL )
 	{
-		EventQueuePrioritizedEvent_t *next = pe->m_pNext;
+		EventQueuePrioritizedEvent_t* next = pe->m_pNext;
 		delete pe;
 		pe = next;
 	}
@@ -817,32 +833,32 @@ void CEventQueue::Clear( void )
 
 void CEventQueue::Dump( void )
 {
-	EventQueuePrioritizedEvent_t *pe = m_Events.m_pNext;
+	EventQueuePrioritizedEvent_t* pe = m_Events.m_pNext;
 
-	Msg("Dumping event queue. Current time is: %.2f\n",
+	Msg( "Dumping event queue. Current time is: %.2f\n",
 #ifdef TF_DLL
-		engine->GetServerTime()
+		 engine->GetServerTime()
 #else
-		gpGlobals->curtime
+		 gpGlobals->curtime
 #endif
-		);
+	   );
 
-	while ( pe != NULL )
+	while( pe != NULL )
 	{
-		EventQueuePrioritizedEvent_t *next = pe->m_pNext;
+		EventQueuePrioritizedEvent_t* next = pe->m_pNext;
 
-		Msg("   (%.2f) Target: '%s', Input: '%s', Parameter '%s'. Activator: '%s', Caller '%s'.  \n", 
-			pe->m_flFireTime, 
-			STRING(pe->m_iTarget), 
-			STRING(pe->m_iTargetInput), 
-			pe->m_VariantValue.String(),
-			pe->m_pActivator ? pe->m_pActivator->GetDebugName() : "None", 
-			pe->m_pCaller ? pe->m_pCaller->GetDebugName() : "None"  );
+		Msg( "   (%.2f) Target: '%s', Input: '%s', Parameter '%s'. Activator: '%s', Caller '%s'.  \n",
+			 pe->m_flFireTime,
+			 STRING( pe->m_iTarget ),
+			 STRING( pe->m_iTargetInput ),
+			 pe->m_VariantValue.String(),
+			 pe->m_pActivator ? pe->m_pActivator->GetDebugName() : "None",
+			 pe->m_pCaller ? pe->m_pCaller->GetDebugName() : "None" );
 
 		pe = next;
 	}
 
-	Msg("Finished dump.\n");
+	Msg( "Finished dump.\n" );
 }
 
 
@@ -850,14 +866,14 @@ void CEventQueue::Dump( void )
 // Purpose: adds the action into the correct spot in the priority queue, targeting entity via string name
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE_VSCRIPT
-int
+	int
 #else
-void
+	void
 #endif
-CEventQueue::AddEvent( const char *target, const char *targetInput, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID )
+CEventQueue::AddEvent( const char* target, const char* targetInput, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID )
 {
 	// build the new event
-	EventQueuePrioritizedEvent_t *newEvent = new EventQueuePrioritizedEvent_t;
+	EventQueuePrioritizedEvent_t* newEvent = new EventQueuePrioritizedEvent_t;
 #ifdef TF_DLL
 	newEvent->m_flFireTime = engine->GetServerTime() + fireDelay;	// priority key in the priority queue
 #else
@@ -874,8 +890,8 @@ CEventQueue::AddEvent( const char *target, const char *targetInput, variant_t Va
 	AddEvent( newEvent );
 
 #ifdef MAPBASE_VSCRIPT
-	Assert( sizeof(EventQueuePrioritizedEvent_t*) == sizeof(int) );
-	return reinterpret_cast<intptr_t>(newEvent);  // POINTER_TO_INT
+	Assert( sizeof( EventQueuePrioritizedEvent_t* ) == sizeof( int ) );
+	return reinterpret_cast<intptr_t>( newEvent ); // POINTER_TO_INT
 #endif
 }
 
@@ -883,14 +899,14 @@ CEventQueue::AddEvent( const char *target, const char *targetInput, variant_t Va
 // Purpose: adds the action into the correct spot in the priority queue, targeting entity via pointer
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE_VSCRIPT
-int
+	int
 #else
-void
+	void
 #endif
-CEventQueue::AddEvent( CBaseEntity *target, const char *targetInput, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID )
+CEventQueue::AddEvent( CBaseEntity* target, const char* targetInput, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID )
 {
 	// build the new event
-	EventQueuePrioritizedEvent_t *newEvent = new EventQueuePrioritizedEvent_t;
+	EventQueuePrioritizedEvent_t* newEvent = new EventQueuePrioritizedEvent_t;
 #ifdef TF_DLL
 	newEvent->m_flFireTime = engine->GetServerTime() + fireDelay;	// primary priority key in the priority queue
 #else
@@ -907,12 +923,12 @@ CEventQueue::AddEvent( CBaseEntity *target, const char *targetInput, variant_t V
 	AddEvent( newEvent );
 
 #ifdef MAPBASE_VSCRIPT
-	Assert( sizeof(EventQueuePrioritizedEvent_t*) == sizeof(int) );
-	return reinterpret_cast<intptr_t>(newEvent); // POINTER_TO_INT
+	Assert( sizeof( EventQueuePrioritizedEvent_t* ) == sizeof( int ) );
+	return reinterpret_cast<intptr_t>( newEvent ); // POINTER_TO_INT
 #endif
 }
 
-void CEventQueue::AddEvent( CBaseEntity *target, const char *action, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID )
+void CEventQueue::AddEvent( CBaseEntity* target, const char* action, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID )
 {
 	variant_t Value;
 	Value.Set( FIELD_VOID, NULL );
@@ -924,13 +940,13 @@ void CEventQueue::AddEvent( CBaseEntity *target, const char *action, float fireD
 // Purpose: private function, adds an event into the list
 // Input  : *newEvent - the (already built) event to add
 //-----------------------------------------------------------------------------
-void CEventQueue::AddEvent( EventQueuePrioritizedEvent_t *newEvent )
+void CEventQueue::AddEvent( EventQueuePrioritizedEvent_t* newEvent )
 {
 	// loop through the actions looking for a place to insert
-	EventQueuePrioritizedEvent_t *pe;
-	for ( pe = &m_Events; pe->m_pNext != NULL; pe = pe->m_pNext )
+	EventQueuePrioritizedEvent_t* pe;
+	for( pe = &m_Events; pe->m_pNext != NULL; pe = pe->m_pNext )
 	{
-		if ( pe->m_pNext->m_flFireTime > newEvent->m_flFireTime )
+		if( pe->m_pNext->m_flFireTime > newEvent->m_flFireTime )
 		{
 			break;
 		}
@@ -942,17 +958,17 @@ void CEventQueue::AddEvent( EventQueuePrioritizedEvent_t *newEvent )
 	newEvent->m_pNext = pe->m_pNext;
 	newEvent->m_pPrev = pe;
 	pe->m_pNext = newEvent;
-	if ( newEvent->m_pNext )
+	if( newEvent->m_pNext )
 	{
 		newEvent->m_pNext->m_pPrev = newEvent;
 	}
 }
 
-void CEventQueue::RemoveEvent( EventQueuePrioritizedEvent_t *pe )
+void CEventQueue::RemoveEvent( EventQueuePrioritizedEvent_t* pe )
 {
 	Assert( pe->m_pPrev );
 	pe->m_pPrev->m_pNext = pe->m_pNext;
-	if ( pe->m_pNext )
+	if( pe->m_pNext )
 	{
 		pe->m_pNext->m_pPrev = pe->m_pPrev;
 	}
@@ -964,17 +980,17 @@ void CEventQueue::RemoveEvent( EventQueuePrioritizedEvent_t *pe )
 //-----------------------------------------------------------------------------
 void CEventQueue::ServiceEvents( void )
 {
-	if (!CBaseEntity::Debug_ShouldStep())
+	if( !CBaseEntity::Debug_ShouldStep() )
 	{
 		return;
 	}
 
-	EventQueuePrioritizedEvent_t *pe = m_Events.m_pNext;
+	EventQueuePrioritizedEvent_t* pe = m_Events.m_pNext;
 
 #ifdef TF_DLL
-	while ( pe != NULL && pe->m_flFireTime <= engine->GetServerTime() )
+	while( pe != NULL && pe->m_flFireTime <= engine->GetServerTime() )
 #else
-	while ( pe != NULL && pe->m_flFireTime <= gpGlobals->curtime )
+	while( pe != NULL && pe->m_flFireTime <= gpGlobals->curtime )
 #endif
 	{
 		MDLCACHE_CRITICAL_SECTION();
@@ -982,16 +998,16 @@ void CEventQueue::ServiceEvents( void )
 		bool targetFound = false;
 
 		// find the targets
-		if ( pe->m_iTarget != NULL_STRING )
+		if( pe->m_iTarget != NULL_STRING )
 		{
 			// In the context the event, the searching entity is also the caller
-			CBaseEntity *pSearchingEntity = pe->m_pCaller;
+			CBaseEntity* pSearchingEntity = pe->m_pCaller;
 #ifdef MAPBASE
 			// This is a hack to access the entity from a FIELD_EHANDLE input
-			if ( FStrEq( STRING( pe->m_iTarget ), "!output" ) )
+			if( FStrEq( STRING( pe->m_iTarget ), "!output" ) )
 			{
 				pe->m_VariantValue.Convert( FIELD_EHANDLE );
-				CBaseEntity *target = pe->m_VariantValue.Entity();
+				CBaseEntity* target = pe->m_VariantValue.Entity();
 
 				// pump the action into the target
 				target->AcceptInput( STRING( pe->m_iTargetInput ), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
@@ -1000,59 +1016,63 @@ void CEventQueue::ServiceEvents( void )
 			else
 #endif
 			{
-			CBaseEntity *target = NULL;
-			while ( 1 )
-			{
-				target = gEntList.FindEntityByName( target, pe->m_iTarget, pSearchingEntity, pe->m_pActivator, pe->m_pCaller );
-				if ( !target )
-					break;
-
-				// pump the action into the target
-				target->AcceptInput( STRING(pe->m_iTargetInput), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
-				targetFound = true;
-			}
-		}
-		}
-
-		// direct pointer
-		if ( pe->m_pEntTarget != NULL )
-		{
-			pe->m_pEntTarget->AcceptInput( STRING(pe->m_iTargetInput), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
-			targetFound = true;
-		}
-
-		if ( !targetFound )
-		{
-			// See if we can find a target if we treat the target as a classname
-			if ( pe->m_iTarget != NULL_STRING )
-			{
-				CBaseEntity *target = NULL;
-				while ( 1 )
+				CBaseEntity* target = NULL;
+				while( 1 )
 				{
-					target = gEntList.FindEntityByClassname( target, STRING(pe->m_iTarget) );
-					if ( !target )
+					target = gEntList.FindEntityByName( target, pe->m_iTarget, pSearchingEntity, pe->m_pActivator, pe->m_pCaller );
+					if( !target )
+					{
 						break;
+					}
 
 					// pump the action into the target
-					target->AcceptInput( STRING(pe->m_iTargetInput), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
+					target->AcceptInput( STRING( pe->m_iTargetInput ), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
 					targetFound = true;
 				}
 			}
 		}
 
-		if ( !targetFound )
+		// direct pointer
+		if( pe->m_pEntTarget != NULL )
 		{
-			const char *pClass ="", *pName = "";
-			
-			// might be NULL
-			if ( pe->m_pCaller )
+			pe->m_pEntTarget->AcceptInput( STRING( pe->m_iTargetInput ), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
+			targetFound = true;
+		}
+
+		if( !targetFound )
+		{
+			// See if we can find a target if we treat the target as a classname
+			if( pe->m_iTarget != NULL_STRING )
 			{
-				pClass = STRING(pe->m_pCaller->m_iClassname);
-				pName = STRING(pe->m_pCaller->GetEntityName());
+				CBaseEntity* target = NULL;
+				while( 1 )
+				{
+					target = gEntList.FindEntityByClassname( target, STRING( pe->m_iTarget ) );
+					if( !target )
+					{
+						break;
+					}
+
+					// pump the action into the target
+					target->AcceptInput( STRING( pe->m_iTargetInput ), pe->m_pActivator, pe->m_pCaller, pe->m_VariantValue, pe->m_iOutputID );
+					targetFound = true;
+				}
 			}
-			
+		}
+
+		if( !targetFound )
+		{
+			const char* pClass = "", *pName = "";
+
+			// might be NULL
+			if( pe->m_pCaller )
+			{
+				pClass = STRING( pe->m_pCaller->m_iClassname );
+				pName = STRING( pe->m_pCaller->GetEntityName() );
+			}
+
 			char szBuffer[256];
-			Q_snprintf( szBuffer, sizeof(szBuffer), "unhandled input: (%s) -> (%s), from (%s,%s); target entity not found\n", STRING(pe->m_iTargetInput), STRING(pe->m_iTarget), pClass, pName );
+			Q_snprintf( szBuffer, sizeof( szBuffer ), "unhandled input: (%s) -> (%s), from (%s,%s); target entity not found\n", STRING( pe->m_iTargetInput ), STRING( pe->m_iTarget ), pClass, pName );
 #ifdef MAPBASE
 			CGMsg( 2, CON_GROUP_IO_SYSTEM, "%s", szBuffer );
 #else
@@ -1068,16 +1088,16 @@ void CEventQueue::ServiceEvents( void )
 		//
 		// If we are in debug mode, exit the loop if we have fired the correct number of events.
 		//
-		if (CBaseEntity::Debug_IsPaused())
+		if( CBaseEntity::Debug_IsPaused() )
 		{
-			if (!CBaseEntity::Debug_Step())
+			if( !CBaseEntity::Debug_Step() )
 			{
 				break;
 			}
 		}
 
 		// restart the list (to catch any new items have probably been added to the queue)
-		pe = m_Events.m_pNext;	
+		pe = m_Events.m_pNext;
 	}
 }
 
@@ -1086,8 +1106,10 @@ void CEventQueue::ServiceEvents( void )
 //-----------------------------------------------------------------------------
 void CC_DumpEventQueue()
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	g_EventQueue.Dump();
 }
@@ -1100,31 +1122,33 @@ static ConCommand dumpeventqueue( "dumpeventqueue", CC_DumpEventQueue, "Dump the
 //			TODO: This is only as reliable as callers are in passing the correct
 //				  caller pointer when they fire the outputs. Make more foolproof.
 //-----------------------------------------------------------------------------
-void CEventQueue::CancelEvents( CBaseEntity *pCaller )
+void CEventQueue::CancelEvents( CBaseEntity* pCaller )
 {
-	if (!pCaller)
+	if( !pCaller )
+	{
 		return;
+	}
 
-	EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext;
+	EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext;
 
-	while (pCur != NULL)
+	while( pCur != NULL )
 	{
 		bool bDelete = false;
-		if (pCur->m_pCaller == pCaller)
+		if( pCur->m_pCaller == pCaller )
 		{
 			// Pointers match; make sure everything else matches.
-			if (!stricmp(STRING(pCur->m_pCaller->GetEntityName()), STRING(pCaller->GetEntityName())) &&
-				!stricmp(pCur->m_pCaller->GetClassname(), pCaller->GetClassname()))
+			if( !stricmp( STRING( pCur->m_pCaller->GetEntityName() ), STRING( pCaller->GetEntityName() ) ) &&
+					!stricmp( pCur->m_pCaller->GetClassname(), pCaller->GetClassname() ) )
 			{
 				// Found a matching event; delete it from the queue.
 				bDelete = true;
 			}
 		}
 
-		EventQueuePrioritizedEvent_t *pCurSave = pCur;
+		EventQueuePrioritizedEvent_t* pCurSave = pCur;
 		pCur = pCur->m_pNext;
 
-		if (bDelete)
+		if( bDelete )
 		{
 			RemoveEvent( pCurSave );
 			delete pCurSave;
@@ -1138,29 +1162,31 @@ void CEventQueue::CancelEvents( CBaseEntity *pCaller )
 //			TODO: This is only as reliable as callers are in passing the correct
 //				  caller pointer when they fire the outputs. Make more foolproof.
 //-----------------------------------------------------------------------------
-void CEventQueue::CancelEventOn( CBaseEntity *pTarget, const char *sInputName )
+void CEventQueue::CancelEventOn( CBaseEntity* pTarget, const char* sInputName )
 {
-	if (!pTarget)
+	if( !pTarget )
+	{
 		return;
+	}
 
-	EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext;
+	EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext;
 
-	while (pCur != NULL)
+	while( pCur != NULL )
 	{
 		bool bDelete = false;
-		if (pCur->m_pEntTarget == pTarget)
+		if( pCur->m_pEntTarget == pTarget )
 		{
-			if ( !Q_strncmp( STRING(pCur->m_iTargetInput), sInputName, strlen(sInputName) ) )
+			if( !Q_strncmp( STRING( pCur->m_iTargetInput ), sInputName, strlen( sInputName ) ) )
 			{
 				// Found a matching event; delete it from the queue.
 				bDelete = true;
 			}
 		}
 
-		EventQueuePrioritizedEvent_t *pCurSave = pCur;
+		EventQueuePrioritizedEvent_t* pCurSave = pCur;
 		pCur = pCur->m_pNext;
 
-		if (bDelete)
+		if( bDelete )
 		{
 			RemoveEvent( pCurSave );
 			delete pCurSave;
@@ -1170,25 +1196,31 @@ void CEventQueue::CancelEventOn( CBaseEntity *pTarget, const char *sInputName )
 
 //-----------------------------------------------------------------------------
 // Purpose: Return true if the target has any pending inputs.
-// Input  : *pTarget - 
+// Input  : *pTarget -
 //			*sInputName - NULL for any input, or a specified one
 //-----------------------------------------------------------------------------
-bool CEventQueue::HasEventPending( CBaseEntity *pTarget, const char *sInputName )
+bool CEventQueue::HasEventPending( CBaseEntity* pTarget, const char* sInputName )
 {
-	if (!pTarget)
-		return false;
-
-	EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext;
-
-	while (pCur != NULL)
+	if( !pTarget )
 	{
-		if (pCur->m_pEntTarget == pTarget)
-		{
-			if ( !sInputName )
-				return true;
+		return false;
+	}
 
-			if ( !Q_strncmp( STRING(pCur->m_iTargetInput), sInputName, strlen(sInputName) ) )
+	EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext;
+
+	while( pCur != NULL )
+	{
+		if( pCur->m_pEntTarget == pTarget )
+		{
+			if( !sInputName )
+			{
 				return true;
+			}
+
+			if( !Q_strncmp( STRING( pCur->m_iTargetInput ), sInputName, strlen( sInputName ) ) )
+			{
+				return true;
+			}
 		}
 
 		pCur = pCur->m_pNext;
@@ -1199,7 +1231,7 @@ bool CEventQueue::HasEventPending( CBaseEntity *pTarget, const char *sInputName 
 
 void ServiceEventQueue( void )
 {
-	VPROF("ServiceEventQueue()");
+	VPROF( "ServiceEventQueue()" );
 
 	g_EventQueue.ServiceEvents();
 }
@@ -1212,32 +1244,34 @@ void ServiceEventQueue( void )
 // Also removes events that were targeted with their debug name (classname when unnamed).
 // E.g. CancelEventsByInput( pRelay, "Trigger" ) removes all pending logic_relay "Trigger" events.
 //-----------------------------------------------------------------------------
-void CEventQueue::CancelEventsByInput( CBaseEntity *pTarget, const char *szInput )
+void CEventQueue::CancelEventsByInput( CBaseEntity* pTarget, const char* szInput )
 {
-	if ( !pTarget )
+	if( !pTarget )
+	{
 		return;
+	}
 
 	string_t iszDebugName = MAKE_STRING( pTarget->GetDebugName() );
-	EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext;
+	EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext;
 
-	while ( pCur )
+	while( pCur )
 	{
 		bool bRemove = false;
 
-		if ( pTarget == pCur->m_pEntTarget || pCur->m_iTarget == iszDebugName )
+		if( pTarget == pCur->m_pEntTarget || pCur->m_iTarget == iszDebugName )
 		{
-			if ( !V_strncmp( STRING(pCur->m_iTargetInput), szInput, strlen(szInput) ) )
+			if( !V_strncmp( STRING( pCur->m_iTargetInput ), szInput, strlen( szInput ) ) )
 			{
 				bRemove = true;
 			}
 		}
 
-		EventQueuePrioritizedEvent_t *pPrev = pCur;
+		EventQueuePrioritizedEvent_t* pPrev = pCur;
 		pCur = pCur->m_pNext;
 
-		if ( bRemove )
+		if( bRemove )
 		{
-			RemoveEvent(pPrev);
+			RemoveEvent( pPrev );
 			delete pPrev;
 		}
 	}
@@ -1245,13 +1279,13 @@ void CEventQueue::CancelEventsByInput( CBaseEntity *pTarget, const char *szInput
 
 bool CEventQueue::RemoveEvent( int event )
 {
-	EventQueuePrioritizedEvent_t *pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>(event); // INT_TO_POINTER
+	EventQueuePrioritizedEvent_t* pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>( event ); // INT_TO_POINTER
 
-	for ( EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )
+	for( EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )
 	{
-		if ( pCur == pe )
+		if( pCur == pe )
 		{
-			RemoveEvent(pCur);
+			RemoveEvent( pCur );
 			delete pCur;
 			return true;
 		}
@@ -1262,13 +1296,13 @@ bool CEventQueue::RemoveEvent( int event )
 
 float CEventQueue::GetTimeLeft( int event )
 {
-	EventQueuePrioritizedEvent_t *pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>(event); // INT_TO_POINTER
+	EventQueuePrioritizedEvent_t* pe = reinterpret_cast<EventQueuePrioritizedEvent_t*>( event ); // INT_TO_POINTER
 
-	for ( EventQueuePrioritizedEvent_t *pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )
+	for( EventQueuePrioritizedEvent_t* pCur = m_Events.m_pNext; pCur; pCur = pCur->m_pNext )
 	{
-		if ( pCur == pe )
+		if( pCur == pe )
 		{
-			return (pCur->m_flFireTime - gpGlobals->curtime);
+			return ( pCur->m_flFireTime - gpGlobals->curtime );
 		}
 	}
 
@@ -1279,56 +1313,60 @@ float CEventQueue::GetTimeLeft( int event )
 
 // save data description for the event queue
 BEGIN_SIMPLE_DATADESC( CEventQueue )
-	// These are saved explicitly in CEventQueue::Save below
-	// DEFINE_FIELD( m_Events, EventQueuePrioritizedEvent_t ),
+// These are saved explicitly in CEventQueue::Save below
+// DEFINE_FIELD( m_Events, EventQueuePrioritizedEvent_t ),
 
-	DEFINE_FIELD( m_iListCount, FIELD_INTEGER ),	// this value is only used during save/restore
-END_DATADESC()
+DEFINE_FIELD( m_iListCount, FIELD_INTEGER ),	// this value is only used during save/restore
+			  END_DATADESC()
 
 
 // save data for a single event in the queue
-BEGIN_SIMPLE_DATADESC( EventQueuePrioritizedEvent_t )
-	DEFINE_FIELD( m_flFireTime, FIELD_TIME ),
-	DEFINE_FIELD( m_iTarget, FIELD_STRING ),
-	DEFINE_FIELD( m_iTargetInput, FIELD_STRING ),
-	DEFINE_FIELD( m_pActivator, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_pCaller, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_pEntTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iOutputID, FIELD_INTEGER ),
-	DEFINE_CUSTOM_FIELD( m_VariantValue, variantFuncs ),
+			  BEGIN_SIMPLE_DATADESC( EventQueuePrioritizedEvent_t )
+			  DEFINE_FIELD( m_flFireTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_iTarget, FIELD_STRING ),
+			  DEFINE_FIELD( m_iTargetInput, FIELD_STRING ),
+			  DEFINE_FIELD( m_pActivator, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_pCaller, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_pEntTarget, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_iOutputID, FIELD_INTEGER ),
+			  DEFINE_CUSTOM_FIELD( m_VariantValue, variantFuncs ),
 
 //	DEFINE_FIELD( m_pNext, FIELD_??? ),
 //	DEFINE_FIELD( m_pPrev, FIELD_??? ),
-END_DATADESC()
+			  END_DATADESC()
 
 
-int CEventQueue::Save( ISave &save )
+			  int CEventQueue::Save( ISave& save )
 {
 	// count the number of items in the queue
-	EventQueuePrioritizedEvent_t *pe;
+	EventQueuePrioritizedEvent_t* pe;
 
 	m_iListCount = 0;
-	for ( pe = m_Events.m_pNext; pe != NULL; pe = pe->m_pNext )
+	for( pe = m_Events.m_pNext; pe != NULL; pe = pe->m_pNext )
 	{
 		m_iListCount++;
 	}
 
 	// save that value out to disk, so we know how many to restore
-	if ( !save.WriteFields( "EventQueue", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
-		return 0;
-	
-	// cycle through all the events, saving them all
-	for ( pe = m_Events.m_pNext; pe != NULL; pe = pe->m_pNext )
+	if( !save.WriteFields( "EventQueue", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
 	{
-		if ( !save.WriteFields( "PEvent", pe, NULL, pe->m_DataMap.dataDesc, pe->m_DataMap.dataNumFields ) )
+		return 0;
+	}
+
+	// cycle through all the events, saving them all
+	for( pe = m_Events.m_pNext; pe != NULL; pe = pe->m_pNext )
+	{
+		if( !save.WriteFields( "PEvent", pe, NULL, pe->m_DataMap.dataDesc, pe->m_DataMap.dataNumFields ) )
+		{
 			return 0;
+		}
 	}
 
 	return 1;
 }
 
 
-int CEventQueue::Restore( IRestore &restore )
+int CEventQueue::Restore( IRestore& restore )
 {
 	// clear the event queue
 	Clear();
@@ -1337,19 +1375,23 @@ int CEventQueue::Restore( IRestore &restore )
 	EventQueuePrioritizedEvent_t tmpEvent;
 
 	// load the number of items saved
-	if ( !restore.ReadFields( "EventQueue", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
-		return 0;
-	
-	for ( int i = 0; i < m_iListCount; i++ )
+	if( !restore.ReadFields( "EventQueue", this, NULL, m_DataMap.dataDesc, m_DataMap.dataNumFields ) )
 	{
-		if ( !restore.ReadFields( "PEvent", &tmpEvent, NULL, tmpEvent.m_DataMap.dataDesc, tmpEvent.m_DataMap.dataNumFields ) )
+		return 0;
+	}
+
+	for( int i = 0; i < m_iListCount; i++ )
+	{
+		if( !restore.ReadFields( "PEvent", &tmpEvent, NULL, tmpEvent.m_DataMap.dataDesc, tmpEvent.m_DataMap.dataNumFields ) )
+		{
 			return 0;
+		}
 
 		// add the restored event into the list
-		if ( tmpEvent.m_pEntTarget )
+		if( tmpEvent.m_pEntTarget )
 		{
 			AddEvent( tmpEvent.m_pEntTarget,
-					  STRING(tmpEvent.m_iTargetInput),
+					  STRING( tmpEvent.m_iTargetInput ),
 					  tmpEvent.m_VariantValue,
 #ifdef TF_DLL
 					  tmpEvent.m_flFireTime - engine->GetServerTime(),
@@ -1362,8 +1404,8 @@ int CEventQueue::Restore( IRestore &restore )
 		}
 		else
 		{
-			AddEvent( STRING(tmpEvent.m_iTarget),
-					  STRING(tmpEvent.m_iTargetInput),
+			AddEvent( STRING( tmpEvent.m_iTarget ),
+					  STRING( tmpEvent.m_iTargetInput ),
 					  tmpEvent.m_VariantValue,
 #ifdef TF_DLL
 					  tmpEvent.m_flFireTime - engine->GetServerTime(),
@@ -1382,53 +1424,72 @@ int CEventQueue::Restore( IRestore &restore )
 ////////////////////////// variant_t implementation //////////////////////////
 
 // BUGBUG: Add support for function pointer save/restore to variants
-// BUGBUG: Must pass datamap_t to read/write fields 
-void variant_t::Set( fieldtype_t ftype, void *data )
+// BUGBUG: Must pass datamap_t to read/write fields
+void variant_t::Set( fieldtype_t ftype, void* data )
 {
 	fieldType = ftype;
 
-	switch ( ftype )
+	switch( ftype )
 	{
-	case FIELD_BOOLEAN:		bVal = *((bool *)data);				break;
-	case FIELD_CHARACTER:	iVal = *((char *)data);				break;
-	case FIELD_SHORT:		iVal = *((short *)data);			break;
-	case FIELD_INTEGER:		iVal = *((int *)data);				break;
-	case FIELD_STRING:		iszVal = *((string_t *)data);		break;
-	case FIELD_FLOAT:		flVal = *((float *)data);			break;
-	case FIELD_COLOR32:		rgbaVal = *((color32 *)data);		break;
+		case FIELD_BOOLEAN:
+			bVal = *( ( bool* )data );
+			break;
+		case FIELD_CHARACTER:
+			iVal = *( ( char* )data );
+			break;
+		case FIELD_SHORT:
+			iVal = *( ( short* )data );
+			break;
+		case FIELD_INTEGER:
+			iVal = *( ( int* )data );
+			break;
+		case FIELD_STRING:
+			iszVal = *( ( string_t* )data );
+			break;
+		case FIELD_FLOAT:
+			flVal = *( ( float* )data );
+			break;
+		case FIELD_COLOR32:
+			rgbaVal = *( ( color32* )data );
+			break;
 
-	case FIELD_VECTOR:
-	case FIELD_POSITION_VECTOR:
-	{
-		vecVal[0] = ((float *)data)[0];
-		vecVal[1] = ((float *)data)[1];
-		vecVal[2] = ((float *)data)[2];
-		break;
-	}
+		case FIELD_VECTOR:
+		case FIELD_POSITION_VECTOR:
+		{
+			vecVal[0] = ( ( float* )data )[0];
+			vecVal[1] = ( ( float* )data )[1];
+			vecVal[2] = ( ( float* )data )[2];
+			break;
+		}
 
 #ifdef MAPBASE
-	// There's this output class called COutputVariant which could output any data type, like a FIELD_INPUT input function.
-	// Well...nobody added support for it. It was there, but it wasn't functional.
-	// Mapbase adds support for it so you could variant your outputs as you please.
-	case FIELD_INPUT:
-	{
-		variant_t *variant = (variant_t*)data;
+		// There's this output class called COutputVariant which could output any data type, like a FIELD_INPUT input function.
+		// Well...nobody added support for it. It was there, but it wasn't functional.
+		// Mapbase adds support for it so you could variant your outputs as you please.
+		case FIELD_INPUT:
+		{
+			variant_t* variant = ( variant_t* )data;
 
-		// Pretty much just copying over its stored value.
-		fieldType = variant->FieldType();
-		variant->SetOther(data);
+			// Pretty much just copying over its stored value.
+			fieldType = variant->FieldType();
+			variant->SetOther( data );
 
-		Set(fieldType, data);
-		break;
-	}
+			Set( fieldType, data );
+			break;
+		}
 #endif
 
-	case FIELD_EHANDLE:		eVal = *((EHANDLE *)data);			break;
-	case FIELD_CLASSPTR:	eVal = *((CBaseEntity **)data);		break;
-	case FIELD_VOID:		
-	default:
-		iVal = 0; fieldType = FIELD_VOID;	
-		break;
+		case FIELD_EHANDLE:
+			eVal = *( ( EHANDLE* )data );
+			break;
+		case FIELD_CLASSPTR:
+			eVal = *( ( CBaseEntity** )data );
+			break;
+		case FIELD_VOID:
+		default:
+			iVal = 0;
+			fieldType = FIELD_VOID;
+			break;
 	}
 }
 
@@ -1437,35 +1498,53 @@ void variant_t::Set( fieldtype_t ftype, void *data )
 // Purpose: Copies the value in the variant into a block of memory
 // Input  : *data - the block to write into
 //-----------------------------------------------------------------------------
-void variant_t::SetOther( void *data )
+void variant_t::SetOther( void* data )
 {
-	switch ( fieldType )
+	switch( fieldType )
 	{
-	case FIELD_BOOLEAN:		*((bool *)data) = bVal != 0;		break;
-	case FIELD_CHARACTER:	*((char *)data) = iVal;				break;
-	case FIELD_SHORT:		*((short *)data) = iVal;			break;
-	case FIELD_INTEGER:		*((int *)data) = iVal;				break;
-	case FIELD_STRING:		*((string_t *)data) = iszVal;		break;
-	case FIELD_FLOAT:		*((float *)data) = flVal;			break;
-	case FIELD_COLOR32:		*((color32 *)data) = rgbaVal;		break;
+		case FIELD_BOOLEAN:
+			*( ( bool* )data ) = bVal != 0;
+			break;
+		case FIELD_CHARACTER:
+			*( ( char* )data ) = iVal;
+			break;
+		case FIELD_SHORT:
+			*( ( short* )data ) = iVal;
+			break;
+		case FIELD_INTEGER:
+			*( ( int* )data ) = iVal;
+			break;
+		case FIELD_STRING:
+			*( ( string_t* )data ) = iszVal;
+			break;
+		case FIELD_FLOAT:
+			*( ( float* )data ) = flVal;
+			break;
+		case FIELD_COLOR32:
+			*( ( color32* )data ) = rgbaVal;
+			break;
 
-	case FIELD_VECTOR:
-	case FIELD_POSITION_VECTOR:
-	{
-		((float *)data)[0] = vecVal[0];
-		((float *)data)[1] = vecVal[1];
-		((float *)data)[2] = vecVal[2];
-		break;
-	}
+		case FIELD_VECTOR:
+		case FIELD_POSITION_VECTOR:
+		{
+			( ( float* )data )[0] = vecVal[0];
+			( ( float* )data )[1] = vecVal[1];
+			( ( float* )data )[2] = vecVal[2];
+			break;
+		}
 
-	case FIELD_EHANDLE:		*((EHANDLE *)data) = eVal;			break;
-	case FIELD_CLASSPTR:	*((CBaseEntity **)data) = eVal;		break;
+		case FIELD_EHANDLE:
+			*( ( EHANDLE* )data ) = eVal;
+			break;
+		case FIELD_CLASSPTR:
+			*( ( CBaseEntity** )data ) = eVal;
+			break;
 	}
 }
 
 #ifdef MAPBASE
-// This way we don't have to use string comparisons when reading failed conversions
-static const char *g_szNoConversion = "No conversion to string";
+	// This way we don't have to use string comparisons when reading failed conversions
+	static const char* g_szNoConversion = "No conversion to string";
 #endif
 
 //-----------------------------------------------------------------------------
@@ -1477,7 +1556,7 @@ static const char *g_szNoConversion = "No conversion to string";
 //-----------------------------------------------------------------------------
 bool variant_t::Convert( fieldtype_t newType )
 {
-	if ( newType == fieldType )
+	if( newType == fieldType )
 	{
 		return true;
 	}
@@ -1485,7 +1564,7 @@ bool variant_t::Convert( fieldtype_t newType )
 	//
 	// Converting to a null value is easy.
 	//
-	if ( newType == FIELD_VOID )
+	if( newType == FIELD_VOID )
 	{
 		Set( FIELD_VOID, NULL );
 		return true;
@@ -1494,38 +1573,38 @@ bool variant_t::Convert( fieldtype_t newType )
 	//
 	// FIELD_INPUT accepts the variant type directly.
 	//
-	if ( newType == FIELD_INPUT )
+	if( newType == FIELD_INPUT )
 	{
 		return true;
 	}
 
 #ifdef MAPBASE
-	if (newType == FIELD_STRING)
+	if( newType == FIELD_STRING )
 	{
 		// I got a conversion error when I tried to convert int to string. I'm actually quite baffled.
 		// Was that case really not handled before? Did I do something that overrode something that already did this?
-		const char *szString = ToString();
+		const char* szString = ToString();
 
 		// g_szNoConversion is returned in ToString() when we can't convert to a string,
 		// so this is safe and it lets us get away with a pointer comparison.
-		if (szString != g_szNoConversion)
+		if( szString != g_szNoConversion )
 		{
-			SetString(AllocPooledString(szString));
+			SetString( AllocPooledString( szString ) );
 			return true;
 		}
 		return false;
 	}
 #endif
 
-	switch ( fieldType )
+	switch( fieldType )
 	{
 		case FIELD_INTEGER:
 		{
-			switch ( newType )
+			switch( newType )
 			{
 				case FIELD_FLOAT:
 				{
-					SetFloat( (float) iVal );
+					SetFloat( ( float ) iVal );
 					return true;
 				}
 
@@ -1540,11 +1619,11 @@ bool variant_t::Convert( fieldtype_t newType )
 
 		case FIELD_FLOAT:
 		{
-			switch ( newType )
+			switch( newType )
 			{
 				case FIELD_INTEGER:
 				{
-					SetInt( (int) flVal );
+					SetInt( ( int ) flVal );
 					return true;
 				}
 
@@ -1563,43 +1642,43 @@ bool variant_t::Convert( fieldtype_t newType )
 		//
 		case FIELD_STRING:
 		{
-			switch ( newType )
+			switch( newType )
 			{
 				case FIELD_INTEGER:
 				{
-					if (iszVal != NULL_STRING)
+					if( iszVal != NULL_STRING )
 					{
-						SetInt(atoi(STRING(iszVal)));
+						SetInt( atoi( STRING( iszVal ) ) );
 					}
 					else
 					{
-						SetInt(0);
+						SetInt( 0 );
 					}
 					return true;
 				}
 
 				case FIELD_FLOAT:
 				{
-					if (iszVal != NULL_STRING)
+					if( iszVal != NULL_STRING )
 					{
-						SetFloat(atof(STRING(iszVal)));
+						SetFloat( atof( STRING( iszVal ) ) );
 					}
 					else
 					{
-						SetFloat(0);
+						SetFloat( 0 );
 					}
 					return true;
 				}
 
 				case FIELD_BOOLEAN:
 				{
-					if (iszVal != NULL_STRING)
+					if( iszVal != NULL_STRING )
 					{
-						SetBool( atoi(STRING(iszVal)) != 0 );
+						SetBool( atoi( STRING( iszVal ) ) != 0 );
 					}
 					else
 					{
-						SetBool(false);
+						SetBool( false );
 					}
 					return true;
 				}
@@ -1607,10 +1686,10 @@ bool variant_t::Convert( fieldtype_t newType )
 				case FIELD_VECTOR:
 				{
 					Vector tmpVec = vec3_origin;
-					if (sscanf(STRING(iszVal), "[%f %f %f]", &tmpVec[0], &tmpVec[1], &tmpVec[2]) == 0)
+					if( sscanf( STRING( iszVal ), "[%f %f %f]", &tmpVec[0], &tmpVec[1], &tmpVec[2] ) == 0 )
 					{
 						// Try sucking out 3 floats with no []s
-						sscanf(STRING(iszVal), "%f %f %f", &tmpVec[0], &tmpVec[1], &tmpVec[2]);
+						sscanf( STRING( iszVal ), "%f %f %f", &tmpVec[0], &tmpVec[1], &tmpVec[2] );
 					}
 					SetVector3D( tmpVec );
 					return true;
@@ -1623,7 +1702,7 @@ bool variant_t::Convert( fieldtype_t newType )
 					int nBlue = 0;
 					int nAlpha = 255;
 
-					sscanf(STRING(iszVal), "%d %d %d %d", &nRed, &nGreen, &nBlue, &nAlpha);
+					sscanf( STRING( iszVal ), "%d %d %d %d", &nRed, &nGreen, &nBlue, &nAlpha );
 					SetColor32( nRed, nGreen, nBlue, nAlpha );
 					return true;
 				}
@@ -1631,13 +1710,13 @@ bool variant_t::Convert( fieldtype_t newType )
 				case FIELD_EHANDLE:
 				{
 					// convert the string to an entity by locating it by classname
-					CBaseEntity *ent = NULL;
-					if ( iszVal != NULL_STRING )
+					CBaseEntity* ent = NULL;
+					if( iszVal != NULL_STRING )
 					{
 #ifdef MAPBASE
 						// We search by both entity name and class name now.
 						// We also have an entirely new version of Convert specifically for !activators on FIELD_EHANDLE.
-						ent = gEntList.FindEntityGeneric( NULL, STRING(iszVal) );
+						ent = gEntList.FindEntityGeneric( NULL, STRING( iszVal ) );
 #else
 						// FIXME: do we need to pass an activator in here?
 						ent = gEntList.FindEntityByName( NULL, iszVal );
@@ -1647,20 +1726,20 @@ bool variant_t::Convert( fieldtype_t newType )
 					return true;
 				}
 			}
-		
+
 			break;
 		}
 
 #ifndef MAPBASE // ToString() above handles this
 		case FIELD_EHANDLE:
 		{
-			switch ( newType )
+			switch( newType )
 			{
 				case FIELD_STRING:
 				{
 					// take the entities targetname as the string
 					string_t iszStr = NULL_STRING;
-					if ( eVal != NULL )
+					if( eVal != NULL )
 					{
 						SetString( eVal->GetEntityName() );
 					}
@@ -1676,8 +1755,8 @@ bool variant_t::Convert( fieldtype_t newType )
 		{
 			// Many fields already turn into some equivalent of "NULL" when given a null string_t.
 			// This takes advantage of that and allows FIELD_VOID to be converted to more than just empty strings.
-			SetString(NULL_STRING);
-			return Convert(newType);
+			SetString( NULL_STRING );
+			return Convert( newType );
 		}
 #endif
 	}
@@ -1690,40 +1769,42 @@ bool variant_t::Convert( fieldtype_t newType )
 //-----------------------------------------------------------------------------
 // Only for when something like !activator needs to become a FIELD_EHANDLE, or when that's a possibility.
 //-----------------------------------------------------------------------------
-bool variant_t::Convert( fieldtype_t newType, CBaseEntity *pSelf, CBaseEntity *pActivator, CBaseEntity *pCaller )
+bool variant_t::Convert( fieldtype_t newType, CBaseEntity* pSelf, CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
 	// Support for turning !activator, !caller, and !self into a FIELD_EHANDLE.
 	// Extremely necessary.
-	if (newType == FIELD_EHANDLE)
+	if( newType == FIELD_EHANDLE )
 	{
-		if (newType == fieldType)
-			return true;
-
-		CBaseEntity *ent = NULL;
-		if (iszVal != NULL_STRING)
+		if( newType == fieldType )
 		{
-			ent = gEntList.FindEntityGeneric(NULL, STRING(iszVal), pSelf, pActivator, pCaller);
+			return true;
 		}
-		SetEntity(ent);
+
+		CBaseEntity* ent = NULL;
+		if( iszVal != NULL_STRING )
+		{
+			ent = gEntList.FindEntityGeneric( NULL, STRING( iszVal ), pSelf, pActivator, pCaller );
+		}
+		SetEntity( ent );
 		return true;
 	}
 
 #if 0 // This was scrapped almost immediately. See the Trello card for details.
 	// Serves as a way of converting the name of the !activator, !caller, or !self into a string
 	// without passing the text "!activator" and stuff.
-	else if (fieldType == FIELD_STRING && STRING(iszVal)[0] == '&')
+	else if( fieldType == FIELD_STRING && STRING( iszVal )[0] == '&' )
 	{
-		const char *val = STRING(iszVal) + 1;
+		const char* val = STRING( iszVal ) + 1;
 
-		#define GetRealName(string, ent) if (FStrEq(val, string)) { if (ent) {SetString(ent->GetEntityName());} return true; }
+#define GetRealName(string, ent) if (FStrEq(val, string)) { if (ent) {SetString(ent->GetEntityName());} return true; }
 
-		GetRealName("!activator", pActivator)
-		else GetRealName("!caller", pCaller)
-		else GetRealName("!self", pSelf)
-	}
+		GetRealName( "!activator", pActivator )
+		else GetRealName( "!caller", pCaller )
+			else GetRealName( "!self", pSelf )
+			}
 #endif
 
-	return Convert(newType);
+	return Convert( newType );
 }
 #endif
 
@@ -1736,79 +1817,79 @@ bool variant_t::Convert( fieldtype_t newType, CBaseEntity *pSelf, CBaseEntity *p
 //				  subsequent calls to this function will overwrite the contents
 //				  of the buffer!
 //-----------------------------------------------------------------------------
-const char *variant_t::ToString( void ) const
+const char* variant_t::ToString( void ) const
 {
-	COMPILE_TIME_ASSERT( sizeof(string_t) == sizeof(int) );
+	COMPILE_TIME_ASSERT( sizeof( string_t ) == sizeof( int ) );
 
 	static char szBuf[512];
 
-	switch (fieldType)
+	switch( fieldType )
 	{
-	case FIELD_STRING:
+		case FIELD_STRING:
 		{
-			return(STRING(iszVal));
+			return( STRING( iszVal ) );
 		}
 
-	case FIELD_BOOLEAN:
+		case FIELD_BOOLEAN:
 		{
-			if (bVal == 0)
+			if( bVal == 0 )
 			{
-				Q_strncpy(szBuf, "false",sizeof(szBuf));
+				Q_strncpy( szBuf, "false", sizeof( szBuf ) );
 			}
 			else
 			{
-				Q_strncpy(szBuf, "true",sizeof(szBuf));
+				Q_strncpy( szBuf, "true", sizeof( szBuf ) );
 			}
-			return(szBuf);
+			return( szBuf );
 		}
 
-	case FIELD_INTEGER:
+		case FIELD_INTEGER:
 		{
 			Q_snprintf( szBuf, sizeof( szBuf ), "%i", iVal );
-			return(szBuf);
+			return( szBuf );
 		}
 
-	case FIELD_FLOAT:
+		case FIELD_FLOAT:
 		{
-			Q_snprintf(szBuf,sizeof(szBuf), "%g", flVal);
-			return(szBuf);
+			Q_snprintf( szBuf, sizeof( szBuf ), "%g", flVal );
+			return( szBuf );
 		}
 
-	case FIELD_COLOR32:
+		case FIELD_COLOR32:
 		{
-			Q_snprintf(szBuf,sizeof(szBuf), "%d %d %d %d", (int)rgbaVal.r, (int)rgbaVal.g, (int)rgbaVal.b, (int)rgbaVal.a);
-			return(szBuf);
+			Q_snprintf( szBuf, sizeof( szBuf ), "%d %d %d %d", ( int )rgbaVal.r, ( int )rgbaVal.g, ( int )rgbaVal.b, ( int )rgbaVal.a );
+			return( szBuf );
 		}
 
-	case FIELD_VECTOR:
+		case FIELD_VECTOR:
 		{
-			Q_snprintf(szBuf,sizeof(szBuf), "[%g %g %g]", (double)vecVal[0], (double)vecVal[1], (double)vecVal[2]);
-			return(szBuf);
+			Q_snprintf( szBuf, sizeof( szBuf ), "[%g %g %g]", ( double )vecVal[0], ( double )vecVal[1], ( double )vecVal[2] );
+			return( szBuf );
 		}
 
-	case FIELD_VOID:
+		case FIELD_VOID:
 		{
 			szBuf[0] = '\0';
-			return(szBuf);
+			return( szBuf );
 		}
 
-	case FIELD_EHANDLE:
+		case FIELD_EHANDLE:
 		{
 #ifdef MAPBASE
 			// This is a really bad idea.
-			const char *pszName = (Entity()) ? Entity()->GetDebugName() : "<<null entity>>";
+			const char* pszName = ( Entity() ) ? Entity()->GetDebugName() : "<<null entity>>";
 #else
-			const char *pszName = (Entity()) ? STRING(Entity()->GetEntityName()) : "<<null entity>>";
+			const char* pszName = ( Entity() ) ? STRING( Entity()->GetEntityName() ) : "<<null entity>>";
 #endif
 			Q_strncpy( szBuf, pszName, 512 );
-			return (szBuf);
+			return ( szBuf );
 		}
 	}
 
 #ifdef MAPBASE
 	return g_szNoConversion;
 #else
-	return("No conversion to string");
+	return( "No conversion to string" );
 #endif
 }
 
@@ -1894,125 +1975,127 @@ typedescription_t variant_t::m_SaveMatrix3x4Worldspace[] =
 class CVariantSaveDataOps : public CDefSaveRestoreOps
 {
 	// saves the entire array of variables
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
 	{
-		variant_t *var = (variant_t*)fieldInfo.pField;
+		variant_t* var = ( variant_t* )fieldInfo.pField;
 
 		int type = var->FieldType();
 		pSave->WriteInt( &type, 1 );
 
-		switch ( var->FieldType() )
+		switch( var->FieldType() )
 		{
-		case FIELD_VOID:
-			break;
-		case FIELD_BOOLEAN:	
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveBool, 1 );
-			break;
-		case FIELD_INTEGER:	
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveInt, 1 );
-			break;
-		case FIELD_FLOAT:
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveFloat, 1 );
-			break;
-		case FIELD_EHANDLE:
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveEHandle, 1 );
-			break;
-		case FIELD_STRING:
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveString, 1 );
-			break;
-		case FIELD_COLOR32:
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveColor, 1 );
-			break;
-		case FIELD_VECTOR:
-		{
-			variant_savevector_t Temp;
-			var->Vector3D(Temp.vecSave);
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SaveVector, 1 );
-			break;
-		}
+			case FIELD_VOID:
+				break;
+			case FIELD_BOOLEAN:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveBool, 1 );
+				break;
+			case FIELD_INTEGER:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveInt, 1 );
+				break;
+			case FIELD_FLOAT:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveFloat, 1 );
+				break;
+			case FIELD_EHANDLE:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveEHandle, 1 );
+				break;
+			case FIELD_STRING:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveString, 1 );
+				break;
+			case FIELD_COLOR32:
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveColor, 1 );
+				break;
+			case FIELD_VECTOR:
+			{
+				variant_savevector_t Temp;
+				var->Vector3D( Temp.vecSave );
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SaveVector, 1 );
+				break;
+			}
 
-		case FIELD_POSITION_VECTOR:
-		{
-			variant_savevector_t Temp;
-			var->Vector3D(Temp.vecSave);
-			pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SavePositionVector, 1 );
-			break;
-		}
+			case FIELD_POSITION_VECTOR:
+			{
+				variant_savevector_t Temp;
+				var->Vector3D( Temp.vecSave );
+				pSave->WriteFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SavePositionVector, 1 );
+				break;
+			}
 
-		default:
-			Warning( "Bad type %d in saved variant_t\n", var->FieldType() );
-			Assert(0);
+			default:
+				Warning( "Bad type %d in saved variant_t\n", var->FieldType() );
+				Assert( 0 );
 		}
 	}
 
 	// restores a single instance of the variable
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		variant_t *var = (variant_t*)fieldInfo.pField;
+		variant_t* var = ( variant_t* )fieldInfo.pField;
 
 		*var = variant_t();
 
-		var->fieldType = (_fieldtypes)pRestore->ReadInt();
+		var->fieldType = ( _fieldtypes )pRestore->ReadInt();
 
-		switch ( var->fieldType )
+		switch( var->fieldType )
 		{
-		case FIELD_VOID:
-			break;
-		case FIELD_BOOLEAN:	
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveBool, 1 );
-			break;
-		case FIELD_INTEGER:	
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveInt, 1 );
-			break;
-		case FIELD_FLOAT:
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveFloat, 1 );
-			break;
-		case FIELD_EHANDLE:
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveEHandle, 1 );
-			break;
-		case FIELD_STRING:
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveString, 1 );
-			break;
-		case FIELD_COLOR32:
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveColor, 1 );
-			break;
-		case FIELD_VECTOR:
-		{
-			variant_savevector_t Temp;
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SaveVector, 1 );
-			var->SetVector3D(Temp.vecSave);
-			break;
-		}
-		case FIELD_POSITION_VECTOR:
-		{
-			variant_savevector_t Temp;
-			pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SavePositionVector, 1 );
-			var->SetPositionVector3D(Temp.vecSave);
-			break;
-		}
-		default:
-			Warning( "Bad type %d in saved variant_t\n", var->FieldType() );
-			Assert(0);
-			break;
+			case FIELD_VOID:
+				break;
+			case FIELD_BOOLEAN:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveBool, 1 );
+				break;
+			case FIELD_INTEGER:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveInt, 1 );
+				break;
+			case FIELD_FLOAT:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveFloat, 1 );
+				break;
+			case FIELD_EHANDLE:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveEHandle, 1 );
+				break;
+			case FIELD_STRING:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveString, 1 );
+				break;
+			case FIELD_COLOR32:
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, var, NULL, variant_t::m_SaveColor, 1 );
+				break;
+			case FIELD_VECTOR:
+			{
+				variant_savevector_t Temp;
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SaveVector, 1 );
+				var->SetVector3D( Temp.vecSave );
+				break;
+			}
+			case FIELD_POSITION_VECTOR:
+			{
+				variant_savevector_t Temp;
+				pRestore->ReadFields( fieldInfo.pTypeDesc->fieldName, &Temp, NULL, variant_t::m_SavePositionVector, 1 );
+				var->SetPositionVector3D( Temp.vecSave );
+				break;
+			}
+			default:
+				Warning( "Bad type %d in saved variant_t\n", var->FieldType() );
+				Assert( 0 );
+				break;
 		}
 	}
 
 
-	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual bool IsEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
 		// check all the elements of the array (usually only 1)
-		variant_t *var = (variant_t*)fieldInfo.pField;
-		for ( int i = 0; i < fieldInfo.pTypeDesc->fieldSize; i++, var++ )
+		variant_t* var = ( variant_t* )fieldInfo.pField;
+		for( int i = 0; i < fieldInfo.pTypeDesc->fieldSize; i++, var++ )
 		{
-			if ( var->FieldType() != FIELD_VOID )
+			if( var->FieldType() != FIELD_VOID )
+			{
 				return 0;
+			}
 		}
 
 		// variant has no data
 		return 1;
 	}
 
-	virtual void MakeEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual void MakeEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
 		// Don't no how to. This is okay, since objects of this type
 		// are always born clean before restore, and not reused
@@ -2023,11 +2106,11 @@ class CVariantSaveDataOps : public CDefSaveRestoreOps
 	// We could just turn it into a string since variant_t can convert it later, but this keyvalue is probably a variant_t for a reason,
 	// meaning it might use strings and numbers completely differently without converting them.
 	// As a result, we try to read it to figure out what type it is.
-	virtual bool Parse( const SaveRestoreFieldInfo_t &fieldInfo, char const* szValue )
+	virtual bool Parse( const SaveRestoreFieldInfo_t& fieldInfo, char const* szValue )
 	{
-		variant_t *var = (variant_t*)fieldInfo.pField;
+		variant_t* var = ( variant_t* )fieldInfo.pField;
 
-		*var = Variant_Parse(szValue);
+		*var = Variant_Parse( szValue );
 
 		return true;
 	}
@@ -2035,25 +2118,25 @@ class CVariantSaveDataOps : public CDefSaveRestoreOps
 };
 
 CVariantSaveDataOps g_VariantSaveDataOps;
-ISaveRestoreOps *variantFuncs = &g_VariantSaveDataOps;
+ISaveRestoreOps* variantFuncs = &g_VariantSaveDataOps;
 
 /////////////////////// entitylist /////////////////////
 
-CUtlMemoryPool g_EntListMemPool( sizeof(entitem_t), 256, CUtlMemoryPool::GROW_NONE, "g_EntListMemPool" );
+CUtlMemoryPool g_EntListMemPool( sizeof( entitem_t ), 256, CUtlMemoryPool::GROW_NONE, "g_EntListMemPool" );
 
 #include "tier0/memdbgoff.h"
 
-void *entitem_t::operator new( size_t stAllocateBlock )
+void* entitem_t::operator new( size_t stAllocateBlock )
 {
 	return g_EntListMemPool.Alloc( stAllocateBlock );
 }
 
-void *entitem_t::operator new( size_t stAllocateBlock, int nBlockUse, const char *pFileName, int nLine )
+void* entitem_t::operator new( size_t stAllocateBlock, int nBlockUse, const char* pFileName, int nLine )
 {
 	return g_EntListMemPool.Alloc( stAllocateBlock );
 }
 
-void entitem_t::operator delete( void *pMem )
+void entitem_t::operator delete( void* pMem )
 {
 	g_EntListMemPool.Free( pMem );
 }
@@ -2070,8 +2153,8 @@ CEntityList::CEntityList()
 CEntityList::~CEntityList()
 {
 	// remove all items from the list
-	entitem_t *next, *e = m_pItemList;
-	while ( e != NULL )
+	entitem_t* next, *e = m_pItemList;
+	while( e != NULL )
 	{
 		next = e->pNext;
 		delete e;
@@ -2080,19 +2163,19 @@ CEntityList::~CEntityList()
 	m_pItemList = NULL;
 }
 
-void CEntityList::AddEntity( CBaseEntity *pEnt )
+void CEntityList::AddEntity( CBaseEntity* pEnt )
 {
 	// check if it's already in the list; if not, add it
-	entitem_t *e = m_pItemList;
-	while ( e != NULL )
+	entitem_t* e = m_pItemList;
+	while( e != NULL )
 	{
-		if ( e->hEnt == pEnt )
+		if( e->hEnt == pEnt )
 		{
 			// it's already in the list
 			return;
 		}
 
-		if ( e->pNext == NULL )
+		if( e->pNext == NULL )
 		{
 			// we've hit the end of the list, so tack it on
 			e->pNext = new entitem_t;
@@ -2104,7 +2187,7 @@ void CEntityList::AddEntity( CBaseEntity *pEnt )
 
 		e = e->pNext;
 	}
-	
+
 	// empty list
 	m_pItemList = new entitem_t;
 	m_pItemList->hEnt = pEnt;
@@ -2112,16 +2195,16 @@ void CEntityList::AddEntity( CBaseEntity *pEnt )
 	m_iNumItems = 1;
 }
 
-void CEntityList::DeleteEntity( CBaseEntity *pEnt )
+void CEntityList::DeleteEntity( CBaseEntity* pEnt )
 {
 	// find the entry in the list and delete it
-	entitem_t *prev = NULL, *e = m_pItemList;
-	while ( e != NULL )
+	entitem_t* prev = NULL, *e = m_pItemList;
+	while( e != NULL )
 	{
 		// delete the link if it's the matching entity OR if the link is NULL
-		if ( e->hEnt == pEnt || e->hEnt == NULL )
+		if( e->hEnt == pEnt || e->hEnt == NULL )
 		{
-			if ( prev )
+			if( prev )
 			{
 				prev->pNext = e->pNext;
 			}

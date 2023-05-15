@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -22,9 +22,9 @@ public:
 	DECLARE_SERVERCLASS();
 
 	SmokeTrail();
-	virtual bool KeyValue( const char *szKeyName, const char *szValue ); 
-	void					SetEmit(bool bVal);
-	void					FollowEntity( CBaseEntity *pEntity, const char *pAttachmentName = NULL);
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
+	void					SetEmit( bool bVal );
+	void					FollowEntity( CBaseEntity* pEntity, const char* pAttachmentName = NULL );
 	static	SmokeTrail*		CreateSmokeTrail();
 
 public:
@@ -39,7 +39,7 @@ public:
 	CNetworkVar( float, m_MinSpeed );				// Speed range.
 	CNetworkVar( float, m_MaxSpeed );
 	CNetworkVar( float, m_StartSize );			// Size ramp.
-	CNetworkVar( float, m_EndSize );	
+	CNetworkVar( float, m_EndSize );
 	CNetworkVar( float, m_SpawnRadius );
 	CNetworkVar( float, m_MinDirectedSpeed );				// Speed range.
 	CNetworkVar( float, m_MaxDirectedSpeed );
@@ -60,9 +60,9 @@ public:
 	DECLARE_SERVERCLASS();
 
 	RocketTrail();
-	void					SetEmit(bool bVal);
-	void					FollowEntity( CBaseEntity *pEntity, const char *pAttachmentName = NULL);
-	static RocketTrail		*CreateRocketTrail();
+	void					SetEmit( bool bVal );
+	void					FollowEntity( CBaseEntity* pEntity, const char* pAttachmentName = NULL );
+	static RocketTrail*		CreateRocketTrail();
 
 public:
 	// Effect parameters. These will assume default values but you can change them.
@@ -76,13 +76,13 @@ public:
 	CNetworkVar( float, m_MinSpeed );				// Speed range.
 	CNetworkVar( float, m_MaxSpeed );
 	CNetworkVar( float, m_StartSize );			// Size ramp.
-	CNetworkVar( float, m_EndSize );	
+	CNetworkVar( float, m_EndSize );
 	CNetworkVar( float, m_SpawnRadius );
-	
+
 	CNetworkVar( bool, m_bEmit );
 
 	CNetworkVar( int, m_nAttachment );
-	
+
 	CNetworkVar( bool, m_bDamaged );
 
 	CNetworkVar( float, m_flFlareScale );			// Size of the flare
@@ -133,8 +133,8 @@ public:
 
 	static SporeExplosion*		CreateSporeExplosion();
 
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 //Data members
 public:
@@ -162,8 +162,8 @@ public:
 	DECLARE_CLASS( CFireTrail, CBaseParticleEntity );
 	DECLARE_SERVERCLASS();
 
-	static CFireTrail	*CreateFireTrail( void );
-	void				FollowEntity( CBaseEntity *pEntity, const char *pAttachmentName );
+	static CFireTrail*	CreateFireTrail( void );
+	void				FollowEntity( CBaseEntity* pEntity, const char* pAttachmentName );
 	void				Precache( void );
 
 	CNetworkVar( int, m_nAttachment );
@@ -182,8 +182,8 @@ public:
 	DECLARE_SERVERCLASS();
 
 	DustTrail();
-	virtual bool KeyValue( const char *szKeyName, const char *szValue ); 
-	void					SetEmit(bool bVal);
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
+	void					SetEmit( bool bVal );
 	static	DustTrail*		CreateDustTrail();
 
 public:
@@ -197,7 +197,7 @@ public:
 	CNetworkVar( float, m_MinSpeed );				// Speed range.
 	CNetworkVar( float, m_MaxSpeed );
 	CNetworkVar( float, m_StartSize );			// Size ramp.
-	CNetworkVar( float, m_EndSize );	
+	CNetworkVar( float, m_EndSize );
 	CNetworkVar( float, m_SpawnRadius );
 	CNetworkVar( float, m_MinDirectedSpeed );				// Speed range.
 	CNetworkVar( float, m_MaxDirectedSpeed );

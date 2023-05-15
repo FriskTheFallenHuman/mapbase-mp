@@ -1,17 +1,17 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef AI_SPEECHFILTER_H
 #define AI_SPEECHFILTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CAI_SpeechFilter : public CBaseEntity, public IEntityListener
 {
@@ -24,19 +24,25 @@ public:
 	void	UpdateOnRemove( void );
 
 	void	Enable( bool bEnable );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
-	void	InputSetIdleModifier( inputdata_t &inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
+	void	InputSetIdleModifier( inputdata_t& inputdata );
 
 	void	PopulateSubjectList( bool purge = false );
 
 
 	// Accessors for our NPC
-	float	GetIdleModifier( void ) { return m_flIdleModifier; }
-	bool	NeverSayHello( void ) { return m_bNeverSayHello; }
+	float	GetIdleModifier( void )
+	{
+		return m_flIdleModifier;
+	}
+	bool	NeverSayHello( void )
+	{
+		return m_bNeverSayHello;
+	}
 
-	void	OnEntityCreated( CBaseEntity *pEntity );
-	void	OnEntityDeleted( CBaseEntity *pEntity );
+	void	OnEntityCreated( CBaseEntity* pEntity );
+	void	OnEntityDeleted( CBaseEntity* pEntity );
 
 protected:
 	string_t	m_iszSubject;

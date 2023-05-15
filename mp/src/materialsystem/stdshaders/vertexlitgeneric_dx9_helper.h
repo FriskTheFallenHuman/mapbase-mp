@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -25,7 +25,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct VertexLitGeneric_DX9_Vars_t
 {
-	VertexLitGeneric_DX9_Vars_t() { memset( this, 0xFF, sizeof(*this) ); }
+	VertexLitGeneric_DX9_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( *this ) );
+	}
 
 	int m_nBaseTexture;
 	int m_nWrinkle;
@@ -65,7 +68,7 @@ struct VertexLitGeneric_DX9_Vars_t
 	int m_nPhongAlbedoTint;
 	int m_nPhongExponentTexture;
 	int m_nDiffuseWarpTexture;
-	int m_nPhongWarpTexture;	
+	int m_nPhongWarpTexture;
 	int m_nPhongBoost;
 	int m_nPhongFresnelRanges;
 	int m_nPhongExponentFactor;
@@ -166,12 +169,12 @@ struct VertexLitGeneric_DX9_Vars_t
 	int m_nTreeSwayStaticValues;
 };
 
-void InitParamsVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info );
-void InitVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info );
-void DrawVertexLitGeneric_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow,
-							   bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t &info, VertexCompressionType_t vertexCompression,
-							   CBasePerMaterialContextData **pContextDataPtr
-	);
+void InitParamsVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info );
+void InitVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info );
+void DrawVertexLitGeneric_DX9( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow,
+							   bool bVertexLitGeneric, VertexLitGeneric_DX9_Vars_t& info, VertexCompressionType_t vertexCompression,
+							   CBasePerMaterialContextData** pContextDataPtr
+							 );
 
 
 #endif // VERTEXLITGENERIC_DX9_HELPER_H

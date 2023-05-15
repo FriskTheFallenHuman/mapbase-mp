@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define ISHADERUTIL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -44,16 +44,17 @@ enum shaderthreadevent_t
 	SHADER_THREAD_RESET_RENDER_STATE =	7,
 };
 
-abstract_class IShaderUtil : public IAppSystem
+abstract_class IShaderUtil :
+public IAppSystem
 {
 public:
 	// Method to allow clients access to the MaterialSystem_Config
 	virtual MaterialSystem_Config_t& GetConfig() = 0;
 
 	// Allows us to convert image formats
-	virtual bool ConvertImageFormat( unsigned char *src, enum ImageFormat srcImageFormat,
-									 unsigned char *dst, enum ImageFormat dstImageFormat, 
-									 int width, int height, int srcStride = 0, int dstStride = 0 ) = 0;
+	virtual bool ConvertImageFormat( unsigned char* src, enum ImageFormat srcImageFormat,
+	unsigned char* dst, enum ImageFormat dstImageFormat,
+	int width, int height, int srcStride = 0, int dstStride = 0 ) = 0;
 
 	// Figures out the amount of memory needed by a bitmap
 	virtual int GetMemRequired( int width, int height, int depth, ImageFormat format, bool mipmap ) = 0;
@@ -61,11 +62,11 @@ public:
 	// Gets image format info
 	virtual const ImageFormatInfo_t& ImageFormatInfo( ImageFormat fmt ) const = 0;
 
-    // Bind standard textures
+	// Bind standard textures
 	virtual void BindStandardTexture( Sampler_t sampler, StandardTextureId_t id ) = 0;
 
 	// What are the lightmap dimensions?
-	virtual void GetLightmapDimensions( int *w, int *h ) = 0;
+	virtual void GetLightmapDimensions( int* w, int* h ) = 0;
 
 	// These methods are called when the shader must eject + restore HW memory
 	virtual void ReleaseShaderObjects() = 0;
@@ -89,21 +90,21 @@ public:
 	// Gets the bound morph's vertex format; returns 0 if no morph is bound
 	virtual MorphFormat_t GetBoundMorphFormat() = 0;
 
-	virtual ITexture *GetRenderTargetEx( int nRenderTargetID ) = 0;
+	virtual ITexture * GetRenderTargetEx( int nRenderTargetID ) = 0;
 
 	// Tells the material system to draw a buffer clearing quad
 	virtual void DrawClearBufferQuad( unsigned char r, unsigned char g, unsigned char b, unsigned char a, bool bClearColor, bool bClearAlpha, bool bClearDepth ) = 0;
 
 #if defined( _X360 )
-	virtual void ReadBackBuffer( Rect_t *pSrcRect, Rect_t *pDstRect, unsigned char *pData, ImageFormat dstFormat, int nDstStride ) = 0;
+	virtual void ReadBackBuffer( Rect_t* pSrcRect, Rect_t* pDstRect, unsigned char* pData, ImageFormat dstFormat, int nDstStride ) = 0;
 #endif
 
 	// Calls from meshes to material system to handle queing/threading
-	virtual bool OnDrawMesh( IMesh *pMesh, int firstIndex, int numIndices ) = 0;
-	virtual bool OnDrawMesh( IMesh *pMesh, CPrimList *pLists, int nLists ) = 0;
-	virtual bool OnSetFlexMesh( IMesh *pStaticMesh, IMesh *pMesh, int nVertexOffsetInBytes ) = 0;
-	virtual bool OnSetColorMesh( IMesh *pStaticMesh, IMesh *pMesh, int nVertexOffsetInBytes ) = 0;
-	virtual bool OnSetPrimitiveType( IMesh *pMesh, MaterialPrimitiveType_t type ) = 0;
+	virtual bool OnDrawMesh( IMesh * pMesh, int firstIndex, int numIndices ) = 0;
+	virtual bool OnDrawMesh( IMesh * pMesh, CPrimList * pLists, int nLists ) = 0;
+	virtual bool OnSetFlexMesh( IMesh * pStaticMesh, IMesh * pMesh, int nVertexOffsetInBytes ) = 0;
+	virtual bool OnSetColorMesh( IMesh * pStaticMesh, IMesh * pMesh, int nVertexOffsetInBytes ) = 0;
+	virtual bool OnSetPrimitiveType( IMesh * pMesh, MaterialPrimitiveType_t type ) = 0;
 	virtual bool OnFlushBufferedPrimitives() = 0;
 
 
@@ -111,7 +112,7 @@ public:
 	virtual void SyncMatrix( MaterialMatrixMode_t ) = 0;
 
 	virtual void BindStandardVertexTexture( VertexTextureSampler_t sampler, StandardTextureId_t id ) = 0;
-	virtual void GetStandardTextureDimensions( int *pWidth, int *pHeight, StandardTextureId_t id ) = 0;
+	virtual void GetStandardTextureDimensions( int* pWidth, int* pHeight, StandardTextureId_t id ) = 0;
 
 	virtual int MaxHWMorphBatchCount() const = 0;
 

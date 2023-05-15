@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -30,7 +30,7 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHL2MPClientScoreBoardDialog::CHL2MPClientScoreBoardDialog( IViewPort *pViewPort ) : CClientScoreBoardDialog( pViewPort )
+CHL2MPClientScoreBoardDialog::CHL2MPClientScoreBoardDialog( IViewPort* pViewPort ) : CClientScoreBoardDialog( pViewPort )
 {
 	m_pPlayerListDM = new SectionedListPanel( this, "PlayerListDM" );
 	m_pPlayerCountLabel_DM = new Label( this, "DM_PlayerCount", "" );
@@ -85,7 +85,7 @@ void CHL2MPClientScoreBoardDialog::PaintBorder()
 //-----------------------------------------------------------------------------
 // Purpose: Apply scheme settings
 //-----------------------------------------------------------------------------
-void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -97,7 +97,7 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	SetBgColor( Color( 0, 0, 0, 0 ) );
 	SetBorder( pScheme->GetBorder( "BaseBorder" ) );
 
-	if ( m_pPlayerListDM )
+	if( m_pPlayerListDM )
 	{
 		m_pPlayerListDM->SetImageList( m_pImageList, false );
 		m_pPlayerListDM->SetBgColor( Color( 0, 0, 0, 0 ) );
@@ -105,7 +105,7 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pPlayerListDM->SetVisible( false );
 	}
 
-	if ( m_pPlayerListR )
+	if( m_pPlayerListR )
 	{
 		m_pPlayerListR->SetImageList( m_pImageList, false );
 		m_pPlayerListR->SetBgColor( Color( 0, 0, 0, 0 ) );
@@ -113,7 +113,7 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pPlayerListR->SetVisible( false );
 	}
 
-	if ( m_pPlayerListC )
+	if( m_pPlayerListC )
 	{
 		m_pPlayerListC->SetImageList( m_pImageList, false );
 		m_pPlayerListC->SetBgColor( Color( 0, 0, 0, 0 ) );
@@ -122,15 +122,15 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 	}
 
 	// turn off the default player list since we have our own
-	if ( m_pPlayerList )
+	if( m_pPlayerList )
 	{
 		m_pPlayerList->SetVisible( false );
 	}
-	m_pScoreHeader_DM = (Label*)FindChildByName( "DM_ScoreHeader" );
-	m_pDeathsHeader_DM = (Label*)FindChildByName( "DM_DeathsHeader" );
-	m_pPingHeader_DM = (Label*)FindChildByName( "DM_PingHeader" );
+	m_pScoreHeader_DM = ( Label* )FindChildByName( "DM_ScoreHeader" );
+	m_pDeathsHeader_DM = ( Label* )FindChildByName( "DM_DeathsHeader" );
+	m_pPingHeader_DM = ( Label* )FindChildByName( "DM_PingHeader" );
 
-	if ( m_pPlayerCountLabel_DM && m_pScoreHeader_DM && m_pDeathsHeader_DM && m_pPingHeader_DM && m_pPingLabel_DM )
+	if( m_pPlayerCountLabel_DM && m_pScoreHeader_DM && m_pDeathsHeader_DM && m_pPingHeader_DM && m_pPingLabel_DM )
 	{
 		m_pPlayerCountLabel_DM->SetFgColor( COLOR_YELLOW );
 		m_pScoreHeader_DM->SetFgColor( COLOR_YELLOW );
@@ -138,11 +138,11 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pPingHeader_DM->SetFgColor( COLOR_YELLOW );
 		m_pPingLabel_DM->SetFgColor( COLOR_YELLOW );
 	}
-	m_pScoreHeader_R = (Label*)FindChildByName( "R_ScoreHeader" );
-	m_pDeathsHeader_R = (Label*)FindChildByName( "R_DeathsHeader" );
-	m_pPingHeader_R = (Label*)FindChildByName( "R_PingHeader" );
+	m_pScoreHeader_R = ( Label* )FindChildByName( "R_ScoreHeader" );
+	m_pDeathsHeader_R = ( Label* )FindChildByName( "R_DeathsHeader" );
+	m_pPingHeader_R = ( Label* )FindChildByName( "R_PingHeader" );
 
-	if ( m_pPlayerCountLabel_R && m_pScoreHeader_R && m_pScoreLabel_R && m_pDeathsHeader_R && m_pPingHeader_R && m_pPingLabel_R )
+	if( m_pPlayerCountLabel_R && m_pScoreHeader_R && m_pScoreLabel_R && m_pDeathsHeader_R && m_pPingHeader_R && m_pPingLabel_R )
 	{
 		m_pPlayerCountLabel_R->SetFgColor( COLOR_RED );
 		m_pScoreHeader_R->SetFgColor( COLOR_RED );
@@ -152,11 +152,11 @@ void CHL2MPClientScoreBoardDialog::ApplySchemeSettings( vgui::IScheme *pScheme )
 		m_pPingLabel_R->SetFgColor( COLOR_RED );
 	}
 
-	m_pScoreHeader_C = (Label*)FindChildByName( "C_ScoreHeader" );
-	m_pDeathsHeader_C = (Label*)FindChildByName( "C_DeathsHeader" );
-	m_pPingHeader_C = (Label*)FindChildByName( "C_PingHeader" );
+	m_pScoreHeader_C = ( Label* )FindChildByName( "C_ScoreHeader" );
+	m_pDeathsHeader_C = ( Label* )FindChildByName( "C_DeathsHeader" );
+	m_pPingHeader_C = ( Label* )FindChildByName( "C_PingHeader" );
 
-	if ( m_pPlayerCountLabel_C && m_pScoreHeader_C && m_pScoreLabel_C && m_pDeathsHeader_C && m_pPingHeader_C && m_pPingLabel_C )
+	if( m_pPlayerCountLabel_C && m_pScoreHeader_C && m_pScoreLabel_C && m_pDeathsHeader_C && m_pPingHeader_C && m_pPingLabel_C )
 	{
 		m_pPlayerCountLabel_C->SetFgColor( COLOR_BLUE );
 		m_pScoreHeader_C->SetFgColor( COLOR_BLUE );
@@ -186,27 +186,35 @@ void CHL2MPClientScoreBoardDialog::Reset()
 //-----------------------------------------------------------------------------
 // Purpose: Used for sorting players
 //-----------------------------------------------------------------------------
-bool CHL2MPClientScoreBoardDialog::HL2MPPlayerSortFunc( vgui::SectionedListPanel *list, int itemID1, int itemID2 )
+bool CHL2MPClientScoreBoardDialog::HL2MPPlayerSortFunc( vgui::SectionedListPanel* list, int itemID1, int itemID2 )
 {
-	KeyValues *it1 = list->GetItemData( itemID1 );
-	KeyValues *it2 = list->GetItemData( itemID2 );
+	KeyValues* it1 = list->GetItemData( itemID1 );
+	KeyValues* it2 = list->GetItemData( itemID2 );
 	Assert( it1 && it2 );
 
 	// first compare score
 	int v1 = it1->GetInt( "frags" );
 	int v2 = it2->GetInt( "frags" );
-	if ( v1 > v2 )
+	if( v1 > v2 )
+	{
 		return true;
-	else if ( v1 < v2 )
+	}
+	else if( v1 < v2 )
+	{
 		return false;
+	}
 
 	// second compare deaths
 	v1 = it1->GetInt( "deaths" );
 	v2 = it2->GetInt( "deaths" );
-	if ( v1 > v2 )
+	if( v1 > v2 )
+	{
 		return false;
-	else if ( v1 < v2 )
+	}
+	else if( v1 < v2 )
+	{
 		return true;
+	}
 
 	// if score and deaths are the same, use player index to get deterministic sort
 	int iPlayerIndex1 = it1->GetInt( "playerIndex" );
@@ -217,7 +225,7 @@ bool CHL2MPClientScoreBoardDialog::HL2MPPlayerSortFunc( vgui::SectionedListPanel
 //-----------------------------------------------------------------------------
 // Purpose: Inits the player list in a list panel
 //-----------------------------------------------------------------------------
-void CHL2MPClientScoreBoardDialog::InitPlayerList( SectionedListPanel *pPlayerList, int teamNumber )
+void CHL2MPClientScoreBoardDialog::InitPlayerList( SectionedListPanel* pPlayerList, int teamNumber )
 {
 	pPlayerList->SetVerticalScrollbar( false );
 	pPlayerList->RemoveAll();
@@ -229,12 +237,12 @@ void CHL2MPClientScoreBoardDialog::InitPlayerList( SectionedListPanel *pPlayerLi
 	pPlayerList->SetBorder( NULL );
 
 	// set the section to have the team color
-	if ( teamNumber && GameResources() )
+	if( teamNumber && GameResources() )
 	{
 		pPlayerList->SetSectionFgColor( 0, GameResources()->GetTeamColor( teamNumber ) );
 	}
 
-	if ( ShowAvatars() )
+	if( ShowAvatars() )
 	{
 		pPlayerList->AddColumnToSection( 0, "avatar", "", SectionedListPanel::COLUMN_IMAGE | SectionedListPanel::COLUMN_CENTER, m_iAvatarWidth );
 	}
@@ -259,7 +267,7 @@ void CHL2MPClientScoreBoardDialog::Update()
 	MoveToCenterOfScreen();
 
 	// update every second
-	m_fNextUpdateTime = gpGlobals->curtime + 1.0f; 
+	m_fNextUpdateTime = gpGlobals->curtime + 1.0f;
 }
 
 //-----------------------------------------------------------------------------
@@ -270,24 +278,28 @@ void CHL2MPClientScoreBoardDialog::UpdateTeamInfo()
 	// update the team sections in the scoreboard
 	int startTeam = TEAM_UNASSIGNED;
 
-	if ( HL2MPRules()->IsTeamplay() )
+	if( HL2MPRules()->IsTeamplay() )
+	{
 		startTeam = TEAM_COMBINE;
+	}
 
-	for ( int teamIndex = startTeam; teamIndex <= TEAM_REBELS; teamIndex++ )
+	for( int teamIndex = startTeam; teamIndex <= TEAM_REBELS; teamIndex++ )
 	{
 		// Make sure spectator is always skipped here.
-		if ( teamIndex == TEAM_SPECTATOR )
+		if( teamIndex == TEAM_SPECTATOR )
+		{
 			continue;
+		}
 
-		wchar_t *teamName = NULL;
-		C_Team *team = GetGlobalTeam( teamIndex );
-		if ( team )
+		wchar_t* teamName = NULL;
+		C_Team* team = GetGlobalTeam( teamIndex );
+		if( team )
 		{
 			// choose dialog variables to set depending on team
-			const char *pDialogVarTeamScore = NULL;
-			const char *pDialogVarTeamPlayerCount = NULL;
-			const char *pDialogVarTeamPing = NULL;
-			switch ( teamIndex ) 
+			const char* pDialogVarTeamScore = NULL;
+			const char* pDialogVarTeamPlayerCount = NULL;
+			const char* pDialogVarTeamPing = NULL;
+			switch( teamIndex )
 			{
 				case TEAM_REBELS:
 					teamName = g_pVGuiLocalize->Find( "#HL2MP_ScoreBoard_Rebels" );
@@ -316,26 +328,28 @@ void CHL2MPClientScoreBoardDialog::UpdateTeamInfo()
 			wchar_t string1[1024];
 			wchar_t wNumPlayers[6];
 			_snwprintf( wNumPlayers, ARRAYSIZE( wNumPlayers ), L"%i", team->Get_Number_Players() );
-			if ( !teamName && team )
+			if( !teamName && team )
 			{
 				g_pVGuiLocalize->ConvertANSIToUnicode( team->Get_Name(), name, sizeof( name ) );
 				teamName = name;
 			}
-			if ( team->Get_Number_Players() == 1 )
+			if( team->Get_Number_Players() == 1 )
 			{
-				g_pVGuiLocalize->ConstructString( string1, sizeof(string1), g_pVGuiLocalize->Find( "#ScoreBoard_Player" ), 2, teamName, wNumPlayers );
+				g_pVGuiLocalize->ConstructString( string1, sizeof( string1 ), g_pVGuiLocalize->Find( "#ScoreBoard_Player" ), 2, teamName, wNumPlayers );
 			}
 			else
 			{
-				g_pVGuiLocalize->ConstructString( string1, sizeof(string1), g_pVGuiLocalize->Find( "#ScoreBoard_Players" ), 2, teamName, wNumPlayers );
+				g_pVGuiLocalize->ConstructString( string1, sizeof( string1 ), g_pVGuiLocalize->Find( "#ScoreBoard_Players" ), 2, teamName, wNumPlayers );
 			}
 
 			// set # of players for team in dialog
 			SetDialogVariable( pDialogVarTeamPlayerCount, string1 );
 
 			// set team score in dialog
-			if ( teamIndex != TEAM_UNASSIGNED )	// Don't accumulate deathmatch scores.
-				SetDialogVariable( pDialogVarTeamScore, team->Get_Score() );			
+			if( teamIndex != TEAM_UNASSIGNED )	// Don't accumulate deathmatch scores.
+			{
+				SetDialogVariable( pDialogVarTeamScore, team->Get_Score() );
+			}
 
 			int pingsum = 0;
 			int numcounted = 0;
@@ -345,7 +359,7 @@ void CHL2MPClientScoreBoardDialog::UpdateTeamInfo()
 				{
 					int ping = g_PR->GetPing( playerIndex );
 
-					if ( ping >= 1 )
+					if( ping >= 1 )
 					{
 						pingsum += ping;
 						numcounted++;
@@ -353,14 +367,14 @@ void CHL2MPClientScoreBoardDialog::UpdateTeamInfo()
 				}
 			}
 
-			if ( numcounted > 0 )
+			if( numcounted > 0 )
 			{
-				int ping = (int)( (float)pingsum / (float)numcounted );
-				SetDialogVariable( pDialogVarTeamPing, ping );		
+				int ping = ( int )( ( float )pingsum / ( float )numcounted );
+				SetDialogVariable( pDialogVarTeamPing, ping );
 			}
 			else
 			{
-				SetDialogVariable( pDialogVarTeamPing, "" );	
+				SetDialogVariable( pDialogVarTeamPing, "" );
 			}
 		}
 	}
@@ -375,38 +389,42 @@ void CHL2MPClientScoreBoardDialog::UpdatePlayerList()
 	m_pPlayerListR->RemoveAll();
 	m_pPlayerListC->RemoveAll();
 
-	C_HL2MP_Player *pLocalPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
-	if ( !pLocalPlayer )
+	C_HL2MP_Player* pLocalPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
+	if( !pLocalPlayer )
+	{
 		return;
+	}
 
 	for( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
 	{
 		if( g_PR->IsConnected( playerIndex ) )
 		{
-			SectionedListPanel *pPlayerList = NULL;
-			
+			SectionedListPanel* pPlayerList = NULL;
+
 			// Not teamplay, use the DM playerlist
-			if ( !HL2MPRules()->IsTeamplay() )
+			if( !HL2MPRules()->IsTeamplay() )
+			{
 				pPlayerList = m_pPlayerListDM;
+			}
 			else
 			{
-				switch ( g_PR->GetTeam( playerIndex ) )
+				switch( g_PR->GetTeam( playerIndex ) )
 				{
-				case TEAM_REBELS:
-					pPlayerList = m_pPlayerListR;
-					break;
-				case TEAM_COMBINE:
-					pPlayerList = m_pPlayerListC;
-					break;
+					case TEAM_REBELS:
+						pPlayerList = m_pPlayerListR;
+						break;
+					case TEAM_COMBINE:
+						pPlayerList = m_pPlayerListC;
+						break;
 				}
 			}
 
-			if ( pPlayerList == NULL )
+			if( pPlayerList == NULL )
 			{
-				continue;			
+				continue;
 			}
 
-			KeyValues *pKeyValues = new KeyValues( "data" );
+			KeyValues* pKeyValues = new KeyValues( "data" );
 			GetPlayerScoreInfo( playerIndex, pKeyValues );
 
 			int itemID = pPlayerList->AddItem( 0, pKeyValues );
@@ -423,17 +441,19 @@ void CHL2MPClientScoreBoardDialog::UpdatePlayerList()
 //-----------------------------------------------------------------------------
 void CHL2MPClientScoreBoardDialog::UpdateSpectatorList()
 {
-	C_HL2MP_Player *pLocalPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
-	if ( !pLocalPlayer )
+	C_HL2MP_Player* pLocalPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
+	if( !pLocalPlayer )
+	{
 		return;
+	}
 
 	char szSpectatorList[512] = "" ;
 	int nSpectators = 0;
 	for( int playerIndex = 1 ; playerIndex <= MAX_PLAYERS; playerIndex++ )
 	{
-		if ( ShouldShowAsSpectator( playerIndex ) )
+		if( ShouldShowAsSpectator( playerIndex ) )
 		{
-			if ( nSpectators > 0 )
+			if( nSpectators > 0 )
 			{
 				Q_strncat( szSpectatorList, ", ", ARRAYSIZE( szSpectatorList ) );
 			}
@@ -444,15 +464,15 @@ void CHL2MPClientScoreBoardDialog::UpdateSpectatorList()
 	}
 
 	wchar_t wzSpectators[512] = L"";
-	if ( nSpectators > 0 )
+	if( nSpectators > 0 )
 	{
-		const char *pchFormat = ( 1 == nSpectators ? "#ScoreBoard_Spectator" : "#ScoreBoard_Spectators" );
+		const char* pchFormat = ( 1 == nSpectators ? "#ScoreBoard_Spectator" : "#ScoreBoard_Spectators" );
 
 		wchar_t wzSpectatorCount[16];
 		wchar_t wzSpectatorList[1024];
 		_snwprintf( wzSpectatorCount, ARRAYSIZE( wzSpectatorCount ), L"%i", nSpectators );
 		g_pVGuiLocalize->ConvertANSIToUnicode( szSpectatorList, wzSpectatorList, sizeof( wzSpectatorList ) );
-		g_pVGuiLocalize->ConstructString( wzSpectators, sizeof(wzSpectators), g_pVGuiLocalize->Find( pchFormat), 2, wzSpectatorCount, wzSpectatorList );
+		g_pVGuiLocalize->ConstructString( wzSpectators, sizeof( wzSpectators ), g_pVGuiLocalize->Find( pchFormat ), 2, wzSpectatorCount, wzSpectatorList );
 	}
 
 	SetDialogVariable( "spectators", wzSpectators );
@@ -464,17 +484,21 @@ void CHL2MPClientScoreBoardDialog::UpdateSpectatorList()
 bool CHL2MPClientScoreBoardDialog::ShouldShowAsSpectator( int iPlayerIndex )
 {
 	// see if player is connected
-	if ( g_PR->IsConnected( iPlayerIndex ) ) 
+	if( g_PR->IsConnected( iPlayerIndex ) )
 	{
 		// spectators show in spectator list
 		int iTeam = g_PR->GetTeam( iPlayerIndex );
 
 		// In team play the DM playerlist is invisible, so show unassigned in the spectator list.
-		if ( HL2MPRules()->IsTeamplay() && TEAM_UNASSIGNED == iTeam )
+		if( HL2MPRules()->IsTeamplay() && TEAM_UNASSIGNED == iTeam )
+		{
 			return true;
+		}
 
-		if ( TEAM_SPECTATOR == iTeam )
+		if( TEAM_SPECTATOR == iTeam )
+		{
 			return true;
+		}
 	}
 	return false;
 }
@@ -482,18 +506,18 @@ bool CHL2MPClientScoreBoardDialog::ShouldShowAsSpectator( int iPlayerIndex )
 //-----------------------------------------------------------------------------
 // Purpose: Event handler
 //-----------------------------------------------------------------------------
-void CHL2MPClientScoreBoardDialog::FireGameEvent( IGameEvent *event )
+void CHL2MPClientScoreBoardDialog::FireGameEvent( IGameEvent* event )
 {
-	const char *type = event->GetName();
+	const char* type = event->GetName();
 
-	if ( 0 == Q_strcmp( type, "server_spawn" ) )
-	{		
+	if( 0 == Q_strcmp( type, "server_spawn" ) )
+	{
 		// set server name in scoreboard
-		const char *hostname = event->GetString( "hostname" );
+		const char* hostname = event->GetString( "hostname" );
 		wchar_t wzHostName[256];
 		wchar_t wzServerLabel[256];
 		g_pVGuiLocalize->ConvertANSIToUnicode( hostname, wzHostName, sizeof( wzHostName ) );
-		g_pVGuiLocalize->ConstructString( wzServerLabel, sizeof(wzServerLabel), g_pVGuiLocalize->Find( "#Scoreboard_Server" ), 1, wzHostName );
+		g_pVGuiLocalize->ConstructString( wzServerLabel, sizeof( wzServerLabel ), g_pVGuiLocalize->Find( "#Scoreboard_Server" ), 1, wzHostName );
 		SetDialogVariable( "server", wzServerLabel );
 	}
 
@@ -506,12 +530,12 @@ void CHL2MPClientScoreBoardDialog::FireGameEvent( IGameEvent *event )
 //-----------------------------------------------------------------------------
 // Purpose: Adds a new row to the scoreboard, from the playerinfo structure
 //-----------------------------------------------------------------------------
-bool CHL2MPClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, KeyValues *kv )
+bool CHL2MPClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, KeyValues* kv )
 {
 	// Clean up the player name
-	const char *oldName = g_PR->GetPlayerName( playerIndex );
+	const char* oldName = g_PR->GetPlayerName( playerIndex );
 	int bufsize = strlen( oldName ) * 2 + 1;
-	char *newName = (char *)_alloca( bufsize );
+	char* newName = ( char* )_alloca( bufsize );
 	UTIL_MakeSafeName( oldName, newName, bufsize );
 	kv->SetString( "name", newName );
 
@@ -522,9 +546,9 @@ bool CHL2MPClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, KeyValue
 
 	UpdatePlayerAvatar( playerIndex, kv );
 
-	if ( g_PR->GetPing( playerIndex ) < 1 )
+	if( g_PR->GetPing( playerIndex ) < 1 )
 	{
-		if ( g_PR->IsFakePlayer( playerIndex ) )
+		if( g_PR->IsFakePlayer( playerIndex ) )
 		{
 			kv->SetString( "ping", "BOT" );
 		}
@@ -544,7 +568,7 @@ bool CHL2MPClientScoreBoardDialog::GetPlayerScoreInfo( int playerIndex, KeyValue
 void CHL2MPClientScoreBoardDialog::UpdateItemVisibiity()
 {
 	// Need to do this in Update, ensure the correct player lists/headers are visible.
-	if ( HL2MPRules()->IsTeamplay() )
+	if( HL2MPRules()->IsTeamplay() )
 	{
 		// Rebel Labels _ON_
 		m_pPlayerListR->SetVisible( true );
@@ -576,7 +600,7 @@ void CHL2MPClientScoreBoardDialog::UpdateItemVisibiity()
 		m_pPingLabel_DM->SetVisible( false );
 
 		// Restore the size to the original incase we've switched from DM -> Teams and back.
-		SetSize(m_iStoredScoreboardWidth, GetTall() );
+		SetSize( m_iStoredScoreboardWidth, GetTall() );
 	}
 	else
 	{
@@ -611,9 +635,9 @@ void CHL2MPClientScoreBoardDialog::UpdateItemVisibiity()
 
 		// Because we have a multi-pane player list, in deathmatch shrink the width of the scoreboard to match the one player list, so it looks nicer.
 		int wide, tall;
-		m_pPlayerListDM->GetContentSize(wide, tall);
+		m_pPlayerListDM->GetContentSize( wide, tall );
 		tall = GetTall();
-		SetSize(wide+4, tall);
-		m_pPlayerListDM->SetSize(wide, tall);
+		SetSize( wide + 4, tall );
+		m_pPlayerListDM->SetSize( wide, tall );
 	}
 }

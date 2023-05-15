@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef UTLSTRINGMAP_H
 #define UTLSTRINGMAP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlsymbol.h"
@@ -21,7 +21,7 @@ public:
 	}
 
 	// Get data by the string itself:
-	T& operator[]( const char *pString )
+	T& operator[]( const char* pString )
 	{
 		CUtlSymbol symbol = m_SymbolTable.AddString( pString );
 		int index = ( int )( UtlSymId_t )symbol;
@@ -35,22 +35,22 @@ public:
 	// Get data by the string's symbol table ID - only used to retrieve a pre-existing symbol, not create a new one!
 	T& operator[]( UtlSymId_t n )
 	{
-		Assert( n >=0 && n <= m_Vector.Count() );
+		Assert( n >= 0 && n <= m_Vector.Count() );
 		return m_Vector[n];
 	}
 
 	const T& operator[]( UtlSymId_t n ) const
 	{
-		Assert( n >=0 && n <= m_Vector.Count() );
+		Assert( n >= 0 && n <= m_Vector.Count() );
 		return m_Vector[n];
 	}
 
-	bool Defined( const char *pString ) const
+	bool Defined( const char* pString ) const
 	{
 		return m_SymbolTable.Find( pString ) != UTL_INVAL_SYMBOL;
 	}
 
-	UtlSymId_t Find( const char *pString ) const
+	UtlSymId_t Find( const char* pString ) const
 	{
 		return m_SymbolTable.Find( pString );
 	}
@@ -65,7 +65,7 @@ public:
 		return m_SymbolTable.GetNumStrings();
 	}
 
-	const char *String( int n )	const
+	const char* String( int n )	const
 	{
 		return m_SymbolTable.String( n );
 	}

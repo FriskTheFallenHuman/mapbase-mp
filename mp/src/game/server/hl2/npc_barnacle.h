@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef NPC_BARNACLE_H
 #define NPC_BARNACLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -48,21 +48,21 @@ public:
 	virtual void Spawn( void );
 	virtual void Precache( void );
 	virtual void UpdateOnRemove( );
-	virtual void VPhysicsUpdate( IPhysicsObject *pPhysics );
+	virtual void VPhysicsUpdate( IPhysicsObject* pPhysics );
 
 	virtual int	UpdateTransmitState( void );
-	bool						CreateSpring( CBaseAnimating *pTongueRoot );
-	static CBarnacleTongueTip	*CreateTongueTip( CNPC_Barnacle *pBarnacle, CBaseAnimating *pTongueRoot, const Vector &vecOrigin, const QAngle &vecAngles );
-	static CBarnacleTongueTip	*CreateTongueRoot( const Vector &vecOrigin, const QAngle &vecAngles );
+	bool						CreateSpring( CBaseAnimating* pTongueRoot );
+	static CBarnacleTongueTip*	CreateTongueTip( CNPC_Barnacle* pBarnacle, CBaseAnimating* pTongueRoot, const Vector& vecOrigin, const QAngle& vecAngles );
+	static CBarnacleTongueTip*	CreateTongueRoot( const Vector& vecOrigin, const QAngle& vecAngles );
 
-	IPhysicsSpring			*m_pSpring;
+	IPhysicsSpring*			m_pSpring;
 
 private:
 	CHandle<CNPC_Barnacle>	m_hBarnacle;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_Barnacle : public CAI_BaseNPC
 {
@@ -77,12 +77,12 @@ public:
 	void			Spawn( void );
 	virtual void	Activate( void );
 	void			Precache( void );
-	Class_T			Classify ( void );
-	virtual void	ComputeWorldSpaceSurroundingBox( Vector *pVecWorldMins, Vector *pVecWorldMaxs );
-	virtual void	HandleAnimEvent( animevent_t *pEvent );
-	void			Event_Killed( const CTakeDamageInfo &info );
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void			PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot );
+	Class_T			Classify( void );
+	virtual void	ComputeWorldSpaceSurroundingBox( Vector* pVecWorldMins, Vector* pVecWorldMaxs );
+	virtual void	HandleAnimEvent( animevent_t* pEvent );
+	void			Event_Killed( const CTakeDamageInfo& info );
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void			PlayerHasIlluminatedNPC( CBasePlayer* pPlayer, float flDot );
 
 #ifdef MAPBASE
 	bool			AllowedToIgnite( void );
@@ -96,12 +96,12 @@ private:
 	void SpawnDeathGibs( void );
 
 	void InitTonguePosition( void );
-	CBaseEntity* TongueTouchEnt ( float *pflLength );
-	void BarnacleThink ( void );
+	CBaseEntity* TongueTouchEnt( float* pflLength );
+	void BarnacleThink( void );
 	void SwallowPrey( void );
-	void WaitTillDead ( void );
- 	void AttachTongueToTarget( CBaseEntity *pTouchEnt, Vector vecGrabPos );
-	CRagdollProp *AttachRagdollToTongue( CBaseAnimating *pAnimating );
+	void WaitTillDead( void );
+	void AttachTongueToTarget( CBaseEntity* pTouchEnt, Vector vecGrabPos );
+	CRagdollProp* AttachRagdollToTongue( CBaseAnimating* pAnimating );
 	void RemoveRagdoll( bool bDestroyRagdoll );
 	void LostPrey( bool bRemoveRagdoll );
 	void BitePrey( void );
@@ -120,7 +120,7 @@ private:
 	bool IsEnemyAPhysicsObject();
 	bool IsEnemyAnNPC();
 
-	bool CanPickup( CBaseCombatCharacter *pBCC );
+	bool CanPickup( CBaseCombatCharacter* pBCC );
 
 	// Allows the ragdoll to settle before biting it
 	bool WaitForRagdollToSettle( float flBiteZOffset );
@@ -143,8 +143,8 @@ private:
 
 	void UpdatePlayerConstraint( void );
 
-	void InputDropTongue( inputdata_t &inputdata );
-	void InputSetDropTongueSpeed( inputdata_t &inputdata );
+	void InputDropTongue( inputdata_t& inputdata );
+	void InputSetDropTongueSpeed( inputdata_t& inputdata );
 	void DropTongue( void );
 
 
@@ -153,37 +153,37 @@ private:
 
 #if HL2_EPISODIC
 	/// Decides whether something should poison the barnacle upon eating
-	static bool IsPoisonous( CBaseEntity *pVictim );
-	const impactdamagetable_t &GetPhysicsImpactDamageTable( void );
+	static bool IsPoisonous( CBaseEntity* pVictim );
+	const impactdamagetable_t& GetPhysicsImpactDamageTable( void );
 #endif
 
 	// Regular HL2 DLL has these now
-	void InputLetGo( inputdata_t &inputdata );
+	void InputLetGo( inputdata_t& inputdata );
 	COutputEHANDLE m_OnGrab, m_OnRelease;
 
 #else
 #if HL2_EPISODIC
 	/// Decides whether something should poison the barnacle upon eating
-	static bool IsPoisonous( CBaseEntity *pVictim );
+	static bool IsPoisonous( CBaseEntity* pVictim );
 
-	void InputLetGo( inputdata_t &inputdata );
+	void InputLetGo( inputdata_t& inputdata );
 	COutputEHANDLE m_OnGrab, m_OnRelease;
 
-	const impactdamagetable_t &GetPhysicsImpactDamageTable( void );
+	const impactdamagetable_t& GetPhysicsImpactDamageTable( void );
 #endif
 #endif
 
 	CNetworkVar( float, m_flAltitude );
 	int				m_cGibs;				// barnacle loads up on gibs each time it kills something.
 	bool			m_bLiftingPrey;			// true when the prey's on the tongue and being lifted to the mouth
-	bool			m_bSwallowingPrey;		// if it's a human, true while the barnacle chews it and swallows it whole. 
+	bool			m_bSwallowingPrey;		// if it's a human, true while the barnacle chews it and swallows it whole.
 	float			m_flDigestFinish;		// time at which we've finished digesting something we chewed
 	float			m_flVictimHeight;
 	int				m_iGrabbedBoneIndex;
 	bool			m_bPlayedPullSound;
 	bool			m_bPlayerWasStanding;
-	
-	static const char	*m_szGibNames[NUM_BARNACLE_GIBS];
+
+	static const char*	m_szGibNames[NUM_BARNACLE_GIBS];
 
 	// Tongue spline points
 	CNetworkVar( Vector, m_vecRoot );
@@ -195,7 +195,7 @@ private:
 	CHandle<CBarnacleTongueTip>	m_hTongueTip;
 	CHandle<CRagdollProp>		m_hRagdoll;
 	matrix3x4_t					m_pRagdollBones[MAXSTUDIOBONES];
-	IPhysicsConstraint			*m_pConstraint;
+	IPhysicsConstraint*			m_pConstraint;
 	float						m_flRestUnitsAboveGround;
 	int							m_nSpitAttachment;
 	EHANDLE						m_hLastSpitEnemy;
@@ -219,7 +219,7 @@ private:
 #ifdef HL2_EPISODIC
 	bool						m_bSwallowingPoison;
 #endif
-	
+
 #if BARNACLE_USE_TONGUE_OFFSET
 	// Static because only one barnacle can be holding the player
 	// at a time, and because it's not really a big deal if it
@@ -246,13 +246,13 @@ inline bool CNPC_Barnacle::IsEnemyARagdoll()
 
 inline bool CNPC_Barnacle::IsEnemyAPhysicsObject()
 {
-	return !m_hRagdoll && GetEnemy() && !GetEnemy()->IsPlayer() && 
-		!GetEnemy()->MyNPCPointer() && (GetEnemy()->GetMoveType() == MOVETYPE_VPHYSICS);
+	return !m_hRagdoll && GetEnemy() && !GetEnemy()->IsPlayer() &&
+		   !GetEnemy()->MyNPCPointer() && ( GetEnemy()->GetMoveType() == MOVETYPE_VPHYSICS );
 }
 
 inline bool CNPC_Barnacle::IsEnemyAnNPC()
 {
-	return !IsEnemyARagdoll() && (GetEnemy()->MyNPCPointer() != NULL);
+	return !IsEnemyARagdoll() && ( GetEnemy()->MyNPCPointer() != NULL );
 }
 
 

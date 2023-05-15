@@ -16,46 +16,62 @@
 
 
 //--------------------------------------------------------------------------------------------------------
-bool AvoidActors::operator()( CBaseCombatCharacter *obj )
+bool AvoidActors::operator()( CBaseCombatCharacter* obj )
 {
-	if ( !obj || ( obj == m_owner ) || ( obj->GetTeamNumber() != m_owner->GetTeamNumber() ) )
+	if( !obj || ( obj == m_owner ) || ( obj->GetTeamNumber() != m_owner->GetTeamNumber() ) )
+	{
 		return true;
+	}
 
 #ifdef CLIENT_DLL
-	if ( obj->IsDormant() )
+	if( obj->IsDormant() )
+	{
 		return true;
+	}
 #endif
 
-	if ( obj->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
+	if( obj->IsSolidFlagSet( FSOLID_NOT_SOLID ) )
+	{
 		return true;
+	}
 
-	CTerrorPlayer *player = ToTerrorPlayer( obj );
-	if ( !player )
+	CTerrorPlayer* player = ToTerrorPlayer( obj );
+	if( !player )
+	{
 		return true;
+	}
 
-	if ( player->IsIncapacitatedRevivable() )
+	if( player->IsIncapacitatedRevivable() )
+	{
 		return true;
+	}
 
-	if ( player->IsGhost() )
+	if( player->IsGhost() )
+	{
 		return true;
+	}
 
 	Vector objOrigin = obj->GetAbsOrigin();
 	Vector vObjMins = objOrigin + obj->WorldAlignMins();
 	Vector vObjMaxs = objOrigin + obj->WorldAlignMaxs();
 	Vector vOwnerMins = *m_dest + m_owner->WorldAlignMins();
 	Vector vOwnerMaxs = *m_dest + m_owner->WorldAlignMaxs();
-	if ( !IsBoxIntersectingBox( vOwnerMins, vOwnerMaxs, vObjMins, vObjMaxs ) )
+	if( !IsBoxIntersectingBox( vOwnerMins, vOwnerMaxs, vObjMins, vObjMaxs ) )
+	{
 		return true;
+	}
 
 	float objWidth = vObjMaxs.x - vObjMins.x;
 	float ownerWidth = vOwnerMaxs.x - vOwnerMins.x;
-	float idealDistance = (objWidth + ownerWidth) * 0.5f * m_scale;
+	float idealDistance = ( objWidth + ownerWidth ) * 0.5f * m_scale;
 
 	Vector vDelta = objOrigin - *m_dest;
 	vDelta.z = 0;
 	float fDist = vDelta.NormalizeInPlace();
-	if ( fDist > idealDistance )
+	if( fDist > idealDistance )
+	{
 		return true;
+	}
 
 	Vector rayOrigin = m_origin;
 	Vector rayDelta = *m_dest - m_origin;
@@ -63,14 +79,14 @@ bool AvoidActors::operator()( CBaseCombatCharacter *obj )
 	float sphereRadius = idealDistance;
 	rayOrigin.z = rayDelta.z = sphereCenter.z = 0.0f;
 	float t1, t2;
-	if ( IntersectRayWithSphere( rayOrigin, rayDelta, sphereCenter, sphereRadius, &t1, &t2 ) )
+	if( IntersectRayWithSphere( rayOrigin, rayDelta, sphereCenter, sphereRadius, &t1, &t2 ) )
 	{
 		Vector sphereToDest = *m_dest - sphereCenter;
 		sphereToDest.z = 0.0f;
-		if ( !sphereToDest.IsZero() )
+		if( !sphereToDest.IsZero() )
 		{
 			float radius = sphereToDest.NormalizeInPlace();
-			sphereToDest *= (idealDistance - radius);
+			sphereToDest *= ( idealDistance - radius );
 			*m_dest += sphereToDest;
 			m_avoidedActors.AddToTail( obj );
 		}

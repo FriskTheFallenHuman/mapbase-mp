@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -24,7 +24,7 @@ class C_CrossbowBolt : public C_BaseCombatCharacter
 	DECLARE_CLASS( C_CrossbowBolt, C_BaseCombatCharacter );
 	DECLARE_CLIENTCLASS();
 public:
-	
+
 	C_CrossbowBolt( void );
 
 	virtual RenderGroup_t GetRenderGroup( void )
@@ -40,7 +40,7 @@ public:
 
 private:
 
-	C_CrossbowBolt( const C_CrossbowBolt & ); // not defined, not accessible
+	C_CrossbowBolt( const C_CrossbowBolt& );  // not defined, not accessible
 
 	Vector	m_vecLastOrigin;
 	bool	m_bUpdated;
@@ -50,21 +50,21 @@ IMPLEMENT_CLIENTCLASS_DT( C_CrossbowBolt, DT_CrossbowBolt, CCrossbowBolt )
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_CrossbowBolt::C_CrossbowBolt( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
 void C_CrossbowBolt::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_bUpdated = false;
 		m_vecLastOrigin = GetAbsOrigin();
@@ -73,24 +73,24 @@ void C_CrossbowBolt::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flags - 
+// Purpose:
+// Input  : flags -
 // Output : int
 //-----------------------------------------------------------------------------
 int C_CrossbowBolt::DrawModel( int flags )
 {
 	// See if we're drawing the motion blur
-	if ( flags & STUDIO_TRANSPARENCY )
+	if( flags & STUDIO_TRANSPARENCY )
 	{
 		float		color[3];
-		IMaterial	*pBlurMaterial = materials->FindMaterial( "effects/muzzleflash1", NULL, false );
+		IMaterial*	pBlurMaterial = materials->FindMaterial( "effects/muzzleflash1", NULL, false );
 
 		Vector	vecDir = GetAbsOrigin() - m_vecLastOrigin;
 		float	speed = VectorNormalize( vecDir );
-		
+
 		speed = clamp( speed, 0, 32 );
-		
-		if ( speed > 0 )
+
+		if( speed > 0 )
 		{
 			float	stepSize = MIN( ( speed * 0.5f ), 4.0f );
 
@@ -103,7 +103,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 			float	alpha;
 
 			// Draw the motion blurred trail
-			for ( int i = 0; i < 20; i++ )
+			for( int i = 0; i < 20; i++ )
 			{
 				spawnPos += spawnStep;
 
@@ -115,7 +115,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 			}
 		}
 
-		if ( gpGlobals->frametime > 0.0f && !m_bUpdated)
+		if( gpGlobals->frametime > 0.0f && !m_bUpdated )
 		{
 			m_bUpdated = true;
 			m_vecLastOrigin = GetAbsOrigin();
@@ -129,7 +129,7 @@ int C_CrossbowBolt::DrawModel( int flags )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_CrossbowBolt::ClientThink( void )
 {
@@ -137,20 +137,22 @@ void C_CrossbowBolt::ClientThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void CrosshairLoadCallback( const CEffectData &data )
+void CrosshairLoadCallback( const CEffectData& data )
 {
-	IClientRenderable *pRenderable = data.GetRenderable( );
-	if ( !pRenderable )
+	IClientRenderable* pRenderable = data.GetRenderable( );
+	if( !pRenderable )
+	{
 		return;
-	
+	}
+
 	Vector	position;
 	QAngle	angles;
 
 	// If we found the attachment, emit sparks there
-	if ( pRenderable->GetAttachment( data.m_nAttachmentIndex, position, angles ) )
+	if( pRenderable->GetAttachment( data.m_nAttachmentIndex, position, angles ) )
 	{
 		FX_ElectricSpark( position, 1.0f, 1.0f, NULL );
 	}

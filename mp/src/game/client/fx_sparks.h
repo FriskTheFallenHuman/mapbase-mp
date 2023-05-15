@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -35,15 +35,15 @@ public:
 	float		m_flWidth;				// Width of the spark
 };
 
-inline void Color32ToFloat4( float colorOut[4], const color32 & colorIn )
+inline void Color32ToFloat4( float colorOut[4], const color32& colorIn )
 {
-	colorOut[0] = colorIn.r * (1.0f/255.0f);
-	colorOut[1] = colorIn.g * (1.0f/255.0f);
-	colorOut[2] = colorIn.b * (1.0f/255.0f);
-	colorOut[3] = colorIn.a * (1.0f/255.0f);
+	colorOut[0] = colorIn.r * ( 1.0f / 255.0f );
+	colorOut[1] = colorIn.g * ( 1.0f / 255.0f );
+	colorOut[2] = colorIn.b * ( 1.0f / 255.0f );
+	colorOut[3] = colorIn.a * ( 1.0f / 255.0f );
 }
 
-inline void FloatToColor32( color32 &out, float r, float g, float b, float a )
+inline void FloatToColor32( color32& out, float r, float g, float b, float a )
 {
 	out.r = r * 255;
 	out.g = g * 255;
@@ -51,7 +51,7 @@ inline void FloatToColor32( color32 &out, float r, float g, float b, float a )
 	out.a = a * 255;
 }
 
-inline void Float4ToColor32( color32 &out, float colorIn[4] )
+inline void Float4ToColor32( color32& out, float colorIn[4] )
 {
 	out.r = colorIn[0] * 255;
 	out.g = colorIn[1] * 255;
@@ -59,7 +59,7 @@ inline void Float4ToColor32( color32 &out, float colorIn[4] )
 	out.a = colorIn[3] * 255;
 }
 
-inline void Color32Init( color32 &out, int r, int g, int b, int a )
+inline void Color32Init( color32& out, int r, int g, int b, int a )
 {
 	out.r = r;
 	out.g = g;
@@ -74,21 +74,39 @@ class CTrailParticles : public CSimpleEmitter
 {
 	DECLARE_CLASS( CTrailParticles, CSimpleEmitter );
 public:
-	CTrailParticles( const char *pDebugName );
-	
-	static CTrailParticles	*Create( const char *pDebugName )	{	return new CTrailParticles( pDebugName );	}
+	CTrailParticles( const char* pDebugName );
 
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
+	static CTrailParticles*	Create( const char* pDebugName )
+	{
+		return new CTrailParticles( pDebugName );
+	}
+
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
 
 	//Setup for point emission
-	virtual void	Setup( const Vector &origin, const Vector *direction, float angularSpread, float minSpeed, float maxSpeed, float gravity, float dampen, int flags, bool bNotCollideable = false );
-	
-	void SetFlag( int flags )				{	m_fFlags |= flags;	}
-	void SetVelocityDampen( float dampen )	{	m_flVelocityDampen = dampen;	}
-	void SetGravity( float gravity )		{	m_ParticleCollision.SetGravity( gravity );	}
-	void SetCollisionDamped( float dampen )	{	m_ParticleCollision.SetCollisionDampen( dampen );	}
-	void SetAngularCollisionDampen( float dampen )	{ m_ParticleCollision.SetAngularCollisionDampen( dampen );	}
+	virtual void	Setup( const Vector& origin, const Vector* direction, float angularSpread, float minSpeed, float maxSpeed, float gravity, float dampen, int flags, bool bNotCollideable = false );
+
+	void SetFlag( int flags )
+	{
+		m_fFlags |= flags;
+	}
+	void SetVelocityDampen( float dampen )
+	{
+		m_flVelocityDampen = dampen;
+	}
+	void SetGravity( float gravity )
+	{
+		m_ParticleCollision.SetGravity( gravity );
+	}
+	void SetCollisionDamped( float dampen )
+	{
+		m_ParticleCollision.SetCollisionDampen( dampen );
+	}
+	void SetAngularCollisionDampen( float dampen )
+	{
+		m_ParticleCollision.SetAngularCollisionDampen( dampen );
+	}
 
 	CParticleCollision	m_ParticleCollision;
 
@@ -98,7 +116,7 @@ protected:
 	float				m_flVelocityDampen;
 
 private:
-	CTrailParticles( const CTrailParticles & ); // not defined, not accessible
+	CTrailParticles( const CTrailParticles& );  // not defined, not accessible
 };
 
 //
@@ -109,10 +127,10 @@ class CSphereTrails : public CSimpleEmitter
 {
 	DECLARE_CLASS( CSphereTrails, CSimpleEmitter );
 public:
-	CSphereTrails( const char *pDebugName, const Vector &origin, float innerRadius, float outerRadius, float speed, int entityIndex, int attachment );
-	
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
+	CSphereTrails( const char* pDebugName, const Vector& origin, float innerRadius, float outerRadius, float speed, int entityIndex, int attachment );
+
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
 	virtual void Update( float flTimeDelta );
 	virtual void StartRender();
 
@@ -132,7 +150,7 @@ public:
 	float	m_dieTime;
 
 private:
-	CSphereTrails( const CSphereTrails & ); // not defined, not accessible
+	CSphereTrails( const CSphereTrails& );  // not defined, not accessible
 };
 
 
@@ -141,11 +159,11 @@ class CSimpleGlowEmitter : public CSimpleEmitter
 {
 	DECLARE_CLASS( CSimpleGlowEmitter, CSimpleEmitter );
 public:
-	CSimpleGlowEmitter( const char *pDebugName, const Vector &sortOrigin, float flDeathTime );
-	static CSimpleGlowEmitter	*Create( const char *pDebugName, const Vector &sortOrigin, float flDeathTime );
+	CSimpleGlowEmitter( const char* pDebugName, const Vector& sortOrigin, float flDeathTime );
+	static CSimpleGlowEmitter*	Create( const char* pDebugName, const Vector& sortOrigin, float flDeathTime );
 
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
 protected:
 
 	bool WasTestedInView( unsigned char viewMask );
@@ -162,7 +180,7 @@ private:
 	unsigned char		m_isVisible;
 
 private:
-	CSimpleGlowEmitter( const CSimpleGlowEmitter & ); // not defined, not accessible
+	CSimpleGlowEmitter( const CSimpleGlowEmitter& );  // not defined, not accessible
 };
 
 #include "tier0/memdbgoff.h"

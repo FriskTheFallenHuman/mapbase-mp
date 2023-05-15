@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -57,7 +57,7 @@ public:
 	float				m_flSpinSpeed;
 	float				m_flDamage;
 	float				m_flDamageRadius;
-	
+
 	// ----------------
 	//	Outputs
 	// ----------------
@@ -69,25 +69,25 @@ public:
 	// ----------------
 	//	Inputs
 	// ----------------
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputLOSCheckOn( inputdata_t &inputdata );
-	void InputLOSCheckOff( inputdata_t &inputdata );
-	void InputSetEnemy( inputdata_t &inputdata );
-	void InputClearEnemy( inputdata_t &inputdata );
-	void InputFireOnce( inputdata_t &inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputLOSCheckOn( inputdata_t& inputdata );
+	void InputLOSCheckOff( inputdata_t& inputdata );
+	void InputSetEnemy( inputdata_t& inputdata );
+	void InputClearEnemy( inputdata_t& inputdata );
+	void InputFireOnce( inputdata_t& inputdata );
 
-	void LauncherTurnOn(void);
-	
+	void LauncherTurnOn( void );
+
 	void				Precache( void );
 	void				Spawn( void );
 	Class_T				Classify( void );
-	bool				IsValidEnemy(CBaseEntity *pTarget );
-	void				LaunchGrenade(CBaseEntity* pLauncher );
-	void				LauncherThink(void );
-	bool				FInViewCone( CBaseEntity *pEntity );
+	bool				IsValidEnemy( CBaseEntity* pTarget );
+	void				LaunchGrenade( CBaseEntity* pLauncher );
+	void				LauncherThink( void );
+	bool				FInViewCone( CBaseEntity* pEntity );
 
-	int					DrawDebugTextOverlays(void);
+	int					DrawDebugTextOverlays( void );
 
 	DECLARE_DATADESC();
 };
@@ -95,93 +95,93 @@ public:
 
 BEGIN_DATADESC( CNPC_Launcher )
 
-	// Inputs
-	DEFINE_KEYFIELD( m_nStartOn,					FIELD_INTEGER,	"StartOn" ),
-	DEFINE_KEYFIELD( m_sMissileModel,			FIELD_STRING,	"MissileModel" ),
-	DEFINE_KEYFIELD( m_sLaunchSound,				FIELD_STRING,	"LaunchSound" ),
-	DEFINE_KEYFIELD( m_sFlySound,				FIELD_STRING,	"FlySound" ),
-	DEFINE_KEYFIELD( m_nSmokeTrail,				FIELD_INTEGER,	"SmokeTrail" ),
-	DEFINE_KEYFIELD( m_bSmokeLaunch,				FIELD_BOOLEAN,	"LaunchSmoke" ),
-	DEFINE_KEYFIELD( m_nLaunchDelay,				FIELD_INTEGER,	"LaunchDelay" ),
-	DEFINE_KEYFIELD( m_flLaunchSpeed,			FIELD_FLOAT,	"LaunchSpeed" ),
-	DEFINE_KEYFIELD( m_sPathCornerName,			FIELD_STRING,	"PathCornerName" ),
-	DEFINE_KEYFIELD( m_flHomingSpeed,			FIELD_FLOAT,	"HomingSpeed" ),
-	DEFINE_KEYFIELD( m_nHomingStrength,			FIELD_INTEGER,	"HomingStrength" ),
-	DEFINE_KEYFIELD( m_flHomingDelay,			FIELD_FLOAT,	"HomingDelay" ),
-	DEFINE_KEYFIELD( m_flHomingRampUp,			FIELD_FLOAT,	"HomingRampUp" ),
-	DEFINE_KEYFIELD( m_flHomingDuration,			FIELD_FLOAT,	"HomingDuration" ),
-	DEFINE_KEYFIELD( m_flHomingRampDown,			FIELD_FLOAT,	"HomingRampDown" ),
-	DEFINE_KEYFIELD( m_flGravity,				FIELD_FLOAT,	"Gravity" ),
-	DEFINE_KEYFIELD( m_flMinAttackDist,			FIELD_FLOAT,	"MinRange" ),
-	DEFINE_KEYFIELD( m_flMaxAttackDist,			FIELD_FLOAT,	"MaxRange" ),
-	DEFINE_KEYFIELD( m_flSpinMagnitude,			FIELD_FLOAT,	"SpinMagnitude" ),
-	DEFINE_KEYFIELD( m_flSpinSpeed,				FIELD_FLOAT,	"SpinSpeed" ),
-	DEFINE_KEYFIELD( m_flDamage,					FIELD_FLOAT,	"Damage" ),
-	DEFINE_KEYFIELD( m_flDamageRadius,			FIELD_FLOAT,	"DamageRadius" ),
-	DEFINE_FIELD( m_flMissileGravity, FIELD_FLOAT ),
+// Inputs
+DEFINE_KEYFIELD( m_nStartOn,					FIELD_INTEGER,	"StartOn" ),
+								 DEFINE_KEYFIELD( m_sMissileModel,			FIELD_STRING,	"MissileModel" ),
+								 DEFINE_KEYFIELD( m_sLaunchSound,				FIELD_STRING,	"LaunchSound" ),
+								 DEFINE_KEYFIELD( m_sFlySound,				FIELD_STRING,	"FlySound" ),
+								 DEFINE_KEYFIELD( m_nSmokeTrail,				FIELD_INTEGER,	"SmokeTrail" ),
+								 DEFINE_KEYFIELD( m_bSmokeLaunch,				FIELD_BOOLEAN,	"LaunchSmoke" ),
+								 DEFINE_KEYFIELD( m_nLaunchDelay,				FIELD_INTEGER,	"LaunchDelay" ),
+								 DEFINE_KEYFIELD( m_flLaunchSpeed,			FIELD_FLOAT,	"LaunchSpeed" ),
+								 DEFINE_KEYFIELD( m_sPathCornerName,			FIELD_STRING,	"PathCornerName" ),
+								 DEFINE_KEYFIELD( m_flHomingSpeed,			FIELD_FLOAT,	"HomingSpeed" ),
+								 DEFINE_KEYFIELD( m_nHomingStrength,			FIELD_INTEGER,	"HomingStrength" ),
+								 DEFINE_KEYFIELD( m_flHomingDelay,			FIELD_FLOAT,	"HomingDelay" ),
+								 DEFINE_KEYFIELD( m_flHomingRampUp,			FIELD_FLOAT,	"HomingRampUp" ),
+								 DEFINE_KEYFIELD( m_flHomingDuration,			FIELD_FLOAT,	"HomingDuration" ),
+								 DEFINE_KEYFIELD( m_flHomingRampDown,			FIELD_FLOAT,	"HomingRampDown" ),
+								 DEFINE_KEYFIELD( m_flGravity,				FIELD_FLOAT,	"Gravity" ),
+								 DEFINE_KEYFIELD( m_flMinAttackDist,			FIELD_FLOAT,	"MinRange" ),
+								 DEFINE_KEYFIELD( m_flMaxAttackDist,			FIELD_FLOAT,	"MaxRange" ),
+								 DEFINE_KEYFIELD( m_flSpinMagnitude,			FIELD_FLOAT,	"SpinMagnitude" ),
+								 DEFINE_KEYFIELD( m_flSpinSpeed,				FIELD_FLOAT,	"SpinSpeed" ),
+								 DEFINE_KEYFIELD( m_flDamage,					FIELD_FLOAT,	"Damage" ),
+								 DEFINE_KEYFIELD( m_flDamageRadius,			FIELD_FLOAT,	"DamageRadius" ),
+								 DEFINE_FIELD( m_flMissileGravity, FIELD_FLOAT ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "LOSCheckOn", InputLOSCheckOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "LOSCheckOn", InputLOSCheckOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "FireOnce", InputFireOnce ),
-	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetEnemyEntity", InputSetEnemy ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "ClearEnemyEntity", InputClearEnemy ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "LOSCheckOn", InputLOSCheckOn ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "LOSCheckOn", InputLOSCheckOn ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "FireOnce", InputFireOnce ),
+								 DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetEnemyEntity", InputSetEnemy ),
+								 DEFINE_INPUTFUNC( FIELD_VOID, "ClearEnemyEntity", InputClearEnemy ),
 
-	DEFINE_OUTPUT( m_OnLaunch, "OnLaunch" ),
+								 DEFINE_OUTPUT( m_OnLaunch, "OnLaunch" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OutMissile, "OutMissile" ),
 #endif
 
-	// Function Pointers
-	DEFINE_THINKFUNC( LauncherThink ),
+								 // Function Pointers
+								 DEFINE_THINKFUNC( LauncherThink ),
 
-END_DATADESC()
+								 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_launcher, CNPC_Launcher );
+								 LINK_ENTITY_TO_CLASS( npc_launcher, CNPC_Launcher );
 
 
 // ===================
 //  Input Functions
 // ===================
-void CNPC_Launcher::InputTurnOn( inputdata_t &inputdata )
+void CNPC_Launcher::InputTurnOn( inputdata_t& inputdata )
 {
 	LauncherTurnOn();
 }
 
-void CNPC_Launcher::InputTurnOff( inputdata_t &inputdata )
+void CNPC_Launcher::InputTurnOff( inputdata_t& inputdata )
 {
-	SetThink(NULL);
+	SetThink( NULL );
 }
 
-void CNPC_Launcher::InputLOSCheckOn( inputdata_t &inputdata )
+void CNPC_Launcher::InputLOSCheckOn( inputdata_t& inputdata )
 {
 	m_spawnflags |= SF_LAUNCHER_CHECK_LOS;
 }
 
-void CNPC_Launcher::InputLOSCheckOff( inputdata_t &inputdata )
+void CNPC_Launcher::InputLOSCheckOff( inputdata_t& inputdata )
 {
 	m_spawnflags &= ~SF_LAUNCHER_CHECK_LOS;
 }
 
-void CNPC_Launcher::InputSetEnemy( inputdata_t &inputdata )
+void CNPC_Launcher::InputSetEnemy( inputdata_t& inputdata )
 {
 	SetEnemy( inputdata.value.Entity().Get() );
 }
 
-void CNPC_Launcher::InputClearEnemy( inputdata_t &inputdata )
+void CNPC_Launcher::InputClearEnemy( inputdata_t& inputdata )
 {
 	SetEnemy( NULL );
 }
 
-void CNPC_Launcher::InputFireOnce( inputdata_t &inputdata )
+void CNPC_Launcher::InputFireOnce( inputdata_t& inputdata )
 {
 	m_flNextAttack = 0;
 
 	// If I using path following missiles just launch
-	if (m_sPathCornerName != NULL_STRING)
+	if( m_sPathCornerName != NULL_STRING )
 	{
-		LaunchGrenade(NULL);
+		LaunchGrenade( NULL );
 	}
 	// Otherwise only launch if I have an enemy
 	else
@@ -192,34 +192,34 @@ void CNPC_Launcher::InputFireOnce( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Launcher::Precache( void )
 {
 	// This is a dummy model that is never used!
-	PrecacheModel("models/player.mdl");
-	PrecacheModel(STRING(m_sMissileModel));
-	PrecacheScriptSound( STRING(m_sLaunchSound));
-	PrecacheScriptSound( STRING(m_sFlySound));
-	
-	UTIL_PrecacheOther( "grenade_homer");
+	PrecacheModel( "models/player.mdl" );
+	PrecacheModel( STRING( m_sMissileModel ) );
+	PrecacheScriptSound( STRING( m_sLaunchSound ) );
+	PrecacheScriptSound( STRING( m_sFlySound ) );
+
+	UTIL_PrecacheOther( "grenade_homer" );
 	BaseClass::Precache();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_Launcher::LauncherTurnOn(void)
+void CNPC_Launcher::LauncherTurnOn( void )
 {
-	SetThink(&CNPC_Launcher::LauncherThink);
+	SetThink( &CNPC_Launcher::LauncherThink );
 	SetNextThink( gpGlobals->curtime );
 	m_flNextAttack = 0;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Launcher::Spawn( void )
 {
@@ -228,16 +228,16 @@ void CNPC_Launcher::Spawn( void )
 	// This is a dummy model that is never used!
 	SetModel( "models/player.mdl" );
 
-	UTIL_SetSize(this, vec3_origin, vec3_origin);
+	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	m_takedamage		= DAMAGE_NO;
 
-	if (m_nHomingStrength > 100)
+	if( m_nHomingStrength > 100 )
 	{
 		m_nHomingStrength = 100;
-		Warning("WARNING: NPC_Launcher Homing Strength must be between 0 and 100\n");
+		Warning( "WARNING: NPC_Launcher Homing Strength must be between 0 and 100\n" );
 	}
-	
+
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_NONE );
 	SetBloodColor( DONT_BLEED );
@@ -248,8 +248,8 @@ void CNPC_Launcher::Spawn( void )
 	CapabilitiesAdd( bits_CAP_SQUAD );
 
 	InitRelationshipTable();
-	
-	if (m_nStartOn)
+
+	if( m_nStartOn )
 	{
 		LauncherTurnOn();
 	}
@@ -257,15 +257,15 @@ void CNPC_Launcher::Spawn( void )
 	// -------------------------------------------------------
 	//  If I form squads add me to a squad
 	// -------------------------------------------------------
-	// @TODO (toml 12-05-02): RECONCILE WITH SAVE/RESTORE	
-	if (!m_pSquad)
+	// @TODO (toml 12-05-02): RECONCILE WITH SAVE/RESTORE
+	if( !m_pSquad )
 	{
-		m_pSquad = g_AI_SquadManager.FindCreateSquad(this, m_SquadName);
+		m_pSquad = g_AI_SquadManager.FindCreateSquad( this, m_SquadName );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Launcher::Classify( void )
 {
@@ -278,39 +278,43 @@ Class_T	CNPC_Launcher::Classify( void )
 void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 {
 	// If a path following missile, create a path following missile
-	if (m_sPathCornerName != NULL_STRING)
+	if( m_sPathCornerName != NULL_STRING )
 	{
-		CGrenadePathfollower *pGrenade = CGrenadePathfollower::CreateGrenadePathfollower( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
-		pGrenade->SetDamage(m_flDamage);
-		pGrenade->SetDamageRadius(m_flDamageRadius);
-		pGrenade->Launch(m_flLaunchSpeed,m_sPathCornerName);
+		CGrenadePathfollower* pGrenade = CGrenadePathfollower::CreateGrenadePathfollower( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
+		pGrenade->SetDamage( m_flDamage );
+		pGrenade->SetDamageRadius( m_flDamageRadius );
+		pGrenade->Launch( m_flLaunchSpeed, m_sPathCornerName );
 
 #ifdef MAPBASE
-		if (GetOwnerEntity())
-			pGrenade->SetOwnerEntity(GetOwnerEntity());
+		if( GetOwnerEntity() )
+		{
+			pGrenade->SetOwnerEntity( GetOwnerEntity() );
+		}
 
-		m_OutMissile.Set(pGrenade, pGrenade, this);
+		m_OutMissile.Set( pGrenade, pGrenade, this );
 #endif
 	}
 	else
 	{
 		Vector vUp;
 		AngleVectors( GetAbsAngles(), NULL, NULL, &vUp );
-		Vector vLaunchVelocity = (vUp * m_flLaunchSpeed);
+		Vector vLaunchVelocity = ( vUp * m_flLaunchSpeed );
 
-		CGrenadeHomer *pGrenade = CGrenadeHomer::CreateGrenadeHomer( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
+		CGrenadeHomer* pGrenade = CGrenadeHomer::CreateGrenadeHomer( m_sMissileModel, m_sFlySound,  GetAbsOrigin(), vec3_angle, edict() );
 		pGrenade->Spawn( );
-		pGrenade->SetSpin(m_flSpinMagnitude,m_flSpinSpeed);
-		pGrenade->SetHoming((0.01*m_nHomingStrength),m_flHomingDelay,m_flHomingRampUp,m_flHomingDuration,m_flHomingRampDown);
-		pGrenade->SetDamage(m_flDamage);
-		pGrenade->SetDamageRadius(m_flDamageRadius);
-		pGrenade->Launch(this,pEnemy,vLaunchVelocity,m_flHomingSpeed,GetGravity(),m_nSmokeTrail);
+		pGrenade->SetSpin( m_flSpinMagnitude, m_flSpinSpeed );
+		pGrenade->SetHoming( ( 0.01 * m_nHomingStrength ), m_flHomingDelay, m_flHomingRampUp, m_flHomingDuration, m_flHomingRampDown );
+		pGrenade->SetDamage( m_flDamage );
+		pGrenade->SetDamageRadius( m_flDamageRadius );
+		pGrenade->Launch( this, pEnemy, vLaunchVelocity, m_flHomingSpeed, GetGravity(), m_nSmokeTrail );
 
 #ifdef MAPBASE
-		if (GetOwnerEntity())
-			pGrenade->SetOwnerEntity(GetOwnerEntity());
+		if( GetOwnerEntity() )
+		{
+			pGrenade->SetOwnerEntity( GetOwnerEntity() );
+		}
 
-		m_OutMissile.Set(pGrenade, pGrenade, this);
+		m_OutMissile.Set( pGrenade, pGrenade, this );
 #endif
 	}
 
@@ -318,14 +322,14 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 
 	EmitSound_t ep;
 	ep.m_nChannel = CHAN_WEAPON;
-	ep.m_pSoundName = STRING(m_sLaunchSound);
+	ep.m_pSoundName = STRING( m_sLaunchSound );
 	ep.m_SoundLevel = SNDLVL_NORM;
 
 	EmitSound( filter, entindex(), ep );
 
-	if (m_bSmokeLaunch)
+	if( m_bSmokeLaunch )
 	{
-		UTIL_Smoke(GetAbsOrigin(), random->RandomInt(20,30), random->RandomInt(10,15));
+		UTIL_Smoke( GetAbsOrigin(), random->RandomInt( 20, 30 ), random->RandomInt( 10, 15 ) );
 	}
 	m_flNextAttack = gpGlobals->curtime + LAUNCHER_REST_TIME;
 
@@ -334,7 +338,7 @@ void CNPC_Launcher::LaunchGrenade( CBaseEntity* pEnemy )
 //------------------------------------------------------------------------------
 // Purpose : Launcher sees 360 degrees
 //------------------------------------------------------------------------------
-bool CNPC_Launcher::FInViewCone( CBaseEntity *pEntity )
+bool CNPC_Launcher::FInViewCone( CBaseEntity* pEntity )
 {
 	return true;
 }
@@ -342,22 +346,22 @@ bool CNPC_Launcher::FInViewCone( CBaseEntity *pEntity )
 //------------------------------------------------------------------------------
 // Purpose : Override base class to check range and visibility
 //------------------------------------------------------------------------------
-bool CNPC_Launcher::IsValidEnemy( CBaseEntity *pTarget )
+bool CNPC_Launcher::IsValidEnemy( CBaseEntity* pTarget )
 {
 	// ---------------------------------
 	//  Check range
 	// ---------------------------------
-	float flTargetDist = (GetAbsOrigin() - pTarget->GetAbsOrigin()).Length();
-	if (flTargetDist < m_flMinAttackDist)
+	float flTargetDist = ( GetAbsOrigin() - pTarget->GetAbsOrigin() ).Length();
+	if( flTargetDist < m_flMinAttackDist )
 	{
 		return false;
 	}
-	if (flTargetDist > m_flMaxAttackDist)
+	if( flTargetDist > m_flMaxAttackDist )
 	{
 		return false;
 	}
 
-	if (!FBitSet (m_spawnflags, SF_LAUNCHER_CHECK_LOS))
+	if( !FBitSet( m_spawnflags, SF_LAUNCHER_CHECK_LOS ) )
 	{
 		return true;
 	}
@@ -366,13 +370,13 @@ bool CNPC_Launcher::IsValidEnemy( CBaseEntity *pTarget )
 	// ------------------------------------------------------
 	trace_t tr;
 
-	// Trace from launch position to target position.  
+	// Trace from launch position to target position.
 	// Use position above actual barral based on vertical launch speed
-	Vector vStartPos = GetAbsOrigin() + Vector(0,0,0.2*m_flLaunchSpeed);
+	Vector vStartPos = GetAbsOrigin() + Vector( 0, 0, 0.2 * m_flLaunchSpeed );
 	Vector vEndPos	 = pTarget->GetAbsOrigin();
 	AI_TraceLine( vStartPos, vEndPos, MASK_SHOT, pTarget, COLLISION_GROUP_NONE, &tr );
 
-	if (tr.fraction == 1.0)
+	if( tr.fraction == 1.0 )
 	{
 		return true;
 	}
@@ -384,25 +388,25 @@ bool CNPC_Launcher::IsValidEnemy( CBaseEntity *pTarget )
 //------------------------------------------------------------------------------
 void CNPC_Launcher::LauncherThink( void )
 {
-	if (gpGlobals->curtime > m_flNextAttack)
+	if( gpGlobals->curtime > m_flNextAttack )
 	{
 		// If enemy was set, fire at enemy
-		if (GetEnemy())
+		if( GetEnemy() )
 		{
-			LaunchGrenade(GetEnemy());
-			m_OnLaunch.FireOutput(GetEnemy(), this);
+			LaunchGrenade( GetEnemy() );
+			m_OnLaunch.FireOutput( GetEnemy(), this );
 			m_flNextAttack = gpGlobals->curtime + m_nLaunchDelay;
 		}
 		// Otherwise look for enemy to fire at
 		else
 		{
-			GetSenses()->Look(m_flMaxAttackDist);
+			GetSenses()->Look( m_flMaxAttackDist );
 			CBaseEntity* pBestEnemy = BestEnemy();
 
-			if (pBestEnemy)
+			if( pBestEnemy )
 			{
-				LaunchGrenade(pBestEnemy);
-				m_OnLaunch.FireOutput(pBestEnemy, this);
+				LaunchGrenade( pBestEnemy );
+				m_OnLaunch.FireOutput( pBestEnemy, this );
 				m_flNextAttack = gpGlobals->curtime + m_nLaunchDelay;
 			}
 		}
@@ -414,19 +418,19 @@ void CNPC_Launcher::LauncherThink( void )
 // Purpose: Draw any debug text overlays
 // Output : Current text offset from the top
 //-----------------------------------------------------------------------------
-int CNPC_Launcher::DrawDebugTextOverlays(void) 
+int CNPC_Launcher::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
-		Q_snprintf(tempstr,sizeof(tempstr),"State: %s", (m_pfnThink) ? "On" : "Off" );
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "State: %s", ( m_pfnThink ) ? "On" : "Off" );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 
-		Q_snprintf(tempstr,sizeof(tempstr),"LOS: %s", (FBitSet (m_spawnflags, SF_LAUNCHER_CHECK_LOS)) ? "On" : "Off" );
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "LOS: %s", ( FBitSet( m_spawnflags, SF_LAUNCHER_CHECK_LOS ) ) ? "On" : "Off" );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;

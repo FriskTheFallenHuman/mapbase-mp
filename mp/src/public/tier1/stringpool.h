@@ -9,7 +9,7 @@
 #define STRINGPOOL_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "utlrbtree.h"
@@ -28,23 +28,23 @@ public:
 
 	unsigned int Count() const;
 
-	const char * Allocate( const char *pszValue );
+	const char* Allocate( const char* pszValue );
 	void FreeAll();
 
 	// searches for a string already in the pool
-	const char * Find( const char *pszValue );
+	const char* Find( const char* pszValue );
 
 protected:
-	typedef CUtlRBTree<const char *, unsigned short> CStrSet;
+	typedef CUtlRBTree<const char*, unsigned short> CStrSet;
 
 	CStrSet m_Strings;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: A reference counted string pool.  
+// Purpose: A reference counted string pool.
 //
-// Elements are stored more efficiently than in the conventional string pool, 
-// quicker to look up, and storage is tracked via reference counts.  
+// Elements are stored more efficiently than in the conventional string pool,
+// quicker to look up, and storage is tracked via reference counts.
 //
 // At some point this should replace CStringPool
 //-----------------------------------------------------------------------------
@@ -77,14 +77,14 @@ public:
 
 	void			FreeAll();
 
-	char			*FindString( const char* pIntrinsic ); 
-	char			*ReferenceString( const char* pIntrinsic );
+	char*			FindString( const char* pIntrinsic );
+	char*			ReferenceString( const char* pIntrinsic );
 	void			DereferenceString( const char* pIntrinsic );
 
 	// These are only reliable if there are less than 64k strings in your string pool
-	unsigned short	FindStringHandle( const char* pIntrinsic ); 
+	unsigned short	FindStringHandle( const char* pIntrinsic );
 	unsigned short	ReferenceStringHandle( const char* pIntrinsic );
-	char			*HandleToString( unsigned short handle );
+	char*			HandleToString( unsigned short handle );
 	void			SpewStrings();
 };
 

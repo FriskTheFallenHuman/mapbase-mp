@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( HUD_SUITPOWER_H )
 #define HUD_SUITPOWER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -22,7 +22,7 @@ class CHudSuitPower : public CHudElement, public vgui::Panel
 	DECLARE_CLASS_SIMPLE( CHudSuitPower, vgui::Panel );
 
 public:
-	CHudSuitPower( const char *pElementName );
+	CHudSuitPower( const char* pElementName );
 	virtual void	Init( void );
 	virtual void	Reset( void );
 	virtual void	OnThink( void );
@@ -52,6 +52,6 @@ private:
 	float m_flSuitPower;
 	int m_nSuitPowerLow;
 	int m_iActiveSuitDevices;
-};	
+};
 
 #endif // HUD_SUITPOWER_H

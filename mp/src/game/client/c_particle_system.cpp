@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -40,7 +40,7 @@ protected:
 
 	enum { kMAXCONTROLPOINTS = 63 }; ///< actually one less than the total number of cpoints since 0 is assumed to be me
 
-	
+
 	EHANDLE		m_hControlPointEnts[kMAXCONTROLPOINTS];
 	Vector		m_vControlPointVecs[kMAXCONTROLPOINTS];
 	//	SendPropArray3( SENDINFO_ARRAY3(m_iControlPointParents), SendPropInt( SENDINFO_ARRAY(m_iControlPointParents), 3, SPROP_UNSIGNED ) ),
@@ -49,30 +49,30 @@ protected:
 	bool		m_bWeatherEffect;
 };
 
-IMPLEMENT_CLIENTCLASS(C_ParticleSystem, DT_ParticleSystem, CParticleSystem);
+IMPLEMENT_CLIENTCLASS( C_ParticleSystem, DT_ParticleSystem, CParticleSystem );
 
 BEGIN_RECV_TABLE_NOBASE( C_ParticleSystem, DT_ParticleSystem )
-	RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
-	RecvPropEHandle( RECVINFO(m_hOwnerEntity) ),
-	RecvPropInt( RECVINFO_NAME(m_hNetworkMoveParent, moveparent), 0, RecvProxy_IntToMoveParent ),
-	RecvPropInt( RECVINFO( m_iParentAttachment ) ),
-	RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
+RecvPropVector( RECVINFO_NAME( m_vecNetworkOrigin, m_vecOrigin ) ),
+				RecvPropEHandle( RECVINFO( m_hOwnerEntity ) ),
+				RecvPropInt( RECVINFO_NAME( m_hNetworkMoveParent, moveparent ), 0, RecvProxy_IntToMoveParent ),
+				RecvPropInt( RECVINFO( m_iParentAttachment ) ),
+				RecvPropQAngles( RECVINFO_NAME( m_angNetworkAngles, m_angRotation ) ),
 
-	RecvPropInt( RECVINFO( m_iEffectIndex ) ),
-	RecvPropBool( RECVINFO( m_bActive ) ),
+				RecvPropInt( RECVINFO( m_iEffectIndex ) ),
+				RecvPropBool( RECVINFO( m_bActive ) ),
 #ifdef MAPBASE
 	RecvPropBool( RECVINFO( m_bDestroyImmediately ) ),
 #endif
-	RecvPropFloat( RECVINFO( m_flStartTime ) ),
+				RecvPropFloat( RECVINFO( m_flStartTime ) ),
 
-	RecvPropArray3( RECVINFO_ARRAY(m_hControlPointEnts), RecvPropEHandle( RECVINFO( m_hControlPointEnts[0] ) ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_vControlPointVecs), RecvPropVector( RECVINFO( m_vControlPointVecs[0] ) ) ),
-	RecvPropArray3( RECVINFO_ARRAY(m_iControlPointParents), RecvPropInt( RECVINFO(m_iControlPointParents[0]))), 
-	RecvPropBool( RECVINFO( m_bWeatherEffect ) ),
-END_RECV_TABLE();
+				RecvPropArray3( RECVINFO_ARRAY( m_hControlPointEnts ), RecvPropEHandle( RECVINFO( m_hControlPointEnts[0] ) ) ),
+				RecvPropArray3( RECVINFO_ARRAY( m_vControlPointVecs ), RecvPropVector( RECVINFO( m_vControlPointVecs[0] ) ) ),
+				RecvPropArray3( RECVINFO_ARRAY( m_iControlPointParents ), RecvPropInt( RECVINFO( m_iControlPointParents[0] ) ) ),
+				RecvPropBool( RECVINFO( m_bWeatherEffect ) ),
+				END_RECV_TABLE();
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_ParticleSystem::C_ParticleSystem()
 {
@@ -80,7 +80,7 @@ C_ParticleSystem::C_ParticleSystem()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ParticleSystem::PreDataUpdate( DataUpdateType_t updateType )
 {
@@ -90,7 +90,7 @@ void C_ParticleSystem::PreDataUpdate( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -98,9 +98,9 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 
 	// Always restart if just created and updated
 	// FIXME: Does this play fairly with PVS?
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
-		if ( m_bActive )
+		if( m_bActive )
 		{
 			// Delayed here so that we don't get invalid abs queries on level init with active particle systems
 			SetNextClientThink( gpGlobals->curtime );
@@ -108,9 +108,9 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 	}
 	else
 	{
-		if ( m_bOldActive != m_bActive )
+		if( m_bOldActive != m_bActive )
 		{
-			if ( m_bActive )
+			if( m_bActive )
 			{
 				// Delayed here so that we don't get invalid abs queries on level init with active particle systems
 				SetNextClientThink( gpGlobals->curtime );
@@ -118,74 +118,82 @@ void C_ParticleSystem::PostDataUpdate( DataUpdateType_t updateType )
 			else
 #ifdef MAPBASE
 			{
-				if (!m_bDestroyImmediately)
-						ParticleProp()->StopEmission();
+				if( !m_bDestroyImmediately )
+				{
+					ParticleProp()->StopEmission();
+				}
 				else
+				{
 					ParticleProp()->StopEmissionAndDestroyImmediately();
+				}
 			}
 #else
 			{
-						ParticleProp()->StopEmission();
-					}
+				ParticleProp()->StopEmission();
+			}
 #endif
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ParticleSystem::ClientThink( void )
 {
-	if ( m_bActive )
+	if( m_bActive )
 	{
-		const char *pszName = GetParticleSystemNameFromIndex( m_iEffectIndex );
-		if ( pszName && pszName[0] )
+		const char* pszName = GetParticleSystemNameFromIndex( m_iEffectIndex );
+		if( pszName && pszName[0] )
 		{
-			if ( !GameRules()->AllowMapParticleEffect( pszName ) )
-				return;
-
-			if ( m_bWeatherEffect && !GameRules()->AllowWeatherParticles() )
-				return;
-
-			CNewParticleEffect *pEffect = ParticleProp()->Create( pszName, PATTACH_ABSORIGIN_FOLLOW );
-			AssertMsg1( pEffect, "Particle system couldn't make %s", pszName );
-			if (pEffect)
+			if( !GameRules()->AllowMapParticleEffect( pszName ) )
 			{
-				if (m_vControlPointVecs[0] != GetAbsOrigin() && m_hControlPointEnts[0] == NULL)
+				return;
+			}
+
+			if( m_bWeatherEffect && !GameRules()->AllowWeatherParticles() )
+			{
+				return;
+			}
+
+			CNewParticleEffect* pEffect = ParticleProp()->Create( pszName, PATTACH_ABSORIGIN_FOLLOW );
+			AssertMsg1( pEffect, "Particle system couldn't make %s", pszName );
+			if( pEffect )
+			{
+				if( m_vControlPointVecs[0] != GetAbsOrigin() && m_hControlPointEnts[0] == NULL )
 				{
 					// we are using info_particle_system_coordinate
-					for (int i = 0; i < kMAXCONTROLPOINTS; ++i)
+					for( int i = 0; i < kMAXCONTROLPOINTS; ++i )
 					{
-						ParticleProp()->AddControlPoint(pEffect, i + 1, this, PATTACH_WORLDORIGIN, 0, m_vControlPointVecs[i] - GetAbsOrigin());
+						ParticleProp()->AddControlPoint( pEffect, i + 1, this, PATTACH_WORLDORIGIN, 0, m_vControlPointVecs[i] - GetAbsOrigin() );
 
-						AssertMsg2(m_iControlPointParents[i] >= 0 && m_iControlPointParents[i] <= kMAXCONTROLPOINTS,
-							"Particle system specified bogus control point parent (%d) for point %d.",
-							m_iControlPointParents[i], i);
+						AssertMsg2( m_iControlPointParents[i] >= 0 && m_iControlPointParents[i] <= kMAXCONTROLPOINTS,
+									"Particle system specified bogus control point parent (%d) for point %d.",
+									m_iControlPointParents[i], i );
 
-						if (m_iControlPointParents[i] != 0)
+						if( m_iControlPointParents[i] != 0 )
 						{
-							pEffect->SetControlPointParent(i + 1, m_iControlPointParents[i]);
+							pEffect->SetControlPointParent( i + 1, m_iControlPointParents[i] );
 						}
 					}
 				}
 				else
 				{
-					for ( int i = 0 ; i < kMAXCONTROLPOINTS ; ++i )
+					for( int i = 0 ; i < kMAXCONTROLPOINTS ; ++i )
 					{
-						CBaseEntity *pOnEntity = m_hControlPointEnts[i].Get();
-						if ( pOnEntity )
+						CBaseEntity* pOnEntity = m_hControlPointEnts[i].Get();
+						if( pOnEntity )
 						{
 							ParticleProp()->AddControlPoint( pEffect, i + 1, pOnEntity, PATTACH_ABSORIGIN_FOLLOW );
 						}
 
 						AssertMsg2( m_iControlPointParents[i] >= 0 && m_iControlPointParents[i] <= kMAXCONTROLPOINTS ,
-							"Particle system specified bogus control point parent (%d) for point %d.",
-							m_iControlPointParents[i], i );
+									"Particle system specified bogus control point parent (%d) for point %d.",
+									m_iControlPointParents[i], i );
 
-						if (m_iControlPointParents[i] != 0)
+						if( m_iControlPointParents[i] != 0 )
 						{
-							pEffect->SetControlPointParent(i+1, m_iControlPointParents[i]);
+							pEffect->SetControlPointParent( i + 1, m_iControlPointParents[i] );
 						}
 					}
 				}
@@ -198,7 +206,7 @@ void C_ParticleSystem::ClientThink( void )
 
 				// Skip the effect ahead if we're restarting it
 				float flTimeDelta = gpGlobals->curtime - m_flStartTime;
-				if ( flTimeDelta > 0.01f )
+				if( flTimeDelta > 0.01f )
 				{
 					VPROF_BUDGET( "C_ParticleSystem::ClientThink SkipToTime", "Particle Simulation" );
 					pEffect->SkipToTime( flTimeDelta );
@@ -213,41 +221,43 @@ void C_ParticleSystem::ClientThink( void )
 // PARTICLE SYSTEM DISPATCH EFFECT
 //======================================================================================================================
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ParticleEffectCallback( const CEffectData &data )
+void ParticleEffectCallback( const CEffectData& data )
 {
-	if ( SuppressingParticleEffects() )
-		return; // this needs to be before using data.m_nHitBox, since that may be a serialized value that's past the end of the current particle system string table
+	if( SuppressingParticleEffects() )
+	{
+		return;    // this needs to be before using data.m_nHitBox, since that may be a serialized value that's past the end of the current particle system string table
+	}
 
-	const char *pszName = GetParticleSystemNameFromIndex( data.m_nHitBox );
+	const char* pszName = GetParticleSystemNameFromIndex( data.m_nHitBox );
 
 	CSmartPtr<CNewParticleEffect> pEffect = NULL;
-	if ( data.m_fFlags & PARTICLE_DISPATCH_FROM_ENTITY )
+	if( data.m_fFlags & PARTICLE_DISPATCH_FROM_ENTITY )
 	{
-		if ( data.m_hEntity.Get() )
+		if( data.m_hEntity.Get() )
 		{
-			C_BaseEntity *pEnt = C_BaseEntity::Instance( data.m_hEntity );
-			if ( pEnt && !pEnt->IsDormant() )
+			C_BaseEntity* pEnt = C_BaseEntity::Instance( data.m_hEntity );
+			if( pEnt && !pEnt->IsDormant() )
 			{
-				if ( data.m_fFlags & PARTICLE_DISPATCH_RESET_PARTICLES )
+				if( data.m_fFlags & PARTICLE_DISPATCH_RESET_PARTICLES )
 				{
 					pEnt->ParticleProp()->StopEmission();
 				}
 
 				Vector vOffset = vec3_origin;
-				ParticleAttachment_t iAttachType = (ParticleAttachment_t)data.m_nDamageType;
-				if ( iAttachType == PATTACH_ABSORIGIN_FOLLOW || iAttachType == PATTACH_POINT_FOLLOW || iAttachType == PATTACH_ROOTBONE_FOLLOW )
+				ParticleAttachment_t iAttachType = ( ParticleAttachment_t )data.m_nDamageType;
+				if( iAttachType == PATTACH_ABSORIGIN_FOLLOW || iAttachType == PATTACH_POINT_FOLLOW || iAttachType == PATTACH_ROOTBONE_FOLLOW )
 				{
 					vOffset = data.m_vStart;
 				}
 
 				pEffect = pEnt->ParticleProp()->Create( pszName, iAttachType, data.m_nAttachmentIndex, vOffset );
 				AssertMsg2( pEffect.IsValid() && pEffect->IsValid(), "%s could not create particle effect %s",
-					C_BaseEntity::Instance( data.m_hEntity )->GetDebugName(), pszName );
-				if ( pEffect.IsValid() && pEffect->IsValid() )
+							C_BaseEntity::Instance( data.m_hEntity )->GetDebugName(), pszName );
+				if( pEffect.IsValid() && pEffect->IsValid() )
 				{
-					if ( iAttachType == PATTACH_CUSTOMORIGIN )
+					if( iAttachType == PATTACH_CUSTOMORIGIN )
 					{
 						pEffect->SetSortOrigin( data.m_vOrigin );
 						pEffect->SetControlPoint( 0, data.m_vOrigin );
@@ -259,16 +269,16 @@ void ParticleEffectCallback( const CEffectData &data )
 				}
 			}
 		}
-	}	
+	}
 	else
 	{
-		if ( GameRules() )
+		if( GameRules() )
 		{
 			pszName = GameRules()->TranslateEffectForVisionFilter( "particles", pszName );
 		}
 
 		pEffect = CNewParticleEffect::Create( NULL, pszName );
-		if ( pEffect->IsValid() )
+		if( pEffect->IsValid() )
 		{
 			pEffect->SetSortOrigin( data.m_vOrigin );
 			pEffect->SetControlPoint( 0, data.m_vOrigin );
@@ -279,15 +289,15 @@ void ParticleEffectCallback( const CEffectData &data )
 		}
 	}
 
-	if ( pEffect.IsValid() && pEffect->IsValid() )
+	if( pEffect.IsValid() && pEffect->IsValid() )
 	{
-		if ( data.m_bCustomColors )
+		if( data.m_bCustomColors )
 		{
 			pEffect->SetControlPoint( CUSTOM_COLOR_CP1, data.m_CustomColors.m_vecColor1 );
 			pEffect->SetControlPoint( CUSTOM_COLOR_CP2, data.m_CustomColors.m_vecColor2 );
 		}
 
-		if ( data.m_bControlPoint1 )
+		if( data.m_bControlPoint1 )
 		{
 			pEffect->SetControlPoint( 1, data.m_ControlPoint1.m_vecOffset );
 		}
@@ -301,18 +311,18 @@ DECLARE_CLIENT_EFFECT( "ParticleEffect", ParticleEffectCallback );
 // PARTICLE SYSTEM STOP EFFECT
 //======================================================================================================================
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ParticleEffectStopCallback( const CEffectData &data )
+void ParticleEffectStopCallback( const CEffectData& data )
 {
-	if ( data.m_hEntity.Get() )
+	if( data.m_hEntity.Get() )
 	{
-		C_BaseEntity *pEnt = C_BaseEntity::Instance( data.m_hEntity );
-		if ( pEnt )
+		C_BaseEntity* pEnt = C_BaseEntity::Instance( data.m_hEntity );
+		if( pEnt )
 		{
-				pEnt->ParticleProp()->StopEmission();
-			}
+			pEnt->ParticleProp()->StopEmission();
 		}
 	}
+}
 
 DECLARE_CLIENT_EFFECT( "ParticleEffectStop", ParticleEffectStopCallback );

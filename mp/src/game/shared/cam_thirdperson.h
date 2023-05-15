@@ -8,7 +8,7 @@
 #define CAM_THIRDPERSON_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #ifdef CLIENT_DLL
@@ -42,37 +42,76 @@ class CThirdPersonManager
 public:
 
 	CThirdPersonManager();
-	void	SetCameraOffsetAngles( const Vector& vecOffset ) { m_vecCameraOffset = vecOffset; }
-	const Vector&	GetCameraOffsetAngles( void ) const { return m_vecCameraOffset; }
-	
-	void	SetDesiredCameraOffset( const Vector& vecOffset ) { m_vecDesiredCameraOffset = vecOffset; }
-	const Vector&	GetDesiredCameraOffset( void ) const { return m_vecDesiredCameraOffset; }
+	void	SetCameraOffsetAngles( const Vector& vecOffset )
+	{
+		m_vecCameraOffset = vecOffset;
+	}
+	const Vector&	GetCameraOffsetAngles( void ) const
+	{
+		return m_vecCameraOffset;
+	}
+
+	void	SetDesiredCameraOffset( const Vector& vecOffset )
+	{
+		m_vecDesiredCameraOffset = vecOffset;
+	}
+	const Vector&	GetDesiredCameraOffset( void ) const
+	{
+		return m_vecDesiredCameraOffset;
+	}
 
 	Vector	GetFinalCameraOffset( void );
 
-	void	SetCameraOrigin( const Vector& vecOffset ) { m_vecCameraOrigin = vecOffset; }
-	const Vector&	GetCameraOrigin( void ) const { return m_vecCameraOrigin; }
+	void	SetCameraOrigin( const Vector& vecOffset )
+	{
+		m_vecCameraOrigin = vecOffset;
+	}
+	const Vector&	GetCameraOrigin( void ) const
+	{
+		return m_vecCameraOrigin;
+	}
 
 	void	Update( void );
 
-	void	PositionCamera( CBasePlayer *pPlayer, const QAngle& angles );
+	void	PositionCamera( CBasePlayer* pPlayer, const QAngle& angles );
 
-	void	UseCameraOffsets( bool bUse ) { m_bUseCameraOffsets = bUse; }
-	bool	UsingCameraOffsets( void ) { return m_bUseCameraOffsets; }
+	void	UseCameraOffsets( bool bUse )
+	{
+		m_bUseCameraOffsets = bUse;
+	}
+	bool	UsingCameraOffsets( void )
+	{
+		return m_bUseCameraOffsets;
+	}
 
-	const QAngle&	GetCameraViewAngles( void ) const { return m_ViewAngles; }
+	const QAngle&	GetCameraViewAngles( void ) const
+	{
+		return m_ViewAngles;
+	}
 
 	Vector	GetDistanceFraction( void );
 
 	bool	WantToUseGameThirdPerson( void );
 
-	void	SetOverridingThirdPerson( bool bOverride ) { m_bOverrideThirdPerson = bOverride; }
-	bool	IsOverridingThirdPerson( void ) { return m_bOverrideThirdPerson; }
+	void	SetOverridingThirdPerson( bool bOverride )
+	{
+		m_bOverrideThirdPerson = bOverride;
+	}
+	bool	IsOverridingThirdPerson( void )
+	{
+		return m_bOverrideThirdPerson;
+	}
 
 	void	Init( void );
 
-	void	SetForcedThirdPerson( bool bForced ) { m_bForced = bForced; }
-	bool	GetForcedThirdPerson() const { return m_bForced; }
+	void	SetForcedThirdPerson( bool bForced )
+	{
+		m_bForced = bForced;
+	}
+	bool	GetForcedThirdPerson() const
+	{
+		return m_bForced;
+	}
 
 private:
 

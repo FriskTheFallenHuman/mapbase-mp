@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define IVGUI_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/interface.h"
@@ -28,7 +28,7 @@ typedef int HContext;
 
 enum
 {
-	DEFAULT_VGUI_CONTEXT = ((vgui::HContext)~0)
+	DEFAULT_VGUI_CONTEXT = ( ( vgui::HContext )~0 )
 };
 
 // safe handle to a panel - can be converted to and from a VPANEL
@@ -53,34 +53,34 @@ public:
 	virtual void RunFrame() = 0;
 
 	// broadcasts "ShutdownRequest" "id" message to all top-level panels in the app
-	virtual void ShutdownMessage(unsigned int shutdownID) = 0;
+	virtual void ShutdownMessage( unsigned int shutdownID ) = 0;
 
 	// panel allocation
 	virtual VPANEL AllocPanel() = 0;
-	virtual void FreePanel(VPANEL panel) = 0;
-	
+	virtual void FreePanel( VPANEL panel ) = 0;
+
 	// debugging prints
-	virtual void DPrintf(PRINTF_FORMAT_STRING const char *format, ...) = 0;
-	virtual void DPrintf2(PRINTF_FORMAT_STRING const char *format, ...) = 0;
+	virtual void DPrintf( PRINTF_FORMAT_STRING const char* format, ... ) = 0;
+	virtual void DPrintf2( PRINTF_FORMAT_STRING const char* format, ... ) = 0;
 	virtual void SpewAllActivePanelNames() = 0;
-	
+
 	// safe-pointer handle methods
-	virtual HPanel PanelToHandle(VPANEL panel) = 0;
-	virtual VPANEL HandleToPanel(HPanel index) = 0;
-	virtual void MarkPanelForDeletion(VPANEL panel) = 0;
+	virtual HPanel PanelToHandle( VPANEL panel ) = 0;
+	virtual VPANEL HandleToPanel( HPanel index ) = 0;
+	virtual void MarkPanelForDeletion( VPANEL panel ) = 0;
 
 	// makes panel receive a 'Tick' message every frame (~50ms, depending on sleep times/framerate)
 	// panel is automatically removed from tick signal list when it's deleted
-	virtual void AddTickSignal(VPANEL panel, int intervalMilliseconds = 0 ) = 0;
-	virtual void RemoveTickSignal(VPANEL panel) = 0;
+	virtual void AddTickSignal( VPANEL panel, int intervalMilliseconds = 0 ) = 0;
+	virtual void RemoveTickSignal( VPANEL panel ) = 0;
 
 	// message sending
-	virtual void PostMessage(VPANEL target, KeyValues *params, VPANEL from, float delaySeconds = 0.0f) = 0;
+	virtual void PostMessage( VPANEL target, KeyValues* params, VPANEL from, float delaySeconds = 0.0f ) = 0;
 
 	// Creates/ destroys vgui contexts, which contains information
 	// about which controls have mouse + key focus, for example.
 	virtual HContext CreateContext() = 0;
-	virtual void DestroyContext( HContext context ) = 0; 
+	virtual void DestroyContext( HContext context ) = 0;
 
 	// Associates a particular panel with a vgui context
 	// Associating NULL is valid; it disconnects the panel from the context
@@ -91,7 +91,7 @@ public:
 	virtual void ActivateContext( HContext context ) = 0;
 
 	// whether to sleep each frame or not, true = sleep
-	virtual void SetSleep( bool state) = 0; 
+	virtual void SetSleep( bool state ) = 0;
 
 	// data accessor for above
 	virtual bool GetShouldVGuiControlSleep() = 0;

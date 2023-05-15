@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #if !defined( C_SPRITE_H )
 #define C_SPRITE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "Sprite.h"

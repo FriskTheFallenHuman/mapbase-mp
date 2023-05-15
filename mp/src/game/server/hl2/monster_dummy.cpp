@@ -1,22 +1,22 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
-// This is a skeleton file for use when creating a new 
+// This is a skeleton file for use when creating a new
 // NPC. Copy and rename this file for the new
 // NPC and add the copy to the build.
 //
-// Leave this file in the build until we ship! Allowing 
+// Leave this file in the build until we ship! Allowing
 // this file to be rebuilt with the rest of the game ensures
 // that it stays up to date with the rest of the NPC code.
 //
 // Replace occurances of CNewNPC with the new NPC's
-// classname. Don't forget the lower-case occurance in 
+// classname. Don't forget the lower-case occurance in
 // LINK_ENTITY_TO_CLASS()
 //
 //
 // ASSUMPTIONS MADE:
 //
-// You're making a character based on CAI_BaseNPC. If this 
+// You're making a character based on CAI_BaseNPC. If this
 // is not true, make sure you replace all occurances
-// of 'CAI_BaseNPC' in this file with the appropriate 
+// of 'CAI_BaseNPC' in this file with the appropriate
 // parent class.
 //
 // You're making a human-sized NPC that walks.
@@ -54,7 +54,7 @@ enum
 //=========================================================
 // Custom tasks
 //=========================================================
-enum 
+enum
 {
 	TASK_MYCUSTOMTASK = LAST_SHARED_TASK,
 };
@@ -63,7 +63,7 @@ enum
 //=========================================================
 // Custom Conditions
 //=========================================================
-enum 
+enum
 {
 	COND_MYCUSTOMCONDITION = LAST_SHARED_CONDITION,
 };
@@ -93,7 +93,7 @@ public:
 };
 
 LINK_ENTITY_TO_CLASS( npc_newnpc, CNewNPC );
-IMPLEMENT_CUSTOM_AI( npc_citizen,CNewNPC );
+IMPLEMENT_CUSTOM_AI( npc_citizen, CNewNPC );
 
 
 //---------------------------------------------------------
@@ -101,30 +101,30 @@ IMPLEMENT_CUSTOM_AI( npc_citizen,CNewNPC );
 //---------------------------------------------------------
 BEGIN_DATADESC( CNewNPC )
 
-	DEFINE_FIELD( m_iDeleteThisField, FIELD_INTEGER ),
+DEFINE_FIELD( m_iDeleteThisField, FIELD_INTEGER ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 // Purpose: Initialize the custom schedules
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CNewNPC::InitCustomSchedules(void) 
+			  void CNewNPC::InitCustomSchedules( void )
 {
-	INIT_CUSTOM_AI(CNewNPC);
+	INIT_CUSTOM_AI( CNewNPC );
 
-	ADD_CUSTOM_TASK(CNewNPC,		TASK_MYCUSTOMTASK);
+	ADD_CUSTOM_TASK( CNewNPC,		TASK_MYCUSTOMTASK );
 
-	ADD_CUSTOM_SCHEDULE(CNewNPC,	SCHED_MYCUSTOMSCHEDULE);
+	ADD_CUSTOM_SCHEDULE( CNewNPC,	SCHED_MYCUSTOMSCHEDULE );
 
-	ADD_CUSTOM_ACTIVITY(CNewNPC,	ACT_MYCUSTOMACTIVITY);
+	ADD_CUSTOM_ACTIVITY( CNewNPC,	ACT_MYCUSTOMACTIVITY );
 
-	ADD_CUSTOM_CONDITION(CNewNPC,	COND_MYCUSTOMCONDITION);
+	ADD_CUSTOM_CONDITION( CNewNPC,	COND_MYCUSTOMCONDITION );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ void CNewNPC::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -146,7 +146,7 @@ void CNewNPC::Spawn( void )
 	Precache();
 
 	SetModel( "models/mymodel.mdl" );
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
@@ -165,10 +165,10 @@ void CNewNPC::Spawn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNewNPC::Classify( void )
 {

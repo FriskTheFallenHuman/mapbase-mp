@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define SOUNDINFO_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "bitbuf.h"
@@ -74,7 +74,7 @@ struct SoundInfo_t
 	int				nSequenceNumber;
 	int				nEntityIndex;
 	int				nChannel;
-	const char		*pszName;		// UNDONE: Make this a FilenameHandle_t to avoid bugs with arrays of these
+	const char*		pszName;		// UNDONE: Make this a FilenameHandle_t to avoid bugs with arrays of these
 	Vector			vOrigin;
 	Vector			vDirection;
 	float			fVolume;
@@ -89,16 +89,16 @@ struct SoundInfo_t
 	bool			bIsSentence;
 	bool			bIsAmbient;
 	int				nSpeakerEntity;
-	
+
 	//---------------------------------
-	
+
 	SoundInfo_t()
 	{
 		SetDefault();
 	}
 
-	void Set(int newEntity, int newChannel, const char *pszNewName, const Vector &newOrigin, const Vector& newDirection, 
-			float newVolume, soundlevel_t newSoundLevel, bool newLooping, int newPitch, const Vector &vecListenerOrigin, int speakerentity )
+	void Set( int newEntity, int newChannel, const char* pszNewName, const Vector& newOrigin, const Vector& newDirection,
+			  float newVolume, soundlevel_t newSoundLevel, bool newLooping, int newPitch, const Vector& vecListenerOrigin, int speakerentity )
 	{
 		nEntityIndex = newEntity;
 		nChannel = newChannel;
@@ -129,11 +129,11 @@ struct SoundInfo_t
 		nSequenceNumber = 0;
 
 		pszName = NULL;
-	
+
 		bLooping = false;
 		bIsSentence = false;
 		bIsAmbient = false;
-		
+
 		vOrigin.Init();
 		vDirection.Init();
 		vListenerOrigin.Init();
@@ -154,17 +154,17 @@ struct SoundInfo_t
 	}
 
 	// this cries for Send/RecvTables:
-	void WriteDelta( SoundInfo_t *delta, bf_write &buffer)
+	void WriteDelta( SoundInfo_t* delta, bf_write& buffer )
 	{
-		if ( nEntityIndex == delta->nEntityIndex )
+		if( nEntityIndex == delta->nEntityIndex )
 		{
 			buffer.WriteOneBit( 0 );
 		}
 		else
 		{
 			buffer.WriteOneBit( 1 );
-		
-			if ( nEntityIndex <= 31)
+
+			if( nEntityIndex <= 31 )
 			{
 				buffer.WriteOneBit( 1 );
 				buffer.WriteUBitLong( nEntityIndex, 5 );
@@ -182,17 +182,17 @@ struct SoundInfo_t
 
 		WRITE_DELTA_UINT( nChannel, 3 );
 
-		buffer.WriteOneBit( bIsAmbient?1:0 );
-		buffer.WriteOneBit( bIsSentence?1:0 ); // NOTE: SND_STOP behavior is different depending on this flag
+		buffer.WriteOneBit( bIsAmbient ? 1 : 0 );
+		buffer.WriteOneBit( bIsSentence ? 1 : 0 ); // NOTE: SND_STOP behavior is different depending on this flag
 
-		if ( nFlags != SND_STOP )
+		if( nFlags != SND_STOP )
 		{
-			if ( nSequenceNumber == delta->nSequenceNumber )
+			if( nSequenceNumber == delta->nSequenceNumber )
 			{
 				// didn't change, most often case
 				buffer.WriteOneBit( 1 );
 			}
-			else if ( nSequenceNumber == (delta->nSequenceNumber+1) )
+			else if( nSequenceNumber == ( delta->nSequenceNumber + 1 ) )
 			{
 				// increased by one
 				buffer.WriteOneBit( 0 );
@@ -202,17 +202,17 @@ struct SoundInfo_t
 			{
 				// send full seqnr
 				buffer.WriteUBitLong( 0, 2 ); // 2 zero bits
-				buffer.WriteUBitLong( nSequenceNumber, SOUND_SEQNUMBER_BITS ); 
+				buffer.WriteUBitLong( nSequenceNumber, SOUND_SEQNUMBER_BITS );
 			}
-						
-			if ( fVolume == delta->fVolume )
+
+			if( fVolume == delta->fVolume )
 			{
 				buffer.WriteOneBit( 0 );
 			}
 			else
 			{
 				buffer.WriteOneBit( 1 );
-				buffer.WriteUBitLong( (unsigned int)(fVolume*127.0f), 7 );
+				buffer.WriteUBitLong( ( unsigned int )( fVolume * 127.0f ), 7 );
 			}
 
 			WRITE_DELTA_UINT( Soundlevel, MAX_SNDLVL_BITS );
@@ -221,7 +221,7 @@ struct SoundInfo_t
 
 			WRITE_DELTA_UINT( nSpecialDSP, 8 );
 
-			if ( fDelay == delta->fDelay )
+			if( fDelay == delta->fDelay )
 			{
 				buffer.WriteOneBit( 0 );
 			}
@@ -236,19 +236,19 @@ struct SoundInfo_t
 				// Convert to msecs
 				int iDelay = fDelay * 1000.0f;
 
-				iDelay = clamp( iDelay, (int)(-10 * MAX_SOUND_DELAY_MSEC), (int)(MAX_SOUND_DELAY_MSEC) );
+				iDelay = clamp( iDelay, ( int )( -10 * MAX_SOUND_DELAY_MSEC ), ( int )( MAX_SOUND_DELAY_MSEC ) );
 
-				if ( iDelay < 0 )
+				if( iDelay < 0 )
 				{
-					iDelay /=10;	
+					iDelay /= 10;
 				}
-				
+
 				buffer.WriteSBitLong( iDelay , MAX_SOUND_DELAY_MSEC_ENCODE_BITS );
 			}
 
 			// don't transmit sounds with high precision
 			WRITE_DELTA_SINT_SCALE( vOrigin.x, 8.0f, COORD_INTEGER_BITS - 2 );
-			WRITE_DELTA_SINT_SCALE( vOrigin.y, 8.0f, COORD_INTEGER_BITS - 2  );
+			WRITE_DELTA_SINT_SCALE( vOrigin.y, 8.0f, COORD_INTEGER_BITS - 2 );
 			WRITE_DELTA_SINT_SCALE( vOrigin.z, 8.0f, COORD_INTEGER_BITS - 2 );
 
 			WRITE_DELTA_SINT( nSpeakerEntity, MAX_EDICT_BITS + 1 );
@@ -259,15 +259,15 @@ struct SoundInfo_t
 		}
 	};
 
-	void ReadDelta( SoundInfo_t *delta, bf_read &buffer, int nProtoVersion )
+	void ReadDelta( SoundInfo_t* delta, bf_read& buffer, int nProtoVersion )
 	{
-		if ( !buffer.ReadOneBit() )
+		if( !buffer.ReadOneBit() )
 		{
 			nEntityIndex = delta->nEntityIndex;
 		}
 		else
 		{
-			if ( buffer.ReadOneBit() )
+			if( buffer.ReadOneBit() )
 			{
 				nEntityIndex = buffer.ReadUBitLong( 5 );
 			}
@@ -277,8 +277,8 @@ struct SoundInfo_t
 			}
 		}
 
-		if ( nProtoVersion > 22 )
-		{	
+		if( nProtoVersion > 22 )
+		{
 			READ_DELTA_UINT( nSoundNum, MAX_SOUND_INDEX_BITS );
 		}
 		else
@@ -286,7 +286,7 @@ struct SoundInfo_t
 			READ_DELTA_UINT( nSoundNum, 13 );
 		}
 
-		if ( nProtoVersion > 18 )
+		if( nProtoVersion > 18 )
 		{
 			READ_DELTA_UINT( nFlags, SND_FLAG_BITS_ENCODE );
 		}
@@ -301,13 +301,13 @@ struct SoundInfo_t
 		bIsAmbient = buffer.ReadOneBit() != 0;
 		bIsSentence = buffer.ReadOneBit() != 0; // NOTE: SND_STOP behavior is different depending on this flag
 
-		if ( nFlags != SND_STOP )
+		if( nFlags != SND_STOP )
 		{
-			if ( buffer.ReadOneBit() != 0 )
+			if( buffer.ReadOneBit() != 0 )
 			{
 				nSequenceNumber = delta->nSequenceNumber;
 			}
-			else if ( buffer.ReadOneBit() != 0 )
+			else if( buffer.ReadOneBit() != 0 )
 			{
 				nSequenceNumber = delta->nSequenceNumber + 1;
 			}
@@ -315,19 +315,19 @@ struct SoundInfo_t
 			{
 				nSequenceNumber = buffer.ReadUBitLong( SOUND_SEQNUMBER_BITS );
 			}
-				
-			if ( buffer.ReadOneBit() != 0 )
+
+			if( buffer.ReadOneBit() != 0 )
 			{
-				fVolume = (float)buffer.ReadUBitLong( 7 )/127.0f;
+				fVolume = ( float )buffer.ReadUBitLong( 7 ) / 127.0f;
 			}
 			else
 			{
 				fVolume = delta->fVolume;
 			}
 
-			if ( buffer.ReadOneBit() != 0 )
+			if( buffer.ReadOneBit() != 0 )
 			{
-				Soundlevel = (soundlevel_t)buffer.ReadUBitLong( MAX_SNDLVL_BITS );
+				Soundlevel = ( soundlevel_t )buffer.ReadUBitLong( MAX_SNDLVL_BITS );
 			}
 			else
 			{
@@ -336,18 +336,18 @@ struct SoundInfo_t
 
 			READ_DELTA_UINT( nPitch, 8 );
 
-			if ( nProtoVersion > 21 )
+			if( nProtoVersion > 21 )
 			{
 				// These bit weren't written in version 19 and below
 				READ_DELTA_UINT( nSpecialDSP, 8 );
 			}
 
-			if ( buffer.ReadOneBit() != 0 )
+			if( buffer.ReadOneBit() != 0 )
 			{
 				// Up to 4096 msec delay
-				fDelay = (float)buffer.ReadSBitLong( MAX_SOUND_DELAY_MSEC_ENCODE_BITS ) / 1000.0f; ;
-				
-				if ( fDelay < 0 )
+				fDelay = ( float )buffer.ReadSBitLong( MAX_SOUND_DELAY_MSEC_ENCODE_BITS ) / 1000.0f; ;
+
+				if( fDelay < 0 )
 				{
 					fDelay *= 10.0f;
 				}
@@ -386,9 +386,9 @@ struct SpatializationInfo_t
 	SoundInfo_t			info;
 
 	// Requested Outputs ( NULL == not requested )
-	Vector				*pOrigin;
-	QAngle				*pAngles;
-	float				*pflRadius;
+	Vector*				pOrigin;
+	QAngle*				pAngles;
+	float*				pflRadius;
 };
 #pragma pack()
 

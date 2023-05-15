@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -39,7 +39,7 @@ ConVar sv_showlagcompensation( "sv_showlagcompensation", "0", FCVAR_CHEAT, "Show
 ConVar sv_unlag_fixstuck( "sv_unlag_fixstuck", "0", FCVAR_DEVELOPMENTONLY, "Disallow backtracking a player for lag compensation if it will cause them to become stuck" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 #define MAX_LAYER_RECORDS (CBaseAnimatingOverlay::MAX_OVERLAYS)
 #define MAX_POSE_PARAMETERS (CBaseAnimating::NUM_POSEPAREMETERS)
@@ -108,8 +108,8 @@ public:
 	Vector					m_vecMinsPreScaled;
 	Vector					m_vecMaxsPreScaled;
 
-	float					m_flSimulationTime;	
-	
+	float					m_flSimulationTime;
+
 	// Player animation details, so we can get the legs in the right spot.
 	LayerRecord				m_layerRecords[MAX_LAYER_RECORDS];
 	int						m_masterSequence;
@@ -121,32 +121,34 @@ public:
 //
 // Try to take the player from his current origin to vWantedPos.
 // If it can't get there, leave the player where he is.
-// 
+//
 
 ConVar sv_unlag_debug( "sv_unlag_debug", "0", FCVAR_GAMEDLL | FCVAR_DEVELOPMENTONLY );
 
 float g_flFractionScale = 0.95;
-static void RestorePlayerTo( CBasePlayer *pPlayer, const Vector &vWantedPos )
+static void RestorePlayerTo( CBasePlayer* pPlayer, const Vector& vWantedPos )
 {
 	// Try to move to the wanted position from our current position.
 	trace_t tr;
 	VPROF_BUDGET( "RestorePlayerTo", "CLagCompensationManager" );
 	UTIL_TraceEntity( pPlayer, vWantedPos, vWantedPos, MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-	if ( tr.startsolid || tr.allsolid )
+	if( tr.startsolid || tr.allsolid )
 	{
-		if ( sv_unlag_debug.GetBool() )
+		if( sv_unlag_debug.GetBool() )
 		{
 			DevMsg( "RestorePlayerTo() could not restore player position for client \"%s\" ( %.1f %.1f %.1f )\n",
 					pPlayer->GetPlayerName(), vWantedPos.x, vWantedPos.y, vWantedPos.z );
 		}
 
 		UTIL_TraceEntity( pPlayer, pPlayer->GetLocalOrigin(), vWantedPos, MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_PLAYER_MOVEMENT, &tr );
-		if ( tr.startsolid || tr.allsolid )
+		if( tr.startsolid || tr.allsolid )
 		{
 			// In this case, the guy got stuck back wherever we lag compensated him to. Nasty.
 
-			if ( sv_unlag_debug.GetBool() )
+			if( sv_unlag_debug.GetBool() )
+			{
 				DevMsg( " restore failed entirely\n" );
+			}
 		}
 		else
 		{
@@ -155,8 +157,10 @@ static void RestorePlayerTo( CBasePlayer *pPlayer, const Vector &vWantedPos )
 			VectorLerp( pPlayer->GetLocalOrigin(), vWantedPos, tr.fraction * g_flFractionScale, vPos );
 			UTIL_SetOrigin( pPlayer, vPos, true );
 
-			if ( sv_unlag_debug.GetBool() )
+			if( sv_unlag_debug.GetBool() )
+			{
 				DevMsg( " restore got most of the way\n" );
+			}
 		}
 	}
 	else
@@ -168,12 +172,12 @@ static void RestorePlayerTo( CBasePlayer *pPlayer, const Vector &vWantedPos )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CLagCompensationManager : public CAutoGameSystemPerFrame, public ILagCompensationManager
 {
 public:
-	CLagCompensationManager( char const *name ) : CAutoGameSystemPerFrame( name ), m_flTeleportDistanceSqr( 64 *64 )
+	CLagCompensationManager( char const* name ) : CAutoGameSystemPerFrame( name ), m_flTeleportDistanceSqr( 64 * 64 )
 	{
 		m_isCurrentlyDoingCompensation = false;
 	}
@@ -195,18 +199,23 @@ public:
 	// ILagCompensationManager stuff
 
 	// Called during player movement to set up/restore after lag compensation
-	void			StartLagCompensation( CBasePlayer *player, CUserCmd *cmd );
-	void			FinishLagCompensation( CBasePlayer *player );
+	void			StartLagCompensation( CBasePlayer* player, CUserCmd* cmd );
+	void			FinishLagCompensation( CBasePlayer* player );
 
-	bool			IsCurrentlyDoingLagCompensation() const OVERRIDE { return m_isCurrentlyDoingCompensation; }
+	bool			IsCurrentlyDoingLagCompensation() const OVERRIDE
+	{
+		return m_isCurrentlyDoingCompensation;
+	}
 
 private:
-	void			BacktrackPlayer( CBasePlayer *player, float flTargetTime );
+	void			BacktrackPlayer( CBasePlayer* player, float flTargetTime );
 
 	void ClearHistory()
 	{
-		for ( int i=0; i<MAX_PLAYERS; i++ )
+		for( int i = 0; i < MAX_PLAYERS; i++ )
+		{
 			m_PlayerTrack[i].Purge();
+		}
 	}
 
 	// keep a list of lag records for each player
@@ -215,11 +224,11 @@ private:
 	// Scratchpad for determining what needs to be restored
 	CBitVec<MAX_PLAYERS>	m_RestorePlayer;
 	bool					m_bNeedToRestore;
-	
+
 	LagRecord				m_RestoreData[ MAX_PLAYERS ];	// player data before we moved him back
 	LagRecord				m_ChangeData[ MAX_PLAYERS ];	// player data where we moved him back
 
-	CBasePlayer				*m_pCurrentPlayer;	// The player we are doing lag compensation for
+	CBasePlayer*				m_pCurrentPlayer;	// The player we are doing lag compensation for
 
 	float					m_flTeleportDistanceSqr;
 
@@ -227,7 +236,7 @@ private:
 };
 
 static CLagCompensationManager g_LagCompensationManager( "CLagCompensationManager" );
-ILagCompensationManager *lagcompensation = &g_LagCompensationManager;
+ILagCompensationManager* lagcompensation = &g_LagCompensationManager;
 
 
 //-----------------------------------------------------------------------------
@@ -235,12 +244,12 @@ ILagCompensationManager *lagcompensation = &g_LagCompensationManager;
 //-----------------------------------------------------------------------------
 void CLagCompensationManager::FrameUpdatePostEntityThink()
 {
-	if ( (gpGlobals->maxClients <= 1) || !sv_unlag.GetBool() )
+	if( ( gpGlobals->maxClients <= 1 ) || !sv_unlag.GetBool() )
 	{
 		ClearHistory();
 		return;
 	}
-	
+
 	m_flTeleportDistanceSqr = sv_lagcompensation_teleport_dist.GetFloat() * sv_lagcompensation_teleport_dist.GetFloat();
 
 	VPROF_BUDGET( "FrameUpdatePostEntityThink", "CLagCompensationManager" );
@@ -249,15 +258,15 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 	int flDeadtime = gpGlobals->curtime - sv_maxunlag.GetFloat();
 
 	// Iterate all active players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
 
-		CUtlFixedLinkedList< LagRecord > *track = &m_PlayerTrack[i-1];
+		CUtlFixedLinkedList< LagRecord >* track = &m_PlayerTrack[i - 1];
 
-		if ( !pPlayer )
+		if( !pPlayer )
 		{
-			if ( track->Count() > 0 )
+			if( track->Count() > 0 )
 			{
 				track->RemoveAll();
 			}
@@ -269,34 +278,38 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 
 		// remove tail records that are too old
 		int tailIndex = track->Tail();
-		while ( track->IsValidIndex( tailIndex ) )
+		while( track->IsValidIndex( tailIndex ) )
 		{
-			LagRecord &tail = track->Element( tailIndex );
+			LagRecord& tail = track->Element( tailIndex );
 
 			// if tail is within limits, stop
-			if ( tail.m_flSimulationTime >= flDeadtime )
+			if( tail.m_flSimulationTime >= flDeadtime )
+			{
 				break;
-			
+			}
+
 			// remove tail, get new tail
 			track->Remove( tailIndex );
 			tailIndex = track->Tail();
 		}
 
 		// check if head has same simulation time
-		if ( track->Count() > 0 )
+		if( track->Count() > 0 )
 		{
-			LagRecord &head = track->Element( track->Head() );
+			LagRecord& head = track->Element( track->Head() );
 
 			// check if player changed simulation time since last time updated
-			if ( head.m_flSimulationTime >= pPlayer->GetSimulationTime() )
-				continue; // don't add new entry for same or older time
+			if( head.m_flSimulationTime >= pPlayer->GetSimulationTime() )
+			{
+				continue;    // don't add new entry for same or older time
+			}
 		}
 
 		// add new record to player track
-		LagRecord &record = track->Element( track->AddToHead() );
+		LagRecord& record = track->Element( track->AddToHead() );
 
 		record.m_fFlags = 0;
-		if ( pPlayer->IsAlive() )
+		if( pPlayer->IsAlive() )
 		{
 			record.m_fFlags |= LC_ALIVE;
 		}
@@ -310,7 +323,7 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 		int layerCount = pPlayer->GetNumAnimOverlays();
 		for( int layerIndex = 0; layerIndex < layerCount; ++layerIndex )
 		{
-			CAnimationLayer *currentLayer = pPlayer->GetAnimOverlay(layerIndex);
+			CAnimationLayer* currentLayer = pPlayer->GetAnimOverlay( layerIndex );
 			if( currentLayer )
 			{
 				record.m_layerRecords[layerIndex].m_cycle = currentLayer->m_flCycle;
@@ -322,7 +335,7 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 		record.m_masterSequence = pPlayer->GetSequence();
 		record.m_masterCycle = pPlayer->GetCycle();
 
-		CStudioHdr *hdr = pPlayer->GetModelPtr();
+		CStudioHdr* hdr = pPlayer->GetModelPtr();
 		if( hdr )
 		{
 			for( int paramIndex = 0; paramIndex < hdr->GetNumPoseParameters(); paramIndex++ )
@@ -337,13 +350,13 @@ void CLagCompensationManager::FrameUpdatePostEntityThink()
 }
 
 // Called during player movement to set up/restore after lag compensation
-void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCmd *cmd )
+void CLagCompensationManager::StartLagCompensation( CBasePlayer* player, CUserCmd* cmd )
 {
 	Assert( !m_isCurrentlyDoingCompensation );
 
 	//DONT LAG COMP AGAIN THIS FRAME IF THERES ALREADY ONE IN PROGRESS
 	//IF YOU'RE HITTING THIS THEN IT MEANS THERES A CODE BUG
-	if ( m_pCurrentPlayer )
+	if( m_pCurrentPlayer )
 	{
 		Assert( m_pCurrentPlayer == NULL );
 		Warning( "Trying to start a new lag compensation session while one is already active!\n" );
@@ -355,14 +368,16 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	m_bNeedToRestore = false;
 
 	m_pCurrentPlayer = player;
-	
-	if ( !player->m_bLagCompensation		// Player not wanting lag compensation
-		 || (gpGlobals->maxClients <= 1)	// no lag compensation in single player
-		 || !sv_unlag.GetBool()				// disabled by server admin
-		 || player->IsBot() 				// not for bots
-		 || player->IsObserver()			// not for spectators
-		)
+
+	if( !player->m_bLagCompensation		// Player not wanting lag compensation
+			|| ( gpGlobals->maxClients <= 1 )	// no lag compensation in single player
+			|| !sv_unlag.GetBool()				// disabled by server admin
+			|| player->IsBot() 				// not for bots
+			|| player->IsObserver()			// not for spectators
+	  )
+	{
 		return;
+	}
 
 	// NOTE: Put this here so that it won't show up in single player mode.
 	VPROF_BUDGET( "StartLagCompensation", VPROF_BUDGETGROUP_OTHER_NETWORKING );
@@ -376,12 +391,12 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 	// correct is the amout of time we have to correct game time
 	float correct = 0.0f;
 
-	INetChannelInfo *nci = engine->GetPlayerNetInfo( player->entindex() ); 
+	INetChannelInfo* nci = engine->GetPlayerNetInfo( player->entindex() );
 
-	if ( nci )
+	if( nci )
 	{
 		// add network latency
-		correct+= nci->GetLatency( FLOW_OUTGOING );
+		correct += nci->GetLatency( FLOW_OUTGOING );
 	}
 
 	// calc number of view interpolation ticks - 1
@@ -389,50 +404,52 @@ void CLagCompensationManager::StartLagCompensation( CBasePlayer *player, CUserCm
 
 	// add view interpolation latency see C_BaseEntity::GetInterpolationAmount()
 	correct += TICKS_TO_TIME( lerpTicks );
-	
+
 	// check bouns [0,sv_maxunlag]
 	correct = clamp( correct, 0.0f, sv_maxunlag.GetFloat() );
 
-	// correct tick send by player 
+	// correct tick send by player
 	int targettick = cmd->tick_count - lerpTicks;
 
 	// calc difference between tick send by player and our latency based tick
-	float deltaTime =  correct - TICKS_TO_TIME(gpGlobals->tickcount - targettick);
+	float deltaTime =  correct - TICKS_TO_TIME( gpGlobals->tickcount - targettick );
 
-	if ( fabs( deltaTime ) > 0.2f )
+	if( fabs( deltaTime ) > 0.2f )
 	{
 		// difference between cmd time and latency is too big > 200ms, use time correction based on latency
 		// DevMsg("StartLagCompensation: delta too big (%.3f)\n", deltaTime );
 		targettick = gpGlobals->tickcount - TIME_TO_TICKS( correct );
 	}
-	
-	// Iterate all active players
-	const CBitVec<MAX_EDICTS> *pEntityTransmitBits = engine->GetEntityTransmitBitsForClient( player->entindex() - 1 );
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
-	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
 
-		if ( !pPlayer )
+	// Iterate all active players
+	const CBitVec<MAX_EDICTS>* pEntityTransmitBits = engine->GetEntityTransmitBitsForClient( player->entindex() - 1 );
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
+	{
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+
+		if( !pPlayer )
 		{
 			continue;
 		}
 
 		// Don't lag compensate yourself you loser...
-		if ( player == pPlayer )
+		if( player == pPlayer )
 		{
 			continue;
 		}
 
 		// Custom checks for if things should lag compensate (based on things like what team the player is on).
-		if ( !player->WantsLagCompensationOnEntity( pPlayer, cmd, pEntityTransmitBits ) )
+		if( !player->WantsLagCompensationOnEntity( pPlayer, cmd, pEntityTransmitBits ) )
+		{
 			continue;
+		}
 
 		// Move other player back in time
 		BacktrackPlayer( pPlayer, TICKS_TO_TIME( targettick ) );
 	}
 }
 
-void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTargetTime )
+void CLagCompensationManager::BacktrackPlayer( CBasePlayer* pPlayer, float flTargetTime )
 {
 	Vector org;
 	Vector minsPreScaled;
@@ -443,21 +460,23 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	int pl_index = pPlayer->entindex() - 1;
 
 	// get track history of this player
-	CUtlFixedLinkedList< LagRecord > *track = &m_PlayerTrack[ pl_index ];
+	CUtlFixedLinkedList< LagRecord >* track = &m_PlayerTrack[ pl_index ];
 
 	// check if we have at leat one entry
-	if ( track->Count() <= 0 )
+	if( track->Count() <= 0 )
+	{
 		return;
+	}
 
 	int curr = track->Head();
 
-	LagRecord *prevRecord = NULL;
-	LagRecord *record = NULL;
+	LagRecord* prevRecord = NULL;
+	LagRecord* record = NULL;
 
 	Vector prevOrg = pPlayer->GetLocalOrigin();
-	
+
 	// Walk context looking for any invalidating event
-	while( track->IsValidIndex(curr) )
+	while( track->IsValidIndex( curr ) )
 	{
 		// remember last record
 		prevRecord = record;
@@ -465,22 +484,24 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 		// get next record
 		record = &track->Element( curr );
 
-		if ( !(record->m_fFlags & LC_ALIVE) )
+		if( !( record->m_fFlags & LC_ALIVE ) )
 		{
 			// player most be alive, lost track
 			return;
 		}
 
 		Vector delta = record->m_vecOrigin - prevOrg;
-		if ( delta.Length2DSqr() > m_flTeleportDistanceSqr )
+		if( delta.Length2DSqr() > m_flTeleportDistanceSqr )
 		{
 			// lost track, too much difference
-			return; 
+			return;
 		}
 
 		// did we find a context smaller than target time ?
-		if ( record->m_flSimulationTime <= flTargetTime )
-			break; // hurra, stop
+		if( record->m_flSimulationTime <= flTargetTime )
+		{
+			break;    // hurra, stop
+		}
 
 		prevOrg = record->m_vecOrigin;
 
@@ -490,9 +511,9 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 
 	Assert( record );
 
-	if ( !record )
+	if( !record )
 	{
-		if ( sv_unlag_debug.GetBool() )
+		if( sv_unlag_debug.GetBool() )
 		{
 			DevMsg( "No valid positions in history for BacktrackPlayer client ( %s )\n", pPlayer->GetPlayerName() );
 		}
@@ -501,9 +522,9 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	}
 
 	float frac = 0.0f;
-	if ( prevRecord && 
-		 (record->m_flSimulationTime < flTargetTime) &&
-		 (record->m_flSimulationTime < prevRecord->m_flSimulationTime) )
+	if( prevRecord &&
+			( record->m_flSimulationTime < flTargetTime ) &&
+			( record->m_flSimulationTime < prevRecord->m_flSimulationTime ) )
 	{
 		// we didn't find the exact time but have a valid previous record
 		// so interpolate between these two records;
@@ -512,8 +533,8 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 		Assert( flTargetTime < prevRecord->m_flSimulationTime );
 
 		// calc fraction between both records
-		frac = ( flTargetTime - record->m_flSimulationTime ) / 
-			( prevRecord->m_flSimulationTime - record->m_flSimulationTime );
+		frac = ( flTargetTime - record->m_flSimulationTime ) /
+			   ( prevRecord->m_flSimulationTime - record->m_flSimulationTime );
 
 		Assert( frac > 0 && frac < 1 ); // should never extrapolate
 
@@ -533,68 +554,74 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	}
 
 	// See if this is still a valid position for us to teleport to
-	if ( sv_unlag_fixstuck.GetBool() )
+	if( sv_unlag_fixstuck.GetBool() )
 	{
 		// Try to move to the wanted position from our current position.
 		trace_t tr;
 		UTIL_TraceEntity( pPlayer, org, org, MASK_PLAYERSOLID, &tr );
-		if ( tr.startsolid || tr.allsolid )
+		if( tr.startsolid || tr.allsolid )
 		{
-			if ( sv_unlag_debug.GetBool() )
+			if( sv_unlag_debug.GetBool() )
+			{
 				DevMsg( "WARNING: BackupPlayer trying to back player into a bad position - client %s\n", pPlayer->GetPlayerName() );
+			}
 
-			CBasePlayer *pHitPlayer = dynamic_cast<CBasePlayer *>( tr.m_pEnt );
+			CBasePlayer* pHitPlayer = dynamic_cast<CBasePlayer*>( tr.m_pEnt );
 
 			// don't lag compensate the current player
-			if ( pHitPlayer && ( pHitPlayer != m_pCurrentPlayer ) )	
+			if( pHitPlayer && ( pHitPlayer != m_pCurrentPlayer ) )
 			{
 				// If we haven't backtracked this player, do it now
 				// this deliberately ignores WantsLagCompensationOnEntity.
-				if ( !m_RestorePlayer.Get( pHitPlayer->entindex() - 1 ) )
+				if( !m_RestorePlayer.Get( pHitPlayer->entindex() - 1 ) )
 				{
 					// prevent recursion - save a copy of m_RestorePlayer,
 					// pretend that this player is off-limits
 					int player_index = pPlayer->entindex() - 1;
 
 					// Temp turn this flag on
-					m_RestorePlayer.Set( player_index  );
+					m_RestorePlayer.Set( player_index );
 
 					BacktrackPlayer( pHitPlayer, flTargetTime );
 
 					// Remove the temp flag
-					m_RestorePlayer.Clear( player_index  );
-				}				
+					m_RestorePlayer.Clear( player_index );
+				}
 			}
 
 			// now trace us back as far as we can go
 			UTIL_TraceEntity( pPlayer, pPlayer->GetLocalOrigin(), org, MASK_PLAYERSOLID, &tr );
 
-			if ( tr.startsolid || tr.allsolid )
+			if( tr.startsolid || tr.allsolid )
 			{
 				// Our starting position is bogus
 
-				if ( sv_unlag_debug.GetBool() )
+				if( sv_unlag_debug.GetBool() )
+				{
 					DevMsg( "Backtrack failed completely, bad starting position\n" );
+				}
 			}
 			else
 			{
 				// We can get to a valid place, but not all the way to the target
 				Vector vPos;
 				VectorLerp( pPlayer->GetLocalOrigin(), org, tr.fraction * g_flFractionScale, vPos );
-				
+
 				// This is as close as we're going to get
 				org = vPos;
 
-				if ( sv_unlag_debug.GetBool() )
+				if( sv_unlag_debug.GetBool() )
+				{
 					DevMsg( "Backtrack got most of the way\n" );
+				}
 			}
 		}
 	}
-	
+
 	// See if this represents a change for the player
 	int flags = 0;
-	LagRecord *restore = &m_RestoreData[ pl_index ];
-	LagRecord *change  = &m_ChangeData[ pl_index ];
+	LagRecord* restore = &m_RestoreData[ pl_index ];
+	LagRecord* change  = &m_ChangeData[ pl_index ];
 
 	QAngle angdiff = pPlayer->GetLocalAngles() - ang;
 	Vector orgdiff = pPlayer->GetLocalOrigin() - org;
@@ -602,7 +629,7 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	// Always remember the pristine simulation time in case we need to restore it.
 	restore->m_flSimulationTime = pPlayer->GetSimulationTime();
 
-	if ( angdiff.LengthSqr() > LAG_COMPENSATION_EPS_SQR )
+	if( angdiff.LengthSqr() > LAG_COMPENSATION_EPS_SQR )
 	{
 		flags |= LC_ANGLES_CHANGED;
 		restore->m_vecAngles = pPlayer->GetLocalAngles();
@@ -611,21 +638,21 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	}
 
 	// Use absolute equality here
-	if ( minsPreScaled != pPlayer->CollisionProp()->OBBMinsPreScaled() || maxsPreScaled != pPlayer->CollisionProp()->OBBMaxsPreScaled() )
+	if( minsPreScaled != pPlayer->CollisionProp()->OBBMinsPreScaled() || maxsPreScaled != pPlayer->CollisionProp()->OBBMaxsPreScaled() )
 	{
 		flags |= LC_SIZE_CHANGED;
 
 		restore->m_vecMinsPreScaled = pPlayer->CollisionProp()->OBBMinsPreScaled();
 		restore->m_vecMaxsPreScaled = pPlayer->CollisionProp()->OBBMaxsPreScaled();
-		
+
 		pPlayer->SetSize( minsPreScaled, maxsPreScaled );
-		
+
 		change->m_vecMinsPreScaled = minsPreScaled;
 		change->m_vecMaxsPreScaled = maxsPreScaled;
 	}
 
 	// Note, do origin at end since it causes a relink into the k/d tree
-	if ( orgdiff.LengthSqr() > LAG_COMPENSATION_EPS_SQR )
+	if( orgdiff.LengthSqr() > LAG_COMPENSATION_EPS_SQR )
 	{
 		flags |= LC_ORIGIN_CHANGED;
 		restore->m_vecOrigin = pPlayer->GetLocalOrigin();
@@ -641,12 +668,12 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	restore->m_masterCycle = pPlayer->GetCycle();
 
 	bool interpolationAllowed = false;
-	if( prevRecord && (record->m_masterSequence == prevRecord->m_masterSequence) )
+	if( prevRecord && ( record->m_masterSequence == prevRecord->m_masterSequence ) )
 	{
 		// If the master state changes, all layers will be invalid too, so don't interp (ya know, interp barely ever happens anyway)
 		interpolationAllowed = true;
 	}
-	
+
 	////////////////////////
 	// First do the master settings
 	bool interpolatedMasters = false;
@@ -661,7 +688,7 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 			// the older record is higher in frame than the newer, it must have wrapped around from 1 back to 0
 			// add one to the newer so it is lerping from .9 to 1.1 instead of .9 to .1, for example.
 			float newCycle = Lerp( frac, record->m_masterCycle, prevRecord->m_masterCycle + 1 );
-			pPlayer->SetCycle(newCycle < 1 ? newCycle : newCycle - 1 );// and make sure .9 to 1.2 does not end up 1.05
+			pPlayer->SetCycle( newCycle < 1 ? newCycle : newCycle - 1 ); // and make sure .9 to 1.2 does not end up 1.05
 		}
 		else
 		{
@@ -670,8 +697,8 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	}
 	if( !interpolatedMasters )
 	{
-		pPlayer->SetSequence(record->m_masterSequence);
-		pPlayer->SetCycle(record->m_masterCycle);
+		pPlayer->SetSequence( record->m_masterSequence );
+		pPlayer->SetCycle( record->m_masterCycle );
 	}
 
 	////////////////////////
@@ -679,7 +706,7 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	int layerCount = pPlayer->GetNumAnimOverlays();
 	for( int layerIndex = 0; layerIndex < layerCount; ++layerIndex )
 	{
-		CAnimationLayer *currentLayer = pPlayer->GetAnimOverlay(layerIndex);
+		CAnimationLayer* currentLayer = pPlayer->GetAnimOverlay( layerIndex );
 		if( currentLayer )
 		{
 			restore->m_layerRecords[layerIndex].m_cycle = currentLayer->m_flCycle;
@@ -688,13 +715,13 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 			restore->m_layerRecords[layerIndex].m_weight = currentLayer->m_flWeight;
 
 			bool interpolated = false;
-			if( (frac > 0.0f)  &&  interpolationAllowed )
+			if( ( frac > 0.0f )  &&  interpolationAllowed )
 			{
-				LayerRecord &recordsLayerRecord = record->m_layerRecords[layerIndex];
-				LayerRecord &prevRecordsLayerRecord = prevRecord->m_layerRecords[layerIndex];
-				if( (recordsLayerRecord.m_order == prevRecordsLayerRecord.m_order)
-					&& (recordsLayerRecord.m_sequence == prevRecordsLayerRecord.m_sequence)
-					)
+				LayerRecord& recordsLayerRecord = record->m_layerRecords[layerIndex];
+				LayerRecord& prevRecordsLayerRecord = prevRecord->m_layerRecords[layerIndex];
+				if( ( recordsLayerRecord.m_order == prevRecordsLayerRecord.m_order )
+						&& ( recordsLayerRecord.m_sequence == prevRecordsLayerRecord.m_sequence )
+				  )
 				{
 					// We can't interpolate across a sequence or order change
 					interpolated = true;
@@ -707,11 +734,11 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 					}
 					else
 					{
-						currentLayer->m_flCycle = Lerp( frac, recordsLayerRecord.m_cycle, prevRecordsLayerRecord.m_cycle  );
+						currentLayer->m_flCycle = Lerp( frac, recordsLayerRecord.m_cycle, prevRecordsLayerRecord.m_cycle );
 					}
 					currentLayer->m_nOrder = recordsLayerRecord.m_order;
 					currentLayer->m_nSequence = recordsLayerRecord.m_sequence;
-					currentLayer->m_flWeight = Lerp( frac, recordsLayerRecord.m_weight, prevRecordsLayerRecord.m_weight  );
+					currentLayer->m_flWeight = Lerp( frac, recordsLayerRecord.m_weight, prevRecordsLayerRecord.m_weight );
 				}
 			}
 			if( !interpolated )
@@ -726,13 +753,13 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 	}
 
 	// Now do pose parameters
-	CStudioHdr *hdr = pPlayer->GetModelPtr();
+	CStudioHdr* hdr = pPlayer->GetModelPtr();
 	if( hdr )
 	{
 		for( int paramIndex = 0; paramIndex < hdr->GetNumPoseParameters(); paramIndex++ )
 		{
 			float poseParameter = record->m_poseParameters[paramIndex];
-			if( (frac > 0.0f)  &&  interpolationAllowed )
+			if( ( frac > 0.0f )  &&  interpolationAllowed )
 			{
 				// These could wrap like cycles, but there's no way to know. In the most common case
 				// (move_x/move_y) it's correct to just lerp. Interpolation almost never happens anyways.
@@ -745,12 +772,16 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 			}
 		}
 	}
-	
-	if ( !flags )
-		return; // we didn't change anything
 
-	if ( sv_lagflushbonecache.GetBool() )
+	if( !flags )
+	{
+		return;    // we didn't change anything
+	}
+
+	if( sv_lagflushbonecache.GetBool() )
+	{
 		pPlayer->InvalidateBoneCache();
+	}
 
 	/*char text[256]; Q_snprintf( text, sizeof(text), "time %.2f", flTargetTime );
 	pPlayer->DrawServerHitboxes( 10 );
@@ -764,53 +795,53 @@ void CLagCompensationManager::BacktrackPlayer( CBasePlayer *pPlayer, float flTar
 
 	if( sv_showlagcompensation.GetInt() == 1 )
 	{
-		pPlayer->DrawServerHitboxes(4, true);
+		pPlayer->DrawServerHitboxes( 4, true );
 	}
 }
 
 
-void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
+void CLagCompensationManager::FinishLagCompensation( CBasePlayer* player )
 {
-	VPROF_BUDGET_FLAGS( "FinishLagCompensation", VPROF_BUDGETGROUP_OTHER_NETWORKING, BUDGETFLAG_CLIENT|BUDGETFLAG_SERVER );
+	VPROF_BUDGET_FLAGS( "FinishLagCompensation", VPROF_BUDGETGROUP_OTHER_NETWORKING, BUDGETFLAG_CLIENT | BUDGETFLAG_SERVER );
 
 	m_pCurrentPlayer = NULL;
 
-	if ( !m_bNeedToRestore )
+	if( !m_bNeedToRestore )
 	{
 		m_isCurrentlyDoingCompensation = false;
 		return; // no player was changed at all
 	}
 
 	// Iterate all active players
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		int pl_index = i - 1;
-		
-		if ( !m_RestorePlayer.Get( pl_index ) )
+
+		if( !m_RestorePlayer.Get( pl_index ) )
 		{
 			// player wasn't changed by lag compensation
 			continue;
 		}
 
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-		if ( !pPlayer )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+		if( !pPlayer )
 		{
 			continue;
 		}
 
-		LagRecord *restore = &m_RestoreData[ pl_index ];
-		LagRecord *change  = &m_ChangeData[ pl_index ];
+		LagRecord* restore = &m_RestoreData[ pl_index ];
+		LagRecord* change  = &m_ChangeData[ pl_index ];
 
 		bool restoreSimulationTime = false;
 
-		if ( restore->m_fFlags & LC_SIZE_CHANGED )
+		if( restore->m_fFlags & LC_SIZE_CHANGED )
 		{
 			restoreSimulationTime = true;
-	
+
 			// see if simulation made any changes, if no, then do the restore, otherwise,
 			//  leave new values in
-			if ( pPlayer->CollisionProp()->OBBMinsPreScaled() == change->m_vecMinsPreScaled &&
-				pPlayer->CollisionProp()->OBBMaxsPreScaled() == change->m_vecMaxsPreScaled )
+			if( pPlayer->CollisionProp()->OBBMinsPreScaled() == change->m_vecMinsPreScaled &&
+					pPlayer->CollisionProp()->OBBMaxsPreScaled() == change->m_vecMaxsPreScaled )
 			{
 				// Restore it
 				pPlayer->SetSize( restore->m_vecMinsPreScaled, restore->m_vecMaxsPreScaled );
@@ -823,25 +854,25 @@ void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
 #endif
 		}
 
-		if ( restore->m_fFlags & LC_ANGLES_CHANGED )
-		{		   
+		if( restore->m_fFlags & LC_ANGLES_CHANGED )
+		{
 			restoreSimulationTime = true;
 
-			if ( pPlayer->GetLocalAngles() == change->m_vecAngles )
+			if( pPlayer->GetLocalAngles() == change->m_vecAngles )
 			{
 				pPlayer->SetLocalAngles( restore->m_vecAngles );
 			}
 		}
 
-		if ( restore->m_fFlags & LC_ORIGIN_CHANGED )
+		if( restore->m_fFlags & LC_ORIGIN_CHANGED )
 		{
 			restoreSimulationTime = true;
 
 			// Okay, let's see if we can do something reasonable with the change
 			Vector delta = pPlayer->GetLocalOrigin() - change->m_vecOrigin;
-			
+
 			// If it moved really far, just leave the player in the new spot!!!
-			if ( delta.Length2DSqr() < m_flTeleportDistanceSqr )
+			if( delta.Length2DSqr() < m_flTeleportDistanceSqr )
 			{
 				RestorePlayerTo( pPlayer, restore->m_vecOrigin + delta );
 			}
@@ -851,13 +882,13 @@ void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
 		{
 			restoreSimulationTime = true;
 
-			pPlayer->SetSequence(restore->m_masterSequence);
-			pPlayer->SetCycle(restore->m_masterCycle);
+			pPlayer->SetSequence( restore->m_masterSequence );
+			pPlayer->SetCycle( restore->m_masterCycle );
 
 			int layerCount = pPlayer->GetNumAnimOverlays();
 			for( int layerIndex = 0; layerIndex < layerCount; ++layerIndex )
 			{
-				CAnimationLayer *currentLayer = pPlayer->GetAnimOverlay(layerIndex);
+				CAnimationLayer* currentLayer = pPlayer->GetAnimOverlay( layerIndex );
 				if( currentLayer )
 				{
 					currentLayer->m_flCycle = restore->m_layerRecords[layerIndex].m_cycle;
@@ -872,7 +903,7 @@ void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
 		{
 			restoreSimulationTime = true;
 
-			CStudioHdr *hdr = pPlayer->GetModelPtr();
+			CStudioHdr* hdr = pPlayer->GetModelPtr();
 			if( hdr )
 			{
 				for( int paramIndex = 0; paramIndex < hdr->GetNumPoseParameters(); paramIndex++ )
@@ -882,7 +913,7 @@ void CLagCompensationManager::FinishLagCompensation( CBasePlayer *player )
 			}
 		}
 
-		if ( restoreSimulationTime )
+		if( restoreSimulationTime )
 		{
 			pPlayer->SetSimulationTime( restore->m_flSimulationTime );
 		}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -25,7 +25,7 @@ public:
 	DECLARE_CLASS( C_TEWorldDecal, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEWorldDecal( void );
+	C_TEWorldDecal( void );
 	virtual			~C_TEWorldDecal( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -39,18 +39,18 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// Networking 
+// Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEWorldDecal, DT_TEWorldDecal, CTEWorldDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEWorldDecal, DT_TEWorldDecal, CTEWorldDecal )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropInt( RECVINFO( m_nIndex ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
 // Constructor, destructor
 //-----------------------------------------------------------------------------
-C_TEWorldDecal::C_TEWorldDecal( void )
+				C_TEWorldDecal::C_TEWorldDecal( void )
 {
 	m_vecOrigin.Init();
 	m_nIndex = 0;
@@ -62,7 +62,7 @@ C_TEWorldDecal::~C_TEWorldDecal( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEWorldDecal::Precache( void )
 {
@@ -72,17 +72,19 @@ void C_TEWorldDecal::Precache( void )
 //-----------------------------------------------------------------------------
 // Shared code
 //-----------------------------------------------------------------------------
-static inline void RecordWorldDecal( const Vector *pos, int index )
+static inline void RecordWorldDecal( const Vector* pos, int index )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_WORLD_DECAL );
- 		msg->SetString( "name", "TE_WorldDecal" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_WORLD_DECAL );
+		msg->SetString( "name", "TE_WorldDecal" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", pos->x );
 		msg->SetFloat( "originy", pos->y );
@@ -96,30 +98,30 @@ static inline void RecordWorldDecal( const Vector *pos, int index )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEWorldDecal::PostDataUpdate( DataUpdateType_t updateType )
 {
 	VPROF( "C_TEWorldDecal::PostDataUpdate" );
 
-	if ( r_decals.GetInt() )
+	if( r_decals.GetInt() )
 	{
-		C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
-		if ( ent )
+		C_BaseEntity* ent = cl_entitylist->GetEnt( 0 );
+		if( ent )
 		{
 			bool bNoBlood = UTIL_IsLowViolence();
 			bool bIsBlood = false;
 
-			if ( bNoBlood )
+			if( bNoBlood )
 			{
-				const char *pchDecalName = decalsystem->GetDecalNameForIndex( m_nIndex );
-				if ( pchDecalName && V_stristr( pchDecalName, "blood" ) )
+				const char* pchDecalName = decalsystem->GetDecalNameForIndex( m_nIndex );
+				if( pchDecalName && V_stristr( pchDecalName, "blood" ) )
 				{
 					bIsBlood = true;
 				}
 			}
 
-			if ( !( bNoBlood && bIsBlood ) )
+			if( !( bNoBlood && bIsBlood ) )
 			{
 				effects->DecalShoot( m_nIndex, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, 0, 0 );
 			}
@@ -134,10 +136,10 @@ void C_TEWorldDecal::PostDataUpdate( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void TE_WorldDecal( IRecipientFilter& filter, float delay, const Vector* pos, int index )
 {
-	if ( r_decals.GetInt() )
+	if( r_decals.GetInt() )
 	{
-		C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
-		if ( ent )
+		C_BaseEntity* ent = cl_entitylist->GetEnt( 0 );
+		if( ent )
 		{
 			effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *pos, 0, 0 );
 		}
@@ -146,13 +148,13 @@ void TE_WorldDecal( IRecipientFilter& filter, float delay, const Vector* pos, in
 }
 
 
-void TE_WorldDecal( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_WorldDecal( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );
 	vecOrigin.y = pKeyValues->GetFloat( "originy" );
 	vecOrigin.z = pKeyValues->GetFloat( "originz" );
-	const char *pDecalName = pKeyValues->GetString( "decalname" );
+	const char* pDecalName = pKeyValues->GetString( "decalname" );
 
-	TE_WorldDecal( filter, 0.0f, &vecOrigin, effects->Draw_DecalIndexFromName( (char*)pDecalName ) );
+	TE_WorldDecal( filter, 0.0f, &vecOrigin, effects->Draw_DecalIndexFromName( ( char* )pDecalName ) );
 }

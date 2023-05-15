@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Used to influence the initial force for a dying NPC's ragdoll. 
+// Purpose: Used to influence the initial force for a dying NPC's ragdoll.
 //			Passive entity. Just represents position in the world, radius, force
 //
 // $NoKeywords: $
@@ -19,28 +19,46 @@ public:
 	DECLARE_DATADESC();
 
 #ifdef MAPBASE
-	Vector GetForceVector( CBaseEntity *pNPC, int *pBone = NULL );
+	Vector GetForceVector( CBaseEntity* pNPC, int* pBone = NULL );
 #else
-	Vector GetForceVector( CBaseEntity *pNPC );
+	Vector GetForceVector( CBaseEntity* pNPC );
 #endif
-	float GetRadius( void ) { return m_radius; }
-	Vector GetAxisVector( void ) { return m_axis - GetAbsOrigin(); }
-	float DistToPoint( const Vector &vecPoint );
+	float GetRadius( void )
+	{
+		return m_radius;
+	}
+	Vector GetAxisVector( void )
+	{
+		return m_axis - GetAbsOrigin();
+	}
+	float DistToPoint( const Vector& vecPoint );
 
-	bool IsEnabled( void ) { return !m_bDisabled; }
-	
-	int IsBarMagnet( void ) { return (m_spawnflags & SF_RAGDOLLMAGNET_BAR); }
+	bool IsEnabled( void )
+	{
+		return !m_bDisabled;
+	}
 
-	static CRagdollMagnet *FindBestMagnet( CBaseEntity *pNPC );
+	int IsBarMagnet( void )
+	{
+		return ( m_spawnflags & SF_RAGDOLLMAGNET_BAR );
+	}
 
-	void Enable( bool bEnable ) { m_bDisabled = !bEnable; }
+	static CRagdollMagnet* FindBestMagnet( CBaseEntity* pNPC );
+
+	void Enable( bool bEnable )
+	{
+		m_bDisabled = !bEnable;
+	}
 
 	// Inputs
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	const char	*BoneTarget() { return STRING(m_BoneTarget); }
+	const char*	BoneTarget()
+	{
+		return STRING( m_BoneTarget );
+	}
 
 	COutputVector m_OnUsed;
 #endif

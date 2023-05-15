@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -31,7 +31,7 @@ public:
 	void SetLimit( uint64 m_cMicroSecDuration );
 	bool BLimitReached();
 	int64 CMicroSecOverage();
-	int64 CMicroSecLeft(); 
+	int64 CMicroSecLeft();
 	int64 CMilliSecLeft();
 private:
 	int64 GetPerformanceCountNow();
@@ -61,11 +61,13 @@ inline void CReliableTimer::End()
 	m_nPerformanceCounterEnd = GetPerformanceCountNow();
 
 	// enforce that we've advanced at least one cycle
-	if ( m_nPerformanceCounterEnd < m_nPerformanceCounterStart )
+	if( m_nPerformanceCounterEnd < m_nPerformanceCounterStart )
 	{
 #ifdef _SERVER
-		if ( m_nPerformanceCounterEnd+10000 < m_nPerformanceCounterStart )
+		if( m_nPerformanceCounterEnd + 10000 < m_nPerformanceCounterStart )
+		{
 			AssertMsgOnce( false, CDbgFmtMsg( "CReliableTimer went backwards - start:%lld end:%lld", m_nPerformanceCounterStart, m_nPerformanceCounterEnd ).ToString() );
+		}
 #endif
 		m_nPerformanceCounterEnd = m_nPerformanceCounterStart + 1;
 	}
@@ -103,7 +105,7 @@ inline void CReliableTimer::SetLimit( uint64 cMicroSecDuration )
 {
 	DbgAssert( 0 != sm_nPerformanceFrequency );	// must have calc'd performance counter frequency
 	m_nPerformanceCounterStart = GetPerformanceCountNow();
-	m_nPerformanceCounterLimit = m_nPerformanceCounterStart + ( ( cMicroSecDuration * sm_nPerformanceFrequency  ) / kMILLION );
+	m_nPerformanceCounterLimit = m_nPerformanceCounterStart + ( ( cMicroSecDuration * sm_nPerformanceFrequency ) / kMILLION );
 }
 
 
@@ -117,14 +119,16 @@ inline bool CReliableTimer::BLimitReached()
 	int64 nPerformanceCountNow = GetPerformanceCountNow();
 
 	// make sure time advances
-	if ( nPerformanceCountNow < m_nPerformanceCounterStart )
+	if( nPerformanceCountNow < m_nPerformanceCounterStart )
 	{
 #ifdef _SERVER
-		if ( nPerformanceCountNow+10000 < m_nPerformanceCounterStart )
+		if( nPerformanceCountNow + 10000 < m_nPerformanceCounterStart )
+		{
 			AssertMsgOnce( false, CDbgFmtMsg( "CReliableTimer went backwards - start:%lld end:%lld", m_nPerformanceCounterStart, m_nPerformanceCounterEnd ).ToString() );
+		}
 #endif
 		// reset the limit to be lower, to match our new clock
-		m_nPerformanceCounterLimit = nPerformanceCountNow + (m_nPerformanceCounterLimit - m_nPerformanceCounterStart);
+		m_nPerformanceCounterLimit = nPerformanceCountNow + ( m_nPerformanceCounterLimit - m_nPerformanceCounterStart );
 	}
 
 	return ( nPerformanceCountNow >= m_nPerformanceCounterLimit );
@@ -140,11 +144,13 @@ inline int64 CReliableTimer::CMicroSecOverage()
 	DbgAssert( m_nPerformanceCounterLimit );	// SetLimit must have been called
 	int64 nPerformanceCountNow = GetPerformanceCountNow();
 #ifdef _SERVER
-	if ( nPerformanceCountNow+10000 < m_nPerformanceCounterStart )
+	if( nPerformanceCountNow + 10000 < m_nPerformanceCounterStart )
+	{
 		AssertMsgOnce( nPerformanceCountNow >= m_nPerformanceCounterStart, CDbgFmtMsg( "CReliableTimer went backwards - start:%lld end:%lld", m_nPerformanceCounterStart, m_nPerformanceCounterEnd ).ToString() );
+	}
 #endif
-	int64 nPerformanceCountOver = ( nPerformanceCountNow > m_nPerformanceCounterLimit ? 
-		nPerformanceCountNow - m_nPerformanceCounterLimit : 0 );
+	int64 nPerformanceCountOver = ( nPerformanceCountNow > m_nPerformanceCounterLimit ?
+									nPerformanceCountNow - m_nPerformanceCounterLimit : 0 );
 
 	Assert( 0 != sm_nPerformanceFrequency );	// must have calc'd performance counter frequency
 	return ( nPerformanceCountOver * kMILLION / sm_nPerformanceFrequency );
@@ -160,11 +166,13 @@ inline int64 CReliableTimer::CMicroSecLeft()
 	DbgAssert( m_nPerformanceCounterLimit );	// SetLimit must have been called
 	int64 nPerformanceCountNow = GetPerformanceCountNow();
 #ifdef _SERVER
-	if ( nPerformanceCountNow+10000 < m_nPerformanceCounterStart )
+	if( nPerformanceCountNow + 10000 < m_nPerformanceCounterStart )
+	{
 		AssertMsgOnce( nPerformanceCountNow >= m_nPerformanceCounterStart, CDbgFmtMsg( "CReliableTimer went backwards - start:%lld end:%lld", m_nPerformanceCounterStart, m_nPerformanceCounterEnd ).ToString() );
+	}
 #endif
-	int64 nPerformanceCountLeft = ( nPerformanceCountNow < m_nPerformanceCounterLimit ? 
-		m_nPerformanceCounterLimit - nPerformanceCountNow : 0 );
+	int64 nPerformanceCountLeft = ( nPerformanceCountNow < m_nPerformanceCounterLimit ?
+									m_nPerformanceCounterLimit - nPerformanceCountNow : 0 );
 
 	DbgAssert( 0 != sm_nPerformanceFrequency );	// must have calc'd performance counter frequency
 	return ( nPerformanceCountLeft * kMILLION / sm_nPerformanceFrequency );

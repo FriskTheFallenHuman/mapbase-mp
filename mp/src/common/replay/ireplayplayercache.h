@@ -5,7 +5,7 @@
 #ifndef IREPLAYPLAYERCACHE_H
 #define IREPLAYPLAYERCACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "interface.h"
@@ -16,7 +16,8 @@
 
 //----------------------------------------------------------------------------------------
 
-abstract_class IReplayPlayerCache : public IBaseInterface
+abstract_class IReplayPlayerCache :
+public IBaseInterface
 {
 public:
 	virtual bool Init() = 0;
@@ -27,11 +28,11 @@ public:
 
 	virtual bool PlayerHasCacheEntry( int nEntIndex ) = 0;
 
-	virtual void SetPlayerClass( int nEntIndex, const char *pPlayerClass ) = 0;
+	virtual void SetPlayerClass( int nEntIndex, const char* pPlayerClass ) = 0;
 	virtual void SetPlayerSpawnTick( int nEntIndex, int nTick ) = 0;
 	virtual void SetPlayerDeathTick( int nEntIndex, int nTick ) = 0;
 
-	virtual const char *GetPlayerClass( int nEntIndex ) = 0;
+	virtual const char* GetPlayerClass( int nEntIndex ) = 0;
 	virtual int GetPlayerSpawnTick( int nEntIndex ) = 0;
 	virtual int GetPlayerDeathTick( int nEntIndex ) = 0;
 };

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,23 +20,23 @@ private:
 	class CHairballDelegate : public CSimplePhysics::IHelper
 	{
 	public:
-		virtual void	GetNodeForces( CSimplePhysics::CNode *pNodes, int iNode, Vector *pAccel );
-		virtual void	ApplyConstraints( CSimplePhysics::CNode *pNodes, int nNodes );
-	
-		C_Hairball		*m_pParent;
+		virtual void	GetNodeForces( CSimplePhysics::CNode* pNodes, int iNode, Vector* pAccel );
+		virtual void	ApplyConstraints( CSimplePhysics::CNode* pNodes, int nNodes );
+
+		C_Hairball*		m_pParent;
 	};
 
 
 public:
-	
-						C_Hairball();
+
+	C_Hairball();
 
 	void				Init();
 
 
 // IClientThinkable.
 public:
-	
+
 	virtual void		ClientThink();
 
 
@@ -62,7 +62,7 @@ public:
 	CHairballDelegate					m_Delegate;
 	CSimplePhysics						m_Physics;
 
-	IMaterial							*m_pMaterial;
+	IMaterial*							m_pMaterial;
 
 
 	// Super sophisticated AI.
@@ -72,40 +72,40 @@ public:
 	float	m_flSpinDuration;
 	float	m_flCurSpinTime;
 	float	m_flSpinRateX, m_flSpinRateY;
-	
+
 	bool	m_bFirstThink;
 };
 
 
-void C_Hairball::CHairballDelegate::GetNodeForces( CSimplePhysics::CNode *pNodes, int iNode, Vector *pAccel )
+void C_Hairball::CHairballDelegate::GetNodeForces( CSimplePhysics::CNode* pNodes, int iNode, Vector* pAccel )
 {
 	pAccel->Init( 0, 0, -1500 );
 }
 
 
-void C_Hairball::CHairballDelegate::ApplyConstraints( CSimplePhysics::CNode *pNodes, int nNodes )
+void C_Hairball::CHairballDelegate::ApplyConstraints( CSimplePhysics::CNode* pNodes, int nNodes )
 {
 	int nSegments = m_pParent->m_nNodesPerHair - 1;
 	float flSpringDistSqr = m_pParent->m_flSpringDist * m_pParent->m_flSpringDist;
 
 	static int nIterations = 1;
-	for( int iIteration=0; iIteration < nIterations; iIteration++ )
+	for( int iIteration = 0; iIteration < nIterations; iIteration++ )
 	{
-		for ( int iHair=0; iHair < m_pParent->m_nHairs; iHair++ )
+		for( int iHair = 0; iHair < m_pParent->m_nHairs; iHair++ )
 		{
-			CSimplePhysics::CNode *pBase = &pNodes[iHair * m_pParent->m_nNodesPerHair];
+			CSimplePhysics::CNode* pBase = &pNodes[iHair * m_pParent->m_nNodesPerHair];
 
-			for( int i=0; i < nSegments; i++ )
+			for( int i = 0; i < nSegments; i++ )
 			{
-				Vector &vNode1 = pBase[i].m_vPos;
-				Vector &vNode2 = pBase[i+1].m_vPos;
+				Vector& vNode1 = pBase[i].m_vPos;
+				Vector& vNode2 = pBase[i + 1].m_vPos;
 				Vector vTo = vNode1 - vNode2;
 
 				float flDistSqr = vTo.LengthSqr();
 				if( flDistSqr > flSpringDistSqr )
 				{
-					float flDist = (float)sqrt( flDistSqr );
-					vTo *= 1 - (m_pParent->m_flSpringDist / flDist);
+					float flDist = ( float )sqrt( flDistSqr );
+					vTo *= 1 - ( m_pParent->m_flSpringDist / flDist );
 
 					vNode1 -= vTo * 0.5f;
 					vNode2 += vTo * 0.5f;
@@ -123,33 +123,33 @@ C_Hairball::C_Hairball()
 {
 	m_nHairs = 100;
 	m_nNodesPerHair = 3;
-	
+
 	float flHairLength = 20;
-	m_flSpringDist = flHairLength / (m_nNodesPerHair - 1);
-	
+	m_flSpringDist = flHairLength / ( m_nNodesPerHair - 1 );
+
 	m_Nodes.SetSize( m_nHairs * m_nNodesPerHair );
 	m_HairPositions.SetSize( m_nHairs );
 	m_TransformedHairPositions.SetSize( m_nHairs );
 
 	m_flSphereRadius = 20;
 	m_vMoveDir.Init();
-	
+
 	m_flSpinDuration = 1;
 	m_flCurSpinTime = 0;
 	m_flSpinRateX = m_flSpinRateY = 0;
 
 	// Distribute on the sphere (need a better random distribution for the sphere).
-	for ( int i=0; i < m_HairPositions.Count(); i++ )
+	for( int i = 0; i < m_HairPositions.Count(); i++ )
 	{
 		float theta = RandomFloat( -M_PI, M_PI );
-		float phi   = RandomFloat( -M_PI/2, M_PI/2 );
-		
+		float phi   = RandomFloat( -M_PI / 2, M_PI / 2 );
+
 		float cosPhi = cos( phi );
 
-		m_HairPositions[i].Init( 
-			cos(theta) * cosPhi * m_flSphereRadius, 
-			sin(theta) * cosPhi * m_flSphereRadius, 
-			sin(phi) * m_flSphereRadius );
+		m_HairPositions[i].Init(
+			cos( theta ) * cosPhi * m_flSphereRadius,
+			sin( theta ) * cosPhi * m_flSphereRadius,
+			sin( phi ) * m_flSphereRadius );
 	}
 
 	m_Delegate.m_pParent = this;
@@ -165,7 +165,7 @@ void C_Hairball::Init()
 {
 	ClientEntityList().AddNonNetworkableEntity( this );
 	ClientThinkList()->SetNextClientThink( GetClientHandle(), CLIENT_THINK_ALWAYS );
-	
+
 	AddToLeafSystem( RENDER_GROUP_OPAQUE_ENTITY );
 
 	m_pMaterial = materials->FindMaterial( "cable/cable", TEXTURE_GROUP_OTHER );
@@ -183,7 +183,7 @@ void C_Hairball::ClientThink()
 
 	// Sophisticated AI.
 	m_flCurSpinTime += gpGlobals->frametime;
-	if ( m_flCurSpinTime < m_flSpinDuration )
+	if( m_flCurSpinTime < m_flSpinDuration )
 	{
 		float div = m_flCurSpinTime / m_flSpinDuration;
 
@@ -197,7 +197,7 @@ void C_Hairball::ClientThink()
 	else
 	{
 		// Flip between stopped and starting.
-		if ( fabs( m_flSpinRateX ) > 0.01f )
+		if( fabs( m_flSpinRateX ) > 0.01f )
 		{
 			m_flSpinRateX = m_flSpinRateY = 0;
 
@@ -207,8 +207,8 @@ void C_Hairball::ClientThink()
 		{
 			static float flXSpeed = 3;
 			static float flYSpeed = flXSpeed * 0.1f;
-			m_flSpinRateX = RandomFloat( -M_PI*flXSpeed, M_PI*flXSpeed );
-			m_flSpinRateY = RandomFloat( -M_PI*flYSpeed, M_PI*flYSpeed );
+			m_flSpinRateX = RandomFloat( -M_PI * flXSpeed, M_PI * flXSpeed );
+			m_flSpinRateY = RandomFloat( -M_PI * flYSpeed, M_PI * flYSpeed );
 
 			m_flSpinDuration = RandomFloat( 1, 4 );
 		}
@@ -216,17 +216,17 @@ void C_Hairball::ClientThink()
 		m_flCurSpinTime = 0;
 	}
 
-	
-	if ( m_flSitStillTime > 0 )
+
+	if( m_flSitStillTime > 0 )
 	{
 		m_flSitStillTime -= gpGlobals->frametime;
 
-		if ( m_flSitStillTime <= 0 )
+		if( m_flSitStillTime <= 0 )
 		{
 			// Shoot out some random lines and find the longest one.
 			m_vMoveDir.Init( 1, 0, 0 );
 			float flLongestFraction = 0;
-			for ( int i=0; i < 15; i++ )
+			for( int i = 0; i < 15; i++ )
 			{
 				Vector vDir( RandomFloat( -1, 1 ), RandomFloat( -1, 1 ), RandomFloat( -1, 1 ) );
 				VectorNormalize( vDir );
@@ -234,9 +234,9 @@ void C_Hairball::ClientThink()
 				trace_t trace;
 				UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + vDir * 10000, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &trace );
 
-				if ( trace.fraction != 1.0 )
+				if( trace.fraction != 1.0 )
 				{
-					if ( trace.fraction > flLongestFraction )
+					if( trace.fraction > flLongestFraction )
 					{
 						flLongestFraction = trace.fraction;
 						m_vMoveDir = vDir;
@@ -256,7 +256,7 @@ void C_Hairball::ClientThink()
 		trace_t trace;
 		UTIL_TraceLine( GetAbsOrigin(), vEnd, MASK_SOLID, NULL, COLLISION_GROUP_NONE, &trace );
 
-		if ( trace.fraction < 1 )
+		if( trace.fraction < 1 )
 		{
 			// Ok, stop moving.
 			m_flSitStillTime = RandomFloat( 1, 3 );
@@ -267,24 +267,24 @@ void C_Hairball::ClientThink()
 		}
 	}
 
-	
+
 	// Transform the base hair positions so we can lock them down.
 	VMatrix mTransform;
 	mTransform.SetupMatrixOrgAngles( GetLocalOrigin(), GetLocalAngles() );
 
-	for ( int i=0; i < m_HairPositions.Count(); i++ )
+	for( int i = 0; i < m_HairPositions.Count(); i++ )
 	{
 		Vector3DMultiplyPosition( mTransform, m_HairPositions[i], m_TransformedHairPositions[i] );
 	}
 
-	if ( m_bFirstThink )
+	if( m_bFirstThink )
 	{
 		m_bFirstThink = false;
-		for ( int i=0; i < m_HairPositions.Count(); i++ )
+		for( int i = 0; i < m_HairPositions.Count(); i++ )
 		{
-			for ( int j=0; j < m_nNodesPerHair; j++ )
+			for( int j = 0; j < m_nNodesPerHair; j++ )
 			{
-				m_Nodes[i*m_nNodesPerHair+j].Init( m_TransformedHairPositions[i] );
+				m_Nodes[i * m_nNodesPerHair + j].Init( m_TransformedHairPositions[i] );
 			}
 		}
 	}
@@ -296,18 +296,20 @@ void C_Hairball::ClientThink()
 
 int C_Hairball::DrawModel( int flags )
 {
-	if ( !m_pMaterial )
+	if( !m_pMaterial )
+	{
 		return 0;
+	}
 
 	CMatRenderContextPtr pRenderContext( g_pMaterialSystem );
-	for ( int iHair=0; iHair < m_nHairs; iHair++ )
+	for( int iHair = 0; iHair < m_nHairs; iHair++ )
 	{
-		CSimplePhysics::CNode *pBase = &m_Nodes[iHair * m_nNodesPerHair];
-		
-		CBeamSegDraw beamDraw;
-		beamDraw.Start( pRenderContext, m_nNodesPerHair-1, m_pMaterial );
+		CSimplePhysics::CNode* pBase = &m_Nodes[iHair * m_nNodesPerHair];
 
-		for ( int i=0; i < m_nNodesPerHair; i++ )
+		CBeamSegDraw beamDraw;
+		beamDraw.Start( pRenderContext, m_nNodesPerHair - 1, m_pMaterial );
+
+		for( int i = 0; i < m_nNodesPerHair; i++ )
 		{
 			BeamSeg_t seg;
 			seg.m_vPos = pBase[i].m_vPredicted;
@@ -319,7 +321,7 @@ int C_Hairball::DrawModel( int flags )
 
 			beamDraw.NextSeg( &seg );
 		}
-		
+
 		beamDraw.End();
 	}
 
@@ -329,16 +331,18 @@ int C_Hairball::DrawModel( int flags )
 
 void CreateHairballCallback()
 {
-	for ( int i=0; i < 20; i++ )
+	for( int i = 0; i < 20; i++ )
 	{
-		C_Hairball *pHairball = new C_Hairball;
+		C_Hairball* pHairball = new C_Hairball;
 		pHairball->Init();
-		
+
 		// Put it a short distance in front of the player.
-		C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-		
-		if ( !pPlayer )
+		C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+
+		if( !pPlayer )
+		{
 			return;
+		}
 
 		Vector vForward;
 		AngleVectors( pPlayer->GetAbsAngles(), &vForward );

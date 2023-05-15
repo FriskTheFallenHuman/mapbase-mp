@@ -11,7 +11,7 @@
 #ifndef EVENTQUEUE_H
 #define EVENTQUEUE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mempool.h"
@@ -28,8 +28,8 @@ struct EventQueuePrioritizedEvent_t
 
 	variant_t m_VariantValue;	// variable-type parameter
 
-	EventQueuePrioritizedEvent_t *m_pNext;
-	EventQueuePrioritizedEvent_t *m_pPrev;
+	EventQueuePrioritizedEvent_t* m_pNext;
+	EventQueuePrioritizedEvent_t* m_pPrev;
 
 	DECLARE_SIMPLE_DATADESC();
 
@@ -41,17 +41,17 @@ class CEventQueue
 public:
 	// pushes an event into the queue, targeting a string name (m_iName), or directly by a pointer
 #ifdef MAPBASE_VSCRIPT
-	int      AddEvent( const char  *target, const char *action, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID = 0 );
-	int      AddEvent( CBaseEntity *target, const char *action, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID = 0 );
+	int      AddEvent( const char*  target, const char* action, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID = 0 );
+	int      AddEvent( CBaseEntity* target, const char* action, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID = 0 );
 #else
-	void AddEvent( const char *target, const char *action, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID = 0 );
-	void AddEvent( CBaseEntity *target, const char *action, variant_t Value, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID = 0 );
+	void AddEvent( const char* target, const char* action, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID = 0 );
+	void AddEvent( CBaseEntity* target, const char* action, variant_t Value, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID = 0 );
 #endif
-	void AddEvent( CBaseEntity *target, const char *action, float fireDelay, CBaseEntity *pActivator, CBaseEntity *pCaller, int outputID = 0 );
+	void AddEvent( CBaseEntity* target, const char* action, float fireDelay, CBaseEntity* pActivator, CBaseEntity* pCaller, int outputID = 0 );
 
-	void CancelEvents( CBaseEntity *pCaller );
-	void CancelEventOn( CBaseEntity *pTarget, const char *sInputName );
-	bool HasEventPending( CBaseEntity *pTarget, const char *sInputName );
+	void CancelEvents( CBaseEntity* pCaller );
+	void CancelEventOn( CBaseEntity* pTarget, const char* sInputName );
+	bool HasEventPending( CBaseEntity* pTarget, const char* sInputName );
 
 	// services the queue, firing off any events who's time hath come
 	void ServiceEvents( void );
@@ -60,8 +60,8 @@ public:
 	void ValidateQueue( void );
 
 	// serialization
-	int Save( ISave &save );
-	int Restore( IRestore &restore );
+	int Save( ISave& save );
+	int Restore( IRestore& restore );
 
 	CEventQueue();
 	~CEventQueue();
@@ -72,15 +72,15 @@ public:
 	void Dump( void );
 
 #ifdef MAPBASE_VSCRIPT
-	void CancelEventsByInput( CBaseEntity *pTarget, const char *szInput );
+	void CancelEventsByInput( CBaseEntity* pTarget, const char* szInput );
 	bool RemoveEvent( int event );
 	float GetTimeLeft( int event );
 #endif // MAPBASE_VSCRIPT
 
 private:
 
-	void AddEvent( EventQueuePrioritizedEvent_t *event );
-	void RemoveEvent( EventQueuePrioritizedEvent_t *pe );
+	void AddEvent( EventQueuePrioritizedEvent_t* event );
+	void RemoveEvent( EventQueuePrioritizedEvent_t* pe );
 
 	DECLARE_SIMPLE_DATADESC();
 	EventQueuePrioritizedEvent_t m_Events;

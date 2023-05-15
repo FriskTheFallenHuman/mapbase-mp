@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -24,23 +24,23 @@ public:
 	DECLARE_CLASS( CItemLongJump, CItem );
 
 	void Spawn( void )
-	{ 
+	{
 		Precache( );
 		SetModel( "models/w_longjump.mdl" );
 		BaseClass::Spawn( );
 	}
 	void Precache( void )
 	{
-		PrecacheModel ("models/w_longjump.mdl");
+		PrecacheModel( "models/w_longjump.mdl" );
 	}
-	bool MyTouch( CBasePlayer *pPlayer )
+	bool MyTouch( CBasePlayer* pPlayer )
 	{
-		if ( pPlayer->m_fLongJump )
+		if( pPlayer->m_fLongJump )
 		{
 			return FALSE;
 		}
 
-		if ( pPlayer->IsSuitEquipped() )
+		if( pPlayer->IsSuitEquipped() )
 		{
 			pPlayer->m_fLongJump = TRUE;// player now has longjump module
 
@@ -48,11 +48,11 @@ public:
 			user.MakeReliable();
 
 			UserMessageBegin( user, "ItemPickup" );
-				WRITE_STRING( STRING(pev->classname) );
+			WRITE_STRING( STRING( pev->classname ) );
 			MessageEnd();
 
 			UTIL_EmitSoundSuit( pPlayer->edict(), "!HEV_A1" );	// Play the longjump sound UNDONE: Kelly? correct sound?
-			return true;		
+			return true;
 		}
 		return false;
 	}

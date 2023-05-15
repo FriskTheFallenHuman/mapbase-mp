@@ -1,6 +1,6 @@
-//========= Copyright � 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -12,7 +12,7 @@
 #include "ammodef.h"
 #include "hl2mp_gamerules.h"
 #ifdef MAPBASE_MP
-#include "mapbase/mapbase_viewmodel.h"
+	#include "mapbase/mapbase_viewmodel.h"
 #endif
 
 #ifdef CLIENT_DLL
@@ -28,18 +28,18 @@
 // ----------------------------------------------------------------------------- //
 // Global functions.
 // ----------------------------------------------------------------------------- //
-bool IsAmmoType( int iAmmoType, const char *pAmmoName )
+bool IsAmmoType( int iAmmoType, const char* pAmmoName )
 {
 	return GetAmmoDef()->Index( pAmmoName ) == iAmmoType;
 }
 
-static const char * s_WeaponAliasInfo[] = 
+static const char* s_WeaponAliasInfo[] =
 {
 	"none",	//	WEAPON_NONE = 0,
 
 	//Melee
 	"shotgun",	//WEAPON_AMERKNIFE,
-	
+
 	NULL,		// end of list marker
 };
 
@@ -52,16 +52,16 @@ IMPLEMENT_NETWORKCLASS_ALIASED( WeaponHL2MPBase, DT_WeaponHL2MPBase )
 BEGIN_NETWORK_TABLE( CWeaponHL2MPBase, DT_WeaponHL2MPBase )
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponHL2MPBase ) 
+BEGIN_PREDICTION_DATA( CWeaponHL2MPBase )
 END_PREDICTION_DATA()
 
 #ifdef GAME_DLL
-BEGIN_DATADESC( CWeaponHL2MPBase )
-END_DATADESC()
+	BEGIN_DATADESC( CWeaponHL2MPBase )
+	END_DATADESC()
 #endif
 
 // ----------------------------------------------------------------------------- //
-// CWeaponHL2MPBase implementation. 
+// CWeaponHL2MPBase implementation.
 // ----------------------------------------------------------------------------- //
 CWeaponHL2MPBase::CWeaponHL2MPBase()
 {
@@ -77,10 +77,10 @@ CWeaponHL2MPBase::CWeaponHL2MPBase()
 bool CWeaponHL2MPBase::Reload( void )
 {
 	bool fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
-	if ( fRet )
+	if( fRet )
 	{
 //		WeaponSound( RELOAD );
-		ToHL2MPPlayer(GetOwner())->DoAnimationEvent( PLAYERANIMEVENT_RELOAD );
+		ToHL2MPPlayer( GetOwner() )->DoAnimationEvent( PLAYERANIMEVENT_RELOAD );
 	}
 	return fRet;
 }
@@ -91,20 +91,20 @@ bool CWeaponHL2MPBase::Reload( void )
 //-----------------------------------------------------------------------------
 bool CWeaponHL2MPBase::Deploy( void )
 {
-	bool fRet = DefaultDeploy( (char*)GetViewModel(), (char*)GetWorldModel(), GetDrawActivity(), (char*)GetAnimPrefix() );
+	bool fRet = DefaultDeploy( ( char* )GetViewModel(), ( char* )GetWorldModel(), GetDrawActivity(), ( char* )GetAnimPrefix() );
 	return fRet;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponHL2MPBase::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponHL2MPBase::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	return BaseClass::Holster( pSwitchingTo );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 {
@@ -112,7 +112,7 @@ void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 	CMapbaseViewModel* vmhands = nullptr;
 
 	CHL2MP_Player* pOwner = GetHL2MPPlayerOwner();
-	if ( pOwner )
+	if( pOwner )
 	{
 		vm = pOwner->GetViewModel( VMINDEX_WEP );
 		vmhands = static_cast<CMapbaseViewModel*>( pOwner->GetViewModel( VMINDEX_HANDS ) );
@@ -121,14 +121,16 @@ void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 #endif
 	}
 
-	if ( visible )
+	if( visible )
 	{
 		RemoveEffects( EF_NODRAW );
 
-		if ( vm )
+		if( vm )
+		{
 			vm->RemoveEffects( EF_NODRAW );
+		}
 
-		if ( vmhands )
+		if( vmhands )
 		{
 			//if ( GetWpnData().m_bUsesHands )
 			{
@@ -139,9 +141,9 @@ void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 			}
 			/*else
 			{
-#ifdef CLIENT_DLL
+			#ifdef CLIENT_DLL
 				vmhands->SetDrawVM( false );
-#endif
+			#endif
 			}*/
 
 		}
@@ -150,39 +152,47 @@ void CWeaponHL2MPBase::SetWeaponVisible( bool visible )
 	{
 		AddEffects( EF_NODRAW );
 
-		if ( vm )
+		if( vm )
+		{
 			vm->AddEffects( EF_NODRAW );
+		}
 
-		if ( vmhands )
+		if( vmhands )
+		{
 			vmhands->AddEffects( EF_NODRAW );
+		}
 	}
 }
 #endif // MAPBASE_MP
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::WeaponSound( WeaponSound_t sound_type, float soundtime /* = 0.0f */ )
 {
 #ifdef CLIENT_DLL
 
-		// If we have some sounds from the weapon classname.txt file, play a random one of them
-		const char *shootsound = GetWpnData().aShootSounds[ sound_type ]; 
-		if ( !shootsound || !shootsound[0] )
-			return;
+	// If we have some sounds from the weapon classname.txt file, play a random one of them
+	const char* shootsound = GetWpnData().aShootSounds[ sound_type ];
+	if( !shootsound || !shootsound[0] )
+	{
+		return;
+	}
 
-		CBroadcastRecipientFilter filter; // this is client side only
-		if ( !te->CanPredict() )
-			return;
-				
-		CBaseEntity::EmitSound( filter, GetPlayerOwner()->entindex(), shootsound, &GetPlayerOwner()->GetAbsOrigin() ); 
+	CBroadcastRecipientFilter filter; // this is client side only
+	if( !te->CanPredict() )
+	{
+		return;
+	}
+
+	CBaseEntity::EmitSound( filter, GetPlayerOwner()->entindex(), shootsound, &GetPlayerOwner()->GetAbsOrigin() );
 #else
-		BaseClass::WeaponSound( sound_type, soundtime );
+	BaseClass::WeaponSound( sound_type, soundtime );
 #endif
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CBasePlayer* CWeaponHL2MPBase::GetPlayerOwner() const
 {
@@ -190,7 +200,7 @@ CBasePlayer* CWeaponHL2MPBase::GetPlayerOwner() const
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CHL2MP_Player* CWeaponHL2MPBase::GetHL2MPPlayerOwner() const
 {
@@ -199,23 +209,27 @@ CHL2MP_Player* CWeaponHL2MPBase::GetHL2MPPlayerOwner() const
 
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( GetPredictable() && !ShouldPredict() )
+	if( GetPredictable() && !ShouldPredict() )
+	{
 		ShutdownPredictable();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponHL2MPBase::ShouldPredict()
 {
-	if ( GetOwner() && GetOwner() == C_BasePlayer::GetLocalPlayer() )
+	if( GetOwner() && GetOwner() == C_BasePlayer::GetLocalPlayer() )
+	{
 		return true;
+	}
 
 	return BaseClass::ShouldPredict();
 }
@@ -223,7 +237,7 @@ bool CWeaponHL2MPBase::ShouldPredict()
 
 #else
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::Spawn()
 {
@@ -234,15 +248,15 @@ void CWeaponHL2MPBase::Spawn()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::Materialize( void )
 {
-	if ( IsEffectActive( EF_NODRAW ) )
+	if( IsEffectActive( EF_NODRAW ) )
 	{
 		// changing from invisible state to visible.
 		EmitSound( "AlyxEmp.Charge" );
-		
+
 		RemoveEffects( EF_NODRAW );
 		DoMuzzleFlash();
 	}
@@ -257,7 +271,7 @@ void CWeaponHL2MPBase::Materialize( void )
 
 	//if ( HasSpawnFlags( SF_NORESPAWN ) == false )
 	{
-		if ( GetOriginalSpawnOrigin() == vec3_origin )
+		if( GetOriginalSpawnOrigin() == vec3_origin )
 		{
 			m_vOriginalSpawnOrigin = GetAbsOrigin();
 			m_vOriginalSpawnAngles = GetAbsAngles();
@@ -273,7 +287,7 @@ void CWeaponHL2MPBase::Materialize( void )
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponHL2MPBase::FallInit( void )
 {
@@ -282,14 +296,14 @@ void CWeaponHL2MPBase::FallInit( void )
 	VPhysicsDestroyObject();
 
 	// Constrained start?
-	if ( HasSpawnFlags( SF_WEAPON_START_CONSTRAINED ) )
+	if( HasSpawnFlags( SF_WEAPON_START_CONSTRAINED ) )
 	{
 		//Constrain the weapon in place
 		IPhysicsObject* pReferenceObject, * pAttachedObject;
 		pReferenceObject = g_PhysWorldObject;
 		pAttachedObject = VPhysicsGetObject();
 
-		if ( pReferenceObject && pAttachedObject )
+		if( pReferenceObject && pAttachedObject )
 		{
 			constraint_fixedparams_t fixed;
 			fixed.Defaults();
@@ -300,7 +314,7 @@ void CWeaponHL2MPBase::FallInit( void )
 
 			IPhysicsConstraint* pConstraint = GetConstraint();
 			pConstraint = physenv->CreateFixedConstraint( pReferenceObject,
-				pAttachedObject, NULL, fixed );
+						  pAttachedObject, NULL, fixed );
 			pConstraint->SetGameData( ( void* ) this );
 		};
 	}
@@ -311,12 +325,18 @@ void CWeaponHL2MPBase::FallInit( void )
 		AddSolidFlags( FSOLID_TRIGGER );
 
 		//any difference?
-		if ( HasSpawnFlags( SF_NORESPAWN ) == false ) UTIL_DropToFloor( this, MASK_SOLID );
-		else VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false );
+		if( HasSpawnFlags( SF_NORESPAWN ) == false )
+		{
+			UTIL_DropToFloor( this, MASK_SOLID );
+		}
+		else
+		{
+			VPhysicsInitNormal( SOLID_BBOX, GetSolidFlags() | FSOLID_TRIGGER, false );
+		}
 	}
 
 	SetPickupTouch();
-	
+
 	SetThink( &CWeaponHL2MPBase::FallThink );
 
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -326,9 +346,9 @@ void CWeaponHL2MPBase::FallInit( void )
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponHL2MPBase::FallThink(void)
+void CWeaponHL2MPBase::FallThink( void )
 {
 	// Prevent the common HL2DM weapon respawn bug from happening
 	// When a weapon is spawned, the following chain of events occurs:
@@ -340,9 +360,9 @@ void CWeaponHL2MPBase::FallThink(void)
 	// If the weapon is unable to move from its location (e.g. if its bounding box is halfway inside a wall), Materialize() never gets called.
 	// Since Materialize() never gets called, the weapon's respawn location is never set, so if a person picks it up, it respawns forever at
 	// 0 0 0 on the map (infinite loop of fall, wait, respawn, not nice at all for performance and bandwidth!)
-	if ( HasSpawnFlags( SF_NORESPAWN ) == false )
+	if( HasSpawnFlags( SF_NORESPAWN ) == false )
 	{
-		if ( GetOriginalSpawnOrigin() == vec3_origin )
+		if( GetOriginalSpawnOrigin() == vec3_origin )
 		{
 			m_vOriginalSpawnOrigin = GetAbsOrigin();
 			m_vOriginalSpawnAngles = GetAbsAngles();
@@ -353,27 +373,27 @@ void CWeaponHL2MPBase::FallThink(void)
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const CHL2MPSWeaponInfo &CWeaponHL2MPBase::GetHL2MPWpnData() const
+const CHL2MPSWeaponInfo& CWeaponHL2MPBase::GetHL2MPWpnData() const
 {
-	const FileWeaponInfo_t *pWeaponInfo = &GetWpnData();
-	const CHL2MPSWeaponInfo *pHL2MPInfo;
+	const FileWeaponInfo_t* pWeaponInfo = &GetWpnData();
+	const CHL2MPSWeaponInfo* pHL2MPInfo;
 
-	#ifdef _DEBUG
-		pHL2MPInfo = dynamic_cast< const CHL2MPSWeaponInfo* >( pWeaponInfo );
-		Assert( pHL2MPInfo );
-	#else
-		pHL2MPInfo = static_cast< const CHL2MPSWeaponInfo* >( pWeaponInfo );
-	#endif
+#ifdef _DEBUG
+	pHL2MPInfo = dynamic_cast< const CHL2MPSWeaponInfo* >( pWeaponInfo );
+	Assert( pHL2MPInfo );
+#else
+	pHL2MPInfo = static_cast< const CHL2MPSWeaponInfo* >( pWeaponInfo );
+#endif
 
 	return *pHL2MPInfo;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponHL2MPBase::FireBullets( const FireBulletsInfo_t &info )
+void CWeaponHL2MPBase::FireBullets( const FireBulletsInfo_t& info )
 {
 	FireBulletsInfo_t modinfo = info;
 
@@ -390,25 +410,25 @@ void CWeaponHL2MPBase::FireBullets( const FireBulletsInfo_t &info )
 #define NUM_MUZZLE_FLASH_TYPES 4
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CWeaponHL2MPBase::OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options )
+bool CWeaponHL2MPBase::OnFireEvent( C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options )
 {
 	return BaseClass::OnFireEvent( pViewModel, origin, angles, event, options );
 }
 
-void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip )
+void UTIL_ClipPunchAngleOffset( QAngle& in, const QAngle& punch, const QAngle& clip )
 {
 	QAngle	final = in + punch;
 
 	//Clip each component
-	for ( int i = 0; i < 3; i++ )
+	for( int i = 0; i < 3; i++ )
 	{
-		if ( final[i] > clip[i] )
+		if( final[i] > clip[i] )
 		{
 			final[i] = clip[i];
 		}
-		else if ( final[i] < -clip[i] )
+		else if( final[i] < -clip[i] )
 		{
 			final[i] = -clip[i];
 		}

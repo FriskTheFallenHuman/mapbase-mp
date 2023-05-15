@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		Things thrown from the hand 
+// Purpose:		Things thrown from the hand
 //
 // $Workfile:     $
 // $Date:         $
@@ -25,9 +25,12 @@ public:
 
 	virtual void	Spawn( void );
 	virtual void	SpawnBrickbatWeapon( void );
-	virtual void	Detonate( void ) { return;};
+	virtual void	Detonate( void )
+	{
+		return;
+	};
 	virtual bool	CreateVPhysics();
-	void			BrickbatTouch( CBaseEntity *pOther );
+	void			BrickbatTouch( CBaseEntity* pOther );
 	void			BrickbatThink( void );
 
 	BrickbatAmmo_t	m_nType;

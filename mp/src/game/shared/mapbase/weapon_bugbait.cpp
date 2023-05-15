@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -29,7 +29,7 @@
 #include "tier0/memdbgon.h"
 
 #ifdef GAME_DLL
-extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
+	extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
 #endif // GAME_DLL
 
 #define BUGBAIT_RADIUS	4.0f // inches
@@ -45,7 +45,7 @@ class CWeaponBugBait: public CBaseHL2MPCombatWeapon
 {
 	DECLARE_CLASS( CWeaponBugBait, CBaseHL2MPCombatWeapon );
 public:
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 public:
@@ -53,34 +53,40 @@ public:
 
 	void	Precache( void );
 #ifdef GAME_DLL
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif
-	void	Drop( const Vector &vecVelocity );
-	void	OnPickedUp( CBaseCombatCharacter *pNewOwner );
+	void	Drop( const Vector& vecVelocity );
+	void	OnPickedUp( CBaseCombatCharacter* pNewOwner );
 	void	PrimaryAttack( void );
 	void	SecondaryAttack( void );
 	void	ItemPostFrame( void );
 
 	bool	Deploy( void );
-	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool	Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 
-	bool	HasAnyAmmo( void ) { return true; }
-	
+	bool	HasAnyAmmo( void )
+	{
+		return true;
+	}
+
 	bool	Reload( void );
 
-	bool	ShouldDisplayHUDHint() { return true; }
+	bool	ShouldDisplayHUDHint()
+	{
+		return true;
+	}
 
-	void	ThrowBugBait( CBasePlayer *pPlayer );
+	void	ThrowBugBait( CBasePlayer* pPlayer );
 
 	// check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
-	void	CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc,
-		const QAngle& angles = vec3_angle );
+	void	CheckThrowPosition( CBasePlayer* pPlayer, const Vector& vecEye, Vector& vecSrc,
+								const QAngle& angles = vec3_angle );
 
 	void	SetSporeEmitterState( bool state = true );
 
 private:
 
-	CWeaponBugBait( const CWeaponBugBait & );
+	CWeaponBugBait( const CWeaponBugBait& );
 
 	CNetworkVar( bool,	m_bRedraw );	//Draw the weapon again after throwing a grenade
 	CNetworkVar( bool,	m_fDrawbackFinished );
@@ -95,7 +101,7 @@ private:
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponBugBait::m_acttable[] = 
+acttable_t	CWeaponBugBait::m_acttable[] =
 {
 	// HL2:DM activities (for third-person animations in SP)
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_GRENADE,					 false },
@@ -138,21 +144,21 @@ BEGIN_NETWORK_TABLE( CWeaponBugBait, DT_WeaponBugBait )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponBugBait )
+	BEGIN_PREDICTION_DATA( CWeaponBugBait )
 	DEFINE_PRED_FIELD( m_bRedraw, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_fDrawbackFinished, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_bEmitSpores, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_bugbait, CWeaponBugBait );
 PRECACHE_WEAPON_REGISTER( weapon_bugbait );
 
-void DropPrimedBugBait( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pWeapon )
+void DropPrimedBugBait( CHL2MP_Player* pPlayer, CBaseCombatWeapon* pWeapon )
 {
-	CWeaponBugBait *pBugBait = dynamic_cast<CWeaponBugBait*>( pWeapon );
+	CWeaponBugBait* pBugBait = dynamic_cast<CWeaponBugBait*>( pWeapon );
 
-	if ( pBugBait )
+	if( pBugBait )
 	{
 		pBugBait->ThrowBugBait( pPlayer );
 		//pBugBait->DecrementAmmo( pPlayer );
@@ -160,7 +166,7 @@ void DropPrimedBugBait( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pWeapon )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponBugBait::CWeaponBugBait( void ) : CBaseHL2MPCombatWeapon()
 {
@@ -168,7 +174,7 @@ CWeaponBugBait::CWeaponBugBait( void ) : CBaseHL2MPCombatWeapon()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::Precache( void )
 {
@@ -184,9 +190,9 @@ void CWeaponBugBait::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponBugBait::Drop( const Vector &vecVelocity )
+void CWeaponBugBait::Drop( const Vector& vecVelocity )
 {
 	BaseClass::Drop( vecVelocity );
 
@@ -197,13 +203,13 @@ void CWeaponBugBait::Drop( const Vector &vecVelocity )
 	if( g_CV_SmokeTrail.GetInt() )
 	{
 		m_hSporeTrail = SporeExplosion::CreateSporeExplosion();
-		
+
 		if( m_hSporeTrail )
 		{
-			SporeExplosion *pSporeExplosion = (SporeExplosion *)m_hSporeTrail.Get();
+			SporeExplosion* pSporeExplosion = ( SporeExplosion* )m_hSporeTrail.Get();
 
 			QAngle	angles;
-			VectorAngles( Vector(0,0,1), angles );
+			VectorAngles( Vector( 0, 0, 1 ), angles );
 
 			pSporeExplosion->SetAbsAngles( angles );
 			pSporeExplosion->SetAbsOrigin( GetAbsOrigin() );
@@ -224,7 +230,7 @@ void CWeaponBugBait::Drop( const Vector &vecVelocity )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponBugBait::Deploy( void )
 {
@@ -235,10 +241,10 @@ bool CWeaponBugBait::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponBugBait::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponBugBait::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	m_bRedraw = false;
 	m_fDrawbackFinished = false;
@@ -247,8 +253,8 @@ bool CWeaponBugBait::Holster( CBaseCombatWeapon *pSwitchingTo )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : true - 
+// Purpose:
+// Input  : true -
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::SetSporeEmitterState( bool state )
 {
@@ -257,13 +263,13 @@ void CWeaponBugBait::SetSporeEmitterState( bool state )
 
 #ifdef GAME_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponBugBait::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponBugBait::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 	bool fThrewBugBait = false;
 
 	switch( pEvent->event )
@@ -293,12 +299,12 @@ void CWeaponBugBait::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatC
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponBugBait::Reload( void )
 {
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
+	if( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
@@ -315,33 +321,41 @@ bool CWeaponBugBait::Reload( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponBugBait::OnPickedUp( CBaseCombatCharacter *pNewOwner )
+void CWeaponBugBait::OnPickedUp( CBaseCombatCharacter* pNewOwner )
 {
 	BaseClass::OnPickedUp( pNewOwner );
 
 #ifdef GAME_DLL
-	if ( m_hSporeTrail )
+	if( m_hSporeTrail )
+	{
 		UTIL_Remove( m_hSporeTrail );
+	}
 #endif // GAME_DLL
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::SecondaryAttack( void )
 {
-	if ( m_bRedraw )
+	if( m_bRedraw )
+	{
 		return;
+	}
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if ( pOwner == NULL )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( pOwner );
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	// Squeeze!
 	CPASAttenuationFilter filter( this );
@@ -349,7 +363,7 @@ void CWeaponBugBait::SecondaryAttack( void )
 	EmitSound( filter, entindex(), "Weapon_Bugbait.Splat" );
 
 #ifdef GAME_DLL
-	if ( CGrenadeBugBait::ActivateBugbaitTargets( GetOwner(), GetAbsOrigin(), true ) == false )
+	if( CGrenadeBugBait::ActivateBugbaitTargets( GetOwner(), GetAbsOrigin(), true ) == false )
 	{
 		g_AntlionMakerManager.BroadcastFollowGoal( GetOwner() );
 	}
@@ -365,24 +379,30 @@ void CWeaponBugBait::SecondaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::PrimaryAttack( void )
 {
-	if ( m_bRedraw )
+	if( m_bRedraw )
+	{
 		return;
+	}
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	if ( pOwner == NULL )
+	CBaseCombatCharacter* pOwner  = GetOwner();
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );;
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );;
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// Note that this is a primary attack and prepare the grenade attack to pause.
 	SendWeaponAnim( ACT_VM_HAULBACK );
-	
+
 	// Put both of these off indefinitely. We do not know how long
 	// the player will hold the grenade.
 	m_flTimeWeaponIdle = FLT_MAX;
@@ -395,16 +415,18 @@ void CWeaponBugBait::PrimaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponBugBait::ItemPostFrame( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 #ifdef MAPBASE
-	if ( pOwner->HasSpawnFlags( SF_PLAYER_SUPPRESS_FIRING ) )
+	if( pOwner->HasSpawnFlags( SF_PLAYER_SUPPRESS_FIRING ) )
 	{
 		WeaponIdle();
 		return;
@@ -424,15 +446,17 @@ void CWeaponBugBait::ItemPostFrame( void )
 	}
 	else
 	{
-		if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) )
+		if( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) )
+		{
 			PrimaryAttack();
+		}
 	}
 
 	BaseClass::ItemPostFrame();
 
-	if ( m_bRedraw )
+	if( m_bRedraw )
 	{
-		if ( IsViewModelSequenceFinished() )
+		if( IsViewModelSequenceFinished() )
 		{
 			Reload();
 		}
@@ -442,30 +466,30 @@ void CWeaponBugBait::ItemPostFrame( void )
 //---------------------------------------------------------------------------------------------------
 // Purpose: check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
 //---------------------------------------------------------------------------------------------------
-void CWeaponBugBait::CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc, const QAngle& angles )
+void CWeaponBugBait::CheckThrowPosition( CBasePlayer* pPlayer, const Vector& vecEye, Vector& vecSrc, const QAngle& angles )
 {
 	// Compute an extended AABB that takes into account the requested bugbait rotation.
 	// This will prevent bugbait from going through nearby solids when model initially intersects with any.
 	matrix3x4_t rotation;
-	AngleMatrix(angles, rotation);
+	AngleMatrix( angles, rotation );
 	Vector mins, maxs;
-	RotateAABB(rotation, -Vector(BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS + 2, 2),
-		Vector(BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS * 2 + 2), mins, maxs);
+	RotateAABB( rotation, -Vector( BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS + 2, 2 ),
+				Vector( BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS + 2, BUGBAIT_RADIUS * 2 + 2 ), mins, maxs );
 	trace_t tr;
 	UTIL_TraceHull( vecEye, vecSrc, mins, maxs, pPlayer->PhysicsSolidMaskForEntity(),
-		pPlayer, pPlayer->GetCollisionGroup(), &tr );
-	
-	if ( tr.DidHit() )
+					pPlayer, pPlayer->GetCollisionGroup(), &tr );
+
+	if( tr.DidHit() )
 	{
 		vecSrc = tr.endpos;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
+// Purpose:
+// Input  : *pPlayer -
 //-----------------------------------------------------------------------------
-void CWeaponBugBait::ThrowBugBait( CBasePlayer *pPlayer )
+void CWeaponBugBait::ThrowBugBait( CBasePlayer* pPlayer )
 {
 #ifndef CLIENT_DLL
 	Vector	vecEye = pPlayer->EyePosition();
@@ -481,22 +505,24 @@ void CWeaponBugBait::ThrowBugBait( CBasePlayer *pPlayer )
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 1200;
 
-	CGrenadeBugBait *pBugbait = BugBaitGrenade_Create( vecSrc, vec3_angle, vecThrow, QAngle( 600, random->RandomInt( -1200,1200 ), 0 ), pPlayer );
-	if ( pBugbait != NULL )
+	CGrenadeBugBait* pBugbait = BugBaitGrenade_Create( vecSrc, vec3_angle, vecThrow, QAngle( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer );
+	if( pBugbait != NULL )
 	{
 		// If the shot is clear to the player, give the missile a grace period
 		trace_t	tr;
 		UTIL_TraceLine( pPlayer->EyePosition(), pPlayer->EyePosition() + ( vForward * 128 ), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-		
-		if ( tr.fraction == 1.0 )
+
+		if( tr.fraction == 1.0 )
+		{
 			pBugbait->SetGracePeriod( 0.1f );
+		}
 	}
 #endif
 
 	m_bRedraw = true;
 
 	WeaponSound( SINGLE );
-	
+
 	// player "shoot" animation
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 

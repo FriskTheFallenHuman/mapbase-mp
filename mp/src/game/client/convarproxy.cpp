@@ -22,8 +22,8 @@ class CConVarMaterialProxy: public IMaterialProxy
 {
 public:
 	CConVarMaterialProxy()
-	: m_pResult( NULL ),
-	  m_conVarRef( "", true )
+		: m_pResult( NULL ),
+		  m_conVarRef( "", true )
 	{
 	}
 
@@ -31,15 +31,17 @@ public:
 	{
 	}
 
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 	{
-		const char *pResult = pKeyValues->GetString( "resultVar" );
-		if ( !pResult )
+		const char* pResult = pKeyValues->GetString( "resultVar" );
+		if( !pResult )
+		{
 			return false;
+		}
 
 		bool found;
 		m_pResult = pMaterial->FindVar( pResult, &found );
-		if ( !found )
+		if( !found )
 		{
 			m_pResult = NULL;
 			return false;
@@ -59,7 +61,7 @@ public:
 		}
 
 		m_conVarRef.Init( pResult, false );
-		if ( !m_conVarRef.IsValid() )
+		if( !m_conVarRef.IsValid() )
 		{
 			return false;
 		}
@@ -71,7 +73,7 @@ public:
 	{
 		switch( m_pResult->GetType() )
 		{
-		case MATERIAL_VAR_TYPE_VECTOR:
+			case MATERIAL_VAR_TYPE_VECTOR:
 			{
 				float f = m_conVarRef.GetFloat();
 				Vector4D vec( f, f, f, f );
@@ -80,23 +82,23 @@ public:
 			break;
 
 #ifdef MAPBASE
-		case MATERIAL_VAR_TYPE_STRING:
-			m_pResult->SetStringValue( m_conVarRef.GetString() );
-			break;
+			case MATERIAL_VAR_TYPE_STRING:
+				m_pResult->SetStringValue( m_conVarRef.GetString() );
+				break;
 #endif
 
-		case MATERIAL_VAR_TYPE_INT:
-			m_pResult->SetIntValue( m_conVarRef.GetInt() );
-			break;
+			case MATERIAL_VAR_TYPE_INT:
+				m_pResult->SetIntValue( m_conVarRef.GetInt() );
+				break;
 
-		case MATERIAL_VAR_TYPE_FLOAT:
-		default:
-			m_pResult->SetFloatValue( m_conVarRef.GetFloat() );
-			break;
+			case MATERIAL_VAR_TYPE_FLOAT:
+			default:
+				m_pResult->SetFloatValue( m_conVarRef.GetFloat() );
+				break;
 		}
 	}
 
-	virtual IMaterial *GetMaterial()
+	virtual IMaterial* GetMaterial()
 	{
 		return m_pResult->GetOwningMaterial();
 	}
@@ -106,7 +108,7 @@ public:
 	}
 
 protected:
-	IMaterialVar *m_pResult;
+	IMaterialVar* m_pResult;
 	ConVarRef m_conVarRef;
 };
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -12,7 +12,7 @@
 #include "tier0/memdbgon.h"
 
 // forward declarations
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 //-----------------------------------------------------------------------------
 // Returns the player health (from 0 to 1)
@@ -20,35 +20,41 @@ void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
 class CProxyHealth : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	CFloatInput	m_Factor;
 };
 
-bool CProxyHealth::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CProxyHealth::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if (!CResultProxy::Init( pMaterial, pKeyValues ))
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	{
 		return false;
+	}
 
-	if (!m_Factor.Init( pMaterial, pKeyValues, "scale", 1 ))
+	if( !m_Factor.Init( pMaterial, pKeyValues, "scale", 1 ) )
+	{
 		return false;
+	}
 
 	return true;
 }
 
-void CProxyHealth::OnBind( void *pC_BaseEntity )
+void CProxyHealth::OnBind( void* pC_BaseEntity )
 {
-	if (!pC_BaseEntity)
+	if( !pC_BaseEntity )
+	{
 		return;
+	}
 
-	C_BaseEntity *pEntity = BindArgToEntity( pC_BaseEntity );
+	C_BaseEntity* pEntity = BindArgToEntity( pC_BaseEntity );
 
 	Assert( m_pResult );
 	SetFloatResult( pEntity->HealthFraction() * m_Factor.GetFloat() );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}

@@ -1,26 +1,26 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef INPUTENUMS_H
 #define INPUTENUMS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // Standard maximum +/- value of a joystick axis
 #define MAX_BUTTONSAMPLE			32768
 
 #if !defined( _X360 )
-#define INVALID_USER_ID		-1
+	#define INVALID_USER_ID		-1
 #else
-#define INVALID_USER_ID		XBX_INVALID_USER_ID
+	#define INVALID_USER_ID		XBX_INVALID_USER_ID
 #endif
 
 //-----------------------------------------------------------------------------
-// Forward declarations: 
+// Forward declarations:
 //-----------------------------------------------------------------------------
 
 enum
@@ -35,7 +35,7 @@ enum
 enum JoystickAxis_t
 {
 	JOY_AXIS_X = 0,
- 	JOY_AXIS_Y,
+	JOY_AXIS_Y,
 	JOY_AXIS_Z,
 	JOY_AXIS_U,
 	JOY_AXIS_R,
@@ -46,7 +46,7 @@ enum JoystickAxis_t
 enum JoystickAxis_t
 {
 	JOY_AXIS_X = 0,
- 	JOY_AXIS_Y,
+	JOY_AXIS_Y,
 	JOY_AXIS_Z,
 	JOY_AXIS_R,
 	JOY_AXIS_U,

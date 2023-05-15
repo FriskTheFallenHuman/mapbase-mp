@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define ITEM_DYNAMIC_RESUPPLY_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,6 +20,6 @@
 #define SF_DYNAMICRESUPPLY_ALTERNATE_MASTER		16	// Don't assume role as master on activate, but don't think either
 
 float DynamicResupply_GetDesiredHealthPercentage( void );
-void DynamicResupply_InitFromAlternateMaster( CBaseEntity *pResupply, string_t iszMaster );
+void DynamicResupply_InitFromAlternateMaster( CBaseEntity* pResupply, string_t iszMaster );
 
 #endif // ITEM_DYNAMIC_RESUPPLY_H

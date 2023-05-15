@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 
 #ifdef _WIN32
-#include <windows.h>
-#include <dbghelp.h>
+	#include <windows.h>
+	#include <dbghelp.h>
 #endif
 #include "tier0/minidump.h"
 #include "tools_minidump.h"
@@ -20,15 +20,17 @@ static ToolsExceptionHandler g_pCustomExceptionHandler = NULL;
 // Internal helpers.
 // --------------------------------------------------------------------------------- //
 
-static long __stdcall ToolsExceptionFilter( struct _EXCEPTION_POINTERS *ExceptionInfo )
+static long __stdcall ToolsExceptionFilter( struct _EXCEPTION_POINTERS* ExceptionInfo )
 {
 #ifdef _WIN32
 	// Non VMPI workers write a minidump and show a crash dialog like normal.
 	int iType = MiniDumpNormal;
-	if ( g_bToolsWriteFullMinidumps )
+	if( g_bToolsWriteFullMinidumps )
+	{
 		iType = MiniDumpWithDataSegs | MiniDumpWithIndirectlyReferencedMemory;
-		
-	WriteMiniDumpUsingExceptionInfo( ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo, (MINIDUMP_TYPE)iType );
+	}
+
+	WriteMiniDumpUsingExceptionInfo( ExceptionInfo->ExceptionRecord->ExceptionCode, ExceptionInfo, ( MINIDUMP_TYPE )iType );
 	return EXCEPTION_CONTINUE_SEARCH;
 #else
 	return 0;
@@ -36,7 +38,7 @@ static long __stdcall ToolsExceptionFilter( struct _EXCEPTION_POINTERS *Exceptio
 }
 
 
-static long __stdcall ToolsExceptionFilter_Custom( struct _EXCEPTION_POINTERS *ExceptionInfo )
+static long __stdcall ToolsExceptionFilter_Custom( struct _EXCEPTION_POINTERS* ExceptionInfo )
 {
 #ifdef _WIN32
 	// Run their custom handler.

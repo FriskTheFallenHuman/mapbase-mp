@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -30,11 +30,11 @@ public:
 	template< class T >
 	CSmartPtr<T> InitSingleton( CSmartPtr<T> pEmitter )
 	{
-		if ( !pEmitter )
+		if( !pEmitter )
 		{
 			Error( "InitSingleton: pEmitter is NULL" );
 		}
-	
+
 		pEmitter->GetBinding().SetDrawThruLeafSystem( false );				// Draw in DrawSingletons instead.
 		pEmitter->SetSortOrigin( Vector( 0, 0, 0 ) );
 
@@ -51,13 +51,13 @@ public:
 	{
 		g_pSimpleSingleton[0] = InitSingleton( CSimpleEmitter::Create( "Simple Particle Singleton" ) );
 		g_pSimpleSingleton[1] = InitSingleton( CSimpleEmitter::Create( "Simple Particle Singleton [sky]" ) );
-		
+
 		g_pEmberSingleton[0] = InitSingleton( CEmberEffect::Create( "Ember Particle Singleton" ) );
 		g_pEmberSingleton[1] = InitSingleton( CEmberEffect::Create( "Ember Particle Singleton [sky]" ) );
-		
+
 		g_pFireSmokeSingleton[0] = InitSingleton( CFireSmokeEffect::Create( "Fire Smoke Particle Singleton" ) );
 		g_pFireSmokeSingleton[1] = InitSingleton( CFireSmokeEffect::Create( "Fire Smoke Particle Singleton [sky]" ) );
-		
+
 		g_pFireSingleton[0] = InitSingleton( CFireParticle::Create( "Fire Particle Singleton" ) );
 		g_pFireSingleton[1] = InitSingleton( CFireParticle::Create( "Fire Particle Singleton [sky]" ) );
 	}
@@ -76,60 +76,60 @@ static CEZParticleInit g_EZParticleInit;
 
 
 template<class T>
-inline void CopyParticle( const T *pSrc, T *pDest )
+inline void CopyParticle( const T* pSrc, T* pDest )
 {
-	if ( pDest )
+	if( pDest )
 	{
 		// Copy the particle, but don't screw up the linked list it's in.
-		Particle *pPrev = pDest->m_pPrev;
-		Particle *pNext = pDest->m_pNext;
+		Particle* pPrev = pDest->m_pPrev;
+		Particle* pNext = pDest->m_pNext;
 		PMaterialHandle pSubTexture = pDest->m_pSubTexture;
-		
+
 		*pDest = *pSrc;
-		
+
 		pDest->m_pPrev = pPrev;
 		pDest->m_pNext = pNext;
 		pDest->m_pSubTexture = pSubTexture;
 	}
 }
-		
 
 
-void AddSimpleParticle( const SimpleParticle *pParticle, PMaterialHandle hMaterial, bool bInSkybox )
+
+void AddSimpleParticle( const SimpleParticle* pParticle, PMaterialHandle hMaterial, bool bInSkybox )
 {
-	if ( g_pSimpleSingleton[bInSkybox].IsValid() )
+	if( g_pSimpleSingleton[bInSkybox].IsValid() )
 	{
-		SimpleParticle *pNew = g_pSimpleSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
+		SimpleParticle* pNew = g_pSimpleSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
 		CopyParticle( pParticle, pNew );
 	}
 }
 
 
-void AddEmberParticle( const SimpleParticle *pParticle, PMaterialHandle hMaterial, bool bInSkybox )
+void AddEmberParticle( const SimpleParticle* pParticle, PMaterialHandle hMaterial, bool bInSkybox )
 {
-	if ( g_pEmberSingleton[bInSkybox].IsValid() )
+	if( g_pEmberSingleton[bInSkybox].IsValid() )
 	{
-		SimpleParticle *pNew = g_pEmberSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
+		SimpleParticle* pNew = g_pEmberSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
 		CopyParticle( pParticle, pNew );
 	}
 }
 
 
-void AddFireSmokeParticle( const SimpleParticle *pParticle, PMaterialHandle hMaterial, bool bInSkybox )
+void AddFireSmokeParticle( const SimpleParticle* pParticle, PMaterialHandle hMaterial, bool bInSkybox )
 {
-	if ( g_pFireSmokeSingleton[bInSkybox].IsValid() )
+	if( g_pFireSmokeSingleton[bInSkybox].IsValid() )
 	{
-		SimpleParticle *pNew = g_pFireSmokeSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
+		SimpleParticle* pNew = g_pFireSmokeSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
 		CopyParticle( pParticle, pNew );
 	}
 }
 
 
-void AddFireParticle( const SimpleParticle *pParticle, PMaterialHandle hMaterial, bool bInSkybox )
+void AddFireParticle( const SimpleParticle* pParticle, PMaterialHandle hMaterial, bool bInSkybox )
 {
-	if ( g_pFireSingleton[bInSkybox].IsValid() )
+	if( g_pFireSingleton[bInSkybox].IsValid() )
 	{
-		SimpleParticle *pNew = g_pFireSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
+		SimpleParticle* pNew = g_pFireSingleton[bInSkybox]->AddSimpleParticle( hMaterial, pParticle->m_Pos );
 		CopyParticle( pParticle, pNew );
 	}
 }
@@ -137,22 +137,22 @@ void AddFireParticle( const SimpleParticle *pParticle, PMaterialHandle hMaterial
 
 void DrawParticleSingletons( bool bInSkybox )
 {
-	if ( g_pSimpleSingleton[bInSkybox].IsValid() )
+	if( g_pSimpleSingleton[bInSkybox].IsValid() )
 	{
 		g_pSimpleSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
 	}
 
-	if ( g_pEmberSingleton[bInSkybox].IsValid() )
+	if( g_pEmberSingleton[bInSkybox].IsValid() )
 	{
 		g_pEmberSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
 	}
 
-	if ( g_pFireSmokeSingleton[bInSkybox].IsValid() )
+	if( g_pFireSmokeSingleton[bInSkybox].IsValid() )
 	{
 		g_pFireSmokeSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
 	}
-	
-	if ( g_pFireSingleton[bInSkybox].IsValid() )
+
+	if( g_pFireSingleton[bInSkybox].IsValid() )
 	{
 		g_pFireSingleton[bInSkybox]->GetBinding().DrawModel( 1 );
 	}

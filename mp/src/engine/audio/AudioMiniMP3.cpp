@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------------
 // VAudio_MiniMP3
-// 
+//
 // Created by Joshua Ashton and Josh Dowell (Slartibarty)
 // joshua@froggi.es 🐸✨
 //-----------------------------------------------------------------------------
@@ -38,9 +38,9 @@ static const int kChunkCount   = 4;
 class CMiniMP3AudioStream final : public IAudioStream
 {
 public:
-	CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler );
+	CMiniMP3AudioStream( IAudioStreamEvent* pEventHandler );
 
-	int				Decode( void *pBuffer, unsigned int uBufferSize ) override;
+	int				Decode( void* pBuffer, unsigned int uBufferSize ) override;
 
 	int				GetOutputBits() override;
 	int				GetOutputRate() override;
@@ -56,7 +56,7 @@ private:
 	// Returns true if it hit EOF
 	bool 			StreamChunk( int nChunkIdx );
 	// Returns number of samples
-	int				DecodeFrame( void *pBuffer );
+	int				DecodeFrame( void* pBuffer );
 
 	unsigned int	SamplesToBytes( int nSamples ) const;
 	unsigned int	GetTotalChunkSizes() const;
@@ -99,38 +99,40 @@ private:
 };
 
 
-CMiniMP3AudioStream::CMiniMP3AudioStream( IAudioStreamEvent *pEventHandler )
+CMiniMP3AudioStream::CMiniMP3AudioStream( IAudioStreamEvent* pEventHandler )
 	: m_pEventHandler( pEventHandler )
 {
 	mp3dec_init( &m_Decoder );
 
 	memset( &m_Info, 0, sizeof( m_Info ) );
 	memset( &m_Frames, 0, sizeof( m_Frames ) );
-	
+
 	UpdateStreamInfo();
 }
 
 
-int	CMiniMP3AudioStream::Decode( void *pBuffer, unsigned int uBufferSize )
+int	CMiniMP3AudioStream::Decode( void* pBuffer, unsigned int uBufferSize )
 {
 	const unsigned int kSamplesPerFrameBufferSize = MINIMP3_MAX_SAMPLES_PER_FRAME * sizeof( short );
 
-	if ( uBufferSize < kSamplesPerFrameBufferSize )
+	if( uBufferSize < kSamplesPerFrameBufferSize )
 	{
 		AssertMsg( false, "Decode called with < kSamplesPerFrameBufferSize!" );
 		return 0;
 	}
 
 	unsigned int uSampleBytes = 0;
-	while ( ( uBufferSize - uSampleBytes ) > kSamplesPerFrameBufferSize )
+	while( ( uBufferSize - uSampleBytes ) > kSamplesPerFrameBufferSize )
 	{
 		// Offset the buffer by the number of samples bytes we've got so far.
-		char *pFrameBuffer = reinterpret_cast<char*>( pBuffer ) + uSampleBytes;
+		char* pFrameBuffer = reinterpret_cast<char*>( pBuffer ) + uSampleBytes;
 
 		int nFrameSamples = DecodeFrame( pFrameBuffer );
 
-		if ( !nFrameSamples )
+		if( !nFrameSamples )
+		{
 			break;
+		}
 
 		uSampleBytes += SamplesToBytes( nFrameSamples );
 	}
@@ -141,7 +143,7 @@ int	CMiniMP3AudioStream::Decode( void *pBuffer, unsigned int uBufferSize )
 	// If this is a streaming MP3, this is just from judder,
 	// so just fill with 1152 samples of 0.
 	const bool bEOF = m_uDataPosition >= m_nEOFPosition;
-	if ( uSampleBytes == 0 && !bEOF )
+	if( uSampleBytes == 0 && !bEOF )
 	{
 		const unsigned int kZeroSampleBytes = Max( SamplesToBytes( 1152 ), uBufferSize );
 		memset( pBuffer, 0, kZeroSampleBytes );
@@ -191,10 +193,10 @@ void CMiniMP3AudioStream::SetPosition( unsigned int uPosition )
 void CMiniMP3AudioStream::UpdateStreamInfo()
 {
 	// Pre-fill all frames.
-	for ( int i = 0; i < kChunkCount; i++ )
+	for( int i = 0; i < kChunkCount; i++ )
 	{
 		const bool bEOF = StreamChunk( i );
-		if ( bEOF )
+		if( bEOF )
 		{
 			m_nEOFPosition = m_uDataPosition;
 			break;
@@ -219,14 +221,14 @@ bool CMiniMP3AudioStream::StreamChunk( int nChunkIdx )
 }
 
 
-int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
+int CMiniMP3AudioStream::DecodeFrame( void* pBuffer )
 {
 	// If we are past the first two chunks, move those two chunks back and load two new ones.
 	//
 	// This part of the code assumes the chunk count to be 4, so if you change that,
 	// check here. You shouldn't need more than 4 4KB chunks making 16KB though...
 	COMPILE_TIME_ASSERT( kChunkCount == 4 );
-	while ( m_uFramePosition >= 2 * kChunkSize && m_uDataPosition < m_nEOFPosition )
+	while( m_uFramePosition >= 2 * kChunkSize && m_uDataPosition < m_nEOFPosition )
 	{
 		// Chunk 0 <- Chunk 2
 		// Chunk 1 <- Chunk 3
@@ -241,7 +243,7 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 		m_uFramePosition -= 2 * kChunkSize;
 
 		// Grab a new Chunk 2 + 3
-		for ( int i = 0; i < 2; i++ )
+		for( int i = 0; i < 2; i++ )
 		{
 			const int nChunkIdx = 2 + i;
 
@@ -252,7 +254,7 @@ int CMiniMP3AudioStream::DecodeFrame( void *pBuffer )
 			// to get the next chunk if there is one left to get.
 			// It's okay if it never gets data, as m_nChunkSize[3] is set to 0
 			// when we move the chunks back.
-			if ( bEOF )
+			if( bEOF )
 			{
 				m_nEOFPosition = m_uDataPosition;
 				break;
@@ -275,8 +277,10 @@ unsigned int CMiniMP3AudioStream::SamplesToBytes( int nSamples ) const
 unsigned int CMiniMP3AudioStream::GetTotalChunkSizes() const
 {
 	int nTotalSize = 0;
-	for ( int i = 0; i < kChunkCount; i++ )
+	for( int i = 0; i < kChunkCount; i++ )
+	{
 		nTotalSize += m_nChunkSize[i];
+	}
 
 	return nTotalSize;
 }
@@ -287,29 +291,29 @@ unsigned int CMiniMP3AudioStream::GetTotalChunkSizes() const
 class CVAudioMiniMP3 final : public IVAudio
 {
 public:
-	IAudioStream*	CreateMP3StreamDecoder ( IAudioStreamEvent *pEventHandler ) override;
-	void			DestroyMP3StreamDecoder( IAudioStream *pDecoder ) override;
+	IAudioStream*	CreateMP3StreamDecoder( IAudioStreamEvent* pEventHandler ) override;
+	void			DestroyMP3StreamDecoder( IAudioStream* pDecoder ) override;
 
-	static CVAudioMiniMP3 &GetInstance();
+	static CVAudioMiniMP3& GetInstance();
 };
 
 
-IAudioStream *CVAudioMiniMP3::CreateMP3StreamDecoder( IAudioStreamEvent *pEventHandler )
+IAudioStream* CVAudioMiniMP3::CreateMP3StreamDecoder( IAudioStreamEvent* pEventHandler )
 {
 	return new CMiniMP3AudioStream( pEventHandler );
 }
 
 
-void CVAudioMiniMP3::DestroyMP3StreamDecoder( IAudioStream *pDecoder )
+void CVAudioMiniMP3::DestroyMP3StreamDecoder( IAudioStream* pDecoder )
 {
-	delete static_cast< CMiniMP3AudioStream * >( pDecoder );
+	delete static_cast< CMiniMP3AudioStream* >( pDecoder );
 }
 
-CVAudioMiniMP3 &CVAudioMiniMP3::GetInstance()
+CVAudioMiniMP3& CVAudioMiniMP3::GetInstance()
 {
 	// We must allocate this as some Source Engine versions attempt
 	// to delete the vaudio pointer on shutdown.
-	static CVAudioMiniMP3 *s_pVAudio = new CVAudioMiniMP3;
+	static CVAudioMiniMP3* s_pVAudio = new CVAudioMiniMP3;
 	return *s_pVAudio;
 }
 

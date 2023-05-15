@@ -1,7 +1,7 @@
 //========= Mapbase MP - https://github.com/FriskTheFallenHuman/mapbase-mp ============//
 //
 // Purpose: A special variant of predicted_viewmodel with nethworked C_Hands
-// 
+//
 //          This is base of ZM:R zmr_viewmodel credits goes to the ZM:R
 //          This was modified to derive from CPredictedViewModel and rmeoval
 //          of the built-in bob
@@ -21,109 +21,119 @@ BEGIN_NETWORK_TABLE( CMapbaseViewModel, DT_Mapbase_ViewModel )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( C_MapbaseViewModel )
-END_PREDICTION_DATA()
+	BEGIN_PREDICTION_DATA( C_MapbaseViewModel )
+	END_PREDICTION_DATA()
 #endif
 
 CMapbaseViewModel::CMapbaseViewModel()
 {
 #ifdef CLIENT_DLL
-    m_bDrawVM = true;
-    m_pLastWeapon = nullptr;
+	m_bDrawVM = true;
+	m_pLastWeapon = nullptr;
 #endif
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CMapbaseViewModel::~CMapbaseViewModel()
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CBaseCombatWeapon* CMapbaseViewModel::GetOwningWeapon()
 {
-    auto* pOwner = CBaseViewModel::GetOwningWeapon();
-    if ( pOwner )
-        return pOwner;
+	auto* pOwner = CBaseViewModel::GetOwningWeapon();
+	if( pOwner )
+	{
+		return pOwner;
+	}
 
-    // Arm viewmodel does not have an owning. Ask our brother.
-    if ( ViewModelIndex() == VMINDEX_HANDS )
-    {
-        auto* pPlayer = ToHL2MPPlayer( GetOwner() );
+	// Arm viewmodel does not have an owning. Ask our brother.
+	if( ViewModelIndex() == VMINDEX_HANDS )
+	{
+		auto* pPlayer = ToHL2MPPlayer( GetOwner() );
 
-        if ( pPlayer )
-        {
-            CBaseViewModel* vm = pPlayer->GetViewModel( VMINDEX_WEP, false );
+		if( pPlayer )
+		{
+			CBaseViewModel* vm = pPlayer->GetViewModel( VMINDEX_WEP, false );
 
-            // Apparently this is possible...
-            // ???
-            if ( vm && vm->ViewModelIndex() == VMINDEX_WEP )
-                return vm->GetOwningWeapon();
-        }
-    }
+			// Apparently this is possible...
+			// ???
+			if( vm && vm->ViewModelIndex() == VMINDEX_WEP )
+			{
+				return vm->GetOwningWeapon();
+			}
+		}
+	}
 
-    return nullptr;
+	return nullptr;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CHL2MP_Player* CMapbaseViewModel::GetOwner() const
 {
-    return ToHL2MPPlayer( CBaseViewModel::GetOwner() );
+	return ToHL2MPPlayer( CBaseViewModel::GetOwner() );
 }
 
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponHL2MPBase* CMapbaseViewModel::GetWeapon() const
 {
-    return static_cast<CWeaponHL2MPBase*>( CBaseViewModel::GetWeapon() );
+	return static_cast<CWeaponHL2MPBase*>( CBaseViewModel::GetWeapon() );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int C_MapbaseViewModel::DrawModel( int flags )
 {
-    if ( m_bDrawVM )
-        return BaseClass::DrawModel( flags );
+	if( m_bDrawVM )
+	{
+		return BaseClass::DrawModel( flags );
+	}
 
-    return 0;
+	return 0;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_BaseAnimating* C_MapbaseViewModel::FindFollowedEntity()
 {
-    if ( ViewModelIndex() == VMINDEX_HANDS )
-    {
-        CHL2MP_Player* pPlayer = ToHL2MPPlayer( GetOwner() );
+	if( ViewModelIndex() == VMINDEX_HANDS )
+	{
+		CHL2MP_Player* pPlayer = ToHL2MPPlayer( GetOwner() );
 
-        if ( pPlayer )
-        {
-            C_BaseViewModel* vm = pPlayer->GetViewModel( VMINDEX_WEP );
-            if ( vm )
-                return vm;
-        }
-    }
+		if( pPlayer )
+		{
+			C_BaseViewModel* vm = pPlayer->GetViewModel( VMINDEX_WEP );
+			if( vm )
+			{
+				return vm;
+			}
+		}
+	}
 
-    return C_BaseAnimating::FindFollowedEntity();
+	return C_BaseAnimating::FindFollowedEntity();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool C_MapbaseViewModel::ShouldPredict()
 {
-    if ( GetOwner() && GetOwner() == CHL2MP_Player::GetLocalPlayer() )
-        return true;
-    
-    return CBaseViewModel::ShouldPredict(); // Skip over to CBaseViewModel::ShouldPredict()
+	if( GetOwner() && GetOwner() == CHL2MP_Player::GetLocalPlayer() )
+	{
+		return true;
+	}
+
+	return CBaseViewModel::ShouldPredict(); // Skip over to CBaseViewModel::ShouldPredict()
 }
 #endif

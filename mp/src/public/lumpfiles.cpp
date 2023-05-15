@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -14,11 +14,11 @@
 
 //-----------------------------------------------------------------------------
 // Purpose: Generate a lump file name for a given bsp & index
-// Input  : *bspfilename - 
-//			*lumpfilename - 
-//			iIndex - 
+// Input  : *bspfilename -
+//			*lumpfilename -
+//			iIndex -
 //-----------------------------------------------------------------------------
-void GenerateLumpFileName( const char *bspfilename, char *lumpfilename, int iBufferSize, int iIndex )
+void GenerateLumpFileName( const char* bspfilename, char* lumpfilename, int iBufferSize, int iIndex )
 {
 	char lumppre[MAX_PATH];
 	V_StripExtension( bspfilename, lumppre, MAX_PATH );

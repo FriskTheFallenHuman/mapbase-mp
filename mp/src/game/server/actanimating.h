@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ACTANIMATING_H
 #define ACTANIMATING_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,9 +20,15 @@ public:
 	DECLARE_CLASS( CActAnimating, CBaseAnimating );
 
 	void			SetActivity( Activity act );
-	inline Activity	GetActivity( void ) { return m_Activity; }
+	inline Activity	GetActivity( void )
+	{
+		return m_Activity;
+	}
 
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
 	DECLARE_DATADESC();
 

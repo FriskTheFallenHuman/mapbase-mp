@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -31,30 +31,30 @@
 
 //Precahce the effects
 #ifndef TF_CLIENT_DLL
-CLIENTEFFECT_REGISTER_BEGIN( PrecacheMuzzleFlash )
-CLIENTEFFECT_MATERIAL( "effects/muzzleflash1" )
-CLIENTEFFECT_MATERIAL( "effects/muzzleflash2" )
-CLIENTEFFECT_MATERIAL( "effects/muzzleflash3" )
-CLIENTEFFECT_MATERIAL( "effects/muzzleflash4" )
-#ifndef CSTRIKE_DLL
-CLIENTEFFECT_MATERIAL( "effects/bluemuzzle" )
-CLIENTEFFECT_MATERIAL( "effects/gunshipmuzzle" )
-CLIENTEFFECT_MATERIAL( "effects/gunshiptracer" )
-#ifndef HL2MP
-CLIENTEFFECT_MATERIAL( "effects/huntertracer" )
-#endif
-CLIENTEFFECT_MATERIAL( "sprites/physcannon_bluelight2" )
-CLIENTEFFECT_MATERIAL( "effects/combinemuzzle1" )
-CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2" )
-CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2_nocull" )
-#endif
-CLIENTEFFECT_REGISTER_END()
+	CLIENTEFFECT_REGISTER_BEGIN( PrecacheMuzzleFlash )
+	CLIENTEFFECT_MATERIAL( "effects/muzzleflash1" )
+	CLIENTEFFECT_MATERIAL( "effects/muzzleflash2" )
+	CLIENTEFFECT_MATERIAL( "effects/muzzleflash3" )
+	CLIENTEFFECT_MATERIAL( "effects/muzzleflash4" )
+	#ifndef CSTRIKE_DLL
+		CLIENTEFFECT_MATERIAL( "effects/bluemuzzle" )
+		CLIENTEFFECT_MATERIAL( "effects/gunshipmuzzle" )
+		CLIENTEFFECT_MATERIAL( "effects/gunshiptracer" )
+		#ifndef HL2MP
+			CLIENTEFFECT_MATERIAL( "effects/huntertracer" )
+		#endif
+		CLIENTEFFECT_MATERIAL( "sprites/physcannon_bluelight2" )
+		CLIENTEFFECT_MATERIAL( "effects/combinemuzzle1" )
+		CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2" )
+		CLIENTEFFECT_MATERIAL( "effects/combinemuzzle2_nocull" )
+	#endif
+	CLIENTEFFECT_REGISTER_END()
 #endif
 
 //Whether or not we should emit a dynamic light
 ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_ARCHIVE );
 
-extern void FX_TracerSound( const Vector &start, const Vector &end, int iTracerType );
+extern void FX_TracerSound( const Vector& start, const Vector& end, int iTracerType );
 
 
 //===================================================================
@@ -62,28 +62,28 @@ extern void FX_TracerSound( const Vector &start, const Vector &end, int iTracerT
 class CImpactOverlay : public CWarpOverlay
 {
 public:
-	
+
 	virtual bool Update( void )
 	{
 		m_flLifetime += gpGlobals->frametime;
-		
+
 		const float flTotalLifetime = 0.1f;
 
-		if ( m_flLifetime < flTotalLifetime )
+		if( m_flLifetime < flTotalLifetime )
 		{
 			float flColorScale = 1.0f - ( m_flLifetime / flTotalLifetime );
 
-			for( int i=0; i < m_nSprites; i++ )
+			for( int i = 0; i < m_nSprites; i++ )
 			{
 				m_Sprites[i].m_vColor = m_vBaseColors[i] * flColorScale;
-				
+
 				m_Sprites[i].m_flHorzSize += 1.0f * gpGlobals->frametime;
 				m_Sprites[i].m_flVertSize += 1.0f * gpGlobals->frametime;
 			}
-	
+
 			return true;
 		}
-	
+
 		return false;
 	}
 
@@ -96,7 +96,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Purpose: Play random ricochet sound
-// Input  : *pos - 
+// Input  : *pos -
 //-----------------------------------------------------------------------------
 void FX_RicochetSound( const Vector& pos )
 {
@@ -106,51 +106,51 @@ void FX_RicochetSound( const Vector& pos )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : entityIndex - 
-//			attachmentIndex - 
-//			*origin - 
-//			*angles - 
+// Purpose:
+// Input  : entityIndex -
+//			attachmentIndex -
+//			*origin -
+//			*angles -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentIndex, Vector *origin, QAngle *angles )
+bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentIndex, Vector* origin, QAngle* angles )
 {
 	// Validate our input
-	if ( ( hEntity == INVALID_EHANDLE_INDEX ) || ( attachmentIndex < 1 ) )
+	if( ( hEntity == INVALID_EHANDLE_INDEX ) || ( attachmentIndex < 1 ) )
 	{
-		if ( origin != NULL )
+		if( origin != NULL )
 		{
 			*origin = vec3_origin;
 		}
-		
-		if ( angles != NULL )
+
+		if( angles != NULL )
 		{
-			*angles = QAngle(0,0,0);
+			*angles = QAngle( 0, 0, 0 );
 		}
 
 		return false;
 	}
 
 	// Get the actual entity
-	IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle( hEntity );
-	if ( pRenderable )
+	IClientRenderable* pRenderable = ClientEntityList().GetClientRenderableFromHandle( hEntity );
+	if( pRenderable )
 	{
 		Vector attachOrigin;
 		QAngle attachAngles;
 
 		// Find the attachment's matrix
 		pRenderable->GetAttachment( attachmentIndex, attachOrigin, attachAngles );
-	
-		if ( origin != NULL )
+
+		if( origin != NULL )
 		{
 			*origin = attachOrigin;
 		}
-		
-		if ( angles != NULL )
+
+		if( angles != NULL )
 		{
 			*angles = attachAngles;
 		}
-		
+
 		return true;
 	}
 
@@ -158,17 +158,17 @@ bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentInde
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : entityIndex - 
-//			attachmentIndex - 
-//			&transform - 
+// Purpose:
+// Input  : entityIndex -
+//			attachmentIndex -
+//			&transform -
 //-----------------------------------------------------------------------------
-bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentIndex, matrix3x4_t &transform )
+bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentIndex, matrix3x4_t& transform )
 {
 	Vector	origin;
 	QAngle	angles;
 
-	if ( FX_GetAttachmentTransform( hEntity, attachmentIndex, &origin, &angles ) )
+	if( FX_GetAttachmentTransform( hEntity, attachmentIndex, &origin, &angles ) )
 	{
 		AngleMatrix( angles, origin, transform );
 		return true;
@@ -180,32 +180,32 @@ bool FX_GetAttachmentTransform( ClientEntityHandle_t hEntity, int attachmentInde
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void FX_MuzzleEffect( 
-	const Vector &origin, 
-	const QAngle &angles, 
-	float scale, 
-	ClientEntityHandle_t hEntity, 
-	unsigned char *pFlashColor,
+void FX_MuzzleEffect(
+	const Vector& origin,
+	const QAngle& angles,
+	float scale,
+	ClientEntityHandle_t hEntity,
+	unsigned char* pFlashColor,
 	bool bOneFrame )
 {
 	VPROF_BUDGET( "FX_MuzzleEffect", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
-	
+
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "MuzzleFlash" );
 	pSimple->SetSortOrigin( origin );
-	
-	SimpleParticle *pParticle;
+
+	SimpleParticle* pParticle;
 	Vector			forward, offset;
 
 	AngleVectors( angles, &forward );
-	float flScale = random->RandomFloat( scale-0.25f, scale+0.25f );
+	float flScale = random->RandomFloat( scale - 0.25f, scale + 0.25f );
 
-	if ( flScale < 0.5f )
+	if( flScale < 0.5f )
 	{
 		flScale = 0.5f;
 	}
-	else if ( flScale > 8.0f )
+	else if( flScale > 8.0f )
 	{
 		flScale = 8.0f;
 	}
@@ -215,21 +215,23 @@ void FX_MuzzleEffect(
 	//
 
 	int i;
-	for ( i = 1; i < 9; i++ )
+	for( i = 1; i < 9; i++ )
 	{
-		offset = origin + (forward * (i*2.0f*scale));
+		offset = origin + ( forward * ( i * 2.0f * scale ) );
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/muzzleflash%d", random->RandomInt(1,4) ) ), offset );
-			
-		if ( pParticle == NULL )
+		pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/muzzleflash%d", random->RandomInt( 1, 4 ) ) ), offset );
+
+		if( pParticle == NULL )
+		{
 			return;
+		}
 
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= /*bOneFrame ? 0.0001f : */0.1f;
 
 		pParticle->m_vecVelocity.Init();
 
-		if ( !pFlashColor )
+		if( !pFlashColor )
 		{
 			pParticle->m_uchColor[0]	= 255;
 			pParticle->m_uchColor[1]	= 255;
@@ -245,7 +247,7 @@ void FX_MuzzleEffect(
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 128;
 
-		pParticle->m_uchStartSize	= (random->RandomFloat( 6.0f, 9.0f ) * (12-(i))/9) * flScale;
+		pParticle->m_uchStartSize	= ( random->RandomFloat( 6.0f, 9.0f ) * ( 12 - ( i ) ) / 9 ) * flScale;
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
@@ -259,7 +261,7 @@ void FX_MuzzleEffect(
 	for ( i = 0; i < 4; i++ )
 	{
 		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "particle/particle_smokegrenade" ), origin );
-			
+
 		if ( pParticle == NULL )
 			return;
 
@@ -290,44 +292,46 @@ void FX_MuzzleEffect(
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : scale - 
-//			attachmentIndex - 
-//			bOneFrame - 
+// Purpose:
+// Input  : scale -
+//			attachmentIndex -
+//			bOneFrame -
 //-----------------------------------------------------------------------------
-void FX_MuzzleEffectAttached( 
-	float scale, 
-	ClientEntityHandle_t hEntity, 
-	int attachmentIndex, 
-	unsigned char *pFlashColor,
+void FX_MuzzleEffectAttached(
+	float scale,
+	ClientEntityHandle_t hEntity,
+	int attachmentIndex,
+	unsigned char* pFlashColor,
 	bool bOneFrame )
 {
 	VPROF_BUDGET( "FX_MuzzleEffect", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 
 	// If the material isn't available, let's not do anything.
-	if ( g_Mat_SMG_Muzzleflash[0] == NULL )
+	if( g_Mat_SMG_Muzzleflash[0] == NULL )
 	{
 		return;
 	}
-	
+
 	CSmartPtr<CLocalSpaceEmitter> pSimple = CLocalSpaceEmitter::Create( "MuzzleFlash", hEntity, attachmentIndex );
 	Assert( pSimple );
-	if ( pSimple == NULL )
+	if( pSimple == NULL )
+	{
 		return;
-	
+	}
+
 	// Lock our bounding box
 	pSimple->GetBinding().SetBBox( -( Vector( 16, 16, 16 ) * scale ), ( Vector( 16, 16, 16 ) * scale ) );
-	
-	SimpleParticle *pParticle;
-	Vector			forward(1,0,0), offset;
 
-	float flScale = random->RandomFloat( scale-0.25f, scale+0.25f );
+	SimpleParticle* pParticle;
+	Vector			forward( 1, 0, 0 ), offset;
 
-	if ( flScale < 0.5f )
+	float flScale = random->RandomFloat( scale - 0.25f, scale + 0.25f );
+
+	if( flScale < 0.5f )
 	{
 		flScale = 0.5f;
 	}
-	else if ( flScale > 8.0f )
+	else if( flScale > 8.0f )
 	{
 		flScale = 8.0f;
 	}
@@ -337,21 +341,23 @@ void FX_MuzzleEffectAttached(
 	//
 
 	int i;
-	for ( i = 1; i < 9; i++ )
+	for( i = 1; i < 9; i++ )
 	{
-		offset = (forward * (i*2.0f*scale));
+		offset = ( forward * ( i * 2.0f * scale ) );
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_SMG_Muzzleflash[random->RandomInt(0,3)], offset );
-			
-		if ( pParticle == NULL )
+		pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_SMG_Muzzleflash[random->RandomInt( 0, 3 )], offset );
+
+		if( pParticle == NULL )
+		{
 			return;
+		}
 
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= bOneFrame ? 0.0001f : 0.1f;
 
 		pParticle->m_vecVelocity.Init();
 
-		if ( !pFlashColor )
+		if( !pFlashColor )
 		{
 			pParticle->m_uchColor[0]	= 255;
 			pParticle->m_uchColor[1]	= 255;
@@ -367,21 +373,25 @@ void FX_MuzzleEffectAttached(
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 128;
 
-		pParticle->m_uchStartSize	= (random->RandomFloat( 6.0f, 9.0f ) * (12-(i))/9) * flScale;
+		pParticle->m_uchStartSize	= ( random->RandomFloat( 6.0f, 9.0f ) * ( 12 - ( i ) ) / 9 ) * flScale;
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
 
-	if ( !ToolsEnabled() )
+	if( !ToolsEnabled() )
+	{
 		return;
+	}
 
-	if ( !clienttools->IsInRecordingMode() )
+	if( !clienttools->IsInRecordingMode() )
+	{
 		return;
+	}
 
-	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( hEntity );
-	if ( pEnt )
+	C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle( hEntity );
+	if( pEnt )
 	{
 		pEnt->RecordToolMessage();
 	}
@@ -389,72 +399,72 @@ void FX_MuzzleEffectAttached(
 	// NOTE: Particle system destruction message will be sent by the particle effect itself.
 	int nId = pSimple->AllocateToolParticleEffectId();
 
-	KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
+	KeyValues* msg = new KeyValues( "OldParticleSystem_Create" );
 	msg->SetString( "name", "FX_MuzzleEffectAttached" );
 	msg->SetInt( "id", nId );
 	msg->SetFloat( "time", gpGlobals->curtime );
 
-	KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
+	KeyValues* pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
 	pEmitter->SetInt( "count", 9 );
 	pEmitter->SetFloat( "duration", 0 );
 	pEmitter->SetString( "material", "effects/muzzleflash2" ); // FIXME - create DmeMultiMaterialSpriteEmitter to support the 4 materials of muzzleflash
 	pEmitter->SetInt( "active", true );
 
-	KeyValues *pInitializers = pEmitter->FindKey( "initializers", true );
+	KeyValues* pInitializers = pEmitter->FindKey( "initializers", true );
 
-	KeyValues *pPosition = pInitializers->FindKey( "DmeLinearAttachedPositionInitializer", true );
-	pPosition->SetPtr( "entindex", (void*)pEnt->entindex() );
+	KeyValues* pPosition = pInitializers->FindKey( "DmeLinearAttachedPositionInitializer", true );
+	pPosition->SetPtr( "entindex", ( void* )pEnt->entindex() );
 	pPosition->SetInt( "attachmentIndex", attachmentIndex );
 	pPosition->SetFloat( "linearOffsetX", 2.0f * scale );
 
 	// TODO - create a DmeConstantLifetimeInitializer
-	KeyValues *pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
+	KeyValues* pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
 	pLifetime->SetFloat( "minLifetime", bOneFrame ? 1.0f / 24.0f : 0.1f );
 	pLifetime->SetFloat( "maxLifetime", bOneFrame ? 1.0f / 24.0f : 0.1f );
 
-	KeyValues *pVelocity = pInitializers->FindKey( "DmeConstantVelocityInitializer", true );
+	KeyValues* pVelocity = pInitializers->FindKey( "DmeConstantVelocityInitializer", true );
 	pVelocity->SetFloat( "velocityX", 0.0f );
 	pVelocity->SetFloat( "velocityY", 0.0f );
 	pVelocity->SetFloat( "velocityZ", 0.0f );
 
-	KeyValues *pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
+	KeyValues* pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
 	pRoll->SetFloat( "minRoll", 0.0f );
 	pRoll->SetFloat( "maxRoll", 360.0f );
 
 	// TODO - create a DmeConstantRollSpeedInitializer
-	KeyValues *pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
+	KeyValues* pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
 	pRollSpeed->SetFloat( "minRollSpeed", 0.0f );
 	pRollSpeed->SetFloat( "maxRollSpeed", 0.0f );
 
 	// TODO - create a DmeConstantColorInitializer
-	KeyValues *pColor = pInitializers->FindKey( "DmeRandomInterpolatedColorInitializer", true );
+	KeyValues* pColor = pInitializers->FindKey( "DmeRandomInterpolatedColorInitializer", true );
 	Color color( pFlashColor ? pFlashColor[ 0 ] : 255, pFlashColor ? pFlashColor[ 1 ] : 255, pFlashColor ? pFlashColor[ 2 ] : 255, 255 );
 	pColor->SetColor( "color1", color );
 	pColor->SetColor( "color2", color );
 
 	// TODO - create a DmeConstantAlphaInitializer
-	KeyValues *pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
+	KeyValues* pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
 	pAlpha->SetInt( "minStartAlpha", 255 );
 	pAlpha->SetInt( "maxStartAlpha", 255 );
 	pAlpha->SetInt( "minEndAlpha", 128 );
 	pAlpha->SetInt( "maxEndAlpha", 128 );
 
 	// size = rand(6..9) * indexed(12/9..4/9) * flScale = rand(6..9) * ( 4f + f * i )
-	KeyValues *pSize = pInitializers->FindKey( "DmeMuzzleFlashSizeInitializer", true );
+	KeyValues* pSize = pInitializers->FindKey( "DmeMuzzleFlashSizeInitializer", true );
 	float f = flScale / 9.0f;
 	pSize->SetFloat( "indexedBase", 4.0f * f );
 	pSize->SetFloat( "indexedDelta", f );
 	pSize->SetFloat( "minRandomFactor", 6.0f );
 	pSize->SetFloat( "maxRandomFactor", 9.0f );
 
-/*
-	KeyValues *pUpdaters = pEmitter->FindKey( "updaters", true );
+	/*
+		KeyValues *pUpdaters = pEmitter->FindKey( "updaters", true );
 
-	pUpdaters->FindKey( "DmePositionVelocityUpdater", true );
-	pUpdaters->FindKey( "DmeRollUpdater", true );
-	pUpdaters->FindKey( "DmeAlphaLinearUpdater", true );
-	pUpdaters->FindKey( "DmeSizeUpdater", true );
-*/
+		pUpdaters->FindKey( "DmePositionVelocityUpdater", true );
+		pUpdaters->FindKey( "DmeRollUpdater", true );
+		pUpdaters->FindKey( "DmeAlphaLinearUpdater", true );
+		pUpdaters->FindKey( "DmeSizeUpdater", true );
+	*/
 	ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 	msg->deleteThis();
 }
@@ -462,17 +472,19 @@ void FX_MuzzleEffectAttached(
 //-----------------------------------------------------------------------------
 // Old-style muzzle flashes
 //-----------------------------------------------------------------------------
-void MuzzleFlashCallback( const CEffectData &data )
+void MuzzleFlashCallback( const CEffectData& data )
 {
 	Vector vecOrigin = data.m_vOrigin;
 	QAngle vecAngles = data.m_vAngles;
-	if ( data.entindex() > 0 )
+	if( data.entindex() > 0 )
 	{
-		IClientRenderable *pRenderable = data.GetRenderable();
-		if ( !pRenderable )
+		IClientRenderable* pRenderable = data.GetRenderable();
+		if( !pRenderable )
+		{
 			return;
+		}
 
-		if ( data.m_nAttachmentIndex )
+		if( data.m_nAttachmentIndex )
 		{
 			//FIXME: We also need to allocate these particles into an attachment space setup
 			pRenderable->GetAttachment( data.m_nAttachmentIndex, vecOrigin, vecAngles );
@@ -484,50 +496,52 @@ void MuzzleFlashCallback( const CEffectData &data )
 		}
 	}
 
-	tempents->MuzzleFlash( vecOrigin, vecAngles, data.m_fFlags & (~MUZZLEFLASH_FIRSTPERSON), data.m_hEntity, (data.m_fFlags & MUZZLEFLASH_FIRSTPERSON) != 0 );	
+	tempents->MuzzleFlash( vecOrigin, vecAngles, data.m_fFlags & ( ~MUZZLEFLASH_FIRSTPERSON ), data.m_hEntity, ( data.m_fFlags & MUZZLEFLASH_FIRSTPERSON ) != 0 );
 }
 
 DECLARE_CLIENT_EFFECT( "MuzzleFlash", MuzzleFlashCallback );
- 
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
-//			&velocity - 
-//			scale - 
-//			numParticles - 
-//			*pColor - 
-//			iAlpha - 
-//			*pMaterial - 
-//			flRoll - 
-//			flRollDelta - 
+// Purpose:
+// Input  : &origin -
+//			&velocity -
+//			scale -
+//			numParticles -
+//			*pColor -
+//			iAlpha -
+//			*pMaterial -
+//			flRoll -
+//			flRollDelta -
 //-----------------------------------------------------------------------------
-CSmartPtr<CSimpleEmitter> FX_Smoke( const Vector &origin, const Vector &velocity, float scale, int numParticles, float flDietime, unsigned char *pColor, int iAlpha, const char *pMaterial, float flRoll, float flRollDelta )
+CSmartPtr<CSimpleEmitter> FX_Smoke( const Vector& origin, const Vector& velocity, float scale, int numParticles, float flDietime, unsigned char* pColor, int iAlpha, const char* pMaterial, float flRoll, float flRollDelta )
 {
 	VPROF_BUDGET( "FX_Smoke", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "FX_Smoke" );
 	pSimple->SetSortOrigin( origin );
 
-	SimpleParticle *pParticle;
+	SimpleParticle* pParticle;
 
 	// Smoke
-	for ( int i = 0; i < numParticles; i++ )
+	for( int i = 0; i < numParticles; i++ )
 	{
 		PMaterialHandle hMaterial = pSimple->GetPMaterial( pMaterial );
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, origin );			
-		if ( pParticle == NULL )
+		pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, origin );
+		if( pParticle == NULL )
+		{
 			return NULL;
+		}
 
 		pParticle->m_flLifetime = 0.0f;
 		pParticle->m_flDieTime = flDietime;
 		pParticle->m_vecVelocity = velocity;
-		for( int j = 0; j < 3; ++j)
+		for( int j = 0; j < 3; ++j )
 		{
 			pParticle->m_uchColor[j] = pColor[j];
 		}
 		pParticle->m_uchStartAlpha	= iAlpha;
 		pParticle->m_uchEndAlpha	= 0;
 		pParticle->m_uchStartSize	= scale;
-		pParticle->m_uchEndSize		= pParticle->m_uchStartSize*2;
+		pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2;
 		pParticle->m_flRoll	= flRoll;
 		pParticle->m_flRollDelta = flRollDelta;
 	}
@@ -538,14 +552,14 @@ CSmartPtr<CSimpleEmitter> FX_Smoke( const Vector &origin, const Vector &velocity
 //-----------------------------------------------------------------------------
 // Purpose: Smoke puffs
 //-----------------------------------------------------------------------------
-void FX_Smoke( const Vector &origin, const QAngle &angles, float scale, int numParticles, unsigned char *pColor, int iAlpha )
+void FX_Smoke( const Vector& origin, const QAngle& angles, float scale, int numParticles, unsigned char* pColor, int iAlpha )
 {
 	VPROF_BUDGET( "FX_Smoke", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	Vector vecVelocity;
 	Vector vecForward;
 
 	// Smoke
-	for ( int i = 0; i < numParticles; i++ )
+	for( int i = 0; i < numParticles; i++ )
 	{
 		// Velocity
 		AngleVectors( angles, &vecForward );
@@ -557,7 +571,7 @@ void FX_Smoke( const Vector &origin, const QAngle &angles, float scale, int numP
 
 		// Color
 		unsigned char particlecolor[3];
-		if ( !pColor )
+		if( !pColor )
 		{
 			int color = random->RandomInt( 64, 164 );
 			particlecolor[0] = color;
@@ -573,7 +587,7 @@ void FX_Smoke( const Vector &origin, const QAngle &angles, float scale, int numP
 
 		// Alpha
 		int alpha = iAlpha;
-		if ( alpha == -1 )
+		if( alpha == -1 )
 		{
 			alpha = random->RandomInt( 10, 25 );
 		}
@@ -601,16 +615,16 @@ class CSmokeEmitter : public CSimpleEmitter
 {
 	typedef CSimpleEmitter BaseClass;
 public:
-	CSmokeEmitter( ClientEntityHandle_t hEntity, int nAttachment, const char *pDebugName ) : CSimpleEmitter( pDebugName ) 
+	CSmokeEmitter( ClientEntityHandle_t hEntity, int nAttachment, const char* pDebugName ) : CSimpleEmitter( pDebugName )
 	{
 		m_hEntity = hEntity;
 		m_nAttachmentIndex = nAttachment;
 		m_flDeathTime = 0;
 		m_flLastParticleSpawnTime = 0;
 	}
-	
+
 	// Create
-	static CSmokeEmitter *Create( ClientEntityHandle_t hEntity, int nAttachment, const char *pDebugName="smoke" )
+	static CSmokeEmitter* Create( ClientEntityHandle_t hEntity, int nAttachment, const char* pDebugName = "smoke" )
 	{
 		return new CSmokeEmitter( hEntity, nAttachment, pDebugName );
 	}
@@ -620,14 +634,14 @@ public:
 		m_flDeathTime = gpGlobals->curtime + flTime;
 	}
 
-	void SetSpurtAngle( QAngle &vecAngles )
+	void SetSpurtAngle( QAngle& vecAngles )
 	{
 		AngleVectors( vecAngles, &m_vecSpurtForward );
 	}
 
-	void SetSpurtColor( const Vector4D &pColor )
+	void SetSpurtColor( const Vector4D& pColor )
 	{
-		for ( int i = 0; i <= 3; i++ )
+		for( int i = 0; i <= 3; i++ )
 		{
 			m_SpurtColor[i] = pColor[i];
 		}
@@ -640,12 +654,12 @@ public:
 
 	void CreateSpurtParticles( void )
 	{
-		SimpleParticle *pParticle;
+		SimpleParticle* pParticle;
 		// PMaterialHandle hMaterial = GetPMaterial( "particle/particle_smokegrenade" );
 
 		Vector vecOrigin = m_vSortOrigin;
-		IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle(m_hEntity);
-		if ( pRenderable && m_nAttachmentIndex )
+		IClientRenderable* pRenderable = ClientEntityList().GetClientRenderableFromHandle( m_hEntity );
+		if( pRenderable && m_nAttachmentIndex )
 		{
 			QAngle tmp;
 			pRenderable->GetAttachment( m_nAttachmentIndex, vecOrigin, tmp );
@@ -653,12 +667,14 @@ public:
 		}
 
 		// Smoke
-		int numParticles = RandomInt( 1,2 );
-		for ( int i = 0; i < numParticles; i++ )
+		int numParticles = RandomInt( 1, 2 );
+		for( int i = 0; i < numParticles; i++ )
 		{
-			pParticle = (SimpleParticle *) AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[0], vecOrigin );			
-			if ( pParticle == NULL )
+			pParticle = ( SimpleParticle* ) AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[0], vecOrigin );
+			if( pParticle == NULL )
+			{
 				break;
+			}
 
 			pParticle->m_flLifetime = 0.0f;
 			pParticle->m_flDieTime = RandomFloat( 0.5, 1.0 );
@@ -685,28 +701,28 @@ public:
 			pParticle->m_uchStartAlpha = m_SpurtColor[3];
 			pParticle->m_uchEndAlpha = 0;
 			pParticle->m_uchStartSize = RandomInt( 50, 60 );
-			pParticle->m_uchEndSize = pParticle->m_uchStartSize*3;
+			pParticle->m_uchEndSize = pParticle->m_uchStartSize * 3;
 			pParticle->m_flRoll	= RandomFloat( 0, 360 );
 			pParticle->m_flRollDelta = RandomFloat( -4.0f, 4.0f );
-		}			
+		}
 
 		m_flLastParticleSpawnTime = gpGlobals->curtime + m_flSpawnRate;
 	}
 
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator )
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator )
 	{
-		Particle *pParticle = pIterator->GetFirst();
-		while ( pParticle )
+		Particle* pParticle = pIterator->GetFirst();
+		while( pParticle )
 		{
 			// If our lifetime isn't up, create more particles
-			if ( m_flDeathTime > gpGlobals->curtime )
+			if( m_flDeathTime > gpGlobals->curtime )
 			{
-				if ( m_flLastParticleSpawnTime <= gpGlobals->curtime )
+				if( m_flLastParticleSpawnTime <= gpGlobals->curtime )
 				{
 					CreateSpurtParticles();
 				}
 			}
-			
+
 			pParticle = pIterator->GetNext();
 		}
 
@@ -723,13 +739,13 @@ private:
 	ClientEntityHandle_t m_hEntity;
 	int			m_nAttachmentIndex;
 
-	CSmokeEmitter( const CSmokeEmitter & ); // not defined, not accessible
+	CSmokeEmitter( const CSmokeEmitter& );  // not defined, not accessible
 };
 
 //-----------------------------------------------------------------------------
 // Purpose: Small hose gas spurt
 //-----------------------------------------------------------------------------
-void FX_BuildSmoke( Vector &vecOrigin, QAngle &vecAngles, ClientEntityHandle_t hEntity, int nAttachment, float flLifeTime, const Vector4D &pColor )
+void FX_BuildSmoke( Vector& vecOrigin, QAngle& vecAngles, ClientEntityHandle_t hEntity, int nAttachment, float flLifeTime, const Vector4D& pColor )
 {
 	CSmartPtr<CSmokeEmitter> pSimple = CSmokeEmitter::Create( hEntity, nAttachment, "FX_Smoke" );
 	pSimple->SetSortOrigin( vecOrigin );
@@ -743,13 +759,13 @@ void FX_BuildSmoke( Vector &vecOrigin, QAngle &vecAngles, ClientEntityHandle_t h
 //-----------------------------------------------------------------------------
 // Purpose: Green hose gas spurt
 //-----------------------------------------------------------------------------
-void SmokeCallback( const CEffectData &data )
+void SmokeCallback( const CEffectData& data )
 {
 	Vector vecOrigin = data.m_vOrigin;
 	QAngle vecAngles = data.m_vAngles;
 
-	Vector4D color( 50,50,50,255 );
-	FX_BuildSmoke( vecOrigin, vecAngles, data.m_hEntity, data.m_nAttachmentIndex, 100.0, color ); 
+	Vector4D color( 50, 50, 50, 255 );
+	FX_BuildSmoke( vecOrigin, vecAngles, data.m_hEntity, data.m_nAttachmentIndex, 100.0, color );
 }
 
 DECLARE_CLIENT_EFFECT( "Smoke", SmokeCallback );
@@ -757,19 +773,19 @@ DECLARE_CLIENT_EFFECT( "Smoke", SmokeCallback );
 
 //-----------------------------------------------------------------------------
 // Purpose: Shockwave for gunship bullet impacts!
-// Input  : &pos - 
+// Input  : &pos -
 //
 // NOTES:	-Don't draw this effect when the viewer is very far away.
 //-----------------------------------------------------------------------------
-void FX_GunshipImpact( const Vector &pos, const Vector &normal, float r, float g, float b )
+void FX_GunshipImpact( const Vector& pos, const Vector& normal, float r, float g, float b )
 {
 	VPROF_BUDGET( "FX_GunshipImpact", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
-	if ( CImpactOverlay *pOverlay = new CImpactOverlay )
+	if( CImpactOverlay* pOverlay = new CImpactOverlay )
 	{
 		pOverlay->m_flLifetime	= 0;
 		VectorMA( pos, 1.0f, normal, pOverlay->m_vPos ); // Doesn't show up on terrain if you don't do this(sjb)
 		pOverlay->m_nSprites	= 1;
-		
+
 		pOverlay->m_vBaseColors[0].Init( r, g, b );
 
 		pOverlay->m_Sprites[0].m_flHorzSize = 0.01f;
@@ -780,10 +796,10 @@ void FX_GunshipImpact( const Vector &pos, const Vector &normal, float r, float g
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : data - 
+// Purpose:
+// Input  : data -
 //-----------------------------------------------------------------------------
-void GunshipImpactCallback( const CEffectData & data )
+void GunshipImpactCallback( const CEffectData& data )
 {
 	Vector vecPosition;
 
@@ -795,7 +811,7 @@ DECLARE_CLIENT_EFFECT( "GunshipImpact", GunshipImpactCallback );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CommandPointerCallback( const CEffectData & data )
+void CommandPointerCallback( const CEffectData& data )
 {
 	int size = COLOR_TABLE_SIZE( commandercolors );
 
@@ -813,15 +829,15 @@ DECLARE_CLIENT_EFFECT( "CommandPointer", CommandPointerCallback );
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void FX_GunshipMuzzleEffect( const Vector &origin, const QAngle &angles, float scale, ClientEntityHandle_t hEntity, unsigned char *pFlashColor )
+void FX_GunshipMuzzleEffect( const Vector& origin, const QAngle& angles, float scale, ClientEntityHandle_t hEntity, unsigned char* pFlashColor )
 {
 	VPROF_BUDGET( "FX_GunshipMuzzleEffect", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "MuzzleFlash" );
 	pSimple->SetSortOrigin( origin );
-	
-	SimpleParticle *pParticle;
+
+	SimpleParticle* pParticle;
 	Vector			forward, offset;
 
 	AngleVectors( angles, &forward );
@@ -831,10 +847,12 @@ void FX_GunshipMuzzleEffect( const Vector &origin, const QAngle &angles, float s
 	//
 	offset = origin;
 
-	pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "effects/gunshipmuzzle" ), offset );
-		
-	if ( pParticle == NULL )
+	pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "effects/gunshipmuzzle" ), offset );
+
+	if( pParticle == NULL )
+	{
 		return;
+	}
 
 	pParticle->m_flLifetime		= 0.0f;
 	pParticle->m_flDieTime		= 0.15f;
@@ -856,11 +874,11 @@ void FX_GunshipMuzzleEffect( const Vector &origin, const QAngle &angles, float s
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : start - 
-//			end - 
-//			velocity - 
-//			makeWhiz - 
+// Purpose:
+// Input  : start -
+//			end -
+//			velocity -
+//			makeWhiz -
 //-----------------------------------------------------------------------------
 void FX_GunshipTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 {
@@ -873,12 +891,14 @@ void FX_GunshipTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	totalDist = VectorNormalize( shotDir );
 
 	//Don't make small tracers
-	if ( totalDist <= 256 )
+	if( totalDist <= 256 )
+	{
 		return;
+	}
 
 	float length = random->RandomFloat( 128.0f, 256.0f );
 	float life = ( totalDist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
+
 	//Add it
 	FX_AddDiscreetLine( start, shotDir, velocity, length, totalDist, 5.0f, life, "effects/gunshiptracer" );
 
@@ -890,7 +910,7 @@ void FX_GunshipTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void FX_StriderMuzzleEffect( const Vector &origin, const QAngle &angles, float scale, ClientEntityHandle_t hEntity, unsigned char *pFlashColor )
+void FX_StriderMuzzleEffect( const Vector& origin, const QAngle& angles, float scale, ClientEntityHandle_t hEntity, unsigned char* pFlashColor )
 {
 	Vector vecDir;
 	AngleVectors( angles, &vecDir );
@@ -906,11 +926,11 @@ void FX_StriderMuzzleEffect( const Vector &origin, const QAngle &angles, float s
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : start - 
-//			end - 
-//			velocity - 
-//			makeWhiz - 
+// Purpose:
+// Input  : start -
+//			end -
+//			velocity -
+//			makeWhiz -
 //-----------------------------------------------------------------------------
 void FX_StriderTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 {
@@ -923,12 +943,14 @@ void FX_StriderTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	totalDist = VectorNormalize( shotDir );
 
 	//Don't make small tracers
-	if ( totalDist <= 256 )
+	if( totalDist <= 256 )
+	{
 		return;
+	}
 
 	float length = random->RandomFloat( 64.0f, 128.0f );
 	float life = ( totalDist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
+
 	//Add it
 	FX_AddDiscreetLine( start, shotDir, velocity, length, totalDist, 2.5f, life, "effects/gunshiptracer" );
 
@@ -938,13 +960,13 @@ void FX_StriderTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	}
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : start - 
-//			end - 
-//			velocity - 
-//			makeWhiz - 
+// Purpose:
+// Input  : start -
+//			end -
+//			velocity -
+//			makeWhiz -
 //-----------------------------------------------------------------------------
 void FX_HunterTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 {
@@ -962,23 +984,23 @@ void FX_HunterTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 
 	float length = 128.0f;//random->RandomFloat( flMinLength, flMaxLength );
 	float life = ( totalDist + length ) / velocity;	// NOTENOTE: We want the tail to finish its run as well
-	
-	// Add it
-	FX_AddDiscreetLine( start, shotDir, velocity*0.5f, length, totalDist, 2.0f, life, "effects/huntertracer" );
 
-	if( makeWhiz ) 
+	// Add it
+	FX_AddDiscreetLine( start, shotDir, velocity * 0.5f, length, totalDist, 2.0f, life, "effects/huntertracer" );
+
+	if( makeWhiz )
 	{
 		FX_TracerSound( start, end, TRACER_TYPE_STRIDER );
 	}
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : start - 
-//			end - 
-//			velocity - 
-//			makeWhiz - 
+// Purpose:
+// Input  : start -
+//			end -
+//			velocity -
+//			makeWhiz -
 //-----------------------------------------------------------------------------
 void FX_GaussTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 {
@@ -991,12 +1013,14 @@ void FX_GaussTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 	totalDist = VectorNormalize( shotDir );
 
 	//Don't make small tracers
-	if ( totalDist <= 256 )
+	if( totalDist <= 256 )
+	{
 		return;
+	}
 
 	float length = random->RandomFloat( 250.0f, 500.0f );
 	float life = ( totalDist + length ) / velocity;	//NOTENOTE: We want the tail to finish its run as well
-	
+
 	//Add it
 	FX_AddDiscreetLine( start, shotDir, velocity, length, totalDist, random->RandomFloat( 5.0f, 8.0f ), life, "effects/spark" );
 }
@@ -1005,13 +1029,13 @@ void FX_GaussTracer( Vector& start, Vector& end, int velocity, bool makeWhiz )
 //-----------------------------------------------------------------------------
 // Purpose: Create a tesla effect between two points
 //-----------------------------------------------------------------------------
-void FX_BuildTesla( 
-	C_BaseEntity *pEntity, 
-	const Vector &vecOrigin, 
-	const Vector &vecEnd,
-	const char *pModelName,
+void FX_BuildTesla(
+	C_BaseEntity* pEntity,
+	const Vector& vecOrigin,
+	const Vector& vecEnd,
+	const char* pModelName,
 	float flBeamWidth,
-	const Vector &vColor,
+	const Vector& vColor,
 	int nFlags,
 	float flTimeVisible )
 {
@@ -1036,20 +1060,20 @@ void FX_BuildTesla(
 	beamInfo.m_nSegments = 20;
 	beamInfo.m_bRenderable = true;
 	beamInfo.m_nFlags = nFlags;
-	
+
 	beams->CreateBeamPoints( beamInfo );
 }
 
-void FX_Tesla( const CTeslaInfo &teslaInfo )
+void FX_Tesla( const CTeslaInfo& teslaInfo )
 {
-	C_BaseEntity *pEntity = ClientEntityList().GetEnt( teslaInfo.m_nEntIndex );
+	C_BaseEntity* pEntity = ClientEntityList().GetEnt( teslaInfo.m_nEntIndex );
 
 	// Send out beams around us
-	int iNumBeamsAround = (teslaInfo.m_nBeams * 2) / 3; // (2/3 of the beams are placed around in a circle)
+	int iNumBeamsAround = ( teslaInfo.m_nBeams * 2 ) / 3; // (2/3 of the beams are placed around in a circle)
 	int iNumRandomBeams = teslaInfo.m_nBeams - iNumBeamsAround;
 	int iTotalBeams = iNumBeamsAround + iNumRandomBeams;
-	float flYawOffset = RandomFloat(0,360);
-	for ( int i = 0; i < iTotalBeams; i++ )
+	float flYawOffset = RandomFloat( 0, 360 );
+	for( int i = 0; i < iTotalBeams; i++ )
 	{
 		// Make a couple of tries at it
 		int iTries = -1;
@@ -1060,10 +1084,10 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 			iTries++;
 
 			// Some beams are deliberatly aimed around the point, the rest are random.
-			if ( i < iNumBeamsAround )
+			if( i < iNumBeamsAround )
 			{
 				QAngle vecTemp = teslaInfo.m_vAngles;
-				vecTemp[YAW] += anglemod( flYawOffset + ((360 / iTotalBeams) * i) );
+				vecTemp[YAW] += anglemod( flYawOffset + ( ( 360 / iTotalBeams ) * i ) );
 				AngleVectors( vecTemp, &vecForward );
 
 				// Randomly angle it up or down
@@ -1075,44 +1099,45 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 			}
 			VectorNormalize( vecForward );
 
-			UTIL_TraceLine( teslaInfo.m_vPos, teslaInfo.m_vPos + (vecForward * teslaInfo.m_flRadius), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
-		} while ( tr.fraction >= 1.0 && iTries < 3 );
+			UTIL_TraceLine( teslaInfo.m_vPos, teslaInfo.m_vPos + ( vecForward * teslaInfo.m_flRadius ), MASK_SHOT, pEntity, COLLISION_GROUP_NONE, &tr );
+		}
+		while( tr.fraction >= 1.0 && iTries < 3 );
 
-		Vector vecEnd = tr.endpos - (vecForward * 8);
+		Vector vecEnd = tr.endpos - ( vecForward * 8 );
 
 		// Only spark & glow if we hit something
-		if ( tr.fraction < 1.0 )
+		if( tr.fraction < 1.0 )
 		{
-			if ( !EffectOccluded( tr.endpos, 0 ) )
+			if( !EffectOccluded( tr.endpos, 0 ) )
 			{
 				// Move it towards the camera
 				Vector vecFlash = tr.endpos;
 				Vector vecViewForward;
 				AngleVectors( MainViewAngles(), &vecViewForward );
-				vecFlash -= (vecViewForward * 8);
+				vecFlash -= ( vecViewForward * 8 );
 
 				g_pEffects->EnergySplash( vecFlash, -vecViewForward, false );
 
 				// End glow
 				CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "dust" );
 				pSimple->SetSortOrigin( vecFlash );
-				SimpleParticle *pParticle;
-				pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "effects/tesla_glow_noz" ), vecFlash );
-				if ( pParticle != NULL )
+				SimpleParticle* pParticle;
+				pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( "effects/tesla_glow_noz" ), vecFlash );
+				if( pParticle != NULL )
 				{
 					pParticle->m_flLifetime = 0.0f;
 					pParticle->m_flDieTime	= RandomFloat( 0.5, 1 );
 					pParticle->m_vecVelocity = vec3_origin;
-					Vector color( 1,1,1 );
+					Vector color( 1, 1, 1 );
 					float  colorRamp = RandomFloat( 0.75f, 1.25f );
 					pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 					pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-					pParticle->m_uchStartSize	= RandomFloat( 6,13 );
+					pParticle->m_uchStartSize	= RandomFloat( 6, 13 );
 					pParticle->m_uchEndSize		= pParticle->m_uchStartSize - 2;
 					pParticle->m_uchStartAlpha	= 255;
 					pParticle->m_uchEndAlpha	= 10;
-					pParticle->m_flRoll			= RandomFloat( 0,360 );
+					pParticle->m_flRoll			= RandomFloat( 0, 360 );
 					pParticle->m_flRollDelta	= 0;
 				}
 			}
@@ -1127,10 +1152,12 @@ void FX_Tesla( const CTeslaInfo &teslaInfo )
 //-----------------------------------------------------------------------------
 // Purpose: Tesla effect
 //-----------------------------------------------------------------------------
-void BuildTeslaCallback( const CEffectData &data )
+void BuildTeslaCallback( const CEffectData& data )
 {
-	if ( data.entindex() < 0 )
+	if( data.entindex() < 0 )
+	{
 		return;
+	}
 
 	CTeslaInfo teslaInfo;
 
@@ -1151,12 +1178,12 @@ void BuildTeslaCallback( const CEffectData &data )
 //-----------------------------------------------------------------------------
 // Purpose: Tesla hitbox
 //-----------------------------------------------------------------------------
-void FX_BuildTeslaHitbox( 
-	C_BaseEntity *pEntity,
+void FX_BuildTeslaHitbox(
+	C_BaseEntity* pEntity,
 	int nStartAttachment,
 	int nEndAttachment,
 	float flBeamWidth,
-	const Vector &vColor,
+	const Vector& vColor,
 	float flTimeVisible )
 {
 	// One along the body
@@ -1182,7 +1209,7 @@ void FX_BuildTeslaHitbox(
 	beamInfo.m_bRenderable = true;
 	beamInfo.m_pStartEnt = beamInfo.m_pEndEnt = NULL;
 
-	beamInfo.m_nFlags = (FBEAM_USE_HITBOXES);
+	beamInfo.m_nFlags = ( FBEAM_USE_HITBOXES );
 
 	beamInfo.m_pStartEnt = pEntity;
 	beamInfo.m_nStartAttachment = nStartAttachment;
@@ -1200,7 +1227,7 @@ void FX_BuildTeslaHitbox(
 
 	UTIL_TraceLine( pEntity->WorldSpaceCenter(), pEntity->WorldSpaceCenter() + ( randomDir * 100 ), MASK_SOLID_BRUSHONLY, pEntity, COLLISION_GROUP_NONE, &tr );
 
-	if ( tr.fraction < 1.0f )
+	if( tr.fraction < 1.0f )
 	{
 		beamInfo.m_nType = TE_BEAMTESLA;
 		beamInfo.m_vecStart = vec3_origin;
@@ -1230,9 +1257,9 @@ void FX_BuildTeslaHitbox(
 	}
 
 	// Create an elight to illuminate the target
-	if ( pEntity != NULL )
+	if( pEntity != NULL )
 	{
-		dlight_t *el = effects->CL_AllocElight( LIGHT_INDEX_TE_DYNAMIC + pEntity->entindex() );
+		dlight_t* el = effects->CL_AllocElight( LIGHT_INDEX_TE_DYNAMIC + pEntity->entindex() );
 
 		// Randomly place it
 		el->origin	= pEntity->WorldSpaceCenter() + RandomVector( -32, 32 );
@@ -1252,36 +1279,44 @@ void FX_BuildTeslaHitbox(
 //-----------------------------------------------------------------------------
 // Purpose: Tesla effect
 //-----------------------------------------------------------------------------
-void FX_BuildTeslaHitbox( const CEffectData &data )
+void FX_BuildTeslaHitbox( const CEffectData& data )
 {
 	Vector vColor( 1, 1, 1 );
 
 #ifdef MAPBASE
-	if ( data.m_bCustomColors )
+	if( data.m_bCustomColors )
 	{
 		vColor = data.m_CustomColors.m_vecColor1;
 	}
 #endif
 
-	C_BaseEntity *pEntity = ClientEntityList().GetEnt( data.entindex() );
-	C_BaseAnimating *pAnimating = pEntity ? pEntity->GetBaseAnimating() : NULL;
-	if (!pAnimating)
+	C_BaseEntity* pEntity = ClientEntityList().GetEnt( data.entindex() );
+	C_BaseAnimating* pAnimating = pEntity ? pEntity->GetBaseAnimating() : NULL;
+	if( !pAnimating )
+	{
 		return;
+	}
 
-	studiohdr_t *pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
-	if (!pStudioHdr)
+	studiohdr_t* pStudioHdr = modelinfo->GetStudiomodel( pAnimating->GetModel() );
+	if( !pStudioHdr )
+	{
 		return;
+	}
 
-	mstudiohitboxset_t *set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
-	if ( !set )
+	mstudiohitboxset_t* set = pStudioHdr->pHitboxSet( pAnimating->GetHitboxSet() );
+	if( !set )
+	{
 		return;
+	}
 
-	matrix3x4_t	*hitboxbones[MAXSTUDIOBONES];
-	if ( !pAnimating->HitboxToWorldTransforms( hitboxbones ) )
+	matrix3x4_t*	hitboxbones[MAXSTUDIOBONES];
+	if( !pAnimating->HitboxToWorldTransforms( hitboxbones ) )
+	{
 		return;
+	}
 
-	int nBeamCount = (int)(data.m_flMagnitude + 0.5f);
-	for ( int i = 0; i < nBeamCount; ++i )
+	int nBeamCount = ( int )( data.m_flMagnitude + 0.5f );
+	for( int i = 0; i < nBeamCount; ++i )
 	{
 		int nStartHitBox = random->RandomInt( 1, set->numhitboxes );
 		int nEndHitBox = random->RandomInt( 1, set->numhitboxes );
@@ -1295,12 +1330,14 @@ DECLARE_CLIENT_EFFECT( "TeslaHitboxes", FX_BuildTeslaHitbox );
 //-----------------------------------------------------------------------------
 // Purpose: Tesla effect
 //-----------------------------------------------------------------------------
-void FX_BuildTeslaZap( const CEffectData &data )
+void FX_BuildTeslaZap( const CEffectData& data )
 {
 	// Build the tesla, only works on entities
-	C_BaseEntity *pEntity = data.GetEntity();
-	if ( !pEntity )
+	C_BaseEntity* pEntity = data.GetEntity();
+	if( !pEntity )
+	{
 		return;
+	}
 
 	Vector vColor( 1, 1, 1 );
 
@@ -1327,7 +1364,7 @@ void FX_BuildTeslaZap( const CEffectData &data )
 	beamInfo.m_nSegments = 20;
 	beamInfo.m_bRenderable = true;
 	beamInfo.m_nFlags = 0;
-	
+
 	beams->CreateBeamEntPoint( beamInfo );
 }
 

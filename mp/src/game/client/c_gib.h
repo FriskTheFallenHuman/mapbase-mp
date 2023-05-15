@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef C_GIB_H
 #define C_GIB_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define	DEFAULT_GIB_LIFETIME	4.0f
@@ -21,13 +21,13 @@ public:
 
 	~C_Gib( void );
 
-	static C_Gib	*CreateClientsideGib( const char *pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float flLifetime = DEFAULT_GIB_LIFETIME );
-	
-	bool	InitializeGib( const char *pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float flLifetime = DEFAULT_GIB_LIFETIME );
-	void	ClientThink( void );
-	void	StartTouch( C_BaseEntity *pOther );
+	static C_Gib*	CreateClientsideGib( const char* pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float flLifetime = DEFAULT_GIB_LIFETIME );
 
-	virtual	void HitSurface( C_BaseEntity *pOther );
+	bool	InitializeGib( const char* pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float flLifetime = DEFAULT_GIB_LIFETIME );
+	void	ClientThink( void );
+	void	StartTouch( C_BaseEntity* pOther );
+
+	virtual	void HitSurface( C_BaseEntity* pOther );
 
 protected:
 
@@ -38,7 +38,7 @@ protected:
 class CAntlionGibManager : public CAutoGameSystemPerFrame
 {
 public:
-	CAntlionGibManager( char const *name ) : CAutoGameSystemPerFrame( name )
+	CAntlionGibManager( char const* name ) : CAutoGameSystemPerFrame( name )
 	{
 	}
 
@@ -46,13 +46,13 @@ public:
 	virtual void Update( float frametime );
 	virtual void LevelInitPreEntity( void );
 
-	void	AddGib( C_BaseEntity *pEntity ); 
-	void	RemoveGib( C_BaseEntity *pEntity );
+	void	AddGib( C_BaseEntity* pEntity );
+	void	RemoveGib( C_BaseEntity* pEntity );
 
 private:
 	typedef CHandle<C_BaseEntity> CGibHandle;
-	CUtlLinkedList< CGibHandle > m_LRU; 
-	
+	CUtlLinkedList< CGibHandle > m_LRU;
+
 };
 
 

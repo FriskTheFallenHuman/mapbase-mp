@@ -20,19 +20,19 @@
 
 BEGIN_DATADESC( CWaterBullet )
 
-	// Function Pointers
-	DEFINE_FUNCTION( Touch ),
-	DEFINE_FUNCTION( BulletThink ),
+// Function Pointers
+DEFINE_FUNCTION( Touch ),
+				 DEFINE_FUNCTION( BulletThink ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( waterbullet, CWaterBullet );
+				 LINK_ENTITY_TO_CLASS( waterbullet, CWaterBullet );
 
 IMPLEMENT_SERVERCLASS_ST( CWaterBullet, DT_WaterBullet )
 END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWaterBullet::Precache()
 {
@@ -41,9 +41,9 @@ void CWaterBullet::Precache()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWaterBullet::Spawn( const Vector &vecOrigin, const Vector &vecDir )
+void CWaterBullet::Spawn( const Vector& vecOrigin, const Vector& vecDir )
 {
 	Precache();
 
@@ -57,7 +57,7 @@ void CWaterBullet::Spawn( const Vector &vecOrigin, const Vector &vecDir )
 
 	QAngle angles;
 	SetAbsOrigin( vecOrigin );
-	
+
 	SetAbsVelocity( vecDir * 1500.0f );
 	VectorAngles( GetAbsVelocity(), angles );
 	SetAbsAngles( angles );
@@ -76,12 +76,12 @@ void CWaterBullet::BulletThink()
 	//NDebugOverlay::Line( GetAbsOrigin(), GetAbsOrigin() - GetAbsVelocity() * 0.1, 255, 255, 255, false, 1 );
 	SetNextThink( gpGlobals->curtime + 0.05 );
 
-/*
-	QAngle angles = GetAbsAngles();
-	angles.x += random->RandomInt( -6, 6 );
-	angles.y += random->RandomInt( -6, 6 );
-	SetAbsAngles( angles );
-*/
+	/*
+		QAngle angles = GetAbsAngles();
+		angles.x += random->RandomInt( -6, 6 );
+		angles.y += random->RandomInt( -6, 6 );
+		SetAbsAngles( angles );
+	*/
 
 	Vector forward;
 	AngleVectors( GetAbsAngles(), &forward );
@@ -89,9 +89,9 @@ void CWaterBullet::BulletThink()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWaterBullet::Touch( CBaseEntity *pOther )
+void CWaterBullet::Touch( CBaseEntity* pOther )
 {
 	Vector	vecDir = GetAbsVelocity();
 	float speed = VectorNormalize( vecDir );

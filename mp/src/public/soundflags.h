@@ -9,7 +9,7 @@
 #define SOUNDFLAGS_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 
@@ -25,10 +25,10 @@ enum
 	CHAN_ITEM		= 3,
 	CHAN_BODY		= 4,
 	CHAN_STREAM		= 5,		// allocate stream channel from the static or dynamic area
-	CHAN_STATIC		= 6,		// allocate channel from the static area 
+	CHAN_STATIC		= 6,		// allocate channel from the static area
 	CHAN_VOICE2		= 7,
 	CHAN_VOICE_BASE	= 8,		// allocate channel for network voice data
-	CHAN_USER_BASE	= (CHAN_VOICE_BASE+128)		// Anything >= this number is allocated to game code.
+	CHAN_USER_BASE	= ( CHAN_VOICE_BASE + 128 )		// Anything >= this number is allocated to game code.
 };
 
 //-----------------------------------------------------------------------------
@@ -43,7 +43,7 @@ enum
 #define ATTN_NONE		0.0f
 #define ATTN_NORM		0.8f
 #define ATTN_IDLE		2.0f
-#define ATTN_STATIC		1.25f 
+#define ATTN_STATIC		1.25f
 #define ATTN_RICOCHET	1.5f
 
 // HL2 world is 8x bigger now! We want to hear gunfire from farther.
@@ -64,7 +64,7 @@ enum soundlevel_t
 	SNDLVL_50dB			= 50,	// 3.9	// average home
 	SNDLVL_55dB			= 55,	// 3.0
 
-	SNDLVL_IDLE			= 60,	// 2.0	
+	SNDLVL_IDLE			= 60,	// 2.0
 	SNDLVL_60dB			= 60,	// 2.0	// normal conversation, clothes dryer
 
 	SNDLVL_65dB			= 65,	// 1.5	// washing machine, dishwasher
@@ -115,20 +115,20 @@ enum soundlevel_t
 enum SoundFlags_t
 {
 	SND_NOFLAGS			= 0,			// to keep the compiler happy
-	SND_CHANGE_VOL		= (1<<0),		// change sound vol
-	SND_CHANGE_PITCH	= (1<<1),		// change sound pitch
-	SND_STOP			= (1<<2),		// stop the sound
-	SND_SPAWNING		= (1<<3),		// we're spawning, used in some cases for ambients
-										// not sent over net, only a param between dll and server.
-	SND_DELAY			= (1<<4),		// sound has an initial delay
-	SND_STOP_LOOPING	= (1<<5),		// stop all looping sounds on the entity.
-	SND_SPEAKER			= (1<<6),		// being played again by a microphone through a speaker
- 
-	SND_SHOULDPAUSE		= (1<<7),		// this sound should be paused if the game is paused
-	SND_IGNORE_PHONEMES	= (1<<8),
-	SND_IGNORE_NAME		= (1<<9),		// used to change all sounds emitted by an entity, regardless of scriptname
+	SND_CHANGE_VOL		= ( 1 << 0 ),		// change sound vol
+	SND_CHANGE_PITCH	= ( 1 << 1 ),		// change sound pitch
+	SND_STOP			= ( 1 << 2 ),		// stop the sound
+	SND_SPAWNING		= ( 1 << 3 ),		// we're spawning, used in some cases for ambients
+	// not sent over net, only a param between dll and server.
+	SND_DELAY			= ( 1 << 4 ),		// sound has an initial delay
+	SND_STOP_LOOPING	= ( 1 << 5 ),		// stop all looping sounds on the entity.
+	SND_SPEAKER			= ( 1 << 6 ),		// being played again by a microphone through a speaker
 
-	SND_DO_NOT_OVERWRITE_EXISTING_ON_CHANNEL = (1<<10),
+	SND_SHOULDPAUSE		= ( 1 << 7 ),		// this sound should be paused if the game is paused
+	SND_IGNORE_PHONEMES	= ( 1 << 8 ),
+	SND_IGNORE_NAME		= ( 1 << 9 ),		// used to change all sounds emitted by an entity, regardless of scriptname
+
+	SND_DO_NOT_OVERWRITE_EXISTING_ON_CHANNEL = ( 1 << 10 ),
 };
 
 #define SND_FLAG_BITS_ENCODE 11
@@ -137,11 +137,11 @@ enum SoundFlags_t
 #define	MAX_SOUNDS				(1<<MAX_SOUND_INDEX_BITS)
 
 #if !defined( IN_XBOX_CODELINE )
-// +/-4096 msec
-#define MAX_SOUND_DELAY_MSEC_ENCODE_BITS	(13)
+	// +/-4096 msec
+	#define MAX_SOUND_DELAY_MSEC_ENCODE_BITS	(13)
 #else
-// +/-65536 msec, 64 seconds
-#define MAX_SOUND_DELAY_MSEC_ENCODE_BITS	(17)
+	// +/-65536 msec, 64 seconds
+	#define MAX_SOUND_DELAY_MSEC_ENCODE_BITS	(17)
 #endif
 
 // Subtract one to leave room for the sign bit

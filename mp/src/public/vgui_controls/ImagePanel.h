@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define IMAGEPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -27,16 +27,22 @@ class ImagePanel : public Panel
 {
 	DECLARE_CLASS_SIMPLE( ImagePanel, Panel );
 public:
-	ImagePanel(Panel *parent, const char *name);
+	ImagePanel( Panel* parent, const char* name );
 	~ImagePanel();
 
-	virtual void SetImage(IImage *image);
-	virtual void SetImage(const char *imageName);
-	virtual IImage *GetImage();
-	char *GetImageName();
+	virtual void SetImage( IImage* image );
+	virtual void SetImage( const char* imageName );
+	virtual IImage* GetImage();
+	char* GetImageName();
 
-	void SetShouldCenterImage( bool state ) { m_bCenterImage = state; }
-	bool GetShouldCenterImage() const { return m_bCenterImage; }
+	void SetShouldCenterImage( bool state )
+	{
+		m_bCenterImage = state;
+	}
+	bool GetShouldCenterImage() const
+	{
+		return m_bCenterImage;
+	}
 
 	// sets whether or not the image should scale to fit the size of the ImagePanel (defaults to false)
 	void SetShouldScaleImage( bool state );
@@ -44,7 +50,10 @@ public:
 	void SetScaleAmount( float scale );
 	float GetScaleAmount( void );
 
-	void SetTileImage( bool bTile )	{ m_bTileImage = bTile; }
+	void SetTileImage( bool bTile )
+	{
+		m_bTileImage = bTile;
+	}
 
 	// set the color to fill with, if no image is specified
 	void SetFillColor( Color col );
@@ -53,32 +62,35 @@ public:
 	virtual Color GetDrawColor( void );
 	virtual void SetDrawColor( Color drawColor );
 
-	virtual void ApplySettings(KeyValues *inResourceData);
+	virtual void ApplySettings( KeyValues* inResourceData );
 
 	// unhooks and evicts image if possible, caller must re-establish
 	bool EvictImage();
-	
+
 	int GetNumFrames();
 	void SetFrame( int nFrame );
 
 #ifdef MAPBASE
 	void SetRotation( int iRotation );
 #else
-	void SetRotation( int iRotation ) { m_iRotation = iRotation; }
+	void SetRotation( int iRotation )
+	{
+		m_iRotation = iRotation;
+	}
 #endif
 
 protected:
 	virtual void PaintBackground();
-	virtual void GetSettings(KeyValues *outResourceData);
-	virtual const char *GetDescription();
-	virtual void OnSizeChanged(int newWide, int newTall);
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void GetSettings( KeyValues* outResourceData );
+	virtual const char* GetDescription();
+	virtual void OnSizeChanged( int newWide, int newTall );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 
 private:
-	IImage *m_pImage;
-	char *m_pszImageName;
-	char *m_pszFillColorName;
-	char *m_pszDrawColorName;
+	IImage* m_pImage;
+	char* m_pszImageName;
+	char* m_pszFillColorName;
+	char* m_pszDrawColorName;
 	bool m_bPositionImage;
 	bool m_bCenterImage;
 	bool m_bScaleImage;

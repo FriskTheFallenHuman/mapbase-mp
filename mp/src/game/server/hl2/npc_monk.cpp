@@ -17,7 +17,7 @@
 #include "ai_behavior_assault.h"
 #include "ai_behavior_lead.h"
 #ifdef MAPBASE
-#include "ai_behavior_functank.h"
+	#include "ai_behavior_functank.h"
 #endif
 #include "npcevent.h"
 #include "ai_playerally.h"
@@ -51,32 +51,32 @@ public:
 
 	bool ShouldBackAway();
 
-	bool IsValidEnemy( CBaseEntity *pEnemy );
+	bool IsValidEnemy( CBaseEntity* pEnemy );
 
 	int	TranslateSchedule( int scheduleType );
-	int	SelectSchedule ();
+	int	SelectSchedule();
 
-	void HandleAnimEvent( animevent_t *pEvent );
+	void HandleAnimEvent( animevent_t* pEvent );
 	Activity NPC_TranslateActivity( Activity eNewActivity );
 
-	void PainSound( const CTakeDamageInfo &info );
-	void DeathSound( const CTakeDamageInfo &info );
-	
-	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
-	Vector GetActualShootPosition( const Vector &shootOrigin );
-	Vector GetActualShootTrajectory( const Vector &shootOrigin );
+	void PainSound( const CTakeDamageInfo& info );
+	void DeathSound( const CTakeDamageInfo& info );
+
+	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon* pWeapon );
+	Vector GetActualShootPosition( const Vector& shootOrigin );
+	Vector GetActualShootTrajectory( const Vector& shootOrigin );
 
 	void PrescheduleThink();
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
 	void GatherConditions();
 
-	bool PassesDamageFilter( const CTakeDamageInfo &info );
-	void OnKilledNPC( CBaseCombatCharacter *pKilled );
+	bool PassesDamageFilter( const CTakeDamageInfo& info );
+	void OnKilledNPC( CBaseCombatCharacter* pKilled );
 
-	bool IsJumpLegal( const Vector &startPos, const Vector &apex, const Vector &endPos ) const;
+	bool IsJumpLegal( const Vector& startPos, const Vector& apex, const Vector& endPos ) const;
 	int SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 
 	DECLARE_DATADESC();
@@ -101,9 +101,9 @@ private:
 	DEFINE_CUSTOM_AI;
 
 	// Inputs
-	void	InputPerfectAccuracyOn( inputdata_t &inputdata );
-	void	InputPerfectAccuracyOff( inputdata_t &inputdata );
-	
+	void	InputPerfectAccuracyOn( inputdata_t& inputdata );
+	void	InputPerfectAccuracyOff( inputdata_t& inputdata );
+
 	CAI_AssaultBehavior		m_AssaultBehavior;
 	CAI_LeadBehavior		m_LeadBehavior;
 #ifdef MAPBASE
@@ -121,20 +121,20 @@ BEGIN_DATADESC( CNPC_Monk )
 //					m_AssaultBehavior
 //					m_LeadBehavior
 #ifdef MAPBASE
-//					m_FuncTankBehavior
+	//					m_FuncTankBehavior
 #endif
-	DEFINE_FIELD( m_iNumZombies, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iDangerousZombies, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bPerfectAccuracy, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bMournedPlayer, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_iNumZombies, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iDangerousZombies, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_bPerfectAccuracy, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bMournedPlayer, FIELD_BOOLEAN ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "PerfectAccuracyOn", InputPerfectAccuracyOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "PerfectAccuracyOff", InputPerfectAccuracyOff ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "PerfectAccuracyOn", InputPerfectAccuracyOn ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "PerfectAccuracyOff", InputPerfectAccuracyOff ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_monk, CNPC_Monk );
+			  LINK_ENTITY_TO_CLASS( npc_monk, CNPC_Monk );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ bool CNPC_Monk::CreateBehaviors()
 #ifdef MAPBASE
 	AddBehavior( &m_FuncTankBehavior );
 #endif
-	
+
 	return BaseClass::CreateBehaviors();
 }
 
@@ -160,13 +160,13 @@ int CNPC_Monk::GetSoundInterests()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Monk::BuildScheduleTestBits( void )
 {
 	// FIXME: we need a way to make scenes non-interruptible
 #if 0
-	if ( IsCurSchedule( SCHED_RANGE_ATTACK1 ) || IsCurSchedule( SCHED_SCENE_GENERIC ) )
+	if( IsCurSchedule( SCHED_RANGE_ATTACK1 ) || IsCurSchedule( SCHED_SCENE_GENERIC ) )
 	{
 		ClearCustomInterruptCondition( COND_LIGHT_DAMAGE );
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
@@ -177,7 +177,7 @@ void CNPC_Monk::BuildScheduleTestBits( void )
 
 	// Don't interrupt while shooting the gun
 	const Task_t* pTask = GetTask();
-	if ( pTask && (pTask->iTask == TASK_RANGE_ATTACK1) )
+	if( pTask && ( pTask->iTask == TASK_RANGE_ATTACK1 ) )
 	{
 		ClearCustomInterruptCondition( COND_HEAVY_DAMAGE );
 		ClearCustomInterruptCondition( COND_ENEMY_OCCLUDED );
@@ -189,7 +189,7 @@ void CNPC_Monk::BuildScheduleTestBits( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Monk::Classify( void )
 {
@@ -197,35 +197,35 @@ Class_T	CNPC_Monk::Classify( void )
 }
 
 #ifdef MAPBASE
-ConVar npc_monk_use_old_acts( "npc_monk_use_old_acts", "1" );
+	ConVar npc_monk_use_old_acts( "npc_monk_use_old_acts", "1" );
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Activity CNPC_Monk::NPC_TranslateActivity( Activity eNewActivity )
 {
 	eNewActivity = BaseClass::NPC_TranslateActivity( eNewActivity );
 
-	if ( (m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT) )
+	if( ( m_NPCState == NPC_STATE_COMBAT || m_NPCState == NPC_STATE_ALERT ) )
 	{
 		bool bGunUp = false;
 
-		bGunUp = (gpGlobals->curtime - m_flLastAttackTime < 4);
-		bGunUp = bGunUp || (GetEnemy() && !HasCondition( COND_TOO_FAR_TO_ATTACK ));
+		bGunUp = ( gpGlobals->curtime - m_flLastAttackTime < 4 );
+		bGunUp = bGunUp || ( GetEnemy() && !HasCondition( COND_TOO_FAR_TO_ATTACK ) );
 
-		if (bGunUp)
+		if( bGunUp )
 		{
-			if ( eNewActivity == ACT_IDLE )
+			if( eNewActivity == ACT_IDLE )
 			{
 				eNewActivity = ACT_IDLE_ANGRY;
 			}
 			// keep aiming a little longer than normal since the shot takes so long and there's no good way to do a transitions between movement types :/
-			else if ( eNewActivity == ACT_WALK )
+			else if( eNewActivity == ACT_WALK )
 			{
 				eNewActivity = ACT_WALK_AIM;
 			}
-			else if ( eNewActivity == ACT_RUN )
+			else if( eNewActivity == ACT_RUN )
 			{
 				eNewActivity = ACT_RUN_AIM;
 			}
@@ -233,16 +233,16 @@ Activity CNPC_Monk::NPC_TranslateActivity( Activity eNewActivity )
 	}
 
 #if defined(EXPANDED_HL2_WEAPON_ACTIVITIES) && AR2_ACTIVITY_FIX == 1
-	if (npc_monk_use_old_acts.GetBool())
+	if( npc_monk_use_old_acts.GetBool() )
 	{
 		// HACKHACK: Don't break the balcony scene
-		if ( FStrEq( STRING(gpGlobals->mapname), "d1_town_02" ) && eNewActivity == ACT_IDLE )
+		if( FStrEq( STRING( gpGlobals->mapname ), "d1_town_02" ) && eNewActivity == ACT_IDLE )
 		{
 			eNewActivity = ACT_IDLE_SMG1;
 		}
 		else
 		{
-			switch (eNewActivity)
+			switch( eNewActivity )
 			{
 				case ACT_IDLE_AR2:
 					eNewActivity = ACT_IDLE_SMG1;
@@ -272,19 +272,19 @@ Activity CNPC_Monk::NPC_TranslateActivity( Activity eNewActivity )
 	}
 #else
 	// We need these so that we can pick up the shotgun to throw it in the balcony scene
-	if ( eNewActivity == ACT_IDLE_ANGRY_SHOTGUN )
+	if( eNewActivity == ACT_IDLE_ANGRY_SHOTGUN )
 	{
 		eNewActivity = ACT_IDLE_ANGRY_SMG1;
 	}
-	else if ( eNewActivity == ACT_WALK_AIM_SHOTGUN )
+	else if( eNewActivity == ACT_WALK_AIM_SHOTGUN )
 	{
 		eNewActivity = ACT_WALK_AIM_RIFLE;
 	}
-	else if ( eNewActivity == ACT_RUN_AIM_SHOTGUN )
+	else if( eNewActivity == ACT_RUN_AIM_SHOTGUN )
 	{
 		eNewActivity = ACT_RUN_AIM_RIFLE;
 	}
-	else if ( eNewActivity == ACT_RANGE_ATTACK_SHOTGUN_LOW )
+	else if( eNewActivity == ACT_RANGE_ATTACK_SHOTGUN_LOW )
 	{
 		return ACT_RANGE_ATTACK_SMG1_LOW;
 	}
@@ -295,21 +295,21 @@ Activity CNPC_Monk::NPC_TranslateActivity( Activity eNewActivity )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Monk::Precache()
 {
 	PrecacheModel( "models/Monk.mdl" );
-	
+
 	PrecacheScriptSound( "NPC_Citizen.FootstepLeft" );
 	PrecacheScriptSound( "NPC_Citizen.FootstepRight" );
 
 	BaseClass::Precache();
 }
- 
+
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Monk::Spawn()
 {
@@ -319,7 +319,7 @@ void CNPC_Monk::Spawn()
 
 	SetModel( "models/Monk.mdl" );
 
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_BBOX );
@@ -330,7 +330,7 @@ void CNPC_Monk::Spawn()
 	m_flFieldOfView		= m_flFieldOfView = -0.707; // 270`
 	m_NPCState			= NPC_STATE_NONE;
 
-	m_HackedGunPos = Vector ( 0, 0, 55 );
+	m_HackedGunPos = Vector( 0, 0, 55 );
 
 	CapabilitiesAdd( bits_CAP_TURN_HEAD | bits_CAP_DOORS_GROUP | bits_CAP_MOVE_GROUND );
 	CapabilitiesAdd( bits_CAP_USE_WEAPONS );
@@ -344,14 +344,14 @@ void CNPC_Monk::Spawn()
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_Monk::PainSound( const CTakeDamageInfo &info )
+void CNPC_Monk::PainSound( const CTakeDamageInfo& info )
 {
 	SpeakIfAllowed( TLK_WOUND );
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_Monk::DeathSound( const CTakeDamageInfo &info )
+void CNPC_Monk::DeathSound( const CTakeDamageInfo& info )
 {
 	// Sentences don't play on dead NPCs
 	SentenceStop();
@@ -361,21 +361,21 @@ void CNPC_Monk::DeathSound( const CTakeDamageInfo &info )
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-WeaponProficiency_t CNPC_Monk::CalcWeaponProficiency( CBaseCombatWeapon *pWeapon )
+WeaponProficiency_t CNPC_Monk::CalcWeaponProficiency( CBaseCombatWeapon* pWeapon )
 {
 	return WEAPON_PROFICIENCY_PERFECT;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-Vector CNPC_Monk::GetActualShootPosition( const Vector &shootOrigin )
+Vector CNPC_Monk::GetActualShootPosition( const Vector& shootOrigin )
 {
 	return BaseClass::GetActualShootPosition( shootOrigin );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-Vector CNPC_Monk::GetActualShootTrajectory( const Vector &shootOrigin )
+Vector CNPC_Monk::GetActualShootTrajectory( const Vector& shootOrigin )
 {
 	if( GetEnemy() && GetEnemy()->Classify() == CLASS_ZOMBIE )
 	{
@@ -398,23 +398,23 @@ Vector CNPC_Monk::GetActualShootTrajectory( const Vector &shootOrigin )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pEvent - 
+// Purpose:
+// Input  : pEvent -
 //-----------------------------------------------------------------------------
-void CNPC_Monk::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Monk::HandleAnimEvent( animevent_t* pEvent )
 {
 	switch( pEvent->event )
 	{
 		case NPC_EVENT_LEFTFOOT:
-			{
-				EmitSound( "NPC_Citizen.FootstepLeft", pEvent->eventtime );
-			}
-			break;
+		{
+			EmitSound( "NPC_Citizen.FootstepLeft", pEvent->eventtime );
+		}
+		break;
 		case NPC_EVENT_RIGHTFOOT:
-			{
-				EmitSound( "NPC_Citizen.FootstepRight", pEvent->eventtime );
-			}
-			break;
+		{
+			EmitSound( "NPC_Citizen.FootstepRight", pEvent->eventtime );
+		}
+		break;
 
 		default:
 			BaseClass::HandleAnimEvent( pEvent );
@@ -430,7 +430,9 @@ void CNPC_Monk::HandleAnimEvent( animevent_t *pEvent )
 bool CNPC_Monk::ShouldBackAway()
 {
 	if( !GetEnemy() )
+	{
 		return false;
+	}
 
 	if( GetAbsOrigin().z - GetEnemy()->GetAbsOrigin().z >= MONK_STAND_GROUND_HEIGHT )
 	{
@@ -444,22 +446,26 @@ bool CNPC_Monk::ShouldBackAway()
 	flDist = ( GetAbsOrigin() - GetEnemy()->GetAbsOrigin() ).Length();
 
 	if( flDist <= 180 )
+	{
 		return true;
+	}
 
 	return false;
 }
 
 //-------------------------------------
 
-bool CNPC_Monk::IsValidEnemy( CBaseEntity *pEnemy )
+bool CNPC_Monk::IsValidEnemy( CBaseEntity* pEnemy )
 {
-	if ( BaseClass::IsValidEnemy( pEnemy ) && GetActiveWeapon() )
+	if( BaseClass::IsValidEnemy( pEnemy ) && GetActiveWeapon() )
 	{
 		float flDist;
 
 		flDist = ( GetAbsOrigin() - pEnemy->GetAbsOrigin() ).Length();
 		if( flDist <= GetActiveWeapon()->m_fMaxRange1 )
+		{
 			return true;
+		}
 	}
 	return false;
 }
@@ -467,16 +473,16 @@ bool CNPC_Monk::IsValidEnemy( CBaseEntity *pEnemy )
 
 //-------------------------------------
 
-int CNPC_Monk::TranslateSchedule( int scheduleType ) 
+int CNPC_Monk::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_MOVE_AWAY_FAIL:
-		// Our first method of backing away failed. Try another.
-		return SCHED_MONK_BACK_AWAY_FROM_ENEMY;
-		break;
+		case SCHED_MOVE_AWAY_FAIL:
+			// Our first method of backing away failed. Try another.
+			return SCHED_MONK_BACK_AWAY_FROM_ENEMY;
+			break;
 
-	case SCHED_RANGE_ATTACK1:
+		case SCHED_RANGE_ATTACK1:
 		{
 			if( ShouldBackAway() )
 			{
@@ -488,15 +494,15 @@ int CNPC_Monk::TranslateSchedule( int scheduleType )
 		}
 		break;
 
-	case SCHED_HIDE_AND_RELOAD:
-	case SCHED_RELOAD:
-		if( ShouldBackAway() )
-		{
-			return SCHED_MONK_BACK_AWAY_AND_RELOAD;
-		}
+		case SCHED_HIDE_AND_RELOAD:
+		case SCHED_RELOAD:
+			if( ShouldBackAway() )
+			{
+				return SCHED_MONK_BACK_AWAY_AND_RELOAD;
+			}
 
-		return SCHED_RELOAD;
-		break;
+			return SCHED_RELOAD;
+			break;
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -508,7 +514,7 @@ int CNPC_Monk::TranslateSchedule( int scheduleType )
 void CNPC_Monk::PrescheduleThink()
 {
 	BaseClass::PrescheduleThink();
-}	
+}
 
 //-------------------------------------
 
@@ -520,7 +526,7 @@ int CNPC_Monk::SelectSchedule()
 		return SCHED_TAKE_COVER_FROM_BEST_SOUND;
 	}
 
-	if ( HasCondition( COND_TALKER_PLAYER_DEAD ) && !m_bMournedPlayer && IsOkToSpeak() )
+	if( HasCondition( COND_TALKER_PLAYER_DEAD ) && !m_bMournedPlayer && IsOkToSpeak() )
 	{
 		m_bMournedPlayer = true;
 		Speak( TLK_IDLE );
@@ -528,7 +534,7 @@ int CNPC_Monk::SelectSchedule()
 
 	if( !BehaviorSelectSchedule() )
 	{
-		if ( HasCondition ( COND_NO_PRIMARY_AMMO ) )
+		if( HasCondition( COND_NO_PRIMARY_AMMO ) )
 		{
 			return SCHED_HIDE_AND_RELOAD;
 		}
@@ -539,13 +545,13 @@ int CNPC_Monk::SelectSchedule()
 
 //-------------------------------------
 
-void CNPC_Monk::StartTask( const Task_t *pTask )
+void CNPC_Monk::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_RELOAD:
+		case TASK_RELOAD:
 		{
-			if ( GetActiveWeapon() && GetActiveWeapon()->HasPrimaryAmmo() )
+			if( GetActiveWeapon() && GetActiveWeapon()->HasPrimaryAmmo() )
 			{
 				// Don't reload if you have done so while moving (See BACK_AWAY_AND_RELOAD schedule).
 				TaskComplete();
@@ -558,7 +564,7 @@ void CNPC_Monk::StartTask( const Task_t *pTask )
 			}
 
 			Activity reloadGesture = TranslateActivity( ACT_GESTURE_RELOAD );
-			if ( reloadGesture != ACT_INVALID && IsPlayingGesture( reloadGesture ) )
+			if( reloadGesture != ACT_INVALID && IsPlayingGesture( reloadGesture ) )
 			{
 				ResetIdealActivity( ACT_IDLE );
 				return;
@@ -568,25 +574,25 @@ void CNPC_Monk::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 
-void CNPC_Monk::RunTask( const Task_t *pTask )
+void CNPC_Monk::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_RELOAD:
+		case TASK_RELOAD:
 		{
 			Activity reloadGesture = TranslateActivity( ACT_GESTURE_RELOAD );
-			if ( GetIdealActivity() != ACT_RELOAD && reloadGesture != ACT_INVALID )
+			if( GetIdealActivity() != ACT_RELOAD && reloadGesture != ACT_INVALID )
 			{
-				if ( !IsPlayingGesture( reloadGesture ) )
+				if( !IsPlayingGesture( reloadGesture ) )
 				{
-					if ( GetShotRegulator() )
+					if( GetShotRegulator() )
 					{
 						GetShotRegulator()->Reset( false );
 					}
@@ -600,9 +606,9 @@ void CNPC_Monk::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
@@ -617,15 +623,15 @@ void CNPC_Monk::GatherConditions()
 	m_iDangerousZombies = 0;
 
 	AISightIter_t iter;
-	CBaseEntity *pSightEnt;
+	CBaseEntity* pSightEnt;
 	pSightEnt = GetSenses()->GetFirstSeenEntity( &iter );
 	while( pSightEnt )
 	{
 		if( pSightEnt->Classify() == CLASS_ZOMBIE && pSightEnt->IsAlive() )
 		{
 			// Is this zombie coming for me?
-			CAI_BaseNPC *pZombie = dynamic_cast<CAI_BaseNPC*>(pSightEnt);
-			
+			CAI_BaseNPC* pZombie = dynamic_cast<CAI_BaseNPC*>( pSightEnt );
+
 			if( pZombie && pZombie->GetEnemy() == this )
 			{
 				m_iNumZombies++;
@@ -633,7 +639,7 @@ void CNPC_Monk::GatherConditions()
 				// if this zombie is close enough to attack, add him to the zombie danger!
 				float flDist;
 
-				flDist = (pZombie->GetAbsOrigin() - GetAbsOrigin()).Length2DSqr();
+				flDist = ( pZombie->GetAbsOrigin() - GetAbsOrigin() ).Length2DSqr();
 
 				if( flDist <= 128.0f * 128.0f )
 				{
@@ -645,26 +651,26 @@ void CNPC_Monk::GatherConditions()
 		pSightEnt = GetSenses()->GetNextSeenEntity( &iter );
 	}
 
-	if( m_iDangerousZombies >= 3 || (GetEnemy() && GetHealth() < 25) )
+	if( m_iDangerousZombies >= 3 || ( GetEnemy() && GetHealth() < 25 ) )
 	{
 		// I see many zombies, or I'm quite injured.
 		SpeakIfAllowed( TLK_HELP_ME );
 	}
 
 	// NOTE!!!!!! This code assumes grigori is using annabelle!
-	ClearCondition(COND_LOW_PRIMARY_AMMO);
-	if ( GetActiveWeapon() )
+	ClearCondition( COND_LOW_PRIMARY_AMMO );
+	if( GetActiveWeapon() )
 	{
-		if ( GetActiveWeapon()->UsesPrimaryAmmo() )
+		if( GetActiveWeapon()->UsesPrimaryAmmo() )
 		{
-			if (!GetActiveWeapon()->HasPrimaryAmmo() )
+			if( !GetActiveWeapon()->HasPrimaryAmmo() )
 			{
-				SetCondition(COND_NO_PRIMARY_AMMO);
+				SetCondition( COND_NO_PRIMARY_AMMO );
 			}
-			else if ( m_NPCState != NPC_STATE_COMBAT && GetActiveWeapon()->UsesClipsForAmmo1() && GetActiveWeapon()->Clip1() < 2 )
+			else if( m_NPCState != NPC_STATE_COMBAT && GetActiveWeapon()->UsesClipsForAmmo1() && GetActiveWeapon()->Clip1() < 2 )
 			{
 				// Don't send a low ammo message unless we're not in combat.
-				SetCondition(COND_LOW_PRIMARY_AMMO);
+				SetCondition( COND_LOW_PRIMARY_AMMO );
 			}
 		}
 	}
@@ -672,29 +678,31 @@ void CNPC_Monk::GatherConditions()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Monk::PassesDamageFilter( const CTakeDamageInfo &info )
+bool CNPC_Monk::PassesDamageFilter( const CTakeDamageInfo& info )
 {
-	if ( info.GetAttacker()->ClassMatches( "npc_headcrab_black" ) || info.GetAttacker()->ClassMatches( "npc_headcrab_poison" ) )
+	if( info.GetAttacker()->ClassMatches( "npc_headcrab_black" ) || info.GetAttacker()->ClassMatches( "npc_headcrab_poison" ) )
+	{
 		return false;
+	}
 
 	return BaseClass::PassesDamageFilter( info );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Monk::OnKilledNPC( CBaseCombatCharacter *pKilled )
+void CNPC_Monk::OnKilledNPC( CBaseCombatCharacter* pKilled )
 {
-	if ( !pKilled )
+	if( !pKilled )
 	{
 		return;
 	}
 
-	if ( pKilled->Classify() == CLASS_ZOMBIE )
+	if( pKilled->Classify() == CLASS_ZOMBIE )
 	{
 		// Don't speak if the gun is empty, cause grigori will want to speak while he's reloading.
-		if ( GetActiveWeapon() )
+		if( GetActiveWeapon() )
 		{
-			if ( GetActiveWeapon()->UsesPrimaryAmmo() && !GetActiveWeapon()->HasPrimaryAmmo() )
+			if( GetActiveWeapon()->UsesPrimaryAmmo() && !GetActiveWeapon()->HasPrimaryAmmo() )
 			{
 				// Gun is empty. I'm about to reload.
 				if( m_iNumZombies >= 2 )
@@ -723,9 +731,9 @@ int CNPC_Monk::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFa
 		{
 #ifdef MAPBASE
 			// I thought it would be a nice touch.
-			if (RandomInt(1, 2) == 1 && CanRunAScriptedNPCInteraction(false))
+			if( RandomInt( 1, 2 ) == 1 && CanRunAScriptedNPCInteraction( false ) )
 			{
-				for ( int i = 0; i < m_ScriptedInteractions.Count(); i++ )
+				for( int i = 0; i < m_ScriptedInteractions.Count(); i++ )
 				{
 					m_ScriptedInteractions[i].flNextAttemptTime = gpGlobals->curtime;
 				}
@@ -742,17 +750,19 @@ int CNPC_Monk::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFa
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CNPC_Monk::IsJumpLegal( const Vector &startPos, const Vector &apex, const Vector &endPos ) const
+bool CNPC_Monk::IsJumpLegal( const Vector& startPos, const Vector& apex, const Vector& endPos ) const
 {
-	if ( startPos.z - endPos.z < 0 )
+	if( startPos.z - endPos.z < 0 )
+	{
 		return false;
+	}
 	return BaseClass::IsJumpLegal( startPos, apex, endPos );
 }
 
 //-----------------------------------------------------------------------------
 // Every shot's a headshot. Useful for scripted Grigoris
 //-----------------------------------------------------------------------------
-void CNPC_Monk::InputPerfectAccuracyOn( inputdata_t &inputdata )
+void CNPC_Monk::InputPerfectAccuracyOn( inputdata_t& inputdata )
 {
 	m_bPerfectAccuracy = true;
 }
@@ -760,7 +770,7 @@ void CNPC_Monk::InputPerfectAccuracyOn( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Turn off perfect accuracy.
 //-----------------------------------------------------------------------------
-void CNPC_Monk::InputPerfectAccuracyOff( inputdata_t &inputdata )
+void CNPC_Monk::InputPerfectAccuracyOff( inputdata_t& inputdata )
 {
 	m_bPerfectAccuracy = false;
 }
@@ -773,71 +783,71 @@ void CNPC_Monk::InputPerfectAccuracyOff( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 AI_BEGIN_CUSTOM_NPC( npc_monk, CNPC_Monk )
 
-	DECLARE_ACTIVITY( ACT_MONK_GUN_IDLE )
+DECLARE_ACTIVITY( ACT_MONK_GUN_IDLE )
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_MONK_RANGE_ATTACK1,
+DEFINE_SCHEDULE
+(
+	SCHED_MONK_RANGE_ATTACK1,
 
-		"	Tasks"
-		"		TASK_STOP_MOVING		0"
-		"		TASK_FACE_ENEMY			0"
-		"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
-		"		TASK_RANGE_ATTACK1		0"
-		""
-		"	Interrupts"
-		"		COND_HEAVY_DAMAGE"
-		"		COND_ENEMY_OCCLUDED"
-		"		COND_HEAR_DANGER"
-		"		COND_WEAPON_BLOCKED_BY_FRIEND"
-		"		COND_WEAPON_SIGHT_OCCLUDED"
-	)
+	"	Tasks"
+	"		TASK_STOP_MOVING		0"
+	"		TASK_FACE_ENEMY			0"
+	"		TASK_ANNOUNCE_ATTACK	1"	// 1 = primary attack
+	"		TASK_RANGE_ATTACK1		0"
+	""
+	"	Interrupts"
+	"		COND_HEAVY_DAMAGE"
+	"		COND_ENEMY_OCCLUDED"
+	"		COND_HEAR_DANGER"
+	"		COND_WEAPON_BLOCKED_BY_FRIEND"
+	"		COND_WEAPON_SIGHT_OCCLUDED"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_MONK_BACK_AWAY_FROM_ENEMY,
+DEFINE_SCHEDULE
+(
+	SCHED_MONK_BACK_AWAY_FROM_ENEMY,
 
-		"	Tasks"
-		"		TASK_STOP_MOVING							0"
-		"		TASK_STORE_ENEMY_POSITION_IN_SAVEPOSITION	0"
-		"		TASK_FIND_BACKAWAY_FROM_SAVEPOSITION		0"
-		"		TASK_WALK_PATH_TIMED						4.0"
-		"		TASK_WAIT_FOR_MOVEMENT						0"
-		""
-		"	Interrupts"
-		"		COND_NEW_ENEMY"
-		"		COND_ENEMY_DEAD"
-	);
+	"	Tasks"
+	"		TASK_STOP_MOVING							0"
+	"		TASK_STORE_ENEMY_POSITION_IN_SAVEPOSITION	0"
+	"		TASK_FIND_BACKAWAY_FROM_SAVEPOSITION		0"
+	"		TASK_WALK_PATH_TIMED						4.0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	""
+	"	Interrupts"
+	"		COND_NEW_ENEMY"
+	"		COND_ENEMY_DEAD"
+);
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_MONK_BACK_AWAY_AND_RELOAD,
+DEFINE_SCHEDULE
+(
+	SCHED_MONK_BACK_AWAY_AND_RELOAD,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE						SCHEDULE:SCHED_MONK_NORMAL_RELOAD"
-		"		TASK_STOP_MOVING							0"
-		"		TASK_STORE_ENEMY_POSITION_IN_SAVEPOSITION	0"
-		"		TASK_FIND_BACKAWAY_FROM_SAVEPOSITION		0"
-		"		TASK_WALK_PATH_TIMED						2.0"
-		"		TASK_WAIT_FOR_MOVEMENT						0"
-		"		TASK_STOP_MOVING							0"
-		"		TASK_RELOAD									0"
-		""
-		"	Interrupts"
-		"		COND_ENEMY_DEAD"
-	);
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE						SCHEDULE:SCHED_MONK_NORMAL_RELOAD"
+	"		TASK_STOP_MOVING							0"
+	"		TASK_STORE_ENEMY_POSITION_IN_SAVEPOSITION	0"
+	"		TASK_FIND_BACKAWAY_FROM_SAVEPOSITION		0"
+	"		TASK_WALK_PATH_TIMED						2.0"
+	"		TASK_WAIT_FOR_MOVEMENT						0"
+	"		TASK_STOP_MOVING							0"
+	"		TASK_RELOAD									0"
+	""
+	"	Interrupts"
+	"		COND_ENEMY_DEAD"
+);
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_MONK_NORMAL_RELOAD,
+DEFINE_SCHEDULE
+(
+	SCHED_MONK_NORMAL_RELOAD,
 
-		"	Tasks"
-		"		TASK_STOP_MOVING							0"
-		"		TASK_RELOAD									0"
-		""
-		"	Interrupts"
-		"		COND_HEAR_DANGER"
-	);
+	"	Tasks"
+	"		TASK_STOP_MOVING							0"
+	"		TASK_RELOAD									0"
+	""
+	"	Interrupts"
+	"		COND_HEAR_DANGER"
+);
 
 
 AI_END_CUSTOM_NPC()

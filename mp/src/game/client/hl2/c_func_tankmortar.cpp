@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -17,8 +17,11 @@ public:
 
 	void OnDataChanged( DataUpdateType_t updateType );
 	int DrawModel( int flags );
-	
-	RenderGroup_t	GetRenderGroup( void )	{ return RENDER_GROUP_TRANSLUCENT_ENTITY; }
+
+	RenderGroup_t	GetRenderGroup( void )
+	{
+		return RENDER_GROUP_TRANSLUCENT_ENTITY;
+	}
 
 private:
 
@@ -38,20 +41,20 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_MortarShell, DT_MortarShell, CMortarShell )
-	RecvPropFloat( RECVINFO( m_flLifespan ) ),
-	RecvPropFloat( RECVINFO( m_flRadius ) ),
-	RecvPropVector( RECVINFO( m_vecSurfaceNormal ) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flLifespan ) ),
+			   RecvPropFloat( RECVINFO( m_flRadius ) ),
+			   RecvPropVector( RECVINFO( m_vecSurfaceNormal ) ),
+			   END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
-void C_MortarShell::OnDataChanged( DataUpdateType_t updateType )
+			   void C_MortarShell::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_flStarttime = gpGlobals->curtime;
 		AddToLeafSystem( RENDER_GROUP_TRANSLUCENT_ENTITY );
@@ -64,12 +67,12 @@ void C_MortarShell::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flPerc - 
+// Purpose:
+// Input  : flPerc -
 //-----------------------------------------------------------------------------
 void C_MortarShell::AddRisingParticles( float flPerc )
 {
-	SimpleParticle *sParticle;
+	SimpleParticle* sParticle;
 
 	Vector offset;
 	float radius = m_flRadius * 0.25f * flPerc;
@@ -79,7 +82,7 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 	float flCur = gpGlobals->frametime;
 
 	// Anime ground effects
-	while ( m_ParticleEvent.NextEvent( flCur ) )
+	while( m_ParticleEvent.NextEvent( flCur ) )
 	{
 		offset.x = random->RandomFloat( -radius, radius );
 		offset.y = random->RandomFloat( -radius, radius );
@@ -87,17 +90,19 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 
 		offset += GetAbsOrigin();
 
-		sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_pEmitter->GetPMaterial( "effects/spark" ), offset );
-		
-		if ( sParticle == NULL )
+		sParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_pEmitter->GetPMaterial( "effects/spark" ), offset );
+
+		if( sParticle == NULL )
+		{
 			return;
+		}
 
 		sParticle->m_vecVelocity = Vector( Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( -4.0f, 4.0f ), Helper_RandomFloat( 32.0f, 256.0f ) * Bias( val, 0.25f ) );
-		
+
 		sParticle->m_uchStartSize	= random->RandomFloat( 4, 8 ) * flPerc;
 
 		sParticle->m_flDieTime = random->RandomFloat( 0.5f, 1.0f );
-		
+
 		sParticle->m_flLifetime		= 0.0f;
 
 		sParticle->m_flRoll			= Helper_RandomInt( 0, 360 );
@@ -115,12 +120,12 @@ void C_MortarShell::AddRisingParticles( float flPerc )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flPerc - 
+// Purpose:
+// Input  : flPerc -
 //-----------------------------------------------------------------------------
 void C_MortarShell::AddExplodingParticles( float flPerc )
 {
-	SimpleParticle *sParticle;
+	SimpleParticle* sParticle;
 
 	Vector offset;
 	float radius = 48.0f * flPerc;
@@ -128,7 +133,7 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 	float flCur = gpGlobals->frametime;
 
 	// Anime ground effects
-	while ( m_ParticleEvent.NextEvent( flCur ) )
+	while( m_ParticleEvent.NextEvent( flCur ) )
 	{
 		offset.x = random->RandomFloat( -radius, radius );
 		offset.y = random->RandomFloat( -radius, radius );
@@ -136,18 +141,20 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 
 		offset += GetAbsOrigin();
 
-		sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_pEmitter->GetPMaterial( "effects/spark" ), offset );
-		
-		if ( sParticle == NULL )
+		sParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_pEmitter->GetPMaterial( "effects/spark" ), offset );
+
+		if( sParticle == NULL )
+		{
 			return;
+		}
 
 		sParticle->m_vecVelocity = RandomVector( -1.0f, 1.0f ) + Vector( 0, 0, 1 );
 		sParticle->m_vecVelocity *= ( 750.0f * flPerc );
-		
+
 		sParticle->m_uchStartSize	= random->RandomFloat( 2, 4 ) * flPerc;
 
 		sParticle->m_flDieTime = random->RandomFloat( 0.25f, 0.5f );
-		
+
 		sParticle->m_flLifetime		= 0.0f;
 
 		sParticle->m_flRoll			= Helper_RandomInt( 0, 360 );
@@ -165,7 +172,7 @@ void C_MortarShell::AddExplodingParticles( float flPerc )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : inline float
 //-----------------------------------------------------------------------------
 inline float C_MortarShell::GetStartPerc( void )
@@ -176,7 +183,7 @@ inline float C_MortarShell::GetStartPerc( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : inline float
 //-----------------------------------------------------------------------------
 inline float C_MortarShell::GetEndPerc( void )
@@ -193,18 +200,20 @@ inline float C_MortarShell::GetEndPerc( void )
 #define	SCALE_MAX	200
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int C_MortarShell::DrawModel( int flags )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if( gpGlobals->frametime <= 0.0f )
+	{
 		return 0;
+	}
 
 	float flPerc;
 	bool ending;
 
 	// See if we're in the beginning phase
-	if ( gpGlobals->curtime < ( m_flStarttime + m_flLifespan ) )
+	if( gpGlobals->curtime < ( m_flStarttime + m_flLifespan ) )
 	{
 		flPerc = GetStartPerc();
 		ending = false;
@@ -216,25 +225,25 @@ int C_MortarShell::DrawModel( int flags )
 	}
 
 	float flAlpha = ALPHA_MIN + ( ( ALPHA_MAX - ALPHA_MIN ) * flPerc );
-	float flScale = ( ending ) ? m_flRadius : ( (m_flRadius*0.1f)+ ( ( m_flRadius - (m_flRadius*0.1f) ) * flPerc ) );
+	float flScale = ( ending ) ? m_flRadius : ( ( m_flRadius * 0.1f ) + ( ( m_flRadius - ( m_flRadius * 0.1f ) ) * flPerc ) );
 
 	// Do the ground effect
-	FX_AddQuad( GetAbsOrigin() + ( m_vecSurfaceNormal * 2.0f ), 
-				m_vecSurfaceNormal, 
+	FX_AddQuad( GetAbsOrigin() + ( m_vecSurfaceNormal * 2.0f ),
+				m_vecSurfaceNormal,
 				flScale,
 				flScale,
-				1.0f, 
+				1.0f,
 				flAlpha,
 				flAlpha,
 				1.0f,
 				0,
 				0,
 				Vector( 1.0f, 1.0f, 1.0f ),
-				0.0001f, 
+				0.0001f,
 				"effects/combinemuzzle2_nocull",
 				0 );
 
-	if ( !ending )
+	if( !ending )
 	{
 		// Add extra effects on startup
 		AddRisingParticles( flPerc );

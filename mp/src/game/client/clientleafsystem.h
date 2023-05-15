@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Revision: $
 // $NoKeywords: $
@@ -12,7 +12,7 @@
 #if !defined( CLIENTLEAFSYSTEM_H )
 #define CLIENTLEAFSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "igamesystem.h"
@@ -41,7 +41,7 @@ class CStaticProp;
 //-----------------------------------------------------------------------------
 enum
 {
-	DETAIL_PROP_RENDER_HANDLE = (ClientRenderHandle_t)0xfffe
+	DETAIL_PROP_RENDER_HANDLE = ( ClientRenderHandle_t )0xfffe
 };
 
 
@@ -61,7 +61,7 @@ public:
 
 	struct CEntry
 	{
-		IClientRenderable	*m_pRenderable;
+		IClientRenderable*	m_pRenderable;
 		unsigned short		m_iWorldListInfoLeaf; // NOTE: this indexes WorldListInfo_t's leaf list.
 		unsigned short		m_TwoPass;
 		ClientRenderHandle_t m_RenderHandle;
@@ -78,8 +78,8 @@ public:
 //-----------------------------------------------------------------------------
 struct SetupRenderInfo_t
 {
-	WorldListInfo_t *m_pWorldListInfo;
-	CClientRenderablesList *m_pRenderList;
+	WorldListInfo_t* m_pWorldListInfo;
+	CClientRenderablesList* m_pRenderList;
 	Vector m_vecRenderOrigin;
 	Vector m_vecRenderForward;
 	int m_nRenderFrame;
@@ -102,7 +102,7 @@ struct SetupRenderInfo_t
 typedef unsigned short ClientLeafShadowHandle_t;
 enum
 {
-	CLIENT_LEAF_SHADOW_INVALID_HANDLE = (ClientLeafShadowHandle_t)~0 
+	CLIENT_LEAF_SHADOW_INVALID_HANDLE = ( ClientLeafShadowHandle_t )~0
 };
 
 
@@ -136,18 +136,19 @@ public:
 //-----------------------------------------------------------------------------
 // The client leaf system
 //-----------------------------------------------------------------------------
-abstract_class IClientLeafSystem : public IClientLeafSystemEngine, public IGameSystemPerFrame
+abstract_class IClientLeafSystem :
+public IClientLeafSystemEngine, public IGameSystemPerFrame
 {
 public:
 	// Adds and removes renderables from the leaf lists
-	virtual void AddRenderable( IClientRenderable* pRenderable, RenderGroup_t group ) = 0;
+	virtual void AddRenderable( IClientRenderable * pRenderable, RenderGroup_t group ) = 0;
 
 	// This tells if the renderable is in the current PVS. It assumes you've updated the renderable
 	// with RenderableChanged() calls
-	virtual bool IsRenderableInPVS( IClientRenderable *pRenderable ) = 0;
+	virtual bool IsRenderableInPVS( IClientRenderable * pRenderable ) = 0;
 
-	virtual void SetSubSystemDataInLeaf( int leaf, int nSubSystemIdx, CClientLeafSubSystemData *pData ) =0;
-	virtual CClientLeafSubSystemData *GetSubSystemDataInLeaf( int leaf, int nSubSystemIdx ) =0;
+	virtual void SetSubSystemDataInLeaf( int leaf, int nSubSystemIdx, CClientLeafSubSystemData * pData ) = 0;
+	virtual CClientLeafSubSystemData * GetSubSystemDataInLeaf( int leaf, int nSubSystemIdx ) = 0;
 
 
 	virtual void SetDetailObjectsInLeaf( int leaf, int firstDetailObject, int detailObjectCount ) = 0;
@@ -167,13 +168,13 @@ public:
 	virtual void SetRenderGroup( ClientRenderHandle_t handle, RenderGroup_t group ) = 0;
 
 	// Computes which leaf translucent objects should be rendered in
-	virtual void ComputeTranslucentRenderLeaf( int count, const LeafIndex_t *pLeafList, const LeafFogVolume_t *pLeafFogVolumeList, int frameNumber, int viewID ) = 0;
+	virtual void ComputeTranslucentRenderLeaf( int count, const LeafIndex_t* pLeafList, const LeafFogVolume_t* pLeafFogVolumeList, int frameNumber, int viewID ) = 0;
 
 	// Put renderables into their appropriate lists.
-	virtual void BuildRenderablesList( const SetupRenderInfo_t &info ) = 0;
+	virtual void BuildRenderablesList( const SetupRenderInfo_t& info ) = 0;
 
 	// Put renderables in the leaf into their appropriate lists.
-	virtual void CollateViewModelRenderables( CUtlVector< IClientRenderable * >& opaqueList, CUtlVector< IClientRenderable * >& translucentList ) = 0;
+	virtual void CollateViewModelRenderables( CUtlVector< IClientRenderable* >& opaqueList, CUtlVector< IClientRenderable* >& translucentList ) = 0;
 
 	// Call this to deactivate static prop rendering..
 	virtual void DrawStaticProps( bool enable ) = 0;
@@ -186,20 +187,20 @@ public:
 	virtual void RemoveShadow( ClientLeafShadowHandle_t h ) = 0;
 
 	// Project a shadow
-	virtual void ProjectShadow( ClientLeafShadowHandle_t handle, int nLeafCount, const int *pLeafList ) = 0;
+	virtual void ProjectShadow( ClientLeafShadowHandle_t handle, int nLeafCount, const int* pLeafList ) = 0;
 
 	// Project a projected texture spotlight
-	virtual void ProjectFlashlight( ClientLeafShadowHandle_t handle, int nLeafCount, const int *pLeafList ) = 0;
+	virtual void ProjectFlashlight( ClientLeafShadowHandle_t handle, int nLeafCount, const int* pLeafList ) = 0;
 
 	// Find all shadow casters in a set of leaves
-	virtual void EnumerateShadowsInLeaves( int leafCount, LeafIndex_t* pLeaves, IClientLeafShadowEnum* pEnum ) = 0;
+	virtual void EnumerateShadowsInLeaves( int leafCount, LeafIndex_t* pLeaves, IClientLeafShadowEnum * pEnum ) = 0;
 
 	// Fill in a list of the leaves this renderable is in.
 	// Returns -1 if the handle is invalid.
 	virtual int GetRenderableLeaves( ClientRenderHandle_t handle, int leaves[128] ) = 0;
 
 	// Get leaves this renderable is in
-	virtual bool GetRenderableLeaf ( ClientRenderHandle_t handle, int* pOutLeaf, const int* pInIterator = 0, int* pOutIterator = 0 ) = 0;
+	virtual bool GetRenderableLeaf( ClientRenderHandle_t handle, int* pOutLeaf, const int* pInIterator = 0, int* pOutIterator = 0 ) = 0;
 
 	// Use alternate translucent sorting algorithm (draw translucent objects in the furthest leaf they lie in)
 	virtual void EnableAlternateSorting( ClientRenderHandle_t handle, bool bEnable ) = 0;
@@ -209,7 +210,7 @@ public:
 //-----------------------------------------------------------------------------
 // Singleton accessor
 //-----------------------------------------------------------------------------
-extern IClientLeafSystem *g_pClientLeafSystem;
+extern IClientLeafSystem* g_pClientLeafSystem;
 inline IClientLeafSystem* ClientLeafSystem()
 {
 	return g_pClientLeafSystem;

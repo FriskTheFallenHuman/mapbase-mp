@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -18,7 +18,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_APCDriver : public CNPC_VehicleDriver
 {
@@ -29,12 +29,15 @@ public:
 
 	virtual void Spawn( void );
 	virtual void Activate( void );
-	
-	virtual bool FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity **ppBlocker );
-	virtual bool WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
-	virtual Class_T Classify ( void ) { return CLASS_COMBINE; }
+
+	virtual bool FVisible( CBaseEntity* pTarget, int traceMask, CBaseEntity** ppBlocker );
+	virtual bool WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
+	virtual Class_T Classify( void )
+	{
+		return CLASS_COMBINE;
+	}
 	virtual void PrescheduleThink( );
-	virtual Disposition_t IRelationType(CBaseEntity *pTarget);
+	virtual Disposition_t IRelationType( CBaseEntity* pTarget );
 
 	// AI
 	virtual int RangeAttack1Conditions( float flDot, float flDist );
@@ -45,8 +48,8 @@ private:
 	bool IsBeingCarried();
 
 	// Enable, disable firing
-	void InputEnableFiring( inputdata_t &inputdata );
-	void InputDisableFiring( inputdata_t &inputdata );
+	void InputEnableFiring( inputdata_t& inputdata );
+	void InputDisableFiring( inputdata_t& inputdata );
 
 	CHandle<CPropAPC>	m_hAPC;
 	float m_flTimeLastSeenEnemy;
@@ -56,16 +59,16 @@ private:
 
 BEGIN_DATADESC( CNPC_APCDriver )
 
-	//DEFINE_FIELD( m_hAPC, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bFiringDisabled, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeLastSeenEnemy, FIELD_TIME ),
+//DEFINE_FIELD( m_hAPC, FIELD_EHANDLE ),
+DEFINE_FIELD( m_bFiringDisabled, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flTimeLastSeenEnemy, FIELD_TIME ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableFiring", InputEnableFiring ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableFiring", InputDisableFiring ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "EnableFiring", InputEnableFiring ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "DisableFiring", InputDisableFiring ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( npc_apcdriver, CNPC_APCDriver );
+			  LINK_ENTITY_TO_CLASS( npc_apcdriver, CNPC_APCDriver );
 
 
 //------------------------------------------------------------------------------
@@ -83,16 +86,16 @@ void CNPC_APCDriver::Spawn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_APCDriver::Activate( void )
 {
 	BaseClass::Activate();
 
-	m_hAPC = dynamic_cast<CPropAPC*>((CBaseEntity*)m_hVehicleEntity);
-	if ( !m_hAPC )
+	m_hAPC = dynamic_cast<CPropAPC*>( ( CBaseEntity* )m_hVehicleEntity );
+	if( !m_hAPC )
 	{
-		Warning( "npc_apcdriver %s couldn't find his apc named %s.\n", STRING(GetEntityName()), STRING(m_iszVehicleName) );
+		Warning( "npc_apcdriver %s couldn't find his apc named %s.\n", STRING( GetEntityName() ), STRING( m_iszVehicleName ) );
 		UTIL_Remove( this );
 		return;
 	}
@@ -108,26 +111,28 @@ void CNPC_APCDriver::Activate( void )
 //-----------------------------------------------------------------------------
 // Enable, disable firing
 //-----------------------------------------------------------------------------
-void CNPC_APCDriver::InputEnableFiring( inputdata_t &inputdata )
+void CNPC_APCDriver::InputEnableFiring( inputdata_t& inputdata )
 {
 	m_bFiringDisabled = false;
 }
 
-void CNPC_APCDriver::InputDisableFiring( inputdata_t &inputdata )
+void CNPC_APCDriver::InputDisableFiring( inputdata_t& inputdata )
 {
 	m_bFiringDisabled = true;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Purpose: Let's not hate things the APC makes
 //-----------------------------------------------------------------------------
-Disposition_t CNPC_APCDriver::IRelationType(CBaseEntity *pTarget)
+Disposition_t CNPC_APCDriver::IRelationType( CBaseEntity* pTarget )
 {
-	if ( pTarget == m_hAPC || (pTarget->GetOwnerEntity() == m_hAPC) )
+	if( pTarget == m_hAPC || ( pTarget->GetOwnerEntity() == m_hAPC ) )
+	{
 		return D_LI;
+	}
 
-	return BaseClass::IRelationType(pTarget);
+	return BaseClass::IRelationType( pTarget );
 }
 
 
@@ -139,7 +144,7 @@ bool CNPC_APCDriver::IsBeingCarried()
 	// Inert if we're carried...
 	Vector vecVelocity;
 	m_hAPC->GetVelocity( &vecVelocity, NULL );
-	return ( m_hAPC->GetMoveParent() != NULL ) || (fabs(vecVelocity.z) >= 15);
+	return ( m_hAPC->GetMoveParent() != NULL ) || ( fabs( vecVelocity.z ) >= 15 );
 }
 
 
@@ -147,49 +152,63 @@ bool CNPC_APCDriver::IsBeingCarried()
 //------------------------------------------------------------------------------
 // Is the enemy visible?
 //------------------------------------------------------------------------------
-bool CNPC_APCDriver::WeaponLOSCondition(const Vector &ownerPos, const Vector &targetPos, bool bSetConditions)
+bool CNPC_APCDriver::WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions )
 {
-	if ( m_hAPC->m_lifeState != LIFE_ALIVE )
+	if( m_hAPC->m_lifeState != LIFE_ALIVE )
+	{
 		return false;
+	}
 
-	if ( IsBeingCarried() || m_bFiringDisabled )
+	if( IsBeingCarried() || m_bFiringDisabled )
+	{
 		return false;
+	}
 
 	float flTargetDist = ownerPos.DistTo( targetPos );
-	if (flTargetDist > m_hAPC->MaxAttackRange())
+	if( flTargetDist > m_hAPC->MaxAttackRange() )
+	{
 		return false;
+	}
 
 	return true;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 // Is the enemy visible?
 //-----------------------------------------------------------------------------
-bool CNPC_APCDriver::FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_APCDriver::FVisible( CBaseEntity* pTarget, int traceMask, CBaseEntity** ppBlocker )
 {
-	if ( m_hAPC->m_lifeState != LIFE_ALIVE )
+	if( m_hAPC->m_lifeState != LIFE_ALIVE )
+	{
 		return false;
+	}
 
-	if ( IsBeingCarried() || m_bFiringDisabled )
+	if( IsBeingCarried() || m_bFiringDisabled )
+	{
 		return false;
+	}
 
 	float flTargetDist = GetAbsOrigin().DistTo( pTarget->GetAbsOrigin() );
-	if (flTargetDist > m_hAPC->MaxAttackRange())
+	if( flTargetDist > m_hAPC->MaxAttackRange() )
+	{
 		return false;
+	}
 
 	bool bVisible = m_hAPC->FVisible( pTarget, traceMask, ppBlocker );
-	if ( bVisible && (pTarget == GetEnemy()) )
+	if( bVisible && ( pTarget == GetEnemy() ) )
 	{
 		m_flTimeLastSeenEnemy = gpGlobals->curtime;
 	}
 
-	if ( pTarget->IsPlayer() || pTarget->Classify() == CLASS_BULLSEYE )
+	if( pTarget->IsPlayer() || pTarget->Classify() == CLASS_BULLSEYE )
 	{
-		if (!bVisible)
+		if( !bVisible )
 		{
-			if ( ( gpGlobals->curtime - m_flTimeLastSeenEnemy ) <= NPC_APCDRIVER_REMEMBER_TIME )
+			if( ( gpGlobals->curtime - m_flTimeLastSeenEnemy ) <= NPC_APCDRIVER_REMEMBER_TIME )
+			{
 				return true;
+			}
 		}
 	}
 
@@ -204,63 +223,93 @@ bool CNPC_APCDriver::FVisible( CBaseEntity *pTarget, int traceMask, CBaseEntity 
 //-----------------------------------------------------------------------------
 int CNPC_APCDriver::RangeAttack1Conditions( float flDot, float flDist )
 {
-	if ( HasSpawnFlags(SF_APCDRIVER_NO_GUN_ATTACK) )
+	if( HasSpawnFlags( SF_APCDRIVER_NO_GUN_ATTACK ) )
+	{
 		return COND_NONE;
+	}
 
-	if ( m_hAPC->m_lifeState != LIFE_ALIVE )
+	if( m_hAPC->m_lifeState != LIFE_ALIVE )
+	{
 		return COND_NONE;
+	}
 
-	if ( IsBeingCarried() || m_bFiringDisabled )
+	if( IsBeingCarried() || m_bFiringDisabled )
+	{
 		return COND_NONE;
+	}
 
-	if ( !HasCondition( COND_SEE_ENEMY ) )
+	if( !HasCondition( COND_SEE_ENEMY ) )
+	{
 		return COND_NONE;
+	}
 
-	if ( !m_hAPC->IsInPrimaryFiringCone() )
+	if( !m_hAPC->IsInPrimaryFiringCone() )
+	{
 		return COND_NONE;
+	}
 
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	if( m_pVehicleInterface->Weapon_PrimaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	{
 		return COND_NONE;
+	}
 
 	float flMinDist, flMaxDist;
 	m_pVehicleInterface->Weapon_PrimaryRanges( &flMinDist, &flMaxDist );
 
-	if (flDist < flMinDist)
+	if( flDist < flMinDist )
+	{
 		return COND_NONE;
+	}
 
-	if (flDist > flMaxDist)
+	if( flDist > flMaxDist )
+	{
 		return COND_NONE;
+	}
 
 	return COND_CAN_RANGE_ATTACK1;
 }
 
 int CNPC_APCDriver::RangeAttack2Conditions( float flDot, float flDist )
 {
-	if ( HasSpawnFlags(SF_APCDRIVER_NO_ROCKET_ATTACK) )
+	if( HasSpawnFlags( SF_APCDRIVER_NO_ROCKET_ATTACK ) )
+	{
 		return COND_NONE;
+	}
 
-	if ( m_hAPC->m_lifeState != LIFE_ALIVE )
+	if( m_hAPC->m_lifeState != LIFE_ALIVE )
+	{
 		return COND_NONE;
+	}
 
-	if ( IsBeingCarried() || m_bFiringDisabled )
+	if( IsBeingCarried() || m_bFiringDisabled )
+	{
 		return COND_NONE;
+	}
 
-	if ( !HasCondition( COND_SEE_ENEMY ) )
+	if( !HasCondition( COND_SEE_ENEMY ) )
+	{
 		return COND_NONE;
+	}
 
 	// Vehicle not ready to fire again yet?
-	if ( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	if( m_pVehicleInterface->Weapon_SecondaryCanFireAt() > gpGlobals->curtime + 0.1f )
+	{
 		return COND_NONE;
+	}
 
 	float flMinDist, flMaxDist;
 	m_pVehicleInterface->Weapon_SecondaryRanges( &flMinDist, &flMaxDist );
 
-	if (flDist < flMinDist)
+	if( flDist < flMinDist )
+	{
 		return COND_NONE;
+	}
 
-	if (flDist > flMaxDist)
+	if( flDist > flMaxDist )
+	{
 		return COND_NONE;
+	}
 
 	return COND_CAN_RANGE_ATTACK2;
 }
@@ -273,15 +322,15 @@ void CNPC_APCDriver::PrescheduleThink( )
 {
 	BaseClass::PrescheduleThink();
 
-	if ( m_hAPC->m_lifeState == LIFE_ALIVE )
+	if( m_hAPC->m_lifeState == LIFE_ALIVE )
 	{
-		if ( GetEnemy() )
+		if( GetEnemy() )
 		{
 			m_hAPC->AimPrimaryWeapon( GetEnemy()->BodyTarget( GetAbsOrigin(), false ) );
 		}
 		m_hAPC->AimSecondaryWeaponAt( GetEnemy() );
 	}
-	else if ( m_hAPC->m_lifeState == LIFE_DEAD )
+	else if( m_hAPC->m_lifeState == LIFE_DEAD )
 	{
 		UTIL_Remove( this );
 	}
@@ -294,5 +343,5 @@ void CNPC_APCDriver::PrescheduleThink( )
 //
 //-----------------------------------------------------------------------------
 AI_BEGIN_CUSTOM_NPC( npc_apcdriver, CNPC_APCDriver )
-	
+
 AI_END_CUSTOM_NPC()

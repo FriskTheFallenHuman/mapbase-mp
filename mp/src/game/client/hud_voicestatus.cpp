@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -16,7 +16,7 @@
 #include "voice_common.h"
 #include "vgui_avatarimage.h"
 
-ConVar *sv_alltalk = NULL;
+ConVar* sv_alltalk = NULL;
 
 //=============================================================================
 // Icon for the local player using voice
@@ -26,15 +26,15 @@ class CHudVoiceSelfStatus : public CHudElement, public vgui::Panel
 public:
 	DECLARE_CLASS_SIMPLE( CHudVoiceSelfStatus, vgui::Panel );
 
-	CHudVoiceSelfStatus( const char *name );
+	CHudVoiceSelfStatus( const char* name );
 
-	virtual bool ShouldDraw();	
+	virtual bool ShouldDraw();
 	virtual void Paint();
 	virtual void VidInit();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 private:
-	CHudTexture *m_pVoiceIcon;
+	CHudTexture* m_pVoiceIcon;
 
 	Color	m_clrIcon;
 };
@@ -43,7 +43,7 @@ private:
 DECLARE_HUDELEMENT( CHudVoiceSelfStatus );
 
 
-CHudVoiceSelfStatus::CHudVoiceSelfStatus( const char *pName ) :
+CHudVoiceSelfStatus::CHudVoiceSelfStatus( const char* pName ) :
 	vgui::Panel( NULL, "HudVoiceSelfStatus" ), CHudElement( pName )
 {
 	SetParent( g_pClientMode->GetViewport() );
@@ -52,10 +52,10 @@ CHudVoiceSelfStatus::CHudVoiceSelfStatus( const char *pName ) :
 
 	SetHiddenBits( 0 );
 
-	m_clrIcon = Color(255,255,255,255);
+	m_clrIcon = Color( 255, 255, 255, 255 );
 }
 
-void CHudVoiceSelfStatus::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudVoiceSelfStatus::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -76,9 +76,11 @@ bool CHudVoiceSelfStatus::ShouldDraw()
 
 void CHudVoiceSelfStatus::Paint()
 {
-   if( !m_pVoiceIcon )
+	if( !m_pVoiceIcon )
+	{
 		return;
-	
+	}
+
 	int x, y, w, h;
 	GetBounds( x, y, w, h );
 
@@ -94,22 +96,22 @@ class CHudVoiceStatus : public CHudElement, public vgui::Panel
 public:
 	DECLARE_CLASS_SIMPLE( CHudVoiceStatus, vgui::Panel );
 
-	CHudVoiceStatus( const char *name );
+	CHudVoiceStatus( const char* name );
 	~CHudVoiceStatus( void );
 
-	virtual bool ShouldDraw();	
+	virtual bool ShouldDraw();
 	virtual void Paint();
 	virtual void VidInit();
 	virtual void Init();
 	virtual void OnThink();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 protected:
 	void ClearActiveList();
 	int FindActiveSpeaker( int playerId );
 
 private:
-	CHudTexture *m_pVoiceIcon;
+	CHudTexture* m_pVoiceIcon;
 	int m_iDeadImageID;
 
 	Color	m_clrIcon;
@@ -160,7 +162,7 @@ private:
 DECLARE_HUDELEMENT( CHudVoiceStatus );
 
 
-CHudVoiceStatus::CHudVoiceStatus( const char *pName ) :
+CHudVoiceStatus::CHudVoiceStatus( const char* pName ) :
 	vgui::Panel( NULL, "HudVoiceStatus" ), CHudElement( pName )
 {
 	SetParent( g_pClientMode->GetViewport() );
@@ -169,10 +171,10 @@ CHudVoiceStatus::CHudVoiceStatus( const char *pName ) :
 
 	SetHiddenBits( 0 );
 
-	m_clrIcon = Color(255,255,255,255);
+	m_clrIcon = Color( 255, 255, 255, 255 );
 
 	m_iDeadImageID = surface()->DrawGetTextureId( "hud/leaderboard_dead" );
-	if ( m_iDeadImageID == -1 ) // we didn't find it, so create a new one
+	if( m_iDeadImageID == -1 )  // we didn't find it, so create a new one
 	{
 		m_iDeadImageID = surface()->CreateNewTextureID();
 		surface()->DrawSetTextureFile( m_iDeadImageID, "hud/leaderboard_dead", true, false );
@@ -184,7 +186,7 @@ CHudVoiceStatus::~CHudVoiceStatus()
 	ClearActiveList();
 }
 
-void CHudVoiceStatus::ApplySchemeSettings(vgui::IScheme *pScheme)
+void CHudVoiceStatus::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -205,12 +207,12 @@ void CHudVoiceStatus::VidInit( void )
 
 void CHudVoiceStatus::OnThink( void )
 {
-	for ( int iPlayerIndex=1; iPlayerIndex<=gpGlobals->maxClients; iPlayerIndex++ )
+	for( int iPlayerIndex = 1; iPlayerIndex <= gpGlobals->maxClients; iPlayerIndex++ )
 	{
-		int activeSpeakerIndex = FindActiveSpeaker(iPlayerIndex);
-		bool bSpeaking = GetClientVoiceMgr()->IsPlayerSpeaking(iPlayerIndex);
+		int activeSpeakerIndex = FindActiveSpeaker( iPlayerIndex );
+		bool bSpeaking = GetClientVoiceMgr()->IsPlayerSpeaking( iPlayerIndex );
 
-		if (activeSpeakerIndex != m_SpeakingList.InvalidIndex() )
+		if( activeSpeakerIndex != m_SpeakingList.InvalidIndex() )
 		{
 			// update their speaking status
 			m_SpeakingList[activeSpeakerIndex].bSpeaking = bSpeaking;
@@ -241,27 +243,27 @@ void CHudVoiceStatus::OnThink( void )
 #ifdef CSTRIKE_DLL
 				// [jpaquin] this allows counter strike to display default avatars for bots.  It can't be a virtual function on
 				// C_BasePlayer because there would be no way to get a game specific default image if the player is null.
-				extern vgui::IImage* GetDefaultAvatarImage( C_BasePlayer *pPlayer );
+				extern vgui::IImage* GetDefaultAvatarImage( C_BasePlayer * pPlayer );
 				activeSpeaker.pAvatar->SetDefaultImage( GetDefaultAvatarImage( UTIL_PlayerByIndex( activeSpeaker.playerId ) ) );
 #endif
-				activeSpeaker.pAvatar->SetDrawFriend(show_friend);
+				activeSpeaker.pAvatar->SetDrawFriend( show_friend );
 				player_info_t pi;
-				if ( engine->GetPlayerInfo( iPlayerIndex, &pi ) )
+				if( engine->GetPlayerInfo( iPlayerIndex, &pi ) )
 				{
-					if ( steamapicontext != NULL && steamapicontext->SteamUtils() != NULL )
+					if( steamapicontext != NULL && steamapicontext->SteamUtils() != NULL )
 					{
 						CSteamID steamIDForPlayer( pi.friendsID, 1, steamapicontext->SteamUtils()->GetConnectedUniverse(), k_EAccountTypeIndividual );
-						activeSpeaker.pAvatar->SetAvatarSteamID(steamIDForPlayer, k_EAvatarSize32x32);
+						activeSpeaker.pAvatar->SetAvatarSteamID( steamIDForPlayer, k_EAvatarSize32x32 );
 					}
 				}
 
-				activeSpeaker.pAvatar->SetAvatarSize( avatar_wide, avatar_tall);
+				activeSpeaker.pAvatar->SetAvatarSize( avatar_wide, avatar_tall );
 
 				//=============================================================================
 				// HPE_END
 				//=============================================================================
 
-				m_SpeakingList.AddToTail(activeSpeaker);
+				m_SpeakingList.AddToTail( activeSpeaker );
 			}
 			//=============================================================================
 			// HPE_END
@@ -271,17 +273,19 @@ void CHudVoiceStatus::OnThink( void )
 
 	float fTime = gpGlobals->frametime;
 
-	for ( int i = m_SpeakingList.Head(); i != m_SpeakingList.InvalidIndex(); )
+	for( int i = m_SpeakingList.Head(); i != m_SpeakingList.InvalidIndex(); )
 	{
 		ActiveSpeaker& activeSpeaker = m_SpeakingList[i];
 
-		if (activeSpeaker.bSpeaking)
+		if( activeSpeaker.bSpeaking )
 		{
-			if ( fade_in_time > 0.0f )
+			if( fade_in_time > 0.0f )
 			{
 				activeSpeaker.fAlpha += fTime / fade_in_time;
-				if ( activeSpeaker.fAlpha > 1.0f )
+				if( activeSpeaker.fAlpha > 1.0f )
+				{
 					activeSpeaker.fAlpha = 1.0f;
+				}
 			}
 			else
 			{
@@ -290,7 +294,7 @@ void CHudVoiceStatus::OnThink( void )
 		}
 		else
 		{
-			if ( fade_out_time > 0.0f )
+			if( fade_out_time > 0.0f )
 			{
 				activeSpeaker.fAlpha -= fTime / fade_out_time;
 			}
@@ -299,33 +303,37 @@ void CHudVoiceStatus::OnThink( void )
 				activeSpeaker.fAlpha = 0.0f;
 			}
 
-			if ( activeSpeaker.fAlpha <= 0.0f )
+			if( activeSpeaker.fAlpha <= 0.0f )
 			{
 				// completely faded, remove them them from the list
 				delete activeSpeaker.pAvatar;
-				int iNext = m_SpeakingList.Next(i);
-				m_SpeakingList.Remove(i);
+				int iNext = m_SpeakingList.Next( i );
+				m_SpeakingList.Remove( i );
 				i = iNext;
 				continue;
 			}
 		}
-		i = m_SpeakingList.Next(i);
+		i = m_SpeakingList.Next( i );
 	}
 }
 
 bool CHudVoiceStatus::ShouldDraw()
 {
-	if ( IsInFreezeCam() == true )
+	if( IsInFreezeCam() == true )
+	{
 		return false;
+	}
 
 	return true;
 }
 
 void CHudVoiceStatus::Paint()
 {
-   	if( !m_pVoiceIcon )
+	if( !m_pVoiceIcon )
+	{
 		return;
-	
+	}
+
 	int x, y, w, h;
 	GetBounds( x, y, w, h );
 
@@ -339,50 +347,52 @@ void CHudVoiceStatus::Paint()
 	if( length > 0 )
 	{
 		surface()->DrawSetTextFont( m_NameFont );
-		surface()->DrawSetTextColor( Color(255,255,255,255) );
+		surface()->DrawSetTextColor( Color( 255, 255, 255, 255 ) );
 		iFontHeight = surface()->GetFontTall( m_NameFont );
 	}
 
-	if ( !sv_alltalk )
+	if( !sv_alltalk )
+	{
 		sv_alltalk = cvar->FindVar( "sv_alltalk" );
+	}
 
 	//draw everyone in the list!
-	FOR_EACH_LL(m_SpeakingList, i)
+	FOR_EACH_LL( m_SpeakingList, i )
 	{
 		int playerId = m_SpeakingList[i].playerId;
 		bool bIsAlive = g_PR->IsAlive( playerId );
 
 		float oldAlphaMultiplier = surface()->DrawGetAlphaMultiplier();
-		surface()->DrawSetAlphaMultiplier(oldAlphaMultiplier * m_SpeakingList[i].fAlpha);
+		surface()->DrawSetAlphaMultiplier( oldAlphaMultiplier * m_SpeakingList[i].fAlpha );
 
-		Color c = g_PR->GetTeamColor( g_PR ? g_PR->GetTeam(playerId) : TEAM_UNASSIGNED );
+		Color c = g_PR->GetTeamColor( g_PR ? g_PR->GetTeam( playerId ) : TEAM_UNASSIGNED );
 
 		c[3] = 128;
 
-		const char *pName = g_PR ? g_PR->GetPlayerName(playerId) : "unknown";
+		const char* pName = g_PR ? g_PR->GetPlayerName( playerId ) : "unknown";
 		wchar_t szconverted[ 64 ];
 
 		// Add the location, if any
 		bool usedLocation = false;
-		if ( sv_alltalk && !sv_alltalk->GetBool() )
+		if( sv_alltalk && !sv_alltalk->GetBool() )
 		{
-			C_BasePlayer *pPlayer = UTIL_PlayerByIndex( playerId );
-			if ( pPlayer )
+			C_BasePlayer* pPlayer = UTIL_PlayerByIndex( playerId );
+			if( pPlayer )
 			{
-				const char *asciiLocation = pPlayer->GetLastKnownPlaceName();
-				if ( asciiLocation && *asciiLocation )
+				const char* asciiLocation = pPlayer->GetLastKnownPlaceName();
+				if( asciiLocation && *asciiLocation )
 				{
-					const wchar_t *unicodeLocation = g_pVGuiLocalize->Find( asciiLocation );
-					if ( unicodeLocation && *unicodeLocation )
+					const wchar_t* unicodeLocation = g_pVGuiLocalize->Find( asciiLocation );
+					if( unicodeLocation && *unicodeLocation )
 					{
-						wchar_t *formatStr = g_pVGuiLocalize->Find( "#Voice_UseLocation" );
-						if ( formatStr )
+						wchar_t* formatStr = g_pVGuiLocalize->Find( "#Voice_UseLocation" );
+						if( formatStr )
 						{
 							wchar_t unicodeName[ 64 ];
 							g_pVGuiLocalize->ConvertANSIToUnicode( pName, unicodeName, sizeof( unicodeName ) );
 
 							g_pVGuiLocalize->ConstructString( szconverted, sizeof( szconverted ),
-								formatStr, 2, unicodeName, unicodeLocation );
+															  formatStr, 2, unicodeName, unicodeLocation );
 
 							usedLocation = true;
 						}
@@ -391,16 +401,16 @@ void CHudVoiceStatus::Paint()
 			}
 		}
 
-		if ( !usedLocation )
+		if( !usedLocation )
 		{
-			g_pVGuiLocalize->ConvertANSIToUnicode( pName, szconverted, sizeof(szconverted)  );
+			g_pVGuiLocalize->ConvertANSIToUnicode( pName, szconverted, sizeof( szconverted ) );
 		}
 
 		// Draw the item background
 		surface()->DrawSetColor( c );
 		surface()->DrawFilledRect( 0, ypos, item_wide, ypos + item_tall );
 
-		if ( show_dead_icon && bIsAlive == false && m_iDeadImageID != -1 )
+		if( show_dead_icon && bIsAlive == false && m_iDeadImageID != -1 )
 		{
 			// draw background for dead icon
 			// surface()->DrawFilledRect(dead_icon_xpos, ypos, 0, ypos + dead_icon_tall);
@@ -417,7 +427,7 @@ void CHudVoiceStatus::Paint()
 			vert[2].Init( Vector2D( dead_icon_xpos + dead_icon_wide, ypos + dead_icon_ypos + dead_icon_tall ), Vector2D( uv2, uv2 ) );
 			vert[3].Init( Vector2D( dead_icon_xpos, ypos + dead_icon_ypos + dead_icon_tall ), Vector2D( uv1, uv2 ) );
 
-			surface()->DrawSetColor(COLOR_WHITE);
+			surface()->DrawSetColor( COLOR_WHITE );
 			surface()->DrawTexturedPolygon( 4, vert );
 		}
 
@@ -427,7 +437,7 @@ void CHudVoiceStatus::Paint()
 		//=============================================================================
 
 		// Draw the players icon
-		if (show_avatar && m_SpeakingList[i].pAvatar)
+		if( show_avatar && m_SpeakingList[i].pAvatar )
 		{
 			m_SpeakingList[i].pAvatar->SetPos( avatar_xpos, ypos + avatar_ypos );
 			m_SpeakingList[i].pAvatar->Paint();
@@ -438,56 +448,60 @@ void CHudVoiceStatus::Paint()
 		//=============================================================================
 
 		// Draw the voice icon
-		if (show_voice_icon)
+		if( show_voice_icon )
+		{
 			m_pVoiceIcon->DrawSelf( voice_icon_xpos, ypos + voice_icon_ypos, voice_icon_wide, voice_icon_tall, m_clrIcon );
+		}
 
 		// Draw the player's name
-		surface()->DrawSetTextColor(COLOR_WHITE);
+		surface()->DrawSetTextColor( COLOR_WHITE );
 		surface()->DrawSetTextPos( text_xpos, ypos + ( item_tall / 2 ) - ( iFontHeight / 2 ) );
 
 		int iTextSpace = item_wide - text_xpos;
 
 		// write as much of the name as will fit, truncate the rest and add ellipses
-		int iNameLength = wcslen(szconverted);
-		const wchar_t *pszconverted = szconverted;
+		int iNameLength = wcslen( szconverted );
+		const wchar_t* pszconverted = szconverted;
 		int iTextWidthCounter = 0;
-		for( int j=0;j<iNameLength;j++ )
+		for( int j = 0; j < iNameLength; j++ )
 		{
 			iTextWidthCounter += surface()->GetCharacterWidth( m_NameFont, pszconverted[j] );
 
 			if( iTextWidthCounter > iTextSpace )
-			{	
+			{
 				if( j > 3 )
 				{
-					szconverted[j-2] = '.';
-					szconverted[j-1] = '.';
+					szconverted[j - 2] = '.';
+					szconverted[j - 1] = '.';
 					szconverted[j] = '\0';
 				}
 				break;
 			}
 		}
 
-		surface()->DrawPrintText( szconverted, wcslen(szconverted) );
-			
+		surface()->DrawPrintText( szconverted, wcslen( szconverted ) );
+
 		ypos -= ( item_spacing + item_tall );
 
-		surface()->DrawSetAlphaMultiplier(oldAlphaMultiplier);
+		surface()->DrawSetAlphaMultiplier( oldAlphaMultiplier );
 	}
 }
 
 int CHudVoiceStatus::FindActiveSpeaker( int playerId )
 {
-	FOR_EACH_LL(m_SpeakingList, i)
+	FOR_EACH_LL( m_SpeakingList, i )
 	{
-		if (m_SpeakingList[i].playerId == playerId)
+		if( m_SpeakingList[i].playerId == playerId )
+		{
 			return i;
+		}
 	}
 	return m_SpeakingList.InvalidIndex();
 }
 
 void CHudVoiceStatus::ClearActiveList()
 {
-	FOR_EACH_LL(m_SpeakingList, i)
+	FOR_EACH_LL( m_SpeakingList, i )
 	{
 		delete m_SpeakingList[i].pAvatar;
 	}

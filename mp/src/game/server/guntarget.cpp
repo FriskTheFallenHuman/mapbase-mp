@@ -30,22 +30,37 @@ public:
 	virtual void Activate( void );
 	bool CreateVPhysics( void );
 
-	virtual int BloodColor( void ) { return DONT_BLEED; }
+	virtual int BloodColor( void )
+	{
+		return DONT_BLEED;
+	}
 
 #if defined( HL2_DLL )
-	virtual Class_T Classify( void ) { return CLASS_MILITARY; }
+	virtual Class_T Classify( void )
+	{
+		return CLASS_MILITARY;
+	}
 #elif defined( HL1_DLL )
-	virtual Class_T Classify( void ) { return CLASS_MACHINE; }
+	virtual Class_T Classify( void )
+	{
+		return CLASS_MACHINE;
+	}
 #else
-	virtual Class_T Classify( void ) { return CLASS_NONE; }
+	virtual Class_T Classify( void )
+	{
+		return CLASS_NONE;
+	}
 #endif
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
-	virtual Vector BodyTarget( const Vector &posSrc, bool bNoisy = true ) { return GetAbsOrigin(); }
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
+	virtual Vector BodyTarget( const Vector& posSrc, bool bNoisy = true )
+	{
+		return GetAbsOrigin();
+	}
 
 	// Input handlers
-	void InputStart( inputdata_t &inputdata );
-	void InputStop( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
+	void InputStart( inputdata_t& inputdata );
+	void InputStop( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 
@@ -70,35 +85,37 @@ LINK_ENTITY_TO_CLASS( func_guntarget, CGunTarget );
 
 BEGIN_DATADESC( CGunTarget )
 
-	DEFINE_FIELD( m_on, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hTargetEnt, FIELD_EHANDLE ),
+DEFINE_FIELD( m_on, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_hTargetEnt, FIELD_EHANDLE ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( Next ),
-	DEFINE_FUNCTION( Start ),
-	DEFINE_FUNCTION( Wait ),
+			  // Function Pointers
+			  DEFINE_FUNCTION( Next ),
+			  DEFINE_FUNCTION( Start ),
+			  DEFINE_FUNCTION( Wait ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Start", InputStart ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Stop", InputStop ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Start", InputStart ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Stop", InputStop ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnDeath, "OnDeath"),
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnDeath, "OnDeath" ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 
-void CGunTarget::Spawn( void )
+			  void CGunTarget::Spawn( void )
 {
 	SetSolid( SOLID_BSP );
 	SetMoveType( MOVETYPE_PUSH );
 
 	SetModel( STRING( GetModelName() ) );
 
-	if ( m_flSpeed == 0 )
+	if( m_flSpeed == 0 )
+	{
 		m_flSpeed = 100;
+	}
 
 	// Don't take damage until "on"
 	m_takedamage = DAMAGE_NO;
@@ -107,7 +124,7 @@ void CGunTarget::Spawn( void )
 	m_on = false;
 	m_iMaxHealth = m_iHealth;
 
-	if ( HasSpawnFlags(FGUNTARGET_START_ON) )
+	if( HasSpawnFlags( FGUNTARGET_START_ON ) )
 	{
 		SetMoveDone( &CGunTarget::Start );
 		SetMoveDoneTime( 0.3 );
@@ -126,10 +143,10 @@ void CGunTarget::Activate( void )
 {
 	BaseClass::Activate();
 
-	CBaseEntity	*pTarg;
+	CBaseEntity*	pTarg;
 	// now find our next target
 	pTarg = GetNextTarget();
-	if ( pTarg )
+	if( pTarg )
 	{
 		m_hTargetEnt = pTarg;
 		Vector nextPos = pTarg->GetAbsOrigin();
@@ -143,8 +160,10 @@ void CGunTarget::Start( void )
 	m_takedamage = DAMAGE_YES;
 	AddFlag( FL_AIMTARGET );
 	m_hTargetEnt = GetNextTarget();
-	if ( m_hTargetEnt == NULL )
+	if( m_hTargetEnt == NULL )
+	{
 		return;
+	}
 	m_iHealth = m_iMaxHealth;
 	Next();
 }
@@ -155,9 +174,9 @@ void CGunTarget::Next( void )
 	SetThink( NULL );
 
 	m_hTargetEnt = GetNextTarget();
-	CBaseEntity *pTarget = m_hTargetEnt;
-	
-	if ( !pTarget )
+	CBaseEntity* pTarget = m_hTargetEnt;
+
+	if( !pTarget )
 	{
 		Stop();
 		return;
@@ -170,9 +189,9 @@ void CGunTarget::Next( void )
 
 void CGunTarget::Wait( void )
 {
-	CBaseEntity *pTarget = m_hTargetEnt;
-	
-	if ( !pTarget )
+	CBaseEntity* pTarget = m_hTargetEnt;
+
+	if( !pTarget )
 	{
 		Stop();
 		return;
@@ -180,13 +199,14 @@ void CGunTarget::Wait( void )
 
 	variant_t emptyVariant;
 	pTarget->AcceptInput( "InPass", this, this, emptyVariant, 0 );
-		
+
 	m_flWait = pTarget->GetDelay();
 
 	m_target = pTarget->m_target;
 	SetMoveDone( &CGunTarget::Next );
-	if (m_flWait != 0)
-	{// -1 wait will wait forever!		
+	if( m_flWait != 0 )
+	{
+		// -1 wait will wait forever!
 		SetMoveDoneTime( m_flWait );
 	}
 	else
@@ -204,12 +224,12 @@ void CGunTarget::Stop( void )
 }
 
 
-int	CGunTarget::OnTakeDamage( const CTakeDamageInfo &info )
+int	CGunTarget::OnTakeDamage( const CTakeDamageInfo& info )
 {
-	if ( m_iHealth > 0 )
+	if( m_iHealth > 0 )
 	{
 		m_iHealth -= info.GetDamage();
-		if ( m_iHealth <= 0 )
+		if( m_iHealth <= 0 )
 		{
 			m_iHealth = 0;
 			Stop();
@@ -224,7 +244,7 @@ int	CGunTarget::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that starts the target moving.
 //-----------------------------------------------------------------------------
-void CGunTarget::InputStart( inputdata_t &inputdata )
+void CGunTarget::InputStart( inputdata_t& inputdata )
 {
 	Start();
 }
@@ -233,7 +253,7 @@ void CGunTarget::InputStart( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that stops the target from moving.
 //-----------------------------------------------------------------------------
-void CGunTarget::InputStop( inputdata_t &inputdata )
+void CGunTarget::InputStop( inputdata_t& inputdata )
 {
 	Stop();
 }
@@ -242,9 +262,9 @@ void CGunTarget::InputStop( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that toggles the start/stop state of the target.
 //-----------------------------------------------------------------------------
-void CGunTarget::InputToggle( inputdata_t &inputdata )
+void CGunTarget::InputToggle( inputdata_t& inputdata )
 {
-	if ( m_on )
+	if( m_on )
 	{
 		Stop();
 	}

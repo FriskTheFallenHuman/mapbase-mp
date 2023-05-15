@@ -18,10 +18,10 @@
 #include "in_buttons.h"
 #include "movehelper_server.h"
 
-void ClientPutInServer( edict_t *pEdict, const char *playername );
-void Bot_Think( CHL2MP_Player *pBot );
+void ClientPutInServer( edict_t* pEdict, const char* playername );
+void Bot_Think( CHL2MP_Player* pBot );
 
-#if defined ( DEBUG ) || defined ( MAPBASE_MP )	
+#if defined ( DEBUG ) || defined ( MAPBASE_MP )
 
 ConVar bot_forcefireweapon( "bot_forcefireweapon", "", 0, "Force bots with the specified weapon to fire." );
 ConVar bot_forceattack2( "bot_forceattack2", "0", 0, "When firing, use attack2." );
@@ -31,9 +31,9 @@ ConVar bot_defend( "bot_defend", "0", 0, "Set to a team number, and that team wi
 ConVar bot_changeclass( "bot_changeclass", "0", 0, "Force all bots to change to the specified class." );
 ConVar bot_zombie( "bot_zombie", "0", 0, "Brraaaaaiiiins." );
 #ifdef NEXT_BOT
-extern ConVar bot_mimic;
+	extern ConVar bot_mimic;
 #else
-ConVar bot_mimic( "bot_mimic", "0", 0, "Bot uses usercmd of player by index." );
+	ConVar bot_mimic( "bot_mimic", "0", 0, "Bot uses usercmd of player by index." );
 #endif
 static ConVar bot_mimic_yaw_offset( "bot_mimic_yaw_offset", "0", 0, "Offsets the bot yaw." );
 ConVar bot_attack( "bot_attack", "0", 0, "Shoot!" );
@@ -58,7 +58,7 @@ typedef struct
 
 	QAngle			forwardAngle;
 	QAngle			lastAngles;
-	
+
 	float			m_flJoinTeamTime;
 	int				m_WantedTeam;
 	int				m_WantedClass;
@@ -71,7 +71,7 @@ static botdata_t g_BotData[ MAX_PLAYERS ];
 // Purpose: Create a new Bot and put it in the game.
 // Output : Pointer to the new Bot, or NULL if there's no free clients.
 //-----------------------------------------------------------------------------
-CBasePlayer *BotPutInServer( bool bFrozen, int iTeam )
+CBasePlayer* BotPutInServer( bool bFrozen, int iTeam )
 {
 	g_iNextBotTeam = iTeam;
 
@@ -80,27 +80,29 @@ CBasePlayer *BotPutInServer( bool bFrozen, int iTeam )
 
 	// This is an evil hack, but we use it to prevent sv_autojointeam from kicking in.
 
-	edict_t *pEdict = engine->CreateFakeClient( botname );
+	edict_t* pEdict = engine->CreateFakeClient( botname );
 
-	if (!pEdict)
+	if( !pEdict )
 	{
-		Msg( "Failed to create Bot.\n");
+		Msg( "Failed to create Bot.\n" );
 		return NULL;
 	}
 
 	// Allocate a CBasePlayer for the bot, and call spawn
 	//ClientPutInServer( pEdict, botname );
-	CHL2MP_Player *pPlayer = ((CHL2MP_Player *)CBaseEntity::Instance( pEdict ));
+	CHL2MP_Player* pPlayer = ( ( CHL2MP_Player* )CBaseEntity::Instance( pEdict ) );
 	pPlayer->ClearFlags();
 	pPlayer->AddFlag( FL_CLIENT | FL_FAKECLIENT );
 
-	if ( bFrozen )
+	if( bFrozen )
+	{
 		pPlayer->AddEFlags( EFL_BOT_FROZEN );
+	}
 
 	BotNumber++;
 
-	g_BotData[pPlayer->entindex()-1].m_WantedTeam = iTeam;
-	g_BotData[pPlayer->entindex()-1].m_flJoinTeamTime = gpGlobals->curtime + 0.3;
+	g_BotData[pPlayer->entindex() - 1].m_WantedTeam = iTeam;
+	g_BotData[pPlayer->entindex() - 1].m_flJoinTeamTime = gpGlobals->curtime + 0.3;
 
 	return pPlayer;
 }
@@ -115,12 +117,12 @@ CON_COMMAND_F( bot_add, "Add a bot.", FCVAR_CHEAT )
 //-----------------------------------------------------------------------------
 void Bot_RunAll( void )
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CHL2MP_Player *pPlayer = ToHL2MPPlayer( UTIL_PlayerByIndex( i ) );
+		CHL2MP_Player* pPlayer = ToHL2MPPlayer( UTIL_PlayerByIndex( i ) );
 
 		// Ignore plugin bots
-		if ( pPlayer && (pPlayer->GetFlags() & FL_FAKECLIENT) && !pPlayer->IsEFlagSet( EFL_PLUGIN_BASED_BOT ) )
+		if( pPlayer && ( pPlayer->GetFlags() & FL_FAKECLIENT ) && !pPlayer->IsEFlagSet( EFL_PLUGIN_BASED_BOT ) )
 		{
 			Bot_Think( pPlayer );
 		}
@@ -129,19 +131,27 @@ void Bot_RunAll( void )
 
 bool RunMimicCommand( CUserCmd& cmd )
 {
-	if ( bot_mimic.GetInt() <= 0 )
+	if( bot_mimic.GetInt() <= 0 )
+	{
 		return false;
+	}
 
-	if ( bot_mimic.GetInt() > gpGlobals->maxClients )
+	if( bot_mimic.GetInt() > gpGlobals->maxClients )
+	{
 		return false;
+	}
 
-	
-	CBasePlayer *pPlayer = UTIL_PlayerByIndex( bot_mimic.GetInt()  );
-	if ( !pPlayer )
-		return false;
 
-	if ( !pPlayer->GetLastUserCommand() )
+	CBasePlayer* pPlayer = UTIL_PlayerByIndex( bot_mimic.GetInt() );
+	if( !pPlayer )
+	{
 		return false;
+	}
+
+	if( !pPlayer->GetLastUserCommand() )
+	{
+		return false;
+	}
 
 	cmd = *pPlayer->GetLastUserCommand();
 	cmd.viewangles[YAW] += bot_mimic_yaw_offset.GetFloat();
@@ -151,20 +161,22 @@ bool RunMimicCommand( CUserCmd& cmd )
 
 //-----------------------------------------------------------------------------
 // Purpose: Simulates a single frame of movement for a player
-// Input  : *fakeclient - 
-//			*viewangles - 
-//			forwardmove - 
-//			sidemove - 
-//			upmove - 
-//			buttons - 
-//			impulse - 
-//			msec - 
+// Input  : *fakeclient -
+//			*viewangles -
+//			forwardmove -
+//			sidemove -
+//			upmove -
+//			buttons -
+//			impulse -
+//			msec -
 // Output : 	virtual void
 //-----------------------------------------------------------------------------
-static void RunPlayerMove( CHL2MP_Player *fakeclient, const QAngle& viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, float frametime )
+static void RunPlayerMove( CHL2MP_Player* fakeclient, const QAngle& viewangles, float forwardmove, float sidemove, float upmove, unsigned short buttons, byte impulse, float frametime )
 {
-	if ( !fakeclient )
+	if( !fakeclient )
+	{
 		return;
+	}
 
 	CUserCmd cmd;
 
@@ -177,7 +189,7 @@ static void RunPlayerMove( CHL2MP_Player *fakeclient, const QAngle& viewangles, 
 
 	Q_memset( &cmd, 0, sizeof( cmd ) );
 
-	if ( !RunMimicCommand( cmd ) && !bot_zombie.GetBool() )
+	if( !RunMimicCommand( cmd ) && !bot_zombie.GetBool() )
 	{
 		VectorCopy( viewangles, cmd.viewangles );
 		cmd.forwardmove = forwardmove;
@@ -189,10 +201,14 @@ static void RunPlayerMove( CHL2MP_Player *fakeclient, const QAngle& viewangles, 
 	}
 
 	if( bot_crouch.GetInt() )
+	{
 		cmd.buttons |= IN_DUCK;
+	}
 
-	if ( bot_attack.GetBool() )
+	if( bot_attack.GetBool() )
+	{
 		cmd.buttons |= IN_ATTACK;
+	}
 
 	MoveHelperServer()->SetHost( fakeclient );
 	fakeclient->PlayerRunCommand( &cmd, MoveHelperServer() );
@@ -211,12 +227,12 @@ static void RunPlayerMove( CHL2MP_Player *fakeclient, const QAngle& viewangles, 
 //-----------------------------------------------------------------------------
 // Purpose: Run this Bot's AI for one frame.
 //-----------------------------------------------------------------------------
-void Bot_Think( CHL2MP_Player *pBot )
+void Bot_Think( CHL2MP_Player* pBot )
 {
 	// Make sure we stay being a bot
 	pBot->AddFlag( FL_FAKECLIENT );
 
-	botdata_t *botdata = &g_BotData[ ENTINDEX( pBot->edict() ) - 1 ];
+	botdata_t* botdata = &g_BotData[ ENTINDEX( pBot->edict() ) - 1 ];
 
 	QAngle vecViewAngles;
 	float forwardmove = 0.0;
@@ -230,17 +246,17 @@ void Bot_Think( CHL2MP_Player *pBot )
 
 
 	// Create some random values
-	if ( pBot->IsAlive() && (pBot->GetSolid() == SOLID_BBOX) )
+	if( pBot->IsAlive() && ( pBot->GetSolid() == SOLID_BBOX ) )
 	{
 		trace_t trace;
 
 		// Stop when shot
-		if ( !pBot->IsEFlagSet(EFL_BOT_FROZEN) )
+		if( !pBot->IsEFlagSet( EFL_BOT_FROZEN ) )
 		{
-			if ( pBot->m_iHealth == 100 )
+			if( pBot->m_iHealth == 100 )
 			{
 				forwardmove = 600 * ( botdata->backwards ? -1 : 1 );
-				if ( botdata->sidemove != 0.0f )
+				if( botdata->sidemove != 0.0f )
 				{
 					forwardmove *= random->RandomFloat( 0.1, 1.0f );
 				}
@@ -252,7 +268,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 		}
 
 		// Only turn if I haven't been hurt
-		if ( !pBot->IsEFlagSet(EFL_BOT_FROZEN) && pBot->m_iHealth == 100 )
+		if( !pBot->IsEFlagSet( EFL_BOT_FROZEN ) && pBot->m_iHealth == 100 )
 		{
 			Vector vecEnd;
 			Vector forward;
@@ -260,9 +276,9 @@ void Bot_Think( CHL2MP_Player *pBot )
 			QAngle angle;
 			float angledelta = 15.0;
 
-			int maxtries = (int)360.0/angledelta;
+			int maxtries = ( int )360.0 / angledelta;
 
-			if ( botdata->lastturntoright )
+			if( botdata->lastturntoright )
 			{
 				angledelta = -angledelta;
 			}
@@ -270,7 +286,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 			angle = pBot->GetLocalAngles();
 
 			Vector vecSrc;
-			while ( --maxtries >= 0 )
+			while( --maxtries >= 0 )
 			{
 				AngleVectors( angle, &forward );
 
@@ -278,12 +294,12 @@ void Bot_Think( CHL2MP_Player *pBot )
 
 				vecEnd = vecSrc + forward * 10;
 
-				UTIL_TraceHull( vecSrc, vecEnd, VEC_HULL_MIN, VEC_HULL_MAX, 
-					MASK_PLAYERSOLID, pBot, COLLISION_GROUP_NONE, &trace );
+				UTIL_TraceHull( vecSrc, vecEnd, VEC_HULL_MIN, VEC_HULL_MAX,
+								MASK_PLAYERSOLID, pBot, COLLISION_GROUP_NONE, &trace );
 
-				if ( trace.fraction == 1.0 )
+				if( trace.fraction == 1.0 )
 				{
-					if ( gpGlobals->curtime < botdata->nextturntime )
+					if( gpGlobals->curtime < botdata->nextturntime )
 					{
 						break;
 					}
@@ -291,10 +307,14 @@ void Bot_Think( CHL2MP_Player *pBot )
 
 				angle.y += angledelta;
 
-				if ( angle.y > 180 )
+				if( angle.y > 180 )
+				{
 					angle.y -= 360;
-				else if ( angle.y < -180 )
+				}
+				else if( angle.y < -180 )
+				{
 					angle.y += 360;
+				}
 
 				botdata->nextturntime = gpGlobals->curtime + 2.0;
 				botdata->lastturntoright = random->RandomInt( 0, 1 ) == 0 ? true : false;
@@ -305,11 +325,11 @@ void Bot_Think( CHL2MP_Player *pBot )
 			}
 
 
-			if ( gpGlobals->curtime >= botdata->nextstrafetime )
+			if( gpGlobals->curtime >= botdata->nextstrafetime )
 			{
 				botdata->nextstrafetime = gpGlobals->curtime + 1.0f;
 
-				if ( random->RandomInt( 0, 5 ) == 0 )
+				if( random->RandomInt( 0, 5 ) == 0 )
 				{
 					botdata->sidemove = -600.0f + 1200.0f * random->RandomFloat( 0, 2 );
 				}
@@ -319,7 +339,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 				}
 				sidemove = botdata->sidemove;
 
-				if ( random->RandomInt( 0, 20 ) == 0 )
+				if( random->RandomInt( 0, 20 ) == 0 )
 				{
 					botdata->backwards = true;
 				}
@@ -334,21 +354,21 @@ void Bot_Think( CHL2MP_Player *pBot )
 		}
 
 		// Is my team being forced to defend?
-		if ( bot_defend.GetInt() == pBot->GetTeamNumber() )
+		if( bot_defend.GetInt() == pBot->GetTeamNumber() )
 		{
 			buttons |= IN_ATTACK2;
 		}
 		// If bots are being forced to fire a weapon, see if I have it
-		else if ( bot_forcefireweapon.GetString() )
+		else if( bot_forcefireweapon.GetString() )
 		{
-			CBaseCombatWeapon *pWeapon = pBot->Weapon_OwnsThisType( bot_forcefireweapon.GetString() );
-			if ( pWeapon )
+			CBaseCombatWeapon* pWeapon = pBot->Weapon_OwnsThisType( bot_forcefireweapon.GetString() );
+			if( pWeapon )
 			{
 				// Switch to it if we don't have it out
-				CBaseCombatWeapon *pActiveWeapon = pBot->GetActiveWeapon();
+				CBaseCombatWeapon* pActiveWeapon = pBot->GetActiveWeapon();
 
 				// Switch?
-				if ( pActiveWeapon != pWeapon )
+				if( pActiveWeapon != pWeapon )
 				{
 					pBot->Weapon_Switch( pWeapon );
 				}
@@ -356,7 +376,7 @@ void Bot_Think( CHL2MP_Player *pBot )
 				{
 					// Start firing
 					// Some weapons require releases, so randomise firing
-					if ( bot_forceattackon.GetBool() || (RandomFloat(0.0,1.0) > 0.5) )
+					if( bot_forceattackon.GetBool() || ( RandomFloat( 0.0, 1.0 ) > 0.5 ) )
 					{
 						buttons |= bot_forceattack2.GetBool() ? IN_ATTACK2 : IN_ATTACK;
 					}
@@ -364,34 +384,34 @@ void Bot_Think( CHL2MP_Player *pBot )
 			}
 		}
 
-		if ( bot_flipout.GetInt() )
+		if( bot_flipout.GetInt() )
 		{
-			if ( bot_forceattackon.GetBool() || (RandomFloat(0.0,1.0) > 0.5) )
+			if( bot_forceattackon.GetBool() || ( RandomFloat( 0.0, 1.0 ) > 0.5 ) )
 			{
 				buttons |= bot_forceattack2.GetBool() ? IN_ATTACK2 : IN_ATTACK;
 			}
 		}
-		
-		if ( strlen( bot_sendcmd.GetString() ) > 0 )
+
+		if( strlen( bot_sendcmd.GetString() ) > 0 )
 		{
 			//send the cmd from this bot
 			CCommand args;
 			args.Tokenize( bot_sendcmd.GetString() );
 			pBot->ClientCommand( args );
 
-			bot_sendcmd.SetValue("");
+			bot_sendcmd.SetValue( "" );
 		}
 	}
 	else
 	{
 		// Wait for Reinforcement wave
-		if ( !pBot->IsAlive() )
+		if( !pBot->IsAlive() )
 		{
 			// Try hitting my buttons occasionally
-			if ( random->RandomInt( 0, 100 ) > 80 )
+			if( random->RandomInt( 0, 100 ) > 80 )
 			{
 				// Respawn the bot
-				if ( random->RandomInt( 0, 1 ) == 0 )
+				if( random->RandomInt( 0, 1 ) == 0 )
 				{
 					buttons |= IN_JUMP;
 				}
@@ -403,18 +423,18 @@ void Bot_Think( CHL2MP_Player *pBot )
 		}
 	}
 
-	if ( bot_flipout.GetInt() >= 2 )
+	if( bot_flipout.GetInt() >= 2 )
 	{
 
 		QAngle angOffset = RandomAngle( -1, 1 );
 
 		botdata->lastAngles += angOffset;
 
-		for ( int i = 0 ; i < 2; i++ )
+		for( int i = 0 ; i < 2; i++ )
 		{
-			if ( fabs( botdata->lastAngles[ i ] - botdata->forwardAngle[ i ] ) > 15.0f )
+			if( fabs( botdata->lastAngles[ i ] - botdata->forwardAngle[ i ] ) > 15.0f )
 			{
-				if ( botdata->lastAngles[ i ] > botdata->forwardAngle[ i ] )
+				if( botdata->lastAngles[ i ] > botdata->forwardAngle[ i ] )
 				{
 					botdata->lastAngles[ i ] = botdata->forwardAngle[ i ] + 15;
 				}

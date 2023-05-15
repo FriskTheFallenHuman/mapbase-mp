@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,11 +26,11 @@ class CTEGlowSprite : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEGlowSprite, CBaseTempEntity );
 
-					CTEGlowSprite( const char *name );
+	CTEGlowSprite( const char* name );
 	virtual			~CTEGlowSprite( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -42,10 +42,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEGlowSprite::CTEGlowSprite( const char *name ) :
+CTEGlowSprite::CTEGlowSprite( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -56,16 +56,16 @@ CTEGlowSprite::CTEGlowSprite( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEGlowSprite::~CTEGlowSprite( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEGlowSprite::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -75,7 +75,7 @@ void CTEGlowSprite::Test( const Vector& current_origin, const QAngle& current_an
 	m_nBrightness = 200;
 	m_fLife = 2.0;
 	m_vecOrigin = current_origin;
-	
+
 	Vector forward, right;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -92,35 +92,35 @@ void CTEGlowSprite::Test( const Vector& current_origin, const QAngle& current_an
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEGlowSprite, DT_TEGlowSprite)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropFloat( SENDINFO(m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
-	SendPropFloat( SENDINFO(m_fLife ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
-	SendPropInt( SENDINFO(m_nBrightness), 8, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEGlowSprite, DT_TEGlowSprite )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+				SendPropFloat( SENDINFO( m_fScale ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
+				SendPropFloat( SENDINFO( m_fLife ), 8, SPROP_ROUNDDOWN, 0.0, 25.6 ),
+				SendPropInt( SENDINFO( m_nBrightness ), 8, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TEGlowSprite objects
-static CTEGlowSprite g_TEGlowSprite( "GlowSprite" );
+				static CTEGlowSprite g_TEGlowSprite( "GlowSprite" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			modelindex - 
-//			life - 
-//			size - 
-//			brightness - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			modelindex -
+//			life -
+//			size -
+//			brightness -
 //-----------------------------------------------------------------------------
 void TE_GlowSprite( IRecipientFilter& filter, float delay,
-	const Vector* pos, int modelindex, float life, float size, int brightness )
+					const Vector* pos, int modelindex, float life, float size, int brightness )
 {
 	g_TEGlowSprite.m_vecOrigin		= *pos;
-	g_TEGlowSprite.m_nModelIndex	= modelindex;	
+	g_TEGlowSprite.m_nModelIndex	= modelindex;
 	g_TEGlowSprite.m_fLife			= life;
 	g_TEGlowSprite.m_fScale			= size;
 	g_TEGlowSprite.m_nBrightness	= brightness;

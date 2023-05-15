@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -26,7 +26,7 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CIntroMenu::CIntroMenu( IViewPort *pViewPort ) : Frame( NULL, PANEL_INTRO )
+CIntroMenu::CIntroMenu( IViewPort* pViewPort ) : Frame( NULL, PANEL_INTRO )
 {
 	// initialize dialog
 	m_pViewPort = pViewPort;
@@ -55,17 +55,17 @@ CIntroMenu::~CIntroMenu()
 //-----------------------------------------------------------------------------
 // Purpose: Sets the color of the top and bottom bars
 //-----------------------------------------------------------------------------
-void CIntroMenu::ApplySchemeSettings( IScheme *pScheme )
+void CIntroMenu::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
-	LoadControlSettings("Resource/UI/IntroMenu.res");
+	LoadControlSettings( "Resource/UI/IntroMenu.res" );
 
-	m_pTitleLabel = dynamic_cast<Label *>( FindChildByName( "titlelabel" ) );
+	m_pTitleLabel = dynamic_cast<Label*>( FindChildByName( "titlelabel" ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CIntroMenu::Reset( void )
 {
@@ -73,18 +73,18 @@ void CIntroMenu::Reset( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CIntroMenu::Update( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CIntroMenu::OnCommand( const char *command )
+void CIntroMenu::OnCommand( const char* command )
 {
-	if ( !Q_strcmp( command, "skip" ) )
+	if( !Q_strcmp( command, "skip" ) )
 	{
 		engine->ClientCmd( "intro_skip" );
 		m_pViewPort->ShowPanel( this, false );
@@ -94,20 +94,22 @@ void CIntroMenu::OnCommand( const char *command )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CIntroMenu::ShowPanel( bool bShow )
 {
-	if ( BaseClass::IsVisible() == bShow )
+	if( BaseClass::IsVisible() == bShow )
+	{
 		return;
+	}
 
 	m_pViewPort->ShowBackGround( bShow );
 
-	if ( bShow )
+	if( bShow )
 	{
 		Activate();
 
-		if ( GameRules() )
+		if( GameRules() )
 		{
 			SetDialogVariable( "gamemode", g_pVGuiLocalize->Find( GameRules()->GetGameTypeName() ) );
 		}

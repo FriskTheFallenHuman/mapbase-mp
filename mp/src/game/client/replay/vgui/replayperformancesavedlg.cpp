@@ -32,23 +32,23 @@ private:
 	DECLARE_CLASS_SIMPLE( CReplayPerformanceSaveDlg, EditablePanel );
 
 public:
-	CReplayPerformanceSaveDlg( Panel *pParent, const char *pName,
-		OnConfirmSaveCallback pfnCallback, void *pContext, CReplay *pReplay, bool bExitEditorWhenDone );
+	CReplayPerformanceSaveDlg( Panel* pParent, const char* pName,
+							   OnConfirmSaveCallback pfnCallback, void* pContext, CReplay* pReplay, bool bExitEditorWhenDone );
 	~CReplayPerformanceSaveDlg();
 
-	static void Show( OnConfirmSaveCallback pfnCallback, void *pContext, CReplay *pReplay,
-		bool bExitEditorWhenDone );
+	static void Show( OnConfirmSaveCallback pfnCallback, void* pContext, CReplay* pReplay,
+					  bool bExitEditorWhenDone );
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void PerformLayout();
-	virtual void OnCommand( const char *command );
+	virtual void OnCommand( const char* command );
 	virtual void OnKeyCodePressed( KeyCode code );
 	virtual void OnKeyCodeTyped( KeyCode code );
 
 	bool		ConfirmOverwriteOrSaveNow();
 	void		CloseWindow();
 
-	static void	OnConfirmOverwrite( bool bConfirm, void *pContext );
+	static void	OnConfirmOverwrite( bool bConfirm, void* pContext );
 
 	MESSAGE_FUNC( OnSetFocus, "SetFocus" );
 
@@ -56,10 +56,10 @@ public:
 
 private:
 	OnConfirmSaveCallback	m_pfnCallback;
-	void					*m_pContext;
-	Panel					*m_pDlg;
-	CReplay					*m_pReplay;
-	TextEntry				*m_pTitleEntry;
+	void*					m_pContext;
+	Panel*					m_pDlg;
+	CReplay*					m_pReplay;
+	TextEntry*				m_pTitleEntry;
 	bool					m_bExitEditorWhenDone;
 	wchar_t					m_wszTitle[ MAX_TAKE_TITLE_LENGTH ];
 };
@@ -69,16 +69,16 @@ vgui::DHANDLE< CReplayPerformanceSaveDlg > CReplayPerformanceSaveDlg::ms_hDlg;
 //-----------------------------------------------------------------------------
 // Purpose: CReplayPerformanceSaveDlg implementation
 //-----------------------------------------------------------------------------
-CReplayPerformanceSaveDlg::CReplayPerformanceSaveDlg( Panel *pParent, const char *pName,
-													  OnConfirmSaveCallback pfnCallback, void *pContext,
-													  CReplay *pReplay, bool bExitEditorWhenDone )
-:	BaseClass( pParent, pName ),
-	m_pfnCallback( pfnCallback ),
-	m_pContext( pContext ),
-	m_pReplay( pReplay ),
-	m_bExitEditorWhenDone( bExitEditorWhenDone ),
-	m_pDlg( NULL ),
-	m_pTitleEntry( NULL )
+CReplayPerformanceSaveDlg::CReplayPerformanceSaveDlg( Panel* pParent, const char* pName,
+		OnConfirmSaveCallback pfnCallback, void* pContext,
+		CReplay* pReplay, bool bExitEditorWhenDone )
+	:	BaseClass( pParent, pName ),
+	  m_pfnCallback( pfnCallback ),
+	  m_pContext( pContext ),
+	  m_pReplay( pReplay ),
+	  m_bExitEditorWhenDone( bExitEditorWhenDone ),
+	  m_pDlg( NULL ),
+	  m_pTitleEntry( NULL )
 {
 	Assert( m_pContext );
 
@@ -91,8 +91,8 @@ CReplayPerformanceSaveDlg::~CReplayPerformanceSaveDlg()
 	ms_hDlg = NULL;
 }
 
-/*static*/ void CReplayPerformanceSaveDlg::Show( OnConfirmSaveCallback pfnCallback, void *pContext, CReplay *pReplay,
-												 bool bExitEditorWhenDone )
+/*static*/ void CReplayPerformanceSaveDlg::Show( OnConfirmSaveCallback pfnCallback, void* pContext, CReplay* pReplay,
+		bool bExitEditorWhenDone )
 {
 	Assert( !ms_hDlg.Get() );
 
@@ -100,15 +100,15 @@ CReplayPerformanceSaveDlg::~CReplayPerformanceSaveDlg()
 	ms_hDlg->SetVisible( true );
 	ms_hDlg->MakePopup();
 	ms_hDlg->MoveToFront();
-	ms_hDlg->SetKeyBoardInputEnabled(true);
-	ms_hDlg->SetMouseInputEnabled(true);
+	ms_hDlg->SetKeyBoardInputEnabled( true );
+	ms_hDlg->SetMouseInputEnabled( true );
 	TFModalStack()->PushModal( ms_hDlg );
 	engine->ClientCmd_Unrestricted( "gameui_hide" );
 
 	ReplayCamera()->EnableInput( false );
 }
 
-void CReplayPerformanceSaveDlg::ApplySchemeSettings( IScheme *pScheme )
+void CReplayPerformanceSaveDlg::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -117,8 +117,8 @@ void CReplayPerformanceSaveDlg::ApplySchemeSettings( IScheme *pScheme )
 	// Cache off the dlg pointer
 	m_pDlg = FindChildByName( "Dlg" );
 
-	CExButton *pDiscardButton;
-	pDiscardButton = dynamic_cast< CExButton * >( m_pDlg->FindChildByName( "DiscardButton" ) );
+	CExButton* pDiscardButton;
+	pDiscardButton = dynamic_cast< CExButton* >( m_pDlg->FindChildByName( "DiscardButton" ) );
 	SetXToRed( pDiscardButton );
 
 	// Setup some action sigs
@@ -126,9 +126,9 @@ void CReplayPerformanceSaveDlg::ApplySchemeSettings( IScheme *pScheme )
 	m_pDlg->FindChildByName( "CancelButton" )->AddActionSignalTarget( this );
 	pDiscardButton->AddActionSignalTarget( this );
 
-	m_pTitleEntry = static_cast< TextEntry * >( m_pDlg->FindChildByName( "TitleInput" ) );
+	m_pTitleEntry = static_cast< TextEntry* >( m_pDlg->FindChildByName( "TitleInput" ) );
 	m_pTitleEntry->SelectAllOnFocusAlways( true );
-	m_pTitleEntry->SetSelectionBgColor( GetSchemeColor( "Yellow", Color( 255, 255, 255, 255), pScheme ) );
+	m_pTitleEntry->SetSelectionBgColor( GetSchemeColor( "Yellow", Color( 255, 255, 255, 255 ), pScheme ) );
 	m_pTitleEntry->SetSelectionTextColor( Color( 255, 255, 255, 255 ) );
 	m_pTitleEntry->SetText( L"" );
 }
@@ -146,7 +146,7 @@ void CReplayPerformanceSaveDlg::PerformLayout()
 
 void CReplayPerformanceSaveDlg::OnKeyCodeTyped( KeyCode code )
 {
-	if ( code == KEY_ESCAPE )
+	if( code == KEY_ESCAPE )
 	{
 		surface()->PlaySound( "replay\\record_fail.wav" );
 		return;
@@ -157,7 +157,7 @@ void CReplayPerformanceSaveDlg::OnKeyCodeTyped( KeyCode code )
 
 void CReplayPerformanceSaveDlg::OnKeyCodePressed( KeyCode code )
 {
-	if ( code == KEY_ENTER )
+	if( code == KEY_ENTER )
 	{
 		OnCommand( "save" );
 	}
@@ -170,9 +170,9 @@ void CReplayPerformanceSaveDlg::OnSetFocus()
 	m_pTitleEntry->RequestFocus();
 }
 
-/*static*/ void CReplayPerformanceSaveDlg::OnConfirmOverwrite( bool bConfirm, void *pContext )
+/*static*/ void CReplayPerformanceSaveDlg::OnConfirmOverwrite( bool bConfirm, void* pContext )
 {
-	CReplayPerformanceSaveDlg *pThis = (CReplayPerformanceSaveDlg *)pContext;
+	CReplayPerformanceSaveDlg* pThis = ( CReplayPerformanceSaveDlg* )pContext;
 	pThis->m_pfnCallback( bConfirm, pThis->m_wszTitle, pThis->m_pContext );
 	pThis->CloseWindow();
 }
@@ -180,11 +180,11 @@ void CReplayPerformanceSaveDlg::OnSetFocus()
 bool CReplayPerformanceSaveDlg::ConfirmOverwriteOrSaveNow()
 {
 	// Using the same title as an existing performance?
-	CReplayPerformance *pExistingPerformance = m_pReplay->GetPerformanceWithTitle( m_wszTitle );
-	if ( pExistingPerformance )
+	CReplayPerformance* pExistingPerformance = m_pReplay->GetPerformanceWithTitle( m_wszTitle );
+	if( pExistingPerformance )
 	{
 		ShowConfirmDialog( "#Replay_OverwriteDlgTitle", "#Replay_OverwriteDlgText",
-			"#Replay_ConfirmOverwrite", "#Replay_Cancel", OnConfirmOverwrite, NULL, this );
+						   "#Replay_ConfirmOverwrite", "#Replay_Cancel", OnConfirmOverwrite, NULL, this );
 		return false;
 	}
 
@@ -193,13 +193,13 @@ bool CReplayPerformanceSaveDlg::ConfirmOverwriteOrSaveNow()
 	return true;
 }
 
-void CReplayPerformanceSaveDlg::OnCommand( const char *command )
+void CReplayPerformanceSaveDlg::OnCommand( const char* command )
 {
 	bool bCloseWindow = false;
 
-	extern IReplayPerformanceController *g_pReplayPerformanceController;
+	extern IReplayPerformanceController* g_pReplayPerformanceController;
 
-	if ( !Q_strnicmp( command, "save", 4 ) )
+	if( !Q_strnicmp( command, "save", 4 ) )
 	{
 		// Get the text and save the replay/performance immediately
 		m_pTitleEntry->GetText( m_wszTitle, MAX_TAKE_TITLE_LENGTH );
@@ -207,13 +207,13 @@ void CReplayPerformanceSaveDlg::OnCommand( const char *command )
 		// If we aren't overwriting an existing performance, this func will return true.
 		bCloseWindow = ConfirmOverwriteOrSaveNow();
 	}
-	else if ( !Q_strnicmp( command, "cancel", 6 ) )
+	else if( !Q_strnicmp( command, "cancel", 6 ) )
 	{
 		bCloseWindow = true;
 	}
 
 	// Close the window?
-	if ( bCloseWindow )
+	if( bCloseWindow )
 	{
 		CloseWindow();
 	}
@@ -228,18 +228,18 @@ void CReplayPerformanceSaveDlg::CloseWindow()
 	TFModalStack()->PopModal( ms_hDlg.Get() );
 	ReplayCamera()->EnableInput( true );
 
-	CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-	if ( m_bExitEditorWhenDone && pEditor )
+	CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+	if( m_bExitEditorWhenDone && pEditor )
 	{
 		pEditor->Exit();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void ReplayUI_ShowPerformanceSaveDlg( OnConfirmSaveCallback pfnCallback,
-									  void *pContext, CReplay *pReplay,
+									  void* pContext, CReplay* pReplay,
 									  bool bExitEditorWhenDone )
 {
 	CReplayPerformanceSaveDlg::Show( pfnCallback, pContext, pReplay, bExitEditorWhenDone );

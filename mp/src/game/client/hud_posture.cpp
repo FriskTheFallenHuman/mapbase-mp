@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -35,7 +35,7 @@ class CHudPosture : public CHudElement, public vgui::Panel
 	DECLARE_CLASS_SIMPLE( CHudPosture, vgui::Panel );
 
 public:
-	CHudPosture( const char *pElementName );
+	CHudPosture( const char* pElementName );
 	bool			ShouldDraw( void );
 
 #ifdef _X360 	// if not xbox 360, don't waste code space on this
@@ -54,12 +54,12 @@ private:
 	CPanelAnimationVarAliasType( float, m_IconX, "icon_xpos", "4", "proportional_float" );
 	CPanelAnimationVarAliasType( float, m_IconY, "icon_ypos", "4", "proportional_float" );
 
-	enum { NOT_FADING, 
-		   FADING_UP, 
+	enum { NOT_FADING,
+		   FADING_UP,
 		   FADING_DOWN
-	} m_kIsFading;
+		 } m_kIsFading;
 #endif
-};	
+};
 
 
 DECLARE_HUDELEMENT( CHudPosture );
@@ -67,40 +67,40 @@ DECLARE_HUDELEMENT( CHudPosture );
 
 namespace
 {
-	// Don't pass a null pPlayer. Doesn't check for it.
-	inline bool PlayerIsDucking(C_BasePlayer *pPlayer)
-	{
-		return  pPlayer->m_Local.m_bDucked &&		 // crouching 
-				pPlayer->GetGroundEntity() != NULL ; // but not jumping
-	}
+// Don't pass a null pPlayer. Doesn't check for it.
+inline bool PlayerIsDucking( C_BasePlayer* pPlayer )
+{
+	return  pPlayer->m_Local.m_bDucked &&		 // crouching
+			pPlayer->GetGroundEntity() != NULL ; // but not jumping
+}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudPosture::CHudPosture( const char *pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "HudPosture" )
+CHudPosture::CHudPosture( const char* pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "HudPosture" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_PLAYERDEAD | HIDEHUD_NEEDSUIT );
 
 	if( IsX360() )
 	{
-		vgui::ivgui()->AddTickSignal( GetVPanel(), (1000/HUD_POSTURE_UPDATES_PER_SECOND) );
+		vgui::ivgui()->AddTickSignal( GetVPanel(), ( 1000 / HUD_POSTURE_UPDATES_PER_SECOND ) );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Save CPU cycles by letting the HUD system early cull
-// costly traversal.  Called per frame, return true if thinking and 
+// costly traversal.  Called per frame, return true if thinking and
 // painting need to occur.
 //-----------------------------------------------------------------------------
 bool CHudPosture::ShouldDraw()
 {
 #ifdef _X360
 	return ( m_duckTimeout >= gpGlobals->curtime &&
-		CHudElement::ShouldDraw() );
+			 CHudElement::ShouldDraw() );
 #else
 	return false;
 #endif
@@ -109,7 +109,7 @@ bool CHudPosture::ShouldDraw()
 #ifdef _X360
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudPosture::Init( void )
 {
@@ -118,7 +118,7 @@ void CHudPosture::Init( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudPosture::Reset( void )
 {
@@ -127,17 +127,19 @@ void CHudPosture::Reset( void )
 
 void CHudPosture::OnTick( void )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if (!pPlayer)
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( PlayerIsDucking(pPlayer) )
+	if( PlayerIsDucking( pPlayer ) )
 	{
 		m_duckTimeout = gpGlobals->curtime + HUD_POSTURE_FADE_TIME; // kick the timer forward
-		if (GetAlpha() < 255)
+		if( GetAlpha() < 255 )
 		{
 			// if not fully faded in, and not fading in, start fading in.
-			if (m_kIsFading != FADING_UP)
+			if( m_kIsFading != FADING_UP )
 			{
 				m_kIsFading = FADING_UP;
 				GetAnimationController()->RunAnimationCommand( this, "alpha", 255, 0, HUD_POSTURE_FADE_TIME, vgui::AnimationController::INTERPOLATOR_SIMPLESPLINE );
@@ -147,13 +149,13 @@ void CHudPosture::OnTick( void )
 		{
 			m_kIsFading = NOT_FADING;
 		}
-	}	
+	}
 	else // player is not ducking
 	{
-		if (GetAlpha() > 0)
+		if( GetAlpha() > 0 )
 		{
 			// if not faded out or fading out, fade out.
-			if (m_kIsFading != FADING_DOWN)
+			if( m_kIsFading != FADING_DOWN )
 			{
 				m_kIsFading = FADING_DOWN;
 				GetAnimationController()->RunAnimationCommand( this, "alpha", 0, 0, HUD_POSTURE_FADE_TIME, vgui::AnimationController::INTERPOLATOR_SIMPLESPLINE );
@@ -172,9 +174,11 @@ void CHudPosture::OnTick( void )
 //-----------------------------------------------------------------------------
 void CHudPosture::Paint()
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( !pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	SetPaintBackgroundEnabled( true );
 

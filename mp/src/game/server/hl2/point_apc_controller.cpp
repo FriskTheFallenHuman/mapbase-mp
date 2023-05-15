@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -34,7 +34,7 @@ public:
 	~CAPCController( void );
 	void	Spawn( void );
 	void	Precache( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 	void	Think( void );
 	void	TrackTarget( void );
 
@@ -42,16 +42,22 @@ public:
 	void	StopRotSound( void );
 
 	// Bmodels don't go across transitions
-	virtual int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 
-	inline bool IsActive( void ) { return (m_spawnflags & SF_TANK_ACTIVE)?TRUE:FALSE; }
+	inline bool IsActive( void )
+	{
+		return ( m_spawnflags & SF_TANK_ACTIVE ) ? TRUE : FALSE;
+	}
 
 	// Input handlers.
-	void InputActivate( inputdata_t &inputdata );
-	void InputDeactivate( inputdata_t &inputdata );
+	void InputActivate( inputdata_t& inputdata );
+	void InputDeactivate( inputdata_t& inputdata );
 
-	void ActivateRocketGuidance(void);
-	void DeactivateRocketGuidance(void);
+	void ActivateRocketGuidance( void );
+	void DeactivateRocketGuidance( void );
 
 	bool		InRange( float range );
 
@@ -66,18 +72,21 @@ public:
 	{
 		m_parentMatrix.InitFromEntity( GetParent() ? GetParent() : NULL );
 	}
-	QAngle		AimBarrelAt( const Vector &parentTarget );
+	QAngle		AimBarrelAt( const Vector& parentTarget );
 
-	bool	ShouldSavePhysics()	{ return false; }
-	
+	bool	ShouldSavePhysics()
+	{
+		return false;
+	}
+
 	DECLARE_DATADESC();
 
-	CBaseEntity *FindTarget( string_t targetName, CBaseEntity *pActivator );
+	CBaseEntity* FindTarget( string_t targetName, CBaseEntity* pActivator );
 
 protected:
 	float			m_yawCenter;	// "Center" yaw
 	float			m_yawRate;		// Max turn rate to track targets
-									// Zero is full rotation
+	// Zero is full rotation
 	float			m_yawTolerance;	// Tolerance angle
 
 	float			m_pitchCenter;	// "Center" pitch
@@ -88,7 +97,7 @@ protected:
 	float			m_maxRange;		// Max range to aim/track
 
 	Vector			m_barrelPos;	// Length of the barrel
-	
+
 	Vector			m_sightOrigin;	// Last sight of target
 
 	string_t		m_soundStartRotate;
@@ -109,119 +118,121 @@ LINK_ENTITY_TO_CLASS( point_apc_controller, CAPCController );
 
 BEGIN_DATADESC( CAPCController )
 
-	DEFINE_FIELD( m_yawCenter, FIELD_FLOAT ),
-	DEFINE_KEYFIELD( m_yawRate, FIELD_FLOAT, "yawrate" ),
-	DEFINE_KEYFIELD( m_yawTolerance, FIELD_FLOAT, "yawtolerance" ),
+DEFINE_FIELD( m_yawCenter, FIELD_FLOAT ),
+			  DEFINE_KEYFIELD( m_yawRate, FIELD_FLOAT, "yawrate" ),
+			  DEFINE_KEYFIELD( m_yawTolerance, FIELD_FLOAT, "yawtolerance" ),
 
 
-	DEFINE_FIELD( m_pitchCenter, FIELD_FLOAT ),
-	DEFINE_KEYFIELD( m_pitchRate, FIELD_FLOAT, "pitchrate" ),
-	DEFINE_KEYFIELD( m_pitchTolerance, FIELD_FLOAT, "pitchtolerance" ),
+			  DEFINE_FIELD( m_pitchCenter, FIELD_FLOAT ),
+			  DEFINE_KEYFIELD( m_pitchRate, FIELD_FLOAT, "pitchrate" ),
+			  DEFINE_KEYFIELD( m_pitchTolerance, FIELD_FLOAT, "pitchtolerance" ),
 
-	DEFINE_KEYFIELD( m_minRange, FIELD_FLOAT, "minRange" ),
-	DEFINE_KEYFIELD( m_maxRange, FIELD_FLOAT, "maxRange" ),
-	DEFINE_FIELD( m_barrelPos, FIELD_VECTOR ),
-	DEFINE_FIELD( m_sightOrigin, FIELD_VECTOR ),
-	DEFINE_KEYFIELD( m_soundStartRotate, FIELD_SOUNDNAME, "rotatestartsound" ),
-	DEFINE_KEYFIELD( m_soundStopRotate, FIELD_SOUNDNAME, "rotatestopsound" ),
-	DEFINE_KEYFIELD( m_soundLoopRotate, FIELD_SOUNDNAME, "rotatesound" ),
-	DEFINE_KEYFIELD( m_targetEntityName, FIELD_STRING, "targetentityname" ),
-	DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_parentMatrix, FIELD_VMATRIX_WORLDSPACE ),
-	DEFINE_FIELD( m_flFiringDelay, FIELD_FLOAT ),
-	DEFINE_FIELD( m_bFireDelayed, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_minRange, FIELD_FLOAT, "minRange" ),
+			  DEFINE_KEYFIELD( m_maxRange, FIELD_FLOAT, "maxRange" ),
+			  DEFINE_FIELD( m_barrelPos, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_sightOrigin, FIELD_VECTOR ),
+			  DEFINE_KEYFIELD( m_soundStartRotate, FIELD_SOUNDNAME, "rotatestartsound" ),
+			  DEFINE_KEYFIELD( m_soundStopRotate, FIELD_SOUNDNAME, "rotatestopsound" ),
+			  DEFINE_KEYFIELD( m_soundLoopRotate, FIELD_SOUNDNAME, "rotatesound" ),
+			  DEFINE_KEYFIELD( m_targetEntityName, FIELD_STRING, "targetentityname" ),
+			  DEFINE_FIELD( m_hTarget, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_parentMatrix, FIELD_VMATRIX_WORLDSPACE ),
+			  DEFINE_FIELD( m_flFiringDelay, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_bFireDelayed, FIELD_BOOLEAN ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnFireAtTarget,	"OnFireAtTarget"),
+			  // Outputs
+			  DEFINE_OUTPUT( m_OnFireAtTarget,	"OnFireAtTarget" ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CAPCController::~CAPCController( void )
+			  CAPCController::~CAPCController( void )
 {
-	if ( m_soundLoopRotate != NULL_STRING )
+	if( m_soundLoopRotate != NULL_STRING )
 	{
-		StopSound( entindex(), CHAN_STATIC, STRING(m_soundLoopRotate) );
+		StopSound( entindex(), CHAN_STATIC, STRING( m_soundLoopRotate ) );
 	}
 }
 
 //------------------------------------------------------------------------------
 // Purpose: Input handler for activating the tank.
 //------------------------------------------------------------------------------
-void CAPCController::InputActivate( inputdata_t &inputdata )
-{	
+void CAPCController::InputActivate( inputdata_t& inputdata )
+{
 	ActivateRocketGuidance();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCController::ActivateRocketGuidance(void)
+void CAPCController::ActivateRocketGuidance( void )
 {
-	m_spawnflags	|= SF_TANK_ACTIVE; 
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
+	m_spawnflags	|= SF_TANK_ACTIVE;
+	SetNextThink( gpGlobals->curtime + 0.1f );
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for deactivating the tank.
 //-----------------------------------------------------------------------------
-void CAPCController::InputDeactivate( inputdata_t &inputdata )
+void CAPCController::InputDeactivate( inputdata_t& inputdata )
 {
 	DeactivateRocketGuidance();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAPCController::DeactivateRocketGuidance(void)
+void CAPCController::DeactivateRocketGuidance( void )
 {
-	m_spawnflags	&= ~SF_TANK_ACTIVE; 
+	m_spawnflags	&= ~SF_TANK_ACTIVE;
 	StopRotSound();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : targetName - 
-//			pActivator - 
+// Purpose:
+// Input  : targetName -
+//			pActivator -
 //-----------------------------------------------------------------------------
-CBaseEntity *CAPCController::FindTarget( string_t targetName, CBaseEntity *pActivator ) 
+CBaseEntity* CAPCController::FindTarget( string_t targetName, CBaseEntity* pActivator )
 {
 	return gEntList.FindEntityGenericNearest( STRING( targetName ), GetAbsOrigin(), 0, this, pActivator );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Caches entity key values until spawn is called.
-// Input  : szKeyName - 
-//			szValue - 
-// Output : 
+// Input  : szKeyName -
+//			szValue -
+// Output :
 //-----------------------------------------------------------------------------
-bool CAPCController::KeyValue( const char *szKeyName, const char *szValue )
+bool CAPCController::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "barrel"))
+	if( FStrEq( szKeyName, "barrel" ) )
 	{
-		m_barrelPos.x = atof(szValue);
+		m_barrelPos.x = atof( szValue );
 	}
-	else if (FStrEq(szKeyName, "barrely"))
+	else if( FStrEq( szKeyName, "barrely" ) )
 	{
-		m_barrelPos.y = atof(szValue);
+		m_barrelPos.y = atof( szValue );
 	}
-	else if (FStrEq(szKeyName, "barrelz"))
+	else if( FStrEq( szKeyName, "barrelz" ) )
 	{
-		m_barrelPos.z = atof(szValue);
+		m_barrelPos.z = atof( szValue );
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
@@ -236,7 +247,7 @@ void CAPCController::Spawn( void )
 	m_yawCenter			= GetLocalAngles().y;
 	m_pitchCenter		= GetLocalAngles().x;
 
-	if ( IsActive() )
+	if( IsActive() )
 	{
 		SetNextThink( gpGlobals->curtime + 1.0f );
 	}
@@ -250,12 +261,18 @@ void CAPCController::Spawn( void )
 //-----------------------------------------
 void CAPCController::Precache( void )
 {
-	if ( m_soundStartRotate != NULL_STRING )
-		PrecacheScriptSound( STRING(m_soundStartRotate) );
-	if ( m_soundStopRotate != NULL_STRING )
-		PrecacheScriptSound( STRING(m_soundStopRotate) );
-	if ( m_soundLoopRotate != NULL_STRING )
-		PrecacheScriptSound( STRING(m_soundLoopRotate) );
+	if( m_soundStartRotate != NULL_STRING )
+	{
+		PrecacheScriptSound( STRING( m_soundStartRotate ) );
+	}
+	if( m_soundStopRotate != NULL_STRING )
+	{
+		PrecacheScriptSound( STRING( m_soundStopRotate ) );
+	}
+	if( m_soundLoopRotate != NULL_STRING )
+	{
+		PrecacheScriptSound( STRING( m_soundLoopRotate ) );
+	}
 }
 
 
@@ -264,10 +281,14 @@ void CAPCController::Precache( void )
 //-----------------------------------------
 bool CAPCController::InRange( float range )
 {
-	if ( range < m_minRange )
+	if( range < m_minRange )
+	{
 		return FALSE;
-	if ( m_maxRange > 0 && range > m_maxRange )
+	}
+	if( m_maxRange > 0 && range > m_maxRange )
+	{
 		return FALSE;
+	}
 
 	return TRUE;
 }
@@ -284,10 +305,14 @@ void CAPCController::Think( void )
 	SetLocalAngularVelocity( vec3_angle );
 	TrackTarget();
 
-	if ( fabs(GetLocalAngularVelocity().x) > 1 || fabs(GetLocalAngularVelocity().y) > 1 )
+	if( fabs( GetLocalAngularVelocity().x ) > 1 || fabs( GetLocalAngularVelocity().y ) > 1 )
+	{
 		StartRotSound();
+	}
 	else
+	{
 		StopRotSound();
+	}
 }
 
 
@@ -296,28 +321,28 @@ void CAPCController::Think( void )
 // Input  : parentTarget - the position of the target in parent space
 // Output : Vector - angles in local space
 //-----------------------------------------------------------------------------
-QAngle CAPCController::AimBarrelAt( const Vector &parentTarget )
+QAngle CAPCController::AimBarrelAt( const Vector& parentTarget )
 {
 	Vector target = parentTarget - GetLocalOrigin();
 	float quadTarget = target.LengthSqr();
-	float quadTargetXY = target.x*target.x + target.y*target.y;
+	float quadTargetXY = target.x * target.x + target.y * target.y;
 
-		// We're trying to aim the offset barrel at an arbitrary point.
-		// To calculate this, I think of the target as being on a sphere with 
-		// it's center at the origin of the gun.
-		// The rotation we need is the opposite of the rotation that moves the target 
-		// along the surface of that sphere to intersect with the gun's shooting direction
-		// To calculate that rotation, we simply calculate the intersection of the ray 
-		// coming out of the barrel with the target sphere (that's the new target position)
-		// and use atan2() to get angles
+	// We're trying to aim the offset barrel at an arbitrary point.
+	// To calculate this, I think of the target as being on a sphere with
+	// it's center at the origin of the gun.
+	// The rotation we need is the opposite of the rotation that moves the target
+	// along the surface of that sphere to intersect with the gun's shooting direction
+	// To calculate that rotation, we simply calculate the intersection of the ray
+	// coming out of the barrel with the target sphere (that's the new target position)
+	// and use atan2() to get angles
 
-		// angles from target pos to center
-		float targetToCenterYaw = atan2( target.y, target.x );
-		float centerToGunYaw = atan2( m_barrelPos.y, sqrt( quadTarget - (m_barrelPos.y*m_barrelPos.y) ) );
+	// angles from target pos to center
+	float targetToCenterYaw = atan2( target.y, target.x );
+	float centerToGunYaw = atan2( m_barrelPos.y, sqrt( quadTarget - ( m_barrelPos.y * m_barrelPos.y ) ) );
 
-		float targetToCenterPitch = atan2( target.z, sqrt( quadTargetXY ) );
-		float centerToGunPitch = atan2( -m_barrelPos.z, sqrt( quadTarget - (m_barrelPos.z*m_barrelPos.z) ) );
-		return QAngle( -RAD2DEG(targetToCenterPitch+centerToGunPitch), RAD2DEG( targetToCenterYaw + centerToGunYaw ), 0 );
+	float targetToCenterPitch = atan2( target.z, sqrt( quadTargetXY ) );
+	float centerToGunPitch = atan2( -m_barrelPos.z, sqrt( quadTarget - ( m_barrelPos.z * m_barrelPos.z ) ) );
+	return QAngle( -RAD2DEG( targetToCenterPitch + centerToGunPitch ), RAD2DEG( targetToCenterYaw + centerToGunYaw ), 0 );
 }
 
 void CAPCController::TrackTarget( void )
@@ -326,11 +351,11 @@ void CAPCController::TrackTarget( void )
 	bool updateTime = FALSE, lineOfSight;
 	QAngle angles;
 	Vector barrelEnd;
-	CBaseEntity *pTarget = NULL;
+	CBaseEntity* pTarget = NULL;
 
 	barrelEnd.Init();
 
-	if ( IsActive() )
+	if( IsActive() )
 	{
 		SetNextThink( gpGlobals->curtime + 0.1f );
 	}
@@ -344,11 +369,11 @@ void CAPCController::TrackTarget( void )
 	// -----------------------------------
 	barrelEnd = WorldBarrelPosition();
 	Vector worldTargetPosition;
-	CBaseEntity *pEntity = (CBaseEntity *)m_hTarget;
-	if ( !pEntity || ( pEntity->GetFlags() & FL_NOTARGET ) )
+	CBaseEntity* pEntity = ( CBaseEntity* )m_hTarget;
+	if( !pEntity || ( pEntity->GetFlags() & FL_NOTARGET ) )
 	{
 		m_hTarget = FindTarget( m_targetEntityName, NULL );
-		if ( IsActive() )
+		if( IsActive() )
 		{
 			SetNextThink( gpGlobals->curtime + 2 );	// Wait 2 sec s
 		}
@@ -360,9 +385,9 @@ void CAPCController::TrackTarget( void )
 	// Calculate angle needed to aim at target
 	worldTargetPosition = pEntity->EyePosition();
 
-	float range = (worldTargetPosition - barrelEnd).Length();
+	float range = ( worldTargetPosition - barrelEnd ).Length();
 
-	if ( !InRange( range ) )
+	if( !InRange( range ) )
 	{
 		m_bFireDelayed = false;
 		return;
@@ -372,12 +397,12 @@ void CAPCController::TrackTarget( void )
 
 	lineOfSight = FALSE;
 	// No line of sight, don't track
-	if ( tr.fraction == 1.0 || tr.m_pEnt == pTarget )
+	if( tr.fraction == 1.0 || tr.m_pEnt == pTarget )
 	{
 		lineOfSight = TRUE;
 
-		CBaseEntity *pInstance = pTarget;
-		if ( InRange( range ) && pInstance && pInstance->IsAlive() )
+		CBaseEntity* pInstance = pTarget;
+		if( InRange( range ) && pInstance && pInstance->IsAlive() )
 		{
 			updateTime = TRUE;
 
@@ -415,27 +440,27 @@ void CAPCController::TrackTarget( void )
 	AngleVectors( GetLocalAngles(), &forward );
 	forward = m_parentMatrix.ApplyRotation( forward );
 
-	AngleVectors(angles, &forward);
+	AngleVectors( angles, &forward );
 
-	if ( lineOfSight == TRUE )
+	if( lineOfSight == TRUE )
 	{
 		// FIXME: This will ultimately have to deal with NPCs being in the vehicle as well
 		// See if the target is in a vehicle. If so, check its relationship
-		CBasePlayer *pPlayer = ToBasePlayer( pTarget );
-		if ( pPlayer && pPlayer->IsInAVehicle() )
+		CBasePlayer* pPlayer = ToBasePlayer( pTarget );
+		if( pPlayer && pPlayer->IsInAVehicle() )
 		{
-			IServerVehicle *pVehicle = pPlayer->GetVehicle();
-			if ( pVehicle->ClassifyPassenger( pPlayer, CLASS_PLAYER ) == CLASS_PLAYER)
+			IServerVehicle* pVehicle = pPlayer->GetVehicle();
+			if( pVehicle->ClassifyPassenger( pPlayer, CLASS_PLAYER ) == CLASS_PLAYER )
 			{
-				if ( !m_bFireDelayed )
+				if( !m_bFireDelayed )
 				{
 					m_bFireDelayed = true;
 					m_flFiringDelay = gpGlobals->curtime + 1.5;	// setup delay time before we start firing
 					return;
 				}
-				if ( gpGlobals->curtime > m_flFiringDelay )
+				if( gpGlobals->curtime > m_flFiringDelay )
 				{
-					m_OnFireAtTarget.Set(forward, this, this);		// tell apc to fire rockets, and what direction
+					m_OnFireAtTarget.Set( forward, this, this );		// tell apc to fire rockets, and what direction
 				}
 			}
 		}
@@ -445,30 +470,30 @@ void CAPCController::TrackTarget( void )
 		m_bFireDelayed = false;		// reset flag since we can no longer see target
 	}
 }
-	
+
 void CAPCController::StartRotSound( void )
-{	
-	if ( m_soundLoopRotate != NULL_STRING )
+{
+	if( m_soundLoopRotate != NULL_STRING )
 	{
 		CPASAttenuationFilter filter( this );
 		filter.MakeReliable();
 
 		EmitSound_t ep;
 		ep.m_nChannel = CHAN_STATIC;
-		ep.m_pSoundName = (char*)STRING(m_soundLoopRotate);
+		ep.m_pSoundName = ( char* )STRING( m_soundLoopRotate );
 		ep.m_SoundLevel = SNDLVL_NORM;
 		ep.m_flVolume = 0.85;
 
 		EmitSound( filter, entindex(), ep );
 	}
-	
-	if ( m_soundStartRotate != NULL_STRING )
+
+	if( m_soundStartRotate != NULL_STRING )
 	{
 		CPASAttenuationFilter filter( this );
 
 		EmitSound_t ep;
 		ep.m_nChannel = CHAN_BODY;
-		ep.m_pSoundName = (char*)STRING(m_soundStartRotate);
+		ep.m_pSoundName = ( char* )STRING( m_soundStartRotate );
 		ep.m_SoundLevel = SNDLVL_NORM;
 		ep.m_flVolume = 1.0f;
 
@@ -479,17 +504,17 @@ void CAPCController::StartRotSound( void )
 
 void CAPCController::StopRotSound( void )
 {
-	if ( m_soundLoopRotate != NULL_STRING )
+	if( m_soundLoopRotate != NULL_STRING )
 	{
-		StopSound( entindex(), CHAN_STATIC, (char*)STRING(m_soundLoopRotate) );
+		StopSound( entindex(), CHAN_STATIC, ( char* )STRING( m_soundLoopRotate ) );
 	}
-	if ( m_soundStopRotate != NULL_STRING )
+	if( m_soundStopRotate != NULL_STRING )
 	{
 		CPASAttenuationFilter filter( this );
 
 		EmitSound_t ep;
 		ep.m_nChannel = CHAN_BODY;
-		ep.m_pSoundName = (char*)STRING(m_soundStopRotate);
+		ep.m_pSoundName = ( char* )STRING( m_soundStopRotate );
 		ep.m_SoundLevel = SNDLVL_NORM;
 
 		EmitSound( filter, entindex(), ep );

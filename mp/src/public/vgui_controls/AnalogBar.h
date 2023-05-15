@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define ANALOGBAR_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -27,7 +27,7 @@ class AnalogBar : public Panel
 	DECLARE_CLASS_SIMPLE( AnalogBar, Panel );
 
 public:
-	AnalogBar(Panel *parent, const char *panelName);
+	AnalogBar( Panel* parent, const char* panelName );
 	~AnalogBar();
 
 	// 'analogValue' is in the range [0.0f, 1.0f]
@@ -36,14 +36,14 @@ public:
 	virtual void SetSegmentInfo( int gap, int width );
 
 	// utility function for calculating a time remaining string
-	static bool ConstructTimeRemainingString(OUT_Z_BYTECAP(outputBufferSizeInBytes) wchar_t *output, int outputBufferSizeInBytes, float startTime, float currentTime, float currentAnalogValue, float lastAnalogValueUpdateTime, bool addRemainingSuffix);
+	static bool ConstructTimeRemainingString( OUT_Z_BYTECAP( outputBufferSizeInBytes ) wchar_t* output, int outputBufferSizeInBytes, float startTime, float currentTime, float currentAnalogValue, float lastAnalogValueUpdateTime, bool addRemainingSuffix );
 
 	void SetBarInset( int pixels );
 	int GetBarInset( void );
-	
-	virtual void ApplySettings(KeyValues *inResourceData);
-	virtual void GetSettings(KeyValues *outResourceData);
-	virtual const char *GetDescription();
+
+	virtual void ApplySettings( KeyValues* inResourceData );
+	virtual void GetSettings( KeyValues* outResourceData );
+	virtual const char* GetDescription();
 
 	// returns the number of segment blocks drawn
 	int GetDrawnSegmentCount();
@@ -57,19 +57,34 @@ public:
 		PROGRESS_SOUTH
 	};
 
-	int GetAnalogValueDirection() const { return m_iAnalogValueDirection; }
-	void SetAnalogValueDirection( int val ) { m_iAnalogValueDirection = val; }
+	int GetAnalogValueDirection() const
+	{
+		return m_iAnalogValueDirection;
+	}
+	void SetAnalogValueDirection( int val )
+	{
+		m_iAnalogValueDirection = val;
+	}
 
-	void SetHomeValue( float val ) { m_fHomeValue = val; }
+	void SetHomeValue( float val )
+	{
+		m_fHomeValue = val;
+	}
 
-	const Color& GetHomeColor( void ) { return m_HomeColor; }
-	void SetHomeColor( const Color &color ) { m_HomeColor = color; }
+	const Color& GetHomeColor( void )
+	{
+		return m_HomeColor;
+	}
+	void SetHomeColor( const Color& color )
+	{
+		m_HomeColor = color;
+	}
 
 protected:
 	virtual void Paint();
-	void PaintSegment( int &x, int &y, int tall, int wide, Color color, bool bHome );
+	void PaintSegment( int& x, int& y, int tall, int wide, Color color, bool bHome );
 	virtual void PaintBackground();
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	MESSAGE_FUNC_PARAMS( OnDialogVariablesChanged, "DialogVariables", dialogVariables );
 	/* CUSTOM MESSAGE HANDLING
 		"SetAnalogValue"
@@ -85,8 +100,8 @@ private:
 	int _segmentGap;
 	int _segmentWide;
 	int m_iBarInset;
-	char *m_pszDialogVar;
-	
+	char* m_pszDialogVar;
+
 	float m_fHomeValue;
 	Color m_HomeColor;
 };
@@ -99,7 +114,7 @@ class ContinuousAnalogBar : public AnalogBar
 	DECLARE_CLASS_SIMPLE( ContinuousAnalogBar, AnalogBar );
 
 public:
-	ContinuousAnalogBar(Panel *parent, const char *panelName);
+	ContinuousAnalogBar( Panel* parent, const char* panelName );
 
 	virtual void Paint();
 };

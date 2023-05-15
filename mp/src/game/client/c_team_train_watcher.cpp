@@ -11,25 +11,25 @@
 #include "teamplayroundbased_gamerules.h"
 
 #ifdef TF_CLIENT_DLL
-#include "tf_shareddefs.h"
+	#include "tf_shareddefs.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_TeamTrainWatcher, DT_TeamTrainWatcher, CTeamTrainWatcher)
+IMPLEMENT_CLIENTCLASS_DT( C_TeamTrainWatcher, DT_TeamTrainWatcher, CTeamTrainWatcher )
 
-	RecvPropFloat( RECVINFO( m_flTotalProgress ) ),
-	RecvPropInt( RECVINFO( m_iTrainSpeedLevel ) ),
-	RecvPropFloat( RECVINFO( m_flRecedeTime ) ),
-	RecvPropInt( RECVINFO( m_nNumCappers ) ),
+RecvPropFloat( RECVINFO( m_flTotalProgress ) ),
+			   RecvPropInt( RECVINFO( m_iTrainSpeedLevel ) ),
+			   RecvPropFloat( RECVINFO( m_flRecedeTime ) ),
+			   RecvPropInt( RECVINFO( m_nNumCappers ) ),
 #ifdef GLOWS_ENABLE
 	RecvPropEHandle( RECVINFO( m_hGlowEnt ) ),
 #endif // GLOWS_ENABLE
 
-END_RECV_TABLE()
+			   END_RECV_TABLE()
 
-CUtlVector< CHandle<C_TeamTrainWatcher> > g_hTrainWatchers;
+			   CUtlVector< CHandle<C_TeamTrainWatcher> > g_hTrainWatchers;
 
 C_TeamTrainWatcher::C_TeamTrainWatcher()
 {
@@ -46,7 +46,7 @@ C_TeamTrainWatcher::C_TeamTrainWatcher()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TeamTrainWatcher::~C_TeamTrainWatcher()
 {
@@ -56,12 +56,12 @@ C_TeamTrainWatcher::~C_TeamTrainWatcher()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::ClientThink()
 {
 #ifdef GLOWS_ENABLE
-	if ( IsDormant() || ( m_hGlowEnt.Get() == NULL ) )
+	if( IsDormant() || ( m_hGlowEnt.Get() == NULL ) )
 	{
 		DestroyGlowEffect();
 		m_hOldGlowEnt = NULL;
@@ -72,18 +72,18 @@ void C_TeamTrainWatcher::ClientThink()
 
 #ifdef GLOWS_ENABLE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::UpdateGlowEffect( void )
 {
 	// destroy the existing effect
-	if ( m_pGlowEffect )
+	if( m_pGlowEffect )
 	{
 		DestroyGlowEffect();
 	}
 
 	// create a new effect if we have a cart
-	if ( m_hGlowEnt )
+	if( m_hGlowEnt )
 	{
 		float r, g, b;
 		TeamplayRoundBasedRules()->GetTeamGlowColor( GetTeamNumber(), r, g, b );
@@ -92,11 +92,11 @@ void C_TeamTrainWatcher::UpdateGlowEffect( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::DestroyGlowEffect( void )
 {
-	if ( m_pGlowEffect )
+	if( m_pGlowEffect )
 	{
 		delete m_pGlowEffect;
 		m_pGlowEffect = NULL;
@@ -118,21 +118,21 @@ void C_TeamTrainWatcher::OnPreDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 
-	if ( m_iOldTrainSpeedLevel != m_iTrainSpeedLevel || m_nOldNumCappers != m_nNumCappers )
+	if( m_iOldTrainSpeedLevel != m_iTrainSpeedLevel || m_nOldNumCappers != m_nNumCappers )
 	{
-		IGameEvent *event = gameeventmanager->CreateEvent( "escort_speed" );
-		if ( event )
+		IGameEvent* event = gameeventmanager->CreateEvent( "escort_speed" );
+		if( event )
 		{
 			event->SetInt( "team", GetTeamNumber() );
 			event->SetInt( "speed", m_iTrainSpeedLevel );
@@ -141,15 +141,15 @@ void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 		}
 	}
 
-	if ( m_flOldProgress != m_flTotalProgress )
+	if( m_flOldProgress != m_flTotalProgress )
 	{
-		IGameEvent *event = gameeventmanager->CreateEvent( "escort_progress" );
-		if ( event )
+		IGameEvent* event = gameeventmanager->CreateEvent( "escort_progress" );
+		if( event )
 		{
 			event->SetInt( "team", GetTeamNumber() );
 			event->SetFloat( "progress", m_flTotalProgress );
 
-			if ( m_flOldProgress <= -1 )
+			if( m_flOldProgress <= -1 )
 			{
 				event->SetBool( "reset", true );
 			}
@@ -158,13 +158,13 @@ void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 		}
 
 		// check to see if the train is now on a hill
-		if ( ObjectiveResource() )
+		if( ObjectiveResource() )
 		{
 			int nNumHills = ObjectiveResource()->GetNumNodeHillData( GetTeamNumber() );
-			if ( nNumHills > 0 )
+			if( nNumHills > 0 )
 			{
 				float flStart = 0, flEnd = 0;
-				for ( int i = 0 ; i < nNumHills ; i++ )
+				for( int i = 0 ; i < nNumHills ; i++ )
 				{
 					ObjectiveResource()->GetHillData( GetTeamNumber(), i, flStart, flEnd );
 
@@ -175,10 +175,10 @@ void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 		}
 	}
 
-	if ( m_flOldRecedeTime != m_flRecedeTime )
+	if( m_flOldRecedeTime != m_flRecedeTime )
 	{
-		IGameEvent *event = gameeventmanager->CreateEvent( "escort_recede" );
-		if ( event )
+		IGameEvent* event = gameeventmanager->CreateEvent( "escort_recede" );
+		if( event )
 		{
 			event->SetInt( "team", GetTeamNumber() );
 			event->SetFloat( "recedetime", m_flRecedeTime );
@@ -186,7 +186,7 @@ void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 		}
 	}
 #ifdef GLOWS_ENABLE
-	if ( m_hOldGlowEnt != m_hGlowEnt )
+	if( m_hOldGlowEnt != m_hGlowEnt )
 	{
 		UpdateGlowEffect();
 	}
@@ -194,20 +194,20 @@ void C_TeamTrainWatcher::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::Spawn( void )
 {
 	BaseClass::Spawn();
 
-	if ( g_hTrainWatchers.Find( this ) == g_hTrainWatchers.InvalidIndex() )
+	if( g_hTrainWatchers.Find( this ) == g_hTrainWatchers.InvalidIndex() )
 	{
 		g_hTrainWatchers.AddToTail( this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TeamTrainWatcher::UpdateOnRemove( void )
 {

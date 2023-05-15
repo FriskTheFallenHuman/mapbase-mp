@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -9,37 +9,38 @@
 #ifndef BASEHLCOMBATWEAPON_H
 #define BASEHLCOMBATWEAPON_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //=========================================================
 // Machine gun base class
 //=========================================================
-abstract_class CHLMachineGun : public CBaseHLCombatWeapon
+abstract_class CHLMachineGun :
+public CBaseHLCombatWeapon
 {
 public:
 	DECLARE_CLASS( CHLMachineGun, CBaseHLCombatWeapon );
 	DECLARE_DATADESC();
 
 	CHLMachineGun();
-	
+
 	DECLARE_SERVERCLASS();
 
 	void	PrimaryAttack( void );
 
 	// Default calls through to m_hOwner, but plasma weapons can override and shoot projectiles here.
 	virtual void	ItemPostFrame( void );
-	virtual void	FireBullets( const FireBulletsInfo_t &info );
+	virtual void	FireBullets( const FireBulletsInfo_t& info );
 	virtual float	GetFireRate( void ) = 0;
 	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
 	virtual bool	Deploy( void );
 
-	virtual const Vector &GetBulletSpread( void );
+	virtual const Vector & GetBulletSpread( void );
 
 	int				WeaponSoundRealtime( WeaponSound_t shoot_type );
 
 	// utility function
-	static void DoMachineGunKick( CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime );
+	static void DoMachineGunKick( CBasePlayer * pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime );
 
 protected:
 
@@ -49,7 +50,7 @@ protected:
 };
 
 //=========================================================
-// Machine guns capable of switching between full auto and 
+// Machine guns capable of switching between full auto and
 // burst fire modes.
 //=========================================================
 // Mode settings for select fire weapons
@@ -69,7 +70,7 @@ class CHLSelectFireMachineGun : public CHLMachineGun
 public:
 
 	CHLSelectFireMachineGun( void );
-	
+
 	DECLARE_SERVERCLASS();
 
 	virtual float	GetBurstCycleRate( void );
@@ -80,7 +81,10 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual int		GetBurstSize( void ) { return 3; };
+	virtual int		GetBurstSize( void )
+	{
+		return 3;
+	};
 
 	void			BurstThink( void );
 

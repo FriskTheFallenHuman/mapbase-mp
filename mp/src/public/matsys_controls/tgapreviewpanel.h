@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define TGAPREVIEWPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -27,9 +27,9 @@ class CTGAPreviewPanel : public CProceduralTexturePanel
 
 public:
 	// constructor
-	CTGAPreviewPanel( vgui::Panel *pParent, const char *pName );
-	void SetTGA( const char *pFullPath );
-	const char *GetTGA() const;
+	CTGAPreviewPanel( vgui::Panel* pParent, const char* pName );
+	void SetTGA( const char* pFullPath );
+	const char* GetTGA() const;
 
 private:
 	CUtlString m_TGAName;

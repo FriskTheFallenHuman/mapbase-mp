@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -18,19 +18,22 @@ private:
 	typedef CEventLog BaseClass;
 
 public:
-	virtual char const *Name() { return "CHL2EventLog"; }
+	virtual char const* Name()
+	{
+		return "CHL2EventLog";
+	}
 
 	virtual ~CHL2EventLog() {};
 
 public:
-	bool PrintEvent( IGameEvent * event )	// override virtual function
+	bool PrintEvent( IGameEvent* event )	// override virtual function
 	{
-		if ( BaseClass::PrintEvent( event ) )
+		if( BaseClass::PrintEvent( event ) )
 		{
 			return true;
 		}
-	
-		if ( Q_strcmp(event->GetName(), "hl2_") == 0 )
+
+		if( Q_strcmp( event->GetName(), "hl2_" ) == 0 )
 		{
 			return PrintHL2Event( event );
 		}
@@ -40,9 +43,9 @@ public:
 
 protected:
 
-	bool PrintHL2Event( IGameEvent * event )	// print Mod specific logs
+	bool PrintHL2Event( IGameEvent* event )	// print Mod specific logs
 	{
-	//	const char * name = event->GetName() + Q_strlen("hl2_"); // remove prefix
+		//	const char * name = event->GetName() + Q_strlen("hl2_"); // remove prefix
 
 		return false;
 	}

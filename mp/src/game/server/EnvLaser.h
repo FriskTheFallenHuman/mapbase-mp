@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ENVLASER_H
 #define ENVLASER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "baseentity.h"
@@ -25,26 +25,29 @@ class CEnvLaser : public CBeam
 public:
 	void	Spawn( void );
 	void	Precache( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 
 	void	TurnOn( void );
 	void	TurnOff( void );
 	int		IsOn( void );
 
-	void	FireAtPoint( trace_t &point );
+	void	FireAtPoint( trace_t& point );
 	void	StrikeThink( void );
 
-	void InputTurnOn( inputdata_t &inputdata );
-	void InputTurnOff( inputdata_t &inputdata );
-	void InputToggle( inputdata_t &inputdata );
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetTarget( inputdata_t &inputdata ) { m_iszLaserTarget = inputdata.value.StringID(); }
+	void InputSetTarget( inputdata_t& inputdata )
+	{
+		m_iszLaserTarget = inputdata.value.StringID();
+	}
 #endif
 
 	DECLARE_DATADESC();
 
 	string_t m_iszLaserTarget;	// Name of entity or entities to strike at, randomly picked if more than one match.
-	CSprite	*m_pSprite;
+	CSprite*	m_pSprite;
 	string_t m_iszSpriteName;
 	Vector  m_firePosition;
 

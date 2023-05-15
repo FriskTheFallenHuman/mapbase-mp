@@ -1,13 +1,13 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef AI_CRITERIA_H
 #define AI_CRITERIA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlrbtree.h"
@@ -19,10 +19,10 @@
 
 using ResponseRules::ResponseType_t;
 
-extern const char *SplitContext( const char *raw, char *key, int keylen, char *value, int valuelen, float *duration, const char *entireContext );
+extern const char* SplitContext( const char* raw, char* key, int keylen, char* value, int valuelen, float* duration, const char* entireContext );
 
 #ifndef AI_CriteriaSet
-#define AI_CriteriaSet ResponseRules::CriteriaSet 
+	#define AI_CriteriaSet ResponseRules::CriteriaSet
 #endif
 
 typedef ResponseRules::ResponseParams	AI_ResponseParams ;

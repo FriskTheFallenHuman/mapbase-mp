@@ -16,22 +16,24 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT( C_VoteController, DT_VoteController, CVoteController )
-	RecvPropInt( RECVINFO( m_iActiveIssueIndex ), 0, C_VoteController::RecvProxy_VoteType ),
-	RecvPropInt( RECVINFO( m_iOnlyTeamToVote ) ),
-	RecvPropArray3( RECVINFO_ARRAY( m_nVoteOptionCount ), RecvPropInt( RECVINFO( m_nVoteOptionCount[0] ), 0, C_VoteController::RecvProxy_VoteOption ) ),
-	RecvPropInt( RECVINFO( m_nPotentialVotes ) ),
-	RecvPropBool( RECVINFO( m_bIsYesNoVote ) )
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_iActiveIssueIndex ), 0, C_VoteController::RecvProxy_VoteType ),
+			 RecvPropInt( RECVINFO( m_iOnlyTeamToVote ) ),
+			 RecvPropArray3( RECVINFO_ARRAY( m_nVoteOptionCount ), RecvPropInt( RECVINFO( m_nVoteOptionCount[0] ), 0, C_VoteController::RecvProxy_VoteOption ) ),
+			 RecvPropInt( RECVINFO( m_nPotentialVotes ) ),
+			 RecvPropBool( RECVINFO( m_bIsYesNoVote ) )
+			 END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_VoteController::RecvProxy_VoteType( const CRecvProxyData *pData, void *pStruct, void *pOut )
+			 void C_VoteController::RecvProxy_VoteType( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	C_VoteController *pMe = (C_VoteController *)pStruct;
+	C_VoteController* pMe = ( C_VoteController* )pStruct;
 	if( pMe->m_iActiveIssueIndex == pData->m_Value.m_Int )
+	{
 		return;
+	}
 
 	pMe->m_iActiveIssueIndex = pData->m_Value.m_Int;
 	pMe->m_bTypeDirty = true;
@@ -44,15 +46,17 @@ void C_VoteController::RecvProxy_VoteType( const CRecvProxyData *pData, void *pS
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_VoteController::RecvProxy_VoteOption( const CRecvProxyData *pData, void *pStruct, void *pOut )
+void C_VoteController::RecvProxy_VoteOption( const CRecvProxyData* pData, void* pStruct, void* pOut )
 {
-	int index = pData->m_pRecvProp->GetOffset() / sizeof(int);
-	
+	int index = pData->m_pRecvProp->GetOffset() / sizeof( int );
+
 	size_t offset = offsetof( C_VoteController, m_nVoteOptionCount );
-	C_VoteController *pMe = (C_VoteController *)((byte *)pStruct - offset );
+	C_VoteController* pMe = ( C_VoteController* )( ( byte* )pStruct - offset );
 	if( pMe->m_nVoteOptionCount[index] == pData->m_Value.m_Int )
+	{
 		return;
-	
+	}
+
 	pMe->m_nVoteOptionCount[index] = pData->m_Value.m_Int;
 	pMe->m_bVotesDirty = true;
 	pMe->SetNextClientThink( gpGlobals->curtime + 0.001 );
@@ -113,22 +117,22 @@ void C_VoteController::ClientThink()
 		m_bTypeDirty = false;
 		m_bVotesDirty = true;
 	}
-	
+
 	if( m_bVotesDirty )
 	{
-		if ( m_nPotentialVotes > 0 )
+		if( m_nPotentialVotes > 0 )
 		{
 #ifdef STAGING_ONLY
 			// Currently hard-coded to MAX_VOTE_COUNT options per issue
 			DevMsg( "Votes: Option1 - %d, Option2 - %d, Option3 - %d, Option4 - %d, Option5 - %d\n",
-				m_nVoteOptionCount[0], m_nVoteOptionCount[1], m_nVoteOptionCount[2], m_nVoteOptionCount[3], m_nVoteOptionCount[4] );
+					m_nVoteOptionCount[0], m_nVoteOptionCount[1], m_nVoteOptionCount[2], m_nVoteOptionCount[3], m_nVoteOptionCount[4] );
 #endif // STAGING_ONLY
 
-			IGameEvent *event = gameeventmanager->CreateEvent( "vote_changed" );
-			if ( event )
+			IGameEvent* event = gameeventmanager->CreateEvent( "vote_changed" );
+			if( event )
 			{
-				for ( int index = 0; index < MAX_VOTE_OPTIONS; index++ )
-				{	
+				for( int index = 0; index < MAX_VOTE_OPTIONS; index++ )
+				{
 					char szOption[2];
 					Q_snprintf( szOption, sizeof( szOption ), "%i", index + 1 );
 
@@ -151,26 +155,32 @@ void C_VoteController::ClientThink()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_VoteController::FireGameEvent( IGameEvent *event )
+void C_VoteController::FireGameEvent( IGameEvent* event )
 {
-	CHudVote *pHudVote = GET_HUDELEMENT( CHudVote );
-	if ( pHudVote && pHudVote->IsVisible() )
+	CHudVote* pHudVote = GET_HUDELEMENT( CHudVote );
+	if( pHudVote && pHudVote->IsVisible() )
 	{
-		const char *eventName = event->GetName();
-		if ( !eventName )
+		const char* eventName = event->GetName();
+		if( !eventName )
+		{
 			return;
+		}
 
-		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
-		if ( !pLocalPlayer )
+		C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+		if( !pLocalPlayer )
+		{
 			return;
+		}
 
 		int team = event->GetInt( "team", TEAM_UNASSIGNED );
-		if ( team > TEAM_UNASSIGNED && team != pLocalPlayer->GetTeamNumber() )
-			return;
-
-		if ( FStrEq( eventName, "vote_cast" ) )
+		if( team > TEAM_UNASSIGNED && team != pLocalPlayer->GetTeamNumber() )
 		{
-			if ( m_bIsYesNoVote )
+			return;
+		}
+
+		if( FStrEq( eventName, "vote_cast" ) )
+		{
+			if( m_bIsYesNoVote )
 			{
 				int vote_option = event->GetInt( "vote_option", TEAM_UNASSIGNED );
 				if( vote_option == VOTE_OPTION2 )

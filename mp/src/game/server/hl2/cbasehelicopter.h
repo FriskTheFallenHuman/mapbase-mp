@@ -9,7 +9,7 @@
 #define CBASEHELICOPTER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -81,26 +81,38 @@ public:
 	void Precache( void );
 	virtual void UpdateOnRemove();
 
-	void Event_Killed( const CTakeDamageInfo &info );
+	void Event_Killed( const CTakeDamageInfo& info );
 	void StopLoopingSounds();
 
-	int  BloodColor( void ) { return DONT_BLEED; }
+	int  BloodColor( void )
+	{
+		return DONT_BLEED;
+	}
 	void GibMonster( void );
 
-	Class_T Classify ( void ) { return CLASS_COMBINE; }
-			 
-	void CallDyingThink( void ) { DyingThink(); }
+	Class_T Classify( void )
+	{
+		return CLASS_COMBINE;
+	}
 
-	bool HasEnemy( void ) { return GetEnemy() != NULL; }
-	virtual void GatherEnemyConditions( CBaseEntity *pEnemy );
+	void CallDyingThink( void )
+	{
+		DyingThink();
+	}
+
+	bool HasEnemy( void )
+	{
+		return GetEnemy() != NULL;
+	}
+	virtual void GatherEnemyConditions( CBaseEntity* pEnemy );
 	virtual bool ChooseEnemy( void );
 	virtual void HelicopterPostThink( void ) { };
-	virtual void FlyTouch( CBaseEntity *pOther );
-	virtual void CrashTouch( CBaseEntity *pOther );
+	virtual void FlyTouch( CBaseEntity* pOther );
+	virtual void CrashTouch( CBaseEntity* pOther );
 	virtual void HelicopterThink( void );
 	virtual void DyingThink( void );
 	virtual void NullThink( void );
-	virtual void Startup ( void );
+	virtual void Startup( void );
 
 	virtual void Flight( void );
 
@@ -110,13 +122,19 @@ public:
 
 	virtual void Hunt( void );
 
-	virtual bool IsCrashing( void ) { return m_lifeState != LIFE_ALIVE; }
-	virtual float GetAcceleration( void ) { return 5; }
+	virtual bool IsCrashing( void )
+	{
+		return m_lifeState != LIFE_ALIVE;
+	}
+	virtual float GetAcceleration( void )
+	{
+		return 5;
+	}
 
-	virtual void ApplySidewaysDrag( const Vector &vecRight );
+	virtual void ApplySidewaysDrag( const Vector& vecRight );
 	virtual void ApplyGeneralDrag( void );
 
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 
 	virtual bool FireGun( void );
 
@@ -124,28 +142,31 @@ public:
 	virtual void InitializeRotorSound( void );
 	virtual void UpdateRotorSoundPitch( int iPitch );
 
-	virtual void AimRocketGun(void) {};
-	virtual void FireRocket(  Vector vLaunchPos, Vector vLaunchDir  ) {};
+	virtual void AimRocketGun( void ) {};
+	virtual void FireRocket( Vector vLaunchPos, Vector vLaunchDir ) {};
 
-	virtual bool	GetTrackPatherTarget( Vector *pPos );
-	virtual CBaseEntity *GetTrackPatherTargetEnt();
+	virtual bool	GetTrackPatherTarget( Vector* pPos );
+	virtual CBaseEntity* GetTrackPatherTargetEnt();
 
-	void	DrawDebugGeometryOverlays(void);
+	void	DrawDebugGeometryOverlays( void );
 
 	// Rotor washes
-	virtual void	DrawRotorWash( float flAltitude, const Vector &vecRotorOrigin );
-	void			DoRotorPhysicsPush( const Vector &vecRotorOrigin, float flAltitude );
-	bool			DoWashPush( washentity_t *pWash, const Vector &vecWashOrigin );
+	virtual void	DrawRotorWash( float flAltitude, const Vector& vecRotorOrigin );
+	void			DoRotorPhysicsPush( const Vector& vecRotorOrigin, float flAltitude );
+	bool			DoWashPush( washentity_t* pWash, const Vector& vecWashOrigin );
 	void			StopRotorWash( void );
 
 	// Purpose: Marks the entity for deletion
-	void			InputKill( inputdata_t &inputdata );
+	void			InputKill( inputdata_t& inputdata );
 	void			DelayedKillThink( );
 
-	virtual			void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+	virtual			void SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
 
 	// Helicopters never burn
-	virtual void	Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner ) { return; }
+	virtual void	Ignite( float flFlameLifetime, bool bNPCOnly, float flSize, bool bCalledByLevelDesigner )
+	{
+		return;
+	}
 
 
 protected:
@@ -164,7 +185,7 @@ protected:
 	void			FireWeapons();
 
 	// Computes the actual position to fly to
-	void			ComputeActualTargetPosition( float flSpeed, float flTime, float flPerpDist, Vector *pDest, bool bApplyNoise = true );
+	void			ComputeActualTargetPosition( float flSpeed, float flTime, float flPerpDist, Vector* pDest, bool bApplyNoise = true );
 
 	// Gets the max speed of the helicopter
 	virtual float	GetMaxSpeed();
@@ -177,18 +198,18 @@ protected:
 	void			RotorWashThink( void );
 
 	// Purpose: Push an airboat in our wash
-	void			DoWashPushOnAirboat( CBaseEntity *pAirboat, const Vector &vecWashToAirboat, float flWashAmount );
+	void			DoWashPushOnAirboat( CBaseEntity* pAirboat, const Vector& vecWashToAirboat, float flWashAmount );
 
 	// Updates the rotor wash volume
 	virtual void	UpdateRotorWashVolume();
 
 	// Rotor sound
-	void	InputEnableRotorSound( inputdata_t &inputdata );
-	void	InputDisableRotorSound( inputdata_t &inputdata );
+	void	InputEnableRotorSound( inputdata_t& inputdata );
+	void	InputDisableRotorSound( inputdata_t& inputdata );
 
 protected:
-	CSoundPatch		*m_pRotorSound;				// Rotor loop played when the player can see the helicopter
-	CSoundPatch		*m_pRotorBlast;				// Sound played when the helicopter's pushing around physics objects
+	CSoundPatch*		m_pRotorSound;				// Rotor loop played when the player can see the helicopter
+	CSoundPatch*		m_pRotorBlast;				// Sound played when the helicopter's pushing around physics objects
 
 	float			m_flForce;
 	int				m_fHelicopterFlags;
@@ -220,20 +241,20 @@ protected:
 #endif
 
 	// Inputs
-	void			InputActivate( inputdata_t &inputdata );
+	void			InputActivate( inputdata_t& inputdata );
 
 	// Inputs
-	void			InputGunOn( inputdata_t &inputdata );
-	void			InputGunOff( inputdata_t &inputdata );
-	void			InputMissileOn( inputdata_t &inputdata );
-	void			InputMissileOff( inputdata_t &inputdata );
-	void			InputEnableRotorWash( inputdata_t &inputdata );
-	void			InputDisableRotorWash( inputdata_t &inputdata );
-	void			InputMoveTopSpeed( inputdata_t &inputdata );	// Causes the helicopter to immediately accelerate to its desired velocity
-	void			InputMoveSpecifiedSpeed( inputdata_t &inputdata );
-	void			InputSetAngles( inputdata_t &inputdata );	// Sets the angles of the helicopter
+	void			InputGunOn( inputdata_t& inputdata );
+	void			InputGunOff( inputdata_t& inputdata );
+	void			InputMissileOn( inputdata_t& inputdata );
+	void			InputMissileOff( inputdata_t& inputdata );
+	void			InputEnableRotorWash( inputdata_t& inputdata );
+	void			InputDisableRotorWash( inputdata_t& inputdata );
+	void			InputMoveTopSpeed( inputdata_t& inputdata );	// Causes the helicopter to immediately accelerate to its desired velocity
+	void			InputMoveSpecifiedSpeed( inputdata_t& inputdata );
+	void			InputSetAngles( inputdata_t& inputdata );	// Sets the angles of the helicopter
 
-protected:	
+protected:
 	// Custom conservative collision volumes
 	Vector			m_cullBoxMins;
 	Vector			m_cullBoxMaxs;
@@ -241,14 +262,17 @@ protected:
 	// Wash physics pushing
 	CUtlVector< washentity_t >	m_hEntitiesPushedByWash;
 
-	void SetStartupTime( float time ) { m_flStartupTime = time; }
+	void SetStartupTime( float time )
+	{
+		m_flStartupTime = time;
+	}
 private:
 	CNetworkVar( float, m_flStartupTime );
 };
 
 //-----------------------------------------------------------------------------
 // This entity is used to create little force spheres that the helicopter
-// should avoid. 
+// should avoid.
 //-----------------------------------------------------------------------------
 class CAvoidSphere : public CBaseEntity
 {
@@ -261,7 +285,7 @@ public:
 	virtual void Activate();
 	virtual void UpdateOnRemove();
 
-	static void ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadius, float flAvoidTime, Vector *pVecAvoidForce );
+	static void ComputeAvoidanceForces( CBaseEntity* pEntity, float flEntityRadius, float flAvoidTime, Vector* pVecAvoidForce );
 
 private:
 	typedef CHandle<CAvoidSphere> AvoidSphereHandle_t;
@@ -271,14 +295,14 @@ private:
 	string_t m_iszAvoidFilter;
 	EHANDLE m_hAvoidFilter;
 #endif
-	
-	static CUtlVector< AvoidSphereHandle_t > s_AvoidSpheres; 
+
+	static CUtlVector< AvoidSphereHandle_t > s_AvoidSpheres;
 };
 
 
 //-----------------------------------------------------------------------------
 // This entity is used to create little force boxes that the helicopter
-// should avoid. 
+// should avoid.
 //-----------------------------------------------------------------------------
 class CAvoidBox : public CBaseEntity
 {
@@ -291,11 +315,11 @@ public:
 	virtual void Activate();
 	virtual void UpdateOnRemove();
 
-	static void ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadius, float flAvoidTime, Vector *pVecAvoidForce );
+	static void ComputeAvoidanceForces( CBaseEntity* pEntity, float flEntityRadius, float flAvoidTime, Vector* pVecAvoidForce );
 
 private:
-	typedef CHandle<CAvoidBox> AvoidBoxHandle_t;	
-	static CUtlVector< AvoidBoxHandle_t > s_AvoidBoxes; 
+	typedef CHandle<CAvoidBox> AvoidBoxHandle_t;
+	static CUtlVector< AvoidBoxHandle_t > s_AvoidBoxes;
 };
 
 

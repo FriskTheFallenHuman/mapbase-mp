@@ -6,7 +6,7 @@
 #ifndef PLAYERINFOMANAGER_H
 #define PLAYERINFOMANAGER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -18,21 +18,21 @@
 class CPlayerInfoManager: public IPlayerInfoManager
 {
 public:
-	virtual IPlayerInfo *GetPlayerInfo( edict_t *pEdict );
-	virtual IPlayerInfo *GetPlayerInfo( int index );
-	virtual CGlobalVars *GetGlobalVars();
+	virtual IPlayerInfo* GetPlayerInfo( edict_t* pEdict );
+	virtual IPlayerInfo* GetPlayerInfo( int index );
+	virtual CGlobalVars* GetGlobalVars();
 	// accessor to hook into aliastoweaponid
-	virtual int			AliasToWeaponId(const char *weaponName);
+	virtual int			AliasToWeaponId( const char* weaponName );
 	// accessor to hook into weaponidtoalias
-	virtual const char *WeaponIdToAlias(int weaponId);
+	virtual const char* WeaponIdToAlias( int weaponId );
 
 };
 
 class CPluginBotManager: public IBotManager
 {
 public:
-	virtual IBotController *GetBotController( edict_t *pEdict );
-	virtual edict_t *CreateBot( const char *botname );
+	virtual IBotController* GetBotController( edict_t* pEdict );
+	virtual edict_t* CreateBot( const char* botname );
 };
 
 #endif

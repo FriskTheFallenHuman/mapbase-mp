@@ -1,17 +1,17 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SCRIPTED_H
 #define SCRIPTED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifndef SCRIPTEVENT_H
-#include "scriptevent.h"
+	#include "scriptevent.h"
 #endif
 
 #include "ai_basenpc.h"
@@ -78,9 +78,12 @@ class CAI_ScriptedSequence : public CBaseEntity
 	DECLARE_CLASS( CAI_ScriptedSequence, CBaseEntity );
 public:
 	void Spawn( void );
-	virtual void Blocked( CBaseEntity *pOther );
-	virtual void Touch( CBaseEntity *pOther );
-	virtual int	 ObjectCaps( void ) { return (BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); }
+	virtual void Blocked( CBaseEntity* pOther );
+	virtual void Touch( CBaseEntity* pOther );
+	virtual int	 ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION );
+	}
 	virtual void Activate( void );
 	virtual void UpdateOnRemove( void );
 	void StartThink();
@@ -96,66 +99,93 @@ public:
 	void StartScript( void );
 	void FireScriptEvent( int nEvent );
 #ifdef MAPBASE
-	void OnBeginSequence( CBaseEntity *pActor );
-	void OnEntrySequence( CBaseEntity *pActor );
-	void OnActionSequence( CBaseEntity *pActor );
-	void OnPreIdleSequence( CBaseEntity *pActor );
+	void OnBeginSequence( CBaseEntity* pActor );
+	void OnEntrySequence( CBaseEntity* pActor );
+	void OnActionSequence( CBaseEntity* pActor );
+	void OnPreIdleSequence( CBaseEntity* pActor );
 #else
 	void OnBeginSequence( void );
 #endif
 
-	void SetTarget( CBaseEntity *pTarget ) { m_hTargetEnt = pTarget; };
-	CBaseEntity *GetTarget( void ) { return m_hTargetEnt; };
+	void SetTarget( CBaseEntity* pTarget )
+	{
+		m_hTargetEnt = pTarget;
+	};
+	CBaseEntity* GetTarget( void )
+	{
+		return m_hTargetEnt;
+	};
 
 	// Input handlers
-	void InputBeginSequence( inputdata_t &inputdata );
-	void InputCancelSequence( inputdata_t &inputdata );
-	void InputMoveToPosition( inputdata_t &inputdata );
+	void InputBeginSequence( inputdata_t& inputdata );
+	void InputCancelSequence( inputdata_t& inputdata );
+	void InputMoveToPosition( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetTarget( inputdata_t &inputdata );
+	void InputSetTarget( inputdata_t& inputdata );
 #endif
 
 	bool IsTimeToStart( void );
 	bool IsWaitingForBegin( void );
-	void ReleaseEntity( CAI_BaseNPC *pEntity );
+	void ReleaseEntity( CAI_BaseNPC* pEntity );
 	void CancelScript( void );
-	bool StartSequence( CAI_BaseNPC *pTarget, string_t iszSeq, bool completeOnEmpty );
-	void SynchronizeSequence( CAI_BaseNPC *pNPC );
-	bool FCanOverrideState ( void );
-	void SequenceDone( CAI_BaseNPC *pNPC );
-	void PostIdleDone( CAI_BaseNPC *pNPC );
-	void FixScriptNPCSchedule( CAI_BaseNPC *pNPC, int iSavedCineFlags );
-	void FixFlyFlag( CAI_BaseNPC *pNPC, int iSavedCineFlags );
+	bool StartSequence( CAI_BaseNPC* pTarget, string_t iszSeq, bool completeOnEmpty );
+	void SynchronizeSequence( CAI_BaseNPC* pNPC );
+	bool FCanOverrideState( void );
+	void SequenceDone( CAI_BaseNPC* pNPC );
+	void PostIdleDone( CAI_BaseNPC* pNPC );
+	void FixScriptNPCSchedule( CAI_BaseNPC* pNPC, int iSavedCineFlags );
+	void FixFlyFlag( CAI_BaseNPC* pNPC, int iSavedCineFlags );
 	bool CanInterrupt( void );
 	void AllowInterrupt( bool fAllow );
 	void RemoveIgnoredConditions( void );
-	bool PlayedSequence( void ) { return m_sequenceStarted; }
+	bool PlayedSequence( void )
+	{
+		return m_sequenceStarted;
+	}
 	bool CanEnqueueAfter( void );
 
 	// Entry & Action loops
-	bool IsPlayingEntry( void ) { return m_bIsPlayingEntry; }
-	bool IsPlayingAction( void ) { return ( m_sequenceStarted && !m_bIsPlayingEntry ); }
-	bool FinishedActionSequence( CAI_BaseNPC *pNPC );
-	void SetLoopActionSequence( bool bLoop ) { m_bLoopActionSequence = bLoop; }
-	bool ShouldLoopActionSequence( void ) { return m_bLoopActionSequence; }
+	bool IsPlayingEntry( void )
+	{
+		return m_bIsPlayingEntry;
+	}
+	bool IsPlayingAction( void )
+	{
+		return ( m_sequenceStarted && !m_bIsPlayingEntry );
+	}
+	bool FinishedActionSequence( CAI_BaseNPC* pNPC );
+	void SetLoopActionSequence( bool bLoop )
+	{
+		m_bLoopActionSequence = bLoop;
+	}
+	bool ShouldLoopActionSequence( void )
+	{
+		return m_bLoopActionSequence;
+	}
 	void StopActionLoop( bool bStopSynchronizedScenes );
-	void SetSynchPostIdles( bool bSynch ) { m_bSynchPostIdles = bSynch; }
+	void SetSynchPostIdles( bool bSynch )
+	{
+		m_bSynchPostIdles = bSynch;
+	}
 	void SynchNewSequence( CAI_BaseNPC::SCRIPTSTATE newState, string_t iszSequence, bool bSynchOtherScenes );
 
 	// Dynamic scripted sequence spawning
-	void ForceSetTargetEntity( CAI_BaseNPC *pTarget, bool bDontCancelOtherSequences );
+	void ForceSetTargetEntity( CAI_BaseNPC* pTarget, bool bDontCancelOtherSequences );
 
 	// Dynamic interactions
-	void SetupInteractionPosition( CBaseEntity *pRelativeEntity, VMatrix &matDesiredLocalToWorld );
-	void ModifyScriptedAutoMovement( Vector *vecNewPos );
+	void SetupInteractionPosition( CBaseEntity* pRelativeEntity, VMatrix& matDesiredLocalToWorld );
+	void ModifyScriptedAutoMovement( Vector* vecNewPos );
 
-	bool IsTeleportingDueToMoveTo( void ) { return m_bIsTeleportingDueToMoveTo; }
+	bool IsTeleportingDueToMoveTo( void )
+	{
+		return m_bIsTeleportingDueToMoveTo;
+	}
 
 	// Debug
 	virtual int DrawDebugTextOverlays( void );
 	virtual void DrawDebugGeometryOverlays( void );
 
-	void InputScriptPlayerDeath( inputdata_t &inputdata );
+	void InputScriptPlayerDeath( inputdata_t& inputdata );
 
 private:
 	friend class CAI_BaseNPC;	// should probably try to eliminate this relationship
@@ -181,10 +211,10 @@ private:
 	int m_iDelay;					// A counter indicating how many scripts are NOT ready to start.
 
 	bool m_bDelayed;				// This moderately hacky hack ensures that we don't calls to DelayStart(true) or DelayStart(false)
-									// twice in succession. This is necessary because we didn't want to remove the call to DelayStart(true)
-									// from StartScript, even though DelayStart(true) is called from TASK_PRE_SCRIPT.
-									// All of this is necessary in case the NPCs schedule gets cleared during the script and then they
-									// reselect the schedule to play the script. Without this you can get NPCs stuck with m_iDelay = -1
+	// twice in succession. This is necessary because we didn't want to remove the call to DelayStart(true)
+	// from StartScript, even though DelayStart(true) is called from TASK_PRE_SCRIPT.
+	// All of this is necessary in case the NPCs schedule gets cleared during the script and then they
+	// reselect the schedule to play the script. Without this you can get NPCs stuck with m_iDelay = -1
 
 	float m_startTime;				// Time when script actually started, used for synchronization
 	bool m_bWaitForBeginSequence;	// Set to true when we are told to MoveToPosition. Holds the actor in the pre-action idle until BeginSequence is called.
@@ -199,13 +229,13 @@ private:
 	EHANDLE	m_hTargetEnt;
 
 	EHANDLE m_hNextCine;		// The script to hand the NPC off to when we finish with them.
-	
+
 	bool	m_bThinking;
 	bool 	m_bInitiatedSelfDelete;
 
 	bool	m_bIsTeleportingDueToMoveTo;
 
-	CAI_BaseNPC *FindScriptEntity( void );
+	CAI_BaseNPC* FindScriptEntity( void );
 	EHANDLE m_hLastFoundEntity;
 
 	// Code forced us to use a specific NPC
@@ -228,9 +258,9 @@ private:
 	COutputEvent m_OnFoundNPC;
 #endif
 
-	static void ScriptEntityCancel( CBaseEntity *pentCine, bool bPretendSuccess = false );
+	static void ScriptEntityCancel( CBaseEntity* pentCine, bool bPretendSuccess = false );
 
-	static const char *GetSpawnPreIdleSequenceForScript( CBaseEntity *pTargetEntity );
+	static const char* GetSpawnPreIdleSequenceForScript( CBaseEntity* pTargetEntity );
 
 	// Dynamic interactions
 	// For now, store just a single one of these. To synchronize positions

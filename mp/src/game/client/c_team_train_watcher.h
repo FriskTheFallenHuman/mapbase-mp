@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef C_TEAM_TRAIN_WATCHER_H
 #define C_TEAM_TRAIN_WATCHER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
 #include "c_physicsprop.h"
 #ifdef GLOWS_ENABLE
-#include "glow_outline_effect.h"
+	#include "glow_outline_effect.h"
 #endif // GLOWS_ENABLE
 
 class C_TeamTrainWatcher : public C_BaseEntity
@@ -31,8 +31,14 @@ public:
 	virtual void Spawn( void );
 	virtual void UpdateOnRemove( void );
 
-	float GetTotalProgress( void ) { return m_flTotalProgress; }
-	int GetSpeedLevel( void ) { return m_iTrainSpeedLevel; }
+	float GetTotalProgress( void )
+	{
+		return m_flTotalProgress;
+	}
+	int GetSpeedLevel( void )
+	{
+		return m_iTrainSpeedLevel;
+	}
 
 	// IClientThinkable overrides.
 public:
@@ -68,7 +74,7 @@ private:
 #ifdef GLOWS_ENABLE
 	EHANDLE m_hGlowEnt;
 	EHANDLE m_hOldGlowEnt;
-	CGlowObject *m_pGlowEffect;
+	CGlowObject* m_pGlowEffect;
 #endif // GLOWS_ENABLE
 };
 

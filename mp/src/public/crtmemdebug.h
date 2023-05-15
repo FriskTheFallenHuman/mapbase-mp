@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -17,13 +17,13 @@
 
 #ifdef USECRTMEMDEBUG
 
-#include <crtdbg.h>
-#define MEMCHECK CheckHeap()
-void CheckHeap( void );
+	#include <crtdbg.h>
+	#define MEMCHECK CheckHeap()
+	void CheckHeap( void );
 
 #else
 
-#define MEMCHECK
+	#define MEMCHECK
 
 #endif
 

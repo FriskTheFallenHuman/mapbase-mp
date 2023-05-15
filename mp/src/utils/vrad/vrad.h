@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -33,17 +33,17 @@
 
 
 #ifdef _WIN32
-#include <windows.h>
+	#include <windows.h>
 #endif
 
 #include <sys/types.h>
 #include <sys/stat.h>
 
 #ifdef _WIN32
-#pragma warning(disable: 4142 4028)
-#include <io.h>
-#pragma warning(default: 4142 4028)
-#include <direct.h>
+	#pragma warning(disable: 4142 4028)
+	#include <io.h>
+	#pragma warning(default: 4142 4028)
+	#include <direct.h>
 #endif
 
 #include <fcntl.h>
@@ -69,10 +69,10 @@ struct directlight_t
 {
 	int		index;
 
-	directlight_t *next;
+	directlight_t* next;
 	dworldlight_t light;
 
-	byte	*pvs;		// accumulated domain of the light
+	byte*	pvs;		// accumulated domain of the light
 	int		facenum;	// domain of attached lights
 	int		texdata;	// texture source of traced lights
 
@@ -93,10 +93,10 @@ struct directlight_t
 	float m_flEndFadeDistance;
 	float m_flCapDist;										// max distance to feed in
 
-	directlight_t(void)
+	directlight_t( void )
 	{
 		m_flEndFadeDistance = -1.0;							// end<start indicates not set
-		m_flStartFadeDistance= 0.0;
+		m_flStartFadeDistance = 0.0;
 		m_flCapDist = 1.0e22;
 
 	}
@@ -104,7 +104,7 @@ struct directlight_t
 
 struct bumplights_t
 {
-	Vector	light[NUM_BUMP_VECTS+1];
+	Vector	light[NUM_BUMP_VECTS + 1];
 };
 
 
@@ -122,11 +122,11 @@ struct LightingValue_t
 
 	FORCEINLINE bool IsValid( void ) const
 	{
-		return ( m_vecLighting.x >= 0 && 
-				 m_vecLighting.y >= 0 && 
+		return ( m_vecLighting.x >= 0 &&
+				 m_vecLighting.y >= 0 &&
 				 m_vecLighting.z >= 0 &&
-				 m_vecLighting.x < 1e10 && 
-				 m_vecLighting.y < 1e10 && 
+				 m_vecLighting.x < 1e10 &&
+				 m_vecLighting.y < 1e10 &&
 				 m_vecLighting.z < 1e10 );
 	}
 
@@ -135,20 +135,20 @@ struct LightingValue_t
 		m_vecLighting.Init( 0, 0, 0 );
 		m_flDirectSunAmount = 0.0;
 	}
-	
+
 	FORCEINLINE void Scale( float m_flScale )
 	{
 		m_vecLighting *= m_flScale;
 		m_flDirectSunAmount *= m_flScale;
 	}
 
-	FORCEINLINE void AddWeighted( LightingValue_t const &src, float flWeight )
+	FORCEINLINE void AddWeighted( LightingValue_t const& src, float flWeight )
 	{
 		m_vecLighting += flWeight * src.m_vecLighting;
 		m_flDirectSunAmount += flWeight * src.m_flDirectSunAmount;
 	}
 
-	FORCEINLINE void AddWeighted( Vector const &src, float flWeight )
+	FORCEINLINE void AddWeighted( Vector const& src, float flWeight )
 	{
 		m_vecLighting += flWeight * src;
 	}
@@ -158,7 +158,7 @@ struct LightingValue_t
 		return m_vecLighting.x + m_vecLighting.y + m_vecLighting.z;
 	}
 
-	FORCEINLINE void AddLight( float flAmount, Vector const &vecColor, float flSunAmount = 0.0 )
+	FORCEINLINE void AddLight( float flAmount, Vector const& vecColor, float flSunAmount = 0.0 )
 	{
 		VectorMA( m_vecLighting, flAmount, vecColor, m_vecLighting );
 		m_flDirectSunAmount += flSunAmount;
@@ -166,13 +166,13 @@ struct LightingValue_t
 	}
 
 
-	FORCEINLINE void AddLight( LightingValue_t const &src )
+	FORCEINLINE void AddLight( LightingValue_t const& src )
 	{
 		m_vecLighting += src.m_vecLighting;
 		m_flDirectSunAmount += src.m_flDirectSunAmount;
 		Assert( this->IsValid() );
 	}
-	
+
 	FORCEINLINE void Init( float x, float y, float z )
 	{
 		m_vecLighting.Init( x, y, z );
@@ -187,16 +187,16 @@ struct LightingValue_t
 
 struct CPatch
 {
-	winding_t	*winding;
+	winding_t*	winding;
 	Vector		mins, maxs, face_mins, face_maxs;
 
 	Vector		origin;				// adjusted off face by face normal
 
-	dplane_t	*plane;				// plane (corrected for facing)
-	
+	dplane_t*	plane;				// plane (corrected for facing)
+
 	unsigned short		m_IterationKey;	// Used to prevent touching the same patch multiple times in the same query.
-										// See IncrementPatchIterationKey().
-	
+	// See IncrementPatchIterationKey().
+
 	// these are packed into one dword
 	unsigned int normalMajorAxis : 2;	// the major axis of base face normal
 	unsigned int sky : 1;
@@ -212,8 +212,8 @@ struct CPatch
 	float		scale[2];			// Scaling of texture in s & t
 
 	bumplights_t totallight;		// accumulated by radiosity
-									// does NOT include light
-									// accounted for by direct lighting
+	// does NOT include light
+	// accounted for by direct lighting
 	Vector		baselight;			// emissivity only
 	float		basearea;			// surface per area per baselight instance
 
@@ -239,7 +239,7 @@ struct CPatch
 //	struct		patch_s		*nextclusterchild;		// next terminal child in cluster
 
 	int			numtransfers;
-	transfer_t	*transfers;
+	transfer_t*	transfers;
 
 	short		indices[3];				// displacement use these for subdivision
 };
@@ -264,7 +264,7 @@ extern sky_camera_t sky_cameras[MAX_MAP_AREAS];
 extern int area_sky_cameras[MAX_MAP_AREAS];
 void ProcessSkyCameras();
 
-extern entity_t		*face_entity[MAX_MAP_FACES];
+extern entity_t*		face_entity[MAX_MAP_FACES];
 extern Vector		face_offset[MAX_MAP_FACES];		// for rotating bmodels
 extern Vector		face_centroids[MAX_MAP_EDGES];
 extern int			leafparents[MAX_MAP_LEAFS];
@@ -282,7 +282,7 @@ extern FileHandle_t	pFileSamples[4][4];
 extern qboolean		g_bLowPriority;
 extern qboolean		do_fast;
 extern bool			g_bInterrupt;		// Was used with background lighting in WC. Tells VRAD to stop lighting.
-extern IIncremental *g_pIncremental;	// null if not doing incremental lighting
+extern IIncremental* g_pIncremental;	// null if not doing incremental lighting
 extern bool			g_bDumpPropLightmaps;
 
 extern float g_flSkySampleScale;								// extra sampling factor for indirect light
@@ -293,9 +293,9 @@ extern bool g_bTextureShadows;
 extern bool g_bShowStaticPropNormals;
 extern bool g_bDisablePropSelfShadowing;
 
-extern CUtlVector<char const *> g_NonShadowCastingMaterialStrings;
-extern void ForceTextureShadowsOnModel( const char *pModelName );
-extern bool IsModelTextureShadowsForced( const char *pModelName );
+extern CUtlVector<char const*> g_NonShadowCastingMaterialStrings;
+extern void ForceTextureShadowsOnModel( const char* pModelName );
+extern bool IsModelTextureShadowsForced( const char* pModelName );
 
 // Raytracing
 
@@ -306,16 +306,16 @@ extern RayTracingEnvironment g_RtEnv;
 
 #include "mpivrad.h"
 
-void MakeShadowSplits (void);
+void MakeShadowSplits( void );
 
 //==============================================
 
-void BuildVisMatrix (void);
+void BuildVisMatrix( void );
 void BuildClusterTable( void );
 void AddDispsToClusterTable( void );
-void FreeVisMatrix (void);
+void FreeVisMatrix( void );
 // qboolean CheckVisBit (unsigned int p1, unsigned int p2);
-void TouchVMFFile (void);
+void TouchVMFFile( void );
 
 //==============================================
 
@@ -328,12 +328,12 @@ extern  float maxlight;
 extern	unsigned numbounce;
 extern  qboolean g_bLogHashData;
 extern  bool	debug_extra;
-extern	directlight_t	*activelights;
-extern	directlight_t	*freelights;
+extern	directlight_t*	activelights;
+extern	directlight_t*	freelights;
 
 // because of hdr having two face lumps (light styles can cause them to be different, among other
 // things), we need to always access (r/w) face data though this pointer
-extern dface_t *g_pFaces;
+extern dface_t* g_pFaces;
 
 
 extern bool g_bMPIProps;
@@ -354,80 +354,80 @@ extern char		source[MAX_PATH];
 // active lights can see the face.
 extern CUtlVector<byte> g_FacesVisibleToLights;
 
-void MakeTnodes (dmodel_t *bm);
-void PairEdges (void);
+void MakeTnodes( dmodel_t* bm );
+void PairEdges( void );
 
 void SaveVertexNormals( void );
 
-qboolean IsIncremental(char *filename);
-int SaveIncremental(char *filename);
-int PartialHead (void);
-void BuildFacelights (int facenum, int threadnum);
+qboolean IsIncremental( char* filename );
+int SaveIncremental( char* filename );
+int PartialHead( void );
+void BuildFacelights( int facenum, int threadnum );
 void PrecompLightmapOffsets();
-void FinalLightFace (int threadnum, int facenum);
-void PvsForOrigin (Vector& org, byte *pvs);
-void ConvertRGBExp32ToRGBA8888( const ColorRGBExp32 *pSrc, unsigned char *pDst, Vector* _optOutLinear = NULL );
-void ConvertRGBExp32ToLinear(const ColorRGBExp32 *pSrc, Vector* pDst);
-void ConvertLinearToRGBA8888( const Vector *pSrc, unsigned char *pDst );
+void FinalLightFace( int threadnum, int facenum );
+void PvsForOrigin( Vector& org, byte* pvs );
+void ConvertRGBExp32ToRGBA8888( const ColorRGBExp32* pSrc, unsigned char* pDst, Vector* _optOutLinear = NULL );
+void ConvertRGBExp32ToLinear( const ColorRGBExp32* pSrc, Vector* pDst );
+void ConvertLinearToRGBA8888( const Vector* pSrc, unsigned char* pDst );
 
 
-inline byte PVSCheck( const byte *pvs, int iCluster )
+inline byte PVSCheck( const byte* pvs, int iCluster )
 {
-	if ( iCluster >= 0 )
+	if( iCluster >= 0 )
 	{
 		return pvs[iCluster >> 3] & ( 1 << ( iCluster & 7 ) );
 	}
 	else
 	{
-		// PointInLeaf still returns -1 for valid points sometimes and rather than 
+		// PointInLeaf still returns -1 for valid points sometimes and rather than
 		// have black samples, we assume the sample is in the PVS.
 		return 1;
 	}
 }
 
 // outputs 1 in fractionVisible if no occlusion, 0 if full occlusion, and in-between values
-void TestLine( FourVectors const& start, FourVectors const& stop, fltx4 *pFractionVisible, int static_prop_index_to_ignore=-1);
+void TestLine( FourVectors const& start, FourVectors const& stop, fltx4* pFractionVisible, int static_prop_index_to_ignore = -1 );
 
 // returns 1 if the ray sees the sky, 0 if it doesn't, and in-between values for partial coverage
 void TestLine_DoesHitSky( FourVectors const& start, FourVectors const& stop,
-                          fltx4 *pFractionVisible, bool canRecurse = true, int static_prop_to_skip=-1, bool bDoDebug = false );
+						  fltx4* pFractionVisible, bool canRecurse = true, int static_prop_to_skip = -1, bool bDoDebug = false );
 
 // converts any marked brush entities to triangles for shadow casting
-void ExtractBrushEntityShadowCasters ( void );
-void AddBrushesForRayTrace ( void );
+void ExtractBrushEntityShadowCasters( void );
+void AddBrushesForRayTrace( void );
 
-void BaseLightForFace( dface_t *f, Vector& light, float *parea, Vector& reflectivity );
-void CreateDirectLights (void);
+void BaseLightForFace( dface_t* f, Vector& light, float* parea, Vector& reflectivity );
+void CreateDirectLights( void );
 void GetPhongNormal( int facenum, Vector const& spot, Vector& phongnormal );
-int LightForString( char *pLight, Vector& intensity );
-void MakeTransfer( int ndxPatch1, int ndxPatch2, transfer_t *all_transfers );
-void MakeScales( int ndxPatch, transfer_t *all_transfers );
+int LightForString( char* pLight, Vector& intensity );
+void MakeTransfer( int ndxPatch1, int ndxPatch2, transfer_t* all_transfers );
+void MakeScales( int ndxPatch, transfer_t* all_transfers );
 
 // Run startup code like initialize mathlib.
 void VRAD_Init();
 
 // Load the BSP file and prepare to do the lighting.
 // This is called after any command-line parameters have been set.
-void VRAD_LoadBSP( char const *pFilename );
+void VRAD_LoadBSP( char const* pFilename );
 
-int VRAD_Main(int argc, char **argv);
+int VRAD_Main( int argc, char** argv );
 
 // This performs an actual lighting pass.
 // Returns true if the process was interrupted (with g_bInterrupt).
 bool RadWorld_Go();
 
-dleaf_t		*PointInLeaf (Vector const& point);
+dleaf_t*		PointInLeaf( Vector const& point );
 int			ClusterFromPoint( Vector const& point );
-winding_t	*WindingFromFace (dface_t *f, Vector& origin );
+winding_t*	WindingFromFace( dface_t* f, Vector& origin );
 
-void WriteWinding (FileHandle_t out, winding_t *w, Vector& color );
-void WriteNormal( FileHandle_t out, Vector const &nPos, Vector const &nDir, 
-				  float length, Vector const &color );
-void WriteLine( FileHandle_t out, const Vector &vecPos1, const Vector &vecPos2, const Vector &color );
-void WriteTrace( const char *pFileName, const FourRays &rays, const RayTracingResult& result );
+void WriteWinding( FileHandle_t out, winding_t* w, Vector& color );
+void WriteNormal( FileHandle_t out, Vector const& nPos, Vector const& nDir,
+				  float length, Vector const& color );
+void WriteLine( FileHandle_t out, const Vector& vecPos1, const Vector& vecPos2, const Vector& color );
+void WriteTrace( const char* pFileName, const FourRays& rays, const RayTracingResult& result );
 
 #ifdef STATIC_FOG
-qboolean IsFog( dface_t * f );
+	qboolean IsFog( dface_t* f );
 #endif
 
 #define CONTENTS_EMPTY	0
@@ -438,8 +438,8 @@ qboolean IsFog( dface_t * f );
 // trace.cpp
 
 bool AddDispCollTreesToWorld( void );
-int PointLeafnum( Vector const &point );
-float TraceLeafBrushes( int leafIndex, const Vector &start, const Vector &end, CBaseTrace &traceOut );
+int PointLeafnum( Vector const& point );
+float TraceLeafBrushes( int leafIndex, const Vector& start, const Vector& end, CBaseTrace& traceOut );
 
 //=============================================================================
 
@@ -447,7 +447,7 @@ float TraceLeafBrushes( int leafIndex, const Vector &start, const Vector &end, C
 
 struct SSE_sampleLightOutput_t
 {
-	fltx4 m_flDot[NUM_BUMP_VECTS+1];
+	fltx4 m_flDot[NUM_BUMP_VECTS + 1];
 	fltx4 m_flFalloff;
 	fltx4 m_flSunAmount;
 };
@@ -456,22 +456,22 @@ struct SSE_sampleLightOutput_t
 #define GATHERLFLAGS_IGNORE_NORMALS 2
 
 // SSE Gather light stuff
-void GatherSampleLightSSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum, 
-					   FourVectors const& pos, FourVectors *pNormals, int normalCount, int iThread,
-					   int nLFlags = 0,					// GATHERLFLAGS_xxx
-					   int static_prop_to_skip=-1,
-					   float flEpsilon = 0.0 );
-//void GatherSampleSkyLightSSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum, 
+void GatherSampleLightSSE( SSE_sampleLightOutput_t& out, directlight_t* dl, int facenum,
+						   FourVectors const& pos, FourVectors* pNormals, int normalCount, int iThread,
+						   int nLFlags = 0,					// GATHERLFLAGS_xxx
+						   int static_prop_to_skip = -1,
+						   float flEpsilon = 0.0 );
+//void GatherSampleSkyLightSSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum,
 //							 FourVectors const& pos, FourVectors *pNormals, int normalCount, int iThread,
 //							 int nLFlags = 0,
 //							 int static_prop_to_skip=-1,
 //							 float flEpsilon = 0.0 );
-//void GatherSampleAmbientSkySSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum, 
+//void GatherSampleAmbientSkySSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum,
 //						  FourVectors const& pos, FourVectors *pNormals, int normalCount, int iThread,
 //						  int nLFlags = 0,					// GATHERLFLAGS_xxx
 //						  int static_prop_to_skip=-1,
 //						  float flEpsilon = 0.0 );
-//void GatherSampleStandardLightSSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum, 
+//void GatherSampleStandardLightSSE( SSE_sampleLightOutput_t &out, directlight_t *dl, int facenum,
 //						  FourVectors const& pos, FourVectors *pNormals, int normalCount, int iThread,
 //						  int nLFlags = 0,					// GATHERLFLAGS_xxx
 //						  int static_prop_to_skip=-1,
@@ -490,7 +490,7 @@ struct lightinfo_t;
 struct DispTested_t
 {
 	int	m_Enum;
-	int	*m_pTested;
+	int*	m_pTested;
 };
 
 class IVRadDispMgr
@@ -501,9 +501,9 @@ public:
 	virtual void Shutdown( void ) = 0;
 
 	// "CalcPoints"
-	virtual bool BuildDispSamples( lightinfo_t *pLightInfo, facelight_t *pFaceLight, int ndxFace ) = 0;
-	virtual bool BuildDispLuxels( lightinfo_t *pLightInfo, facelight_t *pFaceLight, int ndxFace ) = 0;
-	virtual bool BuildDispSamplesAndLuxels_DoFast( lightinfo_t *pLightInfo, facelight_t *pFaceLight, int ndxFace ) = 0;
+	virtual bool BuildDispSamples( lightinfo_t* pLightInfo, facelight_t* pFaceLight, int ndxFace ) = 0;
+	virtual bool BuildDispLuxels( lightinfo_t* pLightInfo, facelight_t* pFaceLight, int ndxFace ) = 0;
+	virtual bool BuildDispSamplesAndLuxels_DoFast( lightinfo_t* pLightInfo, facelight_t* pFaceLight, int ndxFace ) = 0;
 
 	// patching functions
 	virtual void MakePatches( void ) = 0;
@@ -514,45 +514,54 @@ public:
 	virtual void InsertPatchSampleDataIntoHashTable( void ) = 0;
 
 	// "FinalLightFace"
-	virtual radial_t *BuildLuxelRadial( int ndxFace, int ndxStyle, bool bBump ) = 0;
-	virtual bool SampleRadial( int ndxFace, radial_t *pRadial, Vector const &vPos, int ndxLxl, LightingValue_t *pLightSample, int sampleCount, bool bPatch ) = 0;
-	virtual radial_t *BuildPatchRadial( int ndxFace, bool bBump ) = 0;
+	virtual radial_t* BuildLuxelRadial( int ndxFace, int ndxStyle, bool bBump ) = 0;
+	virtual bool SampleRadial( int ndxFace, radial_t* pRadial, Vector const& vPos, int ndxLxl, LightingValue_t* pLightSample, int sampleCount, bool bPatch ) = 0;
+	virtual radial_t* BuildPatchRadial( int ndxFace, bool bBump ) = 0;
 
 	// utility
-	virtual	void GetDispSurfNormal( int ndxFace, Vector &pt, Vector &ptNormal, bool bInside ) = 0;
-	virtual void GetDispSurf( int ndxFace, CVRADDispColl **ppDispTree ) = 0;
+	virtual	void GetDispSurfNormal( int ndxFace, Vector& pt, Vector& ptNormal, bool bInside ) = 0;
+	virtual void GetDispSurf( int ndxFace, CVRADDispColl** ppDispTree ) = 0;
 
 	// bsp tree functions
-	virtual bool ClipRayToDisp( DispTested_t &dispTested, Ray_t const &ray ) = 0;
-	virtual bool ClipRayToDispInLeaf( DispTested_t &dispTested, Ray_t const &ray, int ndxLeaf ) = 0;
-	virtual void ClipRayToDispInLeaf( DispTested_t &dispTested, Ray_t const &ray, 
-				int ndxLeaf, float& dist, dface_t*& pFace, Vector2D& luxelCoord ) = 0;
-	virtual void ClipRayToDispInLeaf( DispTested_t &dispTested, Ray_t const &ray, 
-		int ndxLeaf, float& dist, Vector *pNormal ) = 0;
-	virtual void StartRayTest( DispTested_t &dispTested ) = 0;
+	virtual bool ClipRayToDisp( DispTested_t& dispTested, Ray_t const& ray ) = 0;
+	virtual bool ClipRayToDispInLeaf( DispTested_t& dispTested, Ray_t const& ray, int ndxLeaf ) = 0;
+	virtual void ClipRayToDispInLeaf( DispTested_t& dispTested, Ray_t const& ray,
+									  int ndxLeaf, float& dist, dface_t*& pFace, Vector2D& luxelCoord ) = 0;
+	virtual void ClipRayToDispInLeaf( DispTested_t& dispTested, Ray_t const& ray,
+									  int ndxLeaf, float& dist, Vector* pNormal ) = 0;
+	virtual void StartRayTest( DispTested_t& dispTested ) = 0;
 	virtual void AddPolysForRayTrace() = 0;
 
 	// general timing -- should be moved!!
-	virtual void StartTimer( const char *name ) = 0;
+	virtual void StartTimer( const char* name ) = 0;
 	virtual void EndTimer( void ) = 0;
 };
 
-IVRadDispMgr *StaticDispMgr( void );
+IVRadDispMgr* StaticDispMgr( void );
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-inline bool ValidDispFace( dface_t *pFace )
+inline bool ValidDispFace( dface_t* pFace )
 {
-	if( !pFace ) { return false; }
-	if( pFace->dispinfo == -1 ) { return false; }
-	if( pFace->numedges != 4 ) { return false; }
+	if( !pFace )
+	{
+		return false;
+	}
+	if( pFace->dispinfo == -1 )
+	{
+		return false;
+	}
+	if( pFace->numedges != 4 )
+	{
+		return false;
+	}
 
 	return true;
 }
 
 #define SAMPLEHASH_VOXEL_SIZE			64.0f
 typedef unsigned int SampleHandle_t;				// the upper 16 bits = facelight index (works because max face are 65536)
-													// the lower 16 bits = sample index inside of facelight
+// the lower 16 bits = sample index inside of facelight
 struct sample_t;
 struct SampleData_t
 {
@@ -566,8 +575,8 @@ struct PatchSampleData_t
 	CUtlVector<int>				m_ndxPatches;
 };
 
-UtlHashHandle_t SampleData_AddSample( sample_t *pSample, SampleHandle_t sampleHandle );
-void PatchSampleData_AddSample( CPatch *pPatch, int ndxPatch );
+UtlHashHandle_t SampleData_AddSample( sample_t* pSample, SampleHandle_t sampleHandle );
+void PatchSampleData_AddSample( CPatch* pPatch, int ndxPatch );
 unsigned short IncrementPatchIterationKey();
 void SampleData_Log( void );
 
@@ -582,7 +591,7 @@ extern int patchSamplesAdded;
 //-----------------------------------------------------------------------------
 
 void ComputeDetailPropLighting( int iThread );
-void ComputeIndirectLightingAtPoint( Vector &position, Vector &normal, Vector &outColor, 
+void ComputeIndirectLightingAtPoint( Vector& position, Vector& normal, Vector& outColor,
 									 int iThread, bool force_fast = false, bool bIgnoreNormals = false );
 
 //-----------------------------------------------------------------------------
@@ -593,7 +602,7 @@ struct PropTested_t
 {
 	int m_Enum;
 	int* m_pTested;
-	IPhysicsCollision *pThreadedCollision;
+	IPhysicsCollision* pThreadedCollision;
 };
 
 class IVradStaticPropMgr
@@ -607,7 +616,7 @@ public:
 };
 
 //extern PropTested_t s_PropTested[MAX_TOOL_THREADS+1];
-extern DispTested_t s_DispTested[MAX_TOOL_THREADS+1];
+extern DispTested_t s_DispTested[MAX_TOOL_THREADS + 1];
 
 IVradStaticPropMgr* StaticPropMgr();
 

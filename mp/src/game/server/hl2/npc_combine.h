@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef NPC_COMBINE_H
 #define NPC_COMBINE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -22,13 +22,13 @@
 #include "ai_sentence.h"
 #include "ai_baseactor.h"
 #ifdef MAPBASE
-#include "mapbase/ai_grenade.h"
-#include "ai_behavior_police.h"
+	#include "mapbase/ai_grenade.h"
+	#include "ai_behavior_police.h"
 #endif
 #ifdef EXPANDED_RESPONSE_SYSTEM_USAGE
-#include "mapbase/expandedrs_combine.h"
-//#define CAI_Sentence CAI_SentenceTalker
-#define COMBINE_SOLDIER_USES_RESPONSE_SYSTEM 1
+	#include "mapbase/expandedrs_combine.h"
+	//#define CAI_Sentence CAI_SentenceTalker
+	#define COMBINE_SOLDIER_USES_RESPONSE_SYSTEM 1
 #endif
 
 // Used when only what combine to react to what the spotlight sees
@@ -60,18 +60,21 @@ public:
 	virtual bool	CreateComponents();
 
 #ifndef MAPBASE // CAI_GrenadeUser
-	bool			CanThrowGrenade( const Vector &vecTarget );
-	bool			CheckCanThrowGrenade( const Vector &vecTarget );
+	bool			CanThrowGrenade( const Vector& vecTarget );
+	bool			CheckCanThrowGrenade( const Vector& vecTarget );
 #endif
 	virtual	bool	CanGrenadeEnemy( bool bUseFreeKnowledge = true );
 	virtual bool	CanAltFireEnemy( bool bUseFreeKnowledge );
 	int				GetGrenadeConditions( float flDot, float flDist );
 	int				RangeAttack2Conditions( float flDot, float flDist ); // For innate grenade attack
 	int				MeleeAttack1Conditions( float flDot, float flDist ); // For kick/punch
-	bool			FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
+	bool			FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
 	virtual bool	IsCurTaskContinuousMove();
 
-	virtual float	GetJumpGravity() const		{ return 1.8f; }
+	virtual float	GetJumpGravity() const
+	{
+		return 1.8f;
+	}
 
 	virtual Vector  GetCrouchEyeOffset( void );
 
@@ -79,43 +82,49 @@ public:
 	virtual bool	IsCrouchedActivity( Activity activity );
 #endif
 
-	void Event_Killed( const CTakeDamageInfo &info );
+	void Event_Killed( const CTakeDamageInfo& info );
 
 
 	void SetActivity( Activity NewActivity );
-	NPC_STATE		SelectIdealState ( void );
+	NPC_STATE		SelectIdealState( void );
 
 	// Input handlers.
-	void InputLookOn( inputdata_t &inputdata );
-	void InputLookOff( inputdata_t &inputdata );
-	void InputStartPatrolling( inputdata_t &inputdata );
-	void InputStopPatrolling( inputdata_t &inputdata );
-	void InputAssault( inputdata_t &inputdata );
-	void InputHitByBugbait( inputdata_t &inputdata );
+	void InputLookOn( inputdata_t& inputdata );
+	void InputLookOff( inputdata_t& inputdata );
+	void InputStartPatrolling( inputdata_t& inputdata );
+	void InputStopPatrolling( inputdata_t& inputdata );
+	void InputAssault( inputdata_t& inputdata );
+	void InputHitByBugbait( inputdata_t& inputdata );
 #ifndef MAPBASE
-	void InputThrowGrenadeAtTarget( inputdata_t &inputdata );
+	void InputThrowGrenadeAtTarget( inputdata_t& inputdata );
 #else
-	void InputSetElite( inputdata_t &inputdata );
+	void InputSetElite( inputdata_t& inputdata );
 
-	void InputDropGrenade( inputdata_t &inputdata );
+	void InputDropGrenade( inputdata_t& inputdata );
 
-	void InputSetTacticalVariant( inputdata_t &inputdata );
+	void InputSetTacticalVariant( inputdata_t& inputdata );
 
-	void InputSetPoliceGoal( inputdata_t &inputdata );
+	void InputSetPoliceGoal( inputdata_t& inputdata );
 #endif
 
-	bool			UpdateEnemyMemory( CBaseEntity *pEnemy, const Vector &position, CBaseEntity *pInformer = NULL );
+	bool			UpdateEnemyMemory( CBaseEntity* pEnemy, const Vector& position, CBaseEntity* pInformer = NULL );
 
 	void			Spawn( void );
 	void			Precache( void );
 	void			Activate();
 
 	Class_T			Classify( void );
-	bool			IsElite() { return m_fIsElite; }
+	bool			IsElite()
+	{
+		return m_fIsElite;
+	}
 #ifdef MAPBASE
 	bool			IsAltFireCapable();
 	bool			IsGrenadeCapable();
-	const char*		GetGrenadeAttachment() { return "lefthand"; }
+	const char*		GetGrenadeAttachment()
+	{
+		return "lefthand";
+	}
 #else
 #endif
 #ifndef MAPBASE // CAI_GrenadeUser
@@ -124,25 +133,25 @@ public:
 #endif
 	float			MaxYawSpeed( void );
 	bool			ShouldMoveAndShoot();
-	bool			OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );;
-	void			HandleAnimEvent( animevent_t *pEvent );
+	bool			OverrideMoveFacing( const AILocalMoveGoal_t& move, float flInterval );;
+	void			HandleAnimEvent( animevent_t* pEvent );
 	Vector			Weapon_ShootPosition( );
 
 	Vector			EyeOffset( Activity nActivity );
 	Vector			EyePosition( void );
-	Vector			BodyTarget( const Vector &posSrc, bool bNoisy = true );
+	Vector			BodyTarget( const Vector& posSrc, bool bNoisy = true );
 #ifndef MAPBASE // CAI_GrenadeUser
 	Vector			GetAltFireTarget();
 #endif
 
-	void			StartTask( const Task_t *pTask );
-	void			RunTask( const Task_t *pTask );
+	void			StartTask( const Task_t* pTask );
+	void			RunTask( const Task_t* pTask );
 	void			PostNPCInit();
 	void			GatherConditions();
 	virtual void	PrescheduleThink();
 
 #ifdef MAPBASE
-	Activity		Weapon_TranslateActivity( Activity baseAct, bool *pRequired = NULL );
+	Activity		Weapon_TranslateActivity( Activity baseAct, bool* pRequired = NULL );
 	Activity		NPC_BackupActivity( Activity eNewActivity );
 #endif
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
@@ -157,15 +166,18 @@ public:
 	void			OnEndMoveAndShoot();
 
 	// Combat
-	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
+	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon* pWeapon );
 	bool			HasShotgun();
 	bool			ActiveWeaponIsFullyLoaded();
 
-	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter *sourceEnt);
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 	const char*		GetSquadSlotDebugName( int iSquadSlot );
 
 	bool			IsUsingTacticalVariant( int variant );
-	bool			IsUsingPathfindingVariant( int variant ) { return m_iPathfindingVariant == variant; }
+	bool			IsUsingPathfindingVariant( int variant )
+	{
+		return m_iPathfindingVariant == variant;
+	}
 
 	bool			IsRunningApproachEnemySchedule();
 
@@ -173,8 +185,8 @@ public:
 	// Sounds
 	// -------------
 #ifdef MAPBASE
-	void			DeathSound( const CTakeDamageInfo &info );
-	void			PainSound( const CTakeDamageInfo &info );
+	void			DeathSound( const CTakeDamageInfo& info );
+	void			PainSound( const CTakeDamageInfo& info );
 #else
 	void			DeathSound( void );
 	void			PainSound( void );
@@ -184,24 +196,27 @@ public:
 	void			LostEnemySound( void );
 	void			FoundEnemySound( void );
 	void			AnnounceAssault( void );
-	void			AnnounceEnemyType( CBaseEntity *pEnemy );
-	void			AnnounceEnemyKill( CBaseEntity *pEnemy );
+	void			AnnounceEnemyType( CBaseEntity* pEnemy );
+	void			AnnounceEnemyKill( CBaseEntity* pEnemy );
 
 	void			NotifyDeadFriend( CBaseEntity* pFriend );
 
-	virtual float	HearingSensitivity( void ) { return 1.0; };
+	virtual float	HearingSensitivity( void )
+	{
+		return 1.0;
+	};
 	int				GetSoundInterests( void );
-	virtual bool	QueryHearSound( CSound *pSound );
+	virtual bool	QueryHearSound( CSound* pSound );
 
 	// Speaking
 	void			SpeakSentence( int sentType );
 #ifdef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
-	bool			SpeakIfAllowed( const char *concept, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD )
+	bool			SpeakIfAllowed( const char* concept, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD )
 	{
 		return SpeakIfAllowed( concept, NULL, sentencepriority, sentencecriteria );
 	}
-	bool			SpeakIfAllowed( const char *concept, const char *modifiers, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD );
-	bool			SpeakIfAllowed( const char *concept, AI_CriteriaSet& modifiers, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD );
+	bool			SpeakIfAllowed( const char* concept, const char* modifiers, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD );
+	bool			SpeakIfAllowed( const char* concept, AI_CriteriaSet& modifiers, SentencePriority_t sentencepriority = SENTENCE_PRIORITY_NORMAL, SentenceCriteria_t sentencecriteria = SENTENCE_CRITERIA_IN_SQUAD );
 	void			ModifyOrAppendCriteria( AI_CriteriaSet& set );
 #endif
 
@@ -211,9 +226,15 @@ public:
 	virtual bool	ShouldPickADeathPose( void );
 
 protected:
-	void			SetKickDamage( int nDamage ) { m_nKickDamage = nDamage; }
+	void			SetKickDamage( int nDamage )
+	{
+		m_nKickDamage = nDamage;
+	}
 #ifndef COMBINE_SOLDIER_USES_RESPONSE_SYSTEM
-	CAI_Sentence< CNPC_Combine > *GetSentences() { return &m_Sentences; }
+	CAI_Sentence< CNPC_Combine >* GetSentences()
+	{
+		return &m_Sentences;
+	}
 #endif
 
 private:
@@ -261,7 +282,7 @@ private:
 	//=========================================================
 	// Combine Tasks
 	//=========================================================
-	enum 
+	enum
 	{
 		TASK_COMBINE_FACE_TOSS_DIR = BaseClass::NEXT_TASK,
 		TASK_COMBINE_IGNORE_ATTACKS,
@@ -298,8 +319,8 @@ private:
 	bool ShouldChargePlayer();
 
 	// Chase the enemy, updating the target position as the player moves
-	void StartTaskChaseEnemyContinuously( const Task_t *pTask );
-	void RunTaskChaseEnemyContinuously( const Task_t *pTask );
+	void StartTaskChaseEnemyContinuously( const Task_t* pTask );
+	void RunTaskChaseEnemyContinuously( const Task_t* pTask );
 
 	class CCombineStandoffBehavior : public CAI_ComponentWithOuter<CNPC_Combine, CAI_StandoffBehavior>
 	{
@@ -308,15 +329,23 @@ private:
 		virtual int SelectScheduleAttack()
 		{
 			int result = GetOuter()->SelectScheduleAttack();
-			if ( result == SCHED_NONE )
+			if( result == SCHED_NONE )
+			{
 				result = BaseClass::SelectScheduleAttack();
+			}
 			return result;
 		}
 	};
 
 	// Rappel
-	virtual bool IsWaitingToRappel( void ) { return m_RappelBehavior.IsWaitingToRappel(); }
-	void BeginRappel() { m_RappelBehavior.BeginRappel(); }
+	virtual bool IsWaitingToRappel( void )
+	{
+		return m_RappelBehavior.IsWaitingToRappel();
+	}
+	void BeginRappel()
+	{
+		m_RappelBehavior.BeginRappel();
+	}
 
 private:
 	int				m_nKickDamage;
@@ -335,7 +364,7 @@ private:
 	float			m_flNextPainSoundTime;
 	float			m_flNextAlertSoundTime;
 #ifndef MAPBASE // CAI_GrenadeUser
-	float			m_flNextGrenadeCheck;	
+	float			m_flNextGrenadeCheck;
 #endif
 	float			m_flNextLostSoundTime;
 	float			m_flAlertPatrolTime;		// When to stop doing alert patrol

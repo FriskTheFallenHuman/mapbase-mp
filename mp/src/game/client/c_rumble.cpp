@@ -10,7 +10,7 @@
 #include "rumble_shared.h"
 #include "inputsystem/iinputsystem.h"
 
-ConVar cl_rumblescale( "cl_rumblescale", "1.0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX, "Scale sensitivity of rumble effects (0 to 1.0)" ); 
+ConVar cl_rumblescale( "cl_rumblescale", "1.0", FCVAR_ARCHIVE | FCVAR_ARCHIVE_XBOX, "Scale sensitivity of rumble effects (0 to 1.0)" );
 ConVar cl_debugrumble( "cl_debugrumble", "0", FCVAR_ARCHIVE, "Turn on rumble debugging spew" );
 
 #define MAX_RUMBLE_CHANNELS 3	// Max concurrent rumble effects
@@ -40,12 +40,12 @@ typedef struct
 
 //=========================================================
 // This structure contains parameters necessary to generate
-// a sine or sawtooth waveform. 
+// a sine or sawtooth waveform.
 //=========================================================
 typedef struct tagWaveGenParams
 {
 	float	cycles;				// AKA frequency
-	float	amplitudescale;	
+	float	amplitudescale;
 	bool	leftChannel;		// If false, generating for the right channel
 
 	float	maxAmplitude;		// Clamping
@@ -61,7 +61,7 @@ typedef struct tagWaveGenParams
 	}
 
 	// CTOR
-	tagWaveGenParams( float c_cycles, float c_amplitudescale, bool c_leftChannel, float c_minAmplitude, float c_maxAmplitude ) 
+	tagWaveGenParams( float c_cycles, float c_amplitudescale, bool c_leftChannel, float c_minAmplitude, float c_maxAmplitude )
 	{
 		Set( c_cycles, c_amplitudescale, c_leftChannel, c_minAmplitude, c_maxAmplitude );
 	}
@@ -70,7 +70,7 @@ typedef struct tagWaveGenParams
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void TerminateWaveform( RumbleWaveform_t *pWaveform, int samples )
+void TerminateWaveform( RumbleWaveform_t* pWaveform, int samples )
 {
 	if( samples <= NUM_WAVE_SAMPLES )
 	{
@@ -80,9 +80,9 @@ void TerminateWaveform( RumbleWaveform_t *pWaveform, int samples )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void EaseInWaveform( RumbleWaveform_t *pWaveform, int samples, bool left )
+void EaseInWaveform( RumbleWaveform_t* pWaveform, int samples, bool left )
 {
-	float step = 1.0f / ((float)samples);
+	float step = 1.0f / ( ( float )samples );
 	float factor = 0.0f;
 
 	for( int i = 0 ; i < samples ; i++ )
@@ -102,9 +102,9 @@ void EaseInWaveform( RumbleWaveform_t *pWaveform, int samples, bool left )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void EaseOutWaveform( RumbleWaveform_t *pWaveform, int samples, bool left )
+void EaseOutWaveform( RumbleWaveform_t* pWaveform, int samples, bool left )
 {
-	float step = 1.0f / ((float)samples);
+	float step = 1.0f / ( ( float )samples );
 	float factor = 0.0f;
 
 	int i = NUM_WAVE_SAMPLES - 1;
@@ -127,11 +127,11 @@ void EaseOutWaveform( RumbleWaveform_t *pWaveform, int samples, bool left )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void GenerateSawtoothEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t &params )
+void GenerateSawtoothEffect( RumbleWaveform_t* pWaveform, const WaveGenParams_t& params )
 {
 	float delta = params.maxAmplitude - params.minAmplitude;
 	int waveLength = NUM_WAVE_SAMPLES / params.cycles;
-	float vstep = (delta / waveLength);
+	float vstep = ( delta / waveLength );
 
 	float amplitude = params.minAmplitude;
 
@@ -157,12 +157,12 @@ void GenerateSawtoothEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t 
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void GenerateSquareWaveEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t &params )
+void GenerateSquareWaveEffect( RumbleWaveform_t* pWaveform, const WaveGenParams_t& params )
 {
 	int i = 0;
 	int j;
 
-	int steps = ((float)NUM_WAVE_SAMPLES) / (params.cycles*2.0f);
+	int steps = ( ( float )NUM_WAVE_SAMPLES ) / ( params.cycles * 2.0f );
 
 	while( i < NUM_WAVE_SAMPLES )
 	{
@@ -195,7 +195,7 @@ void GenerateSquareWaveEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_
 // If you pass a numSamples, this wave will only be that many
 // samples long.
 //---------------------------------------------------------
-void GenerateFlatEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t &params )
+void GenerateFlatEffect( RumbleWaveform_t* pWaveform, const WaveGenParams_t& params )
 {
 	for( int i = 0 ; i < NUM_WAVE_SAMPLES ; i++ )
 	{
@@ -212,23 +212,27 @@ void GenerateFlatEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t &par
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void GenerateSineWaveEffect( RumbleWaveform_t *pWaveform, const WaveGenParams_t &params )
+void GenerateSineWaveEffect( RumbleWaveform_t* pWaveform, const WaveGenParams_t& params )
 {
-	float step = (360.0f * (params.cycles * 0.5f) ) / ((float)NUM_WAVE_SAMPLES);
+	float step = ( 360.0f * ( params.cycles * 0.5f ) ) / ( ( float )NUM_WAVE_SAMPLES );
 	float degrees = 180.0f + step; // 180 to start at 0
 
 	for( int i = 0 ; i < NUM_WAVE_SAMPLES ; i++ )
 	{
-		float radians = DEG2RAD(degrees);
-		float value = fabs( sin(radians) );
+		float radians = DEG2RAD( degrees );
+		float value = fabs( sin( radians ) );
 
 		value *= params.amplitudescale;
 
 		if( value < params.minAmplitude )
+		{
 			value = params.minAmplitude;
+		}
 
 		if( value > params.maxAmplitude )
+		{
 			value = params.maxAmplitude;
+		}
 
 		if( params.leftChannel )
 		{
@@ -258,12 +262,12 @@ public:
 	void StartEffect( unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags );
 	void StopEffect( int effectIndex );
 	void StopAllEffects();
-	void ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime, float *pLeft, float *pRight );
+	void ComputeAmplitudes( RumbleChannel_t* pChannel, float curtime, float* pLeft, float* pRight );
 	void UpdateEffects( float curtime );
 	void UpdateScreenShakeRumble( float shake, float balance );
 
-	RumbleChannel_t *FindExistingChannel( int index );
-	RumbleChannel_t	*FindAvailableChannel( int priority );
+	RumbleChannel_t* FindExistingChannel( int index );
+	RumbleChannel_t*	FindAvailableChannel( int priority );
 
 public:
 	RumbleChannel_t	m_Channels[ MAX_RUMBLE_CHANNELS ];
@@ -282,7 +286,7 @@ CRumbleEffects g_RumbleEffects;
 void CRumbleEffects::Init()
 {
 	SetOutputEnabled( true );
-	
+
 	int i;
 
 	for( i = 0 ; i < MAX_RUMBLE_CHANNELS ; i++ )
@@ -292,7 +296,7 @@ void CRumbleEffects::Init()
 	}
 
 	// Every effect defaults to this many samples. Call TerminateWaveform() to trim these.
-	for ( i = 0 ; i < NUM_RUMBLE_EFFECTS ; i++ )
+	for( i = 0 ; i < NUM_RUMBLE_EFFECTS ; i++ )
 	{
 		m_Waveforms[i].numSamples = NUM_WAVE_SAMPLES;
 	}
@@ -384,7 +388,7 @@ void CRumbleEffects::Init()
 
 	params.Set( 1, 1.0f, false, 0.0f, 1.0f );
 	GenerateFlatEffect( &m_Waveforms[RUMBLE_FLAT_RIGHT], params );
-	
+
 	params.Set( 1, 1.0f, true, 0.0f, 1.0f );
 	GenerateFlatEffect( &m_Waveforms[RUMBLE_FLAT_BOTH], params );
 	params.Set( 1, 1.0f, false, 0.0f, 1.0f );
@@ -424,9 +428,9 @@ void CRumbleEffects::Init()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-RumbleChannel_t *CRumbleEffects::FindExistingChannel( int index )
+RumbleChannel_t* CRumbleEffects::FindExistingChannel( int index )
 {
-	RumbleChannel_t *pChannel;
+	RumbleChannel_t* pChannel;
 
 	for( int i = 0 ; i < MAX_RUMBLE_CHANNELS ; i++ )
 	{
@@ -434,7 +438,7 @@ RumbleChannel_t *CRumbleEffects::FindExistingChannel( int index )
 
 		if( pChannel->in_use && pChannel->waveformIndex == index )
 		{
-			// This effect is already playing. Provide this channel for the 
+			// This effect is already playing. Provide this channel for the
 			// effect to be re-started on.
 			return pChannel;
 		}
@@ -446,9 +450,9 @@ RumbleChannel_t *CRumbleEffects::FindExistingChannel( int index )
 //---------------------------------------------------------
 // priority - the priority of the effect we want to play.
 //---------------------------------------------------------
-RumbleChannel_t	*CRumbleEffects::FindAvailableChannel( int priority )
+RumbleChannel_t*	CRumbleEffects::FindAvailableChannel( int priority )
 {
-	RumbleChannel_t *pChannel;
+	RumbleChannel_t* pChannel;
 	int i;
 
 	for( i = 0 ; i < MAX_RUMBLE_CHANNELS ; i++ )
@@ -462,7 +466,7 @@ RumbleChannel_t	*CRumbleEffects::FindAvailableChannel( int priority )
 	}
 
 	int lowestPriority = priority;
-	RumbleChannel_t	*pBestChannel = NULL;
+	RumbleChannel_t*	pBestChannel = NULL;
 	float oldestChannel = FLT_MAX;
 
 	// All channels already in use. Find a channel to slam.
@@ -470,8 +474,10 @@ RumbleChannel_t	*CRumbleEffects::FindAvailableChannel( int priority )
 	{
 		pChannel = &m_Channels[i];
 
-		if( (pChannel->rumbleFlags & RUMBLE_FLAG_LOOP) )
+		if( ( pChannel->rumbleFlags & RUMBLE_FLAG_LOOP ) )
+		{
 			continue;
+		}
 
 		if( pChannel->priority < lowestPriority )
 		{
@@ -538,15 +544,15 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 	}
 
 	int priority = 1;
-	RumbleChannel_t *pChannel = NULL;
+	RumbleChannel_t* pChannel = NULL;
 
-	if( (rumbleFlags & RUMBLE_FLAG_RESTART) )
+	if( ( rumbleFlags & RUMBLE_FLAG_RESTART ) )
 	{
 		// Try to find any active instance of this effect and replace it.
 		pChannel = FindExistingChannel( effectIndex );
 	}
 
-	if( (rumbleFlags & RUMBLE_FLAG_ONLYONE) )
+	if( ( rumbleFlags & RUMBLE_FLAG_ONLYONE ) )
 	{
 		pChannel = FindExistingChannel( effectIndex );
 
@@ -557,12 +563,12 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 		}
 	}
 
-	if( (rumbleFlags & RUMBLE_FLAG_UPDATE_SCALE) )
+	if( ( rumbleFlags & RUMBLE_FLAG_UPDATE_SCALE ) )
 	{
 		pChannel = FindExistingChannel( effectIndex );
 		if( pChannel )
 		{
-			pChannel->scale = ((float)rumbleData) / 100.0f;
+			pChannel->scale = ( ( float )rumbleData ) / 100.0f;
 		}
 
 		// It's possible to return without finding a rumble to update.
@@ -585,7 +591,7 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 
 		if( rumbleFlags & RUMBLE_FLAG_INITIAL_SCALE )
 		{
-			pChannel->scale = ((float)rumbleData) / 100.0f;
+			pChannel->scale = ( ( float )rumbleData ) / 100.0f;
 		}
 		else
 		{
@@ -593,7 +599,7 @@ void CRumbleEffects::StartEffect( unsigned char effectIndex, unsigned char rumbl
 		}
 	}
 
-	if( (rumbleFlags & RUMBLE_FLAG_RANDOM_AMPLITUDE) )
+	if( ( rumbleFlags & RUMBLE_FLAG_RANDOM_AMPLITUDE ) )
 	{
 		pChannel->scale = random->RandomFloat( 0.1f, 1.0f );
 	}
@@ -627,14 +633,14 @@ void CRumbleEffects::StopAllEffects()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime, float *pLeft, float *pRight )
+void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t* pChannel, float curtime, float* pLeft, float* pRight )
 {
 	// How long has this waveform been playing?
 	float elapsed = curtime - pChannel->starttime;
-	
-	if( elapsed >= (NUM_WAVE_SAMPLES/10) )
+
+	if( elapsed >= ( NUM_WAVE_SAMPLES / 10 ) )
 	{
-		if( (pChannel->rumbleFlags & RUMBLE_FLAG_LOOP) )
+		if( ( pChannel->rumbleFlags & RUMBLE_FLAG_LOOP ) )
 		{
 			// This effect loops. Just fixup the start time and recompute elapsed.
 			pChannel->starttime = curtime;
@@ -650,9 +656,9 @@ void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime
 		}
 	}
 
-	// Figure out which sample we're playing FROM. 
-	int seconds = ((int) elapsed);
-	int sample = (int)(elapsed*10.0f);
+	// Figure out which sample we're playing FROM.
+	int seconds = ( ( int ) elapsed );
+	int sample = ( int )( elapsed * 10.0f );
 
 	// Get the fraction bit.
 	float fraction = elapsed - seconds;
@@ -664,7 +670,7 @@ void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime
 		// This effect is done. Send zeroes to the mixer for this
 		// final frame and then turn the channel off. (Unless it loops!)
 
-		if( (pChannel->rumbleFlags & RUMBLE_FLAG_LOOP) )
+		if( ( pChannel->rumbleFlags & RUMBLE_FLAG_LOOP ) )
 		{
 			// Loop this effect
 			pChannel->starttime = gpGlobals->curtime;
@@ -692,7 +698,7 @@ void CRumbleEffects::ComputeAmplitudes( RumbleChannel_t *pChannel, float curtime
 
 	if( cl_debugrumble.GetBool() )
 	{
-		Msg("Seconds:%d Fraction:%f Sample:%d  L:%f R:%f\n", seconds, fraction, sample, left, right );
+		Msg( "Seconds:%d Fraction:%f Sample:%d  L:%f R:%f\n", seconds, fraction, sample, left, right );
 	}
 
 	if( !m_bOutputEnabled )
@@ -731,14 +737,14 @@ void CRumbleEffects::UpdateEffects( float curtime )
 	for( int i = 0 ; i < MAX_RUMBLE_CHANNELS ; i++ )
 	{
 		// Expire old channels
-		RumbleChannel_t *pChannel = & m_Channels[i];
+		RumbleChannel_t* pChannel = & m_Channels[i];
 
 		if( pChannel->in_use )
 		{
 			float left, right;
 
 			ComputeAmplitudes( pChannel, curtime, &left, &right );
-			
+
 			fLeftMotor += left;
 			fRightMotor += right;
 		}
@@ -788,14 +794,14 @@ void StopAllRumbleEffects( void )
 //---------------------------------------------------------
 void RumbleEffect( unsigned char effectIndex, unsigned char rumbleData, unsigned char rumbleFlags )
 {
-	g_RumbleEffects.StartEffect( effectIndex, rumbleData, rumbleFlags );	
+	g_RumbleEffects.StartEffect( effectIndex, rumbleData, rumbleFlags );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
 void UpdateRumbleEffects()
 {
-	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* localPlayer = C_BasePlayer::GetLocalPlayer();
 	if( !localPlayer || !localPlayer->IsAlive() )
 	{
 		StopAllRumbleEffects();
@@ -809,7 +815,7 @@ void UpdateRumbleEffects()
 //---------------------------------------------------------
 void UpdateScreenShakeRumble( float shake, float balance )
 {
-	C_BasePlayer *localPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* localPlayer = C_BasePlayer::GetLocalPlayer();
 	if( !localPlayer || !localPlayer->IsAlive() )
 	{
 		return;

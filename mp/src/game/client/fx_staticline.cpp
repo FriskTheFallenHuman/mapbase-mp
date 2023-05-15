@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -22,12 +22,14 @@ CFXStaticLine
 ==================================================
 */
 
-CFXStaticLine::CFXStaticLine( const char *name, const Vector& start, const Vector& end, float scale, float life, const char *shader, unsigned int flags )
-: CClientSideEffect( name )
+CFXStaticLine::CFXStaticLine( const char* name, const Vector& start, const Vector& end, float scale, float life, const char* shader, unsigned int flags )
+	: CClientSideEffect( name )
 {
 	assert( materials );
-	if ( materials == NULL )
+	if( materials == NULL )
+	{
 		return;
+	}
 
 	// Create a material...
 	m_pMaterial = materials->FindMaterial( shader, TEXTURE_GROUP_CLIENT_EFFECTS );
@@ -62,7 +64,7 @@ void CFXStaticLine::Draw( double frametime )
 	// Get the proper orientation for the line
 	VectorSubtract( m_vecEnd, m_vecStart, lineDir );
 	VectorSubtract( m_vecEnd, CurrentViewOrigin(), viewDir );
-	
+
 	cross = lineDir.Cross( viewDir );
 
 	VectorNormalize( cross );
@@ -75,55 +77,79 @@ void CFXStaticLine::Draw( double frametime )
 
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, 1 );
 
-	bool flipVertical = (m_uiFlags & FXSTATICLINE_FLIP_VERTICAL) != 0;
-	bool flipHorizontal = (m_uiFlags & FXSTATICLINE_FLIP_HORIZONTAL ) != 0;
+	bool flipVertical = ( m_uiFlags & FXSTATICLINE_FLIP_VERTICAL ) != 0;
+	bool flipHorizontal = ( m_uiFlags & FXSTATICLINE_FLIP_HORIZONTAL ) != 0;
 
 	//Setup our points
 	VectorMA( m_vecStart, -m_fScale, cross, tmp );
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.Normal3fv( cross.Base() );
-	if (flipHorizontal)
+	if( flipHorizontal )
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
-	else if (flipVertical)
+	}
+	else if( flipVertical )
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
-	else 
+	}
+	else
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
+	}
 	meshBuilder.Color4ub( 255, 255, 255, 255 );
 	meshBuilder.AdvanceVertex();
 
 	VectorMA( m_vecStart, m_fScale, cross, tmp );
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.Normal3fv( cross.Base() );
-	if (flipHorizontal)
+	if( flipHorizontal )
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
-	else if (flipVertical)
+	}
+	else if( flipVertical )
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
-	else 
+	}
+	else
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
+	}
 	meshBuilder.Color4ub( 255, 255, 255, 255 );
 	meshBuilder.AdvanceVertex();
 
 	VectorMA( m_vecEnd, m_fScale, cross, tmp );
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.Normal3fv( cross.Base() );
-	if (flipHorizontal)
+	if( flipHorizontal )
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
-	else if (flipVertical)
+	}
+	else if( flipVertical )
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
-	else 
+	}
+	else
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
+	}
 	meshBuilder.Color4ub( 255, 255, 255, 255 );
 	meshBuilder.AdvanceVertex();
 
 	VectorMA( m_vecEnd, -m_fScale, cross, tmp );
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.Normal3fv( cross.Base() );
-	if (flipHorizontal)
+	if( flipHorizontal )
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
-	else if (flipVertical)
+	}
+	else if( flipVertical )
+	{
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
-	else 
+	}
+	else
+	{
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
+	}
 	meshBuilder.Color4ub( 255, 255, 255, 255 );
 	meshBuilder.AdvanceVertex();
 
@@ -148,7 +174,7 @@ bool CFXStaticLine::IsActive( void )
 void CFXStaticLine::Destroy( void )
 {
 	//Release the material
-	if ( m_pMaterial != NULL )
+	if( m_pMaterial != NULL )
 	{
 		m_pMaterial->DecrementReferenceCount();
 		m_pMaterial = NULL;

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SOUNDSCAPE_SYSTEM_H
 #define SOUNDSCAPE_SYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -26,7 +26,7 @@ struct clusterSoundscapeList_t
 class CSoundscapeSystem : public CAutoGameSystemPerFrame
 {
 public:
-	CSoundscapeSystem( char const *name ) : CAutoGameSystemPerFrame( name )
+	CSoundscapeSystem( char const* name ) : CAutoGameSystemPerFrame( name )
 	{
 	}
 
@@ -37,22 +37,22 @@ public:
 	virtual void LevelInitPreEntity( void );
 	virtual void LevelInitPostEntity();
 
-	virtual void AddSoundscapeFile( const char *filename );
-	int	GetSoundscapeIndex( const char *pName );
+	virtual void AddSoundscapeFile( const char* filename );
+	int	GetSoundscapeIndex( const char* pName );
 	bool IsValidIndex( int index );
 
 	void FlushSoundscapes( void );
-	void AddSoundscapeEntity( CEnvSoundscape *pSoundscape );
-	void RemoveSoundscapeEntity( CEnvSoundscape *pSoundscape );
+	void AddSoundscapeEntity( CEnvSoundscape* pSoundscape );
+	void RemoveSoundscapeEntity( CEnvSoundscape* pSoundscape );
 	void PrintDebugInfo( void );
 
-	void AddSoundscapeSounds( KeyValues *pSoundscape, int soundscapeIndex );
+	void AddSoundscapeSounds( KeyValues* pSoundscape, int soundscapeIndex );
 	void PrecacheSounds( int soundscapeIndex );
 
 private:
 	CStringRegistry							m_soundscapes;
 	int										m_soundscapeCount;
-	CUtlVector< CEnvSoundscape * >			m_soundscapeEntities;
+	CUtlVector< CEnvSoundscape* >			m_soundscapeEntities;
 	CUtlVector<clusterSoundscapeList_t>		m_soundscapesInCluster;
 	CUtlVector<unsigned short>				m_soundscapeIndexList;
 	int										m_activeIndex;

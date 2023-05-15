@@ -36,9 +36,11 @@
 // It is not compiled into anything, but it may be read by an automated
 // documentation generator.
 
-namespace google {
+namespace google
+{
 
-namespace protobuf {
+namespace protobuf
+{
 
 // Auxiliary classes used for I/O.
 //

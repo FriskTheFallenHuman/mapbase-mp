@@ -1,12 +1,12 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #ifndef BASEHLCOMBATWEAPON_H
 #define BASEHLCOMBATWEAPON_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_hl2mpbase.h"
@@ -22,34 +22,34 @@
 class CHL2MPMachineGun : public CBaseHL2MPCombatWeapon
 {
 public:
-	DECLARE_CLASS( CHL2MPMachineGun, CBaseHL2MPCombatWeapon);
+	DECLARE_CLASS( CHL2MPMachineGun, CBaseHL2MPCombatWeapon );
 	DECLARE_DATADESC();
 
 	CHL2MPMachineGun();
-	
-	DECLARE_NETWORKCLASS(); 
+
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 	void	PrimaryAttack( void );
 
 	// Default calls through to m_hOwner, but plasma weapons can override and shoot projectiles here.
 	virtual void	ItemPostFrame( void );
-	virtual void	FireBullets( const FireBulletsInfo_t &info );
+	virtual void	FireBullets( const FireBulletsInfo_t& info );
 #ifdef GAME_DLL
 	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
 #endif // GAME_DLL
 	virtual bool	Deploy( void );
 
-	virtual const Vector &GetBulletSpread( void );
+	virtual const Vector& GetBulletSpread( void );
 
 	int				WeaponSoundRealtime( WeaponSound_t shoot_type );
 
 	// utility function
-	static void DoMachineGunKick( CBasePlayer *pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime );
+	static void DoMachineGunKick( CBasePlayer* pPlayer, float dampEasy, float maxVerticleKickAngle, float fireDurationTime, float slideLimitTime );
 
 private:
-	
-	CHL2MPMachineGun( const CHL2MPMachineGun & );
+
+	CHL2MPMachineGun( const CHL2MPMachineGun& );
 
 protected:
 

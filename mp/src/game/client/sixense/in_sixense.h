@@ -14,24 +14,25 @@
 
 
 #if defined( CLIENT_DLL )
-class C_Portal_Player;
-#define CPortal_Player C_Portal_Player
+	class C_Portal_Player;
+	#define CPortal_Player C_Portal_Player
 #else
-class CPortal_Player;
+	class CPortal_Player;
 #endif
 
 // forward declarations
-namespace sixenseUtils {
-	class IFPSViewAngles;
-	class IFPSPlayerMovement;
-	class IFPSEvents;
-	class IFPSMeleeWeapon;
+namespace sixenseUtils
+{
+class IFPSViewAngles;
+class IFPSPlayerMovement;
+class IFPSEvents;
+class IFPSMeleeWeapon;
 
-	class IDerivatives;
-	class IButtonStates;
-	class ILaserPointer;
+class IDerivatives;
+class IButtonStates;
+class ILaserPointer;
 
-	class IControllerManager;
+class IControllerManager;
 };
 
 class SixenseInput : public CGameEventListener
@@ -50,11 +51,17 @@ public:
 	void Shutdown();
 #ifdef PORTAL2
 	bool IsBaseWarningUp();
-	void PlayerPortalled( const VMatrix &PortalMatrix );
+	void PlayerPortalled( const VMatrix& PortalMatrix );
 	void SetOneToOneMode( bool bOnOrOff );
 
-	inline QAngle GetAnglesToRightHand() { return m_AnglesToRightHand; }
-	inline QAngle GetAnglesToLeftHand() { return m_AnglesToLeftHand; }
+	inline QAngle GetAnglesToRightHand()
+	{
+		return m_AnglesToRightHand;
+	}
+	inline QAngle GetAnglesToLeftHand()
+	{
+		return m_AnglesToLeftHand;
+	}
 
 	// If the right trigger is held and a melee weapon is selected, go to 1-to-1 melee mode
 	bool IsInOneToOneMode();
@@ -65,24 +72,27 @@ public:
 
 	bool IsHoldingObject();
 
-	C_BaseEntity *GetHeldObject();
+	C_BaseEntity* GetHeldObject();
 #endif
 
 	bool IsEnabled();
 	bool IsLeftHanded();
 
 	// SixenseFrame computes the view parameters from the controllers. Should be called once per frame
-	bool SixenseFrame( float flFrametime, CUserCmd *pCmd );
-	void SixenseUpdateKeys( float flFrametime, CUserCmd *pCmd );
+	bool SixenseFrame( float flFrametime, CUserCmd* pCmd );
+	void SixenseUpdateKeys( float flFrametime, CUserCmd* pCmd );
 
-	bool SendKeyToActiveWindow(ButtonCode_t key);
+	bool SendKeyToActiveWindow( ButtonCode_t key );
 	void SixenseUpdateMouseCursor();
 	void SixenseUpdateControllerManager();
 	void controllerManagerCallback( int );
-	inline void ResetFrameTime( float flTime ) { m_fRemainingFrameTime = flTime; }
+	inline void ResetFrameTime( float flTime )
+	{
+		m_fRemainingFrameTime = flTime;
+	}
 
 	// Set the engine's view angles
-	void SetView( float flInputSampleFrametime, CUserCmd *pCmd );
+	void SetView( float flInputSampleFrametime, CUserCmd* pCmd );
 	void SetMode( int nMode );
 	void ResetView( QAngle SpawnAngles );
 	void SetEnabled( bool bEnabled );
@@ -96,29 +106,29 @@ public:
 	void ForceViewAngles( QAngle angles );
 	bool IsSixenseMap();
 	void CreateGUI( vgui::VPANEL parent );
-	void SwitchViewModes( CUserCmd *pCmd );
+	void SwitchViewModes( CUserCmd* pCmd );
 
 	// playerIndex = (0 to 3), handIndex = (left = 0 or right = 1)
 	void Rumble( unsigned char nIndex, unsigned char nRumbleData, unsigned char nRumbleFlags );
 	void Rumble( unsigned char nPlayerIndex, unsigned char nHandIndex, unsigned char nRumbleData, unsigned char nRumbleFlags );
 
 	void SetFilter( float f );
-	void GetFOV( float *pHfov, float *pVfov );
+	void GetFOV( float* pHfov, float* pVfov );
 
 #ifdef SIXENSE_PLAYER_DATA
-	void SetPlayerHandPositions( CUserCmd *pCmd, float flFrametime );
+	void SetPlayerHandPositions( CUserCmd* pCmd, float flFrametime );
 #endif
 
 	void SetBaseOffset();
 	void SetFilterLevel( float flNearRange, float flNearVal, float flFarRange, float flFarVal );
 
-	static class SixenseGUIFrame *m_SixenseFrame;
+	static class SixenseGUIFrame* m_SixenseFrame;
 
 	bool IsAimingForwards();
 
 
 
-	virtual void FireGameEvent( IGameEvent *pEvent );
+	virtual void FireGameEvent( IGameEvent* pEvent );
 
 	void BlendView();
 
@@ -135,7 +145,7 @@ public:
 
 	void CheckWeaponForScope();
 
-	SixenseGestureBindings *GetGestureBindings();
+	SixenseGestureBindings* GetGestureBindings();
 
 	void InstallConvarCallbacks();
 	void UpdateValuesFromConvars();
@@ -191,7 +201,7 @@ private:
 	bool m_bConvarChanged;
 
 	bool m_bPlayerValid;
-	
+
 	float m_fRemainingFrameTime;
 
 	bool m_bScopeSwitchedMode;
@@ -200,19 +210,19 @@ private:
 
 	float m_fTeleportWaitToBlendTime;
 
-	class ISixenseAPI *m_pSixenseAPI;
+	class ISixenseAPI* m_pSixenseAPI;
 
-	struct _sixenseAllControllerData *m_pACD;
+	struct _sixenseAllControllerData* m_pACD;
 
-	class sixenseUtils::IFPSViewAngles *m_pFPSViewAngles;
-	class sixenseUtils::IFPSPlayerMovement *m_pFPSPlayerMovement;
-	class sixenseUtils::IFPSEvents *m_pFPSEvents;
+	class sixenseUtils::IFPSViewAngles* m_pFPSViewAngles;
+	class sixenseUtils::IFPSPlayerMovement* m_pFPSPlayerMovement;
+	class sixenseUtils::IFPSEvents* m_pFPSEvents;
 
-	class sixenseUtils::IDerivatives *m_pLeftDeriv, *m_pRightDeriv;
-	class sixenseUtils::IButtonStates *m_pLeftButtonStates, *m_pRightButtonStates;
-	class sixenseUtils::ILaserPointer *m_pLaserPointer;
+	class sixenseUtils::IDerivatives* m_pLeftDeriv, *m_pRightDeriv;
+	class sixenseUtils::IButtonStates* m_pLeftButtonStates, *m_pRightButtonStates;
+	class sixenseUtils::ILaserPointer* m_pLaserPointer;
 
-	class sixenseUtils::IControllerManager *m_pControllerManager;
+	class sixenseUtils::IControllerManager* m_pControllerManager;
 
 	int m_LastViewMode;
 	int m_nLeftIndex, m_nRightIndex;
@@ -227,7 +237,7 @@ private:
 	bool m_bJustSpawned;
 
 #ifdef WATERMARK
-	class SixenseWatermarkFrame *m_WatermarkFrame;
+	class SixenseWatermarkFrame* m_WatermarkFrame;
 #endif
 
 	int m_nFreeaimSpinDisabled;
@@ -235,10 +245,10 @@ private:
 
 	bool m_nShouldUnduck;
 
-	SixenseGestureBindings *m_pGestureBindings;
+	SixenseGestureBindings* m_pGestureBindings;
 };
 
-extern SixenseInput *g_pSixenseInput;
+extern SixenseInput* g_pSixenseInput;
 
 
 class SixenseGUIFrame : public vgui::Frame
@@ -248,7 +258,7 @@ class SixenseGUIFrame : public vgui::Frame
 public:
 
 	// Construction
-	SixenseGUIFrame( vgui::VPANEL parent, char const *pPanelName );
+	SixenseGUIFrame( vgui::VPANEL parent, char const* pPanelName );
 	virtual ~SixenseGUIFrame();
 
 	void setImage( CUtlString img_name );
@@ -257,7 +267,7 @@ public:
 
 private:
 
-	vgui::ImagePanel *m_ImagePanel;
+	vgui::ImagePanel* m_ImagePanel;
 
 };
 
@@ -266,12 +276,12 @@ class SixenseBaseWarning : public vgui::Frame
 {
 	DECLARE_CLASS_SIMPLE( SixenseBaseWarning, vgui::Frame );
 public:
-	SixenseBaseWarning( vgui::Panel *parent, char const *name );
+	SixenseBaseWarning( vgui::Panel* parent, char const* name );
 	//virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
 protected:
 	//virtual void PaintBackground();
-	virtual void ApplySchemeSettings(vgui::IScheme *pScheme);
-	vgui::Label *_label;
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
+	vgui::Label* _label;
 };
 #endif
 

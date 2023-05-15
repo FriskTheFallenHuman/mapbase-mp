@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -22,14 +22,14 @@ CFXLine
 ==================================================
 */
 
-CFXLine::CFXLine( const char *name, const FXLineData_t &data )
-: CClientSideEffect( name )
+CFXLine::CFXLine( const char* name, const FXLineData_t& data )
+	: CClientSideEffect( name )
 {
 	m_FXData = data;
-	
+
 	m_FXData.m_flLifeTime = 0.0f;
-	
-	if ( m_FXData.m_pMaterial != NULL )
+
+	if( m_FXData.m_pMaterial != NULL )
 	{
 		m_FXData.m_pMaterial->IncrementReferenceCount();
 	}
@@ -41,8 +41,8 @@ CFXLine::~CFXLine( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : frametime - 
+// Purpose:
+// Input  : frametime -
 //-----------------------------------------------------------------------------
 void CFXLine::Draw( double frametime )
 {
@@ -50,20 +50,20 @@ void CFXLine::Draw( double frametime )
 	Update( frametime );
 
 	Vector lineDir, viewDir;
-	
+
 	//Get the proper orientation for the line
 	VectorSubtract( m_FXData.m_vecStart, m_FXData.m_vecEnd, lineDir );
 	VectorSubtract( m_FXData.m_vecEnd, CurrentViewOrigin(), viewDir );
-	
+
 	Vector cross = lineDir.Cross( viewDir );
 
 	VectorNormalize( cross );
 
 	CMatRenderContextPtr pRenderContext( materials );
-	
+
 	//Bind the material
 	IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, m_FXData.m_pMaterial );
-	
+
 	CMeshBuilder meshBuilder;
 
 	Vector tmp;
@@ -72,7 +72,7 @@ void CFXLine::Draw( double frametime )
 	float scaleTimePerc = ( m_FXData.m_flLifeTime / m_FXData.m_flDieTime );
 	float scale = m_FXData.m_flStartScale + ( ( m_FXData.m_flEndScale - m_FXData.m_flStartScale ) * scaleTimePerc );
 
-	color32 color = {255,255,255,255};
+	color32 color = {255, 255, 255, 255};
 
 	float alpha = m_FXData.m_flStartAlpha + ( ( m_FXData.m_flEndAlpha - m_FXData.m_flStartAlpha ) * scaleTimePerc );
 	alpha = clamp( alpha, 0.0f, 1.0f );
@@ -114,7 +114,7 @@ void CFXLine::Draw( double frametime )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CFXLine::IsActive( void )
@@ -123,12 +123,12 @@ bool CFXLine::IsActive( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFXLine::Destroy( void )
 {
 	//Release the material
-	if ( m_FXData.m_pMaterial != NULL )
+	if( m_FXData.m_pMaterial != NULL )
 	{
 		m_FXData.m_pMaterial->DecrementReferenceCount();
 		m_FXData.m_pMaterial = NULL;
@@ -136,8 +136,8 @@ void CFXLine::Destroy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : frametime - 
+// Purpose:
+// Input  : frametime -
 //-----------------------------------------------------------------------------
 void CFXLine::Update( double frametime )
 {
@@ -148,19 +148,19 @@ void CFXLine::Update( double frametime )
 	VectorMA( m_FXData.m_vecEnd, frametime, m_FXData.m_vecEndVelocity, m_FXData.m_vecEnd );
 }
 
-void FX_DrawLine( const Vector &start, const Vector &end, float scale, IMaterial *pMaterial, const color32 &color )
+void FX_DrawLine( const Vector& start, const Vector& end, float scale, IMaterial* pMaterial, const color32& color )
 {
 	Vector			lineDir, viewDir;
 	//Get the proper orientation for the line
 	VectorSubtract( end, start, lineDir );
 	VectorSubtract( end, CurrentViewOrigin(), viewDir );
-	
+
 	Vector cross = lineDir.Cross( viewDir );
 
 	VectorNormalize( cross );
 
 	CMatRenderContextPtr pRenderContext( materials );
-	
+
 	//Bind the material
 	IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 	CMeshBuilder meshBuilder;
@@ -201,17 +201,17 @@ void FX_DrawLine( const Vector &start, const Vector &end, float scale, IMaterial
 }
 
 
-void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMaterial *pMaterial, const color32 &color, float fadeDist )
+void FX_DrawLineFade( const Vector& start, const Vector& end, float scale, IMaterial* pMaterial, const color32& color, float fadeDist )
 {
 	Vector			lineDir, viewDir;
 	//Get the proper orientation for the line
 	VectorSubtract( end, start, lineDir );
 	VectorSubtract( end, CurrentViewOrigin(), viewDir );
-	
+
 	float lineLength = lineDir.Length();
 	float t0 = 0.25f;
 	float t1 = 0.75f;
-	if ( lineLength > 0 )
+	if( lineLength > 0 )
 	{
 		t0 = fadeDist / lineLength;
 		t0 = clamp( t0, 0.0f, 0.25f );
@@ -251,14 +251,14 @@ void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMate
 	meshBuilder.Normal3fv( cross.Base() );
 	meshBuilder.AdvanceVertex();
 	// v2
-	tmp = v1 - scale*cross;
+	tmp = v1 - scale * cross;
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.TexCoord2f( 0, 1.0f, t0 );
 	meshBuilder.Color4ub( color.r, color.g, color.b, color.a );
 	meshBuilder.Normal3fv( cross.Base() );
 	meshBuilder.AdvanceVertex();
 	// v3
-	tmp = v1 + scale*cross;
+	tmp = v1 + scale * cross;
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.TexCoord2f( 0, 0.0f, t0 );
 	meshBuilder.Color4ub( color.r, color.g, color.b, color.a );
@@ -272,14 +272,14 @@ void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMate
 	meshBuilder.Normal3fv( cross.Base() );
 	meshBuilder.AdvanceVertex();
 	// v5
-	tmp = v4 - scale*cross;
+	tmp = v4 - scale * cross;
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.TexCoord2f( 0, 1.0f, t1 );
 	meshBuilder.Color4ub( color.r, color.g, color.b, color.a );
 	meshBuilder.Normal3fv( cross.Base() );
 	meshBuilder.AdvanceVertex();
 	// v6
-	tmp = v4 + scale*cross;
+	tmp = v4 + scale * cross;
 	meshBuilder.Position3fv( tmp.Base() );
 	meshBuilder.TexCoord2f( 0, 0.0f, t1 );
 	meshBuilder.Color4ub( color.r, color.g, color.b, color.a );
@@ -294,16 +294,32 @@ void FX_DrawLineFade( const Vector &start, const Vector &end, float scale, IMate
 
 
 	// triangles - 0,2,1 - 0,1,3 - 7,4,5 - 7,6,4 - 1,4,6, 1,6,3 - 1,5,4 - 1,2,5
-	meshBuilder.FastIndex( 0 ); meshBuilder.FastIndex( 2 ); meshBuilder.FastIndex( 1 );
-	meshBuilder.FastIndex( 0 ); meshBuilder.FastIndex( 1 ); meshBuilder.FastIndex( 3 );
+	meshBuilder.FastIndex( 0 );
+	meshBuilder.FastIndex( 2 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 0 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 3 );
 
-	meshBuilder.FastIndex( 7 ); meshBuilder.FastIndex( 4 ); meshBuilder.FastIndex( 5 );
-	meshBuilder.FastIndex( 7 ); meshBuilder.FastIndex( 6 ); meshBuilder.FastIndex( 4 );
+	meshBuilder.FastIndex( 7 );
+	meshBuilder.FastIndex( 4 );
+	meshBuilder.FastIndex( 5 );
+	meshBuilder.FastIndex( 7 );
+	meshBuilder.FastIndex( 6 );
+	meshBuilder.FastIndex( 4 );
 
-	meshBuilder.FastIndex( 1 ); meshBuilder.FastIndex( 4 ); meshBuilder.FastIndex( 6 );
-	meshBuilder.FastIndex( 1 ); meshBuilder.FastIndex( 6 ); meshBuilder.FastIndex( 3 );
-	meshBuilder.FastIndex( 1 ); meshBuilder.FastIndex( 5 ); meshBuilder.FastIndex( 4 );
-	meshBuilder.FastIndex( 1 ); meshBuilder.FastIndex( 2 ); meshBuilder.FastIndex( 5 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 4 );
+	meshBuilder.FastIndex( 6 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 6 );
+	meshBuilder.FastIndex( 3 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 5 );
+	meshBuilder.FastIndex( 4 );
+	meshBuilder.FastIndex( 1 );
+	meshBuilder.FastIndex( 2 );
+	meshBuilder.FastIndex( 5 );
 
 	meshBuilder.End();
 	pMesh->Draw();

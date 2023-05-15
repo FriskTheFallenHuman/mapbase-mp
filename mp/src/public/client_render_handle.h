@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef CLIENT_RENDER_HANDLE_H
 #define CLIENT_RENDER_HANDLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,7 +24,7 @@ typedef unsigned short ClientRenderHandle_t;
 
 enum
 {
-	INVALID_CLIENT_RENDER_HANDLE = (ClientRenderHandle_t)0xffff,
+	INVALID_CLIENT_RENDER_HANDLE = ( ClientRenderHandle_t )0xffff,
 };
 
 

@@ -22,25 +22,25 @@ public:
 	virtual void Spawn( void );
 	virtual void Precache( void );
 
-	void InputTrigger( inputdata_t &inputdata );
+	void InputTrigger( inputdata_t& inputdata );
 
 protected:
 	string_t m_iszSkyboxName;
 };
 
-LINK_ENTITY_TO_CLASS(skybox_swapper, CSkyboxSwapper);
+LINK_ENTITY_TO_CLASS( skybox_swapper, CSkyboxSwapper );
 
 BEGIN_DATADESC( CSkyboxSwapper )
-	DEFINE_KEYFIELD( m_iszSkyboxName, FIELD_STRING, "SkyboxName" ),
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "Trigger", InputTrigger),
-END_DATADESC()
+DEFINE_KEYFIELD( m_iszSkyboxName, FIELD_STRING, "SkyboxName" ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Trigger", InputTrigger ),
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Purpose: not much
 //-----------------------------------------------------------------------------
-void CSkyboxSwapper::Spawn( void )
+				 void CSkyboxSwapper::Spawn( void )
 {
 	Precache();
 }
@@ -50,15 +50,15 @@ void CSkyboxSwapper::Spawn( void )
 //-----------------------------------------------------------------------------
 void CSkyboxSwapper::Precache( void )
 {
-	if ( Q_strlen( m_iszSkyboxName.ToCStr() ) == 0 )
+	if( Q_strlen( m_iszSkyboxName.ToCStr() ) == 0 )
 	{
-		Warning( "skybox_swapper (%s) has no skybox specified!\n", STRING(GetEntityName()) );
+		Warning( "skybox_swapper (%s) has no skybox specified!\n", STRING( GetEntityName() ) );
 		return;
 	}
 
 	char  name[ MAX_PATH ];
-	char *skyboxsuffix[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
-	for ( int i = 0; i < 6; i++ )
+	char* skyboxsuffix[ 6 ] = { "rt", "bk", "lf", "ft", "up", "dn" };
+	for( int i = 0; i < 6; i++ )
 	{
 		Q_snprintf( name, sizeof( name ), "skybox/%s%s", m_iszSkyboxName.ToCStr(), skyboxsuffix[i] );
 		PrecacheMaterial( name );
@@ -68,12 +68,12 @@ void CSkyboxSwapper::Precache( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler that triggers the skybox swap.
 //-----------------------------------------------------------------------------
-void CSkyboxSwapper::InputTrigger( inputdata_t &inputdata )
+void CSkyboxSwapper::InputTrigger( inputdata_t& inputdata )
 {
 	static ConVarRef skyname( "sv_skyname", false );
-	if ( !skyname.IsValid() )
+	if( !skyname.IsValid() )
 	{
-		Warning( "skybox_swapper (%s) trigger input failed - cannot find 'sv_skyname' convar!\n", STRING(GetEntityName()) );
+		Warning( "skybox_swapper (%s) trigger input failed - cannot find 'sv_skyname' convar!\n", STRING( GetEntityName() ) );
 		return;
 	}
 	skyname.SetValue( m_iszSkyboxName.ToCStr() );

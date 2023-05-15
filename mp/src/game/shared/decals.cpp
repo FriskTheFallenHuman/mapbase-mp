@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -12,7 +12,7 @@
 #include "filesystem.h"
 
 #ifdef CLIENT_DLL
-#include "iefx.h"
+	#include "iefx.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -23,12 +23,12 @@
 #define TRANSLATION_DATA_SECTION "TranslationData"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CDecalEmitterSystem : public IDecalEmitterSystem, public CAutoGameSystem
 {
 public:
-	CDecalEmitterSystem( char const *name ) : CAutoGameSystem( name )
+	CDecalEmitterSystem( char const* name ) : CAutoGameSystem( name )
 	{
 	}
 
@@ -37,13 +37,13 @@ public:
 	virtual void		LevelInitPreEntity();
 
 	// Public interface
-	virtual int			GetDecalIndexForName( char const *decalname );
-	virtual const char *GetDecalNameForIndex( int nIndex );
-	virtual char const *TranslateDecalForGameMaterial( char const *decalName, unsigned char gamematerial );
+	virtual int			GetDecalIndexForName( char const* decalname );
+	virtual const char* GetDecalNameForIndex( int nIndex );
+	virtual char const* TranslateDecalForGameMaterial( char const* decalName, unsigned char gamematerial );
 
 private:
-	char const		*ImpactDecalForGameMaterial( int gamematerial );
-	void			LoadDecalsFromScript( char const *filename );
+	char const*		ImpactDecalForGameMaterial( int gamematerial );
+	void			LoadDecalsFromScript( char const* filename );
 	void			Clear();
 
 	struct DecalListEntry
@@ -69,7 +69,7 @@ private:
 		DecalEntry( const DecalEntry& src )
 		{
 			int c = src.indices.Count();
-			for ( int i = 0; i < c; i++ )
+			for( int i = 0; i < c; i++ )
 			{
 				indices.AddToTail( src.indices[ i ] );
 			}
@@ -77,11 +77,13 @@ private:
 
 		DecalEntry& operator = ( const DecalEntry& src )
 		{
-			if ( this == &src )
+			if( this == &src )
+			{
 				return *this;
+			}
 
 			int c = src.indices.Count();
-			for ( int i = 0; i < c; i++ )
+			for( int i = 0; i < c; i++ )
 			{
 				indices.AddToTail( src.indices[ i ] );
 			}
@@ -99,45 +101,51 @@ private:
 };
 
 static CDecalEmitterSystem g_DecalSystem( "CDecalEmitterSystem" );
-IDecalEmitterSystem *decalsystem = &g_DecalSystem;
+IDecalEmitterSystem* decalsystem = &g_DecalSystem;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *decalname - 
+// Purpose:
+// Input  : *decalname -
 // Output : int
 //-----------------------------------------------------------------------------
-int CDecalEmitterSystem::GetDecalIndexForName( char const *decalname )
+int CDecalEmitterSystem::GetDecalIndexForName( char const* decalname )
 {
-	if ( !decalname  || !decalname[ 0 ] )
+	if( !decalname  || !decalname[ 0 ] )
+	{
 		return -1;
+	}
 
 	int decalidx = m_Decals.Find( decalname );
-	if ( decalidx == m_Decals.InvalidIndex() )
+	if( decalidx == m_Decals.InvalidIndex() )
+	{
 		return -1;
+	}
 
-	DecalEntry *e = &m_Decals[ decalidx ];
+	DecalEntry* e = &m_Decals[ decalidx ];
 	Assert( e );
 	int count = e->indices.Count();
-	if ( count <= 0 )
+	if( count <= 0 )
+	{
 		return -1;
+	}
 
 	float totalweight = 0.0f;
 	int slot = 0;
 
-	for ( int i = 0; i < count; i++ )
+	for( int i = 0; i < count; i++ )
 	{
 		int idx = e->indices[ i ];
-		DecalListEntry *item = &m_AllDecals[ idx ];
+		DecalListEntry* item = &m_AllDecals[ idx ];
 		Assert( item );
-		
-		if ( !totalweight )
+
+		if( !totalweight )
 		{
 			slot = idx;
 		}
 
 		// Always assume very first slot will match
 		totalweight += item->weight;
-		if ( !totalweight || random->RandomFloat(0,totalweight) < item->weight )
+		if( !totalweight || random->RandomFloat( 0, totalweight ) < item->weight )
 		{
 			slot = idx;
 		}
@@ -146,11 +154,11 @@ int CDecalEmitterSystem::GetDecalIndexForName( char const *decalname )
 	return m_AllDecals[ slot ].precache_index;
 }
 
-const char *CDecalEmitterSystem::GetDecalNameForIndex( int nIndex )
+const char* CDecalEmitterSystem::GetDecalNameForIndex( int nIndex )
 {
-	for ( int nDecal = 0; nDecal < m_AllDecals.Count(); ++nDecal )
+	for( int nDecal = 0; nDecal < m_AllDecals.Count(); ++nDecal )
 	{
-		if ( m_AllDecals[ nDecal ].precache_index == nIndex )
+		if( m_AllDecals[ nDecal ].precache_index == nIndex )
 		{
 			return m_DecalFileNames.String( m_AllDecals[ nDecal ].name );
 		}
@@ -160,7 +168,7 @@ const char *CDecalEmitterSystem::GetDecalNameForIndex( int nIndex )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CDecalEmitterSystem::Init()
@@ -170,17 +178,17 @@ bool CDecalEmitterSystem::Init()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CDecalEmitterSystem::LevelInitPreEntity()
 {
 	// Precache all entries
 	int c = m_AllDecals.Count();
-	for ( int i = 0 ; i < c; i++ )
+	for( int i = 0 ; i < c; i++ )
 	{
 		DecalListEntry& e = m_AllDecals[ i ];
 #if defined( CLIENT_DLL )
-		e.precache_index = effects->Draw_DecalIndexFromName( (char *)m_DecalFileNames.String( e.name ) );
+		e.precache_index = effects->Draw_DecalIndexFromName( ( char* )m_DecalFileNames.String( e.name ) );
 #else
 		e.precache_index = engine->PrecacheDecal( m_DecalFileNames.String( e.name ) );
 #endif
@@ -188,30 +196,30 @@ void CDecalEmitterSystem::LevelInitPreEntity()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *filename - 
+// Purpose:
+// Input  : *filename -
 //-----------------------------------------------------------------------------
-void CDecalEmitterSystem::LoadDecalsFromScript( char const *filename )
+void CDecalEmitterSystem::LoadDecalsFromScript( char const* filename )
 {
-	KeyValues *kv = new KeyValues( filename );
+	KeyValues* kv = new KeyValues( filename );
 	Assert( kv );
-	if ( kv )
+	if( kv )
 	{
-		KeyValues *translation = NULL;
+		KeyValues* translation = NULL;
 #ifndef _XBOX
-		if ( kv->LoadFromFile( filesystem, filename ) )
+		if( kv->LoadFromFile( filesystem, filename ) )
 #else
-		if ( kv->LoadFromFile( filesystem, filename, "GAME" ) )
+		if( kv->LoadFromFile( filesystem, filename, "GAME" ) )
 #endif
 		{
-			KeyValues *p = kv;
-			while ( p )
+			KeyValues* p = kv;
+			while( p )
 			{
-				if ( p->GetFirstSubKey() )
+				if( p->GetFirstSubKey() )
 				{
-					char const *keyname = p->GetName();
+					char const* keyname = p->GetName();
 
-					if ( !Q_stricmp( keyname, TRANSLATION_DATA_SECTION ) )
+					if( !Q_stricmp( keyname, TRANSLATION_DATA_SECTION ) )
 					{
 						translation = p;
 					}
@@ -219,7 +227,7 @@ void CDecalEmitterSystem::LoadDecalsFromScript( char const *filename )
 					{
 						DecalEntry entry;
 
-						for ( KeyValues *sub = p->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
+						for( KeyValues* sub = p->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
 						{
 							MEM_ALLOC_CREDIT();
 
@@ -247,30 +255,32 @@ void CDecalEmitterSystem::LoadDecalsFromScript( char const *filename )
 			Msg( "CDecalEmitterSystem::LoadDecalsFromScript:  Unable to load '%s'\n", filename );
 		}
 
-		if ( !translation )
+		if( !translation )
 		{
 			Msg( "CDecalEmitterSystem::LoadDecalsFromScript:  Script '%s' missing section '%s'\n",
-				filename,
-				TRANSLATION_DATA_SECTION );
+				 filename,
+				 TRANSLATION_DATA_SECTION );
 		}
 		else
 		{
 			// Now parse game material to entry translation table
-			for ( KeyValues *sub = translation->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
+			for( KeyValues* sub = translation->GetFirstSubKey(); sub != NULL; sub = sub->GetNextKey() )
 			{
 				// Don't add NULL string to list
-				if ( !Q_stricmp( sub->GetString(), "" ) )
+				if( !Q_stricmp( sub->GetString(), "" ) )
+				{
 					continue;
+				}
 
 				int idx = m_Decals.Find( sub->GetString() );
-				if ( idx != m_Decals.InvalidIndex() )
+				if( idx != m_Decals.InvalidIndex() )
 				{
 					m_GameMaterialTranslation.Insert( sub->GetName(), idx );
 				}
 				else
 				{
 					Msg( "CDecalEmitterSystem::LoadDecalsFromScript:  Translation for game material type '%s' references unknown decal '%s'\n",
-						sub->GetName(), sub->GetString() );
+						 sub->GetName(), sub->GetString() );
 				}
 			}
 		}
@@ -280,25 +290,27 @@ void CDecalEmitterSystem::LoadDecalsFromScript( char const *filename )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : gamematerial - 
+// Purpose:
+// Input  : gamematerial -
 // Output : char const
 //-----------------------------------------------------------------------------
-char const *CDecalEmitterSystem::ImpactDecalForGameMaterial( int gamematerial )
+char const* CDecalEmitterSystem::ImpactDecalForGameMaterial( int gamematerial )
 {
 	char gm[ 2 ];
-	gm[0] = (char)gamematerial;
+	gm[0] = ( char )gamematerial;
 	gm[1] = 0;
 
 	int idx = m_GameMaterialTranslation.Find( gm );
-	if ( idx == m_GameMaterialTranslation.InvalidIndex() )
+	if( idx == m_GameMaterialTranslation.InvalidIndex() )
+	{
 		return NULL;
+	}
 
-	return m_Decals.GetElementName( m_GameMaterialTranslation.Element(idx) );
+	return m_Decals.GetElementName( m_GameMaterialTranslation.Element( idx ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CDecalEmitterSystem::Shutdown()
 {
@@ -306,7 +318,7 @@ void CDecalEmitterSystem::Shutdown()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CDecalEmitterSystem::Clear()
 {
@@ -317,23 +329,27 @@ void CDecalEmitterSystem::Clear()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *decalName - 
-//			gamematerial - 
+// Purpose:
+// Input  : *decalName -
+//			gamematerial -
 // Output : char const
 //-----------------------------------------------------------------------------
-char const *CDecalEmitterSystem::TranslateDecalForGameMaterial( char const *decalName, unsigned char gamematerial )
+char const* CDecalEmitterSystem::TranslateDecalForGameMaterial( char const* decalName, unsigned char gamematerial )
 {
-	if ( gamematerial == CHAR_TEX_CONCRETE )
-		return decalName;
-
-	if ( !Q_stricmp( decalName, "Impact.Concrete" ) )
+	if( gamematerial == CHAR_TEX_CONCRETE )
 	{
-		if ( gamematerial == '-' )
-			return "";
+		return decalName;
+	}
 
-		char const *d = ImpactDecalForGameMaterial( gamematerial );
-		if ( d )
+	if( !Q_stricmp( decalName, "Impact.Concrete" ) )
+	{
+		if( gamematerial == '-' )
+		{
+			return "";
+		}
+
+		char const* d = ImpactDecalForGameMaterial( gamematerial );
+		if( d )
 		{
 			return d;
 		}

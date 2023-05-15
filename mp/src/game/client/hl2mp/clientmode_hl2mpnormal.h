@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( CLIENTMODE_HLNORMAL_H )
 #define CLIENTMODE_HLNORMAL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "clientmode_shared.h"
@@ -22,7 +22,7 @@ class CHudViewport;
 
 namespace vgui
 {
-	typedef unsigned long HScheme;
+typedef unsigned long HScheme;
 }
 
 //-----------------------------------------------------------------------------
@@ -34,7 +34,7 @@ private:
 	DECLARE_CLASS_SIMPLE( CHudViewport, CBaseViewport );
 
 protected:
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme )
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -43,25 +43,25 @@ protected:
 		SetPaintBackgroundEnabled( false );
 	}
 
-	virtual IViewPortPanel *CreatePanelByName( const char *szPanelName );
+	virtual IViewPortPanel* CreatePanelByName( const char* szPanelName );
 };
 
 
 // --------------------------------------------------------------------------------- //
-// Purpose: 
+// Purpose:
 // --------------------------------------------------------------------------------- //
 class CHL2MPModeManager : public IVModeManager
 {
 public:
 	virtual void	Init();
 	virtual void	SwitchMode( bool commander, bool force ) {}
-	virtual void	LevelInit( const char *newmap );
+	virtual void	LevelInit( const char* newmap );
 	virtual void	LevelShutdown( void );
 	virtual void	ActivateMouse( bool isactive ) {}
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class ClientModeHL2MPNormal : public ClientModeShared
 {
@@ -75,11 +75,11 @@ public:
 	virtual bool	ShouldDrawCrosshair( void );
 	virtual int		GetDeathMessageStartHeight( void );
 	virtual void	PostRenderVGui();
-	virtual bool	CanRecordDemo( char *errorMsg, int length ) const;
-	virtual void	OverrideView( CViewSetup *pSetup );
+	virtual bool	CanRecordDemo( char* errorMsg, int length ) const;
+	virtual void	OverrideView( CViewSetup* pSetup );
 };
 
-extern IClientMode *GetClientModeNormal();
+extern IClientMode* GetClientModeNormal();
 extern vgui::HScheme g_hVGuiCombineScheme;
 
 extern ClientModeHL2MPNormal* GetClientModeHL2MPNormal();

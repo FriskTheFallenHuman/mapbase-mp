@@ -36,7 +36,7 @@ class GLMDisplayMode
 {
 public:
 	GLMDisplayModeInfoFields	m_info;
-	
+
 	GLMDisplayMode( uint width, uint height, uint refreshHz );
 	GLMDisplayMode() { };
 	~GLMDisplayMode( void );
@@ -53,7 +53,7 @@ class GLMDisplayInfo
 {
 public:
 	GLMDisplayInfoFields			m_info;
-	CUtlVector< GLMDisplayMode* >	*m_modes;				// starts out NULL, set by PopulateModes
+	CUtlVector< GLMDisplayMode* >*	m_modes;				// starts out NULL, set by PopulateModes
 	GLMDisplayMode					m_DesktopMode;
 
 #ifdef OSX
@@ -63,7 +63,7 @@ public:
 #endif
 
 	~GLMDisplayInfo( void );
-	
+
 	void	PopulateModes( void );
 
 	void	Dump( int which );
@@ -83,20 +83,20 @@ class GLMRendererInfo
 public:
 	GLMRendererInfoFields			m_info;
 #ifdef OSX
-	CUtlVector< GLMDisplayInfo* >	*m_displays;			// starts out NULL, set by PopulateDisplays
+	CUtlVector< GLMDisplayInfo* >*	m_displays;			// starts out NULL, set by PopulateDisplays
 #else
-	GLMDisplayInfo					*m_display;
+	GLMDisplayInfo*					m_display;
 #endif
 
 #ifdef OSX
-	GLMRendererInfo			( GLMRendererInfoFields *info );
+	GLMRendererInfo( GLMRendererInfoFields* info );
 #else
-	GLMRendererInfo			();
+	GLMRendererInfo();
 #endif
-	~GLMRendererInfo		( void );
+	~GLMRendererInfo( void );
 
 #ifndef OSX
-	void	Init( GLMRendererInfoFields *info );
+	void	Init( GLMRendererInfoFields* info );
 #endif
 	void	PopulateDisplays();
 	void	Dump( int which );
@@ -110,7 +110,7 @@ public:
 // this makes it straightforward to handle cases like two video cards with two displays on one, and one on the other -
 // you get three fake adapters which represent each useful screen.
 
-// the constraint that dxa will have to follow though, is that if the user wants to change their 
+// the constraint that dxa will have to follow though, is that if the user wants to change their
 // display selection for full screen, they would only be able to pick on that has the same underlying renderer.
 // can't change fakeAdapter from one to another with different GL renderer under it.  Screen hop but no card hop.
 
@@ -125,32 +125,32 @@ class GLMDisplayDB
 {
 public:
 #ifdef OSX
-	CUtlVector< GLMRendererInfo* >		*m_renderers;			// starts out NULL, set by PopulateRenderers
+	CUtlVector< GLMRendererInfo* >*		m_renderers;			// starts out NULL, set by PopulateRenderers
 	CUtlVector< GLMFakeAdapter >		m_fakeAdapters;
 #else
 	GLMRendererInfo	m_renderer;
 #endif
 
-	GLMDisplayDB	( void );
-	~GLMDisplayDB	( void );	
+	GLMDisplayDB( void );
+	~GLMDisplayDB( void );
 
 	virtual void	PopulateRenderers( void );
 	virtual void	PopulateFakeAdapters( uint realRendererIndex );		// fake adapters = one real adapter times however many displays are on it
 	virtual void	Populate( void );
-	
+
 	// The info-get functions return false on success.
 	virtual	int		GetFakeAdapterCount( void );
-	virtual	bool	GetFakeAdapterInfo( int fakeAdapterIndex, int *rendererOut, int *displayOut, GLMRendererInfoFields *rendererInfoOut, GLMDisplayInfoFields *displayInfoOut );
-	
+	virtual	bool	GetFakeAdapterInfo( int fakeAdapterIndex, int* rendererOut, int* displayOut, GLMRendererInfoFields* rendererInfoOut, GLMDisplayInfoFields* displayInfoOut );
+
 	virtual	int		GetRendererCount( void );
-	virtual	bool	GetRendererInfo( int rendererIndex, GLMRendererInfoFields *infoOut );
-	
+	virtual	bool	GetRendererInfo( int rendererIndex, GLMRendererInfoFields* infoOut );
+
 	virtual	int		GetDisplayCount( int rendererIndex );
-	virtual	bool	GetDisplayInfo( int rendererIndex, int displayIndex, GLMDisplayInfoFields *infoOut );
+	virtual	bool	GetDisplayInfo( int rendererIndex, int displayIndex, GLMDisplayInfoFields* infoOut );
 
 	virtual	int		GetModeCount( int rendererIndex, int displayIndex );
-	virtual	bool	GetModeInfo( int rendererIndex, int displayIndex, int modeIndex, GLMDisplayModeInfoFields *infoOut );
-	
+	virtual	bool	GetModeInfo( int rendererIndex, int displayIndex, int modeIndex, GLMDisplayModeInfoFields* infoOut );
+
 	virtual	void	Dump( void );
 };
 

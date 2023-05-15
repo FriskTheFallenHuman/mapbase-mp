@@ -8,7 +8,7 @@
 #ifndef PARTICLE_ITERATORS_H
 #define PARTICLE_ITERATORS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -18,9 +18,9 @@
 
 #define NUM_PARTICLES_PER_BATCH 200
 #ifndef _XBOX
-#define MAX_TOTAL_PARTICLES		2048	// Max particles in the world
+	#define MAX_TOTAL_PARTICLES		2048	// Max particles in the world
 #else
-#define MAX_TOTAL_PARTICLES		1024
+	#define MAX_TOTAL_PARTICLES		1024
 #endif
 
 
@@ -36,8 +36,8 @@
 //
 class CParticleRenderIterator
 {
-friend class CParticleMgr;
-friend class CParticleEffectBinding;
+	friend class CParticleMgr;
+	friend class CParticleEffectBinding;
 public:
 	CParticleRenderIterator();
 
@@ -60,20 +60,20 @@ private:
 
 private:
 	// Set by CParticleMgr.
-	CParticleEffectBinding *m_pEffectBinding;
-	CEffectMaterial *m_pMaterial;
-	ParticleDraw *m_pParticleDraw;
-	CMeshBuilder *m_pMeshBuilder;
-	IMesh *m_pMesh;
+	CParticleEffectBinding* m_pEffectBinding;
+	CEffectMaterial* m_pMaterial;
+	ParticleDraw* m_pParticleDraw;
+	CMeshBuilder* m_pMeshBuilder;
+	IMesh* m_pMesh;
 	bool m_bBucketSort;
-	
+
 	// Output after rendering.
 	float m_MinZ;
 	float m_MaxZ;
 	float m_zCoords[MAX_TOTAL_PARTICLES];
 	int m_nZCoords;
-	
-	Particle *m_pCur;
+
+	Particle* m_pCur;
 	bool m_bGotFirst;
 	float m_flPrevZ;
 	int m_nParticlesInCurrentBatch;
@@ -92,26 +92,26 @@ private:
 //
 class CParticleSimulateIterator
 {
-friend class CParticleMgr;
-friend class CParticleEffectBinding;
+	friend class CParticleMgr;
+	friend class CParticleEffectBinding;
 public:
 	CParticleSimulateIterator();
-	
+
 	// Iterate through the particles, simulate them, and remove them if necessary.
 	Particle* GetFirst();
 	Particle* GetNext();
 	float GetTimeDelta() const;
 
-	void RemoveParticle( Particle *pParticle );
+	void RemoveParticle( Particle* pParticle );
 	void RemoveAllParticles();
 
 private:
-	CParticleEffectBinding *m_pEffectBinding;
-	CEffectMaterial *m_pMaterial;
+	CParticleEffectBinding* m_pEffectBinding;
+	CEffectMaterial* m_pMaterial;
 	float m_flTimeDelta;
 
 	bool m_bGotFirst;
-	Particle *m_pNextParticle;
+	Particle* m_pNextParticle;
 };
 
 
@@ -136,8 +136,10 @@ inline const Particle* CParticleRenderIterator::GetFirst()
 	m_bGotFirst = true;
 
 	m_pCur = m_pMaterial->m_Particles.m_pNext;
-	if ( m_pCur == &m_pMaterial->m_Particles )
+	if( m_pCur == &m_pMaterial->m_Particles )
+	{
 		return NULL;
+	}
 
 	m_pParticleDraw->m_pSubTexture = m_pCur->m_pSubTexture;
 	return m_pCur;
@@ -162,14 +164,14 @@ inline const Particle* CParticleRenderIterator::GetNext( float sortKey )
 
 	TestFlushBatch();
 
-	Particle *pNext = m_pCur->m_pNext;
+	Particle* pNext = m_pCur->m_pNext;
 
 	// Update the incremental sort.
 	if( m_bBucketSort )
 	{
 		m_MinZ = MIN( sortKey, m_MinZ );
 		m_MaxZ = MAX( sortKey, m_MaxZ );
-		
+
 		m_zCoords[m_nZCoords] = sortKey;
 		++m_nZCoords;
 	}
@@ -187,8 +189,10 @@ inline const Particle* CParticleRenderIterator::GetNext( float sortKey )
 	}
 
 	m_pCur = pNext;
-	if ( m_pCur == &m_pMaterial->m_Particles )
+	if( m_pCur == &m_pMaterial->m_Particles )
+	{
 		return NULL;
+	}
 
 	m_pParticleDraw->m_pSubTexture = m_pCur->m_pSubTexture;
 	return m_pCur;
@@ -216,15 +220,17 @@ inline Particle* CParticleSimulateIterator::GetFirst()
 {
 #ifdef _DEBUG
 	// Make sure they're either starting out fresh or that the previous guy iterated through all the particles.
-	if ( m_bGotFirst )
+	if( m_bGotFirst )
 	{
 		Assert( m_pNextParticle == &m_pMaterial->m_Particles );
 	}
 #endif
 
-	Particle *pRet = m_pMaterial->m_Particles.m_pNext;
-	if ( pRet == &m_pMaterial->m_Particles )
+	Particle* pRet = m_pMaterial->m_Particles.m_pNext;
+	if( pRet == &m_pMaterial->m_Particles )
+	{
 		return NULL;
+	}
 
 #ifdef _DEBUG
 	m_bGotFirst = true;
@@ -236,24 +242,26 @@ inline Particle* CParticleSimulateIterator::GetFirst()
 
 inline Particle* CParticleSimulateIterator::GetNext()
 {
-	Particle *pRet = m_pNextParticle;
+	Particle* pRet = m_pNextParticle;
 
-	if ( pRet == &m_pMaterial->m_Particles )
+	if( pRet == &m_pMaterial->m_Particles )
+	{
 		return NULL;
-	
+	}
+
 	m_pNextParticle = pRet->m_pNext;
 	return pRet;
 }
 
-inline void CParticleSimulateIterator::RemoveParticle( Particle *pParticle )
+inline void CParticleSimulateIterator::RemoveParticle( Particle* pParticle )
 {
 	m_pEffectBinding->RemoveParticle( pParticle );
 }
 
 inline void CParticleSimulateIterator::RemoveAllParticles()
 {
-	Particle *pParticle = GetFirst();
-	while ( pParticle )
+	Particle* pParticle = GetFirst();
+	while( pParticle )
 	{
 		RemoveParticle( pParticle );
 		pParticle = GetNext();

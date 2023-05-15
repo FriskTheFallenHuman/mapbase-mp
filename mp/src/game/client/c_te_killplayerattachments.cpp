@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -23,7 +23,7 @@ public:
 	DECLARE_CLASS( C_TEKillPlayerAttachments, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEKillPlayerAttachments( void );
+	C_TEKillPlayerAttachments( void );
 	virtual			~C_TEKillPlayerAttachments( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -33,7 +33,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEKillPlayerAttachments::C_TEKillPlayerAttachments( void )
 {
@@ -41,15 +41,15 @@ C_TEKillPlayerAttachments::C_TEKillPlayerAttachments( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEKillPlayerAttachments::~C_TEKillPlayerAttachments( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEKillPlayerAttachments::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -59,11 +59,11 @@ void C_TEKillPlayerAttachments::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_KillPlayerAttachments( IRecipientFilter& filter, float delay,
-	int player )
+							   int player )
 {
 	tempents->KillAttachedTents( player );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, CTEKillPlayerAttachments)
-	RecvPropInt( RECVINFO(m_nPlayer)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEKillPlayerAttachments, DT_TEKillPlayerAttachments, CTEKillPlayerAttachments )
+RecvPropInt( RECVINFO( m_nPlayer ) ),
+			 END_RECV_TABLE()

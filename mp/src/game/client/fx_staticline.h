@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -12,7 +12,7 @@
 #if !defined( FXSTATICLINE_H )
 #define FXSTATICLINE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -26,7 +26,7 @@ class CFXStaticLine : public CClientSideEffect
 {
 public:
 
-	CFXStaticLine( const char *name, const Vector& start, const Vector& end, float scale, float life, const char *shader, unsigned int flags );
+	CFXStaticLine( const char* name, const Vector& start, const Vector& end, float scale, float life, const char* shader, unsigned int flags );
 	~CFXStaticLine( void );
 
 	virtual void	Draw( double frametime );
@@ -36,7 +36,7 @@ public:
 
 protected:
 
-	IMaterial		*m_pMaterial;
+	IMaterial*		m_pMaterial;
 	Vector			m_vecStart, m_vecEnd;
 	unsigned int	m_uiFlags;
 	float			m_fLife;

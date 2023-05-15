@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,19 +8,19 @@
 #ifndef BASEPROJECTILE_H
 #define BASEPROJECTILE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
 
 #ifdef GAME_DLL
-#include "baseanimating.h"
+	#include "baseanimating.h"
 #else
-#include "c_baseanimating.h"
+	#include "c_baseanimating.h"
 #endif
 
 #ifdef CLIENT_DLL
-#define CBaseProjectile C_BaseProjectile
+	#define CBaseProjectile C_BaseProjectile
 #endif // CLIENT_DLL
 
 //=============================================================================
@@ -44,19 +44,43 @@ public:
 	virtual void Spawn();
 
 #ifdef GAME_DLL
-	virtual int GetBaseProjectileType() const { return -1; } // no base
-	virtual int GetProjectileType() const { return -1; } // no type
-	virtual int GetDestroyableHitCount( void ) const { return m_iDestroyableHitCount; }
-	void IncrementDestroyableHitCount( void ) { ++m_iDestroyableHitCount; }
+	virtual int GetBaseProjectileType() const
+	{
+		return -1;    // no base
+	}
+	virtual int GetProjectileType() const
+	{
+		return -1;    // no type
+	}
+	virtual int GetDestroyableHitCount( void ) const
+	{
+		return m_iDestroyableHitCount;
+	}
+	void IncrementDestroyableHitCount( void )
+	{
+		++m_iDestroyableHitCount;
+	}
 
-	virtual bool CanCollideWithTeammates() const { return m_bCanCollideWithTeammates; }
-	virtual float GetCollideWithTeammatesDelay() const { return 0.25f; }
+	virtual bool CanCollideWithTeammates() const
+	{
+		return m_bCanCollideWithTeammates;
+	}
+	virtual float GetCollideWithTeammatesDelay() const
+	{
+		return 0.25f;
+	}
 #endif // GAME_DLL
 
-	virtual bool IsDestroyable( void ) { return false; }
+	virtual bool IsDestroyable( void )
+	{
+		return false;
+	}
 	virtual void Destroy( bool bBlinkOut = true, bool bBreakRocket = false ) {}
-	virtual void SetLauncher( CBaseEntity *pLauncher );
-	CBaseEntity *GetOriginalLauncher() const { return m_hOriginalLauncher; }
+	virtual void SetLauncher( CBaseEntity* pLauncher );
+	CBaseEntity* GetOriginalLauncher() const
+	{
+		return m_hOriginalLauncher;
+	}
 
 protected:
 #ifdef GAME_DLL

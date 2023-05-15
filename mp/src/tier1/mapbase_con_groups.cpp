@@ -1,7 +1,7 @@
 //========= Mapbase - https://github.com/mapbase-source/source-sdk-2013 =================
 //
 // Purpose: Mapbase classifies certain types of console messages into groups with specific colors.
-// 
+//
 //			This is inspired by similar groups seen in CS:GO and Source 2 games.
 //
 // $NoKeywords: $
@@ -21,20 +21,20 @@
 
 struct ConGroup_t
 {
-	ConGroup_t( const char *_pszName, const char *_pszDescription )
+	ConGroup_t( const char* _pszName, const char* _pszDescription )
 	{
 		pszName = _pszName;
 		pszDescription = _pszDescription;
 		_clr.SetColor( 224, 224, 224, 255 ); // Default to a shade of gray
 	}
 
-	const Color &GetColor()
+	const Color& GetColor()
 	{
 		return _clr;
 	}
 
-	const char *pszName;
-	const char *pszDescription;
+	const char* pszName;
+	const char* pszDescription;
 	Color _clr;
 
 	bool bDisabled;
@@ -49,7 +49,8 @@ static bool g_bIncludeConGroupNames = false;
 //#define DEFINE_CON_GROUP(id, name, codename) { name, &con_group_##codename##_color }
 #define DEFINE_CON_GROUP(id, name, description) { name, description }
 
-ConGroup_t g_ConGroups[CON_GROUP_MAX] = {
+ConGroup_t g_ConGroups[CON_GROUP_MAX] =
+{
 
 	// General
 	DEFINE_CON_GROUP( CON_GROUP_MAPBASE_MISC, "Mapbase misc.", "Messages from misc. Mapbase functions, like map-specific files." ),
@@ -69,12 +70,14 @@ ConGroup_t g_ConGroups[CON_GROUP_MAX] = {
 
 };
 
-int FindConGroup( const char *pszName )
+int FindConGroup( const char* pszName )
 {
-	for (int i = 0; i < CON_GROUP_MAX; i++)
+	for( int i = 0; i < CON_GROUP_MAX; i++ )
 	{
-		if (Q_stricmp( pszName, g_ConGroups[i].pszName ) == 0)
+		if( Q_stricmp( pszName, g_ConGroups[i].pszName ) == 0 )
+		{
 			return i;
+		}
 	}
 
 	return -1;
@@ -83,23 +86,25 @@ int FindConGroup( const char *pszName )
 //-----------------------------------------------------------------------------
 // Loads console groups
 //-----------------------------------------------------------------------------
-void LoadConsoleGroupsFromFile( IBaseFileSystem *filesystem, const char *pszFileName, const char *pathID )
+void LoadConsoleGroupsFromFile( IBaseFileSystem* filesystem, const char* pszFileName, const char* pathID )
 {
-	KeyValues *pGroupRoot = new KeyValues( "ConsoleGroups" );
+	KeyValues* pGroupRoot = new KeyValues( "ConsoleGroups" );
 
 	pGroupRoot->LoadFromFile( filesystem, pszFileName, pathID );
 
-	KeyValues *pGroup = NULL;
-	for ( pGroup = pGroupRoot->GetFirstTrueSubKey(); pGroup; pGroup = pGroup->GetNextTrueSubKey() )
+	KeyValues* pGroup = NULL;
+	for( pGroup = pGroupRoot->GetFirstTrueSubKey(); pGroup; pGroup = pGroup->GetNextTrueSubKey() )
 	{
 		int index = FindConGroup( pGroup->GetName() );
-		if (index != -1)
+		if( index != -1 )
 		{
 			Color msgClr = pGroup->GetColor( "MessageColor" );
 
 			// Make sure the color isn't 0,0,0,0 before assigning
-			if (msgClr.GetRawColor() != 0)
+			if( msgClr.GetRawColor() != 0 )
+			{
 				g_ConGroups[index]._clr = msgClr;
+			}
 
 			g_ConGroups[index].bDisabled = pGroup->GetBool( "Disabled", false );
 		}
@@ -112,7 +117,7 @@ void LoadConsoleGroupsFromFile( IBaseFileSystem *filesystem, const char *pszFile
 	pGroupRoot->deleteThis();
 }
 
-void InitConsoleGroups( IBaseFileSystem *filesystem )
+void InitConsoleGroups( IBaseFileSystem* filesystem )
 {
 	LoadConsoleGroupsFromFile( filesystem, "scripts/mapbase_con_groups.txt", "MOD" );
 	LoadConsoleGroupsFromFile( filesystem, "scripts/mod_con_groups.txt", "MOD" );
@@ -121,27 +126,29 @@ void InitConsoleGroups( IBaseFileSystem *filesystem )
 void PrintAllConsoleGroups()
 {
 	Msg( "============================================================\n" );
-	for (int i = 0; i < CON_GROUP_MAX; i++)
+	for( int i = 0; i < CON_GROUP_MAX; i++ )
 	{
 		ConColorMsg( g_ConGroups[i].GetColor(), "	# %s", g_ConGroups[i].pszName );
 
-		if (g_ConGroups[i].bDisabled)
-			Msg(" [DISABLED]");
+		if( g_ConGroups[i].bDisabled )
+		{
+			Msg( " [DISABLED]" );
+		}
 
 		Msg( " - %s ", g_ConGroups[i].pszDescription );
 
-		Msg("\n");
+		Msg( "\n" );
 	}
 	Msg( "============================================================\n" );
 }
 
-void ToggleConsoleGroups( const char *pszQuery )
+void ToggleConsoleGroups( const char* pszQuery )
 {
 	bool bMatched = false;
 
-	for (int i = 0; i < ARRAYSIZE( g_ConGroups ); i++)
+	for( int i = 0; i < ARRAYSIZE( g_ConGroups ); i++ )
 	{
-		if (Matcher_NamesMatch( pszQuery, g_ConGroups[i].pszName ))
+		if( Matcher_NamesMatch( pszQuery, g_ConGroups[i].pszName ) )
 		{
 			Msg( "%s is now %s\n", g_ConGroups[i].pszName, g_ConGroups[i].bDisabled ? "enabled" : "disabled" );
 			g_ConGroups[i].bDisabled = !g_ConGroups[i].bDisabled;
@@ -149,8 +156,10 @@ void ToggleConsoleGroups( const char *pszQuery )
 		}
 	}
 
-	if (!bMatched)
+	if( !bMatched )
+	{
 		Msg( "No groups matching \"%s\"\n", pszQuery );
+	}
 }
 
 void SetConsoleGroupIncludeNames( bool bToggle )
@@ -164,30 +173,32 @@ void SetConsoleGroupIncludeNames( bool bToggle )
 void CGMsg( int level, ConGroupID_t nGroup, const tchar* pMsg, ... )
 {
 	// Return early if we're not at this level
-	if (!IsSpewActive("developer", level))
+	if( !IsSpewActive( "developer", level ) )
+	{
 		return;
+	}
 
 	char string[ 2048 ];
 	va_list argptr;
 	va_start( argptr, pMsg );
-	Q_vsnprintf( string, sizeof(string), pMsg, argptr );
+	Q_vsnprintf( string, sizeof( string ), pMsg, argptr );
 	va_end( argptr );
 
 	Assert( nGroup >= 0 );
 	Assert( nGroup < CON_GROUP_MAX );
 
-	ConGroup_t *pGroup = &g_ConGroups[nGroup];
+	ConGroup_t* pGroup = &g_ConGroups[nGroup];
 
-	if (pGroup->bDisabled)
+	if( pGroup->bDisabled )
 	{
 		// Do nothing
 	}
-	else if (g_bIncludeConGroupNames)
+	else if( g_bIncludeConGroupNames )
 	{
-		ConColorMsg(level, pGroup->GetColor(), "[%s] %s", pGroup->pszName, string);
+		ConColorMsg( level, pGroup->GetColor(), "[%s] %s", pGroup->pszName, string );
 	}
 	else
 	{
-		ConColorMsg(level, pGroup->GetColor(), "%s", string);
+		ConColorMsg( level, pGroup->GetColor(), "%s", string );
 	}
 }

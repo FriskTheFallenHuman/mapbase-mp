@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #ifndef C_VEHICLE_JEEP_H
@@ -37,17 +37,17 @@ public:
 
 public:
 
-	void UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd );
-	void DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles );
+	void UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd );
+	void DampenEyePosition( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles );
 
-	void OnEnteredVehicle( C_BasePlayer *pPlayer );
+	void OnEnteredVehicle( C_BasePlayer* pPlayer );
 	void Simulate( void );
 
 private:
 
-	void DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
-	void DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
-	void ComputePDControllerCoefficients( float *pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
+	void DampenForwardMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
+	void DampenUpMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
+	void ComputePDControllerCoefficients( float* pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
 
 private:
 
@@ -59,7 +59,7 @@ private:
 	float		m_flViewAngleDeltaTime;
 
 	float		m_flJeepFOV;
-	CHeadlightEffect *m_pHeadlight;
+	CHeadlightEffect* m_pHeadlight;
 	bool		m_bHeadlightIsOn;
 };
 

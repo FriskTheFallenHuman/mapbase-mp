@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -9,7 +9,7 @@
 #if !defined( CVAR_H )
 #define CVAR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vstdlib/vstdlib.h"

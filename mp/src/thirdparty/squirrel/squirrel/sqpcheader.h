@@ -3,7 +3,7 @@
 #define _SQPCHEADER_H_
 
 #if defined(_MSC_VER) && defined(_DEBUG)
-#include <crtdbg.h>
+	#include <crtdbg.h>
 #endif
 
 #include <limits.h>

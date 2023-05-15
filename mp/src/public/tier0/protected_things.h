@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PROTECTED_THINGS_H
 #define PROTECTED_THINGS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -26,57 +26,57 @@
 		#undef printf
 	#endif
 	#define printf				printf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( wprintf )
 		#undef wprintf
 	#endif
 	#define wprintf				wprintf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( strcmp )
 		#undef strcmp
 	#endif
 	#define strcmp				strcmp__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( wcscmp )
 		#undef wcscmp
 	#endif
 	#define wcscmp				wcscmp__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( strncpy )
 		#undef strncpy
 	#endif
 	#define strncpy				strncpy__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( wcsncpy )
 		#undef wcsncpy
 	#endif
 	#define wcsncpy				wcsncpy__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( strlen )
 		#undef strlen
 	#endif
 	#define strlen				strlen__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( wcslen )
 		#undef wcslen
 	#endif
 	#define wcslen				wcslen__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( Q_strlen )
 		#undef Q_strlen
 	#endif
 	#define Q_strlen			Q_strlen__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( _snprintf )
 		#undef _snprintf
 	#endif
 	#define _snprintf			snprintf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( _snwprintf )
 		#undef _snwprintf
 	#endif
 	#define _snwprintf			snwprintf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( sprintf )
 		#undef sprintf
 	#endif
@@ -101,12 +101,12 @@
 		#undef _vsnprintf
 	#endif
 	#define _vsnprintf			vsnprintf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( _vsnwprintf )
 		#undef _vsnwprintf
 	#endif
 	#define _vsnwprintf			vsnwprintf__HEY_YOU__USE_VSTDLIB
-	
+
 	#if defined( strcat )
 		#undef strcat
 	#endif
@@ -136,8 +136,8 @@
 		#undef GetTickCount
 	#endif
 	#define GetTickCount		GetTickCount__USE_VCR_MODE
-	
-	
+
+
 	#if defined( timeGetTime )
 		#undef timeGetTime
 	#endif
@@ -146,8 +146,8 @@
 		#undef clock
 	#endif
 	#define time				time__USE_VCR_MODE
-	
-	
+
+
 	#if defined( recvfrom )
 		#undef recvfrom
 	#endif
@@ -158,80 +158,80 @@
 		#undef GetCursorPos
 	#endif
 	#define GetCursorPos		GetCursorPos__USE_VCR_MODE
-	
-	
+
+
 	#if defined( ScreenToClient )
 		#undef ScreenToClient
 	#endif
 	#define ScreenToClient		ScreenToClient__USE_VCR_MODE
-	
-	
+
+
 	#if defined( GetCommandLine )
 		#undef GetCommandLine
 	#endif
 	#define GetCommandLine		GetCommandLine__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegOpenKeyEx )
 		#undef RegOpenKeyEx
 	#endif
 	#define RegOpenKeyEx		RegOpenKeyEx__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegOpenKey )
 		#undef RegOpenKey
 	#endif
 	#define RegOpenKey			RegOpenKey__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegSetValueEx )
 		#undef RegSetValueEx
 	#endif
 	#define RegSetValueEx		RegSetValueEx__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegSetValue )
 		#undef RegSetValue
 	#endif
 	#define RegSetValue			RegSetValue__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegQueryValueEx )
 		#undef RegQueryValueEx
-	#endif		
+	#endif
 	#define RegQueryValueEx		RegQueryValueEx__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegQueryValue )
 		#undef RegQueryValue
-	#endif		
+	#endif
 	#define RegQueryValue		RegQueryValue__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegCreateKeyEx )
 		#undef RegCreateKeyEx
 	#endif
 	#define RegCreateKeyEx		RegCreateKeyEx__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegCreateKey )
 		#undef RegCreateKey
 	#endif
 	#define RegCreateKey		RegCreateKey__USE_VCR_MODE
-	
-	
+
+
 	#if defined( RegCloseKey )
 		#undef RegCloseKey
 	#endif
 	#define RegCloseKey			RegCloseKey__USE_VCR_MODE
-	
-	
+
+
 	#if defined( GetNumberOfConsoleInputEvents )
 		#undef GetNumberOfConsoleInputEvents
 	#endif
 	#define GetNumberOfConsoleInputEvents	GetNumberOfConsoleInputEvents__USE_VCR_MODE
-	
-	
+
+
 	#if defined( ReadConsoleInput )
 		#undef ReadConsoleInput
 	#endif
@@ -243,7 +243,7 @@
 	#endif
 	#define GetAsyncKeyState	GetAsyncKeyState__USE_VCR_MODE
 
-	
+
 	#if defined( GetKeyState )
 		#undef GetKeyState
 	#endif

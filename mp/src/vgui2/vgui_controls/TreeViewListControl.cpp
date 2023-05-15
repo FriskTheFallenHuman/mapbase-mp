@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -36,7 +36,7 @@ using namespace vgui;
 
 DECLARE_BUILD_FACTORY( CTreeViewListControl );
 
-CTreeViewListControl::CTreeViewListControl( vgui::Panel *pParent, const char *pName ) :
+CTreeViewListControl::CTreeViewListControl( vgui::Panel* pParent, const char* pName ) :
 	BaseClass( pParent, pName )
 {
 	m_pTree = NULL;
@@ -46,10 +46,10 @@ CTreeViewListControl::CTreeViewListControl( vgui::Panel *pParent, const char *pN
 	SetPostChildPaintEnabled( true );
 }
 
-void CTreeViewListControl::SetTreeView( vgui::TreeView *pTree )
+void CTreeViewListControl::SetTreeView( vgui::TreeView* pTree )
 {
 	m_pTree = pTree;
-	if ( m_pTree )
+	if( m_pTree )
 	{
 		m_pTree->SetParent( this );
 		m_pTree->SetPaintBackgroundEnabled( false );
@@ -58,7 +58,7 @@ void CTreeViewListControl::SetTreeView( vgui::TreeView *pTree )
 	InvalidateLayout();
 }
 
-vgui::TreeView *CTreeViewListControl::GetTree()
+vgui::TreeView* CTreeViewListControl::GetTree()
 {
 	return m_pTree;
 }
@@ -93,14 +93,14 @@ int CTreeViewListControl::GetNumColumns() const
 	return m_Columns.Count();
 }
 
-void CTreeViewListControl::SetColumnInfo( int iColumn, const char *pTitle, int width, int ciFlags )
+void CTreeViewListControl::SetColumnInfo( int iColumn, const char* pTitle, int width, int ciFlags )
 {
-	if ( iColumn < 0 || iColumn >= m_Columns.Count() )
+	if( iColumn < 0 || iColumn >= m_Columns.Count() )
 	{
 		Assert( false );
 		return;
 	}
-	CColumnInfo *pInfo = &m_Columns[iColumn];
+	CColumnInfo* pInfo = &m_Columns[iColumn];
 	pInfo->m_Title = pTitle;
 	pInfo->m_Width = width;
 	pInfo->m_ciFlags = ciFlags;
@@ -115,33 +115,37 @@ int CTreeViewListControl::GetNumRows()
 
 int CTreeViewListControl::GetTreeItemAtRow( int iRow )
 {
-	if ( iRow < 0 || iRow >= m_Rows.Count() )
+	if( iRow < 0 || iRow >= m_Rows.Count() )
+	{
 		return -1;
+	}
 	else
+	{
 		return m_Rows[iRow];
+	}
 }
 
-void CTreeViewListControl::GetGridElementBounds( int iColumn, int iRow, int &left, int &top, int &right, int &bottom )
+void CTreeViewListControl::GetGridElementBounds( int iColumn, int iRow, int& left, int& top, int& right, int& bottom )
 {
 	left = m_Columns[iColumn].m_Left;
 	right = m_Columns[iColumn].m_Right;
-	
+
 	// vgui doesn't seem to be drawing things exactly right. Like it you draw a line at (0,0) to (100,0),
 	// then a rectangle from (1,1) to (100,100), it'll overwrite the line at the top.
 	int treeTopBorder = 0;
-	IBorder *treeBorder = m_pTree->GetBorder();
-	if ( treeBorder )
+	IBorder* treeBorder = m_pTree->GetBorder();
+	if( treeBorder )
 	{
 		int l, t, r, b;
 		treeBorder->GetInset( l, t, r, b );
 		treeTopBorder = t;
 	}
-	if ( iRow == -1 )
+	if( iRow == -1 )
 	{
 		top = 1;
 		bottom = m_TitleBarHeight - 2;
 	}
-	else if ( m_pTree )
+	else if( m_pTree )
 	{
 		int x, y;
 		m_pTree->GetPos( x, y );
@@ -161,7 +165,7 @@ void CTreeViewListControl::PerformLayout()
 	RecalculateColumns();
 
 	// Reposition the tree view.
-	if ( m_pTree && m_Columns.Count() > 0 )
+	if( m_pTree && m_Columns.Count() > 0 )
 	{
 		int left, top, right, bottom;
 		GetGridElementBounds( 0, -1, left, top, right, bottom );
@@ -179,8 +183,10 @@ void CTreeViewListControl::RecalculateRows()
 {
 	m_Rows.Purge();
 
-	if ( !m_pTree || m_pTree->GetRootItemIndex() == -1 )
+	if( !m_pTree || m_pTree->GetRootItemIndex() == -1 )
+	{
 		return;
+	}
 
 	int iRoot = m_pTree->GetRootItemIndex();
 	RecalculateRows_R( iRoot );
@@ -190,11 +196,13 @@ void CTreeViewListControl::RecalculateRows()
 void CTreeViewListControl::RecalculateRows_R( int index )
 {
 	m_Rows.AddToTail( index );
-	if ( !m_pTree->IsItemExpanded( index ) )
+	if( !m_pTree->IsItemExpanded( index ) )
+	{
 		return;
-	
+	}
+
 	int nChildren = m_pTree->GetNumChildren( index );
-	for ( int i=0; i < nChildren; i++ )
+	for( int i = 0; i < nChildren; i++ )
 	{
 		int iChild = m_pTree->GetChild( index, i );
 		RecalculateRows_R( iChild );
@@ -208,15 +216,15 @@ int CTreeViewListControl::GetScrollBarSize()
 
 void CTreeViewListControl::RecalculateColumns()
 {
-	int rightEdge = GetWide()-1 - GetScrollBarSize();
+	int rightEdge = GetWide() - 1 - GetScrollBarSize();
 
 	int x = 0;
 	int c = m_Columns.Count();
-	for ( int i=0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
 		m_Columns[i].m_Left = x + 1;
 		int cw = m_Columns[i].m_Width;
-		if ( i == c - 1 )
+		if( i == c - 1 )
 		{
 			cw = rightEdge - x - 2;
 		}
@@ -232,15 +240,17 @@ void CTreeViewListControl::PostChildPaint()
 	// Draw the grid lines.
 	vgui::surface()->DrawSetColor( m_BorderColor );
 
-	if ( m_Columns.Count() <= 0 )
+	if( m_Columns.Count() <= 0 )
+	{
 		return;
-	
+	}
+
 	// Draw the horizontal lines.
 	int endX = 0;
-	endX = m_Columns[m_Columns.Count()-1].m_Right + 1;
+	endX = m_Columns[m_Columns.Count() - 1].m_Right + 1;
 
 	int bottomY = 0;
-	for ( int i=0; i < m_Rows.Count(); i++ )
+	for( int i = 0; i < m_Rows.Count(); i++ )
 	{
 		int left, top, right, bottom;
 		GetGridElementBounds( 0, i, left, top, right, bottom );
@@ -251,7 +261,7 @@ void CTreeViewListControl::PostChildPaint()
 
 	// Draw the vertical lines.
 	int curX = 0;
-	for ( int i=0; i < m_Columns.Count(); i++ )
+	for( int i = 0; i < m_Columns.Count(); i++ )
 	{
 		vgui::surface()->DrawLine( curX, 0, curX, bottomY );
 		curX += m_Columns[i].m_Width;
@@ -271,44 +281,46 @@ void CTreeViewListControl::DrawTitleBars()
 {
 	int rightEdge = GetWide();
 
-	for ( int i=0; i < m_Columns.Count(); i++ )
+	for( int i = 0; i < m_Columns.Count(); i++ )
 	{
 		int left, top, right, bottom;
 		GetGridElementBounds( i, -1, left, top, right, bottom );
 
-		if ( left >= rightEdge )
+		if( left >= rightEdge )
+		{
 			continue;
+		}
 
 		vgui::surface()->DrawSetColor( 0, 0, 0, 255 );
 		vgui::surface()->DrawFilledRect( left, top, right, bottom );
 
 		vgui::surface()->DrawSetTextColor( 255, 255, 255, 255 );
 
-		const char *pTitleString = m_Columns[i].m_Title.String();
+		const char* pTitleString = m_Columns[i].m_Title.String();
 
 		wchar_t unicodeString[1024];
-		g_pVGuiLocalize->ConvertANSIToUnicode( pTitleString, unicodeString, sizeof(unicodeString) );
-	
+		g_pVGuiLocalize->ConvertANSIToUnicode( pTitleString, unicodeString, sizeof( unicodeString ) );
+
 		int wide, tall;
 		surface()->GetTextSize( m_TitleBarFont, unicodeString, wide, tall );
 
 		surface()->DrawSetTextFont( m_TitleBarFont );
 
-		if ( m_Columns[i].m_ciFlags & CTreeViewListControl::CI_HEADER_LEFTALIGN )
+		if( m_Columns[i].m_ciFlags & CTreeViewListControl::CI_HEADER_LEFTALIGN )
 		{
-			int midy = (top+bottom)/2;
-			surface()->DrawSetTextPos( left, midy  );
+			int midy = ( top + bottom ) / 2;
+			surface()->DrawSetTextPos( left, midy );
 		}
 		else
 		{
 			int textRight = min( right, rightEdge );
 
-			int midx = (left+textRight)/2;
-			int midy = (top+bottom)/2;
+			int midx = ( left + textRight ) / 2;
+			int midy = ( top + bottom ) / 2;
 
-			surface()->DrawSetTextPos( midx - wide/2, midy - tall/2 );
+			surface()->DrawSetTextPos( midx - wide / 2, midy - tall / 2 );
 		}
-		
+
 		surface()->DrawPrintText( unicodeString, strlen( pTitleString ) );
 	}
 }

@@ -5,7 +5,7 @@
 #ifndef IREPLAYFACTORY_H
 #define IREPLAYFACTORY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -18,10 +18,11 @@ class CReplay;
 
 //----------------------------------------------------------------------------------------
 
-abstract_class IReplayFactory : public IBaseInterface
+abstract_class IReplayFactory :
+public IBaseInterface
 {
 public:
-	virtual CReplay		*Create() = 0;
+	virtual CReplay		* Create() = 0;
 };
 
 #define INTERFACE_VERSION_REPLAY_FACTORY	"IReplayFactory001"

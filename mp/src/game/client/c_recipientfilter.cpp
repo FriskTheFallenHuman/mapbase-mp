@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -14,7 +14,7 @@
 static IPredictionSystem g_RecipientFilterPredictionSystem;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_RecipientFilter::C_RecipientFilter()
 {
@@ -26,8 +26,8 @@ C_RecipientFilter::~C_RecipientFilter()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : src - 
+// Purpose:
+// Input  : src -
 //-----------------------------------------------------------------------------
 void C_RecipientFilter::CopyFrom( const C_RecipientFilter& src )
 {
@@ -38,14 +38,14 @@ void C_RecipientFilter::CopyFrom( const C_RecipientFilter& src )
 	m_bIgnorePredictionCull = src.IgnorePredictionCull();
 
 	int c = src.GetRecipientCount();
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
 		m_Recipients.AddToTail( src.GetRecipientIndex( i ) );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_RecipientFilter::Reset( void )
 {
@@ -72,59 +72,71 @@ int C_RecipientFilter::GetRecipientCount( void ) const
 
 int	C_RecipientFilter::GetRecipientIndex( int slot ) const
 {
-	if ( slot < 0 || slot >= GetRecipientCount() )
+	if( slot < 0 || slot >= GetRecipientCount() )
+	{
 		return -1;
+	}
 
 	return m_Recipients[ slot ];
 }
 
 void C_RecipientFilter::AddAllPlayers( void )
 {
-	if ( !C_BasePlayer::GetLocalPlayer() )
+	if( !C_BasePlayer::GetLocalPlayer() )
+	{
 		return;
+	}
 
 	m_Recipients.RemoveAll();
 	AddRecipient( C_BasePlayer::GetLocalPlayer() );
 }
 
-void C_RecipientFilter::AddRecipient( C_BasePlayer *player )
+void C_RecipientFilter::AddRecipient( C_BasePlayer* player )
 {
 	Assert( player );
 
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	int index = player->m_index;
 
 	// If we're predicting and this is not the first time we've predicted this sound
 	//  then don't send it to the local player again.
-	if ( m_bUsingPredictionRules )
+	if( m_bUsingPredictionRules )
 	{
 		Assert( player == C_BasePlayer::GetLocalPlayer() );
 		Assert( prediction->InPrediction() );
 
 		// Only add local player if this is the first time doing prediction
-		if ( !g_RecipientFilterPredictionSystem.CanPredict() )
+		if( !g_RecipientFilterPredictionSystem.CanPredict() )
 		{
 			return;
 		}
 	}
 
 	// Already in list
-	if ( m_Recipients.Find( index ) != m_Recipients.InvalidIndex() )
+	if( m_Recipients.Find( index ) != m_Recipients.InvalidIndex() )
+	{
 		return;
+	}
 
 	// this is a client side filter, only add the local player
-	if ( !player->IsLocalPlayer() )
+	if( !player->IsLocalPlayer() )
+	{
 		return;
+	}
 
 	m_Recipients.AddToTail( index );
 }
 
-void C_RecipientFilter::RemoveRecipient( C_BasePlayer *player )
+void C_RecipientFilter::RemoveRecipient( C_BasePlayer* player )
 {
-	if ( !player )
+	if( !player )
+	{
 		return;
+	}
 
 	int index = player->m_index;
 
@@ -132,26 +144,30 @@ void C_RecipientFilter::RemoveRecipient( C_BasePlayer *player )
 	m_Recipients.FindAndRemove( index );
 }
 
-void C_RecipientFilter::AddRecipientsByTeam( C_Team *team )
+void C_RecipientFilter::AddRecipientsByTeam( C_Team* team )
 {
 	AddAllPlayers();
 }
 
-void C_RecipientFilter::RemoveRecipientsByTeam( C_Team *team )
+void C_RecipientFilter::RemoveRecipientsByTeam( C_Team* team )
 {
-	Assert ( 0 );
+	Assert( 0 );
 }
 
 void C_RecipientFilter::AddPlayersFromBitMask( CBitVec< ABSOLUTE_PLAYER_LIMIT >& playerbits )
 {
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
 
-	if ( !pPlayer )
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// only add the local player on client side
-	if ( !playerbits[ pPlayer->m_index ] )
+	if( !playerbits[ pPlayer->m_index ] )
+	{
 		return;
+	}
 
 	AddRecipient( pPlayer );
 }
@@ -168,17 +184,19 @@ void C_RecipientFilter::AddRecipientsByPAS( const Vector& origin )
 
 void C_RecipientFilter::UsePredictionRules( void )
 {
-	if ( m_bUsingPredictionRules )
+	if( m_bUsingPredictionRules )
+	{
 		return;
+	}
 
-	if ( !prediction->InPrediction() )
+	if( !prediction->InPrediction() )
 	{
 		Assert( 0 );
 		return;
 	}
 
-	C_BasePlayer *local = C_BasePlayer::GetLocalPlayer();
-	if ( !local )
+	C_BasePlayer* local = C_BasePlayer::GetLocalPlayer();
+	if( !local )
 	{
 		Assert( 0 );
 		return;
@@ -188,10 +206,12 @@ void C_RecipientFilter::UsePredictionRules( void )
 
 	// Cull list now, if needed
 	int c = GetRecipientCount();
-	if ( c == 0 )
+	if( c == 0 )
+	{
 		return;
+	}
 
-	if ( !g_RecipientFilterPredictionSystem.CanPredict() )
+	if( !g_RecipientFilterPredictionSystem.CanPredict() )
 	{
 		RemoveRecipient( local );
 	}
@@ -214,7 +234,7 @@ void C_RecipientFilter::SetIgnorePredictionCull( bool ignore )
 
 CLocalPlayerFilter::CLocalPlayerFilter()
 {
-	if ( C_BasePlayer::GetLocalPlayer() )
+	if( C_BasePlayer::GetLocalPlayer() )
 	{
 		AddRecipient( C_BasePlayer::GetLocalPlayer() );
 	}

@@ -17,11 +17,11 @@ using namespace ResponseRules;
 
 // bizarre function handed down from the misty days of yore
 // and the original response system. a lot of stuff uses it
-// and I can't be arsed to replace everything with the c stdlib 
+// and I can't be arsed to replace everything with the c stdlib
 // stuff
-namespace ResponseRules 
+namespace ResponseRules
 {
-	extern const char *ResponseCopyString( const char *in );
+extern const char* ResponseCopyString( const char* in );
 };
 
 
@@ -48,7 +48,7 @@ Matcher::Matcher()
 
 void Matcher::Describe( void )
 {
-	if ( !valid )
+	if( !valid )
 	{
 		CGMsg( 1, CON_GROUP_RESPONSE_SYSTEM, "    invalid!\n" );
 		return;
@@ -57,17 +57,17 @@ void Matcher::Describe( void )
 
 	sz[ 0] = 0;
 	int minmaxcount = 0;
-	if ( usemin )
+	if( usemin )
 	{
 		Q_snprintf( sz, sizeof( sz ), ">%s%.3f", minequals ? "=" : "", minval );
 		minmaxcount++;
 	}
-	if ( usemax )
+	if( usemax )
 	{
 		char sz2[ 128 ];
 		Q_snprintf( sz2, sizeof( sz2 ), "<%s%.3f", maxequals ? "=" : "", maxval );
 
-		if ( minmaxcount > 0 )
+		if( minmaxcount > 0 )
 		{
 			Q_strncat( sz, " and ", sizeof( sz ), COPY_ALL_CHARACTERS );
 		}
@@ -75,21 +75,21 @@ void Matcher::Describe( void )
 		minmaxcount++;
 	}
 
-	if ( minmaxcount >= 1 )
+	if( minmaxcount >= 1 )
 	{
 		CGMsg( 1, CON_GROUP_RESPONSE_SYSTEM, "    matcher:  %s\n", sz );
 		return;
 	}
 
 #ifdef MAPBASE
-	if ( isbit )
+	if( isbit )
 	{
 		CGMsg( 1, CON_GROUP_RESPONSE_SYSTEM, "    matcher:  &%s%s\n", notequal ? "~" : "", GetToken() );
 		return;
 	}
 #endif
 
-	if ( notequal )
+	if( notequal )
 	{
 		CGMsg( 1, CON_GROUP_RESPONSE_SYSTEM, "    matcher:  !=%s\n", GetToken() );
 		return;
@@ -98,28 +98,28 @@ void Matcher::Describe( void )
 	CGMsg( 1, CON_GROUP_RESPONSE_SYSTEM, "    matcher:  ==%s\n", GetToken() );
 }
 
-void Matcher::SetToken( char const *s )
+void Matcher::SetToken( char const* s )
 {
 	token = g_RS.AddString( s );
 }
 
-void Matcher::SetRaw( char const *raw )
+void Matcher::SetRaw( char const* raw )
 {
 	rawtoken = g_RS.AddString( raw );
 }
 
-char const *Matcher::GetToken()
+char const* Matcher::GetToken()
 {
-	if ( token.IsValid() )
+	if( token.IsValid() )
 	{
 		return g_RS.String( token );
 	}
 	return "";
 }
 
-char const *Matcher::GetRaw()
+char const* Matcher::GetRaw()
 {
-	if ( rawtoken.IsValid() )
+	if( rawtoken.IsValid() )
 	{
 		return g_RS.String( rawtoken );
 	}
@@ -134,7 +134,7 @@ Criteria::Criteria()
 	weight.SetFloat( 1.0f );
 	required = false;
 }
-Criteria::Criteria(const Criteria& src )
+Criteria::Criteria( const Criteria& src )
 {
 	operator=( src );
 }
@@ -144,10 +144,12 @@ Criteria::~Criteria()
 	// do nothing because we don't own name and value anymore
 }
 
-Criteria& Criteria::operator =(const Criteria& src )
+Criteria& Criteria::operator =( const Criteria& src )
 {
-	if ( this == &src )
+	if( this == &src )
+	{
 		return *this;
+	}
 
 	nameSym = src.nameSym;
 	value = ResponseCopyString( src.value );
@@ -158,7 +160,7 @@ Criteria& Criteria::operator =(const Criteria& src )
 
 	int c = src.subcriteria.Count();
 	subcriteria.EnsureCapacity( c );
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
 		subcriteria.AddToTail( src.subcriteria[ i ] );
 	}
@@ -183,8 +185,10 @@ ParserResponse::ParserResponse() : m_followup()
 
 ParserResponse& ParserResponse::operator =( const ParserResponse& src )
 {
-	if ( this == &src )
+	if( this == &src )
+	{
 		return *this;
+	}
 	weight = src.weight;
 	type = src.type;
 	value = ResponseCopyString( src.value );
@@ -193,11 +197,11 @@ ParserResponse& ParserResponse::operator =( const ParserResponse& src )
 	last = src.last;
 	params = src.params;
 
-	m_followup.followup_concept = ResponseCopyString(src.m_followup.followup_concept);
-	m_followup.followup_contexts = ResponseCopyString(src.m_followup.followup_contexts);
-	m_followup.followup_target = ResponseCopyString(src.m_followup.followup_target);
-	m_followup.followup_entityioinput = ResponseCopyString(src.m_followup.followup_entityioinput);
-	m_followup.followup_entityiotarget = ResponseCopyString(src.m_followup.followup_entityiotarget);
+	m_followup.followup_concept = ResponseCopyString( src.m_followup.followup_concept );
+	m_followup.followup_contexts = ResponseCopyString( src.m_followup.followup_contexts );
+	m_followup.followup_target = ResponseCopyString( src.m_followup.followup_target );
+	m_followup.followup_entityioinput = ResponseCopyString( src.m_followup.followup_entityioinput );
+	m_followup.followup_entityiotarget = ResponseCopyString( src.m_followup.followup_entityiotarget );
 	m_followup.followup_delay = src.m_followup.followup_delay;
 	m_followup.followup_entityiodelay = src.m_followup.followup_entityiodelay;
 
@@ -217,7 +221,7 @@ ParserResponse::~ParserResponse()
 
 // ------------ RULE ---------------
 
-Rule::Rule() : m_nForceWeight(0)
+Rule::Rule() : m_nForceWeight( 0 )
 {
 	m_bMatchOnce = false;
 	m_bEnabled = true;
@@ -231,22 +235,24 @@ Rule::Rule() : m_nForceWeight(0)
 
 Rule& Rule::operator =( const Rule& src )
 {
-	if ( this == &src )
+	if( this == &src )
+	{
 		return *this;
+	}
 
 	int i;
 	int c;
 
-	c = src.m_Criteria.Count(); 
+	c = src.m_Criteria.Count();
 	m_Criteria.EnsureCapacity( c );
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
 		m_Criteria.AddToTail( src.m_Criteria[ i ] );
 	}
 
-	c = src.m_Responses.Count(); 
+	c = src.m_Responses.Count();
 	m_Responses.EnsureCapacity( c );
-	for ( i = 0; i < c; i++ )
+	for( i = 0; i < c; i++ )
 	{
 		m_Responses.AddToTail( src.m_Responses[ i ] );
 	}
@@ -265,14 +271,14 @@ Rule& Rule::operator =( const Rule& src )
 
 Rule::Rule( const Rule& src )
 {
-	operator=(src);
+	operator=( src );
 }
 
 Rule::~Rule()
 {
 }
 
-void Rule::SetContext( const char *context )
+void Rule::SetContext( const char* context )
 {
 	// we don't own the data we point to, so just update pointer
 	m_szContext = ResponseCopyString( context );

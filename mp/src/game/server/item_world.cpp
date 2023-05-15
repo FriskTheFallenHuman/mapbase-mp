@@ -15,7 +15,7 @@
 #include "world.h"
 
 #ifdef HL2MP
-#include "hl2mp_gamerules.h"
+	#include "hl2mp_gamerules.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -29,50 +29,52 @@ class CWorldItem : public CBaseAnimating
 public:
 	DECLARE_CLASS( CWorldItem, CBaseAnimating );
 
-	bool	KeyValue( const char *szKeyName, const char *szValue ); 
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 	void	Spawn( void );
 
 	int		m_iType;
 };
 
-LINK_ENTITY_TO_CLASS(world_items, CWorldItem);
+LINK_ENTITY_TO_CLASS( world_items, CWorldItem );
 
 BEGIN_DATADESC( CWorldItem )
 
 DEFINE_FIELD( m_iType, FIELD_INTEGER ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
-bool CWorldItem::KeyValue( const char *szKeyName, const char *szValue )
+			  bool CWorldItem::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "type"))
+	if( FStrEq( szKeyName, "type" ) )
 	{
-		m_iType = atoi(szValue);
+		m_iType = atoi( szValue );
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
 
 void CWorldItem::Spawn( void )
 {
-	CBaseEntity *pEntity = NULL;
+	CBaseEntity* pEntity = NULL;
 
-	switch (m_iType) 
+	switch( m_iType )
 	{
-	case 44: // ITEM_BATTERY:
-		pEntity = CBaseEntity::Create( "item_battery", GetLocalOrigin(), GetLocalAngles() );
-		break;
-	case 45: // ITEM_SUIT:
-		pEntity = CBaseEntity::Create( "item_suit", GetLocalOrigin(), GetLocalAngles() );
-		break;
+		case 44: // ITEM_BATTERY:
+			pEntity = CBaseEntity::Create( "item_battery", GetLocalOrigin(), GetLocalAngles() );
+			break;
+		case 45: // ITEM_SUIT:
+			pEntity = CBaseEntity::Create( "item_suit", GetLocalOrigin(), GetLocalAngles() );
+			break;
 	}
 
-	if (!pEntity)
+	if( !pEntity )
 	{
-		Warning("unable to create world_item %d\n", m_iType );
+		Warning( "unable to create world_item %d\n", m_iType );
 	}
 	else
 	{
@@ -88,15 +90,15 @@ void CWorldItem::Spawn( void )
 
 BEGIN_DATADESC( CItem )
 
-	DEFINE_FIELD( m_bActivateWhenAtRest,	 FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vOriginalSpawnOrigin, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vOriginalSpawnAngles, FIELD_VECTOR ),
-	DEFINE_PHYSPTR( m_pConstraint ),
+DEFINE_FIELD( m_bActivateWhenAtRest,	 FIELD_BOOLEAN ),
+DEFINE_FIELD( m_vOriginalSpawnOrigin, FIELD_POSITION_VECTOR ),
+DEFINE_FIELD( m_vOriginalSpawnAngles, FIELD_VECTOR ),
+DEFINE_PHYSPTR( m_pConstraint ),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( ItemTouch ),
-	DEFINE_THINKFUNC( Materialize ),
-	DEFINE_THINKFUNC( ComeToRest ),
+// Function Pointers
+DEFINE_ENTITYFUNC( ItemTouch ),
+DEFINE_THINKFUNC( Materialize ),
+DEFINE_THINKFUNC( ComeToRest ),
 
 #if defined( HL2MP ) || defined( TF_DLL )
 	DEFINE_FIELD( m_flNextResetCheckTime, FIELD_TIME ),
@@ -111,15 +113,15 @@ BEGIN_DATADESC( CItem )
 	DEFINE_INPUTFUNC( FIELD_VOID, "BreakConstraint", InputBreakConstraint ),
 #endif
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnPlayerTouch, "OnPlayerTouch" ),
-	DEFINE_OUTPUT( m_OnCacheInteraction, "OnCacheInteraction" ),
+// Outputs
+DEFINE_OUTPUT( m_OnPlayerTouch, "OnPlayerTouch" ),
+DEFINE_OUTPUT( m_OnCacheInteraction, "OnCacheInteraction" ),
 
 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Constructor 
+// Constructor
 //-----------------------------------------------------------------------------
 CItem::CItem()
 {
@@ -130,20 +132,20 @@ bool CItem::CreateItemVPhysicsObject( void )
 {
 	// Create the object in the physics system
 	int nSolidFlags = GetSolidFlags() | FSOLID_NOT_STANDABLE;
-	if ( !m_bActivateWhenAtRest )
+	if( !m_bActivateWhenAtRest )
 	{
 		nSolidFlags |= FSOLID_TRIGGER;
 	}
 
-	if ( VPhysicsInitNormal( SOLID_VPHYSICS, nSolidFlags, false ) == NULL )
+	if( VPhysicsInitNormal( SOLID_VPHYSICS, nSolidFlags, false ) == NULL )
 	{
 		SetSolid( SOLID_BBOX );
 		AddSolidFlags( nSolidFlags );
 
 		// If it's not physical, drop it to the floor
-		if (UTIL_DropToFloor(this, MASK_SOLID) == 0)
+		if( UTIL_DropToFloor( this, MASK_SOLID ) == 0 )
 		{
-			Warning( "Item %s fell out of level at %f,%f,%f\n", GetClassname(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z);
+			Warning( "Item %s fell out of level at %f,%f,%f\n", GetClassname(), GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
 			UTIL_Remove( this );
 			return false;
 		}
@@ -153,11 +155,11 @@ bool CItem::CreateItemVPhysicsObject( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem::Spawn( void )
 {
-	if ( g_pGameRules->IsAllowedToSpawn( this ) == false )
+	if( g_pGameRules->IsAllowedToSpawn( this ) == false )
 	{
 		UTIL_Remove( this );
 		return;
@@ -167,7 +169,7 @@ void CItem::Spawn( void )
 	SetSolid( SOLID_BBOX );
 	SetBlocksLOS( false );
 	AddEFlags( EFL_NO_ROTORWASH_PUSH );
-	
+
 	if( IsX360() )
 	{
 		AddEffects( EF_ITEM_BLINK );
@@ -177,24 +179,26 @@ void CItem::Spawn( void )
 	// against other items + weapons
 	SetCollisionGroup( COLLISION_GROUP_WEAPON );
 	CollisionProp()->UseTriggerBounds( true, ITEM_PICKUP_BOX_BLOAT );
-	SetTouch(&CItem::ItemTouch);
+	SetTouch( &CItem::ItemTouch );
 
-	if ( CreateItemVPhysicsObject() == false )
+	if( CreateItemVPhysicsObject() == false )
+	{
 		return;
+	}
 
 	m_takedamage = DAMAGE_EVENTS_ONLY;
 
 #if !defined( CLIENT_DLL )
 	// Constrained start?
-	if ( HasSpawnFlags( SF_ITEM_START_CONSTRAINED ) )
+	if( HasSpawnFlags( SF_ITEM_START_CONSTRAINED ) )
 	{
 		//Constrain the weapon in place
-		IPhysicsObject *pReferenceObject, *pAttachedObject;
+		IPhysicsObject* pReferenceObject, *pAttachedObject;
 
 		pReferenceObject = g_PhysWorldObject;
 		pAttachedObject = VPhysicsGetObject();
 
-		if ( pReferenceObject && pAttachedObject )
+		if( pReferenceObject && pAttachedObject )
 		{
 			constraint_fixedparams_t fixed;
 			fixed.Defaults();
@@ -205,7 +209,7 @@ void CItem::Spawn( void )
 
 			m_pConstraint = physenv->CreateFixedConstraint( pReferenceObject, pAttachedObject, NULL, fixed );
 
-			m_pConstraint->SetGameData( (void *) this );
+			m_pConstraint->SetGameData( ( void* ) this );
 		}
 	}
 #endif //CLIENT_DLL
@@ -217,15 +221,15 @@ void CItem::Spawn( void )
 }
 
 unsigned int CItem::PhysicsSolidMaskForEntity( void ) const
-{ 
+{
 	return BaseClass::PhysicsSolidMaskForEntity() | CONTENTS_PLAYERCLIP;
 }
 
-void CItem::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CItem::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( pActivator );
+	CBasePlayer* pPlayer = ToBasePlayer( pActivator );
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		pPlayer->PickupObject( this );
 	}
@@ -249,15 +253,15 @@ void CItem::ActivateWhenAtRest( float flTime /* = 0.5f */ )
 //-----------------------------------------------------------------------------
 // Become touchable when we are at rest
 //-----------------------------------------------------------------------------
-void CItem::OnEntityEvent( EntityEvent_t event, void *pEventData )
+void CItem::OnEntityEvent( EntityEvent_t event, void* pEventData )
 {
 	BaseClass::OnEntityEvent( event, pEventData );
 
 	switch( event )
 	{
-	case ENTITY_EVENT_WATER_TOUCH:
+		case ENTITY_EVENT_WATER_TOUCH:
 		{
-			// Delay rest for a sec, to avoid changing collision 
+			// Delay rest for a sec, to avoid changing collision
 			// properties inside a collision callback.
 			SetThink( &CItem::ComeToRest );
 			SetNextThink( gpGlobals->curtime + 0.1f );
@@ -272,7 +276,7 @@ void CItem::OnEntityEvent( EntityEvent_t event, void *pEventData )
 //-----------------------------------------------------------------------------
 void CItem::ComeToRest( void )
 {
-	if ( m_bActivateWhenAtRest )
+	if( m_bActivateWhenAtRest )
 	{
 		m_bActivateWhenAtRest = false;
 		AddSolidFlags( FSOLID_TRIGGER );
@@ -283,30 +287,30 @@ void CItem::ComeToRest( void )
 #if defined( HL2MP ) || defined( TF_DLL )
 
 //-----------------------------------------------------------------------------
-// Purpose: Items that have just spawned run this think to catch them when 
-//			they hit the ground. Once we're sure that the object is grounded, 
-//			we change its solid type to trigger and set it in a large box that 
+// Purpose: Items that have just spawned run this think to catch them when
+//			they hit the ground. Once we're sure that the object is grounded,
+//			we change its solid type to trigger and set it in a large box that
 //			helps the player get it.
 //-----------------------------------------------------------------------------
-void CItem::FallThink ( void )
+void CItem::FallThink( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
 #if defined( HL2MP )
 	bool shouldMaterialize = false;
-	IPhysicsObject *pPhysics = VPhysicsGetObject();
-	if ( pPhysics )
+	IPhysicsObject* pPhysics = VPhysicsGetObject();
+	if( pPhysics )
 	{
 		shouldMaterialize = pPhysics->IsAsleep();
 	}
 	else
 	{
-		shouldMaterialize = (GetFlags() & FL_ONGROUND) ? true : false;
+		shouldMaterialize = ( GetFlags() & FL_ONGROUND ) ? true : false;
 	}
 
-	SetThink ( NULL );
+	SetThink( NULL );
 
-	if ( GetOriginalSpawnOrigin() == vec3_origin )
+	if( GetOriginalSpawnOrigin() == vec3_origin )
 	{
 		m_vOriginalSpawnOrigin = GetAbsOrigin();
 		m_vOriginalSpawnAngles = GetAbsAngles();
@@ -318,9 +322,9 @@ void CItem::FallThink ( void )
 #if defined( TF_DLL )
 	// We only come here if ActivateWhenAtRest() is never called,
 	// which is the case when creating currencypacks in MvM
-	if ( !( GetFlags() & FL_ONGROUND ) )
+	if( !( GetFlags() & FL_ONGROUND ) )
 	{
-		if ( !GetAbsVelocity().Length() && GetMoveType() == MOVETYPE_FLYGRAVITY )
+		if( !GetAbsVelocity().Length() && GetMoveType() == MOVETYPE_FLYGRAVITY )
 		{
 			// Mr. Game, meet Mr. Hammer.  Mr. Hammer, meet the uncooperative Mr. Physics.
 			// Mr. Physics really doesn't want to give our friend the FL_ONGROUND flag.
@@ -347,32 +351,40 @@ void CItem::FallThink ( void )
 //			*pPlayer - player attempting the pickup
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer )
+bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity* pItem, CBasePlayer* pPlayer )
 {
-	if ( pItem == NULL || pPlayer == NULL )
+	if( pItem == NULL || pPlayer == NULL )
+	{
 		return false;
+	}
 
 #ifdef MAPBASE
 	// Weapons go through this, but this is identical to SF_WEAPON_NO_PLAYER_PICKUP and that would be a convenient coincidence,
 	// but OnCacheInteraction worked with "No player pickup" before and SF_WEAPON_NO_PLAYER_PICKUP is often checked after this,
 	// so we have to make sure we're not dealing with a weapon for this check after all.
-	if (pItem->HasSpawnFlags(SF_ITEM_NO_PLAYER_PICKUP) && !pItem->IsBaseCombatWeapon())
+	if( pItem->HasSpawnFlags( SF_ITEM_NO_PLAYER_PICKUP ) && !pItem->IsBaseCombatWeapon() )
+	{
 		return false;
+	}
 
 	// Fortunately, unlike the above code, this flag is identical in between weapons and items
 	// and can safely be used without identifying the entity.
-	if (pItem->HasSpawnFlags(SF_ITEM_ALWAYS_TOUCHABLE))
+	if( pItem->HasSpawnFlags( SF_ITEM_ALWAYS_TOUCHABLE ) )
+	{
 		return true;
+	}
 #endif
 
 	// For now, always allow a vehicle riding player to pick up things they're driving over
-	if ( pPlayer->IsInAVehicle() )
+	if( pPlayer->IsInAVehicle() )
+	{
 		return true;
+	}
 
 	// Get our test positions
 	Vector vecStartPos;
-	IPhysicsObject *pPhysObj = pItem->VPhysicsGetObject();
-	if ( pPhysObj != NULL )
+	IPhysicsObject* pPhysObj = pItem->VPhysicsGetObject();
+	if( pPhysObj != NULL )
 	{
 		// Use the physics hull's center
 		QAngle vecAngles;
@@ -396,8 +408,10 @@ bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer )
 
 	// Occluded
 	// FIXME: For now, we exclude starting in solid because there are cases where this doesn't matter
-	if ( tr.fraction < 1.0f )
+	if( tr.fraction < 1.0f )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -407,62 +421,70 @@ bool UTIL_ItemCanBeTouchedByPlayer( CBaseEntity *pItem, CBasePlayer *pPlayer )
 //			into account obstructions and other hinderances
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CItem::ItemCanBeTouchedByPlayer( CBasePlayer *pPlayer )
+bool CItem::ItemCanBeTouchedByPlayer( CBasePlayer* pPlayer )
 {
 	return UTIL_ItemCanBeTouchedByPlayer( this, pPlayer );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pOther - 
+// Purpose:
+// Input  : pOther -
 //-----------------------------------------------------------------------------
-void CItem::ItemTouch( CBaseEntity *pOther )
+void CItem::ItemTouch( CBaseEntity* pOther )
 {
 	// Vehicles can touch items + pick them up
-	if ( pOther->GetServerVehicle() )
+	if( pOther->GetServerVehicle() )
 	{
 		pOther = pOther->GetServerVehicle()->GetPassenger();
-		if ( !pOther )
+		if( !pOther )
+		{
 			return;
+		}
 	}
 
 	// if it's not a player, ignore
-	if ( !pOther->IsPlayer() )
+	if( !pOther->IsPlayer() )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = (CBasePlayer *)pOther;
+	CBasePlayer* pPlayer = ( CBasePlayer* )pOther;
 
 	// Must be a valid pickup scenario (no blocking). Though this is a more expensive
 	// check than some that follow, this has to be first Obecause it's the only one
 	// that inhibits firing the output OnCacheInteraction.
-	if ( ItemCanBeTouchedByPlayer( pPlayer ) == false )
+	if( ItemCanBeTouchedByPlayer( pPlayer ) == false )
+	{
 		return;
+	}
 
-	m_OnCacheInteraction.FireOutput(pOther, this);
+	m_OnCacheInteraction.FireOutput( pOther, this );
 
 	// Can I even pick stuff up?
-	if ( !pPlayer->IsAllowedToPickupWeapons() )
+	if( !pPlayer->IsAllowedToPickupWeapons() )
+	{
 		return;
+	}
 
 	// ok, a player is touching this item, but can he have it?
-	if ( !g_pGameRules->CanHaveItem( pPlayer, this ) )
+	if( !g_pGameRules->CanHaveItem( pPlayer, this ) )
 	{
 		// no? Ignore the touch.
 		return;
 	}
 
-	if ( MyTouch( pPlayer ) )
+	if( MyTouch( pPlayer ) )
 	{
-		m_OnPlayerTouch.FireOutput(pOther, this);
+		m_OnPlayerTouch.FireOutput( pOther, this );
 
 		SetTouch( NULL );
 		SetThink( NULL );
 
-		// player grabbed the item. 
+		// player grabbed the item.
 		g_pGameRules->PlayerGotItem( pPlayer, this );
-		if ( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_YES )
+		if( g_pGameRules->ItemShouldRespawn( this ) == GR_ITEM_RESPAWN_YES )
 		{
-			Respawn(); 
+			Respawn();
 		}
 		else
 		{
@@ -473,7 +495,7 @@ void CItem::ItemTouch( CBaseEntity *pOther )
 #endif
 		}
 	}
-	else if (gEvilImpulse101)
+	else if( gEvilImpulse101 )
 	{
 		UTIL_Remove( this );
 	}
@@ -501,7 +523,7 @@ CBaseEntity* CItem::Respawn( void )
 
 	RemoveAllDecals(); //remove any decals
 
-	SetThink ( &CItem::Materialize );
+	SetThink( &CItem::Materialize );
 	SetNextThink( gpGlobals->curtime + g_pGameRules->FlItemRespawnTime( this ) );
 	return this;
 }
@@ -510,7 +532,7 @@ void CItem::Materialize( void )
 {
 	CreateItemVPhysicsObject();
 
-	if ( IsEffectActive( EF_NODRAW ) )
+	if( IsEffectActive( EF_NODRAW ) )
 	{
 		// changing from invisible state to visible.
 
@@ -528,7 +550,7 @@ void CItem::Materialize( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CItem::Precache()
 {
@@ -538,15 +560,15 @@ void CItem::Precache()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPhysGunUser - 
-//			PICKED_UP_BY_CANNON - 
+// Purpose:
+// Input  : *pPhysGunUser -
+//			PICKED_UP_BY_CANNON -
 //-----------------------------------------------------------------------------
-void CItem::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CItem::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
-	m_OnCacheInteraction.FireOutput(pPhysGunUser, this);
+	m_OnCacheInteraction.FireOutput( pPhysGunUser, this );
 
-	if ( reason == PICKED_UP_BY_CANNON )
+	if( reason == PICKED_UP_BY_CANNON )
 	{
 		// Expand the pickup box
 		CollisionProp()->UseTriggerBounds( true, ITEM_PICKUP_BOX_BLOAT * 2 );
@@ -560,11 +582,11 @@ void CItem::OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPhysGunUser - 
-//			reason - 
+// Purpose:
+// Input  : *pPhysGunUser -
+//			reason -
 //-----------------------------------------------------------------------------
-void CItem::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason )
+void CItem::OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t reason )
 {
 	// Restore the pickup box to the original
 	CollisionProp()->UseTriggerBounds( true, ITEM_PICKUP_BOX_BLOAT );
@@ -572,43 +594,43 @@ void CItem::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem::InputEnablePlayerPickup( inputdata_t &inputdata )
+void CItem::InputEnablePlayerPickup( inputdata_t& inputdata )
 {
-	RemoveSpawnFlags(SF_ITEM_NO_PLAYER_PICKUP);
+	RemoveSpawnFlags( SF_ITEM_NO_PLAYER_PICKUP );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem::InputDisablePlayerPickup( inputdata_t &inputdata )
+void CItem::InputDisablePlayerPickup( inputdata_t& inputdata )
 {
-	AddSpawnFlags(SF_ITEM_NO_PLAYER_PICKUP);
+	AddSpawnFlags( SF_ITEM_NO_PLAYER_PICKUP );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem::InputEnableNPCPickup( inputdata_t &inputdata )
+void CItem::InputEnableNPCPickup( inputdata_t& inputdata )
 {
-	RemoveSpawnFlags(SF_ITEM_NO_NPC_PICKUP);
+	RemoveSpawnFlags( SF_ITEM_NO_NPC_PICKUP );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem::InputDisableNPCPickup( inputdata_t &inputdata )
+void CItem::InputDisableNPCPickup( inputdata_t& inputdata )
 {
-	AddSpawnFlags(SF_ITEM_NO_NPC_PICKUP);
+	AddSpawnFlags( SF_ITEM_NO_NPC_PICKUP );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CItem::InputBreakConstraint( inputdata_t &inputdata )
+void CItem::InputBreakConstraint( inputdata_t& inputdata )
 {
-	if ( m_pConstraint != NULL )
+	if( m_pConstraint != NULL )
 	{
 		physenv->DestroyConstraint( m_pConstraint );
 		m_pConstraint = NULL;

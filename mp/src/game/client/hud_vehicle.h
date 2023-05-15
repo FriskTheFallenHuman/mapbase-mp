@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HUD_CROSSHAIR_H
 #define HUD_CROSSHAIR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -16,26 +16,26 @@
 
 namespace vgui
 {
-	class IScheme;
+class IScheme;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CHudVehicle : public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CHudVehicle, vgui::Panel );
 public:
-	CHudVehicle( const char *pElementName );
+	CHudVehicle( const char* pElementName );
 
 	virtual bool	ShouldDraw();
 
-	virtual void	ApplySchemeSettings( vgui::IScheme *scheme );
+	virtual void	ApplySchemeSettings( vgui::IScheme* scheme );
 	virtual void	Paint( void );
 
 private:
 
-	IClientVehicle	*GetLocalPlayerVehicle();
+	IClientVehicle*	GetLocalPlayerVehicle();
 };
 
 #endif // HUD_CROSSHAIR_H

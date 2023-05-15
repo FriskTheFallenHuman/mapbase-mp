@@ -13,7 +13,7 @@
 #include "saverestore_utlclass.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-------------------------------------
@@ -27,24 +27,24 @@ public:
 		UTLCLASS_SAVERESTORE_VALIDATE_TYPE( FIELD_TYPE );
 	}
 
-	virtual void Save( const SaveRestoreFieldInfo_t &fieldInfo, ISave *pSave )
-	{		
-		datamap_t *pArrayTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( (UTLVECTOR *)NULL );
-		typedescription_t dataDesc = 
+	virtual void Save( const SaveRestoreFieldInfo_t& fieldInfo, ISave* pSave )
+	{
+		datamap_t* pArrayTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( ( UTLVECTOR* )NULL );
+		typedescription_t dataDesc =
 		{
-			(fieldtype_t)FIELD_TYPE, 
-			"elems", 
+			( fieldtype_t )FIELD_TYPE,
+			"elems",
 			{ 0, 0 },
-			1, 
-			FTYPEDESC_SAVE, 
-			NULL, 
-			NULL, 
+			1,
+			FTYPEDESC_SAVE,
+			NULL,
+			NULL,
 			NULL,
 			pArrayTypeDatamap,
 			-1,
 		};
-		
-		datamap_t dataMap = 
+
+		datamap_t dataMap =
 		{
 			&dataDesc,
 			1,
@@ -57,47 +57,49 @@ public:
 			true
 #endif
 		};
-		
-		UTLVECTOR *pUtlVector = (UTLVECTOR *)fieldInfo.pField;
+
+		UTLVECTOR* pUtlVector = ( UTLVECTOR* )fieldInfo.pField;
 		int nElems = pUtlVector->Count();
-		
+
 		pSave->WriteInt( &nElems, 1 );
-		if ( pArrayTypeDatamap == NULL )
+		if( pArrayTypeDatamap == NULL )
 		{
-			if ( nElems )
+			if( nElems )
 			{
 				dataDesc.fieldSize = nElems;
 				dataDesc.fieldSizeInBytes = nElems * CDatamapFieldSizeDeducer<FIELD_TYPE>::FieldSize();
-				pSave->WriteFields("elems", &((*pUtlVector)[0]), &dataMap, &dataDesc, 1 );
+				pSave->WriteFields( "elems", &( ( *pUtlVector )[0] ), &dataMap, &dataDesc, 1 );
 			}
 		}
 		else
 		{
 			// @Note (toml 11-21-02): Save load does not support arrays of user defined types (embedded)
 			dataDesc.fieldSizeInBytes = CDatamapFieldSizeDeducer<FIELD_TYPE>::FieldSize();
-			for ( int i = 0; i < nElems; i++ )
-				pSave->WriteAll( &((*pUtlVector)[i]), &dataMap );
+			for( int i = 0; i < nElems; i++ )
+			{
+				pSave->WriteAll( &( ( *pUtlVector )[i] ), &dataMap );
+			}
 		}
 	}
-	
-	virtual void Restore( const SaveRestoreFieldInfo_t &fieldInfo, IRestore *pRestore )
+
+	virtual void Restore( const SaveRestoreFieldInfo_t& fieldInfo, IRestore* pRestore )
 	{
-		datamap_t *pArrayTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( (UTLVECTOR *)NULL );
-		typedescription_t dataDesc = 
+		datamap_t* pArrayTypeDatamap = CTypedescDeducer<FIELD_TYPE>::Deduce( ( UTLVECTOR* )NULL );
+		typedescription_t dataDesc =
 		{
-			(fieldtype_t)FIELD_TYPE, 
-			"elems", 
+			( fieldtype_t )FIELD_TYPE,
+			"elems",
 			{ 0, 0 },
-			1, 
-			FTYPEDESC_SAVE, 
-			NULL, 
-			NULL, 
+			1,
+			FTYPEDESC_SAVE,
+			NULL,
+			NULL,
 			NULL,
 			pArrayTypeDatamap,
 			-1,
 		};
-		
-		datamap_t dataMap = 
+
+		datamap_t dataMap =
 		{
 			&dataDesc,
 			1,
@@ -110,42 +112,44 @@ public:
 			true
 #endif
 		};
-		
-		UTLVECTOR *pUtlVector = (UTLVECTOR *)fieldInfo.pField;
+
+		UTLVECTOR* pUtlVector = ( UTLVECTOR* )fieldInfo.pField;
 
 		int nElems = pRestore->ReadInt();
-		
+
 		pUtlVector->SetCount( nElems );
-		if ( pArrayTypeDatamap == NULL )
+		if( pArrayTypeDatamap == NULL )
 		{
-			if ( nElems )
+			if( nElems )
 			{
 				dataDesc.fieldSize = nElems;
 				dataDesc.fieldSizeInBytes = nElems * CDatamapFieldSizeDeducer<FIELD_TYPE>::FieldSize();
-				pRestore->ReadFields("elems", &((*pUtlVector)[0]), &dataMap, &dataDesc, 1 );
+				pRestore->ReadFields( "elems", &( ( *pUtlVector )[0] ), &dataMap, &dataDesc, 1 );
 			}
 		}
 		else
 		{
 			// @Note (toml 11-21-02): Save load does not support arrays of user defined types (embedded)
 			dataDesc.fieldSizeInBytes = CDatamapFieldSizeDeducer<FIELD_TYPE>::FieldSize();
-			for ( int i = 0; i < nElems; i++ )
-				pRestore->ReadAll( &((*pUtlVector)[i]), &dataMap );
-		}		
+			for( int i = 0; i < nElems; i++ )
+			{
+				pRestore->ReadAll( &( ( *pUtlVector )[i] ), &dataMap );
+			}
+		}
 	}
-	
-	virtual void MakeEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+
+	virtual void MakeEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		UTLVECTOR *pUtlVector = (UTLVECTOR *)fieldInfo.pField;
+		UTLVECTOR* pUtlVector = ( UTLVECTOR* )fieldInfo.pField;
 		pUtlVector->SetCount( 0 );
 	}
 
-	virtual bool IsEmpty( const SaveRestoreFieldInfo_t &fieldInfo )
+	virtual bool IsEmpty( const SaveRestoreFieldInfo_t& fieldInfo )
 	{
-		UTLVECTOR *pUtlVector = (UTLVECTOR *)fieldInfo.pField;
+		UTLVECTOR* pUtlVector = ( UTLVECTOR* )fieldInfo.pField;
 		return ( pUtlVector->Count() == 0 );
 	}
-	
+
 };
 
 //-------------------------------------
@@ -155,7 +159,7 @@ class CUtlVectorDataopsInstantiator
 {
 public:
 	template <class UTLVECTOR>
-	static ISaveRestoreOps *GetDataOps(UTLVECTOR *)
+	static ISaveRestoreOps* GetDataOps( UTLVECTOR* )
 	{
 		static CUtlVectorDataOps<UTLVECTOR, FIELD_TYPE> ops;
 		return &ops;

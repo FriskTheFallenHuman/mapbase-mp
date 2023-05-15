@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -28,20 +28,20 @@ public:
 };
 
 IMPLEMENT_CLIENTCLASS_DT_NOBASE( C_RagdollManager, DT_RagdollManager, CRagdollManager )
-	RecvPropInt( RECVINFO( m_iCurrentMaxRagdollCount ) ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_iCurrentMaxRagdollCount ) ),
+			 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Constructor 
+// Constructor
 //-----------------------------------------------------------------------------
-C_RagdollManager::C_RagdollManager()
+			 C_RagdollManager::C_RagdollManager()
 {
 	m_iCurrentMaxRagdollCount = -1;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
 void C_RagdollManager::OnDataChanged( DataUpdateType_t updateType )
 {

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define SCREENSPACEEFFECTS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class KeyValues;
@@ -26,7 +26,7 @@ public:
 	virtual void Init( ) = 0;
 	virtual void Shutdown( ) = 0;
 
-	virtual void SetParameters( KeyValues *params ) = 0;
+	virtual void SetParameters( KeyValues * params ) = 0;
 
 	virtual void Render( int x, int y, int w, int h ) = 0;
 
@@ -45,23 +45,23 @@ public:
 	virtual void InitScreenSpaceEffects( ) = 0;
 	virtual void ShutdownScreenSpaceEffects( ) = 0;
 
-	virtual IScreenSpaceEffect *GetScreenSpaceEffect( const char *pEffectName ) = 0;
+	virtual IScreenSpaceEffect * GetScreenSpaceEffect( const char* pEffectName ) = 0;
 
-	virtual void SetScreenSpaceEffectParams( const char *pEffectName, KeyValues *params ) = 0;
-	virtual void SetScreenSpaceEffectParams( IScreenSpaceEffect *pEffect, KeyValues *params ) = 0;
-    
-	virtual void EnableScreenSpaceEffect( const char *pEffectName ) = 0;
-	virtual void EnableScreenSpaceEffect( IScreenSpaceEffect *pEffect ) = 0;
+	virtual void SetScreenSpaceEffectParams( const char* pEffectName, KeyValues * params ) = 0;
+	virtual void SetScreenSpaceEffectParams( IScreenSpaceEffect * pEffect, KeyValues * params ) = 0;
 
-	virtual void DisableScreenSpaceEffect( const char *pEffectName ) = 0;
-	virtual void DisableScreenSpaceEffect( IScreenSpaceEffect *pEffect ) = 0;
+	virtual void EnableScreenSpaceEffect( const char* pEffectName ) = 0;
+	virtual void EnableScreenSpaceEffect( IScreenSpaceEffect * pEffect ) = 0;
+
+	virtual void DisableScreenSpaceEffect( const char* pEffectName ) = 0;
+	virtual void DisableScreenSpaceEffect( IScreenSpaceEffect * pEffect ) = 0;
 
 	virtual void DisableAllScreenSpaceEffects( ) = 0;
 
 	virtual void RenderEffects( int x, int y, int w, int h ) = 0;
 };
 
-extern IScreenSpaceEffectManager *g_pScreenSpaceEffects;
+extern IScreenSpaceEffectManager* g_pScreenSpaceEffects;
 
 
 //-------------------------------------------------------------------------------------
@@ -70,18 +70,18 @@ extern IScreenSpaceEffectManager *g_pScreenSpaceEffects;
 class CScreenSpaceEffectRegistration
 {
 public:
-	CScreenSpaceEffectRegistration( const char *pName, IScreenSpaceEffect *pEffect );
+	CScreenSpaceEffectRegistration( const char* pName, IScreenSpaceEffect* pEffect );
 
-	const char			*m_pEffectName;
-	IScreenSpaceEffect	*m_pEffect;
+	const char*			m_pEffectName;
+	IScreenSpaceEffect*	m_pEffect;
 
-	CScreenSpaceEffectRegistration *m_pNext;
+	CScreenSpaceEffectRegistration* m_pNext;
 
-	static CScreenSpaceEffectRegistration *s_pHead;
+	static CScreenSpaceEffectRegistration* s_pHead;
 };
 
 #define ADD_SCREENSPACE_EFFECT( CEffect, pEffectName )			CEffect pEffectName##_effect;														\
-																CScreenSpaceEffectRegistration pEffectName##_reg( #pEffectName, &pEffectName##_effect );	
+																CScreenSpaceEffectRegistration pEffectName##_reg( #pEffectName, &pEffectName##_effect );
 
 
 

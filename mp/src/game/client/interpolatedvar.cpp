@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -19,7 +19,7 @@ template class CInterpolatedVar<QAngle>;
 template class CInterpolatedVar<C_AnimationLayer>;
 
 
-CInterpolationContext *CInterpolationContext::s_pHead = NULL;
+CInterpolationContext* CInterpolationContext::s_pHead = NULL;
 bool CInterpolationContext::s_bAllowExtrapolation = false;
 float CInterpolationContext::s_flLastTimeStamp = 0;
 

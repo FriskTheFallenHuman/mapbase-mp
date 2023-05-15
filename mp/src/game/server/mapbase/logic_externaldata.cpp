@@ -1,6 +1,6 @@
 //========= Mapbase - https://github.com/mapbase-source/source-sdk-2013 ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -10,7 +10,7 @@
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CLogicExternalData : public CLogicalEntity
 {
@@ -25,17 +25,17 @@ public:
 
 	void LoadFile();
 	void SaveFile();
-	void SetBlock(string_t iszNewTarget, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL);
+	void SetBlock( string_t iszNewTarget, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
 
 	void Activate();
 
 	// Inputs
-	void InputWriteKeyValue( inputdata_t &inputdata );
-	void InputRemoveKeyValue( inputdata_t &inputdata );
-	void InputReadKey( inputdata_t &inputdata );
-	void InputSetBlock( inputdata_t &inputdata );
-	void InputSave( inputdata_t &inputdata );
-	void InputReload( inputdata_t &inputdata );
+	void InputWriteKeyValue( inputdata_t& inputdata );
+	void InputRemoveKeyValue( inputdata_t& inputdata );
+	void InputReadKey( inputdata_t& inputdata );
+	void InputSetBlock( inputdata_t& inputdata );
+	void InputSave( inputdata_t& inputdata );
+	void InputReload( inputdata_t& inputdata );
 
 #ifdef MAPBASE_VSCRIPT
 	HSCRIPT			ScriptGetKeyValues( void );
@@ -44,16 +44,16 @@ public:
 	void			ScriptSetKeyValues( HSCRIPT hKV );
 	void			ScriptSetKeyValueBlock( HSCRIPT hKV );
 
-	void			ScriptSetBlock( const char *szNewBlock, HSCRIPT hActivator = NULL, HSCRIPT hCaller = NULL );
+	void			ScriptSetBlock( const char* szNewBlock, HSCRIPT hActivator = NULL, HSCRIPT hCaller = NULL );
 #endif
 
 	char m_iszFile[MAX_PATH];
 
 	// Root file
-	KeyValues *m_pRoot;
+	KeyValues* m_pRoot;
 
 	// Our specific block
-	KeyValues *m_pBlock;
+	KeyValues* m_pBlock;
 	//string_t m_iszBlock; // Use m_target
 
 	bool m_bSaveEachChange;
@@ -63,34 +63,34 @@ public:
 	COutputString m_OutValue;
 };
 
-LINK_ENTITY_TO_CLASS(logic_externaldata, CLogicExternalData);
+LINK_ENTITY_TO_CLASS( logic_externaldata, CLogicExternalData );
 
 BEGIN_DATADESC( CLogicExternalData )
 
-	// Keys
-	//DEFINE_KEYFIELD( m_iszBlock, FIELD_STRING, "Block" ),
-	DEFINE_KEYFIELD( m_bSaveEachChange, FIELD_BOOLEAN, "SaveEachChange" ),
-	DEFINE_KEYFIELD( m_bReloadBeforeEachAction, FIELD_BOOLEAN, "ReloadBeforeEachAction" ),
-	DEFINE_KEYFIELD( m_iszMapname, FIELD_STRING, "Mapname" ),
+// Keys
+//DEFINE_KEYFIELD( m_iszBlock, FIELD_STRING, "Block" ),
+DEFINE_KEYFIELD( m_bSaveEachChange, FIELD_BOOLEAN, "SaveEachChange" ),
+				 DEFINE_KEYFIELD( m_bReloadBeforeEachAction, FIELD_BOOLEAN, "ReloadBeforeEachAction" ),
+				 DEFINE_KEYFIELD( m_iszMapname, FIELD_STRING, "Mapname" ),
 
-	// This should be cached each load
-	//DEFINE_ARRAY( m_iszFile, FIELD_CHARACTER, MAX_PATH ),
+				 // This should be cached each load
+				 //DEFINE_ARRAY( m_iszFile, FIELD_CHARACTER, MAX_PATH ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_STRING, "WriteKeyValue", InputWriteKeyValue ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "RemoveKeyValue", InputRemoveKeyValue ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "ReadKey", InputReadKey ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetBlock", InputSetBlock ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Save", InputSave ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Reload", InputReload ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_STRING, "WriteKeyValue", InputWriteKeyValue ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "RemoveKeyValue", InputRemoveKeyValue ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "ReadKey", InputReadKey ),
+				 DEFINE_INPUTFUNC( FIELD_STRING, "SetBlock", InputSetBlock ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Save", InputSave ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Reload", InputReload ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OutValue, "OutValue"),
+				 // Outputs
+				 DEFINE_OUTPUT( m_OutValue, "OutValue" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 #ifdef MAPBASE_VSCRIPT
-BEGIN_ENT_SCRIPTDESC( CLogicExternalData, CBaseEntity, "An entity which loads keyvalues from an external data file." )
+	BEGIN_ENT_SCRIPTDESC( CLogicExternalData, CBaseEntity, "An entity which loads keyvalues from an external data file." )
 
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValues, "GetKeyValues", "Gets the external data expressed in CScriptKeyValues." )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetKeyValueBlock, "GetKeyValueBlock", "Gets the current external data block expressed in CScriptKeyValues." )
@@ -101,33 +101,37 @@ BEGIN_ENT_SCRIPTDESC( CLogicExternalData, CBaseEntity, "An entity which loads ke
 	DEFINE_SCRIPTFUNC( LoadFile, "Loads external data from the external file." )
 	DEFINE_SCRIPTFUNC( SaveFile, "Saves the external data to the external file." )
 
-END_SCRIPTDESC();
+	END_SCRIPTDESC();
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CLogicExternalData::~CLogicExternalData()
+				 CLogicExternalData::~CLogicExternalData()
 {
-	if (m_pRoot)
+	if( m_pRoot )
+	{
 		m_pRoot->deleteThis();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLogicExternalData::LoadFile()
 {
-	if (m_pRoot)
+	if( m_pRoot )
+	{
 		m_pRoot->deleteThis();
+	}
 
 	m_pRoot = new KeyValues( m_iszFile );
-	m_pRoot->LoadFromFile(g_pFullFileSystem, m_iszFile, "MOD");
+	m_pRoot->LoadFromFile( g_pFullFileSystem, m_iszFile, "MOD" );
 
 	// This shold work even if the file didn't load.
-	if (m_target != NULL_STRING)
+	if( m_target != NULL_STRING )
 	{
-		m_pBlock = m_pRoot->FindKey(STRING(m_target), true);
+		m_pBlock = m_pRoot->FindKey( STRING( m_target ), true );
 	}
 	else
 	{
@@ -135,35 +139,41 @@ void CLogicExternalData::LoadFile()
 		m_pBlock = m_pRoot;
 	}
 
-	if (!m_pBlock)
+	if( !m_pBlock )
 	{
-		Warning("WARNING! %s has NULL m_pBlock! Removing...\n", GetDebugName());
-		UTIL_Remove(this);
+		Warning( "WARNING! %s has NULL m_pBlock! Removing...\n", GetDebugName() );
+		UTIL_Remove( this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLogicExternalData::SaveFile()
 {
-	DevMsg("Saving to %s...\n", m_iszFile);
-	m_pRoot->SaveToFile(g_pFullFileSystem, m_iszFile, "MOD", false, true);
+	DevMsg( "Saving to %s...\n", m_iszFile );
+	m_pRoot->SaveToFile( g_pFullFileSystem, m_iszFile, "MOD", false, true );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::SetBlock(string_t iszNewTarget, CBaseEntity *pActivator, CBaseEntity *pCaller)
+void CLogicExternalData::SetBlock( string_t iszNewTarget, CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
-	if (STRING(iszNewTarget)[0] == '!')
+	if( STRING( iszNewTarget )[0] == '!' )
 	{
-		if (FStrEq(STRING(iszNewTarget), "!self"))
+		if( FStrEq( STRING( iszNewTarget ), "!self" ) )
+		{
 			iszNewTarget = GetEntityName();
-		else if (pActivator && FStrEq(STRING(iszNewTarget), "!activator"))
+		}
+		else if( pActivator && FStrEq( STRING( iszNewTarget ), "!activator" ) )
+		{
 			iszNewTarget = pActivator->GetEntityName();
-		else if (pCaller && FStrEq(STRING(iszNewTarget), "!caller"))
+		}
+		else if( pCaller && FStrEq( STRING( iszNewTarget ), "!caller" ) )
+		{
 			iszNewTarget = pCaller->GetEntityName();
+		}
 	}
 
 	m_target = iszNewTarget;
@@ -171,103 +181,115 @@ void CLogicExternalData::SetBlock(string_t iszNewTarget, CBaseEntity *pActivator
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLogicExternalData::Activate()
 {
 	BaseClass::Activate();
 
-	if (m_iszMapname == NULL_STRING || STRING(m_iszMapname)[0] == '\0')
+	if( m_iszMapname == NULL_STRING || STRING( m_iszMapname )[0] == '\0' )
+	{
 		m_iszMapname = gpGlobals->mapname;
+	}
 
-	Q_snprintf(m_iszFile, sizeof(m_iszFile), "maps/%s_externaldata.txt", STRING(m_iszMapname));
-	DevMsg("LOGIC_EXTERNALDATA: %s\n", m_iszFile);
-	
+	Q_snprintf( m_iszFile, sizeof( m_iszFile ), "maps/%s_externaldata.txt", STRING( m_iszMapname ) );
+	DevMsg( "LOGIC_EXTERNALDATA: %s\n", m_iszFile );
+
 	// This handles !self, etc. even though the end result could just be assigning to itself.
 	// Also calls LoadFile() for initial load.
-	SetBlock(m_target);
+	SetBlock( m_target );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::InputWriteKeyValue( inputdata_t &inputdata )
+void CLogicExternalData::InputWriteKeyValue( inputdata_t& inputdata )
 {
-	const char *szValue = inputdata.value.String();
+	const char* szValue = inputdata.value.String();
 	char key[256];
 	char value[256];
 
 	// Separate key from value
-	char *delimiter = Q_strstr(szValue, " ");
-	if (delimiter && delimiter[1] != '\0')
+	char* delimiter = Q_strstr( szValue, " " );
+	if( delimiter && delimiter[1] != '\0' )
 	{
-		Q_strncpy(key, szValue, MIN((delimiter - szValue) + 1, sizeof(key)));
-		Q_strncpy(value, delimiter + 1, sizeof(value));
+		Q_strncpy( key, szValue, MIN( ( delimiter - szValue ) + 1, sizeof( key ) ) );
+		Q_strncpy( value, delimiter + 1, sizeof( value ) );
 	}
 	else
 	{
 		// Assume the value is just supposed to be null
-		Q_strncpy(key, szValue, sizeof(key));
+		Q_strncpy( key, szValue, sizeof( key ) );
 	}
 
-	if (m_bReloadBeforeEachAction)
-		LoadFile();
-
-	m_pBlock->SetString(key, value);
-
-	if (m_bSaveEachChange)
-		SaveFile();
-}
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CLogicExternalData::InputRemoveKeyValue( inputdata_t &inputdata )
-{
-	if (m_bReloadBeforeEachAction)
-		LoadFile();
-
-	KeyValues *pKV = m_pBlock->FindKey(inputdata.value.String());
-	if (pKV)
+	if( m_bReloadBeforeEachAction )
 	{
-		m_pBlock->RemoveSubKey(pKV);
+		LoadFile();
+	}
 
-		if (m_bSaveEachChange)
-			SaveFile();
+	m_pBlock->SetString( key, value );
+
+	if( m_bSaveEachChange )
+	{
+		SaveFile();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::InputReadKey( inputdata_t &inputdata )
+void CLogicExternalData::InputRemoveKeyValue( inputdata_t& inputdata )
 {
-	if (m_bReloadBeforeEachAction)
+	if( m_bReloadBeforeEachAction )
+	{
 		LoadFile();
+	}
 
-	m_OutValue.Set(AllocPooledString(m_pBlock->GetString(inputdata.value.String())), inputdata.pActivator, this);
+	KeyValues* pKV = m_pBlock->FindKey( inputdata.value.String() );
+	if( pKV )
+	{
+		m_pBlock->RemoveSubKey( pKV );
+
+		if( m_bSaveEachChange )
+		{
+			SaveFile();
+		}
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::InputSetBlock( inputdata_t &inputdata )
+void CLogicExternalData::InputReadKey( inputdata_t& inputdata )
 {
-	SetBlock(inputdata.value.StringID(), inputdata.pActivator, inputdata.pCaller);
+	if( m_bReloadBeforeEachAction )
+	{
+		LoadFile();
+	}
+
+	m_OutValue.Set( AllocPooledString( m_pBlock->GetString( inputdata.value.String() ) ), inputdata.pActivator, this );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::InputSave( inputdata_t &inputdata )
+void CLogicExternalData::InputSetBlock( inputdata_t& inputdata )
+{
+	SetBlock( inputdata.value.StringID(), inputdata.pActivator, inputdata.pCaller );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CLogicExternalData::InputSave( inputdata_t& inputdata )
 {
 	SaveFile();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicExternalData::InputReload( inputdata_t &inputdata )
+void CLogicExternalData::InputReload( inputdata_t& inputdata )
 {
 	LoadFile();
 }
@@ -277,11 +299,13 @@ void CLogicExternalData::InputReload( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 HSCRIPT CLogicExternalData::ScriptGetKeyValues( void )
 {
-	if (m_bReloadBeforeEachAction)
+	if( m_bReloadBeforeEachAction )
+	{
 		LoadFile();
+	}
 
 	HSCRIPT hScript = NULL;
-	if (m_pRoot)
+	if( m_pRoot )
 	{
 		// Does this need to be destructed or freed? m_pScriptModelKeyValues apparently doesn't.
 		hScript = scriptmanager->CreateScriptKeyValues( g_pScriptVM, m_pRoot, false );
@@ -294,11 +318,13 @@ HSCRIPT CLogicExternalData::ScriptGetKeyValues( void )
 //-----------------------------------------------------------------------------
 HSCRIPT CLogicExternalData::ScriptGetKeyValueBlock( void )
 {
-	if (m_bReloadBeforeEachAction)
+	if( m_bReloadBeforeEachAction )
+	{
 		LoadFile();
+	}
 
 	HSCRIPT hScript = NULL;
-	if (m_pBlock)
+	if( m_pBlock )
 	{
 		// Does this need to be destructed or freed? m_pScriptModelKeyValues apparently doesn't.
 		hScript = scriptmanager->CreateScriptKeyValues( g_pScriptVM, m_pBlock, false );
@@ -312,14 +338,14 @@ HSCRIPT CLogicExternalData::ScriptGetKeyValueBlock( void )
 
 void CLogicExternalData::ScriptSetKeyValues( HSCRIPT hKV )
 {
-	if (m_pRoot)
+	if( m_pRoot )
 	{
 		m_pRoot->deleteThis();
 		m_pRoot = NULL;
 	}
 
-	KeyValues *pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hKV );
-	if (pKV)
+	KeyValues* pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hKV );
+	if( pKV )
 	{
 		m_pRoot = pKV;
 	}
@@ -327,14 +353,14 @@ void CLogicExternalData::ScriptSetKeyValues( HSCRIPT hKV )
 
 void CLogicExternalData::ScriptSetKeyValueBlock( HSCRIPT hKV )
 {
-	if (m_pBlock)
+	if( m_pBlock )
 	{
 		m_pBlock->deleteThis();
 		m_pBlock = NULL;
 	}
 
-	KeyValues *pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hKV );
-	if (pKV)
+	KeyValues* pKV = scriptmanager->GetKeyValuesFromScriptKV( g_pScriptVM, hKV );
+	if( pKV )
 	{
 		m_pBlock = pKV;
 	}
@@ -342,19 +368,25 @@ void CLogicExternalData::ScriptSetKeyValueBlock( HSCRIPT hKV )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CLogicExternalData::ScriptSetBlock( const char *szNewBlock, HSCRIPT hActivator, HSCRIPT hCaller )
+void CLogicExternalData::ScriptSetBlock( const char* szNewBlock, HSCRIPT hActivator, HSCRIPT hCaller )
 {
-	CBaseEntity *pActivator = ToEnt( hActivator );
-	CBaseEntity *pCaller = ToEnt( hCaller );
-	string_t iszNewTarget = AllocPooledString(szNewBlock);
-	if (STRING(iszNewTarget)[0] == '!')
+	CBaseEntity* pActivator = ToEnt( hActivator );
+	CBaseEntity* pCaller = ToEnt( hCaller );
+	string_t iszNewTarget = AllocPooledString( szNewBlock );
+	if( STRING( iszNewTarget )[0] == '!' )
 	{
-		if (FStrEq(STRING(iszNewTarget), "!self"))
+		if( FStrEq( STRING( iszNewTarget ), "!self" ) )
+		{
 			iszNewTarget = GetEntityName();
-		else if (pActivator && FStrEq(STRING(iszNewTarget), "!activator"))
+		}
+		else if( pActivator && FStrEq( STRING( iszNewTarget ), "!activator" ) )
+		{
 			iszNewTarget = pActivator->GetEntityName();
-		else if (pCaller && FStrEq(STRING(iszNewTarget), "!caller"))
+		}
+		else if( pCaller && FStrEq( STRING( iszNewTarget ), "!caller" ) )
+		{
 			iszNewTarget = pCaller->GetEntityName();
+		}
 	}
 
 	m_target = iszNewTarget;

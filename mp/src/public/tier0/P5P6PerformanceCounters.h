@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -218,8 +218,8 @@
 
 
 // AMD
-#define K6_FAMILY	       5	
-#define K8_FAMILY           6	
+#define K6_FAMILY	       5
+#define K8_FAMILY           6
 #define EXTENDED_FAMILY   15  // AMD 64 and AMD Opteron
 
 #endif // P5P6PERFORMANCECOUNTERS_H

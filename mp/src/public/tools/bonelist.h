@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef BONELIST_H
 #define BONELIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "studio.h"
@@ -20,7 +20,7 @@ public:
 
 	void Release();
 
-	static CBoneList *Alloc();
+	static CBoneList* Alloc();
 
 public:
 
@@ -40,7 +40,7 @@ public:
 
 	void Release();
 
-	static CFlexList *Alloc();
+	static CFlexList* Alloc();
 
 public:
 

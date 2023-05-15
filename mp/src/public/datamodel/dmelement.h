@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef DMELEMENT_H
 #define DMELEMENT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlmap.h"
@@ -20,22 +20,22 @@
 
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-typedef bool (CDmElement::*pfnCommandMethod)( const char *command, const char *args );
+typedef bool ( CDmElement::*pfnCommandMethod )( const char* command, const char* args );
 
 // element/element array traversal path item - assumes the full path does NOT contain cycles
 struct ElementPathItem_t
 {
 	ElementPathItem_t( DmElementHandle_t hElem = DMELEMENT_HANDLE_INVALID,
-						DmAttributeHandle_t hAttr = DMATTRIBUTE_HANDLE_INVALID,
-						int idx = -1 )
+					   DmAttributeHandle_t hAttr = DMATTRIBUTE_HANDLE_INVALID,
+					   int idx = -1 )
 		: hElement( hElem ), hAttribute( hAttr ), nIndex( idx )
 	{
 	}
 
 	// only uses hElement so that it can be used to search for elements
-	bool operator==( const ElementPathItem_t &that ) const
+	bool operator==( const ElementPathItem_t& that ) const
 	{
 		return hElement == that.hElement;
 	}
@@ -53,7 +53,7 @@ struct DmAttributeList_t
 {
 	DmAttributeList_t() : m_hAttribute( DMATTRIBUTE_HANDLE_INVALID ), m_pNext( NULL ) {}
 	DmAttributeHandle_t m_hAttribute;
-	DmAttributeList_t *m_pNext;
+	DmAttributeList_t* m_pNext;
 };
 
 //-----------------------------------------------------------------------------
@@ -62,7 +62,7 @@ struct DmAttributeList_t
 class CDmeElementRefHelper
 {
 protected:
-	void Ref  ( DmElementHandle_t hElement, bool bStrong );
+	void Ref( DmElementHandle_t hElement, bool bStrong );
 	void Unref( DmElementHandle_t hElement, bool bStrong );
 };
 
@@ -75,12 +75,12 @@ struct DmElementReference_t
 		m_hElement( hElement ), m_nWeakHandleCount( 0 ), m_nStrongHandleCount( 0 )
 	{
 	}
-	DmElementReference_t( const DmElementReference_t &that ) :
+	DmElementReference_t( const DmElementReference_t& that ) :
 		m_hElement( that.m_hElement ), m_nWeakHandleCount( that.m_nWeakHandleCount ),
 		m_nStrongHandleCount( that.m_nStrongHandleCount ), m_attributes( that.m_attributes )
 	{
 	}
-	DmElementReference_t &operator=( const DmElementReference_t &that )
+	DmElementReference_t& operator=( const DmElementReference_t& that )
 	{
 		m_hElement = that.m_hElement;
 		m_nWeakHandleCount = that.m_nWeakHandleCount;
@@ -94,8 +94,8 @@ struct DmElementReference_t
 		//		Assert( !IsStronglyReferenced() );
 	}
 
-	void AddAttribute( CDmAttribute *pAttribute );
-	void RemoveAttribute( CDmAttribute *pAttribute );
+	void AddAttribute( CDmAttribute* pAttribute );
+	void RemoveAttribute( CDmAttribute* pAttribute );
 
 	bool IsStronglyReferenced() // should this element be kept around (even if it's DmElementHandle_t is invalidated)
 	{
@@ -110,7 +110,7 @@ struct DmElementReference_t
 	int EstimateMemoryOverhead()
 	{
 		int nBytes = 0;
-		for ( DmAttributeList_t *pLink = m_attributes.m_pNext; pLink; pLink = pLink->m_pNext )
+		for( DmAttributeList_t* pLink = m_attributes.m_pNext; pLink; pLink = pLink->m_pNext )
 		{
 			nBytes += sizeof( DmAttributeList_t );
 		}
@@ -125,30 +125,33 @@ struct DmElementReference_t
 
 
 //-----------------------------------------------------------------------------
-// Base DmElement we inherit from in higher-level classes 
+// Base DmElement we inherit from in higher-level classes
 //-----------------------------------------------------------------------------
 class CDmElement
 {
 public:
 	// Can be overridden by derived classes
-	virtual	void		OnAttributeChanged( CDmAttribute *pAttribute ) {}
-	virtual void		PreAttributeChanged( CDmAttribute *pAttribute ) {}
-	virtual void		OnAttributeArrayElementAdded( CDmAttribute *pAttribute, int nFirstElem, int nLastElem ) {}
-	virtual void		OnAttributeArrayElementRemoved( CDmAttribute *pAttribute, int nFirstElem, int nLastElem ) {}
+	virtual	void		OnAttributeChanged( CDmAttribute* pAttribute ) {}
+	virtual void		PreAttributeChanged( CDmAttribute* pAttribute ) {}
+	virtual void		OnAttributeArrayElementAdded( CDmAttribute* pAttribute, int nFirstElem, int nLastElem ) {}
+	virtual void		OnAttributeArrayElementRemoved( CDmAttribute* pAttribute, int nFirstElem, int nLastElem ) {}
 	virtual void		Resolve() {}
 	virtual	bool		IsA( UtlSymId_t typeSymbol ) const;
 	virtual int			GetInheritanceDepth( UtlSymId_t typeSymbol ) const;
 	virtual void		OnElementUnserialized() {}
-	virtual int			AllocatedSize() const { return sizeof( CDmElement ); }
+	virtual int			AllocatedSize() const
+	{
+		return sizeof( CDmElement );
+	}
 
 	// Returns the element handle
 	DmElementHandle_t	GetHandle() const;
 
 	// Attribute iteration, finding
 	// NOTE: Passing a type into GetAttribute will return NULL if the attribute exists but isn't that type
-	bool				HasAttribute( const char *pAttributeName, DmAttributeType_t type = AT_UNKNOWN ) const;
-	CDmAttribute		*GetAttribute( const char *pAttributeName, DmAttributeType_t type = AT_UNKNOWN );
-	const CDmAttribute	*GetAttribute( const char *pAttributeName, DmAttributeType_t type = AT_UNKNOWN ) const;
+	bool				HasAttribute( const char* pAttributeName, DmAttributeType_t type = AT_UNKNOWN ) const;
+	CDmAttribute*		GetAttribute( const char* pAttributeName, DmAttributeType_t type = AT_UNKNOWN );
+	const CDmAttribute*	GetAttribute( const char* pAttributeName, DmAttributeType_t type = AT_UNKNOWN ) const;
 	int					AttributeCount() const;
 	CDmAttribute*		FirstAttribute();
 	const CDmAttribute*	FirstAttribute() const;
@@ -156,45 +159,45 @@ public:
 	// Element name, type, ID
 	// WARNING: SetType() should only be used by format conversion methods (dmxconvert)
 	UtlSymId_t			GetType() const;
-	const char *		GetTypeString() const;
-	const char *		GetName() const;
+	const char* 		GetTypeString() const;
+	const char* 		GetName() const;
 	const DmObjectId_t&	GetId() const;
-	void				SetType( const char *pType );
+	void				SetType( const char* pType );
 	void				SetName( const char* pName );
 
 	// Attribute management
-	CDmAttribute *		AddAttribute( const char *pAttributeName, DmAttributeType_t type );
-	template< class E > CDmAttribute* AddAttributeElement( const char *pAttributeName );
-	template< class E > CDmAttribute* AddAttributeElementArray( const char *pAttributeName );
-	void				RemoveAttribute( const char *pAttributeName );
-	void				RemoveAttributeByPtr( CDmAttribute *pAttributeName );
-	void				RenameAttribute( const char *pAttributeName, const char *pNewName );
+	CDmAttribute* 		AddAttribute( const char* pAttributeName, DmAttributeType_t type );
+	template< class E > CDmAttribute* AddAttributeElement( const char* pAttributeName );
+	template< class E > CDmAttribute* AddAttributeElementArray( const char* pAttributeName );
+	void				RemoveAttribute( const char* pAttributeName );
+	void				RemoveAttributeByPtr( CDmAttribute* pAttributeName );
+	void				RenameAttribute( const char* pAttributeName, const char* pNewName );
 
 	// get attribute value
-	template< class T > const T& GetValue( const char *pAttributeName ) const;
-	template< class T > const T& GetValue( const char *pAttributeName, const T& defaultValue ) const;
-	const char *		GetValueString( const char *pAttributeName ) const;
-	template< class E > E* GetValueElement( const char *pAttributeName ) const;
+	template< class T > const T& GetValue( const char* pAttributeName ) const;
+	template< class T > const T& GetValue( const char* pAttributeName, const T& defaultValue ) const;
+	const char* 		GetValueString( const char* pAttributeName ) const;
+	template< class E > E* GetValueElement( const char* pAttributeName ) const;
 
 	// set attribute value
-	CDmAttribute*		SetValue( const char *pAttributeName, const void *value, size_t size );
-	template< class T > CDmAttribute* SetValue( const char *pAttributeName, const T& value );
-	template< class E >	CDmAttribute* SetValue( const char *pAttributeName, E* value );
+	CDmAttribute*		SetValue( const char* pAttributeName, const void* value, size_t size );
+	template< class T > CDmAttribute* SetValue( const char* pAttributeName, const T& value );
+	template< class E >	CDmAttribute* SetValue( const char* pAttributeName, E* value );
 
 	// set attribute value if the attribute doesn't already exist
-	CDmAttribute*		InitValue( const char *pAttributeName, const void *value, size_t size );
-	template< class T > CDmAttribute* InitValue( const char *pAttributeName, const T& value );
-	template< class E >	CDmAttribute* InitValue( const char *pAttributeName, E* value );
+	CDmAttribute*		InitValue( const char* pAttributeName, const void* value, size_t size );
+	template< class T > CDmAttribute* InitValue( const char* pAttributeName, const T& value );
+	template< class E >	CDmAttribute* InitValue( const char* pAttributeName, E* value );
 
 	// Parses an attribute from a string
 	// Doesn't create an attribute if it doesn't exist and always preserves attribute type
-	void				SetValueFromString( const char *pAttributeName, const char *value );
-	const char			*GetValueAsString( const char *pAttributeName, char *pBuffer, size_t buflen ) const;
+	void				SetValueFromString( const char* pAttributeName, const char* value );
+	const char*			GetValueAsString( const char* pAttributeName, char* pBuffer, size_t buflen ) const;
 
 	// Helpers for our RTTI
 	template< class E > bool IsA() const;
-	bool				IsA( const char *pTypeName ) const;
-	int					GetInheritanceDepth( const char *pTypeName ) const;
+	bool				IsA( const char* pTypeName ) const;
+	int					GetInheritanceDepth( const char* pTypeName ) const;
 	static CUtlSymbol	GetStaticTypeSymbol();
 
 	// Indicates whether this element should be copied or not
@@ -205,7 +208,7 @@ public:
 	CDmElement*			Copy( TraversalDepth_t depth = TD_DEEP ) const;
 
 	// Copies attributes from a specified element
-	void				CopyAttributesTo( CDmElement *pCopy, TraversalDepth_t depth = TD_DEEP ) const;
+	void				CopyAttributesTo( CDmElement* pCopy, TraversalDepth_t depth = TD_DEEP ) const;
 
 	// recursively set fileid's, with option to only change elements in the matched file
 	void				SetFileId( DmFileId_t fileid, TraversalDepth_t depth, bool bOnlyIfMatch = false );
@@ -215,26 +218,29 @@ public:
 	void				MarkAccessible( bool bAccessible );
 	void				MarkAccessible( TraversalDepth_t depth = TD_ALL );
 
-	// returns the first path to the element found traversing all element/element 
+	// returns the first path to the element found traversing all element/element
 	// array attributes - not necessarily the shortest.
-	// cycle-safe (skips any references to elements in the current path) 
+	// cycle-safe (skips any references to elements in the current path)
 	// but may re-traverse elements via different paths
-	bool				FindElement( const CDmElement *pElement, CUtlVector< ElementPathItem_t > &elementPath, TraversalDepth_t depth ) const;
-	bool				FindReferer( DmElementHandle_t hElement, CUtlVector< ElementPathItem_t > &elementPath, TraversalDepth_t depth ) const;
-	void				RemoveAllReferencesToElement( CDmElement *pElement );
-	bool				IsStronglyReferenced() { return m_ref.IsStronglyReferenced(); }
+	bool				FindElement( const CDmElement* pElement, CUtlVector< ElementPathItem_t >& elementPath, TraversalDepth_t depth ) const;
+	bool				FindReferer( DmElementHandle_t hElement, CUtlVector< ElementPathItem_t >& elementPath, TraversalDepth_t depth ) const;
+	void				RemoveAllReferencesToElement( CDmElement* pElement );
+	bool				IsStronglyReferenced()
+	{
+		return m_ref.IsStronglyReferenced();
+	}
 
 	// Estimates the memory usage of the element, its attributes, and child elements
 	int					EstimateMemoryUsage( TraversalDepth_t depth = TD_DEEP );
 
 protected:
 	// NOTE: These are protected to ensure that the factory is the only thing that can create these
-						CDmElement( DmElementHandle_t handle, const char *objectType, const DmObjectId_t &id, const char *objectName, DmFileId_t fileid );
+	CDmElement( DmElementHandle_t handle, const char* objectType, const DmObjectId_t& id, const char* objectName, DmFileId_t fileid );
 	virtual				~CDmElement();
 
 	// Used by derived classes to do construction and setting up CDmaVars
 	void				OnConstruction() { }
-	void				OnDestruction() { }																
+	void				OnDestruction() { }
 	virtual void		PerformConstruction();
 	virtual void		PerformDestruction();
 
@@ -247,7 +253,7 @@ protected:
 	CDmElement*			CopyInternal( TraversalDepth_t depth = TD_DEEP ) const;
 
 	// helper for making attributevarelementarray cleanup easier
-	template< class T >	static void DeleteAttributeVarElementArray( T &array );
+	template< class T >	static void DeleteAttributeVarElementArray( T& array );
 
 private:
 	typedef CUtlMap< DmElementHandle_t, DmElementHandle_t, int > CRefMap;
@@ -256,21 +262,21 @@ private:
 	CDmElement();
 
 	// internal recursive copy method - builds refmap of old element's handle -> copy's handle, and uses it to fixup references
-	void				CopyAttributesTo( CDmElement *pCopy, CRefMap &refmap, TraversalDepth_t depth ) const;
-	void				CopyElementAttribute( const CDmAttribute *pAttr, CDmAttribute *pCopyAttr, CRefMap &refmap, TraversalDepth_t depth ) const;
-	void				CopyElementArrayAttribute( const CDmAttribute *pAttr, CDmAttribute *pCopyAttr, CRefMap &refmap, TraversalDepth_t depth ) const;
-	void				FixupReferences( CUtlHashFast< DmElementHandle_t > &visited, const CRefMap &refmap, TraversalDepth_t depth );
+	void				CopyAttributesTo( CDmElement* pCopy, CRefMap& refmap, TraversalDepth_t depth ) const;
+	void				CopyElementAttribute( const CDmAttribute* pAttr, CDmAttribute* pCopyAttr, CRefMap& refmap, TraversalDepth_t depth ) const;
+	void				CopyElementArrayAttribute( const CDmAttribute* pAttr, CDmAttribute* pCopyAttr, CRefMap& refmap, TraversalDepth_t depth ) const;
+	void				FixupReferences( CUtlHashFast< DmElementHandle_t >& visited, const CRefMap& refmap, TraversalDepth_t depth );
 
 	void				SetFileId( DmFileId_t fileid );
-	void				SetFileId_R( CUtlHashFast< DmElementHandle_t > &visited, DmFileId_t fileid, TraversalDepth_t depth, DmFileId_t match, bool bOnlyIfMatch );
+	void				SetFileId_R( CUtlHashFast< DmElementHandle_t >& visited, DmFileId_t fileid, TraversalDepth_t depth, DmFileId_t match, bool bOnlyIfMatch );
 
-	CDmAttribute*		CreateAttribute( const char *pAttributeName, DmAttributeType_t type );
-	void				RemoveAttribute( CDmAttribute **pAttrRef );
-	CDmAttribute*		AddExternalAttribute( const char *pAttributeName, DmAttributeType_t type, void *pMemory );
-	CDmAttribute		*FindAttribute( const char *pAttributeName ) const;
+	CDmAttribute*		CreateAttribute( const char* pAttributeName, DmAttributeType_t type );
+	void				RemoveAttribute( CDmAttribute** pAttrRef );
+	CDmAttribute*		AddExternalAttribute( const char* pAttributeName, DmAttributeType_t type, void* pMemory );
+	CDmAttribute*		FindAttribute( const char* pAttributeName ) const;
 
 	void				Purge();
-	void				SetId( const DmObjectId_t &id );
+	void				SetId( const DmObjectId_t& id );
 
 	bool				IsDirty() const;
 	void				MarkDirty( bool dirty = true );
@@ -279,24 +285,24 @@ private:
 	bool				IsBeingUnserialized() const;
 
 	// Used by the undo system only.
-	void				AddAttributeByPtr( CDmAttribute *ptr );
-	void				RemoveAttributeByPtrNoDelete( CDmAttribute *ptr );
+	void				AddAttributeByPtr( CDmAttribute* ptr );
+	void				RemoveAttributeByPtrNoDelete( CDmAttribute* ptr );
 
 	// Should only be called from datamodel, who will take care of changing the fileset entry as well
 	void				ChangeHandle( DmElementHandle_t handle );
 
 	// returns element reference struct w/ list of referrers and handle count
 	DmElementReference_t* GetReference();
-	void				SetReference( const DmElementReference_t &ref );
+	void				SetReference( const DmElementReference_t& ref );
 
 	// Estimates memory usage
-	int					EstimateMemoryUsage( CUtlHash< DmElementHandle_t > &visited, TraversalDepth_t depth, int *pCategories );
+	int					EstimateMemoryUsage( CUtlHash< DmElementHandle_t >& visited, TraversalDepth_t depth, int* pCategories );
 
 protected:
 	CDmaString			m_Name;
 
 private:
-	CDmAttribute		*m_pAttributes;
+	CDmAttribute*		m_pAttributes;
 	DmElementReference_t m_ref;
 	UtlSymId_t			m_Type;
 	bool				m_bDirty : 1;
@@ -322,32 +328,32 @@ private:
 	friend class CDmeElementAccessor;
 	friend class CDmeOperator;
 
-	friend void CopyElements( const CUtlVector< CDmElement* > &from, CUtlVector< CDmElement* > &to, TraversalDepth_t depth );
+	friend void CopyElements( const CUtlVector< CDmElement* >& from, CUtlVector< CDmElement* >& to, TraversalDepth_t depth );
 };
 
 
 
-inline void DestroyElement( CDmElement *pElement )
+inline void DestroyElement( CDmElement* pElement )
 {
-	if ( pElement )
+	if( pElement )
 	{
 		g_pDataModel->DestroyElement( pElement->GetHandle() );
 	}
 }
 
-void DestroyElement( CDmElement *pElement, TraversalDepth_t depth );
+void DestroyElement( CDmElement* pElement, TraversalDepth_t depth );
 
 
 //-----------------------------------------------------------------------------
 // copy groups of elements together so that references between them are maintained
 //-----------------------------------------------------------------------------
-void CopyElements( const CUtlVector< CDmElement* > &from, CUtlVector< CDmElement* > &to, TraversalDepth_t depth = TD_DEEP );
+void CopyElements( const CUtlVector< CDmElement* >& from, CUtlVector< CDmElement* >& to, TraversalDepth_t depth = TD_DEEP );
 
 
 //-----------------------------------------------------------------------------
 // allows elements to chain OnAttributeChanged up to their parents (or at least, referrers)
 //-----------------------------------------------------------------------------
-void InvokeOnAttributeChangedOnReferrers( DmElementHandle_t hElement, CDmAttribute *pChangedAttr );
+void InvokeOnAttributeChangedOnReferrers( DmElementHandle_t hElement, CDmAttribute* pChangedAttr );
 
 
 
@@ -356,19 +362,19 @@ void InvokeOnAttributeChangedOnReferrers( DmElementHandle_t hElement, CDmAttribu
 //-----------------------------------------------------------------------------
 // Returns the type, name, id, fileId
 //-----------------------------------------------------------------------------
-inline UtlSymId_t CDmElement::GetType() const 
-{ 
+inline UtlSymId_t CDmElement::GetType() const
+{
 	return m_Type;
 }
 
-inline const char *CDmElement::GetTypeString() const
+inline const char* CDmElement::GetTypeString() const
 {
 	return g_pDataModel->GetString( m_Type );
 }
 
-inline const char *CDmElement::GetName() const 
-{ 
-	return m_Name.Get(); 
+inline const char* CDmElement::GetName() const
+{
+	return m_Name.Get();
 }
 
 inline void CDmElement::SetName( const char* pName )
@@ -376,8 +382,8 @@ inline void CDmElement::SetName( const char* pName )
 	m_Name.Set( pName );
 }
 
-inline const DmObjectId_t& CDmElement::GetId() const 
-{ 
+inline const DmObjectId_t& CDmElement::GetId() const
+{
 	return m_Id;
 }
 
@@ -392,7 +398,7 @@ inline DmFileId_t CDmElement::GetFileId() const
 //-----------------------------------------------------------------------------
 inline void CDmElement::SetShared( bool bShared )
 {
-	if ( bShared )
+	if( bShared )
 	{
 		SetValue< bool >( "shared", true );
 	}
@@ -435,15 +441,15 @@ inline CUtlSymbol CDmElement::GetStaticTypeSymbol()
 	return m_classType;
 }
 
-inline bool CDmElement::IsA( const char *pTypeName ) const
-{												
-	CUtlSymbol typeSymbol = g_pDataModel->GetSymbol( pTypeName ); 
-	return IsA( typeSymbol );				
+inline bool CDmElement::IsA( const char* pTypeName ) const
+{
+	CUtlSymbol typeSymbol = g_pDataModel->GetSymbol( pTypeName );
+	return IsA( typeSymbol );
 }
 
-template< class E > inline bool CDmElement::IsA() const		
-{											
-	return IsA( E::GetStaticTypeSymbol() ); 
+template< class E > inline bool CDmElement::IsA() const
+{
+	return IsA( E::GetStaticTypeSymbol() );
 }
 
 
@@ -451,13 +457,13 @@ template< class E > inline bool CDmElement::IsA() const
 // Helper for finding elements that refer to this element
 //-----------------------------------------------------------------------------
 template< class T >
-T *FindReferringElement( CDmElement *pElement, const char *pAttrName, bool bMustBeInSameFile = true )
+T* FindReferringElement( CDmElement* pElement, const char* pAttrName, bool bMustBeInSameFile = true )
 {
 	return FindReferringElement< T >( pElement, g_pDataModel->GetSymbol( pAttrName ), bMustBeInSameFile );
 }
 
 
-void RemoveElementFromRefereringAttributes( CDmElement *pElement, bool bPreserveOrder = true );
+void RemoveElementFromRefereringAttributes( CDmElement* pElement, bool bPreserveOrder = true );
 
 
 
@@ -468,21 +474,21 @@ void RemoveElementFromRefereringAttributes( CDmElement *pElement, bool bPreserve
 //-----------------------------------------------------------------------------
 
 // returns startindex if none found, 2 if only "prefix" found, and n+1 if "prefixn" found
-int GenerateUniqueNameIndex( const char *prefix, const CUtlVector< DmElementHandle_t > &array, int startindex = -1 );
+int GenerateUniqueNameIndex( const char* prefix, const CUtlVector< DmElementHandle_t >& array, int startindex = -1 );
 
-bool GenerateUniqueName( char *name, int memsize, const char *prefix, const CUtlVector< DmElementHandle_t > &array );
+bool GenerateUniqueName( char* name, int memsize, const char* prefix, const CUtlVector< DmElementHandle_t >& array );
 
-void MakeElementNameUnique( CDmElement *pElement, const char *prefix, const CUtlVector< DmElementHandle_t > &array, bool forceIndex = false );
+void MakeElementNameUnique( CDmElement* pElement, const char* prefix, const CUtlVector< DmElementHandle_t >& array, bool forceIndex = false );
 
 
 //-----------------------------------------------------------------------------
 // helper for making attributevarelementarray cleanup easier
 //-----------------------------------------------------------------------------
 template< class T >
-inline void CDmElement::DeleteAttributeVarElementArray( T &array )
+inline void CDmElement::DeleteAttributeVarElementArray( T& array )
 {
 	int nElements = array.Count();
-	for ( int i = 0; i < nElements; ++i )
+	for( int i = 0; i < nElements; ++i )
 	{
 		g_pDataModel->DestroyElement( array.GetHandle( i ) );
 	}
@@ -501,7 +507,7 @@ int DmeEstimateMemorySize( T* pElement )
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to create an element; this is used for elements that are helper base classes 
+// Helper macro to create an element; this is used for elements that are helper base classes
 //-----------------------------------------------------------------------------
 #define DEFINE_UNINSTANCEABLE_ELEMENT( className, baseClassName )	\
 	protected:														\
@@ -531,7 +537,7 @@ int DmeEstimateMemorySize( T* pElement )
 
 
 //-----------------------------------------------------------------------------
-// Helper macro to create the class factory 
+// Helper macro to create the class factory
 //-----------------------------------------------------------------------------
 #define DEFINE_ELEMENT( className, baseClassName )	\
 	public:											\

@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS( CTEHL2MPFireBullets, CBaseTempEntity );
 	DECLARE_SERVERCLASS();
 
-					CTEHL2MPFireBullets( const char *name );
+	CTEHL2MPFireBullets( const char* name );
 	virtual			~CTEHL2MPFireBullets( void );
 
 public:
@@ -42,42 +42,42 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEHL2MPFireBullets::CTEHL2MPFireBullets( const char *name ) :
+CTEHL2MPFireBullets::CTEHL2MPFireBullets( const char* name ) :
 	CBaseTempEntity( name )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEHL2MPFireBullets::~CTEHL2MPFireBullets( void )
 {
 }
 
-IMPLEMENT_SERVERCLASS_ST_NOBASE(CTEHL2MPFireBullets, DT_TEHL2MPFireBullets)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO(m_vecDir), -1 ),
-	SendPropInt( SENDINFO( m_iAmmoID ), 5, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_iSeed ), NUM_BULLET_SEED_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_iShots ), 5, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO( m_iPlayer ), 6, SPROP_UNSIGNED ), 	// max 64 players, see MAX_PLAYERS
-	SendPropFloat( SENDINFO( m_flSpread ), 10, 0, 0, 1 ),	
-	SendPropBool( SENDINFO( m_bDoImpacts ) ),
-	SendPropBool( SENDINFO( m_bDoTracers ) ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST_NOBASE( CTEHL2MPFireBullets, DT_TEHL2MPFireBullets )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecDir ), -1 ),
+				SendPropInt( SENDINFO( m_iAmmoID ), 5, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_iSeed ), NUM_BULLET_SEED_BITS, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_iShots ), 5, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_iPlayer ), 6, SPROP_UNSIGNED ), 	// max 64 players, see MAX_PLAYERS
+				SendPropFloat( SENDINFO( m_flSpread ), 10, 0, 0, 1 ),
+				SendPropBool( SENDINFO( m_bDoImpacts ) ),
+				SendPropBool( SENDINFO( m_bDoTracers ) ),
+				END_SEND_TABLE()
 
 
 // Singleton
-static CTEHL2MPFireBullets g_TEHL2MPFireBullets( "Shotgun Shot" );
+				static CTEHL2MPFireBullets g_TEHL2MPFireBullets( "Shotgun Shot" );
 
 
-void TE_HL2MPFireBullets( 
+void TE_HL2MPFireBullets(
 	int	iPlayerIndex,
-	const Vector &vOrigin,
-	const Vector &vDir,
+	const Vector& vOrigin,
+	const Vector& vDir,
 	int	iAmmoID,
 	int iSeed,
 	int iShots,
@@ -97,8 +97,8 @@ void TE_HL2MPFireBullets(
 	g_TEHL2MPFireBullets.m_iAmmoID = iAmmoID;
 	g_TEHL2MPFireBullets.m_bDoTracers = bDoTracers;
 	g_TEHL2MPFireBullets.m_bDoImpacts = bDoImpacts;
-	
-	Assert( iSeed < (1 << NUM_BULLET_SEED_BITS) );
-	
+
+	Assert( iSeed < ( 1 << NUM_BULLET_SEED_BITS ) );
+
 	g_TEHL2MPFireBullets.Create( filter, 0 );
 }

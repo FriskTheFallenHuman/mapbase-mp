@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		SLAM 
+// Purpose:		SLAM
 //
 // $Workfile:     $
 // $Date:         $
@@ -16,9 +16,9 @@
 
 #include "basegrenade_shared.h"
 #ifdef HL2MP
-#include "weapon_hl2mpbasehlmpcombatweapon.h"
+	#include "weapon_hl2mpbasehlmpcombatweapon.h"
 #else
-#include "basehlcombatweapon_shared.h"
+	#include "basehlcombatweapon_shared.h"
 #endif
 
 enum
@@ -29,11 +29,11 @@ enum
 };
 
 #ifdef CLIENT_DLL
-#define CWeapon_SLAM C_Weapon_SLAM
+	#define CWeapon_SLAM C_Weapon_SLAM
 #endif
 
 #ifndef HL2MP
-#define CBaseHL2MPCombatWeapon CBaseHLCombatWeapon
+	#define CBaseHL2MPCombatWeapon CBaseHLCombatWeapon
 #endif
 
 class CWeapon_SLAM : public CBaseHL2MPCombatWeapon
@@ -41,18 +41,18 @@ class CWeapon_SLAM : public CBaseHL2MPCombatWeapon
 public:
 	DECLARE_CLASS( CWeapon_SLAM, CBaseHL2MPCombatWeapon );
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 	CNetworkVar( int,	m_tSlamState );
 	CNetworkVar( bool,				m_bDetonatorArmed );
-	CNetworkVar( bool,				m_bNeedDetonatorDraw);
-	CNetworkVar( bool,				m_bNeedDetonatorHolster);
-	CNetworkVar( bool,				m_bNeedReload);
-	CNetworkVar( bool,				m_bClearReload);
-	CNetworkVar( bool,				m_bThrowSatchel);
-	CNetworkVar( bool,				m_bAttachSatchel);
-	CNetworkVar( bool,				m_bAttachTripmine);
+	CNetworkVar( bool,				m_bNeedDetonatorDraw );
+	CNetworkVar( bool,				m_bNeedDetonatorHolster );
+	CNetworkVar( bool,				m_bNeedReload );
+	CNetworkVar( bool,				m_bClearReload );
+	CNetworkVar( bool,				m_bThrowSatchel );
+	CNetworkVar( bool,				m_bAttachSatchel );
+	CNetworkVar( bool,				m_bAttachTripmine );
 	float				m_flWallSwitchTime;
 
 	void				Spawn( void );
@@ -63,14 +63,14 @@ public:
 	void				WeaponIdle( void );
 	void				Weapon_Switch( void );
 	void				SLAMThink( void );
-	
+
 	void				SetPickupTouch( void );
-	void				SlamTouch( CBaseEntity *pOther );	// default weapon touch
-	void				ItemPostFrame( void );	
+	void				SlamTouch( CBaseEntity* pOther );	// default weapon touch
+	void				ItemPostFrame( void );
 	bool				Reload( void );
 	void				SetSlamState( int newState );
-	bool				CanAttachSLAM(void);		// In position where can attach SLAM?
-	bool				AnyUndetonatedCharges(void);
+	bool				CanAttachSLAM( void );		// In position where can attach SLAM?
+	bool				AnyUndetonatedCharges( void );
 	void				StartTripmineAttach( void );
 	void				TripmineAttach( void );
 
@@ -81,7 +81,7 @@ public:
 	void				SatchelThrow( void );
 	void				SatchelAttach( void );
 	bool				Deploy( void );
-	bool				Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool				Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 
 
 	CWeapon_SLAM();
@@ -92,7 +92,7 @@ public:
 #endif
 
 private:
-	CWeapon_SLAM( const CWeapon_SLAM & );
+	CWeapon_SLAM( const CWeapon_SLAM& );
 };
 
 

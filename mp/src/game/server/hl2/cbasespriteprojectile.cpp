@@ -20,23 +20,23 @@ LINK_ENTITY_TO_CLASS( baseprojectile, CBaseSpriteProjectile );
 //---------------------------------------------------------
 BEGIN_DATADESC( CBaseSpriteProjectile )
 
-	DEFINE_FIELD( m_iDmg,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_iDmgType,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_hIntendedTarget, FIELD_EHANDLE ),
+DEFINE_FIELD( m_iDmg,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_iDmgType,	FIELD_INTEGER ),
+				   DEFINE_FIELD( m_hIntendedTarget, FIELD_EHANDLE ),
 
-END_DATADESC()
+				   END_DATADESC()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBaseSpriteProjectile::Spawn(	char *pszModel,
-								const Vector &vecOrigin,
-								const Vector &vecVelocity,
-								edict_t *pOwner,
-								MoveType_t	iMovetype,
-								MoveCollide_t nMoveCollide,
-								int	iDamage,
-								int iDamageType,
-								CBaseEntity *pIntendedTarget )
+				   void CBaseSpriteProjectile::Spawn(	char* pszModel,
+						   const Vector& vecOrigin,
+						   const Vector& vecVelocity,
+						   edict_t* pOwner,
+						   MoveType_t	iMovetype,
+						   MoveCollide_t nMoveCollide,
+						   int	iDamage,
+						   int iDamageType,
+						   CBaseEntity* pIntendedTarget )
 {
 	Precache();
 
@@ -63,16 +63,16 @@ void CBaseSpriteProjectile::Spawn(	char *pszModel,
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBaseSpriteProjectile::Touch( CBaseEntity *pOther )
+void CBaseSpriteProjectile::Touch( CBaseEntity* pOther )
 {
 	HandleTouch( pOther );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CBaseSpriteProjectile::HandleTouch( CBaseEntity *pOther )
+void CBaseSpriteProjectile::HandleTouch( CBaseEntity* pOther )
 {
-	CBaseEntity *pOwner;
+	CBaseEntity* pOwner;
 
 	pOwner = GetOwnerEntity();
 
@@ -85,9 +85,9 @@ void CBaseSpriteProjectile::HandleTouch( CBaseEntity *pOther )
 	tr = BaseClass::GetTouchTrace( );
 
 	CTakeDamageInfo info( this, pOwner, m_iDmg, m_iDmgType );
-	GuessDamageForce( &info, (tr.endpos - tr.startpos), tr.endpos );
+	GuessDamageForce( &info, ( tr.endpos - tr.startpos ), tr.endpos );
 	pOther->TakeDamage( info );
-	
+
 	UTIL_Remove( this );
 }
 

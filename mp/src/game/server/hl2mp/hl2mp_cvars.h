@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose:  
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef HL2MP_CVARS_H
 #define HL2MP_CVARS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define MAX_INTERMISSION_TIME 120

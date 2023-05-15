@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef FUNC_TANK_H
 #define FUNC_TANK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "triggers.h"
@@ -21,7 +21,7 @@
 #define	SF_TANK_DAMAGE_KICK					0x0040	// Kick when take damage
 #define	SF_TANK_AIM_AT_POS					0x0080	// Aim at a particular position
 #define SF_TANK_AIM_ASSISTANCE				0x0100
-#define SF_TANK_NPC							0x0200		
+#define SF_TANK_NPC							0x0200
 #define SF_TANK_NPC_CONTROLLABLE			0x0400		// 1024
 #define SF_TANK_NPC_SET_CONTROLLER			0x0800		// 2048
 #define SF_TANK_ALLOW_PLAYER_HITS			0x1000		// 4096		Allow friendly NPCs to fire upon enemies near the player
@@ -36,7 +36,7 @@
 #define FUNCTANK_NPC_ROUTE_TIME				5.0f
 
 // Effect handling
-// If the func_tank has a chosen method of handling effects, use that 
+// If the func_tank has a chosen method of handling effects, use that
 // instead of the individual effect settings. (muzzleflash, sound, tracer, etc)
 enum FUNCTANK_EFFECT_HANDLING
 {
@@ -56,17 +56,17 @@ enum TANKBULLET
 #define MORTAR_BLAST_RADIUS	350
 
 #ifdef MAPBASE
-// This moves variables related to ammo types from CFuncTank to CFuncTankGun, as CFuncTankGun and its derivatives are the only classes that use it.
-// It also completely replaces the legacy "bullet" keyvalue with the AmmoType keyvalue, making bullet translate to the ammo type variable directly.
-// This fixes the issue where some func_tanks don't fire any bullets.
-// 
-// This code was created in September-October 2018 and moving existing variables like this seems risky and somewhat pointless, but the nature of func_tanks
-// make this unlikely to cause any problems and helps my OCD.
-// 
-// Disable this preprocessor if it causes problems.
-#define AMMOTYPE_MOVED 1
+	// This moves variables related to ammo types from CFuncTank to CFuncTankGun, as CFuncTankGun and its derivatives are the only classes that use it.
+	// It also completely replaces the legacy "bullet" keyvalue with the AmmoType keyvalue, making bullet translate to the ammo type variable directly.
+	// This fixes the issue where some func_tanks don't fire any bullets.
+	//
+	// This code was created in September-October 2018 and moving existing variables like this seems risky and somewhat pointless, but the nature of func_tanks
+	// make this unlikely to cause any problems and helps my OCD.
+	//
+	// Disable this preprocessor if it causes problems.
+	#define AMMOTYPE_MOVED 1
 
-class CTraceFilterSimple;
+	class CTraceFilterSimple;
 #endif
 
 
@@ -82,57 +82,102 @@ class CFuncTank : public CBaseEntity
 
 public:
 
-			CFuncTank();
-			~CFuncTank();
+	CFuncTank();
+	~CFuncTank();
 	void	Spawn( void );
 	void	Activate( void );
 	void	Precache( void );
 	bool	CreateVPhysics( void );
-	bool	KeyValue( const char *szKeyName, const char *szValue );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
 	void	UpdateOnRemove();
 
-	void	SetYawRate( float flYawRate ) { m_yawRate = flYawRate; }
-	void	SetPitchRate( float flPitchRate ) { m_pitchRate = flPitchRate; }
-
-	int	ObjectCaps( void ) 
-	{ 
-		return ( BaseClass::ObjectCaps() | FCAP_IMPULSE_USE | FCAP_USE_IN_RADIUS ); 
+	void	SetYawRate( float flYawRate )
+	{
+		m_yawRate = flYawRate;
+	}
+	void	SetPitchRate( float flPitchRate )
+	{
+		m_pitchRate = flPitchRate;
 	}
 
-	void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	
-	virtual	void FuncTankPreThink() { return; }
-	void	Think( void );
-	virtual	void FuncTankPostThink() { return; }
+	int	ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() | FCAP_IMPULSE_USE | FCAP_USE_IN_RADIUS );
+	}
 
-	int		GetAmmoCount( void )						{ return m_iAmmoCount; }
+	void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
+
+	virtual	void FuncTankPreThink()
+	{
+		return;
+	}
+	void	Think( void );
+	virtual	void FuncTankPostThink()
+	{
+		return;
+	}
+
+	int		GetAmmoCount( void )
+	{
+		return m_iAmmoCount;
+	}
 
 	// NPC
-	bool	NPC_FindManPoint( Vector &vecPos );
+	bool	NPC_FindManPoint( Vector& vecPos );
 	bool	NPC_HasEnemy( void );
 	void	NPC_Fire( void );
 	void	NPC_InterruptRoute( void );
-	void	NPC_JustSawPlayer( CBaseEntity *pTarget );
-	void	NPC_SetInRoute( bool bInRoute )				{ m_bNPCInRoute = bInRoute; }
-	void	NPC_SetIdleAngle( Vector vecIdle )			{ m_vecNPCIdleTarget = vecIdle; }
+	void	NPC_JustSawPlayer( CBaseEntity* pTarget );
+	void	NPC_SetInRoute( bool bInRoute )
+	{
+		m_bNPCInRoute = bInRoute;
+	}
+	void	NPC_SetIdleAngle( Vector vecIdle )
+	{
+		m_vecNPCIdleTarget = vecIdle;
+	}
 
 	// LOS
-	bool	IsEntityInViewCone( CBaseEntity *pEntity );
-	bool	HasLOSTo( CBaseEntity *pEntity );
+	bool	IsEntityInViewCone( CBaseEntity* pEntity );
+	bool	HasLOSTo( CBaseEntity* pEntity );
 
 	// Controller
-	CBaseCombatCharacter *GetController( void );
-	bool StartControl( CBaseCombatCharacter *pController );
+	CBaseCombatCharacter* GetController( void );
+	bool StartControl( CBaseCombatCharacter* pController );
 	void StopControl( void );
-	Vector GetTargetPosition()						{ return m_vTargetPosition; }
-	void SetTargetPosition( const Vector &vecPos )	{ m_vTargetPosition = vecPos; }
+	Vector GetTargetPosition()
+	{
+		return m_vTargetPosition;
+	}
+	void SetTargetPosition( const Vector& vecPos )
+	{
+		m_vTargetPosition = vecPos;
+	}
 
-	const float YawCenter() const { return m_yawCenter; }
-	const float YawCenterWorld() const { return m_yawCenterWorld; }
-	const float YawRange() const { return m_yawRange; }
-	const float PitchCenter() const { return m_pitchCenter; }
-	const float PitchCenterWorld() const { return m_pitchCenterWorld; }
-	const float PitchRange() const { return m_pitchRange; }
+	const float YawCenter() const
+	{
+		return m_yawCenter;
+	}
+	const float YawCenterWorld() const
+	{
+		return m_yawCenterWorld;
+	}
+	const float YawRange() const
+	{
+		return m_yawRange;
+	}
+	const float PitchCenter() const
+	{
+		return m_pitchCenter;
+	}
+	const float PitchCenterWorld() const
+	{
+		return m_pitchCenterWorld;
+	}
+	const float PitchRange() const
+	{
+		return m_pitchRange;
+	}
 
 	virtual void PhysicsSimulate( void );
 
@@ -140,122 +185,155 @@ public:
 	virtual void OnStopControlled() {}
 
 	// SF Tests.
-	inline bool IsControllable( void )		{ return ( m_spawnflags & SF_TANK_CANCONTROL ) ? true : false; }
-	inline bool IsActive( void )			{ return ( m_spawnflags & SF_TANK_ACTIVE ) ? true : false; }
-	inline bool IsNPCControllable( void )	{ return ( m_spawnflags & SF_TANK_NPC_CONTROLLABLE ) ? true : false; }
-	inline bool IsNPCSetController( void )	{ return ( m_spawnflags & SF_TANK_NPC_SET_CONTROLLER ) ? true : false; }
+	inline bool IsControllable( void )
+	{
+		return ( m_spawnflags & SF_TANK_CANCONTROL ) ? true : false;
+	}
+	inline bool IsActive( void )
+	{
+		return ( m_spawnflags & SF_TANK_ACTIVE ) ? true : false;
+	}
+	inline bool IsNPCControllable( void )
+	{
+		return ( m_spawnflags & SF_TANK_NPC_CONTROLLABLE ) ? true : false;
+	}
+	inline bool IsNPCSetController( void )
+	{
+		return ( m_spawnflags & SF_TANK_NPC_SET_CONTROLLER ) ? true : false;
+	}
 
 	virtual void DoMuzzleFlash( void );
-	virtual const char *GetTracerType( void );
+	virtual const char* GetTracerType( void );
 
 #ifdef MAPBASE
 	virtual CTraceFilterSimple GetTraceFilter();
 
 	// Needed because func_tankairboatgun needs the barrel
-	int			GetGunBarrelAttachment() { return m_nBarrelAttachment; }
+	int			GetGunBarrelAttachment()
+	{
+		return m_nBarrelAttachment;
+	}
 #endif
 
 protected:
-	virtual float GetShotSpeed() { return 0; }
+	virtual float GetShotSpeed()
+	{
+		return 0;
+	}
 
 	virtual Vector WorldBarrelPosition( void );
 	void		UpdateMatrix( void );
 
-	float GetNextAttack() const { return m_flNextAttack; }
-	virtual void SetNextAttack( float flWait ) { m_flNextAttack = flWait; }
+	float GetNextAttack() const
+	{
+		return m_flNextAttack;
+	}
+	virtual void SetNextAttack( float flWait )
+	{
+		m_flNextAttack = flWait;
+	}
 
-	virtual void Fire( int bulletCount, const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker, bool bIgnoreSpread );
-	void		TankTrace( const Vector &vecStart, const Vector &vecForward, const Vector &vecSpread, trace_t &tr );
+	virtual void Fire( int bulletCount, const Vector& barrelEnd, const Vector& forward, CBaseEntity* pAttacker, bool bIgnoreSpread );
+	void		TankTrace( const Vector& vecStart, const Vector& vecForward, const Vector& vecSpread, trace_t& tr );
 	int			GetRandomBurst( void );
 	float		GetRandomFireTime( void );
 
-	void	CalcPlayerCrosshairTarget( Vector *pVecTarget );
-	void	CalcNPCEnemyTarget( Vector *pVecTarget );
+	void	CalcPlayerCrosshairTarget( Vector* pVecTarget );
+	void	CalcNPCEnemyTarget( Vector* pVecTarget );
 
-	inline bool IsPlayerManned( void )	{ return m_hController && m_hController->IsPlayer() && ( m_spawnflags & SF_TANK_PLAYER ); }
-	inline bool IsNPCManned( void )		{ return m_hController && m_hController->MyNPCPointer() && ( m_spawnflags & SF_TANK_NPC ); }
+	inline bool IsPlayerManned( void )
+	{
+		return m_hController && m_hController->IsPlayer() && ( m_spawnflags & SF_TANK_PLAYER );
+	}
+	inline bool IsNPCManned( void )
+	{
+		return m_hController && m_hController->MyNPCPointer() && ( m_spawnflags & SF_TANK_NPC );
+	}
 
 private:
 	void	TrackTarget( void );
-	int		DrawDebugTextOverlays(void);
-	void	DrawDebugGeometryOverlays(void);
+	int		DrawDebugTextOverlays( void );
+	void	DrawDebugGeometryOverlays( void );
 
-	virtual void FiringSequence( const Vector &barrelEnd, const Vector &forward, CBaseEntity *pAttacker );
+	virtual void FiringSequence( const Vector& barrelEnd, const Vector& forward, CBaseEntity* pAttacker );
 
 	void	StartRotSound( void );
 	void	StopRotSound( void );
 
 	// Input handlers.
-	void InputActivate( inputdata_t &inputdata );
-	void InputDeactivate( inputdata_t &inputdata );
-	void InputSetFireRate( inputdata_t &inputdata );
-	void InputSetDamage( inputdata_t &inputdata );
-	void InputSetTargetDir( inputdata_t &inputdata );
-	void InputSetTargetPosition( inputdata_t &inputdata );
-	void InputSetTargetEntityName( inputdata_t &inputdata );
+	void InputActivate( inputdata_t& inputdata );
+	void InputDeactivate( inputdata_t& inputdata );
+	void InputSetFireRate( inputdata_t& inputdata );
+	void InputSetDamage( inputdata_t& inputdata );
+	void InputSetTargetDir( inputdata_t& inputdata );
+	void InputSetTargetPosition( inputdata_t& inputdata );
+	void InputSetTargetEntityName( inputdata_t& inputdata );
 
 protected:
-	virtual void InputSetTargetEntity( inputdata_t &inputdata );
-	virtual void InputClearTargetEntity( inputdata_t &inputdata );
+	virtual void InputSetTargetEntity( inputdata_t& inputdata );
+	virtual void InputClearTargetEntity( inputdata_t& inputdata );
 
 private:
-	void InputFindNPCToManTank( inputdata_t &inputdata );
+	void InputFindNPCToManTank( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputTeleportNPCToManTank( inputdata_t &inputdata );
-	void InputForceNPCToManTank( inputdata_t &inputdata );
+	void InputTeleportNPCToManTank( inputdata_t& inputdata );
+	void InputForceNPCToManTank( inputdata_t& inputdata );
 #endif
-	void InputStopFindingNPCs( inputdata_t &inputdata );
-	void InputStartFindingNPCs( inputdata_t &inputdata );
-	void InputForceNPCOff( inputdata_t &inputdata );
-	void InputSetMaxRange( inputdata_t &inputdata );
+	void InputStopFindingNPCs( inputdata_t& inputdata );
+	void InputStartFindingNPCs( inputdata_t& inputdata );
+	void InputForceNPCOff( inputdata_t& inputdata );
+	void InputSetMaxRange( inputdata_t& inputdata );
 
 	inline bool CanFire( void );
 	bool		InRange( float range );
 	bool		InRange2( float flRange2 );
 
-	void		TraceAttack( CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType);
+	void		TraceAttack( CBaseEntity* pAttacker, float flDamage, const Vector& vecDir, trace_t* ptr, int bitsDamageType );
 
-	QAngle		AimBarrelAt( const Vector &parentTarget );
+	QAngle		AimBarrelAt( const Vector& parentTarget );
 
 	DECLARE_DATADESC();
 
-	bool OnControls( CBaseEntity *pTest );
+	bool OnControls( CBaseEntity* pTest );
 	bool HasController( void );
 
-	CBaseEntity *FindTarget( string_t targetName, CBaseEntity *pActivator );
+	CBaseEntity* FindTarget( string_t targetName, CBaseEntity* pActivator );
 
 	// NPC
 	void		NPC_FindController( void );
-	bool		NPC_InRoute( void )							{ return m_bNPCInRoute; }
+	bool		NPC_InRoute( void )
+	{
+		return m_bNPCInRoute;
+	}
 	bool		NPC_InterruptController( void );
 
-	// Aim the tank at the player crosshair 
-	void AimBarrelAtPlayerCrosshair( QAngle *pAngles );
+	// Aim the tank at the player crosshair
+	void AimBarrelAtPlayerCrosshair( QAngle* pAngles );
 
 	// Aim the tank at the NPC's enemy
-	void AimBarrelAtNPCEnemy( QAngle *pAngles );
+	void AimBarrelAtNPCEnemy( QAngle* pAngles );
 
 	// Aim the tank at the func_tank's enemy
 	void AimFuncTankAtTarget( void );
 
-	// Returns true if the desired angles are out of range 
-	bool RotateTankToAngles( const QAngle &angles, float *pDistX = NULL, float *pDistY = NULL );
+	// Returns true if the desired angles are out of range
+	bool RotateTankToAngles( const QAngle& angles, float* pDistX = NULL, float* pDistY = NULL );
 
-	// We lost our target! 
+	// We lost our target!
 #ifdef MAPBASE
-	void LostTarget( CBaseEntity *pTarget );
+	void LostTarget( CBaseEntity* pTarget );
 #else
 	void LostTarget( void );
 #endif
 
-	// Purpose: 
-	void ComputeLeadingPosition( const Vector &vecShootPosition, CBaseEntity *pTarget, Vector *pLeadPosition );
+	// Purpose:
+	void ComputeLeadingPosition( const Vector& vecShootPosition, CBaseEntity* pTarget, Vector* pLeadPosition );
 
 protected:
 	virtual void ControllerPostFrame( void );
 
-	virtual void TankActivate(void);
-	virtual void TankDeactivate(void);
+	virtual void TankActivate( void );
+	virtual void TankDeactivate( void );
 
 	float					m_fireLast;		// Last time I fired
 	float					m_fireRate;		// How many rounds/second
@@ -299,17 +377,17 @@ protected:
 private:
 
 	// This is either the player manning the func_tank, or an NPC. The NPC is either manning the tank, or running
-	// to the man point. If he's en-route, m_bNPCInRoute will be true. 
+	// to the man point. If he's en-route, m_bNPCInRoute will be true.
 	CHandle<CBaseCombatCharacter> m_hController;
 
 	float					m_flNextAttack;
 	Vector					m_vecControllerUsePos;
-	
+
 	float					m_yawCenter;	// "Center" yaw
 	float					m_yawCenterWorld;	// "Center" yaw in world space
 	float					m_yawRate;		// Max turn rate to track targets
 	float					m_yawRange;		// Range of turning motion (one-sided: 30 is +/- 30 degress from center)
-											// Zero is full rotation
+	// Zero is full rotation
 	float					m_yawTolerance;	// Tolerance angle
 
 	float					m_pitchCenter;	// "Center" pitch
@@ -327,7 +405,7 @@ private:
 	float					m_maxRange;		// Max range to aim/track
 	float					m_flMinRange2;
 	float					m_flMaxRange2;
-	int						m_iAmmoCount;	// ammo 
+	int						m_iAmmoCount;	// ammo
 
 	Vector					m_barrelPos;	// Length of the freakin barrel
 	float					m_spriteScale;	// Scale of any sprites we shoot
@@ -404,7 +482,7 @@ public:
 	float					m_flNextControllerSearch;
 	bool					m_bShouldFindNPCs;
 	bool					m_bNPCInRoute;
-	string_t				m_iszNPCManPoint; 
+	string_t				m_iszNPCManPoint;
 
 	bool					m_bReadyToFire;
 

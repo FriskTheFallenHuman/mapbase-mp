@@ -10,17 +10,17 @@
 #include "simtimer.h"
 #include "ai_behavior.h"
 #ifdef NEW_RESPONSE_SYSTEM
-#include "ai_speechconcept.h"
+	#include "ai_speechconcept.h"
 #endif
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #ifdef NEW_RESPONSE_SYSTEM
-typedef CAI_Concept AIConcept_t;
+	typedef CAI_Concept AIConcept_t;
 #else
-typedef const char *AIConcept_t;
+	typedef const char* AIConcept_t;
 #endif
 
 // Speak concepts
@@ -62,7 +62,10 @@ class CAI_LeadBehaviorHandler
 {
 public:
 	virtual void OnEvent( int event ) {}
-	virtual const char *GetConceptModifiers( const char *pszConcept )	{ return NULL; }
+	virtual const char* GetConceptModifiers( const char* pszConcept )
+	{
+		return NULL;
+	}
 };
 
 //-------------------------------------
@@ -76,8 +79,8 @@ enum AI_LeadFlags_t
 
 struct AI_LeadArgs_t
 {
-	const char *pszGoal;
-	const char *pszWaitPoint;
+	const char* pszGoal;
+	const char* pszWaitPoint;
 	int     	flags;
 	float		flWaitDistance;
 	float		flLeadDistance;
@@ -101,22 +104,25 @@ class CAI_LeadBehavior : public CAI_SimpleBehavior
 	DECLARE_CLASS( CAI_LeadBehavior, CAI_SimpleBehavior );
 public:
 	CAI_LeadBehavior()
-	 :	m_pSink(NULL),
-		m_LostTimer( 3.0, 4.0 ),
-		m_LostLOSTimer( 2.0, 3.0 )
+		:	m_pSink( NULL ),
+		  m_LostTimer( 3.0, 4.0 ),
+		  m_LostLOSTimer( 2.0, 3.0 )
 	{
-		memset( &m_args, 0, sizeof(m_args) );
+		memset( &m_args, 0, sizeof( m_args ) );
 		ClearGoal();
 	}
-	
+
 	virtual void OnRestore();
 
-	virtual const char *GetName() {	return "Lead"; }
+	virtual const char* GetName()
+	{
+		return "Lead";
+	}
 
 	virtual int	DrawDebugTextOverlays( int text_offset );
 	virtual bool IsNavigationUrgent();
 
-	void LeadPlayer( const AI_LeadArgs_t &leadArgs, CAI_LeadBehaviorHandler *pSink = NULL );
+	void LeadPlayer( const AI_LeadArgs_t& leadArgs, CAI_LeadBehaviorHandler* pSink = NULL );
 	void StopLeading( void );
 
 	virtual bool CanSelectSchedule();
@@ -124,18 +130,38 @@ public:
 
 	virtual bool IsCurTaskContinuousMove();
 
-	bool SetGoal( const AI_LeadArgs_t &args );
-	void ClearGoal()										{ m_goal = vec3_origin; m_waitpoint = vec3_origin; m_pSink = NULL; m_weaponname = NULL_STRING; }
-	bool HasGoal() const 									{ return (m_goal != vec3_origin); }
-	bool HasWaitPoint() const 								{ return (m_waitpoint != vec3_origin); }
+	bool SetGoal( const AI_LeadArgs_t& args );
+	void ClearGoal()
+	{
+		m_goal = vec3_origin;
+		m_waitpoint = vec3_origin;
+		m_pSink = NULL;
+		m_weaponname = NULL_STRING;
+	}
+	bool HasGoal() const
+	{
+		return ( m_goal != vec3_origin );
+	}
+	bool HasWaitPoint() const
+	{
+		return ( m_waitpoint != vec3_origin );
+	}
 
-	bool Connect( CAI_LeadBehaviorHandler *);
-	bool Disconnect( CAI_LeadBehaviorHandler *);
+	bool Connect( CAI_LeadBehaviorHandler* );
+	bool Disconnect( CAI_LeadBehaviorHandler* );
 
 #ifdef MAPBASE
-	void SetWaitForWeapon( string_t iszWeaponName, float flTimeout = 60 ) { m_weaponname = iszWeaponName; m_flWeaponSafetyTimeOut = gpGlobals->curtime + flTimeout; }
+	void SetWaitForWeapon( string_t iszWeaponName, float flTimeout = 60 )
+	{
+		m_weaponname = iszWeaponName;
+		m_flWeaponSafetyTimeOut = gpGlobals->curtime + flTimeout;
+	}
 #else
-	void SetWaitForWeapon( string_t iszWeaponName ) { m_weaponname = iszWeaponName; m_flWeaponSafetyTimeOut = gpGlobals->curtime + 60; }
+	void SetWaitForWeapon( string_t iszWeaponName )
+	{
+		m_weaponname = iszWeaponName;
+		m_flWeaponSafetyTimeOut = gpGlobals->curtime + 60;
+	}
 #endif
 
 	enum
@@ -155,7 +181,7 @@ public:
 		SCHED_LEAD_SPEAK_THEN_RETRIEVE_PLAYER,
 		SCHED_LEAD_SPEAK_THEN_LEAD_PLAYER,
 		NEXT_SCHEDULE,
-		
+
 		// Tasks
 		TASK_GET_PATH_TO_LEAD_GOAL = BaseClass::NEXT_TASK,
 		TASK_STOP_LEADING,
@@ -170,7 +196,7 @@ public:
 		TASK_LEAD_RETRIEVE_WAIT,
 		TASK_LEAD_WALK_PATH,
 		NEXT_TASK,
-		
+
 		// Conditions
 		COND_LEAD_FOLLOWER_LOST = BaseClass::NEXT_CONDITION,
 		COND_LEAD_FOLLOWER_LAGGING,
@@ -183,16 +209,16 @@ public:
 		NEXT_CONDITION
 
 	};
-	
+
 private:
 
 	void GatherConditions();
 	virtual int SelectSchedule();
 	virtual int TranslateSchedule( int scheduleType );
-	virtual void StartTask( const Task_t *pTask );
-	virtual void RunTask( const Task_t *pTask );
+	virtual void StartTask( const Task_t* pTask );
+	virtual void RunTask( const Task_t* pTask );
 
-	bool GetClosestPointOnRoute( const Vector &targetPos, Vector *pVecClosestPoint );
+	bool GetClosestPointOnRoute( const Vector& targetPos, Vector* pVecClosestPoint );
 	bool PlayerIsAheadOfMe( bool bForce = false );
 
 	bool Speak( AIConcept_t concept );
@@ -204,17 +230,26 @@ private:
 	// provide debugging pinch pount, and allow for class-local logic
 	// in addition to sink logic
 	//
-	void NotifyEvent( int event )								{ if ( m_pSink ) m_pSink->OnEvent( event ) ; }
-	const char * GetConceptModifiers( const char *pszConcept )	{ return ( m_pSink ) ? m_pSink->GetConceptModifiers( pszConcept ) : NULL; }
-	
+	void NotifyEvent( int event )
+	{
+		if( m_pSink )
+		{
+			m_pSink->OnEvent( event ) ;
+		}
+	}
+	const char* GetConceptModifiers( const char* pszConcept )
+	{
+		return ( m_pSink ) ? m_pSink->GetConceptModifiers( pszConcept ) : NULL;
+	}
+
 	// --------------------------------
 
 	AI_LeadArgs_t			m_args;
-	CAI_LeadBehaviorHandler *m_pSink;
+	CAI_LeadBehaviorHandler* m_pSink;
 	EHANDLE					m_hSinkImplementor;
-	
+
 	// --------------------------------
-	
+
 	Vector		m_goal;
 	float		m_goalyaw;
 	Vector		m_waitpoint;
@@ -233,7 +268,7 @@ private:
 	float		m_flNextLeadIdle;
 	bool		m_bInitialAheadTest;
 	CAI_MoveMonitor m_MoveMonitor;
-	
+
 	CRandStopwatch	m_LostTimer;
 	CRandStopwatch  m_LostLOSTimer;
 

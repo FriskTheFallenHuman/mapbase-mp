@@ -22,18 +22,18 @@ EntityParticleTrailInfo_t::EntityParticleTrailInfo_t()
 }
 
 //-----------------------------------------------------------------------------
-// Save/load 
+// Save/load
 //-----------------------------------------------------------------------------
 #ifndef CLIENT_DLL
 
-BEGIN_SIMPLE_DATADESC( EntityParticleTrailInfo_t )
+	BEGIN_SIMPLE_DATADESC( EntityParticleTrailInfo_t )
 
 	DEFINE_KEYFIELD( m_strMaterialName,	FIELD_STRING,	"ParticleTrailMaterial" ),
 	DEFINE_KEYFIELD( m_flLifetime,		FIELD_FLOAT,	"ParticleTrailLifetime" ),
 	DEFINE_KEYFIELD( m_flStartSize,		FIELD_FLOAT,	"ParticleTrailStartSize" ),
 	DEFINE_KEYFIELD( m_flEndSize,		FIELD_FLOAT,	"ParticleTrailEndSize" ),
 
-END_DATADESC()
+	END_DATADESC()
 
 #endif
 

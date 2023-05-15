@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -22,10 +22,10 @@
 //-----------------------------------------------------------------------------
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponIFMBase, DT_WeaponIFMBase )
 
-BEGIN_NETWORK_TABLE( CWeaponIFMBase, DT_WeaponIFMBase )	
+BEGIN_NETWORK_TABLE( CWeaponIFMBase, DT_WeaponIFMBase )
 END_NETWORK_TABLE()
 
-BEGIN_PREDICTION_DATA( CWeaponIFMBase ) 
+BEGIN_PREDICTION_DATA( CWeaponIFMBase )
 END_PREDICTION_DATA()
 
 LINK_ENTITY_TO_CLASS( weapon_ifm_base, CWeaponIFMBase );
@@ -33,14 +33,14 @@ LINK_ENTITY_TO_CLASS( weapon_ifm_base, CWeaponIFMBase );
 
 #ifdef GAME_DLL
 
-BEGIN_DATADESC( CWeaponIFMBase )
+	BEGIN_DATADESC( CWeaponIFMBase )
 
-END_DATADESC()
+	END_DATADESC()
 
 #endif
 
 //-----------------------------------------------------------------------------
-// CWeaponIFMBase implementation. 
+// CWeaponIFMBase implementation.
 //-----------------------------------------------------------------------------
 CWeaponIFMBase::CWeaponIFMBase()
 {
@@ -49,17 +49,17 @@ CWeaponIFMBase::CWeaponIFMBase()
 }
 
 bool CWeaponIFMBase::IsPredicted() const
-{ 
+{
 	return true;
 }
 
 #ifdef CLIENT_DLL
-	
+
 void CWeaponIFMBase::OnDataChanged( DataUpdateType_t type )
 {
 	BaseClass::OnDataChanged( type );
 
-	if ( GetPredictable() && !ShouldPredict() )
+	if( GetPredictable() && !ShouldPredict() )
 	{
 		ShutdownPredictable();
 	}
@@ -67,15 +67,17 @@ void CWeaponIFMBase::OnDataChanged( DataUpdateType_t type )
 
 bool CWeaponIFMBase::ShouldPredict()
 {
-	if ( GetOwner() && GetOwner() == C_BasePlayer::GetLocalPlayer() )
+	if( GetOwner() && GetOwner() == C_BasePlayer::GetLocalPlayer() )
+	{
 		return true;
+	}
 
 	return BaseClass::ShouldPredict();
 }
 
 
 #else
-	
+
 void CWeaponIFMBase::Spawn()
 {
 	BaseClass::Spawn();
@@ -112,7 +114,7 @@ void CWeaponIFMBase::FallInit( void )
 	}
 
 	SetPickupTouch();
-	
+
 	SetThink( &CBaseCombatWeapon::FallThink );
 
 	SetNextThink( gpGlobals->curtime + 0.1f );

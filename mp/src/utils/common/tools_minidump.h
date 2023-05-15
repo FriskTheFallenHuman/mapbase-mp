@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef TOOLS_MINIDUMP_H
 #define TOOLS_MINIDUMP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -28,7 +28,7 @@ void SetupDefaultToolsMinidumpHandler();
 //		pvExceptionInfo		- on Win32 platform points to "struct _EXCEPTION_POINTERS"
 //							  otherwise NULL
 //
-typedef void (*ToolsExceptionHandler)( unsigned long exceptionCode, void *pvExceptionInfo );
+typedef void ( *ToolsExceptionHandler )( unsigned long exceptionCode, void* pvExceptionInfo );
 void SetupToolsMinidumpHandler( ToolsExceptionHandler fn );
 
 

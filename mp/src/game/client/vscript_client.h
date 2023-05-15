@@ -11,16 +11,16 @@
 #include "vscript_shared.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-extern IScriptVM * g_pScriptVM;
+extern IScriptVM* g_pScriptVM;
 
 // Only allow scripts to create entities during map initialization
 bool IsEntityCreationAllowedInScripts( void );
 
 #ifdef MAPBASE_VSCRIPT
-extern IScriptManager * scriptmanager;
+	extern IScriptManager* scriptmanager;
 #endif
 
 #endif // VSCRIPT_CLIENT_H

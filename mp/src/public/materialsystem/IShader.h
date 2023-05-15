@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define ISHADER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //==================================================================================================
@@ -51,10 +51,10 @@ class CBasePerMaterialContextData;
 //-----------------------------------------------------------------------------
 struct ShaderParamInfo_t
 {
-	const char *m_pName;
-	const char *m_pHelp;
+	const char* m_pName;
+	const char* m_pHelp;
 	ShaderParamType_t m_Type;
-	const char *m_pDefaultValue;
+	const char* m_pDefaultValue;
 	int m_nFlags;
 };
 
@@ -69,30 +69,30 @@ abstract_class IShader
 {
 public:
 	// Returns the shader name
-	virtual char const* GetName( ) const = 0;
+	virtual char const * GetName( ) const = 0;
 
 	// returns the shader fallbacks
-	virtual char const* GetFallbackShader( IMaterialVar** params ) const = 0;
+	virtual char const * GetFallbackShader( IMaterialVar** params ) const = 0;
 
 	// Shader parameters
 	virtual int GetNumParams( ) const = 0;
 
 	// These functions must be implemented by the shader
-	virtual void InitShaderParams( IMaterialVar** ppParams, const char *pMaterialName ) = 0;
-	virtual void InitShaderInstance( IMaterialVar** ppParams, IShaderInit *pShaderInit, const char *pMaterialName, const char *pTextureGroupName ) = 0;
-	virtual void DrawElements( IMaterialVar **params, int nModulationFlags,
-		IShaderShadow* pShaderShadow, IShaderDynamicAPI* pShaderAPI, VertexCompressionType_t vertexCompression, CBasePerMaterialContextData **pContextDataPtr ) = 0;
+	virtual void InitShaderParams( IMaterialVar** ppParams, const char* pMaterialName ) = 0;
+	virtual void InitShaderInstance( IMaterialVar** ppParams, IShaderInit * pShaderInit, const char* pMaterialName, const char* pTextureGroupName ) = 0;
+	virtual void DrawElements( IMaterialVar** params, int nModulationFlags,
+	IShaderShadow * pShaderShadow, IShaderDynamicAPI * pShaderAPI, VertexCompressionType_t vertexCompression, CBasePerMaterialContextData** pContextDataPtr ) = 0;
 
-	virtual char const* GetParamName( int paramIndex ) const = 0;
-	virtual char const* GetParamHelp( int paramIndex ) const = 0;
+	virtual char const * GetParamName( int paramIndex ) const = 0;
+	virtual char const * GetParamHelp( int paramIndex ) const = 0;
 	virtual ShaderParamType_t GetParamType( int paramIndex ) const = 0;
-	virtual char const* GetParamDefault( int paramIndex ) const = 0;
+	virtual char const * GetParamDefault( int paramIndex ) const = 0;
 
 	// FIXME: Figure out a better way to do this?
-	virtual int ComputeModulationFlags( IMaterialVar** params, IShaderDynamicAPI* pShaderAPI ) = 0;
-	virtual bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame = true ) const = 0;
-	virtual bool NeedsFullFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const = 0;
-	virtual bool IsTranslucent( IMaterialVar **params ) const = 0;
+	virtual int ComputeModulationFlags( IMaterialVar** params, IShaderDynamicAPI * pShaderAPI ) = 0;
+	virtual bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar** params, bool bCheckSpecificToThisFrame = true ) const = 0;
+	virtual bool NeedsFullFrameBufferTexture( IMaterialVar** params, bool bCheckSpecificToThisFrame ) const = 0;
+	virtual bool IsTranslucent( IMaterialVar** params ) const = 0;
 
 	virtual int GetParamFlags( int paramIndex ) const = 0;
 

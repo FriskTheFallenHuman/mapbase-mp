@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -8,7 +8,7 @@
 #if !defined ( DLIGHTH )
 #define DLIGHTH
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -23,14 +23,14 @@ enum
 	DLIGHT_NO_MODEL_ILLUMINATION = 0x2,
 
 	// NOTE: These two features are used to dynamically tweak the alpha on displacements
-	// which is a special effect for selecting which texture to use. If 
+	// which is a special effect for selecting which texture to use. If
 	// we ever change how alpha is stored for displacements, we'll have to kill this feature
 	DLIGHT_ADD_DISPLACEMENT_ALPHA = 0x4,
 	DLIGHT_SUBTRACT_DISPLACEMENT_ALPHA = 0x8,
-	DLIGHT_DISPLACEMENT_MASK = (DLIGHT_ADD_DISPLACEMENT_ALPHA | DLIGHT_SUBTRACT_DISPLACEMENT_ALPHA),
+	DLIGHT_DISPLACEMENT_MASK = ( DLIGHT_ADD_DISPLACEMENT_ALPHA | DLIGHT_SUBTRACT_DISPLACEMENT_ALPHA ),
 };
 
-// This is the lighting value that is used to determine when something can be 
+// This is the lighting value that is used to determine when something can be
 // culle from lighting because it is close enough to black to be virtually black.
 //#define MIN_LIGHTING_VALUE	(1.0f/256.0f)
 

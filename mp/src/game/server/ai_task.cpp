@@ -13,7 +13,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-const char * g_ppszTaskFailureText[] =
+const char* g_ppszTaskFailureText[] =
 {
 	"No failure",                                    // NO_TASK_FAILURE
 	"No Target",                                     // FAIL_NO_TARGET
@@ -45,20 +45,24 @@ const char * g_ppszTaskFailureText[] =
 	"Item has been taken",		                     // FAIL_ITEM_TAKEN
 };
 
-const char *TaskFailureToString( AI_TaskFailureCode_t code )
+const char* TaskFailureToString( AI_TaskFailureCode_t code )
 {
-	const char *pszResult;
-	if ( code < 0 || code >= NUM_FAIL_CODES )
-		pszResult = (const char *)code;
+	const char* pszResult;
+	if( code < 0 || code >= NUM_FAIL_CODES )
+	{
+		pszResult = ( const char* )code;
+	}
 	else
+	{
 		pszResult = g_ppszTaskFailureText[code];
+	}
 	return pszResult;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Given and task name, return the task ID
 //-----------------------------------------------------------------------------
-int CAI_BaseNPC::GetTaskID(const char* taskName)
+int CAI_BaseNPC::GetTaskID( const char* taskName )
 {
 	return GetSchedulingSymbols()->TaskSymbolToId( taskName );
 }
@@ -68,11 +72,11 @@ int CAI_BaseNPC::GetTaskID(const char* taskName)
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CAI_BaseNPC::InitDefaultTaskSR(void)
+void CAI_BaseNPC::InitDefaultTaskSR( void )
 {
-	#define ADD_DEF_TASK( name ) idSpace.AddTask(#name, name, "CAI_BaseNPC" )
+#define ADD_DEF_TASK( name ) idSpace.AddTask(#name, name, "CAI_BaseNPC" )
 
-	CAI_ClassScheduleIdSpace &idSpace = CAI_BaseNPC::AccessClassScheduleIdSpaceDirect();
+	CAI_ClassScheduleIdSpace& idSpace = CAI_BaseNPC::AccessClassScheduleIdSpaceDirect();
 
 	ADD_DEF_TASK( TASK_INVALID );
 	ADD_DEF_TASK( TASK_ANNOUNCE_ATTACK );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -47,7 +47,7 @@ static void Pause( void )
 	}
 }
 
-static void Exit(const char *msg)
+static void Exit( const char* msg )
 {
 	fprintf( stderr, "%s", msg );
 	Pause();
@@ -67,46 +67,48 @@ static void Usage( void )
 }
 
 
-bool Process_File( char *pInputBaseName, int maxlen )
+bool Process_File( char* pInputBaseName, int maxlen )
 {
 	Q_FixSlashes( pInputBaseName, '/' );
 	// Q_StripExtension( pInputBaseName, pInputBaseName, maxlen );
-	
+
 	if( !g_Quiet )
 	{
 		printf( "input file: %s\n", pInputBaseName );
 	}
-	
-	FileHandle_t f = g_pFullFileSystem->Open(pInputBaseName, "rb", "vice" );
-		
-	if (!f)
-		Error("Could not open input file");
-		
-	int fileSize = g_pFullFileSystem->Size(f);
 
-	unsigned char *buffer = (unsigned char*)_alloca(fileSize);
+	FileHandle_t f = g_pFullFileSystem->Open( pInputBaseName, "rb", "vice" );
 
-	g_pFullFileSystem->Read(buffer, fileSize, f); // read into local buffer
+	if( !f )
+	{
+		Error( "Could not open input file" );
+	}
+
+	int fileSize = g_pFullFileSystem->Size( f );
+
+	unsigned char* buffer = ( unsigned char* )_alloca( fileSize );
+
+	g_pFullFileSystem->Read( buffer, fileSize, f ); // read into local buffer
 	g_pFullFileSystem->Close( f );	// close file after reading
 
 	IceKey ice( 0 ); // level 0 = 64bit key
-	ice.set( (unsigned char*) g_ICEKey ); // set key
+	ice.set( ( unsigned char* ) g_ICEKey ); // set key
 
 	int blockSize = ice.blockSize();
 
-	unsigned char *temp = (unsigned char *)_alloca( fileSize );
-	unsigned char *p1 = buffer;
-	unsigned char *p2 = temp;
-				
+	unsigned char* temp = ( unsigned char* )_alloca( fileSize );
+	unsigned char* p1 = buffer;
+	unsigned char* p2 = temp;
+
 	// encrypt data in 8 byte blocks
 	int bytesLeft = fileSize;
-	while ( bytesLeft >= blockSize )
+	while( bytesLeft >= blockSize )
 	{
-		if ( g_Encrypt )
+		if( g_Encrypt )
 		{
 			ice.encrypt( p1, p2 );
 		}
-		else if ( g_Decrypt )
+		else if( g_Decrypt )
 		{
 			ice.decrypt( p1, p2 );
 		}
@@ -116,8 +118,8 @@ bool Process_File( char *pInputBaseName, int maxlen )
 		}
 
 		bytesLeft -= blockSize;
-		p1+=blockSize;
-		p2+=blockSize;
+		p1 += blockSize;
+		p2 += blockSize;
 	}
 
 	memcpy( p2, p1, bytesLeft );
@@ -129,27 +131,29 @@ bool Process_File( char *pInputBaseName, int maxlen )
 		printf( "output file: %s\n", pInputBaseName );
 	}
 
-	f = g_pFullFileSystem->Open(pInputBaseName, "wb", "vice" );
-	
-	if (!f)
-		Exit("Could not open output file");
-		
+	f = g_pFullFileSystem->Open( pInputBaseName, "wb", "vice" );
+
+	if( !f )
+	{
+		Exit( "Could not open output file" );
+	}
+
 	g_pFullFileSystem->Write( temp, fileSize, f ); // read into local buffer
 	g_pFullFileSystem->Close( f );	// close file after reading
-	
+
 	return TRUE;
 }
 
-int main(int argc, char* argv[])
+int main( int argc, char* argv[] )
 {
 	CommandLine()->CreateCmdLine( argc, argv );
-	
+
 
 	if( argc < 2 )
 	{
 		Usage();
 	}
-	char *pInputBaseName = NULL;
+	char* pInputBaseName = NULL;
 	int i = 1;
 	strcpy( g_Extension, ".dat" );
 	while( i < argc )
@@ -170,41 +174,41 @@ int main(int argc, char* argv[])
 			g_Encrypt = true;
 			i++;
 
-			if ( strlen( argv[i] ) != 8 )
+			if( strlen( argv[i] ) != 8 )
 			{
-				Exit("Error - ICE key must be a 8 char text.\n");
+				Exit( "Error - ICE key must be a 8 char text.\n" );
 			}
 
-			Q_strncpy( g_ICEKey, argv[i], sizeof(g_ICEKey) );
+			Q_strncpy( g_ICEKey, argv[i], sizeof( g_ICEKey ) );
 			i++;
-			
+
 		}
 		if( stricmp( argv[i], "-decrypt" ) == 0 )
 		{
 			g_Decrypt = true;
 			i++;
 
-			if ( strlen( argv[i] ) != 8 )
+			if( strlen( argv[i] ) != 8 )
 			{
-				Exit("Error - ICE key must be a 8 char text.\n");
+				Exit( "Error - ICE key must be a 8 char text.\n" );
 			}
 
-			Q_strncpy( g_ICEKey, argv[i], sizeof(g_ICEKey) );
+			Q_strncpy( g_ICEKey, argv[i], sizeof( g_ICEKey ) );
 			i++;
-			
+
 		}
 		if( stricmp( argv[i], "-newext" ) == 0 )
 		{
 			i++;
 
-			if ( strlen( argv[i] ) > 5 )
+			if( strlen( argv[i] ) > 5 )
 			{
-				Exit("Error - extension must be smaller than 4 chars.\n");
+				Exit( "Error - extension must be smaller than 4 chars.\n" );
 			}
 
-			Q_strncpy( g_Extension, argv[i], sizeof(g_Extension) );
+			Q_strncpy( g_Extension, argv[i], sizeof( g_Extension ) );
 			i++;
-			
+
 		}
 		else
 		{
@@ -212,14 +216,14 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	if ( i >= argc )
+	if( i >= argc )
 	{
-		Exit("Error - missing files in commandline.\n");
+		Exit( "Error - missing files in commandline.\n" );
 	}
 
 	CmdLib_InitFileSystem( argv[i] );
 
-	g_pFullFileSystem->GetCurrentDirectory( gamedir, sizeof(gamedir) );
+	g_pFullFileSystem->GetCurrentDirectory( gamedir, sizeof( gamedir ) );
 	g_pFullFileSystem->AddSearchPath( gamedir, "vice" );
 
 
@@ -231,14 +235,14 @@ int main(int argc, char* argv[])
 		int maxlen = Q_strlen( pInputBaseName ) + 1;
 
 
-		if ( strstr( pInputBaseName, "*.") )
+		if( strstr( pInputBaseName, "*." ) )
 		{
 			char	search[ MAX_PATH ];
 			char	fname[ MAX_PATH ];
 			char	ext[_MAX_EXT];
 
 			_splitpath( pInputBaseName, NULL, NULL, fname, ext ); //find extension wanted
-			fname[strlen(fname)-1] = 0; // remove *
+			fname[strlen( fname ) - 1] = 0; // remove *
 
 			sprintf( search, "%s\\*%s", gamedir, ext );
 
@@ -246,28 +250,32 @@ int main(int argc, char* argv[])
 
 			WIN32_FIND_DATA wfd;
 			HANDLE hResult;
-			memset(&wfd, 0, sizeof(WIN32_FIND_DATA));
-			
+			memset( &wfd, 0, sizeof( WIN32_FIND_DATA ) );
+
 			hResult = FindFirstFile( search, &wfd );
 
-			while ( hResult != INVALID_HANDLE_VALUE )
+			while( hResult != INVALID_HANDLE_VALUE )
 			{
-				if ( !strnicmp( fname, wfd.cFileName, strlen(fname) ) )
+				if( !strnicmp( fname, wfd.cFileName, strlen( fname ) ) )
 				{
-					if ( !Process_File( wfd.cFileName, sizeof( wfd.cFileName ) ) )
+					if( !Process_File( wfd.cFileName, sizeof( wfd.cFileName ) ) )
+					{
 						break;
+					}
 				}
 
-				if ( !FindNextFile( hResult, &wfd) )
+				if( !FindNextFile( hResult, &wfd ) )
+				{
 					break;
-							
+				}
+
 			}
-			
+
 			FindClose( hResult );
 		}
 		else
 		{
-			Process_File( pInputBaseName, maxlen ); 			
+			Process_File( pInputBaseName, maxlen );
 		}
 	}
 

@@ -7,7 +7,7 @@
 #if !defined( WEAPON_SELECTION_H )
 #define WEAPON_SELECTION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hudelement.h"
@@ -26,17 +26,18 @@ extern ConVar hud_fastswitch;
 //-----------------------------------------------------------------------------
 // Purpose: Base class for tf2 & hl2 weapon selection hud elements
 //-----------------------------------------------------------------------------
-abstract_class CBaseHudWeaponSelection : public CHudElement
+abstract_class CBaseHudWeaponSelection :
+public CHudElement
 {
 	DECLARE_CLASS( CBaseHudWeaponSelection, CHudElement );
 
 public:
-	CBaseHudWeaponSelection( const char *pElementName );
+	CBaseHudWeaponSelection( const char* pElementName );
 	virtual void Init( void );
 	virtual void VidInit( void );
 	virtual void ProcessInput();
-	virtual void Reset(void);
-	virtual void OnThink(void);
+	virtual void Reset( void );
+	virtual void OnThink( void );
 
 	virtual void OpenSelection( void );
 	virtual void HideSelection( void );
@@ -47,16 +48,16 @@ public:
 	virtual void CycleToNextWeapon( void ) = 0;
 	virtual void CycleToPrevWeapon( void ) = 0;
 	virtual void SwitchToLastWeapon( void );
-	virtual C_BaseCombatWeapon *GetWeaponInSlot( int iSlot, int iSlotPos ) = 0;
+	virtual C_BaseCombatWeapon * GetWeaponInSlot( int iSlot, int iSlotPos ) = 0;
 	virtual void SelectWeaponSlot( int iSlot ) = 0;
-	virtual C_BaseCombatWeapon	*GetFirstPos( int iSlot );
-	virtual C_BaseCombatWeapon	*GetNextActivePos( int iSlot, int iSlotPos );
+	virtual C_BaseCombatWeapon	* GetFirstPos( int iSlot );
+	virtual C_BaseCombatWeapon	* GetNextActivePos( int iSlot, int iSlotPos );
 	virtual void				SetWeaponSelected( void );
 	virtual void				SelectWeapon( void );
 
-	virtual C_BaseCombatWeapon	*GetSelectedWeapon( void ) = 0;
+	virtual C_BaseCombatWeapon	* GetSelectedWeapon( void ) = 0;
 
-	virtual void OnWeaponPickup( C_BaseCombatWeapon *pWeapon );
+	virtual void OnWeaponPickup( C_BaseCombatWeapon * pWeapon );
 	virtual bool IsInSelectionMode();
 
 	void UserCmd_Slot1( void );
@@ -83,25 +84,31 @@ public:
 
 	bool HandleHudMenuInput( int iSlot );
 
-	static CBaseHudWeaponSelection *GetInstance();
+	static CBaseHudWeaponSelection * GetInstance();
 
 	// these functions are exposed as virtual so that the tf_hints system can redraw the weapon selection
-	virtual void DrawWList( C_BasePlayer *pPlayer, C_BaseCombatWeapon *pSelectedWeapon, bool drawOutline = false, int ora = 0, int og = 0, int ob = 0, int oa = 0 ) {}
-	virtual bool ComputeRect( C_BasePlayer *pPlayer, C_BaseCombatWeapon *pSelectedWeapon, wrect_t *outrect ) { return false; }
-	
-	virtual int	KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+	virtual void DrawWList( C_BasePlayer * pPlayer, C_BaseCombatWeapon * pSelectedWeapon, bool drawOutline = false, int ora = 0, int og = 0, int ob = 0, int oa = 0 ) {}
+	virtual bool ComputeRect( C_BasePlayer * pPlayer, C_BaseCombatWeapon * pSelectedWeapon, wrect_t* outrect )
+	{
+		return false;
+	}
+
+	virtual int	KeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
 
 protected:
 	// returns true if there is a weapon currently visible to select
-	virtual bool IsWeaponSelectable()	{ return IsInSelectionMode(); }
+	virtual bool IsWeaponSelectable()
+	{
+		return IsInSelectionMode();
+	}
 
-	bool	CanBeSelectedInHUD( C_BaseCombatWeapon *pWeapon );
+	bool	CanBeSelectedInHUD( C_BaseCombatWeapon * pWeapon );
 
 	void	UpdateSelectionTime( void );
 
 	float	m_flSelectionTime;	// most recent time at which weapon selection had input
 
-	static CBaseHudWeaponSelection *s_pInstance;
+	static CBaseHudWeaponSelection* s_pInstance;
 
 	bool	m_bSelectionVisible;
 
@@ -109,6 +116,6 @@ protected:
 };
 
 // accessor
-CBaseHudWeaponSelection *GetHudWeaponSelection();
+CBaseHudWeaponSelection* GetHudWeaponSelection();
 
 #endif // WEAPON_SELECTION_H

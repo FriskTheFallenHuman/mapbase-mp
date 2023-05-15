@@ -47,7 +47,7 @@ using namespace vgui;
 
 //-----------------------------------------------------------------------------
 
-extern IReplayPerformanceController *g_pReplayPerformanceController;
+extern IReplayPerformanceController* g_pReplayPerformanceController;
 
 //-----------------------------------------------------------------------------
 
@@ -88,7 +88,7 @@ ConVar replay_replayeditor_rewindmsgcounter( "replay_replayeditor_rewindmsgcount
 
 //-----------------------------------------------------------------------------
 
-static const char *gs_pCamNames[ NCAMS ] =
+static const char* gs_pCamNames[ NCAMS ] =
 {
 	"free",
 	"third",
@@ -96,7 +96,7 @@ static const char *gs_pCamNames[ NCAMS ] =
 	"timescale",
 };
 
-static const char *gs_pBaseComponentNames[ NCAMS ] =
+static const char* gs_pBaseComponentNames[ NCAMS ] =
 {
 	"replay/replay_camera_%s%s",
 	"replay/replay_camera_%s%s",
@@ -121,7 +121,7 @@ void PauseDemo()
 inline float SCurve( float t )
 {
 	t = clamp( t, 0.0f, 1.0f );
-	return t * t * (3 - 2*t);
+	return t * t * ( 3 - 2 * t );
 }
 
 inline float CubicEaseIn( float t )
@@ -133,8 +133,10 @@ inline float CubicEaseIn( float t )
 inline float LerpScale( float flIn, float flInMin, float flInMax, float flOutMin, float flOutMax )
 {
 	float flDenom = flInMax - flInMin;
-	if ( flDenom == 0.0f )
+	if( flDenom == 0.0f )
+	{
 		return 0.0f;
+	}
 
 	float t = clamp( ( flIn - flInMin ) / flDenom, 0.0f, 1.0f );
 	return Lerp( t, flOutMin, flOutMax );
@@ -142,12 +144,14 @@ inline float LerpScale( float flIn, float flInMin, float flInMax, float flOutMin
 
 //-----------------------------------------------------------------------------
 
-void HighlightTipWords( Label *pLabel )
+void HighlightTipWords( Label* pLabel )
 {
 	// Setup coloring - get # of words that should be highlighted
-	wchar_t *pwNumWords = g_pVGuiLocalize->Find( "#Replay_PerfTip_Highlight_NumWords" );
-	if ( !pwNumWords )
+	wchar_t* pwNumWords = g_pVGuiLocalize->Find( "#Replay_PerfTip_Highlight_NumWords" );
+	if( !pwNumWords )
+	{
 		return;
+	}
 
 	// Get the current label text
 	wchar_t wszLabelText[512];
@@ -157,23 +161,27 @@ void HighlightTipWords( Label *pLabel )
 	pLabel->GetTextImage()->AddColorChange( pLabel->GetFgColor(), 0 );
 
 	int nNumWords = _wtoi( pwNumWords );
-	for ( int i = 0; i < nNumWords; ++i )
+	for( int i = 0; i < nNumWords; ++i )
 	{
 		char szWordFindStr[64];
 		V_snprintf( szWordFindStr, sizeof( szWordFindStr ), "#Replay_PerfTip_Highlight_Word%i", i );
-		wchar_t *pwWord = g_pVGuiLocalize->Find( szWordFindStr );
-		if ( !pwWord )
+		wchar_t* pwWord = g_pVGuiLocalize->Find( szWordFindStr );
+		if( !pwWord )
+		{
 			continue;
+		}
 
 		const int nWordLen = wcslen( pwWord );
 
 		// Find any instance of the word in the label text and highlight it in red
-		const wchar_t *p = wszLabelText;
-		do 
+		const wchar_t* p = wszLabelText;
+		do
 		{
-			const wchar_t *pInst = wcsstr( p, pwWord );
-			if ( !pInst )
+			const wchar_t* pInst = wcsstr( p, pwWord );
+			if( !pInst )
+			{
 				break;
+			}
 
 			// Highlight the text
 			int nStartPos = pInst - wszLabelText;
@@ -181,25 +189,26 @@ void HighlightTipWords( Label *pLabel )
 
 			// If start pos is non-zero, clear color changes
 			bool bChangeColor = true;
-			if ( nStartPos == 0 )
+			if( nStartPos == 0 )
 			{
 				pLabel->GetTextImage()->ClearColorChangeStream();
 			}
-			else if ( iswalpha( wszLabelText[ nStartPos - 1 ] ) )
+			else if( iswalpha( wszLabelText[ nStartPos - 1 ] ) )
 			{
 				// If this is not the beginning of the string, check the previous character.  If it's
 				// not whitespace, etc, we found an instance of a keyword within another word.  Skip.
 				bChangeColor = false;
 			}
 
-			if ( bChangeColor )
+			if( bChangeColor )
 			{
-				pLabel->GetTextImage()->AddColorChange( Color(200,80,60,255), nStartPos );
+				pLabel->GetTextImage()->AddColorChange( Color( 200, 80, 60, 255 ), nStartPos );
 				pLabel->GetTextImage()->AddColorChange( pLabel->GetFgColor(), nEndPos );
 			}
 
 			p = pInst + nWordLen;
-		} while ( 1 );
+		}
+		while( 1 );
 	}
 }
 
@@ -209,8 +218,8 @@ class CSavingDialog : public CGenericWaitingDialog
 {
 	DECLARE_CLASS_SIMPLE( CSavingDialog, CGenericWaitingDialog );
 public:
-	CSavingDialog( CReplayPerformanceEditorPanel *pEditorPanel ) 
-	:	CGenericWaitingDialog( pEditorPanel )
+	CSavingDialog( CReplayPerformanceEditorPanel* pEditorPanel )
+		:	CGenericWaitingDialog( pEditorPanel )
 	{
 		m_pEditorPanel = pEditorPanel;
 	}
@@ -219,17 +228,19 @@ public:
 	{
 		BaseClass::OnTick();
 
-		if ( !g_pReplayPerformanceController )
+		if( !g_pReplayPerformanceController )
+		{
 			return;
+		}
 
 		// Update async save
-		if ( g_pReplayPerformanceController->IsSaving() )
+		if( g_pReplayPerformanceController->IsSaving() )
 		{
 			g_pReplayPerformanceController->SaveThink();
 		}
 		else
 		{
-			if ( m_pEditorPanel.Get() )
+			if( m_pEditorPanel.Get() )
 			{
 				m_pEditorPanel->OnSaveComplete();
 			}
@@ -239,7 +250,7 @@ public:
 	}
 
 private:
-	CConfirmDialog *m_pLoginDialog;
+	CConfirmDialog* m_pLoginDialog;
 	vgui::DHANDLE< CReplayPerformanceEditorPanel > m_pEditorPanel;
 };
 
@@ -249,12 +260,12 @@ class CReplayTipLabel : public Label
 {
 	DECLARE_CLASS_SIMPLE( CReplayTipLabel, Label );
 public:
-	CReplayTipLabel( Panel *pParent, const char *pName, const char *pText )
-	:	BaseClass( pParent, pName, pText )
+	CReplayTipLabel( Panel* pParent, const char* pName, const char* pText )
+		:	BaseClass( pParent, pName, pText )
 	{
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 		HighlightTipWords( this );
@@ -271,9 +282,9 @@ class CPerformanceTip : public EditablePanel
 public:
 	static DHANDLE< CPerformanceTip > s_pTip;
 
-	static CPerformanceTip *CreateInstance( const char *pText )
+	static CPerformanceTip* CreateInstance( const char* pText )
 	{
-		if ( s_pTip )
+		if( s_pTip )
 		{
 			s_pTip->SetVisible( false );
 			s_pTip->MarkForDeletion();
@@ -285,20 +296,20 @@ public:
 		return s_pTip;
 	}
 
-	CPerformanceTip( const char *pText )
-	:	BaseClass( g_pClientMode->GetViewport(), "Tip" ),
-		m_flBornTime( gpGlobals->realtime ),
-		m_flAge( 0.0f ),
-		m_flShowDuration( 15.0f )
+	CPerformanceTip( const char* pText )
+		:	BaseClass( g_pClientMode->GetViewport(), "Tip" ),
+		  m_flBornTime( gpGlobals->realtime ),
+		  m_flAge( 0.0f ),
+		  m_flShowDuration( 15.0f )
 	{
 		m_pTextLabel = new CReplayTipLabel( this, "TextLabel", pText );
 	}
-	
+
 	virtual void OnThink()
 	{
 		// Delete the panel if life exceeded
 		const float flEndTime = m_flBornTime + m_flShowDuration;
-		if ( gpGlobals->realtime >= flEndTime )
+		if( gpGlobals->realtime >= flEndTime )
 		{
 			SetVisible( false );
 			MarkForDeletion();
@@ -312,13 +323,13 @@ public:
 		float flAlpha;
 
 		// Fade out?
-		if ( gpGlobals->realtime >= flEndTime - flFadeDuration )
+		if( gpGlobals->realtime >= flEndTime - flFadeDuration )
 		{
 			flAlpha = LerpScale( gpGlobals->realtime, flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
 		}
 
 		// Fade in?
-		else if ( gpGlobals->realtime <= m_flBornTime + flFadeDuration )
+		else if( gpGlobals->realtime <= m_flBornTime + flFadeDuration )
 		{
 			flAlpha = LerpScale( gpGlobals->realtime, m_flBornTime, m_flBornTime + flFadeDuration, 0.0f, 1.0f );
 		}
@@ -332,7 +343,7 @@ public:
 		SetAlpha( 255 * SCurve( flAlpha ) );
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -344,7 +355,7 @@ public:
 		int aContentSize[2];
 		m_pTextLabel->GetContentSize( aContentSize[0], aContentSize[1] );
 		const int nLabelHeight = aContentSize[1];
-		SetBounds( 
+		SetBounds(
 			0,
 			3 * nScreenH / 4 - nLabelHeight / 2,
 			nScreenW,
@@ -360,7 +371,7 @@ public:
 
 	static void Cleanup()
 	{
-		if ( s_pTip )
+		if( s_pTip )
 		{
 			s_pTip->MarkForDeletion();
 			s_pTip = NULL;
@@ -370,7 +381,7 @@ public:
 	CPanelAnimationVarAliasType( int, m_nLeftRightMarginWidth, "left_right_margin", "0", "proportional_xpos" );
 	CPanelAnimationVarAliasType( int, m_nTopBottomMargin , "top_bottom_margin", "0", "proportional_ypos" );
 
-	CReplayTipLabel	*m_pTextLabel;
+	CReplayTipLabel*	m_pTextLabel;
 	float			m_flBornTime;
 	float			m_flAge;
 	float			m_flShowDuration;
@@ -379,14 +390,16 @@ public:
 DHANDLE< CPerformanceTip > CPerformanceTip::s_pTip;
 
 // Display the performance tip if we haven't already displayed it nMaxTimesToDisplay times or more
-inline void DisplayPerformanceTip( const char *pText, ConVar* pCountCv = NULL, int nMaxTimesToDisplay = -1 )
+inline void DisplayPerformanceTip( const char* pText, ConVar* pCountCv = NULL, int nMaxTimesToDisplay = -1 )
 {
 	// Already displayed too many times?  Get out.
-	if ( pCountCv && nMaxTimesToDisplay >= 0 )
+	if( pCountCv && nMaxTimesToDisplay >= 0 )
 	{
 		int nCount = pCountCv->GetInt();
-		if ( nCount >= nMaxTimesToDisplay )
+		if( nCount >= nMaxTimesToDisplay )
+		{
 			return;
+		}
 
 		// Incremement count cvar
 		pCountCv->SetValue( nCount + 1 );
@@ -400,7 +413,7 @@ inline void DisplayPerformanceTip( const char *pText, ConVar* pCountCv = NULL, i
 
 inline float GetPlaybackTime()
 {
-	CReplay *pPlayingReplay = g_pReplayManager->GetPlayingReplay();
+	CReplay* pPlayingReplay = g_pReplayManager->GetPlayingReplay();
 	return gpGlobals->curtime - TICKS_TO_TIME( pPlayingReplay->m_nSpawnTick );
 }
 
@@ -410,14 +423,14 @@ class CPlayerCell : public CExImageButton
 {
 	DECLARE_CLASS_SIMPLE( CPlayerCell, CExImageButton );
 public:
-	CPlayerCell( Panel *pParent, const char *pName, int *pCurTargetPlayerIndex )
-	:	CExImageButton( pParent, pName, "" ),
-		m_iPlayerIndex( -1 ),
-		m_pCurTargetPlayerIndex( pCurTargetPlayerIndex )
+	CPlayerCell( Panel* pParent, const char* pName, int* pCurTargetPlayerIndex )
+		:	CExImageButton( pParent, pName, "" ),
+		  m_iPlayerIndex( -1 ),
+		  m_pCurTargetPlayerIndex( pCurTargetPlayerIndex )
 	{
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -433,12 +446,12 @@ public:
 
 		float flCurTime = GetPlaybackTime();
 
-		extern IReplayPerformanceController *g_pReplayPerformanceController;
+		extern IReplayPerformanceController* g_pReplayPerformanceController;
 		g_pReplayPerformanceController->AddEvent_Camera_ChangePlayer( flCurTime, m_iPlayerIndex );
 	}
 
 	int		m_iPlayerIndex;
-	int		*m_pCurTargetPlayerIndex;	// Allow the button to write current target in outer class when pressed
+	int*		m_pCurTargetPlayerIndex;	// Allow the button to write current target in outer class when pressed
 };
 
 //-----------------------------------------------------------------------------
@@ -457,7 +470,7 @@ public:
 
 	ON_MESSAGE( Reset, OnReset )
 	{
-		SetValue( 
+		SetValue(
 	}
 
 private:
@@ -471,9 +484,9 @@ class CCameraOptionsPanel : public EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CCameraOptionsPanel, EditablePanel );
 public:
-	CCameraOptionsPanel( Panel *pParent, const char *pName, const char *pTitle )
-	:	EditablePanel( pParent, pName ),
-		m_bControlsAdded( false )
+	CCameraOptionsPanel( Panel* pParent, const char* pName, const char* pTitle )
+		:	EditablePanel( pParent, pName ),
+		  m_bControlsAdded( false )
 	{
 		m_pTitleLabel = new CExLabel( this, "TitleLabel", pTitle );
 
@@ -485,9 +498,9 @@ public:
 		m_lstSliderInfos.PurgeAndDeleteElements();
 	}
 
-	void AddControlToLayout( Panel *pControl )
+	void AddControlToLayout( Panel* pControl )
 	{
-		if ( pControl )
+		if( pControl )
 		{
 			m_lstControls.AddToTail( pControl );
 			pControl->SetMouseInputEnabled( true );
@@ -495,10 +508,10 @@ public:
 	}
 
 	// NOTE: Default value is assumed to be stored in flOut
-	void AddSliderToLayout( int nId, Slider *pSlider, const char *pLabelText,
-							float flMinValue, float flMaxValue, float &flOut )
+	void AddSliderToLayout( int nId, Slider* pSlider, const char* pLabelText,
+							float flMinValue, float flMaxValue, float& flOut )
 	{
-		SliderInfo_t *pNewSliderInfo = new SliderInfo_t;
+		SliderInfo_t* pNewSliderInfo = new SliderInfo_t;
 
 		pNewSliderInfo->m_nId = nId;
 		pNewSliderInfo->m_pSlider = pSlider;
@@ -519,23 +532,27 @@ public:
 
 	void ResetSlider( int nId )
 	{
-		const SliderInfo_t *pSliderInfo = FindSliderInfoFromId( nId );
-		if ( !pSliderInfo )
+		const SliderInfo_t* pSliderInfo = FindSliderInfoFromId( nId );
+		if( !pSliderInfo )
+		{
 			return;
+		}
 
 		SetValue( pSliderInfo, pSliderInfo->m_flDefault );
 	}
 
 	void SetValue( int nId, float flValue )
 	{
-		const SliderInfo_t *pSliderInfo = FindSliderInfoFromId( nId );
-		if ( !pSliderInfo )
+		const SliderInfo_t* pSliderInfo = FindSliderInfoFromId( nId );
+		if( !pSliderInfo )
+		{
 			return;
+		}
 
 		SetValue( pSliderInfo, flValue );
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
@@ -548,11 +565,11 @@ public:
 		m_pTitleLabel->SetTall( YRES( 20 ) );
 		m_pTitleLabel->SetColorStr( "235 235 235 255" );
 
-		if ( !m_bControlsAdded )
+		if( !m_bControlsAdded )
 		{
-            const char *pResFile = GetResFile();
-            if ( pResFile )
-            {
+			const char* pResFile = GetResFile();
+			if( pResFile )
+			{
 				LoadControlSettings( pResFile, "GAME" );
 			}
 
@@ -562,8 +579,8 @@ public:
 
 		FOR_EACH_LL( m_lstSliderInfos, it )
 		{
-			SliderInfo_t *pInfo = m_lstSliderInfos[ it ];
-			Slider *pSlider = pInfo->m_pSlider;
+			SliderInfo_t* pInfo = m_lstSliderInfos[ it ];
+			Slider* pSlider = pInfo->m_pSlider;
 			pSlider->SetRange( 0, SLIDER_RANGE_MAX );
 			pSlider->SetNumTicks( 10 );
 			float flDenom = fabs( pInfo->m_flRange[1] - pInfo->m_flRange[0] );
@@ -576,29 +593,31 @@ public:
 		BaseClass::PerformLayout();
 
 		int nWidth = XRES( 140 );
-		int nMargins[2] = { (int)XRES( 5 ), (int)YRES( 5 ) };
+		int nMargins[2] = { ( int )XRES( 5 ), ( int )YRES( 5 ) };
 		int nVBuf = YRES( 0 );
 		int nLastY = -1;
 		int nY = nMargins[1];
-		Panel *pPrevPanel = NULL;
+		Panel* pPrevPanel = NULL;
 		int nLastCtrlHeight = 0;
 
 		FOR_EACH_LL( m_lstControls, i )
 		{
-			Panel *pPanel = m_lstControls[ i ];
-			if ( !pPanel->IsVisible() )
+			Panel* pPanel = m_lstControls[ i ];
+			if( !pPanel->IsVisible() )
+			{
 				continue;
+			}
 
 			int aPos[2];
 			pPanel->GetPos( aPos[0], aPos[1] );
 
-			if ( pPrevPanel && aPos[1] >= 0 )
+			if( pPrevPanel && aPos[1] >= 0 )
 			{
 				nY += pPrevPanel->GetTall() + nVBuf;
 			}
 
 			// Gross hack to see if the control is a default button
-			if ( dynamic_cast< CExButton * >( pPanel ) )
+			if( dynamic_cast< CExButton* >( pPanel ) )
 			{
 				pPanel->SetWide( XRES( 36 ) );
 				pPanel->SetPos( pPrevPanel ? ( GetWide() - nMargins[0] - pPanel->GetWide() ) : 0, nLastY );
@@ -617,9 +636,9 @@ public:
 		SetSize( nWidth, nY + nLastCtrlHeight + 2 * YRES( 3 ) );
 	}
 
-	virtual void OnCommand( const char *pCommand )
+	virtual void OnCommand( const char* pCommand )
 	{
-		if ( !V_strnicmp( pCommand, "reset_", 6 ) )
+		if( !V_strnicmp( pCommand, "reset_", 6 ) )
 		{
 			const int nSliderInfoId = atoi( pCommand + 6 );
 			ResetSlider( nSliderInfoId );
@@ -630,23 +649,23 @@ public:
 		}
 	}
 
-	Label *NewLabel( const char *pText )
+	Label* NewLabel( const char* pText )
 	{
-		Label *pLabel = new Label( this, "Label", pText );
+		Label* pLabel = new Label( this, "Label", pText );
 		pLabel->SetTall( YRES( 9 ) );
 		pLabel->SetPos( -1, 0 );	// Use default x and accumulated y
 
 		// Set font
-		IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
+		IScheme* pScheme = vgui::scheme()->GetIScheme( GetScheme() );
 		HFont hFont = pScheme->GetFont( "DefaultVerySmall", true );
 		pLabel->SetFont( hFont );
 
 		return pLabel;
 	}
 
-	CExButton *NewSetDefaultButton( int nSliderInfoId )
+	CExButton* NewSetDefaultButton( int nSliderInfoId )
 	{
-		CExButton *pButton = new CExButton( this, "DefaultButton", "#Replay_SetDefaultSetting" );
+		CExButton* pButton = new CExButton( this, "DefaultButton", "#Replay_SetDefaultSetting" );
 		pButton->SetTall( YRES( 11 ) );
 		pButton->SetPos( XRES( 30 ), -1 );	// Set y to -1 so it will stay on the same line
 		pButton->SetContentAlignment( Label::a_center );
@@ -655,7 +674,7 @@ public:
 		pButton->AddActionSignalTarget( this );
 
 		// Set font
-		IScheme *pScheme = vgui::scheme()->GetIScheme( GetScheme() );
+		IScheme* pScheme = vgui::scheme()->GetIScheme( GetScheme() );
 		HFont hFont = pScheme->GetFont( "DefaultVerySmall", true );
 		pButton->SetFont( hFont );
 
@@ -665,20 +684,23 @@ public:
 protected:
 	MESSAGE_FUNC_PARAMS( OnSliderMoved, "SliderMoved", pParams )
 	{
-		Panel *pSlider = (Panel *)pParams->GetPtr( "panel" );
+		Panel* pSlider = ( Panel* )pParams->GetPtr( "panel" );
 		float flPercent = pParams->GetInt( "position" ) / SLIDER_RANGE_MAX;
 
 		FOR_EACH_LL( m_lstSliderInfos, it )
 		{
-			SliderInfo_t *pInfo = m_lstSliderInfos[ it ];
-			if ( pSlider == pInfo->m_pSlider )
+			SliderInfo_t* pInfo = m_lstSliderInfos[ it ];
+			if( pSlider == pInfo->m_pSlider )
 			{
 				*pInfo->m_pValueOut = Lerp( flPercent, pInfo->m_flRange[0], pInfo->m_flRange[1] );
 			}
 		}
 	}
 
-	virtual const char *GetResFile() { return NULL; }
+	virtual const char* GetResFile()
+	{
+		return NULL;
+	}
 
 	virtual void AddControls()
 	{
@@ -686,20 +708,22 @@ protected:
 
 	struct SliderInfo_t
 	{
-		Slider	*m_pSlider;
+		Slider*	m_pSlider;
 		float	m_flRange[2];
 		float	m_flDefault;
 		int		m_nId;
-		float	*m_pValueOut;
+		float*	m_pValueOut;
 	};
 
-	const SliderInfo_t *FindSliderInfoFromId( int nId )
+	const SliderInfo_t* FindSliderInfoFromId( int nId )
 	{
 		FOR_EACH_LL( m_lstSliderInfos, it )
 		{
-			SliderInfo_t *pInfo = m_lstSliderInfos[ it ];
-			if ( pInfo->m_nId == nId )
+			SliderInfo_t* pInfo = m_lstSliderInfos[ it ];
+			if( pInfo->m_nId == nId )
+			{
 				return pInfo;
+			}
 		}
 
 		AssertMsg( 0, "Should always find a slider here." );
@@ -707,9 +731,9 @@ protected:
 		return NULL;
 	}
 
-	void SetValue( const SliderInfo_t *pSliderInfo, float flValue )
+	void SetValue( const SliderInfo_t* pSliderInfo, float flValue )
 	{
-		if ( !pSliderInfo )
+		if( !pSliderInfo )
 		{
 			AssertMsg( 0, "This should not happen." );
 			return;
@@ -724,9 +748,9 @@ protected:
 		pSliderInfo->m_pSlider->SetValue( flPercent * SLIDER_RANGE_MAX, true );
 	}
 
-	CUtlLinkedList< Panel * >				m_lstControls;
-	CUtlLinkedList< SliderInfo_t *, int >	m_lstSliderInfos;
-	CExLabel								*m_pTitleLabel;
+	CUtlLinkedList< Panel* >				m_lstControls;
+	CUtlLinkedList< SliderInfo_t*, int >	m_lstSliderInfos;
+	CExLabel*								m_pTitleLabel;
 	bool									m_bControlsAdded;
 };
 
@@ -736,21 +760,21 @@ class CTimeScaleOptionsPanel : public CCameraOptionsPanel
 {
 	DECLARE_CLASS_SIMPLE( CTimeScaleOptionsPanel, CCameraOptionsPanel );
 public:
-	CTimeScaleOptionsPanel( Panel *pParent, float *pTimeScaleProxy )
-	:	BaseClass( pParent, "TimeScaleSettings", "#Replay_TimeScale" ),
-		m_pTimeScaleSlider( NULL ),
-		m_pTimeScaleProxy( pTimeScaleProxy )
+	CTimeScaleOptionsPanel( Panel* pParent, float* pTimeScaleProxy )
+		:	BaseClass( pParent, "TimeScaleSettings", "#Replay_TimeScale" ),
+		  m_pTimeScaleSlider( NULL ),
+		  m_pTimeScaleProxy( pTimeScaleProxy )
 	{
 	}
 
-	virtual const char *GetResFile()
+	virtual const char* GetResFile()
 	{
 		return "resource/ui/replayperformanceeditor/settings_timescale.res";
 	}
 
 	virtual void AddControls()
 	{
-		m_pTimeScaleSlider = dynamic_cast< Slider * >( FindChildByName( "TimeScaleSlider" ) );
+		m_pTimeScaleSlider = dynamic_cast< Slider* >( FindChildByName( "TimeScaleSlider" ) );
 
 		AddSliderToLayout( SLIDER_TIMESCALE, m_pTimeScaleSlider, "#Replay_Scale", TIMESCALE_MIN, TIMESCALE_MAX, *m_pTimeScaleProxy );
 	}
@@ -760,8 +784,8 @@ public:
 		SLIDER_TIMESCALE,
 	};
 
-	Slider		*m_pTimeScaleSlider;
-	float		*m_pTimeScaleProxy;
+	Slider*		m_pTimeScaleSlider;
+	float*		m_pTimeScaleProxy;
 };
 
 //-----------------------------------------------------------------------------
@@ -769,31 +793,31 @@ class CCameraOptionsPanel_Free : public CCameraOptionsPanel
 {
 	DECLARE_CLASS_SIMPLE( CCameraOptionsPanel_Free, CCameraOptionsPanel );
 public:
-	CCameraOptionsPanel_Free( Panel *pParent )
-	:	BaseClass( pParent, "FreeCameraSettings", "#Replay_FreeCam" ),
-		m_pAccelSlider( NULL ),
-		m_pSpeedSlider( NULL ),
-		m_pFovSlider( NULL ),
-		m_pRotFilterSlider( NULL ),
-		m_pShakeSpeedSlider( NULL ),
-		m_pShakeAmountSlider( NULL )
+	CCameraOptionsPanel_Free( Panel* pParent )
+		:	BaseClass( pParent, "FreeCameraSettings", "#Replay_FreeCam" ),
+		  m_pAccelSlider( NULL ),
+		  m_pSpeedSlider( NULL ),
+		  m_pFovSlider( NULL ),
+		  m_pRotFilterSlider( NULL ),
+		  m_pShakeSpeedSlider( NULL ),
+		  m_pShakeAmountSlider( NULL )
 	{
 	}
 
-	virtual const char *GetResFile()
+	virtual const char* GetResFile()
 	{
 		return "resource/ui/replayperformanceeditor/camsettings_free.res";
 	}
 
 	virtual void AddControls()
 	{
-		m_pAccelSlider = dynamic_cast< Slider * >( FindChildByName( "AccelSlider" ) );
-		m_pSpeedSlider = dynamic_cast< Slider * >( FindChildByName( "SpeedSlider" ) );
-		m_pFovSlider = dynamic_cast< Slider * >( FindChildByName( "FovSlider" ) );
-		m_pRotFilterSlider = dynamic_cast< Slider * >( FindChildByName( "RotFilterSlider" ) );
-		m_pShakeSpeedSlider = dynamic_cast< Slider * >( FindChildByName( "ShakeSpeedSlider" ) );
-		m_pShakeAmountSlider = dynamic_cast< Slider * >( FindChildByName( "ShakeAmountSlider" ) );
-		m_pShakeDirSlider = dynamic_cast< Slider * >( FindChildByName( "ShakeDirSlider" ) );
+		m_pAccelSlider = dynamic_cast< Slider* >( FindChildByName( "AccelSlider" ) );
+		m_pSpeedSlider = dynamic_cast< Slider* >( FindChildByName( "SpeedSlider" ) );
+		m_pFovSlider = dynamic_cast< Slider* >( FindChildByName( "FovSlider" ) );
+		m_pRotFilterSlider = dynamic_cast< Slider* >( FindChildByName( "RotFilterSlider" ) );
+		m_pShakeSpeedSlider = dynamic_cast< Slider* >( FindChildByName( "ShakeSpeedSlider" ) );
+		m_pShakeAmountSlider = dynamic_cast< Slider* >( FindChildByName( "ShakeAmountSlider" ) );
+		m_pShakeDirSlider = dynamic_cast< Slider* >( FindChildByName( "ShakeDirSlider" ) );
 
 		AddSliderToLayout( SLIDER_ACCEL, m_pAccelSlider, "#Replay_Accel", FREE_CAM_ACCEL_MIN, FREE_CAM_ACCEL_MAX, ReplayCamera()->m_flRoamingAccel );
 		AddSliderToLayout( SLIDER_SPEED, m_pSpeedSlider, "#Replay_Speed", FREE_CAM_SPEED_MIN, FREE_CAM_SPEED_MAX, ReplayCamera()->m_flRoamingSpeed );
@@ -815,13 +839,13 @@ public:
 		SLIDER_SHAKE_DIR,
 	};
 
-	Slider		*m_pAccelSlider;
-	Slider		*m_pSpeedSlider;
-	Slider		*m_pFovSlider;
-	Slider		*m_pRotFilterSlider;
-	Slider		*m_pShakeSpeedSlider;
-	Slider		*m_pShakeAmountSlider;
-	Slider		*m_pShakeDirSlider;
+	Slider*		m_pAccelSlider;
+	Slider*		m_pSpeedSlider;
+	Slider*		m_pFovSlider;
+	Slider*		m_pRotFilterSlider;
+	Slider*		m_pShakeSpeedSlider;
+	Slider*		m_pShakeAmountSlider;
+	Slider*		m_pShakeDirSlider;
 };
 
 //-----------------------------------------------------------------------------
@@ -830,25 +854,25 @@ class CReplayButton : public CExImageButton
 {
 	DECLARE_CLASS_SIMPLE( CReplayButton, CExImageButton );
 public:
-	CReplayButton( Panel *pParent, const char *pName, const char *pText )
-	:	BaseClass( pParent, pName, pText ),
-		m_pTipText( NULL )
+	CReplayButton( Panel* pParent, const char* pName, const char* pText )
+		:	BaseClass( pParent, pName, pText ),
+		  m_pTipText( NULL )
 	{
 	}
 
-	virtual void ApplySettings( KeyValues *pInResourceData )
+	virtual void ApplySettings( KeyValues* pInResourceData )
 	{
 		BaseClass::ApplySettings( pInResourceData );
 
-		const char *pTipName = pInResourceData->GetString( "tipname" );
-		if ( pTipName && pTipName[0] )
+		const char* pTipName = pInResourceData->GetString( "tipname" );
+		if( pTipName && pTipName[0] )
 		{
-			const wchar_t *pTipText = g_pVGuiLocalize->Find( pTipName );
-			if ( pTipText && pTipText[0] )
+			const wchar_t* pTipText = g_pVGuiLocalize->Find( pTipName );
+			if( pTipText && pTipText[0] )
 			{
 				const int nTipLength = V_wcslen( pTipText );
 				m_pTipText = new wchar_t[ nTipLength + 1 ];
-				V_wcsncpy( m_pTipText, pTipText, sizeof(wchar_t) * ( nTipLength + 1 ) );
+				V_wcsncpy( m_pTipText, pTipText, sizeof( wchar_t ) * ( nTipLength + 1 ) );
 				m_pTipText[ nTipLength ] = L'\0';
 			}
 		}
@@ -858,8 +882,8 @@ public:
 	{
 		BaseClass::OnCursorEntered();
 
-		CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-		if ( pEditor && m_pTipText )
+		CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+		if( pEditor && m_pTipText )
 		{
 			pEditor->SetButtonTip( m_pTipText, this );
 			pEditor->ShowButtonTip( true );
@@ -870,15 +894,15 @@ public:
 	{
 		BaseClass::OnCursorExited();
 
-		CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-		if ( pEditor && m_pTipText )
+		CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+		if( pEditor && m_pTipText )
 		{
 			pEditor->ShowButtonTip( false );
 		}
 	}
 
 private:
-	wchar_t	*m_pTipText;
+	wchar_t*	m_pTipText;
 };
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CReplayButton, CExImageButton );
@@ -891,9 +915,9 @@ class CReplayEditorFastForwardButton : public CReplayButton
 {
 	DECLARE_CLASS_SIMPLE( CReplayEditorFastForwardButton, CReplayButton );
 public:
-	CReplayEditorFastForwardButton( Panel *pParent, const char *pName, const char *pText )
-	:	BaseClass( pParent, pName, pText ),
-		m_flPressTime( 0.0f )
+	CReplayEditorFastForwardButton( Panel* pParent, const char* pName, const char* pText )
+		:	BaseClass( pParent, pName, pText ),
+		  m_flPressTime( 0.0f )
 	{
 		m_pHostTimescale = cvar->FindVar( "host_timescale" );
 		AssertMsg( m_pHostTimescale, "host_timescale lookup failed!" );
@@ -907,7 +931,7 @@ public:
 
 		// Avoid a non-1.0 host_timescale after replay edit, which can happen if
 		// the user is still holding downt he FF button at the end of the replay.
-		if ( m_pHostTimescale )
+		if( m_pHostTimescale )
 		{
 			m_pHostTimescale->SetValue( 1.0f );
 		}
@@ -935,8 +959,8 @@ public:
 	void OnTick()
 	{
 		float flScale;
-		
-		if ( m_flPressTime == 0.0f )
+
+		if( m_flPressTime == 0.0f )
 		{
 			flScale = 1.0f;
 		}
@@ -946,13 +970,13 @@ public:
 			const float t = CubicEaseIn( flElapsed / MAX_FF_RAMP_TIME );
 
 			// If a shift key is down...
-			if ( input()->IsKeyDown( KEY_LSHIFT ) || input()->IsKeyDown( KEY_RSHIFT ) )
+			if( input()->IsKeyDown( KEY_LSHIFT ) || input()->IsKeyDown( KEY_RSHIFT ) )
 			{
 				// ...slow down host_timescale.
 				flScale = .1f + .4f * t;
 			}
 			// If alt key down...
-			else if ( input()->IsKeyDown( KEY_LALT ) || input()->IsKeyDown( KEY_RALT ) )
+			else if( input()->IsKeyDown( KEY_LALT ) || input()->IsKeyDown( KEY_RALT ) )
 			{
 				// ...FF very quickly, ramp from 5 to 10.
 				flScale = 5.0f + 5.0f * t;
@@ -965,7 +989,7 @@ public:
 		}
 
 		// Set host_timescale.
-		if ( m_pHostTimescale )
+		if( m_pHostTimescale )
 		{
 			m_pHostTimescale->SetValue( flScale );
 		}
@@ -973,7 +997,7 @@ public:
 
 private:
 	float	m_flPressTime;
-	ConVar *m_pHostTimescale;
+	ConVar* m_pHostTimescale;
 };
 
 DECLARE_BUILD_FACTORY_DEFAULT_TEXT( CReplayEditorFastForwardButton, CExImageButton );
@@ -984,11 +1008,11 @@ class CRecLightPanel : public EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CRecLightPanel, vgui::EditablePanel );
 public:
-	CRecLightPanel( Panel *pParent )
-	:	EditablePanel( pParent, "RecLightPanel" ),
-		m_flPlayPauseTime( 0.0f ),
-		m_bPaused( false ),
-		m_bPerforming( false )
+	CRecLightPanel( Panel* pParent )
+		:	EditablePanel( pParent, "RecLightPanel" ),
+		  m_flPlayPauseTime( 0.0f ),
+		  m_bPaused( false ),
+		  m_bPerforming( false )
 	{
 		m_pRecLights[ 0 ] = NULL;
 		m_pRecLights[ 1 ] = NULL;
@@ -996,22 +1020,22 @@ public:
 		m_pPlayPause[ 1 ] = NULL;
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme )
+	virtual void ApplySchemeSettings( IScheme* pScheme )
 	{
 		BaseClass::ApplySchemeSettings( pScheme );
 
 		LoadControlSettings( "resource/ui/replayperformanceeditor/reclight.res", "GAME" );
 
-		m_pRecLights[ 0 ] = dynamic_cast< ImagePanel * >( FindChildByName( "RecLightOffImg" ) );
-		m_pRecLights[ 1 ] = dynamic_cast< ImagePanel * >( FindChildByName( "RecLightOnImg" ) );
+		m_pRecLights[ 0 ] = dynamic_cast< ImagePanel* >( FindChildByName( "RecLightOffImg" ) );
+		m_pRecLights[ 1 ] = dynamic_cast< ImagePanel* >( FindChildByName( "RecLightOnImg" ) );
 
-		m_pPlayPause[ 0 ] = dynamic_cast< ImagePanel * >( FindChildByName( "PlayImg" ) );
-		m_pPlayPause[ 1 ] = dynamic_cast< ImagePanel * >( FindChildByName( "PauseImg" ) );
+		m_pPlayPause[ 0 ] = dynamic_cast< ImagePanel* >( FindChildByName( "PlayImg" ) );
+		m_pPlayPause[ 1 ] = dynamic_cast< ImagePanel* >( FindChildByName( "PauseImg" ) );
 
-		m_pCameraFringe = dynamic_cast< ImagePanel *>( FindChildByName( "CameraFringe" ) );
-		m_pCameraCrosshair = dynamic_cast< ImagePanel *>( FindChildByName( "CameraCrosshair" ) );
+		m_pCameraFringe = dynamic_cast< ImagePanel*>( FindChildByName( "CameraFringe" ) );
+		m_pCameraCrosshair = dynamic_cast< ImagePanel*>( FindChildByName( "CameraCrosshair" ) );
 	}
-	
+
 	virtual void PerformLayout()
 	{
 		BaseClass::PerformLayout();
@@ -1029,17 +1053,17 @@ public:
 		const int nHeight = GetTall();
 
 		// Setup camera fringe height
-		if ( m_pCameraFringe )
+		if( m_pCameraFringe )
 		{
 			m_pCameraFringe->SetSize( nWidth, nHeight );
 			m_pCameraFringe->InstallMouseHandler( this );
 		}
 
 		// Setup camera cross hair height
-		if ( m_pCameraCrosshair )
+		if( m_pCameraCrosshair )
 		{
 			int aImageSize[2];
-			IImage *pImage = m_pCameraCrosshair->GetImage();
+			IImage* pImage = m_pCameraCrosshair->GetImage();
 			pImage->GetSize( aImageSize[0], aImageSize[1] );
 
 			aImageSize[0] = m_pCameraCrosshair->GetWide();
@@ -1068,12 +1092,12 @@ public:
 	{
 		const float flTime = gpGlobals->realtime;
 		bool bPauseAnimating = m_flPlayPauseTime > 0.0f &&
-			                   flTime >= m_flPlayPauseTime &&
+							   flTime >= m_flPlayPauseTime &&
 							   flTime < ( m_flPlayPauseTime + m_flAnimTime );
 
 		// Setup light visibility
 		int nOnOff = fmod( flTime * 2.0f, 2.0f );
-		bool bOnLightVisible = (bool)nOnOff;
+		bool bOnLightVisible = ( bool )nOnOff;
 		bool bRecording = g_pReplayPerformanceController->IsRecording();
 		m_pRecLights[ 0 ]->SetVisible( m_bPaused || ( bRecording && !bOnLightVisible ) );
 		m_pRecLights[ 1 ]->SetVisible( bRecording && ( !m_bPaused && bOnLightVisible ) );
@@ -1081,27 +1105,27 @@ public:
 		// Deal with fringe and crosshair vis
 		UpdateBackgroundVisibility();
 
-		int iPlayPauseActive = (int)m_bPaused;
+		int iPlayPauseActive = ( int )m_bPaused;
 
 		// Animate the pause icon
-		if ( bPauseAnimating )
+		if( bPauseAnimating )
 		{
 			const float t = clamp( ( flTime - m_flPlayPauseTime ) / m_flAnimTime, 0.0f, 1.0f );
 			const float s = SCurve( t );
-			const int nSize = (int)Lerp( s, 60.0f, 60.0f * m_nAnimScale );
+			const int nSize = ( int )Lerp( s, 60.0f, 60.0f * m_nAnimScale );
 			int aCrossHairPos[2];
 			m_pCameraCrosshair->GetPos( aCrossHairPos[0], aCrossHairPos[1] );
 			const int nScreenXCenter = aCrossHairPos[0] + m_pCameraCrosshair->GetWide() / 2;
 			const int nScreenYCenter = aCrossHairPos[1] + m_pCameraCrosshair->GetTall() / 2;
 
-			m_pPlayPause[ iPlayPauseActive ]->SetBounds( 
+			m_pPlayPause[ iPlayPauseActive ]->SetBounds(
 				nScreenXCenter - nSize / 2,
 				nScreenYCenter - nSize / 2,
 				nSize,
 				nSize
 			);
 
-			m_pPlayPause[ iPlayPauseActive ]->SetAlpha( (int)( MIN( 0.5f, 1.0f - s ) * 255) );
+			m_pPlayPause[ iPlayPauseActive ]->SetAlpha( ( int )( MIN( 0.5f, 1.0f - s ) * 255 ) );
 		}
 
 		m_pPlayPause[  iPlayPauseActive ]->SetVisible( bPauseAnimating );
@@ -1110,8 +1134,10 @@ public:
 
 	void UpdatePauseState( bool bPaused )
 	{
-		if ( bPaused == m_bPaused )
+		if( bPaused == m_bPaused )
+		{
 			return;
+		}
 
 		m_bPaused = bPaused;
 
@@ -1120,8 +1146,10 @@ public:
 
 	void SetPerforming( bool bPerforming )
 	{
-		if ( bPerforming == m_bPerforming )
+		if( bPerforming == m_bPerforming )
+		{
 			return;
+		}
 
 		m_bPerforming = bPerforming;
 		InvalidateLayout( true, false );
@@ -1130,10 +1158,10 @@ public:
 	float		m_flPlayPauseTime;
 	bool		m_bPaused;
 	bool		m_bPerforming;
-	ImagePanel	*m_pPlayPause[2];	// 0=play, 1=pause
-	ImagePanel	*m_pRecLights[2];	// 0=off, 1=on
-	ImagePanel	*m_pCameraFringe;
-	ImagePanel	*m_pCameraCrosshair;
+	ImagePanel*	m_pPlayPause[2];	// 0=play, 1=pause
+	ImagePanel*	m_pRecLights[2];	// 0=off, 1=on
+	ImagePanel*	m_pCameraFringe;
+	ImagePanel*	m_pCameraCrosshair;
 
 	CPanelAnimationVar( int, m_nAnimScale, "anim_scale", "4" );
 	CPanelAnimationVar( float, m_flAnimTime, "anim_time", "1.5" );
@@ -1141,39 +1169,39 @@ public:
 
 //-----------------------------------------------------------------------------
 
-CReplayPerformanceEditorPanel::CReplayPerformanceEditorPanel( Panel *parent, ReplayHandle_t hReplay )
-:	EditablePanel( parent, "ReplayPerformanceEditor" ),
-	m_hReplay( hReplay ),
-	m_flLastTime( -1 ),
-	m_nRedBlueLabelRightX( 0 ),
-	m_nBottomPanelStartY( 0 ),
-	m_nBottomPanelHeight( 0 ),
-	m_nLastRoundedTime( -1 ),
-	m_flSpaceDownStart( 0.0f ),
-	m_flOldFps( -1.0f ),
-	m_flLastTimeSpaceBarPressed( 0.0f ),
-	m_flActiveTimeInEditor( 0.0f ),
-	m_flTimeScaleProxy( 1.0f ),
-	m_iCameraSelection( CAM_FIRST ),
-	m_bMousePressed( false ),
-	m_bMouseDown( false ),
-	m_nMouseClickedOverCameraSettingsPanel( CAM_INVALID ),
-	m_bShownAtLeastOnce( false ),
-	m_bAchievementAwarded( false ),
-	m_pImageList( NULL ),
-	m_pCurTimeLabel( NULL ),
-	m_pTotalTimeLabel( NULL ),
-	m_pPlayerNameLabel( NULL ),
-	m_pMouseTargetPanel( NULL ),
-	m_pSlowMoButton( NULL ),
-	m_pRecLightPanel( NULL ),
-	m_pPlayerCellData( NULL ),
-	m_pBottom( NULL ),
-	m_pMenuButton( NULL ),
-	m_pMenu( NULL ),
-	m_pPlayerCellsPanel( NULL ),
-	m_pButtonTip( NULL ),
-	m_pSavingDlg( NULL )
+CReplayPerformanceEditorPanel::CReplayPerformanceEditorPanel( Panel* parent, ReplayHandle_t hReplay )
+	:	EditablePanel( parent, "ReplayPerformanceEditor" ),
+	  m_hReplay( hReplay ),
+	  m_flLastTime( -1 ),
+	  m_nRedBlueLabelRightX( 0 ),
+	  m_nBottomPanelStartY( 0 ),
+	  m_nBottomPanelHeight( 0 ),
+	  m_nLastRoundedTime( -1 ),
+	  m_flSpaceDownStart( 0.0f ),
+	  m_flOldFps( -1.0f ),
+	  m_flLastTimeSpaceBarPressed( 0.0f ),
+	  m_flActiveTimeInEditor( 0.0f ),
+	  m_flTimeScaleProxy( 1.0f ),
+	  m_iCameraSelection( CAM_FIRST ),
+	  m_bMousePressed( false ),
+	  m_bMouseDown( false ),
+	  m_nMouseClickedOverCameraSettingsPanel( CAM_INVALID ),
+	  m_bShownAtLeastOnce( false ),
+	  m_bAchievementAwarded( false ),
+	  m_pImageList( NULL ),
+	  m_pCurTimeLabel( NULL ),
+	  m_pTotalTimeLabel( NULL ),
+	  m_pPlayerNameLabel( NULL ),
+	  m_pMouseTargetPanel( NULL ),
+	  m_pSlowMoButton( NULL ),
+	  m_pRecLightPanel( NULL ),
+	  m_pPlayerCellData( NULL ),
+	  m_pBottom( NULL ),
+	  m_pMenuButton( NULL ),
+	  m_pMenu( NULL ),
+	  m_pPlayerCellsPanel( NULL ),
+	  m_pButtonTip( NULL ),
+	  m_pSavingDlg( NULL )
 {
 	V_memset( m_pCameraButtons, 0, sizeof( m_pCameraButtons ) );
 	V_memset( m_pCtrlButtons, 0, sizeof( m_pCtrlButtons ) );
@@ -1204,9 +1232,9 @@ CReplayPerformanceEditorPanel::CReplayPerformanceEditorPanel( Panel *parent, Rep
 
 	// Add player cells
 	m_pPlayerCellsPanel = new EditablePanel( m_pBottom, "PlayerCellsPanel" );
-	for ( int i = 0; i < 2; ++i )
+	for( int i = 0; i < 2; ++i )
 	{
-		for ( int j = 0; j <= MAX_PLAYERS; ++j )
+		for( int j = 0; j <= MAX_PLAYERS; ++j )
 		{
 			m_pPlayerCells[i][j] = new CPlayerCell( m_pPlayerCellsPanel, "PlayerCell", &m_iCurPlayerTarget );
 			m_pPlayerCells[i][j]->SetVisible( false );
@@ -1249,19 +1277,19 @@ CReplayPerformanceEditorPanel::~CReplayPerformanceEditorPanel()
 
 void CReplayPerformanceEditorPanel::ClearPlayerCellData()
 {
-	if ( m_pPlayerCellData )
+	if( m_pPlayerCellData )
 	{
 		m_pPlayerCellData->deleteThis();
 		m_pPlayerCellData = NULL;
 	}
 }
 
-void CReplayPerformanceEditorPanel::AddPanelKeyboardInputDisableList( Panel *pPanel )
+void CReplayPerformanceEditorPanel::AddPanelKeyboardInputDisableList( Panel* pPanel )
 {
 	m_lstDisableKeyboardInputPanels.AddToTail( pPanel );
 }
 
-void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
+void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -1276,7 +1304,7 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 	SetSize( nParentWidth, nParentHeight );
 
 	// Layout bottom
-	if ( m_pBottom )
+	if( m_pBottom )
 	{
 		m_nBottomPanelHeight = m_pBottom->GetTall();	// Get from .res
 		m_nBottomPanelStartY = nParentHeight - m_nBottomPanelHeight;
@@ -1288,17 +1316,19 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 
 	// Setup camera buttons
 	const int nNumCameraButtons = NCAMS;
-	const char *pCameraButtonNames[nNumCameraButtons] = { "CameraFree", "CameraThird", "CameraFirst", "TimeScaleButton" };
+	const char* pCameraButtonNames[nNumCameraButtons] = { "CameraFree", "CameraThird", "CameraFirst", "TimeScaleButton" };
 	int nCurButtonX = nParentWidth - m_nRightMarginWidth;
 	int nLeftmostCameraButtonX = 0;
-	for ( int i = 0; i < nNumCameraButtons; ++i )
+	for( int i = 0; i < nNumCameraButtons; ++i )
 	{
-		m_pCameraButtons[i] = dynamic_cast< CExImageButton * >( FindChildByName( pCameraButtonNames[ i ] ) );
-		if ( m_pCameraButtons[i] )
+		m_pCameraButtons[i] = dynamic_cast< CExImageButton* >( FindChildByName( pCameraButtonNames[ i ] ) );
+		if( m_pCameraButtons[i] )
 		{
-			CExImageButton *pCurButton = m_pCameraButtons[ i ];
-			if ( !pCurButton )
+			CExImageButton* pCurButton = m_pCameraButtons[ i ];
+			if( !pCurButton )
+			{
 				continue;
+			}
 
 			nCurButtonX -= pCurButton->GetWide();
 
@@ -1318,16 +1348,20 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 	}
 	nLeftmostCameraButtonX = nCurButtonX;
 
-	static const char *s_pControlButtonNames[NUM_CTRLBUTTONS] = {
+	static const char* s_pControlButtonNames[NUM_CTRLBUTTONS] =
+	{
 		"InButton", "GotoBeginningButton", "RewindButton",
 		"PlayButton",
 		"FastForwardButton", "GotoEndButton", "OutButton"
 	};
-	for ( int i = 0; i < NUM_CTRLBUTTONS; ++i )
+	for( int i = 0; i < NUM_CTRLBUTTONS; ++i )
 	{
-		CExImageButton *pCurButton = dynamic_cast< CExImageButton * >( FindChildByName( s_pControlButtonNames[ i ] ) );	Assert( pCurButton );
-		if ( !pCurButton )
+		CExImageButton* pCurButton = dynamic_cast< CExImageButton* >( FindChildByName( s_pControlButtonNames[ i ] ) );
+		Assert( pCurButton );
+		if( !pCurButton )
+		{
 			continue;
+		}
 
 		pCurButton->SetParent( m_pBottom );
 		pCurButton->AddActionSignalTarget( this );
@@ -1343,7 +1377,7 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 
 	// If the performance in tick is set, highlight the in point button
 	{
-		CReplayPerformance *pSavedPerformance = GetSavedPerformance();
+		CReplayPerformance* pSavedPerformance = GetSavedPerformance();
 		m_pCtrlButtons[ CTRLBUTTON_IN  ]->SetSelected( pSavedPerformance && pSavedPerformance->HasInTick() );
 		m_pCtrlButtons[ CTRLBUTTON_OUT ]->SetSelected( pSavedPerformance && pSavedPerformance->HasOutTick() );
 	}
@@ -1352,28 +1386,28 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 	UpdateCameraSelectionPosition( CAM_FIRST );
 
 	// Position time label
-	m_pCurTimeLabel = dynamic_cast< CExLabel * >( FindChildByName( "CurTimeLabel" ) );
-	m_pTotalTimeLabel = dynamic_cast< CExLabel * >( FindChildByName( "TotalTimeLabel" ) );
+	m_pCurTimeLabel = dynamic_cast< CExLabel* >( FindChildByName( "CurTimeLabel" ) );
+	m_pTotalTimeLabel = dynamic_cast< CExLabel* >( FindChildByName( "TotalTimeLabel" ) );
 
 	m_pCurTimeLabel->SetParent( m_pBottom );
 	m_pTotalTimeLabel->SetParent( m_pBottom );
 
 	// Get player name label
-	m_pPlayerNameLabel = dynamic_cast< CExLabel * >( FindChildByName( "PlayerNameLabel" ) );
+	m_pPlayerNameLabel = dynamic_cast< CExLabel* >( FindChildByName( "PlayerNameLabel" ) );
 
 	// Get mouse target panel
-	m_pMouseTargetPanel = dynamic_cast< EditablePanel * >( FindChildByName( "MouseTargetPanel" ) );
+	m_pMouseTargetPanel = dynamic_cast< EditablePanel* >( FindChildByName( "MouseTargetPanel" ) );
 
-	for ( int i = 0; i < 2; ++i )
+	for( int i = 0; i < 2; ++i )
 	{
-		for ( int j = 0; j <= MAX_PLAYERS; ++j )
+		for( int j = 0; j <= MAX_PLAYERS; ++j )
 		{
 			m_pPlayerCells[i][j]->SetMouseInputEnabled( true );
 		}
 	}
 
 	// Get menu button
-	m_pMenuButton = dynamic_cast< CExImageButton * >( FindChildByName( "MenuButton" ) );
+	m_pMenuButton = dynamic_cast< CExImageButton* >( FindChildByName( "MenuButton" ) );
 	AddPanelKeyboardInputDisableList( m_pMenuButton );
 	m_pMenuButton->SetMouseInputEnabled( true );
 #if !defined( TF_CLIENT_DLL )
@@ -1381,21 +1415,21 @@ void CReplayPerformanceEditorPanel::ApplySchemeSettings( IScheme *pScheme )
 #endif
 
 	// Get button tip
-	m_pButtonTip = dynamic_cast< CReplayTipLabel * >( FindChildByName( "ButtonTip" ) );
+	m_pButtonTip = dynamic_cast< CReplayTipLabel* >( FindChildByName( "ButtonTip" ) );
 	m_pButtonTip->SetParent( g_pClientMode->GetViewport() );
 }
 
-static void Replay_GotoTick( bool bConfirmed, void *pContext )
+static void Replay_GotoTick( bool bConfirmed, void* pContext )
 {
-	if ( bConfirmed )
+	if( bConfirmed )
 	{
-		int nGotoTick = (int)pContext;
+		int nGotoTick = ( int )pContext;
 		CFmtStr fmtCmd( "demo_gototick %i\ndemo_pause\n", nGotoTick );
 		engine->ClientCmd_Unrestricted( fmtCmd.Access() );
 	}
 }
 
-void CReplayPerformanceEditorPanel::OnSliderMoved( KeyValues *pParams )
+void CReplayPerformanceEditorPanel::OnSliderMoved( KeyValues* pParams )
 {
 }
 
@@ -1406,31 +1440,31 @@ void CReplayPerformanceEditorPanel::OnInGameMouseWheelEvent( int nDelta )
 
 void CReplayPerformanceEditorPanel::HandleMouseWheel( int nDelta )
 {
-	if ( ReplayCamera()->GetMode() == OBS_MODE_ROAMING )
+	if( ReplayCamera()->GetMode() == OBS_MODE_ROAMING )
 	{
 		// Invert mousewheel input if necessary
-		if ( replay_editor_fov_mousewheel_invert.GetBool() )
+		if( replay_editor_fov_mousewheel_invert.GetBool() )
 		{
 			nDelta *= -1;
 		}
 
-		float &flFov = ReplayCamera()->m_flRoamingFov[1];
+		float& flFov = ReplayCamera()->m_flRoamingFov[1];
 		flFov = clamp( flFov - nDelta * replay_editor_fov_mousewheel_multiplier.GetFloat(), FREE_CAM_FOV_MIN, FREE_CAM_FOV_MAX );
 
 		// Update FOV slider in free camera settings
-		CCameraOptionsPanel_Free *pFreeCamOptions = static_cast< CCameraOptionsPanel_Free * >( m_pCameraOptionsPanels[ CAM_FREE ] );
+		CCameraOptionsPanel_Free* pFreeCamOptions = static_cast< CCameraOptionsPanel_Free* >( m_pCameraOptionsPanels[ CAM_FREE ] );
 		pFreeCamOptions->m_pFovSlider->SetValue( flFov - FREE_CAM_FOV_MIN, false );
 	}
 }
 
-void CReplayPerformanceEditorPanel::ApplySettings( KeyValues *pInResourceData )
+void CReplayPerformanceEditorPanel::ApplySettings( KeyValues* pInResourceData )
 {
 	BaseClass::ApplySettings( pInResourceData );
 
 	ClearPlayerCellData();
 
-	KeyValues *pPlayerCellData = pInResourceData->FindKey( "PlayerCell" );
-	if ( pPlayerCellData )
+	KeyValues* pPlayerCellData = pInResourceData->FindKey( "PlayerCell" );
+	if( pPlayerCellData )
 	{
 		m_pPlayerCellData = new KeyValues( "PlayerCell" );
 		pPlayerCellData->CopySubkeys( m_pPlayerCellData );
@@ -1440,11 +1474,13 @@ void CReplayPerformanceEditorPanel::ApplySettings( KeyValues *pInResourceData )
 CameraMode_t CReplayPerformanceEditorPanel::IsMouseOverActiveCameraOptionsPanel( int nMouseX, int nMouseY )
 {
 	// In one of the camera options panels?
-	for ( int i = 0; i < NCAMS; ++i )
+	for( int i = 0; i < NCAMS; ++i )
 	{
-		CCameraOptionsPanel *pCurPanel = m_pCameraOptionsPanels[ i ];
-		if ( pCurPanel && pCurPanel->IsVisible() && pCurPanel->IsWithin( nMouseX, nMouseY ) )
-			return (CameraMode_t)i;
+		CCameraOptionsPanel* pCurPanel = m_pCameraOptionsPanels[ i ];
+		if( pCurPanel && pCurPanel->IsVisible() && pCurPanel->IsWithin( nMouseX, nMouseY ) )
+		{
+			return ( CameraMode_t )i;
+		}
 	}
 
 	return CAM_INVALID;
@@ -1461,16 +1497,18 @@ void CReplayPerformanceEditorPanel::OnTick()
 
 //	engine->Con_NPrintf( 0, "timescale: %f", g_pReplayPerformanceController->GetPlaybackTimeScale() );
 
-	C_ReplayCamera *pCamera = ReplayCamera();
-	if ( !pCamera )
+	C_ReplayCamera* pCamera = ReplayCamera();
+	if( !pCamera )
+	{
 		return;
+	}
 
 	// Calc elapsed time
 	float flElapsed = gpGlobals->realtime - m_flLastTime;
 	m_flLastTime = gpGlobals->realtime;
 
 	// If this is the first time we're running and camera is valid, get primary target
-	if ( m_iCurPlayerTarget < 0 )
+	if( m_iCurPlayerTarget < 0 )
 	{
 		m_iCurPlayerTarget = pCamera->GetPrimaryTargetIndex();
 	}
@@ -1490,7 +1528,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 	m_bMouseDown = bMouseDown;
 
 	// Reset this flag if mouse is no longer down
-	if ( !m_bMouseDown )
+	if( !m_bMouseDown )
 	{
 		m_nMouseClickedOverCameraSettingsPanel = CAM_INVALID;
 	}
@@ -1500,28 +1538,28 @@ void CReplayPerformanceEditorPanel::OnTick()
 	bool bMouseOverMenuButton = m_pMenuButton->IsWithin( nMouseX, nMouseY );
 	bool bMouseOverMenu = m_pMenu->IsWithin( nMouseX, nMouseY );
 	bool bRecording = g_pReplayPerformanceController->IsRecording();
-	if ( IsVisible() && m_bMousePressed )
+	if( IsVisible() && m_bMousePressed )
 	{
 		CameraMode_t nActiveOptionsPanel = IsMouseOverActiveCameraOptionsPanel( nMouseX, nMouseY );
-		if ( nActiveOptionsPanel != CAM_INVALID )
+		if( nActiveOptionsPanel != CAM_INVALID )
 		{
 			m_nMouseClickedOverCameraSettingsPanel = nActiveOptionsPanel;
 		}
-		else if ( m_pMenu->IsVisible() && !m_pMenu->IsWithin( nMouseX, nMouseY ) )
+		else if( m_pMenu->IsVisible() && !m_pMenu->IsWithin( nMouseX, nMouseY ) )
 		{
 			ToggleMenu();
 		}
-		else if ( bInAControllableCameraMode && !bMouseCursorOverPerfEditor && !bMouseOverMenuButton &&
-			!bMouseOverMenu && bNoDialogsUp )
+		else if( bInAControllableCameraMode && !bMouseCursorOverPerfEditor && !bMouseOverMenuButton &&
+				 !bMouseOverMenu && bNoDialogsUp )
 		{
-			if ( bRecording )
+			if( bRecording )
 			{
 				bool bMouseInputEnabled = IsMouseInputEnabled();
 
 				// Already in a controllable camera mode?
-				if ( bMouseInputEnabled )
+				if( bMouseInputEnabled )
 				{
-					DisplayPerformanceTip( "#Replay_PerfTip_ExitFreeCam", &replay_perftip_count_freecam_exit, MAX_TIP_DISPLAYS );	
+					DisplayPerformanceTip( "#Replay_PerfTip_ExitFreeCam", &replay_perftip_count_freecam_exit, MAX_TIP_DISPLAYS );
 					surface()->PlaySound( "replay\\cameracontrolmodeentered.wav" );
 				}
 				else
@@ -1547,13 +1585,13 @@ void CReplayPerformanceEditorPanel::OnTick()
 
 	// Modify visibility?
 	bool bShow = IsVisible();
-	if ( m_bSpacePressed )
+	if( m_bSpacePressed )
 	{
 		bShow = !IsVisible();
 	}
 
 	// Set visibility?
-	if ( IsVisible() != bShow )
+	if( IsVisible() != bShow )
 	{
 		ShowPanel( bShow );
 		m_bShownAtLeastOnce = true;
@@ -1565,7 +1603,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 	// Factor in host_timescale.
 	float flScaledElapsed = flElapsed;
 	ConVarRef host_timescale( "host_timescale" );
-	if ( host_timescale.GetFloat() > 0 )
+	if( host_timescale.GetFloat() > 0 )
 	{
 		flScaledElapsed *= host_timescale.GetFloat();
 	}
@@ -1574,62 +1612,70 @@ void CReplayPerformanceEditorPanel::OnTick()
 	ReplayCamera()->SmoothFov( flScaledElapsed );
 
 	// Don't do any more processing if not needed
-	if ( !m_bShownAtLeastOnce )
+	if( !m_bShownAtLeastOnce )
+	{
 		return;
+	}
 
 	// Update time text if necessary
 	UpdateTimeLabels();
 
 	// Make all player cells invisible
-	int nTeamCounts[2] = {0,0};
+	int nTeamCounts[2] = {0, 0};
 	int nCurTeam = 0;
-	for ( int i = 0; i < 2; ++i )
-	for ( int j = 0; j <= MAX_PLAYERS; ++j )
-	{
-		m_pPlayerCells[i][j]->SetVisible( false );
-	}
+	for( int i = 0; i < 2; ++i )
+		for( int j = 0; j <= MAX_PLAYERS; ++j )
+		{
+			m_pPlayerCells[i][j]->SetVisible( false );
+		}
 
 	int iMouseOverPlayerIndex = -1;
-	CPlayerCell *pMouseOverCell = NULL;
+	CPlayerCell* pMouseOverCell = NULL;
 
 	// Update player cells
 	bool bLayoutPlayerCells = true;	// TODO: only layout when necessary
-	C_ReplayGame_PlayerResource_t *pGamePlayerResource = dynamic_cast< C_ReplayGame_PlayerResource_t * >( g_PR );
-	for ( int iPlayer = 1; iPlayer <= MAX_PLAYERS; ++iPlayer )
+	C_ReplayGame_PlayerResource_t* pGamePlayerResource = dynamic_cast< C_ReplayGame_PlayerResource_t* >( g_PR );
+	for( int iPlayer = 1; iPlayer <= MAX_PLAYERS; ++iPlayer )
 	{
-		IGameResources *pGR = GameResources();
+		IGameResources* pGR = GameResources();
 
-		if ( !pGR || !pGR->IsConnected( iPlayer ) )
+		if( !pGR || !pGR->IsConnected( iPlayer ) )
+		{
 			continue;
+		}
 
 		// Which team?
 		int iTeam = pGR->GetTeam( iPlayer );
-		switch ( iTeam )
+		switch( iTeam )
 		{
-		case REPLAY_TEAM_TEAM0:
-			++nTeamCounts[0];
-			nCurTeam = 0;
-			break;
-		case REPLAY_TEAM_TEAM1:
-			++nTeamCounts[1];
-			nCurTeam = 1;
-			break;
-		default:
-			nCurTeam = -1;
-			break;
+			case REPLAY_TEAM_TEAM0:
+				++nTeamCounts[0];
+				nCurTeam = 0;
+				break;
+			case REPLAY_TEAM_TEAM1:
+				++nTeamCounts[1];
+				nCurTeam = 1;
+				break;
+			default:
+				nCurTeam = -1;
+				break;
 		}
 
-		if ( nCurTeam < 0 )
+		if( nCurTeam < 0 )
+		{
 			continue;
+		}
 
 #if !defined( CSTRIKE_DLL )
 		int iPlayerClass = pGamePlayerResource->GetPlayerClass( iPlayer );
-		if ( iPlayerClass == REPLAY_CLASS_UNDEFINED )
+		if( iPlayerClass == REPLAY_CLASS_UNDEFINED )
+		{
 			continue;
+		}
 #endif
-					 
+
 		int nCurTeamCount = nTeamCounts[ nCurTeam ];
-		CPlayerCell* pCell = m_pPlayerCells[ nCurTeam ][ nCurTeamCount-1 ];
+		CPlayerCell* pCell = m_pPlayerCells[ nCurTeam ][ nCurTeamCount - 1 ];
 
 		// Cache the player index
 		pCell->m_iPlayerIndex = iPlayer;
@@ -1640,20 +1686,20 @@ void CReplayPerformanceEditorPanel::OnTick()
 		// Show leaderboard icon
 #if defined( TF_CLIENT_DLL )
 		char szClassImg[64];
-		extern const char *g_aPlayerClassNames_NonLocalized[ REPLAY_NUM_CLASSES ];
-		char const *pClassName = iPlayerClass == TF_CLASS_DEMOMAN
-			? "demo"
-			: g_aPlayerClassNames_NonLocalized[ iPlayerClass ];
+		extern const char* g_aPlayerClassNames_NonLocalized[ REPLAY_NUM_CLASSES ];
+		char const* pClassName = iPlayerClass == TF_CLASS_DEMOMAN
+								 ? "demo"
+								 : g_aPlayerClassNames_NonLocalized[ iPlayerClass ];
 		V_snprintf( szClassImg, sizeof( szClassImg ), "../HUD/leaderboard_class_%s", pClassName );
 
 		// Show dead icon instead?
-		if ( !pGamePlayerResource->IsAlive( iPlayer ) )
+		if( !pGamePlayerResource->IsAlive( iPlayer ) )
 		{
 			V_strcat( szClassImg, "_d", sizeof( szClassImg ) );
 		}
 
-		IImage *pImage = scheme()->GetImage( szClassImg, true );
-		if ( pImage )
+		IImage* pImage = scheme()->GetImage( szClassImg, true );
+		if( pImage )
 		{
 			pImage->SetSize( 32, 32 );
 			pCell->GetImage()->SetImage( pImage );
@@ -1667,7 +1713,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 #endif
 
 		// Display player name if mouse is over the current cell
-		if ( pCell->IsWithin( nMouseX, nMouseY ) )
+		if( pCell->IsWithin( nMouseX, nMouseY ) )
 		{
 			iMouseOverPlayerIndex = iPlayer;
 			pMouseOverCell = pCell;
@@ -1675,31 +1721,33 @@ void CReplayPerformanceEditorPanel::OnTick()
 	}
 
 	// Check to see if we're hovering over a camera-mode, and if so, display its options panel if it has one
-	if ( bRecording )
+	if( bRecording )
 	{
-		for ( int i = 0; i < NCAMS; ++i )
+		for( int i = 0; i < NCAMS; ++i )
 		{
-			CCameraOptionsPanel *pCurOptionsPanel = m_pCameraOptionsPanels[ i ];
-			if ( !pCurOptionsPanel )
+			CCameraOptionsPanel* pCurOptionsPanel = m_pCameraOptionsPanels[ i ];
+			if( !pCurOptionsPanel )
+			{
 				continue;
+			}
 
 			bool bMouseOverButton = m_pCameraButtons[ i ]->IsWithin( nMouseX, nMouseY );
 			bool bMouseOverOptionsPanel = pCurOptionsPanel->IsWithin( nMouseX, nMouseY );
-			bool bInCameraModeThatMouseIsOver = ReplayCamera()->GetMode() == GetCameraModeFromButtonIndex( (CameraMode_t)i );
+			bool bInCameraModeThatMouseIsOver = ReplayCamera()->GetMode() == GetCameraModeFromButtonIndex( ( CameraMode_t )i );
 			bool bDontCareAboutCameraMode = i == COMPONENT_TIMESCALE;
 			bool bActivate = ( i == m_nMouseClickedOverCameraSettingsPanel ) ||
-				( ( ( bInCameraModeThatMouseIsOver || bDontCareAboutCameraMode ) && bMouseOverButton ) || ( bMouseOverOptionsPanel && pCurOptionsPanel->IsVisible() ) );
+							 ( ( ( bInCameraModeThatMouseIsOver || bDontCareAboutCameraMode ) && bMouseOverButton ) || ( bMouseOverOptionsPanel && pCurOptionsPanel->IsVisible() ) );
 			pCurOptionsPanel->SetVisible( bActivate );
 		}
 	}
 
-	if ( bLayoutPlayerCells )
+	if( bLayoutPlayerCells )
 	{
 		LayoutPlayerCells();
 	}
 
 	// Setup player name label and temporary camera view
-	if ( m_pPlayerNameLabel && pGamePlayerResource && pMouseOverCell )
+	if( m_pPlayerNameLabel && pGamePlayerResource && pMouseOverCell )
 	{
 		m_pPlayerNameLabel->SetText( pGamePlayerResource->GetPlayerName( iMouseOverPlayerIndex ) );
 		m_pPlayerNameLabel->SizeToContents();
@@ -1708,9 +1756,9 @@ void CReplayPerformanceEditorPanel::OnTick()
 		pMouseOverCell->GetPos( nCellPos[0], nCellPos[1] );
 
 		int nLabelX = MAX(
-			nCellPos[0],
-			m_nRedBlueLabelRightX
-		);
+						  nCellPos[0],
+						  m_nRedBlueLabelRightX
+					  );
 		int nLabelY = m_nBottomPanelStartY + ( m_nBottomPanelHeight - m_pPlayerNameLabel->GetTall() ) / 2;
 		m_pPlayerNameLabel->SetPos( nLabelX, nLabelY );
 
@@ -1729,7 +1777,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 	}
 
 	// If user clicked, assume it was the selected cell and set primary target in camera
-	if ( iMouseOverPlayerIndex >= 0 )
+	if( iMouseOverPlayerIndex >= 0 )
 	{
 		pCamera->SetPrimaryTarget( iMouseOverPlayerIndex );
 	}
@@ -1738,12 +1786,12 @@ void CReplayPerformanceEditorPanel::OnTick()
 		pCamera->SetPrimaryTarget( m_iCurPlayerTarget );
 	}
 
-	// fixes a case where the replay would be paused and the player would cycle cameras but the 
+	// fixes a case where the replay would be paused and the player would cycle cameras but the
 	// target's visibility wouldn't be updated until the replay was unpaused (they would be invisible)
-	if ( m_bCurrentTargetNeedsVisibilityUpdate )
+	if( m_bCurrentTargetNeedsVisibilityUpdate )
 	{
-		C_BaseEntity *pTarget = ClientEntityList().GetEnt( pCamera->GetPrimaryTargetIndex() );
-		if ( pTarget )
+		C_BaseEntity* pTarget = ClientEntityList().GetEnt( pCamera->GetPrimaryTargetIndex() );
+		if( pTarget )
 		{
 			pTarget->UpdateVisibility();
 		}
@@ -1752,7 +1800,7 @@ void CReplayPerformanceEditorPanel::OnTick()
 	}
 
 	// If in free-cam mode, add set view event if we're not paused
-	if ( bInAControllableCameraMode && m_bShownAtLeastOnce && bRecording )
+	if( bInAControllableCameraMode && m_bShownAtLeastOnce && bRecording )
 	{
 		AddSetViewEvent();
 		AddTimeScaleEvent( m_flTimeScaleProxy );
@@ -1776,11 +1824,13 @@ void CReplayPerformanceEditorPanel::Achievements_Think( float flElapsed )
 //	engine->Con_NPrintf( 11, "last time space bar pressed: %f", m_flLastTimeSpaceBarPressed );
 
 	// Already awarded one this editing session?
-	if ( m_bAchievementAwarded )
+	if( m_bAchievementAwarded )
+	{
 		return;
-	
+	}
+
 	// Too much idle time since last activity?
-	if ( gpGlobals->realtime - m_flLastTimeSpaceBarPressed > 60.0f )
+	if( gpGlobals->realtime - m_flLastTimeSpaceBarPressed > 60.0f )
 	{
 		m_flActiveTimeInEditor = 0.0f;
 		return;
@@ -1791,8 +1841,10 @@ void CReplayPerformanceEditorPanel::Achievements_Think( float flElapsed )
 
 	// Award now if three-minutes of non-idle time has passed
 	const float flMinutes = 60.0f * 3.0f;
-	if ( m_flActiveTimeInEditor < flMinutes )
+	if( m_flActiveTimeInEditor < flMinutes )
+	{
 		return;
+	}
 
 	Achievements_Grant();
 }
@@ -1812,40 +1864,47 @@ bool CReplayPerformanceEditorPanel::IsPaused()
 	return IsVisible();
 }
 
-CReplayPerformance *CReplayPerformanceEditorPanel::GetPerformance() const
+CReplayPerformance* CReplayPerformanceEditorPanel::GetPerformance() const
 {
 	return g_pReplayPerformanceController->GetPerformance();
 }
 
-CReplayPerformance *CReplayPerformanceEditorPanel::GetSavedPerformance() const
+CReplayPerformance* CReplayPerformanceEditorPanel::GetSavedPerformance() const
 {
 	return g_pReplayPerformanceController->GetSavedPerformance();
 }
 
 int CReplayPerformanceEditorPanel::GetCameraModeFromButtonIndex( CameraMode_t iCamera )
 {
-	switch ( iCamera )
+	switch( iCamera )
 	{
-	case CAM_FREE:	return OBS_MODE_ROAMING;
-	case CAM_THIRD:	return OBS_MODE_CHASE;
-	case CAM_FIRST:	return OBS_MODE_IN_EYE;
+		case CAM_FREE:
+			return OBS_MODE_ROAMING;
+		case CAM_THIRD:
+			return OBS_MODE_CHASE;
+		case CAM_FIRST:
+			return OBS_MODE_IN_EYE;
 	}
 	return CAM_INVALID;
 }
 
 void CReplayPerformanceEditorPanel::UpdateTimeLabels()
 {
-	CReplay *pPlayingReplay = g_pReplayManager->GetPlayingReplay();
+	CReplay* pPlayingReplay = g_pReplayManager->GetPlayingReplay();
 
-	if ( !pPlayingReplay || !m_pCurTimeLabel || !m_pTotalTimeLabel )
+	if( !pPlayingReplay || !m_pCurTimeLabel || !m_pTotalTimeLabel )
+	{
 		return;
+	}
 
 	float flCurTime, flTotalTime;
 	g_pClientReplayContext->GetPlaybackTimes( flCurTime, flTotalTime, pPlayingReplay, GetPerformance() );
 
-	int nCurRoundedTime = (int)flCurTime;	// Essentially floor'd
-	if ( nCurRoundedTime == m_nLastRoundedTime )
+	int nCurRoundedTime = ( int )flCurTime;	// Essentially floor'd
+	if( nCurRoundedTime == m_nLastRoundedTime )
+	{
 		return;
+	}
 
 	m_nLastRoundedTime = nCurRoundedTime;
 
@@ -1855,7 +1914,7 @@ void CReplayPerformanceEditorPanel::UpdateTimeLabels()
 	m_pCurTimeLabel->SetText( szTimeText );
 
 	// Set total time text
-	V_snprintf( szTimeText, sizeof( szTimeText ), "%s", CReplayTime::FormatTimeString( (int)flTotalTime ) );
+	V_snprintf( szTimeText, sizeof( szTimeText ), "%s", CReplayTime::FormatTimeString( ( int )flTotalTime ) );
 	m_pTotalTimeLabel->SetText( szTimeText );
 
 	// Center between left-most camera button and play/pause button
@@ -1871,11 +1930,13 @@ void CReplayPerformanceEditorPanel::UpdateCameraSelectionPosition( CameraMode_t 
 	UpdateCameraButtonImages();
 }
 
-void CReplayPerformanceEditorPanel::UpdateFreeCamSettings( const SetViewParams_t &params )
+void CReplayPerformanceEditorPanel::UpdateFreeCamSettings( const SetViewParams_t& params )
 {
-	CCameraOptionsPanel_Free *pSettingsPanel = dynamic_cast< CCameraOptionsPanel_Free * >( m_pCameraOptionsPanels[ CAM_FREE ] );
-	if ( !pSettingsPanel )
+	CCameraOptionsPanel_Free* pSettingsPanel = dynamic_cast< CCameraOptionsPanel_Free* >( m_pCameraOptionsPanels[ CAM_FREE ] );
+	if( !pSettingsPanel )
+	{
 		return;
+	}
 
 	pSettingsPanel->SetValue( CCameraOptionsPanel_Free::SLIDER_ACCEL, params.m_flAccel );
 	pSettingsPanel->SetValue( CCameraOptionsPanel_Free::SLIDER_SPEED, params.m_flSpeed );
@@ -1885,9 +1946,11 @@ void CReplayPerformanceEditorPanel::UpdateFreeCamSettings( const SetViewParams_t
 
 void CReplayPerformanceEditorPanel::UpdateTimeScale( float flScale )
 {
-	CTimeScaleOptionsPanel *pSettingsPanel = dynamic_cast< CTimeScaleOptionsPanel * >( m_pCameraOptionsPanels[ COMPONENT_TIMESCALE ] );
-	if ( !pSettingsPanel )
+	CTimeScaleOptionsPanel* pSettingsPanel = dynamic_cast< CTimeScaleOptionsPanel* >( m_pCameraOptionsPanels[ COMPONENT_TIMESCALE ] );
+	if( !pSettingsPanel )
+	{
 		return;
+	}
 
 	pSettingsPanel->SetValue( CTimeScaleOptionsPanel::SLIDER_TIMESCALE, flScale );
 }
@@ -1895,24 +1958,26 @@ void CReplayPerformanceEditorPanel::UpdateTimeScale( float flScale )
 void CReplayPerformanceEditorPanel::LayoutPlayerCells()
 {
 	int nPanelHeight = m_pPlayerCellsPanel->GetTall();
-	int nCellBuffer = XRES(1);
-	for ( int i = 0; i < 2; ++i )
+	int nCellBuffer = XRES( 1 );
+	for( int i = 0; i < 2; ++i )
 	{
 		int nCurX = m_nRedBlueLabelRightX;
 
-		for ( int j = 0; j <= MAX_PLAYERS; ++j )
+		for( int j = 0; j <= MAX_PLAYERS; ++j )
 		{
-			CPlayerCell *pCurCell = m_pPlayerCells[i][j];
-			if ( !pCurCell->IsVisible() )
+			CPlayerCell* pCurCell = m_pPlayerCells[i][j];
+			if( !pCurCell->IsVisible() )
+			{
 				continue;
+			}
 
 			// Apply cached settings from .res file
-			if ( m_pPlayerCellData )
+			if( m_pPlayerCellData )
 			{
 				pCurCell->ApplySettings( m_pPlayerCellData );
 			}
 
-			const int nY = nPanelHeight/2 + m_nRedBlueSigns[i] * nPanelHeight/4 - pCurCell->GetTall()/2;
+			const int nY = nPanelHeight / 2 + m_nRedBlueSigns[i] * nPanelHeight / 4 - pCurCell->GetTall() / 2;
 			pCurCell->SetPos(
 				nCurX,
 				nY
@@ -1923,21 +1988,25 @@ void CReplayPerformanceEditorPanel::LayoutPlayerCells()
 	}
 }
 
-void CReplayPerformanceEditorPanel::PerformLayout() 
+void CReplayPerformanceEditorPanel::PerformLayout()
 {
 	int w = ScreenWidth(), h = ScreenHeight();
-	SetBounds(0,0,w,h);
+	SetBounds( 0, 0, w, h );
 
 	// Layout camera options panels
-	for ( int i = 0; i < NCAMS; ++i )
+	for( int i = 0; i < NCAMS; ++i )
 	{
-		CCameraOptionsPanel *pCurOptionsPanel = m_pCameraOptionsPanels[ i ];
-		if ( !pCurOptionsPanel )
+		CCameraOptionsPanel* pCurOptionsPanel = m_pCameraOptionsPanels[ i ];
+		if( !pCurOptionsPanel )
+		{
 			continue;
+		}
 
-		CExImageButton *pCurCameraButton = m_pCameraButtons[ i ];	
-		if ( !pCurCameraButton )
+		CExImageButton* pCurCameraButton = m_pCameraButtons[ i ];
+		if( !pCurCameraButton )
+		{
 			continue;
+		}
 
 		// Get camera button position
 		int aCameraButtonPos[2];
@@ -1965,16 +2034,17 @@ void CReplayPerformanceEditorPanel::PerformLayout()
 	m_pBottom->GetSize( aBottomSize[0], aBottomSize[1] );
 	m_pPlayerCellsPanel->SetBounds( 0, 0, aBottomSize[0] / 2, m_pPlayerCellsPanel->GetTall() );
 
-	CExLabel *pRedBlueLabels[2] = {
-		dynamic_cast< CExLabel * >( m_pPlayerCellsPanel->FindChildByName( "RedLabel" ) ),
-		dynamic_cast< CExLabel * >( m_pPlayerCellsPanel->FindChildByName( "BlueLabel" ) )
+	CExLabel* pRedBlueLabels[2] =
+	{
+		dynamic_cast< CExLabel* >( m_pPlayerCellsPanel->FindChildByName( "RedLabel" ) ),
+		dynamic_cast< CExLabel* >( m_pPlayerCellsPanel->FindChildByName( "BlueLabel" ) )
 	};
-	int nMargins[2] = { (int)XRES( 5 ), (int)YRES( 2 ) };
-	for ( int i = 0; i < 2; ++i )
+	int nMargins[2] = { ( int )XRES( 5 ), ( int )YRES( 2 ) };
+	for( int i = 0; i < 2; ++i )
 	{
 		pRedBlueLabels[i]->SizeToContents();
 
-		const int nY = m_pPlayerCellsPanel->GetTall()/2 + m_nRedBlueSigns[i] * m_pPlayerCellsPanel->GetTall()/4 - pRedBlueLabels[i]->GetTall()/2;
+		const int nY = m_pPlayerCellsPanel->GetTall() / 2 + m_nRedBlueSigns[i] * m_pPlayerCellsPanel->GetTall() / 4 - pRedBlueLabels[i]->GetTall() / 2;
 		pRedBlueLabels[i]->SetPos( nMargins[0], nY );
 
 		m_nRedBlueLabelRightX = MAX( m_nRedBlueLabelRightX, nMargins[0] + pRedBlueLabels[i]->GetWide() + nMargins[0] );
@@ -1986,15 +2056,19 @@ void CReplayPerformanceEditorPanel::PerformLayout()
 	BaseClass::PerformLayout();
 }
 
-bool CReplayPerformanceEditorPanel::OnStateChangeRequested( const char *pEventStr )
+bool CReplayPerformanceEditorPanel::OnStateChangeRequested( const char* pEventStr )
 {
 	// If we're already recording, allow the change.
-	if ( g_pReplayPerformanceController->IsRecording() )
+	if( g_pReplayPerformanceController->IsRecording() )
+	{
 		return true;
+	}
 
 	// If we aren't recording and there is no forthcoming data in the playback stream, allow the change.
-	if ( !g_pReplayPerformanceController->IsPlaybackDataLeft() )
+	if( !g_pReplayPerformanceController->IsPlaybackDataLeft() )
+	{
 		return true;
+	}
 
 	// Otherwise, record the event string and show a dialog asking the user if they're sure they want to nuke.
 	V_strncpy( m_szSuspendedEvent, pEventStr, sizeof( m_szSuspendedEvent ) );
@@ -2003,7 +2077,7 @@ bool CReplayPerformanceEditorPanel::OnStateChangeRequested( const char *pEventSt
 	return false;
 }
 
-void CReplayPerformanceEditorPanel::SetButtonTip( wchar_t *pTipText, Panel *pContextPanel )
+void CReplayPerformanceEditorPanel::SetButtonTip( wchar_t* pTipText, Panel* pContextPanel )
 {
 	// Set the text
 	m_pButtonTip->SetText( pTipText );
@@ -2013,11 +2087,11 @@ void CReplayPerformanceEditorPanel::SetButtonTip( wchar_t *pTipText, Panel *pCon
 	int aPos[2];
 	ipanel()->GetAbsPos( pContextPanel->GetVPanel(), aPos[0], aPos[1] );
 	const int nX = clamp(
-		aPos[0] - m_pButtonTip->GetWide() / 2,
-		0,
-		ScreenWidth() - m_pButtonTip->GetWide() - (int) XRES( 40 )
-	);
-	const int nY = m_nBottomPanelStartY - m_pButtonTip->GetTall() - (int) YRES( 2 );
+					   aPos[0] - m_pButtonTip->GetWide() / 2,
+					   0,
+					   ScreenWidth() - m_pButtonTip->GetWide() - ( int ) XRES( 40 )
+				   );
+	const int nY = m_nBottomPanelStartY - m_pButtonTip->GetTall() - ( int ) YRES( 2 );
 	m_pButtonTip->SetPos( nX, nY );
 }
 
@@ -2035,10 +2109,12 @@ void CReplayPerformanceEditorPanel::ShowSavingDialog()
 
 void CReplayPerformanceEditorPanel::ShowPanel( bool bShow )
 {
-	if ( bShow == IsVisible() )
+	if( bShow == IsVisible() )
+	{
 		return;
+	}
 
-	if ( bShow )
+	if( bShow )
 	{
 		// We are now performing.
 		m_pRecLightPanel->SetPerforming( true );
@@ -2052,8 +2128,8 @@ void CReplayPerformanceEditorPanel::ShowPanel( bool bShow )
 		DisplayPerformanceTip( "#Replay_PerfTip_ExitPerfMode", &replay_perftip_count_exit, MAX_TIP_DISPLAYS );
 
 		// Fire a message the game DLL can intercept (for achievements, etc).
-		IGameEvent *event = gameeventmanager->CreateEvent( "entered_performance_mode" );
-		if ( event )
+		IGameEvent* event = gameeventmanager->CreateEvent( "entered_performance_mode" );
+		if( event )
 		{
 			gameeventmanager->FireEventClientSide( event );
 		}
@@ -2080,7 +2156,7 @@ void CReplayPerformanceEditorPanel::ShowPanel( bool bShow )
 	m_pRecLightPanel->UpdateBackgroundVisibility();
 
 	// Play or pause
-	if ( bShow )
+	if( bShow )
 	{
 		PauseDemo();
 	}
@@ -2095,7 +2171,7 @@ void CReplayPerformanceEditorPanel::ShowPanel( bool bShow )
 
 bool CReplayPerformanceEditorPanel::OnEndOfReplayReached()
 {
-	if ( m_bShownAtLeastOnce )
+	if( m_bShownAtLeastOnce )
 	{
 		ShowPanel( true );
 		DisplayPerformanceTip( "#Replay_PerfTip_EndOfReplayReached" );
@@ -2110,11 +2186,15 @@ bool CReplayPerformanceEditorPanel::OnEndOfReplayReached()
 
 void CReplayPerformanceEditorPanel::AddSetViewEvent()
 {
-	if ( !g_pReplayManager->GetPlayingReplay() )
+	if( !g_pReplayManager->GetPlayingReplay() )
+	{
 		return;
+	}
 
-	if ( !g_pReplayPerformanceController )
+	if( !g_pReplayPerformanceController )
+	{
 		return;
+	}
 
 	Vector pos;
 	QAngle angles;
@@ -2137,19 +2217,23 @@ void CReplayPerformanceEditorPanel::AddSetViewEvent()
 // Input should be in [0,1]
 void CReplayPerformanceEditorPanel::AddTimeScaleEvent( float flTimeScale )
 {
-	if ( !g_pReplayManager->GetPlayingReplay() )
+	if( !g_pReplayManager->GetPlayingReplay() )
+	{
 		return;
+	}
 
-	if ( !g_pReplayPerformanceController )
+	if( !g_pReplayPerformanceController )
+	{
 		return;
+	}
 
 	g_pReplayPerformanceController->AddEvent_TimeScale( GetPlaybackTime(), flTimeScale );
 }
 
 void CReplayPerformanceEditorPanel::UpdateCameraButtonImages( bool bForceUnselected/*=false*/ )
 {
-	CReplayPerformance *pPerformance = GetPerformance();
-	for ( int i = 0; i < NCAMS; ++i )
+	CReplayPerformance* pPerformance = GetPerformance();
+	for( int i = 0; i < NCAMS; ++i )
 	{
 		CFmtStr fmtFile(
 			gs_pBaseComponentNames[i],
@@ -2157,7 +2241,7 @@ void CReplayPerformanceEditorPanel::UpdateCameraButtonImages( bool bForceUnselec
 			( !bForceUnselected && ( !pPerformance || g_pReplayPerformanceController->IsRecording() ) && i == m_iCameraSelection ) ? "_selected" : ""
 		);
 
-		if ( m_pCameraButtons[ i ] )
+		if( m_pCameraButtons[ i ] )
 		{
 			m_pCameraButtons[ i ]->SetSubImage( fmtFile.Access() );
 		}
@@ -2167,7 +2251,7 @@ void CReplayPerformanceEditorPanel::UpdateCameraButtonImages( bool bForceUnselec
 void CReplayPerformanceEditorPanel::EnsureRecording( bool bShouldSnip )
 {
 	// Not recording?
-	if ( !g_pReplayPerformanceController->IsRecording() )
+	if( !g_pReplayPerformanceController->IsRecording() )
 	{
 		// Start recording - snip if needed.
 		g_pReplayPerformanceController->StartRecording( GetReplay(), bShouldSnip );
@@ -2176,17 +2260,19 @@ void CReplayPerformanceEditorPanel::EnsureRecording( bool bShouldSnip )
 
 void CReplayPerformanceEditorPanel::ToggleMenu()
 {
-	if ( !m_pMenu )
+	if( !m_pMenu )
+	{
 		return;
+	}
 
 	// Show/hide
 	const bool bShow = !m_pMenu->IsVisible();
 	m_pMenu->SetVisible( bShow );
 }
 
-void CReplayPerformanceEditorPanel::SaveAs( const wchar_t *pTitle )
+void CReplayPerformanceEditorPanel::SaveAs( const wchar_t* pTitle )
 {
-	if ( !g_pReplayPerformanceController->SaveAsAsync( pTitle ) )
+	if( !g_pReplayPerformanceController->SaveAsAsync( pTitle ) )
 	{
 		DisplaySavedTip( false );
 	}
@@ -2194,14 +2280,16 @@ void CReplayPerformanceEditorPanel::SaveAs( const wchar_t *pTitle )
 	ShowSavingDialog();
 }
 
-/*static*/ void CReplayPerformanceEditorPanel::OnConfirmSaveAs( bool bShouldSave, wchar_t *pTitle, void *pContext )
+/*static*/ void CReplayPerformanceEditorPanel::OnConfirmSaveAs( bool bShouldSave, wchar_t* pTitle, void* pContext )
 {
 	// NOTE: Assumes that overwriting has already been confirmed by the user.
 
-	if ( !bShouldSave )
+	if( !bShouldSave )
+	{
 		return;
+	}
 
-	CReplayPerformanceEditorPanel *pThis = (CReplayPerformanceEditorPanel *)pContext;
+	CReplayPerformanceEditorPanel* pThis = ( CReplayPerformanceEditorPanel* )pContext;
 	pThis->SaveAs( pTitle );
 
 	surface()->PlaySound( "replay\\saved_take.wav" );
@@ -2209,17 +2297,17 @@ void CReplayPerformanceEditorPanel::SaveAs( const wchar_t *pTitle )
 
 void CReplayPerformanceEditorPanel::ShowRewindConfirmMessage()
 {
-	ShowMessageBox( "#Replay_RewindWarningTitle", "#Replay_RewindWarningMsg", "#GameUI_OK", OnConfirmRewind, NULL, (void *)this );
+	ShowMessageBox( "#Replay_RewindWarningTitle", "#Replay_RewindWarningMsg", "#GameUI_OK", OnConfirmRewind, NULL, ( void* )this );
 	surface()->PlaySound( "replay\\replaydialog_warn.wav" );
 }
 
-/*static*/ void	CReplayPerformanceEditorPanel::OnConfirmRewind( bool bConfirmed, void *pContext )
+/*static*/ void	CReplayPerformanceEditorPanel::OnConfirmRewind( bool bConfirmed, void* pContext )
 {
-	if ( bConfirmed )
+	if( bConfirmed )
 	{
-		if ( pContext )
+		if( pContext )
 		{
-			CReplayPerformanceEditorPanel *pEditor = (CReplayPerformanceEditorPanel *)pContext;
+			CReplayPerformanceEditorPanel* pEditor = ( CReplayPerformanceEditorPanel* )pContext;
 			pEditor->OnCommand( "goto_back" );
 		}
 	}
@@ -2228,14 +2316,14 @@ void CReplayPerformanceEditorPanel::ShowRewindConfirmMessage()
 void CReplayPerformanceEditorPanel::OnMenuCommand_Save( bool bExitEditorWhenDone/*=false*/ )
 {
 	// If this is the first time we're saving this performance, do a save-as.
-	if ( !g_pReplayPerformanceController->HasSavedPerformance() )
+	if( !g_pReplayPerformanceController->HasSavedPerformance() )
 	{
 		OnMenuCommand_SaveAs( bExitEditorWhenDone );
 		return;
 	}
 
 	// Regular save
-	if ( !g_pReplayPerformanceController->SaveAsync() )
+	if( !g_pReplayPerformanceController->SaveAsync() )
 	{
 		DisplaySavedTip( false );
 	}
@@ -2244,7 +2332,7 @@ void CReplayPerformanceEditorPanel::OnMenuCommand_Save( bool bExitEditorWhenDone
 	ShowSavingDialog();
 
 	// Exit editor?
-	if ( bExitEditorWhenDone )
+	if( bExitEditorWhenDone )
 	{
 		OnMenuCommand_Exit();
 	}
@@ -2262,15 +2350,17 @@ void CReplayPerformanceEditorPanel::DisplaySavedTip( bool bSucceess )
 
 void CReplayPerformanceEditorPanel::OnSaveComplete()
 {
-	DisplaySavedTip( g_pReplayPerformanceController->GetLastSaveStatus() );	
+	DisplaySavedTip( g_pReplayPerformanceController->GetLastSaveStatus() );
 
 	m_pSavingDlg = NULL;
 }
 
 void CReplayPerformanceEditorPanel::HandleUiToggle()
 {
-	if ( !TFModalStack()->IsEmpty() )
+	if( !TFModalStack()->IsEmpty() )
+	{
 		return;
+	}
 
 	PauseDemo();
 	Exit_ShowDialogs();
@@ -2283,7 +2373,7 @@ void CReplayPerformanceEditorPanel::Exit()
 
 void CReplayPerformanceEditorPanel::Exit_ShowDialogs()
 {
-	if ( g_pReplayPerformanceController->IsDirty() )
+	if( g_pReplayPerformanceController->IsDirty() )
 	{
 		ShowConfirmDialog( "#Replay_DiscardTitle", "#Replay_DiscardChanges", "#Replay_Discard", "#Replay_Cancel", OnConfirmDiscard, NULL, this, REPLAY_SOUND_DIALOG_POPUP );
 	}
@@ -2298,119 +2388,121 @@ void CReplayPerformanceEditorPanel::OnMenuCommand_Exit()
 	Exit_ShowDialogs();
 }
 
-void CReplayPerformanceEditorPanel::OnCommand( const char *command )
+void CReplayPerformanceEditorPanel::OnCommand( const char* command )
 {
 	float flCurTime = GetPlaybackTime();
 
 	g_bIsReplayRewinding = false;
 
-	if ( !V_stricmp( command, "toggle_menu" ) )
+	if( !V_stricmp( command, "toggle_menu" ) )
 	{
 		ToggleMenu();
 	}
-	else if ( !V_strnicmp( command, "menu_", 5 ) )
+	else if( !V_strnicmp( command, "menu_", 5 ) )
 	{
-		const char *pMenuCommand = command + 5;
+		const char* pMenuCommand = command + 5;
 
-		if ( !V_stricmp( pMenuCommand, "save" ) )
+		if( !V_stricmp( pMenuCommand, "save" ) )
 		{
 			OnMenuCommand_Save();
 		}
-		else if ( !V_stricmp( pMenuCommand, "saveas" ) )
+		else if( !V_stricmp( pMenuCommand, "saveas" ) )
 		{
 			OnMenuCommand_SaveAs();
 		}
-		else if ( !V_stricmp( pMenuCommand, "exit" ) )
+		else if( !V_stricmp( pMenuCommand, "exit" ) )
 		{
 			OnMenuCommand_Exit();
 		}
 	}
-	else if ( !V_stricmp( command, "close" ) )
+	else if( !V_stricmp( command, "close" ) )
 	{
 		ShowPanel( false );
 		MarkForDeletion();
 		return;
 	}
-	else if ( !V_stricmp( command, "play" ) )
+	else if( !V_stricmp( command, "play" ) )
 	{
 		ShowPanel( false );
 		return;
 	}
-	else if ( !V_stricmp( command, "pause" ) )
+	else if( !V_stricmp( command, "pause" ) )
 	{
 		ShowPanel( true );
 		return;
 	}
-	else if ( !V_strnicmp( command, "timescale_", 10 ) )
+	else if( !V_strnicmp( command, "timescale_", 10 ) )
 	{
-		const char *pTimeScaleCmd = command + 10;
-		if ( !V_stricmp( pTimeScaleCmd, "showpanel" ) )
+		const char* pTimeScaleCmd = command + 10;
+		if( !V_stricmp( pTimeScaleCmd, "showpanel" ) )
 		{
 			// If we're playing back, pop up a dialog asking if the user is sure they want to nuke the
 			// rest of whatever is playing back.
-			if ( !OnStateChangeRequested( command ) )
+			if( !OnStateChangeRequested( command ) )
+			{
 				return;
+			}
 
 			EnsureRecording();
 		}
 	}
-	else if ( !V_strnicmp( command, "settick_", 8 ) )
+	else if( !V_strnicmp( command, "settick_", 8 ) )
 	{
-		const char *pSetType = command + 8;
+		const char* pSetType = command + 8;
 		const int nCurTick = engine->GetDemoPlaybackTick();
 
-		if ( !V_stricmp( pSetType, "in" ) )
+		if( !V_stricmp( pSetType, "in" ) )
 		{
 			SetOrRemoveInTick( nCurTick, true );
 		}
-		else if ( !V_stricmp( pSetType, "out" ) )
+		else if( !V_stricmp( pSetType, "out" ) )
 		{
 			SetOrRemoveOutTick( nCurTick, true );
 		}
 
 		// Save the replay
-		CReplay *pReplay = GetReplay();
-		if ( pReplay )
+		CReplay* pReplay = GetReplay();
+		if( pReplay )
 		{
 			g_pReplayManager->FlagReplayForFlush( pReplay, true );
 		}
 
 		return;
 	}
-	else if ( !V_strnicmp( command, "goto_", 5 ) )
+	else if( !V_strnicmp( command, "goto_", 5 ) )
 	{
-		const char *pGotoType = command + 5;
-		CReplay *pReplay = GetReplay();
-		if ( pReplay )
+		const char* pGotoType = command + 5;
+		CReplay* pReplay = GetReplay();
+		if( pReplay )
 		{
-			const CReplayPerformance *pScratchPerformance = g_pReplayPerformanceController->GetPerformance();
-			const CReplayPerformance *pSavedPerformance = g_pReplayPerformanceController->GetSavedPerformance();
-			const CReplayPerformance *pPerformance = pScratchPerformance ? pScratchPerformance : pSavedPerformance;
+			const CReplayPerformance* pScratchPerformance = g_pReplayPerformanceController->GetPerformance();
+			const CReplayPerformance* pSavedPerformance = g_pReplayPerformanceController->GetSavedPerformance();
+			const CReplayPerformance* pPerformance = pScratchPerformance ? pScratchPerformance : pSavedPerformance;
 
 			const int nCurTick = engine->GetDemoPlaybackTick();
 
 			// If in or out ticks are set in the performance, use those for the 'full' rewind/fast-forward
 			const int nStartTick = MAX( 0, ( pPerformance && pPerformance->HasInTick() ) ? pPerformance->m_nTickIn : pReplay->m_nSpawnTick );
 			const int nEndTick = MAX(	// The MAX() here will keep us from going back in time if we're already past the "end" tick
-				nCurTick,
-				( ( pPerformance && pPerformance->HasOutTick() ) ?
-					pPerformance->m_nTickOut :
-					( nStartTick + TIME_TO_TICKS( pReplay->m_flLength ) ) )
-				- TIME_TO_TICKS( 0.1f )
-			);
+									 nCurTick,
+									 ( ( pPerformance && pPerformance->HasOutTick() ) ?
+									   pPerformance->m_nTickOut :
+									   ( nStartTick + TIME_TO_TICKS( pReplay->m_flLength ) ) )
+									 - TIME_TO_TICKS( 0.1f )
+								 );
 
 			int nGotoTick = 0;
 			bool bGoingBack = false;
 
-			if ( !V_stricmp( pGotoType, "start" ) )
+			if( !V_stricmp( pGotoType, "start" ) )
 			{
 				bGoingBack = true;
 				nGotoTick = nStartTick;
 			}
-			else if ( !V_stricmp( pGotoType, "back" ) )
+			else if( !V_stricmp( pGotoType, "back" ) )
 			{
 				// If this is the first time rewinding, display a message
-				if ( !replay_replayeditor_rewindmsgcounter.GetBool() )
+				if( !replay_replayeditor_rewindmsgcounter.GetBool() )
 				{
 					replay_replayeditor_rewindmsgcounter.SetValue( 1 );
 					ShowRewindConfirmMessage();
@@ -2420,7 +2512,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 				bGoingBack = true;
 				nGotoTick = nCurTick - TIME_TO_TICKS( 10.0f );
 			}
-			else if ( !V_stricmp( pGotoType, "end" ) )
+			else if( !V_stricmp( pGotoType, "end" ) )
 			{
 				nGotoTick = nEndTick;	// Don't go back in time
 			}
@@ -2429,7 +2521,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 			nGotoTick = clamp( nGotoTick, nStartTick, nEndTick );
 
 			// If going back...
-			if ( bGoingBack )
+			if( bGoingBack )
 			{
 				// ...and notify the recorder that we're skipping, which we only need to do if we're going backwards
 				g_pReplayPerformanceController->NotifyRewinding();
@@ -2442,26 +2534,28 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 		}
 		return;
 	}
-	else if ( !V_strnicmp( command, "setcamera_", 10 ) )
+	else if( !V_strnicmp( command, "setcamera_", 10 ) )
 	{
-		const char *pCamType = command + 10;
+		const char* pCamType = command + 10;
 		int nEntIndex = ReplayCamera()->GetPrimaryTargetIndex();
 
 		// If we're playing back, pop up a dialog asking if the user is sure they want to nuke the
 		// rest of whatever is playing back.
-		if ( !OnStateChangeRequested( command ) )
+		if( !OnStateChangeRequested( command ) )
+		{
 			return;
+		}
 
 		EnsureRecording();
 
-		if ( !V_stricmp( pCamType, "first" ) )
+		if( !V_stricmp( pCamType, "first" ) )
 		{
 			ReplayCamera()->SetMode( OBS_MODE_IN_EYE );
 			UpdateCameraSelectionPosition( CAM_FIRST );
 			m_bCurrentTargetNeedsVisibilityUpdate = true;
 			g_pReplayPerformanceController->AddEvent_Camera_Change_FirstPerson( flCurTime, nEntIndex );
 		}
-		else if ( !V_stricmp( pCamType, "third" ) )
+		else if( !V_stricmp( pCamType, "third" ) )
 		{
 			ReplayCamera()->SetMode( OBS_MODE_CHASE );
 			UpdateCameraSelectionPosition( CAM_THIRD );
@@ -2469,7 +2563,7 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 			g_pReplayPerformanceController->AddEvent_Camera_Change_ThirdPerson( flCurTime, nEntIndex );
 			AddSetViewEvent();
 		}
-		else if ( !V_stricmp( pCamType, "free" ) )
+		else if( !V_stricmp( pCamType, "free" ) )
 		{
 			ReplayCamera()->SetMode( OBS_MODE_ROAMING );
 			UpdateCameraSelectionPosition( CAM_FREE );
@@ -2483,22 +2577,22 @@ void CReplayPerformanceEditorPanel::OnCommand( const char *command )
 	}
 	else
 	{
-		engine->ClientCmd( const_cast<char *>( command ) );
+		engine->ClientCmd( const_cast<char*>( command ) );
 		return;
 	}
 
 	BaseClass::OnCommand( command );
 }
 
-void CReplayPerformanceEditorPanel::OnConfirmDestroyChanges( bool bConfirmed, void *pContext )
+void CReplayPerformanceEditorPanel::OnConfirmDestroyChanges( bool bConfirmed, void* pContext )
 {
 	AssertMsg( pContext, "Should have a context!  Fix me!" );
-	if ( pContext && bConfirmed )
+	if( pContext && bConfirmed )
 	{
-		CReplayPerformanceEditorPanel *pEditorPanel = (CReplayPerformanceEditorPanel *)pContext;
-		if ( bConfirmed )
+		CReplayPerformanceEditorPanel* pEditorPanel = ( CReplayPerformanceEditorPanel* )pContext;
+		if( bConfirmed )
 		{
-			CReplay *pReplay = pEditorPanel->GetReplay();
+			CReplay* pReplay = pEditorPanel->GetReplay();
 			g_pReplayPerformanceController->StartRecording( pReplay, true );
 
 			// Reissue the command.
@@ -2518,32 +2612,32 @@ void CReplayPerformanceEditorPanel::OnConfirmDestroyChanges( bool bConfirmed, vo
 	}
 }
 
-/*static*/ void CReplayPerformanceEditorPanel::OnConfirmDiscard( bool bConfirmed, void *pContext )
+/*static*/ void CReplayPerformanceEditorPanel::OnConfirmDiscard( bool bConfirmed, void* pContext )
 {
-	CReplayPerformanceEditorPanel *pEditor = (CReplayPerformanceEditorPanel *)pContext;
-	if ( bConfirmed )
+	CReplayPerformanceEditorPanel* pEditor = ( CReplayPerformanceEditorPanel* )pContext;
+	if( bConfirmed )
 	{
 		pEditor->Exit();
 	}
 	else
 	{
-		if ( !pEditor->IsVisible() )
+		if( !pEditor->IsVisible() )
 		{
 			PlayDemo();
 		}
 	}
 }
 
-/*static*/ void CReplayPerformanceEditorPanel::OnConfirmExit( bool bConfirmed, void *pContext )
+/*static*/ void CReplayPerformanceEditorPanel::OnConfirmExit( bool bConfirmed, void* pContext )
 {
-	CReplayPerformanceEditorPanel *pEditor = (CReplayPerformanceEditorPanel *)pContext;
-	if ( bConfirmed )
+	CReplayPerformanceEditorPanel* pEditor = ( CReplayPerformanceEditorPanel* )pContext;
+	if( bConfirmed )
 	{
 		pEditor->Exit();
 	}
 	else
 	{
-		if ( !pEditor->IsVisible() )
+		if( !pEditor->IsVisible() )
 		{
 			PlayDemo();
 		}
@@ -2562,14 +2656,14 @@ void CReplayPerformanceEditorPanel::SetOrRemoveOutTick( int nTick, bool bRemoveI
 
 void CReplayPerformanceEditorPanel::SetOrRemoveTick( int nTick, bool bUseInTick, bool bRemoveIfSet )
 {
-	CReplayPerformance *pPerformance = GetPerformance();
+	CReplayPerformance* pPerformance = GetPerformance();
 	AssertMsg( pPerformance, "Performance should always be valid by this point." );
 
 	ControlButtons_t iButton;
-	int *pResultTick;
-	const char *pSetTickKey;
-	const char *pUnsetTickKey;
-	if ( bUseInTick )
+	int* pResultTick;
+	const char* pSetTickKey;
+	const char* pUnsetTickKey;
+	if( bUseInTick )
 	{
 		pResultTick = &pPerformance->m_nTickIn;
 		iButton = CTRLBUTTON_IN;
@@ -2589,7 +2683,7 @@ void CReplayPerformanceEditorPanel::SetOrRemoveTick( int nTick, bool bUseInTick,
 
 	// If tick already exists and we want to remove, remove it
 	bool bSetting;
-	if ( ( *pResultTick >= 0 && bRemoveIfSet ) || bRemoving )
+	if( ( *pResultTick >= 0 && bRemoveIfSet ) || bRemoving )
 	{
 		*pResultTick = -1;
 		bSetting = false;
@@ -2604,7 +2698,7 @@ void CReplayPerformanceEditorPanel::SetOrRemoveTick( int nTick, bool bUseInTick,
 	DisplayPerformanceTip( bSetting ? pSetTickKey : pUnsetTickKey );
 
 	// Select/unselect button
-	CExImageButton *pButton = m_pCtrlButtons[ iButton ];
+	CExImageButton* pButton = m_pCtrlButtons[ iButton ];
 	pButton->SetSelected( bSetting );
 	pButton->InvalidateLayout( true, true );	// Without this, buttons don't update immediately
 
@@ -2612,7 +2706,7 @@ void CReplayPerformanceEditorPanel::SetOrRemoveTick( int nTick, bool bUseInTick,
 	g_pReplayPerformanceController->NotifyDirty();
 }
 
-CReplay *CReplayPerformanceEditorPanel::GetReplay()
+CReplay* CReplayPerformanceEditorPanel::GetReplay()
 {
 	return g_pReplayManager->GetReplay( m_hReplay );
 }
@@ -2631,9 +2725,9 @@ static DHANDLE<CReplayPerformanceEditorPanel> g_ReplayPerformanceEditorPanel;
 
 //-----------------------------------------------------------------------------
 
-CReplayPerformanceEditorPanel *ReplayUI_InitPerformanceEditor( ReplayHandle_t hReplay )
+CReplayPerformanceEditorPanel* ReplayUI_InitPerformanceEditor( ReplayHandle_t hReplay )
 {
-	if ( !g_ReplayPerformanceEditorPanel.Get() )
+	if( !g_ReplayPerformanceEditorPanel.Get() )
 	{
 		g_ReplayPerformanceEditorPanel = SETUP_PANEL( new CReplayPerformanceEditorPanel( NULL, hReplay ) );
 		g_ReplayPerformanceEditorPanel->InvalidateLayout( false, true );
@@ -2647,14 +2741,14 @@ CReplayPerformanceEditorPanel *ReplayUI_InitPerformanceEditor( ReplayHandle_t hR
 
 void ReplayUI_ClosePerformanceEditor()
 {
-	if ( g_ReplayPerformanceEditorPanel )
+	if( g_ReplayPerformanceEditorPanel )
 	{
 		g_ReplayPerformanceEditorPanel->MarkForDeletion();
 		g_ReplayPerformanceEditorPanel = NULL;
 	}
 }
 
-CReplayPerformanceEditorPanel *ReplayUI_GetPerformanceEditor()
+CReplayPerformanceEditorPanel* ReplayUI_GetPerformanceEditor()
 {
 	return g_ReplayPerformanceEditorPanel;
 }

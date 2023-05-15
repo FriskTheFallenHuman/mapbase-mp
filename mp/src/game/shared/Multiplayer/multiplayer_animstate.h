@@ -1,12 +1,12 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #ifndef MULTIPLAYERANIMSTATE_H
 #define MULTIPLAYERANIMSTATE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "convar.h"
@@ -14,10 +14,10 @@
 #include "iplayeranimstate.h"
 
 #if defined( CLIENT_DLL )
-class C_BasePlayer;
-#define CPlayer C_BasePlayer
+	class C_BasePlayer;
+	#define CPlayer C_BasePlayer
 #else
-class CBasePlayer;
+	class CBasePlayer;
 #endif
 
 enum PlayerAnimEvent_t
@@ -95,13 +95,13 @@ struct GestureSlot_t
 	Activity			m_iActivity;
 	bool				m_bAutoKill;
 	bool				m_bActive;
-	CAnimationLayer		*m_pAnimLayer;
+	CAnimationLayer*		m_pAnimLayer;
 };
 
 inline bool IsCustomPlayerAnimEvent( PlayerAnimEvent_t event )
 {
 	return ( event == PLAYERANIMEVENT_CUSTOM ) || ( event == PLAYERANIMEVENT_CUSTOM_GESTURE ) ||
-		( event == PLAYERANIMEVENT_CUSTOM_SEQUENCE ) || ( event == PLAYERANIMEVENT_CUSTOM_GESTURE_SEQUENCE );
+		   ( event == PLAYERANIMEVENT_CUSTOM_SEQUENCE ) || ( event == PLAYERANIMEVENT_CUSTOM_GESTURE_SEQUENCE );
 }
 
 struct MultiPlayerPoseData_t
@@ -154,7 +154,7 @@ struct MultiPlayerMovementData_t
 	// Set speeds to -1 if they are not used.
 	float		m_flWalkSpeed;
 	float		m_flRunSpeed;
-	float		m_flSprintSpeed;	
+	float		m_flSprintSpeed;
 	float		m_flBodyYawRate;
 };
 
@@ -171,30 +171,42 @@ public:
 
 	// Creation/Destruction
 	CMultiPlayerAnimState() {}
-	CMultiPlayerAnimState( CBasePlayer *pPlayer, MultiPlayerMovementData_t &movementData );
+	CMultiPlayerAnimState( CBasePlayer* pPlayer, MultiPlayerMovementData_t& movementData );
 	virtual ~CMultiPlayerAnimState();
 
 	// This is called by both the client and the server in the same way to trigger events for
 	// players firing, jumping, throwing grenades, etc.
 	virtual void ClearAnimationState();
 	virtual void DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
-	virtual Activity CalcMainActivity();	
+	virtual Activity CalcMainActivity();
 	virtual void Update( float eyeYaw, float eyePitch );
 	virtual void Release( void );
 
-	const QAngle &GetRenderAngles();
+	const QAngle& GetRenderAngles();
 
 	virtual Activity TranslateActivity( Activity actDesired );
 
-	virtual void SetRunSpeed( float flSpeed ) { m_MovementData.m_flRunSpeed = flSpeed; }
-	virtual void SetWalkSpeed( float flSpeed ) { m_MovementData.m_flWalkSpeed = flSpeed; }
-	virtual void SetSprintSpeed( float flSpeed ) { m_MovementData.m_flSprintSpeed = flSpeed; }
+	virtual void SetRunSpeed( float flSpeed )
+	{
+		m_MovementData.m_flRunSpeed = flSpeed;
+	}
+	virtual void SetWalkSpeed( float flSpeed )
+	{
+		m_MovementData.m_flWalkSpeed = flSpeed;
+	}
+	virtual void SetSprintSpeed( float flSpeed )
+	{
+		m_MovementData.m_flSprintSpeed = flSpeed;
+	}
 
 	// Debug
 	virtual void ShowDebugInfo( void );
 	virtual void DebugShowAnimState( int iStartLine );
 
-	Activity GetCurrentMainActivity( void ) { return m_eCurrentMainSequenceActivity; }
+	Activity GetCurrentMainActivity( void )
+	{
+		return m_eCurrentMainSequenceActivity;
+	}
 
 	void OnNewModel( void );
 
@@ -207,7 +219,7 @@ public:
 	bool	VerifyAnimLayerInSlot( int iGestureSlot );
 
 	// Feet.
-	// If you are forcing aim yaw, your code is almost definitely broken if you don't include a delay between 
+	// If you are forcing aim yaw, your code is almost definitely broken if you don't include a delay between
 	// teleporting and forcing yaw. This is due to an unfortunate interaction between the command lookback window,
 	// and the fact that m_flEyeYaw is never propogated from the server to the client.
 	// TODO: Fix this after Halloween 2014.
@@ -215,21 +227,27 @@ public:
 
 protected:
 
-	virtual void Init( CBasePlayer *pPlayer, MultiPlayerMovementData_t &movementData ); 
-	CBasePlayer *GetBasePlayer( void )				{ return m_pPlayer; }
+	virtual void Init( CBasePlayer* pPlayer, MultiPlayerMovementData_t& movementData );
+	CBasePlayer* GetBasePlayer( void )
+	{
+		return m_pPlayer;
+	}
 
 	// Allow inheriting classes to override SelectWeightedSequence
-	virtual int SelectWeightedSequence( Activity activity ) { return GetBasePlayer()->SelectWeightedSequence( activity ); }
+	virtual int SelectWeightedSequence( Activity activity )
+	{
+		return GetBasePlayer()->SelectWeightedSequence( activity );
+	}
 	virtual void RestartMainSequence();
 
 	virtual void GetOuterAbsVelocity( Vector& vel );
 	float GetOuterXYSpeed();
 
-	virtual bool HandleJumping( Activity &idealActivity );
-	virtual bool HandleDucking( Activity &idealActivity );
-	virtual bool HandleMoving( Activity &idealActivity );
-	virtual bool HandleSwimming( Activity &idealActivity );
-	virtual bool HandleDying( Activity &idealActivity );
+	virtual bool HandleJumping( Activity& idealActivity );
+	virtual bool HandleDucking( Activity& idealActivity );
+	virtual bool HandleMoving( Activity& idealActivity );
+	virtual bool HandleSwimming( Activity& idealActivity );
+	virtual bool HandleDying( Activity& idealActivity );
 
 	// Gesture Slots
 	CUtlVector<GestureSlot_t>		m_aGestureSlots;
@@ -238,35 +256,38 @@ protected:
 	bool	IsGestureSlotPlaying( int iGestureSlot, Activity iGestureActivity );
 	void	AddToGestureSlot( int iGestureSlot, Activity iGestureActivity, bool bAutoKill );
 	virtual void RestartGesture( int iGestureSlot, Activity iGestureActivity, bool bAutoKill = true );
-	void	ComputeGestureSequence( CStudioHdr *pStudioHdr );
-	void	UpdateGestureLayer( CStudioHdr *pStudioHdr, GestureSlot_t *pGesture );
+	void	ComputeGestureSequence( CStudioHdr* pStudioHdr );
+	void	UpdateGestureLayer( CStudioHdr* pStudioHdr, GestureSlot_t* pGesture );
 	void	DebugGestureInfo( void );
-	virtual float	GetGesturePlaybackRate( void ) { return 1.0f; }
+	virtual float	GetGesturePlaybackRate( void )
+	{
+		return 1.0f;
+	}
 
 #ifdef CLIENT_DLL
-	void	RunGestureSlotAnimEventsToCompletion( GestureSlot_t *pGesture );
+	void	RunGestureSlotAnimEventsToCompletion( GestureSlot_t* pGesture );
 #endif
 
 	virtual void PlayFlinchGesture( Activity iActivity );
 
-	virtual float CalcMovementSpeed( bool *bIsMoving );
-	virtual float CalcMovementPlaybackRate( bool *bIsMoving );
+	virtual float CalcMovementSpeed( bool* bIsMoving );
+	virtual float CalcMovementPlaybackRate( bool* bIsMoving );
 
-	void DoMovementTest( CStudioHdr *pStudioHdr, float flX, float flY );
-	void DoMovementTest( CStudioHdr *pStudioHdr );
-	void GetMovementFlags( CStudioHdr *pStudioHdr );
+	void DoMovementTest( CStudioHdr* pStudioHdr, float flX, float flY );
+	void DoMovementTest( CStudioHdr* pStudioHdr );
+	void GetMovementFlags( CStudioHdr* pStudioHdr );
 
 	// Pose parameters.
-	bool				SetupPoseParameters( CStudioHdr *pStudioHdr );
-	virtual void		ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr );
-	virtual void		ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr );
-	virtual void		ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr );
-	void				ComputePoseParam_BodyHeight( CStudioHdr *pStudioHdr );
+	bool				SetupPoseParameters( CStudioHdr* pStudioHdr );
+	virtual void		ComputePoseParam_MoveYaw( CStudioHdr* pStudioHdr );
+	virtual void		ComputePoseParam_AimPitch( CStudioHdr* pStudioHdr );
+	virtual void		ComputePoseParam_AimYaw( CStudioHdr* pStudioHdr );
+	void				ComputePoseParam_BodyHeight( CStudioHdr* pStudioHdr );
 	virtual void		EstimateYaw( void );
-	void				ConvergeYawAngles( float flGoalYaw, float flYawRate, float flDeltaTime, float &flCurrentYaw );
+	void				ConvergeYawAngles( float flGoalYaw, float flYawRate, float flDeltaTime, float& flCurrentYaw );
 
 	virtual float GetCurrentMaxGroundSpeed();
-	virtual void ComputeSequences( CStudioHdr *pStudioHdr );
+	virtual void ComputeSequences( CStudioHdr* pStudioHdr );
 	void ComputeMainSequence();
 	void UpdateInterpolators();
 	void ResetGroundSpeed( void );
@@ -290,7 +311,7 @@ protected:
 
 protected:
 
-	CBasePlayer	*m_pPlayer;
+	CBasePlayer*	m_pPlayer;
 
 	QAngle				m_angRender;
 
@@ -300,7 +321,7 @@ protected:
 
 	bool						m_bCurrentFeetYawInitialized;
 	float						m_flLastAnimationStateClearTime;
-	
+
 	float m_flEyeYaw;
 	float m_flEyePitch;
 	float m_flGoalFeetYaw;
@@ -311,7 +332,7 @@ protected:
 
 	// Jumping.
 	bool	m_bJumping;
-	float	m_flJumpStartTime;	
+	float	m_flJumpStartTime;
 	bool	m_bFirstJumpFrame;
 
 	// Swimming.
@@ -323,7 +344,7 @@ protected:
 	bool	m_bFirstDyingFrame;
 
 	// Last activity we've used on the lower body. Used to determine if animations should restart.
-	Activity m_eCurrentMainSequenceActivity;	
+	Activity m_eCurrentMainSequenceActivity;
 
 	// Specific full-body sequence to play
 	int		m_nSpecificMainSequence;

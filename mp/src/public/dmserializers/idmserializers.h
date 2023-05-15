@@ -16,7 +16,7 @@
 #define IDMSERIALIZERS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "appframework/IAppSystem.h"
@@ -39,7 +39,7 @@ class IDmSerializers : public IAppSystem
 //-----------------------------------------------------------------------------
 // Singleton
 //-----------------------------------------------------------------------------
-extern IDmSerializers *g_pDmSerializers;
+extern IDmSerializers* g_pDmSerializers;
 
 
 #endif // DMSERIALIZERS_H

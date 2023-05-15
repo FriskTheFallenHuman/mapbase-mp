@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef SCENECACHE_H
 #define SCENECACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "UtlCachedFileData.h"
@@ -28,14 +28,14 @@ public:
 	CSceneCache( const CSceneCache& src );
 
 	int	GetSoundCount() const;
-	char const *GetSoundName( int index );
+	char const* GetSoundName( int index );
 
-	virtual void Save( CUtlBuffer& buf  );
-	virtual void Restore( CUtlBuffer& buf  );
-	virtual void Rebuild( char const *filename );
+	virtual void Save( CUtlBuffer& buf );
+	virtual void Restore( CUtlBuffer& buf );
+	virtual void Rebuild( char const* filename );
 
 	static unsigned int ComputeSoundScriptFileTimestampChecksum();
-	static void PrecacheSceneEvent( CChoreoEvent *event, CUtlVector< unsigned short >& soundlist );
+	static void PrecacheSceneEvent( CChoreoEvent* event, CUtlVector< unsigned short >& soundlist );
 };
 #pragma pack()
 

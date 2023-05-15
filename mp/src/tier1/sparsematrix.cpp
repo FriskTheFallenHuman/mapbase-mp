@@ -34,22 +34,22 @@ void CSparseMatrix::SetDimensions( int nNumRows, int nNumCols )
 }
 
 
-void CSparseMatrix::SetElement( int nRow, int nCol, float flValue ) 
+void CSparseMatrix::SetElement( int nRow, int nCol, float flValue )
 {
 	Assert( nCol < m_nNumCols );
 	int nCount = m_rowDescriptors[nRow].m_nNonZeroCount;
 	bool bValueIsZero = ( flValue == 0.0 );
 	int nFirstEntryIndex = m_rowDescriptors[nRow].m_nDataIndex;
-	if ( nCount )
+	if( nCount )
 	{
-		NonZeroValueDescriptor_t *pValue = &( m_entries[nFirstEntryIndex] );
+		NonZeroValueDescriptor_t* pValue = &( m_entries[nFirstEntryIndex] );
 		int i;
 		for( i = 0; i < nCount; i++ )
 		{
 			int nIdx = pValue->m_nColumnNumber;
-			if ( nIdx == nCol )								// we found it!
+			if( nIdx == nCol )								// we found it!
 			{
-				if ( !bValueIsZero )
+				if( !bValueIsZero )
 				{
 					// we want to overwrite the existing value
 					pValue->m_flValue = flValue;
@@ -65,7 +65,7 @@ void CSparseMatrix::SetElement( int nRow, int nCol, float flValue )
 				}
 				return;
 			}
-			if ( nIdx > nCol )
+			if( nIdx > nCol )
 			{
 				break;
 			}
@@ -73,13 +73,13 @@ void CSparseMatrix::SetElement( int nRow, int nCol, float flValue )
 		}
 		// we did not find an entry for this cell. If we were writing zero, fine - we are
 		// done, otherwise insert
-		if (! bValueIsZero )
+		if( ! bValueIsZero )
 		{
 			m_rowDescriptors[nRow].m_nNonZeroCount++;
 			NonZeroValueDescriptor_t newValue;
 			newValue.m_nColumnNumber = nCol;
 			newValue.m_flValue = flValue;
-			if ( i == nCount )								// need to append
+			if( i == nCount )								// need to append
 			{
 				m_entries.InsertAfter( nFirstEntryIndex + nCount - 1, newValue );
 			}
@@ -94,7 +94,7 @@ void CSparseMatrix::SetElement( int nRow, int nCol, float flValue )
 	else
 	{
 		// row is empty. We may need to insert
-		if ( ! bValueIsZero )
+		if( ! bValueIsZero )
 		{
 			m_rowDescriptors[nRow].m_nNonZeroCount++;
 			NonZeroValueDescriptor_t newValue;
@@ -117,9 +117,9 @@ void CSparseMatrix::FinishedAppending( void )
 
 void CSparseMatrix::AppendElement( int nRow, int nColumn, float flValue )
 {
-	if ( flValue != 0.0 )
+	if( flValue != 0.0 )
 	{
-		if ( m_nHighestRowAppendedTo != nRow )
+		if( m_nHighestRowAppendedTo != nRow )
 		{
 			Assert( nRow > m_nHighestRowAppendedTo );
 			for( int i = m_nHighestRowAppendedTo + 1; i <= nRow; i++ )
@@ -135,7 +135,7 @@ void CSparseMatrix::AppendElement( int nRow, int nColumn, float flValue )
 		m_entries.AddToTail( newDesc );
 	}
 }
-	
-	
+
+
 
 

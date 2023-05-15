@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -16,23 +16,23 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT( C_PointCamera, DT_PointCamera, CPointCamera )
-	RecvPropFloat( RECVINFO( m_FOV ) ), 
-	RecvPropFloat( RECVINFO( m_Resolution ) ), 
-	RecvPropInt( RECVINFO( m_bFogEnable ) ),
-	RecvPropInt( RECVINFO( m_FogColor ) ),
-	RecvPropFloat( RECVINFO( m_flFogStart ) ), 
-	RecvPropFloat( RECVINFO( m_flFogEnd ) ), 
-	RecvPropFloat( RECVINFO( m_flFogMaxDensity ) ), 
-	RecvPropInt( RECVINFO( m_bActive ) ),
-	RecvPropInt( RECVINFO( m_bUseScreenAspectRatio ) ),
+RecvPropFloat( RECVINFO( m_FOV ) ),
+			   RecvPropFloat( RECVINFO( m_Resolution ) ),
+			   RecvPropInt( RECVINFO( m_bFogEnable ) ),
+			   RecvPropInt( RECVINFO( m_FogColor ) ),
+			   RecvPropFloat( RECVINFO( m_flFogStart ) ),
+			   RecvPropFloat( RECVINFO( m_flFogEnd ) ),
+			   RecvPropFloat( RECVINFO( m_flFogMaxDensity ) ),
+			   RecvPropInt( RECVINFO( m_bActive ) ),
+			   RecvPropInt( RECVINFO( m_bUseScreenAspectRatio ) ),
 #ifdef MAPBASE
 	RecvPropInt( RECVINFO( m_iSkyMode ) ),
 	RecvPropString( RECVINFO( m_iszRenderTarget ) ),
 #endif
-END_RECV_TABLE()
+			   END_RECV_TABLE()
 
-C_EntityClassList<C_PointCamera> g_PointCameraList;
-template<> C_PointCamera *C_EntityClassList<C_PointCamera>::m_pClassList = NULL;
+			   C_EntityClassList<C_PointCamera> g_PointCameraList;
+template<> C_PointCamera* C_EntityClassList<C_PointCamera>::m_pClassList = NULL;
 
 C_PointCamera* GetPointCameraList()
 {
@@ -86,7 +86,7 @@ bool C_PointCamera::IsFogEnabled()
 	return m_bFogEnable;
 }
 
-void C_PointCamera::GetFogColor( unsigned char &r, unsigned char &g, unsigned char &b )
+void C_PointCamera::GetFogColor( unsigned char& r, unsigned char& g, unsigned char& b )
 {
 	r = m_FogColor.r;
 	g = m_FogColor.g;
@@ -114,7 +114,7 @@ bool C_PointCamera::IsActive()
 }
 
 
-void C_PointCamera::GetToolRecordingState( KeyValues *msg )
+void C_PointCamera::GetToolRecordingState( KeyValues* msg )
 {
 	BaseClass::GetToolRecordingState( msg );
 
@@ -127,35 +127,37 @@ void C_PointCamera::GetToolRecordingState( KeyValues *msg )
 	state.m_flFogEnd = GetFogEnd();
 	GetFogColor( r, g, b );
 	state.m_FogColor.SetColor( r, g, b, 255 );
-					  
+
 	msg->SetPtr( "monitor", &state );
 }
 
 #ifdef MAPBASE
-extern ITexture *GetCameraTexture( void );
+extern ITexture* GetCameraTexture( void );
 extern void AddReleaseFunc( void );
 
-ITexture *C_PointCamera::RenderTarget()
+ITexture* C_PointCamera::RenderTarget()
 {
-	if (m_iszRenderTarget[0] != '\0')
+	if( m_iszRenderTarget[0] != '\0' )
 	{
-		if (!m_pRenderTarget)
+		if( !m_pRenderTarget )
 		{
 			// We don't use a CTextureReference for this because we don't want to shut down the texture on removal/change
 			m_pRenderTarget = materials->FindTexture( m_iszRenderTarget, TEXTURE_GROUP_RENDER_TARGET );
 		}
 
-		if (m_pRenderTarget)
+		if( m_pRenderTarget )
+		{
 			return m_pRenderTarget;
+		}
 	}
 
 	return GetCameraTexture();
 }
 
 IMPLEMENT_CLIENTCLASS_DT( C_PointCameraOrtho, DT_PointCameraOrtho, CPointCameraOrtho )
-	RecvPropInt( RECVINFO( m_bOrtho ) ),
-	RecvPropArray( RecvPropFloat( RECVINFO( m_OrthoDimensions[0] ) ), m_OrthoDimensions ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_bOrtho ) ),
+			 RecvPropArray( RecvPropFloat( RECVINFO( m_OrthoDimensions[0] ) ), m_OrthoDimensions ),
+			 END_RECV_TABLE()
 #endif
 
 

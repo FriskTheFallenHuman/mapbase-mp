@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -33,11 +33,14 @@ public:
 	void	Update( float fTimeDelta );
 	void	Start( void );
 	int		DrawModel( int flags );
-	bool	ShouldDraw( void ) { return m_bEmit; }
+	bool	ShouldDraw( void )
+	{
+		return m_bEmit;
+	}
 
 protected:
 
-	void		AddExtinguisherDecal( trace_t &tr );
+	void		AddExtinguisherDecal( trace_t& tr );
 
 	bool		m_bEmit;
 	bool		m_bUseMuzzlePoint;
@@ -51,21 +54,21 @@ protected:
 	CSmartPtr<CEmberEffect> m_pEmberEmitter;
 
 private:
-	C_ExtinguisherJet( const C_ExtinguisherJet & );
+	C_ExtinguisherJet( const C_ExtinguisherJet& );
 };
 
 //Datatable
 IMPLEMENT_CLIENTCLASS_DT( C_ExtinguisherJet, DT_ExtinguisherJet, CExtinguisherJet )
-	RecvPropInt(RECVINFO(m_bEmit), 0),
-	RecvPropInt(RECVINFO(m_bUseMuzzlePoint), 0),
-	RecvPropInt(RECVINFO(m_nLength), 0),
-	RecvPropInt(RECVINFO(m_nSize), 0),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_bEmit ), 0 ),
+			 RecvPropInt( RECVINFO( m_bUseMuzzlePoint ), 0 ),
+			 RecvPropInt( RECVINFO( m_nLength ), 0 ),
+			 RecvPropInt( RECVINFO( m_nSize ), 0 ),
+			 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_ExtinguisherJet::C_ExtinguisherJet( void )
+			 C_ExtinguisherJet::C_ExtinguisherJet( void )
 {
 	m_bEmit			= false;
 
@@ -78,12 +81,12 @@ C_ExtinguisherJet::~C_ExtinguisherJet( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
 void C_ExtinguisherJet::OnDataChanged( DataUpdateType_t updateType )
 {
-	C_BaseEntity::OnDataChanged(updateType);
+	C_BaseEntity::OnDataChanged( updateType );
 
 	if( updateType == DATA_UPDATE_CREATED )
 	{
@@ -92,7 +95,7 @@ void C_ExtinguisherJet::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ExtinguisherJet::Start( void )
 {
@@ -101,10 +104,10 @@ void C_ExtinguisherJet::Start( void )
 	m_ParticleSpawn.Init( 100 ); //Events per second
 
 	//Create the basic emitter
-	m_pEmitter = CSimpleEmitter::Create("C_ExtinguisherJet::m_pEmitter");
-	
+	m_pEmitter = CSimpleEmitter::Create( "C_ExtinguisherJet::m_pEmitter" );
+
 	Assert( m_pEmitter.IsValid() );
-	if ( m_pEmitter.IsValid() )
+	if( m_pEmitter.IsValid() )
 	{
 		m_MaterialHandle = g_Mat_DustPuff[0];
 		m_pEmitter->SetSortOrigin( GetAbsOrigin() );
@@ -114,7 +117,7 @@ void C_ExtinguisherJet::Start( void )
 	m_pEmberEmitter = CEmberEffect::Create( "C_ExtinguisherJet::m_pEmberEmitter" );
 
 	Assert( m_pEmberEmitter.IsValid() );
-	if ( m_pEmberEmitter.IsValid() )
+	if( m_pEmberEmitter.IsValid() )
 	{
 		m_EmberMaterialHandle = g_Mat_DustPuff[0];
 		m_pEmberEmitter->SetSortOrigin( GetAbsOrigin() );
@@ -122,42 +125,44 @@ void C_ExtinguisherJet::Start( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_ExtinguisherJet::AddExtinguisherDecal( trace_t &tr )
+void C_ExtinguisherJet::AddExtinguisherDecal( trace_t& tr )
 {
-	C_BaseEntity *ent = cl_entitylist->GetEnt( 0 );
-	
-	if ( ent != NULL )
+	C_BaseEntity* ent = cl_entitylist->GetEnt( 0 );
+
+	if( ent != NULL )
 	{
 		int	index = decalsystem->GetDecalIndexForName( "Extinguish" );
-		if ( index >= 0 )
+		if( index >= 0 )
 		{
 			Vector	endpos;
 			endpos.Random( -24.0f, 24.0f );
 			endpos += tr.endpos;
-	
+
 			effects->DecalShoot( index, 0, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), endpos, 0, 0 );
 		}
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_ExtinguisherJet::Update( float fTimeDelta )
 {
-	if ( m_bEmit == false )
-		return;
-
-	C_BasePlayer *player = C_BasePlayer::GetLocalPlayer();
-
-	if ( m_bUseMuzzlePoint )
+	if( m_bEmit == false )
 	{
-		C_BaseViewModel *vm = player ? player->GetViewModel( 0 ) : NULL;
+		return;
+	}
 
-		if ( vm )
+	C_BasePlayer* player = C_BasePlayer::GetLocalPlayer();
+
+	if( m_bUseMuzzlePoint )
+	{
+		C_BaseViewModel* vm = player ? player->GetViewModel( 0 ) : NULL;
+
+		if( vm )
 		{
 			int iAttachment = vm->LookupAttachment( "muzzle" );
 			Vector origin;
@@ -174,46 +179,46 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 	Vector	shotDir, vRight, vUp;
 
 	AngleVectors( GetAbsAngles(), &shotDir, &vRight, &vUp );
-	
+
 	//FIXME: Muzzle point is incorrect on the model!
-	if ( m_bUseMuzzlePoint )
+	if( m_bUseMuzzlePoint )
 	{
 		shotDir.Negate();
 	}
 
 	Vector	endPoint = GetAbsOrigin() + ( shotDir * 150.0f );
-	
+
 	UTIL_TraceLine( GetAbsOrigin(), endPoint, MASK_SHOT, NULL, COLLISION_GROUP_NONE, &tr );
 
 	bool	hitWall = ( tr.fraction < 1.0f );
 
 	//Add normal jet
-	if ( m_pEmitter.IsValid() )
+	if( m_pEmitter.IsValid() )
 	{
-		SimpleParticle	*pParticle;
+		SimpleParticle*	pParticle;
 
 		m_pEmitter->SetSortOrigin( GetAbsOrigin() );
-	
+
 		float tempDelta = fTimeDelta;
-		
+
 		//FIXME: All particles need to be within this loop
 		while( m_ParticleSpawn.NextEvent( tempDelta ) )
 		{
-			pParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_MaterialHandle, GetAbsOrigin() );
+			pParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle, GetAbsOrigin() );
 
-			if ( pParticle )
+			if( pParticle )
 			{
 				pParticle->m_flDieTime	= 0.2f;
 				pParticle->m_flLifetime	= 0.0f;
-				
+
 				pParticle->m_flRoll		= random->RandomInt( 0, 360 );
-				pParticle->m_flRollDelta= random->RandomFloat( -4.0f, 4.0f );
-				
+				pParticle->m_flRollDelta = random->RandomFloat( -4.0f, 4.0f );
+
 				pParticle->m_uchStartSize	= 1;
 				pParticle->m_uchEndSize		= random->RandomInt( 32, 48 );
 				pParticle->m_uchStartAlpha	= random->RandomInt( 128, 164 );
 				pParticle->m_uchEndAlpha	= 0;
-				
+
 				int	cScale = random->RandomInt( 192, 255 );
 				pParticle->m_uchColor[0]	= cScale;
 				pParticle->m_uchColor[1]	= cScale;
@@ -227,7 +232,7 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 
 				AngleVectors( ofsAngles, &dir );
 
-				if ( m_bUseMuzzlePoint )
+				if( m_bUseMuzzlePoint )
 				{
 					dir.Negate();
 				}
@@ -236,21 +241,21 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 			}
 
 			//Add muzzle effect
-			pParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_MaterialHandle, GetAbsOrigin() );
+			pParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle, GetAbsOrigin() );
 
-			if ( pParticle )
+			if( pParticle )
 			{
 				pParticle->m_flDieTime	= 0.1f;
 				pParticle->m_flLifetime	= 0.0f;
-				
+
 				pParticle->m_flRoll		= random->RandomInt( 0, 360 );
-				pParticle->m_flRollDelta= random->RandomFloat( -4.0f, 4.0f );
-				
+				pParticle->m_flRollDelta = random->RandomFloat( -4.0f, 4.0f );
+
 				pParticle->m_uchStartSize	= 1;
 				pParticle->m_uchEndSize		= random->RandomInt( 8, 16 );
 				pParticle->m_uchStartAlpha	= random->RandomInt( 128, 255 );
 				pParticle->m_uchEndAlpha	= 0;
-				
+
 				int	cScale = random->RandomInt( 192, 255 );
 				pParticle->m_uchColor[0]	= cScale;
 				pParticle->m_uchColor[1]	= cScale;
@@ -264,7 +269,7 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 
 				AngleVectors( ofsAngles, &dir );
 
-				if ( m_bUseMuzzlePoint )
+				if( m_bUseMuzzlePoint )
 				{
 					dir.Negate();
 				}
@@ -273,7 +278,7 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 			}
 
 			//Add a wall effect if needed
-			if ( hitWall )
+			if( hitWall )
 			{
 				AddExtinguisherDecal( tr );
 
@@ -281,21 +286,21 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 
 				offDir.Random( -16.0f, 16.0f );
 
-				pParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_MaterialHandle, ( tr.endpos + ( tr.plane.normal * 8.0f ) ) + offDir );
+				pParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle, ( tr.endpos + ( tr.plane.normal * 8.0f ) ) + offDir );
 
-				if ( pParticle )
+				if( pParticle )
 				{
 					pParticle->m_flDieTime	= 0.4f;
 					pParticle->m_flLifetime	= 0.0f;
-					
+
 					pParticle->m_flRoll		= random->RandomInt( 0, 360 );
-					pParticle->m_flRollDelta= random->RandomFloat( -2.0f, 2.0f );
-					
+					pParticle->m_flRollDelta = random->RandomFloat( -2.0f, 2.0f );
+
 					pParticle->m_uchStartSize	= random->RandomInt( 8, 16 );
 					pParticle->m_uchEndSize		= random->RandomInt( 24, 32 );
 					pParticle->m_uchStartAlpha	= random->RandomInt( 64, 128 );
 					pParticle->m_uchEndAlpha	= 0;
-					
+
 					int	cScale = random->RandomInt( 192, 255 );
 					pParticle->m_uchColor[0]	= cScale;
 					pParticle->m_uchColor[1]	= cScale;
@@ -309,19 +314,19 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 					rDir[2] += random->RandomFloat( -0.9f, 0.9f );
 
 					pParticle->m_vecVelocity = rDir * random->RandomInt( 32, 64 );
-				}			
+				}
 			}
 
 			//Add small ember-like particles
-			if ( random->RandomInt( 0, 1 ) == 0 )
+			if( random->RandomInt( 0, 1 ) == 0 )
 			{
 				m_pEmberEmitter->SetSortOrigin( GetAbsOrigin() );
 
-				pParticle = (SimpleParticle *) m_pEmberEmitter->AddParticle( sizeof(SimpleParticle), g_Mat_DustPuff[0], GetAbsOrigin() );
-				
-				assert(pParticle);
+				pParticle = ( SimpleParticle* ) m_pEmberEmitter->AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[0], GetAbsOrigin() );
 
-				if ( pParticle )
+				assert( pParticle );
+
+				if( pParticle )
 				{
 					pParticle->m_flLifetime		= 0.0f;
 					pParticle->m_flDieTime		= 1.0f;
@@ -336,7 +341,7 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 					pParticle->m_uchEndAlpha	= 0;
 					pParticle->m_uchStartSize	= 1;
 					pParticle->m_uchEndSize		= 0;
-					
+
 					Vector	dir;
 					QAngle  ofsAngles;
 
@@ -345,7 +350,7 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 
 					AngleVectors( ofsAngles, &dir );
 
-					if ( m_bUseMuzzlePoint )
+					if( m_bUseMuzzlePoint )
 					{
 						dir.Negate();
 					}
@@ -367,45 +372,47 @@ void C_ExtinguisherJet::Update( float fTimeDelta )
 
 	// Create our beam points
 	int i;
-	for ( i = 0; i < numPoints; i++ )
+	for( i = 0; i < numPoints; i++ )
 	{
-		beamPoints[i] = GetAbsOrigin() + ( shotDir * (32*i*i) );
+		beamPoints[i] = GetAbsOrigin() + ( shotDir * ( 32 * i * i ) );
 
-		beamPoints[i] += vRight * sin( gpGlobals->curtime * 4.0f ) * (2.0f*i);
-		beamPoints[i] += vUp * sin( gpGlobals->curtime * 8.0f ) * (1.0f*i);
-		beamPoints[i] += shotDir * sin( gpGlobals->curtime * (16.0f*i) ) * (1.0f*i);
+		beamPoints[i] += vRight * sin( gpGlobals->curtime * 4.0f ) * ( 2.0f * i );
+		beamPoints[i] += vUp * sin( gpGlobals->curtime * 8.0f ) * ( 1.0f * i );
+		beamPoints[i] += shotDir * sin( gpGlobals->curtime * ( 16.0f * i ) ) * ( 1.0f * i );
 	}
 
-	IMaterial *pMat = materials->FindMaterial( "particle/particle_smokegrenade", TEXTURE_GROUP_PARTICLE );
+	IMaterial* pMat = materials->FindMaterial( "particle/particle_smokegrenade", TEXTURE_GROUP_PARTICLE );
 
 	beamDraw.Start( numPoints, pMat );
 
-	//Setup and draw those points	
+	//Setup and draw those points
 	for( i = 0; i < numPoints; i++ )
 	{
-		float	t = (float) i / (numPoints - 1);
-		float	color = 1.0f * (1.0f - t);
+		float	t = ( float ) i / ( numPoints - 1 );
+		float	color = 1.0f * ( 1.0f - t );
 
 		seg.m_vColor		= Vector( color, color, color );
 		seg.m_vPos			= beamPoints[i];
-		seg.m_flTexCoord	= (float)i/(float)(numPoints-1) - ((gpGlobals->curtime - (int)gpGlobals->curtime) * 4.0f );
-		seg.m_flWidth		= 4.0f + ( (64.0f*t) * (fabs( sin( gpGlobals->curtime * 16.0f ) )) );
+		seg.m_flTexCoord	= ( float )i / ( float )( numPoints - 1 ) - ( ( gpGlobals->curtime - ( int )gpGlobals->curtime ) * 4.0f );
+		seg.m_flWidth		= 4.0f + ( ( 64.0f * t ) * ( fabs( sin( gpGlobals->curtime * 16.0f ) ) ) );
 		seg.m_flAlpha		= color;
 
 		beamDraw.NextSeg( &seg );
 	}
-	
+
 	beamDraw.End();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flags - 
+// Purpose:
+// Input  : flags -
 //-----------------------------------------------------------------------------
 int C_ExtinguisherJet::DrawModel( int flags )
 {
-	if ( m_bEmit == false )
+	if( m_bEmit == false )
+	{
 		return 1;
+	}
 
 	Update( Helper_GetFrameTime() );
 

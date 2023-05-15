@@ -15,7 +15,7 @@
 #define VGUIMATSYSAPP_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -52,17 +52,20 @@ protected:
 	bool SetVideoMode( );
 
 	// Sets up the game path
-	bool SetupSearchPaths( const char *pStartingDir, bool bOnlyUseStartingDir, bool bIsTool );
+	bool SetupSearchPaths( const char* pStartingDir, bool bOnlyUseStartingDir, bool bIsTool );
 
 private:
 	// Returns the app name
-	virtual const char *GetAppName() = 0;
-	virtual bool AppUsesReadPixels() { return false; }
+	virtual const char* GetAppName() = 0;
+	virtual bool AppUsesReadPixels()
+	{
+		return false;
+	}
 
 	// Creates the app window
-	virtual void *CreateAppWindow( char const *pTitle, bool bWindowed, int w, int h );
+	virtual void* CreateAppWindow( char const* pTitle, bool bWindowed, int w, int h );
 
-	void *m_HWnd;
+	void* m_HWnd;
 	int m_nWidth;
 	int m_nHeight;
 };

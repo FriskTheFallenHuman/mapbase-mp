@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -14,7 +14,7 @@
 #define FPS_MEASURE_TIME 2.0
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <igameevents.h>
@@ -22,14 +22,17 @@
 
 class CPerfVisualBenchmark : public CBaseGameSystemPerFrame
 {
-	
+
 public:
 	CPerfVisualBenchmark();
 	virtual ~CPerfVisualBenchmark();
 
 public: // CBaseGameSystem overrides
 
-	virtual char const *Name() { return "CPerfVisualBenchmark"; }
+	virtual char const* Name()
+	{
+		return "CPerfVisualBenchmark";
+	}
 
 	virtual bool Init();
 	virtual void PreRender( );
@@ -41,10 +44,10 @@ private:
 	void Print();
 	struct RunInfo_t
 	{
-		const char *m_pVarName;
-		const char *m_pOnVal;
-		const char *m_pOffVal;
-		const char *m_pDescription;
+		const char* m_pVarName;
+		const char* m_pOnVal;
+		const char* m_pOffVal;
+		const char* m_pDescription;
 		float m_flStabilizeTime;
 		float m_flFPS;
 	};

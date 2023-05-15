@@ -5,7 +5,7 @@
 // Valve, L.L.C., or in accordance with the terms and conditions stipulated in
 // the agreement/contract under which the contents have been supplied.
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -16,7 +16,7 @@
 #define IMAGEPACKER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #define MAX_MAX_LIGHTMAP_WIDTH 2048
@@ -29,7 +29,7 @@ class CImagePacker
 {
 public:
 	bool Reset( int maxLightmapWidth, int maxLightmapHeight );
-	bool AddBlock( int width, int height, int *returnX, int *returnY );
+	bool AddBlock( int width, int height, int* returnX, int* returnY );
 
 protected:
 	int GetMaxYIndex( int firstX, int width );

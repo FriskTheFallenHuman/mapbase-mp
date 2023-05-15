@@ -9,7 +9,7 @@
 #include "c_baseplayer.h"
 #include "tier0/vprof.h"
 #ifdef MAPBASE
-#include "materialsystem/itexture.h"
+	#include "materialsystem/itexture.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -21,18 +21,18 @@ extern ConVar cl_sunlight_depthbias;
 
 ConVar cl_globallight_freeze( "cl_globallight_freeze", "0" );
 #ifdef MAPBASE
-// I imagine these values might've been designed for the ASW view.
-// You can set these as KV anyway.
-ConVar cl_globallight_xoffset( "cl_globallight_xoffset", "0" );
-ConVar cl_globallight_yoffset( "cl_globallight_yoffset", "0" );
+	// I imagine these values might've been designed for the ASW view.
+	// You can set these as KV anyway.
+	ConVar cl_globallight_xoffset( "cl_globallight_xoffset", "0" );
+	ConVar cl_globallight_yoffset( "cl_globallight_yoffset", "0" );
 
-static ConVar cl_globallight_slopescaledepthbias_shadowmap( "cl_globallight_slopescaledepthbias_shadowmap", "16", FCVAR_CHEAT );
-static ConVar cl_globallight_shadowfiltersize( "cl_globallight_shadowfiltersize", "0.1", FCVAR_CHEAT );
-static ConVar cl_globallight_depthbias_shadowmap( "cl_globallight_depthbias_shadowmap", "0.00001", FCVAR_CHEAT );
-static ConVar cl_globallight_depthres( "cl_globallight_depthres", "8192", FCVAR_CHEAT );
+	static ConVar cl_globallight_slopescaledepthbias_shadowmap( "cl_globallight_slopescaledepthbias_shadowmap", "16", FCVAR_CHEAT );
+	static ConVar cl_globallight_shadowfiltersize( "cl_globallight_shadowfiltersize", "0.1", FCVAR_CHEAT );
+	static ConVar cl_globallight_depthbias_shadowmap( "cl_globallight_depthbias_shadowmap", "0.00001", FCVAR_CHEAT );
+	static ConVar cl_globallight_depthres( "cl_globallight_depthres", "8192", FCVAR_CHEAT );
 #else
-ConVar cl_globallight_xoffset( "cl_globallight_xoffset", "-800" );
-ConVar cl_globallight_yoffset( "cl_globallight_yoffset", "1600" );
+	ConVar cl_globallight_xoffset( "cl_globallight_xoffset", "-800" );
+	ConVar cl_globallight_yoffset( "cl_globallight_yoffset", "1600" );
 #endif
 
 //------------------------------------------------------------------------------
@@ -88,35 +88,35 @@ private:
 ClientShadowHandle_t C_GlobalLight::m_LocalFlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
 
 
-IMPLEMENT_CLIENTCLASS_DT(C_GlobalLight, DT_GlobalLight, CGlobalLight)
-	RecvPropVector(RECVINFO(m_shadowDirection)),
-	RecvPropBool(RECVINFO(m_bEnabled)),
-	RecvPropString(RECVINFO(m_TextureName)),
+IMPLEMENT_CLIENTCLASS_DT( C_GlobalLight, DT_GlobalLight, CGlobalLight )
+RecvPropVector( RECVINFO( m_shadowDirection ) ),
+				RecvPropBool( RECVINFO( m_bEnabled ) ),
+				RecvPropString( RECVINFO( m_TextureName ) ),
 #ifdef MAPBASE
-	RecvPropInt(RECVINFO(m_nSpotlightTextureFrame)),
+	RecvPropInt( RECVINFO( m_nSpotlightTextureFrame ) ),
 #endif
-	/*RecvPropInt(RECVINFO(m_LightColor), 0, RecvProxy_Int32ToColor32),*/
-	RecvPropInt(RECVINFO(m_LightColor), 0, RecvProxy_IntToColor32),
+				/*RecvPropInt(RECVINFO(m_LightColor), 0, RecvProxy_Int32ToColor32),*/
+				RecvPropInt( RECVINFO( m_LightColor ), 0, RecvProxy_IntToColor32 ),
 #ifdef MAPBASE
-	RecvPropFloat(RECVINFO(m_flBrightnessScale)),
+	RecvPropFloat( RECVINFO( m_flBrightnessScale ) ),
 #endif
-	RecvPropFloat(RECVINFO(m_flColorTransitionTime)),
-	RecvPropFloat(RECVINFO(m_flSunDistance)),
-	RecvPropFloat(RECVINFO(m_flFOV)),
-	RecvPropFloat(RECVINFO(m_flNearZ)),
-	RecvPropFloat(RECVINFO(m_flNorthOffset)),
+				RecvPropFloat( RECVINFO( m_flColorTransitionTime ) ),
+				RecvPropFloat( RECVINFO( m_flSunDistance ) ),
+				RecvPropFloat( RECVINFO( m_flFOV ) ),
+				RecvPropFloat( RECVINFO( m_flNearZ ) ),
+				RecvPropFloat( RECVINFO( m_flNorthOffset ) ),
 #ifdef MAPBASE
-	RecvPropFloat(RECVINFO(m_flEastOffset)),
-	RecvPropFloat(RECVINFO(m_flForwardOffset)),
-	RecvPropFloat(RECVINFO(m_flOrthoSize)),
+	RecvPropFloat( RECVINFO( m_flEastOffset ) ),
+	RecvPropFloat( RECVINFO( m_flForwardOffset ) ),
+	RecvPropFloat( RECVINFO( m_flOrthoSize ) ),
 #endif
-	RecvPropBool(RECVINFO(m_bEnableShadows)),
-END_RECV_TABLE()
+				RecvPropBool( RECVINFO( m_bEnableShadows ) ),
+				END_RECV_TABLE()
 
 
-C_GlobalLight::~C_GlobalLight()
+				C_GlobalLight::~C_GlobalLight()
 {
-	if ( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
+	if( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
 	{
 		g_pClientShadowMgr->DestroyFlashlight( m_LocalFlashlightHandle );
 		m_LocalFlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
@@ -125,7 +125,7 @@ C_GlobalLight::~C_GlobalLight()
 
 void C_GlobalLight::OnDataChanged( DataUpdateType_t updateType )
 {
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_SpotlightTexture.Init( m_TextureName, TEXTURE_GROUP_OTHER, true );
 	}
@@ -133,7 +133,7 @@ void C_GlobalLight::OnDataChanged( DataUpdateType_t updateType )
 	else //if ( updateType == DATA_UPDATE_DATATABLE_CHANGED )
 	{
 		// It could've been changed via input
-		if( !FStrEq(m_SpotlightTexture->GetName(), m_TextureName) )
+		if( !FStrEq( m_SpotlightTexture->GetName(), m_TextureName ) )
 		{
 			m_SpotlightTexture.Init( m_TextureName, TEXTURE_GROUP_OTHER, true );
 		}
@@ -162,24 +162,24 @@ bool C_GlobalLight::ShouldDraw()
 
 void C_GlobalLight::ClientThink()
 {
-	VPROF("C_GlobalLight::ClientThink");
+	VPROF( "C_GlobalLight::ClientThink" );
 
 	bool bSupressWorldLights = false;
 
-	if ( cl_globallight_freeze.GetBool() == true )
+	if( cl_globallight_freeze.GetBool() == true )
 	{
 		return;
 	}
 
-	if ( m_bEnabled )
+	if( m_bEnabled )
 	{
 		Vector vLinearFloatLightColor( m_LightColor.r, m_LightColor.g, m_LightColor.b );
 		float flLinearFloatLightAlpha = m_LightColor.a;
 
 #ifdef MAPBASE
-		if ( m_CurrentLinearFloatLightColor != vLinearFloatLightColor || m_flCurrentLinearFloatLightAlpha != flLinearFloatLightAlpha || m_flCurrentBrightnessScale != m_flBrightnessScale )
+		if( m_CurrentLinearFloatLightColor != vLinearFloatLightColor || m_flCurrentLinearFloatLightAlpha != flLinearFloatLightAlpha || m_flCurrentBrightnessScale != m_flBrightnessScale )
 		{
-			if (m_flColorTransitionTime != 0.0f)
+			if( m_flColorTransitionTime != 0.0f )
 			{
 				float flColorTransitionSpeed = gpGlobals->frametime * m_flColorTransitionTime * 255.0f;
 
@@ -200,7 +200,7 @@ void C_GlobalLight::ClientThink()
 			}
 		}
 #else
-		if ( m_CurrentLinearFloatLightColor != vLinearFloatLightColor || m_flCurrentLinearFloatLightAlpha != flLinearFloatLightAlpha )
+		if( m_CurrentLinearFloatLightColor != vLinearFloatLightColor || m_flCurrentLinearFloatLightAlpha != flLinearFloatLightAlpha )
 		{
 			float flColorTransitionSpeed = gpGlobals->frametime * m_flColorTransitionTime * 255.0f;
 
@@ -222,8 +222,10 @@ void C_GlobalLight::ClientThink()
 
 		/*HACK_GETLOCALPLAYER_GUARD( "C_GlobalLight::ClientThink" );*/
 
-		if ( !C_BasePlayer::GetLocalPlayer() )
+		if( !C_BasePlayer::GetLocalPlayer() )
+		{
 			return;
+		}
 
 		Vector vPos;
 		QAngle EyeAngles;
@@ -257,10 +259,10 @@ void C_GlobalLight::ClientThink()
 		state.m_fConstantAtten = 0.0f;
 		state.m_FarZAtten = m_flSunDistance * 2.0f;
 #ifdef MAPBASE
-		float flAlpha = m_flCurrentLinearFloatLightAlpha * (1.0f / 255.0f);
-		state.m_Color[0] = (m_CurrentLinearFloatLightColor.x * ( 1.0f / 255.0f ) * flAlpha) * m_flCurrentBrightnessScale;
-		state.m_Color[1] = (m_CurrentLinearFloatLightColor.y * ( 1.0f / 255.0f ) * flAlpha) * m_flCurrentBrightnessScale;
-		state.m_Color[2] = (m_CurrentLinearFloatLightColor.z * ( 1.0f / 255.0f ) * flAlpha) * m_flCurrentBrightnessScale;
+		float flAlpha = m_flCurrentLinearFloatLightAlpha * ( 1.0f / 255.0f );
+		state.m_Color[0] = ( m_CurrentLinearFloatLightColor.x * ( 1.0f / 255.0f ) * flAlpha ) * m_flCurrentBrightnessScale;
+		state.m_Color[1] = ( m_CurrentLinearFloatLightColor.y * ( 1.0f / 255.0f ) * flAlpha ) * m_flCurrentBrightnessScale;
+		state.m_Color[2] = ( m_CurrentLinearFloatLightColor.z * ( 1.0f / 255.0f ) * flAlpha ) * m_flCurrentBrightnessScale;
 #else
 		state.m_Color[0] = m_CurrentLinearFloatLightColor.x * ( 1.0f / 255.0f ) * m_flCurrentLinearFloatLightAlpha;
 		state.m_Color[1] = m_CurrentLinearFloatLightColor.y * ( 1.0f / 255.0f ) * m_flCurrentLinearFloatLightAlpha;
@@ -278,7 +280,7 @@ void C_GlobalLight::ClientThink()
 		float flOrthoSize = 1000.0f;
 #endif
 
-		if ( flOrthoSize > 0 )
+		if( flOrthoSize > 0 )
 		{
 			state.m_bOrtho = true;
 			state.m_fOrthoLeft = -flOrthoSize;
@@ -312,10 +314,10 @@ void C_GlobalLight::ClientThink()
 		state.m_nShadowQuality = 1; // Allow entity to affect shadow quality
 //		state.m_bShadowHighRes = true;
 
-		if ( m_bOldEnableShadows != m_bEnableShadows )
+		if( m_bOldEnableShadows != m_bEnableShadows )
 		{
 			// If they change the shadow enable/disable, we need to make a new handle
-			if ( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
+			if( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
 			{
 				g_pClientShadowMgr->DestroyFlashlight( m_LocalFlashlightHandle );
 				m_LocalFlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
@@ -336,7 +338,7 @@ void C_GlobalLight::ClientThink()
 
 		bSupressWorldLights = m_bEnableShadows;
 	}
-	else if ( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
+	else if( m_LocalFlashlightHandle != CLIENTSHADOW_INVALID_HANDLE )
 	{
 		g_pClientShadowMgr->DestroyFlashlight( m_LocalFlashlightHandle );
 		m_LocalFlashlightHandle = CLIENTSHADOW_INVALID_HANDLE;
@@ -345,4 +347,4 @@ void C_GlobalLight::ClientThink()
 	g_pClientShadowMgr->SetShadowFromWorldLightsEnabled( !bSupressWorldLights );
 
 	BaseClass::ClientThink();
-} 
+}

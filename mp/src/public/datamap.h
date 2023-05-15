@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,11 +8,11 @@
 #ifndef DATAMAP_H
 #define DATAMAP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifndef VECTOR_H
-#include "mathlib/vector.h"
+	#include "mathlib/vector.h"
 #endif
 
 #include "tier1/utlvector.h"
@@ -62,7 +62,7 @@ typedef enum _fieldtypes
 	FIELD_INTERVAL,			// a start and range floating point interval ( e.g., 3.2->3.6 == 3.2 and 0.4 )
 	FIELD_MODELINDEX,		// a model index
 	FIELD_MATERIALINDEX,	// a material index (using the material precache string table)
-	
+
 	FIELD_VECTOR2D,			// 2 floats
 
 	FIELD_TYPECOUNT,		// MUST BE LAST
@@ -70,7 +70,7 @@ typedef enum _fieldtypes
 
 
 //-----------------------------------------------------------------------------
-// Field sizes... 
+// Field sizes...
 //-----------------------------------------------------------------------------
 template <int FIELD_TYPE>
 class CDatamapFieldSizeDeducer
@@ -92,37 +92,37 @@ public:
 #define FIELD_SIZE( _fieldType )	CDatamapFieldSizeDeducer<_fieldType>::SIZE
 #define FIELD_BITS( _fieldType )	(FIELD_SIZE( _fieldType ) * 8)
 
-DECLARE_FIELD_SIZE( FIELD_FLOAT,		sizeof(float) )
-DECLARE_FIELD_SIZE( FIELD_STRING,		sizeof(int) )
-DECLARE_FIELD_SIZE( FIELD_VECTOR,		3 * sizeof(float) )
-DECLARE_FIELD_SIZE( FIELD_VECTOR2D,		2 * sizeof(float) )
-DECLARE_FIELD_SIZE( FIELD_QUATERNION,	4 * sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_INTEGER,		sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_BOOLEAN,		sizeof(char))
-DECLARE_FIELD_SIZE( FIELD_SHORT,		sizeof(short))
-DECLARE_FIELD_SIZE( FIELD_CHARACTER,	sizeof(char))
-DECLARE_FIELD_SIZE( FIELD_COLOR32,		sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_CLASSPTR,		sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_EHANDLE,		sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_EDICT,		sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_POSITION_VECTOR, 	3 * sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_TIME,			sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_TICK,			sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_MODELNAME,	sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_SOUNDNAME,	sizeof(int))
-DECLARE_FIELD_SIZE( FIELD_INPUT,		sizeof(int))
+DECLARE_FIELD_SIZE( FIELD_FLOAT,		sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_STRING,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_VECTOR,		3 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_VECTOR2D,		2 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_QUATERNION,	4 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_INTEGER,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_BOOLEAN,		sizeof( char ) )
+DECLARE_FIELD_SIZE( FIELD_SHORT,		sizeof( short ) )
+DECLARE_FIELD_SIZE( FIELD_CHARACTER,	sizeof( char ) )
+DECLARE_FIELD_SIZE( FIELD_COLOR32,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_CLASSPTR,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_EHANDLE,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_EDICT,		sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_POSITION_VECTOR, 	3 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_TIME,			sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_TICK,			sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_MODELNAME,	sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_SOUNDNAME,	sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_INPUT,		sizeof( int ) )
 #ifdef POSIX
-// pointer to members under gnuc are 8bytes if you have a virtual func
-DECLARE_FIELD_SIZE( FIELD_FUNCTION,		sizeof(uint64))
+	// pointer to members under gnuc are 8bytes if you have a virtual func
+	DECLARE_FIELD_SIZE( FIELD_FUNCTION,		sizeof( uint64 ) )
 #else
-DECLARE_FIELD_SIZE( FIELD_FUNCTION,		sizeof(int *))
+	DECLARE_FIELD_SIZE( FIELD_FUNCTION,		sizeof( int* ) )
 #endif
-DECLARE_FIELD_SIZE( FIELD_VMATRIX,		16 * sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_VMATRIX_WORLDSPACE,	16 * sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_MATRIX3X4_WORLDSPACE,	12 * sizeof(float))
-DECLARE_FIELD_SIZE( FIELD_INTERVAL,		2 * sizeof( float) )  // NOTE:  Must match interval.h definition
-DECLARE_FIELD_SIZE( FIELD_MODELINDEX,	sizeof(int) )
-DECLARE_FIELD_SIZE( FIELD_MATERIALINDEX,	sizeof(int) )
+DECLARE_FIELD_SIZE( FIELD_VMATRIX,		16 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_VMATRIX_WORLDSPACE,	16 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_MATRIX3X4_WORLDSPACE,	12 * sizeof( float ) )
+DECLARE_FIELD_SIZE( FIELD_INTERVAL,		2 * sizeof( float ) ) // NOTE:  Must match interval.h definition
+DECLARE_FIELD_SIZE( FIELD_MODELINDEX,	sizeof( int ) )
+DECLARE_FIELD_SIZE( FIELD_MATERIALINDEX,	sizeof( int ) )
 
 
 #define ARRAYSIZE2D(p)		(sizeof(p)/sizeof(p[0][0]))
@@ -196,7 +196,7 @@ DECLARE_FIELD_SIZE( FIELD_MATERIALINDEX,	sizeof(int) )
 // the variable 'name' MUST BE derived from CBaseOutput
 // we know the output type from the variable itself, so it doesn't need to be specified here
 class ISaveRestoreOps;
-extern ISaveRestoreOps *eventFuncs;
+extern ISaveRestoreOps* eventFuncs;
 #define DEFINE_OUTPUT( name, outputname )	{ FIELD_CUSTOM, #name, { offsetof(classNameTypedef, name), 0 }, 1, FTYPEDESC_OUTPUT | FTYPEDESC_SAVE | FTYPEDESC_KEY, outputname, eventFuncs }
 
 // replaces EXPORT table for portability and non-DLL based systems (xbox)
@@ -224,7 +224,7 @@ extern ISaveRestoreOps *eventFuncs;
 
 // These flags apply to C_BasePlayer derived objects only
 #define FTYPEDESC_VIEW_OTHER_PLAYER		0x2000		// By default you can only view fields on the local player (yourself), 
-													//   but if this is set, then we allow you to see fields on other players
+//   but if this is set, then we allow you to see fields on other players
 #define FTYPEDESC_VIEW_OWN_TEAM			0x4000		// Only show this data if the player is on the same team as the local player
 #define FTYPEDESC_VIEW_NEVER			0x8000		// Never show this field to anyone, even the local player (unusual)
 
@@ -238,7 +238,7 @@ class ISaveRestoreOps;
 //
 // Function prototype for all input handlers.
 //
-typedef void (CBaseEntity::*inputfunc_t)(inputdata_t &data);
+typedef void ( CBaseEntity::*inputfunc_t )( inputdata_t& data );
 
 struct datamap_t;
 struct typedescription_t;
@@ -255,30 +255,30 @@ enum
 struct typedescription_t
 {
 	fieldtype_t			fieldType;
-	const char			*fieldName;
+	const char*			fieldName;
 
 	// FIXME: VS2022 Port - I changed this to be unsigned to get some warnings away. Good? Bad? Test it.
 	unsigned int		fieldOffset[ TD_OFFSET_COUNT ]; // 0 == normal, 1 == packed offset
 	unsigned short		fieldSize;
 	short				flags;
 	// the name of the variable in the map/fgd data, or the name of the action
-	const char			*externalName;	
+	const char*			externalName;
 	// pointer to the function set for save/restoring of custom data types
-	ISaveRestoreOps		*pSaveRestoreOps; 
+	ISaveRestoreOps*		pSaveRestoreOps;
 	// for associating function with string names
-	inputfunc_t			inputFunc; 
+	inputfunc_t			inputFunc;
 	// For embedding additional datatables inside this one
-	datamap_t			*td;
+	datamap_t*			td;
 
 	// Stores the actual member variable size in bytes
 	int					fieldSizeInBytes;
 
 	// FTYPEDESC_OVERRIDE point to first baseclass instance if chains_validated has occurred
-	struct typedescription_t *override_field;
+	struct typedescription_t* override_field;
 
 	// Used to track exclusion of baseclass fields
 	int					override_count;
-  
+
 	// Tolerance for field errors for float fields
 	float				fieldTolerance;
 };
@@ -290,10 +290,10 @@ struct typedescription_t
 //-----------------------------------------------------------------------------
 struct datamap_t
 {
-	typedescription_t	*dataDesc;
+	typedescription_t*	dataDesc;
 	int					dataNumFields;
-	char const			*dataClassName;
-	datamap_t			*baseMap;
+	char const*			dataClassName;
+	datamap_t*			baseMap;
 
 	bool				chains_validated;
 	// Have the "packed" offsets been computed
@@ -410,52 +410,52 @@ struct datamap_t
 // Forward compatability with potential seperate byteswap datadescs
 
 #define DECLARE_BYTESWAP_DATADESC() DECLARE_SIMPLE_DATADESC()
-#define BEGIN_BYTESWAP_DATADESC(name) BEGIN_SIMPLE_DATADESC(name) 
-#define BEGIN_BYTESWAP_DATADESC_(name,base) BEGIN_SIMPLE_DATADESC_(name,base) 
+#define BEGIN_BYTESWAP_DATADESC(name) BEGIN_SIMPLE_DATADESC(name)
+#define BEGIN_BYTESWAP_DATADESC_(name,base) BEGIN_SIMPLE_DATADESC_(name,base)
 #define END_BYTESWAP_DATADESC() END_DATADESC()
 
 //-----------------------------------------------------------------------------
 
-template <typename T> 
-inline void DataMapAccess(T *ignored, datamap_t **p)
+template <typename T>
+inline void DataMapAccess( T* ignored, datamap_t** p )
 {
 	*p = &T::m_DataMap;
 }
 
-template <typename T> datamap_t* DataMapInit(T*);
+template <typename T> datamap_t* DataMapInit( T* );
 
 //-----------------------------------------------------------------------------
 
 class CDatadescGeneratedNameHolder
 {
 public:
-	CDatadescGeneratedNameHolder( const char *pszBase )
-	 : m_pszBase(pszBase)
+	CDatadescGeneratedNameHolder( const char* pszBase )
+		: m_pszBase( pszBase )
 	{
 		m_nLenBase = strlen( m_pszBase );
 	}
-	
+
 	~CDatadescGeneratedNameHolder()
 	{
-		for ( int i = 0; i < m_Names.Count(); i++ )
+		for( int i = 0; i < m_Names.Count(); i++ )
 		{
 			delete m_Names[i];
 		}
 	}
-	
-	const char *GenerateName( const char *pszIdentifier )
+
+	const char* GenerateName( const char* pszIdentifier )
 	{
-		char *pBuf = new char[m_nLenBase + strlen(pszIdentifier) + 1];
+		char* pBuf = new char[m_nLenBase + strlen( pszIdentifier ) + 1];
 		strcpy( pBuf, m_pszBase );
 		strcat( pBuf, pszIdentifier );
 		m_Names.AddToTail( pBuf );
 		return pBuf;
 	}
-	
+
 private:
-	const char *m_pszBase;
+	const char* m_pszBase;
 	size_t m_nLenBase;
-	CUtlVector<char *> m_Names;
+	CUtlVector<char*> m_Names;
 };
 
 //-----------------------------------------------------------------------------

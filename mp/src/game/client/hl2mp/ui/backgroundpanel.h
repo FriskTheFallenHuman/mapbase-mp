@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -14,23 +14,23 @@
 //-----------------------------------------------------------------------------
 // Purpose: Creates background image panels
 //-----------------------------------------------------------------------------
-void CreateBackground( vgui::EditablePanel *pWindow );
+void CreateBackground( vgui::EditablePanel* pWindow );
 
 //-----------------------------------------------------------------------------
 // Purpose: Resizes windows to fit completely on-screen (for 1280x1024), and
 //          centers them on the screen.  Sub-controls are also resized and moved.
 //-----------------------------------------------------------------------------
-void LayoutBackgroundPanel( vgui::EditablePanel *pWindow );
+void LayoutBackgroundPanel( vgui::EditablePanel* pWindow );
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets colors etc for background image panels
 //-----------------------------------------------------------------------------
-void ApplyBackgroundSchemeSettings( vgui::EditablePanel *pWindow, vgui::IScheme *pScheme );
+void ApplyBackgroundSchemeSettings( vgui::EditablePanel* pWindow, vgui::IScheme* pScheme );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ResizeWindowControls( vgui::EditablePanel *pWindow, int tall, int wide, int offsetX, int offsetY );
+void ResizeWindowControls( vgui::EditablePanel* pWindow, int tall, int wide, int offsetX, int offsetY );
 
 //-----------------------------------------------------------------------------
 // Purpose: transform a standard scaled value into one that is scaled based the minimum
@@ -41,12 +41,12 @@ int GetAlternateProportionalValueFromScaled( vgui::HScheme hScheme, int scaledVa
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void DrawRoundedBackground( Color bgColor, int wide, int tall );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void DrawRoundedBorder( Color borderColor, int wide, int tall );
 

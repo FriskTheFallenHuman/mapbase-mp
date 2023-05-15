@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -13,11 +13,11 @@
 class CTEAntlionDust : public CTEParticleSystem
 {
 public:
-	
+
 	DECLARE_CLASS( CTEAntlionDust, CTEParticleSystem );
 	DECLARE_SERVERCLASS();
 
-					CTEAntlionDust( const char *name );
+	CTEAntlionDust( const char* name );
 	virtual			~CTEAntlionDust( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles ) { };
@@ -27,6 +27,6 @@ public:
 	CNetworkVar( bool, m_bBlockedSpawner );
 };
 
-void UTIL_CreateAntlionDust( const Vector &origin, const QAngle &angles, bool bBlockedSpawner = false );
+void UTIL_CreateAntlionDust( const Vector& origin, const QAngle& angles, bool bBlockedSpawner = false );
 
 #endif	//ANTLION_DUST_H

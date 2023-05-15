@@ -11,21 +11,25 @@
 #include "tier0/threadtools.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 template <typename T>
-inline void SafeAssign(T** ppInoutDst, T* pInoutSrc )
+inline void SafeAssign( T** ppInoutDst, T* pInoutSrc )
 {
 	Assert( ppInoutDst );
 
 	// Do addref before release
-	if ( pInoutSrc )
+	if( pInoutSrc )
+	{
 		( pInoutSrc )->AddRef();
+	}
 
 	// Do addref before release
-	if ( *ppInoutDst )
+	if( *ppInoutDst )
+	{
 		( *ppInoutDst )->Release();
+	}
 
 	// Do the assignment
 	( *ppInoutDst ) = pInoutSrc;
@@ -34,16 +38,20 @@ inline void SafeAssign(T** ppInoutDst, T* pInoutSrc )
 template <typename T>
 inline void SafeAddRef( T* pObj )
 {
-	if ( pObj )
+	if( pObj )
+	{
 		pObj->AddRef();
+	}
 }
 
 template <typename T>
 inline void SafeRelease( T** ppInoutPtr )
 {
-	Assert( ppInoutPtr  );
-	if ( *ppInoutPtr )
+	Assert( ppInoutPtr );
+	if( *ppInoutPtr )
+	{
 		( *ppInoutPtr )->Release();
+	}
 
 	( *ppInoutPtr ) = NULL;
 }
@@ -67,13 +75,13 @@ public:
 //-----------------------------------------------------------------------------
 
 template <class REFCOUNTED_ITEM_PTR>
-inline int SafeRelease( REFCOUNTED_ITEM_PTR &pRef )
+inline int SafeRelease( REFCOUNTED_ITEM_PTR& pRef )
 {
 	// Use funny syntax so that this works on "auto pointers"
-	REFCOUNTED_ITEM_PTR *ppRef = &pRef;
-	if ( *ppRef )
+	REFCOUNTED_ITEM_PTR* ppRef = &pRef;
+	if( *ppRef )
 	{
-		int result = (*ppRef)->Release();
+		int result = ( *ppRef )->Release();
 		*ppRef = NULL;
 		return result;
 	}
@@ -88,21 +96,25 @@ template <class T = IRefCounted>
 class CAutoRef
 {
 public:
-	CAutoRef( T *pRef )
-	  : m_pRef( pRef )
+	CAutoRef( T* pRef )
+		: m_pRef( pRef )
 	{
-		if ( m_pRef )
+		if( m_pRef )
+		{
 			m_pRef->AddRef();
+		}
 	}
 
-   ~CAutoRef()
-   {
-      if (m_pRef)
-         m_pRef->Release();
-   }
+	~CAutoRef()
+	{
+		if( m_pRef )
+		{
+			m_pRef->Release();
+		}
+	}
 
 private:
-   T *m_pRef;
+	T* m_pRef;
 };
 
 //-----------------------------------------------------------------------------
@@ -123,41 +135,111 @@ template <class T>
 class CBaseAutoPtr
 {
 public:
-	CBaseAutoPtr()                                         	: m_pObject(0) {}
-	CBaseAutoPtr(T *pFrom)                        			: m_pObject(pFrom) {}
+	CBaseAutoPtr()                                         	: m_pObject( 0 ) {}
+	CBaseAutoPtr( T* pFrom )                        			: m_pObject( pFrom ) {}
 
-	operator const void *() const          					{ return m_pObject; }
-	operator void *()                      					{ return m_pObject; }
+	operator const void* () const
+	{
+		return m_pObject;
+	}
+	operator void* ()
+	{
+		return m_pObject;
+	}
 
-	operator const T *() const							    { return m_pObject; }
-	operator const T *()          							{ return m_pObject; }
-	operator T *()											{ return m_pObject; }
+	operator const T* () const
+	{
+		return m_pObject;
+	}
+	operator const T* ()
+	{
+		return m_pObject;
+	}
+	operator T* ()
+	{
+		return m_pObject;
+	}
 
-	int			operator=( int i )							{ AssertMsg( i == 0, "Only NULL allowed on integer assign" ); m_pObject = 0; return 0; }
-	T *			operator=( T *p )							{ m_pObject = p; return p; }
+	int			operator=( int i )
+	{
+		AssertMsg( i == 0, "Only NULL allowed on integer assign" );
+		m_pObject = 0;
+		return 0;
+	}
+	T* 			operator=( T* p )
+	{
+		m_pObject = p;
+		return p;
+	}
 
-    bool        operator !() const							{ return ( !m_pObject ); }
-    bool        operator!=( int i ) const					{ AssertMsg( i == 0, "Only NULL allowed on integer compare" ); return (m_pObject != NULL); }
-	bool		operator==( const void *p ) const			{ return ( m_pObject == p ); }
-	bool		operator!=( const void *p ) const			{ return ( m_pObject != p ); }
-	bool		operator==( T *p ) const					{ return operator==( (void *)p ); }
-	bool		operator!=( T *p ) const					{ return operator!=( (void *)p ); }
-	bool		operator==( const CBaseAutoPtr<T> &p ) const { return operator==( (const void *)p ); }
-	bool		operator!=( const CBaseAutoPtr<T> &p ) const { return operator!=( (const void *)p ); }
+	bool        operator !() const
+	{
+		return ( !m_pObject );
+	}
+	bool        operator!=( int i ) const
+	{
+		AssertMsg( i == 0, "Only NULL allowed on integer compare" );
+		return ( m_pObject != NULL );
+	}
+	bool		operator==( const void* p ) const
+	{
+		return ( m_pObject == p );
+	}
+	bool		operator!=( const void* p ) const
+	{
+		return ( m_pObject != p );
+	}
+	bool		operator==( T* p ) const
+	{
+		return operator==( ( void* )p );
+	}
+	bool		operator!=( T* p ) const
+	{
+		return operator!=( ( void* )p );
+	}
+	bool		operator==( const CBaseAutoPtr<T>& p ) const
+	{
+		return operator==( ( const void* )p );
+	}
+	bool		operator!=( const CBaseAutoPtr<T>& p ) const
+	{
+		return operator!=( ( const void* )p );
+	}
 
-	T *  		operator->()								{ return m_pObject; }
-	T &  		operator *()								{ return *m_pObject; }
-	T ** 		operator &()								{ return &m_pObject; }
+	T*   		operator->()
+	{
+		return m_pObject;
+	}
+	T&   		operator *()
+	{
+		return *m_pObject;
+	}
+	T** 		operator &()
+	{
+		return &m_pObject;
+	}
 
-	const T *   operator->() const							{ return m_pObject; }
-	const T &   operator *() const							{ return *m_pObject; }
-	T * const * operator &() const							{ return &m_pObject; }
+	const T*    operator->() const
+	{
+		return m_pObject;
+	}
+	const T&    operator *() const
+	{
+		return *m_pObject;
+	}
+	T* const* operator &() const
+	{
+		return &m_pObject;
+	}
 
 protected:
-	CBaseAutoPtr( const CBaseAutoPtr<T> &from )				: m_pObject( from.m_pObject ) {}
-	void operator=( const CBaseAutoPtr<T> &from ) 			{ m_pObject = from.m_pObject; }
+	CBaseAutoPtr( const CBaseAutoPtr<T>& from )				: m_pObject( from.m_pObject ) {}
+	void operator=( const CBaseAutoPtr<T>& from )
+	{
+		m_pObject = from.m_pObject;
+	}
 
-	T *m_pObject;
+	T* m_pObject;
 };
 
 //---------------------------------------------------------
@@ -168,21 +250,65 @@ class CRefPtr : public CBaseAutoPtr<T>
 	typedef CBaseAutoPtr<T> BaseClass;
 public:
 	CRefPtr()												{}
-	CRefPtr( T *pInit )										: BaseClass( pInit ) {}
-	CRefPtr( const CRefPtr<T> &from )						: BaseClass( from ) {}
-	~CRefPtr()												{ if ( BaseClass::m_pObject ) BaseClass::m_pObject->Release(); }
+	CRefPtr( T* pInit )										: BaseClass( pInit ) {}
+	CRefPtr( const CRefPtr<T>& from )						: BaseClass( from ) {}
+	~CRefPtr()
+	{
+		if( BaseClass::m_pObject )
+		{
+			BaseClass::m_pObject->Release();
+		}
+	}
 
-	void operator=( const CRefPtr<T> &from )				{ BaseClass::operator=( from ); }
+	void operator=( const CRefPtr<T>& from )
+	{
+		BaseClass::operator=( from );
+	}
 
-	int operator=( int i )									{ return BaseClass::operator=( i ); }
-	T *operator=( T *p )									{ return BaseClass::operator=( p ); }
+	int operator=( int i )
+	{
+		return BaseClass::operator=( i );
+	}
+	T* operator=( T* p )
+	{
+		return BaseClass::operator=( p );
+	}
 
-	operator bool() const									{ return !BaseClass::operator!(); }
-	operator bool()											{ return !BaseClass::operator!(); }
+	operator bool() const
+	{
+		return !BaseClass::operator!();
+	}
+	operator bool()
+	{
+		return !BaseClass::operator!();
+	}
 
-	void SafeRelease()										{ if ( BaseClass::m_pObject ) BaseClass::m_pObject->Release(); BaseClass::m_pObject = 0; }
-	void AssignAddRef( T *pFrom )							{ SafeRelease(); if (pFrom) pFrom->AddRef(); BaseClass::m_pObject = pFrom; }
-	void AddRefAssignTo( T *&pTo )							{ ::SafeRelease( pTo ); if ( BaseClass::m_pObject ) BaseClass::m_pObject->AddRef(); pTo = BaseClass::m_pObject; }
+	void SafeRelease()
+	{
+		if( BaseClass::m_pObject )
+		{
+			BaseClass::m_pObject->Release();
+		}
+		BaseClass::m_pObject = 0;
+	}
+	void AssignAddRef( T* pFrom )
+	{
+		SafeRelease();
+		if( pFrom )
+		{
+			pFrom->AddRef();
+		}
+		BaseClass::m_pObject = pFrom;
+	}
+	void AddRefAssignTo( T*& pTo )
+	{
+		::SafeRelease( pTo );
+		if( BaseClass::m_pObject )
+		{
+			BaseClass::m_pObject->AddRef();
+		}
+		pTo = BaseClass::m_pObject;
+	}
 };
 
 
@@ -193,15 +319,27 @@ public:
 class CRefMT
 {
 public:
-	static int Increment( int *p) { return ThreadInterlockedIncrement( (long *)p ); }
-	static int Decrement( int *p) { return ThreadInterlockedDecrement( (long *)p ); }
+	static int Increment( int* p )
+	{
+		return ThreadInterlockedIncrement( ( long* )p );
+	}
+	static int Decrement( int* p )
+	{
+		return ThreadInterlockedDecrement( ( long* )p );
+	}
 };
 
 class CRefST
 {
 public:
-	static int Increment( int *p) { return ++(*p); }
-	static int Decrement( int *p) { return --(*p); }
+	static int Increment( int* p )
+	{
+		return ++( *p );
+	}
+	static int Decrement( int* p )
+	{
+		return --( *p );
+	}
 };
 
 //-----------------------------------------------------------------------------
@@ -214,7 +352,7 @@ class NO_VTABLE CRefCountServiceBase
 {
 protected:
 	CRefCountServiceBase()
-	  : m_iRefs( 1 )
+		: m_iRefs( 1 )
 	{
 	}
 
@@ -240,10 +378,14 @@ protected:
 	int DoRelease()
 	{
 		int result = CRefThreading::Decrement( &m_iRefs );
-		if ( result )
+		if( result )
+		{
 			return result;
-		if ( OnFinalRelease() && bSelfDelete )
+		}
+		if( OnFinalRelease() && bSelfDelete )
+		{
 			delete this;
+		}
 		return 0;
 	}
 
@@ -254,8 +396,14 @@ private:
 class CRefCountServiceNull
 {
 protected:
-	static int DoAddRef() { return 1; }
-	static int DoRelease() { return 1; }
+	static int DoAddRef()
+	{
+		return 1;
+	}
+	static int DoRelease()
+	{
+		return 1;
+	}
 };
 
 template <typename CRefThreading = CRefMT>
@@ -284,8 +432,10 @@ protected:
 	int DoRelease()
 	{
 		int result = CRefThreading::Decrement( &m_iRefs );
-		if ( result )
+		if( result )
+		{
 			return result;
+		}
 		this->~CRefCountServiceDestruct();
 		return 0;
 	}
@@ -309,72 +459,108 @@ typedef CRefCountServiceMT					CRefCountService;
 // Purpose:	Base classes to implement reference counting
 //-----------------------------------------------------------------------------
 
-template < class REFCOUNT_SERVICE = CRefCountService > 
+template < class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted : public REFCOUNT_SERVICE
 {
 public:
 	virtual ~CRefCounted()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-------------------------------------
 
-template < class BASE1, class REFCOUNT_SERVICE = CRefCountService > 
+template < class BASE1, class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted1 : public BASE1,
-							   public REFCOUNT_SERVICE
+	public REFCOUNT_SERVICE
 {
 public:
 	virtual ~CRefCounted1()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-------------------------------------
 
-template < class BASE1, class BASE2, class REFCOUNT_SERVICE = CRefCountService > 
+template < class BASE1, class BASE2, class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted2 : public BASE1, public BASE2,
-							   public REFCOUNT_SERVICE
+	public REFCOUNT_SERVICE
 {
 public:
 	virtual ~CRefCounted2()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-------------------------------------
 
-template < class BASE1, class BASE2, class BASE3, class REFCOUNT_SERVICE = CRefCountService > 
+template < class BASE1, class BASE2, class BASE3, class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted3 : public BASE1, public BASE2, public BASE3,
-							   public REFCOUNT_SERVICE
+	public REFCOUNT_SERVICE
 {
 	virtual ~CRefCounted3()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-------------------------------------
 
-template < class BASE1, class BASE2, class BASE3, class BASE4, class REFCOUNT_SERVICE = CRefCountService > 
+template < class BASE1, class BASE2, class BASE3, class BASE4, class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted4 : public BASE1, public BASE2, public BASE3, public BASE4,
-							   public REFCOUNT_SERVICE
+	public REFCOUNT_SERVICE
 {
 public:
 	virtual ~CRefCounted4()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-------------------------------------
 
-template < class BASE1, class BASE2, class BASE3, class BASE4, class BASE5, class REFCOUNT_SERVICE = CRefCountService > 
+template < class BASE1, class BASE2, class BASE3, class BASE4, class BASE5, class REFCOUNT_SERVICE = CRefCountService >
 class NO_VTABLE CRefCounted5 : public BASE1, public BASE2, public BASE3, public BASE4, public BASE5,
-							   public REFCOUNT_SERVICE
+	public REFCOUNT_SERVICE
 {
 public:
 	virtual ~CRefCounted5()	{}
-	int AddRef() 			{ return REFCOUNT_SERVICE::DoAddRef(); }
-	int Release()			{ return REFCOUNT_SERVICE::DoRelease(); }
+	int AddRef()
+	{
+		return REFCOUNT_SERVICE::DoAddRef();
+	}
+	int Release()
+	{
+		return REFCOUNT_SERVICE::DoRelease();
+	}
 };
 
 //-----------------------------------------------------------------------------
@@ -382,7 +568,7 @@ public:
 //			referencing problems
 //-----------------------------------------------------------------------------
 
-template <class BASE_REFCOUNTED, int FINAL_REFS, const char *pszName>
+template <class BASE_REFCOUNTED, int FINAL_REFS, const char* pszName>
 class CRefDebug : public BASE_REFCOUNTED
 {
 public:

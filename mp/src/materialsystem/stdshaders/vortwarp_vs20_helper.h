@@ -30,9 +30,9 @@ void WorldSpaceVertexProcess( in float time, in float3 modelOrigin, inout float3
 	float3 C = float3( 0.0f, 0.0f, 1.0f );
 	float3 D = float3( 0.0f, 0.0f, 1.0f );
 	// start
-	
+
 //	float3 modelOrigin = float3( 70.0f, -14.0f, 0.0f );
-	
+
 	float t = worldPos.z * ( 1.0f / ( 72.0f ) ); // about 72 inches tall
 	t = saturate( t );
 	float3 worldPosDelta = ( worldPos - modelOrigin ) * CubicBezier( A, B, C, D, t );

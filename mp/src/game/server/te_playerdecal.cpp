@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,11 +24,11 @@ class CTEPlayerDecal : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEPlayerDecal, CBaseTempEntity );
 
-					CTEPlayerDecal( const char *name );
+	CTEPlayerDecal( const char* name );
 	virtual			~CTEPlayerDecal( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -38,10 +38,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEPlayerDecal::CTEPlayerDecal( const char *name ) :
+CTEPlayerDecal::CTEPlayerDecal( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_nPlayer = 0;
@@ -50,16 +50,16 @@ CTEPlayerDecal::CTEPlayerDecal( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEPlayerDecal::~CTEPlayerDecal( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -69,7 +69,7 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 	m_vecOrigin = current_origin;
 
 	Vector vecEnd;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -91,33 +91,33 @@ void CTEPlayerDecal::Test( const Vector& current_origin, const QAngle& current_a
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEPlayerDecal, DT_TEPlayerDecal)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nPlayer), Q_log2( MAX_PLAYERS ), SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEPlayerDecal, DT_TEPlayerDecal )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( m_nEntity ), MAX_EDICT_BITS, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_nPlayer ), Q_log2( MAX_PLAYERS ), SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TEPlayerDecal objects
-static CTEPlayerDecal g_TEPlayerDecal( "Player Decal" );
+				static CTEPlayerDecal g_TEPlayerDecal( "Player Decal" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			player - 
-//			entity - 
-//			index - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			player -
+//			entity -
+//			index -
 //-----------------------------------------------------------------------------
 void TE_PlayerDecal( IRecipientFilter& filter, float delay,
-	const Vector* pos, int player, int entity )
+					 const Vector* pos, int player, int entity )
 {
 	g_TEPlayerDecal.m_vecOrigin		= *pos;
 	g_TEPlayerDecal.m_nPlayer		= player;
-	g_TEPlayerDecal.m_nEntity		= entity;	
+	g_TEPlayerDecal.m_nEntity		= entity;
 
 	// Send it over the wire
 	g_TEPlayerDecal.Create( filter, delay );

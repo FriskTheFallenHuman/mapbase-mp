@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -28,7 +28,7 @@ public:
 	DECLARE_CLASS( CTEBeamRingPoint, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
 
-					CTEBeamRingPoint( const char *name );
+	CTEBeamRingPoint( const char* name );
 	virtual			~CTEBeamRingPoint( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
@@ -40,10 +40,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBeamRingPoint::CTEBeamRingPoint( const char *name ) :
+CTEBeamRingPoint::CTEBeamRingPoint( const char* name ) :
 	CTEBaseBeam( name )
 {
 	m_vecCenter.Init();
@@ -52,16 +52,16 @@ CTEBeamRingPoint::CTEBeamRingPoint( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBeamRingPoint::~CTEBeamRingPoint( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBeamRingPoint::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -86,19 +86,19 @@ void CTEBeamRingPoint::Test( const Vector& current_origin, const QAngle& current
 }
 
 
-IMPLEMENT_SERVERCLASS_ST( CTEBeamRingPoint, DT_TEBeamRingPoint)
-	SendPropVector( SENDINFO(m_vecCenter), -1, SPROP_COORD ),
-	SendPropFloat( SENDINFO(m_flStartRadius), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),
-	SendPropFloat( SENDINFO(m_flEndRadius), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEBeamRingPoint, DT_TEBeamRingPoint )
+SendPropVector( SENDINFO( m_vecCenter ), -1, SPROP_COORD ),
+				SendPropFloat( SENDINFO( m_flStartRadius ), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),
+				SendPropFloat( SENDINFO( m_flEndRadius ), 16, SPROP_ROUNDUP, 0.0f, 4096.0f ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TEBeamRingPoint objects
-static CTEBeamRingPoint g_TEBeamRingPoint( "BeamRingPoint" );
+				static CTEBeamRingPoint g_TEBeamRingPoint( "BeamRingPoint" );
 
 void TE_BeamRingPoint( IRecipientFilter& filter, float delay,
-	const Vector& center, float start_radius, float end_radius, int modelindex, int haloindex, int startframe, int framerate,
-	float life, float width, int spread, float amplitude, int r, int g, int b, int a, int speed, int flags )
+					   const Vector& center, float start_radius, float end_radius, int modelindex, int haloindex, int startframe, int framerate,
+					   float life, float width, int spread, float amplitude, int r, int g, int b, int a, int speed, int flags )
 {
 	g_TEBeamRingPoint.m_vecCenter	= center;
 	g_TEBeamRingPoint.m_flStartRadius = start_radius;

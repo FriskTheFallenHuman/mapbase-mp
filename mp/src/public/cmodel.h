@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -10,7 +10,7 @@
 #ifndef CMODEL_H
 #define CMODEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "trace.h"
@@ -49,7 +49,7 @@ struct cmodel_t
 
 struct csurface_t
 {
-	const char	*name;
+	const char*	name;
 	short		surfaceProps;
 	unsigned short	flags;		// BUGBUG: These are declared per surface, not per material, but this database is per-material now
 };
@@ -72,7 +72,7 @@ struct Ray_t
 		Assert( &end );
 		VectorSubtract( end, start, m_Delta );
 
-		m_IsSwept = (m_Delta.LengthSqr() != 0);
+		m_IsSwept = ( m_Delta.LengthSqr() != 0 );
 
 		VectorClear( m_Extents );
 		m_IsRay = true;
@@ -87,11 +87,11 @@ struct Ray_t
 		Assert( &end );
 		VectorSubtract( end, start, m_Delta );
 
-		m_IsSwept = (m_Delta.LengthSqr() != 0);
+		m_IsSwept = ( m_Delta.LengthSqr() != 0 );
 
 		VectorSubtract( maxs, mins, m_Extents );
 		m_Extents *= 0.5f;
-		m_IsRay = (m_Extents.LengthSqr() < 1e-6);
+		m_IsRay = ( m_Extents.LengthSqr() < 1e-6 );
 
 		// Offset m_Start to be in the center of the box...
 		VectorAdd( mins, maxs, m_StartOffset );
@@ -104,9 +104,9 @@ struct Ray_t
 	Vector InvDelta() const
 	{
 		Vector vecInvDelta;
-		for ( int iAxis = 0; iAxis < 3; ++iAxis )
+		for( int iAxis = 0; iAxis < 3; ++iAxis )
 		{
-			if ( m_Delta[iAxis] != 0.0f )
+			if( m_Delta[iAxis] != 0.0f )
 			{
 				vecInvDelta[iAxis] = 1.0f / m_Delta[iAxis];
 			}
@@ -124,6 +124,6 @@ private:
 
 #endif // CMODEL_H
 
-	
+
 #include "gametrace.h"
 

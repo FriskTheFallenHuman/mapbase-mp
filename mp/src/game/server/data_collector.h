@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -25,8 +25,8 @@ public:
 	CDataCollector( void );
 	~CDataCollector();
 
-	// IGameEventListener 
-	virtual void FireGameEvent( KeyValues *event );
+	// IGameEventListener
+	virtual void FireGameEvent( KeyValues* event );
 };
 
 

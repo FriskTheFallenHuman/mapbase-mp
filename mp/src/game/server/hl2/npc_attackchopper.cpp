@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -39,11 +39,11 @@
 #include "npc_attackchopper.h"
 
 #ifdef HL2_EPISODIC
-#include "physics_bone_follower.h"
+	#include "physics_bone_follower.h"
 #endif // HL2_EPISODIC
 
 #ifdef MAPBASE
-#include "filters.h"
+	#include "filters.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -59,7 +59,7 @@
 
 #define CHOPPER_MAX_SMALL_CHUNKS	1
 #define CHOPPER_MAX_CHUNKS	3
-static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] = 
+static const char* s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 {
 	"models/gibs/helicopter_brokenpiece_01.mdl",
 	"models/gibs/helicopter_brokenpiece_02.mdl",
@@ -120,7 +120,7 @@ static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 #define SF_HELICOPTER_AGGRESSIVE			0x00100000
 #define SF_HELICOPTER_LONG_SHADOW			0x00200000
 #ifdef MAPBASE
-#define SF_HELICOPTER_AIM_WITH_GUN_OFF		0x00400000
+	#define SF_HELICOPTER_AIM_WITH_GUN_OFF		0x00400000
 #endif
 
 #define CHOPPER_SLOW_BOMB_SPEED	250
@@ -132,46 +132,46 @@ static const char *s_pChunkModelName[CHOPPER_MAX_CHUNKS] =
 #define CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2_SQ	(CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2 * CHOPPER_BULLRUSH_SLOW_SHOOT_SPEED_2)
 
 // CVars
-ConVar	sk_helicopter_health( "sk_helicopter_health","5600");
-ConVar	sk_helicopter_firingcone( "sk_helicopter_firingcone","20.0", 0, "The angle in degrees of the cone in which the shots will be fired" );
-ConVar	sk_helicopter_burstcount( "sk_helicopter_burstcount","12", 0, "How many shot bursts to fire after charging up. The bigger the number, the longer the firing is" );
-ConVar	sk_helicopter_roundsperburst( "sk_helicopter_roundsperburst","5", 0, "How many shots to fire in a single burst" );
+ConVar	sk_helicopter_health( "sk_helicopter_health", "5600" );
+ConVar	sk_helicopter_firingcone( "sk_helicopter_firingcone", "20.0", 0, "The angle in degrees of the cone in which the shots will be fired" );
+ConVar	sk_helicopter_burstcount( "sk_helicopter_burstcount", "12", 0, "How many shot bursts to fire after charging up. The bigger the number, the longer the firing is" );
+ConVar	sk_helicopter_roundsperburst( "sk_helicopter_roundsperburst", "5", 0, "How many shots to fire in a single burst" );
 
-ConVar	sk_helicopter_grenadedamage( "sk_helicopter_grenadedamage","25.0", 0, "The amount of damage the helicopter grenade deals." );
-ConVar	sk_helicopter_grenaderadius( "sk_helicopter_grenaderadius","275.0", 0, "The damage radius of the helicopter grenade." );
-ConVar	sk_helicopter_grenadeforce( "sk_helicopter_grenadeforce","55000.0", 0, "The physics force that the helicopter grenade exerts." );
-ConVar	sk_helicopter_grenade_puntscale( "sk_helicopter_grenade_puntscale","1.5", 0, "When physpunting a chopper's grenade, scale its velocity by this much." );
+ConVar	sk_helicopter_grenadedamage( "sk_helicopter_grenadedamage", "25.0", 0, "The amount of damage the helicopter grenade deals." );
+ConVar	sk_helicopter_grenaderadius( "sk_helicopter_grenaderadius", "275.0", 0, "The damage radius of the helicopter grenade." );
+ConVar	sk_helicopter_grenadeforce( "sk_helicopter_grenadeforce", "55000.0", 0, "The physics force that the helicopter grenade exerts." );
+ConVar	sk_helicopter_grenade_puntscale( "sk_helicopter_grenade_puntscale", "1.5", 0, "When physpunting a chopper's grenade, scale its velocity by this much." );
 
 // Number of bomb hits it takes to kill a chopper on each skill level.
-ConVar sk_helicopter_num_bombs1("sk_helicopter_num_bombs1", "3");
-ConVar sk_helicopter_num_bombs2("sk_helicopter_num_bombs2", "5");
-ConVar sk_helicopter_num_bombs3("sk_helicopter_num_bombs3", "5");
+ConVar sk_helicopter_num_bombs1( "sk_helicopter_num_bombs1", "3" );
+ConVar sk_helicopter_num_bombs2( "sk_helicopter_num_bombs2", "5" );
+ConVar sk_helicopter_num_bombs3( "sk_helicopter_num_bombs3", "5" );
 
-ConVar	sk_npc_dmg_helicopter_to_plr( "sk_npc_dmg_helicopter_to_plr","3", 0, "Damage helicopter shots deal to the player" );
-ConVar	sk_npc_dmg_helicopter( "sk_npc_dmg_helicopter","6", 0, "Damage helicopter shots deal to everything but the player" );
+ConVar	sk_npc_dmg_helicopter_to_plr( "sk_npc_dmg_helicopter_to_plr", "3", 0, "Damage helicopter shots deal to the player" );
+ConVar	sk_npc_dmg_helicopter( "sk_npc_dmg_helicopter", "6", 0, "Damage helicopter shots deal to everything but the player" );
 
-ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed","450.0", 0, "How fast does the zapper drone move?" );
+ConVar	sk_helicopter_drone_speed( "sk_helicopter_drone_speed", "450.0", 0, "How fast does the zapper drone move?" );
 
-ConVar	g_helicopter_chargetime( "g_helicopter_chargetime","2.0", 0, "How much time we have to wait (on average) between the time we start hearing the charging sound + the chopper fires" );
-ConVar	g_helicopter_bullrush_distance("g_helicopter_bullrush_distance", "5000");
-ConVar	g_helicopter_bullrush_bomb_enemy_distance("g_helicopter_bullrush_bomb_enemy_distance", "0");
-ConVar	g_helicopter_bullrush_bomb_time("g_helicopter_bullrush_bomb_time", "10");
-ConVar	g_helicopter_idletime( "g_helicopter_idletime","3.0", 0, "How much time we have to wait (on average) after we fire before we can charge up again" );
-ConVar	g_helicopter_maxfiringdist( "g_helicopter_maxfiringdist","2500.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_bomb_speed( "g_helicopter_bullrush_bomb_speed","850.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_shoot_height( "g_helicopter_bullrush_shoot_height","650.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
-ConVar	g_helicopter_bullrush_mega_bomb_health( "g_helicopter_bullrush_mega_bomb_health","0.25", 0, "Fraction of the health of the chopper before it mega-bombs" );
+ConVar	g_helicopter_chargetime( "g_helicopter_chargetime", "2.0", 0, "How much time we have to wait (on average) between the time we start hearing the charging sound + the chopper fires" );
+ConVar	g_helicopter_bullrush_distance( "g_helicopter_bullrush_distance", "5000" );
+ConVar	g_helicopter_bullrush_bomb_enemy_distance( "g_helicopter_bullrush_bomb_enemy_distance", "0" );
+ConVar	g_helicopter_bullrush_bomb_time( "g_helicopter_bullrush_bomb_time", "10" );
+ConVar	g_helicopter_idletime( "g_helicopter_idletime", "3.0", 0, "How much time we have to wait (on average) after we fire before we can charge up again" );
+ConVar	g_helicopter_maxfiringdist( "g_helicopter_maxfiringdist", "2500.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_bomb_speed( "g_helicopter_bullrush_bomb_speed", "850.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_shoot_height( "g_helicopter_bullrush_shoot_height", "650.0", 0, "The maximum distance the player can be from the chopper before it stops firing" );
+ConVar	g_helicopter_bullrush_mega_bomb_health( "g_helicopter_bullrush_mega_bomb_health", "0.25", 0, "Fraction of the health of the chopper before it mega-bombs" );
 
 ConVar	g_helicopter_bomb_danger_radius( "g_helicopter_bomb_danger_radius", "120" );
 
 Activity ACT_HELICOPTER_DROP_BOMB;
 Activity ACT_HELICOPTER_CRASHING;
 
-static const char *s_pBlinkLightThinkContext = "BlinkLights";
-static const char *s_pSpotlightThinkContext = "SpotlightThink";
-static const char *s_pRampSoundContext = "RampSound";
-static const char *s_pWarningBlinkerContext = "WarningBlinker";
-static const char *s_pAnimateThinkContext = "Animate";
+static const char* s_pBlinkLightThinkContext = "BlinkLights";
+static const char* s_pSpotlightThinkContext = "SpotlightThink";
+static const char* s_pRampSoundContext = "RampSound";
+static const char* s_pWarningBlinkerContext = "WarningBlinker";
+static const char* s_pAnimateThinkContext = "Animate";
 
 #define CHOPPER_LIGHT_BLINK_TIME		1.0f
 #define CHOPPER_LIGHT_BLINK_TIME_SHORT	0.1f
@@ -206,7 +206,7 @@ static inline float ClampSplineRemapVal( float flValue, float flMinValue, float 
 
 
 //-----------------------------------------------------------------------------
-// The bombs the attack helicopter drops 
+// The bombs the attack helicopter drops
 //-----------------------------------------------------------------------------
 enum
 {
@@ -224,48 +224,72 @@ public:
 	virtual void Precache( );
 	virtual void Spawn( );
 	virtual void UpdateOnRemove();
-	virtual void OnEntityEvent( EntityEvent_t event, void *pEventData );
+	virtual void OnEntityEvent( EntityEvent_t event, void* pEventData );
 	virtual void PhysicsSimulate( void );
-	virtual float GetShakeAmplitude( void ) { return 25.0; }
-	virtual float GetShakeRadius( void ) { return sk_helicopter_grenaderadius.GetFloat() * 2; }
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
-	void		 SetExplodeOnContact( bool bExplode ) { m_bExplodeOnContact = bExplode; }
+	virtual float GetShakeAmplitude( void )
+	{
+		return 25.0;
+	}
+	virtual float GetShakeRadius( void )
+	{
+		return sk_helicopter_grenaderadius.GetFloat() * 2;
+	}
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
+	void		 SetExplodeOnContact( bool bExplode )
+	{
+		m_bExplodeOnContact = bExplode;
+	}
 
-	virtual QAngle PreferredCarryAngles( void ) { return QAngle( -12, 98, 55 ); }
-	virtual bool HasPreferredCarryAnglesForPlayer( CBasePlayer *pPlayer ) { return true; }
+	virtual QAngle PreferredCarryAngles( void )
+	{
+		return QAngle( -12, 98, 55 );
+	}
+	virtual bool HasPreferredCarryAnglesForPlayer( CBasePlayer* pPlayer )
+	{
+		return true;
+	}
 
 	float GetBombLifetime();
 
 #ifdef HL2_EPISODIC
-	virtual void OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason );
-	virtual Class_T Classify( void ) {	return CLASS_MISSILE; }
-	void SetCollisionObject( CBaseEntity *pEntity ) { m_hCollisionObject = pEntity; }
-	void SendMissEvent();	
+	virtual void OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t reason );
+	virtual Class_T Classify( void )
+	{
+		return CLASS_MISSILE;
+	}
+	void SetCollisionObject( CBaseEntity* pEntity )
+	{
+		m_hCollisionObject = pEntity;
+	}
+	void SendMissEvent();
 	bool IsThrownByPlayer();
 
-	virtual bool	ShouldPuntUseLaunchForces( PhysGunForce_t reason ) { return ( reason == PHYSGUN_FORCE_LAUNCHED ); }
-	virtual Vector  PhysGunLaunchVelocity( const Vector &forward, float flMass );
+	virtual bool	ShouldPuntUseLaunchForces( PhysGunForce_t reason )
+	{
+		return ( reason == PHYSGUN_FORCE_LAUNCHED );
+	}
+	virtual Vector  PhysGunLaunchVelocity( const Vector& forward, float flMass );
 
-	void InputExplodeIn( inputdata_t &inputdata );
+	void InputExplodeIn( inputdata_t& inputdata );
 #endif // HL2_EPISODIC
 
 private:
 	// Pow!
-	void DoExplosion( const Vector &vecOrigin, const Vector &vecVelocity );
+	void DoExplosion( const Vector& vecOrigin, const Vector& vecVelocity );
 	void ExplodeThink();
 	void RampSoundThink();
 	void WarningBlinkerThink();
 	void StopWarningBlinker();
 	void AnimateThink();
-	void ExplodeConcussion( CBaseEntity *pOther );
+	void ExplodeConcussion( CBaseEntity* pOther );
 	void BecomeActive();
-	void ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity );
+	void ResolveFlyCollisionCustom( trace_t& trace, Vector& vecVelocity );
 
 	bool m_bActivated;
 	bool m_bExplodeOnContact;
-	CSoundPatch	*m_pWarnSound;
+	CSoundPatch*	m_pWarnSound;
 
 	EHANDLE m_hWarningSprite;
 	bool m_bBlinkerAtTop;
@@ -282,7 +306,7 @@ private:
 
 
 //-----------------------------------------------------------------------------
-// The bombs the attack helicopter drops 
+// The bombs the attack helicopter drops
 //-----------------------------------------------------------------------------
 class CBombDropSensor : public CBaseEntity
 {
@@ -294,11 +318,11 @@ public:
 	void Spawn();
 
 	// Drop a bomb at a particular location
-	void	InputDropBomb( inputdata_t &inputdata );
-	void	InputDropBombStraightDown( inputdata_t &inputdata );
-	void	InputDropBombAtTarget( inputdata_t &inputdata );
-	void	InputDropBombAtTargetAlways( inputdata_t &inputdata );
-	void	InputDropBombDelay( inputdata_t &inputdata );
+	void	InputDropBomb( inputdata_t& inputdata );
+	void	InputDropBombStraightDown( inputdata_t& inputdata );
+	void	InputDropBombAtTarget( inputdata_t& inputdata );
+	void	InputDropBombAtTargetAlways( inputdata_t& inputdata );
+	void	InputDropBombDelay( inputdata_t& inputdata );
 };
 
 //-----------------------------------------------------------------------------
@@ -315,19 +339,19 @@ public:
 	virtual void Activate();
 	virtual void UpdateOnRemove();
 
-	static bool CanBomb( const Vector &vecPosition );
+	static bool CanBomb( const Vector& vecPosition );
 
 private:
-	typedef CHandle<CBombSuppressor> BombSuppressorHandle_t;	
-	static CUtlVector< BombSuppressorHandle_t > s_BombSuppressors; 
+	typedef CHandle<CBombSuppressor> BombSuppressorHandle_t;
+	static CUtlVector< BombSuppressorHandle_t > s_BombSuppressors;
 };
 
-	enum 
-	{
-		CHUNK_COCKPIT,
-		CHUNK_BODY,
-		CHUNK_TAIL
-	};
+enum
+{
+	CHUNK_COCKPIT,
+	CHUNK_BODY,
+	CHUNK_TAIL
+};
 
 //-----------------------------------------------------------------------------
 // This entity is used for helicopter gibs with specific properties
@@ -340,22 +364,22 @@ public:
 	DECLARE_CLASS( CHelicopterChunk, CBaseAnimating );
 
 	virtual void Spawn( void );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
 
-	static CHelicopterChunk *CreateHelicopterChunk( const Vector &vecPos, const QAngle &vecAngles, const Vector &vecVelocity, const char *pszModelName, int chunkID );
+	static CHelicopterChunk* CreateHelicopterChunk( const Vector& vecPos, const QAngle& vecAngles, const Vector& vecVelocity, const char* pszModelName, int chunkID );
 
 	int		m_nChunkID;
-	
+
 	CHandle<CHelicopterChunk>	m_hMaster;
-	IPhysicsConstraint			*m_pTailConstraint;
-	IPhysicsConstraint			*m_pCockpitConstraint;
+	IPhysicsConstraint*			m_pTailConstraint;
+	IPhysicsConstraint*			m_pCockpitConstraint;
 
 protected:
 
-	void	CollisionCallback( CHelicopterChunk *pCaller );
+	void	CollisionCallback( CHelicopterChunk* pCaller );
 
 #ifdef MAPBASE
-	void	InputFallApart( inputdata_t &inputdata );
+	void	InputFallApart( inputdata_t& inputdata );
 #endif
 
 	void	FallThink( void );
@@ -364,7 +388,7 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-// The attack helicopter 
+// The attack helicopter
 //-----------------------------------------------------------------------------
 class CNPC_AttackHelicopter : public CBaseHelicopter
 {
@@ -389,42 +413,51 @@ public:
 	virtual void	UpdateOnRemove();
 	virtual void	StopLoopingSounds();
 
-	int		BloodColor( void ) { return DONT_BLEED; }
-	Class_T Classify ( void ) { return CLASS_COMBINE_GUNSHIP; }
-	virtual int	OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	virtual int OnTakeDamage( const CTakeDamageInfo &info );
+	int		BloodColor( void )
+	{
+		return DONT_BLEED;
+	}
+	Class_T Classify( void )
+	{
+		return CLASS_COMBINE_GUNSHIP;
+	}
+	virtual int	OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	virtual void TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	virtual int OnTakeDamage( const CTakeDamageInfo& info );
 
 	// Shot spread
-	virtual Vector GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget );
+	virtual Vector GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget );
 
 	// More Enemy visibility check
-	virtual bool FVisible( CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL );
+	virtual bool FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
 
 	// Think!
 	virtual void PrescheduleThink( void );
 
 	// Purpose: Set the gunship's paddles flailing!
-	virtual void Event_Killed( const CTakeDamageInfo &info );
+	virtual void Event_Killed( const CTakeDamageInfo& info );
 
 	// Drop a bomb at a particular location
-	void	InputDropBomb( inputdata_t &inputdata );
-	void	InputDropBombStraightDown( inputdata_t &inputdata );
-	void	InputDropBombAtTarget( inputdata_t &inputdata );
-	void	InputDropBombAtTargetAlways( inputdata_t &inputdata );
-	void	InputDropBombAtTargetInternal( inputdata_t &inputdata, bool bCheckFairness );
-	void	InputDropBombDelay( inputdata_t &inputdata );
-	void	InputStartCarpetBombing( inputdata_t &inputdata );
-	void	InputStopCarpetBombing( inputdata_t &inputdata );
+	void	InputDropBomb( inputdata_t& inputdata );
+	void	InputDropBombStraightDown( inputdata_t& inputdata );
+	void	InputDropBombAtTarget( inputdata_t& inputdata );
+	void	InputDropBombAtTargetAlways( inputdata_t& inputdata );
+	void	InputDropBombAtTargetInternal( inputdata_t& inputdata, bool bCheckFairness );
+	void	InputDropBombDelay( inputdata_t& inputdata );
+	void	InputStartCarpetBombing( inputdata_t& inputdata );
+	void	InputStopCarpetBombing( inputdata_t& inputdata );
 
-	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
-	virtual const char *GetTracerType( void );
+	virtual void SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
+	virtual const char* GetTracerType( void );
 
-	virtual void DoImpactEffect( trace_t &tr, int nDamageType );
+	virtual void DoImpactEffect( trace_t& tr, int nDamageType );
 	virtual void DoMuzzleFlash( void );
 
 	// FIXME: Work this back into the base class
-	virtual bool ShouldUseFixedPatrolLogic() { return true; }
+	virtual bool ShouldUseFixedPatrolLogic()
+	{
+		return true;
+	}
 
 protected:
 
@@ -451,95 +484,95 @@ private:
 	// Weaponry
 	bool	FireGun( void );
 
-	// Movement:	
+	// Movement:
 	virtual void Flight( void );
 
 	// Changes the main thinking method of helicopters
 	virtual void Hunt( void );
 
 	// For scripted times where it *has* to shoot
-	void	InputResetIdleTime( inputdata_t &inputdata );
-	void	InputSetHealthFraction( inputdata_t &inputdata );
-	void	InputStartBombExplodeOnContact( inputdata_t &inputdata );
-	void	InputStopBombExplodeOnContact( inputdata_t &inputdata );
+	void	InputResetIdleTime( inputdata_t& inputdata );
+	void	InputSetHealthFraction( inputdata_t& inputdata );
+	void	InputStartBombExplodeOnContact( inputdata_t& inputdata );
+	void	InputStopBombExplodeOnContact( inputdata_t& inputdata );
 
-	void	InputEnableAlwaysTransition( inputdata_t &inputdata );
-	void	InputDisableAlwaysTransition( inputdata_t &inputdata );
-	void 	InputOutsideTransition( inputdata_t &inputdata );
-	void 	InputSetOutsideTransitionTarget( inputdata_t &inputdata );
+	void	InputEnableAlwaysTransition( inputdata_t& inputdata );
+	void	InputDisableAlwaysTransition( inputdata_t& inputdata );
+	void 	InputOutsideTransition( inputdata_t& inputdata );
+	void 	InputSetOutsideTransitionTarget( inputdata_t& inputdata );
 
 	// Turns off the gun
-	void	InputGunOff( inputdata_t &inputdata );
+	void	InputGunOff( inputdata_t& inputdata );
 
 	// Vehicle attack modes
-	void	InputStartBombingVehicle( inputdata_t &inputdata );
-	void	InputStartTrailingVehicle( inputdata_t &inputdata );
-	void	InputStartDefaultBehavior( inputdata_t &inputdata );
-	void	InputStartAlwaysLeadingVehicle( inputdata_t &inputdata );
+	void	InputStartBombingVehicle( inputdata_t& inputdata );
+	void	InputStartTrailingVehicle( inputdata_t& inputdata );
+	void	InputStartDefaultBehavior( inputdata_t& inputdata );
+	void	InputStartAlwaysLeadingVehicle( inputdata_t& inputdata );
 
 	// Deadly shooting, tex!
-	void	InputEnableDeadlyShooting( inputdata_t &inputdata );
-	void	InputDisableDeadlyShooting( inputdata_t &inputdata );
-	void	InputStartNormalShooting( inputdata_t &inputdata );
-	void	InputStartLongCycleShooting( inputdata_t &inputdata );
-	void	InputStartContinuousShooting( inputdata_t &inputdata );
-	void	InputStartFastShooting( inputdata_t &inputdata );
+	void	InputEnableDeadlyShooting( inputdata_t& inputdata );
+	void	InputDisableDeadlyShooting( inputdata_t& inputdata );
+	void	InputStartNormalShooting( inputdata_t& inputdata );
+	void	InputStartLongCycleShooting( inputdata_t& inputdata );
+	void	InputStartContinuousShooting( inputdata_t& inputdata );
+	void	InputStartFastShooting( inputdata_t& inputdata );
 
 	int		GetShootingMode( );
 	bool	IsDeadlyShooting();
 
 	// Bombing suppression
-	void	InputEnableBombing( inputdata_t &inputdata );
-	void 	InputDisableBombing( inputdata_t &inputdata );
+	void	InputEnableBombing( inputdata_t& inputdata );
+	void 	InputDisableBombing( inputdata_t& inputdata );
 
 	// Visibility tests
-	void	InputDisablePathVisibilityTests( inputdata_t &inputdata );
-	void 	InputEnablePathVisibilityTests( inputdata_t &inputdata );
+	void	InputDisablePathVisibilityTests( inputdata_t& inputdata );
+	void 	InputEnablePathVisibilityTests( inputdata_t& inputdata );
 
 	// Death, etc.
-	void	InputSelfDestruct( inputdata_t &inputdata );
+	void	InputSelfDestruct( inputdata_t& inputdata );
 
 	// Enemy visibility check
-	CBaseEntity *FindTrackBlocker( const Vector &vecViewPoint, const Vector &vecTargetPos );
+	CBaseEntity* FindTrackBlocker( const Vector& vecViewPoint, const Vector& vecTargetPos );
 
 	// Special path navigation when we explicitly want to follow a path
 	void UpdateFollowPathNavigation();
 
 	// Find interesting nearby things to shoot
-	int BuildMissTargetList( int nCount, CBaseEntity **ppMissCandidates );
+	int BuildMissTargetList( int nCount, CBaseEntity** ppMissCandidates );
 
-	// Shoot when the player's your enemy :			 
-	void ShootAtPlayer( const Vector &vBasePos, const Vector &vGunDir );
+	// Shoot when the player's your enemy :
+	void ShootAtPlayer( const Vector& vBasePos, const Vector& vGunDir );
 
 	// Shoot when the player's your enemy + he's driving a vehicle
-	void ShootAtVehicle( const Vector &vBasePos, const Vector &vGunDir );
+	void ShootAtVehicle( const Vector& vBasePos, const Vector& vGunDir );
 
 	// Shoot where we're facing
-	void ShootAtFacingDirection( const Vector &vBasePos, const Vector &vGunDir, bool bFirstShotAccurate );
+	void ShootAtFacingDirection( const Vector& vBasePos, const Vector& vGunDir, bool bFirstShotAccurate );
 
 	// Updates the facing direction
-	void UpdateFacingDirection( const Vector &vecActualDesiredPosition );
+	void UpdateFacingDirection( const Vector& vecActualDesiredPosition );
 
 	// Various states of the helicopter firing...
-	bool PoseGunTowardTargetDirection( const Vector &vTargetDir );
+	bool PoseGunTowardTargetDirection( const Vector& vTargetDir );
 
 	// Compute the position to fire at (vehicle + non-vehicle case)
-	void ComputeFireAtPosition( Vector *pVecActualTargetPosition );
-	void ComputeVehicleFireAtPosition( Vector *pVecActualTargetPosition );
+	void ComputeFireAtPosition( Vector* pVecActualTargetPosition );
+	void ComputeVehicleFireAtPosition( Vector* pVecActualTargetPosition );
 
 	// Various states of the helicopter firing...
-	bool DoGunIdle( const Vector &vecGunDir, const Vector &vTargetDir );
+	bool DoGunIdle( const Vector& vecGunDir, const Vector& vTargetDir );
 	bool DoGunCharging( );
-	bool DoGunFiring( const Vector &vBasePos, const Vector &vGunDir, const Vector &vecFireAtPosition );
+	bool DoGunFiring( const Vector& vBasePos, const Vector& vGunDir, const Vector& vecFireAtPosition );
 	void FireElectricityGun( );
 
 	// Chooses a point within the circle of death to fire in
-	void PickDirectionToCircleOfDeath( const Vector &vBasePos, const Vector &vecFireAtPosition, Vector *pResult );
+	void PickDirectionToCircleOfDeath( const Vector& vBasePos, const Vector& vecFireAtPosition, Vector* pResult );
 
 	// Gets a vehicle the enemy is in (if any)
-	CBaseEntity *GetEnemyVehicle();
+	CBaseEntity* GetEnemyVehicle();
 
-	// Updates the perpendicular path distance for the chopper	
+	// Updates the perpendicular path distance for the chopper
 	float UpdatePerpPathDistance( float flMaxPathOffset );
 
 	// Purpose :
@@ -555,26 +588,26 @@ private:
 	float GetMaxFiringDistance();
 
 	// Make sure we don't hit too many times
-	void FireBullets( const FireBulletsInfo_t &info );
+	void FireBullets( const FireBulletsInfo_t& info );
 
 	// Is it "fair" to drop this bomb?
-	bool IsBombDropFair( const Vector &vecBombStartPos, const Vector &vecVelocity );
+	bool IsBombDropFair( const Vector& vecBombStartPos, const Vector& vecVelocity );
 
 	// Actually drops the bomb
-	void CreateBomb( bool bCheckForFairness = true, Vector *pVecVelocity = NULL, bool bMegaBomb = false );
-	CGrenadeHelicopter *SpawnBombEntity( const Vector &vecPos, const Vector &vecVelocity ); // Spawns the bomb entity and sets it up
+	void CreateBomb( bool bCheckForFairness = true, Vector* pVecVelocity = NULL, bool bMegaBomb = false );
+	CGrenadeHelicopter* SpawnBombEntity( const Vector& vecPos, const Vector& vecVelocity ); // Spawns the bomb entity and sets it up
 
 	// Deliberately aims as close as possible w/o hitting
-	void AimCloseToTargetButMiss( CBaseEntity *pTarget, float flMinDist, float flMaxDist, const Vector &shootOrigin, Vector *pResult );
+	void AimCloseToTargetButMiss( CBaseEntity* pTarget, float flMinDist, float flMaxDist, const Vector& shootOrigin, Vector* pResult );
 
 	// Pops a shot inside the circle of death using the burst rules
-	void ShootInsideCircleOfDeath( const Vector &vBasePos, const Vector &vecFireAtPosition );
+	void ShootInsideCircleOfDeath( const Vector& vBasePos, const Vector& vecFireAtPosition );
 
 	// How easy is the target to hit?
 	void UpdateTargetHittability();
 
 	// Add a smoke trail since we've taken more damage
-	void AddSmokeTrail( const Vector &vecPos );
+	void AddSmokeTrail( const Vector& vecPos );
 
 	// Destroy all smoke trails
 	void DestroySmokeTrails();
@@ -583,7 +616,7 @@ private:
 	void CreateChopperHusk();
 
 	// Pow!
-	void ExplodeAndThrowChunk( const Vector &vecExplosionPos );
+	void ExplodeAndThrowChunk( const Vector& vecExplosionPos );
 
 	// Drop a corpse!
 	void DropCorpse( int nDamage );
@@ -592,24 +625,27 @@ private:
 	bool ShouldTriggerDamageEffect( int nPrevHealth, int nEffectCount ) const;
 
 	// Become indestructible
-	void InputBecomeIndestructible( inputdata_t &inputdata );
+	void InputBecomeIndestructible( inputdata_t& inputdata );
 
 	// Purpose :
 	float CreepTowardEnemy( float flSpeed, float flMinSpeed, float flMaxSpeed, float flMinDist, float flMaxDist );
 
 	// Start bullrush
-	void InputStartBullrushBehavior( inputdata_t &inputdata );
+	void InputStartBullrushBehavior( inputdata_t& inputdata );
 
-	void GetMaxSpeedAndAccel( float *pMaxSpeed, float *pAccelRate );
-	void ComputeAngularVelocity( const Vector &vecGoalUp, const Vector &vecFacingDirection );
-	void ComputeVelocity( const Vector &deltaPos, float flAdditionalHeight, float flMinDistFromSegment, float flMaxDistFromSegment, Vector *pVecAccel );
+	void GetMaxSpeedAndAccel( float* pMaxSpeed, float* pAccelRate );
+	void ComputeAngularVelocity( const Vector& vecGoalUp, const Vector& vecFacingDirection );
+	void ComputeVelocity( const Vector& deltaPos, float flAdditionalHeight, float flMinDistFromSegment, float flMaxDistFromSegment, Vector* pVecAccel );
 	void FlightDirectlyOverhead( void );
 
 	// Methods related to computing leading distance
 	float ComputeBombingLeadingDistance( float flSpeed, float flSpeedAlongPath, bool bEnemyInVehicle );
 	float ComputeBullrushLeadingDistance( float flSpeed, float flSpeedAlongPath, bool bEnemyInVehicle );
 
-	bool IsCarpetBombing() { return m_bIsCarpetBombing == true; }
+	bool IsCarpetBombing()
+	{
+		return m_bIsCarpetBombing == true;
+	}
 
 	// Update the bullrush state
 	void UpdateBullrushState( void );
@@ -638,9 +674,9 @@ private:
 	virtual float	EnemySearchDistance( );
 
 	// Prototype zapper
-	bool IsValidZapTarget( CBaseEntity *pTarget );
-	void CreateZapBeam( const Vector &vecTargetPos );
-	void CreateEntityZapEffect( CBaseEntity *pEnt );
+	bool IsValidZapTarget( CBaseEntity* pTarget );
+	void CreateZapBeam( const Vector& vecTargetPos );
+	void CreateEntityZapEffect( CBaseEntity* pEnt );
 
 	// Blink lights
 	void BlinkLightsThink();
@@ -650,7 +686,10 @@ private:
 	void SpotlightStartup();
 	void SpotlightShutdown();
 
-	CBaseEntity *GetCrashPoint()	{ return m_hCrashPoint.Get(); }
+	CBaseEntity* GetCrashPoint()
+	{
+		return m_hCrashPoint.Get();
+	}
 
 private:
 	enum
@@ -768,7 +807,7 @@ private:
 	float		m_flGoalYawDmg;
 
 	// Sounds
-	CSoundPatch	*m_pGunFiringSound;
+	CSoundPatch*	m_pGunFiringSound;
 
 	// Outputs
 #ifndef MAPBASE
@@ -784,7 +823,7 @@ private:
 };
 
 #ifdef HL2_EPISODIC
-static const char *pFollowerBoneNames[] =
+static const char* pFollowerBoneNames[] =
 {
 	"Chopper.Body"
 };
@@ -794,130 +833,130 @@ LINK_ENTITY_TO_CLASS( npc_helicopter, CNPC_AttackHelicopter );
 
 BEGIN_DATADESC( CNPC_AttackHelicopter )
 
-	DEFINE_ENTITYFUNC( FlyTouch ),
+DEFINE_ENTITYFUNC( FlyTouch ),
 
-	DEFINE_EMBEDDED( m_Spotlight ),
+				   DEFINE_EMBEDDED( m_Spotlight ),
 #ifdef HL2_EPISODIC
 	DEFINE_EMBEDDED( m_BoneFollowerManager ),
 #endif
-	DEFINE_FIELD( m_angGun,				FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecAngAcceleration,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_iAmmoType,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_flLastCorpseFall,	FIELD_TIME ),
-	DEFINE_FIELD( m_nGunState,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_flChargeTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_flIdleTimeDelay,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_nRemainingBursts,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_nGrenadeCount,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_flPathOffset,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_flAcrossTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_flCurrPathOffset,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_nBurstHits,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_nMaxBurstHits,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_flCircleOfDeathRadius,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_nAttackMode,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_flInputDropBombTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_hSensor,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flAvoidMetric,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_vecLastAngVelocity,	FIELD_VECTOR ),
-	DEFINE_AUTO_ARRAY( m_hSmokeTrail,	FIELD_EHANDLE ),
-	DEFINE_FIELD( m_nSmokeTrailCount,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_nNearShots,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_nMaxNearShots,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_angGun,				FIELD_VECTOR ),
+				   DEFINE_FIELD( m_vecAngAcceleration,	FIELD_VECTOR ),
+				   DEFINE_FIELD( m_iAmmoType,			FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flLastCorpseFall,	FIELD_TIME ),
+				   DEFINE_FIELD( m_nGunState,			FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flChargeTime,		FIELD_TIME ),
+				   DEFINE_FIELD( m_flIdleTimeDelay,	FIELD_FLOAT ),
+				   DEFINE_FIELD( m_nRemainingBursts,	FIELD_INTEGER ),
+				   DEFINE_FIELD( m_nGrenadeCount,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flPathOffset,		FIELD_FLOAT ),
+				   DEFINE_FIELD( m_flAcrossTime,		FIELD_TIME ),
+				   DEFINE_FIELD( m_flCurrPathOffset,	FIELD_FLOAT ),
+				   DEFINE_FIELD( m_nBurstHits,			FIELD_INTEGER ),
+				   DEFINE_FIELD( m_nMaxBurstHits,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flCircleOfDeathRadius,	FIELD_FLOAT ),
+				   DEFINE_FIELD( m_nAttackMode,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flInputDropBombTime,	FIELD_TIME ),
+				   DEFINE_FIELD( m_hSensor,			FIELD_EHANDLE ),
+				   DEFINE_FIELD( m_flAvoidMetric,		FIELD_FLOAT ),
+				   DEFINE_FIELD( m_vecLastAngVelocity,	FIELD_VECTOR ),
+				   DEFINE_AUTO_ARRAY( m_hSmokeTrail,	FIELD_EHANDLE ),
+				   DEFINE_FIELD( m_nSmokeTrailCount,	FIELD_INTEGER ),
+				   DEFINE_FIELD( m_nNearShots,			FIELD_INTEGER ),
+				   DEFINE_FIELD( m_nMaxNearShots,		FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nGunTipAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nGunBaseAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nBombAttachment,	FIELD_INTEGER ),
 //	DEFINE_FIELD( m_nSpotlightAttachment, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flLastFastTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_nSecondaryMode,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_flSecondaryModeStartTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_bRushForward,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flBullrushAdditionalHeight,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_nBullrushBombMode,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_flNextBullrushBombTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flNextMegaBombHealth, FIELD_FLOAT ),
-	DEFINE_FIELD( m_nShootingMode,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_bDeadlyShooting,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bBombingSuppressed,	FIELD_BOOLEAN ),
-	DEFINE_SOUNDPATCH( m_pGunFiringSound ),
-	DEFINE_AUTO_ARRAY( m_hLights,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bIgnorePathVisibilityTests, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bShortBlink,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bIndestructible,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bBombsExplodeOnContact, FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_flLastFastTime,		FIELD_TIME ),
+				   DEFINE_FIELD( m_nSecondaryMode,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flSecondaryModeStartTime,	FIELD_TIME ),
+				   DEFINE_FIELD( m_bRushForward,		FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_flBullrushAdditionalHeight,		FIELD_FLOAT ),
+				   DEFINE_FIELD( m_nBullrushBombMode,	FIELD_INTEGER ),
+				   DEFINE_FIELD( m_flNextBullrushBombTime, FIELD_TIME ),
+				   DEFINE_FIELD( m_flNextMegaBombHealth, FIELD_FLOAT ),
+				   DEFINE_FIELD( m_nShootingMode,		FIELD_INTEGER ),
+				   DEFINE_FIELD( m_bDeadlyShooting,	FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_bBombingSuppressed,	FIELD_BOOLEAN ),
+				   DEFINE_SOUNDPATCH( m_pGunFiringSound ),
+				   DEFINE_AUTO_ARRAY( m_hLights,		FIELD_EHANDLE ),
+				   DEFINE_FIELD( m_bIgnorePathVisibilityTests, FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_bShortBlink,		FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_bIndestructible,	FIELD_BOOLEAN ),
+				   DEFINE_FIELD( m_bBombsExplodeOnContact, FIELD_BOOLEAN ),
 
-	DEFINE_KEYFIELD( m_bAlwaysTransition, FIELD_BOOLEAN, "AlwaysTransition" ),
-	DEFINE_KEYFIELD( m_iszTransitionTarget, FIELD_STRING, "TransitionTarget" ),
-	DEFINE_FIELD( m_bIsCarpetBombing, FIELD_BOOLEAN ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableAlwaysTransition", InputEnableAlwaysTransition ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableAlwaysTransition", InputDisableAlwaysTransition ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "OutsideTransition",	InputOutsideTransition ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetTransitionTarget", InputSetOutsideTransitionTarget ),
+				   DEFINE_KEYFIELD( m_bAlwaysTransition, FIELD_BOOLEAN, "AlwaysTransition" ),
+				   DEFINE_KEYFIELD( m_iszTransitionTarget, FIELD_STRING, "TransitionTarget" ),
+				   DEFINE_FIELD( m_bIsCarpetBombing, FIELD_BOOLEAN ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "EnableAlwaysTransition", InputEnableAlwaysTransition ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "DisableAlwaysTransition", InputDisableAlwaysTransition ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "OutsideTransition",	InputOutsideTransition ),
+				   DEFINE_INPUTFUNC( FIELD_STRING, "SetTransitionTarget", InputSetOutsideTransitionTarget ),
 
-	DEFINE_KEYFIELD( m_flGracePeriod,	FIELD_FLOAT, "GracePeriod" ),
-	DEFINE_KEYFIELD( m_flMaxSpeed,		FIELD_FLOAT, "PatrolSpeed" ),
-	DEFINE_KEYFIELD( m_bNonCombat,		FIELD_BOOLEAN,	"NonCombat" ),
+				   DEFINE_KEYFIELD( m_flGracePeriod,	FIELD_FLOAT, "GracePeriod" ),
+				   DEFINE_KEYFIELD( m_flMaxSpeed,		FIELD_FLOAT, "PatrolSpeed" ),
+				   DEFINE_KEYFIELD( m_bNonCombat,		FIELD_BOOLEAN,	"NonCombat" ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_flFieldOfView,	FIELD_FLOAT, "FieldOfView" ),
 #endif
 
-	DEFINE_FIELD( m_hCrashPoint,		FIELD_EHANDLE ),
+				   DEFINE_FIELD( m_hCrashPoint,		FIELD_EHANDLE ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "ResetIdleTime", InputResetIdleTime ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartAlwaysLeadingVehicle", InputStartAlwaysLeadingVehicle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartBombingVehicle", InputStartBombingVehicle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartTrailingVehicle", InputStartTrailingVehicle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartDefaultBehavior", InputStartDefaultBehavior ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartBullrushBehavior", InputStartBullrushBehavior ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "ResetIdleTime", InputResetIdleTime ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartAlwaysLeadingVehicle", InputStartAlwaysLeadingVehicle ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartBombingVehicle", InputStartBombingVehicle ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartTrailingVehicle", InputStartTrailingVehicle ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartDefaultBehavior", InputStartDefaultBehavior ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartBullrushBehavior", InputStartBullrushBehavior ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "DropBomb", InputDropBomb ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DropBombStraightDown", InputDropBombStraightDown ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTargetAlways", InputDropBombAtTargetAlways ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTarget", InputDropBombAtTarget ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "DropBombDelay", InputDropBombDelay ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartCarpetBombing", InputStartCarpetBombing ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StopCarpetBombing", InputStopCarpetBombing ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "BecomeIndestructible", InputBecomeIndestructible ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnableDeadlyShooting", InputEnableDeadlyShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisableDeadlyShooting", InputDisableDeadlyShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartNormalShooting", InputStartNormalShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartLongCycleShooting", InputStartLongCycleShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartContinuousShooting", InputStartContinuousShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartFastShooting", InputStartFastShooting ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "GunOff", InputGunOff ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "DropBomb", InputDropBomb ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "DropBombStraightDown", InputDropBombStraightDown ),
+				   DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTargetAlways", InputDropBombAtTargetAlways ),
+				   DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTarget", InputDropBombAtTarget ),
+				   DEFINE_INPUTFUNC( FIELD_FLOAT, "DropBombDelay", InputDropBombDelay ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartCarpetBombing", InputStartCarpetBombing ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StopCarpetBombing", InputStopCarpetBombing ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "BecomeIndestructible", InputBecomeIndestructible ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "EnableDeadlyShooting", InputEnableDeadlyShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "DisableDeadlyShooting", InputDisableDeadlyShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartNormalShooting", InputStartNormalShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartLongCycleShooting", InputStartLongCycleShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartContinuousShooting", InputStartContinuousShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartFastShooting", InputStartFastShooting ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "GunOff", InputGunOff ),
 #ifndef MAPBASE // This has been added to all NPCs. npc_helicopter overrides it with its original function, but the datadesc entry isn't needed anymore.
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetHealthFraction", InputSetHealthFraction ),
 #endif
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartBombExplodeOnContact", InputStartBombExplodeOnContact ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StopBombExplodeOnContact", InputStopBombExplodeOnContact ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StartBombExplodeOnContact", InputStartBombExplodeOnContact ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "StopBombExplodeOnContact", InputStopBombExplodeOnContact ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "DisablePathVisibilityTests", InputDisablePathVisibilityTests ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "EnablePathVisibilityTests", InputEnablePathVisibilityTests ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "DisablePathVisibilityTests", InputDisablePathVisibilityTests ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "EnablePathVisibilityTests", InputEnablePathVisibilityTests ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "SelfDestruct", InputSelfDestruct ),
+				   DEFINE_INPUTFUNC( FIELD_VOID, "SelfDestruct", InputSelfDestruct ),
 
-	DEFINE_THINKFUNC( BlinkLightsThink ),
-	DEFINE_THINKFUNC( SpotlightThink ),
+				   DEFINE_THINKFUNC( BlinkLightsThink ),
+				   DEFINE_THINKFUNC( SpotlightThink ),
 
 #ifndef MAPBASE
 	DEFINE_OUTPUT( m_OnHealthChanged, "OnHealthChanged" ),
 #endif
-	DEFINE_OUTPUT( m_OnShotDown, "OnShotDown" ),
+				   DEFINE_OUTPUT( m_OnShotDown, "OnShotDown" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_OutBomb, "OutBomb" ),
 #endif
 
-END_DATADESC()
+				   END_DATADESC()
 
 
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-CNPC_AttackHelicopter::CNPC_AttackHelicopter() : 
-	m_bNonCombat( false ),
-	m_flGracePeriod( 2.0f ),
-	m_bBombsExplodeOnContact( false )
+				   CNPC_AttackHelicopter::CNPC_AttackHelicopter() :
+					   m_bNonCombat( false ),
+					   m_flGracePeriod( 2.0f ),
+					   m_bBombsExplodeOnContact( false )
 {
 	m_flMaxSpeed = 0;
 #ifdef MAPBASE
@@ -925,7 +964,7 @@ CNPC_AttackHelicopter::CNPC_AttackHelicopter() :
 #endif
 }
 
-CNPC_AttackHelicopter::~CNPC_AttackHelicopter(void)
+CNPC_AttackHelicopter::~CNPC_AttackHelicopter( void )
 {
 }
 
@@ -937,9 +976,9 @@ void CNPC_AttackHelicopter::StopLoopingSounds()
 {
 	BaseClass::StopLoopingSounds();
 
-	if ( m_pGunFiringSound )
+	if( m_pGunFiringSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		controller.SoundDestroy( m_pGunFiringSound );
 		m_pGunFiringSound = NULL;
 	}
@@ -948,9 +987,9 @@ void CNPC_AttackHelicopter::StopLoopingSounds()
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void Chopper_PrecacheChunks( CBaseEntity *pChopper )
+void Chopper_PrecacheChunks( CBaseEntity* pChopper )
 {
-	for ( int i = 0; i < CHOPPER_MAX_CHUNKS; ++i )
+	for( int i = 0; i < CHOPPER_MAX_CHUNKS; ++i )
 	{
 		pChopper->PrecacheModel( s_pChunkModelName[i] );
 	}
@@ -959,7 +998,7 @@ void Chopper_PrecacheChunks( CBaseEntity *pChopper )
 	pChopper->PrecacheModel( HELICOPTER_CHUNK_TAIL );
 	pChopper->PrecacheModel( HELICOPTER_CHUNK_BODY );
 }
- 
+
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
@@ -968,41 +1007,41 @@ void CNPC_AttackHelicopter::Precache( void )
 	BaseClass::Precache();
 
 #ifdef MAPBASE
-	if ( GetModelName() != NULL_STRING )
+	if( GetModelName() != NULL_STRING )
 	{
-		PrecacheModel( STRING(GetModelName()) );
+		PrecacheModel( STRING( GetModelName() ) );
 	}
 	else
 #endif
-	if ( !HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
-	{
-		PrecacheModel( CHOPPER_MODEL_NAME );
-	}
-	else
-	{
-		PrecacheModel( CHOPPER_DRONE_NAME );
-	}
+		if( !HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
+		{
+			PrecacheModel( CHOPPER_MODEL_NAME );
+		}
+		else
+		{
+			PrecacheModel( CHOPPER_DRONE_NAME );
+		}
 
 	PrecacheModel( CHOPPER_RED_LIGHT_SPRITE );
 	//PrecacheModel( CHOPPER_MODEL_CORPSE_NAME );
-	
+
 	// If we're never going to engage in combat, we don't need to load these assets!
-	if ( m_bNonCombat == false )
+	if( m_bNonCombat == false )
 	{
 		UTIL_PrecacheOther( "grenade_helicopter" );
 		UTIL_PrecacheOther( "env_fire_trail" );
 		Chopper_PrecacheChunks( this );
-		PrecacheModel("models/combine_soldier.mdl");
+		PrecacheModel( "models/combine_soldier.mdl" );
 	}
 
-	PrecacheScriptSound("NPC_AttackHelicopter.ChargeGun");
-	if ( HasSpawnFlags( SF_HELICOPTER_LOUD_ROTOR_SOUND ) )
+	PrecacheScriptSound( "NPC_AttackHelicopter.ChargeGun" );
+	if( HasSpawnFlags( SF_HELICOPTER_LOUD_ROTOR_SOUND ) )
 	{
-		PrecacheScriptSound("NPC_AttackHelicopter.RotorsLoud");
+		PrecacheScriptSound( "NPC_AttackHelicopter.RotorsLoud" );
 	}
 	else
 	{
-		PrecacheScriptSound("NPC_AttackHelicopter.Rotors");
+		PrecacheScriptSound( "NPC_AttackHelicopter.Rotors" );
 	}
 	PrecacheScriptSound( "NPC_AttackHelicopter.DropMine" );
 	PrecacheScriptSound( "NPC_AttackHelicopter.BadlyDamagedAlert" );
@@ -1019,19 +1058,21 @@ void CNPC_AttackHelicopter::Precache( void )
 	PrecacheScriptSound( "NPC_AttackHelicopterGrenade.Ping" );
 }
 
-int CNPC_AttackHelicopter::ObjectCaps() 
-{ 
+int CNPC_AttackHelicopter::ObjectCaps()
+{
 	int caps = BaseClass::ObjectCaps();
-	if ( m_bAlwaysTransition )
+	if( m_bAlwaysTransition )
+	{
 		caps |= FCAP_NOTIFY_ON_TRANSITION;
-	return caps; 
+	}
+	return caps;
 }
 
-void CNPC_AttackHelicopter::InputOutsideTransition( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputOutsideTransition( inputdata_t& inputdata )
 {
-	CBaseEntity *pEnt = gEntList.FindEntityByName( NULL, m_iszTransitionTarget );
+	CBaseEntity* pEnt = gEntList.FindEntityByName( NULL, m_iszTransitionTarget );
 
-	if ( pEnt )
+	if( pEnt )
 	{
 		Vector teleportLocation = pEnt->GetAbsOrigin();
 		QAngle teleportAngles = pEnt->GetAbsAngles();
@@ -1040,11 +1081,11 @@ void CNPC_AttackHelicopter::InputOutsideTransition( inputdata_t &inputdata )
 	}
 	else
 	{
-		DevMsg( 2, "NPC \"%s\" failed to find a suitable transition a point\n", STRING(GetEntityName()) );
+		DevMsg( 2, "NPC \"%s\" failed to find a suitable transition a point\n", STRING( GetEntityName() ) );
 	}
 }
 
-void CNPC_AttackHelicopter::InputSetOutsideTransitionTarget( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputSetOutsideTransitionTarget( inputdata_t& inputdata )
 {
 	m_iszTransitionTarget = MAKE_STRING( inputdata.value.String() );
 }
@@ -1055,8 +1096,10 @@ void CNPC_AttackHelicopter::InputSetOutsideTransitionTarget( inputdata_t &inputd
 //-----------------------------------------------------------------------------
 bool CNPC_AttackHelicopter::CreateComponents()
 {
-	if ( !BaseClass::CreateComponents() )
+	if( !BaseClass::CreateComponents() )
+	{
 		return false;
+	}
 
 	m_Spotlight.Init( this, AI_SPOTLIGHT_NO_DLIGHTS, 45.0f, 500.0f );
 	return true;
@@ -1076,36 +1119,36 @@ void CNPC_AttackHelicopter::Spawn( void )
 	m_bIgnorePathVisibilityTests = false;
 
 #ifdef MAPBASE
-	if ( GetModelName() != NULL_STRING )
+	if( GetModelName() != NULL_STRING )
 	{
-		SetModel( STRING(GetModelName()) );
+		SetModel( STRING( GetModelName() ) );
 	}
 	else
 #endif
-	if ( !HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
-	{
-		SetModel( CHOPPER_MODEL_NAME );
-	}
-	else
-	{
-		SetModel( CHOPPER_DRONE_NAME );
-	}
+		if( !HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
+		{
+			SetModel( CHOPPER_MODEL_NAME );
+		}
+		else
+		{
+			SetModel( CHOPPER_DRONE_NAME );
+		}
 
-	ExtractBbox( SelectHeaviestSequence( ACT_IDLE ), m_cullBoxMins, m_cullBoxMaxs ); 
+	ExtractBbox( SelectHeaviestSequence( ACT_IDLE ), m_cullBoxMins, m_cullBoxMaxs );
 	GetEnemies()->SetFreeKnowledgeDuration( DEFAULT_FREE_KNOWLEDGE_DURATION );
 
 	float flLoadedSpeed = m_flMaxSpeed;
 	BaseClass::Spawn();
 
-	float flChaseDist = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) ? 
-		CHOPPER_MIN_AGGRESSIVE_CHASE_DIST_DIFF : CHOPPER_MIN_CHASE_DIST_DIFF;
+	float flChaseDist = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) ?
+						CHOPPER_MIN_AGGRESSIVE_CHASE_DIST_DIFF : CHOPPER_MIN_CHASE_DIST_DIFF;
 	InitPathingData( CHOPPER_ARRIVE_DIST, flChaseDist, CHOPPER_AVOID_DIST );
 	SetFarthestPathDist( GetMaxFiringDistance() );
 
 	m_takedamage = DAMAGE_YES;
 	m_nGunState = GUN_STATE_IDLE;
 	SetHullType( HULL_LARGE_CENTERED );
-	
+
 	SetHullSizeNormal();
 
 #ifdef HL2_EPISODIC
@@ -1115,14 +1158,16 @@ void CNPC_AttackHelicopter::Spawn( void )
 	SetPauseState( PAUSE_NO_PAUSE );
 
 #ifdef MAPBASE
-	if (m_iHealth != 0)
+	if( m_iHealth != 0 )
+	{
 		m_iMaxHealth = m_iHealth;
+	}
 	else
 #endif
-	m_iMaxHealth = m_iHealth = sk_helicopter_health.GetInt();
-	
+		m_iMaxHealth = m_iHealth = sk_helicopter_health.GetInt();
+
 	m_flMaxSpeed = flLoadedSpeed;
-	if ( m_flMaxSpeed <= 0 )
+	if( m_flMaxSpeed <= 0 )
 	{
 		m_flMaxSpeed = CHOPPER_MAX_SPEED;
 	}
@@ -1134,7 +1179,7 @@ void CNPC_AttackHelicopter::Spawn( void )
 	m_flFieldOfView = -1.0; // 360 degrees
 #endif
 	m_flIdleTimeDelay = 0.0f;
-	m_iAmmoType = GetAmmoDef()->Index("HelicopterGun"); 
+	m_iAmmoType = GetAmmoDef()->Index( "HelicopterGun" );
 
 	InitBoneControllers();
 
@@ -1148,8 +1193,8 @@ void CNPC_AttackHelicopter::Spawn( void )
 	m_flInputDropBombTime = gpGlobals->curtime;
 	SetActivity( ACT_IDLE );
 
-	int nBombAttachment = LookupAttachment("bomb");
-	m_hSensor = static_cast<CBombDropSensor*>(CreateEntityByName( "npc_helicoptersensor" ));
+	int nBombAttachment = LookupAttachment( "bomb" );
+	m_hSensor = static_cast<CBombDropSensor*>( CreateEntityByName( "npc_helicoptersensor" ) );
 	m_hSensor->Spawn();
 	m_hSensor->SetParent( this, nBombAttachment );
 	m_hSensor->SetLocalOrigin( vec3_origin );
@@ -1163,7 +1208,7 @@ void CNPC_AttackHelicopter::Spawn( void )
 
 #ifdef HL2_EPISODIC
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CNPC_AttackHelicopter::CreateVPhysics( void )
 {
@@ -1179,23 +1224,25 @@ void CNPC_AttackHelicopter::Startup()
 {
 	BaseClass::Startup();
 
-	if ( HasSpawnFlags( SF_HELICOPTER_LIGHTS ) )
+	if( HasSpawnFlags( SF_HELICOPTER_LIGHTS ) )
 	{
-		for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
+		for( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
 		{
 			// See if there's an attachment for this smoke trail
 			char buf[32];
 			Q_snprintf( buf, 32, "Light_Red%d", i );
 			int nAttachment = LookupAttachment( buf );
-			if ( nAttachment == 0 )
+			if( nAttachment == 0 )
 			{
 				m_hLights[i] = NULL;
 				continue;
 			}
 
 			m_hLights[i] = CSprite::SpriteCreate( CHOPPER_RED_LIGHT_SPRITE, vec3_origin, false );
-			if ( !m_hLights[i] )
+			if( !m_hLights[i] )
+			{
 				continue;
+			}
 
 			m_hLights[i]->SetParent( this, nAttachment );
 			m_hLights[i]->SetLocalOrigin( vec3_origin );
@@ -1217,12 +1264,14 @@ void CNPC_AttackHelicopter::Startup()
 void CNPC_AttackHelicopter::BlinkLightsThink()
 {
 	bool bIsOn = false;
-	for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
+	for( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
 	{
-		if ( !m_hLights[i] )
+		if( !m_hLights[i] )
+		{
 			continue;
+		}
 
-		if ( m_hLights[i]->GetScale() > 0.1f )
+		if( m_hLights[i]->GetScale() > 0.1f )
 		{
 			m_hLights[i]->SetScale( 0.1f, CHOPPER_LIGHT_BLINK_TIME_SHORT );
 		}
@@ -1234,7 +1283,7 @@ void CNPC_AttackHelicopter::BlinkLightsThink()
 	}
 
 	float flTime;
-	if ( bIsOn )
+	if( bIsOn )
 	{
 		flTime = CHOPPER_LIGHT_BLINK_TIME_SHORT;
 	}
@@ -1253,8 +1302,10 @@ void CNPC_AttackHelicopter::BlinkLightsThink()
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::SpotlightStartup()
 {
-	if ( !HasSpawnFlags( SF_HELICOPTER_LIGHTS ) )
+	if( !HasSpawnFlags( SF_HELICOPTER_LIGHTS ) )
+	{
 		return;
+	}
 
 	Vector vecForward;
 	Vector vecOrigin;
@@ -1280,7 +1331,7 @@ void CNPC_AttackHelicopter::SpotlightShutdown()
 void CNPC_AttackHelicopter::SpotlightThink()
 {
 	// NOTE: This function should deal with all deactivation cases
-	if ( m_lifeState != LIFE_ALIVE ) 
+	if( m_lifeState != LIFE_ALIVE )
 	{
 		SpotlightShutdown();
 		return;
@@ -1288,11 +1339,11 @@ void CNPC_AttackHelicopter::SpotlightThink()
 
 	switch( m_nAttackMode )
 	{
-	case ATTACK_MODE_BULLRUSH_VEHICLE:
+		case ATTACK_MODE_BULLRUSH_VEHICLE:
 		{
-			switch ( m_nSecondaryMode )
+			switch( m_nSecondaryMode )
 			{
-			case BULLRUSH_MODE_SHOOT_GUN:
+				case BULLRUSH_MODE_SHOOT_GUN:
 				{
 					Vector vecForward;
 					Vector vecOrigin;
@@ -1301,23 +1352,23 @@ void CNPC_AttackHelicopter::SpotlightThink()
 				}
 				break;
 
-			case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
-				if ( GetEnemy() )
-				{
-					m_Spotlight.SetSpotlightTargetPos( GetEnemy()->WorldSpaceCenter() );
-				}
-				break;
+				case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
+					if( GetEnemy() )
+					{
+						m_Spotlight.SetSpotlightTargetPos( GetEnemy()->WorldSpaceCenter() );
+					}
+					break;
 
-			default:
-				SpotlightShutdown();
-				return;
+				default:
+					SpotlightShutdown();
+					return;
 			}
 		}
 		break;
 
-	default:
-		SpotlightShutdown();
-		return;
+		default:
+			SpotlightShutdown();
+			return;
 	}
 
 	m_Spotlight.Update();
@@ -1327,7 +1378,7 @@ void CNPC_AttackHelicopter::SpotlightThink()
 //-----------------------------------------------------------------------------
 // Purpose: Always transition along with the player
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputEnableAlwaysTransition( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputEnableAlwaysTransition( inputdata_t& inputdata )
 {
 	m_bAlwaysTransition = true;
 }
@@ -1335,7 +1386,7 @@ void CNPC_AttackHelicopter::InputEnableAlwaysTransition( inputdata_t &inputdata 
 //-----------------------------------------------------------------------------
 // Purpose: Stop always transitioning along with the player
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDisableAlwaysTransition( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDisableAlwaysTransition( inputdata_t& inputdata )
 {
 	m_bAlwaysTransition = false;
 }
@@ -1347,11 +1398,11 @@ void CNPC_AttackHelicopter::UpdateOnRemove()
 {
 	BaseClass::UpdateOnRemove();
 	StopLoopingSounds();
-	UTIL_Remove(m_hSensor);
+	UTIL_Remove( m_hSensor );
 	DestroySmokeTrails();
-	for ( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
+	for( int i = 0; i < MAX_HELICOPTER_LIGHTS; ++i )
 	{
-		if ( m_hLights[i] )
+		if( m_hLights[i] )
 		{
 			UTIL_Remove( m_hLights[i] );
 			m_hLights[i] = NULL;
@@ -1370,34 +1421,34 @@ void CNPC_AttackHelicopter::UpdateOnRemove()
 void CNPC_AttackHelicopter::Activate( void )
 {
 	BaseClass::Activate();
-	m_nGunBaseAttachment = LookupAttachment("gun");
-	m_nGunTipAttachment = LookupAttachment("muzzle");
-	m_nBombAttachment = LookupAttachment("bomb");
-	m_nSpotlightAttachment = LookupAttachment("spotlight");
+	m_nGunBaseAttachment = LookupAttachment( "gun" );
+	m_nGunTipAttachment = LookupAttachment( "muzzle" );
+	m_nBombAttachment = LookupAttachment( "bomb" );
+	m_nSpotlightAttachment = LookupAttachment( "spotlight" );
 
-	if ( HasSpawnFlags( SF_HELICOPTER_LONG_SHADOW ) )
+	if( HasSpawnFlags( SF_HELICOPTER_LONG_SHADOW ) )
 	{
 		SetShadowCastDistance( 2048 );
 	}
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CNPC_AttackHelicopter::GetTracerType( void ) 
+const char* CNPC_AttackHelicopter::GetTracerType( void )
 {
-	return "HelicopterTracer"; 
+	return "HelicopterTracer";
 }
 
 
 //-----------------------------------------------------------------------------
 // Allows the shooter to change the impact effect of his bullets
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::DoImpactEffect( trace_t &tr, int nDamageType )
+void CNPC_AttackHelicopter::DoImpactEffect( trace_t& tr, int nDamageType )
 {
 	UTIL_ImpactTrace( &tr, nDamageType, "HelicopterImpact" );
-} 
+}
 
 
 //------------------------------------------------------------------------------
@@ -1405,12 +1456,12 @@ void CNPC_AttackHelicopter::DoImpactEffect( trace_t &tr, int nDamageType )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InitializeRotorSound( void )
 {
-	if ( !m_pRotorSound )
+	if( !m_pRotorSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		CPASAttenuationFilter filter( this );
 
-		if ( HasSpawnFlags( SF_HELICOPTER_LOUD_ROTOR_SOUND ) )
+		if( HasSpawnFlags( SF_HELICOPTER_LOUD_ROTOR_SOUND ) )
 		{
 			m_pRotorSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopter.RotorsLoud" );
 		}
@@ -1425,9 +1476,9 @@ void CNPC_AttackHelicopter::InitializeRotorSound( void )
 	}
 	else
 	{
-		Assert(m_pRotorSound);
-		Assert(m_pRotorBlast);
-		Assert(m_pGunFiringSound);
+		Assert( m_pRotorSound );
+		Assert( m_pRotorBlast );
+		Assert( m_pGunFiringSound );
 	}
 
 
@@ -1440,40 +1491,54 @@ void CNPC_AttackHelicopter::InitializeRotorSound( void )
 //------------------------------------------------------------------------------
 float CNPC_AttackHelicopter::GetMaxSpeed()
 {
-	if ( HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
+	if( HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
+	{
 		return DRONE_SPEED;
+	}
 
-	if ( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) )
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) )
+	{
 		return CHOPPER_BULLRUSH_ENEMY_BOMB_SPEED;
+	}
 
-	if ( !GetEnemyVehicle() )
+	if( !GetEnemyVehicle() )
+	{
 		return BaseClass::GetMaxSpeed();
+	}
 
 	return 3000.0f;
 }
 
 float CNPC_AttackHelicopter::GetMaxSpeedFiring()
 {
-	if ( HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
+	if( HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
+	{
 		return DRONE_SPEED;
+	}
 
-	if ( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) )
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) )
+	{
 		return CHOPPER_BULLRUSH_ENEMY_BOMB_SPEED;
+	}
 
-	if ( !GetEnemyVehicle() )
+	if( !GetEnemyVehicle() )
+	{
 		return BaseClass::GetMaxSpeedFiring();
+	}
 
 	return 3000.0f;
 }
-  
+
 
 //------------------------------------------------------------------------------
 // Returns the max firing distance
 //------------------------------------------------------------------------------
 float CNPC_AttackHelicopter::GetMaxFiringDistance()
 {
-	if ( !GetEnemyVehicle() )
+	if( !GetEnemyVehicle() )
+	{
 		return CHOPPER_GUN_MAX_FIRING_DIST;
+	}
 
 	return 8000.0f;
 }
@@ -1491,32 +1556,32 @@ float CNPC_AttackHelicopter::EnemySearchDistance( )
 //------------------------------------------------------------------------------
 // Leading behaviors
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputStartBombingVehicle( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartBombingVehicle( inputdata_t& inputdata )
 {
 	m_nAttackMode = ATTACK_MODE_BOMB_VEHICLE;
 	SetLeadingDistance( 1500.0f );
 }
 
-void CNPC_AttackHelicopter::InputStartTrailingVehicle( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartTrailingVehicle( inputdata_t& inputdata )
 {
 	m_nAttackMode = ATTACK_MODE_TRAIL_VEHICLE;
 	SetLeadingDistance( -1500.0f );
 }
 
-void CNPC_AttackHelicopter::InputStartDefaultBehavior( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartDefaultBehavior( inputdata_t& inputdata )
 {
 	m_nAttackMode = ATTACK_MODE_DEFAULT;
 }
 
-void CNPC_AttackHelicopter::InputStartAlwaysLeadingVehicle( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartAlwaysLeadingVehicle( inputdata_t& inputdata )
 {
 	m_nAttackMode = ATTACK_MODE_ALWAYS_LEAD_VEHICLE;
 	SetLeadingDistance( 0.0f );
 }
 
-void CNPC_AttackHelicopter::InputStartBullrushBehavior( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartBullrushBehavior( inputdata_t& inputdata )
 {
-	if ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
 		m_nAttackMode = ATTACK_MODE_BULLRUSH_VEHICLE;
 		SetSecondaryMode( BULLRUSH_MODE_WAIT_FOR_ENEMY );
@@ -1526,14 +1591,14 @@ void CNPC_AttackHelicopter::InputStartBullrushBehavior( inputdata_t &inputdata )
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputStartCarpetBombing( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartCarpetBombing( inputdata_t& inputdata )
 {
 	m_bIsCarpetBombing = true;
 }
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputStopCarpetBombing( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStopCarpetBombing( inputdata_t& inputdata )
 {
 	m_bIsCarpetBombing = false;
 }
@@ -1541,7 +1606,7 @@ void CNPC_AttackHelicopter::InputStopCarpetBombing( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Become indestructible
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputBecomeIndestructible( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputBecomeIndestructible( inputdata_t& inputdata )
 {
 	m_bIndestructible = true;
 }
@@ -1550,32 +1615,32 @@ void CNPC_AttackHelicopter::InputBecomeIndestructible( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Deadly shooting, tex!
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputEnableDeadlyShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputEnableDeadlyShooting( inputdata_t& inputdata )
 {
 	m_bDeadlyShooting = true;
 }
 
-void CNPC_AttackHelicopter::InputDisableDeadlyShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDisableDeadlyShooting( inputdata_t& inputdata )
 {
 	m_bDeadlyShooting = false;
 }
 
-void CNPC_AttackHelicopter::InputStartNormalShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartNormalShooting( inputdata_t& inputdata )
 {
 	m_nShootingMode = SHOOT_MODE_DEFAULT;
 }
 
-void CNPC_AttackHelicopter::InputStartLongCycleShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartLongCycleShooting( inputdata_t& inputdata )
 {
 	m_nShootingMode = SHOOT_MODE_LONG_CYCLE;
 }
 
-void CNPC_AttackHelicopter::InputStartContinuousShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartContinuousShooting( inputdata_t& inputdata )
 {
 	m_nShootingMode = SHOOT_MODE_CONTINUOUS;
 }
 
-void CNPC_AttackHelicopter::InputStartFastShooting( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartFastShooting( inputdata_t& inputdata )
 {
 	m_nShootingMode = SHOOT_MODE_FAST;
 }
@@ -1585,12 +1650,14 @@ void CNPC_AttackHelicopter::InputStartFastShooting( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 bool CNPC_AttackHelicopter::IsDeadlyShooting()
 {
-	if ( m_bDeadlyShooting )
-		return true;
-
-	if (( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
+	if( m_bDeadlyShooting )
 	{
-		return (!GetEnemyVehicle()) && GetEnemy() && GetEnemy()->IsPlayer();
+		return true;
+	}
+
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
+	{
+		return ( !GetEnemyVehicle() ) && GetEnemy() && GetEnemy()->IsPlayer();
 	}
 
 	return false;
@@ -1598,11 +1665,15 @@ bool CNPC_AttackHelicopter::IsDeadlyShooting()
 
 int CNPC_AttackHelicopter::GetShootingMode( )
 {
-	if ( IsDeadlyShooting() )
+	if( IsDeadlyShooting() )
+	{
 		return SHOOT_MODE_LONG_CYCLE;
+	}
 
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	{
 		return SHOOT_MODE_CONTINUOUS;
+	}
 
 	return m_nShootingMode;
 }
@@ -1611,27 +1682,27 @@ int CNPC_AttackHelicopter::GetShootingMode( )
 //-----------------------------------------------------------------------------
 // Bombing suppression
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputEnableBombing( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputEnableBombing( inputdata_t& inputdata )
 {
 	m_bBombingSuppressed = false;
 }
 
-void CNPC_AttackHelicopter::InputDisableBombing( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDisableBombing( inputdata_t& inputdata )
 {
 	m_bBombingSuppressed = true;
 }
-	
+
 
 //-----------------------------------------------------------------------------
 // Visibility tests
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDisablePathVisibilityTests( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDisablePathVisibilityTests( inputdata_t& inputdata )
 {
 	m_bIgnorePathVisibilityTests = true;
 	GetEnemies()->SetUnforgettable( GetEnemy(), true );
 }
 
-void CNPC_AttackHelicopter::InputEnablePathVisibilityTests( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputEnablePathVisibilityTests( inputdata_t& inputdata )
 {
 	m_bIgnorePathVisibilityTests = false;
 	GetEnemies()->SetUnforgettable( GetEnemy(), false );
@@ -1639,49 +1710,49 @@ void CNPC_AttackHelicopter::InputEnablePathVisibilityTests( inputdata_t &inputda
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputSelfDestruct( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputSelfDestruct( inputdata_t& inputdata )
 {
 	m_lifeState = LIFE_ALIVE; // Force to die properly.
-	CTakeDamageInfo info( this, this, Vector(0, 0, 1), WorldSpaceCenter(), GetMaxHealth(), CLASS_MISSILE );
+	CTakeDamageInfo info( this, this, Vector( 0, 0, 1 ), WorldSpaceCenter(), GetMaxHealth(), CLASS_MISSILE );
 	TakeDamage( info );
 }
 
 //-----------------------------------------------------------------------------
 // For scripted times where it *has* to shoot
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputSetHealthFraction( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputSetHealthFraction( inputdata_t& inputdata )
 {
 	// Sets the health fraction, no damage effects
-	if ( inputdata.value.Float() > 0 )
+	if( inputdata.value.Float() > 0 )
 	{
 		SetHealth( GetMaxHealth() * inputdata.value.Float() * 0.01f );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputStartBombExplodeOnContact( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStartBombExplodeOnContact( inputdata_t& inputdata )
 {
 	m_bBombsExplodeOnContact = true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputStopBombExplodeOnContact( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputStopBombExplodeOnContact( inputdata_t& inputdata )
 {
 	m_bBombsExplodeOnContact = false;
 }
-	
+
 //------------------------------------------------------------------------------
 // For scripted times where it *has* to shoot
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputResetIdleTime( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputResetIdleTime( inputdata_t& inputdata )
 {
-	if ( m_nGunState == GUN_STATE_IDLE )
+	if( m_nGunState == GUN_STATE_IDLE )
 	{
 		m_flNextAttack = gpGlobals->curtime;
 	}
@@ -1689,35 +1760,35 @@ void CNPC_AttackHelicopter::InputResetIdleTime( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// This trace filter ignores all breakables + physics props 
+// This trace filter ignores all breakables + physics props
 //-----------------------------------------------------------------------------
 class CTraceFilterChopper : public CTraceFilterSimple
 {
 	DECLARE_CLASS( CTraceFilterChopper, CTraceFilterSimple );
 
 public:
-	CTraceFilterChopper( const IHandleEntity *passentity, int collisionGroup );
-	virtual bool ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask );
+	CTraceFilterChopper( const IHandleEntity* passentity, int collisionGroup );
+	virtual bool ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask );
 
 private:
-	const IHandleEntity *m_pPassEnt;
+	const IHandleEntity* m_pPassEnt;
 	int m_collisionGroup;
 };
 
-CTraceFilterChopper::CTraceFilterChopper( const IHandleEntity *passentity, int collisionGroup ) :
+CTraceFilterChopper::CTraceFilterChopper( const IHandleEntity* passentity, int collisionGroup ) :
 	CTraceFilterSimple( passentity, collisionGroup )
 {
 }
 
-bool CTraceFilterChopper::ShouldHitEntity( IHandleEntity *pServerEntity, int contentsMask )
+bool CTraceFilterChopper::ShouldHitEntity( IHandleEntity* pServerEntity, int contentsMask )
 {
-	CBaseEntity *pEnt = static_cast<IServerUnknown*>(pServerEntity)->GetBaseEntity();
-	if ( pEnt )
+	CBaseEntity* pEnt = static_cast<IServerUnknown*>( pServerEntity )->GetBaseEntity();
+	if( pEnt )
 	{
-		if ( FClassnameIs( pEnt, "func_breakable" ) || 
-			 FClassnameIs( pEnt, "func_physbox" ) || 
-			 FClassnameIs( pEnt, "prop_physics" ) || 
-			 FClassnameIs( pEnt, "physics_prop" ) )
+		if( FClassnameIs( pEnt, "func_breakable" ) ||
+				FClassnameIs( pEnt, "func_physbox" ) ||
+				FClassnameIs( pEnt, "prop_physics" ) ||
+				FClassnameIs( pEnt, "physics_prop" ) )
 		{
 			return false;
 		}
@@ -1730,39 +1801,45 @@ bool CTraceFilterChopper::ShouldHitEntity( IHandleEntity *pServerEntity, int con
 //-----------------------------------------------------------------------------
 // Enemy visibility check
 //-----------------------------------------------------------------------------
-CBaseEntity *CNPC_AttackHelicopter::FindTrackBlocker( const Vector &vecViewPoint, const Vector &vecTargetPos )
+CBaseEntity* CNPC_AttackHelicopter::FindTrackBlocker( const Vector& vecViewPoint, const Vector& vecTargetPos )
 {
-	if ( m_bIgnorePathVisibilityTests )
+	if( m_bIgnorePathVisibilityTests )
+	{
 		return NULL;
+	}
 
 	CTraceFilterChopper chopperFilter( this, COLLISION_GROUP_NONE );
 
 	trace_t	tr;
-	AI_TraceHull( vecViewPoint, vecTargetPos, -Vector(4,4,4), Vector(4,4,4), MASK_SHOT, &chopperFilter, &tr );
+	AI_TraceHull( vecViewPoint, vecTargetPos, -Vector( 4, 4, 4 ), Vector( 4, 4, 4 ), MASK_SHOT, &chopperFilter, &tr );
 
-	if ( tr.fraction != 1.0f )
+	if( tr.fraction != 1.0f )
 	{
 		Assert( tr.m_pEnt );
 	}
 
-	return (tr.fraction != 1.0f) ? tr.m_pEnt : NULL;
+	return ( tr.fraction != 1.0f ) ? tr.m_pEnt : NULL;
 }
 
 
 //-----------------------------------------------------------------------------
 // More Enemy visibility check
 //-----------------------------------------------------------------------------
-bool CNPC_AttackHelicopter::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_AttackHelicopter::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
-	if ( pEntity->GetFlags() & FL_NOTARGET )
+	if( pEntity->GetFlags() & FL_NOTARGET )
+	{
 		return false;
+	}
 
 #if 0
 	// FIXME: only block LOS through opaque water
 	// don't look through water
-	if ((m_nWaterLevel != 3 && pEntity->m_nWaterLevel == 3) 
-		|| (m_nWaterLevel == 3 && pEntity->m_nWaterLevel == 0))
+	if( ( m_nWaterLevel != 3 && pEntity->m_nWaterLevel == 3 )
+			|| ( m_nWaterLevel == 3 && pEntity->m_nWaterLevel == 0 ) )
+	{
 		return false;
+	}
 #endif
 
 	Vector vecLookerOrigin = EyePosition();//look through the caller's 'eyes'
@@ -1771,23 +1848,27 @@ bool CNPC_AttackHelicopter::FVisible( CBaseEntity *pEntity, int traceMask, CBase
 	CTraceFilterChopper chopperFilter( this, COLLISION_GROUP_NONE );
 
 	trace_t tr;
-	UTIL_TraceLine(vecLookerOrigin, vecTargetOrigin, traceMask, &chopperFilter, &tr);
-	
-	if (tr.fraction != 1.0)
+	UTIL_TraceLine( vecLookerOrigin, vecTargetOrigin, traceMask, &chopperFilter, &tr );
+
+	if( tr.fraction != 1.0 )
 	{
 		// Got line of sight!
-		if ( tr.m_pEnt == pEntity )
-			return true;
-
-		// Got line of sight on the vehicle the player is driving!
-		if ( pEntity && pEntity->IsPlayer() )
+		if( tr.m_pEnt == pEntity )
 		{
-			CBasePlayer *pPlayer = assert_cast<CBasePlayer*>( pEntity );
-			if ( tr.m_pEnt == pPlayer->GetVehicleEntity() )
-				return true;
+			return true;
 		}
 
-		if (ppBlocker)
+		// Got line of sight on the vehicle the player is driving!
+		if( pEntity && pEntity->IsPlayer() )
+		{
+			CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( pEntity );
+			if( tr.m_pEnt == pPlayer->GetVehicleEntity() )
+			{
+				return true;
+			}
+		}
+
+		if( ppBlocker )
 		{
 			*ppBlocker = tr.m_pEnt;
 		}
@@ -1802,9 +1883,9 @@ bool CNPC_AttackHelicopter::FVisible( CBaseEntity *pEntity, int traceMask, CBase
 // Shot spread
 //------------------------------------------------------------------------------
 #define PLAYER_TIGHTEN_FACTOR 0.75f
-Vector CNPC_AttackHelicopter::GetAttackSpread( CBaseCombatWeapon *pWeapon, CBaseEntity *pTarget )
+Vector CNPC_AttackHelicopter::GetAttackSpread( CBaseCombatWeapon* pWeapon, CBaseEntity* pTarget )
 {
-	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * PLAYER_TIGHTEN_FACTOR * 0.5f * (3.14f / 180.0f) );
+	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * PLAYER_TIGHTEN_FACTOR * 0.5f * ( 3.14f / 180.0f ) );
 	Vector vecSpread( flSinConeDegrees, flSinConeDegrees, flSinConeDegrees );
 	return vecSpread;
 }
@@ -1813,32 +1894,38 @@ Vector CNPC_AttackHelicopter::GetAttackSpread( CBaseCombatWeapon *pWeapon, CBase
 //------------------------------------------------------------------------------
 // Find interesting nearby things to shoot
 //------------------------------------------------------------------------------
-int CNPC_AttackHelicopter::BuildMissTargetList( int nCount, CBaseEntity **ppMissCandidates )
+int CNPC_AttackHelicopter::BuildMissTargetList( int nCount, CBaseEntity** ppMissCandidates )
 {
 	int numMissCandidates = 0;
 
-	CBaseEntity *pEnts[256];
+	CBaseEntity* pEnts[256];
 	Vector radius( 150, 150, 150 );
-	const Vector &vecSource = GetEnemy()->WorldSpaceCenter();
+	const Vector& vecSource = GetEnemy()->WorldSpaceCenter();
 
-	int numEnts = UTIL_EntitiesInBox( pEnts, 256, vecSource - radius, vecSource+radius, 0 );
+	int numEnts = UTIL_EntitiesInBox( pEnts, 256, vecSource - radius, vecSource + radius, 0 );
 
-	for ( int i = 0; i < numEnts; i++ )
+	for( int i = 0; i < numEnts; i++ )
 	{
-		if ( pEnts[i] == NULL )
+		if( pEnts[i] == NULL )
+		{
 			continue;
+		}
 
-		if ( numMissCandidates >= nCount )
+		if( numMissCandidates >= nCount )
+		{
 			break;
+		}
 
 		// Miss candidates cannot include the player or his vehicle
-		if ( pEnts[i] == GetEnemyVehicle() || pEnts[i] == GetEnemy() )
+		if( pEnts[i] == GetEnemyVehicle() || pEnts[i] == GetEnemy() )
+		{
 			continue;
+		}
 
 		// See if it's a good target candidate
-		if ( FClassnameIs( pEnts[i], "prop_dynamic" ) || 
-			 FClassnameIs( pEnts[i], "prop_physics" ) || 
-			 FClassnameIs( pEnts[i], "physics_prop" ) )
+		if( FClassnameIs( pEnts[i], "prop_dynamic" ) ||
+				FClassnameIs( pEnts[i], "prop_physics" ) ||
+				FClassnameIs( pEnts[i], "physics_prop" ) )
 		{
 			ppMissCandidates[numMissCandidates++] = pEnts[i];
 		}
@@ -1851,22 +1938,26 @@ int CNPC_AttackHelicopter::BuildMissTargetList( int nCount, CBaseEntity **ppMiss
 //------------------------------------------------------------------------------
 // Gets a vehicle the enemy is in (if any)
 //------------------------------------------------------------------------------
-CBaseEntity *CNPC_AttackHelicopter::GetEnemyVehicle()
+CBaseEntity* CNPC_AttackHelicopter::GetEnemyVehicle()
 {
-	if ( !GetEnemy() )
+	if( !GetEnemy() )
+	{
 		return NULL;
+	}
 
-	if ( !GetEnemy()->IsPlayer() )
+	if( !GetEnemy()->IsPlayer() )
+	{
 		return NULL;
+	}
 
-	return static_cast<CBasePlayer*>(GetEnemy())->GetVehicleEntity();
+	return static_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity();
 }
 
 
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ShootAtPlayer( const Vector &vBasePos, const Vector &vGunDir )
+void CNPC_AttackHelicopter::ShootAtPlayer( const Vector& vBasePos, const Vector& vGunDir )
 {
 	// Fire one shots per round right at the player, using usual rules
 	FireBulletsInfo_t info;
@@ -1882,51 +1973,51 @@ void CNPC_AttackHelicopter::ShootAtPlayer( const Vector &vBasePos, const Vector 
 
 	QAngle	vGunAng;
 	VectorAngles( vGunDir, vGunAng );
-	
+
 	FireBullets( info );
 
 	// Fire the rest of the bullets at objects around the player
-	CBaseEntity *ppNearbyTargets[16];
-	int nActualTargets = BuildMissTargetList( 16, ppNearbyTargets ); 
+	CBaseEntity* ppNearbyTargets[16];
+	int nActualTargets = BuildMissTargetList( 16, ppNearbyTargets );
 
 	// Randomly sort it...
 	int i;
-	for ( i = 0; i < nActualTargets; ++i )
+	for( i = 0; i < nActualTargets; ++i )
 	{
-		int nSwap = random->RandomInt( 0, nActualTargets - 1 ); 
+		int nSwap = random->RandomInt( 0, nActualTargets - 1 );
 		V_swap( ppNearbyTargets[i], ppNearbyTargets[nSwap] );
 	}
 
 	// Just shoot where we're facing
-	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * (3.14f / 180.0f) );
+	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * ( 3.14f / 180.0f ) );
 	Vector vecSpread( flSinConeDegrees, flSinConeDegrees, flSinConeDegrees );
 
 	// How many times should we hit the player this time?
-	int nDesiredHitCount = (int)(((float)( m_nMaxBurstHits - m_nBurstHits ) / (float)m_nRemainingBursts) + 0.5f);
+	int nDesiredHitCount = ( int )( ( ( float )( m_nMaxBurstHits - m_nBurstHits ) / ( float )m_nRemainingBursts ) + 0.5f );
 	int nNearbyTargetCount = 0;
 	int nPlayerShotCount = 0;
-	for ( i = sk_helicopter_roundsperburst.GetInt() - 1; --i >= 0; )
+	for( i = sk_helicopter_roundsperburst.GetInt() - 1; --i >= 0; )
 	{
 		// Find something interesting around the enemy to shoot instead of just missing.
-		if ( nActualTargets > nNearbyTargetCount )
+		if( nActualTargets > nNearbyTargetCount )
 		{
 			// FIXME: Constrain to the firing cone?
-			ppNearbyTargets[nNearbyTargetCount]->CollisionProp()->RandomPointInBounds( Vector(.25, .25, .25), Vector(.75, .75, .75), &info.m_vecDirShooting );
+			ppNearbyTargets[nNearbyTargetCount]->CollisionProp()->RandomPointInBounds( Vector( .25, .25, .25 ), Vector( .75, .75, .75 ), &info.m_vecDirShooting );
 			info.m_vecDirShooting -= vBasePos;
 			VectorNormalize( info.m_vecDirShooting );
 			info.m_vecSpread = VECTOR_CONE_PRECALCULATED;
 			info.m_flDistance = MAX_COORD_RANGE;
 			info.m_nFlags = FIRE_BULLETS_TEMPORARY_DANGER_SOUND;
-			
+
 			FireBullets( info );
 
 			++nNearbyTargetCount;
 			continue;
 		}
 
-		if ( GetEnemy() && ( nPlayerShotCount < nDesiredHitCount ))
+		if( GetEnemy() && ( nPlayerShotCount < nDesiredHitCount ) )
 		{
-			GetEnemy()->CollisionProp()->RandomPointInBounds( Vector(0, 0, 0), Vector(1, 1, 1), &info.m_vecDirShooting );
+			GetEnemy()->CollisionProp()->RandomPointInBounds( Vector( 0, 0, 0 ), Vector( 1, 1, 1 ), &info.m_vecDirShooting );
 			info.m_vecDirShooting -= vBasePos;
 			VectorNormalize( info.m_vecDirShooting );
 			info.m_vecSpread = VECTOR_CONE_PRECALCULATED;
@@ -1951,18 +2042,19 @@ void CNPC_AttackHelicopter::ShootAtPlayer( const Vector &vBasePos, const Vector 
 //-----------------------------------------------------------------------------
 // Chooses a point within the circle of death to fire in
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::PickDirectionToCircleOfDeath( const Vector &vBasePos, const Vector &vecFireAtPosition, Vector *pResult )
+void CNPC_AttackHelicopter::PickDirectionToCircleOfDeath( const Vector& vBasePos, const Vector& vecFireAtPosition, Vector* pResult )
 {
 	*pResult = vecFireAtPosition;
 	float x, y;
 	do
 	{
-		x = random->RandomFloat( -1.0f, 1.0f ); 
-		y = random->RandomFloat( -1.0f, 1.0f ); 
-	} while ( (x * x + y * y) > 1.0f );
+		x = random->RandomFloat( -1.0f, 1.0f );
+		y = random->RandomFloat( -1.0f, 1.0f );
+	}
+	while( ( x * x + y * y ) > 1.0f );
 
-	pResult->x += x * m_flCircleOfDeathRadius; 
-	pResult->y += y * m_flCircleOfDeathRadius; 
+	pResult->x += x * m_flCircleOfDeathRadius;
+	pResult->y += y * m_flCircleOfDeathRadius;
 
 	*pResult -= vBasePos;
 	VectorNormalize( *pResult );
@@ -1972,7 +2064,7 @@ void CNPC_AttackHelicopter::PickDirectionToCircleOfDeath( const Vector &vBasePos
 //-----------------------------------------------------------------------------
 // Deliberately aims as close as possible w/o hitting
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float flMinDist, float flMaxDist, const Vector &shootOrigin, Vector *pResult )
+void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity* pTarget, float flMinDist, float flMaxDist, const Vector& shootOrigin, Vector* pResult )
 {
 	Vector vecDirection;
 	VectorSubtract( pTarget->WorldSpaceCenter(), shootOrigin, vecDirection );
@@ -1980,7 +2072,7 @@ void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float
 	float flRadius = pTarget->BoundingRadius() + random->RandomFloat( flMinDist, flMaxDist );
 
 	float flMinRadius = flRadius;
-	if ( flDist > flRadius )
+	if( flDist > flRadius )
 	{
 		flMinRadius = flDist * flRadius / sqrt( flDist * flDist - flRadius * flRadius );
 	}
@@ -2001,19 +2093,19 @@ void CNPC_AttackHelicopter::AimCloseToTargetButMiss( CBaseEntity *pTarget, float
 //-----------------------------------------------------------------------------
 // Make sure we don't hit too many times
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
+void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t& info )
 {
 	// Use this to count the number of hits in a burst
 	bool bIsPlayer = GetEnemy() && GetEnemy()->IsPlayer();
-	if ( !bIsPlayer )
+	if( !bIsPlayer )
 	{
 		BaseClass::FireBullets( info );
 		return;
 	}
 
-	if ( !GetEnemyVehicle() && !IsDeadlyShooting() )
+	if( !GetEnemyVehicle() && !IsDeadlyShooting() )
 	{
-		if ( m_nBurstHits >= m_nMaxBurstHits )
+		if( m_nBurstHits >= m_nMaxBurstHits )
 		{
 			FireBulletsInfo_t actualInfo = info;
 			actualInfo.m_pAdditionalIgnoreEnt = GetEnemy();
@@ -2022,14 +2114,14 @@ void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
 		}
 	}
 
-	CBasePlayer *pPlayer = assert_cast<CBasePlayer*>(GetEnemy());
+	CBasePlayer* pPlayer = assert_cast<CBasePlayer*>( GetEnemy() );
 
 	int nPrevHealth = pPlayer->GetHealth();
 	int nPrevArmor = pPlayer->ArmorValue();
 
 	BaseClass::FireBullets( info );
 
-	if (( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ))
+	if( ( pPlayer->GetHealth() < nPrevHealth ) || ( pPlayer->ArmorValue() < nPrevArmor ) )
 	{
 		++m_nBurstHits;
 	}
@@ -2039,16 +2131,16 @@ void CNPC_AttackHelicopter::FireBullets( const FireBulletsInfo_t &info )
 //------------------------------------------------------------------------------
 // Purpose :
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ShootInsideCircleOfDeath( const Vector &vBasePos, const Vector &vecFireAtPosition )
+void CNPC_AttackHelicopter::ShootInsideCircleOfDeath( const Vector& vBasePos, const Vector& vecFireAtPosition )
 {
 	Vector vecFireDirection;
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
 		PickDirectionToCircleOfDeath( vBasePos, vecFireAtPosition, &vecFireDirection );
 	}
-	else if ( ( m_nNearShots < m_nMaxNearShots ) || !GetEnemyVehicle() )
+	else if( ( m_nNearShots < m_nMaxNearShots ) || !GetEnemyVehicle() )
 	{
-		if ( ( m_nBurstHits < m_nMaxBurstHits ) || !GetEnemy() )
+		if( ( m_nBurstHits < m_nMaxBurstHits ) || !GetEnemy() )
 		{
 			++m_nNearShots;
 			PickDirectionToCircleOfDeath( vBasePos, vecFireAtPosition, &vecFireDirection );
@@ -2072,12 +2164,12 @@ void CNPC_AttackHelicopter::ShootInsideCircleOfDeath( const Vector &vBasePos, co
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::DoMuzzleFlash( void )
 {
 	BaseClass::DoMuzzleFlash();
-	
+
 	CEffectData data;
 
 	data.m_nAttachmentIndex = LookupAttachment( "muzzle" );
@@ -2091,28 +2183,28 @@ void CNPC_AttackHelicopter::DoMuzzleFlash( void )
 #define HIT_VEHICLE_SPEED_MIN 200.0f
 #define HIT_VEHICLE_SPEED_MAX 500.0f
 
-void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector &vecFireAtPosition )
+void CNPC_AttackHelicopter::ShootAtVehicle( const Vector& vBasePos, const Vector& vecFireAtPosition )
 {
 	int nShotsRemaining = sk_helicopter_roundsperburst.GetInt();
 
 	DoMuzzleFlash();
 
 	// Do special code against episodic drivers
-	if ( hl2_episodic.GetBool() )
+	if( hl2_episodic.GetBool() )
 	{
 		Vector vecVelocity;
 		GetEnemyVehicle()->GetVelocity( &vecVelocity, NULL );
-		
+
 		float flSpeed = clamp( vecVelocity.Length(), 0.0f, 400.0f );
 		float flRange = RemapVal( flSpeed, 0.0f, 400.0f, 0.05f, 1.0f );
 
 		// Alter each shot's trajectory based on our speed
-		for ( int i = 0; i < nShotsRemaining; i++ )
+		for( int i = 0; i < nShotsRemaining; i++ )
 		{
 			Vector vecShotDir;
-			
+
 			// If they're at a dead stand-still, just hit them
-			if ( flRange <= 0.1f )
+			if( flRange <= 0.1f )
 			{
 				VectorSubtract( GetEnemy()->EyePosition(), vBasePos, vecShotDir );
 
@@ -2124,9 +2216,9 @@ void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector
 			else
 			{
 				// Aim in a cone around them
-				AimCloseToTargetButMiss( GetEnemy(), (3*12) * flRange, (10*12) * flRange, vBasePos, &vecShotDir );
+				AimCloseToTargetButMiss( GetEnemy(), ( 3 * 12 ) * flRange, ( 10 * 12 ) * flRange, vBasePos, &vecShotDir );
 			}
-			
+
 			FireBulletsInfo_t info( 1, vBasePos, vecShotDir, VECTOR_CONE_PRECALCULATED, MAX_COORD_RANGE, m_iAmmoType );
 			info.m_iTracerFreq = 1;
 			FireBullets( info );
@@ -2138,11 +2230,11 @@ void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector
 	}
 
 	// Pop one at the player based on how fast he's going
-	if ( m_nBurstHits < m_nMaxBurstHits )
+	if( m_nBurstHits < m_nMaxBurstHits )
 	{
-		Vector vecDir;						   
+		Vector vecDir;
 		VectorSubtract( GetEnemy()->EyePosition(), vBasePos, vecDir );
-		
+
 		Vector vecOffset;
 		vecOffset.Random( -5.0f, 5.0f );
 		vecDir += vecOffset;
@@ -2158,33 +2250,33 @@ void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector
 	int i;
 	int nFireInCircle = nShotsRemaining >> 1;
 	nShotsRemaining -= nFireInCircle;
-	for ( i = 0; i < nFireInCircle; ++i )
+	for( i = 0; i < nFireInCircle; ++i )
 	{
 		ShootInsideCircleOfDeath( vBasePos, vecFireAtPosition );
 	}
 
 	// Fire the rest of the bullets at objects around the enemy
-	CBaseEntity *ppNearbyTargets[16];
-	int nActualTargets = BuildMissTargetList( 16, ppNearbyTargets ); 
+	CBaseEntity* ppNearbyTargets[16];
+	int nActualTargets = BuildMissTargetList( 16, ppNearbyTargets );
 
 	// Randomly sort it...
-	for ( i = 0; i < nActualTargets; ++i )
+	for( i = 0; i < nActualTargets; ++i )
 	{
-		int nSwap = random->RandomInt( 0, nActualTargets - 1 ); 
+		int nSwap = random->RandomInt( 0, nActualTargets - 1 );
 		V_swap( ppNearbyTargets[i], ppNearbyTargets[nSwap] );
 	}
 
 	// Just shoot where we're facing
-	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * (3.14f / 180.0f) );
+	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * ( 3.14f / 180.0f ) );
 	Vector vecSpread( flSinConeDegrees, flSinConeDegrees, flSinConeDegrees );
 
-	for ( i = nShotsRemaining; --i >= 0; )
+	for( i = nShotsRemaining; --i >= 0; )
 	{
 		// Find something interesting around the enemy to shoot instead of just missing.
-		if ( nActualTargets > i )
+		if( nActualTargets > i )
 		{
 			Vector vecFireDirection;
-			ppNearbyTargets[i]->CollisionProp()->RandomPointInBounds( Vector(.25, .25, .25), Vector(.75, .75, .75), &vecFireDirection );
+			ppNearbyTargets[i]->CollisionProp()->RandomPointInBounds( Vector( .25, .25, .25 ), Vector( .75, .75, .75 ), &vecFireDirection );
 			vecFireDirection -= vBasePos;
 			VectorNormalize( vecFireDirection );
 
@@ -2206,34 +2298,34 @@ void CNPC_AttackHelicopter::ShootAtVehicle( const Vector &vBasePos, const Vector
 //------------------------------------------------------------------------------
 // Various states of the helicopter firing...
 //------------------------------------------------------------------------------
-bool CNPC_AttackHelicopter::PoseGunTowardTargetDirection( const Vector &vTargetDir )
+bool CNPC_AttackHelicopter::PoseGunTowardTargetDirection( const Vector& vTargetDir )
 {
 	Vector vecOut;
 	VectorIRotate( vTargetDir, EntityToWorldTransform(), vecOut );
 
 	QAngle angles;
-	VectorAngles(vecOut, angles);
+	VectorAngles( vecOut, angles );
 
-	if (angles.y > 180)
+	if( angles.y > 180 )
 	{
 		angles.y = angles.y - 360;
 	}
-	else if (angles.y < -180)
+	else if( angles.y < -180 )
 	{
 		angles.y = angles.y + 360;
 	}
-	if (angles.x > 180)
+	if( angles.x > 180 )
 	{
 		angles.x = angles.x - 360;
 	}
-	else if (angles.x < -180)
+	else if( angles.x < -180 )
 	{
 		angles.x = angles.x + 360;
 	}
 
-	if ( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && !IsInSecondaryMode(BULLRUSH_MODE_SHOOT_IDLE_PLAYER) && GetEnemy())
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && !IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) && GetEnemy() )
 	{
-		if ( GetEnemyVehicle() )
+		if( GetEnemyVehicle() )
 		{
 			angles.x = clamp( angles.x, -12.0f, 0.0f );
 			angles.y = clamp( angles.y, -10.0f, 10.0f );
@@ -2245,19 +2337,19 @@ bool CNPC_AttackHelicopter::PoseGunTowardTargetDirection( const Vector &vTargetD
 		}
 	}
 
-	if (angles.x > m_angGun.x)
+	if( angles.x > m_angGun.x )
 	{
 		m_angGun.x = MIN( angles.x, m_angGun.x + 12 );
 	}
-	if (angles.x < m_angGun.x)
+	if( angles.x < m_angGun.x )
 	{
 		m_angGun.x = MAX( angles.x, m_angGun.x - 12 );
 	}
-	if (angles.y > m_angGun.y)
+	if( angles.y > m_angGun.y )
 	{
 		m_angGun.y = MIN( angles.y, m_angGun.y + 12 );
 	}
-	if (angles.y < m_angGun.y)
+	if( angles.y < m_angGun.y )
 	{
 		m_angGun.y = MAX( angles.y, m_angGun.y - 12 );
 	}
@@ -2272,7 +2364,7 @@ bool CNPC_AttackHelicopter::PoseGunTowardTargetDirection( const Vector &vTargetD
 //------------------------------------------------------------------------------
 // Compute the enemy position (non-vehicle case)
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ComputeFireAtPosition( Vector *pVecActualTargetPosition )
+void CNPC_AttackHelicopter::ComputeFireAtPosition( Vector* pVecActualTargetPosition )
 {
 	// Deal with various leading behaviors...
 	*pVecActualTargetPosition = m_vecTargetPosition;
@@ -2282,29 +2374,29 @@ void CNPC_AttackHelicopter::ComputeFireAtPosition( Vector *pVecActualTargetPosit
 //------------------------------------------------------------------------------
 // Compute the enemy position (non-vehicle case)
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ComputeVehicleFireAtPosition( Vector *pVecActualTargetPosition )
+void CNPC_AttackHelicopter::ComputeVehicleFireAtPosition( Vector* pVecActualTargetPosition )
 {
-	CBaseEntity *pVehicle = GetEnemyVehicle();
+	CBaseEntity* pVehicle = GetEnemyVehicle();
 
 	// Make sure the circle of death doesn't move more than N units
 	// This will cause the target to have to maintain a large enough speed
 	*pVecActualTargetPosition = pVehicle->BodyTarget( GetAbsOrigin(), false );
 
 //	NDebugOverlay::Box( *pVecActualTargetPosition,
-//		Vector(-m_flCircleOfDeathRadius, -m_flCircleOfDeathRadius, 0), 
-//		Vector(m_flCircleOfDeathRadius, m_flCircleOfDeathRadius, 0), 
+//		Vector(-m_flCircleOfDeathRadius, -m_flCircleOfDeathRadius, 0),
+//		Vector(m_flCircleOfDeathRadius, m_flCircleOfDeathRadius, 0),
 //		0, 0, 255, false, 0.1f );
 }
 
-	
+
 //------------------------------------------------------------------------------
 // Here's what we do when we're looking for a target
 //------------------------------------------------------------------------------
-bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTargetDir )
+bool CNPC_AttackHelicopter::DoGunIdle( const Vector& vGunDir, const Vector& vTargetDir )
 {
 	// When bullrushing, skip the idle
-	if ( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && 
-		( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) || IsInSecondaryMode(BULLRUSH_MODE_SHOOT_IDLE_PLAYER) ) )
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) &&
+			( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) || IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) ) )
 	{
 		EmitSound( "NPC_AttackHelicopter.ChargeGun" );
 		m_flChargeTime = gpGlobals->curtime + CHOPPER_GUN_CHARGE_TIME;
@@ -2314,31 +2406,39 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 	}
 
 	// Can't continually fire....
-	if (m_flNextAttack > gpGlobals->curtime)
+	if( m_flNextAttack > gpGlobals->curtime )
+	{
 		return false;
+	}
 
 	// Don't fire if we're too far away, or if the enemy isn't in front of us
-	if (!GetEnemy())
+	if( !GetEnemy() )
+	{
 		return false;
+	}
 
 	float flMaxDistSqr = GetMaxFiringDistance();
 	flMaxDistSqr *= flMaxDistSqr;
 
 	float flDistSqr = WorldSpaceCenter().DistToSqr( GetEnemy()->WorldSpaceCenter() );
-	if (flDistSqr > flMaxDistSqr)
+	if( flDistSqr > flMaxDistSqr )
+	{
 		return false;
+	}
 
 	// If he's mostly within the cone, shoot away!
 	float flChargeCone = sk_helicopter_firingcone.GetFloat() * 0.5f;
-	if ( flChargeCone < 15.0f )
+	if( flChargeCone < 15.0f )
 	{
-		flChargeCone = 15.0f;	
+		flChargeCone = 15.0f;
 	}
 
-	float flCosConeDegrees = cos( flChargeCone * (3.14f / 180.0f) );
+	float flCosConeDegrees = cos( flChargeCone * ( 3.14f / 180.0f ) );
 	float fDotPr = DotProduct( vGunDir, vTargetDir );
-	if (fDotPr < flCosConeDegrees)
+	if( fDotPr < flCosConeDegrees )
+	{
 		return false;
+	}
 
 	// Fast shooting doesn't charge up
 	if( m_nShootingMode == SHOOT_MODE_FAST )
@@ -2353,13 +2453,13 @@ bool CNPC_AttackHelicopter::DoGunIdle( const Vector &vGunDir, const Vector &vTar
 		EmitSound( "NPC_AttackHelicopter.ChargeGun" );
 		float flChargeTime = CHOPPER_GUN_CHARGE_TIME;
 		float flVariance = flChargeTime * 0.1f;
-		m_flChargeTime = gpGlobals->curtime + random->RandomFloat(flChargeTime - flVariance, flChargeTime + flVariance);
+		m_flChargeTime = gpGlobals->curtime + random->RandomFloat( flChargeTime - flVariance, flChargeTime + flVariance );
 		m_nGunState = GUN_STATE_CHARGING;
 		m_flAvoidMetric = 0.0f;
 		m_vecLastAngVelocity.Init( 0, 0, 0 );
 	}
 
-	return true;	
+	return true;
 }
 
 
@@ -2370,7 +2470,7 @@ void CNPC_AttackHelicopter::UpdateTargetHittability()
 {
 	// This simply is a measure of how much juking is going on.
 	// Along with how much steering is happening.
-	if ( GetEnemyVehicle() )
+	if( GetEnemyVehicle() )
 	{
 		Vector vecVelocity;
 		AngularImpulse vecAngVelocity;
@@ -2391,12 +2491,14 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 	// Update the target hittability, which will indicate how many hits we'll accept.
 	UpdateTargetHittability();
 
-	if ( m_flChargeTime > gpGlobals->curtime )
+	if( m_flChargeTime > gpGlobals->curtime )
+	{
 		return false;
+	}
 
 	m_nGunState = GUN_STATE_FIRING;
 
-	if ( HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) )
+	if( HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) )
 	{
 		SetPauseState( PAUSE_AT_NEXT_LOS_POSITION );
 	}
@@ -2404,8 +2506,8 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 	int nHitFactor = 1;
 	switch( GetShootingMode() )
 	{
-	case SHOOT_MODE_DEFAULT:
-	case SHOOT_MODE_FAST:
+		case SHOOT_MODE_DEFAULT:
+		case SHOOT_MODE_FAST:
 		{
 			int nBurstCount = sk_helicopter_burstcount.GetInt();
 			m_nRemainingBursts = random->RandomInt( nBurstCount, 2.0 * nBurstCount );
@@ -2413,7 +2515,7 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 		}
 		break;
 
-	case SHOOT_MODE_LONG_CYCLE:
+		case SHOOT_MODE_LONG_CYCLE:
 		{
 			m_nRemainingBursts = 60;
 			m_flIdleTimeDelay = 0.0f;
@@ -2421,23 +2523,23 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 		}
 		break;
 
-	case SHOOT_MODE_CONTINUOUS:
-		if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
-		{
-			// We're relying on the special aiming behavior for bullrushing to just randomly deal damage
-			m_nRemainingBursts = 1;	
-			m_flIdleTimeDelay = 0.0f;
-		}
-		else
-		{
-			m_nRemainingBursts = 0;	
-			m_flIdleTimeDelay = 0.0f;
-			nHitFactor = 1000;
-		}
-		break;
+		case SHOOT_MODE_CONTINUOUS:
+			if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+			{
+				// We're relying on the special aiming behavior for bullrushing to just randomly deal damage
+				m_nRemainingBursts = 1;
+				m_flIdleTimeDelay = 0.0f;
+			}
+			else
+			{
+				m_nRemainingBursts = 0;
+				m_flIdleTimeDelay = 0.0f;
+				nHitFactor = 1000;
+			}
+			break;
 	}
 
-	if ( !GetEnemyVehicle() )
+	if( !GetEnemyVehicle() )
 	{
 		m_nMaxBurstHits = !IsDeadlyShooting() ? random->RandomInt( 6, 9 ) : 200;
 		m_nMaxNearShots = 10000;
@@ -2453,18 +2555,18 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 		flAvoid = RemapVal( flAvoid, 100.0f, 400.0f, 0.0f, 1.0f );
 
 		float flTotal = 0.5f * ( flSpeed + flAvoid );
-		int nHitCount = (int)(RemapVal( flTotal, 0.0f, 1.0f, 7, -0.5 ) + 0.5f);
+		int nHitCount = ( int )( RemapVal( flTotal, 0.0f, 1.0f, 7, -0.5 ) + 0.5f );
 
 		int nMin = nHitCount >= 1 ? nHitCount - 1 : 0;
 		m_nMaxBurstHits = random->RandomInt( nMin, nHitCount + 1 );
 
-		int nNearShots = (int)(RemapVal( flTotal, 0.0f, 1.0f, 70, 5 ) + 0.5f);
+		int nNearShots = ( int )( RemapVal( flTotal, 0.0f, 1.0f, 70, 5 ) + 0.5f );
 		int nMinNearShots = nNearShots >= 5 ? nNearShots - 5 : 0;
 		m_nMaxNearShots = random->RandomInt( nMinNearShots, nNearShots + 5 );
 
 		// Set up the circle of death parameters at this point
-		m_flCircleOfDeathRadius = SimpleSplineRemapVal( flTotal, 0.0f, 1.0f, 
-			CHOPPER_MIN_CIRCLE_OF_DEATH_RADIUS, CHOPPER_MAX_CIRCLE_OF_DEATH_RADIUS );
+		m_flCircleOfDeathRadius = SimpleSplineRemapVal( flTotal, 0.0f, 1.0f,
+								  CHOPPER_MIN_CIRCLE_OF_DEATH_RADIUS, CHOPPER_MAX_CIRCLE_OF_DEATH_RADIUS );
 	}
 
 	m_nMaxBurstHits *= nHitFactor;
@@ -2479,34 +2581,34 @@ bool CNPC_AttackHelicopter::DoGunCharging( )
 //------------------------------------------------------------------------------
 // Shoot where we're facing
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ShootAtFacingDirection( const Vector &vBasePos, const Vector &vGunDir, bool bFirstShotAccurate )
+void CNPC_AttackHelicopter::ShootAtFacingDirection( const Vector& vBasePos, const Vector& vGunDir, bool bFirstShotAccurate )
 {
 	// Just shoot where we're facing
-	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * (3.14f / 180.0f) );
+	float flSinConeDegrees = sin( sk_helicopter_firingcone.GetFloat() * 0.5f * ( 3.14f / 180.0f ) );
 	Vector vecSpread( flSinConeDegrees, flSinConeDegrees, flSinConeDegrees );
 
 	int nShotCount = sk_helicopter_roundsperburst.GetInt();
-	if ( bFirstShotAccurate && GetEnemy() )
+	if( bFirstShotAccurate && GetEnemy() )
 	{
 		// Check to see if the enemy is within his firing cone
-		if ( GetEnemy() )
+		if( GetEnemy() )
 		{
 			// Find the closest point to the gunDir
-			const Vector &vecCenter = GetEnemy()->WorldSpaceCenter();
+			const Vector& vecCenter = GetEnemy()->WorldSpaceCenter();
 
 			float t;
 			Vector vNearPoint;
 			Vector vEndPoint;
 			VectorMA( vBasePos, 1024.0f, vGunDir, vEndPoint );
 			CalcClosestPointOnLine( vecCenter, vBasePos, vEndPoint, vNearPoint, &t );
-			if ( t > 0.0f )
+			if( t > 0.0f )
 			{
 				Vector vecDelta;
 				VectorSubtract( vecCenter, vBasePos, vecDelta );
 				float flDist = VectorNormalize( vecDelta );
 				float flPerpDist = vecCenter.DistTo( vNearPoint );
 				float flSinAngle = flPerpDist / flDist;
-				if ( flSinAngle <= flSinConeDegrees )
+				if( flSinAngle <= flSinConeDegrees )
 				{
 					FireBulletsInfo_t info( 1, vBasePos, vecDelta, VECTOR_CONE_PRECALCULATED, 8192, m_iAmmoType );
 					info.m_iTracerFreq = 1;
@@ -2517,7 +2619,7 @@ void CNPC_AttackHelicopter::ShootAtFacingDirection( const Vector &vBasePos, cons
 		}
 	}
 
-#ifdef HL2_EPISODIC 
+#ifdef HL2_EPISODIC
 	if( GetEnemy() != NULL )
 	{
 		CSoundEnt::InsertSound( SOUND_DANGER, GetEnemy()->WorldSpaceCenter(), 180.0f, 0.5f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
@@ -2535,34 +2637,40 @@ void CNPC_AttackHelicopter::ShootAtFacingDirection( const Vector &vBasePos, cons
 //-----------------------------------------------------------------------------
 // Can we zap it?
 //-----------------------------------------------------------------------------
-bool CNPC_AttackHelicopter::IsValidZapTarget( CBaseEntity *pTarget )
+bool CNPC_AttackHelicopter::IsValidZapTarget( CBaseEntity* pTarget )
 {
 	// Don't use the player or vehicle as a zap target, we'll do that ourselves.
-	if ( pTarget->IsPlayer() || pTarget->GetServerVehicle() )
+	if( pTarget->IsPlayer() || pTarget->GetServerVehicle() )
+	{
 		return false;
+	}
 
-	if ( pTarget == this )
+	if( pTarget == this )
+	{
 		return false;
+	}
 
-	if ( !pTarget->IsSolid() )
+	if( !pTarget->IsSolid() )
+	{
 		return false;
+	}
 
 	Assert( pTarget );
-	IPhysicsObject *pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-	int count = pTarget->VPhysicsGetObjectList( pList, ARRAYSIZE(pList) );
-	for ( int i = 0; i < count; i++ )
+	IPhysicsObject* pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
+	int count = pTarget->VPhysicsGetObjectList( pList, ARRAYSIZE( pList ) );
+	for( int i = 0; i < count; i++ )
 	{
 		int material = pList[i]->GetMaterialIndex();
-		const surfacedata_t *pSurfaceData = physprops->GetSurfaceData( material );
+		const surfacedata_t* pSurfaceData = physprops->GetSurfaceData( material );
 
 		// Is flesh or metal? Go for it!
-		if ( pSurfaceData->game.material == CHAR_TEX_METAL || 
-			pSurfaceData->game.material == CHAR_TEX_FLESH || 
-			pSurfaceData->game.material == CHAR_TEX_VENT || 
-			pSurfaceData->game.material == CHAR_TEX_GRATE || 
-			pSurfaceData->game.material == CHAR_TEX_COMPUTER || 
-			pSurfaceData->game.material == CHAR_TEX_BLOODYFLESH || 
-			pSurfaceData->game.material == CHAR_TEX_ALIENFLESH )
+		if( pSurfaceData->game.material == CHAR_TEX_METAL ||
+				pSurfaceData->game.material == CHAR_TEX_FLESH ||
+				pSurfaceData->game.material == CHAR_TEX_VENT ||
+				pSurfaceData->game.material == CHAR_TEX_GRATE ||
+				pSurfaceData->game.material == CHAR_TEX_COMPUTER ||
+				pSurfaceData->game.material == CHAR_TEX_BLOODYFLESH ||
+				pSurfaceData->game.material == CHAR_TEX_ALIENFLESH )
 		{
 			return true;
 		}
@@ -2574,17 +2682,17 @@ bool CNPC_AttackHelicopter::IsValidZapTarget( CBaseEntity *pTarget )
 //------------------------------------------------------------------------------
 // Effects
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::CreateZapBeam( const Vector &vecTargetPos )
+void CNPC_AttackHelicopter::CreateZapBeam( const Vector& vecTargetPos )
 {
 	CEffectData	data;
 	data.m_nEntIndex = entindex();
 	data.m_nAttachmentIndex = 0; // m_nGunTipAttachment;
 	data.m_vOrigin = vecTargetPos;
 	data.m_flScale = 5;
-	DispatchEffect( "TeslaZap", data ); 
+	DispatchEffect( "TeslaZap", data );
 }
 
-void CNPC_AttackHelicopter::CreateEntityZapEffect( CBaseEntity *pEnt )
+void CNPC_AttackHelicopter::CreateEntityZapEffect( CBaseEntity* pEnt )
 {
 	CEffectData	data;
 	data.m_nEntIndex = pEnt->entindex();
@@ -2599,34 +2707,40 @@ void CNPC_AttackHelicopter::CreateEntityZapEffect( CBaseEntity *pEnt )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::FireElectricityGun( )
 {
-	if ( m_flNextAttack > gpGlobals->curtime )
+	if( m_flNextAttack > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	EmitSound( "ReallyLoudSpark" );
 
-	CBaseEntity *ppEnts[256];
+	CBaseEntity* ppEnts[256];
 	Vector vecCenter = WorldSpaceCenter();
 	float flRadius = 500.0f;
 	vecCenter.z -= flRadius * 0.8f;
 	int nEntCount = UTIL_EntitiesInSphere( ppEnts, 256, vecCenter, flRadius, 0 );
-	CBaseEntity *ppCandidates[256];
+	CBaseEntity* ppCandidates[256];
 	int nCandidateCount = 0;
 	int i;
-	for ( i = 0; i < nEntCount; i++ )
+	for( i = 0; i < nEntCount; i++ )
 	{
-		if ( ppEnts[i] == NULL )
+		if( ppEnts[i] == NULL )
+		{
 			continue;
+		}
 
 		// Zap metal or flesh things.
-		if ( !IsValidZapTarget( ppEnts[i] ) )
+		if( !IsValidZapTarget( ppEnts[i] ) )
+		{
 			continue;
+		}
 
 		ppCandidates[ nCandidateCount++ ] = ppEnts[i];
 	}
 
 	// First, put a bolt in front of the player, at random
 	float flDist = 1024;
-	if ( GetEnemy() )
+	if( GetEnemy() )
 	{
 		Vector vecDelta;
 		Vector2DSubtract( GetEnemy()->WorldSpaceCenter().AsVector2D(), WorldSpaceCenter().AsVector2D(), vecDelta.AsVector2D() );
@@ -2634,9 +2748,9 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 
 		flDist = VectorNormalize( vecDelta );
 		Vector vecPerp( -vecDelta.y, vecDelta.x, 0.0f );
-		int nBoltCount = (int)(ClampSplineRemapVal( flDist, 256.0f, 1024.0f, 8, 0 ) + 0.5f);
+		int nBoltCount = ( int )( ClampSplineRemapVal( flDist, 256.0f, 1024.0f, 8, 0 ) + 0.5f );
 
-		for ( i = 0; i < nBoltCount; ++i )
+		for( i = 0; i < nBoltCount; ++i )
 		{
 			Vector vecTargetPt = GetEnemy()->WorldSpaceCenter();
 			VectorMA( vecTargetPt, random->RandomFloat( flDist + 100, flDist + 500 ), vecDelta, vecTargetPt );
@@ -2648,9 +2762,9 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 
 	// Next, choose the number of bolts...
 	int nBoltCount = random->RandomInt( 8, 16 );
-	for ( i = 0; i < nBoltCount; ++i )
+	for( i = 0; i < nBoltCount; ++i )
 	{
-		if ( (nCandidateCount > 0) && random->RandomFloat( 0.0f, 1.0f ) < 0.6f )
+		if( ( nCandidateCount > 0 ) && random->RandomFloat( 0.0f, 1.0f ) < 0.6f )
 		{
 			--nCandidateCount;
 
@@ -2666,9 +2780,9 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 			float flEffectRadius = random->RandomFloat( flRadius * 1.2, flRadius * 1.5f );
 			float flTheta = random->RandomFloat( 0.0f, 2.0f * M_PI );
 			float flPhi = random->RandomFloat( -0.5f * M_PI, 0.5f * M_PI );
-			vecTargetPt.x = cos(flTheta) * cos(flPhi);
-			vecTargetPt.y = sin(flTheta) * cos(flPhi);
-			vecTargetPt.z = sin(flPhi);
+			vecTargetPt.x = cos( flTheta ) * cos( flPhi );
+			vecTargetPt.y = sin( flTheta ) * cos( flPhi );
+			vecTargetPt.z = sin( flPhi );
 			vecTargetPt *= flEffectRadius;
 			vecTargetPt += vecCenter;
 
@@ -2676,11 +2790,11 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 		}
 	}
 
-	// Finally, put a bolt right at the player, at random 
+	// Finally, put a bolt right at the player, at random
 	float flHitRatio = ClampSplineRemapVal( flDist, 128.0f, 512.0f, 0.75f, 0.0f );
-	if ( random->RandomFloat( 0.0f, 1.0f ) < flHitRatio )
+	if( random->RandomFloat( 0.0f, 1.0f ) < flHitRatio )
 	{
-		if ( GetEnemyVehicle() )
+		if( GetEnemyVehicle() )
 		{
 			Vector vecTarget;
 			GetEnemyVehicle()->CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &vecTarget );
@@ -2690,7 +2804,7 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 			CTakeDamageInfo info( this, this, 5, DMG_SHOCK );
 			GetEnemy()->TakeDamage( info );
 		}
-		else if ( GetEnemy() )
+		else if( GetEnemy() )
 		{
 			Vector vecTarget;
 			GetEnemy()->CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &vecTarget );
@@ -2710,26 +2824,26 @@ void CNPC_AttackHelicopter::FireElectricityGun( )
 //------------------------------------------------------------------------------
 #define INTERVAL_BETWEEN_HITS 4
 
-bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &vGunDir, const Vector &vecFireAtPosition )
+bool CNPC_AttackHelicopter::DoGunFiring( const Vector& vBasePos, const Vector& vGunDir, const Vector& vecFireAtPosition )
 {
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	float flVolume = controller.SoundGetVolume( m_pGunFiringSound );
-	if ( flVolume != 1.0f )
+	if( flVolume != 1.0f )
 	{
 		controller.SoundChangeVolume( m_pGunFiringSound, 1.0, 0.01f );
 	}
 
-	if ( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && ( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) ) )
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && ( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) ) )
 	{
 		ShootAtFacingDirection( vBasePos, vGunDir, m_nRemainingBursts == 0 );
 	}
-	else if ( GetEnemyVehicle() )
+	else if( GetEnemyVehicle() )
 	{
 		ShootAtVehicle( vBasePos, vecFireAtPosition );
 	}
-	else if ( GetEnemy() && GetEnemy()->IsPlayer() )
+	else if( GetEnemy() && GetEnemy()->IsPlayer() )
 	{
-		if ( !IsDeadlyShooting() )
+		if( !IsDeadlyShooting() )
 		{
 			ShootAtPlayer( vBasePos, vGunDir );
 		}
@@ -2743,9 +2857,9 @@ bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &v
 		ShootAtFacingDirection( vBasePos, vGunDir, false );
 	}
 
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
-		if ( --m_nRemainingBursts < 0 )
+		if( --m_nRemainingBursts < 0 )
 		{
 			m_nRemainingBursts = INTERVAL_BETWEEN_HITS;
 		}
@@ -2753,13 +2867,15 @@ bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &v
 	}
 
 	--m_nRemainingBursts;
-	if ( m_nRemainingBursts > 0 )
+	if( m_nRemainingBursts > 0 )
+	{
 		return true;
+	}
 
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.01f );
 	float flIdleTime = CHOPPER_GUN_IDLE_TIME;
 	float flVariance = flIdleTime * 0.1f;
-	m_flNextAttack = gpGlobals->curtime + m_flIdleTimeDelay + random->RandomFloat(flIdleTime - flVariance, flIdleTime + flVariance);
+	m_flNextAttack = gpGlobals->curtime + m_flIdleTimeDelay + random->RandomFloat( flIdleTime - flVariance, flIdleTime + flVariance );
 	m_nGunState = GUN_STATE_IDLE;
 	SetPauseState( PAUSE_NO_PAUSE );
 	return true;
@@ -2771,27 +2887,33 @@ bool CNPC_AttackHelicopter::DoGunFiring( const Vector &vBasePos, const Vector &v
 //------------------------------------------------------------------------------
 #define MIN_BOMB_DISTANCE_SQR ( 600.0f * 600.0f )
 
-bool CNPC_AttackHelicopter::IsBombDropFair( const Vector &vecBombStartPos, const Vector &vecBombVelocity )
+bool CNPC_AttackHelicopter::IsBombDropFair( const Vector& vecBombStartPos, const Vector& vecBombVelocity )
 {
-	if ( (m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE) && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
+	if( ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE ) && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
+	{
 		return true;
+	}
 
 	// Can happen if you're noclipping around
-	if ( !GetEnemy() )
+	if( !GetEnemy() )
+	{
 		return false;
+	}
 
 	// If the player is moving slowly, it's fair
-	if ( GetEnemy()->GetSmoothedVelocity().LengthSqr() < ( CHOPPER_SLOW_BOMB_SPEED * CHOPPER_SLOW_BOMB_SPEED ) )
+	if( GetEnemy()->GetSmoothedVelocity().LengthSqr() < ( CHOPPER_SLOW_BOMB_SPEED * CHOPPER_SLOW_BOMB_SPEED ) )
+	{
 		return true;
+	}
 
 	// Skip out if we're right above or behind the player.. that's unfair
-	if ( GetEnemy() && GetEnemy()->IsPlayer() )
+	if( GetEnemy() && GetEnemy()->IsPlayer() )
 	{
 		// How much time will it take to fall?
 		// dx = 0.5 * a * t^2
 		Vector vecTarget = GetEnemy()->BodyTarget( GetAbsOrigin(), false );
 		float dz = vecBombStartPos.z - vecTarget.z;
-		float dt = (dz > 0.0f) ? sqrt( 2 * dz / GetCurrentGravity() ) : 0.0f;
+		float dt = ( dz > 0.0f ) ? sqrt( 2 * dz / GetCurrentGravity() ) : 0.0f;
 
 		// Where will the enemy be in that time?
 		Vector vecEnemyVel = GetEnemy()->GetSmoothedVelocity();
@@ -2807,8 +2929,10 @@ bool CNPC_AttackHelicopter::IsBombDropFair( const Vector &vecBombStartPos, const
 		flDistFactorSq *= flDistFactorSq;
 
 		// If it's too close, then we're not doing it.
-		if ( vecBomb.AsVector2D().DistToSqr( vecTarget.AsVector2D() ) < (flDistFactorSq * MIN_BOMB_DISTANCE_SQR) )
+		if( vecBomb.AsVector2D().DistToSqr( vecTarget.AsVector2D() ) < ( flDistFactorSq * MIN_BOMB_DISTANCE_SQR ) )
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -2819,10 +2943,10 @@ bool CNPC_AttackHelicopter::IsBombDropFair( const Vector &vecBombStartPos, const
 // Input  : &vecPos - Position to spawn at
 //			&vecVelocity - velocity to spawn with
 //-----------------------------------------------------------------------------
-CGrenadeHelicopter *CNPC_AttackHelicopter::SpawnBombEntity( const Vector &vecPos, const Vector &vecVelocity )
+CGrenadeHelicopter* CNPC_AttackHelicopter::SpawnBombEntity( const Vector& vecPos, const Vector& vecVelocity )
 {
 	// Create the grenade and set it up
-	CGrenadeHelicopter *pGrenade = static_cast<CGrenadeHelicopter*>(CreateEntityByName( "grenade_helicopter" ));
+	CGrenadeHelicopter* pGrenade = static_cast<CGrenadeHelicopter*>( CreateEntityByName( "grenade_helicopter" ) );
 	pGrenade->SetAbsOrigin( vecPos );
 	pGrenade->SetOwnerEntity( this );
 	pGrenade->SetThrower( this );
@@ -2832,17 +2956,17 @@ CGrenadeHelicopter *CNPC_AttackHelicopter::SpawnBombEntity( const Vector &vecPos
 
 #ifdef HL2_EPISODIC
 	// Disable collisions with the owner's bone followers while we drop
-	physfollower_t *pFollower = m_BoneFollowerManager.GetBoneFollower( 0 );
-	if ( pFollower )
+	physfollower_t* pFollower = m_BoneFollowerManager.GetBoneFollower( 0 );
+	if( pFollower )
 	{
-		CBaseEntity *pBoneFollower = pFollower->hFollower;
+		CBaseEntity* pBoneFollower = pFollower->hFollower;
 		PhysDisableEntityCollisions( pBoneFollower, pGrenade );
 		pGrenade->SetCollisionObject( pBoneFollower );
 	}
 #endif // HL2_EPISODIC
 
 #ifdef MAPBASE
-	m_OutBomb.Set(pGrenade, pGrenade, this);
+	m_OutBomb.Set( pGrenade, pGrenade, this );
 #endif
 
 	return pGrenade;
@@ -2851,20 +2975,24 @@ CGrenadeHelicopter *CNPC_AttackHelicopter::SpawnBombEntity( const Vector &vecPos
 //------------------------------------------------------------------------------
 // Actually drops the bomb
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelocity, bool bMegaBomb )
+void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector* pVecVelocity, bool bMegaBomb )
 {
-	if ( m_bBombingSuppressed )
+	if( m_bBombingSuppressed )
+	{
 		return;
+	}
 
 	Vector vTipPos;
 	GetAttachment( m_nBombAttachment, vTipPos );
 
-	if ( !CBombSuppressor::CanBomb( vTipPos ) )
+	if( !CBombSuppressor::CanBomb( vTipPos ) )
+	{
 		return;
-	
+	}
+
 	// Compute velocity
 	Vector vecActualVelocity;
-	if ( !pVecVelocity )
+	if( !pVecVelocity )
 	{
 		Vector vecAcross;
 		vecActualVelocity = GetAbsVelocity();
@@ -2874,7 +3002,7 @@ void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelo
 		vecAcross *= random->RandomFloat( 0.0f, 1.0f ) < 0.5f ? 1.0f : -1.0f;
 
 		// Blat out z component of velocity if it's moving upward....
-		if ( vecActualVelocity.z > 0 )
+		if( vecActualVelocity.z > 0 )
 		{
 			vecActualVelocity.z = 0.0f;
 		}
@@ -2886,18 +3014,20 @@ void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelo
 		vecActualVelocity = *pVecVelocity;
 	}
 
-	if ( bCheckForFairness )
+	if( bCheckForFairness )
 	{
-		if ( !IsBombDropFair( vTipPos, vecActualVelocity ) )
+		if( !IsBombDropFair( vTipPos, vecActualVelocity ) )
+		{
 			return;
+		}
 	}
 
-	AddGesture( (Activity)ACT_HELICOPTER_DROP_BOMB );
+	AddGesture( ( Activity )ACT_HELICOPTER_DROP_BOMB );
 	EmitSound( "NPC_AttackHelicopter.DropMine" );
 
 	// Make the bomb and send it off
-	CGrenadeHelicopter *pGrenade = SpawnBombEntity( vTipPos, vecActualVelocity );
-	if ( pGrenade && bMegaBomb )
+	CGrenadeHelicopter* pGrenade = SpawnBombEntity( vTipPos, vecActualVelocity );
+	if( pGrenade && bMegaBomb )
 	{
 		pGrenade->AddSpawnFlags( SF_GRENADE_HELICOPTER_MEGABOMB );
 	}
@@ -2907,10 +3037,12 @@ void CNPC_AttackHelicopter::CreateBomb( bool bCheckForFairness, Vector *pVecVelo
 //------------------------------------------------------------------------------
 // Drop a bomb at a particular location
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDropBomb( inputdata_t& inputdata )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if( m_flInputDropBombTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Prevent two triggers from being hit the same frame
 	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
@@ -2918,7 +3050,7 @@ void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 	CreateBomb(	);
 
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 	}
@@ -2928,10 +3060,12 @@ void CNPC_AttackHelicopter::InputDropBomb( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Drops a bomb straight downwards
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t& inputdata )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if( m_flInputDropBombTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Prevent two triggers from being hit the same frame
 	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
@@ -2943,7 +3077,7 @@ void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 	SpawnBombEntity( vTipPos, vec3_origin );
 
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 	}
@@ -2953,18 +3087,20 @@ void CNPC_AttackHelicopter::InputDropBombStraightDown( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Drop a bomb at a particular location
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdata, bool bCheckFairness )
+void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t& inputdata, bool bCheckFairness )
 {
-	if ( m_flInputDropBombTime > gpGlobals->curtime )
+	if( m_flInputDropBombTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Prevent two triggers from being hit the same frame
 	m_flInputDropBombTime = gpGlobals->curtime + 0.01f;
 
 	// Find our specified target
 	string_t strBombTarget = MAKE_STRING( inputdata.value.String() );
-	CBaseEntity *pBombEnt = gEntList.FindEntityByName( NULL, strBombTarget );
-	if ( pBombEnt == NULL )
+	CBaseEntity* pBombEnt = gEntList.FindEntityByName( NULL, strBombTarget );
+	if( pBombEnt == NULL )
 	{
 		Warning( "%s: Could not find bomb drop target '%s'!\n", GetClassname(), STRING( strBombTarget ) );
 		return;
@@ -2976,9 +3112,9 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 	// Compute the time it would take to fall to the target
 	Vector vecTarget = pBombEnt->BodyTarget( GetAbsOrigin(), false );
 	float dz = vTipPos.z - vecTarget.z;
-	if ( dz <= 0.0f )
+	if( dz <= 0.0f )
 	{
-		Warning("Bomb target %s is above the chopper!\n", STRING( strBombTarget ) );
+		Warning( "Bomb target %s is above the chopper!\n", STRING( strBombTarget ) );
 		return;
 	}
 	float dt = sqrt( 2 * dz / GetCurrentGravity() );
@@ -2988,18 +3124,20 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 	VectorSubtract( vecTarget, vTipPos, vecVelocity );
 	vecVelocity /= dt;
 	vecVelocity.z = 0.0f;
-	
-	if ( bCheckFairness )
+
+	if( bCheckFairness )
 	{
-		if ( !IsBombDropFair( vTipPos, vecVelocity ) )
+		if( !IsBombDropFair( vTipPos, vecVelocity ) )
+		{
 			return;
+		}
 	}
 
 	// Make the bomb and send it off
 	SpawnBombEntity( vTipPos, vecVelocity );
 
 	// If we're in the middle of a bomb dropping schedule, wait to drop another bomb.
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		m_flNextAttack = gpGlobals->curtime + 1.5f + random->RandomFloat( 0.1f, 0.2f );
 	}
@@ -3009,16 +3147,16 @@ void CNPC_AttackHelicopter::InputDropBombAtTargetInternal( inputdata_t &inputdat
 //------------------------------------------------------------------------------
 // Drop a bomb at a particular location
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBombAtTargetAlways( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDropBombAtTargetAlways( inputdata_t& inputdata )
 {
 	InputDropBombAtTargetInternal( inputdata, false );
 }
 
-	
+
 //------------------------------------------------------------------------------
 // Drop a bomb at a particular location
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBombAtTarget( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDropBombAtTarget( inputdata_t& inputdata )
 {
 	InputDropBombAtTargetInternal( inputdata, true );
 }
@@ -3027,11 +3165,11 @@ void CNPC_AttackHelicopter::InputDropBombAtTarget( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Drop a bomb at a particular location
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputDropBombDelay( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputDropBombDelay( inputdata_t& inputdata )
 {
 	m_flInputDropBombTime = gpGlobals->curtime + inputdata.value.Float();
 
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		m_flNextAttack = m_flInputDropBombTime;
 	}
@@ -3046,15 +3184,17 @@ void CNPC_AttackHelicopter::InputDropBombDelay( inputdata_t &inputdata )
 void CNPC_AttackHelicopter::DropBombs( )
 {
 	// Can't continually fire....
-	if (m_flNextAttack > gpGlobals->curtime)
+	if( m_flNextAttack > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Otherwise, behave as normal.
-	if ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
-		if ( GetEnemy() && GetEnemy()->IsPlayer() )
+		if( GetEnemy() && GetEnemy()->IsPlayer() )
 		{
-			if ( GetEnemy()->GetSmoothedVelocity().LengthSqr() > ( CHOPPER_SLOW_BOMB_SPEED * CHOPPER_SLOW_BOMB_SPEED ) )
+			if( GetEnemy()->GetSmoothedVelocity().LengthSqr() > ( CHOPPER_SLOW_BOMB_SPEED * CHOPPER_SLOW_BOMB_SPEED ) )
 			{
 				// Don't drop bombs if you are behind the player, unless the player is moving slowly
 				float flLeadingDistSq = GetLeadingDistance() * 0.75f;
@@ -3062,18 +3202,22 @@ void CNPC_AttackHelicopter::DropBombs( )
 
 				Vector vecPoint;
 				ClosestPointToCurrentPath( &vecPoint );
-				if ( vecPoint.AsVector2D().DistToSqr( GetDesiredPosition().AsVector2D() ) > flLeadingDistSq )
+				if( vecPoint.AsVector2D().DistToSqr( GetDesiredPosition().AsVector2D() ) > flLeadingDistSq )
+				{
 					return;
+				}
 			}
 		}
 	}
 	else
 	{
 		// Skip out if we're bullrushing but too far from the player
-		if ( GetEnemy() )
+		if( GetEnemy() )
 		{
-			if ( GetEnemy()->GetAbsOrigin().AsVector2D().DistToSqr( GetAbsOrigin().AsVector2D() ) > MAX_BULLRUSH_BOMB_DISTANCE_SQR )
+			if( GetEnemy()->GetAbsOrigin().AsVector2D().DistToSqr( GetAbsOrigin().AsVector2D() ) > MAX_BULLRUSH_BOMB_DISTANCE_SQR )
+			{
 				return;
+			}
 		}
 	}
 
@@ -3081,9 +3225,9 @@ void CNPC_AttackHelicopter::DropBombs( )
 
 	m_flNextAttack = gpGlobals->curtime + 0.5f + random->RandomFloat( 0.3f, 0.6f );
 
-	if ( (m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE) )
+	if( ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE ) )
 	{
-		if ( --m_nGrenadeCount <= 0 )
+		if( --m_nGrenadeCount <= 0 )
 		{
 			m_nGrenadeCount = CHOPPER_BOMB_DROP_COUNT;
 			m_flNextAttack += random->RandomFloat( 1.5f, 3.0f );
@@ -3100,50 +3244,66 @@ void CNPC_AttackHelicopter::DropBombs( )
 
 bool CNPC_AttackHelicopter::ShouldDropBombs( void )
 {
-	if ( IsCarpetBombing() )
-		return true;
-
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( IsCarpetBombing() )
 	{
-		// Distance determines whether or not we should do this
-		if ((m_nSecondaryMode == BULLRUSH_MODE_SHOOT_IDLE_PLAYER) && (SecondaryModeTime() >= BULLRUSH_IDLE_PLAYER_FIRE_TIME))
-			return ShouldBombIdlePlayer();
-
-		return (( m_nSecondaryMode == BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) || ( m_nSecondaryMode == BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER ));
+		return true;
 	}
 
-	if (!IsLeading() || !GetEnemyVehicle())
-		return false;
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	{
+		// Distance determines whether or not we should do this
+		if( ( m_nSecondaryMode == BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) && ( SecondaryModeTime() >= BULLRUSH_IDLE_PLAYER_FIRE_TIME ) )
+		{
+			return ShouldBombIdlePlayer();
+		}
 
-	if (( m_nAttackMode != ATTACK_MODE_BOMB_VEHICLE ) && ( m_nAttackMode != ATTACK_MODE_ALWAYS_LEAD_VEHICLE ))
-		return false;
+		return ( ( m_nSecondaryMode == BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED ) || ( m_nSecondaryMode == BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER ) );
+	}
 
-	if ( m_nGunState != GUN_STATE_IDLE )
+	if( !IsLeading() || !GetEnemyVehicle() )
+	{
 		return false;
+	}
+
+	if( ( m_nAttackMode != ATTACK_MODE_BOMB_VEHICLE ) && ( m_nAttackMode != ATTACK_MODE_ALWAYS_LEAD_VEHICLE ) )
+	{
+		return false;
+	}
+
+	if( m_nGunState != GUN_STATE_IDLE )
+	{
+		return false;
+	}
 
 	// This is for bombing. If you get hit, give a grace period to get back to speed
 	float flSpeedSqr = GetEnemy()->GetSmoothedVelocity().LengthSqr();
-	if ( flSpeedSqr >= BOMB_MIN_SPEED * BOMB_MIN_SPEED )
+	if( flSpeedSqr >= BOMB_MIN_SPEED * BOMB_MIN_SPEED )
 	{
 		m_flLastFastTime = gpGlobals->curtime;
 	}
 	else
 	{
-		if ( ( gpGlobals->curtime - m_flLastFastTime ) < BOMB_GRACE_PERIOD )
+		if( ( gpGlobals->curtime - m_flLastFastTime ) < BOMB_GRACE_PERIOD )
+		{
 			return false;
+		}
 	}
 
 	float flSpeedAlongPath = TargetSpeedAlongPath();
-	if ( m_nAttackMode == ATTACK_MODE_BOMB_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BOMB_VEHICLE )
+	{
 		return ( flSpeedAlongPath > -BOMB_MIN_SPEED );
+	}
 
 	// This is for ALWAYS_LEAD
-	if ( fabs(flSpeedAlongPath) < 50.0f )
+	if( fabs( flSpeedAlongPath ) < 50.0f )
+	{
 		return false;
+	}
 
 	float flLeadingDist = ComputeDistanceToLeadingPosition( );
 	flLeadingDist = GetLeadingDistance() - flLeadingDist;
-	if ( flSpeedAlongPath < 0.0f )
+	if( flSpeedAlongPath < 0.0f )
 	{
 		return flLeadingDist < 300.0f;
 	}
@@ -3159,10 +3319,12 @@ bool CNPC_AttackHelicopter::ShouldDropBombs( void )
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::BullrushBombs( )
 {
-	if ( gpGlobals->curtime < m_flNextBullrushBombTime )
+	if( gpGlobals->curtime < m_flNextBullrushBombTime )
+	{
 		return;
+	}
 
-	if ( m_nBullrushBombMode & 0x1 )
+	if( m_nBullrushBombMode & 0x1 )
 	{
 		CreateBomb( false, NULL, true );
 	}
@@ -3175,7 +3337,7 @@ void CNPC_AttackHelicopter::BullrushBombs( )
 		vecAcross *= random->RandomFloat( 300.0f, 500.0f );
 
 		// Blat out z component of velocity if it's moving upward....
-		if ( vecVelocity.z > 0 )
+		if( vecVelocity.z > 0 )
 		{
 			vecVelocity.z = 0.0f;
 		}
@@ -3194,13 +3356,13 @@ void CNPC_AttackHelicopter::BullrushBombs( )
 //-----------------------------------------------------------------------------
 // Purpose: Turn the gun off
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::InputGunOff( inputdata_t &inputdata )
+void CNPC_AttackHelicopter::InputGunOff( inputdata_t& inputdata )
 {
 	BaseClass::InputGunOff( inputdata );
 
-	if ( m_pGunFiringSound )
+	if( m_pGunFiringSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.01f );
 	}
 }
@@ -3212,53 +3374,57 @@ void CNPC_AttackHelicopter::InputGunOff( inputdata_t &inputdata )
 bool CNPC_AttackHelicopter::FireGun( void )
 {
 	// Do the test electricity gun
-	if ( HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
+	if( HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
 	{
 		FireElectricityGun( );
 		return true;
 	}
 
 	// HACK: CBaseHelicopter ignores this, and fire forever at the last place it saw the player. Why?
-	if (( m_nGunState == GUN_STATE_IDLE ) && ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE ) && !IsCarpetBombing() )
+	if( ( m_nGunState == GUN_STATE_IDLE ) && ( m_nAttackMode != ATTACK_MODE_BULLRUSH_VEHICLE ) && !IsCarpetBombing() )
 	{
-		if ( (m_flLastSeen + 1 <= gpGlobals->curtime) || (m_flPrevSeen + m_flGracePeriod > gpGlobals->curtime) )
+		if( ( m_flLastSeen + 1 <= gpGlobals->curtime ) || ( m_flPrevSeen + m_flGracePeriod > gpGlobals->curtime ) )
+		{
 			return false;
+		}
 	}
 
-	if ( IsCarpetBombing() )
+	if( IsCarpetBombing() )
 	{
 		BullrushBombs();
 		return false;
 	}
 
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		DropBombs( );
 		return false;
 	}
 
 	// Drop those bullrush bombs when shooting...
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
-		if ( IsInSecondaryMode( BULLRUSH_MODE_MEGA_BOMB ) )
+		if( IsInSecondaryMode( BULLRUSH_MODE_MEGA_BOMB ) )
 		{
 			BullrushBombs( );
 			return false;
 		}
 
 		// Don't fire if we're bullrushing and we're getting distance
-		if ( !IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) && !IsInSecondaryMode(BULLRUSH_MODE_SHOOT_IDLE_PLAYER) )
+		if( !IsInSecondaryMode( BULLRUSH_MODE_SHOOT_GUN ) && !IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
+		{
 			return false;
+		}
 
 		// If we're in the grace period on this mode, then don't fire
-		if ( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) && (SecondaryModeTime() < BULLRUSH_IDLE_PLAYER_FIRE_TIME) )
+		if( IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) && ( SecondaryModeTime() < BULLRUSH_IDLE_PLAYER_FIRE_TIME ) )
 		{
 			// Stop our gun sound
-			if ( m_nGunState != GUN_STATE_IDLE )
+			if( m_nGunState != GUN_STATE_IDLE )
 			{
 				ShutdownGunDuringBullrush();
 			}
-			
+
 			return false;
 		}
 	}
@@ -3269,7 +3435,7 @@ bool CNPC_AttackHelicopter::FireGun( void )
 
 	// Aim perfectly while idle, but after charging, the gun don't move so fast.
 	Vector vecFireAtPosition;
-	if ( !GetEnemyVehicle() || (m_nGunState == GUN_STATE_IDLE) )
+	if( !GetEnemyVehicle() || ( m_nGunState == GUN_STATE_IDLE ) )
 	{
 		ComputeFireAtPosition( &vecFireAtPosition );
 	}
@@ -3277,19 +3443,23 @@ bool CNPC_AttackHelicopter::FireGun( void )
 	{
 		ComputeVehicleFireAtPosition( &vecFireAtPosition );
 	}
-	
+
 	Vector vTargetDir = vecFireAtPosition - vBasePos;
 	VectorNormalize( vTargetDir );
 
 	// Makes the model of the gun point to where we're aiming.
-	if ( !PoseGunTowardTargetDirection( vTargetDir ) )
+	if( !PoseGunTowardTargetDirection( vTargetDir ) )
+	{
 		return false;
+	}
 
 	// Are we charging?
-	if ( m_nGunState == GUN_STATE_CHARGING )
+	if( m_nGunState == GUN_STATE_CHARGING )
 	{
-		if ( !DoGunCharging( ) )
+		if( !DoGunCharging( ) )
+		{
 			return false;
+		}
 	}
 
 	Vector vTipPos;
@@ -3299,7 +3469,7 @@ bool CNPC_AttackHelicopter::FireGun( void )
 	VectorNormalize( vGunDir );
 
 	// Are we firing?
-	if ( m_nGunState == GUN_STATE_FIRING )
+	if( m_nGunState == GUN_STATE_FIRING )
 	{
 		return DoGunFiring( vTipPos, vGunDir, vecFireAtPosition );
 	}
@@ -3313,8 +3483,8 @@ bool CNPC_AttackHelicopter::FireGun( void )
 //-----------------------------------------------------------------------------
 inline bool CNPC_AttackHelicopter::ShouldTriggerDamageEffect( int nPrevHealth, int nEffectCount ) const
 {
-	int nPrevRange = (int)( ((float)nPrevHealth / (float)GetMaxHealth()) * nEffectCount );
-	int nRange = (int)( ((float)GetHealth() / (float)GetMaxHealth()) * nEffectCount );
+	int nPrevRange = ( int )( ( ( float )nPrevHealth / ( float )GetMaxHealth() ) * nEffectCount );
+	int nRange = ( int )( ( ( float )GetHealth() / ( float )GetMaxHealth() ) * nEffectCount );
 	return ( nRange != nPrevRange );
 }
 
@@ -3322,24 +3492,30 @@ inline bool CNPC_AttackHelicopter::ShouldTriggerDamageEffect( int nPrevHealth, i
 //-----------------------------------------------------------------------------
 // Add a smoke trail since we've taken more damage
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::AddSmokeTrail( const Vector &vecPos )
+void CNPC_AttackHelicopter::AddSmokeTrail( const Vector& vecPos )
 {
-	if ( m_nSmokeTrailCount == MAX_SMOKE_TRAILS )
+	if( m_nSmokeTrailCount == MAX_SMOKE_TRAILS )
+	{
 		return;
+	}
 
 	// See if there's an attachment for this smoke trail
 	int nAttachment = LookupAttachment( UTIL_VarArgs( "damage%d", m_nSmokeTrailCount ) );
 
-	if ( nAttachment == 0 )
+	if( nAttachment == 0 )
+	{
 		return;
+	}
 
 	// The final smoke trail is a flaming engine
-	if ( m_nSmokeTrailCount == 0 || m_nSmokeTrailCount % 2 )
+	if( m_nSmokeTrailCount == 0 || m_nSmokeTrailCount % 2 )
 	{
-		CFireTrail *pFireTrail = CFireTrail::CreateFireTrail();
+		CFireTrail* pFireTrail = CFireTrail::CreateFireTrail();
 
-		if ( pFireTrail == NULL )
+		if( pFireTrail == NULL )
+		{
 			return;
+		}
 
 		m_hSmokeTrail[m_nSmokeTrailCount] = pFireTrail;
 
@@ -3351,23 +3527,25 @@ void CNPC_AttackHelicopter::AddSmokeTrail( const Vector &vecPos )
 	}
 	else
 	{
-		SmokeTrail *pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
+		SmokeTrail* pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
 		if( !pSmokeTrail )
+		{
 			return;
+		}
 
 		m_hSmokeTrail[m_nSmokeTrailCount] = pSmokeTrail;
 
 		pSmokeTrail->m_SpawnRate = 48;
 		pSmokeTrail->m_ParticleLifetime = 0.5f;
-		pSmokeTrail->m_StartColor.Init(0.15, 0.15, 0.15);
-		pSmokeTrail->m_EndColor.Init(0.0, 0.0, 0.0);
+		pSmokeTrail->m_StartColor.Init( 0.15, 0.15, 0.15 );
+		pSmokeTrail->m_EndColor.Init( 0.0, 0.0, 0.0 );
 		pSmokeTrail->m_StartSize = 24;
 		pSmokeTrail->m_EndSize = 80;
 		pSmokeTrail->m_SpawnRadius = 8;
 		pSmokeTrail->m_Opacity = 0.2;
 		pSmokeTrail->m_MinSpeed = 16;
 		pSmokeTrail->m_MaxSpeed = 64;
-		pSmokeTrail->SetLifetime(-1);
+		pSmokeTrail->SetLifetime( -1 );
 		pSmokeTrail->SetParent( this, nAttachment );
 		pSmokeTrail->SetLocalOrigin( vec3_origin );
 		pSmokeTrail->SetMoveType( MOVETYPE_NONE );
@@ -3382,21 +3560,21 @@ void CNPC_AttackHelicopter::AddSmokeTrail( const Vector &vecPos )
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::DestroySmokeTrails()
 {
-	for ( int i = m_nSmokeTrailCount; --i >= 0; )
+	for( int i = m_nSmokeTrailCount; --i >= 0; )
 	{
 		UTIL_Remove( m_hSmokeTrail[i] );
 		m_hSmokeTrail[i] = NULL;
 	}
 }
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &vecChunkPos - 
+// Purpose:
+// Input  : &vecChunkPos -
 //-----------------------------------------------------------------------------
-void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, const QAngle &vecChunkAngles, const char *pszChunkName, bool bSmall )
+void Chopper_CreateChunk( CBaseEntity* pChopper, const Vector& vecChunkPos, const QAngle& vecChunkAngles, const char* pszChunkName, bool bSmall )
 {
 	// Drop a flaming, smoking chunk.
-	CGib *pChunk = CREATE_ENTITY( CGib, "gib" );
+	CGib* pChunk = CREATE_ENTITY( CGib, "gib" );
 	pChunk->Spawn( pszChunkName );
 	pChunk->SetBloodColor( DONT_BLEED );
 
@@ -3404,8 +3582,8 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 	pChunk->SetAbsAngles( vecChunkAngles );
 
 	pChunk->SetOwnerEntity( pChopper );
-	
-	if ( bSmall )
+
+	if( bSmall )
 	{
 		pChunk->m_lifeTime = random->RandomFloat( 0.5f, 1.0f );
 		pChunk->SetSolidFlags( FSOLID_NOT_SOLID );
@@ -3417,9 +3595,9 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 	{
 		pChunk->m_lifeTime = 5.0f;
 	}
-	
+
 	pChunk->SetCollisionGroup( COLLISION_GROUP_DEBRIS );
-	
+
 	// Set the velocity
 	Vector vecVelocity;
 	AngularImpulse angImpulse;
@@ -3429,7 +3607,7 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 	angles.y = random->RandomFloat( 0, 360 );
 	angles.z = 0.0f;
 	AngleVectors( angles, &vecVelocity );
-	
+
 	vecVelocity *= random->RandomFloat( 550, 800 );
 	vecVelocity += pChopper->GetAbsVelocity();
 
@@ -3437,21 +3615,23 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 
 	pChunk->SetAbsVelocity( vecVelocity );
 
-	if ( bSmall == false )
+	if( bSmall == false )
 	{
-		IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
-		
-		if ( pPhysicsObject )
+		IPhysicsObject* pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
+
+		if( pPhysicsObject )
 		{
 			pPhysicsObject->EnableMotion( true );
-			pPhysicsObject->SetVelocity(&vecVelocity, &angImpulse );
+			pPhysicsObject->SetVelocity( &vecVelocity, &angImpulse );
 		}
 	}
-	
-	CFireTrail *pFireTrail = CFireTrail::CreateFireTrail();
 
-	if ( pFireTrail == NULL )
+	CFireTrail* pFireTrail = CFireTrail::CreateFireTrail();
+
+	if( pFireTrail == NULL )
+	{
 		return;
+	}
 
 	pFireTrail->FollowEntity( pChunk, "" );
 	pFireTrail->SetParent( pChunk, 0 );
@@ -3463,7 +3643,7 @@ void Chopper_CreateChunk( CBaseEntity *pChopper, const Vector &vecChunkPos, cons
 //------------------------------------------------------------------------------
 // Pow!
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos )
+void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector& vecExplosionPos )
 {
 	CEffectData data;
 	data.m_vOrigin = vecExplosionPos;
@@ -3473,22 +3653,22 @@ void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos 
 
 	UTIL_ScreenShake( vecExplosionPos, 25.0, 150.0, 1.0, 750.0f, SHAKE_START );
 
-	if(GetCrashPoint() != NULL)
+	if( GetCrashPoint() != NULL )
 	{
 		// Make it clear that I'm done for.
-		ExplosionCreate( vecExplosionPos, QAngle(0,0,1), this, 100, 128, false );
+		ExplosionCreate( vecExplosionPos, QAngle( 0, 0, 1 ), this, 100, 128, false );
 	}
 
-	if ( random->RandomInt( 0, 4 ) )
+	if( random->RandomInt( 0, 4 ) )
 	{
-		for ( int i = 0; i < 2; i++ )
+		for( int i = 0; i < 2; i++ )
 		{
-			Chopper_CreateChunk( this, vecExplosionPos, RandomAngle(0, 360), g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ), true );
+			Chopper_CreateChunk( this, vecExplosionPos, RandomAngle( 0, 360 ), g_PropDataSystem.GetRandomChunkModel( "MetalChunks" ), true );
 		}
 	}
 	else
 	{
-		Chopper_CreateChunk( this, vecExplosionPos, RandomAngle(0, 360), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_SMALL_CHUNKS - 1 )], false );
+		Chopper_CreateChunk( this, vecExplosionPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_SMALL_CHUNKS - 1 )], false );
 	}
 }
 
@@ -3499,23 +3679,27 @@ void CNPC_AttackHelicopter::ExplodeAndThrowChunk( const Vector &vecExplosionPos 
 void CNPC_AttackHelicopter::DropCorpse( int nDamage )
 {
 	// Don't drop another corpse if the next guy's not out on the gun yet
-	if ( m_flLastCorpseFall > gpGlobals->curtime )
+	if( m_flLastCorpseFall > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Clamp damage to prevent ridiculous ragdoll velocity
 	if( nDamage > 250.0f )
+	{
 		nDamage = 250.0f;
+	}
 
 	m_flLastCorpseFall = gpGlobals->curtime + 3.0;
 
 	// Spawn a ragdoll combine guard
 	float forceScale = nDamage * 75 * 4;
-	Vector vecForceVector = RandomVector(-1,1);
+	Vector vecForceVector = RandomVector( -1, 1 );
 	vecForceVector.z = 0.5;
 	vecForceVector *= forceScale;
 
-	CBaseEntity *pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
-	if ( pGib )
+	CBaseEntity* pGib = CreateRagGib( "models/combine_soldier.mdl", GetAbsOrigin(), GetAbsAngles(), vecForceVector );
+	if( pGib )
 	{
 		pGib->SetOwnerEntity( this );
 	}
@@ -3523,22 +3707,22 @@ void CNPC_AttackHelicopter::DropCorpse( int nDamage )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CNPC_AttackHelicopter::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	// Take no damage from trace attacks unless it's blast damage. RadiusDamage() sometimes calls
 	// TraceAttack() as a means for delivering blast damage. Usually when the explosive penetrates
 	// the target. (RPG missiles do this sometimes).
 #ifdef MAPBASE
-	if ( ( info.GetDamageType() & DMG_AIRBOAT ) || 
-		 ( info.GetInflictor()->Classify() == CLASS_MISSILE ) || 
-		 ( info.GetAttacker()->Classify() == CLASS_MISSILE ) ||
-		 m_bAllowAnyDamage )
+	if( ( info.GetDamageType() & DMG_AIRBOAT ) ||
+			( info.GetInflictor()->Classify() == CLASS_MISSILE ) ||
+			( info.GetAttacker()->Classify() == CLASS_MISSILE ) ||
+			m_bAllowAnyDamage )
 #else
-	if ( ( info.GetDamageType() & DMG_AIRBOAT ) || 
-		 ( info.GetInflictor()->Classify() == CLASS_MISSILE ) || 
-		 ( info.GetAttacker()->Classify() == CLASS_MISSILE ) )
+	if( ( info.GetDamageType() & DMG_AIRBOAT ) ||
+			( info.GetInflictor()->Classify() == CLASS_MISSILE ) ||
+			( info.GetAttacker()->Classify() == CLASS_MISSILE ) )
 #endif
 	{
 		BaseClass::BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
@@ -3547,9 +3731,9 @@ void CNPC_AttackHelicopter::TraceAttack( const CTakeDamageInfo &info, const Vect
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
+int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	// We don't take blast damage from anything but the airboat or missiles (or myself!)
 #ifdef MAPBASE
@@ -3558,30 +3742,34 @@ int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
 	if( info.GetInflictor() != this )
 #endif
 	{
-		if ( ( ( info.GetDamageType() & DMG_AIRBOAT ) == 0 ) && 
-			( info.GetInflictor()->Classify() != CLASS_MISSILE ) && 
-			( info.GetAttacker()->Classify() != CLASS_MISSILE ) )
+		if( ( ( info.GetDamageType() & DMG_AIRBOAT ) == 0 ) &&
+				( info.GetInflictor()->Classify() != CLASS_MISSILE ) &&
+				( info.GetAttacker()->Classify() != CLASS_MISSILE ) )
+		{
 			return 0;
+		}
 	}
 
-	if ( m_bIndestructible )
+	if( m_bIndestructible )
 	{
-		if ( GetHealth() < info.GetDamage() )
+		if( GetHealth() < info.GetDamage() )
+		{
 			return 0;
+		}
 	}
 
 	// helicopter takes extra damage from its own grenades
-	CGrenadeHelicopter *pGren = dynamic_cast<CGrenadeHelicopter *>(info.GetInflictor());
-	if ( pGren && info.GetAttacker() && info.GetAttacker()->IsPlayer() )
+	CGrenadeHelicopter* pGren = dynamic_cast<CGrenadeHelicopter*>( info.GetInflictor() );
+	if( pGren && info.GetAttacker() && info.GetAttacker()->IsPlayer() )
 	{
 		CTakeDamageInfo fudgedInfo = info;
 
 		float damage;
-		if( g_pGameRules->IsSkillLevel(SKILL_EASY) )
+		if( g_pGameRules->IsSkillLevel( SKILL_EASY ) )
 		{
 			damage = GetMaxHealth() / sk_helicopter_num_bombs1.GetFloat();
 		}
-		else if( g_pGameRules->IsSkillLevel(SKILL_HARD) )
+		else if( g_pGameRules->IsSkillLevel( SKILL_HARD ) )
 		{
 			damage = GetMaxHealth() / sk_helicopter_num_bombs3.GetFloat();
 		}
@@ -3603,11 +3791,11 @@ int CNPC_AttackHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Take damage from trace attacks if they hit the gunner
 //-----------------------------------------------------------------------------
-int CNPC_AttackHelicopter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_AttackHelicopter::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
 	int nPrevHealth = GetHealth();
 
-	if ( ( info.GetInflictor() != NULL ) && ( info.GetInflictor()->GetOwnerEntity() != NULL ) && ( info.GetInflictor()->GetOwnerEntity() == this ) )
+	if( ( info.GetInflictor() != NULL ) && ( info.GetInflictor()->GetOwnerEntity() != NULL ) && ( info.GetInflictor()->GetOwnerEntity() == this ) )
 	{
 		// Don't take damage from my own bombs. (Unless the player grabbed them and threw them back)
 		return 0;
@@ -3642,39 +3830,39 @@ int CNPC_AttackHelicopter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 	}
 
 	// Spawn damage effects
-	if ( nPrevHealth != GetHealth() )
+	if( nPrevHealth != GetHealth() )
 	{
 		// Give the badly damaged call to say we're going to mega bomb soon
-		if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+		if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 		{
-			if (( nPrevHealth > m_flNextMegaBombHealth ) && (GetHealth() <= m_flNextMegaBombHealth) ) 
+			if( ( nPrevHealth > m_flNextMegaBombHealth ) && ( GetHealth() <= m_flNextMegaBombHealth ) )
 			{
 				EmitSound( "NPC_AttackHelicopter.BadlyDamagedAlert" );
 			}
 		}
 
-		if ( ShouldTriggerDamageEffect( nPrevHealth, MAX_SMOKE_TRAILS ) )
+		if( ShouldTriggerDamageEffect( nPrevHealth, MAX_SMOKE_TRAILS ) )
 		{
 			AddSmokeTrail( info.GetDamagePosition() );
 		}
 
-		if ( ShouldTriggerDamageEffect( nPrevHealth, MAX_CORPSES ) )
+		if( ShouldTriggerDamageEffect( nPrevHealth, MAX_CORPSES ) )
 		{
-			if ( nPrevHealth != GetMaxHealth() )
+			if( nPrevHealth != GetMaxHealth() )
 			{
 				DropCorpse( info.GetDamage() );
 			}
 		}
 
-		if ( ShouldTriggerDamageEffect( nPrevHealth, MAX_EXPLOSIONS ) )
+		if( ShouldTriggerDamageEffect( nPrevHealth, MAX_EXPLOSIONS ) )
 		{
 			ExplodeAndThrowChunk( info.GetDamagePosition() );
 		}
 
 #ifndef MAPBASE // We need to make sure the base OnHealthChanged works with helicopters
-		int nPrevPercent = (int)(100.0f * nPrevHealth / GetMaxHealth());
-		int nCurrPercent = (int)(100.0f * GetHealth() / GetMaxHealth());
-		if (( (nPrevPercent + 9) / 10 ) != ( (nCurrPercent + 9) / 10 ))
+		int nPrevPercent = ( int )( 100.0f * nPrevHealth / GetMaxHealth() );
+		int nCurrPercent = ( int )( 100.0f * GetHealth() / GetMaxHealth() );
+		if( ( ( nPrevPercent + 9 ) / 10 ) != ( ( nCurrPercent + 9 ) / 10 ) )
 		{
 			m_OnHealthChanged.Set( nCurrPercent, this, this );
 		}
@@ -3685,17 +3873,17 @@ int CNPC_AttackHelicopter::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void Chopper_BecomeChunks( CBaseEntity *pChopper )
+void Chopper_BecomeChunks( CBaseEntity* pChopper )
 {
 	QAngle vecChunkAngles = pChopper->GetAbsAngles();
 	Vector vecForward, vecUp;
 	pChopper->GetVectors( &vecForward, NULL, &vecUp );
 
 #ifdef HL2_EPISODIC
-	CNPC_AttackHelicopter *pAttackHelicopter;
-	pAttackHelicopter = dynamic_cast<CNPC_AttackHelicopter*>(pChopper);
+	CNPC_AttackHelicopter* pAttackHelicopter;
+	pAttackHelicopter = dynamic_cast<CNPC_AttackHelicopter*>( pChopper );
 	if( pAttackHelicopter != NULL )
 	{
 		// New for EP2, we may be tailspinning, (crashing) and playing an animation that is spinning
@@ -3708,7 +3896,7 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 
 		if( iAttach > -1 )
 		{
-			pAttackHelicopter->GetAttachment(iAttach, vecAttachPos, vecChunkAngles );
+			pAttackHelicopter->GetAttachment( iAttach, vecAttachPos, vecChunkAngles );
 			AngleVectors( vecChunkAngles, &vecForward, NULL, &vecUp );
 		}
 	}
@@ -3717,7 +3905,7 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 
 	Vector vecChunkPos = pChopper->GetAbsOrigin();
 
-	Vector vecRight(0,0,0);
+	Vector vecRight( 0, 0, 0 );
 
 	if( hl2_episodic.GetBool() )
 	{
@@ -3728,13 +3916,13 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 	}
 
 	// Body
-	CHelicopterChunk *pBodyChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity(), HELICOPTER_CHUNK_BODY, CHUNK_BODY );
+	CHelicopterChunk* pBodyChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity(), HELICOPTER_CHUNK_BODY, CHUNK_BODY );
 	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	vecChunkPos = pChopper->GetAbsOrigin() + ( vecForward * 100.0f ) + ( vecUp * -38.0f );
 
 	// Cockpit
-	CHelicopterChunk *pCockpitChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * -800.0f, HELICOPTER_CHUNK_COCKPIT, CHUNK_COCKPIT );
+	CHelicopterChunk* pCockpitChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * -800.0f, HELICOPTER_CHUNK_COCKPIT, CHUNK_COCKPIT );
 	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	pCockpitChunk->m_hMaster = pBodyChunk;
@@ -3742,23 +3930,23 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 	vecChunkPos = pChopper->GetAbsOrigin() + ( vecForward * -175.0f );
 
 	// Tail
-	CHelicopterChunk *pTailChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * 800.0f, HELICOPTER_CHUNK_TAIL, CHUNK_TAIL );
+	CHelicopterChunk* pTailChunk = CHelicopterChunk::CreateHelicopterChunk( vecChunkPos, vecChunkAngles, pChopper->GetAbsVelocity() + vecRight * 800.0f, HELICOPTER_CHUNK_TAIL, CHUNK_TAIL );
 	Chopper_CreateChunk( pChopper, vecChunkPos, RandomAngle( 0, 360 ), s_pChunkModelName[random->RandomInt( 0, CHOPPER_MAX_CHUNKS - 1 )], false );
 
 	pTailChunk->m_hMaster = pBodyChunk;
 
 	// Constrain all the pieces together loosely
-	IPhysicsObject *pBodyObject = pBodyChunk->VPhysicsGetObject();
+	IPhysicsObject* pBodyObject = pBodyChunk->VPhysicsGetObject();
 	Assert( pBodyObject );
 
-	IPhysicsObject *pCockpitObject = pCockpitChunk->VPhysicsGetObject();
+	IPhysicsObject* pCockpitObject = pCockpitChunk->VPhysicsGetObject();
 	Assert( pCockpitObject );
 
-	IPhysicsObject *pTailObject = pTailChunk->VPhysicsGetObject();
+	IPhysicsObject* pTailObject = pTailChunk->VPhysicsGetObject();
 	Assert( pTailObject );
 
-	IPhysicsConstraintGroup *pGroup = NULL;
-	
+	IPhysicsConstraintGroup* pGroup = NULL;
+
 	// Create the constraint
 	constraint_fixedparams_t fixed;
 	fixed.Defaults();
@@ -3777,7 +3965,7 @@ void Chopper_BecomeChunks( CBaseEntity *pChopper )
 //-----------------------------------------------------------------------------
 // Purpose: Start us crashing
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo& info )
 {
 	if( m_lifeState == LIFE_ALIVE )
 	{
@@ -3786,12 +3974,12 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 
 	m_lifeState			= LIFE_DYING;
 
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.1f );
 
 	if( GetCrashPoint() == NULL )
 	{
-		CBaseEntity *pCrashPoint = gEntList.FindEntityByClassname( NULL, "info_target_helicopter_crash" );
+		CBaseEntity* pCrashPoint = gEntList.FindEntityByClassname( NULL, "info_target_helicopter_crash" );
 		if( pCrashPoint != NULL )
 		{
 			m_hCrashPoint.Set( pCrashPoint );
@@ -3841,7 +4029,7 @@ void CNPC_AttackHelicopter::Event_Killed( const CTakeDamageInfo &info )
 void CNPC_AttackHelicopter::CreateChopperHusk()
 {
 	// We're embedded into the ground
-	CBaseEntity *pCorpse = CreateEntityByName( "prop_physics" );
+	CBaseEntity* pCorpse = CreateEntityByName( "prop_physics" );
 	pCorpse->SetAbsOrigin( GetAbsOrigin() );
 	pCorpse->SetAbsAngles( GetAbsAngles() );
 	pCorpse->SetModel( CHOPPER_MODEL_CORPSE_NAME );
@@ -3851,18 +4039,18 @@ void CNPC_AttackHelicopter::CreateChopperHusk()
 }
 
 //-----------------------------------------------------------------------------
-// Think!	
+// Think!
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::PrescheduleThink( void )
 {
-	if ( m_flGoalRollDmg != 0.0f )
+	if( m_flGoalRollDmg != 0.0f )
 	{
 		m_flGoalRollDmg = UTIL_Approach( 0, m_flGoalRollDmg, 2.0f );
 	}
 
 	switch( m_lifeState )
 	{
-	case LIFE_DYING:
+		case LIFE_DYING:
 		{
 			if( GetCrashPoint() != NULL )
 			{
@@ -3870,11 +4058,11 @@ void CNPC_AttackHelicopter::PrescheduleThink( void )
 				SetDesiredPosition( GetCrashPoint()->WorldSpaceCenter() );
 			}
 
-			if ( random->RandomInt( 0, 4 ) == 0 )
+			if( random->RandomInt( 0, 4 ) == 0 )
 			{
-				Vector	explodePoint;		
-				CollisionProp()->RandomPointInBounds( Vector(0.25,0.25,0.25), Vector(0.75,0.75,0.75), &explodePoint );
-				
+				Vector	explodePoint;
+				CollisionProp()->RandomPointInBounds( Vector( 0.25, 0.25, 0.25 ), Vector( 0.75, 0.75, 0.75 ), &explodePoint );
+
 				ExplodeAndThrowChunk( explodePoint );
 			}
 		}
@@ -3886,11 +4074,11 @@ void CNPC_AttackHelicopter::PrescheduleThink( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose:	
+// Purpose:
 //-----------------------------------------------------------------------------
 float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 {
-	if ( !IsLeading() || !GetEnemy() )
+	if( !IsLeading() || !GetEnemy() )
 	{
 		m_flCurrPathOffset = 0.0f;
 		return 0.0f;
@@ -3899,11 +4087,11 @@ float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 	float flNewPathOffset = TargetDistanceToPath();
 
 	// Make bomb dropping more interesting
-	if ( ShouldDropBombs() )
+	if( ShouldDropBombs() )
 	{
 		float flSpeedAlongPath = TargetSpeedAlongPath();
 
-		if ( flSpeedAlongPath > 10.0f )
+		if( flSpeedAlongPath > 10.0f )
 		{
 			float flLeadTime = GetLeadingDistance() / flSpeedAlongPath;
 			flLeadTime = clamp( flLeadTime, 0.0f, 2.0f );
@@ -3912,22 +4100,22 @@ float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 
 		flSpeedAlongPath = clamp( flSpeedAlongPath, 100.0f, 500.0f );
 		float flSinHeight = SimpleSplineRemapVal( flSpeedAlongPath, 100.0f, 500.0f, 0.0f, 200.0f );
-		flNewPathOffset += flSinHeight * sin( 2.0f * M_PI * (gpGlobals->curtime / 6.0f) );
+		flNewPathOffset += flSinHeight * sin( 2.0f * M_PI * ( gpGlobals->curtime / 6.0f ) );
 	}
 
-	if ( (flMaxPathOffset != 0.0f) && (flNewPathOffset > flMaxPathOffset) )
+	if( ( flMaxPathOffset != 0.0f ) && ( flNewPathOffset > flMaxPathOffset ) )
 	{
 		flNewPathOffset = flMaxPathOffset;
 	}
 
-	float flMaxChange = 1000.0f * (gpGlobals->curtime - GetLastThink());
-	if ( fabs( flNewPathOffset - m_flCurrPathOffset ) < flMaxChange )
+	float flMaxChange = 1000.0f * ( gpGlobals->curtime - GetLastThink() );
+	if( fabs( flNewPathOffset - m_flCurrPathOffset ) < flMaxChange )
 	{
 		m_flCurrPathOffset = flNewPathOffset;
 	}
 	else
 	{
-		float flSign = (m_flCurrPathOffset < flNewPathOffset) ? 1.0f : -1.0f;
+		float flSign = ( m_flCurrPathOffset < flNewPathOffset ) ? 1.0f : -1.0f;
 		m_flCurrPathOffset += flSign * flMaxChange;
 	}
 
@@ -3936,13 +4124,13 @@ float CNPC_AttackHelicopter::UpdatePerpPathDistance( float flMaxPathOffset )
 
 
 //-----------------------------------------------------------------------------
-// Computes the max speed + acceleration:	
+// Computes the max speed + acceleration:
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::GetMaxSpeedAndAccel( float *pMaxSpeed, float *pAccelRate )
+void CNPC_AttackHelicopter::GetMaxSpeedAndAccel( float* pMaxSpeed, float* pAccelRate )
 {
 	*pAccelRate = CHOPPER_ACCEL_RATE;
 	*pMaxSpeed = GetMaxSpeed();
-	if ( GetEnemyVehicle() )
+	if( GetEnemyVehicle() )
 	{
 		*pAccelRate *= 9.0f;
 	}
@@ -3950,7 +4138,7 @@ void CNPC_AttackHelicopter::GetMaxSpeedAndAccel( float *pMaxSpeed, float *pAccel
 
 
 //-----------------------------------------------------------------------------
-// Computes the acceleration:	
+// Computes the acceleration:
 //-----------------------------------------------------------------------------
 #define HELICOPTER_GRAVITY	384
 #define HELICOPTER_DT		0.1f
@@ -3959,27 +4147,27 @@ void CNPC_AttackHelicopter::GetMaxSpeedAndAccel( float *pMaxSpeed, float *pAccel
 #define HELICOPTER_FORCE_BLEND 0.8f
 #define HELICOPTER_FORCE_BLEND_VEHICLE 0.2f
 
-void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition, 
-	float flAdditionalHeight, float flMinDistFromSegment, float flMaxDistFromSegment, Vector *pVecAccel )
+void CNPC_AttackHelicopter::ComputeVelocity( const Vector& vecTargetPosition,
+		float flAdditionalHeight, float flMinDistFromSegment, float flMaxDistFromSegment, Vector* pVecAccel )
 {
 	Vector deltaPos;
-	VectorSubtract( vecTargetPosition, GetAbsOrigin(), deltaPos ); 
+	VectorSubtract( vecTargetPosition, GetAbsOrigin(), deltaPos );
 
 	// calc goal linear accel to hit deltaPos in dt time.
 	// This is solving the equation xf = 0.5 * a * dt^2 + vo * dt + xo
 	float dt = 1.0f;
-	pVecAccel->x = 2.0f * (deltaPos.x - GetAbsVelocity().x * dt) / (dt * dt);
-	pVecAccel->y = 2.0f * (deltaPos.y - GetAbsVelocity().y * dt) / (dt * dt);
-	pVecAccel->z = 2.0f * (deltaPos.z - GetAbsVelocity().z * dt) / (dt * dt) + HELICOPTER_GRAVITY;
+	pVecAccel->x = 2.0f * ( deltaPos.x - GetAbsVelocity().x * dt ) / ( dt * dt );
+	pVecAccel->y = 2.0f * ( deltaPos.y - GetAbsVelocity().y * dt ) / ( dt * dt );
+	pVecAccel->z = 2.0f * ( deltaPos.z - GetAbsVelocity().z * dt ) / ( dt * dt ) + HELICOPTER_GRAVITY;
 
 	float flDistFromPath = 0.0f;
 	Vector vecPoint, vecDelta;
-	if ( flMaxDistFromSegment != 0.0f )
+	if( flMaxDistFromSegment != 0.0f )
 	{
 		// Also, add in a little force to get us closer to our current line segment if we can
 		ClosestPointToCurrentPath( &vecPoint );
 
-		if ( flAdditionalHeight != 0.0f )
+		if( flAdditionalHeight != 0.0f )
 		{
 			Vector vecEndPoint, vecClosest;
 			vecEndPoint = vecPoint;
@@ -3989,19 +4177,19 @@ void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition,
 		}
 
 		VectorSubtract( vecPoint, GetAbsOrigin(), vecDelta );
- 		flDistFromPath = VectorNormalize( vecDelta );
-		if ( flDistFromPath > flMaxDistFromSegment )
+		flDistFromPath = VectorNormalize( vecDelta );
+		if( flDistFromPath > flMaxDistFromSegment )
 		{
 			// Strongly constrain to an n unit pipe around the current path
 			// by damping out all impulse forces that would push us further from the pipe
-			float flAmount = (flDistFromPath - flMaxDistFromSegment) / 200.0f;
+			float flAmount = ( flDistFromPath - flMaxDistFromSegment ) / 200.0f;
 			flAmount = clamp( flAmount, 0, 1 );
 			VectorMA( *pVecAccel, flAmount * 200.0f, vecDelta, *pVecAccel );
 		}
 	}
 
 	// Apply avoidance forces
-	if ( !HasSpawnFlags( SF_HELICOPTER_IGNORE_AVOID_FORCES ) )
+	if( !HasSpawnFlags( SF_HELICOPTER_IGNORE_AVOID_FORCES ) )
 	{
 		Vector vecAvoidForce;
 		CAvoidSphere::ComputeAvoidanceForces( this, 350.0f, 2.0f, &vecAvoidForce );
@@ -4018,9 +4206,9 @@ void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition,
 
 	// If we're way above the path, dampen horizontal lift factor
 	float flNewHorizLiftFactor = clamp( deltaPos.z, HELICOPTER_MAX_DZ_DAMP, HELICOPTER_MIN_DZ_DAMP );
-	flNewHorizLiftFactor = SimpleSplineRemapVal( flNewHorizLiftFactor, HELICOPTER_MIN_DZ_DAMP, HELICOPTER_MAX_DZ_DAMP, flHorizLiftFactor, 2.5f * (HELICOPTER_GRAVITY * 0.2) );
-	float flDampening = (flNewHorizLiftFactor != 0.0f) ? (flNewHorizLiftFactor / flHorizLiftFactor) : 1.0f;
-	if ( flDampening < 1.0f )
+	flNewHorizLiftFactor = SimpleSplineRemapVal( flNewHorizLiftFactor, HELICOPTER_MIN_DZ_DAMP, HELICOPTER_MAX_DZ_DAMP, flHorizLiftFactor, 2.5f * ( HELICOPTER_GRAVITY * 0.2 ) );
+	float flDampening = ( flNewHorizLiftFactor != 0.0f ) ? ( flNewHorizLiftFactor / flHorizLiftFactor ) : 1.0f;
+	if( flDampening < 1.0f )
 	{
 		pVecAccel->x *= flDampening;
 		pVecAccel->y *= flDampening;
@@ -4035,36 +4223,36 @@ void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition,
 	m_flForce *= flForceBlend;
 
 	// Now add force based on our acceleration factors
-	m_flForce += ( pVecAccel->z + flHorizLiftFactor ) * HELICOPTER_DT * (1.0f - flForceBlend);
+	m_flForce += ( pVecAccel->z + flHorizLiftFactor ) * HELICOPTER_DT * ( 1.0f - flForceBlend );
 
 	// The force is always *locally* upward based; we pitch + roll the chopper to get movement
 	Vector vecImpulse;
 	VectorMultiply( up, m_flForce, vecImpulse );
-	
+
 	// NOTE: These have to be done *before* the additional path distance drag forces are applied below
 	ApplySidewaysDrag( right );
 	ApplyGeneralDrag();
 
 	// If LIFE_DYING, maintain control as long as we're flying to a crash point.
-	if ( m_lifeState != LIFE_DYING || (m_lifeState == LIFE_DYING && GetCrashPoint() != NULL) )
+	if( m_lifeState != LIFE_DYING || ( m_lifeState == LIFE_DYING && GetCrashPoint() != NULL ) )
 	{
 		vecImpulse.z += -HELICOPTER_GRAVITY * HELICOPTER_DT;
 
-		if ( flMinDistFromSegment != 0.0f && ( flDistFromPath > flMinDistFromSegment ) )
+		if( flMinDistFromSegment != 0.0f && ( flDistFromPath > flMinDistFromSegment ) )
 		{
 			Vector	vecVelDir = GetAbsVelocity();
 
 			// Strongly constrain to an n unit pipe around the current path
 			// by damping out all impulse forces that would push us further from the pipe
 			float flDot = DotProduct( vecImpulse, vecDelta );
-			if ( flDot < 0.0f )
+			if( flDot < 0.0f )
 			{
 				VectorMA( vecImpulse, -flDot * 0.1f, vecDelta, vecImpulse );
 			}
 
 			// Also apply an extra impulse to compensate for the current velocity
 			flDot = DotProduct( vecVelDir, vecDelta );
-			if ( flDot < 0.0f )
+			if( flDot < 0.0f )
 			{
 				VectorMA( vecImpulse, -flDot * 0.1f, vecDelta, vecImpulse );
 			}
@@ -4087,12 +4275,12 @@ void CNPC_AttackHelicopter::ComputeVelocity( const Vector &vecTargetPosition,
 
 
 //-----------------------------------------------------------------------------
-// Computes the max speed + acceleration:	
+// Computes the max speed + acceleration:
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, const Vector &vecFacingDirection )
+void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector& vecGoalUp, const Vector& vecFacingDirection )
 {
 	QAngle goalAngAccel;
-	if ( m_lifeState != LIFE_DYING || (m_lifeState == LIFE_DYING && GetCrashPoint() != NULL) )
+	if( m_lifeState != LIFE_DYING || ( m_lifeState == LIFE_DYING && GetCrashPoint() != NULL ) )
 	{
 		Vector forward, right, up;
 		GetVectors( &forward, &right, &up );
@@ -4112,9 +4300,9 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 
 		// calc angular accel needed to hit goal pitch in dt time.
 		float dt = 0.6;
-		goalAngAccel.x = 2.0 * (AngleDiff( goalPitch, AngleNormalize( GetAbsAngles().x ) ) - GetLocalAngularVelocity().x * dt) / (dt * dt);
-		goalAngAccel.y = 2.0 * (AngleDiff( goalYaw, AngleNormalize( GetAbsAngles().y ) ) - GetLocalAngularVelocity().y * dt) / (dt * dt);
-		goalAngAccel.z = 2.0 * (AngleDiff( goalRoll, AngleNormalize( GetAbsAngles().z ) ) - GetLocalAngularVelocity().z * dt) / (dt * dt);
+		goalAngAccel.x = 2.0 * ( AngleDiff( goalPitch, AngleNormalize( GetAbsAngles().x ) ) - GetLocalAngularVelocity().x * dt ) / ( dt * dt );
+		goalAngAccel.y = 2.0 * ( AngleDiff( goalYaw, AngleNormalize( GetAbsAngles().y ) ) - GetLocalAngularVelocity().y * dt ) / ( dt * dt );
+		goalAngAccel.z = 2.0 * ( AngleDiff( goalRoll, AngleNormalize( GetAbsAngles().z ) ) - GetLocalAngularVelocity().z * dt ) / ( dt * dt );
 
 		goalAngAccel.x = clamp( goalAngAccel.x, -300, 300 );
 		//goalAngAccel.y = clamp( goalAngAccel.y, -60, 60 );
@@ -4131,9 +4319,9 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 	// limit angular accel changes to similate mechanical response times
 	QAngle angAccelAccel;
 	float dt = 0.1;
-	angAccelAccel.x = (goalAngAccel.x - m_vecAngAcceleration.x) / dt;
-	angAccelAccel.y = (goalAngAccel.y - m_vecAngAcceleration.y) / dt;
-	angAccelAccel.z = (goalAngAccel.z - m_vecAngAcceleration.z) / dt;
+	angAccelAccel.x = ( goalAngAccel.x - m_vecAngAcceleration.x ) / dt;
+	angAccelAccel.y = ( goalAngAccel.y - m_vecAngAcceleration.y ) / dt;
+	angAccelAccel.z = ( goalAngAccel.z - m_vecAngAcceleration.z ) / dt;
 
 	angAccelAccel.x = clamp( angAccelAccel.x, -1000, 1000 );
 	angAccelAccel.y = clamp( angAccelAccel.y, -1000, 1000 );
@@ -4151,7 +4339,7 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 	angVel.y = clamp( angVel.y, -120, 120 );
 
 	// Fix up pitch and yaw to tend toward small values
-	if ( m_lifeState == LIFE_DYING && GetCrashPoint() == NULL )
+	if( m_lifeState == LIFE_DYING && GetCrashPoint() == NULL )
 	{
 		float flPitchDiff = random->RandomFloat( -5, 5 ) - GetAbsAngles().x;
 		angVel.x = flPitchDiff * 0.1f;
@@ -4161,32 +4349,32 @@ void CNPC_AttackHelicopter::ComputeAngularVelocity( const Vector &vecGoalUp, con
 
 	SetLocalAngularVelocity( angVel );
 
-	float flAmt = clamp( angVel.y, -30, 30 ); 
+	float flAmt = clamp( angVel.y, -30, 30 );
 	float flRudderPose = RemapVal( flAmt, -30, 30, 45, -45 );
 	SetPoseParameter( "rudder", flRudderPose );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose:	
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::FlightDirectlyOverhead( void )
 {
 	Vector vecTargetPosition = m_vecTargetPosition;
-	CBaseEntity *pEnemy = GetEnemy();
-	if ( HasEnemy() && FVisible( pEnemy ) )
+	CBaseEntity* pEnemy = GetEnemy();
+	if( HasEnemy() && FVisible( pEnemy ) )
 	{
-		if ( GetEnemy()->IsPlayer() )
+		if( GetEnemy()->IsPlayer() )
 		{
-			CBaseEntity *pEnemyVehicle = assert_cast<CBasePlayer*>(GetEnemy())->GetVehicleEntity();
-			if ( pEnemyVehicle )
+			CBaseEntity* pEnemyVehicle = assert_cast<CBasePlayer*>( GetEnemy() )->GetVehicleEntity();
+			if( pEnemyVehicle )
 			{
 				Vector vecEnemyVel = pEnemyVehicle->GetSmoothedVelocity();
 				Vector vecRelativePosition;
 				VectorSubtract( GetAbsOrigin(), pEnemyVehicle->GetAbsOrigin(), vecRelativePosition );
 				float flDist = VectorNormalize( vecRelativePosition );
 				float flEnemySpeed = VectorNormalize( vecEnemyVel );
-				float flDot = DotProduct( vecRelativePosition, vecEnemyVel );  
+				float flDot = DotProduct( vecRelativePosition, vecEnemyVel );
 				float flSpeed = GetMaxSpeed() * 0.3f; //GetAbsVelocity().Length();
 
 				float a = flSpeed * flSpeed - flEnemySpeed * flEnemySpeed;
@@ -4194,9 +4382,9 @@ void CNPC_AttackHelicopter::FlightDirectlyOverhead( void )
 				float c = - flDist * flDist;
 
 				float flDiscrim = b * b - 4 * a * c;
-				if ( flDiscrim >= 0 )
+				if( flDiscrim >= 0 )
 				{
-					float t = ( -b + sqrt( flDiscrim ) ) / (2 * a);
+					float t = ( -b + sqrt( flDiscrim ) ) / ( 2 * a );
 					t = clamp( t, 0.0f, 4.0f );
 					VectorMA( pEnemyVehicle->GetAbsOrigin(), t * flEnemySpeed, vecEnemyVel, vecTargetPosition );
 				}
@@ -4209,7 +4397,7 @@ void CNPC_AttackHelicopter::FlightDirectlyOverhead( void )
 //		vecTargetPosition.z = GetCurrentPathTargetPosition()->z;
 //	}
 
-	NDebugOverlay::Cross3D( vecTargetPosition, -Vector(32,32,32), Vector(32,32,32), 0, 0, 255, true, 0.1f );
+	NDebugOverlay::Cross3D( vecTargetPosition, -Vector( 32, 32, 32 ), Vector( 32, 32, 32 ), 0, 0, 255, true, 0.1f );
 
 	UpdateFacingDirection( vecTargetPosition );
 
@@ -4220,7 +4408,7 @@ void CNPC_AttackHelicopter::FlightDirectlyOverhead( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose:	
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::Flight( void )
 {
@@ -4235,23 +4423,23 @@ void CNPC_AttackHelicopter::Flight( void )
 	float flPerpDist = UpdatePerpPathDistance( flMaxPathOffset );
 
 	float flMinDistFromSegment, flMaxDistFromSegment;
-	if ( !IsLeading() )
+	if( !IsLeading() )
 	{
 		flMinDistFromSegment = 0.0f;
 		flMaxDistFromSegment = 0.0f;
 	}
 	else
 	{
-		flMinDistFromSegment = fabs(flPerpDist) + 100.0f;
-		flMaxDistFromSegment = fabs(flPerpDist) + 200.0f;
-		if ( flMaxPathOffset != 0.0 )
+		flMinDistFromSegment = fabs( flPerpDist ) + 100.0f;
+		flMaxDistFromSegment = fabs( flPerpDist ) + 200.0f;
+		if( flMaxPathOffset != 0.0 )
 		{
-			if ( flMaxDistFromSegment > flMaxPathOffset - 100.0f )
+			if( flMaxDistFromSegment > flMaxPathOffset - 100.0f )
 			{
 				flMaxDistFromSegment = flMaxPathOffset - 100.0f;
 			}
 
-			if ( flMinDistFromSegment > flMaxPathOffset - 200.0f )
+			if( flMinDistFromSegment > flMaxPathOffset - 200.0f )
 			{
 				flMinDistFromSegment = flMaxPathOffset - 200.0f;
 			}
@@ -4269,7 +4457,7 @@ void CNPC_AttackHelicopter::Flight( void )
 
 	// Raise high in the air when doing the shooting attack
 	float flAdditionalHeight = 0.0f;
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
 		flAdditionalHeight = clamp( m_flBullrushAdditionalHeight, 0.0f, flMaxPathOffset );
 		vecTargetPosition.z += flAdditionalHeight;
@@ -4285,20 +4473,20 @@ void CNPC_AttackHelicopter::Flight( void )
 //------------------------------------------------------------------------------
 // Updates the facing direction
 //------------------------------------------------------------------------------
-void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesiredPosition )
+void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector& vecActualDesiredPosition )
 {
 	bool bIsBullrushing = ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE );
 
-	bool bSeenTargetRecently = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) || ( m_flLastSeen + 5 > gpGlobals->curtime ); 
-	if ( GetEnemy() && !bIsBullrushing )
+	bool bSeenTargetRecently = HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) || ( m_flLastSeen + 5 > gpGlobals->curtime );
+	if( GetEnemy() && !bIsBullrushing )
 	{
-		if ( !IsLeading() )
+		if( !IsLeading() )
 		{
 			if( IsCarpetBombing() && hl2_episodic.GetBool() )
 			{
 				m_vecDesiredFaceDir = vecActualDesiredPosition - GetAbsOrigin();
 			}
-			else if ( !IsCrashing() && bSeenTargetRecently )
+			else if( !IsCrashing() && bSeenTargetRecently )
 			{
 				// If we've seen the target recently, face the target.
 				m_vecDesiredFaceDir = m_vecTargetPosition - GetAbsOrigin();
@@ -4310,7 +4498,7 @@ void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesire
 		}
 		else
 		{
-			if ( ShouldDropBombs() || IsCarpetBombing() )
+			if( ShouldDropBombs() || IsCarpetBombing() )
 			{
 				m_vecDesiredFaceDir = vecActualDesiredPosition - GetAbsOrigin();
 			}
@@ -4324,9 +4512,9 @@ void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesire
 	{
 		// Face our desired position
 		float flDistSqr = vecActualDesiredPosition.AsVector2D().DistToSqr( GetAbsOrigin().AsVector2D() );
-		if ( flDistSqr <= 50 * 50 )
+		if( flDistSqr <= 50 * 50 )
 		{
-			if (( flDistSqr > 1 * 1 ) && bSeenTargetRecently && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) ) 
+			if( ( flDistSqr > 1 * 1 ) && bSeenTargetRecently && IsInSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER ) )
 			{
 				m_vecDesiredFaceDir = m_vecTargetPosition - GetAbsOrigin();
 				m_vecDesiredFaceDir.z = 0.0f;
@@ -4341,7 +4529,7 @@ void CNPC_AttackHelicopter::UpdateFacingDirection( const Vector &vecActualDesire
 			m_vecDesiredFaceDir = vecActualDesiredPosition - GetAbsOrigin();
 		}
 	}
-	VectorNormalize( m_vecDesiredFaceDir ); 
+	VectorNormalize( m_vecDesiredFaceDir );
 }
 
 
@@ -4357,7 +4545,7 @@ float CNPC_AttackHelicopter::CreepTowardEnemy( float flSpeed, float flMinSpeed, 
 	// When the player is slow, creep toward him within a second or two
 	float flLeadingDist = ClampSplineRemapVal( flSpeed, flMinSpeed, flMaxSpeed, flMinDist, flMaxDist );
 	float flCurrentDist = GetLeadingDistance( );
-	if ( fabs(flLeadingDist - flCurrentDist) > flEnemyCreepDist )
+	if( fabs( flLeadingDist - flCurrentDist ) > flEnemyCreepDist )
 	{
 		float flSign = ( flLeadingDist < flCurrentDist ) ? -1.0f : 1.0f;
 		flLeadingDist = flCurrentDist + flSign * flEnemyCreepDist;
@@ -4375,7 +4563,7 @@ float CNPC_AttackHelicopter::CreepTowardEnemy( float flSpeed, float flMinSpeed, 
 //------------------------------------------------------------------------------
 float CNPC_AttackHelicopter::ComputeBombingLeadingDistance( float flSpeed, float flSpeedAlongPath, bool bEnemyInVehicle )
 {
-	if ( ( flSpeed <= MIN_ENEMY_SPEED ) && bEnemyInVehicle )
+	if( ( flSpeed <= MIN_ENEMY_SPEED ) && bEnemyInVehicle )
 	{
 		return CreepTowardEnemy( flSpeed, 0.0f, MIN_ENEMY_SPEED, 0.0f, 1000.0f );
 	}
@@ -4389,35 +4577,35 @@ float CNPC_AttackHelicopter::ComputeBombingLeadingDistance( float flSpeed, float
 //------------------------------------------------------------------------------
 float CNPC_AttackHelicopter::ComputeBullrushLeadingDistance( float flSpeed, float flSpeedAlongPath, bool bEnemyInVehicle )
 {
-	switch ( m_nSecondaryMode )
+	switch( m_nSecondaryMode )
 	{
-	case BULLRUSH_MODE_WAIT_FOR_ENEMY:
-		return 0.0f;
+		case BULLRUSH_MODE_WAIT_FOR_ENEMY:
+			return 0.0f;
 
-	case BULLRUSH_MODE_GET_DISTANCE:
-		return m_bRushForward ? -CHOPPER_BULLRUSH_MODE_DISTANCE : CHOPPER_BULLRUSH_MODE_DISTANCE;
+		case BULLRUSH_MODE_GET_DISTANCE:
+			return m_bRushForward ? -CHOPPER_BULLRUSH_MODE_DISTANCE : CHOPPER_BULLRUSH_MODE_DISTANCE;
 
-	case BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER:
+		case BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER:
 //		return m_bRushForward ? 1500.0f : -1500.0f;
-		return ComputeBombingLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle ); 
+			return ComputeBombingLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle );
 
-	case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
-		return 0.0f;
+		case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
+			return 0.0f;
 
-	case BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED:
-		return m_bRushForward ? 7000 : -7000;
+		case BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED:
+			return m_bRushForward ? 7000 : -7000;
 
-	case BULLRUSH_MODE_MEGA_BOMB:
-		return m_bRushForward ? CHOPPER_BULLRUSH_MODE_DISTANCE : -CHOPPER_BULLRUSH_MODE_DISTANCE;
+		case BULLRUSH_MODE_MEGA_BOMB:
+			return m_bRushForward ? CHOPPER_BULLRUSH_MODE_DISTANCE : -CHOPPER_BULLRUSH_MODE_DISTANCE;
 
-	case BULLRUSH_MODE_SHOOT_GUN:
+		case BULLRUSH_MODE_SHOOT_GUN:
 		{
 			float flLeadDistance = 1000.f - CHOPPER_BULLRUSH_ENEMY_BOMB_DISTANCE;
 			return m_bRushForward ? flLeadDistance : -flLeadDistance;
 		}
 	}
 
-	Assert(0);
+	Assert( 0 );
 	return 0.0f;
 }
 
@@ -4428,7 +4616,7 @@ float CNPC_AttackHelicopter::ComputeBullrushLeadingDistance( float flSpeed, floa
 inline void CNPC_AttackHelicopter::SetSecondaryMode( int nMode, bool bRetainTime )
 {
 	m_nSecondaryMode = nMode;
-	if (!bRetainTime)
+	if( !bRetainTime )
 	{
 		m_flSecondaryModeStartTime = gpGlobals->curtime;
 	}
@@ -4457,7 +4645,7 @@ void CNPC_AttackHelicopter::SwitchToBullrushIdle( void )
 	m_flBullrushAdditionalHeight = 0.0f;
 	SetPauseState( PAUSE_NO_PAUSE );
 
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.1f );
 }
 
@@ -4484,7 +4672,7 @@ void CNPC_AttackHelicopter::ShutdownGunDuringBullrush( )
 	m_nRemainingBursts = 0;
 	SetPauseState( PAUSE_NO_PAUSE );
 
-	CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+	CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 	controller.SoundChangeVolume( m_pGunFiringSound, 0.0, 0.1f );
 }
 
@@ -4492,20 +4680,24 @@ void CNPC_AttackHelicopter::ShutdownGunDuringBullrush( )
 #define HELICOPTER_MIN_IDLE_BOMBING_SPEED	350.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CNPC_AttackHelicopter::ShouldBombIdlePlayer( void )
 {
 	// Must be settled over a position and not moving too quickly to do this
-	if ( GetAbsVelocity().LengthSqr() > Square(HELICOPTER_MIN_IDLE_BOMBING_SPEED) )
+	if( GetAbsVelocity().LengthSqr() > Square( HELICOPTER_MIN_IDLE_BOMBING_SPEED ) )
+	{
 		return false;
+	}
 
 	// Must be within a certain range of the target
-	float flDistToTargetSqr = (GetEnemy()->WorldSpaceCenter() - GetAbsOrigin()).Length2DSqr();
-	
-	if ( flDistToTargetSqr < Square(HELICOPTER_MIN_IDLE_BOMBING_DIST) )
+	float flDistToTargetSqr = ( GetEnemy()->WorldSpaceCenter() - GetAbsOrigin() ).Length2DSqr();
+
+	if( flDistToTargetSqr < Square( HELICOPTER_MIN_IDLE_BOMBING_DIST ) )
+	{
 		return true;
+	}
 
 	// Can't bomb this
 	return false;
@@ -4519,9 +4711,9 @@ bool CNPC_AttackHelicopter::ShouldBombIdlePlayer( void )
 
 void CNPC_AttackHelicopter::UpdateBullrushState( void )
 {
-	if ( !GetEnemy() || IsInForcedMove() )
+	if( !GetEnemy() || IsInForcedMove() )
 	{
-		if ( !IsInSecondaryMode( BULLRUSH_MODE_WAIT_FOR_ENEMY ) )
+		if( !IsInSecondaryMode( BULLRUSH_MODE_WAIT_FOR_ENEMY ) )
 		{
 			SwitchToBullrushIdle();
 			SetSecondaryMode( BULLRUSH_MODE_WAIT_FOR_ENEMY );
@@ -4530,20 +4722,20 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 
 	switch( m_nSecondaryMode )
 	{
-	case BULLRUSH_MODE_WAIT_FOR_ENEMY:
+		case BULLRUSH_MODE_WAIT_FOR_ENEMY:
 		{
 			m_flBullrushAdditionalHeight = CHOPPER_BULLRUSH_SHOOTING_VERTICAL_OFFSET;
-			if ( GetEnemy() && !IsInForcedMove() )
+			if( GetEnemy() && !IsInForcedMove() )
 			{
-				// This forces us to not start trying checking positions 
+				// This forces us to not start trying checking positions
 				// until we have been on the path for a little while
-				if ( SecondaryModeTime() > 0.3f )
+				if( SecondaryModeTime() > 0.3f )
 				{
 					float flDistanceToGoal = ComputeDistanceToTargetPosition();
 					Vector vecPathDir;
 					CurrentPathDirection( &vecPathDir );
 					bool bMovingForward = DotProduct2D( GetAbsVelocity().AsVector2D(), vecPathDir.AsVector2D() ) >= 0.0f;
-					if ( flDistanceToGoal * (bMovingForward ? 1.0f : -1.0f) > 1000 )
+					if( flDistanceToGoal * ( bMovingForward ? 1.0f : -1.0f ) > 1000 )
 					{
 						m_bRushForward = bMovingForward;
 						SetSecondaryMode( BULLRUSH_MODE_SHOOT_GUN );
@@ -4563,23 +4755,27 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		break;
 
-	case BULLRUSH_MODE_GET_DISTANCE:
+		case BULLRUSH_MODE_GET_DISTANCE:
 		{
 			m_flBullrushAdditionalHeight = CHOPPER_BULLRUSH_SHOOTING_VERTICAL_OFFSET;
 
 			float flDistanceToGoal = ComputeDistanceToTargetPosition();
-			if ( m_bRushForward )
+			if( m_bRushForward )
 			{
-				if ( flDistanceToGoal < (CHOPPER_BULLRUSH_MODE_DISTANCE - 1000) )
+				if( flDistanceToGoal < ( CHOPPER_BULLRUSH_MODE_DISTANCE - 1000 ) )
+				{
 					break;
+				}
 			}
 			else
 			{
-				if ( flDistanceToGoal > -(CHOPPER_BULLRUSH_MODE_DISTANCE - 1000) )
+				if( flDistanceToGoal > -( CHOPPER_BULLRUSH_MODE_DISTANCE - 1000 ) )
+				{
 					break;
+				}
 			}
 
-			if ( GetHealth() <= m_flNextMegaBombHealth )
+			if( GetHealth() <= m_flNextMegaBombHealth )
 			{
 				m_flNextMegaBombHealth -= GetMaxHealth() * g_helicopter_bullrush_mega_bomb_health.GetFloat();
 				m_flNextBullrushBombTime = gpGlobals->curtime;
@@ -4594,20 +4790,24 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		break;
 
-	case BULLRUSH_MODE_MEGA_BOMB:
+		case BULLRUSH_MODE_MEGA_BOMB:
 		{
 			m_flBullrushAdditionalHeight = CHOPPER_BULLRUSH_SHOOTING_VERTICAL_OFFSET;
 
 			float flDistanceToGoal = ComputeDistanceToTargetPosition();
-			if ( m_bRushForward )
+			if( m_bRushForward )
 			{
-				if ( flDistanceToGoal > -(CHOPPER_BULLRUSH_MODE_DISTANCE - 1000) )
+				if( flDistanceToGoal > -( CHOPPER_BULLRUSH_MODE_DISTANCE - 1000 ) )
+				{
 					break;
+				}
 			}
 			else
 			{
-				if ( flDistanceToGoal < (CHOPPER_BULLRUSH_MODE_DISTANCE - 1000) )
+				if( flDistanceToGoal < ( CHOPPER_BULLRUSH_MODE_DISTANCE - 1000 ) )
+				{
 					break;
+				}
 			}
 
 			m_bRushForward = !m_bRushForward;
@@ -4615,7 +4815,7 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		break;
 
-	case BULLRUSH_MODE_SHOOT_GUN:
+		case BULLRUSH_MODE_SHOOT_GUN:
 		{
 			// When shooting, stop when we cross the player's position
 			// Then start bombing. Use the fixed speed version if we're too far
@@ -4626,22 +4826,26 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 			float flShootingHeight = CHOPPER_BULLRUSH_SHOOTING_VERTICAL_OFFSET;
 			float flSwitchToBombDist = CHOPPER_BULLRUSH_ENEMY_BOMB_DISTANCE;
 			float flDropDownDist = 2000.0f;
-			if ( m_bRushForward )
+			if( m_bRushForward )
 			{
-				m_flBullrushAdditionalHeight = ClampSplineRemapVal( flDistanceToGoal, 
-					flSwitchToBombDist, flSwitchToBombDist + flDropDownDist, 0.0f, flShootingHeight );
-				if ( flDistanceToGoal > flSwitchToBombDist )
+				m_flBullrushAdditionalHeight = ClampSplineRemapVal( flDistanceToGoal,
+											   flSwitchToBombDist, flSwitchToBombDist + flDropDownDist, 0.0f, flShootingHeight );
+				if( flDistanceToGoal > flSwitchToBombDist )
+				{
 					break;
+				}
 			}
 			else
 			{
-				m_flBullrushAdditionalHeight = ClampSplineRemapVal( flDistanceToGoal, 
-					-flSwitchToBombDist - flDropDownDist, -flSwitchToBombDist, flShootingHeight, 0.0f );
-				if ( flDistanceToGoal < -flSwitchToBombDist )
+				m_flBullrushAdditionalHeight = ClampSplineRemapVal( flDistanceToGoal,
+											   -flSwitchToBombDist - flDropDownDist, -flSwitchToBombDist, flShootingHeight, 0.0f );
+				if( flDistanceToGoal < -flSwitchToBombDist )
+				{
 					break;
+				}
 			}
 
-			if ( ShouldShootIdlePlayerInBullrush() )
+			if( ShouldShootIdlePlayerInBullrush() )
 			{
 				SetSecondaryMode( BULLRUSH_MODE_SHOOT_IDLE_PLAYER );
 			}
@@ -4653,13 +4857,13 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		break;
 
-	case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
+		case BULLRUSH_MODE_SHOOT_IDLE_PLAYER:
 		{
 			// Shut down our gun if we're switching to bombing
-			if ( ShouldBombIdlePlayer() )
+			if( ShouldBombIdlePlayer() )
 			{
 				// Must not already be shutdown
-				if (( m_nGunState != GUN_STATE_IDLE ) && (SecondaryModeTime() >= BULLRUSH_IDLE_PLAYER_FIRE_TIME))
+				if( ( m_nGunState != GUN_STATE_IDLE ) && ( SecondaryModeTime() >= BULLRUSH_IDLE_PLAYER_FIRE_TIME ) )
 				{
 					ShutdownGunDuringBullrush( );
 				}
@@ -4668,7 +4872,7 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 //			m_nBurstHits = 0;
 			m_flCircleOfDeathRadius = ClampSplineRemapVal( SecondaryModeTime(), BULLRUSH_IDLE_PLAYER_FIRE_TIME, BULLRUSH_IDLE_PLAYER_FIRE_TIME + 5.0f, 256.0f, 64.0f );
 			m_flBullrushAdditionalHeight = CHOPPER_BULLRUSH_SHOOTING_VERTICAL_OFFSET;
-			if ( !ShouldShootIdlePlayerInBullrush() )
+			if( !ShouldShootIdlePlayerInBullrush() )
 			{
 				ShutdownGunDuringBullrush( );
 				SetSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED );
@@ -4676,11 +4880,11 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		break;
 
-	case BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER:
+		case BULLRUSH_MODE_DROP_BOMBS_FOLLOW_PLAYER:
 		{
 			m_flBullrushAdditionalHeight = 0.0f;
 			float flDistanceToGoal = ComputeDistanceToTargetPosition();
-			if ( fabs( flDistanceToGoal ) > 2000.0f )
+			if( fabs( flDistanceToGoal ) > 2000.0f )
 			{
 				SetSecondaryMode( BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED, true );
 				break;
@@ -4688,12 +4892,12 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 		}
 		// FALL THROUGH!!
 
-	case BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED:
+		case BULLRUSH_MODE_DROP_BOMBS_FIXED_SPEED:
 		{
 			float flDistanceToGoal = ComputeDistanceToTargetPosition();
 
 			m_flBullrushAdditionalHeight = 0.0f;
-			if (( SecondaryModeTime() >= CHOPPER_BULLRUSH_ENEMY_BOMB_TIME ) || ( flDistanceToGoal > BULLRUSH_BOMB_MAX_DISTANCE ))
+			if( ( SecondaryModeTime() >= CHOPPER_BULLRUSH_ENEMY_BOMB_TIME ) || ( flDistanceToGoal > BULLRUSH_BOMB_MAX_DISTANCE ) )
 			{
 				m_bRushForward = !m_bRushForward;
 				SetSecondaryMode( BULLRUSH_MODE_GET_DISTANCE );
@@ -4710,11 +4914,11 @@ void CNPC_AttackHelicopter::UpdateBullrushState( void )
 void CNPC_AttackHelicopter::UpdateEnemyLeading( void )
 {
 	bool bEnemyInVehicle = true;
-	CBaseEntity *pTarget = GetEnemyVehicle();
-	if ( !pTarget )
+	CBaseEntity* pTarget = GetEnemyVehicle();
+	if( !pTarget )
 	{
 		bEnemyInVehicle = false;
-		if ( (m_nAttackMode == ATTACK_MODE_DEFAULT) || !GetEnemy() )
+		if( ( m_nAttackMode == ATTACK_MODE_DEFAULT ) || !GetEnemy() )
 		{
 			EnableLeading( false );
 			return;
@@ -4730,9 +4934,9 @@ void CNPC_AttackHelicopter::UpdateEnemyLeading( void )
 	float flSpeed = pTarget->GetSmoothedVelocity().Length();
 
 	// Do the test electricity gun
-	if ( HasSpawnFlags(SF_HELICOPTER_ELECTRICAL_DRONE) )
+	if( HasSpawnFlags( SF_HELICOPTER_ELECTRICAL_DRONE ) )
 	{
-		if ( flSpeedAlongPath < 200.0f )
+		if( flSpeedAlongPath < 200.0f )
 		{
 			flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, 0.0f, 200.0f, 100.0f, -200.0f );
 		}
@@ -4746,63 +4950,65 @@ void CNPC_AttackHelicopter::UpdateEnemyLeading( void )
 
 	switch( m_nAttackMode )
 	{
-	case ATTACK_MODE_BULLRUSH_VEHICLE:
-		flLeadingDist = ComputeBullrushLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle );
-		break;
+		case ATTACK_MODE_BULLRUSH_VEHICLE:
+			flLeadingDist = ComputeBullrushLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle );
+			break;
 
-	case ATTACK_MODE_ALWAYS_LEAD_VEHICLE:
-		if (( flSpeed <= MIN_ENEMY_SPEED ) && (bEnemyInVehicle) )
-		{
-			flLeadingDist = CreepTowardEnemy( flSpeed, 0.0f, MIN_ENEMY_SPEED, 0.0f, 1000.0f );
-		}
-		else
-		{
-			if ( flSpeedAlongPath > 0.0f )
+		case ATTACK_MODE_ALWAYS_LEAD_VEHICLE:
+			if( ( flSpeed <= MIN_ENEMY_SPEED ) && ( bEnemyInVehicle ) )
 			{
-				flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, 200.0f, 600.0f, 1000.0f, 2000.0f );
+				flLeadingDist = CreepTowardEnemy( flSpeed, 0.0f, MIN_ENEMY_SPEED, 0.0f, 1000.0f );
 			}
 			else
 			{
-				flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, -600.0f, -200.0f, -2000.0f, -1000.0f );
+				if( flSpeedAlongPath > 0.0f )
+				{
+					flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, 200.0f, 600.0f, 1000.0f, 2000.0f );
+				}
+				else
+				{
+					flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, -600.0f, -200.0f, -2000.0f, -1000.0f );
+				}
 			}
-		}
-		break;
+			break;
 
-	case ATTACK_MODE_BOMB_VEHICLE:
-		flLeadingDist = ComputeBombingLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle );
-		break;
+		case ATTACK_MODE_BOMB_VEHICLE:
+			flLeadingDist = ComputeBombingLeadingDistance( flSpeed, flSpeedAlongPath, bEnemyInVehicle );
+			break;
 
-	case ATTACK_MODE_DEFAULT:
-	case ATTACK_MODE_TRAIL_VEHICLE:
-		if (( flSpeed <= MIN_ENEMY_SPEED ) && (bEnemyInVehicle))
-		{
-			flLeadingDist = CreepTowardEnemy( flSpeed, 150.0f, MIN_ENEMY_SPEED, 500.0f, -1000.0f );
-		}
-		else
-		{
-			flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, -600.0f, -200.0f, -2500.0f, -1000.0f );
-		}
-		break;
+		case ATTACK_MODE_DEFAULT:
+		case ATTACK_MODE_TRAIL_VEHICLE:
+			if( ( flSpeed <= MIN_ENEMY_SPEED ) && ( bEnemyInVehicle ) )
+			{
+				flLeadingDist = CreepTowardEnemy( flSpeed, 150.0f, MIN_ENEMY_SPEED, 500.0f, -1000.0f );
+			}
+			else
+			{
+				flLeadingDist = ClampSplineRemapVal( flSpeedAlongPath, -600.0f, -200.0f, -2500.0f, -1000.0f );
+			}
+			break;
 	}
 
 	SetLeadingDistance( flLeadingDist );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pInfo - 
-//			bAlways - 
+// Purpose:
+// Input  : *pInfo -
+//			bAlways -
 //-----------------------------------------------------------------------------
-void CNPC_AttackHelicopter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
+void CNPC_AttackHelicopter::SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	{
 		return;
+	}
 
 	BaseClass::SetTransmit( pInfo, bAlways );
-	
+
 	// Make our smoke trails always come with us
-	for ( int i = 0; i < m_nSmokeTrailCount; i++ )
+	for( int i = 0; i < m_nSmokeTrailCount; i++ )
 	{
 		m_hSmokeTrail[i]->SetTransmit( pInfo, bAlways );
 	}
@@ -4813,12 +5019,12 @@ void CNPC_AttackHelicopter::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways
 //------------------------------------------------------------------------------
 void CNPC_AttackHelicopter::Hunt( void )
 {
-	if ( m_lifeState == LIFE_DEAD )
+	if( m_lifeState == LIFE_DEAD )
 	{
 		return;
 	}
 
-	if ( m_lifeState == LIFE_DYING )
+	if( m_lifeState == LIFE_DYING )
 	{
 		Flight();
 		UpdatePlayerDopplerShift( );
@@ -4831,13 +5037,13 @@ void CNPC_AttackHelicopter::Hunt( void )
 	UpdateEnemy();
 
 	// Give free knowledge of the enemy position if the chopper is "aggressive"
-	if ( HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) && GetEnemy() )
+	if( HasSpawnFlags( SF_HELICOPTER_AGGRESSIVE ) && GetEnemy() )
 	{
 		m_vecTargetPosition = GetEnemy()->WorldSpaceCenter();
 	}
 
 	// Test for state transitions when in bullrush mode
-	if ( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
+	if( m_nAttackMode == ATTACK_MODE_BULLRUSH_VEHICLE )
 	{
 		UpdateBullrushState();
 	}
@@ -4852,7 +5058,7 @@ void CNPC_AttackHelicopter::Hunt( void )
 
 	FireWeapons();
 
-	if ( !(m_fHelicopterFlags & BITS_HELICOPTER_GUN_ON) )
+	if( !( m_fHelicopterFlags & BITS_HELICOPTER_GUN_ON ) )
 	{
 		// !!!HACKHACK This is a fairly unsavoury hack that allows the attack
 		// chopper to continue to carpet bomb even with the gun turned off
@@ -4860,7 +5066,7 @@ void CNPC_AttackHelicopter::Hunt( void )
 		// doesn't get called by the above call to FireWeapons() if the gun is turned off)
 		// Adding this little exception here lets me avoid going into the CBaseHelicopter and
 		// making some functions virtual that don't want to be virtual.
-		if ( IsCarpetBombing() )
+		if( IsCarpetBombing() )
 		{
 			BullrushBombs();
 		}
@@ -4869,7 +5075,7 @@ void CNPC_AttackHelicopter::Hunt( void )
 		// without actually firing at anything. Gun aiming is only handled in FireGun(), which is
 		// disabled when the gun is disabled. point_posecontroller doesn't seem to work well for this either,
 		// so a new spawnflag is handled here to allow the chopper to aim at its enemy even when the gun is off.
-		else if ( HasSpawnFlags( SF_HELICOPTER_AIM_WITH_GUN_OFF ) && GetEnemy() )
+		else if( HasSpawnFlags( SF_HELICOPTER_AIM_WITH_GUN_OFF ) && GetEnemy() )
 		{
 			// Get gun attachment points
 			Vector vBasePos;
@@ -4877,7 +5083,7 @@ void CNPC_AttackHelicopter::Hunt( void )
 
 			Vector vecFireAtPosition;
 			ComputeFireAtPosition( &vecFireAtPosition );
-	
+
 			Vector vTargetDir = vecFireAtPosition - vBasePos;
 			VectorNormalize( vTargetDir );
 
@@ -4888,7 +5094,7 @@ void CNPC_AttackHelicopter::Hunt( void )
 
 #ifdef HL2_EPISODIC
 	// Update our bone followers
-	m_BoneFollowerManager.UpdateBoneFollowers(this);
+	m_BoneFollowerManager.UpdateBoneFollowers( this );
 #endif // HL2_EPISODIC
 }
 
@@ -4897,25 +5103,27 @@ void CNPC_AttackHelicopter::Hunt( void )
 //-----------------------------------------------------------------------------
 void	CNPC_AttackHelicopter::PopulatePoseParameters( void )
 {
-	m_poseWeapon_Pitch = LookupPoseParameter("weapon_pitch");
-	m_poseWeapon_Yaw = LookupPoseParameter("weapon_yaw");
-	m_poseRudder = LookupPoseParameter("rudder");
+	m_poseWeapon_Pitch = LookupPoseParameter( "weapon_pitch" );
+	m_poseWeapon_Yaw = LookupPoseParameter( "weapon_yaw" );
+	m_poseRudder = LookupPoseParameter( "rudder" );
 
 	BaseClass::PopulatePoseParameters();
 }
 
 #ifdef HL2_EPISODIC
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_AttackHelicopter::InitBoneFollowers( void )
 {
 	// Don't do this if we're already loaded
-	if ( m_BoneFollowerManager.GetNumBoneFollowers() != 0 )
+	if( m_BoneFollowerManager.GetNumBoneFollowers() != 0 )
+	{
 		return;
+	}
 
 	// Init our followers
-	m_BoneFollowerManager.InitBoneFollowers( this, ARRAYSIZE(pFollowerBoneNames), pFollowerBoneNames );
+	m_BoneFollowerManager.InitBoneFollowers( this, ARRAYSIZE( pFollowerBoneNames ), pFollowerBoneNames );
 }
 #endif // HL2_EPISODIC
 
@@ -4926,12 +5134,12 @@ AI_BEGIN_CUSTOM_NPC( npc_helicopter, CNPC_AttackHelicopter )
 
 //	DECLARE_TASK(  )
 
-	DECLARE_ACTIVITY( ACT_HELICOPTER_DROP_BOMB );
-	DECLARE_ACTIVITY( ACT_HELICOPTER_CRASHING );
+DECLARE_ACTIVITY( ACT_HELICOPTER_DROP_BOMB );
+DECLARE_ACTIVITY( ACT_HELICOPTER_CRASHING );
 
 //	DECLARE_CONDITION( COND_ )
 
-	//=========================================================
+//=========================================================
 //	DEFINE_SCHEDULE
 //	(
 //		SCHED_DUMMY,
@@ -4956,59 +5164,59 @@ LINK_ENTITY_TO_CLASS( npc_helicoptersensor, CBombDropSensor );
 
 BEGIN_DATADESC( CBombDropSensor )
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "DropBomb", InputDropBomb ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "DropBombStraightDown", InputDropBombStraightDown ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTargetAlways", InputDropBombAtTargetAlways ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTarget", InputDropBombAtTarget ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "DropBombDelay", InputDropBombDelay ),
+DEFINE_INPUTFUNC( FIELD_VOID, "DropBomb", InputDropBomb ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "DropBombStraightDown", InputDropBombStraightDown ),
+				  DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTargetAlways", InputDropBombAtTargetAlways ),
+				  DEFINE_INPUTFUNC( FIELD_STRING, "DropBombAtTarget", InputDropBombAtTarget ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "DropBombDelay", InputDropBombDelay ),
 
-END_DATADESC()
+				  END_DATADESC()
 
 
-void CBombDropSensor::Spawn()
+				  void CBombDropSensor::Spawn()
 {
 	BaseClass::Spawn();
-	UTIL_SetSize(this, Vector(-30,-30,-30), Vector(30,30,30) );
-	SetSolid(SOLID_BBOX);
+	UTIL_SetSize( this, Vector( -30, -30, -30 ), Vector( 30, 30, 30 ) );
+	SetSolid( SOLID_BBOX );
 
 	// Shots pass through
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 }
 
 // Drop a bomb at a particular location
-void CBombDropSensor::InputDropBomb( inputdata_t &inputdata )
+void CBombDropSensor::InputDropBomb( inputdata_t& inputdata )
 {
 	inputdata_t myVersion = inputdata;
 	myVersion.pActivator = this;
-	assert_cast<CNPC_AttackHelicopter*>(GetOwnerEntity())->InputDropBomb( myVersion );
+	assert_cast<CNPC_AttackHelicopter*>( GetOwnerEntity() )->InputDropBomb( myVersion );
 }
 
-void CBombDropSensor::InputDropBombStraightDown( inputdata_t &inputdata )
+void CBombDropSensor::InputDropBombStraightDown( inputdata_t& inputdata )
 {
 	inputdata_t myVersion = inputdata;
 	myVersion.pActivator = this;
-	assert_cast<CNPC_AttackHelicopter*>(GetOwnerEntity())->InputDropBombStraightDown( myVersion );
+	assert_cast<CNPC_AttackHelicopter*>( GetOwnerEntity() )->InputDropBombStraightDown( myVersion );
 }
 
-void CBombDropSensor::InputDropBombAtTarget( inputdata_t &inputdata )
+void CBombDropSensor::InputDropBombAtTarget( inputdata_t& inputdata )
 {
 	inputdata_t myVersion = inputdata;
 	myVersion.pActivator = this;
-	assert_cast<CNPC_AttackHelicopter*>(GetOwnerEntity())->InputDropBombAtTarget( myVersion );
+	assert_cast<CNPC_AttackHelicopter*>( GetOwnerEntity() )->InputDropBombAtTarget( myVersion );
 }
 
-void CBombDropSensor::InputDropBombAtTargetAlways( inputdata_t &inputdata )
+void CBombDropSensor::InputDropBombAtTargetAlways( inputdata_t& inputdata )
 {
 	inputdata_t myVersion = inputdata;
 	myVersion.pActivator = this;
-	assert_cast<CNPC_AttackHelicopter*>(GetOwnerEntity())->InputDropBombAtTargetAlways( myVersion );
+	assert_cast<CNPC_AttackHelicopter*>( GetOwnerEntity() )->InputDropBombAtTargetAlways( myVersion );
 }
 
-void CBombDropSensor::InputDropBombDelay( inputdata_t &inputdata )
+void CBombDropSensor::InputDropBombDelay( inputdata_t& inputdata )
 {
 	inputdata_t myVersion = inputdata;
 	myVersion.pActivator = this;
-	assert_cast<CNPC_AttackHelicopter*>(GetOwnerEntity())->InputDropBombDelay( myVersion );
+	assert_cast<CNPC_AttackHelicopter*>( GetOwnerEntity() )->InputDropBombDelay( myVersion );
 }
 
 //------------------------------------------------------------------------------
@@ -5025,12 +5233,12 @@ LINK_ENTITY_TO_CLASS( grenade_helicopter, CGrenadeHelicopter );
 
 BEGIN_DATADESC( CGrenadeHelicopter )
 
-	DEFINE_FIELD( m_bActivated,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bExplodeOnContact,	FIELD_BOOLEAN ),
-	DEFINE_SOUNDPATCH( m_pWarnSound ),
+DEFINE_FIELD( m_bActivated,			FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_bExplodeOnContact,	FIELD_BOOLEAN ),
+					DEFINE_SOUNDPATCH( m_pWarnSound ),
 
-	DEFINE_FIELD( m_hWarningSprite,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_bBlinkerAtTop,		FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_hWarningSprite,		FIELD_EHANDLE ),
+					DEFINE_FIELD( m_bBlinkerAtTop,		FIELD_BOOLEAN ),
 
 #ifdef HL2_EPISODIC
 	DEFINE_FIELD( m_flLifetime,			FIELD_FLOAT ),
@@ -5043,20 +5251,20 @@ BEGIN_DATADESC( CGrenadeHelicopter )
 	DEFINE_OUTPUT( m_OnPhysGunOnlyPickup, "OnPhysGunOnlyPickup" ),
 #endif // HL2_EPISODIC
 
-	DEFINE_THINKFUNC( ExplodeThink ),
-	DEFINE_THINKFUNC( AnimateThink ),
-	DEFINE_THINKFUNC( RampSoundThink ),
-	DEFINE_THINKFUNC( WarningBlinkerThink ),
-	DEFINE_ENTITYFUNC( ExplodeConcussion ),
+					DEFINE_THINKFUNC( ExplodeThink ),
+					DEFINE_THINKFUNC( AnimateThink ),
+					DEFINE_THINKFUNC( RampSoundThink ),
+					DEFINE_THINKFUNC( WarningBlinkerThink ),
+					DEFINE_ENTITYFUNC( ExplodeConcussion ),
 
-END_DATADESC()
+					END_DATADESC()
 
 #define SF_HELICOPTER_GRENADE_DUD	(1<<16)	// Will not become active on impact, only when launched via physcannon
 
 //------------------------------------------------------------------------------
 // Precache
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::Precache( void )
+					void CGrenadeHelicopter::Precache( void )
 {
 	BaseClass::Precache( );
 	PrecacheModel( GRENADE_HELICOPTER_MODEL );
@@ -5079,14 +5287,14 @@ void CGrenadeHelicopter::Spawn( void )
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	SetModel( GRENADE_HELICOPTER_MODEL );
 
-	if ( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) )
+	if( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) )
 	{
-		m_nSkin = (int)SKIN_DUD;
+		m_nSkin = ( int )SKIN_DUD;
 	}
 
-	if ( !HasSpawnFlags( SF_GRENADE_HELICOPTER_MEGABOMB ) )
+	if( !HasSpawnFlags( SF_GRENADE_HELICOPTER_MEGABOMB ) )
 	{
-		IPhysicsObject *pPhysicsObject = VPhysicsInitNormal( SOLID_VPHYSICS, GetSolidFlags(), false );
+		IPhysicsObject* pPhysicsObject = VPhysicsInitNormal( SOLID_VPHYSICS, GetSolidFlags(), false );
 		SetMoveType( MOVETYPE_VPHYSICS );
 
 		Vector vecAbsVelocity = GetAbsVelocity();
@@ -5108,15 +5316,15 @@ void CGrenadeHelicopter::Spawn( void )
 
 	// contact grenades arc lower
 	QAngle angles;
-	VectorAngles(GetAbsVelocity(), angles );
+	VectorAngles( GetAbsVelocity(), angles );
 	SetLocalAngles( angles );
-	
+
 	SetThink( NULL );
-	
+
 	// Tumble in air
-	QAngle vecAngVel( random->RandomFloat ( -100, -500 ), 0, 0 );
+	QAngle vecAngVel( random->RandomFloat( -100, -500 ), 0, 0 );
 	SetLocalAngularVelocity( vecAngVel );
-	
+
 	// Explode on contact
 	SetTouch( &CGrenadeHelicopter::ExplodeConcussion );
 
@@ -5128,7 +5336,7 @@ void CGrenadeHelicopter::Spawn( void )
 	m_flLifetime = BOMB_LIFETIME * 2.0;
 #endif // HL2_EPISODIC
 
-	if ( hl2_episodic.GetBool() )
+	if( hl2_episodic.GetBool() )
 	{
 		// Disallow this, we'd rather deal with them as physobjects
 		m_takedamage = DAMAGE_NO;
@@ -5161,7 +5369,7 @@ void CGrenadeHelicopter::UpdateOnRemove()
 {
 	if( m_pWarnSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		controller.SoundDestroy( m_pWarnSound );
 	}
 	g_pNotify->ClearEntity( this );
@@ -5172,15 +5380,15 @@ void CGrenadeHelicopter::UpdateOnRemove()
 #ifdef HL2_EPISODIC
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::InputExplodeIn( inputdata_t &inputdata )
+void CGrenadeHelicopter::InputExplodeIn( inputdata_t& inputdata )
 {
 	m_flLifetime = inputdata.value.Float();
-	
-	if ( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) )
+
+	if( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) )
 	{
 		// We are a dud no more!
 		RemoveSpawnFlags( SF_HELICOPTER_GRENADE_DUD );
-		m_nSkin = (int)SKIN_REGULAR;
+		m_nSkin = ( int )SKIN_REGULAR;
 	}
 
 	m_bActivated = false;
@@ -5194,21 +5402,25 @@ void CGrenadeHelicopter::InputExplodeIn( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 void CGrenadeHelicopter::BecomeActive()
 {
-	if ( m_bActivated )
+	if( m_bActivated )
+	{
 		return;
+	}
 
-	if ( IsMarkedForDeletion() )
+	if( IsMarkedForDeletion() )
+	{
 		return;
+	}
 
 	m_bActivated = true;
 
-	bool bMegaBomb = HasSpawnFlags(SF_GRENADE_HELICOPTER_MEGABOMB);
+	bool bMegaBomb = HasSpawnFlags( SF_GRENADE_HELICOPTER_MEGABOMB );
 
 	SetThink( &CGrenadeHelicopter::ExplodeThink );
-	
-	if ( hl2_episodic.GetBool() )
+
+	if( hl2_episodic.GetBool() )
 	{
-		if ( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) == false )
+		if( HasSpawnFlags( SF_HELICOPTER_GRENADE_DUD ) == false )
 		{
 			SetNextThink( gpGlobals->curtime + GetBombLifetime() );
 		}
@@ -5224,17 +5436,17 @@ void CGrenadeHelicopter::BecomeActive()
 		SetNextThink( gpGlobals->curtime + GetBombLifetime() );
 	}
 
-	if ( !bMegaBomb )
+	if( !bMegaBomb )
 	{
 		SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->curtime + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
 
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		CReliableBroadcastRecipientFilter filter;
 		m_pWarnSound = controller.SoundCreate( filter, entindex(), "NPC_AttackHelicopterGrenade.Ping" );
 		controller.Play( m_pWarnSound, 1.0, PITCH_NORM );
 	}
 
-	SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + (GetBombLifetime() - 2.0f), s_pWarningBlinkerContext );
+	SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + ( GetBombLifetime() - 2.0f ), s_pWarningBlinkerContext );
 
 #ifdef HL2_EPISODIC
 	m_flBlinkFastTime = gpGlobals->curtime + GetBombLifetime() - 1.0f;
@@ -5247,9 +5459,9 @@ void CGrenadeHelicopter::BecomeActive()
 //------------------------------------------------------------------------------
 void CGrenadeHelicopter::RampSoundThink( )
 {
-	if ( m_pWarnSound )
+	if( m_pWarnSound )
 	{
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		controller.SoundChangePitch( m_pWarnSound, 140, BOMB_RAMP_SOUND_TIME );
 	}
 
@@ -5265,47 +5477,47 @@ void CGrenadeHelicopter::WarningBlinkerThink()
 	return;
 #endif
 
-/*
-	if( !m_hWarningSprite.Get() )
-	{
-		Vector up;
-		GetVectors( NULL, NULL, &up );
-
-		// Light isn't on, so create the sprite.
-		m_hWarningSprite = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetAbsOrigin() + up * 10.0f, false );
-		CSprite *pSprite = (CSprite *)m_hWarningSprite.Get();
-
-		if( pSprite != NULL )
+	/*
+		if( !m_hWarningSprite.Get() )
 		{
-			pSprite->SetParent( this, LookupAttachment("top") );
-			pSprite->SetTransparency( kRenderTransAdd, 255, 255, 255, 255, kRenderFxNone );
-			pSprite->SetScale( 0.35, 0.0 );
+			Vector up;
+			GetVectors( NULL, NULL, &up );
+
+			// Light isn't on, so create the sprite.
+			m_hWarningSprite = CSprite::SpriteCreate( "sprites/redglow1.vmt", GetAbsOrigin() + up * 10.0f, false );
+			CSprite *pSprite = (CSprite *)m_hWarningSprite.Get();
+
+			if( pSprite != NULL )
+			{
+				pSprite->SetParent( this, LookupAttachment("top") );
+				pSprite->SetTransparency( kRenderTransAdd, 255, 255, 255, 255, kRenderFxNone );
+				pSprite->SetScale( 0.35, 0.0 );
+			}
+
+			m_bBlinkerAtTop = true;
+
+			ResetSequence( LookupActivity( "ACT_ARM" ) );
 		}
-
-		m_bBlinkerAtTop = true;
-
-		ResetSequence( LookupActivity( "ACT_ARM" ) );
-	}
-	else
-*/
+		else
+	*/
 	{
 		// Just flip it to the other attachment.
 		if( m_bBlinkerAtTop )
 		{
 			//m_hWarningSprite->SetParentAttachment( "SetParentAttachment", "bottom", false );
-			m_nSkin = (int)SKIN_REGULAR;
+			m_nSkin = ( int )SKIN_REGULAR;
 			m_bBlinkerAtTop = false;
 		}
 		else
 		{
 			//m_hWarningSprite->SetParentAttachment( "SetParentAttachment", "top", false );
-			m_nSkin = (int)SKIN_DUD;
+			m_nSkin = ( int )SKIN_DUD;
 			m_bBlinkerAtTop = true;
 		}
 	}
 
 	// Frighten people
-	CSoundEnt::InsertSound ( SOUND_DANGER, WorldSpaceCenter(), g_helicopter_bomb_danger_radius.GetFloat(), 0.2f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
+	CSoundEnt::InsertSound( SOUND_DANGER, WorldSpaceCenter(), g_helicopter_bomb_danger_radius.GetFloat(), 0.2f, this, SOUNDENT_CHANNEL_REPEATED_DANGER );
 
 #ifdef HL2_EPISODIC
 	if( gpGlobals->curtime >= m_flBlinkFastTime )
@@ -5341,11 +5553,11 @@ void CGrenadeHelicopter::AnimateThink()
 //------------------------------------------------------------------------------
 // Entity events... these are events targetted to a particular entity
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::OnEntityEvent( EntityEvent_t event, void *pEventData )
+void CGrenadeHelicopter::OnEntityEvent( EntityEvent_t event, void* pEventData )
 {
 	BaseClass::OnEntityEvent( event, pEventData );
 
-	if ( event == ENTITY_EVENT_WATER_TOUCH )
+	if( event == ENTITY_EVENT_WATER_TOUCH )
 	{
 		BecomeActive();
 	}
@@ -5358,12 +5570,12 @@ void CGrenadeHelicopter::OnEntityEvent( EntityEvent_t event, void *pEventData )
 void CGrenadeHelicopter::PhysicsSimulate( void )
 {
 	Vector vecPrevPosition = GetAbsOrigin();
-	
+
 	BaseClass::PhysicsSimulate();
 
-	if (!m_bActivated && (GetMoveType() != MOVETYPE_VPHYSICS))
+	if( !m_bActivated && ( GetMoveType() != MOVETYPE_VPHYSICS ) )
 	{
-		if ( GetWaterLevel() > 1 )
+		if( GetWaterLevel() > 1 )
 		{
 			SetAbsVelocity( vec3_origin );
 			SetMoveType( MOVETYPE_NONE );
@@ -5371,7 +5583,7 @@ void CGrenadeHelicopter::PhysicsSimulate( void )
 		}
 
 		// Stuck condition, can happen pretty often
-		if ( vecPrevPosition == GetAbsOrigin() )
+		if( vecPrevPosition == GetAbsOrigin() )
 		{
 			SetAbsVelocity( vec3_origin );
 			SetMoveType( MOVETYPE_NONE );
@@ -5384,20 +5596,20 @@ void CGrenadeHelicopter::PhysicsSimulate( void )
 //------------------------------------------------------------------------------
 // If we hit something, start the timer
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CGrenadeHelicopter::VPhysicsCollision( int index, gamevcollisionevent_t* pEvent )
 {
 	BaseClass::VPhysicsCollision( index, pEvent );
 	BecomeActive();
 
 #ifndef HL2_EPISODIC	// in ep2, don't do this here, do it in Touch()
-	if ( m_bExplodeOnContact )
+	if( m_bExplodeOnContact )
 	{
 		Vector vecVelocity;
 		GetVelocity( &vecVelocity, NULL );
 		DoExplosion( GetAbsOrigin(), vecVelocity );
 	}
 #endif
-	
+
 
 	if( hl2_episodic.GetBool() )
 	{
@@ -5414,11 +5626,11 @@ void CGrenadeHelicopter::VPhysicsCollision( int index, gamevcollisionevent_t *pE
 //------------------------------------------------------------------------------
 // double launch velocity for ep2_outland_08
 //------------------------------------------------------------------------------
-Vector CGrenadeHelicopter::PhysGunLaunchVelocity( const Vector &forward, float flMass )
+Vector CGrenadeHelicopter::PhysGunLaunchVelocity( const Vector& forward, float flMass )
 {
 	// return ( striderbuster_shot_velocity.GetFloat() * forward );
 
-	return BaseClass::PhysGunLaunchVelocity(forward,flMass) * sk_helicopter_grenaderadius.GetFloat();
+	return BaseClass::PhysGunLaunchVelocity( forward, flMass ) * sk_helicopter_grenaderadius.GetFloat();
 }
 #endif
 
@@ -5438,11 +5650,13 @@ float CGrenadeHelicopter::GetBombLifetime()
 //------------------------------------------------------------------------------
 // Pow!
 //------------------------------------------------------------------------------
-int CGrenadeHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
+int CGrenadeHelicopter::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	// We don't take blast damage
-	if ( info.GetDamageType() & DMG_BLAST )
+	if( info.GetDamageType() & DMG_BLAST )
+	{
 		return 0;
+	}
 
 	return BaseClass::OnTakeDamage( info );
 }
@@ -5451,13 +5665,13 @@ int CGrenadeHelicopter::OnTakeDamage( const CTakeDamageInfo &info )
 //------------------------------------------------------------------------------
 // Pow!
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::DoExplosion( const Vector &vecOrigin, const Vector &vecVelocity )
+void CGrenadeHelicopter::DoExplosion( const Vector& vecOrigin, const Vector& vecVelocity )
 {
-	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity() ? GetOwnerEntity() : this, sk_helicopter_grenadedamage.GetFloat(), 
-		sk_helicopter_grenaderadius.GetFloat(), (SF_ENVEXPLOSION_NOSPARKS|SF_ENVEXPLOSION_NODLIGHTS|SF_ENVEXPLOSION_NODECAL|SF_ENVEXPLOSION_NOFIREBALL|SF_ENVEXPLOSION_NOPARTICLES), 
-		sk_helicopter_grenadeforce.GetFloat(), this );
+	ExplosionCreate( GetAbsOrigin(), GetAbsAngles(), GetOwnerEntity() ? GetOwnerEntity() : this, sk_helicopter_grenadedamage.GetFloat(),
+					 sk_helicopter_grenaderadius.GetFloat(), ( SF_ENVEXPLOSION_NOSPARKS | SF_ENVEXPLOSION_NODLIGHTS | SF_ENVEXPLOSION_NODECAL | SF_ENVEXPLOSION_NOFIREBALL | SF_ENVEXPLOSION_NOPARTICLES ),
+					 sk_helicopter_grenadeforce.GetFloat(), this );
 
-	if ( GetShakeAmplitude() )
+	if( GetShakeAmplitude() )
 	{
 		UTIL_ScreenShake( GetAbsOrigin(), GetShakeAmplitude(), 150.0, 1.0, GetShakeRadius(), SHAKE_START );
 	}
@@ -5465,7 +5679,7 @@ void CGrenadeHelicopter::DoExplosion( const Vector &vecOrigin, const Vector &vec
 	CEffectData data;
 
 	// If we're under water do a water explosion
-	if ( GetWaterLevel() != 0 && (GetWaterType() & CONTENTS_WATER) )
+	if( GetWaterLevel() != 0 && ( GetWaterType() & CONTENTS_WATER ) )
 	{
 		data.m_vOrigin = WorldSpaceCenter();
 		data.m_flMagnitude = 128;
@@ -5487,15 +5701,15 @@ void CGrenadeHelicopter::DoExplosion( const Vector &vecOrigin, const Vector &vec
 //------------------------------------------------------------------------------
 // I think I Pow!
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::ExplodeThink(void)
+void CGrenadeHelicopter::ExplodeThink( void )
 {
 #ifdef HL2_EPISODIC
 	// remember if we were thrown by player, we can only determine this prior to explosion
 	bool bIsThrownByPlayer = IsThrownByPlayer();
 	int iHealthBefore = 0;
 	// get the health of the helicopter we came from prior to our explosion
-	CNPC_AttackHelicopter *pOwner = dynamic_cast<CNPC_AttackHelicopter *>( GetOriginalThrower() );
-	if ( pOwner )
+	CNPC_AttackHelicopter* pOwner = dynamic_cast<CNPC_AttackHelicopter*>( GetOriginalThrower() );
+	if( pOwner )
 	{
 		iHealthBefore = pOwner->GetHealth();
 	}
@@ -5507,10 +5721,10 @@ void CGrenadeHelicopter::ExplodeThink(void)
 
 #ifdef HL2_EPISODIC
 	// if we were thrown by player, look at health of helicopter after explosion and determine if we damaged it
-	if ( bIsThrownByPlayer && pOwner && ( iHealthBefore > 0 ) )
+	if( bIsThrownByPlayer && pOwner && ( iHealthBefore > 0 ) )
 	{
 		int iHealthAfter = pOwner->GetHealth();
-		if ( iHealthAfter == iHealthBefore )
+		if( iHealthAfter == iHealthBefore )
 		{
 			// The player threw us, we exploded due to timer, and we did not damage the helicopter that fired us.  Send a miss event
 			SendMissEvent();
@@ -5524,7 +5738,7 @@ void CGrenadeHelicopter::ExplodeThink(void)
 //------------------------------------------------------------------------------
 // I think I Pow!
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::ResolveFlyCollisionCustom( trace_t &trace, Vector &vecVelocity )
+void CGrenadeHelicopter::ResolveFlyCollisionCustom( trace_t& trace, Vector& vecVelocity )
 {
 	ResolveFlyCollisionBounce( trace, vecVelocity, 0.1f );
 }
@@ -5533,37 +5747,43 @@ void CGrenadeHelicopter::ResolveFlyCollisionCustom( trace_t &trace, Vector &vecV
 //------------------------------------------------------------------------------
 // Contact grenade, explode when it touches something
 //------------------------------------------------------------------------------
-void CGrenadeHelicopter::ExplodeConcussion( CBaseEntity *pOther )
+void CGrenadeHelicopter::ExplodeConcussion( CBaseEntity* pOther )
 {
-	if ( !pOther->IsSolid() )
-		return;
-
-	if ( !m_bExplodeOnContact )
+	if( !pOther->IsSolid() )
 	{
-		if ( pOther->IsWorld() )
-			return;
+		return;
+	}
 
-		if ( hl2_episodic.GetBool() )
+	if( !m_bExplodeOnContact )
+	{
+		if( pOther->IsWorld() )
+		{
+			return;
+		}
+
+		if( hl2_episodic.GetBool() )
 		{
 			// Don't hit anything other than vehicles
-			if ( pOther->GetCollisionGroup() != COLLISION_GROUP_VEHICLE )
+			if( pOther->GetCollisionGroup() != COLLISION_GROUP_VEHICLE )
+			{
 				return;
+			}
 		}
 	}
 
 #ifdef HL2_EPISODIC
-	CBaseEntity *pEntityHit = pOther;
-	if ( pEntityHit->ClassMatches( "phys_bone_follower" ) && pEntityHit->GetOwnerEntity() )
+	CBaseEntity* pEntityHit = pOther;
+	if( pEntityHit->ClassMatches( "phys_bone_follower" ) && pEntityHit->GetOwnerEntity() )
 	{
 		pEntityHit = pEntityHit->GetOwnerEntity();
 	}
-	if ( ( CLASS_COMBINE_GUNSHIP != pEntityHit->Classify() ) || !pEntityHit->ClassMatches( "npc_helicopter" ) )
+	if( ( CLASS_COMBINE_GUNSHIP != pEntityHit->Classify() ) || !pEntityHit->ClassMatches( "npc_helicopter" ) )
 	{
 		// We hit something other than a helicopter.  If the player threw us, send a miss event
-		if ( IsThrownByPlayer() )
+		if( IsThrownByPlayer() )
 		{
 			SendMissEvent();
-		}		
+		}
 	}
 #endif // HL2_EPISODIC
 
@@ -5577,16 +5797,16 @@ void CGrenadeHelicopter::ExplodeConcussion( CBaseEntity *pOther )
 //-----------------------------------------------------------------------------
 // Purpose: The bomb will act differently when picked up by the player
 //-----------------------------------------------------------------------------
-void CGrenadeHelicopter::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPickup_t reason )
+void CGrenadeHelicopter::OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason )
 {
-	if ( reason == PICKED_UP_BY_CANNON )
+	if( reason == PICKED_UP_BY_CANNON )
 	{
-		if ( !m_bPickedUp )
+		if( !m_bPickedUp )
 		{
 			if( m_hWarningSprite.Get() != NULL )
 			{
 				UTIL_Remove( m_hWarningSprite );
-				m_hWarningSprite.Set(NULL);
+				m_hWarningSprite.Set( NULL );
 			}
 
 			// Turn on
@@ -5595,7 +5815,7 @@ void CGrenadeHelicopter::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPicku
 			// Change the warning sound to a captured sound.
 			SetContextThink( &CGrenadeHelicopter::RampSoundThink, gpGlobals->curtime + GetBombLifetime() - BOMB_RAMP_SOUND_TIME, s_pRampSoundContext );
 
-			CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+			CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 			controller.SoundDestroy( m_pWarnSound );
 
 			CReliableBroadcastRecipientFilter filter;
@@ -5609,10 +5829,10 @@ void CGrenadeHelicopter::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPicku
 			SetContextThink( &CGrenadeHelicopter::WarningBlinkerThink, gpGlobals->curtime + GetBombLifetime() - 2.0f, s_pWarningBlinkerContext );
 
 #ifdef HL2_EPISODIC
-			m_nSkin = (int)SKIN_REGULAR;
+			m_nSkin = ( int )SKIN_REGULAR;
 			m_flBlinkFastTime = gpGlobals->curtime + GetBombLifetime() - 1.0f;
 #endif//HL2_EPISODIC
-			
+
 			// Stop us from sparing damage to the helicopter that dropped us
 			SetOwnerEntity( pPhysGunUser );
 			PhysEnableEntityCollisions( this, m_hCollisionObject );
@@ -5628,11 +5848,11 @@ void CGrenadeHelicopter::OnPhysGunPickup(CBasePlayer *pPhysGunUser, PhysGunPicku
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CGrenadeHelicopter::OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t reason )
+void CGrenadeHelicopter::OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t reason )
 {
-	if ( reason == LAUNCHED_BY_CANNON )
+	if( reason == LAUNCHED_BY_CANNON )
 	{
 		// Enable world touches.
 		unsigned int flags = VPhysicsGetObject()->GetCallbackFlags();
@@ -5662,8 +5882,8 @@ bool CGrenadeHelicopter::IsThrownByPlayer()
 void CGrenadeHelicopter::SendMissEvent()
 {
 	// send a miss event
-	IGameEvent *event = gameeventmanager->CreateEvent( "helicopter_grenade_punt_miss" );
-	if ( event )
+	IGameEvent* event = gameeventmanager->CreateEvent( "helicopter_grenade_punt_miss" );
+	if( event )
 	{
 		gameeventmanager->FireEvent( event );
 	}
@@ -5673,10 +5893,10 @@ void CGrenadeHelicopter::SendMissEvent()
 
 //-----------------------------------------------------------------------------
 //
-// This entity is used to create little force spheres that the helicopters should avoid. 
+// This entity is used to create little force spheres that the helicopters should avoid.
 //
 //-----------------------------------------------------------------------------
-CUtlVector< CAvoidSphere::AvoidSphereHandle_t > CAvoidSphere::s_AvoidSpheres; 
+CUtlVector< CAvoidSphere::AvoidSphereHandle_t > CAvoidSphere::s_AvoidSpheres;
 
 #define SF_AVOIDSPHERE_AVOID_BELOW	0x00010000
 
@@ -5684,22 +5904,22 @@ LINK_ENTITY_TO_CLASS( npc_heli_avoidsphere, CAvoidSphere );
 
 BEGIN_DATADESC( CAvoidSphere )
 
-	DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
+DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_iszAvoidFilter, FIELD_STRING, "AvoidFilter" ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Creates an avoidance sphere
 //-----------------------------------------------------------------------------
-CBaseEntity *CreateHelicopterAvoidanceSphere( CBaseEntity *pParent, int nAttachment, float flRadius, bool bAvoidBelow )
+				 CBaseEntity* CreateHelicopterAvoidanceSphere( CBaseEntity* pParent, int nAttachment, float flRadius, bool bAvoidBelow )
 {
-	CAvoidSphere *pSphere = static_cast<CAvoidSphere*>(CreateEntityByName( "npc_heli_avoidsphere" ));
+	CAvoidSphere* pSphere = static_cast<CAvoidSphere*>( CreateEntityByName( "npc_heli_avoidsphere" ) );
 	pSphere->Init( flRadius );
-	if ( bAvoidBelow )
+	if( bAvoidBelow )
 	{
 		pSphere->AddSpawnFlags( SF_AVOIDSPHERE_AVOID_BELOW );
 	}
@@ -5731,9 +5951,9 @@ void CAvoidSphere::Activate( )
 
 #ifdef MAPBASE
 	m_hAvoidFilter = gEntList.FindEntityByName( NULL, m_iszAvoidFilter, this );
-	if (m_hAvoidFilter)
+	if( m_hAvoidFilter )
 	{
-		if (dynamic_cast<CBaseFilter*>(m_hAvoidFilter.Get()) == NULL)
+		if( dynamic_cast<CBaseFilter*>( m_hAvoidFilter.Get() ) == NULL )
 		{
 			Warning( "%s: \"%s\" is not a valid filter", GetDebugName(), m_hAvoidFilter->GetDebugName() );
 			m_hAvoidFilter = NULL;
@@ -5752,8 +5972,8 @@ void CAvoidSphere::UpdateOnRemove( )
 //-----------------------------------------------------------------------------
 // Where are how should we avoid?
 //-----------------------------------------------------------------------------
-void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadius, 
-										  float flAvoidTime, Vector *pVecAvoidForce )
+void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity* pEntity, float flEntityRadius,
+		float flAvoidTime, Vector* pVecAvoidForce )
 {
 	pVecAvoidForce->Init( );
 
@@ -5761,30 +5981,32 @@ void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityR
 	VectorMultiply( pEntity->GetAbsVelocity(), flAvoidTime, vecEntityDelta );
 	Vector vecEntityCenter = pEntity->WorldSpaceCenter();
 
-	for ( int i = s_AvoidSpheres.Count(); --i >= 0; )
+	for( int i = s_AvoidSpheres.Count(); --i >= 0; )
 	{
-		CAvoidSphere *pSphere = s_AvoidSpheres[i].Get();
-		const Vector &vecAvoidCenter = pSphere->WorldSpaceCenter();
+		CAvoidSphere* pSphere = s_AvoidSpheres[i].Get();
+		const Vector& vecAvoidCenter = pSphere->WorldSpaceCenter();
 
 #ifdef MAPBASE
 		// Continue if not passing the avoid sphere filter
-		if ( pSphere->m_hAvoidFilter && !(static_cast<CBaseFilter*>( pSphere->m_hAvoidFilter.Get())->PassesFilter(pSphere, pEntity )) )
+		if( pSphere->m_hAvoidFilter && !( static_cast<CBaseFilter*>( pSphere->m_hAvoidFilter.Get() )->PassesFilter( pSphere, pEntity ) ) )
+		{
 			continue;
+		}
 #endif
 
 		// NOTE: This test can be thought of sweeping a sphere through space
 		// and seeing if it intersects the avoidance sphere
 		float flTotalRadius = flEntityRadius + pSphere->m_flRadius;
 		float t1, t2;
-		if ( !IntersectRayWithSphere( vecEntityCenter, vecEntityDelta, 
-				vecAvoidCenter, flTotalRadius, &t1, &t2 ) )
+		if( !IntersectRayWithSphere( vecEntityCenter, vecEntityDelta,
+									 vecAvoidCenter, flTotalRadius, &t1, &t2 ) )
 		{
 			continue;
 		}
 
 		// NOTE: The point of closest approach is at the average t value
 		Vector vecClosestApproach;
-		float flAverageT = (t1 + t2) * 0.5f;
+		float flAverageT = ( t1 + t2 ) * 0.5f;
 		VectorMA( vecEntityCenter, flAverageT, vecEntityDelta, vecClosestApproach );
 
 		// Add velocity to make it be pushed out away from the sphere center
@@ -5794,7 +6016,7 @@ void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityR
 		float flZDist = vecDir.z;
 		float flDist = VectorNormalize( vecDir );
 		float flDistToTravel;
-		if ( flDist < 0.01f )
+		if( flDist < 0.01f )
 		{
 			flDist = 0.01f;
 			vecDir.Init( 0, 0, 1 );
@@ -5805,7 +6027,7 @@ void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityR
 			// make the chopper always avoid *above*
 			// That means if a force would be applied to push the chopper down,
 			// figure out a new distance to travel that would push the chopper up.
-			if ( flZDist < 0.0f && !pSphere->HasSpawnFlags(SF_AVOIDSPHERE_AVOID_BELOW) )
+			if( flZDist < 0.0f && !pSphere->HasSpawnFlags( SF_AVOIDSPHERE_AVOID_BELOW ) )
 			{
 				Vector vecExitPoint;
 				vecDir.z = -vecDir.z;
@@ -5823,7 +6045,7 @@ void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityR
 		// The actual force amount is easy to think about:
 		// We need to change the position by dx over a time dt, so dv = dx/dt
 		// But so it doesn't explode, lets clamp t1 to a not-unreasonable time
-		if ( t1 < 0.25f )
+		if( t1 < 0.25f )
 		{
 			t1 = 0.25f;
 		}
@@ -5838,10 +6060,10 @@ void CAvoidSphere::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityR
 
 //-----------------------------------------------------------------------------
 //
-// This entity is used to create little force boxes that the helicopters should avoid. 
+// This entity is used to create little force boxes that the helicopters should avoid.
 //
 //-----------------------------------------------------------------------------
-CUtlVector< CAvoidBox::AvoidBoxHandle_t > CAvoidBox::s_AvoidBoxes; 
+CUtlVector< CAvoidBox::AvoidBoxHandle_t > CAvoidBox::s_AvoidBoxes;
 
 #define SF_AVOIDBOX_AVOID_BELOW	0x00010000
 
@@ -5878,7 +6100,7 @@ void CAvoidBox::UpdateOnRemove( )
 //-----------------------------------------------------------------------------
 // Where are how should we avoid?
 //-----------------------------------------------------------------------------
-void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadius, float flAvoidTime, Vector *pVecAvoidForce )
+void CAvoidBox::ComputeAvoidanceForces( CBaseEntity* pEntity, float flEntityRadius, float flAvoidTime, Vector* pVecAvoidForce )
 {
 	pVecAvoidForce->Init( );
 
@@ -5890,24 +6112,26 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 	Vector vecVelDir = pEntity->GetAbsVelocity();
 	VectorNormalize( vecVelDir );
 
-	for ( int i = s_AvoidBoxes.Count(); --i >= 0; )
+	for( int i = s_AvoidBoxes.Count(); --i >= 0; )
 	{
-		CAvoidBox *pBox = s_AvoidBoxes[i].Get();
+		CAvoidBox* pBox = s_AvoidBoxes[i].Get();
 
-		const Vector &vecAvoidCenter = pBox->WorldSpaceCenter();
+		const Vector& vecAvoidCenter = pBox->WorldSpaceCenter();
 
 		// NOTE: This test can be thought of sweeping a sphere through space
 		// and seeing if it intersects the avoidance box
 		float flTotalRadius = flEntityRadius + pBox->BoundingRadius();
 		float t1, t2;
-		if ( !IntersectInfiniteRayWithSphere( vecEntityCenter, vecEntityDelta, 
-				vecAvoidCenter, flTotalRadius, &t1, &t2 ) )
+		if( !IntersectInfiniteRayWithSphere( vecEntityCenter, vecEntityDelta,
+											 vecAvoidCenter, flTotalRadius, &t1, &t2 ) )
 		{
 			continue;
 		}
 
-		if (( t2 < 0.0f ) || ( t1 > 1.0f ))
+		if( ( t2 < 0.0f ) || ( t1 > 1.0f ) )
+		{
 			continue;
+		}
 
 		// Unlike the avoid spheres, we also need to make sure the ray intersects the box
 		Vector vecLocalCenter, vecLocalDelta;
@@ -5920,21 +6144,23 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 		vecBoxMax += pBox->CollisionProp()->OBBMaxs();
 
 		trace_t tr;
-		if ( !IntersectRayWithBox( vecLocalCenter, vecLocalDelta, vecBoxMin, vecBoxMax, 0.0f, &tr ) )
+		if( !IntersectRayWithBox( vecLocalCenter, vecLocalDelta, vecBoxMin, vecBoxMax, 0.0f, &tr ) )
+		{
 			continue;
+		}
 
 		// NOTE: The point of closest approach is at the average t value
 		Vector vecClosestApproach;
-		float flAverageT = (t1 + t2) * 0.5f;
+		float flAverageT = ( t1 + t2 ) * 0.5f;
 		VectorMA( vecEntityCenter, flAverageT, vecEntityDelta, vecClosestApproach );
-		
+
 		// Add velocity to make it be pushed out away from the sphere center
 		// without totally counteracting its velocity.
 		Vector vecDir;
 		VectorSubtract( vecClosestApproach, vecAvoidCenter, vecDir );
 
 		// Limit unnecessary sideways motion
-		if ( ( tr.plane.type != 3 ) || ( tr.plane.normal[2] > 0.0f ) )
+		if( ( tr.plane.type != 3 ) || ( tr.plane.normal[2] > 0.0f ) )
 		{
 			vecDir.x *= 0.1f;
 			vecDir.y *= 0.1f;
@@ -5943,7 +6169,7 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 		float flZDist = vecDir.z;
 		float flDist = VectorNormalize( vecDir );
 		float flDistToTravel;
-		if ( flDist < 10.0f )
+		if( flDist < 10.0f )
 		{
 			flDist = 10.0f;
 			vecDir.Init( 0, 0, 1 );
@@ -5954,7 +6180,7 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 			// make the chopper always avoid *above*
 			// That means if a force would be applied to push the chopper down,
 			// figure out a new distance to travel that would push the chopper up.
-			if ( flZDist < 0.0f && !pBox->HasSpawnFlags(SF_AVOIDSPHERE_AVOID_BELOW) )
+			if( flZDist < 0.0f && !pBox->HasSpawnFlags( SF_AVOIDSPHERE_AVOID_BELOW ) )
 			{
 				Vector vecExitPoint;
 				vecDir.z = -vecDir.z;
@@ -5972,7 +6198,7 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 		// The actual force amount is easy to think about:
 		// We need to change the position by dx over a time dt, so dv = dx/dt
 		// But so it doesn't explode, lets clamp t1 to a not-unreasonable time
-		if ( t1 < 0.25f )
+		if( t1 < 0.25f )
 		{
 			t1 = 0.25f;
 		}
@@ -5987,10 +6213,10 @@ void CAvoidBox::ComputeAvoidanceForces( CBaseEntity *pEntity, float flEntityRadi
 
 //-----------------------------------------------------------------------------
 //
-// This entity is used to create little force boxes that the helicopters should avoid. 
+// This entity is used to create little force boxes that the helicopters should avoid.
 //
 //-----------------------------------------------------------------------------
-CUtlVector< CBombSuppressor::BombSuppressorHandle_t > CBombSuppressor::s_BombSuppressors; 
+CUtlVector< CBombSuppressor::BombSuppressorHandle_t > CBombSuppressor::s_BombSuppressors;
 
 LINK_ENTITY_TO_CLASS( npc_heli_nobomb, CBombSuppressor );
 
@@ -6025,13 +6251,15 @@ void CBombSuppressor::UpdateOnRemove( )
 //-----------------------------------------------------------------------------
 // Where are how should we avoid?
 //-----------------------------------------------------------------------------
-bool CBombSuppressor::CanBomb( const Vector &vecPosition )
+bool CBombSuppressor::CanBomb( const Vector& vecPosition )
 {
-	for ( int i = s_BombSuppressors.Count(); --i >= 0; )
+	for( int i = s_BombSuppressors.Count(); --i >= 0; )
 	{
-		CBombSuppressor *pBox = s_BombSuppressors[i].Get();
-		if ( pBox->CollisionProp()->IsPointInBounds( vecPosition ) )
+		CBombSuppressor* pBox = s_BombSuppressors[i].Get();
+		if( pBox->CollisionProp()->IsPointInBounds( vecPosition ) )
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -6041,39 +6269,39 @@ LINK_ENTITY_TO_CLASS( helicopter_chunk, CHelicopterChunk );
 
 BEGIN_DATADESC( CHelicopterChunk )
 
-	DEFINE_THINKFUNC( FallThink ),
+DEFINE_THINKFUNC( FallThink ),
 
-	DEFINE_FIELD( m_bLanded, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hMaster, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_nChunkID, FIELD_INTEGER ),
-	DEFINE_PHYSPTR( m_pTailConstraint ),
-	DEFINE_PHYSPTR( m_pCockpitConstraint ),
+				  DEFINE_FIELD( m_bLanded, FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_hMaster, FIELD_EHANDLE ),
+				  DEFINE_FIELD( m_nChunkID, FIELD_INTEGER ),
+				  DEFINE_PHYSPTR( m_pTailConstraint ),
+				  DEFINE_PHYSPTR( m_pCockpitConstraint ),
 
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "FallApart", InputFallApart ),
 #endif
 
-END_DATADESC()
+				  END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHelicopterChunk::Spawn( void )
+				  void CHelicopterChunk::Spawn( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHelicopterChunk::FallThink( void )
 {
-	if ( m_bLanded )
+	if( m_bLanded )
 	{
 		SetThink( NULL );
 		return;
 	}
-	
-	if ( random->RandomInt( 0, 8 ) == 0 )
+
+	if( random->RandomInt( 0, 8 ) == 0 )
 	{
 		CEffectData data;
 		data.m_vOrigin = GetAbsOrigin() + RandomVector( -64, 64 );
@@ -6086,23 +6314,25 @@ void CHelicopterChunk::FallThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : index - 
-//			*pEvent - 
+// Purpose:
+// Input  : index -
+//			*pEvent -
 //-----------------------------------------------------------------------------
-void CHelicopterChunk::VPhysicsCollision( int index, gamevcollisionevent_t *pEvent )
+void CHelicopterChunk::VPhysicsCollision( int index, gamevcollisionevent_t* pEvent )
 {
 	BaseClass::VPhysicsCollision( index, pEvent );
 
-	if ( m_bLanded == false )
+	if( m_bLanded == false )
 	{
 		int otherIndex = !index;
-		CBaseEntity *pOther = pEvent->pEntities[otherIndex];
-		if ( !pOther )
+		CBaseEntity* pOther = pEvent->pEntities[otherIndex];
+		if( !pOther )
+		{
 			return;
-		
-		if ( pOther->IsWorld() )
-		{		
+		}
+
+		if( pOther->IsWorld() )
+		{
 			CollisionCallback( this );
 
 			m_bLanded = true;
@@ -6112,37 +6342,39 @@ void CHelicopterChunk::VPhysicsCollision( int index, gamevcollisionevent_t *pEve
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pCaller - 
+// Purpose:
+// Input  : *pCaller -
 //-----------------------------------------------------------------------------
-void CHelicopterChunk::CollisionCallback( CHelicopterChunk *pCaller )
+void CHelicopterChunk::CollisionCallback( CHelicopterChunk* pCaller )
 {
-	if ( m_bLanded )
+	if( m_bLanded )
+	{
 		return;
+	}
 
-	if ( m_hMaster != NULL )
+	if( m_hMaster != NULL )
 	{
 		m_hMaster->CollisionCallback( this );
 	}
 	else
 	{
 		// Break our other constraints
-		if ( m_pTailConstraint )
+		if( m_pTailConstraint )
 		{
 			physenv->DestroyConstraint( m_pTailConstraint );
 			m_pTailConstraint = NULL;
 		}
-		
-		if ( m_pCockpitConstraint )
+
+		if( m_pCockpitConstraint )
 		{
 			physenv->DestroyConstraint( m_pCockpitConstraint );
 			m_pCockpitConstraint = NULL;
 		}
-		
-		// Add a dust cloud
-		AR2Explosion *pExplosion = AR2Explosion::CreateAR2Explosion( GetAbsOrigin() );
 
-		if ( pExplosion != NULL )
+		// Add a dust cloud
+		AR2Explosion* pExplosion = AR2Explosion::CreateAR2Explosion( GetAbsOrigin() );
+
+		if( pExplosion != NULL )
 		{
 			pExplosion->SetLifetime( 10 );
 		}
@@ -6156,30 +6388,32 @@ void CHelicopterChunk::CollisionCallback( CHelicopterChunk *pCaller )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pCaller - 
+// Purpose:
+// Input  : *pCaller -
 //-----------------------------------------------------------------------------
-void CHelicopterChunk::InputFallApart( inputdata_t &inputdata )
+void CHelicopterChunk::InputFallApart( inputdata_t& inputdata )
 {
-	CollisionCallback(this);
+	CollisionCallback( this );
 }
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &vecPos - 
-//			&vecAngles - 
-//			&vecVelocity - 
-//			*pszModelName - 
+// Purpose:
+// Input  : &vecPos -
+//			&vecAngles -
+//			&vecVelocity -
+//			*pszModelName -
 // Output : CHelicopterChunk
 //-----------------------------------------------------------------------------
-CHelicopterChunk *CHelicopterChunk::CreateHelicopterChunk( const Vector &vecPos, const QAngle &vecAngles, const Vector &vecVelocity, const char *pszModelName, int chunkID )
+CHelicopterChunk* CHelicopterChunk::CreateHelicopterChunk( const Vector& vecPos, const QAngle& vecAngles, const Vector& vecVelocity, const char* pszModelName, int chunkID )
 {
 	// Drop a flaming, smoking chunk.
-	CHelicopterChunk *pChunk = CREATE_ENTITY( CHelicopterChunk, "helicopter_chunk" );
-	
-	if ( pChunk == NULL )
+	CHelicopterChunk* pChunk = CREATE_ENTITY( CHelicopterChunk, "helicopter_chunk" );
+
+	if( pChunk == NULL )
+	{
 		return NULL;
+	}
 
 	pChunk->Spawn();
 
@@ -6191,10 +6425,10 @@ CHelicopterChunk *CHelicopterChunk::CreateHelicopterChunk( const Vector &vecPos,
 	pChunk->m_nChunkID = chunkID;
 	pChunk->SetCollisionGroup( COLLISION_GROUP_INTERACTIVE );
 
-	IPhysicsObject *pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
-	
+	IPhysicsObject* pPhysicsObject = pChunk->VPhysicsInitNormal( SOLID_VPHYSICS, pChunk->GetSolidFlags(), false );
+
 	// Set the velocity
-	if ( pPhysicsObject )
+	if( pPhysicsObject )
 	{
 		pPhysicsObject->EnableMotion( true );
 		Vector vecChunkVelocity;
@@ -6203,15 +6437,15 @@ CHelicopterChunk *CHelicopterChunk::CreateHelicopterChunk( const Vector &vecPos,
 		vecChunkVelocity = vecVelocity;
 		angImpulse = vec3_origin;
 
-		pPhysicsObject->SetVelocity(&vecChunkVelocity, &angImpulse );
+		pPhysicsObject->SetVelocity( &vecChunkVelocity, &angImpulse );
 	}
-	
+
 	pChunk->SetThink( &CHelicopterChunk::FallThink );
 	pChunk->SetNextThink( gpGlobals->curtime + 0.1f );
 
 	pChunk->m_bLanded = false;
 
-	SmokeTrail *pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
+	SmokeTrail* pSmokeTrail =  SmokeTrail::CreateSmokeTrail();
 	pSmokeTrail->FollowEntity( pChunk, "damage" );
 
 	pSmokeTrail->m_SpawnRate = 4;
@@ -6222,15 +6456,17 @@ CHelicopterChunk *CHelicopterChunk::CreateHelicopterChunk( const Vector &vecPos,
 
 	pSmokeTrail->m_StartSize	= 32;
 	pSmokeTrail->m_EndSize	= 64;
-	pSmokeTrail->m_SpawnRadius= 8;
+	pSmokeTrail->m_SpawnRadius = 8;
 	pSmokeTrail->m_MinSpeed	= 0;
 	pSmokeTrail->m_MaxSpeed	= 8;
 	pSmokeTrail->m_Opacity	= 0.35f;
 
-	CFireTrail *pFireTrail = CFireTrail::CreateFireTrail();
+	CFireTrail* pFireTrail = CFireTrail::CreateFireTrail();
 
-	if ( pFireTrail == NULL )
+	if( pFireTrail == NULL )
+	{
 		return pChunk;
+	}
 
 	pFireTrail->FollowEntity( pChunk, "damage" );
 	pFireTrail->SetParent( pChunk, 1 );

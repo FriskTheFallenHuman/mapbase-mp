@@ -7,7 +7,7 @@
 #ifndef NPC_VORTIGAUNT_H
 #define NPC_VORTIGAUNT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -47,14 +47,14 @@ class CNPC_Vortigaunt : public CNPC_PlayerCompanion
 	DECLARE_CLASS( CNPC_Vortigaunt, CNPC_PlayerCompanion );
 
 public:
-					CNPC_Vortigaunt( void );
+	CNPC_Vortigaunt( void );
 
 	virtual void	Spawn( void );
 	virtual void	Precache( void );
 	virtual float	MaxYawSpeed( void );
 
 	virtual	Vector  FacingPosition( void );
-	virtual Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
+	virtual Vector	BodyTarget( const Vector& posSrc, bool bNoisy = true );
 
 	virtual void	PrescheduleThink( void );
 	virtual void	BuildScheduleTestBits( void );
@@ -62,102 +62,138 @@ public:
 
 	virtual int		RangeAttack1Conditions( float flDot, float flDist );	// Primary zap
 	virtual int		RangeAttack2Conditions( float flDot, float flDist );	// Concussive zap (larger)
-	virtual bool	InnateWeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	virtual bool	InnateWeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
 	virtual int		MeleeAttack1Conditions( float flDot, float flDist );	// Dispel
-	virtual float	InnateRange1MinRange( void ) { return 0.0f; }
-	virtual float	InnateRange1MaxRange( void ) { return sk_vortigaunt_zap_range.GetFloat()*12; }
-	virtual int		OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	virtual bool	FInViewCone( CBaseEntity *pEntity );
+	virtual float	InnateRange1MinRange( void )
+	{
+		return 0.0f;
+	}
+	virtual float	InnateRange1MaxRange( void )
+	{
+		return sk_vortigaunt_zap_range.GetFloat() * 12;
+	}
+	virtual int		OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	virtual bool	FInViewCone( CBaseEntity* pEntity );
 	virtual bool	ShouldMoveAndShoot( void );
 
 	// vorts have a very long head/neck swing, so debounce heavily
-	virtual	float	GetHeadDebounce( void ) { return 0.7; } // how much of previous head turn to use
+	virtual	float	GetHeadDebounce( void )
+	{
+		return 0.7;    // how much of previous head turn to use
+	}
 
-	virtual void		Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	virtual void		Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	virtual void		AlertSound( void );
-	virtual Class_T		Classify ( void ) { return IsGameEndAlly() ? CLASS_PLAYER_ALLY_VITAL : CLASS_VORTIGAUNT; }
-	virtual void		HandleAnimEvent( animevent_t *pEvent );
+	virtual Class_T		Classify( void )
+	{
+		return IsGameEndAlly() ? CLASS_PLAYER_ALLY_VITAL : CLASS_VORTIGAUNT;
+	}
+	virtual void		HandleAnimEvent( animevent_t* pEvent );
 	virtual Activity	NPC_TranslateActivity( Activity eNewActivity );
 
 	virtual void	UpdateOnRemove( void );
-	virtual void	Event_Killed( const CTakeDamageInfo &info );
+	virtual void	Event_Killed( const CTakeDamageInfo& info );
 	virtual	void	GatherConditions( void );
-	virtual void	RunTask( const Task_t *pTask );
-	virtual void	StartTask( const Task_t *pTask );
-	virtual void	ClearSchedule( const char *szReason );
+	virtual void	RunTask( const Task_t* pTask );
+	virtual void	StartTask( const Task_t* pTask );
+	virtual void	ClearSchedule( const char* szReason );
 
 	virtual void	DeclineFollowing( void );
 	virtual bool	CanBeUsedAsAFriend( void );
-	virtual bool	IsPlayerAlly( void ) { return true; }
+	virtual bool	IsPlayerAlly( void )
+	{
+		return true;
+	}
 
 	// Override these to set behavior
 	virtual int		TranslateSchedule( int scheduleType );
 	virtual int		SelectSchedule( void );
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
-	virtual bool	IsValidEnemy( CBaseEntity *pEnemy );
-	bool			IsLeading( void ) { return ( GetRunningBehavior() == &m_LeadBehavior && m_LeadBehavior.HasGoal() ); }
+	virtual bool	IsValidEnemy( CBaseEntity* pEnemy );
+	bool			IsLeading( void )
+	{
+		return ( GetRunningBehavior() == &m_LeadBehavior && m_LeadBehavior.HasGoal() );
+	}
 
-	void			DeathSound( const CTakeDamageInfo &info );
-	void			PainSound( const CTakeDamageInfo &info );
-	
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void			DeathSound( const CTakeDamageInfo& info );
+	void			PainSound( const CTakeDamageInfo& info );
+
+	virtual void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 	virtual void	SpeakSentence( int sentType );
 
-	virtual int		IRelationPriority( CBaseEntity *pTarget );
-	virtual Disposition_t 	IRelationType( CBaseEntity *pTarget );
-	virtual bool	IsReadinessCapable( void ) { return true; }
-	virtual float	GetReadinessDecay() { return 30.0f; }
-	virtual bool	ShouldRegenerateHealth( void ) { return m_bRegenerateHealth; }
+	virtual int		IRelationPriority( CBaseEntity* pTarget );
+	virtual Disposition_t 	IRelationType( CBaseEntity* pTarget );
+	virtual bool	IsReadinessCapable( void )
+	{
+		return true;
+	}
+	virtual float	GetReadinessDecay()
+	{
+		return 30.0f;
+	}
+	virtual bool	ShouldRegenerateHealth( void )
+	{
+		return m_bRegenerateHealth;
+	}
 	virtual bool	CanRunAScriptedNPCInteraction( bool bForced = false );
 	virtual void	AimGun( void );
 	virtual void	OnUpdateShotRegulator( void );
 
-	void	InputEnableArmorRecharge( inputdata_t &data );
-	void	InputDisableArmorRecharge( inputdata_t &data );
-	void	InputExtractBugbait( inputdata_t &data );
-	void	InputChargeTarget( inputdata_t &data );
-	void	InputDispel( inputdata_t &data );
-	void	InputBeginCarryNPC( inputdata_t &indputdata );
-	void	InputEndCarryNPC( inputdata_t &indputdata );
+	void	InputEnableArmorRecharge( inputdata_t& data );
+	void	InputDisableArmorRecharge( inputdata_t& data );
+	void	InputExtractBugbait( inputdata_t& data );
+	void	InputChargeTarget( inputdata_t& data );
+	void	InputDispel( inputdata_t& data );
+	void	InputBeginCarryNPC( inputdata_t& indputdata );
+	void	InputEndCarryNPC( inputdata_t& indputdata );
 
 	// Health regeneration
-	void	InputEnableHealthRegeneration( inputdata_t &data );
-	void	InputDisableHealthRegeneration( inputdata_t &data );
+	void	InputEnableHealthRegeneration( inputdata_t& data );
+	void	InputDisableHealthRegeneration( inputdata_t& data );
 
 	// color
-	void	InputTurnBlue( inputdata_t &data );
-	void	InputTurnBlack( inputdata_t &data );
+	void	InputTurnBlue( inputdata_t& data );
+	void	InputTurnBlack( inputdata_t& data );
 
 	virtual void	SetScriptedScheduleIgnoreConditions( Interruptability_t interrupt );
 	virtual void    OnRestore( void );
-	virtual bool	OverrideMoveFacing( const AILocalMoveGoal_t &move, float flInterval );
+	virtual bool	OverrideMoveFacing( const AILocalMoveGoal_t& move, float flInterval );
 	virtual void	OnStartScene( void );
 	virtual bool	IsInterruptable( void );
 	virtual bool	CanFlinch( void );
 
 	// used so a grub can notify me that I stepped on it. Says a line.
-	void	OnSquishedGrub( const CBaseEntity *pGrub );
+	void	OnSquishedGrub( const CBaseEntity* pGrub );
 
 #ifdef MAPBASE
 	// Use the vortigaunts' default subtitle color (188,241,174)
-	bool	GetGameTextSpeechParams( hudtextparms_t &params ) { params.r1 = 188; params.g1 = 241; params.b1 = 174; return BaseClass::GetGameTextSpeechParams( params ); }
-	
-	const char*		GetGrenadeAttachment() { return "rightclaw"; }
+	bool	GetGameTextSpeechParams( hudtextparms_t& params )
+	{
+		params.r1 = 188;
+		params.g1 = 241;
+		params.b1 = 174;
+		return BaseClass::GetGameTextSpeechParams( params );
+	}
+
+	const char*		GetGrenadeAttachment()
+	{
+		return "rightclaw";
+	}
 #endif
 
 private:
 
 	int		NumAntlionsInRadius( float flRadius );
-	void	DispelAntlions( const Vector &vecOrigin, float flRadius, bool bDispel = true );
+	void	DispelAntlions( const Vector& vecOrigin, float flRadius, bool bDispel = true );
 	bool	HealGestureHasLOS( void );
-	bool	PlayerBelowHealthPercentage( CBasePlayer *pPlayer, float flPerc );
+	bool	PlayerBelowHealthPercentage( CBasePlayer* pPlayer, float flPerc );
 	void	StartHealing( void );
 	void	StopHealing( bool bInterrupt = false );
 	void	MaintainHealSchedule( void );
-	bool	ShouldHealTarget( CBaseEntity *pTarget );
+	bool	ShouldHealTarget( CBaseEntity* pTarget );
 	int		SelectHealSchedule( void );
 
-	void	CreateBeamBlast( const Vector &vecOrigin );
+	void	CreateBeamBlast( const Vector& vecOrigin );
 
 private:
 	//=========================================================
@@ -177,9 +213,9 @@ private:
 	};
 
 	//=========================================================
-	// Vortigaunt Tasks 
+	// Vortigaunt Tasks
 	//=========================================================
-	enum 
+	enum
 	{
 		TASK_VORTIGAUNT_HEAL_WARMUP = BaseClass::NEXT_TASK,
 		TASK_VORTIGAUNT_HEAL,
@@ -201,7 +237,7 @@ private:
 		COND_VORTIGAUNT_HEAL_TARGET_TOO_FAR,	// Outside or heal range
 		COND_VORTIGAUNT_HEAL_TARGET_BLOCKED,	// Blocked by an obstruction
 		COND_VORTIGAUNT_HEAL_TARGET_BEHIND_US,	// Not within our "forward" range
-		COND_VORTIGAUNT_HEAL_VALID,				// All conditions satisfied	
+		COND_VORTIGAUNT_HEAL_VALID,				// All conditions satisfied
 		COND_VORTIGAUNT_DISPEL_ANTLIONS,		// Repulse all antlions around us
 	};
 
@@ -222,9 +258,9 @@ private:
 	float			m_fGlowChangeTime;
 	bool			m_bGlowTurningOn;
 	int				m_nCurGlowIndex;
-	
+
 	CHandle<CVortigauntEffectDispel>	m_hHandEffect[2];
-	
+
 	void			StartHandGlow( int beamType, int nHand );
 	void			EndHandGlow( int beamType = VORTIGAUNT_BEAM_ALL );
 	void			MaintainGlows( void );
@@ -237,12 +273,12 @@ private:
 	EHANDLE				m_hHealTarget;			// The person that I'm going to heal.
 	bool				m_bPlayerRequestedHeal;	// This adds some priority to our heal (allows it to happen in combat, etc)
 	float				m_flNextHealTokenTime;
-	
+
 	VortigauntHealState_t	m_eHealState;
-	
-	CBaseEntity		*FindHealTarget( void );
+
+	CBaseEntity*		FindHealTarget( void );
 	bool			HealBehaviorAvailable( void );
-	void			SetHealTarget( CBaseEntity *pTarget, bool bPlayerRequested );
+	void			SetHealTarget( CBaseEntity* pTarget, bool bPlayerRequested );
 	void			GatherHealConditions( void );
 
 	int				m_nNumTokensToSpawn;
@@ -253,16 +289,19 @@ private:
 	bool			m_bArmorRechargeEnabled;
 	bool			m_bForceArmorRecharge;
 	float			m_flDispelTestTime;
-	
+
 	bool			m_bExtractingBugbait;
-	
-	bool			IsCarryingNPC( void ) const { return m_bCarryingNPC; }
+
+	bool			IsCarryingNPC( void ) const
+	{
+		return m_bCarryingNPC;
+	}
 	bool			m_bCarryingNPC;
 
 	COutputEvent	m_OnFinishedExtractingBugbait;
 	COutputEvent	m_OnFinishedChargingTarget;
 	COutputEvent	m_OnPlayerUse;
-	
+
 	//Adrian: Let's do it the right way!
 	int				m_iLeftHandAttachment;
 	int				m_iRightHandAttachment;
@@ -283,9 +322,9 @@ public:
 };
 
 //=============================================================================
-// 
-//  Charge Token 
-//	
+//
+//  Charge Token
+//
 //=============================================================================
 
 class CVortigauntChargeToken : public CBaseEntity
@@ -294,9 +333,9 @@ class CVortigauntChargeToken : public CBaseEntity
 
 public:
 
-	static CVortigauntChargeToken *CreateChargeToken( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget );
+	static CVortigauntChargeToken* CreateChargeToken( const Vector& vecOrigin, CBaseEntity* pOwner, CBaseEntity* pTarget );
 
-	CVortigauntChargeToken( void );	
+	CVortigauntChargeToken( void );
 
 	virtual void	Spawn( void );
 	virtual void	Precache( void );
@@ -304,12 +343,15 @@ public:
 
 	void	FadeAndDie( void );
 	void	SeekThink( void );
-	void	SeekTouch( CBaseEntity	*pOther );
-	void	SetTargetEntity( CBaseEntity *pTarget ) { m_hTarget = pTarget; }
+	void	SeekTouch( CBaseEntity*	pOther );
+	void	SetTargetEntity( CBaseEntity* pTarget )
+	{
+		m_hTarget = pTarget;
+	}
 
 private:
 
-	Vector	GetSteerVector( const Vector &vecForward );
+	Vector	GetSteerVector( const Vector& vecForward );
 
 	float				m_flLifetime;
 	EHANDLE				m_hTarget;
@@ -321,9 +363,9 @@ private:
 };
 
 //=============================================================================
-// 
+//
 //  Dispel Effect
-//	
+//
 //=============================================================================
 
 class CVortigauntEffectDispel : public CBaseEntity
@@ -332,9 +374,9 @@ class CVortigauntEffectDispel : public CBaseEntity
 
 public:
 
-	static CVortigauntEffectDispel *CreateEffectDispel( const Vector &vecOrigin, CBaseEntity *pOwner, CBaseEntity *pTarget );
+	static CVortigauntEffectDispel* CreateEffectDispel( const Vector& vecOrigin, CBaseEntity* pOwner, CBaseEntity* pTarget );
 
-	CVortigauntEffectDispel( void );	
+	CVortigauntEffectDispel( void );
 
 	virtual void	Spawn( void );
 

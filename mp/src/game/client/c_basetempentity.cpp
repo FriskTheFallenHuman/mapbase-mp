@@ -10,23 +10,23 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS(C_BaseTempEntity, DT_BaseTempEntity, CBaseTempEntity);
+IMPLEMENT_CLIENTCLASS( C_BaseTempEntity, DT_BaseTempEntity, CBaseTempEntity );
 
-BEGIN_RECV_TABLE_NOBASE(C_BaseTempEntity, DT_BaseTempEntity)
+BEGIN_RECV_TABLE_NOBASE( C_BaseTempEntity, DT_BaseTempEntity )
 END_RECV_TABLE()
 
 
 // Global list of temp entity classes
-C_BaseTempEntity *C_BaseTempEntity::s_pTempEntities = NULL;
+C_BaseTempEntity* C_BaseTempEntity::s_pTempEntities = NULL;
 
 // Global list of dynamic temp entities
-C_BaseTempEntity *C_BaseTempEntity::s_pDynamicEntities = NULL;
+C_BaseTempEntity* C_BaseTempEntity::s_pDynamicEntities = NULL;
 
 //-----------------------------------------------------------------------------
 // Purpose: Returns head of list
 // Output : CBaseTempEntity * -- head of list
 //-----------------------------------------------------------------------------
-C_BaseTempEntity *C_BaseTempEntity::GetDynamicList( void )
+C_BaseTempEntity* C_BaseTempEntity::GetDynamicList( void )
 {
 	return s_pDynamicEntities;
 }
@@ -35,27 +35,27 @@ C_BaseTempEntity *C_BaseTempEntity::GetDynamicList( void )
 // Purpose: Returns head of list
 // Output : CBaseTempEntity * -- head of list
 //-----------------------------------------------------------------------------
-C_BaseTempEntity *C_BaseTempEntity::GetList( void )
+C_BaseTempEntity* C_BaseTempEntity::GetList( void )
 {
 	return s_pTempEntities;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 C_BaseTempEntity::C_BaseTempEntity( void )
 {
 	// Add to list
 	m_pNext			= s_pTempEntities;
 	s_pTempEntities = this;
-	
+
 	m_pNextDynamic = NULL;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 C_BaseTempEntity::~C_BaseTempEntity( void )
 {
@@ -65,7 +65,7 @@ C_BaseTempEntity::~C_BaseTempEntity( void )
 // Purpose: Get next temp ent in chain
 // Output : CBaseTempEntity *
 //-----------------------------------------------------------------------------
-C_BaseTempEntity *C_BaseTempEntity::GetNext( void )
+C_BaseTempEntity* C_BaseTempEntity::GetNext( void )
 {
 	return m_pNext;
 }
@@ -74,13 +74,13 @@ C_BaseTempEntity *C_BaseTempEntity::GetNext( void )
 // Purpose: Get next temp ent in chain
 // Output : CBaseTempEntity *
 //-----------------------------------------------------------------------------
-C_BaseTempEntity *C_BaseTempEntity::GetNextDynamic( void )
+C_BaseTempEntity* C_BaseTempEntity::GetNextDynamic( void )
 {
 	return m_pNextDynamic;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::Precache( void )
 {
@@ -92,8 +92,8 @@ void C_BaseTempEntity::Precache( void )
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::PrecacheTempEnts( void )
 {
-	C_BaseTempEntity *pTe = GetList();
-	while ( pTe )
+	C_BaseTempEntity* pTe = GetList();
+	while( pTe )
 	{
 		pTe->Precache();
 		pTe = pTe->GetNext();
@@ -105,9 +105,9 @@ void C_BaseTempEntity::PrecacheTempEnts( void )
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::ClearDynamicTempEnts( void )
 {
-	C_BaseTempEntity *next;
-	C_BaseTempEntity *pTe = s_pDynamicEntities;
-	while ( pTe )
+	C_BaseTempEntity* next;
+	C_BaseTempEntity* pTe = s_pDynamicEntities;
+	while( pTe )
 	{
 		next = pTe->GetNextDynamic();
 		delete pTe;
@@ -122,12 +122,12 @@ void C_BaseTempEntity::ClearDynamicTempEnts( void )
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::CheckDynamicTempEnts( void )
 {
-	C_BaseTempEntity *next, *newlist = NULL;
-	C_BaseTempEntity *pTe = s_pDynamicEntities;
-	while ( pTe )
+	C_BaseTempEntity* next, *newlist = NULL;
+	C_BaseTempEntity* pTe = s_pDynamicEntities;
+	while( pTe )
 	{
 		next = pTe->GetNextDynamic();
-		if ( pTe->ShouldDestroy() )
+		if( pTe->ShouldDestroy() )
 		{
 			delete pTe;
 		}
@@ -146,12 +146,12 @@ void C_BaseTempEntity::CheckDynamicTempEnts( void )
 // Purpose: Dynamic/non-singleton temp entities are initialized by
 //  calling into here.  They should be added to a list of C_BaseTempEntities so
 //  that their memory can be deallocated appropriately.
-// Input  : *pEnt - 
+// Input  : *pEnt -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool C_BaseTempEntity::Init( int entnum, int iSerialNum )
 {
-	if ( entnum != -1 )
+	if( entnum != -1 )
 	{
 		Assert( 0 );
 	}
@@ -176,8 +176,8 @@ void C_BaseTempEntity::NotifyShouldTransmit( ShouldTransmitState_t state )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_BaseTempEntity::PreDataUpdate( DataUpdateType_t updateType )
 {
@@ -185,14 +185,40 @@ void C_BaseTempEntity::PreDataUpdate( DataUpdateType_t updateType )
 }
 
 
-int C_BaseTempEntity::entindex( void ) const { Assert( 0 ); return 0; }
-void C_BaseTempEntity::PostDataUpdate( DataUpdateType_t updateType ) { Assert( 0 ); }
-void C_BaseTempEntity::OnPreDataChanged( DataUpdateType_t updateType ) { Assert( 0 ); }
-void C_BaseTempEntity::OnDataChanged( DataUpdateType_t updateType ) { Assert( 0 ); }
-void C_BaseTempEntity::SetDormant( bool bDormant ) { Assert( 0 ); }
-bool C_BaseTempEntity::IsDormant( void ) { Assert( 0 ); return false; };
-void C_BaseTempEntity::ReceiveMessage( int classID, bf_read &msg ) { Assert( 0 ); }
-void C_BaseTempEntity::SetDestroyedOnRecreateEntities( void ) { Assert(0); }
+int C_BaseTempEntity::entindex( void ) const
+{
+	Assert( 0 );
+	return 0;
+}
+void C_BaseTempEntity::PostDataUpdate( DataUpdateType_t updateType )
+{
+	Assert( 0 );
+}
+void C_BaseTempEntity::OnPreDataChanged( DataUpdateType_t updateType )
+{
+	Assert( 0 );
+}
+void C_BaseTempEntity::OnDataChanged( DataUpdateType_t updateType )
+{
+	Assert( 0 );
+}
+void C_BaseTempEntity::SetDormant( bool bDormant )
+{
+	Assert( 0 );
+}
+bool C_BaseTempEntity::IsDormant( void )
+{
+	Assert( 0 );
+	return false;
+};
+void C_BaseTempEntity::ReceiveMessage( int classID, bf_read& msg )
+{
+	Assert( 0 );
+}
+void C_BaseTempEntity::SetDestroyedOnRecreateEntities( void )
+{
+	Assert( 0 );
+}
 
 void* C_BaseTempEntity::GetDataTableBasePtr()
 {

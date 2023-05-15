@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -9,7 +9,7 @@
 #if !defined( CLIENTMODE_NORMAL_H )
 #define CLIENTMODE_NORMAL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "iclientmode.h"
@@ -31,22 +31,22 @@ class Panel;
 // HPE_BEGIN:
 // [tj] Moved this from the .cpp file so derived classes could access it
 //=============================================================================
- 
+
 #define ACHIEVEMENT_ANNOUNCEMENT_MIN_TIME 10
- 
+
 //=============================================================================
 // HPE_END
 //=============================================================================
 
 class CReplayReminderPanel;
 
-#define USERID2PLAYER(i) ToBasePlayer( ClientEntityList().GetEnt( engine->GetPlayerForUserID( i ) ) )	
+#define USERID2PLAYER(i) ToBasePlayer( ClientEntityList().GetEnt( engine->GetPlayerForUserID( i ) ) )
 
 #ifdef MAPBASE
-#define DEMO_AUTORECORD 1
+	#define DEMO_AUTORECORD 1
 #endif
 
-extern IClientMode *GetClientModeNormal(); // must be implemented
+extern IClientMode* GetClientModeNormal(); // must be implemented
 
 // This class implements client mode functionality common to HL2 and TF2.
 class ClientModeShared : public IClientMode, public CGameEventListener
@@ -55,19 +55,19 @@ class ClientModeShared : public IClientMode, public CGameEventListener
 public:
 	DECLARE_CLASS_NOBASE( ClientModeShared );
 
-					ClientModeShared();
+	ClientModeShared();
 	virtual			~ClientModeShared();
-	
+
 	virtual void	Init();
 	virtual void	InitViewport();
 	virtual void	VGui_Shutdown();
 	virtual void	Shutdown();
 
-	virtual void	LevelInit( const char *newmap );
+	virtual void	LevelInit( const char* newmap );
 	virtual void	LevelShutdown( void );
 
 #ifdef DEMO_AUTORECORD
-	virtual void	AutoRecord( const char *map );
+	virtual void	AutoRecord( const char* map );
 #endif
 
 	virtual void	Enable();
@@ -75,80 +75,97 @@ public:
 	virtual void	Layout();
 
 	virtual void	ReloadScheme( bool flushLowLevel );
-	virtual void	OverrideView( CViewSetup *pSetup );
+	virtual void	OverrideView( CViewSetup* pSetup );
 	virtual bool	ShouldDrawDetailObjects( );
-	virtual bool	ShouldDrawEntity(C_BaseEntity *pEnt);
-	virtual bool	ShouldDrawLocalPlayer( C_BasePlayer *pPlayer );
+	virtual bool	ShouldDrawEntity( C_BaseEntity* pEnt );
+	virtual bool	ShouldDrawLocalPlayer( C_BasePlayer* pPlayer );
 	virtual bool	ShouldDrawViewModel();
 	virtual bool	ShouldDrawParticles( );
 	virtual bool	ShouldDrawCrosshair( void );
 	virtual bool	ShouldBlackoutAroundHUD() OVERRIDE;
 	virtual HeadtrackMovementMode_t ShouldOverrideHeadtrackControl() OVERRIDE;
 	virtual void	AdjustEngineViewport( int& x, int& y, int& width, int& height );
-	virtual void	PreRender(CViewSetup *pSetup);
+	virtual void	PreRender( CViewSetup* pSetup );
 	virtual void	PostRender();
 	virtual void	PostRenderVGui();
-	virtual void	ProcessInput(bool bActive);
-	virtual bool	CreateMove( float flInputSampleTime, CUserCmd *cmd );
+	virtual void	ProcessInput( bool bActive );
+	virtual bool	CreateMove( float flInputSampleTime, CUserCmd* cmd );
 	virtual void	Update();
 #ifdef MAPBASE // From Alien Swarm SDK
 	virtual void	OnColorCorrectionWeightsReset( void );
 	virtual float	GetColorCorrectionScale( void ) const;
-	virtual void	ClearCurrentColorCorrection() { m_pCurrentColorCorrection = NULL; }
+	virtual void	ClearCurrentColorCorrection()
+	{
+		m_pCurrentColorCorrection = NULL;
+	}
 #endif
 
 	// Input
-	virtual int		KeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
-	virtual int		HudElementKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
-	virtual void	OverrideMouseInput( float *x, float *y );
+	virtual int		KeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
+	virtual int		HudElementKeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
+	virtual void	OverrideMouseInput( float* x, float* y );
 	virtual void	StartMessageMode( int iMessageModeType );
-	virtual vgui::Panel *GetMessagePanel();
+	virtual vgui::Panel* GetMessagePanel();
 
-	virtual void	ActivateInGameVGuiContext( vgui::Panel *pPanel );
+	virtual void	ActivateInGameVGuiContext( vgui::Panel* pPanel );
 	virtual void	DeactivateInGameVGuiContext();
 
 	// The mode can choose to not draw fog
 	virtual bool	ShouldDrawFog( void );
-	
+
 	virtual float	GetViewModelFOV( void );
-	virtual vgui::Panel* GetViewport() { return m_pViewport; }
+	virtual vgui::Panel* GetViewport()
+	{
+		return m_pViewport;
+	}
 	// Gets at the viewports vgui panel animation controller, if there is one...
-	virtual vgui::AnimationController *GetViewportAnimationController()
-		{ return m_pViewport->GetAnimationController(); }
-	
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual vgui::AnimationController* GetViewportAnimationController()
+	{
+		return m_pViewport->GetAnimationController();
+	}
 
-	virtual bool CanRecordDemo( char *errorMsg, int length ) const { return true; }
+	virtual void FireGameEvent( IGameEvent* event );
 
-	virtual int HandleSpectatorKeyInput( int down, ButtonCode_t keynum, const char *pszCurrentBinding );
+	virtual bool CanRecordDemo( char* errorMsg, int length ) const
+	{
+		return true;
+	}
 
-	virtual void	ComputeVguiResConditions( KeyValues *pkvConditions ) OVERRIDE;
+	virtual int HandleSpectatorKeyInput( int down, ButtonCode_t keynum, const char* pszCurrentBinding );
+
+	virtual void	ComputeVguiResConditions( KeyValues* pkvConditions ) OVERRIDE;
 
 	//=============================================================================
 	// HPE_BEGIN:
 	// [menglish] Save server information shown to the client in a persistent place
 	//=============================================================================
-	 
-	virtual wchar_t* GetServerName() { return NULL; }
-	virtual void SetServerName(wchar_t* name) {};
-	virtual wchar_t* GetMapName() { return NULL; }
-	virtual void SetMapName(wchar_t* name) {};
-	 
+
+	virtual wchar_t* GetServerName()
+	{
+		return NULL;
+	}
+	virtual void SetServerName( wchar_t* name ) {};
+	virtual wchar_t* GetMapName()
+	{
+		return NULL;
+	}
+	virtual void SetMapName( wchar_t* name ) {};
+
 	//=============================================================================
 	// HPE_END
 	//=============================================================================
 
-	virtual bool	DoPostScreenSpaceEffects( const CViewSetup *pSetup );
+	virtual bool	DoPostScreenSpaceEffects( const CViewSetup* pSetup );
 
-	virtual void	DisplayReplayMessage( const char *pLocalizeName, float flDuration, bool bUrgent,
-										  const char *pSound, bool bDlg );
+	virtual void	DisplayReplayMessage( const char* pLocalizeName, float flDuration, bool bUrgent,
+										  const char* pSound, bool bDlg );
 
 	virtual bool	IsInfoPanelAllowed() OVERRIDE { return true; }
 	virtual void	InfoPanelDisplayed() OVERRIDE { }
 	virtual bool	IsHTMLInfoPanelAllowed() OVERRIDE { return true; }
 
 protected:
-	CBaseViewport			*m_pViewport;
+	CBaseViewport*			m_pViewport;
 
 	void			DisplayReplayReminder();
 
@@ -160,14 +177,14 @@ private:
 #if defined( REPLAY_ENABLED )
 	float					m_flReplayStartRecordTime;
 	float					m_flReplayStopRecordTime;
-	CReplayReminderPanel	*m_pReplayReminderPanel;
+	CReplayReminderPanel*	m_pReplayReminderPanel;
 #endif
 
 	// Message mode handling
 	// All modes share a common chat interface
-	CBaseHudChat			*m_pChatElement;
+	CBaseHudChat*			m_pChatElement;
 	vgui::HCursor			m_CursorNone;
-	CBaseHudWeaponSelection *m_pWeaponSelection;
+	CBaseHudWeaponSelection* m_pWeaponSelection;
 	int						m_nRootSize[2];
 
 #ifdef MAPBASE // From Alien Swarm SDK

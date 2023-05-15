@@ -8,7 +8,7 @@
 #include "ndebugoverlay.h"
 #include "ai_basenpc.h"
 #ifdef MAPBASE
-#include "mapbase/matchers.h"
+	#include "mapbase/matchers.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -40,25 +40,31 @@ public:
 #ifdef MAPBASE
 	virtual
 #endif
-	void ChangeRelationships( int disposition, int iReverting, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
+	void ChangeRelationships( int disposition, int iReverting, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
 
-	void ApplyRelationship( CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
-	void RevertRelationship( CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
-	void RevertToDefaultRelationship( CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
+	void ApplyRelationship( CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
+	void RevertRelationship( CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
+	void RevertToDefaultRelationship( CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
 
 	void UpdateOnRemove();
 	void OnRestore();
 
-	bool IsASubject( CBaseEntity *pEntity );
-	bool IsATarget( CBaseEntity *pEntity );
+	bool IsASubject( CBaseEntity* pEntity );
+	bool IsATarget( CBaseEntity* pEntity );
 #ifdef MAPBASE
 	// Assume no insane person already has "CLASS_" at the beginning of an entity's (class)name.
-	inline bool IsSubjectClassify() { return Q_strncmp(STRING(m_target), "CLASS_", 6) == 0; }
-	inline bool IsTargetClassify() { return Q_strncmp(STRING(m_target), "CLASS_", 6) == 0; }
+	inline bool IsSubjectClassify()
+	{
+		return Q_strncmp( STRING( m_target ), "CLASS_", 6 ) == 0;
+	}
+	inline bool IsTargetClassify()
+	{
+		return Q_strncmp( STRING( m_target ), "CLASS_", 6 ) == 0;
+	}
 #endif
 
-	void OnEntitySpawned( CBaseEntity *pEntity );
-	void OnEntityDeleted( CBaseEntity *pEntity );
+	void OnEntitySpawned( CBaseEntity* pEntity );
+	void OnEntityDeleted( CBaseEntity* pEntity );
 
 #ifdef MAPBASE
 protected:
@@ -67,8 +73,8 @@ private:
 #endif
 
 	void	ApplyRelationshipThink( void );
-	CBaseEntity *FindEntityForProceduralName( string_t iszName, CBaseEntity *pActivator, CBaseEntity *pCaller );
-	void	DiscloseNPCLocation( CBaseCombatCharacter *pSubject, CBaseCombatCharacter *pTarget );
+	CBaseEntity* FindEntityForProceduralName( string_t iszName, CBaseEntity* pActivator, CBaseEntity* pCaller );
+	void	DiscloseNPCLocation( CBaseCombatCharacter* pSubject, CBaseCombatCharacter* pTarget );
 
 	string_t	m_iszSubject;
 	int			m_iDisposition;
@@ -82,9 +88,9 @@ private:
 
 public:
 	// Input functions
-	void InputApplyRelationship( inputdata_t &inputdata );
-	void InputRevertRelationship( inputdata_t &inputdata );
-	void InputRevertToDefaultRelationship( inputdata_t &inputdata );
+	void InputApplyRelationship( inputdata_t& inputdata );
+	void InputRevertRelationship( inputdata_t& inputdata );
+	void InputRevertToDefaultRelationship( inputdata_t& inputdata );
 
 	DECLARE_DATADESC();
 };
@@ -92,41 +98,41 @@ public:
 LINK_ENTITY_TO_CLASS( ai_relationship, CAI_Relationship );
 
 BEGIN_DATADESC( CAI_Relationship )
-	DEFINE_THINKFUNC( ApplyRelationshipThink ),
-	
-	DEFINE_KEYFIELD( m_iszSubject, FIELD_STRING, "subject" ),
-	DEFINE_KEYFIELD( m_iDisposition, FIELD_INTEGER, "disposition" ),
-	DEFINE_KEYFIELD( m_iRank, FIELD_INTEGER, "rank" ),
-	DEFINE_KEYFIELD( m_fStartActive, FIELD_BOOLEAN, "StartActive" ),
-	DEFINE_FIELD( m_bIsActive, FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
-	DEFINE_FIELD( m_iPreviousDisposition, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iPreviousRank, FIELD_INTEGER ),
-	DEFINE_KEYFIELD( m_bReciprocal, FIELD_BOOLEAN, "reciprocal" ),
+DEFINE_THINKFUNC( ApplyRelationshipThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "ApplyRelationship", InputApplyRelationship ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "RevertRelationship", InputRevertRelationship ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "RevertToDefaultRelationship", InputRevertToDefaultRelationship ),
-END_DATADESC()
+				  DEFINE_KEYFIELD( m_iszSubject, FIELD_STRING, "subject" ),
+				  DEFINE_KEYFIELD( m_iDisposition, FIELD_INTEGER, "disposition" ),
+				  DEFINE_KEYFIELD( m_iRank, FIELD_INTEGER, "rank" ),
+				  DEFINE_KEYFIELD( m_fStartActive, FIELD_BOOLEAN, "StartActive" ),
+				  DEFINE_FIELD( m_bIsActive, FIELD_BOOLEAN ),
+				  DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
+				  DEFINE_FIELD( m_iPreviousDisposition, FIELD_INTEGER ),
+				  DEFINE_FIELD( m_iPreviousRank, FIELD_INTEGER ),
+				  DEFINE_KEYFIELD( m_bReciprocal, FIELD_BOOLEAN, "reciprocal" ),
+
+				  // Inputs
+				  DEFINE_INPUTFUNC( FIELD_VOID, "ApplyRelationship", InputApplyRelationship ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "RevertRelationship", InputRevertRelationship ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "RevertToDefaultRelationship", InputRevertToDefaultRelationship ),
+				  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAI_Relationship::Spawn()
+				  void CAI_Relationship::Spawn()
 {
 	m_bIsActive = false;
 
-	if (m_iszSubject == NULL_STRING)
+	if( m_iszSubject == NULL_STRING )
 	{
-		DevWarning("ai_relationship '%s' with no subject specified, removing.\n", GetDebugName());
-		UTIL_Remove(this);
+		DevWarning( "ai_relationship '%s' with no subject specified, removing.\n", GetDebugName() );
+		UTIL_Remove( this );
 	}
-	else if (m_target == NULL_STRING)
+	else if( m_target == NULL_STRING )
 	{
-		DevWarning("ai_relationship '%s' with no target specified, removing.\n", GetDebugName());
-		UTIL_Remove(this);
+		DevWarning( "ai_relationship '%s' with no target specified, removing.\n", GetDebugName() );
+		UTIL_Remove( this );
 	}
 }
 
@@ -134,7 +140,7 @@ void CAI_Relationship::Spawn()
 //---------------------------------------------------------
 void CAI_Relationship::Activate()
 {
-	if ( m_fStartActive )
+	if( m_fStartActive )
 	{
 		ApplyRelationship();
 
@@ -146,17 +152,17 @@ void CAI_Relationship::Activate()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bActive - 
+// Purpose:
+// Input  : bActive -
 //-----------------------------------------------------------------------------
 void CAI_Relationship::SetActive( bool bActive )
 {
-	if ( bActive && !m_bIsActive )
+	if( bActive && !m_bIsActive )
 	{
 		// Start getting entity updates!
 		gEntList.AddListenerEntity( this );
 	}
-	else if ( !bActive && m_bIsActive )
+	else if( !bActive && m_bIsActive )
 	{
 		// Stop getting entity updates!
 		gEntList.RemoveListenerEntity( this );
@@ -167,21 +173,21 @@ void CAI_Relationship::SetActive( bool bActive )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::InputApplyRelationship( inputdata_t &inputdata )
+void CAI_Relationship::InputApplyRelationship( inputdata_t& inputdata )
 {
 	ApplyRelationship( inputdata.pActivator, inputdata.pCaller );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::InputRevertRelationship( inputdata_t &inputdata )
+void CAI_Relationship::InputRevertRelationship( inputdata_t& inputdata )
 {
 	RevertRelationship( inputdata.pActivator, inputdata.pCaller );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::InputRevertToDefaultRelationship( inputdata_t &inputdata )
+void CAI_Relationship::InputRevertToDefaultRelationship( inputdata_t& inputdata )
 {
 	RevertToDefaultRelationship( inputdata.pActivator, inputdata.pCaller );
 }
@@ -200,19 +206,19 @@ void CAI_Relationship::ApplyRelationshipThink( void )
 //---------------------------------------------------------
 // Purpose: Applies the desired relationships to an entity
 //---------------------------------------------------------
-void CAI_Relationship::ApplyRelationship( CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CAI_Relationship::ApplyRelationship( CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
-	// @TODO (toml 10-22-04): sort out MP relationships 
-	
+	// @TODO (toml 10-22-04): sort out MP relationships
+
 	// The player spawns slightly after the NPCs, meaning that if we don't wait, the
 	// player will miss any relationships placed on them.
-	if ( AI_IsSinglePlayer() && !UTIL_GetLocalPlayer() )
+	if( AI_IsSinglePlayer() && !UTIL_GetLocalPlayer() )
 	{
 		SetThink( &CAI_Relationship::ApplyRelationshipThink );
 		SetNextThink( gpGlobals->curtime );
 	}
 
-	if ( !m_bIsActive )
+	if( !m_bIsActive )
 	{
 		SetActive( true );
 	}
@@ -222,9 +228,9 @@ void CAI_Relationship::ApplyRelationship( CBaseEntity *pActivator, CBaseEntity *
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::RevertRelationship( CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CAI_Relationship::RevertRelationship( CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
-	if ( m_bIsActive )
+	if( m_bIsActive )
 	{
 		ChangeRelationships( m_iPreviousDisposition, REVERTING_TO_PREV, pActivator, pCaller );
 		SetActive( false );
@@ -233,9 +239,9 @@ void CAI_Relationship::RevertRelationship( CBaseEntity *pActivator, CBaseEntity 
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::RevertToDefaultRelationship( CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CAI_Relationship::RevertToDefaultRelationship( CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
-	if ( m_bIsActive )
+	if( m_bIsActive )
 	{
 		ChangeRelationships( -1, REVERTING_TO_DEFAULT, pActivator, pCaller );
 		SetActive( false );
@@ -257,7 +263,7 @@ void CAI_Relationship::UpdateOnRemove()
 void CAI_Relationship::OnRestore()
 {
 	BaseClass::OnRestore();
-	if ( m_bIsActive )
+	if( m_bIsActive )
 	{
 		gEntList.AddListenerEntity( this );
 	}
@@ -266,18 +272,24 @@ void CAI_Relationship::OnRestore()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CAI_Relationship::IsASubject( CBaseEntity *pEntity )
+bool CAI_Relationship::IsASubject( CBaseEntity* pEntity )
 {
 	if( pEntity->NameMatches( m_iszSubject ) )
+	{
 		return true;
+	}
 
 	if( pEntity->ClassMatches( m_iszSubject ) )
+	{
 		return true;
+	}
 
 #ifdef MAPBASE
 	// Hopefully doesn't impact performance.
-	if (Matcher_NamesMatch(STRING(m_iszSubject), g_pGameRules->AIClassText((pEntity->Classify()))))
+	if( Matcher_NamesMatch( STRING( m_iszSubject ), g_pGameRules->AIClassText( ( pEntity->Classify() ) ) ) )
+	{
 		return true;
+	}
 #endif
 
 	return false;
@@ -285,18 +297,24 @@ bool CAI_Relationship::IsASubject( CBaseEntity *pEntity )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CAI_Relationship::IsATarget( CBaseEntity *pEntity )
+bool CAI_Relationship::IsATarget( CBaseEntity* pEntity )
 {
 	if( pEntity->NameMatches( m_target ) )
+	{
 		return true;
+	}
 
 	if( pEntity->ClassMatches( m_target ) )
+	{
 		return true;
+	}
 
 #ifdef MAPBASE
 	// Hopefully doesn't impact performance.
-	if (Matcher_NamesMatch(STRING(m_target), g_pGameRules->AIClassText((pEntity->Classify()))))
+	if( Matcher_NamesMatch( STRING( m_target ), g_pGameRules->AIClassText( ( pEntity->Classify() ) ) ) )
+	{
 		return true;
+	}
 #endif
 
 	return false;
@@ -304,12 +322,12 @@ bool CAI_Relationship::IsATarget( CBaseEntity *pEntity )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::OnEntitySpawned( CBaseEntity *pEntity )
+void CAI_Relationship::OnEntitySpawned( CBaseEntity* pEntity )
 {
 	// NOTE: This cannot use the procedural entity finding code since that only occurs on
 	//		 inputs and not passively.
 
-	if ( IsATarget( pEntity ) || IsASubject( pEntity ) )
+	if( IsATarget( pEntity ) || IsASubject( pEntity ) )
 	{
 		ApplyRelationship();
 	}
@@ -317,7 +335,7 @@ void CAI_Relationship::OnEntitySpawned( CBaseEntity *pEntity )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::OnEntityDeleted( CBaseEntity *pEntity )
+void CAI_Relationship::OnEntityDeleted( CBaseEntity* pEntity )
 {
 }
 
@@ -325,21 +343,25 @@ void CAI_Relationship::OnEntityDeleted( CBaseEntity *pEntity )
 // Purpose: Translate special tokens for inputs
 // Input  : iszName - Name to check
 //			*pActivator - Activator
-//			*pCaller - Caller 
+//			*pCaller - Caller
 // Output : CBaseEntity - Entity that matches (NULL if none)
 //-----------------------------------------------------------------------------
 #define ACTIVATOR_KEYNAME "!activator"
 #define CALLER_KEYNAME "!caller"
 
-CBaseEntity *CAI_Relationship::FindEntityForProceduralName( string_t iszName, CBaseEntity *pActivator, CBaseEntity *pCaller )
+CBaseEntity* CAI_Relationship::FindEntityForProceduralName( string_t iszName, CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
 	// Handle the activator token
-	if ( iszName == AllocPooledString( ACTIVATOR_KEYNAME ) )
+	if( iszName == AllocPooledString( ACTIVATOR_KEYNAME ) )
+	{
 		return pActivator;
+	}
 
 	// Handle the caller token
-	if ( iszName == AllocPooledString( CALLER_KEYNAME ) )
+	if( iszName == AllocPooledString( CALLER_KEYNAME ) )
+	{
 		return pCaller;
+	}
 
 	return NULL;
 }
@@ -349,13 +371,15 @@ CBaseEntity *CAI_Relationship::FindEntityForProceduralName( string_t iszName, CB
 // Input  : *pSubject - Entity to gain the memory of the target's location
 //			*pTarget - Entity who's location will be disclosed
 //-----------------------------------------------------------------------------
-void CAI_Relationship::DiscloseNPCLocation( CBaseCombatCharacter *pSubject, CBaseCombatCharacter *pTarget )
+void CAI_Relationship::DiscloseNPCLocation( CBaseCombatCharacter* pSubject, CBaseCombatCharacter* pTarget )
 {
-	if ( pSubject == NULL || pTarget == NULL )
+	if( pSubject == NULL || pTarget == NULL )
+	{
 		return;
+	}
 
-	CAI_BaseNPC *pNPC = pSubject->MyNPCPointer();
-	if ( pNPC != NULL )
+	CAI_BaseNPC* pNPC = pSubject->MyNPCPointer();
+	if( pNPC != NULL )
 	{
 		pNPC->UpdateEnemyMemory( pTarget, pTarget->GetAbsOrigin() );
 	}
@@ -363,29 +387,29 @@ void CAI_Relationship::DiscloseNPCLocation( CBaseCombatCharacter *pSubject, CBas
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
- 	if( iReverting != NOT_REVERTING && m_iPreviousDisposition == -1 )
+	if( iReverting != NOT_REVERTING && m_iPreviousDisposition == -1 )
 	{
 		// Trying to revert without having ever set the relationships!
-		DevMsg( 2, "ai_relationship cannot revert changes before they are applied!\n");
+		DevMsg( 2, "ai_relationship cannot revert changes before they are applied!\n" );
 		return;
 	}
 
 	const int MAX_HANDLED = 512;
-	CUtlVectorFixed<CBaseCombatCharacter *, MAX_HANDLED> subjectList;
-	CUtlVectorFixed<CBaseCombatCharacter *, MAX_HANDLED> targetList;
+	CUtlVectorFixed<CBaseCombatCharacter*, MAX_HANDLED> subjectList;
+	CUtlVectorFixed<CBaseCombatCharacter*, MAX_HANDLED> targetList;
 
 	// Add any special subjects we found
-	CBaseEntity *pSpecialSubject = FindEntityForProceduralName( m_iszSubject, pActivator, pCaller );
-	if ( pSpecialSubject && pSpecialSubject->MyCombatCharacterPointer() )
+	CBaseEntity* pSpecialSubject = FindEntityForProceduralName( m_iszSubject, pActivator, pCaller );
+	if( pSpecialSubject && pSpecialSubject->MyCombatCharacterPointer() )
 	{
 		subjectList.AddToTail( pSpecialSubject->MyCombatCharacterPointer() );
 	}
 
 	// Add any special targets we found
-	CBaseEntity *pSpecialTarget = FindEntityForProceduralName( m_target, pActivator, pCaller );
-	if ( pSpecialTarget && pSpecialTarget->MyCombatCharacterPointer() )
+	CBaseEntity* pSpecialTarget = FindEntityForProceduralName( m_target, pActivator, pCaller );
+	if( pSpecialTarget && pSpecialTarget->MyCombatCharacterPointer() )
 	{
 		targetList.AddToTail( pSpecialTarget->MyCombatCharacterPointer() );
 	}
@@ -395,23 +419,25 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBa
 	// -------------------------------
 
 	float radiusSq = Square( m_flRadius );
-	
+
 	// Search players first
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		if ( subjectList.Count() == MAX_HANDLED || targetList.Count() == MAX_HANDLED )
+		if( subjectList.Count() == MAX_HANDLED || targetList.Count() == MAX_HANDLED )
 		{
 			DevMsg( "Too many entities handled by ai_relationship %s\n", GetDebugName() );
 			break;
 		}
 
-		CBasePlayer	*pPlayer = UTIL_PlayerByIndex( i );
-		if ( pPlayer )
+		CBasePlayer*	pPlayer = UTIL_PlayerByIndex( i );
+		if( pPlayer )
 		{
 			if( IsASubject( pPlayer ) )
 			{
-				if ( m_flRadius == 0.0 || GetAbsOrigin().DistToSqr( pPlayer->GetAbsOrigin() ) <= radiusSq )
+				if( m_flRadius == 0.0 || GetAbsOrigin().DistToSqr( pPlayer->GetAbsOrigin() ) <= radiusSq )
+				{
 					subjectList.AddToTail( pPlayer );
+				}
 			}
 			else if( IsATarget( pPlayer ) )
 			{
@@ -421,21 +447,23 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBa
 	}
 
 	// Search NPCs
-	for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
+	for( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
 	{
-		if ( subjectList.Count() == MAX_HANDLED || targetList.Count() == MAX_HANDLED )
+		if( subjectList.Count() == MAX_HANDLED || targetList.Count() == MAX_HANDLED )
 		{
 			DevMsg( "Too many entities handled by ai_relationship %s\n", GetDebugName() );
 			break;
 		}
 
-		CAI_BaseNPC *pNPC = (g_AI_Manager.AccessAIs())[i];
-		if ( pNPC )
+		CAI_BaseNPC* pNPC = ( g_AI_Manager.AccessAIs() )[i];
+		if( pNPC )
 		{
 			if( IsASubject( pNPC ) )
 			{
-				if ( m_flRadius == 0.0 || GetAbsOrigin().DistToSqr( pNPC->GetAbsOrigin() ) <= radiusSq )
+				if( m_flRadius == 0.0 || GetAbsOrigin().DistToSqr( pNPC->GetAbsOrigin() ) <= radiusSq )
+				{
 					subjectList.AddToTail( pNPC );
+				}
 			}
 			else if( IsATarget( pNPC ) )
 			{
@@ -450,38 +478,38 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBa
 		DevMsg( 2, "ai_relationship '%s' finds no subject(s) called: %s\n", GetDebugName(), STRING( m_iszSubject ) );
 		return;
 	}
-	else if ( targetList.Count() == 0 )
+	else if( targetList.Count() == 0 )
 	{
 		DevMsg( 2, "ai_relationship '%s' finds no target(s) called: %s\n", GetDebugName(), STRING( m_target ) );
 		return;
 	}
 
 	// Ok, lists are populated. Apply all relationships.
-	for ( int i = 0 ; i < subjectList.Count(); i++ )
+	for( int i = 0 ; i < subjectList.Count(); i++ )
 	{
-		CBaseCombatCharacter *pSubject = subjectList[ i ];
+		CBaseCombatCharacter* pSubject = subjectList[ i ];
 
-		for ( int j = 0 ; j < targetList.Count(); j++ )
+		for( int j = 0 ; j < targetList.Count(); j++ )
 		{
-			CBaseCombatCharacter *pTarget = targetList[ j ];
+			CBaseCombatCharacter* pTarget = targetList[ j ];
 
-			if ( m_iPreviousDisposition == -1 && iReverting == NOT_REVERTING )
+			if( m_iPreviousDisposition == -1 && iReverting == NOT_REVERTING )
 			{
 				// Set previous disposition.
 				m_iPreviousDisposition = pSubject->IRelationType( pTarget );
 				m_iPreviousRank = pSubject->IRelationPriority( pTarget );
 			}
 
-			if ( iReverting == REVERTING_TO_PREV )
+			if( iReverting == REVERTING_TO_PREV )
 			{
-				pSubject->AddEntityRelationship( pTarget, (Disposition_t)m_iPreviousDisposition, m_iPreviousRank );
+				pSubject->AddEntityRelationship( pTarget, ( Disposition_t )m_iPreviousDisposition, m_iPreviousRank );
 
 				if( m_bReciprocal )
 				{
-					pTarget->AddEntityRelationship( pSubject, (Disposition_t)m_iPreviousDisposition, m_iPreviousRank );
+					pTarget->AddEntityRelationship( pSubject, ( Disposition_t )m_iPreviousDisposition, m_iPreviousRank );
 				}
 			}
-			else if ( iReverting == REVERTING_TO_DEFAULT )
+			else if( iReverting == REVERTING_TO_DEFAULT )
 			{
 				pSubject->RemoveEntityRelationship( pTarget );
 
@@ -490,31 +518,31 @@ void CAI_Relationship::ChangeRelationships( int disposition, int iReverting, CBa
 					pTarget->RemoveEntityRelationship( pSubject );
 				}
 			}
-			else if( pSubject->IRelationType(pTarget) != disposition || 
-				     pSubject->IRelationPriority(pTarget) != m_iRank || 
+			else if( pSubject->IRelationType( pTarget ) != disposition ||
+					 pSubject->IRelationPriority( pTarget ) != m_iRank ||
 					 HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_SUBJECT ) ||
 					 HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_TARGET ) )
 			{
 				// Apply the relationship to the subject
-				pSubject->AddEntityRelationship( pTarget, (Disposition_t)disposition, m_iRank );
+				pSubject->AddEntityRelationship( pTarget, ( Disposition_t )disposition, m_iRank );
 
 				// Make the subject aware of the target
-				if ( HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_SUBJECT ) )
+				if( HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_SUBJECT ) )
 				{
 					DiscloseNPCLocation( pSubject, pTarget );
 				}
 
 				// Make the target aware of the subject
-				if ( HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_TARGET ) )
+				if( HasSpawnFlags( SF_RELATIONSHIP_NOTIFY_TARGET ) )
 				{
 					DiscloseNPCLocation( pTarget, pSubject );
 				}
 
 				// This relationship is applied to target and subject alike
-				if ( m_bReciprocal )
+				if( m_bReciprocal )
 				{
 					// Apply the relationship to the target
-					pTarget->AddEntityRelationship( pSubject, (Disposition_t)disposition, m_iRank );
+					pTarget->AddEntityRelationship( pSubject, ( Disposition_t )disposition, m_iRank );
 				}
 			}
 		}
@@ -531,14 +559,23 @@ class CAI_ClassRelationship : public CAI_Relationship
 public:
 
 	// Must override CAI_Relationship
-	void Spawn() { m_bIsActive = false; }
+	void Spawn()
+	{
+		m_bIsActive = false;
+	}
 
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 
-	void ChangeRelationships( int disposition, int iReverting, CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
+	void ChangeRelationships( int disposition, int iReverting, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
 
-	inline bool SubjectUsingClassify() { return m_iSubjectClass != NUM_AI_CLASSES; }
-	inline bool TargetUsingClassify() { return m_iTargetClass != NUM_AI_CLASSES; }
+	inline bool SubjectUsingClassify()
+	{
+		return m_iSubjectClass != NUM_AI_CLASSES;
+	}
+	inline bool TargetUsingClassify()
+	{
+		return m_iTargetClass != NUM_AI_CLASSES;
+	}
 
 protected:
 
@@ -552,70 +589,72 @@ LINK_ENTITY_TO_CLASS( ai_relationship_classify, CAI_ClassRelationship );
 
 BEGIN_DATADESC( CAI_ClassRelationship )
 
-	DEFINE_FIELD( m_iSubjectClass, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iTargetClass, FIELD_INTEGER ),
+DEFINE_FIELD( m_iSubjectClass, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iTargetClass, FIELD_INTEGER ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 // Purpose: Caches entity key values until spawn is called.
-// Input  : szKeyName - 
-//			szValue - 
-// Output : 
+// Input  : szKeyName -
+//			szValue -
+// Output :
 //-----------------------------------------------------------------------------
-bool CAI_ClassRelationship::KeyValue( const char *szKeyName, const char *szValue )
+			  bool CAI_ClassRelationship::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// Override regular subject and target from ai_relationship
-	if (FStrEq(szKeyName, "subject"))
+	if( FStrEq( szKeyName, "subject" ) )
 	{
-		m_iSubjectClass = (Class_T)atoi(szValue);
+		m_iSubjectClass = ( Class_T )atoi( szValue );
 
 		// Direct string maybe
-		if (m_iSubjectClass == CLASS_NONE)
+		if( m_iSubjectClass == CLASS_NONE )
 		{
-			for (int i = 0; i < NUM_AI_CLASSES; i++)
+			for( int i = 0; i < NUM_AI_CLASSES; i++ )
 			{
-				if (FStrEq(szValue, g_pGameRules->AIClassText(i)))
+				if( FStrEq( szValue, g_pGameRules->AIClassText( i ) ) )
 				{
-					m_iSubjectClass = (Class_T)i;
+					m_iSubjectClass = ( Class_T )i;
 				}
 			}
 		}
 	}
-	else if (FStrEq(szKeyName, "target"))
+	else if( FStrEq( szKeyName, "target" ) )
 	{
-		m_iTargetClass = (Class_T)atoi(szValue);
+		m_iTargetClass = ( Class_T )atoi( szValue );
 
 		// Direct string maybe
-		if (m_iTargetClass == CLASS_NONE)
+		if( m_iTargetClass == CLASS_NONE )
 		{
-			for (int i = 0; i < NUM_AI_CLASSES; i++)
+			for( int i = 0; i < NUM_AI_CLASSES; i++ )
 			{
-				if (FStrEq(szValue, g_pGameRules->AIClassText(i)))
+				if( FStrEq( szValue, g_pGameRules->AIClassText( i ) ) )
 				{
-					m_iTargetClass = (Class_T)i;
+					m_iTargetClass = ( Class_T )i;
 				}
 			}
 		}
 	}
 	else
-		return BaseClass::KeyValue(szKeyName, szValue);
+	{
+		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_ClassRelationship::ChangeRelationships( int disposition, int iReverting, CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CAI_ClassRelationship::ChangeRelationships( int disposition, int iReverting, CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
- 	if( iReverting != NOT_REVERTING && m_iPreviousDisposition == -1 )
+	if( iReverting != NOT_REVERTING && m_iPreviousDisposition == -1 )
 	{
 		// Trying to revert without having ever set the relationships!
-		DevMsg( 2, "ai_relationship cannot revert changes before they are applied!\n");
+		DevMsg( 2, "ai_relationship cannot revert changes before they are applied!\n" );
 		return;
 	}
 
-	if ( m_iPreviousDisposition == -1 && iReverting == NOT_REVERTING )
+	if( m_iPreviousDisposition == -1 && iReverting == NOT_REVERTING )
 	{
 		// Set previous disposition.
 		m_iPreviousDisposition = CBaseCombatCharacter::GetDefaultRelationshipDisposition( m_iSubjectClass, m_iTargetClass );
@@ -624,28 +663,28 @@ void CAI_ClassRelationship::ChangeRelationships( int disposition, int iReverting
 
 	// We can't actually reset to "default" without resetting all class relationships period, so we just use the previous disposition.
 	// There probably wouldn't be much overlap with this entity anyway.
-	if ( iReverting == REVERTING_TO_PREV || iReverting == REVERTING_TO_DEFAULT )
+	if( iReverting == REVERTING_TO_PREV || iReverting == REVERTING_TO_DEFAULT )
 	{
-		CBaseCombatCharacter::SetDefaultRelationship(m_iSubjectClass, m_iTargetClass, (Disposition_t)m_iPreviousDisposition, m_iPreviousRank );
+		CBaseCombatCharacter::SetDefaultRelationship( m_iSubjectClass, m_iTargetClass, ( Disposition_t )m_iPreviousDisposition, m_iPreviousRank );
 
 		if( m_bReciprocal )
 		{
-			CBaseCombatCharacter::SetDefaultRelationship(m_iTargetClass, m_iSubjectClass, (Disposition_t)m_iPreviousDisposition, m_iPreviousRank );
+			CBaseCombatCharacter::SetDefaultRelationship( m_iTargetClass, m_iSubjectClass, ( Disposition_t )m_iPreviousDisposition, m_iPreviousRank );
 		}
 	}
-	else if( CBaseCombatCharacter::GetDefaultRelationshipDisposition( m_iSubjectClass, m_iTargetClass ) != disposition || 
-		     CBaseCombatCharacter::GetDefaultRelationshipPriority( m_iSubjectClass, m_iTargetClass ) != m_iRank )
+	else if( CBaseCombatCharacter::GetDefaultRelationshipDisposition( m_iSubjectClass, m_iTargetClass ) != disposition ||
+			 CBaseCombatCharacter::GetDefaultRelationshipPriority( m_iSubjectClass, m_iTargetClass ) != m_iRank )
 	{
 		// Apply the relationship to the subject
-		CBaseCombatCharacter::SetDefaultRelationship(m_iSubjectClass, m_iTargetClass, (Disposition_t)disposition, m_iRank );
+		CBaseCombatCharacter::SetDefaultRelationship( m_iSubjectClass, m_iTargetClass, ( Disposition_t )disposition, m_iRank );
 
 		// Notification flags can't be used here. Sorry.
 
 		// This relationship is applied to target and subject alike
-		if ( m_bReciprocal )
+		if( m_bReciprocal )
 		{
 			// Apply the relationship to the target
-			CBaseCombatCharacter::SetDefaultRelationship(m_iTargetClass, m_iSubjectClass, (Disposition_t)disposition, m_iRank );
+			CBaseCombatCharacter::SetDefaultRelationship( m_iTargetClass, m_iSubjectClass, ( Disposition_t )disposition, m_iRank );
 		}
 	}
 }

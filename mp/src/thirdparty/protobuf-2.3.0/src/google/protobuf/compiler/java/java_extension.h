@@ -39,34 +39,41 @@
 
 #include <google/protobuf/stubs/common.h>
 
-namespace google {
-namespace protobuf {
-  class FieldDescriptor;       // descriptor.h
-  namespace io {
-    class Printer;             // printer.h
-  }
+namespace google
+{
+namespace protobuf
+{
+class FieldDescriptor;       // descriptor.h
+namespace io
+{
+class Printer;             // printer.h
+}
 }
 
-namespace protobuf {
-namespace compiler {
-namespace java {
+namespace protobuf
+{
+namespace compiler
+{
+namespace java
+{
 
 // Generates code for an extension, which may be within the scope of some
 // message or may be at file scope.  This is much simpler than FieldGenerator
 // since extensions are just simple identifiers with interesting types.
-class ExtensionGenerator {
- public:
-  explicit ExtensionGenerator(const FieldDescriptor* descriptor);
-  ~ExtensionGenerator();
+class ExtensionGenerator
+{
+public:
+	explicit ExtensionGenerator( const FieldDescriptor* descriptor );
+	~ExtensionGenerator();
 
-  void Generate(io::Printer* printer);
-  void GenerateInitializationCode(io::Printer* printer);
-  void GenerateRegistrationCode(io::Printer* printer);
+	void Generate( io::Printer* printer );
+	void GenerateInitializationCode( io::Printer* printer );
+	void GenerateRegistrationCode( io::Printer* printer );
 
- private:
-  const FieldDescriptor* descriptor_;
-  string scope_;
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(ExtensionGenerator);
+private:
+	const FieldDescriptor* descriptor_;
+	string scope_;
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( ExtensionGenerator );
 };
 
 }  // namespace java

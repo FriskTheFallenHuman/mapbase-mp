@@ -22,10 +22,10 @@ class C_TEMuzzleFlash : public C_BaseTempEntity
 {
 public:
 	DECLARE_CLASS( C_TEMuzzleFlash, C_BaseTempEntity );
-	
+
 	DECLARE_CLIENTCLASS();
 
-					C_TEMuzzleFlash( void );
+	C_TEMuzzleFlash( void );
 	virtual			~C_TEMuzzleFlash( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -38,7 +38,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEMuzzleFlash::C_TEMuzzleFlash( void )
 {
@@ -49,7 +49,7 @@ C_TEMuzzleFlash::C_TEMuzzleFlash( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEMuzzleFlash::~C_TEMuzzleFlash( void )
 {
@@ -58,17 +58,19 @@ C_TEMuzzleFlash::~C_TEMuzzleFlash( void )
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordMuzzleFlash( const Vector &start, const QAngle &angles, float scale, int type )
+static inline void RecordMuzzleFlash( const Vector& start, const QAngle& angles, float scale, int type )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_MUZZLE_FLASH );
- 		msg->SetString( "name", "TE_MuzzleFlash" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_MUZZLE_FLASH );
+		msg->SetString( "name", "TE_MuzzleFlash" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -86,27 +88,27 @@ static inline void RecordMuzzleFlash( const Vector &start, const QAngle &angles,
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEMuzzleFlash::PostDataUpdate( DataUpdateType_t updateType )
 {
 	VPROF( "C_TEMuzzleFlash::PostDataUpdate" );
 
 	//FIXME: Index is incorrect
-	g_pEffects->MuzzleFlash( m_vecOrigin, m_vecAngles, m_flScale, m_nType );	
-	RecordMuzzleFlash( m_vecOrigin, m_vecAngles, m_flScale, m_nType ); 
+	g_pEffects->MuzzleFlash( m_vecOrigin, m_vecAngles, m_flScale, m_nType );
+	RecordMuzzleFlash( m_vecOrigin, m_vecAngles, m_flScale, m_nType );
 }
 
 void TE_MuzzleFlash( IRecipientFilter& filter, float delay,
-	const Vector &start, const QAngle &angles, float scale, int type )
+					 const Vector& start, const QAngle& angles, float scale, int type )
 {
-	g_pEffects->MuzzleFlash( start, angles, scale, 0 );	
-	RecordMuzzleFlash( start, angles, scale, 0 ); 
+	g_pEffects->MuzzleFlash( start, angles, scale, 0 );
+	RecordMuzzleFlash( start, angles, scale, 0 );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEMuzzleFlash, DT_TEMuzzleFlash, CTEMuzzleFlash)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecAngles)),
-	RecvPropFloat( RECVINFO(m_flScale)),
-	RecvPropInt( RECVINFO(m_nType)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEMuzzleFlash, DT_TEMuzzleFlash, CTEMuzzleFlash )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecAngles ) ),
+				RecvPropFloat( RECVINFO( m_flScale ) ),
+				RecvPropInt( RECVINFO( m_nType ) ),
+				END_RECV_TABLE()

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef C_BASEHELICOPTER_H
 #define C_BASEHELICOPTER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,10 +22,13 @@ public:
 
 	C_BaseHelicopter();
 
-	float StartupTime() const { return m_flStartupTime; }
+	float StartupTime() const
+	{
+		return m_flStartupTime;
+	}
 
 private:
-	C_BaseHelicopter( const C_BaseHelicopter &other ) {}
+	C_BaseHelicopter( const C_BaseHelicopter& other ) {}
 	float m_flStartupTime;
 };
 

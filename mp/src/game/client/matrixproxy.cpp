@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,7 +16,7 @@
 #include "tier0/memdbgon.h"
 
 // forward declarations
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 class C_BaseEntity;
 
@@ -26,17 +26,17 @@ class C_BaseEntity;
 class CTextureTransformProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
-	IMaterialVar *m_pCenterVar;
-	IMaterialVar *m_pScaleVar;
-	IMaterialVar *m_pRotateVar;
-	IMaterialVar *m_pTranslateVar;
+	IMaterialVar* m_pCenterVar;
+	IMaterialVar* m_pScaleVar;
+	IMaterialVar* m_pRotateVar;
+	IMaterialVar* m_pTranslateVar;
 };
 
-bool CTextureTransformProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CTextureTransformProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	// All are optional...
 	m_pCenterVar = NULL;
@@ -72,20 +72,20 @@ bool CTextureTransformProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 	return CResultProxy::Init( pMaterial, pKeyValues );
 }
 
-void CTextureTransformProxy::OnBind( void *pC_BaseEntity )
+void CTextureTransformProxy::OnBind( void* pC_BaseEntity )
 {
 	Vector2D center( 0.5, 0.5 );
 	Vector2D translation( 0, 0 );
 
 	VMatrix mat, temp;
 
-	if (m_pCenterVar)
+	if( m_pCenterVar )
 	{
 		m_pCenterVar->GetVecValue( center.Base(), 2 );
 	}
 	MatrixBuildTranslation( mat, -center.x, -center.y, 0.0f );
 
-	if (m_pScaleVar)
+	if( m_pScaleVar )
 	{
 		Vector2D scale;
 		m_pScaleVar->GetVecValue( scale.Base(), 2 );
@@ -93,7 +93,7 @@ void CTextureTransformProxy::OnBind( void *pC_BaseEntity )
 		MatrixMultiply( temp, mat, mat );
 	}
 
-	if (m_pRotateVar)
+	if( m_pRotateVar )
 	{
 		float angle = m_pRotateVar->GetFloatValue( );
 		MatrixBuildRotateZ( temp, angle );
@@ -102,7 +102,7 @@ void CTextureTransformProxy::OnBind( void *pC_BaseEntity )
 	MatrixBuildTranslation( temp, center.x, center.y, 0.0f );
 	MatrixMultiply( temp, mat, mat );
 
-	if (m_pTranslateVar)
+	if( m_pTranslateVar )
 	{
 		m_pTranslateVar->GetVecValue( translation.Base(), 2 );
 		MatrixBuildTranslation( temp, translation.x, translation.y, 0.0f );
@@ -111,7 +111,7 @@ void CTextureTransformProxy::OnBind( void *pC_BaseEntity )
 
 	m_pResult->SetMatrixValue( mat );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
@@ -128,15 +128,15 @@ EXPOSE_INTERFACE( CTextureTransformProxy, IMaterialProxy, "TextureTransform" IMA
 class CMatrixRotateProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	void OnBind( void *pC_BaseEntity );
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	void OnBind( void* pC_BaseEntity );
 
 private:
 	CFloatInput	m_Angle;
-	IMaterialVar *m_pAxisVar;
+	IMaterialVar* m_pAxisVar;
 };
 
-bool CMatrixRotateProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CMatrixRotateProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	// All are optional...
 	m_pAxisVar = NULL;
@@ -148,20 +148,22 @@ bool CMatrixRotateProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 		m_pAxisVar = pMaterial->FindVar( pVarName, &bFoundVar, false );
 	}
 
-	if (!m_Angle.Init( pMaterial, pKeyValues, "angle", 0 ))
+	if( !m_Angle.Init( pMaterial, pKeyValues, "angle", 0 ) )
+	{
 		return false;
+	}
 
 	return CResultProxy::Init( pMaterial, pKeyValues );
 }
 
-void CMatrixRotateProxy::OnBind( void *pC_BaseEntity )
+void CMatrixRotateProxy::OnBind( void* pC_BaseEntity )
 {
 	VMatrix mat;
 	Vector axis( 0, 0, 1 );
-	if (m_pAxisVar)
+	if( m_pAxisVar )
 	{
 		m_pAxisVar->GetVecValue( axis.Base(), 3 );
-		if (VectorNormalize( axis ) < 1e-3)
+		if( VectorNormalize( axis ) < 1e-3 )
 		{
 			axis.Init( 0, 0, 1 );
 		}
@@ -170,7 +172,7 @@ void CMatrixRotateProxy::OnBind( void *pC_BaseEntity )
 	MatrixBuildRotationAboutAxis( mat, axis, m_Angle.GetFloat() );
 	m_pResult->SetMatrixValue( mat );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef CBASE_H
 #define CBASE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 struct studiohdr_t;
@@ -38,7 +38,7 @@ struct studiohdr_t;
 #include <baseentity_shared.h>
 
 #ifdef MAPBASE
-#include "tier1/mapbase_con_groups.h"
+	#include "tier1/mapbase_con_groups.h"
 #endif
 
 

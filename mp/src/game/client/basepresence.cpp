@@ -12,14 +12,14 @@
 
 // Default global singleton.  Mods should override this.
 static CBasePresence s_basePresence;
-IPresence *presence = NULL;
+IPresence* presence = NULL;
 
 //-----------------------------------------------------------------------------
 // Steam version of Rich Presence is a WIP, so PC implementation is stubbed for now.
 //-----------------------------------------------------------------------------
 bool CBasePresence::Init( void )
 {
-	if ( !presence )
+	if( !presence )
 	{
 		// Mod didn't override, default to base implementation
 		presence = &s_basePresence;
@@ -38,23 +38,23 @@ void CBasePresence::UserSetContext( unsigned int nUserIndex, unsigned int nConte
 {
 	// TODO: Implement for PC
 }
-void CBasePresence::UserSetProperty( unsigned int nUserIndex, unsigned int nPropertyId, unsigned int nBytes, const void *pvValue, bool bAsync )
+void CBasePresence::UserSetProperty( unsigned int nUserIndex, unsigned int nPropertyId, unsigned int nBytes, const void* pvValue, bool bAsync )
 {
 	// TODO: Implement for PC
 }
-void CBasePresence::SetupGameProperties( CUtlVector< XUSER_CONTEXT > &contexts, CUtlVector< XUSER_PROPERTY > &properties )
+void CBasePresence::SetupGameProperties( CUtlVector< XUSER_CONTEXT >& contexts, CUtlVector< XUSER_PROPERTY >& properties )
 {
 	// TODO: Implement for PC
 }
-unsigned int CBasePresence::GetPresenceID( const char *pIDName )
+unsigned int CBasePresence::GetPresenceID( const char* pIDName )
 {
 	return 0;
 }
-const char *CBasePresence::GetPropertyIdString( const uint id )
+const char* CBasePresence::GetPropertyIdString( const uint id )
 {
 	return NULL;
 }
-void CBasePresence::GetPropertyDisplayString( uint id, uint value, char *pOutput, int nBytes )
+void CBasePresence::GetPropertyDisplayString( uint id, uint value, char* pOutput, int nBytes )
 {
 }
 void CBasePresence::StartStatsReporting( HANDLE handle, bool bArbitrated )
@@ -70,9 +70,9 @@ void CBasePresence::UploadStats()
 //---------------------------------------------------------
 // Debug support
 //---------------------------------------------------------
-void CBasePresence::DebugUserSetContext( const CCommand &args )
+void CBasePresence::DebugUserSetContext( const CCommand& args )
 {
-	if ( args.ArgC() == 3 )
+	if( args.ArgC() == 3 )
 	{
 		UserSetContext( 0, atoi( args.Arg( 1 ) ), atoi( args.Arg( 2 ) ) );
 	}
@@ -81,11 +81,11 @@ void CBasePresence::DebugUserSetContext( const CCommand &args )
 		Warning( "user_context <context id> <context value>\n" );
 	}
 }
-void CBasePresence::DebugUserSetProperty( const CCommand &args )
+void CBasePresence::DebugUserSetProperty( const CCommand& args )
 {
-	if ( args.ArgC() == 3 )
+	if( args.ArgC() == 3 )
 	{
-		UserSetProperty( 0, strtoul( args.Arg( 1 ), NULL, 0 ), sizeof(int), args.Arg( 2 ) );
+		UserSetProperty( 0, strtoul( args.Arg( 1 ), NULL, 0 ), sizeof( int ), args.Arg( 2 ) );
 	}
 	else
 	{

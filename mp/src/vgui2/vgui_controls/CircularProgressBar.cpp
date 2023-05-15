@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -29,11 +29,11 @@ DECLARE_BUILD_FACTORY( CircularProgressBar );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CircularProgressBar::CircularProgressBar(Panel *parent, const char *panelName) : ProgressBar(parent, panelName)
+CircularProgressBar::CircularProgressBar( Panel* parent, const char* panelName ) : ProgressBar( parent, panelName )
 {
 	m_iProgressDirection = CircularProgressBar::PROGRESS_CCW;
 
-	for ( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
+	for( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
 	{
 		m_nTextureId[i] = -1;
 		m_pszImageName[i] = NULL;
@@ -48,9 +48,9 @@ CircularProgressBar::CircularProgressBar(Panel *parent, const char *panelName) :
 //-----------------------------------------------------------------------------
 CircularProgressBar::~CircularProgressBar()
 {
-	for ( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
+	for( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
 	{
-		if ( vgui::surface() && m_nTextureId[i] )
+		if( vgui::surface() && m_nTextureId[i] )
 		{
 			vgui::surface()->DestroyTextureID( m_nTextureId[i] );
 			m_nTextureId[i] = -1;
@@ -62,24 +62,24 @@ CircularProgressBar::~CircularProgressBar()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CircularProgressBar::ApplySettings(KeyValues *inResourceData)
+void CircularProgressBar::ApplySettings( KeyValues* inResourceData )
 {
-	for ( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
+	for( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
 	{
 		delete [] m_pszImageName[i];
 		m_pszImageName[i] = NULL;
 		m_lenImageName[i] = 0;
 	}
 
-	const char *imageName = inResourceData->GetString("fg_image", "");
-	if (*imageName)
+	const char* imageName = inResourceData->GetString( "fg_image", "" );
+	if( *imageName )
 	{
 		SetFgImage( imageName );
 	}
-	imageName = inResourceData->GetString("bg_image", "");
-	if (*imageName)
+	imageName = inResourceData->GetString( "bg_image", "" );
+	if( *imageName )
 	{
 		SetBgImage( imageName );
 	}
@@ -88,26 +88,26 @@ void CircularProgressBar::ApplySettings(KeyValues *inResourceData)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CircularProgressBar::ApplySchemeSettings(IScheme *pScheme)
+void CircularProgressBar::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
-	SetFgColor(GetSchemeColor("CircularProgressBar.FgColor", pScheme));
-	SetBgColor(GetSchemeColor("CircularProgressBar.BgColor", pScheme));
-	SetBorder(NULL);
+	SetFgColor( GetSchemeColor( "CircularProgressBar.FgColor", pScheme ) );
+	SetBgColor( GetSchemeColor( "CircularProgressBar.BgColor", pScheme ) );
+	SetBorder( NULL );
 
-	for ( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
+	for( int i = 0; i < NUM_PROGRESS_TEXTURES; i++ )
 	{
-		if ( m_pszImageName[i] && strlen( m_pszImageName[i] ) > 0 )
+		if( m_pszImageName[i] && strlen( m_pszImageName[i] ) > 0 )
 		{
-			if ( m_nTextureId[i] == -1 )
+			if( m_nTextureId[i] == -1 )
 			{
 				m_nTextureId[i] = surface()->CreateNewTextureID();
 			}
 
-			surface()->DrawSetTextureFile( m_nTextureId[i], m_pszImageName[i], true, false);
+			surface()->DrawSetTextureFile( m_nTextureId[i], m_pszImageName[i], true, false );
 		}
 	}
 }
@@ -115,13 +115,13 @@ void CircularProgressBar::ApplySchemeSettings(IScheme *pScheme)
 //-----------------------------------------------------------------------------
 // Purpose: sets an image by file name
 //-----------------------------------------------------------------------------
-void CircularProgressBar::SetImage(const char *imageName, progress_textures_t iPos)
+void CircularProgressBar::SetImage( const char* imageName, progress_textures_t iPos )
 {
-	const char *pszDir = "vgui/";
-	int len = Q_strlen(imageName) + 1;
-	len += strlen(pszDir);
-	
-	if ( m_pszImageName[iPos] && ( m_lenImageName[iPos] < len ) )
+	const char* pszDir = "vgui/";
+	int len = Q_strlen( imageName ) + 1;
+	len += strlen( pszDir );
+
+	if( m_pszImageName[iPos] && ( m_lenImageName[iPos] < len ) )
 	{
 		// If we already have a buffer, but it is too short, then free the buffer
 		delete [] m_pszImageName[iPos];
@@ -129,18 +129,18 @@ void CircularProgressBar::SetImage(const char *imageName, progress_textures_t iP
 		m_lenImageName[iPos] = 0;
 	}
 
-	if ( !m_pszImageName[iPos] )
+	if( !m_pszImageName[iPos] )
 	{
 		m_pszImageName[iPos] = new char[ len ];
 		m_lenImageName[iPos] = len;
 	}
 
 	Q_snprintf( m_pszImageName[iPos], len, "%s%s", pszDir, imageName );
-	InvalidateLayout(false, true); // force applyschemesettings to run
+	InvalidateLayout( false, true ); // force applyschemesettings to run
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CircularProgressBar::PaintBackground()
 {
@@ -150,20 +150,20 @@ void CircularProgressBar::PaintBackground()
 	vgui::surface()->DrawSetColor( GetBgColor() );
 
 	int wide, tall;
-	GetSize(wide, tall);
+	GetSize( wide, tall );
 
 	vgui::surface()->DrawTexturedRect( 0, 0, wide, tall );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CircularProgressBar::Paint()
 {
 	float flProgress = GetProgress();
 	float flEndAngle;
 
-	if ( m_iProgressDirection == PROGRESS_CW )
+	if( m_iProgressDirection == PROGRESS_CW )
 	{
 		flEndAngle = flProgress;
 	}
@@ -192,7 +192,7 @@ namespace vgui
 {
 // This defines the properties of the 8 circle segments
 // in the circular progress bar.
-circular_progress_segment_t Segments[8] = 
+circular_progress_segment_t Segments[8] =
 {
 	{ 0.0,			0.5, 0.0, 1.0, 0.0, 1, 0 },
 	{ M_PI * 0.25,	1.0, 0.0, 1.0, 0.5, 0, 1 },
@@ -212,17 +212,19 @@ circular_progress_segment_t Segments[8] =
 // we draw starting from the top ( 0 progress )
 void CircularProgressBar::DrawCircleSegment( Color c, float flEndProgress, bool bClockwise )
 {
-	if ( m_nTextureId[PROGRESS_TEXTURE_FG] == -1 )
+	if( m_nTextureId[PROGRESS_TEXTURE_FG] == -1 )
+	{
 		return;
+	}
 
 	int wide, tall;
-	GetSize(wide, tall);
+	GetSize( wide, tall );
 
-	float flWide = (float)wide;
-	float flTall = (float)tall;
+	float flWide = ( float )wide;
+	float flTall = ( float )tall;
 
-	float flHalfWide = (float)wide / 2;
-	float flHalfTall = (float)tall / 2;
+	float flHalfWide = ( float )wide / 2;
+	float flHalfTall = ( float )tall / 2;
 
 	vgui::surface()->DrawSetTexture( m_nTextureId[PROGRESS_TEXTURE_FG] );
 	vgui::surface()->DrawSetColor( c );
@@ -232,9 +234,9 @@ void CircularProgressBar::DrawCircleSegment( Color c, float flEndProgress, bool 
 	float flEndProgressRadians = flEndProgress * M_PI * 2;
 
 	int cur_wedge = m_iStartSegment;
-	for ( int i=0;i<8;i++ )
+	for( int i = 0; i < 8; i++ )
 	{
-		if ( flEndProgressRadians > Segments[cur_wedge].minProgressRadians)
+		if( flEndProgressRadians > Segments[cur_wedge].minProgressRadians )
 		{
 			vgui::Vertex_t v[3];
 
@@ -244,20 +246,20 @@ void CircularProgressBar::DrawCircleSegment( Color c, float flEndProgress, bool 
 
 			float flInternalProgress = flEndProgressRadians - Segments[cur_wedge].minProgressRadians;
 
-			if ( flInternalProgress < SEGMENT_ANGLE )
+			if( flInternalProgress < SEGMENT_ANGLE )
 			{
 				// Calc how much of this slice we should be drawing
 
-				if ( i % 2 == 1 )
+				if( i % 2 == 1 )
 				{
 					flInternalProgress = SEGMENT_ANGLE - flInternalProgress;
 				}
 
-				float flTan = tan(flInternalProgress);
-	
+				float flTan = tan( flInternalProgress );
+
 				float flDeltaX, flDeltaY;
 
-				if ( i % 2 == 1 )
+				if( i % 2 == 1 )
 				{
 					flDeltaX = ( flHalfWide - flHalfTall * flTan ) * Segments[i].swipe_dir_x;
 					flDeltaY = ( flHalfTall - flHalfWide * flTan ) * Segments[i].swipe_dir_y;
@@ -286,7 +288,9 @@ void CircularProgressBar::DrawCircleSegment( Color c, float flEndProgress, bool 
 		}
 
 		cur_wedge++;
-		if ( cur_wedge >= 8)
+		if( cur_wedge >= 8 )
+		{
 			cur_wedge = 0;
+		}
 	}
 }

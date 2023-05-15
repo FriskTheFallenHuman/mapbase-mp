@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef MYSQLDATABASE_H
 #define MYSQLDATABASE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <windows.h>
@@ -45,7 +45,7 @@ public:
 	void RunThread();
 
 	// command queues
-	void AddCommandToQueue(ISQLDBCommand *cmd, ISQLDBReplyTarget *replyTarget, int returnState = 0);
+	void AddCommandToQueue( ISQLDBCommand* cmd, ISQLDBReplyTarget* replyTarget, int returnState = 0 );
 
 private:
 
@@ -61,8 +61,8 @@ private:
 
 	struct msg_t
 	{
-		ISQLDBCommand *cmd;
-		ISQLDBReplyTarget *replyTarget;
+		ISQLDBCommand* cmd;
+		ISQLDBReplyTarget* replyTarget;
 		int result;
 		int returnState;
 	};
@@ -84,13 +84,22 @@ public:
 	virtual int RunCommand() = 0;
 
 	// return data
-	virtual void *GetReturnData() { return NULL; }
+	virtual void* GetReturnData()
+	{
+		return NULL;
+	}
 
 	// returns the command ID
-	virtual int GetID() { return 0; }
+	virtual int GetID()
+	{
+		return 0;
+	}
 
 	// gets information about the command for if it failed
-	virtual void GetDebugInfo(char *buf, int bufSize) { buf[0] = 0; }
+	virtual void GetDebugInfo( char* buf, int bufSize )
+	{
+		buf[0] = 0;
+	}
 
 	// use to delete
 	virtual void deleteThis() = 0;

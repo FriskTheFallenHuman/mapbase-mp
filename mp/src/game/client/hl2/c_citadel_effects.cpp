@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -26,7 +26,7 @@ public:
 	void			UpdateCharging( float percentage );
 	void			UpdateDischarging( void );
 
-private:	
+private:
 
 	bool			SetupEmitters( void );
 	inline float	GetStateDurationPercentage( void );
@@ -36,37 +36,37 @@ private:
 	float			m_flDuration;
 	float			m_flStartTime;
 	int				m_spawnflags;
-	
+
 	CSmartPtr<CSimpleEmitter>		m_pSimpleEmitter;
 	CSmartPtr<CParticleAttractor>	m_pAttractorEmitter;
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_CitadelEnergyCore, DT_CitadelEnergyCore, CCitadelEnergyCore )
-	RecvPropFloat( RECVINFO(m_flScale) ),
-	RecvPropInt( RECVINFO(m_nState) ),
-	RecvPropFloat( RECVINFO(m_flDuration) ),
-	RecvPropFloat( RECVINFO(m_flStartTime) ),
-	RecvPropInt( RECVINFO(m_spawnflags) ),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flScale ) ),
+			   RecvPropInt( RECVINFO( m_nState ) ),
+			   RecvPropFloat( RECVINFO( m_flDuration ) ),
+			   RecvPropFloat( RECVINFO( m_flStartTime ) ),
+			   RecvPropInt( RECVINFO( m_spawnflags ) ),
+			   END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : RenderGroup_t
 //-----------------------------------------------------------------------------
-RenderGroup_t C_CitadelEnergyCore::GetRenderGroup( void )
+			   RenderGroup_t C_CitadelEnergyCore::GetRenderGroup( void )
 {
 	return RENDER_GROUP_TRANSLUCENT_ENTITY;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : updateType - 
+// Purpose:
+// Input  : updateType -
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 		SetupEmitters();
@@ -74,53 +74,63 @@ void C_CitadelEnergyCore::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool C_CitadelEnergyCore::SetupEmitters( void )
 {
 	// Setup the basic core emitter
-	if ( m_pSimpleEmitter.IsValid() == false )
+	if( m_pSimpleEmitter.IsValid() == false )
 	{
 		m_pSimpleEmitter = CSimpleEmitter::Create( "energycore" );
 
-		if ( m_pSimpleEmitter.IsValid() == false )
+		if( m_pSimpleEmitter.IsValid() == false )
+		{
 			return false;
+		}
 	}
 
 	// Setup the attractor emitter
-	if ( m_pAttractorEmitter.IsValid() == false )
+	if( m_pAttractorEmitter.IsValid() == false )
 	{
 		m_pAttractorEmitter = CParticleAttractor::Create( GetAbsOrigin(), "energyattractor" );
 
-		if ( m_pAttractorEmitter.IsValid() == false )
+		if( m_pAttractorEmitter.IsValid() == false )
+		{
 			return false;
+		}
 	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : percentage - 
+// Purpose:
+// Input  : percentage -
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::UpdateIdle( float percentage )
 {
 	// Only do these particles if required
-	if ( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	if( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	{
 		return;
+	}
 
 	// Must be active
-	if ( percentage >= 1.0f )
+	if( percentage >= 1.0f )
+	{
 		return;
+	}
 
 	// Emitters must be valid
-	if ( SetupEmitters() == false )
+	if( SetupEmitters() == false )
+	{
 		return;
+	}
 
 	// Reset our sort origin
 	m_pSimpleEmitter->SetSortOrigin( GetAbsOrigin() );
 
-	SimpleParticle *sParticle;
+	SimpleParticle* sParticle;
 
 	// Do the charging particles
 	m_pAttractorEmitter->SetAttractorOrigin( GetAbsOrigin() );
@@ -133,7 +143,7 @@ void C_CitadelEnergyCore::UpdateIdle( float percentage )
 
 	int numParticles = floor( 4.0f * percentage );
 
-	for ( int i = 0; i < numParticles; i++ )
+	for( int i = 0; i < numParticles; i++ )
 	{
 		dist = random->RandomFloat( 4.0f * percentage, 64.0f * percentage );
 
@@ -145,12 +155,14 @@ void C_CitadelEnergyCore::UpdateIdle( float percentage )
 
 		offset += GetAbsOrigin();
 
-		sParticle = (SimpleParticle *) m_pAttractorEmitter->AddParticle( sizeof(SimpleParticle), m_pAttractorEmitter->GetPMaterial( "effects/strider_muzzle" ), offset );
+		sParticle = ( SimpleParticle* ) m_pAttractorEmitter->AddParticle( sizeof( SimpleParticle ), m_pAttractorEmitter->GetPMaterial( "effects/strider_muzzle" ), offset );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
-		
-		sParticle->m_vecVelocity	= Vector(0,0,8);
+		}
+
+		sParticle->m_vecVelocity	= Vector( 0, 0, 8 );
 		sParticle->m_flDieTime		= 0.5f;
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -171,33 +183,39 @@ void C_CitadelEnergyCore::UpdateIdle( float percentage )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : percentage - 
+// Purpose:
+// Input  : percentage -
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::UpdateCharging( float percentage )
 {
 	// Emitters must be valid
-	if ( SetupEmitters() == false )
+	if( SetupEmitters() == false )
+	{
 		return;
+	}
 
-	if ( percentage <= 0.0f )
+	if( percentage <= 0.0f )
+	{
 		return;
+	}
 
 	// Reset our sort origin
 	m_pSimpleEmitter->SetSortOrigin( GetAbsOrigin() );
 
 	float flScale = 4.0f * m_flScale * percentage;
 
-	SimpleParticle *sParticle;
+	SimpleParticle* sParticle;
 
 	// Do the core effects
-	for ( int i = 0; i < 2; i++ )
+	for( int i = 0; i < 2; i++ )
 	{
-		sParticle = (SimpleParticle *) m_pSimpleEmitter->AddParticle( sizeof(SimpleParticle), m_pSimpleEmitter->GetPMaterial( "effects/strider_muzzle" ), GetAbsOrigin() );
+		sParticle = ( SimpleParticle* ) m_pSimpleEmitter->AddParticle( sizeof( SimpleParticle ), m_pSimpleEmitter->GetPMaterial( "effects/strider_muzzle" ), GetAbsOrigin() );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
-		
+		}
+
 		sParticle->m_vecVelocity	= vec3_origin;
 		sParticle->m_flDieTime		= 0.1f;
 		sParticle->m_flLifetime		= 0.0f;
@@ -213,30 +231,32 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 		sParticle->m_uchStartAlpha	= alpha;
 		sParticle->m_uchEndAlpha	= 0;
 
-		if ( i < 2 )
+		if( i < 2 )
 		{
-			sParticle->m_uchStartSize	= flScale * (i+1);
+			sParticle->m_uchStartSize	= flScale * ( i + 1 );
 			sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 2.0f;
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 20 ) == 0 )
+			if( random->RandomInt( 0, 20 ) == 0 )
 			{
-				sParticle->m_uchStartSize	= flScale * (i+1);
+				sParticle->m_uchStartSize	= flScale * ( i + 1 );
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 4.0f;
 				sParticle->m_flDieTime		= 0.25f;
 			}
 			else
 			{
-				sParticle->m_uchStartSize	= flScale * (i+1);
+				sParticle->m_uchStartSize	= flScale * ( i + 1 );
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 2.0f;
 			}
 		}
 	}
 
 	// Only do these particles if required
-	if ( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	if( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	{
 		return;
+	}
 
 	// Do the charging particles
 	m_pAttractorEmitter->SetAttractorOrigin( GetAbsOrigin() );
@@ -249,7 +269,7 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 
 	int numParticles = floor( 4.0f * percentage );
 
-	for ( int i = 0; i < numParticles; i++ )
+	for( int i = 0; i < numParticles; i++ )
 	{
 		dist = random->RandomFloat( 4.0f * percentage, 64.0f * percentage );
 
@@ -261,12 +281,14 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 
 		offset += GetAbsOrigin();
 
-		sParticle = (SimpleParticle *) m_pAttractorEmitter->AddParticle( sizeof(SimpleParticle), m_pAttractorEmitter->GetPMaterial( "effects/strider_muzzle" ), offset );
+		sParticle = ( SimpleParticle* ) m_pAttractorEmitter->AddParticle( sizeof( SimpleParticle ), m_pAttractorEmitter->GetPMaterial( "effects/strider_muzzle" ), offset );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
-		
-		sParticle->m_vecVelocity	= Vector(0,0,8);
+		}
+
+		sParticle->m_vecVelocity	= Vector( 0, 0, 8 );
 		sParticle->m_flDieTime		= 0.5f;
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -287,14 +309,16 @@ void C_CitadelEnergyCore::UpdateCharging( float percentage )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : percentage - 
+// Purpose:
+// Input  : percentage -
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::UpdateDischarging( void )
 {
 	// Emitters must be valid
-	if ( SetupEmitters() == false )
+	if( SetupEmitters() == false )
+	{
 		return;
+	}
 
 	// Reset our sort origin
 	m_pSimpleEmitter->SetSortOrigin( GetAbsOrigin() );
@@ -304,14 +328,16 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 	Vector forward, right, up;
 	AngleVectors( GetAbsAngles(), &forward, &right, &up );
 
-	SimpleParticle *sParticle;
+	SimpleParticle* sParticle;
 
 	// Base of the core effect
-	sParticle = (SimpleParticle *) m_pSimpleEmitter->AddParticle( sizeof(SimpleParticle), m_pSimpleEmitter->GetPMaterial( "effects/strider_muzzle" ), GetAbsOrigin() );
+	sParticle = ( SimpleParticle* ) m_pSimpleEmitter->AddParticle( sizeof( SimpleParticle ), m_pSimpleEmitter->GetPMaterial( "effects/strider_muzzle" ), GetAbsOrigin() );
 
-	if ( sParticle == NULL )
+	if( sParticle == NULL )
+	{
 		return;
-	
+	}
+
 	sParticle->m_vecVelocity	= forward * 32.0f;
 	sParticle->m_flDieTime		= 0.2f;
 	sParticle->m_flLifetime		= 0.0f;
@@ -335,14 +361,16 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 	m_pSimpleEmitter->SetParticleCullRadius( sParticle->m_uchEndSize );
 
 	// Do the core effects
-	for ( int i = 0; i < 2; i++ )
+	for( int i = 0; i < 2; i++ )
 	{
-		sParticle = (SimpleParticle *) m_pSimpleEmitter->AddParticle( sizeof(SimpleParticle), m_pSimpleEmitter->GetPMaterial( "effects/combinemuzzle2" ), GetAbsOrigin() );
+		sParticle = ( SimpleParticle* ) m_pSimpleEmitter->AddParticle( sizeof( SimpleParticle ), m_pSimpleEmitter->GetPMaterial( "effects/combinemuzzle2" ), GetAbsOrigin() );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
-		
-		sParticle->m_vecVelocity	= forward * ( 32.0f * (i+1) );
+		}
+
+		sParticle->m_vecVelocity	= forward * ( 32.0f * ( i + 1 ) );
 		sParticle->m_flDieTime		= 0.2f;
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -357,30 +385,32 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 		sParticle->m_uchStartAlpha	= alpha;
 		sParticle->m_uchEndAlpha	= 0;
 
-		if ( i < 1 )
+		if( i < 1 )
 		{
-			sParticle->m_uchStartSize	= flScale * (i+1);
+			sParticle->m_uchStartSize	= flScale * ( i + 1 );
 			sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 2.0f;
 		}
 		else
 		{
-			if ( random->RandomInt( 0, 20 ) == 0 )
+			if( random->RandomInt( 0, 20 ) == 0 )
 			{
-				sParticle->m_uchStartSize	= flScale * (i+1);
+				sParticle->m_uchStartSize	= flScale * ( i + 1 );
 				sParticle->m_uchEndSize		= 0.0f;
 				sParticle->m_flDieTime		= 0.25f;
 			}
 			else
 			{
-				sParticle->m_uchStartSize	= flScale * (i+1);
+				sParticle->m_uchStartSize	= flScale * ( i + 1 );
 				sParticle->m_uchEndSize		= 0.0f;
 			}
 		}
 	}
 
 	// Only do these particles if required
-	if ( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	if( m_spawnflags & SF_ENERGYCORE_NO_PARTICLES )
+	{
 		return;
+	}
 
 	// Do the charging particles
 	m_pAttractorEmitter->SetAttractorOrigin( GetAbsOrigin() );
@@ -388,7 +418,7 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 	Vector	offset;
 	float	dist;
 
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
 		dist = random->RandomFloat( 4.0f * m_flScale, 64.0f * m_flScale );
 
@@ -400,12 +430,14 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 
 		offset += GetAbsOrigin();
 
-		sParticle = (SimpleParticle *) m_pAttractorEmitter->AddParticle( sizeof(SimpleParticle), m_pAttractorEmitter->GetPMaterial( "effects/combinemuzzle2_dark" ), offset );
+		sParticle = ( SimpleParticle* ) m_pAttractorEmitter->AddParticle( sizeof( SimpleParticle ), m_pAttractorEmitter->GetPMaterial( "effects/combinemuzzle2_dark" ), offset );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
-		
-		sParticle->m_vecVelocity	= Vector(0,0,2);
+		}
+
+		sParticle->m_vecVelocity	= Vector( 0, 0, 2 );
 		sParticle->m_flDieTime		= 0.5f;
 		sParticle->m_flLifetime		= 0.0f;
 
@@ -426,59 +458,63 @@ void C_CitadelEnergyCore::UpdateDischarging( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : inline float
 //-----------------------------------------------------------------------------
 inline float C_CitadelEnergyCore::GetStateDurationPercentage( void )
 {
-	if ( m_flDuration == 0 )
+	if( m_flDuration == 0 )
+	{
 		return 0.0f;
+	}
 
 	return RemapValClamped( ( gpGlobals->curtime - m_flStartTime ), 0, m_flDuration, 0, 1.0f );;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::NotifyShouldTransmit( ShouldTransmitState_t state )
 {
 	BaseClass::NotifyShouldTransmit( state );
 
 	// Turn off
-	if ( state == SHOULDTRANSMIT_END )
+	if( state == SHOULDTRANSMIT_END )
 	{
 		SetNextClientThink( CLIENT_THINK_NEVER );
 	}
 
 	// Turn on
-	if ( state == SHOULDTRANSMIT_START )
+	if( state == SHOULDTRANSMIT_START )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_CitadelEnergyCore::ClientThink( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if( gpGlobals->frametime <= 0.0f )
+	{
 		return;
+	}
 
 	float flDuration = GetStateDurationPercentage();
 
 	switch( m_nState )
 	{
-	case ENERGYCORE_STATE_OFF:
-		UpdateIdle( 1.0f - flDuration );
-		break;
+		case ENERGYCORE_STATE_OFF:
+			UpdateIdle( 1.0f - flDuration );
+			break;
 
-	case ENERGYCORE_STATE_CHARGING:
-		UpdateCharging( flDuration );
-		break;
+		case ENERGYCORE_STATE_CHARGING:
+			UpdateCharging( flDuration );
+			break;
 
-	case ENERGYCORE_STATE_DISCHARGING:
-		UpdateDischarging( );
-		break;
+		case ENERGYCORE_STATE_DISCHARGING:
+			UpdateDischarging( );
+			break;
 	}
 }

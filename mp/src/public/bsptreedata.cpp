@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Revision: $
 // $NoKeywords: $
@@ -112,8 +112,10 @@ IBSPTreeData* CreateBSPTreeData()
 
 void DestroyBSPTreeData( IBSPTreeData* pTreeData )
 {
-	if (pTreeData)
+	if( pTreeData )
+	{
 		delete pTreeData;
+	}
 }
 
 
@@ -149,7 +151,7 @@ void CBSPTreeData::Init( ISpatialQuery* pBSPTree )
 
 	Leaf_t newLeaf;
 	newLeaf.m_FirstElement = m_LeafElements.InvalidIndex();
-	while ( --leafCount >= 0 )
+	while( --leafCount >= 0 )
 	{
 		m_Leaf.AddToTail( newLeaf );
 	}
@@ -190,8 +192,10 @@ BSPTreeDataHandle_t CBSPTreeData::Insert( int userId, Vector const& mins, Vector
 
 void CBSPTreeData::Remove( BSPTreeDataHandle_t handle )
 {
-	if (!m_Handles.IsValidIndex(handle))
+	if( !m_Handles.IsValidIndex( handle ) )
+	{
 		return;
+	}
 
 	RemoveFromTree( handle );
 	m_Handles.Free( handle );
@@ -202,18 +206,22 @@ void CBSPTreeData::Remove( BSPTreeDataHandle_t handle )
 // Adds a handle to a leaf
 //-----------------------------------------------------------------------------
 void CBSPTreeData::AddHandleToLeaf( int leaf, BSPTreeDataHandle_t handle )
-{	
+{
 	// Got to a leaf baby! Add the handle to the leaf's list of elements
 	unsigned short leafElement = m_LeafElements.Alloc( true );
-	if (m_Leaf[leaf].m_FirstElement != m_LeafElements.InvalidIndex() )
+	if( m_Leaf[leaf].m_FirstElement != m_LeafElements.InvalidIndex() )
+	{
 		m_LeafElements.LinkBefore( m_Leaf[leaf].m_FirstElement, leafElement );
+	}
 	m_Leaf[leaf].m_FirstElement = leafElement;
 	m_LeafElements[leafElement] = handle;
 
 	// Insert the leaf into the handles's list of leaves
 	unsigned short handleElement = m_HandleLeafList.Alloc( true );
-	if (m_Handles[handle].m_LeafList != m_HandleLeafList.InvalidIndex() )
+	if( m_Handles[handle].m_LeafList != m_HandleLeafList.InvalidIndex() )
+	{
 		m_HandleLeafList.LinkBefore( m_Handles[handle].m_LeafList, handleElement );
+	}
 	m_Handles[handle].m_LeafList = handleElement;
 	m_HandleLeafList[handleElement].m_Leaf = leaf;
 	m_HandleLeafList[handleElement].m_LeafElementIndex = leafElement;
@@ -225,7 +233,7 @@ void CBSPTreeData::AddHandleToLeaf( int leaf, BSPTreeDataHandle_t handle )
 //-----------------------------------------------------------------------------
 bool CBSPTreeData::EnumerateLeaf( int leaf, int context )
 {
-	BSPTreeDataHandle_t handle = (BSPTreeDataHandle_t)context;
+	BSPTreeDataHandle_t handle = ( BSPTreeDataHandle_t )context;
 	AddHandleToLeaf( leaf, handle );
 	return true;
 }
@@ -243,19 +251,21 @@ void CBSPTreeData::RemoveFromTree( BSPTreeDataHandle_t handle )
 {
 	// Iterate over the list of all leaves the handle is in
 	unsigned short i = m_Handles[handle].m_LeafList;
-	while (i != m_HandleLeafList.InvalidIndex())
+	while( i != m_HandleLeafList.InvalidIndex() )
 	{
 		int leaf = m_HandleLeafList[i].m_Leaf;
-		unsigned short leafElement = m_HandleLeafList[i].m_LeafElementIndex; 
+		unsigned short leafElement = m_HandleLeafList[i].m_LeafElementIndex;
 
 		// Unhook the handle from the leaf handle list
-		if (leafElement == m_Leaf[leaf].m_FirstElement)
-			m_Leaf[leaf].m_FirstElement = m_LeafElements.Next(leafElement);
-		m_LeafElements.Free(leafElement);
+		if( leafElement == m_Leaf[leaf].m_FirstElement )
+		{
+			m_Leaf[leaf].m_FirstElement = m_LeafElements.Next( leafElement );
+		}
+		m_LeafElements.Free( leafElement );
 
 		unsigned short prevNode = i;
-		i = m_HandleLeafList.Next(i);
-		m_HandleLeafList.Free(prevNode);
+		i = m_HandleLeafList.Next( i );
+		m_HandleLeafList.Free( prevNode );
 	}
 
 	m_Handles[handle].m_LeafList = m_HandleLeafList.InvalidIndex();
@@ -267,7 +277,7 @@ void CBSPTreeData::RemoveFromTree( BSPTreeDataHandle_t handle )
 //-----------------------------------------------------------------------------
 void CBSPTreeData::ElementMoved( BSPTreeDataHandle_t handle, Vector const& mins, Vector const& maxs )
 {
-	if (handle != TREEDATA_INVALID_HANDLE)
+	if( handle != TREEDATA_INVALID_HANDLE )
 	{
 		RemoveFromTree( handle );
 		InsertIntoTree( handle, mins, maxs );
@@ -291,7 +301,7 @@ int CBSPTreeData::CountElementsInLeaf( int leaf )
 {
 	int i;
 	int nCount = 0;
-	for( i = m_Leaf[leaf].m_FirstElement; i != m_LeafElements.InvalidIndex(); i = m_LeafElements.Next(i) )
+	for( i = m_Leaf[leaf].m_FirstElement; i != m_LeafElements.InvalidIndex(); i = m_LeafElements.Next( i ) )
 	{
 		++nCount;
 	}
@@ -306,22 +316,22 @@ bool CBSPTreeData::EnumerateElementsInLeaf( int leaf, IBSPTreeDataEnumerator* pE
 {
 #ifdef DBGFLAG_ASSERT
 	// The enumeration method better damn well not change this list...
-	int nCount = CountElementsInLeaf(leaf);
+	int nCount = CountElementsInLeaf( leaf );
 #endif
 
 	unsigned short idx = m_Leaf[leaf].m_FirstElement;
-	while (idx != m_LeafElements.InvalidIndex())
+	while( idx != m_LeafElements.InvalidIndex() )
 	{
 		BSPTreeDataHandle_t handle = m_LeafElements[idx];
-		if (!pEnum->EnumerateElement( m_Handles[handle].m_UserId, context ))
+		if( !pEnum->EnumerateElement( m_Handles[handle].m_UserId, context ) )
 		{
-			Assert( CountElementsInLeaf(leaf) == nCount );
+			Assert( CountElementsInLeaf( leaf ) == nCount );
 			return false;
 		}
-		idx = m_LeafElements.Next(idx);
+		idx = m_LeafElements.Next( idx );
 	}
 
-	Assert( CountElementsInLeaf(leaf) == nCount );
+	Assert( CountElementsInLeaf( leaf ) == nCount );
 
 	return true;
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -11,7 +11,7 @@
 #define BSPLIB_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "zip_utils.h"
@@ -21,13 +21,13 @@
 #include "utllinkedlist.h"
 #include "byteswap.h"
 #ifdef ENGINE_DLL
-#include "zone.h"
+	#include "zone.h"
 #endif
 
 #ifdef ENGINE_DLL
-typedef CUtlVector<unsigned char, CHunkMemory<unsigned char> > CDispLightmapSamplePositions;
+	typedef CUtlVector<unsigned char, CHunkMemory<unsigned char> > CDispLightmapSamplePositions;
 #else
-typedef CUtlVector<unsigned char> CDispLightmapSamplePositions;
+	typedef CUtlVector<unsigned char> CDispLightmapSamplePositions;
 #endif
 
 class ISpatialQuery;
@@ -51,12 +51,12 @@ struct entity_t
 	Vector		origin;
 	int			firstbrush;
 	int			numbrushes;
-	epair_t		*epairs;
+	epair_t*		epairs;
 
 	// only valid for func_areaportals
 	int			areaportalnum;
 	int			portalareas[2];
-	portal_t	*m_pPortalsLeadingIntoAreas[2];	// portals leading into portalareas
+	portal_t*	m_pPortalsLeadingIntoAreas[2];	// portals leading into portalareas
 };
 
 extern	int				num_entities;
@@ -67,21 +67,21 @@ extern	dmodel_t	    dmodels[MAX_MAP_MODELS];
 
 extern	int			    visdatasize;
 extern	byte		    dvisdata[MAX_MAP_VISIBILITY];
-extern	dvis_t		    *dvis;
+extern	dvis_t*	    	dvis;
 
 extern	CUtlVector<byte> dlightdataHDR;
 extern	CUtlVector<byte> dlightdataLDR;
-extern	CUtlVector<byte> *pdlightdata;
+extern	CUtlVector<byte>* pdlightdata;
 extern	CUtlVector<char> dentdata;
 
 extern	int			    numleafs;
 #if !defined( _X360 )
-extern	dleaf_t			dleafs[MAX_MAP_LEAFS];
+	extern	dleaf_t			dleafs[MAX_MAP_LEAFS];
 #else
-extern	dleaf_t			*dleafs;
+	extern	dleaf_t*			dleafs;
 #endif
-extern	CUtlVector<dleafambientlighting_t> *g_pLeafAmbientLighting;
-extern	CUtlVector<dleafambientindex_t> *g_pLeafAmbientIndex;
+extern	CUtlVector<dleafambientlighting_t>* g_pLeafAmbientLighting;
+extern	CUtlVector<dleafambientindex_t>* g_pLeafAmbientIndex;
 extern	unsigned short  g_LeafMinDistToWater[MAX_MAP_LEAFS];
 
 extern	int			    numplanes;
@@ -93,7 +93,7 @@ extern	dvertex_t	    dvertexes[MAX_MAP_VERTS];
 extern	int				g_numvertnormalindices;	// dfaces reference these. These index g_vertnormals.
 extern	unsigned short	g_vertnormalindices[MAX_MAP_VERTNORMALS];
 
-extern	int				g_numvertnormals;	
+extern	int				g_numvertnormals;
 extern	Vector			g_vertnormals[MAX_MAP_VERTNORMALS];
 
 extern	int			    numnodes;
@@ -155,8 +155,8 @@ extern	dbrush_t	    dbrushes[MAX_MAP_BRUSHES];
 extern	int			    numbrushsides;
 extern	dbrushside_t	dbrushsides[MAX_MAP_BRUSHSIDES];
 
-extern  int			    *pNumworldlights;
-extern  dworldlight_t   *dworldlights;
+extern  int*		    	pNumworldlights;
+extern  dworldlight_t*   dworldlights;
 
 extern Vector			g_ClipPortalVerts[MAX_MAP_PORTALVERTS];
 extern int				g_nClipPortalVerts;
@@ -175,7 +175,7 @@ extern CUtlVector<char>	g_TexDataStringData;
 extern CUtlVector<int>	g_TexDataStringTable;
 
 extern	int					numleafwaterdata;
-extern	dleafwaterdata_t	dleafwaterdata[MAX_MAP_LEAFWATERDATA]; 
+extern	dleafwaterdata_t	dleafwaterdata[MAX_MAP_LEAFWATERDATA];
 
 extern CUtlVector<CFaceMacroTextureInfo>	g_FaceMacroTextureInfos;
 
@@ -184,30 +184,30 @@ extern CUtlVector<doccluderpolydata_t>	g_OccluderPolyData;
 extern CUtlVector<int>					g_OccluderVertexIndices;
 
 // level flags - see LVLFLAGS_xxx in bspfile.h
-extern uint32 g_LevelFlags;	
+extern uint32 g_LevelFlags;
 
 // physics collision data
-extern	byte		*g_pPhysCollide;
+extern	byte*		g_pPhysCollide;
 extern	int			g_PhysCollideSize;
-extern byte			*g_pPhysDisp;
+extern byte*			g_pPhysDisp;
 extern int			g_PhysDispSize;
 
 // Embedded pack/pak file
-IZip				*GetPakFile( void );
-IZip				*GetSwapPakFile( void );
-void				ClearPakFile( IZip *pak );
-void				AddFileToPak( IZip *pak, const char *pRelativeName, const char *fullpath, IZip::eCompressionType compressionType = IZip::eCompressionType_None );
-void				AddBufferToPak( IZip *pak, const char *pRelativeName, void *data, int length, bool bTextMode, IZip::eCompressionType compressionType = IZip::eCompressionType_None );
-void				AddDirToPak( IZip *pak, const char *pDirPath, const char *pPakPrefix = NULL );
-bool				FileExistsInPak( IZip *pak, const char *pRelativeName );
-bool				ReadFileFromPak( IZip *pak, const char *pRelativeName, bool bTextMode, CUtlBuffer &buf );
-void				RemoveFileFromPak( IZip *pak, const char *pRelativeName );
-int					GetNextFilename( IZip *pak, int id, char *pBuffer, int bufferSize, int &fileSize );
-void				ForceAlignment( IZip *pak, bool bAlign, bool bCompatibleFormat, unsigned int alignmentSize );
+IZip*				GetPakFile( void );
+IZip*				GetSwapPakFile( void );
+void				ClearPakFile( IZip* pak );
+void				AddFileToPak( IZip* pak, const char* pRelativeName, const char* fullpath, IZip::eCompressionType compressionType = IZip::eCompressionType_None );
+void				AddBufferToPak( IZip* pak, const char* pRelativeName, void* data, int length, bool bTextMode, IZip::eCompressionType compressionType = IZip::eCompressionType_None );
+void				AddDirToPak( IZip* pak, const char* pDirPath, const char* pPakPrefix = NULL );
+bool				FileExistsInPak( IZip* pak, const char* pRelativeName );
+bool				ReadFileFromPak( IZip* pak, const char* pRelativeName, bool bTextMode, CUtlBuffer& buf );
+void				RemoveFileFromPak( IZip* pak, const char* pRelativeName );
+int					GetNextFilename( IZip* pak, int id, char* pBuffer, int bufferSize, int& fileSize );
+void				ForceAlignment( IZip* pak, bool bAlign, bool bCompatibleFormat, unsigned int alignmentSize );
 
-typedef bool (*CompressFunc_t)( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer );
-typedef bool (*VTFConvertFunc_t)( const char *pDebugName, CUtlBuffer &sourceBuf, CUtlBuffer &targetBuf, CompressFunc_t pCompressFunc );
-typedef bool (*VHVFixupFunc_t)( const char *pVhvFilename, const char *pModelName, CUtlBuffer &sourceBuf, CUtlBuffer &targetBuf );
+typedef bool ( *CompressFunc_t )( CUtlBuffer& inputBuffer, CUtlBuffer& outputBuffer );
+typedef bool ( *VTFConvertFunc_t )( const char* pDebugName, CUtlBuffer& sourceBuf, CUtlBuffer& targetBuf, CompressFunc_t pCompressFunc );
+typedef bool ( *VHVFixupFunc_t )( const char* pVhvFilename, const char* pModelName, CUtlBuffer& sourceBuf, CUtlBuffer& targetBuf );
 
 //-----------------------------------------------------------------------------
 // Game lump memory storage
@@ -240,18 +240,18 @@ public:
 	int					GetGameLumpVersion( GameLumpHandle_t handle );
 	void				ComputeGameLumpSizeAndCount( int& size, int& clumpCount );
 	void				ParseGameLump( dheader_t* pHeader );
-	void				SwapGameLump( GameLumpId_t id, int version, byte *dest, byte *src, int size );
+	void				SwapGameLump( GameLumpId_t id, int version, byte* dest, byte* src, int size );
 
 
 	//-----------------------------------------------------------------------------
-	// Game lump accessor methods 
+	// Game lump accessor methods
 	//-----------------------------------------------------------------------------
 	void*	GetGameLump( GameLumpHandle_t handle );
 	int		GameLumpSize( GameLumpHandle_t handle );
 
 
 	//-----------------------------------------------------------------------------
-	// Game lump iteration methods 
+	// Game lump iteration methods
 	//-----------------------------------------------------------------------------
 	GameLumpHandle_t	FirstGameLump();
 	GameLumpHandle_t	NextGameLump( GameLumpHandle_t handle );
@@ -275,78 +275,78 @@ extern CByteswap	g_Swap;
 //-----------------------------------------------------------------------------
 // Helper for the bspzip tool
 //-----------------------------------------------------------------------------
-void ExtractZipFileFromBSP( char *pBSPFileName, char *pZipFileName );
+void ExtractZipFileFromBSP( char* pBSPFileName, char* pZipFileName );
 
 
 //-----------------------------------------------------------------------------
 // String table methods
 //-----------------------------------------------------------------------------
-const char *		TexDataStringTable_GetString( int stringID );
-int					TexDataStringTable_AddOrFindString( const char *pString );
+const char* 		TexDataStringTable_GetString( int stringID );
+int					TexDataStringTable_AddOrFindString( const char* pString );
 
-void	DecompressVis (byte *in, byte *decompressed);
-int		CompressVis (byte *vis, byte *dest);
+void	DecompressVis( byte* in, byte* decompressed );
+int		CompressVis( byte* vis, byte* dest );
 
-void	OpenBSPFile( const char *filename );
-void	CloseBSPFile(void);
-void	LoadBSPFile( const char *filename );
-void	LoadBSPFile_FileSystemOnly( const char *filename );
-void	LoadBSPFileTexinfo( const char *filename );
-void	WriteBSPFile( const char *filename, char *pUnused = NULL );
-void	PrintBSPFileSizes(void);
-void	PrintBSPPackDirectory(void);
-void	ReleasePakFileLumps(void);
+void	OpenBSPFile( const char* filename );
+void	CloseBSPFile( void );
+void	LoadBSPFile( const char* filename );
+void	LoadBSPFile_FileSystemOnly( const char* filename );
+void	LoadBSPFileTexinfo( const char* filename );
+void	WriteBSPFile( const char* filename, char* pUnused = NULL );
+void	PrintBSPFileSizes( void );
+void	PrintBSPPackDirectory( void );
+void	ReleasePakFileLumps( void );
 
-bool	RepackBSPCallback_LZMA( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer );
-bool	RepackBSP( CUtlBuffer &inputBuffer, CUtlBuffer &outputBuffer, CompressFunc_t pCompressFunc, IZip::eCompressionType packfileCompression );
-bool	SwapBSPFile( const char *filename, const char *swapFilename, bool bSwapOnLoad, VTFConvertFunc_t pVTFConvertFunc, VHVFixupFunc_t pVHVFixupFunc, CompressFunc_t pCompressFunc );
+bool	RepackBSPCallback_LZMA( CUtlBuffer& inputBuffer, CUtlBuffer& outputBuffer );
+bool	RepackBSP( CUtlBuffer& inputBuffer, CUtlBuffer& outputBuffer, CompressFunc_t pCompressFunc, IZip::eCompressionType packfileCompression );
+bool	SwapBSPFile( const char* filename, const char* swapFilename, bool bSwapOnLoad, VTFConvertFunc_t pVTFConvertFunc, VHVFixupFunc_t pVHVFixupFunc, CompressFunc_t pCompressFunc );
 
-bool	GetPakFileLump( const char *pBSPFilename, void **pPakData, int *pPakSize );
-bool	SetPakFileLump( const char *pBSPFilename, const char *pNewFilename, void *pPakData, int pakSize );
-void	WriteLumpToFile( char *filename, int lump );
-void	WriteLumpToFile( char *filename, int lump, int nLumpVersion, void *pBuffer, size_t nBufLen );
-bool	GetBSPDependants( const char *pBSPFilename, CUtlVector< CUtlString > *pList );
+bool	GetPakFileLump( const char* pBSPFilename, void** pPakData, int* pPakSize );
+bool	SetPakFileLump( const char* pBSPFilename, const char* pNewFilename, void* pPakData, int pakSize );
+void	WriteLumpToFile( char* filename, int lump );
+void	WriteLumpToFile( char* filename, int lump, int nLumpVersion, void* pBuffer, size_t nBufLen );
+bool	GetBSPDependants( const char* pBSPFilename, CUtlVector< CUtlString >* pList );
 void	UnloadBSPFile();
 
-void	ParseEntities (void);
-void	UnparseEntities (void);
-void	PrintEntity (entity_t *ent);
+void	ParseEntities( void );
+void	UnparseEntities( void );
+void	PrintEntity( entity_t* ent );
 
-void 	SetKeyValue (entity_t *ent, const char *key, const char *value);
-char 	*ValueForKey (entity_t *ent, char *key);
+void 	SetKeyValue( entity_t* ent, const char* key, const char* value );
+char*	 ValueForKey( entity_t* ent, char* key );
 // will return "" if not present
-int		IntForKey (entity_t *ent, char *key);
-int		IntForKeyWithDefault(entity_t *ent, char *key, int nDefault );
-vec_t	FloatForKey (entity_t *ent, char *key);
-vec_t	FloatForKeyWithDefault (entity_t *ent, char *key, float default_value);
-void 	GetVectorForKey (entity_t *ent, char *key, Vector& vec);
-void 	GetVector2DForKey (entity_t *ent, char *key, Vector2D& vec);
-void 	GetAnglesForKey (entity_t *ent, char *key, QAngle& vec);
-epair_t *ParseEpair (void);
-void StripTrailing (char *e);
+int		IntForKey( entity_t* ent, char* key );
+int		IntForKeyWithDefault( entity_t* ent, char* key, int nDefault );
+vec_t	FloatForKey( entity_t* ent, char* key );
+vec_t	FloatForKeyWithDefault( entity_t* ent, char* key, float default_value );
+void 	GetVectorForKey( entity_t* ent, char* key, Vector& vec );
+void 	GetVector2DForKey( entity_t* ent, char* key, Vector2D& vec );
+void 	GetAnglesForKey( entity_t* ent, char* key, QAngle& vec );
+epair_t* ParseEpair( void );
+void StripTrailing( char* e );
 
 // Build a list of the face's vertices (index into dvertexes).
 // points must be able to hold pFace->numedges indices.
-void BuildFaceCalcWindingData( dface_t *pFace, int *points );
+void BuildFaceCalcWindingData( dface_t* pFace, int* points );
 
 // Convert a tristrip to a trilist.
 // Removes degenerates.
 // Fills in pTriListIndices and pnTriListIndices.
 // You must free pTriListIndices with delete[].
-void TriStripToTriList( 
-	unsigned short const *pTriStripIndices,
+void TriStripToTriList(
+	unsigned short const* pTriStripIndices,
 	int nTriStripIndices,
-	unsigned short **pTriListIndices,
-	int *pnTriListIndices );
+	unsigned short** pTriListIndices,
+	int* pnTriListIndices );
 
-// Calculates the lightmap coordinates at a given set of positions given the 
+// Calculates the lightmap coordinates at a given set of positions given the
 // lightmap basis information.
 void CalcTextureCoordsAtPoints(
 	float const texelsPerWorldUnits[2][4],
 	int const subtractOffset[2],
-	Vector const *pPoints,
+	Vector const* pPoints,
 	int const nPoints,
-	Vector2D *pCoords );
+	Vector2D* pCoords );
 
 // Figure out lightmap extents on all (lit) faces.
 void UpdateAllFaceLightmapExtents();
@@ -393,9 +393,9 @@ void SetHDRMode( bool bHDR );
 // Helper accessors for the various structures.
 // ----------------------------------------------------------------------------- //
 
-inline ColorRGBExp32* dface_AvgLightColor( dface_t *pFace, int nLightStyleIndex ) 
-{ 
-	return (ColorRGBExp32*)&(*pdlightdata)[pFace->lightofs - (nLightStyleIndex+1) * 4];
+inline ColorRGBExp32* dface_AvgLightColor( dface_t* pFace, int nLightStyleIndex )
+{
+	return ( ColorRGBExp32* ) & ( *pdlightdata )[pFace->lightofs - ( nLightStyleIndex + 1 ) * 4];
 }
 
 inline const char* TexInfo_TexName( int iTexInfo )

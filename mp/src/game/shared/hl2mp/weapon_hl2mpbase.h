@@ -1,12 +1,12 @@
-//========= Copyright � 1996-2005, Valve Corporation, All rights reserved. ============//
+//========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #ifndef WEAPON_HL2MPBASE_H
 #define WEAPON_HL2MPBASE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "hl2mp_player_shared.h"
@@ -15,18 +15,18 @@
 
 #if defined( CLIENT_DLL )
 	#define CWeaponHL2MPBase C_WeaponHL2MPBase
-	void UTIL_ClipPunchAngleOffset( QAngle &in, const QAngle &punch, const QAngle &clip );
+	void UTIL_ClipPunchAngleOffset( QAngle& in, const QAngle& punch, const QAngle& clip );
 #endif
 
 class CHL2MP_Player;
 
-// These are the names of the ammo types that go in the CAmmoDefs and that the 
+// These are the names of the ammo types that go in the CAmmoDefs and that the
 // weapon script files reference.
 
 // Given an ammo type (like from a weapon's GetPrimaryAmmoType()), this compares it
 // against the ammo name you specify.
 // MIKETODO: this should use indexing instead of searching and strcmp()'ing all the time.
-bool IsAmmoType( int iAmmoType, const char *pAmmoName );
+bool IsAmmoType( int iAmmoType, const char* pAmmoName );
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -35,7 +35,7 @@ class CWeaponHL2MPBase : public CBaseCombatWeapon
 {
 public:
 	DECLARE_CLASS( CWeaponHL2MPBase, CBaseCombatWeapon );
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 	CWeaponHL2MPBase();
@@ -43,53 +43,65 @@ public:
 #ifdef GAME_DLL
 	DECLARE_DATADESC();
 	void Materialize( void );
-	virtual	int	ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_IMPULSE_USE; }
+	virtual	int	ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_IMPULSE_USE;
+	}
 	virtual void FallThink( void );						// make the weapon fall to the ground after spawning
 #endif
 
 	// All predicted weapons need to implement and return true
-	virtual bool	IsPredicted() const { return true; }
+	virtual bool	IsPredicted() const
+	{
+		return true;
+	}
 
 	CBasePlayer* GetPlayerOwner() const;
 	CHL2MP_Player* GetHL2MPPlayerOwner() const;
 
 	void WeaponSound( WeaponSound_t sound_type, float soundtime = 0.0f );
-	
-	CHL2MPSWeaponInfo const	&GetHL2MPWpnData() const;
+
+	CHL2MPSWeaponInfo const&	GetHL2MPWpnData() const;
 
 
-	virtual void FireBullets( const FireBulletsInfo_t &info );
+	virtual void FireBullets( const FireBulletsInfo_t& info );
 	virtual void FallInit( void );
 	virtual bool Reload();
 #ifdef MAPBASE_MP
 	virtual void SetWeaponVisible( bool visible );
 	virtual bool Deploy();
-	virtual bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual bool Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 #endif // MAPBASE_MP
-	
+
 public:
-	#if defined( CLIENT_DLL )
-		
-		virtual bool	ShouldPredict();
-		virtual void	OnDataChanged( DataUpdateType_t type );
+#if defined( CLIENT_DLL )
 
-		virtual bool	OnFireEvent( C_BaseViewModel *pViewModel, const Vector& origin, const QAngle& angles, int event, const char *options );
+	virtual bool	ShouldPredict();
+	virtual void	OnDataChanged( DataUpdateType_t type );
 
-	#else
+	virtual bool	OnFireEvent( C_BaseViewModel* pViewModel, const Vector& origin, const QAngle& angles, int event, const char* options );
 
-		virtual void	Spawn();
+#else
 
-	#endif
+	virtual void	Spawn();
+
+#endif
 
 	float		m_flPrevAnimTime;
 	float  m_flNextResetCheckTime;
 
-	Vector	GetOriginalSpawnOrigin( void ) { return m_vOriginalSpawnOrigin;	}
-	QAngle	GetOriginalSpawnAngles( void ) { return m_vOriginalSpawnAngles;	}
+	Vector	GetOriginalSpawnOrigin( void )
+	{
+		return m_vOriginalSpawnOrigin;
+	}
+	QAngle	GetOriginalSpawnAngles( void )
+	{
+		return m_vOriginalSpawnAngles;
+	}
 
 private:
 
-	CWeaponHL2MPBase( const CWeaponHL2MPBase & );
+	CWeaponHL2MPBase( const CWeaponHL2MPBase& );
 
 	Vector m_vOriginalSpawnOrigin;
 	QAngle m_vOriginalSpawnAngles;

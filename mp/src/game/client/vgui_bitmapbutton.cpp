@@ -18,11 +18,11 @@
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CBitmapButton::CBitmapButton( vgui::Panel *pParent, const char *pName, const char *pText ) : 
+CBitmapButton::CBitmapButton( vgui::Panel* pParent, const char* pName, const char* pText ) :
 	BaseClass( pParent, pName, pText )
 {
 	SetPaintBackgroundEnabled( false );
-	for ( int i = 0; i < BUTTON_STATE_COUNT; ++i )
+	for( int i = 0; i < BUTTON_STATE_COUNT; ++i )
 	{
 		m_bImageLoaded[i] = false;
 	}
@@ -47,12 +47,12 @@ bool CBitmapButton::Init( KeyValues* pInitData )
 //-----------------------------------------------------------------------------
 // initialization from build-mode dialog style .res files
 //-----------------------------------------------------------------------------
-void CBitmapButton::ApplySettings(KeyValues *pInitData)
+void CBitmapButton::ApplySettings( KeyValues* pInitData )
 {
-	BaseClass::ApplySettings(pInitData);
+	BaseClass::ApplySettings( pInitData );
 
 	COMPILE_TIME_ASSERT( BUTTON_STATE_COUNT == 4 );
-	const char *pSectionName[BUTTON_STATE_COUNT] = 
+	const char* pSectionName[BUTTON_STATE_COUNT] =
 	{
 		"enabledImage",
 		"mouseOverImage",
@@ -60,9 +60,9 @@ void CBitmapButton::ApplySettings(KeyValues *pInitData)
 		"disabledImage"
 	};
 
-	for ( int i = 0; i < BUTTON_STATE_COUNT; ++i )
+	for( int i = 0; i < BUTTON_STATE_COUNT; ++i )
 	{
-		m_bImageLoaded[i] = InitializeImage(pInitData, pSectionName[i], this, &m_pImage[i] );
+		m_bImageLoaded[i] = InitializeImage( pInitData, pSectionName[i], this, &m_pImage[i] );
 	}
 }
 
@@ -70,10 +70,10 @@ void CBitmapButton::ApplySettings(KeyValues *pInitData)
 //-----------------------------------------------------------------------------
 // Sets the image
 //-----------------------------------------------------------------------------
-void CBitmapButton::SetImage( ButtonImageType_t type, const char *pMaterialName, color32 color )
+void CBitmapButton::SetImage( ButtonImageType_t type, const char* pMaterialName, color32 color )
 {
 	m_bImageLoaded[type] = m_pImage[type].Init( GetVPanel(), pMaterialName );
-	if (m_bImageLoaded[type])
+	if( m_bImageLoaded[type] )
 	{
 		Color vcol( color.r, color.g, color.b, color.a );
 		m_pImage[type].SetColor( vcol );
@@ -93,9 +93,9 @@ void CBitmapButton::Paint( void )
 {
 	// Determine the image to use based on the state
 	int nCurrentImage = BUTTON_ENABLED;
-	if (IsArmed())
+	if( IsArmed() )
 	{
-		if (IsDepressed())
+		if( IsDepressed() )
 		{
 			nCurrentImage = BUTTON_PRESSED;
 		}
@@ -104,12 +104,12 @@ void CBitmapButton::Paint( void )
 			nCurrentImage = BUTTON_ENABLED_MOUSE_OVER;
 		}
 	}
-	else if (!IsEnabled())
+	else if( !IsEnabled() )
 	{
 		nCurrentImage = BUTTON_DISABLED;
 	}
 
-	if (m_bImageLoaded[nCurrentImage])
+	if( m_bImageLoaded[nCurrentImage] )
 	{
 		m_pImage[nCurrentImage].DoPaint( GetVPanel() );
 	}

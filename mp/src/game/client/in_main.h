@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef IN_MAIN_H
 #define IN_MAIN_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 

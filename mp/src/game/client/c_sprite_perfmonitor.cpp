@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 #include "cbase.h"
@@ -11,7 +11,7 @@ extern bool g_bDisplayParticlePerformance;
 void ResetParticlePerformanceCounters( void );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class C_ParticlePerformanceMonitor : public C_BaseEntity
 {
@@ -27,25 +27,25 @@ private:
 	bool m_bDisplayPerf;
 	bool m_bMeasurePerf;
 private:
-	C_ParticlePerformanceMonitor( const C_ParticlePerformanceMonitor & );
+	C_ParticlePerformanceMonitor( const C_ParticlePerformanceMonitor& );
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_ParticlePerformanceMonitor, DT_ParticlePerformanceMonitor, CParticlePerformanceMonitor )
-	RecvPropInt( RECVINFO(m_bMeasurePerf) ),
-	RecvPropInt( RECVINFO(m_bDisplayPerf) ),
-END_RECV_TABLE()
+RecvPropInt( RECVINFO( m_bMeasurePerf ) ),
+			 RecvPropInt( RECVINFO( m_bDisplayPerf ) ),
+			 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_ParticlePerformanceMonitor::C_ParticlePerformanceMonitor( void )
+			 C_ParticlePerformanceMonitor::C_ParticlePerformanceMonitor( void )
 {
 	m_bDisplayPerf = false;
 	m_bMeasurePerf = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_ParticlePerformanceMonitor::~C_ParticlePerformanceMonitor( void )
 {
@@ -54,14 +54,16 @@ C_ParticlePerformanceMonitor::~C_ParticlePerformanceMonitor( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_ParticlePerformanceMonitor::OnDataChanged( DataUpdateType_t updateType )
 {
-	BaseClass::OnDataChanged(updateType);
+	BaseClass::OnDataChanged( updateType );
 
-	if ( m_bMeasurePerf && ( ! g_bMeasureParticlePerformance ) )
+	if( m_bMeasurePerf && ( ! g_bMeasureParticlePerformance ) )
+	{
 		ResetParticlePerformanceCounters();
+	}
 	g_bMeasureParticlePerformance = m_bMeasurePerf;
 	g_bDisplayParticlePerformance = m_bDisplayPerf;
 }

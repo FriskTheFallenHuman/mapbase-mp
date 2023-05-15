@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -15,11 +15,11 @@
 #include "tier0/memdbgon.h"
 
 BEGIN_DATADESC( CAI_RappelBehavior )
-	DEFINE_FIELD( m_bWaitingToRappel, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bOnGround, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_hLine, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecRopeAnchor, FIELD_POSITION_VECTOR ),
-END_DATADESC();
+DEFINE_FIELD( m_bWaitingToRappel, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bOnGround, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_hLine, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_vecRopeAnchor, FIELD_POSITION_VECTOR ),
+			  END_DATADESC();
 
 //=========================================================
 //=========================================================
@@ -37,11 +37,11 @@ public:
 };
 
 BEGIN_DATADESC( CRopeAnchor )
-	DEFINE_FIELD( m_hRope, FIELD_EHANDLE ),
+DEFINE_FIELD( m_hRope, FIELD_EHANDLE ),
 
-	DEFINE_THINKFUNC( FallThink ),
-	DEFINE_THINKFUNC( RemoveThink ),
-END_DATADESC();
+			  DEFINE_THINKFUNC( FallThink ),
+			  DEFINE_THINKFUNC( RemoveThink ),
+			  END_DATADESC();
 
 LINK_ENTITY_TO_CLASS( rope_anchor, CRopeAnchor );
 
@@ -89,7 +89,7 @@ void CRopeAnchor::FallThink()
 //---------------------------------------------------------
 void CRopeAnchor::RemoveThink()
 {
-	UTIL_Remove( m_hRope );	
+	UTIL_Remove( m_hRope );
 	SetThink( &CRopeAnchor::SUB_Remove );
 	SetNextThink( gpGlobals->curtime );
 }
@@ -100,7 +100,7 @@ void CRopeAnchor::RemoveThink()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CAI_RappelBehavior::CAI_RappelBehavior()
 {
@@ -111,11 +111,11 @@ CAI_RappelBehavior::CAI_RappelBehavior()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-bool CAI_RappelBehavior::KeyValue( const char *szKeyName, const char *szValue )
+bool CAI_RappelBehavior::KeyValue( const char* szKeyName, const char* szValue )
 {
 	if( FStrEq( szKeyName, "waitingtorappel" ) )
 	{
-		m_bWaitingToRappel = ( atoi(szValue) != 0);
+		m_bWaitingToRappel = ( atoi( szValue ) != 0 );
 		m_bOnGround = !m_bWaitingToRappel;
 		return true;
 	}
@@ -161,79 +161,79 @@ void CAI_RappelBehavior::SetDescentSpeed()
 }
 
 
-void CAI_RappelBehavior::CleanupOnDeath( CBaseEntity *pCulprit, bool bFireDeathOutput )
+void CAI_RappelBehavior::CleanupOnDeath( CBaseEntity* pCulprit, bool bFireDeathOutput )
 {
 	BaseClass::CleanupOnDeath( pCulprit, bFireDeathOutput );
 
 	//This will remove the beam and create a rope if the NPC dies while rappeling down.
-	if ( m_hLine )
+	if( m_hLine )
 	{
-		 CAI_BaseNPC *pNPC = GetOuter();
+		CAI_BaseNPC* pNPC = GetOuter();
 
-		 if ( pNPC )
-		 {
-			 CutZipline();
-		 }
+		if( pNPC )
+		{
+			CutZipline();
+		}
 	}
 }
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTask - 
+// Purpose:
+// Input  : *pTask -
 //-----------------------------------------------------------------------------
-void CAI_RappelBehavior::StartTask( const Task_t *pTask )
+void CAI_RappelBehavior::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_MOVE_AWAY_PATH:
-		GetOuter()->GetMotor()->SetIdealYaw( UTIL_AngleMod( GetOuter()->GetLocalAngles().y - 180.0f ) );
-		BaseClass::StartTask( pTask );
-		break;
+		case TASK_MOVE_AWAY_PATH:
+			GetOuter()->GetMotor()->SetIdealYaw( UTIL_AngleMod( GetOuter()->GetLocalAngles().y - 180.0f ) );
+			BaseClass::StartTask( pTask );
+			break;
 
-	case TASK_RANGE_ATTACK1:
-		BaseClass::StartTask( pTask );
-		break;
+		case TASK_RANGE_ATTACK1:
+			BaseClass::StartTask( pTask );
+			break;
 
-	case TASK_RAPPEL:
+		case TASK_RAPPEL:
 		{
 			CreateZipline();
 			SetDescentSpeed();
 		}
 		break;
 
-	case TASK_HIT_GROUND:
-		m_bOnGround = true;
+		case TASK_HIT_GROUND:
+			m_bOnGround = true;
 
-		if( GetOuter()->GetGroundEntity() != NULL && GetOuter()->GetGroundEntity()->IsNPC() && GetOuter()->GetGroundEntity()->m_iClassname == GetOuter()->m_iClassname )
-		{
-			// Although I tried to get NPC's out from under me, I landed on one. Kill it, so long as it's the same type of character as me.
-			variant_t val;
-			val.SetFloat( 0 );
-			g_EventQueue.AddEvent( GetOuter()->GetGroundEntity(), "sethealth", val, 0, GetOuter(), GetOuter() );
-		}
+			if( GetOuter()->GetGroundEntity() != NULL && GetOuter()->GetGroundEntity()->IsNPC() && GetOuter()->GetGroundEntity()->m_iClassname == GetOuter()->m_iClassname )
+			{
+				// Although I tried to get NPC's out from under me, I landed on one. Kill it, so long as it's the same type of character as me.
+				variant_t val;
+				val.SetFloat( 0 );
+				g_EventQueue.AddEvent( GetOuter()->GetGroundEntity(), "sethealth", val, 0, GetOuter(), GetOuter() );
+			}
 
-		TaskComplete();
-		break;
+			TaskComplete();
+			break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTask - 
+// Purpose:
+// Input  : *pTask -
 //-----------------------------------------------------------------------------
-void CAI_RappelBehavior::RunTask( const Task_t *pTask )
+void CAI_RappelBehavior::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_RAPPEL:
+		case TASK_RAPPEL:
 		{
 			// If we don't do this, the beam won't show up sometimes. Ideally, all beams would update their
 			// bboxes correctly, but we're close to shipping and we can't change that now.
-			if ( m_hLine )
+			if( m_hLine )
 			{
 				m_hLine->RelinkBeam();
 			}
@@ -248,7 +248,7 @@ void CAI_RappelBehavior::RunTask( const Task_t *pTask )
 			SetDescentSpeed();
 			if( GetOuter()->GetFlags() & FL_ONGROUND )
 			{
-				CBaseEntity *pGroundEnt = GetOuter()->GetGroundEntity();
+				CBaseEntity* pGroundEnt = GetOuter()->GetGroundEntity();
 
 				if( pGroundEnt && pGroundEnt->IsPlayer() )
 				{
@@ -261,7 +261,7 @@ void CAI_RappelBehavior::RunTask( const Task_t *pTask )
 
 				GetOuter()->m_OnRappelTouchdown.FireOutput( GetOuter(), GetOuter(), 0 );
 				GetOuter()->RemoveFlag( FL_FLY );
-				
+
 				CutZipline();
 
 				TaskComplete();
@@ -269,27 +269,33 @@ void CAI_RappelBehavior::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAI_RappelBehavior::CanSelectSchedule()
 {
-	if ( !GetOuter()->IsInterruptable() )
+	if( !GetOuter()->IsInterruptable() )
+	{
 		return false;
+	}
 
-	if ( m_bWaitingToRappel )
+	if( m_bWaitingToRappel )
+	{
 		return true;
+	}
 
-	if ( m_bOnGround )
+	if( m_bOnGround )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -307,9 +313,9 @@ void CAI_RappelBehavior::GatherConditions()
 		// There seems to be an underlying issue here. COND_CAN_RANGE_ATTACK1 should not be valid without an enemy,
 		// but crashes have been reported from GetEnemy() returning null in this code.
 		Assert( GetEnemy() );
-		if( GetEnemy() && (GetAbsOrigin().z - GetEnemy()->GetAbsOrigin().z >= 36.0f) && GetOuter()->GetShotRegulator()->ShouldShoot() )
+		if( GetEnemy() && ( GetAbsOrigin().z - GetEnemy()->GetAbsOrigin().z >= 36.0f ) && GetOuter()->GetShotRegulator()->ShouldShoot() )
 #else
-		if( (GetAbsOrigin().z - GetEnemy()->GetAbsOrigin().z >= 36.0f) && GetOuter()->GetShotRegulator()->ShouldShoot() )
+		if( ( GetAbsOrigin().z - GetEnemy()->GetAbsOrigin().z >= 36.0f ) && GetOuter()->GetShotRegulator()->ShouldShoot() )
 #endif
 		{
 			Activity activity = GetOuter()->TranslateActivity( ACT_GESTURE_RANGE_ATTACK1 );
@@ -324,18 +330,18 @@ void CAI_RappelBehavior::GatherConditions()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int CAI_RappelBehavior::SelectSchedule()
 {
-	if ( HasCondition( COND_BEGIN_RAPPEL ) )
+	if( HasCondition( COND_BEGIN_RAPPEL ) )
 	{
 		m_bWaitingToRappel = false;
 		return SCHED_RAPPEL;
 	}
 
-	if ( m_bWaitingToRappel )
+	if( m_bWaitingToRappel )
 	{
 		return SCHED_RAPPEL_WAIT;
 	}
@@ -343,7 +349,7 @@ int CAI_RappelBehavior::SelectSchedule()
 	{
 		return SCHED_RAPPEL;
 	}
-	
+
 	return BaseClass::SelectSchedule();
 }
 
@@ -358,7 +364,7 @@ void CAI_RappelBehavior::BeginRappel()
 
 	trace_t tr;
 
-	UTIL_TraceEntity( GetOuter(), GetAbsOrigin(), GetAbsOrigin()-Vector(0,0,4096), MASK_SHOT, GetOuter(), COLLISION_GROUP_NONE, &tr );
+	UTIL_TraceEntity( GetOuter(), GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 4096 ), MASK_SHOT, GetOuter(), COLLISION_GROUP_NONE, &tr );
 
 	if( tr.m_pEnt != NULL && tr.m_pEnt->IsNPC() )
 	{
@@ -378,7 +384,7 @@ void CAI_RappelBehavior::CutZipline()
 		UTIL_Remove( m_hLine );
 	}
 
-	CBaseEntity *pAnchor = CreateEntityByName( "rope_anchor" );
+	CBaseEntity* pAnchor = CreateEntityByName( "rope_anchor" );
 	pAnchor->SetOwnerEntity( GetOuter() ); // Boy, this is a hack!!
 	pAnchor->SetAbsOrigin( m_vecRopeAnchor );
 	pAnchor->Spawn();
@@ -395,7 +401,7 @@ void CAI_RappelBehavior::CreateZipline()
 
 		if( attachment > 0 )
 		{
-			CBeam *pBeam;
+			CBeam* pBeam;
 #ifdef MAPBASE
 			pBeam = CBeam::BeamCreate( "cable/cable_rappel.vmt", 1 );
 #else
@@ -405,7 +411,7 @@ void CAI_RappelBehavior::CreateZipline()
 			pBeam->SetWidth( 0.3 );
 			pBeam->SetEndWidth( 0.3 );
 
-			CAI_BaseNPC *pNPC = GetOuter();
+			CAI_BaseNPC* pNPC = GetOuter();
 			pBeam->PointEntInit( pNPC->GetAbsOrigin() + Vector( 0, 0, 80 ), pNPC );
 
 			pBeam->SetEndAttachment( attachment );
@@ -419,55 +425,55 @@ void CAI_RappelBehavior::CreateZipline()
 
 AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_RappelBehavior )
 
-	DECLARE_TASK( TASK_RAPPEL )
-	DECLARE_TASK( TASK_HIT_GROUND )
+DECLARE_TASK( TASK_RAPPEL )
+DECLARE_TASK( TASK_HIT_GROUND )
 
-	DECLARE_CONDITION( COND_BEGIN_RAPPEL )
+DECLARE_CONDITION( COND_BEGIN_RAPPEL )
 
-	//===============================================
-	//===============================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_RAPPEL_WAIT,
+//===============================================
+//===============================================
+DEFINE_SCHEDULE
+(
+	SCHED_RAPPEL_WAIT,
 
-		"	Tasks"
-		"		TASK_SET_ACTIVITY				ACTIVITY:ACT_RAPPEL_LOOP"
-		"		TASK_WAIT_INDEFINITE			0"
-		""
-		"	Interrupts"
-		"		COND_BEGIN_RAPPEL"
-	);
+	"	Tasks"
+	"		TASK_SET_ACTIVITY				ACTIVITY:ACT_RAPPEL_LOOP"
+	"		TASK_WAIT_INDEFINITE			0"
+	""
+	"	Interrupts"
+	"		COND_BEGIN_RAPPEL"
+);
 
-	//===============================================
-	//===============================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_RAPPEL,
+//===============================================
+//===============================================
+DEFINE_SCHEDULE
+(
+	SCHED_RAPPEL,
 
-		"	Tasks"
-		"		TASK_SET_ACTIVITY		ACTIVITY:ACT_RAPPEL_LOOP"
-		"		TASK_RAPPEL				0"
-		"		TASK_SET_SCHEDULE		SCHEDULE:SCHED_CLEAR_RAPPEL_POINT"
-		""
-		"	Interrupts"
-		""
-		"		COND_NEW_ENEMY"	// Only so the enemy selection code will pick an enemy!
-	);
+	"	Tasks"
+	"		TASK_SET_ACTIVITY		ACTIVITY:ACT_RAPPEL_LOOP"
+	"		TASK_RAPPEL				0"
+	"		TASK_SET_SCHEDULE		SCHEDULE:SCHED_CLEAR_RAPPEL_POINT"
+	""
+	"	Interrupts"
+	""
+	"		COND_NEW_ENEMY"	// Only so the enemy selection code will pick an enemy!
+);
 
-	//===============================================
-	//===============================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_CLEAR_RAPPEL_POINT,
+//===============================================
+//===============================================
+DEFINE_SCHEDULE
+(
+	SCHED_CLEAR_RAPPEL_POINT,
 
-		"	Tasks"
-		"		TASK_HIT_GROUND			0"
-		"		TASK_MOVE_AWAY_PATH		128"	// Clear this spot for other rappellers
-		"		TASK_RUN_PATH			0"
-		"		TASK_WAIT_FOR_MOVEMENT	0"
-		""
-		"	Interrupts"
-		""
-	);
+	"	Tasks"
+	"		TASK_HIT_GROUND			0"
+	"		TASK_MOVE_AWAY_PATH		128"	// Clear this spot for other rappellers
+	"		TASK_RUN_PATH			0"
+	"		TASK_WAIT_FOR_MOVEMENT	0"
+	""
+	"	Interrupts"
+	""
+);
 
 AI_END_CUSTOM_SCHEDULE_PROVIDER()

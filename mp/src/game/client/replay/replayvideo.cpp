@@ -28,7 +28,7 @@ static ReplayVideoMode_t s_VideoModes[] =
 
 //-----------------------------------------------------------------------------
 #ifdef USE_WEBM_FOR_REPLAY
-static ReplayCodec_t s_Codecs[] = 
+static ReplayCodec_t s_Codecs[] =
 {
 	{ VideoEncodeCodec::WEBM_CODEC, "#Replay_Codec_WEBM" },
 };
@@ -36,7 +36,7 @@ static int s_nNumCodecs = ARRAYSIZE( s_Codecs );
 
 //-----------------------------------------------------------------------------
 
-static ReplayQualityPreset_t s_QualityPresets[] = 
+static ReplayQualityPreset_t s_QualityPresets[] =
 {
 	{ "#Replay_RenderSetting_Low", VideoEncodeCodec::WEBM_CODEC, 0, false, 0 },
 	{ "#Replay_RenderSetting_Medium", VideoEncodeCodec::WEBM_CODEC, 50, false, 1 },
@@ -47,7 +47,7 @@ static int s_NumQualityPresets = ARRAYSIZE( s_QualityPresets );
 static int s_DefaultQualityPreset = 1;
 
 #else
-static ReplayCodec_t s_Codecs[] = 
+static ReplayCodec_t s_Codecs[] =
 {
 	{ VideoEncodeCodec::MJPEG_A_CODEC, "#Replay_Codec_MJPEGA" },
 	{ VideoEncodeCodec::H264_CODEC, "#Replay_Codec_H264" },
@@ -56,7 +56,7 @@ static int s_nNumCodecs = ARRAYSIZE( s_Codecs );
 
 //-----------------------------------------------------------------------------
 
-static ReplayQualityPreset_t s_QualityPresets[] = 
+static ReplayQualityPreset_t s_QualityPresets[] =
 {
 	{ "#Replay_RenderSetting_Low", VideoEncodeCodec::MJPEG_A_CODEC, 0, false, 0 },
 	{ "#Replay_RenderSetting_Medium", VideoEncodeCodec::MJPEG_A_CODEC, 50, false, 1 },
@@ -81,7 +81,7 @@ int ReplayVideo_GetVideoModeCount()
 	return VIDEO_MODE_COUNT;
 }
 
-const ReplayVideoMode_t &ReplayVideo_GetVideoMode( int i )
+const ReplayVideoMode_t& ReplayVideo_GetVideoMode( int i )
 {
 	AssertMsg( i >= 0 && i < VIDEO_MODE_COUNT, "Replay video mode out of range!" );
 	return s_VideoModes[ i ];
@@ -107,7 +107,7 @@ int ReplayVideo_GetQualityPresetCount()
 	return s_NumQualityPresets;
 }
 
-const ReplayQualityPreset_t &ReplayVideo_GetQualityPreset( int i )
+const ReplayQualityPreset_t& ReplayVideo_GetQualityPreset( int i )
 {
 	return s_QualityPresets[ i ];
 }
@@ -117,7 +117,7 @@ int ReplayVideo_GetCodecCount()
 	return s_nNumCodecs;
 }
 
-const ReplayCodec_t &ReplayVideo_GetCodec( int i )
+const ReplayCodec_t& ReplayVideo_GetCodec( int i )
 {
 	AssertMsg( i >= 0 && i < s_nNumCodecs, "Replay codec out of range!" );
 	return s_Codecs[ i ];
@@ -126,12 +126,14 @@ const ReplayCodec_t &ReplayVideo_GetCodec( int i )
 int ReplayVideo_FindCodecPresetFromCodec( VideoEncodeCodec_t nCodecId )
 {
 	AssertMsg( nCodecId < VideoEncodeCodec::CODEC_COUNT, "Codec ID out of range!" );
-	for ( int i = 0; i < VideoEncodeCodec::CODEC_COUNT; ++i )
+	for( int i = 0; i < VideoEncodeCodec::CODEC_COUNT; ++i )
 	{
-		if ( s_Codecs[ i ].m_nCodecId == nCodecId )
+		if( s_Codecs[ i ].m_nCodecId == nCodecId )
+		{
 			return i;
+		}
 	}
-	
+
 	AssertMsg( 0, "Codec not found!  This should never happen!" );
 
 	return 0;

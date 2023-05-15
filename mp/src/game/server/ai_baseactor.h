@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Hooks and classes for the support of humanoid NPCs with 
+// Purpose: Hooks and classes for the support of humanoid NPCs with
 //			groovy facial animation capabilities, aka, "Actors"
 //
 //=============================================================================//
@@ -15,7 +15,7 @@
 
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -24,8 +24,8 @@
 // Purpose: The base class for all head/body/eye expressive NPCS.
 //
 //-----------------------------------------------------------------------------
-enum PoseParameter_t { POSE_END=INT_MAX };
-enum FlexWeight_t { FLEX_END=INT_MAX };
+enum PoseParameter_t { POSE_END = INT_MAX };
+enum FlexWeight_t { FLEX_END = INT_MAX };
 
 struct AILookTargetArgs_t
 {
@@ -35,7 +35,7 @@ struct AILookTargetArgs_t
 	float				flInfluence;
 	float				flRamp;
 	bool 				bExcludePlayers;
-	CAI_InterestTarget *pQueue;
+	CAI_InterestTarget* pQueue;
 };
 
 class CAI_BaseActor : public CAI_ExpresserHost<CAI_BaseHumanoid>
@@ -49,43 +49,58 @@ public:
 
 	// FIXME: this method is lame, isn't there some sort of template thing that would get rid of the Outer pointer?
 
-	void	Init( PoseParameter_t &index, const char *szName ) { index = (PoseParameter_t)LookupPoseParameter( szName ); };
-	void	Set( PoseParameter_t index, float flValue ) { SetPoseParameter( (int)index, flValue ); }
-	float	Get( PoseParameter_t index ) { return GetPoseParameter( (int)index ); }
+	void	Init( PoseParameter_t& index, const char* szName )
+	{
+		index = ( PoseParameter_t )LookupPoseParameter( szName );
+	};
+	void	Set( PoseParameter_t index, float flValue )
+	{
+		SetPoseParameter( ( int )index, flValue );
+	}
+	float	Get( PoseParameter_t index )
+	{
+		return GetPoseParameter( ( int )index );
+	}
 
 	float	ClampWithBias( PoseParameter_t index, float value, float base );
 
 	// Note, you must add all names to this static function in order for Init to work
-	static bool	IsServerSideFlexController( char const *szName );
+	static bool	IsServerSideFlexController( char const* szName );
 
-	void	Init( FlexWeight_t &index, const char *szName ) 
-	{ 
+	void	Init( FlexWeight_t& index, const char* szName )
+	{
 		// Make this fatal!!!
-		if ( !IsServerSideFlexController( szName ) )
+		if( !IsServerSideFlexController( szName ) )
 		{
 			Error( "You forgot to add flex controller %s to list in CAI_BaseActor::IsServerSideFlexController().", szName );
 		}
 
-		index = (FlexWeight_t)FindFlexController( szName ); 
+		index = ( FlexWeight_t )FindFlexController( szName );
 	}
-	void	Set( FlexWeight_t index, float flValue ) { SetFlexWeight( (LocalFlexController_t)index, flValue ); }
-	float	Get( FlexWeight_t index ) { return GetFlexWeight( (LocalFlexController_t)index ); }
+	void	Set( FlexWeight_t index, float flValue )
+	{
+		SetFlexWeight( ( LocalFlexController_t )index, flValue );
+	}
+	float	Get( FlexWeight_t index )
+	{
+		return GetFlexWeight( ( LocalFlexController_t )index );
+	}
 
 
 public:
 	CAI_BaseActor()
-	 :	m_fLatchedPositions( 0 ),
-		m_latchedEyeOrigin( vec3_origin ),
-		m_latchedEyeDirection( vec3_origin ),
-		m_latchedHeadDirection( vec3_origin ),
-		m_flBlinktime( 0 ),
-		m_hLookTarget( NULL ),
-		m_iszExpressionScene( NULL_STRING ),
-		m_iszIdleExpression( NULL_STRING ),
-		m_iszAlertExpression( NULL_STRING ),
-		m_iszCombatExpression( NULL_STRING ),
-		m_iszDeathExpression( NULL_STRING ),
-		m_iszExpressionOverride( NULL_STRING )
+		:	m_fLatchedPositions( 0 ),
+		  m_latchedEyeOrigin( vec3_origin ),
+		  m_latchedEyeDirection( vec3_origin ),
+		  m_latchedHeadDirection( vec3_origin ),
+		  m_flBlinktime( 0 ),
+		  m_hLookTarget( NULL ),
+		  m_iszExpressionScene( NULL_STRING ),
+		  m_iszIdleExpression( NULL_STRING ),
+		  m_iszAlertExpression( NULL_STRING ),
+		  m_iszCombatExpression( NULL_STRING ),
+		  m_iszDeathExpression( NULL_STRING ),
+		  m_iszExpressionOverride( NULL_STRING )
 	{
 		memset( m_flextarget, 0, 64 * sizeof( m_flextarget[0] ) );
 	}
@@ -99,16 +114,16 @@ public:
 
 	virtual void			Precache();
 
-	virtual void			SetModel( const char *szModelName );
+	virtual void			SetModel( const char* szModelName );
 
 #ifdef MAPBASE
-	virtual bool			StartSceneEvent( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event, CChoreoActor *actor, CBaseEntity *pTarget, CSceneEntity *pSceneEnt = NULL );
+	virtual bool			StartSceneEvent( CSceneEventInfo* info, CChoreoScene* scene, CChoreoEvent* event, CChoreoActor* actor, CBaseEntity* pTarget, CSceneEntity* pSceneEnt = NULL );
 #else
-	virtual	bool			StartSceneEvent( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event, CChoreoActor *actor, CBaseEntity *pTarget );
+	virtual	bool			StartSceneEvent( CSceneEventInfo* info, CChoreoScene* scene, CChoreoEvent* event, CChoreoActor* actor, CBaseEntity* pTarget );
 #endif
-	virtual bool			ProcessSceneEvent( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event );
-	virtual	bool			ClearSceneEvent( CSceneEventInfo *info, bool fastKill, bool canceled );
-	virtual bool			CheckSceneEventCompletion( CSceneEventInfo *info, float currenttime, CChoreoScene *scene, CChoreoEvent *event );
+	virtual bool			ProcessSceneEvent( CSceneEventInfo* info, CChoreoScene* scene, CChoreoEvent* event );
+	virtual	bool			ClearSceneEvent( CSceneEventInfo* info, bool fastKill, bool canceled );
+	virtual bool			CheckSceneEventCompletion( CSceneEventInfo* info, float currenttime, CChoreoScene* scene, CChoreoEvent* event );
 
 	Vector					EyePosition( );
 	virtual Vector			HeadDirection2D( void );
@@ -116,40 +131,55 @@ public:
 	virtual Vector			EyeDirection2D( void );
 	virtual Vector			EyeDirection3D( void );
 
-	CBaseEntity				*GetLooktarget() { return m_hLookTarget.Get(); }
+	CBaseEntity*				GetLooktarget()
+	{
+		return m_hLookTarget.Get();
+	}
 	virtual void			OnNewLookTarget() {};
 
 	// CBaseFlex
-	virtual	void			SetViewtarget( const Vector &viewtarget );
-	
+	virtual	void			SetViewtarget( const Vector& viewtarget );
+
 	// CAI_BaseNPC
 	virtual float			PickLookTarget( bool bExcludePlayers = false, float minTime = 1.5, float maxTime = 2.5 );
-	virtual float			PickLookTarget( CAI_InterestTarget &queue, bool bExcludePlayers = false, float minTime = 1.5, float maxTime = 2.5 );
-	virtual bool 			PickTacticalLookTarget( AILookTargetArgs_t *pArgs );
-	virtual bool 			PickRandomLookTarget( AILookTargetArgs_t *pArgs );
-	virtual void			MakeRandomLookTarget( AILookTargetArgs_t *pArgs, float minTime, float maxTime );
+	virtual float			PickLookTarget( CAI_InterestTarget& queue, bool bExcludePlayers = false, float minTime = 1.5, float maxTime = 2.5 );
+	virtual bool 			PickTacticalLookTarget( AILookTargetArgs_t* pArgs );
+	virtual bool 			PickRandomLookTarget( AILookTargetArgs_t* pArgs );
+	virtual void			MakeRandomLookTarget( AILookTargetArgs_t* pArgs, float minTime, float maxTime );
 	virtual bool			HasActiveLookTargets( void );
-	virtual void 			OnSelectedLookTarget( AILookTargetArgs_t *pArgs ) { return; }
-	virtual void 			ClearLookTarget( CBaseEntity *pTarget );
-	virtual void			ExpireCurrentRandomLookTarget() { m_flNextRandomLookTime = gpGlobals->curtime - 0.1f; }
+	virtual void 			OnSelectedLookTarget( AILookTargetArgs_t* pArgs )
+	{
+		return;
+	}
+	virtual void 			ClearLookTarget( CBaseEntity* pTarget );
+	virtual void			ExpireCurrentRandomLookTarget()
+	{
+		m_flNextRandomLookTime = gpGlobals->curtime - 0.1f;
+	}
 
-	virtual void			StartTaskRangeAttack1( const Task_t *pTask );
+	virtual void			StartTaskRangeAttack1( const Task_t* pTask );
 
-	virtual void			AddLookTarget( CBaseEntity *pTarget, float flImportance, float flDuration, float flRamp = 0.0 );
-	virtual void			AddLookTarget( const Vector &vecPosition, float flImportance, float flDuration, float flRamp = 0.0 );
+	virtual void			AddLookTarget( CBaseEntity* pTarget, float flImportance, float flDuration, float flRamp = 0.0 );
+	virtual void			AddLookTarget( const Vector& vecPosition, float flImportance, float flDuration, float flRamp = 0.0 );
 
-	virtual void			SetHeadDirection( const Vector &vTargetPos, float flInterval );
+	virtual void			SetHeadDirection( const Vector& vTargetPos, float flInterval );
 
 	void					UpdateBodyControl( void );
-	void					UpdateHeadControl( const Vector &vHeadTarget, float flHeadInfluence );
-	virtual	float			GetHeadDebounce( void ) { return 0.3; } // how much of previous head turn to use
+	void					UpdateHeadControl( const Vector& vHeadTarget, float flHeadInfluence );
+	virtual	float			GetHeadDebounce( void )
+	{
+		return 0.3;    // how much of previous head turn to use
+	}
 
 	virtual void			MaintainLookTargets( float flInterval );
-	virtual bool			ValidEyeTarget(const Vector &lookTargetPos);
-	virtual bool			ValidHeadTarget(const Vector &lookTargetPos);
-	virtual float			HeadTargetValidity(const Vector &lookTargetPos);
+	virtual bool			ValidEyeTarget( const Vector& lookTargetPos );
+	virtual bool			ValidHeadTarget( const Vector& lookTargetPos );
+	virtual float			HeadTargetValidity( const Vector& lookTargetPos );
 
-	virtual bool			ShouldBruteForceFailedNav()	{ return true; }
+	virtual bool			ShouldBruteForceFailedNav()
+	{
+		return true;
+	}
 
 	void					AccumulateIdealYaw( float flYaw, float flIntensity );
 	bool					SetAccumulatedYawAndUpdate( void );
@@ -164,17 +194,23 @@ public:
 	//---------------------------------
 
 	virtual void			PlayExpressionForState( NPC_STATE state );
-	virtual const char		*SelectRandomExpressionForState( NPC_STATE state );
+	virtual const char*		SelectRandomExpressionForState( NPC_STATE state );
 
-	float					SetExpression( const char * );
+	float					SetExpression( const char* );
 	void					ClearExpression();
-	const char *			GetExpression();
+	const char* 			GetExpression();
 
 #ifdef MAPBASE_VSCRIPT
 	//---------------------------------
 
-	void	ScriptAddLookTarget( HSCRIPT pTarget, float flImportance, float flDuration, float flRamp = 0.0 ) { AddLookTarget(ToEnt(pTarget), flImportance, flDuration, flRamp); }
-	void	ScriptAddLookTargetPos( const Vector &vecPosition, float flImportance, float flDuration, float flRamp = 0.0 ) { AddLookTarget(vecPosition, flImportance, flDuration, flRamp); }
+	void	ScriptAddLookTarget( HSCRIPT pTarget, float flImportance, float flDuration, float flRamp = 0.0 )
+	{
+		AddLookTarget( ToEnt( pTarget ), flImportance, flDuration, flRamp );
+	}
+	void	ScriptAddLookTargetPos( const Vector& vecPosition, float flImportance, float flDuration, float flRamp = 0.0 )
+	{
+		AddLookTarget( vecPosition, flImportance, flDuration, flRamp );
+	}
 
 	//---------------------------------
 #endif
@@ -216,7 +252,7 @@ private:
 	void					UpdateLatchedValues( void );
 
 	// Input handlers.
-	void InputSetExpressionOverride( inputdata_t &inputdata );
+	void InputSetExpressionOverride( inputdata_t& inputdata );
 
 	//---------------------------------
 
@@ -297,8 +333,8 @@ private:
 
 private:
 	//---------------------------------
-	bool RandomFaceFlex( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event );
-	bool RandomHeadFlex( CSceneEventInfo *info, CChoreoScene *scene, CChoreoEvent *event );
+	bool RandomFaceFlex( CSceneEventInfo* info, CChoreoScene* scene, CChoreoEvent* event );
+	bool RandomHeadFlex( CSceneEventInfo* info, CChoreoScene* scene, CChoreoEvent* event );
 	float m_flextarget[64];
 
 public:
@@ -312,14 +348,14 @@ public:
 	//
 	// Speech support
 	//
-	virtual CAI_Expresser *GetExpresser();
+	virtual CAI_Expresser* GetExpresser();
 
 protected:
 	bool CreateComponents();
-	virtual CAI_Expresser *CreateExpresser();
+	virtual CAI_Expresser* CreateExpresser();
 private:
 	//---------------------------------
-	CAI_Expresser *m_pExpresser;
+	CAI_Expresser* m_pExpresser;
 };
 
 //-----------------------------------------------------------------------------

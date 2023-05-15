@@ -9,7 +9,7 @@
 #define TIER3DM_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #include "tier3/tier3.h"
@@ -18,7 +18,7 @@
 //-----------------------------------------------------------------------------
 // Helper empty implementation of an IAppSystem for tier2 libraries
 //-----------------------------------------------------------------------------
-template< class IInterface, int ConVarFlag = 0 > 
+template< class IInterface, int ConVarFlag = 0 >
 class CTier3DmAppSystem : public CTier2DmAppSystem< IInterface, ConVarFlag >
 {
 	typedef CTier2DmAppSystem< IInterface, ConVarFlag > BaseClass;
@@ -28,21 +28,23 @@ public:
 	{
 	}
 
-	virtual bool Connect( CreateInterfaceFn factory ) 
+	virtual bool Connect( CreateInterfaceFn factory )
 	{
-		if ( !BaseClass::Connect( factory ) )
+		if( !BaseClass::Connect( factory ) )
+		{
 			return false;
+		}
 
-		if ( IsPrimaryAppSystem() )
+		if( IsPrimaryAppSystem() )
 		{
 			ConnectTier3Libraries( &factory, 1 );
 		}
 		return true;
 	}
 
-	virtual void Disconnect() 
+	virtual void Disconnect()
 	{
-		if ( IsPrimaryAppSystem() )
+		if( IsPrimaryAppSystem() )
 		{
 			DisconnectTier3Libraries();
 		}

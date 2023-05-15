@@ -27,7 +27,7 @@ extern ConVar g_CV_SmokeTrail; // temporary dust explosion switch
 // Setup the sensor list template
 
 CEntityClassList<CBugBaitSensor> g_BugBaitSensorList;
-template <> CBugBaitSensor *CEntityClassList<CBugBaitSensor>::m_pClassList = NULL;
+template <> CBugBaitSensor* CEntityClassList<CBugBaitSensor>::m_pClassList = NULL;
 
 CBugBaitSensor* GetBugBaitSensorList()
 {
@@ -46,11 +46,11 @@ CBugBaitSensor::~CBugBaitSensor( void )
 
 BEGIN_DATADESC( CBugBaitSensor )
 
-	// This is re-set up in the constructor
-	//DEFINE_FIELD( m_pNext, FIELD_CLASSPTR ),
+// This is re-set up in the constructor
+//DEFINE_FIELD( m_pNext, FIELD_CLASSPTR ),
 
-	DEFINE_KEYFIELD( m_bEnabled, FIELD_BOOLEAN, "Enabled" ),
-	DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
+DEFINE_KEYFIELD( m_bEnabled, FIELD_BOOLEAN, "Enabled" ),
+				 DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "radius" ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bUseRadius, FIELD_BOOLEAN, "useradius" ),
@@ -58,9 +58,9 @@ BEGIN_DATADESC( CBugBaitSensor )
 	DEFINE_KEYFIELD( m_vecMaxs, FIELD_VECTOR, "bmaxs" ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
 
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "EnableRadius", InputEnableRadius ),
@@ -70,12 +70,12 @@ BEGIN_DATADESC( CBugBaitSensor )
 	DEFINE_INPUTFUNC( FIELD_VECTOR, "SetMaxs", InputSetMaxs ),
 #endif
 
-	// Function Pointers
-	DEFINE_OUTPUT( m_OnBaited, "OnBaited" ),
+				 // Function Pointers
+				 DEFINE_OUTPUT( m_OnBaited, "OnBaited" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( point_bugbait, CBugBaitSensor );
+				 LINK_ENTITY_TO_CLASS( point_bugbait, CBugBaitSensor );
 
 //=============================================================================
 // Bugbait grenade
@@ -85,17 +85,17 @@ LINK_ENTITY_TO_CLASS( point_bugbait, CBugBaitSensor );
 
 BEGIN_DATADESC( CGrenadeBugBait )
 
-	DEFINE_FIELD( m_flGracePeriodEndsAt, FIELD_TIME ),
-	DEFINE_FIELD( m_pSporeTrail, FIELD_CLASSPTR ),
+DEFINE_FIELD( m_flGracePeriodEndsAt, FIELD_TIME ),
+			  DEFINE_FIELD( m_pSporeTrail, FIELD_CLASSPTR ),
 
-	// Function Pointers
-	DEFINE_ENTITYFUNC( BugBaitTouch ),
-	DEFINE_THINKFUNC( ThinkBecomeSolid ),
+			  // Function Pointers
+			  DEFINE_ENTITYFUNC( BugBaitTouch ),
+			  DEFINE_THINKFUNC( ThinkBecomeSolid ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( npc_grenade_bugbait, CGrenadeBugBait );
+			  LINK_ENTITY_TO_CLASS( npc_grenade_bugbait, CGrenadeBugBait );
 
 //Radius of the bugbait's effect on other creatures
 ConVar bugbait_radius( "bugbait_radius", "512" );
@@ -104,7 +104,7 @@ ConVar bugbait_distract_time( "bugbait_distract_time", "5" );
 ConVar bugbait_grenade_radius( "bugbait_grenade_radius", "150" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CGrenadeBugBait::Spawn( void )
 {
@@ -113,9 +113,9 @@ void CGrenadeBugBait::Spawn( void )
 	SetModel( GRENADE_MODEL );
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	SetMoveType( MOVETYPE_FLYGRAVITY, MOVECOLLIDE_DEFAULT );
-	SetSolid( SOLID_BBOX ); 
+	SetSolid( SOLID_BBOX );
 
-	UTIL_SetSize( this, Vector( -2, -2, -2), Vector( 2, 2, 2 ) );
+	UTIL_SetSize( this, Vector( -2, -2, -2 ), Vector( 2, 2, 2 ) );
 
 	SetTouch( &CGrenadeBugBait::BugBaitTouch );
 
@@ -127,11 +127,11 @@ void CGrenadeBugBait::Spawn( void )
 	if( g_CV_SmokeTrail.GetInt() )
 	{
 		m_pSporeTrail = SporeTrail::CreateSporeTrail();
-		
+
 		if( m_pSporeTrail )
 		{
 			m_pSporeTrail = SporeTrail::CreateSporeTrail();
-	
+
 			m_pSporeTrail->m_bEmit = true;
 			m_pSporeTrail->m_flSpawnRate = 100.0f;
 			m_pSporeTrail->m_flParticleLifetime	= 1.0f;
@@ -145,7 +145,7 @@ void CGrenadeBugBait::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CGrenadeBugBait::Precache( void )
 {
@@ -159,24 +159,26 @@ void CGrenadeBugBait::Precache( void )
 #define	NUM_SPLASHES	6
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
+void CGrenadeBugBait::BugBaitTouch( CBaseEntity* pOther )
 {
 	// Don't hit triggers or water
 	Assert( pOther );
-	if ( pOther->IsSolidFlagSet(FSOLID_TRIGGER|FSOLID_VOLUME_CONTENTS) )
+	if( pOther->IsSolidFlagSet( FSOLID_TRIGGER | FSOLID_VOLUME_CONTENTS ) )
+	{
 		return;
+	}
 
-	if ( m_pSporeTrail != NULL )
+	if( m_pSporeTrail != NULL )
 	{
 		m_pSporeTrail->m_bEmit = false;
 	}
 
 	//Do effect for the hit
-	SporeExplosion *pSporeExplosion = SporeExplosion::CreateSporeExplosion();
+	SporeExplosion* pSporeExplosion = SporeExplosion::CreateSporeExplosion();
 
-	if ( pSporeExplosion )
+	if( pSporeExplosion )
 	{
 		Vector	dir = -GetAbsVelocity();
 		VectorNormalize( dir );
@@ -204,7 +206,7 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 
 	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + traceDir * 64, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
-	if ( tr.fraction < 1.0f )
+	if( tr.fraction < 1.0f )
 	{
 		UTIL_DecalTrace( &tr, "BeerSplash" );	//TODO: Use real decal
 	}
@@ -214,7 +216,7 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 	EmitSound( filter, entindex(), "GrenadeBugBait.Splat" );
 
 	//Make sure we want to call antlions
-	if ( ActivateBugbaitTargets( GetThrower(), GetAbsOrigin(), false ) == false )
+	if( ActivateBugbaitTargets( GetThrower(), GetAbsOrigin(), false ) == false )
 	{
 		//Alert any antlions around
 		CSoundEnt::InsertSound( SOUND_BUGBAIT, GetAbsOrigin(), bugbait_hear_radius.GetInt(), bugbait_distract_time.GetFloat(), GetThrower() );
@@ -224,8 +226,8 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 	g_AntlionMakerManager.BroadcastFightGoal( GetAbsOrigin() );
 
 #ifdef MAPBASE
-	m_OnDetonate.FireOutput(GetThrower(), this);
-	m_OnDetonate_OutPosition.Set(GetAbsOrigin(), GetThrower(), this);
+	m_OnDetonate.FireOutput( GetThrower(), this );
+	m_OnDetonate_OutPosition.Set( GetAbsOrigin(), GetThrower(), this );
 #endif
 
 	//Go away
@@ -236,7 +238,7 @@ void CGrenadeBugBait::BugBaitTouch( CBaseEntity *pOther )
 // Purpose: Activate any nearby bugbait targets
 //			Returns true if the bugbait target wants to suppress the call.
 //-----------------------------------------------------------------------------
-bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity *pOwner, Vector vecOrigin, bool bSqueezed )
+bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity* pOwner, Vector vecOrigin, bool bSqueezed )
 {
 	//Attempt to activate any spawners in a radius around the bugbait
 	CBaseEntity*	pList[100];
@@ -244,30 +246,30 @@ bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity *pOwner, Vector vecOri
 	bool			suppressCall = false;
 
 	int count = UTIL_EntitiesInBox( pList, 100, vecOrigin - delta, vecOrigin + delta, 0 );
-	
+
 	// If the bugbait's been thrown, look for nearby targets to affect
-	if ( !bSqueezed )
+	if( !bSqueezed )
 	{
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
 			// If close enough, make combine soldiers freak out when hit
-			if ( UTIL_DistApprox( pList[i]->WorldSpaceCenter(), vecOrigin ) < bugbait_grenade_radius.GetFloat() )
+			if( UTIL_DistApprox( pList[i]->WorldSpaceCenter(), vecOrigin ) < bugbait_grenade_radius.GetFloat() )
 			{
 				// Must be a soldier
-				if ( FClassnameIs( pList[i], "npc_combine_s") )
+				if( FClassnameIs( pList[i], "npc_combine_s" ) )
 				{
-					CAI_BaseNPC *pCombine = pList[i]->MyNPCPointer();
+					CAI_BaseNPC* pCombine = pList[i]->MyNPCPointer();
 
-					if ( pCombine != NULL )
+					if( pCombine != NULL )
 					{
 						trace_t tr;
-						UTIL_TraceLine( vecOrigin, pCombine->EyePosition(), MASK_ALL, pOwner, COLLISION_GROUP_NONE, &tr);
+						UTIL_TraceLine( vecOrigin, pCombine->EyePosition(), MASK_ALL, pOwner, COLLISION_GROUP_NONE, &tr );
 
-						if ( tr.fraction == 1.0 || tr.m_pEnt == pCombine )
+						if( tr.fraction == 1.0 || tr.m_pEnt == pCombine )
 						{
-							// Randomize the start time a little so multiple combine hit by 
+							// Randomize the start time a little so multiple combine hit by
 							// the same bugbait don't all dance in synch.
-							g_EventQueue.AddEvent( pCombine, "HitByBugbait", RandomFloat(0, 0.5), pOwner, pOwner );
+							g_EventQueue.AddEvent( pCombine, "HitByBugbait", RandomFloat( 0, 0.5 ), pOwner, pOwner );
 						}
 					}
 				}
@@ -275,31 +277,40 @@ bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity *pOwner, Vector vecOri
 		}
 	}
 	// Iterate over all sensors to see if they detected this impact
-	for ( CBugBaitSensor *pSensor = GetBugBaitSensorList(); pSensor != NULL; pSensor = pSensor->m_pNext )
+	for( CBugBaitSensor* pSensor = GetBugBaitSensorList(); pSensor != NULL; pSensor = pSensor->m_pNext )
 	{
-		if ( pSensor == NULL )
+		if( pSensor == NULL )
+		{
 			continue;
+		}
 
-		if ( pSensor->IsDisabled() )
+		if( pSensor->IsDisabled() )
+		{
 			continue;
+		}
 
-		if ( bSqueezed && pSensor->DetectsSqueeze() == false )
+		if( bSqueezed && pSensor->DetectsSqueeze() == false )
+		{
 			continue;
+		}
 
-		if ( !bSqueezed && pSensor->DetectsThrown() == false )
+		if( !bSqueezed && pSensor->DetectsThrown() == false )
+		{
 			continue;
+		}
 
 		//Make sure we're within range of the sensor
 #ifdef MAPBASE
-		if ( pSensor->UsesRadius() ){
+		if( pSensor->UsesRadius() )
+		{
 #endif
-			if ( pSensor->GetRadius() > (pSensor->GetAbsOrigin() - vecOrigin).Length() )
+			if( pSensor->GetRadius() > ( pSensor->GetAbsOrigin() - vecOrigin ).Length() )
 			{
 				//Tell the sensor it's been hit
-				if ( pSensor->Baited( pOwner ) )
+				if( pSensor->Baited( pOwner ) )
 				{
 					//If we're suppressing the call to antlions, then don't make a bugbait sound
-					if ( pSensor->SuppressCall() )
+					if( pSensor->SuppressCall() )
 					{
 						suppressCall = true;
 					}
@@ -307,18 +318,20 @@ bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity *pOwner, Vector vecOri
 			}
 #ifdef MAPBASE
 		}
-		else{
+		else
+		{
 			Vector vMins = pSensor->GetAbsMins();
 			Vector vMaxs = pSensor->GetAbsMaxs();
-			bool inBox = ((vecOrigin.x >= vMins.x && vecOrigin.x <= vMaxs.x) &&
-				(vecOrigin.y >= vMins.y && vecOrigin.y <= vMaxs.y) &&
-				(vecOrigin.z >= vMins.z && vecOrigin.z <= vMaxs.z));
-			if ( inBox ){
+			bool inBox = ( ( vecOrigin.x >= vMins.x && vecOrigin.x <= vMaxs.x ) &&
+						   ( vecOrigin.y >= vMins.y && vecOrigin.y <= vMaxs.y ) &&
+						   ( vecOrigin.z >= vMins.z && vecOrigin.z <= vMaxs.z ) );
+			if( inBox )
+			{
 				//Tell the sensor it's been hit
-				if ( pSensor->Baited( pOwner ) )
+				if( pSensor->Baited( pOwner ) )
 				{
 					//If we're suppressing the call to antlions, then don't make a bugbait sound
-					if ( pSensor->SuppressCall() )
+					if( pSensor->SuppressCall() )
 					{
 						suppressCall = true;
 					}
@@ -332,7 +345,7 @@ bool CGrenadeBugBait::ActivateBugbaitTargets( CBaseEntity *pOwner, Vector vecOri
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CGrenadeBugBait::ThinkBecomeSolid( void )
 {
@@ -341,32 +354,32 @@ void CGrenadeBugBait::ThinkBecomeSolid( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : duration - 
+// Purpose:
+// Input  : duration -
 //-----------------------------------------------------------------------------
 void CGrenadeBugBait::SetGracePeriod( float duration )
 {
 	SetThink( &CGrenadeBugBait::ThinkBecomeSolid );
 	SetNextThink( gpGlobals->curtime + duration );
 
-	// Become unsolid	
+	// Become unsolid
 	AddSolidFlags( FSOLID_NOT_SOLID );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &position - 
-//			&angles - 
-//			&velocity - 
-//			&angVelocity - 
-//			*owner - 
+// Purpose:
+// Input  : &position -
+//			&angles -
+//			&velocity -
+//			&angVelocity -
+//			*owner -
 // Output : CBaseGrenade
 //-----------------------------------------------------------------------------
-CGrenadeBugBait *BugBaitGrenade_Create( const Vector &position, const QAngle &angles, const Vector &velocity, const QAngle &angVelocity, CBaseEntity *owner )
+CGrenadeBugBait* BugBaitGrenade_Create( const Vector& position, const QAngle& angles, const Vector& velocity, const QAngle& angVelocity, CBaseEntity* owner )
 {
-	CGrenadeBugBait *pGrenade = (CGrenadeBugBait *) CBaseEntity::Create( "npc_grenade_bugbait", position, angles, owner );
-	
-	if ( pGrenade != NULL )
+	CGrenadeBugBait* pGrenade = ( CGrenadeBugBait* ) CBaseEntity::Create( "npc_grenade_bugbait", position, angles, owner );
+
+	if( pGrenade != NULL )
 	{
 		pGrenade->SetLocalAngularVelocity( angVelocity );
 		pGrenade->SetAbsVelocity( velocity );

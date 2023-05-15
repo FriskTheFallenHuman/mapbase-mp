@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef EPISODIC_SCREENSPACEEFFECTS_H
 #define EPISODIC_SCREENSPACEEFFECTS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ScreenSpaceEffects.h"
@@ -15,16 +15,19 @@
 class CStunEffect : public IScreenSpaceEffect
 {
 public:
-	CStunEffect( void ) : 
-		m_flDuration( 0.0f ), 
-		m_flFinishTime( 0.0f ), 
+	CStunEffect( void ) :
+		m_flDuration( 0.0f ),
+		m_flFinishTime( 0.0f ),
 		m_bUpdateView( true ) {}
 
 	virtual void Init( void );
 	virtual void Shutdown( void );
-	virtual void SetParameters( KeyValues *params );
+	virtual void SetParameters( KeyValues* params );
 	virtual void Enable( bool bEnable ) {};
-	virtual bool IsEnabled( ) { return true; }
+	virtual bool IsEnabled( )
+	{
+		return true;
+	}
 
 	virtual void Render( int x, int y, int w, int h );
 
@@ -45,23 +48,29 @@ ADD_SCREENSPACE_EFFECT( CStunEffect, episodic_stun );
 class CEP1IntroEffect : public IScreenSpaceEffect
 {
 public:
-	CEP1IntroEffect( void ) : 
-		  m_flDuration( 0.0f ), 
-		  m_flFinishTime( 0.0f ), 
-		  m_bUpdateView( true ),
-		  m_bEnabled( false ),
-		  m_bFadeOut( false ) {}
+	CEP1IntroEffect( void ) :
+		m_flDuration( 0.0f ),
+		m_flFinishTime( 0.0f ),
+		m_bUpdateView( true ),
+		m_bEnabled( false ),
+		m_bFadeOut( false ) {}
 
 	virtual void Init( void );
 	virtual void Shutdown( void );
-	virtual void SetParameters( KeyValues *params );
-	virtual void Enable( bool bEnable ) { m_bEnabled = bEnable; }
-	virtual bool IsEnabled( ) { return m_bEnabled; }
+	virtual void SetParameters( KeyValues* params );
+	virtual void Enable( bool bEnable )
+	{
+		m_bEnabled = bEnable;
+	}
+	virtual bool IsEnabled( )
+	{
+		return m_bEnabled;
+	}
 
 	virtual void Render( int x, int y, int w, int h );
 
 private:
-	
+
 	inline unsigned char	GetFadeAlpha( void );
 
 	CTextureReference m_StunTexture;
@@ -86,18 +95,24 @@ ADD_SCREENSPACE_EFFECT( CEP1IntroEffect, episodic_intro );
 class CEP2StunEffect : public IScreenSpaceEffect
 {
 public:
-	CEP2StunEffect( void ) : 
-	  m_flDuration( 0.0f ), 
-	  m_flFinishTime( 0.0f ), 
-	  m_bUpdateView( true ),
-	  m_bEnabled( false ),
-	  m_bFadeOut( false ) {}
+	CEP2StunEffect( void ) :
+		m_flDuration( 0.0f ),
+		m_flFinishTime( 0.0f ),
+		m_bUpdateView( true ),
+		m_bEnabled( false ),
+		m_bFadeOut( false ) {}
 
 	virtual void Init( void );
 	virtual void Shutdown( void );
-	virtual void SetParameters( KeyValues *params );
-	virtual void Enable( bool bEnable ) { m_bEnabled = bEnable; }
-	virtual bool IsEnabled( ) { return m_bEnabled; }
+	virtual void SetParameters( KeyValues* params );
+	virtual void Enable( bool bEnable )
+	{
+		m_bEnabled = bEnable;
+	}
+	virtual bool IsEnabled( )
+	{
+		return m_bEnabled;
+	}
 
 	virtual void Render( int x, int y, int w, int h );
 

@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef WEAPON_IFMBASECAMERA_H
 #define WEAPON_IFMBASECAMERA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "weapon_ifmbase.h"
 
 #ifdef CLIENT_DLL
-#include "materialsystem/MaterialSystemUtil.h"
+	#include "materialsystem/MaterialSystemUtil.h"
 #endif
 
 #if defined( CLIENT_DLL )
@@ -24,7 +24,7 @@ class CWeaponIFMBaseCamera : public CWeaponIFMBase
 {
 public:
 	DECLARE_CLASS( CWeaponIFMBaseCamera, CWeaponIFMBase );
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 #ifdef GAME_DLL
@@ -38,20 +38,20 @@ public:
 #ifdef CLIENT_DLL
 	// Client code
 public:
-	virtual void	ViewModelDrawn( CBaseViewModel *pBaseViewModel );
+	virtual void	ViewModelDrawn( CBaseViewModel* pBaseViewModel );
 	virtual void	DrawCrosshair( );
 	virtual int		DrawModel( int flags );
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
 protected:
 	// Gets the abs orientation of the camera
-	virtual void ComputeAbsCameraTransform( Vector &vecAbsOrigin, QAngle &angAbsRotation );
+	virtual void ComputeAbsCameraTransform( Vector& vecAbsOrigin, QAngle& angAbsRotation );
 
 	// Gets the bounds of the overlay to draw
-	void GetOverlayBounds( int &x, int &y, int &w, int &h );
+	void GetOverlayBounds( int& x, int& y, int& w, int& h );
 
 	// Gets the size of the overlay to draw
-	void GetViewportSize( int &w, int &h );
+	void GetViewportSize( int& w, int& h );
 
 	void TransmitRenderInfo();
 
@@ -69,7 +69,7 @@ protected:
 #ifdef GAME_DLL
 	// Server code
 public:
-	void SetRenderInfo( float flAspectRatio, float flFOV, float flArmLength, const Vector &vecPosition, const QAngle &angles );
+	void SetRenderInfo( float flAspectRatio, float flFOV, float flArmLength, const Vector& vecPosition, const QAngle& angles );
 #endif
 
 private:
@@ -79,7 +79,7 @@ private:
 	CNetworkVector( m_vecRenderPosition );
 	CNetworkQAngle( m_angRenderAngles );
 
-	CWeaponIFMBaseCamera( const CWeaponIFMBaseCamera & );
+	CWeaponIFMBaseCamera( const CWeaponIFMBaseCamera& );
 };
 
 

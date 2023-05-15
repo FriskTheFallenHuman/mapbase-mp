@@ -47,7 +47,7 @@ private:
 		ReplayCamera()->SetPrimaryTarget( nEntIndex );
 	}
 
-	virtual void OnEvent_Camera_SetView( const SetViewParams_t &params )
+	virtual void OnEvent_Camera_SetView( const SetViewParams_t& params )
 	{
 		ReplayCamera()->OverrideView( params.m_pOrigin, params.m_pAngles, params.m_flFov );
 		Editor_UpdateFreeCamSettings( params );
@@ -63,27 +63,33 @@ private:
 
 	void Editor_UpdateCameraModeIcon( CameraMode_t nMode )
 	{
-		CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-		if ( !pEditor )
+		CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+		if( !pEditor )
+		{
 			return;
+		}
 
 		pEditor->UpdateCameraSelectionPosition( nMode );
 	}
 
-	void Editor_UpdateFreeCamSettings( const SetViewParams_t &params )
+	void Editor_UpdateFreeCamSettings( const SetViewParams_t& params )
 	{
-		CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-		if ( !pEditor )
+		CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+		if( !pEditor )
+		{
 			return;
+		}
 
 		pEditor->UpdateFreeCamSettings( params );
 	}
 
 	void Editor_UpdateTimeScale( float flScale )
 	{
-		CReplayPerformanceEditorPanel *pEditor = ReplayUI_GetPerformanceEditor();
-		if ( !pEditor )
+		CReplayPerformanceEditorPanel* pEditor = ReplayUI_GetPerformanceEditor();
+		if( !pEditor )
+		{
 			return;
+		}
 
 		pEditor->UpdateTimeScale( flScale );
 	}
@@ -92,7 +98,7 @@ private:
 //-----------------------------------------------------------------------------
 
 CReplayPerformancePlaybackHandler s_ReplayPerformancePlaybackHandler;
-IReplayPerformancePlaybackHandler *g_pReplayPerformancePlaybackHandler = &s_ReplayPerformancePlaybackHandler;
+IReplayPerformancePlaybackHandler* g_pReplayPerformancePlaybackHandler = &s_ReplayPerformancePlaybackHandler;
 
 //-----------------------------------------------------------------------------
 

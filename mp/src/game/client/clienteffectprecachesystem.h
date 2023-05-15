@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Deals with singleton  
+// Purpose: Deals with singleton
 //
 // $Revision: $
 // $NoKeywords: $
@@ -9,7 +9,7 @@
 #if !defined( CLIENTEFFECTPRECACHESYSTEM_H )
 #define CLIENTEFFECTPRECACHESYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "igamesystem.h"
@@ -34,16 +34,25 @@ public:
 class CClientEffectPrecacheSystem : public IGameSystem
 {
 public:
-	virtual char const *Name() { return "CCLientEffectPrecacheSystem"; }
+	virtual char const* Name()
+	{
+		return "CCLientEffectPrecacheSystem";
+	}
 
-	virtual bool	IsPerFrame() { return false; }
+	virtual bool	IsPerFrame()
+	{
+		return false;
+	}
 
 	// constructor, destructor
 	CClientEffectPrecacheSystem() {}
 	virtual ~CClientEffectPrecacheSystem() {}
 
 	// Init, shutdown
-	virtual bool Init() { return true; }
+	virtual bool Init()
+	{
+		return true;
+	}
 	virtual void PostInit() {}
 	virtual void Shutdown();
 
@@ -57,15 +66,15 @@ public:
 	virtual void OnRestore() {}
 	virtual void SafeRemoveIfDesired() {}
 
-	void Register( IClientEffect *effect );
+	void Register( IClientEffect* effect );
 
 protected:
 
-	CUtlVector< IClientEffect * >	m_Effects;
+	CUtlVector< IClientEffect* >	m_Effects;
 };
 
 //Singleton accessor
-extern CClientEffectPrecacheSystem	*ClientEffectPrecacheSystem();
+extern CClientEffectPrecacheSystem*	ClientEffectPrecacheSystem();
 
 //-----------------------------------------------------------------------------
 // Deals with automated registering and precaching of materials for effects
@@ -87,12 +96,12 @@ public:
 //		  : increment - whether to increment or decrement the reference counter
 //-----------------------------------------------------------------------------
 
-	inline void ReferenceMaterial( const char *materialName, bool increment = true )
+	inline void ReferenceMaterial( const char* materialName, bool increment = true )
 	{
-		IMaterial	*material = materials->FindMaterial( materialName, TEXTURE_GROUP_CLIENT_EFFECTS );
-		if ( !IsErrorMaterial( material ) )
+		IMaterial*	material = materials->FindMaterial( materialName, TEXTURE_GROUP_CLIENT_EFFECTS );
+		if( !IsErrorMaterial( material ) )
 		{
-			if ( increment )
+			if( increment )
 			{
 				material->IncrementReferenceCount();
 			}

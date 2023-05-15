@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -10,14 +10,14 @@
 #ifndef ILOADINGDISC_H
 #define ILOADINGDISC_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 abstract_class ILoadingDisc
@@ -33,6 +33,6 @@ public:
 	virtual void		SetPausedVisible( bool bVisible ) = 0;
 };
 
-extern ILoadingDisc *loadingdisc;
+extern ILoadingDisc* loadingdisc;
 
 #endif // ILOADINGDISC_H

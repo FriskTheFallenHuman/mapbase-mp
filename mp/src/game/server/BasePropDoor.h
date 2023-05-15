@@ -15,7 +15,7 @@
 #ifndef BASEPROPDOOR_H
 #define BASEPROPDOOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "props.h"
@@ -32,7 +32,8 @@ struct opendata_t
 };
 
 
-abstract_class CBasePropDoor : public CDynamicProp
+abstract_class CBasePropDoor :
+public CDynamicProp
 {
 public:
 
@@ -46,7 +47,7 @@ public:
 	void Activate();
 	int	ObjectCaps();
 
-	void HandleAnimEvent( animevent_t *pEvent );
+	void HandleAnimEvent( animevent_t* pEvent );
 
 	// Base class services.
 	// Do not make the functions in this block virtual!!
@@ -58,27 +59,36 @@ public:
 	inline bool IsDoorClosing();
 	inline bool IsDoorLocked();
 	inline bool IsDoorBlocked() const;
-	inline bool IsNPCOpening(CAI_BaseNPC *pNPC);
+	inline bool IsNPCOpening( CAI_BaseNPC * pNPC );
 	inline bool IsPlayerOpening();
-	inline bool IsOpener(CBaseEntity *pEnt);
+	inline bool IsOpener( CBaseEntity * pEnt );
 
-	bool NPCOpenDoor(CAI_BaseNPC *pNPC);
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	bool NPCOpenDoor( CAI_BaseNPC * pNPC );
+	bool TestCollision( const Ray_t & ray, unsigned int mask, trace_t& trace );
 	// }
 
 	// Implement these in your leaf class.
 	// {
-	virtual bool DoorCanClose( bool bAutoClose ) { return true; }
-	virtual bool DoorCanOpen( void ) { return true; }
+	virtual bool DoorCanClose( bool bAutoClose )
+	{
+		return true;
+	}
+	virtual bool DoorCanOpen( void )
+	{
+		return true;
+	}
 
-	virtual void GetNPCOpenData(CAI_BaseNPC *pNPC, opendata_t &opendata) = 0;
-	virtual float GetOpenInterval(void) = 0;
+	virtual void GetNPCOpenData( CAI_BaseNPC * pNPC, opendata_t& opendata ) = 0;
+	virtual float GetOpenInterval( void ) = 0;
 	// }
 
 #ifdef MAPBASE
-	virtual bool PassesDoorFilter(CBaseEntity *pEntity) { return true; }
+	virtual bool PassesDoorFilter( CBaseEntity * pEntity )
+	{
+		return true;
+	}
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 #endif
 
 protected:
@@ -95,20 +105,35 @@ protected:
 	// dvs: FIXME: make these private
 	void DoorClose();
 
-	CBasePropDoor *GetMaster( void ) { return m_hMaster; }
-	bool HasSlaves( void ) { return ( m_hDoorList.Count() > 0 ); }
+	CBasePropDoor * GetMaster( void )
+	{
+		return m_hMaster;
+	}
+	bool HasSlaves( void )
+	{
+		return ( m_hDoorList.Count() > 0 );
+	}
 
 	inline void SetDoorState( DoorState_t eDoorState );
 
 	float m_flAutoReturnDelay;	// How many seconds to wait before automatically closing, -1 never closes automatically.
 	CUtlVector< CHandle< CBasePropDoor > >	m_hDoorList;	// List of doors linked to us
 
-	inline CBaseEntity *GetActivator();
+	inline CBaseEntity * GetActivator();
 
 #ifdef MAPBASE
-	inline float GetNPCOpenDistance() { return m_flNPCOpenDistance; }
-	inline Activity GetNPCOpenFrontActivity() { return m_eNPCOpenFrontActivity; }
-	inline Activity GetNPCOpenBackActivity() { return m_eNPCOpenBackActivity; }
+	inline float GetNPCOpenDistance()
+	{
+		return m_flNPCOpenDistance;
+	}
+	inline Activity GetNPCOpenFrontActivity()
+	{
+		return m_eNPCOpenFrontActivity;
+	}
+	inline Activity GetNPCOpenBackActivity()
+	{
+		return m_eNPCOpenBackActivity;
+	}
 #endif
 
 private:
@@ -122,7 +147,7 @@ private:
 	virtual void OnDoorClosed() {}
 
 	// Called to tell the door to start opening.
-	virtual void BeginOpening(CBaseEntity *pOpenAwayFrom) = 0;
+	virtual void BeginOpening( CBaseEntity * pOpenAwayFrom ) = 0;
 
 	// Called to tell the door to start closing.
 	virtual void BeginClosing( void ) = 0;
@@ -132,7 +157,7 @@ private:
 
 	// Called when blocked to tell the door to continue moving.
 	virtual void DoorResume( void ) = 0;
-	
+
 	// Called to send the door instantly to its spawn positions.
 	virtual void DoorTeleportToSpawnPosition() = 0;
 	// }
@@ -143,8 +168,8 @@ private:
 	// Do not make the functions in this block virtual!!
 	// {
 	bool DoorActivate();
-	void DoorOpen( CBaseEntity *pOpenAwayFrom );
-	void OpenIfUnlocked(CBaseEntity *pActivator, CBaseEntity *pOpenAwayFrom);
+	void DoorOpen( CBaseEntity * pOpenAwayFrom );
+	void OpenIfUnlocked( CBaseEntity * pActivator, CBaseEntity * pOpenAwayFrom );
 
 	void DoorOpenMoveDone();
 	void DoorCloseMoveDone();
@@ -153,47 +178,53 @@ private:
 	void Lock();
 	void Unlock();
 
-	void Use(CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value);
-	void OnUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity * pActivator, CBaseEntity * pCaller, USE_TYPE useType, float value );
+	void OnUse( CBaseEntity * pActivator, CBaseEntity * pCaller, USE_TYPE useType, float value );
 
-	inline bool WillAutoReturn() { return m_flAutoReturnDelay != -1; }
+	inline bool WillAutoReturn()
+	{
+		return m_flAutoReturnDelay != -1;
+	}
 
-	void StartBlocked(CBaseEntity *pOther);
-	void OnStartBlocked( CBaseEntity *pOther );
-	void MasterStartBlocked( CBaseEntity *pOther );
+	void StartBlocked( CBaseEntity * pOther );
+	void OnStartBlocked( CBaseEntity * pOther );
+	void MasterStartBlocked( CBaseEntity * pOther );
 
-	void Blocked(CBaseEntity *pOther);
-	void EndBlocked(void);
+	void Blocked( CBaseEntity * pOther );
+	void EndBlocked( void );
 	void OnEndBlocked( void );
 
-	void UpdateAreaPortals(bool bOpen);
+	void UpdateAreaPortals( bool bOpen );
 
 	// Input handlers
-	void InputClose(inputdata_t &inputdata);
-	void InputLock(inputdata_t &inputdata);
-	void InputOpen(inputdata_t &inputdata);
-	void InputOpenAwayFrom(inputdata_t &inputdata);
-	void InputToggle(inputdata_t &inputdata);
-	void InputUnlock(inputdata_t &inputdata);
+	void InputClose( inputdata_t& inputdata );
+	void InputLock( inputdata_t& inputdata );
+	void InputOpen( inputdata_t& inputdata );
+	void InputOpenAwayFrom( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
+	void InputUnlock( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputAllowPlayerUse(inputdata_t &inputdata);
-	void InputDisallowPlayerUse(inputdata_t &inputdata);
+	void InputAllowPlayerUse( inputdata_t& inputdata );
+	void InputDisallowPlayerUse( inputdata_t& inputdata );
 #endif
 
-	void SetDoorBlocker( CBaseEntity *pBlocker );
+	void SetDoorBlocker( CBaseEntity * pBlocker );
 
-	void SetMaster( CBasePropDoor *pMaster ) { m_hMaster = pMaster; }
+	void SetMaster( CBasePropDoor * pMaster )
+	{
+		m_hMaster = pMaster;
+	}
 
 	void CalcDoorSounds();
 	// }
 
 	int		m_nHardwareType;
-	
+
 	DoorState_t m_eDoorState;	// Holds whether the door is open, closed, opening, or closing.
 
 	locksound_t m_ls;			// The sounds the door plays when being locked, unlocked, etc.
-	EHANDLE		m_hActivator;		
-	
+	EHANDLE		m_hActivator;
+
 	bool	m_bLocked;				// True if the door is locked.
 	EHANDLE	m_hBlocker;				// Entity blocking the door currently
 	bool	m_bFirstBlocked;		// Marker for being the first door (in a group) to be blocked (needed for motion control)
@@ -269,7 +300,7 @@ bool CBasePropDoor::IsDoorLocked()
 	return m_bLocked;
 }
 
-CBaseEntity *CBasePropDoor::GetActivator()
+CBaseEntity* CBasePropDoor::GetActivator()
 {
 	return m_hActivator;
 }
@@ -279,9 +310,9 @@ bool CBasePropDoor::IsDoorBlocked() const
 	return ( m_hBlocker != NULL );
 }
 
-bool CBasePropDoor::IsNPCOpening( CAI_BaseNPC *pNPC )
+bool CBasePropDoor::IsNPCOpening( CAI_BaseNPC* pNPC )
 {
-	return ( pNPC == ( CAI_BaseNPC * )GetActivator() );
+	return ( pNPC == ( CAI_BaseNPC* )GetActivator() );
 }
 
 inline bool CBasePropDoor::IsPlayerOpening()
@@ -289,7 +320,7 @@ inline bool CBasePropDoor::IsPlayerOpening()
 	return ( GetActivator() && GetActivator()->IsPlayer() );
 }
 
-inline bool CBasePropDoor::IsOpener(CBaseEntity *pEnt)
+inline bool CBasePropDoor::IsOpener( CBaseEntity* pEnt )
 {
 	return ( GetActivator() == pEnt );
 }

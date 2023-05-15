@@ -1,7 +1,7 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Dr. Eli Vance, earths last great hope, single-handedly fighting
-//			off both an evil alien invasion, as well as trying to stop 
+//			off both an evil alien invasion, as well as trying to stop
 //			that idiot lab assistant from putting the moves on his daughter.
 //=============================================================================//
 
@@ -23,7 +23,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_Eli : public CAI_BaseActor
 {
@@ -32,25 +32,31 @@ public:
 
 	void	Spawn( void );
 	void	Precache( void );
-	Class_T Classify ( void );
-	void	HandleAnimEvent( animevent_t *pEvent );
+	Class_T Classify( void );
+	void	HandleAnimEvent( animevent_t* pEvent );
 	int		GetSoundInterests( void );
 	void	SetupWithoutParent( void );
 	void	PrescheduleThink( void );
 
 #ifdef MAPBASE
 	// Use Eli's default subtitle color (255,208,172)
-	bool	GetGameTextSpeechParams( hudtextparms_t &params ) { params.r1 = 255; params.g1 = 208; params.b1 = 172; return BaseClass::GetGameTextSpeechParams( params ); }
+	bool	GetGameTextSpeechParams( hudtextparms_t& params )
+	{
+		params.r1 = 255;
+		params.g1 = 208;
+		params.b1 = 172;
+		return BaseClass::GetGameTextSpeechParams( params );
+	}
 #endif
 };
 
 LINK_ENTITY_TO_CLASS( npc_eli, CNPC_Eli );
 
 //-----------------------------------------------------------------------------
-// Classify - indicates this NPC's place in the 
+// Classify - indicates this NPC's place in the
 // relationship table.
 //-----------------------------------------------------------------------------
-Class_T	CNPC_Eli::Classify ( void )
+Class_T	CNPC_Eli::Classify( void )
 {
 	return	CLASS_PLAYER_ALLY_VITAL;
 }
@@ -61,21 +67,21 @@ Class_T	CNPC_Eli::Classify ( void )
 // HandleAnimEvent - catches the NPC-specific messages
 // that occur when tagged animation frames are played.
 //-----------------------------------------------------------------------------
-void CNPC_Eli::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Eli::HandleAnimEvent( animevent_t* pEvent )
 {
 	switch( pEvent->event )
 	{
-	case 1:
-	default:
-		BaseClass::HandleAnimEvent( pEvent );
-		break;
+		case 1:
+		default:
+			BaseClass::HandleAnimEvent( pEvent );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // GetSoundInterests - generic NPC can't hear.
 //-----------------------------------------------------------------------------
-int CNPC_Eli::GetSoundInterests ( void )
+int CNPC_Eli::GetSoundInterests( void )
 {
 	return	NULL;
 }
@@ -87,11 +93,11 @@ void CNPC_Eli::Spawn()
 {
 	// Eli is allowed to use multiple models, because he appears in the pod.
 	// He defaults to his normal model.
-	char *szModel = (char *)STRING( GetModelName() );
-	if (!szModel || !*szModel)
+	char* szModel = ( char* )STRING( GetModelName() );
+	if( !szModel || !*szModel )
 	{
 		szModel = "models/eli.mdl";
-		SetModelName( AllocPooledString(szModel) );
+		SetModelName( AllocPooledString( szModel ) );
 	}
 
 	Precache();
@@ -99,11 +105,11 @@ void CNPC_Eli::Spawn()
 
 	BaseClass::Spawn();
 
-	SetHullType(HULL_HUMAN);
+	SetHullType( HULL_HUMAN );
 	SetHullSizeNormal();
 
 	// If Eli has a parent, he's currently inside a pod. Prevent him from moving.
-	if ( GetMoveParent() )
+	if( GetMoveParent() )
 	{
 		SetSolid( SOLID_BBOX );
 		AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -133,10 +139,10 @@ void CNPC_Eli::Precache()
 {
 	PrecacheModel( STRING( GetModelName() ) );
 	BaseClass::Precache();
-}	
+}
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Eli::SetupWithoutParent( void )
 {
@@ -149,14 +155,14 @@ void CNPC_Eli::SetupWithoutParent( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Eli::PrescheduleThink( void )
 {
 	BaseClass::PrescheduleThink();
 
 	// Figure out if Eli has just been removed from his parent
-	if ( GetMoveType() == MOVETYPE_NONE && !GetMoveParent() )
+	if( GetMoveType() == MOVETYPE_NONE && !GetMoveParent() )
 	{
 		SetupWithoutParent();
 		SetupVPhysicsHull();

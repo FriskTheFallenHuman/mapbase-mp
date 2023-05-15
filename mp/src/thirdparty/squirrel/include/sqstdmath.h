@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-SQUIRREL_API SQRESULT sqstd_register_mathlib(HSQUIRRELVM v);
+SQUIRREL_API SQRESULT sqstd_register_mathlib( HSQUIRRELVM v );
 
 #ifdef __cplusplus
 } /*extern "C"*/

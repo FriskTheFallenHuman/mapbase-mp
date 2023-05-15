@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -22,7 +22,7 @@
 #include "tier1/refcount.h"
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -35,14 +35,14 @@ class IFileList;
 class IThreadPool;
 class CMemoryFileBacking;
 
-typedef void * FileHandle_t;
-typedef void * FileCacheHandle_t;
+typedef void* FileHandle_t;
+typedef void* FileCacheHandle_t;
 typedef int FileFindHandle_t;
-typedef void (*FileSystemLoggingFunc_t)( const char *fileName, const char *accessType );
+typedef void ( *FileSystemLoggingFunc_t )( const char* fileName, const char* accessType );
 typedef int WaitForResourcesHandle_t;
 
 #ifdef _X360
-typedef void* HANDLE;
+	typedef void* HANDLE;
 #endif
 
 #define USE_CRC_FILE_TRACKING 0
@@ -72,11 +72,11 @@ public:
 	virtual void Release() = 0;
 
 	// What should we do with a particular file?
-	virtual EPureServerFileClass GetFileClass( const char *pszFilename ) = 0;
+	virtual EPureServerFileClass GetFileClass( const char* pszFilename ) = 0;
 
 	// Access list of trusted keys which we will allow to set trusted content
 	virtual int GetTrustedKeyCount() const = 0;
-	virtual const byte *GetTrustedKey( int iKeyIndex, int *nKeySize ) const = 0;
+	virtual const byte* GetTrustedKey( int iKeyIndex, int* nKeySize ) const = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -184,31 +184,31 @@ public:
 	};
 
 	FileBlockingItem() :
-		m_ItemType( (FileBlockingWarning_t)0 ),
+		m_ItemType( ( FileBlockingWarning_t )0 ),
 		m_flElapsed( 0.0f ),
 		m_nAccessType( 0 )
 	{
 		SetFileName( NULL );
 	}
 
-	FileBlockingItem( int type, char const *filename, float elapsed, int accessType ) :
-		m_ItemType( (FileBlockingWarning_t)type ),
+	FileBlockingItem( int type, char const* filename, float elapsed, int accessType ) :
+		m_ItemType( ( FileBlockingWarning_t )type ),
 		m_flElapsed( elapsed ),
 		m_nAccessType( accessType )
 	{
 		SetFileName( filename );
 	}
 
-	void SetFileName( char const *filename )
+	void SetFileName( char const* filename )
 	{
-		if ( !filename )
+		if( !filename )
 		{
 			m_szFilename[ 0 ] = 0;
 			return;
 		}
 
 		int len = Q_strlen( filename );
-		if ( len >= sizeof( m_szFilename ) )
+		if( len >= sizeof( m_szFilename ) )
 		{
 			Q_strncpy( m_szFilename, &filename[ len - sizeof( m_szFilename ) + 1 ], sizeof( m_szFilename ) );
 		}
@@ -218,7 +218,7 @@ public:
 		}
 	}
 
-	char const *GetFileName() const
+	char const* GetFileName() const
 	{
 		return m_szFilename;
 	}
@@ -235,7 +235,7 @@ private:
 class IBlockingFileItemList
 {
 public:
-	
+
 	// You can't call any of the below calls without locking first
 	virtual void	LockMutex() = 0;
 	virtual void	UnlockMutex() = 0;
@@ -265,10 +265,10 @@ enum SearchPathAdd_t
 
 enum FilesystemOpenExFlags_t
 {
-	FSOPEN_UNBUFFERED		= (1 << 0),
-	FSOPEN_FORCE_TRACK_CRC	= (1 << 1),		// This makes it calculate a CRC for the file (if the file came from disk) regardless 
-											// of the IFileList passed to RegisterFileWhitelist.
-	FSOPEN_NEVERINPACK	    = (1 << 2),		// 360 only, hint to FS that file is not allowed to be in pack file
+	FSOPEN_UNBUFFERED		= ( 1 << 0 ),
+	FSOPEN_FORCE_TRACK_CRC	= ( 1 << 1 ),		// This makes it calculate a CRC for the file (if the file came from disk) regardless
+	// of the IFileList passed to RegisterFileWhitelist.
+	FSOPEN_NEVERINPACK	    = ( 1 << 2 ),		// 360 only, hint to FS that file is not allowed to be in pack file
 };
 
 #define FILESYSTEM_INVALID_HANDLE	( FileHandle_t )0
@@ -279,8 +279,8 @@ enum FilesystemOpenExFlags_t
 
 struct FileSystemStatistics
 {
-	CInterlockedUInt	nReads,		
-						nWrites,		
+	CInterlockedUInt	nReads,
+						nWrites,
 						nBytesRead,
 						nBytesWritten,
 						nSeeks;
@@ -289,21 +289,21 @@ struct FileSystemStatistics
 //-----------------------------------------------------------------------------
 // File system allocation functions. Client must free on failure
 //-----------------------------------------------------------------------------
-typedef void *(*FSAllocFunc_t)( const char *pszFilename, unsigned nBytes );
+typedef void* ( *FSAllocFunc_t )( const char* pszFilename, unsigned nBytes );
 
 
 //-----------------------------------------------------------------------------
 // Used to display dirty disk error functions
 //-----------------------------------------------------------------------------
-typedef void (*FSDirtyDiskReportFunc_t)();
+typedef void ( *FSDirtyDiskReportFunc_t )();
 
 
 //-----------------------------------------------------------------------------
 // Asynchronous support types
 //-----------------------------------------------------------------------------
-DECLARE_POINTER_HANDLE(FSAsyncControl_t);
-DECLARE_POINTER_HANDLE(FSAsyncFile_t);
-const FSAsyncFile_t FS_INVALID_ASYNC_FILE = (FSAsyncFile_t)(0x0000ffff);
+DECLARE_POINTER_HANDLE( FSAsyncControl_t );
+DECLARE_POINTER_HANDLE( FSAsyncFile_t );
+const FSAsyncFile_t FS_INVALID_ASYNC_FILE = ( FSAsyncFile_t )( 0x0000ffff );
 
 
 //---------------------------------------------------------
@@ -342,7 +342,7 @@ enum FSAsyncFlags_t
 //---------------------------------------------------------
 enum EFileCRCStatus
 {
-	k_eFileCRCStatus_CantOpenFile,		// We don't have this file. 
+	k_eFileCRCStatus_CantOpenFile,		// We don't have this file.
 	k_eFileCRCStatus_GotCRC,
 	k_eFileCRCStatus_FileInVPK
 };
@@ -361,29 +361,33 @@ enum ECacheCRCType
 // Note: If you change the signature of the callback, you will have to account for it in FileSystemV12 (toml [4/18/2005] )
 //---------------------------------------------------------
 struct FileAsyncRequest_t;
-typedef void (*FSAsyncCallbackFunc_t)(const FileAsyncRequest_t &request, int nBytesRead, FSAsyncStatus_t err);
+typedef void ( *FSAsyncCallbackFunc_t )( const FileAsyncRequest_t& request, int nBytesRead, FSAsyncStatus_t err );
 
 //---------------------------------------------------------
 // Description of an async request
 //---------------------------------------------------------
 struct FileAsyncRequest_t
 {
-	FileAsyncRequest_t()	{ memset( this, 0, sizeof(*this) ); hSpecificAsyncFile = FS_INVALID_ASYNC_FILE;	}
-	const char *			pszFilename;		// file system name
-	void *					pData;				// optional, system will alloc/free if NULL
+	FileAsyncRequest_t()
+	{
+		memset( this, 0, sizeof( *this ) );
+		hSpecificAsyncFile = FS_INVALID_ASYNC_FILE;
+	}
+	const char* 			pszFilename;		// file system name
+	void* 					pData;				// optional, system will alloc/free if NULL
 	int						nOffset;			// optional initial seek_set, 0=beginning
 	int						nBytes;				// optional read clamp, -1=exist test, 0=full read
 	FSAsyncCallbackFunc_t	pfnCallback;		// optional completion callback
-	void *					pContext;			// caller's unique file identifier
+	void* 					pContext;			// caller's unique file identifier
 	int						priority;			// inter list priority, 0=lowest
 	unsigned				flags;				// behavior modifier
-	const char *			pszPathID;			// path ID (NOTE: this field is here to remain binary compatible with release HL2 filesystem interface)
+	const char* 			pszPathID;			// path ID (NOTE: this field is here to remain binary compatible with release HL2 filesystem interface)
 	FSAsyncFile_t			hSpecificAsyncFile; // Optional hint obtained using AsyncBeginRead()
 	FSAllocFunc_t			pfnAlloc;			// custom allocator. can be null. not compatible with FSASYNC_FLAGS_FREEDATAPTR
 };
 
 
-struct FileHash_t 
+struct FileHash_t
 {
 	enum EFileHashType_t
 	{
@@ -405,17 +409,17 @@ struct FileHash_t
 	int m_PackFileID;
 	int m_nPackFileNumber;
 
-	bool operator==( const FileHash_t &src ) const
+	bool operator==( const FileHash_t& src ) const
 	{
-		return m_crcIOSequence == src.m_crcIOSequence && 
-			m_md5contents == src.m_md5contents && 
-			m_eFileHashType == src.m_eFileHashType;
+		return m_crcIOSequence == src.m_crcIOSequence &&
+			   m_md5contents == src.m_md5contents &&
+			   m_eFileHashType == src.m_eFileHashType;
 	}
-	bool operator!=( const FileHash_t &src ) const
+	bool operator!=( const FileHash_t& src ) const
 	{
-		return m_crcIOSequence != src.m_crcIOSequence || 
-			m_md5contents != src.m_md5contents || 
-			m_eFileHashType != src.m_eFileHashType;
+		return m_crcIOSequence != src.m_crcIOSequence ||
+			   m_md5contents != src.m_md5contents ||
+			   m_eFileHashType != src.m_eFileHashType;
 	}
 
 };
@@ -456,9 +460,10 @@ public:
 // as a hook
 //-----------------------------------------------------------------------------
 
-abstract_class IAsyncFileFetch {
+abstract_class IAsyncFileFetch
+{
 public:
-	typedef void *Handle;
+	typedef void* Handle;
 
 	/// Initiate a request.  Returns error status, or on success
 	/// returns an opaque handle used to terminate the job
@@ -469,7 +474,7 @@ public:
 	/// The callback is required, and is the only mechanism to communicate
 	/// status.  (No polling.)  The request is automatically destroyed anytime
 	/// after the callback is executed.
-	virtual FSAsyncStatus_t Start( const FileAsyncRequest_t &request, Handle *pOutHandle, IThreadPool *pThreadPool ) = 0;
+	virtual FSAsyncStatus_t Start( const FileAsyncRequest_t& request, Handle * pOutHandle, IThreadPool * pThreadPool ) = 0;
 
 	/// Attempt to complete any active work, returning status.  The callback WILL
 	/// be executed (this is necessary in case we allocated the buffer).
@@ -485,9 +490,9 @@ public:
 abstract_class IThreadedFileMD5Processor
 {
 public:
-	virtual int				SubmitThreadedMD5Request( uint8 *pubBuffer, int cubBuffer, int PackFileID, int nPackFileNumber, int nPackFileFraction ) = 0;
-	virtual bool			BlockUntilMD5RequestComplete( int iRequest, MD5Value_t *pMd5ValueOut ) = 0;
-	virtual bool			IsMD5RequestComplete( int iRequest, MD5Value_t *pMd5ValueOut ) = 0;
+	virtual int				SubmitThreadedMD5Request( uint8 * pubBuffer, int cubBuffer, int PackFileID, int nPackFileNumber, int nPackFileFraction ) = 0;
+	virtual bool			BlockUntilMD5RequestComplete( int iRequest, MD5Value_t* pMd5ValueOut ) = 0;
+	virtual bool			IsMD5RequestComplete( int iRequest, MD5Value_t* pMd5ValueOut ) = 0;
 };
 
 //-----------------------------------------------------------------------------
@@ -502,33 +507,33 @@ abstract_class IBaseFileSystem
 {
 public:
 	virtual int				Read( void* pOutput, int size, FileHandle_t file ) = 0;
-	virtual int				Write( void const* pInput, int size, FileHandle_t file ) = 0;
+	virtual int				Write( void const * pInput, int size, FileHandle_t file ) = 0;
 
 	// if pathID is NULL, all paths will be searched for the file
-	virtual FileHandle_t	Open( const char *pFileName, const char *pOptions, const char *pathID = 0 ) = 0;
+	virtual FileHandle_t	Open( const char* pFileName, const char* pOptions, const char* pathID = 0 ) = 0;
 	virtual void			Close( FileHandle_t file ) = 0;
 
 
 	virtual void			Seek( FileHandle_t file, int pos, FileSystemSeek_t seekType ) = 0;
 	virtual unsigned int	Tell( FileHandle_t file ) = 0;
 	virtual unsigned int	Size( FileHandle_t file ) = 0;
-	virtual unsigned int	Size( const char *pFileName, const char *pPathID = 0 ) = 0;
+	virtual unsigned int	Size( const char* pFileName, const char* pPathID = 0 ) = 0;
 
 	virtual void			Flush( FileHandle_t file ) = 0;
-	virtual bool			Precache( const char *pFileName, const char *pPathID = 0 ) = 0;
+	virtual bool			Precache( const char* pFileName, const char* pPathID = 0 ) = 0;
 
-	virtual bool			FileExists( const char *pFileName, const char *pPathID = 0 ) = 0;
-	virtual bool			IsFileWritable( char const *pFileName, const char *pPathID = 0 ) = 0;
-	virtual bool			SetFileWritable( char const *pFileName, bool writable, const char *pPathID = 0 ) = 0;
+	virtual bool			FileExists( const char* pFileName, const char* pPathID = 0 ) = 0;
+	virtual bool			IsFileWritable( char const * pFileName, const char* pPathID = 0 ) = 0;
+	virtual bool			SetFileWritable( char const * pFileName, bool writable, const char* pPathID = 0 ) = 0;
 
-	virtual long			GetFileTime( const char *pFileName, const char *pPathID = 0 ) = 0;
+	virtual long			GetFileTime( const char* pFileName, const char* pPathID = 0 ) = 0;
 
 	//--------------------------------------------------------
 	// Reads/writes files to utlbuffers. Use this for optimal read performance when doing open/read/close
 	//--------------------------------------------------------
-	virtual bool			ReadFile( const char *pFileName, const char *pPath, CUtlBuffer &buf, int nMaxBytes = 0, int nStartingByte = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
-	virtual bool			WriteFile( const char *pFileName, const char *pPath, CUtlBuffer &buf ) = 0;
-	virtual bool			UnzipFile( const char *pFileName, const char *pPath, const char *pDestination ) = 0;
+	virtual bool			ReadFile( const char* pFileName, const char* pPath, CUtlBuffer & buf, int nMaxBytes = 0, int nStartingByte = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
+	virtual bool			WriteFile( const char* pFileName, const char* pPath, CUtlBuffer & buf ) = 0;
+	virtual bool			UnzipFile( const char* pFileName, const char* pPath, const char* pDestination ) = 0;
 };
 
 
@@ -538,7 +543,8 @@ public:
 
 #define FILESYSTEM_INTERFACE_VERSION			"VFileSystem022"
 
-abstract_class IFileSystem : public IAppSystem, public IBaseFileSystem
+abstract_class IFileSystem :
+public IAppSystem, public IBaseFileSystem
 {
 public:
 	//--------------------------------------------------------
@@ -547,9 +553,9 @@ public:
 
 	virtual bool			IsSteam() const = 0;
 
-	// Supplying an extra app id will mount this app in addition 
+	// Supplying an extra app id will mount this app in addition
 	// to the one specified in the environment variable "steamappid"
-	// 
+	//
 	// If nExtraAppId is < -1, then it will mount that app ID only.
 	// (Was needed by the dedicated server b/c the "SteamAppId" env var only gets passed to steam.dll
 	// at load time, so the dedicated couldn't pass it in that way).
@@ -562,59 +568,59 @@ public:
 	// Add paths in priority order (mod dir, game dir, ....)
 	// If one or more .pak files are in the specified directory, then they are
 	//  added after the file system path
-	// If the path is the relative path to a .bsp file, then any previous .bsp file 
+	// If the path is the relative path to a .bsp file, then any previous .bsp file
 	//  override is cleared and the current .bsp is searched for an embedded PAK file
 	//  and this file becomes the highest priority search path ( i.e., it's looked at first
 	//   even before the mod's file system path ).
-	virtual void			AddSearchPath( const char *pPath, const char *pathID, SearchPathAdd_t addType = PATH_ADD_TO_TAIL ) = 0;
-	virtual bool			RemoveSearchPath( const char *pPath, const char *pathID = 0 ) = 0;
+	virtual void			AddSearchPath( const char* pPath, const char* pathID, SearchPathAdd_t addType = PATH_ADD_TO_TAIL ) = 0;
+	virtual bool			RemoveSearchPath( const char* pPath, const char* pathID = 0 ) = 0;
 
 	// Remove all search paths (including write path?)
 	virtual void			RemoveAllSearchPaths( void ) = 0;
 
 	// Remove search paths associated with a given pathID
-	virtual void			RemoveSearchPaths( const char *szPathID ) = 0;
+	virtual void			RemoveSearchPaths( const char* szPathID ) = 0;
 
 	// This is for optimization. If you mark a path ID as "by request only", then files inside it
 	// will only be accessed if the path ID is specifically requested. Otherwise, it will be ignored.
 	// If there are currently no search paths with the specified path ID, then it will still
 	// remember it in case you add search paths with this path ID.
-	virtual void			MarkPathIDByRequestOnly( const char *pPathID, bool bRequestOnly ) = 0;
+	virtual void			MarkPathIDByRequestOnly( const char* pPathID, bool bRequestOnly ) = 0;
 
 	// converts a partial path into a full path
 	// Prefer using the RelativePathToFullPath_safe template wrapper to calling this directly
-	virtual const char		*RelativePathToFullPath( const char *pFileName, const char *pPathID, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars, PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t *pPathType = NULL ) = 0;
-	template <size_t maxLenInChars> const char *RelativePathToFullPath_safe( const char *pFileName, const char *pPathID, OUT_Z_ARRAY char (&pDest)[maxLenInChars], PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t *pPathType = NULL )
+	virtual const char*		RelativePathToFullPath( const char* pFileName, const char* pPathID, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars, PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t* pPathType = NULL ) = 0;
+	template <size_t maxLenInChars> const char* RelativePathToFullPath_safe( const char* pFileName, const char* pPathID, OUT_Z_ARRAY char ( &pDest )[maxLenInChars], PathTypeFilter_t pathFilter = FILTER_NONE, PathTypeQuery_t* pPathType = NULL )
 	{
-		return RelativePathToFullPath( pFileName, pPathID, pDest, (int)maxLenInChars, pathFilter, pPathType );
+		return RelativePathToFullPath( pFileName, pPathID, pDest, ( int )maxLenInChars, pathFilter, pPathType );
 	}
 
 	// Returns the search path, each path is separated by ;s. Returns the length of the string returned
 	// Prefer using the GetSearchPath_safe template wrapper to calling this directly
-	virtual int				GetSearchPath( const char *pathID, bool bGetPackFiles, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
-	template <size_t maxLenInChars> int GetSearchPath_safe( const char *pathID, bool bGetPackFiles, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	virtual int				GetSearchPath( const char* pathID, bool bGetPackFiles, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> int GetSearchPath_safe( const char* pathID, bool bGetPackFiles, OUT_Z_ARRAY char ( &pDest )[maxLenInChars] )
 	{
-		return GetSearchPath( pathID, bGetPackFiles, pDest, (int)maxLenInChars );
+		return GetSearchPath( pathID, bGetPackFiles, pDest, ( int )maxLenInChars );
 	}
 
 	// interface for custom pack files > 4Gb
-	virtual bool			AddPackFile( const char *fullpath, const char *pathID ) = 0;
+	virtual bool			AddPackFile( const char* fullpath, const char* pathID ) = 0;
 
 	//--------------------------------------------------------
 	// File manipulation operations
 	//--------------------------------------------------------
 
 	// Deletes a file (on the WritePath)
-	virtual void			RemoveFile( char const* pRelativePath, const char *pathID = 0 ) = 0;
+	virtual void			RemoveFile( char const * pRelativePath, const char* pathID = 0 ) = 0;
 
 	// Renames a file (on the WritePath)
-	virtual bool			RenameFile( char const *pOldPath, char const *pNewPath, const char *pathID = 0 ) = 0;
+	virtual bool			RenameFile( char const * pOldPath, char const * pNewPath, const char* pathID = 0 ) = 0;
 
 	// create a local directory structure
-	virtual void			CreateDirHierarchy( const char *path, const char *pathID = 0 ) = 0;
+	virtual void			CreateDirHierarchy( const char* path, const char* pathID = 0 ) = 0;
 
 	// File I/O and info
-	virtual bool			IsDirectory( const char *pFileName, const char *pathID = 0 ) = 0;
+	virtual bool			IsDirectory( const char* pFileName, const char* pathID = 0 ) = 0;
 
 	virtual void			FileTimeToString( char* pStrip, int maxCharsIncludingTerminator, long fileTime ) = 0;
 
@@ -628,33 +634,33 @@ public:
 
 	virtual bool			EndOfFile( FileHandle_t file ) = 0;
 
-	virtual char			*ReadLine( char *pOutput, int maxChars, FileHandle_t file ) = 0;
-	virtual int				FPrintf( FileHandle_t file, PRINTF_FORMAT_STRING const char *pFormat, ... ) = 0;
+	virtual char*			ReadLine( char* pOutput, int maxChars, FileHandle_t file ) = 0;
+	virtual int				FPrintf( FileHandle_t file, PRINTF_FORMAT_STRING const char* pFormat, ... ) = 0;
 
 	//--------------------------------------------------------
 	// Dynamic library operations
 	//--------------------------------------------------------
 
 	// load/unload modules
-	virtual CSysModule 		*LoadModule( const char *pFileName, const char *pPathID = 0, bool bValidatedDllOnly = true ) = 0;
-	virtual void			UnloadModule( CSysModule *pModule ) = 0;
+	virtual CSysModule 		* LoadModule( const char* pFileName, const char* pPathID = 0, bool bValidatedDllOnly = true ) = 0;
+	virtual void			UnloadModule( CSysModule * pModule ) = 0;
 
 	//--------------------------------------------------------
 	// File searching operations
 	//--------------------------------------------------------
 
 	// FindFirst/FindNext. Also see FindFirstEx.
-	virtual const char		*FindFirst( const char *pWildCard, FileFindHandle_t *pHandle ) = 0;
-	virtual const char		*FindNext( FileFindHandle_t handle ) = 0;
+	virtual const char*		FindFirst( const char* pWildCard, FileFindHandle_t* pHandle ) = 0;
+	virtual const char*		FindNext( FileFindHandle_t handle ) = 0;
 	virtual bool			FindIsDirectory( FileFindHandle_t handle ) = 0;
 	virtual void			FindClose( FileFindHandle_t handle ) = 0;
 
 	// Same as FindFirst, but you can filter by path ID, which can make it faster.
-	virtual const char		*FindFirstEx( 
-		const char *pWildCard, 
-		const char *pPathID,
-		FileFindHandle_t *pHandle
-		) = 0;
+	virtual const char*		FindFirstEx(
+		const char* pWildCard,
+		const char* pPathID,
+		FileFindHandle_t* pHandle
+	) = 0;
 
 	//--------------------------------------------------------
 	// File name and directory operations
@@ -663,19 +669,19 @@ public:
 	// FIXME: This method is obsolete! Use RelativePathToFullPath instead!
 	// converts a partial path into a full path
 	// Prefer using the GetLocalPath_safe template wrapper to calling this directly
-	virtual const char		*GetLocalPath( const char *pFileName, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
-	template <size_t maxLenInChars> const char *GetLocalPath_safe( const char *pFileName, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	virtual const char*		GetLocalPath( const char* pFileName, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> const char* GetLocalPath_safe( const char* pFileName, OUT_Z_ARRAY char ( &pDest )[maxLenInChars] )
 	{
-		return GetLocalPath( pFileName, pDest, (int)maxLenInChars );
+		return GetLocalPath( pFileName, pDest, ( int )maxLenInChars );
 	}
 
-	// Returns true on success ( based on current list of search paths, otherwise false if 
+	// Returns true on success ( based on current list of search paths, otherwise false if
 	//  it can't be resolved )
 	// Prefer using the FullPathToRelativePath_safe template wrapper to calling this directly
-	virtual bool			FullPathToRelativePath( const char *pFullpath, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
-	template <size_t maxLenInChars> bool FullPathToRelativePath_safe( const char *pFullpath, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	virtual bool			FullPathToRelativePath( const char* pFullpath, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool FullPathToRelativePath_safe( const char* pFullpath, OUT_Z_ARRAY char ( &pDest )[maxLenInChars] )
 	{
-		return FullPathToRelativePath( pFullpath, pDest, (int)maxLenInChars );
+		return FullPathToRelativePath( pFullpath, pDest, ( int )maxLenInChars );
 	}
 
 	// Gets the current working directory
@@ -685,8 +691,8 @@ public:
 	// Filename dictionary operations
 	//--------------------------------------------------------
 
-	virtual FileNameHandle_t	FindOrAddFileName( char const *pFileName ) = 0;
-	virtual bool				String( const FileNameHandle_t& handle, char *buf, int buflen ) = 0;
+	virtual FileNameHandle_t	FindOrAddFileName( char const * pFileName ) = 0;
+	virtual bool				String( const FileNameHandle_t& handle, char* buf, int buflen ) = 0;
 
 	//--------------------------------------------------------
 	// Asynchronous file operations
@@ -695,10 +701,13 @@ public:
 	//------------------------------------
 	// Global operations
 	//------------------------------------
-			FSAsyncStatus_t	AsyncRead( const FileAsyncRequest_t &request, FSAsyncControl_t *phControl = NULL )	{ return AsyncReadMultiple( &request, 1, phControl ); 	}
-	virtual FSAsyncStatus_t	AsyncReadMultiple( const FileAsyncRequest_t *pRequests, int nRequests,  FSAsyncControl_t *phControls = NULL ) = 0;
-	virtual FSAsyncStatus_t	AsyncAppend(const char *pFileName, const void *pSrc, int nSrcBytes, bool bFreeMemory, FSAsyncControl_t *pControl = NULL ) = 0;
-	virtual FSAsyncStatus_t	AsyncAppendFile(const char *pAppendToFileName, const char *pAppendFromFileName, FSAsyncControl_t *pControl = NULL ) = 0;
+	FSAsyncStatus_t	AsyncRead( const FileAsyncRequest_t& request, FSAsyncControl_t* phControl = NULL )
+	{
+		return AsyncReadMultiple( &request, 1, phControl );
+	}
+	virtual FSAsyncStatus_t	AsyncReadMultiple( const FileAsyncRequest_t* pRequests, int nRequests,  FSAsyncControl_t* phControls = NULL ) = 0;
+	virtual FSAsyncStatus_t	AsyncAppend( const char* pFileName, const void* pSrc, int nSrcBytes, bool bFreeMemory, FSAsyncControl_t* pControl = NULL ) = 0;
+	virtual FSAsyncStatus_t	AsyncAppendFile( const char* pAppendToFileName, const char* pAppendFromFileName, FSAsyncControl_t* pControl = NULL ) = 0;
 	virtual void			AsyncFinishAll( int iToPriority = 0 ) = 0;
 	virtual void			AsyncFinishAllWrites() = 0;
 	virtual FSAsyncStatus_t	AsyncFlush() = 0;
@@ -708,25 +717,25 @@ public:
 	/// Add async fetcher interface.  This gives apps a hook to intercept async requests and
 	/// pull the data from a source of their choosing.  The immediate use case is to load
 	/// assets from the CDN via HTTP.
-	virtual void AsyncAddFetcher( IAsyncFileFetch *pFetcher ) = 0;
-	virtual void AsyncRemoveFetcher( IAsyncFileFetch *pFetcher ) = 0;
+	virtual void AsyncAddFetcher( IAsyncFileFetch * pFetcher ) = 0;
+	virtual void AsyncRemoveFetcher( IAsyncFileFetch * pFetcher ) = 0;
 
 	//------------------------------------
 	// Functions to hold a file open if planning on doing mutiple reads. Use is optional,
 	// and is taken only as a hint
 	//------------------------------------
-	virtual FSAsyncStatus_t	AsyncBeginRead( const char *pszFile, FSAsyncFile_t *phFile ) = 0;
+	virtual FSAsyncStatus_t	AsyncBeginRead( const char* pszFile, FSAsyncFile_t* phFile ) = 0;
 	virtual FSAsyncStatus_t	AsyncEndRead( FSAsyncFile_t hFile ) = 0;
 
 	//------------------------------------
 	// Request management
 	//------------------------------------
 	virtual FSAsyncStatus_t	AsyncFinish( FSAsyncControl_t hControl, bool wait = true ) = 0;
-	virtual FSAsyncStatus_t	AsyncGetResult( FSAsyncControl_t hControl, void **ppData, int *pSize ) = 0;
+	virtual FSAsyncStatus_t	AsyncGetResult( FSAsyncControl_t hControl, void** ppData, int* pSize ) = 0;
 	virtual FSAsyncStatus_t	AsyncAbort( FSAsyncControl_t hControl ) = 0;
 	virtual FSAsyncStatus_t	AsyncStatus( FSAsyncControl_t hControl ) = 0;
 	// set a new priority for a file already in the queue
-	virtual FSAsyncStatus_t	AsyncSetPriority(FSAsyncControl_t hControl, int newPriority) = 0;
+	virtual FSAsyncStatus_t	AsyncSetPriority( FSAsyncControl_t hControl, int newPriority ) = 0;
 	virtual void			AsyncAddRef( FSAsyncControl_t hControl ) = 0;
 	virtual void			AsyncRelease( FSAsyncControl_t hControl ) = 0;
 
@@ -736,22 +745,22 @@ public:
 
 	// starts waiting for resources to be available
 	// returns FILESYSTEM_INVALID_HANDLE if there is nothing to wait on
-	virtual WaitForResourcesHandle_t WaitForResources( const char *resourcelist ) = 0;
+	virtual WaitForResourcesHandle_t WaitForResources( const char* resourcelist ) = 0;
 	// get progress on waiting for resources; progress is a float [0, 1], complete is true on the waiting being done
 	// returns false if no progress is available
 	// any calls after complete is true or on an invalid handle will return false, 0.0f, true
-	virtual bool			GetWaitForResourcesProgress( WaitForResourcesHandle_t handle, float *progress /* out */ , bool *complete /* out */ ) = 0;
+	virtual bool			GetWaitForResourcesProgress( WaitForResourcesHandle_t handle, float* progress /* out */ , bool* complete /* out */ ) = 0;
 	// cancels a progress call
 	virtual void			CancelWaitForResources( WaitForResourcesHandle_t handle ) = 0;
 
 	// hints that a set of files will be loaded in near future
 	// HintResourceNeed() is not to be confused with resource precaching.
-	virtual int				HintResourceNeed( const char *hintlist, int forgetEverything ) = 0;
+	virtual int				HintResourceNeed( const char* hintlist, int forgetEverything ) = 0;
 	// returns true if a file is on disk
-	virtual bool			IsFileImmediatelyAvailable(const char *pFileName) = 0;
-	
+	virtual bool			IsFileImmediatelyAvailable( const char* pFileName ) = 0;
+
 	// copies file out of pak/bsp/steam cache onto disk (to be accessible by third-party code)
-	virtual void			GetLocalCopy( const char *pFileName ) = 0;
+	virtual void			GetLocalCopy( const char* pFileName ) = 0;
 
 	//--------------------------------------------------------
 	// Debugging operations
@@ -762,31 +771,31 @@ public:
 	virtual void			PrintSearchPaths( void ) = 0;
 
 	// output
-	virtual void			SetWarningFunc( void (*pfnWarning)( PRINTF_FORMAT_STRING const char *fmt, ... ) ) = 0;
+	virtual void			SetWarningFunc( void ( *pfnWarning )( PRINTF_FORMAT_STRING const char* fmt, ... ) ) = 0;
 	virtual void			SetWarningLevel( FileWarningLevel_t level ) = 0;
-	virtual void			AddLoggingFunc( void (*pfnLogFunc)( const char *fileName, const char *accessType ) ) = 0;
+	virtual void			AddLoggingFunc( void ( *pfnLogFunc )( const char* fileName, const char* accessType ) ) = 0;
 	virtual void			RemoveLoggingFunc( FileSystemLoggingFunc_t logFunc ) = 0;
 
 	// Returns the file system statistics retreived by the implementation.  Returns NULL if not supported.
-	virtual const FileSystemStatistics *GetFilesystemStatistics() = 0;
+	virtual const FileSystemStatistics * GetFilesystemStatistics() = 0;
 
 	//--------------------------------------------------------
 	// Start of new functions after Lost Coast release (7/05)
 	//--------------------------------------------------------
 
-	virtual FileHandle_t	OpenEx( const char *pFileName, const char *pOptions, unsigned flags = 0, const char *pathID = 0, char **ppszResolvedFilename = NULL ) = 0;
+	virtual FileHandle_t	OpenEx( const char* pFileName, const char* pOptions, unsigned flags = 0, const char* pathID = 0, char** ppszResolvedFilename = NULL ) = 0;
 
 	// Extended version of read provides more context to allow for more optimal reading
 	virtual int				ReadEx( void* pOutput, int sizeDest, int size, FileHandle_t file ) = 0;
-	virtual int				ReadFileEx( const char *pFileName, const char *pPath, void **ppBuf, bool bNullTerminate = false, bool bOptimalAlloc = false, int nMaxBytes = 0, int nStartingByte = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
+	virtual int				ReadFileEx( const char* pFileName, const char* pPath, void** ppBuf, bool bNullTerminate = false, bool bOptimalAlloc = false, int nMaxBytes = 0, int nStartingByte = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
 
-	virtual FileNameHandle_t	FindFileName( char const *pFileName ) = 0;
+	virtual FileNameHandle_t	FindFileName( char const * pFileName ) = 0;
 
 #if defined( TRACK_BLOCKING_IO )
 	virtual void			EnableBlockingFileAccessTracking( bool state ) = 0;
 	virtual bool			IsBlockingFileAccessEnabled() const = 0;
 
-	virtual IBlockingFileItemList *RetrieveBlockingFileAccessInfo() = 0;
+	virtual IBlockingFileItemList * RetrieveBlockingFileAccessInfo() = 0;
 #endif
 
 	virtual void SetupPreloadData() = 0;
@@ -801,33 +810,36 @@ public:
 		NUM_PRELOAD_TYPES
 	};
 
-	virtual void		LoadCompiledKeyValues( KeyValuesPreloadType_t type, char const *archiveFile ) = 0;
+	virtual void		LoadCompiledKeyValues( KeyValuesPreloadType_t type, char const * archiveFile ) = 0;
 
 	// If the "PreloadedData" hasn't been purged, then this'll try and instance the KeyValues using the fast path of compiled keyvalues loaded during startup.
 	// Otherwise, it'll just fall through to the regular KeyValues loading routines
-	virtual KeyValues	*LoadKeyValues( KeyValuesPreloadType_t type, char const *filename, char const *pPathID = 0 ) = 0;
-	virtual bool		LoadKeyValues( KeyValues& head, KeyValuesPreloadType_t type, char const *filename, char const *pPathID = 0 ) = 0;
-	virtual bool		ExtractRootKeyName( KeyValuesPreloadType_t type, char *outbuf, size_t bufsize, char const *filename, char const *pPathID = 0 ) = 0;
+	virtual KeyValues	* LoadKeyValues( KeyValuesPreloadType_t type, char const * filename, char const* pPathID = 0 ) = 0;
+	virtual bool		LoadKeyValues( KeyValues & head, KeyValuesPreloadType_t type, char const * filename, char const* pPathID = 0 ) = 0;
+	virtual bool		ExtractRootKeyName( KeyValuesPreloadType_t type, char* outbuf, size_t bufsize, char const * filename, char const* pPathID = 0 ) = 0;
 
-	virtual FSAsyncStatus_t	AsyncWrite(const char *pFileName, const void *pSrc, int nSrcBytes, bool bFreeMemory, bool bAppend = false, FSAsyncControl_t *pControl = NULL ) = 0;
-	virtual FSAsyncStatus_t	AsyncWriteFile(const char *pFileName, const CUtlBuffer *pSrc, int nSrcBytes, bool bFreeMemory, bool bAppend = false, FSAsyncControl_t *pControl = NULL ) = 0;
+	virtual FSAsyncStatus_t	AsyncWrite( const char* pFileName, const void* pSrc, int nSrcBytes, bool bFreeMemory, bool bAppend = false, FSAsyncControl_t* pControl = NULL ) = 0;
+	virtual FSAsyncStatus_t	AsyncWriteFile( const char* pFileName, const CUtlBuffer * pSrc, int nSrcBytes, bool bFreeMemory, bool bAppend = false, FSAsyncControl_t* pControl = NULL ) = 0;
 	// Async read functions with memory blame
-	FSAsyncStatus_t			AsyncReadCreditAlloc( const FileAsyncRequest_t &request, const char *pszFile, int line, FSAsyncControl_t *phControl = NULL )	{ return AsyncReadMultipleCreditAlloc( &request, 1, pszFile, line, phControl ); 	}
-	virtual FSAsyncStatus_t	AsyncReadMultipleCreditAlloc( const FileAsyncRequest_t *pRequests, int nRequests, const char *pszFile, int line, FSAsyncControl_t *phControls = NULL ) = 0;
+	FSAsyncStatus_t			AsyncReadCreditAlloc( const FileAsyncRequest_t& request, const char* pszFile, int line, FSAsyncControl_t* phControl = NULL )
+	{
+		return AsyncReadMultipleCreditAlloc( &request, 1, pszFile, line, phControl );
+	}
+	virtual FSAsyncStatus_t	AsyncReadMultipleCreditAlloc( const FileAsyncRequest_t* pRequests, int nRequests, const char* pszFile, int line, FSAsyncControl_t* phControls = NULL ) = 0;
 
-	virtual bool			GetFileTypeForFullPath( char const *pFullPath, OUT_Z_BYTECAP(bufSizeInBytes) wchar_t *buf, size_t bufSizeInBytes ) = 0;
+	virtual bool			GetFileTypeForFullPath( char const * pFullPath, OUT_Z_BYTECAP( bufSizeInBytes ) wchar_t* buf, size_t bufSizeInBytes ) = 0;
 
 	//--------------------------------------------------------
 	//--------------------------------------------------------
-	virtual bool		ReadToBuffer( FileHandle_t hFile, CUtlBuffer &buf, int nMaxBytes = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
+	virtual bool		ReadToBuffer( FileHandle_t hFile, CUtlBuffer & buf, int nMaxBytes = 0, FSAllocFunc_t pfnAlloc = NULL ) = 0;
 
 	//--------------------------------------------------------
 	// Optimal IO operations
 	//--------------------------------------------------------
-	virtual bool		GetOptimalIOConstraints( FileHandle_t hFile, unsigned *pOffsetAlign, unsigned *pSizeAlign, unsigned *pBufferAlign ) = 0;
+	virtual bool		GetOptimalIOConstraints( FileHandle_t hFile, unsigned * pOffsetAlign, unsigned * pSizeAlign, unsigned * pBufferAlign ) = 0;
 	inline unsigned		GetOptimalReadSize( FileHandle_t hFile, unsigned nLogicalSize );
-	virtual void		*AllocOptimalReadBuffer( FileHandle_t hFile, unsigned nSize = 0, unsigned nOffset = 0 ) = 0;
-	virtual void		FreeOptimalReadBuffer( void * ) = 0;
+	virtual void*		AllocOptimalReadBuffer( FileHandle_t hFile, unsigned nSize = 0, unsigned nOffset = 0 ) = 0;
+	virtual void		FreeOptimalReadBuffer( void* ) = 0;
 
 	//--------------------------------------------------------
 	//
@@ -837,14 +849,14 @@ public:
 
 	// Returns true on success, otherwise false if it can't be resolved
 	// Prefer using the FullPathToRelativePathEx_safe template wrapper to calling this directly
-	virtual bool		FullPathToRelativePathEx( const char *pFullpath, const char *pPathId, OUT_Z_CAP(maxLenInChars) char *pDest, int maxLenInChars ) = 0;
-	template <size_t maxLenInChars> bool FullPathToRelativePathEx_safe( const char *pFullpath, OUT_Z_ARRAY char (&pDest)[maxLenInChars] )
+	virtual bool		FullPathToRelativePathEx( const char* pFullpath, const char* pPathId, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool FullPathToRelativePathEx_safe( const char* pFullpath, OUT_Z_ARRAY char ( &pDest )[maxLenInChars] )
 	{
-		return FullPathToRelativePathEx( pFullpath, pDest, (int)maxLenInChars );
+		return FullPathToRelativePathEx( pFullpath, pDest, ( int )maxLenInChars );
 	}
 
-	virtual int			GetPathIndex( const FileNameHandle_t &handle ) = 0;
-	virtual long		GetPathTime( const char *pPath, const char *pPathID ) = 0;
+	virtual int			GetPathIndex( const FileNameHandle_t& handle ) = 0;
+	virtual long		GetPathTime( const char* pPath, const char* pPathID ) = 0;
 
 	virtual DVDMode_t	GetDVDMode() = 0;
 
@@ -857,16 +869,16 @@ public:
 	virtual void			EnableWhitelistFileTracking( bool bEnable, bool bCacheAllVPKHashes, bool bRecalculateAndCheckHashes ) = 0;
 
 	// This is called when the client connects to a server using a pure_server_whitelist.txt file.
-	virtual void			RegisterFileWhitelist( IPureServerWhitelist *pWhiteList, IFileList **pFilesToReload ) = 0;
+	virtual void			RegisterFileWhitelist( IPureServerWhitelist * pWhiteList, IFileList** pFilesToReload ) = 0;
 
-	// Called when the client logs onto a server. Any files that came off disk should be marked as 
+	// Called when the client logs onto a server. Any files that came off disk should be marked as
 	// unverified because this server may have a different set of files it wants to guarantee.
 	virtual void			MarkAllCRCsUnverified() = 0;
 
 	// As the server loads whitelists when it transitions maps, it calls this to calculate CRCs for any files marked
 	// with check_crc.   Then it calls CheckCachedFileCRC later when it gets client requests to verify CRCs.
-	virtual void			CacheFileCRCs( const char *pPathname, ECacheCRCType eType, IFileList *pFilter ) = 0;
-	virtual EFileCRCStatus	CheckCachedFileHash( const char *pPathID, const char *pRelativeFilename, int nFileFraction, FileHash_t *pFileHash ) = 0;
+	virtual void			CacheFileCRCs( const char* pPathname, ECacheCRCType eType, IFileList * pFilter ) = 0;
+	virtual EFileCRCStatus	CheckCachedFileHash( const char* pPathID, const char* pRelativeFilename, int nFileFraction, FileHash_t* pFileHash ) = 0;
 
 	// Fills in the list of files that have been loaded off disk and have not been verified.
 	// Returns the number of files filled in (between 0 and nMaxFiles).
@@ -874,8 +886,8 @@ public:
 	// This also removes any files it's returning from the unverified CRC list, so they won't be
 	// returned from here again.
 	// The client sends batches of these to the server to verify.
-	virtual int				GetUnverifiedFileHashes( CUnverifiedFileHash *pFiles, int nMaxFiles ) = 0;
-	
+	virtual int				GetUnverifiedFileHashes( CUnverifiedFileHash * pFiles, int nMaxFiles ) = 0;
+
 	// Control debug message output.
 	// Pass a combination of WHITELIST_SPEW_ flags.
 	virtual int				GetWhitelistSpewFlags() = 0;
@@ -892,7 +904,7 @@ public:
 	// files across moves between pure/non-pure environments.
 	//--------------------------------------------------------
 	virtual FileCacheHandle_t CreateFileCache() = 0;
-	virtual void AddFilesToFileCache( FileCacheHandle_t cacheId, const char **ppFileNames, int nFileNames, const char *pPathID ) = 0;
+	virtual void AddFilesToFileCache( FileCacheHandle_t cacheId, const char** ppFileNames, int nFileNames, const char* pPathID ) = 0;
 	virtual bool IsFileCacheFileLoaded( FileCacheHandle_t cacheId, const char* pFileName ) = 0;
 	virtual bool IsFileCacheLoaded( FileCacheHandle_t cacheId ) = 0;
 	virtual void DestroyFileCache( FileCacheHandle_t cacheId ) = 0;
@@ -908,23 +920,23 @@ public:
 	// Returns false and outputs an ref-bumped pointer to the existing entry
 	// if the same file has already been registered by someone else; this must
 	// be Unregistered to maintain the balance.
-	virtual bool RegisterMemoryFile( CMemoryFileBacking *pFile, CMemoryFileBacking **ppExistingFileWithRef ) = 0;
+	virtual bool RegisterMemoryFile( CMemoryFileBacking * pFile, CMemoryFileBacking** ppExistingFileWithRef ) = 0;
 
 	// Unregister a CMemoryFileBacking; must balance with RegisterMemoryFile.
-	virtual void UnregisterMemoryFile( CMemoryFileBacking *pFile ) = 0;
+	virtual void UnregisterMemoryFile( CMemoryFileBacking * pFile ) = 0;
 
 	virtual void			CacheAllVPKFileHashes( bool bCacheAllVPKHashes, bool bRecalculateAndCheckHashes ) = 0;
-	virtual bool			CheckVPKFileHash( int PackFileID, int nPackFileNumber, int nFileFraction, MD5Value_t &md5Value ) = 0;
+	virtual bool			CheckVPKFileHash( int PackFileID, int nPackFileNumber, int nFileFraction, MD5Value_t& md5Value ) = 0;
 
 	// Called when we unload a file, to remove that file's info for pure server purposes.
-	virtual void			NotifyFileUnloaded( const char *pszFilename, const char *pPathId ) = 0;
+	virtual void			NotifyFileUnloaded( const char* pszFilename, const char* pPathId ) = 0;
 
 	// Returns true on successfully retrieve case-sensitive full path, otherwise false
 	// Prefer using the GetCaseCorrectFullPath template wrapper to calling this directly
-	virtual bool			GetCaseCorrectFullPath_Ptr( const char *pFullPath, OUT_Z_CAP( maxLenInChars ) char *pDest, int maxLenInChars ) = 0;
-	template <size_t maxLenInChars> bool GetCaseCorrectFullPath( const char *pFullPath, OUT_Z_ARRAY char( &pDest )[maxLenInChars] )
+	virtual bool			GetCaseCorrectFullPath_Ptr( const char* pFullPath, OUT_Z_CAP( maxLenInChars ) char* pDest, int maxLenInChars ) = 0;
+	template <size_t maxLenInChars> bool GetCaseCorrectFullPath( const char* pFullPath, OUT_Z_ARRAY char( &pDest )[maxLenInChars] )
 	{
-		return GetCaseCorrectFullPath_Ptr( pFullPath, pDest, (int)maxLenInChars );
+		return GetCaseCorrectFullPath_Ptr( pFullPath, pDest, ( int )maxLenInChars );
 	}
 };
 
@@ -936,7 +948,14 @@ class CMemoryFileBacking : public CRefCounted<CRefCountServiceMT>
 {
 public:
 	CMemoryFileBacking( IFileSystem* pFS ) : m_pFS( pFS ), m_nRegistered( 0 ), m_pFileName( NULL ), m_pData( NULL ), m_nLength( 0 ) { }
-	~CMemoryFileBacking() { free( (char*) m_pFileName ); if ( m_pData ) m_pFS->FreeOptimalReadBuffer( (char*) m_pData ); }
+	~CMemoryFileBacking()
+	{
+		free( ( char* ) m_pFileName );
+		if( m_pData )
+		{
+			m_pFS->FreeOptimalReadBuffer( ( char* ) m_pData );
+		}
+	}
 
 	IFileSystem* m_pFS;
 	int m_nRegistered;
@@ -952,12 +971,12 @@ private:
 //-----------------------------------------------------------------------------
 
 #if defined( _X360 ) && !defined( _RETAIL )
-extern char g_szXboxProfileLastFileOpened[MAX_PATH];
-#define SetLastProfileFileRead( s ) Q_strncpy( g_szXboxProfileLastFileOpened, sizeof( g_szXboxProfileLastFileOpened), pFileName )
-#define GetLastProfileFileRead() (&g_szXboxProfileLastFileOpened[0])
+	extern char g_szXboxProfileLastFileOpened[MAX_PATH];
+	#define SetLastProfileFileRead( s ) Q_strncpy( g_szXboxProfileLastFileOpened, sizeof( g_szXboxProfileLastFileOpened), pFileName )
+	#define GetLastProfileFileRead() (&g_szXboxProfileLastFileOpened[0])
 #else
-#define SetLastProfileFileRead( s ) ((void)0)
-#define GetLastProfileFileRead() NULL
+	#define SetLastProfileFileRead( s ) ((void)0)
+	#define GetLastProfileFileRead() NULL
 #endif
 
 #if defined( _X360 ) && defined( _BASETSD_H_ )
@@ -984,13 +1003,17 @@ private:
 
 //-----------------------------------------------------------------------------
 
-inline unsigned IFileSystem::GetOptimalReadSize( FileHandle_t hFile, unsigned nLogicalSize ) 
-{ 
-	unsigned align; 
-	if ( GetOptimalIOConstraints( hFile, &align, NULL, NULL ) ) 
+inline unsigned IFileSystem::GetOptimalReadSize( FileHandle_t hFile, unsigned nLogicalSize )
+{
+	unsigned align;
+	if( GetOptimalIOConstraints( hFile, &align, NULL, NULL ) )
+	{
 		return AlignValue( nLogicalSize, align );
+	}
 	else
+	{
 		return nLogicalSize;
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -1003,10 +1026,10 @@ inline unsigned IFileSystem::GetOptimalReadSize( FileHandle_t hFile, unsigned nL
 //-----------------------------------------------------------------------------
 
 #if (defined(_DEBUG) || defined(USE_MEM_DEBUG))
-#define AsyncRead( a, b ) AsyncReadCreditAlloc( a, __FILE__, __LINE__, b )
-#define AsyncReadMutiple( a, b, c ) AsyncReadMultipleCreditAlloc( a, b, __FILE__, __LINE__, c )
+	#define AsyncRead( a, b ) AsyncReadCreditAlloc( a, __FILE__, __LINE__, b )
+	#define AsyncReadMutiple( a, b, c ) AsyncReadMultipleCreditAlloc( a, b, __FILE__, __LINE__, c )
 #endif
 
-extern IFileSystem *g_pFullFileSystem;
+extern IFileSystem* g_pFullFileSystem;
 
 #endif // FILESYSTEM_H

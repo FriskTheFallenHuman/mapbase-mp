@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -45,7 +45,7 @@ enum GameMessageIDs
 
 	GAME_MSG_ABORT,				// phase these out
 	GAME_MSG_WAITING_ABORT,
-	
+
 //	GAME_MSG_CLOSE_WINDOW,
 
 	// special individual game messages should take IDs 1000 and over

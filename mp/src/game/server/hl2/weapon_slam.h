@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose:		SLAM 
+// Purpose:		SLAM
 //
 // $Workfile:     $
 // $Date:         $
@@ -46,20 +46,23 @@ public:
 	void				Spawn( void );
 	void				Precache( void );
 
-	int					CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int					CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 	void				PrimaryAttack( void );
 	void				SecondaryAttack( void );
 	void				WeaponIdle( void );
 	void				WeaponSwitch( void );
 	void				SLAMThink( void );
-	
+
 	void				SetPickupTouch( void );
-	void				SlamTouch( CBaseEntity *pOther );	// default weapon touch
-	void				ItemPostFrame( void );	
+	void				SlamTouch( CBaseEntity* pOther );	// default weapon touch
+	void				ItemPostFrame( void );
 	bool				Reload( void );
 	void				SetSlamState( SlamState_t newState );
-	bool				CanAttachSLAM(void);		// In position where can attach SLAM?
-	bool				AnyUndetonatedCharges(void);
+	bool				CanAttachSLAM( void );		// In position where can attach SLAM?
+	bool				AnyUndetonatedCharges( void );
 	void				StartTripmineAttach( void );
 	void				TripmineAttach( void );
 
@@ -70,7 +73,7 @@ public:
 	void				SatchelThrow( void );
 	void				SatchelAttach( void );
 	bool				Deploy( void );
-	bool				Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool				Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 
 
 	CWeapon_SLAM();

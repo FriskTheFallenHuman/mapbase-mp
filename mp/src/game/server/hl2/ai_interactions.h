@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -14,7 +14,7 @@
 #define	AI_INTERACTIONS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //Antlion

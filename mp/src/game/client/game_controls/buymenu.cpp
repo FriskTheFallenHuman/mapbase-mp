@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -19,20 +19,20 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CBuyMenu::CBuyMenu(IViewPort *pViewPort) : WizardPanel( NULL, PANEL_BUY )
+CBuyMenu::CBuyMenu( IViewPort* pViewPort ) : WizardPanel( NULL, PANEL_BUY )
 {
-	SetScheme("ClientScheme");
-	SetTitle( "#Cstrike_Buy_Menu", true);
+	SetScheme( "ClientScheme" );
+	SetTitle( "#Cstrike_Buy_Menu", true );
 
-	SetMoveable(false);
-	SetSizeable(false);
-	SetProportional(true);
+	SetMoveable( false );
+	SetSizeable( false );
+	SetProportional( true );
 
 	// hide the system buttons
 	SetTitleBarVisible( false );
 
 	SetAutoDelete( false ); // we reuse this panel, don't let WizardPanel delete us
-	
+
 	LoadControlSettings( "Resource/UI/BuyMenu.res" );
 	ShowButtons( false );
 
@@ -49,19 +49,23 @@ CBuyMenu::CBuyMenu(IViewPort *pViewPort) : WizardPanel( NULL, PANEL_BUY )
 //-----------------------------------------------------------------------------
 CBuyMenu::~CBuyMenu()
 {
-	if ( m_pMainMenu )
-		m_pMainMenu->DeleteSubPanels();	//?
+	if( m_pMainMenu )
+	{
+		m_pMainMenu->DeleteSubPanels();    //?
+	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: shows/hides the buy menu
 //-----------------------------------------------------------------------------
-void CBuyMenu::ShowPanel(bool bShow)
+void CBuyMenu::ShowPanel( bool bShow )
 {
-	if ( BaseClass::IsVisible() == bShow )
+	if( BaseClass::IsVisible() == bShow )
+	{
 		return;
+	}
 
-	if ( bShow )
+	if( bShow )
 	{
 		Update();
 
@@ -99,31 +103,31 @@ void CBuyMenu::OnKeyCodePressed( vgui::KeyCode code )
 {
 	int nDir = 0;
 
-	switch ( code )
+	switch( code )
 	{
-	case KEY_XBUTTON_UP:
-	case KEY_XSTICK1_UP:
-	case KEY_XSTICK2_UP:
-	case KEY_UP:
-		nDir = -1;
-		break;
+		case KEY_XBUTTON_UP:
+		case KEY_XSTICK1_UP:
+		case KEY_XSTICK2_UP:
+		case KEY_UP:
+			nDir = -1;
+			break;
 
-	case KEY_XBUTTON_DOWN:
-	case KEY_XSTICK1_DOWN:
-	case KEY_XSTICK2_DOWN:
-	case KEY_DOWN:
-		nDir = 1;
-		break;
+		case KEY_XBUTTON_DOWN:
+		case KEY_XSTICK1_DOWN:
+		case KEY_XSTICK2_DOWN:
+		case KEY_DOWN:
+			nDir = 1;
+			break;
 	}
 
-	if ( nDir != 0 )
+	if( nDir != 0 )
 	{
-		Panel *pSubPanel = ( GetCurrentSubPanel() ? GetCurrentSubPanel() : m_pMainMenu );
+		Panel* pSubPanel = ( GetCurrentSubPanel() ? GetCurrentSubPanel() : m_pMainMenu );
 
 		CUtlSortVector< SortedPanel_t, CSortedPanelYLess > vecSortedButtons;
-		VguiPanelGetSortedChildButtonList( pSubPanel, (void*)&vecSortedButtons, "&", 0 );
+		VguiPanelGetSortedChildButtonList( pSubPanel, ( void* )&vecSortedButtons, "&", 0 );
 
-		if ( VguiPanelNavigateSortedChildButtonList( (void*)&vecSortedButtons, nDir ) != -1 )
+		if( VguiPanelNavigateSortedChildButtonList( ( void* )&vecSortedButtons, nDir ) != -1 )
 		{
 			// Handled!
 			return;
@@ -137,7 +141,7 @@ void CBuyMenu::OnKeyCodePressed( vgui::KeyCode code )
 
 void CBuyMenu::OnKeyCodeTyped( KeyCode code )
 {
-	if ( code == KEY_ESCAPE	)
+	if( code == KEY_ESCAPE	)
 	{
 		OnClose();
 	}

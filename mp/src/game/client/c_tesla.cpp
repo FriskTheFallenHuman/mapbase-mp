@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -13,16 +13,16 @@
 #include "tier0/memdbgon.h"
 
 IMPLEMENT_CLIENTCLASS_DT( C_Tesla, DT_Tesla, CTesla )
-	RecvPropString( RECVINFO( m_SoundName ) ),
-	RecvPropString( RECVINFO( m_iszSpriteName ) )
-END_RECV_TABLE()
+RecvPropString( RECVINFO( m_SoundName ) ),
+				RecvPropString( RECVINFO( m_iszSpriteName ) )
+				END_RECV_TABLE()
 
 
-C_Tesla::C_Tesla()
+				C_Tesla::C_Tesla()
 {
 }
 
-void C_Tesla::ReceiveMessage( int classID, bf_read &msg )
+void C_Tesla::ReceiveMessage( int classID, bf_read& msg )
 {
 	CTeslaInfo teslaInfo;
 
@@ -32,15 +32,15 @@ void C_Tesla::ReceiveMessage( int classID, bf_read &msg )
 	teslaInfo.m_nEntIndex = msg.ReadShort();
 	teslaInfo.m_flRadius = msg.ReadFloat();
 
-	teslaInfo.m_vColor.x = ((unsigned char)msg.ReadChar()) / 255.0f;
-	teslaInfo.m_vColor.y = ((unsigned char)msg.ReadChar()) / 255.0f;
-	teslaInfo.m_vColor.z = ((unsigned char)msg.ReadChar()) / 255.0f;
-	
+	teslaInfo.m_vColor.x = ( ( unsigned char )msg.ReadChar() ) / 255.0f;
+	teslaInfo.m_vColor.y = ( ( unsigned char )msg.ReadChar() ) / 255.0f;
+	teslaInfo.m_vColor.z = ( ( unsigned char )msg.ReadChar() ) / 255.0f;
+
 	float flAlpha = 0;
-	flAlpha = ((unsigned char)msg.ReadChar()) / 255.0f;
+	flAlpha = ( ( unsigned char )msg.ReadChar() ) / 255.0f;
 
 	teslaInfo.m_nBeams = msg.ReadChar();
-	
+
 	teslaInfo.m_flBeamWidth = msg.ReadFloat();
 	teslaInfo.m_flTimeVisible = msg.ReadFloat();
 	teslaInfo.m_pszSpriteName = m_iszSpriteName;

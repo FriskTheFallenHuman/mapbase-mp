@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef C_EFFECTS_H
 #define C_EFFECTS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
@@ -28,11 +28,11 @@ public:
 	float	m_SpawnTime;				// Note: Tweak with this to change lifetime
 	float	m_Mass;
 	float	m_Ramp;
-	
+
 	float	m_flCurLifetime;
 	float	m_flMaxLifetime;
 };
-						  
+
 
 class CClient_Precipitation;
 static CUtlVector<CClient_Precipitation*> g_Precipitations;
@@ -41,22 +41,22 @@ static CUtlVector<CClient_Precipitation*> g_Precipitations;
 // Snow fall
 //===========
 class CSnowFallManager;
-static CSnowFallManager *s_pSnowFallMgr = NULL;
-bool SnowFallManagerCreate( CClient_Precipitation *pSnowEntity );
+static CSnowFallManager* s_pSnowFallMgr = NULL;
+bool SnowFallManagerCreate( CClient_Precipitation* pSnowEntity );
 void SnowFallManagerDestroy( void );
 
 class AshDebrisEffect : public CSimpleEmitter
 {
 public:
-	AshDebrisEffect( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
+	AshDebrisEffect( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
 
-	static AshDebrisEffect* Create( const char *pDebugName );
+	static AshDebrisEffect* Create( const char* pDebugName );
 
-	virtual float UpdateAlpha( const SimpleParticle *pParticle );
-	virtual	float UpdateRoll( SimpleParticle *pParticle, float timeDelta );
+	virtual float UpdateAlpha( const SimpleParticle* pParticle );
+	virtual	float UpdateRoll( SimpleParticle* pParticle, float timeDelta );
 
 private:
-	AshDebrisEffect( const AshDebrisEffect & );
+	AshDebrisEffect( const AshDebrisEffect& );
 };
 
 //-----------------------------------------------------------------------------
@@ -65,8 +65,8 @@ private:
 
 class CClient_Precipitation : public C_BaseEntity
 {
-class CPrecipitationEffect;
-friend class CClient_Precipitation::CPrecipitationEffect;
+	class CPrecipitationEffect;
+	friend class CClient_Precipitation::CPrecipitationEffect;
 
 public:
 	DECLARE_CLASS( CClient_Precipitation, C_BaseEntity );
@@ -91,7 +91,7 @@ private:
 	void Simulate( float dt );
 
 	// Renders the particle
-	void RenderParticle( CPrecipitationParticle* pParticle, CMeshBuilder &mb );
+	void RenderParticle( CPrecipitationParticle* pParticle, CMeshBuilder& mb );
 
 	void CreateWaterSplashes();
 
@@ -119,23 +119,23 @@ private:
 	void PrecacheParticlePrecip( void );
 	void CreateParticlePrecip( void );
 	void InitializeParticlePrecip( void );
-	void DispatchOuterParticlePrecip( C_BasePlayer *pPlayer, Vector vForward );
-	void DispatchInnerParticlePrecip( C_BasePlayer *pPlayer, Vector vForward );
+	void DispatchOuterParticlePrecip( C_BasePlayer* pPlayer, Vector vForward );
+	void DispatchInnerParticlePrecip( C_BasePlayer* pPlayer, Vector vForward );
 	void DestroyOuterParticlePrecip( void );
 	void DestroyInnerParticlePrecip( void );
 
-	void UpdateParticlePrecip( C_BasePlayer *pPlayer );
+	void UpdateParticlePrecip( C_BasePlayer* pPlayer );
 
 private:
 	void CreateAshParticle( void );
 	void CreateRainOrSnowParticle( Vector vSpawnPosition, Vector vVelocity );
 
 #ifdef MAPBASE
-	void ClampParticlePosition( Vector &vPlayerPos, Vector &vOffsetPos, Vector &vOffsetPosNear, Vector &vOffsetPosFar );
+	void ClampParticlePosition( Vector& vPlayerPos, Vector& vOffsetPos, Vector& vOffsetPosNear, Vector& vOffsetPosFar );
 #endif
 
 	// Information helpful in creating and rendering particles
-	IMaterial		*m_MatHandle;	// material used 
+	IMaterial*		m_MatHandle;	// material used
 
 	float			m_Color[4];		// precip color
 	float			m_Lifetime;		// Precip lifetime
@@ -174,9 +174,9 @@ private:
 
 protected:
 	float							m_flParticleInnerDist;	//The distance at which to start drawing the inner system
-	char							*m_pParticleInnerNearDef; //Name of the first inner system
-	char							*m_pParticleInnerFarDef;  //Name of the second inner system
-	char							*m_pParticleOuterDef;     //Name of the outer system
+	char*							m_pParticleInnerNearDef; //Name of the first inner system
+	char*							m_pParticleInnerFarDef;  //Name of the second inner system
+	char*							m_pParticleOuterDef;     //Name of the outer system
 	HPARTICLEFFECT					m_pParticlePrecipInnerNear;
 	HPARTICLEFFECT					m_pParticlePrecipInnerFar;
 	HPARTICLEFFECT					m_pParticlePrecipOuter;
@@ -185,7 +185,7 @@ protected:
 	bool							m_bParticlePrecipInitialized;
 
 private:
-	CClient_Precipitation( const CClient_Precipitation & ); // not defined, not accessible
+	CClient_Precipitation( const CClient_Precipitation& );  // not defined, not accessible
 };
 
 #endif // C_EFFECTS_H

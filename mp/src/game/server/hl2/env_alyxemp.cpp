@@ -16,38 +16,38 @@
 LINK_ENTITY_TO_CLASS( env_alyxemp, CAlyxEmpEffect );
 
 BEGIN_DATADESC( CAlyxEmpEffect )
-	
-	DEFINE_KEYFIELD( m_nType,			FIELD_INTEGER,	"Type" ),
-	DEFINE_KEYFIELD( m_strTargetName,	FIELD_STRING,	"EndTargetName" ),
 
-	DEFINE_FIELD( m_nState,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_flDuration,		FIELD_FLOAT ),
-	DEFINE_FIELD( m_flStartTime,	FIELD_TIME ),
-	DEFINE_FIELD( m_hTargetEnt,		FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hBeam,			FIELD_EHANDLE ),
+DEFINE_KEYFIELD( m_nType,			FIELD_INTEGER,	"Type" ),
+						  DEFINE_KEYFIELD( m_strTargetName,	FIELD_STRING,	"EndTargetName" ),
 
-	DEFINE_FIELD( m_iState,			FIELD_INTEGER ),
-	DEFINE_FIELD( m_bAutomated,		FIELD_BOOLEAN ),
+						  DEFINE_FIELD( m_nState,			FIELD_INTEGER ),
+						  DEFINE_FIELD( m_flDuration,		FIELD_FLOAT ),
+						  DEFINE_FIELD( m_flStartTime,	FIELD_TIME ),
+						  DEFINE_FIELD( m_hTargetEnt,		FIELD_EHANDLE ),
+						  DEFINE_FIELD( m_hBeam,			FIELD_EHANDLE ),
 
-	DEFINE_THINKFUNC( AutomaticThink ),
+						  DEFINE_FIELD( m_iState,			FIELD_INTEGER ),
+						  DEFINE_FIELD( m_bAutomated,		FIELD_BOOLEAN ),
 
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "StartCharge", InputStartCharge ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartDischarge", InputStartDischarge ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "Stop", InputStop ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetTargetEnt", InputSetTargetEnt ),
+						  DEFINE_THINKFUNC( AutomaticThink ),
 
-END_DATADESC()
+						  DEFINE_INPUTFUNC( FIELD_FLOAT, "StartCharge", InputStartCharge ),
+						  DEFINE_INPUTFUNC( FIELD_VOID, "StartDischarge", InputStartDischarge ),
+						  DEFINE_INPUTFUNC( FIELD_FLOAT, "Stop", InputStop ),
+						  DEFINE_INPUTFUNC( FIELD_STRING, "SetTargetEnt", InputSetTargetEnt ),
 
-IMPLEMENT_SERVERCLASS_ST( CAlyxEmpEffect, DT_AlyxEmpEffect )
-	SendPropInt( SENDINFO(m_nState), 8, SPROP_UNSIGNED),
-	SendPropFloat( SENDINFO(m_flDuration), 0, SPROP_NOSCALE),
-	SendPropFloat( SENDINFO(m_flStartTime), 0, SPROP_NOSCALE),
-END_SEND_TABLE()
+						  END_DATADESC()
+
+						  IMPLEMENT_SERVERCLASS_ST( CAlyxEmpEffect, DT_AlyxEmpEffect )
+						  SendPropInt( SENDINFO( m_nState ), 8, SPROP_UNSIGNED ),
+						  SendPropFloat( SENDINFO( m_flDuration ), 0, SPROP_NOSCALE ),
+						  SendPropFloat( SENDINFO( m_flStartTime ), 0, SPROP_NOSCALE ),
+						  END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::Spawn( void )
+						  void CAlyxEmpEffect::Spawn( void )
 {
 	Precache();
 
@@ -59,31 +59,31 @@ void CAlyxEmpEffect::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAlyxEmpEffect::Activate( void )
 {
 	// Start out with a target entity
-	SetTargetEntity( STRING(m_strTargetName) );
-	
+	SetTargetEntity( STRING( m_strTargetName ) );
+
 	BaseClass::Activate();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *szEntityName - 
+// Purpose:
+// Input  : *szEntityName -
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::SetTargetEntity( const char *szEntityName )
+void CAlyxEmpEffect::SetTargetEntity( const char* szEntityName )
 {
 	// Find and store off our target entity
-	CBaseEntity *pTargetEnt = NULL;
-	if ( szEntityName && szEntityName[0] )
+	CBaseEntity* pTargetEnt = NULL;
+	if( szEntityName && szEntityName[0] )
 	{
 		pTargetEnt = gEntList.FindEntityByName( NULL, szEntityName );
 
-		if ( pTargetEnt == NULL )
+		if( pTargetEnt == NULL )
 		{
-			Assert(0);
+			Assert( 0 );
 			DevMsg( "Unable to find env_alyxemp (%s) target %s!\n", GetEntityName().ToCStr(), szEntityName );
 		}
 	}
@@ -94,19 +94,19 @@ void CAlyxEmpEffect::SetTargetEntity( const char *szEntityName )
 //-----------------------------------------------------------------------------
 // Passing NULL is ok!
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::SetTargetEntity( CBaseEntity *pTarget )
+void CAlyxEmpEffect::SetTargetEntity( CBaseEntity* pTarget )
 {
 	m_hTargetEnt.Set( pTarget );
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::ActivateAutomatic( CBaseEntity *pAlyx, CBaseEntity *pTarget )
+void CAlyxEmpEffect::ActivateAutomatic( CBaseEntity* pAlyx, CBaseEntity* pTarget )
 {
 	Assert( pAlyx->GetBaseAnimating() != NULL );
 
-	SetParent( pAlyx, pAlyx->GetBaseAnimating()->LookupAttachment("LeftHand") );
+	SetParent( pAlyx, pAlyx->GetBaseAnimating()->LookupAttachment( "LeftHand" ) );
 	SetLocalOrigin( vec3_origin );
 
 	m_iState = ALYXEMP_STATE_OFF;
@@ -125,25 +125,25 @@ void CAlyxEmpEffect::AutomaticThink()
 
 	switch( m_iState )
 	{
-	case ALYXEMP_STATE_OFF:
-		StartCharge( 0.05f );
-		break;
+		case ALYXEMP_STATE_OFF:
+			StartCharge( 0.05f );
+			break;
 
-	case ALYXEMP_STATE_CHARGING:
-		StartDischarge();
-		break;
+		case ALYXEMP_STATE_CHARGING:
+			StartDischarge();
+			break;
 
-	case ALYXEMP_STATE_DISCHARGING:
-		Stop( 1.0f );
-		bSetNextThink = false;
-		break;
+		case ALYXEMP_STATE_DISCHARGING:
+			Stop( 1.0f );
+			bSetNextThink = false;
+			break;
 	}
 
 	m_iState++;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAlyxEmpEffect::Precache( void )
 {
@@ -155,10 +155,10 @@ void CAlyxEmpEffect::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::InputStartCharge( inputdata_t &inputdata )
+void CAlyxEmpEffect::InputStartCharge( inputdata_t& inputdata )
 {
 	StartCharge( inputdata.value.Float() );
 }
@@ -169,7 +169,7 @@ void CAlyxEmpEffect::StartCharge( float flDuration )
 {
 	EmitSound( "AlyxEmp.Charge" );
 
-	m_nState = (int)ALYXEMP_STATE_CHARGING;
+	m_nState = ( int )ALYXEMP_STATE_CHARGING;
 	m_flDuration = flDuration;
 	m_flStartTime = gpGlobals->curtime;
 
@@ -180,10 +180,10 @@ void CAlyxEmpEffect::StartCharge( float flDuration )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::InputStartDischarge( inputdata_t &inputdata )
+void CAlyxEmpEffect::InputStartDischarge( inputdata_t& inputdata )
 {
 	StartDischarge();
 }
@@ -192,16 +192,16 @@ void CAlyxEmpEffect::StartDischarge()
 {
 	EmitSound( "AlyxEmp.Discharge" );
 
-	m_nState = (int)ALYXEMP_STATE_DISCHARGING;
+	m_nState = ( int )ALYXEMP_STATE_DISCHARGING;
 	m_flStartTime = gpGlobals->curtime;
 
 	// Beam effects on the target entity!
-	if ( !m_hBeam && m_hTargetEnt )
+	if( !m_hBeam && m_hTargetEnt )
 	{
 		// Check to store off our view model index
 		m_hBeam = CBeam::BeamCreate( EMP_BEAM_SPRITE, 8 );
 
-		if ( m_hBeam != NULL )
+		if( m_hBeam != NULL )
 		{
 			m_hBeam->PointEntInit( m_hTargetEnt->GetAbsOrigin(), this );
 			m_hBeam->SetStartEntity( m_hTargetEnt );
@@ -219,7 +219,7 @@ void CAlyxEmpEffect::StartDischarge()
 		VectorNormalize( shotDir );
 
 		CPVSFilter filter( m_hTargetEnt->GetAbsOrigin() );
-		te->GaussExplosion( filter, 0.0f, m_hTargetEnt->GetAbsOrigin() - ( shotDir * 4.0f ), RandomVector(-1.0f, 1.0f), 0 );
+		te->GaussExplosion( filter, 0.0f, m_hTargetEnt->GetAbsOrigin() - ( shotDir * 4.0f ), RandomVector( -1.0f, 1.0f ), 0 );
 	}
 
 	if( m_bAutomated )
@@ -229,10 +229,10 @@ void CAlyxEmpEffect::StartDischarge()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::InputStop( inputdata_t &inputdata )
+void CAlyxEmpEffect::InputStop( inputdata_t& inputdata )
 {
 	float flDuration = inputdata.value.Float();
 
@@ -245,11 +245,11 @@ void CAlyxEmpEffect::Stop( float flDuration )
 {
 	EmitSound( "AlyxEmp.Stop" );
 
-	m_nState = (int)ALYXEMP_STATE_OFF;
+	m_nState = ( int )ALYXEMP_STATE_OFF;
 	m_flDuration = flDuration;
 	m_flStartTime = gpGlobals->curtime;
 
-	if ( m_hBeam != NULL )
+	if( m_hBeam != NULL )
 	{
 		UTIL_Remove( m_hBeam );
 		m_hBeam = NULL;
@@ -263,10 +263,10 @@ void CAlyxEmpEffect::Stop( float flDuration )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAlyxEmpEffect::InputSetTargetEnt( inputdata_t &inputdata )
+void CAlyxEmpEffect::InputSetTargetEnt( inputdata_t& inputdata )
 {
 	SetTargetEntity( inputdata.value.String() );
 }

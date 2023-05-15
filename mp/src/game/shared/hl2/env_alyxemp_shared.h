@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef ENV_ALYXEMP_SHARED_H
 #define ENV_ALYXEMP_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "beam_shared.h"
@@ -27,17 +27,17 @@ class CAlyxEmpEffect : public CBaseEntity
 
 public:
 
-	void	InputStartCharge( inputdata_t &inputdata );
-	void	InputStartDischarge( inputdata_t &inputdata );
-	void	InputStop( inputdata_t &inputdata );
-	void	InputSetTargetEnt( inputdata_t &inputdata );
+	void	InputStartCharge( inputdata_t& inputdata );
+	void	InputStartDischarge( inputdata_t& inputdata );
+	void	InputStop( inputdata_t& inputdata );
+	void	InputSetTargetEnt( inputdata_t& inputdata );
 
 	void	StartCharge( float flDuration );
 	void	StartDischarge();
 	void	Stop( float flDuration );
-	void	SetTargetEntity( CBaseEntity *pTarget );
+	void	SetTargetEntity( CBaseEntity* pTarget );
 
-	void	ActivateAutomatic( CBaseEntity *pAlyx, CBaseEntity *pTarget );
+	void	ActivateAutomatic( CBaseEntity* pAlyx, CBaseEntity* pTarget );
 	void	AutomaticThink();
 
 	void	Spawn( void );
@@ -46,7 +46,7 @@ public:
 
 private:
 
-	void	SetTargetEntity( const char *szEntityName );
+	void	SetTargetEntity( const char* szEntityName );
 	CHandle<CBeam>			m_hBeam;
 	CHandle<CBaseEntity>	m_hTargetEnt;
 	string_t				m_strTargetName;

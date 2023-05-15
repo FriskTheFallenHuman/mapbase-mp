@@ -22,19 +22,20 @@ class SIMDRandStreamContext
 {
 	fltx4 m_RandY[55];
 
-	fltx4 *m_pRand_J, *m_pRand_K;
+	fltx4* m_pRand_J, *m_pRand_K;
 
 
 public:
 	void Seed( uint32 seed )
 	{
-		m_pRand_J=m_RandY+23; m_pRand_K=m_RandY+54;
-		for(int i=0;i<55;i++)
+		m_pRand_J = m_RandY + 23;
+		m_pRand_K = m_RandY + 54;
+		for( int i = 0; i < 55; i++ )
 		{
-			for(int j=0;j<4;j++)
+			for( int j = 0; j < 4; j++ )
 			{
-				SubFloat( m_RandY[i], j) = (seed>>16)/65536.0;
-				seed=(seed+1)*3141592621u;
+				SubFloat( m_RandY[i], j ) = ( seed >> 16 ) / 65536.0;
+				seed = ( seed + 1 ) * 3141592621u;
 			}
 		}
 	}
@@ -42,20 +43,24 @@ public:
 	inline fltx4 RandSIMD( void )
 	{
 		// ret= rand[k]+rand[j]
-		fltx4 retval=AddSIMD( *m_pRand_K, *m_pRand_J );
-		
+		fltx4 retval = AddSIMD( *m_pRand_K, *m_pRand_J );
+
 		// if ( ret>=1.0) ret-=1.0
-		fltx4 overflow_mask=CmpGeSIMD( retval, Four_Ones );
-		retval=SubSIMD( retval, AndSIMD( Four_Ones, overflow_mask ) );
-		
+		fltx4 overflow_mask = CmpGeSIMD( retval, Four_Ones );
+		retval = SubSIMD( retval, AndSIMD( Four_Ones, overflow_mask ) );
+
 		*m_pRand_K = retval;
-		
+
 		// update pointers w/ wrap-around
-		if ( --m_pRand_J < m_RandY )
-			m_pRand_J=m_RandY+54;
-		if ( --m_pRand_K < m_RandY )
-			m_pRand_K=m_RandY+54;
-		
+		if( --m_pRand_J < m_RandY )
+		{
+			m_pRand_J = m_RandY + 54;
+		}
+		if( --m_pRand_K < m_RandY )
+		{
+			m_pRand_K = m_RandY + 54;
+		}
+
 		return retval;
 	}
 };
@@ -66,10 +71,12 @@ static SIMDRandStreamContext s_SIMDRandContexts[MAX_SIMULTANEOUS_RANDOM_STREAMS]
 
 static volatile int s_nRandContextsInUse[MAX_SIMULTANEOUS_RANDOM_STREAMS];
 
-void SeedRandSIMD(uint32 seed)
+void SeedRandSIMD( uint32 seed )
 {
-	for( int i = 0; i<MAX_SIMULTANEOUS_RANDOM_STREAMS; i++)
-		s_SIMDRandContexts[i].Seed( seed+i );
+	for( int i = 0; i < MAX_SIMULTANEOUS_RANDOM_STREAMS; i++ )
+	{
+		s_SIMDRandContexts[i].Seed( seed + i );
+	}
 }
 
 fltx4 RandSIMD( int nContextIndex )
@@ -79,20 +86,20 @@ fltx4 RandSIMD( int nContextIndex )
 
 int GetSIMDRandContext( void )
 {
-	for(;;)
+	for( ;; )
 	{
-		for(int i=0; i < NELEMS( s_SIMDRandContexts ); i++)
+		for( int i = 0; i < NELEMS( s_SIMDRandContexts ); i++ )
 		{
-			if ( ! s_nRandContextsInUse[i] )				// available?
+			if( ! s_nRandContextsInUse[i] )				// available?
 			{
 				// try to take it!
-				if ( ThreadInterlockedAssignIf( &( s_nRandContextsInUse[i]), 1, 0 ) )
+				if( ThreadInterlockedAssignIf( &( s_nRandContextsInUse[i] ), 1, 0 ) )
 				{
 					return i;								// done!
 				}
 			}
 		}
-		Assert(0);											// why don't we have enough buffers?
+		Assert( 0 );											// why don't we have enough buffers?
 		ThreadSleep();
 	}
 }

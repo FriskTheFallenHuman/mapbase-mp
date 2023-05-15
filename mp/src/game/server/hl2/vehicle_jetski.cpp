@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -59,29 +59,29 @@ class CPropJetski : public CPropVehicleDriveable
 public:
 
 	// CPropVehicle
-	virtual void	ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData );
-	virtual void	DriveVehicle( CBasePlayer *pPlayer, CUserCmd *ucmd );
-	virtual void	SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
+	virtual void	ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData );
+	virtual void	DriveVehicle( CBasePlayer* pPlayer, CUserCmd* ucmd );
+	virtual void	SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move );
 
 	// CBaseEntity
-	void			Think(void);
+	void			Think( void );
 	void			Precache( void );
 	void			Spawn( void );
 
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
 
 private:
 
-	void			OnTurn( CUserCmd *ucmd );
-	void			OnSpeed( CUserCmd *ucmd );
+	void			OnTurn( CUserCmd* ucmd );
+	void			OnSpeed( CUserCmd* ucmd );
 	void			UpdateTurnAndSpeed( void );
-	
+
 	void			CreateSplash( int nSplashType );
 
-	bool			UpdateLean( CUserCmd *ucmd );
-	float			CalculateFriction( CUserCmd *ucmd );
-	float			CalculateDrag( CUserCmd *ucmd );
+	bool			UpdateLean( CUserCmd* ucmd );
+	float			CalculateFriction( CUserCmd* ucmd );
+	float			CalculateDrag( CUserCmd* ucmd );
 
 private:
 
@@ -92,7 +92,7 @@ private:
 	bool						m_bInitialHandbrake;
 
 	float						m_springLen[4];
-	IPhysicsVehicleController  *m_pVehicle;
+	IPhysicsVehicleController*  m_pVehicle;
 };
 
 LINK_ENTITY_TO_CLASS( prop_vehicle_jetski, CPropJetski );
@@ -102,27 +102,27 @@ LINK_ENTITY_TO_CLASS( prop_vehicle_jetski, CPropJetski );
 //---------------------------------------------------------
 BEGIN_DATADESC( CPropJetski )
 
-	DEFINE_AUTO_ARRAY( m_flSpringLengthApproach, FIELD_FLOAT ),
-	DEFINE_AUTO_ARRAY( m_flFrictionWheels, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flHandbrakeTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bInitialHandbrake, FIELD_BOOLEAN ),
-	DEFINE_AUTO_ARRAY( m_springLen, FIELD_FLOAT ),
-	DEFINE_PHYSPTR( m_pVehicle ),
+DEFINE_AUTO_ARRAY( m_flSpringLengthApproach, FIELD_FLOAT ),
+				   DEFINE_AUTO_ARRAY( m_flFrictionWheels, FIELD_FLOAT ),
+				   DEFINE_FIELD( m_flHandbrakeTime, FIELD_TIME ),
+				   DEFINE_FIELD( m_bInitialHandbrake, FIELD_BOOLEAN ),
+				   DEFINE_AUTO_ARRAY( m_springLen, FIELD_FLOAT ),
+				   DEFINE_PHYSPTR( m_pVehicle ),
 
-END_DATADESC()
+				   END_DATADESC()
 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::Precache( void )
+				   void CPropJetski::Precache( void )
 {
 	BaseClass::Precache();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropJetski::Spawn( void )
 {
@@ -141,7 +141,7 @@ void CPropJetski::Spawn( void )
 
 	// Setup vehicle variables.
 	m_pVehicle = m_VehiclePhysics.GetVehicle();
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
 		m_springLen[i] = JETSKI_SHOCK_LENGTH_REST;
 	}
@@ -150,13 +150,13 @@ void CPropJetski::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr )
+void CPropJetski::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr )
 {
-	if ( ptr->hitbox == VEHICLE_HITBOX_DRIVER )
+	if( ptr->hitbox == VEHICLE_HITBOX_DRIVER )
 	{
-		if ( m_hPlayer != NULL )
+		if( m_hPlayer != NULL )
 		{
 			m_hPlayer->TakeDamage( info );
 		}
@@ -164,9 +164,9 @@ void CPropJetski::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CPropJetski::OnTakeDamage( const CTakeDamageInfo &info )
+int CPropJetski::OnTakeDamage( const CTakeDamageInfo& info )
 {
 	//Do scaled up physic damage to the car
 	CTakeDamageInfo physDmg = info;
@@ -174,11 +174,13 @@ int CPropJetski::OnTakeDamage( const CTakeDamageInfo &info )
 	VPhysicsTakeDamage( physDmg );
 
 	//Check to do damage to driver
-	if ( m_hPlayer != NULL )
+	if( m_hPlayer != NULL )
 	{
 		//Take no damage from physics damages
-		if ( info.GetDamageType() & DMG_CRUSH )
+		if( info.GetDamageType() & DMG_CRUSH )
+		{
 			return 0;
+		}
 
 		//Take the damage
 		m_hPlayer->TakeDamage( info );
@@ -188,18 +190,18 @@ int CPropJetski::OnTakeDamage( const CTakeDamageInfo &info )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::Think(void)
+void CPropJetski::Think( void )
 {
 	BaseClass::Think();
-	
+
 	// set handbrake after physics sim settles down
-	if ( gpGlobals->curtime < m_flHandbrakeTime )
+	if( gpGlobals->curtime < m_flHandbrakeTime )
 	{
 		SetNextThink( gpGlobals->curtime );
 	}
-	else if ( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
+	else if( !m_bInitialHandbrake )	// after initial timer expires, set the handbrake
 	{
 		m_bInitialHandbrake = true;
 		m_VehiclePhysics.SetHandbrake( true );
@@ -208,16 +210,16 @@ void CPropJetski::Think(void)
 
 
 	// play enter animation
-	if ( (m_bEnterAnimOn || m_bExitAnimOn) && !IsSequenceFinished() )
+	if( ( m_bEnterAnimOn || m_bExitAnimOn ) && !IsSequenceFinished() )
 	{
 		StudioFrameAdvance();
 	}
-	else if ( IsSequenceFinished() )
+	else if( IsSequenceFinished() )
 	{
-		if ( m_bExitAnimOn )
+		if( m_bExitAnimOn )
 		{
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
-			if ( pPlayer )
+			CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+			if( pPlayer )
 			{
 				pPlayer->LeaveVehicle();		// now that sequence is finished, leave car
 				Vector vecEyes;
@@ -225,12 +227,12 @@ void CPropJetski::Think(void)
 				GetAttachment( "vehicle_driver_eyes", vecEyes, vecEyeAng );
 				vecEyeAng.x = 0;
 				vecEyeAng.z = 0;
-				pPlayer->SnapEyeAngles( vecEyeAng );			
+				pPlayer->SnapEyeAngles( vecEyeAng );
 			}
 			m_bExitAnimOn = false;
 		}
 		int iSequence = SelectWeightedSequence( ACT_IDLE );
-		if ( iSequence > ACTIVITY_NOT_AVAILABLE )
+		if( iSequence > ACTIVITY_NOT_AVAILABLE )
 		{
 			m_flCycle = 0;
 			m_flAnimTime = gpGlobals->curtime;
@@ -243,11 +245,11 @@ void CPropJetski::Think(void)
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::OnTurn( CUserCmd *ucmd )
+void CPropJetski::OnTurn( CUserCmd* ucmd )
 {
 #if 0
 	// Check for lean and adjust the turning radius accordingly.
-	if ( ucmd->buttons & IN_JUMP )
+	if( ucmd->buttons & IN_JUMP )
 	{
 		m_VehiclePhysics.SetSteeringDegrees( JETSKI_STEERING_LEAN );
 	}
@@ -283,7 +285,7 @@ void CPropJetski::OnTurn( CUserCmd *ucmd )
 	return;
 
 	// Roll right.
-	if( bRight )	 
+	if( bRight )
 	{
 		float flLengthRight = JETSKI_SHOCK_LENGTH_SHORT + ( JETSKI_SHOCK_LENGTH_REST - JETSKI_SHOCK_LENGTH_SHORT ) * flInvAbsSteering;
 		float flLengthLeft = JETSKI_SHOCK_LENGTH_REST + ( JETSKI_SHOCK_LENGTH_LONG - JETSKI_SHOCK_LENGTH_REST ) * flAbsSteering;
@@ -294,7 +296,7 @@ void CPropJetski::OnTurn( CUserCmd *ucmd )
 		m_flSpringLengthApproach[3] = flLengthRight;		// Back-Right
 	}
 	// Roll left.
-	else if ( bLeft )
+	else if( bLeft )
 	{
 		float flLengthRight = JETSKI_SHOCK_LENGTH_REST + ( JETSKI_SHOCK_LENGTH_LONG - JETSKI_SHOCK_LENGTH_REST ) * flAbsSteering;
 		float flLengthLeft = JETSKI_SHOCK_LENGTH_SHORT + ( JETSKI_SHOCK_LENGTH_REST - JETSKI_SHOCK_LENGTH_SHORT ) * flInvAbsSteering;
@@ -305,7 +307,7 @@ void CPropJetski::OnTurn( CUserCmd *ucmd )
 		m_flSpringLengthApproach[3] = flLengthRight;		// Back-Right
 	}
 	// Return springs to their normal height
-	else		
+	else
 	{
 		m_flSpringLengthApproach[0] = JETSKI_SHOCK_LENGTH_REST;			// Front-Left
 		m_flSpringLengthApproach[1] = JETSKI_SHOCK_LENGTH_REST;			// Front-Right
@@ -317,10 +319,10 @@ void CPropJetski::OnTurn( CUserCmd *ucmd )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-bool CPropJetski::UpdateLean( CUserCmd *ucmd )
+bool CPropJetski::UpdateLean( CUserCmd* ucmd )
 {
 	// Are we leaning back?
-	if ( ucmd->buttons & IN_JUMP )
+	if( ucmd->buttons & IN_JUMP )
 	{
 		m_pVehicle->SetLeanBack( true );
 		return true;
@@ -333,7 +335,7 @@ bool CPropJetski::UpdateLean( CUserCmd *ucmd )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-float CPropJetski::CalculateFriction( CUserCmd *ucmd )
+float CPropJetski::CalculateFriction( CUserCmd* ucmd )
 {
 	// Get the speed and ratio to max speed.
 	float flSpeed = m_VehiclePhysics.GetSpeed();
@@ -356,7 +358,7 @@ float CPropJetski::CalculateFriction( CUserCmd *ucmd )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-float CPropJetski::CalculateDrag( CUserCmd *ucmd )
+float CPropJetski::CalculateDrag( CUserCmd* ucmd )
 {
 	// Get the speed and ratio to max speed.
 	float flSpeed = m_VehiclePhysics.GetSpeed();
@@ -366,24 +368,24 @@ float CPropJetski::CalculateDrag( CUserCmd *ucmd )
 	float flDrag = 0.0f;
 
 	bool bLean = UpdateLean( ucmd );
-	
+
 #if 0
-	if ( bLean )
+	if( bLean )
 	{
 		flDrag += JETSKI_DRAG_LEAN_ADD;
 	}
-		float flNormalizedRatio = ( flRatio - 0.4f ) * 1.667f;
-		float flSplineRatio = SimpleSpline( flNormalizedRatio );
+	float flNormalizedRatio = ( flRatio - 0.4f ) * 1.667f;
+	float flSplineRatio = SimpleSpline( flNormalizedRatio );
 
-		flFriction = JETSKI_FRICTION_MAX + ( JETSKI_FRICTION_MIN - JETSKI_FRICTION_MAX ) * flSplineRatio;
-		flDrag = JETSKI_DRAG_IN_WATER + ( JETSKI_DRAG_ON_WATER - JETSKI_DRAG_IN_WATER ) * flNormalizedRatio;
+	flFriction = JETSKI_FRICTION_MAX + ( JETSKI_FRICTION_MIN - JETSKI_FRICTION_MAX ) * flSplineRatio;
+	flDrag = JETSKI_DRAG_IN_WATER + ( JETSKI_DRAG_ON_WATER - JETSKI_DRAG_IN_WATER ) * flNormalizedRatio;
 
-		// Leaning backwards.
-		if ( bLean )
-		{
-			flDrag += JETSKI_DRAG_LEAN_ADD;
-		}
+	// Leaning backwards.
+	if( bLean )
+	{
+		flDrag += JETSKI_DRAG_LEAN_ADD;
 	}
+}
 
 #define JETSKI_DRAG_NO_THRUST_IN_WATER		10.0f
 #define JETSKI_DRAG_NO_THRUST_ON_WATER		30.0f
@@ -392,27 +394,29 @@ float CPropJetski::CalculateDrag( CUserCmd *ucmd )
 #define JETSKI_DRAG_IN_THRUST				5.0f
 #endif
 
-	// Debug
-	Msg( "Drag = %f\n", flDrag );
+// Debug
+Msg( "Drag = %f\n", flDrag );
 
-	return flDrag;
+return flDrag;
 }
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::OnSpeed( CUserCmd *ucmd )
+void CPropJetski::OnSpeed( CUserCmd* ucmd )
 {
 	// Get the physics object so we can adjust the drag.
-	IPhysicsObject *pPhysJetski = VPhysicsGetObject();
-	if ( !pPhysJetski )
+	IPhysicsObject* pPhysJetski = VPhysicsGetObject();
+	if( !pPhysJetski )
+	{
 		return;
+	}
 
 	float flFriction = CalculateFriction( ucmd );
 	float flDrag = CalculateDrag( ucmd );
 
 	// Update the friction of the jetski "fake wheels."
-	for ( int iWheel = 0; iWheel < 4; ++iWheel )
+	for( int iWheel = 0; iWheel < 4; ++iWheel )
 	{
 		m_flFrictionWheels[iWheel] = flFriction;
 	}
@@ -423,13 +427,13 @@ void CPropJetski::OnSpeed( CUserCmd *ucmd )
 
 #if 0
 	// Splash effects.
-	if ( flRatio > 0.1f )
+	if( flRatio > 0.1f )
 	{
 		CreateSplash( JETSKI_SPLASH_RIPPLE );
 	}
 
 	float flRandom = random->RandomFloat( 0.0f, 1.0f );
-	if ( flRatio > 0.8f && flRandom < 0.15f )
+	if( flRatio > 0.8f && flRandom < 0.15f )
 	{
 		CreateSplash( JETSKI_SPLASH_SPRAY );
 	}
@@ -437,7 +441,7 @@ void CPropJetski::OnSpeed( CUserCmd *ucmd )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropJetski::UpdateTurnAndSpeed( void )
 {
@@ -454,20 +458,22 @@ void CPropJetski::UpdateTurnAndSpeed( void )
 #endif
 
 	// Update wheel frictions.
-	for ( int iWheel = 0; iWheel < 4; ++iWheel )
+	for( int iWheel = 0; iWheel < 4; ++iWheel )
 	{
 		m_pVehicle->SetWheelFriction( iWheel, m_flFrictionWheels[iWheel] );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::DriveVehicle( CBasePlayer *pPlayer, CUserCmd *ucmd )
+void CPropJetski::DriveVehicle( CBasePlayer* pPlayer, CUserCmd* ucmd )
 {
 	//Lose control when the player dies
-	if ( pPlayer->IsAlive() == false )
+	if( pPlayer->IsAlive() == false )
+	{
 		return;
+	}
 
 	OnTurn( ucmd );
 	OnSpeed( ucmd );
@@ -477,30 +483,30 @@ void CPropJetski::DriveVehicle( CBasePlayer *pPlayer, CUserCmd *ucmd )
 
 	// Save this data.
 	m_nSpeed = m_VehiclePhysics.GetSpeed();
-	m_nRPM = m_VehiclePhysics.GetRPM();	
+	m_nRPM = m_VehiclePhysics.GetRPM();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
-//			*pMoveData - 
+// Purpose:
+// Input  : *pPlayer -
+//			*pMoveData -
 //-----------------------------------------------------------------------------
-void CPropJetski::ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData )
+void CPropJetski::ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData )
 {
 	BaseClass::ProcessMovement( pPlayer, pMoveData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPropJetski::SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move )
+void CPropJetski::SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move )
 {
 	DriveVehicle( player, ucmd );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPropJetski::CreateSplash( int nSplashType )
 {
@@ -513,10 +519,10 @@ void CPropJetski::CreateSplash( int nSplashType )
 
 	CEffectData	data;
 	data.m_vOrigin = vecSplashPoint;
-	
-	switch ( nSplashType )
+
+	switch( nSplashType )
 	{
-	case JETSKI_SPLASH_SPRAY:
+		case JETSKI_SPLASH_SPRAY:
 		{
 			Vector vecSplashDir;
 			vecSplashDir = ( vecForward + vecUp ) * 0.5f;
@@ -526,7 +532,7 @@ void CPropJetski::CreateSplash( int nSplashType )
 			DispatchEffect( "waterripple", data );
 			DispatchEffect( "watersplash", data );
 		}
-	case JETSKI_SPLASH_GURGLE:
+		case JETSKI_SPLASH_GURGLE:
 		{
 			Vector vecSplashDir;
 			vecSplashDir = vecUp;
@@ -536,7 +542,7 @@ void CPropJetski::CreateSplash( int nSplashType )
 			DispatchEffect( "waterripple", data );
 			DispatchEffect( "watersplash", data );
 		}
-	case JETSKI_SPLASH_RIPPLE:
+		case JETSKI_SPLASH_RIPPLE:
 		{
 			Vector vecSplashDir;
 			vecSplashDir = vecUp;
@@ -544,7 +550,7 @@ void CPropJetski::CreateSplash( int nSplashType )
 			data.m_flScale = JETSKI_SPLASH_RIPPLE_SIZE + random->RandomFloat( 0, JETSKI_SPLASH_RIPPLE_SIZE * 0.25 );
 			DispatchEffect( "waterripple", data );
 		}
-	default:
+		default:
 		{
 			return;
 		}

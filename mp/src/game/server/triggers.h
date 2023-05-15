@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,13 +8,13 @@
 #ifndef TRIGGERS_H
 #define TRIGGERS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef MAPBASE
-#include "baseentity.h"
+	#include "baseentity.h"
 #else
-#include "basetoggle.h"
+	#include "basetoggle.h"
 #endif
 #include "entityoutput.h"
 
@@ -29,9 +29,9 @@ enum
 	SF_TRIGGER_ALLOW_PUSHABLES				= 0x04,		// Pushables can fire this trigger
 	SF_TRIGGER_ALLOW_PHYSICS				= 0x08,		// Physics objects can fire this trigger
 	SF_TRIGGER_ONLY_PLAYER_ALLY_NPCS		= 0x10,		// *if* NPCs can fire this trigger, this flag means only player allies do so
-	SF_TRIGGER_ONLY_CLIENTS_IN_VEHICLES		= 0x20,		// *if* Players can fire this trigger, this flag means only players inside vehicles can 
+	SF_TRIGGER_ONLY_CLIENTS_IN_VEHICLES		= 0x20,		// *if* Players can fire this trigger, this flag means only players inside vehicles can
 	SF_TRIGGER_ALLOW_ALL					= 0x40,		// Everything can fire this trigger EXCEPT DEBRIS!
-	SF_TRIGGER_ONLY_CLIENTS_OUT_OF_VEHICLES	= 0x200,	// *if* Players can fire this trigger, this flag means only players outside vehicles can 
+	SF_TRIGGER_ONLY_CLIENTS_OUT_OF_VEHICLES	= 0x200,	// *if* Players can fire this trigger, this flag means only players outside vehicles can
 	SF_TRIG_PUSH_ONCE						= 0x80,		// trigger_push removes itself after firing once
 	SF_TRIG_PUSH_AFFECT_PLAYER_ON_LADDER	= 0x100,	// if pushed object is player on a ladder, then this disengages them from the ladder (HL2only)
 	SF_TRIG_TOUCH_DEBRIS 					= 0x400,	// Will touch physics debris objects
@@ -44,10 +44,10 @@ enum
 
 // DVS TODO: get rid of CBaseToggle
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE
-#define CBaseToggle CBaseEntity
+	#define CBaseToggle CBaseEntity
 #endif
 class CBaseTrigger : public CBaseToggle
 {
@@ -57,7 +57,7 @@ class CBaseTrigger : public CBaseToggle
 #endif
 public:
 	CBaseTrigger();
-	
+
 	void Activate( void );
 	virtual void PostClientActive( void );
 	void InitTrigger( void );
@@ -66,40 +66,49 @@ public:
 	void Disable( void );
 	void Spawn( void );
 	void UpdateOnRemove( void );
-	void TouchTest(  void );
+	void TouchTest( void );
 
 	// Input handlers
-	virtual void InputEnable( inputdata_t &inputdata );
-	virtual void InputDisable( inputdata_t &inputdata );
-	virtual void InputToggle( inputdata_t &inputdata );
-	virtual void InputTouchTest ( inputdata_t &inputdata );
+	virtual void InputEnable( inputdata_t& inputdata );
+	virtual void InputDisable( inputdata_t& inputdata );
+	virtual void InputToggle( inputdata_t& inputdata );
+	virtual void InputTouchTest( inputdata_t& inputdata );
 
-	virtual void InputStartTouch( inputdata_t &inputdata );
-	virtual void InputEndTouch( inputdata_t &inputdata );
+	virtual void InputStartTouch( inputdata_t& inputdata );
+	virtual void InputEndTouch( inputdata_t& inputdata );
 
-	virtual bool UsesFilter( void ){ return ( m_hFilter.Get() != NULL ); }
-	virtual bool PassesTriggerFilters(CBaseEntity *pOther);
-	virtual void StartTouch(CBaseEntity *pOther);
-	virtual void EndTouch(CBaseEntity *pOther);
+	virtual bool UsesFilter( void )
+	{
+		return ( m_hFilter.Get() != NULL );
+	}
+	virtual bool PassesTriggerFilters( CBaseEntity* pOther );
+	virtual void StartTouch( CBaseEntity* pOther );
+	virtual void EndTouch( CBaseEntity* pOther );
 	virtual void StartTouchAll() {}
 	virtual void EndTouchAll() {}
-	bool IsTouching( CBaseEntity *pOther );
+	bool IsTouching( CBaseEntity* pOther );
 #ifdef MAPBASE_VSCRIPT
 	bool ScriptIsTouching( HSCRIPT hOther );
 #endif
 
-	CBaseEntity *GetTouchedEntityOfType( const char *sClassName );
+	CBaseEntity* GetTouchedEntityOfType( const char* sClassName );
 
-	int	 DrawDebugTextOverlays(void);
+	int	 DrawDebugTextOverlays( void );
 
 	// by default, triggers don't deal with TraceAttack
-	void TraceAttack(CBaseEntity *pAttacker, float flDamage, const Vector &vecDir, trace_t *ptr, int bitsDamageType) {}
+	void TraceAttack( CBaseEntity* pAttacker, float flDamage, const Vector& vecDir, trace_t* ptr, int bitsDamageType ) {}
 
-	bool PointIsWithin( const Vector &vecPoint );
+	bool PointIsWithin( const Vector& vecPoint );
 
 #ifdef MAPBASE_VSCRIPT
-	bool	ScriptPassesTriggerFilters( HSCRIPT hOther ) { return ToEnt(hOther) ? PassesTriggerFilters( ToEnt(hOther) ) : NULL; }
-	HSCRIPT	ScriptGetTouchedEntityOfType( const char *sClassName ) { return ToHScript( GetTouchedEntityOfType(sClassName) ); }
+	bool	ScriptPassesTriggerFilters( HSCRIPT hOther )
+	{
+		return ToEnt( hOther ) ? PassesTriggerFilters( ToEnt( hOther ) ) : NULL;
+	}
+	HSCRIPT	ScriptGetTouchedEntityOfType( const char* sClassName )
+	{
+		return ToHScript( GetTouchedEntityOfType( sClassName ) );
+	}
 
 	void	ScriptGetTouchingEntities( HSCRIPT hTable );
 #endif
@@ -126,12 +135,15 @@ protected:
 	EHANDLE		m_hActivator;
 	float		m_flWait;
 	string_t	m_sMaster;		// If this button has a master switch, this is the targetname.
-								// A master switch must be of the multisource type. If all 
-								// of the switches in the multisource have been triggered, then
-								// the button will be allowed to operate. Otherwise, it will be
-								// deactivated.
+	// A master switch must be of the multisource type. If all
+	// of the switches in the multisource have been triggered, then
+	// the button will be allowed to operate. Otherwise, it will be
+	// deactivated.
 
-	virtual float	GetDelay( void ) { return m_flWait; }
+	virtual float	GetDelay( void )
+	{
+		return m_flWait;
+	}
 #endif
 
 	DECLARE_DATADESC();
@@ -150,9 +162,9 @@ class CTriggerMultiple : public CBaseTrigger
 	DECLARE_CLASS( CTriggerMultiple, CBaseTrigger );
 public:
 	void Spawn( void );
-	void MultiTouch( CBaseEntity *pOther );
+	void MultiTouch( CBaseEntity* pOther );
 	void MultiWaitOver( void );
-	void ActivateMultiTrigger(CBaseEntity *pActivator);
+	void ActivateMultiTrigger( CBaseEntity* pActivator );
 
 	DECLARE_DATADESC();
 
@@ -166,7 +178,7 @@ extern CUtlVector< CHandle<CTriggerMultiple> >	g_hWeaponFireTriggers;
 
 //------------------------------------------------------------------------------
 // Base VPhysics trigger implementation
-// NOTE: This uses vphysics to compute touch events.  It doesn't do a per-frame Touch call, so the 
+// NOTE: This uses vphysics to compute touch events.  It doesn't do a per-frame Touch call, so the
 // Entity I/O is different from a regular trigger
 //------------------------------------------------------------------------------
 #define SF_VPHYSICS_MOTION_MOVEABLE	0x1000
@@ -182,18 +194,18 @@ public:
 	virtual void UpdateOnRemove();
 	virtual bool CreateVPhysics();
 	virtual void Activate( void );
-	virtual bool PassesTriggerFilters(CBaseEntity *pOther);
+	virtual bool PassesTriggerFilters( CBaseEntity* pOther );
 
 	// UNDONE: Pass trigger event in or change Start/EndTouch.  Add ITriggerVPhysics perhaps?
 	// BUGBUG: If a player touches two of these, his movement will screw up.
 	// BUGBUG: If a player uses crouch/uncrouch it will generate touch events and clear the motioncontroller flag
-	virtual void StartTouch( CBaseEntity *pOther );
-	virtual void EndTouch( CBaseEntity *pOther );
+	virtual void StartTouch( CBaseEntity* pOther );
+	virtual void EndTouch( CBaseEntity* pOther );
 
-	void InputToggle( inputdata_t &inputdata );
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
-	
+	void InputToggle( inputdata_t& inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
+
 
 protected:
 	bool						m_bDisabled;
@@ -214,8 +226,14 @@ class CTriggerHurtShim : public CBaseTrigger
 
 public:
 
-	void RadiationThinkShim( void ){ RadiationThink(); }
-	void HurtThinkShim( void ){ HurtThink(); }
+	void RadiationThinkShim( void )
+	{
+		RadiationThink();
+	}
+	void HurtThinkShim( void )
+	{
+		HurtThink();
+	}
 };
 
 DECLARE_AUTO_LIST( ITriggerHurtAutoList );
@@ -237,13 +255,13 @@ public:
 	void Spawn( void );
 	void RadiationThink( void );
 	void HurtThink( void );
-	void Touch( CBaseEntity *pOther );
-	void EndTouch( CBaseEntity *pOther );
-	bool HurtEntity( CBaseEntity *pOther, float damage );
+	void Touch( CBaseEntity* pOther );
+	void EndTouch( CBaseEntity* pOther );
+	bool HurtEntity( CBaseEntity* pOther, float damage );
 	int HurtAllTouchers( float dt );
 
 #ifdef MAPBASE
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 #endif
 
 	DECLARE_DATADESC();
@@ -273,10 +291,10 @@ public:
 	CUtlVector<EHANDLE>	m_hurtEntities;
 };
 
-bool IsTakingTriggerHurtDamageAtPoint( const Vector &vecPoint );
+bool IsTakingTriggerHurtDamageAtPoint( const Vector& vecPoint );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CTriggerCamera : public CBaseEntity
 {
@@ -292,36 +310,36 @@ public:
 #endif
 
 	void Spawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 	void Enable( void );
 	void Disable( void );
 
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	void FollowTarget( void );
-	void StartCameraShot( const char *pszShotType, CBaseEntity *pSceneEntity, CBaseEntity *pActor1, CBaseEntity *pActor2, float duration );
-	int ScriptGetFov(void);
-	void ScriptSetFov(int iFOV, float rate);
+	void StartCameraShot( const char* pszShotType, CBaseEntity* pSceneEntity, CBaseEntity* pActor1, CBaseEntity* pActor2, float duration );
+	int ScriptGetFov( void );
+	void ScriptSetFov( int iFOV, float rate );
 #ifdef MAPBASE
 	void MoveThink( void );
 #endif
-	void Move(void);
+	void Move( void );
 
 	// Always transmit to clients so they know where to move the view to
 	virtual int UpdateTransmitState();
-	
+
 	DECLARE_DATADESC();
 
 	// Input handlers
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void InputSetFOV( inputdata_t &inputdata );
-	void InputSetFOVRate( inputdata_t &inputdata );
+	void InputSetFOV( inputdata_t& inputdata );
+	void InputSetFOVRate( inputdata_t& inputdata );
 
-	void InputSetTarget( inputdata_t &inputdata );
-	void InputSetTargetAttachment( inputdata_t &inputdata );
-	void InputSetTrackSpeed( inputdata_t &inputdata );
+	void InputSetTarget( inputdata_t& inputdata );
+	void InputSetTargetAttachment( inputdata_t& inputdata );
+	void InputSetTrackSpeed( inputdata_t& inputdata );
 #endif
 
 private:
@@ -329,7 +347,7 @@ private:
 	EHANDLE m_hTarget;
 
 	// used for moving the camera along a path (rail rides)
-	CBaseEntity *m_pPath;
+	CBaseEntity* m_pPath;
 	string_t m_sPath;
 	float m_flWait;
 	float m_flReturnTime;

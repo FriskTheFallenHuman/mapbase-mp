@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -15,18 +15,20 @@
 
 static const char g_EffectName[] = "Quad";
 
-CFXQuad::CFXQuad( const FXQuadData_t &data )
+CFXQuad::CFXQuad( const FXQuadData_t& data )
 	: CClientSideEffect( g_EffectName )
 {
 	m_FXData = data;
 
-	if ( data.m_pMaterial != NULL )
+	if( data.m_pMaterial != NULL )
 	{
 		// If we've got a material, use that as our effectname instead of just "Quad".
 		//  This should hopefully help narrow down messages like "No room for effect Quad".
-		const char *szMaterialName = data.m_pMaterial->GetName();
-		if ( szMaterialName )
+		const char* szMaterialName = data.m_pMaterial->GetName();
+		if( szMaterialName )
+		{
 			SetEffectName( szMaterialName );
+		}
 	}
 }
 
@@ -36,8 +38,8 @@ CFXQuad::~CFXQuad( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : frametime - 
+// Purpose:
+// Input  : frametime -
 //-----------------------------------------------------------------------------
 void CFXQuad::Draw( double frametime )
 {
@@ -49,7 +51,7 @@ void CFXQuad::Draw( double frametime )
 	float	scaleTimePerc, alphaTimePerc;
 
 	//Determine the scale
-	if ( m_FXData.m_uiFlags & FXQUAD_BIAS_SCALE )
+	if( m_FXData.m_uiFlags & FXQUAD_BIAS_SCALE )
 	{
 		scaleTimePerc = Bias( ( m_FXData.m_flLifeTime / m_FXData.m_flDieTime ), m_FXData.m_flScaleBias );
 	}
@@ -61,7 +63,7 @@ void CFXQuad::Draw( double frametime )
 	float scale = m_FXData.m_flStartScale + ( ( m_FXData.m_flEndScale - m_FXData.m_flStartScale ) * scaleTimePerc );
 
 	//Determine the alpha
-	if ( m_FXData.m_uiFlags & FXQUAD_BIAS_ALPHA )
+	if( m_FXData.m_uiFlags & FXQUAD_BIAS_ALPHA )
 	{
 		alphaTimePerc = Bias( ( m_FXData.m_flLifeTime / m_FXData.m_flDieTime ), m_FXData.m_flAlphaBias );
 	}
@@ -74,11 +76,11 @@ void CFXQuad::Draw( double frametime )
 	alpha = clamp( alpha, 0.0f, 1.0f );
 
 	// PASSTIME don't bother if alpha is 0
-	if ( alpha == 0 )
+	if( alpha == 0 )
 	{
 		return;
 	}
-	
+
 	CMatRenderContextPtr pRenderContext( materials );
 
 	//Bind the material
@@ -99,7 +101,7 @@ void CFXQuad::Draw( double frametime )
 	color[1] = m_FXData.m_Color[1];
 	color[2] = m_FXData.m_Color[2];
 
-	if ( m_FXData.m_uiFlags & FXQUAD_COLOR_FADE )
+	if( m_FXData.m_uiFlags & FXQUAD_COLOR_FADE )
 	{
 		color[0] *= alpha;
 		color[1] *= alpha;
@@ -113,7 +115,7 @@ void CFXQuad::Draw( double frametime )
 	Vector	rRight, rUp;
 
 	rRight	= ( vRight * cos( DEG2RAD( m_FXData.m_flYaw ) ) ) - ( vUp * sin( DEG2RAD( m_FXData.m_flYaw ) ) );
-	rUp		= ( vRight * cos( DEG2RAD( m_FXData.m_flYaw+90.0f ) ) ) - ( vUp * sin( DEG2RAD( m_FXData.m_flYaw+90.0f ) ) );
+	rUp		= ( vRight * cos( DEG2RAD( m_FXData.m_flYaw + 90.0f ) ) ) - ( vUp * sin( DEG2RAD( m_FXData.m_flYaw + 90.0f ) ) );
 
 	vRight	= rRight * ( scale * 0.5f );
 	vUp		= rUp * ( scale * 0.5f );
@@ -155,7 +157,7 @@ void CFXQuad::Draw( double frametime )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CFXQuad::IsActive( void )
@@ -164,14 +166,14 @@ bool CFXQuad::IsActive( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CFXQuad::Destroy( void )
 {
 	SetEffectName( g_EffectName );
 
 	//Release the material
-	if ( m_FXData.m_pMaterial != NULL )
+	if( m_FXData.m_pMaterial != NULL )
 	{
 		m_FXData.m_pMaterial->DecrementReferenceCount();
 		m_FXData.m_pMaterial = NULL;
@@ -179,8 +181,8 @@ void CFXQuad::Destroy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : frametime - 
+// Purpose:
+// Input  : frametime -
 //-----------------------------------------------------------------------------
 void CFXQuad::Update( double frametime )
 {

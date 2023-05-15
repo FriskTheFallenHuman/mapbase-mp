@@ -39,7 +39,7 @@ public:
 	DECLARE_PREDICTABLE();
 
 	CWeaponCGuard( void );
-	
+
 	void Precache( void );
 	void PrimaryAttack( void );
 	void AddViewKick( void );
@@ -49,7 +49,10 @@ public:
 	void UpdateLasers( void );
 
 #ifdef GAME_DLL
-	int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
 	DECLARE_ACTTABLE();
@@ -75,10 +78,10 @@ BEGIN_NETWORK_TABLE( CWeaponCGuard, DT_WeaponCGuard )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponCGuard )
+	BEGIN_PREDICTION_DATA( CWeaponCGuard )
 	DEFINE_PRED_FIELD( m_bFired, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flChargeTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_cguard, CWeaponCGuard );
@@ -87,7 +90,7 @@ PRECACHE_WEAPON_REGISTER( weapon_cguard );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t CWeaponCGuard::m_acttable[] = 
+acttable_t CWeaponCGuard::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_SMG1,			true },
 	{ ACT_RELOAD,					ACT_RELOAD_SMG1,				true },
@@ -96,7 +99,7 @@ acttable_t CWeaponCGuard::m_acttable[] =
 
 	{ ACT_WALK,						ACT_WALK_RIFLE,					true },
 	{ ACT_WALK_AIM,					ACT_WALK_AIM_RIFLE,				true  },
-	
+
 // Readiness activities (not aiming)
 	{ ACT_IDLE_RELAXED,				ACT_IDLE_SMG1_RELAXED,			false },//never aims
 	{ ACT_IDLE_STIMULATED,			ACT_IDLE_SMG1_STIMULATED,		false },
@@ -111,7 +114,7 @@ acttable_t CWeaponCGuard::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_RIFLE,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_SMG1_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_RIFLE_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_SMG1,			false },//always aims
 
@@ -189,7 +192,7 @@ CWeaponCGuard::CWeaponCGuard( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::Precache( void )
 {
@@ -204,14 +207,16 @@ void CWeaponCGuard::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::AlertTargets( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
-	if ( pPlayer == NULL )
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	// Fire the bullets
 	Vector vecSrc	 = pPlayer->Weapon_ShootPosition( );
@@ -226,9 +231,11 @@ void CWeaponCGuard::AlertTargets( void )
 	trace_t	tr;
 
 	UTIL_TraceLine( vecSrc, impactPoint, MASK_SHOT, pPlayer, COLLISION_GROUP_NONE, &tr );
-	
-	if ( ( vecSrc-tr.endpos ).Length() > 1024 )
+
+	if( ( vecSrc - tr.endpos ).Length() > 1024 )
+	{
 		return;
+	}
 
 #ifdef GAME_DLL
 	CSoundEnt::InsertSound( SOUND_DANGER, tr.endpos, 128, 0.5f );
@@ -236,7 +243,7 @@ void CWeaponCGuard::AlertTargets( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 /*
 void CWeaponCGuard::UpdateLasers( void )
@@ -294,20 +301,22 @@ void CWeaponCGuard::UpdateLasers( void )
 		UTIL_TraceLine( ofs, ofs + ( v_dir * MAX_TRACE_LENGTH ), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
 		UTIL_Beam( ofs, tr.endpos, m_beamIndex, 0, 0, 2.0f, 0.1f, 2, 0, 1, 0, 255, 255, 255, 32, 100 );
-		
+
 		UTIL_Beam( ofs, tr.endpos, m_haloIndex, 0, 0, 2.0f, 0.1f, 4, 0, 1, 16, 255, 255, 255, 8, 100 );
 	}
 }
 */
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::PrimaryAttack( void )
 {
-	if ( m_flChargeTime >= gpGlobals->curtime )
+	if( m_flChargeTime >= gpGlobals->curtime )
+	{
 		return;
-		
+	}
+
 	AlertTargets();
 
 	WeaponSound( SPECIAL1 );
@@ -319,13 +328,13 @@ void CWeaponCGuard::PrimaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::ItemPostFrame( void )
 {
 	//FIXME: UpdateLasers();
 
-	if ( ( m_flChargeTime < gpGlobals->curtime ) && ( m_bFired == false ) )
+	if( ( m_flChargeTime < gpGlobals->curtime ) && ( m_bFired == false ) )
 	{
 		DelayedFire();
 	}
@@ -335,26 +344,34 @@ void CWeaponCGuard::ItemPostFrame( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::DelayedFire( void )
 {
-	if ( m_flChargeTime >= gpGlobals->curtime )
+	if( m_flChargeTime >= gpGlobals->curtime )
+	{
 		return;
+	}
 
-	if ( m_bFired )
+	if( m_bFired )
+	{
 		return;
+	}
 
 	m_bFired = true;
 
 	// Only the player fires this way so we can cast
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( pPlayer == NULL )
+	{
 		return;
-	
+	}
+
 	// Abort here to handle burst and auto fire modes
-	if ( ( GetMaxClip1() != -1 && m_iClip1 == 0 ) || ( GetMaxClip1() == -1 && !pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) ) )
+	if( ( GetMaxClip1() != -1 && m_iClip1 == 0 ) || ( GetMaxClip1() == -1 && !pPlayer->GetAmmoCount( m_iPrimaryAmmoType ) ) )
+	{
 		return;
+	}
 
 	// MUST call sound before removing a round from the clip of a CMachineGun
 	BaseClass::WeaponSound( SINGLE );
@@ -365,7 +382,7 @@ void CWeaponCGuard::DelayedFire( void )
 	pPlayer->DoMuzzleFlash();
 
 	// Register a muzzleflash for the AI.
-	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );	
+	pPlayer->SetMuzzleFlashTime( gpGlobals->curtime + 0.5 );
 #endif // GAME_DLL
 
 	// Make sure we don't fire more than the amount in the clip, if this weapon uses clips
@@ -411,19 +428,21 @@ void CWeaponCGuard::DelayedFire( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponCGuard::AddViewKick( void )
 {
 	//Get the view kick
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
 
-	if ( pPlayer == NULL )
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 #ifdef GAME_DLL
 	color32 white = {255, 255, 255, 64};
-	UTIL_ScreenFade( pPlayer, white, 0.1, 0, FFADE_IN  );
+	UTIL_ScreenFade( pPlayer, white, 0.1, 0, FFADE_IN );
 #endif // GAME_DLL
 
 	//Disorient the player

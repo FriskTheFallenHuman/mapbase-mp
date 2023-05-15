@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define DMELEMENTHANDLE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -25,9 +25,18 @@ struct DmElementHandle_t
 {
 	DmElementHandle_t() : handle( 0xffffffff ) {}
 	explicit DmElementHandle_t( int h ) : handle( h ) {}
-	inline bool operator==( const DmElementHandle_t &h ) const { return handle == h.handle; }
-	inline bool operator!=( const DmElementHandle_t &h ) const { return handle != h.handle; }
-	inline bool operator<( const DmElementHandle_t &h ) const { return handle < h.handle; }
+	inline bool operator==( const DmElementHandle_t& h ) const
+	{
+		return handle == h.handle;
+	}
+	inline bool operator!=( const DmElementHandle_t& h ) const
+	{
+		return handle != h.handle;
+	}
+	inline bool operator<( const DmElementHandle_t& h ) const
+	{
+		return handle < h.handle;
+	}
 //	inline operator int() const { return handle; } // if we're okay with implicit int casts, uncomment this method
 	int handle;
 };

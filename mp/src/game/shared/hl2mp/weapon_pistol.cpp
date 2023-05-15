@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -33,7 +33,7 @@
 ConVar	g_pistol_use_new_accuracy( "g_pistol_use_new_accuracy", "1", FCVAR_ARCHIVE | FCVAR_REPLICATED );
 
 #ifdef CLIENT_DLL
-#define CWeaponPistol C_WeaponPistol
+	#define CWeaponPistol C_WeaponPistol
 #endif
 
 //-----------------------------------------------------------------------------
@@ -45,9 +45,9 @@ class CWeaponPistol : public CHL2MPMachineGun
 public:
 	DECLARE_CLASS( CWeaponPistol, CHL2MPMachineGun );
 
-	CWeaponPistol(void);
+	CWeaponPistol( void );
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 	void	Precache( void );
@@ -58,38 +58,43 @@ public:
 	void	AddViewKick( void );
 	void	DryFire( void );
 #ifdef GAME_DLL
-	void	Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void	Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #ifdef MAPBASE
-	void	FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir );
-	void	Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
+	void	FireNPCPrimaryAttack( CBaseCombatCharacter* pOperator, Vector& vecShootOrigin, Vector& vecShootDir );
+	void	Operator_ForceNPCFire( CBaseCombatCharacter*  pOperator, bool bSecondary );
 #endif
 #endif // GAME_DLL
 
 	void	UpdatePenaltyTime( void );
 
 #ifdef GAME_DLL
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int		CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 	Activity	GetPrimaryAttackActivity( void );
 
 	virtual bool Reload( void );
 
 	virtual const Vector& GetBulletSpread( void )
-	{		
+	{
 		// Handle NPCs first
 		static Vector npcCone = VECTOR_CONE_5DEGREES;
-		if ( GetOwner() && GetOwner()->IsNPC() )
+		if( GetOwner() && GetOwner()->IsNPC() )
+		{
 			return npcCone;
-			
+		}
+
 		static Vector cone;
 
-		if ( g_pistol_use_new_accuracy.GetBool() )
+		if( g_pistol_use_new_accuracy.GetBool() )
 		{
-			float ramp = RemapValClamped(	m_flAccuracyPenalty, 
-											0.0f, 
-											PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME, 
-											0.0f, 
-											1.0f ); 
+			float ramp = RemapValClamped(	m_flAccuracyPenalty,
+											0.0f,
+											PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME,
+											0.0f,
+											1.0f );
 
 			// We lerp from very accurate to inaccurate over time
 			VectorLerp( VECTOR_CONE_1DEGREES, VECTOR_CONE_6DEGREES, ramp, cone );
@@ -102,26 +107,32 @@ public:
 
 		return cone;
 	}
-	
-	virtual int	GetMinBurst() 
-	{ 
-		return 1; 
-	}
 
-	virtual int	GetMaxBurst() 
-	{ 
-		return 3; 
-	}
-
-	virtual float GetFireRate( void ) 
+	virtual int	GetMinBurst()
 	{
-		return 0.5f; 
+		return 1;
+	}
+
+	virtual int	GetMaxBurst()
+	{
+		return 3;
+	}
+
+	virtual float GetFireRate( void )
+	{
+		return 0.5f;
 	}
 
 #ifdef MAPBASE
 	// Pistols are their own backup activities
-	virtual acttable_t		*GetBackupActivityList() { return NULL; }
-	virtual int				GetBackupActivityListCount() { return 0; }
+	virtual acttable_t*		GetBackupActivityList()
+	{
+		return NULL;
+	}
+	virtual int				GetBackupActivityListCount()
+	{
+		return 0;
+	}
 #endif
 
 	DECLARE_ACTTABLE();
@@ -133,7 +144,7 @@ private:
 	CNetworkVar( int,	m_nNumShotsFired );
 
 private:
-	CWeaponPistol( const CWeaponPistol & );
+	CWeaponPistol( const CWeaponPistol& );
 };
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponPistol, DT_WeaponPistol )
@@ -153,12 +164,12 @@ BEGIN_NETWORK_TABLE( CWeaponPistol, DT_WeaponPistol )
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponPistol )
+	BEGIN_PREDICTION_DATA( CWeaponPistol )
 	DEFINE_PRED_FIELD( m_flSoonestPrimaryAttack, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flLastAttackTime, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_flAccuracyPenalty, FIELD_FLOAT, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_nNumShotsFired, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_pistol, CWeaponPistol );
@@ -167,7 +178,7 @@ PRECACHE_WEAPON_REGISTER( weapon_pistol );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t CWeaponPistol::m_acttable[] = 
+acttable_t CWeaponPistol::m_acttable[] =
 {
 	{ ACT_IDLE,						ACT_IDLE_PISTOL,				true },
 	{ ACT_IDLE_ANGRY,				ACT_IDLE_ANGRY_PISTOL,			true },
@@ -175,7 +186,7 @@ acttable_t CWeaponPistol::m_acttable[] =
 	{ ACT_RELOAD,					ACT_RELOAD_PISTOL,				true },
 	{ ACT_WALK_AIM,					ACT_WALK_AIM_PISTOL,			true },
 	{ ACT_RUN_AIM,					ACT_RUN_AIM_PISTOL,				true },
-	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL,true },
+	{ ACT_GESTURE_RANGE_ATTACK1,	ACT_GESTURE_RANGE_ATTACK_PISTOL, true },
 	{ ACT_RELOAD_LOW,				ACT_RELOAD_PISTOL_LOW,			false },
 	{ ACT_RANGE_ATTACK1_LOW,		ACT_RANGE_ATTACK_PISTOL_LOW,	false },
 	{ ACT_COVER_LOW,				ACT_COVER_PISTOL_LOW,			false },
@@ -184,9 +195,9 @@ acttable_t CWeaponPistol::m_acttable[] =
 	{ ACT_WALK,						ACT_WALK_PISTOL,				false },
 	{ ACT_RUN,						ACT_RUN_PISTOL,					false },
 
-	// 
+	//
 	// Activities ported from weapon_alyxgun below
-	// 
+	//
 
 #if EXPANDED_HL2_WEAPON_ACTIVITIES
 	// Readiness activities (not aiming)
@@ -206,7 +217,7 @@ acttable_t CWeaponPistol::m_acttable[] =
 	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
 
 	// Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL_RELAXED,		false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL_RELAXED,		false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_PISTOL_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
 	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
@@ -239,7 +250,7 @@ acttable_t CWeaponPistol::m_acttable[] =
 	{ ACT_RUN_STEALTH,				ACT_RUN_STEALTH_PISTOL,			false },
 
 	// Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_PISTOL,				false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_ANGRY_PISTOL,			false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_PISTOL,			false },//always aims
 	{ ACT_IDLE_AIM_STEALTH,			ACT_IDLE_STEALTH_PISTOL,		false },
@@ -258,7 +269,7 @@ acttable_t CWeaponPistol::m_acttable[] =
 
 	// Crouch activities
 	{ ACT_CROUCHIDLE_STIMULATED,	ACT_CROUCHIDLE_STIMULATED,		false },
-	{ ACT_CROUCHIDLE_AIM_STIMULATED,ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
+	{ ACT_CROUCHIDLE_AIM_STIMULATED, ACT_RANGE_AIM_PISTOL_LOW,		false }, //always aims
 	{ ACT_CROUCHIDLE_AGITATED,		ACT_RANGE_AIM_PISTOL_LOW,		false },//always aims
 
 	// Readiness translations
@@ -311,14 +322,14 @@ IMPLEMENT_ACTTABLE( CWeaponPistol );
 
 #ifdef MAPBASE
 // Allows Weapon_BackupActivity() to access the pistol's activity table.
-acttable_t *GetPistolActtable()
+acttable_t* GetPistolActtable()
 {
 	return CWeaponPistol::m_acttable;
 }
 
 int GetPistolActtableCount()
 {
-	return ARRAYSIZE(CWeaponPistol::m_acttable);
+	return ARRAYSIZE( CWeaponPistol::m_acttable );
 }
 #endif
 
@@ -339,7 +350,7 @@ CWeaponPistol::CWeaponPistol( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponPistol::Precache( void )
 {
@@ -352,7 +363,7 @@ void CWeaponPistol::Precache( void )
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponPistol::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
 	switch( pEvent->event )
 	{
@@ -361,7 +372,7 @@ void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 			Vector vecShootOrigin, vecShootDir;
 			vecShootOrigin = pOperator->Weapon_ShootPosition();
 
-			CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+			CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 			ASSERT( npc != NULL );
 
 			vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
@@ -369,7 +380,7 @@ void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 #ifdef MAPBASE
 			FireNPCPrimaryAttack( pOperator, vecShootOrigin, vecShootDir );
 #else
-			CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
+			CSoundEnt::InsertSound( SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
 
 			WeaponSound( SINGLE_NPC );
 			pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2 );
@@ -386,11 +397,11 @@ void CWeaponPistol::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCh
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CWeaponPistol::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vector &vecShootOrigin, Vector &vecShootDir )
+void CWeaponPistol::FireNPCPrimaryAttack( CBaseCombatCharacter* pOperator, Vector& vecShootOrigin, Vector& vecShootDir )
 {
-	CSoundEnt::InsertSound( SOUND_COMBAT|SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
+	CSoundEnt::InsertSound( SOUND_COMBAT | SOUND_CONTEXT_GUNFIRE, pOperator->GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, pOperator, SOUNDENT_CHANNEL_WEAPON, pOperator->GetEnemy() );
 
 	WeaponSound( SINGLE_NPC );
 	pOperator->FireBullets( 1, vecShootOrigin, vecShootDir, VECTOR_CONE_PRECALCULATED, MAX_TRACE_LENGTH, m_iPrimaryAmmoType, 2 );
@@ -401,7 +412,7 @@ void CWeaponPistol::FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, Vecto
 //-----------------------------------------------------------------------------
 // Purpose: Some things need this. (e.g. the new Force(X)Fire inputs or blindfire actbusy)
 //-----------------------------------------------------------------------------
-void CWeaponPistol::Operator_ForceNPCFire( CBaseCombatCharacter *pOperator, bool bSecondary )
+void CWeaponPistol::Operator_ForceNPCFire( CBaseCombatCharacter* pOperator, bool bSecondary )
 {
 	// Ensure we have enough rounds in the clip
 	m_iClip1++;
@@ -422,7 +433,7 @@ void CWeaponPistol::DryFire( void )
 {
 	WeaponSound( EMPTY );
 	SendWeaponAnim( ACT_VM_DRYFIRE );
-	
+
 	m_flSoonestPrimaryAttack	= gpGlobals->curtime + PISTOL_FASTEST_DRY_REFIRE_TIME;
 	m_flNextPrimaryAttack		= gpGlobals->curtime + SequenceDuration();
 }
@@ -432,7 +443,7 @@ void CWeaponPistol::DryFire( void )
 //-----------------------------------------------------------------------------
 void CWeaponPistol::PrimaryAttack( void )
 {
-	if ( ( gpGlobals->curtime - m_flLastAttackTime ) > 0.5f )
+	if( ( gpGlobals->curtime - m_flLastAttackTime ) > 0.5f )
 	{
 		m_nNumShotsFired = 0;
 	}
@@ -447,7 +458,7 @@ void CWeaponPistol::PrimaryAttack( void )
 	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), SOUNDENT_VOLUME_PISTOL, 0.2, GetOwner() );
 #endif // GAME_DLL
 
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
 	if( pOwner )
 	{
@@ -470,17 +481,19 @@ void CWeaponPistol::PrimaryAttack( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponPistol::UpdatePenaltyTime( void )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-	if ( pOwner == NULL )
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	// Check our penalty time decay
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
 	{
 		m_flAccuracyPenalty -= gpGlobals->frametime;
 		m_flAccuracyPenalty = clamp( m_flAccuracyPenalty, 0.0f, PISTOL_ACCURACY_MAXIMUM_PENALTY_TIME );
@@ -488,7 +501,7 @@ void CWeaponPistol::UpdatePenaltyTime( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponPistol::ItemPreFrame( void )
 {
@@ -498,7 +511,7 @@ void CWeaponPistol::ItemPreFrame( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponPistol::ItemBusyFrame( void )
 {
@@ -514,39 +527,49 @@ void CWeaponPistol::ItemPostFrame( void )
 {
 	BaseClass::ItemPostFrame();
 
-	if ( m_bInReload )
+	if( m_bInReload )
+	{
 		return;
-	
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	}
 
-	if ( pOwner == NULL )
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
+
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
 	//Allow a refire as fast as the player can click
-	if ( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
+	if( ( ( pOwner->m_nButtons & IN_ATTACK ) == false ) && ( m_flSoonestPrimaryAttack < gpGlobals->curtime ) )
 	{
 		m_flNextPrimaryAttack = gpGlobals->curtime - 0.1f;
 	}
-	else if ( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) && ( m_iClip1 <= 0 ) )
+	else if( ( pOwner->m_nButtons & IN_ATTACK ) && ( m_flNextPrimaryAttack < gpGlobals->curtime ) && ( m_iClip1 <= 0 ) )
 	{
 		DryFire();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 Activity CWeaponPistol::GetPrimaryAttackActivity( void )
 {
-	if ( m_nNumShotsFired < 1 )
+	if( m_nNumShotsFired < 1 )
+	{
 		return ACT_VM_PRIMARYATTACK;
+	}
 
-	if ( m_nNumShotsFired < 2 )
+	if( m_nNumShotsFired < 2 )
+	{
 		return ACT_VM_RECOIL1;
+	}
 
-	if ( m_nNumShotsFired < 3 )
+	if( m_nNumShotsFired < 3 )
+	{
 		return ACT_VM_RECOIL2;
+	}
 
 	return ACT_VM_RECOIL3;
 }
@@ -556,24 +579,26 @@ Activity CWeaponPistol::GetPrimaryAttackActivity( void )
 bool CWeaponPistol::Reload( void )
 {
 	bool fRet = DefaultReload( GetMaxClip1(), GetMaxClip2(), ACT_VM_RELOAD );
-	if ( fRet )
+	if( fRet )
 	{
 		WeaponSound( RELOAD );
-		ToHL2MPPlayer(GetOwner())->DoAnimationEvent( PLAYERANIMEVENT_RELOAD );
+		ToHL2MPPlayer( GetOwner() )->DoAnimationEvent( PLAYERANIMEVENT_RELOAD );
 		m_flAccuracyPenalty = 0.0f;
 	}
 	return fRet;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponPistol::AddViewKick( void )
 {
-	CBasePlayer *pPlayer  = ToBasePlayer( GetOwner() );
-	
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer  = ToBasePlayer( GetOwner() );
+
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	QAngle	viewPunch;
 

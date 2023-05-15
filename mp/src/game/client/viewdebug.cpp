@@ -15,9 +15,9 @@
 #include "materialsystem/imaterialvar.h"
 
 #ifdef PORTAL
-//#include "C_Portal_Player.h"
-#include "portal_render_targets.h"
-#include "PortalRender.h"
+	//#include "C_Portal_Player.h"
+	#include "portal_render_targets.h"
+	#include "PortalRender.h"
 #endif
 
 //-----------------------------------------------------------------------------
@@ -30,7 +30,7 @@ static ConVar mat_showframebuffertexture( "mat_showframebuffertexture", "0", FCV
 static ConVar mat_framebuffercopyoverlaysize( "mat_framebuffercopyoverlaysize", "256" );
 static ConVar mat_showcamerarendertarget( "mat_showcamerarendertarget", "0", FCVAR_CHEAT );
 #ifdef MAPBASE
-static ConVar mat_showcamerarendertarget_all( "mat_showcamerarendertarget_all", "0", FCVAR_CHEAT );
+	static ConVar mat_showcamerarendertarget_all( "mat_showcamerarendertarget_all", "0", FCVAR_CHEAT );
 #endif
 static ConVar mat_camerarendertargetoverlaysize( "mat_camerarendertargetoverlaysize", "256", FCVAR_CHEAT );
 static ConVar mat_hsv( "mat_hsv", "0", FCVAR_CHEAT );
@@ -39,7 +39,7 @@ static ConVar cl_overdraw_test( "cl_overdraw_test", "0", FCVAR_CHEAT | FCVAR_NEV
 static ConVar mat_drawTexture( "mat_drawTexture", "", 0, "Enable debug view texture" );
 static ConVar mat_drawTextureScale( "mat_drawTextureScale", "1.0", 0, "Debug view texture scale" );
 #ifdef _X360
-static ConVar mat_drawColorRamp( "mat_drawColorRamp", "0", 0, "Draw color test pattern (0=Off, 1=[0..255], 2=[0..127]" );
+	static ConVar mat_drawColorRamp( "mat_drawColorRamp", "0", 0, "Draw color test pattern (0=Off, 1=[0..255], 2=[0..127]" );
 #endif
 
 //-----------------------------------------------------------------------------
@@ -47,8 +47,8 @@ static ConVar mat_drawColorRamp( "mat_drawColorRamp", "0", 0, "Draw color test p
 //-----------------------------------------------------------------------------
 // (the engine owns this cvar).
 ConVar mat_wireframe( "mat_wireframe", "0", FCVAR_CHEAT );
-const ConVar *sv_cheats = NULL;
-ConVar	mat_showlightmappage(  "mat_showlightmappage", "-1" ); // set this to the lightmap page that you want to see on screen, set to -1 to show nothing.
+const ConVar* sv_cheats = NULL;
+ConVar	mat_showlightmappage( "mat_showlightmappage", "-1" );  // set this to the lightmap page that you want to see on screen, set to -1 to show nothing.
 ConVar cl_drawshadowtexture( "cl_drawshadowtexture", "0", FCVAR_CHEAT );
 ConVar cl_shadowtextureoverlaysize( "cl_shadowtextureoverlaysize", "256", FCVAR_CHEAT );
 
@@ -61,7 +61,7 @@ static ConVar r_flashlightdrawdepth( "r_flashlightdrawdepth", "0" );
 class CLightmapDebugView : public CRendering3dView
 {
 public:
-	CLightmapDebugView(CViewRender *pMainView) : CRendering3dView( pMainView ) {}
+	CLightmapDebugView( CViewRender* pMainView ) : CRendering3dView( pMainView ) {}
 
 	void Draw()
 	{
@@ -83,14 +83,14 @@ public:
 //-----------------------------------------------------------------------------
 // Renders a material orthographically to screen...
 //-----------------------------------------------------------------------------
-static void RenderMaterial( const char *pMaterialName )
+static void RenderMaterial( const char* pMaterialName )
 {
 	// So it's not in the very top left
 	float x = 100.0f, y = 100.0f;
 	// float x = 0.0f, y = 0.0f;
 
-	IMaterial *pMaterial = materials->FindMaterial( pMaterialName, TEXTURE_GROUP_OTHER, false );
-	if ( !IsErrorMaterial( pMaterial ) )
+	IMaterial* pMaterial = materials->FindMaterial( pMaterialName, TEXTURE_GROUP_OTHER, false );
+	if( !IsErrorMaterial( pMaterial ) )
 	{
 		CMatRenderContextPtr pRenderContext( materials );
 		pRenderContext->Bind( pMaterial );
@@ -124,7 +124,7 @@ static void RenderMaterial( const char *pMaterialName )
 	}
 }
 
-static void OverlayWaterTexture( IMaterial *pMaterial, int xOffset, int yOffset, bool bFlip )
+static void OverlayWaterTexture( IMaterial* pMaterial, int xOffset, int yOffset, bool bFlip )
 {
 	// screen safe
 	float xBaseOffset = IsPC() ? 0 : 32;
@@ -173,11 +173,11 @@ static void OverlayWaterTextures( void )
 	OverlayWaterTexture( materials->FindMaterial( "debug/debugrefract", NULL ), 0, 1, true );
 }
 
-void OverlayCameraRenderTarget( const char *pszMaterialName, float flX, float flY, float w, float h )
+void OverlayCameraRenderTarget( const char* pszMaterialName, float flX, float flY, float w, float h )
 {
 	float offsetS = ( 0.5f / 256.0f );
 	float offsetT = ( 0.5f / 256.0f );
-	IMaterial *pMaterial;
+	IMaterial* pMaterial;
 	pMaterial = materials->FindMaterial( pszMaterialName, TEXTURE_GROUP_OTHER, true );
 	if( !IsErrorMaterial( pMaterial ) )
 	{
@@ -197,15 +197,15 @@ void OverlayCameraRenderTarget( const char *pszMaterialName, float flX, float fl
 		meshBuilder.TexCoord2f( 0, 0.0f + offsetS, 0.0f + offsetT );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Position3f( flX+w, flY, 0.0f );
+		meshBuilder.Position3f( flX + w, flY, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f + offsetS, 0.0f + offsetT );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Position3f( flX+w, flY+h, 0.0f );
+		meshBuilder.Position3f( flX + w, flY + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f + offsetS, 1.0f + offsetT );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Position3f( flX, flY+h, 0.0f );
+		meshBuilder.Position3f( flX, flY + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f + offsetS, 1.0f + offsetT );
 		meshBuilder.AdvanceVertex();
 
@@ -224,7 +224,7 @@ static void OverlayFrameBufferTexture( int nFrameBufferIndex )
 {
 	float offsetS = ( 0.5f / 256.0f );
 	float offsetT = ( 0.5f / 256.0f );
-	IMaterial *pMaterial;
+	IMaterial* pMaterial;
 	char buf[MAX_PATH];
 	Q_snprintf( buf, MAX_PATH, "debug/debugfbtexture%d", nFrameBufferIndex );
 #ifdef MAPBASE
@@ -272,9 +272,9 @@ static void OverlayFrameBufferTexture( int nFrameBufferIndex )
 static void OverlayShowTexture( const char* textureName, float scale )
 {
 	bool			foundVar;
-	IMaterial		*pMaterial;
-	IMaterialVar	*BaseTextureVar;
-	ITexture		*pTex;
+	IMaterial*		pMaterial;
+	IMaterialVar*	BaseTextureVar;
+	ITexture*		pTex;
 	float			x, y, w, h;
 
 	// screen safe
@@ -283,12 +283,14 @@ static void OverlayShowTexture( const char* textureName, float scale )
 
 	pMaterial = materials->FindMaterial( "___debug", TEXTURE_GROUP_OTHER, true );
 	BaseTextureVar = pMaterial->FindVar( "$basetexture", &foundVar, false );
-	if (!foundVar)
+	if( !foundVar )
+	{
 		return;
+	}
 
 	CMatRenderContextPtr pRenderContext( materials );
 
-	if ( textureName && textureName[0] )
+	if( textureName && textureName[0] )
 	{
 		pTex = materials->FindTexture( textureName, TEXTURE_GROUP_OTHER, false );
 		BaseTextureVar->SetTextureValue( pTex );
@@ -309,13 +311,13 @@ static void OverlayShowTexture( const char* textureName, float scale )
 	meshBuilder.Position3f( x, y, 0.0f );
 	meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 	meshBuilder.AdvanceVertex();
-	meshBuilder.Position3f( x+w, y, 0.0f );
+	meshBuilder.Position3f( x + w, y, 0.0f );
 	meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 	meshBuilder.AdvanceVertex();
-	meshBuilder.Position3f( x+w, y+h, 0.0f );
+	meshBuilder.Position3f( x + w, y + h, 0.0f );
 	meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 	meshBuilder.AdvanceVertex();
-	meshBuilder.Position3f( x, y+h, 0.0f );
+	meshBuilder.Position3f( x, y + h, 0.0f );
 	meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 	meshBuilder.AdvanceVertex();
 	meshBuilder.End();
@@ -328,26 +330,26 @@ static void OverlayShowTexture( const char* textureName, float scale )
 #if defined( _X360 )
 static void OverlayColorRamp( bool bHalfSpace )
 {
-	IMaterial		*pMaterial;
+	IMaterial*		pMaterial;
 	float			x, y, w, h;
 
 	pMaterial = materials->FindMaterial( "vgui/white", TEXTURE_GROUP_OTHER, true );
-	
+
 	int backBufferWidth, backBufferHeight;
 	materials->GetBackBufferDimensions( backBufferWidth, backBufferHeight );
 
 	w = ( backBufferWidth == 1280 ) ? 1024 : 512;
 	h = 80;
-	x = ( backBufferWidth - w )/2;
-	y = ( backBufferHeight - 4*h )/2;
-	
+	x = ( backBufferWidth - w ) / 2;
+	y = ( backBufferHeight - 4 * h ) / 2;
+
 	int numBands = 32;
 	int color0 = 0;
 	int color1 = bHalfSpace ? 127 : 255;
-	int colorStep = (color1 - color0 + 1)/numBands;
+	int colorStep = ( color1 - color0 + 1 ) / numBands;
 
 	CMatRenderContextPtr pRenderContext( materials );
-	
+
 	pRenderContext->Bind( pMaterial );
 	IMesh* pMesh = pRenderContext->GetDynamicMesh( true );
 
@@ -355,10 +357,10 @@ static void OverlayColorRamp( bool bHalfSpace )
 
 	// draw ticks
 	int xx = x;
-	meshBuilder.Begin( pMesh, MATERIAL_LINES, numBands+1 );
-	for ( int i=0; i<numBands+1; i++ )
+	meshBuilder.Begin( pMesh, MATERIAL_LINES, numBands + 1 );
+	for( int i = 0; i < numBands + 1; i++ )
 	{
-		meshBuilder.Position3f( xx, y-10, 0.0f );
+		meshBuilder.Position3f( xx, y - 10, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( 255, 255, 0 );
 		meshBuilder.AdvanceVertex();
@@ -366,7 +368,7 @@ static void OverlayColorRamp( bool bHalfSpace )
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( 255, 255, 0 );
 		meshBuilder.AdvanceVertex();
-		xx += w/numBands;
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -375,28 +377,30 @@ static void OverlayColorRamp( bool bHalfSpace )
 	xx = x;
 	int color = color0;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, numBands );
-	for ( int i=0; i<numBands+1; i++ )
+	for( int i = 0; i < numBands + 1; i++ )
 	{
 		meshBuilder.Position3f( xx, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y+h, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx, y+h, 0.0f );
+		meshBuilder.Position3f( xx, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
 		color += colorStep;
-		if ( color > 255 )
+		if( color > 255 )
+		{
 			color = 255;
-		xx += w/numBands;
+		}
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -406,28 +410,30 @@ static void OverlayColorRamp( bool bHalfSpace )
 	y += h;
 	xx = x;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, numBands );
-	for ( int i=0; i<numBands+1; i++ )
+	for( int i = 0; i < numBands + 1; i++ )
 	{
 		meshBuilder.Position3f( xx, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y+h, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx, y+h, 0.0f );
+		meshBuilder.Position3f( xx, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 		meshBuilder.Color3ub( color, color, color );
 		meshBuilder.AdvanceVertex();
 		color -= colorStep;
-		if ( color < 0 )
+		if( color < 0 )
+		{
 			color = 0;
-		xx += w/numBands;
+		}
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -437,28 +443,30 @@ static void OverlayColorRamp( bool bHalfSpace )
 	y += h;
 	xx = x;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, numBands );
-	for ( int i=0; i<numBands+1; i++ )
+	for( int i = 0; i < numBands + 1; i++ )
 	{
 		meshBuilder.Position3f( xx, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( color, 0, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 		meshBuilder.Color3ub( color, 0, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y+h, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 		meshBuilder.Color3ub( color, 0, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx, y+h, 0.0f );
+		meshBuilder.Position3f( xx, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 		meshBuilder.Color3ub( color, 0, 0 );
 		meshBuilder.AdvanceVertex();
 		color -= colorStep;
-		if ( color < 0 )
+		if( color < 0 )
+		{
 			color = 0;
-		xx += w/numBands;
+		}
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -468,29 +476,31 @@ static void OverlayColorRamp( bool bHalfSpace )
 	y += h;
 	xx = x;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, numBands );
-	for ( int i=0; i<numBands+1; i++ )
+	for( int i = 0; i < numBands + 1; i++ )
 	{
 		meshBuilder.Position3f( xx, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( 0, color, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 		meshBuilder.Color3ub( 0, color, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y+h, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 		meshBuilder.Color3ub( 0, color, 0 );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx, y+h, 0.0f );
+		meshBuilder.Position3f( xx, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 		meshBuilder.Color3ub( 0, color, 0 );
 		meshBuilder.AdvanceVertex();
 
 		color -= colorStep;
-		if ( color < 0 )
+		if( color < 0 )
+		{
 			color = 0;
-		xx += w/numBands;
+		}
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -500,28 +510,30 @@ static void OverlayColorRamp( bool bHalfSpace )
 	y += h;
 	xx = x;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, numBands );
-	for ( int i=0; i<numBands+1; i++ )
+	for( int i = 0; i < numBands + 1; i++ )
 	{
 		meshBuilder.Position3f( xx, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 0.0f );
 		meshBuilder.Color3ub( 0, 0, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 0.0f );
 		meshBuilder.Color3ub( 0, 0, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx+w/numBands, y+h, 0.0f );
+		meshBuilder.Position3f( xx + w / numBands, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 1.0f, 1.0f );
 		meshBuilder.Color3ub( 0, 0, color );
 		meshBuilder.AdvanceVertex();
-		meshBuilder.Position3f( xx, y+h, 0.0f );
+		meshBuilder.Position3f( xx, y + h, 0.0f );
 		meshBuilder.TexCoord2f( 0, 0.0f, 1.0f );
 		meshBuilder.Color3ub( 0, 0, color );
 		meshBuilder.AdvanceVertex();
 		color -= colorStep;
-		if ( color < 0 )
+		if( color < 0 )
+		{
 			color = 0;
-		xx += w/numBands;
+		}
+		xx += w / numBands;
 	}
 	meshBuilder.End();
 	pMesh->Draw();
@@ -531,9 +543,9 @@ static void OverlayColorRamp( bool bHalfSpace )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup& view )
 {
-	VPROF("CViewRender::Draw3DDebuggingInfo");
+	VPROF( "CViewRender::Draw3DDebuggingInfo" );
 
 	// Draw 3d overlays
 	render->Draw3DDebugOverlays();
@@ -546,15 +558,17 @@ void CDebugViewRender::Draw3DDebuggingInfo( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // Draws all the debugging info
 //-----------------------------------------------------------------------------
-void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
+void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup& view )
 {
-	if ( IsX360() && IsRetail() )
+	if( IsX360() && IsRetail() )
+	{
 		return;
+	}
 
 	// HDRFIXME: Assert NULL rendertarget
-	if ( mat_yuv.GetInt() && (engine->GetDXSupportLevel() >= 80) )
+	if( mat_yuv.GetInt() && ( engine->GetDXSupportLevel() >= 80 ) )
 	{
-		IMaterial *pMaterial;
+		IMaterial* pMaterial;
 		pMaterial = materials->FindMaterial( "debug/yuv", TEXTURE_GROUP_OTHER, true );
 		if( !IsErrorMaterial( pMaterial ) )
 		{
@@ -564,9 +578,9 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		}
 	}
 
-	if ( mat_hsv.GetInt() && (engine->GetDXSupportLevel() >= 90) )
+	if( mat_hsv.GetInt() && ( engine->GetDXSupportLevel() >= 90 ) )
 	{
-		IMaterial *pMaterial;
+		IMaterial* pMaterial;
 		pMaterial = materials->FindMaterial( "debug/hsv", TEXTURE_GROUP_OTHER, true );
 		if( !IsErrorMaterial( pMaterial ) )
 		{
@@ -577,31 +591,31 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 	}
 
 	// Draw debugging lightmaps
-	if ( mat_showlightmappage.GetInt() != -1 )
+	if( mat_showlightmappage.GetInt() != -1 )
 	{
-		CLightmapDebugView clientView( assert_cast<CViewRender *>( g_pView ) );
+		CLightmapDebugView clientView( assert_cast<CViewRender*>( g_pView ) );
 		clientView.Setup( view );
 		clientView.Draw();
 	}
 
-	if ( cl_drawshadowtexture.GetInt() )
+	if( cl_drawshadowtexture.GetInt() )
 	{
 		int nSize = cl_shadowtextureoverlaysize.GetInt();
 		g_pClientShadowMgr->RenderShadowTexture( nSize, nSize );
 	}
 
-	const char *pDrawMaterial = cl_drawmaterial.GetString();
-	if ( pDrawMaterial && pDrawMaterial[0] )
+	const char* pDrawMaterial = cl_drawmaterial.GetString();
+	if( pDrawMaterial && pDrawMaterial[0] )
 	{
-		RenderMaterial( pDrawMaterial ); 
+		RenderMaterial( pDrawMaterial );
 	}
 
-	if ( mat_showwatertextures.GetBool() )
+	if( mat_showwatertextures.GetBool() )
 	{
 		OverlayWaterTextures();
 	}
 
-	if ( mat_showcamerarendertarget.GetBool() )
+	if( mat_showcamerarendertarget.GetBool() )
 	{
 #ifdef MAPBASE
 		float w = mat_camerarendertargetoverlaysize.GetFloat();
@@ -617,11 +631,11 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 #ifdef MAPBASE
 		int iCameraNum = mat_showcamerarendertarget.GetInt();
 
-		if (iCameraNum == 1) // Display the default camera
+		if( iCameraNum == 1 ) // Display the default camera
 		{
 			OverlayCameraRenderTarget( "debug/debugcamerarendertarget", 0, 0, w, h );
 		}
-		else if (mat_showcamerarendertarget_all.GetBool()) // Display all cameras
+		else if( mat_showcamerarendertarget_all.GetBool() ) // Display all cameras
 		{
 			OverlayCameraRenderTarget( "debug/debugcamerarendertarget", 0, 0, w, h );
 
@@ -630,20 +644,24 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 
 			// Show Mapbase's cameras
 			char szTextureName[48];
-			for (int i = 0; i < iCameraNum; i++)
+			for( int i = 0; i < iCameraNum; i++ )
 			{
 				V_snprintf( szTextureName, sizeof( szTextureName ), "debug/debugcamerarendertarget_camera%i", i );
 
 				// Show them vertically if the cvar is set to 2
-				if (mat_showcamerarendertarget_all.GetInt() == 2)
-					OverlayCameraRenderTarget( szTextureName, 0, h * (i + 1), w, h );
+				if( mat_showcamerarendertarget_all.GetInt() == 2 )
+				{
+					OverlayCameraRenderTarget( szTextureName, 0, h * ( i + 1 ), w, h );
+				}
 				else
-					OverlayCameraRenderTarget( szTextureName, w * (i + 1), 0, w, h );
+				{
+					OverlayCameraRenderTarget( szTextureName, w * ( i + 1 ), 0, w, h );
+				}
 			}
 		}
 		else // Display one of the new cameras
 		{
-			OverlayCameraRenderTarget( VarArgs( "debug/debugcamerarendertarget_camera%i", iCameraNum-2 ), 0, 0, w, h );
+			OverlayCameraRenderTarget( VarArgs( "debug/debugcamerarendertarget_camera%i", iCameraNum - 2 ), 0, 0, w, h );
 		}
 #else
 		OverlayCameraRenderTarget( "debug/debugcamerarendertarget", 0, 0, w, h );
@@ -652,7 +670,7 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 #endif
 	}
 
-	if ( mat_showframebuffertexture.GetBool() )
+	if( mat_showframebuffertexture.GetBool() )
 	{
 		// HDRFIXME: Get rid of these rendertarget sets assuming that the assert at the top of this function is true.
 		CMatRenderContextPtr pRenderContext( materials );
@@ -662,20 +680,20 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 		pRenderContext->PopRenderTargetAndViewport( );
 	}
 
-	const char *pDrawTexture = mat_drawTexture.GetString();
-	if ( pDrawTexture && pDrawTexture[0] )
-	{		
+	const char* pDrawTexture = mat_drawTexture.GetString();
+	if( pDrawTexture && pDrawTexture[0] )
+	{
 		OverlayShowTexture( pDrawTexture, mat_drawTextureScale.GetFloat() );
 	}
 
 #ifdef _X360
-	if ( mat_drawColorRamp.GetBool() )
+	if( mat_drawColorRamp.GetBool() )
 	{
 		OverlayColorRamp( mat_drawColorRamp.GetInt() == 2 );
 	}
 #endif
 
-	if ( r_flashlightdrawdepth.GetBool() )
+	if( r_flashlightdrawdepth.GetBool() )
 	{
 		shadowmgr->DrawFlashlightDepthTexture( );
 	}
@@ -684,18 +702,18 @@ void CDebugViewRender::Draw2DDebuggingInfo( const CViewSetup &view )
 //-----------------------------------------------------------------------------
 // A console command allowing you to draw a material as an overlay
 //-----------------------------------------------------------------------------
-CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_CHEAT|FCVAR_SERVER_CAN_EXECUTE )
+CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_CHEAT | FCVAR_SERVER_CAN_EXECUTE )
 {
 	if( args.ArgC() == 2 )
 	{
-		if ( !Q_stricmp( "off", args[1] ) )
+		if( !Q_stricmp( "off", args[1] ) )
 		{
 			g_pView->SetScreenOverlayMaterial( NULL );
 		}
 		else
 		{
-			IMaterial *pMaterial = materials->FindMaterial( args[1], TEXTURE_GROUP_OTHER, false );
-			if ( !IsErrorMaterial( pMaterial ) )
+			IMaterial* pMaterial = materials->FindMaterial( args[1], TEXTURE_GROUP_OTHER, false );
+			if( !IsErrorMaterial( pMaterial ) )
 			{
 				g_pView->SetScreenOverlayMaterial( pMaterial );
 			}
@@ -707,7 +725,7 @@ CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_C
 	}
 	else
 	{
-		IMaterial *pMaterial = g_pView->GetScreenOverlayMaterial();
+		IMaterial* pMaterial = g_pView->GetScreenOverlayMaterial();
 		Warning( "r_screenoverlay: %s\n", pMaterial ? pMaterial->GetName() : "off" );
 	}
 }
@@ -716,25 +734,25 @@ CON_COMMAND_F( r_screenoverlay, "Draw specified material as an overlay", FCVAR_C
 //-----------------------------------------------------------------------------
 // The same as above, but using the new indexed overlays
 //-----------------------------------------------------------------------------
-CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay in the specified index", FCVAR_CHEAT|FCVAR_SERVER_CAN_EXECUTE )
+CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay in the specified index", FCVAR_CHEAT | FCVAR_SERVER_CAN_EXECUTE )
 {
 	if( args.ArgC() == 3 )
 	{
 		int index = atoi( args[1] );
-		if (index < 0 || index >= MAX_SCREEN_OVERLAYS)
+		if( index < 0 || index >= MAX_SCREEN_OVERLAYS )
 		{
 			Warning( "r_screenoverlay_indexed: '%i' is out of range (should be 0-9)\n", index );
 			return;
 		}
 
-		if ( !Q_stricmp( "off", args[2] ) )
+		if( !Q_stricmp( "off", args[2] ) )
 		{
 			g_pView->SetIndexedScreenOverlayMaterial( index, NULL );
 		}
 		else
 		{
-			IMaterial *pMaterial = materials->FindMaterial( args[2], TEXTURE_GROUP_OTHER, false );
-			if ( !IsErrorMaterial( pMaterial ) )
+			IMaterial* pMaterial = materials->FindMaterial( args[2], TEXTURE_GROUP_OTHER, false );
+			if( !IsErrorMaterial( pMaterial ) )
 			{
 				g_pView->SetIndexedScreenOverlayMaterial( index, pMaterial );
 			}
@@ -744,16 +762,16 @@ CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay i
 			}
 		}
 	}
-	else if ( args.ArgC() == 2 )
+	else if( args.ArgC() == 2 )
 	{
 		int index = atoi( args[1] );
-		if (index < 0 || index >= MAX_SCREEN_OVERLAYS)
+		if( index < 0 || index >= MAX_SCREEN_OVERLAYS )
 		{
 			Warning( "r_screenoverlay_indexed: '%i' is out of range (should be 0-9)\n", index );
 			return;
 		}
 
-		IMaterial *pMaterial = g_pView->GetIndexedScreenOverlayMaterial( index );
+		IMaterial* pMaterial = g_pView->GetIndexedScreenOverlayMaterial( index );
 		Warning( "r_screenoverlay_indexed %i: %s\n", index, pMaterial ? pMaterial->GetName() : "off" );
 	}
 	else
@@ -766,13 +784,17 @@ CON_COMMAND_F( r_screenoverlay_indexed, "Draw specified material as an overlay i
 // Used to verify frame syncing.
 void CDebugViewRender::GenerateOverdrawForTesting()
 {
-	if ( IsX360() )
+	if( IsX360() )
+	{
 		return;
+	}
 
-	if ( !cl_overdraw_test.GetInt() )
+	if( !cl_overdraw_test.GetInt() )
+	{
 		return;
+	}
 
-	for ( int i=0; i < 40; i++ )
+	for( int i = 0; i < 40; i++ )
 	{
 		g_SmokeFogOverlayAlpha = 20 / 255.0;
 		DrawSmokeFogOverlay();

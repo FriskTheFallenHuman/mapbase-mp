@@ -19,7 +19,7 @@
 #include "physconstraint.h"
 
 #ifdef TF_DLL
-#include "tf_shareddefs.h"
+	#include "tf_shareddefs.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -64,85 +64,85 @@ EHANDLE g_hTeamTrainWatcherMaster = NULL;
 
 BEGIN_DATADESC( CTeamTrainWatcher )
 
-	// Inputs.
-	DEFINE_INPUTFUNC( FIELD_VOID, "RoundActivate", InputRoundActivate ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetNumTrainCappers", InputSetNumTrainCappers ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "OnStartOvertime", InputOnStartOvertime ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeedForwardModifier", InputSetSpeedForwardModifier ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTrainRecedeTime", InputSetTrainRecedeTime ),
-	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetTrainCanRecede", InputSetTrainCanRecede ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTrainRecedeTimeAndUpdate", InputSetTrainRecedeTimeAndUpdate ),
+// Inputs.
+DEFINE_INPUTFUNC( FIELD_VOID, "RoundActivate", InputRoundActivate ),
+				  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetNumTrainCappers", InputSetNumTrainCappers ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "OnStartOvertime", InputOnStartOvertime ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeedForwardModifier", InputSetSpeedForwardModifier ),
+				  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTrainRecedeTime", InputSetTrainRecedeTime ),
+				  DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetTrainCanRecede", InputSetTrainCanRecede ),
+				  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTrainRecedeTimeAndUpdate", InputSetTrainRecedeTimeAndUpdate ),
 
-	// Outputs
-	DEFINE_OUTPUT( m_OnTrainStartRecede, "OnTrainStartRecede" ),
+				  // Outputs
+				  DEFINE_OUTPUT( m_OnTrainStartRecede, "OnTrainStartRecede" ),
 
-	// key
-	DEFINE_KEYFIELD( m_iszTrain, FIELD_STRING, "train" ),
-	DEFINE_KEYFIELD( m_iszStartNode, FIELD_STRING, "start_node" ),
-	DEFINE_KEYFIELD( m_iszGoalNode, FIELD_STRING, "goal_node" ),
+				  // key
+				  DEFINE_KEYFIELD( m_iszTrain, FIELD_STRING, "train" ),
+				  DEFINE_KEYFIELD( m_iszStartNode, FIELD_STRING, "start_node" ),
+				  DEFINE_KEYFIELD( m_iszGoalNode, FIELD_STRING, "goal_node" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[0], FIELD_STRING, "linked_pathtrack_1" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[0], FIELD_STRING, "linked_cp_1" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[0], FIELD_STRING, "linked_pathtrack_1" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[0], FIELD_STRING, "linked_cp_1" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[1], FIELD_STRING, "linked_pathtrack_2" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[1], FIELD_STRING, "linked_cp_2" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[1], FIELD_STRING, "linked_pathtrack_2" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[1], FIELD_STRING, "linked_cp_2" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[2], FIELD_STRING, "linked_pathtrack_3" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[2], FIELD_STRING, "linked_cp_3" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[2], FIELD_STRING, "linked_pathtrack_3" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[2], FIELD_STRING, "linked_cp_3" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[3], FIELD_STRING, "linked_pathtrack_4" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[3], FIELD_STRING, "linked_cp_4" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[3], FIELD_STRING, "linked_pathtrack_4" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[3], FIELD_STRING, "linked_cp_4" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[4], FIELD_STRING, "linked_pathtrack_5" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[4], FIELD_STRING, "linked_cp_5" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[4], FIELD_STRING, "linked_pathtrack_5" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[4], FIELD_STRING, "linked_cp_5" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[5], FIELD_STRING, "linked_pathtrack_6" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[5], FIELD_STRING, "linked_cp_6" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[5], FIELD_STRING, "linked_pathtrack_6" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[5], FIELD_STRING, "linked_cp_6" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[6], FIELD_STRING, "linked_pathtrack_7" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[6], FIELD_STRING, "linked_cp_7" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[6], FIELD_STRING, "linked_pathtrack_7" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[6], FIELD_STRING, "linked_cp_7" ),
 
-	DEFINE_KEYFIELD( m_iszLinkedPathTracks[7], FIELD_STRING, "linked_pathtrack_8" ),
-	DEFINE_KEYFIELD( m_iszLinkedCPs[7], FIELD_STRING, "linked_cp_8" ),
+				  DEFINE_KEYFIELD( m_iszLinkedPathTracks[7], FIELD_STRING, "linked_pathtrack_8" ),
+				  DEFINE_KEYFIELD( m_iszLinkedCPs[7], FIELD_STRING, "linked_cp_8" ),
 
-	DEFINE_KEYFIELD( m_bTrainCanRecede, FIELD_BOOLEAN, "train_can_recede" ),
+				  DEFINE_KEYFIELD( m_bTrainCanRecede, FIELD_BOOLEAN, "train_can_recede" ),
 
-	DEFINE_KEYFIELD( m_bHandleTrainMovement, FIELD_BOOLEAN, "handle_train_movement" ),
+				  DEFINE_KEYFIELD( m_bHandleTrainMovement, FIELD_BOOLEAN, "handle_train_movement" ),
 
-	// can be up to 8 links
+				  // can be up to 8 links
 
-	// min speed for train hud speed levels
-	DEFINE_KEYFIELD( m_flSpeedLevels[0], FIELD_FLOAT, "hud_min_speed_level_1" ),
-	DEFINE_KEYFIELD( m_flSpeedLevels[1], FIELD_FLOAT, "hud_min_speed_level_2" ),
-	DEFINE_KEYFIELD( m_flSpeedLevels[2], FIELD_FLOAT, "hud_min_speed_level_3" ),
+				  // min speed for train hud speed levels
+				  DEFINE_KEYFIELD( m_flSpeedLevels[0], FIELD_FLOAT, "hud_min_speed_level_1" ),
+				  DEFINE_KEYFIELD( m_flSpeedLevels[1], FIELD_FLOAT, "hud_min_speed_level_2" ),
+				  DEFINE_KEYFIELD( m_flSpeedLevels[2], FIELD_FLOAT, "hud_min_speed_level_3" ),
 
-	DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN,	"StartDisabled" ),
+				  DEFINE_KEYFIELD( m_bDisabled,	FIELD_BOOLEAN,	"StartDisabled" ),
 
-	DEFINE_KEYFIELD( m_iszSparkName, FIELD_STRING, "env_spark_name" ),
+				  DEFINE_KEYFIELD( m_iszSparkName, FIELD_STRING, "env_spark_name" ),
 
-	DEFINE_KEYFIELD( m_flSpeedForwardModifier, FIELD_FLOAT, "speed_forward_modifier" ),
+				  DEFINE_KEYFIELD( m_flSpeedForwardModifier, FIELD_FLOAT, "speed_forward_modifier" ),
 
-	DEFINE_KEYFIELD( m_nTrainRecedeTime, FIELD_INTEGER, "train_recede_time" ),
+				  DEFINE_KEYFIELD( m_nTrainRecedeTime, FIELD_INTEGER, "train_recede_time" ),
 
-END_DATADESC()
+				  END_DATADESC()
 
 
-IMPLEMENT_SERVERCLASS_ST(CTeamTrainWatcher, DT_TeamTrainWatcher)
+				  IMPLEMENT_SERVERCLASS_ST( CTeamTrainWatcher, DT_TeamTrainWatcher )
 
-	SendPropFloat( SENDINFO( m_flTotalProgress ), 11, 0, 0.0f, 1.0f ),
-	SendPropInt( SENDINFO( m_iTrainSpeedLevel ), 4 ),
-	SendPropTime( SENDINFO( m_flRecedeTime ) ),
-	SendPropInt( SENDINFO( m_nNumCappers ) ),
+				  SendPropFloat( SENDINFO( m_flTotalProgress ), 11, 0, 0.0f, 1.0f ),
+				  SendPropInt( SENDINFO( m_iTrainSpeedLevel ), 4 ),
+				  SendPropTime( SENDINFO( m_flRecedeTime ) ),
+				  SendPropInt( SENDINFO( m_nNumCappers ) ),
 #ifdef GLOWS_ENABLE
 	SendPropEHandle( SENDINFO( m_hGlowEnt ) ),
 #endif // GLOWS_ENABLE
 
-END_SEND_TABLE()
+				  END_SEND_TABLE()
 
 
-LINK_ENTITY_TO_CLASS( team_train_watcher, CTeamTrainWatcher );
+				  LINK_ENTITY_TO_CLASS( team_train_watcher, CTeamTrainWatcher );
 
 IMPLEMENT_AUTO_LIST( ITFTeamTrainWatcher );
 
@@ -324,13 +324,13 @@ CTeamTrainWatcher::CTeamTrainWatcher()
 #else
 	ChangeTeam( TEAM_UNASSIGNED );
 #endif
-/*
-	// create a CTeamTrainWatcherMaster entity
-	if ( g_hTeamTrainWatcherMaster.Get() == NULL )
-	{
-		g_hTeamTrainWatcherMaster = CreateEntityByName( "team_train_watcher_master" );
-	}
-*/
+	/*
+		// create a CTeamTrainWatcherMaster entity
+		if ( g_hTeamTrainWatcherMaster.Get() == NULL )
+		{
+			g_hTeamTrainWatcherMaster = CreateEntityByName( "team_train_watcher_master" );
+		}
+	*/
 	ListenForGameEvent( "path_track_passed" );
 }
 
@@ -348,7 +348,7 @@ void CTeamTrainWatcher::UpdateOnRemove( void )
 
 int CTeamTrainWatcher::UpdateTransmitState()
 {
-	if ( m_bDisabled )
+	if( m_bDisabled )
 	{
 		return SetTransmitState( FL_EDICT_DONTSEND );
 	}
@@ -356,17 +356,17 @@ int CTeamTrainWatcher::UpdateTransmitState()
 	return SetTransmitState( FL_EDICT_ALWAYS );
 }
 
-void CTeamTrainWatcher::InputRoundActivate( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputRoundActivate( inputdata_t& inputdata )
 {
 	StopCaptureAlarm();
 
-	if ( !m_bDisabled )
+	if( !m_bDisabled )
 	{
 		WatcherActivate();
 	}
 }
 
-void CTeamTrainWatcher::InputEnable( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputEnable( inputdata_t& inputdata )
 {
 	StopCaptureAlarm();
 
@@ -377,7 +377,7 @@ void CTeamTrainWatcher::InputEnable( inputdata_t &inputdata )
 	UpdateTransmitState();
 }
 
-void CTeamTrainWatcher::InputDisable( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputDisable( inputdata_t& inputdata )
 {
 	StopCaptureAlarm();
 
@@ -393,11 +393,11 @@ void CTeamTrainWatcher::InputDisable( inputdata_t &inputdata )
 #endif // GLOWS_ENABLE
 
 	// if we're moving the train, let's shut it down
-	if ( m_bHandleTrainMovement )
+	if( m_bHandleTrainMovement )
 	{
 		m_flCurrentSpeed = 0.0f;
 
-		if ( m_hTrain )
+		if( m_hTrain )
 		{
 			m_hTrain->SetSpeedDirAccel( m_flCurrentSpeed );
 		}
@@ -412,26 +412,28 @@ void CTeamTrainWatcher::InputDisable( inputdata_t &inputdata )
 ConVar tf_escort_recede_time( "tf_escort_recede_time", "30", 0, "", true, 0, false, 0 );
 ConVar tf_escort_recede_time_overtime( "tf_escort_recede_time_overtime", "5", 0, "", true, 0, false, 0 );
 
-void CTeamTrainWatcher::FireGameEvent( IGameEvent *event )
+void CTeamTrainWatcher::FireGameEvent( IGameEvent* event )
 {
-	if ( IsDisabled() || !m_bHandleTrainMovement )
+	if( IsDisabled() || !m_bHandleTrainMovement )
+	{
 		return;
+	}
 
-	const char *pszEventName = event->GetName();
-	if ( FStrEq( pszEventName, "path_track_passed" ) )
+	const char* pszEventName = event->GetName();
+	if( FStrEq( pszEventName, "path_track_passed" ) )
 	{
 		int iIndex = event->GetInt( "index" );
-		CPathTrack *pNode = dynamic_cast< CPathTrack* >( UTIL_EntityByIndex( iIndex ) );
+		CPathTrack* pNode = dynamic_cast< CPathTrack* >( UTIL_EntityByIndex( iIndex ) );
 
-		if ( pNode )
+		if( pNode )
 		{
 			bool bHandleEvent = false;
-			CPathTrack *pTempNode = m_hStartNode.Get();
+			CPathTrack* pTempNode = m_hStartNode.Get();
 
 			// is this a node in the track we're watching?
-			while ( pTempNode )
+			while( pTempNode )
 			{
-				if ( pTempNode == pNode )
+				if( pTempNode == pNode )
 				{
 					bHandleEvent = true;
 					break;
@@ -440,14 +442,14 @@ void CTeamTrainWatcher::FireGameEvent( IGameEvent *event )
 				pTempNode = pTempNode->GetNext();
 			}
 
-			if ( bHandleEvent )
+			if( bHandleEvent )
 			{
-				// If we're receding and we've hit a node but the next node (going backwards) is disabled 
-				// the train is going to stop (like at the base of a downhill section) when we start forward 
+				// If we're receding and we've hit a node but the next node (going backwards) is disabled
+				// the train is going to stop (like at the base of a downhill section) when we start forward
 				// again we won't pass this node again so don't change our hill state based on this node.
-				if ( m_bReceding )
+				if( m_bReceding )
 				{
-					if ( pNode->GetPrevious() && pNode->GetPrevious()->IsDisabled() )
+					if( pNode->GetPrevious() && pNode->GetPrevious()->IsDisabled() )
 					{
 						return;
 					}
@@ -456,23 +458,23 @@ void CTeamTrainWatcher::FireGameEvent( IGameEvent *event )
 				int iHillType = pNode->GetHillType();
 				bool bUpdate = ( m_iCurrentHillType != iHillType );
 
-				if ( !bUpdate )
+				if( !bUpdate )
 				{
 					// the hill settings are the same, but are we leaving an uphill or downhill segment?
-					if ( m_iCurrentHillType != HILL_TYPE_NONE )
+					if( m_iCurrentHillType != HILL_TYPE_NONE )
 					{
 						// let's peek at the next node
-						CPathTrack *pNextNode = pNode->GetNext();
-						if ( m_flCurrentSpeed < 0 )
+						CPathTrack* pNextNode = pNode->GetNext();
+						if( m_flCurrentSpeed < 0 )
 						{
 							// we're going backwards
 							pNextNode = pNode->GetPrevious();
 						}
 
-						if ( pNextNode )
+						if( pNextNode )
 						{
 							int iNextHillType = pNextNode->GetHillType();
-							if ( m_iCurrentHillType != iNextHillType )
+							if( m_iCurrentHillType != iNextHillType )
 							{
 								// we're leaving an uphill or downhill segment...so reset our state until we pass the next node
 								bUpdate = true;
@@ -482,7 +484,7 @@ void CTeamTrainWatcher::FireGameEvent( IGameEvent *event )
 					}
 				}
 
-				if ( bUpdate )
+				if( bUpdate )
 				{
 					m_iCurrentHillType = iHillType;
 					HandleTrainMovement();
@@ -494,15 +496,17 @@ void CTeamTrainWatcher::FireGameEvent( IGameEvent *event )
 
 void CTeamTrainWatcher::HandleSparks( bool bSparks )
 {
-	if ( IsDisabled() || !m_bHandleTrainMovement )
+	if( IsDisabled() || !m_bHandleTrainMovement )
+	{
 		return;
+	}
 
-	for ( int i = 0 ; i < m_Sparks.Count() ; i++ )
+	for( int i = 0 ; i < m_Sparks.Count() ; i++ )
 	{
 		CEnvSpark* pSpark = m_Sparks[i].Get();
-		if ( pSpark && ( pSpark->IsSparking() != bSparks ) )
+		if( pSpark && ( pSpark->IsSparking() != bSparks ) )
 		{
-			if ( bSparks )
+			if( bSparks )
 			{
 				pSpark->StartSpark();
 			}
@@ -516,14 +520,16 @@ void CTeamTrainWatcher::HandleSparks( bool bSparks )
 
 void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 {
-	if ( IsDisabled() || !m_bHandleTrainMovement )
+	if( IsDisabled() || !m_bHandleTrainMovement )
+	{
 		return;
+	}
 
-	if ( m_hTrain )
+	if( m_hTrain )
 	{
 		float flSpeed = 0.0f;
 
-		if ( bStartReceding )
+		if( bStartReceding )
 		{
 			flSpeed = -0.1f;
 			m_bReceding = true;
@@ -531,11 +537,11 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 		else
 		{
 			// do we have cappers on the train?
-			if ( m_nNumCappers > 0 )
+			if( m_nNumCappers > 0 )
 			{
 				m_bReceding = false;
 
-				if ( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
+				if( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
 				{
 					flSpeed = 1.0f;
 				}
@@ -543,23 +549,23 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 				{
 					switch( m_nNumCappers )
 					{
-					case 1:
-						flSpeed = 0.55f;
-						break;
-					case 2:
-						flSpeed = 0.77f;
-						break;
-					case 3:
-					default:
-						flSpeed = 1.0f;
-						break;
+						case 1:
+							flSpeed = 0.55f;
+							break;
+						case 2:
+							flSpeed = 0.77f;
+							break;
+						case 3:
+						default:
+							flSpeed = 1.0f;
+							break;
 					}
 				}
 			}
-			else if ( m_nNumCappers == -1 )
+			else if( m_nNumCappers == -1 )
 			{
 				// we'll get a -1 for a blocked cart (speed should be 0 for that unless we're on a hill)
-				if ( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
+				if( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
 				{
 					flSpeed = 1.0f;
 				}
@@ -567,9 +573,9 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 			else
 			{
 				// there's nobody on the train, what should it be doing?
-				if ( m_flCurrentSpeed > 0 )
+				if( m_flCurrentSpeed > 0 )
 				{
-					if ( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
+					if( m_iCurrentHillType == HILL_TYPE_DOWNHILL )
 					{
 						flSpeed = 1.0f;
 					}
@@ -577,13 +583,13 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 				else
 				{
 					// we're rolling backwards
-					if ( m_iCurrentHillType == HILL_TYPE_UPHILL )
+					if( m_iCurrentHillType == HILL_TYPE_UPHILL )
 					{
 						flSpeed = -1.0f;
 					}
 					else
 					{
-						if ( m_bReceding )
+						if( m_bReceding )
 						{
 							// resume our previous backup speed
 							flSpeed = -0.1f;
@@ -594,9 +600,9 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 		}
 
 		// only need to update the train if our speed has changed
-		if ( m_flCurrentSpeed != flSpeed )
+		if( m_flCurrentSpeed != flSpeed )
 		{
-			if ( flSpeed >= 0.0f )
+			if( flSpeed >= 0.0f )
 			{
 				m_bReceding = false;
 			}
@@ -606,7 +612,7 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 
 			// handle the sparks under the train
 			bool bSparks = false;
-			if ( m_flCurrentSpeed < 0 )
+			if( m_flCurrentSpeed < 0 )
 			{
 				bSparks = true;
 			}
@@ -616,15 +622,17 @@ void CTeamTrainWatcher::HandleTrainMovement( bool bStartReceding /* = false */ )
 	}
 }
 
-void CTeamTrainWatcher::InputSetSpeedForwardModifier( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputSetSpeedForwardModifier( inputdata_t& inputdata )
 {
 	InternalSetSpeedForwardModifier( inputdata.value.Float() );
 }
 
 void CTeamTrainWatcher::InternalSetSpeedForwardModifier( float flModifier )
 {
-	if ( IsDisabled() || !m_bHandleTrainMovement )
+	if( IsDisabled() || !m_bHandleTrainMovement )
+	{
 		return;
+	}
 
 	// store the passed value
 	float flSpeedForwardModifier = flModifier;
@@ -632,43 +640,45 @@ void CTeamTrainWatcher::InternalSetSpeedForwardModifier( float flModifier )
 
 	m_flSpeedForwardModifier = clamp( flSpeedForwardModifier, 0.f, 1.f );
 
-	if ( m_hTrain )
+	if( m_hTrain )
 	{
 		m_hTrain->SetSpeedForwardModifier( m_flSpeedForwardModifier );
 	}
 }
 
-void CTeamTrainWatcher::InternalSetNumTrainCappers( int iNumCappers, CBaseEntity *pTrigger )
+void CTeamTrainWatcher::InternalSetNumTrainCappers( int iNumCappers, CBaseEntity* pTrigger )
 {
-	if ( IsDisabled() )
+	if( IsDisabled() )
+	{
 		return;
+	}
 
 	m_nNumCappers = iNumCappers;
 
 	// inputdata.pCaller is hopefully an area capture
 	// lets see if its blocked, and not start receding if it is
-	CTriggerAreaCapture *pAreaCap = dynamic_cast<CTriggerAreaCapture *>( pTrigger );
-	if ( pAreaCap )
+	CTriggerAreaCapture* pAreaCap = dynamic_cast<CTriggerAreaCapture*>( pTrigger );
+	if( pAreaCap )
 	{
 		m_bCapBlocked = pAreaCap->IsBlocked();
 		m_hAreaCap = pAreaCap;
 	}
 
-	if ( iNumCappers <= 0 && !m_bCapBlocked && m_bTrainCanRecede )
+	if( iNumCappers <= 0 && !m_bCapBlocked && m_bTrainCanRecede )
 	{
-		if ( !m_bWaitingToRecede )
+		if( !m_bWaitingToRecede )
 		{
 			// start receding in [tf_escort_cart_recede_time] seconds
 			m_bWaitingToRecede = true;
 
-			if ( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->InOvertime() )
+			if( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->InOvertime() )
 			{
 				m_flRecedeTotalTime = tf_escort_recede_time_overtime.GetFloat();
 			}
 			else
 			{
 				m_flRecedeTotalTime = tf_escort_recede_time.GetFloat();
-				if ( m_nTrainRecedeTime > 0 )
+				if( m_nTrainRecedeTime > 0 )
 				{
 					m_flRecedeTotalTime = m_nTrainRecedeTime;
 				}
@@ -676,7 +686,7 @@ void CTeamTrainWatcher::InternalSetNumTrainCappers( int iNumCappers, CBaseEntity
 
 			m_flRecedeStartTime = gpGlobals->curtime;
 			m_flRecedeTime = m_flRecedeStartTime + m_flRecedeTotalTime;
-		}		
+		}
 	}
 	else
 	{
@@ -689,23 +699,25 @@ void CTeamTrainWatcher::InternalSetNumTrainCappers( int iNumCappers, CBaseEntity
 }
 
 // only used for train watchers that control the train movement
-void CTeamTrainWatcher::SetNumTrainCappers( int iNumCappers, CBaseEntity *pTrigger )
+void CTeamTrainWatcher::SetNumTrainCappers( int iNumCappers, CBaseEntity* pTrigger )
 {
-	if ( IsDisabled() || !m_bHandleTrainMovement )
+	if( IsDisabled() || !m_bHandleTrainMovement )
+	{
 		return;
+	}
 
 	InternalSetNumTrainCappers( iNumCappers, pTrigger );
 }
 
-void CTeamTrainWatcher::InputSetNumTrainCappers( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputSetNumTrainCappers( inputdata_t& inputdata )
 {
 	InternalSetNumTrainCappers( inputdata.value.Int(), inputdata.pCaller );
 }
 
-void CTeamTrainWatcher::InputSetTrainRecedeTime( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputSetTrainRecedeTime( inputdata_t& inputdata )
 {
 	int nSeconds = inputdata.value.Int();
-	if ( nSeconds >= 0 )
+	if( nSeconds >= 0 )
 	{
 		m_nTrainRecedeTime = nSeconds;
 	}
@@ -715,15 +727,15 @@ void CTeamTrainWatcher::InputSetTrainRecedeTime( inputdata_t &inputdata )
 	}
 }
 
-void CTeamTrainWatcher::InputSetTrainRecedeTimeAndUpdate(inputdata_t &inputdata)
+void CTeamTrainWatcher::InputSetTrainRecedeTimeAndUpdate( inputdata_t& inputdata )
 {
 	InputSetTrainRecedeTime( inputdata );
 
 	// update our time if we're already counting down
-	if ( m_flRecedeTime > 0 )
+	if( m_flRecedeTime > 0 )
 	{
 		m_flRecedeTotalTime = tf_escort_recede_time.GetFloat();
-		if ( m_nTrainRecedeTime > 0 )
+		if( m_nTrainRecedeTime > 0 )
 		{
 			m_flRecedeTotalTime = m_nTrainRecedeTime;
 		}
@@ -733,21 +745,21 @@ void CTeamTrainWatcher::InputSetTrainRecedeTimeAndUpdate(inputdata_t &inputdata)
 	}
 }
 
-void CTeamTrainWatcher::InputSetTrainCanRecede( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputSetTrainCanRecede( inputdata_t& inputdata )
 {
 	m_bTrainCanRecede = inputdata.value.Bool();
 }
 
-void CTeamTrainWatcher::InputOnStartOvertime( inputdata_t &inputdata )
+void CTeamTrainWatcher::InputOnStartOvertime( inputdata_t& inputdata )
 {
 	// recalculate the recede time
-	if ( m_bWaitingToRecede )
+	if( m_bWaitingToRecede )
 	{
 		float flRecedeTimeRemaining = m_flRecedeTime - gpGlobals->curtime;
 		float flOvertimeRecedeLen = tf_escort_recede_time_overtime.GetFloat();
 
 		// drop to overtime recede time if it's more than that
-		if ( flRecedeTimeRemaining > flOvertimeRecedeLen )
+		if( flRecedeTimeRemaining > flOvertimeRecedeLen )
 		{
 			m_flRecedeTotalTime = flOvertimeRecedeLen;
 			m_flRecedeStartTime = gpGlobals->curtime;
@@ -759,39 +771,39 @@ void CTeamTrainWatcher::InputOnStartOvertime( inputdata_t &inputdata )
 #ifdef GLOWS_ENABLE
 void CTeamTrainWatcher::FindGlowEntity( void )
 {
-	if ( m_hTrain && ( m_hTrain->GetEntityName() != NULL_STRING ) )
+	if( m_hTrain && ( m_hTrain->GetEntityName() != NULL_STRING ) )
 	{
 		string_t iszTrainName = m_hTrain->GetEntityName();
-		CBaseEntity *pGlowEnt = NULL;
+		CBaseEntity* pGlowEnt = NULL;
 
 		// first try to find a phys_constraint relationship with the train
-		CPhysFixed *pPhysConstraint = dynamic_cast<CPhysFixed*>( gEntList.FindEntityByClassname( NULL, "phys_constraint" ) );
-		while ( pPhysConstraint )
+		CPhysFixed* pPhysConstraint = dynamic_cast<CPhysFixed*>( gEntList.FindEntityByClassname( NULL, "phys_constraint" ) );
+		while( pPhysConstraint )
 		{
 			string_t iszName1 = pPhysConstraint->GetNameAttach1();
 			string_t iszName2 = pPhysConstraint->GetNameAttach2();
 
-			if ( iszTrainName == iszName1 )
+			if( iszTrainName == iszName1 )
 			{
 				pGlowEnt = gEntList.FindEntityByName( NULL, STRING( iszName2 ) );
 				break;
 			}
-			else if ( iszTrainName == iszName2 )
+			else if( iszTrainName == iszName2 )
 			{
 				pGlowEnt = gEntList.FindEntityByName( NULL, STRING( iszName1 ) );
 				break;
 			}
-			
+
 			pPhysConstraint = dynamic_cast<CPhysFixed*>( gEntList.FindEntityByClassname( pPhysConstraint, "phys_constraint" ) );
 		}
 
-		if ( !pGlowEnt )
+		if( !pGlowEnt )
 		{
 			// if we're here, we haven't found the glow entity yet...try all of the prop_dynamic entities
-			CDynamicProp *pPropDynamic = dynamic_cast<CDynamicProp*>( gEntList.FindEntityByClassname( NULL, "prop_dynamic" ) );
-			while ( pPropDynamic )
+			CDynamicProp* pPropDynamic = dynamic_cast<CDynamicProp*>( gEntList.FindEntityByClassname( NULL, "prop_dynamic" ) );
+			while( pPropDynamic )
 			{
-				if ( pPropDynamic->GetParent() == m_hTrain )
+				if( pPropDynamic->GetParent() == m_hTrain )
 				{
 					pGlowEnt = pPropDynamic;
 					break;
@@ -802,12 +814,12 @@ void CTeamTrainWatcher::FindGlowEntity( void )
 		}
 
 		// if we still haven't found a glow entity, just have the CFuncTrackTrain glow
-		if ( !pGlowEnt )
+		if( !pGlowEnt )
 		{
 			pGlowEnt = m_hTrain.Get();
 		}
 
-		if ( pGlowEnt )
+		if( pGlowEnt )
 		{
 			pGlowEnt->SetTransmitState( FL_EDICT_ALWAYS );
 			m_hGlowEnt.Set( pGlowEnt );
@@ -821,7 +833,7 @@ void CTeamTrainWatcher::FindGlowEntity( void )
 // calculate the distance between each
 // ==========================================================
 void CTeamTrainWatcher::WatcherActivate( void )
-{		
+{
 	m_flRecedeTime = 0;
 	m_bWaitingToRecede = false;
 	m_bCapBlocked = false;
@@ -837,20 +849,20 @@ void CTeamTrainWatcher::WatcherActivate( void )
 
 	// init our train
 	m_hTrain = dynamic_cast<CFuncTrackTrain*>( gEntList.FindEntityByName( NULL, m_iszTrain ) );
-	if ( !m_hTrain )
+	if( !m_hTrain )
 	{
-		Warning("%s failed to find train named '%s'\n", GetClassname(), STRING( m_iszTrain ) );
+		Warning( "%s failed to find train named '%s'\n", GetClassname(), STRING( m_iszTrain ) );
 	}
 
 	// find the trigger area that will give us movement updates and find the sparks (if we're going to handle the train movement)
-	if ( m_bHandleTrainMovement )
+	if( m_bHandleTrainMovement )
 	{
-		if ( m_hTrain )
+		if( m_hTrain )
 		{
-			for ( int i=0; i<ITriggerAreaCaptureAutoList::AutoList().Count(); ++i )
+			for( int i = 0; i < ITriggerAreaCaptureAutoList::AutoList().Count(); ++i )
 			{
-				CTriggerAreaCapture *pArea = static_cast< CTriggerAreaCapture * >( ITriggerAreaCaptureAutoList::AutoList()[i] );
-				if ( pArea->GetParent() == m_hTrain.Get() )
+				CTriggerAreaCapture* pArea = static_cast< CTriggerAreaCapture* >( ITriggerAreaCaptureAutoList::AutoList()[i] );
+				if( pArea->GetParent() == m_hTrain.Get() )
 				{
 					// this is the capture area we care about, so let it know that we want updates on the capture numbers
 					pArea->SetTrainWatcher( this );
@@ -860,8 +872,8 @@ void CTeamTrainWatcher::WatcherActivate( void )
 		}
 
 		// init the sprites (if any)
-		CEnvSpark *pSpark = dynamic_cast<CEnvSpark*>( gEntList.FindEntityByName( NULL, m_iszSparkName ) );
-		while ( pSpark )
+		CEnvSpark* pSpark = dynamic_cast<CEnvSpark*>( gEntList.FindEntityByName( NULL, m_iszSparkName ) );
+		while( pSpark )
 		{
 			m_Sparks.AddToTail( pSpark );
 			pSpark = dynamic_cast<CEnvSpark*>( gEntList.FindEntityByName( pSpark, m_iszSparkName ) );
@@ -872,11 +884,11 @@ void CTeamTrainWatcher::WatcherActivate( void )
 	m_iNumCPLinks = 0;
 
 	int i;
-	for ( i = 0 ; i < MAX_CONTROL_POINTS ; i++ )
+	for( i = 0 ; i < MAX_CONTROL_POINTS ; i++ )
 	{
-		CPathTrack *pPathTrack = dynamic_cast<CPathTrack*>( gEntList.FindEntityByName( NULL, m_iszLinkedPathTracks[i] ) );
-		CTeamControlPoint *pCP = dynamic_cast<CTeamControlPoint*>( gEntList.FindEntityByName( NULL, m_iszLinkedCPs[i] ) );
-		if ( pPathTrack && pCP )
+		CPathTrack* pPathTrack = dynamic_cast<CPathTrack*>( gEntList.FindEntityByName( NULL, m_iszLinkedPathTracks[i] ) );
+		CTeamControlPoint* pCP = dynamic_cast<CTeamControlPoint*>( gEntList.FindEntityByName( NULL, m_iszLinkedCPs[i] ) );
+		if( pPathTrack && pCP )
 		{
 			m_CPLinks[m_iNumCPLinks].hPathTrack = pPathTrack;
 			m_CPLinks[m_iNumCPLinks].hCP = pCP;
@@ -888,15 +900,15 @@ void CTeamTrainWatcher::WatcherActivate( void )
 
 	// init our start and goal nodes
 	m_hStartNode = dynamic_cast<CPathTrack*>( gEntList.FindEntityByName( NULL, m_iszStartNode ) );
-	if ( !m_hStartNode )
+	if( !m_hStartNode )
 	{
-		Warning("%s failed to find path_track named '%s'\n", GetClassname(), STRING(m_iszStartNode) );
+		Warning( "%s failed to find path_track named '%s'\n", GetClassname(), STRING( m_iszStartNode ) );
 	}
 
 	m_hGoalNode = dynamic_cast<CPathTrack*>( gEntList.FindEntityByName( NULL, m_iszGoalNode ) );
-	if ( !m_hGoalNode )
+	if( !m_hGoalNode )
 	{
-		Warning("%s failed to find path_track named '%s'\n", GetClassname(), STRING(m_iszGoalNode) );
+		Warning( "%s failed to find path_track named '%s'\n", GetClassname(), STRING( m_iszGoalNode ) );
 	}
 
 	m_flTotalPathDistance = 0.0f;
@@ -910,14 +922,14 @@ void CTeamTrainWatcher::WatcherActivate( void )
 
 	if( m_hStartNode.Get() && m_hGoalNode.Get() )
 	{
-		CPathTrack *pNode = m_hStartNode;
-		CPathTrack *pPrev = pNode;
-		CPathTrack *pHillStart = NULL;
+		CPathTrack* pNode = m_hStartNode;
+		CPathTrack* pPrev = pNode;
+		CPathTrack* pHillStart = NULL;
 		pNode = pNode->GetNext();
 		int iHillType = HILL_TYPE_NONE;
 
 		// don't check the start node for links. If it's linked, it will have 0 distance anyway
-		while ( pNode )
+		while( pNode )
 		{
 			Vector dir = pNode->GetLocalOrigin() - pPrev->GetLocalOrigin();
 			float length = dir.Length();
@@ -925,15 +937,15 @@ void CTeamTrainWatcher::WatcherActivate( void )
 			m_flTotalPathDistance += length;
 
 			// gather our hill data for the HUD
-			if ( pNode->GetHillType() != iHillType )
+			if( pNode->GetHillType() != iHillType )
 			{
-				if ( !bOnHill ) // we're at the start of a hill
+				if( !bOnHill )  // we're at the start of a hill
 				{
 					hillData.AddToTail( m_flTotalPathDistance );
 					bOnHill = true;
 					pHillStart = pNode;
 
-					if ( iHillCount < TEAM_TRAIN_MAX_HILLS )
+					if( iHillCount < TEAM_TRAIN_MAX_HILLS )
 					{
 						bDownHillData[iHillCount] = pNode->IsDownHill() ? true : false;
 						iHillCount++;
@@ -943,21 +955,21 @@ void CTeamTrainWatcher::WatcherActivate( void )
 				{
 					float flDistance = m_flTotalPathDistance - length; // subtract length because the prev node was the end of the hill (not this one)
 
-					if ( pHillStart && ( pHillStart == pPrev ) )
+					if( pHillStart && ( pHillStart == pPrev ) )
 					{
 						flDistance = m_flTotalPathDistance; // we had a single node marked as a hill, so we'll use the current distance as the next marker
 					}
 
-					hillData.AddToTail( flDistance ); 
+					hillData.AddToTail( flDistance );
 
 					// is our current node the start of another hill?
-					if ( pNode->GetHillType() != HILL_TYPE_NONE )
+					if( pNode->GetHillType() != HILL_TYPE_NONE )
 					{
 						hillData.AddToTail( m_flTotalPathDistance );
 						bOnHill = true;
 						pHillStart = pNode;
 
-						if ( iHillCount < TEAM_TRAIN_MAX_HILLS )
+						if( iHillCount < TEAM_TRAIN_MAX_HILLS )
 						{
 							bDownHillData[iHillCount] = pNode->IsDownHill() ? true : false;
 							iHillCount++;
@@ -974,17 +986,19 @@ void CTeamTrainWatcher::WatcherActivate( void )
 			}
 
 			// if pNode is one of our cp nodes, store its distance from m_hStartNode
-			for ( i = 0 ; i < m_iNumCPLinks ; i++ )
+			for( i = 0 ; i < m_iNumCPLinks ; i++ )
 			{
-				if ( m_CPLinks[i].hPathTrack == pNode )
+				if( m_CPLinks[i].hPathTrack == pNode )
 				{
 					m_CPLinks[i].flDistanceFromStart = m_flTotalPathDistance;
 					break;
 				}
 			}
 
-			if ( pNode == m_hGoalNode )
+			if( pNode == m_hGoalNode )
+			{
 				break;
+			}
 
 			pPrev = pNode;
 			pNode = pNode->GetNext();
@@ -992,38 +1006,38 @@ void CTeamTrainWatcher::WatcherActivate( void )
 	}
 
 	// if we don't have an even number of entries in our hill data (beginning/end) add the final distance
-	if ( ( hillData.Count() % 2 ) != 0 )
+	if( ( hillData.Count() % 2 ) != 0 )
 	{
 		hillData.AddToTail( m_flTotalPathDistance );
 	}
 
-	if ( ObjectiveResource() )
+	if( ObjectiveResource() )
 	{
 		ObjectiveResource()->ResetHillData( GetTeamNumber() );
 
 		// convert our hill data into 0-1 percentages for networking
-		if ( m_flTotalPathDistance > 0 && hillData.Count() > 0 )
+		if( m_flTotalPathDistance > 0 && hillData.Count() > 0 )
 		{
 			i = 0;
-	 		while ( i < hillData.Count() )
+			while( i < hillData.Count() )
 			{
-				if ( i < TEAM_TRAIN_HILLS_ARRAY_SIZE - 1 ) // - 1 because we want to use 2 entries
+				if( i < TEAM_TRAIN_HILLS_ARRAY_SIZE - 1 )  // - 1 because we want to use 2 entries
 				{
 					// add/subtract to the hill start/end to fix rounding errors in the HUD when the train
 					// stops at the bottom/top of a hill but the HUD thinks the train is still on the hill
-					ObjectiveResource()->SetHillData( GetTeamNumber(), (hillData[i] / m_flTotalPathDistance) + 0.005f, (hillData[i+1] / m_flTotalPathDistance) - 0.005f, bDownHillData[i/2] );
+					ObjectiveResource()->SetHillData( GetTeamNumber(), ( hillData[i] / m_flTotalPathDistance ) + 0.005f, ( hillData[i + 1] / m_flTotalPathDistance ) - 0.005f, bDownHillData[i / 2] );
 				}
 				i = i + 2;
 			}
 		}
 	}
- 
+
 	// We have total distance and increments in our links array
-	for ( i=0;i<m_iNumCPLinks;i++ )
+	for( i = 0; i < m_iNumCPLinks; i++ )
 	{
 		int iCPIndex = m_CPLinks[i].hCP.Get()->GetPointIndex();
 // This can be pulled once DoD includes team_objectiveresource.* and c_team_objectiveresource.*
-#ifndef DOD_DLL 
+#ifndef DOD_DLL
 		ObjectiveResource()->SetTrainPathDistance( iCPIndex, m_CPLinks[i].flDistanceFromStart / m_flTotalPathDistance );
 #endif
 	}
@@ -1039,7 +1053,7 @@ void CTeamTrainWatcher::WatcherActivate( void )
 
 void CTeamTrainWatcher::StopCaptureAlarm( void )
 {
-	if ( m_pAlarm )
+	if( m_pAlarm )
 	{
 		CSoundEnvelopeController::GetController().SoundDestroy( m_pAlarm );
 		m_pAlarm = NULL;
@@ -1049,14 +1063,14 @@ void CTeamTrainWatcher::StopCaptureAlarm( void )
 	SetContextThink( NULL, 0, TW_ALARM_THINK );
 }
 
-void CTeamTrainWatcher::StartCaptureAlarm( CTeamControlPoint *pPoint )
+void CTeamTrainWatcher::StartCaptureAlarm( CTeamControlPoint* pPoint )
 {
 	StopCaptureAlarm();
 
-	if ( pPoint )
+	if( pPoint )
 	{
 		CReliableBroadcastRecipientFilter filter;
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 		m_pAlarm = controller.SoundCreate( filter, pPoint->entindex(), CHAN_STATIC, TEAM_TRAIN_ALARM, ATTN_NORM );
 		controller.Play( m_pAlarm, 1.0, PITCH_NORM );
 
@@ -1064,12 +1078,14 @@ void CTeamTrainWatcher::StartCaptureAlarm( CTeamControlPoint *pPoint )
 	}
 }
 
-void CTeamTrainWatcher::PlayCaptureAlert( CTeamControlPoint *pPoint, bool bFinalPointInMap )
+void CTeamTrainWatcher::PlayCaptureAlert( CTeamControlPoint* pPoint, bool bFinalPointInMap )
 {
-	if ( !pPoint )
+	if( !pPoint )
+	{
 		return;
+	}
 
-	if ( TeamplayRoundBasedRules() )
+	if( TeamplayRoundBasedRules() )
 	{
 		TeamplayRoundBasedRules()->PlayTrainCaptureAlert( pPoint, bFinalPointInMap );
 	}
@@ -1080,14 +1096,14 @@ ConVar tf_show_train_path( "tf_show_train_path", "0", FCVAR_CHEAT );
 
 void CTeamTrainWatcher::WatcherThink( void )
 {
-	if ( m_bWaitingToRecede )
+	if( m_bWaitingToRecede )
 	{
-		if ( m_flRecedeTime < gpGlobals->curtime )
+		if( m_flRecedeTime < gpGlobals->curtime )
 		{
 			m_bWaitingToRecede = false;
 
 			// don't actually recede in overtime
-			if ( TeamplayRoundBasedRules() && !TeamplayRoundBasedRules()->InOvertime() )
+			if( TeamplayRoundBasedRules() && !TeamplayRoundBasedRules()->InOvertime() )
 			{
 				// fire recede output
 				m_OnTrainStartRecede.FireOutput( this, this );
@@ -1096,8 +1112,8 @@ void CTeamTrainWatcher::WatcherThink( void )
 		}
 	}
 
-	bool bDisableAlarm = (TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->State_Get() != GR_STATE_RND_RUNNING);
-	if ( bDisableAlarm )
+	bool bDisableAlarm = ( TeamplayRoundBasedRules() && TeamplayRoundBasedRules()->State_Get() != GR_STATE_RND_RUNNING );
+	if( bDisableAlarm )
 	{
 		StopCaptureAlarm();
 	}
@@ -1105,8 +1121,8 @@ void CTeamTrainWatcher::WatcherThink( void )
 	// given its next node, we can walk the nodes and find the linear
 	// distance to the next cp node, or to the goal node
 
-	CFuncTrackTrain *pTrain = m_hTrain;
-	if ( pTrain )
+	CFuncTrackTrain* pTrain = m_hTrain;
+	if( pTrain )
 	{
 		int iOldTrainSpeedLevel = m_iTrainSpeedLevel;
 
@@ -1116,27 +1132,27 @@ void CTeamTrainWatcher::WatcherThink( void )
 		// divide speed into regions
 		// anything negative is -1
 
-		if ( flSpeed < 0 )
+		if( flSpeed < 0 )
 		{
 			m_iTrainSpeedLevel = -1;
 
 			// even though our desired speed might be negative,
 			// our actual speed might be zero if we're at a dead end...
 			// this will turn off the < image when the train is done moving backwards
-			if ( pTrain->GetCurrentSpeed() == 0 )
+			if( pTrain->GetCurrentSpeed() == 0 )
 			{
 				m_iTrainSpeedLevel = 0;
 			}
 		}
-		else if ( flSpeed > m_flSpeedLevels[2] )
+		else if( flSpeed > m_flSpeedLevels[2] )
 		{
 			m_iTrainSpeedLevel = 3;
 		}
-		else if ( flSpeed > m_flSpeedLevels[1] )
+		else if( flSpeed > m_flSpeedLevels[1] )
 		{
 			m_iTrainSpeedLevel = 2;
 		}
-		else if ( flSpeed > m_flSpeedLevels[0] )
+		else if( flSpeed > m_flSpeedLevels[0] )
 		{
 			m_iTrainSpeedLevel = 1;
 		}
@@ -1145,26 +1161,26 @@ void CTeamTrainWatcher::WatcherThink( void )
 			m_iTrainSpeedLevel = 0;
 		}
 
-		if ( m_iTrainSpeedLevel != iOldTrainSpeedLevel )
+		if( m_iTrainSpeedLevel != iOldTrainSpeedLevel )
 		{
 			// make sure the sparks are off if we're not moving backwards anymore
-			if ( m_bHandleTrainMovement )
+			if( m_bHandleTrainMovement )
 			{
-				if ( m_iTrainSpeedLevel == 0 && iOldTrainSpeedLevel != 0 )
+				if( m_iTrainSpeedLevel == 0 && iOldTrainSpeedLevel != 0 )
 				{
 					HandleSparks( false );
 				}
 			}
 
-			// play any concepts that we might need to play		
-			if ( TeamplayRoundBasedRules() )
+			// play any concepts that we might need to play
+			if( TeamplayRoundBasedRules() )
 			{
-				if ( m_iTrainSpeedLevel == 0 && iOldTrainSpeedLevel != 0 )
+				if( m_iTrainSpeedLevel == 0 && iOldTrainSpeedLevel != 0 )
 				{
 					TeamplayRoundBasedRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_CART_STOP );
 					m_flNextSpeakForwardConceptTime = 0;
 				}
-				else if ( m_iTrainSpeedLevel < 0 && iOldTrainSpeedLevel == 0 )
+				else if( m_iTrainSpeedLevel < 0 && iOldTrainSpeedLevel == 0 )
 				{
 					TeamplayRoundBasedRules()->HaveAllPlayersSpeakConceptIfAllowed( MP_CONCEPT_CART_MOVING_BACKWARD );
 					m_flNextSpeakForwardConceptTime = 0;
@@ -1172,16 +1188,16 @@ void CTeamTrainWatcher::WatcherThink( void )
 			}
 		}
 
-		if ( m_iTrainSpeedLevel > 0 && m_flNextSpeakForwardConceptTime < gpGlobals->curtime )
+		if( m_iTrainSpeedLevel > 0 && m_flNextSpeakForwardConceptTime < gpGlobals->curtime )
 		{
-			if ( m_hAreaCap.Get() )
+			if( m_hAreaCap.Get() )
 			{
-				for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+				for( int i = 1; i <= gpGlobals->maxClients; i++ )
 				{
-					CBaseMultiplayerPlayer *pPlayer = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
-					if ( pPlayer )
+					CBaseMultiplayerPlayer* pPlayer = ToBaseMultiplayerPlayer( UTIL_PlayerByIndex( i ) );
+					if( pPlayer )
 					{
-						if ( m_hAreaCap->IsTouching( pPlayer ) )
+						if( m_hAreaCap->IsTouching( pPlayer ) )
 						{
 							pPlayer->SpeakConceptIfAllowed( MP_CONCEPT_CART_MOVING_FORWARD );
 						}
@@ -1193,15 +1209,15 @@ void CTeamTrainWatcher::WatcherThink( void )
 		}
 
 		// what percent progress are we at?
-		CPathTrack *pNode = ( pTrain->m_ppath ) ? pTrain->m_ppath->GetNext() : NULL;
+		CPathTrack* pNode = ( pTrain->m_ppath ) ? pTrain->m_ppath->GetNext() : NULL;
 
 		// if we're moving backwards, GetNext is going to be wrong
-		if ( flSpeed < 0 )
+		if( flSpeed < 0 )
 		{
 			pNode = pTrain->m_ppath;
 		}
 
-		if ( pNode )
+		if( pNode )
 		{
 			float flDistanceToGoal = 0;
 
@@ -1210,25 +1226,27 @@ void CTeamTrainWatcher::WatcherThink( void )
 			flDistanceToGoal = vecDir.Length();
 
 			// distance of next node to goal node
-			if ( pNode && pNode != m_hGoalNode )
+			if( pNode && pNode != m_hGoalNode )
 			{
 				// walk this until we get to goal node, or a dead end
-				CPathTrack *pPrev = pNode;
+				CPathTrack* pPrev = pNode;
 				pNode = pNode->GetNext();
-				while ( pNode )
+				while( pNode )
 				{
 					vecDir = pNode->GetLocalOrigin() - pPrev->GetLocalOrigin();
 					flDistanceToGoal += vecDir.Length();
 
-					if ( pNode == m_hGoalNode )
+					if( pNode == m_hGoalNode )
+					{
 						break;
+					}
 
 					pPrev = pNode;
 					pNode = pNode->GetNext();
 				}
 			}
 
-			if ( m_flTotalPathDistance <= 0 )
+			if( m_flTotalPathDistance <= 0 )
 			{
 				Assert( !"No path distance in team_train_watcher\n" );
 				m_flTotalPathDistance = 1;
@@ -1239,13 +1257,13 @@ void CTeamTrainWatcher::WatcherThink( void )
 			m_flTrainDistanceFromStart = m_flTotalPathDistance - flDistanceToGoal;
 
 			// play alert sounds if necessary
-			for ( int iCount = 0 ; iCount < m_iNumCPLinks ; iCount++ )
+			for( int iCount = 0 ; iCount < m_iNumCPLinks ; iCount++ )
 			{
-				if ( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart - TEAM_TRAIN_ALERT_DISTANCE )
+				if( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart - TEAM_TRAIN_ALERT_DISTANCE )
 				{
 					// back up twice the alert distance before resetting our flag to play the warning again
-					if ( ( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart - ( TEAM_TRAIN_ALERT_DISTANCE * 2 ) ) || // has receded back twice the alert distance or...
-						 ( !m_bTrainCanRecede ) ) // used to catch the case where the train doesn't normally recede but has rolled back down a hill away from the CP
+					if( ( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart - ( TEAM_TRAIN_ALERT_DISTANCE * 2 ) ) ||  // has receded back twice the alert distance or...
+							( !m_bTrainCanRecede ) ) // used to catch the case where the train doesn't normally recede but has rolled back down a hill away from the CP
 					{
 						// reset our alert flag
 						m_CPLinks[iCount].bAlertPlayed = false;
@@ -1253,42 +1271,42 @@ void CTeamTrainWatcher::WatcherThink( void )
 				}
 				else
 				{
-					if ( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart && !m_CPLinks[iCount].bAlertPlayed )
+					if( m_flTrainDistanceFromStart < m_CPLinks[iCount].flDistanceFromStart && !m_CPLinks[iCount].bAlertPlayed )
 					{
 						m_CPLinks[iCount].bAlertPlayed = true;
 						bool bFinalPointInMap = false;
 
-						CTeamControlPoint *pCurrentPoint = m_CPLinks[iCount].hCP.Get();
-						CTeamControlPointMaster *pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
-						if ( pMaster )
+						CTeamControlPoint* pCurrentPoint = m_CPLinks[iCount].hCP.Get();
+						CTeamControlPointMaster* pMaster = g_hControlPointMasters.Count() ? g_hControlPointMasters[0] : NULL;
+						if( pMaster )
 						{
-							// if we're not playing mini-rounds 
-							if ( !pMaster->PlayingMiniRounds() )  
+							// if we're not playing mini-rounds
+							if( !pMaster->PlayingMiniRounds() )
 							{
-								for ( int i = FIRST_GAME_TEAM ; i < MAX_CONTROL_POINT_TEAMS ; i++ )
+								for( int i = FIRST_GAME_TEAM ; i < MAX_CONTROL_POINT_TEAMS ; i++ )
 								{
-									if ( ObjectiveResource() && ObjectiveResource()->TeamCanCapPoint( pCurrentPoint->GetPointIndex(), i ) )
+									if( ObjectiveResource() && ObjectiveResource()->TeamCanCapPoint( pCurrentPoint->GetPointIndex(), i ) )
 									{
-										if ( pMaster->WouldNewCPOwnerWinGame( pCurrentPoint, i ) )
+										if( pMaster->WouldNewCPOwnerWinGame( pCurrentPoint, i ) )
 										{
 											bFinalPointInMap = true;
 										}
 									}
 								}
 							}
-							else 
+							else
 							{
 								// or this is the last round
-								if ( pMaster->NumPlayableControlPointRounds() == 1 )
+								if( pMaster->NumPlayableControlPointRounds() == 1 )
 								{
-									CTeamControlPointRound *pRound = pMaster->GetCurrentRound();
-									if ( pRound )
+									CTeamControlPointRound* pRound = pMaster->GetCurrentRound();
+									if( pRound )
 									{
-										for ( int i = FIRST_GAME_TEAM ; i < MAX_CONTROL_POINT_TEAMS ; i++ )
+										for( int i = FIRST_GAME_TEAM ; i < MAX_CONTROL_POINT_TEAMS ; i++ )
 										{
-											if ( ObjectiveResource() && ObjectiveResource()->TeamCanCapPoint( pCurrentPoint->GetPointIndex(), i ) )
+											if( ObjectiveResource() && ObjectiveResource()->TeamCanCapPoint( pCurrentPoint->GetPointIndex(), i ) )
 											{
-												if ( pRound->WouldNewCPOwnerWinGame( pCurrentPoint, i ) )
+												if( pRound->WouldNewCPOwnerWinGame( pCurrentPoint, i ) )
 												{
 													bFinalPointInMap = true;
 												}
@@ -1305,29 +1323,29 @@ void CTeamTrainWatcher::WatcherThink( void )
 			}
 
 			// check to see if we need to start or stop the alarm
-			if ( flDistanceToGoal <= TEAM_TRAIN_ALARM_DISTANCE )
+			if( flDistanceToGoal <= TEAM_TRAIN_ALARM_DISTANCE )
 			{
-				if ( ObjectiveResource() )
+				if( ObjectiveResource() )
 				{
 					ObjectiveResource()->SetTrackAlarm( GetTeamNumber(), true );
 				}
 
-				if ( !bDisableAlarm )
+				if( !bDisableAlarm )
 				{
-					if ( !m_pAlarm )
+					if( !m_pAlarm )
 					{
-						if ( m_iNumCPLinks > 0 && !m_bAlarmPlayed )
+						if( m_iNumCPLinks > 0 && !m_bAlarmPlayed )
 						{
 							// start the alarm at the final point
-							StartCaptureAlarm( m_CPLinks[m_iNumCPLinks-1].hCP.Get() );
+							StartCaptureAlarm( m_CPLinks[m_iNumCPLinks - 1].hCP.Get() );
 							m_bAlarmPlayed = true; // used to prevent the alarm from starting again on maps where the train doesn't recede (alarm loops for short time then only plays singles)
 						}
 					}
 					else
 					{
-						if ( !m_bTrainCanRecede ) // if the train won't recede, we only want to play the alarm for a short time
+						if( !m_bTrainCanRecede )  // if the train won't recede, we only want to play the alarm for a short time
 						{
-							if ( m_flAlarmEndTime > 0 && m_flAlarmEndTime < gpGlobals->curtime )
+							if( m_flAlarmEndTime > 0 && m_flAlarmEndTime < gpGlobals->curtime )
 							{
 								StopCaptureAlarm();
 								SetContextThink( &CTeamTrainWatcher::WatcherAlarmThink, gpGlobals->curtime + TW_ALARM_THINK_INTERVAL, TW_ALARM_THINK );
@@ -1338,7 +1356,7 @@ void CTeamTrainWatcher::WatcherThink( void )
 			}
 			else
 			{
-				if ( ObjectiveResource() )
+				if( ObjectiveResource() )
 				{
 					ObjectiveResource()->SetTrackAlarm( GetTeamNumber(), false );
 				}
@@ -1348,10 +1366,10 @@ void CTeamTrainWatcher::WatcherThink( void )
 			}
 		}
 
-		if ( tf_show_train_path.GetBool() )
+		if( tf_show_train_path.GetBool() )
 		{
-			CPathTrack *nextNode = NULL;
-			CPathTrack *node = m_hStartNode;
+			CPathTrack* nextNode = NULL;
+			CPathTrack* node = m_hStartNode;
 
 			CPathTrack::BeginIteration();
 			while( node )
@@ -1359,8 +1377,10 @@ void CTeamTrainWatcher::WatcherThink( void )
 				node->Visit();
 				nextNode = node->GetNext();
 
-				if ( !nextNode || nextNode->HasBeenVisited() )
+				if( !nextNode || nextNode->HasBeenVisited() )
+				{
 					break;
+				}
 
 				NDebugOverlay::Line( node->GetAbsOrigin(), nextNode->GetAbsOrigin(), 255, 255, 0, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 
@@ -1370,7 +1390,7 @@ void CTeamTrainWatcher::WatcherThink( void )
 
 			// show segment of path train is actually on
 			node = pTrain->m_ppath;
-			if ( node && node->GetNext() )
+			if( node && node->GetNext() )
 			{
 				NDebugOverlay::HorzArrow( node->GetAbsOrigin(), node->GetNext()->GetAbsOrigin(), 5.0f, 255, 0, 0, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 			}
@@ -1382,8 +1402,8 @@ void CTeamTrainWatcher::WatcherThink( void )
 
 void CTeamTrainWatcher::WatcherAlarmThink( void )
 {
-	CTeamControlPoint *pPoint = m_CPLinks[m_iNumCPLinks-1].hCP.Get();
-	if ( pPoint )
+	CTeamControlPoint* pPoint = m_CPLinks[m_iNumCPLinks - 1].hCP.Get();
+	if( pPoint )
 	{
 		pPoint->EmitSound( TEAM_TRAIN_ALARM_SINGLE );
 	}
@@ -1391,25 +1411,29 @@ void CTeamTrainWatcher::WatcherAlarmThink( void )
 	SetContextThink( &CTeamTrainWatcher::WatcherAlarmThink, gpGlobals->curtime + TW_ALARM_THINK_INTERVAL, TW_ALARM_THINK );
 }
 
-CBaseEntity *CTeamTrainWatcher::GetTrainEntity( void )
+CBaseEntity* CTeamTrainWatcher::GetTrainEntity( void )
 {
 	return m_hTrain.Get();
 }
 
 bool CTeamTrainWatcher::TimerMayExpire( void )
 {
-	if ( IsDisabled() )
+	if( IsDisabled() )
 	{
 		return true;
 	}
 
 	// Still in overtime if we're waiting to recede
-	if ( m_bWaitingToRecede )
+	if( m_bWaitingToRecede )
+	{
 		return false;
+	}
 
 	// capture blocked so we're not receding, but game shouldn't end
-	if ( m_bCapBlocked )
+	if( m_bCapBlocked )
+	{
 		return false;
+	}
 
 	// not waiting, so we're capping, in which case the area capture
 	// will not let us expire
@@ -1418,10 +1442,10 @@ bool CTeamTrainWatcher::TimerMayExpire( void )
 
 
 // Project the given position onto the track and return the point and how far along that projected position is
-void CTeamTrainWatcher::ProjectPointOntoPath( const Vector &pos, Vector *posOnPathResult, float *distanceAlongPathResult ) const
+void CTeamTrainWatcher::ProjectPointOntoPath( const Vector& pos, Vector* posOnPathResult, float* distanceAlongPathResult ) const
 {
-	CPathTrack *nextNode = NULL;
-	CPathTrack *node = m_hStartNode;
+	CPathTrack* nextNode = NULL;
+	CPathTrack* node = m_hStartNode;
 
 	Vector toPos;
 	Vector alongPath;
@@ -1437,8 +1461,10 @@ void CTeamTrainWatcher::ProjectPointOntoPath( const Vector &pos, Vector *posOnPa
 		node->Visit();
 		nextNode = node->GetNext();
 
-		if ( !nextNode || nextNode->HasBeenVisited() )
+		if( !nextNode || nextNode->HasBeenVisited() )
+		{
 			break;
+		}
 
 		alongPath = nextNode->GetAbsOrigin() - node->GetAbsOrigin();
 		float segmentLength = alongPath.NormalizeInPlace();
@@ -1446,13 +1472,13 @@ void CTeamTrainWatcher::ProjectPointOntoPath( const Vector &pos, Vector *posOnPa
 		toPos = pos - node->GetAbsOrigin();
 		float segmentOverlap = DotProduct( toPos, alongPath );
 
-		if ( segmentOverlap >= 0.0f && segmentOverlap < segmentLength )
+		if( segmentOverlap >= 0.0f && segmentOverlap < segmentLength )
 		{
 			// projection is within segment bounds
 			Vector onPath = node->GetAbsOrigin() + alongPath * segmentOverlap;
 
 			float perpendicularDistanceSq = ( onPath - pos ).LengthSqr();
-			if ( perpendicularDistanceSq < closestPerpendicularDistanceSq )
+			if( perpendicularDistanceSq < closestPerpendicularDistanceSq )
 			{
 				closestPointOnPath = onPath;
 				closestPerpendicularDistanceSq = perpendicularDistanceSq;
@@ -1465,12 +1491,12 @@ void CTeamTrainWatcher::ProjectPointOntoPath( const Vector &pos, Vector *posOnPa
 	}
 	CPathTrack::EndIteration();
 
-	if ( posOnPathResult )
+	if( posOnPathResult )
 	{
 		*posOnPathResult = closestPointOnPath;
 	}
 
-	if ( distanceAlongPathResult )
+	if( distanceAlongPathResult )
 	{
 		*distanceAlongPathResult = closestDistanceAlongPath;
 	}
@@ -1478,7 +1504,7 @@ void CTeamTrainWatcher::ProjectPointOntoPath( const Vector &pos, Vector *posOnPa
 
 
 // Return true if the given position is farther down the track than the train is
-bool CTeamTrainWatcher::IsAheadOfTrain( const Vector &pos ) const
+bool CTeamTrainWatcher::IsAheadOfTrain( const Vector& pos ) const
 {
 	float distanceAlongPath;
 	ProjectPointOntoPath( pos, NULL, &distanceAlongPath );
@@ -1492,8 +1518,8 @@ bool CTeamTrainWatcher::IsTrainNearCheckpoint( void ) const
 {
 	for( int i = 0; i < m_iNumCPLinks ; ++i )
 	{
-		if ( m_flTrainDistanceFromStart > m_CPLinks[i].flDistanceFromStart - TEAM_TRAIN_ALERT_DISTANCE &&
-			m_flTrainDistanceFromStart < m_CPLinks[i].flDistanceFromStart )
+		if( m_flTrainDistanceFromStart > m_CPLinks[i].flDistanceFromStart - TEAM_TRAIN_ALERT_DISTANCE &&
+				m_flTrainDistanceFromStart < m_CPLinks[i].flDistanceFromStart )
 		{
 			return true;
 		}
@@ -1515,7 +1541,7 @@ Vector CTeamTrainWatcher::GetNextCheckpointPosition( void ) const
 {
 	for( int i = 0; i < m_iNumCPLinks ; ++i )
 	{
-		if ( m_flTrainDistanceFromStart < m_CPLinks[i].flDistanceFromStart )
+		if( m_flTrainDistanceFromStart < m_CPLinks[i].flDistanceFromStart )
 		{
 			return m_CPLinks[i].hPathTrack->GetAbsOrigin();
 		}
@@ -1529,11 +1555,13 @@ Vector CTeamTrainWatcher::GetNextCheckpointPosition( void ) const
 CON_COMMAND_F( tf_dumptrainstats, "Dump the stats for the current train watcher to the console", FCVAR_GAMEDLL )
 {
 	// Listenserver host or rcon access only!
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
-	CTeamTrainWatcher *pWatcher = NULL;
-	while( ( pWatcher = dynamic_cast< CTeamTrainWatcher * >( gEntList.FindEntityByClassname( pWatcher, "team_train_watcher" ) ) ) != NULL )
+	CTeamTrainWatcher* pWatcher = NULL;
+	while( ( pWatcher = dynamic_cast< CTeamTrainWatcher* >( gEntList.FindEntityByClassname( pWatcher, "team_train_watcher" ) ) ) != NULL )
 	{
 		pWatcher->DumpStats();
 	}
@@ -1543,7 +1571,7 @@ void CTeamTrainWatcher::DumpStats( void )
 {
 	float flLastPosition = 0.0f;
 	float flTotalDistance = 0.0f;
- 	char szOutput[2048];
+	char szOutput[2048];
 	char szTemp[256];
 
 	V_strcpy_safe( szOutput, "\n\nTrain Watcher stats for team " );
@@ -1552,7 +1580,7 @@ void CTeamTrainWatcher::DumpStats( void )
 	for( int i = 0; i < m_iNumCPLinks ; ++i )
 	{
 		float flDistance = m_CPLinks[i].flDistanceFromStart - flLastPosition;
-		if ( i == 0 )
+		if( i == 0 )
 		{
 			V_sprintf_safe( szTemp, "\tControl Point: %d\tDistance from start: %0.2f\n", i + 1, flDistance );
 		}
@@ -1565,7 +1593,7 @@ void CTeamTrainWatcher::DumpStats( void )
 		flLastPosition = m_CPLinks[i].flDistanceFromStart;
 	}
 
-	V_sprintf_safe( szTemp, "\tTotal Distance: %0.2f\n\n", flTotalDistance ); 
+	V_sprintf_safe( szTemp, "\tTotal Distance: %0.2f\n\n", flTotalDistance );
 	V_strcat_safe( szOutput, szTemp );
 	Msg( "%s", szOutput );
 }

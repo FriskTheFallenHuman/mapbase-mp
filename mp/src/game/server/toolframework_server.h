@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,17 +10,17 @@
 #define TOOLFRAMEWORK_SERVER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
 //-----------------------------------------------------------------------------
-// Are tools enabled? 
+// Are tools enabled?
 //-----------------------------------------------------------------------------
 #ifndef NO_TOOLFRAMEWORK
-bool ToolsEnabled();
+	bool ToolsEnabled();
 #else
-#define ToolsEnabled() 0
+	#define ToolsEnabled() 0
 #endif
 
 

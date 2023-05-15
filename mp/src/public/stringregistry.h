@@ -23,26 +23,26 @@ struct StringTable_t;
 class CStringRegistry
 {
 private:
-	StringTable_t	*m_pStringList;
+	StringTable_t*	m_pStringList;
 
 public:
 	// returns a key for a given string
-	unsigned short AddString(const char *stringText, int stringID);
+	unsigned short AddString( const char* stringText, int stringID );
 
 	// This is optimized.  It will do 2 O(logN) searches
 	// Only one of the searches needs to compare strings, the other compares symbols (ints)
 	// returns -1 if the string is not present in the registry.
-	int		GetStringID(const char *stringText);
+	int		GetStringID( const char* stringText );
 
 	// This is unoptimized.  It will linearly search (but only compares ints, not strings)
-	const char	*GetStringText(int stringID);
+	const char*	GetStringText( int stringID );
 
 	// This is O(1).  It will not search.  key MUST be a value that was returned by AddString
-	const char *GetStringForKey(unsigned short key);
+	const char* GetStringForKey( unsigned short key );
 	// This is O(1).  It will not search.  key MUST be a value that was returned by AddString
-	int		GetIDForKey(unsigned short key);
+	int		GetIDForKey( unsigned short key );
 
-	void	ClearStrings(void);
+	void	ClearStrings( void );
 
 
 	// Iterate all the keys.
@@ -50,8 +50,8 @@ public:
 	unsigned short Next( unsigned short key ) const;
 	unsigned short InvalidIndex() const;
 
-	~CStringRegistry(void);			// Need to free allocated memory
-	CStringRegistry(void);
+	~CStringRegistry( void );			// Need to free allocated memory
+	CStringRegistry( void );
 };
 
 #endif // STRINGREGISTRY_H

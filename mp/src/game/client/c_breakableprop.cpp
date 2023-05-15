@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include "cbase.h"
@@ -17,11 +17,11 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-IMPLEMENT_CLIENTCLASS_DT(C_BreakableProp, DT_BreakableProp, CBreakableProp)
+IMPLEMENT_CLIENTCLASS_DT( C_BreakableProp, DT_BreakableProp, CBreakableProp )
 END_RECV_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_BreakableProp::C_BreakableProp( void )
 {
@@ -29,7 +29,7 @@ C_BreakableProp::C_BreakableProp( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_BreakableProp::SetFadeMinMax( float fademin, float fademax )
 {
@@ -40,7 +40,7 @@ void C_BreakableProp::SetFadeMinMax( float fademin, float fademax )
 //-----------------------------------------------------------------------------
 // Copy fade from another breakable prop
 //-----------------------------------------------------------------------------
-void C_BreakableProp::CopyFadeFrom( C_BreakableProp *pSource )
+void C_BreakableProp::CopyFadeFrom( C_BreakableProp* pSource )
 {
 	m_flFadeScale = pSource->m_flFadeScale;
 }

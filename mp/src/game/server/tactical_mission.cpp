@@ -9,19 +9,19 @@
 /**
  * Global singleton accessor.
  */
-CTacticalMissionManager &TheTacticalMissions( void )
+CTacticalMissionManager& TheTacticalMissions( void )
 {
-	static CTacticalMissionManager *manager = g_pGameRules->TacticalMissionManagerFactory();
+	static CTacticalMissionManager* manager = g_pGameRules->TacticalMissionManagerFactory();
 
 	return *manager;
 }
 
 
 //---------------------------------------------------------------------------------------------
-class CListMissions : public CTacticalMissionManager::IForEachMission 
+class CListMissions : public CTacticalMissionManager::IForEachMission
 {
 public:
-	virtual bool Inspect( const CTacticalMission &mission )
+	virtual bool Inspect( const CTacticalMission& mission )
 	{
 		Msg( "%s\n", mission.GetName() );
 		return true;
@@ -30,8 +30,10 @@ public:
 
 CON_COMMAND_F( mission_list, "List all available tactical missions", FCVAR_GAMEDLL )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	CListMissions list;
 	TheTacticalMissions().ForEachMission( list );
@@ -43,7 +45,7 @@ CON_COMMAND_F( mission_list, "List all available tactical missions", FCVAR_GAMED
 class CShowZone : public IForEachNavArea
 {
 public:
-	virtual bool Inspect( const CNavArea *area )
+	virtual bool Inspect( const CNavArea* area )
 	{
 		area->DrawFilled( 255, 255, 0, 255, 9999.9f );
 		return true;
@@ -53,20 +55,22 @@ public:
 
 CON_COMMAND_F( mission_show, "Show the given mission", FCVAR_GAMEDLL )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
-		return;
-
-	if ( args.ArgC() < 2 )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
 	{
-		Msg( "%s <name of mission>\n", args.Arg(0) );
 		return;
 	}
 
-	const CTacticalMission *mission = TheTacticalMissions().GetMission( args.Arg(1) );
-	if ( mission )
+	if( args.ArgC() < 2 )
 	{
-		const CTacticalMissionZone *zone = mission->GetDeployZone( NULL );
-		if ( zone )
+		Msg( "%s <name of mission>\n", args.Arg( 0 ) );
+		return;
+	}
+
+	const CTacticalMission* mission = TheTacticalMissions().GetMission( args.Arg( 1 ) );
+	if( mission )
+	{
+		const CTacticalMissionZone* zone = mission->GetDeployZone( NULL );
+		if( zone )
 		{
 			CShowZone show;
 			zone->ForEachArea( show );
@@ -78,18 +82,20 @@ CON_COMMAND_F( mission_show, "Show the given mission", FCVAR_GAMEDLL )
 	}
 	else
 	{
-		Msg( "Unknown mission '%s'\n", args.Arg(1) );
+		Msg( "Unknown mission '%s'\n", args.Arg( 1 ) );
 	}
 }
 
 
 //---------------------------------------------------------------------------------------------
-CNavArea *CTacticalMissionZone::SelectArea( CBasePlayer *who ) const
+CNavArea* CTacticalMissionZone::SelectArea( CBasePlayer* who ) const
 {
-	if ( m_areaVector.Count() == 0 )
+	if( m_areaVector.Count() == 0 )
+	{
 		return NULL;
+	}
 
-	int which = RandomInt( 0, m_areaVector.Count()-1 );
+	int which = RandomInt( 0, m_areaVector.Count() - 1 );
 	return m_areaVector[ which ];
 }
 
@@ -99,14 +105,16 @@ CNavArea *CTacticalMissionZone::SelectArea( CBasePlayer *who ) const
  * Iterate each area in this zone.
  * If functor returns false, stop iterating and return false.
  */
-bool CTacticalMissionZone::ForEachArea( IForEachNavArea &func ) const
+bool CTacticalMissionZone::ForEachArea( IForEachNavArea& func ) const
 {
 	int i;
 
-	for( i=0; i<m_areaVector.Count(); ++i )
+	for( i = 0; i < m_areaVector.Count(); ++i )
 	{
-		if ( func.Inspect( m_areaVector[i] ) == false )
+		if( func.Inspect( m_areaVector[i] ) == false )
+		{
 			break;
+		}
 	}
 
 	bool wasCompleteIteration = ( i == m_areaVector.Count() );
@@ -127,9 +135,9 @@ CTacticalMissionManager::CTacticalMissionManager( void )
 
 
 //---------------------------------------------------------------------------------------------
-void CTacticalMissionManager::FireGameEvent( IGameEvent *gameEvent )
+void CTacticalMissionManager::FireGameEvent( IGameEvent* gameEvent )
 {
-	if ( FStrEq( gameEvent->GetName(), "round_start" ) || FStrEq( gameEvent->GetName(), "teamplay_round_start" ) )
+	if( FStrEq( gameEvent->GetName(), "round_start" ) || FStrEq( gameEvent->GetName(), "teamplay_round_start" ) )
 	{
 		OnRoundRestart();
 	}
@@ -137,9 +145,9 @@ void CTacticalMissionManager::FireGameEvent( IGameEvent *gameEvent )
 
 
 //---------------------------------------------------------------------------------------------
-void CTacticalMissionManager::Register( CTacticalMission *mission )
+void CTacticalMissionManager::Register( CTacticalMission* mission )
 {
-	if ( m_missionVector.Find( mission ) == m_missionVector.InvalidIndex() )
+	if( m_missionVector.Find( mission ) == m_missionVector.InvalidIndex() )
 	{
 		m_missionVector.AddToTail( mission );
 	}
@@ -147,7 +155,7 @@ void CTacticalMissionManager::Register( CTacticalMission *mission )
 
 
 //---------------------------------------------------------------------------------------------
-void CTacticalMissionManager::Unregister( CTacticalMission *mission )
+void CTacticalMissionManager::Unregister( CTacticalMission* mission )
 {
 	m_missionVector.FindAndRemove( mission );
 }
@@ -157,12 +165,14 @@ void CTacticalMissionManager::Unregister( CTacticalMission *mission )
 /**
  * Given a mission name, return the mission (or NULL)
  */
-const CTacticalMission *CTacticalMissionManager::GetMission( const char *name )
+const CTacticalMission* CTacticalMissionManager::GetMission( const char* name )
 {
 	FOR_EACH_VEC( m_missionVector, it )
 	{
-		if ( FStrEq( m_missionVector[it]->GetName(), name ) )
+		if( FStrEq( m_missionVector[it]->GetName(), name ) )
+		{
 			return m_missionVector[it];
+		}
 	}
 
 	return NULL;
@@ -174,12 +184,14 @@ const CTacticalMission *CTacticalMissionManager::GetMission( const char *name )
  * Iterate each mission.
  * If functor returns false, stop iterating and return false.
  */
-bool CTacticalMissionManager::ForEachMission( CTacticalMissionManager::IForEachMission &func )
+bool CTacticalMissionManager::ForEachMission( CTacticalMissionManager::IForEachMission& func )
 {
 	FOR_EACH_VEC( m_missionVector, it )
 	{
-		if ( !func.Inspect( *m_missionVector[it] ) )
+		if( !func.Inspect( *m_missionVector[it] ) )
+		{
 			return false;
+		}
 	}
 
 	return true;

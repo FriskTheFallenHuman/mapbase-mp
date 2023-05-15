@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ class CTEEffectDispatch : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEEffectDispatch, CBaseTempEntity );
 
-					CTEEffectDispatch( const char *name );
+	CTEEffectDispatch( const char* name );
 	virtual			~CTEEffectDispatch( void );
 
 	DECLARE_SERVERCLASS();
@@ -36,16 +36,16 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEEffectDispatch::CTEEffectDispatch( const char *name ) :
+CTEEffectDispatch::CTEEffectDispatch( const char* name ) :
 	CBaseTempEntity( name )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEEffectDispatch::~CTEEffectDispatch( void )
 {
@@ -53,7 +53,7 @@ CTEEffectDispatch::~CTEEffectDispatch( void )
 
 IMPLEMENT_SERVERCLASS_ST( CTEEffectDispatch, DT_TEEffectDispatch )
 
-	SendPropDataTable( SENDINFO_DT( m_EffectData ), &REFERENCE_SEND_TABLE( DT_EffectData ) )
+SendPropDataTable( SENDINFO_DT( m_EffectData ), &REFERENCE_SEND_TABLE( DT_EffectData ) )
 
 END_SEND_TABLE()
 
@@ -62,9 +62,9 @@ END_SEND_TABLE()
 static CTEEffectDispatch g_TEEffectDispatch( "EffectDispatch" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void TE_DispatchEffect( IRecipientFilter& filter, float delay, const Vector &pos, const char *pName, const CEffectData &data )
+void TE_DispatchEffect( IRecipientFilter& filter, float delay, const Vector& pos, const char* pName, const CEffectData& data )
 {
 	// Copy the supplied effect data.
 	g_TEEffectDispatch.m_EffectData = data;
@@ -77,15 +77,15 @@ void TE_DispatchEffect( IRecipientFilter& filter, float delay, const Vector &pos
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void DispatchEffect( const char *pName, const CEffectData &data )
+void DispatchEffect( const char* pName, const CEffectData& data )
 {
 	CPASFilter filter( data.m_vOrigin );
 	DispatchEffect( pName, data, filter );
 }
 
-void DispatchEffect( const char *pName, const CEffectData &data, CRecipientFilter &filter )
+void DispatchEffect( const char* pName, const CEffectData& data, CRecipientFilter& filter )
 {
 	te->DispatchEffect( filter, 0.0, data.m_vOrigin, pName, data );
 }

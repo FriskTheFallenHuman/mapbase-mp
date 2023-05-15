@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PLAYERANDOBJECTENUMERATOR_H
 #define PLAYERANDOBJECTENUMERATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -28,17 +28,17 @@ public:
 	CPlayerAndObjectEnumerator( float radius );
 
 	//Actual work code
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity );
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity );
 
 	int	GetObjectCount();
-	C_BaseEntity *GetObject( int index );
+	C_BaseEntity* GetObject( int index );
 
 public:
 	//Data members
 	float	m_flRadiusSquared;
 
 	CUtlVector< CHandle< C_BaseEntity > > m_Objects;
-	C_BasePlayer *m_pLocal;
+	C_BasePlayer* m_pLocal;
 };
 
 #endif // PLAYERANDOBJECTENUMERATOR_H

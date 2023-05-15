@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef THREADHELPERS_H
 #define THREADHELPERS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,14 +21,14 @@
 class CCriticalSection
 {
 public:
-			CCriticalSection();
-			~CCriticalSection();
+	CCriticalSection();
+	~CCriticalSection();
 
 
 protected:
 
 	friend class CCriticalSectionLock;
-	
+
 	void	Lock();
 	void	Unlock();
 
@@ -38,7 +38,7 @@ public:
 
 	// Used to protect against deadlock in debug mode.
 //#if defined( _DEBUG )
-	CUtlLinkedList<unsigned long,int>	m_Locks;
+	CUtlLinkedList<unsigned long, int>	m_Locks;
 	char								m_DeadlockProtect[SIZEOF_CS];
 //#endif
 };
@@ -48,13 +48,13 @@ public:
 class CCriticalSectionLock
 {
 public:
-			CCriticalSectionLock( CCriticalSection *pCS );
-			~CCriticalSectionLock();
+	CCriticalSectionLock( CCriticalSection* pCS );
+	~CCriticalSectionLock();
 	void	Lock();
 	void	Unlock();
 
 private:
-	CCriticalSection	*m_pCS;
+	CCriticalSection*	m_pCS;
 	bool				m_bLocked;
 };
 
@@ -69,7 +69,7 @@ public:
 		CCriticalSection::Lock();
 		return &m_Data;
 	}
-	
+
 	void	Unlock()
 	{
 		CCriticalSection::Unlock();
@@ -92,7 +92,7 @@ public:
 
 	bool Init( bool bManualReset, bool bInitialState );
 	void Term();
-	
+
 	void* GetEventHandle() const;
 
 	// Signal the event.
@@ -103,7 +103,7 @@ public:
 
 
 private:
-	void *m_hEvent;
+	void* m_hEvent;
 };
 
 

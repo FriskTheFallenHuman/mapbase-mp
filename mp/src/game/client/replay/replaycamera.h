@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -9,14 +9,14 @@
 #ifndef REPLAYCAMERA_H
 #define REPLAYCAMERA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "replay/ireplaycamera.h"
 #include "GameEventListener.h"
 
 class C_ReplayCamera : public CGameEventListener,
-					   public IReplayCamera
+	public IReplayCamera
 {
 public:
 	C_ReplayCamera();
@@ -32,29 +32,38 @@ public:
 
 	void EnableInput( bool bEnable );
 
-	void OverrideView( const Vector *pOrigin, const QAngle *pAngles, float flFov );
-	void GetCachedView( Vector &origin, QAngle &angles, float &fov );
+	void OverrideView( const Vector* pOrigin, const QAngle* pAngles, float flFov );
+	void GetCachedView( Vector& origin, QAngle& angles, float& fov );
 
-	void CalcView(Vector& origin, QAngle& angles, float& fov);
-	void FireGameEvent( IGameEvent *event );
+	void CalcView( Vector& origin, QAngle& angles, float& fov );
+	void FireGameEvent( IGameEvent* event );
 
-	void SetMode(int iMode);
-	void SetChaseCamParams( float flOffset, float flDistance, float flTheta, float flPhi  );
+	void SetMode( int iMode );
+	void SetChaseCamParams( float flOffset, float flDistance, float flTheta, float flPhi );
 	void SpecNextPlayer( bool bInverse );
-	void SpecNamedPlayer( const char *szPlayerName );
+	void SpecNamedPlayer( const char* szPlayerName );
 	bool IsPVSLocked();
 	void SetAutoDirector( bool bActive );
-	
-	int  GetMode();	// returns current camera mode
-	C_BaseEntity *GetPrimaryTarget();  // return primary target
-	inline int GetPrimaryTargetIndex()	{ return m_iTarget1; }	
-	void SetPrimaryTarget( int nEntity); // set the primary obs target
 
-	void CreateMove(CUserCmd *cmd);
+	int  GetMode();	// returns current camera mode
+	C_BaseEntity* GetPrimaryTarget();  // return primary target
+	inline int GetPrimaryTargetIndex()
+	{
+		return m_iTarget1;
+	}
+	void SetPrimaryTarget( int nEntity ); // set the primary obs target
+
+	void CreateMove( CUserCmd* cmd );
 	void FixupMovmentParents();
 	void PostEntityPacketReceived();
-	const char* GetTitleText() { return m_szTitleText; }
-	int  GetNumSpectators() { return m_nNumSpectators; }
+	const char* GetTitleText()
+	{
+		return m_szTitleText;
+	}
+	int  GetNumSpectators()
+	{
+		return m_nNumSpectators;
+	}
 
 	void SmoothFov( float flDelta );
 
@@ -73,7 +82,7 @@ protected:
 	void CalcChaseCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov, float flDelta );
 	void CalcFixedView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov, float flDelta );
 	void CalcInEyeCamView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov, float flDelta );
-	void CalcRoamingView(Vector& eyeOrigin, QAngle& eyeAngles, float& fov, float flDelta);
+	void CalcRoamingView( Vector& eyeOrigin, QAngle& eyeAngles, float& fov, float flDelta );
 
 	void SmoothCameraAngle( QAngle& targetAngle );
 	void SetCameraAngle( QAngle& targetAngle );
@@ -103,7 +112,7 @@ protected:
 	float		m_flOffset;  // z-offset from target origin
 	float		m_flDistance; // distance to traget origin+offset
 	float		m_flLastDistance; // too smooth distance
-	float		m_flTheta; // view angle horizontal 
+	float		m_flTheta; // view angle horizontal
 	float		m_flPhi; // view angle vertical
 	float		m_flInertia; // camera inertia 0..100
 	float		m_flLastAngleUpdateTime;
@@ -132,7 +141,7 @@ protected:
 
 //-----------------------------------------------------------------------------
 
-C_ReplayCamera *ReplayCamera();
+C_ReplayCamera* ReplayCamera();
 
 //-----------------------------------------------------------------------------
 

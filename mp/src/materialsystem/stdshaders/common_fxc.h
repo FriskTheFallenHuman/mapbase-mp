@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,41 +12,43 @@
 #include "common_hlsl_cpp_consts.h"
 
 #ifdef NV3X
-#	define HALF half
-#	define HALF2 half2
-#	define HALF3 half3
-#	define HALF4 half4
-#	define HALF3x3 half3x3
-#	define HALF3x4 half3x4
-#	define HALF4x3 half4x3
-#	define HALF_CONSTANT( _constant )	((HALF)_constant)
+	#define HALF half
+	#define HALF2 half2
+	#define HALF3 half3
+	#define HALF4 half4
+	#define HALF3x3 half3x3
+	#define HALF3x4 half3x4
+	#define HALF4x3 half4x3
+	#define HALF_CONSTANT( _constant )	((HALF)_constant)
 #else
-#	define HALF float
-#	define HALF2 float2
-#	define HALF3 float3
-#	define HALF4 float4
-#	define HALF3x3 float3x3
-#	define HALF3x4 float3x4
-#	define HALF4x3 float4x3
-#	define HALF_CONSTANT( _constant )	_constant
+	#define HALF float
+	#define HALF2 float2
+	#define HALF3 float3
+	#define HALF4 float4
+	#define HALF3x3 float3x3
+	#define HALF3x4 float3x4
+	#define HALF4x3 float4x3
+	#define HALF_CONSTANT( _constant )	_constant
 #endif
 
 // This is where all common code for both vertex and pixel shaders.
 #define OO_SQRT_3 0.57735025882720947f
-static const HALF3 bumpBasis[3] = {
+static const HALF3 bumpBasis[3] =
+{
 	HALF3( 0.81649661064147949f, 0.0f, OO_SQRT_3 ),
-	HALF3(  -0.40824833512306213f, 0.70710676908493042f, OO_SQRT_3 ),
-	HALF3(  -0.40824821591377258f, -0.7071068286895752f, OO_SQRT_3 )
+	HALF3( -0.40824833512306213f, 0.70710676908493042f, OO_SQRT_3 ),
+	HALF3( -0.40824821591377258f, -0.7071068286895752f, OO_SQRT_3 )
 };
-static const HALF3 bumpBasisTranspose[3] = {
+static const HALF3 bumpBasisTranspose[3] =
+{
 	HALF3( 0.81649661064147949f, -0.40824833512306213f, -0.40824833512306213f ),
-	HALF3(  0.0f, 0.70710676908493042f, -0.7071068286895752f ),
-	HALF3(  OO_SQRT_3, OO_SQRT_3, OO_SQRT_3 )
+	HALF3( 0.0f, 0.70710676908493042f, -0.7071068286895752f ),
+	HALF3( OO_SQRT_3, OO_SQRT_3, OO_SQRT_3 )
 };
 
 #if defined( _X360 )
-#define REVERSE_DEPTH_ON_X360 //uncomment to use D3DFMT_D24FS8 with an inverted depth viewport for better performance. Keep this in sync with the same named #define in public/shaderapi/shareddefs.h
-//Note that the reversal happens in the viewport. So ONLY reading back from a depth texture should be affected. Projected math is unaffected.
+	#define REVERSE_DEPTH_ON_X360 //uncomment to use D3DFMT_D24FS8 with an inverted depth viewport for better performance. Keep this in sync with the same named #define in public/shaderapi/shareddefs.h
+	//Note that the reversal happens in the viewport. So ONLY reading back from a depth texture should be affected. Projected math is unaffected.
 #endif
 
 HALF3 CalcReflectionVectorNormalized( HALF3 normal, HALF3 eyeVector )
@@ -64,7 +66,7 @@ HALF3 CalcReflectionVectorUnnormalized( HALF3 normal, HALF3 eyeVector )
 	// compute reflection vector r = 2 * ((n dot v)/(n dot n)) n - v
 	//  multiply all values through by N.N.  uniformly scaling reflection vector won't affect result
 	//  since it is used in a cubemap lookup
-	return (2.0*(dot( normal, eyeVector ))*normal) - (dot( normal, normal )*eyeVector);
+	return ( 2.0 * ( dot( normal, eyeVector ) ) * normal ) - ( dot( normal, normal ) * eyeVector );
 }
 
 float3 HuePreservingColorClamp( float3 c )
@@ -72,72 +74,72 @@ float3 HuePreservingColorClamp( float3 c )
 	// Get the max of all of the color components and a specified maximum amount
 	float maximum = max( max( c.x, c.y ), max( c.z, 1.0f ) );
 
-	return (c / maximum);
+	return ( c / maximum );
 }
 
 HALF3 HuePreservingColorClamp( HALF3 c, HALF maxVal )
 {
 	// Get the max of all of the color components and a specified maximum amount
 	float maximum = max( max( c.x, c.y ), max( c.z, maxVal ) );
-	return (c * ( maxVal / maximum ) );
+	return ( c * ( maxVal / maximum ) );
 }
 
 #if (AA_CLAMP==1)
-HALF2 ComputeLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord ) 
+HALF2 ComputeLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord )
 {
-    HALF2 result = saturate(Lightmap1and2Coord.xy) * Lightmap1and2Coord.wz * 0.99;
-    result += Lightmap3Coord;
-    return result;
+	HALF2 result = saturate( Lightmap1and2Coord.xy ) * Lightmap1and2Coord.wz * 0.99;
+	result += Lightmap3Coord;
+	return result;
 }
 
 void ComputeBumpedLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord,
-									  out HALF2 bumpCoord1,
-									  out HALF2 bumpCoord2,
-									  out HALF2 bumpCoord3 ) 
+									   out HALF2 bumpCoord1,
+									   out HALF2 bumpCoord2,
+									   out HALF2 bumpCoord3 )
 {
-    HALF2 result = saturate(Lightmap1and2Coord.xy) * Lightmap1and2Coord.wz * 0.99;
-    result += Lightmap3Coord;
-    bumpCoord1 = result + HALF2(Lightmap1and2Coord.z, 0);
-    bumpCoord2 = result + 2*HALF2(Lightmap1and2Coord.z, 0);
-    bumpCoord3 = result + 3*HALF2(Lightmap1and2Coord.z, 0);
+	HALF2 result = saturate( Lightmap1and2Coord.xy ) * Lightmap1and2Coord.wz * 0.99;
+	result += Lightmap3Coord;
+	bumpCoord1 = result + HALF2( Lightmap1and2Coord.z, 0 );
+	bumpCoord2 = result + 2 * HALF2( Lightmap1and2Coord.z, 0 );
+	bumpCoord3 = result + 3 * HALF2( Lightmap1and2Coord.z, 0 );
 }
 #else
-HALF2 ComputeLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord ) 
+HALF2 ComputeLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord )
 {
-    return Lightmap1and2Coord.xy;
+	return Lightmap1and2Coord.xy;
 }
 
 void ComputeBumpedLightmapCoordinates( HALF4 Lightmap1and2Coord, HALF2 Lightmap3Coord,
-									  out HALF2 bumpCoord1,
-									  out HALF2 bumpCoord2,
-									  out HALF2 bumpCoord3 ) 
+									   out HALF2 bumpCoord1,
+									   out HALF2 bumpCoord2,
+									   out HALF2 bumpCoord3 )
 {
-    bumpCoord1 = Lightmap1and2Coord.xy;
-    bumpCoord2 = Lightmap1and2Coord.wz; // reversed order!!!
-    bumpCoord3 = Lightmap3Coord.xy;
+	bumpCoord1 = Lightmap1and2Coord.xy;
+	bumpCoord2 = Lightmap1and2Coord.wz; // reversed order!!!
+	bumpCoord3 = Lightmap3Coord.xy;
 }
 #endif
 
-// Versions of matrix multiply functions which force HLSL compiler to explictly use DOTs, 
+// Versions of matrix multiply functions which force HLSL compiler to explictly use DOTs,
 // not giving it the option of using MAD expansion.  In a perfect world, the compiler would
 // always pick the best strategy, and these shouldn't be needed.. but.. well.. umm..
 //
 // lorenmcq
 
-float3 mul3x3(float3 v, float3x3 m)
+float3 mul3x3( float3 v, float3x3 m )
 {
 #if !defined( _X360 )
-    return float3(dot(v, transpose(m)[0]), dot(v, transpose(m)[1]), dot(v, transpose(m)[2]));
+	return float3( dot( v, transpose( m )[0] ), dot( v, transpose( m )[1] ), dot( v, transpose( m )[2] ) );
 #else
 	// xbox360 fxc.exe (new back end) borks with transposes, generates bad code
 	return mul( v, m );
 #endif
 }
 
-float3 mul4x3(float4 v, float4x3 m)
+float3 mul4x3( float4 v, float4x3 m )
 {
 #if !defined( _X360 )
-	return float3(dot(v, transpose(m)[0]), dot(v, transpose(m)[1]), dot(v, transpose(m)[2]));
+	return float3( dot( v, transpose( m )[0] ), dot( v, transpose( m )[1] ), dot( v, transpose( m )[2] ) );
 #else
 	// xbox360 fxc.exe (new back end) borks with transposes, generates bad code
 	return mul( v, m );
@@ -151,7 +153,7 @@ float3 DecompressHDR( float4 input )
 
 float4 CompressHDR( float3 input )
 {
-	// FIXME: want to use min so that we clamp to white, but what happens if we 
+	// FIXME: want to use min so that we clamp to white, but what happens if we
 	// have an albedo component that's less than 1/MAX_HDR_OVERBRIGHT?
 	//	float fMax = max( max( color.r, color.g ), color.b );
 	float4 output;
@@ -220,9 +222,9 @@ float X360GammaToLinear( float fl360GammaValue )
 	float flLinearValue;
 
 	fl360GammaValue = saturate( fl360GammaValue );
-	if ( fl360GammaValue < ( 96.0f / 255.0f ) )
+	if( fl360GammaValue < ( 96.0f / 255.0f ) )
 	{
-		if ( fl360GammaValue < ( 64.0f / 255.0f ) )
+		if( fl360GammaValue < ( 64.0f / 255.0f ) )
 		{
 			flLinearValue = fl360GammaValue * 255.0f;
 		}
@@ -257,9 +259,9 @@ float X360LinearToGamma( float flLinearValue )
 	float fl360GammaValue;
 
 	flLinearValue = saturate( flLinearValue );
-	if ( flLinearValue < ( 128.0f / 1023.0f ) )
+	if( flLinearValue < ( 128.0f / 1023.0f ) )
 	{
-		if ( flLinearValue < ( 64.0f / 1023.0f ) )
+		if( flLinearValue < ( 64.0f / 1023.0f ) )
 		{
 			fl360GammaValue = flLinearValue * ( 1023.0f * ( 1.0f / 255.0f ) );
 		}
@@ -270,14 +272,14 @@ float X360LinearToGamma( float flLinearValue )
 	}
 	else
 	{
-		if ( flLinearValue < ( 512.0f / 1023.0f ) )
+		if( flLinearValue < ( 512.0f / 1023.0f ) )
 		{
 			fl360GammaValue = flLinearValue * ( ( 1023.0f / 4.0f ) * ( 1.0f / 255.0f ) ) + ( 64.0f / 255.0f );
 		}
 		else
 		{
-			fl360GammaValue = flLinearValue * ( ( 1023.0f /8.0f ) * ( 1.0f / 255.0f ) ) + ( 128.0f /255.0f ); // 1.0 -> 1.0034313725490196078431372549016
-			if ( fl360GammaValue > 1.0f )
+			fl360GammaValue = flLinearValue * ( ( 1023.0f / 8.0f ) * ( 1.0f / 255.0f ) ) + ( 128.0f / 255.0f ); // 1.0 -> 1.0034313725490196078431372549016
+			if( fl360GammaValue > 1.0f )
 			{
 				fl360GammaValue = 1.0f;
 			}

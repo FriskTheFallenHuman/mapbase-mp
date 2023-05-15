@@ -11,7 +11,7 @@
 class CServerReplayImp : public IServerReplay
 {
 public:
-	virtual void UploadOgsData( KeyValues *pData, bool bIncludeTimeField )
+	virtual void UploadOgsData( KeyValues* pData, bool bIncludeTimeField )
 	{
 		GetReplayGameStatsHelper().UploadError( pData, bIncludeTimeField );
 	}

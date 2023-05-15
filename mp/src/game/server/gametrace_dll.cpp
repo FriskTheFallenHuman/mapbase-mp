@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -25,9 +25,13 @@ bool CGameTrace::DidHitNonWorldEntity() const
 
 int CGameTrace::GetEntityIndex() const
 {
-	if ( m_pEnt )
+	if( m_pEnt )
+	{
 		return m_pEnt->entindex();
+	}
 	else
+	{
 		return -1;
+	}
 }
 

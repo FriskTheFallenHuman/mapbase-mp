@@ -28,13 +28,13 @@ class HaltonSequenceGenerator_t
 	float fbase;											//< base as a float
 
 public:
-	HaltonSequenceGenerator_t(int base);					//< base MUST be prime, >=2
+	HaltonSequenceGenerator_t( int base );					//< base MUST be prime, >=2
 
-	float GetElement(int element);
+	float GetElement( int element );
 
-	inline float NextValue(void)
+	inline float NextValue( void )
 	{
-		return GetElement(seed++);
+		return GetElement( seed++ );
 	}
 
 };
@@ -45,22 +45,22 @@ class DirectionalSampler_t									//< pseudo-random sphere sampling
 	HaltonSequenceGenerator_t zdot;
 	HaltonSequenceGenerator_t vrot;
 public:
-	DirectionalSampler_t(void)
-		: zdot(2),vrot(3)
+	DirectionalSampler_t( void )
+		: zdot( 2 ), vrot( 3 )
 	{
 	}
 
-	Vector NextValue(void)
+	Vector NextValue( void )
 	{
-		float zvalue=zdot.NextValue();
-		zvalue=2*zvalue-1.0;								// map from 0..1 to -1..1
-		float phi=acos(zvalue);
+		float zvalue = zdot.NextValue();
+		zvalue = 2 * zvalue - 1.0;								// map from 0..1 to -1..1
+		float phi = acos( zvalue );
 		// now, generate a random rotation angle for x/y
-		float theta=2.0*M_PI*vrot.NextValue();
-		float sin_p=sin(phi);
-		return Vector(cos(theta)*sin_p,
-					  sin(theta)*sin_p,
-					  zvalue);
+		float theta = 2.0 * M_PI * vrot.NextValue();
+		float sin_p = sin( phi );
+		return Vector( cos( theta ) * sin_p,
+					   sin( theta ) * sin_p,
+					   zvalue );
 
 	}
 };

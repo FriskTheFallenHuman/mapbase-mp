@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -49,11 +49,11 @@ void CFuncBulletShield::Spawn( void )
 }
 
 /*
-bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta, 
-	const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs, 
+bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
+	const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs,
 	float flTolerance, CBaseTrace *pTrace );
 
-bool IntersectRayWithOBB( const Vector &vecRayOrigin, const Vector &vecRayDelta, 
+bool IntersectRayWithOBB( const Vector &vecRayOrigin, const Vector &vecRayDelta,
 	const Vector &vecBoxOrigin, const QAngle &angBoxRotation,
 	const Vector &vecOBBMins, const Vector &vecOBBMaxs, float flTolerance, CBaseTrace *pTrace );
 
@@ -63,22 +63,22 @@ bool IntersectRayWithOBB( const Ray_t &ray, const Vector &vecBoxOrigin, const QA
 bool IntersectRayWithOBB( const Ray_t &ray, const matrix3x4_t &matOBBToWorld,
 	const Vector &vecOBBMins, const Vector &vecOBBMaxs, float flTolerance, CBaseTrace *pTrace );
 
-bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta, 
-	const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs, 
+bool IntersectRayWithOBB( const Vector &vecRayStart, const Vector &vecRayDelta,
+	const matrix3x4_t &matOBBToWorld, const Vector &vecOBBMins, const Vector &vecOBBMaxs,
 	float flTolerance, BoxTraceInfo_t *pTrace );
 	*/
 
-bool CFuncBulletShield::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
+bool CFuncBulletShield::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
 {
 	// ignore unless a shot
-	if ((mask & MASK_SHOT)	 == MASK_SHOT)
+	if( ( mask & MASK_SHOT )	 == MASK_SHOT )
 	{
 		// use obb collision
-		ICollideable *pCol = GetCollideable();
-		Assert(pCol);
+		ICollideable* pCol = GetCollideable();
+		Assert( pCol );
 
-		return IntersectRayWithOBB(ray,pCol->GetCollisionOrigin(),pCol->GetCollisionAngles(),
-			pCol->OBBMins(),pCol->OBBMaxs(),1.0f,&trace);
+		return IntersectRayWithOBB( ray, pCol->GetCollisionOrigin(), pCol->GetCollisionAngles(),
+									pCol->OBBMins(), pCol->OBBMaxs(), 1.0f, &trace );
 
 		/*
 		const model_t *pModel = this->GetCollisionModel();
@@ -97,5 +97,7 @@ bool CFuncBulletShield::TestCollision( const Ray_t &ray, unsigned int mask, trac
 		// return BaseClass::TestCollision( ray, mask, trace );
 	}
 	else
+	{
 		return false;
+	}
 }

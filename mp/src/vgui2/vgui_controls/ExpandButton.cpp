@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -26,7 +26,7 @@ DECLARE_BUILD_FACTORY( ExpandButton );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-ExpandButton::ExpandButton( Panel *parent, const char *panelName ) : ToggleButton( parent, panelName, "" )
+ExpandButton::ExpandButton( Panel* parent, const char* panelName ) : ToggleButton( parent, panelName, "" )
 {
 	m_bExpandable = true;
 	m_hFont = INVALID_FONT;
@@ -41,23 +41,23 @@ ExpandButton::~ExpandButton()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ExpandButton::ApplySchemeSettings(IScheme *pScheme)
+void ExpandButton::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
 	m_Color = GetSchemeColor( "ExpandButton.Color", pScheme );
-	m_hFont = pScheme->GetFont("Marlett", IsProportional() );
+	m_hFont = pScheme->GetFont( "Marlett", IsProportional() );
 
 	// don't draw a background
-	SetPaintBackgroundEnabled(false);
+	SetPaintBackgroundEnabled( false );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-IBorder *ExpandButton::GetBorder(bool depressed, bool armed, bool selected, bool keyfocus)
+IBorder* ExpandButton::GetBorder( bool depressed, bool armed, bool selected, bool keyfocus )
 {
 	return NULL;
 }
@@ -66,15 +66,15 @@ IBorder *ExpandButton::GetBorder(bool depressed, bool armed, bool selected, bool
 //-----------------------------------------------------------------------------
 // Purpose: Expand the button
 //-----------------------------------------------------------------------------
-void ExpandButton::SetSelected(bool state)
+void ExpandButton::SetSelected( bool state )
 {
-	if ( m_bExpandable && ( state != IsSelected() ) )
+	if( m_bExpandable && ( state != IsSelected() ) )
 	{
 		// send a message saying we've been checked
-		KeyValues *msg = new KeyValues("Expanded", "state", (int)state);
-		PostActionSignal(msg);
+		KeyValues* msg = new KeyValues( "Expanded", "state", ( int )state );
+		PostActionSignal( msg );
 
-		BaseClass::SetSelected(state);
+		BaseClass::SetSelected( state );
 	}
 }
 
@@ -82,7 +82,7 @@ void ExpandButton::SetSelected(bool state)
 //-----------------------------------------------------------------------------
 // Purpose: sets whether or not the state of the check can be changed
 //-----------------------------------------------------------------------------
-void ExpandButton::SetExpandable(bool state)
+void ExpandButton::SetExpandable( bool state )
 {
 	m_bExpandable = state;
 	Repaint();
@@ -105,10 +105,10 @@ void ExpandButton::Paint()
 	surface()->DrawUnicodeChar( code );
 }
 
-	
+
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void ExpandButton::OnExpanded(Panel *panel)
+void ExpandButton::OnExpanded( Panel* panel )
 {
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -24,7 +24,7 @@ public:
 	{
 		BaseClass::OnDataChanged( updateType );
 
-		if ( updateType == DATA_UPDATE_CREATED )
+		if( updateType == DATA_UPDATE_CREATED )
 		{
 			m_pEmitter = CSimpleEmitter::Create( "FX_Bubble" );
 			m_pEmitter->SetSortOrigin( GetAbsOrigin() );
@@ -40,23 +40,25 @@ public:
 		Vector	direction = GetAbsOrigin() - m_vecLastOrigin;
 		float	flDist = VectorNormalize( direction );
 
-		int	numBubbles = (int) ( flDist * BUBBLES_PER_INCH );
+		int	numBubbles = ( int )( flDist * BUBBLES_PER_INCH );
 
-		if ( numBubbles < 1 )
+		if( numBubbles < 1 )
+		{
 			numBubbles = 1;
+		}
 
 		// Make bubbles
-		SimpleParticle *sParticle;
+		SimpleParticle* sParticle;
 
 		Vector	offset;
 
-		for ( int i = 0; i < numBubbles; i++ )
+		for( int i = 0; i < numBubbles; i++ )
 		{
 			offset = m_vecLastOrigin + ( direction * ( flDist / numBubbles ) * i ) + RandomVector( -2.5f, 2.5f );
 
-			sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_pEmitter->GetPMaterial( "effects/bubble" ), offset );
+			sParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_pEmitter->GetPMaterial( "effects/bubble" ), offset );
 
-			if ( sParticle )
+			if( sParticle )
 			{
 				sParticle->m_flLifetime		= 0.0f;
 				sParticle->m_flDieTime		= random->RandomFloat( 0.75f, 1.25f );
@@ -73,13 +75,13 @@ public:
 				sParticle->m_uchEndAlpha	= 0;
 				sParticle->m_uchStartSize	= random->RandomInt( 1, 2 );
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize;
-				
+
 				sParticle->m_vecVelocity	= ( direction * 64.0f ) + Vector( 0, 0, 32 );
 			}
-			
-			sParticle = (SimpleParticle *) m_pEmitter->AddParticle( sizeof(SimpleParticle), m_pEmitter->GetPMaterial( "effects/splash2" ), offset );
 
-			if ( sParticle )
+			sParticle = ( SimpleParticle* ) m_pEmitter->AddParticle( sizeof( SimpleParticle ), m_pEmitter->GetPMaterial( "effects/splash2" ), offset );
+
+			if( sParticle )
 			{
 				sParticle->m_flLifetime		= 0.0f;
 				sParticle->m_flDieTime		= 0.2f;
@@ -96,7 +98,7 @@ public:
 				sParticle->m_uchEndAlpha	= 0;
 				sParticle->m_uchStartSize	= 2;
 				sParticle->m_uchEndSize		= sParticle->m_uchStartSize * 4;
-				
+
 				sParticle->m_vecVelocity	= ( direction * 64.0f ) + Vector( 0, 0, 32 );
 			}
 		}
@@ -107,10 +109,13 @@ public:
 		BaseClass::AddEntity();
 	}
 
-	bool ShouldDraw( void ) { return true; }
+	bool ShouldDraw( void )
+	{
+		return true;
+	}
 
 private:
-	C_WaterBullet( const C_WaterBullet & );
+	C_WaterBullet( const C_WaterBullet& );
 
 	CSmartPtr<CSimpleEmitter> m_pEmitter;
 

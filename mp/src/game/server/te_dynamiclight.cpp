@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,7 +24,7 @@ class CTEDynamicLight : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEDynamicLight, CBaseTempEntity );
 
-					CTEDynamicLight( const char *name );
+	CTEDynamicLight( const char* name );
 	virtual			~CTEDynamicLight( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
@@ -43,10 +43,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEDynamicLight::CTEDynamicLight( const char *name ) :
+CTEDynamicLight::CTEDynamicLight( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -60,16 +60,16 @@ CTEDynamicLight::CTEDynamicLight( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEDynamicLight::~CTEDynamicLight( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -82,7 +82,7 @@ void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_
 	m_fRadius = 200;
 	m_fTime = 2.0;
 	m_fDecay = 0.0;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -97,37 +97,37 @@ void CTEDynamicLight::Test( const Vector& current_origin, const QAngle& current_
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEDynamicLight, DT_TEDynamicLight)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(r), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(g), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(b), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(exponent), 8, 0 ),
-	SendPropFloat( SENDINFO(m_fRadius), 8, SPROP_ROUNDUP, 0, 2560.0 ),
-	SendPropFloat( SENDINFO(m_fTime), 8, SPROP_ROUNDDOWN, 0, 25.6 ),
-	SendPropFloat( SENDINFO(m_fDecay), 8, SPROP_ROUNDDOWN, 0, 2560.0 ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEDynamicLight, DT_TEDynamicLight )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( r ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( g ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( b ), 8, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( exponent ), 8, 0 ),
+				SendPropFloat( SENDINFO( m_fRadius ), 8, SPROP_ROUNDUP, 0, 2560.0 ),
+				SendPropFloat( SENDINFO( m_fTime ), 8, SPROP_ROUNDDOWN, 0, 25.6 ),
+				SendPropFloat( SENDINFO( m_fDecay ), 8, SPROP_ROUNDDOWN, 0, 2560.0 ),
+				END_SEND_TABLE()
 
 
 // Singleton
-static CTEDynamicLight g_TEDynamicLight( "Dynamic Light" );
+				static CTEDynamicLight g_TEDynamicLight( "Dynamic Light" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*org - 
-//			r - 
-//			g - 
-//			b - 
-//			radius - 
-//			time - 
-//			decay - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*org -
+//			r -
+//			g -
+//			b -
+//			radius -
+//			time -
+//			decay -
 //-----------------------------------------------------------------------------
 void TE_DynamicLight( IRecipientFilter& filter, float delay,
-	const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay )
+					  const Vector* org, int r, int g, int b, int exponent, float radius, float time, float decay )
 {
 	// Set up parameters
 	g_TEDynamicLight.m_vecOrigin = *org;

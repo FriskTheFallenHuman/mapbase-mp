@@ -13,7 +13,7 @@
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CLocalSpaceEmitter::CLocalSpaceEmitter( const char *pDebugName ) :
+CLocalSpaceEmitter::CLocalSpaceEmitter( const char* pDebugName ) :
 	CSimpleEmitter( pDebugName )
 {
 }
@@ -28,15 +28,15 @@ inline const matrix3x4_t& CLocalSpaceEmitter::GetTransformMatrix() const
 //-----------------------------------------------------------------------------
 // Purpose: Creates a local space emitter
 //-----------------------------------------------------------------------------
-CSmartPtr<CLocalSpaceEmitter> CLocalSpaceEmitter::Create( const char *pDebugName, 
-	ClientEntityHandle_t hEntity, int nAttachment, int fFlags )
+CSmartPtr<CLocalSpaceEmitter> CLocalSpaceEmitter::Create( const char* pDebugName,
+		ClientEntityHandle_t hEntity, int nAttachment, int fFlags )
 {
-	CLocalSpaceEmitter *pRet = new CLocalSpaceEmitter( pDebugName );
+	CLocalSpaceEmitter* pRet = new CLocalSpaceEmitter( pDebugName );
 	pRet->SetDynamicallyAllocated( true );
 	pRet->m_hEntity = hEntity;
 	pRet->m_nAttachment = nAttachment;
 	pRet->m_fFlags = fFlags;
-	
+
 	pRet->SetupTransformMatrix();
 
 	return pRet;
@@ -50,15 +50,15 @@ void CLocalSpaceEmitter::Update( float flTimeDelta )
 	SetupTransformMatrix();
 }
 
-extern void FormatViewModelAttachment( Vector &vOrigin, bool bInverse );
+extern void FormatViewModelAttachment( Vector& vOrigin, bool bInverse );
 
 
-void CLocalSpaceEmitter::SimulateParticles( CParticleSimulateIterator *pIterator )
+void CLocalSpaceEmitter::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
 	float timeDelta = pIterator->GetTimeDelta();
 
-	SimpleParticle *pParticle = (SimpleParticle*)pIterator->GetFirst();
-	while ( pParticle )
+	SimpleParticle* pParticle = ( SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		// Update velocity
 		UpdateVelocity( pParticle, timeDelta );
@@ -69,37 +69,37 @@ void CLocalSpaceEmitter::SimulateParticles( CParticleSimulateIterator *pIterator
 		UpdateRoll( pParticle, timeDelta );
 
 		// If we're dead, we're done
-		if ( pParticle->m_flLifetime >= pParticle->m_flDieTime )
+		if( pParticle->m_flLifetime >= pParticle->m_flDieTime )
 		{
 			pIterator->RemoveParticle( pParticle );
 		}
-	
-		pParticle = (SimpleParticle*)pIterator->GetNext();
+
+		pParticle = ( SimpleParticle* )pIterator->GetNext();
 	}
 }
 
 
-void CLocalSpaceEmitter::RenderParticles( CParticleRenderIterator *pIterator )
+void CLocalSpaceEmitter::RenderParticles( CParticleRenderIterator* pIterator )
 {
-	const matrix3x4_t &mLocalToWorld = GetTransformMatrix();
-	const VMatrix &mModelView = ParticleMgr()->GetModelView();
+	const matrix3x4_t& mLocalToWorld = GetTransformMatrix();
+	const VMatrix& mModelView = ParticleMgr()->GetModelView();
 
-	const SimpleParticle *pParticle = (const SimpleParticle *)pIterator->GetFirst();
-	while ( pParticle )
+	const SimpleParticle* pParticle = ( const SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		// Transform it
 		Vector screenPos, worldPos;
 		VectorTransform( pParticle->m_Pos, mLocalToWorld, worldPos );
-		
+
 		// Correct viewmodel squashing
-		if ( m_fFlags & FLE_VIEWMODEL )
+		if( m_fFlags & FLE_VIEWMODEL )
 		{
 			FormatViewModelAttachment( worldPos, false );
 		}
 
 		TransformParticle( mModelView, worldPos, screenPos );
-		
-		float sortKey = (int) screenPos.z;
+
+		float sortKey = ( int ) screenPos.z;
 
 		// Render it
 		RenderParticle_ColorSizeAngle(
@@ -108,39 +108,39 @@ void CLocalSpaceEmitter::RenderParticles( CParticleRenderIterator *pIterator )
 			UpdateColor( pParticle ),
 			UpdateAlpha( pParticle ) * GetAlphaDistanceFade( screenPos, m_flNearClipMin, m_flNearClipMax ),
 			UpdateScale( pParticle ),
-			pParticle->m_flRoll 
-			);
+			pParticle->m_flRoll
+		);
 
-		pParticle = (const SimpleParticle *)pIterator->GetNext( sortKey );
+		pParticle = ( const SimpleParticle* )pIterator->GetNext( sortKey );
 	}
 }
 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Create the matrix by which we'll transform the particle's local 
+// Purpose: Create the matrix by which we'll transform the particle's local
 //			space into world space, via the attachment's transform
 //-----------------------------------------------------------------------------
 void CLocalSpaceEmitter::SetupTransformMatrix( void )
 {
-	IClientRenderable *pRenderable = ClientEntityList().GetClientRenderableFromHandle( m_hEntity );
-	if ( pRenderable )
+	IClientRenderable* pRenderable = ClientEntityList().GetClientRenderableFromHandle( m_hEntity );
+	if( pRenderable )
 	{
 		matrix3x4_t mat;
-		if ( pRenderable->GetAttachment( m_nAttachment, mat ) == false )
+		if( pRenderable->GetAttachment( m_nAttachment, mat ) == false )
 		{
 			// This attachment is bogus!
-			Assert(0);
+			Assert( 0 );
 		}
-	
+
 		// Tell the particle effect so it knows
 		Vector origin;
 		MatrixGetColumn( mat, 3, origin );
 		m_ParticleEffect.SetLocalSpaceTransform( mat );
 		SetSortOrigin( origin );
 
-		C_BaseEntity *pEnt = pRenderable->GetIClientUnknown()->GetBaseEntity();
-		if ( pEnt )
+		C_BaseEntity* pEnt = pRenderable->GetIClientUnknown()->GetBaseEntity();
+		if( pEnt )
 		{
 			Vector vWorldMins, vWorldMaxs;
 			float scale = pEnt->CollisionProp()->BoundingRadius();

@@ -9,7 +9,7 @@
 #define EXPANDBUTTON_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -27,7 +27,7 @@ class ExpandButton : public ToggleButton
 	DECLARE_CLASS_SIMPLE( ExpandButton, ToggleButton );
 
 public:
-	ExpandButton( Panel *parent, const char *panelName );
+	ExpandButton( Panel* parent, const char* panelName );
 	~ExpandButton();
 
 	// Expand the button (selected == expanded)
@@ -35,15 +35,15 @@ public:
 
 	// sets whether or not the state of the check can be changed
 	// if this is set to false, then no input in the code or by the user can change it's state
-	void SetExpandable(bool state);
+	void SetExpandable( bool state );
 
 	virtual void Paint();
 
 protected:
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	MESSAGE_FUNC_PTR( OnExpanded, "Expanded", panel );
 
-	virtual IBorder *GetBorder(bool depressed, bool armed, bool selected, bool keyfocus);
+	virtual IBorder* GetBorder( bool depressed, bool armed, bool selected, bool keyfocus );
 
 	/* MESSAGES SENT
 		"Expanded" - sent when the expand button state is changed

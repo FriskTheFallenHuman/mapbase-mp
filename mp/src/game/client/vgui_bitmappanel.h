@@ -10,7 +10,7 @@
 #define VGUI_BITMAPPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -32,14 +32,14 @@ class CBitmapPanel : public vgui::Panel
 public:
 	// constructor
 	CBitmapPanel( );
-	CBitmapPanel( vgui::Panel *pParent, const char *pName );
+	CBitmapPanel( vgui::Panel* pParent, const char* pName );
 	~CBitmapPanel();
 
 	// initialization
 	bool Init( KeyValues* pInitData );
 
 	// initialization from build-mode dialog style .res files
-	virtual void ApplySettings(KeyValues *inResourceData);
+	virtual void ApplySettings( KeyValues* inResourceData );
 
 	virtual void Paint( void );
 	virtual void PaintBackground( void ) {}
@@ -48,12 +48,12 @@ public:
 	virtual void OnCursorExited();
 
 	// Setup for panels that aren't created by the commander overlay factory (i.e. aren't parsed from a keyvalues file)
-	virtual void SetImage( BitmapImage *pImage );
+	virtual void SetImage( BitmapImage* pImage );
 
 	/// Set bitmap data directly
-	virtual void SetBitmap( const Bitmap_t &bitmap );
+	virtual void SetBitmap( const Bitmap_t& bitmap );
 
-	const char *GetMouseOverText( void );
+	const char* GetMouseOverText( void );
 
 private:
 	enum
@@ -61,7 +61,7 @@ private:
 		MAX_ENTITY_MOUSEOVER = 256
 	};
 	// The bitmap to render
-	BitmapImage *m_pImage;
+	BitmapImage* m_pImage;
 	int m_r, m_g, m_b, m_a;
 	bool m_bOwnsImage;
 

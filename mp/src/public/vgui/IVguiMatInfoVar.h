@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -18,8 +18,8 @@ public:
 	// doesn't have a destructor.
 	virtual ~IVguiMatInfoVar() {}
 
-	virtual int GetIntValue ( void ) const = 0;
-	virtual void SetIntValue ( int val ) = 0;
+	virtual int GetIntValue( void ) const = 0;
+	virtual void SetIntValue( int val ) = 0;
 
 	// todo: if you need to add more IMaterialVar functions add them here
 };

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -14,26 +14,26 @@
 LINK_ENTITY_TO_CLASS( env_player_surface_trigger, CEnvPlayerSurfaceTrigger );
 
 BEGIN_DATADESC( CEnvPlayerSurfaceTrigger )
-	DEFINE_KEYFIELD( m_iTargetGameMaterial, FIELD_INTEGER, "gamematerial" ),
-	DEFINE_FIELD( m_iCurrentGameMaterial, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bDisabled, FIELD_BOOLEAN ),
+DEFINE_KEYFIELD( m_iTargetGameMaterial, FIELD_INTEGER, "gamematerial" ),
+				 DEFINE_FIELD( m_iCurrentGameMaterial, FIELD_INTEGER ),
+				 DEFINE_FIELD( m_bDisabled, FIELD_BOOLEAN ),
 
-	DEFINE_THINKFUNC( UpdateMaterialThink ),
+				 DEFINE_THINKFUNC( UpdateMaterialThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnSurfaceChangedToTarget, "OnSurfaceChangedToTarget"),
-	DEFINE_OUTPUT(m_OnSurfaceChangedFromTarget, "OnSurfaceChangedFromTarget"),
-END_DATADESC()
+				 // Outputs
+				 DEFINE_OUTPUT( m_OnSurfaceChangedToTarget, "OnSurfaceChangedToTarget" ),
+				 DEFINE_OUTPUT( m_OnSurfaceChangedFromTarget, "OnSurfaceChangedFromTarget" ),
+				 END_DATADESC()
 
 // Global list of surface triggers
-CUtlVector< CHandle<CEnvPlayerSurfaceTrigger> >	g_PlayerSurfaceTriggers;
+				 CUtlVector< CHandle<CEnvPlayerSurfaceTrigger> >	g_PlayerSurfaceTriggers;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CEnvPlayerSurfaceTrigger::~CEnvPlayerSurfaceTrigger( void )
 {
@@ -41,7 +41,7 @@ CEnvPlayerSurfaceTrigger::~CEnvPlayerSurfaceTrigger( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvPlayerSurfaceTrigger::Spawn( void )
 {
@@ -55,7 +55,7 @@ void CEnvPlayerSurfaceTrigger::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvPlayerSurfaceTrigger::OnRestore( void )
 {
@@ -65,37 +65,41 @@ void CEnvPlayerSurfaceTrigger::OnRestore( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvPlayerSurfaceTrigger::SetPlayerSurface( CBasePlayer *pPlayer, char gameMaterial )
+void CEnvPlayerSurfaceTrigger::SetPlayerSurface( CBasePlayer* pPlayer, char gameMaterial )
 {
 	// Ignore players in the air (stops bunny hoppers escaping triggers)
-	if ( gameMaterial == 0 )
+	if( gameMaterial == 0 )
+	{
 		return;
+	}
 
 	// Loop through the surface triggers and tell them all about the change
 	int iCount = g_PlayerSurfaceTriggers.Count();
-	for ( int i = 0; i < iCount; i++ )
+	for( int i = 0; i < iCount; i++ )
 	{
 		g_PlayerSurfaceTriggers[i]->PlayerSurfaceChanged( pPlayer, gameMaterial );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvPlayerSurfaceTrigger::PlayerSurfaceChanged( CBasePlayer *pPlayer, char gameMaterial )
+void CEnvPlayerSurfaceTrigger::PlayerSurfaceChanged( CBasePlayer* pPlayer, char gameMaterial )
 {
-	if ( m_bDisabled )
+	if( m_bDisabled )
+	{
 		return;
+	}
 
 	// Fire the output if we've changed, but only if it involves the target material
-	if ( gameMaterial != (char)m_iCurrentGameMaterial &&
-	     ( gameMaterial == m_iTargetGameMaterial || m_iCurrentGameMaterial == m_iTargetGameMaterial ) )
+	if( gameMaterial != ( char )m_iCurrentGameMaterial &&
+			( gameMaterial == m_iTargetGameMaterial || m_iCurrentGameMaterial == m_iTargetGameMaterial ) )
 	{
 		DevMsg( 2, "Player changed material to %d (was %d)\n", gameMaterial, m_iCurrentGameMaterial );
 
-		m_iCurrentGameMaterial = (int)gameMaterial;
+		m_iCurrentGameMaterial = ( int )gameMaterial;
 
 		SetThink( &CEnvPlayerSurfaceTrigger::UpdateMaterialThink );
 		SetNextThink( gpGlobals->curtime );
@@ -108,28 +112,28 @@ void CEnvPlayerSurfaceTrigger::PlayerSurfaceChanged( CBasePlayer *pPlayer, char 
 //-----------------------------------------------------------------------------
 void CEnvPlayerSurfaceTrigger::UpdateMaterialThink( void )
 {
-	if ( m_iCurrentGameMaterial == m_iTargetGameMaterial )
+	if( m_iCurrentGameMaterial == m_iTargetGameMaterial )
 	{
 		m_OnSurfaceChangedToTarget.FireOutput( NULL, this );
 	}
-	else 
+	else
 	{
 		m_OnSurfaceChangedFromTarget.FireOutput( NULL, this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvPlayerSurfaceTrigger::InputDisable( inputdata_t &inputdata )
+void CEnvPlayerSurfaceTrigger::InputDisable( inputdata_t& inputdata )
 {
 	m_bDisabled = true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CEnvPlayerSurfaceTrigger::InputEnable( inputdata_t &inputdata )
+void CEnvPlayerSurfaceTrigger::InputEnable( inputdata_t& inputdata )
 {
 	m_bDisabled = false;
 }

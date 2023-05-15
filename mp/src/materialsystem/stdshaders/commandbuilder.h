@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 // Utility class for building command buffers into memory
@@ -10,14 +10,14 @@
 #define COMMANDBUILDER_H
 
 #ifndef COMMANDBUFFER_H
-#include "shaderapi/commandbuffer.h"
+	#include "shaderapi/commandbuffer.h"
 #endif
 
 #include "BaseVSShader.h"
 #include "shaderapi/ishaderapi.h"
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 extern ConVar	my_mat_fullbright;
@@ -27,11 +27,11 @@ template<int N> class CFixedCommandStorageBuffer
 public:
 	uint8 m_Data[N];
 
-	uint8 *m_pDataOut;
+	uint8* m_pDataOut;
 #ifdef DBGFLAG_ASSERT
 	size_t m_nNumBytesRemaining;
 #endif
-	
+
 	FORCEINLINE CFixedCommandStorageBuffer( void )
 	{
 		m_pDataOut = m_Data;
@@ -46,10 +46,10 @@ public:
 		Assert( m_nNumBytesRemaining >= sz );
 	}
 
-	template<class T> FORCEINLINE void Put( T const &nValue )
+	template<class T> FORCEINLINE void Put( T const& nValue )
 	{
 		EnsureCapacity( sizeof( T ) );
-		*( reinterpret_cast<T *>( m_pDataOut ) ) = nValue;
+		*( reinterpret_cast<T*>( m_pDataOut ) ) = nValue;
 		m_pDataOut += sizeof( nValue );
 #ifdef DBGFLAG_ASSERT
 		m_nNumBytesRemaining -= sizeof( nValue );
@@ -66,19 +66,19 @@ public:
 		Put( nValue );
 	}
 
-	FORCEINLINE void PutPtr( void * pPtr )
+	FORCEINLINE void PutPtr( void* pPtr )
 	{
 		Put( pPtr );
 	}
 
-	FORCEINLINE void PutMemory( const void *pMemory, size_t nBytes )
+	FORCEINLINE void PutMemory( const void* pMemory, size_t nBytes )
 	{
 		EnsureCapacity( nBytes );
 		memcpy( m_pDataOut, pMemory, nBytes );
 		m_pDataOut += nBytes;
 	}
 
-	FORCEINLINE uint8 *Base( void )
+	FORCEINLINE uint8* Base( void )
 	{
 		return m_Data;
 	}
@@ -109,7 +109,7 @@ public:
 	}
 
 
-	FORCEINLINE IMaterialVar *Param( int nVar ) const
+	FORCEINLINE IMaterialVar* Param( int nVar ) const
 	{
 		return CBaseShader::s_ppParams[nVar];
 	}
@@ -121,7 +121,7 @@ public:
 		m_Storage.PutInt( nConstants );
 	}
 
-	FORCEINLINE void OutputConstantData( float const *pSrcData )
+	FORCEINLINE void OutputConstantData( float const* pSrcData )
 	{
 		m_Storage.PutFloat( pSrcData[0] );
 		m_Storage.PutFloat( pSrcData[1] );
@@ -137,7 +137,7 @@ public:
 		m_Storage.PutFloat( flVal3 );
 	}
 
-	FORCEINLINE void SetPixelShaderConstant( int nFirstConstant, float const *pSrcData, int nNumConstantsToSet )
+	FORCEINLINE void SetPixelShaderConstant( int nFirstConstant, float const* pSrcData, int nNumConstantsToSet )
 	{
 		SetPixelShaderConstants( nFirstConstant, nNumConstantsToSet );
 		m_Storage.PutMemory( pSrcData, 4 * sizeof( float ) * nNumConstantsToSet );
@@ -151,7 +151,7 @@ public:
 	void SetPixelShaderConstantGammaToLinear( int pixelReg, int constantVar )
 	{
 		float val[4];
-		Param(constantVar)->GetVecValue( val, 3 );
+		Param( constantVar )->GetVecValue( val, 3 );
 		val[0] = val[0] > 1.0f ? val[0] : GammaToLinear( val[0] );
 		val[1] = val[1] > 1.0f ? val[1] : GammaToLinear( val[1] );
 		val[2] = val[2] > 1.0f ? val[2] : GammaToLinear( val[2] );
@@ -159,7 +159,7 @@ public:
 		SetPixelShaderConstant( pixelReg, val );
 	}
 
-	FORCEINLINE void SetPixelShaderConstant( int nFirstConstant, float const *pSrcData )
+	FORCEINLINE void SetPixelShaderConstant( int nFirstConstant, float const* pSrcData )
 	{
 		SetPixelShaderConstants( nFirstConstant, 1 );
 		OutputConstantData( pSrcData );
@@ -173,15 +173,15 @@ public:
 
 	FORCEINLINE void SetPixelShaderConstant_W( int pixelReg, int constantVar, float fWValue )
 	{
-		if ( constantVar != -1 )
+		if( constantVar != -1 )
 		{
 			float val[3];
-			Param(constantVar)->GetVecValue( val, 3);
+			Param( constantVar )->GetVecValue( val, 3 );
 			SetPixelShaderConstant4( pixelReg, val[0], val[1], val[2], fWValue );
 		}
 	}
 
-	FORCEINLINE void SetVertexShaderConstant( int nFirstConstant, float const *pSrcData )
+	FORCEINLINE void SetVertexShaderConstant( int nFirstConstant, float const* pSrcData )
 	{
 		m_Storage.PutInt( CBCMD_SET_VERTEX_SHADER_FLOAT_CONST );
 		m_Storage.PutInt( nFirstConstant );
@@ -189,7 +189,7 @@ public:
 		OutputConstantData( pSrcData );
 	}
 
-	FORCEINLINE void SetVertexShaderConstant( int nFirstConstant, float const *pSrcData, int nConsts )
+	FORCEINLINE void SetVertexShaderConstant( int nFirstConstant, float const* pSrcData, int nConsts )
 	{
 		m_Storage.PutInt( CBCMD_SET_VERTEX_SHADER_FLOAT_CONST );
 		m_Storage.PutInt( nFirstConstant );
@@ -213,9 +213,9 @@ public:
 	{
 		Vector4D transformation[2];
 		IMaterialVar* pTransformationVar = Param( transformVar );
-		if (pTransformationVar && (pTransformationVar->GetType() == MATERIAL_VAR_TYPE_MATRIX))
+		if( pTransformationVar && ( pTransformationVar->GetType() == MATERIAL_VAR_TYPE_MATRIX ) )
 		{
-			const VMatrix &mat = pTransformationVar->GetMatrixValue();
+			const VMatrix& mat = pTransformationVar->GetMatrixValue();
 			transformation[0].Init( mat[0][0], mat[0][1], mat[0][2], mat[0][3] );
 			transformation[1].Init( mat[1][0], mat[1][1], mat[1][2], mat[1][3] );
 		}
@@ -224,7 +224,7 @@ public:
 			transformation[0].Init( 1.0f, 0.0f, 0.0f, 0.0f );
 			transformation[1].Init( 0.0f, 1.0f, 0.0f, 0.0f );
 		}
-		SetVertexShaderConstant( vertexReg, transformation[0].Base(), 2 ); 
+		SetVertexShaderConstant( vertexReg, transformation[0].Base(), 2 );
 	}
 
 
@@ -232,9 +232,9 @@ public:
 	{
 		Vector4D transformation[2];
 		IMaterialVar* pTransformationVar = Param( transformVar );
-		if (pTransformationVar && (pTransformationVar->GetType() == MATERIAL_VAR_TYPE_MATRIX))
+		if( pTransformationVar && ( pTransformationVar->GetType() == MATERIAL_VAR_TYPE_MATRIX ) )
 		{
-			const VMatrix &mat = pTransformationVar->GetMatrixValue();
+			const VMatrix& mat = pTransformationVar->GetMatrixValue();
 			transformation[0].Init( mat[0][0], mat[0][1], mat[0][2], mat[0][3] );
 			transformation[1].Init( mat[1][0], mat[1][1], mat[1][2], mat[1][3] );
 		}
@@ -246,12 +246,16 @@ public:
 
 		Vector2D scale( 1, 1 );
 		IMaterialVar* pScaleVar = Param( scaleVar );
-		if (pScaleVar)
+		if( pScaleVar )
 		{
-			if (pScaleVar->GetType() == MATERIAL_VAR_TYPE_VECTOR)
+			if( pScaleVar->GetType() == MATERIAL_VAR_TYPE_VECTOR )
+			{
 				pScaleVar->GetVecValue( scale.Base(), 2 );
-			else if (pScaleVar->IsDefined())
+			}
+			else if( pScaleVar->IsDefined() )
+			{
 				scale[0] = scale[1] = pScaleVar->GetFloatValue();
+			}
 		}
 
 		// Apply the scaling
@@ -261,14 +265,14 @@ public:
 		transformation[1][1] *= scale[1];
 		transformation[0][3] *= scale[0];
 		transformation[1][3] *= scale[1];
-		SetVertexShaderConstant( vertexReg, transformation[0].Base(), 2 ); 
+		SetVertexShaderConstant( vertexReg, transformation[0].Base(), 2 );
 	}
 
 	FORCEINLINE void SetEnvMapTintPixelShaderDynamicState( int pixelReg, int tintVar )
 	{
 		if( g_pConfig->bShowSpecular && my_mat_fullbright.GetInt() != 2 )
 		{
-			SetPixelShaderConstant( pixelReg, Param( tintVar)->GetVecValue() );
+			SetPixelShaderConstant( pixelReg, Param( tintVar )->GetVecValue() );
 		}
 		else
 		{
@@ -282,7 +286,7 @@ public:
 		{
 			float color[4];
 			color[3] = flAlphaValue;
-			Param( tintVar)->GetLinearVecValue( color, 3 );
+			Param( tintVar )->GetLinearVecValue( color, 3 );
 			SetPixelShaderConstant( pixelReg, color );
 		}
 		else
@@ -331,7 +335,7 @@ public:
 	FORCEINLINE void BindTexture( Sampler_t nSampler, ShaderAPITextureHandle_t hTexture )
 	{
 		Assert( hTexture != INVALID_SHADERAPI_TEXTURE_HANDLE );
-		if ( hTexture != INVALID_SHADERAPI_TEXTURE_HANDLE )
+		if( hTexture != INVALID_SHADERAPI_TEXTURE_HANDLE )
 		{
 			m_Storage.PutInt( CBCMD_BIND_SHADERAPI_TEXTURE_HANDLE );
 			m_Storage.PutInt( nSampler );
@@ -339,13 +343,13 @@ public:
 		}
 	}
 
-	FORCEINLINE void BindTexture( CBaseVSShader *pShader, Sampler_t nSampler, int nTextureVar, int nFrameVar )
+	FORCEINLINE void BindTexture( CBaseVSShader* pShader, Sampler_t nSampler, int nTextureVar, int nFrameVar )
 	{
 		ShaderAPITextureHandle_t hTexture = pShader->GetShaderAPITextureBindHandle( nTextureVar, nFrameVar );
 		BindTexture( nSampler, hTexture );
 	}
 
-	FORCEINLINE void BindMultiTexture( CBaseVSShader *pShader, Sampler_t nSampler1, Sampler_t nSampler2, int nTextureVar, int nFrameVar )
+	FORCEINLINE void BindMultiTexture( CBaseVSShader* pShader, Sampler_t nSampler1, Sampler_t nSampler2, int nTextureVar, int nFrameVar )
 	{
 		ShaderAPITextureHandle_t hTexture = pShader->GetShaderAPITextureBindHandle( nTextureVar, nFrameVar, 0 );
 		BindTexture( nSampler1, hTexture );
@@ -372,13 +376,13 @@ public:
 		m_Storage.PutFloat( fDepthBlendScale );
 	}
 
-	FORCEINLINE void Goto( uint8 *pCmdBuf )
+	FORCEINLINE void Goto( uint8* pCmdBuf )
 	{
 		m_Storage.PutInt( CBCMD_JUMP );
 		m_Storage.PutPtr( pCmdBuf );
 	}
 
-	FORCEINLINE void Call( uint8 *pCmdBuf )
+	FORCEINLINE void Call( uint8* pCmdBuf )
 	{
 		m_Storage.PutInt( CBCMD_JSR );
 		m_Storage.PutPtr( pCmdBuf );
@@ -394,7 +398,7 @@ public:
 		return m_Storage.Size();
 	}
 
-	FORCEINLINE uint8 *Base( void )
+	FORCEINLINE uint8* Base( void )
 	{
 		return m_Storage.Base();
 	}

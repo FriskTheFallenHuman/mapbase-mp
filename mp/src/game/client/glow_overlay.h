@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef GLOW_OVERLAY_H
 #define GLOW_OVERLAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -17,7 +17,7 @@
 #include "c_pixel_visibility.h"
 
 #ifdef PORTAL
-#include "c_prop_portal.h" //MAX_PORTAL_RECURSIVE_VIEWS
+	#include "c_prop_portal.h" //MAX_PORTAL_RECURSIVE_VIEWS
 #endif
 
 extern float g_flOverlayRange;
@@ -28,7 +28,7 @@ public:
 	Vector				m_vColor;		// 0-1
 	float				m_flHorzSize;	// Horizontal and vertical sizes.
 	float				m_flVertSize;	// 1 = size of the sun
-	IMaterial			*m_pMaterial;	// Material to use
+	IMaterial*			m_pMaterial;	// Material to use
 };
 
 
@@ -36,7 +36,7 @@ class CGlowOverlay
 {
 public:
 
-					CGlowOverlay();
+	CGlowOverlay();
 	virtual			~CGlowOverlay();
 
 	// Return false to remove (and delete) the overlay.
@@ -75,7 +75,7 @@ public:
 	// You can also call Activate and Deactivate as many times as you want.
 	void			Activate();
 	void			Deactivate();
-	
+
 	// Render all the active overlays.
 	static void		DrawOverlays( bool bCacheFullSceneState );
 	static void		UpdateSkyOverlays( float zFar, bool bCacheFullSceneState );
@@ -87,28 +87,28 @@ public:
 
 protected:
 
-	void			UpdateGlowObstruction( const Vector &vToGlow, bool bCacheFullSceneState );
+	void			UpdateGlowObstruction( const Vector& vToGlow, bool bCacheFullSceneState );
 	void			UpdateSkyGlowObstruction( float zFar, bool bCacheFullSceneState );
 
-	virtual void	CalcSpriteColorAndSize( 
+	virtual void	CalcSpriteColorAndSize(
 		float flDot,
-		CGlowSprite *pSprite, 
-		float *flHorzSize, 
-		float *flVertSize, 
-		Vector *vColor );
+		CGlowSprite* pSprite,
+		float* flHorzSize,
+		float* flVertSize,
+		Vector* vColor );
 
-	virtual void	CalcBasis( 
-		const Vector &vToGlow,
+	virtual void	CalcBasis(
+		const Vector& vToGlow,
 		float flHorzSize,
 		float flVertSize,
-		Vector &vBasePt,
-		Vector &vUp,
-		Vector &vRight );
+		Vector& vBasePt,
+		Vector& vUp,
+		Vector& vRight );
 
 	virtual void	Draw( bool bCacheFullSceneState );
 	float			CalcGlowAspect();
-	
-	float			m_flGlowObstructionScale;	
+
+	float			m_flGlowObstructionScale;
 	bool			m_bCacheGlowObstruction;			// Flags to cache obstruction scales
 	bool			m_bCacheSkyObstruction;				// Used in IFM poster rendering
 
@@ -122,7 +122,7 @@ private:
 class CWarpOverlay : public CGlowOverlay
 {
 protected:
-	
+
 	virtual void Draw( bool bCacheFullSceneState );
 };
 

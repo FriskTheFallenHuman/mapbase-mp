@@ -8,7 +8,7 @@
 #ifndef CON_VERBOSE_COLORS_H
 #define CON_VERBOSE_COLORS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -36,9 +36,9 @@ enum ConGroupID_t
 
 	//--------------------------
 
-	// 
+	//
 	// Mod groups can be inserted here
-	// 
+	//
 
 	//--------------------------
 
@@ -54,10 +54,10 @@ void CGMsg( int level, ConGroupID_t nGroup, PRINTF_FORMAT_STRING const tchar* pM
 
 class IBaseFileSystem;
 
-void InitConsoleGroups( IBaseFileSystem *filesystem );
+void InitConsoleGroups( IBaseFileSystem* filesystem );
 
 void PrintAllConsoleGroups();
-void ToggleConsoleGroups( const char *pszQuery );
+void ToggleConsoleGroups( const char* pszQuery );
 void SetConsoleGroupIncludeNames( bool bToggle );
 
 #endif

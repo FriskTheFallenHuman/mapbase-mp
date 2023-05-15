@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef SHADER_VCS_VERSION_H
 #define SHADER_VCS_VERSION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // 1 = hl2 shipped
@@ -72,4 +72,4 @@ struct StaticComboAliasRecord_t								// for duplicate static combos
 
 
 #endif // SHADER_VCS_VERSION_H
-	
+

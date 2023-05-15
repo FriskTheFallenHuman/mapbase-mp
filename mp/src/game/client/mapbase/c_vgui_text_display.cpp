@@ -35,15 +35,36 @@ public:
 
 	virtual void PostDataUpdate( DataUpdateType_t updateType );
 
-	bool IsEnabled( void ) const { return m_bEnabled; }
+	bool IsEnabled( void ) const
+	{
+		return m_bEnabled;
+	}
 
-	const char *GetDisplayText( void ) const { return m_szDisplayText; }
-	const char *GetFontName( void ) const { return m_szFont; }
-	int GetResolution( void ) const { return m_iResolution; }
-	vgui::Label::Alignment GetContentAlignment() const { return m_iContentAlignment; }
+	const char* GetDisplayText( void ) const
+	{
+		return m_szDisplayText;
+	}
+	const char* GetFontName( void ) const
+	{
+		return m_szFont;
+	}
+	int GetResolution( void ) const
+	{
+		return m_iResolution;
+	}
+	vgui::Label::Alignment GetContentAlignment() const
+	{
+		return m_iContentAlignment;
+	}
 
-	bool NeedsTextUpdate() { return m_bTextNeedsUpdate; }
-	void UpdatedText() { m_bTextNeedsUpdate = false; }
+	bool NeedsTextUpdate()
+	{
+		return m_bTextNeedsUpdate;
+	}
+	void UpdatedText()
+	{
+		m_bTextNeedsUpdate = false;
+	}
 
 private:
 	bool	m_bEnabled;
@@ -56,14 +77,14 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_VGuiTextDisplay, DT_VGuiTextDisplay, CVGuiTextDisplay )
-	RecvPropBool( RECVINFO( m_bEnabled ) ),
-	RecvPropString( RECVINFO( m_szDisplayText ) ),
-	RecvPropInt( RECVINFO( m_iContentAlignment ) ),
-	RecvPropString( RECVINFO( m_szFont ) ),
-	RecvPropInt( RECVINFO( m_iResolution ) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bEnabled ) ),
+			  RecvPropString( RECVINFO( m_szDisplayText ) ),
+			  RecvPropInt( RECVINFO( m_iContentAlignment ) ),
+			  RecvPropString( RECVINFO( m_szFont ) ),
+			  RecvPropInt( RECVINFO( m_iResolution ) ),
+			  END_RECV_TABLE()
 
-C_VGuiTextDisplay::C_VGuiTextDisplay()
+			  C_VGuiTextDisplay::C_VGuiTextDisplay()
 {
 }
 
@@ -82,17 +103,17 @@ void C_VGuiTextDisplay::PostDataUpdate( DataUpdateType_t updateType )
 using namespace vgui;
 
 //-----------------------------------------------------------------------------
-// Control screen 
+// Control screen
 //-----------------------------------------------------------------------------
 class C_TextDisplayPanel : public CVGuiScreenPanel
 {
 	DECLARE_CLASS( C_TextDisplayPanel, CVGuiScreenPanel );
 
 public:
-	C_TextDisplayPanel( vgui::Panel *parent, const char *panelName );
+	C_TextDisplayPanel( vgui::Panel* parent, const char* panelName );
 	~C_TextDisplayPanel( void );
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 
 	void UpdateText();
 
@@ -106,18 +127,18 @@ private:
 	CHandle<C_VGuiTextDisplay>	m_hScreenEntity;
 
 	// VGUI specifics
-	Label			*m_pDisplayTextLabel;
+	Label*			m_pDisplayTextLabel;
 };
 
 DECLARE_VGUI_SCREEN_FACTORY( C_TextDisplayPanel, "text_display_panel" );
 
-CUtlVector <C_TextDisplayPanel *>	g_TextDisplays;
+CUtlVector <C_TextDisplayPanel*>	g_TextDisplays;
 
 //-----------------------------------------------------------------------------
-// Constructor: 
+// Constructor:
 //-----------------------------------------------------------------------------
-C_TextDisplayPanel::C_TextDisplayPanel( vgui::Panel *parent, const char *panelName )
-: BaseClass( parent, "C_TextDisplayPanel"/*, vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/WorldTextPanel.res", "WorldTextPanel" )*/ ) 
+C_TextDisplayPanel::C_TextDisplayPanel( vgui::Panel* parent, const char* panelName )
+	: BaseClass( parent, "C_TextDisplayPanel"/*, vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/WorldTextPanel.res", "WorldTextPanel" )*/ )
 {
 	// Add ourselves to the global list of movie displays
 	g_TextDisplays.AddToTail( this );
@@ -135,7 +156,7 @@ C_TextDisplayPanel::~C_TextDisplayPanel( void )
 //-----------------------------------------------------------------------------
 // Purpose: Setup our scheme
 //-----------------------------------------------------------------------------
-void C_TextDisplayPanel::ApplySchemeSettings( IScheme *pScheme )
+void C_TextDisplayPanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -147,7 +168,7 @@ void C_TextDisplayPanel::ApplySchemeSettings( IScheme *pScheme )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TextDisplayPanel::UpdateText()
 {
@@ -161,7 +182,7 @@ void C_TextDisplayPanel::UpdateText()
 
 	Label::Alignment iAlignment = m_hScreenEntity->GetContentAlignment();
 
-	switch (iAlignment)
+	switch( iAlignment )
 	{
 		// Use a special scaling method when using a south alignment
 		case Label::Alignment::a_southwest:
@@ -175,7 +196,7 @@ void C_TextDisplayPanel::UpdateText()
 			float sW, sT;
 			m_hVGUIScreen->GetSize( sW, sT );
 			//Msg( "Screen width: %f, new height: %f\n", sW, sW * (lT / m_hScreenEntity->GetResolution()) );
-			m_hVGUIScreen->SetHeight( sW * ((float)lT / (float)m_hScreenEntity->GetResolution()) );
+			m_hVGUIScreen->SetHeight( sW * ( ( float )lT / ( float )m_hScreenEntity->GetResolution() ) );
 			m_hVGUIScreen->SetPixelHeight( lT );
 			break;
 
@@ -189,7 +210,7 @@ void C_TextDisplayPanel::UpdateText()
 
 	bool bWrap = true;
 	bool bCenterWrap = false;
-	switch (iAlignment)
+	switch( iAlignment )
 	{
 		// Center wrap if centered
 		case Label::Alignment::a_north:
@@ -211,14 +232,14 @@ void C_TextDisplayPanel::UpdateText()
 
 	//Msg( "Resolution is %i\n", m_hScreenEntity->GetResolution() );
 
-	const char *pszFontName = m_hScreenEntity->GetFontName();
-	if (pszFontName && pszFontName[0] != '\0')
+	const char* pszFontName = m_hScreenEntity->GetFontName();
+	if( pszFontName && pszFontName[0] != '\0' )
 	{
 		HFont font = scheme()->GetIScheme( GetScheme() )->GetFont( pszFontName );
 
-		if ( !font )
+		if( !font )
 		{
-			extern HFont GetScriptFont( const char *, bool );
+			extern HFont GetScriptFont( const char*, bool );
 			font = GetScriptFont( pszFontName, false );
 		}
 
@@ -229,24 +250,26 @@ void C_TextDisplayPanel::UpdateText()
 }
 
 //-----------------------------------------------------------------------------
-// Initialization 
+// Initialization
 //-----------------------------------------------------------------------------
 bool C_TextDisplayPanel::Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pInitData )
 {
-	if ( !BaseClass::Init( pKeyValues, pInitData ) )
+	if( !BaseClass::Init( pKeyValues, pInitData ) )
+	{
 		return false;
+	}
 
 	// Make sure we get ticked...
 	vgui::ivgui()->AddTickSignal( GetVPanel() );
 
-	m_pDisplayTextLabel = dynamic_cast<vgui::Label*>(FindChildByName( "TextDisplay" ));
+	m_pDisplayTextLabel = dynamic_cast<vgui::Label*>( FindChildByName( "TextDisplay" ) );
 
 	// Save this for simplicity later on
-	m_hVGUIScreen = dynamic_cast<C_VGuiScreen *>( GetEntity() );
-	if ( m_hVGUIScreen != NULL )
+	m_hVGUIScreen = dynamic_cast<C_VGuiScreen*>( GetEntity() );
+	if( m_hVGUIScreen != NULL )
 	{
 		// Also get the associated entity
-		m_hScreenEntity = dynamic_cast<C_VGuiTextDisplay *>(m_hVGUIScreen->GetOwnerEntity());
+		m_hScreenEntity = dynamic_cast<C_VGuiTextDisplay*>( m_hVGUIScreen->GetOwnerEntity() );
 		UpdateText();
 	}
 
@@ -258,7 +281,7 @@ bool C_TextDisplayPanel::Init( KeyValues* pKeyValues, VGuiScreenInitData_t* pIni
 //-----------------------------------------------------------------------------
 void C_TextDisplayPanel::OnTick()
 {
-	if (m_hScreenEntity->NeedsTextUpdate())
+	if( m_hScreenEntity->NeedsTextUpdate() )
 	{
 		UpdateText();
 		m_hScreenEntity->UpdatedText();
@@ -275,7 +298,7 @@ ConVar r_vguitext_bg( "r_vguitext_bg", "0" );
 void C_TextDisplayPanel::Paint( void )
 {
 	// Black out the background (we could omit drawing under the video surface, but this is straight-forward)
-	if ( r_vguitext_bg.GetBool() )
+	if( r_vguitext_bg.GetBool() )
 	{
 		surface()->DrawSetColor( 0, 0, 0, 255 );
 		surface()->DrawFilledRect( 0, 0, GetWide(), GetTall() );

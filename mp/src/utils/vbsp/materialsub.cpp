@@ -13,14 +13,14 @@
 
 bool g_ReplaceMaterials	= false;
 
-static KeyValues *kv			= 0;
-static KeyValues *allMapKeys	= 0;
-static KeyValues *curMapKeys	= 0;
+static KeyValues* kv			= 0;
+static KeyValues* allMapKeys	= 0;
+static KeyValues* curMapKeys	= 0;
 
 //-----------------------------------------------------------------------------
 // Purpose: Loads the KeyValues file for materials replacements
 //-----------------------------------------------------------------------------
-void LoadMaterialReplacementKeys( const char *gamepath, const char *mapname )
+void LoadMaterialReplacementKeys( const char* gamepath, const char* mapname )
 {
 	// Careful with static variables
 	if( kv )
@@ -29,16 +29,20 @@ void LoadMaterialReplacementKeys( const char *gamepath, const char *mapname )
 		kv = 0;
 	}
 	if( allMapKeys )
+	{
 		allMapKeys = 0;
+	}
 	if( curMapKeys )
+	{
 		curMapKeys = 0;
+	}
 
 	Msg( "Loading Replacement Keys\n" );
 
 	// Attach the path to the keyValues file
 	char path[1024];
 	Q_snprintf( path, sizeof( path ), "%scfg\\materialsub.cfg", gamepath );
-	
+
 	// Load the keyvalues file
 	kv = new KeyValues( "MaterialReplacements" );
 
@@ -76,7 +80,7 @@ void DeleteMaterialReplacementKeys( void )
 //-----------------------------------------------------------------------------
 // Purpose: Replace the passed-in material name with a replacement name, if one exists
 //-----------------------------------------------------------------------------
-const char* ReplaceMaterialName( const char *name )
+const char* ReplaceMaterialName( const char* name )
 {
 	// Look for the material name in the global and map KeyValues
 	// If it's not there, just return the original name

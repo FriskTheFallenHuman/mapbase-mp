@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define POINT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
@@ -27,29 +27,29 @@ public:
 	// constructors
 	Point()
 	{
-		SetPoint(0, 0);
+		SetPoint( 0, 0 );
 	}
-	Point(int x,int y)
+	Point( int x, int y )
 	{
-		SetPoint(x,y);
+		SetPoint( x, y );
 	}
 
-	void SetPoint(int x1, int y1)
+	void SetPoint( int x1, int y1 )
 	{
-		x=x1;
-		y=y1;	
+		x = x1;
+		y = y1;
 	}
 
-	void GetPoint(int &x1, int &y1) const
+	void GetPoint( int& x1, int& y1 ) const
 	{
 		x1 = x;
 		y1 = y;
-	
+
 	}
 
-	bool operator == (Point &rhs) const
+	bool operator == ( Point& rhs ) const
 	{
-		return (x == rhs.x && y == rhs.y);
+		return ( x == rhs.x && y == rhs.y );
 	}
 
 private:

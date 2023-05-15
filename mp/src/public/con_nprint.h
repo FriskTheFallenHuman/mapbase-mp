@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: Debug overlay / notfication printing 
+// Purpose: Debug overlay / notfication printing
 //
 //=============================================================================//
 
@@ -8,11 +8,11 @@
 #define CON_NPRINT_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose:  Debug overlay / notfication printing 
+// Purpose:  Debug overlay / notfication printing
 // NOTE:  Structure cannot be changed by mods
 //-----------------------------------------------------------------------------
 typedef struct con_nprint_s
@@ -24,8 +24,8 @@ typedef struct con_nprint_s
 } con_nprint_t;
 
 // Print string on line idx
-void Con_NPrintf( int idx, PRINTF_FORMAT_STRING const char *fmt, ... );
+void Con_NPrintf( int idx, PRINTF_FORMAT_STRING const char* fmt, ... );
 // Customized printout
-void Con_NXPrintf( const con_nprint_t *info, PRINTF_FORMAT_STRING const char *fmt, ... );
+void Con_NXPrintf( const con_nprint_t* info, PRINTF_FORMAT_STRING const char* fmt, ... );
 
 #endif // CON_NPRINT_H

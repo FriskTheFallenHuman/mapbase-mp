@@ -19,7 +19,7 @@ enum Hull_t
 	HULL_TINY,				// Headcrab
 	HULL_WIDE_SHORT,		// Bullsquid
 	HULL_MEDIUM,			// Cremator
-	HULL_TINY_CENTERED,		// Manhack 
+	HULL_TINY_CENTERED,		// Manhack
 	HULL_LARGE,				// Antlion Guard
 	HULL_LARGE_CENTERED,	// Mortar Synth
 	HULL_MEDIUM_TALL,		// Hunter
@@ -55,21 +55,21 @@ inline int HullToBit( Hull_t hull )
 //=============================================================================
 namespace NAI_Hull
 {
-	const Vector &Mins(int id);
-	const Vector &Maxs(int id);
+const Vector& Mins( int id );
+const Vector& Maxs( int id );
 
-	const Vector &SmallMins(int id);
-	const Vector &SmallMaxs(int id);
+const Vector& SmallMins( int id );
+const Vector& SmallMaxs( int id );
 
-	float		Length(int id);
-	float		Width(int id);
-	float		Height(int id);
+float		Length( int id );
+float		Width( int id );
+float		Height( int id );
 
-	int			Bits(int id);
- 
-	const char*	Name(int id);
+int			Bits( int id );
 
-	Hull_t		LookupId(const char *szName);
+const char*	Name( int id );
+
+Hull_t		LookupId( const char* szName );
 };
 
 #endif // AI_HULL_H

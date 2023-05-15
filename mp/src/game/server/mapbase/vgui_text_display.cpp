@@ -27,10 +27,10 @@ public:
 	CVGuiTextDisplay();
 	virtual ~CVGuiTextDisplay();
 
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
 
 	virtual int  UpdateTransmitState();
-	virtual void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+	virtual void SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
 
 	virtual void Spawn( void );
 	virtual void Precache( void );
@@ -41,21 +41,21 @@ public:
 	void	Disable( void );
 	void	Enable( void );
 
-	void	InputDisable( inputdata_t &inputdata );
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputToggle( inputdata_t &inputdata );
+	void	InputDisable( inputdata_t& inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputToggle( inputdata_t& inputdata );
 
-	void	InputSetMessage( inputdata_t &inputdata );
-	void	InputSetTextAlignment( inputdata_t &inputdata );
-	void	InputSetFont( inputdata_t &inputdata );
-	void	InputSetResolution( inputdata_t &inputdata );
-	void	InputSetTextSize( inputdata_t &inputdata );
+	void	InputSetMessage( inputdata_t& inputdata );
+	void	InputSetTextAlignment( inputdata_t& inputdata );
+	void	InputSetFont( inputdata_t& inputdata );
+	void	InputSetResolution( inputdata_t& inputdata );
+	void	InputSetTextSize( inputdata_t& inputdata );
 
 private:
 
 	// Control panel
-	void GetControlPanelInfo( int nPanelIndex, const char *&pPanelName );
-	void GetControlPanelClassName( int nPanelIndex, const char *&pPanelName );
+	void GetControlPanelInfo( int nPanelIndex, const char*& pPanelName );
+	void GetControlPanelClassName( int nPanelIndex, const char*& pPanelName );
 	void SpawnControlPanels( void );
 	void RestoreControlPanels( void );
 
@@ -78,43 +78,43 @@ private:
 LINK_ENTITY_TO_CLASS( vgui_text_display, CVGuiTextDisplay );
 
 //-----------------------------------------------------------------------------
-// Save/load 
+// Save/load
 //-----------------------------------------------------------------------------
 BEGIN_DATADESC( CVGuiTextDisplay )
 
-	DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
 
-	DEFINE_AUTO_ARRAY_KEYFIELD( m_szDisplayText, FIELD_CHARACTER, "message" ),
-	DEFINE_KEYFIELD( m_iContentAlignment, FIELD_INTEGER, "alignment" ),
-	DEFINE_AUTO_ARRAY_KEYFIELD( m_szFont, FIELD_CHARACTER, "font" ),
-	DEFINE_KEYFIELD( m_iResolution, FIELD_INTEGER, "resolution" ),
-	DEFINE_KEYFIELD( m_flTextSize, FIELD_FLOAT, "textsize" ),
+			  DEFINE_AUTO_ARRAY_KEYFIELD( m_szDisplayText, FIELD_CHARACTER, "message" ),
+			  DEFINE_KEYFIELD( m_iContentAlignment, FIELD_INTEGER, "alignment" ),
+			  DEFINE_AUTO_ARRAY_KEYFIELD( m_szFont, FIELD_CHARACTER, "font" ),
+			  DEFINE_KEYFIELD( m_iResolution, FIELD_INTEGER, "resolution" ),
+			  DEFINE_KEYFIELD( m_flTextSize, FIELD_FLOAT, "textsize" ),
 
-	DEFINE_FIELD( m_bDoFullTransmit, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bDoFullTransmit, FIELD_BOOLEAN ),
 
-	DEFINE_FIELD( m_hScreen, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hScreen, FIELD_EHANDLE ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
 
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetMessage", InputSetMessage ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTextAlignment", InputSetTextAlignment ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetFont", InputSetFont ),
-	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetResolution", InputSetResolution ),
-	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPanelSize", InputSetTextSize ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetMessage", InputSetMessage ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetTextAlignment", InputSetTextAlignment ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetFont", InputSetFont ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetResolution", InputSetResolution ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetPanelSize", InputSetTextSize ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CVGuiTextDisplay, DT_VGuiTextDisplay )
-	SendPropBool( SENDINFO( m_bEnabled ) ),
-	SendPropString( SENDINFO( m_szDisplayText ) ),
-	SendPropInt( SENDINFO( m_iContentAlignment ) ),
-	SendPropString( SENDINFO( m_szFont ) ),
-	SendPropInt( SENDINFO( m_iResolution ) ),
-END_SEND_TABLE()
+			  IMPLEMENT_SERVERCLASS_ST( CVGuiTextDisplay, DT_VGuiTextDisplay )
+			  SendPropBool( SENDINFO( m_bEnabled ) ),
+			  SendPropString( SENDINFO( m_szDisplayText ) ),
+			  SendPropInt( SENDINFO( m_iContentAlignment ) ),
+			  SendPropString( SENDINFO( m_szFont ) ),
+			  SendPropInt( SENDINFO( m_iResolution ) ),
+			  END_SEND_TABLE()
 
-CVGuiTextDisplay::CVGuiTextDisplay()
+			  CVGuiTextDisplay::CVGuiTextDisplay()
 {
 	m_flTextSize = 100.0f;
 	m_iResolution = 200;
@@ -129,7 +129,7 @@ CVGuiTextDisplay::~CVGuiTextDisplay()
 //-----------------------------------------------------------------------------
 // Read in Hammer data
 //-----------------------------------------------------------------------------
-bool CVGuiTextDisplay::KeyValue( const char *szKeyName, const char *szValue )
+bool CVGuiTextDisplay::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// NOTE: Have to do these separate because they set two values instead of one
 	if( FStrEq( szKeyName, "angles" ) )
@@ -163,17 +163,19 @@ bool CVGuiTextDisplay::KeyValue( const char *szKeyName, const char *szValue )
 		return BaseClass::KeyValue( "rendercolor", szValue );
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 int CVGuiTextDisplay::UpdateTransmitState()
 {
-	if ( m_bDoFullTransmit )
+	if( m_bDoFullTransmit )
 	{
 		m_bDoFullTransmit = false;
 		return SetTransmitState( FL_EDICT_ALWAYS );
@@ -183,13 +185,15 @@ int CVGuiTextDisplay::UpdateTransmitState()
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
+void CVGuiTextDisplay::SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	{
 		return;
+	}
 
 	BaseClass::SetTransmit( pInfo, bAlways );
 
@@ -198,7 +202,7 @@ void CVGuiTextDisplay::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::Spawn( void )
 {
@@ -216,7 +220,7 @@ void CVGuiTextDisplay::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::Precache( void )
 {
@@ -226,7 +230,7 @@ void CVGuiTextDisplay::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::OnRestore( void )
 {
@@ -238,14 +242,14 @@ void CVGuiTextDisplay::OnRestore( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::ScreenVisible( bool bVisible )
 {
 	// Set its active state
 	m_hScreen->SetActive( bVisible );
 
-	if ( bVisible )
+	if( bVisible )
 	{
 		m_hScreen->RemoveEffects( EF_NODRAW );
 	}
@@ -256,12 +260,14 @@ void CVGuiTextDisplay::ScreenVisible( bool bVisible )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::Disable( void )
 {
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = false;
 
@@ -269,12 +275,14 @@ void CVGuiTextDisplay::Disable( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::Enable( void )
 {
-	if ( m_bEnabled )
+	if( m_bEnabled )
+	{
 		return;
+	}
 
 	m_bEnabled = true;
 
@@ -282,69 +290,69 @@ void CVGuiTextDisplay::Enable( void )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputDisable( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputDisable( inputdata_t& inputdata )
 {
 	Disable();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputEnable( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputEnable( inputdata_t& inputdata )
 {
 	Enable();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputToggle( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputToggle( inputdata_t& inputdata )
 {
 	m_bEnabled ? Disable() : Enable();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputSetMessage( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputSetMessage( inputdata_t& inputdata )
 {
 	Q_strcpy( m_szDisplayText.GetForModify(), inputdata.value.String() );
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputSetTextAlignment( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputSetTextAlignment( inputdata_t& inputdata )
 {
 	m_iContentAlignment = inputdata.value.Int();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputSetFont( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputSetFont( inputdata_t& inputdata )
 {
 	Q_strcpy( m_szFont.GetForModify(), inputdata.value.String() );
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputSetResolution( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputSetResolution( inputdata_t& inputdata )
 {
 	m_iResolution = inputdata.value.Int();
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::InputSetTextSize( inputdata_t &inputdata )
+void CVGuiTextDisplay::InputSetTextSize( inputdata_t& inputdata )
 {
 	m_flTextSize = inputdata.value.Float();
 
-	if (m_hScreen)
+	if( m_hScreen )
 	{
 		m_hScreen->SetActualSize( m_flTextSize, m_flTextSize );
 		m_hScreen->SetLocalOrigin( m_hScreen->CollisionProp()->OBBCenter() * -1.0f );
@@ -352,17 +360,17 @@ void CVGuiTextDisplay::InputSetTextSize( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::GetControlPanelInfo( int nPanelIndex, const char *&pPanelName )
+void CVGuiTextDisplay::GetControlPanelInfo( int nPanelIndex, const char*& pPanelName )
 {
 	pPanelName = "text_display_panel";
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
-void CVGuiTextDisplay::GetControlPanelClassName( int nPanelIndex, const char *&pPanelName )
+void CVGuiTextDisplay::GetControlPanelClassName( int nPanelIndex, const char*& pPanelName )
 {
 	pPanelName = "vgui_screen";
 }
@@ -373,22 +381,26 @@ void CVGuiTextDisplay::GetControlPanelClassName( int nPanelIndex, const char *&p
 void CVGuiTextDisplay::SpawnControlPanels()
 {
 	int nPanel;
-	for ( nPanel = 0; true; ++nPanel )
+	for( nPanel = 0; true; ++nPanel )
 	{
-		const char *pScreenName;
+		const char* pScreenName;
 		GetControlPanelInfo( nPanel, pScreenName );
-		if (!pScreenName)
+		if( !pScreenName )
+		{
 			continue;
+		}
 
-		const char *pScreenClassname;
+		const char* pScreenClassname;
 		GetControlPanelClassName( nPanel, pScreenClassname );
-		if ( !pScreenClassname )
+		if( !pScreenClassname )
+		{
 			continue;
+		}
 
 		float flWidth = m_flTextSize;
 		float flHeight = m_flTextSize;
 
-		CVGuiScreen *pScreen = CreateVGuiScreen( pScreenClassname, pScreenName, this, this, 0 );
+		CVGuiScreen* pScreen = CreateVGuiScreen( pScreenClassname, pScreenName, this, this, 0 );
 		pScreen->ChangeTeam( GetTeamNumber() );
 		pScreen->SetActualSize( flWidth, flHeight );
 		pScreen->SetLocalOrigin( pScreen->CollisionProp()->OBBCenter() * -1.0f );
@@ -402,31 +414,35 @@ void CVGuiTextDisplay::SpawnControlPanels()
 }
 
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 void CVGuiTextDisplay::RestoreControlPanels( void )
 {
 	int nPanel;
-	for ( nPanel = 0; true; ++nPanel )
+	for( nPanel = 0; true; ++nPanel )
 	{
-		const char *pScreenName;
+		const char* pScreenName;
 		GetControlPanelInfo( nPanel, pScreenName );
-		if (!pScreenName)
-			continue;
-
-		const char *pScreenClassname;
-		GetControlPanelClassName( nPanel, pScreenClassname );
-		if ( !pScreenClassname )
-			continue;
-
-		CVGuiScreen *pScreen = (CVGuiScreen *)gEntList.FindEntityByClassname( NULL, pScreenClassname );
-
-		while ( ( pScreen && pScreen->GetOwnerEntity() != this ) || Q_strcmp( pScreen->GetPanelName(), pScreenName ) != 0 )
+		if( !pScreenName )
 		{
-			pScreen = (CVGuiScreen *)gEntList.FindEntityByClassname( pScreen, pScreenClassname );
+			continue;
 		}
 
-		if ( pScreen )
+		const char* pScreenClassname;
+		GetControlPanelClassName( nPanel, pScreenClassname );
+		if( !pScreenClassname )
+		{
+			continue;
+		}
+
+		CVGuiScreen* pScreen = ( CVGuiScreen* )gEntList.FindEntityByClassname( NULL, pScreenClassname );
+
+		while( ( pScreen && pScreen->GetOwnerEntity() != this ) || Q_strcmp( pScreen->GetPanelName(), pScreenName ) != 0 )
+		{
+			pScreen = ( CVGuiScreen* )gEntList.FindEntityByClassname( pScreen, pScreenClassname );
+		}
+
+		if( pScreen )
 		{
 			m_hScreen = pScreen;
 			m_hScreen->SetActive( true );

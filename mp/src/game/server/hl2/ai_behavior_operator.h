@@ -15,13 +15,13 @@
 #ifndef AI_BEHAVIOR_OPERATOR_H
 #define AI_BEHAVIOR_OPERATOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_behavior.h"
 #include "ai_goalentity.h"
 
-enum 
+enum
 {
 	OPERATOR_STATE_NOT_READY = 0,
 	OPERATOR_STATE_READY,
@@ -45,17 +45,23 @@ public:
 	{
 	}
 
-	void EnableGoal( CAI_BaseNPC *pAI );
+	void EnableGoal( CAI_BaseNPC* pAI );
 
-	int GetState() { return m_iState; }
-	int GetMoveTo() { return m_iMoveTo; }
+	int GetState()
+	{
+		return m_iState;
+	}
+	int GetMoveTo()
+	{
+		return m_iMoveTo;
+	}
 
 	// Inputs
-	virtual void InputActivate( inputdata_t &inputdata );
-	virtual void InputDeactivate( inputdata_t &inputdata );
+	virtual void InputActivate( inputdata_t& inputdata );
+	virtual void InputDeactivate( inputdata_t& inputdata );
 
-	void	InputSetStateReady( inputdata_t &inputdata );
-	void	InputSetStateFinished( inputdata_t &inputdata );
+	void	InputSetStateReady( inputdata_t& inputdata );
+	void	InputSetStateFinished( inputdata_t& inputdata );
 
 	COutputEvent	m_OnBeginApproach;
 	COutputEvent	m_OnMakeReady;
@@ -79,9 +85,12 @@ class CAI_OperatorBehavior : public CAI_SimpleBehavior
 public:
 	CAI_OperatorBehavior();
 
-	virtual const char *GetName() {	return "Operator"; }
+	virtual const char* GetName()
+	{
+		return "Operator";
+	}
 
-	virtual void SetParameters( CAI_OperatorGoal *pGoal, CBaseEntity *pPositionEnt, CBaseEntity *pContextTarget );
+	virtual void SetParameters( CAI_OperatorGoal* pGoal, CBaseEntity* pPositionEnt, CBaseEntity* pContextTarget );
 
 	virtual bool 	CanSelectSchedule();
 	//virtual void	BeginScheduleSelection();
@@ -93,10 +102,10 @@ public:
 	void GatherConditionsNotActive();
 	void GatherConditions( void );
 
-	void StartTask( const Task_t *pTask );
-	void RunTask( const Task_t *pTask );
+	void StartTask( const Task_t* pTask );
+	void RunTask( const Task_t* pTask );
 
-	CAI_OperatorGoal *GetGoalEntity();
+	CAI_OperatorGoal* GetGoalEntity();
 
 	bool IsGoalReady();
 

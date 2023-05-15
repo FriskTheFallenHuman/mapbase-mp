@@ -4,11 +4,11 @@
 #include "fgdlib/fgdlib.h"
 #include "manifest.h"
 #ifdef _WIN32
-#include "windows.h"
+	#include "windows.h"
 #endif
 
 #ifdef MAPBASE
-entity_t *g_ManifestWorldSpawn = NULL;
+entity_t* g_ManifestWorldSpawn = NULL;
 
 extern char g_MainMapPath[ MAX_PATH ];
 
@@ -42,8 +42,8 @@ CManifestMap::CManifestMap( void )
 //-----------------------------------------------------------------------------
 // Purpose: default constructor
 //-----------------------------------------------------------------------------
-CManifest::CManifest( void ) 
-{ 
+CManifest::CManifest( void )
+{
 	m_InstancePath[ 0 ] = 0;
 	m_bIsCordoning = false;
 	m_CordoningMapEnt = NULL;
@@ -57,33 +57,33 @@ CManifest::CManifest( void )
 //			pManifestMap - the manifest map this belongs to
 // Output : ChunkFileResult_t - result of the parsing
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadManifestMapKeyCallback( const char *szKey, const char *szValue, CManifestMap *pManifestMap )
+ChunkFileResult_t CManifest::LoadManifestMapKeyCallback( const char* szKey, const char* szValue, CManifestMap* pManifestMap )
 {
 #ifdef MAPBASE
-	if ( !stricmp( szKey, "InternalID" ) )
+	if( !stricmp( szKey, "InternalID" ) )
 	{
 		pManifestMap->m_nInternalId = atoi( szValue );
 	}
-	else if ( !stricmp( szKey, "Name" ) )
+	else if( !stricmp( szKey, "Name" ) )
 #else
-	if ( !stricmp( szKey, "Name" ) )
+	if( !stricmp( szKey, "Name" ) )
 #endif
 	{
 		//		pManifestMap->m_FriendlyName = szValue;
 	}
-	else if ( !stricmp( szKey, "File" ) )
+	else if( !stricmp( szKey, "File" ) )
 	{
 		strcpy( pManifestMap->m_RelativeMapFileName, szValue );
 	}
-	else if ( !stricmp( szKey, "IsPrimary" ) )
+	else if( !stricmp( szKey, "IsPrimary" ) )
 	{
 		//		pManifestMap->m_bPrimaryMap = ( atoi( szValue ) == 1 );
 	}
-	else if ( !stricmp( szKey, "IsProtected" ) )
+	else if( !stricmp( szKey, "IsProtected" ) )
 	{
 		//		pManifestMap->m_bCanBeModified = ( atoi( szValue ) != 1 );
 	}
-	else if ( !stricmp( szKey, "TopLevel" ) )
+	else if( !stricmp( szKey, "TopLevel" ) )
 	{
 		pManifestMap->m_bTopLevelMap = ( atoi( szValue ) == 1 );
 	}
@@ -98,9 +98,9 @@ ChunkFileResult_t CManifest::LoadManifestMapKeyCallback( const char *szKey, cons
 //			pDoc - the owning manifest document
 // Output : ChunkFileResult_t - result of the parsing
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadManifestVMFCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadManifestVMFCallback( CChunkFile* pFile, CManifest* pManifest )
 {
-	CManifestMap	*pManifestMap = new CManifestMap();
+	CManifestMap*	pManifestMap = new CManifestMap();
 
 	pManifest->m_Maps.AddToTail( pManifestMap );
 
@@ -133,13 +133,13 @@ ChunkFileResult_t CManifest::LoadManifestVMFCallback( CChunkFile *pFile, CManife
 //
 //-----------------------------------------------------------------------------
 
-ChunkFileResult_t CManifest::LoadPrefsVmfKeyCallback( const char *szKey, const char *szValue, CManifestMapPrefs *pManifestMapPrefs )
+ChunkFileResult_t CManifest::LoadPrefsVmfKeyCallback( const char* szKey, const char* szValue, CManifestMapPrefs* pManifestMapPrefs )
 {
-	if ( !stricmp( szKey, "InternalID" ) )
+	if( !stricmp( szKey, "InternalID" ) )
 	{
 		pManifestMapPrefs->m_nInternalId = atoi( szValue );
 	}
-	else if ( !stricmp( szKey, "IsVisible" ) )
+	else if( !stricmp( szKey, "IsVisible" ) )
 	{
 		pManifestMapPrefs->m_bIsVisible = ( atoi( szValue ) == 1 );
 	}
@@ -154,16 +154,16 @@ ChunkFileResult_t CManifest::LoadPrefsVmfKeyCallback( const char *szKey, const c
 //-----------------------------------------------------------------------------
 // Parses preferences and applies them to their corresponding submaps
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadPrefsVmfCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadPrefsVmfCallback( CChunkFile* pFile, CManifest* pManifest )
 {
 	CManifestMapPrefs prefs;
-	ChunkFileResult_t eResult = pFile->ReadChunk( (KeyHandler_t)LoadPrefsVmfKeyCallback, &prefs );
+	ChunkFileResult_t eResult = pFile->ReadChunk( ( KeyHandler_t )LoadPrefsVmfKeyCallback, &prefs );
 
-	if (eResult == ChunkFile_Ok && prefs.m_nInternalId != 0)
+	if( eResult == ChunkFile_Ok && prefs.m_nInternalId != 0 )
 	{
 		for( int i = 0; i < pManifest->m_Maps.Count(); i++ )
 		{
-			if ( pManifest->m_Maps[ i ]->m_nInternalId == prefs.m_nInternalId )
+			if( pManifest->m_Maps[ i ]->m_nInternalId == prefs.m_nInternalId )
 			{
 				pManifest->m_Maps[ i ]->m_bIsVisible = prefs.m_bIsVisible;
 				break;
@@ -171,14 +171,14 @@ ChunkFileResult_t CManifest::LoadPrefsVmfCallback( CChunkFile *pFile, CManifest 
 		}
 	}
 
-	return(eResult);
+	return( eResult );
 }
 
-ChunkFileResult_t CManifest::LoadPrefsMapsCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadPrefsMapsCallback( CChunkFile* pFile, CManifest* pManifest )
 {
 	CChunkHandlerMap Handlers;
 	Handlers.AddHandler( "VMF", ( ChunkHandler_t )CManifest::LoadPrefsVmfCallback, pManifest );
-	pFile->PushHandlers(&Handlers);
+	pFile->PushHandlers( &Handlers );
 
 	ChunkFileResult_t eResult = pFile->ReadChunk();
 
@@ -194,11 +194,11 @@ ChunkFileResult_t CManifest::LoadPrefsMapsCallback( CChunkFile *pFile, CManifest
 //			pDoc - the owning manifest document
 // Output : ChunkFileResult_t - result of the parsing
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadManifestMapsCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadManifestMapsCallback( CChunkFile* pFile, CManifest* pManifest )
 {
 	CChunkHandlerMap Handlers;
 	Handlers.AddHandler( "VMF", ( ChunkHandler_t )LoadManifestVMFCallback, pManifest );
-	pFile->PushHandlers(&Handlers);
+	pFile->PushHandlers( &Handlers );
 
 	ChunkFileResult_t eResult = ChunkFile_Ok;
 
@@ -211,35 +211,35 @@ ChunkFileResult_t CManifest::LoadManifestMapsCallback( CChunkFile *pFile, CManif
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonBoxCallback( CChunkFile *pFile, Cordon_t *pCordon )
+ChunkFileResult_t CManifest::LoadCordonBoxCallback( CChunkFile* pFile, Cordon_t* pCordon )
 {
 	// Add a box to this cordon.
 	pCordon->m_Boxes.AddToTail();
-	BoundBox &box = pCordon->m_Boxes.Tail();
+	BoundBox& box = pCordon->m_Boxes.Tail();
 
 	// Fill it in with the data from the VMF.
-	return pFile->ReadChunk( (KeyHandler_t)LoadCordonBoxKeyCallback, (void *)&box );
+	return pFile->ReadChunk( ( KeyHandler_t )LoadCordonBoxKeyCallback, ( void* )&box );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonBoxKeyCallback( const char *szKey, const char *szValue, BoundBox *pBox )
+ChunkFileResult_t CManifest::LoadCordonBoxKeyCallback( const char* szKey, const char* szValue, BoundBox* pBox )
 {
-	if (!stricmp(szKey, "mins"))
+	if( !stricmp( szKey, "mins" ) )
 	{
-		CChunkFile::ReadKeyValuePoint(szValue, pBox->bmins);
+		CChunkFile::ReadKeyValuePoint( szValue, pBox->bmins );
 	}
-	else if (!stricmp(szKey, "maxs"))
+	else if( !stricmp( szKey, "maxs" ) )
 	{
-		CChunkFile::ReadKeyValuePoint(szValue, pBox->bmaxs);
+		CChunkFile::ReadKeyValuePoint( szValue, pBox->bmaxs );
 	}
 
 	return ChunkFile_Ok;
@@ -247,20 +247,20 @@ ChunkFileResult_t CManifest::LoadCordonBoxKeyCallback( const char *szKey, const 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonKeyCallback( const char *szKey, const char *szValue, Cordon_t *pCordon )
+ChunkFileResult_t CManifest::LoadCordonKeyCallback( const char* szKey, const char* szValue, Cordon_t* pCordon )
 {
-	if (!stricmp(szKey, "name"))
+	if( !stricmp( szKey, "name" ) )
 	{
 		pCordon->m_szName.Set( szValue );
 	}
 	// Whether this particular cordon volume is active.
-	else if (!stricmp(szKey, "active"))
+	else if( !stricmp( szKey, "active" ) )
 	{
-		CChunkFile::ReadKeyValueBool(szValue, pCordon->m_bActive);
+		CChunkFile::ReadKeyValueBool( szValue, pCordon->m_bActive );
 	}
 
 	return ChunkFile_Ok;
@@ -268,34 +268,34 @@ ChunkFileResult_t CManifest::LoadCordonKeyCallback( const char *szKey, const cha
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadCordonCallback( CChunkFile* pFile, CManifest* pManifest )
 {
 	// Add a new cordon which will be filled in by the key callback
 	pManifest->m_Cordons.AddToTail();
-	Cordon_t &cordon = pManifest->m_Cordons.Tail();
+	Cordon_t& cordon = pManifest->m_Cordons.Tail();
 
 	CChunkHandlerMap Handlers;
-	Handlers.AddHandler( "box", (ChunkHandler_t)CManifest::LoadCordonBoxCallback, (void *)&cordon );
+	Handlers.AddHandler( "box", ( ChunkHandler_t )CManifest::LoadCordonBoxCallback, ( void* )&cordon );
 
-	pFile->PushHandlers(&Handlers);
-	ChunkFileResult_t eResult = pFile->ReadChunk( (KeyHandler_t)LoadCordonKeyCallback, (void *)&cordon );
+	pFile->PushHandlers( &Handlers );
+	ChunkFileResult_t eResult = pFile->ReadChunk( ( KeyHandler_t )LoadCordonKeyCallback, ( void* )&cordon );
 	pFile->PopHandlers();
 
-	return(eResult);
+	return( eResult );
 }
 
 
 //-----------------------------------------------------------------------------------------------------------
 // Parses keys that are applicable to all cordons in the map.
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonsKeyCallback( const char *szKey, const char *szValue, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadCordonsKeyCallback( const char* szKey, const char* szValue, CManifest* pManifest )
 {
 	// Whether the cordoning system is enabled or disabled.
-	if ( !stricmp( szKey, "active" ) )
+	if( !stricmp( szKey, "active" ) )
 	{
 		CChunkFile::ReadKeyValueBool( szValue, pManifest->m_bIsCordoning );
 	}
@@ -324,21 +324,21 @@ ChunkFileResult_t CManifest::LoadCordonsKeyCallback( const char *szKey, const ch
 //		}
 //
 //-----------------------------------------------------------------------------
-ChunkFileResult_t CManifest::LoadCordonsCallback( CChunkFile *pFile, CManifest *pManifest )
+ChunkFileResult_t CManifest::LoadCordonsCallback( CChunkFile* pFile, CManifest* pManifest )
 {
 	CChunkHandlerMap Handlers;
-	Handlers.AddHandler( "cordon", (ChunkHandler_t)CManifest::LoadCordonCallback, pManifest );
+	Handlers.AddHandler( "cordon", ( ChunkHandler_t )CManifest::LoadCordonCallback, pManifest );
 
-	pFile->PushHandlers(&Handlers);
-	ChunkFileResult_t eResult = pFile->ReadChunk( (KeyHandler_t)LoadCordonsKeyCallback, pManifest );
+	pFile->PushHandlers( &Handlers );
+	ChunkFileResult_t eResult = pFile->ReadChunk( ( KeyHandler_t )LoadCordonsKeyCallback, pManifest );
 	pFile->PopHandlers();
 
-	return(eResult);
+	return( eResult );
 }
 
-extern ChunkFileResult_t LoadSolidCallback(CChunkFile *pFile, LoadEntity_t *pLoadEntity);
+extern ChunkFileResult_t LoadSolidCallback( CChunkFile* pFile, LoadEntity_t* pLoadEntity );
 
-ChunkFileResult_t CManifest::LoadManifestCordoningPrefsCallback( CChunkFile *pFile, CManifest *pDoc )
+ChunkFileResult_t CManifest::LoadManifestCordoningPrefsCallback( CChunkFile* pFile, CManifest* pDoc )
 {
 	pDoc->m_CordoningMapEnt = &g_MainMap->entities[g_MainMap->num_entities];
 	g_MainMap->num_entities++;
@@ -358,8 +358,8 @@ ChunkFileResult_t CManifest::LoadManifestCordoningPrefsCallback( CChunkFile *pFi
 	//
 	CChunkHandlerMap Handlers;
 	Handlers.AddHandler( "cordons", ( ChunkHandler_t )CManifest::LoadCordonsCallback, pDoc );
-	Handlers.AddHandler("solid", (ChunkHandler_t)::LoadSolidCallback, &LoadEntity);
-	pFile->PushHandlers(&Handlers);
+	Handlers.AddHandler( "solid", ( ChunkHandler_t )::LoadSolidCallback, &LoadEntity );
+	pFile->PushHandlers( &Handlers );
 
 	ChunkFileResult_t eResult = ChunkFile_Ok;
 
@@ -377,9 +377,9 @@ ChunkFileResult_t CManifest::LoadManifestCordoningPrefsCallback( CChunkFile *pFi
 //			pValue - the value of the pair
 // Output : returns a newly created epair structure
 //-----------------------------------------------------------------------------
-epair_t *CManifest::CreateEPair( char *pKey, char *pValue )
+epair_t* CManifest::CreateEPair( char* pKey, char* pValue )
 {
-	epair_t *pEPair = new epair_t;
+	epair_t* pEPair = new epair_t;
 
 	pEPair->key = new char[ strlen( pKey ) + 1 ];
 	pEPair->value = new char[ strlen( pValue ) + 1 ];
@@ -392,16 +392,16 @@ epair_t *CManifest::CreateEPair( char *pKey, char *pValue )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: this function will load in all of the submaps belonging to this manifest, 
+// Purpose: this function will load in all of the submaps belonging to this manifest,
 //			except for the top level map, which is loaded separately.
 // Input  : pMapFile - the top level map that was previously loaded
 //			pszFileName - the absolute file name of the top level map file
 // Output : returns true if all submaps were loaded
 //-----------------------------------------------------------------------------
-bool CManifest::LoadSubMaps( CMapFile *pMapFile, const char *pszFileName )
+bool CManifest::LoadSubMaps( CMapFile* pMapFile, const char* pszFileName )
 {
-	entity_t	*InstanceEntity;
-	epair_t		*pEPair;
+	entity_t*	InstanceEntity;
+	epair_t*		pEPair;
 
 	InstanceEntity = &pMapFile->entities[ pMapFile->num_entities ];
 	pMapFile->num_entities++;
@@ -419,8 +419,10 @@ bool CManifest::LoadSubMaps( CMapFile *pMapFile, const char *pszFileName )
 	for( int i = 0; i < m_Maps.Count(); i++ )
 	{
 #ifdef MAPBASE
-		if ( g_bNoHiddenManifestMaps && !m_Maps[ i ]->m_bIsVisible )
+		if( g_bNoHiddenManifestMaps && !m_Maps[ i ]->m_bIsVisible )
+		{
 			continue;
+		}
 #endif
 
 		//		if ( m_Maps[ i ]->m_bTopLevelMap == false )
@@ -454,7 +456,7 @@ bool CManifest::LoadSubMaps( CMapFile *pMapFile, const char *pszFileName )
 			pEPair->next = InstanceEntity->epairs;
 			InstanceEntity->epairs = pEPair;
 
-			if ( m_Maps[ i ]->m_bTopLevelMap == true )
+			if( m_Maps[ i ]->m_bTopLevelMap == true )
 			{
 				pEPair = CreateEPair( "toplevel", "1" );
 				pEPair->next = InstanceEntity->epairs;
@@ -468,11 +470,11 @@ bool CManifest::LoadSubMaps( CMapFile *pMapFile, const char *pszFileName )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
-bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
+bool CManifest::LoadVMFManifestUserPrefs( const char* pszFileName )
 {
 	char		UserName[ MAX_PATH ], FileName[ MAX_PATH ], UserPrefsFileName[ MAX_PATH ];
 	DWORD		UserNameSize;
@@ -480,7 +482,7 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 	UserNameSize = sizeof( UserName );
 	// TODO: What does this do?
 #ifdef _WIN32
-	if ( GetUserName( UserName, &UserNameSize ) == 0 )
+	if( GetUserName( UserName, &UserNameSize ) == 0 )
 	{
 #ifdef MAPBASE
 		strcpy( UserName, "default" );
@@ -494,8 +496,8 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 	V_StripExtension( pszFileName, FileName, sizeof( FileName ) );
 	strcat( FileName, UserPrefsFileName );
 
-	FILE *fp = fopen( FileName, "rb" );
-	if ( !fp )
+	FILE* fp = fopen( FileName, "rb" );
+	if( !fp )
 	{
 		return false;
 	}
@@ -503,7 +505,7 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 	CChunkFile File;
 	ChunkFileResult_t eResult = File.Open( FileName, ChunkFile_Read );
 
-	if ( eResult == ChunkFile_Ok )
+	if( eResult == ChunkFile_Ok )
 	{
 		//
 		// Set up handlers for the subchunks that we are interested in.
@@ -512,20 +514,22 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 		Handlers.AddHandler( "cordoning", ( ChunkHandler_t )CManifest::LoadManifestCordoningPrefsCallback, this );
 
 #ifdef MAPBASE
-		if (g_bNoHiddenManifestMaps)
+		if( g_bNoHiddenManifestMaps )
+		{
 			Handlers.AddHandler( "Maps", ( ChunkHandler_t )CManifest::LoadPrefsMapsCallback, this );
+		}
 #endif
 
 		//		Handlers.SetErrorHandler( ( ChunkErrorHandler_t )CMapDoc::HandleLoadError, this);
 
-		File.PushHandlers(&Handlers);
+		File.PushHandlers( &Handlers );
 
 		while( eResult == ChunkFile_Ok )
 		{
 			eResult = File.ReadChunk();
 		}
 
-		if ( eResult == ChunkFile_EOF )
+		if( eResult == ChunkFile_EOF )
 		{
 			eResult = ChunkFile_Ok;
 		}
@@ -533,7 +537,7 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 		File.PopHandlers();
 	}
 
-	if ( eResult == ChunkFile_Ok )
+	if( eResult == ChunkFile_Ok )
 	{
 	}
 	else
@@ -550,14 +554,14 @@ bool CManifest::LoadVMFManifestUserPrefs( const char *pszFileName )
 // Purpose: Loads a .VMM file.
 // Input  : pszFileName - Full path of the map file to load.
 //-----------------------------------------------------------------------------
-bool CManifest::LoadVMFManifest( const char *pszFileName )
+bool CManifest::LoadVMFManifest( const char* pszFileName )
 {
 	V_StripExtension( pszFileName, m_InstancePath, sizeof( m_InstancePath ) );
 	strcat( m_InstancePath, "\\" );
 
 	CChunkFile File;
 	ChunkFileResult_t eResult = File.Open( pszFileName, ChunkFile_Read );
-	if ( eResult != ChunkFile_Ok )
+	if( eResult != ChunkFile_Ok )
 	{
 		g_MapError.ReportError( File.GetErrorText( eResult ) );
 		return false;
@@ -566,25 +570,25 @@ bool CManifest::LoadVMFManifest( const char *pszFileName )
 	CChunkHandlerMap Handlers;
 	Handlers.AddHandler( "Maps", ( ChunkHandler_t )LoadManifestMapsCallback, this );
 
-	File.PushHandlers(&Handlers);
+	File.PushHandlers( &Handlers );
 
-	while (eResult == ChunkFile_Ok)
+	while( eResult == ChunkFile_Ok )
 	{
 		eResult = File.ReadChunk();
 	}
 
-	if (eResult == ChunkFile_EOF)
+	if( eResult == ChunkFile_EOF )
 	{
 		eResult = ChunkFile_Ok;
 	}
 
 	File.PopHandlers();
 
-	if ( eResult == ChunkFile_Ok )
+	if( eResult == ChunkFile_Ok )
 	{
 		int index = g_Maps.AddToTail( new CMapFile() );
 		g_LoadingMap = g_Maps[ index ];
-		if ( g_MainMap == NULL )
+		if( g_MainMap == NULL )
 		{
 			g_MainMap = g_LoadingMap;
 #ifdef MAPBASE
@@ -608,21 +612,22 @@ bool CManifest::LoadVMFManifest( const char *pszFileName )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : 
-// Output : 
+// Purpose:
+// Input  :
+// Output :
 //-----------------------------------------------------------------------------
 void CManifest::CordonWorld( )
 {
-	if ( m_bIsCordoning == false )
+	if( m_bIsCordoning == false )
 	{
 		return;
 	}
 
-	for ( int i = 0; i < g_MainMap->num_entities; i++ )
+	for( int i = 0; i < g_MainMap->num_entities; i++ )
 	{
-		if ( i == 0 )
-		{	// for world spawn, we look at brushes
+		if( i == 0 )
+		{
+			// for world spawn, we look at brushes
 			for( int nBrushNum = 0; nBrushNum < g_MainMap->entities[ i ].numbrushes; nBrushNum++ )
 			{
 				int nIndex = g_MainMap->entities[ i ].firstbrush + nBrushNum;
@@ -631,27 +636,27 @@ void CManifest::CordonWorld( )
 
 				for( int nCordon = 0; nCordon < m_Cordons.Count(); nCordon++ )
 				{
-					if ( m_Cordons[ nCordon ].m_bActive == false )
+					if( m_Cordons[ nCordon ].m_bActive == false )
 					{
 						continue;
 					}
 
 					for( int nBox = 0; nBox < m_Cordons[ nCordon ].m_Boxes.Count(); nBox++ )
 					{
-						if ( m_Cordons[ nCordon ].m_Boxes[ nBox ].IsIntersectingBox( g_MainMap->mapbrushes[ nIndex ].mins, g_MainMap->mapbrushes[ nIndex ].maxs ) == true )
+						if( m_Cordons[ nCordon ].m_Boxes[ nBox ].IsIntersectingBox( g_MainMap->mapbrushes[ nIndex ].mins, g_MainMap->mapbrushes[ nIndex ].maxs ) == true )
 						{
 							bRemove = false;
 							break;
 						}
 					}
 
-					if ( bRemove == false )
+					if( bRemove == false )
 					{
 						break;
 					}
 				}
 
-				if ( bRemove )
+				if( bRemove )
 				{
 					int nSize = ( g_MainMap->entities[ i ].numbrushes - nBrushNum - 1 ) * sizeof( g_MainMap->mapbrushes[ 0 ] );
 					memmove( &g_MainMap->mapbrushes[ nIndex ], &g_MainMap->mapbrushes[ nIndex + 1 ], nSize );
@@ -660,9 +665,10 @@ void CManifest::CordonWorld( )
 				}
 			}
 		}
-		else if ( &g_MainMap->entities[ i ] != m_CordoningMapEnt )
-		{	// for all other entities, even if they include brushes, we look at origin
-			if ( g_MainMap->entities[ i ].numbrushes == 0 && g_MainMap->entities[ i ].epairs == NULL )
+		else if( &g_MainMap->entities[ i ] != m_CordoningMapEnt )
+		{
+			// for all other entities, even if they include brushes, we look at origin
+			if( g_MainMap->entities[ i ].numbrushes == 0 && g_MainMap->entities[ i ].epairs == NULL )
 			{
 				continue;
 			}
@@ -671,27 +677,27 @@ void CManifest::CordonWorld( )
 
 			for( int nCordon = 0; nCordon < m_Cordons.Count(); nCordon++ )
 			{
-				if ( m_Cordons[ nCordon ].m_bActive == false )
+				if( m_Cordons[ nCordon ].m_bActive == false )
 				{
 					continue;
 				}
 
 				for( int nBox = 0; nBox < m_Cordons[ nCordon ].m_Boxes.Count(); nBox++ )
 				{
-					if ( m_Cordons[ nCordon ].m_Boxes[ nBox ].ContainsPoint( g_MainMap->entities[ i ].origin ) == true )
+					if( m_Cordons[ nCordon ].m_Boxes[ nBox ].ContainsPoint( g_MainMap->entities[ i ].origin ) == true )
 					{
 						bRemove = false;
 						break;
 					}
 				}
 
-				if ( bRemove == false )
+				if( bRemove == false )
 				{
 					break;
 				}
 			}
 
-			if ( bRemove )
+			if( bRemove )
 			{
 				g_MainMap->entities[ i ].numbrushes = 0;
 				g_MainMap->entities[ i ].epairs = NULL;
@@ -699,7 +705,7 @@ void CManifest::CordonWorld( )
 		}
 	}
 
-	if ( m_CordoningMapEnt )
+	if( m_CordoningMapEnt )
 	{
 		g_MainMap->MoveBrushesToWorldGeneral( m_CordoningMapEnt );
 		m_CordoningMapEnt->numbrushes = 0;

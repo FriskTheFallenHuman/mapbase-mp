@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef KEYVALUESCOMPILER_H
 #define KEYVALUESCOMPILER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -95,18 +95,18 @@ public:
 		m_StringTable.AddString( "" );
 	}
 
-	void AppendKeyValuesFile( char const *filename );
-	void WriteFile( char const *outfile );
+	void AppendKeyValuesFile( char const* filename );
+	void WriteFile( char const* outfile );
 
 private:
 
 	void Describe( const KVFile_t& file );
 
-	void BuildKVData_R( KeyValues *kv, int parent );
+	void BuildKVData_R( KeyValues* kv, int parent );
 
 	void WriteStringTable( CUtlBuffer& buf );
 	void WriteData( CUtlBuffer& buf );
-	void WriteFiles( CUtlBuffer &buf );
+	void WriteFiles( CUtlBuffer& buf );
 
 	CUtlVector< KVFile_t >		m_Files;
 	CUtlVector< KVInfo_t >		m_Data;
@@ -120,19 +120,19 @@ class CRunTimeKeyValuesStringTable
 public:
 
 	bool ReadStringTable( int numStrings, CUtlBuffer& buf );
-	
+
 	inline int Count() const
 	{
 		return m_Strings.Count();
 	}
 
-	inline char const *Lookup( short index )
+	inline char const* Lookup( short index )
 	{
 		return m_Strings[ index ];
 	}
 
 private:
-	CUtlVector< const char * >	m_Strings; 
+	CUtlVector< const char* >	m_Strings;
 };
 
 class CCompiledKeyValuesReader
@@ -140,27 +140,27 @@ class CCompiledKeyValuesReader
 public:
 
 	CCompiledKeyValuesReader();
-	
-	bool		LoadFile( char const *filename );
 
-	KeyValues	*Instance( char const *kvfilename );
-	bool		InstanceInPlace( KeyValues& head, char const *kvfilename );
-	bool		LookupKeyValuesRootKeyName( char const *kvfilename, char *outbuf, size_t bufsize );
+	bool		LoadFile( char const* filename );
+
+	KeyValues*	Instance( char const* kvfilename );
+	bool		InstanceInPlace( KeyValues& head, char const* kvfilename );
+	bool		LookupKeyValuesRootKeyName( char const* kvfilename, char* outbuf, size_t bufsize );
 
 	int			First() const;
 	int			Next( int i ) const;
 	int			InvalidIndex() const;
 
-	void		GetFileName( int index, char *buf, size_t bufsize );
+	void		GetFileName( int index, char* buf, size_t bufsize );
 
 private:
 
 	struct FileInfo_t
 	{
-		FileInfo_t() : 
+		FileInfo_t() :
 			hFile( 0 ),
-			nFirstIndex( 0 ), 
-			nCount( 0 ) 
+			nFirstIndex( 0 ),
+			nCount( 0 )
 		{
 		}
 		FileNameHandle_t	hFile;
@@ -173,7 +173,7 @@ private:
 		}
 	};
 
-	KeyValues *CreateFromData( const FileInfo_t& info );
+	KeyValues* CreateFromData( const FileInfo_t& info );
 	bool CreateInPlaceFromData( KeyValues& head, const FileInfo_t& info );
 
 	// Now get the actual files

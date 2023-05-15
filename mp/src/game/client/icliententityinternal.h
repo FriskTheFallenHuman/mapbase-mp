@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #ifndef ICLIENTENTITYINTERNAL_H
 #define ICLIENTENTITYINTERNAL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "icliententity.h"

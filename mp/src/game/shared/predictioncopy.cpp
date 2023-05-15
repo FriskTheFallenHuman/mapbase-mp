@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -11,7 +11,7 @@
 
 #if defined( CLIENT_DLL )
 
-#include "igamesystem.h"
+	#include "igamesystem.h"
 
 #endif
 #include <memory.h>
@@ -30,7 +30,7 @@
 // CSave
 //
 // --------------------------------------------------------------
-static const char *g_FieldTypes[ FIELD_TYPECOUNT ] = 
+static const char* g_FieldTypes[ FIELD_TYPECOUNT ] =
 {
 	"FIELD_VOID",			// FIELD_VOID
 	"FIELD_FLOAT",			// FIELD_FLOAT
@@ -54,16 +54,16 @@ static const char *g_FieldTypes[ FIELD_TYPECOUNT ] =
 	"FIELD_SOUNDNAME",		// FIELD_SOUNDNAME
 	"FIELD_INPUT",			// FIELD_INPUT		(uses custom type)
 	"FIELD_FUNCTION",		// FIELD_FUNCTION
-	"FIELD_VMATRIX",			
+	"FIELD_VMATRIX",
 	"FIELD_VMATRIX_WORLDSPACE",
 	"FIELD_MATRIX3X4_WORLDSPACE",
 	"FIELD_INTERVAL"		// FIELD_INTERVAL
 	"FIELD_MODELINDEX"		// FIELD_MODELINDEX
 };
 
-CPredictionCopy::CPredictionCopy( int type, void *dest, bool dest_packed, void const *src, bool src_packed, 
-	bool counterrors /*= false*/, bool reporterrors /*= false*/, bool performcopy /*= true*/,
-	bool describefields /*= false*/, FN_FIELD_COMPARE func /*= NULL*/ )
+CPredictionCopy::CPredictionCopy( int type, void* dest, bool dest_packed, void const* src, bool src_packed,
+								  bool counterrors /*= false*/, bool reporterrors /*= false*/, bool performcopy /*= true*/,
+								  bool describefields /*= false*/, FN_FIELD_COMPARE func /*= NULL*/ )
 {
 	m_nType				= type;
 	m_pDest				= dest;
@@ -86,27 +86,31 @@ CPredictionCopy::CPredictionCopy( int type, void *dest, bool dest_packed, void c
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *fmt - 
-//			... - 
+// Purpose:
+// Input  : *fmt -
+//			... -
 //-----------------------------------------------------------------------------
-void CPredictionCopy::ReportFieldsDiffer( const char *fmt, ... )
+void CPredictionCopy::ReportFieldsDiffer( const char* fmt, ... )
 {
 	++m_nErrorCount;
 
-	if ( !m_bShouldReport )
+	if( !m_bShouldReport )
+	{
 		return;
+	}
 
-	if ( m_bDescribeFields && m_FieldCompareFunc )
+	if( m_bDescribeFields && m_FieldCompareFunc )
+	{
 		return;
+	}
 
 	Assert( m_pCurrentMap );
 	Assert( m_pCurrentClassName );
 
-	const char *fieldname = "empty";
+	const char* fieldname = "empty";
 	int flags = 0;
 
-	if ( m_pCurrentField )
+	if( m_pCurrentField )
 	{
 		flags		= m_pCurrentField->flags;
 		fieldname	= m_pCurrentField->fieldName ? m_pCurrentField->fieldName : "NULL";
@@ -115,44 +119,48 @@ void CPredictionCopy::ReportFieldsDiffer( const char *fmt, ... )
 	va_list argptr;
 	char data[ 4096 ];
 	int len;
-	va_start(argptr, fmt);
-	len = Q_vsnprintf(data, sizeof( data ), fmt, argptr);
-	va_end(argptr);
+	va_start( argptr, fmt );
+	len = Q_vsnprintf( data, sizeof( data ), fmt, argptr );
+	va_end( argptr );
 
-	if ( m_nErrorCount == 1 )
+	if( m_nErrorCount == 1 )
 	{
 		Msg( "\n" );
 	}
 
 	Msg( "%03i %s::%s - %s",
-		m_nErrorCount,
-		m_pCurrentClassName,
-		fieldname,
-		data );
+		 m_nErrorCount,
+		 m_pCurrentClassName,
+		 fieldname,
+		 data );
 
 	m_bShouldReport = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *fmt - 
-//			... - 
+// Purpose:
+// Input  : *fmt -
+//			... -
 //-----------------------------------------------------------------------------
-void CPredictionCopy::DescribeFields( difftype_t dt, const char *fmt, ... )
+void CPredictionCopy::DescribeFields( difftype_t dt, const char* fmt, ... )
 {
-	if ( !m_bShouldDescribe )
+	if( !m_bShouldDescribe )
+	{
 		return;
+	}
 
-	if ( !m_FieldCompareFunc )
+	if( !m_FieldCompareFunc )
+	{
 		return;
+	}
 
 	Assert( m_pCurrentMap );
 	Assert( m_pCurrentClassName );
 
-	const char *fieldname = "empty";
+	const char* fieldname = "empty";
 	int flags = 0;
 
-	if ( m_pCurrentField )
+	if( m_pCurrentField )
 	{
 		flags		= m_pCurrentField->flags;
 		fieldname	= m_pCurrentField->fieldName ? m_pCurrentField->fieldName : "NULL";
@@ -161,14 +169,14 @@ void CPredictionCopy::DescribeFields( difftype_t dt, const char *fmt, ... )
 	va_list argptr;
 	char data[ 4096 ];
 	int len;
-	va_start(argptr, fmt);
-	len = Q_vsnprintf(data, sizeof( data ), fmt, argptr);
-	va_end(argptr);
+	va_start( argptr, fmt );
+	len = Q_vsnprintf( data, sizeof( data ), fmt, argptr );
+	va_end( argptr );
 
 	bool isnetworked = ( flags & FTYPEDESC_INSENDTABLE ) ? true : false;
 	bool isnoterrorchecked = ( flags & FTYPEDESC_NOERRORCHECK ) ? true : false;
 
-	( *m_FieldCompareFunc )( 
+	( *m_FieldCompareFunc )(
 		m_pCurrentClassName,
 		fieldname,
 		g_FieldTypes[ m_pCurrentField->fieldType ],
@@ -176,21 +184,21 @@ void CPredictionCopy::DescribeFields( difftype_t dt, const char *fmt, ... )
 		isnoterrorchecked,
 		dt != IDENTICAL ? true : false,
 		dt == WITHINTOLERANCE ? true : false,
-		data 
+		data
 	);
 
 	m_bShouldDescribe = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CPredictionCopy::CanCheck( void )
 {
 	Assert( m_pCurrentField );
 
-	if ( m_pCurrentField->flags & FTYPEDESC_NOERRORCHECK )
+	if( m_pCurrentField->flags & FTYPEDESC_NOERRORCHECK )
 	{
 		return false;
 	}
@@ -199,10 +207,10 @@ bool CPredictionCopy::CanCheck( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : size - 
-//			*outdata - 
-//			*indata - 
+// Purpose:
+// Input  : size -
+//			*outdata -
+//			*indata -
 //-----------------------------------------------------------------------------
 /*
 void CPredictionCopy::CopyData( difftype_t dt, int size, char *outdata, const char *indata )
@@ -217,14 +225,16 @@ void CPredictionCopy::CopyData( difftype_t dt, int size, char *outdata, const ch
 }
 */
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareData( int size, char *outdata, const char *indata )
+CPredictionCopy::difftype_t CPredictionCopy::CompareData( int size, char* outdata, const char* indata )
 {
-	if ( !m_bErrorCheck )
-		return DIFFERS;
-
-	if ( CanCheck() )
+	if( !m_bErrorCheck )
 	{
-		if ( memcmp( outdata, indata, size ) )
+		return DIFFERS;
+	}
+
+	if( CanCheck() )
+	{
+		if( memcmp( outdata, indata, size ) )
 		{
 			return DIFFERS;
 		}
@@ -239,12 +249,14 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareData( int size, char *outdat
 	return IDENTICAL;
 }
 
-void CPredictionCopy::DescribeData( difftype_t dt, int size, char *outdata, const char *indata )
+void CPredictionCopy::DescribeData( difftype_t dt, int size, char* outdata, const char* indata )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		ReportFieldsDiffer( "binary data differs (%i bytes)\n", size );
 	}
@@ -252,47 +264,55 @@ void CPredictionCopy::DescribeData( difftype_t dt, int size, char *outdata, cons
 	DescribeFields( dt, "binary (%i bytes)\n", size );
 }
 
-void CPredictionCopy::WatchData( difftype_t dt, int size, char *outdata, const char *indata )
+void CPredictionCopy::WatchData( difftype_t dt, int size, char* outdata, const char* indata )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "binary (%i bytes)", size );
 }
 
-void CPredictionCopy::DescribeShort( difftype_t dt, short *outvalue, const short *invalue, int count )
+void CPredictionCopy::DescribeShort( difftype_t dt, short* outvalue, const short* invalue, int count )
 {
-	if ( !m_bErrorCheck )
-		return;
-
-	if ( dt == DIFFERS )
+	if( !m_bErrorCheck )
 	{
-		int i = 0;
-		ReportFieldsDiffer( "short differs (net %i pred %i) diff(%i)\n", (int)(invalue[i]), (int)(outvalue[i]), (int)(outvalue[i] - invalue[i]) );
+		return;
 	}
 
-	DescribeFields( dt, "short (%i)\n", (int)(outvalue[0]) );
+	if( dt == DIFFERS )
+	{
+		int i = 0;
+		ReportFieldsDiffer( "short differs (net %i pred %i) diff(%i)\n", ( int )( invalue[i] ), ( int )( outvalue[i] ), ( int )( outvalue[i] - invalue[i] ) );
+	}
+
+	DescribeFields( dt, "short (%i)\n", ( int )( outvalue[0] ) );
 }
 
-void CPredictionCopy::WatchShort( difftype_t dt, short *outvalue, const short *invalue, int count )
+void CPredictionCopy::WatchShort( difftype_t dt, short* outvalue, const short* invalue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
-	WatchMsg( "short (%i)", (int)(outvalue[0]) );
+	WatchMsg( "short (%i)", ( int )( outvalue[0] ) );
 }
 
 #if defined( CLIENT_DLL )
-#include "cdll_int.h"
+	#include "cdll_int.h"
 
 #endif
 
-void CPredictionCopy::DescribeInt( difftype_t dt, int *outvalue, const int *invalue, int count )
+void CPredictionCopy::DescribeInt( difftype_t dt, int* outvalue, const int* invalue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		int i = 0;
 		ReportFieldsDiffer( "int differs (net %i pred %i) diff(%i)\n", invalue[i], outvalue[i], outvalue[i] - invalue[i] );
@@ -300,11 +320,11 @@ void CPredictionCopy::DescribeInt( difftype_t dt, int *outvalue, const int *inva
 
 #if defined( CLIENT_DLL )
 	bool described = false;
-	if ( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
+	if( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
 	{
 		int modelindex = outvalue[0];
-		model_t const *m = modelinfo->GetModel( modelindex );
-		if ( m )
+		model_t const* m = modelinfo->GetModel( modelindex );
+		if( m )
 		{
 			described = true;
 			char shortfile[ 512 ];
@@ -315,7 +335,7 @@ void CPredictionCopy::DescribeInt( difftype_t dt, int *outvalue, const int *inva
 		}
 	}
 
-	if ( !described )
+	if( !described )
 	{
 		DescribeFields( dt, "integer (%i)\n", outvalue[0] );
 	}
@@ -324,18 +344,20 @@ void CPredictionCopy::DescribeInt( difftype_t dt, int *outvalue, const int *inva
 #endif
 }
 
-void CPredictionCopy::WatchInt( difftype_t dt, int *outvalue, const int *invalue, int count )
+void CPredictionCopy::WatchInt( difftype_t dt, int* outvalue, const int* invalue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 #if defined( CLIENT_DLL )
 	bool described = false;
-	if ( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
+	if( m_pCurrentField->flags & FTYPEDESC_MODELINDEX )
 	{
 		int modelindex = outvalue[0];
-		model_t const *m = modelinfo->GetModel( modelindex );
-		if ( m )
+		model_t const* m = modelinfo->GetModel( modelindex );
+		if( m )
 		{
 			described = true;
 			char shortfile[ 512 ];
@@ -346,7 +368,7 @@ void CPredictionCopy::WatchInt( difftype_t dt, int *outvalue, const int *invalue
 		}
 	}
 
-	if ( !described )
+	if( !described )
 	{
 		WatchMsg( "integer (%i)", outvalue[0] );
 	}
@@ -355,35 +377,41 @@ void CPredictionCopy::WatchInt( difftype_t dt, int *outvalue, const int *invalue
 #endif
 }
 
-void CPredictionCopy::DescribeBool( difftype_t dt, bool *outvalue, const bool *invalue, int count )
+void CPredictionCopy::DescribeBool( difftype_t dt, bool* outvalue, const bool* invalue, int count )
 {
-	if ( !m_bErrorCheck )
-		return;
-
-	if ( dt == DIFFERS )
+	if( !m_bErrorCheck )
 	{
-		int i = 0;
-		ReportFieldsDiffer( "bool differs (net %s pred %s)\n", (invalue[i]) ? "true" : "false", (outvalue[i]) ? "true" : "false" );
+		return;
 	}
 
-	DescribeFields( dt, "bool (%s)\n", (outvalue[0]) ? "true" : "false" );
+	if( dt == DIFFERS )
+	{
+		int i = 0;
+		ReportFieldsDiffer( "bool differs (net %s pred %s)\n", ( invalue[i] ) ? "true" : "false", ( outvalue[i] ) ? "true" : "false" );
+	}
+
+	DescribeFields( dt, "bool (%s)\n", ( outvalue[0] ) ? "true" : "false" );
 }
 
 
-void CPredictionCopy::WatchBool( difftype_t dt, bool *outvalue, const bool *invalue, int count )
+void CPredictionCopy::WatchBool( difftype_t dt, bool* outvalue, const bool* invalue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
-	WatchMsg( "bool (%s)", (outvalue[0]) ? "true" : "false" );
+	WatchMsg( "bool (%s)", ( outvalue[0] ) ? "true" : "false" );
 }
 
-void CPredictionCopy::DescribeFloat( difftype_t dt, float *outvalue, const float *invalue, int count )
+void CPredictionCopy::DescribeFloat( difftype_t dt, float* outvalue, const float* invalue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		int i = 0;
 		ReportFieldsDiffer( "float differs (net %f pred %f) diff(%f)\n", invalue[ i ], outvalue[ i ], outvalue[ i ] - invalue[ i ] );
@@ -392,20 +420,24 @@ void CPredictionCopy::DescribeFloat( difftype_t dt, float *outvalue, const float
 	DescribeFields( dt, "float (%f)\n", outvalue[ 0 ] );
 }
 
-void CPredictionCopy::WatchFloat( difftype_t dt, float *outvalue, const float *invalue, int count )
+void CPredictionCopy::WatchFloat( difftype_t dt, float* outvalue, const float* invalue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "float (%f)", outvalue[ 0 ] );
 }
 
-void CPredictionCopy::DescribeString( difftype_t dt, char *outstring, const char *instring )
+void CPredictionCopy::DescribeString( difftype_t dt, char* outstring, const char* instring )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		ReportFieldsDiffer( "string differs (net %s pred %s)\n", instring, outstring );
 	}
@@ -413,160 +445,180 @@ void CPredictionCopy::DescribeString( difftype_t dt, char *outstring, const char
 	DescribeFields( dt, "string (%s)\n", outstring );
 }
 
-void CPredictionCopy::WatchString( difftype_t dt, char *outstring, const char *instring )
+void CPredictionCopy::WatchString( difftype_t dt, char* outstring, const char* instring )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "string (%s)", outstring );
 }
 
-void CPredictionCopy::DescribeVector( difftype_t dt, Vector& outValue, const Vector &inValue )
+void CPredictionCopy::DescribeVector( difftype_t dt, Vector& outValue, const Vector& inValue )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		Vector delta = outValue - inValue;
 
-		ReportFieldsDiffer( "vec differs (net %f %f %f - pred %f %f %f) delta(%f %f %f)\n", 
-			inValue.x, inValue.y, inValue.z,
-			outValue.x, outValue.y, outValue.z,
-			delta.x, delta.y, delta.z );
+		ReportFieldsDiffer( "vec differs (net %f %f %f - pred %f %f %f) delta(%f %f %f)\n",
+							inValue.x, inValue.y, inValue.z,
+							outValue.x, outValue.y, outValue.z,
+							delta.x, delta.y, delta.z );
 	}
 
-	DescribeFields( dt, "vector (%f %f %f)\n", 
-				outValue.x, outValue.y, outValue.z );
+	DescribeFields( dt, "vector (%f %f %f)\n",
+					outValue.x, outValue.y, outValue.z );
 }
 
-void CPredictionCopy::DescribeVector( difftype_t dt, Vector* outValue, const Vector *inValue, int count )
+void CPredictionCopy::DescribeVector( difftype_t dt, Vector* outValue, const Vector* inValue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		int i = 0;
 		Vector delta = outValue[ i ] - inValue[ i ];
 
-		ReportFieldsDiffer( "vec[] differs (1st diff) (net %f %f %f - pred %f %f %f) delta(%f %f %f)\n", 
-			inValue[i].x, inValue[i].y, inValue[i].z,
-			outValue[i].x, outValue[i].y, outValue[i].z,
-			delta.x, delta.y, delta.z );
+		ReportFieldsDiffer( "vec[] differs (1st diff) (net %f %f %f - pred %f %f %f) delta(%f %f %f)\n",
+							inValue[i].x, inValue[i].y, inValue[i].z,
+							outValue[i].x, outValue[i].y, outValue[i].z,
+							delta.x, delta.y, delta.z );
 	}
 
-	DescribeFields( dt, "vector (%f %f %f)\n", 
+	DescribeFields( dt, "vector (%f %f %f)\n",
 					outValue[0].x, outValue[0].y, outValue[0].z );
 }
 
-void CPredictionCopy::WatchVector( difftype_t dt, Vector& outValue, const Vector &inValue )
+void CPredictionCopy::WatchVector( difftype_t dt, Vector& outValue, const Vector& inValue )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "vector (%f %f %f)", outValue.x, outValue.y, outValue.z );
 }
 
-void CPredictionCopy::WatchVector( difftype_t dt, Vector* outValue, const Vector *inValue, int count )
+void CPredictionCopy::WatchVector( difftype_t dt, Vector* outValue, const Vector* inValue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "vector (%f %f %f)", outValue[0].x, outValue[0].y, outValue[0].z );
 }
 
 
 
-void CPredictionCopy::DescribeQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion &inValue )
+void CPredictionCopy::DescribeQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion& inValue )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		Quaternion delta;
-		
-		for ( int i = 0; i < 4; i++ )
+
+		for( int i = 0; i < 4; i++ )
 		{
 			delta[i] = outValue[i] - inValue[i];
 		}
 
-		ReportFieldsDiffer( "quaternion differs (net %f %f %f %f - pred %f %f %f %f) delta(%f %f %f %f)\n", 
-			inValue[0], inValue[1], inValue[2], inValue[3],
-			outValue[0], outValue[1], outValue[2], outValue[3],
-			delta[0], delta[1], delta[2], delta[3] );
+		ReportFieldsDiffer( "quaternion differs (net %f %f %f %f - pred %f %f %f %f) delta(%f %f %f %f)\n",
+							inValue[0], inValue[1], inValue[2], inValue[3],
+							outValue[0], outValue[1], outValue[2], outValue[3],
+							delta[0], delta[1], delta[2], delta[3] );
 	}
 
-	DescribeFields( dt, "quaternion (%f %f %f %f)\n", 
-				outValue[0], outValue[1], outValue[2], outValue[3] );
+	DescribeFields( dt, "quaternion (%f %f %f %f)\n",
+					outValue[0], outValue[1], outValue[2], outValue[3] );
 }
 
-void CPredictionCopy::DescribeQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion *inValue, int count )
+void CPredictionCopy::DescribeQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion* inValue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		int i = 0;
 		Quaternion delta;
 
-		for ( int j = 0; j < 4; j++ )
+		for( int j = 0; j < 4; j++ )
 		{
 			delta[j] = outValue[i][j] - inValue[i][j];
 		}
 
-		ReportFieldsDiffer( "quaternion[] differs (1st diff) (net %f %f %f %f - pred %f %f %f %f) delta(%f %f %f %f)\n", 
-			(float)inValue[i][0], (float)inValue[i][1], (float)inValue[i][2], (float)inValue[i][3],
-			(float)outValue[i][0], (float)outValue[i][1], (float)outValue[i][2], (float)outValue[i][3],
-			delta[0], delta[1], delta[2], delta[3] );
+		ReportFieldsDiffer( "quaternion[] differs (1st diff) (net %f %f %f %f - pred %f %f %f %f) delta(%f %f %f %f)\n",
+							( float )inValue[i][0], ( float )inValue[i][1], ( float )inValue[i][2], ( float )inValue[i][3],
+							( float )outValue[i][0], ( float )outValue[i][1], ( float )outValue[i][2], ( float )outValue[i][3],
+							delta[0], delta[1], delta[2], delta[3] );
 	}
 
-	DescribeFields( dt, "quaternion (%f %f %f %f)\n", 
-					(float)outValue[0][0], (float)outValue[0][1], (float)outValue[0][2], (float)outValue[0][3] );
+	DescribeFields( dt, "quaternion (%f %f %f %f)\n",
+					( float )outValue[0][0], ( float )outValue[0][1], ( float )outValue[0][2], ( float )outValue[0][3] );
 }
 
-void CPredictionCopy::WatchQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion &inValue )
+void CPredictionCopy::WatchQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion& inValue )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
-	WatchMsg( "quaternion (%f %f %f %f)", (float)outValue[0], (float)outValue[1], (float)outValue[2], (float)outValue[3] );
+	WatchMsg( "quaternion (%f %f %f %f)", ( float )outValue[0], ( float )outValue[1], ( float )outValue[2], ( float )outValue[3] );
 }
 
-void CPredictionCopy::WatchQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion *inValue, int count )
+void CPredictionCopy::WatchQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion* inValue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 	WatchMsg( "quaternion (%f %f %f %f)", outValue[0][0], outValue[0][1], outValue[0][2], outValue[0][3] );
 }
 
 
 
-void CPredictionCopy::DescribeEHandle( difftype_t dt, EHANDLE *outvalue, EHANDLE const *invalue, int count )
+void CPredictionCopy::DescribeEHandle( difftype_t dt, EHANDLE* outvalue, EHANDLE const* invalue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return;
+	}
 
-	if ( dt == DIFFERS )
+	if( dt == DIFFERS )
 	{
 		int i = 0;
-		ReportFieldsDiffer( "EHandles differ (net) 0x%p (pred) 0x%p\n", (void const *)invalue[ i ].Get(), (void *)outvalue[ i ].Get() );
+		ReportFieldsDiffer( "EHandles differ (net) 0x%p (pred) 0x%p\n", ( void const* )invalue[ i ].Get(), ( void* )outvalue[ i ].Get() );
 	}
 
 #if defined( CLIENT_DLL )
-	C_BaseEntity *ent = outvalue[0].Get();
-	if ( ent )
+	C_BaseEntity* ent = outvalue[0].Get();
+	if( ent )
 	{
-		const char *classname = ent->GetClassname();
-		if ( !classname[0] )
+		const char* classname = ent->GetClassname();
+		if( !classname[0] )
 		{
 			classname = typeid( *ent ).name();
 		}
 
-		DescribeFields( dt, "EHandle (0x%p->%s)", (void *)outvalue[ 0 ], classname );
+		DescribeFields( dt, "EHandle (0x%p->%s)", ( void* )outvalue[ 0 ], classname );
 	}
 	else
 	{
@@ -574,27 +626,29 @@ void CPredictionCopy::DescribeEHandle( difftype_t dt, EHANDLE *outvalue, EHANDLE
 	}
 
 #else
-	DescribeFields( dt, "EHandle (0x%p)", (void *)outvalue[ 0 ] );
+	DescribeFields( dt, "EHandle (0x%p)", ( void* )outvalue[ 0 ] );
 #endif
 
 }
 
-void CPredictionCopy::WatchEHandle( difftype_t dt, EHANDLE *outvalue, EHANDLE const *invalue, int count )
+void CPredictionCopy::WatchEHandle( difftype_t dt, EHANDLE* outvalue, EHANDLE const* invalue, int count )
 {
-	if ( m_pWatchField != m_pCurrentField )
+	if( m_pWatchField != m_pCurrentField )
+	{
 		return;
+	}
 
 #if defined( CLIENT_DLL )
-	C_BaseEntity *ent = outvalue[0].Get();
-	if ( ent )
+	C_BaseEntity* ent = outvalue[0].Get();
+	if( ent )
 	{
-		const char *classname = ent->GetClassname();
-		if ( !classname[0] )
+		const char* classname = ent->GetClassname();
+		if( !classname[0] )
 		{
 			classname = typeid( *ent ).name();
 		}
 
-		WatchMsg( "EHandle (0x%p->%s)", (void *)outvalue[ 0 ], classname );
+		WatchMsg( "EHandle (0x%p->%s)", ( void* )outvalue[ 0 ], classname );
 	}
 	else
 	{
@@ -602,33 +656,41 @@ void CPredictionCopy::WatchEHandle( difftype_t dt, EHANDLE *outvalue, EHANDLE co
 	}
 
 #else
-	WatchMsg( "EHandle (0x%p)", (void *)outvalue[ 0 ] );
+	WatchMsg( "EHandle (0x%p)", ( void* )outvalue[ 0 ] );
 #endif
 
 }
 
-void CPredictionCopy::CopyShort( difftype_t dt, short *outvalue, const short *invalue, int count )
+void CPredictionCopy::CopyShort( difftype_t dt, short* outvalue, const short* invalue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof(short) * count, (char *)outvalue, (const char *)invalue ); 
+	CopyData( dt, sizeof( short ) * count, ( char* )outvalue, ( const char* )invalue );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareShort( short *outvalue, const short *invalue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareShort( short* outvalue, const short* invalue, int count )
 {
-	if ( !m_bErrorCheck )
-		return DIFFERS;
-
-	if ( CanCheck() )
+	if( !m_bErrorCheck )
 	{
-		for ( int i = 0; i < count; i++ )
+		return DIFFERS;
+	}
+
+	if( CanCheck() )
+	{
+		for( int i = 0; i < count; i++ )
 		{
-			if ( outvalue[ i ] == invalue[ i ] )
+			if( outvalue[ i ] == invalue[ i ] )
+			{
 				continue;
+			}
 
 			return DIFFERS;
 		}
@@ -638,28 +700,36 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareShort( short *outvalue, cons
 }
 
 
-void CPredictionCopy::CopyInt( difftype_t dt, int *outvalue, const int *invalue, int count )
+void CPredictionCopy::CopyInt( difftype_t dt, int* outvalue, const int* invalue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof(int) * count, (char *)outvalue, (const char *)invalue );
+	CopyData( dt, sizeof( int ) * count, ( char* )outvalue, ( const char* )invalue );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareInt( int *outvalue, const int *invalue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareInt( int* outvalue, const int* invalue, int count )
 {
-	if ( !m_bErrorCheck )
-		return DIFFERS;
-
-	if ( CanCheck() )
+	if( !m_bErrorCheck )
 	{
-		for ( int i = 0; i < count; i++ )
+		return DIFFERS;
+	}
+
+	if( CanCheck() )
+	{
+		for( int i = 0; i < count; i++ )
 		{
-			if ( outvalue[ i ] == invalue[ i ] )
+			if( outvalue[ i ] == invalue[ i ] )
+			{
 				continue;
+			}
 
 			ReportFieldsDiffer( "int differs (net %i pred %i) diff(%i)\n", invalue[i], outvalue[i], outvalue[i] - invalue[i] );
 			return DIFFERS;
@@ -669,28 +739,36 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareInt( int *outvalue, const in
 	return IDENTICAL;
 }
 
-void CPredictionCopy::CopyBool( difftype_t dt, bool *outvalue, const bool *invalue, int count )
+void CPredictionCopy::CopyBool( difftype_t dt, bool* outvalue, const bool* invalue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof( bool ) * count, (char *)outvalue, (const char *)invalue );
+	CopyData( dt, sizeof( bool ) * count, ( char* )outvalue, ( const char* )invalue );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareBool( bool *outvalue, const bool *invalue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareBool( bool* outvalue, const bool* invalue, int count )
 {
-	if ( !m_bErrorCheck )
-		return DIFFERS;
-
-	if ( CanCheck() )
+	if( !m_bErrorCheck )
 	{
-		for ( int i = 0; i < count; i++ )
+		return DIFFERS;
+	}
+
+	if( CanCheck() )
+	{
+		for( int i = 0; i < count; i++ )
 		{
-			if ( outvalue[ i ] == invalue[ i ] )
+			if( outvalue[ i ] == invalue[ i ] )
+			{
 				continue;
+			}
 
 			return DIFFERS;
 		}
@@ -699,37 +777,45 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareBool( bool *outvalue, const 
 	return IDENTICAL;
 }
 
-void CPredictionCopy::CopyFloat( difftype_t dt, float *outvalue, const float *invalue, int count )
+void CPredictionCopy::CopyFloat( difftype_t dt, float* outvalue, const float* invalue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof( float ) * count, (char *)outvalue, (const char *)invalue );
+	CopyData( dt, sizeof( float ) * count, ( char* )outvalue, ( const char* )invalue );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareFloat( float *outvalue, const float *invalue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareFloat( float* outvalue, const float* invalue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
 	difftype_t retval = IDENTICAL;
 
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
 		float tolerance = m_pCurrentField->fieldTolerance;
 		Assert( tolerance >= 0.0f );
 		bool usetolerance = tolerance > 0.0f;
 
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			if ( outvalue[ i ] == invalue[ i ] )
+			if( outvalue[ i ] == invalue[ i ] )
+			{
 				continue;
+			}
 
-			if ( usetolerance &&
-				( fabs( outvalue[ i ] - invalue[ i ] ) <= tolerance ) )
+			if( usetolerance &&
+					( fabs( outvalue[ i ] - invalue[ i ] ) <= tolerance ) )
 			{
 				retval = WITHINTOLERANCE;
 				continue;
@@ -738,29 +824,35 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareFloat( float *outvalue, cons
 			return DIFFERS;
 		}
 	}
-	
+
 	return retval;
 }
 
-void CPredictionCopy::CopyString( difftype_t dt, char *outstring, const char *instring )
+void CPredictionCopy::CopyString( difftype_t dt, char* outstring, const char* instring )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, Q_strlen( instring ) + 1, (char *)outstring, (const char *)instring );
+	CopyData( dt, Q_strlen( instring ) + 1, ( char* )outstring, ( const char* )instring );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareString( char *outstring, const char *instring )
+CPredictionCopy::difftype_t CPredictionCopy::CompareString( char* outstring, const char* instring )
 {
-	if ( !m_bErrorCheck )
-		return DIFFERS;
-
-	if ( CanCheck() )
+	if( !m_bErrorCheck )
 	{
-		if ( Q_strcmp( outstring, instring ) )
+		return DIFFERS;
+	}
+
+	if( CanCheck() )
+	{
+		if( Q_strcmp( outstring, instring ) )
 		{
 			return DIFFERS;
 		}
@@ -769,33 +861,35 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareString( char *outstring, con
 	return IDENTICAL;
 }
 
-void CPredictionCopy::CopyVector( difftype_t dt, Vector& outValue, const Vector &inValue )
+void CPredictionCopy::CopyVector( difftype_t dt, Vector& outValue, const Vector& inValue )
 {
 	CopyVector( dt, &outValue, &inValue, 1 );
 }
 
-void CPredictionCopy::CopyQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion &inValue )
+void CPredictionCopy::CopyQuaternion( difftype_t dt, Quaternion& outValue, const Quaternion& inValue )
 {
 	CopyQuaternion( dt, &outValue, &inValue, 1 );
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector& outValue, const Vector &inValue )
+CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector& outValue, const Vector& inValue )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
 		float tolerance = m_pCurrentField->fieldTolerance;
 		Assert( tolerance >= 0.0f );
 
-		if ( outValue != inValue && ( tolerance > 0.0f ) )
+		if( outValue != inValue && ( tolerance > 0.0f ) )
 		{
 			Vector delta = outValue - inValue;
 
-			if ( fabs( delta.x ) <= tolerance &&
-				 fabs( delta.y ) <= tolerance &&
-				 fabs( delta.z ) <= tolerance )
+			if( fabs( delta.x ) <= tolerance &&
+					fabs( delta.y ) <= tolerance &&
+					fabs( delta.z ) <= tolerance )
 			{
 				return WITHINTOLERANCE;
 			}
@@ -807,41 +901,45 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector& outValue, co
 	return IDENTICAL;
 }
 
-static int QuaternionCompare (const Quaternion& q1, const Quaternion& q2 )
+static int QuaternionCompare( const Quaternion& q1, const Quaternion& q2 )
 {
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
-		if ( q1[i] != q2[i] )
+		if( q1[i] != q2[i] )
+		{
 			return 0;
+		}
 	}
 
 	return 1;
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion& outValue, const Quaternion &inValue )
+CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion& outValue, const Quaternion& inValue )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
 		float tolerance = m_pCurrentField->fieldTolerance;
 		Assert( tolerance >= 0.0f );
 
-		if ( QuaternionCompare( outValue, inValue ) == 0
-			&& ( tolerance > 0.0f ) )
+		if( QuaternionCompare( outValue, inValue ) == 0
+				&& ( tolerance > 0.0f ) )
 		{
 			Quaternion delta;
 
-			for ( int j = 0; j < 4; j++ )
+			for( int j = 0; j < 4; j++ )
 			{
 				delta[j] = outValue[j] - inValue[j];
 			}
 
-			if ( fabs( delta[0] ) <= tolerance &&
-				 fabs( delta[1] ) <= tolerance &&
-				 fabs( delta[2] ) <= tolerance &&
-				 fabs( delta[3] ) <= tolerance )
+			if( fabs( delta[0] ) <= tolerance &&
+					fabs( delta[1] ) <= tolerance &&
+					fabs( delta[2] ) <= tolerance &&
+					fabs( delta[3] ) <= tolerance )
 			{
 				return WITHINTOLERANCE;
 			}
@@ -853,53 +951,65 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion& outV
 	return IDENTICAL;
 }
 
-void CPredictionCopy::CopyVector( difftype_t dt, Vector* outValue, const Vector *inValue, int count )
+void CPredictionCopy::CopyVector( difftype_t dt, Vector* outValue, const Vector* inValue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof( Vector ) * count, (char *)outValue, (const char *)inValue );
+	CopyData( dt, sizeof( Vector ) * count, ( char* )outValue, ( const char* )inValue );
 }
 
-void CPredictionCopy::CopyQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion *inValue, int count )
+void CPredictionCopy::CopyQuaternion( difftype_t dt, Quaternion* outValue, const Quaternion* inValue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	CopyData( dt, sizeof( Quaternion ) * count, (char *)outValue, (const char *)inValue );
+	CopyData( dt, sizeof( Quaternion ) * count, ( char* )outValue, ( const char* )inValue );
 }
 
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector* outValue, const Vector *inValue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector* outValue, const Vector* inValue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
 	difftype_t retval = IDENTICAL;
 
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
 		float tolerance = m_pCurrentField->fieldTolerance;
 		Assert( tolerance >= 0.0f );
 
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			if ( outValue[ i ] == inValue[ i ] )
+			if( outValue[ i ] == inValue[ i ] )
+			{
 				continue;
+			}
 
 			Vector delta = outValue[ i ] - inValue[ i ];
 
-			if ( tolerance > 0.0f )
+			if( tolerance > 0.0f )
 			{
-				if ( fabs( delta.x ) <= tolerance &&
-					 fabs( delta.y ) <= tolerance &&
-					 fabs( delta.z ) <= tolerance )
+				if( fabs( delta.x ) <= tolerance &&
+						fabs( delta.y ) <= tolerance &&
+						fabs( delta.z ) <= tolerance )
 				{
 					retval = WITHINTOLERANCE;
 					continue;
@@ -912,36 +1022,40 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareVector( Vector* outValue, co
 	return retval;
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion* outValue, const Quaternion *inValue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion* outValue, const Quaternion* inValue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
 	difftype_t retval = IDENTICAL;
 
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
 		float tolerance = m_pCurrentField->fieldTolerance;
 		Assert( tolerance >= 0.0f );
 
-		for ( int i = 0; i < count; i++ )
+		for( int i = 0; i < count; i++ )
 		{
-			if ( QuaternionCompare( outValue[ i ], inValue[ i ] ) )
+			if( QuaternionCompare( outValue[ i ], inValue[ i ] ) )
+			{
 				continue;
+			}
 
 			Quaternion delta;
 
-			for ( int j = 0; j < 4; j++ )
+			for( int j = 0; j < 4; j++ )
 			{
 				delta[j] = outValue[i][j] - inValue[i][j];
 			}
 
-			if ( tolerance > 0.0f )
+			if( tolerance > 0.0f )
 			{
-				if ( fabs( delta[0] ) <= tolerance &&
-					 fabs( delta[1] ) <= tolerance &&
-					 fabs( delta[2] ) <= tolerance &&
-					 fabs( delta[3] ) <= tolerance )
+				if( fabs( delta[0] ) <= tolerance &&
+						fabs( delta[1] ) <= tolerance &&
+						fabs( delta[2] ) <= tolerance &&
+						fabs( delta[3] ) <= tolerance )
 				{
 					retval = WITHINTOLERANCE;
 					continue;
@@ -954,32 +1068,40 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareQuaternion( Quaternion* outV
 	return retval;
 }
 
-void CPredictionCopy::CopyEHandle( difftype_t dt, EHANDLE *outvalue, EHANDLE const *invalue, int count )
+void CPredictionCopy::CopyEHandle( difftype_t dt, EHANDLE* outvalue, EHANDLE const* invalue, int count )
 {
-	if ( !m_bPerformCopy )
+	if( !m_bPerformCopy )
+	{
 		return;
+	}
 
-	if ( dt == IDENTICAL )
+	if( dt == IDENTICAL )
+	{
 		return;
+	}
 
-	for ( int i = 0; i < count; i++ )
+	for( int i = 0; i < count; i++ )
 	{
 		outvalue[ i ] = invalue[ i ];
 	}
 }
 
-CPredictionCopy::difftype_t CPredictionCopy::CompareEHandle( EHANDLE *outvalue, EHANDLE const *invalue, int count )
+CPredictionCopy::difftype_t CPredictionCopy::CompareEHandle( EHANDLE* outvalue, EHANDLE const* invalue, int count )
 {
-	if ( !m_bErrorCheck )
+	if( !m_bErrorCheck )
+	{
 		return DIFFERS;
+	}
 
 	int i;
-	if ( CanCheck() )
+	if( CanCheck() )
 	{
-		for ( i = 0; i < count; i++ )
+		for( i = 0; i < count; i++ )
 		{
-			if ( outvalue[ i ].Get() == invalue[ i ].Get() )
+			if( outvalue[ i ].Get() == invalue[ i ].Get() )
+			{
 				continue;
+			}
 
 			return DIFFERS;
 		}
@@ -988,7 +1110,7 @@ CPredictionCopy::difftype_t CPredictionCopy::CompareEHandle( EHANDLE *outvalue, 
 	return IDENTICAL;
 }
 
-void CPredictionCopy::CopyFields( int chain_count, datamap_t *pRootMap, typedescription_t *pFields, int fieldCount )
+void CPredictionCopy::CopyFields( int chain_count, datamap_t* pRootMap, typedescription_t* pFields, int fieldCount )
 {
 	int				i;
 	int				flags;
@@ -997,53 +1119,59 @@ void CPredictionCopy::CopyFields( int chain_count, datamap_t *pRootMap, typedesc
 	int				fieldSize;
 
 	m_pCurrentMap = pRootMap;
-	if ( !m_pCurrentClassName )
+	if( !m_pCurrentClassName )
 	{
 		m_pCurrentClassName = pRootMap->dataClassName;
 	}
 
-	for ( i = 0; i < fieldCount; i++ )
+	for( i = 0; i < fieldCount; i++ )
 	{
 		m_pCurrentField = &pFields[ i ];
 		flags = m_pCurrentField->flags;
 
 		// Mark any subchains first
-		if ( m_pCurrentField->override_field != NULL )
+		if( m_pCurrentField->override_field != NULL )
 		{
 			m_pCurrentField->override_field->override_count = chain_count;
 		}
 
 		// Skip this field?
-		if ( m_pCurrentField->override_count == chain_count )
+		if( m_pCurrentField->override_count == chain_count )
 		{
 			continue;
 		}
 
 		// Always recurse into embeddeds
-		if ( m_pCurrentField->fieldType != FIELD_EMBEDDED )
+		if( m_pCurrentField->fieldType != FIELD_EMBEDDED )
 		{
 			// Don't copy fields that are private to server or client
-			if ( flags & FTYPEDESC_PRIVATE )
+			if( flags & FTYPEDESC_PRIVATE )
+			{
 				continue;
+			}
 
 			// For PC_NON_NETWORKED_ONLYs skip any fields that are present in the network send tables
-			if ( m_nType == PC_NON_NETWORKED_ONLY && ( flags & FTYPEDESC_INSENDTABLE ) )
+			if( m_nType == PC_NON_NETWORKED_ONLY && ( flags & FTYPEDESC_INSENDTABLE ) )
+			{
 				continue;
+			}
 
 			// For PC_NETWORKED_ONLYs skip any fields that are not present in the network send tables
-			if ( m_nType == PC_NETWORKED_ONLY && !( flags & FTYPEDESC_INSENDTABLE ) )
+			if( m_nType == PC_NETWORKED_ONLY && !( flags & FTYPEDESC_INSENDTABLE ) )
+			{
 				continue;
+			}
 		}
 
-		void *pOutputData;
-		void const *pInputData;
+		void* pOutputData;
+		void const* pInputData;
 
 		fieldOffsetDest = m_pCurrentField->fieldOffset[ m_nDestOffsetIndex ];
 		fieldOffsetSrc	= m_pCurrentField->fieldOffset[ m_nSrcOffsetIndex ];
 		fieldSize = m_pCurrentField->fieldSize;
 
-		pOutputData = (void *)((char *)m_pDest + fieldOffsetDest );
-		pInputData = (void const *)((char *)m_pSrc + fieldOffsetSrc );
+		pOutputData = ( void* )( ( char* )m_pDest + fieldOffsetDest );
+		pInputData = ( void const* )( ( char* )m_pSrc + fieldOffsetSrc );
 
 		// Assume we can report
 		m_bShouldReport = m_bReportErrors;
@@ -1055,27 +1183,27 @@ void CPredictionCopy::CopyFields( int chain_count, datamap_t *pRootMap, typedesc
 
 		switch( m_pCurrentField->fieldType )
 		{
-		case FIELD_EMBEDDED:
+			case FIELD_EMBEDDED:
 			{
-				typedescription_t *save = m_pCurrentField;
-				void *saveDest = m_pDest;
-				void const *saveSrc = m_pSrc;
-				const char *saveName = m_pCurrentClassName;
+				typedescription_t* save = m_pCurrentField;
+				void* saveDest = m_pDest;
+				void const* saveSrc = m_pSrc;
+				const char* saveName = m_pCurrentClassName;
 
 				m_pCurrentClassName = m_pCurrentField->td->dataClassName;
 
 				// FIXME: Should this be done outside the FIELD_EMBEDDED case??
 				// Don't follow the pointer if we're reading from a compressed packet
 				m_pSrc = pInputData;
-				if ( ( flags & FTYPEDESC_PTR ) && (m_nSrcOffsetIndex == PC_DATA_NORMAL) )
+				if( ( flags & FTYPEDESC_PTR ) && ( m_nSrcOffsetIndex == PC_DATA_NORMAL ) )
 				{
-					m_pSrc = *((void**)m_pSrc);
+					m_pSrc = *( ( void** )m_pSrc );
 				}
 
 				m_pDest = pOutputData;
-				if ( ( flags & FTYPEDESC_PTR ) && (m_nDestOffsetIndex == PC_DATA_NORMAL) )
+				if( ( flags & FTYPEDESC_PTR ) && ( m_nDestOffsetIndex == PC_DATA_NORMAL ) )
 				{
-					m_pDest = *((void**)m_pDest);
+					m_pDest = *( ( void** )m_pDest );
 				}
 
 				CopyFields( chain_count, pRootMap, m_pCurrentField->td->dataDesc, m_pCurrentField->td->dataNumFields );
@@ -1086,139 +1214,199 @@ void CPredictionCopy::CopyFields( int chain_count, datamap_t *pRootMap, typedesc
 				m_pSrc = saveSrc;
 			}
 			break;
-		case FIELD_FLOAT:
+			case FIELD_FLOAT:
 			{
-				difftype = CompareFloat( (float *)pOutputData, (float const *)pInputData, fieldSize );
-				CopyFloat( difftype, (float *)pOutputData, (float const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeFloat( difftype, (float *)pOutputData, (float const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchFloat( difftype, (float *)pOutputData, (float const *)pInputData, fieldSize );
+				difftype = CompareFloat( ( float* )pOutputData, ( float const* )pInputData, fieldSize );
+				CopyFloat( difftype, ( float* )pOutputData, ( float const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeFloat( difftype, ( float* )pOutputData, ( float const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchFloat( difftype, ( float* )pOutputData, ( float const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_TIME:
-		case FIELD_TICK:
-			Assert( 0 );
-			break;
+			case FIELD_TIME:
+			case FIELD_TICK:
+				Assert( 0 );
+				break;
 
-		case FIELD_STRING:
+			case FIELD_STRING:
 			{
-				difftype = CompareString( (char *)pOutputData, (char const*)pInputData );
-				CopyString( difftype, (char *)pOutputData, (char const*)pInputData );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeString( difftype,(char *)pOutputData, (char const*)pInputData );
-				if ( bShouldWatch ) WatchString( difftype,(char *)pOutputData, (char const*)pInputData );
+				difftype = CompareString( ( char* )pOutputData, ( char const* )pInputData );
+				CopyString( difftype, ( char* )pOutputData, ( char const* )pInputData );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeString( difftype, ( char* )pOutputData, ( char const* )pInputData );
+				}
+				if( bShouldWatch )
+				{
+					WatchString( difftype, ( char* )pOutputData, ( char const* )pInputData );
+				}
 			}
 			break;
 
-		case FIELD_MODELINDEX:
-			Assert( 0 );
-			break;
+			case FIELD_MODELINDEX:
+				Assert( 0 );
+				break;
 
-		case FIELD_MODELNAME:
-		case FIELD_SOUNDNAME:
-			Assert( 0 );
-			break;
+			case FIELD_MODELNAME:
+			case FIELD_SOUNDNAME:
+				Assert( 0 );
+				break;
 
-		case FIELD_CUSTOM:
-			Assert( 0 );
-			break;
+			case FIELD_CUSTOM:
+				Assert( 0 );
+				break;
 
-		case FIELD_CLASSPTR:
-		case FIELD_EDICT:
-			Assert( 0 );
-			break;
+			case FIELD_CLASSPTR:
+			case FIELD_EDICT:
+				Assert( 0 );
+				break;
 
-		case FIELD_POSITION_VECTOR:
-			Assert( 0 );
-			break;
+			case FIELD_POSITION_VECTOR:
+				Assert( 0 );
+				break;
 
-		case FIELD_VECTOR:
+			case FIELD_VECTOR:
 			{
-				difftype = CompareVector( (Vector *)pOutputData, (Vector const *)pInputData, fieldSize );
-				CopyVector( difftype, (Vector *)pOutputData, (Vector const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeVector( difftype, (Vector *)pOutputData, (Vector const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchVector( difftype, (Vector *)pOutputData, (Vector const *)pInputData, fieldSize );
+				difftype = CompareVector( ( Vector* )pOutputData, ( Vector const* )pInputData, fieldSize );
+				CopyVector( difftype, ( Vector* )pOutputData, ( Vector const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeVector( difftype, ( Vector* )pOutputData, ( Vector const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchVector( difftype, ( Vector* )pOutputData, ( Vector const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_QUATERNION:
+			case FIELD_QUATERNION:
 			{
-				difftype = CompareQuaternion( (Quaternion *)pOutputData, (Quaternion const *)pInputData, fieldSize );
-				CopyQuaternion( difftype, (Quaternion *)pOutputData, (Quaternion const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeQuaternion( difftype, (Quaternion *)pOutputData, (Quaternion const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchQuaternion( difftype, (Quaternion *)pOutputData, (Quaternion const *)pInputData, fieldSize );
+				difftype = CompareQuaternion( ( Quaternion* )pOutputData, ( Quaternion const* )pInputData, fieldSize );
+				CopyQuaternion( difftype, ( Quaternion* )pOutputData, ( Quaternion const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeQuaternion( difftype, ( Quaternion* )pOutputData, ( Quaternion const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchQuaternion( difftype, ( Quaternion* )pOutputData, ( Quaternion const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_COLOR32:
+			case FIELD_COLOR32:
 			{
-				difftype = CompareData( 4*fieldSize, (char *)pOutputData, (const char *)pInputData );
-				CopyData( difftype, 4*fieldSize, (char *)pOutputData, (const char *)pInputData );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeData( difftype, 4*fieldSize, (char *)pOutputData, (const char *)pInputData );
-				if ( bShouldWatch ) WatchData( difftype, 4*fieldSize, (char *)pOutputData, (const char *)pInputData );
+				difftype = CompareData( 4 * fieldSize, ( char* )pOutputData, ( const char* )pInputData );
+				CopyData( difftype, 4 * fieldSize, ( char* )pOutputData, ( const char* )pInputData );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeData( difftype, 4 * fieldSize, ( char* )pOutputData, ( const char* )pInputData );
+				}
+				if( bShouldWatch )
+				{
+					WatchData( difftype, 4 * fieldSize, ( char* )pOutputData, ( const char* )pInputData );
+				}
 			}
 			break;
 
-		case FIELD_BOOLEAN:
+			case FIELD_BOOLEAN:
 			{
-				difftype = CompareBool( (bool *)pOutputData, (bool const *)pInputData, fieldSize );
-				CopyBool( difftype, (bool *)pOutputData, (bool const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeBool( difftype, (bool *)pOutputData, (bool const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchBool( difftype, (bool *)pOutputData, (bool const *)pInputData, fieldSize );
+				difftype = CompareBool( ( bool* )pOutputData, ( bool const* )pInputData, fieldSize );
+				CopyBool( difftype, ( bool* )pOutputData, ( bool const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeBool( difftype, ( bool* )pOutputData, ( bool const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchBool( difftype, ( bool* )pOutputData, ( bool const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_INTEGER:
+			case FIELD_INTEGER:
 			{
-				difftype = CompareInt( (int *)pOutputData, (int const *)pInputData, fieldSize );
-				CopyInt( difftype, (int *)pOutputData, (int const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeInt( difftype, (int *)pOutputData, (int const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchInt( difftype, (int *)pOutputData, (int const *)pInputData, fieldSize );
+				difftype = CompareInt( ( int* )pOutputData, ( int const* )pInputData, fieldSize );
+				CopyInt( difftype, ( int* )pOutputData, ( int const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeInt( difftype, ( int* )pOutputData, ( int const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchInt( difftype, ( int* )pOutputData, ( int const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_SHORT:
+			case FIELD_SHORT:
 			{
-				difftype = CompareShort( (short *)pOutputData, (short const *)pInputData, fieldSize );
-				CopyShort( difftype, (short *)pOutputData, (short const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeShort( difftype, (short *)pOutputData, (short const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchShort( difftype, (short *)pOutputData, (short const *)pInputData, fieldSize );
+				difftype = CompareShort( ( short* )pOutputData, ( short const* )pInputData, fieldSize );
+				CopyShort( difftype, ( short* )pOutputData, ( short const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeShort( difftype, ( short* )pOutputData, ( short const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchShort( difftype, ( short* )pOutputData, ( short const* )pInputData, fieldSize );
+				}
 			}
 			break;
 
-		case FIELD_CHARACTER:
+			case FIELD_CHARACTER:
 			{
-				difftype = CompareData( fieldSize, ((char *)pOutputData), (const char *)pInputData );
-				CopyData( difftype, fieldSize, ((char *)pOutputData), (const char *)pInputData );
-				
-				int valOut = *((char *)pOutputData);
-				int valIn  = *((const char *)pInputData);
-				
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeInt( difftype, &valOut, &valIn, fieldSize );
-				if ( bShouldWatch ) WatchData( difftype, fieldSize, ((char *)pOutputData), (const char *)pInputData );
+				difftype = CompareData( fieldSize, ( ( char* )pOutputData ), ( const char* )pInputData );
+				CopyData( difftype, fieldSize, ( ( char* )pOutputData ), ( const char* )pInputData );
+
+				int valOut = *( ( char* )pOutputData );
+				int valIn  = *( ( const char* )pInputData );
+
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeInt( difftype, &valOut, &valIn, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchData( difftype, fieldSize, ( ( char* )pOutputData ), ( const char* )pInputData );
+				}
 			}
 			break;
-		case FIELD_EHANDLE:
+			case FIELD_EHANDLE:
 			{
-				difftype = CompareEHandle( (EHANDLE *)pOutputData, (EHANDLE const *)pInputData, fieldSize );
-				CopyEHandle( difftype, (EHANDLE *)pOutputData, (EHANDLE const *)pInputData, fieldSize );
-				if ( m_bErrorCheck && m_bShouldDescribe ) DescribeEHandle( difftype, (EHANDLE *)pOutputData, (EHANDLE const *)pInputData, fieldSize );
-				if ( bShouldWatch ) WatchEHandle( difftype, (EHANDLE *)pOutputData, (EHANDLE const *)pInputData, fieldSize );
+				difftype = CompareEHandle( ( EHANDLE* )pOutputData, ( EHANDLE const* )pInputData, fieldSize );
+				CopyEHandle( difftype, ( EHANDLE* )pOutputData, ( EHANDLE const* )pInputData, fieldSize );
+				if( m_bErrorCheck && m_bShouldDescribe )
+				{
+					DescribeEHandle( difftype, ( EHANDLE* )pOutputData, ( EHANDLE const* )pInputData, fieldSize );
+				}
+				if( bShouldWatch )
+				{
+					WatchEHandle( difftype, ( EHANDLE* )pOutputData, ( EHANDLE const* )pInputData, fieldSize );
+				}
 			}
 			break;
-		case FIELD_FUNCTION:
+			case FIELD_FUNCTION:
 			{
-			Assert( 0 );
+				Assert( 0 );
 			}
 			break;
-		case FIELD_VOID:
+			case FIELD_VOID:
 			{
 				// Don't do anything, it's an empty data description
 			}
 			break;
-		default:
+			default:
 			{
 				Warning( "Bad field type\n" );
-				Assert(0);
+				Assert( 0 );
 			}
 			break;
 		}
@@ -1227,12 +1415,12 @@ void CPredictionCopy::CopyFields( int chain_count, datamap_t *pRootMap, typedesc
 	m_pCurrentClassName = NULL;
 }
 
-void CPredictionCopy::TransferData_R( int chaincount, datamap_t *dmap )
+void CPredictionCopy::TransferData_R( int chaincount, datamap_t* dmap )
 {
 	// Copy from here first, then baseclasses
 	CopyFields( chaincount, dmap, dmap->dataDesc, dmap->dataNumFields );
 
-	if ( dmap->baseMap )
+	if( dmap->baseMap )
 	{
 		TransferData_R( chaincount, dmap->baseMap );
 	}
@@ -1240,72 +1428,78 @@ void CPredictionCopy::TransferData_R( int chaincount, datamap_t *dmap )
 
 static int g_nChainCount = 1;
 
-static typedescription_t *FindFieldByName_R( const char *fieldname, datamap_t *dmap )
+static typedescription_t* FindFieldByName_R( const char* fieldname, datamap_t* dmap )
 {
 	int c = dmap->dataNumFields;
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		typedescription_t *td = &dmap->dataDesc[ i ];
-		if ( td->fieldType == FIELD_VOID )
+		typedescription_t* td = &dmap->dataDesc[ i ];
+		if( td->fieldType == FIELD_VOID )
+		{
 			continue;
+		}
 
-		if ( td->fieldType == FIELD_EMBEDDED )
+		if( td->fieldType == FIELD_EMBEDDED )
 		{
 			// TODO:  this will only find the first subclass with the variable of the specified name
 			//  At some point we might want to support multiple levels of overriding automatically
-			typedescription_t *ret = FindFieldByName_R( fieldname, td->td );
-			if ( ret )
+			typedescription_t* ret = FindFieldByName_R( fieldname, td->td );
+			if( ret )
 			{
 				return ret;
 			}
 		}
 
-		if ( !V_stricmp( td->fieldName, fieldname ) )
+		if( !V_stricmp( td->fieldName, fieldname ) )
 		{
 			return td;
 		}
 	}
 
-	if ( dmap->baseMap )
+	if( dmap->baseMap )
 	{
 		return FindFieldByName_R( fieldname, dmap->baseMap );
 	}
 	return NULL;
 }
 
-void ValidateChains_R( datamap_t *dmap )
+void ValidateChains_R( datamap_t* dmap )
 {
 	dmap->chains_validated = true;
 
 	int c = dmap->dataNumFields;
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		typedescription_t *td = &dmap->dataDesc[ i ];
-		if ( td->fieldType == FIELD_VOID )
+		typedescription_t* td = &dmap->dataDesc[ i ];
+		if( td->fieldType == FIELD_VOID )
+		{
 			continue;
+		}
 
-		if ( td->fieldType == FIELD_EMBEDDED )
+		if( td->fieldType == FIELD_EMBEDDED )
 		{
 			ValidateChains_R( td->td );
 			continue;
 		}
 
-		if ( !( td->flags & FTYPEDESC_OVERRIDE ) )
-			continue;
-
-		if ( dmap->baseMap )
+		if( !( td->flags & FTYPEDESC_OVERRIDE ) )
 		{
-			typedescription_t *basefield = FindFieldByName_R( td->fieldName, dmap->baseMap );
-			if ( basefield )
+			continue;
+		}
+
+		if( dmap->baseMap )
+		{
+			typedescription_t* basefield = FindFieldByName_R( td->fieldName, dmap->baseMap );
+			if( basefield )
 			{
 				td->override_field = basefield;
 			}
 		}
 	}
 
-	if ( dmap->baseMap )
+	if( dmap->baseMap )
 	{
-		if ( !dmap->baseMap->chains_validated )
+		if( !dmap->baseMap->chains_validated )
 		{
 			ValidateChains_R( dmap->baseMap );
 		}
@@ -1313,12 +1507,12 @@ void ValidateChains_R( datamap_t *dmap )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *fieldname - 
-//			*dmap - 
+// Purpose:
+// Input  : *fieldname -
+//			*dmap -
 // Output : typedescription_t
 //-----------------------------------------------------------------------------
-typedescription_t *FindFieldByName( const char *fieldname, datamap_t *dmap )
+typedescription_t* FindFieldByName( const char* fieldname, datamap_t* dmap )
 {
 	return FindFieldByName_R( fieldname, dmap );
 }
@@ -1327,68 +1521,76 @@ static ConVar pwatchent( "pwatchent", "-1", FCVAR_CHEAT, "Entity to watch for pr
 static ConVar pwatchvar( "pwatchvar", "", FCVAR_CHEAT, "Entity variable to watch in prediction system for changes." );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *fmt - 
-//			... - 
+// Purpose:
+// Input  : *fmt -
+//			... -
 //-----------------------------------------------------------------------------
-void CPredictionCopy::WatchMsg( const char *fmt, ... )
+void CPredictionCopy::WatchMsg( const char* fmt, ... )
 {
-	Assert( m_pCurrentField && (m_pCurrentField == m_pWatchField) );
+	Assert( m_pCurrentField && ( m_pCurrentField == m_pWatchField ) );
 	Assert( m_pOperation );
 
 	va_list argptr;
 	char data[ 4096 ];
 	int len;
-	va_start(argptr, fmt);
-	len = Q_vsnprintf(data, sizeof( data ), fmt, argptr);
-	va_end(argptr);
+	va_start( argptr, fmt );
+	len = Q_vsnprintf( data, sizeof( data ), fmt, argptr );
+	va_end( argptr );
 
 	Msg( "%i %s %s : %s\n", gpGlobals->tickcount, m_pOperation, m_pCurrentField->fieldName, data );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *operation - 
-//			entindex - 
-//			*dmap - 
+// Purpose:
+// Input  : *operation -
+//			entindex -
+//			*dmap -
 //-----------------------------------------------------------------------------
-void CPredictionCopy::DetermineWatchField( const char *operation, int entindex,  datamap_t *dmap )
+void CPredictionCopy::DetermineWatchField( const char* operation, int entindex,  datamap_t* dmap )
 {
 	m_pWatchField = NULL;
 	m_pOperation = operation;
-	if ( !m_pOperation || !m_pOperation[0] )
+	if( !m_pOperation || !m_pOperation[0] )
+	{
 		return;
+	}
 
 	int enttowatch = pwatchent.GetInt();
-	if ( enttowatch < 0 )
+	if( enttowatch < 0 )
+	{
 		return;
+	}
 
-	if ( entindex != enttowatch )
+	if( entindex != enttowatch )
+	{
 		return;
+	}
 
 	// See if they specified a field
-	if ( pwatchvar.GetString()[0] == 0 )
+	if( pwatchvar.GetString()[0] == 0 )
+	{
 		return;
+	}
 
 	m_pWatchField = FindFieldByName( pwatchvar.GetString(), dmap );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *operation - 
-//			entindex - 
-//			*dmap - 
+// Purpose:
+// Input  : *operation -
+//			entindex -
+//			*dmap -
 // Output : int
 //-----------------------------------------------------------------------------
-int CPredictionCopy::TransferData( const char *operation, int entindex, datamap_t *dmap )
+int CPredictionCopy::TransferData( const char* operation, int entindex, datamap_t* dmap )
 {
 	++g_nChainCount;
 
-	if ( !dmap->chains_validated )
+	if( !dmap->chains_validated )
 	{
 		ValidateChains_R( dmap );
 	}
-	
+
 	DetermineWatchField( operation, entindex, dmap );
 
 	TransferData_R( g_nChainCount, dmap );
@@ -1406,11 +1608,11 @@ public:
 	CPredictionDescribeData( void const *src );
 
 	void	DescribeShort( const short *invalue, int count );
-	void	DescribeInt( const int *invalue, int count );		
-	void	DescribeBool( const bool *invalue, int count );	
-	void	DescribeFloat( const float *invalue, int count );	
-	void	DescribeData( int size, const char *indata );		
-	void	DescribeString( const char *instring );			
+	void	DescribeInt( const int *invalue, int count );
+	void	DescribeBool( const bool *invalue, int count );
+	void	DescribeFloat( const float *invalue, int count );
+	void	DescribeData( int size, const char *indata );
+	void	DescribeString( const char *instring );
 	void	DescribeVector( const Vector &inValue );
 	void	DescribeVector( const Vector *inValue, int count );
 	void	DescribeEHandle( EHANDLE const *invalue, int count );
@@ -1428,7 +1630,7 @@ private:
 };
 */
 
-CPredictionDescribeData::CPredictionDescribeData( void const *src, bool src_packed, FN_FIELD_DESCRIPTION func /*= 0*/ )
+CPredictionDescribeData::CPredictionDescribeData( void const* src, bool src_packed, FN_FIELD_DESCRIPTION func /*= 0*/ )
 {
 	m_pSrc				= src;
 	m_nSrcOffsetIndex	= src_packed ? TD_OFFSET_PACKED : TD_OFFSET_NORMAL;
@@ -1442,11 +1644,11 @@ CPredictionDescribeData::CPredictionDescribeData( void const *src, bool src_pack
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *fmt - 
-//			... - 
+// Purpose:
+// Input  : *fmt -
+//			... -
 //-----------------------------------------------------------------------------
-void CPredictionDescribeData::Describe( const char *fmt, ... )
+void CPredictionDescribeData::Describe( const char* fmt, ... )
 {
 //	if ( !m_bShouldReport )
 //		return;
@@ -1454,10 +1656,10 @@ void CPredictionDescribeData::Describe( const char *fmt, ... )
 	Assert( m_pCurrentMap );
 	Assert( m_pCurrentClassName );
 
-	const char *fieldname = "empty";
+	const char* fieldname = "empty";
 	int flags = 0;
 
-	if ( m_pCurrentField )
+	if( m_pCurrentField )
 	{
 		flags		= m_pCurrentField->flags;
 		fieldname	= m_pCurrentField->fieldName ? m_pCurrentField->fieldName : "NULL";
@@ -1466,18 +1668,18 @@ void CPredictionDescribeData::Describe( const char *fmt, ... )
 	va_list argptr;
 	char data[ 4096 ];
 	int len;
-	va_start(argptr, fmt);
-	len = Q_vsnprintf(data, sizeof( data ), fmt, argptr);
-	va_end(argptr);
+	va_start( argptr, fmt );
+	len = Q_vsnprintf( data, sizeof( data ), fmt, argptr );
+	va_end( argptr );
 
 	bool isprivate = ( flags & FTYPEDESC_PRIVATE ) ? true : false;
 	bool isnetworked = ( flags & FTYPEDESC_INSENDTABLE ) ? true : false;
 
-	if ( m_FieldDescFunc )
+	if( m_FieldDescFunc )
 	{
-		(*m_FieldDescFunc)( 
-			m_pCurrentClassName, 
-			m_pCurrentField->fieldName, 
+		( *m_FieldDescFunc )(
+			m_pCurrentClassName,
+			m_pCurrentField->fieldName,
 			g_FieldTypes[ m_pCurrentField->fieldType ],
 			isnetworked,
 			data );
@@ -1487,33 +1689,33 @@ void CPredictionDescribeData::Describe( const char *fmt, ... )
 		char suffix[ 128 ];
 
 		suffix[ 0 ] = 0;
-		if ( isprivate )
+		if( isprivate )
 		{
 			Q_strncat( suffix, "private", sizeof( suffix ), COPY_ALL_CHARACTERS );
 		}
-		if ( isnetworked )
+		if( isnetworked )
 		{
-			if ( suffix[ 0 ] )
+			if( suffix[ 0 ] )
 			{
 				Q_strncat( suffix, " - ", sizeof( suffix ), COPY_ALL_CHARACTERS );
 			}
 			Q_strncat( suffix, "net", sizeof( suffix ), COPY_ALL_CHARACTERS );
 		}
 
-		if ( suffix[ 0 ] )
+		if( suffix[ 0 ] )
 		{
 			Msg( "%s::%s(%s) - %s",
-				m_pCurrentClassName,
-				fieldname,
-				suffix,
-				data );
+				 m_pCurrentClassName,
+				 fieldname,
+				 suffix,
+				 data );
 		}
 		else
 		{
 			Msg( "%s::%s - %s",
-				m_pCurrentClassName,
-				fieldname,
-				data );
+				 m_pCurrentClassName,
+				 fieldname,
+				 data );
 		}
 	}
 
@@ -1521,81 +1723,83 @@ void CPredictionDescribeData::Describe( const char *fmt, ... )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : size - 
-//			*outdata - 
-//			*indata - 
+// Purpose:
+// Input  : size -
+//			*outdata -
+//			*indata -
 //-----------------------------------------------------------------------------
-void CPredictionDescribeData::DescribeData( int size, const char *indata )
+void CPredictionDescribeData::DescribeData( int size, const char* indata )
 {
-	if ( !indata )
+	if( !indata )
+	{
 		return;
+	}
 
 	Describe( "binary (%i bytes)\n", size );
 }
 
 
-void CPredictionDescribeData::DescribeShort( const short *invalue, int count )
+void CPredictionDescribeData::DescribeShort( const short* invalue, int count )
 {
-	Describe( "short (%i)\n", (int)(invalue[0]) );
+	Describe( "short (%i)\n", ( int )( invalue[0] ) );
 }
 
 
-void CPredictionDescribeData::DescribeInt( const int *invalue, int count )
+void CPredictionDescribeData::DescribeInt( const int* invalue, int count )
 {
-	for ( int i = 0; i < count; ++i )
+	for( int i = 0; i < count; ++i )
 	{
 		Describe( "[%i] integer (%i)\n", i, invalue[i] );
 	}
 }
 
-void CPredictionDescribeData::DescribeBool( const bool *invalue, int count )
+void CPredictionDescribeData::DescribeBool( const bool* invalue, int count )
 {
-	Describe( "bool (%s)\n", (invalue[0]) ? "true" : "false" );
+	Describe( "bool (%s)\n", ( invalue[0] ) ? "true" : "false" );
 }
 
-void CPredictionDescribeData::DescribeFloat( const float *invalue, int count )
+void CPredictionDescribeData::DescribeFloat( const float* invalue, int count )
 {
 	Describe( "float (%f)\n", invalue[ 0 ] );
 }
 
-void CPredictionDescribeData::DescribeString( const char *instring )
+void CPredictionDescribeData::DescribeString( const char* instring )
 {
 	Describe( "string (%s)\n", instring );
 }
 
-void CPredictionDescribeData::DescribeVector( const Vector &inValue )
+void CPredictionDescribeData::DescribeVector( const Vector& inValue )
 {
-	Describe( "vector (%f %f %f)\n", 
-				inValue.x, inValue.y, inValue.z );
+	Describe( "vector (%f %f %f)\n",
+			  inValue.x, inValue.y, inValue.z );
 }
 
 
-void CPredictionDescribeData::DescribeVector( const Vector *inValue, int count )
+void CPredictionDescribeData::DescribeVector( const Vector* inValue, int count )
 {
-	Describe( "vector (%f %f %f)\n", 
-					inValue[0].x, inValue[0].y, inValue[0].z );
+	Describe( "vector (%f %f %f)\n",
+			  inValue[0].x, inValue[0].y, inValue[0].z );
 }
 
-void CPredictionDescribeData::DescribeQuaternion( const Quaternion &inValue )
+void CPredictionDescribeData::DescribeQuaternion( const Quaternion& inValue )
 {
-	Describe( "quaternion (%f %f %f %f)\n", 
-				inValue[0], inValue[1], inValue[2], inValue[3] );
+	Describe( "quaternion (%f %f %f %f)\n",
+			  inValue[0], inValue[1], inValue[2], inValue[3] );
 }
 
 
-void CPredictionDescribeData::DescribeQuaternion( const Quaternion *inValue, int count )
+void CPredictionDescribeData::DescribeQuaternion( const Quaternion* inValue, int count )
 {
-	Describe( "quaternion (%f %f %f %f)\n", 
-				inValue[0][0], inValue[0][1], inValue[0][2], inValue[0][3] );
+	Describe( "quaternion (%f %f %f %f)\n",
+			  inValue[0][0], inValue[0][1], inValue[0][2], inValue[0][3] );
 }
 
-void CPredictionDescribeData::DescribeEHandle( EHANDLE const *invalue, int count )
+void CPredictionDescribeData::DescribeEHandle( EHANDLE const* invalue, int count )
 {
-	Describe( "EHandle (%p)\n", (void *)invalue[ 0 ] );
+	Describe( "EHandle (%p)\n", ( void* )invalue[ 0 ] );
 }
 
-void CPredictionDescribeData::DescribeFields_R( int chain_count, datamap_t *pRootMap, typedescription_t *pFields, int fieldCount )
+void CPredictionDescribeData::DescribeFields_R( int chain_count, datamap_t* pRootMap, typedescription_t* pFields, int fieldCount )
 {
 	int				i;
 	int				flags;
@@ -1603,148 +1807,148 @@ void CPredictionDescribeData::DescribeFields_R( int chain_count, datamap_t *pRoo
 	int				fieldSize;
 
 	m_pCurrentMap = pRootMap;
-	if ( !m_pCurrentClassName )
+	if( !m_pCurrentClassName )
 	{
 		m_pCurrentClassName = pRootMap->dataClassName;
 	}
 
-	for ( i = 0; i < fieldCount; i++ )
+	for( i = 0; i < fieldCount; i++ )
 	{
 		m_pCurrentField = &pFields[ i ];
 		flags = m_pCurrentField->flags;
-		
+
 		// Mark any subchains first
-		if ( m_pCurrentField->override_field != NULL )
+		if( m_pCurrentField->override_field != NULL )
 		{
 			m_pCurrentField->override_field->override_count = chain_count;
 		}
 
 		// Skip this field?
-		if ( m_pCurrentField->override_count == chain_count )
+		if( m_pCurrentField->override_count == chain_count )
 		{
 			continue;
 		}
 
-		void const *pInputData;
-		
+		void const* pInputData;
+
 		fieldOffsetSrc = m_pCurrentField->fieldOffset[ m_nSrcOffsetIndex ];
 		fieldSize = m_pCurrentField->fieldSize;
-		
-		pInputData = (void const *)((char *)m_pSrc + fieldOffsetSrc );
-		
+
+		pInputData = ( void const* )( ( char* )m_pSrc + fieldOffsetSrc );
+
 		// Assume we can report
 		m_bShouldReport = true;
-		
+
 		switch( m_pCurrentField->fieldType )
 		{
-		case FIELD_EMBEDDED:
+			case FIELD_EMBEDDED:
 			{
-				typedescription_t *save = m_pCurrentField;
-				void const *saveSrc = m_pSrc;
-				const char *saveName = m_pCurrentClassName;
-				
+				typedescription_t* save = m_pCurrentField;
+				void const* saveSrc = m_pSrc;
+				const char* saveName = m_pCurrentClassName;
+
 				m_pCurrentClassName = m_pCurrentField->td->dataClassName;
-				
+
 				m_pSrc = pInputData;
-				if ( ( flags & FTYPEDESC_PTR ) && (m_nSrcOffsetIndex == PC_DATA_NORMAL) )
+				if( ( flags & FTYPEDESC_PTR ) && ( m_nSrcOffsetIndex == PC_DATA_NORMAL ) )
 				{
-					m_pSrc = *((void**)m_pSrc);
+					m_pSrc = *( ( void** )m_pSrc );
 				}
 
 				DescribeFields_R( chain_count, pRootMap, m_pCurrentField->td->dataDesc, m_pCurrentField->td->dataNumFields );
-				
+
 				m_pCurrentClassName = saveName;
 				m_pCurrentField = save;
 				m_pSrc = saveSrc;
 			}
 			break;
-		case FIELD_FLOAT:
-			DescribeFloat( (float const *)pInputData, fieldSize );
-			break;
-		case FIELD_TIME:
-		case FIELD_TICK:
-			Assert( 0 );
-			break;
-		case FIELD_STRING:
-			DescribeString( (char const*)pInputData );
-			break;
-			
-		case FIELD_MODELNAME:
-		case FIELD_SOUNDNAME:
-			Assert( 0 );
-			break;
-			
-		case FIELD_MODELINDEX:
-			Assert( 0 );
-			break;
+			case FIELD_FLOAT:
+				DescribeFloat( ( float const* )pInputData, fieldSize );
+				break;
+			case FIELD_TIME:
+			case FIELD_TICK:
+				Assert( 0 );
+				break;
+			case FIELD_STRING:
+				DescribeString( ( char const* )pInputData );
+				break;
 
-		case FIELD_CUSTOM:
-			Assert( 0 );
-			break;
-			
-		case FIELD_CLASSPTR:
-		case FIELD_EDICT:
-			break;
-		case FIELD_POSITION_VECTOR:
-			Assert( 0 );
-			break;
-		case FIELD_VECTOR:
-			DescribeVector( (const Vector *)pInputData, fieldSize );
-			break;
-		case FIELD_QUATERNION:
-			DescribeQuaternion( ( const Quaternion * )pInputData, fieldSize );
-			break;
-			
-		case FIELD_COLOR32:
-			DescribeData( 4*fieldSize, (const char *)pInputData );
-			break;
-			
-		case FIELD_BOOLEAN:
-			DescribeBool( (bool const *)pInputData, fieldSize );
-			break;
-		case FIELD_INTEGER:
-			DescribeInt( (int const *)pInputData, fieldSize );
-			break;
-			
-		case FIELD_SHORT:
-			DescribeShort( (short const *)pInputData, fieldSize );
-			break;
-			
-		case FIELD_CHARACTER:
-			DescribeData( fieldSize, (const char *)pInputData );
-			break;
-			
-		case FIELD_EHANDLE:
-			DescribeEHandle( (EHANDLE const *)pInputData, fieldSize );
-			break;
-		case FIELD_FUNCTION:
-			Assert( 0 );
-			break;
-		case FIELD_VOID:
-			Describe( "FIELD_VOID: empty field\n" );
-			break;
-		default:
-			Warning( "Bad field type\n" );
-			Assert(0);
-			break;
+			case FIELD_MODELNAME:
+			case FIELD_SOUNDNAME:
+				Assert( 0 );
+				break;
+
+			case FIELD_MODELINDEX:
+				Assert( 0 );
+				break;
+
+			case FIELD_CUSTOM:
+				Assert( 0 );
+				break;
+
+			case FIELD_CLASSPTR:
+			case FIELD_EDICT:
+				break;
+			case FIELD_POSITION_VECTOR:
+				Assert( 0 );
+				break;
+			case FIELD_VECTOR:
+				DescribeVector( ( const Vector* )pInputData, fieldSize );
+				break;
+			case FIELD_QUATERNION:
+				DescribeQuaternion( ( const Quaternion* )pInputData, fieldSize );
+				break;
+
+			case FIELD_COLOR32:
+				DescribeData( 4 * fieldSize, ( const char* )pInputData );
+				break;
+
+			case FIELD_BOOLEAN:
+				DescribeBool( ( bool const* )pInputData, fieldSize );
+				break;
+			case FIELD_INTEGER:
+				DescribeInt( ( int const* )pInputData, fieldSize );
+				break;
+
+			case FIELD_SHORT:
+				DescribeShort( ( short const* )pInputData, fieldSize );
+				break;
+
+			case FIELD_CHARACTER:
+				DescribeData( fieldSize, ( const char* )pInputData );
+				break;
+
+			case FIELD_EHANDLE:
+				DescribeEHandle( ( EHANDLE const* )pInputData, fieldSize );
+				break;
+			case FIELD_FUNCTION:
+				Assert( 0 );
+				break;
+			case FIELD_VOID:
+				Describe( "FIELD_VOID: empty field\n" );
+				break;
+			default:
+				Warning( "Bad field type\n" );
+				Assert( 0 );
+				break;
 		}
 	}
 
 	m_pCurrentClassName = NULL;
 }
 
-void CPredictionDescribeData::DumpDescription( datamap_t *pMap )
+void CPredictionDescribeData::DumpDescription( datamap_t* pMap )
 {
 	++g_nChainCount;
 
-	if ( !pMap->chains_validated )
+	if( !pMap->chains_validated )
 	{
 		ValidateChains_R( pMap );
 	}
 
-	while ( pMap )
+	while( pMap )
 	{
-        DescribeFields_R( g_nChainCount, pMap, pMap->dataDesc, pMap->dataNumFields );
+		DescribeFields_R( g_nChainCount, pMap, pMap->dataDesc, pMap->dataNumFields );
 		pMap = pMap->baseMap;
 	}
 }
@@ -1757,115 +1961,121 @@ CValueChangeTracker::CValueChangeTracker() :
 	Q_memset( m_OrigValueBuf, 0, sizeof( m_OrigValueBuf ) );
 }
 
-C_BaseEntity *CValueChangeTracker::GetEntity()
+C_BaseEntity* CValueChangeTracker::GetEntity()
 {
 	return m_hEntityToTrack.Get();
 }
 
-void CValueChangeTracker::GetValue( char *buf, size_t bufsize )
+void CValueChangeTracker::GetValue( char* buf, size_t bufsize )
 {
 	buf[ 0 ] = 0;
 
 	Assert( IsActive() );
 
-	if ( !m_hEntityToTrack.Get() )
+	if( !m_hEntityToTrack.Get() )
+	{
 		return;
+	}
 
-	void const *pInputData = ( const void * )m_hEntityToTrack.Get();
-	typedescription_t *td = NULL;
-	for ( int i = 0; i < m_FieldStack.Count(); ++i )
+	void const* pInputData = ( const void* )m_hEntityToTrack.Get();
+	typedescription_t* td = NULL;
+	for( int i = 0; i < m_FieldStack.Count(); ++i )
 	{
 		td = m_FieldStack[ i ];
-		Assert( ( i == ( m_FieldStack.Count() -1 ) ) || 
-			( td->fieldType & FIELD_EMBEDDED ) );
+		Assert( ( i == ( m_FieldStack.Count() - 1 ) ) ||
+				( td->fieldType & FIELD_EMBEDDED ) );
 		int fieldOffsetSrc = td->fieldOffset[ TD_OFFSET_NORMAL ];
-		const void *pSaveSrc = (const void *)( (char *)pInputData + fieldOffsetSrc );
-		if ( ( td->flags & FTYPEDESC_PTR ) && 
-			 ( td->fieldType & FIELD_EMBEDDED ) )
+		const void* pSaveSrc = ( const void* )( ( char* )pInputData + fieldOffsetSrc );
+		if( ( td->flags & FTYPEDESC_PTR ) &&
+				( td->fieldType & FIELD_EMBEDDED ) )
 		{
-			pInputData = *(const void **)pSaveSrc;
+			pInputData = *( const void** )pSaveSrc;
 		}
 		else
 		{
-			pInputData = (void const *)((char *)pSaveSrc );
+			pInputData = ( void const* )( ( char* )pSaveSrc );
 		}
 	}
 
-	if ( !td || !pInputData )
+	if( !td || !pInputData )
+	{
 		return;
+	}
 
 	int fieldType = td->fieldType;
 
 	switch( fieldType )
 	{
-	default:
-	case FIELD_EMBEDDED:
-	case FIELD_MODELNAME:
-	case FIELD_SOUNDNAME:
-	case FIELD_CUSTOM:
-	case FIELD_CLASSPTR:
-	case FIELD_EDICT:
-	case FIELD_POSITION_VECTOR:
-	case FIELD_VOID:
-	case FIELD_FUNCTION:
+		default:
+		case FIELD_EMBEDDED:
+		case FIELD_MODELNAME:
+		case FIELD_SOUNDNAME:
+		case FIELD_CUSTOM:
+		case FIELD_CLASSPTR:
+		case FIELD_EDICT:
+		case FIELD_POSITION_VECTOR:
+		case FIELD_VOID:
+		case FIELD_FUNCTION:
 		{
 			Assert( 0 );
 		}
 		break;
-	case FIELD_FLOAT:
-	case FIELD_TIME:
-		Q_snprintf( buf, bufsize, "%f", *(float const *)pInputData );
-		break;
-	case FIELD_STRING:
-		Q_snprintf( buf, bufsize, "%s", (char const*)pInputData );
-		break;
-	case FIELD_VECTOR:
+		case FIELD_FLOAT:
+		case FIELD_TIME:
+			Q_snprintf( buf, bufsize, "%f", *( float const* )pInputData );
+			break;
+		case FIELD_STRING:
+			Q_snprintf( buf, bufsize, "%s", ( char const* )pInputData );
+			break;
+		case FIELD_VECTOR:
 		{
-			const Vector *pVec = (const Vector *)pInputData;
+			const Vector* pVec = ( const Vector* )pInputData;
 			Q_snprintf( buf, bufsize, "%f %f %f", pVec->x, pVec->y, pVec->z );
 		}
 		break;
-	case FIELD_QUATERNION:
+		case FIELD_QUATERNION:
 		{
-			const Quaternion *p = ( const Quaternion * )pInputData;
+			const Quaternion* p = ( const Quaternion* )pInputData;
 			Q_snprintf( buf, bufsize, "%f %f %f %f", p->x, p->y, p->z, p->w );
 		}
 		break;
 
-	case FIELD_COLOR32:
+		case FIELD_COLOR32:
 		{
-			const Color *color = ( const Color * )pInputData;
+			const Color* color = ( const Color* )pInputData;
 			Q_snprintf( buf, bufsize, "%d %d %d %d", color->r(), color->g(), color->b(), color->a() );
 		}
 		break;
 
-	case FIELD_BOOLEAN:
-		Q_snprintf( buf, bufsize, "%s", (*(const bool *)pInputData) ? "true" : "false" );
-		break;
-	case FIELD_INTEGER:
-	case FIELD_TICK:
-	case FIELD_MODELINDEX:
-		Q_snprintf( buf, bufsize, "%i", *(const int*)pInputData );
-		break;
+		case FIELD_BOOLEAN:
+			Q_snprintf( buf, bufsize, "%s", ( *( const bool* )pInputData ) ? "true" : "false" );
+			break;
+		case FIELD_INTEGER:
+		case FIELD_TICK:
+		case FIELD_MODELINDEX:
+			Q_snprintf( buf, bufsize, "%i", *( const int* )pInputData );
+			break;
 
-	case FIELD_SHORT:
-		Q_snprintf( buf, bufsize, "%i", (int)*(const short*)pInputData );
-		break;
+		case FIELD_SHORT:
+			Q_snprintf( buf, bufsize, "%i", ( int ) * ( const short* )pInputData );
+			break;
 
-	case FIELD_CHARACTER:
-		Q_snprintf( buf, bufsize, "%c", *(const char *)pInputData );
-		break;
+		case FIELD_CHARACTER:
+			Q_snprintf( buf, bufsize, "%c", *( const char* )pInputData );
+			break;
 
-	case FIELD_EHANDLE:
-		Q_snprintf( buf, bufsize, "eh 0x%p", (void const *)((const EHANDLE *)pInputData)->Get() );
-		break;
+		case FIELD_EHANDLE:
+			Q_snprintf( buf, bufsize, "eh 0x%p", ( void const* )( ( const EHANDLE* )pInputData )->Get() );
+			break;
 	}
 }
 
-void CValueChangeTracker::StartTrack( char const *pchContext )
+void CValueChangeTracker::StartTrack( char const* pchContext )
 {
-	if ( !IsActive() )
+	if( !IsActive() )
+	{
 		return;
+	}
 
 	m_strContext = pchContext;
 
@@ -1877,18 +2087,22 @@ void CValueChangeTracker::StartTrack( char const *pchContext )
 
 void CValueChangeTracker::EndTrack()
 {
-	if ( !IsActive() )
+	if( !IsActive() )
+	{
 		return;
+	}
 
-	if ( !m_bTracking )
+	if( !m_bTracking )
+	{
 		return;
+	}
 	m_bTracking = false;
 
 	char final[ eChangeTrackerBufSize ];
 	GetValue( final, sizeof( final ) );
 
-	CUtlString *history = &m_History[ m_History.AddToTail() ];
-	if ( Q_stricmp( final, m_OrigValueBuf ) )
+	CUtlString* history = &m_History[ m_History.AddToTail() ];
+	if( Q_stricmp( final, m_OrigValueBuf ) )
 	{
 		history->Set( CFmtStr( "+++ %-20.20s:  %s (was %s)", m_strContext.String(), final, m_OrigValueBuf ) );
 	}
@@ -1910,30 +2124,32 @@ void CValueChangeTracker::ClearTracking()
 	m_FieldStack.RemoveAll();
 }
 
-static bool FindFieldStackByName_R( const char *fieldname, datamap_t *dmap, CUtlVector< typedescription_t * >& stack )
+static bool FindFieldStackByName_R( const char* fieldname, datamap_t* dmap, CUtlVector< typedescription_t* >& stack )
 {
 	int c = dmap->dataNumFields;
-	for ( int i = 0; i < c; i++ )
+	for( int i = 0; i < c; i++ )
 	{
-		typedescription_t *td = &dmap->dataDesc[ i ];
+		typedescription_t* td = &dmap->dataDesc[ i ];
 
-		if ( td->fieldType == FIELD_VOID )
+		if( td->fieldType == FIELD_VOID )
+		{
 			continue;
+		}
 
 		stack.AddToTail( td );
 
-		if ( td->fieldType == FIELD_EMBEDDED )
+		if( td->fieldType == FIELD_EMBEDDED )
 		{
 			// TODO:  this will only find the first subclass with the variable of the specified name
 			//  At some point we might want to support multiple levels of overriding automatically
 			bool ret = FindFieldStackByName_R( fieldname, td->td, stack );
-			if ( ret )
+			if( ret )
 			{
 				return ret;
 			}
 		}
 
-		if ( !Q_stricmp( td->fieldName, fieldname ) )
+		if( !Q_stricmp( td->fieldName, fieldname ) )
 		{
 			return true;
 		}
@@ -1941,27 +2157,27 @@ static bool FindFieldStackByName_R( const char *fieldname, datamap_t *dmap, CUtl
 		stack.FindAndRemove( td );
 	}
 
-	if ( dmap->baseMap )
+	if( dmap->baseMap )
 	{
 		return FindFieldStackByName_R( fieldname, dmap->baseMap, stack );
 	}
 	return false;
 }
 
-void CValueChangeTracker::SetupTracking( C_BaseEntity *ent, char const *pchFieldName )
+void CValueChangeTracker::SetupTracking( C_BaseEntity* ent, char const* pchFieldName )
 {
 	ClearTracking();
 
 	// Find the field
-	datamap_t *dmap = ent->GetPredDescMap();
-	if ( !dmap )
+	datamap_t* dmap = ent->GetPredDescMap();
+	if( !dmap )
 	{
 		Msg( "No prediction datamap_t for entity %d/%s\n", ent->m_index, ent->GetClassname() );
 		return;
 	}
 
 	bool bFound = FindFieldStackByName_R( pchFieldName, dmap, m_FieldStack );
-	if ( !bFound || !m_FieldStack.Count() )
+	if( !bFound || !m_FieldStack.Count() )
 	{
 		Msg( "No field '%s' in datamap_t for entity %d/%s\n", pchFieldName, ent->m_index, ent->GetClassname() );
 		return;
@@ -1984,9 +2200,9 @@ bool CValueChangeTracker::IsActive() const
 
 void CValueChangeTracker::Spew()
 {
-	if ( IsActive() )
+	if( IsActive() )
 	{
-		for ( int i = 0 ; i < m_History.Count(); ++i )
+		for( int i = 0 ; i < m_History.Count(); ++i )
 		{
 			Msg( "%s\n", m_History[ i ].String() );
 		}
@@ -1996,13 +2212,13 @@ void CValueChangeTracker::Spew()
 }
 
 static CValueChangeTracker g_ChangeTracker;
-CValueChangeTracker *g_pChangeTracker = &g_ChangeTracker;
+CValueChangeTracker* g_pChangeTracker = &g_ChangeTracker;
 
 CON_COMMAND_F( cl_pred_track, "<entindex> <fieldname>:  Track changes to entity index entindex, for field fieldname.", 0 )
 {
 	g_pChangeTracker->ClearTracking();
 
-	if ( args.ArgC() != 3 )
+	if( args.ArgC() != 3 )
 	{
 		Msg( "cl_pred_track <entindex> <fieldname>\n" );
 		return;
@@ -2010,12 +2226,12 @@ CON_COMMAND_F( cl_pred_track, "<entindex> <fieldname>:  Track changes to entity 
 
 	int iEntIndex = Q_atoi( args[1] );
 
-	C_BaseEntity *ent = cl_entitylist->GetBaseEntity( iEntIndex );
-	if ( !ent )
+	C_BaseEntity* ent = cl_entitylist->GetBaseEntity( iEntIndex );
+	if( !ent )
 	{
 		Msg( "cl_pred_track:  Unknown ent index %d\n", iEntIndex );
 		return;
-   	}
+	}
 
 	g_pChangeTracker->SetupTracking( ent, args[2] );
 }
@@ -2046,7 +2262,7 @@ public:
 	// end of level shutdown
 
 	// Called before rendering
-	virtual void PreRender ( ) {}
+	virtual void PreRender( ) {}
 
 	// Called after rendering
 	virtual void PostRender() {}
@@ -2072,30 +2288,30 @@ public:
 	CCopyTesterData()
 	{
 		m_CharValue = 'a';
-		m_ShortValue = (short)100;
-		m_IntValue = (int)100;
+		m_ShortValue = ( short )100;
+		m_IntValue = ( int )100;
 		m_FloatValue = 1.0f;
 		Q_strncpy( m_szValue, "primarydata", sizeof( m_szValue ) );
 		m_Vector = Vector( 100, 100, 100 );
 		m_Bool = false;
 		m_Clr.r = m_Clr.g = m_Clr.b = m_Clr.a = 255;
 
-		m_Ptr = (void *)0xfedcba98;
-	//	m_hEHandle = NULL;
+		m_Ptr = ( void* )0xfedcba98;
+		//	m_hEHandle = NULL;
 	}
 
 	void MakeDifferent( void )
 	{
 		m_CharValue = 'd';
-		m_ShortValue = (short)400;
-		m_IntValue = (int)400;
+		m_ShortValue = ( short )400;
+		m_IntValue = ( int )400;
 		m_FloatValue = 4.0f;
 		Q_strncpy( m_szValue, "secondarydata", sizeof( m_szValue ) );
 		m_Vector = Vector( 400, 400, 400 );
 		m_Bool = true;
 		m_Clr.r = m_Clr.g = m_Clr.b = m_Clr.a = 1;
-		m_Ptr = (void *)0x00000001;
-	//	m_hEHandle = (C_BaseEntity *)0x00000001;
+		m_Ptr = ( void* )0x00000001;
+		//	m_hEHandle = (C_BaseEntity *)0x00000001;
 	}
 
 	DECLARE_PREDICTABLE();
@@ -2108,26 +2324,26 @@ public:
 	Vector	m_Vector;
 	bool	m_Bool;
 	color32	m_Clr;
-	void	*m_Ptr;
+	void*	m_Ptr;
 //	EHANDLE	m_hEHandle;
 
 };
 
 BEGIN_PREDICTION_DATA_NO_BASE( CCopyTesterData )
 
-	DEFINE_FIELD( CCopyTesterData, m_CharValue, FIELD_CHARACTER ),
-	DEFINE_FIELD( CCopyTesterData, m_ShortValue, FIELD_SHORT ),
-	DEFINE_FIELD( CCopyTesterData, m_IntValue, FIELD_INTEGER ),
-	DEFINE_FIELD( CCopyTesterData, m_FloatValue, FIELD_FLOAT ),
-	DEFINE_FIELD( CCopyTesterData, m_szValue, FIELD_STRING ),
-	DEFINE_FIELD( CCopyTesterData, m_Vector, FIELD_VECTOR ),
-	DEFINE_FIELD( CCopyTesterData, m_Bool, FIELD_BOOLEAN ),
-	DEFINE_FIELD( CCopyTesterData, m_Clr, FIELD_COLOR32 ),
+DEFINE_FIELD( CCopyTesterData, m_CharValue, FIELD_CHARACTER ),
+			  DEFINE_FIELD( CCopyTesterData, m_ShortValue, FIELD_SHORT ),
+			  DEFINE_FIELD( CCopyTesterData, m_IntValue, FIELD_INTEGER ),
+			  DEFINE_FIELD( CCopyTesterData, m_FloatValue, FIELD_FLOAT ),
+			  DEFINE_FIELD( CCopyTesterData, m_szValue, FIELD_STRING ),
+			  DEFINE_FIELD( CCopyTesterData, m_Vector, FIELD_VECTOR ),
+			  DEFINE_FIELD( CCopyTesterData, m_Bool, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( CCopyTesterData, m_Clr, FIELD_COLOR32 ),
 //	DEFINE_FIELD( CCopyTesterData, m_hEHandle, FIELD_EHANDLE ),
 
-END_PREDICTION_DATA()
+			  END_PREDICTION_DATA()
 
-class CCopyTesterData2 : public C_BaseEntity
+			  class CCopyTesterData2 : public C_BaseEntity
 {
 	DECLARE_CLASS( CCopyTesterData2, C_BaseEntity );
 
@@ -2137,16 +2353,16 @@ public:
 		CONSTRUCT_PREDICTABLE( CCopyTesterData2 );
 
 		m_CharValue = 'b';
-		m_ShortValue = (short)200;
-		m_IntValue = (int)200;
+		m_ShortValue = ( short )200;
+		m_IntValue = ( int )200;
 		m_FloatValue = 2.0f;
 	}
 
 	void MakeDifferent( void )
 	{
 		m_CharValue = 'e';
-		m_ShortValue = (short)500;
-		m_IntValue = (int)500;
+		m_ShortValue = ( short )500;
+		m_IntValue = ( int )500;
 		m_FloatValue = 5.0f;
 		m_FooData.MakeDifferent();
 	}
@@ -2163,17 +2379,17 @@ public:
 
 BEGIN_PREDICTION_DATA_NO_BASE( CCopyTesterData2 )
 
-	DEFINE_FIELD( CCopyTesterData2, m_CharValue, FIELD_CHARACTER ),
-	DEFINE_FIELD( CCopyTesterData2, m_ShortValue, FIELD_SHORT ),
-	DEFINE_PRED_TYPEDESCRIPTION( CCopyTesterData2, m_FooData, CCopyTesterData ),
-	DEFINE_FIELD( CCopyTesterData2, m_IntValue, FIELD_INTEGER ),
-	DEFINE_FIELD( CCopyTesterData2, m_FloatValue, FIELD_FLOAT ),
+DEFINE_FIELD( CCopyTesterData2, m_CharValue, FIELD_CHARACTER ),
+			  DEFINE_FIELD( CCopyTesterData2, m_ShortValue, FIELD_SHORT ),
+			  DEFINE_PRED_TYPEDESCRIPTION( CCopyTesterData2, m_FooData, CCopyTesterData ),
+			  DEFINE_FIELD( CCopyTesterData2, m_IntValue, FIELD_INTEGER ),
+			  DEFINE_FIELD( CCopyTesterData2, m_FloatValue, FIELD_FLOAT ),
 
-END_PREDICTION_DATA()
+			  END_PREDICTION_DATA()
 
-void CPredictionCopyTester::RunTests( void )
+			  void CPredictionCopyTester::RunTests( void )
 {
-	CCopyTesterData2 *foo1, *foo2, *foo3;
+	CCopyTesterData2* foo1, *foo2, *foo3;
 
 	foo1 = new CCopyTesterData2;
 	foo2 = new CCopyTesterData2;
@@ -2188,7 +2404,7 @@ void CPredictionCopyTester::RunTests( void )
 		CPredictionCopy tester( PC_NON_NETWORKED_ONLY, foo1, false, foo3, false, true );
 		int diff_count = 0;
 		diff_count = tester.TransferData( foo3->GetPredDescMap(), foo1->GetPredDescMap()->dataDesc, foo1->GetPredDescMap()->dataNumFields );
-		
+
 		Msg( "diff_count == %i\n", diff_count );
 		Assert( !diff_count );
 	}
@@ -2199,7 +2415,7 @@ void CPredictionCopyTester::RunTests( void )
 		CPredictionCopy tester( PC_NON_NETWORKED_ONLY, foo1, false, foo2, false, true, false );
 		int diff_count = 0;
 		diff_count = tester.TransferData( foo2->GetPredDescMap(), foo1->GetPredDescMap()->dataDesc, foo1->GetPredDescMap()->dataNumFields );
-		
+
 		Msg( "diff_count == %i (should be 12)\n", diff_count );
 		Assert( diff_count == 12 );
 	}
@@ -2210,14 +2426,14 @@ void CPredictionCopyTester::RunTests( void )
 		CPredictionCopy tester( PC_NON_NETWORKED_ONLY, foo1, false, foo2, false, true );
 		int diff_count = 0;
 		diff_count = tester.TransferData( foo2->GetPredDescMap(), foo1->GetPredDescMap()->dataDesc, foo1->GetPredDescMap()->dataNumFields );
-		
+
 		Msg( "diff_count == %i (should be 12)\n", diff_count );
 		Assert( diff_count == 12 );
 	}
 
 	{
 		Msg( "Comparing and copying objects which were just made to coincide, should have zero diffcount\n" );
-	
+
 
 		CPredictionCopy tester( PC_NON_NETWORKED_ONLY, foo1, false, foo2, false, true );
 		int diff_count = 0;
@@ -2231,7 +2447,7 @@ void CPredictionCopyTester::RunTests( void )
 		CPredictionDescribeData describe( foo1, false );
 		describe.DumpDescription( foo1->GetPredDescMap(), foo1->GetPredDescMap()->dataDesc, foo1->GetPredDescMap()->dataNumFields );
 	}
-		
+
 	delete foo3;
 	delete foo2;
 	delete foo1;

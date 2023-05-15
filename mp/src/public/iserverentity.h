@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ISERVERENTITY_H
 #define ISERVERENTITY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -33,7 +33,7 @@ public:
 
 // Previously in pev
 	virtual int				GetModelIndex( void ) const = 0;
- 	virtual string_t		GetModelName( void ) const = 0;
+	virtual string_t		GetModelName( void ) const = 0;
 
 	virtual void			SetModelIndex( int index ) = 0;
 };

@@ -8,7 +8,7 @@
 #ifndef WORLD_H
 #define WORLD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,18 +22,21 @@ public:
 
 	DECLARE_SERVERCLASS();
 
-	virtual int RequiredEdictIndex( void ) { return 0; }   // the world always needs to be in slot 0
-	
+	virtual int RequiredEdictIndex( void )
+	{
+		return 0;    // the world always needs to be in slot 0
+	}
+
 	static void RegisterSharedActivities( void );
 	static void RegisterSharedEvents( void );
 	virtual void Spawn( void );
 	virtual void Precache( void );
-	virtual bool KeyValue( const char *szKeyName, const char *szValue );
-	virtual void DecalTrace( trace_t *pTrace, char const *decalName );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent ) {}
-	virtual void VPhysicsFriction( IPhysicsObject *pObject, float energy, int surfaceProps, int surfacePropsHit ) {}
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
+	virtual void DecalTrace( trace_t* pTrace, char const* decalName );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent ) {}
+	virtual void VPhysicsFriction( IPhysicsObject* pObject, float energy, int surfaceProps, int surfacePropsHit ) {}
 
-	inline void GetWorldBounds( Vector &vecMins, Vector &vecMaxs )
+	inline void GetWorldBounds( Vector& vecMins, Vector& vecMaxs )
 	{
 		VectorCopy( m_WorldMins, vecMins );
 		VectorCopy( m_WorldMaxs, vecMaxs );
@@ -41,7 +44,7 @@ public:
 
 	inline float GetWaveHeight() const
 	{
-		return (float)m_flWaveHeight;
+		return ( float )m_flWaveHeight;
 	}
 
 	bool GetDisplayTitle() const;
@@ -53,16 +56,19 @@ public:
 	bool IsColdWorld( void );
 
 #ifdef MAPBASE
-	inline const char *GetChapterTitle()
+	inline const char* GetChapterTitle()
 	{
-		return STRING(m_iszChapterTitle.Get());
+		return STRING( m_iszChapterTitle.Get() );
 	}
 
-	void InputSetChapterTitle( inputdata_t &inputdata );
+	void InputSetChapterTitle( inputdata_t& inputdata );
 #endif
 
 #ifdef MAPBASE_VSCRIPT
-	ScriptLanguage_t GetScriptLanguage() { return (ScriptLanguage_t)(m_iScriptLanguage); }
+	ScriptLanguage_t GetScriptLanguage()
+	{
+		return ( ScriptLanguage_t )( m_iScriptLanguage );
+	}
 #endif
 
 private:
@@ -101,7 +107,7 @@ private:
 
 
 CWorld* GetWorldEntity();
-extern const char *GetDefaultLightstyleString( int styleIndex );
+extern const char* GetDefaultLightstyleString( int styleIndex );
 
 
 #endif // WORLD_H

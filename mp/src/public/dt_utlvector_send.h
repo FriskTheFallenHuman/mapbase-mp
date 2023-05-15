@@ -36,22 +36,22 @@
 //
 //	SendPropUtlVectorDataTable( m_StructArray, 11, DT_TestStruct )
 //
-//	SendPropUtlVector( 
+//	SendPropUtlVector(
 //		SENDINFO_UTLVECTOR( m_FloatArray ),
 //		16,	// max elements
 //		SendPropFloat( NULL, 0, 0, 0, SPROP_NOSCALE )
 //		)
 //
 SendProp SendPropUtlVector(
-	const char *pVarName,		// Use SENDINFO_UTLVECTOR to generate these first 4 parameters.
+	const char* pVarName,		// Use SENDINFO_UTLVECTOR to generate these first 4 parameters.
 	int offset,
 	int sizeofVar,
 	EnsureCapacityFn ensureFn,
 
 	int nMaxElements,			// Max # of elements in the array. Keep this as low as possible.
 	SendProp pArrayProp,		// Describe the data inside of each element in the array.
-	SendTableProxyFn varProxy=SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
-	);
+	SendTableProxyFn varProxy = SendProxy_DataTableToDataTable	// This can be overridden to control who the array is sent to.
+);
 
 
 #endif	// DT_UTLVECTOR_SEND_H

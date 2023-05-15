@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef AI_GOAL_POLICE_H
 #define AI_GOAL_POLICE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CAI_PoliceGoal : public CBaseEntity
@@ -16,17 +16,17 @@ public:
 
 	DECLARE_CLASS( CAI_PoliceGoal, CBaseEntity );
 
-				CAI_PoliceGoal( void );
+	CAI_PoliceGoal( void );
 
 	float		GetRadius( void );
-	CBaseEntity *GetTarget( void );
+	CBaseEntity* GetTarget( void );
 
-	bool		ShouldKnockOutTarget( const Vector &targetPos, bool bTargetVisible );	// If the target should be knocked out
-	void		KnockOutTarget( CBaseEntity *pTarget );									// Send an output that we've knocked out this target
+	bool		ShouldKnockOutTarget( const Vector& targetPos, bool bTargetVisible );	// If the target should be knocked out
+	void		KnockOutTarget( CBaseEntity* pTarget );									// Send an output that we've knocked out this target
 	bool		ShouldRemainAtPost( void );
 
-	void		InputEnableKnockOut( inputdata_t &data );
-	void		InputDisableKnockOut( inputdata_t &data );
+	void		InputEnableKnockOut( inputdata_t& data );
+	void		InputDisableKnockOut( inputdata_t& data );
 
 	void		FireWarningLevelOutput( int level );
 

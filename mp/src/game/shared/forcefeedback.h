@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef FORCEFEEDBACK_H
 #define FORCEFEEDBACK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 enum
@@ -58,14 +58,14 @@ abstract_class IForceFeedback
 {
 public:
 	// API
-	virtual void			StopAllEffects( CBasePlayer *player ) = 0;
-	virtual void			StopEffect( CBasePlayer *player, FORCEFEEDBACK_t effect ) = 0;
-	virtual void			StartEffect( CBasePlayer *player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params ) = 0;
+	virtual void			StopAllEffects( CBasePlayer * player ) = 0;
+	virtual void			StopEffect( CBasePlayer * player, FORCEFEEDBACK_t effect ) = 0;
+	virtual void			StartEffect( CBasePlayer * player, FORCEFEEDBACK_t effect, const FFBaseParams_t& params ) = 0;
 
-	virtual void			PauseAll( CBasePlayer *player ) = 0;
-	virtual void			ResumeAll( CBasePlayer *player ) = 0;
+	virtual void			PauseAll( CBasePlayer * player ) = 0;
+	virtual void			ResumeAll( CBasePlayer * player ) = 0;
 };
 
-extern IForceFeedback *forcefeedback;
+extern IForceFeedback* forcefeedback;
 
 #endif // FORCEFEEDBACK_H

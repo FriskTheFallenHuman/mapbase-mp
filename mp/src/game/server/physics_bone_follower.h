@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef PHYSICS_BONE_FOLLOWER_H
 #define PHYSICS_BONE_FOLLOWER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CBoneFollower;
@@ -28,10 +28,10 @@ struct physfollower_t
 struct vcollide_t;
 
 // create a manager and a list of followers directly from a ragdoll
-void CreateBoneFollowersFromRagdoll( CBaseAnimating *pEntity, class CBoneFollowerManager *pManager, vcollide_t *pCollide );
+void CreateBoneFollowersFromRagdoll( CBaseAnimating* pEntity, class CBoneFollowerManager* pManager, vcollide_t* pCollide );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CBoneFollowerManager
 {
@@ -41,21 +41,24 @@ public:
 	~CBoneFollowerManager();
 
 	// Use either of these to create the bone followers in your entity's CreateVPhysics()
-	void InitBoneFollowers( CBaseAnimating *pParentEntity, int iNumBones, const char **pFollowerBoneNames );
-	void AddBoneFollower( CBaseAnimating *pParentEntity, const char *pFollowerBoneName, solid_t *pSolid = NULL );	// Adds a single bone follower
+	void InitBoneFollowers( CBaseAnimating* pParentEntity, int iNumBones, const char** pFollowerBoneNames );
+	void AddBoneFollower( CBaseAnimating* pParentEntity, const char* pFollowerBoneName, solid_t* pSolid = NULL );	// Adds a single bone follower
 
 	// Call this after you move your bones
-	void UpdateBoneFollowers( CBaseAnimating *pParentEntity );
+	void UpdateBoneFollowers( CBaseAnimating* pParentEntity );
 
 	// Call this when your entity's removed
 	void DestroyBoneFollowers( void );
 
-	physfollower_t *GetBoneFollower( int iFollowerIndex );
-	int				GetBoneFollowerIndex( CBoneFollower *pFollower );
-	int				GetNumBoneFollowers( void ) const { return m_iNumBones; }
+	physfollower_t* GetBoneFollower( int iFollowerIndex );
+	int				GetBoneFollowerIndex( CBoneFollower* pFollower );
+	int				GetNumBoneFollowers( void ) const
+	{
+		return m_iNumBones;
+	}
 
 private:
-	bool CreatePhysicsFollower( CBaseAnimating *pParentEntity, physfollower_t &follow, const char *pBoneName, solid_t *pSolid );
+	bool CreatePhysicsFollower( CBaseAnimating* pParentEntity, physfollower_t& follow, const char* pBoneName, solid_t* pSolid );
 
 private:
 	int							m_iNumBones;
@@ -70,29 +73,29 @@ class CBoneFollower : public CBaseEntity
 	DECLARE_SERVERCLASS();
 public:
 	// CBaseEntity
-	void VPhysicsUpdate( IPhysicsObject *pPhysics );
-	int  UpdateTransmitState(void);
+	void VPhysicsUpdate( IPhysicsObject* pPhysics );
+	int  UpdateTransmitState( void );
 
 	// NOTE: These are forwarded to the parent object!
-	void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
-	void VPhysicsFriction( IPhysicsObject *pObject, float energy, int surfaceProps, int surfacePropsHit );
-	void VPhysicsShadowCollision( int index, gamevcollisionevent_t *pEvent );
+	void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
+	void VPhysicsFriction( IPhysicsObject* pObject, float energy, int surfaceProps, int surfacePropsHit );
+	void VPhysicsShadowCollision( int index, gamevcollisionevent_t* pEvent );
 
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
+	bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
 	int	 ObjectCaps( void );
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	
-	void Touch( CBaseEntity *pOther );
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
-	void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void Touch( CBaseEntity* pOther );
+
+	void TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 
 	// locals
-	bool Init( CBaseEntity *pOwner, const char *pModelName, solid_t &solid, const Vector &position, const QAngle &orientation );
-	void UpdateFollower( const Vector &position, const QAngle &orientation, float flInterval );
+	bool Init( CBaseEntity* pOwner, const char* pModelName, solid_t& solid, const Vector& position, const QAngle& orientation );
+	void UpdateFollower( const Vector& position, const QAngle& orientation, float flInterval );
 	void SetTraceData( int physicsBone, int hitGroup );
 
 	// factory
-	static CBoneFollower *Create( CBaseEntity *pOwner, const char *pModelName, solid_t &solid, const Vector &position, const QAngle &orientation );
+	static CBoneFollower* Create( CBaseEntity* pOwner, const char* pModelName, solid_t& solid, const Vector& position, const QAngle& orientation );
 
 private:
 	CNetworkVar( int, m_modelIndex );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -19,10 +19,13 @@
 
 static CPerfVisualBenchmark s_PerfVisualBenchmark; // singleton
 
-IGameSystem* PerfVisualBenchmark() { return &s_PerfVisualBenchmark; }
+IGameSystem* PerfVisualBenchmark()
+{
+	return &s_PerfVisualBenchmark;
+}
 
 #ifndef _XBOX
-extern ConVar cl_mouseenable;
+	extern ConVar cl_mouseenable;
 #endif
 
 void usrCmd_Start()
@@ -35,8 +38,8 @@ void usrCmd_Abort()
 	s_PerfVisualBenchmark.Stop();
 }
 
-static ConCommand perfvisualbenchmark("perfvisualbenchmark", usrCmd_Start);
-static ConCommand perfvisualbenchmark_abort("perfvisualbenchmark_abort", usrCmd_Abort);
+static ConCommand perfvisualbenchmark( "perfvisualbenchmark", usrCmd_Start );
+static ConCommand perfvisualbenchmark_abort( "perfvisualbenchmark_abort", usrCmd_Abort );
 
 
 CPerfVisualBenchmark::CPerfVisualBenchmark()
@@ -50,7 +53,7 @@ CPerfVisualBenchmark::~CPerfVisualBenchmark()
 bool CPerfVisualBenchmark::Init()
 {
 	RunInfo_t runInfo;
-	
+
 	runInfo.m_pVarName = "";
 	runInfo.m_pOnVal = "";
 	runInfo.m_pOffVal = "";
@@ -219,11 +222,11 @@ void CPerfVisualBenchmark::Start()
 	m_flTimer = gpGlobals->realtime + FPS_STABILIZE_TIME;
 	m_bWaiting = true;
 	m_bIsOn = true;									// showtime!
-	engine->ClientCmd_Unrestricted("cancelselect");				// exit menu and console
-//	engine->ClientCmd_Unrestricted("wait");				
+	engine->ClientCmd_Unrestricted( "cancelselect" );				// exit menu and console
+//	engine->ClientCmd_Unrestricted("wait");
 //	engine->ClientCmd_Unrestricted("setpause");					// pause the mofo
-	engine->ClientCmd_Unrestricted("host_timescale 0.0001");					// pause the mofo
-	
+	engine->ClientCmd_Unrestricted( "host_timescale 0.0001" );					// pause the mofo
+
 }
 
 void CPerfVisualBenchmark::Stop()
@@ -233,22 +236,26 @@ void CPerfVisualBenchmark::Stop()
 #endif
 	m_bIsOn = false;
 	Print();
-	engine->ClientCmd_Unrestricted("host_timescale 0");					// pause the mofo
+	engine->ClientCmd_Unrestricted( "host_timescale 0" );					// pause the mofo
 //	engine->ClientCmd_Unrestricted("unpause");				// unpause the mofo
-//	engine->ClientCmd_Unrestricted("wait");				
-	engine->ClientCmd_Unrestricted("toggleconsole");
+//	engine->ClientCmd_Unrestricted("wait");
+	engine->ClientCmd_Unrestricted( "toggleconsole" );
 }
 
 void CPerfVisualBenchmark::PreRender( )
 {
-	if (!m_bIsOn)
+	if( !m_bIsOn )
+	{
 		return;
+	}
 
 	// Wait for the timer
-	if ( m_flTimer > gpGlobals->realtime )
+	if( m_flTimer > gpGlobals->realtime )
+	{
 		return;
+	}
 
-	if ( m_bWaiting )
+	if( m_bWaiting )
 	{
 		m_flTimer = gpGlobals->realtime + FPS_MEASURE_TIME;
 		m_flStartMeasureTime = gpGlobals->realtime;
@@ -259,13 +266,13 @@ void CPerfVisualBenchmark::PreRender( )
 
 	// Ok, we were measuring, lets calculate the results
 	float flDenom = gpGlobals->realtime - m_flStartMeasureTime;
-	if (flDenom == 0)
+	if( flDenom == 0 )
 	{
 		flDenom = 1.0f;
 	}
 
 	// note the current avged fps;
-	float flAveFPS = (gpGlobals->framecount - m_nStartFrameCount) / flDenom;
+	float flAveFPS = ( gpGlobals->framecount - m_nStartFrameCount ) / flDenom;
 	m_RunInfo[m_iCurVar].m_flFPS = flAveFPS;
 
 	m_flTimer = gpGlobals->realtime + FPS_STABILIZE_TIME;
@@ -274,39 +281,39 @@ void CPerfVisualBenchmark::PreRender( )
 	char combuffer[255];
 
 	// Turn off any previous value
-	if ( m_RunInfo[m_iCurVar].m_pVarName )
+	if( m_RunInfo[m_iCurVar].m_pVarName )
 	{
-		Q_snprintf(combuffer, sizeof(combuffer), "%s %s\n", m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOffVal );	//turn off current var
-		engine->ClientCmd_Unrestricted(combuffer);
+		Q_snprintf( combuffer, sizeof( combuffer ), "%s %s\n", m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOffVal );	//turn off current var
+		engine->ClientCmd_Unrestricted( combuffer );
 	}
 
 	// next var
-	m_iCurVar++;				
-	if (m_iCurVar == m_RunInfo.Count())
+	m_iCurVar++;
+	if( m_iCurVar == m_RunInfo.Count() )
 	{
 		Stop();
 		return;
 	}
 
-	Q_snprintf(combuffer, sizeof(combuffer), "%s %s\n",m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOnVal);  //turn on next var
-	engine->ClientCmd_Unrestricted(combuffer);
+	Q_snprintf( combuffer, sizeof( combuffer ), "%s %s\n", m_RunInfo[m_iCurVar].m_pVarName, m_RunInfo[m_iCurVar].m_pOnVal ); //turn on next var
+	engine->ClientCmd_Unrestricted( combuffer );
 }
 
 
 void CPerfVisualBenchmark::Print()				//  sort and print into console
 {
-	for (int i = 0; i<m_RunInfo.Count(); i++)
+	for( int i = 0; i < m_RunInfo.Count(); i++ )
 	{
 		int curMax = 0;
-		for (int j = 0; j<m_RunInfo.Count(); j++)
+		for( int j = 0; j < m_RunInfo.Count(); j++ )
 		{
-			if (m_RunInfo[j].m_flFPS > m_RunInfo[curMax].m_flFPS)
+			if( m_RunInfo[j].m_flFPS > m_RunInfo[curMax].m_flFPS )
 			{
 				curMax = j;
 			}
 		}
-		Msg("%.0f fps - %s\n",m_RunInfo[curMax].m_flFPS, m_RunInfo[curMax].m_pDescription);
-		m_RunInfo[curMax].m_flFPS=-1;
+		Msg( "%.0f fps - %s\n", m_RunInfo[curMax].m_flFPS, m_RunInfo[curMax].m_pDescription );
+		m_RunInfo[curMax].m_flFPS = -1;
 	}
 }
 

@@ -26,7 +26,7 @@ public:
 
 	DECLARE_SERVERCLASS();
 
-	CTEImpact( const char *name );
+	CTEImpact( const char* name );
 	virtual	~CTEImpact();
 
 	void Precache( void );
@@ -40,34 +40,34 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
-// Output : 
+// Purpose:
+// Input  : *name -
+// Output :
 //-----------------------------------------------------------------------------
-CTEImpact::CTEImpact( const char *name ) : CBaseTempEntity( name )
+CTEImpact::CTEImpact( const char* name ) : CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
 	m_vecNormal.Init();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEImpact::~CTEImpact( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CTEImpact::Precache( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEImpact::Test( const Vector& current_origin, const Vector& current_normal )
 {
@@ -75,21 +75,21 @@ void CTEImpact::Test( const Vector& current_origin, const Vector& current_normal
 
 
 //Server class implementation
-IMPLEMENT_SERVERCLASS_ST( CTEImpact, DT_TEImpact)
-	SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
-	SendPropVector( SENDINFO( m_vecNormal ), -1, SPROP_COORD ),
-	SendPropInt( SENDINFO( m_iType ), 32, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEImpact, DT_TEImpact )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecNormal ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( m_iType ), 32, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 // Singleton to fire TEImpact objects
-static CTEImpact g_TEImpact( "Impact" );
+				static CTEImpact g_TEImpact( "Impact" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
 //-----------------------------------------------------------------------------
 void TE_Impact( IRecipientFilter& filter, float delay )
 {

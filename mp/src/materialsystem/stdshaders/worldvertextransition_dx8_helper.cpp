@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================
@@ -15,25 +15,25 @@
 #include "tier0/memdbgon.h"
 
 
-void InitParamsWorldVertexTransitionEditor_DX8( IMaterialVar** params, WorldVertexTransitionEditor_DX8_Vars_t &info )
+void InitParamsWorldVertexTransitionEditor_DX8( IMaterialVar** params, WorldVertexTransitionEditor_DX8_Vars_t& info )
 {
 	SET_FLAGS2( MATERIAL_VAR2_LIGHTING_LIGHTMAP );
 }
 
-void InitWorldVertexTransitionEditor_DX8( CBaseVSShader *pShader, IMaterialVar** params, WorldVertexTransitionEditor_DX8_Vars_t &info )
+void InitWorldVertexTransitionEditor_DX8( CBaseVSShader* pShader, IMaterialVar** params, WorldVertexTransitionEditor_DX8_Vars_t& info )
 {
-	if ( params[info.m_nBaseTextureVar]->IsDefined() )
+	if( params[info.m_nBaseTextureVar]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nBaseTextureVar );
 	}
 
-	if ( params[info.m_nBaseTexture2Var]->IsDefined() )
+	if( params[info.m_nBaseTexture2Var]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nBaseTexture2Var );
 	}
 }
 
-void DrawWorldVertexTransitionEditor_DX8( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI, IShaderShadow* pShaderShadow, WorldVertexTransitionEditor_DX8_Vars_t &info )
+void DrawWorldVertexTransitionEditor_DX8( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI, IShaderShadow* pShaderShadow, WorldVertexTransitionEditor_DX8_Vars_t& info )
 {
 	SHADOW_STATE
 	{
@@ -48,7 +48,7 @@ void DrawWorldVertexTransitionEditor_DX8( CBaseVSShader *pShader, IMaterialVar**
 		sdk_worldvertextransition_Static_Index vshIndex;
 		pShaderShadow->SetVertexShader( "SDK_WorldVertexTransition", vshIndex.GetIndex() );
 		pShaderShadow->SetPixelShader( "SDK_WorldVertexTransition_Editor" );
-	
+
 		pShader->FogToFogColor();
 	}
 	DYNAMIC_STATE
@@ -58,19 +58,19 @@ void DrawWorldVertexTransitionEditor_DX8( CBaseVSShader *pShader, IMaterialVar**
 
 		// Texture 3 = lightmap
 		pShaderAPI->BindStandardTexture( SHADER_SAMPLER2, TEXTURE_LIGHTMAP );
-		
+
 		pShader->EnablePixelShaderOverbright( 0, true, true );
-		
+
 		// JasonM - Gnarly hack since we're calling this legacy shader from DX9
 		int nTextureTransformConst  = VERTEX_SHADER_SHADER_SPECIFIC_CONST_0;
 		int nTextureTransformConst2 = VERTEX_SHADER_SHADER_SPECIFIC_CONST_2;
-		if ( g_pHardwareConfig->GetDXSupportLevel() >= 90)
+		if( g_pHardwareConfig->GetDXSupportLevel() >= 90 )
 		{
 			nTextureTransformConst  -= 10;
 			nTextureTransformConst2 -= 10;
 		}
 
-		pShader->SetVertexShaderTextureTransform( nTextureTransformConst,  info.m_nBaseTextureTransformVar  );
+		pShader->SetVertexShaderTextureTransform( nTextureTransformConst,  info.m_nBaseTextureTransformVar );
 		pShader->SetVertexShaderTextureTransform( nTextureTransformConst2, info.m_nBaseTexture2TransformVar );
 
 		sdk_worldvertextransition_Dynamic_Index vshIndex;

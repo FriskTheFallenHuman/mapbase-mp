@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -28,52 +28,58 @@ ConVar	r_drawsprites( "r_drawsprites", "1", FCVAR_CHEAT );
 
 //-----------------------------------------------------------------------------
 // Purpose: Generic sprite model renderer
-// Input  : *baseentity - 
-//			*psprite - 
-//			fscale - 
-//			frame - 
-//			rendermode - 
-//			r - 
-//			g - 
-//			b - 
-//			a - 
-//			forward - 
-//			right - 
-//			up - 
+// Input  : *baseentity -
+//			*psprite -
+//			fscale -
+//			frame -
+//			rendermode -
+//			r -
+//			g -
+//			b -
+//			a -
+//			forward -
+//			right -
+//			up -
 //-----------------------------------------------------------------------------
 static unsigned int s_nHDRColorScaleCache = 0;
-void DrawSpriteModel( IClientEntity *baseentity, CEngineSprite *psprite, const Vector &origin, float fscale, float frame, 
-	int rendermode, int r, int g, int b, int a, const Vector& forward, const Vector& right, const Vector& up, float flHDRColorScale )
+void DrawSpriteModel( IClientEntity* baseentity, CEngineSprite* psprite, const Vector& origin, float fscale, float frame,
+					  int rendermode, int r, int g, int b, int a, const Vector& forward, const Vector& right, const Vector& up, float flHDRColorScale )
 {
 	float		scale;
-	IMaterial	*material;
-	
+	IMaterial*	material;
+
 	// don't even bother culling, because it's just a single
 	// polygon without a surface cache
-	if ( fscale > 0 )
+	if( fscale > 0 )
+	{
 		scale = fscale;
+	}
 	else
+	{
 		scale = 1.0f;
-	
-	if ( rendermode == kRenderNormal )
+	}
+
+	if( rendermode == kRenderNormal )
 	{
 		render->SetBlend( 1.0f );
 	}
-	
-	material = psprite->GetMaterial( (RenderMode_t)rendermode, frame );
-	if ( !material )
+
+	material = psprite->GetMaterial( ( RenderMode_t )rendermode, frame );
+	if( !material )
+	{
 		return;
+	}
 
 	CMatRenderContextPtr pRenderContext( materials );
-	
-	if ( ShouldDrawInWireFrameMode() || r_drawsprites.GetInt() == 2 )
+
+	if( ShouldDrawInWireFrameMode() || r_drawsprites.GetInt() == 2 )
 	{
-		IMaterial *pMaterial = materials->FindMaterial( "debug/debugspritewireframe", TEXTURE_GROUP_OTHER );
+		IMaterial* pMaterial = materials->FindMaterial( "debug/debugspritewireframe", TEXTURE_GROUP_OTHER );
 		pRenderContext->Bind( pMaterial, NULL );
 	}
 	else
 	{
-		pRenderContext->Bind( material, (IClientRenderable*)baseentity );
+		pRenderContext->Bind( material, ( IClientRenderable* )baseentity );
 	}
 
 	unsigned char color[4];
@@ -82,7 +88,7 @@ void DrawSpriteModel( IClientEntity *baseentity, CEngineSprite *psprite, const V
 	color[2] = b;
 	color[3] = a;
 
-	IMaterialVar *pHDRColorScaleVar = material->FindVarFast( "$HDRCOLORSCALE", &s_nHDRColorScaleCache );
+	IMaterialVar* pHDRColorScaleVar = material->FindVarFast( "$HDRCOLORSCALE", &s_nHDRColorScaleCache );
 	if( pHDRColorScaleVar )
 	{
 		pHDRColorScaleVar->SetVecValue( flHDRColorScale, flHDRColorScale, flHDRColorScale );
@@ -131,65 +137,65 @@ void DrawSpriteModel( IClientEntity *baseentity, CEngineSprite *psprite, const V
 	VectorAdd( vec_a, vec_d, point );
 	meshBuilder.Position3fv( point.Base() );
 	meshBuilder.AdvanceVertex();
-	
+
 	meshBuilder.End();
 	pMesh->Draw();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Determine glow brightness/scale based on distance to render origin and trace results
-// Input  : entorigin - 
-//			rendermode - 
-//			renderfx - 
-//			alpha - 
+// Input  : entorigin -
+//			rendermode -
+//			renderfx -
+//			alpha -
 //			pscale - Pointer to the value for scale, will be changed based on distance and rendermode.
 //-----------------------------------------------------------------------------
-float StandardGlowBlend( const pixelvis_queryparams_t &params, pixelvis_handle_t *queryHandle, int rendermode, int renderfx, int alpha, float *pscale )
+float StandardGlowBlend( const pixelvis_queryparams_t& params, pixelvis_handle_t* queryHandle, int rendermode, int renderfx, int alpha, float* pscale )
 {
 	float dist;
 	float brightness;
 
 	brightness = PixelVisibility_FractionVisible( params, queryHandle );
-	if ( brightness <= 0.0f )
+	if( brightness <= 0.0f )
 	{
 		return 0.0f;
 	}
 	dist = GlowSightDistance( params.position, false );
-	if ( dist <= 0.0f )
+	if( dist <= 0.0f )
 	{
 		return 0.0f;
 	}
 
-	if ( renderfx == kRenderFxNoDissipation )
+	if( renderfx == kRenderFxNoDissipation )
 	{
-		return (float)alpha * (1.0f/255.0f) * brightness;
+		return ( float )alpha * ( 1.0f / 255.0f ) * brightness;
 	}
 
 	// UNDONE: Tweak these magic numbers (1200 - distance at full brightness)
-	float fadeOut = (1200.0f*1200.0f) / (dist*dist);
+	float fadeOut = ( 1200.0f * 1200.0f ) / ( dist * dist );
 	fadeOut = clamp( fadeOut, 0.0f, 1.0f );
 
-	if (rendermode != kRenderWorldGlow)
+	if( rendermode != kRenderWorldGlow )
 	{
 		// Make the glow fixed size in screen space, taking into consideration the scale setting.
-		if ( *pscale == 0.0f )
+		if( *pscale == 0.0f )
 		{
 			*pscale = 1.0f;
 		}
 
-		*pscale *= dist * (1.0f/200.0f);
+		*pscale *= dist * ( 1.0f / 200.0f );
 	}
 
 	return fadeOut * brightness;
 }
 
-static float SpriteAspect( CEngineSprite *pSprite )
+static float SpriteAspect( CEngineSprite* pSprite )
 {
-	if ( pSprite )
+	if( pSprite )
 	{
-		float x = fabsf(pSprite->GetRight() - pSprite->GetLeft());
-		float y = fabsf(pSprite->GetDown() - pSprite->GetUp());
-		if ( y != 0 && x != 0 )
+		float x = fabsf( pSprite->GetRight() - pSprite->GetLeft() );
+		float y = fabsf( pSprite->GetDown() - pSprite->GetUp() );
+		if( y != 0 && x != 0 )
 		{
 			return x / y;
 		}
@@ -198,19 +204,19 @@ static float SpriteAspect( CEngineSprite *pSprite )
 	return 1.0f;
 }
 
-float C_SpriteRenderer::GlowBlend( CEngineSprite *psprite, const Vector& entorigin, int rendermode, int renderfx, int alpha, float *pscale )
+float C_SpriteRenderer::GlowBlend( CEngineSprite* psprite, const Vector& entorigin, int rendermode, int renderfx, int alpha, float* pscale )
 {
 	pixelvis_queryparams_t params;
-	float aspect = SpriteAspect(psprite);
+	float aspect = SpriteAspect( psprite );
 	params.Init( entorigin, PIXELVIS_DEFAULT_PROXY_SIZE, aspect );
 	return StandardGlowBlend( params, &m_queryHandle, rendermode, renderfx, alpha, pscale );
 }
 
 // since sprites can network down a glow proxy size, handle that here
-float CSprite::GlowBlend( CEngineSprite *psprite, const Vector& entorigin, int rendermode, int renderfx, int alpha, float *pscale )
+float CSprite::GlowBlend( CEngineSprite* psprite, const Vector& entorigin, int rendermode, int renderfx, int alpha, float* pscale )
 {
 	pixelvis_queryparams_t params;
-	float aspect = SpriteAspect(psprite);
+	float aspect = SpriteAspect( psprite );
 	params.Init( entorigin, m_flGlowProxySize, aspect );
 	return StandardGlowBlend( params, &m_queryHandle, rendermode, renderfx, alpha, pscale );
 }
@@ -218,31 +224,31 @@ float CSprite::GlowBlend( CEngineSprite *psprite, const Vector& entorigin, int r
 
 //-----------------------------------------------------------------------------
 // Purpose: Determine sprite orientation axes
-// Input  : type - 
-//			forward - 
-//			right - 
-//			up - 
+// Input  : type -
+//			forward -
+//			right -
+//			up -
 //-----------------------------------------------------------------------------
-void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type, 
-	const Vector& origin,
-	const QAngle& angles,
-	Vector& forward, 
-	Vector& right, 
-	Vector& up )
+void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
+									  const Vector& origin,
+									  const QAngle& angles,
+									  Vector& forward,
+									  Vector& right,
+									  Vector& up )
 {
 	int				i;
 	float			dot, angle, sr, cr;
 	Vector			tvec;
 
 	// Automatically roll parallel sprites if requested
-	if ( angles[2] != 0 && type == SPR_VP_PARALLEL )
+	if( angles[2] != 0 && type == SPR_VP_PARALLEL )
 	{
 		type = SPR_VP_PARALLEL_ORIENTED;
 	}
 
 	switch( type )
 	{
-	case SPR_FACING_UPRIGHT:
+		case SPR_FACING_UPRIGHT:
 		{
 			// generate the sprite's axes, with vup straight up in worldspace, and
 			// r_spritedesc.vright perpendicular to modelorg.
@@ -253,11 +259,13 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 			tvec[0] = -origin[0];
 			tvec[1] = -origin[1];
 			tvec[2] = -origin[2];
-			VectorNormalize (tvec);
+			VectorNormalize( tvec );
 			dot = tvec[2];	// same as DotProduct (tvec, r_spritedesc.vup) because
 			//  r_spritedesc.vup is 0, 0, 1
-			if ((dot > 0.999848f) || (dot < -0.999848f))	// cos(1 degree) = 0.999848
+			if( ( dot > 0.999848f ) || ( dot < -0.999848f ) )	// cos(1 degree) = 0.999848
+			{
 				return;
+			}
 			up[0] = 0;
 			up[1] = 0;
 			up[2] = 1;
@@ -266,7 +274,7 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 			right[1] = -tvec[0];
 			//              r_spritedesc.vright)
 			right[2] = 0;
-			VectorNormalize (right);
+			VectorNormalize( right );
 			forward[0] = -right[1];
 			forward[1] = right[0];
 			forward[2] = 0;
@@ -275,12 +283,12 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 		}
 		break;
 
-	case SPR_VP_PARALLEL:
+		case SPR_VP_PARALLEL:
 		{
 			// generate the sprite's axes, completely parallel to the viewplane. There
 			// are no problem situations, because the sprite is always in the same
 			// position relative to the viewer
-			for (i=0 ; i<3 ; i++)
+			for( i = 0 ; i < 3 ; i++ )
 			{
 				up[i]		= CurrentViewUp()[i];
 				right[i]	= CurrentViewRight()[i];
@@ -289,7 +297,7 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 		}
 		break;
 
-	case SPR_VP_PARALLEL_UPRIGHT:
+		case SPR_VP_PARALLEL_UPRIGHT:
 		{
 			// generate the sprite's axes, with g_vecVUp straight up in worldspace, and
 			// r_spritedesc.vright parallel to the viewplane.
@@ -299,8 +307,10 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 			// the two vectors are less than 1 degree apart
 			dot = CurrentViewForward()[2];	// same as DotProduct (vpn, r_spritedesc.g_vecVUp) because
 			//  r_spritedesc.vup is 0, 0, 1
-			if ((dot > 0.999848f) || (dot < -0.999848f))	// cos(1 degree) = 0.999848
+			if( ( dot > 0.999848f ) || ( dot < -0.999848f ) )	// cos(1 degree) = 0.999848
+			{
 				return;
+			}
 			up[0] = 0;
 			up[1] = 0;
 			up[2] = 1;
@@ -308,7 +318,7 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 			// CrossProduct (r_spritedesc.vup, vpn,
 			right[1] = -CurrentViewForward()[0];	//  r_spritedesc.vright)
 			right[2] = 0;
-			VectorNormalize (right);
+			VectorNormalize( right );
 			forward[0] = -right[1];
 			forward[1] = right[0];
 			forward[2] = 0;
@@ -317,22 +327,22 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 		}
 		break;
 
-	case SPR_ORIENTED:
+		case SPR_ORIENTED:
 		{
 			// generate the sprite's axes, according to the sprite's world orientation
 			AngleVectors( angles, &forward, &right, &up );
 		}
 		break;
-		
-	case SPR_VP_PARALLEL_ORIENTED:
+
+		case SPR_VP_PARALLEL_ORIENTED:
 		{
 			// generate the sprite's axes, parallel to the viewplane, but rotated in
 			// that plane around the center according to the sprite entity's roll
 			// angle. So vpn stays the same, but vright and vup rotate
-			angle = angles[ROLL] * (M_PI*2.0f/360.0f);
+			angle = angles[ROLL] * ( M_PI * 2.0f / 360.0f );
 			SinCos( angle, &sr, &cr );
-			
-			for (i=0 ; i<3 ; i++)
+
+			for( i = 0 ; i < 3 ; i++ )
 			{
 				forward[i] = CurrentViewForward()[i];
 				right[i] = CurrentViewRight()[i] * cr + CurrentViewUp()[i] * sr;
@@ -341,44 +351,44 @@ void C_SpriteRenderer::GetSpriteAxes( SPRITETYPE type,
 		}
 		break;
 
-	default:
-		Warning( "GetSpriteAxes: Bad sprite type %d\n", type );
-		break;
+		default:
+			Warning( "GetSpriteAxes: Bad sprite type %d\n", type );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
-int C_SpriteRenderer::DrawSprite( 
-	IClientEntity *entity,
-	const model_t *model, 
-	const Vector& origin, 
+int C_SpriteRenderer::DrawSprite(
+	IClientEntity* entity,
+	const model_t* model,
+	const Vector& origin,
 	const QAngle& angles,
 	float frame,
-	IClientEntity *attachedto,
+	IClientEntity* attachedto,
 	int attachmentindex,
 	int rendermode,
 	int renderfx,
 	int alpha,
-	int r, 
-	int g, 
+	int r,
+	int g,
 	int b,
 	float scale,
 	float flHDRColorScale
-	)
+)
 {
 	VPROF_BUDGET( "C_SpriteRenderer::DrawSprite", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
 
-	if ( !r_drawsprites.GetBool() || !model || modelinfo->GetModelType( model ) != mod_sprite )
+	if( !r_drawsprites.GetBool() || !model || modelinfo->GetModelType( model ) != mod_sprite )
 	{
 		return 0;
 	}
 
 	// Get extra data
-	CEngineSprite *psprite = (CEngineSprite *)modelinfo->GetModelExtraData( model );
-	if ( !psprite )
+	CEngineSprite* psprite = ( CEngineSprite* )modelinfo->GetModelExtraData( model );
+	if( !psprite )
 	{
 		return 0;
 	}
@@ -387,29 +397,31 @@ int C_SpriteRenderer::DrawSprite(
 	VectorCopy( origin, effect_origin );
 
 	// Use attachment point
-	if ( attachedto )
+	if( attachedto )
 	{
-		C_BaseEntity *ent = attachedto->GetBaseEntity();
-		if ( ent )
+		C_BaseEntity* ent = attachedto->GetBaseEntity();
+		if( ent )
 		{
 			// don't draw viewmodel effects in reflections
-			if ( CurrentViewID() == VIEW_REFLECTION )
+			if( CurrentViewID() == VIEW_REFLECTION )
 			{
 				int group = ent->GetRenderGroup();
-				if ( group == RENDER_GROUP_VIEW_MODEL_TRANSLUCENT || group == RENDER_GROUP_VIEW_MODEL_OPAQUE )
+				if( group == RENDER_GROUP_VIEW_MODEL_TRANSLUCENT || group == RENDER_GROUP_VIEW_MODEL_OPAQUE )
+				{
 					return 0;
+				}
 			}
 			QAngle temp;
 			ent->GetAttachment( attachmentindex, effect_origin, temp );
 		}
 	}
 
-	if ( rendermode != kRenderNormal )
+	if( rendermode != kRenderNormal )
 	{
 		float blend = render->GetBlend();
 
 		// kRenderGlow and kRenderWorldGlow have a special blending function
-		if (( rendermode == kRenderGlow ) || ( rendermode == kRenderWorldGlow ))
+		if( ( rendermode == kRenderGlow ) || ( rendermode == kRenderWorldGlow ) )
 		{
 			blend *= GlowBlend( psprite, effect_origin, rendermode, renderfx, alpha, &scale );
 
@@ -420,28 +432,28 @@ int C_SpriteRenderer::DrawSprite(
 		}
 
 		render->SetBlend( blend );
-		if ( blend <= 0.0f )
+		if( blend <= 0.0f )
 		{
 			return 0;
 		}
 	}
-	
+
 	// Get orthonormal basis
 	Vector forward, right, up;
-	GetSpriteAxes( (SPRITETYPE)psprite->GetOrientation(), origin, angles, forward, right, up );
+	GetSpriteAxes( ( SPRITETYPE )psprite->GetOrientation(), origin, angles, forward, right, up );
 
 	// Draw
-	DrawSpriteModel( 
+	DrawSpriteModel(
 		entity,
-		psprite, 
+		psprite,
 		effect_origin,
 		scale,
-		frame, 
-		rendermode, 
-		r, 
-		g, 
+		frame,
+		rendermode,
+		r,
+		g,
 		b,
-		alpha, 
+		alpha,
 		forward, right, up, flHDRColorScale );
 
 	return 1;
@@ -449,24 +461,26 @@ int C_SpriteRenderer::DrawSprite(
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CSprite::GetToolRecordingState( KeyValues *msg )
+void CSprite::GetToolRecordingState( KeyValues* msg )
 {
-	if ( !ToolsEnabled() )
+	if( !ToolsEnabled() )
+	{
 		return;
+	}
 
 	VPROF_BUDGET( "CSprite::GetToolRecordingState", VPROF_BUDGETGROUP_TOOLS );
 
 	BaseClass::GetToolRecordingState( msg );
 
 	// Use attachment point
-	if ( m_hAttachedToEntity )
+	if( m_hAttachedToEntity )
 	{
-		C_BaseEntity *ent = m_hAttachedToEntity->GetBaseEntity();
-		if ( ent )
+		C_BaseEntity* ent = m_hAttachedToEntity->GetBaseEntity();
+		if( ent )
 		{
-			BaseEntityRecordingState_t *pState = (BaseEntityRecordingState_t*)msg->GetPtr( "baseentity" );
+			BaseEntityRecordingState_t* pState = ( BaseEntityRecordingState_t* )msg->GetPtr( "baseentity" );
 
 			// override position if we're driven by an attachment
 			QAngle temp;
@@ -480,9 +494,9 @@ void CSprite::GetToolRecordingState( KeyValues *msg )
 	}
 
 	float renderscale = GetRenderScale();
-	if ( m_bWorldSpaceScale )
+	if( m_bWorldSpaceScale )
 	{
-		CEngineSprite *psprite = ( CEngineSprite * )modelinfo->GetModelExtraData( GetModel() );
+		CEngineSprite* psprite = ( CEngineSprite* )modelinfo->GetModelExtraData( GetModel() );
 		float flMinSize = MIN( psprite->GetWidth(), psprite->GetHeight() );
 		renderscale /= flMinSize;
 	}

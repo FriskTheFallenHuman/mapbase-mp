@@ -30,13 +30,13 @@
 #pragma once
 
 #ifdef OSX
-#include <OpenGL/gl.h>
-#include <OpenGL/glext.h>
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glext.h>
 #elif defined(DX_TO_GL_ABSTRACTION)
-#include <GL/gl.h>
-#include <GL/glext.h>
+	#include <GL/gl.h>
+	#include <GL/glext.h>
 #else
-#error
+	#error
 #endif
 
 #ifndef GL_EXT_framebuffer_sRGB
@@ -82,42 +82,42 @@
 #define XGL_SCALED_RESOLVE_NICEST_EXT 0x90BB
 
 #ifndef GL_TEXTURE_MINIMIZE_STORAGE_APPLE
-#define GL_TEXTURE_MINIMIZE_STORAGE_APPLE  0x85B6
+	#define GL_TEXTURE_MINIMIZE_STORAGE_APPLE  0x85B6
 #endif
 
 #ifndef GL_ALL_COMPLETED_NV
-#define GL_ALL_COMPLETED_NV               0x84F2
+	#define GL_ALL_COMPLETED_NV               0x84F2
 #endif
 
 #ifndef GL_MAP_READ_BIT
-#define GL_MAP_READ_BIT                   0x0001
+	#define GL_MAP_READ_BIT                   0x0001
 #endif
 
 #ifndef GL_MAP_WRITE_BIT
-#define GL_MAP_WRITE_BIT                  0x0002
+	#define GL_MAP_WRITE_BIT                  0x0002
 #endif
 
 #ifndef GL_MAP_INVALIDATE_RANGE_BIT
-#define GL_MAP_INVALIDATE_RANGE_BIT       0x0004
+	#define GL_MAP_INVALIDATE_RANGE_BIT       0x0004
 #endif
 
 #ifndef GL_MAP_INVALIDATE_BUFFER_BIT
-#define GL_MAP_INVALIDATE_BUFFER_BIT      0x0008
+	#define GL_MAP_INVALIDATE_BUFFER_BIT      0x0008
 #endif
 
 #ifndef GL_MAP_FLUSH_EXPLICIT_BIT
-#define GL_MAP_FLUSH_EXPLICIT_BIT         0x0010
+	#define GL_MAP_FLUSH_EXPLICIT_BIT         0x0010
 #endif
 
 #ifndef GL_MAP_UNSYNCHRONIZED_BIT
-#define GL_MAP_UNSYNCHRONIZED_BIT         0x0020
+	#define GL_MAP_UNSYNCHRONIZED_BIT         0x0020
 #endif
 
 #ifndef GL_MAP_PERSISTENT_BIT
-#define GL_MAP_PERSISTENT_BIT				0x0040
+	#define GL_MAP_PERSISTENT_BIT				0x0040
 #endif
 
 #ifndef GL_MAP_COHERENT_BIT
-#define GL_MAP_COHERENT_BIT					0x0080
+	#define GL_MAP_COHERENT_BIT					0x0080
 #endif
 

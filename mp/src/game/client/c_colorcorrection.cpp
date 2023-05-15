@@ -19,34 +19,34 @@
 static ConVar mat_colcorrection_disableentities( "mat_colcorrection_disableentities", "0", FCVAR_NONE, "Disable map color-correction entities" );
 
 #ifdef MAPBASE // From Alien Swarm SDK
-static ConVar mat_colcorrection_forceentitiesclientside( "mat_colcorrection_forceentitiesclientside", "0", FCVAR_CHEAT, "Forces color correction entities to be updated on the client" );
+	static ConVar mat_colcorrection_forceentitiesclientside( "mat_colcorrection_forceentitiesclientside", "0", FCVAR_CHEAT, "Forces color correction entities to be updated on the client" );
 #endif
 
-IMPLEMENT_CLIENTCLASS_DT(C_ColorCorrection, DT_ColorCorrection, CColorCorrection)
-	RecvPropVector( RECVINFO(m_vecOrigin) ),
-	RecvPropFloat(  RECVINFO(m_minFalloff) ),
-	RecvPropFloat(  RECVINFO(m_maxFalloff) ),
-	RecvPropFloat(  RECVINFO(m_flCurWeight) ),
+IMPLEMENT_CLIENTCLASS_DT( C_ColorCorrection, DT_ColorCorrection, CColorCorrection )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropFloat( RECVINFO( m_minFalloff ) ),
+				RecvPropFloat( RECVINFO( m_maxFalloff ) ),
+				RecvPropFloat( RECVINFO( m_flCurWeight ) ),
 #ifdef MAPBASE // From Alien Swarm SDK
-	RecvPropFloat(  RECVINFO(m_flMaxWeight) ),
-	RecvPropFloat(  RECVINFO(m_flFadeInDuration) ),
-	RecvPropFloat(  RECVINFO(m_flFadeOutDuration) ),
+	RecvPropFloat( RECVINFO( m_flMaxWeight ) ),
+	RecvPropFloat( RECVINFO( m_flFadeInDuration ) ),
+	RecvPropFloat( RECVINFO( m_flFadeOutDuration ) ),
 #endif
-	RecvPropString( RECVINFO(m_netLookupFilename) ),
-	RecvPropBool(   RECVINFO(m_bEnabled) ),
+				RecvPropString( RECVINFO( m_netLookupFilename ) ),
+				RecvPropBool( RECVINFO( m_bEnabled ) ),
 #ifdef MAPBASE // From Alien Swarm SDK
-	RecvPropBool(   RECVINFO(m_bMaster) ),
-	RecvPropBool(   RECVINFO(m_bClientSide) ),
-	RecvPropBool(	RECVINFO(m_bExclusive) )
+	RecvPropBool( RECVINFO( m_bMaster ) ),
+	RecvPropBool( RECVINFO( m_bClientSide ) ),
+	RecvPropBool(	RECVINFO( m_bExclusive ) )
 #endif
 
-END_RECV_TABLE()
+				END_RECV_TABLE()
 
 
 //------------------------------------------------------------------------------
 // Constructor, destructor
 //------------------------------------------------------------------------------
-C_ColorCorrection::C_ColorCorrection()
+				C_ColorCorrection::C_ColorCorrection()
 {
 #ifdef MAPBASE // From Alien Swarm SDK
 	m_minFalloff = -1.0f;
@@ -91,13 +91,13 @@ bool C_ColorCorrection::IsClientSide() const
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_ColorCorrection::OnDataChanged(DataUpdateType_t updateType)
+void C_ColorCorrection::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
-		if ( m_CCHandle == INVALID_CLIENT_CCHANDLE )
+		if( m_CCHandle == INVALID_CLIENT_CCHANDLE )
 		{
 #ifdef MAPBASE // From Alien Swarm SDK
 			// forming a unique name without extension
@@ -127,11 +127,11 @@ bool C_ColorCorrection::ShouldDraw()
 }
 
 #ifdef MAPBASE // From Alien Swarm SDK
-void C_ColorCorrection::Update( C_BasePlayer *pPlayer, float ccScale )
+void C_ColorCorrection::Update( C_BasePlayer* pPlayer, float ccScale )
 {
 	Assert( m_CCHandle != INVALID_CLIENT_CCHANDLE );
 
-	if ( mat_colcorrection_disableentities.GetInt() )
+	if( mat_colcorrection_disableentities.GetInt() )
 	{
 		// Allow the colorcorrectionui panel (or user) to turn off color-correction entities
 		g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCHandle, 0.0f, m_bExclusive );
@@ -139,7 +139,7 @@ void C_ColorCorrection::Update( C_BasePlayer *pPlayer, float ccScale )
 	}
 
 	// fade weight on client
-	if ( IsClientSide() )
+	if( IsClientSide() )
 	{
 		m_flCurWeight = Lerp( GetFadeRatio(), m_flFadeStartWeight, m_bFadingIn ? m_flMaxWeight : 0.0f );
 	}
@@ -153,12 +153,18 @@ void C_ColorCorrection::Update( C_BasePlayer *pPlayer, float ccScale )
 	Vector playerOrigin = pPlayer->GetAbsOrigin();
 
 	float weight = 0;
-	if ( ( m_minFalloff != -1 ) && ( m_maxFalloff != -1 ) && m_minFalloff != m_maxFalloff )
+	if( ( m_minFalloff != -1 ) && ( m_maxFalloff != -1 ) && m_minFalloff != m_maxFalloff )
 	{
-		float dist = (playerOrigin - m_vecOrigin).Length();
-		weight = (dist-m_minFalloff) / (m_maxFalloff-m_minFalloff);
-		if ( weight<0.0f ) weight = 0.0f;	
-		if ( weight>1.0f ) weight = 1.0f;	
+		float dist = ( playerOrigin - m_vecOrigin ).Length();
+		weight = ( dist - m_minFalloff ) / ( m_maxFalloff - m_minFalloff );
+		if( weight < 0.0f )
+		{
+			weight = 0.0f;
+		}
+		if( weight > 1.0f )
+		{
+			weight = 1.0f;
+		}
 	}
 
 	g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCHandle, m_flCurWeight * ( 1.0 - weight ) * ccScale, m_bExclusive );
@@ -166,7 +172,7 @@ void C_ColorCorrection::Update( C_BasePlayer *pPlayer, float ccScale )
 
 void C_ColorCorrection::EnableOnClient( bool bEnable, bool bSkipFade )
 {
-	if ( !IsClientSide() )
+	if( !IsClientSide() )
 	{
 		return;
 	}
@@ -176,17 +182,17 @@ void C_ColorCorrection::EnableOnClient( bool bEnable, bool bSkipFade )
 	// initialize countdown timer
 	m_flFadeStartWeight = m_flCurWeight;
 	float flFadeTimeScale = 1.0f;
-	if ( m_flMaxWeight != 0.0f )
+	if( m_flMaxWeight != 0.0f )
 	{
 		flFadeTimeScale = m_flCurWeight / m_flMaxWeight;
 	}
 
-	if ( m_bFadingIn )
+	if( m_bFadingIn )
 	{
 		flFadeTimeScale = 1.0f - flFadeTimeScale;
 	}
 
-	if ( bSkipFade )
+	if( bSkipFade )
 	{
 		flFadeTimeScale = 0.0f;
 	}
@@ -226,8 +232,8 @@ void C_ColorCorrection::StartFade( float flDuration )
 float C_ColorCorrection::GetFadeRatio() const
 {
 	float flRatio = 1.0f;
-	
-	if ( m_flFadeDuration != 0.0f )
+
+	if( m_flFadeDuration != 0.0f )
 	{
 		flRatio = ( gpGlobals->curtime - m_flFadeStartTime ) / m_flFadeDuration;
 		flRatio = clamp( flRatio, 0.0f, 1.0f );
@@ -241,20 +247,22 @@ bool C_ColorCorrection::IsFadeTimeElapsed() const
 			( ( gpGlobals->curtime - m_flFadeStartTime ) < 0.0f );
 }
 
-void UpdateColorCorrectionEntities( C_BasePlayer *pPlayer, float ccScale, C_ColorCorrection **pList, int listCount )
+void UpdateColorCorrectionEntities( C_BasePlayer* pPlayer, float ccScale, C_ColorCorrection** pList, int listCount )
 {
-	for ( int i = 0; i < listCount; i++ )
+	for( int i = 0; i < listCount; i++ )
 	{
-		pList[i]->Update(pPlayer, ccScale);
+		pList[i]->Update( pPlayer, ccScale );
 	}
 }
 #else
 void C_ColorCorrection::ClientThink()
 {
-	if ( m_CCHandle == INVALID_CLIENT_CCHANDLE )
+	if( m_CCHandle == INVALID_CLIENT_CCHANDLE )
+	{
 		return;
+	}
 
-	if ( mat_colcorrection_disableentities.GetInt() )
+	if( mat_colcorrection_disableentities.GetInt() )
 	{
 		// Allow the colorcorrectionui panel (or user) to turn off color-correction entities
 		g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCHandle, 0.0f );
@@ -267,21 +275,29 @@ void C_ColorCorrection::ClientThink()
 		return;
 	}
 
-	C_BaseEntity *pPlayer = C_BasePlayer::GetLocalPlayer();
+	C_BaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
 	if( !pPlayer )
+	{
 		return;
+	}
 
 	Vector playerOrigin = pPlayer->GetAbsOrigin();
 
 	float weight = 0;
-	if ( ( m_minFalloff != -1 ) && ( m_maxFalloff != -1 ) && m_minFalloff != m_maxFalloff )
+	if( ( m_minFalloff != -1 ) && ( m_maxFalloff != -1 ) && m_minFalloff != m_maxFalloff )
 	{
-		float dist = (playerOrigin - m_vecOrigin).Length();
-		weight = (dist-m_minFalloff) / (m_maxFalloff-m_minFalloff);
-		if ( weight<0.0f ) weight = 0.0f;	
-		if ( weight>1.0f ) weight = 1.0f;	
+		float dist = ( playerOrigin - m_vecOrigin ).Length();
+		weight = ( dist - m_minFalloff ) / ( m_maxFalloff - m_minFalloff );
+		if( weight < 0.0f )
+		{
+			weight = 0.0f;
+		}
+		if( weight > 1.0f )
+		{
+			weight = 1.0f;
+		}
 	}
-	
+
 	g_pColorCorrectionMgr->SetColorCorrectionWeight( m_CCHandle, m_flCurWeight * ( 1.0 - weight ) );
 
 	BaseClass::ClientThink();

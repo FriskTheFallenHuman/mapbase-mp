@@ -30,7 +30,7 @@ enum MaterialModifyMode_t
 };
 
 // forward declarations
-void ToolFramework_RecordMaterialParams( IMaterial *pMaterial );
+void ToolFramework_RecordMaterialParams( IMaterial* pMaterial );
 
 ConVar debug_materialmodifycontrol_client( "debug_materialmodifycontrol_client", "0" );
 
@@ -65,21 +65,36 @@ public:
 	void OnDataChanged( DataUpdateType_t updateType );
 	bool ShouldDraw();
 
-	IMaterial *GetMaterial( void )					{ return m_pMaterial; }
-	const char *GetMaterialVariableName( void )		{ return m_szMaterialVar; }
-	const char *GetMaterialVariableValue( void )	{ return m_szMaterialVarValue; }
+	IMaterial* GetMaterial( void )
+	{
+		return m_pMaterial;
+	}
+	const char* GetMaterialVariableName( void )
+	{
+		return m_szMaterialVar;
+	}
+	const char* GetMaterialVariableValue( void )
+	{
+		return m_szMaterialVarValue;
+	}
 
 	DECLARE_CLIENTCLASS();
 
 	// Animated texture and Float Lerp usage
-	bool	HasNewAnimationCommands( void )			{ return m_bHasNewAnimationCommands; }
-	void	ClearAnimationCommands( void )			{ m_bHasNewAnimationCommands = false; }
+	bool	HasNewAnimationCommands( void )
+	{
+		return m_bHasNewAnimationCommands;
+	}
+	void	ClearAnimationCommands( void )
+	{
+		m_bHasNewAnimationCommands = false;
+	}
 
 	// Animated texture usage
-	void	GetAnimationCommands( materialanimcommands_t *pCommands );
+	void	GetAnimationCommands( materialanimcommands_t* pCommands );
 
 	// FloatLerp usage
-	void	GetFloatLerpCommands( materialfloatlerpcommands_t *pCommands );
+	void	GetFloatLerpCommands( materialfloatlerpcommands_t* pCommands );
 
 	void	SetAnimationStartTime( float flTime )
 	{
@@ -92,14 +107,14 @@ public:
 
 	MaterialModifyMode_t GetModifyMode( void ) const
 	{
-		return ( MaterialModifyMode_t)m_nModifyMode;
+		return ( MaterialModifyMode_t )m_nModifyMode;
 	}
 private:
 
 	char m_szMaterialName[MATERIAL_MODIFY_STRING_SIZE];
 	char m_szMaterialVar[MATERIAL_MODIFY_STRING_SIZE];
 	char m_szMaterialVarValue[MATERIAL_MODIFY_STRING_SIZE];
-	IMaterial		*m_pMaterial;
+	IMaterial*		m_pMaterial;
 
 	bool	m_bHasNewAnimationCommands;
 
@@ -121,33 +136,33 @@ private:
 	int		m_nModifyMode;
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_MaterialModifyControl, DT_MaterialModifyControl, CMaterialModifyControl)
-	RecvPropString( RECVINFO( m_szMaterialName ) ),
-	RecvPropString( RECVINFO( m_szMaterialVar ) ),
-	RecvPropString( RECVINFO( m_szMaterialVarValue ) ),
-	RecvPropInt( RECVINFO(m_iFrameStart) ),
-	RecvPropInt( RECVINFO(m_iFrameEnd) ),
-	RecvPropInt( RECVINFO(m_bWrap) ),
-	RecvPropFloat( RECVINFO(m_flFramerate) ),
-	RecvPropInt( RECVINFO(m_bNewAnimCommandsSemaphore) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpStartValue) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpEndValue) ),
-	RecvPropFloat( RECVINFO(m_flFloatLerpTransitionTime) ),
-	RecvPropInt( RECVINFO(m_bFloatLerpWrap) ),
-	RecvPropInt( RECVINFO(m_nModifyMode) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_MaterialModifyControl, DT_MaterialModifyControl, CMaterialModifyControl )
+RecvPropString( RECVINFO( m_szMaterialName ) ),
+				RecvPropString( RECVINFO( m_szMaterialVar ) ),
+				RecvPropString( RECVINFO( m_szMaterialVarValue ) ),
+				RecvPropInt( RECVINFO( m_iFrameStart ) ),
+				RecvPropInt( RECVINFO( m_iFrameEnd ) ),
+				RecvPropInt( RECVINFO( m_bWrap ) ),
+				RecvPropFloat( RECVINFO( m_flFramerate ) ),
+				RecvPropInt( RECVINFO( m_bNewAnimCommandsSemaphore ) ),
+				RecvPropFloat( RECVINFO( m_flFloatLerpStartValue ) ),
+				RecvPropFloat( RECVINFO( m_flFloatLerpEndValue ) ),
+				RecvPropFloat( RECVINFO( m_flFloatLerpTransitionTime ) ),
+				RecvPropInt( RECVINFO( m_bFloatLerpWrap ) ),
+				RecvPropInt( RECVINFO( m_nModifyMode ) ),
+				END_RECV_TABLE()
 
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-C_MaterialModifyControl::C_MaterialModifyControl()
+				C_MaterialModifyControl::C_MaterialModifyControl()
 {
 	m_pMaterial = NULL;
 	m_bOldAnimCommandsSemaphore = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_MaterialModifyControl::OnPreDataChanged( DataUpdateType_t updateType )
 {
@@ -170,16 +185,16 @@ void C_MaterialModifyControl::OnDataChanged( DataUpdateType_t updateType )
 	}
 
 	// Detect changes in the anim commands
-	if ( m_bNewAnimCommandsSemaphore != m_bOldAnimCommandsSemaphore )
+	if( m_bNewAnimCommandsSemaphore != m_bOldAnimCommandsSemaphore )
 	{
 		m_bHasNewAnimationCommands = true;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_MaterialModifyControl::GetAnimationCommands( materialanimcommands_t *pCommands )
+void C_MaterialModifyControl::GetAnimationCommands( materialanimcommands_t* pCommands )
 {
 	pCommands->iFrameStart = m_iFrameStart;
 	pCommands->iFrameEnd = m_iFrameEnd;
@@ -188,9 +203,9 @@ void C_MaterialModifyControl::GetAnimationCommands( materialanimcommands_t *pCom
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_MaterialModifyControl::GetFloatLerpCommands( materialfloatlerpcommands_t *pCommands )
+void C_MaterialModifyControl::GetFloatLerpCommands( materialfloatlerpcommands_t* pCommands )
 {
 	pCommands->flStartValue = m_flFloatLerpStartValue;
 	pCommands->flEndValue = m_flFloatLerpEndValue;
@@ -214,19 +229,19 @@ class CMaterialModifyProxy : public CBaseAnimatedTextureProxy
 public:
 	CMaterialModifyProxy();
 	virtual ~CMaterialModifyProxy();
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pEntity );
-	virtual IMaterial *GetMaterial();
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pEntity );
+	virtual IMaterial* GetMaterial();
 
 private:
-	void OnBindSetVar( C_MaterialModifyControl *pControl );
-	void OnBindAnimatedTexture( C_MaterialModifyControl *pControl );
-	void OnBindFloatLerp( C_MaterialModifyControl *pControl );
+	void OnBindSetVar( C_MaterialModifyControl* pControl );
+	void OnBindAnimatedTexture( C_MaterialModifyControl* pControl );
+	void OnBindFloatLerp( C_MaterialModifyControl* pControl );
 	float GetAnimationStartTime( void* pArg );
 	void AnimationWrapped( void* pArg );
 
-	IMaterial	*m_pMaterial;
-	
+	IMaterial*	m_pMaterial;
+
 	// texture animation stuff
 	int			m_iFrameStart;
 	int			m_iFrameEnd;
@@ -235,7 +250,7 @@ private:
 	float		m_flCustomFramerate;
 
 	// float lerp stuff
-	IMaterialVar *m_pMaterialVar;
+	IMaterialVar* m_pMaterialVar;
 	int			m_flStartValue;
 	int			m_flEndValue;
 	float		m_flStartTime;
@@ -256,7 +271,7 @@ CMaterialModifyProxy::~CMaterialModifyProxy()
 {
 }
 
-bool CMaterialModifyProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CMaterialModifyProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	// set var stuff
 	m_pMaterial = pMaterial;
@@ -275,15 +290,15 @@ bool CMaterialModifyProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
 	return true;
 }
 
-void CMaterialModifyProxy::OnBind( void *pEntity )
+void CMaterialModifyProxy::OnBind( void* pEntity )
 {
 	// Get the modified material vars from the entity input
-	IClientRenderable *pRend = (IClientRenderable *)pEntity;
-	if ( pRend )
+	IClientRenderable* pRend = ( IClientRenderable* )pEntity;
+	if( pRend )
 	{
-		C_BaseEntity *pBaseEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-		
-		if ( pBaseEntity )
+		C_BaseEntity* pBaseEntity = pRend->GetIClientUnknown()->GetBaseEntity();
+
+		if( pBaseEntity )
 		{
 			if( debug_materialmodifycontrol_client.GetBool() )
 			{
@@ -291,35 +306,37 @@ void CMaterialModifyProxy::OnBind( void *pEntity )
 			}
 			int numChildren = 0;
 			bool gotOne = false;
-			for ( C_BaseEntity *pChild = pBaseEntity->FirstMoveChild(); pChild; pChild = pChild->NextMovePeer() )
+			for( C_BaseEntity* pChild = pBaseEntity->FirstMoveChild(); pChild; pChild = pChild->NextMovePeer() )
 			{
 				numChildren++;
-				C_MaterialModifyControl *pControl = dynamic_cast<C_MaterialModifyControl*>( pChild );
-				if ( !pControl )
+				C_MaterialModifyControl* pControl = dynamic_cast<C_MaterialModifyControl*>( pChild );
+				if( !pControl )
+				{
 					continue;
+				}
 
 				if( debug_materialmodifycontrol_client.GetBool() )
 				{
 //					DevMsg( 1, "pControl: 0x%p\n", pControl );
 				}
-				
+
 				switch( pControl->GetModifyMode() )
 				{
-				case MATERIAL_MODIFY_MODE_NONE:
-					break;
-				case MATERIAL_MODIFY_MODE_SETVAR:
-					gotOne = true;
-					OnBindSetVar( pControl );
-					break;
-				case MATERIAL_MODIFY_MODE_ANIM_SEQUENCE:
-					OnBindAnimatedTexture( pControl );
-					break;
-				case MATERIAL_MODIFY_MODE_FLOAT_LERP:
-					OnBindFloatLerp( pControl );
-					break;
-				default:
-					Assert( 0 );
-					break;
+					case MATERIAL_MODIFY_MODE_NONE:
+						break;
+					case MATERIAL_MODIFY_MODE_SETVAR:
+						gotOne = true;
+						OnBindSetVar( pControl );
+						break;
+					case MATERIAL_MODIFY_MODE_ANIM_SEQUENCE:
+						OnBindAnimatedTexture( pControl );
+						break;
+					case MATERIAL_MODIFY_MODE_FLOAT_LERP:
+						OnBindFloatLerp( pControl );
+						break;
+					default:
+						Assert( 0 );
+						break;
 				}
 			}
 			if( gotOne )
@@ -329,13 +346,13 @@ void CMaterialModifyProxy::OnBind( void *pEntity )
 		}
 	}
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
 }
 
-IMaterial *CMaterialModifyProxy::GetMaterial()
+IMaterial* CMaterialModifyProxy::GetMaterial()
 {
 	return m_pMaterial;
 }
@@ -343,38 +360,40 @@ IMaterial *CMaterialModifyProxy::GetMaterial()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CMaterialModifyProxy::OnBindSetVar( C_MaterialModifyControl *pControl )
+void CMaterialModifyProxy::OnBindSetVar( C_MaterialModifyControl* pControl )
 {
-	IMaterial *pMaterial = pControl->GetMaterial();
+	IMaterial* pMaterial = pControl->GetMaterial();
 	if( !pMaterial )
 	{
 		Assert( 0 );
 		return;
 	}
 
-	if ( pMaterial != m_pMaterial )
+	if( pMaterial != m_pMaterial )
 	{
 //		Warning( "\t%s!=%s\n", pMaterial->GetName(), m_pMaterial->GetName() );
 		return;
 	}
 
 	bool bFound;
-	IMaterialVar *pMaterialVar = pMaterial->FindVar( pControl->GetMaterialVariableName(), &bFound, false );
-	if ( !bFound )
+	IMaterialVar* pMaterialVar = pMaterial->FindVar( pControl->GetMaterialVariableName(), &bFound, false );
+	if( !bFound )
+	{
 		return;
+	}
 
 	if( Q_strcmp( pControl->GetMaterialVariableValue(), "" ) )
 	{
 //		const char *pMaterialName = m_pMaterial->GetName();
 //		const char *pMaterialVarName = pMaterialVar->GetName();
 //		const char *pMaterialVarValue = pControl->GetMaterialVariableValue();
-//		if( debug_materialmodifycontrol_client.GetBool() 
+//		if( debug_materialmodifycontrol_client.GetBool()
 //			&& Q_stristr( m_pMaterial->GetName(), "faceandhair" )
 //			&& Q_stristr( pMaterialVar->GetName(), "self" )
 //			)
 //		{
 //			static int count = 0;
-//			DevMsg( 1, "CMaterialModifyProxy::OnBindSetVar \"%s\" %s=%s %d pControl=0x%p\n", 
+//			DevMsg( 1, "CMaterialModifyProxy::OnBindSetVar \"%s\" %s=%s %d pControl=0x%p\n",
 //				m_pMaterial->GetName(), pMaterialVar->GetName(), pControl->GetMaterialVariableValue(), count++, pControl );
 //		}
 		pMaterialVar->SetValueAutodetectType( pControl->GetMaterialVariableValue() );
@@ -385,19 +404,23 @@ void CMaterialModifyProxy::OnBindSetVar( C_MaterialModifyControl *pControl )
 //-----------------------------------------------------------------------------
 // Does the dirty deed
 //-----------------------------------------------------------------------------
-void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pControl )
+void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl* pControl )
 {
-	assert ( m_AnimatedTextureVar );
+	assert( m_AnimatedTextureVar );
 	if( m_AnimatedTextureVar->GetType() != MATERIAL_VAR_TYPE_TEXTURE )
+	{
 		return;
+	}
 
-	ITexture *pTexture;
+	ITexture* pTexture;
 	pTexture = m_AnimatedTextureVar->GetTextureValue();
 
-	if ( !pControl )
+	if( !pControl )
+	{
 		return;
+	}
 
-	if ( pControl->HasNewAnimationCommands() )
+	if( pControl->HasNewAnimationCommands() )
 	{
 		// Read the data from the modify entity
 		materialanimcommands_t sCommands;
@@ -414,7 +437,7 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 		pControl->ClearAnimationCommands();
 	}
 
-	// Init all the vars based on whether we're using the base material settings, 
+	// Init all the vars based on whether we're using the base material settings,
 	// or the custom ones from the entity input.
 	int numFrames;
 	bool bWrapAnimation;
@@ -422,28 +445,28 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 	int iLastFrame;
 
 	// Do we have a custom frame section from the server?
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
-		if ( m_iFrameEnd == MATERIAL_MODIFY_ANIMATION_UNSET )
+		if( m_iFrameEnd == MATERIAL_MODIFY_ANIMATION_UNSET )
 		{
 			m_iFrameEnd = pTexture->GetNumAnimationFrames();
 		}
 
-		numFrames = (m_iFrameEnd - m_iFrameStart) + 1;
+		numFrames = ( m_iFrameEnd - m_iFrameStart ) + 1;
 		bWrapAnimation = m_bCustomWrap;
 		flFrameRate = m_flCustomFramerate;
-		iLastFrame = (m_iFrameEnd - 1);
+		iLastFrame = ( m_iFrameEnd - 1 );
 	}
 	else
 	{
 		numFrames = pTexture->GetNumAnimationFrames();
 		bWrapAnimation = m_WrapAnimation;
 		flFrameRate = m_FrameRate;
-		iLastFrame = (numFrames - 1);
+		iLastFrame = ( numFrames - 1 );
 	}
 
 	// Have we already reached the end? If so, stay there.
-	if ( m_bReachedEnd && !bWrapAnimation )
+	if( m_bReachedEnd && !bWrapAnimation )
 	{
 		m_AnimatedTextureFrameNumVar->SetIntValue( iLastFrame );
 		return;
@@ -453,41 +476,45 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 	// because the bind proxy can be called many times per frame.
 	// Prevent multiple Wrap callbacks to be sent for no wrap mode
 	float startTime;
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
 		startTime = m_flStartTime;
 	}
 	else
 	{
-		startTime = GetAnimationStartTime(pControl);
+		startTime = GetAnimationStartTime( pControl );
 	}
 	float deltaTime = gpGlobals->curtime - startTime;
 	float prevTime = deltaTime - gpGlobals->frametime;
 
 	// Clamp..
-	if (deltaTime < 0.0f)
+	if( deltaTime < 0.0f )
+	{
 		deltaTime = 0.0f;
-	if (prevTime < 0.0f)
+	}
+	if( prevTime < 0.0f )
+	{
 		prevTime = 0.0f;
+	}
 
-	float frame = flFrameRate * deltaTime;	
+	float frame = flFrameRate * deltaTime;
 	float prevFrame = flFrameRate * prevTime;
 
-	int intFrame = ((int)frame) % numFrames; 
-	int intPrevFrame = ((int)prevFrame) % numFrames;
+	int intFrame = ( ( int )frame ) % numFrames;
+	int intPrevFrame = ( ( int )prevFrame ) % numFrames;
 
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
 		intFrame += m_iFrameStart;
 		intPrevFrame += m_iFrameStart;
 	}
 
 	// Report wrap situation...
-	if (intPrevFrame > intFrame)
+	if( intPrevFrame > intFrame )
 	{
 		m_bReachedEnd = true;
 
-		if (bWrapAnimation)
+		if( bWrapAnimation )
 		{
 			AnimationWrapped( pControl );
 		}
@@ -495,8 +522,10 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 		{
 			// Only sent the wrapped message once.
 			// when we're in non-wrapping mode
-			if (prevFrame < numFrames)
+			if( prevFrame < numFrames )
+			{
 				AnimationWrapped( pControl );
+			}
 			intFrame = numFrames - 1;
 		}
 	}
@@ -505,16 +534,18 @@ void CMaterialModifyProxy::OnBindAnimatedTexture( C_MaterialModifyControl *pCont
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CMaterialModifyProxy::GetAnimationStartTime( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return 0.0f;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		return pEntity->GetTextureAnimationStartTime();
 	}
@@ -522,16 +553,18 @@ float CMaterialModifyProxy::GetAnimationStartTime( void* pArg )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMaterialModifyProxy::AnimationWrapped( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		pEntity->TextureAnimationWrapped();
 	}
@@ -540,12 +573,14 @@ void CMaterialModifyProxy::AnimationWrapped( void* pArg )
 //-----------------------------------------------------------------------------
 // Does the dirty deed
 //-----------------------------------------------------------------------------
-void CMaterialModifyProxy::OnBindFloatLerp( C_MaterialModifyControl *pControl )
+void CMaterialModifyProxy::OnBindFloatLerp( C_MaterialModifyControl* pControl )
 {
-	if ( !pControl )
+	if( !pControl )
+	{
 		return;
+	}
 
-	if ( pControl->HasNewAnimationCommands() )
+	if( pControl->HasNewAnimationCommands() )
 	{
 		pControl->SetAnimationStartTime( gpGlobals->curtime );
 		pControl->ClearAnimationCommands();
@@ -585,21 +620,21 @@ void CMaterialModifyProxy::OnBindFloatLerp( C_MaterialModifyControl *pControl )
 
 //=============================================================================
 //
-// MATERIALMODIFYANIMATED PROXY 
+// MATERIALMODIFYANIMATED PROXY
 //
 class CMaterialModifyAnimatedProxy : public CBaseAnimatedTextureProxy
 {
 public:
 	CMaterialModifyAnimatedProxy() {};
 	virtual ~CMaterialModifyAnimatedProxy() {};
-	virtual bool Init( IMaterial *pMaterial, KeyValues *pKeyValues );
-	virtual void OnBind( void *pEntity );
+	virtual bool Init( IMaterial* pMaterial, KeyValues* pKeyValues );
+	virtual void OnBind( void* pEntity );
 
 	virtual float GetAnimationStartTime( void* pBaseEntity );
 	virtual void AnimationWrapped( void* pC_BaseEntity );
 
 private:
-	IMaterial	*m_pMaterial;
+	IMaterial*	m_pMaterial;
 	int			m_iFrameStart;
 	int			m_iFrameEnd;
 	bool		m_bReachedEnd;
@@ -609,9 +644,9 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CMaterialModifyAnimatedProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CMaterialModifyAnimatedProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
 	m_pMaterial = pMaterial;
 	m_iFrameStart = MATERIAL_MODIFY_ANIMATION_UNSET;
@@ -623,30 +658,36 @@ bool CMaterialModifyAnimatedProxy::Init( IMaterial *pMaterial, KeyValues *pKeyVa
 //-----------------------------------------------------------------------------
 // Does the dirty deed
 //-----------------------------------------------------------------------------
-void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
+void CMaterialModifyAnimatedProxy::OnBind( void* pEntity )
 {
-	assert ( m_AnimatedTextureVar );
+	assert( m_AnimatedTextureVar );
 	if( m_AnimatedTextureVar->GetType() != MATERIAL_VAR_TYPE_TEXTURE )
+	{
 		return;
+	}
 
-	ITexture *pTexture;
+	ITexture* pTexture;
 	pTexture = m_AnimatedTextureVar->GetTextureValue();
 
 	// Get the modified material vars from the entity input
-	IClientRenderable *pRend = (IClientRenderable *)pEntity;
-	if ( pRend )
+	IClientRenderable* pRend = ( IClientRenderable* )pEntity;
+	if( pRend )
 	{
-		C_BaseEntity *pBaseEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-		if ( pBaseEntity )
+		C_BaseEntity* pBaseEntity = pRend->GetIClientUnknown()->GetBaseEntity();
+		if( pBaseEntity )
 		{
-			for ( C_BaseEntity *pChild = pBaseEntity->FirstMoveChild(); pChild; pChild = pChild->NextMovePeer() )
+			for( C_BaseEntity* pChild = pBaseEntity->FirstMoveChild(); pChild; pChild = pChild->NextMovePeer() )
 			{
-				C_MaterialModifyControl *pControl = dynamic_cast<C_MaterialModifyControl*>( pChild );
-				if ( !pControl )
+				C_MaterialModifyControl* pControl = dynamic_cast<C_MaterialModifyControl*>( pChild );
+				if( !pControl )
+				{
 					continue;
+				}
 
-				if ( !pControl->HasNewAnimationCommands() )
+				if( !pControl->HasNewAnimationCommands() )
+				{
 					continue;
+				}
 
 				// Read the data from the modify entity
 				materialanimcommands_t sCommands;
@@ -665,7 +706,7 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 		}
 	}
 
-	// Init all the vars based on whether we're using the base material settings, 
+	// Init all the vars based on whether we're using the base material settings,
 	// or the custom ones from the entity input.
 	int numFrames;
 	bool bWrapAnimation;
@@ -673,28 +714,28 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 	int iLastFrame;
 
 	// Do we have a custom frame section from the server?
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
-		if ( m_iFrameEnd == MATERIAL_MODIFY_ANIMATION_UNSET )
+		if( m_iFrameEnd == MATERIAL_MODIFY_ANIMATION_UNSET )
 		{
 			m_iFrameEnd = pTexture->GetNumAnimationFrames();
 		}
 
-		numFrames = (m_iFrameEnd - m_iFrameStart) + 1;
+		numFrames = ( m_iFrameEnd - m_iFrameStart ) + 1;
 		bWrapAnimation = m_bCustomWrap;
 		flFrameRate = m_flCustomFramerate;
-		iLastFrame = (m_iFrameEnd - 1);
+		iLastFrame = ( m_iFrameEnd - 1 );
 	}
 	else
 	{
 		numFrames = pTexture->GetNumAnimationFrames();
 		bWrapAnimation = m_WrapAnimation;
 		flFrameRate = m_FrameRate;
-		iLastFrame = (numFrames - 1);
+		iLastFrame = ( numFrames - 1 );
 	}
 
 	// Have we already reached the end? If so, stay there.
-	if ( m_bReachedEnd && !bWrapAnimation )
+	if( m_bReachedEnd && !bWrapAnimation )
 	{
 		m_AnimatedTextureFrameNumVar->SetIntValue( iLastFrame );
 		return;
@@ -704,41 +745,45 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 	// because the bind proxy can be called many times per frame.
 	// Prevent multiple Wrap callbacks to be sent for no wrap mode
 	float startTime;
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
 		startTime = m_flStartTime;
 	}
 	else
 	{
-		startTime = GetAnimationStartTime(pEntity);
+		startTime = GetAnimationStartTime( pEntity );
 	}
 	float deltaTime = gpGlobals->curtime - startTime;
 	float prevTime = deltaTime - gpGlobals->frametime;
 
 	// Clamp..
-	if (deltaTime < 0.0f)
+	if( deltaTime < 0.0f )
+	{
 		deltaTime = 0.0f;
-	if (prevTime < 0.0f)
+	}
+	if( prevTime < 0.0f )
+	{
 		prevTime = 0.0f;
+	}
 
-	float frame = flFrameRate * deltaTime;	
+	float frame = flFrameRate * deltaTime;
 	float prevFrame = flFrameRate * prevTime;
 
-	int intFrame = ((int)frame) % numFrames; 
-	int intPrevFrame = ((int)prevFrame) % numFrames;
+	int intFrame = ( ( int )frame ) % numFrames;
+	int intPrevFrame = ( ( int )prevFrame ) % numFrames;
 
-	if ( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
+	if( m_iFrameStart != MATERIAL_MODIFY_ANIMATION_UNSET )
 	{
 		intFrame += m_iFrameStart;
 		intPrevFrame += m_iFrameStart;
 	}
 
 	// Report wrap situation...
-	if (intPrevFrame > intFrame)
+	if( intPrevFrame > intFrame )
 	{
 		m_bReachedEnd = true;
 
-		if (bWrapAnimation)
+		if( bWrapAnimation )
 		{
 			AnimationWrapped( pEntity );
 		}
@@ -746,31 +791,35 @@ void CMaterialModifyAnimatedProxy::OnBind( void *pEntity )
 		{
 			// Only sent the wrapped message once.
 			// when we're in non-wrapping mode
-			if (prevFrame < numFrames)
+			if( prevFrame < numFrames )
+			{
 				AnimationWrapped( pEntity );
+			}
 			intFrame = numFrames - 1;
 		}
 	}
 
 	m_AnimatedTextureFrameNumVar->SetIntValue( intFrame );
 
-	if ( ToolsEnabled() )
+	if( ToolsEnabled() )
 	{
 		ToolFramework_RecordMaterialParams( GetMaterial() );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CMaterialModifyAnimatedProxy::GetAnimationStartTime( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return 0.0f;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		return pEntity->GetTextureAnimationStartTime();
 	}
@@ -778,16 +827,18 @@ float CMaterialModifyAnimatedProxy::GetAnimationStartTime( void* pArg )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CMaterialModifyAnimatedProxy::AnimationWrapped( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		pEntity->TextureAnimationWrapped();
 	}

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -80,7 +80,7 @@ void NavDrawLine( const Vector& from, const Vector& to, NavEditColor navColor )
 
 	Color color = NavColors[navColor];
 	NDebugOverlay::Line( from + offset, to + offset, color[0], color[1], color[2], false, NDEBUG_PERSIST_TILL_NEXT_SERVER );
-	NDebugOverlay::Line( from + offset, to + offset, color[0]/2, color[1]/2, color[2]/2, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+	NDebugOverlay::Line( from + offset, to + offset, color[0] / 2, color[1] / 2, color[2] / 2, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 }
 
 
@@ -97,7 +97,7 @@ void NavDrawTriangle( const Vector& point1, const Vector& point2, const Vector& 
 void NavDrawFilledTriangle( const Vector& point1, const Vector& point2, const Vector& point3, NavEditColor navColor, bool dark )
 {
 	Color color = NavColors[navColor];
-	if ( dark )
+	if( dark )
 	{
 		color[0] = color[0] / 2;
 		color[1] = color[1] / 2;
@@ -114,7 +114,7 @@ void NavDrawHorizontalArrow( const Vector& from, const Vector& to, float width, 
 
 	Color color = NavColors[navColor];
 	NDebugOverlay::HorzArrow( from + offset, to + offset, width, color[0], color[1], color[2], 255, false, NDEBUG_PERSIST_TILL_NEXT_SERVER );
-	NDebugOverlay::HorzArrow( from + offset, to + offset, width, color[0]/2, color[1]/2, color[2]/2, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+	NDebugOverlay::HorzArrow( from + offset, to + offset, width, color[0] / 2, color[1] / 2, color[2] / 2, 255, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 }
 
 
@@ -128,12 +128,12 @@ void NavDrawDashedLine( const Vector& from, const Vector& to, NavEditColor navCo
 	const float solidLen = 7.0f;
 	const float   gapLen = 3.0f;
 
-	Vector unit = (to - from);
+	Vector unit = ( to - from );
 	const float totalDistance = unit.NormalizeInPlace();
 
 	float distance = 0.0f;
 
-	while ( distance < totalDistance )
+	while( distance < totalDistance )
 	{
 		Vector start = from + unit * distance;
 		float endDistance = distance + solidLen;
@@ -143,13 +143,13 @@ void NavDrawDashedLine( const Vector& from, const Vector& to, NavEditColor navCo
 		distance += solidLen + gapLen;
 
 		NDebugOverlay::Line( start + offset, end + offset, color[0], color[1], color[2], false, NDEBUG_PERSIST_TILL_NEXT_SERVER );
-		NDebugOverlay::Line( start + offset, end + offset, color[0]/2, color[1]/2, color[2]/2, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+		NDebugOverlay::Line( start + offset, end + offset, color[0] / 2, color[1] / 2, color[2] / 2, true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
 	}
 }
 
 
 //--------------------------------------------------------------------------------------------------------------
-void NavDrawVolume( const Vector &vMin, const Vector &vMax, int zMidline, NavEditColor navColor )
+void NavDrawVolume( const Vector& vMin, const Vector& vMax, int zMidline, NavEditColor navColor )
 {
 	// Center rectangle
 	NavDrawLine( Vector( vMax.x, vMax.y, zMidline ), Vector( vMin.x, vMax.y, zMidline ),	navColor );

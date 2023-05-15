@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define MP3PLAYER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //
@@ -26,12 +26,12 @@
 // Forward declarations
 namespace vgui
 {
-	class MenuButton;
-	class Button;
-	class Slider;
-	class IScheme;
-	class FileOpenDialog;
-	class DirectorySelectDialog;
+class MenuButton;
+class Button;
+class Slider;
+class IScheme;
+class FileOpenDialog;
+class DirectorySelectDialog;
 };
 
 class CMP3FileSheet;
@@ -89,7 +89,7 @@ struct MP3Dir_t
 		int i, c;
 
 		c = m_Subdirectories.Count();
-		for ( i = c - 1; i >= 0 ; --i )
+		for( i = c - 1; i >= 0 ; --i )
 		{
 			delete m_Subdirectories[ i ];
 		}
@@ -104,22 +104,22 @@ struct MP3Dir_t
 		int i, c;
 
 		c = src.m_Subdirectories.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
-			MP3Dir_t *subCopy = new MP3Dir_t( *src.m_Subdirectories[ i ] );
+			MP3Dir_t* subCopy = new MP3Dir_t( *src.m_Subdirectories[ i ] );
 			m_Subdirectories.AddToTail( subCopy );
 		}
 
 		c = src.m_FilesInDirectory.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
 			m_FilesInDirectory.AddToTail( src.m_FilesInDirectory[ i ] );
 		}
 	}
 
-	MP3Dir_t &operator =( const MP3Dir_t& src )
+	MP3Dir_t& operator =( const MP3Dir_t& src )
 	{
-		if ( this == &src )
+		if( this == &src )
 		{
 			return *this;
 		}
@@ -134,15 +134,15 @@ struct MP3Dir_t
 		int i, c;
 
 		c = src.m_Subdirectories.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
 			// make a copy
-			MP3Dir_t *subCopy = new MP3Dir_t( *src.m_Subdirectories[ i ] );
+			MP3Dir_t* subCopy = new MP3Dir_t( *src.m_Subdirectories[ i ] );
 			m_Subdirectories.AddToTail( subCopy );
 		}
 
 		c = src.m_FilesInDirectory.Count();
-		for ( i = 0; i < c; ++i )
+		for( i = 0; i < c; ++i )
 		{
 			m_FilesInDirectory.AddToTail( src.m_FilesInDirectory[ i ] );
 		}
@@ -150,14 +150,14 @@ struct MP3Dir_t
 		return *this;
 	}
 
-	void AddSubDirectory( MP3Dir_t *sub )
+	void AddSubDirectory( MP3Dir_t* sub )
 	{
 		m_Subdirectories.AddToTail( sub );
 	}
 
 	CUtlSymbol					m_DirName;	// "artist"
 	CUtlSymbol					m_FullDirPath;	// "artist/album
-	CUtlVector< MP3Dir_t * >	m_Subdirectories;
+	CUtlVector< MP3Dir_t* >	m_Subdirectories;
 	CUtlVector< int >			m_FilesInDirectory;
 };
 
@@ -180,20 +180,23 @@ struct SoundDirectory_t
 		delete m_pTree;
 	}
 
-	void SetTree( MP3Dir_t *tree )
+	void SetTree( MP3Dir_t* tree )
 	{
-		if ( m_pTree )
+		if( m_pTree )
 		{
 			delete m_pTree;
 		}
 		m_pTree = tree;
 	}
 
-	int			GetIndex() const { return m_nIndex; }
+	int			GetIndex() const
+	{
+		return m_nIndex;
+	}
 
 	int			m_nIndex;
 	CUtlSymbol	m_Root;
-	MP3Dir_t	*m_pTree;
+	MP3Dir_t*	m_pTree;
 	bool		m_bGameSound;
 };
 
@@ -207,16 +210,16 @@ class CMP3Player : public vgui::Frame
 public:
 
 	// Construction
-	CMP3Player( vgui::VPANEL parent, char const *panelName );
+	CMP3Player( vgui::VPANEL parent, char const* panelName );
 	~CMP3Player();
 
 	virtual void			SetVisible( bool );
 
 	// Lookup data
-	MP3File_t				*GetSongInfo( int songIndex );
+	MP3File_t*				GetSongInfo( int songIndex );
 
 	// Static singleton accessor
-	static CMP3Player		*GetMP3Player();
+	static CMP3Player*		GetMP3Player();
 
 	void					AddToPlayList( int songIndex, bool playNow );
 	void					RemoveFromPlayList( int songIndex );
@@ -241,8 +244,8 @@ public:
 	void					EnableAutoAdvance( bool state );
 
 protected:
-	virtual void			OnCommand( char const *cmd );
-	virtual void			ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void			OnCommand( char const* cmd );
+	virtual void			ApplySchemeSettings( vgui::IScheme* pScheme );
 	virtual void			OnTick();
 
 	MESSAGE_FUNC( OnTreeViewItemSelected, "TreeViewItemSelected" );
@@ -250,7 +253,7 @@ protected:
 
 	void					PopulateTree();
 	void					PopulateLists();
-	void					RecursiveAddToTree( MP3Dir_t *current, int parentIndex );
+	void					RecursiveAddToTree( MP3Dir_t* current, int parentIndex );
 	void					DeleteSoundDirectories();
 	// Leave root objects, clear all subdirs
 	void					WipeSoundDirectories();
@@ -258,21 +261,21 @@ protected:
 	// Remove the _mp3/a45ef65a.mp3 style temp sounds
 	void					RemoveTempSounds();
 
-	void					SplitFile( CUtlVector< CUtlSymbol >& splitList, char const *relative );
-	int						AddSplitFileToDirectoryTree_R( int songIndex, MP3Dir_t *parent, CUtlVector< CUtlSymbol >& splitList, int level );
+	void					SplitFile( CUtlVector< CUtlSymbol >& splitList, char const* relative );
+	int						AddSplitFileToDirectoryTree_R( int songIndex, MP3Dir_t* parent, CUtlVector< CUtlSymbol >& splitList, int level );
 
-	MP3Dir_t				*FindOrAddSubdirectory( MP3Dir_t *parent, char const *dirname );
+	MP3Dir_t*				FindOrAddSubdirectory( MP3Dir_t* parent, char const* dirname );
 
-	int						AddFileToDirectoryTree( SoundDirectory_t *dir, char const *relative );
-	void					RecursiveFindMP3Files( SoundDirectory_t *root, char const *current, char const *pathID );
+	int						AddFileToDirectoryTree( SoundDirectory_t* dir, char const* relative );
+	void					RecursiveFindMP3Files( SoundDirectory_t* root, char const* current, char const* pathID );
 
-	int						AddSong( char const *relative, int dirnum );
+	int						AddSong( char const* relative, int dirnum );
 	void					RemoveFSSongs(); // Remove all non-built-in .mp3s
-	int						FindSong( char const *relative );
+	int						FindSong( char const* relative );
 
 	void					PlaySong( int songIndex, float skipTime = 0.0f );
-	void					GetLocalCopyOfSong( const MP3File_t &mp3, char *outsong, size_t outlen );
-	float					GetMP3Duration( char const *songname );
+	void					GetLocalCopyOfSong( const MP3File_t& mp3, char* outsong, size_t outlen );
+	float					GetMP3Duration( char const* songname );
 	void					OnNextTrack();
 	void					OnPrevTrack();
 
@@ -281,24 +284,24 @@ protected:
 	void					OnChangeVolume( float newVol );
 
 	void					AddGameSounds( bool recurse );
-	SoundDirectory_t		*AddSoundDirectory( char const *fullpath, bool recurse );
-	int						FindSoundDirectory( char const *fullpath );
+	SoundDirectory_t*		AddSoundDirectory( char const* fullpath, bool recurse );
+	int						FindSoundDirectory( char const* fullpath );
 
-	bool					RestoreDb( char const *filename );
-	void					SaveDb( char const *filename );
+	bool					RestoreDb( char const* filename );
+	void					SaveDb( char const* filename );
 
-	void					SaveDbFile( int level, CUtlBuffer& buf, MP3File_t *file, int filenumber );
-	void					FlattenDirectoryFileList_R( MP3Dir_t *dir, CUtlVector< int >& list );
-	void					SaveDbDirectory( int level, CUtlBuffer& buf, SoundDirectory_t *sd );
+	void					SaveDbFile( int level, CUtlBuffer& buf, MP3File_t* file, int filenumber );
+	void					FlattenDirectoryFileList_R( MP3Dir_t* dir, CUtlVector< int >& list );
+	void					SaveDbDirectory( int level, CUtlBuffer& buf, SoundDirectory_t* sd );
 
-	void					RestoreSongs( KeyValues *songs );
-	void					RestoreDirectories( KeyValues *dirs );
-	void					RestoreDirectory( KeyValues *dir, SoundDirectory_t *sd );	
+	void					RestoreSongs( KeyValues* songs );
+	void					RestoreDirectories( KeyValues* dirs );
+	void					RestoreDirectory( KeyValues* dir, SoundDirectory_t* sd );
 
-	void					LoadPlayList( char const *filename );
-	void					SavePlayList( char const *filename );
+	void					LoadPlayList( char const* filename );
+	void					SavePlayList( char const* filename );
 
-	void					SetMostRecentPlayList( char const *filename );
+	void					SetMostRecentPlayList( char const* filename );
 
 	void					SaveSettings();
 	void					LoadSettings();
@@ -318,18 +321,18 @@ protected:
 private:
 
 // UI elements
-	vgui::MenuButton		*m_pOptions;
-	CMP3TreeControl			*m_pTree;
-	CMP3FileSheet			*m_pFileSheet;
-	vgui::Label				*m_pCurrentSong;
-	vgui::Label				*m_pDuration;
-	CMP3SongProgress		*m_pSongProgress;
-	vgui::Button			*m_pPlay;
-	vgui::Button			*m_pStop;
-	vgui::Button			*m_pNext, *m_pPrev; // moving between tracks
-	vgui::CheckButton		*m_pMute;
-	vgui::CheckButton		*m_pShuffle;
-	vgui::Slider			*m_pVolume;
+	vgui::MenuButton*		m_pOptions;
+	CMP3TreeControl*			m_pTree;
+	CMP3FileSheet*			m_pFileSheet;
+	vgui::Label*				m_pCurrentSong;
+	vgui::Label*				m_pDuration;
+	CMP3SongProgress*		m_pSongProgress;
+	vgui::Button*			m_pPlay;
+	vgui::Button*			m_pStop;
+	vgui::Button*			m_pNext, *m_pPrev; // moving between tracks
+	vgui::CheckButton*		m_pMute;
+	vgui::CheckButton*		m_pShuffle;
+	vgui::Slider*			m_pVolume;
 
 // Raw list of all known files
 	CUtlVector< MP3File_t >	m_Files;
@@ -360,7 +363,7 @@ private:
 	int						m_nSongSeconds;
 
 // List of all added directories
-	CUtlVector< SoundDirectory_t * >	m_SoundDirectories;
+	CUtlVector< SoundDirectory_t* >	m_SoundDirectories;
 
 // Selection set
 	CUtlVector< int >		m_SelectedSongs;

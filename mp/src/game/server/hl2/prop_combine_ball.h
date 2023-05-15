@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef PROP_COMBINE_BALL_H
 #define PROP_COMBINE_BALL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -37,37 +37,49 @@ public:
 	virtual void UpdateOnRemove();
 	void StopLoopingSounds();
 
-	virtual void OnPhysGunPickup( CBasePlayer *pPhysGunUser, PhysGunPickup_t reason );
-	virtual void OnPhysGunDrop( CBasePlayer *pPhysGunUser, PhysGunDrop_t Reason );
-	virtual void VPhysicsCollision( int index, gamevcollisionevent_t *pEvent );
+	virtual void OnPhysGunPickup( CBasePlayer* pPhysGunUser, PhysGunPickup_t reason );
+	virtual void OnPhysGunDrop( CBasePlayer* pPhysGunUser, PhysGunDrop_t Reason );
+	virtual void VPhysicsCollision( int index, gamevcollisionevent_t* pEvent );
 
 	virtual bool OverridePropdata();
 	virtual bool CreateVPhysics();
 
-	CFuncCombineBallSpawner *GetSpawner();
+	CFuncCombineBallSpawner* GetSpawner();
 
 	virtual void ExplodeThink( void );
 
 	// Override of IPlayerPickupVPhysics;
-	virtual bool ShouldPuntUseLaunchForces( PhysGunForce_t reason ) { return ( reason == PHYSGUN_FORCE_PUNTED ); }
+	virtual bool ShouldPuntUseLaunchForces( PhysGunForce_t reason )
+	{
+		return ( reason == PHYSGUN_FORCE_PUNTED );
+	}
 
 	void SetRadius( float flRadius );
-	void SetSpeed( float flSpeed ) { m_flSpeed = flSpeed; }
-	float GetSpeed( void ) const { return m_flSpeed; }
+	void SetSpeed( float flSpeed )
+	{
+		m_flSpeed = flSpeed;
+	}
+	float GetSpeed( void ) const
+	{
+		return m_flSpeed;
+	}
 
 	void CaptureBySpawner( );
-	bool IsBeingCaptured() const { return m_bCaptureInProgress; }
+	bool IsBeingCaptured() const
+	{
+		return m_bCaptureInProgress;
+	}
 
 	void ReplaceInSpawner( float flSpeed );
 
 	// Input
-	void InputExplode( inputdata_t &inputdata );
-	void InputFadeAndRespawn( inputdata_t &inputdata );
-	void InputKill( inputdata_t &inputdata );
-	void InputSocketed( inputdata_t &inputdata );
+	void InputExplode( inputdata_t& inputdata );
+	void InputFadeAndRespawn( inputdata_t& inputdata );
+	void InputKill( inputdata_t& inputdata );
+	void InputSocketed( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetLifetime( inputdata_t &inputdata );
-	void InputAddLifetime( inputdata_t &inputdata );
+	void InputSetLifetime( inputdata_t& inputdata );
+	void InputAddLifetime( inputdata_t& inputdata );
 #endif
 
 	enum
@@ -87,24 +99,43 @@ public:
 	void ClearLifetime( );
 	void SetMass( float mass );
 
-	void SetWeaponLaunched( bool state = true ) { m_bWeaponLaunched = state; m_bLaunched = state; }
-	bool WasWeaponLaunched( void ) const { return m_bWeaponLaunched; }
+	void SetWeaponLaunched( bool state = true )
+	{
+		m_bWeaponLaunched = state;
+		m_bLaunched = state;
+	}
+	bool WasWeaponLaunched( void ) const
+	{
+		return m_bWeaponLaunched;
+	}
 
-	bool WasFiredByNPC() const { return (GetOwnerEntity() && GetOwnerEntity()->IsNPC()); }
+	bool WasFiredByNPC() const
+	{
+		return ( GetOwnerEntity() && GetOwnerEntity()->IsNPC() );
+	}
 
 	bool ShouldHitPlayer() const;
 
-	virtual CBasePlayer *HasPhysicsAttacker( float dt );
+	virtual CBasePlayer* HasPhysicsAttacker( float dt );
 
-	void	SetSpawner( CFuncCombineBallSpawner *pSpawner ) { m_hSpawner = pSpawner; }
+	void	SetSpawner( CFuncCombineBallSpawner* pSpawner )
+	{
+		m_hSpawner = pSpawner;
+	}
 	void	NotifySpawnerOfRemoval( void );
 
 
 	float	LastCaptureTime() const;
 
-	unsigned char GetState() const { return m_nState;	}
+	unsigned char GetState() const
+	{
+		return m_nState;
+	}
 
-	int  NumBounces( void ) const { return m_nBounceCount; }
+	int  NumBounces( void ) const
+	{
+		return m_nBounceCount;
+	}
 
 	void SetMaxBounces( int iBounces )
 	{
@@ -116,12 +147,18 @@ public:
 		m_bEmit = bEmit;
 	}
 
-	void SetOriginalOwner( CBaseEntity *pEntity ) { m_hOriginalOwner = pEntity; }
-	CBaseEntity *GetOriginalOwner() { return m_hOriginalOwner; }
+	void SetOriginalOwner( CBaseEntity* pEntity )
+	{
+		m_hOriginalOwner = pEntity;
+	}
+	CBaseEntity* GetOriginalOwner()
+	{
+		return m_hOriginalOwner;
+	}
 
 private:
 
-	void SetPlayerLaunched( CBasePlayer *pOwner );
+	void SetPlayerLaunched( CBasePlayer* pOwner );
 
 	float GetBallHoldDissolveTime();
 	float GetBallHoldSoundRampTime();
@@ -134,23 +171,23 @@ private:
 
 	void SetBallAsLaunched( void );
 
-	void CollisionEventToTrace( int index, gamevcollisionevent_t *pEvent, trace_t &tr );
-	bool DissolveEntity( CBaseEntity *pEntity );
-	void OnHitEntity( CBaseEntity *pHitEntity, float flSpeed, int index, gamevcollisionevent_t *pEvent );
-	void DoImpactEffect( const Vector &preVelocity, int index, gamevcollisionevent_t *pEvent );
+	void CollisionEventToTrace( int index, gamevcollisionevent_t* pEvent, trace_t& tr );
+	bool DissolveEntity( CBaseEntity* pEntity );
+	void OnHitEntity( CBaseEntity* pHitEntity, float flSpeed, int index, gamevcollisionevent_t* pEvent );
+	void DoImpactEffect( const Vector& preVelocity, int index, gamevcollisionevent_t* pEvent );
 
-	// Bounce inside the spawner: 
-	void BounceInSpawner( float flSpeed, int index, gamevcollisionevent_t *pEvent );
+	// Bounce inside the spawner:
+	void BounceInSpawner( float flSpeed, int index, gamevcollisionevent_t* pEvent );
 
-	bool IsAttractiveTarget( CBaseEntity *pEntity );
+	bool IsAttractiveTarget( CBaseEntity* pEntity );
 
-	// Deflects the ball toward enemies in case of a collision 
-	void DeflectTowardEnemy( float flSpeed, int index, gamevcollisionevent_t *pEvent );
+	// Deflects the ball toward enemies in case of a collision
+	void DeflectTowardEnemy( float flSpeed, int index, gamevcollisionevent_t* pEvent );
 
-	// Is this something we can potentially dissolve? 
-	bool IsHittableEntity( CBaseEntity *pHitEntity );
+	// Is this something we can potentially dissolve?
+	bool IsHittableEntity( CBaseEntity* pHitEntity );
 
-	// Sucky. 
+	// Sucky.
 	void WhizSoundThink();
 	void DieThink();
 	void DissolveThink();
@@ -183,8 +220,8 @@ private:
 
 	float	m_flSpeed;
 
-	CSpriteTrail *m_pGlowTrail;
-	CSoundPatch *m_pHoldingSound;
+	CSpriteTrail* m_pGlowTrail;
+	CSoundPatch* m_pHoldingSound;
 
 	float	m_flNextDamageTime;
 	float	m_flLastCaptureTime;
@@ -211,20 +248,20 @@ public:
 	virtual void Precache();
 
 	// Balls call this to figure out where to bounce to
-	void GetTargetEndpoint( bool bForward, Vector *pVecEndpoint );
+	void GetTargetEndpoint( bool bForward, Vector* pVecEndpoint );
 
 	// Balls call this when they've been removed from the spawner
 	void RespawnBall( float flRespawnTime );
 	void RespawnBallPostExplosion( void );
 
 	// Fire ball grabbed output
-	void BallGrabbed( CBaseEntity *pEntity );
+	void BallGrabbed( CBaseEntity* pEntity );
 
 	// Get speed of ball to place into the field
 	float GetBallSpeed( ) const;
 
 	// Register that a reflection occurred
-	void RegisterReflection( CPropCombineBall *pBall, bool bForward );
+	void RegisterReflection( CPropCombineBall* pBall, bool bForward );
 
 	// Spawn a ball
 	virtual void SpawnBall();
@@ -232,20 +269,20 @@ public:
 private:
 
 	// Choose a random point inside the cylinder
-	void ChoosePointInCylinder( Vector *pVecPoint );
+	void ChoosePointInCylinder( Vector* pVecPoint );
 
 	// Choose a random point inside the box
-	void ChoosePointInBox( Vector *pVecPoint );
+	void ChoosePointInBox( Vector* pVecPoint );
 
 	// Used to determine when to respawn balls
 	void BallThink();
 
 	// Input
-	void	InputEnable( inputdata_t &inputdata );
-	void	InputDisable( inputdata_t &inputdata );
+	void	InputEnable( inputdata_t& inputdata );
+	void	InputDisable( inputdata_t& inputdata );
 
 	// Fire ball grabbed output
-	void	GrabBallTouch( CBaseEntity *pOther );
+	void	GrabBallTouch( CBaseEntity* pOther );
 
 public:
 	bool m_bShooter;
@@ -281,7 +318,7 @@ public:
 
 	virtual void Spawn( void );
 	virtual void SpawnBall( void );
-	void InputLaunchBall ( inputdata_t &inputdata );
+	void InputLaunchBall( inputdata_t& inputdata );
 
 	CPointCombineBallLauncher();
 
@@ -293,11 +330,11 @@ private:
 };
 
 // Creates a combine ball
-CBaseEntity *CreateCombineBall( const Vector &origin, const Vector &velocity, float radius, float mass, float lifetime, CBaseEntity *pOwner );
+CBaseEntity* CreateCombineBall( const Vector& origin, const Vector& velocity, float radius, float mass, float lifetime, CBaseEntity* pOwner );
 
 // Query function to find out if a physics object is a combine ball (used for collision checks)
-bool UTIL_IsCombineBall( CBaseEntity *pEntity );
-bool UTIL_IsCombineBallDefinite( CBaseEntity *pEntity );
-bool UTIL_IsAR2CombineBall( CBaseEntity *pEntity );
+bool UTIL_IsCombineBall( CBaseEntity* pEntity );
+bool UTIL_IsCombineBallDefinite( CBaseEntity* pEntity );
+bool UTIL_IsAR2CombineBall( CBaseEntity* pEntity );
 
 #endif // PROP_COMBINE_BALL_H

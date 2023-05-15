@@ -17,7 +17,7 @@ class CSchemeVisualizer : public vgui::Frame
 	DECLARE_CLASS_SIMPLE( CSchemeVisualizer, vgui::Frame );
 
 public:
-	CSchemeVisualizer( vgui::Panel *pParent, vgui::IScheme *pViewScheme, const char *pSchemeName );
+	CSchemeVisualizer( vgui::Panel* pParent, vgui::IScheme* pViewScheme, const char* pSchemeName );
 	virtual ~CSchemeVisualizer();
 
 private:
@@ -42,12 +42,12 @@ private:
 	void AddFontsToList();
 	void AddColorsToList();
 
-	vgui::PanelListPanel	*m_pList;
+	vgui::PanelListPanel*	m_pList;
 	ListDataType_t			m_nListDataType;	// Currently selected data type
 	int						m_nSelectedComboItem;
 
-	vgui::IScheme			*m_pViewScheme;		// The scheme we're visualizing
-	vgui::ComboBox			*m_pListDataTypeCombo;
+	vgui::IScheme*			m_pViewScheme;		// The scheme we're visualizing
+	vgui::ComboBox*			m_pListDataTypeCombo;
 };
 
 //----------------------------------------------------------------------------------------

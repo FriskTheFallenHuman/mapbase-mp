@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 // This class is a message box that has two buttons, ok and cancel instead of
 // just the ok button of a message box. We use a message box class for the ok button
 // and implement another button here.
@@ -35,9 +35,9 @@ static int s_iTooltipWindowCount = 0;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-BaseTooltip::BaseTooltip(Panel *parent, const char *text) 
+BaseTooltip::BaseTooltip( Panel* parent, const char* text )
 {
-	SetText(text);
+	SetText( text );
 
 	_displayOnOneLine = false;
 	_makeVisible = false;
@@ -95,7 +95,7 @@ void BaseTooltip::SetTooltipFormatToMultiLine()
 //-----------------------------------------------------------------------------
 // Purpose: Display the tooltip
 //-----------------------------------------------------------------------------
-void BaseTooltip::ShowTooltip(Panel *currentPanel)
+void BaseTooltip::ShowTooltip( Panel* currentPanel )
 {
 	_makeVisible = true;
 
@@ -112,15 +112,21 @@ void BaseTooltip::SetEnabled( bool bState )
 //-----------------------------------------------------------------------------
 bool BaseTooltip::ShouldLayout( void )
 {
-	if (!_makeVisible)
+	if( !_makeVisible )
+	{
 		return false;
+	}
 
-	if (_delay > system()->GetTimeMillis())
-		return false;	
+	if( _delay > system()->GetTimeMillis() )
+	{
+		return false;
+	}
 
 	// We only need to layout when we first become visible
-	if ( !_isDirty )
+	if( !_isDirty )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -137,36 +143,36 @@ void BaseTooltip::HideTooltip()
 //-----------------------------------------------------------------------------
 // Purpose: Set the tooltip text
 //-----------------------------------------------------------------------------
-void BaseTooltip::SetText(const char *text)
+void BaseTooltip::SetText( const char* text )
 {
 	_isDirty = true;
 
-	if (!text)
+	if( !text )
 	{
 		text = "";
 	}
 
-	if (m_Text.Size() > 0)
+	if( m_Text.Size() > 0 )
 	{
 		m_Text.RemoveAll();
 	}
 
-	for (unsigned int i = 0; i < strlen(text); i++)
+	for( unsigned int i = 0; i < strlen( text ); i++ )
 	{
-		m_Text.AddToTail(text[i]);
+		m_Text.AddToTail( text[i] );
 	}
-	m_Text.AddToTail('\0');
-	
-	if (s_TooltipWindow.Get() && m_pParent == s_TooltipWindow.Get()->GetParent())
+	m_Text.AddToTail( '\0' );
+
+	if( s_TooltipWindow.Get() && m_pParent == s_TooltipWindow.Get()->GetParent() )
 	{
-		s_TooltipWindow->SetText(m_Text.Base());
+		s_TooltipWindow->SetText( m_Text.Base() );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Get the tooltip text
 //-----------------------------------------------------------------------------
-const char *BaseTooltip::GetText()
+const char* BaseTooltip::GetText()
 {
 	return m_Text.Base();
 }
@@ -174,80 +180,80 @@ const char *BaseTooltip::GetText()
 //-----------------------------------------------------------------------------
 // Purpose: Position the tool tip
 //-----------------------------------------------------------------------------
-void BaseTooltip::PositionWindow( Panel *pTipPanel )
+void BaseTooltip::PositionWindow( Panel* pTipPanel )
 {
 	int iTipW, iTipH;
 	pTipPanel->GetSize( iTipW, iTipH );
 
 	int cursorX, cursorY;
-	input()->GetCursorPos(cursorX, cursorY);
+	input()->GetCursorPos( cursorX, cursorY );
 
 	int wide, tall;
-	surface()->GetScreenSize(wide, tall);
+	surface()->GetScreenSize( wide, tall );
 
-	if (wide - iTipW > cursorX)
+	if( wide - iTipW > cursorX )
 	{
 		cursorY += 20;
 		// menu hanging right
-		if (tall - iTipH > cursorY)
+		if( tall - iTipH > cursorY )
 		{
 			// menu hanging down
-			pTipPanel->SetPos(cursorX, cursorY);
+			pTipPanel->SetPos( cursorX, cursorY );
 		}
 		else
 		{
 			// menu hanging up
-			pTipPanel->SetPos(cursorX, cursorY - iTipH - 20);
+			pTipPanel->SetPos( cursorX, cursorY - iTipH - 20 );
 		}
 	}
 	else
 	{
 		// menu hanging left
-		if (tall - iTipH > cursorY)
+		if( tall - iTipH > cursorY )
 		{
 			// menu hanging down
-			pTipPanel->SetPos(cursorX - iTipW, cursorY);
+			pTipPanel->SetPos( cursorX - iTipW, cursorY );
 		}
 		else
 		{
 			// menu hanging up
-			pTipPanel->SetPos(cursorX - iTipW, cursorY - iTipH - 20 );
+			pTipPanel->SetPos( cursorX - iTipW, cursorY - iTipH - 20 );
 		}
-	}	
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-TextTooltip::TextTooltip(Panel *parent, const char *text) : BaseTooltip( parent, text )
+TextTooltip::TextTooltip( Panel* parent, const char* text ) : BaseTooltip( parent, text )
 {
-	if (!s_TooltipWindow.Get())
+	if( !s_TooltipWindow.Get() )
 	{
-		s_TooltipWindow = new TextEntry(NULL, "tooltip");
+		s_TooltipWindow = new TextEntry( NULL, "tooltip" );
 
- 		s_TooltipWindow->InvalidateLayout(false, true);
+		s_TooltipWindow->InvalidateLayout( false, true );
 
 		// this bit of hackery is necessary because tooltips don't get ApplySchemeSettings called from their parents
-		IScheme *pScheme = scheme()->GetIScheme( s_TooltipWindow->GetScheme() );
-		s_TooltipWindow->SetBgColor(s_TooltipWindow->GetSchemeColor("Tooltip.BgColor", s_TooltipWindow->GetBgColor(), pScheme));
-		s_TooltipWindow->SetFgColor(s_TooltipWindow->GetSchemeColor("Tooltip.TextColor", s_TooltipWindow->GetFgColor(), pScheme));
-		s_TooltipWindow->SetBorder(pScheme->GetBorder("ToolTipBorder"));
-		s_TooltipWindow->SetFont( pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional()));
+		IScheme* pScheme = scheme()->GetIScheme( s_TooltipWindow->GetScheme() );
+		s_TooltipWindow->SetBgColor( s_TooltipWindow->GetSchemeColor( "Tooltip.BgColor", s_TooltipWindow->GetBgColor(), pScheme ) );
+		s_TooltipWindow->SetFgColor( s_TooltipWindow->GetSchemeColor( "Tooltip.TextColor", s_TooltipWindow->GetFgColor(), pScheme ) );
+		s_TooltipWindow->SetBorder( pScheme->GetBorder( "ToolTipBorder" ) );
+		s_TooltipWindow->SetFont( pScheme->GetFont( "DefaultSmall", s_TooltipWindow->IsProportional() ) );
 	}
 	s_iTooltipWindowCount++;
 
 	// this line prevents the main window from losing focus
 	// when a tooltip pops up
-	s_TooltipWindow->MakePopup(false, true);
+	s_TooltipWindow->MakePopup( false, true );
 	s_TooltipWindow->SetKeyBoardInputEnabled( false );
 	s_TooltipWindow->SetMouseInputEnabled( false );
-	
-	SetText(text);
-	s_TooltipWindow->SetText(m_Text.Base());
-	s_TooltipWindow->SetEditable(false);
-	s_TooltipWindow->SetMultiline(true);
-	s_TooltipWindow->SetVisible(false);
+
+	SetText( text );
+	s_TooltipWindow->SetText( m_Text.Base() );
+	s_TooltipWindow->SetEditable( false );
+	s_TooltipWindow->SetMultiline( true );
+	s_TooltipWindow->SetVisible( false );
 }
 
 
@@ -256,9 +262,9 @@ TextTooltip::TextTooltip(Panel *parent, const char *text) : BaseTooltip( parent,
 //-----------------------------------------------------------------------------
 TextTooltip::~TextTooltip()
 {
-	if (--s_iTooltipWindowCount < 1)
+	if( --s_iTooltipWindowCount < 1 )
 	{
-		if ( s_TooltipWindow.Get() )
+		if( s_TooltipWindow.Get() )
 		{
 			s_TooltipWindow->MarkForDeletion();
 		}
@@ -269,50 +275,50 @@ TextTooltip::~TextTooltip()
 //-----------------------------------------------------------------------------
 // Purpose: Set the tooltip text
 //-----------------------------------------------------------------------------
-void TextTooltip::SetText(const char *text)
+void TextTooltip::SetText( const char* text )
 {
 	BaseTooltip::SetText( text );
-	
-	if (s_TooltipWindow.Get())
+
+	if( s_TooltipWindow.Get() )
 	{
-		s_TooltipWindow->SetText(m_Text.Base());
+		s_TooltipWindow->SetText( m_Text.Base() );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: gets the font from the scheme
 //-----------------------------------------------------------------------------
-void TextTooltip::ApplySchemeSettings(IScheme *pScheme)
+void TextTooltip::ApplySchemeSettings( IScheme* pScheme )
 {
-	if ( s_TooltipWindow )
+	if( s_TooltipWindow )
 	{
-		s_TooltipWindow->SetFont(pScheme->GetFont("DefaultSmall", s_TooltipWindow->IsProportional()));
+		s_TooltipWindow->SetFont( pScheme->GetFont( "DefaultSmall", s_TooltipWindow->IsProportional() ) );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Display the tooltip
 //-----------------------------------------------------------------------------
-void TextTooltip::ShowTooltip(Panel *currentPanel)
+void TextTooltip::ShowTooltip( Panel* currentPanel )
 {
-	if ( s_TooltipWindow.Get() )
+	if( s_TooltipWindow.Get() )
 	{
 		int nLen = s_TooltipWindow->GetTextLength();
 
-		if ( nLen <= 0 )
+		if( nLen <= 0 )
 		{
 			// Empty tool tip, no need to show it
 			_makeVisible = false;
 			return;
 		}
 
-		char *pBuf = (char*)_alloca( nLen+1 );
-		s_TooltipWindow->GetText( pBuf, nLen+1 );
-		Panel *pCurrentParent = s_TooltipWindow->GetParent();
+		char* pBuf = ( char* )_alloca( nLen + 1 );
+		s_TooltipWindow->GetText( pBuf, nLen + 1 );
+		Panel* pCurrentParent = s_TooltipWindow->GetParent();
 
 		_isDirty = _isDirty || ( pCurrentParent != currentPanel );
 		s_TooltipWindow->SetText( m_Text.Base() );
-		s_TooltipWindow->SetParent(currentPanel);
+		s_TooltipWindow->SetParent( currentPanel );
 	}
 	BaseTooltip::ShowTooltip( currentPanel );
 }
@@ -322,15 +328,19 @@ void TextTooltip::ShowTooltip(Panel *currentPanel)
 //-----------------------------------------------------------------------------
 void TextTooltip::PerformLayout()
 {
-	if ( !ShouldLayout() )
+	if( !ShouldLayout() )
+	{
 		return;
+	}
 	// we're ready, just make us visible
-	if ( !s_TooltipWindow.Get() )
+	if( !s_TooltipWindow.Get() )
+	{
 		return;
+	}
 
 	_isDirty = false;
 
-	s_TooltipWindow->SetVisible(true);
+	s_TooltipWindow->SetVisible( true );
 	s_TooltipWindow->MakePopup( false, true );
 	s_TooltipWindow->SetKeyBoardInputEnabled( false );
 	s_TooltipWindow->SetMouseInputEnabled( false );
@@ -347,39 +357,41 @@ void TextTooltip::PerformLayout()
 //-----------------------------------------------------------------------------
 void TextTooltip::SizeTextWindow()
 {
-	if ( !s_TooltipWindow.Get() )
+	if( !s_TooltipWindow.Get() )
+	{
 		return;
+	}
 
-	if (_displayOnOneLine)
+	if( _displayOnOneLine )
 	{
 		// We want the tool tip to be one line
-		s_TooltipWindow->SetMultiline(false);
+		s_TooltipWindow->SetMultiline( false );
 		s_TooltipWindow->SetToFullWidth();
 	}
 	else
 	{
 		// We want the tool tip to be one line
-		s_TooltipWindow->SetMultiline(false);
+		s_TooltipWindow->SetMultiline( false );
 		s_TooltipWindow->SetToFullWidth();
 		int wide, tall;
 		s_TooltipWindow->GetSize( wide, tall );
-		double newWide = sqrt( (2.0/1) * wide * tall );
-		double newTall = (1/2) * newWide;
-		s_TooltipWindow->SetMultiline(true);
-		s_TooltipWindow->SetSize((int)newWide, (int)newTall );
+		double newWide = sqrt( ( 2.0 / 1 ) * wide * tall );
+		double newTall = ( 1 / 2 ) * newWide;
+		s_TooltipWindow->SetMultiline( true );
+		s_TooltipWindow->SetSize( ( int )newWide, ( int )newTall );
 		s_TooltipWindow->SetToFullHeight();
-		
+
 		s_TooltipWindow->GetSize( wide, tall );
-		
-		if (( wide < 100 ) && ( s_TooltipWindow->GetNumLines() == 2) ) 
+
+		if( ( wide < 100 ) && ( s_TooltipWindow->GetNumLines() == 2 ) )
 		{
-			s_TooltipWindow->SetMultiline(false);
-			s_TooltipWindow->SetToFullWidth();	
+			s_TooltipWindow->SetMultiline( false );
+			s_TooltipWindow->SetToFullWidth();
 		}
 		else
 		{
-			
-			while ( (float)wide/(float)tall < 2 )
+
+			while( ( float )wide / ( float )tall < 2 )
 			{
 				s_TooltipWindow->SetSize( wide + 1, tall );
 				s_TooltipWindow->SetToFullHeight();
@@ -387,7 +399,7 @@ void TextTooltip::SizeTextWindow()
 			}
 		}
 		s_TooltipWindow->GetSize( wide, tall );
-	//	ivgui()->DPrintf("End Ratio: %f\n", (float)wide/(float)tall);		
+		//	ivgui()->DPrintf("End Ratio: %f\n", (float)wide/(float)tall);
 	}
 }
 
@@ -396,9 +408,9 @@ void TextTooltip::SizeTextWindow()
 //-----------------------------------------------------------------------------
 void TextTooltip::HideTooltip()
 {
-	if ( s_TooltipWindow.Get() )
+	if( s_TooltipWindow.Get() )
 	{
-		s_TooltipWindow->SetVisible(false);
+		s_TooltipWindow->SetVisible( false );
 	}
 
 	BaseTooltip::HideTooltip();

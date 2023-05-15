@@ -30,30 +30,30 @@ bool g_bUsedPlayerClassSlots[MAX_PLAYERCLASSES] = { 0 };
 
 #ifdef DEBUG
 
-void CC_ReloadPlayerClasses_f (void)
+void CC_ReloadPlayerClasses_f( void )
 {
 	//ResetFilePlayerClassInfoDatabase();
 }
 
-static ConCommand dod_reloadplayerclasses("dod_reloadplayerclasses", CC_ReloadPlayerClasses_f, "Reset player class info cache" );
+static ConCommand dod_reloadplayerclasses( "dod_reloadplayerclasses", CC_ReloadPlayerClasses_f, "Reset player class info cache" );
 
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 // Output : FilePlayerClassInfo_t
 //-----------------------------------------------------------------------------
-static PLAYERCLASS_FILE_INFO_HANDLE FindPlayerClassInfoSlot( const char *name )
+static PLAYERCLASS_FILE_INFO_HANDLE FindPlayerClassInfoSlot( const char* name )
 {
 	// Complain about duplicately defined metaclass names...
 	unsigned short lookup = m_PlayerClassInfoDatabase.Find( name );
-	if ( lookup != m_PlayerClassInfoDatabase.InvalidIndex() )
+	if( lookup != m_PlayerClassInfoDatabase.InvalidIndex() )
 	{
 		return lookup;
 	}
 
-	FilePlayerClassInfo_t *insert = CreatePlayerClassInfo();
+	FilePlayerClassInfo_t* insert = CreatePlayerClassInfo();
 
 	lookup = m_PlayerClassInfoDatabase.Insert( name, insert );
 	Assert( lookup != m_PlayerClassInfoDatabase.InvalidIndex() );
@@ -61,7 +61,7 @@ static PLAYERCLASS_FILE_INFO_HANDLE FindPlayerClassInfoSlot( const char *name )
 }
 
 // Find a class slot, assuming the weapon's data has already been loaded.
-PLAYERCLASS_FILE_INFO_HANDLE LookupPlayerClassInfoSlot( const char *name )
+PLAYERCLASS_FILE_INFO_HANDLE LookupPlayerClassInfoSlot( const char* name )
 {
 	return m_PlayerClassInfoDatabase.Find( name );
 }
@@ -73,13 +73,13 @@ static FilePlayerClassInfo_t gNullPlayerClassInfo;
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : handle - 
+// Purpose:
+// Input  : handle -
 // Output : FilePlayerClassInfo_t
 //-----------------------------------------------------------------------------
-FilePlayerClassInfo_t *GetFilePlayerClassInfoFromHandle( PLAYERCLASS_FILE_INFO_HANDLE handle )
+FilePlayerClassInfo_t* GetFilePlayerClassInfoFromHandle( PLAYERCLASS_FILE_INFO_HANDLE handle )
 {
-	if ( handle == GetInvalidPlayerClassInfoHandle() )
+	if( handle == GetInvalidPlayerClassInfoHandle() )
 	{
 		Assert( !"bad index into playerclass info UtlDict" );
 		return &gNullPlayerClassInfo;
@@ -89,12 +89,12 @@ FilePlayerClassInfo_t *GetFilePlayerClassInfoFromHandle( PLAYERCLASS_FILE_INFO_H
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : PLAYERCLASS_FILE_INFO_HANDLE
 //-----------------------------------------------------------------------------
 PLAYERCLASS_FILE_INFO_HANDLE GetInvalidPlayerClassInfoHandle( void )
 {
-	return (PLAYERCLASS_FILE_INFO_HANDLE)m_PlayerClassInfoDatabase.InvalidIndex();
+	return ( PLAYERCLASS_FILE_INFO_HANDLE )m_PlayerClassInfoDatabase.InvalidIndex();
 }
 
 void ResetFilePlayerClassInfoDatabase( void )
@@ -102,51 +102,51 @@ void ResetFilePlayerClassInfoDatabase( void )
 	m_PlayerClassInfoDatabase.PurgeAndDeleteElements();
 
 #ifdef _DEBUG
-	memset(g_bUsedPlayerClassSlots, 0, sizeof(g_bUsedPlayerClassSlots));
+	memset( g_bUsedPlayerClassSlots, 0, sizeof( g_bUsedPlayerClassSlots ) );
 #endif
 }
 
 #ifndef _XBOX
-KeyValues* ReadEncryptedKVPlayerClassFile( IFileSystem *filesystem, const char *szFilenameWithoutExtension, const unsigned char *pICEKey )
+KeyValues* ReadEncryptedKVPlayerClassFile( IFileSystem* filesystem, const char* szFilenameWithoutExtension, const unsigned char* pICEKey )
 {
 	Assert( strchr( szFilenameWithoutExtension, '.' ) == NULL );
 	char szFullName[512];
 
 	// Open the weapon data file, and abort if we can't
-	KeyValues *pKV = new KeyValues( "PlayerClassDatafile" );
+	KeyValues* pKV = new KeyValues( "PlayerClassDatafile" );
 
-	Q_snprintf(szFullName,sizeof(szFullName), "%s.txt", szFilenameWithoutExtension);
+	Q_snprintf( szFullName, sizeof( szFullName ), "%s.txt", szFilenameWithoutExtension );
 
-	if ( !pKV->LoadFromFile( filesystem, szFullName, "GAME" ) ) // try to load the normal .txt file first
+	if( !pKV->LoadFromFile( filesystem, szFullName, "GAME" ) )  // try to load the normal .txt file first
 	{
-		if ( pICEKey )
+		if( pICEKey )
 		{
-			Q_snprintf(szFullName,sizeof(szFullName), "%s.ctx", szFilenameWithoutExtension); // fall back to the .ctx file
+			Q_snprintf( szFullName, sizeof( szFullName ), "%s.ctx", szFilenameWithoutExtension ); // fall back to the .ctx file
 
-			FileHandle_t f = filesystem->Open( szFullName, "rb", "GAME");
+			FileHandle_t f = filesystem->Open( szFullName, "rb", "GAME" );
 
-			if (!f)
+			if( !f )
 			{
 				pKV->deleteThis();
 				return NULL;
 			}
 			// load file into a null-terminated buffer
-			int fileSize = filesystem->Size(f);
-			char *buffer = (char*)MemAllocScratch(fileSize + 1);
-		
-			Assert(buffer);
-		
-			filesystem->Read(buffer, fileSize, f); // read into local buffer
+			int fileSize = filesystem->Size( f );
+			char* buffer = ( char* )MemAllocScratch( fileSize + 1 );
+
+			Assert( buffer );
+
+			filesystem->Read( buffer, fileSize, f ); // read into local buffer
 			buffer[fileSize] = 0; // null terminate file as EOF
 			filesystem->Close( f );	// close file after reading
 
-			UTIL_DecodeICE( (unsigned char*)buffer, fileSize, pICEKey );
+			UTIL_DecodeICE( ( unsigned char* )buffer, fileSize, pICEKey );
 
 			bool retOK = pKV->LoadFromBuffer( szFullName, buffer, filesystem );
 
 			MemFreeScratch();
 
-			if ( !retOK )
+			if( !retOK )
 			{
 				pKV->deleteThis();
 				return NULL;
@@ -168,26 +168,30 @@ KeyValues* ReadEncryptedKVPlayerClassFile( IFileSystem *filesystem, const char *
 // Output:  true  - if data2 successfully read
 //			false - if data load fails
 //-----------------------------------------------------------------------------
-bool ReadPlayerClassDataFromFileForSlot( IFileSystem* filesystem, const char *szPlayerClassName, PLAYERCLASS_FILE_INFO_HANDLE *phandle, const unsigned char *pICEKey )
+bool ReadPlayerClassDataFromFileForSlot( IFileSystem* filesystem, const char* szPlayerClassName, PLAYERCLASS_FILE_INFO_HANDLE* phandle, const unsigned char* pICEKey )
 {
-	if ( !phandle )
+	if( !phandle )
 	{
 		Assert( 0 );
 		return false;
 	}
 
 	*phandle = FindPlayerClassInfoSlot( szPlayerClassName );
-	FilePlayerClassInfo_t *pFileInfo = GetFilePlayerClassInfoFromHandle( *phandle );
+	FilePlayerClassInfo_t* pFileInfo = GetFilePlayerClassInfoFromHandle( *phandle );
 	Assert( pFileInfo );
 
-	if ( pFileInfo->m_bParsedScript )
+	if( pFileInfo->m_bParsedScript )
+	{
 		return true;
+	}
 
 	char sz[128];
 	Q_snprintf( sz, sizeof( sz ), "scripts/playerclass_%s", szPlayerClassName );
-	KeyValues *pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey );
-	if ( !pKV )
+	KeyValues* pKV = ReadEncryptedKVFile( filesystem, sz, pICEKey );
+	if( !pKV )
+	{
 		return false;
+	}
 
 	pFileInfo->Parse( pKV, szPlayerClassName );
 
@@ -211,7 +215,7 @@ FilePlayerClassInfo_t::FilePlayerClassInfo_t()
 	m_szSelectCmd[0] = 0;
 }
 
-void FilePlayerClassInfo_t::Parse( KeyValues *pKeyValuesData, const char *szPlayerClassName )
+void FilePlayerClassInfo_t::Parse( KeyValues* pKeyValuesData, const char* szPlayerClassName )
 {
 	// Okay, we tried at least once to look this up...
 	m_bParsedScript = true;

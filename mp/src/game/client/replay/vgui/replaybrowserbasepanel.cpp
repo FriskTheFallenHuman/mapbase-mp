@@ -14,19 +14,19 @@ using namespace vgui;
 
 //-----------------------------------------------------------------------------
 
-CReplayBasePanel::CReplayBasePanel( Panel *pParent, const char *pName )
-:	BaseClass( pParent, pName )
+CReplayBasePanel::CReplayBasePanel( Panel* pParent, const char* pName )
+	:	BaseClass( pParent, pName )
 {
 }
 
-void CReplayBasePanel::GetPosRelativeToAncestor( Panel *pAncestor, int &nXOut, int &nYOut )
+void CReplayBasePanel::GetPosRelativeToAncestor( Panel* pAncestor, int& nXOut, int& nYOut )
 {
 	nXOut = nYOut = 0;
 
-	Panel *pCurrent = this;
-	while ( pCurrent && pCurrent != pAncestor )
+	Panel* pCurrent = this;
+	while( pCurrent && pCurrent != pAncestor )
 	{
-		int x,y;
+		int x, y;
 		pCurrent->GetPos( x, y );
 		nXOut += x;
 		nYOut += y;

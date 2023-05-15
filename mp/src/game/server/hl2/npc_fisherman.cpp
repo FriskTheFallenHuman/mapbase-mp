@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -83,24 +83,30 @@ public:
 	{
 		BaseClass::Activate();
 
-		if (m_iHatState == -1)
+		if( m_iHatState == -1 )
 		{
 			m_iHatState = ACT_FISHERMAN_HAT_DOWN;
 		}
 
 		// allocate layer, start with the hat down
-		m_iHatLayer = AddGesture( (Activity)m_iHatState, false );
+		m_iHatLayer = AddGesture( ( Activity )m_iHatState, false );
 	}
 
 	void	Spawn( void );
 	void	SelectModel();
 	Class_T Classify( void );
 
-	void HandleAnimEvent( animevent_t *pEvent );
+	void HandleAnimEvent( animevent_t* pEvent );
 
-	bool ShouldLookForBetterWeapon() { return false; }
-	virtual bool	IgnorePlayerPushing( void ) { return true; }
-	void	DeathSound( const CTakeDamageInfo &info );
+	bool ShouldLookForBetterWeapon()
+	{
+		return false;
+	}
+	virtual bool	IgnorePlayerPushing( void )
+	{
+		return true;
+	}
+	void	DeathSound( const CTakeDamageInfo& info );
 
 	int m_iHatLayer;	// overlay layer for hat, don't save/restore.
 	int m_iHatState;	// hat state, persistant.
@@ -111,7 +117,7 @@ public:
 LINK_ENTITY_TO_CLASS( npc_fisherman, CNPC_Fisherman );
 
 //---------------------------------------------------------
-// 
+//
 //---------------------------------------------------------
 /*
 IMPLEMENT_SERVERCLASS_ST(CNPC_Fisherman, DT_NPC_Fisherman)
@@ -123,21 +129,21 @@ END_SEND_TABLE()
 //---------------------------------------------------------
 BEGIN_DATADESC( CNPC_Fisherman )
 
-	// DEFINE_FIELD( m_iHatLayer, FIELD_INT ),
-	DEFINE_FIELD( m_iHatState, FIELD_INTEGER ),
+// DEFINE_FIELD( m_iHatLayer, FIELD_INT ),
+DEFINE_FIELD( m_iHatState, FIELD_INTEGER ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_Fisherman::SelectModel()
+			  void CNPC_Fisherman::SelectModel()
 {
 	SetModelName( AllocPooledString( FISHERMAN_MODEL ) );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Fisherman::Spawn( void )
 {
@@ -160,8 +166,8 @@ void CNPC_Fisherman::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Fisherman::Classify( void )
 {
@@ -170,45 +176,45 @@ Class_T	CNPC_Fisherman::Classify( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_Fisherman::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Fisherman::HandleAnimEvent( animevent_t* pEvent )
 {
-	if ( pEvent->event == NPC_EVENT_LEFTFOOT )
+	if( pEvent->event == NPC_EVENT_LEFTFOOT )
 	{
 		EmitSound( "NPC_Fisherman.FootstepLeft", pEvent->eventtime );
 	}
-	else if ( pEvent->event == NPC_EVENT_RIGHTFOOT )
+	else if( pEvent->event == NPC_EVENT_RIGHTFOOT )
 	{
 		EmitSound( "NPC_Fisherman.FootstepRight", pEvent->eventtime );
 	}
-	else if ( pEvent->event == AE_FISHERMAN_HAT_UP )
+	else if( pEvent->event == AE_FISHERMAN_HAT_UP )
 	{
-		if (m_iHatLayer != -1)
+		if( m_iHatLayer != -1 )
 		{
 			RemoveLayer( m_iHatLayer, 0.2, 0.2 );
 			m_iHatLayer = -1;
 		}
 
 		m_iHatState = ACT_FISHERMAN_HAT_UP;
-		m_iHatLayer = AddGesture( (Activity)m_iHatState, false );
+		m_iHatLayer = AddGesture( ( Activity )m_iHatState, false );
 	}
-	else if ( pEvent->event == AE_FISHERMAN_HAT_DOWN )
+	else if( pEvent->event == AE_FISHERMAN_HAT_DOWN )
 	{
-		if (m_iHatLayer != -1)
+		if( m_iHatLayer != -1 )
 		{
 			RemoveLayer( m_iHatLayer, 0.2, 0.2 );
 			m_iHatLayer = -1;
 		}
 
 		m_iHatState = ACT_FISHERMAN_HAT_DOWN;
-		m_iHatLayer = AddGesture( (Activity)m_iHatState, false );
+		m_iHatLayer = AddGesture( ( Activity )m_iHatState, false );
 	}
-	else if ( pEvent->event == AE_FISHERMAN_HAT_ON )
+	else if( pEvent->event == AE_FISHERMAN_HAT_ON )
 	{
-		m_iHatLayer = AddGesture( (Activity)m_iHatState, false );
+		m_iHatLayer = AddGesture( ( Activity )m_iHatState, false );
 	}
-	else if ( pEvent->event == AE_FISHERMAN_HAT_OFF )
+	else if( pEvent->event == AE_FISHERMAN_HAT_OFF )
 	{
-		if (m_iHatLayer != -1)
+		if( m_iHatLayer != -1 )
 		{
 			RemoveLayer( m_iHatLayer, 0.2, 0.2 );
 			m_iHatLayer = -1;
@@ -222,7 +228,7 @@ void CNPC_Fisherman::HandleAnimEvent( animevent_t *pEvent )
 
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void CNPC_Fisherman::DeathSound( const CTakeDamageInfo &info )
+void CNPC_Fisherman::DeathSound( const CTakeDamageInfo& info )
 {
 	// Sentences don't play on dead NPCs
 	SentenceStop();
@@ -236,12 +242,12 @@ void CNPC_Fisherman::DeathSound( const CTakeDamageInfo &info )
 
 AI_BEGIN_CUSTOM_NPC( npc_fisherman, CNPC_Fisherman )
 
-	DECLARE_ACTIVITY( ACT_FISHERMAN_HAT_UP )
-	DECLARE_ACTIVITY( ACT_FISHERMAN_HAT_DOWN )
+DECLARE_ACTIVITY( ACT_FISHERMAN_HAT_UP )
+DECLARE_ACTIVITY( ACT_FISHERMAN_HAT_DOWN )
 
-	DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_UP )
-	DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_DOWN )
-	DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_ON )
-	DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_OFF )
+DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_UP )
+DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_DOWN )
+DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_ON )
+DECLARE_ANIMEVENT( AE_FISHERMAN_HAT_OFF )
 
 AI_END_CUSTOM_NPC()

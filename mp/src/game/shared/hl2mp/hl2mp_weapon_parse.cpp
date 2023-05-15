@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -22,7 +22,7 @@ CHL2MPSWeaponInfo::CHL2MPSWeaponInfo()
 }
 
 
-void CHL2MPSWeaponInfo::Parse( KeyValues *pKeyValuesData, const char *szWeaponName )
+void CHL2MPSWeaponInfo::Parse( KeyValues* pKeyValuesData, const char* szWeaponName )
 {
 	BaseClass::Parse( pKeyValuesData, szWeaponName );
 

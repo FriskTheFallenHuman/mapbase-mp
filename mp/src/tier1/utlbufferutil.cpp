@@ -27,19 +27,19 @@
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
-			    
+
 
 //-----------------------------------------------------------------------------
 // For serialization, set the delimiter rules
 //-----------------------------------------------------------------------------
-CUtlCharConversion *s_pConv = NULL;
-const char *s_pUtlBufferUtilArrayDelim = NULL;
-void SetSerializationDelimiter( CUtlCharConversion *pConv )
+CUtlCharConversion* s_pConv = NULL;
+const char* s_pUtlBufferUtilArrayDelim = NULL;
+void SetSerializationDelimiter( CUtlCharConversion* pConv )
 {
 	s_pConv = pConv;
 }
 
-void SetSerializationArrayDelimiter( const char *pDelimiter )
+void SetSerializationArrayDelimiter( const char* pDelimiter )
 {
 	s_pUtlBufferUtilArrayDelim = pDelimiter;
 }
@@ -48,19 +48,19 @@ void SetSerializationArrayDelimiter( const char *pDelimiter )
 //-----------------------------------------------------------------------------
 // Serialize a floating point number in text mode in a readably friendly fashion
 //-----------------------------------------------------------------------------
-static void SerializeFloat( CUtlBuffer &buf, float f )
+static void SerializeFloat( CUtlBuffer& buf, float f )
 {
 	Assert( buf.IsText() );
 
 	// FIXME: Print this in a way that we never lose precision
 	char pTemp[256];
-	int nLen = Q_snprintf( pTemp, sizeof(pTemp), "%.10f", f );
-	while ( nLen > 0 && pTemp[nLen-1] == '0' )
+	int nLen = Q_snprintf( pTemp, sizeof( pTemp ), "%.10f", f );
+	while( nLen > 0 && pTemp[nLen - 1] == '0' )
 	{
 		--nLen;
 		pTemp[nLen] = 0;
 	}
-	if ( nLen > 0 && pTemp[nLen-1] == '.' )
+	if( nLen > 0 && pTemp[nLen - 1] == '.' )
 	{
 		--nLen;
 		pTemp[nLen] = 0;
@@ -68,12 +68,12 @@ static void SerializeFloat( CUtlBuffer &buf, float f )
 	buf.PutString( pTemp );
 }
 
-static void SerializeFloats( CUtlBuffer &buf, int nCount, const float *pFloats )
+static void SerializeFloats( CUtlBuffer& buf, int nCount, const float* pFloats )
 {
-	for ( int i = 0; i < nCount; ++i )
+	for( int i = 0; i < nCount; ++i )
 	{
 		SerializeFloat( buf, pFloats[i] );
-		if ( i != nCount-1 )
+		if( i != nCount - 1 )
 		{
 			buf.PutChar( ' ' );
 		}
@@ -84,9 +84,9 @@ static void SerializeFloats( CUtlBuffer &buf, int nCount, const float *pFloats )
 //-----------------------------------------------------------------------------
 // Serialization methods for basic types
 //-----------------------------------------------------------------------------
-bool Serialize( CUtlBuffer &buf, const bool &src )
+bool Serialize( CUtlBuffer& buf, const bool& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		buf.Printf( "%d", src );
 	}
@@ -97,14 +97,14 @@ bool Serialize( CUtlBuffer &buf, const bool &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, bool &dest )
+bool Unserialize( CUtlBuffer& buf, bool& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		int nValue = 0;
 		int nRetVal = buf.Scanf( "%d", &nValue );
 		dest = ( nValue != 0 );
-		return (nRetVal == 1) && buf.IsValid();
+		return ( nRetVal == 1 ) && buf.IsValid();
 	}
 
 	dest = ( buf.GetChar( ) != 0 );
@@ -112,9 +112,9 @@ bool Unserialize( CUtlBuffer &buf, bool &dest )
 }
 
 
-bool Serialize( CUtlBuffer &buf, const int &src )
+bool Serialize( CUtlBuffer& buf, const int& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		buf.Printf( "%d", src );
 	}
@@ -125,21 +125,21 @@ bool Serialize( CUtlBuffer &buf, const int &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, int &dest )
+bool Unserialize( CUtlBuffer& buf, int& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		int nRetVal = buf.Scanf( "%d", &dest );
-		return (nRetVal == 1) && buf.IsValid();
+		return ( nRetVal == 1 ) && buf.IsValid();
 	}
 
 	dest = buf.GetInt( );
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const float &src )
+bool Serialize( CUtlBuffer& buf, const float& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloat( buf, src );
 	}
@@ -150,13 +150,13 @@ bool Serialize( CUtlBuffer &buf, const float &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, float &dest )
+bool Unserialize( CUtlBuffer& buf, float& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f", &dest );
-		return (nRetVal == 1) && buf.IsValid();
+		return ( nRetVal == 1 ) && buf.IsValid();
 	}
 
 	dest = buf.GetFloat( );
@@ -167,9 +167,9 @@ bool Unserialize( CUtlBuffer &buf, float &dest )
 //-----------------------------------------------------------------------------
 // Attribute types related to vector math
 //-----------------------------------------------------------------------------
-bool Serialize( CUtlBuffer &buf, const Vector2D &src )
+bool Serialize( CUtlBuffer& buf, const Vector2D& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloats( buf, 2, src.Base() );
 	}
@@ -181,13 +181,13 @@ bool Serialize( CUtlBuffer &buf, const Vector2D &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, Vector2D &dest )
+bool Unserialize( CUtlBuffer& buf, Vector2D& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f %f", &dest.x, &dest.y );
-		return (nRetVal == 2) && buf.IsValid();
+		return ( nRetVal == 2 ) && buf.IsValid();
 	}
 
 	dest.x = buf.GetFloat( );
@@ -195,9 +195,9 @@ bool Unserialize( CUtlBuffer &buf, Vector2D &dest )
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const Vector &src )
+bool Serialize( CUtlBuffer& buf, const Vector& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloats( buf, 3, src.Base() );
 	}
@@ -210,13 +210,13 @@ bool Serialize( CUtlBuffer &buf, const Vector &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, Vector &dest )
+bool Unserialize( CUtlBuffer& buf, Vector& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f %f %f", &dest.x, &dest.y, &dest.z );
-		return (nRetVal == 3) && buf.IsValid();
+		return ( nRetVal == 3 ) && buf.IsValid();
 	}
 
 	dest.x = buf.GetFloat( );
@@ -225,9 +225,9 @@ bool Unserialize( CUtlBuffer &buf, Vector &dest )
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const Vector4D &src )
+bool Serialize( CUtlBuffer& buf, const Vector4D& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloats( buf, 4, src.Base() );
 	}
@@ -241,13 +241,13 @@ bool Serialize( CUtlBuffer &buf, const Vector4D &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, Vector4D &dest )
+bool Unserialize( CUtlBuffer& buf, Vector4D& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f %f %f %f", &dest.x, &dest.y, &dest.z, &dest.w );
-		return (nRetVal == 4) && buf.IsValid();
+		return ( nRetVal == 4 ) && buf.IsValid();
 	}
 
 	dest.x = buf.GetFloat( );
@@ -257,9 +257,9 @@ bool Unserialize( CUtlBuffer &buf, Vector4D &dest )
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const QAngle &src )
+bool Serialize( CUtlBuffer& buf, const QAngle& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloats( buf, 3, src.Base() );
 	}
@@ -272,13 +272,13 @@ bool Serialize( CUtlBuffer &buf, const QAngle &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, QAngle &dest )
+bool Unserialize( CUtlBuffer& buf, QAngle& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f %f %f", &dest.x, &dest.y, &dest.z );
-		return (nRetVal == 3) && buf.IsValid();
+		return ( nRetVal == 3 ) && buf.IsValid();
 	}
 
 	dest.x = buf.GetFloat( );
@@ -287,9 +287,9 @@ bool Unserialize( CUtlBuffer &buf, QAngle &dest )
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const Quaternion &src )
+bool Serialize( CUtlBuffer& buf, const Quaternion& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		SerializeFloats( buf, 4, &src.x );
 	}
@@ -303,13 +303,13 @@ bool Serialize( CUtlBuffer &buf, const Quaternion &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, Quaternion &dest )
+bool Unserialize( CUtlBuffer& buf, Quaternion& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		// FIXME: Print this in a way that we never lose precision
 		int nRetVal = buf.Scanf( "%f %f %f %f", &dest.x, &dest.y, &dest.z, &dest.w );
-		return (nRetVal == 4) && buf.IsValid();
+		return ( nRetVal == 4 ) && buf.IsValid();
 	}
 
 	dest.x = buf.GetFloat( );
@@ -319,9 +319,9 @@ bool Unserialize( CUtlBuffer &buf, Quaternion &dest )
 	return buf.IsValid();
 }
 
-bool Serialize( CUtlBuffer &buf, const VMatrix &src )
+bool Serialize( CUtlBuffer& buf, const VMatrix& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		buf.Printf( "\n" );
 		SerializeFloats( buf, 4, src[0] );
@@ -335,27 +335,29 @@ bool Serialize( CUtlBuffer &buf, const VMatrix &src )
 	}
 	else
 	{
-		buf.Put( &src, sizeof(VMatrix) );
+		buf.Put( &src, sizeof( VMatrix ) );
 	}
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, VMatrix &dest )
+bool Unserialize( CUtlBuffer& buf, VMatrix& dest )
 {
-	if ( !buf.IsValid() )
-		return false;
-
-	if ( buf.IsText() )
+	if( !buf.IsValid() )
 	{
-		int nRetVal = buf.Scanf( "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
-			&dest[ 0 ][ 0 ], &dest[ 0 ][ 1 ], &dest[ 0 ][ 2 ], &dest[ 0 ][ 3 ],
-			&dest[ 1 ][ 0 ], &dest[ 1 ][ 1 ], &dest[ 1 ][ 2 ], &dest[ 1 ][ 3 ],
-			&dest[ 2 ][ 0 ], &dest[ 2 ][ 1 ], &dest[ 2 ][ 2 ], &dest[ 2 ][ 3 ],
-			&dest[ 3 ][ 0 ], &dest[ 3 ][ 1 ], &dest[ 3 ][ 2 ], &dest[ 3 ][ 3 ] );
-		return (nRetVal == 16);
+		return false;
 	}
 
-	buf.Get( &dest, sizeof(VMatrix) );
+	if( buf.IsText() )
+	{
+		int nRetVal = buf.Scanf( "%f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f",
+								 &dest[ 0 ][ 0 ], &dest[ 0 ][ 1 ], &dest[ 0 ][ 2 ], &dest[ 0 ][ 3 ],
+								 &dest[ 1 ][ 0 ], &dest[ 1 ][ 1 ], &dest[ 1 ][ 2 ], &dest[ 1 ][ 3 ],
+								 &dest[ 2 ][ 0 ], &dest[ 2 ][ 1 ], &dest[ 2 ][ 2 ], &dest[ 2 ][ 3 ],
+								 &dest[ 3 ][ 0 ], &dest[ 3 ][ 1 ], &dest[ 3 ][ 2 ], &dest[ 3 ][ 3 ] );
+		return ( nRetVal == 16 );
+	}
+
+	buf.Get( &dest, sizeof( VMatrix ) );
 	return true;
 }
 
@@ -363,9 +365,9 @@ bool Unserialize( CUtlBuffer &buf, VMatrix &dest )
 //-----------------------------------------------------------------------------
 // Color attribute
 //-----------------------------------------------------------------------------
-bool Serialize( CUtlBuffer &buf, const Color &src )
+bool Serialize( CUtlBuffer& buf, const Color& src )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		buf.Printf( "%d %d %d %d", src[0], src[1], src[2], src[3] );
 	}
@@ -379,14 +381,14 @@ bool Serialize( CUtlBuffer &buf, const Color &src )
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, Color &dest )
+bool Unserialize( CUtlBuffer& buf, Color& dest )
 {
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		int r = 0, g = 0, b = 0, a = 255;
 		int nRetVal = buf.Scanf( "%d %d %d %d", &r, &g, &b, &a );
 		dest.SetColor( r, g, b, a );
-		return (nRetVal == 4) && buf.IsValid();
+		return ( nRetVal == 4 ) && buf.IsValid();
 	}
 
 	dest[0] = buf.GetUnsignedChar( );
@@ -414,13 +416,13 @@ bool Unserialize( CUtlBuffer &buf, DmObjectId_t &dest )
 //-----------------------------------------------------------------------------
 // Binary buffer attribute
 //-----------------------------------------------------------------------------
-bool Serialize( CUtlBuffer &buf, const CUtlBinaryBlock &src )
+bool Serialize( CUtlBuffer& buf, const CUtlBinaryBlock& src )
 {
 	int nLength = src.Length();
-	if ( !buf.IsText() )
+	if( !buf.IsText() )
 	{
 		buf.PutInt( nLength );
-		if ( nLength != 0 )
+		if( nLength != 0 )
 		{
 			buf.Put( src.Get(), nLength );
 		}
@@ -428,9 +430,9 @@ bool Serialize( CUtlBuffer &buf, const CUtlBinaryBlock &src )
 	}
 
 	// Writes out uuencoded binaries
-	for ( int i = 0; i < nLength; ++i )
+	for( int i = 0; i < nLength; ++i )
 	{
-		if ( (i % 40) == 0 )
+		if( ( i % 40 ) == 0 )
 		{
 			buf.PutChar( '\n' );
 		}
@@ -449,14 +451,14 @@ bool Serialize( CUtlBuffer &buf, const CUtlBinaryBlock &src )
 	return buf.IsValid();
 }
 
-static int CountBinaryBytes( CUtlBuffer &buf, int *pEndGet )
+static int CountBinaryBytes( CUtlBuffer& buf, int* pEndGet )
 {
 	// This counts the number of bytes in the uuencoded text
 	int nStartGet = buf.TellGet();
 	buf.EatWhiteSpace();
 	*pEndGet = buf.TellGet();
 	int nByteCount = 0;
-	while ( buf.IsValid() )
+	while( buf.IsValid() )
 	{
 		char c1 = buf.GetChar();
 		char c2 = buf.GetChar();
@@ -464,11 +466,13 @@ static int CountBinaryBytes( CUtlBuffer &buf, int *pEndGet )
 		bool bIsNum1 = ( c1 >= '0' ) && ( c1 <= '9' );
 		bool bIsNum2 = ( c2 >= '0' ) && ( c2 <= '9' );
 
-		bool bIsAlpha1 = (( c1 >= 'A' ) && ( c1 <= 'F' )) || (( c1 >= 'a' ) && ( c1 <= 'f' ));
-		bool bIsAlpha2 = (( c2 >= 'A' ) && ( c2 <= 'F' )) || (( c2 >= 'a' ) && ( c2 <= 'f' ));
+		bool bIsAlpha1 = ( ( c1 >= 'A' ) && ( c1 <= 'F' ) ) || ( ( c1 >= 'a' ) && ( c1 <= 'f' ) );
+		bool bIsAlpha2 = ( ( c2 >= 'A' ) && ( c2 <= 'F' ) ) || ( ( c2 >= 'a' ) && ( c2 <= 'f' ) );
 
-		if ( !(bIsNum1 || bIsAlpha1) || !(bIsNum2 || bIsAlpha2) )
+		if( !( bIsNum1 || bIsAlpha1 ) || !( bIsNum2 || bIsAlpha2 ) )
+		{
 			break;
+		}
 
 		buf.EatWhiteSpace();
 		*pEndGet = buf.TellGet();
@@ -480,30 +484,36 @@ static int CountBinaryBytes( CUtlBuffer &buf, int *pEndGet )
 
 inline static unsigned char HexCharToInt( int c1 )
 {
-	if (( c1 >= '0' ) && ( c1 <= '9' ))
+	if( ( c1 >= '0' ) && ( c1 <= '9' ) )
+	{
 		return c1 - '0';
+	}
 
-	if (( c1 >= 'A' ) && ( c1 <= 'F' ))
+	if( ( c1 >= 'A' ) && ( c1 <= 'F' ) )
+	{
 		return 10 + c1 - 'A';
+	}
 
-	if (( c1 >= 'a' ) && ( c1 <= 'f' ))
+	if( ( c1 >= 'a' ) && ( c1 <= 'f' ) )
+	{
 		return 10 + c1 - 'a';
+	}
 
 	return 0xFF;
 }
 
-bool Unserialize( CUtlBuffer &buf, CUtlBinaryBlock &dest )
+bool Unserialize( CUtlBuffer& buf, CUtlBinaryBlock& dest )
 {
-	if ( !buf.IsText() )
+	if( !buf.IsText() )
 	{
 		int nLen = buf.GetInt( );
 		dest.SetLength( nLen );
-		if ( dest.Length() != 0 )
+		if( dest.Length() != 0 )
 		{
 			buf.Get( dest.Get(), dest.Length() );
 		}
 
-		if ( nLen != dest.Length() )
+		if( nLen != dest.Length() )
 		{
 			buf.SeekGet( CUtlBuffer::SEEK_CURRENT, nLen - dest.Length() );
 			return false;
@@ -514,8 +524,10 @@ bool Unserialize( CUtlBuffer &buf, CUtlBinaryBlock &dest )
 
 	int nEndGet;
 	int nByteCount = CountBinaryBytes( buf, &nEndGet );
-	if ( nByteCount < 0 )
+	if( nByteCount < 0 )
+	{
 		return false;
+	}
 
 	buf.EatWhiteSpace();
 	int nDest = 0;
@@ -527,8 +539,10 @@ bool Unserialize( CUtlBuffer &buf, CUtlBinaryBlock &dest )
 
 		unsigned char b1 = HexCharToInt( c1 );
 		unsigned char b2 = HexCharToInt( c2 );
-		if ( b1 == 0xFF || b2 == 0xFF )
+		if( b1 == 0xFF || b2 == 0xFF )
+		{
 			return false;
+		}
 
 		dest[ nDest++ ] = b2 | ( b1 << 4 );
 		buf.EatWhiteSpace();
@@ -541,13 +555,13 @@ bool Unserialize( CUtlBuffer &buf, CUtlBinaryBlock &dest )
 //-----------------------------------------------------------------------------
 // String attribute
 //-----------------------------------------------------------------------------
-bool Serialize( CUtlBuffer &buf, const CUtlString &src )
+bool Serialize( CUtlBuffer& buf, const CUtlString& src )
 {
 	buf.PutDelimitedString( s_pConv, src.Get() );
 	return buf.IsValid();
 }
 
-bool Unserialize( CUtlBuffer &buf, CUtlString &dest )
+bool Unserialize( CUtlBuffer& buf, CUtlString& dest )
 {
 	int nLen = buf.PeekDelimitedStringLength( s_pConv );
 	dest.SetLength( nLen - 1 );	// -1 because the length returned includes space for \0

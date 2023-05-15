@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -28,24 +28,24 @@
 class CRocketTrailParticle : public CSimpleEmitter
 {
 public:
-	
-	CRocketTrailParticle( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
-	
+
+	CRocketTrailParticle( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
+
 	//Create
-	static CRocketTrailParticle *Create( const char *pDebugName )
+	static CRocketTrailParticle* Create( const char* pDebugName )
 	{
 		return new CRocketTrailParticle( pDebugName );
 	}
 
 	//Roll
-	virtual	float UpdateRoll( SimpleParticle *pParticle, float timeDelta )
+	virtual	float UpdateRoll( SimpleParticle* pParticle, float timeDelta )
 	{
 		pParticle->m_flRoll += pParticle->m_flRollDelta * timeDelta;
-		
+
 		pParticle->m_flRollDelta += pParticle->m_flRollDelta * ( timeDelta * -8.0f );
 
 		//Cap the minimum roll
-		if ( fabs( pParticle->m_flRollDelta ) < 0.5f )
+		if( fabs( pParticle->m_flRollDelta ) < 0.5f )
 		{
 			pParticle->m_flRollDelta = ( pParticle->m_flRollDelta > 0.0f ) ? 0.5f : -0.5f;
 		}
@@ -54,13 +54,13 @@ public:
 	}
 
 	//Alpha
-	virtual float UpdateAlpha( const SimpleParticle *pParticle )
+	virtual float UpdateAlpha( const SimpleParticle* pParticle )
 	{
-		return ( ((float)pParticle->m_uchStartAlpha/255.0f) * sin( M_PI * (pParticle->m_flLifetime / pParticle->m_flDieTime) ) );
+		return ( ( ( float )pParticle->m_uchStartAlpha / 255.0f ) * sin( M_PI * ( pParticle->m_flLifetime / pParticle->m_flDieTime ) ) );
 	}
 
 private:
-	CRocketTrailParticle( const CRocketTrailParticle & );
+	CRocketTrailParticle( const CRocketTrailParticle& );
 };
 
 //
@@ -70,45 +70,45 @@ private:
 class CSmokeParticle : public CSimpleEmitter
 {
 public:
-	
-	CSmokeParticle( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
-	
+
+	CSmokeParticle( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
+
 	//Create
-	static CSmokeParticle *Create( const char *pDebugName )
+	static CSmokeParticle* Create( const char* pDebugName )
 	{
 		return new CSmokeParticle( pDebugName );
 	}
 
 	//Alpha
-	virtual float UpdateAlpha( const SimpleParticle *pParticle )
+	virtual float UpdateAlpha( const SimpleParticle* pParticle )
 	{
-		return ( ((float)pParticle->m_uchStartAlpha/255.0f) * sin( M_PI * (pParticle->m_flLifetime / pParticle->m_flDieTime) ) );
+		return ( ( ( float )pParticle->m_uchStartAlpha / 255.0f ) * sin( M_PI * ( pParticle->m_flLifetime / pParticle->m_flDieTime ) ) );
 	}
 
 	//Color
-	virtual Vector UpdateColor( const SimpleParticle *pParticle )
+	virtual Vector UpdateColor( const SimpleParticle* pParticle )
 	{
 		Vector	color;
 
 		float	tLifetime = pParticle->m_flLifetime / pParticle->m_flDieTime;
 		float	ramp = 1.0f - tLifetime;
 
-		color[0] = ( (float) pParticle->m_uchColor[0] * ramp ) / 255.0f;
-		color[1] = ( (float) pParticle->m_uchColor[1] * ramp ) / 255.0f;
-		color[2] = ( (float) pParticle->m_uchColor[2] * ramp ) / 255.0f;
+		color[0] = ( ( float ) pParticle->m_uchColor[0] * ramp ) / 255.0f;
+		color[1] = ( ( float ) pParticle->m_uchColor[1] * ramp ) / 255.0f;
+		color[2] = ( ( float ) pParticle->m_uchColor[2] * ramp ) / 255.0f;
 
 		return color;
 	}
 
 	//Roll
-	virtual	float UpdateRoll( SimpleParticle *pParticle, float timeDelta )
+	virtual	float UpdateRoll( SimpleParticle* pParticle, float timeDelta )
 	{
 		pParticle->m_flRoll += pParticle->m_flRollDelta * timeDelta;
-		
+
 		pParticle->m_flRollDelta += pParticle->m_flRollDelta * ( timeDelta * -8.0f );
 
 		//Cap the minimum roll
-		if ( fabs( pParticle->m_flRollDelta ) < 0.5f )
+		if( fabs( pParticle->m_flRollDelta ) < 0.5f )
 		{
 			pParticle->m_flRollDelta = ( pParticle->m_flRollDelta > 0.0f ) ? 0.5f : -0.5f;
 		}
@@ -117,40 +117,40 @@ public:
 	}
 
 private:
-	CSmokeParticle( const CSmokeParticle & );
+	CSmokeParticle( const CSmokeParticle& );
 };
 
 // Datatable.. this can have all the smoketrail parameters when we need it to.
-IMPLEMENT_CLIENTCLASS_DT(C_SmokeTrail, DT_SmokeTrail, SmokeTrail)
-	RecvPropFloat(RECVINFO(m_SpawnRate)),
-	RecvPropVector(RECVINFO(m_StartColor)),
-	RecvPropVector(RECVINFO(m_EndColor)),
-	RecvPropFloat(RECVINFO(m_ParticleLifetime)),
-	RecvPropFloat(RECVINFO(m_StopEmitTime)),
-	RecvPropFloat(RECVINFO(m_MinSpeed)),
-	RecvPropFloat(RECVINFO(m_MaxSpeed)),
-	RecvPropFloat(RECVINFO(m_MinDirectedSpeed)),
-	RecvPropFloat(RECVINFO(m_MaxDirectedSpeed)),
-	RecvPropFloat(RECVINFO(m_StartSize)),
-	RecvPropFloat(RECVINFO(m_EndSize)),
-	RecvPropFloat(RECVINFO(m_SpawnRadius)),
-	RecvPropInt(RECVINFO(m_bEmit)),
-	RecvPropInt(RECVINFO(m_nAttachment)),	
-	RecvPropFloat(RECVINFO(m_Opacity)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_SmokeTrail, DT_SmokeTrail, SmokeTrail )
+RecvPropFloat( RECVINFO( m_SpawnRate ) ),
+			   RecvPropVector( RECVINFO( m_StartColor ) ),
+			   RecvPropVector( RECVINFO( m_EndColor ) ),
+			   RecvPropFloat( RECVINFO( m_ParticleLifetime ) ),
+			   RecvPropFloat( RECVINFO( m_StopEmitTime ) ),
+			   RecvPropFloat( RECVINFO( m_MinSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MaxSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MinDirectedSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MaxDirectedSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_StartSize ) ),
+			   RecvPropFloat( RECVINFO( m_EndSize ) ),
+			   RecvPropFloat( RECVINFO( m_SpawnRadius ) ),
+			   RecvPropInt( RECVINFO( m_bEmit ) ),
+			   RecvPropInt( RECVINFO( m_nAttachment ) ),
+			   RecvPropFloat( RECVINFO( m_Opacity ) ),
+			   END_RECV_TABLE()
 
 // ------------------------------------------------------------------------- //
 // ParticleMovieExplosion
 // ------------------------------------------------------------------------- //
-C_SmokeTrail::C_SmokeTrail()
+			   C_SmokeTrail::C_SmokeTrail()
 {
 	m_MaterialHandle[0] = NULL;
 	m_MaterialHandle[1] = NULL;
 
 	m_SpawnRate = 10;
-	m_ParticleSpawn.Init(10);
-	m_StartColor.Init(0.5, 0.5, 0.5);
-	m_EndColor.Init(0,0,0);
+	m_ParticleSpawn.Init( 10 );
+	m_StartColor.Init( 0.5, 0.5, 0.5 );
+	m_EndColor.Init( 0, 0, 0 );
 	m_ParticleLifetime = 5;
 	m_StopEmitTime = 0;	// No end time
 	m_MinSpeed = 2;
@@ -172,9 +172,9 @@ C_SmokeTrail::C_SmokeTrail()
 
 C_SmokeTrail::~C_SmokeTrail()
 {
-	if ( ToolsEnabled() && clienttools->IsInRecordingMode() && m_pSmokeEmitter.IsValid() && m_pSmokeEmitter->GetToolParticleEffectId() != TOOLPARTICLESYSTEMID_INVALID )
+	if( ToolsEnabled() && clienttools->IsInRecordingMode() && m_pSmokeEmitter.IsValid() && m_pSmokeEmitter->GetToolParticleEffectId() != TOOLPARTICLESYSTEMID_INVALID )
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
 		msg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", false );
@@ -183,7 +183,7 @@ C_SmokeTrail::~C_SmokeTrail()
 		msg->deleteThis();
 	}
 
-	if ( m_pParticleMgr )
+	if( m_pParticleMgr )
 	{
 		m_pParticleMgr->RemoveEffect( &m_ParticleEffect );
 	}
@@ -191,12 +191,12 @@ C_SmokeTrail::~C_SmokeTrail()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_SmokeTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles )
+void C_SmokeTrail::GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles )
 {
-	C_BaseEntity *pEnt = pAttachedTo->GetBaseEntity();
-	if (pEnt && (m_nAttachment > 0))
+	C_BaseEntity* pEnt = pAttachedTo->GetBaseEntity();
+	if( pEnt && ( m_nAttachment > 0 ) )
 	{
 		pEnt->GetAttachment( m_nAttachment, *pAbsOrigin, *pAbsAngles );
 	}
@@ -208,52 +208,54 @@ void C_SmokeTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrig
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bEmit - 
+// Purpose:
+// Input  : bEmit -
 //-----------------------------------------------------------------------------
-void C_SmokeTrail::SetEmit(bool bEmit)
+void C_SmokeTrail::SetEmit( bool bEmit )
 {
 	m_bEmit = bEmit;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : rate - 
+// Purpose:
+// Input  : rate -
 //-----------------------------------------------------------------------------
-void C_SmokeTrail::SetSpawnRate(float rate)
+void C_SmokeTrail::SetSpawnRate( float rate )
 {
 	m_SpawnRate = rate;
-	m_ParticleSpawn.Init(rate);
+	m_ParticleSpawn.Init( rate );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
-void C_SmokeTrail::OnDataChanged(DataUpdateType_t updateType)
+void C_SmokeTrail::OnDataChanged( DataUpdateType_t updateType )
 {
-	C_BaseEntity::OnDataChanged(updateType);
+	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_SmokeTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_SmokeTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
-	if(!pParticleMgr->AddEffect( &m_ParticleEffect, this ))
+	if( !pParticleMgr->AddEffect( &m_ParticleEffect, this ) )
+	{
 		return;
+	}
 
 	m_pParticleMgr	= pParticleMgr;
-	m_pSmokeEmitter = CSmokeParticle::Create("smokeTrail");
-	
-	if ( !m_pSmokeEmitter )
+	m_pSmokeEmitter = CSmokeParticle::Create( "smokeTrail" );
+
+	if( !m_pSmokeEmitter )
 	{
 		Assert( false );
 		return;
@@ -264,32 +266,38 @@ void C_SmokeTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs
 
 	m_MaterialHandle[0] = g_Mat_DustPuff[0];
 	m_MaterialHandle[1] = g_Mat_DustPuff[1];
-	
+
 	m_ParticleSpawn.Init( m_SpawnRate );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_SmokeTrail::Update( float fTimeDelta )
 {
-	if ( !m_pSmokeEmitter )
+	if( !m_pSmokeEmitter )
+	{
 		return;
+	}
 
 	Vector	offsetColor;
 
 	// Add new particles
-	if ( !m_bEmit )
+	if( !m_bEmit )
+	{
 		return;
+	}
 
-	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	if( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	{
 		return;
+	}
 
 	float tempDelta = fTimeDelta;
 
-	SimpleParticle	*pParticle;
+	SimpleParticle*	pParticle;
 	Vector			offset;
 
 	Vector vecOrigin;
@@ -306,10 +314,12 @@ void C_SmokeTrail::Update( float fTimeDelta )
 		offset += vecOrigin;
 		VectorMA( offset, fldt, GetAbsVelocity(), offset );
 
-		pParticle = (SimpleParticle *) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt(0,1)], offset );
+		pParticle = ( SimpleParticle* ) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt( 0, 1 )], offset );
 
-		if ( pParticle == NULL )
+		if( pParticle == NULL )
+		{
 			continue;
+		}
 
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= m_ParticleLifetime;
@@ -318,13 +328,13 @@ void C_SmokeTrail::Update( float fTimeDelta )
 		pParticle->m_vecVelocity *= random->RandomFloat( m_MinSpeed, m_MaxSpeed );
 
 		pParticle->m_vecVelocity = pParticle->m_vecVelocity + GetAbsVelocity();
-		
+
 		float flDirectedVel = random->RandomFloat( m_MinDirectedSpeed, m_MaxDirectedSpeed );
 		VectorMA( pParticle->m_vecVelocity, flDirectedVel, vecForward, pParticle->m_vecVelocity );
 
 		offsetColor = m_StartColor;
 		float flMaxVal = MAX( m_StartColor[0], m_StartColor[1] );
-		if ( flMaxVal < m_StartColor[2] )
+		if( flMaxVal < m_StartColor[2] )
 		{
 			flMaxVal = m_StartColor[2];
 		}
@@ -337,31 +347,31 @@ void C_SmokeTrail::Update( float fTimeDelta )
 		offsetColor[1] = clamp( offsetColor[1], 0.0f, 1.0f );
 		offsetColor[2] = clamp( offsetColor[2], 0.0f, 1.0f );
 
-		pParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
-		pParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
-		pParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
-		
+		pParticle->m_uchColor[0]	= offsetColor[0] * 255.0f;
+		pParticle->m_uchColor[1]	= offsetColor[1] * 255.0f;
+		pParticle->m_uchColor[2]	= offsetColor[2] * 255.0f;
+
 		pParticle->m_uchStartSize	= m_StartSize;
 		pParticle->m_uchEndSize		= m_EndSize;
-		
-		float alpha = random->RandomFloat( m_Opacity*0.75f, m_Opacity*1.25f );
+
+		float alpha = random->RandomFloat( m_Opacity * 0.75f, m_Opacity * 1.25f );
 		alpha = clamp( alpha, 0.0f, 1.0f );
 
-		pParticle->m_uchStartAlpha	= alpha * 255; 
+		pParticle->m_uchStartAlpha	= alpha * 255;
 		pParticle->m_uchEndAlpha	= 0;
-			
+
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
-    }
+	}
 }
 
 
-void C_SmokeTrail::RenderParticles( CParticleRenderIterator *pIterator )
+void C_SmokeTrail::RenderParticles( CParticleRenderIterator* pIterator )
 {
 }
 
 
-void C_SmokeTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_SmokeTrail::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
 }
 
@@ -370,10 +380,12 @@ void C_SmokeTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
 // This is called after sending this entity's recording state
 //-----------------------------------------------------------------------------
 
-void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
+void C_SmokeTrail::CleanupToolRecordingState( KeyValues* msg_ )
 {
-	if ( !ToolsEnabled() )
+	if( !ToolsEnabled() )
+	{
 		return;
+	}
 
 	BaseClass::CleanupToolRecordingState( msg_ );
 
@@ -381,70 +393,74 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
 	// allocated state it put into the message, but here we're going
 	// to use it to send particle system messages because we
 	// know the grenade has been recorded at this point
-	if ( !clienttools->IsInRecordingMode() || !m_pSmokeEmitter.IsValid() )
+	if( !clienttools->IsInRecordingMode() || !m_pSmokeEmitter.IsValid() )
+	{
 		return;
-	
+	}
+
 	// For now, we can't record smoketrails that don't have a moveparent
-	C_BaseEntity *pEnt = GetMoveParent();
-	if ( !pEnt )
+	C_BaseEntity* pEnt = GetMoveParent();
+	if( !pEnt )
+	{
 		return;
+	}
 
 	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->curtime ) );
 
 	// NOTE: Particle system destruction message will be sent by the particle effect itself.
-	if ( m_pSmokeEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
+	if( m_pSmokeEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
 	{
 		int nId = m_pSmokeEmitter->AllocateToolParticleEffectId();
 
-		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_Create" );
 		msg->SetString( "name", "C_SmokeTrail" );
 		msg->SetInt( "id", nId );
 		msg->SetFloat( "time", gpGlobals->curtime );
 
-		KeyValues *pRandomEmitter = msg->FindKey( "DmeRandomEmitter", true );
+		KeyValues* pRandomEmitter = msg->FindKey( "DmeRandomEmitter", true );
 		pRandomEmitter->SetInt( "count", m_SpawnRate );	// particles per second, when duration is < 0
 		pRandomEmitter->SetFloat( "duration", -1 );
 		pRandomEmitter->SetInt( "active", bEmitterActive );
 
-		KeyValues *pEmitterParent1 = pRandomEmitter->FindKey( "emitter1", true );
+		KeyValues* pEmitterParent1 = pRandomEmitter->FindKey( "emitter1", true );
 		pEmitterParent1->SetFloat( "randomamount", 0.5f );
-		KeyValues *pEmitterParent2 = pRandomEmitter->FindKey( "emitter2", true );
+		KeyValues* pEmitterParent2 = pRandomEmitter->FindKey( "emitter2", true );
 		pEmitterParent2->SetFloat( "randomamount", 0.5f );
 
-		KeyValues *pEmitter = pEmitterParent1->FindKey( "DmeSpriteEmitter", true );
+		KeyValues* pEmitter = pEmitterParent1->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetString( "material", "particle/particle_smokegrenade" );
 
-		KeyValues *pInitializers = pEmitter->FindKey( "initializers", true );
+		KeyValues* pInitializers = pEmitter->FindKey( "initializers", true );
 
 		// FIXME: Until we can interpolate ent logs during emission, this can't work
-		KeyValues *pPosition = pInitializers->FindKey( "DmePositionPointToEntityInitializer", true );
-		pPosition->SetPtr( "entindex", (void*)pEnt->entindex() );
+		KeyValues* pPosition = pInitializers->FindKey( "DmePositionPointToEntityInitializer", true );
+		pPosition->SetPtr( "entindex", ( void* )pEnt->entindex() );
 		pPosition->SetInt( "attachmentIndex", m_nAttachment );
 		pPosition->SetFloat( "randomDist", m_SpawnRadius );
 		pPosition->SetFloat( "startx", pEnt->GetAbsOrigin().x );
 		pPosition->SetFloat( "starty", pEnt->GetAbsOrigin().y );
 		pPosition->SetFloat( "startz", pEnt->GetAbsOrigin().z );
 
-		KeyValues *pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
+		KeyValues* pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
 		pLifetime->SetFloat( "minLifetime", m_ParticleLifetime );
- 		pLifetime->SetFloat( "maxLifetime", m_ParticleLifetime );
+		pLifetime->SetFloat( "maxLifetime", m_ParticleLifetime );
 
-		KeyValues *pVelocity = pInitializers->FindKey( "DmeAttachmentVelocityInitializer", true );
-		pVelocity->SetPtr( "entindex", (void*)entindex() );
+		KeyValues* pVelocity = pInitializers->FindKey( "DmeAttachmentVelocityInitializer", true );
+		pVelocity->SetPtr( "entindex", ( void* )entindex() );
 		pVelocity->SetFloat( "minAttachmentSpeed", m_MinDirectedSpeed );
- 		pVelocity->SetFloat( "maxAttachmentSpeed", m_MaxDirectedSpeed );
- 		pVelocity->SetFloat( "minRandomSpeed", m_MinSpeed );
- 		pVelocity->SetFloat( "maxRandomSpeed", m_MaxSpeed );
+		pVelocity->SetFloat( "maxAttachmentSpeed", m_MaxDirectedSpeed );
+		pVelocity->SetFloat( "minRandomSpeed", m_MinSpeed );
+		pVelocity->SetFloat( "maxRandomSpeed", m_MaxSpeed );
 
-		KeyValues *pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
+		KeyValues* pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
 		pRoll->SetFloat( "minRoll", 0.0f );
- 		pRoll->SetFloat( "maxRoll", 360.0f );
+		pRoll->SetFloat( "maxRoll", 360.0f );
 
-		KeyValues *pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
+		KeyValues* pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
 		pRollSpeed->SetFloat( "minRollSpeed", -1.0f );
- 		pRollSpeed->SetFloat( "maxRollSpeed", 1.0f );
+		pRollSpeed->SetFloat( "maxRollSpeed", 1.0f );
 
-		KeyValues *pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
+		KeyValues* pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
 		Color c(
 			FastFToC( clamp( m_StartColor.x, 0.f, 1.f ) ),
 			FastFToC( clamp( m_StartColor.y, 0.f, 1.f ) ),
@@ -452,10 +468,10 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
 			255 );
 		pColor->SetColor( "startColor", c );
 		pColor->SetFloat( "minStartValueDelta", -0.2f );
- 		pColor->SetFloat( "maxStartValueDelta", 0.2f );
+		pColor->SetFloat( "maxStartValueDelta", 0.2f );
 		pColor->SetColor( "endColor", Color( 0, 0, 0, 255 ) );
 
-		KeyValues *pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
+		KeyValues* pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
 		int nMinAlpha = 255 * m_Opacity * 0.75f;
 		int nMaxAlpha = 255 * m_Opacity * 1.25f;
 		pAlpha->SetInt( "minStartAlpha", 0 );
@@ -463,18 +479,18 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
 		pAlpha->SetInt( "minEndAlpha", clamp( nMinAlpha, 0, 255 ) );
 		pAlpha->SetInt( "maxEndAlpha", clamp( nMaxAlpha, 0, 255 ) );
 
-		KeyValues *pSize = pInitializers->FindKey( "DmeRandomSizeInitializer", true );
+		KeyValues* pSize = pInitializers->FindKey( "DmeRandomSizeInitializer", true );
 		pSize->SetFloat( "minStartSize", m_StartSize );
 		pSize->SetFloat( "maxStartSize", m_StartSize );
 		pSize->SetFloat( "minEndSize", m_EndSize );
 		pSize->SetFloat( "maxEndSize", m_EndSize );
 
-		KeyValues *pUpdaters = pEmitter->FindKey( "updaters", true );
-	    
+		KeyValues* pUpdaters = pEmitter->FindKey( "updaters", true );
+
 		pUpdaters->FindKey( "DmePositionVelocityUpdater", true );
 		pUpdaters->FindKey( "DmeRollUpdater", true );
 
-		KeyValues *pRollSpeedUpdater = pUpdaters->FindKey( "DmeRollSpeedAttenuateUpdater", true );
+		KeyValues* pRollSpeedUpdater = pUpdaters->FindKey( "DmeRollSpeedAttenuateUpdater", true );
 		pRollSpeedUpdater->SetFloat( "attenuation", 1.0f - 8.0f / 30.0f );
 		pRollSpeedUpdater->SetFloat( "attenuationTme", 1.0f / 30.0f );
 		pRollSpeedUpdater->SetFloat( "minRollSpeed", 0.5f );
@@ -483,16 +499,16 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
 		pUpdaters->FindKey( "DmeColorUpdater", true );
 		pUpdaters->FindKey( "DmeSizeUpdater", true );
 
-		KeyValues *pEmitter2 = pEmitter->MakeCopy();
+		KeyValues* pEmitter2 = pEmitter->MakeCopy();
 		pEmitter2->SetString( "material", "particle/particle_noisesphere" );
 		pEmitterParent2->AddSubKey( pEmitter2 );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}
-	else 
+	else
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
 		msg->SetInt( "id", m_pSmokeEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", bEmitterActive );
@@ -508,39 +524,39 @@ void C_SmokeTrail::CleanupToolRecordingState( KeyValues *msg_ )
 //==================================================
 
 // Expose to the particle app.
-EXPOSE_PROTOTYPE_EFFECT(RocketTrail, C_RocketTrail);
+EXPOSE_PROTOTYPE_EFFECT( RocketTrail, C_RocketTrail );
 
 // Datatable.. this can have all the smoketrail parameters when we need it to.
-IMPLEMENT_CLIENTCLASS_DT(C_RocketTrail, DT_RocketTrail, RocketTrail)
-	RecvPropFloat(RECVINFO(m_SpawnRate)),
-	RecvPropVector(RECVINFO(m_StartColor)),
-	RecvPropVector(RECVINFO(m_EndColor)),
-	RecvPropFloat(RECVINFO(m_ParticleLifetime)),
-	RecvPropFloat(RECVINFO(m_StopEmitTime)),
-	RecvPropFloat(RECVINFO(m_MinSpeed)),
-	RecvPropFloat(RECVINFO(m_MaxSpeed)),
-	RecvPropFloat(RECVINFO(m_StartSize)),
-	RecvPropFloat(RECVINFO(m_EndSize)),
-	RecvPropFloat(RECVINFO(m_SpawnRadius)),
-	RecvPropInt(RECVINFO(m_bEmit)),
-	RecvPropInt(RECVINFO(m_nAttachment)),	
-	RecvPropFloat(RECVINFO(m_Opacity)),
-	RecvPropInt(RECVINFO(m_bDamaged)),
-	RecvPropFloat(RECVINFO(m_flFlareScale)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_RocketTrail, DT_RocketTrail, RocketTrail )
+RecvPropFloat( RECVINFO( m_SpawnRate ) ),
+			   RecvPropVector( RECVINFO( m_StartColor ) ),
+			   RecvPropVector( RECVINFO( m_EndColor ) ),
+			   RecvPropFloat( RECVINFO( m_ParticleLifetime ) ),
+			   RecvPropFloat( RECVINFO( m_StopEmitTime ) ),
+			   RecvPropFloat( RECVINFO( m_MinSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MaxSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_StartSize ) ),
+			   RecvPropFloat( RECVINFO( m_EndSize ) ),
+			   RecvPropFloat( RECVINFO( m_SpawnRadius ) ),
+			   RecvPropInt( RECVINFO( m_bEmit ) ),
+			   RecvPropInt( RECVINFO( m_nAttachment ) ),
+			   RecvPropFloat( RECVINFO( m_Opacity ) ),
+			   RecvPropInt( RECVINFO( m_bDamaged ) ),
+			   RecvPropFloat( RECVINFO( m_flFlareScale ) ),
+			   END_RECV_TABLE()
 
 // ------------------------------------------------------------------------- //
 // ParticleMovieExplosion
 // ------------------------------------------------------------------------- //
-C_RocketTrail::C_RocketTrail()
+			   C_RocketTrail::C_RocketTrail()
 {
 	m_MaterialHandle[0] = NULL;
 	m_MaterialHandle[1] = NULL;
-	
+
 	m_SpawnRate = 10;
-	m_ParticleSpawn.Init(10);
-	m_StartColor.Init(0.5, 0.5, 0.5);
-	m_EndColor.Init(0,0,0);
+	m_ParticleSpawn.Init( 10 );
+	m_StartColor.Init( 0.5, 0.5, 0.5 );
+	m_EndColor.Init( 0, 0, 0 );
 	m_ParticleLifetime = 5;
 	m_StopEmitTime = 0;	// No end time
 	m_MinSpeed = 2;
@@ -562,7 +578,7 @@ C_RocketTrail::C_RocketTrail()
 
 C_RocketTrail::~C_RocketTrail()
 {
-	if ( m_pParticleMgr )
+	if( m_pParticleMgr )
 	{
 		m_pParticleMgr->RemoveEffect( &m_ParticleEffect );
 	}
@@ -570,12 +586,12 @@ C_RocketTrail::~C_RocketTrail()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_RocketTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles )
+void C_RocketTrail::GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles )
 {
-	C_BaseEntity *pEnt = pAttachedTo->GetBaseEntity();
-	if (pEnt && (m_nAttachment > 0))
+	C_BaseEntity* pEnt = pAttachedTo->GetBaseEntity();
+	if( pEnt && ( m_nAttachment > 0 ) )
 	{
 		pEnt->GetAttachment( m_nAttachment, *pAbsOrigin, *pAbsAngles );
 	}
@@ -587,51 +603,53 @@ void C_RocketTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOri
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bEmit - 
+// Purpose:
+// Input  : bEmit -
 //-----------------------------------------------------------------------------
-void C_RocketTrail::SetEmit(bool bEmit)
+void C_RocketTrail::SetEmit( bool bEmit )
 {
 	m_bEmit = bEmit;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : rate - 
+// Purpose:
+// Input  : rate -
 //-----------------------------------------------------------------------------
-void C_RocketTrail::SetSpawnRate(float rate)
+void C_RocketTrail::SetSpawnRate( float rate )
 {
 	m_SpawnRate = rate;
-	m_ParticleSpawn.Init(rate);
+	m_ParticleSpawn.Init( rate );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
-void C_RocketTrail::OnDataChanged(DataUpdateType_t updateType)
+void C_RocketTrail::OnDataChanged( DataUpdateType_t updateType )
 {
-	C_BaseEntity::OnDataChanged(updateType);
+	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_RocketTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_RocketTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
-	if(!pParticleMgr->AddEffect( &m_ParticleEffect, this ))
+	if( !pParticleMgr->AddEffect( &m_ParticleEffect, this ) )
+	{
 		return;
+	}
 
 	m_pParticleMgr	= pParticleMgr;
-	m_pRocketEmitter = CRocketTrailParticle::Create("smokeTrail");
-	if ( !m_pRocketEmitter )
+	m_pRocketEmitter = CRocketTrailParticle::Create( "smokeTrail" );
+	if( !m_pRocketEmitter )
 	{
 		Assert( false );
 		return;
@@ -642,7 +660,7 @@ void C_RocketTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 
 	m_MaterialHandle[0] = g_Mat_DustPuff[0];
 	m_MaterialHandle[1] = g_Mat_DustPuff[1];
-	
+
 	m_ParticleSpawn.Init( m_SpawnRate );
 
 	m_vecLastPosition = GetAbsOrigin();
@@ -650,41 +668,47 @@ void C_RocketTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArg
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_RocketTrail::Update( float fTimeDelta )
 {
-	if ( !m_pRocketEmitter )
+	if( !m_pRocketEmitter )
+	{
 		return;
+	}
 
-	if ( gpGlobals->frametime == 0.0f )
+	if( gpGlobals->frametime == 0.0f )
+	{
 		return;
+	}
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "MuzzleFlash" );
 	pSimple->SetSortOrigin( GetAbsOrigin() );
-	
+
 	Vector			forward;
 
 	AngleVectors( GetAbsAngles(), &forward );
-	
+
 	forward.Negate();
 
-	float flScale = random->RandomFloat( m_flFlareScale-0.5f, m_flFlareScale+0.5f );
+	float flScale = random->RandomFloat( m_flFlareScale - 0.5f, m_flFlareScale + 0.5f );
 
 	//
 	// Flash
 	//
 
 
-	for (int i = 1; i < 9; i++ )
+	for( int i = 1; i < 9; i++ )
 	{
-		Vector offset = GetAbsOrigin() + (forward * (i*2.0f*m_flFlareScale));
+		Vector offset = GetAbsOrigin() + ( forward * ( i * 2.0f * m_flFlareScale ) );
 
-		SimpleParticle* pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/muzzleflash%d", random->RandomInt(1,4) ) ), offset );
-			
-		if ( pParticle == NULL )
+		SimpleParticle* pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), pSimple->GetPMaterial( VarArgs( "effects/muzzleflash%d", random->RandomInt( 1, 4 ) ) ), offset );
+
+		if( pParticle == NULL )
+		{
 			return;
+		}
 
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= 0.01f;
@@ -698,116 +722,122 @@ void C_RocketTrail::Update( float fTimeDelta )
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 128;
 
-		pParticle->m_uchStartSize	= (random->RandomFloat( 5.0f, 6.0f ) * (12-(i))/9) * flScale;
+		pParticle->m_uchStartSize	= ( random->RandomFloat( 5.0f, 6.0f ) * ( 12 - ( i ) ) / 9 ) * flScale;
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize;
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= 0.0f;
 	}
 
 	// Add new particles (undamaged version)
-	if ( m_bEmit )
+	if( m_bEmit )
 	{
 		Vector	moveDiff	= GetAbsOrigin() - m_vecLastPosition;
 		float	moveLength	= VectorNormalize( moveDiff );
 
 		int	numPuffs = moveLength / ( m_StartSize / 2.0f );
 
-		//debugoverlay->AddLineOverlay( m_vecLastPosition, GetAbsOrigin(), 255, 0, 0, true, 2.0f ); 
-		
+		//debugoverlay->AddLineOverlay( m_vecLastPosition, GetAbsOrigin(), 255, 0, 0, true, 2.0f );
+
 		//FIXME: More rational cap here, perhaps
-		if ( numPuffs > 50 )
+		if( numPuffs > 50 )
+		{
 			numPuffs = 50;
+		}
 
 		Vector			offsetColor;
 		float			step = moveLength / numPuffs;
 
 		//Fill in the gaps
-		for (int i = 1; i < numPuffs+1; i++ )
+		for( int i = 1; i < numPuffs + 1; i++ )
 		{
 			Vector offset = m_vecLastPosition + ( moveDiff * step * i );
 
 			//debugoverlay->AddBoxOverlay( offset, -Vector(2,2,2), Vector(2,2,2), vec3_angle, i*4, i*4, i*4, true, 4.0f );
-			
-			SimpleParticle* pParticle = (SimpleParticle *) m_pRocketEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt(0,1)], offset );
 
-			if ( pParticle != NULL )
+			SimpleParticle* pParticle = ( SimpleParticle* ) m_pRocketEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt( 0, 1 )], offset );
+
+			if( pParticle != NULL )
 			{
 				pParticle->m_flLifetime		= 0.0f;
-				pParticle->m_flDieTime		= m_ParticleLifetime + random->RandomFloat(m_ParticleLifetime*0.9f,m_ParticleLifetime*1.1f);
+				pParticle->m_flDieTime		= m_ParticleLifetime + random->RandomFloat( m_ParticleLifetime * 0.9f, m_ParticleLifetime * 1.1f );
 
 				pParticle->m_vecVelocity.Random( -1.0f, 1.0f );
 				pParticle->m_vecVelocity *= random->RandomFloat( m_MinSpeed, m_MaxSpeed );
-				
+
 				offsetColor = m_StartColor * random->RandomFloat( 0.75f, 1.25f );
 
 				offsetColor[0] = clamp( offsetColor[0], 0.0f, 1.0f );
 				offsetColor[1] = clamp( offsetColor[1], 0.0f, 1.0f );
 				offsetColor[2] = clamp( offsetColor[2], 0.0f, 1.0f );
 
-				pParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
-				pParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
-				pParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
-				
+				pParticle->m_uchColor[0]	= offsetColor[0] * 255.0f;
+				pParticle->m_uchColor[1]	= offsetColor[1] * 255.0f;
+				pParticle->m_uchColor[2]	= offsetColor[2] * 255.0f;
+
 				pParticle->m_uchStartSize	= m_StartSize * random->RandomFloat( 0.75f, 1.25f );
 				pParticle->m_uchEndSize		= m_EndSize * random->RandomFloat( 1.0f, 1.25f );
-				
-				float alpha = random->RandomFloat( m_Opacity*0.75f, m_Opacity*1.25f );
 
-				if ( alpha > 1.0f )
+				float alpha = random->RandomFloat( m_Opacity * 0.75f, m_Opacity * 1.25f );
+
+				if( alpha > 1.0f )
+				{
 					alpha = 1.0f;
-				if ( alpha < 0.0f )
+				}
+				if( alpha < 0.0f )
+				{
 					alpha = 0.0f;
+				}
 
-				pParticle->m_uchStartAlpha	= alpha * 255; 
+				pParticle->m_uchStartAlpha	= alpha * 255;
 				pParticle->m_uchEndAlpha	= 0;
-				
+
 				pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 				pParticle->m_flRollDelta	= random->RandomFloat( -8.0f, 8.0f );
 			}
 		}
 	}
-	
-	if ( m_bDamaged )
+
+	if( m_bDamaged )
 	{
 		Vector			offsetColor;
 
-		CSmartPtr<CEmberEffect>	pEmitter = CEmberEffect::Create("C_RocketTrail::damaged");
+		CSmartPtr<CEmberEffect>	pEmitter = CEmberEffect::Create( "C_RocketTrail::damaged" );
 
 		pEmitter->SetSortOrigin( GetAbsOrigin() );
 
 		PMaterialHandle flameMaterial = m_pRocketEmitter->GetPMaterial( VarArgs( "sprites/flamelet%d", random->RandomInt( 1, 4 ) ) );
-		
+
 		// Flames from the rocket
-		for (int i = 0; i < 8; i++ )
+		for( int i = 0; i < 8; i++ )
 		{
 			Vector offset = RandomVector( -8, 8 ) + GetAbsOrigin();
 
-			SimpleParticle* pParticle = (SimpleParticle *) pEmitter->AddParticle( sizeof( SimpleParticle ), flameMaterial, offset );
+			SimpleParticle* pParticle = ( SimpleParticle* ) pEmitter->AddParticle( sizeof( SimpleParticle ), flameMaterial, offset );
 
-			if ( pParticle != NULL )
+			if( pParticle != NULL )
 			{
 				pParticle->m_flLifetime		= 0.0f;
 				pParticle->m_flDieTime		= 0.25f;
 
 				pParticle->m_vecVelocity.Random( -1.0f, 1.0f );
 				pParticle->m_vecVelocity *= random->RandomFloat( 32, 128 );
-				
+
 				offsetColor = m_StartColor * random->RandomFloat( 0.75f, 1.25f );
 
 				offsetColor[0] = clamp( offsetColor[0], 0.0f, 1.0f );
 				offsetColor[1] = clamp( offsetColor[1], 0.0f, 1.0f );
 				offsetColor[2] = clamp( offsetColor[2], 0.0f, 1.0f );
 
-				pParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
-				pParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
-				pParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
-				
+				pParticle->m_uchColor[0]	= offsetColor[0] * 255.0f;
+				pParticle->m_uchColor[1]	= offsetColor[1] * 255.0f;
+				pParticle->m_uchColor[2]	= offsetColor[2] * 255.0f;
+
 				pParticle->m_uchStartSize	= 8.0f;
 				pParticle->m_uchEndSize		= 32.0f;
-				
+
 				pParticle->m_uchStartAlpha	= 255;
 				pParticle->m_uchEndAlpha	= 0;
-				
+
 				pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 				pParticle->m_flRollDelta	= random->RandomFloat( -8.0f, 8.0f );
 			}
@@ -817,31 +847,31 @@ void C_RocketTrail::Update( float fTimeDelta )
 	m_vecLastPosition = GetAbsOrigin();
 }
 
-void C_RocketTrail::RenderParticles( CParticleRenderIterator *pIterator )
+void C_RocketTrail::RenderParticles( CParticleRenderIterator* pIterator )
 {
 }
 
-void C_RocketTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_RocketTrail::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
 }
 
-SporeEffect::SporeEffect( const char *pDebugName ) : CSimpleEmitter( pDebugName )
+SporeEffect::SporeEffect( const char* pDebugName ) : CSimpleEmitter( pDebugName )
 {
 }
 
 
-SporeEffect* SporeEffect::Create( const char *pDebugName )
+SporeEffect* SporeEffect::Create( const char* pDebugName )
 {
 	return new SporeEffect( pDebugName );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 // Output : Vector
 //-----------------------------------------------------------------------------
-void SporeEffect::UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
+void SporeEffect::UpdateVelocity( SimpleParticle* pParticle, float timeDelta )
 {
 	float	speed = VectorNormalize( pParticle->m_vecVelocity );
 	Vector	offset;
@@ -857,31 +887,31 @@ void SporeEffect::UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticle - 
-//			timeDelta - 
+// Purpose:
+// Input  : *pParticle -
+//			timeDelta -
 //-----------------------------------------------------------------------------
-Vector SporeEffect::UpdateColor( const SimpleParticle *pParticle )
+Vector SporeEffect::UpdateColor( const SimpleParticle* pParticle )
 {
 	Vector	color;
-	float	ramp = ((float)pParticle->m_uchStartAlpha/255.0f) * sin( M_PI * (pParticle->m_flLifetime / pParticle->m_flDieTime) );//1.0f - ( pParticle->m_flLifetime / pParticle->m_flDieTime );
+	float	ramp = ( ( float )pParticle->m_uchStartAlpha / 255.0f ) * sin( M_PI * ( pParticle->m_flLifetime / pParticle->m_flDieTime ) ); //1.0f - ( pParticle->m_flLifetime / pParticle->m_flDieTime );
 
-	color[0] = ( (float) pParticle->m_uchColor[0] * ramp ) / 255.0f;
-	color[1] = ( (float) pParticle->m_uchColor[1] * ramp ) / 255.0f;
-	color[2] = ( (float) pParticle->m_uchColor[2] * ramp ) / 255.0f;
+	color[0] = ( ( float ) pParticle->m_uchColor[0] * ramp ) / 255.0f;
+	color[1] = ( ( float ) pParticle->m_uchColor[1] * ramp ) / 255.0f;
+	color[2] = ( ( float ) pParticle->m_uchColor[2] * ramp ) / 255.0f;
 
 	return color;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticle - 
-//			timeDelta - 
+// Purpose:
+// Input  : *pParticle -
+//			timeDelta -
 // Output : float
 //-----------------------------------------------------------------------------
-float SporeEffect::UpdateAlpha( const SimpleParticle *pParticle )
+float SporeEffect::UpdateAlpha( const SimpleParticle* pParticle )
 {
-	return ( ((float)pParticle->m_uchStartAlpha/255.0f) * sin( M_PI * (pParticle->m_flLifetime / pParticle->m_flDieTime) ) );
+	return ( ( ( float )pParticle->m_uchStartAlpha / 255.0f ) * sin( M_PI * ( pParticle->m_flLifetime / pParticle->m_flDieTime ) ) );
 }
 
 //==================================================
@@ -891,16 +921,16 @@ float SporeEffect::UpdateAlpha( const SimpleParticle *pParticle )
 EXPOSE_PROTOTYPE_EFFECT( SporeExplosion, C_SporeExplosion );
 
 IMPLEMENT_CLIENTCLASS_DT( C_SporeExplosion, DT_SporeExplosion, SporeExplosion )
-	RecvPropFloat(RECVINFO(m_flSpawnRate)),
-	RecvPropFloat(RECVINFO(m_flParticleLifetime)),
-	RecvPropFloat(RECVINFO(m_flStartSize)),
-	RecvPropFloat(RECVINFO(m_flEndSize)),
-	RecvPropFloat(RECVINFO(m_flSpawnRadius)),
-	RecvPropBool(RECVINFO(m_bEmit)),
-	RecvPropBool(RECVINFO(m_bDontRemove)),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flSpawnRate ) ),
+			   RecvPropFloat( RECVINFO( m_flParticleLifetime ) ),
+			   RecvPropFloat( RECVINFO( m_flStartSize ) ),
+			   RecvPropFloat( RECVINFO( m_flEndSize ) ),
+			   RecvPropFloat( RECVINFO( m_flSpawnRadius ) ),
+			   RecvPropBool( RECVINFO( m_bEmit ) ),
+			   RecvPropBool( RECVINFO( m_bDontRemove ) ),
+			   END_RECV_TABLE()
 
-C_SporeExplosion::C_SporeExplosion( void )
+			   C_SporeExplosion::C_SporeExplosion( void )
 {
 	m_pParticleMgr			= NULL;
 
@@ -919,21 +949,21 @@ C_SporeExplosion::C_SporeExplosion( void )
 
 C_SporeExplosion::~C_SporeExplosion()
 {
-	if ( m_pParticleMgr != NULL )
+	if( m_pParticleMgr != NULL )
 	{
 		m_pParticleMgr->RemoveEffect( &m_ParticleEffect );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
 void C_SporeExplosion::OnDataChanged( DataUpdateType_t updateType )
 {
 	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_flPreviousSpawnRate = m_flSpawnRate;
 		m_teParticleSpawn.Init( m_flSpawnRate );
@@ -953,21 +983,25 @@ void C_SporeExplosion::OnDataChanged( DataUpdateType_t updateType )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_SporeExplosion::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_SporeExplosion::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
 	//Add us into the effect manager
 	if( pParticleMgr->AddEffect( &m_ParticleEffect, this ) == false )
+	{
 		return;
+	}
 
 	//Create our main effect
 	m_pSporeEffect = SporeEffect::Create( "C_SporeExplosion" );
-	
-	if ( m_pSporeEffect == NULL )
+
+	if( m_pSporeEffect == NULL )
+	{
 		return;
+	}
 
 	m_hMaterial	= m_pSporeEffect->GetPMaterial( "particle/fire" );
 
@@ -976,13 +1010,15 @@ void C_SporeExplosion::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *p
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_SporeExplosion::AddParticles( void )
 {
 	// Don't create more spores if we're at our limit
 	if( !m_pSporeEffect )
+	{
 		return;
+	}
 
 	//Spores
 	Vector	offset;
@@ -991,16 +1027,18 @@ void C_SporeExplosion::AddParticles( void )
 	//Get our direction
 	AngleVectors( GetAbsAngles(), &dir );
 
-	SimpleParticle	*sParticle;
+	SimpleParticle*	sParticle;
 
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
 		//Add small particle to the effect's origin
 		offset.Random( -m_flSpawnRadius, m_flSpawnRadius );
-		sParticle = (SimpleParticle *) m_pSporeEffect->AddParticle( sizeof(SimpleParticle), m_hMaterial, GetAbsOrigin()+offset );
+		sParticle = ( SimpleParticle* ) m_pSporeEffect->AddParticle( sizeof( SimpleParticle ), m_hMaterial, GetAbsOrigin() + offset );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
+		}
 
 		sParticle->m_flLifetime		= 0.0f;
 		sParticle->m_flDieTime		= 2.0f;
@@ -1020,11 +1058,13 @@ void C_SporeExplosion::AddParticles( void )
 	}
 
 	//Add smokey bits
-	offset.Random( -(m_flSpawnRadius * 0.5), (m_flSpawnRadius * 0.5) );
-	sParticle = (SimpleParticle *) m_pSporeEffect->AddParticle( sizeof(SimpleParticle), g_Mat_DustPuff[1], GetAbsOrigin()+offset );
+	offset.Random( -( m_flSpawnRadius * 0.5 ), ( m_flSpawnRadius * 0.5 ) );
+	sParticle = ( SimpleParticle* ) m_pSporeEffect->AddParticle( sizeof( SimpleParticle ), g_Mat_DustPuff[1], GetAbsOrigin() + offset );
 
-	if ( sParticle == NULL )
+	if( sParticle == NULL )
+	{
 		return;
+	}
 
 	sParticle->m_flLifetime		= 0.0f;
 	sParticle->m_flDieTime		= 1.0f;
@@ -1046,8 +1086,8 @@ void C_SporeExplosion::AddParticles( void )
 
 ConVar cl_sporeclipdistance( "cl_sporeclipdistance", "512", FCVAR_CHEAT | FCVAR_CLIENTDLL );
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_SporeExplosion::Update( float fTimeDelta )
 {
@@ -1055,12 +1095,12 @@ void C_SporeExplosion::Update( float fTimeDelta )
 	{
 		float tempDelta = fTimeDelta;
 
-		float flDist = (MainViewOrigin() - GetAbsOrigin()).Length();
+		float flDist = ( MainViewOrigin() - GetAbsOrigin() ).Length();
 
 		//Lower the spawnrate by half if we're far away from it.
-		if ( cl_sporeclipdistance.GetFloat() <= flDist )
+		if( cl_sporeclipdistance.GetFloat() <= flDist )
 		{
-			if ( m_flSpawnRate == m_flPreviousSpawnRate )
+			if( m_flSpawnRate == m_flPreviousSpawnRate )
 			{
 				m_flPreviousSpawnRate = m_flSpawnRate * 0.5f;
 				m_teParticleSpawn.ResetRate( m_flPreviousSpawnRate );
@@ -1068,14 +1108,14 @@ void C_SporeExplosion::Update( float fTimeDelta )
 		}
 		else
 		{
-			if ( m_flSpawnRate != m_flPreviousSpawnRate )
+			if( m_flSpawnRate != m_flPreviousSpawnRate )
 			{
 				m_flPreviousSpawnRate = m_flSpawnRate;
 				m_teParticleSpawn.ResetRate( m_flPreviousSpawnRate );
 			}
 		}
 
-		while ( m_teParticleSpawn.NextEvent( tempDelta ) )
+		while( m_teParticleSpawn.NextEvent( tempDelta ) )
 		{
 			AddParticles();
 		}
@@ -1083,45 +1123,45 @@ void C_SporeExplosion::Update( float fTimeDelta )
 }
 
 
-void C_SporeExplosion::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_SporeExplosion::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
-	StandardParticle_t *pParticle = (StandardParticle_t*)pIterator->GetFirst();
-	while ( pParticle )
+	StandardParticle_t* pParticle = ( StandardParticle_t* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		pParticle->m_Lifetime += pIterator->GetTimeDelta();
-		
+
 		if( pParticle->m_Lifetime > m_flParticleLifetime )
 		{
 			pIterator->RemoveParticle( pParticle );
 		}
 
-		pParticle = (StandardParticle_t*)pIterator->GetNext();
+		pParticle = ( StandardParticle_t* )pIterator->GetNext();
 	}
 }
 
-void C_SporeExplosion::RenderParticles( CParticleRenderIterator *pIterator )
+void C_SporeExplosion::RenderParticles( CParticleRenderIterator* pIterator )
 {
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void RPGShotDownCallback( const CEffectData &data )
+void RPGShotDownCallback( const CEffectData& data )
 {
 	CLocalPlayerFilter filter;
 	C_BaseEntity::EmitSound( filter, SOUND_FROM_WORLD, "Missile.ShotDown", &data.m_vOrigin );
 
-	if ( CExplosionOverlay *pOverlay = new CExplosionOverlay )
+	if( CExplosionOverlay* pOverlay = new CExplosionOverlay )
 	{
 		pOverlay->m_flLifetime	= 0;
 		pOverlay->m_vPos		= data.m_vOrigin;
 		pOverlay->m_nSprites	= 1;
-		
+
 		pOverlay->m_vBaseColors[0].Init( 1.0f, 0.9f, 0.7f );
 
 		pOverlay->m_Sprites[0].m_flHorzSize = 0.01f;
-		pOverlay->m_Sprites[0].m_flVertSize = pOverlay->m_Sprites[0].m_flHorzSize*0.5f;
+		pOverlay->m_Sprites[0].m_flVertSize = pOverlay->m_Sprites[0].m_flHorzSize * 0.5f;
 
 		pOverlay->Activate();
 	}
@@ -1140,7 +1180,7 @@ class C_SporeTrail : public C_BaseParticleEntity
 public:
 	DECLARE_CLASS( C_SporeTrail, C_BaseParticleEntity );
 	DECLARE_CLIENTCLASS();
-	
+
 	C_SporeTrail( void );
 	virtual	~C_SporeTrail( void );
 
@@ -1151,18 +1191,18 @@ public:
 // C_BaseEntity
 public:
 	virtual	void	OnDataChanged( DataUpdateType_t updateType );
-	virtual void	GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles );
+	virtual void	GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles );
 
 // IPrototypeAppEffect
 public:
-	virtual void	Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs );
+	virtual void	Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs );
 
 // IParticleEffect
 public:
 	virtual void	Update( float fTimeDelta );
-	virtual void RenderParticles( CParticleRenderIterator *pIterator );
-	virtual void SimulateParticles( CParticleSimulateIterator *pIterator );
-	virtual void	StartRender( VMatrix &effectMatrix );
+	virtual void RenderParticles( CParticleRenderIterator* pIterator );
+	virtual void SimulateParticles( CParticleSimulateIterator* pIterator );
+	virtual void	StartRender( VMatrix& effectMatrix );
 
 public:
 	Vector	m_vecEndColor;
@@ -1178,7 +1218,7 @@ public:
 	bool	m_bEmit;
 
 private:
-	C_SporeTrail( const C_SporeTrail & );
+	C_SporeTrail( const C_SporeTrail& );
 
 	void			AddParticles( void );
 
@@ -1188,10 +1228,10 @@ private:
 
 	Vector			m_vecPos;
 	Vector			m_vecLastPos;	// This is stored so we can spawn particles in between the previous and new position
-									// to eliminate holes in the trail.
+	// to eliminate holes in the trail.
 
 	VMatrix			m_mAttachmentMatrix;
-	CParticleMgr		*m_pParticleMgr;
+	CParticleMgr*		m_pParticleMgr;
 };
 
 
@@ -1201,16 +1241,16 @@ private:
 //==================================================
 
 IMPLEMENT_CLIENTCLASS_DT( C_SporeTrail, DT_SporeTrail, SporeTrail )
-	RecvPropFloat(RECVINFO(m_flSpawnRate)),
-	RecvPropVector(RECVINFO(m_vecEndColor)),
-	RecvPropFloat(RECVINFO(m_flParticleLifetime)),
-	RecvPropFloat(RECVINFO(m_flStartSize)),
-	RecvPropFloat(RECVINFO(m_flEndSize)),
-	RecvPropFloat(RECVINFO(m_flSpawnRadius)),
-	RecvPropInt(RECVINFO(m_bEmit)),
-END_RECV_TABLE()
+RecvPropFloat( RECVINFO( m_flSpawnRate ) ),
+			   RecvPropVector( RECVINFO( m_vecEndColor ) ),
+			   RecvPropFloat( RECVINFO( m_flParticleLifetime ) ),
+			   RecvPropFloat( RECVINFO( m_flStartSize ) ),
+			   RecvPropFloat( RECVINFO( m_flEndSize ) ),
+			   RecvPropFloat( RECVINFO( m_flSpawnRadius ) ),
+			   RecvPropInt( RECVINFO( m_bEmit ) ),
+			   END_RECV_TABLE()
 
-C_SporeTrail::C_SporeTrail( void )
+			   C_SporeTrail::C_SporeTrail( void )
 {
 	m_pParticleMgr			= NULL;
 	//m_pSmokeEffect			= SporeSmokeEffect::Create( "C_SporeTrail" );
@@ -1239,8 +1279,8 @@ C_SporeTrail::~C_SporeTrail()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bEmit - 
+// Purpose:
+// Input  : bEmit -
 //-----------------------------------------------------------------------------
 void C_SporeTrail::SetEmit( bool bEmit )
 {
@@ -1248,14 +1288,14 @@ void C_SporeTrail::SetEmit( bool bEmit )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
 void C_SporeTrail::OnDataChanged( DataUpdateType_t updateType )
 {
 	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
 	}
@@ -1263,14 +1303,16 @@ void C_SporeTrail::OnDataChanged( DataUpdateType_t updateType )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_SporeTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_SporeTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
 	if( pParticleMgr->AddEffect( &m_ParticleEffect, this ) == false )
+	{
 		return;
+	}
 
 	m_hMaterial	= g_Mat_DustPuff[1];
 	m_pParticleMgr = pParticleMgr;
@@ -1278,17 +1320,19 @@ void C_SporeTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_SporeTrail::AddParticles( void )
 {
 	Vector	offset = RandomVector( -4.0f, 4.0f );
 
 	//Make a new particle
-	SimpleParticle *sParticle = (SimpleParticle *) m_ParticleEffect.AddParticle( sizeof(SimpleParticle), m_hMaterial );//m_pSmokeEffect->AddParticle( sizeof(SimpleParticle), m_hMaterial, GetAbsOrigin()+offset );
+	SimpleParticle* sParticle = ( SimpleParticle* ) m_ParticleEffect.AddParticle( sizeof( SimpleParticle ), m_hMaterial ); //m_pSmokeEffect->AddParticle( sizeof(SimpleParticle), m_hMaterial, GetAbsOrigin()+offset );
 
-	if ( sParticle == NULL )
+	if( sParticle == NULL )
+	{
 		return;
+	}
 
 	sParticle->m_Pos			= offset;
 	sParticle->m_flRoll			= Helper_RandomInt( 0, 360 );
@@ -1305,25 +1349,27 @@ void C_SporeTrail::AddParticles( void )
 
 	sParticle->m_uchStartSize	= 1.0f;
 	sParticle->m_uchEndSize		= 1.0f;
-	
+
 	sParticle->m_vecVelocity	= RandomVector( -8.0f, 8.0f );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_SporeTrail::Update( float fTimeDelta )
 {
-	if ( m_pParticleMgr == NULL )
+	if( m_pParticleMgr == NULL )
+	{
 		return;
+	}
 
 	//Add new particles
-	if ( m_bEmit )
+	if( m_bEmit )
 	{
 		float tempDelta = fTimeDelta;
-		
-		while ( m_teParticleSpawn.NextEvent( tempDelta ) )
+
+		while( m_teParticleSpawn.NextEvent( tempDelta ) )
 		{
 			AddParticles();
 		}
@@ -1331,21 +1377,23 @@ void C_SporeTrail::Update( float fTimeDelta )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &effectMatrix - 
+// Purpose:
+// Input  : &effectMatrix -
 //-----------------------------------------------------------------------------
-void C_SporeTrail::StartRender( VMatrix &effectMatrix )
+void C_SporeTrail::StartRender( VMatrix& effectMatrix )
 {
 	effectMatrix = effectMatrix * m_mAttachmentMatrix;
 }
 
-void C_SporeTrail::RenderParticles( CParticleRenderIterator *pIterator )
+void C_SporeTrail::RenderParticles( CParticleRenderIterator* pIterator )
 {
-	if ( m_bEmit == false )
+	if( m_bEmit == false )
+	{
 		return;
+	}
 
-	const SimpleParticle *pParticle = (const SimpleParticle*)pIterator->GetFirst();
-	while ( pParticle )
+	const SimpleParticle* pParticle = ( const SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		//Render
 		Vector	tPos;
@@ -1362,18 +1410,20 @@ void C_SporeTrail::RenderParticles( CParticleRenderIterator *pIterator )
 			1.0f,
 			4 );
 
-		pParticle = (const SimpleParticle*)pIterator->GetNext( sortKey );
+		pParticle = ( const SimpleParticle* )pIterator->GetNext( sortKey );
 	}
 }
 
 
-void C_SporeTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_SporeTrail::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
-	if ( m_bEmit == false )
+	if( m_bEmit == false )
+	{
 		return;
+	}
 
-	SimpleParticle *pParticle = (SimpleParticle*)pIterator->GetFirst();
-	while ( pParticle )
+	SimpleParticle* pParticle = ( SimpleParticle* )pIterator->GetFirst();
+	while( pParticle )
 	{
 		//UpdateVelocity( pParticle, timeDelta );
 		pParticle->m_Pos += pParticle->m_vecVelocity * pIterator->GetTimeDelta();
@@ -1381,23 +1431,23 @@ void C_SporeTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
 		//Should this particle die?
 		pParticle->m_flLifetime += pIterator->GetTimeDelta();
 
-		if ( pParticle->m_flLifetime >= pParticle->m_flDieTime )
+		if( pParticle->m_flLifetime >= pParticle->m_flDieTime )
 		{
 			pIterator->RemoveParticle( pParticle );
 		}
 
-		pParticle = (SimpleParticle*)pIterator->GetNext();
+		pParticle = ( SimpleParticle* )pIterator->GetNext();
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_SporeTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles )
+void C_SporeTrail::GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles )
 {
-	C_BaseEntity *pEnt = pAttachedTo->GetBaseEntity();
-	
+	C_BaseEntity* pEnt = pAttachedTo->GetBaseEntity();
+
 	pEnt->GetAttachment( 1, *pAbsOrigin, *pAbsAngles );
 
 	matrix3x4_t	matrix;
@@ -1412,9 +1462,9 @@ void C_SporeTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrig
 //==================================================
 
 // Datatable.. this can have all the smoketrail parameters when we need it to.
-IMPLEMENT_CLIENTCLASS_DT(C_FireTrail, DT_FireTrail, CFireTrail)
-	RecvPropInt(RECVINFO(m_nAttachment)),	
-	RecvPropFloat(RECVINFO(m_flLifetime)),
+IMPLEMENT_CLIENTCLASS_DT( C_FireTrail, DT_FireTrail, CFireTrail )
+RecvPropInt( RECVINFO( m_nAttachment ) ),
+RecvPropFloat( RECVINFO( m_flLifetime ) ),
 END_RECV_TABLE()
 
 // ------------------------------------------------------------------------- //
@@ -1425,24 +1475,24 @@ C_FireTrail::C_FireTrail()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_FireTrail::~C_FireTrail( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_FireTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_FireTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
 	BaseClass::Start( pParticleMgr, pArgs );
 
 	m_pTrailEmitter = CSimpleEmitter::Create( "FireTrail" );
-	
-	if ( !m_pTrailEmitter )
+
+	if( !m_pTrailEmitter )
 	{
 		Assert( false );
 		return;
@@ -1453,7 +1503,7 @@ void C_FireTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs 
 	// Setup our materials
 	m_hMaterial[FTRAIL_SMOKE1] = g_Mat_DustPuff[0];
 	m_hMaterial[FTRAIL_SMOKE2] = g_Mat_DustPuff[1];
-	
+
 	m_hMaterial[FTRAIL_FLAME1] = m_pTrailEmitter->GetPMaterial( "sprites/flamelet1" );
 	m_hMaterial[FTRAIL_FLAME2] = m_pTrailEmitter->GetPMaterial( "sprites/flamelet2" );
 	m_hMaterial[FTRAIL_FLAME3] = m_pTrailEmitter->GetPMaterial( "sprites/flamelet3" );
@@ -1462,11 +1512,11 @@ void C_FireTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs 
 
 	// Setup our smoke emitter
 	m_pSmokeEmitter = CSmokeParticle::Create( "FireTrail_Smoke" );
-	
+
 	m_pSmokeEmitter->SetSortOrigin( GetAbsOrigin() );
 	m_pSmokeEmitter->SetNearClip( 64.0f, 128.0f );
 
-	if ( !m_pSmokeEmitter )
+	if( !m_pSmokeEmitter )
 	{
 		Assert( false );
 		return;
@@ -1478,20 +1528,24 @@ void C_FireTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_FireTrail::Update( float fTimeDelta )
 {
-	if ( !m_pTrailEmitter )
+	if( !m_pTrailEmitter )
+	{
 		return;
+	}
 
-	if ( ( m_flLifetime != 0 ) && ( m_flLifetime <= gpGlobals->curtime ) )
+	if( ( m_flLifetime != 0 ) && ( m_flLifetime <= gpGlobals->curtime ) )
+	{
 		return;
+	}
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "FireTrail" );
 	pSimple->SetSortOrigin( GetAbsOrigin() );
-	
+
 
 #define	STARTSIZE			8
 #define	ENDSIZE				16
@@ -1510,20 +1564,20 @@ void C_FireTrail::Update( float fTimeDelta )
 		//FIXME: More rational cap here, perhaps
 		numPuffs = clamp( numPuffs, 1, 32 );
 
-		SimpleParticle	*pParticle;
+		SimpleParticle*	pParticle;
 		Vector			offsetColor;
 		float			step = moveLength / numPuffs;
 
 		//Fill in the gaps
-		for ( int i = 1; i < numPuffs+1; i++ )
+		for( int i = 1; i < numPuffs + 1; i++ )
 		{
 			Vector offset = m_vecLastPosition + ( moveDiff * step * i ) + RandomVector( -4.0f, 4.0f );
 
 			//debugoverlay->AddBoxOverlay( offset, -Vector(2,2,2), Vector(2,2,2), vec3_angle, i*4, i*4, i*4, true, 1.0f );
-			
-			pParticle = (SimpleParticle *) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_hMaterial[random->RandomInt( FTRAIL_FLAME1,FTRAIL_FLAME5 )], offset );
 
-			if ( pParticle != NULL )
+			pParticle = ( SimpleParticle* ) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_hMaterial[random->RandomInt( FTRAIL_FLAME1, FTRAIL_FLAME5 )], offset );
+
+			if( pParticle != NULL )
 			{
 				pParticle->m_flLifetime		= 0.0f;
 				pParticle->m_flDieTime		= /*PARTICLE_LIFETIME*/ 0.5f;// + random->RandomFloat(PARTICLE_LIFETIME*0.75f, PARTICLE_LIFETIME*1.25f);
@@ -1531,17 +1585,17 @@ void C_FireTrail::Update( float fTimeDelta )
 				pParticle->m_vecVelocity.Random( 0.0f, 1.0f );
 				pParticle->m_vecVelocity *= random->RandomFloat( MIN_SPEED, MAX_SPEED );
 				pParticle->m_vecVelocity[2] += 50;//random->RandomFloat( 32, 64 );
-				
+
 				pParticle->m_uchColor[0]	= 255.0f;
 				pParticle->m_uchColor[1]	= 255.0f;
 				pParticle->m_uchColor[2]	= 255.0f;
-				
+
 				pParticle->m_uchStartSize	= STARTSIZE * 2.0f;
 				pParticle->m_uchEndSize		= STARTSIZE * 0.5f;
-				
-				pParticle->m_uchStartAlpha	= 255; 
+
+				pParticle->m_uchStartAlpha	= 255;
 				pParticle->m_uchEndAlpha	= 0;
-				
+
 				pParticle->m_flRoll			= 0.0f;//random->RandomInt( 0, 360 );
 				pParticle->m_flRollDelta	= random->RandomFloat( -16.0f, 16.0f );
 			}
@@ -1551,29 +1605,29 @@ void C_FireTrail::Update( float fTimeDelta )
 		// Smoke
 		//
 
-		Vector offset = RandomVector( -STARTSIZE*0.5f, STARTSIZE*0.5f ) + GetAbsOrigin();
+		Vector offset = RandomVector( -STARTSIZE * 0.5f, STARTSIZE * 0.5f ) + GetAbsOrigin();
 
-		pParticle = (SimpleParticle *) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_hMaterial[random->RandomInt( FTRAIL_SMOKE1, FTRAIL_SMOKE2 )], offset );
+		pParticle = ( SimpleParticle* ) m_pSmokeEmitter->AddParticle( sizeof( SimpleParticle ), m_hMaterial[random->RandomInt( FTRAIL_SMOKE1, FTRAIL_SMOKE2 )], offset );
 
-		if ( pParticle != NULL )
+		if( pParticle != NULL )
 		{
 			pParticle->m_flLifetime		= 0.0f;
-			pParticle->m_flDieTime		= ( PARTICLE_LIFETIME * 10.0f ) + random->RandomFloat(PARTICLE_LIFETIME*0.75f, PARTICLE_LIFETIME*1.25f);
+			pParticle->m_flDieTime		= ( PARTICLE_LIFETIME * 10.0f ) + random->RandomFloat( PARTICLE_LIFETIME * 0.75f, PARTICLE_LIFETIME * 1.25f );
 
 			pParticle->m_vecVelocity.Random( 0.0f, 1.0f );
 			pParticle->m_vecVelocity *= random->RandomFloat( MIN_SPEED, MAX_SPEED );
 			pParticle->m_vecVelocity[2] += random->RandomFloat( 50, 100 );
-			
+
 			pParticle->m_uchColor[0]	= 255.0f * 0.5f;
 			pParticle->m_uchColor[1]	= 245.0f * 0.5f;
 			pParticle->m_uchColor[2]	= 205.0f * 0.5f;
-			
+
 			pParticle->m_uchStartSize	= 16 * random->RandomFloat( 0.75f, 1.25f );
 			pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2.5f;
-			
-			pParticle->m_uchStartAlpha	= 64; 
+
+			pParticle->m_uchStartAlpha	= 64;
 			pParticle->m_uchEndAlpha	= 0;
-			
+
 			pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 			pParticle->m_flRollDelta	= random->RandomFloat( -16.0f, 16.0f );
 		}
@@ -1591,72 +1645,72 @@ void C_FireTrail::Update( float fTimeDelta )
 class CDustFollower : public CSimpleEmitter
 {
 public:
-	
-	CDustFollower( const char *pDebugName ) : CSimpleEmitter( pDebugName ) {}
-	
+
+	CDustFollower( const char* pDebugName ) : CSimpleEmitter( pDebugName ) {}
+
 	//Create
-	static CDustFollower *Create( const char *pDebugName )
+	static CDustFollower* Create( const char* pDebugName )
 	{
 		return new CDustFollower( pDebugName );
 	}
 
 	//Alpha
-	virtual float UpdateAlpha( const SimpleParticle *pParticle )
+	virtual float UpdateAlpha( const SimpleParticle* pParticle )
 	{
-		return ( ((float)pParticle->m_uchStartAlpha/255.0f) * sin( M_PI * (pParticle->m_flLifetime / pParticle->m_flDieTime) ) );
+		return ( ( ( float )pParticle->m_uchStartAlpha / 255.0f ) * sin( M_PI * ( pParticle->m_flLifetime / pParticle->m_flDieTime ) ) );
 	}
 
-	virtual	void	UpdateVelocity( SimpleParticle *pParticle, float timeDelta )
+	virtual	void	UpdateVelocity( SimpleParticle* pParticle, float timeDelta )
 	{
 		pParticle->m_vecVelocity = pParticle->m_vecVelocity * ExponentialDecay( 0.3, timeDelta );
 	}
 
 	//Roll
-	virtual	float UpdateRoll( SimpleParticle *pParticle, float timeDelta )
+	virtual	float UpdateRoll( SimpleParticle* pParticle, float timeDelta )
 	{
 		pParticle->m_flRoll += pParticle->m_flRollDelta * timeDelta;
-		
+
 		pParticle->m_flRollDelta *= ExponentialDecay( 0.5, timeDelta );
 
 		return pParticle->m_flRoll;
 	}
 
 private:
-	CDustFollower( const CDustFollower & );
+	CDustFollower( const CDustFollower& );
 };
 
 
 // Datatable.. this can have all the smoketrail parameters when we need it to.
-IMPLEMENT_CLIENTCLASS_DT(C_DustTrail, DT_DustTrail, DustTrail)
-	RecvPropFloat(RECVINFO(m_SpawnRate)),
-	RecvPropVector(RECVINFO(m_Color)),
-	RecvPropFloat(RECVINFO(m_ParticleLifetime)),
-	RecvPropFloat(RECVINFO(m_StopEmitTime)),
-	RecvPropFloat(RECVINFO(m_MinSpeed)),
-	RecvPropFloat(RECVINFO(m_MaxSpeed)),
-	RecvPropFloat(RECVINFO(m_MinDirectedSpeed)),
-	RecvPropFloat(RECVINFO(m_MaxDirectedSpeed)),
-	RecvPropFloat(RECVINFO(m_StartSize)),
-	RecvPropFloat(RECVINFO(m_EndSize)),
-	RecvPropFloat(RECVINFO(m_SpawnRadius)),
-	RecvPropInt(RECVINFO(m_bEmit)),
-	RecvPropFloat(RECVINFO(m_Opacity)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_DustTrail, DT_DustTrail, DustTrail )
+RecvPropFloat( RECVINFO( m_SpawnRate ) ),
+			   RecvPropVector( RECVINFO( m_Color ) ),
+			   RecvPropFloat( RECVINFO( m_ParticleLifetime ) ),
+			   RecvPropFloat( RECVINFO( m_StopEmitTime ) ),
+			   RecvPropFloat( RECVINFO( m_MinSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MaxSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MinDirectedSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_MaxDirectedSpeed ) ),
+			   RecvPropFloat( RECVINFO( m_StartSize ) ),
+			   RecvPropFloat( RECVINFO( m_EndSize ) ),
+			   RecvPropFloat( RECVINFO( m_SpawnRadius ) ),
+			   RecvPropInt( RECVINFO( m_bEmit ) ),
+			   RecvPropFloat( RECVINFO( m_Opacity ) ),
+			   END_RECV_TABLE()
 
 
 // ------------------------------------------------------------------------- //
 // ParticleMovieExplosion
 // ------------------------------------------------------------------------- //
-C_DustTrail::C_DustTrail()
+			   C_DustTrail::C_DustTrail()
 {
-	for (int i = 0; i < DUSTTRAIL_MATERIALS; i++)
+	for( int i = 0; i < DUSTTRAIL_MATERIALS; i++ )
 	{
-        m_MaterialHandle[i] = NULL;
+		m_MaterialHandle[i] = NULL;
 	}
 
 	m_SpawnRate = 10;
-	m_ParticleSpawn.Init(10);
-	m_Color.Init(0.5, 0.5, 0.5);
+	m_ParticleSpawn.Init( 10 );
+	m_Color.Init( 0.5, 0.5, 0.5 );
 	m_ParticleLifetime = 5;
 	m_StartEmitTime = gpGlobals->curtime;
 	m_StopEmitTime = 0;	// No end time
@@ -1677,9 +1731,9 @@ C_DustTrail::C_DustTrail()
 
 C_DustTrail::~C_DustTrail()
 {
-	if ( ToolsEnabled() && clienttools->IsInRecordingMode() && m_pDustEmitter.IsValid() && m_pDustEmitter->GetToolParticleEffectId() != TOOLPARTICLESYSTEMID_INVALID )
+	if( ToolsEnabled() && clienttools->IsInRecordingMode() && m_pDustEmitter.IsValid() && m_pDustEmitter->GetToolParticleEffectId() != TOOLPARTICLESYSTEMID_INVALID )
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
 		msg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", false );
@@ -1688,40 +1742,40 @@ C_DustTrail::~C_DustTrail()
 		msg->deleteThis();
 	}
 
-	if ( m_pParticleMgr )
+	if( m_pParticleMgr )
 	{
 		m_pParticleMgr->RemoveEffect( &m_ParticleEffect );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bEmit - 
+// Purpose:
+// Input  : bEmit -
 //-----------------------------------------------------------------------------
-void C_DustTrail::SetEmit(bool bEmit)
+void C_DustTrail::SetEmit( bool bEmit )
 {
 	m_bEmit = bEmit;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : rate - 
+// Purpose:
+// Input  : rate -
 //-----------------------------------------------------------------------------
-void C_DustTrail::SetSpawnRate(float rate)
+void C_DustTrail::SetSpawnRate( float rate )
 {
 	m_SpawnRate = rate;
-	m_ParticleSpawn.Init(rate);
+	m_ParticleSpawn.Init( rate );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bnewentity - 
+// Purpose:
+// Input  : bnewentity -
 //-----------------------------------------------------------------------------
-void C_DustTrail::OnDataChanged(DataUpdateType_t updateType)
+void C_DustTrail::OnDataChanged( DataUpdateType_t updateType )
 {
-	C_BaseEntity::OnDataChanged(updateType);
+	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
 	}
@@ -1752,19 +1806,21 @@ CLIENTEFFECT_REGISTER_END()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pParticleMgr - 
-//			*pArgs - 
+// Purpose:
+// Input  : *pParticleMgr -
+//			*pArgs -
 //-----------------------------------------------------------------------------
-void C_DustTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_DustTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
-	if(!pParticleMgr->AddEffect( &m_ParticleEffect, this ))
+	if( !pParticleMgr->AddEffect( &m_ParticleEffect, this ) )
+	{
 		return;
+	}
 
 	m_pParticleMgr	= pParticleMgr;
-	m_pDustEmitter = CDustFollower::Create("DustTrail");
-	
-	if ( !m_pDustEmitter )
+	m_pDustEmitter = CDustFollower::Create( "DustTrail" );
+
+	if( !m_pDustEmitter )
 	{
 		Assert( false );
 		return;
@@ -1773,38 +1829,44 @@ void C_DustTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs 
 	m_pDustEmitter->SetSortOrigin( GetAbsOrigin() );
 	m_pDustEmitter->SetNearClip( 64.0f, 128.0f );
 
-	for (int i = 0; i < DUSTTRAIL_MATERIALS; i++)
+	for( int i = 0; i < DUSTTRAIL_MATERIALS; i++ )
 	{
 		//char name[256];
 		//Q_snprintf( name, sizeof( name ), "particle/smokesprites_%04d", i + 1 );
 		m_MaterialHandle[i] = m_pDustEmitter->GetPMaterial( "particle/smokesprites_0001" );
 	}
-	
+
 	m_ParticleSpawn.Init( m_SpawnRate );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : fTimeDelta - 
+// Purpose:
+// Input  : fTimeDelta -
 //-----------------------------------------------------------------------------
 void C_DustTrail::Update( float fTimeDelta )
 {
-	if ( !m_pDustEmitter )
+	if( !m_pDustEmitter )
+	{
 		return;
+	}
 
 	Vector	offsetColor;
 
 	// Add new particles
-	if ( !m_bEmit )
+	if( !m_bEmit )
+	{
 		return;
+	}
 
-	if ( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	if( ( m_StopEmitTime != 0 ) && ( m_StopEmitTime <= gpGlobals->curtime ) )
+	{
 		return;
+	}
 
 	float tempDelta = fTimeDelta;
 
-	SimpleParticle	*pParticle;
+	SimpleParticle*	pParticle;
 	Vector			offset;
 
 	Vector vecOrigin;
@@ -1824,10 +1886,12 @@ void C_DustTrail::Update( float fTimeDelta )
 		//if ( random->RandomFloat( 0.f, 5.0f ) > GetAbsVelocity().Length())
 		//	continue;
 
-		pParticle = (SimpleParticle *) m_pDustEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt(0,0)], offset ); // FIXME: the other sprites look bad
+		pParticle = ( SimpleParticle* ) m_pDustEmitter->AddParticle( sizeof( SimpleParticle ), m_MaterialHandle[random->RandomInt( 0, 0 )], offset ); // FIXME: the other sprites look bad
 
-		if ( pParticle == NULL )
+		if( pParticle == NULL )
+		{
 			continue;
+		}
 
 		pParticle->m_flLifetime		= 0.0f;
 		pParticle->m_flDieTime		= m_ParticleLifetime;
@@ -1836,13 +1900,13 @@ void C_DustTrail::Update( float fTimeDelta )
 		pParticle->m_vecVelocity *= random->RandomFloat( m_MinSpeed, m_MaxSpeed );
 
 		pParticle->m_vecVelocity = pParticle->m_vecVelocity + GetAbsVelocity();
-		
+
 		float flDirectedVel = random->RandomFloat( m_MinDirectedSpeed, m_MaxDirectedSpeed );
 		VectorMA( pParticle->m_vecVelocity, flDirectedVel, vecForward, pParticle->m_vecVelocity );
 
 		offsetColor = m_Color;
 		float flMaxVal = MAX( m_Color[0], m_Color[1] );
-		if ( flMaxVal < m_Color[2] )
+		if( flMaxVal < m_Color[2] )
 		{
 			flMaxVal = m_Color[2];
 		}
@@ -1855,36 +1919,36 @@ void C_DustTrail::Update( float fTimeDelta )
 		offsetColor[1] = clamp( offsetColor[1], 0.0f, 1.0f );
 		offsetColor[2] = clamp( offsetColor[2], 0.0f, 1.0f );
 
-		pParticle->m_uchColor[0]	= offsetColor[0]*255.0f;
-		pParticle->m_uchColor[1]	= offsetColor[1]*255.0f;
-		pParticle->m_uchColor[2]	= offsetColor[2]*255.0f;
-		
+		pParticle->m_uchColor[0]	= offsetColor[0] * 255.0f;
+		pParticle->m_uchColor[1]	= offsetColor[1] * 255.0f;
+		pParticle->m_uchColor[2]	= offsetColor[2] * 255.0f;
+
 		pParticle->m_uchStartSize	= m_StartSize;
 		pParticle->m_uchEndSize		= m_EndSize;
-		
-		float alpha = random->RandomFloat( m_Opacity*0.75f, m_Opacity*1.25f );
+
+		float alpha = random->RandomFloat( m_Opacity * 0.75f, m_Opacity * 1.25f );
 		alpha = clamp( alpha, 0.0f, 1.0f );
 
-		if ( m_StopEmitTime != 0 && m_StopEmitTime > m_StartEmitTime )
+		if( m_StopEmitTime != 0 && m_StopEmitTime > m_StartEmitTime )
 		{
-			alpha *= sqrt( (m_StopEmitTime - gpGlobals->curtime) /(m_StopEmitTime - m_StartEmitTime) );
+			alpha *= sqrt( ( m_StopEmitTime - gpGlobals->curtime ) / ( m_StopEmitTime - m_StartEmitTime ) );
 		}
 
-		pParticle->m_uchStartAlpha	= alpha * 255; 
+		pParticle->m_uchStartAlpha	= alpha * 255;
 		pParticle->m_uchEndAlpha	= 0;
-			
+
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
-    }
+	}
 }
 
 
-void C_DustTrail::RenderParticles( CParticleRenderIterator *pIterator )
+void C_DustTrail::RenderParticles( CParticleRenderIterator* pIterator )
 {
 }
 
 
-void C_DustTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
+void C_DustTrail::SimulateParticles( CParticleSimulateIterator* pIterator )
 {
 }
 
@@ -1893,10 +1957,12 @@ void C_DustTrail::SimulateParticles( CParticleSimulateIterator *pIterator )
 // This is called after sending this entity's recording state
 //-----------------------------------------------------------------------------
 
-void C_DustTrail::CleanupToolRecordingState( KeyValues *msg_ )
+void C_DustTrail::CleanupToolRecordingState( KeyValues* msg_ )
 {
-	if ( !ToolsEnabled() )
+	if( !ToolsEnabled() )
+	{
 		return;
+	}
 
 	BaseClass::CleanupToolRecordingState( msg_ );
 
@@ -1904,74 +1970,78 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg_ )
 	// allocated state it put into the message, but here we're going
 	// to use it to send particle system messages because we
 	// know the grenade has been recorded at this point
-	if ( !clienttools->IsInRecordingMode() || !m_pDustEmitter.IsValid() )
+	if( !clienttools->IsInRecordingMode() || !m_pDustEmitter.IsValid() )
+	{
 		return;
-	
+	}
+
 	// For now, we can't record Dusttrails that don't have a moveparent
-	C_BaseEntity *pEnt = GetMoveParent();
-	if ( !pEnt )
+	C_BaseEntity* pEnt = GetMoveParent();
+	if( !pEnt )
+	{
 		return;
+	}
 
 	bool bEmitterActive = m_bEmit && ( ( m_StopEmitTime == 0 ) || ( m_StopEmitTime > gpGlobals->curtime ) );
 
 	// NOTE: Particle system destruction message will be sent by the particle effect itself.
-	if ( m_pDustEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
+	if( m_pDustEmitter->GetToolParticleEffectId() == TOOLPARTICLESYSTEMID_INVALID )
 	{
 		int nId = m_pDustEmitter->AllocateToolParticleEffectId();
 
-		KeyValues *msg = new KeyValues( "OldParticleSystem_Create" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_Create" );
 		msg->SetString( "name", "C_DustTrail" );
 		msg->SetInt( "id", nId );
 		msg->SetFloat( "time", gpGlobals->curtime );
 
-		KeyValues *pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
+		KeyValues* pEmitter = msg->FindKey( "DmeSpriteEmitter", true );
 		pEmitter->SetString( "material", "particle/smokesprites_0001" );
 		pEmitter->SetInt( "count", m_SpawnRate );	// particles per second, when duration is < 0
 		pEmitter->SetFloat( "duration", -1 ); // FIXME
 		pEmitter->SetInt( "active", bEmitterActive );
 
-		KeyValues *pInitializers = pEmitter->FindKey( "initializers", true );
+		KeyValues* pInitializers = pEmitter->FindKey( "initializers", true );
 
 		// FIXME: Until we can interpolate ent logs during emission, this can't work
-		KeyValues *pPosition = pInitializers->FindKey( "DmePositionPointToEntityInitializer", true );
-		pPosition->SetPtr( "entindex", (void*)pEnt->entindex() );
+		KeyValues* pPosition = pInitializers->FindKey( "DmePositionPointToEntityInitializer", true );
+		pPosition->SetPtr( "entindex", ( void* )pEnt->entindex() );
 		pPosition->SetInt( "attachmentIndex", GetParentAttachment() );
 		pPosition->SetFloat( "randomDist", m_SpawnRadius );
 		pPosition->SetFloat( "startx", pEnt->GetAbsOrigin().x );
 		pPosition->SetFloat( "starty", pEnt->GetAbsOrigin().y );
 		pPosition->SetFloat( "startz", pEnt->GetAbsOrigin().z );
 
-		KeyValues *pVelocity = pInitializers->FindKey( "DmeDecayVelocityInitializer", true );
+		KeyValues* pVelocity = pInitializers->FindKey( "DmeDecayVelocityInitializer", true );
 		pVelocity->SetFloat( "velocityX", pEnt->GetAbsVelocity().x );
 		pVelocity->SetFloat( "velocityY", pEnt->GetAbsVelocity().y );
 		pVelocity->SetFloat( "velocityZ", pEnt->GetAbsVelocity().z );
 		pVelocity->SetFloat( "decayto", 0.5 );
 		pVelocity->SetFloat( "decaytime", 0.3 );
 
-		KeyValues *pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
+		KeyValues* pLifetime = pInitializers->FindKey( "DmeRandomLifetimeInitializer", true );
 		pLifetime->SetFloat( "minLifetime", m_ParticleLifetime );
- 		pLifetime->SetFloat( "maxLifetime", m_ParticleLifetime );
+		pLifetime->SetFloat( "maxLifetime", m_ParticleLifetime );
 
-		KeyValues *pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
+		KeyValues* pRoll = pInitializers->FindKey( "DmeRandomRollInitializer", true );
 		pRoll->SetFloat( "minRoll", 0.0f );
- 		pRoll->SetFloat( "maxRoll", 360.0f );
+		pRoll->SetFloat( "maxRoll", 360.0f );
 
-		KeyValues *pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
+		KeyValues* pRollSpeed = pInitializers->FindKey( "DmeRandomRollSpeedInitializer", true );
 		pRollSpeed->SetFloat( "minRollSpeed", -1.0f );
- 		pRollSpeed->SetFloat( "maxRollSpeed", 1.0f );
+		pRollSpeed->SetFloat( "maxRollSpeed", 1.0f );
 
-		KeyValues *pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
-		Color c( 
+		KeyValues* pColor = pInitializers->FindKey( "DmeRandomValueColorInitializer", true );
+		Color c(
 			FastFToC( clamp( m_Color.x, 0.f, 1.f ) ),
 			FastFToC( clamp( m_Color.y, 0.f, 1.f ) ),
 			FastFToC( clamp( m_Color.z, 0.f, 1.f ) ),
 			255 );
 		pColor->SetColor( "startColor", c );
 		pColor->SetFloat( "minStartValueDelta", 0.0f );
- 		pColor->SetFloat( "maxStartValueDelta", 0.0f );
+		pColor->SetFloat( "maxStartValueDelta", 0.0f );
 		pColor->SetColor( "endColor", c );
 
-		KeyValues *pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
+		KeyValues* pAlpha = pInitializers->FindKey( "DmeRandomAlphaInitializer", true );
 		int nMinAlpha = 255 * m_Opacity * 0.75f;
 		int nMaxAlpha = 255 * m_Opacity * 1.25f;
 		pAlpha->SetInt( "minStartAlpha", clamp( nMinAlpha, 0, 255 ) );
@@ -1979,17 +2049,17 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg_ )
 		pAlpha->SetInt( "minEndAlpha", clamp( nMinAlpha, 0, 255 ) );
 		pAlpha->SetInt( "maxEndAlpha", clamp( nMaxAlpha, 0, 255 ) );
 
-		KeyValues *pSize = pInitializers->FindKey( "DmeRandomSizeInitializer", true );
+		KeyValues* pSize = pInitializers->FindKey( "DmeRandomSizeInitializer", true );
 		pSize->SetFloat( "minStartSize", m_StartSize );
 		pSize->SetFloat( "maxStartSize", m_StartSize );
 		pSize->SetFloat( "minEndSize", m_EndSize );
 		pSize->SetFloat( "maxEndSize", m_EndSize );
 
-		KeyValues *pUpdaters = pEmitter->FindKey( "updaters", true );
+		KeyValues* pUpdaters = pEmitter->FindKey( "updaters", true );
 		pUpdaters->FindKey( "DmePositionVelocityDecayUpdater", true );
 		pUpdaters->FindKey( "DmeRollUpdater", true );
 
-		KeyValues *pRollSpeedUpdater = pUpdaters->FindKey( "DmeRollSpeedAttenuateUpdater", true );
+		KeyValues* pRollSpeedUpdater = pUpdaters->FindKey( "DmeRollSpeedAttenuateUpdater", true );
 		pRollSpeedUpdater->SetFloat( "attenuation", 1.0f - 8.0f / 30.0f );
 		pRollSpeedUpdater->SetFloat( "attenuationTme", 1.0f / 30.0f );
 		pRollSpeedUpdater->SetFloat( "minRollSpeed", 0.5f );
@@ -2001,9 +2071,9 @@ void C_DustTrail::CleanupToolRecordingState( KeyValues *msg_ )
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
 	}
-	else 
+	else
 	{
-		KeyValues *msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
+		KeyValues* msg = new KeyValues( "OldParticleSystem_ActivateEmitter" );
 		msg->SetInt( "id", m_pDustEmitter->GetToolParticleEffectId() );
 		msg->SetInt( "emitter", 0 );
 		msg->SetInt( "active", bEmitterActive );

@@ -41,14 +41,14 @@ ConVar cl_draw_airboat_wake( "cl_draw_airboat_wake", "1", FCVAR_CHEAT );
 // NOTE: Must restart (or create a new airboat) after changing these cvars!
 ConVar r_AirboatRollCurveZero( "r_AirboatRollCurveZero", "90.0", FCVAR_CHEAT );			// Roll less than this is clamped to zero.
 ConVar r_AirboatRollCurveLinear( "r_AirboatRollCurveLinear", "120.0", FCVAR_CHEAT );	// Roll greater than this is mapped directly.
-																						// Spline in between.
+// Spline in between.
 
 ConVar r_AirboatPitchCurveZero( "r_AirboatPitchCurveZero", "25.0", FCVAR_CHEAT );		// Pitch less than this is clamped to zero.
 ConVar r_AirboatPitchCurveLinear( "r_AirboatPitchCurveLinear", "60.0", FCVAR_CHEAT );	// Pitch greater than this is mapped directly.
-																						// Spline in between.
+// Spline in between.
 
 ConVar airboat_joy_response_move( "airboat_joy_response_move", "1" );					// Quadratic steering response
-																						
+
 
 #define AIRBOAT_DELTA_LENGTH_MAX	12.0f			// 1 foot
 #define AIRBOAT_FRAMETIME_MIN		1e-6
@@ -72,7 +72,7 @@ public:
 
 	DECLARE_CLIENTCLASS();
 	DECLARE_INTERPOLATION();
- 	DECLARE_DATADESC();
+	DECLARE_DATADESC();
 
 	C_PropAirboat();
 	~C_PropAirboat();
@@ -83,8 +83,8 @@ public:
 	virtual void Simulate();
 
 	// IClientVehicle
-	virtual void UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd );
-	virtual void OnEnteredVehicle( C_BasePlayer *pPlayer );
+	virtual void UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd );
+	virtual void OnEnteredVehicle( C_BasePlayer* pPlayer );
 	virtual int GetPrimaryAmmoType() const;
 	virtual int GetPrimaryAmmoClip() const;
 	virtual bool PrimaryAmmoUsesClips() const;
@@ -100,21 +100,21 @@ private:
 
 	void DrawPropWake( Vector origin, float speed );
 	void DrawPontoonSplash( Vector position, Vector direction, float speed );
-	void DrawPontoonWake( Vector startPos, Vector wakeDir, float wakeLength, float speed);
+	void DrawPontoonWake( Vector startPos, Vector wakeDir, float wakeLength, float speed );
 
-	void DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles );
-	void DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
-	void DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
-	void ComputePDControllerCoefficients( float *pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
+	void DampenEyePosition( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles );
+	void DampenForwardMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
+	void DampenUpMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
+	void ComputePDControllerCoefficients( float* pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
 
 	void UpdateHeadlight( void );
 	void UpdateWake( void );
 	int	 DrawWake( void );
-	void DrawSegment( const BeamSeg_t &beamSeg, const Vector &vNormal );
+	void DrawSegment( const BeamSeg_t& beamSeg, const Vector& vNormal );
 
-	TrailPoint_t *GetTrailPoint( int n )
+	TrailPoint_t* GetTrailPoint( int n )
 	{
-		int nIndex = (n + m_nFirstStep) & WAKE_POINT_MASK;
+		int nIndex = ( n + m_nFirstStep ) & WAKE_POINT_MASK;
 		return &m_vecSteps[nIndex];
 	}
 
@@ -129,10 +129,10 @@ private:
 
 	bool		m_bHeadlightIsOn;
 	int			m_nAmmoCount;
-	CHeadlightEffect *m_pHeadlight;
+	CHeadlightEffect* m_pHeadlight;
 
 	int				m_nExactWaterLevel;
-	
+
 	TrailPoint_t	m_vecSteps[MAX_WAKE_POINTS];
 	int				m_nFirstStep;
 	int				m_nStepCount;
@@ -145,27 +145,27 @@ private:
 };
 
 IMPLEMENT_CLIENTCLASS_DT( C_PropAirboat, DT_PropAirboat, CPropAirboat )
-	RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
-	RecvPropInt( RECVINFO( m_nAmmoCount ) ),
-	RecvPropInt( RECVINFO( m_nExactWaterLevel ) ),
-	RecvPropInt( RECVINFO( m_nWaterLevel ) ),
-	RecvPropVector( RECVINFO( m_vecPhysVelocity ) ),
-END_RECV_TABLE()
+RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
+			  RecvPropInt( RECVINFO( m_nAmmoCount ) ),
+			  RecvPropInt( RECVINFO( m_nExactWaterLevel ) ),
+			  RecvPropInt( RECVINFO( m_nWaterLevel ) ),
+			  RecvPropVector( RECVINFO( m_vecPhysVelocity ) ),
+			  END_RECV_TABLE()
 
 
-BEGIN_DATADESC( C_PropAirboat )
-	DEFINE_FIELD( m_vecLastEyePos, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecLastEyeTarget, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecEyeSpeed, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecTargetSpeed, FIELD_VECTOR ),
-	//DEFINE_FIELD( m_flViewAngleDeltaTime, FIELD_FLOAT ),
-END_DATADESC()
+			  BEGIN_DATADESC( C_PropAirboat )
+			  DEFINE_FIELD( m_vecLastEyePos, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_vecLastEyeTarget, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_vecEyeSpeed, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecTargetSpeed, FIELD_VECTOR ),
+			  //DEFINE_FIELD( m_flViewAngleDeltaTime, FIELD_FLOAT ),
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-C_PropAirboat::C_PropAirboat()
+			  C_PropAirboat::C_PropAirboat()
 {
 	m_vecEyeSpeed.Init();
 	m_flViewAngleDeltaTime = 0.0f;
@@ -192,7 +192,7 @@ C_PropAirboat::C_PropAirboat()
 //-----------------------------------------------------------------------------
 C_PropAirboat::~C_PropAirboat()
 {
-	if (m_pHeadlight)
+	if( m_pHeadlight )
 	{
 		delete m_pHeadlight;
 	}
@@ -204,26 +204,28 @@ C_PropAirboat::~C_PropAirboat()
 //-----------------------------------------------------------------------------
 int C_PropAirboat::GetPrimaryAmmoType() const
 {
-	if ( m_nAmmoCount < 0 )
+	if( m_nAmmoCount < 0 )
+	{
 		return -1;
+	}
 
 	int nAmmoType = GetAmmoDef()->Index( "AirboatGun" );
-	return nAmmoType; 
+	return nAmmoType;
 }
 
 int C_PropAirboat::GetPrimaryAmmoCount() const
-{ 
-	return m_nAmmoCount; 
+{
+	return m_nAmmoCount;
 }
 
 bool C_PropAirboat::PrimaryAmmoUsesClips() const
-{ 
-	return false; 
+{
+	return false;
 }
 
 int C_PropAirboat::GetPrimaryAmmoClip() const
-{ 
-	return -1; 
+{
+	return -1;
 }
 
 //-----------------------------------------------------------------------------
@@ -243,8 +245,8 @@ void C_PropAirboat::DrawHudElements( )
 
 	MDLCACHE_CRITICAL_SECTION();
 
-	CHudTexture *pIcon = gHUD.GetIcon( IsX360() ? "crosshair_default" : "plushair" );
-	if ( pIcon != NULL )
+	CHudTexture* pIcon = gHUD.GetIcon( IsX360() ? "crosshair_default" : "plushair" );
+	if( pIcon != NULL )
 	{
 		float x, y;
 		Vector screen;
@@ -253,9 +255,9 @@ void C_PropAirboat::DrawHudElements( )
 		vgui::surface()->GetFullscreenViewport( vx, vy, vw, vh );
 		float screenWidth = vw;
 		float screenHeight = vh;
-		
-		x = screenWidth/2;
-		y = screenHeight/2;
+
+		x = screenWidth / 2;
+		y = screenHeight / 2;
 
 		int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 		Vector vehicleEyeOrigin;
@@ -273,9 +275,9 @@ void C_PropAirboat::DrawHudElements( )
 		x += 0.5 * screen[0] * screenWidth + 0.5;
 		y -= 0.5 * screen[1] * screenHeight + 0.5;
 
-		x -= pIcon->Width() / 2; 
-		y -= pIcon->Height() / 2; 
-		
+		x -= pIcon->Width() / 2;
+		y -= pIcon->Height() / 2;
+
 		pIcon->DrawSelf( x, y, gHUD.m_clrNormal );
 	}
 }
@@ -283,25 +285,25 @@ void C_PropAirboat::DrawHudElements( )
 //-----------------------------------------------------------------------------
 // Purpose: Blend view angles.
 //-----------------------------------------------------------------------------
-void C_PropAirboat::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd )
+void C_PropAirboat::UpdateViewAngles( C_BasePlayer* pLocalPlayer, CUserCmd* pCmd )
 {
-	if ( r_AirboatViewBlendTo.GetInt() )
+	if( r_AirboatViewBlendTo.GetInt() )
 	{
 		//
 		// Autocenter the view after a period of no mouse movement while throttling.
 		//
 		bool bResetViewAngleTime = false;
 
-		if ( ( pCmd->mousedx != 0 || pCmd->mousedy != 0 ) || ( fabsf( m_flThrottle ) < 0.01f ) )
+		if( ( pCmd->mousedx != 0 || pCmd->mousedy != 0 ) || ( fabsf( m_flThrottle ) < 0.01f ) )
 		{
-			if ( IsX360() )
+			if( IsX360() )
 			{
 				// Only reset this if there isn't an autoaim target!
-				C_BaseHLPlayer *pLocalHLPlayer = (C_BaseHLPlayer *)pLocalPlayer;
-				if ( pLocalHLPlayer )
+				C_BaseHLPlayer* pLocalHLPlayer = ( C_BaseHLPlayer* )pLocalPlayer;
+				if( pLocalHLPlayer )
 				{
 					// Get the autoaim target.
-					CBaseEntity *pTarget = pLocalHLPlayer->m_HL2Local.m_hAutoAimTarget.Get();
+					CBaseEntity* pTarget = pLocalHLPlayer->m_HL2Local.m_hAutoAimTarget.Get();
 
 					if( !pTarget )
 					{
@@ -324,14 +326,14 @@ void C_PropAirboat::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd
 			m_flViewAngleDeltaTime += gpGlobals->frametime;
 		}
 
-		if ( m_flViewAngleDeltaTime > r_AirboatViewBlendToTime.GetFloat() )
+		if( m_flViewAngleDeltaTime > r_AirboatViewBlendToTime.GetFloat() )
 		{
 			// Blend the view angles.
 			int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 			Vector vehicleEyeOrigin;
 			QAngle vehicleEyeAngles;
 			GetAttachmentLocal( eyeAttachmentIndex, vehicleEyeOrigin, vehicleEyeAngles );
-			
+
 			QAngle outAngles;
 			InterpolateAngles( pCmd->viewangles, vehicleEyeAngles, outAngles, r_AirboatViewBlendToScale.GetFloat() );
 			pCmd->viewangles = outAngles;
@@ -345,11 +347,11 @@ void C_PropAirboat::UpdateViewAngles( C_BasePlayer *pLocalPlayer, CUserCmd *pCmd
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropAirboat::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles )
+void C_PropAirboat::DampenEyePosition( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles )
 {
 	// Get the frametime. (Check to see if enough time has passed to warrent dampening).
 	float flFrameTime = gpGlobals->frametime;
-	if ( flFrameTime < AIRBOAT_FRAMETIME_MIN )
+	if( flFrameTime < AIRBOAT_FRAMETIME_MIN )
 	{
 		vecVehicleEyePos = m_vecLastEyePos;
 		DampenUpMotion( vecVehicleEyePos, vecVehicleEyeAngles, 0.0f );
@@ -370,9 +372,9 @@ void C_PropAirboat::DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehi
 // Use the controller as follows:
 // speed += ( pCoefficientsOut[0] * ( targetPos - currentPos ) + pCoefficientsOut[1] * ( targetSpeed - currentSpeed ) ) * flDeltaTime;
 //-----------------------------------------------------------------------------
-void C_PropAirboat::ComputePDControllerCoefficients( float *pCoefficientsOut,
-												  float flFrequency, float flDampening,
-												  float flDeltaTime )
+void C_PropAirboat::ComputePDControllerCoefficients( float* pCoefficientsOut,
+		float flFrequency, float flDampening,
+		float flDeltaTime )
 {
 	float flKs = 9.0f * flFrequency * flFrequency;
 	float flKd = 4.5f * flFrequency * flDampening;
@@ -382,11 +384,11 @@ void C_PropAirboat::ComputePDControllerCoefficients( float *pCoefficientsOut,
 	pCoefficientsOut[0] = flKs * flScale;
 	pCoefficientsOut[1] = ( flKd + flKs * flDeltaTime ) * flScale;
 }
- 
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropAirboat::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime )
+void C_PropAirboat::DampenForwardMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime )
 {
 	// vecVehicleEyePos = real eye position this frame
 
@@ -401,7 +403,7 @@ void C_PropAirboat::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVe
 	// Calculate the approximate speed based on the current vehicle eye position and the eye position last frame.
 	Vector vecVehicleEyeSpeed = ( vecVehicleEyePos - m_vecLastEyeTarget ) / flFrameTime;
 	m_vecLastEyeTarget = vecVehicleEyePos;
-	if (vecVehicleEyeSpeed.Length() == 0.0)
+	if( vecVehicleEyeSpeed.Length() == 0.0 )
 	{
 		return;
 	}
@@ -415,11 +417,11 @@ void C_PropAirboat::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVe
 	AngleVectors( vecVehicleEyeAngles, &vecForward );
 
 	float flDeltaLength = vecDeltaPos.Length();
-	if ( flDeltaLength > AIRBOAT_DELTA_LENGTH_MAX )
+	if( flDeltaLength > AIRBOAT_DELTA_LENGTH_MAX )
 	{
 		// Clamp.
 		float flDelta = flDeltaLength - AIRBOAT_DELTA_LENGTH_MAX;
-		if ( flDelta > 40.0f )
+		if( flDelta > 40.0f )
 		{
 			// This part is a bit of a hack to get rid of large deltas (at level load, etc.).
 			m_vecLastEyePos = vecVehicleEyePos;
@@ -447,10 +449,10 @@ void C_PropAirboat::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVe
 		float flCoefficients[2];
 		ComputePDControllerCoefficients( flCoefficients, r_AirboatViewDampenFreq.GetFloat(), r_AirboatViewDampenDamp.GetFloat(), flFrameTime );
 		m_vecEyeSpeed += ( ( flCoefficients[0] * vecDeltaPos + flCoefficients[1] * vecDeltaSpeed ) * flFrameTime );
-		
+
 		// Save off data for next frame.
 		m_vecLastEyePos = vecPredEyePos;
-		
+
 		// Move eye forward/backward.
 		Vector vecForwardOffset = vecForward * ( vecForward.Dot( vecDeltaPos ) );
 		vecVehicleEyePos -= vecForwardOffset;
@@ -461,7 +463,7 @@ void C_PropAirboat::DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVe
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void C_PropAirboat::DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime )
+void C_PropAirboat::DampenUpMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime )
 {
 	// Get up vector.
 	Vector vecUp;
@@ -474,9 +476,9 @@ void C_PropAirboat::DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicle
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_PropAirboat::OnEnteredVehicle( C_BasePlayer *pPlayer )
+void C_PropAirboat::OnEnteredVehicle( C_BasePlayer* pPlayer )
 {
 	int eyeAttachmentIndex = LookupAttachment( "vehicle_driver_eyes" );
 	Vector vehicleEyeOrigin;
@@ -490,7 +492,7 @@ void C_PropAirboat::OnEnteredVehicle( C_BasePlayer *pPlayer )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PropAirboat::Simulate()
 {
@@ -506,15 +508,17 @@ void C_PropAirboat::Simulate()
 //-----------------------------------------------------------------------------
 void C_PropAirboat::UpdateHeadlight()
 {
-	if (m_bHeadlightIsOn)
+	if( m_bHeadlightIsOn )
 	{
-		if (!m_pHeadlight)
+		if( !m_pHeadlight )
 		{
 			// Turned on the headlight; create it.
 			m_pHeadlight = new CHeadlightEffect();
 
-			if (!m_pHeadlight)
+			if( !m_pHeadlight )
+			{
 				return;
+			}
 
 			m_pHeadlight->TurnOn();
 		}
@@ -525,15 +529,15 @@ void C_PropAirboat::UpdateHeadlight()
 
 		Vector vecLightPos;
 		QAngle angLightDir;
-		GetAttachment(nHeadlightIndex, vecLightPos, angLightDir);
+		GetAttachment( nHeadlightIndex, vecLightPos, angLightDir );
 
 		Vector vecLightDir, vecLightRight, vecLightUp;
 		AngleVectors( angLightDir, &vecLightDir, &vecLightRight, &vecLightUp );
 
-		// Update the light with the new position and direction.		
+		// Update the light with the new position and direction.
 		m_pHeadlight->UpdateLight( vecLightPos, vecLightDir, vecLightRight, vecLightUp, HEADLIGHT_DISTANCE );
 	}
-	else if (m_pHeadlight)
+	else if( m_pHeadlight )
 	{
 		// Turned off the headlight; delete it.
 		delete m_pHeadlight;
@@ -542,37 +546,41 @@ void C_PropAirboat::UpdateHeadlight()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_PropAirboat::UpdateWake( void )
 {
-	if ( gpGlobals->frametime <= 0.0f )
+	if( gpGlobals->frametime <= 0.0f )
+	{
 		return;
+	}
 
 	// Can't update too quickly
-	if ( m_flUpdateTime > gpGlobals->curtime )
+	if( m_flUpdateTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	Vector	screenPos = GetRenderOrigin();
 	screenPos.z = m_nExactWaterLevel;
 
-	TrailPoint_t *pLast = m_nStepCount ? GetTrailPoint( m_nStepCount-1 ) : NULL;
-	if ( ( pLast == NULL ) || ( pLast->m_vecScreenPos.DistToSqr( screenPos ) > 4.0f ) )
+	TrailPoint_t* pLast = m_nStepCount ? GetTrailPoint( m_nStepCount - 1 ) : NULL;
+	if( ( pLast == NULL ) || ( pLast->m_vecScreenPos.DistToSqr( screenPos ) > 4.0f ) )
 	{
 		// If we're over our limit, steal the last point and put it up front
-		if ( m_nStepCount >= MAX_WAKE_POINTS )
+		if( m_nStepCount >= MAX_WAKE_POINTS )
 		{
 			--m_nStepCount;
 			++m_nFirstStep;
 		}
 
 		// Save off its screen position, not its world position
-		TrailPoint_t *pNewPoint = GetTrailPoint( m_nStepCount );
+		TrailPoint_t* pNewPoint = GetTrailPoint( m_nStepCount );
 		pNewPoint->m_vecScreenPos = screenPos + Vector( 0, 0, 2 );
 		pNewPoint->m_flDieTime	= gpGlobals->curtime + WAKE_LIFETIME;
 		pNewPoint->m_flWidthVariance = random->RandomFloat( -16, 16 );
-		
-		if ( pLast )
+
+		if( pLast )
 		{
 			pNewPoint->m_flTexCoord	= pLast->m_flTexCoord + pLast->m_vecScreenPos.DistTo( screenPos );
 			pNewPoint->m_flTexCoord = fmod( pNewPoint->m_flTexCoord, 1 );
@@ -586,19 +594,19 @@ void C_PropAirboat::UpdateWake( void )
 	}
 
 	// Don't update again for a bit
-	m_flUpdateTime = gpGlobals->curtime + ( 0.5f / (float) MAX_WAKE_POINTS );
+	m_flUpdateTime = gpGlobals->curtime + ( 0.5f / ( float ) MAX_WAKE_POINTS );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &beamSeg - 
+// Purpose:
+// Input  : &beamSeg -
 //-----------------------------------------------------------------------------
-void C_PropAirboat::DrawSegment( const BeamSeg_t &beamSeg, const Vector &vNormal )
+void C_PropAirboat::DrawSegment( const BeamSeg_t& beamSeg, const Vector& vNormal )
 {
 	// Build the endpoints.
 	Vector vPoint1, vPoint2;
-	VectorMA( beamSeg.m_vPos,  beamSeg.m_flWidth*0.5f, vNormal, vPoint1 );
-	VectorMA( beamSeg.m_vPos, -beamSeg.m_flWidth*0.5f, vNormal, vPoint2 );
+	VectorMA( beamSeg.m_vPos,  beamSeg.m_flWidth * 0.5f, vNormal, vPoint1 );
+	VectorMA( beamSeg.m_vPos, -beamSeg.m_flWidth * 0.5f, vNormal, vPoint2 );
 
 	// Specify the points.
 	m_Mesh.Position3fv( vPoint1.Base() );
@@ -615,17 +623,17 @@ void C_PropAirboat::DrawSegment( const BeamSeg_t &beamSeg, const Vector &vNormal
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : position - 
+// Purpose:
+// Input  : position -
 //-----------------------------------------------------------------------------
 void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float speed )
 {
 	Vector	offset;
-	
+
 	CSmartPtr<CSplashParticle> pSimple = CSplashParticle::Create( "splish" );
 	pSimple->SetSortOrigin( origin );
 
-	SimpleParticle	*pParticle;
+	SimpleParticle*	pParticle;
 
 	Vector	color = Vector( 0.8f, 0.8f, 0.75f );
 	float	colorRamp;
@@ -633,12 +641,12 @@ void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float sp
 	float	flScale = RemapVal( speed, 64, 256, 0.75f, 1.0f );
 
 	PMaterialHandle	hMaterial;
-	
+
 	float tempDelta = gpGlobals->frametime;
 
 	while( m_SplashTime.NextEvent( tempDelta ) )
 	{
-		if ( random->RandomInt( 0, 1 ) )
+		if( random->RandomInt( 0, 1 ) )
 		{
 			hMaterial = ParticleMgr()->GetPMaterial( "effects/splash1" );
 		}
@@ -651,105 +659,107 @@ void C_PropAirboat::DrawPontoonSplash( Vector origin, Vector direction, float sp
 		offset[2] = 0.0f;
 		offset += origin;
 
-		pParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
+		pParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), hMaterial, offset );
 
-		if ( pParticle == NULL )
+		if( pParticle == NULL )
+		{
 			continue;
-		
+		}
+
 		pParticle->m_flLifetime = 0.0f;
 		pParticle->m_flDieTime	= 0.25f;
 
 		pParticle->m_vecVelocity.Random( -0.4f, 0.4f );
-		pParticle->m_vecVelocity += (direction*5.0f+Vector(0,0,1));
-		
+		pParticle->m_vecVelocity += ( direction * 5.0f + Vector( 0, 0, 1 ) );
+
 		VectorNormalize( pParticle->m_vecVelocity );
 
 		pParticle->m_vecVelocity *= speed + random->RandomFloat( -128.0f, 128.0f );
-		
+
 		colorRamp = random->RandomFloat( 0.75f, 1.25f );
 
 		pParticle->m_uchColor[0]	= MIN( 1.0f, color[0] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[1]	= MIN( 1.0f, color[1] * colorRamp ) * 255.0f;
 		pParticle->m_uchColor[2]	= MIN( 1.0f, color[2] * colorRamp ) * 255.0f;
-		
+
 		pParticle->m_uchStartSize	= random->RandomFloat( 8, 16 ) * flScale;
 		pParticle->m_uchEndSize		= pParticle->m_uchStartSize * 2;
-		
+
 		pParticle->m_uchStartAlpha	= 255;
 		pParticle->m_uchEndAlpha	= 0;
-		
+
 		pParticle->m_flRoll			= random->RandomInt( 0, 360 );
 		pParticle->m_flRollDelta	= random->RandomFloat( -4.0f, 4.0f );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : Vector	startPos - 
-//			wakeDir - 
-//			wakeLength - 
+// Purpose:
+// Input  : Vector	startPos -
+//			wakeDir -
+//			wakeLength -
 //-----------------------------------------------------------------------------
 void C_PropAirboat::DrawPontoonWake( Vector	startPos, Vector wakeDir, float wakeLength, float speed )
 {
 #define	WAKE_STEPS	6
 
-	Vector	wakeStep = wakeDir * ( wakeLength / (float) WAKE_STEPS );
+	Vector	wakeStep = wakeDir * ( wakeLength / ( float ) WAKE_STEPS );
 	Vector	origin;
 	float	scale;
 
-	IMaterial *pMaterial = materials->FindMaterial( "effects/splashwake1", NULL, false );
+	IMaterial* pMaterial = materials->FindMaterial( "effects/splashwake1", NULL, false );
 	CMatRenderContextPtr pRenderContext( materials );
 	IMesh* pMesh = pRenderContext->GetDynamicMesh( 0, 0, 0, pMaterial );
 
 	CMeshBuilder meshBuilder;
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, WAKE_STEPS );
 
-	for ( int i = 0; i < WAKE_STEPS; i++ )
+	for( int i = 0; i < WAKE_STEPS; i++ )
 	{
 		origin = startPos + ( wakeStep * i );
 		origin[0] += random->RandomFloat( -4.0f, 4.0f );
 		origin[1] += random->RandomFloat( -4.0f, 4.0f );
 		origin[2] = m_nExactWaterLevel + 2.0f;
 
-		float scaleRange = RemapVal( i, 0, WAKE_STEPS-1, 32, 64 );
+		float scaleRange = RemapVal( i, 0, WAKE_STEPS - 1, 32, 64 );
 		scale = scaleRange + ( 8.0f * sin( gpGlobals->curtime * 5 * i ) );
-		
+
 		float alpha = RemapValClamped( speed, 128, 600, 0.05f, 0.25f );
 		float color[4] = { 1.0f, 1.0f, 1.0f, alpha };
-		
+
 		// Needs to be time based so it'll freeze when the game is frozen
 		float yaw = random->RandomFloat( 0, 360 );
 
-		Vector rRight = ( Vector(1,0,0) * cos( DEG2RAD( yaw ) ) ) - ( Vector(0,1,0) * sin( DEG2RAD( yaw ) ) );
-		Vector rUp = ( Vector(1,0,0) * cos( DEG2RAD( yaw+90.0f ) ) ) - ( Vector(0,1,0) * sin( DEG2RAD( yaw+90.0f ) ) );
+		Vector rRight = ( Vector( 1, 0, 0 ) * cos( DEG2RAD( yaw ) ) ) - ( Vector( 0, 1, 0 ) * sin( DEG2RAD( yaw ) ) );
+		Vector rUp = ( Vector( 1, 0, 0 ) * cos( DEG2RAD( yaw + 90.0f ) ) ) - ( Vector( 0, 1, 0 ) * sin( DEG2RAD( yaw + 90.0f ) ) );
 
 		Vector point;
-		meshBuilder.Color4fv (color);
-		meshBuilder.TexCoord2f (0, 0, 1);
-		VectorMA (origin, -scale, rRight, point);
-		VectorMA (point, -scale, rUp, point);
-		meshBuilder.Position3fv (point.Base());
+		meshBuilder.Color4fv( color );
+		meshBuilder.TexCoord2f( 0, 0, 1 );
+		VectorMA( origin, -scale, rRight, point );
+		VectorMA( point, -scale, rUp, point );
+		meshBuilder.Position3fv( point.Base() );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Color4fv (color);
-		meshBuilder.TexCoord2f (0, 0, 0);
-		VectorMA (origin, scale, rRight, point);
-		VectorMA (point, -scale, rUp, point);
-		meshBuilder.Position3fv (point.Base());
+		meshBuilder.Color4fv( color );
+		meshBuilder.TexCoord2f( 0, 0, 0 );
+		VectorMA( origin, scale, rRight, point );
+		VectorMA( point, -scale, rUp, point );
+		meshBuilder.Position3fv( point.Base() );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Color4fv (color);
-		meshBuilder.TexCoord2f (0, 1, 0);
-		VectorMA (origin, scale, rRight, point);
-		VectorMA (point, scale, rUp, point);
-		meshBuilder.Position3fv (point.Base());
+		meshBuilder.Color4fv( color );
+		meshBuilder.TexCoord2f( 0, 1, 0 );
+		VectorMA( origin, scale, rRight, point );
+		VectorMA( point, scale, rUp, point );
+		meshBuilder.Position3fv( point.Base() );
 		meshBuilder.AdvanceVertex();
 
-		meshBuilder.Color4fv (color);
-		meshBuilder.TexCoord2f (0, 1, 1);
-		VectorMA (origin, -scale, rRight, point);
-		VectorMA (point, scale, rUp, point);
-		meshBuilder.Position3fv (point.Base());
+		meshBuilder.Color4fv( color );
+		meshBuilder.TexCoord2f( 0, 1, 1 );
+		VectorMA( origin, -scale, rRight, point );
+		VectorMA( point, scale, rUp, point );
+		meshBuilder.Position3fv( point.Base() );
 		meshBuilder.AdvanceVertex();
 	}
 
@@ -758,21 +768,27 @@ void C_PropAirboat::DrawPontoonWake( Vector	startPos, Vector wakeDir, float wake
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 //-----------------------------------------------------------------------------
 int C_PropAirboat::DrawWake( void )
 {
-	if ( cl_draw_airboat_wake.GetBool() == false )
+	if( cl_draw_airboat_wake.GetBool() == false )
+	{
 		return 0;
+	}
 
 	// Make sure we're in water...
-	if ( GetWaterLevel() == 0 )
+	if( GetWaterLevel() == 0 )
+	{
 		return 0;
+	}
 
 	//FIXME: For now, we don't draw slime this way
-	if ( GetWaterLevel() == 2 )
+	if( GetWaterLevel() == 2 )
+	{
 		return 0;
+	}
 
 	bool bDriven = ( GetPassenger( VEHICLE_ROLE_DRIVER ) != NULL );
 
@@ -806,7 +822,7 @@ int C_PropAirboat::DrawWake( void )
 	vecPontoonFrontLeft.z = m_nExactWaterLevel;
 	vecPontoonFrontRight.z = m_nExactWaterLevel;
 
-	if ( bDriven && vehicleSpeed > 128.0f )
+	if( bDriven && vehicleSpeed > 128.0f )
 	{
 		DrawPontoonWake( vecPontoonFrontLeft, vecLeftWakeDir, flWakeLeftLength, vehicleSpeed );
 		DrawPontoonWake( vecPontoonFrontRight, vecRightWakeDir, flWakeRightLength, vehicleSpeed );
@@ -815,24 +831,24 @@ int C_PropAirboat::DrawWake( void )
 		Vector vForward;
 		GetVectors( &vForward, NULL, NULL );
 
-		if ( m_vecPhysVelocity.x < -64.0f )
+		if( m_vecPhysVelocity.x < -64.0f )
 		{
 			vecSplashDir = vecLeftWakeDir - vForward;
 			VectorNormalize( vecSplashDir );
 
 			// Don't do this if we're going backwards
-			if ( m_vecPhysVelocity.y > 0.0f )
+			if( m_vecPhysVelocity.y > 0.0f )
 			{
 				DrawPontoonSplash( vecPontoonFrontLeft + ( vecLeftWakeDir * 1.0f ), vecSplashDir, m_vecPhysVelocity.y );
 			}
 		}
-		else if ( m_vecPhysVelocity.x > 64.0f )
+		else if( m_vecPhysVelocity.x > 64.0f )
 		{
 			vecSplashDir = vecRightWakeDir + vForward;
 			VectorNormalize( vecSplashDir );
 
 			// Don't do this if we're going backwards
-			if ( m_vecPhysVelocity.y > 0.0f )
+			if( m_vecPhysVelocity.y > 0.0f )
 			{
 				DrawPontoonSplash( vecPontoonFrontRight + ( vecRightWakeDir * 1.0f ), vecSplashDir, m_vecPhysVelocity.y );
 			}
@@ -840,35 +856,37 @@ int C_PropAirboat::DrawWake( void )
 	}
 
 	// Must have at least one point
-	if ( m_nStepCount <= 1 )
+	if( m_nStepCount <= 1 )
+	{
 		return 1;
+	}
 
-	IMaterial *pMaterial = materials->FindMaterial( "effects/splashwake4", 0);
-		
+	IMaterial* pMaterial = materials->FindMaterial( "effects/splashwake4", 0 );
+
 	//Bind the material
 	CMatRenderContextPtr pRenderContext( materials );
-	IMesh *pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
-	
-	m_Mesh.Begin( pMesh, MATERIAL_TRIANGLE_STRIP, (m_nStepCount-1) * 2 );
+	IMesh* pMesh = pRenderContext->GetDynamicMesh( true, NULL, NULL, pMaterial );
 
-	TrailPoint_t *pLast = GetTrailPoint( m_nStepCount - 1 );
-	
+	m_Mesh.Begin( pMesh, MATERIAL_TRIANGLE_STRIP, ( m_nStepCount - 1 ) * 2 );
+
+	TrailPoint_t* pLast = GetTrailPoint( m_nStepCount - 1 );
+
 	TrailPoint_t currentPoint;
 	currentPoint.m_flDieTime = gpGlobals->curtime + 0.5f;
 	currentPoint.m_vecScreenPos = GetAbsOrigin();
 	currentPoint.m_vecScreenPos[2] = m_nExactWaterLevel + 16;
-	currentPoint.m_flTexCoord = pLast->m_flTexCoord + currentPoint.m_vecScreenPos.DistTo(pLast->m_vecScreenPos);
+	currentPoint.m_flTexCoord = pLast->m_flTexCoord + currentPoint.m_vecScreenPos.DistTo( pLast->m_vecScreenPos );
 	currentPoint.m_flTexCoord = fmod( currentPoint.m_flTexCoord, 1 );
 	currentPoint.m_flWidthVariance = 0.0f;
 
-	TrailPoint_t *pPrevPoint = NULL;
-	
+	TrailPoint_t* pPrevPoint = NULL;
+
 	Vector segDir, normal;
 
-	for ( int i = 0; i <= m_nStepCount; ++i )
+	for( int i = 0; i <= m_nStepCount; ++i )
 	{
 		// This makes it so that we're always drawing to the current location
-		TrailPoint_t *pPoint = (i != m_nStepCount) ? GetTrailPoint(i) : &currentPoint;
+		TrailPoint_t* pPoint = ( i != m_nStepCount ) ? GetTrailPoint( i ) : &currentPoint;
 
 		float flLifePerc = RemapValClamped( ( pPoint->m_flDieTime - gpGlobals->curtime ), 0, WAKE_LIFETIME, 0.0f, 1.0f );
 
@@ -882,20 +900,20 @@ int C_PropAirboat::DrawWake( void )
 		curSeg.m_flAlpha *= flAlphaFade * alpha;
 
 		curSeg.m_vPos = pPoint->m_vecScreenPos;
-		
+
 		float widthBase = SimpleSplineRemapVal( fabs( m_vecPhysVelocity.y ), 128, 600, 32, 48 );
 
-		curSeg.m_flWidth = Lerp( flLifePerc, widthBase*6, widthBase );
+		curSeg.m_flWidth = Lerp( flLifePerc, widthBase * 6, widthBase );
 		curSeg.m_flWidth += pPoint->m_flWidthVariance;
 
-		if ( curSeg.m_flWidth < 0.0f )
+		if( curSeg.m_flWidth < 0.0f )
 		{
 			curSeg.m_flWidth = 0.0f;
 		}
 
 		curSeg.m_flTexCoord = pPoint->m_flTexCoord;
 
-		if ( pPrevPoint != NULL )
+		if( pPrevPoint != NULL )
 		{
 			segDir = ( pPrevPoint->m_vecScreenPos - pPoint->m_vecScreenPos );
 			VectorNormalize( segDir );
@@ -915,17 +933,21 @@ int C_PropAirboat::DrawWake( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : flags - 
+// Purpose:
+// Input  : flags -
 // Output : int
 //-----------------------------------------------------------------------------
 int C_PropAirboat::DrawModel( int flags )
 {
-	if ( BaseClass::DrawModel( flags ) == false )
+	if( BaseClass::DrawModel( flags ) == false )
+	{
 		return 0;
-	
-	if ( !m_bReadyToDraw )
+	}
+
+	if( !m_bReadyToDraw )
+	{
 		return 0;
+	}
 
 	return DrawWake();
 }

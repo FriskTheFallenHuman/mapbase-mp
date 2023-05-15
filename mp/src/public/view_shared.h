@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -8,7 +8,7 @@
 #define VIEW_SHARED_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "convar.h"
@@ -39,7 +39,7 @@ enum StereoEye_t
 
 
 //-----------------------------------------------------------------------------
-// Purpose: Renderer setup data.  
+// Purpose: Renderer setup data.
 //-----------------------------------------------------------------------------
 class CViewSetup
 {
@@ -53,23 +53,23 @@ public:
 		m_bOffCenter = false;
 		m_bCacheFullSceneState = false;
 //		m_bUseExplicitViewVector = false;
-        m_bViewToProjectionOverride = false;
+		m_bViewToProjectionOverride = false;
 		m_eStereoEye = STEREO_EYE_MONO;
 	}
 
 // shared by 2D & 3D views
 
 	// left side of view window
-	int			x;					
+	int			x;
 	int			m_nUnscaledX;
 	// top side of view window
-	int			y;					
+	int			y;
 	int			m_nUnscaledY;
 	// width of view window
-	int			width;				
+	int			width;
 	int			m_nUnscaledWidth;
 	// height of view window
-	int			height;				
+	int			height;
 	// which eye are we rendering?
 	StereoEye_t m_eStereoEye;
 	int			m_nUnscaledHeight;
@@ -77,32 +77,32 @@ public:
 // the rest are only used by 3D views
 
 	// Orthographic projection?
-	bool		m_bOrtho;			
+	bool		m_bOrtho;
 	// View-space rectangle for ortho projection.
-	float		m_OrthoLeft;		
+	float		m_OrthoLeft;
 	float		m_OrthoTop;
 	float		m_OrthoRight;
 	float		m_OrthoBottom;
 
 	// horizontal FOV in degrees
-	float		fov;				
+	float		fov;
 	// horizontal FOV in degrees for in-view model
-	float		fovViewmodel;		
+	float		fovViewmodel;
 
 	// 3D origin of camera
-	Vector		origin;					
+	Vector		origin;
 
 	// heading of camera (pitch, yaw, roll)
-	QAngle		angles;				
+	QAngle		angles;
 	// local Z coordinate of near plane of camera
-	float		zNear;			
-		// local Z coordinate of far plane of camera
-	float		zFar;			
+	float		zNear;
+	// local Z coordinate of far plane of camera
+	float		zFar;
 
 	// local Z coordinate of near plane of camera ( when rendering view model )
-	float		zNearViewmodel;		
+	float		zNearViewmodel;
 	// local Z coordinate of far plane of camera ( when rendering view model )
-	float		zFarViewmodel;		
+	float		zFarViewmodel;
 
 	// set to true if this is to draw into a subrect of the larger screen
 	// this really is a hack, but no more than the rest of the way this class is used
@@ -125,10 +125,10 @@ public:
 	// Cached mode for certain full-scene per-frame varying state such as sun entity coverage
 	bool		m_bCacheFullSceneState;
 
-    // If using VR, the headset calibration will feed you a projection matrix per-eye.
+	// If using VR, the headset calibration will feed you a projection matrix per-eye.
 	// This does NOT override the Z range - that will be set up as normal (i.e. the values in this matrix will be ignored).
-    bool        m_bViewToProjectionOverride;
-    VMatrix     m_ViewToProjection;
+	bool        m_bViewToProjectionOverride;
+	VMatrix     m_ViewToProjection;
 };
 
 

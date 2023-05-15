@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef MDLSEQUENCEPICKER_H
 #define MDLSEQUENCEPICKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vgui_controls/ImageList.h"
@@ -21,8 +21,8 @@
 //-----------------------------------------------------------------------------
 namespace vgui
 {
-	class Splitter;
-	class Button;
+class Splitter;
+class Button;
 }
 
 class CGameFileTreeView;
@@ -35,7 +35,7 @@ class CMDLSequencePicker : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CMDLSequencePicker, vgui::EditablePanel );
 public:
-	CMDLSequencePicker( vgui::Panel *pParent );
+	CMDLSequencePicker( vgui::Panel* pParent );
 	virtual ~CMDLSequencePicker();
 
 	// overridden frame functions
@@ -44,12 +44,12 @@ public:
 	virtual void PerformLayout();
 	virtual void OnTick();
 
-	char const *GetModelName();
-	char const *GetSequenceName();
+	char const* GetModelName();
+	char const* GetSequenceName();
 	int	GetSequenceNumber();
 
 private:
-	void SelectMDL( const char *pMDLName );
+	void SelectMDL( const char* pMDLName );
 	void RefreshFileList();
 	void RefreshActivitiesAndSequencesList();
 
@@ -69,18 +69,18 @@ private:
 //	MESSAGE_FUNC_INT( OpenFileForEdit, "EditFile", item );
 //	MESSAGE_FUNC_INT( OpenFileForDelete, "DeleteFile", item );
 
-	CMDLPanel *m_pMDLPreview;
-	vgui::ComboBox *m_pFilterList;
-	CGameFileTreeView *m_pFileTree;
+	CMDLPanel* m_pMDLPreview;
+	vgui::ComboBox* m_pFilterList;
+	CGameFileTreeView* m_pFileTree;
 	vgui::ImageList m_Images;
 	vgui::Splitter* m_pMDLSplitter;
 	vgui::Splitter* m_pSequenceSplitter;
-	vgui::PropertySheet *m_pViewsSheet;
-	vgui::PropertyPage *m_pSequencesPage;
-	vgui::PropertyPage *m_pActivitiesPage;
+	vgui::PropertySheet* m_pViewsSheet;
+	vgui::PropertyPage* m_pSequencesPage;
+	vgui::PropertyPage* m_pActivitiesPage;
 
-	vgui::ListPanel *m_pSequencesList;
-	vgui::ListPanel *m_pActivitiesList;
+	vgui::ListPanel* m_pSequencesList;
+	vgui::ListPanel* m_pActivitiesList;
 
 	MDLHandle_t m_hSelectedMDL;
 
@@ -94,7 +94,7 @@ class CMDLSequencePickerFrame : public vgui::Frame
 {
 	DECLARE_CLASS_SIMPLE( CMDLSequencePickerFrame, vgui::Frame );
 public:
-	CMDLSequencePickerFrame( vgui::Panel *parent, char const *title );
+	CMDLSequencePickerFrame( vgui::Panel* parent, char const* title );
 	virtual ~CMDLSequencePickerFrame();
 
 	virtual void PerformLayout();
@@ -107,10 +107,10 @@ protected:
 	MESSAGE_FUNC( OnCancel, "OnCancel" );
 
 private:
-	CMDLSequencePicker *m_pMDLSequencePicker;
+	CMDLSequencePicker* m_pMDLSequencePicker;
 
-	vgui::Button		*m_pOK;
-	vgui::Button		*m_pCancel;
+	vgui::Button*		m_pOK;
+	vgui::Button*		m_pCancel;
 };
 
 #endif // MDLSEQUENCEPICKER_H

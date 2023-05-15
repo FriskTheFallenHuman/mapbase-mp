@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -9,7 +9,7 @@
 #define IMAGELIST_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <utlvector.h>
@@ -26,27 +26,27 @@ namespace vgui
 class ImageList
 {
 public:
-	ImageList(bool deleteImagesWhenDone);
+	ImageList( bool deleteImagesWhenDone );
 	~ImageList();
 
 	// adds a new image to the list, returning the index it was placed at
-	int AddImage(vgui::IImage *image);
+	int AddImage( vgui::IImage* image );
 
 	// returns the number of images
 	int GetImageCount();
 
 	// returns true if an index is valid
-	bool IsValidIndex(int imageIndex);
+	bool IsValidIndex( int imageIndex );
 
 	// sets an image at a specified index, growing and adding NULL images if necessary
-	void SetImageAtIndex(int index, vgui::IImage *image);
+	void SetImageAtIndex( int index, vgui::IImage* image );
 
 	// gets an image, imageIndex is of range [0, GetImageCount)
 	// image index 0 is always the blank image
-	vgui::IImage *GetImage(int imageIndex);
+	vgui::IImage* GetImage( int imageIndex );
 
 private:
-	CUtlVector<vgui::IImage *> m_Images;
+	CUtlVector<vgui::IImage*> m_Images;
 	bool m_bDeleteImagesWhenDone;
 };
 

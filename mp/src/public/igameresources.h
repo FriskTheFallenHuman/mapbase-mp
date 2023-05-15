@@ -17,10 +17,10 @@ abstract_class IGameResources
 public:
 	virtual	~IGameResources() {};
 
-	// Team data access 
-	virtual const char		*GetTeamName( int index ) = 0;
+	// Team data access
+	virtual const char*		GetTeamName( int index ) = 0;
 	virtual int				GetTeamScore( int index ) = 0;
-	virtual const Color&	GetTeamColor( int index ) = 0;
+	virtual const Color &	GetTeamColor( int index ) = 0;
 
 	// Player data access
 	virtual bool	IsConnected( int index ) = 0;
@@ -28,7 +28,7 @@ public:
 	virtual bool	IsFakePlayer( int index ) = 0;
 	virtual bool	IsLocalPlayer( int index ) = 0;
 
-	virtual const char *GetPlayerName( int index ) = 0;
+	virtual const char* GetPlayerName( int index ) = 0;
 	virtual int		GetPlayerScore( int index ) = 0;
 	virtual int		GetPing( int index ) = 0;
 //	virtual int		GetPacketloss( int index ) = 0;
@@ -38,7 +38,7 @@ public:
 	virtual int		GetHealth( int index ) = 0;
 };
 
-extern IGameResources *GameResources( void ); // singelton accessor
+extern IGameResources* GameResources( void ); // singelton accessor
 
 #endif
 

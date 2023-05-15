@@ -28,7 +28,7 @@
 
 #define tmEnter(...)
 #define tmEnterEx(...)
-#define tmZone(...) 
+#define tmZone(...)
 #define tmZoneFiltered(...)
 #define tmLeave(...)
 #define tmLeaveEx(...)
@@ -58,7 +58,7 @@
 
 #define tmTryLock(...)
 #define tmTryLockEx(...)
-    
+
 #define tmPlot(...)
 #define tmPlotF32(...)
 #define tmPlotF64(...)
@@ -71,7 +71,7 @@
 
 #define tmPPUGetListener(...) TMERR_DISABLED
 #define tmPPURegisterSPUProgram(...) TMERR_DISABLED
-#define tmSPUBindContextToListener(...) 
+#define tmSPUBindContextToListener(...)
 #define tmSPUUpdateTime(...)
 #define tmSPUFlushImage(...)
 
@@ -80,5 +80,5 @@
 #define TM_CONTEXT_LITE(val) ((char*)(val))
 #define TM_CONTEXT_FULL(val) ((char*)(val))
 
-typedef char *HTELEMETRY;
+typedef char* HTELEMETRY;
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -19,32 +19,32 @@ extern float ScriptInfo_CalculateFOV( float flFOVBlendStartTime, float flNextFOV
 // Global point to the active intro script
 CHandle<CScriptIntro> g_hIntroScript;
 
-LINK_ENTITY_TO_CLASS(script_intro, CScriptIntro);
+LINK_ENTITY_TO_CLASS( script_intro, CScriptIntro );
 
-BEGIN_DATADESC(CScriptIntro)
-	// Keys
-	DEFINE_FIELD( m_vecCameraView, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecCameraViewAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecPlayerView, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecPlayerViewAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_iBlendMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iQueuedBlendMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iQueuedNextBlendMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iNextBlendMode, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flNextBlendTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flBlendStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_iNextFOV, FIELD_INTEGER ),
-	DEFINE_FIELD( m_flNextFOVBlendTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flFOVBlendStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_iFOV, FIELD_INTEGER ),
-	DEFINE_ARRAY( m_flFadeColor, FIELD_FLOAT, 3 ),
-	DEFINE_FIELD( m_flFadeAlpha, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flFadeDuration, FIELD_FLOAT ),
-	DEFINE_FIELD( m_hCameraEntity, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iStartFOV, FIELD_INTEGER ),
+BEGIN_DATADESC( CScriptIntro )
+// Keys
+DEFINE_FIELD( m_vecCameraView, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecCameraViewAngles, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecPlayerView, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vecPlayerViewAngles, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_iBlendMode, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iQueuedBlendMode, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iQueuedNextBlendMode, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_iNextBlendMode, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_flNextBlendTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flBlendStartTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iNextFOV, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_flNextFOVBlendTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flFOVBlendStartTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_iFOV, FIELD_INTEGER ),
+			  DEFINE_ARRAY( m_flFadeColor, FIELD_FLOAT, 3 ),
+			  DEFINE_FIELD( m_flFadeAlpha, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_flFadeDuration, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_hCameraEntity, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_iStartFOV, FIELD_INTEGER ),
 
-	DEFINE_KEYFIELD( m_bAlternateFOV, FIELD_BOOLEAN, "alternatefovchange" ),
+			  DEFINE_KEYFIELD( m_bAlternateFOV, FIELD_BOOLEAN, "alternatefovchange" ),
 
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bDrawSky, FIELD_BOOLEAN, "DrawSky" ),
@@ -53,69 +53,69 @@ BEGIN_DATADESC(CScriptIntro)
 	DEFINE_KEYFIELD( m_bUseEyePosition, FIELD_BOOLEAN, "UseEyePosition" ),
 #endif
 
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_STRING, "SetCameraViewEntity", InputSetCameraViewEntity ),
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetBlendMode", InputSetBlendMode ),
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetNextFOV", InputSetNextFOV ),
-	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetFOVBlendTime", InputSetFOVBlendTime ),
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetFOV", InputSetFOV ),
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetNextBlendMode", InputSetNextBlendMode ),
-	DEFINE_INPUTFUNC(FIELD_FLOAT, "SetNextBlendTime", InputSetNextBlendTime ),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Deactivate", InputDeactivate ),
-	DEFINE_INPUTFUNC(FIELD_STRING, "FadeTo", InputFadeTo ),
-	DEFINE_INPUTFUNC(FIELD_STRING, "SetFadeColor", InputSetFadeColor ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetCameraViewEntity", InputSetCameraViewEntity ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetBlendMode", InputSetBlendMode ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetNextFOV", InputSetNextFOV ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetFOVBlendTime", InputSetFOVBlendTime ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetFOV", InputSetFOV ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "SetNextBlendMode", InputSetNextBlendMode ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetNextBlendTime", InputSetNextBlendTime ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "FadeTo", InputFadeTo ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetFadeColor", InputSetFadeColor ),
 #ifdef MAPBASE
-	DEFINE_INPUTFUNC(FIELD_BOOLEAN, "SetDrawSky", InputSetDrawSky ),
-	DEFINE_INPUTFUNC(FIELD_BOOLEAN, "SetDrawSky2", InputSetDrawSky2 ),
+	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetDrawSky", InputSetDrawSky ),
+	DEFINE_INPUTFUNC( FIELD_BOOLEAN, "SetDrawSky2", InputSetDrawSky2 ),
 #endif
 
-	DEFINE_THINKFUNC( BlendComplete ),
+			  DEFINE_THINKFUNC( BlendComplete ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CScriptIntro, DT_ScriptIntro )
-	SendPropVector(SENDINFO(m_vecCameraView), -1, SPROP_COORD),
-	SendPropVector(SENDINFO(m_vecCameraViewAngles), -1, SPROP_COORD),
-	SendPropInt( SENDINFO( m_iBlendMode ), 5 ),
-	SendPropInt( SENDINFO( m_iNextBlendMode ), 5 ),
-	SendPropFloat( SENDINFO( m_flNextBlendTime ), 10 ),
-	SendPropFloat( SENDINFO( m_flBlendStartTime ), 10 ),
-	SendPropBool( SENDINFO( m_bActive ) ),
+			  IMPLEMENT_SERVERCLASS_ST( CScriptIntro, DT_ScriptIntro )
+			  SendPropVector( SENDINFO( m_vecCameraView ), -1, SPROP_COORD ),
+			  SendPropVector( SENDINFO( m_vecCameraViewAngles ), -1, SPROP_COORD ),
+			  SendPropInt( SENDINFO( m_iBlendMode ), 5 ),
+			  SendPropInt( SENDINFO( m_iNextBlendMode ), 5 ),
+			  SendPropFloat( SENDINFO( m_flNextBlendTime ), 10 ),
+			  SendPropFloat( SENDINFO( m_flBlendStartTime ), 10 ),
+			  SendPropBool( SENDINFO( m_bActive ) ),
 #ifdef MAPBASE
 	SendPropBool( SENDINFO( m_bDrawSky ) ),
 	SendPropBool( SENDINFO( m_bDrawSky2 ) ),
 	SendPropBool( SENDINFO( m_bUseEyePosition ) ),
 #endif
 
-	// Fov & fov blends
-	SendPropInt( SENDINFO( m_iFOV ), 9 ),
-	SendPropInt( SENDINFO( m_iNextFOV ), 9 ),
-	SendPropInt( SENDINFO( m_iStartFOV ), 9 ),
-	SendPropFloat( SENDINFO( m_flNextFOVBlendTime ), 10 ),
-	SendPropFloat( SENDINFO( m_flFOVBlendStartTime ), 10 ),
+			  // Fov & fov blends
+			  SendPropInt( SENDINFO( m_iFOV ), 9 ),
+			  SendPropInt( SENDINFO( m_iNextFOV ), 9 ),
+			  SendPropInt( SENDINFO( m_iStartFOV ), 9 ),
+			  SendPropFloat( SENDINFO( m_flNextFOVBlendTime ), 10 ),
+			  SendPropFloat( SENDINFO( m_flFOVBlendStartTime ), 10 ),
 
-	SendPropBool( SENDINFO( m_bAlternateFOV ) ),
+			  SendPropBool( SENDINFO( m_bAlternateFOV ) ),
 
-	// Fades
-	SendPropFloat( SENDINFO( m_flFadeAlpha ), 10 ),
-	SendPropArray(
-		SendPropFloat( SENDINFO_ARRAY(m_flFadeColor), 32, SPROP_NOSCALE),
-		m_flFadeColor),
-	SendPropFloat( SENDINFO( m_flFadeDuration ), 10, SPROP_ROUNDDOWN, 0.0f, 255.0 ),
-	SendPropEHandle(SENDINFO( m_hCameraEntity ) ),
-END_SEND_TABLE()
+			  // Fades
+			  SendPropFloat( SENDINFO( m_flFadeAlpha ), 10 ),
+			  SendPropArray(
+				  SendPropFloat( SENDINFO_ARRAY( m_flFadeColor ), 32, SPROP_NOSCALE ),
+				  m_flFadeColor ),
+			  SendPropFloat( SENDINFO( m_flFadeDuration ), 10, SPROP_ROUNDDOWN, 0.0f, 255.0 ),
+			  SendPropEHandle( SENDINFO( m_hCameraEntity ) ),
+			  END_SEND_TABLE()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::Spawn( void )
+			  void CScriptIntro::Spawn( void )
 {
 	m_iNextBlendMode = -1;
 	m_iQueuedBlendMode = -1;
 	m_iQueuedNextBlendMode = -1;
 	AddSolidFlags( FSOLID_NOT_SOLID );
-	SetSize( -Vector(5,5,5), Vector(5,5,5) );
+	SetSize( -Vector( 5, 5, 5 ), Vector( 5, 5, 5 ) );
 	m_bActive = false;
 	m_iNextFOV = 0;
 	m_iFOV = 0;
@@ -123,12 +123,12 @@ void CScriptIntro::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CScriptIntro::Activate( void )
 {
 	// Restore our script pointer, this is necessary to trigger other internal logic to due with PVS checks
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		g_hIntroScript = this;
 	}
@@ -152,19 +152,21 @@ int CScriptIntro::UpdateTransmitState()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetCameraViewEntity( inputdata_t &inputdata )
+void CScriptIntro::InputSetCameraViewEntity( inputdata_t& inputdata )
 {
 	// Find the specified entity
 	string_t iszEntityName = inputdata.value.StringID();
-	if ( iszEntityName == NULL_STRING )
-		return;
-
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, iszEntityName, NULL, inputdata.pActivator, inputdata.pCaller );
-	if ( !pEntity )
+	if( iszEntityName == NULL_STRING )
 	{
-		Warning("script_intro %s couldn't find SetCameraViewEntity named %s\n", STRING(GetEntityName()), STRING(iszEntityName) );
+		return;
+	}
+
+	CBaseEntity* pEntity = gEntList.FindEntityByName( NULL, iszEntityName, NULL, inputdata.pActivator, inputdata.pCaller );
+	if( !pEntity )
+	{
+		Warning( "script_intro %s couldn't find SetCameraViewEntity named %s\n", STRING( GetEntityName() ), STRING( iszEntityName ) );
 		return;
 	}
 
@@ -176,9 +178,9 @@ void CScriptIntro::InputSetCameraViewEntity( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Fill out the origin that should be included in the player's PVS
 //-----------------------------------------------------------------------------
-bool CScriptIntro::GetIncludedPVSOrigin( Vector *pOrigin, CBaseEntity **ppCamera )
+bool CScriptIntro::GetIncludedPVSOrigin( Vector* pOrigin, CBaseEntity** ppCamera )
 {
-	if ( m_bActive && m_hCameraEntity.Get() )
+	if( m_bActive && m_hCameraEntity.Get() )
 	{
 		*ppCamera = m_hCameraEntity.Get();
 		*pOrigin = m_hCameraEntity.Get()->GetAbsOrigin();
@@ -196,51 +198,51 @@ static ConVar cl_spewscriptintro( "cl_spewscriptintro", "0" );
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetBlendMode( inputdata_t &inputdata )
+void CScriptIntro::InputSetBlendMode( inputdata_t& inputdata )
 {
 	m_iBlendMode = m_iNextBlendMode = inputdata.value.Int();
 	m_flBlendStartTime = m_flNextBlendTime = gpGlobals->curtime;
 	m_iQueuedBlendMode = -1;
 	SetContextThink( NULL, gpGlobals->curtime, "BlendComplete" );
 
-	if ( cl_spewscriptintro.GetInt() )
+	if( cl_spewscriptintro.GetInt() )
 	{
 		DevMsg( 1, "%.2f INPUT: Blend mode set to %d\n", gpGlobals->curtime, m_iBlendMode.Get() );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetNextBlendMode( inputdata_t &inputdata )
+void CScriptIntro::InputSetNextBlendMode( inputdata_t& inputdata )
 {
 	m_iQueuedNextBlendMode = inputdata.value.Int();
 
-	if ( cl_spewscriptintro.GetInt() )
+	if( cl_spewscriptintro.GetInt() )
 	{
 		DevMsg( 1, "%.2f INPUT: Next Blend mode set to %d\n", gpGlobals->curtime, m_iQueuedNextBlendMode );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetNextFOV( inputdata_t &inputdata )
+void CScriptIntro::InputSetNextFOV( inputdata_t& inputdata )
 {
 	m_iNextFOV = inputdata.value.Int();
 }
 
 //------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetFOVBlendTime( inputdata_t &inputdata )
+void CScriptIntro::InputSetFOVBlendTime( inputdata_t& inputdata )
 {
 	// Cache our FOV starting point before we update our data here
-	if ( m_flNextFOVBlendTime >= gpGlobals->curtime )
+	if( m_flNextFOVBlendTime >= gpGlobals->curtime )
 	{
 		// We're already in a blend, so capture where we are at this point in time
 		m_iStartFOV = ScriptInfo_CalculateFOV( m_flFOVBlendStartTime, m_flNextFOVBlendTime, m_iStartFOV, m_iNextFOV, m_bAlternateFOV );
@@ -248,8 +250,8 @@ void CScriptIntro::InputSetFOVBlendTime( inputdata_t &inputdata )
 	else
 	{
 		// If we weren't blending, then we need to construct a proper starting point from scratch
-		CBasePlayer *pPlayer = AI_GetSinglePlayer();
-		if ( pPlayer )
+		CBasePlayer* pPlayer = AI_GetSinglePlayer();
+		if( pPlayer )
 		{
 			m_iStartFOV = ( m_iFOV ) ? m_iFOV : pPlayer->GetFOV();
 		}
@@ -264,40 +266,40 @@ void CScriptIntro::InputSetFOVBlendTime( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetFOV( inputdata_t &inputdata )
+void CScriptIntro::InputSetFOV( inputdata_t& inputdata )
 {
 	m_iFOV = inputdata.value.Int();
 	m_iStartFOV = m_iFOV;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetNextBlendTime( inputdata_t &inputdata )
+void CScriptIntro::InputSetNextBlendTime( inputdata_t& inputdata )
 {
 	m_flNextBlendTime = gpGlobals->curtime + inputdata.value.Float();
 	m_flBlendStartTime = gpGlobals->curtime;
 
 	// This logic is used to support continued calls to SetNextBlendMode
 	// without intervening calls to SetBlendMode
-	if ( m_iQueuedBlendMode >= 0 )
+	if( m_iQueuedBlendMode >= 0 )
 	{
 		m_iBlendMode = m_iQueuedBlendMode;
 	}
 
-	if ( m_iQueuedNextBlendMode < 0 )
+	if( m_iQueuedNextBlendMode < 0 )
 	{
 		Warning( "script_intro: Warning!! Set blend time without setting next blend mode!\n" );
 		m_iQueuedNextBlendMode = m_iBlendMode;
 	}
 
-	m_iNextBlendMode = m_iQueuedNextBlendMode; 
+	m_iNextBlendMode = m_iQueuedNextBlendMode;
 	m_iQueuedNextBlendMode = -1;
 	m_iQueuedBlendMode = m_iNextBlendMode;
 
-	if ( cl_spewscriptintro.GetInt() )
+	if( cl_spewscriptintro.GetInt() )
 	{
 		DevMsg( 1, "%.2f BLEND STARTED: %d to %d, end at %.2f\n", gpGlobals->curtime, m_iBlendMode.Get(), m_iNextBlendMode.Get(), m_flNextBlendTime.Get() );
 	}
@@ -307,7 +309,7 @@ void CScriptIntro::InputSetNextBlendTime( inputdata_t &inputdata )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CScriptIntro::BlendComplete( )
 {
@@ -319,47 +321,47 @@ void CScriptIntro::BlendComplete( )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputActivate( inputdata_t &inputdata )
+void CScriptIntro::InputActivate( inputdata_t& inputdata )
 {
 	m_bActive = true;
 	g_hIntroScript = this;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputDeactivate( inputdata_t &inputdata )
+void CScriptIntro::InputDeactivate( inputdata_t& inputdata )
 {
 	m_bActive = false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputFadeTo( inputdata_t &inputdata )
+void CScriptIntro::InputFadeTo( inputdata_t& inputdata )
 {
 	char parseString[255];
-	Q_strncpy(parseString, inputdata.value.String(), sizeof(parseString));
+	Q_strncpy( parseString, inputdata.value.String(), sizeof( parseString ) );
 
 	// Get the fade alpha
-	char *pszParam = strtok(parseString," ");
-	if ( !pszParam || !pszParam[0] )
+	char* pszParam = strtok( parseString, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received FadeTo input without an alpha. Syntax: <fade alpha> <fade duration>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received FadeTo input without an alpha. Syntax: <fade alpha> <fade duration>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	float flAlpha = atof( pszParam );
 
 	// Get the fade duration
-	pszParam = strtok(NULL," ");
-	if ( !pszParam || !pszParam[0] )
+	pszParam = strtok( NULL, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received FadeTo input without a duration. Syntax: <fade alpha> <fade duration>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received FadeTo input without a duration. Syntax: <fade alpha> <fade duration>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 
@@ -371,35 +373,35 @@ void CScriptIntro::InputFadeTo( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CScriptIntro::InputSetFadeColor( inputdata_t &inputdata )
+void CScriptIntro::InputSetFadeColor( inputdata_t& inputdata )
 {
 	char parseString[255];
-	Q_strncpy(parseString, inputdata.value.String(), sizeof(parseString));
+	Q_strncpy( parseString, inputdata.value.String(), sizeof( parseString ) );
 
 	// Get the fade colors
-	char *pszParam = strtok(parseString," ");
-	if ( !pszParam || !pszParam[0] )
+	char* pszParam = strtok( parseString, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	float flR = atof( pszParam );
 
-	pszParam = strtok(NULL," ");
-	if ( !pszParam || !pszParam[0] )
+	pszParam = strtok( NULL, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	float flG = atof( pszParam );
 
-	pszParam = strtok(NULL," ");
-	if ( !pszParam || !pszParam[0] )
+	pszParam = strtok( NULL, " " );
+	if( !pszParam || !pszParam[0] )
 	{
-		Warning("%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
+		Warning( "%s (%s) received SetFadeColor input without correct parameters. Syntax: <Red> <Green> <Blue>>\n", GetClassname(), GetDebugName() );
 		return;
 	}
 	float flB = atof( pszParam );
@@ -423,18 +425,18 @@ public:
 	void Spawn( void );
 	int UpdateTransmitState( void );
 
-	void ActivateEnt( CBaseEntity *pActivator = NULL, CBaseEntity *pCaller = NULL );
+	void ActivateEnt( CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
 	void DeactivateEnt();
 	void MeasureThink();
 
 	Vector	EyePosition( void );			// position of eyes
-	const QAngle &EyeAngles( void );		// Direction of eyes in world space
-	const QAngle &LocalEyeAngles( void );	// Direction of eyes
+	const QAngle& EyeAngles( void );		// Direction of eyes in world space
+	const QAngle& LocalEyeAngles( void );	// Direction of eyes
 	Vector	EarPosition( void );			// position of ears
 
 	// Inputs
-	void	InputActivate( inputdata_t &inputdata );
-	void	InputDeactivate( inputdata_t &inputdata );
+	void	InputActivate( inputdata_t& inputdata );
+	void	InputDeactivate( inputdata_t& inputdata );
 
 #ifdef MAPBASE_MP
 	// TODO: Mapbase MP should use reception filter or something to determine which player's eye position is offset
@@ -457,42 +459,44 @@ LINK_ENTITY_TO_CLASS( info_player_view_proxy, CPlayerViewProxy );
 
 BEGIN_DATADESC( CPlayerViewProxy )
 
-	// Keys
-	DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_iszMeasureReference, FIELD_STRING, "MeasureReference" ),
-	DEFINE_FIELD( m_hMeasureReference, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_iszTargetReference, FIELD_STRING, "TargetReference" ),
-	DEFINE_FIELD( m_hTargetReference, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "TargetScale" ),
-	DEFINE_KEYFIELD( m_bEnabled, FIELD_BOOLEAN, "Enabled" ),
+// Keys
+DEFINE_FIELD( m_hPlayer, FIELD_EHANDLE ),
+			  DEFINE_KEYFIELD( m_iszMeasureReference, FIELD_STRING, "MeasureReference" ),
+			  DEFINE_FIELD( m_hMeasureReference, FIELD_EHANDLE ),
+			  DEFINE_KEYFIELD( m_iszTargetReference, FIELD_STRING, "TargetReference" ),
+			  DEFINE_FIELD( m_hTargetReference, FIELD_EHANDLE ),
+			  DEFINE_KEYFIELD( m_flScale, FIELD_FLOAT, "TargetScale" ),
+			  DEFINE_KEYFIELD( m_bEnabled, FIELD_BOOLEAN, "Enabled" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Deactivate", InputDeactivate ),
 
-	DEFINE_THINKFUNC( MeasureThink ),
+			  DEFINE_THINKFUNC( MeasureThink ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-IMPLEMENT_SERVERCLASS_ST( CPlayerViewProxy, DT_PlayerViewProxy )
+			  IMPLEMENT_SERVERCLASS_ST( CPlayerViewProxy, DT_PlayerViewProxy )
 #ifdef MAPBASE_MP
 	SendPropEHandle( SENDINFO( m_hPlayer ) ),
 #endif
-	SendPropBool( SENDINFO( m_bEnabled ) ),
-END_SEND_TABLE()
+			  SendPropBool( SENDINFO( m_bEnabled ) ),
+			  END_SEND_TABLE()
 
-CPlayerViewProxy::CPlayerViewProxy()
+			  CPlayerViewProxy::CPlayerViewProxy()
 {
 	m_flScale = 1.0f;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPlayerViewProxy::Spawn( void )
 {
-	if (m_bEnabled)
+	if( m_bEnabled )
+	{
 		ActivateEnt();
+	}
 }
 
 //------------------------------------------------------------------------------
@@ -504,24 +508,24 @@ int CPlayerViewProxy::UpdateTransmitState()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPlayerViewProxy::MeasureThink( void )
 {
-	if (m_hPlayer.Get() == NULL)
+	if( m_hPlayer.Get() == NULL )
 	{
 		// Player has disappeared! Stopping measure
 		return;
 	}
 
-	if (m_bEnabled && m_hMeasureReference.Get() && m_hTargetReference.Get())
+	if( m_bEnabled && m_hMeasureReference.Get() && m_hTargetReference.Get() )
 	{
 		matrix3x4_t matRefToMeasure, matWorldToMeasure;
 		MatrixInvert( m_hPlayer.Get()->EntityToWorldTransform(), matWorldToMeasure );
 		ConcatTransforms( matWorldToMeasure, m_hMeasureReference.Get()->EntityToWorldTransform(), matRefToMeasure );
 
 		// Apply the scale factor
-		if ( ( m_flScale != 0.0f ) && ( m_flScale != 1.0f ) )
+		if( ( m_flScale != 0.0f ) && ( m_flScale != 1.0f ) )
 		{
 			Vector vecTranslation;
 			MatrixGetColumn( matRefToMeasure, 3, vecTranslation );
@@ -549,11 +553,11 @@ void CPlayerViewProxy::MeasureThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector CPlayerViewProxy::EyePosition( void )
 {
-	if (m_hPlayer.Get())
+	if( m_hPlayer.Get() )
 	{
 		//Vector vecPlayerOffset = m_hPlayer.Get()->EyePosition() - m_hPlayer.Get()->GetAbsOrigin();
 		//return GetAbsOrigin() + vecPlayerOffset;
@@ -563,63 +567,73 @@ Vector CPlayerViewProxy::EyePosition( void )
 		float fldummy;
 		m_hPlayer->CalcView( vecOrigin, angAngles, fldummy, fldummy, fldummy );
 
-		return GetAbsOrigin() + (vecOrigin - m_hPlayer->GetAbsOrigin());
+		return GetAbsOrigin() + ( vecOrigin - m_hPlayer->GetAbsOrigin() );
 	}
 	else
+	{
 		return BaseClass::EyePosition();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const QAngle &CPlayerViewProxy::EyeAngles( void )
+const QAngle& CPlayerViewProxy::EyeAngles( void )
 {
-	if (m_hPlayer.Get())
+	if( m_hPlayer.Get() )
 	{
 		Vector vecOrigin;
 		static QAngle angAngles;
 		float fldummy;
 		m_hPlayer->CalcView( vecOrigin, angAngles, fldummy, fldummy, fldummy );
 
-		angAngles = GetAbsAngles() + (angAngles - m_hPlayer->GetAbsAngles());
+		angAngles = GetAbsAngles() + ( angAngles - m_hPlayer->GetAbsAngles() );
 		return angAngles;
 
 		//return m_hPlayer.Get()->EyeAngles();
 	}
 	else
+	{
 		return BaseClass::EyeAngles();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const QAngle &CPlayerViewProxy::LocalEyeAngles( void )
+const QAngle& CPlayerViewProxy::LocalEyeAngles( void )
 {
-	if (m_hPlayer.Get()) {
-		static QAngle angAngles = GetAbsAngles() + (m_hPlayer->LocalEyeAngles() - m_hPlayer->GetAbsAngles());
+	if( m_hPlayer.Get() )
+	{
+		static QAngle angAngles = GetAbsAngles() + ( m_hPlayer->LocalEyeAngles() - m_hPlayer->GetAbsAngles() );
 		return angAngles;
-	} else
+	}
+	else
+	{
 		return BaseClass::LocalEyeAngles();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector CPlayerViewProxy::EarPosition( void )
 {
-	if (m_hPlayer.Get())
+	if( m_hPlayer.Get() )
 	{
 		Vector vecPlayerOffset = m_hPlayer.Get()->EarPosition() - m_hPlayer.Get()->GetAbsOrigin();
 		return GetAbsOrigin() + vecPlayerOffset;
 	}
 	else
+	{
 		return BaseClass::EarPosition();
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPlayerViewProxy::ActivateEnt( CBaseEntity *pActivator, CBaseEntity *pCaller )
+void CPlayerViewProxy::ActivateEnt( CBaseEntity* pActivator, CBaseEntity* pCaller )
 {
 	m_bEnabled = true;
 
@@ -634,7 +648,7 @@ void CPlayerViewProxy::ActivateEnt( CBaseEntity *pActivator, CBaseEntity *pCalle
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPlayerViewProxy::DeactivateEnt( void )
 {
@@ -645,19 +659,19 @@ void CPlayerViewProxy::DeactivateEnt( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CPlayerViewProxy::InputActivate( inputdata_t &inputdata )
+void CPlayerViewProxy::InputActivate( inputdata_t& inputdata )
 {
-	ActivateEnt(inputdata.pActivator, inputdata.pCaller);
+	ActivateEnt( inputdata.pActivator, inputdata.pCaller );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CPlayerViewProxy::InputDeactivate( inputdata_t &inputdata )
+void CPlayerViewProxy::InputDeactivate( inputdata_t& inputdata )
 {
 	DeactivateEnt();
 }

@@ -12,10 +12,10 @@
 #include "tier0/memdbgon.h"
 
 #ifdef GNUC
-#define __cdecl 
+	#define __cdecl
 #endif
 
-void __cdecl srand(unsigned int)
+void __cdecl srand( unsigned int )
 {
 }
 

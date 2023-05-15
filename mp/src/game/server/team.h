@@ -8,7 +8,7 @@
 #ifndef TEAM_H
 #define TEAM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shareddefs.h"
@@ -26,7 +26,10 @@ public:
 
 	DECLARE_SERVERCLASS();
 
-	virtual void Precache( void ) { return; };
+	virtual void Precache( void )
+	{
+		return;
+	};
 
 	virtual void Think( void );
 	virtual int  UpdateTransmitState( void );
@@ -34,32 +37,32 @@ public:
 	//-----------------------------------------------------------------------------
 	// Initialization
 	//-----------------------------------------------------------------------------
-	virtual void		Init( const char *pName, int iNumber );
+	virtual void		Init( const char* pName, int iNumber );
 
 	//-----------------------------------------------------------------------------
 	// Data Handling
 	//-----------------------------------------------------------------------------
 	virtual int			GetTeamNumber( void ) const;
-	virtual const char *GetName( void );
-	virtual void		UpdateClientData( CBasePlayer *pPlayer );
+	virtual const char* GetName( void );
+	virtual void		UpdateClientData( CBasePlayer* pPlayer );
 	virtual bool		ShouldTransmitToPlayer( CBasePlayer* pRecipient, CBaseEntity* pEntity );
 
 	//-----------------------------------------------------------------------------
 	// Spawnpoints
 	//-----------------------------------------------------------------------------
 	virtual void InitializeSpawnpoints( void );
-	virtual void AddSpawnpoint( CTeamSpawnPoint *pSpawnpoint );
-	virtual void RemoveSpawnpoint( CTeamSpawnPoint *pSpawnpoint );
-	virtual CBaseEntity *SpawnPlayer( CBasePlayer *pPlayer );
+	virtual void AddSpawnpoint( CTeamSpawnPoint* pSpawnpoint );
+	virtual void RemoveSpawnpoint( CTeamSpawnPoint* pSpawnpoint );
+	virtual CBaseEntity* SpawnPlayer( CBasePlayer* pPlayer );
 
 	//-----------------------------------------------------------------------------
 	// Players
 	//-----------------------------------------------------------------------------
 	virtual void InitializePlayers( void );
-	virtual void AddPlayer( CBasePlayer *pPlayer );
-	virtual void RemovePlayer( CBasePlayer *pPlayer );
+	virtual void AddPlayer( CBasePlayer* pPlayer );
+	virtual void RemovePlayer( CBasePlayer* pPlayer );
 	virtual int  GetNumPlayers( void );
-	virtual CBasePlayer *GetPlayer( int iIndex );
+	virtual CBasePlayer* GetPlayer( int iIndex );
 
 	//-----------------------------------------------------------------------------
 	// Scoring
@@ -70,17 +73,26 @@ public:
 	virtual void ResetScores( void );
 
 	// Round scoring
-	virtual int GetRoundsWon( void ) { return m_iRoundsWon; }
-	virtual void SetRoundsWon( int iRounds ) { m_iRoundsWon = iRounds; }
-	virtual void IncrementRoundsWon( void ) { m_iRoundsWon++; }
+	virtual int GetRoundsWon( void )
+	{
+		return m_iRoundsWon;
+	}
+	virtual void SetRoundsWon( int iRounds )
+	{
+		m_iRoundsWon = iRounds;
+	}
+	virtual void IncrementRoundsWon( void )
+	{
+		m_iRoundsWon++;
+	}
 
 	void AwardAchievement( int iAchievement );
 
 	virtual int GetAliveMembers( void );
 
 public:
-	CUtlVector< CTeamSpawnPoint * > m_aSpawnPoints;
-	CUtlVector< CBasePlayer * >		m_aPlayers;
+	CUtlVector< CTeamSpawnPoint* > m_aSpawnPoints;
+	CUtlVector< CBasePlayer* >		m_aPlayers;
 
 	// Data
 	CNetworkString( m_szTeamname, MAX_TEAM_NAME_LENGTH );
@@ -94,8 +106,8 @@ public:
 	CNetworkVar( int, m_iTeamNum );			// Which team is this?
 };
 
-extern CUtlVector< CTeam * > g_Teams;
-extern CTeam *GetGlobalTeam( int iIndex );
+extern CUtlVector< CTeam* > g_Teams;
+extern CTeam* GetGlobalTeam( int iIndex );
 extern int GetNumberOfTeams( void );
 
 #endif // TEAM_H

@@ -7,7 +7,7 @@
 #ifndef ISTEAMNETWORKING
 #define ISTEAMNETWORKING
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "steamtypes.h"
@@ -23,8 +23,8 @@ enum EP2PSessionError
 	k_EP2PSessionErrorNoRightsToApp = 2,			// local user doesn't own the app that is running
 	k_EP2PSessionErrorDestinationNotLoggedIn = 3,	// target user isn't connected to Steam
 	k_EP2PSessionErrorTimeout = 4,					// target isn't responding, perhaps not calling AcceptP2PSessionWithUser()
-													// corporate firewalls can also block this (NAT traversal is not firewall traversal)
-													// make sure that UDP ports 3478, 4379, and 4380 are open in an outbound direction
+	// corporate firewalls can also block this (NAT traversal is not firewall traversal)
+	// make sure that UDP ports 3478, 4379, and 4380 are open in an outbound direction
 	k_EP2PSessionErrorMax = 5
 };
 
@@ -42,12 +42,12 @@ enum EP2PSend
 	// This is only really useful for kinds of data that should never buffer up, i.e. voice payload packets
 	k_EP2PSendUnreliableNoDelay = 1,
 
-	// Reliable message send. Can send up to 1MB of data in a single message. 
-	// Does fragmentation/re-assembly of messages under the hood, as well as a sliding window for efficient sends of large chunks of data. 
+	// Reliable message send. Can send up to 1MB of data in a single message.
+	// Does fragmentation/re-assembly of messages under the hood, as well as a sliding window for efficient sends of large chunks of data.
 	k_EP2PSendReliable = 2,
 
-	// As above, but applies the Nagle algorithm to the send - sends will accumulate 
-	// until the current MTU size (typically ~1200 bytes, but can change) or ~200ms has passed (Nagle algorithm). 
+	// As above, but applies the Nagle algorithm to the send - sends will accumulate
+	// until the current MTU size (typically ~1200 bytes, but can change) or ~200ms has passed (Nagle algorithm).
 	// Useful if you want to send a set of smaller messages but have the coalesced into a single packet
 	// Since the reliable stream is all ordered, you can do several small message sends with k_EP2PSendReliableWithBuffering and then
 	// do a normal k_EP2PSendReliable to force all the buffered data to be sent.
@@ -59,12 +59,12 @@ enum EP2PSend
 // connection state to a specified user, returned by GetP2PSessionState()
 // this is under-the-hood info about what's going on with a SendP2PPacket(), shouldn't be needed except for debuggin
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-#pragma pack( push, 4 )
+	#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-#pragma pack( push, 8 )
+	#pragma pack( push, 8 )
 #else
-#error isteamclient.h must be included
-#endif 
+	#error isteamclient.h must be included
+#endif
 struct P2PSessionState_t
 {
 	uint8 m_bConnectionActive;		// true if we've got an active open connection
@@ -73,7 +73,7 @@ struct P2PSessionState_t
 	uint8 m_bUsingRelay;			// true if it's going through a relay server (TURN)
 	int32 m_nBytesQueuedForSend;
 	int32 m_nPacketsQueuedForSend;
-	uint32 m_nRemoteIP;				// potential IP:Port of remote host. Could be TURN server. 
+	uint32 m_nRemoteIP;				// potential IP:Port of remote host. Could be TURN server.
 	uint16 m_nRemotePort;			// Only exists for compatibility with older authentication api's
 };
 #pragma pack( pop )
@@ -86,11 +86,11 @@ typedef uint32 SNetListenSocket_t;	// CreateListenSocket()
 // connection progress indicators, used by CreateP2PConnectionSocket()
 enum ESNetSocketState
 {
-	k_ESNetSocketStateInvalid = 0,						
+	k_ESNetSocketStateInvalid = 0,
 
 	// communication is valid
-	k_ESNetSocketStateConnected = 1,				
-	
+	k_ESNetSocketStateConnected = 1,
+
 	// states while establishing a connection
 	k_ESNetSocketStateInitiated = 10,				// the connection state machine has started
 
@@ -102,7 +102,7 @@ enum ESNetSocketState
 	k_ESNetSocketStateChallengeHandshake = 15,		// we've received a challenge packet from the server
 
 	// failure states
-	k_ESNetSocketStateDisconnecting = 21,			// the API shut it down, and we're in the process of telling the other end	
+	k_ESNetSocketStateDisconnecting = 21,			// the API shut it down, and we're in the process of telling the other end
 	k_ESNetSocketStateLocalDisconnect = 22,			// the API shut it down, and we've completed shutdown
 	k_ESNetSocketStateTimeoutDuringConnect = 23,	// we timed out while trying to creating the connection
 	k_ESNetSocketStateRemoteEndDisconnected = 24,	// the remote end has disconnected from us
@@ -136,19 +136,19 @@ public:
 	// if we can't get through to the user, an error will be posted via the callback P2PSessionConnectFail_t
 	// see EP2PSend enum above for the descriptions of the different ways of sending packets
 	//
-	// nChannel is a routing number you can use to help route message to different systems 	- you'll have to call ReadP2PPacket() 
+	// nChannel is a routing number you can use to help route message to different systems 	- you'll have to call ReadP2PPacket()
 	// with the same channel number in order to retrieve the data on the other end
 	// using different channels to talk to the same user will still use the same underlying p2p connection, saving on resources
-	virtual bool SendP2PPacket( CSteamID steamIDRemote, const void *pubData, uint32 cubData, EP2PSend eP2PSendType, int nChannel = 0 ) = 0;
+	virtual bool SendP2PPacket( CSteamID steamIDRemote, const void* pubData, uint32 cubData, EP2PSend eP2PSendType, int nChannel = 0 ) = 0;
 
 	// returns true if any data is available for read, and the amount of data that will need to be read
-	virtual bool IsP2PPacketAvailable( uint32 *pcubMsgSize, int nChannel = 0 ) = 0;
+	virtual bool IsP2PPacketAvailable( uint32* pcubMsgSize, int nChannel = 0 ) = 0;
 
 	// reads in a packet that has been sent from another user via SendP2PPacket()
 	// returns the size of the message and the steamID of the user who sent it in the last two parameters
 	// if the buffer passed in is too small, the message will be truncated
 	// this call is not blocking, and will return false if no data is available
-	virtual bool ReadP2PPacket( void *pubDest, uint32 cubDest, uint32 *pcubMsgSize, CSteamID *psteamIDRemote, int nChannel = 0 ) = 0;
+	virtual bool ReadP2PPacket( void* pubDest, uint32 cubDest, uint32* pcubMsgSize, CSteamID* psteamIDRemote, int nChannel = 0 ) = 0;
 
 	// AcceptP2PSessionWithUser() should only be called in response to a P2PSessionRequest_t callback
 	// P2PSessionRequest_t will be posted if another user tries to send you a packet that you haven't talked to yet
@@ -170,7 +170,7 @@ public:
 	// fills out P2PSessionState_t structure with details about the underlying connection to the user
 	// should only needed for debugging purposes
 	// returns false if no connection exists to the specified user
-	virtual bool GetP2PSessionState( CSteamID steamIDRemote, P2PSessionState_t *pConnectionState ) = 0;
+	virtual bool GetP2PSessionState( CSteamID steamIDRemote, P2PSessionState_t* pConnectionState ) = 0;
 
 	// Allow P2P connections to fall back to being relayed through the Steam servers if a direct connection
 	// or NAT-traversal cannot be established. Only applies to connections created after setting this value,
@@ -219,24 +219,24 @@ public:
 	// data is all sent via UDP, and thus send sizes are limited to 1200 bytes; after this, many routers will start dropping packets
 	// use the reliable flag with caution; although the resend rate is pretty aggressive,
 	// it can still cause stalls in receiving data (like TCP)
-	virtual bool SendDataOnSocket( SNetSocket_t hSocket, void *pubData, uint32 cubData, bool bReliable ) = 0;
+	virtual bool SendDataOnSocket( SNetSocket_t hSocket, void* pubData, uint32 cubData, bool bReliable ) = 0;
 
 	// receiving data
 	// returns false if there is no data remaining
 	// fills out *pcubMsgSize with the size of the next message, in bytes
-	virtual bool IsDataAvailableOnSocket( SNetSocket_t hSocket, uint32 *pcubMsgSize ) = 0; 
+	virtual bool IsDataAvailableOnSocket( SNetSocket_t hSocket, uint32* pcubMsgSize ) = 0;
 
 	// fills in pubDest with the contents of the message
 	// messages are always complete, of the same size as was sent (i.e. packetized, not streaming)
 	// if *pcubMsgSize < cubDest, only partial data is written
 	// returns false if no data is available
-	virtual bool RetrieveDataFromSocket( SNetSocket_t hSocket, void *pubDest, uint32 cubDest, uint32 *pcubMsgSize ) = 0; 
+	virtual bool RetrieveDataFromSocket( SNetSocket_t hSocket, void* pubDest, uint32 cubDest, uint32* pcubMsgSize ) = 0;
 
 	// checks for data from any socket that has been connected off this listen socket
 	// returns false if there is no data remaining
 	// fills out *pcubMsgSize with the size of the next message, in bytes
 	// fills out *phSocket with the socket that data is available on
-	virtual bool IsDataAvailable( SNetListenSocket_t hListenSocket, uint32 *pcubMsgSize, SNetSocket_t *phSocket ) = 0;
+	virtual bool IsDataAvailable( SNetListenSocket_t hListenSocket, uint32* pcubMsgSize, SNetSocket_t* phSocket ) = 0;
 
 	// retrieves data from any socket that has been connected off this listen socket
 	// fills in pubDest with the contents of the message
@@ -244,14 +244,14 @@ public:
 	// if *pcubMsgSize < cubDest, only partial data is written
 	// returns false if no data is available
 	// fills out *phSocket with the socket that data is available on
-	virtual bool RetrieveData( SNetListenSocket_t hListenSocket, void *pubDest, uint32 cubDest, uint32 *pcubMsgSize, SNetSocket_t *phSocket ) = 0;
+	virtual bool RetrieveData( SNetListenSocket_t hListenSocket, void* pubDest, uint32 cubDest, uint32* pcubMsgSize, SNetSocket_t* phSocket ) = 0;
 
 	// returns information about the specified socket, filling out the contents of the pointers
-	virtual bool GetSocketInfo( SNetSocket_t hSocket, CSteamID *pSteamIDRemote, int *peSocketStatus, uint32 *punIPRemote, uint16 *punPortRemote ) = 0;
+	virtual bool GetSocketInfo( SNetSocket_t hSocket, CSteamID* pSteamIDRemote, int* peSocketStatus, uint32* punIPRemote, uint16* punPortRemote ) = 0;
 
 	// returns which local port the listen socket is bound to
 	// *pnIP and *pnPort will be 0 if the socket is set to listen for P2P connections only
-	virtual bool GetListenSocketInfo( SNetListenSocket_t hListenSocket, uint32 *pnIP, uint16 *pnPort ) = 0;
+	virtual bool GetListenSocketInfo( SNetListenSocket_t hListenSocket, uint32* pnIP, uint16* pnPort ) = 0;
 
 	// returns true to describe how the socket ended up connecting
 	virtual ESNetSocketConnectionType GetSocketConnectionType( SNetSocket_t hSocket ) = 0;
@@ -263,17 +263,17 @@ public:
 
 // callbacks
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-#pragma pack( push, 4 )
+	#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-#pragma pack( push, 8 )
+	#pragma pack( push, 8 )
 #else
-#error isteamclient.h must be included
-#endif 
+	#error isteamclient.h must be included
+#endif
 
 // callback notification - a user wants to talk to us over the P2P channel via the SendP2PPacket() API
 // in response, a call to AcceptP2PPacketsFromUser() needs to be made, if you want to talk with them
 struct P2PSessionRequest_t
-{ 
+{
 	enum { k_iCallback = k_iSteamNetworkingCallbacks + 2 };
 	CSteamID m_steamIDRemote;			// user who wants to talk to us
 };
@@ -283,7 +283,7 @@ struct P2PSessionRequest_t
 // all packets queued packets unsent at this point will be dropped
 // further attempts to send will retry making the connection (but will be dropped if we fail again)
 struct P2PSessionConnectFail_t
-{ 
+{
 	enum { k_iCallback = k_iSteamNetworkingCallbacks + 3 };
 	CSteamID m_steamIDRemote;			// user we were sending packets to
 	uint8 m_eP2PSessionError;			// EP2PSessionError indicating why we're having trouble
@@ -291,9 +291,9 @@ struct P2PSessionConnectFail_t
 
 
 // callback notification - status of a socket has changed
-// used as part of the CreateListenSocket() / CreateP2PConnectionSocket() 
+// used as part of the CreateListenSocket() / CreateP2PConnectionSocket()
 struct SocketStatusCallback_t
-{ 
+{
 	enum { k_iCallback = k_iSteamNetworkingCallbacks + 1 };
 	SNetSocket_t m_hSocket;				// the socket used to send/receive data to the remote host
 	SNetListenSocket_t m_hListenSocket;	// this is the server socket that we were listening on; NULL if this was an outgoing connection

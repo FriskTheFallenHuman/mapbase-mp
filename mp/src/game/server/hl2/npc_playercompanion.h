@@ -18,17 +18,17 @@
 #include "ai_behavior_fear.h"
 
 #ifdef HL2_EPISODIC
-#include "ai_behavior_operator.h"
-#include "ai_behavior_passenger_companion.h"
+	#include "ai_behavior_operator.h"
+	#include "ai_behavior_passenger_companion.h"
 #endif
 
 #ifdef MAPBASE
-#include "ai_behavior_functank.h"
-#include "mapbase/ai_grenade.h"
+	#include "ai_behavior_functank.h"
+	#include "mapbase/ai_grenade.h"
 #endif
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 enum AIReadiness_t
@@ -51,12 +51,12 @@ enum AIReadinessUse_t
 class CCompanionActivityRemap : public CActivityRemap
 {
 public:
-	CCompanionActivityRemap( void ) : 
-	  m_fUsageBits( 0 ),
-	  m_readiness( AIRL_RELAXED ),
-	  m_bAiming( false ),
-	  m_bWeaponRequired( false ),
-	  m_bInVehicle( false ) {} 
+	CCompanionActivityRemap( void ) :
+		m_fUsageBits( 0 ),
+		m_readiness( AIRL_RELAXED ),
+		m_bAiming( false ),
+		m_bWeaponRequired( false ),
+		m_bInVehicle( false ) {}
 
 	// This bitfield maps which bits of data are being utilized by this data structure, since not all criteria
 	// in the parsed file are essential.  You must add corresponding bits to the definitions below and maintain
@@ -91,8 +91,8 @@ public:
 class CPhysicsProp;
 
 #ifdef MAPBASE
-// If you think about it, this is really unnecessary.
-//#define COMPANION_MELEE_ATTACK 1
+	// If you think about it, this is really unnecessary.
+	//#define COMPANION_MELEE_ATTACK 1
 #endif
 
 //-----------------------------------------------------------------------------
@@ -119,15 +119,15 @@ public:
 	void			Spawn();
 	virtual void	SelectModel() {};
 
-	virtual int		Restore( IRestore &restore );
+	virtual int		Restore( IRestore& restore );
 	virtual void	DoCustomSpeechAI( void );
 
 	//---------------------------------
 	int 			ObjectCaps();
 	bool 			ShouldAlwaysThink();
 
-	Disposition_t	IRelationType( CBaseEntity *pTarget );
-	
+	Disposition_t	IRelationType( CBaseEntity* pTarget );
+
 	bool			IsSilentSquadMember() const;
 
 	//---------------------------------
@@ -137,16 +137,19 @@ public:
 	virtual void	PredictPlayerPush();
 	void			BuildScheduleTestBits();
 
-	CSound			*GetBestSound( int validTypes = ALL_SOUNDS );
-	bool			QueryHearSound( CSound *pSound );
-	bool			QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC = false );
-	bool			ShouldIgnoreSound( CSound * );
-	
+	CSound*			GetBestSound( int validTypes = ALL_SOUNDS );
+	bool			QueryHearSound( CSound* pSound );
+	bool			QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC = false );
+	bool			ShouldIgnoreSound( CSound* );
+
 	int 			SelectSchedule();
 
 	virtual int 	SelectScheduleDanger();
 	virtual int 	SelectSchedulePriorityAction();
-	virtual int 	SelectScheduleNonCombat()			{ return SCHED_NONE; }
+	virtual int 	SelectScheduleNonCombat()
+	{
+		return SCHED_NONE;
+	}
 	virtual int 	SelectScheduleCombat();
 	int 			SelectSchedulePlayerPush();
 
@@ -155,21 +158,21 @@ public:
 	virtual bool	ShouldDeferToFollowBehavior();
 	bool			ShouldDeferToPassengerBehavior( void );
 
-	bool			IsValidReasonableFacing( const Vector &vecSightDir, float sightDist );
-	
+	bool			IsValidReasonableFacing( const Vector& vecSightDir, float sightDist );
+
 	int 			TranslateSchedule( int scheduleType );
-	
-	void 			StartTask( const Task_t *pTask );
-	void 			RunTask( const Task_t *pTask );
-	
+
+	void 			StartTask( const Task_t* pTask );
+	void 			RunTask( const Task_t* pTask );
+
 	Activity		TranslateActivityReadiness( Activity activity );
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
-	void 			HandleAnimEvent( animevent_t *pEvent );
-	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
+	void 			HandleAnimEvent( animevent_t* pEvent );
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	int				GetSoundInterests();
-	
-	void 			Touch( CBaseEntity *pOther );
+
+	void 			Touch( CBaseEntity* pOther );
 
 	virtual bool	IgnorePlayerPushing( void );
 
@@ -177,7 +180,7 @@ public:
 	void			Activate( void );
 
 	void			PrepareReadinessRemap( void );
-	
+
 	virtual bool	IsNavigationUrgent( void );
 
 	//---------------------------------
@@ -186,19 +189,31 @@ public:
 
 protected:
 	virtual bool	IsReadinessCapable();
-	bool			IsReadinessLocked() { return gpGlobals->curtime < m_flReadinessLockedUntil; }
+	bool			IsReadinessLocked()
+	{
+		return gpGlobals->curtime < m_flReadinessLockedUntil;
+	}
 	void			AddReadiness( float flAdd, bool bOverrideLock = false );
 	void			SubtractReadiness( float flAdd, bool bOverrideLock = false );
 	void			SetReadinessValue( float flSet );
-	void			SetReadinessSensitivity( float flSensitivity ) { m_flReadinessSensitivity = flSensitivity; }
+	void			SetReadinessSensitivity( float flSensitivity )
+	{
+		m_flReadinessSensitivity = flSensitivity;
+	}
 	virtual void	UpdateReadiness();
 	virtual float	GetReadinessDecay();
-	bool			IsInScriptedReadinessState( void ) { return (m_flReadiness < 0 ); }
+	bool			IsInScriptedReadinessState( void )
+	{
+		return ( m_flReadiness < 0 );
+	}
 
 	CUtlVector< CCompanionActivityRemap > m_activityMappings;
 
 public:
-	float			GetReadinessValue()	{ return m_flReadiness; }
+	float			GetReadinessValue()
+	{
+		return m_flReadiness;
+	}
 	int				GetReadinessLevel();
 	void			SetReadinessLevel( int iLevel, bool bOverrideLock, bool bSlam );
 	void			LockReadiness( float duration = -1.0f ); // Defaults to indefinitely locked
@@ -207,26 +222,26 @@ public:
 	virtual			void ReadinessLevelChanged( int iPriorLevel ) { 	}
 
 #ifndef MAPBASE
-	void			InputGiveWeapon( inputdata_t &inputdata );
+	void			InputGiveWeapon( inputdata_t& inputdata );
 #endif
 
 #ifdef HL2_EPISODIC
 	//---------------------------------
 	// Vehicle passenger
 	//---------------------------------
-	void			InputEnterVehicle( inputdata_t &inputdata );
-	void			InputEnterVehicleImmediately( inputdata_t &inputdata );
-	void			InputCancelEnterVehicle( inputdata_t &inputdata );
-	void			InputExitVehicle( inputdata_t &inputdata );
+	void			InputEnterVehicle( inputdata_t& inputdata );
+	void			InputEnterVehicleImmediately( inputdata_t& inputdata );
+	void			InputCancelEnterVehicle( inputdata_t& inputdata );
+	void			InputExitVehicle( inputdata_t& inputdata );
 	bool			CanEnterVehicle( void );
 	bool			CanExitVehicle( void );
-	void			EnterVehicle( CBaseEntity *pEntityVehicle, bool bImmediately );
+	void			EnterVehicle( CBaseEntity* pEntityVehicle, bool bImmediately );
 	virtual bool	ExitVehicle( void );
 
 	virtual void	UpdateEfficiency( bool bInPVS );
 	virtual bool	IsInAVehicle( void ) const;
-	virtual	IServerVehicle *GetVehicle( void );
-	virtual CBaseEntity *GetVehicleEntity( void );
+	virtual	IServerVehicle* GetVehicle( void );
+	virtual CBaseEntity* GetVehicleEntity( void );
 
 	virtual bool CanRunAScriptedNPCInteraction( bool bForced = false );
 	virtual bool IsAllowedToDodge( void );
@@ -235,121 +250,142 @@ public:
 
 public:
 
-	virtual void	OnPlayerKilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual void	OnPlayerKilledOther( CBaseEntity* pVictim, const CTakeDamageInfo& info );
 #ifdef MAPBASE
 	// This is just here to overwrite ai_playerally's TLK_ENEMY_DEAD
-	virtual void	OnKilledNPC(CBaseCombatCharacter *pKilled) {}
+	virtual void	OnKilledNPC( CBaseCombatCharacter* pKilled ) {}
 
-	virtual void	Event_Killed( const CTakeDamageInfo &info );
-	virtual void	Event_KilledOther( CBaseEntity *pVictim, const CTakeDamageInfo &info );
+	virtual void	Event_Killed( const CTakeDamageInfo& info );
+	virtual void	Event_KilledOther( CBaseEntity* pVictim, const CTakeDamageInfo& info );
 	virtual void	DoCustomCombatAI( void );
 #endif
 
 	//---------------------------------
 	//---------------------------------
-	bool PickTacticalLookTarget( AILookTargetArgs_t *pArgs );
+	bool PickTacticalLookTarget( AILookTargetArgs_t* pArgs );
 
 	//---------------------------------
 	// Aiming
 	//---------------------------------
-	CBaseEntity		*GetAimTarget() { return m_hAimTarget; }
-	void			SetAimTarget( CBaseEntity *pTarget );
-	void			StopAiming( char *pszReason = NULL );
+	CBaseEntity*		GetAimTarget()
+	{
+		return m_hAimTarget;
+	}
+	void			SetAimTarget( CBaseEntity* pTarget );
+	void			StopAiming( char* pszReason = NULL );
 	bool			FindNewAimTarget();
 	void			OnNewLookTarget();
 	bool			ShouldBeAiming();
 	virtual bool	IsAllowedToAim();
-	bool			HasAimLOS( CBaseEntity *pAimTarget );
+	bool			HasAimLOS( CBaseEntity* pAimTarget );
 	void			AimGun();
-	CBaseEntity		*GetAlternateMoveShootTarget();
+	CBaseEntity*		GetAlternateMoveShootTarget();
 
 	//---------------------------------
 	// Combat
 	//---------------------------------
 	virtual void 	LocateEnemySound() {};
 
-	bool			IsValidEnemy( CBaseEntity *pEnemy );
+	bool			IsValidEnemy( CBaseEntity* pEnemy );
 
-	bool 			IsSafeFromFloorTurret( const Vector &vecLocation, CBaseEntity *pTurret );
+	bool 			IsSafeFromFloorTurret( const Vector& vecLocation, CBaseEntity* pTurret );
 
 	bool			ShouldMoveAndShoot( void );
 	void			OnUpdateShotRegulator();
 
-	void			DecalTrace( trace_t *pTrace, char const *decalName );
+	void			DecalTrace( trace_t* pTrace, char const* decalName );
 	bool 			FCanCheckAttacks();
-	Vector 			GetActualShootPosition( const Vector &shootOrigin );
-	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon *pWeapon );
+	Vector 			GetActualShootPosition( const Vector& shootOrigin );
+	WeaponProficiency_t CalcWeaponProficiency( CBaseCombatWeapon* pWeapon );
 	bool			ShouldLookForBetterWeapon();
-	bool			Weapon_CanUse( CBaseCombatWeapon *pWeapon );
-	void			Weapon_Equip( CBaseCombatWeapon *pWeapon );
+	bool			Weapon_CanUse( CBaseCombatWeapon* pWeapon );
+	void			Weapon_Equip( CBaseCombatWeapon* pWeapon );
 #ifdef MAPBASE
 	bool			DoUnholster( void );
 #endif
-	void			PickupWeapon( CBaseCombatWeapon *pWeapon );
-	
+	void			PickupWeapon( CBaseCombatWeapon* pWeapon );
+
 #if COMPANION_MELEE_ATTACK
-	bool			KeyValue( const char *szKeyName, const char *szValue );
+	bool			KeyValue( const char* szKeyName, const char* szValue );
 	int				MeleeAttack1Conditions( float flDot, float flDist );
 #endif
-	
-	bool 			FindCoverPos( CBaseEntity *pEntity, Vector *pResult);
-	bool			FindCoverPosInRadius( CBaseEntity *pEntity, const Vector &goalPos, float coverRadius, Vector *pResult );
-	bool			FindCoverPos( CSound *pSound, Vector *pResult );
-	bool			FindMortarCoverPos( CSound *pSound, Vector *pResult );
-	bool 			IsCoverPosition( const Vector &vecThreat, const Vector &vecPosition );
 
-	bool			IsEnemyTurret() { return ( GetEnemy() && IsTurret(GetEnemy()) ); }
-	
-	static bool		IsMortar( CBaseEntity *pEntity );
-	static bool		IsSniper( CBaseEntity *pEntity );
-	static bool		IsTurret(  CBaseEntity *pEntity );
-	static bool		IsGunship( CBaseEntity *pEntity );
-	
+	bool 			FindCoverPos( CBaseEntity* pEntity, Vector* pResult );
+	bool			FindCoverPosInRadius( CBaseEntity* pEntity, const Vector& goalPos, float coverRadius, Vector* pResult );
+	bool			FindCoverPos( CSound* pSound, Vector* pResult );
+	bool			FindMortarCoverPos( CSound* pSound, Vector* pResult );
+	bool 			IsCoverPosition( const Vector& vecThreat, const Vector& vecPosition );
+
+	bool			IsEnemyTurret()
+	{
+		return ( GetEnemy() && IsTurret( GetEnemy() ) );
+	}
+
+	static bool		IsMortar( CBaseEntity* pEntity );
+	static bool		IsSniper( CBaseEntity* pEntity );
+	static bool		IsTurret( CBaseEntity* pEntity );
+	static bool		IsGunship( CBaseEntity* pEntity );
+
 	//---------------------------------
 	// Damage handling
 	//---------------------------------
-	int 			OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	void 			OnFriendDamaged( CBaseCombatCharacter *pSquadmate, CBaseEntity *pAttacker );
+	int 			OnTakeDamage_Alive( const CTakeDamageInfo& info );
+	void 			OnFriendDamaged( CBaseCombatCharacter* pSquadmate, CBaseEntity* pAttacker );
 
 	//---------------------------------
 	// Hints
 	//---------------------------------
-	bool			FValidateHintType ( CAI_Hint *pHint );
+	bool			FValidateHintType( CAI_Hint* pHint );
 
 	//---------------------------------
 	// Navigation
 	//---------------------------------
-	bool			IsValidMoveAwayDest( const Vector &vecDest );
+	bool			IsValidMoveAwayDest( const Vector& vecDest );
 	bool 			ValidateNavGoal();
 	bool 			OverrideMove( float flInterval );				// Override to take total control of movement (return true if done so)
-	bool			MovementCost( int moveType, const Vector &vecStart, const Vector &vecEnd, float *pCost );
+	bool			MovementCost( int moveType, const Vector& vecStart, const Vector& vecEnd, float* pCost );
 	float			GetIdealSpeed() const;
 	float			GetIdealAccel() const;
-	bool			OnObstructionPreSteer( AILocalMoveGoal_t *pMoveGoal, float distClear, AIMoveResult_t *pResult );
+	bool			OnObstructionPreSteer( AILocalMoveGoal_t* pMoveGoal, float distClear, AIMoveResult_t* pResult );
 
 	//---------------------------------
 	// Inputs
 	//---------------------------------
-	void 			InputOutsideTransition( inputdata_t &inputdata );
-	void			InputSetReadinessPanic( inputdata_t &inputdata );
-	void			InputSetReadinessStealth( inputdata_t &inputdata );
-	void			InputSetReadinessLow( inputdata_t &inputdata );
-	void			InputSetReadinessMedium( inputdata_t &inputdata );
-	void			InputSetReadinessHigh( inputdata_t &inputdata );
-	void			InputLockReadiness( inputdata_t &inputdata );
+	void 			InputOutsideTransition( inputdata_t& inputdata );
+	void			InputSetReadinessPanic( inputdata_t& inputdata );
+	void			InputSetReadinessStealth( inputdata_t& inputdata );
+	void			InputSetReadinessLow( inputdata_t& inputdata );
+	void			InputSetReadinessMedium( inputdata_t& inputdata );
+	void			InputSetReadinessHigh( inputdata_t& inputdata );
+	void			InputLockReadiness( inputdata_t& inputdata );
 #if HL2_EPISODIC
-	void			InputClearAllOuputs( inputdata_t &inputdata ); ///< annihilate every output on this npc
+	void			InputClearAllOuputs( inputdata_t& inputdata ); ///< annihilate every output on this npc
 #endif
 
 	bool			AllowReadinessValueChange( void );
 
 #ifdef MAPBASE
-	virtual bool IsAltFireCapable() { return (m_iGrenadeCapabilities & GRENCAP_ALTFIRE) != 0 && BaseClass::IsAltFireCapable(); }
-	virtual bool IsGrenadeCapable() { return (m_iGrenadeCapabilities & GRENCAP_GRENADE) != 0; }
+	virtual bool IsAltFireCapable()
+	{
+		return ( m_iGrenadeCapabilities & GRENCAP_ALTFIRE ) != 0 && BaseClass::IsAltFireCapable();
+	}
+	virtual bool IsGrenadeCapable()
+	{
+		return ( m_iGrenadeCapabilities & GRENCAP_GRENADE ) != 0;
+	}
 
-	virtual bool	ShouldDropGrenades() { return (m_iGrenadeDropCapabilities & GRENDROPCAP_GRENADE) != 0 && BaseClass::ShouldDropGrenades(); }
-	virtual bool	ShouldDropInterruptedGrenades() { return (m_iGrenadeDropCapabilities & GRENDROPCAP_INTERRUPTED) != 0 && BaseClass::ShouldDropInterruptedGrenades(); }
-	virtual bool	ShouldDropAltFire() { return (m_iGrenadeDropCapabilities & GRENDROPCAP_ALTFIRE) != 0 && BaseClass::ShouldDropAltFire(); }
+	virtual bool	ShouldDropGrenades()
+	{
+		return ( m_iGrenadeDropCapabilities & GRENDROPCAP_GRENADE ) != 0 && BaseClass::ShouldDropGrenades();
+	}
+	virtual bool	ShouldDropInterruptedGrenades()
+	{
+		return ( m_iGrenadeDropCapabilities & GRENDROPCAP_INTERRUPTED ) != 0 && BaseClass::ShouldDropInterruptedGrenades();
+	}
+	virtual bool	ShouldDropAltFire()
+	{
+		return ( m_iGrenadeDropCapabilities & GRENDROPCAP_ALTFIRE ) != 0 && BaseClass::ShouldDropAltFire();
+	}
 
 private:
 
@@ -399,11 +435,11 @@ protected:
 	};
 
 private:
-	void SetupCoverSearch( CBaseEntity *pEntity );
+	void SetupCoverSearch( CBaseEntity* pEntity );
 	void CleanupCoverSearch();
 
 	//-----------------------------------------------------
-	
+
 	bool			m_bMovingAwayFromPlayer;
 	bool			m_bWeightPathsInCover;
 
@@ -420,12 +456,18 @@ private:
 	CSimpleSimTimer		m_FakeOutMortarTimer;
 
 	// Derived classes should not use the expresser directly
-	virtual CAI_Expresser *GetExpresser()	{ return BaseClass::GetExpresser(); }
+	virtual CAI_Expresser* GetExpresser()
+	{
+		return BaseClass::GetExpresser();
+	}
 
 protected:
 	//-----------------------------------------------------
 
-	virtual CAI_FollowBehavior &GetFollowBehavior( void ) { return m_FollowBehavior; }
+	virtual CAI_FollowBehavior& GetFollowBehavior( void )
+	{
+		return m_FollowBehavior;
+	}
 
 	CAI_AssaultBehavior				m_AssaultBehavior;
 	CAI_FollowBehavior				m_FollowBehavior;
@@ -446,7 +488,7 @@ protected:
 
 	// Readiness is a value that's fed by various events in the NPC's AI. It is used
 	// to make decisions about what type of posture the NPC should be in (relaxed, agitated).
-	// It is not used to make decisions about what to do in the AI. 
+	// It is not used to make decisions about what to do in the AI.
 	float m_flReadiness;
 	float m_flReadinessSensitivity;
 	bool m_bReadinessCapable;
@@ -461,7 +503,7 @@ protected:
 	float m_flBoostSpeed;
 
 	//-----------------------------------------------------
-	
+
 	CSimpleSimTimer m_AnnounceAttackTimer;
 
 	//-----------------------------------------------------
@@ -476,12 +518,12 @@ protected:
 
 #ifdef MAPBASE
 	static string_t gm_iszMortarClassname;
-	#define gm_iszFloorTurretClassname gm_isz_class_FloorTurret
+#define gm_iszFloorTurretClassname gm_isz_class_FloorTurret
 	static string_t gm_iszGroundTurretClassname;
-	#define gm_iszShotgunClassname gm_isz_class_Shotgun
-	#define gm_iszRollerMineClassname gm_isz_class_Rollermine
-	#define gm_iszSMG1Classname gm_isz_class_SMG1
-	#define gm_iszAR2Classname gm_isz_class_AR2
+#define gm_iszShotgunClassname gm_isz_class_Shotgun
+#define gm_iszRollerMineClassname gm_isz_class_Rollermine
+#define gm_iszSMG1Classname gm_isz_class_SMG1
+#define gm_iszAR2Classname gm_isz_class_AR2
 #else
 	static string_t gm_iszMortarClassname;
 	static string_t gm_iszFloorTurretClassname;
@@ -496,13 +538,13 @@ protected:
 
 	//-----------------------------------------------------
 
-	void	InputEnableAlwaysTransition( inputdata_t &inputdata );
-	void	InputDisableAlwaysTransition( inputdata_t &inputdata );
+	void	InputEnableAlwaysTransition( inputdata_t& inputdata );
+	void	InputDisableAlwaysTransition( inputdata_t& inputdata );
 	bool	m_bAlwaysTransition;
 	bool	m_bDontPickupWeapons;
 
-	void	InputEnableWeaponPickup( inputdata_t &inputdata );
-	void	InputDisableWeaponPickup( inputdata_t &inputdata );
+	void	InputEnableWeaponPickup( inputdata_t& inputdata );
+	void	InputDisableWeaponPickup( inputdata_t& inputdata );
 
 	COutputEvent	m_OnWeaponPickup;
 
@@ -518,7 +560,7 @@ protected:
 
 // Used for quick override move searches against certain types of entities
 void OverrideMoveCache_ForceRepopulateList( void );
-CBaseEntity *OverrideMoveCache_FindTargetsInRadius( CBaseEntity *pFirstEntity, const Vector &vecOrigin, float flRadius );
+CBaseEntity* OverrideMoveCache_FindTargetsInRadius( CBaseEntity* pFirstEntity, const Vector& vecOrigin, float flRadius );
 void OverrideMoveCache_LevelInitPreEntity( void );
 void OverrideMoveCache_LevelShutdownPostEntity( void );
 

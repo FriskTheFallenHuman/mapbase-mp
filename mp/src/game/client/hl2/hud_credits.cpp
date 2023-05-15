@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -58,7 +58,7 @@ enum
 #define CREDITS_INTRO 2
 #define CREDITS_OUTRO 3
 #ifdef MAPBASE
-#define CREDITS_PRECACHE 4
+	#define CREDITS_PRECACHE 4
 #endif
 
 bool g_bRollingCredits = false;
@@ -73,42 +73,44 @@ class CHudCredits : public CHudElement, public vgui::Panel
 	DECLARE_CLASS_SIMPLE( CHudCredits, vgui::Panel );
 
 public:
-	CHudCredits( const char *pElementName );
+	CHudCredits( const char* pElementName );
 	virtual void Init( void );
 	virtual void LevelShutdown( void );
 
-	int GetStringPixelWidth ( wchar_t *pString, vgui::HFont hFont );
+	int GetStringPixelWidth( wchar_t* pString, vgui::HFont hFont );
 
-	void MsgFunc_CreditsMsg( bf_read &msg );
-	void MsgFunc_LogoTimeMsg( bf_read &msg );
+	void MsgFunc_CreditsMsg( bf_read& msg );
+	void MsgFunc_LogoTimeMsg( bf_read& msg );
 
-	virtual bool	ShouldDraw( void ) 
-	{ 
+	virtual bool	ShouldDraw( void )
+	{
 		g_bRollingCredits = IsActive();
 
-		if ( g_bRollingCredits && m_iCreditsType == CREDITS_INTRO )
-			 g_bRollingCredits = false;
+		if( g_bRollingCredits && m_iCreditsType == CREDITS_INTRO )
+		{
+			g_bRollingCredits = false;
+		}
 
-		return IsActive(); 
+		return IsActive();
 	}
 
 protected:
 	virtual void Paint();
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 private:
 
 	void	Clear();
 
-	void ReadNames( KeyValues *pKeyValue );
-	void ReadParams( KeyValues *pKeyValue );
-	void PrepareCredits( const char *pKeyName );
+	void ReadNames( KeyValues* pKeyValue );
+	void ReadParams( KeyValues* pKeyValue );
+	void PrepareCredits( const char* pKeyName );
 	void DrawOutroCreditsName( void );
 	void DrawIntroCreditsName( void );
 	void DrawLogo( void );
 #ifdef MAPBASE
-	void DrawOutroCreditFont( const char *pCreditName, float flYPos, vgui::HFont hTFont, const Color &cColor, int iScreenWidth, int iDivisor = 2 );
-	void DrawOutroCreditTexture( int iImageID, float flYPos, float flImageScale, const Color &cColor, int iScreenWidth, int iDivisor = 2 );
+	void DrawOutroCreditFont( const char* pCreditName, float flYPos, vgui::HFont hTFont, const Color& cColor, int iScreenWidth, int iDivisor = 2 );
+	void DrawOutroCreditTexture( int iImageID, float flYPos, float flImageScale, const Color& cColor, int iScreenWidth, int iDivisor = 2 );
 #endif
 
 	void PrepareLogo( float flTime );
@@ -121,10 +123,10 @@ private:
 
 	float FadeBlend( float fadein, float fadeout, float hold, float localTime );
 
-	void PrepareLine( vgui::HFont hFont, char const *pchLine );
+	void PrepareLine( vgui::HFont hFont, char const* pchLine );
 
 #ifdef MAPBASE
-	int GetOrAllocateImageID( const char *szFileName );
+	int GetOrAllocateImageID( const char* szFileName );
 #endif
 
 	CPanelAnimationVar( vgui::HFont, m_hTextFont, "TextFont", "Default" );
@@ -173,18 +175,18 @@ private:
 	Color m_cLogoColor;
 	Color m_cLogo2Color;
 #endif
-};	
+};
 
 
-void CHudCredits::PrepareCredits( const char *pKeyName )
+void CHudCredits::PrepareCredits( const char* pKeyName )
 {
 	Clear();
 
-	KeyValues *pKV= new KeyValues( "CreditsFile" );
+	KeyValues* pKV = new KeyValues( "CreditsFile" );
 #ifdef MAPBASE
-	if ( !pKV->LoadFromFile( filesystem, m_szCreditsFile, "MOD" ) )
+	if( !pKV->LoadFromFile( filesystem, m_szCreditsFile, "MOD" ) )
 #else
-	if ( !pKV->LoadFromFile( filesystem, CREDITS_FILE, "MOD" ) )
+	if( !pKV->LoadFromFile( filesystem, CREDITS_FILE, "MOD" ) )
 #endif
 	{
 		pKV->deleteThis();
@@ -193,8 +195,8 @@ void CHudCredits::PrepareCredits( const char *pKeyName )
 		return;
 	}
 
-	KeyValues *pKVSubkey;
-	if ( pKeyName )
+	KeyValues* pKVSubkey;
+	if( pKeyName )
 	{
 		pKVSubkey = pKV->FindKey( pKeyName );
 		ReadNames( pKVSubkey );
@@ -215,9 +217,9 @@ DECLARE_HUD_MESSAGE( CHudCredits, LogoTimeMsg );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudCredits::CHudCredits( const char *pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "HudCredits" )
+CHudCredits::CHudCredits( const char* pElementName ) : CHudElement( pElementName ), BaseClass( NULL, "HudCredits" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 }
 
@@ -235,11 +237,11 @@ void CHudCredits::Clear( void )
 	m_iLogoState = LOGO_FADEOFF;
 
 #ifdef MAPBASE
-	if ( surface() )
+	if( surface() )
 	{
-		for (int i = m_ImageDict.Count()-1; i >= 0; i--)
+		for( int i = m_ImageDict.Count() - 1; i >= 0; i-- )
 		{
-			if (m_ImageDict[i] != -1)
+			if( m_ImageDict[i] != -1 )
 			{
 				surface()->DestroyTextureID( m_ImageDict[i] );
 				m_ImageDict.RemoveAt( i );
@@ -250,7 +252,7 @@ void CHudCredits::Clear( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudCredits::Init()
 {
@@ -259,23 +261,23 @@ void CHudCredits::Init()
 	SetActive( false );
 }
 
-void CHudCredits::ReadNames( KeyValues *pKeyValue )
+void CHudCredits::ReadNames( KeyValues* pKeyValue )
 {
-	if ( pKeyValue == NULL )
+	if( pKeyValue == NULL )
 	{
 		Assert( !"CHudCredits couldn't be initialized!" );
 		return;
 	}
 
 	// Now try and parse out each act busy anim
-	KeyValues *pKVNames = pKeyValue->GetFirstSubKey();
-	
-	while ( pKVNames )
+	KeyValues* pKVNames = pKeyValue->GetFirstSubKey();
+
+	while( pKVNames )
 	{
 		creditname_t Credits;
 		V_strcpy_safe( Credits.szCreditName, pKVNames->GetName() );
 #ifdef MAPBASE
-		V_strcpy_safe( Credits.szFontName, pKVNames->GetString( (const char *)NULL, "Default" ) );
+		V_strcpy_safe( Credits.szFontName, pKVNames->GetString( ( const char* )NULL, "Default" ) );
 #else
 		V_strcpy_safe( Credits.szFontName, pKeyValue->GetString( Credits.szCreditName, "Default" ) );
 #endif
@@ -285,9 +287,9 @@ void CHudCredits::ReadNames( KeyValues *pKeyValue )
 	}
 }
 
-void CHudCredits::ReadParams( KeyValues *pKeyValue )
+void CHudCredits::ReadParams( KeyValues* pKeyValue )
 {
-	if ( pKeyValue == NULL )
+	if( pKeyValue == NULL )
 	{
 		Assert( !"CHudCredits couldn't be initialized!" );
 		return;
@@ -326,11 +328,11 @@ void CHudCredits::ReadParams( KeyValues *pKeyValue )
 #endif
 }
 
-int CHudCredits::GetStringPixelWidth( wchar_t *pString, vgui::HFont hFont )
+int CHudCredits::GetStringPixelWidth( wchar_t* pString, vgui::HFont hFont )
 {
 	int iLength = 0;
 
-	for ( wchar_t *wch = pString; *wch != 0; wch++ )
+	for( wchar_t* wch = pString; *wch != 0; wch++ )
 	{
 		iLength += surface()->GetCharacterWidth( hFont, *wch );
 	}
@@ -340,20 +342,24 @@ int CHudCredits::GetStringPixelWidth( wchar_t *pString, vgui::HFont hFont )
 
 void CHudCredits::DrawOutroCreditsName( void )
 {
-	if ( m_CreditsList.Count() == 0 )
-		 return;
+	if( m_CreditsList.Count() == 0 )
+	{
+		return;
+	}
 
 	// fill the screen
 	int iWidth, iTall;
-	GetHudSize(iWidth, iTall);
+	GetHudSize( iWidth, iTall );
 	SetSize( iWidth, iTall );
 
-	for ( int i = 0; i < m_CreditsList.Count(); i++ )
+	for( int i = 0; i < m_CreditsList.Count(); i++ )
 	{
-		creditname_t *pCredit = &m_CreditsList[i];
+		creditname_t* pCredit = &m_CreditsList[i];
 
-		if ( pCredit == NULL )
-			 continue;
+		if( pCredit == NULL )
+		{
+			continue;
+		}
 
 #ifdef MAPBASE
 		vgui::HScheme scheme = GetScheme();
@@ -365,11 +371,11 @@ void CHudCredits::DrawOutroCreditsName( void )
 		int iFontTall = 1;
 
 #ifdef MAPBASE
-		if (pCredit->iImageID != -1)
+		if( pCredit->iImageID != -1 )
 		{
 			// Get the size of the tallest image if there's multiple
 			int iFontWide;
-			if (m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ))
+			if( m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ) )
 			{
 				CUtlStringList outStrings;
 				V_SplitString( pCredit->szCreditName, "\t", outStrings );
@@ -377,8 +383,10 @@ void CHudCredits::DrawOutroCreditsName( void )
 				{
 					int iTempTall;
 					surface()->DrawGetTextureSize( GetOrAllocateImageID( outStrings[i] ), iFontWide, iTempTall );
-					if (iTempTall > iFontTall)
+					if( iTempTall > iFontTall )
+					{
 						iFontTall = iTempTall;
+					}
 				}
 				outStrings.PurgeAndDeleteElements();
 			}
@@ -387,7 +395,7 @@ void CHudCredits::DrawOutroCreditsName( void )
 				surface()->DrawGetTextureSize( GetOrAllocateImageID( pCredit->szCreditName ), iFontWide, iFontTall );
 			}
 
-			iFontTall = ((float)iFontTall * pCredit->flImageScale);
+			iFontTall = ( ( float )iFontTall * pCredit->flImageScale );
 		}
 		else
 #endif
@@ -396,7 +404,7 @@ void CHudCredits::DrawOutroCreditsName( void )
 			iFontTall = surface()->GetFontTall( m_hTFont );
 		}
 
-		if ( pCredit->flYPos < -iFontTall ||  pCredit->flYPos > iTall )
+		if( pCredit->flYPos < -iFontTall ||  pCredit->flYPos > iTall )
 		{
 			pCredit->bActive = false;
 		}
@@ -408,25 +416,27 @@ void CHudCredits::DrawOutroCreditsName( void )
 		Color cColor = m_TextColor;
 
 #ifdef MAPBASE
-		if (pCredit->cColorOverride.a() > 0)
+		if( pCredit->cColorOverride.a() > 0 )
+		{
 			cColor = pCredit->cColorOverride;
+		}
 
 		// Some lines should stick around and fade out
-		if ( i >= m_CreditsList.Count()-m_iEndLines )
+		if( i >= m_CreditsList.Count() - m_iEndLines )
 #else
 		//HACKHACK
 		//Last one stays on screen and fades out
-		if ( i == m_CreditsList.Count()-1 )
+		if( i == m_CreditsList.Count() - 1 )
 #endif
 		{
-			if ( m_bLastOneInPlace == false )
+			if( m_bLastOneInPlace == false )
 			{
-				pCredit->flYPos -= gpGlobals->frametime * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
-		
-				if ( (int)pCredit->flYPos + ( iFontTall / 2 ) <= iTall / 2 )
+				pCredit->flYPos -= gpGlobals->frametime * ( ( float )g_iCreditsPixelHeight / m_flScrollTime );
+
+				if( ( int )pCredit->flYPos + ( iFontTall / 2 ) <= iTall / 2 )
 				{
 					m_bLastOneInPlace = true;
-					
+
 #ifdef MAPBASE
 					m_flFadeTime = gpGlobals->curtime + m_flEndLinesFadeHoldTime;
 #else
@@ -437,13 +447,13 @@ void CHudCredits::DrawOutroCreditsName( void )
 			}
 			else
 			{
-				if ( m_flFadeTime <= gpGlobals->curtime )
+				if( m_flFadeTime <= gpGlobals->curtime )
 				{
-					if ( m_Alpha > 0 )
+					if( m_Alpha > 0 )
 					{
 						m_Alpha -= gpGlobals->frametime * ( m_flScrollTime * 2 );
 
-						if ( m_Alpha <= 0 )
+						if( m_Alpha <= 0 )
 						{
 							pCredit->bActive = false;
 							engine->ClientCmd( "creditsdone" );
@@ -456,20 +466,22 @@ void CHudCredits::DrawOutroCreditsName( void )
 		}
 		else
 		{
-			pCredit->flYPos -= gpGlobals->frametime * ( (float)g_iCreditsPixelHeight / m_flScrollTime );
+			pCredit->flYPos -= gpGlobals->frametime * ( ( float )g_iCreditsPixelHeight / m_flScrollTime );
 		}
-		
-		if ( pCredit->bActive == false )
-			 continue;
-			
+
+		if( pCredit->bActive == false )
+		{
+			continue;
+		}
+
 #ifdef MAPBASE
 		// Credits separated by tabs should appear divided
-		if (m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ))
+		if( m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ) )
 		{
 			CUtlStringList outStrings;
 			V_SplitString( pCredit->szCreditName, "\t", outStrings );
 			int iDivisor = 1 + outStrings.Count();
-			if (pCredit->iImageID != -1)
+			if( pCredit->iImageID != -1 )
 			{
 				FOR_EACH_VEC( outStrings, i )
 				{
@@ -478,13 +490,13 @@ void CHudCredits::DrawOutroCreditsName( void )
 					// Center the image if needed
 					int iImageWide, iImageTall = 1;
 					surface()->DrawGetTextureSize( iImageID, iImageWide, iImageTall );
-					if (iImageTall < iFontTall)
+					if( iImageTall < iFontTall )
 					{
-						DrawOutroCreditTexture( iImageID, pCredit->flYPos + ((iFontTall * 0.5f) - (iImageTall * 0.5f)), pCredit->flImageScale, cColor, iWidth*(i + 1), iDivisor );
+						DrawOutroCreditTexture( iImageID, pCredit->flYPos + ( ( iFontTall * 0.5f ) - ( iImageTall * 0.5f ) ), pCredit->flImageScale, cColor, iWidth * ( i + 1 ), iDivisor );
 					}
 					else
 					{
-						DrawOutroCreditTexture( iImageID, pCredit->flYPos, pCredit->flImageScale, cColor, iWidth*(i + 1), iDivisor );
+						DrawOutroCreditTexture( iImageID, pCredit->flYPos, pCredit->flImageScale, cColor, iWidth * ( i + 1 ), iDivisor );
 					}
 				}
 			}
@@ -492,12 +504,12 @@ void CHudCredits::DrawOutroCreditsName( void )
 			{
 				FOR_EACH_VEC( outStrings, i )
 				{
-					DrawOutroCreditFont( outStrings[i], pCredit->flYPos, m_hTFont, cColor, iWidth*(i + 1), iDivisor );
+					DrawOutroCreditFont( outStrings[i], pCredit->flYPos, m_hTFont, cColor, iWidth * ( i + 1 ), iDivisor );
 				}
 			}
 			outStrings.PurgeAndDeleteElements();
 		}
-		else if (pCredit->iImageID != -1)
+		else if( pCredit->iImageID != -1 )
 		{
 			DrawOutroCreditTexture( pCredit->iImageID, pCredit->flYPos, pCredit->flImageScale, cColor, iWidth, 2 );
 		}
@@ -507,20 +519,20 @@ void CHudCredits::DrawOutroCreditsName( void )
 		}
 #else
 		surface()->DrawSetTextFont( m_hTFont );
-		surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3]  );
-		
+		surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3] );
+
 		wchar_t unicode[256];
-		
-		if ( pCredit->szCreditName[0] == '#' )
+
+		if( pCredit->szCreditName[0] == '#' )
 		{
-			g_pVGuiLocalize->ConstructString( unicode, sizeof(unicode), g_pVGuiLocalize->Find(pCredit->szCreditName), 0 );
+			g_pVGuiLocalize->ConstructString( unicode, sizeof( unicode ), g_pVGuiLocalize->Find( pCredit->szCreditName ), 0 );
 		}
 		else
 		{
 			g_pVGuiLocalize->ConvertANSIToUnicode( pCredit->szCreditName, unicode, sizeof( unicode ) );
 		}
 
-		int iStringWidth = GetStringPixelWidth( unicode, m_hTFont ); 
+		int iStringWidth = GetStringPixelWidth( unicode, m_hTFont );
 
 		surface()->DrawSetTextPos( ( iWidth / 2 ) - ( iStringWidth / 2 ), pCredit->flYPos );
 		surface()->DrawUnicodeString( unicode );
@@ -529,16 +541,16 @@ void CHudCredits::DrawOutroCreditsName( void )
 }
 
 #ifdef MAPBASE
-void CHudCredits::DrawOutroCreditFont( const char *pCreditName, float flYPos, vgui::HFont hTFont, const Color &cColor, int iScreenWidth, int iDivisor )
+void CHudCredits::DrawOutroCreditFont( const char* pCreditName, float flYPos, vgui::HFont hTFont, const Color& cColor, int iScreenWidth, int iDivisor )
 {
 	surface()->DrawSetTextFont( hTFont );
-	surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3]  );
-	
+	surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3] );
+
 	wchar_t unicode[256];
-	
-	if ( pCreditName[0] == '#' )
+
+	if( pCreditName[0] == '#' )
 	{
-		g_pVGuiLocalize->ConstructString( unicode, sizeof(unicode), g_pVGuiLocalize->Find(pCreditName), 0 );
+		g_pVGuiLocalize->ConstructString( unicode, sizeof( unicode ), g_pVGuiLocalize->Find( pCreditName ), 0 );
 	}
 	else
 	{
@@ -549,20 +561,20 @@ void CHudCredits::DrawOutroCreditFont( const char *pCreditName, float flYPos, vg
 
 	// ((iScreenWidth*iMultiplier) / iDivisor)
 	// When needed, just multiply iScreenWidth before sending to the function
-	surface()->DrawSetTextPos( (iScreenWidth / iDivisor) - (iStringWidth / 2), flYPos );
+	surface()->DrawSetTextPos( ( iScreenWidth / iDivisor ) - ( iStringWidth / 2 ), flYPos );
 	surface()->DrawUnicodeString( unicode );
 }
 
-void CHudCredits::DrawOutroCreditTexture( int iImageID, float flYPos, float flImageScale, const Color &cColor, int iScreenWidth, int iDivisor )
+void CHudCredits::DrawOutroCreditTexture( int iImageID, float flYPos, float flImageScale, const Color& cColor, int iScreenWidth, int iDivisor )
 {
 	int iImageWide, iImageTall;
 	surface()->DrawGetTextureSize( iImageID, iImageWide, iImageTall );
 
 	// Scale for resolution
-	flImageScale *= ((float)GetTall() / 900.0f);
+	flImageScale *= ( ( float )GetTall() / 900.0f );
 
-	iImageWide = ((float)(iImageWide) * flImageScale);
-	iImageTall = ((float)(iImageTall) * flImageScale);
+	iImageWide = ( ( float )( iImageWide ) * flImageScale );
+	iImageTall = ( ( float )( iImageTall ) * flImageScale );
 
 	iImageWide /= 2;
 	//iImageTall /= 2;
@@ -590,7 +602,7 @@ void CHudCredits::DrawLogo( void )
 
 			m_Alpha = MAX( 0, RemapValClamped( flDeltaTime, 5.0f, 0, -128, 255 ) );
 
-			if ( flDeltaTime <= 0.0f )
+			if( flDeltaTime <= 0.0f )
 			{
 				m_iLogoState = LOGO_FADEHOLD;
 				m_flFadeTime = gpGlobals->curtime + m_flLogoDesiredLength;
@@ -601,7 +613,7 @@ void CHudCredits::DrawLogo( void )
 
 		case LOGO_FADEHOLD:
 		{
-			if ( m_flFadeTime <= gpGlobals->curtime )
+			if( m_flFadeTime <= gpGlobals->curtime )
 			{
 				m_iLogoState = LOGO_FADEOUT;
 				m_flFadeTime = gpGlobals->curtime + 2.0f;
@@ -615,7 +627,7 @@ void CHudCredits::DrawLogo( void )
 
 			m_Alpha = RemapValClamped( flDeltaTime, 0.0f, 2.0f, 0, 255 );
 
-			if ( flDeltaTime <= 0.0f )
+			if( flDeltaTime <= 0.0f )
 			{
 				m_iLogoState = LOGO_FADEOFF;
 				SetActive( false );
@@ -627,70 +639,72 @@ void CHudCredits::DrawLogo( void )
 
 	// fill the screen
 	int iWidth, iTall;
-	GetHudSize(iWidth, iTall);
+	GetHudSize( iWidth, iTall );
 	SetSize( iWidth, iTall );
 
 	char szLogoFont[64];
 
 #ifdef MAPBASE
-	if (m_szLogoFont[0] != '\0')
+	if( m_szLogoFont[0] != '\0' )
 	{
 		// Custom logo font
 		Q_strncpy( szLogoFont, m_szLogoFont, sizeof( szLogoFont ) );
 	}
 	else
 #endif
-	if ( IsXbox() )
-	{
-		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons_Small" );
-	}
-	else if ( hl2_episodic.GetBool() )
-	{
-		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "ClientTitleFont" );
-	}
-	else
-	{
-		Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons" );
-	}
+		if( IsXbox() )
+		{
+			Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons_Small" );
+		}
+		else if( hl2_episodic.GetBool() )
+		{
+			Q_snprintf( szLogoFont, sizeof( szLogoFont ), "ClientTitleFont" );
+		}
+		else
+		{
+			Q_snprintf( szLogoFont, sizeof( szLogoFont ), "WeaponIcons" );
+		}
 
 #ifdef MAPBASE
 	vgui::HScheme scheme = GetScheme();
 #else
 	vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 #endif
-	vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont( szLogoFont );
+	vgui::HFont m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( szLogoFont );
 
-	int iFontTall = surface()->GetFontTall ( m_hTFont );
+	int iFontTall = surface()->GetFontTall( m_hTFont );
 
 	Color cColor = m_TextColor;
 	cColor[3] = m_Alpha;
-				
+
 #ifdef MAPBASE
-	if (m_cLogoColor.a() > 0)
+	if( m_cLogoColor.a() > 0 )
+	{
 		cColor = m_cLogoColor;
+	}
 #endif
-				
+
 	surface()->DrawSetTextFont( m_hTFont );
-	surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3]  );
-	
+	surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], cColor[3] );
+
 	wchar_t unicode[256];
 	g_pVGuiLocalize->ConvertANSIToUnicode( m_szLogo, unicode, sizeof( unicode ) );
 
-	int iStringWidth = GetStringPixelWidth( unicode, m_hTFont ); 
+	int iStringWidth = GetStringPixelWidth( unicode, m_hTFont );
 
 	surface()->DrawSetTextPos( ( iWidth / 2 ) - ( iStringWidth / 2 ), ( iTall / 2 ) - ( iFontTall / 2 ) );
 	surface()->DrawUnicodeString( unicode );
 
-	if ( Q_strlen( m_szLogo2 ) > 0 )
+	if( Q_strlen( m_szLogo2 ) > 0 )
 	{
 #ifdef MAPBASE
-		if (m_szLogo2Font[0] != '\0')
+		if( m_szLogo2Font[0] != '\0' )
 		{
 			m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( m_szLogo2Font );
 			iFontTall = surface()->GetFontTall( m_hTFont );
 			surface()->DrawSetTextFont( m_hTFont );
 		}
-		if (m_cLogo2Color.a() > 0)
+		if( m_cLogo2Color.a() > 0 )
 		{
 			surface()->DrawSetTextColor( m_cLogo2Color[0], m_cLogo2Color[1], m_cLogo2Color[2], m_cLogo2Color[3] );
 		}
@@ -698,104 +712,124 @@ void CHudCredits::DrawLogo( void )
 
 		g_pVGuiLocalize->ConvertANSIToUnicode( m_szLogo2, unicode, sizeof( unicode ) );
 
-		iStringWidth = GetStringPixelWidth( unicode, m_hTFont ); 
+		iStringWidth = GetStringPixelWidth( unicode, m_hTFont );
 
-		surface()->DrawSetTextPos( ( iWidth / 2 ) - ( iStringWidth / 2 ), ( iTall / 2 ) + ( iFontTall / 2 ));
+		surface()->DrawSetTextPos( ( iWidth / 2 ) - ( iStringWidth / 2 ), ( iTall / 2 ) + ( iFontTall / 2 ) );
 		surface()->DrawUnicodeString( unicode );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 float CHudCredits::FadeBlend( float fadein, float fadeout, float hold, float localTime )
 {
 	float fadeTime = fadein + hold;
 	float fadeBlend;
 
-	if ( localTime < 0 )
+	if( localTime < 0 )
+	{
 		return 0;
-
-	if ( localTime < fadein )
-	{
-		fadeBlend = 1 - ((fadein - localTime) / fadein);
 	}
-	else if ( localTime > fadeTime )
+
+	if( localTime < fadein )
 	{
-		if ( fadeout > 0 )
-			fadeBlend = 1 - ((localTime - fadeTime) / fadeout);
+		fadeBlend = 1 - ( ( fadein - localTime ) / fadein );
+	}
+	else if( localTime > fadeTime )
+	{
+		if( fadeout > 0 )
+		{
+			fadeBlend = 1 - ( ( localTime - fadeTime ) / fadeout );
+		}
 		else
+		{
 			fadeBlend = 0;
+		}
 	}
 	else
+	{
 		fadeBlend = 1;
+	}
 
-	if ( fadeBlend < 0 )
-		 fadeBlend = 0;
+	if( fadeBlend < 0 )
+	{
+		fadeBlend = 0;
+	}
 
 	return fadeBlend;
 }
 
 void CHudCredits::DrawIntroCreditsName( void )
 {
-	if ( m_CreditsList.Count() == 0 )
-		 return;
-	
+	if( m_CreditsList.Count() == 0 )
+	{
+		return;
+	}
+
 	// fill the screen
 	int iWidth, iTall;
-	GetHudSize(iWidth, iTall);
+	GetHudSize( iWidth, iTall );
 	SetSize( iWidth, iTall );
 
-	for ( int i = 0; i < m_CreditsList.Count(); i++ )
+	for( int i = 0; i < m_CreditsList.Count(); i++ )
 	{
-		creditname_t *pCredit = &m_CreditsList[i];
+		creditname_t* pCredit = &m_CreditsList[i];
 
-		if ( pCredit == NULL )
-			 continue;
+		if( pCredit == NULL )
+		{
+			continue;
+		}
 
-		if ( pCredit->bActive == false )
-			 continue;
-				
+		if( pCredit->bActive == false )
+		{
+			continue;
+		}
+
 #ifdef MAPBASE
 		vgui::HScheme scheme = GetScheme();
 #else
 		vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 #endif
-		vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont( pCredit->szFontName );
+		vgui::HFont m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( pCredit->szFontName );
 
 		float localTime = gpGlobals->curtime - pCredit->flTimeStart;
 
 		surface()->DrawSetTextFont( m_hTFont );
 #ifdef MAPBASE
 		Color cColor = m_cColor;
-		if (pCredit->cColorOverride.a() > 0)
+		if( pCredit->cColorOverride.a() > 0 )
+		{
 			cColor = pCredit->cColorOverride;
+		}
 
 		surface()->DrawSetTextColor( cColor[0], cColor[1], cColor[2], FadeBlend( m_flFadeInTime, m_flFadeOutTime, m_flFadeHoldTime + pCredit->flTimeAdd, localTime ) * cColor[3] );
 #else
 		surface()->DrawSetTextColor( m_cColor[0], m_cColor[1], m_cColor[2], FadeBlend( m_flFadeInTime, m_flFadeOutTime, m_flFadeHoldTime + pCredit->flTimeAdd, localTime ) * m_cColor[3] );
 #endif
-		
+
 		wchar_t unicode[256];
 		g_pVGuiLocalize->ConvertANSIToUnicode( pCredit->szCreditName, unicode, sizeof( unicode ) );
 
 		surface()->DrawSetTextPos( XRES( pCredit->flXPos ), YRES( pCredit->flYPos ) );
 		surface()->DrawUnicodeString( unicode );
-		
-		if ( m_flLogoTime > gpGlobals->curtime )
-			 continue;
-		
-		if ( pCredit->flTime - m_flNextStartTime <= gpGlobals->curtime )
-		{
-			if ( m_CreditsList.IsValidIndex( i + 3 ) )
-			{
-				creditname_t *pNextCredits = &m_CreditsList[i + 3];
 
-				if ( pNextCredits && pNextCredits->flTime == 0.0f )
+		if( m_flLogoTime > gpGlobals->curtime )
+		{
+			continue;
+		}
+
+		if( pCredit->flTime - m_flNextStartTime <= gpGlobals->curtime )
+		{
+			if( m_CreditsList.IsValidIndex( i + 3 ) )
+			{
+				creditname_t* pNextCredits = &m_CreditsList[i + 3];
+
+				if( pNextCredits && pNextCredits->flTime == 0.0f )
 				{
 					pNextCredits->bActive = true;
 
-					if ( i < 3 )
+					if( i < 3 )
 					{
 						pNextCredits->flTimeAdd = ( i + 1.0f );
 						pNextCredits->flTime = gpGlobals->curtime + m_flFadeInTime + m_flFadeOutTime + m_flFadeHoldTime + pNextCredits->flTimeAdd;
@@ -813,11 +847,11 @@ void CHudCredits::DrawIntroCreditsName( void )
 			}
 		}
 
-		if ( pCredit->flTime <= gpGlobals->curtime )
+		if( pCredit->flTime <= gpGlobals->curtime )
 		{
 			pCredit->bActive = false;
 
-			if ( i == m_CreditsList.Count()-1 )
+			if( i == m_CreditsList.Count() - 1 )
 			{
 				Clear();
 			}
@@ -825,26 +859,26 @@ void CHudCredits::DrawIntroCreditsName( void )
 	}
 }
 
-void CHudCredits::ApplySchemeSettings( IScheme *pScheme )
+void CHudCredits::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
 	SetVisible( ShouldDraw() );
 
-	SetBgColor( Color(0, 0, 0, 0) );
+	SetBgColor( Color( 0, 0, 0, 0 ) );
 }
 
 void CHudCredits::Paint()
 {
-	if ( m_iCreditsType == CREDITS_LOGO )
+	if( m_iCreditsType == CREDITS_LOGO )
 	{
 		DrawLogo();
 	}
-	else if ( m_iCreditsType == CREDITS_INTRO )
+	else if( m_iCreditsType == CREDITS_INTRO )
 	{
 		DrawIntroCreditsName();
 	}
-	else if ( m_iCreditsType == CREDITS_OUTRO )
+	else if( m_iCreditsType == CREDITS_OUTRO )
 	{
 		DrawOutroCreditsName();
 	}
@@ -862,15 +896,15 @@ void CHudCredits::PrepareLogo( float flTime )
 	SetActive( true );
 }
 
-void CHudCredits::PrepareLine( vgui::HFont hFont, char const *pchLine )
+void CHudCredits::PrepareLine( vgui::HFont hFont, char const* pchLine )
 {
 	Assert( pchLine );
 
 	wchar_t unicode[256];
 
-	if ( pchLine[0] == '#' )
+	if( pchLine[0] == '#' )
 	{
-		g_pVGuiLocalize->ConstructString( unicode, sizeof(unicode), g_pVGuiLocalize->Find(pchLine), 0 );
+		g_pVGuiLocalize->ConstructString( unicode, sizeof( unicode ), g_pVGuiLocalize->Find( pchLine ), 0 );
 	}
 	else
 	{
@@ -883,37 +917,41 @@ void CHudCredits::PrepareLine( vgui::HFont hFont, char const *pchLine )
 void CHudCredits::PrepareOutroCredits( void )
 {
 	PrepareCredits( "OutroCreditsNames" );
-	
-	if ( m_CreditsList.Count() == 0 )
-		 return;
+
+	if( m_CreditsList.Count() == 0 )
+	{
+		return;
+	}
 
 	// fill the screen
 	int iWidth, iTall;
-	GetHudSize(iWidth, iTall);
+	GetHudSize( iWidth, iTall );
 	SetSize( iWidth, iTall );
 
 	int iHeight = iTall;
 
 #ifdef MAPBASE
-	if (m_iEndLines <= 0)
+	if( m_iEndLines <= 0 )
 	{
 		// We need a credit to fade out at the end so we know when the credits are done.
 		// Add a dummy credit to act as the "end line".
 		creditname_t DummyCredit;
-		V_strcpy_safe( DummyCredit.szCreditName, "");
+		V_strcpy_safe( DummyCredit.szCreditName, "" );
 		V_strcpy_safe( DummyCredit.szFontName, "Default" );
 
-		m_CreditsList.AddToTail(DummyCredit);
+		m_CreditsList.AddToTail( DummyCredit );
 		m_iEndLines = 1;
 	}
 #endif
 
-	for ( int i = 0; i < m_CreditsList.Count(); i++ )
+	for( int i = 0; i < m_CreditsList.Count(); i++ )
 	{
-		creditname_t *pCredit = &m_CreditsList[i];
+		creditname_t* pCredit = &m_CreditsList[i];
 
-		if ( pCredit == NULL )
-			 continue;
+		if( pCredit == NULL )
+		{
+			continue;
+		}
 
 #ifdef MAPBASE
 		vgui::HScheme scheme = GetScheme();
@@ -922,17 +960,17 @@ void CHudCredits::PrepareOutroCredits( void )
 #endif
 
 #ifdef MAPBASE
-		if (pCredit->szFontName[0] == '$')
+		if( pCredit->szFontName[0] == '$' )
 		{
-			if (V_strncmp( pCredit->szFontName + 1, "Image", 5 ) == 0)
+			if( V_strncmp( pCredit->szFontName + 1, "Image", 5 ) == 0 )
 			{
-				if (pCredit->szFontName[6] == ';')
+				if( pCredit->szFontName[6] == ';' )
 				{
 					CUtlStringList outStrings;
 					V_SplitString( pCredit->szFontName, ";", outStrings );
 					FOR_EACH_VEC( outStrings, i )
 					{
-						switch (i)
+						switch( i )
 						{
 							// Get scale
 							case 1:
@@ -952,7 +990,7 @@ void CHudCredits::PrepareOutroCredits( void )
 
 				// Get the size of the tallest image if there's multiple
 				int iFontWide, iFontTall = 1;
-				if (m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ))
+				if( m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ) )
 				{
 					CUtlStringList outStrings;
 					V_SplitString( pCredit->szCreditName, "\t", outStrings );
@@ -962,8 +1000,10 @@ void CHudCredits::PrepareOutroCredits( void )
 
 						int iTempTall;
 						surface()->DrawGetTextureSize( pCredit->iImageID, iFontWide, iTempTall );
-						if (iTempTall > iFontTall)
+						if( iTempTall > iFontTall )
+						{
 							iFontTall = iTempTall;
+						}
 					}
 					outStrings.PurgeAndDeleteElements();
 				}
@@ -976,7 +1016,7 @@ void CHudCredits::PrepareOutroCredits( void )
 				pCredit->flYPos = iHeight;
 				pCredit->bActive = false;
 
-				iHeight += ((float)iFontTall * pCredit->flImageScale * ((float)GetTall() / 900.0f)) + m_flSeparation;
+				iHeight += ( ( float )iFontTall * pCredit->flImageScale * ( ( float )GetTall() / 900.0f ) ) + m_flSeparation;
 
 				//Msg( "'%s' is image type (image scale is %f)\n", pCredit->szCreditName, pCredit->flImageScale );
 			}
@@ -989,13 +1029,13 @@ void CHudCredits::PrepareOutroCredits( void )
 #endif
 		{
 #ifdef MAPBASE
-			if (V_strstr( pCredit->szFontName, ";" ))
+			if( V_strstr( pCredit->szFontName, ";" ) )
 			{
 				CUtlStringList outStrings;
 				V_SplitString( pCredit->szFontName, ";", outStrings );
 				FOR_EACH_VEC( outStrings, i )
 				{
-					switch (i)
+					switch( i )
 					{
 						// Get color
 						case 1:
@@ -1013,19 +1053,21 @@ void CHudCredits::PrepareOutroCredits( void )
 
 			vgui::HFont m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( pCredit->szFontName, true );
 
-		pCredit->flYPos = iHeight;
-		pCredit->bActive = false;
+			pCredit->flYPos = iHeight;
+			pCredit->bActive = false;
 
-		iHeight += surface()->GetFontTall ( m_hTFont ) + m_flSeparation;
+			iHeight += surface()->GetFontTall( m_hTFont ) + m_flSeparation;
 
-		PrepareLine( m_hTFont, pCredit->szCreditName );
-	}
+			PrepareLine( m_hTFont, pCredit->szCreditName );
+		}
 	}
 
 #ifdef MAPBASE
 	// Check if the last line has a color override. If it does, use that as the alpha for the fadeout
-	if (m_CreditsList.Tail().cColorOverride.a() != 0)
+	if( m_CreditsList.Tail().cColorOverride.a() != 0 )
+	{
 		m_Alpha = m_CreditsList.Tail().cColorOverride.a();
+	}
 #endif
 
 	SetActive( true );
@@ -1039,21 +1081,23 @@ void CHudCredits::PrepareIntroCredits( void )
 
 	int iSlot = 0;
 
-	for ( int i = 0; i < m_CreditsList.Count(); i++ )
+	for( int i = 0; i < m_CreditsList.Count(); i++ )
 	{
-		creditname_t *pCredit = &m_CreditsList[i];
+		creditname_t* pCredit = &m_CreditsList[i];
 
-		if ( pCredit == NULL )
-			 continue;
+		if( pCredit == NULL )
+		{
+			continue;
+		}
 
 #ifdef MAPBASE
-		if (V_strstr( pCredit->szFontName, ";" ))
+		if( V_strstr( pCredit->szFontName, ";" ) )
 		{
 			CUtlStringList outStrings;
 			V_SplitString( pCredit->szFontName, ";", outStrings );
 			FOR_EACH_VEC( outStrings, i )
 			{
-				switch (i)
+				switch( i )
 				{
 					// Get color
 					case 1:
@@ -1074,12 +1118,12 @@ void CHudCredits::PrepareIntroCredits( void )
 #else
 		vgui::HScheme scheme = vgui::scheme()->GetScheme( "ClientScheme" );
 #endif
-		vgui::HFont m_hTFont = vgui::scheme()->GetIScheme(scheme)->GetFont( pCredit->szFontName );
+		vgui::HFont m_hTFont = vgui::scheme()->GetIScheme( scheme )->GetFont( pCredit->szFontName );
 
-		pCredit->flYPos = m_flY + ( iSlot * surface()->GetFontTall ( m_hTFont ) );
+		pCredit->flYPos = m_flY + ( iSlot * surface()->GetFontTall( m_hTFont ) );
 		pCredit->flXPos = m_flX;
-				
-		if ( i < 3 )
+
+		if( i < 3 )
 		{
 			pCredit->bActive = true;
 			pCredit->iSlot = iSlot;
@@ -1105,22 +1149,26 @@ void CHudCredits::PrepareIntroCredits( void )
 void CHudCredits::PrecacheCredits()
 {
 	PrepareCredits( "OutroCreditsNames" );
-	
-	if ( m_CreditsList.Count() == 0 )
-		 return;
 
-	for ( int i = 0; i < m_CreditsList.Count(); i++ )
+	if( m_CreditsList.Count() == 0 )
 	{
-		creditname_t *pCredit = &m_CreditsList[i];
+		return;
+	}
 
-		if ( pCredit == NULL )
-			 continue;
+	for( int i = 0; i < m_CreditsList.Count(); i++ )
+	{
+		creditname_t* pCredit = &m_CreditsList[i];
 
-		if (pCredit->szFontName[0] == '$')
+		if( pCredit == NULL )
 		{
-			if (V_strncmp( pCredit->szFontName + 1, "Image", 5 ) == 0)
+			continue;
+		}
+
+		if( pCredit->szFontName[0] == '$' )
+		{
+			if( V_strncmp( pCredit->szFontName + 1, "Image", 5 ) == 0 )
 			{
-				if (m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ))
+				if( m_bAllowColumns && V_strstr( pCredit->szCreditName, "\t" ) )
 				{
 					CUtlStringList outStrings;
 					V_SplitString( pCredit->szCreditName, "\t", outStrings );
@@ -1145,10 +1193,10 @@ void CHudCredits::PrecacheCredits()
 	m_CreditsList.RemoveAll();
 }
 
-int CHudCredits::GetOrAllocateImageID( const char *szFileName )
+int CHudCredits::GetOrAllocateImageID( const char* szFileName )
 {
 	int iIndex = m_ImageDict.Find( szFileName );
-	if (iIndex == m_ImageDict.InvalidIndex())
+	if( iIndex == m_ImageDict.InvalidIndex() )
 	{
 		iIndex = surface()->CreateNewTextureID();
 		m_ImageDict.Insert( szFileName, iIndex );
@@ -1159,18 +1207,20 @@ int CHudCredits::GetOrAllocateImageID( const char *szFileName )
 }
 #endif
 
-void CHudCredits::MsgFunc_CreditsMsg( bf_read &msg )
+void CHudCredits::MsgFunc_CreditsMsg( bf_read& msg )
 {
 	m_iCreditsType = msg.ReadByte();
 
 #ifdef MAPBASE
-	msg.ReadString(m_szCreditsFile, sizeof(m_szCreditsFile));
+	msg.ReadString( m_szCreditsFile, sizeof( m_szCreditsFile ) );
 
-	if (m_szCreditsFile[0] == '\0')
-		Q_strncpy(m_szCreditsFile, CREDITS_FILE, sizeof(m_szCreditsFile));
+	if( m_szCreditsFile[0] == '\0' )
+	{
+		Q_strncpy( m_szCreditsFile, CREDITS_FILE, sizeof( m_szCreditsFile ) );
+	}
 #endif
 
-	switch ( m_iCreditsType )
+	switch( m_iCreditsType )
 	{
 		case CREDITS_LOGO:
 		{
@@ -1197,17 +1247,19 @@ void CHudCredits::MsgFunc_CreditsMsg( bf_read &msg )
 	}
 }
 
-void CHudCredits::MsgFunc_LogoTimeMsg( bf_read &msg )
+void CHudCredits::MsgFunc_LogoTimeMsg( bf_read& msg )
 {
 	m_iCreditsType = CREDITS_LOGO;
 #ifdef MAPBASE
 	float flLogoTime = msg.ReadFloat();
-	msg.ReadString(m_szCreditsFile, sizeof(m_szCreditsFile));
+	msg.ReadString( m_szCreditsFile, sizeof( m_szCreditsFile ) );
 
-	if (m_szCreditsFile[0] == '\0')
-		Q_strncpy(m_szCreditsFile, CREDITS_FILE, sizeof(m_szCreditsFile));
+	if( m_szCreditsFile[0] == '\0' )
+	{
+		Q_strncpy( m_szCreditsFile, CREDITS_FILE, sizeof( m_szCreditsFile ) );
+	}
 
-	PrepareLogo(flLogoTime);
+	PrepareLogo( flLogoTime );
 #else
 	PrepareLogo( msg.ReadFloat() );
 #endif

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -17,7 +17,7 @@ public:
 		ePaintMAX
 	};
 	// returns the texture id used, pass in -1 to create a new texture
-	virtual int DrawSubTextureRGBA( EPaintTarget eTarget, int textureID, int x, int y, const unsigned char *pRGBA, int wide, int tall ) = 0;
+	virtual int DrawSubTextureRGBA( EPaintTarget eTarget, int textureID, int x, int y, const unsigned char* pRGBA, int wide, int tall ) = 0;
 	virtual void DeleteTexture( EPaintTarget eTarget, int textureID ) = 0;
 };
 

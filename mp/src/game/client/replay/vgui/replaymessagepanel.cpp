@@ -12,9 +12,9 @@
 #include "vgui_controls/PHandle.h"
 #include "econ/econ_controls.h"
 #if defined( CSTRIKE_DLL )
-#  include "cstrike/clientmode_csnormal.h"
+	#include "cstrike/clientmode_csnormal.h"
 #elif defined( TF_CLIENT_DLL )
-#  include "tf/clientmode_tf.h"
+	#include "tf/clientmode_tf.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -25,13 +25,13 @@
 #if _DEBUG
 CON_COMMAND( testreplaymessagepanel, "" )
 {
-	CReplayMessagePanel *pPanel = new CReplayMessagePanel( "#Replay_StartRecord", replay_msgduration_misc.GetFloat(), rand()%2==0);
+	CReplayMessagePanel* pPanel = new CReplayMessagePanel( "#Replay_StartRecord", replay_msgduration_misc.GetFloat(), rand() % 2 == 0 );
 	pPanel->Show();
 }
 
 CON_COMMAND( testreplaymessagedlg, "" )
 {
-	CReplayMessageDlg *pPanel = SETUP_PANEL( new CReplayMessageDlg( "text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text." ) );
+	CReplayMessageDlg* pPanel = SETUP_PANEL( new CReplayMessageDlg( "text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text text." ) );
 	pPanel->SetVisible( true );
 	pPanel->MakePopup();
 	pPanel->MoveToFront();
@@ -62,11 +62,11 @@ ConVar replay_msgduration_connectrecording( "replay_msgduration_connectrecording
 
 //-----------------------------------------------------------------------------
 
-CReplayMessageDlg::CReplayMessageDlg( const char *pText )
-:	BaseClass( NULL, "ReplayMessageDlg" ),
-	m_pOKButton( NULL ),
-	m_pDlg( NULL ),
-	m_pMsgLabel( NULL )
+CReplayMessageDlg::CReplayMessageDlg( const char* pText )
+	:	BaseClass( NULL, "ReplayMessageDlg" ),
+	  m_pOKButton( NULL ),
+	  m_pDlg( NULL ),
+	  m_pMsgLabel( NULL )
 {
 	InvalidateLayout( true, true );
 
@@ -77,10 +77,10 @@ CReplayMessageDlg::~CReplayMessageDlg()
 {
 }
 
-void CReplayMessageDlg::ApplySchemeSettings( IScheme *pScheme )
+void CReplayMessageDlg::ApplySchemeSettings( IScheme* pScheme )
 {
 	// Link in TF scheme
-	extern IEngineVGui *enginevgui;
+	extern IEngineVGui* enginevgui;
 	vgui::HScheme pTFScheme = vgui::scheme()->LoadSchemeFromFileEx( enginevgui->GetPanel( PANEL_CLIENTDLL ), "resource/ClientScheme.res", "ClientScheme" );
 	SetScheme( pTFScheme );
 	SetProportional( true );
@@ -91,8 +91,8 @@ void CReplayMessageDlg::ApplySchemeSettings( IScheme *pScheme )
 
 	m_pDlg = FindChildByName( "Dlg" );
 
-	m_pOKButton = dynamic_cast< CExButton * >( m_pDlg->FindChildByName( "OKButton" ) );
-	m_pMsgLabel = dynamic_cast< CExLabel * >( m_pDlg->FindChildByName( "TextLabel") );
+	m_pOKButton = dynamic_cast< CExButton* >( m_pDlg->FindChildByName( "OKButton" ) );
+	m_pMsgLabel = dynamic_cast< CExLabel* >( m_pDlg->FindChildByName( "TextLabel" ) );
 
 	m_pOKButton->AddActionSignalTarget( this );
 }
@@ -108,7 +108,7 @@ void CReplayMessageDlg::PerformLayout()
 	m_pDlg->SetPos( ( ScreenWidth() - m_pDlg->GetWide() ) / 2, ( ScreenHeight() - m_pDlg->GetTall() ) / 2 );
 
 	// Position OK below text label, centered horizontally
-	int nButtonX = XRES(13);
+	int nButtonX = XRES( 13 );
 	int nButtonY = m_pDlg->GetTall() - m_pOKButton->GetTall() - YRES( 10 );
 	m_pOKButton->SetPos( nButtonX, nButtonY );
 }
@@ -121,9 +121,9 @@ void CReplayMessageDlg::Close()
 	engine->ClientCmd_Unrestricted( "gameui_hide" );
 }
 
-void CReplayMessageDlg::OnCommand( const char *pCommand )
+void CReplayMessageDlg::OnCommand( const char* pCommand )
 {
-	if ( FStrEq( pCommand, "close" ) )
+	if( FStrEq( pCommand, "close" ) )
 	{
 		Close();
 	}
@@ -133,13 +133,13 @@ void CReplayMessageDlg::OnCommand( const char *pCommand )
 
 void CReplayMessageDlg::OnKeyCodeTyped( KeyCode nCode )
 {
-	switch ( nCode )
+	switch( nCode )
 	{
-	case KEY_ESCAPE:
-	case KEY_SPACE:
-	case KEY_ENTER:
-		Close();
-		return;
+		case KEY_ESCAPE:
+		case KEY_SPACE:
+		case KEY_ENTER:
+			Close();
+			return;
 	}
 
 	BaseClass::OnKeyCodeTyped( nCode );
@@ -156,7 +156,7 @@ void CReplayMessagePanel::RemoveAll()
 {
 	FOR_EACH_VEC( g_vecReplayMessagePanels, i )
 	{
-		CReplayMessagePanel *pCurPanel = g_vecReplayMessagePanels[ i ];
+		CReplayMessagePanel* pCurPanel = g_vecReplayMessagePanels[ i ];
 		pCurPanel->MarkForDeletion();
 	}
 
@@ -165,16 +165,16 @@ void CReplayMessagePanel::RemoveAll()
 
 //-----------------------------------------------------------------------------
 
-ReplayMessagePanelHandle_t GetReplayMessagePanelHandle( CReplayMessagePanel *pPanel )
+ReplayMessagePanelHandle_t GetReplayMessagePanelHandle( CReplayMessagePanel* pPanel )
 {
 	ReplayMessagePanelHandle_t hThis;
 	hThis = pPanel;
 	return hThis;
 }
 
-CReplayMessagePanel::CReplayMessagePanel( const char *pLocalizeName, float flDuration, bool bUrgent )
-:	EditablePanel( g_pClientMode->GetViewport(), "ReplayMessagePanel" ),
-	m_bUrgent( bUrgent )
+CReplayMessagePanel::CReplayMessagePanel( const char* pLocalizeName, float flDuration, bool bUrgent )
+	:	EditablePanel( g_pClientMode->GetViewport(), "ReplayMessagePanel" ),
+	  m_bUrgent( bUrgent )
 {
 	m_flShowStartTime = 0;
 	m_flShowDuration = flDuration;
@@ -184,11 +184,11 @@ CReplayMessagePanel::CReplayMessagePanel( const char *pLocalizeName, float flDur
 	m_pIcon = new ImagePanel( this, "Icon" );
 
 #if defined( TF_CLIENT_DLL )
-	const char *pBorderName = bUrgent ? "ReplayFatLineBorderRedBGOpaque" : "ReplayFatLineBorderOpaque";
+	const char* pBorderName = bUrgent ? "ReplayFatLineBorderRedBGOpaque" : "ReplayFatLineBorderOpaque";
 	V_strncpy( m_szBorderName, pBorderName, sizeof( m_szBorderName ) );
 #endif
 
-	g_vecReplayMessagePanels.AddToTail( GetReplayMessagePanelHandle( const_cast< CReplayMessagePanel * >( this ) ) );
+	g_vecReplayMessagePanels.AddToTail( GetReplayMessagePanelHandle( const_cast< CReplayMessagePanel* >( this ) ) );
 
 	InvalidateLayout( true, true );
 
@@ -201,16 +201,16 @@ CReplayMessagePanel::~CReplayMessagePanel()
 	int iFind = g_vecReplayMessagePanels.InvalidIndex();
 	FOR_EACH_VEC( g_vecReplayMessagePanels, i )
 	{
-		if ( g_vecReplayMessagePanels[ i ].Get() == this )
+		if( g_vecReplayMessagePanels[ i ].Get() == this )
 		{
 			iFind = i;
 		}
 	}
 
 	// Remove, if found.
-	if ( iFind != g_vecReplayMessagePanels.InvalidIndex() )
+	if( iFind != g_vecReplayMessagePanels.InvalidIndex() )
 	{
-		g_vecReplayMessagePanels.FastRemove( iFind );	
+		g_vecReplayMessagePanels.FastRemove( iFind );
 	}
 
 	ivgui()->RemoveTickSignal( GetVPanel() );
@@ -231,8 +231,10 @@ void CReplayMessagePanel::Show()
 inline float LerpScale( float flIn, float flInMin, float flInMax, float flOutMin, float flOutMax )
 {
 	float flDenom = flInMax - flInMin;
-	if ( flDenom == 0.0f )
+	if( flDenom == 0.0f )
+	{
 		return 0.0f;
+	}
 
 	float t = clamp( ( flIn - flInMin ) / flDenom, 0.0f, 1.0f );
 	return Lerp( t, flOutMin, flOutMax );
@@ -241,7 +243,7 @@ inline float LerpScale( float flIn, float flInMin, float flInMax, float flOutMin
 inline float SCurve( float t )
 {
 	t = clamp( t, 0.0f, 1.0f );
-	return t * t * (3 - 2*t);
+	return t * t * ( 3 - 2 * t );
 }
 
 void CReplayMessagePanel::OnTick()
@@ -249,7 +251,7 @@ void CReplayMessagePanel::OnTick()
 	// Hide if taking screenshot
 	extern ConVar hud_freezecamhide;
 	extern bool IsTakingAFreezecamScreenshot();
-	if ( hud_freezecamhide.GetBool() && IsTakingAFreezecamScreenshot() )
+	if( hud_freezecamhide.GetBool() && IsTakingAFreezecamScreenshot() )
 	{
 		SetVisible( false );
 		return;
@@ -257,7 +259,7 @@ void CReplayMessagePanel::OnTick()
 
 	// Delete the panel if life exceeded
 	const float flEndTime = m_flShowStartTime + m_flShowDuration;
-	if ( gpGlobals->curtime >= flEndTime )
+	if( gpGlobals->curtime >= flEndTime )
 	{
 		SetVisible( false );
 		MarkForDeletion();
@@ -270,13 +272,13 @@ void CReplayMessagePanel::OnTick()
 	float flAlpha;
 
 	// Fade out?
-	if ( gpGlobals->curtime >= flEndTime - flFadeDuration )
+	if( gpGlobals->curtime >= flEndTime - flFadeDuration )
 	{
 		flAlpha = LerpScale( gpGlobals->curtime, flEndTime - flFadeDuration, flEndTime, 1.0f, 0.0f );
 	}
 
 	// Fade in?
-	else if ( gpGlobals->curtime <= m_flShowStartTime + flFadeDuration )
+	else if( gpGlobals->curtime <= m_flShowStartTime + flFadeDuration )
 	{
 		flAlpha = LerpScale( gpGlobals->curtime, m_flShowStartTime, m_flShowStartTime + flFadeDuration, 0.0f, 1.0f );
 	}
@@ -290,7 +292,7 @@ void CReplayMessagePanel::OnTick()
 	SetAlpha( 255 * SCurve( flAlpha ) );
 }
 
-void CReplayMessagePanel::ApplySchemeSettings( IScheme *pScheme )
+void CReplayMessagePanel::ApplySchemeSettings( IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -310,7 +312,7 @@ void CReplayMessagePanel::PerformLayout()
 
 #if defined( TF_CLIENT_DLL )
 	// Set the border if one was specified
-	if ( m_szBorderName[0] )
+	if( m_szBorderName[0] )
 	{
 		SetBorder( scheme()->GetIScheme( GetScheme() )->GetBorder( m_szBorderName ) );
 	}
@@ -323,24 +325,24 @@ void CReplayMessagePanel::PerformLayout()
 #else
 	bool bMinMode = false;
 #endif
-	int nVerticalBuffer = bMinMode ? YRES(3) : YRES(5);
+	int nVerticalBuffer = bMinMode ? YRES( 3 ) : YRES( 5 );
 	int nMessageLabelY = nVerticalBuffer;
-	int nVerticalOffsetBetweenPanels = YRES(6);
+	int nVerticalOffsetBetweenPanels = YRES( 6 );
 
 	// Only display replay icon and "replay" label if this is the top-most (vertically) panel
 	// and we're not in min-mode
 	Assert( InstanceCount() > 0 );
-	if ( !InstanceCount() || bMinMode || g_vecReplayMessagePanels[ 0 ].Get() != this )
+	if( !InstanceCount() || bMinMode || g_vecReplayMessagePanels[ 0 ].Get() != this )
 	{
 		m_pIcon->SetTall( 0 );
 		m_pReplayLabel->SetTall( 0 );
-		nVerticalOffsetBetweenPanels = YRES(1);
+		nVerticalOffsetBetweenPanels = YRES( 1 );
 	}
 	else
 	{
 		m_pReplayLabel->SizeToContents();
 		nMessageLabelY += m_pReplayLabel->GetTall();
-		nVerticalOffsetBetweenPanels = YRES(6);
+		nVerticalOffsetBetweenPanels = YRES( 6 );
 	}
 
 	// Resize the message label to fit the text
@@ -350,15 +352,17 @@ void CReplayMessagePanel::PerformLayout()
 	SetTall( nMessageLabelY + m_pMessageLabel->GetTall() + nVerticalBuffer );
 
 	// Set the message label's position
-	m_pMessageLabel->SetPos( XRES(8), nMessageLabelY );
+	m_pMessageLabel->SetPos( XRES( 8 ), nMessageLabelY );
 
 	// Get the bottom of the bottom-most message panel
 	int nMaxY = 0;
 	FOR_EACH_VEC( g_vecReplayMessagePanels, it )
 	{
-		CReplayMessagePanel *pPanel = g_vecReplayMessagePanels[ it ];
-		if ( pPanel == this )
+		CReplayMessagePanel* pPanel = g_vecReplayMessagePanels[ it ];
+		if( pPanel == this )
+		{
 			continue;
+		}
 
 		int nX, nY;
 		pPanel->GetPos( nX, nY );
@@ -367,7 +371,7 @@ void CReplayMessagePanel::PerformLayout()
 
 	// Adjust this panel's position to be below bottom-most panel
 	// NOTE: Intentionally using YRES() for xpos, since we want to match offsets in both x & y margins
-	SetPos( YRES(6), nMaxY + nVerticalOffsetBetweenPanels );
+	SetPos( YRES( 6 ), nMaxY + nVerticalOffsetBetweenPanels );
 }
 
 //-----------------------------------------------------------------------------

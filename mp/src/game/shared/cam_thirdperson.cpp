@@ -17,22 +17,22 @@
 	#define THIRDPERSON_CVAR_FLAGS FCVAR_NOT_CONNECTED | FCVAR_USERINFO | FCVAR_ARCHIVE | FCVAR_DEVELOPMENTONLY
 #endif
 
-static Vector CAM_HULL_MIN(-CAM_HULL_OFFSET,-CAM_HULL_OFFSET,-CAM_HULL_OFFSET);
-static Vector CAM_HULL_MAX( CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET);
+static Vector CAM_HULL_MIN( -CAM_HULL_OFFSET, -CAM_HULL_OFFSET, -CAM_HULL_OFFSET );
+static Vector CAM_HULL_MAX( CAM_HULL_OFFSET, CAM_HULL_OFFSET, CAM_HULL_OFFSET );
 
 #ifdef CLIENT_DLL
 
 #include "input.h"
 
 
-extern const ConVar *sv_cheats;
+extern const ConVar* sv_cheats;
 
-void CAM_ToThirdPerson(void);
-void CAM_ToFirstPerson(void);
+void CAM_ToThirdPerson( void );
+void CAM_ToFirstPerson( void );
 
 void ToggleThirdPerson( bool bValue )
 {
-	if ( bValue == true )
+	if( bValue == true )
 	{
 		CAM_ToThirdPerson();
 	}
@@ -42,14 +42,14 @@ void ToggleThirdPerson( bool bValue )
 	}
 }
 
-void ThirdPersonChange( IConVar *pConVar, const char *pOldValue, float flOldValue )
+void ThirdPersonChange( IConVar* pConVar, const char* pOldValue, float flOldValue )
 {
 	ConVarRef var( pConVar );
 
 	ToggleThirdPerson( var.GetBool() );
 }
 
-ConVar cl_thirdperson( "cl_thirdperson", "0", THIRDPERSON_CVAR_FLAGS, "Enables/Disables third person", ThirdPersonChange  );
+ConVar cl_thirdperson( "cl_thirdperson", "0", THIRDPERSON_CVAR_FLAGS, "Enables/Disables third person", ThirdPersonChange );
 
 #endif
 
@@ -69,7 +69,7 @@ void CThirdPersonManager::Init( void )
 
 	m_flUpOffset = CAMERA_UP_OFFSET;
 
-	if ( input )
+	if( input )
 	{
 		input->CAM_SetCameraThirdData( NULL, vec3_angle );
 	}
@@ -79,24 +79,24 @@ void CThirdPersonManager::Update( void )
 {
 
 #ifdef CLIENT_DLL
-	if ( !sv_cheats )
+	if( !sv_cheats )
 	{
 		sv_cheats = cvar->FindVar( "sv_cheats" );
 	}
 
 	// If cheats have been disabled, pull us back out of third-person view.
-	if ( sv_cheats && !sv_cheats->GetBool() && GameRules() && GameRules()->AllowThirdPersonCamera() == false )
+	if( sv_cheats && !sv_cheats->GetBool() && GameRules() && GameRules()->AllowThirdPersonCamera() == false )
 	{
-		if ( (bool)input->CAM_IsThirdPerson() == true )
+		if( ( bool )input->CAM_IsThirdPerson() == true )
 		{
 			input->CAM_ToFirstPerson();
 		}
 		return;
 	}
 
-	if ( IsOverridingThirdPerson() == false )
+	if( IsOverridingThirdPerson() == false )
 	{
-		if ( (bool)input->CAM_IsThirdPerson() != ( cl_thirdperson.GetBool() || m_bForced ) && GameRules() && GameRules()->AllowThirdPersonCamera() == true )
+		if( ( bool )input->CAM_IsThirdPerson() != ( cl_thirdperson.GetBool() || m_bForced ) && GameRules() && GameRules()->AllowThirdPersonCamera() == true )
 		{
 			ToggleThirdPerson( m_bForced || cl_thirdperson.GetBool() );
 		}
@@ -109,7 +109,7 @@ Vector CThirdPersonManager::GetFinalCameraOffset( void )
 {
 	Vector vDesired = GetDesiredCameraOffset();
 
-	if ( m_flUpFraction != 1.0f )
+	if( m_flUpFraction != 1.0f )
 	{
 		vDesired.z += m_flUpOffset;
 	}
@@ -120,7 +120,7 @@ Vector CThirdPersonManager::GetFinalCameraOffset( void )
 
 Vector CThirdPersonManager::GetDistanceFraction( void )
 {
-	if ( IsOverridingThirdPerson() == true )
+	if( IsOverridingThirdPerson() == true )
 	{
 		return Vector( m_flTargetFraction, m_flTargetFraction, m_flTargetFraction );
 	}
@@ -132,7 +132,7 @@ Vector CThirdPersonManager::GetDistanceFraction( void )
 
 	flFraction = Lerp( flFrac, m_flFraction, m_flTargetFraction );
 
-	if ( flFrac == 1.0f )
+	if( flFrac == 1.0f )
 	{
 		m_flFraction = m_flTargetFraction;
 	}
@@ -141,7 +141,7 @@ Vector CThirdPersonManager::GetDistanceFraction( void )
 
 	flUpFraction = 1.0f - Lerp( flFrac, m_flUpFraction, m_flTargetUpFraction );
 
-	if ( flFrac == 1.0f )
+	if( flFrac == 1.0f )
 	{
 		m_flUpFraction = m_flTargetUpFraction;
 	}
@@ -149,9 +149,9 @@ Vector CThirdPersonManager::GetDistanceFraction( void )
 	return Vector( flFraction, flFraction, flUpFraction );
 }
 
-void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, const QAngle& angles )
+void CThirdPersonManager::PositionCamera( CBasePlayer* pPlayer, const QAngle& angles )
 {
-	if ( pPlayer )
+	if( pPlayer )
 	{
 		trace_t trace;
 
@@ -162,16 +162,16 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, const QAngle& an
 		origin += pPlayer->GetViewOffset();
 
 		AngleVectors( angles, &camForward, &camRight, &camUp );
-	
+
 		Vector endPos = origin;
 
-		Vector vecCamOffset = endPos + (camForward * - GetDesiredCameraOffset()[DIST_FORWARD]) + (camRight * GetDesiredCameraOffset()[ DIST_RIGHT ]) + (camUp * GetDesiredCameraOffset()[ DIST_UP ] );
+		Vector vecCamOffset = endPos + ( camForward * - GetDesiredCameraOffset()[DIST_FORWARD] ) + ( camRight * GetDesiredCameraOffset()[ DIST_RIGHT ] ) + ( camUp * GetDesiredCameraOffset()[ DIST_UP ] );
 
 		// use our previously #defined hull to collision trace
 		CTraceFilterSimple traceFilter( pPlayer, COLLISION_GROUP_NONE );
 		UTIL_TraceHull( endPos, vecCamOffset, CAM_HULL_MIN, CAM_HULL_MAX, MASK_SOLID & ~CONTENTS_MONSTER, &traceFilter, &trace );
-		
-		if ( trace.fraction != m_flTargetFraction )
+
+		if( trace.fraction != m_flTargetFraction )
 		{
 			m_flLerpTime = gpGlobals->curtime;
 		}
@@ -180,30 +180,30 @@ void CThirdPersonManager::PositionCamera( CBasePlayer *pPlayer, const QAngle& an
 		m_flTargetUpFraction = 1.0f;
 
 		//If we're getting closer to a wall snap the fraction right away.
-		if ( m_flTargetFraction < m_flFraction )
+		if( m_flTargetFraction < m_flFraction )
 		{
 			m_flFraction = m_flTargetFraction;
 			m_flLerpTime = gpGlobals->curtime;
 		}
-	
+
 
 		// move the camera closer if it hit something
-		if( trace.fraction < 1.0  )
+		if( trace.fraction < 1.0 )
 		{
 			m_vecCameraOffset[ DIST ] *= trace.fraction;
 
-			UTIL_TraceHull( endPos, endPos + (camForward * - GetDesiredCameraOffset()[DIST_FORWARD]), CAM_HULL_MIN, CAM_HULL_MAX, MASK_SOLID & ~CONTENTS_MONSTER, &traceFilter, &trace );
+			UTIL_TraceHull( endPos, endPos + ( camForward * - GetDesiredCameraOffset()[DIST_FORWARD] ), CAM_HULL_MIN, CAM_HULL_MAX, MASK_SOLID & ~CONTENTS_MONSTER, &traceFilter, &trace );
 
-			if ( trace.fraction != 1.0f )
+			if( trace.fraction != 1.0f )
 			{
-				if ( trace.fraction != m_flTargetUpFraction )
+				if( trace.fraction != m_flTargetUpFraction )
 				{
 					m_flUpLerpTime = gpGlobals->curtime;
 				}
 
 				m_flTargetUpFraction = trace.fraction;
 
-				if ( m_flTargetUpFraction < m_flUpFraction )
+				if( m_flTargetUpFraction < m_flUpFraction )
 				{
 					m_flUpFraction = trace.fraction;
 					m_flUpLerpTime = gpGlobals->curtime;

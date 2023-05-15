@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -13,7 +13,7 @@ C_ParticleTrail::C_ParticleTrail( void )
 
 C_ParticleTrail::~C_ParticleTrail( void )
 {
-	if ( m_pParticleMgr )
+	if( m_pParticleMgr )
 	{
 		m_pParticleMgr->RemoveEffect( &m_ParticleEffect );
 	}
@@ -22,11 +22,11 @@ C_ParticleTrail::~C_ParticleTrail( void )
 //-----------------------------------------------------------------------------
 // Purpose: Gets the attachment point to spawn at
 //-----------------------------------------------------------------------------
-void C_ParticleTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsOrigin, QAngle *pAbsAngles )
+void C_ParticleTrail::GetAimEntOrigin( IClientEntity* pAttachedTo, Vector* pAbsOrigin, QAngle* pAbsAngles )
 {
-	C_BaseEntity *pEnt = pAttachedTo->GetBaseEntity();
+	C_BaseEntity* pEnt = pAttachedTo->GetBaseEntity();
 
-	if ( pEnt && (m_nAttachment > 0) )
+	if( pEnt && ( m_nAttachment > 0 ) )
 	{
 		pEnt->GetAttachment( m_nAttachment, *pAbsOrigin, *pAbsAngles );
 		return;
@@ -36,7 +36,7 @@ void C_ParticleTrail::GetAimEntOrigin( IClientEntity *pAttachedTo, Vector *pAbsO
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Turn on the emission of particles 
+// Purpose: Turn on the emission of particles
 //-----------------------------------------------------------------------------
 void C_ParticleTrail::SetEmit( bool bEmit )
 {
@@ -55,23 +55,25 @@ void C_ParticleTrail::SetSpawnRate( float rate )
 //-----------------------------------------------------------------------------
 // Purpose: First sent down from the server
 //-----------------------------------------------------------------------------
-void C_ParticleTrail::OnDataChanged(DataUpdateType_t updateType)
+void C_ParticleTrail::OnDataChanged( DataUpdateType_t updateType )
 {
-	C_BaseEntity::OnDataChanged(updateType);
+	C_BaseEntity::OnDataChanged( updateType );
 
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		Start( ParticleMgr(), NULL );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void C_ParticleTrail::Start( CParticleMgr *pParticleMgr, IPrototypeArgAccess *pArgs )
+void C_ParticleTrail::Start( CParticleMgr* pParticleMgr, IPrototypeArgAccess* pArgs )
 {
 	if( pParticleMgr->AddEffect( &m_ParticleEffect, this ) == false )
+	{
 		return;
+	}
 
 	m_pParticleMgr = pParticleMgr;
 }

@@ -10,10 +10,10 @@
 
 #if !defined( MAKE_VPC )
 
-#if !defined( RAD_TELEMETRY_DISABLED ) && ( defined( IS_WINDOWS_PC ) || defined( _LINUX ) )
-// Rad Telemetry profiling is enabled on Win32 and Win64.
-#define RAD_TELEMETRY_ENABLED
-#endif
+	#if !defined( RAD_TELEMETRY_DISABLED ) && ( defined( IS_WINDOWS_PC ) || defined( _LINUX ) )
+		// Rad Telemetry profiling is enabled on Win32 and Win64.
+		#define RAD_TELEMETRY_ENABLED
+	#endif
 
 #endif // !MAKE_VPC
 
@@ -27,12 +27,12 @@
 
 inline void TelemetryTick() {}
 inline void TelemetrySetLevel( unsigned int Level ) {}
-#define TelemetrySetLockName( _ctx, _location, _description ) 
+#define TelemetrySetLockName( _ctx, _location, _description )
 
 class CTelemetryLock
 {
 public:
-	CTelemetryLock(void *plocation, const char *description) {}
+	CTelemetryLock( void* plocation, const char* description ) {}
 	~CTelemetryLock() {}
 	void Locked() {}
 	void Unlocked() {}
@@ -41,7 +41,7 @@ public:
 class CTelemetrySpikeDetector
 {
 public:
-	CTelemetrySpikeDetector( const char *msg, uint32 threshold = 50 ) {}
+	CTelemetrySpikeDetector( const char* msg, uint32 threshold = 50 ) {}
 	~CTelemetrySpikeDetector() { }
 };
 
@@ -92,9 +92,9 @@ PLATFORM_INTERFACE void TelemetrySetLevel( unsigned int Level );
 class CTelemetryLock
 {
 public:
-	CTelemetryLock(void *plocation, const char *description)
+	CTelemetryLock( void* plocation, const char* description )
 	{
-		m_plocation = (const char *)plocation;
+		m_plocation = ( const char* )plocation;
 		m_description = description;
 		TelemetrySetLockName( TELEMETRY_LEVEL1, m_plocation, m_description );
 		tmTryLock( TELEMETRY_LEVEL1, m_plocation, "%s", m_description );
@@ -118,15 +118,15 @@ public:
 	}
 
 public:
-	const char *m_plocation;
-	const char *m_description;
+	const char* m_plocation;
+	const char* m_description;
 };
 
 class CTelemetrySpikeDetector
 {
 public:
 	// Spews Telemetry message when threshold hit (in milliseconds.)
-	CTelemetrySpikeDetector( const char *msg, float threshold = 5 ) :
+	CTelemetrySpikeDetector( const char* msg, float threshold = 5 ) :
 		m_message( msg ), m_threshold( threshold ), time0( tmFastTime() ) {}
 	~CTelemetrySpikeDetector()
 	{
@@ -140,7 +140,7 @@ public:
 private:
 	TmU64 time0;
 	float m_threshold;
-	const char *m_message;
+	const char* m_message;
 };
 
 #endif // RAD_TELEMETRY_ENABLED

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,12 +9,12 @@
 #include "weapon_ifmbasecamera.h"
 
 #ifdef CLIENT_DLL
-#include "view_shared.h"
-#include "iviewrender.h"
-#include "vgui_controls/Controls.h"
-#include "vgui/ISurface.h"
+	#include "view_shared.h"
+	#include "iviewrender.h"
+	#include "vgui_controls/Controls.h"
+	#include "vgui/ISurface.h"
 
-bool ToolFramework_SetupEngineView( Vector &origin, QAngle &angles, float &fov );
+	bool ToolFramework_SetupEngineView( Vector& origin, QAngle& angles, float& fov );
 
 #endif
 
@@ -26,7 +26,7 @@ bool ToolFramework_SetupEngineView( Vector &origin, QAngle &angles, float &fov )
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponIFMBaseCamera, DT_WeaponIFMBaseCamera )
 LINK_ENTITY_TO_CLASS( weapon_ifm_base_camera, CWeaponIFMBaseCamera );
 
-BEGIN_NETWORK_TABLE( CWeaponIFMBaseCamera, DT_WeaponIFMBaseCamera )	
+BEGIN_NETWORK_TABLE( CWeaponIFMBaseCamera, DT_WeaponIFMBaseCamera )
 #if !defined( CLIENT_DLL )
 	SendPropFloat( SENDINFO( m_flRenderAspectRatio ), 0, SPROP_NOSCALE ),
 	SendPropFloat( SENDINFO( m_flRenderFOV ), 0, SPROP_NOSCALE ),
@@ -44,32 +44,32 @@ END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
 
-BEGIN_PREDICTION_DATA( CWeaponIFMBaseCamera ) 
+	BEGIN_PREDICTION_DATA( CWeaponIFMBaseCamera )
 	DEFINE_PRED_FIELD( m_flFOV, FIELD_FLOAT, 0 ),
 	DEFINE_PRED_FIELD( m_flArmLength, FIELD_FLOAT, 0 ),
 	DEFINE_PRED_FIELD( m_vecRelativePosition, FIELD_VECTOR, 0 ),
 	DEFINE_PRED_FIELD( m_angRelativeAngles, FIELD_VECTOR, 0 ),
 	DEFINE_PRED_FIELD( m_bFullScreen, FIELD_BOOLEAN, 0 ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 
 #endif
 
 
 #ifdef GAME_DLL
 
-BEGIN_DATADESC( CWeaponIFMBaseCamera )
+	BEGIN_DATADESC( CWeaponIFMBaseCamera )
 	DEFINE_FIELD( m_flRenderAspectRatio, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flRenderFOV, FIELD_FLOAT ),
 	DEFINE_FIELD( m_flRenderArmLength, FIELD_FLOAT ),
 	DEFINE_FIELD( m_vecRenderPosition, FIELD_VECTOR ),
 	DEFINE_FIELD( m_angRenderAngles, FIELD_VECTOR ),
-END_DATADESC()
+	END_DATADESC()
 
 #endif
 
 
 //-----------------------------------------------------------------------------
-// CWeaponIFMBaseCamera implementation. 
+// CWeaponIFMBaseCamera implementation.
 //-----------------------------------------------------------------------------
 CWeaponIFMBaseCamera::CWeaponIFMBaseCamera()
 {
@@ -80,19 +80,19 @@ CWeaponIFMBaseCamera::CWeaponIFMBaseCamera()
 	m_angRelativeAngles.Init();
 	m_bFullScreen = false;
 	m_nScreenWidth = 0;
-	m_nScreenHeight = 0; 
+	m_nScreenHeight = 0;
 #endif
 }
 
 
 //-----------------------------------------------------------------------------
 //
-// Specific methods on the server 
+// Specific methods on the server
 //
 //-----------------------------------------------------------------------------
 #ifdef GAME_DLL
 
-void CWeaponIFMBaseCamera::SetRenderInfo( float flAspectRatio, float flFOV, float flArmLength, const Vector &vecPosition, const QAngle &angles )
+void CWeaponIFMBaseCamera::SetRenderInfo( float flAspectRatio, float flFOV, float flArmLength, const Vector& vecPosition, const QAngle& angles )
 {
 	m_flRenderAspectRatio = flAspectRatio;
 	m_flRenderFOV = flFOV;
@@ -103,13 +103,17 @@ void CWeaponIFMBaseCamera::SetRenderInfo( float flAspectRatio, float flFOV, floa
 
 CON_COMMAND( ifm_basecamera_camerastate, "Set camera state" )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( UTIL_GetCommandClient() );
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( args.ArgC() != 10 )
+	if( args.ArgC() != 10 )
+	{
 		return;
-	
+	}
+
 	Vector vecPosition;
 	QAngle angAngles;
 	float flAspectRatio = atof( args[1] );
@@ -123,26 +127,28 @@ CON_COMMAND( ifm_basecamera_camerastate, "Set camera state" )
 	angAngles.z = atof( args[9] );
 
 	int nCount = pPlayer->WeaponCount();
-	for ( int i = 0; i < nCount; ++i )
+	for( int i = 0; i < nCount; ++i )
 	{
-		CWeaponIFMBaseCamera *pCamera = dynamic_cast<CWeaponIFMBaseCamera*>( pPlayer->GetWeapon( i ) );
-		if ( !pCamera )
+		CWeaponIFMBaseCamera* pCamera = dynamic_cast<CWeaponIFMBaseCamera*>( pPlayer->GetWeapon( i ) );
+		if( !pCamera )
+		{
 			continue;
+		}
 
 		pCamera->SetRenderInfo( flAspectRatio, flFOV, flArmLength, vecPosition, angAngles );
 	}
-}	
+}
 
 #endif   // GAME_DLL
 
 
 //-----------------------------------------------------------------------------
 //
-// Specific methods on the client 
+// Specific methods on the client
 //
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
-	
+
 
 //-----------------------------------------------------------------------------
 // Sets up the material to draw with
@@ -150,7 +156,7 @@ CON_COMMAND( ifm_basecamera_camerastate, "Set camera state" )
 void CWeaponIFMBaseCamera::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-	if (updateType == DATA_UPDATE_CREATED)
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_FrustumMaterial.Init( "effects/steadycamfrustum", TEXTURE_GROUP_OTHER );
 		m_FrustumWireframeMaterial.Init( "shadertest/wireframevertexcolor", TEXTURE_GROUP_OTHER );
@@ -163,7 +169,7 @@ void CWeaponIFMBaseCamera::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 void CWeaponIFMBaseCamera::TransmitRenderInfo()
 {
-	float flAspectRatio = (m_nScreenHeight != 0) ? (float)m_nScreenWidth / (float)m_nScreenHeight : 1.0f;
+	float flAspectRatio = ( m_nScreenHeight != 0 ) ? ( float )m_nScreenWidth / ( float )m_nScreenHeight : 1.0f;
 	float flFOV = m_flFOV;
 
 	Vector position;
@@ -174,9 +180,9 @@ void CWeaponIFMBaseCamera::TransmitRenderInfo()
 	ToolFramework_SetupEngineView( position, angles, flFOV );
 
 	char pBuf[256];
-	Q_snprintf( pBuf, sizeof(pBuf), "ifm_basecamera_camerastate %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f", 
-		flAspectRatio, flFOV, m_flArmLength, position.x, position.y, position.z,
-		angles.x, angles.y, angles.z );
+	Q_snprintf( pBuf, sizeof( pBuf ), "ifm_basecamera_camerastate %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f %.2f",
+				flAspectRatio, flFOV, m_flArmLength, position.x, position.y, position.z,
+				angles.x, angles.y, angles.z );
 
 	engine->ClientCmd( pBuf );
 }
@@ -191,8 +197,8 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 {
 	int nRetVal = BaseClass::DrawModel( flags );
 
-	CBasePlayer *pPlayer = GetPlayerOwner();
-	if ( pPlayer && !pPlayer->IsLocalPlayer() )
+	CBasePlayer* pPlayer = GetPlayerOwner();
+	if( pPlayer && !pPlayer->IsLocalPlayer() )
 	{
 		// Compute endpoints
 		float flMaxD = 1.0f / tan( M_PI * m_flFOV / 360.0f );
@@ -219,7 +225,7 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 
 		CMeshBuilder meshBuilder;
 		meshBuilder.Begin( pMesh, MATERIAL_TRIANGLES, 4 );
-		for ( int i = 0; i < 4; ++i )
+		for( int i = 0; i < 4; ++i )
 		{
 			meshBuilder.Position3fv( m_vecRenderPosition.Get().Base() );
 			meshBuilder.Color4ub( 128, 0, 0, 255 );
@@ -229,7 +235,7 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 			meshBuilder.Color4ub( 128, 0, 0, 255 );
 			meshBuilder.AdvanceVertex();
 
-			meshBuilder.Position3fv( vecEndPoint[(i+1)%4].Base() );
+			meshBuilder.Position3fv( vecEndPoint[( i + 1 ) % 4].Base() );
 			meshBuilder.Color4ub( 128, 0, 0, 255 );
 			meshBuilder.AdvanceVertex();
 		}
@@ -240,7 +246,7 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 		pRenderContext->Bind( m_FrustumWireframeMaterial );
 		pMesh = pRenderContext->GetDynamicMesh( true );
 		meshBuilder.Begin( pMesh, MATERIAL_LINES, 8 );
-		for ( int i = 0; i < 4; ++i )
+		for( int i = 0; i < 4; ++i )
 		{
 			meshBuilder.Position3fv( m_vecRenderPosition.Get().Base() );
 			meshBuilder.Color4ub( 255, 255, 255, 255 );
@@ -254,7 +260,7 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 			meshBuilder.Color4ub( 255, 255, 255, 255 );
 			meshBuilder.AdvanceVertex();
 
-			meshBuilder.Position3fv( vecEndPoint[(i+1)%4].Base() );
+			meshBuilder.Position3fv( vecEndPoint[( i + 1 ) % 4].Base() );
 			meshBuilder.Color4ub( 255, 255, 255, 255 );
 			meshBuilder.AdvanceVertex();
 		}
@@ -270,9 +276,9 @@ int CWeaponIFMBaseCamera::DrawModel( int flags )
 //-----------------------------------------------------------------------------
 // Gets the size of the overlay to draw
 //-----------------------------------------------------------------------------
-void CWeaponIFMBaseCamera::GetViewportSize( int &w, int &h )
+void CWeaponIFMBaseCamera::GetViewportSize( int& w, int& h )
 {
-	if ( !m_bFullScreen )
+	if( !m_bFullScreen )
 	{
 		w = m_nScreenWidth * INSET_VIEW_FACTOR;
 		h = m_nScreenHeight * INSET_VIEW_FACTOR;
@@ -288,10 +294,10 @@ void CWeaponIFMBaseCamera::GetViewportSize( int &w, int &h )
 //-----------------------------------------------------------------------------
 // Gets the abs orientation of the camera
 //-----------------------------------------------------------------------------
-void CWeaponIFMBaseCamera::ComputeAbsCameraTransform( Vector &vecAbsOrigin, QAngle &angAbsRotation )
+void CWeaponIFMBaseCamera::ComputeAbsCameraTransform( Vector& vecAbsOrigin, QAngle& angAbsRotation )
 {
-	CBasePlayer *pPlayer = GetPlayerOwner();
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = GetPlayerOwner();
+	if( !pPlayer )
 	{
 		vecAbsOrigin.Init();
 		angAbsRotation.Init();
@@ -309,8 +315,8 @@ void CWeaponIFMBaseCamera::ComputeAbsCameraTransform( Vector &vecAbsOrigin, QAng
 	// Offset the view along the forward direction vector by the arm length
 	Vector vecForward;
 	AngleVectors( viewAngles, &vecForward );
-	VectorMA( viewOrigin, m_flArmLength, vecForward, viewOrigin );  
-	
+	VectorMA( viewOrigin, m_flArmLength, vecForward, viewOrigin );
+
 	// Use player roll
 	QAngle angles = m_angRelativeAngles;
 	angles.z = viewAngles.z;
@@ -330,10 +336,10 @@ void CWeaponIFMBaseCamera::ComputeAbsCameraTransform( Vector &vecAbsOrigin, QAng
 //-----------------------------------------------------------------------------
 // Gets the bounds of the overlay to draw
 //-----------------------------------------------------------------------------
-void CWeaponIFMBaseCamera::GetOverlayBounds( int &x, int &y, int &w, int &h )
+void CWeaponIFMBaseCamera::GetOverlayBounds( int& x, int& y, int& w, int& h )
 {
-	const CViewSetup *pViewSetup = view->GetViewSetup();
-	if ( !m_bFullScreen )
+	const CViewSetup* pViewSetup = view->GetViewSetup();
+	if( !m_bFullScreen )
 	{
 		w = pViewSetup->width * INSET_VIEW_FACTOR;
 		h = pViewSetup->height * INSET_VIEW_FACTOR;
@@ -353,7 +359,7 @@ void CWeaponIFMBaseCamera::GetOverlayBounds( int &x, int &y, int &w, int &h )
 //-----------------------------------------------------------------------------
 // When drawing the model, if drawing the viewmodel, draw an overlay of what's being rendered
 //-----------------------------------------------------------------------------
-void CWeaponIFMBaseCamera::ViewModelDrawn( CBaseViewModel *pBaseViewModel )
+void CWeaponIFMBaseCamera::ViewModelDrawn( CBaseViewModel* pBaseViewModel )
 {
 	// NOTE: This is not recursively called because we do not draw viewmodels in the overlay
 	CViewSetup overlayView = *view->GetViewSetup();
@@ -393,10 +399,10 @@ void CWeaponIFMBaseCamera::DrawCrosshair( void )
 
 	int nBorderSize = 4;
 	vgui::surface()->DrawSetColor( light );
-	vgui::surface()->DrawFilledRect( x-nBorderSize, y-nBorderSize, x+w+nBorderSize, y );
-	vgui::surface()->DrawFilledRect( x-nBorderSize, y+h, x+w+nBorderSize, y+h+nBorderSize );
-	vgui::surface()->DrawFilledRect( x-nBorderSize, y, x, y+h );
-	vgui::surface()->DrawFilledRect( x+w, y, x+w+nBorderSize, y+h );
+	vgui::surface()->DrawFilledRect( x - nBorderSize, y - nBorderSize, x + w + nBorderSize, y );
+	vgui::surface()->DrawFilledRect( x - nBorderSize, y + h, x + w + nBorderSize, y + h + nBorderSize );
+	vgui::surface()->DrawFilledRect( x - nBorderSize, y, x, y + h );
+	vgui::surface()->DrawFilledRect( x + w, y, x + w + nBorderSize, y + h );
 }
 
 #endif // CLIENT_DLL

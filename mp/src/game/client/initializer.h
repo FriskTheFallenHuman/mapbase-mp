@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -20,28 +20,28 @@
 #define INITIALIZER_H
 
 
-typedef void* (*CreateInitializerObjectFn)();
-typedef void (*DeleteInitializerObjectFn)(void *ptr);
+typedef void* ( *CreateInitializerObjectFn )();
+typedef void ( *DeleteInitializerObjectFn )( void* ptr );
 
 class Initializer
 {
 public:
-					Initializer(void **pVar, CreateInitializerObjectFn createFn, DeleteInitializerObjectFn deleteFn);
+	Initializer( void** pVar, CreateInitializerObjectFn createFn, DeleteInitializerObjectFn deleteFn );
 
 	// Allocates all the global objects.
 	static bool		InitializeAllObjects();
-	
+
 	// Free all the global objects.
 	static void		FreeAllObjects();
 
 
 private:
-	static Initializer			*s_pInitializers;
-	
-	void						**m_pVar;
+	static Initializer*			s_pInitializers;
+
+	void**						m_pVar;
 	CreateInitializerObjectFn	m_CreateFn;
 	DeleteInitializerObjectFn	m_DeleteFn;
-	Initializer					*m_pNext;
+	Initializer*					m_pNext;
 };
 
 

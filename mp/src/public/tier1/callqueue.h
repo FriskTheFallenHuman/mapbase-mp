@@ -11,7 +11,7 @@
 #include "functors.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------
@@ -75,7 +75,7 @@
 
 //-----------------------------------------------------
 
-template <typename QUEUE_TYPE = CTSQueue<CFunctor *> >
+template <typename QUEUE_TYPE = CTSQueue<CFunctor*> >
 class CCallQueueT
 {
 public:
@@ -84,18 +84,20 @@ public:
 	{
 #ifdef _DEBUG
 		m_nCurSerialNumber = 0;
-		m_nBreakSerialNumber = (unsigned)-1;
+		m_nBreakSerialNumber = ( unsigned ) - 1;
 #endif
 	}
 
 	void DisableQueue( bool bDisable )
 	{
-		if ( m_bNoQueue == bDisable )
+		if( m_bNoQueue == bDisable )
 		{
 			return;
 		}
-		if ( !m_bNoQueue )
+		if( !m_bNoQueue )
+		{
 			CallQueued();
+		}
 
 		m_bNoQueue = bDisable;
 	}
@@ -112,30 +114,30 @@ public:
 
 	void CallQueued()
 	{
-		if ( !m_queue.Count() )
+		if( !m_queue.Count() )
 		{
 			return;
 		}
 
 		m_queue.PushItem( NULL );
 
-		CFunctor *pFunctor;
+		CFunctor* pFunctor;
 
-		while ( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
+		while( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
 		{
 #ifdef _DEBUG
-			if ( pFunctor->m_nUserID == m_nBreakSerialNumber)
+			if( pFunctor->m_nUserID == m_nBreakSerialNumber )
 			{
-				m_nBreakSerialNumber = (unsigned)-1;
+				m_nBreakSerialNumber = ( unsigned ) - 1;
 			}
 #endif
-			(*pFunctor)();
+			( *pFunctor )();
 			pFunctor->Release();
 		}
 
 	}
 
-	void QueueFunctor( CFunctor *pFunctor )
+	void QueueFunctor( CFunctor* pFunctor )
 	{
 		Assert( pFunctor );
 		QueueFunctorInternal( RetAddRef( pFunctor ) );
@@ -145,9 +147,9 @@ public:
 	{
 		m_queue.PushItem( NULL );
 
-		CFunctor *pFunctor;
+		CFunctor* pFunctor;
 
-		while ( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
+		while( m_queue.PopItem( &pFunctor ) && pFunctor != NULL )
 		{
 			pFunctor->Release();
 		}
@@ -156,9 +158,9 @@ public:
 	FUNC_GENERATE_QUEUE_METHODS();
 
 private:
-	void QueueFunctorInternal( CFunctor *pFunctor )
+	void QueueFunctorInternal( CFunctor* pFunctor )
 	{
-		if ( !m_bNoQueue )
+		if( !m_bNoQueue )
 		{
 #ifdef _DEBUG
 			pFunctor->m_nUserID = m_nCurSerialNumber++;
@@ -167,7 +169,7 @@ private:
 		}
 		else
 		{
-			(*pFunctor)();
+			( *pFunctor )();
 			pFunctor->Release();
 		}
 	}
@@ -189,7 +191,7 @@ class CCallQueue : public CCallQueueT<>
 class ICallQueue
 {
 public:
-	void QueueFunctor( CFunctor *pFunctor )
+	void QueueFunctor( CFunctor* pFunctor )
 	{
 		QueueFunctorInternal( RetAddRef( pFunctor ) );
 	}
@@ -197,7 +199,7 @@ public:
 	FUNC_GENERATE_QUEUE_METHODS();
 
 private:
-	virtual void QueueFunctorInternal( CFunctor *pFunctor ) = 0;
+	virtual void QueueFunctorInternal( CFunctor* pFunctor ) = 0;
 };
 
 #endif // CALLQUEUE_H

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef CHECKBUTTONLIST_H
 #define CHECKBUTTONLIST_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/EditablePanel.h>
@@ -24,11 +24,11 @@ class CheckButtonList : public EditablePanel
 	DECLARE_CLASS_SIMPLE( CheckButtonList, EditablePanel );
 
 public:
-	CheckButtonList(Panel *parent, const char *name);
+	CheckButtonList( Panel* parent, const char* name );
 	~CheckButtonList();
 
 	// adds a check button to the list
-	int AddItem(const char *itemText, bool startsSelected, KeyValues *userData);
+	int AddItem( const char* itemText, bool startsSelected, KeyValues* userData );
 
 	// clears the list
 	void RemoveAll();
@@ -37,14 +37,14 @@ public:
 	int GetCheckedItemCount();
 
 	// item iteration
-	bool IsItemIDValid(int itemID);
+	bool IsItemIDValid( int itemID );
 	int GetHighestItemID();
 	int GetItemCount();
 
 	// item info
-	KeyValues *GetItemData(int itemID);
-	bool IsItemChecked(int itemID);
-	void SetItemCheckable(int itemID, bool state);
+	KeyValues* GetItemData( int itemID );
+	bool IsItemChecked( int itemID );
+	void SetItemCheckable( int itemID, bool state );
 
 	/* MESSAGES SENT
 		"CheckButtonChecked" - sent when one of the check buttons state has changed
@@ -53,8 +53,8 @@ public:
 
 protected:
 	virtual void PerformLayout();
-	virtual void ApplySchemeSettings(IScheme *pScheme);
-	virtual void OnMouseWheeled(int delta);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
+	virtual void OnMouseWheeled( int delta );
 
 private:
 	MESSAGE_FUNC_PARAMS( OnCheckButtonChecked, "CheckButtonChecked", pParams );
@@ -62,11 +62,11 @@ private:
 
 	struct CheckItem_t
 	{
-		vgui::CheckButton *checkButton;
-		KeyValues *userData;
+		vgui::CheckButton* checkButton;
+		KeyValues* userData;
 	};
 	CUtlVector<CheckItem_t> m_CheckItems;
-	vgui::ScrollBar *m_pScrollBar;
+	vgui::ScrollBar* m_pScrollBar;
 };
 
 }

@@ -8,7 +8,7 @@
 #ifndef HUD_ELEMENT_HELPER_H
 #define HUD_ELEMENT_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CHudElement;
@@ -21,22 +21,22 @@ class CHudElementHelper
 {
 public:
 	// Static list of helpers
-	static CHudElementHelper *m_sHelpers;
+	static CHudElementHelper* m_sHelpers;
 	// Create all the hud elements
 	static void CreateAllElements( void );
 
 public:
 	// Construction
-	CHudElementHelper( CHudElement *( *pfnCreate )( void ), int depth );
+	CHudElementHelper( CHudElement * ( *pfnCreate )( void ), int depth );
 
 	// Accessors
-	CHudElementHelper *GetNext( void );
+	CHudElementHelper* GetNext( void );
 
 private:
 	// Next factory in list
-	CHudElementHelper	*m_pNext;
+	CHudElementHelper*	m_pNext;
 	// Creation function to use for this technology
-	CHudElement			*( *m_pfnCreate )( void );
+	CHudElement*			( *m_pfnCreate )( void );
 
 	//Depth used to determine hud panel ordering
 	int					m_iDepth;

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -8,7 +8,7 @@
 #if !defined( USERCMD_H )
 #define USERCMD_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -65,8 +65,10 @@ public:
 
 	CUserCmd& operator =( const CUserCmd& src )
 	{
-		if ( this == &src )
+		if( this == &src )
+		{
 			return *this;
+		}
 
 		command_number		= src.command_number;
 		tick_count			= src.tick_count;
@@ -106,13 +108,13 @@ public:
 		CRC32_Init( &crc );
 		CRC32_ProcessBuffer( &crc, &command_number, sizeof( command_number ) );
 		CRC32_ProcessBuffer( &crc, &tick_count, sizeof( tick_count ) );
-		CRC32_ProcessBuffer( &crc, &viewangles, sizeof( viewangles ) );    
-		CRC32_ProcessBuffer( &crc, &forwardmove, sizeof( forwardmove ) );   
-		CRC32_ProcessBuffer( &crc, &sidemove, sizeof( sidemove ) );      
-		CRC32_ProcessBuffer( &crc, &upmove, sizeof( upmove ) );         
-		CRC32_ProcessBuffer( &crc, &buttons, sizeof( buttons ) );		
-		CRC32_ProcessBuffer( &crc, &impulse, sizeof( impulse ) );        
-		CRC32_ProcessBuffer( &crc, &weaponselect, sizeof( weaponselect ) );	
+		CRC32_ProcessBuffer( &crc, &viewangles, sizeof( viewangles ) );
+		CRC32_ProcessBuffer( &crc, &forwardmove, sizeof( forwardmove ) );
+		CRC32_ProcessBuffer( &crc, &sidemove, sizeof( sidemove ) );
+		CRC32_ProcessBuffer( &crc, &upmove, sizeof( upmove ) );
+		CRC32_ProcessBuffer( &crc, &buttons, sizeof( buttons ) );
+		CRC32_ProcessBuffer( &crc, &impulse, sizeof( impulse ) );
+		CRC32_ProcessBuffer( &crc, &weaponselect, sizeof( weaponselect ) );
 		CRC32_ProcessBuffer( &crc, &weaponsubtype, sizeof( weaponsubtype ) );
 		CRC32_ProcessBuffer( &crc, &random_seed, sizeof( random_seed ) );
 		CRC32_ProcessBuffer( &crc, &mousedx, sizeof( mousedx ) );
@@ -135,25 +137,25 @@ public:
 
 	// For matching server and client commands for debugging
 	int		command_number;
-	
+
 	// the tick the client created this command
 	int		tick_count;
-	
+
 	// Player instantaneous view angles.
-	QAngle	viewangles;     
+	QAngle	viewangles;
 	// Intended velocities
 	//	forward velocity.
-	float	forwardmove;   
+	float	forwardmove;
 	//  sideways velocity.
-	float	sidemove;      
+	float	sidemove;
 	//  upward velocity.
-	float	upmove;         
+	float	upmove;
 	// Attack button states
-	int		buttons;		
+	int		buttons;
 	// Impulse command issued.
-	byte    impulse;        
+	byte    impulse;
 	// Current weapon id
-	int		weaponselect;	
+	int		weaponselect;
 	int		weaponsubtype;
 
 	int		random_seed;	// For shared random functions
@@ -175,10 +177,10 @@ public:
 };
 
 #if defined( MAPBASE_VSCRIPT ) && defined( GAME_DLL )
-void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from, CBaseEntity *pPlayer );
+	void ReadUsercmd( bf_read* buf, CUserCmd* move, CUserCmd* from, CBaseEntity* pPlayer );
 #else
-void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from );
+	void ReadUsercmd( bf_read* buf, CUserCmd* move, CUserCmd* from );
 #endif
-void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from );
+void WriteUsercmd( bf_write* buf, const CUserCmd* to, const CUserCmd* from );
 
 #endif // USERCMD_H

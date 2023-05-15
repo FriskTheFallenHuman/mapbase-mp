@@ -1,13 +1,13 @@
 //========= Copyright © 1996-2008, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef HL2MP_PLAYERANIMSTATE_H
 #define HL2MP_PLAYERANIMSTATE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -15,10 +15,10 @@
 #include "multiplayer_animstate.h"
 
 #if defined( CLIENT_DLL )
-class C_HL2MP_Player;
-#define CHL2MP_Player C_HL2MP_Player
+	class C_HL2MP_Player;
+	#define CHL2MP_Player C_HL2MP_Player
 #else
-class CHL2MP_Player;
+	class CHL2MP_Player;
 #endif
 
 // ------------------------------------------------------------------------------------------------ //
@@ -27,15 +27,18 @@ class CHL2MP_Player;
 class CHL2MPPlayerAnimState : public CMultiPlayerAnimState
 {
 public:
-	
+
 	DECLARE_CLASS( CHL2MPPlayerAnimState, CMultiPlayerAnimState );
 
 	CHL2MPPlayerAnimState();
-	CHL2MPPlayerAnimState( CBasePlayer *pPlayer, MultiPlayerMovementData_t &movementData );
+	CHL2MPPlayerAnimState( CBasePlayer* pPlayer, MultiPlayerMovementData_t& movementData );
 	~CHL2MPPlayerAnimState();
 
-	void InitHL2MPAnimState( CHL2MP_Player *pPlayer );
-	CHL2MP_Player *GetHL2MPPlayer( void )							{ return m_pHL2MPPlayer; }
+	void InitHL2MPAnimState( CHL2MP_Player* pPlayer );
+	CHL2MP_Player* GetHL2MPPlayer( void )
+	{
+		return m_pHL2MPPlayer;
+	}
 
 #ifdef MAPBASE_MP
 	virtual void GetOuterAbsVelocity( Vector& vel );
@@ -47,27 +50,36 @@ public:
 
 	void	DoAnimationEvent( PlayerAnimEvent_t event, int nData = 0 );
 
-	bool	HandleMoving( Activity &idealActivity );
-	bool	HandleJumping( Activity &idealActivity );
-	bool	HandleDucking( Activity &idealActivity );
-	bool	HandleSwimming( Activity &idealActivity );
+	bool	HandleMoving( Activity& idealActivity );
+	bool	HandleJumping( Activity& idealActivity );
+	bool	HandleDucking( Activity& idealActivity );
+	bool	HandleSwimming( Activity& idealActivity );
 
 	virtual float GetCurrentMaxGroundSpeed();
 
 #ifdef MAPBASE_MP
 	//bool Uses9WayAnim() const { return m_LegAnimType; }
-	bool ModelUses9WaysAnimation() const { return m_LegAnimType == LEGANIM_9WAY; }
-	bool ModelUses8WaysAnimation() const { return m_LegAnimType == LEGANIM_8WAY; }
-	bool ModelUsesGoldsourcesAnimation() const { return m_LegAnimType == LEGANIM_GOLDSRC; }
+	bool ModelUses9WaysAnimation() const
+	{
+		return m_LegAnimType == LEGANIM_9WAY;
+	}
+	bool ModelUses8WaysAnimation() const
+	{
+		return m_LegAnimType == LEGANIM_8WAY;
+	}
+	bool ModelUsesGoldsourcesAnimation() const
+	{
+		return m_LegAnimType == LEGANIM_GOLDSRC;
+	}
 #endif
 
 private:
 	//Tony; temp till 9way!
-	bool						SetupPoseParameters( CStudioHdr *pStudioHdr );
+	bool						SetupPoseParameters( CStudioHdr* pStudioHdr );
 	virtual void				EstimateYaw( void );
-	virtual void				ComputePoseParam_MoveYaw( CStudioHdr *pStudioHdr );
-	virtual void				ComputePoseParam_AimPitch( CStudioHdr *pStudioHdr );
-	virtual void				ComputePoseParam_AimYaw( CStudioHdr *pStudioHdr );
+	virtual void				ComputePoseParam_MoveYaw( CStudioHdr* pStudioHdr );
+	virtual void				ComputePoseParam_AimPitch( CStudioHdr* pStudioHdr );
+	virtual void				ComputePoseParam_AimYaw( CStudioHdr* pStudioHdr );
 #ifdef MAPBASE_MP
 #ifdef CLIENT_DLL
 	virtual void				ComputePoseParam_Head( CStudioHdr* pStudioHdr );
@@ -75,8 +87,8 @@ private:
 	virtual void				UpdateLookAt();
 #endif // CLIENT_DLL
 #endif
-	
-	CHL2MP_Player   *m_pHL2MPPlayer;
+
+	CHL2MP_Player*   m_pHL2MPPlayer;
 	bool		m_bInAirWalk;
 	float		m_flHoldDeployedPoseUntilTime;
 
@@ -105,7 +117,7 @@ private:
 #endif
 };
 
-CHL2MPPlayerAnimState *CreateHL2MPPlayerAnimState( CHL2MP_Player *pPlayer );
+CHL2MPPlayerAnimState* CreateHL2MPPlayerAnimState( CHL2MP_Player* pPlayer );
 
 
 

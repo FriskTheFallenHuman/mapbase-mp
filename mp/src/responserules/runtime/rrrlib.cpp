@@ -1,4 +1,4 @@
-/// PLACEHOLDER FILE FOR RESPONSE RULES RUNTIME LIBRARY 
+/// PLACEHOLDER FILE FOR RESPONSE RULES RUNTIME LIBRARY
 
 #include "rrbase.h"
 
@@ -6,8 +6,8 @@
 #include "tier0/memdbgon.h"
 
 
-namespace ResponseRules 
+namespace ResponseRules
 {
-	/// Custom symbol table for the response rules.
-	CUtlSymbolTable g_RS;
+/// Custom symbol table for the response rules.
+CUtlSymbolTable g_RS;
 };

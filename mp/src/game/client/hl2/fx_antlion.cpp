@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -20,7 +20,8 @@ PMaterialHandle	g_Material_Blood[2] = { NULL, NULL };
 
 // XBox only uses a few gibs
 #define	NUM_ANTLION_GIBS 3
-const char *pszAntlionGibs[NUM_ANTLION_GIBS] = {
+const char* pszAntlionGibs[NUM_ANTLION_GIBS] =
+{
 	"models/gibs/antlion_gib_large_2.mdl",	// Head
 	"models/gibs/antlion_gib_medium_1.mdl",	// Pincher
 	"models/gibs/antlion_gib_medium_2.mdl",	// Leg
@@ -30,14 +31,16 @@ const char *pszAntlionGibs[NUM_ANTLION_GIBS] = {
 
 // Use all the gibs
 #define	NUM_ANTLION_GIBS_UNIQUE	3
-const char *pszAntlionGibs_Unique[NUM_ANTLION_GIBS_UNIQUE] = {
+const char* pszAntlionGibs_Unique[NUM_ANTLION_GIBS_UNIQUE] =
+{
 	"models/gibs/antlion_gib_large_1.mdl",
 	"models/gibs/antlion_gib_large_2.mdl",
 	"models/gibs/antlion_gib_large_3.mdl"
 };
 
 #define	NUM_ANTLION_GIBS_MEDIUM	3
-const char *pszAntlionGibs_Medium[NUM_ANTLION_GIBS_MEDIUM] = {
+const char* pszAntlionGibs_Medium[NUM_ANTLION_GIBS_MEDIUM] =
+{
 	"models/gibs/antlion_gib_medium_1.mdl",
 	"models/gibs/antlion_gib_medium_2.mdl",
 	"models/gibs/antlion_gib_medium_3.mdl"
@@ -45,7 +48,8 @@ const char *pszAntlionGibs_Medium[NUM_ANTLION_GIBS_MEDIUM] = {
 
 // XBox doesn't use the smaller gibs, so don't cache them
 #define	NUM_ANTLION_GIBS_SMALL	3
-const char *pszAntlionGibs_Small[NUM_ANTLION_GIBS_SMALL] = {
+const char* pszAntlionGibs_Small[NUM_ANTLION_GIBS_SMALL] =
+{
 	"models/gibs/antlion_gib_small_1.mdl",
 	"models/gibs/antlion_gib_small_2.mdl",
 	"models/gibs/antlion_gib_small_3.mdl"
@@ -61,34 +65,36 @@ void CAntlionGibManager::LevelInitPreEntity( void )
 
 CAntlionGibManager s_AntlionGibManager( "CAntlionGibManager" );
 
-void CAntlionGibManager::AddGib( C_BaseEntity *pEntity )
+void CAntlionGibManager::AddGib( C_BaseEntity* pEntity )
 {
 	m_LRU.AddToTail( pEntity );
 }
 
-void CAntlionGibManager::RemoveGib( C_BaseEntity *pEntity )
+void CAntlionGibManager::RemoveGib( C_BaseEntity* pEntity )
 {
 	m_LRU.FindAndRemove( pEntity );
 }
-	
+
 
 //-----------------------------------------------------------------------------
 // Methods of IGameSystem
 //-----------------------------------------------------------------------------
 void CAntlionGibManager::Update( float frametime )
 {
-	if ( m_LRU.Count() < g_antlion_maxgibs.GetInt() )
-		 return;
-	
+	if( m_LRU.Count() < g_antlion_maxgibs.GetInt() )
+	{
+		return;
+	}
+
 	int i = 0;
 	i = m_LRU.Head();
 
-	if ( m_LRU[ i ].Get() )
+	if( m_LRU[ i ].Get() )
 	{
-		 m_LRU[ i ].Get()->SetNextClientThink( gpGlobals->curtime );
+		m_LRU[ i ].Get()->SetNextClientThink( gpGlobals->curtime );
 	}
 
-	m_LRU.Remove(i);
+	m_LRU.Remove( i );
 }
 
 // Antlion gib - marks surfaces when it bounces
@@ -97,16 +103,20 @@ class C_AntlionGib : public C_Gib
 {
 	typedef C_Gib BaseClass;
 public:
-	
-	static C_AntlionGib *CreateClientsideGib( const char *pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float m_flLifetime = DEFAULT_GIB_LIFETIME )
+
+	static C_AntlionGib* CreateClientsideGib( const char* pszModelName, Vector vecOrigin, Vector vecForceDir, AngularImpulse vecAngularImp, float m_flLifetime = DEFAULT_GIB_LIFETIME )
 	{
-		C_AntlionGib *pGib = new C_AntlionGib;
+		C_AntlionGib* pGib = new C_AntlionGib;
 
-		if ( pGib == NULL )
+		if( pGib == NULL )
+		{
 			return NULL;
+		}
 
-		if ( pGib->InitializeGib( pszModelName, vecOrigin, vecForceDir, vecAngularImp, m_flLifetime ) == false )
+		if( pGib->InitializeGib( pszModelName, vecOrigin, vecForceDir, vecAngularImp, m_flLifetime ) == false )
+		{
 			return NULL;
+		}
 
 		s_AntlionGibManager.AddGib( pGib );
 
@@ -114,13 +124,13 @@ public:
 	}
 
 	// Decal the surface
-	virtual	void HitSurface( C_BaseEntity *pOther )
+	virtual	void HitSurface( C_BaseEntity* pOther )
 	{
 		//JDW: Removed for the time being
 
 		/*
 		int index = decalsystem->GetDecalIndexForName( "YellowBlood" );
-		
+
 		if (index >= 0 )
 		{
 			effects->DecalShoot( index, pOther->entindex(), pOther->GetModel(), pOther->GetAbsOrigin(), pOther->GetAbsAngles(), GetAbsOrigin(), 0, 0 );
@@ -130,17 +140,17 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &origin - 
+// Purpose:
+// Input  : &origin -
 //-----------------------------------------------------------------------------
-void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
+void FX_AntlionGib( const Vector& origin, const Vector& direction, float scale )
 {
 	Vector	offset;
 
 #ifdef _XBOX
 
 	// Throw less gibs for XBox
-	for ( int i = 0; i < NUM_ANTLION_GIBS; i++ )
+	for( int i = 0; i < NUM_ANTLION_GIBS; i++ )
 	{
 		offset = RandomVector( -32, 32 ) + origin;
 		C_AntlionGib::CreateClientsideGib( pszAntlionGibs[i], offset, ( direction + RandomVector( -0.8f, 0.8f ) ) * ( 250 * scale ), RandomAngularImpulse( -32, 32 ), 1.0f );
@@ -151,17 +161,17 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 	int numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_UNIQUE );
 
 	// Spawn all the unique gibs
-	for ( int i = 0; i < numGibs; i++ )
+	for( int i = 0; i < numGibs; i++ )
 	{
 		offset = RandomVector( -16, 16 ) + origin;
 
-		C_AntlionGib::CreateClientsideGib( pszAntlionGibs_Unique[i], offset, ( direction + RandomVector( -0.8f, 0.8f ) ) * ( 150 * scale ), RandomAngularImpulse( -32, 32 ), 2.0f);
+		C_AntlionGib::CreateClientsideGib( pszAntlionGibs_Unique[i], offset, ( direction + RandomVector( -0.8f, 0.8f ) ) * ( 150 * scale ), RandomAngularImpulse( -32, 32 ), 2.0f );
 	}
 
 	numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_MEDIUM );
 
 	// Spawn all the medium gibs
-	for ( int i = 0; i < numGibs; i++ )
+	for( int i = 0; i < numGibs; i++ )
 	{
 		offset = RandomVector( -16, 16 ) + origin;
 
@@ -171,7 +181,7 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 	numGibs = random->RandomInt( 1, NUM_ANTLION_GIBS_SMALL );
 
 	// Spawn all the small gibs
-	for ( int i = 0; i < NUM_ANTLION_GIBS_SMALL; i++ )
+	for( int i = 0; i < NUM_ANTLION_GIBS_SMALL; i++ )
 	{
 		offset = RandomVector( -16, 16 ) + origin;
 
@@ -188,15 +198,15 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 
 	CSmartPtr<CSimpleEmitter> pSimple = CSimpleEmitter::Create( "FX_AntlionGib" );
 	pSimple->SetSortOrigin( origin );
-	pSimple->GetBinding().SetBBox( origin - Vector(64,64,64), origin + Vector(64,64,64) );
+	pSimple->GetBinding().SetBBox( origin - Vector( 64, 64, 64 ), origin + Vector( 64, 64, 64 ) );
 
 	// Cache this if we're not already
-	if ( g_Material_Blood[0] == NULL )
+	if( g_Material_Blood[0] == NULL )
 	{
 		g_Material_Blood[0] = g_Mat_BloodPuff[0];
 	}
-	
-	if ( g_Material_Blood[1] == NULL )
+
+	if( g_Material_Blood[1] == NULL )
 	{
 		g_Material_Blood[1] = g_Mat_BloodPuff[1];
 	}
@@ -205,15 +215,17 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 	vDir.Random( -1.0f, 1.0f );
 
 	// Gore bits
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
-		SimpleParticle *sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Material_Blood[0], origin + RandomVector(-16,16));
-		if ( sParticle == NULL )
+		SimpleParticle* sParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Material_Blood[0], origin + RandomVector( -16, 16 ) );
+		if( sParticle == NULL )
+		{
 			return;
+		}
 
 		sParticle->m_flLifetime		= 0.0f;
 		sParticle->m_flDieTime		= random->RandomFloat( 0.25f, 0.5f );
-			
+
 		float speed = random->RandomFloat( 16.0f, 64.0f );
 
 		sParticle->m_vecVelocity.Init();
@@ -230,9 +242,11 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 	}
 
 	// Middle core
-	SimpleParticle *sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Material_Blood[1], origin );
-	if ( sParticle == NULL )
+	SimpleParticle* sParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Material_Blood[1], origin );
+	if( sParticle == NULL )
+	{
 		return;
+	}
 
 	sParticle->m_flLifetime		= 0.0f;
 	sParticle->m_flDieTime		= random->RandomFloat( 0.5f, 0.75f );
@@ -265,12 +279,14 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 
 	vDir.Random( -1.0f, 1.0f );
 
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
-		SimpleParticle *sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_BloodPuff[0], origin );
+		SimpleParticle* sParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_BloodPuff[0], origin );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
+		{
 			return;
+		}
 
 		sParticle->m_flLifetime		= 0.0f;
 		sParticle->m_flDieTime		= random->RandomFloat( 0.5f, 0.75f );
@@ -291,11 +307,11 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 		sParticle->m_flRollDelta	= random->RandomFloat( -1.0f, 1.0f );
 	}
 
-	for ( int i = 0; i < 4; i++ )
+	for( int i = 0; i < 4; i++ )
 	{
-		SimpleParticle *sParticle = (SimpleParticle *) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_BloodPuff[1], origin );
+		SimpleParticle* sParticle = ( SimpleParticle* ) pSimple->AddParticle( sizeof( SimpleParticle ), g_Mat_BloodPuff[1], origin );
 
-		if ( sParticle == NULL )
+		if( sParticle == NULL )
 		{
 			return;
 		}
@@ -323,10 +339,10 @@ void FX_AntlionGib( const Vector &origin, const Vector &direction, float scale )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void AntlionGibCallback( const CEffectData &data )
+void AntlionGibCallback( const CEffectData& data )
 {
 	FX_AntlionGib( data.m_vOrigin, data.m_vNormal, data.m_flScale );
 }

@@ -18,9 +18,9 @@
 #define LZMA_SDK_VERSION_MINOR MY_VER_MINOR
 
 #if !defined( _X360 )
-#define LZMA_ID				(('A'<<24)|('M'<<16)|('Z'<<8)|('L'))
+	#define LZMA_ID				(('A'<<24)|('M'<<16)|('Z'<<8)|('L'))
 #else
-#define LZMA_ID				(('L'<<24)|('Z'<<16)|('M'<<8)|('A'))
+	#define LZMA_ID				(('L'<<24)|('Z'<<16)|('M'<<8)|('A'))
 #endif
 
 // bind the buffer for correct identification
@@ -39,16 +39,16 @@ class CLZMAStream;
 class CLZMA
 {
 public:
-	static unsigned int	Uncompress( unsigned char *pInput, unsigned char *pOutput );
-	static bool			IsCompressed( unsigned char *pInput );
-	static unsigned int	GetActualSize( unsigned char *pInput );
+	static unsigned int	Uncompress( unsigned char* pInput, unsigned char* pOutput );
+	static bool			IsCompressed( unsigned char* pInput );
+	static unsigned int	GetActualSize( unsigned char* pInput );
 };
 
 // For files besides the implementation, we forward declare a dummy struct. We can't unconditionally forward declare
 // this because LzmaEnc.h typedefs this directly to an unnamed struct :-/
 #ifndef CLzmaDec_t
-struct _CLzmaDec_t;
-#define CLzmaDec_t struct _CLzmaDec_t
+	struct _CLzmaDec_t;
+	#define CLzmaDec_t struct _CLzmaDec_t
 #endif
 
 class CLZMAStream
@@ -64,13 +64,13 @@ public:
 	// Attempt to read up to nMaxInputBytes from the compressed stream, writing up to nMaxOutputBytes to pOutput.
 	// Makes progress until blocked on input or output.
 	// Returns false if read stops due to an error or if called at EOF (GetExpectedBytesRemaining == 0)
-	bool Read( unsigned char *pInput, unsigned int nMaxInputBytes,
-	           unsigned char *pOutput, unsigned int nMaxOutputBytes,
-	           /* out */ unsigned int &nCompressedBytesRead, /* out */ unsigned int &nOutputBytesWritten );
+	bool Read( unsigned char* pInput, unsigned int nMaxInputBytes,
+			   unsigned char* pOutput, unsigned int nMaxOutputBytes,
+			   /* out */ unsigned int& nCompressedBytesRead, /* out */ unsigned int& nOutputBytesWritten );
 
 	// Get the expected uncompressed bytes yet to be read from this stream. Returns false if not yet known, such as
 	// before being fed the header.
-	bool GetExpectedBytesRemaining( /* out */ unsigned int &nBytesRemaining );
+	bool GetExpectedBytesRemaining( /* out */ unsigned int& nBytesRemaining );
 
 private:
 	enum eHeaderParse
@@ -80,13 +80,13 @@ private:
 		eHeaderParse_NeedMoreBytes
 	};
 
-	eHeaderParse TryParseHeader( unsigned char *pInput, unsigned int nBytesAvailable, /* out */ unsigned int &nBytesConsumed );
+	eHeaderParse TryParseHeader( unsigned char* pInput, unsigned int nBytesAvailable, /* out */ unsigned int& nBytesConsumed );
 
 	void FreeDecoderState();
-	bool CreateDecoderState( const unsigned char *pProperties );
+	bool CreateDecoderState( const unsigned char* pProperties );
 
 	// Init from a zip-embedded LZMA stream. Requires the original size be passed from zip headers.
-	CLzmaDec_t *m_pDecoderState;
+	CLzmaDec_t* m_pDecoderState;
 
 	unsigned int m_nActualSize;
 	unsigned int m_nActualBytesRead;

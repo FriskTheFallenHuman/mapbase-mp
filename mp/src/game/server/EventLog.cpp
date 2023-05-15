@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -22,28 +22,28 @@ CEventLog::~CEventLog()
 }
 
 
-void CEventLog::FireGameEvent( IGameEvent *event )
+void CEventLog::FireGameEvent( IGameEvent* event )
 {
-	PrintEvent ( event );
+	PrintEvent( event );
 }
 
-bool CEventLog::PrintEvent( IGameEvent *event )
+bool CEventLog::PrintEvent( IGameEvent* event )
 {
-	const char * name = event->GetName();
+	const char* name = event->GetName();
 
-	if ( Q_strncmp(name, "server_", strlen("server_")) == 0 )
+	if( Q_strncmp( name, "server_", strlen( "server_" ) ) == 0 )
 	{
 		return true; // we don't care about server events (engine does)
 	}
-	else if ( Q_strncmp(name, "player_", strlen("player_")) == 0 )
+	else if( Q_strncmp( name, "player_", strlen( "player_" ) ) == 0 )
 	{
 		return PrintPlayerEvent( event );
 	}
-	else if ( Q_strncmp(name, "team_", strlen("team_")) == 0 )
+	else if( Q_strncmp( name, "team_", strlen( "team_" ) ) == 0 )
 	{
 		return PrintTeamEvent( event );
 	}
-	else if ( Q_strncmp(name, "game_", strlen("game_")) == 0 )
+	else if( Q_strncmp( name, "game_", strlen( "game_" ) ) == 0 )
 	{
 		return PrintGameEvent( event );
 	}
@@ -53,35 +53,35 @@ bool CEventLog::PrintEvent( IGameEvent *event )
 	}
 }
 
-bool CEventLog::PrintGameEvent( IGameEvent *event )
+bool CEventLog::PrintGameEvent( IGameEvent* event )
 {
 //	const char * name = event->GetName() + Q_strlen("game_"); // remove prefix
 
 	return false;
 }
 
-bool CEventLog::PrintPlayerEvent( IGameEvent *event )
+bool CEventLog::PrintPlayerEvent( IGameEvent* event )
 {
-	const char * eventName = event->GetName();
+	const char* eventName = event->GetName();
 	const int userid = event->GetInt( "userid" );
 
-	if ( !Q_strncmp( eventName, "player_connect", Q_strlen("player_connect") ) ) // player connect is before the CBasePlayer pointer is setup
+	if( !Q_strncmp( eventName, "player_connect", Q_strlen( "player_connect" ) ) ) // player connect is before the CBasePlayer pointer is setup
 	{
-		const char *name = event->GetString( "name" );
-		const char *address = event->GetString( "address" );
-		const char *networkid = event->GetString("networkid" );
-		UTIL_LogPrintf( "\"%s<%i><%s><>\" connected, address \"%s\"\n", name, userid, networkid, address);
+		const char* name = event->GetString( "name" );
+		const char* address = event->GetString( "address" );
+		const char* networkid = event->GetString( "networkid" );
+		UTIL_LogPrintf( "\"%s<%i><%s><>\" connected, address \"%s\"\n", name, userid, networkid, address );
 		return true;
 	}
-	else if ( !Q_strncmp( eventName, "player_disconnect", Q_strlen("player_disconnect")  ) )
+	else if( !Q_strncmp( eventName, "player_disconnect", Q_strlen( "player_disconnect" ) ) )
 	{
-		const char *reason = event->GetString("reason" );
-		const char *name = event->GetString("name" );
-		const char *networkid = event->GetString("networkid" );
-		CTeam *team = NULL;
-		CBasePlayer *pPlayer = UTIL_PlayerByUserId( userid );
+		const char* reason = event->GetString( "reason" );
+		const char* name = event->GetString( "name" );
+		const char* networkid = event->GetString( "networkid" );
+		CTeam* team = NULL;
+		CBasePlayer* pPlayer = UTIL_PlayerByUserId( userid );
 
-		if ( pPlayer )
+		if( pPlayer )
 		{
 			team = pPlayer->GetTeam();
 		}
@@ -90,77 +90,77 @@ bool CEventLog::PrintPlayerEvent( IGameEvent *event )
 		return true;
 	}
 
-	CBasePlayer *pPlayer = UTIL_PlayerByUserId( userid );
-	if ( !pPlayer)
+	CBasePlayer* pPlayer = UTIL_PlayerByUserId( userid );
+	if( !pPlayer )
 	{
 		DevMsg( "CEventLog::PrintPlayerEvent: Failed to find player (userid: %i, event: %s)\n", userid, eventName );
 		return false;
 	}
 
-	if ( !Q_strncmp( eventName, "player_team", Q_strlen("player_team") ) )
+	if( !Q_strncmp( eventName, "player_team", Q_strlen( "player_team" ) ) )
 	{
 		const bool bDisconnecting = event->GetBool( "disconnect" );
 
-		if ( !bDisconnecting )
+		if( !bDisconnecting )
 		{
 			const int newTeam = event->GetInt( "team" );
 			const int oldTeam = event->GetInt( "oldteam" );
-			CTeam *team = GetGlobalTeam( newTeam );
-			CTeam *oldteam = GetGlobalTeam( oldTeam );
-			
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" joined team \"%s\"\n", 
-			pPlayer->GetPlayerName(),
-			pPlayer->GetUserID(),
-			pPlayer->GetNetworkIDString(),
-			oldteam->GetName(),
-			team->GetName() );
+			CTeam* team = GetGlobalTeam( newTeam );
+			CTeam* oldteam = GetGlobalTeam( oldTeam );
+
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" joined team \"%s\"\n",
+							pPlayer->GetPlayerName(),
+							pPlayer->GetUserID(),
+							pPlayer->GetNetworkIDString(),
+							oldteam->GetName(),
+							team->GetName() );
 		}
 
 		return true;
 	}
-	else if ( !Q_strncmp( eventName, "player_death", Q_strlen("player_death") ) )
+	else if( !Q_strncmp( eventName, "player_death", Q_strlen( "player_death" ) ) )
 	{
-		const int attackerid = event->GetInt("attacker" );
+		const int attackerid = event->GetInt( "attacker" );
 
 #ifdef HL2MP
-		const char *weapon = event->GetString( "weapon" );
+		const char* weapon = event->GetString( "weapon" );
 #endif
-		
-		CBasePlayer *pAttacker = UTIL_PlayerByUserId( attackerid );
-		CTeam *team = pPlayer->GetTeam();
-		CTeam *attackerTeam = NULL;
-		
-		if ( pAttacker )
+
+		CBasePlayer* pAttacker = UTIL_PlayerByUserId( attackerid );
+		CTeam* team = pPlayer->GetTeam();
+		CTeam* attackerTeam = NULL;
+
+		if( pAttacker )
 		{
 			attackerTeam = pAttacker->GetTeam();
 		}
-		if ( pPlayer == pAttacker && pPlayer )  
-		{  
+		if( pPlayer == pAttacker && pPlayer )
+		{
 
 #ifdef HL2MP
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",  
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",
 							pPlayer->GetPlayerName(),
 							userid,
 							pPlayer->GetNetworkIDString(),
 							team ? team->GetName() : "",
 							weapon
-							);
+						  );
 #else
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",  
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",
 							pPlayer->GetPlayerName(),
 							userid,
 							pPlayer->GetNetworkIDString(),
 							team ? team->GetName() : "",
 							pAttacker->GetClassname()
-							);
+						  );
 #endif
 		}
-		else if ( pAttacker )
+		else if( pAttacker )
 		{
-			CTeam *attackerTeam = pAttacker->GetTeam();
+			CTeam* attackerTeam = pAttacker->GetTeam();
 
 #ifdef HL2MP
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",  
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",
 							pAttacker->GetPlayerName(),
 							attackerid,
 							pAttacker->GetNetworkIDString(),
@@ -170,9 +170,9 @@ bool CEventLog::PrintPlayerEvent( IGameEvent *event )
 							pPlayer->GetNetworkIDString(),
 							team ? team->GetName() : "",
 							weapon
-							);
+						  );
 #else
-			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\"\n",  
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\"\n",
 							pAttacker->GetPlayerName(),
 							attackerid,
 							pAttacker->GetNetworkIDString(),
@@ -181,59 +181,59 @@ bool CEventLog::PrintPlayerEvent( IGameEvent *event )
 							userid,
 							pPlayer->GetNetworkIDString(),
 							team ? team->GetName() : ""
-							);								
+						  );
 #endif
 		}
 		else
-		{  
+		{
 			// killed by the world
 			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"world\"\n",
 							pPlayer->GetPlayerName(),
 							userid,
 							pPlayer->GetNetworkIDString(),
 							team ? team->GetName() : ""
-							);
+						  );
 		}
 		return true;
 	}
-	else if ( !Q_strncmp( eventName, "player_activate", Q_strlen("player_activate") ) )
+	else if( !Q_strncmp( eventName, "player_activate", Q_strlen( "player_activate" ) ) )
 	{
-		UTIL_LogPrintf( "\"%s<%i><%s><>\" entered the game\n",  
-							pPlayer->GetPlayerName(),
-							userid,
-							pPlayer->GetNetworkIDString()
-							);
+		UTIL_LogPrintf( "\"%s<%i><%s><>\" entered the game\n",
+						pPlayer->GetPlayerName(),
+						userid,
+						pPlayer->GetNetworkIDString()
+					  );
 
 		return true;
 	}
-	else if ( !Q_strncmp( eventName, "player_changename", Q_strlen("player_changename") ) )
+	else if( !Q_strncmp( eventName, "player_changename", Q_strlen( "player_changename" ) ) )
 	{
-		const char *newName = event->GetString( "newname" );
-		const char *oldName = event->GetString( "oldname" );
-		CTeam *team = pPlayer->GetTeam();
-		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n", 
-					oldName,
-					userid,
-					pPlayer->GetNetworkIDString(),
-					team ? team->GetName() : "",
-					newName
-					);
+		const char* newName = event->GetString( "newname" );
+		const char* oldName = event->GetString( "oldname" );
+		CTeam* team = pPlayer->GetTeam();
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n",
+						oldName,
+						userid,
+						pPlayer->GetNetworkIDString(),
+						team ? team->GetName() : "",
+						newName
+					  );
 		return true;
 	}
-				   
+
 // ignored events
 //player_hurt
 	return false;
 }
 
-bool CEventLog::PrintTeamEvent( IGameEvent *event )
+bool CEventLog::PrintTeamEvent( IGameEvent* event )
 {
 //	const char * name = event->GetName() + Q_strlen("team_"); // remove prefix
 
 	return false;
 }
 
-bool CEventLog::PrintOtherEvent( IGameEvent *event )
+bool CEventLog::PrintOtherEvent( IGameEvent* event )
 {
 	return false;
 }

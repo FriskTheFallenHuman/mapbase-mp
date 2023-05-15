@@ -11,7 +11,7 @@
 #define	SATCHEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basegrenade_shared.h"
@@ -28,11 +28,11 @@ public:
 	void			Spawn( void );
 	void			Precache( void );
 	void			BounceSound( void );
-	void			SatchelTouch( CBaseEntity *pOther );
+	void			SatchelTouch( CBaseEntity* pOther );
 	void			SatchelThink( void );
-	
+
 	// Input handlers
-	void			InputExplode( inputdata_t &inputdata );
+	void			InputExplode( inputdata_t& inputdata );
 
 	float			m_flNextBounceSoundTime;
 	bool			m_bInAir;

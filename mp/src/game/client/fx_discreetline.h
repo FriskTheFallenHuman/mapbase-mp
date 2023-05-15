@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -14,7 +14,7 @@
 #if !defined( FXDISCREETLINE_H )
 #define FXDISCREETLINE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -26,9 +26,9 @@ class CFXDiscreetLine : public CClientSideEffect
 {
 public:
 
-	CFXDiscreetLine ( const char *name, const Vector& start, const Vector& direction, float velocity, 
-		float length, float clipLength, float scale, float life, const char *shader );
-	~CFXDiscreetLine ( void );
+	CFXDiscreetLine( const char* name, const Vector& start, const Vector& direction, float velocity,
+					 float length, float clipLength, float scale, float life, const char* shader );
+	~CFXDiscreetLine( void );
 
 	virtual void	Draw( double frametime );
 	virtual bool	IsActive( void );
@@ -37,7 +37,7 @@ public:
 
 protected:
 
-	IMaterial		*m_pMaterial;
+	IMaterial*		m_pMaterial;
 	float			m_fLife;
 	Vector			m_vecOrigin, m_vecDirection;
 	float			m_fVelocity;

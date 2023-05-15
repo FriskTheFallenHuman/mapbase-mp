@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -36,7 +36,7 @@
 
 #define MAX_SETTINGS	5
 
-float RateOfFire[ MAX_SETTINGS ] = 
+float RateOfFire[ MAX_SETTINGS ] =
 {
 	0.1,
 	0.2,
@@ -55,8 +55,8 @@ float Damage[ MAX_SETTINGS ] =
 };
 
 #ifdef MAPBASE
-extern acttable_t *GetAR2Acttable();
-extern int GetAR2ActtableCount();
+	extern acttable_t* GetAR2Acttable();
+	extern int GetAR2ActtableCount();
 #endif
 
 //=========================================================
@@ -73,10 +73,16 @@ public:
 
 	bool	Deploy( void );
 
-	float GetFireRate( void ) {return RateOfFire[ m_ROF ];}
+	float GetFireRate( void )
+	{
+		return RateOfFire[ m_ROF ];
+	}
 
 #ifdef GAME_DLL
-	int CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	int CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 #endif // GAME_DLL
 
 	void SecondaryAttack( void );
@@ -88,7 +94,7 @@ public:
 	}
 
 #ifdef GAME_DLL
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+	void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 	{
 		switch( pEvent->event )
 		{
@@ -97,9 +103,9 @@ public:
 				Vector vecShootOrigin, vecShootDir;
 				vecShootOrigin = pOperator->Weapon_ShootPosition( );
 
-				CAI_BaseNPC *npc = pOperator->MyNPCPointer();
+				CAI_BaseNPC* npc = pOperator->MyNPCPointer();
 				ASSERT( npc != NULL );
-				
+
 				vecShootDir = npc->GetActualShootTrajectory( vecShootOrigin );
 
 				WeaponSound( SINGLE_NPC );
@@ -115,8 +121,14 @@ public:
 #endif // GAME_DLL
 
 #ifdef MAPBASE
-	virtual acttable_t		*GetBackupActivityList() { return GetAR2Acttable(); }
-	virtual int				GetBackupActivityListCount() { return GetAR2ActtableCount(); }
+	virtual acttable_t*		GetBackupActivityList()
+	{
+		return GetAR2Acttable();
+	}
+	virtual int				GetBackupActivityListCount()
+	{
+		return GetAR2ActtableCount();
+	}
 #endif
 
 	DECLARE_ACTTABLE();
@@ -145,10 +157,10 @@ PRECACHE_WEAPON_REGISTER( weapon_ar1 );
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponAR1::m_acttable[] = 
+acttable_t	CWeaponAR1::m_acttable[] =
 {
 	{ ACT_RANGE_ATTACK1,			ACT_RANGE_ATTACK_AR1,		true },
-	
+
 #if EXPANDED_HL2_UNUSED_WEAPON_ACTIVITIES
 	// Optional new NPC activities
 	// (these should fall back to AR2 animations when they don't exist on an NPC)
@@ -170,7 +182,7 @@ acttable_t	CWeaponAR1::m_acttable[] =
 	{ ACT_RUN_AGITATED,				ACT_RUN_AIM_AR1,				false },//always aims
 
 // Readiness activities (aiming)
-	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_AR1_RELAXED,			false },//never aims	
+	{ ACT_IDLE_AIM_RELAXED,			ACT_IDLE_AR1_RELAXED,			false },//never aims
 	{ ACT_IDLE_AIM_STIMULATED,		ACT_IDLE_AIM_AR1_STIMULATED,	false },
 	{ ACT_IDLE_AIM_AGITATED,		ACT_IDLE_ANGRY_AR1,				false },//always aims
 
@@ -233,7 +245,7 @@ acttable_t	CWeaponAR1::m_acttable[] =
 IMPLEMENT_ACTTABLE( CWeaponAR1 );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CWeaponAR1::CWeaponAR1( )
 {
@@ -241,7 +253,7 @@ CWeaponAR1::CWeaponAR1( )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponAR1::Deploy( void )
 {
@@ -249,20 +261,24 @@ bool CWeaponAR1::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponAR1::SecondaryAttack( void )
 {
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );
-	if ( pPlayer )
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );
+	if( pPlayer )
+	{
 		pPlayer->m_nButtons &= ~IN_ATTACK2;
+	}
 
 	m_flNextSecondaryAttack = gpGlobals->curtime + 0.1;
 
 	m_ROF += 1;
 
 	if( m_ROF == MAX_SETTINGS )
+	{
 		m_ROF = 0;
+	}
 
 	int i;
 
@@ -270,9 +286,13 @@ void CWeaponAR1::SecondaryAttack( void )
 	for( i = 0 ; i < MAX_SETTINGS ; i++ )
 	{
 		if( i == m_ROF )
+		{
 			Msg( "|" );
+		}
 		else
+		{
 			Msg( "-" );
+		}
 	}
 	Msg( "\n" );
 }

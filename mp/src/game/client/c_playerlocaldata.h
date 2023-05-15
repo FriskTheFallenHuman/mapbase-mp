@@ -9,7 +9,7 @@
 #ifndef C_PLAYERLOCALDATA_H
 #define C_PLAYERLOCALDATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basetypes.h"
@@ -39,9 +39,9 @@ public:
 	unsigned char			m_chAreaPortalBits[MAX_AREA_PORTAL_STATE_BYTES];// Area portal visibility flags.
 
 	int						m_iHideHUD;			// bitfields containing sections of the HUD to hide
-	
+
 	float					m_flFOVRate;		// rate at which the FOV changes
-	
+
 
 	bool					m_bDucked;
 	bool					m_bDucking;
@@ -52,9 +52,9 @@ public:
 	int						m_nStepside;
 	float					m_flFallVelocity;
 	int						m_nOldButtons;
-	// Base velocity that was passed in to server physics so 
+	// Base velocity that was passed in to server physics so
 	//  client can predict conveyors correctly.  Server zeroes it, so we need to store here, too.
-	Vector					m_vecClientBaseVelocity;  
+	Vector					m_vecClientBaseVelocity;
 	CNetworkQAngle( m_vecPunchAngle );		// auto-decaying view angle adjustment
 	CInterpolatedVar< QAngle >	m_iv_vecPunchAngle;
 

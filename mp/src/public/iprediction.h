@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,7 +13,7 @@
 #if !defined( IPREDICTION_H )
 #define IPREDICTION_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -36,12 +36,12 @@ public:
 
 	// Run prediction
 	virtual void	Update
-					( 
-						int startframe,				// World update ( un-modded ) most recently received
-						bool validframe,			// Is frame data valid
-						int incoming_acknowledged,	// Last command acknowledged to have been run by server (un-modded)
-						int outgoing_command		// Last command (most recent) sent to server (un-modded)
-					) = 0;
+	(
+		int startframe,				// World update ( un-modded ) most recently received
+		bool validframe,			// Is frame data valid
+		int incoming_acknowledged,	// Last command acknowledged to have been run by server (un-modded)
+		int outgoing_command		// Last command (most recent) sent to server (un-modded)
+	) = 0;
 
 	// We are about to get a network update from the server.  We know the update #, so we can pull any
 	//  data purely predicted on the client side and transfer it to the new from data state.
@@ -52,15 +52,15 @@ public:
 	virtual void	OnReceivedUncompressedPacket( void ) = 0;
 
 	// The engine needs to be able to access a few predicted values
-	virtual void	GetViewOrigin( Vector& org ) = 0;
-	virtual void	SetViewOrigin( Vector& org ) = 0;
-	virtual void	GetViewAngles( QAngle& ang ) = 0;
-	virtual void	SetViewAngles( QAngle& ang ) = 0;
-	virtual void	GetLocalViewAngles( QAngle& ang ) = 0;
-	virtual void	SetLocalViewAngles( QAngle& ang ) = 0;
+	virtual void	GetViewOrigin( Vector & org ) = 0;
+	virtual void	SetViewOrigin( Vector & org ) = 0;
+	virtual void	GetViewAngles( QAngle & ang ) = 0;
+	virtual void	SetViewAngles( QAngle & ang ) = 0;
+	virtual void	GetLocalViewAngles( QAngle & ang ) = 0;
+	virtual void	SetLocalViewAngles( QAngle & ang ) = 0;
 };
 
-extern IPrediction *g_pClientSidePrediction;
+extern IPrediction* g_pClientSidePrediction;
 
 #define VCLIENT_PREDICTION_INTERFACE_VERSION	"VClientPrediction001"
 

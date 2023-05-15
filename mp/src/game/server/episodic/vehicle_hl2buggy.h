@@ -1,13 +1,13 @@
 //====== Copyright © 1996-2005, Valve Corporation, All rights reserved. =======
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef VEHICLE_HL2BUGGY_H
 #define VEHICLE_HL2BUGGY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vehicle_jeep.h"
@@ -27,62 +27,73 @@ class CPropHL2Buggy : public CPropJeep
 //	DECLARE_SERVERCLASS();
 
 public:
-					CPropHL2Buggy( void );
+	CPropHL2Buggy( void );
 
 	virtual void	Spawn( void );
 	virtual void	Activate( void );
 	virtual void	Think( void );
 	virtual void	UpdateOnRemove( void );
 
-	virtual void	NPC_FinishedEnterVehicle( CAI_BaseNPC *pPassenger, bool bCompanion );
-	virtual void	NPC_FinishedExitVehicle( CAI_BaseNPC *pPassenger, bool bCompanion );
-	
-	virtual bool	NPC_CanEnterVehicle( CAI_BaseNPC *pPassenger, bool bCompanion );
-	virtual bool	NPC_CanExitVehicle( CAI_BaseNPC *pPassenger, bool bCompanion );
-	virtual void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual void	Precache( void );
-	virtual void	EnterVehicle( CBaseCombatCharacter *pPassenger );
-	virtual void	ExitVehicle( int nRole );
-	virtual bool	AllowBlockedExit( CBaseCombatCharacter *pPassenger, int nRole );
-	
-	// Passengers take no damage except what we pass them
-	virtual bool	PassengerShouldReceiveDamage( CTakeDamageInfo &info ) 
-	{ 
-		if ( GetServerVehicle() && GetServerVehicle()->IsPassengerExiting() )
-			return false;
+	virtual void	NPC_FinishedEnterVehicle( CAI_BaseNPC* pPassenger, bool bCompanion );
+	virtual void	NPC_FinishedExitVehicle( CAI_BaseNPC* pPassenger, bool bCompanion );
 
-		return ( info.GetDamageType() & DMG_VEHICLE ) != 0; 
+	virtual bool	NPC_CanEnterVehicle( CAI_BaseNPC* pPassenger, bool bCompanion );
+	virtual bool	NPC_CanExitVehicle( CAI_BaseNPC* pPassenger, bool bCompanion );
+	virtual void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
+	virtual void	Precache( void );
+	virtual void	EnterVehicle( CBaseCombatCharacter* pPassenger );
+	virtual void	ExitVehicle( int nRole );
+	virtual bool	AllowBlockedExit( CBaseCombatCharacter* pPassenger, int nRole );
+
+	// Passengers take no damage except what we pass them
+	virtual bool	PassengerShouldReceiveDamage( CTakeDamageInfo& info )
+	{
+		if( GetServerVehicle() && GetServerVehicle()->IsPassengerExiting() )
+		{
+			return false;
+		}
+
+		return ( info.GetDamageType() & DMG_VEHICLE ) != 0;
 	}
 
-	virtual int		ObjectCaps( void ) { return (BaseClass::ObjectCaps() | FCAP_NOTIFY_ON_TRANSITION); }
+	virtual int		ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() | FCAP_NOTIFY_ON_TRANSITION );
+	}
 
 
-	virtual void	DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased );
+	virtual void	DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButtonsDown, int iButtonsReleased );
 	virtual int DrawDebugTextOverlays( void );
 
 	DECLARE_DATADESC();
 
 protected:
-	virtual float			GetUprightTime( void ) { return 1.0f; }
+	virtual float			GetUprightTime( void )
+	{
+		return 1.0f;
+	}
 	virtual float			GetUprightStrength( void );
-	virtual bool			ShouldPuntUseLaunchForces( PhysGunForce_t reason ) { return ( reason == PHYSGUN_FORCE_PUNTED ); }
+	virtual bool			ShouldPuntUseLaunchForces( PhysGunForce_t reason )
+	{
+		return ( reason == PHYSGUN_FORCE_PUNTED );
+	}
 	virtual void			HandleWater( void );
 
 	virtual AngularImpulse	PhysGunLaunchAngularImpulse( void );
-	virtual Vector			PhysGunLaunchVelocity( const Vector &forward, float flMass );
+	virtual Vector			PhysGunLaunchVelocity( const Vector& forward, float flMass );
 
 private:
-	
+
 	void	UpdateWheelDust( void );
 
-	void	InputLockEntrance( inputdata_t &data );
-	void	InputUnlockEntrance( inputdata_t &data );
-	void	InputLockExit( inputdata_t &data );
-	void	InputUnlockExit( inputdata_t &data );
-	void	InputDisablePhysGun( inputdata_t &data );
-	void	InputEnablePhysGun( inputdata_t &data );
-	void	InputCreateLinkController( inputdata_t &data );
-	void	InputDestroyLinkController( inputdata_t &data );
+	void	InputLockEntrance( inputdata_t& data );
+	void	InputUnlockEntrance( inputdata_t& data );
+	void	InputLockExit( inputdata_t& data );
+	void	InputUnlockExit( inputdata_t& data );
+	void	InputDisablePhysGun( inputdata_t& data );
+	void	InputEnablePhysGun( inputdata_t& data );
+	void	InputCreateLinkController( inputdata_t& data );
+	void	InputDestroyLinkController( inputdata_t& data );
 	void	CreateAvoidanceZone( void );
 
 	bool	m_bEntranceLocked;

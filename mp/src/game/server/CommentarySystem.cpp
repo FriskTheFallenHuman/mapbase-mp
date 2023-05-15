@@ -23,21 +23,21 @@
 #include "ai_basenpc.h"
 #include "Sprite.h"
 #ifdef MAPBASE
-#include "mapbase/SystemConvarMod.h"
-#include <vgui_controls/Controls.h>
-#include <vgui/ILocalize.h>
+	#include "mapbase/SystemConvarMod.h"
+	#include <vgui_controls/Controls.h>
+	#include <vgui/ILocalize.h>
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
 static bool g_bTracingVsCommentaryNodes = false;
-static const char *s_pCommentaryUpdateViewThink = "CommentaryUpdateViewThink";
+static const char* s_pCommentaryUpdateViewThink = "CommentaryUpdateViewThink";
 
 #define COMMENTARY_SPAWNED_SEMAPHORE		"commentary_semaphore"
 
 extern ConVar commentary;
-ConVar commentary_available("commentary_available", "0", FCVAR_NONE, "Automatically set by the game when a commentary file is available for the current map." );
+ConVar commentary_available( "commentary_available", "0", FCVAR_NONE, "Automatically set by the game when a commentary file is available for the current map." );
 
 enum teleport_stages_t
 {
@@ -50,7 +50,7 @@ enum teleport_stages_t
 #ifndef MAPBASE // This has been moved to mapbase/SystemConvarMod.h
 // Convar restoration save/restore
 #define MAX_MODIFIED_CONVAR_STRING		128
-struct modifiedconvars_t 
+struct modifiedconvars_t
 {
 	DECLARE_SIMPLE_DATADESC();
 
@@ -100,14 +100,23 @@ public:
 	void CleanupPostCommentary( void );
 	void UpdateViewThink( void );
 	void UpdateViewPostThink( void );
-	bool TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace );
-	bool HasViewTarget( void ) { return (m_hViewTarget != NULL || m_hViewPosition.Get() != NULL); }
+	bool TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace );
+	bool HasViewTarget( void )
+	{
+		return ( m_hViewTarget != NULL || m_hViewPosition.Get() != NULL );
+	}
 	bool PreventsMovement( void );
-	bool CannotBeStopped( void ) { return (m_bUnstoppable || m_bPreventChangesWhileMoving); }
+	bool CannotBeStopped( void )
+	{
+		return ( m_bUnstoppable || m_bPreventChangesWhileMoving );
+	}
 	int  UpdateTransmitState( void );
-	void SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
+	void SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
 	void SetDisabled( bool bDisabled );
-	void SetNodeNumber( int iCount ) { m_iNodeNumber = iCount; }
+	void SetNodeNumber( int iCount )
+	{
+		m_iNodeNumber = iCount;
+	}
 
 	// Called to tell the node when it's moved under/not-under the player's crosshair
 	void SetUnderCrosshair( bool bUnderCrosshair );
@@ -116,37 +125,73 @@ public:
 	void PlayerActivated( void );
 	void StopPlaying( void );
 	void AbortPlaying( void );
-	void TeleportTo( CBasePlayer *pPlayer );
+	void TeleportTo( CBasePlayer* pPlayer );
 	bool CanTeleportTo( void );
 
 #ifdef MAPBASE
-	bool IsActive() { return m_bActive; }
-	bool IsDisabled() { return m_bDisabled; }
+	bool IsActive()
+	{
+		return m_bActive;
+	}
+	bool IsDisabled()
+	{
+		return m_bDisabled;
+	}
 
-	int GetCommentaryType() { return m_iCommentaryType; }
-	void SetCommentaryType( int iType ) { m_iCommentaryType = iType; }
+	int GetCommentaryType()
+	{
+		return m_iCommentaryType;
+	}
+	void SetCommentaryType( int iType )
+	{
+		m_iCommentaryType = iType;
+	}
 
-	const char *GetCommentaryFile() { return STRING( m_iszCommentaryFile.Get() ); }
-	void SetCommentaryFile( const char *pszNewFile ) { m_iszCommentaryFile.Set( AllocPooledString( pszNewFile ) ); }
-	const char *GetSpeakers() { return STRING( m_iszSpeakers.Get() ); }
-	void SetSpeakers( const char *pszSpeakers ) { m_iszSpeakers.Set( AllocPooledString( pszSpeakers ) ); }
-	const char *GetPrintName() { return STRING( m_iszPrintName.Get() ); }
-	void SetPrintName( const char *pszPrintName ) { m_iszPrintName.Set( AllocPooledString( pszPrintName ) ); }
-	const char *GetFootnote() { return STRING( m_iszFootnote.Get() ); }
-	void SetFootnote( const char *pszFootnote ) { m_iszFootnote.Set( AllocPooledString( pszFootnote ) ); }
+	const char* GetCommentaryFile()
+	{
+		return STRING( m_iszCommentaryFile.Get() );
+	}
+	void SetCommentaryFile( const char* pszNewFile )
+	{
+		m_iszCommentaryFile.Set( AllocPooledString( pszNewFile ) );
+	}
+	const char* GetSpeakers()
+	{
+		return STRING( m_iszSpeakers.Get() );
+	}
+	void SetSpeakers( const char* pszSpeakers )
+	{
+		m_iszSpeakers.Set( AllocPooledString( pszSpeakers ) );
+	}
+	const char* GetPrintName()
+	{
+		return STRING( m_iszPrintName.Get() );
+	}
+	void SetPrintName( const char* pszPrintName )
+	{
+		m_iszPrintName.Set( AllocPooledString( pszPrintName ) );
+	}
+	const char* GetFootnote()
+	{
+		return STRING( m_iszFootnote.Get() );
+	}
+	void SetFootnote( const char* pszFootnote )
+	{
+		m_iszFootnote.Set( AllocPooledString( pszFootnote ) );
+	}
 #endif
 
 	// Inputs
-	void InputStartCommentary( inputdata_t &inputdata );
-	void InputStartUnstoppableCommentary( inputdata_t &inputdata );
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputStartCommentary( inputdata_t& inputdata );
+	void InputStartUnstoppableCommentary( inputdata_t& inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetViewTarget( inputdata_t &inputdata );
-	void InputSetViewPosition( inputdata_t &inputdata );
-	void InputSetViewTargetSpeed( inputdata_t &inputdata );
-	void InputSetViewPositionSpeed( inputdata_t &inputdata );
-	void InputSetReturnSpeed( inputdata_t &inputdata );
+	void InputSetViewTarget( inputdata_t& inputdata );
+	void InputSetViewPosition( inputdata_t& inputdata );
+	void InputSetViewTargetSpeed( inputdata_t& inputdata );
+	void InputSetViewPositionSpeed( inputdata_t& inputdata );
+	void InputSetReturnSpeed( inputdata_t& inputdata );
 #endif
 
 #ifdef MAPBASE_VSCRIPT
@@ -201,31 +246,31 @@ private:
 };
 
 BEGIN_DATADESC( CPointCommentaryNode )
-	DEFINE_KEYFIELD( m_iszPreCommands,	FIELD_STRING,	"precommands" ),
-	DEFINE_KEYFIELD( m_iszPostCommands,	FIELD_STRING,	"postcommands" ),
-	DEFINE_KEYFIELD( m_iszCommentaryFile, FIELD_STRING,	"commentaryfile" ),
-	DEFINE_KEYFIELD( m_iszCommentaryFileNoHDR, FIELD_STRING,	"commentaryfile_nohdr" ),
-	DEFINE_KEYFIELD( m_iszViewTarget, FIELD_STRING,	"viewtarget" ),
-	DEFINE_FIELD( m_hViewTarget, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hViewTargetAngles, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_iszViewPosition, FIELD_STRING,	"viewposition" ),
-	DEFINE_FIELD( m_hViewPosition, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hViewPositionMover, FIELD_EHANDLE ),
-	DEFINE_KEYFIELD( m_bPreventMovement, FIELD_BOOLEAN,	"prevent_movement" ),
-	DEFINE_FIELD( m_bUnderCrosshair, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bUnstoppable, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flFinishedTime, FIELD_TIME ),
-	DEFINE_FIELD( m_vecFinishOrigin, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecOriginalAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecFinishAngles, FIELD_VECTOR ),
-	DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flStartTime, FIELD_TIME ),
-	DEFINE_KEYFIELD( m_iszSpeakers, FIELD_STRING, "speakers" ),
-	DEFINE_FIELD( m_iNodeNumber, FIELD_INTEGER ),
-	DEFINE_FIELD( m_iNodeNumberMax, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bPreventChangesWhileMoving, FIELD_BOOLEAN ),
-	DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "start_disabled" ),
-	DEFINE_KEYFIELD( m_vecTeleportOrigin, FIELD_VECTOR, "teleport_origin" ),
+DEFINE_KEYFIELD( m_iszPreCommands,	FIELD_STRING,	"precommands" ),
+					DEFINE_KEYFIELD( m_iszPostCommands,	FIELD_STRING,	"postcommands" ),
+					DEFINE_KEYFIELD( m_iszCommentaryFile, FIELD_STRING,	"commentaryfile" ),
+					DEFINE_KEYFIELD( m_iszCommentaryFileNoHDR, FIELD_STRING,	"commentaryfile_nohdr" ),
+					DEFINE_KEYFIELD( m_iszViewTarget, FIELD_STRING,	"viewtarget" ),
+					DEFINE_FIELD( m_hViewTarget, FIELD_EHANDLE ),
+					DEFINE_FIELD( m_hViewTargetAngles, FIELD_EHANDLE ),
+					DEFINE_KEYFIELD( m_iszViewPosition, FIELD_STRING,	"viewposition" ),
+					DEFINE_FIELD( m_hViewPosition, FIELD_EHANDLE ),
+					DEFINE_FIELD( m_hViewPositionMover, FIELD_EHANDLE ),
+					DEFINE_KEYFIELD( m_bPreventMovement, FIELD_BOOLEAN,	"prevent_movement" ),
+					DEFINE_FIELD( m_bUnderCrosshair, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_bUnstoppable, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_flFinishedTime, FIELD_TIME ),
+					DEFINE_FIELD( m_vecFinishOrigin, FIELD_VECTOR ),
+					DEFINE_FIELD( m_vecOriginalAngles, FIELD_VECTOR ),
+					DEFINE_FIELD( m_vecFinishAngles, FIELD_VECTOR ),
+					DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
+					DEFINE_FIELD( m_flStartTime, FIELD_TIME ),
+					DEFINE_KEYFIELD( m_iszSpeakers, FIELD_STRING, "speakers" ),
+					DEFINE_FIELD( m_iNodeNumber, FIELD_INTEGER ),
+					DEFINE_FIELD( m_iNodeNumberMax, FIELD_INTEGER ),
+					DEFINE_FIELD( m_bPreventChangesWhileMoving, FIELD_BOOLEAN ),
+					DEFINE_KEYFIELD( m_bDisabled, FIELD_BOOLEAN, "start_disabled" ),
+					DEFINE_KEYFIELD( m_vecTeleportOrigin, FIELD_VECTOR, "teleport_origin" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_flViewTargetSpeedScale, FIELD_FLOAT, "viewtarget_speed" ),
 	DEFINE_KEYFIELD( m_flViewPositionSpeedScale, FIELD_FLOAT, "viewposition_speed" ),
@@ -239,15 +284,15 @@ BEGIN_DATADESC( CPointCommentaryNode )
 	DEFINE_KEYFIELD( m_flPanelY, FIELD_FLOAT, "y" ),
 #endif
 
-	// Outputs
-	DEFINE_OUTPUT( m_pOnCommentaryStarted, "OnCommentaryStarted" ),
-	DEFINE_OUTPUT( m_pOnCommentaryStopped, "OnCommentaryStopped" ),
+					// Outputs
+					DEFINE_OUTPUT( m_pOnCommentaryStarted, "OnCommentaryStarted" ),
+					DEFINE_OUTPUT( m_pOnCommentaryStopped, "OnCommentaryStopped" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartCommentary", InputStartCommentary ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "StartUnstoppableCommentary", InputStartUnstoppableCommentary ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+					// Inputs
+					DEFINE_INPUTFUNC( FIELD_VOID, "StartCommentary", InputStartCommentary ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "StartUnstoppableCommentary", InputStartUnstoppableCommentary ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+					DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetViewTarget", InputSetViewTarget ),
 	DEFINE_INPUTFUNC( FIELD_EHANDLE, "SetViewPosition", InputSetViewPosition ),
@@ -256,17 +301,17 @@ BEGIN_DATADESC( CPointCommentaryNode )
 	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetReturnSpeed", InputSetReturnSpeed ),
 #endif
 
-	// Functions
-	DEFINE_THINKFUNC( SpinThink ),
-	DEFINE_THINKFUNC( UpdateViewThink ),
-	DEFINE_THINKFUNC( UpdateViewPostThink ),
-END_DATADESC()
+					// Functions
+					DEFINE_THINKFUNC( SpinThink ),
+					DEFINE_THINKFUNC( UpdateViewThink ),
+					DEFINE_THINKFUNC( UpdateViewPostThink ),
+					END_DATADESC()
 
 #ifdef MAPBASE_VSCRIPT
 
-ScriptHook_t	CPointCommentaryNode::g_Hook_PreStartCommentary;
+	ScriptHook_t	CPointCommentaryNode::g_Hook_PreStartCommentary;
 
-BEGIN_ENT_SCRIPTDESC( CPointCommentaryNode, CBaseAnimating, "Commentary nodes which play commentary in commentary mode." )
+	BEGIN_ENT_SCRIPTDESC( CPointCommentaryNode, CBaseAnimating, "Commentary nodes which play commentary in commentary mode." )
 	DEFINE_SCRIPTFUNC( IsDisabled, "" )
 	DEFINE_SCRIPTFUNC( SetDisabled, "" )
 
@@ -289,19 +334,19 @@ BEGIN_ENT_SCRIPTDESC( CPointCommentaryNode, CBaseAnimating, "Commentary nodes wh
 	DEFINE_SCRIPTFUNC( AbortPlaying, "Stops playing the node and snaps out of its camera control immediately. The game uses this function to shut down commentary while in the middle of playing a node, as it can't smoothly blend out (since the commentary entities need to be removed)." )
 
 	DEFINE_SIMPLE_SCRIPTHOOK( CPointCommentaryNode::g_Hook_PreStartCommentary, "PreStartCommentary", FIELD_BOOLEAN, "Called just before commentary begins. Use this to modify variables or commentary behavior before it begins. Returning false will prevent the commentary from starting." )
-END_SCRIPTDESC();
+	END_SCRIPTDESC();
 
 #endif // MAPBASE_VSCRIPT
 
-IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode )
-	SendPropBool( SENDINFO(m_bActive) ),
-	SendPropStringT( SENDINFO(m_iszCommentaryFile) ),
-	SendPropStringT( SENDINFO(m_iszCommentaryFileNoHDR) ),
-	SendPropTime( SENDINFO(m_flStartTime) ),
-	SendPropStringT( SENDINFO(m_iszSpeakers) ),
-	SendPropInt( SENDINFO(m_iNodeNumber), 8, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_iNodeNumberMax), 8, SPROP_UNSIGNED ),
-	SendPropEHandle( SENDINFO(m_hViewPosition) ),
+					IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode )
+					SendPropBool( SENDINFO( m_bActive ) ),
+					SendPropStringT( SENDINFO( m_iszCommentaryFile ) ),
+					SendPropStringT( SENDINFO( m_iszCommentaryFileNoHDR ) ),
+					SendPropTime( SENDINFO( m_flStartTime ) ),
+					SendPropStringT( SENDINFO( m_iszSpeakers ) ),
+					SendPropInt( SENDINFO( m_iNodeNumber ), 8, SPROP_UNSIGNED ),
+					SendPropInt( SENDINFO( m_iNodeNumberMax ), 8, SPROP_UNSIGNED ),
+					SendPropEHandle( SENDINFO( m_hViewPosition ) ),
 #ifdef MAPBASE
 	SendPropStringT( SENDINFO( m_iszPrintName ) ),
 	SendPropStringT( SENDINFO( m_iszFootnote ) ),
@@ -310,21 +355,21 @@ IMPLEMENT_SERVERCLASS_ST( CPointCommentaryNode, DT_PointCommentaryNode )
 	SendPropFloat( SENDINFO( m_flPanelX ) ),
 	SendPropFloat( SENDINFO( m_flPanelY ) ),
 #endif
-END_SEND_TABLE()
+					END_SEND_TABLE()
 
-LINK_ENTITY_TO_CLASS( point_commentary_node, CPointCommentaryNode );
+					LINK_ENTITY_TO_CLASS( point_commentary_node, CPointCommentaryNode );
 
 //-----------------------------------------------------------------------------
 // Laser Dot
 //-----------------------------------------------------------------------------
-class CCommentaryViewPosition : public CSprite 
+class CCommentaryViewPosition : public CSprite
 {
 	DECLARE_CLASS( CCommentaryViewPosition, CSprite );
 public:
 	virtual void Spawn( void )
 	{
 		Precache();
-		SetModelName( MAKE_STRING("sprites/redglow1.vmt") );
+		SetModelName( MAKE_STRING( "sprites/redglow1.vmt" ) );
 
 		BaseClass::Spawn();
 
@@ -345,18 +390,18 @@ LINK_ENTITY_TO_CLASS( point_commentary_viewpoint, CCommentaryViewPosition );
 //-----------------------------------------------------------------------------
 // Purpose: In multiplayer, always return player 1
 //-----------------------------------------------------------------------------
-CBasePlayer *GetCommentaryPlayer( void )
+CBasePlayer* GetCommentaryPlayer( void )
 {
-	CBasePlayer *pPlayer;
+	CBasePlayer* pPlayer;
 
-	if ( gpGlobals->maxClients <= 1 )
+	if( gpGlobals->maxClients <= 1 )
 	{
 		pPlayer = UTIL_GetLocalPlayer();
 	}
 	else
 	{
 		// only respond to the first player
-		pPlayer = UTIL_PlayerByIndex(1);
+		pPlayer = UTIL_PlayerByIndex( 1 );
 	}
 
 	return pPlayer;
@@ -365,7 +410,7 @@ CBasePlayer *GetCommentaryPlayer( void )
 //===========================================================================================================
 // COMMENTARY GAME SYSTEM
 //===========================================================================================================
-void CV_GlobalChange_Commentary( IConVar *var, const char *pOldString, float flOldValue );
+void CV_GlobalChange_Commentary( IConVar* var, const char* pOldString, float flOldValue );
 
 //-----------------------------------------------------------------------------
 // Purpose: Game system to kickstart the director's commentary
@@ -387,7 +432,7 @@ public:
 		m_iClearPressedButtons = 0;
 
 		// If the map started via the map_commentary cmd, start in commentary
-		g_bInCommentaryMode = (engine->IsInCommentaryMode() != 0);
+		g_bInCommentaryMode = ( engine->IsInCommentaryMode() != 0 );
 
 		CalculateCommentaryState();
 	}
@@ -396,13 +441,13 @@ public:
 	{
 		// Set the available cvar if we can find commentary data for this level
 		char szFullName[512];
-		Q_snprintf(szFullName,sizeof(szFullName), "maps/%s_commentary.txt", STRING( gpGlobals->mapname) );
-		if ( filesystem->FileExists( szFullName ) )
+		Q_snprintf( szFullName, sizeof( szFullName ), "maps/%s_commentary.txt", STRING( gpGlobals->mapname ) );
+		if( filesystem->FileExists( szFullName ) )
 		{
 			commentary_available.SetValue( true );
 
 			// If the user wanted commentary, kick it on
-			if ( commentary.GetBool() )
+			if( commentary.GetBool() )
 			{
 				g_bInCommentaryMode = true;
 			}
@@ -419,32 +464,32 @@ public:
 		ShutDownCommentary();
 	}
 
-	void ParseEntKVBlock( CBaseEntity *pNode, KeyValues *pkvNode )
+	void ParseEntKVBlock( CBaseEntity* pNode, KeyValues* pkvNode )
 	{
-		KeyValues *pkvNodeData = pkvNode->GetFirstSubKey();
-		while ( pkvNodeData )
+		KeyValues* pkvNodeData = pkvNode->GetFirstSubKey();
+		while( pkvNodeData )
 		{
 			// Handle the connections block
-			if ( !Q_strcmp(pkvNodeData->GetName(), "connections") )
+			if( !Q_strcmp( pkvNodeData->GetName(), "connections" ) )
 			{
 				ParseEntKVBlock( pNode, pkvNodeData );
 			}
 			else
-			{ 
-				#define COMMENTARY_STRING_LENGTH_MAX		1024
+			{
+#define COMMENTARY_STRING_LENGTH_MAX		1024
 
-				const char *pszValue = pkvNodeData->GetString();
-				Assert( Q_strlen(pszValue) < COMMENTARY_STRING_LENGTH_MAX );
-				if ( Q_strnchr(pszValue, '^', COMMENTARY_STRING_LENGTH_MAX) )
+				const char* pszValue = pkvNodeData->GetString();
+				Assert( Q_strlen( pszValue ) < COMMENTARY_STRING_LENGTH_MAX );
+				if( Q_strnchr( pszValue, '^', COMMENTARY_STRING_LENGTH_MAX ) )
 				{
 					// We want to support quotes in our strings so that we can specify multiple parameters in
 					// an output inside our commentary files. We convert ^s to "s here.
 					char szTmp[COMMENTARY_STRING_LENGTH_MAX];
 					Q_strncpy( szTmp, pszValue, COMMENTARY_STRING_LENGTH_MAX );
 					int len = Q_strlen( szTmp );
-					for ( int i = 0; i < len; i++ )
+					for( int i = 0; i < len; i++ )
 					{
-						if ( szTmp[i] == '^' )
+						if( szTmp[i] == '^' )
 						{
 							szTmp[i] = '"';
 						}
@@ -464,62 +509,74 @@ public:
 
 	virtual void LevelInitPostEntity( void )
 	{
-		if ( !IsInCommentaryMode() )
+		if( !IsInCommentaryMode() )
+		{
 			return;
+		}
 
 		// Don't spawn commentary entities when loading a savegame
-		if ( gpGlobals->eLoadType == MapLoad_LoadGame || gpGlobals->eLoadType == MapLoad_Background )
+		if( gpGlobals->eLoadType == MapLoad_LoadGame || gpGlobals->eLoadType == MapLoad_Background )
+		{
 			return;
+		}
 
 		m_bCommentaryEnabledMidGame = false;
 		InitCommentary();
 
-		IGameEvent *event = gameeventmanager->CreateEvent( "playing_commentary" );
+		IGameEvent* event = gameeventmanager->CreateEvent( "playing_commentary" );
 		gameeventmanager->FireEventClientSide( event );
 	}
 
-	CPointCommentaryNode *GetNodeUnderCrosshair()
+	CPointCommentaryNode* GetNodeUnderCrosshair()
 	{
-		CBasePlayer *pPlayer = GetCommentaryPlayer();
-		if ( !pPlayer )
+		CBasePlayer* pPlayer = GetCommentaryPlayer();
+		if( !pPlayer )
+		{
 			return NULL;
+		}
 
 		// See if the player's looking at a commentary node
 		trace_t tr;
 		Vector vecSrc = pPlayer->EyePosition();
-		Vector vecForward = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DIRECT_ONLY );	
+		Vector vecForward = pPlayer->GetAutoaimVector( AUTOAIM_SCALE_DIRECT_ONLY );
 
 		g_bTracingVsCommentaryNodes = true;
 		UTIL_TraceLine( vecSrc, vecSrc + vecForward * MAX_TRACE_LENGTH, MASK_SOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
 		g_bTracingVsCommentaryNodes = false;
 
-		if ( !tr.m_pEnt )
+		if( !tr.m_pEnt )
+		{
 			return NULL;
+		}
 
-		return dynamic_cast<CPointCommentaryNode*>(tr.m_pEnt);
+		return dynamic_cast<CPointCommentaryNode*>( tr.m_pEnt );
 	}
 
-	void PrePlayerRunCommand( CBasePlayer *pPlayer, CUserCmd *pUserCmds )
+	void PrePlayerRunCommand( CBasePlayer* pPlayer, CUserCmd* pUserCmds )
 	{
-		if ( !IsInCommentaryMode() )
+		if( !IsInCommentaryMode() )
+		{
 			return;
+		}
 
-		if ( pPlayer->IsFakeClient() )
+		if( pPlayer->IsFakeClient() )
+		{
 			return;
+		}
 
-		CPointCommentaryNode *pCurrentNode = GetNodeUnderCrosshair();
+		CPointCommentaryNode* pCurrentNode = GetNodeUnderCrosshair();
 
 		// Changed nodes?
- 		if ( m_hCurrentNode != pCurrentNode )
+		if( m_hCurrentNode != pCurrentNode )
 		{
 			// Stop animating the old one
- 			if ( m_hCurrentNode.Get() )
+			if( m_hCurrentNode.Get() )
 			{
 				m_hCurrentNode->SetUnderCrosshair( false );
 			}
 
 			// Start animating the new one
-			if ( pCurrentNode )
+			if( pCurrentNode )
 			{
 				pCurrentNode->SetUnderCrosshair( true );
 			}
@@ -528,68 +585,68 @@ public:
 		}
 
 		// Check for commentary node activations
-		if ( pPlayer )
+		if( pPlayer )
 		{
 			// Has the player pressed down an attack button?
 			int buttonsChanged = m_afPlayersLastButtons ^ pUserCmds->buttons;
 			int buttonsPressed = buttonsChanged & pUserCmds->buttons;
 			m_afPlayersLastButtons = pUserCmds->buttons;
 
-			if ( !(pUserCmds->buttons & COMMENTARY_BUTTONS) )
+			if( !( pUserCmds->buttons & COMMENTARY_BUTTONS ) )
 			{
 				m_iClearPressedButtons &= ~COMMENTARY_BUTTONS;
 			}
 
 			// Detect press events to start/stop commentary nodes
-			if (buttonsPressed & COMMENTARY_BUTTONS) 
+			if( buttonsPressed & COMMENTARY_BUTTONS )
 			{
-				if ( buttonsPressed & IN_ATTACK2 )
+				if( buttonsPressed & IN_ATTACK2 )
 				{
-					if ( !(GetActiveNode() && GetActiveNode()->CannotBeStopped()) )
+					if( !( GetActiveNode() && GetActiveNode()->CannotBeStopped() ) )
 					{
 						JumpToNextNode( pPlayer );
 						pUserCmds->buttons &= ~COMMENTARY_BUTTONS;
-						m_iClearPressedButtons |= (buttonsPressed & COMMENTARY_BUTTONS);
+						m_iClearPressedButtons |= ( buttonsPressed & COMMENTARY_BUTTONS );
 					}
 				}
 				else
 				{
- 					// Looking at a node?
-					if ( m_hCurrentNode )
+					// Looking at a node?
+					if( m_hCurrentNode )
 					{
 						// Ignore input while an unstoppable node is playing
-						if ( !GetActiveNode() || !GetActiveNode()->CannotBeStopped() )
+						if( !GetActiveNode() || !GetActiveNode()->CannotBeStopped() )
 						{
 							// If we have an active node already, stop it
-							if ( GetActiveNode() && GetActiveNode() != m_hCurrentNode )
+							if( GetActiveNode() && GetActiveNode() != m_hCurrentNode )
 							{
 								GetActiveNode()->StopPlaying();
- 							}
+							}
 
 							m_hCurrentNode->PlayerActivated();
 						}
 
 						// Prevent weapon firing when toggling nodes
 						pUserCmds->buttons &= ~COMMENTARY_BUTTONS;
-						m_iClearPressedButtons |= (buttonsPressed & COMMENTARY_BUTTONS);
+						m_iClearPressedButtons |= ( buttonsPressed & COMMENTARY_BUTTONS );
 					}
-					else if ( GetActiveNode() && GetActiveNode()->HasViewTarget() )
+					else if( GetActiveNode() && GetActiveNode()->HasViewTarget() )
 					{
-						if ( !GetActiveNode()->CannotBeStopped() )
+						if( !GetActiveNode()->CannotBeStopped() )
 						{
 							GetActiveNode()->StopPlaying();
 						}
 
 						// Prevent weapon firing when toggling nodes
 						pUserCmds->buttons &= ~COMMENTARY_BUTTONS;
-						m_iClearPressedButtons |= (buttonsPressed & COMMENTARY_BUTTONS);
+						m_iClearPressedButtons |= ( buttonsPressed & COMMENTARY_BUTTONS );
 					}
 				}
 			}
 
-			if ( GetActiveNode() && GetActiveNode()->PreventsMovement() )
+			if( GetActiveNode() && GetActiveNode()->PreventsMovement() )
 			{
- 				pUserCmds->buttons &= ~(IN_FORWARD | IN_BACK | IN_MOVELEFT | IN_MOVERIGHT | IN_JUMP | IN_DUCK );
+				pUserCmds->buttons &= ~( IN_FORWARD | IN_BACK | IN_MOVELEFT | IN_MOVERIGHT | IN_JUMP | IN_DUCK );
 				pUserCmds->upmove = 0;
 				pUserCmds->sidemove = 0;
 				pUserCmds->forwardmove = 0;
@@ -601,21 +658,21 @@ public:
 			pUserCmds->buttons &= ~m_iClearPressedButtons;
 		}
 
-		if ( m_iTeleportStage != TELEPORT_NONE )
+		if( m_iTeleportStage != TELEPORT_NONE )
 		{
-			if ( m_flNextTeleportTime <= gpGlobals->curtime )
+			if( m_flNextTeleportTime <= gpGlobals->curtime )
 			{
-				if ( m_iTeleportStage == TELEPORT_FADEOUT )
+				if( m_iTeleportStage == TELEPORT_FADEOUT )
 				{
 					m_iTeleportStage = TELEPORT_TELEPORT;
 					m_flNextTeleportTime = gpGlobals->curtime + 0.35;
 
-					color32_s clr = { 0,0,0,255 };
+					color32_s clr = { 0, 0, 0, 255 };
 					UTIL_ScreenFade( pPlayer, clr, 0.3, 0, FFADE_OUT | FFADE_PURGE | FFADE_STAYOUT );
 				}
-				else if ( m_iTeleportStage == TELEPORT_TELEPORT )
+				else if( m_iTeleportStage == TELEPORT_TELEPORT )
 				{
-					if ( m_hLastCommentaryNode )
+					if( m_hLastCommentaryNode )
 					{
 						m_hLastCommentaryNode->TeleportTo( pPlayer );
 					}
@@ -623,27 +680,27 @@ public:
 					m_iTeleportStage = TELEPORT_FADEIN;
 					m_flNextTeleportTime = gpGlobals->curtime + 0.6;
 				}
-				else if ( m_iTeleportStage == TELEPORT_FADEIN )
+				else if( m_iTeleportStage == TELEPORT_FADEIN )
 				{
 					m_iTeleportStage = TELEPORT_NONE;
 					m_flNextTeleportTime = gpGlobals->curtime + 0.25;
 
-					color32_s clr = { 0,0,0,255 };
+					color32_s clr = { 0, 0, 0, 255 };
 					UTIL_ScreenFade( pPlayer, clr, 0.3, 0, FFADE_IN | FFADE_PURGE );
 				}
 			}
 		}
 	}
 
-	CPointCommentaryNode *GetActiveNode( void )
+	CPointCommentaryNode* GetActiveNode( void )
 	{
 		return m_hActiveCommentaryNode;
 	}
 
-	void SetActiveNode( CPointCommentaryNode *pNode )
+	void SetActiveNode( CPointCommentaryNode* pNode )
 	{
 		m_hActiveCommentaryNode = pNode;
-		if ( pNode )
+		if( pNode )
 		{
 			m_hLastCommentaryNode = pNode;
 		}
@@ -664,17 +721,17 @@ public:
 		m_bCommentaryConvarsChanging = bChanging;
 	}
 
-	void ConvarChanged( IConVar *pConVar, const char *pOldString, float flOldValue )
+	void ConvarChanged( IConVar* pConVar, const char* pOldString, float flOldValue )
 	{
 		ConVarRef var( pConVar );
 
 		// A convar has been changed by a commentary node. We need to store
 		// the old state. If the engine shuts down, we need to restore any
 		// convars that the commentary changed to their previous values.
-		for ( int i = 0; i < m_ModifiedConvars.Count(); i++ )
+		for( int i = 0; i < m_ModifiedConvars.Count(); i++ )
 		{
 			// If we find it, just update the current value
-			if ( !Q_strncmp( var.GetName(), m_ModifiedConvars[i].pszConvar, MAX_MODIFIED_CONVAR_STRING ) )
+			if( !Q_strncmp( var.GetName(), m_ModifiedConvars[i].pszConvar, MAX_MODIFIED_CONVAR_STRING ) )
 			{
 				Q_strncpy( m_ModifiedConvars[i].pszCurrentValue, var.GetString(), MAX_MODIFIED_CONVAR_STRING );
 				//Msg("    Updating Convar %s: value %s (org %s)\n", m_ModifiedConvars[i].pszConvar, m_ModifiedConvars[i].pszCurrentValue, m_ModifiedConvars[i].pszOrgValue );
@@ -710,47 +767,49 @@ public:
 
 		// If we find the commentary semaphore, the commentary entities already exist.
 		// This occurs when you transition back to a map that has saved commentary nodes in it.
-		if ( gEntList.FindEntityByName( NULL, COMMENTARY_SPAWNED_SEMAPHORE ) )
+		if( gEntList.FindEntityByName( NULL, COMMENTARY_SPAWNED_SEMAPHORE ) )
+		{
 			return;
+		}
 
 		// Spawn the commentary semaphore entity
-		CBaseEntity *pSemaphore = CreateEntityByName( "info_target" );
-		pSemaphore->SetName( MAKE_STRING(COMMENTARY_SPAWNED_SEMAPHORE) );
+		CBaseEntity* pSemaphore = CreateEntityByName( "info_target" );
+		pSemaphore->SetName( MAKE_STRING( COMMENTARY_SPAWNED_SEMAPHORE ) );
 
 		bool oldLock = engine->LockNetworkStringTables( false );
 
 		// Find the commentary file
 		char szFullName[512];
-		Q_snprintf(szFullName,sizeof(szFullName), "maps/%s_commentary.txt", STRING( gpGlobals->mapname ));
-		KeyValues *pkvFile = new KeyValues( "Commentary" );
-		if ( pkvFile->LoadFromFile( filesystem, szFullName, "MOD" ) )
+		Q_snprintf( szFullName, sizeof( szFullName ), "maps/%s_commentary.txt", STRING( gpGlobals->mapname ) );
+		KeyValues* pkvFile = new KeyValues( "Commentary" );
+		if( pkvFile->LoadFromFile( filesystem, szFullName, "MOD" ) )
 		{
 			Msg( "Commentary: Loading commentary data from %s. \n", szFullName );
 
 			// Load each commentary block, and spawn the entities
-			KeyValues *pkvNode = pkvFile->GetFirstSubKey();
-			while ( pkvNode )
+			KeyValues* pkvNode = pkvFile->GetFirstSubKey();
+			while( pkvNode )
 			{
 				// Get node name
-				const char *pNodeName = pkvNode->GetName();
+				const char* pNodeName = pkvNode->GetName();
 
 				// Skip the trackinfo
-				if ( !Q_strncmp( pNodeName, "trackinfo", 9 ) )
+				if( !Q_strncmp( pNodeName, "trackinfo", 9 ) )
 				{
 					pkvNode = pkvNode->GetNextKey();
 					continue;
 				}
 
-				KeyValues *pClassname = pkvNode->FindKey( "classname" );
-				if ( pClassname )
+				KeyValues* pClassname = pkvNode->FindKey( "classname" );
+				if( pClassname )
 				{
 					// Use the classname instead
 					pNodeName = pClassname->GetString();
 				}
 
 				// Spawn the commentary entity
-				CBaseEntity *pNode = CreateEntityByName( pNodeName );
-				if ( pNode )
+				CBaseEntity* pNode = CreateEntityByName( pNodeName );
+				if( pNode )
 				{
 					ParseEntKVBlock( pNode, pkvNode );
 					DispatchSpawn( pNode );
@@ -759,8 +818,8 @@ public:
 					hHandle = pNode;
 					m_hSpawnedEntities.AddToTail( hHandle );
 
-					CPointCommentaryNode *pCommNode = dynamic_cast<CPointCommentaryNode*>(pNode);
-					if ( pCommNode )
+					CPointCommentaryNode* pCommNode = dynamic_cast<CPointCommentaryNode*>( pNode );
+					if( pCommNode )
 					{
 						m_iCommentaryNodeCount++;
 						pCommNode->SetNodeNumber( m_iCommentaryNodeCount );
@@ -768,7 +827,7 @@ public:
 				}
 				else
 				{
-					Warning("Commentary: Failed to spawn commentary entity, type: '%s'\n", pNodeName );
+					Warning( "Commentary: Failed to spawn commentary entity, type: '%s'\n", pNodeName );
 				}
 
 				// Move to next entity
@@ -776,7 +835,7 @@ public:
 			}
 
 			// Then activate all the entities
-			for ( int i = 0; i < m_hSpawnedEntities.Count(); i++ )
+			for( int i = 0; i < m_hSpawnedEntities.Count(); i++ )
 			{
 				m_hSpawnedEntities[i]->Activate();
 			}
@@ -800,15 +859,15 @@ public:
 
 	void ShutDownCommentary( void )
 	{
-		if ( GetActiveNode() )
+		if( GetActiveNode() )
 		{
 			GetActiveNode()->AbortPlaying();
 		}
 
 		// Destroy all the entities created by commentary
-		for ( int i = m_hSpawnedEntities.Count()-1; i >= 0; i-- )
+		for( int i = m_hSpawnedEntities.Count() - 1; i >= 0; i-- )
 		{
-			if ( m_hSpawnedEntities[i] )
+			if( m_hSpawnedEntities[i] )
 			{
 				UTIL_Remove( m_hSpawnedEntities[i] );
 			}
@@ -817,8 +876,8 @@ public:
 		m_iCommentaryNodeCount = 0;
 
 		// Remove the commentary semaphore
-		CBaseEntity *pSemaphore = gEntList.FindEntityByName( NULL, COMMENTARY_SPAWNED_SEMAPHORE );
-		if ( pSemaphore )
+		CBaseEntity* pSemaphore = gEntList.FindEntityByName( NULL, COMMENTARY_SPAWNED_SEMAPHORE );
+		if( pSemaphore )
 		{
 			UTIL_Remove( pSemaphore );
 		}
@@ -827,10 +886,10 @@ public:
 		cvar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
 
 		// Reset any convars that have been changed by the commentary
-		for ( int i = 0; i < m_ModifiedConvars.Count(); i++ )
+		for( int i = 0; i < m_ModifiedConvars.Count(); i++ )
 		{
-			ConVar *pConVar = (ConVar *)cvar->FindVar( m_ModifiedConvars[i].pszConvar );
-			if ( pConVar )
+			ConVar* pConVar = ( ConVar* )cvar->FindVar( m_ModifiedConvars[i].pszConvar );
+			if( pConVar )
 			{
 				pConVar->SetValue( m_ModifiedConvars[i].pszOrgValue );
 			}
@@ -850,7 +909,7 @@ public:
 		CalculateCommentaryState();
 
 		// If we're turning on commentary, create all the entities.
-		if ( IsInCommentaryMode() )
+		if( IsInCommentaryMode() )
 		{
 			m_bCommentaryEnabledMidGame = true;
 			InitCommentary();
@@ -865,14 +924,16 @@ public:
 	{
 		cvar->RemoveGlobalChangeCallback( CV_GlobalChange_Commentary );
 
-		if ( !IsInCommentaryMode() )
+		if( !IsInCommentaryMode() )
+		{
 			return;
+		}
 
 		// Set any convars that have already been changed by the commentary before the save
-		for ( int i = 0; i < m_ModifiedConvars.Count(); i++ )
+		for( int i = 0; i < m_ModifiedConvars.Count(); i++ )
 		{
-			ConVar *pConVar = (ConVar *)cvar->FindVar( m_ModifiedConvars[i].pszConvar );
-			if ( pConVar )
+			ConVar* pConVar = ( ConVar* )cvar->FindVar( m_ModifiedConvars[i].pszConvar );
+			if( pConVar )
 			{
 				//Msg("    Restoring Convar %s: value %s (org %s)\n", m_ModifiedConvars[i].pszConvar, m_ModifiedConvars[i].pszCurrentValue, m_ModifiedConvars[i].pszOrgValue );
 				pConVar->SetValue( m_ModifiedConvars[i].pszCurrentValue );
@@ -883,28 +944,30 @@ public:
 		cvar->InstallGlobalChangeCallback( CV_GlobalChange_Commentary );
 	}
 
-	bool CommentaryWasEnabledMidGame( void ) 
+	bool CommentaryWasEnabledMidGame( void )
 	{
 		return m_bCommentaryEnabledMidGame;
 	}
 
-	void JumpToNextNode( CBasePlayer *pPlayer )
+	void JumpToNextNode( CBasePlayer* pPlayer )
 	{
-		if ( m_flNextTeleportTime > gpGlobals->curtime || m_iTeleportStage != TELEPORT_NONE )
-			return;
-
-		CBaseEntity *pEnt = m_hLastCommentaryNode;
-		while ( ( pEnt = gEntList.FindEntityByClassname( pEnt, "point_commentary_node" ) ) != m_hLastCommentaryNode )
+		if( m_flNextTeleportTime > gpGlobals->curtime || m_iTeleportStage != TELEPORT_NONE )
 		{
-			CPointCommentaryNode *pNode = dynamic_cast<CPointCommentaryNode *>( pEnt );
-			if ( pNode && pNode->CanTeleportTo() )
+			return;
+		}
+
+		CBaseEntity* pEnt = m_hLastCommentaryNode;
+		while( ( pEnt = gEntList.FindEntityByClassname( pEnt, "point_commentary_node" ) ) != m_hLastCommentaryNode )
+		{
+			CPointCommentaryNode* pNode = dynamic_cast<CPointCommentaryNode*>( pEnt );
+			if( pNode && pNode->CanTeleportTo() )
 			{
 				m_iTeleportStage = TELEPORT_FADEOUT;
 				m_hLastCommentaryNode = pNode;
 				m_flNextTeleportTime = gpGlobals->curtime;
 
 				// Stop any active nodes
-				if ( m_hActiveCommentaryNode )
+				if( m_hActiveCommentaryNode )
 				{
 					m_hActiveCommentaryNode->StopPlaying();
 				}
@@ -931,44 +994,44 @@ private:
 
 CCommentarySystem	g_CommentarySystem;
 
-void CommentarySystem_PePlayerRunCommand( CBasePlayer *player, CUserCmd *ucmd )
+void CommentarySystem_PePlayerRunCommand( CBasePlayer* player, CUserCmd* ucmd )
 {
 	g_CommentarySystem.PrePlayerRunCommand( player, ucmd );
 }
 
 BEGIN_DATADESC_NO_BASE( CCommentarySystem )
-	//int m_afPlayersLastButtons;			DON'T SAVE
-	//bool m_bCommentaryConvarsChanging;	DON'T SAVE
-	//int m_iClearPressedButtons;			DON'T SAVE
+//int m_afPlayersLastButtons;			DON'T SAVE
+//bool m_bCommentaryConvarsChanging;	DON'T SAVE
+//int m_iClearPressedButtons;			DON'T SAVE
 
-	DEFINE_FIELD( m_bCommentaryEnabledMidGame, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flNextTeleportTime, FIELD_TIME ),
-	DEFINE_FIELD( m_iTeleportStage, FIELD_INTEGER ),
+DEFINE_FIELD( m_bCommentaryEnabledMidGame, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_flNextTeleportTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_iTeleportStage, FIELD_INTEGER ),
 
-	DEFINE_UTLVECTOR( m_ModifiedConvars, FIELD_EMBEDDED ),
-	DEFINE_UTLVECTOR( m_hSpawnedEntities, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hCurrentNode, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hActiveCommentaryNode, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hLastCommentaryNode, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_iCommentaryNodeCount, FIELD_INTEGER ),
-END_DATADESC()
+			  DEFINE_UTLVECTOR( m_ModifiedConvars, FIELD_EMBEDDED ),
+			  DEFINE_UTLVECTOR( m_hSpawnedEntities, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hCurrentNode, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hActiveCommentaryNode, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hLastCommentaryNode, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_iCommentaryNodeCount, FIELD_INTEGER ),
+			  END_DATADESC()
 
 #ifndef MAPBASE // This has been moved to mapbase/SystemConvarMod.h
-BEGIN_SIMPLE_DATADESC( modifiedconvars_t )
+	BEGIN_SIMPLE_DATADESC( modifiedconvars_t )
 	DEFINE_ARRAY( pszConvar, FIELD_CHARACTER, MAX_MODIFIED_CONVAR_STRING ),
 	DEFINE_ARRAY( pszCurrentValue, FIELD_CHARACTER, MAX_MODIFIED_CONVAR_STRING ),
 	DEFINE_ARRAY( pszOrgValue, FIELD_CHARACTER, MAX_MODIFIED_CONVAR_STRING ),
-END_DATADESC()
+	END_DATADESC()
 #endif
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CC_CommentaryChanged( IConVar *pConVar, const char *pOldString, float flOldValue )
+			  void CC_CommentaryChanged( IConVar* pConVar, const char* pOldString, float flOldValue )
 {
 	ConVarRef var( pConVar );
- 	if ( var.GetBool() != g_bInCommentaryMode )
+	if( var.GetBool() != g_bInCommentaryMode )
 	{
 		g_CommentarySystem.SetCommentaryMode( var.GetBool() );
 	}
@@ -980,9 +1043,9 @@ ConVar commentary( "commentary", "0", FCVAR_NONE, "Desired commentary mode state
 //			commentary system during commentary. This code stores convar changes
 //			made by the commentary system, and reverts them when finished.
 //-----------------------------------------------------------------------------
-void CV_GlobalChange_Commentary( IConVar *var, const char *pOldString, float flOldValue )
+void CV_GlobalChange_Commentary( IConVar* var, const char* pOldString, float flOldValue )
 {
-	if ( !g_CommentarySystem.CommentaryConvarsChanging() )
+	if( !g_CommentarySystem.CommentaryConvarsChanging() )
 	{
 		// A convar has changed, but not due to commentary nodes. Ignore it.
 		return;
@@ -992,13 +1055,13 @@ void CV_GlobalChange_Commentary( IConVar *var, const char *pOldString, float flO
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CC_CommentaryNotChanging( void )
 {
 	g_CommentarySystem.SetCommentaryConvarsChanging( false );
 }
-static ConCommand commentary_cvarsnotchanging("commentary_cvarsnotchanging", CC_CommentaryNotChanging, 0 );
+static ConCommand commentary_cvarsnotchanging( "commentary_cvarsnotchanging", CC_CommentaryNotChanging, 0 );
 
 bool IsListeningToCommentary( void )
 {
@@ -1010,16 +1073,16 @@ bool IsListeningToCommentary( void )
 //===========================================================================================================
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::Spawn( void )
 {
 	// No model specified?
-	const char *szModel = STRING( GetModelName() );
-	if (!szModel || !*szModel)
+	const char* szModel = STRING( GetModelName() );
+	if( !szModel || !*szModel )
 	{
 #ifdef MAPBASE
-		switch (m_iCommentaryType)
+		switch( m_iCommentaryType )
 		{
 			case COMMENTARY_TYPE_TEXT:
 				szModel = "models/extras/info_text.mdl";
@@ -1041,26 +1104,28 @@ void CPointCommentaryNode::Spawn( void )
 #else
 		szModel = "models/extras/info_speech.mdl";
 #endif
-		SetModelName( AllocPooledString(szModel) );
+		SetModelName( AllocPooledString( szModel ) );
 	}
 
 	Precache();
 	SetModel( szModel );
-	UTIL_SetSize( this, -Vector(16,16,16), Vector(16,16,16) );
+	UTIL_SetSize( this, -Vector( 16, 16, 16 ), Vector( 16, 16, 16 ) );
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_CUSTOMRAYTEST | FSOLID_CUSTOMBOXTEST );
 	AddEffects( EF_NOSHADOW );
 
 #ifdef MAPBASE
 	// Default to view position speed scale (which in turn defaults to 1.0)
-	if (m_flReturnSpeedScale == 0.0f)
+	if( m_flReturnSpeedScale == 0.0f )
+	{
 		m_flReturnSpeedScale = m_flViewPositionSpeedScale;
+	}
 #endif
 
 	// Setup for animation
-	ResetSequence( LookupSequence("idle") );
+	ResetSequence( LookupSequence( "idle" ) );
 	SetThink( &CPointCommentaryNode::SpinThink );
-	SetNextThink( gpGlobals->curtime + 0.1f ); 
+	SetNextThink( gpGlobals->curtime + 0.1f );
 
 	m_iNodeNumber = 0;
 	m_iNodeNumberMax = 0;
@@ -1069,27 +1134,27 @@ void CPointCommentaryNode::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::Activate( void )
 {
 	m_iNodeNumberMax = g_CommentarySystem.GetCommentaryNodeCount();
 
-	if ( m_iszViewTarget != NULL_STRING )
+	if( m_iszViewTarget != NULL_STRING )
 	{
 		m_hViewTarget = gEntList.FindEntityByName( NULL, m_iszViewTarget );
-		if ( !m_hViewTarget )
+		if( !m_hViewTarget )
 		{
-			Warning("%s: %s could not find viewtarget %s.\n", GetClassname(), GetDebugName(), STRING(m_iszViewTarget) );
+			Warning( "%s: %s could not find viewtarget %s.\n", GetClassname(), GetDebugName(), STRING( m_iszViewTarget ) );
 		}
 	}
 
-	if ( m_iszViewPosition != NULL_STRING )
+	if( m_iszViewPosition != NULL_STRING )
 	{
 		m_hViewPosition = gEntList.FindEntityByName( NULL, m_iszViewPosition );
-		if ( !m_hViewPosition.Get() )
+		if( !m_hViewPosition.Get() )
 		{
-			Warning("%s: %s could not find viewposition %s.\n", GetClassname(), GetDebugName(), STRING(m_iszViewPosition) );
+			Warning( "%s: %s could not find viewposition %s.\n", GetClassname(), GetDebugName(), STRING( m_iszViewPosition ) );
 		}
 	}
 
@@ -1097,40 +1162,40 @@ void CPointCommentaryNode::Activate( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::Precache()
 {
 	PrecacheModel( STRING( GetModelName() ) );
 
-	if ( m_iszCommentaryFile.Get() != NULL_STRING )
+	if( m_iszCommentaryFile.Get() != NULL_STRING )
 	{
 		PrecacheScriptSound( STRING( m_iszCommentaryFile.Get() ) );
 	}
 	else
 	{
-		Warning("%s: %s has no commentary file.\n", GetClassname(), GetDebugName() );
+		Warning( "%s: %s has no commentary file.\n", GetClassname(), GetDebugName() );
 	}
 
-	if ( m_iszCommentaryFileNoHDR.Get() != NULL_STRING )
+	if( m_iszCommentaryFileNoHDR.Get() != NULL_STRING )
 	{
 		PrecacheScriptSound( STRING( m_iszCommentaryFileNoHDR.Get() ) );
 	}
-	
+
 	BaseClass::Precache();
-}	
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Called to tell the node when it's moved under/not-under the player's crosshair
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::SetUnderCrosshair( bool bUnderCrosshair )
 {
-	if ( bUnderCrosshair )
+	if( bUnderCrosshair )
 	{
 		// Start animating
 		m_bUnderCrosshair = true;
-	
-		if ( !m_bActive )
+
+		if( !m_bActive )
 		{
 			m_flAnimTime = gpGlobals->curtime;
 		}
@@ -1145,12 +1210,16 @@ void CPointCommentaryNode::SetUnderCrosshair( bool bUnderCrosshair )
 //------------------------------------------------------------------------------
 // Purpose: Prevent collisions of everything except the trace from the commentary system
 //------------------------------------------------------------------------------
-bool CPointCommentaryNode::TestCollision( const Ray_t &ray, unsigned int mask, trace_t& trace )
+bool CPointCommentaryNode::TestCollision( const Ray_t& ray, unsigned int mask, trace_t& trace )
 {
-	if ( !g_bTracingVsCommentaryNodes )
+	if( !g_bTracingVsCommentaryNodes )
+	{
 		return false;
-	if ( m_bDisabled )
+	}
+	if( m_bDisabled )
+	{
 		return false;
+	}
 
 	return BaseClass::TestCollision( ray, mask, trace );
 }
@@ -1162,9 +1231,9 @@ void CPointCommentaryNode::SpinThink( void )
 {
 	// Rotate if we're active, or under the crosshair. Don't rotate if we're
 	// under the crosshair, but we've already been listened to.
-	if ( m_bActive || (m_bUnderCrosshair && m_nSkin == 0) )
+	if( m_bActive || ( m_bUnderCrosshair && m_nSkin == 0 ) )
 	{
-		if ( m_bActive )
+		if( m_bActive )
 		{
 			m_flPlaybackRate = 3.0;
 		}
@@ -1173,7 +1242,7 @@ void CPointCommentaryNode::SpinThink( void )
 			m_flPlaybackRate = 1.0;
 		}
 		StudioFrameAdvance();
-		DispatchAnimEvents(this);
+		DispatchAnimEvents( this );
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.1f );
@@ -1186,7 +1255,7 @@ void CPointCommentaryNode::PlayerActivated( void )
 {
 	gamestats->Event_Commentary();
 
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		StopPlaying();
 	}
@@ -1198,11 +1267,11 @@ void CPointCommentaryNode::PlayerActivated( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::StopPlaying( void )
 {
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		FinishCommentary();
 	}
@@ -1211,16 +1280,16 @@ void CPointCommentaryNode::StopPlaying( void )
 //-----------------------------------------------------------------------------
 // Purpose: Stop playing the node, but snap completely out of the node.
 //			Used when players shut down commentary while we're in the middle
-//			of playing a node, so we can't smoothly blend out (since the 
+//			of playing a node, so we can't smoothly blend out (since the
 //			commentary entities need to be removed).
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::AbortPlaying( void )
 {
-	if ( m_bActive )
+	if( m_bActive )
 	{
 		FinishCommentary( false );
 	}
-	else if ( m_bPreventChangesWhileMoving )
+	else if( m_bPreventChangesWhileMoving )
 	{
 		// We're a node that's not active, but is in the process of transitioning the view. Finish movement.
 		CleanupPostCommentary();
@@ -1228,7 +1297,7 @@ void CPointCommentaryNode::AbortPlaying( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CPointCommentaryNode::CanTeleportTo( void )
 {
@@ -1237,12 +1306,12 @@ bool CPointCommentaryNode::CanTeleportTo( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::TeleportTo( CBasePlayer *pPlayer )
+void CPointCommentaryNode::TeleportTo( CBasePlayer* pPlayer )
 {
 	Vector vecTarget = m_vecTeleportOrigin;
-	if ( m_vecTeleportOrigin == vec3_origin )
+	if( m_vecTeleportOrigin == vec3_origin )
 	{
 		vecTarget = GetAbsOrigin();
 	}
@@ -1255,7 +1324,7 @@ void CPointCommentaryNode::TeleportTo( CBasePlayer *pPlayer )
 	Vector vecToNode = GetAbsOrigin() - pPlayer->EyePosition();
 	VectorNormalize( vecToNode );
 	QAngle vecAngle;
-	VectorAngles( vecToNode, Vector(0,0,1), vecAngle );
+	VectorAngles( vecToNode, Vector( 0, 0, 1 ), vecAngle );
 
 	pPlayer->SnapEyeAngles( vecAngle );
 }
@@ -1265,20 +1334,24 @@ void CPointCommentaryNode::TeleportTo( CBasePlayer *pPlayer )
 //------------------------------------------------------------------------------
 void CPointCommentaryNode::StartCommentary( void )
 {
-	CBasePlayer *pPlayer = GetCommentaryPlayer();
+	CBasePlayer* pPlayer = GetCommentaryPlayer();
 
-	if ( !pPlayer )
+	if( !pPlayer )
+	{
 		return;
+	}
 
 #ifdef MAPBASE_VSCRIPT
-	if (m_ScriptScope.IsInitialized() && g_Hook_PreStartCommentary.CanRunInScope( m_ScriptScope ))
+	if( m_ScriptScope.IsInitialized() && g_Hook_PreStartCommentary.CanRunInScope( m_ScriptScope ) )
 	{
 		ScriptVariant_t functionReturn;
-		if ( g_Hook_PreStartCommentary.Call( m_ScriptScope, &functionReturn, NULL ) && functionReturn.m_type == FIELD_BOOLEAN )
+		if( g_Hook_PreStartCommentary.Call( m_ScriptScope, &functionReturn, NULL ) && functionReturn.m_type == FIELD_BOOLEAN )
 		{
 			// Don't play the commentary if it returned false
-			if (functionReturn.m_bool == false)
+			if( functionReturn.m_bool == false )
+			{
 				return;
+			}
 		}
 	}
 #endif
@@ -1288,16 +1361,16 @@ void CPointCommentaryNode::StartCommentary( void )
 	m_flAnimTime = gpGlobals->curtime;
 	m_flPrevAnimTime = gpGlobals->curtime;
 
-	// Switch to the greyed out skin 
+	// Switch to the greyed out skin
 	m_nSkin = 1;
 
 	m_pOnCommentaryStarted.FireOutput( this, this );
 
 	// Fire off our precommands
-	if ( m_iszPreCommands != NULL_STRING )
+	if( m_iszPreCommands != NULL_STRING )
 	{
 		g_CommentarySystem.SetCommentaryConvarsChanging( true );
-		engine->ClientCommand( pPlayer->edict(), STRING(m_iszPreCommands) );
+		engine->ClientCommand( pPlayer->edict(), STRING( m_iszPreCommands ) );
 		engine->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
 	}
 
@@ -1305,7 +1378,7 @@ void CPointCommentaryNode::StartCommentary( void )
 	m_flStartTime = gpGlobals->curtime;
 
 #ifdef MAPBASE
-	if (m_hViewPosition.Get())
+	if( m_hViewPosition.Get() )
 	{
 		m_flViewPositionChangedTime = gpGlobals->curtime;
 	}
@@ -1320,43 +1393,47 @@ void CPointCommentaryNode::StartCommentary( void )
 #endif
 
 	// If we have a view target, start blending towards it
-	if ( m_hViewTarget || m_hViewPosition.Get() )
+	if( m_hViewTarget || m_hViewPosition.Get() )
 	{
 		m_vecOriginalAngles = pPlayer->EyeAngles();
- 		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
 	}
 
 	//SetContextThink( &CPointCommentaryNode::FinishCommentary, gpGlobals->curtime + flDuration, s_pFinishCommentaryThink );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CC_CommentaryFinishNode( void )
 {
 	// We were told by the client DLL that our commentary has finished
-	if ( g_CommentarySystem.GetActiveNode() )
+	if( g_CommentarySystem.GetActiveNode() )
 	{
 		g_CommentarySystem.GetActiveNode()->StopPlaying();
 	}
 }
-static ConCommand commentary_finishnode("commentary_finishnode", CC_CommentaryFinishNode, 0 );
+static ConCommand commentary_finishnode( "commentary_finishnode", CC_CommentaryFinishNode, 0 );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::UpdateViewThink( void )
 {
-	if ( !m_bActive )
+	if( !m_bActive )
+	{
 		return;
-	CBasePlayer *pPlayer = GetCommentaryPlayer();
-	if ( !pPlayer )
+	}
+	CBasePlayer* pPlayer = GetCommentaryPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// Swing the view towards the target
-	if ( m_hViewTarget )
+	if( m_hViewTarget )
 	{
-		if ( !m_hViewTargetAngles && !m_hViewPositionMover )
+		if( !m_hViewTargetAngles && !m_hViewPositionMover )
 		{
 			// Make an invisible entity to attach view angles to
 			m_hViewTargetAngles = CreateEntityByName( "point_commentary_viewpoint" );
@@ -1364,20 +1441,20 @@ void CPointCommentaryNode::UpdateViewThink( void )
 			m_hViewTargetAngles->SetAbsAngles( pPlayer->EyeAngles() );
 			pPlayer->SetViewEntity( m_hViewTargetAngles );
 
-			if ( pPlayer->GetActiveWeapon() )
+			if( pPlayer->GetActiveWeapon() )
 			{
 				pPlayer->GetActiveWeapon()->Holster();
 			}
 		}
 
- 		QAngle angGoal;
- 		QAngle angCurrent;
-		if ( m_hViewPositionMover )
+		QAngle angGoal;
+		QAngle angCurrent;
+		if( m_hViewPositionMover )
 		{
 			angCurrent = m_hViewPositionMover->GetAbsAngles();
 			VectorAngles( m_hViewTarget->WorldSpaceCenter() - m_hViewPositionMover->GetAbsOrigin(), angGoal );
 		}
-		else if ( m_hViewTargetAngles )
+		else if( m_hViewTargetAngles )
 		{
 			angCurrent = m_hViewTargetAngles->GetAbsAngles();
 			m_hViewTargetAngles->SetAbsOrigin( pPlayer->EyePosition() );
@@ -1386,28 +1463,30 @@ void CPointCommentaryNode::UpdateViewThink( void )
 		else
 		{
 			angCurrent = pPlayer->EyeAngles();
-      		VectorAngles( m_hViewTarget->WorldSpaceCenter() - pPlayer->EyePosition(), angGoal );
+			VectorAngles( m_hViewTarget->WorldSpaceCenter() - pPlayer->EyePosition(), angGoal );
 		}
 
 		// Accelerate towards the target goal angles
-  		float dx = AngleDiff( angGoal.x, angCurrent.x );
-  		float dy = AngleDiff( angGoal.y, angCurrent.y );
+		float dx = AngleDiff( angGoal.x, angCurrent.x );
+		float dy = AngleDiff( angGoal.y, angCurrent.y );
 		float mod = 1.0 - ExponentialDecay( 0.5, 0.3, gpGlobals->frametime );
 #ifdef MAPBASE
-		if (m_flViewTargetSpeedScale != 1.0f)
+		if( m_flViewTargetSpeedScale != 1.0f )
+		{
 			mod *= m_flViewTargetSpeedScale;
+		}
 #endif
-   		float dxmod = dx * mod;
+		float dxmod = dx * mod;
 		float dymod = dy * mod;
 
- 		angCurrent.x = AngleNormalize( angCurrent.x + dxmod );
- 		angCurrent.y = AngleNormalize( angCurrent.y + dymod );
+		angCurrent.x = AngleNormalize( angCurrent.x + dxmod );
+		angCurrent.y = AngleNormalize( angCurrent.y + dymod );
 
-		if ( m_hViewPositionMover )
+		if( m_hViewPositionMover )
 		{
 			m_hViewPositionMover->SetAbsAngles( angCurrent );
 		}
-		else if ( m_hViewTargetAngles )
+		else if( m_hViewTargetAngles )
 		{
 			m_hViewTargetAngles->SetAbsAngles( angCurrent );
 			pPlayer->SnapEyeAngles( angCurrent );
@@ -1420,31 +1499,33 @@ void CPointCommentaryNode::UpdateViewThink( void )
 		SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
 	}
 
- 	if ( m_hViewPosition.Get() )
+	if( m_hViewPosition.Get() )
 	{
-		if ( pPlayer->GetActiveWeapon() )
+		if( pPlayer->GetActiveWeapon() )
 		{
 			pPlayer->GetActiveWeapon()->Holster();
 		}
 
- 		if ( !m_hViewPositionMover )
+		if( !m_hViewPositionMover )
 		{
-			// Make an invisible info target entity for us to attach the view to, 
+			// Make an invisible info target entity for us to attach the view to,
 			// and move it to the desired view position.
 			m_hViewPositionMover = CreateEntityByName( "point_commentary_viewpoint" );
 			m_hViewPositionMover->SetAbsAngles( pPlayer->EyeAngles() );
 			pPlayer->SetViewEntity( m_hViewPositionMover );
 		}
 
-		// Blend to the target position over time. 
+		// Blend to the target position over time.
 #ifdef MAPBASE
-		float flCurTime = (gpGlobals->curtime - m_flViewPositionChangedTime);
-		if (m_flViewPositionSpeedScale != 1.0f)
+		float flCurTime = ( gpGlobals->curtime - m_flViewPositionChangedTime );
+		if( m_flViewPositionSpeedScale != 1.0f )
+		{
 			flCurTime *= m_flViewPositionSpeedScale;
+		}
 #else
- 		float flCurTime = (gpGlobals->curtime - m_flStartTime);
+		float flCurTime = ( gpGlobals->curtime - m_flStartTime );
 #endif
- 		float flBlendPerc = clamp( flCurTime * 0.5f, 0.f, 1.f );
+		float flBlendPerc = clamp( flCurTime * 0.5f, 0.f, 1.f );
 
 		// Figure out the current view position
 		Vector vecCurEye;
@@ -1453,34 +1534,36 @@ void CPointCommentaryNode::UpdateViewThink( void )
 #else
 		VectorLerp( pPlayer->EyePosition(), m_hViewPosition.Get()->GetAbsOrigin(), flBlendPerc, vecCurEye );
 #endif
-		m_hViewPositionMover->SetAbsOrigin( vecCurEye ); 
+		m_hViewPositionMover->SetAbsOrigin( vecCurEye );
 
 		SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
 	}
 #ifdef MAPBASE
-	else if ( m_flViewPositionChangedTime != -1.0f && m_hViewPositionMover )
+	else if( m_flViewPositionChangedTime != -1.0f && m_hViewPositionMover )
 	{
- 		// Blend back to the player's position over time.
-   		float flCurTime = (gpGlobals->curtime - m_flViewPositionChangedTime);
-		if (m_flViewPositionSpeedScale != 1.0f)
+		// Blend back to the player's position over time.
+		float flCurTime = ( gpGlobals->curtime - m_flViewPositionChangedTime );
+		if( m_flViewPositionSpeedScale != 1.0f )
+		{
 			flCurTime *= m_flViewPositionSpeedScale;
+		}
 
 		//float flTimeToBlend = MIN( 2.0, m_flViewPositionChangedTime - m_flStartTime );
- 		//float flBlendPerc = 1.0f - clamp( flCurTime / flTimeToBlend, 0.f, 1.f );
+		//float flBlendPerc = 1.0f - clamp( flCurTime / flTimeToBlend, 0.f, 1.f );
 		float flBlendPerc = 1.0f - clamp( flCurTime * 0.5f, 0.f, 1.f );
 
 		//Msg("OUT: CurTime %.2f, BlendTime: %.2f, Blend: %.3f\n", flCurTime, flTimeToBlend, flBlendPerc );
 
 		// Only do this while we're still moving
-		if ( flBlendPerc > 0 )
+		if( flBlendPerc > 0 )
 		{
 			// Figure out the current view position
 			Vector vecPlayerPos = pPlayer->EyePosition();
-			Vector vecToPosition = (m_vecFinishOrigin - vecPlayerPos); 
-			Vector vecCurEye = pPlayer->EyePosition() + (vecToPosition * flBlendPerc);
-		m_hViewPositionMover->SetAbsOrigin( vecCurEye ); 
+			Vector vecToPosition = ( m_vecFinishOrigin - vecPlayerPos );
+			Vector vecCurEye = pPlayer->EyePosition() + ( vecToPosition * flBlendPerc );
+			m_hViewPositionMover->SetAbsOrigin( vecCurEye );
 
-			if ( m_hViewTarget )
+			if( m_hViewTarget )
 			{
 				Quaternion quatFinish;
 				Quaternion quatOriginal;
@@ -1493,7 +1576,7 @@ void CPointCommentaryNode::UpdateViewThink( void )
 				m_hViewPositionMover->SetAbsAngles( angCurrent );
 			}
 
-		SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+			SetNextThink( gpGlobals->curtime, s_pCommentaryUpdateViewThink );
 			return;
 		}
 		else
@@ -1501,12 +1584,12 @@ void CPointCommentaryNode::UpdateViewThink( void )
 			pPlayer->SnapEyeAngles( m_hViewPositionMover->GetAbsAngles() );
 
 			// Try to clean up the view position stuff without ending the commentary
-			if ( !m_hViewTargetAngles && pPlayer->GetActiveWeapon() )
+			if( !m_hViewTargetAngles && pPlayer->GetActiveWeapon() )
 			{
 				pPlayer->GetActiveWeapon()->Deploy();
 			}
 
-			if (pPlayer->GetViewEntity() == m_hViewPositionMover)
+			if( pPlayer->GetViewEntity() == m_hViewPositionMover )
 			{
 				pPlayer->SetViewEntity( NULL );
 			}
@@ -1519,37 +1602,41 @@ void CPointCommentaryNode::UpdateViewThink( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::UpdateViewPostThink( void )
 {
-	CBasePlayer *pPlayer = GetCommentaryPlayer();
-	if ( !pPlayer )
-		return;
-
- 	if ( m_hViewPosition.Get() && m_hViewPositionMover )
+	CBasePlayer* pPlayer = GetCommentaryPlayer();
+	if( !pPlayer )
 	{
- 		// Blend back to the player's position over time.
-   		float flCurTime = (gpGlobals->curtime - m_flFinishedTime);
+		return;
+	}
+
+	if( m_hViewPosition.Get() && m_hViewPositionMover )
+	{
+		// Blend back to the player's position over time.
+		float flCurTime = ( gpGlobals->curtime - m_flFinishedTime );
 #ifdef MAPBASE
-		if (m_flReturnSpeedScale != 1.0f)
+		if( m_flReturnSpeedScale != 1.0f )
+		{
 			flCurTime *= m_flReturnSpeedScale;
+		}
 #endif
-		float flTimeToBlend = MIN( 2.0, m_flFinishedTime - m_flStartTime ); 
- 		float flBlendPerc = 1.0f - clamp( flCurTime / flTimeToBlend, 0.f, 1.f );
+		float flTimeToBlend = MIN( 2.0, m_flFinishedTime - m_flStartTime );
+		float flBlendPerc = 1.0f - clamp( flCurTime / flTimeToBlend, 0.f, 1.f );
 
 		//Msg("OUT: CurTime %.2f, BlendTime: %.2f, Blend: %.3f\n", flCurTime, flTimeToBlend, flBlendPerc );
 
 		// Only do this while we're still moving
-		if ( flBlendPerc > 0 )
+		if( flBlendPerc > 0 )
 		{
 			// Figure out the current view position
 			Vector vecPlayerPos = pPlayer->EyePosition();
-			Vector vecToPosition = (m_vecFinishOrigin - vecPlayerPos); 
-			Vector vecCurEye = pPlayer->EyePosition() + (vecToPosition * flBlendPerc);
-			m_hViewPositionMover->SetAbsOrigin( vecCurEye ); 
+			Vector vecToPosition = ( m_vecFinishOrigin - vecPlayerPos );
+			Vector vecCurEye = pPlayer->EyePosition() + ( vecToPosition * flBlendPerc );
+			m_hViewPositionMover->SetAbsOrigin( vecCurEye );
 
-			if ( m_hViewTarget )
+			if( m_hViewTarget )
 			{
 				Quaternion quatFinish;
 				Quaternion quatOriginal;
@@ -1580,24 +1667,26 @@ void CPointCommentaryNode::UpdateViewPostThink( void )
 //------------------------------------------------------------------------------
 void CPointCommentaryNode::FinishCommentary( bool bBlendOut )
 {
-	CBasePlayer *pPlayer = GetCommentaryPlayer();
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = GetCommentaryPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
 	// Fire off our postcommands
-	if ( m_iszPostCommands != NULL_STRING )
+	if( m_iszPostCommands != NULL_STRING )
 	{
 		g_CommentarySystem.SetCommentaryConvarsChanging( true );
-		engine->ClientCommand( pPlayer->edict(), STRING(m_iszPostCommands) );
+		engine->ClientCommand( pPlayer->edict(), STRING( m_iszPostCommands ) );
 		engine->ClientCommand( pPlayer->edict(), "commentary_cvarsnotchanging\n" );
 	}
 
 	// Stop the commentary
 	m_flFinishedTime = gpGlobals->curtime;
 
-	if ( bBlendOut && m_hViewPositionMover )
+	if( bBlendOut && m_hViewPositionMover )
 	{
- 		m_bActive = false;
+		m_bActive = false;
 		m_flPlaybackRate = 1.0;
 		m_vecFinishOrigin = m_hViewPositionMover->GetAbsOrigin();
 		m_vecFinishAngles = m_hViewPositionMover->GetAbsAngles();
@@ -1613,26 +1702,28 @@ void CPointCommentaryNode::FinishCommentary( bool bBlendOut )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::CleanupPostCommentary( void )
 {
-	CBasePlayer *pPlayer = GetCommentaryPlayer();
-	if ( !pPlayer )
+	CBasePlayer* pPlayer = GetCommentaryPlayer();
+	if( !pPlayer )
+	{
 		return;
+	}
 
-	if ( ( m_hViewPositionMover || m_hViewTargetAngles ) && pPlayer->GetActiveWeapon() )
+	if( ( m_hViewPositionMover || m_hViewTargetAngles ) && pPlayer->GetActiveWeapon() )
 	{
 		pPlayer->GetActiveWeapon()->Deploy();
 	}
 
-	if ( m_hViewTargetAngles && pPlayer->GetViewEntity() == m_hViewTargetAngles )
+	if( m_hViewTargetAngles && pPlayer->GetViewEntity() == m_hViewTargetAngles )
 	{
 		pPlayer->SetViewEntity( NULL );
 	}
 	UTIL_Remove( m_hViewTargetAngles );
 
-	if ( m_hViewPositionMover && pPlayer->GetViewEntity() == m_hViewPositionMover )
+	if( m_hViewPositionMover && pPlayer->GetViewEntity() == m_hViewPositionMover )
 	{
 		pPlayer->SetViewEntity( NULL );
 	}
@@ -1653,27 +1744,27 @@ void CPointCommentaryNode::CleanupPostCommentary( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputStartCommentary( inputdata_t &inputdata )
+void CPointCommentaryNode::InputStartCommentary( inputdata_t& inputdata )
 {
- 	if ( !m_bActive )
+	if( !m_bActive )
 	{
-		if ( g_CommentarySystem.GetActiveNode() )
+		if( g_CommentarySystem.GetActiveNode() )
 		{
 			g_CommentarySystem.GetActiveNode()->StopPlaying();
 		}
 
 		PlayerActivated();
-	}	
+	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputStartUnstoppableCommentary( inputdata_t &inputdata )
+void CPointCommentaryNode::InputStartUnstoppableCommentary( inputdata_t& inputdata )
 {
-	if ( !m_bActive )
+	if( !m_bActive )
 	{
 		m_bUnstoppable = true;
 		InputStartCommentary( inputdata );
@@ -1681,26 +1772,26 @@ void CPointCommentaryNode::InputStartUnstoppableCommentary( inputdata_t &inputda
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputEnable( inputdata_t &inputdata )
+void CPointCommentaryNode::InputEnable( inputdata_t& inputdata )
 {
 	SetDisabled( false );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputDisable( inputdata_t &inputdata )
+void CPointCommentaryNode::InputDisable( inputdata_t& inputdata )
 {
 	SetDisabled( true );
 }
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputSetViewTarget( inputdata_t &inputdata )
+void CPointCommentaryNode::InputSetViewTarget( inputdata_t& inputdata )
 {
 	m_hViewTarget = inputdata.value.Entity();
 
@@ -1709,11 +1800,11 @@ void CPointCommentaryNode::InputSetViewTarget( inputdata_t &inputdata )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputSetViewPosition( inputdata_t &inputdata )
+void CPointCommentaryNode::InputSetViewPosition( inputdata_t& inputdata )
 {
-	if (m_hViewPosition.Get() && m_hViewPositionMover)
+	if( m_hViewPosition.Get() && m_hViewPositionMover )
 	{
 		// In case the view position is being cleared, assign the "finish" vectors
 		m_vecFinishOrigin = m_hViewPositionMover->GetAbsOrigin();
@@ -1721,8 +1812,8 @@ void CPointCommentaryNode::InputSetViewPosition( inputdata_t &inputdata )
 	}
 	else
 	{
-		CBasePlayer *pPlayer = GetCommentaryPlayer();
-		if (pPlayer)
+		CBasePlayer* pPlayer = GetCommentaryPlayer();
+		if( pPlayer )
 		{
 			// And in case it's a new view position coming from the player, assign the "finish" vectors to the player
 			m_vecFinishOrigin = pPlayer->EyePosition();
@@ -1738,45 +1829,45 @@ void CPointCommentaryNode::InputSetViewPosition( inputdata_t &inputdata )
 	m_flViewPositionChangedTime = gpGlobals->curtime;
 
 	// If we have a view target, start blending towards it
-	if ( m_hViewPosition.Get() )
+	if( m_hViewPosition.Get() )
 	{
- 		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
+		SetContextThink( &CPointCommentaryNode::UpdateViewThink, gpGlobals->curtime, s_pCommentaryUpdateViewThink );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputSetViewTargetSpeed( inputdata_t &inputdata )
+void CPointCommentaryNode::InputSetViewTargetSpeed( inputdata_t& inputdata )
 {
 	m_flViewTargetSpeedScale = inputdata.value.Float();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputSetViewPositionSpeed( inputdata_t &inputdata )
+void CPointCommentaryNode::InputSetViewPositionSpeed( inputdata_t& inputdata )
 {
 	m_flViewPositionSpeedScale = inputdata.value.Float();
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::InputSetReturnSpeed( inputdata_t &inputdata )
+void CPointCommentaryNode::InputSetReturnSpeed( inputdata_t& inputdata )
 {
 	m_flReturnSpeedScale = inputdata.value.Float();
 }
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointCommentaryNode::SetDisabled( bool bDisabled )
 {
 	m_bDisabled = bDisabled;
 
-	if ( m_bDisabled )
+	if( m_bDisabled )
 	{
 		AddEffects( EF_NODRAW );
 	}
@@ -1795,49 +1886,51 @@ int CPointCommentaryNode::UpdateTransmitState( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointCommentaryNode::SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways )
+void CPointCommentaryNode::SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways )
 {
 	// Are we already marked for transmission?
-	if ( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	if( pInfo->m_pTransmitEdict->Get( entindex() ) )
+	{
 		return;
+	}
 
 	BaseClass::SetTransmit( pInfo, bAlways );
 
 	// Force our camera view position entity to be sent
-	if ( m_hViewTarget )
+	if( m_hViewTarget )
 	{
 		m_hViewTarget->SetTransmit( pInfo, bAlways );
 	}
-	if ( m_hViewTargetAngles )
+	if( m_hViewTargetAngles )
 	{
 		m_hViewTargetAngles->SetTransmit( pInfo, bAlways );
 	}
-	if ( m_hViewPosition.Get() )
+	if( m_hViewPosition.Get() )
 	{
 		m_hViewPosition.Get()->SetTransmit( pInfo, bAlways );
 	}
-	if ( m_hViewPositionMover )
+	if( m_hViewPositionMover )
 	{
 		m_hViewPositionMover->SetTransmit( pInfo, bAlways );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CPointCommentaryNode::PreventsMovement( void )
-{ 
+{
 	// If we're moving the player's view at all, prevent movement
 #ifdef MAPBASE
-	if ( m_hViewPosition.Get() || m_flViewPositionChangedTime != -1.0f )
+	if( m_hViewPosition.Get() || m_flViewPositionChangedTime != -1.0f )
 #else
-	if ( m_hViewPosition.Get() )
+	if( m_hViewPosition.Get() )
 #endif
 		return true;
 
-	return m_bPreventMovement; 
+	return m_bPreventMovement;
 }
 
 //-----------------------------------------------------------------------------
@@ -1848,17 +1941,17 @@ static short COMMENTARY_SAVE_RESTORE_VERSION = 2;
 class CCommentary_SaveRestoreBlockHandler : public CDefSaveRestoreBlockHandler
 {
 public:
-	const char *GetBlockName()
+	const char* GetBlockName()
 	{
 		return "Commentary";
 	}
 
 	//---------------------------------
 
-	void Save( ISave *pSave )
+	void Save( ISave* pSave )
 	{
 		pSave->WriteBool( &g_bInCommentaryMode );
-		if ( IsInCommentaryMode() )
+		if( IsInCommentaryMode() )
 		{
 			pSave->WriteAll( &g_CommentarySystem, g_CommentarySystem.GetDataDescMap() );
 			pSave->WriteInt( &CAI_BaseNPC::m_nDebugBits );
@@ -1867,14 +1960,14 @@ public:
 
 	//---------------------------------
 
-	void WriteSaveHeaders( ISave *pSave )
+	void WriteSaveHeaders( ISave* pSave )
 	{
 		pSave->WriteShort( &COMMENTARY_SAVE_RESTORE_VERSION );
 	}
 
 	//---------------------------------
 
-	void ReadRestoreHeaders( IRestore *pRestore )
+	void ReadRestoreHeaders( IRestore* pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
 		short version;
@@ -1884,12 +1977,12 @@ public:
 
 	//---------------------------------
 
-	void Restore( IRestore *pRestore, bool createPlayers )
+	void Restore( IRestore* pRestore, bool createPlayers )
 	{
-		if ( m_fDoLoad )
+		if( m_fDoLoad )
 		{
 			pRestore->ReadBool( &g_bInCommentaryMode );
-			if ( g_bInCommentaryMode )
+			if( g_bInCommentaryMode )
 			{
 				pRestore->ReadAll( &g_CommentarySystem, g_CommentarySystem.GetDataDescMap() );
 				CAI_BaseNPC::m_nDebugBits = pRestore->ReadInt();
@@ -1910,7 +2003,7 @@ CCommentary_SaveRestoreBlockHandler g_Commentary_SaveRestoreBlockHandler;
 
 //-------------------------------------
 
-ISaveRestoreBlockHandler *GetCommentarySaveRestoreBlockHandler()
+ISaveRestoreBlockHandler* GetCommentarySaveRestoreBlockHandler()
 {
 	return &g_Commentary_SaveRestoreBlockHandler;
 }
@@ -1925,10 +2018,10 @@ class CCommentaryAuto : public CBaseEntity
 public:
 	DECLARE_DATADESC();
 
-	void Spawn(void);
-	void Think(void);
+	void Spawn( void );
+	void Think( void );
 
-	void InputMultiplayerSpawned( inputdata_t &inputdata );
+	void InputMultiplayerSpawned( inputdata_t& inputdata );
 
 private:
 	// fired if commentary started due to new map
@@ -1941,46 +2034,46 @@ private:
 	COutputEvent m_OnCommentaryMultiplayerSpawn;
 };
 
-LINK_ENTITY_TO_CLASS(commentary_auto, CCommentaryAuto);
+LINK_ENTITY_TO_CLASS( commentary_auto, CCommentaryAuto );
 
 BEGIN_DATADESC( CCommentaryAuto )
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "MultiplayerSpawned", InputMultiplayerSpawned ),
+// Inputs
+DEFINE_INPUTFUNC( FIELD_VOID, "MultiplayerSpawned", InputMultiplayerSpawned ),
 
-	// Outputs
-	DEFINE_OUTPUT(m_OnCommentaryNewGame, "OnCommentaryNewGame"),
-	DEFINE_OUTPUT(m_OnCommentaryMidGame, "OnCommentaryMidGame"),
-	DEFINE_OUTPUT(m_OnCommentaryMultiplayerSpawn, "OnCommentaryMultiplayerSpawn"),
-END_DATADESC()
+				  // Outputs
+				  DEFINE_OUTPUT( m_OnCommentaryNewGame, "OnCommentaryNewGame" ),
+				  DEFINE_OUTPUT( m_OnCommentaryMidGame, "OnCommentaryMidGame" ),
+				  DEFINE_OUTPUT( m_OnCommentaryMultiplayerSpawn, "OnCommentaryMultiplayerSpawn" ),
+				  END_DATADESC()
 
 //------------------------------------------------------------------------------
 // Purpose : Fire my outputs here if I fire on map reload
 //------------------------------------------------------------------------------
-void CCommentaryAuto::Spawn(void)
+				  void CCommentaryAuto::Spawn( void )
 {
 	BaseClass::Spawn();
 	SetNextThink( gpGlobals->curtime + 0.1 );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CCommentaryAuto::Think(void)
+void CCommentaryAuto::Think( void )
 {
-	if ( g_CommentarySystem.CommentaryWasEnabledMidGame() )
+	if( g_CommentarySystem.CommentaryWasEnabledMidGame() )
 	{
-		m_OnCommentaryMidGame.FireOutput(NULL, this);
+		m_OnCommentaryMidGame.FireOutput( NULL, this );
 	}
 	else
 	{
-		m_OnCommentaryNewGame.FireOutput(NULL, this);
+		m_OnCommentaryNewGame.FireOutput( NULL, this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CCommentaryAuto::InputMultiplayerSpawned( inputdata_t &inputdata )
+void CCommentaryAuto::InputMultiplayerSpawned( inputdata_t& inputdata )
 {
 	m_OnCommentaryMultiplayerSpawn.FireOutput( NULL, this );
 }

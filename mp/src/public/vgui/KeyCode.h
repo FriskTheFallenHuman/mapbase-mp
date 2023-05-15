@@ -11,7 +11,7 @@
 #define KEYCODE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "inputsystem/ButtonCode.h"

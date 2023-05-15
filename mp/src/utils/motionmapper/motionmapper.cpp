@@ -23,7 +23,7 @@ char g_outfile[1024];
 bool uselogfile = false;
 
 char	g_szFilename[1024];
-FILE	*g_fpInput;
+FILE*	g_fpInput;
 char	g_szLine[4096];
 int		g_iLinecount;
 
@@ -32,12 +32,12 @@ bool g_bGaveMissingBoneWarning = false;
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : depth - 
-//			*fmt - 
-//			... - 
+// Purpose:
+// Input  : depth -
+//			*fmt -
+//			... -
 //-----------------------------------------------------------------------------
-void vprint( int depth, const char *fmt, ... )
+void vprint( int depth, const char* fmt, ... )
 {
 	char string[ 8192 ];
 	va_list va;
@@ -45,18 +45,18 @@ void vprint( int depth, const char *fmt, ... )
 	V_vsprintf_safe( string, fmt, va );
 	va_end( va );
 
-	FILE *fp = NULL;
+	FILE* fp = NULL;
 
-	if ( uselogfile )
+	if( uselogfile )
 	{
 		fp = fopen( "log.txt", "ab" );
 	}
 
-	while ( depth-- > 0 )
+	while( depth-- > 0 )
 	{
 		vprint( 0,  "  " );
 		OutputDebugString( "  " );
-		if ( fp )
+		if( fp )
 		{
 			fprintf( fp, "  " );
 		}
@@ -65,12 +65,12 @@ void vprint( int depth, const char *fmt, ... )
 	::printf( "%s", string );
 	OutputDebugString( string );
 
-	if ( fp )
+	if( fp )
 	{
-		char *p = string;
-		while ( *p )
+		char* p = string;
+		while( *p )
 		{
-			if ( *p == '\n' )
+			if( *p == '\n' )
 			{
 				fputc( '\r', fp );
 			}
@@ -83,7 +83,7 @@ void vprint( int depth, const char *fmt, ... )
 
 
 int k_memtotal;
-void *kalloc( int num, int size )
+void* kalloc( int num, int size )
 {
 	// vprint( 0,  "calloc( %d, %d )\n", num, size );
 	// vprint( 0,  "%d ", num * size );
@@ -91,7 +91,7 @@ void *kalloc( int num, int size )
 	return calloc( num, size );
 }
 
-void kmemset( void *ptr, int value, int size )
+void kmemset( void* ptr, int value, int size )
 {
 	// vprint( 0,  "kmemset( %x, %d, %d )\n", ptr, value, size );
 	memset( ptr, value, size );
@@ -100,49 +100,49 @@ void kmemset( void *ptr, int value, int size )
 
 static bool g_bFirstWarning = true;
 
-void MdlWarning( const char *fmt, ... )
+void MdlWarning( const char* fmt, ... )
 {
 	va_list args;
 	static char output[1024];
 
-	if (g_quiet)
+	if( g_quiet )
 	{
-		if (g_bFirstWarning)
+		if( g_bFirstWarning )
 		{
 			vprint( 0, "%s :\n", fullpath );
 			g_bFirstWarning = false;
 		}
-		vprint( 0, "\t");
+		vprint( 0, "\t" );
 	}
 
-	vprint( 0, "WARNING: ");
+	vprint( 0, "WARNING: " );
 	va_start( args, fmt );
 	vprint( 0, fmt, args );
 }
 
 
-void MdlError( char const *fmt, ... )
+void MdlError( char const* fmt, ... )
 {
 	va_list		args;
 
-	if (g_quiet)
+	if( g_quiet )
 	{
-		if (g_bFirstWarning)
+		if( g_bFirstWarning )
 		{
 			vprint( 0, "%s :\n", fullpath );
 			g_bFirstWarning = false;
 		}
-		vprint( 0, "\t");
+		vprint( 0, "\t" );
 	}
 
-	vprint( 0, "ERROR: ");
+	vprint( 0, "ERROR: " );
 	va_start( args, fmt );
 	vprint( 0, fmt, args );
 
 	exit( -1 );
 }
 
-int OpenGlobalFile( char *src )
+int OpenGlobalFile( char* src )
 {
 	int		time1;
 	char	filename[1024];
@@ -162,11 +162,11 @@ int OpenGlobalFile( char *src )
 		{
 			strcpy( tmp, CmdLib_GetBasePath( i ) );
 			strcat( tmp, filename + pathLength );
-			
+
 			time1 = FileTime( tmp );
 			if( time1 != -1 )
 			{
-				if ((g_fpInput = fopen(tmp, "r")) == 0) 
+				if( ( g_fpInput = fopen( tmp, "r" ) ) == 0 )
 				{
 					MdlWarning( "reader: could not open file '%s'\n", src );
 					return 0;
@@ -181,12 +181,14 @@ int OpenGlobalFile( char *src )
 	}
 	else
 	{
-		time1 = FileTime (filename);
-		if (time1 == -1)
+		time1 = FileTime( filename );
+		if( time1 == -1 )
+		{
 			return 0;
+		}
 
 		// Whoohooo, FOPEN!
-		if ((g_fpInput = fopen(filename, "r")) == 0) 
+		if( ( g_fpInput = fopen( filename, "r" ) ) == 0 )
 		{
 			MdlWarning( "reader: could not open file '%s'\n", src );
 			return 0;
@@ -198,14 +200,16 @@ int OpenGlobalFile( char *src )
 
 bool IsEnd( char const* pLine )
 {
-	if (strncmp( "end", pLine, 3 ) != 0) 
+	if( strncmp( "end", pLine, 3 ) != 0 )
+	{
 		return false;
-	return (pLine[3] == '\0') || (pLine[3] == '\n');
+	}
+	return ( pLine[3] == '\0' ) || ( pLine[3] == '\n' );
 }
 
 
 //Wrong name for the use of it.
-void scale_vertex( Vector &org )
+void scale_vertex( Vector& org )
 {
 	org[0] = org[0] * g_currentscale;
 	org[1] = org[1] * g_currentscale;
@@ -218,11 +222,16 @@ void clip_rotations( RadianEuler& rot )
 	int j;
 	// clip everything to : -M_PI <= x < M_PI
 
-	for (j = 0; j < 3; j++) {
-		while (rot[j] >= M_PI) 
-			rot[j] -= M_PI*2;
-		while (rot[j] < -M_PI) 
-			rot[j] += M_PI*2;
+	for( j = 0; j < 3; j++ )
+	{
+		while( rot[j] >= M_PI )
+		{
+			rot[j] -= M_PI * 2;
+		}
+		while( rot[j] < -M_PI )
+		{
+			rot[j] += M_PI * 2;
+		}
 	}
 }
 
@@ -232,21 +241,26 @@ void clip_rotations( Vector& rot )
 	int j;
 	// clip everything to : -180 <= x < 180
 
-	for (j = 0; j < 3; j++) {
-		while (rot[j] >= 180) 
-			rot[j] -= 180*2;
-		while (rot[j] < -180) 
-			rot[j] += 180*2;
+	for( j = 0; j < 3; j++ )
+	{
+		while( rot[j] >= 180 )
+		{
+			rot[j] -= 180 * 2;
+		}
+		while( rot[j] < -180 )
+		{
+			rot[j] += 180 * 2;
+		}
 	}
 }
 
 
-void Build_Reference( s_source_t *psource)
+void Build_Reference( s_source_t* psource )
 {
 	int		i, parent;
 	Vector	angle;
 
-	for (i = 0; i < psource->numbones; i++)
+	for( i = 0; i < psource->numbones; i++ )
 	{
 		matrix3x4_t m;
 		AngleMatrix( psource->rawanim[0][i].rot, m );
@@ -255,13 +269,13 @@ void Build_Reference( s_source_t *psource)
 		m[2][3] = psource->rawanim[0][i].pos[2];
 
 		parent = psource->localBone[i].parent;
-		if (parent == -1) 
+		if( parent == -1 )
 		{
 			// scale the done pos.
 			// calc rotational matrices
 			MatrixCopy( m, psource->boneToPose[i] );
 		}
-		else 
+		else
 		{
 			// calc compound rotational matrices
 			// FIXME : Hey, it's orthogical so inv(A) == transpose(A)
@@ -277,7 +291,7 @@ void Build_Reference( s_source_t *psource)
 	}
 }
 
-int Grab_Nodes( s_node_t *pnodes )
+int Grab_Nodes( s_node_t* pnodes )
 {
 	//
 	// s_node_t structure: index is index!!
@@ -288,17 +302,17 @@ int Grab_Nodes( s_node_t *pnodes )
 	int numbones = 0;
 
 	// Init parent to none
-	for (index = 0; index < MAXSTUDIOSRCBONES; index++)
+	for( index = 0; index < MAXSTUDIOSRCBONES; index++ )
 	{
 		pnodes[index].parent = -1;
 	}
 
 	// March through nodes lines
-	while (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL) 
+	while( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL )
 	{
 		g_iLinecount++;
 		// get tokens
-		if (sscanf( g_szLine, "%d \"%[^\"]\" %d", &index, name, &parent ) == 3)
+		if( sscanf( g_szLine, "%d \"%[^\"]\" %d", &index, name, &parent ) == 3 )
 		{
 			// check for duplicated bones
 			/*
@@ -312,12 +326,12 @@ int Grab_Nodes( s_node_t *pnodes )
 			// set parent into struct array
 			pnodes[index].parent = parent;
 			// increment numbones
-			if (index > numbones)
+			if( index > numbones )
 			{
 				numbones = index;
 			}
 		}
-		else 
+		else
 		{
 			return numbones + 1;
 		}
@@ -326,7 +340,7 @@ int Grab_Nodes( s_node_t *pnodes )
 	return 0;
 }
 
-void Grab_Vertexanimation( s_source_t *psource )
+void Grab_Vertexanimation( s_source_t* psource )
 {
 	char	cmd[1024];
 	int		index;
@@ -334,19 +348,19 @@ void Grab_Vertexanimation( s_source_t *psource )
 	Vector	normal;
 	int		t = -1;
 	int		count = 0;
-	static s_vertanim_t	tmpvanim[MAXSTUDIOVERTS*4];
+	static s_vertanim_t	tmpvanim[MAXSTUDIOVERTS * 4];
 
-	while (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL) 
+	while( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL )
 	{
 		g_iLinecount++;
-		if (sscanf( g_szLine, "%d %f %f %f %f %f %f", &index, &pos[0], &pos[1], &pos[2], &normal[0], &normal[1], &normal[2] ) == 7)
+		if( sscanf( g_szLine, "%d %f %f %f %f %f %f", &index, &pos[0], &pos[1], &pos[2], &normal[0], &normal[1], &normal[2] ) == 7 )
 		{
-			if (psource->startframe < 0)
+			if( psource->startframe < 0 )
 			{
 				MdlError( "Missing frame start(%d) : %s", g_iLinecount, g_szLine );
 			}
 
-			if (t < 0)
+			if( t < 0 )
 			{
 				MdlError( "VTA Frame Sync (%d) : %s", g_iLinecount, g_szLine );
 			}
@@ -356,46 +370,48 @@ void Grab_Vertexanimation( s_source_t *psource )
 			VectorCopy( normal, tmpvanim[count].normal );
 			count++;
 
-			if (index >= psource->numvertices)
+			if( index >= psource->numvertices )
+			{
 				psource->numvertices = index + 1;
+			}
 		}
 		else
 		{
 			// flush data
 
-			if (count)
+			if( count )
 			{
 				psource->numvanims[t] = count;
 
-				psource->vanim[t] = (s_vertanim_t *)kalloc( count, sizeof( s_vertanim_t ) );
+				psource->vanim[t] = ( s_vertanim_t* )kalloc( count, sizeof( s_vertanim_t ) );
 
 				memcpy( psource->vanim[t], tmpvanim, count * sizeof( s_vertanim_t ) );
 			}
-			else if (t > 0)
+			else if( t > 0 )
 			{
 				psource->numvanims[t] = 0;
 			}
 
 			// next command
-			if (sscanf( g_szLine, "%1023s %d", cmd, &index ))
+			if( sscanf( g_szLine, "%1023s %d", cmd, &index ) )
 			{
-				if (strcmp( cmd, "time" ) == 0) 
+				if( strcmp( cmd, "time" ) == 0 )
 				{
 					t = index;
 					count = 0;
 
-					if (t < psource->startframe)
+					if( t < psource->startframe )
 					{
 						MdlError( "Frame MdlError(%d) : %s", g_iLinecount, g_szLine );
 					}
-					if (t > psource->endframe)
+					if( t > psource->endframe )
 					{
 						MdlError( "Frame MdlError(%d) : %s", g_iLinecount, g_szLine );
 					}
 
 					t -= psource->startframe;
 				}
-				else if (strcmp( cmd, "end") == 0) 
+				else if( strcmp( cmd, "end" ) == 0 )
 				{
 					psource->numframes = psource->endframe - psource->startframe + 1;
 					return;
@@ -415,7 +431,7 @@ void Grab_Vertexanimation( s_source_t *psource )
 	MdlError( "unexpected EOF: %s\n", psource->filename );
 }
 
-void Grab_Animation( s_source_t *psource )
+void Grab_Animation( s_source_t* psource )
 {
 	Vector pos;
 	RadianEuler rot;
@@ -431,15 +447,15 @@ void Grab_Animation( s_source_t *psource )
 	size = psource->numbones * sizeof( s_bone_t );
 
 	// march through animation
-	while (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL) 
+	while( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL )
 	{
 		// linecount
 		g_iLinecount++;
 		// split if big enoough
-		if (sscanf( g_szLine, "%d %f %f %f %f %f %f", &index, &pos[0], &pos[1], &pos[2], &rot[0], &rot[1], &rot[2] ) == 7)
+		if( sscanf( g_szLine, "%d %f %f %f %f %f %f", &index, &pos[0], &pos[1], &pos[2], &rot[0], &rot[1], &rot[2] ) == 7 )
 		{
 			// startframe is sanity check for having determined time
-			if (psource->startframe < 0)
+			if( psource->startframe < 0 )
 			{
 				MdlError( "Missing frame start(%d) : %s", g_iLinecount, g_szLine );
 			}
@@ -451,24 +467,24 @@ void Grab_Animation( s_source_t *psource )
 
 			clip_rotations( rot ); // !!!
 		}
-		else if (sscanf( g_szLine, "%1023s %d", cmd, &index ))
+		else if( sscanf( g_szLine, "%1023s %d", cmd, &index ) )
 		{
 			// get time
-			if (strcmp( cmd, "time" ) == 0) 
+			if( strcmp( cmd, "time" ) == 0 )
 			{
 				// again time IS an index
 				t = index;
-				if (psource->startframe == -1)
+				if( psource->startframe == -1 )
 				{
 					psource->startframe = t;
 				}
 				// sanity check time (little funny logic here, see previous IF)
-				if (t < psource->startframe)
+				if( t < psource->startframe )
 				{
 					MdlError( "Frame MdlError(%d) : %s", g_iLinecount, g_szLine );
 				}
 				// bump up endframe?
-				if (t > psource->endframe)
+				if( t > psource->endframe )
 				{
 					psource->endframe = t;
 				}
@@ -476,18 +492,18 @@ void Grab_Animation( s_source_t *psource )
 				t -= psource->startframe;
 
 				// check for memory allocation
-				if (psource->rawanim[t] == NULL)
+				if( psource->rawanim[t] == NULL )
 				{
-					// Allocate 1 frame of full bonecount 
-					psource->rawanim[t] = (s_bone_t *)kalloc( 1, size );
+					// Allocate 1 frame of full bonecount
+					psource->rawanim[t] = ( s_bone_t* )kalloc( 1, size );
 
 					// duplicate previous frames keys?? preventative sanity?
-					if (t > 0 && psource->rawanim[t-1])
+					if( t > 0 && psource->rawanim[t - 1] )
 					{
-						for (int j = 0; j < psource->numbones; j++)
+						for( int j = 0; j < psource->numbones; j++ )
 						{
-							VectorCopy( psource->rawanim[t-1][j].pos, psource->rawanim[t][j].pos );
-							VectorCopy( psource->rawanim[t-1][j].rot, psource->rawanim[t][j].rot );
+							VectorCopy( psource->rawanim[t - 1][j].pos, psource->rawanim[t][j].pos );
+							VectorCopy( psource->rawanim[t - 1][j].rot, psource->rawanim[t][j].rot );
 						}
 					}
 				}
@@ -496,13 +512,13 @@ void Grab_Animation( s_source_t *psource )
 					// MdlError( "%s has duplicated frame %d\n", psource->filename, t );
 				}
 			}
-			else if (strcmp( cmd, "end") == 0) 
+			else if( strcmp( cmd, "end" ) == 0 )
 			{
 				psource->numframes = psource->endframe - psource->startframe + 1;
 
-				for (t = 0; t < psource->numframes; t++)
+				for( t = 0; t < psource->numframes; t++ )
 				{
-					if (psource->rawanim[t] == NULL)
+					if( psource->rawanim[t] == NULL )
 					{
 						MdlError( "%s is missing frame %d\n", psource->filename, t + psource->startframe );
 					}
@@ -525,24 +541,25 @@ void Grab_Animation( s_source_t *psource )
 	MdlError( "unexpected EOF: %s\n", psource->filename );
 }
 
-int lookup_index( s_source_t *psource, int material, Vector& vertex, Vector& normal, Vector2D texcoord )
+int lookup_index( s_source_t* psource, int material, Vector& vertex, Vector& normal, Vector2D texcoord )
 {
 	int i;
 
-	for (i = 0; i < numvlist; i++) 
+	for( i = 0; i < numvlist; i++ )
 	{
-		if (v_listdata[i].m == material
-			&& DotProduct( g_normal[i], normal ) > normal_blend
-			&& VectorCompare( g_vertex[i], vertex )
-			&& g_texcoord[i][0] == texcoord[0]
-			&& g_texcoord[i][1] == texcoord[1])
+		if( v_listdata[i].m == material
+				&& DotProduct( g_normal[i], normal ) > normal_blend
+				&& VectorCompare( g_vertex[i], vertex )
+				&& g_texcoord[i][0] == texcoord[0]
+				&& g_texcoord[i][1] == texcoord[1] )
 		{
 			v_listdata[i].lastref = numvlist;
 			return i;
 		}
 	}
-	if (i >= MAXSTUDIOVERTS) {
-		MdlError( "too many indices in source: \"%s\"\n", psource->filename);
+	if( i >= MAXSTUDIOVERTS )
+	{
+		MdlError( "too many indices in source: \"%s\"\n", psource->filename );
 	}
 
 	VectorCopy( vertex, g_vertex[i] );
@@ -562,7 +579,7 @@ int lookup_index( s_source_t *psource, int material, Vector& vertex, Vector& nor
 }
 
 
-void ParseFaceData( s_source_t *psource, int material, s_face_t *pFace )
+void ParseFaceData( s_source_t* psource, int material, s_face_t* pFace )
 {
 	int index[3];
 	int i, j;
@@ -573,68 +590,70 @@ void ParseFaceData( s_source_t *psource, int material, s_face_t *pFace )
 	float   weights[MAXSTUDIOSRCBONES];
 	int bone;
 
-	for (j = 0; j < 3; j++) 
+	for( j = 0; j < 3; j++ )
 	{
 		memset( g_szLine, 0, sizeof( g_szLine ) );
 
-		if (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) == NULL) 
+		if( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) == NULL )
 		{
-			MdlError("%s: error on g_szLine %d: %s", g_szFilename, g_iLinecount, g_szLine );
+			MdlError( "%s: error on g_szLine %d: %s", g_szFilename, g_iLinecount, g_szLine );
 		}
 
 		iCount = 0;
 
 		g_iLinecount++;
 		i = sscanf( g_szLine, "%d %f %f %f %f %f %f %f %f %d %d %f %d %f %d %f %d %f",
-			&bone, 
-			&p[0], &p[1], &p[2], 
-			&normal[0], &normal[1], &normal[2], 
-			&t[0], &t[1],
-			&iCount,
-			&bones[0], &weights[0], &bones[1], &weights[1], &bones[2], &weights[2], &bones[3], &weights[3] );
-			
-		if (i < 9) 
-			continue;
+					&bone,
+					&p[0], &p[1], &p[2],
+					&normal[0], &normal[1], &normal[2],
+					&t[0], &t[1],
+					&iCount,
+					&bones[0], &weights[0], &bones[1], &weights[1], &bones[2], &weights[2], &bones[3], &weights[3] );
 
-		if (bone < 0 || bone >= psource->numbones) 
+		if( i < 9 )
 		{
-			MdlError("bogus bone index\n%d %s :\n%s", g_iLinecount, g_szFilename, g_szLine );
+			continue;
+		}
+
+		if( bone < 0 || bone >= psource->numbones )
+		{
+			MdlError( "bogus bone index\n%d %s :\n%s", g_iLinecount, g_szFilename, g_szLine );
 		}
 
 		//Scale face pos
 		scale_vertex( p );
-		
+
 		// continue parsing more bones.
 		// FIXME: don't we have a built in parser that'll do this?
-		if (iCount > 4)
+		if( iCount > 4 )
 		{
 			int k;
 			int ctr = 0;
-			char *tok;
-			for (k = 0; k < 18; k++)
+			char* tok;
+			for( k = 0; k < 18; k++ )
 			{
-				while (g_szLine[ctr] == ' ')
+				while( g_szLine[ctr] == ' ' )
 				{
 					ctr++;
 				}
 				tok = strtok( &g_szLine[ctr], " " );
-				ctr += strlen(tok) + 1;
+				ctr += strlen( tok ) + 1;
 			}
-			for (k = 4; k < iCount && k < MAXSTUDIOSRCBONES; k++)
+			for( k = 4; k < iCount && k < MAXSTUDIOSRCBONES; k++ )
 			{
-				while (g_szLine[ctr] == ' ')
+				while( g_szLine[ctr] == ' ' )
 				{
 					ctr++;
 				}
 				tok = strtok( &g_szLine[ctr], " " );
-				ctr += strlen(tok) + 1;
+				ctr += strlen( tok ) + 1;
 
-				bones[k] = atoi(tok);
+				bones[k] = atoi( tok );
 
 				tok = strtok( &g_szLine[ctr], " " );
-				ctr += strlen(tok) + 1;
-			
-				weights[k] = atof(tok);
+				ctr += strlen( tok ) + 1;
+
+				weights[k] = atof( tok );
 			}
 			// vprint( 0, "%d ", iCount );
 
@@ -659,7 +678,7 @@ void ParseFaceData( s_source_t *psource, int material, s_face_t *pFace )
 
 		index[j] = lookup_index( psource, material, p, normal, t );
 
-		if (i == 9 || iCount == 0)
+		if( i == 9 || iCount == 0 )
 		{
 			g_bone[index[j]].numbones = 1;
 			g_bone[index[j]].bone[0] = bone;
@@ -670,7 +689,7 @@ void ParseFaceData( s_source_t *psource, int material, s_face_t *pFace )
 			iCount = SortAndBalanceBones( iCount, MAXSTUDIOBONEWEIGHTS, bones, weights );
 
 			g_bone[index[j]].numbones = iCount;
-			for (i = 0; i < iCount; i++)
+			for( i = 0; i < iCount; i++ )
 			{
 				g_bone[index[j]].bone[i] = bones[i];
 				g_bone[index[j]].weight[i] = weights[i];
@@ -682,18 +701,20 @@ void ParseFaceData( s_source_t *psource, int material, s_face_t *pFace )
 	pFace->a		= index[0];
 	pFace->b		= index[1];
 	pFace->c		= index[2];
-	Assert( ((pFace->a & 0xF0000000) == 0) && ((pFace->b & 0xF0000000) == 0) && 
-		((pFace->c & 0xF0000000) == 0) );
+	Assert( ( ( pFace->a & 0xF0000000 ) == 0 ) && ( ( pFace->b & 0xF0000000 ) == 0 ) &&
+			( ( pFace->c & 0xF0000000 ) == 0 ) );
 
-	if (flip_triangles)
+	if( flip_triangles )
 	{
-		j = pFace->b;  pFace->b  = pFace->c;  pFace->c  = j;
+		j = pFace->b;
+		pFace->b  = pFace->c;
+		pFace->c  = j;
 	}
 }
 
 int use_texture_as_material( int textureindex )
 {
-	if (g_texture[textureindex].material == -1)
+	if( g_texture[textureindex].material == -1 )
 	{
 		// vprint( 0, "%d %d %s\n", textureindex, g_nummaterials, g_texture[textureindex].name );
 		g_material[g_nummaterials] = textureindex;
@@ -706,9 +727,9 @@ int use_texture_as_material( int textureindex )
 int material_to_texture( int material )
 {
 	int i;
-	for (i = 0; i < g_numtextures; i++)
+	for( i = 0; i < g_numtextures; i++ )
 	{
-		if (g_texture[i].material == material)
+		if( g_texture[i].material == material )
 		{
 			return i;
 		}
@@ -716,22 +737,24 @@ int material_to_texture( int material )
 	return -1;
 }
 
-int lookup_texture( char *texturename, int maxlen )
+int lookup_texture( char* texturename, int maxlen )
 {
 	int i;
 
 	Q_StripExtension( texturename, texturename, maxlen );
 
-	for (i = 0; i < g_numtextures; i++) 
+	for( i = 0; i < g_numtextures; i++ )
 	{
-		if (stricmp( g_texture[i].name, texturename ) == 0) 
+		if( stricmp( g_texture[i].name, texturename ) == 0 )
 		{
 			return i;
 		}
 	}
 
-	if (i >= MAXSTUDIOSKINS)
-		MdlError("Too many materials used, max %d\n", ( int )MAXSTUDIOSKINS );
+	if( i >= MAXSTUDIOSKINS )
+	{
+		MdlError( "Too many materials used, max %d\n", ( int )MAXSTUDIOSKINS );
+	}
 
 //	vprint( 0,  "texture %d = %s\n", i, texturename );
 	V_strcpy_safe( g_texture[i].name, texturename );
@@ -754,12 +777,12 @@ int SortAndBalanceBones( int iCount, int iMaxCount, int bones[], float weights[]
 	int i;
 
 	// collapse duplicate bone weights
-	for (i = 0; i < iCount-1; i++)
+	for( i = 0; i < iCount - 1; i++ )
 	{
 		int j;
-		for (j = i + 1; j < iCount; j++)
+		for( j = i + 1; j < iCount; j++ )
 		{
-			if (bones[i] == bones[j])
+			if( bones[i] == bones[j] )
 			{
 				weights[i] += weights[j];
 				weights[j] = 0.0;
@@ -769,44 +792,50 @@ int SortAndBalanceBones( int iCount, int iMaxCount, int bones[], float weights[]
 
 	// do sleazy bubble sort
 	int bShouldSort;
-	do {
+	do
+	{
 		bShouldSort = false;
-		for (i = 0; i < iCount-1; i++)
+		for( i = 0; i < iCount - 1; i++ )
 		{
-			if (weights[i+1] > weights[i])
+			if( weights[i + 1] > weights[i] )
 			{
-				int j = bones[i+1]; bones[i+1] = bones[i]; bones[i] = j;
-				float w = weights[i+1]; weights[i+1] = weights[i]; weights[i] = w;
+				int j = bones[i + 1];
+				bones[i + 1] = bones[i];
+				bones[i] = j;
+				float w = weights[i + 1];
+				weights[i + 1] = weights[i];
+				weights[i] = w;
 				bShouldSort = true;
 			}
 		}
-	} while (bShouldSort);
+	}
+	while( bShouldSort );
 
 	// throw away all weights less than 1/20th
-	while (iCount > 1 && weights[iCount-1] < 0.05)
+	while( iCount > 1 && weights[iCount - 1] < 0.05 )
 	{
 		iCount--;
 	}
 
 	// clip to the top iMaxCount bones
-	if (iCount > iMaxCount)
+	if( iCount > iMaxCount )
 	{
 		iCount = iMaxCount;
 	}
 
 	float t = 0;
-	for (i = 0; i < iCount; i++)
+	for( i = 0; i < iCount; i++ )
 	{
 		t += weights[i];
 	}
 
-	if (t <= 0.0)
+	if( t <= 0.0 )
 	{
 		// missing weights?, go ahead and evenly share?
 		// FIXME: shouldn't this error out?
 		t = 1.0 / iCount;
 
-		for (i = 0; i < iCount; i++)
+		for( i = 0; i < iCount; i++ )
 		{
 			weights[i] = t;
 		}
@@ -816,7 +845,7 @@ int SortAndBalanceBones( int iCount, int iMaxCount, int bones[], float weights[]
 		// scale to sum to 1.0
 		t = 1.0 / t;
 
-		for (i = 0; i < iCount; i++)
+		for( i = 0; i < iCount; i++ )
 		{
 			weights[i] = weights[i] * t;
 		}
@@ -825,42 +854,58 @@ int SortAndBalanceBones( int iCount, int iMaxCount, int bones[], float weights[]
 	return iCount;
 }
 
-int vlistCompare( const void *elem1, const void *elem2 )
+int vlistCompare( const void* elem1, const void* elem2 )
 {
-	v_unify_t *u1 = &v_listdata[*(int *)elem1];
-	v_unify_t *u2 = &v_listdata[*(int *)elem2];
+	v_unify_t* u1 = &v_listdata[*( int* )elem1];
+	v_unify_t* u2 = &v_listdata[*( int* )elem2];
 
 	// sort by material
-	if (u1->m < u2->m)
+	if( u1->m < u2->m )
+	{
 		return -1;
-	if (u1->m > u2->m)
+	}
+	if( u1->m > u2->m )
+	{
 		return 1;
+	}
 
 	// sort by last used
-	if (u1->lastref < u2->lastref)
+	if( u1->lastref < u2->lastref )
+	{
 		return -1;
-	if (u1->lastref > u2->lastref)
+	}
+	if( u1->lastref > u2->lastref )
+	{
 		return 1;
+	}
 
 	return 0;
 }
 
-int faceCompare( const void *elem1, const void *elem2 )
+int faceCompare( const void* elem1, const void* elem2 )
 {
-	int i1 = *(int *)elem1;
-	int i2 = *(int *)elem2;
+	int i1 = *( int* )elem1;
+	int i2 = *( int* )elem2;
 
 	// sort by material
-	if (g_face[i1].material < g_face[i2].material)
+	if( g_face[i1].material < g_face[i2].material )
+	{
 		return -1;
-	if (g_face[i1].material > g_face[i2].material)
+	}
+	if( g_face[i1].material > g_face[i2].material )
+	{
 		return 1;
+	}
 
 	// sort by original usage
-	if (i1 < i2)
+	if( i1 < i2 )
+	{
 		return -1;
-	if (i1 > i2)
+	}
+	if( i1 > i2 )
+	{
 		return 1;
+	}
 
 	return 0;
 }
@@ -871,19 +916,19 @@ int faceCompare( const void *elem1, const void *elem2 )
 // Creates basis vectors, based on a vertex and index list.
 // See the NVidia white paper 'GDC2K PerPixel Lighting' for a description
 // of how this computation works
-static void CalcTriangleTangentSpace( s_source_t *pSrc, int v1, int v2, int v3, 
-									  Vector &sVect, Vector &tVect )
+static void CalcTriangleTangentSpace( s_source_t* pSrc, int v1, int v2, int v3,
+									  Vector& sVect, Vector& tVect )
 {
-/*
-	static bool firstTime = true;
-	static FILE *fp = NULL;
-	if( firstTime )
-	{
-		firstTime = false;
-		fp = fopen( "crap.out", "w" );
-	}
-*/
-    
+	/*
+		static bool firstTime = true;
+		static FILE *fp = NULL;
+		if( firstTime )
+		{
+			firstTime = false;
+			fp = fopen( "crap.out", "w" );
+		}
+	*/
+
 	/* Compute the partial derivatives of X, Y, and Z with respect to S and T. */
 	Vector2D t0( pSrc->texcoord[v1][0], pSrc->texcoord[v1][1] );
 	Vector2D t1( pSrc->texcoord[v2][0], pSrc->texcoord[v2][1] );
@@ -917,7 +962,7 @@ static void CalcTriangleTangentSpace( s_source_t *pSrc, int v1, int v2, int v3,
 		sVect.y += -cross.y / cross.x;
 		tVect.y += -cross.z / cross.x;
 	}
-	
+
 	// z, s, t
 	edge01 = Vector( p1.z - p0.z, t1.x - t0.x, t1.y - t0.y );
 	edge02 = Vector( p2.z - p0.z, t2.x - t0.x, t2.y - t0.y );
@@ -933,74 +978,74 @@ static void CalcTriangleTangentSpace( s_source_t *pSrc, int v1, int v2, int v3,
 	VectorNormalize( sVect );
 	VectorNormalize( tVect );
 
-/*
-	// Calculate flat normal
-	Vector flatNormal;
-	edge01 = p1 - p0;
-	edge02 = p2 - p0;
-	CrossProduct( edge02, edge01, flatNormal );
-	VectorNormalize( flatNormal );
-	
-	// Get the average position
-	Vector avgPos = ( p0 + p1 + p2 ) / 3.0f;
+	/*
+		// Calculate flat normal
+		Vector flatNormal;
+		edge01 = p1 - p0;
+		edge02 = p2 - p0;
+		CrossProduct( edge02, edge01, flatNormal );
+		VectorNormalize( flatNormal );
 
-	// Draw the svect
-	Vector endS = avgPos + sVect * .2f;
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 1.0 0.0 0.0\n", endS[0], endS[1], endS[2] );
-	fvprint( 0,  fp, "%f %f %f 1.0 0.0 0.0\n", avgPos[0], avgPos[1], avgPos[2] );
-	
-	// Draw the tvect
-	Vector endT = avgPos + tVect * .2f;
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 0.0 1.0 0.0\n", endT[0], endT[1], endT[2] );
-	fvprint( 0,  fp, "%f %f %f 0.0 1.0 0.0\n", avgPos[0], avgPos[1], avgPos[2] );
-	
-	// Draw the normal
-	Vector endN = avgPos + flatNormal * .2f;
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 0.0 0.0 1.0\n", endN[0], endN[1], endN[2] );
-	fvprint( 0,  fp, "%f %f %f 0.0 0.0 1.0\n", avgPos[0], avgPos[1], avgPos[2] );
-	
-	// Draw the wireframe of the triangle in white.
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p0[0], p0[1], p0[2] );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p1[0], p1[1], p1[2] );
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p1[0], p1[1], p1[2] );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p2[0], p2[1], p2[2] );
-	fvprint( 0,  fp, "2\n" );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p2[0], p2[1], p2[2] );
-	fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p0[0], p0[1], p0[2] );
+		// Get the average position
+		Vector avgPos = ( p0 + p1 + p2 ) / 3.0f;
 
-	// Draw a slightly shrunken version of the geometry to hide surfaces
-	Vector tmp0 = p0 - flatNormal * .1f;
-	Vector tmp1 = p1 - flatNormal * .1f;
-	Vector tmp2 = p2 - flatNormal * .1f;
-	fvprint( 0,  fp, "3\n" );
-	fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp0[0], tmp0[1], tmp0[2] );
-	fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp1[0], tmp1[1], tmp1[2] );
-	fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp2[0], tmp2[1], tmp2[2] );
-		
-	fflush( fp );
-*/
+		// Draw the svect
+		Vector endS = avgPos + sVect * .2f;
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 1.0 0.0 0.0\n", endS[0], endS[1], endS[2] );
+		fvprint( 0,  fp, "%f %f %f 1.0 0.0 0.0\n", avgPos[0], avgPos[1], avgPos[2] );
+
+		// Draw the tvect
+		Vector endT = avgPos + tVect * .2f;
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 0.0 1.0 0.0\n", endT[0], endT[1], endT[2] );
+		fvprint( 0,  fp, "%f %f %f 0.0 1.0 0.0\n", avgPos[0], avgPos[1], avgPos[2] );
+
+		// Draw the normal
+		Vector endN = avgPos + flatNormal * .2f;
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 0.0 0.0 1.0\n", endN[0], endN[1], endN[2] );
+		fvprint( 0,  fp, "%f %f %f 0.0 0.0 1.0\n", avgPos[0], avgPos[1], avgPos[2] );
+
+		// Draw the wireframe of the triangle in white.
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p0[0], p0[1], p0[2] );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p1[0], p1[1], p1[2] );
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p1[0], p1[1], p1[2] );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p2[0], p2[1], p2[2] );
+		fvprint( 0,  fp, "2\n" );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p2[0], p2[1], p2[2] );
+		fvprint( 0,  fp, "%f %f %f 1.0 1.0 1.0\n", p0[0], p0[1], p0[2] );
+
+		// Draw a slightly shrunken version of the geometry to hide surfaces
+		Vector tmp0 = p0 - flatNormal * .1f;
+		Vector tmp1 = p1 - flatNormal * .1f;
+		Vector tmp2 = p2 - flatNormal * .1f;
+		fvprint( 0,  fp, "3\n" );
+		fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp0[0], tmp0[1], tmp0[2] );
+		fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp1[0], tmp1[1], tmp1[2] );
+		fvprint( 0,  fp, "%f %f %f 0.1 0.1 0.1\n", tmp2[0], tmp2[1], tmp2[2] );
+
+		fflush( fp );
+	*/
 }
 
 typedef CUtlVector<int> CIntVector;
 
-void CalcModelTangentSpaces( s_source_t *pSrc )
+void CalcModelTangentSpaces( s_source_t* pSrc )
 {
 	// Build a map from vertex to a list of triangles that share the vert.
 	int meshID;
 	for( meshID = 0; meshID < pSrc->nummeshes; meshID++ )
 	{
-		s_mesh_t *pMesh = &pSrc->mesh[pSrc->meshindex[meshID]];
+		s_mesh_t* pMesh = &pSrc->mesh[pSrc->meshindex[meshID]];
 		CUtlVector<CIntVector> vertToTriMap;
 		vertToTriMap.AddMultipleToTail( pMesh->numvertices );
 		int triID;
 		for( triID = 0; triID < pMesh->numfaces; triID++ )
 		{
-			s_face_t *pFace = &pSrc->face[triID + pMesh->faceoffset];
+			s_face_t* pFace = &pSrc->face[triID + pMesh->faceoffset];
 			vertToTriMap[pFace->a].AddToTail( triID );
 			vertToTriMap[pFace->b].AddToTail( triID );
 			vertToTriMap[pFace->c].AddToTail( triID );
@@ -1013,20 +1058,20 @@ void CalcModelTangentSpaces( s_source_t *pSrc )
 		triTVect.AddMultipleToTail( pMesh->numfaces );
 		for( triID = 0; triID < pMesh->numfaces; triID++ )
 		{
-			s_face_t *pFace = &pSrc->face[triID + pMesh->faceoffset];
-			CalcTriangleTangentSpace( pSrc, 
-				pMesh->vertexoffset + pFace->a, 
-				pMesh->vertexoffset + pFace->b, 
-				pMesh->vertexoffset + pFace->c, 
-				triSVect[triID], triTVect[triID] );
-		}	
+			s_face_t* pFace = &pSrc->face[triID + pMesh->faceoffset];
+			CalcTriangleTangentSpace( pSrc,
+									  pMesh->vertexoffset + pFace->a,
+									  pMesh->vertexoffset + pFace->b,
+									  pMesh->vertexoffset + pFace->c,
+									  triSVect[triID], triTVect[triID] );
+		}
 
 		// calculate an average tangent space for each vertex.
 		int vertID;
 		for( vertID = 0; vertID < pMesh->numvertices; vertID++ )
 		{
-			const Vector &normal = pSrc->normal[vertID+pMesh->vertexoffset];
-			Vector4D &finalSVect = pSrc->tangentS[vertID+pMesh->vertexoffset];
+			const Vector& normal = pSrc->normal[vertID + pMesh->vertexoffset];
+			Vector4D& finalSVect = pSrc->tangentS[vertID + pMesh->vertexoffset];
 			Vector sVect, tVect;
 
 			sVect.Init( 0.0f, 0.0f, 0.0f );
@@ -1092,18 +1137,18 @@ void CalcModelTangentSpaces( s_source_t *pSrc )
 	}
 }
 
-void BuildIndividualMeshes( s_source_t *psource )
+void BuildIndividualMeshes( s_source_t* psource )
 {
 	// sort new vertices by materials, last used
 	static int v_listsort[MAXSTUDIOVERTS];	// map desired order to vlist entry
 	static int v_ilistsort[MAXSTUDIOVERTS]; // map vlist entry to desired order
 
-	for (int i = 0; i < numvlist; i++)
+	for( int i = 0; i < numvlist; i++ )
 	{
 		v_listsort[i] = i;
 	}
 	qsort( v_listsort, numvlist, sizeof( int ), vlistCompare );
-	for (int i = 0; i < numvlist; i++)
+	for( int i = 0; i < numvlist; i++ )
 	{
 		v_ilistsort[v_listsort[i]] = i;
 	}
@@ -1111,25 +1156,25 @@ void BuildIndividualMeshes( s_source_t *psource )
 
 	// allocate memory
 	psource->numvertices = numvlist;
-	psource->localBoneweight = (s_boneweight_t *)kalloc( psource->numvertices, sizeof( s_boneweight_t ) );
+	psource->localBoneweight = ( s_boneweight_t* )kalloc( psource->numvertices, sizeof( s_boneweight_t ) );
 	psource->globalBoneweight = NULL;
-	psource->vertexInfo = (s_vertexinfo_t *)kalloc( psource->numvertices, sizeof( s_vertexinfo_t ) );
+	psource->vertexInfo = ( s_vertexinfo_t* )kalloc( psource->numvertices, sizeof( s_vertexinfo_t ) );
 	psource->vertex = new Vector[psource->numvertices];
 	psource->normal = new Vector[psource->numvertices];
 	psource->tangentS = new Vector4D[psource->numvertices];
-	psource->texcoord = (Vector2D *)kalloc( psource->numvertices, sizeof( Vector2D ) );
+	psource->texcoord = ( Vector2D* )kalloc( psource->numvertices, sizeof( Vector2D ) );
 
 	// create arrays of unique vertexes, normals, texcoords.
-	for (int i = 0; i < psource->numvertices; i++)
+	for( int i = 0; i < psource->numvertices; i++ )
 	{
 		int j = v_listsort[i];
 
 		VectorCopy( g_vertex[v_listdata[j].v], psource->vertex[i] );
-		VectorCopy( g_normal[v_listdata[j].n], psource->normal[i] );		
+		VectorCopy( g_normal[v_listdata[j].n], psource->normal[i] );
 		Vector2Copy( g_texcoord[v_listdata[j].t], psource->texcoord[i] );
 
 		psource->localBoneweight[i].numbones		= g_bone[v_listdata[j].v].numbones;
-		for(int k = 0; k < MAXSTUDIOBONEWEIGHTS; k++ )
+		for( int k = 0; k < MAXSTUDIOBONEWEIGHTS; k++ )
 		{
 			psource->localBoneweight[i].bone[k]		= g_bone[v_listdata[j].v].bone[k];
 			psource->localBoneweight[i].weight[k]	= g_bone[v_listdata[j].v].weight[k];
@@ -1146,20 +1191,20 @@ void BuildIndividualMeshes( s_source_t *psource )
 	// sort faces by materials, last used.
 	static int facesort[MAXSTUDIOTRIANGLES];	// map desired order to src_face entry
 	static int ifacesort[MAXSTUDIOTRIANGLES];	// map src_face entry to desired order
-	
-	for (int i = 0; i < g_numfaces; i++)
+
+	for( int i = 0; i < g_numfaces; i++ )
 	{
 		facesort[i] = i;
 	}
 	qsort( facesort, g_numfaces, sizeof( int ), faceCompare );
-	for (int i = 0; i < g_numfaces; i++)
+	for( int i = 0; i < g_numfaces; i++ )
 	{
 		ifacesort[facesort[i]] = i;
 	}
 
 	psource->numfaces = g_numfaces;
 	// find first occurance for each material
-	for (int k = 0; k < MAXSTUDIOSKINS; k++)
+	for( int k = 0; k < MAXSTUDIOSKINS; k++ )
 	{
 		psource->mesh[k].numvertices = 0;
 		psource->mesh[k].vertexoffset = psource->numvertices;
@@ -1169,22 +1214,26 @@ void BuildIndividualMeshes( s_source_t *psource )
 	}
 
 	// find first and count of indices per material
-	for (int i = 0; i < psource->numvertices; i++)
+	for( int i = 0; i < psource->numvertices; i++ )
 	{
 		int k = psource->vertexInfo[i].material;
 		psource->mesh[k].numvertices++;
-		if (psource->mesh[k].vertexoffset > i)
+		if( psource->mesh[k].vertexoffset > i )
+		{
 			psource->mesh[k].vertexoffset = i;
+		}
 	}
 
 	// find first and count of faces per material
-	for (int i = 0; i < psource->numfaces; i++)
+	for( int i = 0; i < psource->numfaces; i++ )
 	{
 		int k = g_face[facesort[i]].material;
 
 		psource->mesh[k].numfaces++;
-		if (psource->mesh[k].faceoffset > i)
+		if( psource->mesh[k].faceoffset > i )
+		{
 			psource->mesh[k].faceoffset = i;
+		}
 	}
 
 	/*
@@ -1195,22 +1244,22 @@ void BuildIndividualMeshes( s_source_t *psource )
 	*/
 
 	// create remapped faces
-	psource->face = (s_face_t *)kalloc( psource->numfaces, sizeof( s_face_t ));
-	for (int k = 0; k < MAXSTUDIOSKINS; k++)
+	psource->face = ( s_face_t* )kalloc( psource->numfaces, sizeof( s_face_t ) );
+	for( int k = 0; k < MAXSTUDIOSKINS; k++ )
 	{
-		if (psource->mesh[k].numfaces)
+		if( psource->mesh[k].numfaces )
 		{
 			psource->meshindex[psource->nummeshes] = k;
 
-			for (int i = psource->mesh[k].faceoffset; i < psource->mesh[k].numfaces + psource->mesh[k].faceoffset; i++)
+			for( int i = psource->mesh[k].faceoffset; i < psource->mesh[k].numfaces + psource->mesh[k].faceoffset; i++ )
 			{
 				int j = facesort[i];
 
 				psource->face[i].a = v_ilistsort[g_src_uface[j].a] - psource->mesh[k].vertexoffset;
 				psource->face[i].b = v_ilistsort[g_src_uface[j].b] - psource->mesh[k].vertexoffset;
 				psource->face[i].c = v_ilistsort[g_src_uface[j].c] - psource->mesh[k].vertexoffset;
-				Assert( ((psource->face[i].a & 0xF0000000) == 0) && ((psource->face[i].b & 0xF0000000) == 0) && 
-					((psource->face[i].c & 0xF0000000) == 0) );
+				Assert( ( ( psource->face[i].a & 0xF0000000 ) == 0 ) && ( ( psource->face[i].b & 0xF0000000 ) == 0 ) &&
+						( ( psource->face[i].c & 0xF0000000 ) == 0 ) );
 				// vprint( 0, "%3d : %4d %4d %4d\n", i, psource->face[i].a, psource->face[i].b, psource->face[i].c );
 			}
 
@@ -1221,7 +1270,7 @@ void BuildIndividualMeshes( s_source_t *psource )
 	CalcModelTangentSpaces( psource );
 }
 
-void Grab_Triangles( s_source_t *psource )
+void Grab_Triangles( s_source_t* psource )
 {
 	int		i;
 	Vector	vmin, vmax;
@@ -1231,7 +1280,7 @@ void Grab_Triangles( s_source_t *psource )
 
 	g_numfaces = 0;
 	numvlist = 0;
- 
+
 	//
 	// load the base triangles
 	//
@@ -1239,48 +1288,52 @@ void Grab_Triangles( s_source_t *psource )
 	int material;
 	char texturename[64];
 
-	while (1) 
+	while( 1 )
 	{
-		if (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) == NULL) 
+		if( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) == NULL )
+		{
 			break;
+		}
 
 		g_iLinecount++;
 
 		// check for end
-		if (IsEnd( g_szLine )) 
+		if( IsEnd( g_szLine ) )
+		{
 			break;
+		}
 
 		// Look for extra junk that we may want to avoid...
 		int nLineLength = strlen( g_szLine );
-		if (nLineLength >= 64)
+		if( nLineLength >= 64 )
 		{
-			MdlWarning("Unexpected data at line %d, (need a texture name) ignoring...\n", g_iLinecount );
+			MdlWarning( "Unexpected data at line %d, (need a texture name) ignoring...\n", g_iLinecount );
 			continue;
 		}
 
 		// strip off trailing smag
 		V_strcpy_safe( texturename, g_szLine );
-		for (i = strlen( texturename ) - 1; i >= 0 && ! isgraph( texturename[i] ); i--)
+		for( i = strlen( texturename ) - 1; i >= 0 && ! isgraph( texturename[i] ); i-- )
 		{
 		}
 		texturename[i + 1] = '\0';
 
 		// funky texture overrides
-		for (i = 0; i < numrep; i++)  
+		for( i = 0; i < numrep; i++ )
 		{
-			if (sourcetexture[i][0] == '\0') 
+			if( sourcetexture[i][0] == '\0' )
 			{
 				strcpy( texturename, defaulttexture[i] );
 				break;
 			}
-			if (stricmp( texturename, sourcetexture[i]) == 0) 
+			if( stricmp( texturename, sourcetexture[i] ) == 0 )
 			{
 				strcpy( texturename, defaulttexture[i] );
 				break;
 			}
 		}
 
-		if (texturename[0] == '\0')
+		if( texturename[0] == '\0' )
 		{
 			// weird source problem, skip them
 			fgets( g_szLine, sizeof( g_szLine ), g_fpInput );
@@ -1290,7 +1343,7 @@ void Grab_Triangles( s_source_t *psource )
 			continue;
 		}
 
-		if (stricmp( texturename, "null.bmp") == 0 || stricmp( texturename, "null.tga") == 0)
+		if( stricmp( texturename, "null.bmp" ) == 0 || stricmp( texturename, "null.tga" ) == 0 )
 		{
 			// skip all faces with the null texture on them.
 			fgets( g_szLine, sizeof( g_szLine ), g_fpInput );
@@ -1306,7 +1359,7 @@ void Grab_Triangles( s_source_t *psource )
 
 		s_face_t f;
 		ParseFaceData( psource, material, &f );
-	
+
 		g_src_uface[g_numfaces] = f;
 		g_face[g_numfaces].material = material;
 		g_numfaces++;
@@ -1317,63 +1370,67 @@ void Grab_Triangles( s_source_t *psource )
 
 //--------------------------------------------------------------------
 // Load a SMD file
-//--------------------------------------------------------------------  
-int Load_SMD ( s_source_t *psource )
+//--------------------------------------------------------------------
+int Load_SMD( s_source_t* psource )
 {
 	char	cmd[1024];
 	int		option;
 
 	// Open file
-	if (!OpenGlobalFile( psource->filename ))
+	if( !OpenGlobalFile( psource->filename ) )
+	{
 		return 0;
+	}
 
 	// verbose
 	if( !g_quiet )
 	{
-		printf ("SMD MODEL %s\n", psource->filename);
+		printf( "SMD MODEL %s\n", psource->filename );
 	}
 
 	//March through lines
 	g_iLinecount = 0;
-	while (fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL) 
+	while( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL )
 	{
 		g_iLinecount++;
 		int numRead = sscanf( g_szLine, "%s %d", cmd, &option );
 
 		// Blank line
-		if ((numRead == EOF) || (numRead == 0))
-			continue;
-
-		if (strcmp( cmd, "version" ) == 0) 
+		if( ( numRead == EOF ) || ( numRead == 0 ) )
 		{
-			if (option != 1) 
+			continue;
+		}
+
+		if( strcmp( cmd, "version" ) == 0 )
+		{
+			if( option != 1 )
 			{
-				MdlError("bad version\n");
+				MdlError( "bad version\n" );
 			}
 		}
 		// Get hierarchy?
-		else if (strcmp( cmd, "nodes" ) == 0) 
+		else if( strcmp( cmd, "nodes" ) == 0 )
 		{
 			psource->numbones = Grab_Nodes( psource->localBone );
 		}
 		// Get animation??
-		else if (strcmp( cmd, "skeleton" ) == 0) 
+		else if( strcmp( cmd, "skeleton" ) == 0 )
 		{
 			Grab_Animation( psource );
 		}
 		// Geo?
-		else if (strcmp( cmd, "triangles" ) == 0) 
+		else if( strcmp( cmd, "triangles" ) == 0 )
 		{
 			Grab_Triangles( psource );
 		}
 		// Geo animation
-		else if (strcmp( cmd, "vertexanimation" ) == 0) 
+		else if( strcmp( cmd, "vertexanimation" ) == 0 )
 		{
 			Grab_Vertexanimation( psource );
 		}
-		else 
+		else
 		{
-			MdlWarning("unknown studio command\n" );
+			MdlWarning( "unknown studio command\n" );
 		}
 	}
 	fclose( g_fpInput );
@@ -1386,34 +1443,40 @@ int Load_SMD ( s_source_t *psource )
 //-----------------------------------------------------------------------------
 // Checks to see if the model source was already loaded
 //-----------------------------------------------------------------------------
-static s_source_t *FindCachedSource( char const* name, char const* xext )
+static s_source_t* FindCachedSource( char const* name, char const* xext )
 {
 	int i;
 
 	if( xext[0] )
 	{
 		// we know what extension is necessary. . look for it.
-		sprintf (g_szFilename, "%s%s.%s", cddir[numdirs], name, xext );
-		for (i = 0; i < g_numsources; i++)
+		sprintf( g_szFilename, "%s%s.%s", cddir[numdirs], name, xext );
+		for( i = 0; i < g_numsources; i++ )
 		{
-			if (stricmp( g_szFilename, g_source[i]->filename ) == 0)
+			if( stricmp( g_szFilename, g_source[i]->filename ) == 0 )
+			{
 				return g_source[i];
+			}
 		}
 	}
 	else
 	{
 		// we don't know what extension to use, so look for all of 'em.
-		sprintf (g_szFilename, "%s%s.vrm", cddir[numdirs], name );
-		for (i = 0; i < g_numsources; i++)
+		sprintf( g_szFilename, "%s%s.vrm", cddir[numdirs], name );
+		for( i = 0; i < g_numsources; i++ )
 		{
-			if (stricmp( g_szFilename, g_source[i]->filename ) == 0)
+			if( stricmp( g_szFilename, g_source[i]->filename ) == 0 )
+			{
 				return g_source[i];
+			}
 		}
-		sprintf (g_szFilename, "%s%s.smd", cddir[numdirs], name );
-		for (i = 0; i < g_numsources; i++)
+		sprintf( g_szFilename, "%s%s.smd", cddir[numdirs], name );
+		for( i = 0; i < g_numsources; i++ )
 		{
-			if (stricmp( g_szFilename, g_source[i]->filename ) == 0)
+			if( stricmp( g_szFilename, g_source[i]->filename ) == 0 )
+			{
 				return g_source[i];
+			}
 		}
 		/*
 		sprintf (g_szFilename, "%s%s.vta", cddir[numdirs], name );
@@ -1429,18 +1492,20 @@ static s_source_t *FindCachedSource( char const* name, char const* xext )
 	return 0;
 }
 
-static void FlipFacing( s_source_t *pSrc )
+static void FlipFacing( s_source_t* pSrc )
 {
 	unsigned short tmp;
 
 	int i, j;
 	for( i = 0; i < pSrc->nummeshes; i++ )
 	{
-		s_mesh_t *pMesh = &pSrc->mesh[i];
+		s_mesh_t* pMesh = &pSrc->mesh[i];
 		for( j = 0; j < pMesh->numfaces; j++ )
 		{
-			s_face_t &f = pSrc->face[pMesh->faceoffset + j];
-			tmp = f.b;  f.b  = f.c;  f.c  = tmp;
+			s_face_t& f = pSrc->face[pMesh->faceoffset + j];
+			tmp = f.b;
+			f.b  = f.c;
+			f.c  = tmp;
 		}
 	}
 }
@@ -1449,25 +1514,27 @@ static void FlipFacing( s_source_t *pSrc )
 // Loads an animation source
 //-----------------------------------------------------------------------------
 
-s_source_t *Load_Source( char const *name, const char *ext, bool reverse, bool isActiveModel )
+s_source_t* Load_Source( char const* name, const char* ext, bool reverse, bool isActiveModel )
 {
 	// Sanity check number of source files
-	if ( g_numsources >= MAXSTUDIOSEQUENCES )
+	if( g_numsources >= MAXSTUDIOSEQUENCES )
+	{
 		MdlError( "Load_Source( %s ) - overflowed g_numsources.", name );
+	}
 
 	// Sanity check file and init
-	Assert(name);
-	int namelen = strlen(name) + 1;
-	char* pTempName = (char*)_alloca( namelen );
+	Assert( name );
+	int namelen = strlen( name ) + 1;
+	char* pTempName = ( char* )_alloca( namelen );
 	char xext[32];
 	int result = false;
 
 	// Local copy of filename
 	strcpy( pTempName, name );
-	
+
 	// Sanity check file extension?
 	Q_ExtractFileExtension( pTempName, xext, sizeof( xext ) );
-	if (xext[0] == '\0')
+	if( xext[0] == '\0' )
 	{
 		V_strcpy_safe( xext, ext );
 	}
@@ -1480,27 +1547,27 @@ s_source_t *Load_Source( char const *name, const char *ext, bool reverse, bool i
 	// s_source_t* pSource = FindCachedSource( pTempName, xext );
 	// if (pSource)
 	// {
-		// if (isActiveModel)
-			// pSource->isActiveModel = true;
-		// return pSource;
+	// if (isActiveModel)
+	// pSource->isActiveModel = true;
+	// return pSource;
 	// }
 
 	// allocate space and whatnot
-	g_source[g_numsources] = (s_source_t *)kalloc( 1, sizeof( s_source_t ) );
+	g_source[g_numsources] = ( s_source_t* )kalloc( 1, sizeof( s_source_t ) );
 	V_strcpy_safe( g_source[g_numsources]->filename, g_szFilename );
 
 	// legacy stuff
-	if (isActiveModel)
+	if( isActiveModel )
 	{
 		g_source[g_numsources]->isActiveModel = true;
 	}
 
 	// more ext sanity check
-	if ( ( !result && xext[0] == '\0' ) || stricmp( xext, "smd" ) == 0)
+	if( ( !result && xext[0] == '\0' ) || stricmp( xext, "smd" ) == 0 )
 	{
-		Q_snprintf( g_szFilename, sizeof(g_szFilename), "%s%s.smd", cddir[numdirs], pTempName );
+		Q_snprintf( g_szFilename, sizeof( g_szFilename ), "%s%s.smd", cddir[numdirs], pTempName );
 		V_strcpy_safe( g_source[g_numsources]->filename, g_szFilename );
- 
+
 		// Import part, load smd file
 		result = Load_SMD( g_source[g_numsources] );
 	}
@@ -1517,7 +1584,7 @@ s_source_t *Load_Source( char const *name, const char *ext, bool reverse, bool i
 	*/
 
 	// Oops
-	if ( !result)
+	if( !result )
 	{
 		MdlError( "could not load file '%s'\n", g_source[g_numsources]->filename );
 	}
@@ -1526,21 +1593,23 @@ s_source_t *Load_Source( char const *name, const char *ext, bool reverse, bool i
 	g_numsources++;
 	if( reverse )
 	{
-		FlipFacing( g_source[g_numsources-1] );
+		FlipFacing( g_source[g_numsources - 1] );
 	}
-	return g_source[g_numsources-1];
+	return g_source[g_numsources - 1];
 }
 
-void SaveNodes( s_source_t *source, CUtlBuffer& buf )
+void SaveNodes( s_source_t* source, CUtlBuffer& buf )
 {
-	if ( source->numbones <= 0 )
+	if( source->numbones <= 0 )
+	{
 		return;
+	}
 
 	buf.Printf( "nodes\n" );
 
-	for ( int i = 0; i < source->numbones; ++i )
+	for( int i = 0; i < source->numbones; ++i )
 	{
-		s_node_t *bone = &source->localBone[ i ];
+		s_node_t* bone = &source->localBone[ i ];
 
 		buf.Printf( "%d \"%s\" %d\n", i, bone->name, bone->parent );
 	}
@@ -1549,7 +1618,7 @@ void SaveNodes( s_source_t *source, CUtlBuffer& buf )
 }
 
 // FIXME:  since we don't us a .qc, we could have problems with scaling, etc.???
-void descale_vertex( Vector &org )
+void descale_vertex( Vector& org )
 {
 	float invscale = 1.0f / g_currentscale;
 
@@ -1558,23 +1627,25 @@ void descale_vertex( Vector &org )
 	org[2] = org[2] * invscale;
 }
 
-void SaveAnimation( s_source_t *source, CUtlBuffer& buf )
+void SaveAnimation( s_source_t* source, CUtlBuffer& buf )
 {
-	if ( source->numbones <= 0 )
+	if( source->numbones <= 0 )
+	{
 		return;
+	}
 
 	buf.Printf( "skeleton\n" );
 
-	for ( int frame = 0; frame < source->numframes; ++frame )
+	for( int frame = 0; frame < source->numframes; ++frame )
 	{
 		buf.Printf( "time %i\n", frame + source->startframe );
 
-		for ( int i = 0; i < source->numbones; ++i )
+		for( int i = 0; i < source->numbones; ++i )
 		{
-			s_bone_t *prev = NULL;
-			if ( frame > 0 )
+			s_bone_t* prev = NULL;
+			if( frame > 0 )
 			{
-				if ( source->rawanim[ frame - 1 ] )
+				if( source->rawanim[ frame - 1 ] )
 				{
 					prev = &source->rawanim[ frame - 1 ][ i ];
 				}
@@ -1586,41 +1657,41 @@ void SaveAnimation( s_source_t *source, CUtlBuffer& buf )
 
 // If this is enabled, then we delta this pos vs the prev frame and don't write out a sample if it's the same value...
 #if 0
-			if ( prev )
+			if( prev )
 			{
-				Vector ppos = source->rawanim[ frame -1 ][ i ].pos; 
+				Vector ppos = source->rawanim[ frame - 1 ][ i ].pos;
 				descale_vertex( pos );
-				RadianEuler prot = source->rawanim[ frame -1 ][ i ].rot;
+				RadianEuler prot = source->rawanim[ frame - 1 ][ i ].rot;
 
 				// Only output it if there's a delta
-				if ( ( ppos != pos ) || 
-					Q_memcmp( &prot, &rot, sizeof( prot ) ) )
+				if( ( ppos != pos ) ||
+						Q_memcmp( &prot, &rot, sizeof( prot ) ) )
 				{
 					buf.Printf
-						( "%d %f %f %f %f %f %f\n", 
-						i,				// bone index
-						pos[ 0 ],
-						pos[ 1 ],
-						pos[ 2 ],
-						rot[ 0 ],
-						rot[ 1 ],
-						rot[ 2 ]
-						);
+					( "%d %f %f %f %f %f %f\n",
+					  i,				// bone index
+					  pos[ 0 ],
+					  pos[ 1 ],
+					  pos[ 2 ],
+					  rot[ 0 ],
+					  rot[ 1 ],
+					  rot[ 2 ]
+					);
 				}
 			}
 			else
 #endif
 			{
 				buf.Printf
-					( "%d %f %f %f %f %f %f\n", 
-					i,				// bone index
-					pos[ 0 ],
-					pos[ 1 ],
-					pos[ 2 ],
-					rot[ 0 ],
-					rot[ 1 ],
-					rot[ 2 ]
-					);
+				( "%d %f %f %f %f %f %f\n",
+				  i,				// bone index
+				  pos[ 0 ],
+				  pos[ 1 ],
+				  pos[ 2 ],
+				  rot[ 0 ],
+				  rot[ 1 ],
+				  rot[ 2 ]
+				);
 			}
 		}
 	}
@@ -1628,7 +1699,7 @@ void SaveAnimation( s_source_t *source, CUtlBuffer& buf )
 	buf.Printf( "end\n" );
 }
 
-void Save_SMD( char const *filename, s_source_t *source )
+void Save_SMD( char const* filename, s_source_t* source )
 {
 	// Text buffer
 	CUtlBuffer buf( 0, 0, CUtlBuffer::TEXT_BUFFER );
@@ -1639,7 +1710,7 @@ void Save_SMD( char const *filename, s_source_t *source )
 	SaveAnimation( source, buf );
 
 	FileHandle_t fh = g_pFileSystem->Open( filename, "wb" );
-	if ( FILESYSTEM_INVALID_HANDLE != fh )
+	if( FILESYSTEM_INVALID_HANDLE != fh )
 	{
 		g_pFileSystem->Write( buf.Base(), buf.TellPut(), fh );
 		g_pFileSystem->Close( fh );
@@ -1651,43 +1722,70 @@ void Save_SMD( char const *filename, s_source_t *source )
 //--------------------------------------------------------------------
 struct M_matrix4x4_t
 {
-	M_matrix4x4_t() {
-	
-		m_flMatVal[0][0] = 1.0;	m_flMatVal[0][1] = 0.0; m_flMatVal[0][2] = 0.0; m_flMatVal[0][3] = 0.0;
-		m_flMatVal[1][0] = 0.0;	m_flMatVal[1][1] = 1.0; m_flMatVal[1][2] = 0.0;	m_flMatVal[1][3] = 0.0;
-		m_flMatVal[2][0] = 0.0;	m_flMatVal[2][1] = 0.0; m_flMatVal[2][2] = 1.0;	m_flMatVal[2][3] = 0.0;
-		m_flMatVal[3][0] = 0.0;	m_flMatVal[3][1] = 0.0; m_flMatVal[3][2] = 0.0;	m_flMatVal[3][3] = 1.0;
+	M_matrix4x4_t()
+	{
+
+		m_flMatVal[0][0] = 1.0;
+		m_flMatVal[0][1] = 0.0;
+		m_flMatVal[0][2] = 0.0;
+		m_flMatVal[0][3] = 0.0;
+		m_flMatVal[1][0] = 0.0;
+		m_flMatVal[1][1] = 1.0;
+		m_flMatVal[1][2] = 0.0;
+		m_flMatVal[1][3] = 0.0;
+		m_flMatVal[2][0] = 0.0;
+		m_flMatVal[2][1] = 0.0;
+		m_flMatVal[2][2] = 1.0;
+		m_flMatVal[2][3] = 0.0;
+		m_flMatVal[3][0] = 0.0;
+		m_flMatVal[3][1] = 0.0;
+		m_flMatVal[3][2] = 0.0;
+		m_flMatVal[3][3] = 1.0;
 
 	}
-	// M_matrix3x4_t( 
-		// float m00, float m01, float m02, 
-		// float m10, float m11, float m12,
-		// float m20, float m21, float m22,
-		// float m30, float m31, float m32)
+	// M_matrix3x4_t(
+	// float m00, float m01, float m02,
+	// float m10, float m11, float m12,
+	// float m20, float m21, float m22,
+	// float m30, float m31, float m32)
 	// {
-		// m_flMatVal[0][0] = m00;	m_flMatVal[0][1] = m01; m_flMatVal[0][2] = m02;
-		// m_flMatVal[1][0] = m10;	m_flMatVal[1][1] = m11; m_flMatVal[1][2] = m12;
-		// m_flMatVal[2][0] = m20;	m_flMatVal[2][1] = m21; m_flMatVal[2][2] = m22;
-		// m_flMatVal[3][0] = m30;	m_flMatVal[3][1] = m31; m_flMatVal[3][2] = m32;
+	// m_flMatVal[0][0] = m00;	m_flMatVal[0][1] = m01; m_flMatVal[0][2] = m02;
+	// m_flMatVal[1][0] = m10;	m_flMatVal[1][1] = m11; m_flMatVal[1][2] = m12;
+	// m_flMatVal[2][0] = m20;	m_flMatVal[2][1] = m21; m_flMatVal[2][2] = m22;
+	// m_flMatVal[3][0] = m30;	m_flMatVal[3][1] = m31; m_flMatVal[3][2] = m32;
 
 	// }
 
-	float *operator[]( int i )				{ Assert(( i >= 0 ) && ( i < 4 )); return m_flMatVal[i]; }
-	const float *operator[]( int i ) const	{ Assert(( i >= 0 ) && ( i < 4 )); return m_flMatVal[i]; }
-	float *Base()							{ return &m_flMatVal[0][0]; }
-	const float *Base() const				{ return &m_flMatVal[0][0]; }
+	float* operator[]( int i )
+	{
+		Assert( ( i >= 0 ) && ( i < 4 ) );
+		return m_flMatVal[i];
+	}
+	const float* operator[]( int i ) const
+	{
+		Assert( ( i >= 0 ) && ( i < 4 ) );
+		return m_flMatVal[i];
+	}
+	float* Base()
+	{
+		return &m_flMatVal[0][0];
+	}
+	const float* Base() const
+	{
+		return &m_flMatVal[0][0];
+	}
 
 	float m_flMatVal[4][4];
 };
 
-void M_MatrixAngles( const M_matrix4x4_t& matrix, RadianEuler &angles, Vector &position)
+void M_MatrixAngles( const M_matrix4x4_t& matrix, RadianEuler& angles, Vector& position )
 {
 	float cX, sX, cY, sY, cZ, sZ;
 
 	sY = -matrix[0][2];
-	cY = sqrtf(1.0-(sY*sY));
+	cY = sqrtf( 1.0 - ( sY * sY ) );
 
-	if (cY != 0.0)
+	if( cY != 0.0 )
 	{
 		sX = matrix[1][2];
 		cX = matrix[2][2];
@@ -1705,16 +1803,20 @@ void M_MatrixAngles( const M_matrix4x4_t& matrix, RadianEuler &angles, Vector &p
 	angles[0] = atan2f( sX, cX );
 	angles[2] = atan2f( sZ, cZ );
 
-	sX = sinf(angles[0]);
-	cX = cosf(angles[0]);
+	sX = sinf( angles[0] );
+	cX = cosf( angles[0] );
 
-	if (sX > cX)
+	if( sX > cX )
+	{
 		cY = matrix[1][2] / sX;
+	}
 	else
+	{
 		cY = matrix[2][2] / cX;
+	}
 
 	angles[1] = atan2f( sY, cY );
-	
+
 
 	position.x = matrix[3][0];
 	position.y = matrix[3][1];
@@ -1723,48 +1825,48 @@ void M_MatrixAngles( const M_matrix4x4_t& matrix, RadianEuler &angles, Vector &p
 }
 
 // void M_MatrixAngles( const M_matrix4x4_t& matrix, RadianEuler &angles, Vector &position)
-// { 
+// {
 
-	// float cX, sX, cY, sY, cZ, sZ;
+// float cX, sX, cY, sY, cZ, sZ;
 
-	// sY = matrix[2][0];
-	// cY = sqrtf(1.0-(sY*sY));
+// sY = matrix[2][0];
+// cY = sqrtf(1.0-(sY*sY));
 
-	// if (cY != 0.0)
-	// {
-		// sX = -matrix[2][1];
-		// cX = matrix[2][2];
-		// sZ = -matrix[1][0];
-		// cZ = matrix[0][0];
-	// }
-	// else
-	// {
-		// sX = matrix[0][1];
-		// cX = matrix[1][1];
-		// sZ = 0.0;
-		// cZ = 1.0;
-	// }
+// if (cY != 0.0)
+// {
+// sX = -matrix[2][1];
+// cX = matrix[2][2];
+// sZ = -matrix[1][0];
+// cZ = matrix[0][0];
+// }
+// else
+// {
+// sX = matrix[0][1];
+// cX = matrix[1][1];
+// sZ = 0.0;
+// cZ = 1.0;
+// }
 
-	// angles[0] = atan2f( sX, cX );
-	// angles[2] = atan2f( sZ, cZ );
+// angles[0] = atan2f( sX, cX );
+// angles[2] = atan2f( sZ, cZ );
 
-	// sX = sinf(angles[0]);
-	// cX = cosf(angles[0]);
+// sX = sinf(angles[0]);
+// cX = cosf(angles[0]);
 
-	// if (sX > cX)
-		// cY = -matrix[2][1] / sX;
-	// else
-		// cY = matrix[2][2] / cX;
+// if (sX > cX)
+// cY = -matrix[2][1] / sX;
+// else
+// cY = matrix[2][2] / cX;
 
-	// angles[1] = atan2f( sY, cY );
-	
-	// angles[0] = angles[0];
-	// angles[1] = angles[1];
-	// angles[2] = angles[2];
+// angles[1] = atan2f( sY, cY );
 
-	// position.x = matrix[3][0];
-	// position.y = matrix[3][1];
-	// position.z = matrix[3][2];
+// angles[0] = angles[0];
+// angles[1] = angles[1];
+// angles[2] = angles[2];
+
+// position.x = matrix[3][0];
+// position.y = matrix[3][1];
+// position.z = matrix[3][2];
 // }
 
 void M_MatrixCopy( const M_matrix4x4_t& in, M_matrix4x4_t& out )
@@ -1772,14 +1874,14 @@ void M_MatrixCopy( const M_matrix4x4_t& in, M_matrix4x4_t& out )
 	// Assert( s_bMathlibInitialized );
 	memcpy( out.Base(), in.Base(), sizeof( float ) * 4 * 4 );
 }
-void M_RotateZMatrix(float radian, M_matrix4x4_t &resultMatrix)
+void M_RotateZMatrix( float radian, M_matrix4x4_t& resultMatrix )
 {
 
-	resultMatrix[0][0] = cosf(radian);
-	resultMatrix[0][1] = sin(radian);
+	resultMatrix[0][0] = cosf( radian );
+	resultMatrix[0][1] = sin( radian );
 	resultMatrix[0][2] = 0.0;
-	resultMatrix[1][0] =-sin(radian);
-	resultMatrix[1][1] =  cos(radian);
+	resultMatrix[1][0] = -sin( radian );
+	resultMatrix[1][1] =  cos( radian );
 	resultMatrix[1][2] = 0.0;
 	resultMatrix[2][0] = 0.0;
 	resultMatrix[2][1] =  0.0;
@@ -1787,16 +1889,16 @@ void M_RotateZMatrix(float radian, M_matrix4x4_t &resultMatrix)
 }
 
 // !!! THIS SHIT DOESN'T WORK!! WHY? HAS I EVER?
-void M_AngleAboutAxis(Vector &axis, float radianAngle, M_matrix4x4_t &result)
+void M_AngleAboutAxis( Vector& axis, float radianAngle, M_matrix4x4_t& result )
 {
-	float c = cosf(radianAngle);
-	float s = sinf(radianAngle);
+	float c = cosf( radianAngle );
+	float s = sinf( radianAngle );
 	float t = 1.0 - c;
 	// axis.normalize();
-	
+
 	result[0][0] = t * axis[0] * axis[0] + c;
 	result[0][1] = t * axis[0] * axis[1] - s * axis[2];
-	result[0][2] = t * axis[0] * axis[2] + s * axis[1];          
+	result[0][2] = t * axis[0] * axis[2] + s * axis[1];
 	result[1][0] = t * axis[0] * axis[1] + s * axis[2];
 	result[1][1] = t * axis[1] * axis[1] + c;
 	result[1][2] = t * axis[1] * axis[2] - s * axis[0];
@@ -1810,7 +1912,7 @@ void M_AngleAboutAxis(Vector &axis, float radianAngle, M_matrix4x4_t &result)
 void M_MatrixInvert( const M_matrix4x4_t& in, M_matrix4x4_t& out )
 {
 	// Assert( s_bMathlibInitialized );
-	if ( &in == &out )
+	if( &in == &out )
 	{
 		M_matrix4x4_t in2;
 		M_MatrixCopy( in, in2 );
@@ -1851,56 +1953,56 @@ void M_MatrixInvert( const M_matrix4x4_t& in, M_matrix4x4_t& out )
 	out[3][1] = -DotProduct( tmp, v2 );
 	out[3][2] = -DotProduct( tmp, v3 );
 
-    // Trivial case
-    // if (IS_IDENTITY(matrix))
+	// Trivial case
+	// if (IS_IDENTITY(matrix))
 	// return SbMatrix::identity();
 
-    // // Affine case...
-    // // SbMatrix affineAnswer;
-    // // if (  affine_inverse( SbMatrix(matrix), affineAnswer ) )
+	// // Affine case...
+	// // SbMatrix affineAnswer;
+	// // if (  affine_inverse( SbMatrix(matrix), affineAnswer ) )
 	// // return affineAnswer;
 
-    // int         index[4];
-    // float       d, invmat[4][4], temp;
-    // SbMatrix	inverse = *this;
+	// int         index[4];
+	// float       d, invmat[4][4], temp;
+	// SbMatrix	inverse = *this;
 
-    // if(inverse.LUDecomposition(index, d)) {
+	// if(inverse.LUDecomposition(index, d)) {
 
-		// invmat[0][0] = 1.0;
-		// invmat[0][1] = 0.0;
-		// invmat[0][2] = 0.0;
-		// invmat[0][3] = 0.0;
-		// inverse.LUBackSubstitution(index, invmat[0]);
-		// invmat[1][0] = 0.0;
-		// invmat[1][1] = 1.0;
-		// invmat[1][2] = 0.0;
-		// invmat[1][3] = 0.0;
-		// inverse.LUBackSubstitution(index, invmat[1]);
-		// invmat[2][0] = 0.0;
-		// invmat[2][1] = 0.0;
-		// invmat[2][2] = 1.0;
-		// invmat[2][3] = 0.0;
-		// inverse.LUBackSubstitution(index, invmat[2]);
-		// invmat[3][0] = 0.0;
-		// invmat[3][1] = 0.0;
-		// invmat[3][2] = 0.0;
-		// invmat[3][3] = 1.0;
-		// inverse.LUBackSubstitution(index, invmat[3]);
-		
+	// invmat[0][0] = 1.0;
+	// invmat[0][1] = 0.0;
+	// invmat[0][2] = 0.0;
+	// invmat[0][3] = 0.0;
+	// inverse.LUBackSubstitution(index, invmat[0]);
+	// invmat[1][0] = 0.0;
+	// invmat[1][1] = 1.0;
+	// invmat[1][2] = 0.0;
+	// invmat[1][3] = 0.0;
+	// inverse.LUBackSubstitution(index, invmat[1]);
+	// invmat[2][0] = 0.0;
+	// invmat[2][1] = 0.0;
+	// invmat[2][2] = 1.0;
+	// invmat[2][3] = 0.0;
+	// inverse.LUBackSubstitution(index, invmat[2]);
+	// invmat[3][0] = 0.0;
+	// invmat[3][1] = 0.0;
+	// invmat[3][2] = 0.0;
+	// invmat[3][3] = 1.0;
+	// inverse.LUBackSubstitution(index, invmat[3]);
+
 // #define SWAP(i,j)		 \
-		// temp = invmat[i][j];	 \
-		// invmat[i][j] = invmat[j][i];			\
-		// invmat[j][i] = temp;
-		
-		// SWAP(1,0);
-		
-		// SWAP(2,0);
-		// SWAP(2,1);
-		
-		// SWAP(3,0);
-		// SWAP(3,1);
-		// SWAP(3,2);
-// #undef SWAP	
+	// temp = invmat[i][j];	 \
+	// invmat[i][j] = invmat[j][i];			\
+	// invmat[j][i] = temp;
+
+	// SWAP(1,0);
+
+	// SWAP(2,0);
+	// SWAP(2,1);
+
+	// SWAP(3,0);
+	// SWAP(3,1);
+	// SWAP(3,2);
+// #undef SWAP
 	// }
 }
 
@@ -1909,23 +2011,23 @@ void M_MatrixInvert( const M_matrix4x4_t& in, M_matrix4x4_t& out )
 M_ConcatTransforms
 ================
 */
-void M_ConcatTransforms (const M_matrix4x4_t &in1, const M_matrix4x4_t &in2, M_matrix4x4_t &out)
+void M_ConcatTransforms( const M_matrix4x4_t& in1, const M_matrix4x4_t& in2, M_matrix4x4_t& out )
 {
-	
+
 	// Assert( s_bMathlibInitialized );
 	// if ( &in1 == &out )
 	// {
-		// matrix3x4_t in1b;
-		// MatrixCopy( in1, in1b );
-		// ConcatTransforms( in1b, in2, out );
-		// return;
+	// matrix3x4_t in1b;
+	// MatrixCopy( in1, in1b );
+	// ConcatTransforms( in1b, in2, out );
+	// return;
 	// }
 	// if ( &in2 == &out )
 	// {
-		// matrix3x4_t in2b;
-		// MatrixCopy( in2, in2b );
-		// ConcatTransforms( in1, in2b, out );
-		// return;
+	// matrix3x4_t in2b;
+	// MatrixCopy( in2, in2b );
+	// ConcatTransforms( in1, in2b, out );
+	// return;
 	// }
 
 #define MULT(i,j) (in1[i][0]*in2[0][j] + \
@@ -1933,67 +2035,67 @@ void M_ConcatTransforms (const M_matrix4x4_t &in1, const M_matrix4x4_t &in2, M_m
 			 in1[i][2]*in2[2][j] + \
 			 in1[i][3]*in2[3][j])
 
-    out[0][0] = MULT(0,0);
-    out[0][1] = MULT(0,1);
-    out[0][2] = MULT(0,2);
-    out[0][3] = MULT(0,3);
-    out[1][0] = MULT(1,0);
-    out[1][1] = MULT(1,1);
-    out[1][2] = MULT(1,2);
-    out[1][3] = MULT(1,3);
-    out[2][0] = MULT(2,0);
-    out[2][1] = MULT(2,1);
-    out[2][2] = MULT(2,2);
-    out[2][3] = MULT(2,3);
-    out[3][0] = MULT(3,0);
-    out[3][1] = MULT(3,1);
-    out[3][2] = MULT(3,2);
-    out[3][3] = MULT(3,3);
+	out[0][0] = MULT( 0, 0 );
+	out[0][1] = MULT( 0, 1 );
+	out[0][2] = MULT( 0, 2 );
+	out[0][3] = MULT( 0, 3 );
+	out[1][0] = MULT( 1, 0 );
+	out[1][1] = MULT( 1, 1 );
+	out[1][2] = MULT( 1, 2 );
+	out[1][3] = MULT( 1, 3 );
+	out[2][0] = MULT( 2, 0 );
+	out[2][1] = MULT( 2, 1 );
+	out[2][2] = MULT( 2, 2 );
+	out[2][3] = MULT( 2, 3 );
+	out[3][0] = MULT( 3, 0 );
+	out[3][1] = MULT( 3, 1 );
+	out[3][2] = MULT( 3, 2 );
+	out[3][3] = MULT( 3, 3 );
 
 #undef MULT
 
 }
 
-void M_AngleMatrix( RadianEuler const &angles, const Vector &position, M_matrix4x4_t& matrix )
+void M_AngleMatrix( RadianEuler const& angles, const Vector& position, M_matrix4x4_t& matrix )
 {
 	// Assert( s_bMathlibInitialized );
 	float		sx, sy, sz, cx, cy, cz;
-	
 
-	sx = sinf(angles[0]);
-	cx = cosf(angles[0]);
-	sy = sinf(angles[1]);
-	cy = cosf(angles[1]);
-	sz = sinf(angles[2]);
-	cz = cosf(angles[2]);
-	
+
+	sx = sinf( angles[0] );
+	cx = cosf( angles[0] );
+	sy = sinf( angles[1] );
+	cy = cosf( angles[1] );
+	sz = sinf( angles[2] );
+	cz = cosf( angles[2] );
+
 	// SinCos( angles[0], &sx, &cx ); // 2
 	// SinCos( angles[1], &sy, &cy ); // 1
 	// SinCos( angles[2], &sz, &cz ); // 0
-	
+
 	M_matrix4x4_t mx, my, mz, temp1;
-	
+
 	// rotation about x
 	mx[1][1] = cx;
 	mx[1][2] = sx;
 	mx[2][1] = -sx;
 	mx[2][2] = cx;
- 
+
 	// rotation about y
 	my[0][0] = cy;
 	my[0][2] = -sy;
 	my[2][0] = sy;
 	my[2][2] = cy;
-	
-    // rotation about z
+
+	// rotation about z
 	mz[0][0] = cz;
 	mz[0][1] = sz;
 	mz[1][0] = -sz;
 	mz[1][1] = cz;
 
 	// z * y * x
-	M_ConcatTransforms(mx, my, temp1);
-	M_ConcatTransforms(temp1, mz, matrix);
+	M_ConcatTransforms( mx, my, temp1 );
+	M_ConcatTransforms( temp1, mz, matrix );
 
 	// put position in
 	matrix[3][0] = position.x;
@@ -2008,9 +2110,9 @@ void M_AngleMatrix( RadianEuler const &angles, const Vector &position, M_matrix4
 //-----------------------------------------------------------------------------
 #define BONEAXIS 0
 #define BONEDIR 0
-#define BONESIDE  1	
+#define BONESIDE  1
 #define BONEUP   2
-#define WORLDUP 2	
+#define WORLDUP 2
 #define PRINTMAT(m) \
 	printf("\n%f %f %f %f\n", m[0][0], m[0][1], m[0][2], m[0][3]);	\
 	printf("%f %f %f %f\n",   m[1][0], m[1][1], m[1][2], m[1][3]);	\
@@ -2022,7 +2124,7 @@ struct s_planeConstraint_t
 	char jointNameString[1024];
 	float floor;
 	int axis;
-	
+
 };
 
 struct s_iksolve_t
@@ -2034,7 +2136,7 @@ struct s_iksolve_t
 	int doRelativeLock;
 	char relativeLockNameString[1024];
 	float relativeLockScale;
-	
+
 };
 
 struct s_jointScale_t
@@ -2042,30 +2144,30 @@ struct s_jointScale_t
 	char jointNameString[1024];
 	float scale;
 };
-	
+
 struct s_template_t
 {
 	char rootScaleJoint[1024];
 	float rootScaleAmount;
 	int numIKSolves;
-	s_iksolve_t *ikSolves[128];
+	s_iksolve_t* ikSolves[128];
 	int numJointScales;
-	s_jointScale_t *jointScales[128];
+	s_jointScale_t* jointScales[128];
 	int numPlaneConstraints;
-	s_planeConstraint_t *planeConstraints[128];
+	s_planeConstraint_t* planeConstraints[128];
 	float toeFloorZ;
 	int doSkeletonScale;
 	float skeletonScale;
 
 };
 
-	
+
 //-----------------------------------------------------------------------------
 // Load a template file into structure
 //-----------------------------------------------------------------------------
-s_template_t *New_Template()
+s_template_t* New_Template()
 {
-	s_template_t *pTemplate = (s_template_t *)kalloc(1, sizeof(s_template_t));
+	s_template_t* pTemplate = ( s_template_t* )kalloc( 1, sizeof( s_template_t ) );
 	pTemplate->rootScaleAmount = 1.0;
 	pTemplate->numIKSolves = 0;
 	pTemplate->numJointScales = 0;
@@ -2075,9 +2177,9 @@ s_template_t *New_Template()
 	pTemplate->skeletonScale = 1.0;
 	return pTemplate;
 }
-s_iksolve_t *New_IKSolve()
-{	
-	s_iksolve_t *pIKSolve = (s_iksolve_t *)kalloc(1, sizeof(s_iksolve_t));
+s_iksolve_t* New_IKSolve()
+{
+	s_iksolve_t* pIKSolve = ( s_iksolve_t* )kalloc( 1, sizeof( s_iksolve_t ) );
 	pIKSolve->reverseSolve = 0;
 	pIKSolve->extremityScale = 1.0;
 	pIKSolve->limbRootOffsetScale[0] = pIKSolve->limbRootOffsetScale[1] = pIKSolve->limbRootOffsetScale[2] = 0.0;
@@ -2086,20 +2188,20 @@ s_iksolve_t *New_IKSolve()
 	return pIKSolve;
 }
 
-s_planeConstraint_t *New_planeConstraint(float floor)
-{	
-	s_planeConstraint_t *pConstraint = (s_planeConstraint_t *)kalloc(1, sizeof(s_planeConstraint_t));
+s_planeConstraint_t* New_planeConstraint( float floor )
+{
+	s_planeConstraint_t* pConstraint = ( s_planeConstraint_t* )kalloc( 1, sizeof( s_planeConstraint_t ) );
 	pConstraint->floor = floor;
 	pConstraint->axis = 2;
-	
+
 	return pConstraint;
 }
 
-void Set_DefaultTemplate(s_template_t *pTemplate)
+void Set_DefaultTemplate( s_template_t* pTemplate )
 {
 	pTemplate->numJointScales = 0;
-	
-	strcpy(pTemplate->rootScaleJoint, "ValveBiped.Bip01_L_Foot");
+
+	strcpy( pTemplate->rootScaleJoint, "ValveBiped.Bip01_L_Foot" );
 	pTemplate->rootScaleAmount = 1.0;
 
 	pTemplate->numIKSolves = 4;
@@ -2107,36 +2209,36 @@ void Set_DefaultTemplate(s_template_t *pTemplate)
 	pTemplate->ikSolves[1] = New_IKSolve();
 	pTemplate->ikSolves[2] = New_IKSolve();
 	pTemplate->ikSolves[3] = New_IKSolve();
-	
+
 
 	pTemplate->numPlaneConstraints = 2;
-	pTemplate->planeConstraints[0] = New_planeConstraint(pTemplate->toeFloorZ);
-	strcpy(pTemplate->planeConstraints[0]->jointNameString, "ValveBiped.Bip01_L_Toe0");
-	pTemplate->planeConstraints[1] = New_planeConstraint(pTemplate->toeFloorZ);
-	strcpy(pTemplate->planeConstraints[1]->jointNameString, "ValveBiped.Bip01_R_Toe0");	
+	pTemplate->planeConstraints[0] = New_planeConstraint( pTemplate->toeFloorZ );
+	strcpy( pTemplate->planeConstraints[0]->jointNameString, "ValveBiped.Bip01_L_Toe0" );
+	pTemplate->planeConstraints[1] = New_planeConstraint( pTemplate->toeFloorZ );
+	strcpy( pTemplate->planeConstraints[1]->jointNameString, "ValveBiped.Bip01_R_Toe0" );
 
-	strcpy(pTemplate->ikSolves[0]->jointNameString, "ValveBiped.Bip01_L_Foot");
+	strcpy( pTemplate->ikSolves[0]->jointNameString, "ValveBiped.Bip01_L_Foot" );
 	pTemplate->ikSolves[0]->reverseSolve = 0;
 	pTemplate->ikSolves[0]->extremityScale = 1.0;
 	pTemplate->ikSolves[0]->limbRootOffsetScale[0] = 1.0;
 	pTemplate->ikSolves[0]->limbRootOffsetScale[1] = 1.0;
 	pTemplate->ikSolves[0]->limbRootOffsetScale[2] = 0.0;
 
-	strcpy(pTemplate->ikSolves[1]->jointNameString, "ValveBiped.Bip01_R_Foot");
+	strcpy( pTemplate->ikSolves[1]->jointNameString, "ValveBiped.Bip01_R_Foot" );
 	pTemplate->ikSolves[1]->reverseSolve = 0;
 	pTemplate->ikSolves[1]->extremityScale = 1.0;
 	pTemplate->ikSolves[1]->limbRootOffsetScale[0] = 1.0;
 	pTemplate->ikSolves[1]->limbRootOffsetScale[1] = 1.0;
 	pTemplate->ikSolves[1]->limbRootOffsetScale[2] = 0.0;
 
-	strcpy(pTemplate->ikSolves[2]->jointNameString, "ValveBiped.Bip01_R_Hand");
+	strcpy( pTemplate->ikSolves[2]->jointNameString, "ValveBiped.Bip01_R_Hand" );
 	pTemplate->ikSolves[2]->reverseSolve = 1;
 	pTemplate->ikSolves[2]->extremityScale = 1.0;
 	pTemplate->ikSolves[2]->limbRootOffsetScale[0] = 0.0;
 	pTemplate->ikSolves[2]->limbRootOffsetScale[1] = 0.0;
 	pTemplate->ikSolves[2]->limbRootOffsetScale[2] = 1.0;
 
-	strcpy(pTemplate->ikSolves[3]->jointNameString, "ValveBiped.Bip01_L_Hand");
+	strcpy( pTemplate->ikSolves[3]->jointNameString, "ValveBiped.Bip01_L_Hand" );
 	pTemplate->ikSolves[3]->reverseSolve = 1;
 	pTemplate->ikSolves[3]->extremityScale = 1.0;
 	pTemplate->ikSolves[3]->limbRootOffsetScale[0] = 0.0;
@@ -2148,163 +2250,173 @@ void Set_DefaultTemplate(s_template_t *pTemplate)
 
 }
 
-void split(char *str, char *sep, char **sp)
+void split( char* str, char* sep, char** sp )
 {
-	char *r = strtok(str, sep);
-	while(r != NULL)
+	char* r = strtok( str, sep );
+	while( r != NULL )
 	{
 		*sp = r;
 		sp++;
-		r = strtok(NULL, sep);
+		r = strtok( NULL, sep );
 	}
 	*sp = NULL;
 }
 
-	
-int checkCommand(char *str, char *cmd, int numOptions, int numSplit)
+
+int checkCommand( char* str, char* cmd, int numOptions, int numSplit )
 {
-	if(strcmp(str, cmd) == 0)
+	if( strcmp( str, cmd ) == 0 )
 	{
-		if(numOptions <= numSplit)
+		if( numOptions <= numSplit )
+		{
 			return 1;
+		}
 		else
 		{
-			printf("Error: Number or argument mismatch in template file cmd %s, requires %i, found %i\n", cmd, numOptions, numSplit);
+			printf( "Error: Number or argument mismatch in template file cmd %s, requires %i, found %i\n", cmd, numOptions, numSplit );
 			return 0;
 		}
 	}
 	return 0;
 }
 
-s_template_t *Load_Template(char *name )
+s_template_t* Load_Template( char* name )
 {
 
 	// Sanity check file and init
-	Assert(name);
+	Assert( name );
 
-	s_template_t *pTemplate = New_Template();
-	
+	s_template_t* pTemplate = New_Template();
+
 
 	// Open file
-	if (!OpenGlobalFile( name ))
+	if( !OpenGlobalFile( name ) )
+	{
 		return 0;
+	}
 
 
 	//March through lines
 	g_iLinecount = 0;
-	while(fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL) 
+	while( fgets( g_szLine, sizeof( g_szLine ), g_fpInput ) != NULL )
 	{
 		g_iLinecount++;
-		if(g_szLine[0] == '#')
+		if( g_szLine[0] == '#' )
+		{
 			continue;
-		
-		char *endP = strrchr(g_szLine, '\n');
-		if(endP != NULL)
-			*endP = '\0';
-		
+		}
 
-		char *sp[128];
-		char **spp = sp;
-		
+		char* endP = strrchr( g_szLine, '\n' );
+		if( endP != NULL )
+		{
+			*endP = '\0';
+		}
+
+
+		char* sp[128];
+		char** spp = sp;
+
 		char sep[] = " ";
-		split(g_szLine, sep, sp);
+		split( g_szLine, sep, sp );
 		int numSplit = 0;
-		
-		while(*spp != NULL)
+
+		while( *spp != NULL )
 		{
 			spp++;
 			numSplit++;
-			
+
 		}
-		if(numSplit < 1 ||
-			*sp[0] == '\n')
+		if( numSplit < 1 ||
+				*sp[0] == '\n' )
+		{
 			continue;
+		}
 
 
 		// int numRead = sscanf( g_szLine, "%s %s %s", cmd, &option, &option2 );
 
 		// // Blank line
 		// if ((numRead == EOF) || (numRead == 0))
-			// continue;
+		// continue;
 
 		// commands
-		char	*cmd;
+		char*	cmd;
 		int numOptions = numSplit - 1;
-		
+
 		cmd = sp[0];
-		if(checkCommand(cmd, "twoJointIKSolve", 1, numOptions))
+		if( checkCommand( cmd, "twoJointIKSolve", 1, numOptions ) )
 		{
-			printf("\nCreating two joint IK solve %s\n", sp[1]);
+			printf( "\nCreating two joint IK solve %s\n", sp[1] );
 			pTemplate->ikSolves[pTemplate->numIKSolves] = New_IKSolve();
-			strcpy(pTemplate->ikSolves[pTemplate->numIKSolves]->jointNameString, sp[1]);
+			strcpy( pTemplate->ikSolves[pTemplate->numIKSolves]->jointNameString, sp[1] );
 			pTemplate->numIKSolves++;
-			
+
 		}
-		else if(checkCommand(cmd, "oneJointPlaneConstraint", 1, numOptions))
+		else if( checkCommand( cmd, "oneJointPlaneConstraint", 1, numOptions ) )
 		{
-			printf("\nCreating one joint plane constraint %s\n", sp[1]);
-			pTemplate->planeConstraints[pTemplate->numPlaneConstraints] = New_planeConstraint(pTemplate->toeFloorZ);
-			strcpy(pTemplate->planeConstraints[pTemplate->numPlaneConstraints]->jointNameString, sp[1]);
+			printf( "\nCreating one joint plane constraint %s\n", sp[1] );
+			pTemplate->planeConstraints[pTemplate->numPlaneConstraints] = New_planeConstraint( pTemplate->toeFloorZ );
+			strcpy( pTemplate->planeConstraints[pTemplate->numPlaneConstraints]->jointNameString, sp[1] );
 			pTemplate->numPlaneConstraints++;
 
 		}
-		else if(checkCommand(cmd, "reverseSolve", 1, numOptions)) 
+		else if( checkCommand( cmd, "reverseSolve", 1, numOptions ) )
 		{
-			printf("reverseSolve: %s\n", sp[1]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->reverseSolve = atoi(sp[1]);
+			printf( "reverseSolve: %s\n", sp[1] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->reverseSolve = atoi( sp[1] );
 		}
-		else if(checkCommand(cmd, "extremityScale", 1, numOptions)) 
+		else if( checkCommand( cmd, "extremityScale", 1, numOptions ) )
 		{
-			printf("extremityScale: %s\n", sp[1]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->extremityScale = atof(sp[1]);
+			printf( "extremityScale: %s\n", sp[1] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->extremityScale = atof( sp[1] );
 		}
-		else if(checkCommand(cmd, "limbRootOffsetScale", 3, numOptions)) 
+		else if( checkCommand( cmd, "limbRootOffsetScale", 3, numOptions ) )
 		{
-			printf("limbRootOffsetScale: %s %s %s\n", sp[1], sp[2], sp[3]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[0] = atof(sp[1]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[1] = atof(sp[2]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[2] = atof(sp[3]);
+			printf( "limbRootOffsetScale: %s %s %s\n", sp[1], sp[2], sp[3] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[0] = atof( sp[1] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[1] = atof( sp[2] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->limbRootOffsetScale[2] = atof( sp[3] );
 		}
-		else if(checkCommand(cmd, "toeFloorZ", 1, numOptions))
+		else if( checkCommand( cmd, "toeFloorZ", 1, numOptions ) )
 		{
-			printf("toeFloorZ: %s\n", sp[1]);
-			pTemplate->toeFloorZ = atof(sp[1]);
+			printf( "toeFloorZ: %s\n", sp[1] );
+			pTemplate->toeFloorZ = atof( sp[1] );
 		}
-		else if(checkCommand(cmd, "relativeLock", 2, numOptions)) 
+		else if( checkCommand( cmd, "relativeLock", 2, numOptions ) )
 		{
-			printf("relativeLock: %s\n", sp[1]);
+			printf( "relativeLock: %s\n", sp[1] );
 			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->doRelativeLock = 1;
-			strcpy(pTemplate->ikSolves[pTemplate->numIKSolves - 1]->relativeLockNameString, sp[1]);
-			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->relativeLockScale = atof(sp[2]);
+			strcpy( pTemplate->ikSolves[pTemplate->numIKSolves - 1]->relativeLockNameString, sp[1] );
+			pTemplate->ikSolves[pTemplate->numIKSolves - 1]->relativeLockScale = atof( sp[2] );
 
 		}
-		else if(checkCommand(cmd, "rootScaleJoint", 1, numOptions)) 
+		else if( checkCommand( cmd, "rootScaleJoint", 1, numOptions ) )
 		{
-			printf("\nrootScaleJoint: %s\n", sp[1]);
-			strcpy(pTemplate->rootScaleJoint, sp[1]);
+			printf( "\nrootScaleJoint: %s\n", sp[1] );
+			strcpy( pTemplate->rootScaleJoint, sp[1] );
 		}
-		else if(checkCommand(cmd, "rootScaleAmount", 1, numOptions)) 
+		else if( checkCommand( cmd, "rootScaleAmount", 1, numOptions ) )
 		{
-			printf("rootScaleAmount: %s\n", sp[1]);
-			pTemplate->rootScaleAmount = atof(sp[1]);
+			printf( "rootScaleAmount: %s\n", sp[1] );
+			pTemplate->rootScaleAmount = atof( sp[1] );
 		}
-		else if(checkCommand(cmd, "jointScale", 2, numOptions))
+		else if( checkCommand( cmd, "jointScale", 2, numOptions ) )
 		{
-			printf("\nCreating joint scale %s of %s\n", sp[1], sp[2]);
-			pTemplate->jointScales[pTemplate->numJointScales] = (s_jointScale_t *)kalloc(1, sizeof(s_jointScale_t));
-			strcpy(pTemplate->jointScales[pTemplate->numJointScales]->jointNameString, sp[1]);
-			pTemplate->jointScales[pTemplate->numJointScales]->scale = atof(sp[2]);
+			printf( "\nCreating joint scale %s of %s\n", sp[1], sp[2] );
+			pTemplate->jointScales[pTemplate->numJointScales] = ( s_jointScale_t* )kalloc( 1, sizeof( s_jointScale_t ) );
+			strcpy( pTemplate->jointScales[pTemplate->numJointScales]->jointNameString, sp[1] );
+			pTemplate->jointScales[pTemplate->numJointScales]->scale = atof( sp[2] );
 			pTemplate->numJointScales++;
 		}
-		else if(checkCommand(cmd, "skeletonScale", 2, numOptions))
+		else if( checkCommand( cmd, "skeletonScale", 2, numOptions ) )
 		{
-			printf("\nCreating skeleton scale of %s\n", sp[1]);
+			printf( "\nCreating skeleton scale of %s\n", sp[1] );
 			pTemplate->doSkeletonScale = 1;
-			pTemplate->skeletonScale = atof(sp[1]);
+			pTemplate->skeletonScale = atof( sp[1] );
 		}
-		else 
+		else
 		{
-			MdlWarning("unknown studio command\n" );
+			MdlWarning( "unknown studio command\n" );
 		}
 	}
 	fclose( g_fpInput );
@@ -2314,14 +2426,14 @@ s_template_t *Load_Template(char *name )
 //-----------------------------------------------------------------------------
 // get node index from node string name
 //-----------------------------------------------------------------------------
-int GetNodeIndex(s_source_t *psource, char *nodeName)
+int GetNodeIndex( s_source_t* psource, char* nodeName )
 {
-	for(int i = 0; i < psource->numbones; i++)
+	for( int i = 0; i < psource->numbones; i++ )
 	{
-		if(strcmp(nodeName, psource->localBone[i].name) == 0)
+		if( strcmp( nodeName, psource->localBone[i].name ) == 0 )
 		{
 			return i;
-		}	
+		}
 	}
 	return -1;
 }
@@ -2329,14 +2441,14 @@ int GetNodeIndex(s_source_t *psource, char *nodeName)
 //-----------------------------------------------------------------------------
 // get node index from node string name
 //-----------------------------------------------------------------------------
-void GetNodePath(s_source_t *psource,  int startIndex, int endIndex, int *path)
+void GetNodePath( s_source_t* psource,  int startIndex, int endIndex, int* path )
 {
 	*path = endIndex;
-	
-	s_node_t *nodes;
+
+	s_node_t* nodes;
 	nodes = psource->localBone;
-	while(*path != startIndex)
-	{	
+	while( *path != startIndex )
+	{
 		int parent = nodes[*path].parent;
 		path++;
 		*path = parent;
@@ -2345,167 +2457,167 @@ void GetNodePath(s_source_t *psource,  int startIndex, int endIndex, int *path)
 	*path = -1;
 }
 
-void SumBonePathTranslations(int *indexPath, s_bone_t *boneArray, Vector &resultVector, int rootOffset = 0)
+void SumBonePathTranslations( int* indexPath, s_bone_t* boneArray, Vector& resultVector, int rootOffset = 0 )
 {
 
 	// walk the path
-	int *pathPtr = indexPath;
+	int* pathPtr = indexPath;
 	// M_matrix4x4_t matrixCum;
 
 	// find length of path
 	int length = 0;
-	while(*pathPtr != -1)
+	while( *pathPtr != -1 )
 	{
 		length++;
 		pathPtr++;
 	}
 
-	int l = length - (1 + rootOffset);
+	int l = length - ( 1 + rootOffset );
 
 	resultVector[0] = 0.0;
 	resultVector[1] = 0.0;
 	resultVector[2] = 0.0;
-	
-	for(int i = l; i > -1; i--)
-	{		
-		s_bone_t *thisBone = boneArray + indexPath[i];
+
+	for( int i = l; i > -1; i-- )
+	{
+		s_bone_t* thisBone = boneArray + indexPath[i];
 		resultVector += thisBone->pos;
 	}
 }
 
-void CatBonePath(int *indexPath, s_bone_t *boneArray, M_matrix4x4_t &resultMatrix, int rootOffset = 0)
+void CatBonePath( int* indexPath, s_bone_t* boneArray, M_matrix4x4_t& resultMatrix, int rootOffset = 0 )
 {
 
 	// walk the path
-	int *pathPtr = indexPath;
+	int* pathPtr = indexPath;
 	// M_matrix4x4_t matrixCum;
 
 	// find length of path
 	int length = 0;
-	while(*pathPtr != -1)
+	while( *pathPtr != -1 )
 	{
 		length++;
 		pathPtr++;
 	}
 
-	int l = length - (1 + rootOffset);
+	int l = length - ( 1 + rootOffset );
 
-	for(int i = l; i > -1; i--)
-	{		
-		s_bone_t *thisBone = boneArray + indexPath[i];
+	for( int i = l; i > -1; i-- )
+	{
+		s_bone_t* thisBone = boneArray + indexPath[i];
 		// printf("bone index: %i  %i\n", i, indexPath[i]);
 		// printf("pos: %f %f %f, rot: %f %f %f\n", thisBone->pos.x, thisBone->pos.y, thisBone->pos.z, thisBone->rot.x, thisBone->rot.y, thisBone->rot.z);
-		M_matrix4x4_t thisMatrix;		
-		M_AngleMatrix(thisBone->rot, thisBone->pos, thisMatrix);
+		M_matrix4x4_t thisMatrix;
+		M_AngleMatrix( thisBone->rot, thisBone->pos, thisMatrix );
 		// PRINTMAT(thisMatrix)
 		M_matrix4x4_t tempCum;
-		M_MatrixCopy(resultMatrix, tempCum);
-		M_ConcatTransforms(thisMatrix, tempCum, resultMatrix);
+		M_MatrixCopy( resultMatrix, tempCum );
+		M_ConcatTransforms( thisMatrix, tempCum, resultMatrix );
 	}
-	// PRINTMAT(matrixCum);	
+	// PRINTMAT(matrixCum);
 	// M_MatrixAngles(matrixCum, resultBone.rot, resultBone.pos);
-	
+
 	// printf("pos: %f %f %f, rot: %f %f %f\n", resultBone.pos.x,resultBone.pos.y, resultBone.pos.z, RAD2DEG(resultBone.rot.x),RAD2DEG(resultBone.rot.y),RAD2DEG(resultBone.rot.z));
-	
+
 }
 // int ConformSources(s_source_t *pSource, s_source_t *pTarget)
 // {
-	// if(pSource->numbones != *pTarget->numbones)
-	// {
-		// printf("ERROR: The number of bones in the target file must match the source file.");
-		// return 1;
-	// }
-	// if(pSource->numframes != pTarget->numframes)
-	// {
-		// printf("Note: Source and target frame lengths do not match");
-		// for(int t = 0; t < pTarget->numframes; t++)
-		// {
-			// free(pTarget->rawanim[t]);
-		// }
-		// pTarget->numframes = pSource->numframes;
-		// int size = pTarget->numbones * sizeof( s_bone_t ); 
-		// for(t = 0; t < pTarget->numframes; t++)
-		// {
-			// pTarget->rawanim[t] = (s_bone_t *) kalloc(1, size);
-			// memcpy((void *) pSource->rawanim[t], (void *) pTarget->rawanim[t], size
-		// }	
-	// }			
-	// pTarget->startframe = pSource->startframe;
-	// pTarget->endframe = pSource->endframe;
+// if(pSource->numbones != *pTarget->numbones)
+// {
+// printf("ERROR: The number of bones in the target file must match the source file.");
+// return 1;
+// }
+// if(pSource->numframes != pTarget->numframes)
+// {
+// printf("Note: Source and target frame lengths do not match");
+// for(int t = 0; t < pTarget->numframes; t++)
+// {
+// free(pTarget->rawanim[t]);
+// }
+// pTarget->numframes = pSource->numframes;
+// int size = pTarget->numbones * sizeof( s_bone_t );
+// for(t = 0; t < pTarget->numframes; t++)
+// {
+// pTarget->rawanim[t] = (s_bone_t *) kalloc(1, size);
+// memcpy((void *) pSource->rawanim[t], (void *) pTarget->rawanim[t], size
+// }
+// }
+// pTarget->startframe = pSource->startframe;
+// pTarget->endframe = pSource->endframe;
 
 
 
 
-void ScaleJointsFrame(s_source_t *pSkeleton, s_jointScale_t *jointScale, int t)
+void ScaleJointsFrame( s_source_t* pSkeleton, s_jointScale_t* jointScale, int t )
 {
 	int numBones = pSkeleton->numbones;
 
-	for(int i = 0; i < numBones; i++)
+	for( int i = 0; i < numBones; i++ )
 	{
 		s_node_t pNode = pSkeleton->localBone[i];
-		s_bone_t *pSkelBone = &pSkeleton->rawanim[t][i];
-		if(strcmp(jointScale->jointNameString, pNode.name) == 0)
+		s_bone_t* pSkelBone = &pSkeleton->rawanim[t][i];
+		if( strcmp( jointScale->jointNameString, pNode.name ) == 0 )
 		{
-			// printf("Scaling joint %s\n", pNode.name);			
+			// printf("Scaling joint %s\n", pNode.name);
 			pSkelBone->pos = pSkelBone->pos * jointScale->scale;
 		}
-		
+
 	}
 }
-void ScaleJoints(s_source_t *pSkeleton, s_jointScale_t *jointScale)
+void ScaleJoints( s_source_t* pSkeleton, s_jointScale_t* jointScale )
 {
 	int numFrames = pSkeleton->numframes;
-	for(int t = 0; t < numFrames; t++)
+	for( int t = 0; t < numFrames; t++ )
 	{
-		ScaleJointsFrame(pSkeleton, jointScale, t);
+		ScaleJointsFrame( pSkeleton, jointScale, t );
 	}
 }
 
-void ScaleSkeletonFrame(s_source_t *pSkeleton, float scale, int t)
+void ScaleSkeletonFrame( s_source_t* pSkeleton, float scale, int t )
 {
 	int numBones = pSkeleton->numbones;
 
-	for(int i = 0; i < numBones; i++)
+	for( int i = 0; i < numBones; i++ )
 	{
-		s_bone_t *pSkelBone = &pSkeleton->rawanim[t][i];
+		s_bone_t* pSkelBone = &pSkeleton->rawanim[t][i];
 		pSkelBone->pos = pSkelBone->pos * scale;
-		
+
 	}
 }
-void ScaleSkeleton(s_source_t *pSkeleton, float scale)
+void ScaleSkeleton( s_source_t* pSkeleton, float scale )
 {
 	int numFrames = pSkeleton->numframes;
-	for(int t = 0; t < numFrames; t++)
+	for( int t = 0; t < numFrames; t++ )
 	{
-		ScaleSkeletonFrame(pSkeleton, scale, t);
+		ScaleSkeletonFrame( pSkeleton, scale, t );
 	}
 }
 
-void CombineSkeletonAnimationFrame(s_source_t *pSkeleton, s_source_t *pAnimation, s_bone_t **ppAnim, int t)
+void CombineSkeletonAnimationFrame( s_source_t* pSkeleton, s_source_t* pAnimation, s_bone_t** ppAnim, int t )
 {
 	int numBones = pAnimation->numbones;
 	int size = numBones * sizeof( s_bone_t );
-	ppAnim[t] = (s_bone_t *) kalloc(1, size);
-	for(int i = 0; i < numBones; i++)
+	ppAnim[t] = ( s_bone_t* ) kalloc( 1, size );
+	for( int i = 0; i < numBones; i++ )
 	{
 		s_node_t pNode = pAnimation->localBone[i];
 		s_bone_t pAnimBone = pAnimation->rawanim[t][i];
-		
-		if(pNode.parent > -1)
+
+		if( pNode.parent > -1 )
 		{
-			if ( i < pSkeleton->numbones )
+			if( i < pSkeleton->numbones )
 			{
 				s_bone_t pSkelBone = pSkeleton->rawanim[0][i];
 				ppAnim[t][i].pos = pSkelBone.pos;
 			}
 			else
 			{
-				if ( !g_bGaveMissingBoneWarning )
+				if( !g_bGaveMissingBoneWarning )
 				{
 					g_bGaveMissingBoneWarning = true;
 					Warning( "Warning: Target skeleton has less bones than source animation. Reverting to source data for extra bones.\n" );
 				}
-				
+
 				ppAnim[t][i].pos = pAnimBone.pos;
 			}
 		}
@@ -2513,55 +2625,55 @@ void CombineSkeletonAnimationFrame(s_source_t *pSkeleton, s_source_t *pAnimation
 		{
 			ppAnim[t][i].pos = pAnimBone.pos;
 		}
-		
-		ppAnim[t][i].rot = pAnimBone.rot;	
+
+		ppAnim[t][i].rot = pAnimBone.rot;
 	}
 }
-void CombineSkeletonAnimation(s_source_t *pSkeleton, s_source_t *pAnimation, s_bone_t **ppAnim)
+void CombineSkeletonAnimation( s_source_t* pSkeleton, s_source_t* pAnimation, s_bone_t** ppAnim )
 {
 	int numFrames = pAnimation->numframes;
-	for(int t = 0; t < numFrames; t++)
+	for( int t = 0; t < numFrames; t++ )
 	{
-		CombineSkeletonAnimationFrame(pSkeleton, pAnimation, ppAnim, t);
+		CombineSkeletonAnimationFrame( pSkeleton, pAnimation, ppAnim, t );
 	}
 }
 
 
 //--------------------------------------------------------------------
 // MotionMap
-//--------------------------------------------------------------------  
-s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *pTemplate )
+//--------------------------------------------------------------------
+s_source_t* MotionMap( s_source_t* pSource, s_source_t* pTarget, s_template_t* pTemplate )
 {
 
 	// scale skeleton
-	if(pTemplate->doSkeletonScale)
+	if( pTemplate->doSkeletonScale )
 	{
-		ScaleSkeleton(pTarget, pTemplate->skeletonScale);
+		ScaleSkeleton( pTarget, pTemplate->skeletonScale );
 	}
 
 	// scale joints
-	for(int j = 0; j < pTemplate->numJointScales; j++)
+	for( int j = 0; j < pTemplate->numJointScales; j++ )
 	{
-		s_jointScale_t *pJointScale = pTemplate->jointScales[j];
-		ScaleJoints(pTarget, pJointScale);
+		s_jointScale_t* pJointScale = pTemplate->jointScales[j];
+		ScaleJoints( pTarget, pJointScale );
 	}
-	
+
 
 	// root stuff
 	char rootString[128] = "ValveBiped.Bip01";
 
 	// !!! PARAMETER
-	int rootIndex  = GetNodeIndex(pSource, rootString);
-	int rootScaleIndex = GetNodeIndex(pSource, pTemplate->rootScaleJoint);
+	int rootIndex  = GetNodeIndex( pSource, rootString );
+	int rootScaleIndex = GetNodeIndex( pSource, pTemplate->rootScaleJoint );
 	int rootScalePath[512];
-	if(rootScaleIndex > -1)
+	if( rootScaleIndex > -1 )
 	{
-		GetNodePath(pSource, rootIndex, rootScaleIndex, rootScalePath);
+		GetNodePath( pSource, rootIndex, rootScaleIndex, rootScalePath );
 	}
 	else
 	{
-		printf("Error: Can't find node\n");
-		exit(0);
+		printf( "Error: Can't find node\n" );
+		exit( 0 );
 	}
 	float rootScaleLengthSrc = pSource->rawanim[0][rootScaleIndex].pos[BONEDIR];
 	float rootScaleParentLengthSrc = pSource->rawanim[0][rootScalePath[1]].pos[BONEDIR];
@@ -2571,9 +2683,11 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 	float rootScaleTgt = rootScaleLengthTgt + rootScaleParentLengthTgt;
 	float rootScaleFactor = rootScaleTgt / rootScaleSrc;
 
-	if(g_verbose)
-		printf("Root Scale Factor: %f\n", rootScaleFactor);
-	
+	if( g_verbose )
+	{
+		printf( "Root Scale Factor: %f\n", rootScaleFactor );
+	}
+
 
 	// root scale origin
 	float toeFloorZ = pTemplate->toeFloorZ;
@@ -2582,133 +2696,137 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 
 
 	// setup workspace
-	s_bone_t *combinedRefAnimation[MAXSTUDIOANIMFRAMES];
-	s_bone_t *combinedAnimation[MAXSTUDIOANIMFRAMES];
-	s_bone_t *sourceAnimation[MAXSTUDIOANIMFRAMES];
-	CombineSkeletonAnimation(pTarget, pSource, combinedAnimation);
-	CombineSkeletonAnimation(pTarget, pSource, combinedRefAnimation);
-	
+	s_bone_t* combinedRefAnimation[MAXSTUDIOANIMFRAMES];
+	s_bone_t* combinedAnimation[MAXSTUDIOANIMFRAMES];
+	s_bone_t* sourceAnimation[MAXSTUDIOANIMFRAMES];
+	CombineSkeletonAnimation( pTarget, pSource, combinedAnimation );
+	CombineSkeletonAnimation( pTarget, pSource, combinedRefAnimation );
+
 
 	// do source and target sanity checking
 	int sourceNumFrames = pSource->numframes;
 
 
 	// iterate through limb solves
-	for(int t = 0; t < sourceNumFrames; t++)
+	for( int t = 0; t < sourceNumFrames; t++ )
 	{
 		// setup pTarget for skeleton comparison
 		pTarget->rawanim[t] = combinedRefAnimation[t];
 
-		printf("Note: Processing frame: %i\n", t);
-		for(int ii = 0; ii < pTemplate->numIKSolves; ii++)
+		printf( "Note: Processing frame: %i\n", t );
+		for( int ii = 0; ii < pTemplate->numIKSolves; ii++ )
 		{
-			s_iksolve_t *thisSolve = pTemplate->ikSolves[ii];
-			
-			char *thisJointNameString = thisSolve->jointNameString;
-			int thisJointIndex = GetNodeIndex(pSource, thisJointNameString);
-			
+			s_iksolve_t* thisSolve = pTemplate->ikSolves[ii];
+
+			char* thisJointNameString = thisSolve->jointNameString;
+			int thisJointIndex = GetNodeIndex( pSource, thisJointNameString );
+
 			// init paths to feet
 			int thisJointPathInRoot[512];
-			
+
 			// get paths to feet
-			if(thisJointIndex > -1)
+			if( thisJointIndex > -1 )
 			{
-				GetNodePath(pSource, rootIndex, thisJointIndex, thisJointPathInRoot);
+				GetNodePath( pSource, rootIndex, thisJointIndex, thisJointPathInRoot );
 			}
 			else
 			{
-				printf("Error: Can't find node: %s\n" , thisJointNameString);
-				exit(0);
+				printf( "Error: Can't find node: %s\n" , thisJointNameString );
+				exit( 0 );
 			}
-			
+
 			// leg "root" or thigh pointers
 			//int gParentIndex = thisJointPathInRoot[2];
-			int *gParentPath = thisJointPathInRoot + 2;
-			
+			int* gParentPath = thisJointPathInRoot + 2;
+
 			//----------------------------------------------------------------
 			// get limb lengths
-			//----------------------------------------------------------------  
+			//----------------------------------------------------------------
 			float thisJointLengthSrc = pSource->rawanim[0][thisJointIndex].pos[BONEDIR];
 			float parentJointLengthSrc = pSource->rawanim[0][thisJointPathInRoot[1]].pos[BONEDIR];
-			
+
 			float thisLimbLengthSrc = thisJointLengthSrc + parentJointLengthSrc;
-			
+
 			float thisJointLengthTgt = pTarget->rawanim[0][thisJointIndex].pos[BONEDIR];
 			float parentJointLengthTgt = pTarget->rawanim[0][thisJointPathInRoot[1]].pos[BONEDIR];
-			
+
 			float thisLimbLengthTgt = thisJointLengthTgt + parentJointLengthTgt;
-			
+
 			// Factor leg length delta
 			float thisLimbLength = thisLimbLengthSrc - thisLimbLengthTgt;
 			float thisLimbLengthFactor = thisLimbLengthTgt / thisLimbLengthSrc;
-			
-			if(g_verbose)
-				printf("limb length %s: %i: %f, factor %f\n", thisJointNameString, thisJointIndex, thisLimbLength, thisLimbLengthFactor);
-			
+
+			if( g_verbose )
+			{
+				printf( "limb length %s: %i: %f, factor %f\n", thisJointNameString, thisJointIndex, thisLimbLength, thisLimbLengthFactor );
+			}
+
 			// calculate joint grandparent offset
 			// Note: because there's no reference pose this doesn't take rotation into account.
 			// This only works because of the assumption that joint translations aren't animated.
 			M_matrix4x4_t gParentGlobalMatSrc, gParentGlobalMatTgt;
 			Vector gParentGlobalSrc, gParentGlobalTgt;
-			
-			// SumBonePathTranslations(gParentPath, pSource->rawanim[t], gParentGlobalSrc, 1);			
+
+			// SumBonePathTranslations(gParentPath, pSource->rawanim[t], gParentGlobalSrc, 1);
 			// SumBonePathTranslations(gParentPath, pTarget->rawanim[t], gParentGlobalTgt, 1);
 
 			// get root path to source parent
-			CatBonePath(gParentPath, pSource->rawanim[t], gParentGlobalMatSrc, 1);
+			CatBonePath( gParentPath, pSource->rawanim[t], gParentGlobalMatSrc, 1 );
 			// check against reference animation
-			CatBonePath(gParentPath, pTarget->rawanim[t], gParentGlobalMatTgt, 1);
+			CatBonePath( gParentPath, pTarget->rawanim[t], gParentGlobalMatTgt, 1 );
 
 			gParentGlobalSrc[0] = gParentGlobalMatSrc[3][0];
 			gParentGlobalSrc[1] = gParentGlobalMatSrc[3][1];
 			gParentGlobalSrc[2] = gParentGlobalMatSrc[3][2];
-			
+
 			gParentGlobalTgt[0] = gParentGlobalMatTgt[3][0];
 			gParentGlobalTgt[1] = gParentGlobalMatTgt[3][1];
 			gParentGlobalTgt[2] = gParentGlobalMatTgt[3][2];
-			
 
-			Vector gParentDelta(gParentGlobalTgt - gParentGlobalSrc);
-			
-			if(g_verbose)
-				printf("Grand parent delta: %f %f %f\n", gParentDelta[0], gParentDelta[1], gParentDelta[2]);
+
+			Vector gParentDelta( gParentGlobalTgt - gParentGlobalSrc );
+
+			if( g_verbose )
+			{
+				printf( "Grand parent delta: %f %f %f\n", gParentDelta[0], gParentDelta[1], gParentDelta[2] );
+			}
 
 			gParentDelta *= thisSolve->limbRootOffsetScale;
-			
+
 
 			//----------------------------------------------------------------
 			// time takes effect here
 			// above waste is unavoidable?
 			//----------------------------------------------------------------
 			M_matrix4x4_t rootMat;
-			M_AngleMatrix(pSource->rawanim[t][rootIndex].rot, pSource->rawanim[t][rootIndex].pos, rootMat);
-			
-			
+			M_AngleMatrix( pSource->rawanim[t][rootIndex].rot, pSource->rawanim[t][rootIndex].pos, rootMat );
+
+
 			// OK, time to get it together
 			// 1) scale foot by legLengthFactor in the non-translated thigh space
 			// 2) translate foot by legRootDelta in the space of the root
 			// do we leave everything in the space of the root then? PROBABLY!!
-			
+
 			M_matrix4x4_t thisJointMat, parentJointMat, thisJointInGParentMat;
-			M_AngleMatrix(pSource->rawanim[t][thisJointPathInRoot[0]].rot, pSource->rawanim[t][thisJointPathInRoot[0]].pos, thisJointMat);
-			M_AngleMatrix(pSource->rawanim[t][thisJointPathInRoot[1]].rot, pSource->rawanim[t][thisJointPathInRoot[1]].pos, parentJointMat);
-			M_ConcatTransforms(thisJointMat, parentJointMat, thisJointInGParentMat);
-				
-			if(!thisSolve->doRelativeLock)
+			M_AngleMatrix( pSource->rawanim[t][thisJointPathInRoot[0]].rot, pSource->rawanim[t][thisJointPathInRoot[0]].pos, thisJointMat );
+			M_AngleMatrix( pSource->rawanim[t][thisJointPathInRoot[1]].rot, pSource->rawanim[t][thisJointPathInRoot[1]].pos, parentJointMat );
+			M_ConcatTransforms( thisJointMat, parentJointMat, thisJointInGParentMat );
+
+			if( !thisSolve->doRelativeLock )
 			{
 				// scale around grand parent
-				float effectiveScaleFactor = ((thisLimbLengthFactor - 1.0) * thisSolve->extremityScale ) + 1.0;
+				float effectiveScaleFactor = ( ( thisLimbLengthFactor - 1.0 ) * thisSolve->extremityScale ) + 1.0;
 				thisJointInGParentMat[3][0] *= effectiveScaleFactor;
 				thisJointInGParentMat[3][1] *= effectiveScaleFactor;
 				thisJointInGParentMat[3][2] *= effectiveScaleFactor;
 			}
-			
+
 			// adjust into source root space
 			M_matrix4x4_t gParentInRootMat, thisJointInRootMat;
-			CatBonePath(gParentPath, pSource->rawanim[t], gParentInRootMat, 1);
-			M_ConcatTransforms(thisJointInGParentMat, gParentInRootMat, thisJointInRootMat);			
-				
-			if(!thisSolve->doRelativeLock)
+			CatBonePath( gParentPath, pSource->rawanim[t], gParentInRootMat, 1 );
+			M_ConcatTransforms( thisJointInGParentMat, gParentInRootMat, thisJointInRootMat );
+
+			if( !thisSolve->doRelativeLock )
 			{
 				// adjust by difference of local root
 				thisJointInRootMat[3][0] += gParentDelta[0];
@@ -2717,34 +2835,34 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 			}
 			else
 			{
-				char *relativeJointNameString = thisSolve->relativeLockNameString;
-				int relativeJointIndex = GetNodeIndex(pSource, relativeJointNameString);
-				
+				char* relativeJointNameString = thisSolve->relativeLockNameString;
+				int relativeJointIndex = GetNodeIndex( pSource, relativeJointNameString );
+
 				// init paths to feet
 				int relativeJointPathInRoot[512];
-				
+
 				// get paths to feet
-				if(relativeJointIndex > -1)
+				if( relativeJointIndex > -1 )
 				{
-					GetNodePath(pSource, rootIndex, relativeJointIndex, relativeJointPathInRoot);
+					GetNodePath( pSource, rootIndex, relativeJointIndex, relativeJointPathInRoot );
 				}
 				else
 				{
-					printf("Error: Can't find node: %s\n" , relativeJointNameString);
-					exit(0);
+					printf( "Error: Can't find node: %s\n" , relativeJointNameString );
+					exit( 0 );
 				}
 				// get the source relative joint
 				M_matrix4x4_t relativeJointInRootMatSrc, relativeJointInRootMatSrcInverse, thisJointInRelativeSrcMat;
-				CatBonePath(relativeJointPathInRoot, pSource->rawanim[t], relativeJointInRootMatSrc, 1);
-				M_MatrixInvert(relativeJointInRootMatSrc, relativeJointInRootMatSrcInverse);
-				M_ConcatTransforms(thisJointInRootMat, relativeJointInRootMatSrcInverse, thisJointInRelativeSrcMat);
-				if(thisSolve->relativeLockScale != 1.0)
+				CatBonePath( relativeJointPathInRoot, pSource->rawanim[t], relativeJointInRootMatSrc, 1 );
+				M_MatrixInvert( relativeJointInRootMatSrc, relativeJointInRootMatSrcInverse );
+				M_ConcatTransforms( thisJointInRootMat, relativeJointInRootMatSrcInverse, thisJointInRelativeSrcMat );
+				if( thisSolve->relativeLockScale != 1.0 )
 				{
 					thisJointInRelativeSrcMat[3][0] *= thisSolve->relativeLockScale;
 					thisJointInRelativeSrcMat[3][1] *= thisSolve->relativeLockScale;
 					thisJointInRelativeSrcMat[3][2] *= thisSolve->relativeLockScale;
 				}
-				
+
 				// swap momentarily to get new destination
 				// NOTE: the relative lock must have already been solved
 				sourceAnimation[t] = pSource->rawanim[t];
@@ -2752,8 +2870,8 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 
 				// get new relative location
 				M_matrix4x4_t relativeJointInRootMatTgt;
-				CatBonePath(relativeJointPathInRoot, pSource->rawanim[t], relativeJointInRootMatTgt, 1);
-				M_ConcatTransforms(thisJointInRelativeSrcMat, relativeJointInRootMatTgt, thisJointInRootMat);
+				CatBonePath( relativeJointPathInRoot, pSource->rawanim[t], relativeJointInRootMatTgt, 1 );
+				M_ConcatTransforms( thisJointInRelativeSrcMat, relativeJointInRootMatTgt, thisJointInRootMat );
 
 				// swap back just for cleanliness
 				// a little overkill as it's just swapped
@@ -2762,142 +2880,142 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 				pSource->rawanim[t] = sourceAnimation[t];
 
 			}
-			
+
 			//----------------------------------------------------------------
 			// swap animation
 			//----------------------------------------------------------------
 			sourceAnimation[t] = pSource->rawanim[t];
 			pSource->rawanim[t] = combinedAnimation[t];
-			
+
 			//----------------------------------------------------------------
 			// make thigh data global based on new skeleton
-			//----------------------------------------------------------------  
+			//----------------------------------------------------------------
 			// get thigh in global space
 			M_matrix4x4_t gParentInTgtRootMat, ggParentInTgtRootMat;
 			// int *gParentPath = thisJointPathInRoot + 2;
-			CatBonePath(gParentPath, pSource->rawanim[t], gParentInTgtRootMat, 1);
-			CatBonePath(gParentPath+1, pSource->rawanim[t], ggParentInTgtRootMat, 1);
-			
-			
+			CatBonePath( gParentPath, pSource->rawanim[t], gParentInTgtRootMat, 1 );
+			CatBonePath( gParentPath + 1, pSource->rawanim[t], ggParentInTgtRootMat, 1 );
+
+
 			//----------------------------------------------------------------
 			// Calculate IK for legs
 			//----------------------------------------------------------------
-			float parentJointLength = pSource->rawanim[t][*(thisJointPathInRoot + 1)].pos[BONEDIR];
+			float parentJointLength = pSource->rawanim[t][*( thisJointPathInRoot + 1 )].pos[BONEDIR];
 			float thisJointLength = pSource->rawanim[t][thisJointIndex].pos[BONEDIR];
-			
+
 			Vector thisLimbHypot;
 			thisLimbHypot[0] = thisJointInRootMat[3][0] - gParentInTgtRootMat[3][0];
 			thisLimbHypot[1] = thisJointInRootMat[3][1] - gParentInTgtRootMat[3][1];
 			thisLimbHypot[2] = thisJointInRootMat[3][2] - gParentInTgtRootMat[3][2];
-			
+
 			float thisLimbHypotLength = thisLimbHypot.Length();
-			
+
 			// law of cosines!
-			float gParentCos = (thisLimbHypotLength*thisLimbHypotLength + parentJointLength*parentJointLength - thisJointLength*thisJointLength) / (2*parentJointLength*thisLimbHypotLength);
-			float parentCos = (parentJointLength*parentJointLength + thisJointLength*thisJointLength - thisLimbHypotLength*thisLimbHypotLength) / (2*parentJointLength*thisJointLength);
-			
-			VectorNormalize(thisLimbHypot);
-			
+			float gParentCos = ( thisLimbHypotLength * thisLimbHypotLength + parentJointLength * parentJointLength - thisJointLength * thisJointLength ) / ( 2 * parentJointLength * thisLimbHypotLength );
+			float parentCos = ( parentJointLength * parentJointLength + thisJointLength * thisJointLength - thisLimbHypotLength * thisLimbHypotLength ) / ( 2 * parentJointLength * thisJointLength );
+
+			VectorNormalize( thisLimbHypot );
+
 			Vector thisLimbHypotUnit = thisLimbHypot;
-			
+
 			M_matrix4x4_t gParentJointIKMat;
 			Vector gParentJointIKRot, gParentJointIKOrth;
-			
+
 			gParentJointIKRot[0] = gParentInTgtRootMat[BONEUP][0];
 			gParentJointIKRot[1] = gParentInTgtRootMat[BONEUP][1];
 			gParentJointIKRot[2] = gParentInTgtRootMat[BONEUP][2];
-			
-			VectorNormalize(gParentJointIKRot);
-			gParentJointIKOrth = gParentJointIKRot.Cross(thisLimbHypotUnit);
-			VectorNormalize(gParentJointIKOrth);
-			gParentJointIKRot = thisLimbHypotUnit.Cross(gParentJointIKOrth);
-			VectorNormalize(gParentJointIKRot);
-			
-			M_MatrixCopy(gParentInTgtRootMat, gParentJointIKMat);
-			
+
+			VectorNormalize( gParentJointIKRot );
+			gParentJointIKOrth = gParentJointIKRot.Cross( thisLimbHypotUnit );
+			VectorNormalize( gParentJointIKOrth );
+			gParentJointIKRot = thisLimbHypotUnit.Cross( gParentJointIKOrth );
+			VectorNormalize( gParentJointIKRot );
+
+			M_MatrixCopy( gParentInTgtRootMat, gParentJointIKMat );
+
 			gParentJointIKMat[0][0] = thisLimbHypotUnit[0];
 			gParentJointIKMat[0][1] = thisLimbHypotUnit[1];
 			gParentJointIKMat[0][2] = thisLimbHypotUnit[2];
-			
+
 			gParentJointIKMat[1][0] = gParentJointIKOrth[0];
 			gParentJointIKMat[1][1] = gParentJointIKOrth[1];
 			gParentJointIKMat[1][2] = gParentJointIKOrth[2];
-			
+
 			gParentJointIKMat[2][0] = gParentJointIKRot[0];
 			gParentJointIKMat[2][1] = gParentJointIKRot[1];
 			gParentJointIKMat[2][2] = gParentJointIKRot[2];
-			
-			
+
+
 			M_matrix4x4_t gParentJointIKRotMat, gParentJointResultMat;
 			float gParentDeg;
-			if(thisSolve->reverseSolve)
+			if( thisSolve->reverseSolve )
 			{
-				gParentDeg = acos(gParentCos);
+				gParentDeg = acos( gParentCos );
 			}
 			else
 			{
-				gParentDeg = -acos(gParentCos);
+				gParentDeg = -acos( gParentCos );
 			}
 
 			// sanity check limb length
-			if(thisLimbHypotLength < thisLimbLengthTgt)
-			{	
-				M_RotateZMatrix(gParentDeg, gParentJointIKRotMat);
+			if( thisLimbHypotLength < thisLimbLengthTgt )
+			{
+				M_RotateZMatrix( gParentDeg, gParentJointIKRotMat );
 			}
-			
-			M_ConcatTransforms(gParentJointIKRotMat, gParentJointIKMat, gParentJointResultMat);
-			
+
+			M_ConcatTransforms( gParentJointIKRotMat, gParentJointIKMat, gParentJointResultMat );
+
 			M_matrix4x4_t parentJointIKRotMat;
 			//!!! shouldn't need the 180 degree  addition, something in the law of cosines!!!
 			float parentDeg;
-			if(thisSolve->reverseSolve)
+			if( thisSolve->reverseSolve )
 			{
-				parentDeg = acos(parentCos)+M_PI;
+				parentDeg = acos( parentCos ) + M_PI;
 			}
 			else
 			{
-				parentDeg = -acos(parentCos)+M_PI;
-			}
-			
-			// sanity check limb length
-			if(thisLimbHypotLength < thisLimbLengthTgt)
-			{	
-				M_RotateZMatrix(parentDeg, parentJointIKRotMat);
+				parentDeg = -acos( parentCos ) + M_PI;
 			}
 
-		
+			// sanity check limb length
+			if( thisLimbHypotLength < thisLimbLengthTgt )
+			{
+				M_RotateZMatrix( parentDeg, parentJointIKRotMat );
+			}
+
+
 			// Thighs
 			M_matrix4x4_t ggParentInTgtRootMatInverse, gParentJointLocalMat;
-			M_MatrixInvert(ggParentInTgtRootMat, ggParentInTgtRootMatInverse);
-			M_ConcatTransforms(gParentJointResultMat, ggParentInTgtRootMatInverse, gParentJointLocalMat);
-			
+			M_MatrixInvert( ggParentInTgtRootMat, ggParentInTgtRootMatInverse );
+			M_ConcatTransforms( gParentJointResultMat, ggParentInTgtRootMatInverse, gParentJointLocalMat );
+
 			s_bone_t resultBone;
-			
+
 			// temp test stuff
 			// M_MatrixAngles(thisJointInRootMat, resultBone.rot, resultBone.pos);
 			// pSource->rawanim[t][thisJointIndex].rot = resultBone.rot;
 			// pSource->rawanim[t][thisJointIndex].pos = resultBone.pos;
-			
+
 			// M_MatrixAngles(gParentInTgtRootMat, resultBone.rot, resultBone.pos);
 			// pSource->rawanim[t][gParentIndex].rot = resultBone.rot;
 			// pSource->rawanim[t][gParentIndex].pos = resultBone.pos;
-			
-			
-			M_MatrixAngles(gParentJointLocalMat, resultBone.rot, resultBone.pos);
+
+
+			M_MatrixAngles( gParentJointLocalMat, resultBone.rot, resultBone.pos );
 			pSource->rawanim[t][*gParentPath].pos = resultBone.pos;
 			pSource->rawanim[t][*gParentPath].rot = resultBone.rot;
-			
-			M_MatrixAngles(parentJointIKRotMat, resultBone.rot, resultBone.pos);
-			pSource->rawanim[t][*(thisJointPathInRoot+1)].rot = resultBone.rot;
-			
+
+			M_MatrixAngles( parentJointIKRotMat, resultBone.rot, resultBone.pos );
+			pSource->rawanim[t][*( thisJointPathInRoot + 1 )].rot = resultBone.rot;
+
 			M_matrix4x4_t parentJointGlobalMat, parentJointGlobalMatInverse, thisJointLocalMat;
-			CatBonePath(thisJointPathInRoot+1, pSource->rawanim[t], parentJointGlobalMat, 1);
-			
-			
-			M_MatrixInvert(parentJointGlobalMat, parentJointGlobalMatInverse);
-			M_ConcatTransforms(thisJointInRootMat, parentJointGlobalMatInverse, thisJointLocalMat);
-			
-			M_MatrixAngles(thisJointLocalMat, resultBone.rot, resultBone.pos);
+			CatBonePath( thisJointPathInRoot + 1, pSource->rawanim[t], parentJointGlobalMat, 1 );
+
+
+			M_MatrixInvert( parentJointGlobalMat, parentJointGlobalMatInverse );
+			M_ConcatTransforms( thisJointInRootMat, parentJointGlobalMatInverse, thisJointLocalMat );
+
+			M_MatrixAngles( thisJointLocalMat, resultBone.rot, resultBone.pos );
 			pSource->rawanim[t][thisJointIndex].rot = resultBone.rot;
 
 
@@ -2912,84 +3030,86 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 
 		//----------------------------------------------------------------
 		// adjust root
-		//----------------------------------------------------------------  
+		//----------------------------------------------------------------
 		Vector originBonePos = pSource->rawanim[t][rootIndex].pos;
 		Vector rootInScaleOrigin = originBonePos - rootScaleOrigin;
-		float effectiveRootScale = ((rootScaleFactor - 1.0) * pTemplate->rootScaleAmount) + 1.0;
+		float effectiveRootScale = ( ( rootScaleFactor - 1.0 ) * pTemplate->rootScaleAmount ) + 1.0;
 		Vector scaledRoot = rootInScaleOrigin * effectiveRootScale;
 		pSource->rawanim[t][rootIndex].pos = rootScaleOrigin + scaledRoot;
 
 		//------------------------------------------------------------
-        // plane constraints
-        //------------------------------------------------------------
-		for(int ii = 0; ii < pTemplate->numPlaneConstraints; ii++)
+		// plane constraints
+		//------------------------------------------------------------
+		for( int ii = 0; ii < pTemplate->numPlaneConstraints; ii++ )
 		{
-			s_planeConstraint_t *thisSolve = pTemplate->planeConstraints[ii];
-			
-			char *thisJointNameString = thisSolve->jointNameString;
-			if(g_verbose)
-				printf("Executing plane constraint: %s\n", thisJointNameString);
-			
-			int thisJointIndex = GetNodeIndex(pSource, thisJointNameString);
-			
+			s_planeConstraint_t* thisSolve = pTemplate->planeConstraints[ii];
+
+			char* thisJointNameString = thisSolve->jointNameString;
+			if( g_verbose )
+			{
+				printf( "Executing plane constraint: %s\n", thisJointNameString );
+			}
+
+			int thisJointIndex = GetNodeIndex( pSource, thisJointNameString );
+
 			// init paths to feet
 			int thisJointPath[512];
-			
+
 			// get paths to feet
-			if(thisJointIndex > -1)
+			if( thisJointIndex > -1 )
 			{
-				GetNodePath(pSource, -1, thisJointIndex, thisJointPath);
+				GetNodePath( pSource, -1, thisJointIndex, thisJointPath );
 			}
 			else
 			{
-				printf("Error: Can't find node: %s\n" , thisJointNameString);
-				exit(0);
+				printf( "Error: Can't find node: %s\n" , thisJointNameString );
+				exit( 0 );
 			}
 			int parentIndex = thisJointPath[1];
-			int *parentPath = thisJointPath + 1;
-			
-			M_matrix4x4_t thisJointGlobalMat, parentJointGlobalMat, gParentJointGlobalMat, gParentJointGlobalMatInverse;
-			CatBonePath(thisJointPath, pSource->rawanim[t], thisJointGlobalMat, 0);
-			CatBonePath(parentPath, pSource->rawanim[t], parentJointGlobalMat, 0);
-			CatBonePath(parentPath+1, pSource->rawanim[t], gParentJointGlobalMat, 0);
-			M_MatrixInvert(gParentJointGlobalMat, gParentJointGlobalMatInverse);
+			int* parentPath = thisJointPath + 1;
 
-			if(thisJointGlobalMat[3][thisSolve->axis] < thisSolve->floor)
+			M_matrix4x4_t thisJointGlobalMat, parentJointGlobalMat, gParentJointGlobalMat, gParentJointGlobalMatInverse;
+			CatBonePath( thisJointPath, pSource->rawanim[t], thisJointGlobalMat, 0 );
+			CatBonePath( parentPath, pSource->rawanim[t], parentJointGlobalMat, 0 );
+			CatBonePath( parentPath + 1, pSource->rawanim[t], gParentJointGlobalMat, 0 );
+			M_MatrixInvert( gParentJointGlobalMat, gParentJointGlobalMatInverse );
+
+			if( thisJointGlobalMat[3][thisSolve->axis] < thisSolve->floor )
 			{
 				// printf("-- broken plane: %f\n", thisJointGlobalMat[3][thisSolve->axis]);
-				if(parentJointGlobalMat[3][thisSolve->axis] < thisSolve->floor)
+				if( parentJointGlobalMat[3][thisSolve->axis] < thisSolve->floor )
 				{
-					printf("Error: Constraint parent has broken the plane, this frame's plane constraint unsolvable!\n");
+					printf( "Error: Constraint parent has broken the plane, this frame's plane constraint unsolvable!\n" );
 				}
 				else
 				{
-					Vector parentJointAtPlane(parentJointGlobalMat[3][0], parentJointGlobalMat[3][1], parentJointGlobalMat[3][2]);
-					Vector parentPos(parentJointGlobalMat[3][0], parentJointGlobalMat[3][1], parentJointGlobalMat[3][2]);
-					Vector thisJointAtPlane(thisJointGlobalMat[3][0], thisJointGlobalMat[3][1], thisJointGlobalMat[3][2]);
-					Vector thisJointPos(thisJointGlobalMat[3][0], thisJointGlobalMat[3][1], thisJointGlobalMat[3][2]);
+					Vector parentJointAtPlane( parentJointGlobalMat[3][0], parentJointGlobalMat[3][1], parentJointGlobalMat[3][2] );
+					Vector parentPos( parentJointGlobalMat[3][0], parentJointGlobalMat[3][1], parentJointGlobalMat[3][2] );
+					Vector thisJointAtPlane( thisJointGlobalMat[3][0], thisJointGlobalMat[3][1], thisJointGlobalMat[3][2] );
+					Vector thisJointPos( thisJointGlobalMat[3][0], thisJointGlobalMat[3][1], thisJointGlobalMat[3][2] );
 
 					thisJointAtPlane[thisSolve->axis] = thisSolve->floor;
 					parentJointAtPlane[thisSolve->axis] = thisSolve->floor;
 
 					float thisJointLength = pSource->rawanim[t][thisJointIndex].pos[BONEAXIS];
 					float parentLengthToPlane = parentPos[thisSolve->axis] - thisSolve->floor;
-					float adjacent = sqrtf((thisJointLength * thisJointLength) - (parentLengthToPlane * parentLengthToPlane));
+					float adjacent = sqrtf( ( thisJointLength * thisJointLength ) - ( parentLengthToPlane * parentLengthToPlane ) );
 					Vector parentDirection = thisJointAtPlane - parentJointAtPlane;
-					VectorNormalize(parentDirection);
-					
-					Vector newJointPos = parentJointAtPlane + (parentDirection * adjacent);
+					VectorNormalize( parentDirection );
+
+					Vector newJointPos = parentJointAtPlane + ( parentDirection * adjacent );
 
 					Vector newParentDir = newJointPos - parentPos;
-					Vector parentUp(parentJointGlobalMat[BONEUP][0], parentJointGlobalMat[BONEUP][1], parentJointGlobalMat[BONEUP][2]);
-					
-					VectorNormalize(newParentDir);
-					VectorNormalize(parentUp);
+					Vector parentUp( parentJointGlobalMat[BONEUP][0], parentJointGlobalMat[BONEUP][1], parentJointGlobalMat[BONEUP][2] );
+
+					VectorNormalize( newParentDir );
+					VectorNormalize( parentUp );
 					// Vector parentSide = newParentDir.Cross(parentUp);
-					Vector parentSide = parentUp.Cross(newParentDir);
-					VectorNormalize(parentSide);
-					parentUp = newParentDir.Cross(parentSide);
+					Vector parentSide = parentUp.Cross( newParentDir );
+					VectorNormalize( parentSide );
+					parentUp = newParentDir.Cross( parentSide );
 					// parentUp = parentSide.Cross(newParentDir);
-					VectorNormalize(parentUp);
+					VectorNormalize( parentUp );
 					parentJointGlobalMat[BONEDIR][0] = newParentDir[0];
 					parentJointGlobalMat[BONEDIR][1] = newParentDir[1];
 					parentJointGlobalMat[BONEDIR][2] = newParentDir[2];
@@ -2999,14 +3119,14 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 					parentJointGlobalMat[BONESIDE][0] = parentSide[0];
 					parentJointGlobalMat[BONESIDE][1] = parentSide[1];
 					parentJointGlobalMat[BONESIDE][2] = parentSide[2];
-					
-					
+
+
 					M_matrix4x4_t newParentJointMat;
-					
-					M_ConcatTransforms(parentJointGlobalMat, gParentJointGlobalMatInverse, newParentJointMat);
-					
+
+					M_ConcatTransforms( parentJointGlobalMat, gParentJointGlobalMatInverse, newParentJointMat );
+
 					s_bone_t resultBone;
-					M_MatrixAngles(newParentJointMat, resultBone.rot, resultBone.pos);
+					M_MatrixAngles( newParentJointMat, resultBone.rot, resultBone.pos );
 					pSource->rawanim[t][parentIndex].rot = resultBone.rot;
 				}
 			}
@@ -3016,19 +3136,19 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 		combinedAnimation[t] = pSource->rawanim[t];
 		pSource->rawanim[t] = sourceAnimation[t];
 	}
-	for(int t = 0; t < sourceNumFrames; t++)
+	for( int t = 0; t < sourceNumFrames; t++ )
 	{
 		pTarget->rawanim[t] = combinedAnimation[t];
 	}
 	pTarget->numframes = sourceNumFrames;
-	
 
 
-	
+
+
 
 #if 0
 	// Process motion mapping into out and return that
-	s_source_t *out = new s_source_t;
+	s_source_t* out = new s_source_t;
 
 	return out;
 #else
@@ -3037,8 +3157,8 @@ s_source_t *MotionMap( s_source_t *pSource, s_source_t *pTarget, s_template_t *p
 #endif
 }
 
-char templates[] = 
-"\n\
+char templates[] =
+	"\n\
 #\n\
 # default template file is analogus to not specifying a template file at all\n\
 #\n\
@@ -3082,7 +3202,7 @@ void UsageAndExit()
 \toutput:  animation from source mapped onto target skeleton (contains new ref pose)\n\
 \t-templateFile filename : specifies a template file for guiding the mapping of motion\n\
 \t-printTemplate: Causes motionmapper to output the contents of an example template file, which can be used in conjunction with the -templateFile argument to create various motion effects.\n\
-\n");
+\n" );
 }
 
 void PrintHeader()
@@ -3098,13 +3218,13 @@ void PrintHeader()
 main
 ==============
 */
-int main (int argc, char **argv)
+int main( int argc, char** argv )
 {
 	int		i;
-	
+
 	int useTemplate = 0;
 	char templateFileName[1024];
-	
+
 	// Header
 	PrintHeader();
 
@@ -3118,61 +3238,61 @@ int main (int argc, char **argv)
 	g_defaultrotation = RadianEuler( 0, 0, M_PI / 2 );
 
 	// No args?
-	if (argc == 1)
+	if( argc == 1 )
 	{
 		UsageAndExit();
 	}
-	
+
 	// Init variable
-	g_quiet = false;	
-	
+	g_quiet = false;
+
 	// list template hooey
 	CUtlVector< CUtlSymbol > filenames;
 
 	// Get args
-	for (i = 1; i < argc; i++) 
+	for( i = 1; i < argc; i++ )
 	{
 		// Switches
-		if (argv[i][0] == '-') 
+		if( argv[i][0] == '-' )
 		{
-			if (!stricmp(argv[i], "-allowdebug"))
+			if( !stricmp( argv[i], "-allowdebug" ) )
 			{
 				// Ignore, used by interface system to catch debug builds checked into release tree
 				continue;
 			}
 
-			if (!stricmp(argv[i], "-quiet"))
+			if( !stricmp( argv[i], "-quiet" ) )
 			{
 				g_quiet = true;
 				g_verbose = false;
 				continue;
 			}
 
-			if (!stricmp(argv[i], "-verbose"))
+			if( !stricmp( argv[i], "-verbose" ) )
 			{
 				g_quiet = false;
 				g_verbose = true;
 				continue;
 			}
-			if (!stricmp(argv[i], "-printTemplate"))
+			if( !stricmp( argv[i], "-printTemplate" ) )
 			{
-				printf("%s\n", templates);
-				exit(0);
-				
+				printf( "%s\n", templates );
+				exit( 0 );
+
 			}
-			if (!stricmp(argv[i], "-templateFile"))
+			if( !stricmp( argv[i], "-templateFile" ) )
 			{
-				if(i + 1 < argc)
+				if( i + 1 < argc )
 				{
-					strcpy( templateFileName, argv[i+1]);
+					strcpy( templateFileName, argv[i + 1] );
 					useTemplate = 1;
-					printf("Note: %s passed as template file", templateFileName);
+					printf( "Note: %s passed as template file", templateFileName );
 				}
 				else
 				{
-					printf("Error: -templateFile requires an argument, none found!");
+					printf( "Error: -templateFile requires an argument, none found!" );
 					UsageAndExit();
-					
+
 				}
 				i++;
 				continue;
@@ -3184,14 +3304,14 @@ int main (int argc, char **argv)
 			CUtlSymbol sym = argv[ i ];
 			filenames.AddToTail( sym );
 		}
-	}	
+	}
 
 	// Enough file args?
-	if ( filenames.Count() != 3 )
+	if( filenames.Count() != 3 )
 	{
 		// misformed arguments
 		// otherwise generating unintended results
-		printf("Error: 3 file arguments required, %i found!", filenames.Count());
+		printf( "Error: 3 file arguments required, %i found!", filenames.Count() );
 		UsageAndExit();
 	}
 
@@ -3209,59 +3329,59 @@ int main (int argc, char **argv)
 	Q_FileBase( g_outfile, g_outfile, sizeof( g_outfile ) );
 
 	// Verbose stuff
-	if (!g_quiet)
+	if( !g_quiet )
 	{
 		vprint( 0, "%s, %s, %s, path %s\n", qdir, gamedir, g_outfile );
 	}
 	// ??
-	Q_DefaultExtension(g_outfile, ".smd", sizeof( g_outfile ) );
-	
+	Q_DefaultExtension( g_outfile, ".smd", sizeof( g_outfile ) );
+
 	// Verbose stuff
-	if (!g_quiet)
+	if( !g_quiet )
 	{
 		vprint( 0, "Source animation:  %s\n", filenames[ sourceanim ].String() );
 		vprint( 0, "Target skeleton:  %s\n", filenames[ targetskel ].String() );
 
-		vprint( 0, "Creating on \"%s\"\n", g_outfile);
+		vprint( 0, "Creating on \"%s\"\n", g_outfile );
 	}
 	// fullpath = EXTERNAL GLOBAL!!!???
 	strcpy( fullpath, g_outfile );
 	strcpy( fullpath, ExpandPath( fullpath ) );
 	strcpy( fullpath, ExpandArg( fullpath ) );
-	
+
 	// Load source and target data
-	s_source_t *pSource = Load_Source( filenames[sourceanim].String(), "smd", false, false );
-	s_source_t *pTarget = Load_Source( filenames[targetskel].String(), "smd", false, false );
+	s_source_t* pSource = Load_Source( filenames[sourceanim].String(), "smd", false, false );
+	s_source_t* pTarget = Load_Source( filenames[targetskel].String(), "smd", false, false );
 
 
 	//
-	s_template_t *pTemplate = NULL;
-	if(useTemplate)
+	s_template_t* pTemplate = NULL;
+	if( useTemplate )
 	{
-		pTemplate = Load_Template(templateFileName);
+		pTemplate = Load_Template( templateFileName );
 	}
 	else
 	{
-		printf("Note: No template file specified, using defaults settings.\n");
-		
+		printf( "Note: No template file specified, using defaults settings.\n" );
+
 		pTemplate = New_Template();
-		Set_DefaultTemplate(pTemplate);
+		Set_DefaultTemplate( pTemplate );
 	}
-	
+
 
 	// Process skeleton
-	s_source_t *pMappedAnimation = MotionMap( pSource, pTarget, pTemplate );
+	s_source_t* pMappedAnimation = MotionMap( pSource, pTarget, pTemplate );
 
-	
+
 	// Save output (ref skeleton & animation data);
 	Save_SMD( fullpath, pMappedAnimation );
 
 	Q_StripExtension( filenames[outputanim].String(), outname, sizeof( outname ) );
 
 	// Verbose stuff
-	if (!g_quiet)
+	if( !g_quiet )
 	{
-		vprint( 0, "\nCompleted \"%s\"\n", g_outfile);
+		vprint( 0, "\nCompleted \"%s\"\n", g_outfile );
 	}
 
 	return 0;

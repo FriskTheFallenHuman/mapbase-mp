@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -22,7 +22,7 @@ public:
 	DECLARE_CLASS( C_TESparks, C_TEParticleSystem );
 	DECLARE_CLIENTCLASS();
 
-					C_TESparks( void );
+	C_TESparks( void );
 	virtual			~C_TESparks( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -34,14 +34,14 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESparks::C_TESparks( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESparks::~C_TESparks( void )
 {
@@ -55,17 +55,19 @@ void C_TESparks::Precache( void )
 //-----------------------------------------------------------------------------
 // Recording
 //-----------------------------------------------------------------------------
-static inline void RecordSparks( const Vector &start, int nMagnitude, int nTrailLength, const Vector &direction )
+static inline void RecordSparks( const Vector& start, int nMagnitude, int nTrailLength, const Vector& direction )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		KeyValues *msg = new KeyValues( "TempEntity" );
+		return;
+	}
 
- 		msg->SetInt( "te", TE_SPARKS );
- 		msg->SetString( "name", "TE_Sparks" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_SPARKS );
+		msg->SetString( "name", "TE_Sparks" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -83,7 +85,7 @@ static inline void RecordSparks( const Vector &start, int nMagnitude, int nTrail
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TESparks::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -92,14 +94,14 @@ void C_TESparks::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_Sparks( IRecipientFilter& filter, float delay,
-	const Vector* pos, int nMagnitude, int nTrailLength, const Vector *pDir )
+				const Vector* pos, int nMagnitude, int nTrailLength, const Vector* pDir )
 {
 	g_pEffects->Sparks( *pos, nMagnitude, nTrailLength, pDir );
 	RecordSparks( *pos, nMagnitude, nTrailLength, *pDir );
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESparks, DT_TESparks, CTESparks)
-	RecvPropInt( RECVINFO( m_nMagnitude ) ),
-	RecvPropInt( RECVINFO( m_nTrailLength ) ),
-	RecvPropVector( RECVINFO( m_vecDir ) ),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TESparks, DT_TESparks, CTESparks )
+RecvPropInt( RECVINFO( m_nMagnitude ) ),
+			 RecvPropInt( RECVINFO( m_nTrailLength ) ),
+			 RecvPropVector( RECVINFO( m_vecDir ) ),
+			 END_RECV_TABLE()

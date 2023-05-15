@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -14,7 +14,7 @@
 #include "shake.h"
 #include "eventlist.h"
 #ifdef MAPBASE
-#include "mapentities_shared.h"
+	#include "mapentities_shared.h"
 #endif
 // NVNT haptic include for notification of world precache
 #include "haptics/haptic_utils.h"
@@ -22,11 +22,11 @@
 #include "tier0/memdbgon.h"
 
 #ifdef CWorld
-#undef CWorld
+	#undef CWorld
 #endif
 
-C_GameRules *g_pGameRules = NULL;
-static C_World *g_pClientWorld;
+C_GameRules* g_pGameRules = NULL;
+static C_World* g_pClientWorld;
 
 
 void ClientWorldFactoryInit()
@@ -52,27 +52,27 @@ static IClientNetworkable* ClientWorldFactory( int entnum, int serialNum )
 IMPLEMENT_CLIENTCLASS_FACTORY( C_World, DT_World, CWorld, ClientWorldFactory );
 
 BEGIN_RECV_TABLE( C_World, DT_World )
-	RecvPropFloat(RECVINFO(m_flWaveHeight)),
-	RecvPropVector(RECVINFO(m_WorldMins)),
-	RecvPropVector(RECVINFO(m_WorldMaxs)),
-	RecvPropInt(RECVINFO(m_bStartDark)),
-	RecvPropFloat(RECVINFO(m_flMaxOccludeeArea)),
-	RecvPropFloat(RECVINFO(m_flMinOccluderArea)),
-	RecvPropFloat(RECVINFO(m_flMaxPropScreenSpaceWidth)),
-	RecvPropFloat(RECVINFO(m_flMinPropScreenSpaceWidth)),
-	RecvPropString(RECVINFO(m_iszDetailSpriteMaterial)),
-	RecvPropInt(RECVINFO(m_bColdWorld)),
+RecvPropFloat( RECVINFO( m_flWaveHeight ) ),
+			   RecvPropVector( RECVINFO( m_WorldMins ) ),
+			   RecvPropVector( RECVINFO( m_WorldMaxs ) ),
+			   RecvPropInt( RECVINFO( m_bStartDark ) ),
+			   RecvPropFloat( RECVINFO( m_flMaxOccludeeArea ) ),
+			   RecvPropFloat( RECVINFO( m_flMinOccluderArea ) ),
+			   RecvPropFloat( RECVINFO( m_flMaxPropScreenSpaceWidth ) ),
+			   RecvPropFloat( RECVINFO( m_flMinPropScreenSpaceWidth ) ),
+			   RecvPropString( RECVINFO( m_iszDetailSpriteMaterial ) ),
+			   RecvPropInt( RECVINFO( m_bColdWorld ) ),
 #ifdef MAPBASE
-	RecvPropString(RECVINFO(m_iszChapterTitle)),
+	RecvPropString( RECVINFO( m_iszChapterTitle ) ),
 #endif
-END_RECV_TABLE()
+			   END_RECV_TABLE()
 
 #ifdef MAPBASE_VSCRIPT
-extern bool VScriptClientInit();
+	extern bool VScriptClientInit();
 #endif
 
 
-C_World::C_World( void )
+			   C_World::C_World( void )
 {
 }
 
@@ -110,11 +110,11 @@ void C_World::OnDataChanged( DataUpdateType_t updateType )
 	BaseClass::OnDataChanged( updateType );
 
 	// Always force reset to normal mode upon receipt of world in new map
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		modemanager->SwitchMode( false, true );
 
-		if ( m_bStartDark )
+		if( m_bStartDark )
 		{
 			ScreenFade_t sf;
 			memset( &sf, 0, sizeof( sf ) );
@@ -122,8 +122,8 @@ void C_World::OnDataChanged( DataUpdateType_t updateType )
 			sf.r = 0;
 			sf.g = 0;
 			sf.b = 0;
-			sf.duration = (float)(1<<SCREENFADE_FRACBITS) * 5.0f;
-			sf.holdTime = (float)(1<<SCREENFADE_FRACBITS) * 1.0f;
+			sf.duration = ( float )( 1 << SCREENFADE_FRACBITS ) * 5.0f;
+			sf.holdTime = ( float )( 1 << SCREENFADE_FRACBITS ) * 1.0f;
 			sf.fadeFlags = FFADE_IN | FFADE_PURGE;
 			vieweffects->Fade( sf );
 		}
@@ -147,7 +147,7 @@ void C_World::RegisterSharedActivities( void )
 //	Sprite Index info
 // -----------------------------------------
 short		g_sModelIndexLaser;			// holds the index for the laser beam
-const char	*g_pModelNameLaser = "sprites/laserbeam.vmt";
+const char*	g_pModelNameLaser = "sprites/laserbeam.vmt";
 short		g_sModelIndexLaserDot;		// holds the index for the laser beam dot
 short		g_sModelIndexFireball;		// holds the index for the fireball
 short		g_sModelIndexSmoke;			// holds the index for the smoke cloud
@@ -159,18 +159,18 @@ short		g_sModelIndexBloodSpray;	// holds the sprite index for splattered blood
 //-----------------------------------------------------------------------------
 // Purpose: Precache global weapon sounds
 //-----------------------------------------------------------------------------
-void W_Precache(void)
+void W_Precache( void )
 {
 	PrecacheFileWeaponInfoDatabase( filesystem, g_pGameRules->GetEncryptionKey() );
 
-	g_sModelIndexFireball = modelinfo->GetModelIndex ("sprites/zerogxplode.vmt");// fireball
-	g_sModelIndexWExplosion = modelinfo->GetModelIndex ("sprites/WXplo1.vmt");// underwater fireball
-	g_sModelIndexSmoke = modelinfo->GetModelIndex ("sprites/steam1.vmt");// smoke
-	g_sModelIndexBubbles = modelinfo->GetModelIndex ("sprites/bubble.vmt");//bubbles
-	g_sModelIndexBloodSpray = modelinfo->GetModelIndex ("sprites/bloodspray.vmt"); // initial blood
-	g_sModelIndexBloodDrop = modelinfo->GetModelIndex ("sprites/blood.vmt"); // splattered blood 
-	g_sModelIndexLaser = modelinfo->GetModelIndex( (char *)g_pModelNameLaser );
-	g_sModelIndexLaserDot = modelinfo->GetModelIndex("sprites/laserdot.vmt");
+	g_sModelIndexFireball = modelinfo->GetModelIndex( "sprites/zerogxplode.vmt" ); // fireball
+	g_sModelIndexWExplosion = modelinfo->GetModelIndex( "sprites/WXplo1.vmt" ); // underwater fireball
+	g_sModelIndexSmoke = modelinfo->GetModelIndex( "sprites/steam1.vmt" ); // smoke
+	g_sModelIndexBubbles = modelinfo->GetModelIndex( "sprites/bubble.vmt" ); //bubbles
+	g_sModelIndexBloodSpray = modelinfo->GetModelIndex( "sprites/bloodspray.vmt" ); // initial blood
+	g_sModelIndexBloodDrop = modelinfo->GetModelIndex( "sprites/blood.vmt" ); // splattered blood
+	g_sModelIndexLaser = modelinfo->GetModelIndex( ( char* )g_pModelNameLaser );
+	g_sModelIndexLaserDot = modelinfo->GetModelIndex( "sprites/laserdot.vmt" );
 }
 
 void C_World::Precache( void )
@@ -185,13 +185,15 @@ void C_World::Precache( void )
 	RegisterSharedActivities();
 
 	// Get weapon precaches
-	W_Precache();	
+	W_Precache();
 
 	// Call all registered precachers.
 	CPrecacheRegister::Precache();
 	// NVNT notify system of precache
-	if (haptics)
+	if( haptics )
+	{
 		haptics->WorldPrecache();
+	}
 }
 
 void C_World::Spawn( void )
@@ -202,14 +204,14 @@ void C_World::Spawn( void )
 //-----------------------------------------------------------------------------
 // Parse data from a map file
 //-----------------------------------------------------------------------------
-bool C_World::KeyValue( const char *szKeyName, const char *szValue ) 
+bool C_World::KeyValue( const char* szKeyName, const char* szValue )
 {
 #ifdef MAPBASE_VSCRIPT
-	if ( FStrEq( szKeyName, "vscriptlanguage" ) )
+	if( FStrEq( szKeyName, "vscriptlanguage" ) )
 	{
 		m_iScriptLanguageServer = atoi( szValue );
 	}
-	else if ( FStrEq( szKeyName, "vscriptlanguage_client" ) )
+	else if( FStrEq( szKeyName, "vscriptlanguage_client" ) )
 	{
 		m_iScriptLanguageClient = atoi( szValue );
 	}
@@ -224,10 +226,10 @@ bool C_World::KeyValue( const char *szKeyName, const char *szValue )
 //-----------------------------------------------------------------------------
 // Parses worldspawn data from BSP on the client
 //-----------------------------------------------------------------------------
-void C_World::ParseWorldMapData( const char *pMapData )
+void C_World::ParseWorldMapData( const char* pMapData )
 {
 	char szTokenBuffer[MAPKEY_MAXLENGTH];
-	for ( ; true; pMapData = MapEntity_SkipToNextEntity(pMapData, szTokenBuffer) )
+	for( ; true; pMapData = MapEntity_SkipToNextEntity( pMapData, szTokenBuffer ) )
 	{
 		//
 		// Parse the opening brace.
@@ -238,24 +240,26 @@ void C_World::ParseWorldMapData( const char *pMapData )
 		//
 		// Check to see if we've finished or not.
 		//
-		if (!pMapData)
-			break;
-
-		if (token[0] != '{')
+		if( !pMapData )
 		{
-			Error( "MapEntity_ParseAllEntities: found %s when expecting {", token);
+			break;
+		}
+
+		if( token[0] != '{' )
+		{
+			Error( "MapEntity_ParseAllEntities: found %s when expecting {", token );
 			continue;
 		}
 
-		CEntityMapData entData( (char*)pMapData );
+		CEntityMapData entData( ( char* )pMapData );
 		char className[MAPKEY_MAXLENGTH];
 
-		if (!entData.ExtractValue( "classname", className ))
+		if( !entData.ExtractValue( "classname", className ) )
 		{
 			Error( "classname missing from entity!\n" );
 		}
 
-		if ( !Q_strcmp( className, "worldspawn" ) )
+		if( !Q_strcmp( className, "worldspawn" ) )
 		{
 			// Set up keyvalues.
 			ParseMapData( &entData );
@@ -267,7 +271,7 @@ void C_World::ParseWorldMapData( const char *pMapData )
 
 
 
-C_World *GetClientWorldEntity()
+C_World* GetClientWorldEntity()
 {
 	Assert( g_pClientWorld != NULL );
 	return g_pClientWorld;

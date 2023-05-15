@@ -38,7 +38,7 @@ enum LessonInstanceType
 
 struct delayed_player_swap_t
 {
-	CHandle<C_BaseEntity> *phHandleToChange;
+	CHandle<C_BaseEntity>* phHandleToChange;
 	int iNewUserID;
 
 	delayed_player_swap_t( void )
@@ -49,27 +49,41 @@ struct delayed_player_swap_t
 };
 
 
-abstract_class CBaseLesson : public CGameEventListener
+abstract_class CBaseLesson :
+public CGameEventListener
 {
 public:
-	CBaseLesson( const char *pchName, bool bIsDefaultHolder, bool bIsOpenOpportunity );
+	CBaseLesson( const char* pchName, bool bIsDefaultHolder, bool bIsOpenOpportunity );
 	virtual ~CBaseLesson( void );
 
-	void AddPrerequisite( const char *pchLessonName );
+	void AddPrerequisite( const char* pchLessonName );
 
-	const CGameInstructorSymbol& GetNameSymbol( void ) const { return m_stringName; }
-	const char * GetName( void ) const { return m_stringName.String(); }
+	const CGameInstructorSymbol & GetNameSymbol( void ) const { return m_stringName; }
+	const char* GetName( void ) const { return m_stringName.String(); }
 	int GetPriority( void ) const { return m_iPriority;	}
-	const char * GetCloseReason( void ) const { return m_stringCloseReason.String(); }
-	void SetCloseReason( const char *pchReason ) { m_stringCloseReason = pchReason; }
+	const char* GetCloseReason( void ) const { return m_stringCloseReason.String(); }
+	void SetCloseReason( const char* pchReason )
+	{
+		m_stringCloseReason = pchReason;
+	}
 
-	CBaseLesson* GetRoot( void ) const { return m_pRoot; }
-	void SetRoot( CBaseLesson *pRoot );
-	const CUtlVector < CBaseLesson * >* GetChildren( void ) const { return &m_OpenOpportunities; }
+	CBaseLesson * GetRoot( void ) const { return m_pRoot; }
+	void SetRoot( CBaseLesson * pRoot );
+	const CUtlVector < CBaseLesson* >* GetChildren( void ) const { return &m_OpenOpportunities; }
 
-	float GetInitTime( void ) { return m_fInitTime; }
-	void SetStartTime( void ) { m_fStartTime = gpGlobals->curtime; }
-	void ResetStartTime( void ) { m_fStartTime = 0.0f; m_bHasPlayedSound = false; }
+	float GetInitTime( void )
+	{
+		return m_fInitTime;
+	}
+	void SetStartTime( void )
+	{
+		m_fStartTime = gpGlobals->curtime;
+	}
+	void ResetStartTime( void )
+	{
+		m_fStartTime = 0.0f;
+		m_bHasPlayedSound = false;
+	}
 
 	bool ShouldShowSpew( void );
 	bool NoPriority( void ) const;
@@ -83,18 +97,27 @@ public:
 	bool IsTimedOut( void );
 
 	int InstanceType( void ) const { return m_iInstanceType; }
-	const CGameInstructorSymbol& GetReplaceKeySymbol( void ) const { return m_stringReplaceKey; }
+	const CGameInstructorSymbol & GetReplaceKeySymbol( void ) const { return m_stringReplaceKey; }
 	const char* GetReplaceKey( void ) const { return m_stringReplaceKey.String(); }
 	int GetFixedInstancesMax( void ) const { return m_iFixedInstancesMax; }
 	bool ShouldReplaceOnlyWhenStopped( void ) const { return m_bReplaceOnlyWhenStopped; }
-	void SetInstanceActive( bool bInstanceActive ) { m_bInstanceActive = bInstanceActive; }
+	void SetInstanceActive( bool bInstanceActive )
+	{
+		m_bInstanceActive = bInstanceActive;
+	}
 	bool IsInstanceActive( void ) const { return m_bInstanceActive; }
 
 	void ResetDisplaysAndSuccesses( void );
 	bool IncDisplayCount( void );
 	bool IncSuccessCount( void );
-	void SetDisplayCount( int iDisplayCount ) { m_iDisplayCount = iDisplayCount; }
-	void SetSuccessCount( int iSuccessCount ) { m_iSuccessCount = iSuccessCount; }
+	void SetDisplayCount( int iDisplayCount )
+	{
+		m_iDisplayCount = iDisplayCount;
+	}
+	void SetSuccessCount( int iSuccessCount )
+	{
+		m_iSuccessCount = iSuccessCount;
+	}
 	int GetDisplayCount( void ) const { return m_iDisplayCount; }
 	int GetSuccessCount( void ) const { return m_iSuccessCount; }
 	int GetDisplayLimit( void ) const { return m_iDisplayLimit; }
@@ -112,21 +135,27 @@ public:
 	virtual bool IsVisible( void ) const { return true; }
 	virtual bool WasDisplayed( void ) const { return m_bWasDisplayed ? true : false; }
 	virtual void SwapOutPlayers( int iOldUserID, int iNewUserID ) {}
-	virtual void TakePlaceOf( CBaseLesson *pLesson );
+	virtual void TakePlaceOf( CBaseLesson * pLesson );
 
-	const char *GetGroup() { return m_szLessonGroup.String(); }
-	void	SetEnabled( bool bEnabled ) { m_bDisabled = !bEnabled; }
+	const char* GetGroup()
+	{
+		return m_szLessonGroup.String();
+	}
+	void	SetEnabled( bool bEnabled )
+	{
+		m_bDisabled = !bEnabled;
+	}
 
 protected:
 	void MarkSucceeded( void );
-	void CloseOpportunity( const char *pchReason );
+	void CloseOpportunity( const char* pchReason );
 	bool DoDelayedPlayerSwaps( void ) const;
 
 private:
 
-	CBaseLesson							*m_pRoot;
-	CUtlVector < CBaseLesson * >		m_OpenOpportunities;
-	CUtlVector < const CBaseLesson * >	m_Prerequisites;
+	CBaseLesson*							m_pRoot;
+	CUtlVector < CBaseLesson* >		m_OpenOpportunities;
+	CUtlVector < const CBaseLesson* >	m_Prerequisites;
 
 	CGameInstructorSymbol		m_stringCloseReason;
 	CGameInstructorSymbol		m_stringName;
@@ -219,21 +248,24 @@ public:
 	virtual bool ShouldDisplay( void ) const;
 	virtual bool IsVisible( void ) const;
 	virtual void SwapOutPlayers( int iOldUserID, int iNewUserID );
-	virtual void TakePlaceOf( CBaseLesson *pLesson );
+	virtual void TakePlaceOf( CBaseLesson* pLesson );
 
-	void SetLocatorBinding( CLocatorTarget * pLocatorTarget );
+	void SetLocatorBinding( CLocatorTarget* pLocatorTarget );
 
-	const char *GetCaptionColorString()	{ return m_szCaptionColor.String(); }
+	const char* GetCaptionColorString()
+	{
+		return m_szCaptionColor.String();
+	}
 
 	bool IsPresentComplete( void );
 	void PresentStart( void );
 	void PresentEnd( void );
 
 private:
-	virtual void UpdateLocatorTarget( CLocatorTarget *pLocatorTarget, C_BaseEntity *pIconTarget );
+	virtual void UpdateLocatorTarget( CLocatorTarget* pLocatorTarget, C_BaseEntity* pIconTarget );
 
 #ifdef MAPBASE
-	Vector GetIconTargetPosition( C_BaseEntity *pIconTarget );
+	Vector GetIconTargetPosition( C_BaseEntity* pIconTarget );
 #endif
 
 protected:
@@ -343,7 +375,7 @@ struct LessonElement_t
 	bool					bNot : 1;
 	bool					bOptionalParam : 1;
 
-	LessonElement_t( int p_iVariable, int p_iAction, bool p_bNot, bool p_bOptionalParam, const char *pchParam, int p_iParamVarIndex, _fieldtypes p_paramType )
+	LessonElement_t( int p_iVariable, int p_iAction, bool p_bNot, bool p_bOptionalParam, const char* pchParam, int p_iParamVarIndex, _fieldtypes p_paramType )
 	{
 		iVariable = p_iVariable;
 		iAction = p_iAction;
@@ -354,7 +386,7 @@ struct LessonElement_t
 		paramType = p_paramType;
 	}
 
-	LessonElement_t( const LessonElement_t &p_LessonElement )
+	LessonElement_t( const LessonElement_t& p_LessonElement )
 	{
 		iVariable = p_LessonElement.iVariable;
 		iAction = p_LessonElement.iAction;
@@ -389,41 +421,56 @@ public:
 
 	virtual void SwapOutPlayers( int iOldUserID, int iNewUserID );
 
-	virtual void FireGameEvent( IGameEvent *event );
-	virtual void ProcessOpenGameEvents( const CScriptedIconLesson *pRootLesson, const char *name, IGameEvent *event );
-	virtual void ProcessCloseGameEvents( const CScriptedIconLesson *pRootLesson, const char *name, IGameEvent *event );
-	virtual void ProcessSuccessGameEvents( const CScriptedIconLesson *pRootLesson, const char *name, IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
+	virtual void ProcessOpenGameEvents( const CScriptedIconLesson* pRootLesson, const char* name, IGameEvent* event );
+	virtual void ProcessCloseGameEvents( const CScriptedIconLesson* pRootLesson, const char* name, IGameEvent* event );
+	virtual void ProcessSuccessGameEvents( const CScriptedIconLesson* pRootLesson, const char* name, IGameEvent* event );
 
-	CUtlVector< LessonEvent_t >& GetOpenEvents( void ) { return m_OpenEvents; }
-	CUtlVector< LessonEvent_t >& GetCloseEvents( void ) { return m_CloseEvents; }
-	CUtlVector< LessonEvent_t >& GetSuccessEvents( void ) { return m_SuccessEvents; }
-	CUtlVector< LessonEvent_t >& GetOnOpenEvents( void ) { return m_OnOpenEvents; }
-	CUtlVector< LessonEvent_t >& GetUpdateEvents( void ) { return m_UpdateEvents; }
+	CUtlVector< LessonEvent_t >& GetOpenEvents( void )
+	{
+		return m_OpenEvents;
+	}
+	CUtlVector< LessonEvent_t >& GetCloseEvents( void )
+	{
+		return m_CloseEvents;
+	}
+	CUtlVector< LessonEvent_t >& GetSuccessEvents( void )
+	{
+		return m_SuccessEvents;
+	}
+	CUtlVector< LessonEvent_t >& GetOnOpenEvents( void )
+	{
+		return m_OnOpenEvents;
+	}
+	CUtlVector< LessonEvent_t >& GetUpdateEvents( void )
+	{
+		return m_UpdateEvents;
+	}
 
-	bool ProcessElements( IGameEvent *event, const CUtlVector< LessonElement_t > *pElements );
+	bool ProcessElements( IGameEvent* event, const CUtlVector< LessonElement_t >* pElements );
 
 private:
-	void InitElementsFromKeys( CUtlVector< LessonElement_t > *pLessonElements, KeyValues *pKey );
-	void InitElementsFromElements( CUtlVector< LessonElement_t > *pLessonElements, const CUtlVector< LessonElement_t > *pLessonElements2 );
+	void InitElementsFromKeys( CUtlVector< LessonElement_t >* pLessonElements, KeyValues* pKey );
+	void InitElementsFromElements( CUtlVector< LessonElement_t >* pLessonElements, const CUtlVector< LessonElement_t >* pLessonElements2 );
 
-	void InitFromKeys( KeyValues *pKey );
+	void InitFromKeys( KeyValues* pKey );
 
-	bool ProcessElement( IGameEvent *event, const LessonElement_t *pLessonElement, bool bInFailedScope );
+	bool ProcessElement( IGameEvent* event, const LessonElement_t* pLessonElement, bool bInFailedScope );
 
-	bool ProcessElementAction( int iAction, bool bNot, const char *pchVarName, float &bVar, const CGameInstructorSymbol *pchParamName, float fParam );
-	bool ProcessElementAction( int iAction, bool bNot, const char *pchVarName, int &bVar, const CGameInstructorSymbol *pchParamName, float fParam );
-	bool ProcessElementAction( int iAction, bool bNot, const char *pchVarName, bool &bVar, const CGameInstructorSymbol *pchParamName, float fParam );
-	bool ProcessElementAction( int iAction, bool bNot, const char *pchVarName, EHANDLE &hVar, const CGameInstructorSymbol *pchParamName, float fParam, C_BaseEntity *pParam, const char *pchParam );
-	bool ProcessElementAction( int iAction, bool bNot, const char *pchVarName, CGameInstructorSymbol *pchVar, const CGameInstructorSymbol *pchParamName, const char *pchParam );
+	bool ProcessElementAction( int iAction, bool bNot, const char* pchVarName, float& bVar, const CGameInstructorSymbol* pchParamName, float fParam );
+	bool ProcessElementAction( int iAction, bool bNot, const char* pchVarName, int& bVar, const CGameInstructorSymbol* pchParamName, float fParam );
+	bool ProcessElementAction( int iAction, bool bNot, const char* pchVarName, bool& bVar, const CGameInstructorSymbol* pchParamName, float fParam );
+	bool ProcessElementAction( int iAction, bool bNot, const char* pchVarName, EHANDLE& hVar, const CGameInstructorSymbol* pchParamName, float fParam, C_BaseEntity* pParam, const char* pchParam );
+	bool ProcessElementAction( int iAction, bool bNot, const char* pchVarName, CGameInstructorSymbol* pchVar, const CGameInstructorSymbol* pchParamName, const char* pchParam );
 
 	// Implemented per mod so they can have custom actions
-	bool Mod_ProcessElementAction( int iAction, bool bNot, const char *pchVarName, EHANDLE &hVar, const CGameInstructorSymbol *pchParamName, float fParam, C_BaseEntity *pParam, const char *pchParam, bool &bModHandled );
+	bool Mod_ProcessElementAction( int iAction, bool bNot, const char* pchVarName, EHANDLE& hVar, const CGameInstructorSymbol* pchParamName, float fParam, C_BaseEntity* pParam, const char* pchParam, bool& bModHandled );
 
-	LessonEvent_t * AddOpenEvent( void );
-	LessonEvent_t * AddCloseEvent( void );
-	LessonEvent_t * AddSuccessEvent( void );
-	LessonEvent_t * AddOnOpenEvent( void );
-	LessonEvent_t * AddUpdateEvent( void );
+	LessonEvent_t* AddOpenEvent( void );
+	LessonEvent_t* AddCloseEvent( void );
+	LessonEvent_t* AddSuccessEvent( void );
+	LessonEvent_t* AddOnOpenEvent( void );
+	LessonEvent_t* AddUpdateEvent( void );
 
 private:
 	static CUtlDict< int, int > LessonActionMap;
@@ -447,13 +494,13 @@ private:
 	CUtlVector< LessonEvent_t >	m_UpdateEvents;
 
 	float					m_fUpdateEventTime;
-	CScriptedIconLesson		*m_pDefaultHolder;
+	CScriptedIconLesson*		m_pDefaultHolder;
 
 	int		m_iScopeDepth;
 
 	// Need this to get offsets to scripted variables
 	friend class LessonVariableInfo;
-	friend int LessonActionFromString( const char *pchName );
+	friend int LessonActionFromString( const char* pchName );
 };
 
 

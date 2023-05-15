@@ -10,7 +10,7 @@
 #include "ai_component.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -29,11 +29,17 @@ public:
 	void RunShootWhileMove();
 	void EndShootWhileMove();
 	void SuspendMoveAndShoot( float flDuration );
-	bool IsSuspended() { return m_flSuspendUntilTime > gpGlobals->curtime; }
+	bool IsSuspended()
+	{
+		return m_flSuspendUntilTime > gpGlobals->curtime;
+	}
 
 	void SetInitialDelay( float delay );
 
-	bool IsMovingAndShooting( void ) const { return m_bMovingAndShooting; }
+	bool IsMovingAndShooting( void ) const
+	{
+		return m_bMovingAndShooting;
+	}
 
 private:
 

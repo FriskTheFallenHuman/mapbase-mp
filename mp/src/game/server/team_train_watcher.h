@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef TEAM_TRAIN_WATCHER_H
 #define TEAM_TRAIN_WATCHER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
@@ -49,16 +49,16 @@ public:
 	virtual void UpdateOnRemove( void );
 	virtual int UpdateTransmitState();
 
-	void InputRoundActivate( inputdata_t &inputdata );
-	void InputEnable( inputdata_t &inputdata );
-	void InputDisable( inputdata_t &inputdata );
+	void InputRoundActivate( inputdata_t& inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
 
-	void InputSetNumTrainCappers( inputdata_t &inputdata );
-	void InputOnStartOvertime( inputdata_t &inputdata );
-	void InputSetSpeedForwardModifier( inputdata_t &inputdata );
-	void InputSetTrainRecedeTime( inputdata_t &inputdata );
-	void InputSetTrainCanRecede( inputdata_t &inputdata );
-	void InputSetTrainRecedeTimeAndUpdate( inputdata_t &inputdata );
+	void InputSetNumTrainCappers( inputdata_t& inputdata );
+	void InputOnStartOvertime( inputdata_t& inputdata );
+	void InputSetSpeedForwardModifier( inputdata_t& inputdata );
+	void InputSetTrainRecedeTime( inputdata_t& inputdata );
+	void InputSetTrainCanRecede( inputdata_t& inputdata );
+	void InputSetTrainRecedeTimeAndUpdate( inputdata_t& inputdata );
 
 	// ==========================================================
 	// given a start node and a list of goal nodes
@@ -69,21 +69,24 @@ public:
 	void WatcherThink( void );
 	void WatcherAlarmThink( void );
 
-	CBaseEntity *GetTrainEntity( void );
-	bool IsDisabled( void ) { return m_bDisabled; }
+	CBaseEntity* GetTrainEntity( void );
+	bool IsDisabled( void )
+	{
+		return m_bDisabled;
+	}
 
 	bool TimerMayExpire( void );
 
 	void StopCaptureAlarm( void );
 
-	void SetNumTrainCappers( int iNumCappers, CBaseEntity *pTrigger );  // only used for train watchers that control the train movement
+	void SetNumTrainCappers( int iNumCappers, CBaseEntity* pTrigger );  // only used for train watchers that control the train movement
 
-	virtual void FireGameEvent( IGameEvent * event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 	int GetCapturerCount( void ) const;			// return the number of players who are "capturing" the payload, or -1 if the payload is blocked
 
-	void ProjectPointOntoPath( const Vector &pos, Vector *posOnPath, float *distanceAlongPath ) const;	// project the given position onto the track and return the point and how far along that projected position is
-	bool IsAheadOfTrain( const Vector &pos ) const;	// return true if the given position is farther down the track than the train is
+	void ProjectPointOntoPath( const Vector& pos, Vector* posOnPath, float* distanceAlongPath ) const;	// project the given position onto the track and return the point and how far along that projected position is
+	bool IsAheadOfTrain( const Vector& pos ) const;	// return true if the given position is farther down the track than the train is
 
 	bool IsTrainAtStart( void ) const;				// return true if the train hasn't left its starting position yet
 	bool IsTrainNearCheckpoint( void ) const;		// return true if the train is almost at the next checkpoint
@@ -95,13 +98,16 @@ public:
 	void DumpStats( void );
 #endif // STAGING_ONLY && TF_DLL
 
-	float GetTrainProgress() { return m_flTotalProgress; }
+	float GetTrainProgress()
+	{
+		return m_flTotalProgress;
+	}
 
 private:
 
-	void StartCaptureAlarm( CTeamControlPoint *pPoint );
-	void PlayCaptureAlert( CTeamControlPoint *pPoint, bool bFinalPointInMap );
-	void InternalSetNumTrainCappers( int iNumCappers, CBaseEntity *pTrigger );
+	void StartCaptureAlarm( CTeamControlPoint* pPoint );
+	void PlayCaptureAlert( CTeamControlPoint* pPoint, bool bFinalPointInMap );
+	void InternalSetNumTrainCappers( int iNumCappers, CBaseEntity* pTrigger );
 	void InternalSetSpeedForwardModifier( float flModifier );
 #ifdef GLOWS_ENABLE
 	void FindGlowEntity( void );
@@ -129,7 +135,7 @@ private:
 	string_t m_iszGoalNode;
 
 	// list of node associations with control points
-	typedef struct 
+	typedef struct
 	{
 		CHandle<CPathTrack>	hPathTrack;
 		CHandle<CTeamControlPoint> hCP;
@@ -170,7 +176,7 @@ private:
 	float m_flNextSpeakForwardConceptTime; // used to have players speak the forward concept every X seconds
 	CHandle<CTriggerAreaCapture> m_hAreaCap;
 
-	CSoundPatch *m_pAlarm;
+	CSoundPatch* m_pAlarm;
 	float m_flAlarmEndTime;
 	bool m_bAlarmPlayed;
 

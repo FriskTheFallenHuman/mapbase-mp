@@ -11,14 +11,14 @@
 #define AI_AMMODEF_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class ConVar;
 
-struct Ammo_t 
+struct Ammo_t
 {
-	char 				*pName;
+	char*				 pName;
 	int					nDamageType;
 	int					eTracerType;
 	float				physicsForceImpulse;
@@ -71,33 +71,36 @@ public:
 
 	Ammo_t				m_AmmoType[MAX_AMMO_TYPES];
 
-	Ammo_t				*GetAmmoOfIndex(int nAmmoIndex);
+	Ammo_t*				GetAmmoOfIndex( int nAmmoIndex );
 #ifdef MAPBASE
-	const char*			Name(int nAmmoIndex);
+	const char*			Name( int nAmmoIndex );
 #endif
-	int					Index(const char *psz);
-	int					PlrDamage(int nAmmoIndex);
-	int					NPCDamage(int nAmmoIndex);
-	int					MaxCarry(int nAmmoIndex);
-	int					DamageType(int nAmmoIndex);
-	int					TracerType(int nAmmoIndex);
-	float				DamageForce(int nAmmoIndex);
-	int					MinSplashSize(int nAmmoIndex);
-	int					MaxSplashSize(int nAmmoIndex);
-	int					Flags(int nAmmoIndex);
+	int					Index( const char* psz );
+	int					PlrDamage( int nAmmoIndex );
+	int					NPCDamage( int nAmmoIndex );
+	int					MaxCarry( int nAmmoIndex );
+	int					DamageType( int nAmmoIndex );
+	int					TracerType( int nAmmoIndex );
+	float				DamageForce( int nAmmoIndex );
+	int					MinSplashSize( int nAmmoIndex );
+	int					MaxSplashSize( int nAmmoIndex );
+	int					Flags( int nAmmoIndex );
 
-	void				AddAmmoType(char const* name, int damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
-	void				AddAmmoType(char const* name, int damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
+	void				AddAmmoType( char const* name, int damageType, int tracerType, int plr_dmg, int npc_dmg, int carry, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
+	void				AddAmmoType( char const* name, int damageType, int tracerType, char const* plr_cvar, char const* npc_var, char const* carry_cvar, float physicsForceImpulse, int nFlags, int minSplashSize = 4, int maxSplashSize = 8 );
 
-	CAmmoDef(void);
+	CAmmoDef( void );
 	virtual ~CAmmoDef( void );
 
 private:
-	bool				AddAmmoType(char const* name, int damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize );
+	bool				AddAmmoType( char const* name, int damageType, int tracerType, int nFlags, int minSplashSize, int maxSplashSize );
 
 #ifdef MAPBASE_VSCRIPT
 	ALLOW_SCRIPT_ACCESS();
-	int					GetNumAmmoTypes() { return m_nAmmoIndex; }
+	int					GetNumAmmoTypes()
+	{
+		return m_nAmmoIndex;
+	}
 #endif
 };
 
@@ -108,4 +111,4 @@ CAmmoDef* GetAmmoDef();
 
 
 #endif // AI_AMMODEF_H
- 
+

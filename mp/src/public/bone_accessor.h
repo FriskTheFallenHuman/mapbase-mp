@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef BONE_ACCESSOR_H
 #define BONE_ACCESSOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,15 +20,15 @@ class C_BaseAnimating;
 class CBoneAccessor
 {
 public:
-	
+
 	CBoneAccessor();
-	CBoneAccessor( matrix3x4_t *pBones ); // This can be used to allow access to all bones.
-	
+	CBoneAccessor( matrix3x4_t* pBones ); // This can be used to allow access to all bones.
+
 	// Initialize.
 #if defined( CLIENT_DLL )
-	void Init( const C_BaseAnimating *pAnimating, matrix3x4_t *pBones );
+	void Init( const C_BaseAnimating* pAnimating, matrix3x4_t* pBones );
 #endif
-	
+
 	int GetReadableBones();
 	void SetReadableBones( int flags );
 
@@ -40,7 +40,7 @@ public:
 	const matrix3x4_t&	operator[]( int iBone ) const;
 	matrix3x4_t&		GetBoneForWrite( int iBone );
 
-	matrix3x4_t			*GetBoneArrayForWrite( ) const;
+	matrix3x4_t*			GetBoneArrayForWrite( ) const;
 
 private:
 
@@ -49,9 +49,9 @@ private:
 #endif
 
 	// Only used in the client DLL for debug verification.
-	const C_BaseAnimating *m_pAnimating;
+	const C_BaseAnimating* m_pAnimating;
 
-	matrix3x4_t *m_pBones;
+	matrix3x4_t* m_pBones;
 
 	int m_ReadableBones;		// Which bones can be read.
 	int m_WritableBones;		// Which bones can be written.
@@ -65,18 +65,18 @@ inline CBoneAccessor::CBoneAccessor()
 	m_ReadableBones = m_WritableBones = 0;
 }
 
-inline CBoneAccessor::CBoneAccessor( matrix3x4_t *pBones )
+inline CBoneAccessor::CBoneAccessor( matrix3x4_t* pBones )
 {
 	m_pAnimating = NULL;
 	m_pBones = pBones;
 }
 
 #if defined( CLIENT_DLL )
-	inline void CBoneAccessor::Init( const C_BaseAnimating *pAnimating, matrix3x4_t *pBones )
-	{
-		m_pAnimating = pAnimating;
-		m_pBones = pBones;
-	}
+inline void CBoneAccessor::Init( const C_BaseAnimating* pAnimating, matrix3x4_t* pBones )
+{
+	m_pAnimating = pAnimating;
+	m_pBones = pBones;
+}
 #endif
 
 inline int CBoneAccessor::GetReadableBones()
@@ -123,7 +123,7 @@ inline matrix3x4_t& CBoneAccessor::GetBoneForWrite( int iBone )
 	return m_pBones[iBone];
 }
 
-inline matrix3x4_t *CBoneAccessor::GetBoneArrayForWrite( void ) const
+inline matrix3x4_t* CBoneAccessor::GetBoneArrayForWrite( void ) const
 {
 	return m_pBones;
 }

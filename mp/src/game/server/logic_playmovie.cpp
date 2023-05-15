@@ -7,7 +7,7 @@
 #include "cbase.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CLogicPlayMovie : public CLogicalEntity
 {
@@ -20,14 +20,14 @@ public:
 
 	virtual void Precache( void );
 	virtual void Spawn( void );
-	
+
 private:
 
-	void		InputPlayMovie( inputdata_t &data );
+	void		InputPlayMovie( inputdata_t& data );
 #ifdef MAPBASE
-	void		InputStopMovie( inputdata_t &data );
+	void		InputStopMovie( inputdata_t& data );
 #endif
-	void		InputMovieFinished( inputdata_t &data );
+	void		InputMovieFinished( inputdata_t& data );
 
 	string_t	m_strMovieFilename;
 	bool		m_bAllowUserSkip;
@@ -45,8 +45,8 @@ LINK_ENTITY_TO_CLASS( logic_playmovie, CLogicPlayMovie );
 
 BEGIN_DATADESC( CLogicPlayMovie )
 
-	DEFINE_KEYFIELD( m_strMovieFilename, FIELD_STRING, "MovieFilename" ),
-	DEFINE_KEYFIELD( m_bAllowUserSkip, FIELD_BOOLEAN, "allowskip" ),
+DEFINE_KEYFIELD( m_strMovieFilename, FIELD_STRING, "MovieFilename" ),
+				 DEFINE_KEYFIELD( m_bAllowUserSkip, FIELD_BOOLEAN, "allowskip" ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_bLooping, FIELD_BOOLEAN, "loopvideo" ),
 	DEFINE_KEYFIELD( m_bMuted, FIELD_BOOLEAN, "mute" ),
@@ -54,41 +54,41 @@ BEGIN_DATADESC( CLogicPlayMovie )
 	DEFINE_FIELD( m_bPlayingVideo, FIELD_BOOLEAN ),
 #endif
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "PlayMovie", InputPlayMovie ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "PlayMovie", InputPlayMovie ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_VOID, "StopMovie", InputStopMovie ),
 #endif
-	DEFINE_INPUTFUNC( FIELD_VOID, "__MovieFinished", InputMovieFinished ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "__MovieFinished", InputMovieFinished ),
 
-	DEFINE_OUTPUT( m_OnPlaybackFinished, "OnPlaybackFinished" ),
+				 DEFINE_OUTPUT( m_OnPlaybackFinished, "OnPlaybackFinished" ),
 
-END_DATADESC()
+				 END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicPlayMovie::Precache( void )
+				 void CLogicPlayMovie::Precache( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CLogicPlayMovie::Spawn( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicPlayMovie::InputPlayMovie( inputdata_t &data )
+void CLogicPlayMovie::InputPlayMovie( inputdata_t& data )
 {
 	// Build the hacked string
-	
+
 	char szClientCmd[256];
-	Q_snprintf( szClientCmd, sizeof(szClientCmd), 
-				"playvideo_complex %s \"ent_fire %s __MovieFinished\" %d %d %d\n", 
-				STRING(m_strMovieFilename), 
+	Q_snprintf( szClientCmd, sizeof( szClientCmd ),
+				"playvideo_complex %s \"ent_fire %s __MovieFinished\" %d %d %d\n",
+				STRING( m_strMovieFilename ),
 				GetEntityNameAsCStr(),
 				m_bAllowUserSkip,
 #ifdef MAPBASE
@@ -98,7 +98,7 @@ void CLogicPlayMovie::InputPlayMovie( inputdata_t &data )
 				0,
 				0
 #endif
-				 );
+			  );
 
 	// Send it on
 	engine->ServerCommand( szClientCmd );
@@ -110,11 +110,11 @@ void CLogicPlayMovie::InputPlayMovie( inputdata_t &data )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicPlayMovie::InputStopMovie( inputdata_t &data )
+void CLogicPlayMovie::InputStopMovie( inputdata_t& data )
 {
-	if (m_bPlayingVideo)
+	if( m_bPlayingVideo )
 	{
 		// Send it on
 		engine->ServerCommand( "stopvideos\n" );
@@ -123,9 +123,9 @@ void CLogicPlayMovie::InputStopMovie( inputdata_t &data )
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CLogicPlayMovie::InputMovieFinished( inputdata_t &data )
+void CLogicPlayMovie::InputMovieFinished( inputdata_t& data )
 {
 	// Simply fire our output
 	m_OnPlaybackFinished.FireOutput( this, this );

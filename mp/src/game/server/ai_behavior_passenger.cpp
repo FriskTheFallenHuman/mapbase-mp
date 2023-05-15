@@ -29,56 +29,58 @@ ConVar passenger_impact_response_threshold( "passenger_impact_response_threshold
 
 BEGIN_DATADESC( CAI_PassengerBehavior )
 
-	DEFINE_EMBEDDED( m_vehicleState ),
-	DEFINE_FIELD( m_bEnabled,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_PassengerIntent,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_PassengerState,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_hVehicle,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hBlocker,			FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecTargetPosition,	FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecTargetAngles,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_flOriginStartFrame, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flOriginEndFrame,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_flAnglesStartFrame, FIELD_FLOAT ),
-	DEFINE_FIELD( m_flAnglesEndFrame,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_nTransitionSequence,FIELD_INTEGER ),
+DEFINE_EMBEDDED( m_vehicleState ),
+				 DEFINE_FIELD( m_bEnabled,			FIELD_BOOLEAN ),
+				 DEFINE_FIELD( m_PassengerIntent,	FIELD_INTEGER ),
+				 DEFINE_FIELD( m_PassengerState,		FIELD_INTEGER ),
+				 DEFINE_FIELD( m_hVehicle,			FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_hBlocker,			FIELD_EHANDLE ),
+				 DEFINE_FIELD( m_vecTargetPosition,	FIELD_POSITION_VECTOR ),
+				 DEFINE_FIELD( m_vecTargetAngles,	FIELD_VECTOR ),
+				 DEFINE_FIELD( m_flOriginStartFrame, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flOriginEndFrame,	FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flAnglesStartFrame, FIELD_FLOAT ),
+				 DEFINE_FIELD( m_flAnglesEndFrame,	FIELD_FLOAT ),
+				 DEFINE_FIELD( m_nTransitionSequence, FIELD_INTEGER ),
 
-END_DATADESC();
+				 END_DATADESC();
 
 BEGIN_SIMPLE_DATADESC( passengerVehicleState_t )
 
-	DEFINE_FIELD( m_bWasBoosting,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bWasOverturned,			FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecLastLocalVelocity,	FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecDeltaVelocity,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_vecLastAngles,			FIELD_VECTOR ),
-	DEFINE_FIELD( m_flNextWarningTime,		FIELD_TIME ),
-	DEFINE_FIELD( m_flLastSpeedSqr,			FIELD_FLOAT ),
-	DEFINE_FIELD( m_bPlayerInVehicle,		FIELD_BOOLEAN ),
+DEFINE_FIELD( m_bWasBoosting,			FIELD_BOOLEAN ),
+					  DEFINE_FIELD( m_bWasOverturned,			FIELD_BOOLEAN ),
+					  DEFINE_FIELD( m_vecLastLocalVelocity,	FIELD_VECTOR ),
+					  DEFINE_FIELD( m_vecDeltaVelocity,		FIELD_VECTOR ),
+					  DEFINE_FIELD( m_vecLastAngles,			FIELD_VECTOR ),
+					  DEFINE_FIELD( m_flNextWarningTime,		FIELD_TIME ),
+					  DEFINE_FIELD( m_flLastSpeedSqr,			FIELD_FLOAT ),
+					  DEFINE_FIELD( m_bPlayerInVehicle,		FIELD_BOOLEAN ),
 
-END_DATADESC();
+					  END_DATADESC();
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-CAI_PassengerBehavior::CAI_PassengerBehavior( void ) : 
-m_bEnabled( false ), 
-m_hVehicle( NULL ), 
-m_PassengerState( PASSENGER_STATE_OUTSIDE ), 
-m_PassengerIntent( PASSENGER_INTENT_NONE ),
-m_nTransitionSequence( -1 )
+CAI_PassengerBehavior::CAI_PassengerBehavior( void ) :
+	m_bEnabled( false ),
+	m_hVehicle( NULL ),
+	m_PassengerState( PASSENGER_STATE_OUTSIDE ),
+	m_PassengerIntent( PASSENGER_INTENT_NONE ),
+	m_nTransitionSequence( -1 )
 {
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Enables the behavior to run
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::Enable( CPropJeepEpisodic *pVehicle, bool bImmediateEnter /*= false*/ ) 
-{ 
-	if ( m_bEnabled && m_hVehicle.Get() )
+void CAI_PassengerBehavior::Enable( CPropJeepEpisodic* pVehicle, bool bImmediateEnter /*= false*/ )
+{
+	if( m_bEnabled && m_hVehicle.Get() )
+	{
 		return;
+	}
 
-	m_bEnabled = true; 
+	m_bEnabled = true;
 	m_hVehicle = pVehicle;
 	SetPassengerState( PASSENGER_STATE_OUTSIDE );
 
@@ -88,11 +90,11 @@ void CAI_PassengerBehavior::Enable( CPropJeepEpisodic *pVehicle, bool bImmediate
 
 void CAI_PassengerBehavior::OnRestore()
 {
-	if ( m_bEnabled && !m_hVehicle.Get() )
+	if( m_bEnabled && !m_hVehicle.Get() )
 	{
 		Disable();
 	}
-	
+
 	BaseClass::OnRestore();
 }
 
@@ -112,10 +114,10 @@ void CAI_PassengerBehavior::Disable( void )
 void CAI_PassengerBehavior::EnterVehicle( void )
 {
 	// If we're already in the vehicle, simply cancel out our intents
-	if ( GetPassengerState() == PASSENGER_STATE_INSIDE || GetPassengerState() == PASSENGER_STATE_ENTERING )
+	if( GetPassengerState() == PASSENGER_STATE_INSIDE || GetPassengerState() == PASSENGER_STATE_ENTERING )
 	{
 		// Clear out an exit
-		if ( m_PassengerIntent == PASSENGER_INTENT_EXIT )
+		if( m_PassengerIntent == PASSENGER_INTENT_EXIT )
 		{
 			m_PassengerIntent = PASSENGER_INTENT_NONE;
 			ClearCondition( COND_PASSENGER_ENTERING );
@@ -138,10 +140,10 @@ void CAI_PassengerBehavior::EnterVehicle( void )
 void CAI_PassengerBehavior::ExitVehicle( void )
 {
 	// Must be in the seat
-	if ( GetPassengerState() == PASSENGER_STATE_OUTSIDE || GetPassengerState() == PASSENGER_STATE_EXITING )
+	if( GetPassengerState() == PASSENGER_STATE_OUTSIDE || GetPassengerState() == PASSENGER_STATE_EXITING )
 	{
 		// Clear out an entrance
-		if ( m_PassengerIntent == PASSENGER_INTENT_ENTER )
+		if( m_PassengerIntent == PASSENGER_INTENT_ENTER )
 		{
 			m_PassengerIntent = PASSENGER_INTENT_NONE;
 			SetCondition( COND_PASSENGER_CANCEL_ENTER );
@@ -159,12 +161,16 @@ void CAI_PassengerBehavior::ExitVehicle( void )
 	//
 
 	// Must have a valid vehicle
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
+	{
 		return;
+	}
 
 	// Cannot exit while we're upside down
-	if ( m_hVehicle->IsOverturned() )
+	if( m_hVehicle->IsOverturned() )
+	{
 		return;
+	}
 
 	// Interrupt what we're doing
 	SetCondition( COND_PASSENGER_EXITING );
@@ -182,13 +188,13 @@ void CAI_PassengerBehavior::AddPhysicsPush( float force )
 	impulse.z = -0.75;
 	VectorNormalize( impulse );
 	Vector vecForce = impulse * force;
-	
+
 	m_hVehicle->VPhysicsGetObject()->ApplyForceOffset( vecForce, GetOuter()->GetAbsOrigin() );
 	*/
 
 	Vector vecDir;
 
-	IPhysicsObject *pObject = GetOuter()->VPhysicsGetObject();
+	IPhysicsObject* pObject = GetOuter()->VPhysicsGetObject();
 	Vector vecVelocity;
 	pObject->GetVelocity( &vecVelocity, NULL );
 	GetOuter()->GetVectors( NULL, NULL, &vecDir );
@@ -200,27 +206,29 @@ void CAI_PassengerBehavior::AddPhysicsPush( float force )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAI_PassengerBehavior::IsPassengerHostile( void )
 {
-	CBaseEntity *pPlayer = AI_GetSinglePlayer();
-	
+	CBaseEntity* pPlayer = AI_GetSinglePlayer();
+
 	// If the player hates or fears the passenger, they're hostile
-	if ( GetOuter()->IRelationType( pPlayer ) == D_HT || GetOuter()->IRelationType( pPlayer ) == D_FR )
+	if( GetOuter()->IRelationType( pPlayer ) == D_HT || GetOuter()->IRelationType( pPlayer ) == D_FR )
+	{
 		return true;
+	}
 
 	return false;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::InitVehicleState( void )
 {
 	// Set the player's state
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
+	CBasePlayer* pPlayer = AI_GetSinglePlayer();
 	m_vehicleState.m_bPlayerInVehicle = ( pPlayer && pPlayer->IsInAVehicle() && pPlayer->GetServerVehicle() == m_hVehicle->GetServerVehicle() );
 
 	// Update our vehicle state so we don't confuse our previous velocity on the first frame!
@@ -242,8 +250,10 @@ void CAI_PassengerBehavior::InitVehicleState( void )
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::FinishEnterVehicle( void )
 {
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
+	{
 		return;
+	}
 
 	// Get the ultimate position we want to be in
 	Vector vecFinalPos;
@@ -258,15 +268,15 @@ void CAI_PassengerBehavior::FinishEnterVehicle( void )
 
 	// We're now riding inside the vehicle
 	SetPassengerState( PASSENGER_STATE_INSIDE );
-	
+
 	// If we've not been told to leave immediately, we're done
-	if ( m_PassengerIntent == PASSENGER_INTENT_ENTER )
+	if( m_PassengerIntent == PASSENGER_INTENT_ENTER )
 	{
 		m_PassengerIntent = PASSENGER_INTENT_NONE;
 	}
-	
-	// Tell the vehicle we've succeeded 
-	m_hVehicle->NPC_FinishedEnterVehicle( GetOuter(), (IsPassengerHostile()==false) );
+
+	// Tell the vehicle we've succeeded
+	m_hVehicle->NPC_FinishedEnterVehicle( GetOuter(), ( IsPassengerHostile() == false ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -274,11 +284,13 @@ void CAI_PassengerBehavior::FinishEnterVehicle( void )
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::FinishExitVehicle( void )
 {
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
+	{
 		return;
+	}
 
 	// Destroy the blocker
-	if ( m_hBlocker != NULL )
+	if( m_hBlocker != NULL )
 	{
 		UTIL_Remove( m_hBlocker );
 		m_hBlocker = NULL;
@@ -291,14 +303,14 @@ void CAI_PassengerBehavior::FinishExitVehicle( void )
 	GetOuter()->GetMotor()->SetYawLocked( false );
 
 	// Re-enable the physical collisions for this NPC
-	IPhysicsObject *pPhysObj = GetOuter()->VPhysicsGetObject();
-	if ( pPhysObj != NULL )
+	IPhysicsObject* pPhysObj = GetOuter()->VPhysicsGetObject();
+	if( pPhysObj != NULL )
 	{
 		pPhysObj->EnableCollisions( true );
 	}
 
 	m_hVehicle->NPC_RemovePassenger( GetOuter() );
-	m_hVehicle->NPC_FinishedExitVehicle( GetOuter(), (IsPassengerHostile()==false) );
+	m_hVehicle->NPC_FinishedExitVehicle( GetOuter(), ( IsPassengerHostile() == false ) );
 
 	SetPassengerState( PASSENGER_STATE_OUTSIDE );
 
@@ -306,7 +318,7 @@ void CAI_PassengerBehavior::FinishExitVehicle( void )
 	GetOuter()->m_iszSceneCustomMoveSeq = NULL_STRING;
 
 	// If we've not been told to enter immediately, we're done
-	if ( m_PassengerIntent == PASSENGER_INTENT_EXIT )
+	if( m_PassengerIntent == PASSENGER_INTENT_EXIT )
 	{
 		m_PassengerIntent = PASSENGER_INTENT_NONE;
 		Disable();
@@ -319,7 +331,7 @@ void CAI_PassengerBehavior::FinishExitVehicle( void )
 void CAI_PassengerBehavior::BuildScheduleTestBits( void )
 {
 	// Always interrupt when we need to get in or out
-	if ( GetPassengerState() == PASSENGER_STATE_OUTSIDE || GetPassengerState() == PASSENGER_STATE_INSIDE )
+	if( GetPassengerState() == PASSENGER_STATE_OUTSIDE || GetPassengerState() == PASSENGER_STATE_INSIDE )
 	{
 		GetOuter()->SetCustomInterruptCondition( GetClassScheduleIdSpace()->ConditionLocalToGlobal( COND_PASSENGER_ENTERING ) );
 		GetOuter()->SetCustomInterruptCondition( GetClassScheduleIdSpace()->ConditionLocalToGlobal( COND_PASSENGER_EXITING ) );
@@ -339,20 +351,24 @@ bool CAI_PassengerBehavior::CanSelectSchedule( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CAI_PassengerBehavior::CanExitVehicle( void )
 {
 	// Vehicle must not be overturned
-	if ( m_hVehicle->IsOverturned() )
+	if( m_hVehicle->IsOverturned() )
+	{
 		return false;
+	}
 
 	// Vehicle must be at rest
 	Vector vecVelocity;
-	m_hVehicle->GetVelocity( &vecVelocity, NULL );	
-	if ( vecVelocity.LengthSqr() > Square( 8.0f ) )
+	m_hVehicle->GetVelocity( &vecVelocity, NULL );
+	if( vecVelocity.LengthSqr() > Square( 8.0f ) )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -364,19 +380,19 @@ bool CAI_PassengerBehavior::CanExitVehicle( void )
 int CAI_PassengerBehavior::SelectTransitionSchedule( void )
 {
 	// Handle our various states
-	if ( GetPassengerState() == PASSENGER_STATE_INSIDE )
+	if( GetPassengerState() == PASSENGER_STATE_INSIDE )
 	{
 		// Exiting schedule
-		if ( HasCondition( COND_PASSENGER_EXITING ) || m_PassengerIntent == PASSENGER_INTENT_EXIT )
+		if( HasCondition( COND_PASSENGER_EXITING ) || m_PassengerIntent == PASSENGER_INTENT_EXIT )
 		{
-			if ( CanExitVehicle( ) )
+			if( CanExitVehicle( ) )
 			{
 				ClearCondition( COND_PASSENGER_EXITING );
 				return SCHED_PASSENGER_EXIT_VEHICLE;
 			}
 		}
 	}
-	else if ( GetPassengerState() == PASSENGER_STATE_ENTERING || GetPassengerState() == PASSENGER_STATE_EXITING )
+	else if( GetPassengerState() == PASSENGER_STATE_ENTERING || GetPassengerState() == PASSENGER_STATE_EXITING )
 	{
 		// The following code attempts to fix up a passenger being interrupted mid-transition
 		Warning( "SelectSchedule() called on transitioning passenger!\n" );
@@ -384,17 +400,17 @@ int CAI_PassengerBehavior::SelectTransitionSchedule( void )
 		Assert( 0 );
 
 		// Correct this issue immediately
-		if ( GetPassengerState() == PASSENGER_STATE_EXITING )
+		if( GetPassengerState() == PASSENGER_STATE_EXITING )
 		{
 			// Force them out of the vehicle to where they want to be
 			// The teleport function is overridden for passengers, meaning that they will clean up properly when called to do so
 			GetOuter()->Teleport( &m_vecTargetPosition, &m_vecTargetAngles, NULL );
 		}
-		else if ( GetPassengerState() == PASSENGER_STATE_ENTERING )
+		else if( GetPassengerState() == PASSENGER_STATE_ENTERING )
 		{
 			// Force them into the proper position
 			GetOuter()->SetLocalOrigin( m_vecTargetPosition );
-			GetOuter()->SetLocalAngles( m_vecTargetAngles ); 
+			GetOuter()->SetLocalAngles( m_vecTargetAngles );
 			FinishEnterVehicle();
 		}
 
@@ -412,34 +428,36 @@ int CAI_PassengerBehavior::SelectTransitionSchedule( void )
 int CAI_PassengerBehavior::SelectSchedule( void )
 {
 	// Protect from this rare occurrence happening
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
 	{
 		Assert( m_hVehicle != NULL );
 		Warning( "Entity %s running passenger behavior without a valid vehicle!\n", GetName() );
-		
+
 		Disable();
 		return BaseClass::SelectSchedule();
 	}
 
 	// See if we're transitioning in / out of the vehicle
 	int nSchedule = SelectTransitionSchedule();
-	if ( nSchedule != SCHED_NONE )
+	if( nSchedule != SCHED_NONE )
+	{
 		return nSchedule;
+	}
 
 	return SCHED_PASSENGER_IDLE;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int CAI_PassengerBehavior::SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode )
 {
 	switch( failedTask )
 	{
-	// For now, just sit back down
-	case TASK_PASSENGER_DETACH_FROM_VEHICLE:
-		return SCHED_PASSENGER_IDLE;
-		break;
+		// For now, just sit back down
+		case TASK_PASSENGER_DETACH_FROM_VEHICLE:
+			return SCHED_PASSENGER_IDLE;
+			break;
 	}
 
 	return BaseClass::SelectFailSchedule( failedSchedule, failedTask, taskFailCode );
@@ -452,7 +470,7 @@ int CAI_PassengerBehavior::SelectFailSchedule( int failedSchedule, int failedTas
 //			*out - ground position
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::FindGroundAtPosition( const Vector &in, float flUpDelta, float flDownDelta, Vector *out )
+bool CAI_PassengerBehavior::FindGroundAtPosition( const Vector& in, float flUpDelta, float flDownDelta, Vector* out )
 {
 	Vector startPos = in + Vector( 0, 0, flUpDelta );	// Look up by delta
 	Vector endPos   = in - Vector( 0, 0, flDownDelta );	// Look down by delta
@@ -466,32 +484,32 @@ bool CAI_PassengerBehavior::FindGroundAtPosition( const Vector &in, float flUpDe
 	UTIL_TraceHull( startPos, endPos, hullMin, hullMax, MASK_NPCSOLID, &ignoreFilter, &tr );
 
 	// Must not have ended up in solid space
-	if ( tr.allsolid )
+	if( tr.allsolid )
 	{
 		// Debug
-		if ( passenger_debug_transition.GetBool() )
+		if( passenger_debug_transition.GetBool() )
 		{
 			NDebugOverlay::SweptBox( tr.startpos, tr.endpos, hullMin, hullMax, vec3_angle, 255, 255, 0, 255, 1.0f );
 		}
-		
+
 		return false;
 	}
 
 	// Must have ended up with feet on the ground
-	if ( tr.DidHitWorld() || ( tr.m_pEnt && tr.m_pEnt->IsStandable() ) )
+	if( tr.DidHitWorld() || ( tr.m_pEnt && tr.m_pEnt->IsStandable() ) )
 	{
 		// Debug
-		if ( passenger_debug_transition.GetBool() )
+		if( passenger_debug_transition.GetBool() )
 		{
 			NDebugOverlay::SweptBox( tr.startpos, tr.endpos, hullMin, hullMax, vec3_angle, 0, 255, 0, 255, 1.0f );
 		}
-		
+
 		*out = tr.endpos;
 		return true;
 	}
 
 	// Ended up in the air
-	if ( passenger_debug_transition.GetBool() )
+	if( passenger_debug_transition.GetBool() )
 	{
 		NDebugOverlay::SweptBox( tr.startpos, tr.endpos, hullMin, hullMax, vec3_angle, 255, 0, 0, 255, 1.0f );
 	}
@@ -502,25 +520,25 @@ bool CAI_PassengerBehavior::FindGroundAtPosition( const Vector &in, float flUpDe
 //-----------------------------------------------------------------------------
 // Purpose: Attempt to verify that a test position is on the node graph
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::PointIsNavigable( const Vector &vecTargetPos )
+bool CAI_PassengerBehavior::PointIsNavigable( const Vector& vecTargetPos )
 {
 	// Attempt to local move between this point and the nearest node, ignoring anything but world architecture
 	AIMoveTrace_t moveTrace;
 	int iNearestNode = GetOuter()->GetPathfinder()->NearestNodeToPoint( vecTargetPos );
-	if ( iNearestNode != NO_NODE )
+	if( iNearestNode != NO_NODE )
 	{
 		// Try a movement trace between the test position and the node
-		GetOuter()->GetMoveProbe()->MoveLimit( NAV_GROUND, 
-			g_pBigAINet->GetNodePosition(GetOuter()->GetHullType(), iNearestNode ), 
-			vecTargetPos, 
-			MASK_SOLID_BRUSHONLY, 
-			NULL, 
-			0, 
-			&moveTrace );
-		
+		GetOuter()->GetMoveProbe()->MoveLimit( NAV_GROUND,
+											   g_pBigAINet->GetNodePosition( GetOuter()->GetHullType(), iNearestNode ),
+											   vecTargetPos,
+											   MASK_SOLID_BRUSHONLY,
+											   NULL,
+											   0,
+											   &moveTrace );
+
 		// See if we got close enough to call it arrived
-		if ( ( moveTrace.vEndPosition - vecTargetPos ).LengthSqr() < Square( GetHullWidth() ) &&
-			GetOuter()->GetMoveProbe()->CheckStandPosition( moveTrace.vEndPosition, MASK_SOLID_BRUSHONLY ) )
+		if( ( moveTrace.vEndPosition - vecTargetPos ).LengthSqr() < Square( GetHullWidth() ) &&
+				GetOuter()->GetMoveProbe()->CheckStandPosition( moveTrace.vEndPosition, MASK_SOLID_BRUSHONLY ) )
 		{
 			// NDebugOverlay::HorzArrow( vecTargetPos, moveTrace.vEndPosition, 8.0f, 255, 0, 0, 16, true, 4.0f );
 			// NDebugOverlay::HorzArrow( vecTargetPos, g_pBigAINet->GetNodePosition(GetOuter()->GetHullType(), iNearestNode ), 8.0f, 255, 255, 0, 16, true, 4.0f );
@@ -536,7 +554,7 @@ bool CAI_PassengerBehavior::PointIsNavigable( const Vector &vecTargetPos )
 // Input  : &vecOut - position the entity should be at when finished exiting
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::GetExitPoint( int nSequence, Vector *vecExitPoint, QAngle *vecExitAngles )
+bool CAI_PassengerBehavior::GetExitPoint( int nSequence, Vector* vecExitPoint, QAngle* vecExitAngles )
 {
 	bool bSucceeded = true;
 
@@ -549,16 +567,16 @@ bool CAI_PassengerBehavior::GetExitPoint( int nSequence, Vector *vecExitPoint, Q
 	Vector vecRotPos = vecDeltaPos;
 	VectorRotate( vecRotPos, GetOuter()->GetAbsAngles(), vecDeltaPos );
 
-	if ( vecExitPoint != NULL )
+	if( vecExitPoint != NULL )
 	{
 		float flDownDelta = 64.0f;
 		float flUpDelta = 16.0f;
 		Vector vecGroundPos;
-		
+
 		bool bFoundGround = FindGroundAtPosition( GetOuter()->GetAbsOrigin() + vecDeltaPos, flUpDelta, flDownDelta, &vecGroundPos );
-		if ( bFoundGround )
+		if( bFoundGround )
 		{
-			if ( PointIsNavigable( vecGroundPos ) == false )
+			if( PointIsNavigable( vecGroundPos ) == false )
 			{
 				bSucceeded = false;
 			}
@@ -571,7 +589,7 @@ bool CAI_PassengerBehavior::GetExitPoint( int nSequence, Vector *vecExitPoint, Q
 		*vecExitPoint = vecGroundPos;
 	}
 
-	if ( vecExitAngles != NULL )
+	if( vecExitAngles != NULL )
 	{
 		QAngle newAngles = GetOuter()->GetAbsAngles() + vecDeltaAngles;
 		newAngles.x = UTIL_AngleMod( newAngles.x );
@@ -592,8 +610,10 @@ bool CAI_PassengerBehavior::ReserveEntryPoint( VehicleSeatQuery_e eSeatSearchTyp
 	// FIXME: Move all this logic into the NPC_EnterVehicle function?
 	// Find any seat to get into
 	int nSeatID = m_hVehicle->GetServerVehicle()->NPC_GetAvailableSeat( GetOuter(), GetRoleName(), eSeatSearchType );
-	if ( nSeatID != VEHICLE_SEAT_INVALID )
+	if( nSeatID != VEHICLE_SEAT_INVALID )
+	{
 		return m_hVehicle->NPC_AddPassenger( GetOuter(), GetRoleName(), nSeatID );
+	}
 
 	return false;
 }
@@ -604,10 +624,10 @@ bool CAI_PassengerBehavior::ReserveEntryPoint( VehicleSeatQuery_e eSeatSearchTyp
 //			&vecEndPos - end position
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::IsValidTransitionPoint( const Vector &vecStartPos, const Vector &vecEndPos )
+bool CAI_PassengerBehavior::IsValidTransitionPoint( const Vector& vecStartPos, const Vector& vecEndPos )
 {
 	// Now sweep a hull through space to see if we can validly exit there
-	Vector vecHullMins = GetOuter()->GetHullMins() + Vector( 0, 0, GetOuter()->StepHeight()*2.0f );
+	Vector vecHullMins = GetOuter()->GetHullMins() + Vector( 0, 0, GetOuter()->StepHeight() * 2.0f );
 	Vector vecHullMaxs = GetOuter()->GetHullMaxs() - Vector( 0, 0, GetOuter()->StepHeight() );
 
 	trace_t tr;
@@ -615,15 +635,15 @@ bool CAI_PassengerBehavior::IsValidTransitionPoint( const Vector &vecStartPos, c
 	UTIL_TraceHull( vecStartPos, vecEndPos, vecHullMins, vecHullMaxs, MASK_NPCSOLID, &skipFilter, &tr );
 
 	// If we're blocked, we can't get out there
-	if ( tr.fraction < 1.0f || tr.allsolid )
+	if( tr.fraction < 1.0f || tr.allsolid )
 	{
-		if ( passenger_debug_transition.GetBool() )
+		if( passenger_debug_transition.GetBool() )
 		{
 			NDebugOverlay::SweptBox( vecStartPos, vecEndPos, vecHullMins, vecHullMaxs, vec3_angle, 255, 0, 0, 64, 2.0f );
 		}
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -637,16 +657,20 @@ bool CAI_PassengerBehavior::IsValidTransitionPoint( const Vector &vecStartPos, c
 int CAI_PassengerBehavior::FindEntrySequence( bool bNearest /*= false*/ )
 {
 	// Get a list of all our animations
-	const PassengerSeatAnims_t *pEntryAnims = m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatAnims( GetOuter(), PASSENGER_SEAT_ENTRY );
-	if ( pEntryAnims == NULL )
+	const PassengerSeatAnims_t* pEntryAnims = m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatAnims( GetOuter(), PASSENGER_SEAT_ENTRY );
+	if( pEntryAnims == NULL )
+	{
 		return -1;
+	}
 
 	// Get the ultimate position we'll end up at
 	Vector	vecStartPos, vecEndPos;
-	if ( m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPosition( GetOuter(), &vecEndPos, NULL ) == false )
+	if( m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPosition( GetOuter(), &vecEndPos, NULL ) == false )
+	{
 		return -1;
+	}
 
-	const CPassengerSeatTransition *pTransition;
+	const CPassengerSeatTransition* pTransition;
 	Vector	vecSeatDir;
 	float	flNearestDist = FLT_MAX;
 	float	flSeatDist;
@@ -654,73 +678,89 @@ int CAI_PassengerBehavior::FindEntrySequence( bool bNearest /*= false*/ )
 	int		nSequence;
 
 	// Test each animation (sorted by priority) for the best match
-	for ( int i = 0; i < pEntryAnims->Count(); i++ )
+	for( int i = 0; i < pEntryAnims->Count(); i++ )
 	{
 		// Find the activity for this animation name
-		pTransition = &pEntryAnims->Element(i);
+		pTransition = &pEntryAnims->Element( i );
 		nSequence = GetOuter()->LookupSequence( STRING( pTransition->GetAnimationName() ) );
-		if ( nSequence == -1 )
+		if( nSequence == -1 )
+		{
 			continue;
+		}
 
 		// Test this entry for validity
-		if ( GetEntryPoint( nSequence, &vecStartPos ) == false )
+		if( GetEntryPoint( nSequence, &vecStartPos ) == false )
+		{
 			continue;
+		}
 
 		// Check to see if we can use this
-		if ( IsValidTransitionPoint( vecStartPos, vecEndPos ) )
+		if( IsValidTransitionPoint( vecStartPos, vecEndPos ) )
 		{
 			// If we're just looking for the first, we're done
-			if ( bNearest == false )
+			if( bNearest == false )
+			{
 				return nSequence;
+			}
 
 			// Otherwise distance is the deciding factor
 			vecSeatDir = ( vecStartPos - GetOuter()->GetAbsOrigin() );
 			flSeatDist = VectorNormalize( vecSeatDir );
 
 			// Closer, take it
-			if ( flSeatDist < flNearestDist )
+			if( flSeatDist < flNearestDist )
 			{
 				flNearestDist = flSeatDist;
 				nNearestSequence = nSequence;
 			}
 		}
-			
+
 	}
 
 	return nNearestSequence;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 int CAI_PassengerBehavior::FindExitSequence( void )
 {
 	// Get a list of all our animations
-	const PassengerSeatAnims_t *pExitAnims = m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatAnims( GetOuter(), PASSENGER_SEAT_EXIT );
-	if ( pExitAnims == NULL )
+	const PassengerSeatAnims_t* pExitAnims = m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatAnims( GetOuter(), PASSENGER_SEAT_EXIT );
+	if( pExitAnims == NULL )
+	{
 		return -1;
+	}
 
 	// Get the ultimate position we'll end up at
 	Vector	vecStartPos, vecEndPos;
-	if ( m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPosition( GetOuter(), &vecStartPos, NULL ) == false )
+	if( m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPosition( GetOuter(), &vecStartPos, NULL ) == false )
+	{
 		return -1;
+	}
 
 	// Test each animation (sorted by priority) for the best match
-	for ( int i = 0; i < pExitAnims->Count(); i++ )
+	for( int i = 0; i < pExitAnims->Count(); i++ )
 	{
 		// Find the activity for this animation name
-		int nSequence = GetOuter()->LookupSequence( STRING( pExitAnims->Element(i).GetAnimationName() ) );
-		if ( nSequence == -1 )
+		int nSequence = GetOuter()->LookupSequence( STRING( pExitAnims->Element( i ).GetAnimationName() ) );
+		if( nSequence == -1 )
+		{
 			continue;
+		}
 
 		// Test this entry for validity
-		if ( GetExitPoint( nSequence, &vecEndPos ) == false )
+		if( GetExitPoint( nSequence, &vecEndPos ) == false )
+		{
 			continue;
+		}
 
 		// Check to see if we can use this
-		if ( IsValidTransitionPoint( vecStartPos, vecEndPos ) )
+		if( IsValidTransitionPoint( vecStartPos, vecEndPos ) )
+		{
 			return nSequence;
+		}
 	}
 
 	return -1;
@@ -734,18 +774,24 @@ bool CAI_PassengerBehavior::ReserveExitPoint( void )
 {
 	// Cannot exit while we're upside down
 	// FIXME: This is probably redundant!
-	if ( m_hVehicle->IsOverturned() )
+	if( m_hVehicle->IsOverturned() )
+	{
 		return false;
+	}
 
 	// Find the exit activity to use
 	int nSequence = FindExitSequence();
-	if ( nSequence == -1 )
+	if( nSequence == -1 )
+	{
 		return false;
+	}
 
 	// Get the exit position
 	Vector vecGroundPos;
-	if ( GetExitPoint( nSequence, &vecGroundPos, &m_vecTargetAngles ) == false )
+	if( GetExitPoint( nSequence, &vecGroundPos, &m_vecTargetAngles ) == false )
+	{
 		return false;
+	}
 
 	// We have to do this specially because the activities are not named
 	SetTransitionSequence( nSequence );
@@ -757,11 +803,11 @@ bool CAI_PassengerBehavior::ReserveExitPoint( void )
 
 	// Save this destination position so we can interpolate towards it
 	m_vecTargetPosition = vecGroundPos;
-	
+
 	// Pitch and roll must be zero when we finish!
 	m_vecTargetAngles.x = m_vecTargetAngles.z = 0.0f;
 
-	if ( passenger_debug_transition.GetBool() )
+	if( passenger_debug_transition.GetBool() )
 	{
 		Vector vecForward;
 		AngleVectors( m_vecTargetAngles, &vecForward, NULL, NULL );
@@ -776,7 +822,7 @@ bool CAI_PassengerBehavior::ReserveExitPoint( void )
 // Purpose: Find the exact point we'd like to start our animation from to enter
 //			the vehicle.
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::GetEntryPoint( int nSequence, Vector *vecEntryPoint, QAngle *vecEntryAngles )
+bool CAI_PassengerBehavior::GetEntryPoint( int nSequence, Vector* vecEntryPoint, QAngle* vecEntryAngles )
 {
 	bool bSucceeded = true;
 
@@ -798,18 +844,18 @@ bool CAI_PassengerBehavior::GetEntryPoint( int nSequence, Vector *vecEntryPoint,
 	vecTargetPos = vecTargetPos + vecDeltaPos;
 
 	// Output the position, if requested
-	if ( vecEntryPoint != NULL )
+	if( vecEntryPoint != NULL )
 	{
 		m_hVehicle->EntityToWorldSpace( vecTargetPos, vecEntryPoint );
 
 		// Trace down to the ground to see where we'll stand
 		Vector vecGroundPos;
-		if ( FindGroundAtPosition( (*vecEntryPoint), 16.0f, 64.0f, &vecGroundPos ) == false )
+		if( FindGroundAtPosition( ( *vecEntryPoint ), 16.0f, 64.0f, &vecGroundPos ) == false )
 		{
 			// We failed
-			if ( passenger_debug_transition.GetBool() )
+			if( passenger_debug_transition.GetBool() )
 			{
-				NDebugOverlay::SweptBox( (*vecEntryPoint), vecGroundPos, GetOuter()->GetHullMins(), GetOuter()->GetHullMaxs(), vec3_angle, 255, 0, 0, 64, 2.0f );
+				NDebugOverlay::SweptBox( ( *vecEntryPoint ), vecGroundPos, GetOuter()->GetHullMins(), GetOuter()->GetHullMaxs(), vec3_angle, 255, 0, 0, 64, 2.0f );
 			}
 
 			// The floor could not be found
@@ -821,7 +867,7 @@ bool CAI_PassengerBehavior::GetEntryPoint( int nSequence, Vector *vecEntryPoint,
 	}
 
 	// Output the angles, if requested
-	if ( vecEntryAngles != NULL )
+	if( vecEntryAngles != NULL )
 	{
 		// Add our delta angles to find what angles to start at
 		*vecEntryAngles = vecTargetAngles;
@@ -829,23 +875,23 @@ bool CAI_PassengerBehavior::GetEntryPoint( int nSequence, Vector *vecEntryPoint,
 
 		//Transform those angles to worldspace
 		matrix3x4_t angToParent, angToWorld;
-		AngleMatrix( (*vecEntryAngles), angToParent );
+		AngleMatrix( ( *vecEntryAngles ), angToParent );
 		ConcatTransforms( m_hVehicle->EntityToWorldTransform(), angToParent, angToWorld );
-		MatrixAngles( angToWorld, (*vecEntryAngles) );
+		MatrixAngles( angToWorld, ( *vecEntryAngles ) );
 	}
 
 	// Debug info
-	if ( passenger_debug_transition.GetBool() && vecEntryPoint && vecEntryAngles )
+	if( passenger_debug_transition.GetBool() && vecEntryPoint && vecEntryAngles )
 	{
 		NDebugOverlay::Axis( *vecEntryPoint, vecTargetAngles, 16, true, 4.0f );
 		NDebugOverlay::Cross3D( *vecEntryPoint, 4, 255, 255, 0, true, 4.0f );
-		
-		if ( vecEntryAngles != NULL )
+
+		if( vecEntryAngles != NULL )
 		{
 			Vector vecForward;
-			AngleVectors( (*vecEntryAngles), &vecForward, NULL, NULL );
-			Vector vecArrowEnd = (*vecEntryPoint ) + ( vecForward * 64.0f );
-			NDebugOverlay::HorzArrow( (*vecEntryPoint), vecArrowEnd, 8.0f, 0, 255, 0, 64, true, 4.0f );
+			AngleVectors( ( *vecEntryAngles ), &vecForward, NULL, NULL );
+			Vector vecArrowEnd = ( *vecEntryPoint ) + ( vecForward * 64.0f );
+			NDebugOverlay::HorzArrow( ( *vecEntryPoint ), vecArrowEnd, 8.0f, 0, 255, 0, 64, true, 4.0f );
 		}
 	}
 
@@ -867,7 +913,7 @@ void CAI_PassengerBehavior::DetachFromVehicle( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::AttachToVehicle( void )
 {
@@ -879,8 +925,8 @@ void CAI_PassengerBehavior::AttachToVehicle( void )
 	GetOuter()->SetCollisionGroup( COLLISION_GROUP_IN_VEHICLE );
 
 	// Turn off physical interactions while we're in the vehicle
-	IPhysicsObject *pPhysObj = GetOuter()->VPhysicsGetObject();
-	if ( pPhysObj != NULL )
+	IPhysicsObject* pPhysObj = GetOuter()->VPhysicsGetObject();
+	if( pPhysObj != NULL )
 	{
 		pPhysObj->EnableCollisions( false );
 	}
@@ -895,11 +941,11 @@ void CAI_PassengerBehavior::AttachToVehicle( void )
 //-----------------------------------------------------------------------------
 // Purpose: Handle task starting
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::StartTask( const Task_t *pTask )
+void CAI_PassengerBehavior::StartTask( const Task_t* pTask )
 {
-	switch ( pTask->iTask )
+	switch( pTask->iTask )
 	{
-	case TASK_PASSENGER_ENTER_VEHICLE:
+		case TASK_PASSENGER_ENTER_VEHICLE:
 		{
 			// You must have set your entrance animation before this point!
 			Assert( m_nTransitionSequence != -1 );
@@ -913,33 +959,33 @@ void CAI_PassengerBehavior::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_PASSENGER_EXIT_VEHICLE:
+		case TASK_PASSENGER_EXIT_VEHICLE:
 		{
 			// You must have set your entrance animation before this point!
 			Assert( m_nTransitionSequence != -1 );
 
 			// Start us playing the correct sequence
 			GetOuter()->SetIdealActivity( ACT_SCRIPT_CUSTOM_MOVE );
-			
+
 			// Overlaying any gestures will mess us up, so don't allow it
 			GetOuter()->RemoveAllGestures();
 		}
 		break;
 
-	case TASK_PASSENGER_ATTACH_TO_VEHICLE:
+		case TASK_PASSENGER_ATTACH_TO_VEHICLE:
 		{
 			AttachToVehicle();
 			TaskComplete();
 		}
 		break;
 
-	case TASK_PASSENGER_DETACH_FROM_VEHICLE:
+		case TASK_PASSENGER_DETACH_FROM_VEHICLE:
 		{
 			// Place an entity blocker where we're going to go
-			if ( ReserveExitPoint() == false )
+			if( ReserveExitPoint() == false )
 			{
 				OnExitVehicleFailed();
-				TaskFail("Failed to find valid exit point\n");
+				TaskFail( "Failed to find valid exit point\n" );
 				return;
 			}
 
@@ -953,47 +999,47 @@ void CAI_PassengerBehavior::StartTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_PASSENGER_SET_IDEAL_ENTRY_YAW:
+		case TASK_PASSENGER_SET_IDEAL_ENTRY_YAW:
 		{
 			// Get the ideal facing to enter the vehicle
 			QAngle vecEntryAngles;
 			GetEntryPoint( m_nTransitionSequence, NULL, &vecEntryAngles );
 			GetOuter()->GetMotor()->SetIdealYaw( vecEntryAngles.y );
-			
+
 			TaskComplete();
 			return;
-		}	
+		}
 		break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Handle task running
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::RunTask( const Task_t *pTask )
+void CAI_PassengerBehavior::RunTask( const Task_t* pTask )
 {
-	switch ( pTask->iTask )
+	switch( pTask->iTask )
 	{
-	case TASK_PASSENGER_ENTER_VEHICLE:
-		{	
+		case TASK_PASSENGER_ENTER_VEHICLE:
+		{
 			// Correct for angular/spatial deviation
 			Assert( GetSequence() == m_nTransitionSequence );
-			if ( GetSequence() != m_nTransitionSequence )
+			if( GetSequence() != m_nTransitionSequence )
 			{
-				Warning("Corrected entrance animation on vehicle enter!\n");
+				Warning( "Corrected entrance animation on vehicle enter!\n" );
 				GetOuter()->SetIdealActivity( ACT_SCRIPT_CUSTOM_MOVE );
 				GetOuter()->GetNavigator()->ClearGoal();
 				SetTransitionSequence( m_nTransitionSequence );
 			}
-			
+
 			bool corrected = DoTransitionMovement();
 
 			// We must be done with the animation and in the correct position
-			if ( corrected == false )
+			if( corrected == false )
 			{
 				FinishEnterVehicle();
 				TaskComplete();
@@ -1001,13 +1047,13 @@ void CAI_PassengerBehavior::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	case TASK_PASSENGER_EXIT_VEHICLE:
+		case TASK_PASSENGER_EXIT_VEHICLE:
 		{
 			// Correct for angular/spatial deviation
 			Assert( GetSequence() == m_nTransitionSequence );
-			if ( GetSequence() != m_nTransitionSequence )
+			if( GetSequence() != m_nTransitionSequence )
 			{
-				Warning("Corrected exit animation on vehicle exit!\n");
+				Warning( "Corrected exit animation on vehicle exit!\n" );
 				GetOuter()->SetIdealActivity( ACT_SCRIPT_CUSTOM_MOVE );
 				GetOuter()->GetNavigator()->ClearGoal();
 				SetTransitionSequence( m_nTransitionSequence );
@@ -1017,7 +1063,7 @@ void CAI_PassengerBehavior::RunTask( const Task_t *pTask )
 			bool corrected = DoTransitionMovement();
 
 			// We must be done with the animation and in the correct position
-			if ( corrected == false )
+			if( corrected == false )
 			{
 				FinishExitVehicle();
 				TaskComplete();
@@ -1025,30 +1071,30 @@ void CAI_PassengerBehavior::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Find the blend amounts for position and angles, given a point in 
+// Purpose: Find the blend amounts for position and angles, given a point in
 //			time within a sequence
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::GetSequenceBlendAmount( float flCycle, float *posBlend, float *angBlend )
+bool CAI_PassengerBehavior::GetSequenceBlendAmount( float flCycle, float* posBlend, float* angBlend )
 {
 	// Find positional blend, if requested
-	if ( posBlend != NULL )
+	if( posBlend != NULL )
 	{
 		float flFrac = RemapValClamped( flCycle, m_flOriginStartFrame, m_flOriginEndFrame, 0.0f, 1.0f );
-		(*posBlend) = SimpleSpline( flFrac );
+		( *posBlend ) = SimpleSpline( flFrac );
 	}
 
 	// Find angular blend, if requested
-	if ( angBlend != NULL )
+	if( angBlend != NULL )
 	{
 		float flFrac = RemapValClamped( flCycle, m_flAnglesStartFrame, m_flAnglesEndFrame, 0.0f, 1.0f );
-		(*angBlend) = SimpleSpline( flFrac );		
+		( *angBlend ) = SimpleSpline( flFrac );
 	}
 
 	return true;
@@ -1057,7 +1103,7 @@ bool CAI_PassengerBehavior::GetSequenceBlendAmount( float flCycle, float *posBle
 //-----------------------------------------------------------------------------
 // Purpose: Returns the target destination for the entry animation
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::GetEntryTarget( Vector *vecOrigin, QAngle *vecAngles )
+void CAI_PassengerBehavior::GetEntryTarget( Vector* vecOrigin, QAngle* vecAngles )
 {
 	// Get the ultimate position we'll end up at
 	m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPositionLocal( GetOuter(), vecOrigin, vecAngles );
@@ -1067,7 +1113,7 @@ void CAI_PassengerBehavior::GetEntryTarget( Vector *vecOrigin, QAngle *vecAngles
 // Purpose: Returns the ideal position to be in to end up at the target at the
 //			end of the animation.
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::GetTransitionAnimationIdeal( float flCycle, const Vector &vecTargetPos, const QAngle &vecTargetAngles, Vector *idealOrigin, QAngle *idealAngles )
+void CAI_PassengerBehavior::GetTransitionAnimationIdeal( float flCycle, const Vector& vecTargetPos, const QAngle& vecTargetAngles, Vector* idealOrigin, QAngle* idealAngles )
 {
 	// Get the position in time working backwards from our goal
 	Vector vecDeltaPos;
@@ -1079,17 +1125,17 @@ void CAI_PassengerBehavior::GetTransitionAnimationIdeal( float flCycle, const Ve
 	VectorRotate( vecPreDelta, vecTargetAngles, vecDeltaPos );
 
 	// Ideal origin
-	if ( idealOrigin != NULL )
+	if( idealOrigin != NULL )
 	{
 		*idealOrigin = ( vecTargetPos + vecDeltaPos );
 	}
 
 	// Ideal angles
-	if ( idealAngles != NULL )
+	if( idealAngles != NULL )
 	{
-		(*idealAngles).x = anglemod( vecTargetAngles.x + vecDeltaAngles.x );
-		(*idealAngles).y = anglemod( vecTargetAngles.y + vecDeltaAngles.y );
-		(*idealAngles).z = anglemod( vecTargetAngles.z + vecDeltaAngles.z );
+		( *idealAngles ).x = anglemod( vecTargetAngles.x + vecDeltaAngles.x );
+		( *idealAngles ).y = anglemod( vecTargetAngles.y + vecDeltaAngles.y );
+		( *idealAngles ).z = anglemod( vecTargetAngles.z + vecDeltaAngles.z );
 	}
 }
 
@@ -1098,17 +1144,19 @@ void CAI_PassengerBehavior::GetTransitionAnimationIdeal( float flCycle, const Ve
 //			which doesn't remove the x and z components of the angles.  This
 //			should be consolidated to not replicate so much code! -- jdw
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::LocalIntervalMovement( float flInterval, bool &bMoveSeqFinished, Vector &newPosition, QAngle &newAngles )
+bool CAI_PassengerBehavior::LocalIntervalMovement( float flInterval, bool& bMoveSeqFinished, Vector& newPosition, QAngle& newAngles )
 {
-	CStudioHdr *pstudiohdr = GetOuter()->GetModelPtr();
-	if ( pstudiohdr == NULL )
+	CStudioHdr* pstudiohdr = GetOuter()->GetModelPtr();
+	if( pstudiohdr == NULL )
+	{
 		return false;
+	}
 
 	// Get our next cycle point
 	float flNextCycle = GetNextCycleForInterval( GetSequence(), flInterval );
 
 	// Fix-up loops
-	if ( ( GetOuter()->SequenceLoops() == false ) && flNextCycle > 1.0f )
+	if( ( GetOuter()->SequenceLoops() == false ) && flNextCycle > 1.0f )
 	{
 		flInterval = GetOuter()->GetCycle() / ( GetOuter()->GetSequenceCycleRate( GetSequence() ) * GetOuter()->GetPlaybackRate() );
 		flNextCycle = 1.0f;
@@ -1123,11 +1171,11 @@ bool CAI_PassengerBehavior::LocalIntervalMovement( float flInterval, bool &bMove
 	QAngle deltaAngles;
 
 	// Find the delta position and delta angles for this sequence
-	if ( Studio_SeqMovement( pstudiohdr, GetOuter()->GetSequence(), GetOuter()->GetCycle(), flNextCycle, GetOuter()->GetPoseParameterArray(), deltaPos, deltaAngles ))
+	if( Studio_SeqMovement( pstudiohdr, GetOuter()->GetSequence(), GetOuter()->GetCycle(), flNextCycle, GetOuter()->GetPoseParameterArray(), deltaPos, deltaAngles ) )
 	{
 		Vector vecPreDelta = deltaPos;
 		VectorRotate( vecPreDelta, GetOuter()->GetLocalAngles(), deltaPos );
-		
+
 		newPosition = GetLocalOrigin() + deltaPos;
 		newAngles = GetLocalAngles() + deltaAngles;
 
@@ -1155,11 +1203,11 @@ float CAI_PassengerBehavior::GetNextCycleForInterval( int nSequence, float flInt
 //-----------------------------------------------------------------------------
 // Purpose: Draw debug information for the transitional movement
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::DrawDebugTransitionInfo( const Vector &vecIdealPos, const QAngle &vecIdealAngles, const Vector &vecAnimPos, const QAngle &vecAnimAngles )
+void CAI_PassengerBehavior::DrawDebugTransitionInfo( const Vector& vecIdealPos, const QAngle& vecIdealAngles, const Vector& vecAnimPos, const QAngle& vecAnimAngles )
 {
 	// Debug info
-	if ( GetPassengerState() == PASSENGER_STATE_ENTERING )
-	{	
+	if( GetPassengerState() == PASSENGER_STATE_ENTERING )
+	{
 		// Green - Ideal location
 		Vector foo;
 		m_hVehicle->EntityToWorldSpace( vecIdealPos, &foo );
@@ -1196,8 +1244,8 @@ bool CAI_PassengerBehavior::DoTransitionMovement( void )
 	bool	bSequenceFinished;
 
 	// Get the position we're moving to for this frame with our animation's motion
-	if ( LocalIntervalMovement( flInterval, bSequenceFinished, vecAnimPos, vecAnimAngles ) )
-	{	
+	if( LocalIntervalMovement( flInterval, bSequenceFinished, vecAnimPos, vecAnimAngles ) )
+	{
 		// Get the position we'd ideally be in
 		Vector vecIdealPos;
 		QAngle vecIdealAngles;
@@ -1212,7 +1260,7 @@ bool CAI_PassengerBehavior::DoTransitionMovement( void )
 
 		// Find the error between our position and our ideal
 		Vector vecDelta = ( vecIdealPos - vecAnimPos ) * flPosBlend;
-		
+
 		QAngle vecDeltaAngles;
 		vecDeltaAngles.x = AngleDiff( vecIdealAngles.x, vecAnimAngles.x ) * flAngBlend;
 		vecDeltaAngles.y = AngleDiff( vecIdealAngles.y, vecAnimAngles.y ) * flAngBlend;
@@ -1223,14 +1271,16 @@ bool CAI_PassengerBehavior::DoTransitionMovement( void )
 		GetOuter()->SetLocalAngles( vecAnimAngles + vecDeltaAngles );
 
 		// Draw our debug information
-		if ( passenger_debug_transition.GetBool() )
+		if( passenger_debug_transition.GetBool() )
 		{
 			DrawDebugTransitionInfo( vecIdealPos, vecIdealAngles, vecAnimPos, vecAnimAngles );
 		}
 
 		// We're done moving
-		if ( bSequenceFinished )
+		if( bSequenceFinished )
+		{
 			return false;
+		}
 
 		// We're still correcting out the error
 		return true;
@@ -1245,11 +1295,13 @@ bool CAI_PassengerBehavior::DoTransitionMovement( void )
 //-----------------------------------------------------------------------------
 int CAI_PassengerBehavior::TranslateSchedule( int scheduleType )
 {
-	if ( GetPassengerState() == PASSENGER_STATE_INSIDE )
+	if( GetPassengerState() == PASSENGER_STATE_INSIDE )
 	{
 		// Always be seated when riding in the car!
-		if ( scheduleType == SCHED_IDLE_STAND )
+		if( scheduleType == SCHED_IDLE_STAND )
+		{
 			return SCHED_PASSENGER_IDLE;
+		}
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -1258,7 +1310,7 @@ int CAI_PassengerBehavior::TranslateSchedule( int scheduleType )
 //-----------------------------------------------------------------------------
 // Purpose: Returns the velocity of the vehicle with respect to its orientation
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::GetLocalVehicleVelocity( Vector *pOut  )
+void CAI_PassengerBehavior::GetLocalVehicleVelocity( Vector* pOut )
 {
 	Vector velocity;
 	m_hVehicle->GetVelocity( &velocity, NULL );
@@ -1271,8 +1323,10 @@ void CAI_PassengerBehavior::GetLocalVehicleVelocity( Vector *pOut  )
 void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 {
 	// Must have a vehicle to bother with this
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
+	{
 		return;
+	}
 
 	// Clear out transient conditions
 	ClearCondition( COND_PASSENGER_HARD_IMPACT );
@@ -1283,12 +1337,12 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 	ClearCondition( COND_PASSENGER_PLAYER_ENTERED_VEHICLE );
 	ClearCondition( COND_PASSENGER_PLAYER_EXITED_VEHICLE );
 
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	if ( pPlayer )
+	CBasePlayer* pPlayer = AI_GetSinglePlayer();
+	if( pPlayer )
 	{
-		if ( pPlayer->IsInAVehicle() && pPlayer->GetVehicle() == m_hVehicle->GetServerVehicle() )
+		if( pPlayer->IsInAVehicle() && pPlayer->GetVehicle() == m_hVehicle->GetServerVehicle() )
 		{
-			if ( m_vehicleState.m_bPlayerInVehicle == false )
+			if( m_vehicleState.m_bPlayerInVehicle == false )
 			{
 				SetCondition( COND_PASSENGER_PLAYER_ENTERED_VEHICLE );
 				m_vehicleState.m_bPlayerInVehicle = true;
@@ -1296,7 +1350,7 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 		}
 		else
 		{
-			if ( m_vehicleState.m_bPlayerInVehicle )
+			if( m_vehicleState.m_bPlayerInVehicle )
 			{
 				SetCondition( COND_PASSENGER_PLAYER_EXITED_VEHICLE );
 				m_vehicleState.m_bPlayerInVehicle = false;
@@ -1305,9 +1359,9 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 	}
 
 	// Get the vehicle's boost state
-	if ( m_hVehicle->m_nBoostTimeLeft < 100.0f )
+	if( m_hVehicle->m_nBoostTimeLeft < 100.0f )
 	{
-		if ( m_vehicleState.m_bWasBoosting == false )
+		if( m_vehicleState.m_bWasBoosting == false )
 		{
 			m_vehicleState.m_bWasBoosting = true;
 		}
@@ -1318,18 +1372,18 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 	}
 
 	// Detect being overturned
-	if ( m_hVehicle->IsOverturned() )
+	if( m_hVehicle->IsOverturned() )
 	{
 		SetCondition( COND_PASSENGER_OVERTURNED );
 
-		if ( m_vehicleState.m_bWasOverturned == false )
+		if( m_vehicleState.m_bWasOverturned == false )
 		{
 			m_vehicleState.m_bWasOverturned = true;
 		}
 	}
 	else
 	{
-		ClearCondition( COND_PASSENGER_OVERTURNED ); 
+		ClearCondition( COND_PASSENGER_OVERTURNED );
 		m_vehicleState.m_bWasOverturned = false;
 	}
 
@@ -1340,30 +1394,30 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 	Vector	deltaVelocity = ( localVelocity - m_vehicleState.m_vecLastLocalVelocity );
 
 	// Detect a sudden stop!
-	if ( deltaVelocity.y < passenger_impact_response_threshold.GetFloat() )
+	if( deltaVelocity.y < passenger_impact_response_threshold.GetFloat() )
 	{
 		SetCondition( COND_PASSENGER_HARD_IMPACT );
 	}
-	else if ( fabs( deltaVelocity.x ) > 200.0f || fabs( deltaVelocity.z ) > 75.0f )
+	else if( fabs( deltaVelocity.x ) > 200.0f || fabs( deltaVelocity.z ) > 75.0f )
 	{
 		// The X axis represents lateral movement and the Z axis represents vertical movement{
-   		SetCondition( COND_PASSENGER_ERRATIC_DRIVING );
-	} 
-	else if ( fabs( deltaVelocity.x ) > 50.0f || fabs( deltaVelocity.z ) > 25.0f )
+		SetCondition( COND_PASSENGER_ERRATIC_DRIVING );
+	}
+	else if( fabs( deltaVelocity.x ) > 50.0f || fabs( deltaVelocity.z ) > 25.0f )
 	{
 		// Lightly jostled
-      	SetCondition( COND_PASSENGER_JOSTLE_SMALL );
+		SetCondition( COND_PASSENGER_JOSTLE_SMALL );
 	}
 
 	// Get our speed
 	float flSpeedSqr = localVelocity.LengthSqr();
 
 	// See if we've crossed over the threshold between movement to stillness
-	if ( m_vehicleState.m_flLastSpeedSqr > STOPPED_VELOCITY_THRESHOLD_SQR && flSpeedSqr < STOPPED_VELOCITY_THRESHOLD_SQR )
+	if( m_vehicleState.m_flLastSpeedSqr > STOPPED_VELOCITY_THRESHOLD_SQR && flSpeedSqr < STOPPED_VELOCITY_THRESHOLD_SQR )
 	{
 		SetCondition( COND_PASSENGER_VEHICLE_STOPPED );
 	}
-	else if ( m_vehicleState.m_flLastSpeedSqr < STARTED_VELOCITY_THRESHOLD_SQR && flSpeedSqr > STARTED_VELOCITY_THRESHOLD_SQR )
+	else if( m_vehicleState.m_flLastSpeedSqr < STARTED_VELOCITY_THRESHOLD_SQR && flSpeedSqr > STARTED_VELOCITY_THRESHOLD_SQR )
 	{
 		// See if we've crossed over the threshold between stillness to movement
 		SetCondition( COND_PASSENGER_VEHICLE_STARTED );
@@ -1375,13 +1429,13 @@ void CAI_PassengerBehavior::GatherVehicleStateConditions( void )
 	// Find our delta velocity from the last frame
 	m_vehicleState.m_vecDeltaVelocity = ( localVelocity - m_vehicleState.m_vecLastLocalVelocity );
 	m_vehicleState.m_vecLastLocalVelocity = localVelocity;
-	
+
 	// Get our angular velocity
 	Vector vecVelocity;
 	AngularImpulse angVelocty;
 	m_hVehicle->GetVelocity( &vecVelocity, &angVelocty );
 	QAngle angVel( angVelocty.x, angVelocty.y, angVelocty.z );
-	
+
 	// Blend this into the old values
 	m_vehicleState.m_vecLastAngles = ( m_vehicleState.m_vecLastAngles * 0.2f ) + ( angVel * 0.8f );
 }
@@ -1394,7 +1448,7 @@ void CAI_PassengerBehavior::PrescheduleThink( void )
 	BaseClass::PrescheduleThink();
 
 	// If we're outside the vehicle, we need to turn this behavior off immediately
-	if ( GetPassengerState() == PASSENGER_STATE_OUTSIDE && HasCondition( COND_PASSENGER_CANCEL_ENTER ) )
+	if( GetPassengerState() == PASSENGER_STATE_OUTSIDE && HasCondition( COND_PASSENGER_CANCEL_ENTER ) )
 	{
 		// Clear out our passenger intent
 		m_PassengerIntent = PASSENGER_INTENT_NONE;
@@ -1407,17 +1461,17 @@ void CAI_PassengerBehavior::PrescheduleThink( void )
 		Disable();
 
 		// This must be stomped to cause our behavior to relinquish control
-		GetOuter()->ClearSchedule("Passenger enter canceled");
+		GetOuter()->ClearSchedule( "Passenger enter canceled" );
 	}
 
 #ifdef DEBUG
-	if ( GetPassengerState() == PASSENGER_STATE_INSIDE )
+	if( GetPassengerState() == PASSENGER_STATE_INSIDE )
 	{
 		Vector vecSeatOrigin;
 		QAngle vecSeatAngles;
-		if ( m_hVehicle && m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPositionLocal( GetOuter(), &vecSeatOrigin, &vecSeatAngles ) )
+		if( m_hVehicle && m_hVehicle->GetServerVehicle()->NPC_GetPassengerSeatPositionLocal( GetOuter(), &vecSeatOrigin, &vecSeatAngles ) )
 		{
-			if ( ( GetLocalOrigin() - vecSeatOrigin ).LengthSqr() > Square( 0.1f ) )
+			if( ( GetLocalOrigin() - vecSeatOrigin ).LengthSqr() > Square( 0.1f ) )
 			{
 				Warning( "Passenger has strayed from seat position!\n" );
 				// GetOuter()->SetLocalOrigin( vecSeatOrigin );
@@ -1441,8 +1495,10 @@ void CAI_PassengerBehavior::PrescheduleThink( void )
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::GatherConditions( void )
 {
-	if ( IsEnabled() == false )
+	if( IsEnabled() == false )
+	{
 		return BaseClass::GatherConditions();
+	}
 
 	// Sense the state of the car
 	GatherVehicleStateConditions();
@@ -1451,12 +1507,14 @@ void CAI_PassengerBehavior::GatherConditions( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet )
 {
-	if ( m_hVehicle == NULL )
+	if( m_hVehicle == NULL )
+	{
 		return;
+	}
 
 	// Mark whether we're overturned or not
 	bool bOverturned = m_hVehicle->IsOverturned();
@@ -1476,7 +1534,7 @@ void CAI_PassengerBehavior::ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet 
 
 	// Set the vehicle's speed (necessary for certain types of movement judgments)
 	float flVehicleSpeed = sqrt( m_vehicleState.m_flLastSpeedSqr );
-	criteriaSet.AppendCriteria( "vehicle_speed", UTIL_VarArgs( "%f", flVehicleSpeed  ) );
+	criteriaSet.AppendCriteria( "vehicle_speed", UTIL_VarArgs( "%f", flVehicleSpeed ) );
 
 	// Whether or not the passenger is currently able to enter the vehicle (only accounts for locking really)
 	bool bCanExitVehicle = ( m_hVehicle->NPC_CanExitVehicle( GetOuter(), true ) );
@@ -1493,16 +1551,16 @@ void CAI_PassengerBehavior::ModifyOrAppendCriteria( AI_CriteriaSet& criteriaSet 
 void CAI_PassengerBehavior::CacheBlendTargets( void )
 {
 	// Get the keyvalues for this sequence
-	KeyValues *seqValues = GetOuter()->GetSequenceKeyValues( m_nTransitionSequence );
-	if ( seqValues == NULL )
+	KeyValues* seqValues = GetOuter()->GetSequenceKeyValues( m_nTransitionSequence );
+	if( seqValues == NULL )
 	{
 		Assert( 0 );
 		return;
 	}
 
 	// Get the entry/exit subkeys
-	KeyValues *blendValues = seqValues->FindKey( "entryexit_blend" );
-	if ( blendValues == NULL )
+	KeyValues* blendValues = seqValues->FindKey( "entryexit_blend" );
+	if( blendValues == NULL )
 	{
 		Assert( 0 );
 		return;
@@ -1512,8 +1570,8 @@ void CAI_PassengerBehavior::CacheBlendTargets( void )
 	int nMaxFrames = Studio_MaxFrame( GetOuter()->GetModelPtr(), m_nTransitionSequence, GetOuter()->GetPoseParameterArray() );
 
 	// Find a key by this name
-	KeyValues *subKeys = blendValues->FindKey( ORIGIN_KEYNAME );
-	if ( subKeys )
+	KeyValues* subKeys = blendValues->FindKey( ORIGIN_KEYNAME );
+	if( subKeys )
 	{
 		// Retrieve our frame numbers
 		m_flOriginStartFrame = subKeys->GetFloat( "startframe", 0.0f );
@@ -1526,7 +1584,7 @@ void CAI_PassengerBehavior::CacheBlendTargets( void )
 
 	// Find a key by this name
 	subKeys = blendValues->FindKey( ANGLES_KEYNAME );
-	if ( subKeys )
+	if( subKeys )
 	{
 		// Retrieve our frame numbers
 		m_flAnglesStartFrame = subKeys->GetFloat( "startframe", 0.0f );
@@ -1539,7 +1597,7 @@ void CAI_PassengerBehavior::CacheBlendTargets( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::SetTransitionSequence( int nSequence )
 {
@@ -1552,14 +1610,16 @@ void CAI_PassengerBehavior::SetTransitionSequence( int nSequence )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::SpeakIfAllowed( AIConcept_t concept, const char *modifiers /*= NULL*/, bool bRespondingToPlayer /*= false*/, char *pszOutResponseChosen /*= NULL*/, size_t bufsize /*= 0*/ )
+bool CAI_PassengerBehavior::SpeakIfAllowed( AIConcept_t concept, const char* modifiers /*= NULL*/, bool bRespondingToPlayer /*= false*/, char* pszOutResponseChosen /*= NULL*/, size_t bufsize /*= 0*/ )
 {
 	// FIXME: Store this cast off?
-	CAI_PlayerAlly *pAlly = dynamic_cast<CAI_PlayerAlly *>(GetOuter());
-	if ( pAlly != NULL )
+	CAI_PlayerAlly* pAlly = dynamic_cast<CAI_PlayerAlly*>( GetOuter() );
+	if( pAlly != NULL )
+	{
 		return pAlly->SpeakIfAllowed( concept, modifiers, bRespondingToPlayer, pszOutResponseChosen, bufsize );
+	}
 
 	return false;
 }
@@ -1567,14 +1627,16 @@ bool CAI_PassengerBehavior::SpeakIfAllowed( AIConcept_t concept, const char *mod
 //-----------------------------------------------------------------------------
 // Purpose: Forces us to begin a dynamic scripted scene
 // Input  : *lpszInteractionName - Name of the sequence we'll play
-//			*pOther - 
+//			*pOther -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CAI_PassengerBehavior::ForceVehicleInteraction( const char *lpszInteractionName, CBaseCombatCharacter *pOther )
+bool CAI_PassengerBehavior::ForceVehicleInteraction( const char* lpszInteractionName, CBaseCombatCharacter* pOther )
 {
 	// Don't do this unless we're sitting in the cabin of the vehicle!
-	if ( GetPassengerState() != PASSENGER_STATE_INSIDE )
+	if( GetPassengerState() != PASSENGER_STATE_INSIDE )
+	{
 		return false;
+	}
 
 	// Set a sequence and fire it off!
 	GetOuter()->m_iszSceneCustomMoveSeq = AllocPooledString( lpszInteractionName );
@@ -1589,15 +1651,15 @@ bool CAI_PassengerBehavior::ForceVehicleInteraction( const char *lpszInteraction
 //-----------------------------------------------------------------------------
 // Purpose: Fix up teleport event when in the vehicle
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity )
+void CAI_PassengerBehavior::Teleport( const Vector* newPosition, const QAngle* newAngles, const Vector* newVelocity )
 {
 	//First, safely remove me from the vehicle
-	if ( GetPassengerState() != PASSENGER_STATE_OUTSIDE )
+	if( GetPassengerState() != PASSENGER_STATE_OUTSIDE )
 	{
 		// Detach from the vehicle
 		DetachFromVehicle();
 		FinishExitVehicle();
-		
+
 		// Turn the behavior off
 		GetOuter()->ClearSchedule( "ai_behavior_passenger: teleport while in vehicle" );
 		Disable();
@@ -1611,12 +1673,12 @@ void CAI_PassengerBehavior::Teleport( const Vector *newPosition, const QAngle *n
 // Purpose: We override this function because it can completely wreak havoc if
 //			we're in the middle of a transition
 //-----------------------------------------------------------------------------
-void CAI_PassengerBehavior::ClearSchedule( const char *szReason )
+void CAI_PassengerBehavior::ClearSchedule( const char* szReason )
 {
 	// Cannot do this while we're transitioning, but it's also a bug because the code that called it was probably relying on this to work!
-	if ( GetPassengerState() == PASSENGER_STATE_ENTERING || GetPassengerState() == PASSENGER_STATE_EXITING )
+	if( GetPassengerState() == PASSENGER_STATE_ENTERING || GetPassengerState() == PASSENGER_STATE_EXITING )
 	{
-		Warning("ClearSchedule rejected due to transitioning passenger: %s\n", szReason );
+		Warning( "ClearSchedule rejected due to transitioning passenger: %s\n", szReason );
 		return;
 	}
 
@@ -1636,12 +1698,12 @@ bool CAI_PassengerBehavior::IsInterruptable( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_PassengerBehavior::CancelEnterVehicle( void )
 {
 	// Stop!
-	if ( GetPassengerState() == PASSENGER_STATE_OUTSIDE )
+	if( GetPassengerState() == PASSENGER_STATE_OUTSIDE )
 	{
 		SetCondition( COND_PASSENGER_CANCEL_ENTER );
 	}
@@ -1677,59 +1739,59 @@ AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_PassengerBehavior )
 	// FIXME: Move to companion
 	DEFINE_SCHEDULE
 	(
-	SCHED_PASSENGER_ENTER_VEHICLE,
+		SCHED_PASSENGER_ENTER_VEHICLE,
 
-	"	Tasks"
-	"		TASK_PASSENGER_SET_IDEAL_ENTRY_YAW	0"
-	"		TASK_FACE_IDEAL						0"
-	"		TASK_PASSENGER_ATTACH_TO_VEHICLE	0"
-	"		TASK_PASSENGER_ENTER_VEHICLE		0"
-	""
-	"	Interrupts"
-	"		COND_NO_CUSTOM_INTERRUPTS"
+		"	Tasks"
+		"		TASK_PASSENGER_SET_IDEAL_ENTRY_YAW	0"
+		"		TASK_FACE_IDEAL						0"
+		"		TASK_PASSENGER_ATTACH_TO_VEHICLE	0"
+		"		TASK_PASSENGER_ENTER_VEHICLE		0"
+		""
+		"	Interrupts"
+		"		COND_NO_CUSTOM_INTERRUPTS"
 	)
 
 	DEFINE_SCHEDULE
 	(
-	SCHED_PASSENGER_EXIT_VEHICLE,
+		SCHED_PASSENGER_EXIT_VEHICLE,
 
-	"	Tasks"
-	"		TASK_SET_FAIL_SCHEDULE		SCHEDULE:SCHED_PASSENGER_IDLE"
-	"		TASK_PASSENGER_DETACH_FROM_VEHICLE	0"
-	"		TASK_WAIT 0.1"  // We must wait one tick for us to start being updated
-	"		TASK_PASSENGER_EXIT_VEHICLE	0"
-	""
-	"	Interrupts"
-	"		COND_NO_CUSTOM_INTERRUPTS"
-	"		COND_TASK_FAILED"
+		"	Tasks"
+		"		TASK_SET_FAIL_SCHEDULE		SCHEDULE:SCHED_PASSENGER_IDLE"
+		"		TASK_PASSENGER_DETACH_FROM_VEHICLE	0"
+		"		TASK_WAIT 0.1"  // We must wait one tick for us to start being updated
+		"		TASK_PASSENGER_EXIT_VEHICLE	0"
+		""
+		"	Interrupts"
+		"		COND_NO_CUSTOM_INTERRUPTS"
+		"		COND_TASK_FAILED"
 	)
 
 	DEFINE_SCHEDULE
-	( 
-	SCHED_PASSENGER_IDLE,
+	(
+		SCHED_PASSENGER_IDLE,
 
-	"	Tasks"
-	"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
-	"		TASK_WAIT					2"
-	""
-	"	Interrupts"
-	"		COND_PROVOKED"
-	"		COND_NEW_ENEMY"
-	"		COND_CAN_RANGE_ATTACK1"
-	"		COND_CAN_MELEE_ATTACK1"
-	"		COND_PASSENGER_EXITING"
-	"		COND_HEAR_DANGER"
+		"	Tasks"
+		"		TASK_SET_ACTIVITY			ACTIVITY:ACT_IDLE"
+		"		TASK_WAIT					2"
+		""
+		"	Interrupts"
+		"		COND_PROVOKED"
+		"		COND_NEW_ENEMY"
+		"		COND_CAN_RANGE_ATTACK1"
+		"		COND_CAN_MELEE_ATTACK1"
+		"		COND_PASSENGER_EXITING"
+		"		COND_HEAR_DANGER"
 	)
 
 	DEFINE_SCHEDULE
-	( 
-	SCHED_PASSENGER_PLAY_SCRIPTED_ANIM,
-	
-	"	Tasks"
-	"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_SCRIPT_CUSTOM_MOVE"
-	""
-	"	Interrupts"
-	"		COND_PASSENGER_HARD_IMPACT"
+	(
+		SCHED_PASSENGER_PLAY_SCRIPTED_ANIM,
+
+		"	Tasks"
+		"		TASK_PLAY_SEQUENCE			ACTIVITY:ACT_SCRIPT_CUSTOM_MOVE"
+		""
+		"	Interrupts"
+		"		COND_PASSENGER_HARD_IMPACT"
 	)
 
 	AI_END_CUSTOM_SCHEDULE_PROVIDER()

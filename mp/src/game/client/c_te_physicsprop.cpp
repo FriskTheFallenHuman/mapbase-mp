@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -26,7 +26,7 @@ public:
 	DECLARE_CLASS( C_TEPhysicsProp, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEPhysicsProp( void );
+	C_TEPhysicsProp( void );
 	virtual			~C_TEPhysicsProp( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -45,23 +45,23 @@ public:
 //-----------------------------------------------------------------------------
 // Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEPhysicsProp, DT_TEPhysicsProp, CTEPhysicsProp)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
-	RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
-	RecvPropVector( RECVINFO(m_vecVelocity)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropInt( RECVINFO(m_nFlags)),
-	RecvPropInt( RECVINFO(m_nSkin)),
-	RecvPropInt( RECVINFO(m_nEffects)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEPhysicsProp, DT_TEPhysicsProp, CTEPhysicsProp )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[0] ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[1] ) ),
+				RecvPropFloat( RECVINFO( m_angRotation[2] ) ),
+				RecvPropVector( RECVINFO( m_vecVelocity ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropInt( RECVINFO( m_nFlags ) ),
+				RecvPropInt( RECVINFO( m_nSkin ) ),
+				RecvPropInt( RECVINFO( m_nEffects ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TEPhysicsProp::C_TEPhysicsProp( void )
+				C_TEPhysicsProp::C_TEPhysicsProp( void )
 {
 	m_vecOrigin.Init();
 	m_angRotation.Init();
@@ -73,7 +73,7 @@ C_TEPhysicsProp::C_TEPhysicsProp( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEPhysicsProp::~C_TEPhysicsProp( void )
 {
@@ -81,23 +81,25 @@ C_TEPhysicsProp::~C_TEPhysicsProp( void )
 
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordPhysicsProp( const Vector& start, const QAngle &angles, 
-	const Vector& vel, int nModelIndex, bool bBreakModel, int nSkin, int nEffects )
+static inline void RecordPhysicsProp( const Vector& start, const QAngle& angles,
+									  const Vector& vel, int nModelIndex, bool bBreakModel, int nSkin, int nEffects )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		const model_t* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		return;
+	}
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		const model_t* pModel = ( nModelIndex != 0 ) ? modelinfo->GetModel( nModelIndex ) : NULL;
+		const char* pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
 
- 		msg->SetInt( "te", TE_PHYSICS_PROP );
- 		msg->SetString( "name", "TE_PhysicsProp" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_PHYSICS_PROP );
+		msg->SetString( "name", "TE_PhysicsProp" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -108,8 +110,8 @@ static inline void RecordPhysicsProp( const Vector& start, const QAngle &angles,
 		msg->SetFloat( "velx", vel.x );
 		msg->SetFloat( "vely", vel.y );
 		msg->SetFloat( "velz", vel.z );
-  		msg->SetString( "model", pModelName );
- 		msg->SetInt( "breakmodel", bBreakModel );
+		msg->SetString( "model", pModelName );
+		msg->SetInt( "breakmodel", bBreakModel );
 		msg->SetInt( "skin", nSkin );
 		msg->SetInt( "effects", nEffects );
 
@@ -120,17 +122,17 @@ static inline void RecordPhysicsProp( const Vector& start, const QAngle &angles,
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void TE_PhysicsProp( IRecipientFilter& filter, float delay,
-	int modelindex, int skin, const Vector& pos, const QAngle &angles, const Vector& vel, bool breakmodel, int propeffects )
+					 int modelindex, int skin, const Vector& pos, const QAngle& angles, const Vector& vel, bool breakmodel, int propeffects )
 {
 	tempents->PhysicsProp( modelindex, skin, pos, angles, vel, breakmodel, propeffects );
 	RecordPhysicsProp( pos, angles, vel, modelindex, breakmodel, skin, propeffects );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEPhysicsProp::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -140,7 +142,7 @@ void C_TEPhysicsProp::PostDataUpdate( DataUpdateType_t updateType )
 	RecordPhysicsProp( m_vecOrigin, m_angRotation, m_vecVelocity, m_nModelIndex, m_nFlags, m_nSkin, m_nEffects );
 }
 
-void TE_PhysicsProp( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_PhysicsProp( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecVel;
 	QAngle angles;
@@ -155,7 +157,7 @@ void TE_PhysicsProp( IRecipientFilter& filter, float delay, KeyValues *pKeyValue
 	vecVel.x = pKeyValues->GetFloat( "velx" );
 	vecVel.y = pKeyValues->GetFloat( "vely" );
 	vecVel.z = pKeyValues->GetFloat( "velz" );
-	const char *pModelName = pKeyValues->GetString( "model" );
+	const char* pModelName = pKeyValues->GetString( "model" );
 	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
 	bool bBreakModel = pKeyValues->GetInt( "breakmodel" ) != 0;
 	int nEffects = pKeyValues->GetInt( "effects" );

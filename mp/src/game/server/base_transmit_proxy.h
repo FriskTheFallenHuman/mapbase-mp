@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef BASE_TRANSMIT_PROXY_H
 #define BASE_TRANSMIT_PROXY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -21,12 +21,12 @@ class CBaseTransmitProxy
 {
 public:
 
-	CBaseTransmitProxy( CBaseEntity *pEnt );
+	CBaseTransmitProxy( CBaseEntity* pEnt );
 	virtual ~CBaseTransmitProxy();
 
 	// Override this to control the ShouldTransmit behavior of whatever entity the proxy is attached to.
 	// bPrevShouldTransmitResult is what the proxy's entity's ShouldTransmit() returned.
-	virtual int ShouldTransmit( const CCheckTransmitInfo *pInfo, int nPrevShouldTransmitResult );
+	virtual int ShouldTransmit( const CCheckTransmitInfo* pInfo, int nPrevShouldTransmitResult );
 
 
 	void AddRef();

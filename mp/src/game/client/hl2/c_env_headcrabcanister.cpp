@@ -33,25 +33,25 @@ public:
 	virtual void ClientThink();
 
 private:
-	C_EnvHeadcrabCanister( const C_EnvHeadcrabCanister & );
+	C_EnvHeadcrabCanister( const C_EnvHeadcrabCanister& );
 
 	CEnvHeadcrabCanisterShared	m_Shared;
 	CNetworkVar( bool, m_bLanded );
 };
 
 
-EXTERN_RECV_TABLE(DT_EnvHeadcrabCanisterShared);
+EXTERN_RECV_TABLE( DT_EnvHeadcrabCanisterShared );
 
 IMPLEMENT_CLIENTCLASS_DT( C_EnvHeadcrabCanister, DT_EnvHeadcrabCanister, CEnvHeadcrabCanister )
-	RecvPropDataTable( RECVINFO_DT( m_Shared ), 0, &REFERENCE_RECV_TABLE(DT_EnvHeadcrabCanisterShared) ),
-	RecvPropBool( RECVINFO( m_bLanded ) ),
-END_RECV_TABLE()
+RecvPropDataTable( RECVINFO_DT( m_Shared ), 0, &REFERENCE_RECV_TABLE( DT_EnvHeadcrabCanisterShared ) ),
+				   RecvPropBool( RECVINFO( m_bLanded ) ),
+				   END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
 // Constructor
 //-----------------------------------------------------------------------------
-C_EnvHeadcrabCanister::C_EnvHeadcrabCanister()
+				   C_EnvHeadcrabCanister::C_EnvHeadcrabCanister()
 {
 }
 
@@ -70,13 +70,13 @@ C_EnvHeadcrabCanister::~C_EnvHeadcrabCanister()
 void C_EnvHeadcrabCanister::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-	if ( updateType == DATA_UPDATE_CREATED )
+	if( updateType == DATA_UPDATE_CREATED )
 	{
 		SetNextClientThink( CLIENT_THINK_ALWAYS );
 	}
 
 	// Stop client-side simulation on landing
-	if ( m_bLanded )
+	if( m_bLanded )
 	{
 		SetNextClientThink( CLIENT_THINK_NEVER );
 	}

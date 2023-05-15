@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -9,7 +9,7 @@
 #if !defined( C_HL2_PLAYERLOCALDATA_H )
 #define C_HL2_PLAYERLOCALDATA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 

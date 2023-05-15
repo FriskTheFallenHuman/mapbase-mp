@@ -71,27 +71,54 @@ class CBlobElement : public CBaseAnimating
 public:
 	void Precache();
 	void Spawn();
-	int	DrawDebugTextOverlays(void); 
+	int	DrawDebugTextOverlays( void );
 
 	void	SetElementVelocity( Vector vecVelocity, bool bPlanarOnly );
 	void	AddElementVelocity( Vector vecVelocityAdd, bool bPlanarOnly );
 	void	ModifyVelocityForSurface( float flInterval, float flSpeed );
 
-	void	SetSinePhase( float flPhase ) { m_flSinePhase = flPhase; }
-	float	GetSinePhase() { return m_flSinePhase; }
+	void	SetSinePhase( float flPhase )
+	{
+		m_flSinePhase = flPhase;
+	}
+	float	GetSinePhase()
+	{
+		return m_flSinePhase;
+	}
 
-	float	GetSineAmplitude() { return m_flSineAmplitude; }
-	float	GetSineFrequency() { return m_flSineFrequency; }
+	float	GetSineAmplitude()
+	{
+		return m_flSineAmplitude;
+	}
+	float	GetSineFrequency()
+	{
+		return m_flSineFrequency;
+	}
 
-	void	SetActiveMovementRule( int moveRule ) { m_iMovementRule = moveRule; }
-	int		GetActiveMovementRule() { return m_iMovementRule; }
+	void	SetActiveMovementRule( int moveRule )
+	{
+		m_iMovementRule = moveRule;
+	}
+	int		GetActiveMovementRule()
+	{
+		return m_iMovementRule;
+	}
 
 	void	MoveTowardsTargetEntity( float speed );
-	void	SetTargetEntity( CBaseEntity *pEntity ) { m_hTargetEntity = pEntity; }
-	CBaseEntity *GetTargetEntity() { return m_hTargetEntity.Get(); }
+	void	SetTargetEntity( CBaseEntity* pEntity )
+	{
+		m_hTargetEntity = pEntity;
+	}
+	CBaseEntity* GetTargetEntity()
+	{
+		return m_hTargetEntity.Get();
+	}
 
 	void	MoveTowardsTargetLocation( float speed );
-	void	SetTargetLocation( const Vector &vecLocation ) { m_vecTargetLocation = vecLocation; }
+	void	SetTargetLocation( const Vector& vecLocation )
+	{
+		m_vecTargetLocation = vecLocation;
+	}
 
 	void	ReconfigureRandomParams();
 	void	EnforceSpeedLimits( float flMinSpeed, float flMaxSpeed );
@@ -122,21 +149,21 @@ LINK_ENTITY_TO_CLASS( blob_element, CBlobElement );
 BEGIN_DATADESC( CBlobElement )
 
 DEFINE_FIELD( m_vecPrevOrigin,			FIELD_POSITION_VECTOR ),
-DEFINE_FIELD( m_iStuckCount,			FIELD_INTEGER ),
-DEFINE_FIELD( m_bOnWall,				FIELD_BOOLEAN ),
-DEFINE_FIELD( m_flDistFromCentroidSqr,	FIELD_FLOAT ),
-DEFINE_FIELD( m_iElementNumber,			FIELD_INTEGER ),
-DEFINE_FIELD( m_vecTargetLocation,		FIELD_POSITION_VECTOR ),
-DEFINE_FIELD( m_hTargetEntity,			FIELD_EHANDLE ),
-DEFINE_FIELD( m_flSinePhase,			FIELD_FLOAT ),
-DEFINE_FIELD( m_flSineAmplitude,		FIELD_FLOAT ),
-DEFINE_FIELD( m_flSineFrequency,		FIELD_FLOAT ),
-DEFINE_FIELD( m_iMovementRule,			FIELD_INTEGER ),
+					 DEFINE_FIELD( m_iStuckCount,			FIELD_INTEGER ),
+					 DEFINE_FIELD( m_bOnWall,				FIELD_BOOLEAN ),
+					 DEFINE_FIELD( m_flDistFromCentroidSqr,	FIELD_FLOAT ),
+					 DEFINE_FIELD( m_iElementNumber,			FIELD_INTEGER ),
+					 DEFINE_FIELD( m_vecTargetLocation,		FIELD_POSITION_VECTOR ),
+					 DEFINE_FIELD( m_hTargetEntity,			FIELD_EHANDLE ),
+					 DEFINE_FIELD( m_flSinePhase,			FIELD_FLOAT ),
+					 DEFINE_FIELD( m_flSineAmplitude,		FIELD_FLOAT ),
+					 DEFINE_FIELD( m_flSineFrequency,		FIELD_FLOAT ),
+					 DEFINE_FIELD( m_iMovementRule,			FIELD_INTEGER ),
 
-END_DATADESC()
+					 END_DATADESC()
 
 
-const char *pszBlobModels[] =
+					 const char* pszBlobModels[] =
 {
 	"models/gibs/agibs.mdl",
 	"models/props_junk/watermelon01.mdl",
@@ -144,7 +171,7 @@ const char *pszBlobModels[] =
 	"models/baby_headcrab.mdl"
 };
 
-const char *GetBlobModelName()
+const char* GetBlobModelName()
 {
 	int index = npc_blob_use_model.GetInt();
 
@@ -165,7 +192,7 @@ void CBlobElement::Precache()
 void CBlobElement::Spawn()
 {
 	Precache();
-	
+
 	SetSolid( SOLID_NONE );
 	SetMoveType( MOVETYPE_FLY );
 	AddSolidFlags( FSOLID_NOT_STANDABLE | FSOLID_NOT_SOLID );
@@ -173,7 +200,7 @@ void CBlobElement::Spawn()
 	SetModel( GetBlobModelName() );
 	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
-	QAngle angles(0,0,0);
+	QAngle angles( 0, 0, 0 );
 	angles.y = random->RandomFloat( 0, 180 );
 	SetAbsAngles( angles );
 
@@ -184,14 +211,14 @@ void CBlobElement::Spawn()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CBlobElement::DrawDebugTextOverlays(void) 
+int CBlobElement::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
-		Q_snprintf(tempstr,sizeof(tempstr), "Element #:%d", m_iElementNumber );
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "Element #:%d", m_iElementNumber );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;
@@ -211,7 +238,7 @@ void CBlobElement::SetElementVelocity( Vector vecVelocity, bool bPlanarOnly )
 }
 
 //---------------------------------------------------------
-// This is the official way to add velocity to an element. 
+// This is the official way to add velocity to an element.
 // See SetElementVelocity() for explanation.
 //---------------------------------------------------------
 void CBlobElement::AddElementVelocity( Vector vecVelocityAdd, bool bPlanarOnly )
@@ -231,7 +258,7 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 	Vector vecStart = GetAbsOrigin();
 	Vector up = Vector( 0, 0, BLOB_TRACE_HEIGHT );
 
-	Vector vecWishedGoal = vecStart + (GetAbsVelocity() * flInterval);
+	Vector vecWishedGoal = vecStart + ( GetAbsVelocity() * flInterval );
 
 	UTIL_TraceLine( vecStart + up, vecWishedGoal + up, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
@@ -241,7 +268,7 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 
 	if( tr.fraction == 1.0f )
 	{
-		UTIL_TraceLine( vecWishedGoal + up, vecWishedGoal - (up * 2.0f), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecWishedGoal + up, vecWishedGoal - ( up * 2.0f ), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 		//NDebugOverlay::Line( tr.startpos, tr.endpos, 255, 255, 0, false, 0.1f );
 		tr.endpos.z += MOVE_HEIGHT_EPSILON;
 	}
@@ -253,7 +280,7 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 
 		if( tr.m_pEnt != NULL && !tr.m_pEnt->IsWorld() )
 		{
-			IPhysicsObject *pPhysics = tr.m_pEnt->VPhysicsGetObject();
+			IPhysicsObject* pPhysics = tr.m_pEnt->VPhysicsGetObject();
 
 			if( pPhysics != NULL )
 			{
@@ -265,7 +292,7 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 
 				if( tr.endpos.z > vecMassCenterWorld.z )
 				{
-					pPhysics->ApplyForceOffset( (-150.0f * m_flRandomEightyPercent) * tr.plane.normal, tr.endpos );
+					pPhysics->ApplyForceOffset( ( -150.0f * m_flRandomEightyPercent ) * tr.plane.normal, tr.endpos );
 				}
 			}
 		}
@@ -278,17 +305,17 @@ void CBlobElement::ModifyVelocityForSurface( float flInterval, float flSpeed )
 
 //---------------------------------------------------------
 // Set velocity that will carry me towards a specified entity
-// Most often used to move along with the npc_blob that 
+// Most often used to move along with the npc_blob that
 // is directing me.
 //---------------------------------------------------------
 void CBlobElement::MoveTowardsTargetEntity( float speed )
 {
-	CBaseEntity *pTarget = m_hTargetEntity.Get();
+	CBaseEntity* pTarget = m_hTargetEntity.Get();
 
 	if( pTarget != NULL )
 	{
 		// Try to attack my target's enemy directly if I can.
-		CBaseEntity *pTargetEnemy = pTarget->GetEnemy();
+		CBaseEntity* pTargetEnemy = pTarget->GetEnemy();
 
 		if( pTargetEnemy != NULL )
 		{
@@ -301,7 +328,7 @@ void CBlobElement::MoveTowardsTargetEntity( float speed )
 	}
 	else
 	{
-        SetElementVelocity( vec3_origin, true );
+		SetElementVelocity( vec3_origin, true );
 	}
 }
 
@@ -339,7 +366,7 @@ void CBlobElement::ReconfigureRandomParams()
 }
 
 //---------------------------------------------------------
-// Adjust velocity if this element is moving faster than 
+// Adjust velocity if this element is moving faster than
 // flMaxSpeed or slower than flMinSpeed
 //---------------------------------------------------------
 void CBlobElement::EnforceSpeedLimits( float flMinSpeed, float flMaxSpeed )
@@ -368,7 +395,7 @@ enum
 //=========================================================
 // Custom tasks
 //=========================================================
-enum 
+enum
 {
 	TASK_MYCUSTOMTASK = LAST_SHARED_TASK,
 };
@@ -377,7 +404,7 @@ enum
 //=========================================================
 // Custom Conditions
 //=========================================================
-enum 
+enum
 {
 	COND_MYCUSTOMCONDITION = LAST_SHARED_CONDITION,
 };
@@ -397,7 +424,10 @@ public:
 	void	RunAI();
 	void	GatherConditions( void );
 	int		SelectSchedule( void );
-	int		GetSoundInterests( void ) { return (SOUND_BUGBAIT); }
+	int		GetSoundInterests( void )
+	{
+		return ( SOUND_BUGBAIT );
+	}
 
 
 	void	ComputeCentroid();
@@ -409,7 +439,7 @@ public:
 	int		GetBatchStart();
 	int		GetBatchEnd();
 
-	CBlobElement *CreateNewElement();
+	CBlobElement* CreateNewElement();
 	void	InitializeElements();
 	void	RecomputeIdealElementDist();
 
@@ -434,12 +464,12 @@ public:
 	DEFINE_CUSTOM_AI;
 
 public:
-	void InputFormPathShape( inputdata_t &inputdata );
-	void InputSetRadius( inputdata_t &inputdata );
-	void InputChaseEntity( inputdata_t &inputdata );
-	void InputIsolateElement( inputdata_t &inputdata );
-	void InputFormHemisphere( inputdata_t &inputdata );
-	void InputFormTwoSpheres( inputdata_t &inputdata );
+	void InputFormPathShape( inputdata_t& inputdata );
+	void InputSetRadius( inputdata_t& inputdata );
+	void InputChaseEntity( inputdata_t& inputdata );
+	void InputIsolateElement( inputdata_t& inputdata );
+	void InputFormHemisphere( inputdata_t& inputdata );
+	void InputFormTwoSpheres( inputdata_t& inputdata );
 
 public:
 	Vector	m_vecAvoidOrigin[ BLOB_MAX_AVOID_ORIGINS ];
@@ -453,7 +483,7 @@ private:
 };
 
 LINK_ENTITY_TO_CLASS( npc_blob, CNPC_Blob );
-IMPLEMENT_CUSTOM_AI( npc_blob,CNPC_Blob );
+IMPLEMENT_CUSTOM_AI( npc_blob, CNPC_Blob );
 
 
 //---------------------------------------------------------
@@ -462,25 +492,25 @@ IMPLEMENT_CUSTOM_AI( npc_blob,CNPC_Blob );
 BEGIN_DATADESC( CNPC_Blob )
 
 DEFINE_FIELD( m_iNumElements, FIELD_INTEGER ),
-DEFINE_FIELD( m_bInitialized, FIELD_BOOLEAN ),
-DEFINE_FIELD( m_iBatchStart, FIELD_INTEGER ),
-DEFINE_FIELD( m_vecCentroid, FIELD_POSITION_VECTOR ),
-DEFINE_FIELD( m_flMinElementDist, FIELD_FLOAT ),
-DEFINE_FIELD( m_iReconfigureElement, FIELD_INTEGER ),
-DEFINE_UTLVECTOR( m_Elements, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_bInitialized, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_iBatchStart, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_vecCentroid, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_flMinElementDist, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_iReconfigureElement, FIELD_INTEGER ),
+			  DEFINE_UTLVECTOR( m_Elements, FIELD_EHANDLE ),
 
-DEFINE_INPUTFUNC( FIELD_STRING, "FormPathShape", InputFormPathShape ),
-DEFINE_INPUTFUNC( FIELD_FLOAT, "SetRadius", InputSetRadius ),
-DEFINE_INPUTFUNC( FIELD_STRING, "ChaseEntity", InputChaseEntity ),
-DEFINE_INPUTFUNC( FIELD_INTEGER, "IsolateElement", InputIsolateElement ),
-DEFINE_INPUTFUNC( FIELD_VOID, "FormHemisphere", InputFormHemisphere ),
-DEFINE_INPUTFUNC( FIELD_VOID, "FormTwoSpheres", InputFormTwoSpheres ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "FormPathShape", InputFormPathShape ),
+			  DEFINE_INPUTFUNC( FIELD_FLOAT, "SetRadius", InputSetRadius ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "ChaseEntity", InputChaseEntity ),
+			  DEFINE_INPUTFUNC( FIELD_INTEGER, "IsolateElement", InputIsolateElement ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "FormHemisphere", InputFormHemisphere ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "FormTwoSpheres", InputFormTwoSpheres ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-CNPC_Blob::CNPC_Blob()
+			  CNPC_Blob::CNPC_Blob()
 {
 	m_iNumElements = 0;
 	m_bInitialized = false;
@@ -492,19 +522,19 @@ CNPC_Blob::CNPC_Blob()
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InitCustomSchedules(void) 
+void CNPC_Blob::InitCustomSchedules( void )
 {
-	INIT_CUSTOM_AI(CNPC_Blob);
+	INIT_CUSTOM_AI( CNPC_Blob );
 
-	ADD_CUSTOM_TASK(CNPC_Blob,		TASK_MYCUSTOMTASK);
+	ADD_CUSTOM_TASK( CNPC_Blob,		TASK_MYCUSTOMTASK );
 
-	ADD_CUSTOM_SCHEDULE(CNPC_Blob,	SCHED_MYCUSTOMSCHEDULE);
+	ADD_CUSTOM_SCHEDULE( CNPC_Blob,	SCHED_MYCUSTOMSCHEDULE );
 
-	ADD_CUSTOM_CONDITION(CNPC_Blob,	COND_MYCUSTOMCONDITION);
+	ADD_CUSTOM_CONDITION( CNPC_Blob,	COND_MYCUSTOMCONDITION );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -518,7 +548,7 @@ void CNPC_Blob::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
 //-----------------------------------------------------------------------------
@@ -528,7 +558,7 @@ void CNPC_Blob::Spawn( void )
 
 	SetModel( NPC_BLOB_MODEL );
 
-	SetHullType(HULL_TINY);
+	SetHullType( HULL_TINY );
 	SetHullSizeNormal();
 
 	SetSolid( SOLID_NONE );
@@ -553,10 +583,10 @@ void CNPC_Blob::Spawn( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //
 //
-// Output : 
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNPC_Blob::Classify( void )
 {
@@ -574,7 +604,7 @@ void CNPC_Blob::RunAI()
 	{
 		// m_bInitialized is set to false in the constructor. So this bit of
 		// code runs one time, the first time I think.
-		Msg("I need to initialize\n");
+		Msg( "I need to initialize\n" );
 		InitializeElements();
 		m_bInitialized = true;
 		return;
@@ -588,9 +618,9 @@ void CNPC_Blob::RunAI()
 		if( delta < 0 )
 		{
 			delta = -delta;
-			delta = MIN(delta, 5 );
+			delta = MIN( delta, 5 );
 			RemoveExcessElements( delta );
-			
+
 			if( m_iReconfigureElement > m_iNumElements )
 			{
 				// Start this index over at zero, if it is past the new end of the utlvector.
@@ -599,10 +629,10 @@ void CNPC_Blob::RunAI()
 		}
 		else
 		{
-			delta = MIN(delta, 5 );
+			delta = MIN( delta, 5 );
 			AddNewElements( delta );
 		}
-	
+
 		RecomputeIdealElementDist();
 	}
 
@@ -686,7 +716,9 @@ void CNPC_Blob::GatherConditions( void )
 int CNPC_Blob::SelectSchedule( void )
 {
 	if( GetEnemy() == NULL )
+	{
 		return SCHED_IDLE_STAND;
+	}
 
 	return SCHED_CHASE_ENEMY;
 }
@@ -707,7 +739,7 @@ void CNPC_Blob::ComputeCentroid()
 }
 
 //-----------------------------------------------------------------------------
-// Run all of the AI for elements within the range iStart to iEnd 
+// Run all of the AI for elements within the range iStart to iEnd
 //-----------------------------------------------------------------------------
 void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 {
@@ -742,7 +774,7 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 	// which makes the entire group look far less orderly
 	if( GetEnemy() != NULL )
 	{
-		// If I have an enemy, the right-hand vector is perpendicular to a straight line 
+		// If I have an enemy, the right-hand vector is perpendicular to a straight line
 		// from the group's centroid to the enemy's origin.
 		vecForward = GetEnemy()->GetAbsOrigin() - m_vecCentroid;
 		VectorNormalize( vecForward );
@@ -763,14 +795,14 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 	//--
 	for( int i = iStart ; i < iEnd ; i++ )
 	{
-		CBlobElement *pThisElement = m_Elements[ i ];
+		CBlobElement* pThisElement = m_Elements[ i ];
 
 		//--
 		// Initial movement
 		//--
 		// Start out with bEnforceSpeedLimit set to false. This is because an element
-		// can't overspeed if it's moving undisturbed towards its target entity or 
-		// target location. An element can only under or overspeed when it is repelled 
+		// can't overspeed if it's moving undisturbed towards its target entity or
+		// target location. An element can only under or overspeed when it is repelled
 		// by multiple other elements in the group. See "Relative Positions" below.
 		//
 		// Initialize some 'defaults' that may be changed for each iteration of this loop
@@ -781,14 +813,14 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 
 		switch( pThisElement->GetActiveMovementRule() )
 		{
-		case BLOB_MOVE_DONT_MOVE:
+			case BLOB_MOVE_DONT_MOVE:
 			{
 				pThisElement->SetElementVelocity( vec3_origin, true );
 
 				trace_t tr;
 				Vector vecOrigin = pThisElement->GetAbsOrigin();
 
-				UTIL_TraceLine( vecOrigin, vecOrigin - Vector( 0, 0, 16), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
+				UTIL_TraceLine( vecOrigin, vecOrigin - Vector( 0, 0, 16 ), MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
 
 				if( tr.fraction < 1.0f )
 				{
@@ -807,11 +839,11 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 			continue;
 			break;
 
-		case BLOB_MOVE_TO_TARGET_LOCATION:
+			case BLOB_MOVE_TO_TARGET_LOCATION:
 			{
 				Vector vecDiff = pThisElement->GetAbsOrigin() - pThisElement->m_vecTargetLocation;
 
-				if( vecDiff.Length2DSqr() <= Square(80.0f) )
+				if( vecDiff.Length2DSqr() <= Square( 80.0f ) )
 				{
 					// Don't shove this guy around any more, let him get to his goal position.
 					flSpeed *= 0.5f;
@@ -823,22 +855,22 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 			}
 			break;
 
-		case BLOB_MOVE_TO_TARGET_ENTITY:
+			case BLOB_MOVE_TO_TARGET_ENTITY:
 			{
 				if( !IsMoving() && GetEnemy() == NULL )
 				{
 					if( pThisElement->GetAbsOrigin().DistToSqr( GetAbsOrigin() ) <= flBlobRadiusSqr )
 					{
-						flSpeed = (flSpeed * flIdleSpeedFactor) * pThisElement->m_flRandomEightyPercent;
+						flSpeed = ( flSpeed * flIdleSpeedFactor ) * pThisElement->m_flRandomEightyPercent;
 					}
 				}
 				pThisElement->MoveTowardsTargetEntity( flSpeed );
 			}
 			break;
 
-		default:
-			Msg("ERROR: Blob Element with unspecified Movement Rule\n");
-			break;
+			default:
+				Msg( "ERROR: Blob Element with unspecified Movement Rule\n" );
+				break;
 		}
 
 		//---
@@ -846,7 +878,7 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 		//--
 		// Check this element against ALL other elements. If the two elements are closer
 		// than the allowed minimum distance, repel this element away. (The other element
-		// will repel when its AI runs). A single element can be repelled by many other 
+		// will repel when its AI runs). A single element can be repelled by many other
 		// elements. This is why bEnforceSpeedLimit is set to true if any of the repelling
 		// code runs for this element. Multiple attempts to repel an element in the same
 		// direction will cause overspeed. Conflicting attempts to repel an element in opposite
@@ -861,12 +893,14 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 				// This is the innermost loop! We should optimize here, if anywhere.
 
 				// If this element is on the wall, then don't be repelled by anyone. Repelling
-				// elements that are trying to climb a wall usually make them look like they 
+				// elements that are trying to climb a wall usually make them look like they
 				// fall off the wall a few times while climbing.
 				if( pThisElement->m_bOnWall )
+				{
 					continue;
+				}
 
-				CBlobElement *pThatElement = m_Elements[ j ];
+				CBlobElement* pThatElement = m_Elements[ j ];
 				if( i != j )
 				{
 					Vector vecThatElementOrigin = pThatElement->GetAbsOrigin();
@@ -879,11 +913,11 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 						Vector vecRepelDir = ( vecThisElementOrigin - vecThatElementOrigin );
 
 						vecRepelDir.NormalizeInPlace();
-						flRepelSpeed = (flSpeed * ( 1.0f - ( distSqr / minDistSqr ) ) ) * pThatElement->GetSinePhase(); 
+						flRepelSpeed = ( flSpeed * ( 1.0f - ( distSqr / minDistSqr ) ) ) * pThatElement->GetSinePhase();
 						pThisElement->AddElementVelocity( vecRepelDir * flRepelSpeed, true );
 
 						// Since we altered this element's velocity after it was initially set, there's a chance
-						// that the sums of multiple vectors will cause the element to over or underspeed, so 
+						// that the sums of multiple vectors will cause the element to over or underspeed, so
 						// mark it for speed limit enforcement
 						bEnforceSpeedLimit = true;
 					}
@@ -898,7 +932,7 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 		{
 			flMySine = sin( gpGlobals->curtime * pThisElement->GetSineFrequency() );
 			flMyAmplitude = flAmplitude * pThisElement->GetSineAmplitude();
-			pThisElement->AddElementVelocity( vecRight * (flMySine * flMyAmplitude), true );
+			pThisElement->AddElementVelocity( vecRight * ( flMySine * flMyAmplitude ), true );
 		}
 
 		// Avoidance
@@ -906,10 +940,10 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 		{
 			Vector vecAvoidDir = pThisElement->GetAbsOrigin() - m_vecAvoidOrigin[ a ];
 
-			if( vecAvoidDir.LengthSqr() <= (m_flAvoidRadiusSqr * pThisElement->m_flRandomEightyPercent) )
+			if( vecAvoidDir.LengthSqr() <= ( m_flAvoidRadiusSqr * pThisElement->m_flRandomEightyPercent ) )
 			{
 				VectorNormalize( vecAvoidDir );
-				pThisElement->AddElementVelocity( vecAvoidDir * (flSpeed * 2.0f), true );
+				pThisElement->AddElementVelocity( vecAvoidDir * ( flSpeed * 2.0f ), true );
 				break;
 			}
 		}
@@ -928,7 +962,7 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 		pThisElement->ModifyVelocityForSurface( flInterval, flSpeed );
 
 		// For identifying stuck elements.
-		pThisElement->m_vecPrevOrigin = pThisElement->GetAbsOrigin(); 
+		pThisElement->m_vecPrevOrigin = pThisElement->GetAbsOrigin();
 
 		pThisElement->m_flDistFromCentroidSqr = pThisElement->m_vecPrevOrigin.DistToSqr( m_vecCentroid );
 
@@ -940,27 +974,29 @@ void CNPC_Blob::DoBlobBatchedAI( int iStart, int iEnd )
 			pThisElement->SetAbsAngles( angles );
 		}
 
-/*
-		//--
-		// Stragglers/Group integrity
-		//
-		if( pThisElement->m_flDistFromCentroidSqr > flStragglerDistSqr )
-		{
-			NDebugOverlay::Line( pThisElement->GetAbsOrigin(), m_vecCentroid, 255, 0, 0, false, 0.025f );
-		}
-*/
+		/*
+				//--
+				// Stragglers/Group integrity
+				//
+				if( pThisElement->m_flDistFromCentroidSqr > flStragglerDistSqr )
+				{
+					NDebugOverlay::Line( pThisElement->GetAbsOrigin(), m_vecCentroid, 255, 0, 0, false, 0.025f );
+				}
+		*/
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Throw out all elements and their entities except for the the specified 
-// index into the UTILVector. This is useful for isolating elements that 
+// Throw out all elements and their entities except for the the specified
+// index into the UTILVector. This is useful for isolating elements that
 // get into a bad state.
 //-----------------------------------------------------------------------------
 void CNPC_Blob::RemoveAllElementsExcept( int iExempt )
 {
 	if( m_Elements.Count() == 1 )
+	{
 		return;
+	}
 
 	m_Elements[ 0 ].Set( m_Elements[ iExempt ].Get() );
 
@@ -988,7 +1024,7 @@ void CNPC_Blob::RemoveExcessElements( int iNumElements )
 	for( i = 0 ; i < iNumElements ; i++ )
 	{
 		int iLastElement = m_iNumElements - 1;
-		
+
 		// Nuke the associated entity
 		m_Elements[ iLastElement ]->SUB_Remove();
 
@@ -1005,17 +1041,17 @@ void CNPC_Blob::RemoveExcessElements( int iNumElements )
 void CNPC_Blob::AddNewElements( int iNumElements )
 {
 	int i;
-	
+
 	// Keep track of how many elements we had when we came into this function.
 	// Since the new elements copy their origins from existing elements, we only want
-	// to copy origins from elements that existed before we came into this function. 
-	// Otherwise, the more elements we create while in this function, the more likely it 
+	// to copy origins from elements that existed before we came into this function.
+	// Otherwise, the more elements we create while in this function, the more likely it
 	// becomes that several of them will stack on the same origin.
 	int iInitialElements = m_iNumElements;
 
 	for( i = 0 ; i < iNumElements ; i++ )
 	{
-		CBlobElement *pElement = CreateNewElement();
+		CBlobElement* pElement = CreateNewElement();
 
 		if( pElement != NULL )
 		{
@@ -1038,7 +1074,7 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 	int i;
 	int iNumVerts = 0;
 
-	for ( i = 0 ; i < BLOB_MAX_VERTS ; i++ )
+	for( i = 0 ; i < BLOB_MAX_VERTS ; i++ )
 	{
 		if( iszPathName == NULL_STRING )
 		{
@@ -1046,7 +1082,7 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 			break;
 		}
 
-		CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, iszPathName );
+		CBaseEntity* pEntity = gEntList.FindEntityByName( NULL, iszPathName );
 
 		if( pEntity != NULL )
 		{
@@ -1068,7 +1104,9 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 			iNumVerts++;
 
 			if( bClosedPath )
+			{
 				break;
+			}
 		}
 	}
 
@@ -1085,7 +1123,7 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 	}
 
 	flDistribution = flPathLength / m_iNumElements;
-	Msg("Path length is %f, distribution is %f\n", flPathLength, flDistribution );
+	Msg( "Path length is %f, distribution is %f\n", flPathLength, flDistribution );
 
 	int element = 0;
 	for( i = 0 ; i < iNumVerts - 1 ; i++ )
@@ -1106,7 +1144,9 @@ void CNPC_Blob::FormShapeFromPath( string_t iszPathName )
 			element++;
 
 			if( element == m_iNumElements )
+			{
 				return;
+			}
 		}
 	}
 }
@@ -1121,12 +1161,14 @@ void CNPC_Blob::SetRadius( float flRadius )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputFormPathShape( inputdata_t &inputdata )
+void CNPC_Blob::InputFormPathShape( inputdata_t& inputdata )
 {
 	string_t shape = inputdata.value.StringID();
 
 	if( shape == NULL_STRING )
+	{
 		return;
+	}
 
 	//Msg("I'm supposed to form some shape called:%s\n", shape );
 
@@ -1135,7 +1177,7 @@ void CNPC_Blob::InputFormPathShape( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputSetRadius( inputdata_t &inputdata )
+void CNPC_Blob::InputSetRadius( inputdata_t& inputdata )
 {
 	float flNewRadius = inputdata.value.Float();
 
@@ -1144,15 +1186,15 @@ void CNPC_Blob::InputSetRadius( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputChaseEntity( inputdata_t &inputdata )
+void CNPC_Blob::InputChaseEntity( inputdata_t& inputdata )
 {
-	CBaseEntity *pEntity = gEntList.FindEntityByName( NULL, inputdata.value.StringID(), NULL, inputdata.pActivator, inputdata.pCaller );
-	
-	if ( pEntity )
+	CBaseEntity* pEntity = gEntList.FindEntityByName( NULL, inputdata.value.StringID(), NULL, inputdata.pActivator, inputdata.pCaller );
+
+	if( pEntity )
 	{
 		for( int i = 0 ; i < m_Elements.Count() ; i++ )
 		{
-			CBlobElement *pElement = m_Elements[ i ];
+			CBlobElement* pElement = m_Elements[ i ];
 
 			pElement->SetTargetEntity( pEntity );
 			pElement->SetActiveMovementRule( BLOB_MOVE_TO_TARGET_ENTITY );
@@ -1162,7 +1204,7 @@ void CNPC_Blob::InputChaseEntity( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputIsolateElement( inputdata_t &inputdata )
+void CNPC_Blob::InputIsolateElement( inputdata_t& inputdata )
 {
 	int iElement = inputdata.value.Int();
 
@@ -1171,7 +1213,7 @@ void CNPC_Blob::InputIsolateElement( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputFormHemisphere( inputdata_t &inputdata )
+void CNPC_Blob::InputFormHemisphere( inputdata_t& inputdata )
 {
 	Vector center = GetAbsOrigin();
 	const float flRadius = 240.0f;
@@ -1180,7 +1222,7 @@ void CNPC_Blob::InputFormHemisphere( inputdata_t &inputdata )
 
 	for( int i = 0 ; i < m_Elements.Count() ; i++ )
 	{
-		CBlobElement *pElement = m_Elements[ i ];
+		CBlobElement* pElement = m_Elements[ i ];
 
 		// Compute a point around my center
 		vecDir.x = random->RandomFloat( -1, 1 );
@@ -1196,7 +1238,7 @@ void CNPC_Blob::InputFormHemisphere( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Blob::InputFormTwoSpheres( inputdata_t &inputdata )
+void CNPC_Blob::InputFormTwoSpheres( inputdata_t& inputdata )
 {
 	Vector center = GetAbsOrigin();
 	Vector sphere1 = GetAbsOrigin() + Vector( 120.0f, 0, 120.0f );
@@ -1209,7 +1251,7 @@ void CNPC_Blob::InputFormTwoSpheres( inputdata_t &inputdata )
 
 	for( int i = 0 ; i < batchSize ; i++ )
 	{
-		CBlobElement *pElement = m_Elements[ i ];
+		CBlobElement* pElement = m_Elements[ i ];
 
 		// Compute a point around my center
 		vecDir.x = random->RandomFloat( -1, 1 );
@@ -1224,7 +1266,7 @@ void CNPC_Blob::InputFormTwoSpheres( inputdata_t &inputdata )
 
 	for( int i = batchSize ; i < m_Elements.Count() ; i++ )
 	{
-		CBlobElement *pElement = m_Elements[ i ];
+		CBlobElement* pElement = m_Elements[ i ];
 
 		// Compute a point around my center
 		vecDir.x = random->RandomFloat( -1, 1 );
@@ -1274,20 +1316,22 @@ void CNPC_Blob::AdvanceBatch()
 	m_iBatchStart += ComputeBatchSize();
 
 	if( m_iBatchStart >= m_Elements.Count() )
+	{
 		m_iBatchStart = 0;
+	}
 }
 
 //-----------------------------------------------------------------------------
 // Creates a new blob element from scratch and adds it to the blob
 //-----------------------------------------------------------------------------
-CBlobElement *CNPC_Blob::CreateNewElement()
+CBlobElement* CNPC_Blob::CreateNewElement()
 {
-	CBlobElement *pElement = static_cast<CBlobElement*>(CreateEntityByName( "blob_element" ));
+	CBlobElement* pElement = static_cast<CBlobElement*>( CreateEntityByName( "blob_element" ) );
 
 	if( pElement != NULL )
 	{
 		pElement->SetOwnerEntity( this );
-		pElement->SetSinePhase( fabs( sin(((float)m_iNumElements)/10.0f) ) );
+		pElement->SetSinePhase( fabs( sin( ( ( float )m_iNumElements ) / 10.0f ) ) );
 		pElement->SetActiveMovementRule( BLOB_MOVE_TO_TARGET_ENTITY );
 		pElement->SetTargetEntity( this );
 
@@ -1298,7 +1342,7 @@ CBlobElement *CNPC_Blob::CreateNewElement()
 		return pElement;
 	}
 
-	Warning("Blob could not spawn new element!\n");
+	Warning( "Blob could not spawn new element!\n" );
 	return NULL;
 }
 
@@ -1313,7 +1357,7 @@ void CNPC_Blob::InitializeElements()
 
 	int iNumElements = blob_numelements.GetInt();
 
-	float step = 360.0f / ((float)iNumElements);
+	float step = 360.0f / ( ( float )iNumElements );
 	for( i = 0 ; i < iNumElements ; i++ )
 	{
 		Vector vecDir;
@@ -1321,28 +1365,28 @@ void CNPC_Blob::InitializeElements()
 		AngleVectors( angDistributor, &vecDir, NULL, NULL );
 		vecDest = WorldSpaceCenter() + vecDir * 64.0f;
 
-		CBlobElement *pElement = CreateNewElement();
+		CBlobElement* pElement = CreateNewElement();
 
 		if( !pElement )
 		{
-			Msg("Blob could not create all elements!!\n");
+			Msg( "Blob could not create all elements!!\n" );
 			return;
 		}
 
 		trace_t tr;
-		UTIL_TraceLine( vecDest, vecDest + Vector (0, 0, MIN_COORD_FLOAT), MASK_SHOT, pElement, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( vecDest, vecDest + Vector( 0, 0, MIN_COORD_FLOAT ), MASK_SHOT, pElement, COLLISION_GROUP_NONE, &tr );
 
 		pElement->SetAbsOrigin( tr.endpos + Vector( 0, 0, 1 ) );
 
 		angDistributor.y += step;
 	}
 
-	CBaseEntity *pEntity = gEntList.FindEntityByClassname( NULL, "info_target" );
+	CBaseEntity* pEntity = gEntList.FindEntityByClassname( NULL, "info_target" );
 	for( i = 0 ; i < BLOB_MAX_AVOID_ORIGINS ; i++ )
 	{
 		if( pEntity )
 		{
-			if( pEntity->NameMatches("avoid") )
+			if( pEntity->NameMatches( "avoid" ) )
 			{
 				m_vecAvoidOrigin[ i ] = pEntity->GetAbsOrigin();
 				m_flAvoidRadiusSqr = Square( 120.0f );
@@ -1357,7 +1401,7 @@ void CNPC_Blob::InitializeElements()
 		}
 	}
 
-	Msg("%d avoid origins\n", m_iNumAvoidOrigins );
+	Msg( "%d avoid origins\n", m_iNumAvoidOrigins );
 
 	RecomputeIdealElementDist();
 }
@@ -1367,7 +1411,7 @@ void CNPC_Blob::InitializeElements()
 void CNPC_Blob::RecomputeIdealElementDist()
 {
 	float radius = blob_radius.GetFloat();
-	float area = M_PI * Square(radius);
+	float area = M_PI * Square( radius );
 
 	//Msg("Area of blob is: %f\n", area );
 

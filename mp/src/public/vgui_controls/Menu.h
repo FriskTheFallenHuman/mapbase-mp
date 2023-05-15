@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define MENU_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui_controls/Panel.h>
@@ -48,7 +48,7 @@ class MenuSeparator;
 //   The clicking and dragging on the scroll bar nob also scrolls the menu items.
 //   If a highlighed menuitem scrolls off, and the user then begins navigating via keys,
 //    the menu will snap the scroll bar so the highlighted item is visible.
-//   If user has been navigating via keys, moving the mouse over a menu item 
+//   If user has been navigating via keys, moving the mouse over a menu item
 //    highlights it.
 // Mousewheel:
 //   You must have the mouse inside the menu/scroll bar to use the wheel.
@@ -56,14 +56,14 @@ class MenuSeparator;
 //   If the list has no scroll bar the wheel will cycle from the bottom of the list
 //    to the top of the list and vice versa.
 //   If the list has a scrollbar the mouse wheel will stop at the top or bottom
-//    of the list. 
+//    of the list.
 //   If the mouse is over the scroll bar no items are highlighted.
 // Keyboard:
 //   When a menu is opened, no items are highlighted.
 //   If a menuitem has a cascading menu it does not open when the item is highlighted.
-//   The down arrow selects the next item in the list. 
+//   The down arrow selects the next item in the list.
 //    (first item if none are highlighted and there is a scrollbar).
-//   The up arrow selects the previous item in the list 
+//   The up arrow selects the previous item in the list
 //    (first item if none are highlighted and there is a scrollbar, last item if none are
 //    highlighted and there is no scrollbar).
 //   Selecting a new menuitem closes any previously open submenus in the list.
@@ -73,7 +73,7 @@ class MenuSeparator;
 //   Pressing the left arrow closes the submenu.
 //   When the submenu is opened the cascading menuitem stays highlighted.
 //   No items in the submenu are highlighted when it is opened.
-//   
+//
 //   Note: Cascading menuitems in menus with a scrollbar is not supported.
 //         Its a clunky UI and if we want this we should design a better solution,
 //         perhaps along the lines of how explorer's bookmarks does it.
@@ -96,72 +96,72 @@ public:
 		ALIGN_WITH_PARENT, // make the menu appear under the parent
 	};
 
-	Menu(Panel *parent, const char *panelName);
+	Menu( Panel* parent, const char* panelName );
 	~Menu();
 
-	static void PlaceContextMenu( Panel *parent, Menu *menu );
-	static void OnInternalMousePressed( Panel *other, MouseCode code );
+	static void PlaceContextMenu( Panel* parent, Menu* menu );
+	static void OnInternalMousePressed( Panel* other, MouseCode code );
 
-	virtual void PositionRelativeToPanel( Panel *reference, MenuDirection_e direction, int nAdditionalYOffset = 0, bool showMenu = false );
+	virtual void PositionRelativeToPanel( Panel* reference, MenuDirection_e direction, int nAdditionalYOffset = 0, bool showMenu = false );
 
-	  // the menu.  For combo boxes, it's the edit/field, etc. etc.
+	// the menu.  For combo boxes, it's the edit/field, etc. etc.
 
 	// Add a simple text item to the menu
-	virtual int AddMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, const KeyValues *userData = NULL );
-	virtual int AddMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, const KeyValues *userData = NULL );
+	virtual int AddMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, const KeyValues* userData = NULL );
+	virtual int AddMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, const KeyValues* userData = NULL );
 
-	virtual int AddMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target , const KeyValues *userData = NULL);
-	virtual int AddMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target , const KeyValues *userData = NULL);
-	
-	virtual int AddMenuItem( const char *itemText, const char *command, Panel *target , const KeyValues *userData = NULL);
-	virtual int AddMenuItem( const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData = NULL );
-	virtual int AddMenuItem( const char *itemText, Panel *target, const KeyValues *userData = NULL );
+	virtual int AddMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target , const KeyValues* userData = NULL );
+	virtual int AddMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target , const KeyValues* userData = NULL );
+
+	virtual int AddMenuItem( const char* itemText, const char* command, Panel* target , const KeyValues* userData = NULL );
+	virtual int AddMenuItem( const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData = NULL );
+	virtual int AddMenuItem( const char* itemText, Panel* target, const KeyValues* userData = NULL );
 
 	// Add a checkable item to the menu
-	virtual int AddCheckableMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, const KeyValues *userData = NULL );
-	virtual int AddCheckableMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, const KeyValues *userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, const KeyValues* userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, const KeyValues* userData = NULL );
 
-	virtual int AddCheckableMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData = NULL );
-	virtual int AddCheckableMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target, const KeyValues *userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target, const KeyValues* userData = NULL );
 
-	virtual int AddCheckableMenuItem( const char *itemText, const char *command, Panel *target , const KeyValues *userData = NULL);
-	virtual int AddCheckableMenuItem( const char *itemText, KeyValues *message, Panel *target, const KeyValues *userData = NULL );
-	virtual int AddCheckableMenuItem( const char *itemText, Panel *target, const KeyValues *userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemText, const char* command, Panel* target , const KeyValues* userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemText, KeyValues* message, Panel* target, const KeyValues* userData = NULL );
+	virtual int AddCheckableMenuItem( const char* itemText, Panel* target, const KeyValues* userData = NULL );
 
 	// Add a cascading menu item to the menu
-	virtual int AddCascadingMenuItem( const char *itemName, const char *itemText, const char *command, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
-	virtual int AddCascadingMenuItem( const char *itemName, const wchar_t *wszItemText, const char *command, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemName, const char* itemText, const char* command, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemName, const wchar_t* wszItemText, const char* command, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
 
-	virtual int AddCascadingMenuItem( const char *itemName, const char *itemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
-	virtual int AddCascadingMenuItem( const char *itemName, const wchar_t *wszItemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
-	
-	virtual int AddCascadingMenuItem( const char *itemText, const char *command, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
-	virtual int AddCascadingMenuItem( const char *itemText, KeyValues *message, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
-	virtual int AddCascadingMenuItem( const char *itemText, Panel *target, Menu *cascadeMenu, const KeyValues *userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemName, const char* itemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemName, const wchar_t* wszItemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
+
+	virtual int AddCascadingMenuItem( const char* itemText, const char* command, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemText, KeyValues* message, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
+	virtual int AddCascadingMenuItem( const char* itemText, Panel* target, Menu* cascadeMenu, const KeyValues* userData = NULL );
 
 	// Add a custom panel to the menu
-	virtual int AddMenuItem( MenuItem *panel );
+	virtual int AddMenuItem( MenuItem* panel );
 
 	virtual void AddSeparator();
 	virtual void AddSeparatorAfterItem( int itemID );
 
 	// Sets the values of a menu item at the specified index
-	virtual void UpdateMenuItem(int itemID, const char *itemText,KeyValues *message, const KeyValues *userData = NULL);
-	virtual void UpdateMenuItem(int itemID, const wchar_t *wszItemText,KeyValues *message, const KeyValues *userData = NULL);
+	virtual void UpdateMenuItem( int itemID, const char* itemText, KeyValues* message, const KeyValues* userData = NULL );
+	virtual void UpdateMenuItem( int itemID, const wchar_t* wszItemText, KeyValues* message, const KeyValues* userData = NULL );
 
 	virtual void MoveMenuItem( int itemID, int moveBeforeThisItemID );
 
-	virtual bool IsValidMenuID(int itemID);
+	virtual bool IsValidMenuID( int itemID );
 	virtual int GetInvalidMenuID();
 
-	KeyValues *GetItemUserData(int itemID);
-	void GetItemText(int itemID, wchar_t *text, int bufLenInBytes);
-	void GetItemText(int itemID, char *text, int bufLenInBytes);
+	KeyValues* GetItemUserData( int itemID );
+	void GetItemText( int itemID, wchar_t* text, int bufLenInBytes );
+	void GetItemText( int itemID, char* text, int bufLenInBytes );
 
-	virtual void SetItemEnabled(const char *itemName, bool state);
-	virtual void SetItemEnabled(int itemID, bool state);
-	virtual void SetItemVisible(const char *itemName, bool visible);
-	virtual void SetItemVisible(int itemID, bool visible);
+	virtual void SetItemEnabled( const char* itemName, bool state );
+	virtual void SetItemEnabled( int itemID, bool state );
+	virtual void SetItemVisible( const char* itemName, bool visible );
+	virtual void SetItemVisible( int itemID, bool visible );
 
 	// Remove a single item
 	void DeleteItem( int itemID );
@@ -176,7 +176,7 @@ public:
 	void SetContentAlignment( Label::Alignment alignment );
 
 	// sets the height of each menu item
-	virtual void SetMenuItemHeight(int itemHeight);
+	virtual void SetMenuItemHeight( int itemHeight );
 	virtual int  GetMenuItemHeight() const;
 
 	// Set the max number of items visible (scrollbar appears with more)
@@ -188,8 +188,8 @@ public:
 	// Set up the menu items layout
 	virtual void PerformLayout( void );
 
-	virtual void SetBorder(class IBorder *border);
-	virtual void ApplySchemeSettings(IScheme *pScheme);
+	virtual void SetBorder( class IBorder* border );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 
 	// Set type ahead behaviour
 	enum MenuTypeAheadMode
@@ -198,34 +198,34 @@ public:
 		HOT_KEY_MODE,
 		TYPE_AHEAD_MODE,
 	};
-	virtual void SetTypeAheadMode(MenuTypeAheadMode mode);
+	virtual void SetTypeAheadMode( MenuTypeAheadMode mode );
 	virtual int GetTypeAheadMode();
 
 	// Hotkey handling
-	virtual void OnKeyTyped(wchar_t unichar);
+	virtual void OnKeyTyped( wchar_t unichar );
 	// Menu nagivation etc.
 	virtual void OnKeyCodeTyped( KeyCode code );
 
 	// Visibility
-	virtual void SetVisible(bool state);
+	virtual void SetVisible( bool state );
 
 	// Activates item in the menu list, as if that menu item had been selected by the user
-	virtual void ActivateItem(int itemID);
-	virtual void SilentActivateItem(int itemID); // activate item, but don't fire the action signal
-	virtual void ActivateItemByRow(int row);
+	virtual void ActivateItem( int itemID );
+	virtual void SilentActivateItem( int itemID ); // activate item, but don't fire the action signal
+	virtual void ActivateItemByRow( int row );
 	virtual int GetActiveItem();		// returns the itemID (not the row) of the active item
 
 	// Return the number of items currently in the menu list
 	virtual int GetItemCount() const;
 
 	// return the menuID of the n'th item in the menu list, valid from [0, GetItemCount)
-	virtual int GetMenuID(int index);
-	
+	virtual int GetMenuID( int index );
+
 	// Return the number of items currently visible in the menu list
 	int GetCurrentlyVisibleItemsCount();
-	
-	MenuItem *GetMenuItem(int itemID);
-	void CloseOtherMenus(MenuItem *item);
+
+	MenuItem* GetMenuItem( int itemID );
+	void CloseOtherMenus( MenuItem* item );
 	virtual void OnKillFocus();
 
 	int GetMenuMode();
@@ -235,16 +235,16 @@ public:
 		KEYBOARD,
 	};
 
-	void SetCurrentlyHighlightedItem(int itemID);
+	void SetCurrentlyHighlightedItem( int itemID );
 	int GetCurrentlyHighlightedItem();
 	void ClearCurrentlyHighlightedItem();
-	
-	// Set the checked state of a checkable menuItem
-	void SetMenuItemChecked(int itemID, bool state);
-	bool IsChecked(int index); // check if item is checked.
 
-	
-	void SetMinimumWidth(int width);
+	// Set the checked state of a checkable menuItem
+	void SetMenuItemChecked( int itemID, bool state );
+	bool IsChecked( int index ); // check if item is checked.
+
+
+	void SetMinimumWidth( int width );
 	int  GetMinimumWidth();
 
 	// baseclass overrides to chain colors through to cascade menus
@@ -254,19 +254,19 @@ public:
 	virtual void SetFont( HFont font );
 
 	// Pass in NULL hotkey to remove hotkey
-	void SetCurrentKeyBinding( int itemID, char const *hotkey );
+	void SetCurrentKeyBinding( int itemID, char const* hotkey );
 
 	void ForceCalculateWidth();
 
 	void SetUseFallbackFont( bool bState, HFont hFallback );
 
 protected:
-	// helper functions	
-	int AddMenuItemCharCommand(MenuItem *item, const char *command, Panel *target, const KeyValues *userData);
-	int AddMenuItemKeyValuesCommand(MenuItem *item, KeyValues *message, Panel *target, const KeyValues *userData);
+	// helper functions
+	int AddMenuItemCharCommand( MenuItem* item, const char* command, Panel* target, const KeyValues* userData );
+	int AddMenuItemKeyValuesCommand( MenuItem* item, KeyValues* message, Panel* target, const KeyValues* userData );
 
 	// vgui result reporting
-	virtual void OnCommand( const char *command );
+	virtual void OnCommand( const char* command );
 	MESSAGE_FUNC_PTR( OnMenuItemSelected, "MenuItemSelected", panel );
 	virtual void AddScrollBar();
 	virtual void RemoveScrollBar();
@@ -274,10 +274,10 @@ protected:
 	virtual void Paint();
 	virtual void LayoutMenuBorder();
 	virtual void MakeItemsVisibleInScrollRange( int maxVisibleItems, int nNumPixelsAvailable );
-	virtual void OnMouseWheeled(int delta);
+	virtual void OnMouseWheeled( int delta );
 	// Alternate OnKeyTyped behaviors
-	virtual void OnHotKey(wchar_t unichar);
-	virtual void OnTypeAhead(wchar_t unichar);
+	virtual void OnHotKey( wchar_t unichar );
+	virtual void OnTypeAhead( wchar_t unichar );
 
 	int	CountVisibleItems();
 	void ComputeWorkspaceSize( int& workWide, int& workTall );
@@ -288,19 +288,19 @@ protected:
 	void LayoutScrollBar();
 	void PositionCascadingMenu();
 	void SizeMenuItems();
-	void OnCursorMoved(int x, int y);
-	void OnKeyCodePressed(KeyCode code);
+	void OnCursorMoved( int x, int y );
+	void OnKeyCodePressed( KeyCode code );
 	void OnMenuClose();
 	MESSAGE_FUNC( OnKeyModeSet, "KeyModeSet" );
 
-	void SetCurrentlySelectedItem(MenuItem *item);
-	void SetCurrentlySelectedItem(int itemID);
-	MESSAGE_FUNC_INT( OnCursorEnteredMenuItem, "CursorEnteredMenuItem", VPanel);
-	MESSAGE_FUNC_INT( OnCursorExitedMenuItem, "CursorExitedMenuItem", VPanel);
+	void SetCurrentlySelectedItem( MenuItem* item );
+	void SetCurrentlySelectedItem( int itemID );
+	MESSAGE_FUNC_INT( OnCursorEnteredMenuItem, "CursorEnteredMenuItem", VPanel );
+	MESSAGE_FUNC_INT( OnCursorExitedMenuItem, "CursorExitedMenuItem", VPanel );
 
-	void MoveAlongMenuItemList(int direction, int loopCount); 
+	void MoveAlongMenuItemList( int direction, int loopCount );
 
-	enum 
+	enum
 	{
 		DEFAULT_MENU_ITEM_HEIGHT = 22, // height of items in the menu
 		MENU_UP = -1, // used for moving up/down list of menu items in the menu
@@ -308,24 +308,24 @@ protected:
 	};
 
 #ifdef DBGFLAG_VALIDATE
-	virtual void Validate( CValidator &validator, char *pchName );
+	virtual void Validate( CValidator& validator, char* pchName );
 #endif // DBGFLAG_VALIDATE
 
 private:
-	MenuItem *GetParentMenuItem();
+	MenuItem* GetParentMenuItem();
 
 	int 			m_iMenuItemHeight;
 	int 			m_iFixedWidth;
 	int 			m_iMinimumWidth; // a minimum width the menu has to be if it is not fixed width
 	int 			m_iNumVisibleLines;	// number of items in menu before scroll bar adds on
-	ScrollBar 		*m_pScroller;
+	ScrollBar*		 m_pScroller;
 
 	CUtlLinkedList<MenuItem*, int> 	m_MenuItems;
 
 	CUtlVector<int>					m_VisibleSortedItems;
-	CUtlVector<int>					m_SortedItems;		// used for visual 
+	CUtlVector<int>					m_SortedItems;		// used for visual
 	CUtlVector<int>					m_Separators;       // menu item ids after  which separators should be shown
-	CUtlVector<MenuSeparator *>		m_SeparatorPanels;
+	CUtlVector<MenuSeparator*>		m_SeparatorPanels;
 
 	bool 			_sizedForScrollBar: 1 ;  // whether menu has been sized for a scrollbar
 	bool			m_bUseFallbackFont : 1;
@@ -344,7 +344,7 @@ private:
 	HFont			m_hFallbackItemFont;
 
 	// for managing type ahead
-	#define			TYPEAHEAD_BUFSIZE 256
+#define			TYPEAHEAD_BUFSIZE 256
 	MenuTypeAheadMode m_eTypeAheadMode;
 	wchar_t			m_szTypeAheadBuf[TYPEAHEAD_BUFSIZE];
 	int				m_iNumTypeAheadChars;
@@ -359,19 +359,19 @@ class MenuBuilder
 {
 public:
 
-	MenuBuilder( Menu *pMenu, Panel *pActionTarget );
+	MenuBuilder( Menu* pMenu, Panel* pActionTarget );
 
-	MenuItem* AddMenuItem( const char *pszButtonText, const char *pszCommand, const char *pszCategoryName );
+	MenuItem* AddMenuItem( const char* pszButtonText, const char* pszCommand, const char* pszCategoryName );
 
-	MenuItem* AddCascadingMenuItem( const char *pszButtonText, Menu *pSubMenu, const char *pszCategoryName );
+	MenuItem* AddCascadingMenuItem( const char* pszButtonText, Menu* pSubMenu, const char* pszCategoryName );
 
 private:
 
-	void AddSepratorIfNeeded( const char *pszCategoryName );
+	void AddSepratorIfNeeded( const char* pszCategoryName );
 
-	Menu *m_pMenu;
-	Panel *m_pActionTarget;
-	const char *m_pszLastCategory;
+	Menu* m_pMenu;
+	Panel* m_pActionTarget;
+	const char* m_pszLastCategory;
 };
 
 } // namespace vgui

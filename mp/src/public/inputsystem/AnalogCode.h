@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //===========================================================================//
@@ -9,7 +9,7 @@
 #define ANALOGCODE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -35,7 +35,7 @@ enum AnalogCode_t
 	MOUSE_WHEEL,
 
 	JOYSTICK_FIRST_AXIS,
-	JOYSTICK_LAST_AXIS = JOYSTICK_AXIS_INTERNAL( MAX_JOYSTICKS-1, MAX_JOYSTICK_AXES-1 ),
+	JOYSTICK_LAST_AXIS = JOYSTICK_AXIS_INTERNAL( MAX_JOYSTICKS - 1, MAX_JOYSTICK_AXES - 1 ),
 
 	ANALOG_CODE_LAST,
 };

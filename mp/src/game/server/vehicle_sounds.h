@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef VEHICLE_SOUNDS_H
 #define VEHICLE_SOUNDS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vcollide_parse.h"
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 enum vehiclesound
 {
@@ -30,14 +30,14 @@ enum vehiclesound
 	VS_NUM_SOUNDS,
 };
 
-extern const char *vehiclesound_parsenames[VS_NUM_SOUNDS];
+extern const char* vehiclesound_parsenames[VS_NUM_SOUNDS];
 
 // This is a list of vehiclesounds to automatically stop when the vehicle's driver exits the vehicle
 #define NUM_SOUNDS_TO_STOP_ON_EXIT	4
 extern vehiclesound g_iSoundsToStopOnExit[NUM_SOUNDS_TO_STOP_ON_EXIT];
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 struct vehicle_gear_t
 {
@@ -86,7 +86,7 @@ enum sound_states
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 struct vehiclesounds_t
 {
@@ -94,13 +94,13 @@ struct vehiclesounds_t
 	{
 		pGears.Purge();
 		crashSounds.Purge();
-		
-		for ( int i = 0; i < VS_NUM_SOUNDS; i++ )
+
+		for( int i = 0; i < VS_NUM_SOUNDS; i++ )
 		{
 			iszSound[i] = NULL_STRING;
 		}
 
-		for ( int i = 0; i < SS_NUM_STATES; i++ )
+		for( int i = 0; i < SS_NUM_STATES; i++ )
 		{
 			iszStateSounds[i] = NULL_STRING;
 			minStateTime[i] = 0.0f;
@@ -124,8 +124,8 @@ class CVehicleSoundsParser : public IVPhysicsKeyHandler
 public:
 	CVehicleSoundsParser( void );
 
-	virtual void ParseKeyValue( void *pData, const char *pKey, const char *pValue );
-	virtual void SetDefaults( void *pData );
+	virtual void ParseKeyValue( void* pData, const char* pKey, const char* pValue );
+	virtual void SetDefaults( void* pData );
 
 private:
 	// Index of the gear we're currently reading data into

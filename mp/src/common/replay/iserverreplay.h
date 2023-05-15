@@ -5,7 +5,7 @@
 #ifndef ISERVERREPLAY_H
 #define ISERVERREPLAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@ class KeyValues;
 class IServerReplay : public IBaseInterface
 {
 public:
-	virtual void				UploadOgsData( KeyValues *pData, bool bIncludeTimeField ) = 0;
+	virtual void				UploadOgsData( KeyValues* pData, bool bIncludeTimeField ) = 0;
 };
 
 //----------------------------------------------------------------------------------------

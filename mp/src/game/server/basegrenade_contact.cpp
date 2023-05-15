@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -34,21 +34,21 @@ void CBaseGrenadeContact::Spawn( void )
 	SetCollisionGroup( COLLISION_GROUP_PROJECTILE );
 	SetModel( "models/weapons/w_grenade.mdl" );	// BUG: wrong model
 
-	UTIL_SetSize(this, vec3_origin, vec3_origin);
+	UTIL_SetSize( this, vec3_origin, vec3_origin );
 
 	// contact grenades arc lower
 	SetGravity( UTIL_ScaleForGravity( 400 ) );	// use a lower gravity for grenades to make them easier to see
 
 	QAngle angles;
-	VectorAngles(GetAbsVelocity(), angles);
+	VectorAngles( GetAbsVelocity(), angles );
 	SetLocalAngles( angles );
-	
+
 	// make NPCs afaid of it while in the air
 	SetThink( &CBaseGrenadeContact::DangerSoundThink );
 	SetNextThink( gpGlobals->curtime );
-	
+
 	// Tumble in air
-	QAngle vecAngVelocity( random->RandomFloat ( -100, -500 ), 0, 0 );
+	QAngle vecAngVelocity( random->RandomFloat( -100, -500 ), 0, 0 );
 	SetLocalAngularVelocity( vecAngVelocity );
 
 	// Explode on contact
@@ -67,5 +67,5 @@ void CBaseGrenadeContact::Precache( void )
 {
 	BaseClass::Precache( );
 
-	PrecacheModel("models/weapons/w_grenade.mdl");
+	PrecacheModel( "models/weapons/w_grenade.mdl" );
 }

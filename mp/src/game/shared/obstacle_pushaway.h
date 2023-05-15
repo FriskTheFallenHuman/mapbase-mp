@@ -1,29 +1,29 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef OBSTACLE_PUSHAWAY_H
 #define OBSTACLE_PUSHAWAY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "props_shared.h"
 #ifndef CLIENT_DLL
-#include "func_breakablesurf.h"
-#include "BasePropDoor.h"
-#include "doors.h"
+	#include "func_breakablesurf.h"
+	#include "BasePropDoor.h"
+	#include "doors.h"
 #endif // CLIENT_DLL
 
 //--------------------------------------------------------------------------------------------------------------
-bool IsPushAwayEntity( CBaseEntity *pEnt );
-bool IsPushableEntity( CBaseEntity *pEnt );
+bool IsPushAwayEntity( CBaseEntity* pEnt );
+bool IsPushableEntity( CBaseEntity* pEnt );
 
 //--------------------------------------------------------------------------------------------------------------
 #ifndef CLIENT_DLL
-bool IsBreakableEntity( CBaseEntity *pEnt );
+	bool IsBreakableEntity( CBaseEntity* pEnt );
 #endif // !CLIENT_DLL
 
 //--------------------------------------------------------------------------------------------------------------
@@ -31,23 +31,23 @@ class CPushAwayEnumerator : public IPartitionEnumerator
 {
 public:
 	// Forced constructor
-	CPushAwayEnumerator(CBaseEntity **ents, int nMaxEnts)
+	CPushAwayEnumerator( CBaseEntity** ents, int nMaxEnts )
 	{
 		m_nAlreadyHit = 0;
 		m_AlreadyHit = ents;
 		m_nMaxHits = nMaxEnts;
 	}
-	
+
 	// Actual work code
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity )
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity )
 	{
 #ifdef CLIENT_DLL
-		CBaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
+		CBaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
 #else
-		CBaseEntity *pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+		CBaseEntity* pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
 #endif // CLIENT_DLL
 
-		if ( IsPushAwayEntity( pEnt ) && m_nAlreadyHit < m_nMaxHits )
+		if( IsPushAwayEntity( pEnt ) && m_nAlreadyHit < m_nMaxHits )
 		{
 			m_AlreadyHit[m_nAlreadyHit] = pEnt;
 			m_nAlreadyHit++;
@@ -58,7 +58,7 @@ public:
 
 public:
 
-	CBaseEntity **m_AlreadyHit;
+	CBaseEntity** m_AlreadyHit;
 	int m_nAlreadyHit;
 	int m_nMaxHits;
 };
@@ -73,24 +73,28 @@ public:
 class CBotBreakableEnumerator : public CPushAwayEnumerator
 {
 public:
-	CBotBreakableEnumerator(CBaseEntity **ents, int nMaxEnts) : CPushAwayEnumerator(ents, nMaxEnts)
+	CBotBreakableEnumerator( CBaseEntity** ents, int nMaxEnts ) : CPushAwayEnumerator( ents, nMaxEnts )
 	{
 	}
 
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity )
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity )
 	{
-		CBaseEntity *pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+		CBaseEntity* pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
 
-		if ( !IsBreakableEntity( pEnt ) )
+		if( !IsBreakableEntity( pEnt ) )
+		{
 			return ITERATION_CONTINUE;
+		}
 
 		// ignore breakables parented to doors
-		if ( pEnt->GetParent() &&
-			( FClassnameIs( pEnt->GetParent(), "func_door*" ) ||
-			FClassnameIs( pEnt, "prop_door*" ) ) )
+		if( pEnt->GetParent() &&
+				( FClassnameIs( pEnt->GetParent(), "func_door*" ) ||
+				  FClassnameIs( pEnt, "prop_door*" ) ) )
+		{
 			return ITERATION_CONTINUE;
+		}
 
-		if ( m_nAlreadyHit < m_nMaxHits )
+		if( m_nAlreadyHit < m_nMaxHits )
 		{
 			m_AlreadyHit[m_nAlreadyHit] = pEnt;
 			m_nAlreadyHit++;
@@ -108,44 +112,46 @@ public:
 class CBotDoorEnumerator : public CPushAwayEnumerator
 {
 public:
-	CBotDoorEnumerator(CBaseEntity **ents, int nMaxEnts) : CPushAwayEnumerator(ents, nMaxEnts)
+	CBotDoorEnumerator( CBaseEntity** ents, int nMaxEnts ) : CPushAwayEnumerator( ents, nMaxEnts )
 	{
 	}
 
-	virtual IterationRetval_t EnumElement( IHandleEntity *pHandleEntity )
+	virtual IterationRetval_t EnumElement( IHandleEntity* pHandleEntity )
 	{
-		CBaseEntity *pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
+		CBaseEntity* pEnt = gEntList.GetBaseEntity( pHandleEntity->GetRefEHandle() );
 
-		if ( pEnt == NULL )
-			return ITERATION_CONTINUE;
-
-		if ( ( pEnt->ObjectCaps() & FCAP_IMPULSE_USE ) == 0 )
+		if( pEnt == NULL )
 		{
 			return ITERATION_CONTINUE;
 		}
 
-		if ( FClassnameIs( pEnt, "func_door*" ) )
+		if( ( pEnt->ObjectCaps() & FCAP_IMPULSE_USE ) == 0 )
 		{
-			CBaseDoor *door = dynamic_cast<CBaseDoor *>(pEnt);
-			if ( !door )
+			return ITERATION_CONTINUE;
+		}
+
+		if( FClassnameIs( pEnt, "func_door*" ) )
+		{
+			CBaseDoor* door = dynamic_cast<CBaseDoor*>( pEnt );
+			if( !door )
 			{
 				return ITERATION_CONTINUE;
 			}
 
-			if ( door->m_toggle_state == TS_GOING_UP || door->m_toggle_state == TS_GOING_DOWN )
+			if( door->m_toggle_state == TS_GOING_UP || door->m_toggle_state == TS_GOING_DOWN )
 			{
 				return ITERATION_CONTINUE;
 			}
 		}
-		else if ( FClassnameIs( pEnt, "prop_door*" ) )
+		else if( FClassnameIs( pEnt, "prop_door*" ) )
 		{
-			CBasePropDoor *door = dynamic_cast<CBasePropDoor *>(pEnt);
-			if ( !door )
+			CBasePropDoor* door = dynamic_cast<CBasePropDoor*>( pEnt );
+			if( !door )
 			{
 				return ITERATION_CONTINUE;
 			}
 
-			if ( door->IsDoorOpening() || door->IsDoorClosing() )
+			if( door->IsDoorOpening() || door->IsDoorClosing() )
 			{
 				return ITERATION_CONTINUE;
 			}
@@ -155,7 +161,7 @@ public:
 			return ITERATION_CONTINUE;
 		}
 
-		if ( m_nAlreadyHit < m_nMaxHits )
+		if( m_nAlreadyHit < m_nMaxHits )
 		{
 			m_AlreadyHit[m_nAlreadyHit] = pEnt;
 			m_nAlreadyHit++;
@@ -170,18 +176,18 @@ public:
 /**
  *  Returns an entity that matches the filter that is along the line segment
  */
-CBaseEntity * CheckForEntitiesAlongSegment( const Vector &start, const Vector &end, const Vector &mins, const Vector &maxs, CPushAwayEnumerator *enumerator );
+CBaseEntity* CheckForEntitiesAlongSegment( const Vector& start, const Vector& end, const Vector& mins, const Vector& maxs, CPushAwayEnumerator* enumerator );
 #endif // CLIENT_DLL
 
 
 //--------------------------------------------------------------------------------------------------------------
 // Retrieves physics objects near pPushingEntity
-void AvoidPushawayProps(  CBaseCombatCharacter *pPlayer, CUserCmd *pCmd );
-int GetPushawayEnts( CBaseCombatCharacter *pPushingEntity, CBaseEntity **ents, int nMaxEnts, float flPlayerExpand, int PartitionMask, CPushAwayEnumerator *enumerator = NULL );
+void AvoidPushawayProps( CBaseCombatCharacter* pPlayer, CUserCmd* pCmd );
+int GetPushawayEnts( CBaseCombatCharacter* pPushingEntity, CBaseEntity** ents, int nMaxEnts, float flPlayerExpand, int PartitionMask, CPushAwayEnumerator* enumerator = NULL );
 
 //--------------------------------------------------------------------------------------------------------------
 // Pushes physics objects away from the entity
-void PerformObstaclePushaway( CBaseCombatCharacter *pPushingEntity );
+void PerformObstaclePushaway( CBaseCombatCharacter* pPushingEntity );
 
 
 #endif // OBSTACLE_PUSHAWAY_H

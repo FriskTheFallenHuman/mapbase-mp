@@ -10,12 +10,12 @@
 #include "basehlcombatweapon.h"
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 #ifdef MAPBASE
-extern acttable_t *GetPistolActtable();
-extern int GetPistolActtableCount();
+	extern acttable_t* GetPistolActtable();
+	extern int GetPistolActtableCount();
 #endif
 
 class CWeaponAlyxGun : public CHLSelectFireMachineGun
@@ -28,37 +28,55 @@ public:
 	~CWeaponAlyxGun();
 
 	DECLARE_SERVERCLASS();
-	
+
 	void	Precache( void );
 
-	virtual int		GetMinBurst( void ) { return 4; }
-	virtual int		GetMaxBurst( void ) { return 7; }
+	virtual int		GetMinBurst( void )
+	{
+		return 4;
+	}
+	virtual int		GetMaxBurst( void )
+	{
+		return 7;
+	}
 	virtual float	GetMinRestTime( void );
 	virtual float	GetMaxRestTime( void );
 
-	virtual void Equip( CBaseCombatCharacter *pOwner );
+	virtual void Equip( CBaseCombatCharacter* pOwner );
 
-	float	GetFireRate( void ) { return 0.1f; }
-	int		CapabilitiesGet( void ) { return bits_CAP_WEAPON_RANGE_ATTACK1; }
+	float	GetFireRate( void )
+	{
+		return 0.1f;
+	}
+	int		CapabilitiesGet( void )
+	{
+		return bits_CAP_WEAPON_RANGE_ATTACK1;
+	}
 	int		WeaponRangeAttack1Condition( float flDot, float flDist );
 	int		WeaponRangeAttack2Condition( float flDot, float flDist );
 
 	virtual const Vector& GetBulletSpread( void );
 
-	void FireNPCPrimaryAttack( CBaseCombatCharacter *pOperator, bool bUseWeaponAngles );
+	void FireNPCPrimaryAttack( CBaseCombatCharacter* pOperator, bool bUseWeaponAngles );
 
-	void Operator_ForceNPCFire( CBaseCombatCharacter  *pOperator, bool bSecondary );
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void Operator_ForceNPCFire( CBaseCombatCharacter*  pOperator, bool bSecondary );
+	void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 
 	virtual void SetPickupTouch( void )
 	{
 		// Alyx gun cannot be picked up
-		SetTouch(NULL);
+		SetTouch( NULL );
 	}
 
 #ifdef MAPBASE
-	virtual acttable_t		*GetBackupActivityList() { return GetPistolActtable(); }
-	virtual int				GetBackupActivityListCount() { return GetPistolActtableCount(); }
+	virtual acttable_t*		GetBackupActivityList()
+	{
+		return GetPistolActtable();
+	}
+	virtual int				GetBackupActivityListCount()
+	{
+		return GetPistolActtableCount();
+	}
 #endif
 
 	float m_flTooCloseTimer;

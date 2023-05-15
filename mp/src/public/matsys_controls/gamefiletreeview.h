@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define GAMEFILETREEVIEW_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,7 +22,7 @@
 //-----------------------------------------------------------------------------
 namespace vgui
 {
-	class IScheme;
+class IScheme;
 }
 
 
@@ -34,12 +34,12 @@ class CGameFileTreeView : public vgui::TreeView
 	DECLARE_CLASS_SIMPLE( CGameFileTreeView, vgui::TreeView );
 
 public:
-	CGameFileTreeView( vgui::Panel *parent, const char *name, const char *pRootFolderName, const char *pRootDir, const char *pExtension = NULL );
+	CGameFileTreeView( vgui::Panel* parent, const char* name, const char* pRootFolderName, const char* pRootDir, const char* pExtension = NULL );
 
 	// Inherited from base classes
 	virtual void GenerateChildrenOfNode( int itemIndex );
-	virtual void GenerateContextMenu( int itemIndex, int x, int y ); 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void GenerateContextMenu( int itemIndex, int x, int y );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 	// Purpose: Refreshes the active file list
 	void RefreshFileList();
@@ -51,7 +51,7 @@ public:
 	int GetRootDirectoryCount();
 
 	// Gets the ith root directory
-	const char *GetRootDirectory( int nIndex );
+	const char* GetRootDirectory( int nIndex );
 
 	// Selects the root folder
 	void SelectRoot();
@@ -61,13 +61,13 @@ private:
 	void PopulateRootNode( int itemIndex );
 
 	// Populate the root node with directories
-	void AddDirectoriesOfNode( int itemIndex, const char *pFilePath );
+	void AddDirectoriesOfNode( int itemIndex, const char* pFilePath );
 
 	// Populate the root node with directories
-	bool DoesDirectoryHaveSubdirectories( const char *pFilePath );
+	bool DoesDirectoryHaveSubdirectories( const char* pFilePath );
 
 	// Populate the root node with files
-	void AddFilesOfNode( int itemIndex, const char *pFilePath, const char *pExt );
+	void AddFilesOfNode( int itemIndex, const char* pFilePath, const char* pExt );
 
 	CUtlString m_RootDir;
 	CUtlString m_Ext;

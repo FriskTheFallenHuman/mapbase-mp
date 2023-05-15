@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -39,7 +39,7 @@
 #define GRENADE_RADIUS	4.0f // inches
 
 #ifdef CLIENT_DLL
-#define CWeaponFrag C_WeaponFrag
+	#define CWeaponFrag C_WeaponFrag
 #endif
 
 //-----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ class CWeaponFrag: public CBaseHL2MPCombatWeapon
 {
 	DECLARE_CLASS( CWeaponFrag, CBaseHL2MPCombatWeapon );
 public:
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 public:
@@ -57,35 +57,41 @@ public:
 
 	void	Precache( void );
 #ifdef GAME_DLL
-	void Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 #endif
 	void	PrimaryAttack( void );
 	void	SecondaryAttack( void );
-	void	DecrementAmmo( CBaseCombatCharacter *pOwner );
+	void	DecrementAmmo( CBaseCombatCharacter* pOwner );
 	void	ItemPostFrame( void );
 
 	bool	Deploy( void );
-	bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
-	
+	bool	Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
+
 	bool	Reload( void );
 
-	bool	ShouldDisplayHUDHint() { return true; }
+	bool	ShouldDisplayHUDHint()
+	{
+		return true;
+	}
 
-	void	ThrowGrenade( CBasePlayer *pPlayer );
-	bool	IsPrimed( bool ) { return ( m_AttackPaused != 0 );	}
-	void	RollGrenade( CBasePlayer *pPlayer );
-	void	LobGrenade( CBasePlayer *pPlayer );
+	void	ThrowGrenade( CBasePlayer* pPlayer );
+	bool	IsPrimed( bool )
+	{
+		return ( m_AttackPaused != 0 );
+	}
+	void	RollGrenade( CBasePlayer* pPlayer );
+	void	LobGrenade( CBasePlayer* pPlayer );
 
 	// check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
-	void	CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc,
-		const QAngle& angles = vec3_angle );
+	void	CheckThrowPosition( CBasePlayer* pPlayer, const Vector& vecEye, Vector& vecSrc,
+								const QAngle& angles = vec3_angle );
 
 private:
 
-	CWeaponFrag( const CWeaponFrag & );
+	CWeaponFrag( const CWeaponFrag& );
 
 	CNetworkVar( bool,	m_bRedraw );	//Draw the weapon again after throwing a grenade
-	
+
 	CNetworkVar( int,	m_AttackPaused );
 	CNetworkVar( bool,	m_fDrawbackFinished );
 
@@ -95,7 +101,7 @@ private:
 //-----------------------------------------------------------------------------
 // Maps base activities to weapons-specific ones so our characters do the right things.
 //-----------------------------------------------------------------------------
-acttable_t	CWeaponFrag::m_acttable[] = 
+acttable_t	CWeaponFrag::m_acttable[] =
 {
 	// HL2:DM activities (for third-person animations in SP)
 	{ ACT_MP_STAND_IDLE,				ACT_HL2MP_IDLE_GRENADE,					 false },
@@ -120,7 +126,7 @@ acttable_t	CWeaponFrag::m_acttable[] =
 	{ ACT_MP_JUMP,						ACT_HL2MP_JUMP_GRENADE,					 false },
 };
 
-IMPLEMENT_ACTTABLE(CWeaponFrag);
+IMPLEMENT_ACTTABLE( CWeaponFrag );
 
 IMPLEMENT_NETWORKCLASS_ALIASED( WeaponFrag, DT_WeaponFrag )
 
@@ -135,25 +141,25 @@ BEGIN_NETWORK_TABLE( CWeaponFrag, DT_WeaponFrag )
 	SendPropBool( SENDINFO( m_fDrawbackFinished ) ),
 	SendPropInt( SENDINFO( m_AttackPaused ) ),
 #endif
-	
+
 END_NETWORK_TABLE()
 
 #ifdef CLIENT_DLL
-BEGIN_PREDICTION_DATA( CWeaponFrag )
+	BEGIN_PREDICTION_DATA( CWeaponFrag )
 	DEFINE_PRED_FIELD( m_bRedraw, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_fDrawbackFinished, FIELD_BOOLEAN, FTYPEDESC_INSENDTABLE ),
 	DEFINE_PRED_FIELD( m_AttackPaused, FIELD_INTEGER, FTYPEDESC_INSENDTABLE ),
-END_PREDICTION_DATA()
+	END_PREDICTION_DATA()
 #endif
 
 LINK_ENTITY_TO_CLASS( weapon_frag, CWeaponFrag );
 PRECACHE_WEAPON_REGISTER( weapon_frag );
 
-void DropPrimedFragGrenade( CHL2MP_Player *pPlayer, CBaseCombatWeapon *pGrenade )
+void DropPrimedFragGrenade( CHL2MP_Player* pPlayer, CBaseCombatWeapon* pGrenade )
 {
-	CWeaponFrag *pWeaponFrag = dynamic_cast<CWeaponFrag*>( pGrenade );
+	CWeaponFrag* pWeaponFrag = dynamic_cast<CWeaponFrag*>( pGrenade );
 
-	if ( pWeaponFrag )
+	if( pWeaponFrag )
 	{
 		pWeaponFrag->ThrowGrenade( pPlayer );
 		pWeaponFrag->DecrementAmmo( pPlayer );
@@ -167,7 +173,7 @@ CWeaponFrag::CWeaponFrag( void ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponFrag::Precache( void )
 {
@@ -182,7 +188,7 @@ void CWeaponFrag::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool CWeaponFrag::Deploy( void )
 {
@@ -193,10 +199,10 @@ bool CWeaponFrag::Deploy( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CWeaponFrag::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponFrag::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
 	m_bRedraw = false;
 	m_fDrawbackFinished = false;
@@ -207,13 +213,13 @@ bool CWeaponFrag::Holster( CBaseCombatWeapon *pSwitchingTo )
 
 #ifndef CLIENT_DLL
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEvent - 
-//			*pOperator - 
+// Purpose:
+// Input  : *pEvent -
+//			*pOperator -
 //-----------------------------------------------------------------------------
-void CWeaponFrag::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator )
+void CWeaponFrag::Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator )
 {
-	CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+	CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 	bool fThrewGrenade = false;
 
 	switch( pEvent->event )
@@ -257,15 +263,17 @@ void CWeaponFrag::Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatChar
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
 bool CWeaponFrag::Reload( void )
 {
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
+	{
 		return false;
+	}
 
-	if ( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
+	if( ( m_bRedraw ) && ( m_flNextPrimaryAttack <= gpGlobals->curtime ) && ( m_flNextSecondaryAttack <= gpGlobals->curtime ) )
 	{
 		//Redraw the weapon
 		SendWeaponAnim( ACT_VM_DRAW );
@@ -283,25 +291,33 @@ bool CWeaponFrag::Reload( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponFrag::SecondaryAttack( void )
 {
-	if ( m_bRedraw )
+	if( m_bRedraw )
+	{
 		return;
+	}
 
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
+	{
 		return;
+	}
 
-	CBaseCombatCharacter *pOwner  = GetOwner();
+	CBaseCombatCharacter* pOwner  = GetOwner();
 
-	if ( pOwner == NULL )
+	if( pOwner == NULL )
+	{
 		return;
+	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( pOwner );
-	
-	if ( pPlayer == NULL )
+	CBasePlayer* pPlayer = ToBasePlayer( pOwner );
+
+	if( pPlayer == NULL )
+	{
 		return;
+	}
 
 	// Note that this is a secondary attack and prepare the grenade attack to pause.
 	m_AttackPaused = GRENADE_PAUSED_SECONDARY;
@@ -312,113 +328,117 @@ void CWeaponFrag::SecondaryAttack( void )
 	m_flNextSecondaryAttack	= FLT_MAX;
 
 	// If I'm now out of ammo, switch away
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
 	{
 		pPlayer->SwitchToNextBestWeapon( this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponFrag::PrimaryAttack( void )
 {
-	if ( m_bRedraw )
-		return;
-
-	CBaseCombatCharacter *pOwner  = GetOwner();
-	
-	if ( pOwner == NULL )
-	{ 
+	if( m_bRedraw )
+	{
 		return;
 	}
 
-	CBasePlayer *pPlayer = ToBasePlayer( GetOwner() );;
+	CBaseCombatCharacter* pOwner  = GetOwner();
 
-	if ( !pPlayer )
+	if( pOwner == NULL )
+	{
 		return;
+	}
+
+	CBasePlayer* pPlayer = ToBasePlayer( GetOwner() );;
+
+	if( !pPlayer )
+	{
+		return;
+	}
 
 	// Note that this is a primary attack and prepare the grenade attack to pause.
 	m_AttackPaused = GRENADE_PAUSED_PRIMARY;
 	SendWeaponAnim( ACT_VM_PULLBACK_HIGH );
-	
+
 	// Put both of these off indefinitely. We do not know how long
 	// the player will hold the grenade.
 	m_flTimeWeaponIdle = FLT_MAX;
 	m_flNextPrimaryAttack = FLT_MAX;
 
 	// If I'm now out of ammo, switch away
-	if ( !HasPrimaryAmmo() )
+	if( !HasPrimaryAmmo() )
 	{
 		pPlayer->SwitchToNextBestWeapon( this );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pOwner - 
+// Purpose:
+// Input  : *pOwner -
 //-----------------------------------------------------------------------------
-void CWeaponFrag::DecrementAmmo( CBaseCombatCharacter *pOwner )
+void CWeaponFrag::DecrementAmmo( CBaseCombatCharacter* pOwner )
 {
 	pOwner->RemoveAmmo( 1, m_iPrimaryAmmoType );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CWeaponFrag::ItemPostFrame( void )
 {
 	if( m_fDrawbackFinished )
 	{
-		CBasePlayer *pOwner = ToBasePlayer( GetOwner() );
+		CBasePlayer* pOwner = ToBasePlayer( GetOwner() );
 
-		if (pOwner)
+		if( pOwner )
 		{
 			switch( m_AttackPaused )
 			{
-			case GRENADE_PAUSED_PRIMARY:
-				if( !(pOwner->m_nButtons & IN_ATTACK) )
-				{
-					SendWeaponAnim( ACT_VM_THROW );
-					ToHL2MPPlayer(pOwner)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
-
-					//Tony; fire the sequence
-					m_fDrawbackFinished = false;
-				}
-				break;
-
-			case GRENADE_PAUSED_SECONDARY:
-				if( !(pOwner->m_nButtons & IN_ATTACK2) )
-				{
-					//See if we're ducking
-					if ( pOwner->m_nButtons & IN_DUCK )
+				case GRENADE_PAUSED_PRIMARY:
+					if( !( pOwner->m_nButtons & IN_ATTACK ) )
 					{
-						//Send the weapon animation
-						SendWeaponAnim( ACT_VM_SECONDARYATTACK );
+						SendWeaponAnim( ACT_VM_THROW );
+						ToHL2MPPlayer( pOwner )->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+
+						//Tony; fire the sequence
+						m_fDrawbackFinished = false;
 					}
-					else
+					break;
+
+				case GRENADE_PAUSED_SECONDARY:
+					if( !( pOwner->m_nButtons & IN_ATTACK2 ) )
 					{
-						//Send the weapon animation
-						SendWeaponAnim( ACT_VM_HAULBACK );
+						//See if we're ducking
+						if( pOwner->m_nButtons & IN_DUCK )
+						{
+							//Send the weapon animation
+							SendWeaponAnim( ACT_VM_SECONDARYATTACK );
+						}
+						else
+						{
+							//Send the weapon animation
+							SendWeaponAnim( ACT_VM_HAULBACK );
+						}
+						//Tony; the grenade really should have a secondary anim. but it doesn't on the player.
+						ToHL2MPPlayer( pOwner )->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+
+						m_fDrawbackFinished = false;
 					}
-					//Tony; the grenade really should have a secondary anim. but it doesn't on the player.
-					ToHL2MPPlayer(pOwner)->DoAnimationEvent( PLAYERANIMEVENT_ATTACK_PRIMARY );
+					break;
 
-					m_fDrawbackFinished = false;
-				}
-				break;
-
-			default:
-				break;
+				default:
+					break;
 			}
 		}
 	}
 
 	BaseClass::ItemPostFrame();
 
-	if ( m_bRedraw )
+	if( m_bRedraw )
 	{
-		if ( IsViewModelSequenceFinished() )
+		if( IsViewModelSequenceFinished() )
 		{
 			Reload();
 		}
@@ -426,30 +446,30 @@ void CWeaponFrag::ItemPostFrame( void )
 }
 
 // check a throw from vecSrc.  If not valid, move the position back along the line to vecEye
-void CWeaponFrag::CheckThrowPosition( CBasePlayer *pPlayer, const Vector &vecEye, Vector &vecSrc, const QAngle& angles )
+void CWeaponFrag::CheckThrowPosition( CBasePlayer* pPlayer, const Vector& vecEye, Vector& vecSrc, const QAngle& angles )
 {
 	// Compute an extended AABB that takes into account the requested grenade rotation.
 	// This will prevent grenade from going through nearby solids when model initially intersects with any.
 	matrix3x4_t rotation;
-	AngleMatrix(angles, rotation);
+	AngleMatrix( angles, rotation );
 	Vector mins, maxs;
-	RotateAABB(rotation, -Vector(GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, 2),
-		Vector(GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, GRENADE_RADIUS * 2 + 2), mins, maxs);
+	RotateAABB( rotation, -Vector( GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, 2 ),
+				Vector( GRENADE_RADIUS + 2, GRENADE_RADIUS + 2, GRENADE_RADIUS * 2 + 2 ), mins, maxs );
 	trace_t tr;
 	UTIL_TraceHull( vecEye, vecSrc, mins, maxs, pPlayer->PhysicsSolidMaskForEntity(),
-		pPlayer, pPlayer->GetCollisionGroup(), &tr );
-	
-	if ( tr.DidHit() )
+					pPlayer, pPlayer->GetCollisionGroup(), &tr );
+
+	if( tr.DidHit() )
 	{
 		vecSrc = tr.endpos;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
+// Purpose:
+// Input  : *pPlayer -
 //-----------------------------------------------------------------------------
-void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
+void CWeaponFrag::ThrowGrenade( CBasePlayer* pPlayer )
 {
 #ifndef CLIENT_DLL
 	Vector	vecEye = pPlayer->EyePosition();
@@ -465,15 +485,15 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 1200;
 
-	CBaseGrenade *pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(600,random->RandomInt(-1200,1200),0), pPlayer, GRENADE_TIMER, false );
-	if ( pGrenade )
+	CBaseGrenade* pGrenade = Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse( 600, random->RandomInt( -1200, 1200 ), 0 ), pPlayer, GRENADE_TIMER, false );
+	if( pGrenade )
 	{
-		if ( pPlayer && pPlayer->m_lifeState != LIFE_ALIVE )
+		if( pPlayer && pPlayer->m_lifeState != LIFE_ALIVE )
 		{
 			pPlayer->GetVelocity( &vecThrow, NULL );
 
-			IPhysicsObject *pPhysicsObject = pGrenade->VPhysicsGetObject();
-			if ( pPhysicsObject )
+			IPhysicsObject* pPhysicsObject = pGrenade->VPhysicsGetObject();
+			if( pPhysicsObject )
 			{
 				pPhysicsObject->SetVelocity( &vecThrow, NULL );
 			}
@@ -484,7 +504,7 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 	m_bRedraw = true;
 
 	WeaponSound( SINGLE );
-	
+
 	// player "shoot" animation
 	pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
@@ -495,10 +515,10 @@ void CWeaponFrag::ThrowGrenade( CBasePlayer *pPlayer )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
+// Purpose:
+// Input  : *pPlayer -
 //-----------------------------------------------------------------------------
-void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
+void CWeaponFrag::LobGrenade( CBasePlayer* pPlayer )
 {
 #ifndef CLIENT_DLL
 	Vector	vecEye = pPlayer->EyePosition();
@@ -507,11 +527,11 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 	pPlayer->EyeVectors( &vForward, &vRight, NULL );
 	Vector vecSrc = vecEye + vForward * 18.0f + vRight * 8.0f + Vector( 0, 0, -8 );
 	CheckThrowPosition( pPlayer, vecEye, vecSrc );
-	
+
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vForward * 350 + Vector( 0, 0, 50 );
-	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse(200,random->RandomInt(-600,600),0), pPlayer, GRENADE_TIMER, false );
+	Fraggrenade_Create( vecSrc, vec3_angle, vecThrow, AngularImpulse( 200, random->RandomInt( -600, 600 ), 0 ), pPlayer, GRENADE_TIMER, false );
 #endif
 
 	WeaponSound( WPN_DOUBLE );
@@ -528,10 +548,10 @@ void CWeaponFrag::LobGrenade( CBasePlayer *pPlayer )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pPlayer - 
+// Purpose:
+// Input  : *pPlayer -
 //-----------------------------------------------------------------------------
-void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
+void CWeaponFrag::RollGrenade( CBasePlayer* pPlayer )
 {
 #ifndef CLIENT_DLL
 	// BUGBUG: Hardcoded grenade width of 4 - better not change the model :)
@@ -544,23 +564,23 @@ void CWeaponFrag::RollGrenade( CBasePlayer *pPlayer )
 	vecFacing.z = 0;
 	VectorNormalize( vecFacing );
 	trace_t tr;
-	UTIL_TraceLine( vecSrc, vecSrc - Vector(0,0,16), MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
-	if ( tr.fraction != 1.0 )
+	UTIL_TraceLine( vecSrc, vecSrc - Vector( 0, 0, 16 ), MASK_PLAYERSOLID, pPlayer, COLLISION_GROUP_NONE, &tr );
+	if( tr.fraction != 1.0 )
 	{
 		// compute forward vec parallel to floor plane and roll grenade along that
 		Vector tangent;
 		CrossProduct( vecFacing, tr.plane.normal, tangent );
 		CrossProduct( tr.plane.normal, tangent, vecFacing );
 	}
-	vecSrc += (vecFacing * 18.0);
+	vecSrc += ( vecFacing * 18.0 );
 
 	Vector vecThrow;
 	pPlayer->GetVelocity( &vecThrow, NULL );
 	vecThrow += vecFacing * 700;
 	// put it on its side
-	QAngle orientation(0,pPlayer->GetLocalAngles().y,-90);
+	QAngle orientation( 0, pPlayer->GetLocalAngles().y, -90 );
 	// roll it
-	AngularImpulse rotSpeed(0,0,720);
+	AngularImpulse rotSpeed( 0, 0, 720 );
 	CheckThrowPosition( pPlayer, pPlayer->WorldSpaceCenter(), vecSrc, orientation );
 	Fraggrenade_Create( vecSrc, orientation, vecThrow, rotSpeed, pPlayer, GRENADE_TIMER, false );
 #endif

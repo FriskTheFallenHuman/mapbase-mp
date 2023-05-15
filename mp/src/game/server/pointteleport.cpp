@@ -24,18 +24,18 @@ public:
 	void	Activate( void );
 
 #ifdef MAPBASE
-	void TeleportEntity( CBaseEntity *pTarget, const Vector &vecPosition, const QAngle &angAngles );
+	void TeleportEntity( CBaseEntity* pTarget, const Vector& vecPosition, const QAngle& angAngles );
 #endif
 
-	void InputTeleport( inputdata_t &inputdata );
+	void InputTeleport( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputTeleportEntity( inputdata_t &inputdata );
-	void InputTeleportToCurrentPos( inputdata_t &inputdata );
+	void InputTeleportEntity( inputdata_t& inputdata );
+	void InputTeleportToCurrentPos( inputdata_t& inputdata );
 #endif
 
 private:
-	
-	bool	EntityMayTeleport( CBaseEntity *pTarget );
+
+	bool	EntityMayTeleport( CBaseEntity* pTarget );
 
 	Vector m_vSaveOrigin;
 	QAngle m_vSaveAngles;
@@ -49,31 +49,33 @@ LINK_ENTITY_TO_CLASS( point_teleport, CPointTeleport );
 
 BEGIN_DATADESC( CPointTeleport )
 
-	DEFINE_FIELD( m_vSaveOrigin, FIELD_VECTOR ),
-	DEFINE_FIELD( m_vSaveAngles, FIELD_VECTOR ),
+DEFINE_FIELD( m_vSaveOrigin, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_vSaveAngles, FIELD_VECTOR ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Teleport", InputTeleport ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Teleport", InputTeleport ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_EHANDLE, "TeleportEntity", InputTeleportEntity ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "TeleportToCurrentPos", InputTeleportToCurrentPos ),
 #endif
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTarget - 
+// Purpose:
+// Input  : *pTarget -
 // Output : Returns true if the entity may be teleported
 //-----------------------------------------------------------------------------
-bool CPointTeleport::EntityMayTeleport( CBaseEntity *pTarget )
+			  bool CPointTeleport::EntityMayTeleport( CBaseEntity* pTarget )
 {
-	if ( pTarget->GetMoveParent() != NULL )
+	if( pTarget->GetMoveParent() != NULL )
 	{
 		// Passengers in a vehicle are allowed to teleport; their behavior handles it
-		CBaseCombatCharacter *pBCC = pTarget->MyCombatCharacterPointer();
-		if ( pBCC == NULL || ( pBCC != NULL && pBCC->IsInAVehicle() == false ) )
+		CBaseCombatCharacter* pBCC = pTarget->MyCombatCharacterPointer();
+		if( pBCC == NULL || ( pBCC != NULL && pBCC->IsInAVehicle() == false ) )
+		{
 			return false;
+		}
 	}
 
 	return true;
@@ -89,13 +91,13 @@ void CPointTeleport::Activate( void )
 	m_vSaveAngles = GetAbsAngles();
 
 	// Save off the spawn position of the target if instructed to do so
-	if ( m_spawnflags & SF_TELEPORT_TO_SPAWN_POS )
+	if( m_spawnflags & SF_TELEPORT_TO_SPAWN_POS )
 	{
-		CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_target );
-		if ( pTarget )
+		CBaseEntity* pTarget = gEntList.FindEntityByName( NULL, m_target );
+		if( pTarget )
 		{
 			// If teleport object is in a movement hierarchy, remove it first
-			if ( EntityMayTeleport( pTarget ) )
+			if( EntityMayTeleport( pTarget ) )
 			{
 				// Save the points
 				m_vSaveOrigin = pTarget->GetAbsOrigin();
@@ -103,14 +105,14 @@ void CPointTeleport::Activate( void )
 			}
 			else
 			{
-				Warning("ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n",GetDebugName(),pTarget->GetDebugName(),pTarget->GetMoveParent()->GetDebugName());
+				Warning( "ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n", GetDebugName(), pTarget->GetDebugName(), pTarget->GetMoveParent()->GetDebugName() );
 				BaseClass::Activate();
 				return;
 			}
 		}
 		else
 		{
-			Warning("ERROR: (%s) target '%s' not found. Deleting.\n", GetDebugName(), STRING(m_target));
+			Warning( "ERROR: (%s) target '%s' not found. Deleting.\n", GetDebugName(), STRING( m_target ) );
 			UTIL_Remove( this );
 			return;
 		}
@@ -123,14 +125,14 @@ void CPointTeleport::Activate( void )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPointTeleport::TeleportEntity( CBaseEntity *pTarget, const Vector &vecPosition, const QAngle &angAngles )
+void CPointTeleport::TeleportEntity( CBaseEntity* pTarget, const Vector& vecPosition, const QAngle& angAngles )
 {
 	// in episodic, we have a special spawn flag that forces Gordon into a duck
 #ifdef HL2_EPISODIC
-	if ( (m_spawnflags & SF_TELEPORT_INTO_DUCK) && pTarget->IsPlayer() ) 
+	if( ( m_spawnflags & SF_TELEPORT_INTO_DUCK ) && pTarget->IsPlayer() )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( pTarget );
-		if ( pPlayer != NULL )
+		CBasePlayer* pPlayer = ToBasePlayer( pTarget );
+		if( pPlayer != NULL )
 		{
 			pPlayer->m_nButtons |= IN_DUCK;
 			pPlayer->AddFlag( FL_DUCKING );
@@ -140,7 +142,7 @@ void CPointTeleport::TeleportEntity( CBaseEntity *pTarget, const Vector &vecPosi
 			pPlayer->SetViewOffset( VEC_DUCK_VIEW_SCALED( pPlayer ) );
 			pPlayer->SetCollisionBounds( VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX );
 		}
-	}		
+	}
 #endif
 
 	pTarget->Teleport( &vecPosition, &angAngles, NULL );
@@ -150,17 +152,19 @@ void CPointTeleport::TeleportEntity( CBaseEntity *pTarget, const Vector &vecPosi
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPointTeleport::InputTeleport( inputdata_t &inputdata )
+void CPointTeleport::InputTeleport( inputdata_t& inputdata )
 {
 	// Attempt to find the entity in question
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_target, this, inputdata.pActivator, inputdata.pCaller );
-	if ( pTarget == NULL )
+	CBaseEntity* pTarget = gEntList.FindEntityByName( NULL, m_target, this, inputdata.pActivator, inputdata.pCaller );
+	if( pTarget == NULL )
+	{
 		return;
+	}
 
 	// If teleport object is in a movement hierarchy, remove it first
-	if ( EntityMayTeleport( pTarget ) == false )
+	if( EntityMayTeleport( pTarget ) == false )
 	{
-		Warning("ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n",GetDebugName(),pTarget->GetDebugName(),pTarget->GetMoveParent()->GetDebugName());
+		Warning( "ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n", GetDebugName(), pTarget->GetDebugName(), pTarget->GetMoveParent()->GetDebugName() );
 		return;
 	}
 
@@ -169,10 +173,10 @@ void CPointTeleport::InputTeleport( inputdata_t &inputdata )
 #else
 	// in episodic, we have a special spawn flag that forces Gordon into a duck
 #ifdef HL2_EPISODIC
-	if ( (m_spawnflags & SF_TELEPORT_INTO_DUCK) && pTarget->IsPlayer() ) 
+	if( ( m_spawnflags & SF_TELEPORT_INTO_DUCK ) && pTarget->IsPlayer() )
 	{
-		CBasePlayer *pPlayer = ToBasePlayer( pTarget );
-		if ( pPlayer != NULL )
+		CBasePlayer* pPlayer = ToBasePlayer( pTarget );
+		if( pPlayer != NULL )
 		{
 			pPlayer->m_nButtons |= IN_DUCK;
 			pPlayer->AddFlag( FL_DUCKING );
@@ -182,7 +186,7 @@ void CPointTeleport::InputTeleport( inputdata_t &inputdata )
 			pPlayer->SetViewOffset( VEC_DUCK_VIEW_SCALED( pPlayer ) );
 			pPlayer->SetCollisionBounds( VEC_DUCK_HULL_MIN, VEC_DUCK_HULL_MAX );
 		}
-	}		
+	}
 #endif
 
 	pTarget->Teleport( &m_vSaveOrigin, &m_vSaveAngles, NULL );
@@ -193,18 +197,18 @@ void CPointTeleport::InputTeleport( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPointTeleport::InputTeleportEntity( inputdata_t &inputdata )
+void CPointTeleport::InputTeleportEntity( inputdata_t& inputdata )
 {
-	if ( !inputdata.value.Entity() )
+	if( !inputdata.value.Entity() )
 	{
 		Warning( "%s unable to find entity from TeleportEntity\n", GetDebugName() );
 		return;
 	}
 
 	// If teleport object is in a movement hierarchy, remove it first
-	if ( EntityMayTeleport( inputdata.value.Entity() ) == false )
+	if( EntityMayTeleport( inputdata.value.Entity() ) == false )
 	{
-		Warning("ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n",GetDebugName(),inputdata.value.Entity()->GetDebugName(),inputdata.value.Entity()->GetMoveParent()->GetDebugName());
+		Warning( "ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n", GetDebugName(), inputdata.value.Entity()->GetDebugName(), inputdata.value.Entity()->GetMoveParent()->GetDebugName() );
 		return;
 	}
 
@@ -214,17 +218,19 @@ void CPointTeleport::InputTeleportEntity( inputdata_t &inputdata )
 //------------------------------------------------------------------------------
 // Purpose:
 //------------------------------------------------------------------------------
-void CPointTeleport::InputTeleportToCurrentPos( inputdata_t &inputdata )
+void CPointTeleport::InputTeleportToCurrentPos( inputdata_t& inputdata )
 {
 	// Attempt to find the entity in question
-	CBaseEntity *pTarget = gEntList.FindEntityByName( NULL, m_target, this, inputdata.pActivator, inputdata.pCaller );
-	if ( pTarget == NULL )
+	CBaseEntity* pTarget = gEntList.FindEntityByName( NULL, m_target, this, inputdata.pActivator, inputdata.pCaller );
+	if( pTarget == NULL )
+	{
 		return;
+	}
 
 	// If teleport object is in a movement hierarchy, remove it first
-	if ( EntityMayTeleport( pTarget ) == false )
+	if( EntityMayTeleport( pTarget ) == false )
 	{
-		Warning("ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n",GetDebugName(),pTarget->GetDebugName(),pTarget->GetMoveParent()->GetDebugName());
+		Warning( "ERROR: (%s) can't teleport object (%s) as it has a parent (%s)!\n", GetDebugName(), pTarget->GetDebugName(), pTarget->GetMoveParent()->GetDebugName() );
 		return;
 	}
 

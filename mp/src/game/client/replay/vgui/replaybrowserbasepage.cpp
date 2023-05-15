@@ -24,12 +24,12 @@
 
 //-----------------------------------------------------------------------------
 
-extern IReplayMovieManager *g_pReplayMovieManager;
+extern IReplayMovieManager* g_pReplayMovieManager;
 
 //-----------------------------------------------------------------------------
 
-CReplayBrowserBasePage::CReplayBrowserBasePage( Panel *pParent )
-:	BaseClass( pParent, "BasePage" )
+CReplayBrowserBasePage::CReplayBrowserBasePage( Panel* pParent )
+	:	BaseClass( pParent, "BasePage" )
 {
 	m_pReplayList = new CReplayListPanel( this, "ReplayList" );
 	m_pReplayList->SetFirstColumnWidth( 0 );
@@ -53,21 +53,23 @@ CReplayBrowserBasePage::~CReplayBrowserBasePage()
 
 void CReplayBrowserBasePage::OnTick()
 {
-	if ( !IsVisible() )
+	if( !IsVisible() )
+	{
 		return;
+	}
 
 	int nCursorX, nCursorY;
 	input()->GetCursorPos( nCursorX, nCursorY );
 
-	if ( input()->IsMouseDown( MOUSE_LEFT ) &&
-		 !m_pSearchTextEntry->IsWithin( nCursorX, nCursorY ) &&
-		 m_pSearchTextEntry->HasFocus() )
+	if( input()->IsMouseDown( MOUSE_LEFT ) &&
+			!m_pSearchTextEntry->IsWithin( nCursorX, nCursorY ) &&
+			m_pSearchTextEntry->HasFocus() )
 	{
 		RequestFocus();
 	}
 }
 
-void CReplayBrowserBasePage::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CReplayBrowserBasePage::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	BaseClass::ApplySchemeSettings( pScheme );
 
@@ -84,12 +86,12 @@ void CReplayBrowserBasePage::OnPageShow()
 
 void CReplayBrowserBasePage::OnSelectionStarted()
 {
-	PostActionSignal( new KeyValues("SelectionUpdate", "open", 1 ) );
+	PostActionSignal( new KeyValues( "SelectionUpdate", "open", 1 ) );
 }
 
 void CReplayBrowserBasePage::OnSelectionEnded()
 {
-	PostActionSignal( new KeyValues("SelectionUpdate", "open", 0 ) );
+	PostActionSignal( new KeyValues( "SelectionUpdate", "open", 0 ) );
 }
 
 void CReplayBrowserBasePage::CleanupUIForReplayItem( ReplayItemHandle_t hReplayItem )
@@ -104,8 +106,8 @@ void CReplayBrowserBasePage::AddReplay( ReplayHandle_t hReplay )
 
 void CReplayBrowserBasePage::DeleteReplay( ReplayHandle_t hReplayItem )
 {
-	IReplayItemManager *pItemManager;
-	if ( FindReplayItem( hReplayItem, &pItemManager ) )
+	IReplayItemManager* pItemManager;
+	if( FindReplayItem( hReplayItem, &pItemManager ) )
 	{
 		ReplayUI_GetBrowserPanel()->AttemptToDeleteReplayItem( this, hReplayItem, pItemManager, -1 );
 	}
@@ -120,12 +122,12 @@ void CReplayBrowserBasePage::GoBack()
 	DeleteDetailsPanelAndShowReplayList();
 }
 
-void CReplayBrowserBasePage::OnReplayItemDeleted( KeyValues *pParams )
+void CReplayBrowserBasePage::OnReplayItemDeleted( KeyValues* pParams )
 {
 	GoBack();
 }
 
-void CReplayBrowserBasePage::OnTextChanged( KeyValues *data )
+void CReplayBrowserBasePage::OnTextChanged( KeyValues* data )
 {
 	wchar_t wszText[256];
 	m_pSearchTextEntry->GetText( wszText, ARRAYSIZE( wszText ) );
@@ -133,23 +135,24 @@ void CReplayBrowserBasePage::OnTextChanged( KeyValues *data )
 	InvalidateLayout();
 }
 
-void CReplayBrowserBasePage::OnCommand( const char *pCommand )
+void CReplayBrowserBasePage::OnCommand( const char* pCommand )
 {
 	// User wants details on a replay?
-	if ( !V_strnicmp( pCommand, "details", 7 ) )
+	if( !V_strnicmp( pCommand, "details", 7 ) )
 	{
 		// Get rid of preview panel
 		m_pReplayList->ClearPreviewPanel();
 
-		QueryableReplayItemHandle_t hReplayItem = (QueryableReplayItemHandle_t)atoi( pCommand + 7 );
-		IReplayItemManager *pItemManager;
-		IQueryableReplayItem *pReplayItem = FindReplayItem( hReplayItem, &pItemManager );		Assert( pReplayItem );
-		if ( pReplayItem )
+		QueryableReplayItemHandle_t hReplayItem = ( QueryableReplayItemHandle_t )atoi( pCommand + 7 );
+		IReplayItemManager* pItemManager;
+		IQueryableReplayItem* pReplayItem = FindReplayItem( hReplayItem, &pItemManager );
+		Assert( pReplayItem );
+		if( pReplayItem )
 		{
 			// Get performance
 			int iPerformance = -1;
-			const char *pPerformanceStr = V_strstr( pCommand + 8, "_" );
-			if ( pPerformanceStr )
+			const char* pPerformanceStr = V_strstr( pCommand + 8, "_" );
+			if( pPerformanceStr )
 			{
 				iPerformance = atoi( pPerformanceStr + 1 );
 			}
@@ -165,7 +168,7 @@ void CReplayBrowserBasePage::OnCommand( const char *pCommand )
 	}
 
 	// "back" button was hit in details panel?
-	else if ( FStrEq( pCommand, "back" ) )
+	else if( FStrEq( pCommand, "back" ) )
 	{
 		GoBack();
 	}
@@ -176,7 +179,7 @@ void CReplayBrowserBasePage::OnCommand( const char *pCommand )
 void CReplayBrowserBasePage::DeleteDetailsPanelAndShowReplayList()
 {
 	// Delete the panel
-	if ( m_hReplayDetailsPanel )
+	if( m_hReplayDetailsPanel )
 	{
 		m_hReplayDetailsPanel->MarkForDeletion();
 		m_hReplayDetailsPanel = NULL;
@@ -189,7 +192,7 @@ void CReplayBrowserBasePage::PerformLayout()
 {
 	BaseClass::PerformLayout();
 
-	if ( m_pSearchTextEntry )
+	if( m_pSearchTextEntry )
 	{
 		const bool bHasReplays = g_pReplayManager && g_pReplayManager->GetReplayCount();
 		const bool bHasMovies = g_pReplayMovieManager && g_pReplayMovieManager->GetMovieCount();

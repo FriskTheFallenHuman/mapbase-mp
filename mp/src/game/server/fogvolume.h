@@ -5,7 +5,7 @@
 #define FOG_VOLUME_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -27,9 +27,9 @@ public:
 	virtual void Spawn( void );
 	virtual void Activate();
 
-	static CFogVolume *FindFogVolumeForPosition( const Vector &position );
+	static CFogVolume* FindFogVolumeForPosition( const Vector& position );
 
-	const char *GetFogControllerName() const 
+	const char* GetFogControllerName() const
 	{
 		return STRING( m_fogName );
 	}
@@ -49,8 +49,8 @@ public:
 		return m_hColorCorrectionController.Get();
 	}
 
-	void InputEnable( inputdata_t &data );
-	void InputDisable( inputdata_t &data );
+	void InputEnable( inputdata_t& data );
+	void InputDisable( inputdata_t& data );
 
 private:
 	string_t m_fogName;
@@ -68,7 +68,7 @@ private:
 	void RemoveFromGlobalList();
 };
 
-extern CUtlVector< CFogVolume * > TheFogVolumes;
+extern CUtlVector< CFogVolume* > TheFogVolumes;
 
 
 #endif // FOG_VOLUME_H

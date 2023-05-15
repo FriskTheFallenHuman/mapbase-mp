@@ -1,20 +1,20 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
 #ifndef IMATCHMAKING_H
 #define IMATCHMAKING_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "const.h"
 #include "vgui/VGUI.h"
 
 #if !defined( _X360 )
-#include "xbox/xboxstubs.h"
+	#include "xbox/xboxstubs.h"
 #endif
 
 class KeyValues;
@@ -62,7 +62,7 @@ struct hostData_s
 	char scenario[MAX_MAP_NAME];
 	int  gameState;
 	int	 gameTime;
-	XUID xuid; 
+	XUID xuid;
 };
 
 struct MM_QOS_t
@@ -80,8 +80,8 @@ abstract_class IMatchmaking
 {
 public:
 	virtual void SessionNotification( const SESSION_NOTIFY notification, const int param = 0 ) = 0;
-	virtual void AddSessionProperty( const uint nType, const char *pID, const char *pValue, const char *pValueType ) = 0;
-	virtual void SetSessionProperties( KeyValues *pPropertyKeys ) = 0;
+	virtual void AddSessionProperty( const uint nType, const char* pID, const char* pValue, const char* pValueType ) = 0;
+	virtual void SetSessionProperties( KeyValues * pPropertyKeys ) = 0;
 	virtual void SelectSession( uint idx ) = 0;
 	virtual void ModifySession() = 0;
 	virtual void UpdateMuteList() = 0;
@@ -89,16 +89,16 @@ public:
 	virtual void StartClient( bool bSystemLink = false ) = 0;
 	virtual bool StartGame() = 0;
 	virtual bool CancelStartGame() = 0;
-	virtual void ChangeTeam( const char *pTeamName ) = 0;
+	virtual void ChangeTeam( const char* pTeamName ) = 0;
 	virtual void TellClientsToConnect() = 0;
 	virtual void CancelCurrentOperation() = 0;
 	virtual void KickPlayerFromSession( uint64 id ) = 0;
-	virtual void JoinInviteSession( XSESSION_INFO *pHostInfo ) = 0;
+	virtual void JoinInviteSession( XSESSION_INFO * pHostInfo ) = 0;
 	virtual void JoinInviteSessionByID( XNKID nSessionID ) = 0;
 	virtual void EndStatsReporting() = 0;
 
 	// For Gameui
-	virtual KeyValues *GetSessionProperties() = 0;
+	virtual KeyValues * GetSessionProperties() = 0;
 
 	// For voice chat
 	virtual uint64	PlayerIdToXuid( int playerId ) = 0;
@@ -107,7 +107,7 @@ public:
 	// To determine host Quality-of-Service
 	virtual MM_QOS_t GetQosWithLIVE() = 0;
 
-	// Used by non-'host' local machines which are starting a map to "prime" the caches.  Will sit at near completion indefinitely -- 
+	// Used by non-'host' local machines which are starting a map to "prime" the caches.  Will sit at near completion indefinitely --
 	//  the client is waiting for a TellClientsToConnect message
 	virtual bool	PreventFullServerStartup() = 0;
 };

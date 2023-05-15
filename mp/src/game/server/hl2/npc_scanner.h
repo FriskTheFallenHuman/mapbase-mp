@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef NPC_SCANNER_H
 #define NPC_SCANNER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "npc_basescanner.h"
@@ -24,7 +24,7 @@ class SmokeTrail;
 class CSpotlightEnd;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_CScanner : public CNPC_BaseScanner
 {
@@ -33,62 +33,65 @@ class CNPC_CScanner : public CNPC_BaseScanner
 public:
 	CNPC_CScanner();
 
-	int				GetSoundInterests( void ) { return (SOUND_WORLD|SOUND_COMBAT|SOUND_PLAYER|SOUND_DANGER); }
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	int				GetSoundInterests( void )
+	{
+		return ( SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_DANGER );
+	}
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
 
-	bool			FValidateHintType(CAI_Hint *pHint);
+	bool			FValidateHintType( CAI_Hint* pHint );
 
 	virtual int		TranslateSchedule( int scheduleType );
-	Disposition_t	IRelationType(CBaseEntity *pTarget);
+	Disposition_t	IRelationType( CBaseEntity* pTarget );
 
 	void			NPCThink( void );
 
 	void			GatherConditions( void );
 	void			PrescheduleThink( void );
-	void			Precache(void);
-	void			RunTask( const Task_t *pTask );
-	int				SelectSchedule(void);
-	virtual char	*GetScannerSoundPrefix( void );
-	void			Spawn(void);
+	void			Precache( void );
+	void			RunTask( const Task_t* pTask );
+	int				SelectSchedule( void );
+	virtual char*	GetScannerSoundPrefix( void );
+	void			Spawn( void );
 	void			Activate();
 #ifdef MAPBASE
-	bool			KeyValue( const char *szKeyName, const char *szValue );
+	bool			KeyValue( const char* szKeyName, const char* szValue );
 #endif
-	void			StartTask( const Task_t *pTask );
+	void			StartTask( const Task_t* pTask );
 	void			UpdateOnRemove( void );
 	void			DeployMine();
 	float			GetMaxSpeed();
 	virtual void	Gib( void );
 
-	void			HandleAnimEvent( animevent_t *pEvent );
+	void			HandleAnimEvent( animevent_t* pEvent );
 	Activity		NPC_TranslateActivity( Activity eNewActivity );
 
-	void			InputDisableSpotlight( inputdata_t &inputdata );
-	void			InputSetFollowTarget( inputdata_t &inputdata );
-	void			InputClearFollowTarget( inputdata_t &inputdata );
-	void			InputInspectTargetPhoto( inputdata_t &inputdata );
-	void			InputInspectTargetSpotlight( inputdata_t &inputdata );
-	void			InputDeployMine( inputdata_t &inputdata );
-	void			InputEquipMine( inputdata_t &inputdata );
+	void			InputDisableSpotlight( inputdata_t& inputdata );
+	void			InputSetFollowTarget( inputdata_t& inputdata );
+	void			InputClearFollowTarget( inputdata_t& inputdata );
+	void			InputInspectTargetPhoto( inputdata_t& inputdata );
+	void			InputInspectTargetSpotlight( inputdata_t& inputdata );
+	void			InputDeployMine( inputdata_t& inputdata );
+	void			InputEquipMine( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void			InputDisablePhotos( inputdata_t &inputdata );
-	void			InputEnablePhotos( inputdata_t &inputdata );
+	void			InputDisablePhotos( inputdata_t& inputdata );
+	void			InputEnablePhotos( inputdata_t& inputdata );
 #endif
-	void			InputShouldInspect( inputdata_t &inputdata );
+	void			InputShouldInspect( inputdata_t& inputdata );
 
-	void			InspectTarget( inputdata_t &inputdata, ScannerFlyMode_t eFlyMode );
+	void			InspectTarget( inputdata_t& inputdata, ScannerFlyMode_t eFlyMode );
 
-	void			Event_Killed( const CTakeDamageInfo &info );
+	void			Event_Killed( const CTakeDamageInfo& info );
 
-	char			*GetEngineSound( void );
+	char*			GetEngineSound( void );
 
-	virtual float	MinGroundDist(void);
+	virtual float	MinGroundDist( void );
 	virtual void	AdjustScannerVelocity( void );
 
 	virtual float	GetHeadTurnRate( void );
 
 public:
-	bool			HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt);
+	bool			HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	// ------------------------------
 	//	Inspecting
@@ -101,17 +104,20 @@ public:
 	bool			m_bOnlyInspectPlayers;
 	bool			m_bNeverInspectPlayers;
 
-	void			SetInspectTargetToEnt(CBaseEntity *pEntity, float fInspectDuration);
-	void			SetInspectTargetToPos(const Vector &vInspectPos, float fInspectDuration);
-	void			SetInspectTargetToHint(CAI_Hint *pHint, float fInspectDuration);
-	void			ClearInspectTarget(void);
-	bool			HaveInspectTarget(void);
-	Vector			InspectTargetPosition(void);
-	bool			IsValidInspectTarget(CBaseEntity *pEntity);
-	CBaseEntity*	BestInspectTarget(void);
-	void			RequestInspectSupport(void);
+	void			SetInspectTargetToEnt( CBaseEntity* pEntity, float fInspectDuration );
+	void			SetInspectTargetToPos( const Vector& vInspectPos, float fInspectDuration );
+	void			SetInspectTargetToHint( CAI_Hint* pHint, float fInspectDuration );
+	void			ClearInspectTarget( void );
+	bool			HaveInspectTarget( void );
+	Vector			InspectTargetPosition( void );
+	bool			IsValidInspectTarget( CBaseEntity* pEntity );
+	CBaseEntity*	BestInspectTarget( void );
+	void			RequestInspectSupport( void );
 
-	bool			IsStriderScout() { return HasSpawnFlags( SF_CSCANNER_STRIDER_SCOUT ); }
+	bool			IsStriderScout()
+	{
+		return HasSpawnFlags( SF_CSCANNER_STRIDER_SCOUT );
+	}
 
 	// ------------------------
 	//  Photographing
@@ -120,7 +126,7 @@ public:
 	CSprite*		m_pEyeFlash;
 
 	void			TakePhoto( void );
-	void			BlindFlashTarget( CBaseEntity *pTarget );
+	void			BlindFlashTarget( CBaseEntity* pTarget );
 
 	// ------------------------------
 	//	Spotlight
@@ -137,14 +143,17 @@ public:
 	float			m_fNextSpotlightTime;
 	int				m_nHaloSprite;
 
-	void			SpotlightUpdate(void);
-	Vector			SpotlightTargetPos(void);
-	Vector			SpotlightCurrentPos(void);
-	void			SpotlightCreate(void);
-	void			SpotlightDestroy(void);
+	void			SpotlightUpdate( void );
+	Vector			SpotlightTargetPos( void );
+	Vector			SpotlightCurrentPos( void );
+	void			SpotlightCreate( void );
+	void			SpotlightDestroy( void );
 
 protected:
-	void			BecomeClawScanner( void ) { m_bIsClawScanner = true; }
+	void			BecomeClawScanner( void )
+	{
+		m_bIsClawScanner = true;
+	}
 
 private:
 	bool			MovingToInspectTarget( void );
@@ -156,20 +165,20 @@ private:
 	COutputEvent		m_OnPhotographPlayer;
 	COutputEvent		m_OnPhotographNPC;
 
-	bool				OverrideMove(float flInterval);
-	void				MoveToTarget(float flInterval, const Vector &MoveTarget);
-	void				MoveToSpotlight(float flInterval);
-	void				MoveToPhotograph(float flInterval);
+	bool				OverrideMove( float flInterval );
+	void				MoveToTarget( float flInterval, const Vector& MoveTarget );
+	void				MoveToSpotlight( float flInterval );
+	void				MoveToPhotograph( float flInterval );
 
 	// Attacks
 	bool				m_bNoLight;
 	bool				m_bPhotoTaken;
 
-	void				AttackPreFlash(void);
-	void				AttackFlash(void);
-	void				AttackFlashBlind(void);
+	void				AttackPreFlash( void );
+	void				AttackFlash( void );
+	void				AttackFlashBlind( void );
 
-	virtual void		AttackDivebomb(void);
+	virtual void		AttackDivebomb( void );
 
 	DEFINE_CUSTOM_AI;
 
@@ -177,7 +186,7 @@ private:
 	enum
 	{
 		COND_CSCANNER_HAVE_INSPECT_TARGET = BaseClass::NEXT_CONDITION,
-		COND_CSCANNER_INSPECT_DONE,							
+		COND_CSCANNER_INSPECT_DONE,
 		COND_CSCANNER_CAN_PHOTOGRAPH,
 		COND_CSCANNER_SPOT_ON_TARGET,
 

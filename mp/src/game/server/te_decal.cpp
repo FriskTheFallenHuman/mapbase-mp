@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -24,11 +24,11 @@ class CTEDecal : public CBaseTempEntity
 public:
 	DECLARE_CLASS( CTEDecal, CBaseTempEntity );
 
-					CTEDecal( const char *name );
+	CTEDecal( const char* name );
 	virtual			~CTEDecal( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
-	
+
 	DECLARE_SERVERCLASS();
 
 public:
@@ -40,10 +40,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEDecal::CTEDecal( const char *name ) :
+CTEDecal::CTEDecal( const char* name ) :
 	CBaseTempEntity( name )
 {
 	m_vecOrigin.Init();
@@ -52,16 +52,16 @@ CTEDecal::CTEDecal( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEDecal::~CTEDecal( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEDecal::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -71,7 +71,7 @@ void CTEDecal::Test( const Vector& current_origin, const QAngle& current_angles 
 	m_vecOrigin = current_origin;
 
 	Vector vecEnd;
-	
+
 	Vector forward;
 
 	m_vecOrigin.GetForModify()[2] += 24;
@@ -94,35 +94,35 @@ void CTEDecal::Test( const Vector& current_origin, const QAngle& current_angles 
 }
 
 
-IMPLEMENT_SERVERCLASS_ST(CTEDecal, DT_TEDecal)
-	SendPropVector( SENDINFO(m_vecOrigin), -1, SPROP_COORD),
-	SendPropVector( SENDINFO(m_vecStart), -1, SPROP_COORD),
-	SendPropInt( SENDINFO(m_nEntity), MAX_EDICT_BITS, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nHitbox), 12, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nIndex), 9, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEDecal, DT_TEDecal )
+SendPropVector( SENDINFO( m_vecOrigin ), -1, SPROP_COORD ),
+				SendPropVector( SENDINFO( m_vecStart ), -1, SPROP_COORD ),
+				SendPropInt( SENDINFO( m_nEntity ), MAX_EDICT_BITS, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_nHitbox ), 12, SPROP_UNSIGNED ),
+				SendPropInt( SENDINFO( m_nIndex ), 9, SPROP_UNSIGNED ),
+				END_SEND_TABLE()
 
 
 // Singleton to fire TEDecal objects
-static CTEDecal g_TEDecal( "Entity Decal" );
+				static CTEDecal g_TEDecal( "Entity Decal" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//			*pos - 
-//			entity - 
-//			index - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//			*pos -
+//			entity -
+//			index -
 //-----------------------------------------------------------------------------
 void TE_Decal( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* start, int entity, int hitbox, int index )
+			   const Vector* pos, const Vector* start, int entity, int hitbox, int index )
 {
 	Assert( pos && start );
 	g_TEDecal.m_vecOrigin	= *pos;
 	g_TEDecal.m_vecStart	= *start;
-	g_TEDecal.m_nEntity		= entity;	
+	g_TEDecal.m_nEntity		= entity;
 	g_TEDecal.m_nHitbox		= hitbox;
 	g_TEDecal.m_nIndex		= index;
 

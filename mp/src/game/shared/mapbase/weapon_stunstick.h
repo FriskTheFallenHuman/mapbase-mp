@@ -8,13 +8,13 @@
 #ifndef WEAPON_STUNSTICK_H
 #define WEAPON_STUNSTICK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef CLIENT_DLL
-#include "c_basehlcombatweapon.h"
+	#include "c_basehlcombatweapon.h"
 #else
-#include "basebludgeonweapon.h"
+	#include "basebludgeonweapon.h"
 #endif
 
 #define	STUNSTICK_RANGE				75.0f
@@ -25,8 +25,8 @@
 #define STUNSTICK_GLOW_MATERIAL_NOZ	"sprites/light_glow02_add_noz"
 
 #ifdef CLIENT_DLL
-#define CWeaponStunStick C_WeaponStunStick
-#define CBaseHLBludgeonWeapon C_BaseHLBludgeonWeapon
+	#define CWeaponStunStick C_WeaponStunStick
+	#define CBaseHLBludgeonWeapon C_BaseHLBludgeonWeapon
 #endif
 
 #ifndef HL2MP
@@ -38,12 +38,12 @@ class CWeaponStunStick : public CBaseHL2MPBludgeonWeapon
 {
 	DECLARE_CLASS( CWeaponStunStick, CBaseHL2MPBludgeonWeapon );
 #endif
-	
+
 public:
 
 	CWeaponStunStick();
 
-	DECLARE_NETWORKCLASS(); 
+	DECLARE_NETWORKCLASS();
 	DECLARE_PREDICTABLE();
 
 #ifndef CLIENT_DLL
@@ -55,47 +55,59 @@ public:
 	virtual void			ClientThink( void );
 	virtual void			OnDataChanged( DataUpdateType_t updateType );
 	virtual RenderGroup_t	GetRenderGroup( void );
-	virtual void			ViewModelDrawn( C_BaseViewModel *pBaseViewModel );
-	
+	virtual void			ViewModelDrawn( C_BaseViewModel* pBaseViewModel );
+
 #endif
 
 	virtual void Precache();
 
 	void		Spawn();
 
-	float		GetRange( void )		{ return STUNSTICK_RANGE; }
-	float		GetFireRate( void )		{ return STUNSTICK_REFIRE; }
+	float		GetRange( void )
+	{
+		return STUNSTICK_RANGE;
+	}
+	float		GetFireRate( void )
+	{
+		return STUNSTICK_REFIRE;
+	}
 
 
 	bool		Deploy( void );
-	bool		Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
-	
-	void		Drop( const Vector &vecVelocity );
-	void		ImpactEffect( trace_t &traceHit );
+	bool		Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
+
+	void		Drop( const Vector& vecVelocity );
+	void		ImpactEffect( trace_t& traceHit );
 	void		SecondaryAttack( void )	{}
 	void		SetStunState( bool state );
 	bool		GetStunState( void );
 
 #ifndef CLIENT_DLL
-	void		Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
+	void		Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
 	int			WeaponMeleeAttack1Condition( float flDot, float flDist );
 #endif
-	
+
 	float		GetDamageForActivity( Activity hitActivity );
 
 #ifdef MAPBASE
 	// Don't use backup activities
-	acttable_t		*GetBackupActivityList() { return NULL; }
-	int				GetBackupActivityListCount() { return 0; }
+	acttable_t*		GetBackupActivityList()
+	{
+		return NULL;
+	}
+	int				GetBackupActivityListCount()
+	{
+		return 0;
+	}
 #endif
 
-	CWeaponStunStick( const CWeaponStunStick & );
+	CWeaponStunStick( const CWeaponStunStick& );
 
 private:
 
 #ifdef CLIENT_DLL
 
-	#define	NUM_BEAM_ATTACHMENTS	9
+#define	NUM_BEAM_ATTACHMENTS	9
 
 	struct stunstickBeamInfo_t
 	{
@@ -116,7 +128,7 @@ private:
 
 	bool	m_bSwungLastFrame;
 
-	#define	FADE_DURATION	0.25f
+#define	FADE_DURATION	0.25f
 
 	float	m_flFadeTime;
 

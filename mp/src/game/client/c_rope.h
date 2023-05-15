@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_ROPE_H
 #define C_ROPE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "c_baseentity.h"
@@ -42,10 +42,10 @@ private:
 	class CPhysicsDelegate : public CSimplePhysics::IHelper
 	{
 	public:
-		virtual void	GetNodeForces( CSimplePhysics::CNode *pNodes, int iNode, Vector *pAccel );
-		virtual void	ApplyConstraints( CSimplePhysics::CNode *pNodes, int nNodes );
-	
-		C_RopeKeyframe	*m_pKeyframe;
+		virtual void	GetNodeForces( CSimplePhysics::CNode* pNodes, int iNode, Vector* pAccel );
+		virtual void	ApplyConstraints( CSimplePhysics::CNode* pNodes, int nNodes );
+
+		C_RopeKeyframe*	m_pKeyframe;
 	};
 
 	friend class CPhysicsDelegate;
@@ -53,28 +53,28 @@ private:
 
 public:
 
-					C_RopeKeyframe();
-					~C_RopeKeyframe();
+	C_RopeKeyframe();
+	~C_RopeKeyframe();
 
 	// This can be used for client-only ropes.
 	static C_RopeKeyframe* Create(
-		C_BaseEntity *pStartEnt,
-		C_BaseEntity *pEndEnt,
-		int iStartAttachment=0,
-		int iEndAttachment=0,
+		C_BaseEntity* pStartEnt,
+		C_BaseEntity* pEndEnt,
+		int iStartAttachment = 0,
+		int iEndAttachment = 0,
 		float ropeWidth = 2,
-		const char *pMaterialName = "cable/cable",		// Note: whoever creates the rope must
-														// use PrecacheModel for whatever material
-														// it specifies here.
+		const char* pMaterialName = "cable/cable",		// Note: whoever creates the rope must
+		// use PrecacheModel for whatever material
+		// it specifies here.
 		int numSegments = 5,
 		int ropeFlags = ROPE_SIMULATE
-		);
+	);
 
 	// Create a client-only rope and initialize it with the parameters from the KeyValues.
-	static C_RopeKeyframe* CreateFromKeyValues( C_BaseAnimating *pEnt, KeyValues *pValues );
+	static C_RopeKeyframe* CreateFromKeyValues( C_BaseAnimating* pEnt, KeyValues* pValues );
 
 	// Find ropes (with both endpoints connected) that intersect this AABB. This is just an approximation.
-	static int GetRopesIntersectingAABB( C_RopeKeyframe **pRopes, int nMaxRopes, const Vector &vAbsMin, const Vector &vAbsMax );
+	static int GetRopesIntersectingAABB( C_RopeKeyframe** pRopes, int nMaxRopes, const Vector& vAbsMin, const Vector& vAbsMax );
 
 	// Set the slack.
 	void SetSlack( int slack );
@@ -85,39 +85,39 @@ public:
 	void SetupHangDistance( float flHangDist );
 
 	// Change which entities the rope is connected to.
-	void SetStartEntity( C_BaseEntity *pEnt );
-	void SetEndEntity( C_BaseEntity *pEnt );
+	void SetStartEntity( C_BaseEntity* pEnt );
+	void SetEndEntity( C_BaseEntity* pEnt );
 
 	C_BaseEntity* GetStartEntity() const;
 	C_BaseEntity* GetEndEntity() const;
 
 	// Hook the physics. Pass in your own implementation of CSimplePhysics::IHelper. The
 	// default implementation is returned so you can call through to it if you want.
-	CSimplePhysics::IHelper*	HookPhysics( CSimplePhysics::IHelper *pHook );
+	CSimplePhysics::IHelper*	HookPhysics( CSimplePhysics::IHelper* pHook );
 
 	// Attach to things (you can also just lock the endpoints down yourself if you hook the physics).
 
 	// Client-only right now. This could be moved to the server if there was a good reason.
-	void			SetColorMod( const Vector &vColorMod );
+	void			SetColorMod( const Vector& vColorMod );
 
 	// Use this when rope length and slack change to recompute the spring length.
 	void			RecomputeSprings();
 
-	void ShakeRope( const Vector &vCenter, float flRadius, float flMagnitude );
+	void ShakeRope( const Vector& vCenter, float flRadius, float flMagnitude );
 
 	// Get the attachment position of one of the endpoints.
-	bool			GetEndPointPos( int iPt, Vector &vPos );
+	bool			GetEndPointPos( int iPt, Vector& vPos );
 
 	// Get the rope material data.
-	IMaterial		*GetSolidMaterial( void );
+	IMaterial*		GetSolidMaterial( void );
 #ifndef MAPBASE
-	IMaterial		*GetBackMaterial( void );
+	IMaterial*		GetBackMaterial( void );
 #endif
 
 	struct BuildRopeQueuedData_t
 	{
-		Vector	*m_pPredictedPositions;
-		Vector	*m_pLightValues;
+		Vector*	m_pPredictedPositions;
+		Vector*	m_pLightValues;
 		int		m_iNodeCount;
 		Vector	m_vColorMod;
 		float	m_RopeLength;
@@ -125,9 +125,9 @@ public:
 	};
 
 #ifdef MAPBASE
-	void			BuildRope( RopeSegData_t *pRopeSegment, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, BuildRopeQueuedData_t *pQueuedData );
+	void			BuildRope( RopeSegData_t* pRopeSegment, const Vector& vCurrentViewForward, const Vector& vCurrentViewOrigin, BuildRopeQueuedData_t* pQueuedData );
 #else
-	void			BuildRope( RopeSegData_t *pRopeSegment, const Vector &vCurrentViewForward, const Vector &vCurrentViewOrigin, BuildRopeQueuedData_t *pQueuedData, bool bQueued );
+	void			BuildRope( RopeSegData_t* pRopeSegment, const Vector& vCurrentViewForward, const Vector& vCurrentViewOrigin, BuildRopeQueuedData_t* pQueuedData, bool bQueued );
 #endif
 
 // C_BaseEntity overrides.
@@ -140,43 +140,49 @@ public:
 	virtual const Vector& WorldSpaceCenter() const;
 
 	// Specify ROPE_ATTACHMENT_START_POINT or ROPE_ATTACHMENT_END_POINT for the attachment.
-	virtual	bool	GetAttachment( int number, Vector &origin, QAngle &angles );
-	virtual bool	GetAttachment( int number, matrix3x4_t &matrix );
-	virtual bool	GetAttachment( int number, Vector &origin );
-	virtual bool	GetAttachmentVelocity( int number, Vector &originVel, Quaternion &angleVel );
+	virtual	bool	GetAttachment( int number, Vector& origin, QAngle& angles );
+	virtual bool	GetAttachment( int number, matrix3x4_t& matrix );
+	virtual bool	GetAttachment( int number, Vector& origin );
+	virtual bool	GetAttachmentVelocity( int number, Vector& originVel, Quaternion& angleVel );
 
 #ifdef MAPBASE
-	const Vector	&GetNodePosition( int index );
+	const Vector&	GetNodePosition( int index );
 	int				GetNumNodes();
 #endif
 
 private:
-	
-	void			FinishInit( const char *pMaterialName );
+
+	void			FinishInit( const char* pMaterialName );
 
 	void			RunRopeSimulation( float flSeconds );
-	Vector			ConstrainNode( const Vector &vNormal, const Vector &vNodePosition, const Vector &vMidpiont, float fNormalLength );
+	Vector			ConstrainNode( const Vector& vNormal, const Vector& vNodePosition, const Vector& vMidpiont, float fNormalLength );
 	void			ConstrainNodesBetweenEndpoints( void );
 
 	bool			AnyPointsMoved();
 
 	bool			DidEndPointMove( int iPt );
-	bool			DetectRestingState( bool &bApplyWind );
+	bool			DetectRestingState( bool& bApplyWind );
 
 	void			UpdateBBox();
 	bool			InitRopePhysics();
-	
-	bool			GetEndPointAttachment( int iPt, Vector &vPos, QAngle &angle );
-	
-	Vector			*GetRopeSubdivVectors( int *nSubdivs );
+
+	bool			GetEndPointAttachment( int iPt, Vector& vPos, QAngle& angle );
+
+	Vector*			GetRopeSubdivVectors( int* nSubdivs );
 	void			CalcLightValues();
 
-	void			ReceiveMessage( int classID, bf_read &msg );
-	bool			CalculateEndPointAttachment( C_BaseEntity *pEnt, int iAttachment, Vector &vPos, QAngle *pAngles );
+	void			ReceiveMessage( int classID, bf_read& msg );
+	bool			CalculateEndPointAttachment( C_BaseEntity* pEnt, int iAttachment, Vector& vPos, QAngle* pAngles );
 
 #ifdef MAPBASE_VSCRIPT
-	HSCRIPT			ScriptGetStartEntity() { return ToHScript( GetStartEntity() ); }
-	HSCRIPT			ScriptGetEndEntity() { return ToHScript( GetEndEntity() ); }
+	HSCRIPT			ScriptGetStartEntity()
+	{
+		return ToHScript( GetStartEntity() );
+	}
+	HSCRIPT			ScriptGetEndEntity()
+	{
+		return ToHScript( GetEndEntity() );
+	}
 #endif
 
 
@@ -197,12 +203,12 @@ private:
 
 	int				m_RopeFlags;			// Combo of ROPE_ flags.
 	int				m_iRopeMaterialModelIndex;	// Index of sprite model with the rope's material.
-		
+
 	CRopePhysics<ROPE_MAX_SEGMENTS>	m_RopePhysics;
 	Vector			m_LightValues[ROPE_MAX_SEGMENTS]; // light info when the rope is created.
 
 	int				m_nSegments;		// Number of segments.
-	
+
 	EHANDLE			m_hStartPoint;		// StartPoint/EndPoint are entities
 	EHANDLE			m_hEndPoint;
 	short			m_iStartAttachment;	// StartAttachment/EndAttachment are attachment points.
@@ -213,7 +219,7 @@ private:
 	int				m_RopeLength;		// Length of the rope, used for tension.
 	int				m_Slack;			// Extra length the rope is given.
 	float			m_TextureScale;		// pixels per inch
-	
+
 	int				m_fLockedPoints;	// Which points are locked down.
 #ifdef MAPBASE
 	int				m_nChangeCount;
@@ -223,9 +229,9 @@ private:
 
 	CPhysicsDelegate	m_PhysicsDelegate;
 
-	IMaterial		*m_pMaterial;
+	IMaterial*		m_pMaterial;
 #ifndef MAPBASE
-	IMaterial		*m_pBackMaterial;			// Optional translucent background material for the rope to help reduce aliasing.
+	IMaterial*		m_pBackMaterial;			// Optional translucent background material for the rope to help reduce aliasing.
 #endif
 
 	int				m_TextureHeight;	// Texture height, for texture scale calculations.
@@ -257,7 +263,7 @@ private:
 	bool			m_bEndPointAttachmentPositionsDirty : 1;
 	bool			m_bEndPointAttachmentAnglesDirty : 1;
 	bool			m_bNewDataThisFrame : 1;			// Set to true in OnDataChanged so that we simulate that frame
-	bool			m_bPhysicsInitted : 1;				// It waits until all required entities are 
+	bool			m_bPhysicsInitted : 1;				// It waits until all required entities are
 	// present to start simulating and rendering.
 
 	friend class CRopeManager;
@@ -277,7 +283,7 @@ abstract_class IRopeManager
 public:
 	virtual						~IRopeManager() {}
 	virtual void				ResetRenderCache( void ) = 0;
-	virtual void				AddToRenderCache( C_RopeKeyframe *pRope ) = 0;
+	virtual void				AddToRenderCache( C_RopeKeyframe * pRope ) = 0;
 	virtual void				DrawRenderCache( bool bShadowDepth ) = 0;
 #ifndef MAPBASE
 	virtual void				OnRenderStart( void ) = 0;
@@ -287,6 +293,6 @@ public:
 	virtual int					GetHolidayLightStyle( void ) = 0;
 };
 
-IRopeManager *RopeManager();
+IRopeManager* RopeManager();
 
 #endif // C_ROPE_H

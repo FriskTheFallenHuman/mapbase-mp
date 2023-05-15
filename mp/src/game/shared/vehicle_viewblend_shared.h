@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef VEHICLE_VIEWBLEND_SHARED_H
 #define VEHICLE_VIEWBLEND_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // Definition for how to calculate a point on the remap curve
@@ -33,7 +33,7 @@ struct ViewLockData_t
 	float	flUnlockBlendInterval;	// If this DOF is locked, how long to spend blending out of the locked view when we unlock.
 };
 
-// This is separate from the base vehicle implementation so that any class 
+// This is separate from the base vehicle implementation so that any class
 // that derives from IClientVehicle can use it. To use it, contain one of the
 // following structs, fill out the first section, and then call VehicleViewSmoothing()
 // inside your GetVehicleViewPosition() function.
@@ -42,7 +42,7 @@ struct ViewSmoothingData_t
 	DECLARE_SIMPLE_DATADESC();
 
 	// Fill these out in your vehicle
-	CBaseAnimating	*pVehicle;
+	CBaseAnimating*	pVehicle;
 	bool	bClampEyeAngles;	// Perform eye Z clamping
 	float	flPitchCurveZero;	// Pitch values below this are clamped to zero.
 	float	flPitchCurveLinear;	// Pitch values above this are mapped directly.
@@ -69,11 +69,11 @@ struct ViewSmoothingData_t
 };
 
 // TEMP: Shared vehicle view smoothing
-void SharedVehicleViewSmoothing(CBasePlayer *pPlayer, 
-								Vector *pAbsOrigin, QAngle *pAbsAngles, 
-								bool bEnterAnimOn, bool bExitAnimOn, 
-								const Vector &vecEyeExitEndpoint, 
-								ViewSmoothingData_t *pData, 
-								float *pFOV );
+void SharedVehicleViewSmoothing( CBasePlayer* pPlayer,
+								 Vector* pAbsOrigin, QAngle* pAbsAngles,
+								 bool bEnterAnimOn, bool bExitAnimOn,
+								 const Vector& vecEyeExitEndpoint,
+								 ViewSmoothingData_t* pData,
+								 float* pFOV );
 
 #endif // VEHICLE_VIEWBLEND_SHARED_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define MDLPANEL_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,10 +24,10 @@
 //-----------------------------------------------------------------------------
 namespace vgui
 {
-	class IScheme;
+class IScheme;
 }
 
-// 
+//
 struct MDLAnimEventState_t
 {
 	int		m_nEventSequence;
@@ -43,19 +43,19 @@ class CMDLPanel : public CPotteryWheelPanel
 
 public:
 	// constructor, destructor
-	CMDLPanel( vgui::Panel *pParent, const char *pName );
+	CMDLPanel( vgui::Panel* pParent, const char* pName );
 	virtual ~CMDLPanel();
 
 	// Overriden methods of vgui::Panel
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 
 	virtual void OnTick();
 
 	virtual void Paint();
 
 	// Sets the current mdl
-	virtual void SetMDL( MDLHandle_t handle, void *pProxyData = NULL );
-	virtual void SetMDL( const char *pMDLName, void *pProxyData = NULL );
+	virtual void SetMDL( MDLHandle_t handle, void* pProxyData = NULL );
+	virtual void SetMDL( const char* pMDLName, void* pProxyData = NULL );
 
 	// Sets the camera to look at the model
 	void LookAtMDL( );
@@ -67,11 +67,11 @@ public:
 	void SetSequence( int nSequence, bool bResetSequence = false );
 
 	// Set the pose parameters
-	void SetPoseParameters( const float *pPoseParameters, int nCount );
-	bool SetPoseParameterByName( const char *pszName, float fValue );
+	void SetPoseParameters( const float* pPoseParameters, int nCount );
+	bool SetPoseParameterByName( const char* pszName, float fValue );
 
 	// Set the overlay sequence layers
-	void SetSequenceLayers( const MDLSquenceLayer_t *pSequenceLayers, int nCount );
+	void SetSequenceLayers( const MDLSquenceLayer_t* pSequenceLayers, int nCount );
 
 	void SetCollsionModel( bool bVisible );
 	void SetGroundGrid( bool bVisible );
@@ -83,26 +83,29 @@ public:
 	void SetThumbnailSafeZone( bool bVisible );
 
 	// Bounds.
-	bool GetBoundingBox( Vector &vecBoundsMin, Vector &vecBoundsMax );
-	bool GetBoundingSphere( Vector &vecCenter, float &flRadius );
+	bool GetBoundingBox( Vector& vecBoundsMin, Vector& vecBoundsMax );
+	bool GetBoundingSphere( Vector& vecCenter, float& flRadius );
 
-	virtual void SetModelAnglesAndPosition( const QAngle &angRot, const Vector &vecPos );
+	virtual void SetModelAnglesAndPosition( const QAngle& angRot, const Vector& vecPos );
 
 	// Attached models.
-	void	SetMergeMDL( MDLHandle_t handle, void *pProxyData = NULL, int nSkin = -1 );
-	MDLHandle_t SetMergeMDL( const char *pMDLName, void *pProxyData = NULL, int nSkin = -1 );
-	int		GetMergeMDLIndex( void *pProxyData );
+	void	SetMergeMDL( MDLHandle_t handle, void* pProxyData = NULL, int nSkin = -1 );
+	MDLHandle_t SetMergeMDL( const char* pMDLName, void* pProxyData = NULL, int nSkin = -1 );
+	int		GetMergeMDLIndex( void* pProxyData );
 	int		GetMergeMDLIndex( MDLHandle_t handle );
-	CMDL	*GetMergeMDL(MDLHandle_t handle );
+	CMDL*	GetMergeMDL( MDLHandle_t handle );
 	void	ClearMergeMDLs( void );
 
-	virtual void	SetupFlexWeights( void ) { return; }
+	virtual void	SetupFlexWeights( void )
+	{
+		return;
+	}
 
 	// Events
 	void DoAnimationEvents();
-	void DoAnimationEvents( CStudioHdr *pStudioHdr, int nSeqNum, float flTime, bool bNoLoop, MDLAnimEventState_t *pEventState );
-	virtual void FireEvent( const char *pszEventName, const char *pszEventOptions ) { }
-	void ResetAnimationEventState( MDLAnimEventState_t *pEventState );
+	void DoAnimationEvents( CStudioHdr* pStudioHdr, int nSeqNum, float flTime, bool bNoLoop, MDLAnimEventState_t* pEventState );
+	virtual void FireEvent( const char* pszEventName, const char* pszEventOptions ) { }
+	void ResetAnimationEventState( MDLAnimEventState_t* pEventState );
 
 protected:
 
@@ -129,10 +132,10 @@ protected:
 private:
 	// paint it!
 	virtual void OnPaint3D();
-	virtual void PrePaint3D( IMatRenderContext *pRenderContext ) { };
-	virtual void PostPaint3D( IMatRenderContext *pRenderContext ) { };
-	virtual void RenderingRootModel( IMatRenderContext *pRenderContext, CStudioHdr *pStudioHdr, MDLHandle_t mdlHandle, matrix3x4_t *pWorldMatrix ) { };
-	virtual void RenderingMergedModel( IMatRenderContext *pRenderContext, CStudioHdr *pStudioHdr, MDLHandle_t mdlHandle, matrix3x4_t *pWorldMatrix ) { };
+	virtual void PrePaint3D( IMatRenderContext* pRenderContext ) { };
+	virtual void PostPaint3D( IMatRenderContext* pRenderContext ) { };
+	virtual void RenderingRootModel( IMatRenderContext* pRenderContext, CStudioHdr* pStudioHdr, MDLHandle_t mdlHandle, matrix3x4_t* pWorldMatrix ) { };
+	virtual void RenderingMergedModel( IMatRenderContext* pRenderContext, CStudioHdr* pStudioHdr, MDLHandle_t mdlHandle, matrix3x4_t* pWorldMatrix ) { };
 
 	void OnMouseDoublePressed( vgui::MouseCode code );
 

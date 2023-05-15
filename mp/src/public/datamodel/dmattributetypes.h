@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef DMATTRIBUTETYPES_H
 #define DMATTRIBUTETYPES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlvector.h"
@@ -34,7 +34,10 @@ typedef UniqueId_t DmObjectId_t;
 //-----------------------------------------------------------------------------
 struct DmUnknownAttribute_t
 {
-	bool operator==( const DmUnknownAttribute_t& src ) const { return true; }
+	bool operator==( const DmUnknownAttribute_t& src ) const
+	{
+		return true;
+	}
 };
 
 
@@ -45,8 +48,14 @@ struct DmElementAttribute_t
 {
 	DmElementAttribute_t() : m_ElementType( UTL_INVAL_SYMBOL ) {}
 
-	operator DmElementHandle_t&() { return m_Handle; }
-	operator const DmElementHandle_t&() const { return m_Handle; }
+	operator DmElementHandle_t& ()
+	{
+		return m_Handle;
+	}
+	operator const DmElementHandle_t& () const
+	{
+		return m_Handle;
+	}
 
 	DmElementHandle_t m_Handle;
 	UtlSymId_t m_ElementType;
@@ -56,7 +65,7 @@ struct DmElementArray_t : public CUtlVector< DmElementHandle_t >
 {
 	DmElementArray_t() : m_ElementType( UTL_INVAL_SYMBOL ) {}
 
-	UtlSymId_t m_ElementType;	
+	UtlSymId_t m_ElementType;
 };
 
 
@@ -103,7 +112,7 @@ enum DmAttributeType_t
 	AT_TYPE_COUNT,
 };
 
-const char *GetTypeString( DmAttributeType_t type );
+const char* GetTypeString( DmAttributeType_t type );
 
 inline bool IsValueType( DmAttributeType_t type )
 {
@@ -134,100 +143,100 @@ inline DmAttributeType_t ArrayTypeToValueType( DmAttributeType_t type )
 
 inline int NumComponents( DmAttributeType_t type )
 {
-	switch ( type )
+	switch( type )
 	{
-	case AT_BOOL:
-	case AT_INT:
-	case AT_FLOAT:
-		return 1;
+		case AT_BOOL:
+		case AT_INT:
+		case AT_FLOAT:
+			return 1;
 
-	case AT_VECTOR2:
-		return 2;
+		case AT_VECTOR2:
+			return 2;
 
-	case AT_VECTOR3:
-	case AT_QANGLE:
-		return 3;
+		case AT_VECTOR3:
+		case AT_QANGLE:
+			return 3;
 
-	case AT_COLOR: //rgba
-	case AT_VECTOR4:
-	case AT_QUATERNION:
-		return 4;
+		case AT_COLOR: //rgba
+		case AT_VECTOR4:
+		case AT_QUATERNION:
+			return 4;
 
-	case AT_VMATRIX:
-		return 16;
+		case AT_VMATRIX:
+			return 16;
 
-	case AT_ELEMENT:
-	case AT_STRING:
-	case AT_VOID:
-	case AT_OBJECTID:
-	default:
-		return 0;
+		case AT_ELEMENT:
+		case AT_STRING:
+		case AT_VOID:
+		case AT_OBJECTID:
+		default:
+			return 0;
 	}
 }
 
 template< typename T >
-inline float GetComponent( const T &value, int i )
+inline float GetComponent( const T& value, int i )
 {
 	Assert( 0 );
 	return 0.0f;
 }
 
-template <> inline float GetComponent( const bool &value, int i )
+template <> inline float GetComponent( const bool& value, int i )
 {
 	Assert( i == 0 );
 	return value ? 1.0f : 0.0f;
 }
 
-template <> inline float GetComponent( const int &value, int i )
+template <> inline float GetComponent( const int& value, int i )
 {
 	Assert( i == 0 );
 	return float( value );
 }
 
-template <> inline float GetComponent( const float &value, int i )
+template <> inline float GetComponent( const float& value, int i )
 {
 	Assert( i == 0 );
 	return value;
 }
 
-template <> inline float GetComponent( const Vector2D &value, int i )
+template <> inline float GetComponent( const Vector2D& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const Vector &value, int i )
+template <> inline float GetComponent( const Vector& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const QAngle &value, int i )
+template <> inline float GetComponent( const QAngle& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const Color &value, int i )
+template <> inline float GetComponent( const Color& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const Vector4D &value, int i )
+template <> inline float GetComponent( const Vector4D& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const Quaternion &value, int i )
+template <> inline float GetComponent( const Quaternion& value, int i )
 {
 	return value[ i ];
 }
 
-template <> inline float GetComponent( const VMatrix &value, int i )
+template <> inline float GetComponent( const VMatrix& value, int i )
 {
 	return value.Base()[ i ];
 }
 
 
 //-----------------------------------------------------------------------------
-// Attribute info... 
+// Attribute info...
 //-----------------------------------------------------------------------------
 template <typename T>
 class CDmAttributeInfo
@@ -242,14 +251,14 @@ public:
 		return AT_UNKNOWN;
 	}
 
-	static const char *AttributeTypeName()
+	static const char* AttributeTypeName()
 	{
 		return "unknown";
 	}
 
 	static void SetDefaultValue( T& value )
 	{
-		Assert(0);
+		Assert( 0 );
 	}
 };
 

@@ -48,9 +48,9 @@ public:
 
 	float GetPoseValue( void );
 
-	void SetProp( CBaseAnimating *pProp );
-	void SetPropName( const char *pName );
-	void SetPoseParameterName( const char *pName );
+	void SetProp( CBaseAnimating* pProp );
+	void SetPropName( const char* pName );
+	void SetPoseParameterName( const char* pName );
 	void SetPoseValue( float fValue );
 	void SetInterpolationTime( float fValue );
 	void SetInterpolationWrap( bool bWrap );
@@ -62,19 +62,19 @@ public:
 	void RandomizeFMod( float fExtremeness );
 
 	// Input handlers
-	void InputSetPoseParameterName( inputdata_t &inputdata );
-	void InputSetPoseValue( inputdata_t &inputdata );
-	void InputSetInterpolationTime( inputdata_t &inputdata );
-	void InputSetCycleFrequency( inputdata_t &inputdata );
-	void InputSetFModType( inputdata_t &inputdata );
-	void InputSetFModTimeOffset( inputdata_t &inputdata );
-	void InputSetFModRate( inputdata_t &inputdata );
-	void InputSetFModAmplitude( inputdata_t &inputdata );
-	void InputRandomizeFMod( inputdata_t &inputdata );
-	void InputGetFMod( inputdata_t &inputdata );
+	void InputSetPoseParameterName( inputdata_t& inputdata );
+	void InputSetPoseValue( inputdata_t& inputdata );
+	void InputSetInterpolationTime( inputdata_t& inputdata );
+	void InputSetCycleFrequency( inputdata_t& inputdata );
+	void InputSetFModType( inputdata_t& inputdata );
+	void InputSetFModTimeOffset( inputdata_t& inputdata );
+	void InputSetFModRate( inputdata_t& inputdata );
+	void InputSetFModAmplitude( inputdata_t& inputdata );
+	void InputRandomizeFMod( inputdata_t& inputdata );
+	void InputGetFMod( inputdata_t& inputdata );
 
 #ifdef MAPBASE
-	void InputSetTarget( inputdata_t &inputdata );
+	void InputSetTarget( inputdata_t& inputdata );
 #endif
 
 private:

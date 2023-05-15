@@ -52,9 +52,9 @@
 #include "common_lightmappedgeneric_fxc.h"
 
 #if SEAMLESS
-#define USE_FAST_PATH 1
+	#define USE_FAST_PATH 1
 #else
-#define USE_FAST_PATH FASTPATH
+	#define USE_FAST_PATH FASTPATH
 #endif
 
 const HALF4 g_EnvmapTint : register( c0 );
@@ -62,9 +62,9 @@ const HALF4 g_EnvmapTint : register( c0 );
 #if USE_FAST_PATH == 1
 
 #	if FASTPATHENVMAPCONTRAST == 0
-static const HALF3 g_EnvmapContrast = { 0.0f, 0.0f, 0.0f };
+	static const HALF3 g_EnvmapContrast = { 0.0f, 0.0f, 0.0f };
 #	else
-static const HALF3 g_EnvmapContrast = { 1.0f, 1.0f, 1.0f };
+	static const HALF3 g_EnvmapContrast = { 1.0f, 1.0f, 1.0f };
 #	endif
 static const HALF3 g_EnvmapSaturation = { 1.0f, 1.0f, 1.0f };
 static const HALF g_FresnelReflection = 1.0f;
@@ -77,48 +77,54 @@ const float4 g_OutlineParams : register( c2 );
 #define OUTLINE_MAX_VALUE0 g_OutlineParams.z
 #define OUTLINE_MAX_VALUE1 g_OutlineParams.w
 
-const float4 g_OutlineColor : register( c3 );
+	const float4 g_OutlineColor : register( c3 );
 #define OUTLINE_COLOR g_OutlineColor
 
 #   endif
 #   if SOFTEDGES
-const float4 g_EdgeSoftnessParms : register( c4 );
+	const float4 g_EdgeSoftnessParms : register( c4 );
 #define SOFT_MASK_MIN g_EdgeSoftnessParms.x
 #define SOFT_MASK_MAX g_EdgeSoftnessParms.y
 #   endif
 #else
 
-const HALF3 g_EnvmapContrast				: register( c2 );
-const HALF3 g_EnvmapSaturation				: register( c3 );
-const HALF4 g_FresnelReflectionReg			: register( c4 );
+	const HALF3 g_EnvmapContrast				: register( c2 );
+	const HALF3 g_EnvmapSaturation				:
+	register( c3 );
+	const HALF4 g_FresnelReflectionReg			:
+	register( c4 );
 #define g_FresnelReflection g_FresnelReflectionReg.a
 #define g_OneMinusFresnelReflection g_FresnelReflectionReg.b
-const HALF4 g_SelfIllumTint					: register( c7 );
+	const HALF4 g_SelfIllumTint					: register( c7 );
 #endif
 
-const float4 g_DetailTint_and_BlendFactor	: register( c8 );
+	const float4 g_DetailTint_and_BlendFactor	: register( c8 );
 #define g_DetailTint (g_DetailTint_and_BlendFactor.rgb)
 #define g_DetailBlendFactor (g_DetailTint_and_BlendFactor.w)
 
-const float4 g_EyePos_MinLight				: register( c10 );
+	const float4 g_EyePos_MinLight				: register( c10 );
 #define g_EyePos g_EyePos_MinLight.xyz
 #define g_fMinLighting g_EyePos_MinLight.w
 
 
-const HALF4 g_FogParams						: register( c11 );
-const float4 g_TintValuesAndLightmapScale	: register( c12 );
+	const HALF4 g_FogParams						: register( c11 );
+	const float4 g_TintValuesAndLightmapScale	:
+	register( c12 );
 
 #define g_flAlpha2 g_TintValuesAndLightmapScale.w
 
-const float4 g_FlashlightAttenuationFactors	: register( c13 );
-const float3 g_FlashlightPos				: register( c14 );
-const float4x4 g_FlashlightWorldToTexture	: register( c15 ); // through c18
-const float4 g_ShadowTweaks					: register( c19 );
+	const float4 g_FlashlightAttenuationFactors	: register( c13 );
+	const float3 g_FlashlightPos				:
+	register( c14 );
+	const float4x4 g_FlashlightWorldToTexture	:
+	register( c15 ); // through c18
+	const float4 g_ShadowTweaks					: register( c19 );
 
 #if PARALLAXCORRECT
 // Parallax cubemaps
-const float4 cubemapPos						: register(c21);
-const float4x4 obbMatrix					: register(c22); //through c25
+	const float4 cubemapPos						: register( c21 );
+	const float4x4 obbMatrix					:
+	register( c22 ); //through c25
 #define g_BlendInverted cubemapPos.w
 #else
 // Blixibon - Hammer apparently has a bug that causes the vertex blend to get swapped.
@@ -126,92 +132,122 @@ const float4x4 obbMatrix					: register(c22); //through c25
 // Downfall got around this by swapping around the base textures in the DLL code when drawn by the editor.
 // Doing it here in the shader itself allows us to retain other properties, like FANCY_BLENDING.
 // TODO: This may be inefficent usage of a constant
-const HALF g_BlendInverted					: register(c21);
+	const HALF g_BlendInverted					: register( c21 );
 #endif
 
 
-sampler BaseTextureSampler		: register( s0 );
-sampler LightmapSampler			: register( s1 );
-sampler EnvmapSampler			: register( s2 );
+sampler BaseTextureSampler		:
+	register( s0 );
+sampler LightmapSampler			:
+	register( s1 );
+sampler EnvmapSampler			:
+	register( s2 );
 #if FANCY_BLENDING
-sampler BlendModulationSampler	: register( s3 );
+sampler BlendModulationSampler	:
+	register( s3 );
 #endif
 
 #if DETAILTEXTURE
-sampler DetailSampler			: register( s12 );
+sampler DetailSampler			:
+	register( s12 );
 #endif
 
-sampler BumpmapSampler			: register( s4 );
+sampler BumpmapSampler			:
+	register( s4 );
 #if NORMAL_DECODE_MODE == NORM_DECODE_ATI2N_ALPHA
-sampler AlphaMapSampler		: register( s9 );	// alpha
+sampler AlphaMapSampler		:
+	register( s9 );	// alpha
 #else
 #define AlphaMapSampler		BumpmapSampler
 #endif
 
 #if BUMPMAP2 == 1
-sampler BumpmapSampler2			: register( s5 );
+sampler BumpmapSampler2			:
+	register( s5 );
 #if NORMAL_DECODE_MODE == NORM_DECODE_ATI2N_ALPHA
-sampler AlphaMapSampler2		: register( s10 );	// alpha
+sampler AlphaMapSampler2		:
+	register( s10 );	// alpha
 #else
 #define AlphaMapSampler2		BumpmapSampler2
 #endif
 #else
-sampler EnvmapMaskSampler		: register( s5 );
+sampler EnvmapMaskSampler		:
+	register( s5 );
 #endif
 
 
 #if WARPLIGHTING
-sampler WarpLightingSampler		: register( s6 );
+sampler WarpLightingSampler		:
+	register( s6 );
 #endif
-sampler BaseTextureSampler2		: register( s7 );
+sampler BaseTextureSampler2		:
+	register( s7 );
 
 #if BUMPMASK == 1
-sampler BumpMaskSampler			: register( s8 );
+sampler BumpMaskSampler			:
+	register( s8 );
 #if NORMALMASK_DECODE_MODE == NORM_DECODE_ATI2N_ALPHA
-sampler AlphaMaskSampler		: register( s11 );	// alpha
+sampler AlphaMaskSampler		:
+	register( s11 );	// alpha
 #else
 #define AlphaMaskSampler		BumpMaskSampler
 #endif
 #endif
 
 #if defined( _X360 ) && FLASHLIGHT
-sampler FlashlightSampler		: register( s13 );
-sampler ShadowDepthSampler		: register( s14 );
-sampler RandRotSampler			: register( s15 );
+sampler FlashlightSampler		:
+	register( s13 );
+sampler ShadowDepthSampler		:
+	register( s14 );
+sampler RandRotSampler			:
+	register( s15 );
 #endif
 
-struct PS_INPUT
+	struct PS_INPUT
 {
 #if SEAMLESS
-	float3 SeamlessTexCoord         : TEXCOORD0;            // zy xz
-	float4 detailOrBumpAndEnvmapMaskTexCoord : TEXCOORD1;   // envmap mask
+float3 SeamlessTexCoord         :
+	TEXCOORD0;            // zy xz
+float4 detailOrBumpAndEnvmapMaskTexCoord :
+	TEXCOORD1;   // envmap mask
 #else
 #if BASETEXTURETRANSFORM2
 	// Blixibon - Using two extra floats for $basetexturetransform2
-	HALF4 baseTexCoord				: TEXCOORD0;
+HALF4 baseTexCoord				:
+	TEXCOORD0;
 #else
-	HALF2 baseTexCoord				: TEXCOORD0;
+HALF2 baseTexCoord				:
+	TEXCOORD0;
 #endif
 	// detail textures and bumpmaps are mutually exclusive so that we have enough texcoords.
 #if ( RELIEF_MAPPING == 0 )
-	HALF4 detailOrBumpAndEnvmapMaskTexCoord	: TEXCOORD1;
+HALF4 detailOrBumpAndEnvmapMaskTexCoord	:
+	TEXCOORD1;
 #endif
 #endif
 // CENTROID: TEXCOORD2
-	HALF4 lightmapTexCoord1And2		: TEXCOORD2;
+HALF4 lightmapTexCoord1And2		:
+	TEXCOORD2;
 // CENTROID: TEXCOORD3
-	HALF4 lightmapTexCoord3			: TEXCOORD3;
-	HALF4 worldPos_projPosZ			: TEXCOORD4;
-	HALF3x3 tangentSpaceTranspose	: TEXCOORD5;
+HALF4 lightmapTexCoord3			:
+	TEXCOORD3;
+HALF4 worldPos_projPosZ			:
+	TEXCOORD4;
+HALF3x3 tangentSpaceTranspose	:
+	TEXCOORD5;
 	// tangentSpaceTranspose		: TEXCOORD6
 	// tangentSpaceTranspose		: TEXCOORD7
-	HALF4 vertexColor				: COLOR;
-	float4 vertexBlendX_fogFactorW	: COLOR1;
+HALF4 vertexColor				:
+	COLOR;
+float4 vertexBlendX_fogFactorW	:
+	COLOR1;
 
 	// Extra iterators on 360, used in flashlight combo
 #if defined( _X360 ) && FLASHLIGHT
-	float4 flashlightSpacePos		: TEXCOORD8;
-	float4 vProjPos					: TEXCOORD9;
+float4 flashlightSpacePos		:
+	TEXCOORD8;
+float4 vProjPos					:
+	TEXCOORD9;
 #endif
 };
 
@@ -235,8 +271,8 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 	float4 baseColor = 0.0f;
 	float4 baseColor2 = 0.0f;
-	float4 vNormal = float4(0, 0, 1, 1);
-	float3 baseTexCoords = float3(0,0,0);
+	float4 vNormal = float4( 0, 0, 1, 1 );
+	float3 baseTexCoords = float3( 0, 0, 0 );
 
 #if SEAMLESS
 	baseTexCoords = i.SeamlessTexCoord.xyz;
@@ -247,19 +283,19 @@ HALF4 main( PS_INPUT i ) : COLOR
 #if BASETEXTURETRANSFORM2
 	// Blixibon - Simpler version of GetBaseTextureAndNormal() that supports $basetexturetransform2
 	// (make this its own function in common_lightmappedgeneric_fxc.h if this becomes more widespread)
-	// 
+	//
 	// Also, not sure where else to put this, but we're using an entire BASETEXTURETRANSFORM2 combo
 	// because in DX9, $basetexture2 would update from the original $basetexturetransform, so
 	// keeping this code separate retains that original behavior.
 	baseColor = tex2D( BaseTextureSampler, baseTexCoords.xy );
 	baseColor2 = tex2D( BaseTextureSampler2, i.baseTexCoord.wz );
-	if ( bBumpmap || bNormalMapAlphaEnvmapMask )
+	if( bBumpmap || bNormalMapAlphaEnvmapMask )
 	{
 		vNormal  = tex2D( BumpmapSampler, baseTexCoords.xy );
 	}
 #else
-	GetBaseTextureAndNormal( BaseTextureSampler, BaseTextureSampler2, BumpmapSampler, bBaseTexture2, bBumpmap || bNormalMapAlphaEnvmapMask, 
-		baseTexCoords, i.vertexColor.rgb, baseColor, baseColor2, vNormal );
+	GetBaseTextureAndNormal( BaseTextureSampler, BaseTextureSampler2, BumpmapSampler, bBaseTexture2, bBumpmap || bNormalMapAlphaEnvmapMask,
+	baseTexCoords, i.vertexColor.rgb, baseColor, baseColor2, vNormal );
 #endif
 
 #if BUMPMAP == 1	// not ssbump
@@ -276,8 +312,8 @@ HALF4 main( PS_INPUT i ) : COLOR
 		HALF2 bumpCoord2;
 		HALF2 bumpCoord3;
 		ComputeBumpedLightmapCoordinates( i.lightmapTexCoord1And2, i.lightmapTexCoord3.xy,
-			bumpCoord1, bumpCoord2, bumpCoord3 );
-		
+		bumpCoord1, bumpCoord2, bumpCoord3 );
+
 		lightmapColor1 = LightMapSample( LightmapSampler, bumpCoord1 );
 		lightmapColor2 = LightMapSample( LightmapSampler, bumpCoord2 );
 		lightmapColor3 = LightMapSample( LightmapSampler, bumpCoord3 );
@@ -291,23 +327,23 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 #if RELIEF_MAPPING
 	// in the parallax case, all texcoords must be the same in order to free
-    // up an iterator for the tangent space view vector
+	// up an iterator for the tangent space view vector
 	HALF2 detailTexCoord = i.baseTexCoord.xy;
 	HALF2 bumpmapTexCoord = i.baseTexCoord.xy;
 	HALF2 envmapMaskTexCoord = i.baseTexCoord.xy;
 #else
 
-	#if ( DETAILTEXTURE == 1 )
-		HALF2 detailTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
-		HALF2 bumpmapTexCoord = i.baseTexCoord.xy;
-	#elif ( BUMPMASK == 1 )
-		HALF2 detailTexCoord = 0.0f;
-		HALF2 bumpmapTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
-		HALF2 bumpmap2TexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.wz;
-	#else
-		HALF2 detailTexCoord = 0.0f;
-		HALF2 bumpmapTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
-	#endif
+#if ( DETAILTEXTURE == 1 )
+	HALF2 detailTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
+	HALF2 bumpmapTexCoord = i.baseTexCoord.xy;
+#elif ( BUMPMASK == 1 )
+	HALF2 detailTexCoord = 0.0f;
+	HALF2 bumpmapTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
+	HALF2 bumpmap2TexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.wz;
+#else
+	HALF2 detailTexCoord = 0.0f;
+	HALF2 bumpmapTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.xy;
+#endif
 
 	HALF2 envmapMaskTexCoord = i.detailOrBumpAndEnvmapMaskTexCoord.wz;
 #endif // !RELIEF_MAPPING
@@ -327,17 +363,17 @@ HALF4 main( PS_INPUT i ) : COLOR
 	float distAlphaMask = baseColor.a;
 
 #   if OUTLINE
-	if ( ( distAlphaMask >= OUTLINE_MIN_VALUE0 ) &&
-		 ( distAlphaMask <= OUTLINE_MAX_VALUE1 ) )
+	if( ( distAlphaMask >= OUTLINE_MIN_VALUE0 ) &&
+	( distAlphaMask <= OUTLINE_MAX_VALUE1 ) )
 	{
-		float oFactor=1.0;
-		if ( distAlphaMask <= OUTLINE_MIN_VALUE1 )
+		float oFactor = 1.0;
+		if( distAlphaMask <= OUTLINE_MIN_VALUE1 )
 		{
-			oFactor=smoothstep( OUTLINE_MIN_VALUE0, OUTLINE_MIN_VALUE1, distAlphaMask );
+			oFactor = smoothstep( OUTLINE_MIN_VALUE0, OUTLINE_MIN_VALUE1, distAlphaMask );
 		}
 		else
 		{
-			oFactor=smoothstep( OUTLINE_MAX_VALUE1, OUTLINE_MAX_VALUE0, distAlphaMask );
+			oFactor = smoothstep( OUTLINE_MAX_VALUE1, OUTLINE_MAX_VALUE0, distAlphaMask );
 		}
 		baseColor = lerp( baseColor, OUTLINE_COLOR, oFactor );
 	}
@@ -351,21 +387,21 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 
 #if LIGHTING_PREVIEW == 2
-	baseColor.xyz=GammaToLinear(baseColor.xyz);
+	baseColor.xyz = GammaToLinear( baseColor.xyz );
 #endif
 
 	float blendedAlpha = baseColor.a;
 
 #if MASKEDBLENDING
-	float blendfactor=0.5;
+	float blendfactor = 0.5;
 #else
-	
-	float blendfactor=i.vertexBlendX_fogFactorW.r;
+
+	float blendfactor = i.vertexBlendX_fogFactorW.r;
 
 	// See g_BlendInverted's declaration for more info on this
-	if (g_BlendInverted > 0.0)
+	if( g_BlendInverted > 0.0 )
 	{
-		blendfactor=1.0f-blendfactor;
+		blendfactor = 1.0f - blendfactor;
 	}
 
 #endif
@@ -373,22 +409,22 @@ HALF4 main( PS_INPUT i ) : COLOR
 	if( bBaseTexture2 )
 	{
 #if (SELFILLUM == 0) && (PIXELFOGTYPE != PIXEL_FOG_TYPE_HEIGHT) && (FANCY_BLENDING)
-		float4 modt=tex2D(BlendModulationSampler,baseTexCoords);
+		float4 modt = tex2D( BlendModulationSampler, baseTexCoords );
 #if MASKEDBLENDING
-		float minb=modt.g-modt.r;
-		float maxb=modt.g+modt.r;
+		float minb = modt.g - modt.r;
+		float maxb = modt.g + modt.r;
 #else
-		float minb=max(0,modt.g-modt.r);
-		float maxb=min(1,modt.g+modt.r);
+		float minb = max( 0, modt.g - modt.r );
+		float maxb = min( 1, modt.g + modt.r );
 #endif
-		blendfactor=smoothstep(minb,maxb,blendfactor);
+		blendfactor = smoothstep( minb, maxb, blendfactor );
 #endif
 		baseColor.rgb = lerp( baseColor.rgb, baseColor2.rgb, blendfactor );
 		blendedAlpha = lerp( baseColor.a, baseColor2.a, blendfactor );
 	}
 
 	HALF3 specularFactor = 1.0f;
-	float4 vNormalMask = float4(0, 0, 1, 1);
+	float4 vNormalMask = float4( 0, 0, 1, 1 );
 	if( bBumpmap )
 	{
 		if( bBaseTextureNoEnvmap )
@@ -398,24 +434,28 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 #if ( BUMPMAP2 == 1 )
 		{
-	#if ( BUMPMASK == 1 )
+#if ( BUMPMASK == 1 )
 			HALF2 b2TexCoord = bumpmap2TexCoord;
-	#else
+#else
 			HALF2 b2TexCoord = bumpmapTexCoord;
-	#endif
+#endif
 
 			HALF4 vNormal2;
-			if ( BUMPMAP == 2 )
+			if( BUMPMAP == 2 )
+			{
 				vNormal2 = tex2D( BumpmapSampler2, b2TexCoord );
+			}
 			else
-				vNormal2 = DecompressNormal( BumpmapSampler2, b2TexCoord, NORMAL_DECODE_MODE, AlphaMapSampler2 );		// Bump 2 coords
+			{
+				vNormal2 = DecompressNormal( BumpmapSampler2, b2TexCoord, NORMAL_DECODE_MODE, AlphaMapSampler2 );    // Bump 2 coords
+			}
 
 			if( bBaseTexture2NoEnvmap )
 			{
 				vNormal2.a = 0.0f;
 			}
 
-	#if ( BUMPMASK == 1 )
+#if ( BUMPMASK == 1 )
 			float3 vNormal1 = DecompressNormal( BumpmapSampler, i.detailOrBumpAndEnvmapMaskTexCoord.xy, NORMALMASK_DECODE_MODE, AlphaMapSampler );
 
 			vNormal.xyz = normalize( vNormal1.xyz + vNormal2.xyz );
@@ -425,17 +465,17 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 			vNormal.xyz = lerp( vNormalMask.xyz, vNormal.xyz, vNormalMask.a );		// Mask out normals from vNormal
 			specularFactor = vNormalMask.a;
-	#else // BUMPMASK == 0
-			if ( FANCY_BLENDING && bNormalMapAlphaEnvmapMask )
+#else // BUMPMASK == 0
+			if( FANCY_BLENDING && bNormalMapAlphaEnvmapMask )
 			{
-				vNormal = lerp( vNormal, vNormal2, blendfactor);
+				vNormal = lerp( vNormal, vNormal2, blendfactor );
 			}
 			else
 			{
-				vNormal.xyz = lerp( vNormal.xyz, vNormal2.xyz, blendfactor);
+				vNormal.xyz = lerp( vNormal.xyz, vNormal2.xyz, blendfactor );
 			}
 
-	#endif
+#endif
 
 		}
 
@@ -446,7 +486,7 @@ HALF4 main( PS_INPUT i ) : COLOR
 			specularFactor *= vNormal.a;
 		}
 	}
-	else if ( bNormalMapAlphaEnvmapMask )
+	else if( bNormalMapAlphaEnvmapMask )
 	{
 		specularFactor *= vNormal.a;
 	}
@@ -454,7 +494,7 @@ HALF4 main( PS_INPUT i ) : COLOR
 #if ( BUMPMAP2 == 0 )
 	if( bEnvmapMask )
 	{
-		specularFactor *= tex2D( EnvmapMaskSampler, envmapMaskTexCoord ).xyz;	
+		specularFactor *= tex2D( EnvmapMaskSampler, envmapMaskTexCoord ).xyz;
 	}
 #endif
 
@@ -497,16 +537,16 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 		// now, calculate vNormal for reflection purposes. if vNormal isn't needed, hopefully
 		// the compiler will eliminate these calculations
-		vNormal.xyz = normalize( bumpBasis[0]*vNormal.x + bumpBasis[1]*vNormal.y + bumpBasis[2]*vNormal.z);
+		vNormal.xyz = normalize( bumpBasis[0] * vNormal.x + bumpBasis[1] * vNormal.y + bumpBasis[2] * vNormal.z );
 #else
 		float3 dp;
 		dp.x = saturate( dot( vNormal.xyz, bumpBasis[0] ) );
 		dp.y = saturate( dot( vNormal.xyz, bumpBasis[1] ) );
 		dp.z = saturate( dot( vNormal.xyz, bumpBasis[2] ) );
 		dp *= dp;
-		
+
 #if ( DETAIL_BLEND_MODE == TCOMBINE_SSBUMP_BUMP )
-		dp *= 2*detailColor;
+		dp *= 2 * detailColor;
 #endif
 		diffuseLighting = dp.x * lightmapColor1 +
 						  dp.y * lightmapColor2 +
@@ -521,16 +561,16 @@ HALF4 main( PS_INPUT i ) : COLOR
 	}
 
 #if WARPLIGHTING && ( SEAMLESS == 0 )
-	float len=0.5*length(diffuseLighting);
+	float len = 0.5 * length( diffuseLighting );
 	// FIXME: 8-bit lookup textures like this need a "nice filtering" VTF option, which converts
 	//        them to 16-bit on load or does filtering in the shader (since most hardware - 360
 	//        included - interpolates 8-bit textures at 8-bit precision, which causes banding)
-	diffuseLighting *= 2.0*tex2D(WarpLightingSampler,float2(len,0));
+	diffuseLighting *= 2.0 * tex2D( WarpLightingSampler, float2( len, 0 ) );
 #endif
 
 #if 1 //CUBEMAP || LIGHTING_PREVIEW || ( defined( _X360 ) && FLASHLIGHT )
 	float3x3 tangentSpaceTranspose = i.tangentSpaceTranspose;
-	
+
 	float3 worldSpaceNormal = mul( vNormal.xyz, i.tangentSpaceTranspose );
 #endif
 
@@ -561,18 +601,18 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 	tangentPosToLightVector = normalize( tangentPosToLightVector );
 
-	float nDotL = saturate( vSSBumpVector.x*dot( tangentPosToLightVector, bumpBasis[0]) +
-							vSSBumpVector.y*dot( tangentPosToLightVector, bumpBasis[1]) +
-							vSSBumpVector.z*dot( tangentPosToLightVector, bumpBasis[2]) );
+	float nDotL = saturate( vSSBumpVector.x * dot( tangentPosToLightVector, bumpBasis[0] ) +
+	vSSBumpVector.y * dot( tangentPosToLightVector, bumpBasis[1] ) +
+	vSSBumpVector.z * dot( tangentPosToLightVector, bumpBasis[2] ) );
 #else
 	bool bHasNormal = true;
 	float nDotL = 1.0f;
 #endif
 
 	float fFlashlight = DoFlashlight( g_FlashlightPos, i.worldPos_projPosZ.xyz, i.flashlightSpacePos,
-		worldSpaceNormal, g_FlashlightAttenuationFactors.xyz, 
-		g_FlashlightAttenuationFactors.w, FlashlightSampler, ShadowDepthSampler,
-		RandRotSampler, 0, true, false, i.vProjPos.xy / i.vProjPos.w, false, g_ShadowTweaks, bHasNormal );
+	worldSpaceNormal, g_FlashlightAttenuationFactors.xyz,
+	g_FlashlightAttenuationFactors.w, FlashlightSampler, ShadowDepthSampler,
+	RandRotSampler, 0, true, false, i.vProjPos.xy / i.vProjPos.w, false, g_ShadowTweaks, bHasNormal );
 
 	diffuseComponent = albedo.xyz * ( diffuseLighting + ( fFlashlight * nDotL ) );
 #endif
@@ -591,31 +631,31 @@ HALF4 main( PS_INPUT i ) : COLOR
 		float3 reflectVect = CalcReflectionVectorUnnormalized( worldSpaceNormal, worldVertToEyeVector );
 
 		// Calc Fresnel factor
-		half3 eyeVect = normalize(worldVertToEyeVector);
+		half3 eyeVect = normalize( worldVertToEyeVector );
 		HALF fresnel = 1.0 - dot( worldSpaceNormal, eyeVect );
 		fresnel = pow( fresnel, 5.0 );
 		fresnel = fresnel * g_OneMinusFresnelReflection + g_FresnelReflection;
-		
+
 #if PARALLAXCORRECT
 		//Parallax correction (2_0b and beyond)
-        //Adapted from http://seblagarde.wordpress.com/2012/09/29/image-based-lighting-approaches-and-parallax-corrected-cubemap/
-        float3 worldPos = i.worldPos_projPosZ.xyz;
-        float3 positionLS = mul(float4(worldPos, 1), obbMatrix);
-        float3 rayLS = mul(reflectVect, (float3x3) obbMatrix);
+		//Adapted from http://seblagarde.wordpress.com/2012/09/29/image-based-lighting-approaches-and-parallax-corrected-cubemap/
+		float3 worldPos = i.worldPos_projPosZ.xyz;
+		float3 positionLS = mul( float4( worldPos, 1 ), obbMatrix );
+		float3 rayLS = mul( reflectVect, ( float3x3 ) obbMatrix );
 
-        float3 firstPlaneIntersect = (float3(1.0f, 1.0f, 1.0f) - positionLS) / rayLS;
-        float3 secondPlaneIntersect = (-positionLS) / rayLS;
-        float3 furthestPlane = max(firstPlaneIntersect, secondPlaneIntersect);
-        float distance = min(furthestPlane.x, min(furthestPlane.y, furthestPlane.z));
+		float3 firstPlaneIntersect = ( float3( 1.0f, 1.0f, 1.0f ) - positionLS ) / rayLS;
+		float3 secondPlaneIntersect = ( -positionLS ) / rayLS;
+		float3 furthestPlane = max( firstPlaneIntersect, secondPlaneIntersect );
+		float distance = min( furthestPlane.x, min( furthestPlane.y, furthestPlane.z ) );
 
-        // Use distance in WS directly to recover intersection
-        float3 intersectPositionWS = worldPos + reflectVect * distance;
-        reflectVect = intersectPositionWS - cubemapPos;
+		// Use distance in WS directly to recover intersection
+		float3 intersectPositionWS = worldPos + reflectVect * distance;
+		reflectVect = intersectPositionWS - cubemapPos;
 #endif
-		
+
 		specularLighting = ENV_MAP_SCALE * texCUBE( EnvmapSampler, reflectVect );
 		specularLighting *= specularFactor;
-								   
+
 		specularLighting *= g_EnvmapTint.rgb;
 #if FANCY_BLENDING == 0
 		HALF3 specularLightingSquared = specularLighting * specularLighting;
@@ -628,20 +668,20 @@ HALF4 main( PS_INPUT i ) : COLOR
 #endif
 
 	HALF3 result = diffuseComponent + specularLighting;
-	
+
 #if LIGHTING_PREVIEW
 	worldSpaceNormal = mul( vNormal, tangentSpaceTranspose );
 #	if LIGHTING_PREVIEW == 1
-	float dotprod = 0.7+0.25 * dot( worldSpaceNormal, normalize( float3( 1, 2, -.5 ) ) );
-	return FinalOutput( HALF4( dotprod*albedo.xyz, alpha ), 0, PIXEL_FOG_TYPE_NONE, TONEMAP_SCALE_NONE );
+	float dotprod = 0.7 + 0.25 * dot( worldSpaceNormal, normalize( float3( 1, 2, -.5 ) ) );
+	return FinalOutput( HALF4( dotprod * albedo.xyz, alpha ), 0, PIXEL_FOG_TYPE_NONE, TONEMAP_SCALE_NONE );
 #	else
 	LPREVIEW_PS_OUT ret;
-	ret.color = float4( albedo.xyz,alpha );
-	ret.normal = float4( worldSpaceNormal,alpha );
+	ret.color = float4( albedo.xyz, alpha );
+	ret.normal = float4( worldSpaceNormal, alpha );
 	ret.position = float4( i.worldPos_projPosZ.xyz, alpha );
 	ret.flags = float4( 1, 1, 1, alpha );
 
-	return FinalOutput( ret, 0, PIXEL_FOG_TYPE_NONE, TONEMAP_SCALE_NONE );	
+	return FinalOutput( ret, 0, PIXEL_FOG_TYPE_NONE, TONEMAP_SCALE_NONE );
 #	endif
 #else // == end LIGHTING_PREVIEW ==
 
@@ -662,4 +702,4 @@ HALF4 main( PS_INPUT i ) : COLOR
 
 #endif
 }
- 
+

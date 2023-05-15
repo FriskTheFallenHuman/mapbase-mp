@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -22,20 +22,20 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: constructor
 //-----------------------------------------------------------------------------
-CHudBitmapNumericDisplay::CHudBitmapNumericDisplay(vgui::Panel *parent, const char *name) : vgui::Panel(parent, name)
+CHudBitmapNumericDisplay::CHudBitmapNumericDisplay( vgui::Panel* parent, const char* name ) : vgui::Panel( parent, name )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
 	m_iValue = 0;
 	m_bDisplayValue = true;
-	memset( m_pNumbers, 0, 10*sizeof(CHudTexture *) );
+	memset( m_pNumbers, 0, 10 * sizeof( CHudTexture* ) );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
-void CHudBitmapNumericDisplay::SetDisplayValue(int value)
+void CHudBitmapNumericDisplay::SetDisplayValue( int value )
 {
 	m_iValue = value;
 }
@@ -51,25 +51,25 @@ void CHudBitmapNumericDisplay::Paint()
 	fgColor[3] *= alpha;
 	SetFgColor( fgColor );
 
-	if (m_bDisplayValue)
+	if( m_bDisplayValue )
 	{
 		// draw our numbers
-	//	surface()->DrawSetTextColor(GetFgColor());
-		PaintNumbers(digit_xpos, digit_ypos, m_iValue, GetFgColor());
+		//	surface()->DrawSetTextColor(GetFgColor());
+		PaintNumbers( digit_xpos, digit_ypos, m_iValue, GetFgColor() );
 
 		// draw the overbright blur
-		for (float fl = m_flBlur; fl > 0.0f; fl -= 1.0f)
+		for( float fl = m_flBlur; fl > 0.0f; fl -= 1.0f )
 		{
-			if (fl >= 1.0f)
+			if( fl >= 1.0f )
 			{
-				PaintNumbers(digit_xpos, digit_ypos, m_iValue, GetFgColor());
+				PaintNumbers( digit_xpos, digit_ypos, m_iValue, GetFgColor() );
 			}
 			else
 			{
 				// draw a percentage of the last one
 				Color col = GetFgColor();
 				col[3] *= fl;
-				PaintNumbers(digit_xpos, digit_ypos, m_iValue, col);
+				PaintNumbers( digit_xpos, digit_ypos, m_iValue, col );
 			}
 		}
 	}
@@ -78,13 +78,13 @@ void CHudBitmapNumericDisplay::Paint()
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
-void CHudBitmapNumericDisplay::SetShouldDisplayValue(bool state)
+void CHudBitmapNumericDisplay::SetShouldDisplayValue( bool state )
 {
 	m_bDisplayValue = state;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudBitmapNumericDisplay::PaintBackground( void )
 {
@@ -97,16 +97,16 @@ void CHudBitmapNumericDisplay::PaintBackground( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudBitmapNumericDisplay::PaintNumbers(int xpos, int ypos, int value, Color col, int numSigDigits )
+void CHudBitmapNumericDisplay::PaintNumbers( int xpos, int ypos, int value, Color col, int numSigDigits )
 {
 	if( !m_pNumbers[0] )
 	{
 		int i;
 		char a[16];
 
-		for( i=0;i<10;i++ )
+		for( i = 0; i < 10; i++ )
 		{
 			sprintf( a, "number_%d", i );
 
@@ -114,7 +114,9 @@ void CHudBitmapNumericDisplay::PaintNumbers(int xpos, int ypos, int value, Color
 		}
 
 		if( !m_pNumbers[0] )
+		{
 			return;
+		}
 	}
 
 	if( value > 100000 )
@@ -124,7 +126,7 @@ void CHudBitmapNumericDisplay::PaintNumbers(int xpos, int ypos, int value, Color
 
 	int pos = 10000;
 
-	float scale = ( digit_height / (float)m_pNumbers[0]->Height());
+	float scale = ( digit_height / ( float )m_pNumbers[0]->Height() );
 
 	int digit;
 	Color color = GetFgColor();
@@ -140,13 +142,17 @@ void CHudBitmapNumericDisplay::PaintNumbers(int xpos, int ypos, int value, Color
 	while( x >= 10 )
 	{
 		if( value >= x )
+		{
 			numdigits++;
+		}
 
 		x /= 10;
 	}
 
 	if( numdigits < numSigDigits )
+	{
 		numdigits = numSigDigits;
+	}
 
 	xpos -= numdigits * width;
 
@@ -155,13 +161,13 @@ void CHudBitmapNumericDisplay::PaintNumbers(int xpos, int ypos, int value, Color
 	{
 		digit = value / pos;
 		value = value % pos;
-		
-		if( bStart || digit > 0 || pos <= pow(10.0f,numSigDigits-1) )
+
+		if( bStart || digit > 0 || pos <= pow( 10.0f, numSigDigits - 1 ) )
 		{
 			bStart = true;
 			m_pNumbers[digit]->DrawSelf( xpos, ypos, width, height, col );
 			xpos += width;
-		}		
+		}
 
 		pos /= 10;
 	}

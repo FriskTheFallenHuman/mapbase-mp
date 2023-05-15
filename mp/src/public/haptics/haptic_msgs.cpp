@@ -12,24 +12,24 @@
 	#include "c_prop_vehicle.h"
 	#include "prediction.h"
 	#include "activitylist.h"
-#ifdef TERROR
-	#include "ClientTerrorPlayer.h"
-#endif
-extern vgui::IInputInternal *g_InputInternal;
+	#ifdef TERROR
+		#include "ClientTerrorPlayer.h"
+	#endif
+	extern vgui::IInputInternal* g_InputInternal;
 #else
 	#include "usermessages.h"
 #endif
 
 #include "haptics/haptic_msgs.h"
 
-void RegisterHapticMessages(void)
+void RegisterHapticMessages( void )
 {
 	usermessages->Register( "SPHapWeapEvent", 4 );
 	usermessages->Register( "HapDmg", -1 );
 	usermessages->Register( "HapPunch", -1 );
 	usermessages->Register( "HapSetDrag", -1 );
 	usermessages->Register( "HapSetConst", -1 );
-	usermessages->Register( "HapMeleeContact", 0);
+	usermessages->Register( "HapMeleeContact", 0 );
 }
 
 //-----------------------------------------------------------------------------
@@ -37,67 +37,67 @@ void RegisterHapticMessages(void)
 //-----------------------------------------------------------------------------
 #ifndef CLIENT_DLL
 
-void HapticMsg_SendWeaponAnim( CBasePlayer *pPlayer, int iActivity )
+void HapticMsg_SendWeaponAnim( CBasePlayer* pPlayer, int iActivity )
 {
 	//Send the haptics message
 	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
 	UserMessageBegin( user, "SPHapWeapEvent" );
-	WRITE_LONG(iActivity);
+	WRITE_LONG( iActivity );
 	MessageEnd();
 }
 
-void HapticMsg_SetDrag(CBasePlayer* pPlayer, float drag)
+void HapticMsg_SetDrag( CBasePlayer* pPlayer, float drag )
 {
 	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
 	UserMessageBegin( user, "HapSetDrag" );
-	WRITE_FLOAT(drag);
+	WRITE_FLOAT( drag );
 	MessageEnd();
 }
 
-void HapticMsg_SetConstantForce(CBasePlayer* pPlayer, Vector force)
+void HapticMsg_SetConstantForce( CBasePlayer* pPlayer, Vector force )
 {
 	// portal does not network this.
 	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
 	UserMessageBegin( user, "HapSetConst" );
-		WRITE_SHORT(force.x);
-		WRITE_SHORT(force.y);
-		WRITE_SHORT(force.z);
+	WRITE_SHORT( force.x );
+	WRITE_SHORT( force.y );
+	WRITE_SHORT( force.z );
 	MessageEnd();
 }
 
-void HapticMsg_HapDmg(CBasePlayer* pPlayer, float pitch, float yaw, float dmg, float dmgType )
+void HapticMsg_HapDmg( CBasePlayer* pPlayer, float pitch, float yaw, float dmg, float dmgType )
 {
-	CSingleUserRecipientFilter user(pPlayer);
+	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
-	UserMessageBegin(user,"HapDmg");
+	UserMessageBegin( user, "HapDmg" );
 
-	WRITE_FLOAT(pitch);
-	WRITE_FLOAT(yaw);
-	WRITE_FLOAT(dmg);
-	WRITE_LONG(dmgType);
+	WRITE_FLOAT( pitch );
+	WRITE_FLOAT( yaw );
+	WRITE_FLOAT( dmg );
+	WRITE_LONG( dmgType );
 	MessageEnd();
 }
 
-void HapticMsg_Punch(CBasePlayer* pPlayer, float x, float y, float z)
+void HapticMsg_Punch( CBasePlayer* pPlayer, float x, float y, float z )
 {
-	CSingleUserRecipientFilter user(pPlayer);
+	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
-	UserMessageBegin(user,"HapPunch");
+	UserMessageBegin( user, "HapPunch" );
 
-	WRITE_FLOAT(x);
-	WRITE_FLOAT(y);
-	WRITE_FLOAT(z);
+	WRITE_FLOAT( x );
+	WRITE_FLOAT( y );
+	WRITE_FLOAT( z );
 	MessageEnd();
 }
 
-void HapticMsg_MeleeContact(CBasePlayer* pPlayer)
+void HapticMsg_MeleeContact( CBasePlayer* pPlayer )
 {
-	CSingleUserRecipientFilter user(pPlayer);
+	CSingleUserRecipientFilter user( pPlayer );
 	user.MakeReliable();
-	UserMessageBegin(user,"HapMeleeContact");
+	UserMessageBegin( user, "HapMeleeContact" );
 	MessageEnd();
 }
 
@@ -107,28 +107,28 @@ void HapticMsg_MeleeContact(CBasePlayer* pPlayer)
 // Client
 //-----------------------------------------------------------------------------
 #ifdef CLIENT_DLL
-void HookHapticMessages(void)
+void HookHapticMessages( void )
 {
-	HOOK_MESSAGE(SPHapWeapEvent);
-	HOOK_MESSAGE(HapDmg);
-	HOOK_MESSAGE(HapPunch);
-	HOOK_MESSAGE(HapSetDrag);
-	HOOK_MESSAGE(HapSetConst);
-	HOOK_MESSAGE(HapMeleeContact);
+	HOOK_MESSAGE( SPHapWeapEvent );
+	HOOK_MESSAGE( HapDmg );
+	HOOK_MESSAGE( HapPunch );
+	HOOK_MESSAGE( HapSetDrag );
+	HOOK_MESSAGE( HapSetConst );
+	HOOK_MESSAGE( HapMeleeContact );
 
 }
 
 // Defined in haptics_utils
 #ifdef WIN32
-void HapticsHandleMsg_HapSetDrag( float drag );
-void HapticsHandleMsg_HapSetConst( Vector const &constant );
-void HapticsHandleMsg_SPHapWeapEvent( int iActivity );
-void HapticsHandleMsg_HapPunch( QAngle const &angle );
-void HapticsHandleMsg_HapDmg( float pitch, float yaw, float damage, int damageType );
-void HapticsHandleMsg_HapMeleeContact();
+	void HapticsHandleMsg_HapSetDrag( float drag );
+	void HapticsHandleMsg_HapSetConst( Vector const& constant );
+	void HapticsHandleMsg_SPHapWeapEvent( int iActivity );
+	void HapticsHandleMsg_HapPunch( QAngle const& angle );
+	void HapticsHandleMsg_HapDmg( float pitch, float yaw, float damage, int damageType );
+	void HapticsHandleMsg_HapMeleeContact();
 #endif // WIN32
 
-void __MsgFunc_HapSetDrag( bf_read &msg )
+void __MsgFunc_HapSetDrag( bf_read& msg )
 {
 #ifdef WIN32
 	float drag = msg.ReadFloat();
@@ -137,7 +137,7 @@ void __MsgFunc_HapSetDrag( bf_read &msg )
 }
 
 //Might be able to handle this better...
-void __MsgFunc_HapSetConst( bf_read &msg )
+void __MsgFunc_HapSetConst( bf_read& msg )
 {
 #ifdef WIN32
 	Vector constant;
@@ -149,7 +149,7 @@ void __MsgFunc_HapSetConst( bf_read &msg )
 #endif // WIN32
 }
 
-void __MsgFunc_SPHapWeapEvent( bf_read &msg )
+void __MsgFunc_SPHapWeapEvent( bf_read& msg )
 {
 #ifdef WIN32
 	int iActivity = msg.ReadLong();
@@ -158,18 +158,18 @@ void __MsgFunc_SPHapWeapEvent( bf_read &msg )
 #endif // WIN32
 }
 
-void __MsgFunc_HapPunch( bf_read &msg )
+void __MsgFunc_HapPunch( bf_read& msg )
 {
 #ifdef WIN32
 	float x = msg.ReadFloat();
 	float y = msg.ReadFloat();
 	float z = msg.ReadFloat();
 
-	HapticsHandleMsg_HapPunch( QAngle(x,y,z) );
+	HapticsHandleMsg_HapPunch( QAngle( x, y, z ) );
 #endif // WIN32
 }
 
-void __MsgFunc_HapDmg( bf_read &msg )
+void __MsgFunc_HapDmg( bf_read& msg )
 {
 #ifdef WIN32
 	float pitch = msg.ReadFloat();
@@ -181,7 +181,7 @@ void __MsgFunc_HapDmg( bf_read &msg )
 #endif // WIN32
 }
 
-void __MsgFunc_HapMeleeContact( bf_read &msg )
+void __MsgFunc_HapMeleeContact( bf_read& msg )
 {
 #ifdef WIN32
 	HapticsHandleMsg_HapMeleeContact();

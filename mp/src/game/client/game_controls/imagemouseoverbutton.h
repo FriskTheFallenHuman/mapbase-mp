@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -23,17 +23,17 @@ private:
 	//DECLARE_CLASS_SIMPLE( CImageMouseOverButton, MouseOverButton );
 
 public:
-	CImageMouseOverButton( vgui::Panel *parent, const char *panelName, T *templatePanel );
+	CImageMouseOverButton( vgui::Panel* parent, const char* panelName, T* templatePanel );
 
-	virtual void ApplySettings( KeyValues *inResourceData );
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme );
+	virtual void ApplySettings( KeyValues* inResourceData );
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme );
 	virtual void OnSizeChanged( int newWide, int newTall );
 
 	void RecalculateImageSizes( void );
-	void SetActiveImage( const char *imagename );
-	void SetInactiveImage( const char *imagename );
-	void SetActiveImage( vgui::IImage *image );
-	void SetInactiveImage( vgui::IImage *image );
+	void SetActiveImage( const char* imagename );
+	void SetInactiveImage( const char* imagename );
+	void SetActiveImage( vgui::IImage* image );
+	void SetInactiveImage( vgui::IImage* image );
 
 public:
 	virtual void Paint();
@@ -41,17 +41,17 @@ public:
 	virtual void HidePage( void );
 
 private:
-	vgui::IImage *m_pActiveImage;	
-	char *m_pszActiveImageName;
+	vgui::IImage* m_pActiveImage;
+	char* m_pszActiveImageName;
 
-	vgui::IImage *m_pInactiveImage;
-	char *m_pszInactiveImageName;
+	vgui::IImage* m_pInactiveImage;
+	char* m_pszInactiveImageName;
 
 	bool m_bScaleImage;
 };
 
 template <class T>
-CImageMouseOverButton<T>::CImageMouseOverButton( vgui::Panel *parent, const char *panelName, T *templatePanel ) :
+CImageMouseOverButton<T>::CImageMouseOverButton( vgui::Panel* parent, const char* panelName, T* templatePanel ) :
 	MouseOverButton<T>( parent, panelName, templatePanel )
 {
 	m_pszActiveImageName = NULL;
@@ -62,7 +62,7 @@ CImageMouseOverButton<T>::CImageMouseOverButton( vgui::Panel *parent, const char
 }
 
 template <class T>
-void CImageMouseOverButton<T>::ApplySettings( KeyValues *inResourceData )
+void CImageMouseOverButton<T>::ApplySettings( KeyValues* inResourceData )
 {
 	m_bScaleImage = inResourceData->GetInt( "scaleImage", 0 );
 
@@ -70,8 +70,8 @@ void CImageMouseOverButton<T>::ApplySettings( KeyValues *inResourceData )
 	delete [] m_pszActiveImageName;
 	m_pszActiveImageName = NULL;
 
-	const char *activeImageName = inResourceData->GetString( "activeimage", "" );
-	if ( *activeImageName )
+	const char* activeImageName = inResourceData->GetString( "activeimage", "" );
+	if( *activeImageName )
 	{
 		this->SetActiveImage( activeImageName );
 	}
@@ -80,8 +80,8 @@ void CImageMouseOverButton<T>::ApplySettings( KeyValues *inResourceData )
 	delete [] m_pszInactiveImageName;
 	m_pszInactiveImageName = NULL;
 
-	const char *inactiveImageName = inResourceData->GetString( "inactiveimage", "" );
-	if ( *inactiveImageName )
+	const char* inactiveImageName = inResourceData->GetString( "inactiveimage", "" );
+	if( *inactiveImageName )
 	{
 		this->SetInactiveImage( inactiveImageName );
 	}
@@ -92,26 +92,26 @@ void CImageMouseOverButton<T>::ApplySettings( KeyValues *inResourceData )
 }
 
 template <class T>
-void CImageMouseOverButton<T>::ApplySchemeSettings( vgui::IScheme *pScheme )
+void CImageMouseOverButton<T>::ApplySchemeSettings( vgui::IScheme* pScheme )
 {
 	MouseOverButton<T>::ApplySchemeSettings( pScheme );
 
-	if ( m_pszActiveImageName && strlen( m_pszActiveImageName ) > 0 )
+	if( m_pszActiveImageName && strlen( m_pszActiveImageName ) > 0 )
 	{
 		this->SetActiveImage( vgui::scheme()->GetImage( m_pszActiveImageName, m_bScaleImage ) );
 	}
 
-	if ( m_pszInactiveImageName && strlen( m_pszInactiveImageName ) > 0 )
+	if( m_pszInactiveImageName && strlen( m_pszInactiveImageName ) > 0 )
 	{
 		this->SetInactiveImage( vgui::scheme()->GetImage( m_pszInactiveImageName, m_bScaleImage ) );
 	}
 
-	vgui::IBorder *pBorder = pScheme->GetBorder( "NoBorder" );
-	this->SetDefaultBorder( pBorder);
+	vgui::IBorder* pBorder = pScheme->GetBorder( "NoBorder" );
+	this->SetDefaultBorder( pBorder );
 	this->SetDepressedBorder( pBorder );
 	this->SetKeyFocusBorder( pBorder );
 
-	Color blank(0,0,0,0);
+	Color blank( 0, 0, 0, 0 );
 	this->SetDefaultColor( this->GetButtonFgColor(), blank );
 	this->SetArmedColor( this->GetButtonArmedFgColor(), blank );
 	this->SetDepressedColor( this->GetButtonDepressedFgColor(), blank );
@@ -127,7 +127,7 @@ void CImageMouseOverButton<T>::RecalculateImageSizes( void )
 }
 
 template <class T>
-void CImageMouseOverButton<T>::SetActiveImage( const char *imagename )
+void CImageMouseOverButton<T>::SetActiveImage( const char* imagename )
 {
 	int len = Q_strlen( imagename ) + 1;
 	m_pszActiveImageName = new char[ len ];
@@ -135,7 +135,7 @@ void CImageMouseOverButton<T>::SetActiveImage( const char *imagename )
 }
 
 template <class T>
-void CImageMouseOverButton<T>::SetInactiveImage( const char *imagename )
+void CImageMouseOverButton<T>::SetInactiveImage( const char* imagename )
 {
 	int len = Q_strlen( imagename ) + 1;
 	m_pszInactiveImageName = new char[ len ];
@@ -143,14 +143,14 @@ void CImageMouseOverButton<T>::SetInactiveImage( const char *imagename )
 }
 
 template <class T>
-void CImageMouseOverButton<T>::SetActiveImage( vgui::IImage *image )
+void CImageMouseOverButton<T>::SetActiveImage( vgui::IImage* image )
 {
 	m_pActiveImage = image;
 
-	if ( m_pActiveImage )
+	if( m_pActiveImage )
 	{
 		int wide, tall;
-		if ( m_bScaleImage )
+		if( m_bScaleImage )
 		{
 			// scaling, force the image size to be our size
 			this->GetSize( wide, tall );
@@ -168,14 +168,14 @@ void CImageMouseOverButton<T>::SetActiveImage( vgui::IImage *image )
 }
 
 template <class T>
-void CImageMouseOverButton<T>::SetInactiveImage( vgui::IImage *image )
+void CImageMouseOverButton<T>::SetInactiveImage( vgui::IImage* image )
 {
 	m_pInactiveImage = image;
 
-	if ( m_pInactiveImage )
+	if( m_pInactiveImage )
 	{
 		int wide, tall;
-		if ( m_bScaleImage)
+		if( m_bScaleImage )
 		{
 			// scaling, force the image size to be our size
 			this->GetSize( wide, tall );
@@ -195,15 +195,19 @@ void CImageMouseOverButton<T>::SetInactiveImage( vgui::IImage *image )
 template <class T>
 void CImageMouseOverButton<T>::OnSizeChanged( int newWide, int newTall )
 {
-	if ( m_bScaleImage )
+	if( m_bScaleImage )
 	{
 		// scaling, force the image size to be our size
 
-		if ( m_pActiveImage )
+		if( m_pActiveImage )
+		{
 			m_pActiveImage->SetSize( newWide, newTall );
+		}
 
-		if ( m_pInactiveImage )
+		if( m_pInactiveImage )
+		{
 			m_pInactiveImage->SetSize( newWide, newTall );
+		}
 	}
 	MouseOverButton<T>::OnSizeChanged( newWide, newTall );
 }
@@ -214,27 +218,27 @@ void CImageMouseOverButton<T>::Paint()
 	this->SetActiveImage( m_pActiveImage );
 	this->SetInactiveImage( m_pInactiveImage );
 
-	if ( this->IsArmed() )
+	if( this->IsArmed() )
 	{
 		// draw the active image
-		if ( m_pActiveImage )
+		if( m_pActiveImage )
 		{
 			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 			m_pActiveImage->SetPos( 0, 0 );
 			m_pActiveImage->Paint();
 		}
 	}
-	else 
+	else
 	{
 		// draw the inactive image
-		if ( m_pInactiveImage )
+		if( m_pInactiveImage )
 		{
 			vgui::surface()->DrawSetColor( 255, 255, 255, 255 );
 			m_pInactiveImage->SetPos( 0, 0 );
 			m_pInactiveImage->Paint();
 		}
 	}
-	
+
 	MouseOverButton<T>::Paint();
 }
 

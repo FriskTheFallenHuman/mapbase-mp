@@ -11,7 +11,7 @@
 #define	TRIPWIRE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basegrenade_shared.h"
@@ -36,8 +36,8 @@ public:
 	void Spawn( void );
 	void Precache( void );
 	bool CreateVPhysics( void );
-	void EndTouch( CBaseEntity *pOther );
-	void SetVelocity( const Vector &velocity, const AngularImpulse &angVelocity );
+	void EndTouch( CBaseEntity* pOther );
+	void SetVelocity( const Vector& velocity, const AngularImpulse& angVelocity );
 };
 
 class CTripwireGrenade : public CBaseGrenade, public CSteamIDWeapon
@@ -49,19 +49,19 @@ public:
 	void Spawn( void );
 	void Precache( void );
 
-	int OnTakeDamage_Alive( const CTakeDamageInfo &info );
-	
+	int OnTakeDamage_Alive( const CTakeDamageInfo& info );
+
 	void WarningThink( void );
 	void PowerupThink( void );
 	void RopeBreakThink( void );
 	void FireThink( void );
-	void Event_Killed( const CTakeDamageInfo &info );
+	void Event_Killed( const CTakeDamageInfo& info );
 	void Attach( void );
 
 	void MakeRope( void );
 	void BreakRope( void );
 	void ShakeRope( void );
-	void FireMissile(const Vector &vTargetPos);
+	void FireMissile( const Vector& vTargetPos );
 
 private:
 	float			m_flPowerUp;

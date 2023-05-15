@@ -18,9 +18,15 @@ class CBaseToggle : public CBaseEntity
 public:
 	CBaseToggle();
 
-	virtual bool		KeyValue( const char *szKeyName, const char *szValue );
-	virtual bool		KeyValue( const char *szKeyName, Vector vec ) { return BaseClass::KeyValue( szKeyName, vec ); };
-	virtual bool		KeyValue( const char *szKeyName, float flValue ) { return BaseClass::KeyValue( szKeyName, flValue ); };
+	virtual bool		KeyValue( const char* szKeyName, const char* szValue );
+	virtual bool		KeyValue( const char* szKeyName, Vector vec )
+	{
+		return BaseClass::KeyValue( szKeyName, vec );
+	};
+	virtual bool		KeyValue( const char* szKeyName, float flValue )
+	{
+		return BaseClass::KeyValue( szKeyName, flValue );
+	};
 
 	TOGGLE_STATE		m_toggle_state;
 	float				m_flMoveDistance;// how far a door should slide or rotate
@@ -43,25 +49,28 @@ public:
 
 	DECLARE_DATADESC();
 
-	virtual float	GetDelay( void ) { return m_flWait; }
+	virtual float	GetDelay( void )
+	{
+		return m_flWait;
+	}
 
 	// common member functions
-	void LinearMove( const Vector &vecDest, float flSpeed );
+	void LinearMove( const Vector& vecDest, float flSpeed );
 	void LinearMoveDone( void );
-	void AngularMove( const QAngle &vecDestAngle, float flSpeed );
+	void AngularMove( const QAngle& vecDestAngle, float flSpeed );
 	void AngularMoveDone( void );
 	bool IsLockedByMaster( void );
 	virtual void MoveDone( void );
 
-	static float AxisValue( int flags, const QAngle &angles );
+	static float AxisValue( int flags, const QAngle& angles );
 	void AxisDir( void );
-	static float AxisDelta( int flags, const QAngle &angle1, const QAngle &angle2 );
+	static float AxisDelta( int flags, const QAngle& angle1, const QAngle& angle2 );
 
 	string_t m_sMaster;		// If this button has a master switch, this is the targetname.
-							// A master switch must be of the multisource type. If all 
-							// of the switches in the multisource have been triggered, then
-							// the button will be allowed to operate. Otherwise, it will be
-							// deactivated.
+	// A master switch must be of the multisource type. If all
+	// of the switches in the multisource have been triggered, then
+	// the button will be allowed to operate. Otherwise, it will be
+	// deactivated.
 };
 
 

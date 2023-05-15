@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 
@@ -28,7 +28,7 @@ IMaterialSystemStub* GetStubMaterialSystem()
 
 CMatStubHandler::CMatStubHandler()
 {
-	if ( mat_stub.GetInt() )
+	if( mat_stub.GetInt() )
 	{
 		m_pOldMaterialSystem = materials;
 
@@ -54,7 +54,7 @@ CMatStubHandler::~CMatStubHandler()
 void CMatStubHandler::End()
 {
 	// Put back the original material system pointer.
-	if ( m_pOldMaterialSystem )
+	if( m_pOldMaterialSystem )
 	{
 		materials = m_pOldMaterialSystem;
 		materials->SetInStubMode( false );

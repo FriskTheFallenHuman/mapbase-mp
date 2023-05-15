@@ -33,35 +33,35 @@
 
 CSAchievementsAndStatsInterface::CSAchievementsAndStatsInterface() : AchievementsAndStatsInterface()
 {
-    m_pAchievementAndStatsSummary = NULL;
+	m_pAchievementAndStatsSummary = NULL;
 
-    g_pAchievementsAndStatsInterface = this;
+	g_pAchievementsAndStatsInterface = this;
 }
 
 void CSAchievementsAndStatsInterface::CreatePanel( vgui::Panel* pParent )
 {
-    // Create achievement & stats dialog if not already created
-    if ( !m_pAchievementAndStatsSummary )
-    {
-        m_pAchievementAndStatsSummary = new CAchievementAndStatsSummary(NULL);
-    }
+	// Create achievement & stats dialog if not already created
+	if( !m_pAchievementAndStatsSummary )
+	{
+		m_pAchievementAndStatsSummary = new CAchievementAndStatsSummary( NULL );
+	}
 
-    if ( m_pAchievementAndStatsSummary )
-    {
-        m_pAchievementAndStatsSummary->SetParent(pParent);
-    }
+	if( m_pAchievementAndStatsSummary )
+	{
+		m_pAchievementAndStatsSummary->SetParent( pParent );
+	}
 }
 
 void CSAchievementsAndStatsInterface::DisplayPanel()
 {
-    // Position & show dialog
-    PositionDialog(m_pAchievementAndStatsSummary);
-    m_pAchievementAndStatsSummary->Activate();
+	// Position & show dialog
+	PositionDialog( m_pAchievementAndStatsSummary );
+	m_pAchievementAndStatsSummary->Activate();
 
 	//Make sure the top of the page appears on the screen (for video modes such as 1280x720).
 	int x, y;
 	m_pAchievementAndStatsSummary->GetPos( x, y );
-	if ( y <  0 )
+	if( y <  0 )
 	{
 		m_pAchievementAndStatsSummary->SetPos( x, 0 );
 	}
@@ -69,11 +69,11 @@ void CSAchievementsAndStatsInterface::DisplayPanel()
 
 void CSAchievementsAndStatsInterface::ReleasePanel()
 {
-    // Make sure the BasePanel doesn't try to delete this, because it doesn't really own it.
-    if ( m_pAchievementAndStatsSummary )
-    {
-        m_pAchievementAndStatsSummary->SetParent((vgui::Panel*)NULL);
-    }
+	// Make sure the BasePanel doesn't try to delete this, because it doesn't really own it.
+	if( m_pAchievementAndStatsSummary )
+	{
+		m_pAchievementAndStatsSummary->SetParent( ( vgui::Panel* )NULL );
+	}
 }
 
 #endif

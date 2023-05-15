@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -33,16 +33,16 @@ class CHudBattery : public CHudNumericDisplay, public CHudElement
 	DECLARE_CLASS_SIMPLE( CHudBattery, CHudNumericDisplay );
 
 public:
-	CHudBattery( const char *pElementName );
+	CHudBattery( const char* pElementName );
 	void Init( void );
 	void Reset( void );
 	void VidInit( void );
 	void OnThink( void );
-	void MsgFunc_Battery(bf_read &msg );
+	void MsgFunc_Battery( bf_read& msg );
 	bool ShouldDraw();
-	
+
 private:
-	int		m_iBat;	
+	int		m_iBat;
 	int		m_iNewBat;
 };
 
@@ -52,33 +52,33 @@ DECLARE_HUD_MESSAGE( CHudBattery, Battery );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CHudBattery::CHudBattery( const char *pElementName ) : BaseClass(NULL, "HudSuit"), CHudElement( pElementName )
+CHudBattery::CHudBattery( const char* pElementName ) : BaseClass( NULL, "HudSuit" ), CHudElement( pElementName )
 {
 	SetHiddenBits( HIDEHUD_HEALTH | HIDEHUD_NEEDSUIT );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudBattery::Init( void )
 {
-	HOOK_HUD_MESSAGE( CHudBattery, Battery);
+	HOOK_HUD_MESSAGE( CHudBattery, Battery );
 	Reset();
 	m_iBat		= INIT_BAT;
 	m_iNewBat   = 0;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudBattery::Reset( void )
 {
-	SetLabelText(g_pVGuiLocalize->Find("#Valve_Hud_SUIT"));
-	SetDisplayValue(m_iBat);
+	SetLabelText( g_pVGuiLocalize->Find( "#Valve_Hud_SUIT" ) );
+	SetDisplayValue( m_iBat );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudBattery::VidInit( void )
 {
@@ -87,7 +87,7 @@ void CHudBattery::VidInit( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Save CPU cycles by letting the HUD system early cull
-// costly traversal.  Called per frame, return true if thinking and 
+// costly traversal.  Called per frame, return true if thinking and
 // painting need to occur.
 //-----------------------------------------------------------------------------
 bool CHudBattery::ShouldDraw( void )
@@ -98,50 +98,52 @@ bool CHudBattery::ShouldDraw( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CHudBattery::OnThink( void )
 {
-	if ( m_iBat == m_iNewBat )
-		return;
-
-	if ( !m_iNewBat )
+	if( m_iBat == m_iNewBat )
 	{
-	 	g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitPowerZero");
+		return;
 	}
-	else if ( m_iNewBat < m_iBat )
+
+	if( !m_iNewBat )
+	{
+		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "SuitPowerZero" );
+	}
+	else if( m_iNewBat < m_iBat )
 	{
 		// battery power has decreased, so play the damaged animation
-		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitDamageTaken");
+		g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "SuitDamageTaken" );
 
 		// play an extra animation if we're super low
-		if ( m_iNewBat < 20 )
+		if( m_iNewBat < 20 )
 		{
-			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitArmorLow");
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "SuitArmorLow" );
 		}
 	}
 	else
 	{
 		// battery power has increased (if we had no previous armor, or if we just loaded the game, don't use alert state)
-		if ( m_iBat == INIT_BAT || m_iBat == 0 || m_iNewBat >= 20)
+		if( m_iBat == INIT_BAT || m_iBat == 0 || m_iNewBat >= 20 )
 		{
-			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitPowerIncreasedAbove20");
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "SuitPowerIncreasedAbove20" );
 		}
 		else
 		{
-			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence("SuitPowerIncreasedBelow20");
+			g_pClientMode->GetViewportAnimationController()->StartAnimationSequence( "SuitPowerIncreasedBelow20" );
 		}
 	}
 
 	m_iBat = m_iNewBat;
 
-	SetDisplayValue(m_iBat);
+	SetDisplayValue( m_iBat );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CHudBattery::MsgFunc_Battery( bf_read &msg )
+void CHudBattery::MsgFunc_Battery( bf_read& msg )
 {
 	m_iNewBat = msg.ReadShort();
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,57 +8,57 @@
 #ifndef AI_ACTIVITY_H
 #define AI_ACTIVITY_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #ifdef MAPBASE
 
-// 
-// Mapbase adds many new shared activities, primarily for NPCs.
-// 
-// These are at the bottom of the enum to prevent disruptions in the order of existing activities.
-// 
+	//
+	// Mapbase adds many new shared activities, primarily for NPCs.
+	//
+	// These are at the bottom of the enum to prevent disruptions in the order of existing activities.
+	//
 
-// AR2 ACTIVITY FIX
-// Citizens and Combine soldiers have several activities for the SMG1 and AR2 which differ from each other.
-// Across both NPCs, there are around 20-40 different AR2 animations. Most of these animations are similar to the
-// SMG1 animations, except their hand positions are adjusted to use the AR2 instead.
-// 
-// Unfortunately, the vast majority of the AR2 animations in those models are not declared as real activities in
-// code. The AR2 instead falls back to its SMG1 animation counterparts.
-// This is thought to be an oversight which dates back to late in Half-Life 2's development.
-// 
-// This preprocessor declares those activities and implements them on the AR2. In-game, they work surprisingly well
-// despite presumably never being tested in-game during HL2's development.
-#define AR2_ACTIVITY_FIX 1
+	// AR2 ACTIVITY FIX
+	// Citizens and Combine soldiers have several activities for the SMG1 and AR2 which differ from each other.
+	// Across both NPCs, there are around 20-40 different AR2 animations. Most of these animations are similar to the
+	// SMG1 animations, except their hand positions are adjusted to use the AR2 instead.
+	//
+	// Unfortunately, the vast majority of the AR2 animations in those models are not declared as real activities in
+	// code. The AR2 instead falls back to its SMG1 animation counterparts.
+	// This is thought to be an oversight which dates back to late in Half-Life 2's development.
+	//
+	// This preprocessor declares those activities and implements them on the AR2. In-game, they work surprisingly well
+	// despite presumably never being tested in-game during HL2's development.
+	#define AR2_ACTIVITY_FIX 1
 
-// SHARED COMBINE ACTIVITIES
-// This turns ACT_COMBINE_AR2_ALTFIRE, ACT_COMBINE_THROW_GRENADE, and their new gesture counterparts into shared activities.
-// This is necessary for other NPCs to use them without having to rely on private custom activities declared through the AI definition system.
-#define SHARED_COMBINE_ACTIVITIES 1
+	// SHARED COMBINE ACTIVITIES
+	// This turns ACT_COMBINE_AR2_ALTFIRE, ACT_COMBINE_THROW_GRENADE, and their new gesture counterparts into shared activities.
+	// This is necessary for other NPCs to use them without having to rely on private custom activities declared through the AI definition system.
+	#define SHARED_COMBINE_ACTIVITIES 1
 
-// EXPANDED HL2 WEAPON ACTIVITIES
-// This enables a bunch of new activities for Half-Life 2 weapons, including new 357 animations and readiness activities for pistols.
-#define EXPANDED_HL2_WEAPON_ACTIVITIES 1
+	// EXPANDED HL2 WEAPON ACTIVITIES
+	// This enables a bunch of new activities for Half-Life 2 weapons, including new 357 animations and readiness activities for pistols.
+	#define EXPANDED_HL2_WEAPON_ACTIVITIES 1
 
-// EXPANDED HL2 UNUSED WEAPON ACTIVITIES
-// This enables a bunch of new activities for unused Half-Life 2 weapons, particularly those which exist in the SDK, but are deactivated by default.
-// This essentially just means mods which restore those weapons have the option of using custom activities for them.
-// Mapbase's backup activity system would allow them to fall back to other weapons if the relevant activities do not exist.
-// Also includes activity names for "AR3", "SMG3", and "DUAL_PISTOLS", which were never used in HL2, but may be useful when additional animation sets are needed.
-#define EXPANDED_HL2_UNUSED_WEAPON_ACTIVITIES 1
+	// EXPANDED HL2 UNUSED WEAPON ACTIVITIES
+	// This enables a bunch of new activities for unused Half-Life 2 weapons, particularly those which exist in the SDK, but are deactivated by default.
+	// This essentially just means mods which restore those weapons have the option of using custom activities for them.
+	// Mapbase's backup activity system would allow them to fall back to other weapons if the relevant activities do not exist.
+	// Also includes activity names for "AR3", "SMG3", and "DUAL_PISTOLS", which were never used in HL2, but may be useful when additional animation sets are needed.
+	#define EXPANDED_HL2_UNUSED_WEAPON_ACTIVITIES 1
 
-// EXPANDED NAVIGATION ACTIVITIES
-// This enables some new navigation-related activities.
-#define EXPANDED_NAVIGATION_ACTIVITIES 1
+	// EXPANDED NAVIGATION ACTIVITIES
+	// This enables some new navigation-related activities.
+	#define EXPANDED_NAVIGATION_ACTIVITIES 1
 
-// EXPANDED HL2 COVER ACTIVITIES
-// This enables some new cover-related activities.
-#define EXPANDED_HL2_COVER_ACTIVITIES 1
+	// EXPANDED HL2 COVER ACTIVITIES
+	// This enables some new cover-related activities.
+	#define EXPANDED_HL2_COVER_ACTIVITIES 1
 
-// EXPANDED HL2DM ACTIVITIES
-// This enables some new activities for the HL2:DM set.
-#define EXPANDED_HL2DM_ACTIVITIES 1
+	// EXPANDED HL2DM ACTIVITIES
+	// This enables some new activities for the HL2:DM set.
+	#define EXPANDED_HL2DM_ACTIVITIES 1
 
 #endif
 
@@ -131,7 +131,7 @@ typedef enum
 	ACT_LOOKBACK_LEFT,
 	ACT_COWER,				// FIXME: unused, should be more extreme version of crouching
 	ACT_SMALL_FLINCH,		// FIXME: needed? shouldn't flinching be down with overlays?
-	ACT_BIG_FLINCH,		
+	ACT_BIG_FLINCH,
 	ACT_MELEE_ATTACK1,
 	ACT_MELEE_ATTACK2,
 	ACT_RELOAD,
@@ -161,7 +161,7 @@ typedef enum
 	ACT_RUN_STIMULATED,
 	ACT_RUN_AGITATED,
 	ACT_RUN_STEALTH,
-		
+
 	ACT_IDLE_AIM_RELAXED,
 	ACT_IDLE_AIM_STIMULATED,
 	ACT_IDLE_AIM_AGITATED,
@@ -184,12 +184,12 @@ typedef enum
 	ACT_WALK_HURT,			// limp  (loop)
 	ACT_RUN_HURT,			// limp  (loop)
 	ACT_SPECIAL_ATTACK1,	// very monster specific special attacks.
-	ACT_SPECIAL_ATTACK2,	
+	ACT_SPECIAL_ATTACK2,
 	ACT_COMBAT_IDLE,		// FIXME: unused?  agitated idle.
 	ACT_WALK_SCARED,
 	ACT_RUN_SCARED,
 	ACT_VICTORY_DANCE,		// killed a player, do a victory dance.
-	ACT_DIE_HEADSHOT,		// die, hit in head. 
+	ACT_DIE_HEADSHOT,		// die, hit in head.
 	ACT_DIE_CHESTSHOT,		// die, hit in chest
 	ACT_DIE_GUTSHOT,		// die, hit in gut
 	ACT_DIE_BACKSHOT,		// die, hit in back
@@ -204,7 +204,7 @@ typedef enum
 
 	ACT_IDLE_ON_FIRE,		// ON FIRE animations
 	ACT_WALK_ON_FIRE,
-	ACT_RUN_ON_FIRE,		
+	ACT_RUN_ON_FIRE,
 
 	ACT_RAPPEL_LOOP,		// Rappel down a rope!
 
@@ -278,9 +278,9 @@ typedef enum
 	ACT_VM_PULLPIN,
 	ACT_VM_PRIMARYATTACK,		// fire
 	ACT_VM_SECONDARYATTACK,		// alt. fire
-	ACT_VM_RELOAD,			
-	ACT_VM_RELOAD_START,			
-	ACT_VM_RELOAD_FINISH,			
+	ACT_VM_RELOAD,
+	ACT_VM_RELOAD_START,
+	ACT_VM_RELOAD_FINISH,
 	ACT_VM_DRYFIRE,				// fire with no ammo loaded.
 	ACT_VM_HITLEFT,				// bludgeon, swing to left - hit (primary attk)
 	ACT_VM_HITLEFT2,			// bludgeon, swing to left - hit (secondary attk)
@@ -306,7 +306,7 @@ typedef enum
 	ACT_VM_RECOIL3,
 	ACT_VM_PICKUP,
 	ACT_VM_RELEASE,
-	
+
 	ACT_VM_ATTACH_SILENCER,
 	ACT_VM_DETACH_SILENCER,
 
@@ -341,10 +341,10 @@ typedef enum
 	ACT_SLAM_STICKWALL_ND_ATTACH2,
 	ACT_SLAM_STICKWALL_DETONATE,
 	ACT_SLAM_STICKWALL_DETONATOR_HOLSTER,
-	ACT_SLAM_STICKWALL_DRAW, 
-	ACT_SLAM_STICKWALL_ND_DRAW, 
-	ACT_SLAM_STICKWALL_TO_THROW, 
-	ACT_SLAM_STICKWALL_TO_THROW_ND, 
+	ACT_SLAM_STICKWALL_DRAW,
+	ACT_SLAM_STICKWALL_ND_DRAW,
+	ACT_SLAM_STICKWALL_TO_THROW,
+	ACT_SLAM_STICKWALL_TO_THROW_ND,
 	ACT_SLAM_STICKWALL_TO_TRIPMINE_ND,
 	ACT_SLAM_THROW_IDLE,
 	ACT_SLAM_THROW_ND_IDLE,
@@ -352,21 +352,21 @@ typedef enum
 	ACT_SLAM_THROW_THROW2,
 	ACT_SLAM_THROW_THROW_ND,
 	ACT_SLAM_THROW_THROW_ND2,
-	ACT_SLAM_THROW_DRAW, 
+	ACT_SLAM_THROW_DRAW,
 	ACT_SLAM_THROW_ND_DRAW,
-	ACT_SLAM_THROW_TO_STICKWALL, 
-	ACT_SLAM_THROW_TO_STICKWALL_ND, 
+	ACT_SLAM_THROW_TO_STICKWALL,
+	ACT_SLAM_THROW_TO_STICKWALL_ND,
 	ACT_SLAM_THROW_DETONATE,
 	ACT_SLAM_THROW_DETONATOR_HOLSTER,
 	ACT_SLAM_THROW_TO_TRIPMINE_ND,
 	ACT_SLAM_TRIPMINE_IDLE,
-	ACT_SLAM_TRIPMINE_DRAW, 
-	ACT_SLAM_TRIPMINE_ATTACH, 
-	ACT_SLAM_TRIPMINE_ATTACH2, 
+	ACT_SLAM_TRIPMINE_DRAW,
+	ACT_SLAM_TRIPMINE_ATTACH,
+	ACT_SLAM_TRIPMINE_ATTACH2,
 	ACT_SLAM_TRIPMINE_TO_STICKWALL_ND,
 	ACT_SLAM_TRIPMINE_TO_THROW_ND,
-	ACT_SLAM_DETONATOR_IDLE, 
-	ACT_SLAM_DETONATOR_DRAW, 
+	ACT_SLAM_DETONATOR_IDLE,
+	ACT_SLAM_DETONATOR_DRAW,
 	ACT_SLAM_DETONATOR_DETONATE,
 	ACT_SLAM_DETONATOR_HOLSTER,
 	ACT_SLAM_DETONATOR_STICKWALL_DRAW,
@@ -385,7 +385,7 @@ typedef enum
 	ACT_SMG2_DRYFIRE2,
 	ACT_SMG2_TOAUTO,
 	ACT_SMG2_TOBURST,
-	
+
 	// Physcannon special activities
 	ACT_PHYSCANNON_UPGRADE,
 
@@ -471,22 +471,22 @@ typedef enum
 
 	// Manned guns
 	ACT_IDLE_MANNEDGUN,
-		
+
 	// Melee weapon
 	ACT_IDLE_MELEE,
 	ACT_IDLE_ANGRY_MELEE,
 
 	// RPG activities
 	ACT_IDLE_RPG_RELAXED,
-	ACT_IDLE_RPG, 
+	ACT_IDLE_RPG,
 	ACT_IDLE_ANGRY_RPG,
-	ACT_COVER_LOW_RPG, 
+	ACT_COVER_LOW_RPG,
 	ACT_WALK_RPG,
-	ACT_RUN_RPG, 
-	ACT_WALK_CROUCH_RPG, 
-	ACT_RUN_CROUCH_RPG, 
-	ACT_WALK_RPG_RELAXED, 
-	ACT_RUN_RPG_RELAXED, 
+	ACT_RUN_RPG,
+	ACT_WALK_CROUCH_RPG,
+	ACT_RUN_CROUCH_RPG,
+	ACT_WALK_RPG_RELAXED,
+	ACT_RUN_RPG_RELAXED,
 
 	ACT_WALK_RIFLE,
 	ACT_WALK_AIM_RIFLE,
@@ -543,9 +543,9 @@ typedef enum
 
 	// For NPCs being lifted/eaten by barnacles:
 	// being swallowed by a barnacle
-	ACT_DIE_BARNACLE_SWALLOW,  
-	 // being lifted by a barnacle
-	ACT_GESTURE_BARNACLE_STRANGLE, 
+	ACT_DIE_BARNACLE_SWALLOW,
+	// being lifted by a barnacle
+	ACT_GESTURE_BARNACLE_STRANGLE,
 
 	ACT_PHYSCANNON_DETACH,	// An activity to be played if we're picking this up with the physcannon
 	ACT_PHYSCANNON_ANIMATE, // An activity to be played by an object being picked up with the physcannon, but has different behavior to DETACH
@@ -698,16 +698,16 @@ typedef enum
 	ACT_PLAYER_CROUCH_WALK_FIRE,
 	ACT_PLAYER_WALK_FIRE,
 	ACT_PLAYER_RUN_FIRE,
-	
+
 	ACT_IDLETORUN,
 	ACT_RUNTOIDLE,
-	
+
 
 //===========================
 // DoD Specific Activities
 //===========================
 	ACT_SPRINT,
-	
+
 	ACT_GET_DOWN_STAND,
 	ACT_GET_UP_STAND,
 	ACT_GET_DOWN_CROUCH,
@@ -720,7 +720,7 @@ typedef enum
 	ACT_DEEPIDLE3,
 	ACT_DEEPIDLE4,
 
-	ACT_VM_RELOAD_DEPLOYED, 
+	ACT_VM_RELOAD_DEPLOYED,
 	ACT_VM_RELOAD_IDLE,
 
 	ACT_VM_DRAW_DEPLOYED,
@@ -789,7 +789,7 @@ typedef enum
 	ACT_VM_PRIMARYATTACK_DEPLOYED,
 	ACT_VM_PRIMARYATTACK_DEPLOYED_8,
 	ACT_VM_PRIMARYATTACK_DEPLOYED_7,
-	ACT_VM_PRIMARYATTACK_DEPLOYED_6, 
+	ACT_VM_PRIMARYATTACK_DEPLOYED_6,
 	ACT_VM_PRIMARYATTACK_DEPLOYED_5,
 	ACT_VM_PRIMARYATTACK_DEPLOYED_4,
 	ACT_VM_PRIMARYATTACK_DEPLOYED_3,
@@ -809,7 +809,7 @@ typedef enum
 	ACT_DOD_PRIMARYATTACK_DEPLOYED,
 	ACT_DOD_PRIMARYATTACK_PRONE_DEPLOYED,
 	ACT_DOD_RELOAD_DEPLOYED,
-	ACT_DOD_RELOAD_PRONE_DEPLOYED,	
+	ACT_DOD_RELOAD_PRONE_DEPLOYED,
 	ACT_DOD_PRIMARYATTACK_PRONE,
 	ACT_DOD_SECONDARYATTACK_PRONE,
 	ACT_DOD_RELOAD_CROUCH,
@@ -1295,7 +1295,7 @@ typedef enum
 	ACT_HL2MP_GESTURE_RANGE_ATTACK,
 	ACT_HL2MP_GESTURE_RELOAD,
 	ACT_HL2MP_JUMP,
-	
+
 	ACT_HL2MP_IDLE_PISTOL,
 	ACT_HL2MP_RUN_PISTOL,
 	ACT_HL2MP_IDLE_CROUCH_PISTOL,
@@ -1474,8 +1474,8 @@ typedef enum
 
 	ACT_MP_RELOAD_STAND_PRIMARY_2,
 	ACT_MP_RELOAD_STAND_PRIMARY_LOOP_2,
-	ACT_MP_RELOAD_STAND_PRIMARY_END_2,	
-	ACT_MP_RELOAD_CROUCH_PRIMARY_2,	
+	ACT_MP_RELOAD_STAND_PRIMARY_END_2,
+	ACT_MP_RELOAD_CROUCH_PRIMARY_2,
 	ACT_MP_RELOAD_CROUCH_PRIMARY_LOOP_2,
 	ACT_MP_RELOAD_CROUCH_PRIMARY_END_2,
 	ACT_MP_RELOAD_SWIM_PRIMARY_2,
@@ -1652,7 +1652,7 @@ typedef enum
 	ACT_MP_ATTACK_SWIM_ITEM2,
 	ACT_MP_ATTACK_AIRWALK_ITEM2,
 
-	ACT_MP_ATTACK_STAND_HARD_ITEM2,	
+	ACT_MP_ATTACK_STAND_HARD_ITEM2,
 	ACT_MP_ATTACK_CROUCH_HARD_ITEM2,
 	ACT_MP_ATTACK_SWIM_HARD_ITEM2,
 
@@ -1905,18 +1905,18 @@ typedef enum
 	ACT_PRIMARY_VM_PULLBACK,
 	ACT_PRIMARY_VM_PRIMARYATTACK,
 	ACT_PRIMARY_VM_SECONDARYATTACK,
-	ACT_PRIMARY_VM_RELOAD,			
-	ACT_PRIMARY_RELOAD_START,			
-	ACT_PRIMARY_RELOAD_FINISH,			
-	ACT_PRIMARY_VM_DRYFIRE,		
+	ACT_PRIMARY_VM_RELOAD,
+	ACT_PRIMARY_RELOAD_START,
+	ACT_PRIMARY_RELOAD_FINISH,
+	ACT_PRIMARY_VM_DRYFIRE,
 	ACT_PRIMARY_VM_IDLE_TO_LOWERED,
 	ACT_PRIMARY_VM_IDLE_LOWERED,
 	ACT_PRIMARY_VM_LOWERED_TO_IDLE,
 	ACT_PRIMARY_VM_RELOAD_2,
-	ACT_PRIMARY_RELOAD_START_2,		
+	ACT_PRIMARY_RELOAD_START_2,
 	ACT_PRIMARY_RELOAD_FINISH_2,
 	ACT_PRIMARY_VM_RELOAD_3,
-	ACT_PRIMARY_RELOAD_START_3,		
+	ACT_PRIMARY_RELOAD_START_3,
 	ACT_PRIMARY_RELOAD_FINISH_3,
 	ACT_PRIMARY_VM_PRIMARYATTACK_3,
 
@@ -1926,11 +1926,11 @@ typedef enum
 	ACT_SECONDARY_VM_PULLBACK,
 	ACT_SECONDARY_VM_PRIMARYATTACK,
 	ACT_SECONDARY_VM_SECONDARYATTACK,
-	ACT_SECONDARY_VM_RELOAD,			
+	ACT_SECONDARY_VM_RELOAD,
 	ACT_SECONDARY_RELOAD_START,
 	ACT_SECONDARY_RELOAD_FINISH,
-	ACT_SECONDARY_VM_RELOAD2,			
-	ACT_SECONDARY_VM_DRYFIRE,		
+	ACT_SECONDARY_VM_RELOAD2,
+	ACT_SECONDARY_VM_DRYFIRE,
 	ACT_SECONDARY_VM_IDLE_TO_LOWERED,
 	ACT_SECONDARY_VM_IDLE_LOWERED,
 	ACT_SECONDARY_VM_LOWERED_TO_IDLE,
@@ -1946,13 +1946,13 @@ typedef enum
 	ACT_MELEE_VM_PULLBACK,
 	ACT_MELEE_VM_PRIMARYATTACK,
 	ACT_MELEE_VM_SECONDARYATTACK,
-	ACT_MELEE_VM_RELOAD,			
-	ACT_MELEE_VM_DRYFIRE,		
+	ACT_MELEE_VM_RELOAD,
+	ACT_MELEE_VM_DRYFIRE,
 	ACT_MELEE_VM_IDLE_TO_LOWERED,
 	ACT_MELEE_VM_IDLE_LOWERED,
 	ACT_MELEE_VM_LOWERED_TO_IDLE,
 	ACT_MELEE_VM_STUN,
-	ACT_MELEE_VM_HITCENTER,		
+	ACT_MELEE_VM_HITCENTER,
 	ACT_MELEE_VM_SWINGHARD,
 
 	ACT_PDA_VM_DRAW,
@@ -1961,8 +1961,8 @@ typedef enum
 	ACT_PDA_VM_PULLBACK,
 	ACT_PDA_VM_PRIMARYATTACK,
 	ACT_PDA_VM_SECONDARYATTACK,
-	ACT_PDA_VM_RELOAD,			
-	ACT_PDA_VM_DRYFIRE,		
+	ACT_PDA_VM_RELOAD,
+	ACT_PDA_VM_DRYFIRE,
 	ACT_PDA_VM_IDLE_TO_LOWERED,
 	ACT_PDA_VM_IDLE_LOWERED,
 	ACT_PDA_VM_LOWERED_TO_IDLE,
@@ -1981,13 +1981,13 @@ typedef enum
 	ACT_ITEM1_VM_PULLBACK,
 	ACT_ITEM1_VM_PRIMARYATTACK,
 	ACT_ITEM1_VM_SECONDARYATTACK,
-	ACT_ITEM1_VM_RELOAD,			
-	ACT_ITEM1_VM_DRYFIRE,		
+	ACT_ITEM1_VM_RELOAD,
+	ACT_ITEM1_VM_DRYFIRE,
 	ACT_ITEM1_VM_IDLE_TO_LOWERED,
 	ACT_ITEM1_VM_IDLE_LOWERED,
 	ACT_ITEM1_VM_LOWERED_TO_IDLE,
-	ACT_ITEM1_RELOAD_START,			
-	ACT_ITEM1_RELOAD_FINISH,			
+	ACT_ITEM1_RELOAD_START,
+	ACT_ITEM1_RELOAD_FINISH,
 	ACT_ITEM1_VM_HITCENTER,
 	ACT_ITEM1_VM_SWINGHARD,
 	ACT_ITEM1_BACKSTAB_VM_UP,
@@ -2001,8 +2001,8 @@ typedef enum
 	ACT_ITEM2_VM_PULLBACK,
 	ACT_ITEM2_VM_PRIMARYATTACK,
 	ACT_ITEM2_VM_SECONDARYATTACK,
-	ACT_ITEM2_VM_RELOAD,			
-	ACT_ITEM2_VM_DRYFIRE,		
+	ACT_ITEM2_VM_RELOAD,
+	ACT_ITEM2_VM_DRYFIRE,
 	ACT_ITEM2_VM_IDLE_TO_LOWERED,
 	ACT_ITEM2_VM_IDLE_LOWERED,
 	ACT_ITEM2_VM_LOWERED_TO_IDLE,
@@ -2023,8 +2023,8 @@ typedef enum
 	ACT_ITEM3_VM_PULLBACK,
 	ACT_ITEM3_VM_PRIMARYATTACK,
 	ACT_ITEM3_VM_SECONDARYATTACK,
-	ACT_ITEM3_VM_RELOAD,			
-	ACT_ITEM3_VM_DRYFIRE,		
+	ACT_ITEM3_VM_RELOAD,
+	ACT_ITEM3_VM_DRYFIRE,
 	ACT_ITEM3_VM_IDLE_TO_LOWERED,
 	ACT_ITEM3_VM_IDLE_LOWERED,
 	ACT_ITEM3_VM_LOWERED_TO_IDLE,
@@ -2041,15 +2041,15 @@ typedef enum
 	ACT_SECONDARY2_VM_PULLBACK,
 	ACT_SECONDARY2_VM_PRIMARYATTACK,
 	ACT_SECONDARY2_VM_SECONDARY2ATTACK,
-	ACT_SECONDARY2_VM_RELOAD,			
+	ACT_SECONDARY2_VM_RELOAD,
 	ACT_SECONDARY2_RELOAD_START,
 	ACT_SECONDARY2_RELOAD_FINISH,
-	ACT_SECONDARY2_VM_RELOAD2,			
-	ACT_SECONDARY2_VM_DRYFIRE,		
+	ACT_SECONDARY2_VM_RELOAD2,
+	ACT_SECONDARY2_VM_DRYFIRE,
 	ACT_SECONDARY2_VM_IDLE_TO_LOWERED,
 	ACT_SECONDARY2_VM_IDLE_LOWERED,
 	ACT_SECONDARY2_VM_LOWERED_TO_IDLE,
-	
+
 	ACT_BACKSTAB_VM_UP,
 	ACT_BACKSTAB_VM_DOWN,
 	ACT_BACKSTAB_VM_IDLE,
@@ -2119,13 +2119,13 @@ typedef enum
 	ACT_MELEE_ALLCLASS_VM_PULLBACK,
 	ACT_MELEE_ALLCLASS_VM_PRIMARYATTACK,
 	ACT_MELEE_ALLCLASS_VM_SECONDARYATTACK,
-	ACT_MELEE_ALLCLASS_VM_RELOAD,			
-	ACT_MELEE_ALLCLASS_VM_DRYFIRE,		
+	ACT_MELEE_ALLCLASS_VM_RELOAD,
+	ACT_MELEE_ALLCLASS_VM_DRYFIRE,
 	ACT_MELEE_ALLCLASS_VM_IDLE_TO_LOWERED,
 	ACT_MELEE_ALLCLASS_VM_IDLE_LOWERED,
 	ACT_MELEE_ALLCLASS_VM_LOWERED_TO_IDLE,
 	ACT_MELEE_ALLCLASS_VM_STUN,
-	ACT_MELEE_ALLCLASS_VM_HITCENTER,		
+	ACT_MELEE_ALLCLASS_VM_HITCENTER,
 	ACT_MELEE_ALLCLASS_VM_SWINGHARD,
 
 	// BOMB activities for TD mode.
@@ -2142,8 +2142,8 @@ typedef enum
 	ACT_VM_PULLBACK_QRL,
 	ACT_VM_PRIMARYATTACK_QRL,
 	ACT_VM_RELOAD_QRL,
-	ACT_VM_RELOAD_START_QRL,			
-	ACT_VM_RELOAD_FINISH_QRL,	
+	ACT_VM_RELOAD_START_QRL,
+	ACT_VM_RELOAD_FINISH_QRL,
 
 	// Third person anims for the Soldier Quake RL
 	ACT_MP_RELOAD_STAND_PRIMARY3,
@@ -2165,8 +2165,8 @@ typedef enum
 
 	// Spell Animations
 	ACT_SPELL_VM_DRAW,
-	ACT_SPELL_VM_IDLE, 
-	ACT_SPELL_VM_ARM, 
+	ACT_SPELL_VM_IDLE,
+	ACT_SPELL_VM_ARM,
 	ACT_SPELL_VM_FIRE,
 
 	// Bread Monster Sapper
@@ -2596,7 +2596,7 @@ typedef enum
 	ACT_CLIMB_MOUNT_BOTTOM,
 	ACT_CLIMB_DISMOUNT_BOTTOM,
 #endif
-	
+
 #if EXPANDED_HL2_COVER_ACTIVITIES
 	// Crouch Cover Medium
 	ACT_RANGE_ATTACK1_MED,

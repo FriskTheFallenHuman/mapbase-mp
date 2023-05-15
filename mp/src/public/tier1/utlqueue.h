@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef UTLQUEUE_H
 #define UTLQUEUE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "utlmemory.h"
@@ -18,21 +18,21 @@
 enum QueueIter_t { QUEUE_ITERATOR_INVALID = 0xffffffff };
 
 // T is the type stored in the queue
-template< class T, class M = CUtlMemory< T > > 
+template< class T, class M = CUtlMemory< T > >
 class CUtlQueue
 {
 public:
 
 	CUtlQueue( int growSize = 0, int initSize = 0 );
-	CUtlQueue( T *pMemory, int numElements );
+	CUtlQueue( T* pMemory, int numElements );
 
 	// return the item from the front of the queue and delete it
 	T RemoveAtHead();
-	bool RemoveAtHead( T &removedElement );
+	bool RemoveAtHead( T& removedElement );
 
 	// return the item from the end of the queue and delete it
 	T RemoveAtTail();
-	bool RemoveAtTail( T &removedElement );
+	bool RemoveAtTail( T& removedElement );
 
 	// return item at the front of the queue
 	T const& Head() const;
@@ -40,7 +40,7 @@ public:
 	T const& Tail() const;
 
 	// Add a new item to the end of the queue
-	void	Insert( T const &element );
+	void	Insert( T const& element );
 
 	// checks if an element of this value already exists on the stack, returns true if it does
 	bool		Check( T const element ) const;
@@ -102,7 +102,7 @@ inline CUtlQueue<T, M>::CUtlQueue( int growSize, int initSize ) :
 }
 
 template< class T, class M >
-inline CUtlQueue<T, M>::CUtlQueue( T *pMemory, int numElements ) : 
+inline CUtlQueue<T, M>::CUtlQueue( T* pMemory, int numElements ) :
 	m_memory( pMemory, numElements ), m_head( QUEUE_ITERATOR_INVALID ), m_tail( QUEUE_ITERATOR_INVALID )
 {
 }
@@ -116,10 +116,10 @@ inline T CUtlQueue<T, M>::RemoveAtHead()
 }
 
 template <class T, class M>
-inline bool CUtlQueue<T, M>::RemoveAtHead( T &removedElement )
+inline bool CUtlQueue<T, M>::RemoveAtHead( T& removedElement )
 {
 	Assert( m_head != QUEUE_ITERATOR_INVALID );
-	if ( m_head == QUEUE_ITERATOR_INVALID )
+	if( m_head == QUEUE_ITERATOR_INVALID )
 	{
 		Construct( &removedElement );
 		return false;
@@ -128,7 +128,7 @@ inline bool CUtlQueue<T, M>::RemoveAtHead( T &removedElement )
 	QueueIter_t it = m_head;
 	removedElement = m_memory[ it ];
 	Destruct( &m_memory[ it ] );
-	if ( m_head == m_tail )
+	if( m_head == m_tail )
 	{
 		m_head = m_tail = QUEUE_ITERATOR_INVALID;
 	}
@@ -148,10 +148,10 @@ inline T CUtlQueue<T, M>::RemoveAtTail()
 }
 
 template <class T, class M>
-inline bool CUtlQueue<T, M>::RemoveAtTail( T &removedElement )
+inline bool CUtlQueue<T, M>::RemoveAtTail( T& removedElement )
 {
 	Assert( m_tail != QUEUE_ITERATOR_INVALID );
-	if ( m_tail == QUEUE_ITERATOR_INVALID )
+	if( m_tail == QUEUE_ITERATOR_INVALID )
 	{
 		Construct( &removedElement );
 		return false;
@@ -159,7 +159,7 @@ inline bool CUtlQueue<T, M>::RemoveAtTail( T &removedElement )
 
 	removedElement = m_memory[ m_tail ];
 	Destruct( &m_memory[ m_tail ] );
-	if ( m_head == m_tail )
+	if( m_head == m_tail )
 	{
 		m_head = m_tail = QUEUE_ITERATOR_INVALID;
 	}
@@ -174,7 +174,7 @@ template <class T, class M>
 inline T const& CUtlQueue<T, M>::Head() const
 {
 	Assert( m_head != QUEUE_ITERATOR_INVALID );
-	if ( m_head == QUEUE_ITERATOR_INVALID )
+	if( m_head == QUEUE_ITERATOR_INVALID )
 	{
 		static T dummy;
 		return dummy;
@@ -187,7 +187,7 @@ template <class T, class M>
 inline T const& CUtlQueue<T, M>::Tail() const
 {
 	Assert( m_tail != QUEUE_ITERATOR_INVALID );
-	if ( m_tail == QUEUE_ITERATOR_INVALID )
+	if( m_tail == QUEUE_ITERATOR_INVALID )
 	{
 		static T dummy;
 		return dummy;
@@ -197,9 +197,9 @@ inline T const& CUtlQueue<T, M>::Tail() const
 }
 
 template <class T, class M>
-void CUtlQueue<T, M>::Insert( T const &element )
+void CUtlQueue<T, M>::Insert( T const& element )
 {
-	if ( m_tail == QUEUE_ITERATOR_INVALID )
+	if( m_tail == QUEUE_ITERATOR_INVALID )
 	{
 		// empty
 		m_memory.EnsureCapacity( 1 );
@@ -209,7 +209,7 @@ void CUtlQueue<T, M>::Insert( T const &element )
 	{
 		// non-empty
 		QueueIter_t nextTail = Next_Unchecked( m_tail );
-		if ( nextTail == m_head ) // if non-empty, and growing by 1 appears to make the queue of length 1, then we were already full before the Insert
+		if( nextTail == m_head )  // if non-empty, and growing by 1 appears to make the queue of length 1, then we were already full before the Insert
 		{
 			int nOldAllocCount = m_memory.NumAllocated();
 			m_memory.Grow();
@@ -218,7 +218,7 @@ void CUtlQueue<T, M>::Insert( T const &element )
 
 			nextTail = Next_Unchecked( m_tail ); // if nextTail was 0, then it now should be nOldAllocCount
 
-			if ( m_head != QueueIter_t( 0 ) )
+			if( m_head != QueueIter_t( 0 ) )
 			{
 				// if the queue wraps around the end of m_memory, move the part at the end of memory to the new end of memory
 				Q_memmove( &m_memory[ m_head + nGrowAmount ], &m_memory[ m_head ], ( nOldAllocCount - m_head ) * sizeof( T ) );
@@ -237,10 +237,12 @@ void CUtlQueue<T, M>::Insert( T const &element )
 template <class T, class M>
 bool CUtlQueue<T, M>::Check( T const element ) const
 {
-	for ( QueueIter_t it = First(); it != QUEUE_ITERATOR_INVALID; it = Next( it ) )
+	for( QueueIter_t it = First(); it != QUEUE_ITERATOR_INVALID; it = Next( it ) )
 	{
-		if ( m_memory[ it ] == element )
+		if( m_memory[ it ] == element )
+		{
 			return true;
+		}
 	}
 	return false;
 }
@@ -254,15 +256,21 @@ QueueIter_t CUtlQueue<T, M>::First() const
 template <class T, class M>
 QueueIter_t CUtlQueue<T, M>::Next( QueueIter_t it ) const
 {
-	if ( it == QUEUE_ITERATOR_INVALID )
+	if( it == QUEUE_ITERATOR_INVALID )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
-	if ( it == m_tail )
+	if( it == m_tail )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
 	Assert( IsValid( it ) );
-	if ( !IsValid( it ) )
+	if( !IsValid( it ) )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
 	return Next_Unchecked( it );
 }
@@ -276,15 +284,21 @@ QueueIter_t CUtlQueue<T, M>::Last() const
 template <class T, class M>
 QueueIter_t CUtlQueue<T, M>::Previous( QueueIter_t it ) const
 {
-	if ( it == QUEUE_ITERATOR_INVALID )
+	if( it == QUEUE_ITERATOR_INVALID )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
-	if ( it == m_head )
+	if( it == m_head )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
 	Assert( IsValid( it ) );
-	if ( !IsValid( it ) )
+	if( !IsValid( it ) )
+	{
 		return QUEUE_ITERATOR_INVALID;
+	}
 
 	return Previous_Unchecked( it );
 }
@@ -304,14 +318,20 @@ QueueIter_t CUtlQueue<T, M>::Previous_Unchecked( QueueIter_t it ) const
 template <class T, class M>
 bool CUtlQueue<T, M>::IsValid( QueueIter_t it ) const
 {
-	if ( it == QUEUE_ITERATOR_INVALID )
+	if( it == QUEUE_ITERATOR_INVALID )
+	{
 		return false;
+	}
 
-	if ( m_head == QUEUE_ITERATOR_INVALID )
+	if( m_head == QUEUE_ITERATOR_INVALID )
+	{
 		return false;
+	}
 
-	if ( m_head <= m_tail )
+	if( m_head <= m_tail )
+	{
 		return it >= m_head && it <= m_tail;
+	}
 
 	return ( it >= m_head && it < m_memory.Count() ) || ( it >= 0 && it <= m_tail );
 }
@@ -320,7 +340,7 @@ template <class T, class M>
 T const& CUtlQueue<T, M>::Element( QueueIter_t it ) const
 {
 	Assert( it != QUEUE_ITERATOR_INVALID );
-	if ( it == QUEUE_ITERATOR_INVALID )
+	if( it == QUEUE_ITERATOR_INVALID )
 	{
 		static T dummy;
 		return dummy;
@@ -333,15 +353,17 @@ T const& CUtlQueue<T, M>::Element( QueueIter_t it ) const
 template <class T, class M>
 int CUtlQueue<T, M>::Count() const
 {
-	if ( m_head == QUEUE_ITERATOR_INVALID )
+	if( m_head == QUEUE_ITERATOR_INVALID )
 	{
 		Assert( m_tail == QUEUE_ITERATOR_INVALID );
 		return 0;
 	}
 	Assert( m_tail != QUEUE_ITERATOR_INVALID );
 
-	if ( m_head <= m_tail )
+	if( m_head <= m_tail )
+	{
 		return m_tail + 1 - m_head;
+	}
 
 	return m_tail + 1 - m_head + m_memory.Count();
 }
@@ -374,9 +396,16 @@ void CUtlQueue<T, M>::Purge()
 struct Data_t
 {
 	Data_t( int i = 0xffffffff ) : m_id( i ) {}
-	Data_t( const Data_t &that ) : m_id( that.m_id ) {}
-	~Data_t() { m_id = 0xdddddddd; }
-	Data_t &operator=( const Data_t &that ) { m_id = that.m_id; return *this; }
+	Data_t( const Data_t& that ) : m_id( that.m_id ) {}
+	~Data_t()
+	{
+		m_id = 0xdddddddd;
+	}
+	Data_t& operator=( const Data_t& that )
+	{
+		m_id = that.m_id;
+		return *this;
+	}
 
 	int m_id;
 };
@@ -385,19 +414,19 @@ inline void CUtlQueue_Test()
 {
 	CUtlQueue< Data_t > queue;
 
-	for ( int n = 1; n < 100; ++n )
+	for( int n = 1; n < 100; ++n )
 	{
 		Assert( queue.Count() == 0 );
 		Assert( queue.m_head == QUEUE_ITERATOR_INVALID );
 		Assert( queue.m_tail == QUEUE_ITERATOR_INVALID );
 
 		int w = rand() % n;
-		for ( int i = 0; i < w; ++i )
+		for( int i = 0; i < w; ++i )
 		{
 			queue.Insert( Data_t( i ) );
 		}
 
-		if ( w > 0 )
+		if( w > 0 )
 		{
 			Assert( queue.Head().m_id == queue.First() );
 			Assert( queue.Tail().m_id == queue.Last() );
@@ -406,15 +435,15 @@ inline void CUtlQueue_Test()
 		}
 		Assert( queue.Count() == w );
 
-		for ( int j = 0; j < n; ++j )
+		for( int j = 0; j < n; ++j )
 		{
 			queue.Insert( Data_t( w + j ) );
 
-			if ( j == 0 )
+			if( j == 0 )
 			{
 				Assert( queue.Count() == w + j + 1 );
 
-				for ( int i = 0; i < w; ++i )
+				for( int i = 0; i < w; ++i )
 				{
 					queue.RemoveAtHead();
 				}
@@ -426,23 +455,23 @@ inline void CUtlQueue_Test()
 			Assert( queue.m_tail != QUEUE_ITERATOR_INVALID );
 
 			int id = queue.Head().m_id % queue.m_memory.Count();
-			for ( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
+			for( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
 			{
 				Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 				id = ( id + 1 ) % queue.m_memory.Count();
 			}
 
 			id = queue.Tail().m_id % queue.m_memory.Count();
-			for ( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
+			for( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
 			{
 				Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 				id = ( id + queue.m_memory.Count() - 1 ) % queue.m_memory.Count();
 			}
 
-			for ( int i = 0; i < j; ++i )
+			for( int i = 0; i < j; ++i )
 			{
 				int id = queue.m_memory[ i ].m_id;
-				if ( queue.IsValid( QueueIter_t( i ) ) )
+				if( queue.IsValid( QueueIter_t( i ) ) )
 				{
 					Assert( ( id & 0xff000000 ) == 0 );
 				}
@@ -455,7 +484,7 @@ inline void CUtlQueue_Test()
 
 		Assert( queue.Count() == n );
 #if 0
-		for ( int j = 0; j < n; ++j )
+		for( int j = 0; j < n; ++j )
 		{
 			Assert( queue.m_head != QUEUE_ITERATOR_INVALID );
 			Assert( queue.m_tail != QUEUE_ITERATOR_INVALID );
@@ -466,27 +495,27 @@ inline void CUtlQueue_Test()
 
 			Assert( queue.Count() == n - j - 1 );
 
-			if ( queue.Count() > 0 )
+			if( queue.Count() > 0 )
 			{
 				int id = queue.Head().m_id % queue.m_memory.Count();
-				for ( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
+				for( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
 				{
 					Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 					id = ( id + 1 ) % queue.m_memory.Count();
 				}
 
 				id = queue.Tail().m_id % queue.m_memory.Count();
-				for ( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
+				for( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
 				{
 					Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 					id = ( id + queue.m_memory.Count() - 1 ) % queue.m_memory.Count();
 				}
 			}
 
-			for ( int i = 0; i < j; ++i )
+			for( int i = 0; i < j; ++i )
 			{
 				int id = queue.m_memory[ i ].m_id;
-				if ( queue.IsValid( QueueIter_t( i ) ) )
+				if( queue.IsValid( QueueIter_t( i ) ) )
 				{
 					Assert( ( id & 0xff000000 ) == 0 );
 				}
@@ -497,7 +526,7 @@ inline void CUtlQueue_Test()
 			}
 		}
 #else
-		for ( int j = n - 1; j >= 0; --j )
+		for( int j = n - 1; j >= 0; --j )
 		{
 			Assert( queue.m_head != QUEUE_ITERATOR_INVALID );
 			Assert( queue.m_tail != QUEUE_ITERATOR_INVALID );
@@ -508,27 +537,27 @@ inline void CUtlQueue_Test()
 
 			Assert( queue.Count() == j );
 
-			if ( queue.Count() > 0 )
+			if( queue.Count() > 0 )
 			{
 				int id = queue.Head().m_id % queue.m_memory.Count();
-				for ( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
+				for( QueueIter_t it = queue.First(); it != QUEUE_ITERATOR_INVALID; it = queue.Next( it ) )
 				{
 					Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 					id = ( id + 1 ) % queue.m_memory.Count();
 				}
 
 				id = queue.Tail().m_id % queue.m_memory.Count();
-				for ( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
+				for( QueueIter_t it = queue.Last(); it != QUEUE_ITERATOR_INVALID; it = queue.Previous( it ) )
 				{
 					Assert( queue.Element( it ).m_id % queue.m_memory.Count() == id );
 					id = ( id + queue.m_memory.Count() - 1 ) % queue.m_memory.Count();
 				}
 			}
 
-			for ( int i = 0; i < j; ++i )
+			for( int i = 0; i < j; ++i )
 			{
 				int id = queue.m_memory[ i ].m_id;
-				if ( queue.IsValid( QueueIter_t( i ) ) )
+				if( queue.IsValid( QueueIter_t( i ) ) )
 				{
 					Assert( ( id & 0xff000000 ) == 0 );
 				}

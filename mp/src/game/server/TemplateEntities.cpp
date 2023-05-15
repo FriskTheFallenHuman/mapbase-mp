@@ -29,41 +29,41 @@
 ConVar template_debug( "template_debug", "0" );
 
 // This is appended to key's values that will need to be unique in template instances
-const char *ENTITYIO_FIXUP_STRING = "&0000";
+const char* ENTITYIO_FIXUP_STRING = "&0000";
 
-int MapEntity_GetNumKeysInEntity( const char *pEntData );
+int MapEntity_GetNumKeysInEntity( const char* pEntData );
 
 struct TemplateEntityData_t
 {
-	const char	*pszName;
-	char		*pszMapData;
+	const char*	pszName;
+	char*		pszMapData;
 	string_t	iszMapData;
 	int			iMapDataLength;
 	bool		bNeedsEntityIOFixup;	// If true, this template has entity I/O in its mapdata that needs fixup before spawning.
-	char		*pszFixedMapData;		// A single copy of this template that we used to fix up the Entity I/O whenever someone wants a fixed version of this template
+	char*		pszFixedMapData;		// A single copy of this template that we used to fix up the Entity I/O whenever someone wants a fixed version of this template
 
 	DECLARE_SIMPLE_DATADESC();
 };
 
 BEGIN_SIMPLE_DATADESC( TemplateEntityData_t )
-	//DEFINE_FIELD( pszName,			FIELD_STRING	),		// Saved custom, see below
-	//DEFINE_FIELD( pszMapData,			FIELD_STRING	),		// Saved custom, see below
-	DEFINE_FIELD( iszMapData,				FIELD_STRING	),
-	DEFINE_FIELD( iMapDataLength,			FIELD_INTEGER	),
-	DEFINE_FIELD( bNeedsEntityIOFixup,	FIELD_BOOLEAN	),
+//DEFINE_FIELD( pszName,			FIELD_STRING	),		// Saved custom, see below
+//DEFINE_FIELD( pszMapData,			FIELD_STRING	),		// Saved custom, see below
+DEFINE_FIELD( iszMapData,				FIELD_STRING	),
+							DEFINE_FIELD( iMapDataLength,			FIELD_INTEGER	),
+							DEFINE_FIELD( bNeedsEntityIOFixup,	FIELD_BOOLEAN	),
 
-	//DEFINE_FIELD( pszFixedMapData,	FIELD_STRING	),		// Not saved at all
-END_DATADESC()
+							//DEFINE_FIELD( pszFixedMapData,	FIELD_STRING	),		// Not saved at all
+							END_DATADESC()
 
-struct grouptemplate_t
+							struct grouptemplate_t
 {
-	CEntityMapData *pMapDataParser;
+	CEntityMapData* pMapDataParser;
 	char			pszName[MAPKEY_MAXLENGTH];
 	int				iIndex;
 	bool			bChangeTargetname;
 };
 
-static CUtlVector<TemplateEntityData_t *> g_Templates;
+static CUtlVector<TemplateEntityData_t*> g_Templates;
 
 int	g_iCurrentTemplateInstance;
 
@@ -71,27 +71,27 @@ int	g_iCurrentTemplateInstance;
 // Purpose: Saves the given entity's keyvalue data for later use by a spawner.
 //			Returns the index into the templates.
 //-----------------------------------------------------------------------------
-int Templates_Add(CBaseEntity *pEntity, const char *pszMapData, int nLen)
+int Templates_Add( CBaseEntity* pEntity, const char* pszMapData, int nLen )
 {
-	const char *pszName = STRING(pEntity->GetEntityName());
-	if ((!pszName) || (!strlen(pszName)))
+	const char* pszName = STRING( pEntity->GetEntityName() );
+	if( ( !pszName ) || ( !strlen( pszName ) ) )
 	{
-		DevWarning(1, "RegisterTemplateEntity: template entity with no name, class %s\n", pEntity->GetClassname());
+		DevWarning( 1, "RegisterTemplateEntity: template entity with no name, class %s\n", pEntity->GetClassname() );
 		return -1;
 	}
 
-	TemplateEntityData_t *pEntData = (TemplateEntityData_t *)malloc(sizeof(TemplateEntityData_t));
+	TemplateEntityData_t* pEntData = ( TemplateEntityData_t* )malloc( sizeof( TemplateEntityData_t ) );
 	pEntData->pszName = strdup( pszName );
 
 	// We may modify the values of the keys in this mapdata chunk later on to fix Entity I/O
 	// connections. For this reason, we need to ensure we have enough memory to do that.
 	int iKeys = MapEntity_GetNumKeysInEntity( pszMapData );
-	int iExtraSpace = (strlen(ENTITYIO_FIXUP_STRING)+1) * iKeys;
+	int iExtraSpace = ( strlen( ENTITYIO_FIXUP_STRING ) + 1 ) * iKeys;
 
 	// Extra 1 because the mapdata passed in isn't null terminated
 	pEntData->iMapDataLength = nLen + iExtraSpace + 1;
-	pEntData->pszMapData = (char *)malloc( pEntData->iMapDataLength );
-	memcpy(pEntData->pszMapData, pszMapData, nLen + 1);
+	pEntData->pszMapData = ( char* )malloc( pEntData->iMapDataLength );
+	memcpy( pEntData->pszMapData, pszMapData, nLen + 1 );
 	pEntData->pszMapData[nLen] = '\0';
 
 	// We don't alloc these suckers right now because that gives us no time to
@@ -100,7 +100,7 @@ int Templates_Add(CBaseEntity *pEntity, const char *pszMapData, int nLen)
 	pEntData->bNeedsEntityIOFixup = false;
 	pEntData->pszFixedMapData = NULL;
 
-	return g_Templates.AddToTail(pEntData);
+	return g_Templates.AddToTail( pEntData );
 }
 
 
@@ -124,7 +124,7 @@ string_t Templates_FindByIndex( int iIndex )
 
 	// First time through we alloc the mapdata onto the pool.
 	// It's safe to do it now because this isn't called until post Entity I/O cleanup.
-	if ( g_Templates[iIndex]->iszMapData == NULL_STRING )
+	if( g_Templates[iIndex]->iszMapData == NULL_STRING )
 	{
 		g_Templates[iIndex]->iszMapData = AllocPooledString( g_Templates[iIndex]->pszMapData );
 	}
@@ -133,7 +133,7 @@ string_t Templates_FindByIndex( int iIndex )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 int Templates_GetStringSize( int iIndex )
 {
@@ -146,14 +146,16 @@ int Templates_GetStringSize( int iIndex )
 //			a null-terminated string containing key/value pairs.
 //			NOTE: This can't handle multiple templates with the same targetname.
 //-----------------------------------------------------------------------------
-string_t Templates_FindByTargetName(const char *pszName)
+string_t Templates_FindByTargetName( const char* pszName )
 {
 	int nCount = g_Templates.Count();
-	for (int i = 0; i < nCount; i++)
+	for( int i = 0; i < nCount; i++ )
 	{
-		TemplateEntityData_t *pTemplate = g_Templates.Element(i);
-		if ( !stricmp(pTemplate->pszName, pszName) )
+		TemplateEntityData_t* pTemplate = g_Templates.Element( i );
+		if( !stricmp( pTemplate->pszName, pszName ) )
+		{
 			return Templates_FindByIndex( i );
+		}
 	}
 
 	return NULL_STRING;
@@ -164,32 +166,36 @@ string_t Templates_FindByTargetName(const char *pszName)
 // Purpose: A new version of name fixup which targets all instances of a name
 //			in a keyvalue, including output parameters.
 //-----------------------------------------------------------------------------
-void Templates_NewNameFixup( CUtlVector< grouptemplate_t > &GroupTemplates, int i, int iCount, CEntityMapData *mapData, CUtlDict< int, int > &KeyInstanceCount, char *keyName, char *value )
+void Templates_NewNameFixup( CUtlVector< grouptemplate_t >& GroupTemplates, int i, int iCount, CEntityMapData* mapData, CUtlDict< int, int >& KeyInstanceCount, char* keyName, char* value )
 {
-	do 
+	do
 	{
 		// Ignore targetnames
-		if ( !stricmp( keyName, "targetname" ) )
+		if( !stricmp( keyName, "targetname" ) )
+		{
 			continue;
+		}
 
-		// Add to the count for this 
+		// Add to the count for this
 		int idx = KeyInstanceCount.Find( keyName );
-		if ( idx == KeyInstanceCount.InvalidIndex() )
+		if( idx == KeyInstanceCount.InvalidIndex() )
 		{
 			idx = KeyInstanceCount.Insert( keyName, 0 );
 		}
 		KeyInstanceCount[idx]++;
 
 		// Loop through our group templates
-		for ( int iTName = 0; iTName < iCount; iTName++ )
+		for( int iTName = 0; iTName < iCount; iTName++ )
 		{
-			char *pName = GroupTemplates[iTName].pszName;
-			if (strstr( value, pName ) == NULL)
-				continue;
-
-			if ( template_debug.GetInt() )
+			char* pName = GroupTemplates[iTName].pszName;
+			if( strstr( value, pName ) == NULL )
 			{
-				Msg("Template Connection Found: Key %s (\"%s\") in entity named \"%s\"(%d) matches entity %d's targetname\n", keyName, value, GroupTemplates[i].pszName, i, iTName );
+				continue;
+			}
+
+			if( template_debug.GetInt() )
+			{
+				Msg( "Template Connection Found: Key %s (\"%s\") in entity named \"%s\"(%d) matches entity %d's targetname\n", keyName, value, GroupTemplates[i].pszName, i, iTName );
 			}
 
 			char newvalue[MAPKEY_MAXLENGTH];
@@ -203,14 +209,14 @@ void Templates_NewNameFixup( CUtlVector< grouptemplate_t > &GroupTemplates, int 
 			// Add our IO value to the targetname
 			V_StrSubst( value, pName, fixedup, newvalue, MAPKEY_MAXLENGTH );
 
-			if ( template_debug.GetInt() )
+			if( template_debug.GetInt() )
 			{
-				Msg("	Fixed up value: Key %s with \"%s\" in entity named \"%s\"(%d) has become \"%s\"\n", keyName, value, GroupTemplates[i].pszName, i, newvalue );
+				Msg( "	Fixed up value: Key %s with \"%s\" in entity named \"%s\"(%d) has become \"%s\"\n", keyName, value, GroupTemplates[i].pszName, i, newvalue );
 			}
 
 			mapData->SetValue( keyName, newvalue, nKeyInstance );
 			Q_strncpy( value, newvalue, MAPKEY_MAXLENGTH );
-			
+
 			// Remember we changed this targetname
 			GroupTemplates[iTName].bChangeTargetname = true;
 
@@ -218,8 +224,8 @@ void Templates_NewNameFixup( CUtlVector< grouptemplate_t > &GroupTemplates, int 
 			g_Templates[ GroupTemplates[i].iIndex ]->bNeedsEntityIOFixup = true;
 			g_Templates[ GroupTemplates[iTName].iIndex ]->bNeedsEntityIOFixup = true;
 		}
-	} 
-	while ( mapData->GetNextKey(keyName, value) );
+	}
+	while( mapData->GetNextKey( keyName, value ) );
 }
 #endif
 
@@ -230,21 +236,23 @@ void Templates_NewNameFixup( CUtlVector< grouptemplate_t > &GroupTemplates, int 
 //			found values, which will later be filled out by a unique identifier
 //			whenever the template is instanced.
 //-----------------------------------------------------------------------------
-void Templates_ReconnectIOForGroup( CPointTemplate *pGroup )
+void Templates_ReconnectIOForGroup( CPointTemplate* pGroup )
 {
 	int iCount = pGroup->GetNumTemplates();
-	if ( !iCount )
+	if( !iCount )
+	{
 		return;
+	}
 
 	// First assemble a list of the targetnames of all the templates in the group.
 	// We need to store off the original names here, because we're going to change
 	// them as we go along.
 	CUtlVector< grouptemplate_t > GroupTemplates;
 	int i;
-	for ( i = 0; i < iCount; i++ )
+	for( i = 0; i < iCount; i++ )
 	{
 		grouptemplate_t newGroupTemplate;
-		newGroupTemplate.iIndex = pGroup->GetTemplateIndexForTemplate(i);
+		newGroupTemplate.iIndex = pGroup->GetTemplateIndexForTemplate( i );
 		newGroupTemplate.pMapDataParser = new CEntityMapData( g_Templates[ newGroupTemplate.iIndex ]->pszMapData, g_Templates[ newGroupTemplate.iIndex ]->iMapDataLength );
 		Assert( newGroupTemplate.pMapDataParser );
 		newGroupTemplate.pMapDataParser->ExtractValue( "targetname", newGroupTemplate.pszName );
@@ -253,68 +261,74 @@ void Templates_ReconnectIOForGroup( CPointTemplate *pGroup )
 		GroupTemplates.AddToTail( newGroupTemplate );
 	}
 
-	if (pGroup->AllowNameFixup())
+	if( pGroup->AllowNameFixup() )
 	{
 		char keyName[MAPKEY_MAXLENGTH];
 		char value[MAPKEY_MAXLENGTH];
 		char valueclipped[MAPKEY_MAXLENGTH];
-		
+
 		// Now go through all the entities in the group and parse their mapdata keyvalues.
 		// We're looking for any values that match targetnames of any of the group entities.
-		for ( i = 0; i < iCount; i++ )
+		for( i = 0; i < iCount; i++ )
 		{
 			// We need to know what instance of each key we're changing.
 			// Store a table of the count of the keys we've run into.
 			CUtlDict< int, int > KeyInstanceCount;
-			CEntityMapData *mapData = GroupTemplates[i].pMapDataParser;
+			CEntityMapData* mapData = GroupTemplates[i].pMapDataParser;
 
 			// Loop through our keys
-			if ( !mapData->GetFirstKey(keyName, value) )
+			if( !mapData->GetFirstKey( keyName, value ) )
+			{
 				continue;
+			}
 
 #ifdef MAPBASE
-			if ( pGroup->NameFixupExpanded() )
+			if( pGroup->NameFixupExpanded() )
 			{
 				Templates_NewNameFixup( GroupTemplates, i, iCount, mapData, KeyInstanceCount, keyName, value );
 				continue;
 			}
 #endif
 
-			do 
+			do
 			{
 				// Ignore targetnames
-				if ( !stricmp( keyName, "targetname" ) )
+				if( !stricmp( keyName, "targetname" ) )
+				{
 					continue;
+				}
 
-				// Add to the count for this 
+				// Add to the count for this
 				int idx = KeyInstanceCount.Find( keyName );
-				if ( idx == KeyInstanceCount.InvalidIndex() )
+				if( idx == KeyInstanceCount.InvalidIndex() )
 				{
 					idx = KeyInstanceCount.Insert( keyName, 0 );
 				}
 				KeyInstanceCount[idx]++;
 
 				// Entity I/O values are stored as "Targetname,<data>", so we need to see if there's a ',' in the string
-				char *sValue = value;
+				char* sValue = value;
 				// FIXME: This is very brittle. Any key with a , will not be found.
-				char *s = strchr( value, ',' );
-				if ( s )
+				char* s = strchr( value, ',' );
+				if( s )
 				{
 					// Grab just the targetname of the receiver
-					Q_strncpy( valueclipped, value, (s - value+1) );
+					Q_strncpy( valueclipped, value, ( s - value + 1 ) );
 					sValue = valueclipped;
 				}
 
 				// Loop through our group templates
-				for ( int iTName = 0; iTName < iCount; iTName++ )
+				for( int iTName = 0; iTName < iCount; iTName++ )
 				{
-					char *pName = GroupTemplates[iTName].pszName;
-					if ( stricmp( pName, sValue ) )
-						continue;
-
-					if ( template_debug.GetInt() )
+					char* pName = GroupTemplates[iTName].pszName;
+					if( stricmp( pName, sValue ) )
 					{
-						Msg("Template Connection Found: Key %s (\"%s\") in entity named \"%s\"(%d) matches entity %d's targetname\n", keyName, sValue, GroupTemplates[i].pszName, i, iTName );
+						continue;
+					}
+
+					if( template_debug.GetInt() )
+					{
+						Msg( "Template Connection Found: Key %s (\"%s\") in entity named \"%s\"(%d) matches entity %d's targetname\n", keyName, sValue, GroupTemplates[i].pszName, i, iTName );
 					}
 
 					char newvalue[MAPKEY_MAXLENGTH];
@@ -324,20 +338,20 @@ void Templates_ReconnectIOForGroup( CPointTemplate *pGroup )
 
 					// Add our IO value to the targetname
 					// We need to append it if this isn't an Entity I/O value, or prepend it to the ',' if it is
-					if ( s )
+					if( s )
 					{
 						Q_strncpy( newvalue, valueclipped, MAPKEY_MAXLENGTH );
-						Q_strncat( newvalue, ENTITYIO_FIXUP_STRING, sizeof(newvalue), COPY_ALL_CHARACTERS );
-						Q_strncat( newvalue, s, sizeof(newvalue), COPY_ALL_CHARACTERS );
+						Q_strncat( newvalue, ENTITYIO_FIXUP_STRING, sizeof( newvalue ), COPY_ALL_CHARACTERS );
+						Q_strncat( newvalue, s, sizeof( newvalue ), COPY_ALL_CHARACTERS );
 						mapData->SetValue( keyName, newvalue, nKeyInstance );
 					}
 					else
 					{
 						Q_strncpy( newvalue, sValue, MAPKEY_MAXLENGTH );
-						Q_strncat( newvalue, ENTITYIO_FIXUP_STRING, sizeof(newvalue), COPY_ALL_CHARACTERS );
+						Q_strncat( newvalue, ENTITYIO_FIXUP_STRING, sizeof( newvalue ), COPY_ALL_CHARACTERS );
 						mapData->SetValue( keyName, newvalue, nKeyInstance );
 					}
-					
+
 					// Remember we changed this targetname
 					GroupTemplates[iTName].bChangeTargetname = true;
 
@@ -345,27 +359,27 @@ void Templates_ReconnectIOForGroup( CPointTemplate *pGroup )
 					g_Templates[ GroupTemplates[i].iIndex ]->bNeedsEntityIOFixup = true;
 					g_Templates[ GroupTemplates[iTName].iIndex ]->bNeedsEntityIOFixup = true;
 				}
-			} 
-			while ( mapData->GetNextKey(keyName, value) );
+			}
+			while( mapData->GetNextKey( keyName, value ) );
 		}
 
 		// Now change targetnames for all entities that need them changed
-		for ( i = 0; i < iCount; i++ )
+		for( i = 0; i < iCount; i++ )
 		{
 			char value[MAPKEY_MAXLENGTH];
 
-			if ( GroupTemplates[i].bChangeTargetname )
+			if( GroupTemplates[i].bChangeTargetname )
 			{
-				CEntityMapData *mapData = GroupTemplates[i].pMapDataParser;
+				CEntityMapData* mapData = GroupTemplates[i].pMapDataParser;
 				mapData->ExtractValue( "targetname", value );
-				Q_strncat( value, ENTITYIO_FIXUP_STRING, sizeof(value), COPY_ALL_CHARACTERS );
+				Q_strncat( value, ENTITYIO_FIXUP_STRING, sizeof( value ), COPY_ALL_CHARACTERS );
 				mapData->SetValue( "targetname", value );
 			}
 		}
 	}
 
 	// Delete our group parsers
-	for ( i = 0; i < iCount; i++ )
+	for( i = 0; i < iCount; i++ )
 	{
 		delete GroupTemplates[i].pMapDataParser;
 	}
@@ -381,11 +395,11 @@ void Templates_StartUniqueInstance( void )
 	g_iCurrentTemplateInstance++;
 
 	// Make sure there's enough room to fit it into the string
-	int iMax = pow(10.0f, (int)((strlen(ENTITYIO_FIXUP_STRING) - 1)));	// -1 for the &
-	if ( g_iCurrentTemplateInstance >= iMax )
+	int iMax = pow( 10.0f, ( int )( ( strlen( ENTITYIO_FIXUP_STRING ) - 1 ) ) );	// -1 for the &
+	if( g_iCurrentTemplateInstance >= iMax )
 	{
 		// We won't hit this.
-		Assert(0);
+		Assert( 0 );
 		// Hopefully there were still be instance number 0 around.
 		g_iCurrentTemplateInstance = 0;
 	}
@@ -396,35 +410,35 @@ void Templates_StartUniqueInstance( void )
 //			entity IO fixup. Fill out the pMapData with a copy of the template
 //			with unique key/values where the template requires them.
 //-----------------------------------------------------------------------------
-char *Templates_GetEntityIOFixedMapData( int iIndex )
+char* Templates_GetEntityIOFixedMapData( int iIndex )
 {
 #ifndef MAPBASE // This code also runs when the point_template's script scope is active
 	Assert( Templates_IndexRequiresEntityIOFixup( iIndex ) );
 #endif
 
 	// First time through?
-	if ( !g_Templates[iIndex]->pszFixedMapData )
+	if( !g_Templates[iIndex]->pszFixedMapData )
 	{
 		g_Templates[iIndex]->pszFixedMapData = new char[g_Templates[iIndex]->iMapDataLength];
 		Q_strncpy( g_Templates[iIndex]->pszFixedMapData, g_Templates[iIndex]->pszMapData, g_Templates[iIndex]->iMapDataLength );
 	}
 
-	int iFixupSize = strlen(ENTITYIO_FIXUP_STRING); // don't include \0 when copying in the fixup
-	char *sOurFixup = new char[iFixupSize+1]; // do alloc room here for the null terminator
-	Q_snprintf( sOurFixup, iFixupSize+1, "%c%.4d", ENTITYIO_FIXUP_STRING[0], g_iCurrentTemplateInstance );
+	int iFixupSize = strlen( ENTITYIO_FIXUP_STRING ); // don't include \0 when copying in the fixup
+	char* sOurFixup = new char[iFixupSize + 1]; // do alloc room here for the null terminator
+	Q_snprintf( sOurFixup, iFixupSize + 1, "%c%.4d", ENTITYIO_FIXUP_STRING[0], g_iCurrentTemplateInstance );
 
 	// Now rip through the map data string and replace any instances of the fixup string with our unique identifier
-	char *c = g_Templates[iIndex]->pszFixedMapData;
+	char* c = g_Templates[iIndex]->pszFixedMapData;
 	do
 	{
-		if ( *c == ENTITYIO_FIXUP_STRING[0] )
+		if( *c == ENTITYIO_FIXUP_STRING[0] )
 		{
 			// Make sure it's our fixup string
 			bool bValid = true;
-			for ( int i = 1; i < iFixupSize; i++ )
+			for( int i = 1; i < iFixupSize; i++ )
 			{
 				// Look for any number, because we've already used this string
-				if ( !(*(c+i) >= '0' && *(c+i) <= '9') )
+				if( !( *( c + i ) >= '0' && *( c + i ) <= '9' ) )
 				{
 					// Some other string
 					bValid = false;
@@ -433,14 +447,15 @@ char *Templates_GetEntityIOFixedMapData( int iIndex )
 			}
 
 			// Stomp it with our unique string
-			if ( bValid )
+			if( bValid )
 			{
 				memcpy( c, sOurFixup, iFixupSize );
 				c += iFixupSize;
 			}
 		}
 		c++;
-	} while (*c);
+	}
+	while( *c );
 
 	return g_Templates[iIndex]->pszFixedMapData;
 }
@@ -448,21 +463,21 @@ char *Templates_GetEntityIOFixedMapData( int iIndex )
 //-----------------------------------------------------------------------------
 // Purpose: Frees all the template data. Called on level shutdown.
 //-----------------------------------------------------------------------------
-void Templates_RemoveAll(void)
+void Templates_RemoveAll( void )
 {
 	int nCount = g_Templates.Count();
-	for (int i = 0; i < nCount; i++)
+	for( int i = 0; i < nCount; i++ )
 	{
-		TemplateEntityData_t *pTemplate = g_Templates.Element(i);
+		TemplateEntityData_t* pTemplate = g_Templates.Element( i );
 
-		free((void *)pTemplate->pszName);
-		free(pTemplate->pszMapData);
-		if ( pTemplate->pszFixedMapData )
+		free( ( void* )pTemplate->pszName );
+		free( pTemplate->pszMapData );
+		if( pTemplate->pszFixedMapData )
 		{
-			free(pTemplate->pszFixedMapData);
+			free( pTemplate->pszFixedMapData );
 		}
 
-		free(pTemplate);
+		free( pTemplate );
 	}
 
 	g_Templates.RemoveAll();
@@ -475,7 +490,7 @@ void Templates_RemoveAll(void)
 class CTemplatesHook : public CAutoGameSystem
 {
 public:
-	CTemplatesHook( char const *name ) : CAutoGameSystem( name )
+	CTemplatesHook( char const* name ) : CAutoGameSystem( name )
 	{
 	}
 
@@ -496,22 +511,22 @@ static short TEMPLATE_SAVE_RESTORE_VERSION = 1;
 class CTemplate_SaveRestoreBlockHandler : public CDefSaveRestoreBlockHandler
 {
 public:
-	const char *GetBlockName()
+	const char* GetBlockName()
 	{
 		return "Templates";
 	}
 
 	//---------------------------------
 
-	void Save( ISave *pSave )
+	void Save( ISave* pSave )
 	{
 		pSave->WriteInt( &g_iCurrentTemplateInstance );
 
 		short nCount = g_Templates.Count();
 		pSave->WriteShort( &nCount );
-		for ( int i = 0; i < nCount; i++ )
+		for( int i = 0; i < nCount; i++ )
 		{
-			TemplateEntityData_t *pTemplate = g_Templates[i];
+			TemplateEntityData_t* pTemplate = g_Templates[i];
 			pSave->WriteAll( pTemplate );
 			pSave->WriteString( pTemplate->pszName );
 			pSave->WriteString( pTemplate->pszMapData );
@@ -520,14 +535,14 @@ public:
 
 	//---------------------------------
 
-	void WriteSaveHeaders( ISave *pSave )
+	void WriteSaveHeaders( ISave* pSave )
 	{
 		pSave->WriteShort( &TEMPLATE_SAVE_RESTORE_VERSION );
 	}
-	
+
 	//---------------------------------
 
-	void ReadRestoreHeaders( IRestore *pRestore )
+	void ReadRestoreHeaders( IRestore* pRestore )
 	{
 		// No reason why any future version shouldn't try to retain backward compatability. The default here is to not do so.
 		short version;
@@ -537,18 +552,18 @@ public:
 
 	//---------------------------------
 
-	void Restore( IRestore *pRestore, bool createPlayers )
+	void Restore( IRestore* pRestore, bool createPlayers )
 	{
-		if ( m_fDoLoad )
+		if( m_fDoLoad )
 		{
 			Templates_RemoveAll();
 			g_Templates.Purge();
 			g_iCurrentTemplateInstance = pRestore->ReadInt();
 
 			int iTemplates = pRestore->ReadShort();
-			while ( iTemplates-- )
+			while( iTemplates-- )
 			{
-				TemplateEntityData_t *pNewTemplate = (TemplateEntityData_t *)malloc(sizeof(TemplateEntityData_t));
+				TemplateEntityData_t* pNewTemplate = ( TemplateEntityData_t* )malloc( sizeof( TemplateEntityData_t ) );
 				pRestore->ReadAll( pNewTemplate );
 
 				int sizeData = 0;//pRestore->SkipHeader();
@@ -556,7 +571,7 @@ public:
 				pRestore->ReadString( szName, MAPKEY_MAXLENGTH, sizeData );
 				pNewTemplate->pszName = strdup( szName );
 				//sizeData = pRestore->SkipHeader();
-				pNewTemplate->pszMapData = (char *)malloc( pNewTemplate->iMapDataLength );
+				pNewTemplate->pszMapData = ( char* )malloc( pNewTemplate->iMapDataLength );
 				pRestore->ReadString( pNewTemplate->pszMapData, pNewTemplate->iMapDataLength, sizeData );
 
 				// Set this to NULL so it'll be created the first time it gets used
@@ -565,7 +580,7 @@ public:
 				g_Templates.AddToTail( pNewTemplate );
 			}
 		}
-		
+
 	}
 
 private:
@@ -578,7 +593,7 @@ CTemplate_SaveRestoreBlockHandler g_Template_SaveRestoreBlockHandler;
 
 //-------------------------------------
 
-ISaveRestoreBlockHandler *GetTemplateSaveRestoreBlockHandler()
+ISaveRestoreBlockHandler* GetTemplateSaveRestoreBlockHandler()
 {
 	return &g_Template_SaveRestoreBlockHandler;
 }

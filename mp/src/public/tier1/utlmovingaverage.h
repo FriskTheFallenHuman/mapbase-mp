@@ -4,13 +4,13 @@
 //
 // $NoKeywords: $
 //
-// 
+//
 //=============================================================================//
 #ifndef MOVING_AVERAGE_H
 #define MOVING_AVERAGE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
@@ -31,9 +31,9 @@ public:
 		m_flTotal = 0.0f;
 	}
 
-	uint32 GetTotalValuesPushed() const 
-	{ 
-		return m_nValuesPushed; 
+	uint32 GetTotalValuesPushed() const
+	{
+		return m_nValuesPushed;
 	}
 
 	float GetAverage( )
@@ -42,9 +42,9 @@ public:
 		return n ? ( m_flTotal / static_cast<double>( n ) ) : 0.0f;
 	}
 
-	void GetAverageAndAbsRange( float *pflOutAverage, float *pflOutAbsRange, float *pflMinTime, float *pflMaxTime )
+	void GetAverageAndAbsRange( float* pflOutAverage, float* pflOutAbsRange, float* pflMinTime, float* pflMaxTime )
 	{
-		if ( m_nValuesPushed == 0 )
+		if( m_nValuesPushed == 0 )
 		{
 			*pflOutAverage = 0;
 			*pflOutAbsRange = 0;
@@ -61,7 +61,7 @@ public:
 		float flMinTime = 9e+9;
 		float flMaxTime = 0;
 
-		for ( int i = 0; i < nNumValues; ++i )
+		for( int i = 0; i < nNumValues; ++i )
 		{
 			float flDif = ( m_Buffer[i] - *pflOutAverage );
 			flAbsRange = MAX( flAbsRange, abs( flDif ) );
@@ -77,8 +77,8 @@ public:
 	void PushValue( float v )
 	{
 		uint nIndex = m_nValuesPushed % TBufferSize;
-		
-		if ( m_nValuesPushed >= TBufferSize )
+
+		if( m_nValuesPushed >= TBufferSize )
 		{
 			m_flTotal = MAX( m_flTotal - m_Buffer[nIndex], 0.0f );
 		}
@@ -87,12 +87,12 @@ public:
 		m_Buffer[nIndex] = v;
 		m_nValuesPushed++;
 
-		if ( UINT_MAX == m_nValuesPushed )
+		if( UINT_MAX == m_nValuesPushed )
 		{
 			Reset();
 		}
 	}
-		
+
 private:
 	float m_Buffer[TBufferSize];
 	uint32 m_nValuesPushed;

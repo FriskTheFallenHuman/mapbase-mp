@@ -10,7 +10,7 @@
 #define C_BASECOMBATWEAPON_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basecombatweapon_shared.h"
@@ -20,7 +20,7 @@ class CViewSetup;
 class C_BaseViewModel;
 
 // Accessors for local weapons
-C_BaseCombatWeapon *GetActiveWeapon( void );
+C_BaseCombatWeapon* GetActiveWeapon( void );
 
 
 #endif // C_BASECOMBATWEAPON

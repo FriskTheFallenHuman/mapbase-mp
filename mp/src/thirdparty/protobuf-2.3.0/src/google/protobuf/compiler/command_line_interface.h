@@ -45,15 +45,18 @@
 #include <set>
 #include <utility>
 
-namespace google {
-namespace protobuf {
+namespace google
+{
+namespace protobuf
+{
 
 class FileDescriptor;        // descriptor.h
 class DescriptorPool;        // descriptor.h
 class FileDescriptorProto;   // descriptor.pb.h
 template<typename T> class RepeatedPtrField;  // repeated_field.h
 
-namespace compiler {
+namespace compiler
+{
 
 class CodeGenerator;        // code_generator.h
 class OutputDirectory;      // code_generator.h
@@ -87,228 +90,235 @@ class DiskSourceTree;       // importer.h
 //   protoc --cpp_out=outdir --foo_out=outdir --proto_path=src src/foo.proto
 //
 // For a full description of the command-line syntax, invoke it with --help.
-class LIBPROTOC_EXPORT CommandLineInterface {
- public:
-  CommandLineInterface();
-  ~CommandLineInterface();
+class LIBPROTOC_EXPORT CommandLineInterface
+{
+public:
+	CommandLineInterface();
+	~CommandLineInterface();
 
-  // Register a code generator for a language.
-  //
-  // Parameters:
-  // * flag_name: The command-line flag used to specify an output file of
-  //   this type.  The name must start with a '-'.  If the name is longer
-  //   than one letter, it must start with two '-'s.
-  // * generator: The CodeGenerator which will be called to generate files
-  //   of this type.
-  // * help_text: Text describing this flag in the --help output.
-  //
-  // Some generators accept extra parameters.  You can specify this parameter
-  // on the command-line by placing it before the output directory, separated
-  // by a colon:
-  //   protoc --foo_out=enable_bar:outdir
-  // The text before the colon is passed to CodeGenerator::Generate() as the
-  // "parameter".
-  void RegisterGenerator(const string& flag_name,
-                         CodeGenerator* generator,
-                         const string& help_text);
+	// Register a code generator for a language.
+	//
+	// Parameters:
+	// * flag_name: The command-line flag used to specify an output file of
+	//   this type.  The name must start with a '-'.  If the name is longer
+	//   than one letter, it must start with two '-'s.
+	// * generator: The CodeGenerator which will be called to generate files
+	//   of this type.
+	// * help_text: Text describing this flag in the --help output.
+	//
+	// Some generators accept extra parameters.  You can specify this parameter
+	// on the command-line by placing it before the output directory, separated
+	// by a colon:
+	//   protoc --foo_out=enable_bar:outdir
+	// The text before the colon is passed to CodeGenerator::Generate() as the
+	// "parameter".
+	void RegisterGenerator( const string& flag_name,
+							CodeGenerator* generator,
+							const string& help_text );
 
-  // Enables "plugins".  In this mode, if a command-line flag ends with "_out"
-  // but does not match any registered generator, the compiler will attempt to
-  // find a "plugin" to implement the generator.  Plugins are just executables.
-  // They should live somewhere in the PATH.
-  //
-  // The compiler determines the executable name to search for by concatenating
-  // exe_name_prefix with the unrecognized flag name, removing "_out".  So, for
-  // example, if exe_name_prefix is "protoc-" and you pass the flag --foo_out,
-  // the compiler will try to run the program "protoc-foo".
-  //
-  // The plugin program should implement the following usage:
-  //   plugin [--out=OUTDIR] [--parameter=PARAMETER] PROTO_FILES < DESCRIPTORS
-  // --out indicates the output directory (as passed to the --foo_out
-  // parameter); if omitted, the current directory should be used.  --parameter
-  // gives the generator parameter, if any was provided.  The PROTO_FILES list
-  // the .proto files which were given on the compiler command-line; these are
-  // the files for which the plugin is expected to generate output code.
-  // Finally, DESCRIPTORS is an encoded FileDescriptorSet (as defined in
-  // descriptor.proto).  This is piped to the plugin's stdin.  The set will
-  // include descriptors for all the files listed in PROTO_FILES as well as
-  // all files that they import.  The plugin MUST NOT attempt to read the
-  // PROTO_FILES directly -- it must use the FileDescriptorSet.
-  //
-  // The plugin should generate whatever files are necessary, as code generators
-  // normally do.  It should write the names of all files it generates to
-  // stdout.  The names should be relative to the output directory, NOT absolute
-  // names or relative to the current directory.  If any errors occur, error
-  // messages should be written to stderr.  If an error is fatal, the plugin
-  // should exit with a non-zero exit code.
-  void AllowPlugins(const string& exe_name_prefix);
+	// Enables "plugins".  In this mode, if a command-line flag ends with "_out"
+	// but does not match any registered generator, the compiler will attempt to
+	// find a "plugin" to implement the generator.  Plugins are just executables.
+	// They should live somewhere in the PATH.
+	//
+	// The compiler determines the executable name to search for by concatenating
+	// exe_name_prefix with the unrecognized flag name, removing "_out".  So, for
+	// example, if exe_name_prefix is "protoc-" and you pass the flag --foo_out,
+	// the compiler will try to run the program "protoc-foo".
+	//
+	// The plugin program should implement the following usage:
+	//   plugin [--out=OUTDIR] [--parameter=PARAMETER] PROTO_FILES < DESCRIPTORS
+	// --out indicates the output directory (as passed to the --foo_out
+	// parameter); if omitted, the current directory should be used.  --parameter
+	// gives the generator parameter, if any was provided.  The PROTO_FILES list
+	// the .proto files which were given on the compiler command-line; these are
+	// the files for which the plugin is expected to generate output code.
+	// Finally, DESCRIPTORS is an encoded FileDescriptorSet (as defined in
+	// descriptor.proto).  This is piped to the plugin's stdin.  The set will
+	// include descriptors for all the files listed in PROTO_FILES as well as
+	// all files that they import.  The plugin MUST NOT attempt to read the
+	// PROTO_FILES directly -- it must use the FileDescriptorSet.
+	//
+	// The plugin should generate whatever files are necessary, as code generators
+	// normally do.  It should write the names of all files it generates to
+	// stdout.  The names should be relative to the output directory, NOT absolute
+	// names or relative to the current directory.  If any errors occur, error
+	// messages should be written to stderr.  If an error is fatal, the plugin
+	// should exit with a non-zero exit code.
+	void AllowPlugins( const string& exe_name_prefix );
 
-  // Run the Protocol Compiler with the given command-line parameters.
-  // Returns the error code which should be returned by main().
-  //
-  // It may not be safe to call Run() in a multi-threaded environment because
-  // it calls strerror().  I'm not sure why you'd want to do this anyway.
-  int Run(int argc, const char* const argv[]);
+	// Run the Protocol Compiler with the given command-line parameters.
+	// Returns the error code which should be returned by main().
+	//
+	// It may not be safe to call Run() in a multi-threaded environment because
+	// it calls strerror().  I'm not sure why you'd want to do this anyway.
+	int Run( int argc, const char* const argv[] );
 
-  // Call SetInputsAreCwdRelative(true) if the input files given on the command
-  // line should be interpreted relative to the proto import path specified
-  // using --proto_path or -I flags.  Otherwise, input file names will be
-  // interpreted relative to the current working directory (or as absolute
-  // paths if they start with '/'), though they must still reside inside
-  // a directory given by --proto_path or the compiler will fail.  The latter
-  // mode is generally more intuitive and easier to use, especially e.g. when
-  // defining implicit rules in Makefiles.
-  void SetInputsAreProtoPathRelative(bool enable) {
-    inputs_are_proto_path_relative_ = enable;
-  }
+	// Call SetInputsAreCwdRelative(true) if the input files given on the command
+	// line should be interpreted relative to the proto import path specified
+	// using --proto_path or -I flags.  Otherwise, input file names will be
+	// interpreted relative to the current working directory (or as absolute
+	// paths if they start with '/'), though they must still reside inside
+	// a directory given by --proto_path or the compiler will fail.  The latter
+	// mode is generally more intuitive and easier to use, especially e.g. when
+	// defining implicit rules in Makefiles.
+	void SetInputsAreProtoPathRelative( bool enable )
+	{
+		inputs_are_proto_path_relative_ = enable;
+	}
 
-  // Provides some text which will be printed when the --version flag is
-  // used.  The version of libprotoc will also be printed on the next line
-  // after this text.
-  void SetVersionInfo(const string& text) {
-    version_info_ = text;
-  }
+	// Provides some text which will be printed when the --version flag is
+	// used.  The version of libprotoc will also be printed on the next line
+	// after this text.
+	void SetVersionInfo( const string& text )
+	{
+		version_info_ = text;
+	}
 
 
- private:
-  // -----------------------------------------------------------------
+private:
+	// -----------------------------------------------------------------
 
-  class ErrorPrinter;
-  class MemoryOutputDirectory;
-  class MemoryOutputStream;
+	class ErrorPrinter;
+	class MemoryOutputDirectory;
+	class MemoryOutputStream;
 
-  // Clear state from previous Run().
-  void Clear();
+	// Clear state from previous Run().
+	void Clear();
 
-  // Remaps each file in input_files_ so that it is relative to one of the
-  // directories in proto_path_.  Returns false if an error occurred.  This
-  // is only used if inputs_are_proto_path_relative_ is false.
-  bool MakeInputsBeProtoPathRelative(
-    DiskSourceTree* source_tree);
+	// Remaps each file in input_files_ so that it is relative to one of the
+	// directories in proto_path_.  Returns false if an error occurred.  This
+	// is only used if inputs_are_proto_path_relative_ is false.
+	bool MakeInputsBeProtoPathRelative(
+		DiskSourceTree* source_tree );
 
-  // Parse all command-line arguments.
-  bool ParseArguments(int argc, const char* const argv[]);
+	// Parse all command-line arguments.
+	bool ParseArguments( int argc, const char* const argv[] );
 
-  // Parses a command-line argument into a name/value pair.  Returns
-  // true if the next argument in the argv should be used as the value,
-  // false otherwise.
-  //
-  // Exmaples:
-  //   "-Isrc/protos" ->
-  //     name = "-I", value = "src/protos"
-  //   "--cpp_out=src/foo.pb2.cc" ->
-  //     name = "--cpp_out", value = "src/foo.pb2.cc"
-  //   "foo.proto" ->
-  //     name = "", value = "foo.proto"
-  bool ParseArgument(const char* arg, string* name, string* value);
+	// Parses a command-line argument into a name/value pair.  Returns
+	// true if the next argument in the argv should be used as the value,
+	// false otherwise.
+	//
+	// Exmaples:
+	//   "-Isrc/protos" ->
+	//     name = "-I", value = "src/protos"
+	//   "--cpp_out=src/foo.pb2.cc" ->
+	//     name = "--cpp_out", value = "src/foo.pb2.cc"
+	//   "foo.proto" ->
+	//     name = "", value = "foo.proto"
+	bool ParseArgument( const char* arg, string* name, string* value );
 
-  // Interprets arguments parsed with ParseArgument.
-  bool InterpretArgument(const string& name, const string& value);
+	// Interprets arguments parsed with ParseArgument.
+	bool InterpretArgument( const string& name, const string& value );
 
-  // Print the --help text to stderr.
-  void PrintHelpText();
+	// Print the --help text to stderr.
+	void PrintHelpText();
 
-  // Generate the given output file from the given input.
-  struct OutputDirective;  // see below
-  bool GenerateOutput(const vector<const FileDescriptor*>& parsed_files,
-                      const OutputDirective& output_directive,
-                      OutputDirectory* output_directory);
-  bool GeneratePluginOutput(const vector<const FileDescriptor*>& parsed_files,
-                            const string& plugin_name,
-                            const string& parameter,
-                            OutputDirectory* output_directory,
-                            string* error);
+	// Generate the given output file from the given input.
+	struct OutputDirective;  // see below
+	bool GenerateOutput( const vector<const FileDescriptor*>& parsed_files,
+						 const OutputDirective& output_directive,
+						 OutputDirectory* output_directory );
+	bool GeneratePluginOutput( const vector<const FileDescriptor*>& parsed_files,
+							   const string& plugin_name,
+							   const string& parameter,
+							   OutputDirectory* output_directory,
+							   string* error );
 
-  // Implements --encode and --decode.
-  bool EncodeOrDecode(const DescriptorPool* pool);
+	// Implements --encode and --decode.
+	bool EncodeOrDecode( const DescriptorPool* pool );
 
-  // Implements the --descriptor_set_out option.
-  bool WriteDescriptorSet(const vector<const FileDescriptor*> parsed_files);
+	// Implements the --descriptor_set_out option.
+	bool WriteDescriptorSet( const vector<const FileDescriptor*> parsed_files );
 
-  // Get all transitive dependencies of the given file (including the file
-  // itself), adding them to the given list of FileDescriptorProtos.  The
-  // protos will be ordered such that every file is listed before any file that
-  // depends on it, so that you can call DescriptorPool::BuildFile() on them
-  // in order.  Any files in *already_seen will not be added, and each file
-  // added will be inserted into *already_seen.
-  static void GetTransitiveDependencies(
-      const FileDescriptor* file,
-      set<const FileDescriptor*>* already_seen,
-      RepeatedPtrField<FileDescriptorProto>* output);
+	// Get all transitive dependencies of the given file (including the file
+	// itself), adding them to the given list of FileDescriptorProtos.  The
+	// protos will be ordered such that every file is listed before any file that
+	// depends on it, so that you can call DescriptorPool::BuildFile() on them
+	// in order.  Any files in *already_seen will not be added, and each file
+	// added will be inserted into *already_seen.
+	static void GetTransitiveDependencies(
+		const FileDescriptor* file,
+		set<const FileDescriptor*>* already_seen,
+		RepeatedPtrField<FileDescriptorProto>* output );
 
-  // -----------------------------------------------------------------
+	// -----------------------------------------------------------------
 
-  // The name of the executable as invoked (i.e. argv[0]).
-  string executable_name_;
+	// The name of the executable as invoked (i.e. argv[0]).
+	string executable_name_;
 
-  // Version info set with SetVersionInfo().
-  string version_info_;
+	// Version info set with SetVersionInfo().
+	string version_info_;
 
-  // Map from flag names to registered generators.
-  struct GeneratorInfo {
-    CodeGenerator* generator;
-    string help_text;
-  };
-  typedef map<string, GeneratorInfo> GeneratorMap;
-  GeneratorMap generators_;
+	// Map from flag names to registered generators.
+	struct GeneratorInfo
+	{
+		CodeGenerator* generator;
+		string help_text;
+	};
+	typedef map<string, GeneratorInfo> GeneratorMap;
+	GeneratorMap generators_;
 
-  // See AllowPlugins().  If this is empty, plugins aren't allowed.
-  string plugin_prefix_;
+	// See AllowPlugins().  If this is empty, plugins aren't allowed.
+	string plugin_prefix_;
 
-  // Maps specific plugin names to files.  When executing a plugin, this map
-  // is searched first to find the plugin executable.  If not found here, the
-  // PATH (or other OS-specific search strategy) is searched.
-  map<string, string> plugins_;
+	// Maps specific plugin names to files.  When executing a plugin, this map
+	// is searched first to find the plugin executable.  If not found here, the
+	// PATH (or other OS-specific search strategy) is searched.
+	map<string, string> plugins_;
 
-  // Stuff parsed from command line.
-  enum Mode {
-    MODE_COMPILE,  // Normal mode:  parse .proto files and compile them.
-    MODE_ENCODE,   // --encode:  read text from stdin, write binary to stdout.
-    MODE_DECODE    // --decode:  read binary from stdin, write text to stdout.
-  };
+	// Stuff parsed from command line.
+	enum Mode
+	{
+		MODE_COMPILE,  // Normal mode:  parse .proto files and compile them.
+		MODE_ENCODE,   // --encode:  read text from stdin, write binary to stdout.
+		MODE_DECODE    // --decode:  read binary from stdin, write text to stdout.
+	};
 
-  Mode mode_;
+	Mode mode_;
 
-  enum ErrorFormat {
-    ERROR_FORMAT_GCC,   // GCC error output format (default).
-    ERROR_FORMAT_MSVS   // Visual Studio output (--error_format=msvs).
-  };
+	enum ErrorFormat
+	{
+		ERROR_FORMAT_GCC,   // GCC error output format (default).
+		ERROR_FORMAT_MSVS   // Visual Studio output (--error_format=msvs).
+	};
 
-  ErrorFormat error_format_;
+	ErrorFormat error_format_;
 
-  vector<pair<string, string> > proto_path_;  // Search path for proto files.
-  vector<string> input_files_;                // Names of the input proto files.
+	vector<pair<string, string> > proto_path_;  // Search path for proto files.
+	vector<string> input_files_;                // Names of the input proto files.
 
-  // output_directives_ lists all the files we are supposed to output and what
-  // generator to use for each.
-  struct OutputDirective {
-    string name;                // E.g. "--foo_out"
-    CodeGenerator* generator;   // NULL for plugins
-    string parameter;
-    string output_location;
-  };
-  vector<OutputDirective> output_directives_;
+	// output_directives_ lists all the files we are supposed to output and what
+	// generator to use for each.
+	struct OutputDirective
+	{
+		string name;                // E.g. "--foo_out"
+		CodeGenerator* generator;   // NULL for plugins
+		string parameter;
+		string output_location;
+	};
+	vector<OutputDirective> output_directives_;
 
-  // When using --encode or --decode, this names the type we are encoding or
-  // decoding.  (Empty string indicates --decode_raw.)
-  string codec_type_;
+	// When using --encode or --decode, this names the type we are encoding or
+	// decoding.  (Empty string indicates --decode_raw.)
+	string codec_type_;
 
-  // If --descriptor_set_out was given, this is the filename to which the
-  // FileDescriptorSet should be written.  Otherwise, empty.
-  string descriptor_set_name_;
+	// If --descriptor_set_out was given, this is the filename to which the
+	// FileDescriptorSet should be written.  Otherwise, empty.
+	string descriptor_set_name_;
 
-  // True if --include_imports was given, meaning that we should
-  // write all transitive dependencies to the DescriptorSet.  Otherwise, only
-  // the .proto files listed on the command-line are added.
-  bool imports_in_descriptor_set_;
+	// True if --include_imports was given, meaning that we should
+	// write all transitive dependencies to the DescriptorSet.  Otherwise, only
+	// the .proto files listed on the command-line are added.
+	bool imports_in_descriptor_set_;
 
-  // Was the --disallow_services flag used?
-  bool disallow_services_;
+	// Was the --disallow_services flag used?
+	bool disallow_services_;
 
-  // See SetInputsAreProtoPathRelative().
-  bool inputs_are_proto_path_relative_;
+	// See SetInputsAreProtoPathRelative().
+	bool inputs_are_proto_path_relative_;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(CommandLineInterface);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( CommandLineInterface );
 };
 
 }  // namespace compiler

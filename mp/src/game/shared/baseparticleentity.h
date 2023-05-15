@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -16,15 +16,15 @@
 #include "baseentity_shared.h"
 
 #if defined( CLIENT_DLL )
-#define CBaseParticleEntity C_BaseParticleEntity
+	#define CBaseParticleEntity C_BaseParticleEntity
 
-#include "particlemgr.h"
+	#include "particlemgr.h"
 
-#endif 
+#endif
 
 class CBaseParticleEntity : public CBaseEntity
 #if defined( CLIENT_DLL )
-, public IParticleEffect
+	, public IParticleEffect
 #endif
 {
 public:
@@ -38,27 +38,36 @@ public:
 	// CBaseEntity overrides.
 public:
 #if !defined( CLIENT_DLL )
-	virtual int		UpdateTransmitState( void );	
+	virtual int		UpdateTransmitState( void );
 #else
 // Default IParticleEffect overrides.
 public:
 
-	virtual bool	ShouldSimulate() const { return m_bSimulate; }
-	virtual void	SetShouldSimulate( bool bSim ) { m_bSimulate = bSim; }
+	virtual bool	ShouldSimulate() const
+	{
+		return m_bSimulate;
+	}
+	virtual void	SetShouldSimulate( bool bSim )
+	{
+		m_bSimulate = bSim;
+	}
 
-	virtual void	SimulateParticles( CParticleSimulateIterator *pIterator );
-	virtual void	RenderParticles( CParticleRenderIterator *pIterator );
-	virtual const Vector & GetSortOrigin();
+	virtual void	SimulateParticles( CParticleSimulateIterator* pIterator );
+	virtual void	RenderParticles( CParticleRenderIterator* pIterator );
+	virtual const Vector& GetSortOrigin();
 public:
 	CParticleEffectBinding	m_ParticleEffect;
 #endif
 
 	virtual void	Activate();
-	virtual void	Think();	
+	virtual void	Think();
 
 #if defined( CLIENT_DLL )
 	// NOTE: Ths enclosed particle effect binding will do all the drawing
-	virtual bool	ShouldDraw() { return false; }
+	virtual bool	ShouldDraw()
+	{
+		return false;
+	}
 
 	int				AllocateToolParticleEffectId();
 	int				GetToolParticleEffectId() const;
@@ -69,14 +78,14 @@ private:
 #endif
 
 public:
-	void			FollowEntity(CBaseEntity *pEntity);
-	
+	void			FollowEntity( CBaseEntity* pEntity );
+
 	// UTIL_Remove will be called after the specified amount of time.
 	// If you pass in -1, the entity will never go away automatically.
-	void			SetLifetime(float lifetime);
+	void			SetLifetime( float lifetime );
 
 private:
-	CBaseParticleEntity( const CBaseParticleEntity & ); // not defined, not accessible
+	CBaseParticleEntity( const CBaseParticleEntity& );  // not defined, not accessible
 };
 
 

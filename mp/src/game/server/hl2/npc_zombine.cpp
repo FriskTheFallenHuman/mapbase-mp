@@ -39,7 +39,7 @@
 #include "tier0/memdbgon.h"
 
 enum
-{	
+{
 	SQUAD_SLOT_ZOMBINE_SPRINT1 = LAST_SHARED_SQUADSLOT,
 	SQUAD_SLOT_ZOMBINE_SPRINT2,
 };
@@ -71,7 +71,7 @@ int AE_ZOMBINE_PULLPIN;
 
 extern bool IsAlyxInDarknessMode();
 
-ConVar	sk_zombie_soldier_health( "sk_zombie_soldier_health","0");
+ConVar	sk_zombie_soldier_health( "sk_zombie_soldier_health", "0" );
 
 float g_flZombineGrenadeTimes = 0;
 
@@ -91,15 +91,15 @@ public:
 	virtual int SelectSchedule( void );
 	virtual void BuildScheduleTestBits( void );
 
-	virtual void HandleAnimEvent( animevent_t *pEvent );
+	virtual void HandleAnimEvent( animevent_t* pEvent );
 
-	virtual const char *GetLegsModel( void );
-	virtual const char *GetTorsoModel( void );
-	virtual const char *GetHeadcrabClassname( void );
-	virtual const char *GetHeadcrabModel( void );
+	virtual const char* GetLegsModel( void );
+	virtual const char* GetTorsoModel( void );
+	virtual const char* GetHeadcrabClassname( void );
+	virtual const char* GetHeadcrabModel( void );
 
-	virtual void PainSound( const CTakeDamageInfo &info );
-	virtual void DeathSound( const CTakeDamageInfo &info );
+	virtual void PainSound( const CTakeDamageInfo& info );
+	virtual void DeathSound( const CTakeDamageInfo& info );
 	virtual void AlertSound( void );
 	virtual void IdleSound( void );
 	virtual void AttackSound( void );
@@ -107,23 +107,23 @@ public:
 	virtual void AttackMissSound( void );
 	virtual void FootstepSound( bool fRightFoot );
 	virtual void FootscuffSound( bool fRightFoot );
-	virtual void MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize );
+	virtual void MoanSound( envelopePoint_t* pEnvelope, int iEnvelopeSize );
 
-	virtual void Event_Killed( const CTakeDamageInfo &info );
-	virtual void TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	virtual void RunTask( const Task_t *pTask );
-	virtual int  MeleeAttack1Conditions ( float flDot, float flDist );
+	virtual void Event_Killed( const CTakeDamageInfo& info );
+	virtual void TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	virtual void RunTask( const Task_t* pTask );
+	virtual int  MeleeAttack1Conditions( float flDot, float flDist );
 
-	virtual bool ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold );
+	virtual bool ShouldBecomeTorso( const CTakeDamageInfo& info, float flDamageThreshold );
 
-	virtual void OnScheduleChange ( void );
+	virtual void OnScheduleChange( void );
 	virtual bool CanRunAScriptedNPCInteraction( bool bForced );
 
 	void GatherGrenadeConditions( void );
 
 	virtual Activity NPC_TranslateActivity( Activity baseAct );
 
-	const char *GetMoanSound( int nSound );
+	const char* GetMoanSound( int nSound );
 
 	bool AllowedToSprint( void );
 	void Sprint( bool bMadSprint = false );
@@ -131,20 +131,26 @@ public:
 
 	void DropGrenade( Vector vDir );
 
-	bool IsSprinting( void ) { return m_flSprintTime > gpGlobals->curtime;	}
-	bool HasGrenade( void ) { return m_hGrenade != NULL; }
+	bool IsSprinting( void )
+	{
+		return m_flSprintTime > gpGlobals->curtime;
+	}
+	bool HasGrenade( void )
+	{
+		return m_hGrenade != NULL;
+	}
 
 	int TranslateSchedule( int scheduleType );
 
-	void InputStartSprint ( inputdata_t &inputdata );
-	void InputPullGrenade ( inputdata_t &inputdata );
+	void InputStartSprint( inputdata_t& inputdata );
+	void InputPullGrenade( inputdata_t& inputdata );
 
-	virtual CBaseEntity *OnFailedPhysGunPickup ( Vector vPhysgunPos );
+	virtual CBaseEntity* OnFailedPhysGunPickup( Vector vPhysgunPos );
 
 	//Called when we want to let go of a grenade and let the physcannon pick it up.
 	void ReleaseGrenade( Vector vPhysgunPos );
 
-	virtual bool HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sourceEnt );
+	virtual bool HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt );
 
 	enum
 	{
@@ -166,7 +172,7 @@ private:
 
 	float	m_flSuperFastAttackTime;
 	float   m_flGrenadePullTime;
-	
+
 #ifdef MAPBASE
 	int		m_iGrenadeCount = ZOMBINE_MAX_GRENADES;
 #else
@@ -179,31 +185,31 @@ private:
 	EHANDLE	m_hGrenade;
 
 protected:
-	static const char *pMoanSounds[];
+	static const char* pMoanSounds[];
 
 };
 
 LINK_ENTITY_TO_CLASS( npc_zombine, CNPC_Zombine );
 
 BEGIN_DATADESC( CNPC_Zombine )
-	DEFINE_FIELD( m_flSprintTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flSprintRestTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flSuperFastAttackTime, FIELD_TIME ),
-	DEFINE_FIELD( m_hGrenade, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_flGrenadePullTime, FIELD_TIME ),
+DEFINE_FIELD( m_flSprintTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flSprintRestTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flSuperFastAttackTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_hGrenade, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flGrenadePullTime, FIELD_TIME ),
 #ifdef MAPBASE
 	DEFINE_KEYFIELD( m_iGrenadeCount, FIELD_INTEGER, "NumGrenades" ),
 	DEFINE_OUTPUT( m_OnGrenade, "OnPullGrenade" ),
 #else
 	DEFINE_FIELD( m_iGrenadeCount, FIELD_INTEGER ),
 #endif
-	DEFINE_INPUTFUNC( FIELD_VOID,	"StartSprint", InputStartSprint ),
-	DEFINE_INPUTFUNC( FIELD_VOID,	"PullGrenade", InputPullGrenade ),
-END_DATADESC()
+			  DEFINE_INPUTFUNC( FIELD_VOID,	"StartSprint", InputStartSprint ),
+			  DEFINE_INPUTFUNC( FIELD_VOID,	"PullGrenade", InputPullGrenade ),
+			  END_DATADESC()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-const char *CNPC_Zombine::pMoanSounds[] =
+			  const char* CNPC_Zombine::pMoanSounds[] =
 {
 	"ATV_engine_null",
 };
@@ -216,7 +222,7 @@ void CNPC_Zombine::Spawn( void )
 #ifndef MAPBASE // Controlled by KV
 	m_fIsHeadless = false;
 #endif
-	
+
 #ifdef HL2_EPISODIC
 	SetBloodColor( BLOOD_COLOR_ZOMBIE );
 #else
@@ -299,13 +305,13 @@ void CNPC_Zombine::PrescheduleThink( void )
 		}
 	}
 
-	if ( HasGrenade () )
+	if( HasGrenade() )
 	{
-		CSoundEnt::InsertSound ( SOUND_DANGER, GetAbsOrigin() + GetSmoothedVelocity() * 0.5f , 256, 0.1, this, SOUNDENT_CHANNEL_ZOMBINE_GRENADE );
+		CSoundEnt::InsertSound( SOUND_DANGER, GetAbsOrigin() + GetSmoothedVelocity() * 0.5f , 256, 0.1, this, SOUNDENT_CHANNEL_ZOMBINE_GRENADE );
 
 		if( IsSprinting() && GetEnemy() && GetEnemy()->Classify() == CLASS_PLAYER_ALLY_VITAL && HasCondition( COND_SEE_ENEMY ) )
 		{
-			if( GetAbsOrigin().DistToSqr(GetEnemy()->GetAbsOrigin()) < Square( 144 ) )
+			if( GetAbsOrigin().DistToSqr( GetEnemy()->GetAbsOrigin() ) < Square( 144 ) )
 			{
 				StopSprint();
 			}
@@ -317,7 +323,7 @@ void CNPC_Zombine::PrescheduleThink( void )
 
 void CNPC_Zombine::OnScheduleChange( void )
 {
-	if ( HasCondition( COND_CAN_MELEE_ATTACK1 ) && IsSprinting() == true )
+	if( HasCondition( COND_CAN_MELEE_ATTACK1 ) && IsSprinting() == true )
 	{
 		m_flSuperFastAttackTime = gpGlobals->curtime + 1.0f;
 	}
@@ -326,21 +332,25 @@ void CNPC_Zombine::OnScheduleChange( void )
 }
 bool CNPC_Zombine::CanRunAScriptedNPCInteraction( bool bForced )
 {
-	if ( HasGrenade() == true )
+	if( HasGrenade() == true )
+	{
 		return false;
+	}
 
 	return BaseClass::CanRunAScriptedNPCInteraction( bForced );
 }
 
 int CNPC_Zombine::SelectSchedule( void )
 {
-	if ( GetHealth() <= 0 )
+	if( GetHealth() <= 0 )
+	{
 		return BaseClass::SelectSchedule();
+	}
 
-	if ( HasCondition( COND_ZOMBINE_GRENADE ) )
+	if( HasCondition( COND_ZOMBINE_GRENADE ) )
 	{
 		ClearCondition( COND_ZOMBINE_GRENADE );
-		
+
 		return SCHED_ZOMBINE_PULL_GRENADE;
 	}
 
@@ -356,26 +366,26 @@ void CNPC_Zombine::BuildScheduleTestBits( void )
 
 Activity CNPC_Zombine::NPC_TranslateActivity( Activity baseAct )
 {
-	if ( baseAct == ACT_MELEE_ATTACK1 )
+	if( baseAct == ACT_MELEE_ATTACK1 )
 	{
-		if ( m_flSuperFastAttackTime > gpGlobals->curtime || HasGrenade() )
+		if( m_flSuperFastAttackTime > gpGlobals->curtime || HasGrenade() )
 		{
-			return (Activity)ACT_ZOMBINE_ATTACK_FAST;
+			return ( Activity )ACT_ZOMBINE_ATTACK_FAST;
 		}
 	}
 
-	if ( baseAct == ACT_IDLE )
+	if( baseAct == ACT_IDLE )
 	{
-		if ( HasGrenade() )
+		if( HasGrenade() )
 		{
-			return (Activity)ACT_ZOMBINE_GRENADE_IDLE;
+			return ( Activity )ACT_ZOMBINE_GRENADE_IDLE;
 		}
 	}
 
 	return BaseClass::NPC_TranslateActivity( baseAct );
 }
 
-int CNPC_Zombine::MeleeAttack1Conditions ( float flDot, float flDist )
+int CNPC_Zombine::MeleeAttack1Conditions( float flDot, float flDist )
 {
 	int iBase = BaseClass::MeleeAttack1Conditions( flDot, flDist );
 
@@ -383,7 +393,7 @@ int CNPC_Zombine::MeleeAttack1Conditions ( float flDot, float flDist )
 	{
 		//Adrian: stop spriting if we get close enough to melee and we have a grenade
 		//this gives NPCs time to move away from you (before it was almost impossible cause of the high sprint speed)
-		if ( iBase == COND_CAN_MELEE_ATTACK1 )
+		if( iBase == COND_CAN_MELEE_ATTACK1 )
 		{
 			StopSprint();
 		}
@@ -394,57 +404,79 @@ int CNPC_Zombine::MeleeAttack1Conditions ( float flDot, float flDist )
 
 void CNPC_Zombine::GatherGrenadeConditions( void )
 {
-	if ( m_iGrenadeCount <= 0 )
-		return;
-
-	if ( g_flZombineGrenadeTimes > gpGlobals->curtime )
-		return;
-
-	if ( m_flGrenadePullTime > gpGlobals->curtime )
-		return;
-
-	if ( m_flSuperFastAttackTime >= gpGlobals->curtime )
-		return;
-	
-	if ( HasGrenade() )
-		return;
-
-	if ( GetEnemy() == NULL )
-		return;
-
-	if ( FVisible( GetEnemy() ) == false )
-		return;
-
-	if ( IsSprinting() )
-		return;
-
-	if ( IsOnFire() )
-		return;
-	
-	if ( IsRunningDynamicInteraction() == true )
-		return;
-
-	if ( m_ActBusyBehavior.IsActive() )
-		return;
-
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-
-	if ( pPlayer && pPlayer->FVisible( this ) )
+	if( m_iGrenadeCount <= 0 )
 	{
-		float flLengthToPlayer = (pPlayer->GetAbsOrigin() - GetAbsOrigin()).Length();
+		return;
+	}
+
+	if( g_flZombineGrenadeTimes > gpGlobals->curtime )
+	{
+		return;
+	}
+
+	if( m_flGrenadePullTime > gpGlobals->curtime )
+	{
+		return;
+	}
+
+	if( m_flSuperFastAttackTime >= gpGlobals->curtime )
+	{
+		return;
+	}
+
+	if( HasGrenade() )
+	{
+		return;
+	}
+
+	if( GetEnemy() == NULL )
+	{
+		return;
+	}
+
+	if( FVisible( GetEnemy() ) == false )
+	{
+		return;
+	}
+
+	if( IsSprinting() )
+	{
+		return;
+	}
+
+	if( IsOnFire() )
+	{
+		return;
+	}
+
+	if( IsRunningDynamicInteraction() == true )
+	{
+		return;
+	}
+
+	if( m_ActBusyBehavior.IsActive() )
+	{
+		return;
+	}
+
+	CBasePlayer* pPlayer = AI_GetSinglePlayer();
+
+	if( pPlayer && pPlayer->FVisible( this ) )
+	{
+		float flLengthToPlayer = ( pPlayer->GetAbsOrigin() - GetAbsOrigin() ).Length();
 		float flLengthToEnemy = flLengthToPlayer;
 
-		if ( pPlayer != GetEnemy() )
+		if( pPlayer != GetEnemy() )
 		{
-			flLengthToEnemy = ( GetEnemy()->GetAbsOrigin() - GetAbsOrigin()).Length();
+			flLengthToEnemy = ( GetEnemy()->GetAbsOrigin() - GetAbsOrigin() ).Length();
 		}
 
-		if ( flLengthToPlayer <= GRENADE_PULL_MAX_DISTANCE && flLengthToEnemy <= GRENADE_PULL_MAX_DISTANCE )
+		if( flLengthToPlayer <= GRENADE_PULL_MAX_DISTANCE && flLengthToEnemy <= GRENADE_PULL_MAX_DISTANCE )
 		{
 			float flPullChance = 1.0f - ( flLengthToEnemy / GRENADE_PULL_MAX_DISTANCE );
 			m_flGrenadePullTime = gpGlobals->curtime + 0.5f;
 
-			if ( flPullChance >= random->RandomFloat( 0.0f, 1.0f ) )
+			if( flPullChance >= random->RandomFloat( 0.0f, 1.0f ) )
 			{
 				g_flZombineGrenadeTimes = gpGlobals->curtime + 10.0f;
 				SetCondition( COND_ZOMBINE_GRENADE );
@@ -453,15 +485,17 @@ void CNPC_Zombine::GatherGrenadeConditions( void )
 	}
 }
 
-int CNPC_Zombine::TranslateSchedule( int scheduleType ) 
+int CNPC_Zombine::TranslateSchedule( int scheduleType )
 {
 	return BaseClass::TranslateSchedule( scheduleType );
 }
 
 void CNPC_Zombine::DropGrenade( Vector vDir )
 {
-	if ( m_hGrenade == NULL )
-		 return;
+	if( m_hGrenade == NULL )
+	{
+		return;
+	}
 
 	m_hGrenade->SetParent( NULL );
 	m_hGrenade->SetOwnerEntity( NULL );
@@ -470,9 +504,9 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 	QAngle angles;
 	GetAttachment( "grenade_attachment", vGunPos, angles );
 
-	IPhysicsObject *pPhysObj = m_hGrenade->VPhysicsGetObject();
+	IPhysicsObject* pPhysObj = m_hGrenade->VPhysicsGetObject();
 
-	if ( pPhysObj == NULL )
+	if( pPhysObj == NULL )
 	{
 		m_hGrenade->SetMoveType( MOVETYPE_VPHYSICS );
 		m_hGrenade->SetSolid( SOLID_VPHYSICS );
@@ -481,7 +515,7 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 		m_hGrenade->CreateVPhysics();
 	}
 
-	if ( pPhysObj )
+	if( pPhysObj )
 	{
 		pPhysObj->Wake();
 		pPhysObj->SetPosition( vGunPos, angles, true );
@@ -493,11 +527,11 @@ void CNPC_Zombine::DropGrenade( Vector vDir )
 	m_hGrenade = NULL;
 }
 
-void CNPC_Zombine::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_Zombine::Event_Killed( const CTakeDamageInfo& info )
 {
 	BaseClass::Event_Killed( info );
 
-	if ( HasGrenade() )
+	if( HasGrenade() )
 	{
 		DropGrenade( vec3_origin );
 	}
@@ -511,11 +545,11 @@ void CNPC_Zombine::Event_Killed( const CTakeDamageInfo &info )
 // Output :	 true  - if sub-class has a response for the interaction
 //			 false - if sub-class has no response
 //-----------------------------------------------------------------------------
-bool CNPC_Zombine::HandleInteraction( int interactionType, void *data, CBaseCombatCharacter *sourceEnt )
+bool CNPC_Zombine::HandleInteraction( int interactionType, void* data, CBaseCombatCharacter* sourceEnt )
 {
-	if ( interactionType == g_interactionBarnacleVictimGrab )
+	if( interactionType == g_interactionBarnacleVictimGrab )
 	{
-		if ( HasGrenade() )
+		if( HasGrenade() )
 		{
 			DropGrenade( vec3_origin );
 		}
@@ -524,19 +558,21 @@ bool CNPC_Zombine::HandleInteraction( int interactionType, void *data, CBaseComb
 	return BaseClass::HandleInteraction( interactionType, data, sourceEnt );
 }
 
-void CNPC_Zombine::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator )
+void CNPC_Zombine::TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator )
 {
 	BaseClass::TraceAttack( info, vecDir, ptr, pAccumulator );
 
 	//Only knock grenades off their hands if it's a player doing the damage.
-	if ( info.GetAttacker() && info.GetAttacker()->IsNPC() )
-		return;
-
-	if ( info.GetDamageType() & ( DMG_BULLET | DMG_CLUB ) )
+	if( info.GetAttacker() && info.GetAttacker()->IsNPC() )
 	{
-		if ( ptr->hitgroup == HITGROUP_LEFTARM )
+		return;
+	}
+
+	if( info.GetDamageType() & ( DMG_BULLET | DMG_CLUB ) )
+	{
+		if( ptr->hitgroup == HITGROUP_LEFTARM )
 		{
-			if ( HasGrenade() )
+			if( HasGrenade() )
 			{
 				DropGrenade( info.GetDamageForce() );
 				StopSprint();
@@ -545,26 +581,26 @@ void CNPC_Zombine::TraceAttack( const CTakeDamageInfo &info, const Vector &vecDi
 	}
 }
 
-void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
+void CNPC_Zombine::HandleAnimEvent( animevent_t* pEvent )
 {
-	if ( pEvent->event == AE_ZOMBINE_PULLPIN )
+	if( pEvent->event == AE_ZOMBINE_PULLPIN )
 	{
 		Vector vecStart;
 		QAngle angles;
 		GetAttachment( "grenade_attachment", vecStart, angles );
 
-		CBaseGrenade *pGrenade = Fraggrenade_Create( vecStart, vec3_angle, vec3_origin, AngularImpulse( 0, 0, 0 ), this, 3.5f, true );
+		CBaseGrenade* pGrenade = Fraggrenade_Create( vecStart, vec3_angle, vec3_origin, AngularImpulse( 0, 0, 0 ), this, 3.5f, true );
 
-		if ( pGrenade )
+		if( pGrenade )
 		{
 			// Move physobject to shadow
-			IPhysicsObject *pPhysicsObject = pGrenade->VPhysicsGetObject();
+			IPhysicsObject* pPhysicsObject = pGrenade->VPhysicsGetObject();
 
-			if ( pPhysicsObject )
+			if( pPhysicsObject )
 			{
 				pGrenade->VPhysicsDestroyObject();
 
-				int iAttachment = LookupAttachment( "grenade_attachment");
+				int iAttachment = LookupAttachment( "grenade_attachment" );
 
 				pGrenade->SetMoveType( MOVETYPE_NONE );
 				pGrenade->SetSolid( SOLID_NONE );
@@ -577,26 +613,26 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 
 				pGrenade->SetDamage( 200.0f );
 #ifdef MAPBASE
-				m_OnGrenade.Set(pGrenade, pGrenade, this);
+				m_OnGrenade.Set( pGrenade, pGrenade, this );
 #endif
 				m_hGrenade = pGrenade;
-				
+
 				EmitSound( "Zombine.ReadyGrenade" );
 
 				// Tell player allies nearby to regard me!
-				CAI_BaseNPC **ppAIs = g_AI_Manager.AccessAIs();
-				CAI_BaseNPC *pNPC;
-				for ( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
+				CAI_BaseNPC** ppAIs = g_AI_Manager.AccessAIs();
+				CAI_BaseNPC* pNPC;
+				for( int i = 0; i < g_AI_Manager.NumAIs(); i++ )
 				{
 					pNPC = ppAIs[i];
 
-					if( pNPC->Classify() == CLASS_PLAYER_ALLY || ( pNPC->Classify() == CLASS_PLAYER_ALLY_VITAL && pNPC->FVisible(this) ) )
+					if( pNPC->Classify() == CLASS_PLAYER_ALLY || ( pNPC->Classify() == CLASS_PLAYER_ALLY_VITAL && pNPC->FVisible( this ) ) )
 					{
 						int priority;
 						Disposition_t disposition;
 
-						priority = pNPC->IRelationPriority(this);
-						disposition = pNPC->IRelationType(this);
+						priority = pNPC->IRelationPriority( this );
+						disposition = pNPC->IRelationType( this );
 
 						pNPC->AddEntityRelationship( this, disposition, priority + 1 );
 					}
@@ -609,10 +645,12 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 		return;
 	}
 
-	if ( pEvent->event == AE_NPC_ATTACK_BROADCAST )
+	if( pEvent->event == AE_NPC_ATTACK_BROADCAST )
 	{
-		if ( HasGrenade() )
+		if( HasGrenade() )
+		{
 			return;
+		}
 	}
 
 	BaseClass::HandleAnimEvent( pEvent );
@@ -620,53 +658,65 @@ void CNPC_Zombine::HandleAnimEvent( animevent_t *pEvent )
 
 bool CNPC_Zombine::AllowedToSprint( void )
 {
-	if ( IsOnFire() )
+	if( IsOnFire() )
+	{
 		return false;
-	
+	}
+
 	//If you're sprinting then there's no reason to sprint again.
-	if ( IsSprinting() )
+	if( IsSprinting() )
+	{
 		return false;
+	}
 
 	int iChance = SPRINT_CHANCE_VALUE;
 
-	CHL2_Player *pPlayer = dynamic_cast <CHL2_Player*> ( AI_GetSinglePlayer() );
+	CHL2_Player* pPlayer = dynamic_cast <CHL2_Player*>( AI_GetSinglePlayer() );
 
-	if ( pPlayer )
+	if( pPlayer )
 	{
-		if ( HL2GameRules()->IsAlyxInDarknessMode() && pPlayer->FlashlightIsOn() == false )
+		if( HL2GameRules()->IsAlyxInDarknessMode() && pPlayer->FlashlightIsOn() == false )
 		{
 			iChance = SPRINT_CHANCE_VALUE_DARKNESS;
 		}
 
 		//Bigger chance of this happening if the player is not looking at the zombie
-		if ( pPlayer->FInViewCone( this ) == false )
+		if( pPlayer->FInViewCone( this ) == false )
 		{
 			iChance *= 2;
 		}
 	}
 
-	if ( HasGrenade() ) 
+	if( HasGrenade() )
 	{
 		iChance *= 4;
 	}
 
 	//Below 25% health they'll always sprint
-	if ( ( GetHealth() > GetMaxHealth() * 0.5f ) )
+	if( ( GetHealth() > GetMaxHealth() * 0.5f ) )
 	{
-		if ( IsStrategySlotRangeOccupied( SQUAD_SLOT_ZOMBINE_SPRINT1, SQUAD_SLOT_ZOMBINE_SPRINT2 ) == true )
+		if( IsStrategySlotRangeOccupied( SQUAD_SLOT_ZOMBINE_SPRINT1, SQUAD_SLOT_ZOMBINE_SPRINT2 ) == true )
+		{
 			return false;
-		
-		if ( random->RandomInt( 0, 100 ) > iChance )
+		}
+
+		if( random->RandomInt( 0, 100 ) > iChance )
+		{
 			return false;
-		
-		if ( m_flSprintRestTime > gpGlobals->curtime )
+		}
+
+		if( m_flSprintRestTime > gpGlobals->curtime )
+		{
 			return false;
+		}
 	}
 
 	float flLength = ( GetEnemy()->WorldSpaceCenter() - WorldSpaceCenter() ).Length();
 
-	if ( flLength > MAX_SPRINT_DISTANCE )
+	if( flLength > MAX_SPRINT_DISTANCE )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -681,8 +731,10 @@ void CNPC_Zombine::StopSprint( void )
 
 void CNPC_Zombine::Sprint( bool bMadSprint )
 {
-	if ( IsSprinting() )
+	if( IsSprinting() )
+	{
 		return;
+	}
 
 	OccupyStrategySlotRange( SQUAD_SLOT_ZOMBINE_SPRINT1, SQUAD_SLOT_ZOMBINE_SPRINT2 );
 	GetNavigator()->SetMovementActivity( ACT_RUN );
@@ -690,7 +742,7 @@ void CNPC_Zombine::Sprint( bool bMadSprint )
 	float flSprintTime = random->RandomFloat( MIN_SPRINT_TIME, MAX_SPRINT_TIME );
 
 	//If holding a grenade then sprint until it blows up.
-	if ( HasGrenade() || bMadSprint == true )
+	if( HasGrenade() || bMadSprint == true )
 	{
 		flSprintTime = 9999;
 	}
@@ -703,46 +755,46 @@ void CNPC_Zombine::Sprint( bool bMadSprint )
 	EmitSound( "Zombine.Charge" );
 }
 
-void CNPC_Zombine::RunTask( const Task_t *pTask )
+void CNPC_Zombine::RunTask( const Task_t* pTask )
 {
-	switch ( pTask->iTask )
+	switch( pTask->iTask )
 	{
 		case TASK_WAIT_FOR_MOVEMENT_STEP:
 		case TASK_WAIT_FOR_MOVEMENT:
 		{
 			BaseClass::RunTask( pTask );
 
-			if ( IsOnFire() && IsSprinting() )
+			if( IsOnFire() && IsSprinting() )
 			{
 				StopSprint();
 			}
 
 			//Only do this if I have an enemy
-			if ( GetEnemy() )
+			if( GetEnemy() )
 			{
-				if ( AllowedToSprint() == true )
+				if( AllowedToSprint() == true )
 				{
 					Sprint( ( GetHealth() <= GetMaxHealth() * 0.5f ) );
 					return;
 				}
 
-				if ( HasGrenade() )
+				if( HasGrenade() )
 				{
-					if ( IsSprinting() )
+					if( IsSprinting() )
 					{
-						GetNavigator()->SetMovementActivity( (Activity)ACT_ZOMBINE_GRENADE_RUN );
+						GetNavigator()->SetMovementActivity( ( Activity )ACT_ZOMBINE_GRENADE_RUN );
 					}
 					else
 					{
-						GetNavigator()->SetMovementActivity( (Activity)ACT_ZOMBINE_GRENADE_WALK );
+						GetNavigator()->SetMovementActivity( ( Activity )ACT_ZOMBINE_GRENADE_WALK );
 					}
 
 					return;
 				}
 
-				if ( GetNavigator()->GetMovementActivity() != ACT_WALK )
+				if( GetNavigator()->GetMovementActivity() != ACT_WALK )
 				{
-					if ( IsSprinting() == false )
+					if( IsSprinting() == false )
 					{
 						GetNavigator()->SetMovementActivity( ACT_WALK );
 					}
@@ -752,7 +804,7 @@ void CNPC_Zombine::RunTask( const Task_t *pTask )
 			{
 				GetNavigator()->SetMovementActivity( ACT_WALK );
 			}
-		
+
 			break;
 		}
 		default:
@@ -763,12 +815,12 @@ void CNPC_Zombine::RunTask( const Task_t *pTask )
 	}
 }
 
-void CNPC_Zombine::InputStartSprint ( inputdata_t &inputdata )
+void CNPC_Zombine::InputStartSprint( inputdata_t& inputdata )
 {
 	Sprint();
 }
 
-void CNPC_Zombine::InputPullGrenade ( inputdata_t &inputdata )
+void CNPC_Zombine::InputPullGrenade( inputdata_t& inputdata )
 {
 	g_flZombineGrenadeTimes = gpGlobals->curtime + 5.0f;
 	SetCondition( COND_ZOMBINE_GRENADE );
@@ -777,7 +829,7 @@ void CNPC_Zombine::InputPullGrenade ( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 // Purpose: Returns a moan sound for this class of zombie.
 //-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetMoanSound( int nSound )
+const char* CNPC_Zombine::GetMoanSound( int nSound )
 {
 	return pMoanSounds[ nSound % ARRAYSIZE( pMoanSounds ) ];
 }
@@ -800,7 +852,7 @@ void CNPC_Zombine::FootstepSound( bool fRightFoot )
 //-----------------------------------------------------------------------------
 // Purpose: Overloaded so that explosions don't split the zombine in twain.
 //-----------------------------------------------------------------------------
-bool CNPC_Zombine::ShouldBecomeTorso( const CTakeDamageInfo &info, float flDamageThreshold )
+bool CNPC_Zombine::ShouldBecomeTorso( const CTakeDamageInfo& info, float flDamageThreshold )
 {
 	return false;
 }
@@ -838,12 +890,12 @@ void CNPC_Zombine::AttackMissSound( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_Zombine::PainSound( const CTakeDamageInfo &info )
+void CNPC_Zombine::PainSound( const CTakeDamageInfo& info )
 {
 	// We're constantly taking damage when we are on fire. Don't make all those noises!
-	if ( IsOnFire() )
+	if( IsOnFire() )
 	{
 		return;
 	}
@@ -853,13 +905,13 @@ void CNPC_Zombine::PainSound( const CTakeDamageInfo &info )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_Zombine::DeathSound( const CTakeDamageInfo &info ) 
+void CNPC_Zombine::DeathSound( const CTakeDamageInfo& info )
 {
 	EmitSound( "Zombine.Die" );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::AlertSound( void )
 {
@@ -895,27 +947,27 @@ void CNPC_Zombine::IdleSound( void )
 //-----------------------------------------------------------------------------
 void CNPC_Zombine::AttackSound( void )
 {
-	
+
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetHeadcrabModel( void )
+const char* CNPC_Zombine::GetHeadcrabModel( void )
 {
 	return "models/headcrabclassic.mdl";
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetLegsModel( void )
+const char* CNPC_Zombine::GetLegsModel( void )
 {
 	return "models/zombie/zombie_soldier_legs.mdl";
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetTorsoModel( void )
+const char* CNPC_Zombine::GetTorsoModel( void )
 {
 	return "models/zombie/zombie_soldier_torso.mdl";
 }
@@ -923,7 +975,7 @@ const char *CNPC_Zombine::GetTorsoModel( void )
 //---------------------------------------------------------
 // Classic zombie only uses moan sound if on fire.
 //---------------------------------------------------------
-void CNPC_Zombine::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
+void CNPC_Zombine::MoanSound( envelopePoint_t* pEnvelope, int iEnvelopeSize )
 {
 	if( IsOnFire() )
 	{
@@ -934,15 +986,17 @@ void CNPC_Zombine::MoanSound( envelopePoint_t *pEnvelope, int iEnvelopeSize )
 //-----------------------------------------------------------------------------
 // Purpose: Returns the classname (ie "npc_headcrab") to spawn when our headcrab bails.
 //-----------------------------------------------------------------------------
-const char *CNPC_Zombine::GetHeadcrabClassname( void )
+const char* CNPC_Zombine::GetHeadcrabClassname( void )
 {
 	return "npc_headcrab";
 }
 
 void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 {
-	if ( HasGrenade() == false )
+	if( HasGrenade() == false )
+	{
 		return;
+	}
 
 	Vector vDir = vPhysgunPos - m_hGrenade->GetAbsOrigin();
 	VectorNormalize( vDir );
@@ -958,38 +1012,46 @@ void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 	bool bNegativeForward = false;
 	bool bNegativeRight = false;
 
-	if ( flDotForward < 0.0f )
+	if( flDotForward < 0.0f )
 	{
 		bNegativeForward = true;
 		flDotForward = flDotForward * -1;
 	}
 
-	if ( flDotRight < 0.0f )
+	if( flDotRight < 0.0f )
 	{
 		bNegativeRight = true;
 		flDotRight = flDotRight * -1;
 	}
 
-	if ( flDotRight > flDotForward )
+	if( flDotRight > flDotForward )
 	{
-		if ( bNegativeRight == true )
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_WEST;
-		else 
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_EAST;
+		if( bNegativeRight == true )
+		{
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_WEST;
+		}
+		else
+		{
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_EAST;
+		}
 	}
 	else
 	{
-		if ( bNegativeForward == true )
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_BACK;
-		else 
-			aActivity = (Activity)ACT_ZOMBINE_GRENADE_FLINCH_FRONT;
+		if( bNegativeForward == true )
+		{
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_BACK;
+		}
+		else
+		{
+			aActivity = ( Activity )ACT_ZOMBINE_GRENADE_FLINCH_FRONT;
+		}
 	}
 
 	AddGesture( aActivity );
 
 	DropGrenade( vec3_origin );
 
-	if ( IsSprinting() )
+	if( IsSprinting() )
 	{
 		StopSprint();
 	}
@@ -999,9 +1061,9 @@ void CNPC_Zombine::ReleaseGrenade( Vector vPhysgunPos )
 	}
 }
 
-CBaseEntity *CNPC_Zombine::OnFailedPhysGunPickup( Vector vPhysgunPos )
+CBaseEntity* CNPC_Zombine::OnFailedPhysGunPickup( Vector vPhysgunPos )
 {
-	CBaseEntity *pGrenade = m_hGrenade;
+	CBaseEntity* pGrenade = m_hGrenade;
 	ReleaseGrenade( vPhysgunPos );
 	return pGrenade;
 }
@@ -1014,27 +1076,27 @@ CBaseEntity *CNPC_Zombine::OnFailedPhysGunPickup( Vector vPhysgunPos )
 
 AI_BEGIN_CUSTOM_NPC( npc_zombine, CNPC_Zombine )
 
-	//Squad slots
-	DECLARE_SQUADSLOT( SQUAD_SLOT_ZOMBINE_SPRINT1 )
-	DECLARE_SQUADSLOT( SQUAD_SLOT_ZOMBINE_SPRINT2 )
+//Squad slots
+DECLARE_SQUADSLOT( SQUAD_SLOT_ZOMBINE_SPRINT1 )
+DECLARE_SQUADSLOT( SQUAD_SLOT_ZOMBINE_SPRINT2 )
 
-	DECLARE_CONDITION( COND_ZOMBINE_GRENADE )
+DECLARE_CONDITION( COND_ZOMBINE_GRENADE )
 
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_PULL )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_WALK )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_RUN )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_IDLE )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_ATTACK_FAST )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_BACK )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_FRONT )
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_WEST)
-	DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_EAST )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_PULL )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_WALK )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_RUN )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_IDLE )
+DECLARE_ACTIVITY( ACT_ZOMBINE_ATTACK_FAST )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_BACK )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_FRONT )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_WEST )
+DECLARE_ACTIVITY( ACT_ZOMBINE_GRENADE_FLINCH_EAST )
 
-	DECLARE_ANIMEVENT( AE_ZOMBINE_PULLPIN )
+DECLARE_ANIMEVENT( AE_ZOMBINE_PULLPIN )
 
 
-	DEFINE_SCHEDULE
-	(
+DEFINE_SCHEDULE
+(
 	SCHED_ZOMBINE_PULL_GRENADE,
 
 	"	Tasks"
@@ -1043,7 +1105,7 @@ AI_BEGIN_CUSTOM_NPC( npc_zombine, CNPC_Zombine )
 
 	"	Interrupts"
 
-	)
+)
 
 AI_END_CUSTOM_NPC()
 

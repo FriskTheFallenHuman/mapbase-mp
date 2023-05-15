@@ -5,7 +5,7 @@
 #ifndef IREPLAYCAMERA_H
 #define IREPLAYCAMERA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -14,7 +14,8 @@
 
 //----------------------------------------------------------------------------------------
 
-abstract_class IReplayCamera : public IBaseInterface
+abstract_class IReplayCamera :
+public IBaseInterface
 {
 public:
 	virtual void		ClearOverrideView() = 0;

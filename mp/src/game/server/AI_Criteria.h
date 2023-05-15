@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -10,7 +10,7 @@
 #ifndef AI_CRITERIA_H
 #define AI_CRITERIA_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/utlrbtree.h"
@@ -18,7 +18,7 @@
 #include "interval.h"
 #include "mathlib/compressed_vector.h"
 
-extern const char *SplitContext( const char *raw, char *key, int keylen, char *value, int valuelen, float *duration );
+extern const char* SplitContext( const char* raw, char* key, int keylen, char* value, int valuelen, float* duration );
 
 
 class AI_CriteriaSet
@@ -28,16 +28,16 @@ public:
 	AI_CriteriaSet( const AI_CriteriaSet& src );
 	~AI_CriteriaSet();
 
-	void AppendCriteria( const char *criteria, const char *value = "", float weight = 1.0f );
-	void RemoveCriteria( const char *criteria );
-	
+	void AppendCriteria( const char* criteria, const char* value = "", float weight = 1.0f );
+	void RemoveCriteria( const char* criteria );
+
 	void Describe();
 
 	int GetCount() const;
-	int			FindCriterionIndex( const char *name ) const;
+	int			FindCriterionIndex( const char* name ) const;
 
-	const char *GetName( int index ) const;
-	const char *GetValue( int index ) const;
+	const char* GetName( int index ) const;
+	const char* GetValue( int index ) const;
 	float		GetWeight( int index ) const;
 
 #ifdef MAPBASE
@@ -49,8 +49,8 @@ private:
 	struct CritEntry_t
 	{
 		CritEntry_t() :
-				criterianame( UTL_INVAL_SYMBOL ),
-				weight( 0.0f )
+			criterianame( UTL_INVAL_SYMBOL ),
+			weight( 0.0f )
 		{
 			value[ 0 ] = 0;
 		}
@@ -65,8 +65,10 @@ private:
 
 		CritEntry_t& operator=( const CritEntry_t& src )
 		{
-			if ( this == &src )
+			if( this == &src )
+			{
 				return *this;
+			}
 
 			criterianame = src.criterianame;
 			weight = src.weight;
@@ -80,9 +82,9 @@ private:
 			return Q_stricmp( lhs.criterianame.String(), rhs.criterianame.String() ) < 0 ? true : false;
 		}
 
-		void SetValue( char const *str )
+		void SetValue( char const* str )
 		{
-			if ( !str )
+			if( !str )
 			{
 				value[ 0 ] = 0;
 			}
@@ -109,9 +111,22 @@ struct response_interval_t
 	T start;
 	T range;
 
-	interval_t &ToInterval( interval_t &dest ) const	{ dest.start = start; dest.range = range; return dest; }
-	void FromInterval( const interval_t &from )			{ start = from.start; range = from.range; }
-	float Random() const								{ interval_t temp = { start, range }; return RandomInterval( temp ); }
+	interval_t& ToInterval( interval_t& dest ) const
+	{
+		dest.start = start;
+		dest.range = range;
+		return dest;
+	}
+	void FromInterval( const interval_t& from )
+	{
+		start = from.start;
+		range = from.range;
+	}
+	float Random() const
+	{
+		interval_t temp = { start, range };
+		return RandomInterval( temp );
+	}
 };
 
 typedef response_interval_t<float16_with_assign> responseparams_interval_t;
@@ -122,15 +137,15 @@ struct AI_ResponseParams
 
 	enum
 	{
-		RG_DELAYAFTERSPEAK =	(1<<0),
-		RG_SPEAKONCE =			(1<<1),
-		RG_ODDS =				(1<<2),
-		RG_RESPEAKDELAY =		(1<<3),
-		RG_SOUNDLEVEL =			(1<<4),
-		RG_DONT_USE_SCENE =		(1<<5),
-		RG_STOP_ON_NONIDLE =	(1<<6),
-		RG_WEAPONDELAY =		(1<<7),
-		RG_DELAYBEFORESPEAK =	(1<<8),
+		RG_DELAYAFTERSPEAK =	( 1 << 0 ),
+		RG_SPEAKONCE =	( 1 << 1 ),
+		RG_ODDS =	( 1 << 2 ),
+		RG_RESPEAKDELAY =	( 1 << 3 ),
+		RG_SOUNDLEVEL =	( 1 << 4 ),
+		RG_DONT_USE_SCENE =	( 1 << 5 ),
+		RG_STOP_ON_NONIDLE =	( 1 << 6 ),
+		RG_WEAPONDELAY =	( 1 << 7 ),
+		RG_DELAYBEFORESPEAK =	( 1 << 8 ),
 	};
 
 	AI_ResponseParams()
@@ -180,18 +195,18 @@ enum ResponseType_t
 #ifdef MAPBASE
 // I wanted to add more options to apply contexts to,
 // so I replaced the existing system with a flag-based integer instead of a bunch of booleans.
-// 
-// New ones should be implemented in: 
+//
+// New ones should be implemented in:
 // CResponseSystem::ParseRule() - AI_ResponseSystem.cpp
 // AI_Response::Describe() - AI_Criteria.cpp
 // CAI_Expresser::SpeakDispatchResponse() - ai_speech.cpp
 enum
 {
-	APPLYCONTEXT_SELF = (1 << 0), // Included for contexts that apply to both self and something else
-	APPLYCONTEXT_WORLD = (1 << 1), // Apply to world
+	APPLYCONTEXT_SELF = ( 1 << 0 ), // Included for contexts that apply to both self and something else
+	APPLYCONTEXT_WORLD = ( 1 << 1 ), // Apply to world
 
-	APPLYCONTEXT_SQUAD = (1 << 2), // Apply to squad
-	APPLYCONTEXT_ENEMY = (1 << 3), // Apply to enemy
+	APPLYCONTEXT_SQUAD = ( 1 << 2 ), // Apply to squad
+	APPLYCONTEXT_ENEMY = ( 1 << 3 ), // Apply to enemy
 };
 #endif
 
@@ -201,16 +216,22 @@ public:
 	DECLARE_SIMPLE_DATADESC();
 
 	AI_Response();
-	AI_Response( const AI_Response &from );
+	AI_Response( const AI_Response& from );
 	~AI_Response();
-	AI_Response &operator=( const AI_Response &from );
+	AI_Response& operator=( const AI_Response& from );
 
 	void			Release();
 
-	const char *	GetNamePtr() const;
-	const char *	GetResponsePtr() const;
-	const AI_ResponseParams *GetParams() const { return &m_Params; }
-	ResponseType_t	GetType() const { return (ResponseType_t)m_Type; }
+	const char* 	GetNamePtr() const;
+	const char* 	GetResponsePtr() const;
+	const AI_ResponseParams* GetParams() const
+	{
+		return &m_Params;
+	}
+	ResponseType_t	GetType() const
+	{
+		return ( ResponseType_t )m_Type;
+	}
 	soundlevel_t	GetSoundLevel() const;
 	float			GetRespeakDelay() const;
 	float			GetWeaponDelay() const;
@@ -221,39 +242,51 @@ public:
 	float			GetDelay() const;
 	float			GetPreDelay() const;
 
-	void			SetContext( const char *context );
-	const char *	GetContext( void ) const { return m_szContext.Length() ? m_szContext.Get() : NULL; }
+	void			SetContext( const char* context );
+	const char* 	GetContext( void ) const
+	{
+		return m_szContext.Length() ? m_szContext.Get() : NULL;
+	}
 
 #ifdef MAPBASE
-	int				GetContextFlags() { return m_iContextFlags; }
-	bool			IsApplyContextToWorld( void ) { return (m_iContextFlags & APPLYCONTEXT_WORLD) != 0; }
+	int				GetContextFlags()
+	{
+		return m_iContextFlags;
+	}
+	bool			IsApplyContextToWorld( void )
+	{
+		return ( m_iContextFlags & APPLYCONTEXT_WORLD ) != 0;
+	}
 #else
-	bool			IsApplyContextToWorld( void ) { return m_bApplyContextToWorld; }
+	bool			IsApplyContextToWorld( void )
+	{
+		return m_bApplyContextToWorld;
+	}
 #endif
 
 	void Describe();
 
 	const AI_CriteriaSet* GetCriteria();
 
-	void	Init( ResponseType_t type, 
-				const char *responseName, 
-				const AI_CriteriaSet& criteria, 
-				const AI_ResponseParams& responseparams,
-				const char *matchingRule,
-				const char *applyContext,
-				bool bApplyContextToWorld );
+	void	Init( ResponseType_t type,
+				  const char* responseName,
+				  const AI_CriteriaSet& criteria,
+				  const AI_ResponseParams& responseparams,
+				  const char* matchingRule,
+				  const char* applyContext,
+				  bool bApplyContextToWorld );
 
 #ifdef MAPBASE
-	void	Init( ResponseType_t type, 
-				const char *responseName, 
-				const AI_CriteriaSet& criteria, 
-				const AI_ResponseParams& responseparams,
-				const char *matchingRule,
-				const char *applyContext,
-				int iContextFlags );
+	void	Init( ResponseType_t type,
+				  const char* responseName,
+				  const AI_CriteriaSet& criteria,
+				  const AI_ResponseParams& responseparams,
+				  const char* matchingRule,
+				  const char* applyContext,
+				  int iContextFlags );
 #endif
 
-	static const char *DescribeResponse( ResponseType_t type );
+	static const char* DescribeResponse( ResponseType_t type );
 
 	enum
 	{
@@ -268,7 +301,7 @@ private:
 	char			m_szMatchingRule[ MAX_RULE_NAME ];
 
 	// The initial criteria to which we are responsive
-	AI_CriteriaSet	*m_pCriteria;
+	AI_CriteriaSet*	m_pCriteria;
 
 	AI_ResponseParams m_Params;
 

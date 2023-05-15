@@ -16,16 +16,16 @@ static bool sFoundConfigArgs = false;
 //-----------------------------------------------------------------------------
 // Purpose: Parses arguments and adds them to argv and argc
 //-----------------------------------------------------------------------------
-static void AddArguments( int &argc, char **&argv, const char *str )
+static void AddArguments( int& argc, char**& argv, const char* str )
 {
-	char  **args	 = 0;
-	char   *argList	 = 0;
+	char**  args	 = 0;
+	char*   argList	 = 0;
 	int		argCt	 = argc;
 
 	argList = V_strdup( str );
 
 	// Parse the arguments out of the string
-	char *token = strtok( argList, " " );
+	char* token = strtok( argList, " " );
 	while( token )
 	{
 		++argCt;
@@ -38,7 +38,7 @@ static void AddArguments( int &argc, char **&argv, const char *str )
 		sFoundConfigArgs = true;
 
 		// Allocate a new array for argv
-		args = new char*[ argCt ];
+		args = new char* [ argCt ];
 
 		// Copy original arguments, up to the last one
 		int i;
@@ -72,27 +72,29 @@ static void AddArguments( int &argc, char **&argv, const char *str )
 // keyname: Name of the block containing the key/args pairs (ie map or model name)
 // appname: Keyname for the commandline arguments to be loaded - typically the exe name.
 //-----------------------------------------------------------------------------
-void LoadCmdLineFromFile( int &argc, char **&argv, const char *keyname, const char *appname )
+void LoadCmdLineFromFile( int& argc, char**& argv, const char* keyname, const char* appname )
 {
 	sFoundConfigArgs = false;
 
 	assert( g_pFileSystem );
 	if( !g_pFileSystem )
+	{
 		return;
+	}
 
 	// Load the cfg file, and find the keyname
-	KeyValues *kv = new KeyValues( "CommandLine" );
+	KeyValues* kv = new KeyValues( "CommandLine" );
 
 	char filename[512];
 	Q_snprintf( filename, sizeof( filename ), "%s/cfg/commandline.cfg", gamedir );
 
-	if ( kv->LoadFromFile( g_pFileSystem, filename ) )
+	if( kv->LoadFromFile( g_pFileSystem, filename ) )
 	{
 		// Load the commandline arguments for this app
-		KeyValues  *appKey	= kv->FindKey( keyname );
+		KeyValues*  appKey	= kv->FindKey( keyname );
 		if( appKey )
 		{
-			const char *str	= appKey->GetString( appname );
+			const char* str	= appKey->GetString( appname );
 			Msg( "Command Line found: %s\n", str );
 
 			AddArguments( argc, argv, str );
@@ -106,10 +108,12 @@ void LoadCmdLineFromFile( int &argc, char **&argv, const char *keyname, const ch
 // Purpose: Cleans up any memory allocated for the new argv.  Pass in the app's
 // argc and argv - this is safe even if no extra arguments were loaded.
 //-----------------------------------------------------------------------------
-void DeleteCmdLine( int argc, char **argv )
+void DeleteCmdLine( int argc, char** argv )
 {
 	if( !sFoundConfigArgs )
+	{
 		return;
+	}
 
 	for( int i = 0; i < argc; ++i )
 	{

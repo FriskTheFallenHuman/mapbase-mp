@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -12,14 +12,14 @@
 void SaveVertexNormals( void )
 {
 	int i, j;
-	dface_t *f;
-	texinfo_t	*tex;
+	dface_t* f;
+	texinfo_t*	tex;
 
 
 	g_numvertnormalindices = 0;
 	g_numvertnormals = 0;
 
-	for( i = 0 ;i<numfaces ; i++ )
+	for( i = 0 ; i < numfaces ; i++ )
 	{
 		f = &dfaces[i];
 		tex = &texinfo[f->texinfo];
@@ -30,7 +30,7 @@ void SaveVertexNormals( void )
 			{
 				Error( "g_numvertnormalindices == MAX_MAP_VERTNORMALINDICES (%d)", MAX_MAP_VERTNORMALINDICES );
 			}
-			
+
 			g_vertnormalindices[g_numvertnormalindices] = g_numvertnormals;
 			g_numvertnormalindices++;
 		}

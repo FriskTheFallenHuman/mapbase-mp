@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -28,7 +28,7 @@ public:
 	DECLARE_CLASS( CTEBeamEnts, CTEBaseBeam );
 	DECLARE_SERVERCLASS();
 
-					CTEBeamEnts( const char *name );
+	CTEBeamEnts( const char* name );
 	virtual			~CTEBeamEnts( void );
 
 	virtual void	Test( const Vector& current_origin, const QAngle& current_angles );
@@ -40,10 +40,10 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *name - 
+// Purpose:
+// Input  : *name -
 //-----------------------------------------------------------------------------
-CTEBeamEnts::CTEBeamEnts( const char *name ) :
+CTEBeamEnts::CTEBeamEnts( const char* name ) :
 	CTEBaseBeam( name )
 {
 	m_nStartEntity	= 0;
@@ -51,16 +51,16 @@ CTEBeamEnts::CTEBeamEnts( const char *name ) :
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CTEBeamEnts::~CTEBeamEnts( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *current_origin - 
-//			*current_angles - 
+// Purpose:
+// Input  : *current_origin -
+//			*current_angles -
 //-----------------------------------------------------------------------------
 void CTEBeamEnts::Test( const Vector& current_origin, const QAngle& current_angles )
 {
@@ -83,37 +83,37 @@ void CTEBeamEnts::Test( const Vector& current_origin, const QAngle& current_angl
 	Create( filter, 0.0 );
 }
 
-IMPLEMENT_SERVERCLASS_ST(CTEBeamEnts, DT_TEBeamEnts)
-	SendPropInt( SENDINFO(m_nStartEntity), 24, SPROP_UNSIGNED ),
-	SendPropInt( SENDINFO(m_nEndEntity), 24, SPROP_UNSIGNED ),
-END_SEND_TABLE()
+IMPLEMENT_SERVERCLASS_ST( CTEBeamEnts, DT_TEBeamEnts )
+SendPropInt( SENDINFO( m_nStartEntity ), 24, SPROP_UNSIGNED ),
+			 SendPropInt( SENDINFO( m_nEndEntity ), 24, SPROP_UNSIGNED ),
+			 END_SEND_TABLE()
 
 
 // Singleton to fire TEBeamEnts objects
-static CTEBeamEnts g_TEBeamEnts( "BeamEnts" );
+			 static CTEBeamEnts g_TEBeamEnts( "BeamEnts" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : msg_dest - 
-//			delay - 
-//			*origin - 
-//			*recipient - 
-//				int	start - 
-//			end - 
-//			modelindex - 
-//			startframe - 
-//			framerate - 
-//			msg_dest - 
-//			delay - 
-//			origin - 
-//			recipient - 
+// Purpose:
+// Input  : msg_dest -
+//			delay -
+//			*origin -
+//			*recipient -
+//				int	start -
+//			end -
+//			modelindex -
+//			startframe -
+//			framerate -
+//			msg_dest -
+//			delay -
+//			origin -
+//			recipient -
 //-----------------------------------------------------------------------------
 void TE_BeamEnts( IRecipientFilter& filter, float delay,
-	int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
-	float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
+				  int	start, int end, int modelindex, int haloindex, int startframe, int framerate,
+				  float life, float width, float endWidth, int fadeLength, float amplitude, int r, int g, int b, int a, int speed )
 {
-	g_TEBeamEnts.m_nStartEntity = (start & 0x0FFF) | ((1 & 0xF)<<12);
-	g_TEBeamEnts.m_nEndEntity	= (end & 0x0FFF) | ((1 & 0xF)<<12);
+	g_TEBeamEnts.m_nStartEntity = ( start & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
+	g_TEBeamEnts.m_nEndEntity	= ( end & 0x0FFF ) | ( ( 1 & 0xF ) << 12 );
 	g_TEBeamEnts.m_nModelIndex	= modelindex;
 	g_TEBeamEnts.m_nHaloIndex	= haloindex;
 	g_TEBeamEnts.m_nStartFrame	= startframe;

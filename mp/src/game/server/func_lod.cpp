@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -18,7 +18,7 @@ class CFunc_LOD : public CBaseEntity
 public:
 	DECLARE_SERVERCLASS();
 
-					CFunc_LOD();
+	CFunc_LOD();
 	virtual 		~CFunc_LOD();
 
 
@@ -38,19 +38,19 @@ public:
 	virtual void	Spawn();
 	bool			CreateVPhysics();
 	virtual void	Activate();
-	virtual bool	KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool	KeyValue( const char* szKeyName, const char* szValue );
 };
 
 
-IMPLEMENT_SERVERCLASS_ST(CFunc_LOD, DT_Func_LOD)
-	SendPropFloat(SENDINFO(m_fDisappearDist), 0, SPROP_NOSCALE),
+IMPLEMENT_SERVERCLASS_ST( CFunc_LOD, DT_Func_LOD )
+SendPropFloat( SENDINFO( m_fDisappearDist ), 0, SPROP_NOSCALE ),
 #ifdef MAPBASE
-	SendPropFloat(SENDINFO(m_fDisappearMaxDist), 0, SPROP_NOSCALE),
+	SendPropFloat( SENDINFO( m_fDisappearMaxDist ), 0, SPROP_NOSCALE ),
 #endif
-END_SEND_TABLE()
+			   END_SEND_TABLE()
 
 
-LINK_ENTITY_TO_CLASS(func_lod, CFunc_LOD);
+			   LINK_ENTITY_TO_CLASS( func_lod, CFunc_LOD );
 
 
 //---------------------------------------------------------
@@ -58,18 +58,18 @@ LINK_ENTITY_TO_CLASS(func_lod, CFunc_LOD);
 //---------------------------------------------------------
 BEGIN_DATADESC( CFunc_LOD )
 
-	DEFINE_FIELD( m_fDisappearDist,	FIELD_FLOAT ),
+DEFINE_FIELD( m_fDisappearDist,	FIELD_FLOAT ),
 #ifdef MAPBASE
 	DEFINE_FIELD( m_fDisappearMaxDist,	FIELD_FLOAT ),
 #endif
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 // ------------------------------------------------------------------------------------- //
 // CFunc_LOD implementation.
 // ------------------------------------------------------------------------------------- //
-CFunc_LOD::CFunc_LOD()
+			  CFunc_LOD::CFunc_LOD()
 {
 }
 
@@ -101,34 +101,34 @@ void CFunc_LOD::Activate()
 }
 
 
-bool CFunc_LOD::KeyValue( const char *szKeyName, const char *szValue )
+bool CFunc_LOD::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "DisappearDist"))
+	if( FStrEq( szKeyName, "DisappearDist" ) )
 	{
-		m_fDisappearDist = (float)atof(szValue);
+		m_fDisappearDist = ( float )atof( szValue );
 	}
 #ifdef MAPBASE
-	else if (FStrEq(szKeyName, "DisappearMaxDist"))
+	else if( FStrEq( szKeyName, "DisappearMaxDist" ) )
 	{
-		m_fDisappearMaxDist = (float)atof(szValue);
+		m_fDisappearMaxDist = ( float )atof( szValue );
 	}
-	else if (FStrEq(szKeyName, "DisappearMinDist")) // Forwards compatibility
+	else if( FStrEq( szKeyName, "DisappearMinDist" ) ) // Forwards compatibility
 	{
-		m_fDisappearDist = (float)atof(szValue);
+		m_fDisappearDist = ( float )atof( szValue );
 	}
 #endif
-	else if (FStrEq(szKeyName, "Solid"))
+	else if( FStrEq( szKeyName, "Solid" ) )
 	{
-		if (atoi(szValue) != 0)
+		if( atoi( szValue ) != 0 )
 		{
 			AddSolidFlags( FSOLID_NOT_SOLID );
 		}
 	}
 	else
 	{
-		return BaseClass::KeyValue(szKeyName, szValue);
+		return BaseClass::KeyValue( szKeyName, szValue );
 	}
 
 	return true;
 }
-			  
+

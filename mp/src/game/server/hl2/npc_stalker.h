@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NPC_STALKER_H
 #define NPC_STALKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -59,64 +59,64 @@ public:
 	void				UpdateOnRemove( void );
 #endif
 
-	void				KillAttackBeam(void);
-	void				DrawAttackBeam(void);
-	void				CalcBeamPosition(void);
-	Vector				LaserStartPosition(Vector vStalkerPos);
+	void				KillAttackBeam( void );
+	void				DrawAttackBeam( void );
+	void				CalcBeamPosition( void );
+	Vector				LaserStartPosition( Vector vStalkerPos );
 
 	Vector				m_vLaserCurPos;			// Last position successfully burned
-	bool				InnateWeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
-	
+	bool				InnateWeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
+
 	// ------------------------------
 	//	Dormancy
 	// ------------------------------
-	CAI_Schedule*	WakeUp(void);
-	void			GoDormant(void);
+	CAI_Schedule*	WakeUp( void );
+	void			GoDormant( void );
 
 public:
 	void			Spawn( void );
 	void			Precache( void );
 	bool			CreateBehaviors();
 	float			MaxYawSpeed( void );
-	Class_T			Classify ( void );
+	Class_T			Classify( void );
 
 	void			PrescheduleThink();
 
-	bool			IsValidEnemy( CBaseEntity *pEnemy );
-	
-	void			StartTask( const Task_t *pTask );
-	void			RunTask( const Task_t *pTask );
-	virtual int		SelectSchedule ( void );
+	bool			IsValidEnemy( CBaseEntity* pEnemy );
+
+	void			StartTask( const Task_t* pTask );
+	void			RunTask( const Task_t* pTask );
+	virtual int		SelectSchedule( void );
 	virtual int		TranslateSchedule( int scheduleType );
-	int				OnTakeDamage_Alive( const CTakeDamageInfo &info );
+	int				OnTakeDamage_Alive( const CTakeDamageInfo& info );
 	void			OnScheduleChange();
 
-	void			StalkerThink(void);
-	void			NotifyDeadFriend( CBaseEntity *pFriend );
+	void			StalkerThink( void );
+	void			NotifyDeadFriend( CBaseEntity* pFriend );
 
-	int				MeleeAttack1Conditions ( float flDot, float flDist );
-	int				RangeAttack1Conditions ( float flDot, float flDist );
-	void			HandleAnimEvent( animevent_t *pEvent );
+	int				MeleeAttack1Conditions( float flDot, float flDist );
+	int				RangeAttack1Conditions( float flDot, float flDist );
+	void			HandleAnimEvent( animevent_t* pEvent );
 
-	bool			FValidateHintType(CAI_Hint *pHint);
+	bool			FValidateHintType( CAI_Hint* pHint );
 	Activity		GetHintActivity( short sHintType, Activity HintsActivity );
 	float			GetHintDelay( short sHintType );
 
 	void			IdleSound( void );
-	void			DeathSound( const CTakeDamageInfo &info );
-	void			PainSound( const CTakeDamageInfo &info );
+	void			DeathSound( const CTakeDamageInfo& info );
+	void			PainSound( const CTakeDamageInfo& info );
 
-	void			Event_Killed( const CTakeDamageInfo &info );
+	void			Event_Killed( const CTakeDamageInfo& info );
 #ifdef MAPBASE
-	void			TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
+	void			TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
 #endif
-	void			DoSmokeEffect( const Vector &position );
+	void			DoSmokeEffect( const Vector& position );
 
-	void			AddZigZagToPath(void);
+	void			AddZigZagToPath( void );
 	void			StartAttackBeam();
 	void			UpdateAttackBeam();
 
-	CNPC_Stalker(void);
+	CNPC_Stalker( void );
 
 	DECLARE_DATADESC();
 	DEFINE_CUSTOM_AI;

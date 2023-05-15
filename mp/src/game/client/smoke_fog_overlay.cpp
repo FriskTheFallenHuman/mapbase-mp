@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -16,7 +16,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static IMaterial *g_pSmokeFogMaterial = NULL;
+static IMaterial* g_pSmokeFogMaterial = NULL;
 
 
 float		g_SmokeFogOverlayAlpha;
@@ -29,21 +29,23 @@ CLIENTEFFECT_REGISTER_END()
 void InitSmokeFogOverlay()
 {
 	TermSmokeFogOverlay();
-	
+
 	g_SmokeFogOverlayAlpha = 0;
 
-	if(materials)
+	if( materials )
 	{
 		g_pSmokeFogMaterial = materials->FindMaterial( "particle/screenspace_fog", TEXTURE_GROUP_CLIENT_EFFECTS );
-		if(g_pSmokeFogMaterial)
+		if( g_pSmokeFogMaterial )
+		{
 			g_pSmokeFogMaterial->IncrementReferenceCount();
+		}
 	}
 }
 
 
 void TermSmokeFogOverlay()
 {
-	if(g_pSmokeFogMaterial)
+	if( g_pSmokeFogMaterial )
 	{
 		g_pSmokeFogMaterial->DecrementReferenceCount();
 		g_pSmokeFogMaterial = NULL;
@@ -53,14 +55,16 @@ void TermSmokeFogOverlay()
 
 void DrawSmokeFogOverlay()
 {
-	if(g_SmokeFogOverlayAlpha == 0 || !g_pSmokeFogMaterial || !materials)
+	if( g_SmokeFogOverlayAlpha == 0 || !g_pSmokeFogMaterial || !materials )
+	{
 		return;
+	}
 
 	tmZone( TELEMETRY_LEVEL0, TMZF_NONE, "%s", __FUNCTION__ );
 
 	// Hard-coded for now..
 	g_SmokeFogOverlayColor.Init( 0.3, 0.3, 0.3 );
-	
+
 	CMatRenderContextPtr pRenderContext( materials );
 
 	pRenderContext->MatrixMode( MATERIAL_PROJECTION );
@@ -79,10 +83,10 @@ void DrawSmokeFogOverlay()
 	static float dist = 10;
 
 	Vector vColor = g_SmokeFogOverlayColor;
-	vColor.x = MIN(MAX(vColor.x, 0), 1);
-	vColor.y = MIN(MAX(vColor.y, 0), 1);
-	vColor.z = MIN(MAX(vColor.z, 0), 1);
-	float alpha = MIN(MAX(g_SmokeFogOverlayAlpha, 0), 1);
+	vColor.x = MIN( MAX( vColor.x, 0 ), 1 );
+	vColor.y = MIN( MAX( vColor.y, 0 ), 1 );
+	vColor.z = MIN( MAX( vColor.z, 0 ), 1 );
+	float alpha = MIN( MAX( g_SmokeFogOverlayAlpha, 0 ), 1 );
 
 	meshBuilder.Begin( pMesh, MATERIAL_QUADS, 1 );
 

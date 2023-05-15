@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -14,16 +14,16 @@
 #include "tier0/memdbgon.h"
 
 BEGIN_DATADESC( CAI_FearBehavior )
-	DEFINE_FIELD( m_flTimeToSafety, FIELD_TIME ),
-	DEFINE_FIELD( m_flTimePlayerLastVisible, FIELD_TIME ),
-	DEFINE_FIELD( m_hSafePlaceHint, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hMovingToHint, FIELD_EHANDLE ),
-	DEFINE_EMBEDDED( m_SafePlaceMoveMonitor ),
-	DEFINE_FIELD( m_flDeferUntil, FIELD_TIME ),
+DEFINE_FIELD( m_flTimeToSafety, FIELD_TIME ),
+			  DEFINE_FIELD( m_flTimePlayerLastVisible, FIELD_TIME ),
+			  DEFINE_FIELD( m_hSafePlaceHint, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hMovingToHint, FIELD_EHANDLE ),
+			  DEFINE_EMBEDDED( m_SafePlaceMoveMonitor ),
+			  DEFINE_FIELD( m_flDeferUntil, FIELD_TIME ),
 #ifdef MAPBASE
 	DEFINE_FIELD( m_hFearGoal, FIELD_EHANDLE ),
 #endif
-END_DATADESC();
+			  END_DATADESC();
 
 #define BEHAVIOR_FEAR_SAFETY_TIME		5
 #define FEAR_SAFE_PLACE_TOLERANCE		36.0f
@@ -32,10 +32,10 @@ END_DATADESC();
 
 ConVar ai_enable_fear_behavior( "ai_enable_fear_behavior", "1" );
 
-ConVar ai_fear_player_dist("ai_fear_player_dist", "720" );
+ConVar ai_fear_player_dist( "ai_fear_player_dist", "720" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CAI_FearBehavior::CAI_FearBehavior()
 {
@@ -44,7 +44,7 @@ CAI_FearBehavior::CAI_FearBehavior()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CAI_FearBehavior::Precache( void )
 {
@@ -52,75 +52,77 @@ void CAI_FearBehavior::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTask - 
+// Purpose:
+// Input  : *pTask -
 //-----------------------------------------------------------------------------
-void CAI_FearBehavior::StartTask( const Task_t *pTask )
+void CAI_FearBehavior::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_FEAR_IN_SAFE_PLACE:
-		// We've arrived! Lock the hint and set the marker. we're safe for now.
-		m_hSafePlaceHint = m_hMovingToHint;
-		m_hSafePlaceHint->Lock( GetOuter() );
-		m_SafePlaceMoveMonitor.SetMark( GetOuter(), FEAR_SAFE_PLACE_TOLERANCE );
+		case TASK_FEAR_IN_SAFE_PLACE:
+			// We've arrived! Lock the hint and set the marker. we're safe for now.
+			m_hSafePlaceHint = m_hMovingToHint;
+			m_hSafePlaceHint->Lock( GetOuter() );
+			m_SafePlaceMoveMonitor.SetMark( GetOuter(), FEAR_SAFE_PLACE_TOLERANCE );
 #ifdef MAPBASE
-		m_hSafePlaceHint->NPCStartedUsing( GetOuter() );
-		if (m_hFearGoal)
-			m_hFearGoal->m_OnArriveAtFearNode.FireOutput(m_hSafePlaceHint, GetOuter());
+			m_hSafePlaceHint->NPCStartedUsing( GetOuter() );
+			if( m_hFearGoal )
+			{
+				m_hFearGoal->m_OnArriveAtFearNode.FireOutput( m_hSafePlaceHint, GetOuter() );
+			}
 #endif
-		TaskComplete();
-		break;
+			TaskComplete();
+			break;
 
-	case TASK_FEAR_GET_PATH_TO_SAFETY_HINT:
-		// Using TaskInterrupt() optimizations. See RunTask().
-		break;
+		case TASK_FEAR_GET_PATH_TO_SAFETY_HINT:
+			// Using TaskInterrupt() optimizations. See RunTask().
+			break;
 
-	case TASK_FEAR_WAIT_FOR_SAFETY:
-		m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
-		break;
+		case TASK_FEAR_WAIT_FOR_SAFETY:
+			m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
+			break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pTask - 
+// Purpose:
+// Input  : *pTask -
 //-----------------------------------------------------------------------------
-void CAI_FearBehavior::RunTask( const Task_t *pTask )
+void CAI_FearBehavior::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_FEAR_WAIT_FOR_SAFETY:
-		if( HasCondition(COND_SEE_ENEMY) )
-		{
-			m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
-		}
-		else
-		{
-			if( gpGlobals->curtime > m_flTimeToSafety )
+		case TASK_FEAR_WAIT_FOR_SAFETY:
+			if( HasCondition( COND_SEE_ENEMY ) )
 			{
-				TaskComplete();
+				m_flTimeToSafety = gpGlobals->curtime + BEHAVIOR_FEAR_SAFETY_TIME;
 			}
-		}
-		break;
+			else
+			{
+				if( gpGlobals->curtime > m_flTimeToSafety )
+				{
+					TaskComplete();
+				}
+			}
+			break;
 
-	case TASK_FEAR_GET_PATH_TO_SAFETY_HINT:
+		case TASK_FEAR_GET_PATH_TO_SAFETY_HINT:
 		{
 			switch( GetOuter()->GetTaskInterrupt() )
 			{
-			case 0:// Find the hint node
+				case 0:// Find the hint node
 				{
 					ReleaseAllHints();
-					CAI_Hint *pHint = FindFearWithdrawalDest();
+					CAI_Hint* pHint = FindFearWithdrawalDest();
 
 					if( pHint == NULL )
 					{
-						TaskFail("Fear: Couldn't find hint node\n");
+						TaskFail( "Fear: Couldn't find hint node\n" );
 						m_flDeferUntil = gpGlobals->curtime + 3.0f;// Don't bang the hell out of this behavior. If we don't find a node, take a short break and run regular AI.
 					}
 					else
@@ -131,11 +133,11 @@ void CAI_FearBehavior::RunTask( const Task_t *pTask )
 				}
 				break;
 
-			case 1:// Do the pathfinding.
+				case 1:// Do the pathfinding.
 				{
 					Assert( m_hMovingToHint != NULL );
 
-					AI_NavGoal_t goal(m_hMovingToHint->GetAbsOrigin());
+					AI_NavGoal_t goal( m_hMovingToHint->GetAbsOrigin() );
 					goal.pTarget = NULL;
 					if( GetNavigator()->SetGoal( goal ) == false )
 					{
@@ -169,33 +171,39 @@ void CAI_FearBehavior::RunTask( const Task_t *pTask )
 		}
 		break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : TRUE if I have an enemy and that enemy would attack me if it could
 // Notes  : Returns FALSE if the enemy is neutral or likes me.
 //-----------------------------------------------------------------------------
 bool CAI_FearBehavior::EnemyDislikesMe()
 {
-	CBaseEntity *pEnemy = GetEnemy();
+	CBaseEntity* pEnemy = GetEnemy();
 
 	if( pEnemy == NULL )
+	{
 		return false;
+	}
 
 	if( pEnemy->MyNPCPointer() == NULL )
+	{
 		return false;
+	}
 
-	Disposition_t disposition = pEnemy->MyNPCPointer()->IRelationType(GetOuter());
+	Disposition_t disposition = pEnemy->MyNPCPointer()->IRelationType( GetOuter() );
 
-	Assert(disposition != D_ER);
+	Assert( disposition != D_ER );
 
 	if( disposition >= D_LI )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -218,11 +226,15 @@ bool CAI_FearBehavior::IsInASafePlace()
 {
 	// No safe place in mind.
 	if( !m_SafePlaceMoveMonitor.IsMarkSet() )
+	{
 		return false;
+	}
 
 	// I have a safe place, but I'm not there.
-	if( m_SafePlaceMoveMonitor.TargetMoved(GetOuter()) )
+	if( m_SafePlaceMoveMonitor.TargetMoved( GetOuter() ) )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -244,7 +256,7 @@ void CAI_FearBehavior::ReleaseAllHints()
 		m_hSafePlaceHint->Unlock();
 
 #ifdef MAPBASE
-		m_hSafePlaceHint->NPCStoppedUsing(GetOuter());
+		m_hSafePlaceHint->NPCStoppedUsing( GetOuter() );
 #endif
 
 		// Don't make it available right away. I probably left for a good reason.
@@ -263,7 +275,7 @@ void CAI_FearBehavior::ReleaseAllHints()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : Returns true on success, false on failure.
 // Notes  : This behavior runs when I have an enemy that I fear, but who
 //			does NOT hate or fear me (meaning they aren't going to fight me)
@@ -271,43 +283,61 @@ void CAI_FearBehavior::ReleaseAllHints()
 bool CAI_FearBehavior::CanSelectSchedule()
 {
 	if( !GetOuter()->IsInterruptable() )
+	{
 		return false;
+	}
 
 	if( m_flDeferUntil > gpGlobals->curtime )
+	{
 		return false;
+	}
 
-	CBaseEntity *pEnemy = GetEnemy();
+	CBaseEntity* pEnemy = GetEnemy();
 
 	if( pEnemy == NULL )
+	{
 		return false;
+	}
 
 	//if( !HasCondition(COND_SEE_PLAYER) )
 	//	return false;
 
 	if( !ai_enable_fear_behavior.GetBool() )
+	{
 		return false;
-	
-	if( GetOuter()->IRelationType(pEnemy) != D_FR )
+	}
+
+	if( GetOuter()->IRelationType( pEnemy ) != D_FR )
+	{
 		return false;
+	}
 
 #ifdef MAPBASE
 	// Don't run fear behavior if we've been ordered somewhere
-	if (GetOuter()->GetCommandGoal() != vec3_invalid)
+	if( GetOuter()->GetCommandGoal() != vec3_invalid )
+	{
 		return false;
+	}
 
 	// Don't run fear behavior if we're running any non-follow behaviors
-	if (GetOuter()->GetRunningBehavior() && GetOuter()->GetRunningBehavior() != this && !FStrEq(GetOuter()->GetRunningBehavior()->GetName(), "Follow"))
-		return false;
-
-	if (m_hFearGoal && m_iszFearTarget != NULL_STRING)
+	if( GetOuter()->GetRunningBehavior() && GetOuter()->GetRunningBehavior() != this && !FStrEq( GetOuter()->GetRunningBehavior()->GetName(), "Follow" ) )
 	{
-		if (pEnemy->NameMatches(m_iszFearTarget) || pEnemy->ClassMatches(m_iszFearTarget))
+		return false;
+	}
+
+	if( m_hFearGoal && m_iszFearTarget != NULL_STRING )
+	{
+		if( pEnemy->NameMatches( m_iszFearTarget ) || pEnemy->ClassMatches( m_iszFearTarget ) )
+		{
 			return true;
+		}
 	}
 #endif
 
-	if( !pEnemy->ClassMatches("npc_hunter") )
+	if( !pEnemy->ClassMatches( "npc_hunter" ) )
+	{
 		return false;
+	}
 
 	return true;
 }
@@ -322,7 +352,7 @@ void CAI_FearBehavior::GatherConditions()
 	ClearCondition( COND_FEAR_ENEMY_TOO_CLOSE );
 	if( GetEnemy() )
 	{
-		float flEnemyDistSqr = GetAbsOrigin().DistToSqr(GetEnemy()->GetAbsOrigin());
+		float flEnemyDistSqr = GetAbsOrigin().DistToSqr( GetEnemy()->GetAbsOrigin() );
 
 		if( flEnemyDistSqr < FEAR_ENEMY_TOLERANCE_TOO_CLOSE_DIST_SQR )
 		{
@@ -332,7 +362,7 @@ void CAI_FearBehavior::GatherConditions()
 				SpoilSafePlace();
 			}
 		}
-		else if( flEnemyDistSqr < FEAR_ENEMY_TOLERANCE_CLOSE_DIST_SQR && GetEnemy()->GetEnemy() == GetOuter() )	
+		else if( flEnemyDistSqr < FEAR_ENEMY_TOLERANCE_CLOSE_DIST_SQR && GetEnemy()->GetEnemy() == GetOuter() )
 		{
 			// Only become scared of an enemy at this range if they're my enemy, too
 			SetCondition( COND_FEAR_ENEMY_CLOSE );
@@ -343,21 +373,21 @@ void CAI_FearBehavior::GatherConditions()
 		}
 	}
 
-	ClearCondition(COND_FEAR_SEPARATED_FROM_PLAYER);
+	ClearCondition( COND_FEAR_SEPARATED_FROM_PLAYER );
 
 	// Check for separation from the player
 	//	-The player is farther away than 60 feet
 	//  -I haven't seen the player in 2 seconds
 	//
 	// Here's the distance check:
-	CBasePlayer *pPlayer = AI_GetSinglePlayer();
-	if( pPlayer != NULL && GetAbsOrigin().DistToSqr(pPlayer->GetAbsOrigin()) >= Square( ai_fear_player_dist.GetFloat() * 1.5f )  )
+	CBasePlayer* pPlayer = AI_GetSinglePlayer();
+	if( pPlayer != NULL && GetAbsOrigin().DistToSqr( pPlayer->GetAbsOrigin() ) >= Square( ai_fear_player_dist.GetFloat() * 1.5f ) )
 	{
-		SetCondition(COND_FEAR_SEPARATED_FROM_PLAYER);
+		SetCondition( COND_FEAR_SEPARATED_FROM_PLAYER );
 	}
 
 	// Here's the visibility check. We can't skip this because it's time-sensitive
-	if( GetOuter()->FVisible(pPlayer) )
+	if( GetOuter()->FVisible( pPlayer ) )
 	{
 		m_flTimePlayerLastVisible = gpGlobals->curtime;
 	}
@@ -365,11 +395,11 @@ void CAI_FearBehavior::GatherConditions()
 	{
 		if( gpGlobals->curtime - m_flTimePlayerLastVisible >= 2.0f )
 		{
-			SetCondition(COND_FEAR_SEPARATED_FROM_PLAYER);
+			SetCondition( COND_FEAR_SEPARATED_FROM_PLAYER );
 		}
 	}
 
-	if( HasCondition(COND_FEAR_SEPARATED_FROM_PLAYER) )
+	if( HasCondition( COND_FEAR_SEPARATED_FROM_PLAYER ) )
 	{
 		//Msg("I am separated from player\n");
 
@@ -401,7 +431,7 @@ void CAI_FearBehavior::BeginScheduleSelection()
 //-----------------------------------------------------------------------------
 void CAI_FearBehavior::EndScheduleSelection()
 {
-	// We don't have to release our hints or markers or anything here. 
+	// We don't have to release our hints or markers or anything here.
 	// Just because we ran other AI for a while doesn't mean we aren't still in a safe place.
 	//ReleaseAllHints();
 }
@@ -410,7 +440,7 @@ void CAI_FearBehavior::EndScheduleSelection()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 // Output : int
 // Notes  : If fear behavior is running at all, we know we're afraid of our enemy
 //-----------------------------------------------------------------------------
@@ -418,7 +448,7 @@ int CAI_FearBehavior::SelectSchedule()
 {
 	bool bInSafePlace = IsInASafePlace();
 
-	if( !HasCondition(COND_HEAR_DANGER) )
+	if( !HasCondition( COND_HEAR_DANGER ) )
 	{
 		if( !bInSafePlace )
 		{
@@ -428,8 +458,10 @@ int CAI_FearBehavior::SelectSchedule()
 		else
 		{
 			// We ARE in a safe place
-			if( HasCondition(COND_CAN_RANGE_ATTACK1) )
+			if( HasCondition( COND_CAN_RANGE_ATTACK1 ) )
+			{
 				return SCHED_RANGE_ATTACK1;
+			}
 
 			return SCHED_FEAR_STAY_IN_SAFE_PLACE;
 		}
@@ -449,9 +481,9 @@ void CAI_FearBehavior::BuildScheduleTestBits()
 		// Stop doing ANYTHING if we get scared.
 		//GetOuter()->SetCustomInterruptCondition( COND_HEAR_DANGER );
 
-		if( !IsCurSchedule(SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY, false) && !IsCurSchedule(SCHED_FEAR_MOVE_TO_SAFE_PLACE, false) )
+		if( !IsCurSchedule( SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY, false ) && !IsCurSchedule( SCHED_FEAR_MOVE_TO_SAFE_PLACE, false ) )
 		{
-			GetOuter()->SetCustomInterruptCondition( GetClassScheduleIdSpace()->ConditionLocalToGlobal(COND_FEAR_SEPARATED_FROM_PLAYER) );
+			GetOuter()->SetCustomInterruptCondition( GetClassScheduleIdSpace()->ConditionLocalToGlobal( COND_FEAR_SEPARATED_FROM_PLAYER ) );
 		}
 	}
 }
@@ -462,16 +494,16 @@ int CAI_FearBehavior::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_FEAR_MOVE_TO_SAFE_PLACE:
-		if( HasCondition(COND_FEAR_ENEMY_TOO_CLOSE) )
-		{
-			// If I'm moving to a safe place AND have an enemy too close to me,
-			// make the move to safety while ignoring the condition.
-			// this stops an oscillation
-			// IS THIS CODE EVER EVEN BEING CALLED? (sjb)
-			return SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY;
-		}
-		break;
+		case SCHED_FEAR_MOVE_TO_SAFE_PLACE:
+			if( HasCondition( COND_FEAR_ENEMY_TOO_CLOSE ) )
+			{
+				// If I'm moving to a safe place AND have an enemy too close to me,
+				// make the move to safety while ignoring the condition.
+				// this stops an oscillation
+				// IS THIS CODE EVER EVEN BEING CALLED? (sjb)
+				return SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY;
+			}
+			break;
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -479,18 +511,18 @@ int CAI_FearBehavior::TranslateSchedule( int scheduleType )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-CAI_Hint *CAI_FearBehavior::FindFearWithdrawalDest()
+CAI_Hint* CAI_FearBehavior::FindFearWithdrawalDest()
 {
-	CAI_Hint *pHint;
+	CAI_Hint* pHint;
 	CHintCriteria hintCriteria;
-	CAI_BaseNPC *pOuter = GetOuter();
+	CAI_BaseNPC* pOuter = GetOuter();
 
-	Assert(pOuter != NULL);
+	Assert( pOuter != NULL );
 
 	hintCriteria.AddHintType( HINT_PLAYER_ALLY_FEAR_DEST );
 	hintCriteria.SetFlag( bits_HINT_NODE_VISIBLE_TO_PLAYER | bits_HINT_NOT_CLOSE_TO_ENEMY /*| bits_HINT_NODE_IN_VIEWCONE | bits_HINT_NPC_IN_NODE_FOV*/ );
 #ifdef MAPBASE
-	hintCriteria.SetFlag(bits_HINT_NODE_USE_GROUP);
+	hintCriteria.SetFlag( bits_HINT_NODE_USE_GROUP );
 #endif
 	hintCriteria.AddIncludePosition( AI_GetSinglePlayer()->GetAbsOrigin(), ( ai_fear_player_dist.GetFloat() ) );
 
@@ -505,7 +537,7 @@ CAI_Hint *CAI_FearBehavior::FindFearWithdrawalDest()
 #if 0
 	else
 	{
-		Msg("DID NOT FIND HINT\n");
+		Msg( "DID NOT FIND HINT\n" );
 		NDebugOverlay::Cross3D( GetOuter()->WorldSpaceCenter(), 32, 255, 255, 0, false, 10.0f );
 	}
 #endif
@@ -515,13 +547,13 @@ CAI_Hint *CAI_FearBehavior::FindFearWithdrawalDest()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// 
+//
 //-----------------------------------------------------------------------------
 Activity CAI_FearBehavior::NPC_TranslateActivity( Activity activity )
 {
-	if ( activity == ACT_IDLE && m_hSafePlaceHint && m_hSafePlaceHint->HintActivityName() != NULL_STRING )
+	if( activity == ACT_IDLE && m_hSafePlaceHint && m_hSafePlaceHint->HintActivityName() != NULL_STRING )
 	{
-		return GetOuter()->GetHintActivity(m_hSafePlaceHint->HintType(), (Activity)CAI_BaseNPC::GetActivityID( STRING(m_hSafePlaceHint->HintActivityName()) ) );
+		return GetOuter()->GetHintActivity( m_hSafePlaceHint->HintType(), ( Activity )CAI_BaseNPC::GetActivityID( STRING( m_hSafePlaceHint->HintActivityName() ) ) );
 	}
 	return BaseClass::NPC_TranslateActivity( activity );
 }
@@ -533,7 +565,7 @@ void CAI_FearBehavior::OnRestore()
 {
 	BaseClass::OnRestore();
 
-	if (m_hFearGoal.Get() != NULL)
+	if( m_hFearGoal.Get() != NULL )
 	{
 		m_iszFearTarget = m_hFearGoal->m_target;
 	}
@@ -541,7 +573,7 @@ void CAI_FearBehavior::OnRestore()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CAI_FearBehavior::SetParameters( CAI_FearGoal *pGoal, string_t target )
+void CAI_FearBehavior::SetParameters( CAI_FearGoal* pGoal, string_t target )
 {
 	m_hFearGoal = pGoal;
 	m_iszFearTarget = target;
@@ -558,58 +590,58 @@ void CAI_FearBehavior::SetParameters( CAI_FearGoal *pGoal, string_t target )
 LINK_ENTITY_TO_CLASS( ai_goal_fear, CAI_FearGoal );
 
 BEGIN_DATADESC( CAI_FearGoal )
-	//DEFINE_KEYFIELD( m_iSomething, FIELD_INTEGER, "something" ),
+//DEFINE_KEYFIELD( m_iSomething, FIELD_INTEGER, "something" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
+// Inputs
+DEFINE_INPUTFUNC( FIELD_VOID, "Activate", InputActivate ),
 
-	// Outputs
-	//DEFINE_OUTPUT( m_OnSeeFearEntity, "OnSeeFearEntity" ),
-	DEFINE_OUTPUT( m_OnArriveAtFearNode, "OnArrivedAtNode" ),
-END_DATADESC()
+				  // Outputs
+				  //DEFINE_OUTPUT( m_OnSeeFearEntity, "OnSeeFearEntity" ),
+				  DEFINE_OUTPUT( m_OnArriveAtFearNode, "OnArrivedAtNode" ),
+				  END_DATADESC()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CAI_FearGoal::EnableGoal( CAI_BaseNPC *pAI )
+				  void CAI_FearGoal::EnableGoal( CAI_BaseNPC* pAI )
 {
-	CAI_FearBehavior *pBehavior;
+	CAI_FearBehavior* pBehavior;
 
-	if ( !pAI->GetBehavior( &pBehavior ) )
+	if( !pAI->GetBehavior( &pBehavior ) )
 	{
 		return;
 	}
 
-	pBehavior->SetParameters(this, m_target);
+	pBehavior->SetParameters( this, m_target );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CAI_FearGoal::DisableGoal( CAI_BaseNPC *pAI )
+void CAI_FearGoal::DisableGoal( CAI_BaseNPC* pAI )
 {
-	CAI_FearBehavior *pBehavior;
+	CAI_FearBehavior* pBehavior;
 
-	if ( !pAI->GetBehavior( &pBehavior ) )
+	if( !pAI->GetBehavior( &pBehavior ) )
 	{
 		return;
 	}
 
-	pBehavior->SetParameters(NULL, NULL_STRING);
+	pBehavior->SetParameters( NULL, NULL_STRING );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAI_FearGoal::InputActivate( inputdata_t &inputdata )
+void CAI_FearGoal::InputActivate( inputdata_t& inputdata )
 {
 	BaseClass::InputActivate( inputdata );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &inputdata - 
+// Purpose:
+// Input  : &inputdata -
 //-----------------------------------------------------------------------------
-void CAI_FearGoal::InputDeactivate( inputdata_t &inputdata )
+void CAI_FearGoal::InputDeactivate( inputdata_t& inputdata )
 {
 	BaseClass::InputDeactivate( inputdata );
 }
@@ -617,92 +649,92 @@ void CAI_FearGoal::InputDeactivate( inputdata_t &inputdata )
 
 AI_BEGIN_CUSTOM_SCHEDULE_PROVIDER( CAI_FearBehavior )
 
-	DECLARE_TASK( TASK_FEAR_GET_PATH_TO_SAFETY_HINT )
-	DECLARE_TASK( TASK_FEAR_WAIT_FOR_SAFETY )
-	DECLARE_TASK( TASK_FEAR_IN_SAFE_PLACE )
+DECLARE_TASK( TASK_FEAR_GET_PATH_TO_SAFETY_HINT )
+DECLARE_TASK( TASK_FEAR_WAIT_FOR_SAFETY )
+DECLARE_TASK( TASK_FEAR_IN_SAFE_PLACE )
 
-	DECLARE_CONDITION( COND_FEAR_ENEMY_CLOSE )
-	DECLARE_CONDITION( COND_FEAR_ENEMY_TOO_CLOSE )
-	DECLARE_CONDITION( COND_FEAR_SEPARATED_FROM_PLAYER )
+DECLARE_CONDITION( COND_FEAR_ENEMY_CLOSE )
+DECLARE_CONDITION( COND_FEAR_ENEMY_TOO_CLOSE )
+DECLARE_CONDITION( COND_FEAR_SEPARATED_FROM_PLAYER )
 
-	//===============================================
-	//===============================================
-	DEFINE_SCHEDULE
-	(
-		SCHED_FEAR_MOVE_TO_SAFE_PLACE,
+//===============================================
+//===============================================
+DEFINE_SCHEDULE
+(
+	SCHED_FEAR_MOVE_TO_SAFE_PLACE,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_RUN_FROM_ENEMY"
-		"		TASK_FEAR_GET_PATH_TO_SAFETY_HINT	0"
-		"		TASK_RUN_PATH						0"
-		"		TASK_WAIT_FOR_MOVEMENT				0"
-		"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
-		"		TASK_FEAR_IN_SAFE_PLACE				0"
-		"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_FEAR_STAY_IN_SAFE_PLACE"
-		""
-		"	Interrupts"
-		""
-		"		COND_HEAR_DANGER"
-		"		COND_NEW_ENEMY"
-		"		COND_FEAR_ENEMY_TOO_CLOSE"
-	);
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_RUN_FROM_ENEMY"
+	"		TASK_FEAR_GET_PATH_TO_SAFETY_HINT	0"
+	"		TASK_RUN_PATH						0"
+	"		TASK_WAIT_FOR_MOVEMENT				0"
+	"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
+	"		TASK_FEAR_IN_SAFE_PLACE				0"
+	"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_FEAR_STAY_IN_SAFE_PLACE"
+	""
+	"	Interrupts"
+	""
+	"		COND_HEAR_DANGER"
+	"		COND_NEW_ENEMY"
+	"		COND_FEAR_ENEMY_TOO_CLOSE"
+);
 
-	DEFINE_SCHEDULE
-		(
-		SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY,
+DEFINE_SCHEDULE
+(
+	SCHED_FEAR_MOVE_TO_SAFE_PLACE_RETRY,
 
-		"	Tasks"
-		"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_RUN_FROM_ENEMY"
-		"		TASK_FEAR_GET_PATH_TO_SAFETY_HINT	0"
-		"		TASK_RUN_PATH						0"
-		"		TASK_WAIT_FOR_MOVEMENT				0"
-		"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
-		"		TASK_FEAR_IN_SAFE_PLACE				0"
-		"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_FEAR_STAY_IN_SAFE_PLACE"
-		""
-		"	Interrupts"
-		""
-		"		COND_HEAR_DANGER"
-		"		COND_NEW_ENEMY"
-		);
+	"	Tasks"
+	"		TASK_SET_FAIL_SCHEDULE				SCHEDULE:SCHED_RUN_FROM_ENEMY"
+	"		TASK_FEAR_GET_PATH_TO_SAFETY_HINT	0"
+	"		TASK_RUN_PATH						0"
+	"		TASK_WAIT_FOR_MOVEMENT				0"
+	"		TASK_SET_ACTIVITY					ACTIVITY:ACT_IDLE"
+	"		TASK_FEAR_IN_SAFE_PLACE				0"
+	"		TASK_SET_SCHEDULE					SCHEDULE:SCHED_FEAR_STAY_IN_SAFE_PLACE"
+	""
+	"	Interrupts"
+	""
+	"		COND_HEAR_DANGER"
+	"		COND_NEW_ENEMY"
+);
 
-	//===============================================
-	//===============================================
+//===============================================
+//===============================================
 #ifdef MAPBASE
-	DEFINE_SCHEDULE
-		(
-		SCHED_FEAR_STAY_IN_SAFE_PLACE,
+DEFINE_SCHEDULE
+(
+	SCHED_FEAR_STAY_IN_SAFE_PLACE,
 
-		"	Tasks"
-		"		TASK_FEAR_WAIT_FOR_SAFETY			0"
-		""
-		"	Interrupts"
-		""
-		"		COND_NEW_ENEMY"
-		"		COND_HEAR_DANGER"
-		"		COND_FEAR_ENEMY_CLOSE"
-		"		COND_FEAR_ENEMY_TOO_CLOSE"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_FEAR_SEPARATED_FROM_PLAYER"
-		"		COND_ENEMY_DEAD" // Allows the fearful to follow the player when enemy dies
-		);
+	"	Tasks"
+	"		TASK_FEAR_WAIT_FOR_SAFETY			0"
+	""
+	"	Interrupts"
+	""
+	"		COND_NEW_ENEMY"
+	"		COND_HEAR_DANGER"
+	"		COND_FEAR_ENEMY_CLOSE"
+	"		COND_FEAR_ENEMY_TOO_CLOSE"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_FEAR_SEPARATED_FROM_PLAYER"
+	"		COND_ENEMY_DEAD" // Allows the fearful to follow the player when enemy dies
+);
 #else
-	DEFINE_SCHEDULE
-		(
-		SCHED_FEAR_STAY_IN_SAFE_PLACE,
+DEFINE_SCHEDULE
+(
+	SCHED_FEAR_STAY_IN_SAFE_PLACE,
 
-		"	Tasks"
-		"		TASK_FEAR_WAIT_FOR_SAFETY			0"
-		""
-		"	Interrupts"
-		""
-		"		COND_NEW_ENEMY"
-		"		COND_HEAR_DANGER"
-		"		COND_FEAR_ENEMY_CLOSE"
-		"		COND_FEAR_ENEMY_TOO_CLOSE"
-		"		COND_CAN_RANGE_ATTACK1"
-		"		COND_FEAR_SEPARATED_FROM_PLAYER"
-		);
+	"	Tasks"
+	"		TASK_FEAR_WAIT_FOR_SAFETY			0"
+	""
+	"	Interrupts"
+	""
+	"		COND_NEW_ENEMY"
+	"		COND_HEAR_DANGER"
+	"		COND_FEAR_ENEMY_CLOSE"
+	"		COND_FEAR_ENEMY_TOO_CLOSE"
+	"		COND_CAN_RANGE_ATTACK1"
+	"		COND_FEAR_SEPARATED_FROM_PLAYER"
+);
 #endif
 
 

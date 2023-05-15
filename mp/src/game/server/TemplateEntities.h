@@ -10,7 +10,7 @@
 #ifndef TEMPLATEENTITIES_H
 #define TEMPLATEENTITIES_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "isaverestore.h"
@@ -18,19 +18,19 @@
 class CBaseEntity;
 class CPointTemplate;
 
-int			Templates_Add(CBaseEntity *pEntity, const char *pszMapData, int nLen);
+int			Templates_Add( CBaseEntity* pEntity, const char* pszMapData, int nLen );
 string_t	Templates_FindByIndex( int iIndex );
 int			Templates_GetStringSize( int iIndex );
-string_t	Templates_FindByTargetName(const char *pszName);
-void		Templates_ReconnectIOForGroup( CPointTemplate *pGroup );
+string_t	Templates_FindByTargetName( const char* pszName );
+void		Templates_ReconnectIOForGroup( CPointTemplate* pGroup );
 
 // Some templates have Entity I/O connecting the entities within the template.
 // Unique versions of these templates need to be created whenever they're instanced.
 void		Templates_StartUniqueInstance( void );
 bool		Templates_IndexRequiresEntityIOFixup( int iIndex );
-char		*Templates_GetEntityIOFixedMapData( int iIndex );
+char*		Templates_GetEntityIOFixedMapData( int iIndex );
 
 // Save / Restore
-ISaveRestoreBlockHandler *GetTemplateSaveRestoreBlockHandler( void );
+ISaveRestoreBlockHandler* GetTemplateSaveRestoreBlockHandler( void );
 
 #endif // TEMPLATEENTITIES_H

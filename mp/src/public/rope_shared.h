@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ROPE_SHARED_H
 #define ROPE_SHARED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,28 +23,28 @@
 
 // Rope flags.
 #define ROPE_RESIZE				(1<<0)		// Try to keep the rope dangling the same amount
-									// even as the rope length changes.
+// even as the rope length changes.
 #define ROPE_BARBED				(1<<1)		// Hack option to draw like a barbed wire.
 #define ROPE_COLLIDE			(1<<2)		// Collide with the world?
 #define ROPE_SIMULATE			(1<<3)		// Is the rope valid?
 #define ROPE_BREAKABLE			(1<<4)		// Can the endpoints detach?
 #ifdef MAPBASE
-#define ROPE_USE_WIND			(1<<5)		// Wind simulation on this rope.
+	#define ROPE_USE_WIND			(1<<5)		// Wind simulation on this rope.
 #else
-#define ROPE_NO_WIND			(1<<5)		// No wind simulation on this rope.
+	#define ROPE_NO_WIND			(1<<5)		// No wind simulation on this rope.
 #endif
 #define ROPE_INITIAL_HANG		(1<<6)		// By default, ropes will simulate for a bit internally when they 
-											// are created so they sag, but dynamically created ropes for things
-											// like harpoons don't want this.
+// are created so they sag, but dynamically created ropes for things
+// like harpoons don't want this.
 #define ROPE_PLAYER_WPN_ATTACH	(1<<7)		// If this flag is set, then the second attachment must be a player.
-											// The rope will attach to "buff_attach" on the player's active weapon.
-											// (This is a flag because it requires special code on the client to
-											// find the weapon).
+// The rope will attach to "buff_attach" on the player's active weapon.
+// (This is a flag because it requires special code on the client to
+// find the weapon).
 #define ROPE_NO_GRAVITY			(1<<8)		// Disable gravity on this rope.
 #define ROPE_NUMFLAGS			9
 
 
-// This is added to all rope slacks so when a level designer enters a 
+// This is added to all rope slacks so when a level designer enters a
 // slack of zero in the entity, it doesn't dangle so low.
 #define ROPESLACK_FUDGEFACTOR	-100
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -15,7 +15,7 @@
 
 
 #ifdef QUIVER
-#include "r_local.h"
+	#include "r_local.h"
 #endif
 #include "mathlib/bumpvects.h"
 #include "mathlib/vector.h"
@@ -26,7 +26,7 @@
 
 // z is coming out of the face.
 
-void GetBumpNormals( const Vector& sVect, const Vector& tVect, const Vector& flatNormal, 
+void GetBumpNormals( const Vector& sVect, const Vector& tVect, const Vector& flatNormal,
 					 const Vector& phongNormal, Vector bumpNormals[NUM_BUMP_VECTS] )
 {
 	Vector tmpNormal;
@@ -34,7 +34,7 @@ void GetBumpNormals( const Vector& sVect, const Vector& tVect, const Vector& fla
 	int i;
 
 	assert( NUM_BUMP_VECTS == 3 );
-	
+
 	// Are we left or right handed?
 	CrossProduct( sVect, tVect, tmpNormal );
 	if( DotProduct( flatNormal, tmpNormal ) < 0.0f )
@@ -53,12 +53,12 @@ void GetBumpNormals( const Vector& sVect, const Vector& tVect, const Vector& fla
 	CrossProduct( smoothBasis[1], phongNormal.Base(), smoothBasis[0] );
 	VectorNormalize( smoothBasis[0] );
 	VectorCopy( phongNormal.Base(), smoothBasis[2] );
-	
+
 	if( leftHanded )
 	{
 		VectorNegate( smoothBasis[1] );
 	}
-	
+
 	// move the g_localBumpBasis into world space to create bumpNormals
 	for( i = 0; i < 3; i++ )
 	{

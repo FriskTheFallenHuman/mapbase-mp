@@ -10,7 +10,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-static const char *g_ProficiencyNames[] = 
+static const char* g_ProficiencyNames[] =
 {
 	"Poor",
 	"Average",
@@ -19,11 +19,13 @@ static const char *g_ProficiencyNames[] =
 	"Perfect"
 };
 
-const char *GetWeaponProficiencyName( WeaponProficiency_t proficiency )
+const char* GetWeaponProficiencyName( WeaponProficiency_t proficiency )
 {
-	COMPILE_TIME_ASSERT( ARRAYSIZE(g_ProficiencyNames) == WEAPON_PROFICIENCY_PERFECT + 1 ); // Hey, update that there table!
+	COMPILE_TIME_ASSERT( ARRAYSIZE( g_ProficiencyNames ) == WEAPON_PROFICIENCY_PERFECT + 1 ); // Hey, update that there table!
 
-	if ( proficiency < 0 || proficiency > WEAPON_PROFICIENCY_PERFECT )
+	if( proficiency < 0 || proficiency > WEAPON_PROFICIENCY_PERFECT )
+	{
 		return "<<Invalid>>";
+	}
 	return g_ProficiencyNames[proficiency];
 }

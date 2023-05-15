@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -23,7 +23,7 @@ public:
 	DECLARE_CLASS( ParticleSmokeGrenade, CBaseParticleEntity );
 	DECLARE_SERVERCLASS();
 
-						ParticleSmokeGrenade();
+	ParticleSmokeGrenade();
 
 	virtual int			UpdateTransmitState( void );
 
@@ -33,14 +33,14 @@ public:
 	void				FillVolume();
 
 	// Set the times it fades out at.
-	void				SetFadeTime(float startTime, float endTime);
+	void				SetFadeTime( float startTime, float endTime );
 
 	// Set time to fade out relative to current time
-	void				SetRelativeFadeTime(float startTime, float endTime);
+	void				SetRelativeFadeTime( float startTime, float endTime );
 
 
 public:
-	
+
 	// Stage 0 (default): make a smoke trail that follows the entity it's following.
 	// Stage 1          : fill a volume with smoke.
 	CNetworkVar( unsigned char, m_CurrentStage );

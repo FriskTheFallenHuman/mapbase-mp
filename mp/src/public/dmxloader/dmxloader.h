@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -8,7 +8,7 @@
 #define DMXLOADER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -21,11 +21,11 @@ class CDmxElement;
 //-----------------------------------------------------------------------------
 // Serialization/Unserialization
 //-----------------------------------------------------------------------------
-bool SerializeDMX( CUtlBuffer &buf, CDmxElement *pRoot, const char *pFileName = NULL );
-bool SerializeDMX( const char *pFileName, const char *pPathID, bool bTextMode, CDmxElement *pRoot );
+bool SerializeDMX( CUtlBuffer& buf, CDmxElement* pRoot, const char* pFileName = NULL );
+bool SerializeDMX( const char* pFileName, const char* pPathID, bool bTextMode, CDmxElement* pRoot );
 
-bool UnserializeDMX( CUtlBuffer &buf, CDmxElement **ppRoot, const char *pFileName = NULL );
-bool UnserializeDMX( const char *pFileName, const char *pPathID,  bool bTextMode, CDmxElement **ppRoot );
+bool UnserializeDMX( CUtlBuffer& buf, CDmxElement** ppRoot, const char* pFileName = NULL );
+bool UnserializeDMX( const char* pFileName, const char* pPathID,  bool bTextMode, CDmxElement** ppRoot );
 
 //-----------------------------------------------------------------------------
 // DMX elements/attributes can only be accessed inside a dmx context
@@ -41,8 +41,15 @@ void DecommitDMXMemory();
 class CDMXContextHelper
 {
 public:
-	CDMXContextHelper( bool bDecommitMemory ) { m_bDecommitMemory = bDecommitMemory; BeginDMXContext(); }
-	~CDMXContextHelper() { EndDMXContext( m_bDecommitMemory ); }
+	CDMXContextHelper( bool bDecommitMemory )
+	{
+		m_bDecommitMemory = bDecommitMemory;
+		BeginDMXContext();
+	}
+	~CDMXContextHelper()
+	{
+		EndDMXContext( m_bDecommitMemory );
+	}
 
 private:
 	bool m_bDecommitMemory;

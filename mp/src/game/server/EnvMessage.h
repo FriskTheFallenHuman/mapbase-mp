@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ENVMESSAGE_H
 #define ENVMESSAGE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "baseentity.h"
@@ -26,13 +26,16 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 
-	inline void SetMessage( string_t iszMessage ) { m_iszMessage = iszMessage; }
+	inline void SetMessage( string_t iszMessage )
+	{
+		m_iszMessage = iszMessage;
+	}
 
-	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 
 private:
 
-	void InputShowMessage( inputdata_t &inputdata );
+	void InputShowMessage( inputdata_t& inputdata );
 
 	string_t m_iszMessage;		// Message to display.
 	float m_MessageVolume;

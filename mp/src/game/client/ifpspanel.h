@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,14 +13,14 @@
 #if !defined( IFPSPANEL_H )
 #define IFPSPANEL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 abstract_class IFPSPanel
@@ -38,7 +38,7 @@ public:
 };
 
 
-extern IFPSPanel *fps;
-extern IShowBlockingPanel *iopanel;
+extern IFPSPanel* fps;
+extern IShowBlockingPanel* iopanel;
 
 #endif // IFPSPANEL_H

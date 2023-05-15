@@ -19,13 +19,13 @@
 class CNPCEventResponseSystem : public CAutoGameSystemPerFrame
 {
 public:
-	CNPCEventResponseSystem( char const *name ) : CAutoGameSystemPerFrame( name )
+	CNPCEventResponseSystem( char const* name ) : CAutoGameSystemPerFrame( name )
 	{
 	}
 
 	void	LevelInitPreEntity();
 	void	FrameUpdatePreEntityThink();
-	void	TriggerEvent( const char *pResponse, bool bForce, bool bCancelScript );
+	void	TriggerEvent( const char* pResponse, bool bForce, bool bCancelScript );
 
 private:
 	float	m_flNextEventPoll;
@@ -43,6 +43,6 @@ private:
 	EventMap m_ActiveEvents;
 };
 
-CNPCEventResponseSystem	*NPCEventResponse();
+CNPCEventResponseSystem*	NPCEventResponse();
 
 #endif // AI_EVENTRESPONSE_H

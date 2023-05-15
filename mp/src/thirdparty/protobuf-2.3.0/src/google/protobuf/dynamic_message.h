@@ -41,8 +41,10 @@
 #include <google/protobuf/message.h>
 #include <google/protobuf/stubs/common.h>
 
-namespace google {
-namespace protobuf {
+namespace google
+{
+namespace protobuf
+{
 
 // Defined in other files.
 class Descriptor;        // descriptor.h
@@ -65,69 +67,71 @@ class DescriptorPool;    // descriptor.h
 // encapsulates this "cache".  All DynamicMessages of the same type created
 // from the same factory will share the same support data.  Any Descriptors
 // used with a particular factory must outlive the factory.
-class LIBPROTOBUF_EXPORT DynamicMessageFactory : public MessageFactory {
- public:
-  // Construct a DynamicMessageFactory that will search for extensions in
-  // the DescriptorPool in which the exendee is defined.
-  DynamicMessageFactory();
+class LIBPROTOBUF_EXPORT DynamicMessageFactory : public MessageFactory
+{
+public:
+	// Construct a DynamicMessageFactory that will search for extensions in
+	// the DescriptorPool in which the exendee is defined.
+	DynamicMessageFactory();
 
-  // Construct a DynamicMessageFactory that will search for extensions in
-  // the given DescriptorPool.
-  //
-  // DEPRECATED:  Use CodedInputStream::SetExtensionRegistry() to tell the
-  //   parser to look for extensions in an alternate pool.  However, note that
-  //   this is almost never what you want to do.  Almost all users should use
-  //   the zero-arg constructor.
-  DynamicMessageFactory(const DescriptorPool* pool);
+	// Construct a DynamicMessageFactory that will search for extensions in
+	// the given DescriptorPool.
+	//
+	// DEPRECATED:  Use CodedInputStream::SetExtensionRegistry() to tell the
+	//   parser to look for extensions in an alternate pool.  However, note that
+	//   this is almost never what you want to do.  Almost all users should use
+	//   the zero-arg constructor.
+	DynamicMessageFactory( const DescriptorPool* pool );
 
-  ~DynamicMessageFactory();
+	~DynamicMessageFactory();
 
-  // Call this to tell the DynamicMessageFactory that if it is given a
-  // Descriptor d for which:
-  //   d->file()->pool() == DescriptorPool::generated_pool(),
-  // then it should delegate to MessageFactory::generated_factory() instead
-  // of constructing a dynamic implementation of the message.  In theory there
-  // is no down side to doing this, so it may become the default in the future.
-  void SetDelegateToGeneratedFactory(bool enable) {
-    delegate_to_generated_factory_ = enable;
-  }
+	// Call this to tell the DynamicMessageFactory that if it is given a
+	// Descriptor d for which:
+	//   d->file()->pool() == DescriptorPool::generated_pool(),
+	// then it should delegate to MessageFactory::generated_factory() instead
+	// of constructing a dynamic implementation of the message.  In theory there
+	// is no down side to doing this, so it may become the default in the future.
+	void SetDelegateToGeneratedFactory( bool enable )
+	{
+		delegate_to_generated_factory_ = enable;
+	}
 
-  // implements MessageFactory ---------------------------------------
+	// implements MessageFactory ---------------------------------------
 
-  // Given a Descriptor, constructs the default (prototype) Message of that
-  // type.  You can then call that message's New() method to construct a
-  // mutable message of that type.
-  //
-  // Calling this method twice with the same Descriptor returns the same
-  // object.  The returned object remains property of the factory and will
-  // be destroyed when the factory is destroyed.  Also, any objects created
-  // by calling the prototype's New() method share some data with the
-  // prototype, so these must be destoyed before the DynamicMessageFactory
-  // is destroyed.
-  //
-  // The given descriptor must outlive the returned message, and hence must
-  // outlive the DynamicMessageFactory.
-  //
-  // The method is thread-safe.
-  const Message* GetPrototype(const Descriptor* type);
+	// Given a Descriptor, constructs the default (prototype) Message of that
+	// type.  You can then call that message's New() method to construct a
+	// mutable message of that type.
+	//
+	// Calling this method twice with the same Descriptor returns the same
+	// object.  The returned object remains property of the factory and will
+	// be destroyed when the factory is destroyed.  Also, any objects created
+	// by calling the prototype's New() method share some data with the
+	// prototype, so these must be destoyed before the DynamicMessageFactory
+	// is destroyed.
+	//
+	// The given descriptor must outlive the returned message, and hence must
+	// outlive the DynamicMessageFactory.
+	//
+	// The method is thread-safe.
+	const Message* GetPrototype( const Descriptor* type );
 
- private:
-  const DescriptorPool* pool_;
-  bool delegate_to_generated_factory_;
+private:
+	const DescriptorPool* pool_;
+	bool delegate_to_generated_factory_;
 
-  // This struct just contains a hash_map.  We can't #include <google/protobuf/stubs/hash.h> from
-  // this header due to hacks needed for hash_map portability in the open source
-  // release.  Namely, stubs/hash.h, which defines hash_map portably, is not a
-  // public header (for good reason), but dynamic_message.h is, and public
-  // headers may only #include other public headers.
-  struct PrototypeMap;
-  scoped_ptr<PrototypeMap> prototypes_;
-  mutable Mutex prototypes_mutex_;
+	// This struct just contains a hash_map.  We can't #include <google/protobuf/stubs/hash.h> from
+	// this header due to hacks needed for hash_map portability in the open source
+	// release.  Namely, stubs/hash.h, which defines hash_map portably, is not a
+	// public header (for good reason), but dynamic_message.h is, and public
+	// headers may only #include other public headers.
+	struct PrototypeMap;
+	scoped_ptr<PrototypeMap> prototypes_;
+	mutable Mutex prototypes_mutex_;
 
-  friend class DynamicMessage;
-  const Message* GetPrototypeNoLock(const Descriptor* type);
+	friend class DynamicMessage;
+	const Message* GetPrototypeNoLock( const Descriptor* type );
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(DynamicMessageFactory);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( DynamicMessageFactory );
 };
 
 }  // namespace protobuf

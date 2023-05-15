@@ -3,7 +3,7 @@
 #ifndef EYE_REFRACT_HELPER_H
 #define EYE_REFRACT_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <string.h>
@@ -21,7 +21,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct Eye_Refract_Vars_t
 {
-	Eye_Refract_Vars_t() { memset( this, 0xFF, sizeof(Eye_Refract_Vars_t) ); }
+	Eye_Refract_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( Eye_Refract_Vars_t ) );
+	}
 
 	int m_nFrame;
 	int m_nIris;
@@ -61,9 +64,9 @@ static const float kDefaultCorneaBumpStrength = 1.0f;
 static const float kDefaultAmbientOcclColor[4] = { 0.33f, 0.33f, 0.33f, 0.0f };
 static const float kDefaultEyeballRadius = 0.5f;
 
-void InitParams_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, Eye_Refract_Vars_t &info );
-void Init_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, Eye_Refract_Vars_t &info );
-void Draw_Eyes_Refract( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-					    IShaderShadow* pShaderShadow, Eye_Refract_Vars_t &info, VertexCompressionType_t vertexCompression );
+void InitParams_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, Eye_Refract_Vars_t& info );
+void Init_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, Eye_Refract_Vars_t& info );
+void Draw_Eyes_Refract( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+						IShaderShadow* pShaderShadow, Eye_Refract_Vars_t& info, VertexCompressionType_t vertexCompression );
 
 #endif // EYES_DX8_DX9_HELPER_H

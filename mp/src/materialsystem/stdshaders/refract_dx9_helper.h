@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef REFRACT_DX9_HELPER_H
 #define REFRACT_DX9_HELPER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <string.h>
@@ -25,7 +25,10 @@ class IShaderShadow;
 //-----------------------------------------------------------------------------
 struct Refract_DX9_Vars_t
 {
-	Refract_DX9_Vars_t() { memset( this, 0xFF, sizeof( *this ) ); }
+	Refract_DX9_Vars_t()
+	{
+		memset( this, 0xFF, sizeof( *this ) );
+	}
 
 	int m_nBaseTexture;
 	int m_nFrame;
@@ -53,10 +56,10 @@ struct Refract_DX9_Vars_t
 	int m_nForceAlphaWrite;
 };
 
-void InitParamsRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, 
-						   Refract_DX9_Vars_t &info );
-void InitRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, Refract_DX9_Vars_t &info );
-void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-					 IShaderShadow* pShaderShadow, Refract_DX9_Vars_t &info, VertexCompressionType_t vertexCompression );
+void InitParamsRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName,
+							Refract_DX9_Vars_t& info );
+void InitRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, Refract_DX9_Vars_t& info );
+void DrawRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+					  IShaderShadow* pShaderShadow, Refract_DX9_Vars_t& info, VertexCompressionType_t vertexCompression );
 
 #endif // REFRACT_DX9_HELPER_H

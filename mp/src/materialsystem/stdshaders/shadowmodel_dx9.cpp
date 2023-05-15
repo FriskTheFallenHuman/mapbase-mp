@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Header: $
 // $NoKeywords: $
@@ -10,8 +10,8 @@
 #include "BaseVSShader.h"
 
 #if !defined( _X360 )
-#include "shadowmodel_ps20.inc"
-#include "shadowmodel_vs20.inc"
+	#include "shadowmodel_ps20.inc"
+	#include "shadowmodel_vs20.inc"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -35,30 +35,36 @@ END_SHADER_PARAMS
 
 SHADER_INIT_PARAMS()
 {
-	if (!params[BASETEXTURESCALE]->IsDefined())
+	if( !params[BASETEXTURESCALE]->IsDefined() )
 	{
-		Vector2D scale(1, 1);
+		Vector2D scale( 1, 1 );
 		params[BASETEXTURESCALE]->SetVecValue( scale.Base(), 2 );
 	}
 
-	if (!params[FALLOFFDISTANCE]->IsDefined())
+	if( !params[FALLOFFDISTANCE]->IsDefined() )
+	{
 		params[FALLOFFDISTANCE]->SetFloatValue( 100.0f );
+	}
 
-	if (!params[FALLOFFAMOUNT]->IsDefined())
+	if( !params[FALLOFFAMOUNT]->IsDefined() )
+	{
 		params[FALLOFFAMOUNT]->SetFloatValue( 0.9f );
+	}
 }
 
 SHADER_FALLBACK
 {
-	if ( g_pHardwareConfig->GetDXSupportLevel() < 90 )
+	if( g_pHardwareConfig->GetDXSupportLevel() < 90 )
+	{
 		return "ShadowModel_DX8";
+	}
 
 	return 0;
 }
 
 SHADER_INIT
 {
-	if (params[BASETEXTURE]->IsDefined())
+	if( params[BASETEXTURE]->IsDefined() )
 	{
 		LoadTexture( BASETEXTURE );
 	}
@@ -97,8 +103,10 @@ SHADER_DRAW
 		Vector4D shadow;
 		shadow[0] = params[FALLOFFOFFSET]->GetFloatValue();
 		shadow[1] = params[FALLOFFDISTANCE]->GetFloatValue() + shadow[0];
-		if (shadow[1] != 0.0f)
+		if( shadow[1] != 0.0f )
+		{
 			shadow[1] = 1.0f / shadow[1];
+		}
 		shadow[2] = params[FALLOFFAMOUNT]->GetFloatValue();
 		pShaderAPI->SetVertexShaderConstant( VERTEX_SHADER_SHADER_SPECIFIC_CONST_5, shadow.Base(), 1 );
 

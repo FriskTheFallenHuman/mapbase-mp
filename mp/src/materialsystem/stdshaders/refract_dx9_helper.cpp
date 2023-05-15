@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -16,7 +16,7 @@
 #define MAXBLUR 1
 
 // FIXME: doesn't support fresnel!
-void InitParamsRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, Refract_DX9_Vars_t &info )
+void InitParamsRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, Refract_DX9_Vars_t& info )
 {
 	SET_FLAGS2( MATERIAL_VAR2_NEEDS_TANGENT_SPACES );
 	SET_FLAGS( MATERIAL_VAR_TRANSLUCENT );
@@ -59,30 +59,30 @@ void InitParamsRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, const
 	SET_FLAGS2( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE );
 }
 
-void InitRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, Refract_DX9_Vars_t &info )
+void InitRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, Refract_DX9_Vars_t& info )
 {
-	if (params[info.m_nBaseTexture]->IsDefined() )
+	if( params[info.m_nBaseTexture]->IsDefined() )
 	{
 		pShader->LoadTexture( info.m_nBaseTexture, TEXTUREFLAGS_SRGB );
 	}
-	if (params[info.m_nNormalMap]->IsDefined() )
+	if( params[info.m_nNormalMap]->IsDefined() )
 	{
 		pShader->LoadBumpMap( info.m_nNormalMap );
 	}
-	if (params[info.m_nNormalMap2]->IsDefined() )
+	if( params[info.m_nNormalMap2]->IsDefined() )
 	{
 		pShader->LoadBumpMap( info.m_nNormalMap2 );
 	}
 	if( params[info.m_nEnvmap]->IsDefined() )
 	{
-		pShader->LoadCubeMap( info.m_nEnvmap, TEXTUREFLAGS_SRGB  );
+		pShader->LoadCubeMap( info.m_nEnvmap, TEXTUREFLAGS_SRGB );
 
 #ifdef MAPBASE
-		if (mat_specular_disable_on_missing.GetBool())
+		if( mat_specular_disable_on_missing.GetBool() )
 		{
 			// Revert to defaultcubemap when the envmap texture is missing
 			// (should be equivalent to toolsblack in Mapbase)
-			if (!IS_FLAG_SET( MATERIAL_VAR_MODEL ) && params[info.m_nEnvmap]->GetTextureValue()->IsError())
+			if( !IS_FLAG_SET( MATERIAL_VAR_MODEL ) && params[info.m_nEnvmap]->GetTextureValue()->IsError() )
 			{
 				params[info.m_nEnvmap]->SetStringValue( "engine/defaultcubemap" );
 				pShader->LoadCubeMap( info.m_nEnvmap, TEXTUREFLAGS_SRGB );
@@ -92,19 +92,19 @@ void InitRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, Refract_DX9
 	}
 	if( params[info.m_nRefractTintTexture]->IsDefined() )
 	{
-		pShader->LoadTexture( info.m_nRefractTintTexture, TEXTUREFLAGS_SRGB  );
+		pShader->LoadTexture( info.m_nRefractTintTexture, TEXTUREFLAGS_SRGB );
 	}
 }
 
-void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-					 IShaderShadow* pShaderShadow, Refract_DX9_Vars_t &info, VertexCompressionType_t vertexCompression )
+void DrawRefract_DX9( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+					  IShaderShadow* pShaderShadow, Refract_DX9_Vars_t& info, VertexCompressionType_t vertexCompression )
 {
 	bool bIsModel = IS_FLAG_SET( MATERIAL_VAR_MODEL );
 	bool bHasEnvmap = params[info.m_nEnvmap]->IsTexture();
 	bool bRefractTintTexture = params[info.m_nRefractTintTexture]->IsTexture();
 	bool bFadeOutOnSilhouette = params[info.m_nFadeOutOnSilhouette]->GetIntValue() != 0;
 	int blurAmount = params[info.m_nBlurAmount]->GetIntValue();
-	bool bMasked = (params[info.m_nMasked]->GetIntValue() != 0);
+	bool bMasked = ( params[info.m_nMasked]->GetIntValue() != 0 );
 	bool bSecondaryNormal = ( ( info.m_nNormalMap2 != -1 ) && ( params[info.m_nNormalMap2]->IsTexture() ) );
 	bool bColorModulate = ( ( info.m_nVertexColorModulate != -1 ) && ( params[info.m_nVertexColorModulate]->GetIntValue() ) );
 	bool bWriteZ = params[info.m_nNoWriteZ]->GetIntValue() == 0;
@@ -119,27 +119,27 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 	}
 
 	BlendType_t nBlendType = pShader->EvaluateBlendRequirements( BASETEXTURE, true );
-	bool bFullyOpaque = (nBlendType != BT_BLENDADD) && (nBlendType != BT_BLEND) && !IS_FLAG_SET(MATERIAL_VAR_ALPHATEST); //dest alpha is free for special use
+	bool bFullyOpaque = ( nBlendType != BT_BLENDADD ) && ( nBlendType != BT_BLEND ) && !IS_FLAG_SET( MATERIAL_VAR_ALPHATEST ); //dest alpha is free for special use
 	bFullyOpaque &= !bMasked;
 
 	bool bTranslucentNormal = pShader->TextureIsTranslucent( info.m_nNormalMap, false );
-	bFullyOpaque &= (! bTranslucentNormal );
+	bFullyOpaque &= ( ! bTranslucentNormal );
 
 	NormalDecodeMode_t nNormalDecodeMode = NORMAL_DECODE_NONE;
-	if ( g_pHardwareConfig->SupportsNormalMapCompression() )
+	if( g_pHardwareConfig->SupportsNormalMapCompression() )
 	{
-		ITexture *pBumpTex = params[info.m_nNormalMap]->GetTextureValue();
-		if ( pBumpTex )
+		ITexture* pBumpTex = params[info.m_nNormalMap]->GetTextureValue();
+		if( pBumpTex )
 		{
 			nNormalDecodeMode = pBumpTex->GetNormalDecodeMode();
 
-			if ( bSecondaryNormal )			// Check encoding of secondary normal if there is one
+			if( bSecondaryNormal )			// Check encoding of secondary normal if there is one
 			{
-				ITexture *pBumpTex2 = params[info.m_nNormalMap2]->GetTextureValue();
-				if ( pBumpTex2 && ( pBumpTex2->GetNormalDecodeMode() != nNormalDecodeMode ) )
+				ITexture* pBumpTex2 = params[info.m_nNormalMap2]->GetTextureValue();
+				if( pBumpTex2 && ( pBumpTex2->GetNormalDecodeMode() != nNormalDecodeMode ) )
 				{
-					DevMsg("Refract: Primary and Secondary normal map compression formats don't match.  This is unsupported!\n");
-					Assert(0);
+					DevMsg( "Refract: Primary and Secondary normal map compression formats don't match.  This is unsupported!\n" );
+					Assert( 0 );
 				}
 			}
 		}
@@ -152,11 +152,11 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 		pShaderShadow->EnableDepthWrites( bWriteZ );
 
 		// Alpha test: FIXME: shouldn't this be handled in Shader_t::SetInitialShadowState
-		pShaderShadow->EnableAlphaTest( IS_FLAG_SET(MATERIAL_VAR_ALPHATEST) );
+		pShaderShadow->EnableAlphaTest( IS_FLAG_SET( MATERIAL_VAR_ALPHATEST ) );
 
 		// If envmap is not specified, the alpha channel is the translucency
 		// (If envmap *is* specified, alpha channel is the reflection amount)
-		if ( params[info.m_nNormalMap]->IsTexture() && !bHasEnvmap )
+		if( params[info.m_nNormalMap]->IsTexture() && !bHasEnvmap )
 		{
 			pShader->SetDefaultBlendingShadowState( info.m_nNormalMap, false );
 		}
@@ -167,16 +167,16 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		// normal map
 		pShaderShadow->EnableTexture( SHADER_SAMPLER3, true );
-		if ( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
+		if( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
 		{
 			pShaderShadow->EnableTexture( SHADER_SAMPLER6, true );	// Normal map alpha, in the compressed normal case
 		}
 
-		if ( bSecondaryNormal )
+		if( bSecondaryNormal )
 		{
 			pShaderShadow->EnableTexture( SHADER_SAMPLER1, true );
 
-			if ( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
+			if( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
 			{
 				pShaderShadow->EnableTexture( SHADER_SAMPLER7, true );	// Secondary normal map alpha, in the compressed normal case
 			}
@@ -209,16 +209,16 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			flags |= VERTEX_TANGENT_S | VERTEX_TANGENT_T;
 		}
 
-		if ( bColorModulate )
+		if( bColorModulate )
 		{
 			flags |= VERTEX_COLOR;
 		}
-		
+
 		// This shader supports compressed vertices, so OR in that flag:
 		flags |= VERTEX_FORMAT_COMPRESSED;
 
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
-		
+
 		DECLARE_STATIC_VERTEX_SHADER( sdk_refract_vs20 );
 		SET_STATIC_VERTEX_SHADER_COMBO( MODEL,  bIsModel );
 		SET_STATIC_VERTEX_SHADER_COMBO( COLORMODULATE, bColorModulate );
@@ -226,7 +226,7 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		// We have to do this in the shader on R500 or Leopard
 		bool bShaderSRGBConvert = IsOSX() && ( g_pHardwareConfig->FakeSRGBWrite() || !g_pHardwareConfig->CanDoSRGBReadFromRTs() );
-		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // always send OpenGL down the ps2b path
+		if( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() )  // always send OpenGL down the ps2b path
 		{
 			DECLARE_STATIC_PIXEL_SHADER( sdk_refract_ps20b );
 			SET_STATIC_PIXEL_SHADER_COMBO( BLUR,  blurAmount );
@@ -236,7 +236,7 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			SET_STATIC_PIXEL_SHADER_COMBO( MASKED, bMasked );
 			SET_STATIC_PIXEL_SHADER_COMBO( COLORMODULATE, bColorModulate );
 			SET_STATIC_PIXEL_SHADER_COMBO( SECONDARY_NORMAL, bSecondaryNormal );
-			SET_STATIC_PIXEL_SHADER_COMBO( NORMAL_DECODE_MODE, (int) nNormalDecodeMode );
+			SET_STATIC_PIXEL_SHADER_COMBO( NORMAL_DECODE_MODE, ( int ) nNormalDecodeMode );
 			SET_STATIC_PIXEL_SHADER_COMBO( SHADER_SRGB_READ, bShaderSRGBConvert );
 			SET_STATIC_PIXEL_SHADER( sdk_refract_ps20b );
 		}
@@ -250,7 +250,7 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			SET_STATIC_PIXEL_SHADER_COMBO( MASKED, bMasked );
 			SET_STATIC_PIXEL_SHADER_COMBO( COLORMODULATE, bColorModulate );
 			SET_STATIC_PIXEL_SHADER_COMBO( SECONDARY_NORMAL, bSecondaryNormal );
-			SET_STATIC_PIXEL_SHADER_COMBO( NORMAL_DECODE_MODE, (int) nNormalDecodeMode );
+			SET_STATIC_PIXEL_SHADER_COMBO( NORMAL_DECODE_MODE, ( int ) nNormalDecodeMode );
 			SET_STATIC_PIXEL_SHADER( sdk_refract_ps20 );
 		}
 		pShader->DefaultFog();
@@ -266,7 +266,7 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 	{
 		pShaderAPI->SetDefaultState();
 
-		if ( params[info.m_nBaseTexture]->IsTexture() )
+		if( params[info.m_nBaseTexture]->IsTexture() )
 		{
 			pShader->BindTexture( SHADER_SAMPLER2, info.m_nBaseTexture, info.m_nFrame );
 		}
@@ -275,7 +275,7 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			pShaderAPI->BindStandardTexture( SHADER_SAMPLER2, TEXTURE_FRAME_BUFFER_FULL_TEXTURE_0 );
 		}
 
-		if ( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
+		if( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
 		{
 			pShader->BindTexture( SHADER_SAMPLER3, SHADER_SAMPLER6, info.m_nNormalMap, info.m_nBumpFrame );
 		}
@@ -284,9 +284,9 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 			pShader->BindTexture( SHADER_SAMPLER3, info.m_nNormalMap, info.m_nBumpFrame );
 		}
 
-		if ( bSecondaryNormal )
+		if( bSecondaryNormal )
 		{
-			if ( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
+			if( nNormalDecodeMode == NORMAL_DECODE_ATI2N_ALPHA )
 			{
 				pShader->BindTexture( SHADER_SAMPLER1, SHADER_SAMPLER7, info.m_nNormalMap2, info.m_nBumpFrame2 );
 			}
@@ -308,10 +308,10 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 
 		DECLARE_DYNAMIC_VERTEX_SHADER( sdk_refract_vs20 );
 		SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING,  pShaderAPI->GetCurrentNumBones() > 0 );
-		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+		SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 		SET_DYNAMIC_VERTEX_SHADER( sdk_refract_vs20 );
 
-		if ( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() ) // always send Posix down the ps2b path
+		if( g_pHardwareConfig->SupportsPixelShaders_2_b() || g_pHardwareConfig->ShouldAlwaysUseShaderModel2bShaders() )  // always send Posix down the ps2b path
 		{
 			DECLARE_DYNAMIC_PIXEL_SHADER( sdk_refract_ps20b );
 			SET_DYNAMIC_PIXEL_SHADER_COMBO( PIXELFOGTYPE, pShaderAPI->GetPixelFogCombo() );
@@ -339,12 +339,14 @@ void DrawRefract_DX9( CBaseVSShader *pShader, IMaterialVar** params, IShaderDyna
 		pShader->SetPixelShaderConstantGammaToLinear( 1, info.m_nRefractTint );
 		pShader->SetPixelShaderConstant( 2, info.m_nEnvmapContrast );
 		pShader->SetPixelShaderConstant( 3, info.m_nEnvmapSaturation );
-		float c5[4] = { params[info.m_nRefractAmount]->GetFloatValue(), 
-			params[info.m_nRefractAmount]->GetFloatValue(), 0.0f, 0.0f };
+		float c5[4] = {
+			params[info.m_nRefractAmount]->GetFloatValue(),
+			params[info.m_nRefractAmount]->GetFloatValue(), 0.0f, 0.0f
+		};
 
 		// Time % 1000
 		c5[3] = pShaderAPI->CurrentTime();
-		c5[3] -= (float)( (int)( c5[3] / 1000.0f ) ) * 1000.0f;
+		c5[3] -= ( float )( ( int )( c5[3] / 1000.0f ) ) * 1000.0f;
 		pShaderAPI->SetPixelShaderConstant( 5, c5, 1 );
 
 		float cVs3[4] = { c5[3], 0.0f, 0.0f, 0.0f };

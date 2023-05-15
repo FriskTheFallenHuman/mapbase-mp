@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef VEHICLE_JEEP_H
 #define VEHICLE_JEEP_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "vehicle_base.h"
@@ -27,7 +27,7 @@ struct JeepWaterData_t
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPropJeep : public CPropVehicleDriveable
 {
@@ -40,55 +40,83 @@ public:
 	CPropJeep( void );
 
 	// CPropVehicle
-	virtual void	ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData );
-	virtual void	DriveVehicle( float flFrameTime, CUserCmd *ucmd, int iButtonsDown, int iButtonsReleased );
-	virtual void	SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
-	virtual void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
-	virtual void	DampenEyePosition( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles );
-	virtual bool	AllowBlockedExit( CBasePlayer *pPlayer, int nRole ) { return false; }
-	virtual bool	CanExitVehicle( CBaseEntity *pEntity );
-	virtual bool	IsVehicleBodyInWater() { return m_WaterData.m_bBodyInWater; }
-	
+	virtual void	ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData );
+	virtual void	DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButtonsDown, int iButtonsReleased );
+	virtual void	SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move );
+	virtual void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
+	virtual void	DampenEyePosition( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles );
+	virtual bool	AllowBlockedExit( CBasePlayer* pPlayer, int nRole )
+	{
+		return false;
+	}
+	virtual bool	CanExitVehicle( CBaseEntity* pEntity );
+	virtual bool	IsVehicleBodyInWater()
+	{
+		return m_WaterData.m_bBodyInWater;
+	}
+
 	// Passengers do not directly receive damage from blasts or radiation damage
-	virtual bool PassengerShouldReceiveDamage( CTakeDamageInfo &info ) 
-	{ 
-		if ( GetServerVehicle() && GetServerVehicle()->IsPassengerExiting() )
+	virtual bool PassengerShouldReceiveDamage( CTakeDamageInfo& info )
+	{
+		if( GetServerVehicle() && GetServerVehicle()->IsPassengerExiting() )
+		{
 			return false;
+		}
 
-		if ( info.GetDamageType() & DMG_VEHICLE )
+		if( info.GetDamageType() & DMG_VEHICLE )
+		{
 			return true;
+		}
 
-		return (info.GetDamageType() & (DMG_RADIATION|DMG_BLAST) ) == 0; 
+		return ( info.GetDamageType() & ( DMG_RADIATION | DMG_BLAST ) ) == 0;
 	}
 
 	// CBaseEntity
-	void			Think(void);
+	void			Think( void );
 	void			Precache( void );
-	void			Spawn( void ); 
+	void			Spawn( void );
 	void			Activate( void );
 
 	virtual void	CreateServerVehicle( void );
-	virtual Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
-	virtual float	PassengerDamageModifier( const CTakeDamageInfo &info );
+	virtual Vector	BodyTarget( const Vector& posSrc, bool bNoisy = true );
+	virtual void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
+	virtual float	PassengerDamageModifier( const CTakeDamageInfo& info );
 
-	virtual void	EnterVehicle( CBaseCombatCharacter *pPassenger );
+	virtual void	EnterVehicle( CBaseCombatCharacter* pPassenger );
 	virtual void	ExitVehicle( int nRole );
 
-	void			AimGunAt( Vector *endPos, float flInterval );
-	bool			TauCannonHasBeenCutOff( void ) { return m_bGunHasBeenCutOff; }
+	void			AimGunAt( Vector* endPos, float flInterval );
+	bool			TauCannonHasBeenCutOff( void )
+	{
+		return m_bGunHasBeenCutOff;
+	}
 
 	// NPC Driving
-	bool			NPC_HasPrimaryWeapon( void ) { return true; }
+	bool			NPC_HasPrimaryWeapon( void )
+	{
+		return true;
+	}
 	void			NPC_AimPrimaryWeapon( Vector vecTarget );
 
-	const char		*GetTracerType( void ) { return "AR2Tracer"; }
-	void			DoImpactEffect( trace_t &tr, int nDamageType );
+	const char*		GetTracerType( void )
+	{
+		return "AR2Tracer";
+	}
+	void			DoImpactEffect( trace_t& tr, int nDamageType );
 
-	bool HeadlightIsOn( void ) { return m_bHeadlightIsOn; }
-	void HeadlightTurnOn( void ) { m_bHeadlightIsOn = true; }
-	void HeadlightTurnOff( void ) { m_bHeadlightIsOn = false; }
+	bool HeadlightIsOn( void )
+	{
+		return m_bHeadlightIsOn;
+	}
+	void HeadlightTurnOn( void )
+	{
+		m_bHeadlightIsOn = true;
+	}
+	void HeadlightTurnOff( void )
+	{
+		m_bHeadlightIsOn = false;
+	}
 
 private:
 
@@ -96,31 +124,31 @@ private:
 	void		ChargeCannon( void );
 	void		FireChargedCannon( void );
 
-	void		DrawBeam( const Vector &startPos, const Vector &endPos, float width );
+	void		DrawBeam( const Vector& startPos, const Vector& endPos, float width );
 	void		StopChargeSound( void );
-	void		GetCannonAim( Vector *resultDir );
+	void		GetCannonAim( Vector* resultDir );
 
 	void		InitWaterData( void );
 	void		CheckWaterLevel( void );
-	void		CreateSplash( const Vector &vecPosition );
-	void		CreateRipple( const Vector &vecPosition );
+	void		CreateSplash( const Vector& vecPosition );
+	void		CreateRipple( const Vector& vecPosition );
 
 	void		CreateDangerSounds( void );
 
-	void		ComputePDControllerCoefficients( float *pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
-	void		DampenForwardMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
-	void		DampenUpMotion( Vector &vecVehicleEyePos, QAngle &vecVehicleEyeAngles, float flFrameTime );
+	void		ComputePDControllerCoefficients( float* pCoefficientsOut, float flFrequency, float flDampening, float flDeltaTime );
+	void		DampenForwardMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
+	void		DampenUpMotion( Vector& vecVehicleEyePos, QAngle& vecVehicleEyeAngles, float flFrameTime );
 
 	void		JeepSeagullThink( void );
 	void		SpawnPerchedSeagull( void );
-	void		AddSeagullPoop( const Vector &vecOrigin );
+	void		AddSeagullPoop( const Vector& vecOrigin );
 
-	void		InputShowHudHint( inputdata_t &inputdata );
-	void		InputStartRemoveTauCannon( inputdata_t &inputdata );
-	void		InputFinishRemoveTauCannon( inputdata_t &inputdata );
+	void		InputShowHudHint( inputdata_t& inputdata );
+	void		InputStartRemoveTauCannon( inputdata_t& inputdata );
+	void		InputFinishRemoveTauCannon( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void		InputDisablePhysGun( inputdata_t &data );
-	void		InputEnablePhysGun( inputdata_t &data );
+	void		InputDisablePhysGun( inputdata_t& data );
+	void		InputEnablePhysGun( inputdata_t& data );
 #endif
 
 protected:
@@ -135,7 +163,7 @@ protected:
 	float			m_flCannonTime;
 	float			m_flCannonChargeStartTime;
 	Vector			m_vecGunOrigin;
-	CSoundPatch		*m_sndCannonCharge;
+	CSoundPatch*		m_sndCannonCharge;
 	int				m_nSpinPos;
 	float			m_aimYaw;
 	float			m_aimPitch;

@@ -39,8 +39,8 @@ class EffectMap_t
 {
 public:
 	FORCEFEEDBACK_t			effect;
-	char const				*effectfile;
-	vecEffectPtr_t			*pVecEffectPtr;
+	char const*				effectfile;
+	vecEffectPtr_t*			pVecEffectPtr;
 	bool					m_bDownloaded;
 };
 
@@ -57,7 +57,7 @@ static EffectMap_t g_EffectMap[] =
 static void InitEffectMap()
 {
 	int c = ARRAYSIZE( g_EffectMap );
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
 		g_EffectMap[ i ].pVecEffectPtr = new vecEffectPtr_t();
 	}
@@ -65,9 +65,9 @@ static void InitEffectMap()
 static void ShutdownEffectMap()
 {
 	int c = ARRAYSIZE( g_EffectMap );
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		if ( g_EffectMap[ i ].pVecEffectPtr )
+		if( g_EffectMap[ i ].pVecEffectPtr )
 		{
 			g_EffectMap[ i ].pVecEffectPtr->RemoveAll();
 			delete g_EffectMap[ i ].pVecEffectPtr;
@@ -76,9 +76,9 @@ static void ShutdownEffectMap()
 	}
 }
 
-static void ReportCap( int flags, int bits, char const *desc )
+static void ReportCap( int flags, int bits, char const* desc )
 {
-	if ( flags & bits )
+	if( flags & bits )
 	{
 		DevMsg( "%s\n", desc );
 	}
@@ -89,273 +89,273 @@ static void ReportDevType( DWORD devType )
 	byte baseType = GET_DIDEVICE_TYPE( devType );
 	byte subType = GET_DIDEVICE_SUBTYPE( devType );
 
-	switch ( baseType )
+	switch( baseType )
 	{
-	default:
-		DevMsg( "unknown type\n" );
-		break;
-	case DI8DEVTYPE_DEVICE:
-		DevMsg( "DEVICE\n" );
-		break;
-	case DI8DEVTYPE_MOUSE:
-		DevMsg( "MOUSE\n" );
-		switch ( subType )
-		{
 		default:
+			DevMsg( "unknown type\n" );
+			break;
+		case DI8DEVTYPE_DEVICE:
+			DevMsg( "DEVICE\n" );
+			break;
+		case DI8DEVTYPE_MOUSE:
+			DevMsg( "MOUSE\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEMOUSE_UNKNOWN:
+					DevMsg( "DI8DEVTYPEMOUSE_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPEMOUSE_TRADITIONAL:
+					DevMsg( "DI8DEVTYPEMOUSE_TRADITIONAL\n" );
+					break;
+				case DI8DEVTYPEMOUSE_FINGERSTICK:
+					DevMsg( "DI8DEVTYPEMOUSE_FINGERSTICK\n" );
+					break;
+				case DI8DEVTYPEMOUSE_TOUCHPAD:
+					DevMsg( "DI8DEVTYPEMOUSE_TOUCHPAD\n" );
+					break;
+				case DI8DEVTYPEMOUSE_TRACKBALL:
+					DevMsg( "DI8DEVTYPEMOUSE_TRACKBALL\n" );
+					break;
+				case DI8DEVTYPEMOUSE_ABSOLUTE:
+					DevMsg( "DI8DEVTYPEMOUSE_ABSOLUTE\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_KEYBOARD:
+			DevMsg( "KEYBOARD\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEKEYBOARD_UNKNOWN:
+					DevMsg( "DI8DEVTYPEKEYBOARD_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_PCXT:
+					DevMsg( "DI8DEVTYPEKEYBOARD_PCXT\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_OLIVETTI:
+					DevMsg( "DI8DEVTYPEKEYBOARD_OLIVETTI\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_PCAT:
+					DevMsg( "DI8DEVTYPEKEYBOARD_PCAT\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_PCENH:
+					DevMsg( "DI8DEVTYPEKEYBOARD_PCENH:\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_NOKIA1050:
+					DevMsg( "DI8DEVTYPEKEYBOARD_NOKIA1050\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_NOKIA9140:
+					DevMsg( "DI8DEVTYPEKEYBOARD_NOKIA9140\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_NEC98:
+					DevMsg( "DI8DEVTYPEKEYBOARD_NEC98\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_NEC98LAPTOP:
+					DevMsg( "DI8DEVTYPEKEYBOARD_NEC98LAPTOP\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_NEC98106:
+					DevMsg( "DI8DEVTYPEKEYBOARD_NEC98106\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_JAPAN106:
+					DevMsg( "DI8DEVTYPEKEYBOARD_JAPAN106\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_JAPANAX:
+					DevMsg( "DI8DEVTYPEKEYBOARD_JAPANAX\n" );
+					break;
+				case DI8DEVTYPEKEYBOARD_J3100:
+					DevMsg( "DI8DEVTYPEKEYBOARD_J3100\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_JOYSTICK:
+			DevMsg( "JOYSTICK\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEJOYSTICK_LIMITED :
+					DevMsg( "DI8DEVTYPEJOYSTICK_LIMITED\n" );
+					break;
+				case DI8DEVTYPEJOYSTICK_STANDARD:
+					DevMsg( "DI8DEVTYPEJOYSTICK_STANDARD\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_GAMEPAD:
+			DevMsg( "GAMEPAD\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEGAMEPAD_LIMITED:
+					DevMsg( "DI8DEVTYPEGAMEPAD_LIMITED\n" );
+					break;
+				case DI8DEVTYPEGAMEPAD_STANDARD:
+					DevMsg( "DI8DEVTYPEGAMEPAD_STANDARD\n" );
+					break;
+				case DI8DEVTYPEGAMEPAD_TILT:
+					DevMsg( "DI8DEVTYPEGAMEPAD_TILT\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_DRIVING:
+			DevMsg( "DRIVING\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEDRIVING_LIMITED:
+					DevMsg( "DI8DEVTYPEDRIVING_LIMITED\n" );
+					break;
+				case DI8DEVTYPEDRIVING_COMBINEDPEDALS:
+					DevMsg( "DI8DEVTYPEDRIVING_COMBINEDPEDALS\n" );
+					break;
+				case DI8DEVTYPEDRIVING_DUALPEDALS:
+					DevMsg( "DI8DEVTYPEDRIVING_DUALPEDALS\n" );
+					break;
+				case DI8DEVTYPEDRIVING_THREEPEDALS:
+					DevMsg( "DI8DEVTYPEDRIVING_THREEPEDALS\n" );
+					break;
+				case DI8DEVTYPEDRIVING_HANDHELD:
+					DevMsg( "DI8DEVTYPEDRIVING_HANDHELD\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_FLIGHT:
+			DevMsg( "FLIGHT\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEFLIGHT_LIMITED:
+					DevMsg( "DI8DEVTYPEFLIGHT_LIMITED\n" );
+					break;
+				case DI8DEVTYPEFLIGHT_STICK:
+					DevMsg( "DI8DEVTYPEFLIGHT_STICK\n" );
+					break;
+				case DI8DEVTYPEFLIGHT_YOKE:
+					DevMsg( "DI8DEVTYPEFLIGHT_YOKE\n" );
+					break;
+				case DI8DEVTYPEFLIGHT_RC:
+					DevMsg( "DI8DEVTYPEFLIGHT_RC\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_1STPERSON:
+			DevMsg( "1STPERSON\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPE1STPERSON_LIMITED:
+					DevMsg( "DI8DEVTYPE1STPERSON_LIMITED\n" );
+					break;
+				case DI8DEVTYPE1STPERSON_UNKNOWN:
+					DevMsg( "DI8DEVTYPE1STPERSON_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPE1STPERSON_SIXDOF:
+					DevMsg( "DI8DEVTYPE1STPERSON_SIXDOF\n" );
+					break;
+				case DI8DEVTYPE1STPERSON_SHOOTER:
+					DevMsg( "DI8DEVTYPE1STPERSON_SHOOTER\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_DEVICECTRL:
+			DevMsg( "DEVICECTRL\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEDEVICECTRL_UNKNOWN:
+					DevMsg( "DI8DEVTYPEDEVICECTRL_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPEDEVICECTRL_COMMSSELECTION:
+					DevMsg( "DI8DEVTYPEDEVICECTRL_COMMSSELECTION\n" );
+					break;
+				case DI8DEVTYPEDEVICECTRL_COMMSSELECTION_HARDWIRED:
+					DevMsg( "DI8DEVTYPEDEVICECTRL_COMMSSELECTION_HARDWIRED\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_SCREENPOINTER:
+			DevMsg( "SCREENPOINTER\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPESCREENPTR_UNKNOWN:
+					DevMsg( "DI8DEVTYPESCREENPTR_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPESCREENPTR_LIGHTGUN:
+					DevMsg( "DI8DEVTYPESCREENPTR_LIGHTGUN\n" );
+					break;
+				case DI8DEVTYPESCREENPTR_LIGHTPEN:
+					DevMsg( "DI8DEVTYPESCREENPTR_LIGHTPEN\n" );
+					break;
+				case DI8DEVTYPESCREENPTR_TOUCH:
+					DevMsg( "DI8DEVTYPESCREENPTR_TOUCH\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_REMOTE:
+			DevMsg( "REMOTE\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPEREMOTE_UNKNOWN:
+					DevMsg( "DI8DEVTYPEREMOTE_UNKNOWN\n" );
+					break;
+			}
+			break;
+		case DI8DEVTYPE_SUPPLEMENTAL:
+			DevMsg( "SUPPLEMENTAL\n" );
+			switch( subType )
+			{
+				default:
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_UNKNOWN:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_UNKNOWN\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_2NDHANDCONTROLLER:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_2NDHANDCONTROLLER\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_HEADTRACKER:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_HEADTRACKER\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_HANDTRACKER:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_HANDTRACKER\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_SHIFTSTICKGATE:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_SHIFTSTICKGATE\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_SHIFTER:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_SHIFTER\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_THROTTLE:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_THROTTLE\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_SPLITTHROTTLE:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_SPLITTHROTTLE\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_COMBINEDPEDALS:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_COMBINEDPEDALS\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_DUALPEDALS:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_DUALPEDALS\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_THREEPEDALS:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_THREEPEDALS\n" );
+					break;
+				case DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS:
+					DevMsg( "DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS\n" );
+					break;
+			}
 			break;
-		case DI8DEVTYPEMOUSE_UNKNOWN:
-			DevMsg( "DI8DEVTYPEMOUSE_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPEMOUSE_TRADITIONAL:
-			DevMsg( "DI8DEVTYPEMOUSE_TRADITIONAL\n" );
-			break;
-		case DI8DEVTYPEMOUSE_FINGERSTICK:
-			DevMsg( "DI8DEVTYPEMOUSE_FINGERSTICK\n" );
-			break;
-		case DI8DEVTYPEMOUSE_TOUCHPAD:
-			DevMsg( "DI8DEVTYPEMOUSE_TOUCHPAD\n" );
-			break;
-		case DI8DEVTYPEMOUSE_TRACKBALL:
-			DevMsg( "DI8DEVTYPEMOUSE_TRACKBALL\n" );
-			break;
-		case DI8DEVTYPEMOUSE_ABSOLUTE:
-			DevMsg( "DI8DEVTYPEMOUSE_ABSOLUTE\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_KEYBOARD:
-		DevMsg( "KEYBOARD\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEKEYBOARD_UNKNOWN:
-			DevMsg( "DI8DEVTYPEKEYBOARD_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_PCXT:
-			DevMsg( "DI8DEVTYPEKEYBOARD_PCXT\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_OLIVETTI:
-			DevMsg( "DI8DEVTYPEKEYBOARD_OLIVETTI\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_PCAT:
-			DevMsg( "DI8DEVTYPEKEYBOARD_PCAT\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_PCENH:
-			DevMsg( "DI8DEVTYPEKEYBOARD_PCENH:\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_NOKIA1050:
-			DevMsg( "DI8DEVTYPEKEYBOARD_NOKIA1050\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_NOKIA9140:
-			DevMsg( "DI8DEVTYPEKEYBOARD_NOKIA9140\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_NEC98:
-			DevMsg( "DI8DEVTYPEKEYBOARD_NEC98\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_NEC98LAPTOP:
-			DevMsg( "DI8DEVTYPEKEYBOARD_NEC98LAPTOP\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_NEC98106:
-			DevMsg( "DI8DEVTYPEKEYBOARD_NEC98106\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_JAPAN106:
-			DevMsg( "DI8DEVTYPEKEYBOARD_JAPAN106\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_JAPANAX:
-			DevMsg( "DI8DEVTYPEKEYBOARD_JAPANAX\n" );
-			break;
-		case DI8DEVTYPEKEYBOARD_J3100:
-			DevMsg( "DI8DEVTYPEKEYBOARD_J3100\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_JOYSTICK:
-		DevMsg( "JOYSTICK\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEJOYSTICK_LIMITED :
-			DevMsg( "DI8DEVTYPEJOYSTICK_LIMITED\n" );
-			break;
-		case DI8DEVTYPEJOYSTICK_STANDARD:
-			DevMsg( "DI8DEVTYPEJOYSTICK_STANDARD\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_GAMEPAD:
-		DevMsg( "GAMEPAD\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEGAMEPAD_LIMITED:
-			DevMsg( "DI8DEVTYPEGAMEPAD_LIMITED\n" );
-			break;
-		case DI8DEVTYPEGAMEPAD_STANDARD:
-			DevMsg( "DI8DEVTYPEGAMEPAD_STANDARD\n" );
-			break;
-		case DI8DEVTYPEGAMEPAD_TILT:
-			DevMsg( "DI8DEVTYPEGAMEPAD_TILT\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_DRIVING:
-		DevMsg( "DRIVING\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEDRIVING_LIMITED:
-			DevMsg( "DI8DEVTYPEDRIVING_LIMITED\n" );
-			break;
-		case DI8DEVTYPEDRIVING_COMBINEDPEDALS:
-			DevMsg( "DI8DEVTYPEDRIVING_COMBINEDPEDALS\n" );
-			break;
-		case DI8DEVTYPEDRIVING_DUALPEDALS:
-			DevMsg( "DI8DEVTYPEDRIVING_DUALPEDALS\n" );
-			break;
-		case DI8DEVTYPEDRIVING_THREEPEDALS:
-			DevMsg( "DI8DEVTYPEDRIVING_THREEPEDALS\n" );
-			break;
-		case DI8DEVTYPEDRIVING_HANDHELD:
-			DevMsg( "DI8DEVTYPEDRIVING_HANDHELD\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_FLIGHT:
-		DevMsg( "FLIGHT\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEFLIGHT_LIMITED:
-			DevMsg( "DI8DEVTYPEFLIGHT_LIMITED\n" );
-			break;
-		case DI8DEVTYPEFLIGHT_STICK:
-			DevMsg( "DI8DEVTYPEFLIGHT_STICK\n" );
-			break;
-		case DI8DEVTYPEFLIGHT_YOKE:
-			DevMsg( "DI8DEVTYPEFLIGHT_YOKE\n" );
-			break;
-		case DI8DEVTYPEFLIGHT_RC:
-			DevMsg( "DI8DEVTYPEFLIGHT_RC\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_1STPERSON:
-		DevMsg( "1STPERSON\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPE1STPERSON_LIMITED:
-			DevMsg( "DI8DEVTYPE1STPERSON_LIMITED\n" );
-			break;
-		case DI8DEVTYPE1STPERSON_UNKNOWN:
-			DevMsg( "DI8DEVTYPE1STPERSON_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPE1STPERSON_SIXDOF:
-			DevMsg( "DI8DEVTYPE1STPERSON_SIXDOF\n" );
-			break;
-		case DI8DEVTYPE1STPERSON_SHOOTER:
-			DevMsg( "DI8DEVTYPE1STPERSON_SHOOTER\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_DEVICECTRL:
-		DevMsg( "DEVICECTRL\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEDEVICECTRL_UNKNOWN:
-			DevMsg( "DI8DEVTYPEDEVICECTRL_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPEDEVICECTRL_COMMSSELECTION:
-			DevMsg( "DI8DEVTYPEDEVICECTRL_COMMSSELECTION\n" );
-			break;
-		case DI8DEVTYPEDEVICECTRL_COMMSSELECTION_HARDWIRED:
-			DevMsg( "DI8DEVTYPEDEVICECTRL_COMMSSELECTION_HARDWIRED\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_SCREENPOINTER:
-		DevMsg( "SCREENPOINTER\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPESCREENPTR_UNKNOWN:
-			DevMsg( "DI8DEVTYPESCREENPTR_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPESCREENPTR_LIGHTGUN:
-			DevMsg( "DI8DEVTYPESCREENPTR_LIGHTGUN\n" );
-			break;
-		case DI8DEVTYPESCREENPTR_LIGHTPEN:
-			DevMsg( "DI8DEVTYPESCREENPTR_LIGHTPEN\n" );
-			break;
-		case DI8DEVTYPESCREENPTR_TOUCH:
-			DevMsg( "DI8DEVTYPESCREENPTR_TOUCH\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_REMOTE:
-		DevMsg( "REMOTE\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPEREMOTE_UNKNOWN:
-			DevMsg( "DI8DEVTYPEREMOTE_UNKNOWN\n" );
-			break;
-		}
-		break;
-	case DI8DEVTYPE_SUPPLEMENTAL:
-		DevMsg( "SUPPLEMENTAL\n" );
-		switch ( subType )
-		{
-		default:
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_UNKNOWN:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_UNKNOWN\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_2NDHANDCONTROLLER:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_2NDHANDCONTROLLER\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_HEADTRACKER:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_HEADTRACKER\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_HANDTRACKER:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_HANDTRACKER\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_SHIFTSTICKGATE:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_SHIFTSTICKGATE\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_SHIFTER:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_SHIFTER\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_THROTTLE:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_THROTTLE\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_SPLITTHROTTLE:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_SPLITTHROTTLE\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_COMBINEDPEDALS:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_COMBINEDPEDALS\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_DUALPEDALS:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_DUALPEDALS\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_THREEPEDALS:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_THREEPEDALS\n" );
-			break;
-		case DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS:
-			DevMsg( "DI8DEVTYPESUPPLEMENTAL_RUDDERPEDALS\n" );
-			break;
-		}
-		break;
 	}
 }
 
@@ -382,54 +382,54 @@ static void DescribeFFDevice( const DIDEVCAPS& caps )
 	DevMsg( "  %u axes\n", caps.dwAxes );
 	DevMsg( "  %u POVs\n", caps.dwPOVs );
 
-	DevMsg( "  %.1f msec FF sample period\n", (float)caps.dwFFSamplePeriod/1000.0f );
-	DevMsg( "  %.1f msec FF min time resolution period\n", (float)caps.dwFFMinTimeResolution/1000.0f );
+	DevMsg( "  %.1f msec FF sample period\n", ( float )caps.dwFFSamplePeriod / 1000.0f );
+	DevMsg( "  %.1f msec FF min time resolution period\n", ( float )caps.dwFFMinTimeResolution / 1000.0f );
 }
 
 struct LoadEffectContext_t
 {
 	LPDIRECTINPUTDEVICE8	device;
-	EffectMap_t				*map;
+	EffectMap_t*				map;
 };
 
-static BOOL CALLBACK EnumEffectsInFileProc(LPCDIFILEEFFECT lpdife, LPVOID pvRef)
+static BOOL CALLBACK EnumEffectsInFileProc( LPCDIFILEEFFECT lpdife, LPVOID pvRef )
 
 {
- 	LoadEffectContext_t *ctx = ( LoadEffectContext_t * )pvRef;
+	LoadEffectContext_t* ctx = ( LoadEffectContext_t* )pvRef;
 
-    EffectMap_t *map = ctx->map;
+	EffectMap_t* map = ctx->map;
 
 
-	vecEffectPtr_t *vecPtr = map->pVecEffectPtr;
+	vecEffectPtr_t* vecPtr = map->pVecEffectPtr;
 	Assert( vecPtr );
 
 	int idx = vecPtr->AddToTail( NULL );
 
-    HRESULT     hr;
+	HRESULT     hr;
 	hr = ctx->device->CreateEffect
-		(
-			lpdife->GuidEffect, 
-            lpdife->lpDiEffect,
-            &(*vecPtr)[ idx ], 
-            NULL
-		);
+		 (
+			 lpdife->GuidEffect,
+			 lpdife->lpDiEffect,
+			 &( *vecPtr )[ idx ],
+			 NULL
+		 );
 
-    if ( FAILED ( hr ) )
-    {
-        // Error handling
+	if( FAILED( hr ) )
+	{
+		// Error handling
 		Msg( "EnumEffectsInFileProc during effect loading for %s\n", map->effectfile );
-    }
+	}
 
 	return DIENUM_CONTINUE;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : device - 
-//			&map - 
+// Purpose:
+// Input  : device -
+//			&map -
 // Output : static void
 //-----------------------------------------------------------------------------
-static void LoadEffectFile( LPDIRECTINPUTDEVICE8 device, EffectMap_t &map )
+static void LoadEffectFile( LPDIRECTINPUTDEVICE8 device, EffectMap_t& map )
 {
 	LoadEffectContext_t context;
 	context.device = device;
@@ -442,12 +442,12 @@ static void LoadEffectFile( LPDIRECTINPUTDEVICE8 device, EffectMap_t &map )
 	filesystem->GetLocalPath( map.effectfile, fullpath, sizeof( fullpath ) );
 
 	HRESULT hr = device->EnumEffectsInFile
-		( fullpath, 
-          EnumEffectsInFileProc,
-          (LPVOID)&context, 
-          DIFEF_MODIFYIFNEEDED );
+				 ( fullpath,
+				   EnumEffectsInFileProc,
+				   ( LPVOID )&context,
+				   DIFEF_MODIFYIFNEEDED );
 
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		Msg( "EnumEffectsInFile failed for %s\n", map.effectfile );
 	}
@@ -455,14 +455,14 @@ static void LoadEffectFile( LPDIRECTINPUTDEVICE8 device, EffectMap_t &map )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : device - 
+// Purpose:
+// Input  : device -
 // Output : static void
 //-----------------------------------------------------------------------------
 static void LoadEffectFiles( LPDIRECTINPUTDEVICE8 device )
 {
 	int c = ARRAYSIZE( g_EffectMap );
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
 		EffectMap_t& map = g_EffectMap[ i ];
 
@@ -471,75 +471,75 @@ static void LoadEffectFiles( LPDIRECTINPUTDEVICE8 device )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Init_ForceFeedback 
+// Purpose: Init_ForceFeedback
 //-----------------------------------------------------------------------------
-void CInput::Init_ForceFeedback() 
-{ 
+void CInput::Init_ForceFeedback()
+{
 	// abort startup if user requests no joystick
-	if ( CommandLine()->FindParm("-noff" ) ) 
+	if( CommandLine()->FindParm( "-noff" ) )
 	{
-		return; 
+		return;
 	}
- 
+
 	Assert( !m_pFF );
 
 	m_pFF = new ForceFeedbackParams_t;
 	Assert( m_pFF );
 	Q_memset( m_pFF, 0, sizeof( *m_pFF ) );
 
-	HRESULT hr = DirectInput8Create(GetModuleHandle(0), DIRECTINPUT_VERSION, 
-        IID_IDirectInput8, (void**)&m_pFF->m_pIInput, NULL ); 
+	HRESULT hr = DirectInput8Create( GetModuleHandle( 0 ), DIRECTINPUT_VERSION,
+									 IID_IDirectInput8, ( void** )&m_pFF->m_pIInput, NULL );
 
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		return;
 	}
 
-	hr = m_pFF->m_pIInput->CreateDevice(GUID_Joystick, &m_pFF->m_pIJoystick, NULL );
-	if ( FAILED( hr ) )
+	hr = m_pFF->m_pIInput->CreateDevice( GUID_Joystick, &m_pFF->m_pIJoystick, NULL );
+	if( FAILED( hr ) )
 	{
 		return;
 	}
 
-	hr = m_pFF->m_pIJoystick->SetDataFormat(&c_dfDIJoystick2 );
+	hr = m_pFF->m_pIJoystick->SetDataFormat( &c_dfDIJoystick2 );
 
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		return;
 	}
-	
-	HWND mainWnd = (HWND)g_pEngineWindow->GetWindowHandle();
+
+	HWND mainWnd = ( HWND )g_pEngineWindow->GetWindowHandle();
 
 	hr = m_pFF->m_pIJoystick->SetCooperativeLevel( mainWnd, DISCL_BACKGROUND | DISCL_EXCLUSIVE );
 
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		return;
 	}
 
 	DIPROPDWORD dwd;
 	//The following code turns the center spring off
-	dwd.diph.dwSize       = sizeof(DIPROPDWORD);
-	dwd.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+	dwd.diph.dwSize       = sizeof( DIPROPDWORD );
+	dwd.diph.dwHeaderSize = sizeof( DIPROPHEADER );
 	dwd.diph.dwObj        = 0;
 	dwd.diph.dwHow        = DIPH_DEVICE;
 	dwd.dwData            = FALSE;
 
-	if ( !ff_autocenter.GetBool() )
+	if( !ff_autocenter.GetBool() )
 	{
 		hr = m_pFF->m_pIJoystick->SetProperty( DIPROP_AUTOCENTER, &dwd.diph );
-		if ( FAILED( hr ) )
+		if( FAILED( hr ) )
 		{
 			return;
 		}
 	}
 
-    // Acquire the device
+	// Acquire the device
 	hr = m_pFF->m_pIJoystick->Acquire();
 
-    if( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
-        return;
+		return;
 	}
 
 	DIDEVCAPS diDevCaps;
@@ -548,13 +548,13 @@ void CInput::Init_ForceFeedback()
 
 	hr = m_pFF->m_pIJoystick->GetCapabilities( &diDevCaps );
 
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		DevMsg( "GetCapabilities failed\n" );
 		return;
 	}
 
-	if ( !( diDevCaps.dwFlags & DIDC_FORCEFEEDBACK ) )
+	if( !( diDevCaps.dwFlags & DIDC_FORCEFEEDBACK ) )
 	{
 		// Doesn't support FF
 		return;
@@ -565,24 +565,24 @@ void CInput::Init_ForceFeedback()
 	diDI.dwSize = sizeof( diDI );
 
 	hr = m_pFF->m_pIJoystick->GetDeviceInfo( &diDI );
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		DevMsg( "GetDeviceInfo failed\n" );
 		return;
 	}
 
-	DevMsg( "Forcefeedback device found:\n" ); 
+	DevMsg( "Forcefeedback device found:\n" );
 
 	//DevMsg( "  device '%s'\n", diDI.tszInstanceName );
 	DevMsg( "  product '%s'\n", diDI.tszProductName );
 
 	DescribeFFDevice( diDevCaps );
-	
+
 	InitEffectMap();
 
 	LoadEffectFiles( m_pFF->m_pIJoystick );
 
-	m_pFF->m_bForceFeedbackAvailable = true; 
+	m_pFF->m_bForceFeedbackAvailable = true;
 }
 
 //-----------------------------------------------------------------------------
@@ -594,37 +594,37 @@ void CInput::Shutdown_ForceFeedback()
 
 	Assert( m_pFF );
 
-	if ( !m_pFF )
+	if( !m_pFF )
 	{
 		return;
 	}
 
-	if ( m_pFF->m_bForceFeedbackAvailable )
+	if( m_pFF->m_bForceFeedbackAvailable )
 	{
 		m_pFF->m_bForceFeedbackAvailable = false;
 
 		ShutdownEffectMap();
 
 		// Do cleanup
-		if ( m_pFF->m_pIJoystick )
+		if( m_pFF->m_pIJoystick )
 		{
 			hr = m_pFF->m_pIJoystick->Unacquire();
-			if ( FAILED( hr ) )
+			if( FAILED( hr ) )
 			{
 				DevMsg( "Forcefeedback Unacquire failed\n" );
 			}
 
 			hr = m_pFF->m_pIJoystick->Release();
-			if ( FAILED( hr ) )
+			if( FAILED( hr ) )
 			{
 				DevMsg( "Forcefeedback Release failed\n" );
 			}
 		}
 
-		if ( m_pFF->m_pIInput )
+		if( m_pFF->m_pIInput )
 		{
 			hr = m_pFF->m_pIInput->Release();
-			if ( FAILED( hr ) )
+			if( FAILED( hr ) )
 			{
 				DevMsg( "DirectInput Release failed\n" );
 			}
@@ -636,15 +636,17 @@ void CInput::Shutdown_ForceFeedback()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Reaquire()
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 	HRESULT hr = m_pFF->m_pIJoystick->Acquire();
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
 		DevMsg( "ForceFeedback_Reaquire failed\n" );
 	}
@@ -655,14 +657,16 @@ void CInput::ForceFeedback_Reaquire()
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Think()
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 	HRESULT hr = m_pFF->m_pIJoystick->Poll();
-	if ( FAILED( hr ) )
+	if( FAILED( hr ) )
 	{
-		if ( hr == DIERR_INPUTLOST ||
-			 hr == DIERR_NOTACQUIRED )
+		if( hr == DIERR_INPUTLOST ||
+				hr == DIERR_NOTACQUIRED )
 		{
 			ForceFeedback_Reaquire();
 		}
@@ -671,92 +675,102 @@ void CInput::ForceFeedback_Think()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_StopAll()
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 	HRESULT hr = m_pFF->m_pIJoystick->SendForceFeedbackCommand( DISFFC_STOPALL );
-	if ( hr == DIERR_INPUTLOST )
+	if( hr == DIERR_INPUTLOST )
 	{
 		ForceFeedback_Reaquire();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Pause()
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 	m_pFF->m_bPaused = true;
 	HRESULT hr = m_pFF->m_pIJoystick->SendForceFeedbackCommand( DISFFC_PAUSE );
-	if ( hr == DIERR_INPUTLOST )
+	if( hr == DIERR_INPUTLOST )
 	{
 		ForceFeedback_Reaquire();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Resume()
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
-	if ( !m_pFF->m_bPaused )
+	if( !m_pFF->m_bPaused )
+	{
 		return;
+	}
 
 	m_pFF->m_bPaused = false;
 	HRESULT hr = m_pFF->m_pIJoystick->SendForceFeedbackCommand( DISFFC_CONTINUE );
-	if ( hr == DIERR_INPUTLOST )
+	if( hr == DIERR_INPUTLOST )
 	{
 		ForceFeedback_Reaquire();
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : effectnum - 
-//			params - 
+// Purpose:
+// Input  : effectnum -
+//			params -
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Start( int effectnum, const FFBaseParams_t& params )
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 	// Unpause system...
-	if ( m_pFF->m_bPaused )
+	if( m_pFF->m_bPaused )
 	{
 		ForceFeedback_Resume();
 	}
 
 	// look up the effect
-	FORCEFEEDBACK_t effect = (FORCEFEEDBACK_t)effectnum;
+	FORCEFEEDBACK_t effect = ( FORCEFEEDBACK_t )effectnum;
 
-	if ( effect < 0 || effect >= NUM_FORCE_FEEDBACK_PRESETS )
+	if( effect < 0 || effect >= NUM_FORCE_FEEDBACK_PRESETS )
 	{
 		Assert( !"ForceFeedback_Start with bogus effectnum" );
 		return;
 	}
 
-	EffectMap_t *map = &g_EffectMap[ effectnum ];
+	EffectMap_t* map = &g_EffectMap[ effectnum ];
 
-	vecEffectPtr_t *effects = map->pVecEffectPtr;
+	vecEffectPtr_t* effects = map->pVecEffectPtr;
 
 
 	// Play the effects on the device
 	int c = effects->Count();
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		LPDIRECTINPUTEFFECT pEffect = (*effects)[ i ];
+		LPDIRECTINPUTEFFECT pEffect = ( *effects )[ i ];
 
-		if ( !map->m_bDownloaded )
+		if( !map->m_bDownloaded )
 		{
 			pEffect->Download();
 			map->m_bDownloaded = true;
@@ -775,17 +789,17 @@ void CInput::ForceFeedback_Start( int effectnum, const FFBaseParams_t& params )
 		effect.cAxes = 2;
 
 		HRESULT hr = pEffect->GetParameters( &effect, flags );
-		if ( !FAILED( hr ) )
+		if( !FAILED( hr ) )
 		{
 			// If params.m_flDuration == 0.0f then that means use the duration in the file
-			if ( params.m_flDuration <= -0.999f )
+			if( params.m_flDuration <= -0.999f )
 			{
 				effect.dwDuration = INFINITE;
 			}
 			else if( params.m_flDuration >= 0.001f )
 			{
 				// Convert to microsseconds
-				effect.dwDuration = (DWORD)( params.m_flDuration * 1000000.0f );
+				effect.dwDuration = ( DWORD )( params.m_flDuration * 1000000.0f );
 			}
 
 			effect.dwGain = params.m_flGain * 10000.0f;
@@ -793,7 +807,7 @@ void CInput::ForceFeedback_Start( int effectnum, const FFBaseParams_t& params )
 			effect.rglDirection[ 1 ] = 0;
 
 			hr = pEffect->SetParameters( &effect, flags );
-			if ( !FAILED( hr ) )
+			if( !FAILED( hr ) )
 			{
 				pEffect->Start( 1, params.m_bSolo ? DIES_SOLO : 0 );
 			}
@@ -802,33 +816,35 @@ void CInput::ForceFeedback_Start( int effectnum, const FFBaseParams_t& params )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : effectnum - 
+// Purpose:
+// Input  : effectnum -
 //-----------------------------------------------------------------------------
 void CInput::ForceFeedback_Stop( int effectnum )
 {
-	if ( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	if( !m_pFF || !m_pFF->m_bForceFeedbackAvailable )
+	{
 		return;
+	}
 
 
 	// look up the effect
-	FORCEFEEDBACK_t effect = (FORCEFEEDBACK_t)effectnum;
+	FORCEFEEDBACK_t effect = ( FORCEFEEDBACK_t )effectnum;
 
-	if ( effect < 0 || effect >= NUM_FORCE_FEEDBACK_PRESETS )
+	if( effect < 0 || effect >= NUM_FORCE_FEEDBACK_PRESETS )
 	{
 		Assert( !"ForceFeedback_Stop with bogus effectnum" );
 		return;
 	}
 
-	EffectMap_t *map = &g_EffectMap[ effectnum ];
+	EffectMap_t* map = &g_EffectMap[ effectnum ];
 
-	vecEffectPtr_t *effects = map->pVecEffectPtr;
+	vecEffectPtr_t* effects = map->pVecEffectPtr;
 
 	// Stop the effects on the device
 	int c = effects->Count();
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		LPDIRECTINPUTEFFECT pEffect = (*effects)[ i ];
+		LPDIRECTINPUTEFFECT pEffect = ( *effects )[ i ];
 		pEffect->Stop();
 	}
 }

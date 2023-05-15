@@ -1,21 +1,21 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 // Information about algorithmic stuff that can occur on both client + server
 //
-// In order to reduce network traffic, it's possible to create a algorithms 
-// that will work on both the client and the server and be totally repeatable. 
-// All we need do is to send down initial conditions and let the algorithm 
-// compute the values at various times. Note that this algorithm will be called 
+// In order to reduce network traffic, it's possible to create a algorithms
+// that will work on both the client and the server and be totally repeatable.
+// All we need do is to send down initial conditions and let the algorithm
+// compute the values at various times. Note that this algorithm will be called
 // at different times with different frequencies on the client and server.
 //
 // The trick here is that in order for it to be repeatable, the algorithm either
-// cannot depend on random numbers, or, if it does, we need to make sure that 
-// the random numbers generated are effectively done at the beginning of time, 
-// so that differences in frame rate on client and server won't matter. It also 
-// is important that the initial state sent across the network is identical 
-// bitwise so that we produce the exact same results. Therefore no compression 
-// should be used in the datatables. 
+// cannot depend on random numbers, or, if it does, we need to make sure that
+// the random numbers generated are effectively done at the beginning of time,
+// so that differences in frame rate on client and server won't matter. It also
+// is important that the initial state sent across the network is identical
+// bitwise so that we produce the exact same results. Therefore no compression
+// should be used in the datatables.
 //
 // Note also that each algorithm must have its own random number stream so that
 // it cannot possibly interact with other code using random numbers that will
@@ -23,20 +23,20 @@
 // CUniformRandomStream class for this.
 //
 // There are two types of client-server neutral code: Code that doesn't interact
-// with player prediction, and code that does. The code that doesn't interact 
-// with player prediction simply has to be able to produce the result f(time) 
+// with player prediction, and code that does. The code that doesn't interact
+// with player prediction simply has to be able to produce the result f(time)
 // where time is monotonically increasing. For prediction, we have to produce
-// the result f(time) where time does *not* monotonically increase (time can be 
+// the result f(time) where time does *not* monotonically increase (time can be
 // anywhere between the "current" time and the prior 10 seconds).
 //
-// Code that is not used by player prediction can maintain state because later 
+// Code that is not used by player prediction can maintain state because later
 // calls will always compute the value at some future time. This computation can
-// use random number generation, but with the following restriction: Your code 
-// must generate exactly the same number of random numbers regardless of how 
+// use random number generation, but with the following restriction: Your code
+// must generate exactly the same number of random numbers regardless of how
 // frequently the code is called.
 //
 // In specific, this means that all random numbers used must either be computed
-// at init time, or must be used in an 'event-based form'. Namely, use random 
+// at init time, or must be used in an 'event-based form'. Namely, use random
 // numbers to compute the time at which events occur and the random inputs for
 // those events.  When simulating forward, you must simulate all intervening
 // time and generate the same number of random numbers.
@@ -45,21 +45,21 @@
 // some sort of stateless computation (where the only states are the initial
 // state and time). Note that random number generators have state implicit in
 // the number of calls made to that random number generator, and therefore you
-// cannot call a random number generator unless you are able to 
+// cannot call a random number generator unless you are able to
 //
 // 1) Use a random number generator that can return the ith random number, namely:
 //
 //	float r = random( i );	// i == the ith number in the random sequence
 //
-// 2) Be able to accurately know at any given time t how many random numbers 
+// 2) Be able to accurately know at any given time t how many random numbers
 //		have already been generated (namely, compute the i in part 1 above).
 //
-// There is another alternative for code meant to be used by player prediction: 
-// you could just store a history of 'events' from which you could completely 
+// There is another alternative for code meant to be used by player prediction:
+// you could just store a history of 'events' from which you could completely
 // determine the value of f(time). That history would need to be at least 10
 // seconds long, which is guaranteed to be longer than the amount of time that
 // prediction would need. I've written a class which I haven't tested yet (but
-// will be using soon) called CTimedEventQueue (currently located in 
+// will be using soon) called CTimedEventQueue (currently located in
 // env_wind_shared.h) which I plan to use to solve my problem (getting wind to
 // blow players).
 //
@@ -71,7 +71,7 @@
 #include "engine/IEngineSound.h"
 #include "sharedInterface.h"
 #ifdef CLIENT_DLL
-#include "renderparm.h"
+	#include "renderparm.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -81,12 +81,12 @@
 // globals
 //-----------------------------------------------------------------------------
 #ifdef MAPBASE
-static CUtlLinkedList< CEnvWindShared * > s_windControllers;
+	static CUtlLinkedList< CEnvWindShared* > s_windControllers;
 #else
-static Vector s_vecWindVelocity( 0, 0, 0 );
+	static Vector s_vecWindVelocity( 0, 0, 0 );
 #endif
 
-CEnvWindShared::CEnvWindShared() : m_WindAveQueue(10), m_WindVariationQueue(10)
+CEnvWindShared::CEnvWindShared() : m_WindAveQueue( 10 ), m_WindVariationQueue( 10 )
 {
 	m_pWindSound = NULL;
 #ifdef MAPBASE
@@ -98,7 +98,7 @@ CEnvWindShared::CEnvWindShared() : m_WindAveQueue(10), m_WindVariationQueue(10)
 
 CEnvWindShared::~CEnvWindShared()
 {
-	if (m_pWindSound)
+	if( m_pWindSound )
 	{
 		CSoundEnvelopeController::GetController().Shutdown( m_pWindSound );
 	}
@@ -107,8 +107,8 @@ CEnvWindShared::~CEnvWindShared()
 #endif
 }
 
-void CEnvWindShared::Init( int nEntIndex, int iRandomSeed, float flTime, 
-						  int iInitialWindYaw, float flInitialWindSpeed )
+void CEnvWindShared::Init( int nEntIndex, int iRandomSeed, float flTime,
+						   int iInitialWindYaw, float flInitialWindSpeed )
 {
 	m_iEntIndex = nEntIndex;
 	m_flWindAngleVariation = m_flWindSpeedVariation = 1.0f;
@@ -119,10 +119,12 @@ void CEnvWindShared::Init( int nEntIndex, int iRandomSeed, float flTime,
 	m_iWindDir = m_iInitialWindDir = iInitialWindYaw;
 #ifdef MAPBASE
 	// Bound it for networking as a postive integer
-	m_iInitialWindDir = (int)( anglemod( m_iInitialWindDir ) );
+	m_iInitialWindDir = ( int )( anglemod( m_iInitialWindDir ) );
 
-	if (m_windRadiusInner == 0.0f)
+	if( m_windRadiusInner == 0.0f )
+	{
 		m_windRadiusInner = m_windRadius;
+	}
 #endif
 
 	m_flAveWindSpeed = m_flWindSpeed = m_flInitialWindSpeed = flInitialWindSpeed;
@@ -132,7 +134,7 @@ void CEnvWindShared::Init( int nEntIndex, int iRandomSeed, float flTime,
 	if (!g_pEffects->IsServer())
 	{
 		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
-		m_pWindSound = controller.SoundCreate( -1, CHAN_STATIC, 
+		m_pWindSound = controller.SoundCreate( -1, CHAN_STATIC,
 			"EnvWind.Loop", ATTN_NONE );
 		controller.Play( m_pWindSound, 0.0f, 100 );
 	}
@@ -167,15 +169,17 @@ void CEnvWindShared::ComputeWindVariation( float flTime )
 //-----------------------------------------------------------------------------
 void CEnvWindShared::UpdateWindSound( float flTotalWindSpeed )
 {
-	if (!g_pEffects->IsServer())
+	if( !g_pEffects->IsServer() )
 	{
 		float flDuration = random->RandomFloat( 1.0f, 2.0f );
-		CSoundEnvelopeController &controller = CSoundEnvelopeController::GetController();
+		CSoundEnvelopeController& controller = CSoundEnvelopeController::GetController();
 
 		// FIXME: Tweak with these numbers
 		float flNormalizedWindSpeed = flTotalWindSpeed / 150.0f;
-		if (flNormalizedWindSpeed > 1.0f)
+		if( flNormalizedWindSpeed > 1.0f )
+		{
 			flNormalizedWindSpeed = 1.0f;
+		}
 		float flPitch = 120 * Bias( flNormalizedWindSpeed, 0.3f ) + 100;
 		float flVolume = 0.3f * Bias( flNormalizedWindSpeed, 0.3f ) + 0.7f;
 		controller.SoundChangePitch( m_pWindSound, flPitch, flDuration );
@@ -194,7 +198,7 @@ void CEnvWindShared::UpdateTreeSway( float flTime )
 	{
 		// Since the wind is constantly changing, but we need smooth values, we cache them off here.
 		m_PrevSwayVector = m_CurrentSwayVector;
-		m_CurrentSwayVector = m_flTreeSwayScale != 1.0f ? (m_currentWindVector * m_flTreeSwayScale) : m_currentWindVector;
+		m_CurrentSwayVector = m_flTreeSwayScale != 1.0f ? ( m_currentWindVector * m_flTreeSwayScale ) : m_currentWindVector;
 		m_flSwayTime += TREE_SWAY_UPDATE_TIME;
 	}
 
@@ -218,7 +222,7 @@ void CEnvWindShared::UpdateTreeSway( float flTime )
 
 float CEnvWindShared::WindThink( float flTime )
 {
-	// NOTE: This algorithm can be client-server neutal because we're using 
+	// NOTE: This algorithm can be client-server neutal because we're using
 	// the random number generator to generate *time* at which the wind changes.
 	// We therefore need to structure the algorithm so that no matter the
 	// frequency of calls to this function we produce the same wind speeds...
@@ -226,47 +230,55 @@ float CEnvWindShared::WindThink( float flTime )
 	ComputeWindVariation( flTime );
 
 #if defined(MAPBASE) && defined(CLIENT_DLL)
-	if (m_flTreeSwayScale != 0.0f)
+	if( m_flTreeSwayScale != 0.0f )
 	{
 		// Update Tree Sway
 		UpdateTreeSway( flTime );
 	}
 #endif
 
-	while (true)
+	while( true )
 	{
 		// First, simulate up to the next switch time...
 		float flTimeToSwitch = m_flSwitchTime - m_flSimTime;
 		float flMaxDeltaTime = flTime - m_flSimTime;
 
-		bool bGotToSwitchTime = (flMaxDeltaTime > flTimeToSwitch);
+		bool bGotToSwitchTime = ( flMaxDeltaTime > flTimeToSwitch );
 
 		float flSimDeltaTime = bGotToSwitchTime ? flTimeToSwitch : flMaxDeltaTime;
 
-		// Now that we've chosen 
+		// Now that we've chosen
 		// either ramp up, or sleep till change
 		bool bReachedSteadyState = true;
-		if ( m_flAveWindSpeed > m_flWindSpeed )
+		if( m_flAveWindSpeed > m_flWindSpeed )
 		{
 			m_flWindSpeed += WIND_ACCELERATION * flSimDeltaTime;
-			if (m_flWindSpeed > m_flAveWindSpeed)
+			if( m_flWindSpeed > m_flAveWindSpeed )
+			{
 				m_flWindSpeed = m_flAveWindSpeed;
+			}
 			else
+			{
 				bReachedSteadyState = false;
+			}
 		}
-		else if ( m_flAveWindSpeed < m_flWindSpeed )
+		else if( m_flAveWindSpeed < m_flWindSpeed )
 		{
 			m_flWindSpeed -= WIND_DECELERATION * flSimDeltaTime;
-			if (m_flWindSpeed < m_flAveWindSpeed)
+			if( m_flWindSpeed < m_flAveWindSpeed )
+			{
 				m_flWindSpeed = m_flAveWindSpeed;
+			}
 			else
+			{
 				bReachedSteadyState = false;
+			}
 		}
 
 		// Update the sim time
 
-		// If we didn't get to a switch point, then we're done simulating for now 
-		if (!bGotToSwitchTime)
+		// If we didn't get to a switch point, then we're done simulating for now
+		if( !bGotToSwitchTime )
 		{
 			m_flSimTime = flTime;
 
@@ -317,7 +329,7 @@ float CEnvWindShared::WindThink( float flTime )
 			m_flAveWindSpeed = m_Stream.RandomInt( m_iMinGust, m_iMaxGust );
 
 			// change wind direction, maybe a lot
-			m_iWindDir = anglemod( m_iWindDir + m_Stream.RandomInt(-m_iGustDirChange, m_iGustDirChange) );
+			m_iWindDir = anglemod( m_iWindDir + m_Stream.RandomInt( -m_iGustDirChange, m_iGustDirChange ) );
 
 			// set up to stop the gust in a short while
 			m_bGusting = true;
@@ -350,30 +362,30 @@ void ResetWindspeed()
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// GetWindspeedAtTime was never finished to actually take time in to consideration.  We don't need 
+// GetWindspeedAtTime was never finished to actually take time in to consideration.  We don't need
 // features that aren't written, but we do need to have multiple wind controllers on a map, so
 // we need to find the one that is affecting the given location and return its speed.
-// 
+//
 // NEW WITH MAPBASE: Inner-radius!
 // You can now choose an inner-radius for your wind, which allows for varying intensities at different distances.
 // This can mix in with a global wind controller or even other wind controllers.
 //-----------------------------------------------------------------------------
-Vector GetWindspeedAtLocation( const Vector &location )
+Vector GetWindspeedAtLocation( const Vector& location )
 {
 	Vector wind = Vector( 0, 0, 0 );
 
 	FOR_EACH_LL( s_windControllers, it )
 	{
-		CEnvWindShared *thisWindController = s_windControllers[it];
-		float distance = (thisWindController->m_location - location).Length();
+		CEnvWindShared* thisWindController = s_windControllers[it];
+		float distance = ( thisWindController->m_location - location ).Length();
 
 		if( distance < thisWindController->m_windRadius )
 		{
-			if (distance > thisWindController->m_windRadiusInner)
+			if( distance > thisWindController->m_windRadiusInner )
 			{
 				// New with Mapbase: Inner-radius!
 				wind += thisWindController->m_currentWindVector *
-					((distance - thisWindController->m_windRadiusInner) / (thisWindController->m_windRadius - thisWindController->m_windRadiusInner));
+						( ( distance - thisWindController->m_windRadiusInner ) / ( thisWindController->m_windRadius - thisWindController->m_windRadiusInner ) );
 			}
 			else
 			{
@@ -385,11 +397,11 @@ Vector GetWindspeedAtLocation( const Vector &location )
 
 	FOR_EACH_LL( s_windControllers, it )
 	{
-		CEnvWindShared *thisWindController = s_windControllers[it];
+		CEnvWindShared* thisWindController = s_windControllers[it];
 
 		if( thisWindController->m_windRadius == -1.0f )
 		{
-			// We do a second search for a global controller so you don't have to worry about order in the list.  
+			// We do a second search for a global controller so you don't have to worry about order in the list.
 			//wind += thisWindController->m_currentWindVector;
 			wind = VectorLerp( wind, thisWindController->m_currentWindVector, 1.0f );
 		}
@@ -402,12 +414,12 @@ Vector GetWindspeedAtLocation( const Vector &location )
 //-----------------------------------------------------------------------------
 // Method to sample the windspeed at a particular time
 //-----------------------------------------------------------------------------
-void GetWindspeedAtTime( float flTime, Vector &vecVelocity )
+void GetWindspeedAtTime( float flTime, Vector& vecVelocity )
 {
 	// For now, ignore history and time.. fix later when we use wind to affect
 	// client-side prediction
 #ifdef MAPBASE
-	if ( s_windControllers.Count() == 0 )
+	if( s_windControllers.Count() == 0 )
 	{
 		vecVelocity.Init( 0, 0, 0 );
 	}

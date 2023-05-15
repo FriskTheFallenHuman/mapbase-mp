@@ -8,7 +8,7 @@
 #ifndef WEAPON_CUSTOM_SCRIPTED_H
 #define WEAPON_CUSTOM_SCRIPTED_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 // The base class of the scripted weapon is game-specific.
@@ -24,7 +24,7 @@
 #endif // HL2_DLL || HL2_CLIENT_DLL || HL2MP
 
 #ifdef CLIENT_DLL
-#include "vscript_client.h"
+	#include "vscript_client.h"
 #endif
 
 #ifdef CLIENT_DLL
@@ -43,19 +43,25 @@ public:
 
 	CWeaponCustomScripted();
 
-	bool	RunWeaponHook( ScriptHook_t &hook, HSCRIPT &cached, ScriptVariant_t *retVal = NULL, ScriptVariant_t *pArgs = NULL );
+	bool	RunWeaponHook( ScriptHook_t& hook, HSCRIPT& cached, ScriptVariant_t* retVal = NULL, ScriptVariant_t* pArgs = NULL );
 
-	bool	KeyValue( const char *szKeyName, const char *szValue );
-	bool	GetKeyValue( const char *szKeyName, char *szValue, int iMaxLen );
+	bool	KeyValue( const char* szKeyName, const char* szValue );
+	bool	GetKeyValue( const char* szKeyName, char* szValue, int iMaxLen );
 
 	// Base script has a function for this
 	//void	Precache( void );
 
 	virtual void	Spawn( void );
 
-	virtual bool	IsPredicted( void ) const { return m_iszClientScripts[0] != '\0'; }
+	virtual bool	IsPredicted( void ) const
+	{
+		return m_iszClientScripts[0] != '\0';
+	}
 
-	const char*		GetWeaponScriptName() { return m_iszWeaponScriptName[0] != '\0' ? m_iszWeaponScriptName : BaseClass::GetWeaponScriptName(); }
+	const char*		GetWeaponScriptName()
+	{
+		return m_iszWeaponScriptName[0] != '\0' ? m_iszWeaponScriptName : BaseClass::GetWeaponScriptName();
+	}
 
 	// Weapon selection
 	virtual bool	HasAnyAmmo( void );						// Returns true is weapon has ammo
@@ -65,7 +71,7 @@ public:
 	virtual bool	CanHolster( void );						// returns true if the weapon can be holstered
 	virtual bool	CanDeploy( void );						// return true if the weapon's allowed to deploy
 	virtual bool	Deploy( void );							// returns true is deploy was successful
-	virtual bool	Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	virtual bool	Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 
 	// Weapon behaviour
 	virtual void	ItemPreFrame( void );					// called each frame by the player PreThink
@@ -104,7 +110,7 @@ public:
 	virtual void	AddViewKick( void );
 
 #ifndef CLIENT_DLL
-	virtual bool	WeaponLOSCondition( const Vector &ownerPos, const Vector &targetPos, bool bSetConditions );
+	virtual bool	WeaponLOSCondition( const Vector& ownerPos, const Vector& targetPos, bool bSetConditions );
 	virtual int		WeaponRangeAttack1Condition( float flDot, float flDist );
 	virtual int		WeaponRangeAttack2Condition( float flDot, float flDist );
 	virtual int		WeaponMeleeAttack1Condition( float flDot, float flDist );
@@ -177,7 +183,7 @@ private:
 	CNetworkString( m_iszWeaponScriptName, 256 );
 
 protected:
-	
+
 	DECLARE_ACTTABLE();
 	DECLARE_DATADESC();
 	DECLARE_ENT_SCRIPTDESC();

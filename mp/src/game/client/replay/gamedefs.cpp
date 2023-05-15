@@ -18,7 +18,7 @@ StatInfo_t g_pReplayDisplayGameStats[REPLAY_MAX_DISPLAY_GAMESTATS] =
 	{ TFSTAT_DEFENSES,			"#Stat_Defenses" },
 	{ TFSTAT_REVENGE,			"#Stat_Revenge" },
 	{ TFSTAT_POINTSSCORED,		"#Stat_PointsScored" },
-	{ TFSTAT_BUILDINGSDESTROYED,"#Stat_BuildingsDestroyed" },
+	{ TFSTAT_BUILDINGSDESTROYED, "#Stat_BuildingsDestroyed" },
 	{ TFSTAT_HEADSHOTS,			"#Stat_Headshots" },
 	{ TFSTAT_PLAYTIME,			"#Stat_PlayTime" },
 

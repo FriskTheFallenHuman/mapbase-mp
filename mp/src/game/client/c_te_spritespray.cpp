@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 // $NoKeywords: $
 //
 //===========================================================================//
@@ -24,7 +24,7 @@ public:
 	DECLARE_CLASS( C_TESpriteSpray, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TESpriteSpray( void );
+	C_TESpriteSpray( void );
 	virtual			~C_TESpriteSpray( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -40,22 +40,22 @@ public:
 
 
 //-----------------------------------------------------------------------------
-// Networking 
+// Networking
 //-----------------------------------------------------------------------------
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TESpriteSpray, DT_TESpriteSpray, CTESpriteSpray)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropVector( RECVINFO(m_vecDirection)),
-	RecvPropInt( RECVINFO(m_nModelIndex)),
-	RecvPropFloat( RECVINFO(m_fNoise )),
-	RecvPropInt( RECVINFO(m_nCount)),
-	RecvPropInt( RECVINFO(m_nSpeed)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TESpriteSpray, DT_TESpriteSpray, CTESpriteSpray )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropVector( RECVINFO( m_vecDirection ) ),
+				RecvPropInt( RECVINFO( m_nModelIndex ) ),
+				RecvPropFloat( RECVINFO( m_fNoise ) ),
+				RecvPropInt( RECVINFO( m_nCount ) ),
+				RecvPropInt( RECVINFO( m_nSpeed ) ),
+				END_RECV_TABLE()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-C_TESpriteSpray::C_TESpriteSpray( void )
+				C_TESpriteSpray::C_TESpriteSpray( void )
 {
 	m_vecOrigin.Init();
 	m_vecDirection.Init();
@@ -66,7 +66,7 @@ C_TESpriteSpray::C_TESpriteSpray( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TESpriteSpray::~C_TESpriteSpray( void )
 {
@@ -74,23 +74,25 @@ C_TESpriteSpray::~C_TESpriteSpray( void )
 
 
 //-----------------------------------------------------------------------------
-// Recording 
+// Recording
 //-----------------------------------------------------------------------------
-static inline void RecordSpriteSpray( const Vector& start, const Vector &direction, 
-	int nModelIndex, int nSpeed, float flNoise, int nCount )
+static inline void RecordSpriteSpray( const Vector& start, const Vector& direction,
+									  int nModelIndex, int nSpeed, float flNoise, int nCount )
 {
-	if ( !ToolsEnabled() )
-		return;
-
-	if ( clienttools->IsInRecordingMode() )
+	if( !ToolsEnabled() )
 	{
-		const model_t* pModel = (nModelIndex != 0) ? modelinfo->GetModel( nModelIndex ) : NULL;
-		const char *pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
+		return;
+	}
 
-		KeyValues *msg = new KeyValues( "TempEntity" );
+	if( clienttools->IsInRecordingMode() )
+	{
+		const model_t* pModel = ( nModelIndex != 0 ) ? modelinfo->GetModel( nModelIndex ) : NULL;
+		const char* pModelName = pModel ? modelinfo->GetModelName( pModel ) : "";
 
- 		msg->SetInt( "te", TE_SPRITE_SPRAY );
- 		msg->SetString( "name", "TE_SpriteSpray" );
+		KeyValues* msg = new KeyValues( "TempEntity" );
+
+		msg->SetInt( "te", TE_SPRITE_SPRAY );
+		msg->SetString( "name", "TE_SpriteSpray" );
 		msg->SetFloat( "time", gpGlobals->curtime );
 		msg->SetFloat( "originx", start.x );
 		msg->SetFloat( "originy", start.y );
@@ -98,10 +100,10 @@ static inline void RecordSpriteSpray( const Vector& start, const Vector &directi
 		msg->SetFloat( "directionx", direction.x );
 		msg->SetFloat( "directiony", direction.y );
 		msg->SetFloat( "directionz", direction.z );
-  		msg->SetString( "model", pModelName );
- 		msg->SetInt( "speed", nSpeed );
- 		msg->SetFloat( "noise", flNoise );
- 		msg->SetInt( "count", nCount );
+		msg->SetString( "model", pModelName );
+		msg->SetInt( "speed", nSpeed );
+		msg->SetFloat( "noise", flNoise );
+		msg->SetInt( "count", nCount );
 
 		ToolFramework_PostToolMessage( HTOOLHANDLE_INVALID, msg );
 		msg->deleteThis();
@@ -109,7 +111,7 @@ static inline void RecordSpriteSpray( const Vector& start, const Vector &directi
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TESpriteSpray::PostDataUpdate( DataUpdateType_t updateType )
 {
@@ -120,13 +122,13 @@ void C_TESpriteSpray::PostDataUpdate( DataUpdateType_t updateType )
 }
 
 void TE_SpriteSpray( IRecipientFilter& filter, float delay,
-	const Vector* pos, const Vector* dir, int modelindex, int speed, float noise, int count )
+					 const Vector* pos, const Vector* dir, int modelindex, int speed, float noise, int count )
 {
 	tempents->Sprite_Spray( *pos, *dir, modelindex, count, speed * 0.2, noise * 100.0 );
 	RecordSpriteSpray( *pos, *dir, modelindex, speed, noise, count );
 }
 
-void TE_SpriteSpray( IRecipientFilter& filter, float delay, KeyValues *pKeyValues )
+void TE_SpriteSpray( IRecipientFilter& filter, float delay, KeyValues* pKeyValues )
 {
 	Vector vecOrigin, vecDirection;
 	vecOrigin.x = pKeyValues->GetFloat( "originx" );
@@ -135,7 +137,7 @@ void TE_SpriteSpray( IRecipientFilter& filter, float delay, KeyValues *pKeyValue
 	vecDirection.x = pKeyValues->GetFloat( "directionx" );
 	vecDirection.y = pKeyValues->GetFloat( "directiony" );
 	vecDirection.z = pKeyValues->GetFloat( "directionz" );
-	const char *pModelName = pKeyValues->GetString( "model" );
+	const char* pModelName = pKeyValues->GetString( "model" );
 	int nModelIndex = pModelName[0] ? modelinfo->GetModelIndex( pModelName ) : 0;
 	int nSpeed = pKeyValues->GetInt( "speed" );
 	float flNoise = pKeyValues->GetFloat( "noise" );

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: An application framework 
+// Purpose: An application framework
 //
 // $Revision: $
 // $NoKeywords: $
@@ -10,7 +10,7 @@
 #define APPFRAMEWORK_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "appframework/IAppSystemGroup.h"
@@ -19,7 +19,7 @@
 //-----------------------------------------------------------------------------
 // Gets the application instance..
 //-----------------------------------------------------------------------------
-void *GetAppInstance();
+void* GetAppInstance();
 
 
 //-----------------------------------------------------------------------------
@@ -31,16 +31,16 @@ void SetAppInstance( void* hInstance );
 //-----------------------------------------------------------------------------
 // Main entry point for the application
 //-----------------------------------------------------------------------------
-int AppMain( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int nCmdShow, CAppSystemGroup *pAppSystemGroup );
-int AppMain( int argc, char **argv, CAppSystemGroup *pAppSystemGroup );
+int AppMain( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int nCmdShow, CAppSystemGroup* pAppSystemGroup );
+int AppMain( int argc, char** argv, CAppSystemGroup* pAppSystemGroup );
 
 
 //-----------------------------------------------------------------------------
 // Used to startup/shutdown the application
 //-----------------------------------------------------------------------------
-int AppStartup( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int nCmdShow, CAppSystemGroup *pAppSystemGroup );
-int AppStartup( int argc, char **argv, CAppSystemGroup *pAppSystemGroup );
-void AppShutdown( CAppSystemGroup *pAppSystemGroup );
+int AppStartup( void* hInstance, void* hPrevInstance, const char* lpCmdLine, int nCmdShow, CAppSystemGroup* pAppSystemGroup );
+int AppStartup( int argc, char** argv, CAppSystemGroup* pAppSystemGroup );
+void AppShutdown( CAppSystemGroup* pAppSystemGroup );
 
 
 //-----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ void AppShutdown( CAppSystemGroup *pAppSystemGroup );
 #else
 #error
 #endif
-	
+
 #else
 #define DEFINE_WINDOWED_APPLICATION_OBJECT_GLOBALVAR( _globalVarName )	\
 	void __cdecl main()																\
@@ -113,7 +113,7 @@ class CSteamApplication : public CAppSystemGroup
 	typedef CAppSystemGroup BaseClass;
 
 public:
-	CSteamApplication( CSteamAppSystemGroup *pAppSystemGroup );
+	CSteamApplication( CSteamAppSystemGroup* pAppSystemGroup );
 
 	// Implementation of IAppSystemGroup
 	virtual bool Create( );
@@ -128,8 +128,8 @@ public:
 	virtual void Shutdown();
 
 protected:
-	IFileSystem *m_pFileSystem;
-	CSteamAppSystemGroup *m_pChildAppSystemGroup;
+	IFileSystem* m_pFileSystem;
+	CSteamAppSystemGroup* m_pChildAppSystemGroup;
 	bool m_bSteam;
 };
 

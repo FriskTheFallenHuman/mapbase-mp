@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef HUD_CONTROLPOINTICONS_H
 #define HUD_CONTROLPOINTICONS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "cbase.h"
@@ -44,7 +44,7 @@ extern ConVar mp_blockstyle;
 class CControlPointIcon;
 
 // Options for how the cap progress teardrop positions itself around the cap point icon
-enum 
+enum
 {
 	CP_DIR_N,
 	CP_DIR_NW,
@@ -52,21 +52,24 @@ enum
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CControlPointCountdown : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CControlPointCountdown, vgui::EditablePanel );
 
 public:
-	CControlPointCountdown(Panel *parent, const char *name);
+	CControlPointCountdown( Panel* parent, const char* name );
 
-	virtual void ApplySchemeSettings( IScheme *scheme );
+	virtual void ApplySchemeSettings( IScheme* scheme );
 	virtual void PerformLayout();
 	virtual void OnTick( void );
 
 	void SetUnlockTime( float flTime );
-	float GetUnlockTime( void ){ return m_flUnlockTime; }
+	float GetUnlockTime( void )
+	{
+		return m_flUnlockTime;
+	}
 
 private:
 
@@ -81,42 +84,42 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CControlPointProgressBar : public vgui::EditablePanel
 {
 	DECLARE_CLASS_SIMPLE( CControlPointProgressBar, vgui::EditablePanel );
 public:
-	CControlPointProgressBar(Panel *parent);
+	CControlPointProgressBar( Panel* parent );
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
+	virtual void ApplySchemeSettings( IScheme* pScheme );
 	virtual void PerformLayout( void );
 	virtual void Paint( void );
 	virtual bool IsVisible( void );
 	virtual void Reset( void );
 
-	void SetupForPoint( CControlPointIcon *pIcon );
+	void SetupForPoint( CControlPointIcon* pIcon );
 	void UpdateBarText( void );
 
 private:
-	CControlPointIcon			*m_pAttachedToIcon;
-	vgui::CircularProgressBar	*m_pBar;
-	vgui::Label					*m_pBarText;
-	CIconPanel					*m_pTeardrop;
-	CIconPanel					*m_pTeardropSide;
-	CIconPanel					*m_pBlocked;
+	CControlPointIcon*			m_pAttachedToIcon;
+	vgui::CircularProgressBar*	m_pBar;
+	vgui::Label*					m_pBarText;
+	CIconPanel*					m_pTeardrop;
+	CIconPanel*					m_pTeardropSide;
+	CIconPanel*					m_pBlocked;
 	int							m_iOrgHeight;
 	int							m_iMidGroupIndex;
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CControlPointIconSwoop : public vgui::ImagePanel, public CGameEventListener
 {
 	DECLARE_CLASS_SIMPLE( CControlPointIconSwoop, vgui::ImagePanel );
 public:
-	CControlPointIconSwoop(Panel *parent, const char *name) : vgui::ImagePanel( parent, name )
+	CControlPointIconSwoop( Panel* parent, const char* name ) : vgui::ImagePanel( parent, name )
 	{
 		SetImage( "../sprites/obj_icons/capture_highlight" );
 		SetShouldScaleImage( true );
@@ -125,18 +128,18 @@ public:
 
 	virtual void PaintBackground( void )
 	{
-		float flElapsedTime = (gpGlobals->curtime - m_flStartCapAnimStart);
+		float flElapsedTime = ( gpGlobals->curtime - m_flStartCapAnimStart );
 
-		if (GetImage())
+		if( GetImage() )
 		{
-			surface()->DrawSetColor(255, 255, 255, 255);
+			surface()->DrawSetColor( 255, 255, 255, 255 );
 			int iYPos = RemapValClamped( flElapsedTime, 0, STARTCAPANIM_SWOOP_LENGTH, 0, GetTall() );
 			GetImage()->SetPos( 0, iYPos );
 			GetImage()->Paint();
 		}
 
 		// Once we've finished the swoop, go away
-		if ( flElapsedTime >= STARTCAPANIM_SWOOP_LENGTH )
+		if( flElapsedTime >= STARTCAPANIM_SWOOP_LENGTH )
 		{
 			SetVisible( false );
 		}
@@ -144,8 +147,10 @@ public:
 
 	virtual bool IsVisible( void )
 	{
-		if ( IsInFreezeCam() == true )
+		if( IsInFreezeCam() == true )
+		{
 			return false;
+		}
 
 		return BaseClass::IsVisible();
 	}
@@ -155,9 +160,9 @@ public:
 		m_flStartCapAnimStart = gpGlobals->curtime;
 	}
 
-	void	FireGameEvent( IGameEvent * event )
+	void	FireGameEvent( IGameEvent* event )
 	{
-		if ( FStrEq( "localplayer_changeteam", event->GetName() ) )
+		if( FStrEq( "localplayer_changeteam", event->GetName() ) )
 		{
 			SetVisible( false );
 		}
@@ -168,36 +173,36 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CControlPointIconCapArrow : public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CControlPointIconCapArrow, vgui::Panel );
 public:
-	CControlPointIconCapArrow( CControlPointIcon *pIcon, Panel *parent, const char *name);
+	CControlPointIconCapArrow( CControlPointIcon* pIcon, Panel* parent, const char* name );
 
 	virtual void Paint( void );
 	virtual bool IsVisible( void );
 
-	void	SetImage( const char *pszImage )
+	void	SetImage( const char* pszImage )
 	{
 		m_pArrowMaterial = materials->FindMaterial( pszImage, TEXTURE_GROUP_VGUI );
 	}
 
 private:
-	IMaterial			*m_pArrowMaterial;
-	CControlPointIcon	*m_pAttachedToIcon;
+	IMaterial*			m_pArrowMaterial;
+	CControlPointIcon*	m_pAttachedToIcon;
 
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CControlPointIconCapturePulse : public vgui::ImagePanel
 {
 	DECLARE_CLASS_SIMPLE( CControlPointIconCapturePulse, vgui::ImagePanel );
 public:
-	CControlPointIconCapturePulse(Panel *parent, const char *name) : vgui::ImagePanel( parent, name )
+	CControlPointIconCapturePulse( Panel* parent, const char* name ) : vgui::ImagePanel( parent, name )
 	{
 		SetImage( "../sprites/obj_icons/icon_obj_white" );
 		SetShouldScaleImage( true );
@@ -205,20 +210,20 @@ public:
 
 	virtual void PaintBackground( void )
 	{
-		if ( m_flFinishCapAnimStart && gpGlobals->curtime > m_flFinishCapAnimStart )
+		if( m_flFinishCapAnimStart && gpGlobals->curtime > m_flFinishCapAnimStart )
 		{
-			float flElapsedTime = MAX( 0, (gpGlobals->curtime - m_flFinishCapAnimStart) );
-			if (GetImage())
+			float flElapsedTime = MAX( 0, ( gpGlobals->curtime - m_flFinishCapAnimStart ) );
+			if( GetImage() )
 			{
-				surface()->DrawSetColor(255, 255, 255, 255);
+				surface()->DrawSetColor( 255, 255, 255, 255 );
 				int iSize = RemapValClamped( flElapsedTime, 0, FINISHCAPANIM_SWOOP_LENGTH, GetWide(), m_iShrinkSize );
-				GetImage()->SetPos( (GetWide() - iSize)*0.5, (GetTall() - iSize)*0.5 );
+				GetImage()->SetPos( ( GetWide() - iSize ) * 0.5, ( GetTall() - iSize ) * 0.5 );
 				GetImage()->SetSize( iSize, iSize );
 				GetImage()->Paint();
 			}
 
 			// Once we've finished the swoop, go away
-			if ( flElapsedTime >= FINISHCAPANIM_SWOOP_LENGTH )
+			if( flElapsedTime >= FINISHCAPANIM_SWOOP_LENGTH )
 			{
 				SetVisible( false );
 			}
@@ -230,7 +235,7 @@ public:
 		m_flFinishCapAnimStart = flTime;
 		m_iShrinkSize = iShrinkSize;
 
-		if ( GetWide() < m_iShrinkSize )
+		if( GetWide() < m_iShrinkSize )
 		{
 			SetWide( m_iShrinkSize );
 		}
@@ -238,8 +243,10 @@ public:
 
 	virtual bool IsVisible( void )
 	{
-		if ( IsInFreezeCam() == true )
+		if( IsInFreezeCam() == true )
+		{
 			return false;
+		}
 
 		return BaseClass::IsVisible();
 	}
@@ -256,15 +263,15 @@ class CControlPointIconPulseable : public vgui::ImagePanel
 {
 	DECLARE_CLASS_SIMPLE( CControlPointIconPulseable, vgui::ImagePanel );
 public:
-	CControlPointIconPulseable(Panel *parent, const char *name, int iIndex) : vgui::ImagePanel( parent, name )
+	CControlPointIconPulseable( Panel* parent, const char* name, int iIndex ) : vgui::ImagePanel( parent, name )
 	{
 		SetShouldScaleImage( true );
 		m_pPulseImage = NULL;
 		m_iCPIndex = iIndex;
 	}
 
-	virtual void ApplySchemeSettings( IScheme *pScheme );
-	virtual void OnSizeChanged(int newWide, int newTall);
+	virtual void ApplySchemeSettings( IScheme* pScheme );
+	virtual void OnSizeChanged( int newWide, int newTall );
 	virtual void PaintBackground( void );
 
 	void	StartPulsing( float flDelay, float flPulseTime, bool bAccelerate );
@@ -272,8 +279,10 @@ public:
 
 	virtual bool IsVisible( void )
 	{
-		if ( IsInFreezeCam() == true )
+		if( IsInFreezeCam() == true )
+		{
 			return false;
+		}
 
 		return BaseClass::IsVisible();
 	}
@@ -283,7 +292,7 @@ private:
 	float				m_flStartCapAnimStart;
 	float				m_flPulseTime;
 	bool				m_bAccelerateOverCapture;
-	IImage				*m_pPulseImage;
+	IImage*				m_pPulseImage;
 };
 
 //-----------------------------------------------------------------------------
@@ -292,31 +301,46 @@ private:
 class CControlPointIcon : public vgui::EditablePanel, public CHudElement
 {
 	DECLARE_CLASS_SIMPLE( CControlPointIcon, vgui::EditablePanel );
-public:	
-	CControlPointIcon( Panel *parent, const char *pName, int iIndex );
+public:
+	CControlPointIcon( Panel* parent, const char* pName, int iIndex );
 	~CControlPointIcon( void );
-	
-	virtual void ApplySchemeSettings( IScheme *scheme );
+
+	virtual void ApplySchemeSettings( IScheme* scheme );
 	virtual void PerformLayout( void );
 
 	void		 UpdateImage( void );
 	void		 UpdateCapImage( void );
 	bool		 IsPointLocked( void );
-	int			 GetCapIndex( void ) { return m_iCPIndex; }
-	void		 SetSwipeUp( bool bUp ) { m_bSwipeUp = bUp; }
-	bool		 ShouldSwipeUp( void ) { return m_bSwipeUp; }
-	int			 GetCapProgressDir( void ) { return m_iCapProgressDir; }
-	void		 SetCapProgressDir( int iDir ) { m_iCapProgressDir = iDir; }
+	int			 GetCapIndex( void )
+	{
+		return m_iCPIndex;
+	}
+	void		 SetSwipeUp( bool bUp )
+	{
+		m_bSwipeUp = bUp;
+	}
+	bool		 ShouldSwipeUp( void )
+	{
+		return m_bSwipeUp;
+	}
+	int			 GetCapProgressDir( void )
+	{
+		return m_iCapProgressDir;
+	}
+	void		 SetCapProgressDir( int iDir )
+	{
+		m_iCapProgressDir = iDir;
+	}
 	void		 FakePulse( float flTime );
 	bool		 IsVisible( void );
 	virtual void Paint( void );
 	bool		 IsPointUnlockCountdownRunning( void );
 
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 	void SetUnlockTime( float flTime )
 	{
-		if ( m_pCountdown )
+		if( m_pCountdown )
 		{
 			m_pCountdown->SetUnlockTime( flTime );
 		}
@@ -329,13 +353,13 @@ private:
 
 private:
 	int								m_iCPIndex;
-	vgui::ImagePanel				*m_pOverlayImage;
-	CControlPointIconPulseable		*m_pBaseImage;
-	CControlPointIconCapArrow		*m_pCapImage;
+	vgui::ImagePanel*				m_pOverlayImage;
+	CControlPointIconPulseable*		m_pBaseImage;
+	CControlPointIconCapArrow*		m_pCapImage;
 	DHANDLE< CControlPointIconSwoop	>	m_pCapHighlightImage;
 	DHANDLE< CControlPointIconCapturePulse > m_pCapPulseImage;
-	vgui::ImagePanel				*m_pCapPlayerImage;
-	vgui::Label						*m_pCapNumPlayers;
+	vgui::ImagePanel*				m_pCapPlayerImage;
+	vgui::Label*						m_pCapNumPlayers;
 	bool							m_bSwipeUp;
 	float							m_flStartCapAnimStart;
 	int								m_iCapProgressDir;
@@ -343,7 +367,7 @@ private:
 	bool							m_bCachedLockedState;
 
 	bool							m_bCachedCountdownState;
-	CControlPointCountdown			*m_pCountdown;
+	CControlPointCountdown*			m_pCountdown;
 
 	DHANDLE< CExLabel >				m_pCPTimerLabel; // used to display CCPTimerLogic countdowns
 	DHANDLE< vgui::ImagePanel >		m_pCPTimerBG; // used to display CCPTimerLogic countdowns
@@ -354,17 +378,17 @@ private:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CHudControlPointIcons : public CHudElement, public vgui::Panel
 {
 public:
 	DECLARE_CLASS_SIMPLE( CHudControlPointIcons, vgui::Panel );
 
-	CHudControlPointIcons( const char *pName );
+	CHudControlPointIcons( const char* pName );
 	virtual ~CHudControlPointIcons( void );
 
-	virtual void ApplySchemeSettings( IScheme *scheme );
+	virtual void ApplySchemeSettings( IScheme* scheme );
 	virtual void PerformLayout( void );
 	virtual void Paint();
 	virtual void Init();
@@ -377,7 +401,7 @@ public:
 		return IsVisible();
 	}
 
-	virtual void FireGameEvent( IGameEvent *event );
+	virtual void FireGameEvent( IGameEvent* event );
 
 	void UpdateProgressBarFor( int iIndex );
 	void InitIcons();
@@ -385,18 +409,24 @@ public:
 	void DrawBackgroundBox( int xpos, int ypos, int nBoxWidth, int nBoxHeight, bool bCutCorner );
 	bool PaintTeamBaseIcon( int index, float flXPos, float flYPos, float flIconSize );
 
-	bool IsFakingCapture( int index = -1, bool *bMult = NULL, float *flFakeTime = NULL ) 
-	{ 
-		if ( m_bFakingCapture && m_flFakeCaptureTime < gpGlobals->curtime )
+	bool IsFakingCapture( int index = -1, bool* bMult = NULL, float* flFakeTime = NULL )
+	{
+		if( m_bFakingCapture && m_flFakeCaptureTime < gpGlobals->curtime )
 		{
 			m_iCurrentCP = -1;
 			m_bFakingCapture = false;
 			m_bFakingCaptureMult = false;
 		}
 
-		if ( bMult) *bMult = m_bFakingCaptureMult; 
-		if ( flFakeTime ) *flFakeTime = m_flFakeCaptureTime; 
-		return (m_bFakingCapture && (index == -1 || index == m_iCurrentCP)); 
+		if( bMult )
+		{
+			*bMult = m_bFakingCaptureMult;
+		}
+		if( flFakeTime )
+		{
+			*flFakeTime = m_flFakeCaptureTime;
+		}
+		return ( m_bFakingCapture && ( index == -1 || index == m_iCurrentCP ) );
 	}
 
 private:
@@ -432,7 +462,7 @@ private:
 	CPanelAnimationVarAliasType( int,	m_iIconGapHeight, "separator_height", "9", "proportional_int" );
 	CPanelAnimationVarAliasType( int,	m_nHeightOffset, "height_offset", "0", "proportional_int" );
 
-	CUtlVector<CControlPointIcon *>		m_Icons;
+	CUtlVector<CControlPointIcon*>		m_Icons;
 };
 
 #endif // HUD_CONTROLPOINTICONS_H

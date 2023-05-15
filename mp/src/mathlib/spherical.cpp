@@ -16,7 +16,8 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-float s_flFactorials[]={
+float s_flFactorials[] =
+{
 	1.,
 	1.,
 	2.,
@@ -57,7 +58,7 @@ float AssociatedLegendrePolynomial( int nL, int nM, float flX )
 {
 	// evaluate associated legendre polynomial at flX, using recurrence relation
 	float flPmm = 1.;
-	if ( nM > 0 )
+	if( nM > 0 )
 	{
 		float flSomX2 = sqrt( ( 1 - flX ) * ( 1 + flX ) );
 		float flFact = 1.;
@@ -67,11 +68,15 @@ float AssociatedLegendrePolynomial( int nL, int nM, float flX )
 			flFact += 2.0;
 		}
 	}
-	if ( nL == nM )
+	if( nL == nM )
+	{
 		return flPmm;
+	}
 	float flPmmp1 = flX * ( 2.0 * nM + 1.0 ) * flPmm;
-	if ( nL == nM + 1 ) 
+	if( nL == nM + 1 )
+	{
 		return flPmmp1;
+	}
 	float flPll = 0.;
 	for( int nLL = nM + 2 ; nLL <= nL; nLL++ )
 	{
@@ -84,22 +89,24 @@ float AssociatedLegendrePolynomial( int nL, int nM, float flX )
 
 static float SHNormalizationFactor( int nL, int nM )
 {
-	double flTemp = ( ( 2. * nL + 1.0 ) * s_flFactorials[ nL - nM ] )/ ( 4. * M_PI * s_flFactorials[ nL + nM ] );
+	double flTemp = ( ( 2. * nL + 1.0 ) * s_flFactorials[ nL - nM ] ) / ( 4. * M_PI * s_flFactorials[ nL + nM ] );
 	return sqrt( flTemp );
 }
 
-#define SQRT_2 1.414213562373095 
+#define SQRT_2 1.414213562373095
 
 FORCEINLINE float SphericalHarmonic( int nL, int nM, float flTheta, float flPhi, float flCosTheta )
 {
-	if ( nM == 0 )
+	if( nM == 0 )
+	{
 		return SHNormalizationFactor( nL, 0 ) * AssociatedLegendrePolynomial( nL, nM, flCosTheta );
+	}
 
-	if ( nM > 0 )
-		return SQRT_2 * SHNormalizationFactor( nL, nM ) * cos ( nM * flPhi ) *
-			AssociatedLegendrePolynomial( nL, nM, flCosTheta );
+	if( nM > 0 )
+		return SQRT_2 * SHNormalizationFactor( nL, nM ) * cos( nM * flPhi ) *
+			   AssociatedLegendrePolynomial( nL, nM, flCosTheta );
 
-	return 
+	return
 		SQRT_2 * SHNormalizationFactor( nL, -nM ) * sin( -nM * flPhi ) * AssociatedLegendrePolynomial( nL, -nM, flCosTheta );
 
 }
@@ -109,13 +116,13 @@ float SphericalHarmonic( int nL, int nM, float flTheta, float flPhi )
 	return SphericalHarmonic( nL, nM, flTheta, flPhi, cos( flTheta ) );
 }
 
-float SphericalHarmonic( int nL, int nM, Vector const &vecDirection )
+float SphericalHarmonic( int nL, int nM, Vector const& vecDirection )
 {
 	Assert( fabs( VectorLength( vecDirection ) - 1.0 ) < 0.0001 );
 	float flPhi = acos( vecDirection.z );
 	float flTheta = 0;
 	float S = Square( vecDirection.x ) + Square( vecDirection.y );
-	if ( S > 0 )
+	if( S > 0 )
 	{
 		flTheta = atan2( vecDirection.y, vecDirection.x );
 	}

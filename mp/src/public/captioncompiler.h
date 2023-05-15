@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef CAPTIONCOMPILER_H
 #define CAPTIONCOMPILER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "datamap.h"
@@ -40,10 +40,10 @@ struct CaptionLookup_t
 	unsigned short	offset;
 	unsigned short	length;
 
-	void SetHash( char const *string )
+	void SetHash( char const* string )
 	{
 		int len = Q_strlen( string );
-		char *tempstr = (char *)_alloca( len + 1 );
+		char* tempstr = ( char* )_alloca( len + 1 );
 		Q_strncpy( tempstr, string, len + 1 );
 		Q_strlower( tempstr );
 		CRC32_t temp;
@@ -59,7 +59,7 @@ struct CaptionLookup_t
 class CCaptionLookupLess
 {
 public:
-	bool	Less( const CaptionLookup_t& lhs, const CaptionLookup_t& rhs, void *pContext )
+	bool	Less( const CaptionLookup_t& lhs, const CaptionLookup_t& rhs, void* pContext )
 	{
 		return lhs.hash < rhs.hash;
 	}
@@ -71,7 +71,7 @@ struct CaptionBlock_t
 };
 
 // For swapping compiled caption files
-bool	SwapClosecaptionFile( void *pData );
-int		UpdateOrCreateCaptionFile( const char *pSourceName, char *pTargetName, int targetLen, bool bForce = false );
+bool	SwapClosecaptionFile( void* pData );
+int		UpdateOrCreateCaptionFile( const char* pSourceName, char* pTargetName, int targetLen, bool bForce = false );
 
 #endif // CAPTIONCOMPILER_H

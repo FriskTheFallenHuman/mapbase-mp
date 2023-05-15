@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef VMTPICKER_H
 #define VMTPICKER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "matsys_controls/baseassetpicker.h"
@@ -20,7 +20,7 @@ class CVMTPreviewPanel;
 
 namespace vgui
 {
-	class Splitter;
+class Splitter;
 }
 
 
@@ -32,17 +32,17 @@ class CVMTPicker : public CBaseAssetPicker
 	DECLARE_CLASS_SIMPLE( CVMTPicker, CBaseAssetPicker );
 
 public:
-	CVMTPicker( vgui::Panel *pParent, bool bAllowMultiselect = false );
+	CVMTPicker( vgui::Panel* pParent, bool bAllowMultiselect = false );
 	virtual ~CVMTPicker();
 
 private:
 	// Derived classes have this called when the previewed asset changes
-	virtual void OnSelectedAssetPicked( const char *pAssetName );
+	virtual void OnSelectedAssetPicked( const char* pAssetName );
 
-	CVMTPreviewPanel *m_pVMTPreview2D;
-	CVMTPreviewPanel *m_pVMTPreview3D;
-	vgui::Splitter *m_p2D3DSplitter;
-	vgui::Splitter *m_pPreviewSplitter;
+	CVMTPreviewPanel* m_pVMTPreview2D;
+	CVMTPreviewPanel* m_pVMTPreview3D;
+	vgui::Splitter* m_p2D3DSplitter;
+	vgui::Splitter* m_pPreviewSplitter;
 };
 
 
@@ -54,7 +54,7 @@ class CVMTPickerFrame : public CBaseAssetPickerFrame
 	DECLARE_CLASS_SIMPLE( CVMTPickerFrame, CBaseAssetPickerFrame );
 
 public:
-	CVMTPickerFrame( vgui::Panel *pParent, const char *pTitle, bool bAllowMultiselect = false );
+	CVMTPickerFrame( vgui::Panel* pParent, const char* pTitle, bool bAllowMultiselect = false );
 };
 
 

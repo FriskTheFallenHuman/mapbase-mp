@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NPC_BULLSEYE_H
 #define NPC_BULLSEYE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -21,7 +21,7 @@ class CNPC_Bullseye : public CAI_BaseNPC
 	DECLARE_CLASS( CNPC_Bullseye, CAI_BaseNPC );
 
 public:
-	CNPC_Bullseye(void);
+	CNPC_Bullseye( void );
 	~CNPC_Bullseye();
 
 	virtual void Precache( void );
@@ -29,28 +29,40 @@ public:
 	virtual void Activate( void );
 	virtual void OnRestore( void );
 
-	virtual float GetAutoAimRadius() { return m_fAutoaimRadius; }
+	virtual float GetAutoAimRadius()
+	{
+		return m_fAutoaimRadius;
+	}
 
 	Class_T Classify( void );
-	void	Event_Killed( const CTakeDamageInfo &info );
-	void	DecalTrace( trace_t *pTrace, char const *decalName );
-	void	ImpactTrace( trace_t *pTrace, int iDamageType, const char *pCustomImpactName );
-	bool	IsLightDamage( const CTakeDamageInfo &info );
-	void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	int		OnTakeDamage( const CTakeDamageInfo &info );
-	bool	UsePerfectAccuracy( void ) { return m_bPerfectAccuracy; }
+	void	Event_Killed( const CTakeDamageInfo& info );
+	void	DecalTrace( trace_t* pTrace, char const* decalName );
+	void	ImpactTrace( trace_t* pTrace, int iDamageType, const char* pCustomImpactName );
+	bool	IsLightDamage( const CTakeDamageInfo& info );
+	void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	int		OnTakeDamage( const CTakeDamageInfo& info );
+	bool	UsePerfectAccuracy( void )
+	{
+		return m_bPerfectAccuracy;
+	}
 
-	bool	TestHitboxes( const Ray_t &ray, unsigned int fContentsMask, trace_t& tr ) { return false; } // force traces to test against hull
-	
+	bool	TestHitboxes( const Ray_t& ray, unsigned int fContentsMask, trace_t& tr )
+	{
+		return false;    // force traces to test against hull
+	}
+
 	void	BullseyeThink( void );
 	bool	CanBecomeRagdoll( void );
 
-	void	SetPainPartner( CBaseEntity *pOther );
-	void	InputTargeted( inputdata_t &inputdata );
-	void	InputReleased( inputdata_t &inputdata );
-	bool	CanBecomeServerRagdoll( void ) { return false;	}
+	void	SetPainPartner( CBaseEntity* pOther );
+	void	InputTargeted( inputdata_t& inputdata );
+	void	InputReleased( inputdata_t& inputdata );
+	bool	CanBecomeServerRagdoll( void )
+	{
+		return false;
+	}
 
-	bool	CanBeAnEnemyOf( CBaseEntity *pEnemy );
+	bool	CanBeAnEnemyOf( CBaseEntity* pEnemy );
 
 
 protected:
@@ -65,7 +77,7 @@ protected:
 	DECLARE_DATADESC();
 };
 
-int FindBullseyesInCone( CBaseEntity **pList, int listMax, const Vector &coneOrigin, const Vector &coneAxis, float coneAngleCos, float coneLength );
+int FindBullseyesInCone( CBaseEntity** pList, int listMax, const Vector& coneOrigin, const Vector& coneAxis, float coneAngleCos, float coneLength );
 
 #define SF_BULLSEYE_NONSOLID		(1 << 16)
 #define SF_BULLSEYE_NODAMAGE		(1 << 17)

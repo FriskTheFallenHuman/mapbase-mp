@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -14,17 +14,17 @@
 #ifndef WEAPON_STUNSTICK_H
 #define WEAPON_STUNSTICK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basebludgeonweapon.h"
 
 #define	STUNSTICK_RANGE		75.0f
 #ifdef MAPBASE
-// MP refire
-#define STUNSTICK_REFIRE	0.8f
+	// MP refire
+	#define STUNSTICK_REFIRE	0.8f
 #else
-#define	STUNSTICK_REFIRE	0.6f
+	#define	STUNSTICK_REFIRE	0.6f
 #endif
 
 class CWeaponStunStick : public CBaseHLBludgeonWeapon
@@ -43,24 +43,33 @@ public:
 
 	void		Spawn();
 
-	float		GetRange( void )		{ return STUNSTICK_RANGE; }
-	float		GetFireRate( void )		{ return STUNSTICK_REFIRE; }
+	float		GetRange( void )
+	{
+		return STUNSTICK_RANGE;
+	}
+	float		GetFireRate( void )
+	{
+		return STUNSTICK_REFIRE;
+	}
 
 	int			WeaponMeleeAttack1Condition( float flDot, float flDist );
 
 	bool		Deploy( void );
-	bool		Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
-	
-	void		Drop( const Vector &vecVelocity );
-	void		ImpactEffect( trace_t &traceHit );
+	bool		Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
+
+	void		Drop( const Vector& vecVelocity );
+	void		ImpactEffect( trace_t& traceHit );
 	void		SecondaryAttack( void )	{}
 	void		SetStunState( bool state );
 	bool		GetStunState( void );
-	void		Operator_HandleAnimEvent( animevent_t *pEvent, CBaseCombatCharacter *pOperator );
-	
+	void		Operator_HandleAnimEvent( animevent_t* pEvent, CBaseCombatCharacter* pOperator );
+
 	float		GetDamageForActivity( Activity hitActivity );
 
-	bool		CanBePickedUpByNPCs( void ) { return false;	}		
+	bool		CanBePickedUpByNPCs( void )
+	{
+		return false;
+	}
 
 private:
 

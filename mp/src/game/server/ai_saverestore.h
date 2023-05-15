@@ -9,9 +9,9 @@
 #define AI_SAVERESTORE_H
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
-ISaveRestoreBlockHandler *GetAISaveRestoreBlockHandler();
+ISaveRestoreBlockHandler* GetAISaveRestoreBlockHandler();
 
 #endif // AI_SAVERESTORE_H

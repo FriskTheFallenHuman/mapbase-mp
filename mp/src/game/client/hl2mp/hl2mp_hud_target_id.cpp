@@ -24,16 +24,16 @@ static ConVar hud_centerid( "hud_centerid", "1" );
 static ConVar hud_showtargetid( "hud_showtargetid", "1" );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CTargetID : public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CTargetID, vgui::Panel );
 
 public:
-	CTargetID( const char *pElementName );
+	CTargetID( const char* pElementName );
 	void Init( void );
-	virtual void	ApplySchemeSettings( vgui::IScheme *scheme );
+	virtual void	ApplySchemeSettings( vgui::IScheme* scheme );
 	virtual void	Paint( void );
 	void VidInit( void );
 
@@ -50,12 +50,12 @@ DECLARE_HUDELEMENT( CTargetID );
 using namespace vgui;
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CTargetID::CTargetID( const char *pElementName ) :
+CTargetID::CTargetID( const char* pElementName ) :
 	CHudElement( pElementName ), BaseClass( NULL, "TargetID" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 
 	m_hFont = g_hFontTrebuchet24;
@@ -72,7 +72,7 @@ void CTargetID::Init( void )
 {
 };
 
-void CTargetID::ApplySchemeSettings( vgui::IScheme *scheme )
+void CTargetID::ApplySchemeSettings( vgui::IScheme* scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
@@ -95,7 +95,7 @@ void CTargetID::VidInit()
 Color CTargetID::GetColorForTargetTeam( int iTeamNumber )
 {
 	return GameResources()->GetTeamColor( iTeamNumber );
-} 
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw function for the element
@@ -106,20 +106,22 @@ void CTargetID::Paint()
 	wchar_t sIDString[ MAX_ID_STRING ];
 	sIDString[0] = 0;
 
-	C_HL2MP_Player *pHL2MPPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
+	C_HL2MP_Player* pHL2MPPlayer = C_HL2MP_Player::GetLocalHL2MPPlayer();
 
-	if ( !pHL2MPPlayer)
+	if( !pHL2MPPlayer )
+	{
 		return;
+	}
 
 	Color c;
 
 	// Get our target's ent index
 	int iEntIndex = pHL2MPPlayer->GetIDTarget();
 	// Didn't find one?
-	if ( !iEntIndex )
+	if( !iEntIndex )
 	{
 		// Check to see if we should clear our ID
-		if ( m_flLastChangeTime && (gpGlobals->curtime > (m_flLastChangeTime + 0.5)) )
+		if( m_flLastChangeTime && ( gpGlobals->curtime > ( m_flLastChangeTime + 0.5 ) ) )
 		{
 			m_flLastChangeTime = 0;
 			sIDString[0] = 0;
@@ -137,12 +139,12 @@ void CTargetID::Paint()
 	}
 
 	// Is this an entindex sent by the server?
-	if ( iEntIndex )
+	if( iEntIndex )
 	{
-		C_BasePlayer *pPlayer = static_cast<C_BasePlayer*>(cl_entitylist->GetEnt( iEntIndex ));
-		C_BasePlayer *pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+		C_BasePlayer* pPlayer = static_cast<C_BasePlayer*>( cl_entitylist->GetEnt( iEntIndex ) );
+		C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
 
-		const char *printFormatString = NULL;
+		const char* printFormatString = NULL;
 		wchar_t wszPlayerName[ MAX_PLAYER_NAME_LENGTH ];
 		wchar_t wszHealthText[ 10 ];
 		bool bShowHealth = false;
@@ -151,14 +153,14 @@ void CTargetID::Paint()
 		// Some entities we always want to check, cause the text may change
 		// even while we're looking at it
 		// Is it a player?
-		if ( IsPlayerIndex( iEntIndex ) )
+		if( IsPlayerIndex( iEntIndex ) )
 		{
 			c = GetColorForTargetTeam( pPlayer->GetTeamNumber() );
 
 			bShowPlayerName = true;
-			g_pVGuiLocalize->ConvertANSIToUnicode( pPlayer->GetPlayerName(),  wszPlayerName, sizeof(wszPlayerName) );
-			
-			if ( HL2MPRules()->IsTeamplay() == true && pPlayer->InSameTeam(pLocalPlayer) )
+			g_pVGuiLocalize->ConvertANSIToUnicode( pPlayer->GetPlayerName(),  wszPlayerName, sizeof( wszPlayerName ) );
+
+			if( HL2MPRules()->IsTeamplay() == true && pPlayer->InSameTeam( pLocalPlayer ) )
 			{
 				printFormatString = "#Playerid_sameteam";
 				bShowHealth = true;
@@ -167,56 +169,56 @@ void CTargetID::Paint()
 			{
 				printFormatString = "#Playerid_diffteam";
 			}
-		
 
-			if ( bShowHealth )
+
+			if( bShowHealth )
 			{
-				_snwprintf( wszHealthText, ARRAYSIZE(wszHealthText) - 1, L"%.0f%%",  ((float)pPlayer->GetHealth() / (float)pPlayer->GetMaxHealth() ) );
-				wszHealthText[ ARRAYSIZE(wszHealthText)-1 ] = '\0';
+				_snwprintf( wszHealthText, ARRAYSIZE( wszHealthText ) - 1, L"%.0f%%", ( ( float )pPlayer->GetHealth() / ( float )pPlayer->GetMaxHealth() ) );
+				wszHealthText[ ARRAYSIZE( wszHealthText ) - 1 ] = '\0';
 			}
 		}
 
-		if ( printFormatString )
+		if( printFormatString )
 		{
-			if ( bShowPlayerName && bShowHealth )
+			if( bShowPlayerName && bShowHealth )
 			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 2, wszPlayerName, wszHealthText );
+				g_pVGuiLocalize->ConstructString( sIDString, sizeof( sIDString ), g_pVGuiLocalize->Find( printFormatString ), 2, wszPlayerName, wszHealthText );
 			}
-			else if ( bShowPlayerName )
+			else if( bShowPlayerName )
 			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 1, wszPlayerName );
+				g_pVGuiLocalize->ConstructString( sIDString, sizeof( sIDString ), g_pVGuiLocalize->Find( printFormatString ), 1, wszPlayerName );
 			}
-			else if ( bShowHealth )
+			else if( bShowHealth )
 			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 1, wszHealthText );
+				g_pVGuiLocalize->ConstructString( sIDString, sizeof( sIDString ), g_pVGuiLocalize->Find( printFormatString ), 1, wszHealthText );
 			}
 			else
 			{
-				g_pVGuiLocalize->ConstructString( sIDString, sizeof(sIDString), g_pVGuiLocalize->Find(printFormatString), 0 );
+				g_pVGuiLocalize->ConstructString( sIDString, sizeof( sIDString ), g_pVGuiLocalize->Find( printFormatString ), 0 );
 			}
 		}
 
-		if ( sIDString[0] )
+		if( sIDString[0] )
 		{
 			int wide, tall;
-			int ypos = YRES(260);
-			int xpos = XRES(10);
+			int ypos = YRES( 260 );
+			int xpos = XRES( 10 );
 
 			vgui::surface()->GetTextSize( m_hFont, sIDString, wide, tall );
 
 			if( hud_centerid.GetInt() == 0 )
 			{
-				ypos = YRES(420);
+				ypos = YRES( 420 );
 			}
 			else
 			{
-				xpos = (ScreenWidth() - wide) / 2;
+				xpos = ( ScreenWidth() - wide ) / 2;
 			}
-			
+
 			vgui::surface()->DrawSetTextFont( m_hFont );
 			vgui::surface()->DrawSetTextPos( xpos, ypos );
 			vgui::surface()->DrawSetTextColor( c );
-			vgui::surface()->DrawPrintText( sIDString, wcslen(sIDString) );
+			vgui::surface()->DrawPrintText( sIDString, wcslen( sIDString ) );
 		}
 	}
 }

@@ -33,25 +33,25 @@
 #pragma once
 
 #ifdef USE_SDL
-#include "SDL_opengl.h"
+	#include "SDL_opengl.h"
 #endif
 
 #ifdef OSX
-#include <OpenGL/OpenGL.h>
-#include <OpenGL/gl.h>
-#include <OpenGL/CGLTypes.h>
-#include <OpenGL/CGLRenderers.h>
-#include <OpenGL/CGLCurrent.h>
+	#include <OpenGL/OpenGL.h>
+	#include <OpenGL/gl.h>
+	#include <OpenGL/CGLTypes.h>
+	#include <OpenGL/CGLRenderers.h>
+	#include <OpenGL/CGLCurrent.h>
 #endif
 
 #ifdef MAC_OS_X_VERSION_10_9
-typedef uint32_t CGDirectDisplayID;
-typedef uint32_t CGOpenGLDisplayMask;
-typedef double CGRefreshRate;
+	typedef uint32_t CGDirectDisplayID;
+	typedef uint32_t CGOpenGLDisplayMask;
+	typedef double CGRefreshRate;
 #endif
 
 typedef void _PseudoNSGLContext;					// aka NSOpenGLContext
-typedef _PseudoNSGLContext	*PseudoNSGLContextPtr;
+typedef _PseudoNSGLContext*	PseudoNSGLContextPtr;
 
 struct GLMDisplayModeInfoFields
 {
@@ -68,13 +68,13 @@ struct GLMDisplayInfoFields
 	CGOpenGLDisplayMask				m_glDisplayMask;		// result of CGDisplayIDToOpenGLDisplayMask on the cg_displayID.
 #endif
 	uint							m_displayPixelWidth;
-	uint							m_displayPixelHeight;	
+	uint							m_displayPixelHeight;
 };
 
 struct GLMRendererInfoFields
 {
 	/*properties of interest and their desired values.
-	
+
 	   kCGLRPFullScreen          =  54,		true
 	   kCGLRPAccelerated         =  73,		true
 	   kCGLRPWindow              =  80,		true
@@ -109,7 +109,7 @@ struct GLMRendererInfoFields
 	GLint	m_fullscreen;
 	GLint	m_accelerated;
 	GLint	m_windowed;
-	
+
 	GLint	m_rendererID;
 	GLint	m_displayMask;
 	GLint	m_bufferModes;
@@ -126,7 +126,7 @@ struct GLMRendererInfoFields
 
 	GLint	m_vidMemory;
 	GLint	m_texMemory;
-	
+
 	uint	m_pciVendorID;
 	uint	m_pciDeviceID;
 	char	m_pciModelString[64];
@@ -136,7 +136,7 @@ struct GLMRendererInfoFields
 
 	// OS version found
 	uint	m_osComboVersion;			// 0x00XXYYZZ : XX major, YY minor, ZZ minor minor : 10.6.3 --> 0x000A0603.  10.5.8 --> 0x000A0508.
-		
+
 	//--------------------------- shorthands - also set up by CocoaMgr - driven by vendorid / deviceid
 
 	bool	m_ati;
@@ -145,7 +145,7 @@ struct GLMRendererInfoFields
 	bool	m_atiR7xx;
 	bool	m_atiR8xx;
 	bool	m_atiNewer;
-	
+
 	bool	m_intel;
 	bool	m_intel95x;
 	bool	m_intel3100;
@@ -155,10 +155,10 @@ struct GLMRendererInfoFields
 	bool	m_nvG7x;
 	bool	m_nvG8x;
 	bool	m_nvNewer;
-	
+
 	//--------------------------- context query results - left blank in the display DB - but valid in a GLMContext (call ctx->Caps() to get a const ref)
-	
-	// booleans	
+
+	// booleans
 	bool	m_hasGammaWrites;			// aka glGetBooleanv(GL_FRAMEBUFFER_SRGB_CAPABLE_EXT) / glEnable(GL_FRAMEBUFFER_SRGB_EXT)
 	bool	m_hasMixedAttachmentSizes;	// aka ARB_fbo in 10.6.3 - test for min OS vers, then exported ext string
 	bool	m_hasBGRA;					// aka GL_BGRA vertex attribs in 10.6.3 -  - test for min OS vers, then exported ext string
@@ -167,18 +167,18 @@ struct GLMRendererInfoFields
 	bool	m_hasOcclusionQuery;		// occlusion query: do you speak it ?!
 	bool	m_hasFramebufferBlit;		// framebuffer blit: know what I'm sayin?!
 	bool	m_hasPerfPackage1;			// means new MTGL, fast OQ, fast uniform upload, NV can resolve flipped (late summer 2010 post 10.6.4 update)
-	
+
 	// counts
 	int		m_maxAniso;					// aniso limit - context query
-	
+
 	// other exts
 	bool	m_hasBindableUniforms;
 	int		m_maxVertexBindableUniforms;
 	int		m_maxFragmentBindableUniforms;
 	int		m_maxBindableUniformSize;
-	
+
 	bool	m_hasUniformBuffers;
-	
+
 	// runtime options that aren't negotiable once set
 	bool	m_hasDualShaders;			// must supply CLI arg "-glmdualshaders" or we go GLSL only
 

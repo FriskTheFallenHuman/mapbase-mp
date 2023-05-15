@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
@@ -19,24 +19,27 @@ struct entitySideList_t
 
 static bool SideIsNotDispAndHasDispMaterial( int iSide )
 {
-	side_t *pSide = &g_MainMap->brushsides[iSide];
+	side_t* pSide = &g_MainMap->brushsides[iSide];
 
 	// If it's a displacement, then it's fine to have a displacement-only material.
-	if ( pSide->pMapDisp )
+	if( pSide->pMapDisp )
 	{
 		return false;
 	}
 
-	pSide->texinfo;	
+	pSide->texinfo;
 
 	return true;
 }
 
-static void BackSlashToForwardSlash( char *pname )
+static void BackSlashToForwardSlash( char* pname )
 {
-	while ( *pname ) {
-		if ( *pname == '\\' )
+	while( *pname )
+	{
+		if( *pname == '\\' )
+		{
 			*pname = '/';
+		}
 		pname++;
 	}
 }
@@ -44,12 +47,12 @@ static void BackSlashToForwardSlash( char *pname )
 //-----------------------------------------------------------------------------
 // Generate patched material name
 //-----------------------------------------------------------------------------
-static void GeneratePatchedMaterialName( const char *pMaterialName, char *pBuffer, int nMaxLen )
+static void GeneratePatchedMaterialName( const char* pMaterialName, char* pBuffer, int nMaxLen )
 {
 	int nLen = Q_snprintf( pBuffer, nMaxLen, "maps/%s/%s_wvt_patch", g_mapbase, pMaterialName );
 
 	Assert( nLen < TEXTURE_NAME_LENGTH - 1 );
-	if ( nLen >= TEXTURE_NAME_LENGTH - 1 )
+	if( nLen >= TEXTURE_NAME_LENGTH - 1 )
 	{
 		Error( "Generated worldvertextransition patch name : %s too long! (max = %d)\n", pBuffer, TEXTURE_NAME_LENGTH );
 	}
@@ -58,9 +61,9 @@ static void GeneratePatchedMaterialName( const char *pMaterialName, char *pBuffe
 	Q_strlower( pBuffer );
 }
 
-static void RemoveKey( KeyValues *kv, const char *pSubKeyName )
+static void RemoveKey( KeyValues* kv, const char* pSubKeyName )
 {
-	KeyValues *pSubKey = kv->FindKey( pSubKeyName );
+	KeyValues* pSubKey = kv->FindKey( pSubKeyName );
 	if( pSubKey )
 	{
 		kv->RemoveSubKey( pSubKey );
@@ -68,9 +71,9 @@ static void RemoveKey( KeyValues *kv, const char *pSubKeyName )
 	}
 }
 
-void CreateWorldVertexTransitionPatchedMaterial( const char *pOriginalMaterialName, const char *pPatchedMaterialName )
+void CreateWorldVertexTransitionPatchedMaterial( const char* pOriginalMaterialName, const char* pPatchedMaterialName )
 {
-	KeyValues *kv = LoadMaterialKeyValues( pOriginalMaterialName, 0 );
+	KeyValues* kv = LoadMaterialKeyValues( pOriginalMaterialName, 0 );
 	if( kv )
 	{
 		// change shader to Lightmappedgeneric (from worldvertextransition*)
@@ -84,7 +87,7 @@ void CreateWorldVertexTransitionPatchedMaterial( const char *pOriginalMaterialNa
 		RemoveKey( kv, "$maskedblending" );
 		RemoveKey( kv, "$surfaceprop2" );
 		// If we didn't want a basetexture on the first texture in the blend, we don't want an envmap at all.
-		KeyValues *basetexturenoenvmap = kv->FindKey( "$BASETEXTURENOENVMAP" );
+		KeyValues* basetexturenoenvmap = kv->FindKey( "$BASETEXTURENOENVMAP" );
 		if( basetexturenoenvmap->GetInt() )
 		{
 			RemoveKey( kv, "$envmap" );
@@ -98,24 +101,28 @@ void CreateWorldVertexTransitionPatchedMaterial( const char *pOriginalMaterialNa
 int CreateBrushVersionOfWorldVertexTransitionMaterial( int originalTexInfo )
 {
 	// Don't make cubemap tex infos for nodes
-	if ( originalTexInfo == TEXINFO_NODE )
+	if( originalTexInfo == TEXINFO_NODE )
+	{
 		return originalTexInfo;
+	}
 
-	texinfo_t *pTexInfo = &texinfo[originalTexInfo];
-	dtexdata_t *pTexData = GetTexData( pTexInfo->texdata );
-	const char *pOriginalMaterialName = TexDataStringTable_GetString( pTexData->nameStringTableID );
+	texinfo_t* pTexInfo = &texinfo[originalTexInfo];
+	dtexdata_t* pTexData = GetTexData( pTexInfo->texdata );
+	const char* pOriginalMaterialName = TexDataStringTable_GetString( pTexData->nameStringTableID );
 
 	// Get out of here if the originalTexInfo is already a patched wvt material
-	if ( Q_stristr( pOriginalMaterialName, "_wvt_patch" ) )
+	if( Q_stristr( pOriginalMaterialName, "_wvt_patch" ) )
+	{
 		return originalTexInfo;
+	}
 
 	char patchedMaterialName[1024];
 	GeneratePatchedMaterialName( pOriginalMaterialName, patchedMaterialName, 1024 );
 //	Warning( "GeneratePatchedMaterialName: %s %s\n", pMaterialName, patchedMaterialName );
-	
+
 	// Make sure the texdata doesn't already exist.
 	int nTexDataID = FindTexData( patchedMaterialName );
-	bool bHasTexData = (nTexDataID != -1);
+	bool bHasTexData = ( nTexDataID != -1 );
 	if( !bHasTexData )
 	{
 		// Create the new vmt material file
@@ -138,7 +145,7 @@ int CreateBrushVersionOfWorldVertexTransitionMaterial( int originalTexInfo )
 	if( bHasTexData )
 	{
 		nTexInfoID = FindTexInfo( newTexInfo );
-		bHasTexInfo = (nTexInfoID != -1);
+		bHasTexInfo = ( nTexInfoID != -1 );
 	}
 
 	// Make a new texinfo if we need to.
@@ -151,13 +158,13 @@ int CreateBrushVersionOfWorldVertexTransitionMaterial( int originalTexInfo )
 	return nTexInfoID;
 }
 
-const char *GetShaderNameForTexInfo( int iTexInfo )
+const char* GetShaderNameForTexInfo( int iTexInfo )
 {
-	texinfo_t *pTexInfo = &texinfo[iTexInfo];
-	dtexdata_t *pTexData = GetTexData( pTexInfo->texdata );
-	const char *pMaterialName = TexDataStringTable_GetString( pTexData->nameStringTableID );
+	texinfo_t* pTexInfo = &texinfo[iTexInfo];
+	dtexdata_t* pTexData = GetTexData( pTexInfo->texdata );
+	const char* pMaterialName = TexDataStringTable_GetString( pTexData->nameStringTableID );
 	MaterialSystemMaterial_t hMaterial = FindMaterial( pMaterialName, NULL, false );
-	const char *pShaderName = GetMaterialShaderName( hMaterial );
+	const char* pShaderName = GetMaterialShaderName( hMaterial );
 	return pShaderName;
 }
 
@@ -166,43 +173,47 @@ void WorldVertexTransitionFixup( void )
 	CUtlVector<entitySideList_t> sideList;
 	sideList.SetCount( g_MainMap->num_entities );
 	int i;
-	for ( i = 0; i < g_MainMap->num_entities; i++ )
+	for( i = 0; i < g_MainMap->num_entities; i++ )
 	{
 		sideList[i].firstBrushSide = 0;
 		sideList[i].brushSideCount = 0;
 	}
 
-	for ( i = 0; i < g_MainMap->nummapbrushes; i++ )
+	for( i = 0; i < g_MainMap->nummapbrushes; i++ )
 	{
 		sideList[g_MainMap->mapbrushes[i].entitynum].brushSideCount += g_MainMap->mapbrushes[i].numsides;
 	}
 	int curSide = 0;
-	for ( i = 0; i < g_MainMap->num_entities; i++ )
+	for( i = 0; i < g_MainMap->num_entities; i++ )
 	{
 		sideList[i].firstBrushSide = curSide;
 		curSide += sideList[i].brushSideCount;
 	}
 
 	int currentEntity = 0;
-	for ( int iSide = 0; iSide < g_MainMap->nummapbrushsides; ++iSide )
+	for( int iSide = 0; iSide < g_MainMap->nummapbrushsides; ++iSide )
 	{
-		side_t *pSide = &g_MainMap->brushsides[iSide];
+		side_t* pSide = &g_MainMap->brushsides[iSide];
 
 		// skip displacments
-		if ( pSide->pMapDisp )
-			continue;
-
-		if( pSide->texinfo < 0 )
-			continue;
-
-		const char *pShaderName = GetShaderNameForTexInfo( pSide->texinfo );
-		if ( !pShaderName || !Q_stristr( pShaderName, "worldvertextransition" ) )
+		if( pSide->pMapDisp )
 		{
 			continue;
 		}
 
-		while ( currentEntity < g_MainMap->num_entities-1 && 
-			iSide > sideList[currentEntity].firstBrushSide + sideList[currentEntity].brushSideCount )
+		if( pSide->texinfo < 0 )
+		{
+			continue;
+		}
+
+		const char* pShaderName = GetShaderNameForTexInfo( pSide->texinfo );
+		if( !pShaderName || !Q_stristr( pShaderName, "worldvertextransition" ) )
+		{
+			continue;
+		}
+
+		while( currentEntity < g_MainMap->num_entities - 1 &&
+				iSide > sideList[currentEntity].firstBrushSide + sideList[currentEntity].brushSideCount )
 		{
 			currentEntity++;
 		}

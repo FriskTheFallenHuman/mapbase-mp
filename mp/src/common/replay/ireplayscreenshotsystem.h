@@ -5,7 +5,7 @@
 #ifndef IREPLAYSCREENSHOTSYSTEM_H
 #define IREPLAYSCREENSHOTSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //----------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ struct WriteReplayScreenshotParams_t;
 class IReplayScreenshotSystem : public IBaseInterface
 {
 public:
-	virtual void	WriteReplayScreenshot( WriteReplayScreenshotParams_t &params ) = 0;
+	virtual void	WriteReplayScreenshot( WriteReplayScreenshotParams_t& params ) = 0;
 	virtual void	UpdateReplayScreenshotCache() = 0;
 };
 

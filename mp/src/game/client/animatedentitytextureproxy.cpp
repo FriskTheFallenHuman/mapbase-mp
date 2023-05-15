@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -25,12 +25,14 @@ EXPOSE_INTERFACE( CAnimatedEntityTextureProxy, IMaterialProxy, "AnimatedEntityTe
 
 float CAnimatedEntityTextureProxy::GetAnimationStartTime( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return 0.0f;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		return pEntity->GetTextureAnimationStartTime();
 	}
@@ -39,12 +41,14 @@ float CAnimatedEntityTextureProxy::GetAnimationStartTime( void* pArg )
 
 void CAnimatedEntityTextureProxy::AnimationWrapped( void* pArg )
 {
-	IClientRenderable *pRend = (IClientRenderable *)pArg;
-	if (!pRend)
+	IClientRenderable* pRend = ( IClientRenderable* )pArg;
+	if( !pRend )
+	{
 		return;
+	}
 
 	C_BaseEntity* pEntity = pRend->GetIClientUnknown()->GetBaseEntity();
-	if (pEntity)
+	if( pEntity )
 	{
 		pEntity->TextureAnimationWrapped();
 	}

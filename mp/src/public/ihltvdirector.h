@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef IHLTVDIRECTOR_H
 #define IHLTVDIRECTOR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class IHLTVServer;
@@ -23,9 +23,9 @@ public:
 
 	virtual bool	IsActive( void ) = 0; // true if director is active
 
-	virtual void	SetHLTVServer( IHLTVServer *hltv ) = 0; // give the director the engine HLTV interface 
+	virtual void	SetHLTVServer( IHLTVServer* hltv ) = 0; // give the director the engine HLTV interface
 	virtual IHLTVServer* GetHLTVServer( void ) = 0; // get current HLTV server interface
-	
+
 	virtual int		GetDirectorTick( void ) = 0;	// get current broadcast tick from director
 	virtual int		GetPVSEntity( void ) = 0; // get current view entity (PVS), 0 if coords are used
 	virtual Vector	GetPVSOrigin( void ) = 0; // get current PVS origin

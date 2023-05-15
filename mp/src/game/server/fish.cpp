@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -25,59 +25,63 @@ LINK_ENTITY_TO_CLASS( fish, CFish );
 
 //-----------------------------------------------------------------------------------------------------
 BEGIN_DATADESC( CFish )
-	DEFINE_FIELD( m_pool, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_id, FIELD_INTEGER ),
-	DEFINE_FIELD( m_angle, FIELD_FLOAT ),
-	DEFINE_FIELD( m_angleChange, FIELD_FLOAT ),
-	DEFINE_FIELD( m_forward, FIELD_VECTOR ),
-	DEFINE_FIELD( m_perp, FIELD_VECTOR ),
-	DEFINE_FIELD( m_poolOrigin, FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_waterLevel, FIELD_FLOAT ),
-	DEFINE_FIELD( m_speed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_desiredSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_calmSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_panicSpeed, FIELD_FLOAT ),
-	DEFINE_FIELD( m_avoidRange, FIELD_FLOAT ),
-	DEFINE_FIELD( m_turnClockwise, FIELD_BOOLEAN ),
-END_DATADESC()
+DEFINE_FIELD( m_pool, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_id, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_angle, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_angleChange, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_forward, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_perp, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_poolOrigin, FIELD_POSITION_VECTOR ),
+			  DEFINE_FIELD( m_waterLevel, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_speed, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_desiredSpeed, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_calmSpeed, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_panicSpeed, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_avoidRange, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_turnClockwise, FIELD_BOOLEAN ),
+			  END_DATADESC()
 
 
 //-----------------------------------------------------------------------------------------------------
-/**
- * Send fish position relative to pool origin
- */
-void SendProxy_FishOriginX( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+			  /**
+			   * Send fish position relative to pool origin
+			   */
+			  void SendProxy_FishOriginX( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID )
 {
-	CFish *pFish = (CFish *)pStruct;
+	CFish* pFish = ( CFish* )pStruct;
 	Assert( pFish );
 
-	const Vector &v = pFish->GetAbsOrigin();
+	const Vector& v = pFish->GetAbsOrigin();
 	Vector origin = pFish->m_poolOrigin;
 
 	pOut->m_Float = v.x - origin.x;
 }
 
-void SendProxy_FishOriginY( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_FishOriginY( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID )
 {
-	CFish *pFish = (CFish *)pStruct;
+	CFish* pFish = ( CFish* )pStruct;
 	Assert( pFish );
 
-	const Vector &v = pFish->GetAbsOrigin();
+	const Vector& v = pFish->GetAbsOrigin();
 	Vector origin = pFish->m_poolOrigin;
 
 	pOut->m_Float = v.y - origin.y;
 }
 
 // keep angle in normalized range when sending it
-void SendProxy_FishAngle( const SendProp *pProp, const void *pStruct, const void *pData, DVariant *pOut, int iElement, int objectID )
+void SendProxy_FishAngle( const SendProp* pProp, const void* pStruct, const void* pData, DVariant* pOut, int iElement, int objectID )
 {
-	float value = *((float *)pData);
+	float value = *( ( float* )pData );
 
 	while( value > 360.0f )
+	{
 		value -= 360.0f;
+	}
 
-	while (value < 0.0f)
+	while( value < 0.0f )
+	{
 		value += 360.0f;
+	}
 
 	pOut->m_Float = value;
 }
@@ -90,18 +94,18 @@ void SendProxy_FishAngle( const SendProp *pProp, const void *pStruct, const void
  */
 IMPLEMENT_SERVERCLASS_ST_NOBASE( CFish, DT_CFish )
 
-	SendPropVector( SENDINFO(m_poolOrigin), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT ),	// only sent once
+SendPropVector( SENDINFO( m_poolOrigin ), -1, SPROP_COORD, 0.0f, HIGH_DEFAULT ),	// only sent once
 
-	SendPropFloat( SENDINFO(m_angle), 7, 0 /*SPROP_CHANGES_OFTEN*/, 0.0f, 360.0f, SendProxy_FishAngle ),
+SendPropFloat( SENDINFO( m_angle ), 7, 0 /*SPROP_CHANGES_OFTEN*/, 0.0f, 360.0f, SendProxy_FishAngle ),
 
-	SendPropFloat( SENDINFO(m_x), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f ),
-	SendPropFloat( SENDINFO(m_y), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f ),
-	SendPropFloat( SENDINFO(m_z), -1, SPROP_COORD ),								// only sent once
+SendPropFloat( SENDINFO( m_x ), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f ),
+SendPropFloat( SENDINFO( m_y ), 7, 0 /*SPROP_CHANGES_OFTEN*/, -255.0f, 255.0f ),
+SendPropFloat( SENDINFO( m_z ), -1, SPROP_COORD ),								// only sent once
 
-	SendPropModelIndex( SENDINFO(m_nModelIndex) ),
-	SendPropInt( SENDINFO(m_lifeState) ),
+SendPropModelIndex( SENDINFO( m_nModelIndex ) ),
+SendPropInt( SENDINFO( m_lifeState ) ),
 
-	SendPropFloat( SENDINFO(m_waterLevel) ),										// only sent once
+SendPropFloat( SENDINFO( m_waterLevel ) ),										// only sent once
 
 END_SEND_TABLE()
 
@@ -120,7 +124,7 @@ CFish::~CFish()
 
 
 //-------------------------------------------------------------------------------------------------------------
-void CFish::Initialize( CFishPool *pool, unsigned int id )
+void CFish::Initialize( CFishPool* pool, unsigned int id )
 {
 	m_pool = pool;
 	m_id = id;
@@ -160,7 +164,7 @@ void CFish::Spawn( void )
 	m_panicSpeed = m_calmSpeed * RandomFloat( 4.0f, 5.0f );
 	m_desiredSpeed = m_calmSpeed;
 
-	m_turnClockwise = (RandomInt( 0, 100 ) < 50);
+	m_turnClockwise = ( RandomInt( 0, 100 ) < 50 );
 
 	m_avoidRange = RandomFloat( 40.0f, 75.0f );
 
@@ -177,7 +181,7 @@ void CFish::Spawn( void )
 
 
 //-------------------------------------------------------------------------------------------------------------
-void CFish::Event_Killed( const CTakeDamageInfo &info )
+void CFish::Event_Killed( const CTakeDamageInfo& info )
 {
 	m_takedamage = DAMAGE_NO;
 	m_lifeState = LIFE_DEAD;
@@ -188,9 +192,9 @@ void CFish::Event_Killed( const CTakeDamageInfo &info )
 /**
  * In contact with "other"
  */
-void CFish::Touch( CBaseEntity *other )
+void CFish::Touch( CBaseEntity* other )
 {
-	if (other && other->IsPlayer())
+	if( other && other->IsPlayer() )
 	{
 		// touched a Player - panic!
 		Panic();
@@ -204,39 +208,43 @@ void CFish::Touch( CBaseEntity *other )
  * 'amount' ranges from zero to one, representing the amount of flocking influence allowed
  * If 'other' is NULL, flock to the center of the pool.
  */
-void CFish::FlockTo( CFish *other, float amount )
+void CFish::FlockTo( CFish* other, float amount )
 {
 	// allow fish to disperse a bit at round start
-	if (!m_disperseTimer.IsElapsed())
+	if( !m_disperseTimer.IsElapsed() )
+	{
 		return;
+	}
 
-	const float maxRange = (other) ? 100.0f : 300.0f;
+	const float maxRange = ( other ) ? 100.0f : 300.0f;
 
-	Vector to = (other) ? (other->GetAbsOrigin() - GetAbsOrigin()) : (m_pool->GetAbsOrigin() - GetAbsOrigin());
+	Vector to = ( other ) ? ( other->GetAbsOrigin() - GetAbsOrigin() ) : ( m_pool->GetAbsOrigin() - GetAbsOrigin() );
 	float range = to.NormalizeInPlace();
 
-	if (range > maxRange)
+	if( range > maxRange )
+	{
 		return;
+	}
 
 	// if they are close and we are moving together, avoid them
 	const float avoidRange = 25.0f;
-	if (other && range < avoidRange)
+	if( other && range < avoidRange )
 	{
 		// compute their relative velocity to us
 		Vector relVel = other->GetAbsVelocity() - GetAbsVelocity();
 
-		if (DotProduct( to, relVel ) < 0.0f)
+		if( DotProduct( to, relVel ) < 0.0f )
 		{
 			const float avoidPower = 5.0f;
 
 			// their comin' right at us! - avoid
-			if (DotProduct( m_perp, to ) > 0.0f)
+			if( DotProduct( m_perp, to ) > 0.0f )
 			{
-				m_angleChange -= avoidPower * (1.0f - range/avoidRange);
+				m_angleChange -= avoidPower * ( 1.0f - range / avoidRange );
 			}
 			else
 			{
-				m_angleChange += avoidPower * (1.0f - range/avoidRange);
+				m_angleChange += avoidPower * ( 1.0f - range / avoidRange );
 			}
 			return;
 		}
@@ -246,15 +254,15 @@ void CFish::FlockTo( CFish *other, float amount )
 	float turn = 1.0f + DotProduct( -m_forward, to );
 
 	Vector perp( -m_forward.y, m_forward.x, 0.0f );
-	float side = (DotProduct( perp, to ) > 1.0f) ? 1.0f : -1.0f;
+	float side = ( DotProduct( perp, to ) > 1.0f ) ? 1.0f : -1.0f;
 
-	if (turn > 1.0f)
+	if( turn > 1.0f )
 	{
 		// always turn one way to avoid dithering if many fish are behind us
-		side = (m_turnClockwise) ? 1.0f : -1.0f;
+		side = ( m_turnClockwise ) ? 1.0f : -1.0f;
 	}
 
-	float power = 1.0f - (range / maxRange);
+	float power = 1.0f - ( range / maxRange );
 
 	const float flockInfluence = 0.7f; // 0.3f;	// 0.3
 	m_angleChange += amount * flockInfluence * power * side * turn;
@@ -271,19 +279,19 @@ float CFish::Avoid( void )
 {
 	const float avoidPower = 100.0f; // 50.0f; // 25.0f;
 
-	// 
+	//
 	// Stay within pool bounds.
 	// This may cause problems with pools with oddly concave portions
 	// right at the max range.
 	//
 	Vector toCenter = m_pool->GetAbsOrigin() - GetAbsOrigin();
 	const float avoidZone = 20.0f;
-	if (toCenter.IsLengthGreaterThan( m_pool->GetMaxRange() - avoidZone ))
+	if( toCenter.IsLengthGreaterThan( m_pool->GetMaxRange() - avoidZone ) )
 	{
 		// turn away from edge
-		if (DotProduct( toCenter, m_forward ) < 0.0f)
+		if( DotProduct( toCenter, m_forward ) < 0.0f )
 		{
-			m_angleChange += (m_turnClockwise) ? -avoidPower : avoidPower;
+			m_angleChange += ( m_turnClockwise ) ? -avoidPower : avoidPower;
 		}
 
 		// take total precedence over flocking
@@ -297,24 +305,24 @@ float CFish::Avoid( void )
 	float leftDanger = 0.0f;
 
 	// slightly right of forward
-	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + m_avoidRange * (m_forward + sideOffset * m_perp), MASK_PLAYERSOLID, this, COLLISION_GROUP_NONE, &result );
-	if (result.fraction < 1.0f)
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + m_avoidRange * ( m_forward + sideOffset * m_perp ), MASK_PLAYERSOLID, this, COLLISION_GROUP_NONE, &result );
+	if( result.fraction < 1.0f )
 	{
 		rightDanger = 1.0f - result.fraction;
 	}
 
 	// slightly left of forward
-	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + m_avoidRange * (m_forward - sideOffset * m_perp), MASK_PLAYERSOLID, this, COLLISION_GROUP_NONE, &result );
-	if (result.fraction < 1.0f)
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + m_avoidRange * ( m_forward - sideOffset * m_perp ), MASK_PLAYERSOLID, this, COLLISION_GROUP_NONE, &result );
+	if( result.fraction < 1.0f )
 	{
 		// steer away
 		leftDanger = 1.0f - result.fraction;
 	}
 
 	// steer away - prefer one side to avoid cul-de-sacs
-	if (m_turnClockwise)
+	if( m_turnClockwise )
 	{
-		if (rightDanger > 0.0f)
+		if( rightDanger > 0.0f )
 		{
 			m_angleChange -= avoidPower * rightDanger;
 		}
@@ -325,7 +333,7 @@ float CFish::Avoid( void )
 	}
 	else
 	{
-		if (leftDanger > 0.0f)
+		if( leftDanger > 0.0f )
 		{
 			m_angleChange += avoidPower * leftDanger;
 		}
@@ -336,7 +344,7 @@ float CFish::Avoid( void )
 	}
 
 
-	return (leftDanger > rightDanger) ? leftDanger : rightDanger;
+	return ( leftDanger > rightDanger ) ? leftDanger : rightDanger;
 }
 
 
@@ -370,10 +378,10 @@ void CFish::Update( float deltaT )
 	// Dead fish just coast to a stop.  All floating to the
 	// surface and bobbing motion is handled client-side.
 	//
-	if (m_lifeState == LIFE_DEAD)
+	if( m_lifeState == LIFE_DEAD )
 	{
 		// don't allow fish to leave maximum range of pool
-		if (deltaPos.IsLengthGreaterThan( m_pool->GetMaxRange() - safetyMargin ))
+		if( deltaPos.IsLengthGreaterThan( m_pool->GetMaxRange() - safetyMargin ) )
 		{
 			SetAbsVelocity( Vector( 0, 0, 0 ) );
 		}
@@ -397,23 +405,23 @@ void CFish::Update( float deltaT )
 	//
 
 	// periodically change our turning preference
-	if (m_turnTimer.IsElapsed())
+	if( m_turnTimer.IsElapsed() )
 	{
 		m_turnTimer.Start( RandomFloat( 10.0f, 30.0f ) );
 		m_turnClockwise = !m_turnClockwise;
 	}
 
-	if (m_panicTimer.GetRemainingTime() > 0.0f)
+	if( m_panicTimer.GetRemainingTime() > 0.0f )
 	{
 		// panicking
 		m_desiredSpeed = m_panicSpeed;
 	}
-	else if (m_moveTimer.GetRemainingTime() > 0.0f)
+	else if( m_moveTimer.GetRemainingTime() > 0.0f )
 	{
 		// normal movement
 		m_desiredSpeed = m_calmSpeed;
 	}
-	else if (m_goTimer.IsElapsed())
+	else if( m_goTimer.IsElapsed() )
 	{
 		// move every so often
 		m_goTimer.Start( RandomFloat( 10.0f, 60.0f ) );
@@ -425,26 +433,26 @@ void CFish::Update( float deltaT )
 	float danger = Avoid();
 
 	// flock towards visible fish
-	for( int i=0; i<m_visible.Count(); ++i )
+	for( int i = 0; i < m_visible.Count(); ++i )
 	{
-		FlockTo( m_visible[i], (1.0f - danger) );
+		FlockTo( m_visible[i], ( 1.0f - danger ) );
 	}
 
 	// flock towards center of pool
-	FlockTo( NULL, (1.0f - danger) );
+	FlockTo( NULL, ( 1.0f - danger ) );
 
-	
+
 	//
 	// Update orientation
 	//
 
 	// limit rate of angular change - proportional to movement rate
-	const float maxAngleChange = (25.0f + 175.0f * (m_speed/m_panicSpeed)) * deltaT;
-	if (m_angleChange > maxAngleChange)
+	const float maxAngleChange = ( 25.0f + 175.0f * ( m_speed / m_panicSpeed ) ) * deltaT;
+	if( m_angleChange > maxAngleChange )
 	{
 		m_angleChange = maxAngleChange;
 	}
-	else if (m_angleChange < -maxAngleChange)
+	else if( m_angleChange < -maxAngleChange )
 	{
 		m_angleChange = -maxAngleChange;
 	}
@@ -452,8 +460,8 @@ void CFish::Update( float deltaT )
 	m_angle += m_angleChange;
 	m_angleChange = 0.0f;
 
-	m_forward.x = cos( m_angle * M_PI/180.0f );
-	m_forward.y = sin( m_angle * M_PI/180.0f );
+	m_forward.x = cos( m_angle * M_PI / 180.0f );
+	m_forward.y = sin( m_angle * M_PI / 180.0f );
 	m_forward.z = 0.0f;
 
 	m_perp.x = -m_forward.y;
@@ -464,14 +472,14 @@ void CFish::Update( float deltaT )
 	// Update speed
 	//
 	const float rate = 2.0f;
-	m_speed += rate * (m_desiredSpeed - m_speed) * deltaT;
+	m_speed += rate * ( m_desiredSpeed - m_speed ) * deltaT;
 
 	// decay desired speed if done moving
-	if (m_moveTimer.IsElapsed())
+	if( m_moveTimer.IsElapsed() )
 	{
 		const float decayRate = 1.0f;
 		m_desiredSpeed -= decayRate * deltaT;
-		if (m_desiredSpeed < 0.0f)
+		if( m_desiredSpeed < 0.0f )
 		{
 			m_desiredSpeed = 0.0f;
 		}
@@ -480,12 +488,12 @@ void CFish::Update( float deltaT )
 	Vector vel = m_speed * m_forward;
 
 	// don't allow fish to leave maximum range of pool
-	if (deltaPos.IsLengthGreaterThan( m_pool->GetMaxRange() - safetyMargin ))
+	if( deltaPos.IsLengthGreaterThan( m_pool->GetMaxRange() - safetyMargin ) )
 	{
 		Vector toCenter = -deltaPos;
 
 		float radial = DotProduct( toCenter, vel );
-		if (radial < 0.0f)
+		if( radial < 0.0f )
 		{
 			// heading out of range, zero the radial velocity component
 			toCenter.NormalizeInPlace();
@@ -517,7 +525,7 @@ void CFish::ResetVisible( void )
 /**
  * Add this fish to our visible vector
  */
-void CFish::AddVisible( CFish *pFish )
+void CFish::AddVisible( CFish* pFish )
 {
 	m_visible.AddToTail( pFish );
 }
@@ -533,12 +541,12 @@ LINK_ENTITY_TO_CLASS( func_fish_pool, CFishPool );
 
 BEGIN_DATADESC( CFishPool )
 
-	DEFINE_FIELD( m_fishCount, FIELD_INTEGER ),
-	DEFINE_FIELD( m_maxRange, FIELD_FLOAT ),
-	DEFINE_FIELD( m_swimDepth, FIELD_FLOAT ),
-	DEFINE_FIELD( m_waterLevel, FIELD_FLOAT ),
-	DEFINE_FIELD( m_isDormant, FIELD_BOOLEAN ),
-	DEFINE_UTLVECTOR( m_fishes, FIELD_EHANDLE ),
+DEFINE_FIELD( m_fishCount, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_maxRange, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_swimDepth, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_waterLevel, FIELD_FLOAT ),
+			  DEFINE_FIELD( m_isDormant, FIELD_BOOLEAN ),
+			  DEFINE_UTLVECTOR( m_fishes, FIELD_EHANDLE ),
 
 #ifdef MAPBASE
 	DEFINE_INPUT( m_nSkin, FIELD_INTEGER, "skin" ),
@@ -553,13 +561,13 @@ BEGIN_DATADESC( CFishPool )
 	DEFINE_OUTPUT( m_OnSpawnFish, "OnSpawnFish" ),
 #endif
 
-	DEFINE_THINKFUNC( Update ),
+			  DEFINE_THINKFUNC( Update ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
 //-------------------------------------------------------------------------------------------------------------
-CFishPool::CFishPool( void )
+			  CFishPool::CFishPool( void )
 {
 	m_fishCount = 0;
 	m_maxRange = 255.0f;
@@ -597,14 +605,14 @@ void CFishPool::Spawn()
 	m_waterLevel = UTIL_WaterLevel( GetAbsOrigin(), GetAbsOrigin().z, GetAbsOrigin().z + 1000.0f );
 
 	trace_t result;
-	for( int i=0; i<m_fishCount; ++i )
+	for( int i = 0; i < m_fishCount; ++i )
 	{
 		QAngle heading( 0.0f, RandomFloat( 0, 360.0f ), 0.0f );
 
-		CFish *fish = (CFish *)Create( "fish", GetAbsOrigin(), heading, this );
+		CFish* fish = ( CFish* )Create( "fish", GetAbsOrigin(), heading, this );
 		fish->Initialize( this, i );
 
-		if (fish)
+		if( fish )
 		{
 			CHandle<CFish> hFish;
 			hFish.Set( fish );
@@ -622,21 +630,21 @@ void CFishPool::Spawn()
 /**
  * Parse KeyValue pairs
  */
-bool CFishPool::KeyValue( const char *szKeyName, const char *szValue )
+bool CFishPool::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq( szKeyName, "fish_count" ))
+	if( FStrEq( szKeyName, "fish_count" ) )
 	{
-		m_fishCount = atoi(szValue);
+		m_fishCount = atoi( szValue );
 		return true;
 	}
-	else if (FStrEq( szKeyName, "max_range" ))
+	else if( FStrEq( szKeyName, "max_range" ) )
 	{
-		m_maxRange = atof(szValue);
-		if (m_maxRange <= 1.0f)
+		m_maxRange = atof( szValue );
+		if( m_maxRange <= 1.0f )
 		{
 			m_maxRange = 1.0f;
 		}
-		else if (m_maxRange > 255.0f)
+		else if( m_maxRange > 255.0f )
 		{
 			// stay within 8 bits range
 			m_maxRange = 255.0f;
@@ -644,7 +652,7 @@ bool CFishPool::KeyValue( const char *szKeyName, const char *szValue )
 
 		return true;
 	}
-	else if (FStrEq( szKeyName, "model" ))
+	else if( FStrEq( szKeyName, "model" ) )
 	{
 		PrecacheModel( szValue );
 		SetModelName( AllocPooledString( szValue ) );
@@ -658,24 +666,24 @@ bool CFishPool::KeyValue( const char *szKeyName, const char *szValue )
 /**
  * Game event processing
  */
-void CFishPool::FireGameEvent( IGameEvent *event )
+void CFishPool::FireGameEvent( IGameEvent* event )
 {
-	CBasePlayer *player = UTIL_PlayerByUserId( event->GetInt( "userid" ) );
-	
+	CBasePlayer* player = UTIL_PlayerByUserId( event->GetInt( "userid" ) );
+
 	// the fish panic
 #ifdef MAPBASE
-	float range = (Q_strcmp( "player_footstep", event->GetName() )) ? m_flLoudPanicRange : m_flQuietPanicRange;
+	float range = ( Q_strcmp( "player_footstep", event->GetName() ) ) ? m_flLoudPanicRange : m_flQuietPanicRange;
 #else
 	const float loudRange = 500.0f;
 	const float quietRange = 75.0f;
 
-	float range = (Q_strcmp( "player_footstep", event->GetName() )) ? loudRange : quietRange;
+	float range = ( Q_strcmp( "player_footstep", event->GetName() ) ) ? loudRange : quietRange;
 #endif
 
-	for( int i=0; i<m_fishes.Count(); ++i )
+	for( int i = 0; i < m_fishes.Count(); ++i )
 	{
 		// if player is NULL, assume a game-wide event
-		if (player && (player->GetAbsOrigin() - m_fishes[i]->GetAbsOrigin()).IsLengthGreaterThan( range ))
+		if( player && ( player->GetAbsOrigin() - m_fishes[i]->GetAbsOrigin() ).IsLengthGreaterThan( range ) )
 		{
 			// event too far away to care
 			continue;
@@ -697,16 +705,16 @@ void CFishPool::Update( void )
 
 	/// @todo Go dormant when no players are around to see us
 
-	if (fish_dormant.GetBool())
+	if( fish_dormant.GetBool() )
 	{
-		if (!m_isDormant)
+		if( !m_isDormant )
 		{
 			// stop all the fish
-			for( int i=0; i<m_fishes.Count(); ++i )
+			for( int i = 0; i < m_fishes.Count(); ++i )
 			{
 				m_fishes[i]->SetAbsVelocity( Vector( 0, 0, 0 ) );
 			}
-			
+
 			m_isDormant = true;
 		}
 
@@ -718,7 +726,7 @@ void CFishPool::Update( void )
 	}
 
 	// update fish to fish visibility
-	if (m_visTimer.IsElapsed())
+	if( m_visTimer.IsElapsed() )
 	{
 		m_visTimer.Reset();
 
@@ -726,12 +734,12 @@ void CFishPool::Update( void )
 		trace_t result;
 
 		// reset each fishes vis list
-		for( i=0; i<m_fishes.Count(); ++i )
+		for( i = 0; i < m_fishes.Count(); ++i )
 		{
 #ifdef MAPBASE
-			if (m_fishes[i] == NULL)
+			if( m_fishes[i] == NULL )
 			{
-				m_fishes.Remove(i);
+				m_fishes.Remove( i );
 				i--;
 				continue;
 			}
@@ -741,29 +749,33 @@ void CFishPool::Update( void )
 		}
 
 		// build new vis lists - line of sight is symmetric
-		for( i=0; i<m_fishes.Count(); ++i )
+		for( i = 0; i < m_fishes.Count(); ++i )
 		{
-			if (!m_fishes[i]->IsAlive())
-				continue;
-
-			for( j=i+1; j<m_fishes.Count(); ++j )
+			if( !m_fishes[i]->IsAlive() )
 			{
-				if (!m_fishes[j]->IsAlive())
+				continue;
+			}
+
+			for( j = i + 1; j < m_fishes.Count(); ++j )
+			{
+				if( !m_fishes[j]->IsAlive() )
+				{
 					continue;
+				}
 
 				UTIL_TraceLine( m_fishes[i]->GetAbsOrigin(), m_fishes[j]->GetAbsOrigin(), MASK_PLAYERSOLID, m_fishes[i], COLLISION_GROUP_NONE, &result );
-				if (result.fraction >= 1.0f)
+				if( result.fraction >= 1.0f )
 				{
 					// the fish can see each other
 					m_fishes[i]->AddVisible( m_fishes[j] );
 					m_fishes[j]->AddVisible( m_fishes[i] );
 				}
 			}
-		}		
+		}
 	}
 
 	// simulate the fishes behavior
-	for( int i=0; i<m_fishes.Count(); ++i )
+	for( int i = 0; i < m_fishes.Count(); ++i )
 	{
 		m_fishes[i]->Update( deltaT );
 	}
@@ -774,14 +786,14 @@ void CFishPool::Update( void )
 /**
  * Inputs
  */
-void CFishPool::InputSpawnFish( inputdata_t &inputdata )
+void CFishPool::InputSpawnFish( inputdata_t& inputdata )
 {
 	QAngle heading( 0.0f, RandomFloat( 0, 360.0f ), 0.0f );
 
-	CFish *fish = (CFish *)Create( "fish", GetAbsOrigin(), heading, this );
+	CFish* fish = ( CFish* )Create( "fish", GetAbsOrigin(), heading, this );
 	fish->Initialize( this, m_fishes.Count() );
 
-	if (fish)
+	if( fish )
 	{
 		CHandle<CFish> hFish;
 		hFish.Set( fish );
@@ -792,15 +804,15 @@ void CFishPool::InputSpawnFish( inputdata_t &inputdata )
 	}
 }
 
-void CFishPool::InputPanicLoudFromPoint( inputdata_t &inputdata )
+void CFishPool::InputPanicLoudFromPoint( inputdata_t& inputdata )
 {
 	// Make the fish panic from this point
 	Vector vecPoint;
 	inputdata.value.Vector3D( vecPoint );
-	for( int i=0; i<m_fishes.Count(); ++i )
+	for( int i = 0; i < m_fishes.Count(); ++i )
 	{
 		// Use loud range
-		if ((vecPoint - m_fishes[i]->GetAbsOrigin()).IsLengthGreaterThan( m_flLoudPanicRange ))
+		if( ( vecPoint - m_fishes[i]->GetAbsOrigin() ).IsLengthGreaterThan( m_flLoudPanicRange ) )
 		{
 			// event too far away to care
 			continue;
@@ -810,15 +822,15 @@ void CFishPool::InputPanicLoudFromPoint( inputdata_t &inputdata )
 	}
 }
 
-void CFishPool::InputPanicQuietFromPoint( inputdata_t &inputdata )
+void CFishPool::InputPanicQuietFromPoint( inputdata_t& inputdata )
 {
 	// Make the fish panic from this point
 	Vector vecPoint;
 	inputdata.value.Vector3D( vecPoint );
-	for( int i=0; i<m_fishes.Count(); ++i )
+	for( int i = 0; i < m_fishes.Count(); ++i )
 	{
 		// Use loud range
-		if ((vecPoint - m_fishes[i]->GetAbsOrigin()).IsLengthGreaterThan( m_flQuietPanicRange ))
+		if( ( vecPoint - m_fishes[i]->GetAbsOrigin() ).IsLengthGreaterThan( m_flQuietPanicRange ) )
 		{
 			// event too far away to care
 			continue;

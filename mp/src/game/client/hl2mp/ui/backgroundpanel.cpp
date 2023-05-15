@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -23,7 +23,8 @@ using namespace vgui;
 
 //-----------------------------------------------------------------------------
 const int NumSegments = 7;
-static int coord[NumSegments+1] = {
+static int coord[NumSegments + 1] =
+{
 	0,
 	1,
 	2,
@@ -38,8 +39,8 @@ static int coord[NumSegments+1] = {
 void DrawRoundedBackground( Color bgColor, int wide, int tall )
 {
 	int x1, x2, y1, y2;
-	surface()->DrawSetColor(bgColor);
-	surface()->DrawSetTextColor(bgColor);
+	surface()->DrawSetColor( bgColor );
+	surface()->DrawSetTextColor( bgColor );
 
 	int i;
 
@@ -52,11 +53,11 @@ void DrawRoundedBackground( Color bgColor, int wide, int tall )
 	int yMult = 1;
 	int x = 0;
 	int y = 0;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		y2 = y + coord[NumSegments];
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 
@@ -73,11 +74,11 @@ void DrawRoundedBackground( Color bgColor, int wide, int tall )
 	y = 0;
 	xMult = -1;
 	yMult = 1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		y2 = y + coord[NumSegments];
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
@@ -93,12 +94,12 @@ void DrawRoundedBackground( Color bgColor, int wide, int tall )
 	y = tall;
 	xMult = -1;
 	yMult = -1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
 		y1 = y - coord[NumSegments];
-		y2 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		y2 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
 		yIndex += yDir;
@@ -113,12 +114,12 @@ void DrawRoundedBackground( Color bgColor, int wide, int tall )
 	y = tall;
 	xMult = 1;
 	yMult = -1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
 		y1 = y - coord[NumSegments];
-		y2 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		y2 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
 		yIndex += yDir;
@@ -150,8 +151,8 @@ void DrawRoundedBackground( Color bgColor, int wide, int tall )
 void DrawRoundedBorder( Color borderColor, int wide, int tall )
 {
 	int x1, x2, y1, y2;
-	surface()->DrawSetColor(borderColor);
-	surface()->DrawSetTextColor(borderColor);
+	surface()->DrawSetColor( borderColor );
+	surface()->DrawSetTextColor( borderColor );
 
 	int i;
 
@@ -164,12 +165,12 @@ void DrawRoundedBorder( Color borderColor, int wide, int tall )
 	int yMult = 1;
 	int x = 0;
 	int y = 0;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
-		y2 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
+		y2 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 
 		xIndex += xDir;
@@ -185,12 +186,12 @@ void DrawRoundedBorder( Color borderColor, int wide, int tall )
 	y = 0;
 	xMult = -1;
 	yMult = 1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
-		y2 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
+		y2 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
 		yIndex += yDir;
@@ -205,12 +206,12 @@ void DrawRoundedBorder( Color borderColor, int wide, int tall )
 	y = tall;
 	xMult = -1;
 	yMult = -1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
-		y2 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
+		y2 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
 		yIndex += yDir;
@@ -225,12 +226,12 @@ void DrawRoundedBorder( Color borderColor, int wide, int tall )
 	y = tall;
 	xMult = 1;
 	yMult = -1;
-	for ( i=0; i<NumSegments; ++i )
+	for( i = 0; i < NumSegments; ++i )
 	{
-		x1 = min( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		x2 = max( x + coord[xIndex]*xMult, x + coord[xIndex+1]*xMult );
-		y1 = min( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
-		y2 = max( y + coord[yIndex]*yMult, y + coord[yIndex+1]*yMult );
+		x1 = min( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		x2 = max( x + coord[xIndex] * xMult, x + coord[xIndex + 1] * xMult );
+		y1 = min( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
+		y2 = max( y + coord[yIndex] * yMult, y + coord[yIndex + 1] * yMult );
 		surface()->DrawFilledRect( x1, y1, x2, y2 );
 		xIndex += xDir;
 		yIndex += yDir;
@@ -267,11 +268,11 @@ void DrawRoundedBorder( Color borderColor, int wide, int tall )
 class CaptionLabel : public Label
 {
 public:
-	CaptionLabel(Panel *parent, const char *panelName, const char *text) : Label(parent, panelName, text)
+	CaptionLabel( Panel* parent, const char* panelName, const char* text ) : Label( parent, panelName, text )
 	{
 	}
 
-	virtual void ApplySchemeSettings( vgui::IScheme *pScheme )
+	virtual void ApplySchemeSettings( vgui::IScheme* pScheme )
 	{
 		Label::ApplySchemeSettings( pScheme );
 		SetFont( pScheme->GetFont( "MenuTitle", IsProportional() ) );
@@ -282,24 +283,24 @@ public:
 // Purpose: transform a normalized value into one that is scaled based the minimum
 //          of the horizontal and vertical ratios
 //-----------------------------------------------------------------------------
-static int GetAlternateProportionalValueFromNormal(int normalizedValue)
+static int GetAlternateProportionalValueFromNormal( int normalizedValue )
 {
 	int wide, tall;
 	GetHudSize( wide, tall );
 	int proH, proW;
 	surface()->GetProportionalBase( proW, proH );
-	double scaleH = (double)tall / (double)proH;
-	double scaleW = (double)wide / (double)proW;
-	double scale = (scaleW < scaleH) ? scaleW : scaleH;
+	double scaleH = ( double )tall / ( double )proH;
+	double scaleW = ( double )wide / ( double )proW;
+	double scale = ( scaleW < scaleH ) ? scaleW : scaleH;
 
-	return (int)( normalizedValue * scale );
+	return ( int )( normalizedValue * scale );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: transform a standard scaled value into one that is scaled based the minimum
 //          of the horizontal and vertical ratios
 //-----------------------------------------------------------------------------
-int GetAlternateProportionalValueFromScaled( HScheme hScheme, int scaledValue)
+int GetAlternateProportionalValueFromScaled( HScheme hScheme, int scaledValue )
 {
 	return GetAlternateProportionalValueFromNormal( scheme()->GetProportionalNormalizedValueEx( hScheme,  scaledValue ) );
 }
@@ -307,14 +308,14 @@ int GetAlternateProportionalValueFromScaled( HScheme hScheme, int scaledValue)
 //-----------------------------------------------------------------------------
 // Purpose: moves and resizes a single control
 //-----------------------------------------------------------------------------
-static void RepositionControl( Panel *pPanel )
+static void RepositionControl( Panel* pPanel )
 {
 	int x, y, w, h;
-	pPanel->GetBounds(x, y, w, h);
+	pPanel->GetBounds( x, y, w, h );
 
 #if DEBUG_WINDOW_RESIZING
 	int x1, y1, w1, h1;
-	pPanel->GetBounds(x1, y1, w1, h1);
+	pPanel->GetBounds( x1, y1, w1, h1 );
 	int x2, y2, w2, h2;
 	x2 = scheme()->GetProportionalNormalizedValueEx( pPanel->GetScheme(),  x1 );
 	y2 = scheme()->GetProportionalNormalizedValueEx( pPanel->GetScheme(),  y1 );
@@ -322,79 +323,81 @@ static void RepositionControl( Panel *pPanel )
 	h2 = scheme()->GetProportionalNormalizedValueEx( pPanel->GetScheme(),  h1 );
 #endif
 
-	x = GetAlternateProportionalValueFromScaled(pPanel->GetScheme(),x);
-	y = GetAlternateProportionalValueFromScaled(pPanel->GetScheme(),y);
-	w = GetAlternateProportionalValueFromScaled(pPanel->GetScheme(),w);
-	h = GetAlternateProportionalValueFromScaled(pPanel->GetScheme(),h);
+	x = GetAlternateProportionalValueFromScaled( pPanel->GetScheme(), x );
+	y = GetAlternateProportionalValueFromScaled( pPanel->GetScheme(), y );
+	w = GetAlternateProportionalValueFromScaled( pPanel->GetScheme(), w );
+	h = GetAlternateProportionalValueFromScaled( pPanel->GetScheme(), h );
 
-	pPanel->SetBounds(x, y, w, h);
+	pPanel->SetBounds( x, y, w, h );
 
 #if DEBUG_WINDOW_RESIZING
 	DevMsg( "Resizing '%s' from (%d,%d) %dx%d to (%d,%d) %dx%d -- initially was (%d,%d) %dx%d\n",
-		pPanel->GetName(), x1, y1, w1, h1, x, y, w, h, x2, y2, w2, h2 );
+			pPanel->GetName(), x1, y1, w1, h1, x, y, w, h, x2, y2, w2, h2 );
 #endif
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Sets colors etc for background image panels
 //-----------------------------------------------------------------------------
-void ApplyBackgroundSchemeSettings( EditablePanel *pWindow, vgui::IScheme *pScheme )
+void ApplyBackgroundSchemeSettings( EditablePanel* pWindow, vgui::IScheme* pScheme )
 {
 	Color bgColor = Color( 255, 255, 255, pScheme->GetColor( "BgColor", Color( 0, 0, 0, 0 ) )[3] );
 	Color fgColor = pScheme->GetColor( "FgColor", Color( 0, 0, 0, 0 ) );
 
-	if ( !pWindow )
+	if( !pWindow )
+	{
 		return;
+	}
 
-	CBitmapImagePanel *pBitmapPanel;
+	CBitmapImagePanel* pBitmapPanel;
 
 	// corners --------------------------------------------
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "TopLeftPanel" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "TopLeftPanel" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "TopRightPanel" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "TopRightPanel" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "BottomLeftPanel" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "BottomLeftPanel" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "BottomRightPanel" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "BottomRightPanel" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
 
 	// background -----------------------------------------
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "TopSolid" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "TopSolid" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "UpperMiddleSolid" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "UpperMiddleSolid" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "LowerMiddleSolid" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "LowerMiddleSolid" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "BottomSolid" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "BottomSolid" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( bgColor );
 	}
 
 	// Logo -----------------------------------------------
-	pBitmapPanel = dynamic_cast< CBitmapImagePanel * >(pWindow->FindChildByName( "ExclamationPanel" ));
-	if ( pBitmapPanel )
+	pBitmapPanel = dynamic_cast< CBitmapImagePanel* >( pWindow->FindChildByName( "ExclamationPanel" ) );
+	if( pBitmapPanel )
 	{
 		pBitmapPanel->setImageColor( fgColor );
 	}
@@ -403,10 +406,12 @@ void ApplyBackgroundSchemeSettings( EditablePanel *pWindow, vgui::IScheme *pSche
 //-----------------------------------------------------------------------------
 // Purpose: Re-aligns background image panels so they are touching.
 //-----------------------------------------------------------------------------
-static void FixupBackgroundPanels( EditablePanel *pWindow, int offsetX, int offsetY )
+static void FixupBackgroundPanels( EditablePanel* pWindow, int offsetX, int offsetY )
 {
-	if ( !pWindow )
+	if( !pWindow )
+	{
 		return;
+	}
 
 	int screenWide, screenTall;
 	pWindow->GetSize( screenWide, screenTall );
@@ -421,32 +426,32 @@ static void FixupBackgroundPanels( EditablePanel *pWindow, int offsetX, int offs
 
 	int captionInset = GetAlternateProportionalValueFromNormal( 76 );
 
-	Panel *pPanel;
+	Panel* pPanel;
 
 	// corners --------------------------------------------
 	pPanel = pWindow->FindChildByName( "TopLeftPanel" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( offsetX + inset, offsetY + inset, cornerSize, cornerSize );
 	}
 
 	pPanel = pWindow->FindChildByName( "TopRightPanel" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( screenWide - offsetX - inset - cornerSize, offsetY + inset, cornerSize, cornerSize );
 	}
 
 	pPanel = pWindow->FindChildByName( "BottomLeftPanel" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( offsetX + inset, screenTall - offsetY - inset - cornerSize, cornerSize, cornerSize );
 	}
 
 	pPanel = pWindow->FindChildByName( "BottomRightPanel" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( screenWide - offsetX - inset - cornerSize, screenTall - offsetY - inset - cornerSize, cornerSize, cornerSize );
@@ -454,74 +459,74 @@ static void FixupBackgroundPanels( EditablePanel *pWindow, int offsetX, int offs
 
 	// background -----------------------------------------
 	pPanel = pWindow->FindChildByName( "TopSolid" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( offsetX + inset + cornerSize, offsetY + inset, screenWide - 2*offsetX - 2*inset - 2*cornerSize, cornerSize );
+		pPanel->SetBounds( offsetX + inset + cornerSize, offsetY + inset, screenWide - 2 * offsetX - 2 * inset - 2 * cornerSize, cornerSize );
 	}
 
 	pPanel = pWindow->FindChildByName( "UpperMiddleSolid" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( offsetX + inset, offsetY + inset + cornerSize, screenWide - 2*offsetX - 2*inset, titleHeight );
+		pPanel->SetBounds( offsetX + inset, offsetY + inset + cornerSize, screenWide - 2 * offsetX - 2 * inset, titleHeight );
 	}
 
 	pPanel = pWindow->FindChildByName( "LowerMiddleSolid" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( offsetX + inset + cornerSize, screenTall - offsetY - inset - cornerSize, screenWide - 2*offsetX - 2*inset - 2*cornerSize, cornerSize );
+		pPanel->SetBounds( offsetX + inset + cornerSize, screenTall - offsetY - inset - cornerSize, screenWide - 2 * offsetX - 2 * inset - 2 * cornerSize, cornerSize );
 	}
 
 	pPanel = pWindow->FindChildByName( "BottomSolid" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( offsetX + inset, screenTall - offsetY - inset - cornerSize - mainHeight, screenWide - 2*offsetX - 2*inset, mainHeight );
+		pPanel->SetBounds( offsetX + inset, screenTall - offsetY - inset - cornerSize - mainHeight, screenWide - 2 * offsetX - 2 * inset, mainHeight );
 	}
 
 	// transparent border ---------------------------------
 	pPanel = pWindow->FindChildByName( "TopClear" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( 0, 0, screenWide, offsetY + inset );
 	}
 
 	pPanel = pWindow->FindChildByName( "BottomClear" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
 		pPanel->SetBounds( 0, screenTall - offsetY - inset, screenWide, offsetY + inset );
 	}
 
 	pPanel = pWindow->FindChildByName( "LeftClear" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( 0, offsetY + inset, offsetX + inset, screenTall - 2*offsetY - 2*inset );
+		pPanel->SetBounds( 0, offsetY + inset, offsetX + inset, screenTall - 2 * offsetY - 2 * inset );
 	}
 
 	pPanel = pWindow->FindChildByName( "RightClear" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -20 );
-		pPanel->SetBounds( screenWide - offsetX - inset, offsetY + inset, offsetX + inset, screenTall - 2*offsetY - 2*inset );
+		pPanel->SetBounds( screenWide - offsetX - inset, offsetY + inset, offsetX + inset, screenTall - 2 * offsetY - 2 * inset );
 	}
 
 	// Logo -----------------------------------------------
-	int logoInset = (cornerSize + titleHeight - logoSize)/2;
+	int logoInset = ( cornerSize + titleHeight - logoSize ) / 2;
 	pPanel = pWindow->FindChildByName( "ExclamationPanel" );
-	if ( pPanel )
+	if( pPanel )
 	{
 		pPanel->SetZPos( -19 ); // higher than the background
 		pPanel->SetBounds( offsetX + inset + logoInset, offsetY + inset + logoInset, logoSize, logoSize );
 	}
 
 	// Title caption --------------------------------------
-	pPanel = dynamic_cast< Label * >(pWindow->FindChildByName( "CaptionLabel" ));
-	if ( pPanel )
+	pPanel = dynamic_cast< Label* >( pWindow->FindChildByName( "CaptionLabel" ) );
+	if( pPanel )
 	{
 		pPanel->SetZPos( -19 ); // higher than the background
 		pPanel->SetBounds( offsetX + captionInset/*inset + 2*logoInset + logoSize*/, offsetY + inset + logoInset, screenWide, logoSize );
@@ -531,7 +536,7 @@ static void FixupBackgroundPanels( EditablePanel *pWindow, int offsetX, int offs
 //-----------------------------------------------------------------------------
 // Purpose: Creates background image panels
 //-----------------------------------------------------------------------------
-void CreateBackground( EditablePanel *pWindow )
+void CreateBackground( EditablePanel* pWindow )
 {
 	// corners --------------------------------------------
 	new CBitmapImagePanel( pWindow, "TopLeftPanel", "gfx/vgui/round_corner_nw" );
@@ -555,43 +560,49 @@ void CreateBackground( EditablePanel *pWindow )
 	new CBitmapImagePanel( pWindow, "ExclamationPanel", "gfx/vgui/hl2mp_logo" );
 
 	// Title caption --------------------------------------
-	Panel *pPanel = dynamic_cast< Label * >(pWindow->FindChildByName( "CaptionLabel" ));
-	if ( !pPanel )
+	Panel* pPanel = dynamic_cast< Label* >( pWindow->FindChildByName( "CaptionLabel" ) );
+	if( !pPanel )
+	{
 		new CaptionLabel( pWindow, "CaptionLabel", "" );
+	}
 }
 
-void ResizeWindowControls( EditablePanel *pWindow, int tall, int wide, int offsetX, int offsetY )
+void ResizeWindowControls( EditablePanel* pWindow, int tall, int wide, int offsetX, int offsetY )
 {
-	if (!pWindow || !pWindow->GetBuildGroup() || !pWindow->GetBuildGroup()->GetPanelList())
+	if( !pWindow || !pWindow->GetBuildGroup() || !pWindow->GetBuildGroup()->GetPanelList() )
+	{
 		return;
+	}
 
-	CUtlVector<PHandle> *panelList = pWindow->GetBuildGroup()->GetPanelList();
-	CUtlVector<Panel *> resizedPanels;
-	CUtlVector<Panel *> movedPanels;
+	CUtlVector<PHandle>* panelList = pWindow->GetBuildGroup()->GetPanelList();
+	CUtlVector<Panel*> resizedPanels;
+	CUtlVector<Panel*> movedPanels;
 
 	// Resize to account for 1.25 aspect ratio (1280x1024) screens
 	{
-		for ( int i = 0; i < panelList->Size(); ++i )
+		for( int i = 0; i < panelList->Size(); ++i )
 		{
-			PHandle handle = (*panelList)[i];
+			PHandle handle = ( *panelList )[i];
 
-			Panel *panel = handle.Get();
+			Panel* panel = handle.Get();
 
 			bool found = false;
-			for ( int j = 0; j < resizedPanels.Size(); ++j )
+			for( int j = 0; j < resizedPanels.Size(); ++j )
 			{
-				if (panel == resizedPanels[j])
+				if( panel == resizedPanels[j] )
+				{
 					found = true;
+				}
 			}
 
-			if (!panel || found)
+			if( !panel || found )
 			{
 				continue;
 			}
 
 			resizedPanels.AddToTail( panel ); // don't move a panel more than once
 
-			if ( panel != pWindow )
+			if( panel != pWindow )
 			{
 				RepositionControl( panel );
 			}
@@ -599,27 +610,29 @@ void ResizeWindowControls( EditablePanel *pWindow, int tall, int wide, int offse
 	}
 
 	// and now re-center them.  Woohoo!
-	for ( int i = 0; i < panelList->Size(); ++i )
+	for( int i = 0; i < panelList->Size(); ++i )
 	{
-		PHandle handle = (*panelList)[i];
+		PHandle handle = ( *panelList )[i];
 
-		Panel *panel = handle.Get();
+		Panel* panel = handle.Get();
 
 		bool found = false;
-		for ( int j = 0; j < movedPanels.Size(); ++j )
+		for( int j = 0; j < movedPanels.Size(); ++j )
 		{
-			if (panel == movedPanels[j])
+			if( panel == movedPanels[j] )
+			{
 				found = true;
+			}
 		}
 
-		if (!panel || found)
+		if( !panel || found )
 		{
 			continue;
 		}
 
 		movedPanels.AddToTail( panel ); // don't move a panel more than once
 
-		if ( panel != pWindow )
+		if( panel != pWindow )
 		{
 			int x, y;
 
@@ -628,7 +641,7 @@ void ResizeWindowControls( EditablePanel *pWindow, int tall, int wide, int offse
 
 #if DEBUG_WINDOW_REPOSITIONING
 			DevMsg( "Repositioning '%s' from (%d,%d) to (%d,%d) -- a distance of (%d,%d)\n",
-				panel->GetName(), x, y, x + offsetX, y + offsetY, offsetX, offsetY );
+					panel->GetName(), x, y, x + offsetX, y + offsetY, offsetX, offsetY );
 #endif
 		}
 	}
@@ -638,10 +651,12 @@ void ResizeWindowControls( EditablePanel *pWindow, int tall, int wide, int offse
 // Purpose: Resizes windows to fit completely on-screen (for 1280x1024), and
 //          centers them on the screen.  Sub-controls are also resized and moved.
 //-----------------------------------------------------------------------------
-void LayoutBackgroundPanel( EditablePanel *pWindow )
+void LayoutBackgroundPanel( EditablePanel* pWindow )
 {
-	if ( !pWindow )
+	if( !pWindow )
+	{
 		return;
+	}
 
 	int screenW, screenH;
 	GetHudSize( screenW, screenH );
@@ -655,13 +670,13 @@ void LayoutBackgroundPanel( EditablePanel *pWindow )
 	// Slide everything over to the center
 	pWindow->SetBounds( 0, 0, screenW, screenH );
 
-	if ( wide != screenW || tall != screenH )
+	if( wide != screenW || tall != screenH )
 	{
-		wide = GetAlternateProportionalValueFromScaled(pWindow->GetScheme(), wide);
-		tall = GetAlternateProportionalValueFromScaled(pWindow->GetScheme(), tall);
+		wide = GetAlternateProportionalValueFromScaled( pWindow->GetScheme(), wide );
+		tall = GetAlternateProportionalValueFromScaled( pWindow->GetScheme(), tall );
 
-		offsetX = (screenW - wide)/2;
-		offsetY = (screenH - tall)/2;
+		offsetX = ( screenW - wide ) / 2;
+		offsetY = ( screenH - tall ) / 2;
 
 		ResizeWindowControls( pWindow, tall, wide, offsetX, offsetY );
 	}

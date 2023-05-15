@@ -39,7 +39,7 @@
 #include "tier0/memdbgon.h"
 
 // Debug visualization
-ConVar	g_debug_combine_camera("g_debug_combine_camera", "0");
+ConVar	g_debug_combine_camera( "g_debug_combine_camera", "0" );
 
 #define	COMBINE_CAMERA_MODEL		"models/combine_camera/combine_camera.mdl"
 #define COMBINE_CAMERA_GLOW_SPRITE	"sprites/glow1.vmt"
@@ -105,13 +105,13 @@ enum eyeState_t
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CNPC_CombineCamera : public CAI_BaseNPC
 {
-	DECLARE_CLASS(CNPC_CombineCamera, CAI_BaseNPC);
+	DECLARE_CLASS( CNPC_CombineCamera, CAI_BaseNPC );
 public:
-	
+
 	CNPC_CombineCamera();
 	~CNPC_CombineCamera();
 
@@ -126,52 +126,55 @@ public:
 	void SearchThink();
 	void DeathThink();
 
-	void InputToggle(inputdata_t &inputdata);
-	void InputEnable(inputdata_t &inputdata);
-	void InputDisable(inputdata_t &inputdata);
-	void InputSetAngry(inputdata_t &inputdata);
-	void InputSetIdle(inputdata_t &inputdata);
+	void InputToggle( inputdata_t& inputdata );
+	void InputEnable( inputdata_t& inputdata );
+	void InputDisable( inputdata_t& inputdata );
+	void InputSetAngry( inputdata_t& inputdata );
+	void InputSetIdle( inputdata_t& inputdata );
 
-	void DrawDebugGeometryOverlays(void);
-	
+	void DrawDebugGeometryOverlays( void );
+
 	float MaxYawSpeed();
 
-	int OnTakeDamage(const CTakeDamageInfo &inputInfo);
+	int OnTakeDamage( const CTakeDamageInfo& inputInfo );
 
-	Class_T Classify() { return (m_bEnabled) ? CLASS_MILITARY : CLASS_NONE; }
-	
-	bool IsValidEnemy( CBaseEntity *pEnemy );
-	bool FVisible(CBaseEntity *pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity **ppBlocker = NULL);
-
-	Vector EyeOffset(Activity nActivity) 
+	Class_T Classify()
 	{
-		Vector vecEyeOffset(0,0,-64);
-		GetEyePosition(GetModelPtr(), vecEyeOffset);
+		return ( m_bEnabled ) ? CLASS_MILITARY : CLASS_NONE;
+	}
+
+	bool IsValidEnemy( CBaseEntity* pEnemy );
+	bool FVisible( CBaseEntity* pEntity, int traceMask = MASK_BLOCKLOS, CBaseEntity** ppBlocker = NULL );
+
+	Vector EyeOffset( Activity nActivity )
+	{
+		Vector vecEyeOffset( 0, 0, -64 );
+		GetEyePosition( GetModelPtr(), vecEyeOffset );
 		return vecEyeOffset;
 	}
 
 	Vector EyePosition()
 	{
-		return GetAbsOrigin() + EyeOffset(GetActivity());
+		return GetAbsOrigin() + EyeOffset( GetActivity() );
 	}
 
 protected:
 
-	CBaseEntity *GetTarget();
+	CBaseEntity* GetTarget();
 	bool UpdateFacing();
-	void TrackTarget(CBaseEntity *pTarget);
+	void TrackTarget( CBaseEntity* pTarget );
 
-	bool PreThink(cameraState_e state);
-	void SetEyeState(eyeState_t state);
+	bool PreThink( cameraState_e state );
+	void SetEyeState( eyeState_t state );
 	void MaintainEye();
-	void Ping();	
+	void Ping();
 	void Toggle();
 	void Enable();
 	void Disable();
-	void SetHeight(float height);
+	void SetHeight( float height );
 
-	CBaseEntity *MaintainEnemy();
-	void SetAngry(bool bAngry);
+	CBaseEntity* MaintainEnemy();
+	void SetAngry( bool bAngry );
 
 protected:
 	int m_iAmmoType;
@@ -187,7 +190,7 @@ protected:
 
 	string_t m_sDefaultTarget;
 
-	EHANDLE	m_hEnemyTarget;			// Entity we acquired as an enemy.	
+	EHANDLE	m_hEnemyTarget;			// Entity we acquired as an enemy.
 
 	float m_flPingTime;
 	float m_flClickTime;			// Time to take next picture while angry.
@@ -198,50 +201,50 @@ protected:
 
 	QAngle m_vecGoalAngles;
 
-	CSprite *m_pEyeGlow;
-	CSprite *m_pEyeFlash;
+	CSprite* m_pEyeGlow;
+	CSprite* m_pEyeFlash;
 
 	DECLARE_DATADESC();
 };
 
 
-BEGIN_DATADESC(CNPC_CombineCamera)
+BEGIN_DATADESC( CNPC_CombineCamera )
 
-	DEFINE_FIELD(m_iAmmoType, FIELD_INTEGER),
-	DEFINE_KEYFIELD(m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg"),
-	DEFINE_KEYFIELD(m_nInnerRadius, FIELD_INTEGER, "innerradius"),
-	DEFINE_KEYFIELD(m_nOuterRadius, FIELD_INTEGER, "outerradius"),
-	DEFINE_FIELD(m_bActive, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bAngry, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bBlinkState, FIELD_BOOLEAN),
-	DEFINE_FIELD(m_bEnabled, FIELD_BOOLEAN),
-	DEFINE_KEYFIELD(m_sDefaultTarget, FIELD_STRING, "defaulttarget"),
-	DEFINE_FIELD(m_hEnemyTarget, FIELD_EHANDLE),
-	DEFINE_FIELD(m_flPingTime, FIELD_TIME),
-	DEFINE_FIELD(m_flClickTime, FIELD_TIME),
-	DEFINE_FIELD(m_nClickCount, FIELD_INTEGER ),
-	DEFINE_FIELD(m_flMoveSoundTime, FIELD_TIME),
-	DEFINE_FIELD(m_flTurnOffEyeFlashTime, FIELD_TIME),
-	DEFINE_FIELD(m_flEyeHappyTime, FIELD_TIME),
-	DEFINE_FIELD(m_vecGoalAngles, FIELD_VECTOR),
-	DEFINE_FIELD(m_pEyeGlow, FIELD_CLASSPTR),
-	DEFINE_FIELD(m_pEyeFlash, FIELD_CLASSPTR),
+DEFINE_FIELD( m_iAmmoType, FIELD_INTEGER ),
+			  DEFINE_KEYFIELD( m_iMinHealthDmg, FIELD_INTEGER, "minhealthdmg" ),
+			  DEFINE_KEYFIELD( m_nInnerRadius, FIELD_INTEGER, "innerradius" ),
+			  DEFINE_KEYFIELD( m_nOuterRadius, FIELD_INTEGER, "outerradius" ),
+			  DEFINE_FIELD( m_bActive, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bAngry, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bBlinkState, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bEnabled, FIELD_BOOLEAN ),
+			  DEFINE_KEYFIELD( m_sDefaultTarget, FIELD_STRING, "defaulttarget" ),
+			  DEFINE_FIELD( m_hEnemyTarget, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_flPingTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flClickTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_nClickCount, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_flMoveSoundTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flTurnOffEyeFlashTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flEyeHappyTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_vecGoalAngles, FIELD_VECTOR ),
+			  DEFINE_FIELD( m_pEyeGlow, FIELD_CLASSPTR ),
+			  DEFINE_FIELD( m_pEyeFlash, FIELD_CLASSPTR ),
 
-	DEFINE_THINKFUNC(Deploy),
-	DEFINE_THINKFUNC(ActiveThink),
-	DEFINE_THINKFUNC(SearchThink),
-	DEFINE_THINKFUNC(DeathThink),
+			  DEFINE_THINKFUNC( Deploy ),
+			  DEFINE_THINKFUNC( ActiveThink ),
+			  DEFINE_THINKFUNC( SearchThink ),
+			  DEFINE_THINKFUNC( DeathThink ),
 
-	// Inputs
-	DEFINE_INPUTFUNC(FIELD_VOID, "Toggle", InputToggle),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Enable", InputEnable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "Disable", InputDisable),
-	DEFINE_INPUTFUNC(FIELD_VOID, "SetAngry", InputSetAngry),
-	DEFINE_INPUTFUNC(FIELD_VOID, "SetIdle", InputSetIdle),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "SetAngry", InputSetAngry ),
+			  DEFINE_INPUTFUNC( FIELD_VOID, "SetIdle", InputSetIdle ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS(npc_combine_camera, CNPC_CombineCamera);
+			  LINK_ENTITY_TO_CLASS( npc_combine_camera, CNPC_CombineCamera );
 
 
 //-----------------------------------------------------------------------------
@@ -263,7 +266,7 @@ CNPC_CombineCamera::CNPC_CombineCamera()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 CNPC_CombineCamera::~CNPC_CombineCamera()
 {
@@ -275,16 +278,16 @@ CNPC_CombineCamera::~CNPC_CombineCamera()
 //-----------------------------------------------------------------------------
 void CNPC_CombineCamera::Precache()
 {
-	PrecacheModel(COMBINE_CAMERA_MODEL);
-	PrecacheModel(COMBINE_CAMERA_GLOW_SPRITE);
-	PrecacheModel(COMBINE_CAMERA_FLASH_SPRITE);
+	PrecacheModel( COMBINE_CAMERA_MODEL );
+	PrecacheModel( COMBINE_CAMERA_GLOW_SPRITE );
+	PrecacheModel( COMBINE_CAMERA_FLASH_SPRITE );
 
 	//  Activities
-	ADD_CUSTOM_ACTIVITY(CNPC_CombineCamera, ACT_COMBINE_CAMERA_OPEN);
-	ADD_CUSTOM_ACTIVITY(CNPC_CombineCamera, ACT_COMBINE_CAMERA_CLOSE);
-	ADD_CUSTOM_ACTIVITY(CNPC_CombineCamera, ACT_COMBINE_CAMERA_CLOSED_IDLE);
-	ADD_CUSTOM_ACTIVITY(CNPC_CombineCamera, ACT_COMBINE_CAMERA_OPEN_IDLE);
-	ADD_CUSTOM_ACTIVITY(CNPC_CombineCamera, ACT_COMBINE_CAMERA_FIRE);
+	ADD_CUSTOM_ACTIVITY( CNPC_CombineCamera, ACT_COMBINE_CAMERA_OPEN );
+	ADD_CUSTOM_ACTIVITY( CNPC_CombineCamera, ACT_COMBINE_CAMERA_CLOSE );
+	ADD_CUSTOM_ACTIVITY( CNPC_CombineCamera, ACT_COMBINE_CAMERA_CLOSED_IDLE );
+	ADD_CUSTOM_ACTIVITY( CNPC_CombineCamera, ACT_COMBINE_CAMERA_OPEN_IDLE );
+	ADD_CUSTOM_ACTIVITY( CNPC_CombineCamera, ACT_COMBINE_CAMERA_FIRE );
 
 	PrecacheScriptSound( "NPC_CombineCamera.Move" );
 	PrecacheScriptSound( "NPC_CombineCamera.BecomeIdle" );
@@ -305,74 +308,74 @@ void CNPC_CombineCamera::Spawn()
 {
 	Precache();
 
-	SetModel(COMBINE_CAMERA_MODEL);
+	SetModel( COMBINE_CAMERA_MODEL );
 
-	m_pEyeFlash = CSprite::SpriteCreate(COMBINE_CAMERA_FLASH_SPRITE, GetLocalOrigin(), FALSE);
-	m_pEyeFlash->SetTransparency(kRenderGlow, 255, 255, 255, 0, kRenderFxNoDissipation);
-	m_pEyeFlash->SetAttachment(this, 2);
-	m_pEyeFlash->SetBrightness(0);
-	m_pEyeFlash->SetScale(1.0);
+	m_pEyeFlash = CSprite::SpriteCreate( COMBINE_CAMERA_FLASH_SPRITE, GetLocalOrigin(), FALSE );
+	m_pEyeFlash->SetTransparency( kRenderGlow, 255, 255, 255, 0, kRenderFxNoDissipation );
+	m_pEyeFlash->SetAttachment( this, 2 );
+	m_pEyeFlash->SetBrightness( 0 );
+	m_pEyeFlash->SetScale( 1.0 );
 
 	BaseClass::Spawn();
 
-	m_HackedGunPos	= Vector(0, 0, 12.75);
-	SetViewOffset(EyeOffset(ACT_IDLE));
+	m_HackedGunPos	= Vector( 0, 0, 12.75 );
+	SetViewOffset( EyeOffset( ACT_IDLE ) );
 	m_flFieldOfView	= CAMERA_FOV_WIDE;
 	m_takedamage	= DAMAGE_YES;
 	m_iHealth		= 50;
 	m_bloodColor	= BLOOD_COLOR_MECH;
-	
-	SetSolid(SOLID_BBOX);
-	AddSolidFlags(FSOLID_NOT_STANDABLE);
 
-	SetHeight(COMBINE_CAMERA_RETRACT_HEIGHT);
+	SetSolid( SOLID_BBOX );
+	AddSolidFlags( FSOLID_NOT_STANDABLE );
 
-	AddFlag(FL_AIMTARGET);
+	SetHeight( COMBINE_CAMERA_RETRACT_HEIGHT );
 
-	SetPoseParameter(COMBINE_CAMERA_BC_YAW, 0);
-	SetPoseParameter(COMBINE_CAMERA_BC_PITCH, 0);
+	AddFlag( FL_AIMTARGET );
 
-	m_iAmmoType = GetAmmoDef()->Index("Pistol");
+	SetPoseParameter( COMBINE_CAMERA_BC_YAW, 0 );
+	SetPoseParameter( COMBINE_CAMERA_BC_PITCH, 0 );
+
+	m_iAmmoType = GetAmmoDef()->Index( "Pistol" );
 
 	// Create our eye sprite
-	m_pEyeGlow = CSprite::SpriteCreate(COMBINE_CAMERA_GLOW_SPRITE, GetLocalOrigin(), false);
-	m_pEyeGlow->SetTransparency(kRenderWorldGlow, 255, 0, 0, 128, kRenderFxNoDissipation);
-	m_pEyeGlow->SetAttachment(this, 2);
+	m_pEyeGlow = CSprite::SpriteCreate( COMBINE_CAMERA_GLOW_SPRITE, GetLocalOrigin(), false );
+	m_pEyeGlow->SetTransparency( kRenderWorldGlow, 255, 0, 0, 128, kRenderFxNoDissipation );
+	m_pEyeGlow->SetAttachment( this, 2 );
 
 	// Set our enabled state
-	m_bEnabled = ((m_spawnflags & SF_COMBINE_CAMERA_STARTINACTIVE) == false);
+	m_bEnabled = ( ( m_spawnflags & SF_COMBINE_CAMERA_STARTINACTIVE ) == false );
 
 	// Make sure the radii are sane.
-	if (m_nOuterRadius <= 0)
+	if( m_nOuterRadius <= 0 )
 	{
 		m_nOuterRadius = 300;
 	}
 
-	if (m_nInnerRadius <= 0)
+	if( m_nInnerRadius <= 0 )
 	{
 		m_nInnerRadius = 450;
 	}
 
-	if (m_nOuterRadius < m_nInnerRadius)
+	if( m_nOuterRadius < m_nInnerRadius )
 	{
-		V_swap(m_nOuterRadius, m_nInnerRadius);
+		V_swap( m_nOuterRadius, m_nInnerRadius );
 	}
 
 	// Do we start active?
-	if (m_bEnabled)
+	if( m_bEnabled )
 	{
 		Deploy();
 	}
 	else
 	{
-		SetEyeState(CAMERA_EYE_DISABLED);
+		SetEyeState( CAMERA_EYE_DISABLED );
 	}
 
 	//Adrian: No shadows on these guys.
 	AddEffects( EF_NOSHADOW );
 
 	// Stagger our starting times
-	SetNextThink( gpGlobals->curtime + random->RandomFloat(0.1f, 0.3f) );
+	SetNextThink( gpGlobals->curtime + random->RandomFloat( 0.1f, 0.3f ) );
 
 	// Don't allow us to skip animation setup because our attachments are critical to us!
 	SetBoneCacheFlags( BCF_NO_ANIMATION_SKIP );
@@ -380,47 +383,53 @@ void CNPC_CombineCamera::Spawn()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CBaseEntity *CNPC_CombineCamera::GetTarget()
+CBaseEntity* CNPC_CombineCamera::GetTarget()
 {
 	return m_hEnemyTarget;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-int CNPC_CombineCamera::OnTakeDamage(const CTakeDamageInfo &inputInfo)
+int CNPC_CombineCamera::OnTakeDamage( const CTakeDamageInfo& inputInfo )
 {
-	if (!m_takedamage)
+	if( !m_takedamage )
+	{
 		return 0;
+	}
 
 	CTakeDamageInfo info = inputInfo;
 
-	if (m_bActive == false)
-		info.ScaleDamage(0.1f);
+	if( m_bActive == false )
+	{
+		info.ScaleDamage( 0.1f );
+	}
 
 	// If attacker can't do at least the min required damage to us, don't take any damage from them
-	if (info.GetDamage() < m_iMinHealthDmg)
+	if( info.GetDamage() < m_iMinHealthDmg )
+	{
 		return 0;
+	}
 
 	m_iHealth -= info.GetDamage();
 
-	if (m_iHealth <= 0)
+	if( m_iHealth <= 0 )
 	{
 		m_iHealth = 0;
 		m_takedamage = DAMAGE_NO;
 
-		RemoveFlag(FL_NPC); // why are they set in the first place???
+		RemoveFlag( FL_NPC ); // why are they set in the first place???
 
 		// FIXME: This needs to throw a ragdoll gib or something other than animating the retraction -- jdw
 
-		ExplosionCreate(GetAbsOrigin(), GetLocalAngles(), this, 100, 100, false);
-		SetThink(&CNPC_CombineCamera::DeathThink);
+		ExplosionCreate( GetAbsOrigin(), GetLocalAngles(), this, 100, 100, false );
+		SetThink( &CNPC_CombineCamera::DeathThink );
 
-		StopSound("Alert");
+		StopSound( "Alert" );
 
-		m_OnDamaged.FireOutput(info.GetInflictor(), this);
+		m_OnDamaged.FireOutput( info.GetInflictor(), this );
 
 		SetNextThink( gpGlobals->curtime + 0.1f );
 
@@ -440,15 +449,15 @@ void CNPC_CombineCamera::Deploy()
 
 	SetNextThink( gpGlobals->curtime );
 
-	SetEyeState(CAMERA_EYE_IDLE);
+	SetEyeState( CAMERA_EYE_IDLE );
 	m_bActive = true;
 
-	SetHeight(COMBINE_CAMERA_DEPLOY_HEIGHT);
-	SetIdealActivity((Activity) ACT_COMBINE_CAMERA_OPEN_IDLE);
+	SetHeight( COMBINE_CAMERA_DEPLOY_HEIGHT );
+	SetIdealActivity( ( Activity ) ACT_COMBINE_CAMERA_OPEN_IDLE );
 	m_flPlaybackRate = 0;
-	SetThink(&CNPC_CombineCamera::SearchThink);
+	SetThink( &CNPC_CombineCamera::SearchThink );
 
-	EmitSound("NPC_CombineCamera.Move");
+	EmitSound( "NPC_CombineCamera.Move" );
 }
 
 
@@ -457,8 +466,10 @@ void CNPC_CombineCamera::Deploy()
 //-----------------------------------------------------------------------------
 float CNPC_CombineCamera::MaxYawSpeed()
 {
-	if (m_hEnemyTarget)
+	if( m_hEnemyTarget )
+	{
 		return 180.0f;
+	}
 
 	return 60.0f;
 }
@@ -471,43 +482,43 @@ bool CNPC_CombineCamera::UpdateFacing()
 {
 	bool  bMoved = false;
 	matrix3x4_t localToWorld;
-	
-	GetAttachment(LookupAttachment("eyes"), localToWorld);
+
+	GetAttachment( LookupAttachment( "eyes" ), localToWorld );
 
 	Vector vecGoalDir;
-	AngleVectors(m_vecGoalAngles, &vecGoalDir );
+	AngleVectors( m_vecGoalAngles, &vecGoalDir );
 
 	Vector vecGoalLocalDir;
-	VectorIRotate(vecGoalDir, localToWorld, vecGoalLocalDir);
+	VectorIRotate( vecGoalDir, localToWorld, vecGoalLocalDir );
 
 	QAngle vecGoalLocalAngles;
-	VectorAngles(vecGoalLocalDir, vecGoalLocalAngles);
+	VectorAngles( vecGoalLocalDir, vecGoalLocalAngles );
 
 	// Update pitch
-	float flDiff = AngleNormalize(UTIL_ApproachAngle( vecGoalLocalAngles.x, 0.0, 0.1f * MaxYawSpeed()));
-	
-	int iPose = LookupPoseParameter(COMBINE_CAMERA_BC_PITCH);
-	SetPoseParameter(iPose, GetPoseParameter(iPose) + (flDiff / 1.5f));
+	float flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.x, 0.0, 0.1f * MaxYawSpeed() ) );
 
-	if (fabs(flDiff) > 0.1f)
+	int iPose = LookupPoseParameter( COMBINE_CAMERA_BC_PITCH );
+	SetPoseParameter( iPose, GetPoseParameter( iPose ) + ( flDiff / 1.5f ) );
+
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
 
 	// Update yaw
-	flDiff = AngleNormalize(UTIL_ApproachAngle( vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed()));
+	flDiff = AngleNormalize( UTIL_ApproachAngle( vecGoalLocalAngles.y, 0.0, 0.1f * MaxYawSpeed() ) );
 
-	iPose = LookupPoseParameter(COMBINE_CAMERA_BC_YAW);
-	SetPoseParameter(iPose, GetPoseParameter(iPose) + (flDiff / 1.5f));
+	iPose = LookupPoseParameter( COMBINE_CAMERA_BC_YAW );
+	SetPoseParameter( iPose, GetPoseParameter( iPose ) + ( flDiff / 1.5f ) );
 
-	if (fabs(flDiff) > 0.1f)
+	if( fabs( flDiff ) > 0.1f )
 	{
 		bMoved = true;
 	}
 
-	if (bMoved && (m_flMoveSoundTime < gpGlobals->curtime))
+	if( bMoved && ( m_flMoveSoundTime < gpGlobals->curtime ) )
 	{
-		EmitSound("NPC_CombineCamera.Move");
+		EmitSound( "NPC_CombineCamera.Move" );
 		m_flMoveSoundTime = gpGlobals->curtime + CAMERA_MOVE_INTERVAL;
 	}
 
@@ -519,43 +530,45 @@ bool CNPC_CombineCamera::UpdateFacing()
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 Vector CNPC_CombineCamera::HeadDirection2D()
 {
 	Vector	vecMuzzle, vecMuzzleDir;
 
-	GetAttachment("eyes", vecMuzzle, &vecMuzzleDir );
+	GetAttachment( "eyes", vecMuzzle, &vecMuzzleDir );
 	vecMuzzleDir.z = 0;
-	VectorNormalize(vecMuzzleDir);
+	VectorNormalize( vecMuzzleDir );
 
 	return vecMuzzleDir;
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : *pEntity - 
+// Purpose:
+// Input  : *pEntity -
 // Output : Returns true on success, false on failure.
 //-----------------------------------------------------------------------------
-bool CNPC_CombineCamera::FVisible(CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker)
+bool CNPC_CombineCamera::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
-	CBaseEntity	*pHitEntity = NULL;
-	if ( BaseClass::FVisible( pEntity, traceMask, &pHitEntity ) )
+	CBaseEntity*	pHitEntity = NULL;
+	if( BaseClass::FVisible( pEntity, traceMask, &pHitEntity ) )
+	{
 		return true;
+	}
 
 	// If we hit something that's okay to hit anyway, still fire
-	if ( pHitEntity && pHitEntity->MyCombatCharacterPointer() )
+	if( pHitEntity && pHitEntity->MyCombatCharacterPointer() )
 	{
 #ifdef MAPBASE
-		if (IRelationType(pHitEntity) <= D_FR)
+		if( IRelationType( pHitEntity ) <= D_FR )
 #else
-		if (IRelationType(pHitEntity) == D_HT)
+		if( IRelationType( pHitEntity ) == D_HT )
 #endif
 			return true;
 	}
 
-	if (ppBlocker)
+	if( ppBlocker )
 	{
 		*ppBlocker = pHitEntity;
 	}
@@ -566,12 +579,14 @@ bool CNPC_CombineCamera::FVisible(CBaseEntity *pEntity, int traceMask, CBaseEnti
 //-----------------------------------------------------------------------------
 // Purpose: Enemies are only valid if they're inside our radius
 //-----------------------------------------------------------------------------
-bool CNPC_CombineCamera::IsValidEnemy( CBaseEntity *pEnemy )
+bool CNPC_CombineCamera::IsValidEnemy( CBaseEntity* pEnemy )
 {
 	Vector vecDelta = pEnemy->GetAbsOrigin() - GetAbsOrigin();
 	float flDist = vecDelta.Length();
-	if ( (flDist > m_nOuterRadius) || !FInViewCone(pEnemy) )
+	if( ( flDist > m_nOuterRadius ) || !FInViewCone( pEnemy ) )
+	{
 		return false;
+	}
 
 	return BaseClass::IsValidEnemy( pEnemy );
 }
@@ -579,36 +594,40 @@ bool CNPC_CombineCamera::IsValidEnemy( CBaseEntity *pEnemy )
 //-----------------------------------------------------------------------------
 // Purpose: Called when we have no scripted target. Looks for new enemies to track.
 //-----------------------------------------------------------------------------
-CBaseEntity *CNPC_CombineCamera::MaintainEnemy()
+CBaseEntity* CNPC_CombineCamera::MaintainEnemy()
 {
-	if (HasSpawnFlags(SF_COMBINE_CAMERA_IGNOREENEMIES))
+	if( HasSpawnFlags( SF_COMBINE_CAMERA_IGNOREENEMIES ) )
+	{
 		return NULL;
+	}
 
-	GetSenses()->Look(m_nOuterRadius);
+	GetSenses()->Look( m_nOuterRadius );
 
-	CBaseEntity *pEnemy = BestEnemy();
-	if (pEnemy)
+	CBaseEntity* pEnemy = BestEnemy();
+	if( pEnemy )
 	{
 		// See if our best enemy is too far away to care about.
 		Vector vecDelta = pEnemy->GetAbsOrigin() - GetAbsOrigin();
 		float flDist = vecDelta.Length();
-		if (flDist < m_nOuterRadius)
+		if( flDist < m_nOuterRadius )
 		{
-			if (FInViewCone(pEnemy))
+			if( FInViewCone( pEnemy ) )
 			{
 				// dvs: HACK: for checking multiple view cones
 				float flSaveFieldOfView = m_flFieldOfView;
 				m_flFieldOfView = CAMERA_FOV_NARROW;
 
 				// Is the target visible?
-				bool bVisible = FVisible(pEnemy);
+				bool bVisible = FVisible( pEnemy );
 				m_flFieldOfView = flSaveFieldOfView;
-				if ( bVisible )
+				if( bVisible )
+				{
 					return pEnemy;
+				}
 			}
 		}
 	}
-	
+
 	return NULL;
 }
 
@@ -619,59 +638,63 @@ CBaseEntity *CNPC_CombineCamera::MaintainEnemy()
 void CNPC_CombineCamera::ActiveThink()
 {
 	// Allow descended classes a chance to do something before the think function
-	if (PreThink(CAMERA_ACTIVE))
+	if( PreThink( CAMERA_ACTIVE ) )
+	{
 		return;
+	}
 
 	// No active target, look for suspicious characters.
-	CBaseEntity *pTarget = MaintainEnemy();
-	if ( !pTarget )
+	CBaseEntity* pTarget = MaintainEnemy();
+	if( !pTarget )
 	{
 		// Nobody suspicious. Go back to being idle.
 #ifdef MAPBASE
-		if (m_hEnemyTarget)
+		if( m_hEnemyTarget )
 		{
 			m_OnLostEnemy.FireOutput( m_hEnemyTarget, this );
-			if (m_hEnemyTarget->IsPlayer())
+			if( m_hEnemyTarget->IsPlayer() )
+			{
 				m_OnLostPlayer.FireOutput( m_hEnemyTarget, this );
+			}
 		}
 #endif
 		m_hEnemyTarget = NULL;
-		EmitSound("NPC_CombineCamera.BecomeIdle");
-		SetAngry(false);
-		SetThink(&CNPC_CombineCamera::SearchThink);
+		EmitSound( "NPC_CombineCamera.BecomeIdle" );
+		SetAngry( false );
+		SetThink( &CNPC_CombineCamera::SearchThink );
 		SetNextThink( gpGlobals->curtime );
 		return;
 	}
 
 	// Examine the target until it reaches our inner radius
-	if ( pTarget != m_hEnemyTarget )
+	if( pTarget != m_hEnemyTarget )
 	{
 		Vector vecDelta = pTarget->GetAbsOrigin() - GetAbsOrigin();
 		float flDist = vecDelta.Length();
-		if ( (flDist < m_nInnerRadius) && FInViewCone(pTarget) )
+		if( ( flDist < m_nInnerRadius ) && FInViewCone( pTarget ) )
 		{
-			m_OnFoundEnemy.Set(pTarget, pTarget, this);
+			m_OnFoundEnemy.Set( pTarget, pTarget, this );
 
 			// If it's a citizen, it's ok. If it's the player, it's not ok.
-			if ( pTarget->IsPlayer() )
+			if( pTarget->IsPlayer() )
 			{
-				SetEyeState(CAMERA_EYE_FOUND_TARGET);
+				SetEyeState( CAMERA_EYE_FOUND_TARGET );
 
-				if (HasSpawnFlags(SF_COMBINE_CAMERA_BECOMEANGRY))
+				if( HasSpawnFlags( SF_COMBINE_CAMERA_BECOMEANGRY ) )
 				{
-					SetAngry(true);
+					SetAngry( true );
 				}
 				else
 				{
-					EmitSound("NPC_CombineCamera.Active");
+					EmitSound( "NPC_CombineCamera.Active" );
 				}
 
-				m_OnFoundPlayer.Set(pTarget, pTarget, this);
+				m_OnFoundPlayer.Set( pTarget, pTarget, this );
 				m_hEnemyTarget = pTarget;
 			}
 			else
 			{
-				SetEyeState(CAMERA_EYE_HAPPY);
+				SetEyeState( CAMERA_EYE_HAPPY );
 				m_flEyeHappyTime = gpGlobals->curtime + 2.0;
 
 				// Now forget about this target forever
@@ -681,64 +704,66 @@ void CNPC_CombineCamera::ActiveThink()
 		else
 		{
 			// If we get angry automatically, we get un-angry automatically
-			if ( HasSpawnFlags(SF_COMBINE_CAMERA_BECOMEANGRY) && m_bAngry )
+			if( HasSpawnFlags( SF_COMBINE_CAMERA_BECOMEANGRY ) && m_bAngry )
 			{
-				SetAngry(false);
+				SetAngry( false );
 			}
 			m_hEnemyTarget = NULL;
 
 			// We don't quite see this guy, but we sense him.
-			SetEyeState(CAMERA_EYE_SEEKING_TARGET);
+			SetEyeState( CAMERA_EYE_SEEKING_TARGET );
 		}
 	}
 
 	// Update our think time
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	TrackTarget(pTarget);
+	TrackTarget( pTarget );
 	MaintainEye();
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : pTarget - 
+// Purpose:
+// Input  : pTarget -
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::TrackTarget( CBaseEntity *pTarget )
+void CNPC_CombineCamera::TrackTarget( CBaseEntity* pTarget )
 {
-	if (!pTarget)
+	if( !pTarget )
+	{
 		return;
+	}
 
 	// Calculate direction to target
 	Vector vecMid = EyePosition();
-	Vector vecMidTarget = pTarget->BodyTarget(vecMid);
-	Vector vecDirToTarget = vecMidTarget - vecMid;	
+	Vector vecMidTarget = pTarget->BodyTarget( vecMid );
+	Vector vecDirToTarget = vecMidTarget - vecMid;
 
 	// We want to look at the target's eyes so we don't jitter
 	Vector vecDirToTargetEyes = pTarget->WorldSpaceCenter() - vecMid;
-	VectorNormalize(vecDirToTargetEyes);
+	VectorNormalize( vecDirToTargetEyes );
 
 	QAngle vecAnglesToTarget;
-	VectorAngles(vecDirToTargetEyes, vecAnglesToTarget);
+	VectorAngles( vecDirToTargetEyes, vecAnglesToTarget );
 
 	// Draw debug info
-	if (g_debug_combine_camera.GetBool())
+	if( g_debug_combine_camera.GetBool() )
 	{
-		NDebugOverlay::Cross3D(vecMid, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05);
-		NDebugOverlay::Cross3D(pTarget->WorldSpaceCenter(), -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05);
-		NDebugOverlay::Line(vecMid, pTarget->WorldSpaceCenter(), 0, 255, 0, false, 0.05);
+		NDebugOverlay::Cross3D( vecMid, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( pTarget->WorldSpaceCenter(), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMid, pTarget->WorldSpaceCenter(), 0, 255, 0, false, 0.05 );
 
-		NDebugOverlay::Cross3D(vecMid, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05);
-		NDebugOverlay::Cross3D(vecMidTarget, -Vector(2,2,2), Vector(2,2,2), 0, 255, 0, false, 0.05);
-		NDebugOverlay::Line(vecMid, vecMidTarget, 0, 255, 0, false, 0.05f);
+		NDebugOverlay::Cross3D( vecMid, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Cross3D( vecMidTarget, -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 0, 255, 0, false, 0.05 );
+		NDebugOverlay::Line( vecMid, vecMidTarget, 0, 255, 0, false, 0.05f );
 	}
 
 	Vector vecMuzzle, vecMuzzleDir;
 	QAngle vecMuzzleAng;
-	
-	GetAttachment("eyes", vecMuzzle, &vecMuzzleDir);
-	
-	SetIdealActivity((Activity) ACT_COMBINE_CAMERA_OPEN_IDLE);
+
+	GetAttachment( "eyes", vecMuzzle, &vecMuzzleDir );
+
+	SetIdealActivity( ( Activity ) ACT_COMBINE_CAMERA_OPEN_IDLE );
 
 	m_vecGoalAngles.y = vecAnglesToTarget.y;
 	m_vecGoalAngles.x = vecAnglesToTarget.x;
@@ -749,25 +774,25 @@ void CNPC_CombineCamera::TrackTarget( CBaseEntity *pTarget )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CombineCamera::MaintainEye()
 {
 	// Angry cameras take a few pictures of their target.
-	if ((m_bAngry) && (m_nClickCount <= 3))
+	if( ( m_bAngry ) && ( m_nClickCount <= 3 ) )
 	{
-		if ((m_flClickTime != 0) && (m_flClickTime < gpGlobals->curtime))
+		if( ( m_flClickTime != 0 ) && ( m_flClickTime < gpGlobals->curtime ) )
 		{
-			m_pEyeFlash->SetScale(1.0);
-			m_pEyeFlash->SetBrightness(255);
-			m_pEyeFlash->SetColor(255,255,255);
+			m_pEyeFlash->SetScale( 1.0 );
+			m_pEyeFlash->SetBrightness( 255 );
+			m_pEyeFlash->SetColor( 255, 255, 255 );
 
-			EmitSound("NPC_CombineCamera.Click");
+			EmitSound( "NPC_CombineCamera.Click" );
 
 			m_flTurnOffEyeFlashTime = gpGlobals->curtime + 0.1;
 			m_flClickTime = gpGlobals->curtime + CAMERA_CLICK_INTERVAL;
 		}
-		else if ((m_flTurnOffEyeFlashTime != 0) && (m_flTurnOffEyeFlashTime < gpGlobals->curtime))
+		else if( ( m_flTurnOffEyeFlashTime != 0 ) && ( m_flTurnOffEyeFlashTime < gpGlobals->curtime ) )
 		{
 			m_flTurnOffEyeFlashTime = 0;
 			m_pEyeFlash->SetBrightness( 0, 0.25f );
@@ -782,17 +807,19 @@ void CNPC_CombineCamera::MaintainEye()
 void CNPC_CombineCamera::SearchThink()
 {
 	// Allow descended classes a chance to do something before the think function
-	if (PreThink(CAMERA_SEARCHING))
+	if( PreThink( CAMERA_SEARCHING ) )
+	{
 		return;
+	}
 
 	SetNextThink( gpGlobals->curtime + 0.05f );
 
-	SetIdealActivity((Activity) ACT_COMBINE_CAMERA_OPEN_IDLE);
+	SetIdealActivity( ( Activity ) ACT_COMBINE_CAMERA_OPEN_IDLE );
 
-	if ( !GetTarget() )
+	if( !GetTarget() )
 	{
 		// Try to acquire a new target
-		if (MaintainEnemy())
+		if( MaintainEnemy() )
 		{
 			SetThink( &CNPC_CombineCamera::ActiveThink );
 			return;
@@ -801,20 +828,20 @@ void CNPC_CombineCamera::SearchThink()
 
 	// Display that we're scanning
 	m_vecGoalAngles.x = 15.0f;
-	m_vecGoalAngles.y = GetAbsAngles().y + (sin(gpGlobals->curtime * 2.0f) * 45.0f);
+	m_vecGoalAngles.y = GetAbsAngles().y + ( sin( gpGlobals->curtime * 2.0f ) * 45.0f );
 
 	// Turn and ping
 	UpdateFacing();
 	Ping();
 
-	SetEyeState(CAMERA_EYE_IDLE);
+	SetEyeState( CAMERA_EYE_IDLE );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Allows a generic think function before the others are called
 // Input  : state - which state the camera is currently in
 //-----------------------------------------------------------------------------
-bool CNPC_CombineCamera::PreThink(cameraState_e state)
+bool CNPC_CombineCamera::PreThink( cameraState_e state )
 {
 	CheckPVSCondition();
 
@@ -822,9 +849,9 @@ bool CNPC_CombineCamera::PreThink(cameraState_e state)
 	StudioFrameAdvance();
 
 	// If we're disabled, shut down
-	if ( !m_bEnabled )
+	if( !m_bEnabled )
 	{
-		SetIdealActivity((Activity) ACT_COMBINE_CAMERA_CLOSED_IDLE);
+		SetIdealActivity( ( Activity ) ACT_COMBINE_CAMERA_CLOSED_IDLE );
 		SetNextThink( gpGlobals->curtime + 0.1f );
 		return true;
 	}
@@ -838,35 +865,37 @@ bool CNPC_CombineCamera::PreThink(cameraState_e state)
 // Purpose: Sets the state of the glowing eye attached to the camera
 // Input  : state - state the eye should be in
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::SetEyeState(eyeState_t state)
+void CNPC_CombineCamera::SetEyeState( eyeState_t state )
 {
 	// Must have a valid eye to affect
-	if (m_pEyeGlow == NULL)
-		return;
-
-	if (m_bAngry)
+	if( m_pEyeGlow == NULL )
 	{
-		m_pEyeGlow->SetColor(255, 0, 0);
-		m_pEyeGlow->SetBrightness(164, 0.1f);
-		m_pEyeGlow->SetScale(0.4f, 0.1f);
+		return;
+	}
+
+	if( m_bAngry )
+	{
+		m_pEyeGlow->SetColor( 255, 0, 0 );
+		m_pEyeGlow->SetBrightness( 164, 0.1f );
+		m_pEyeGlow->SetScale( 0.4f, 0.1f );
 		return;
 	}
 
 	// If we're switching to IDLE, and we're still happy, use happy instead
-	if ( state == CAMERA_EYE_IDLE && m_flEyeHappyTime > gpGlobals->curtime )
+	if( state == CAMERA_EYE_IDLE && m_flEyeHappyTime > gpGlobals->curtime )
 	{
 		state = CAMERA_EYE_HAPPY;
 	}
 
 	// Set the state
-	switch (state)
+	switch( state )
 	{
 		default:
 		case CAMERA_EYE_IDLE:
 		{
-			m_pEyeGlow->SetColor(0, 255, 0);
-			m_pEyeGlow->SetBrightness(164, 0.1f);
-			m_pEyeGlow->SetScale(0.4f, 0.1f);
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetBrightness( 164, 0.1f );
+			m_pEyeGlow->SetScale( 0.4f, 0.1f );
 			break;
 		}
 
@@ -876,19 +905,19 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 			m_bBlinkState = !m_bBlinkState;
 
 			// Amber
-			m_pEyeGlow->SetColor(255, 128, 0);
+			m_pEyeGlow->SetColor( 255, 128, 0 );
 
-			if (m_bBlinkState)
+			if( m_bBlinkState )
 			{
 				// Fade up and scale up
-				m_pEyeGlow->SetScale(0.25f, 0.1f);
-				m_pEyeGlow->SetBrightness(164, 0.1f);
+				m_pEyeGlow->SetScale( 0.25f, 0.1f );
+				m_pEyeGlow->SetBrightness( 164, 0.1f );
 			}
 			else
 			{
 				// Fade down and scale down
-				m_pEyeGlow->SetScale(0.2f, 0.1f);
-				m_pEyeGlow->SetBrightness(64, 0.1f);
+				m_pEyeGlow->SetScale( 0.2f, 0.1f );
+				m_pEyeGlow->SetBrightness( 64, 0.1f );
 			}
 
 			break;
@@ -896,20 +925,20 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 
 		case CAMERA_EYE_FOUND_TARGET:
 		{
-			if (!m_bAngry)
+			if( !m_bAngry )
 			{
 				// Amber
-				m_pEyeGlow->SetColor(255, 128, 0);
+				m_pEyeGlow->SetColor( 255, 128, 0 );
 
 				// Fade up and scale up
-				m_pEyeGlow->SetScale(0.45f, 0.1f);
-				m_pEyeGlow->SetBrightness(220, 0.1f);
+				m_pEyeGlow->SetScale( 0.45f, 0.1f );
+				m_pEyeGlow->SetBrightness( 220, 0.1f );
 			}
 			else
 			{
-				m_pEyeGlow->SetColor(255, 0, 0);
-				m_pEyeGlow->SetBrightness(164, 0.1f);
-				m_pEyeGlow->SetScale(0.4f, 0.1f);
+				m_pEyeGlow->SetColor( 255, 0, 0 );
+				m_pEyeGlow->SetBrightness( 164, 0.1f );
+				m_pEyeGlow->SetScale( 0.4f, 0.1f );
 			}
 
 			break;
@@ -917,33 +946,33 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 
 		case CAMERA_EYE_DORMANT: // Fade out and scale down
 		{
-			m_pEyeGlow->SetColor(0, 255, 0);
-			m_pEyeGlow->SetScale(0.1f, 0.5f);
-			m_pEyeGlow->SetBrightness(64, 0.5f);
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 0.5f );
+			m_pEyeGlow->SetBrightness( 64, 0.5f );
 			break;
 		}
 
 		case CAMERA_EYE_DEAD: // Fade out slowly
 		{
-			m_pEyeGlow->SetColor(255, 0, 0);
-			m_pEyeGlow->SetScale(0.1f, 3.0f);
-			m_pEyeGlow->SetBrightness(0, 3.0f);
+			m_pEyeGlow->SetColor( 255, 0, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 3.0f );
+			m_pEyeGlow->SetBrightness( 0, 3.0f );
 			break;
 		}
 
 		case CAMERA_EYE_DISABLED:
 		{
-			m_pEyeGlow->SetColor(0, 255, 0);
-			m_pEyeGlow->SetScale(0.1f, 1.0f);
-			m_pEyeGlow->SetBrightness(0, 1.0f);
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetScale( 0.1f, 1.0f );
+			m_pEyeGlow->SetBrightness( 0, 1.0f );
 			break;
 		}
 
 		case CAMERA_EYE_HAPPY:
 		{
-			m_pEyeGlow->SetColor(0, 255, 0);
-			m_pEyeGlow->SetBrightness(255, 0.1f);
-			m_pEyeGlow->SetScale(0.5f, 0.1f);
+			m_pEyeGlow->SetColor( 0, 255, 0 );
+			m_pEyeGlow->SetBrightness( 255, 0.1f );
+			m_pEyeGlow->SetScale( 0.5f, 0.1f );
 			break;
 		}
 	}
@@ -956,11 +985,13 @@ void CNPC_CombineCamera::SetEyeState(eyeState_t state)
 void CNPC_CombineCamera::Ping()
 {
 	// See if it's time to ping again
-	if (m_flPingTime > gpGlobals->curtime)
+	if( m_flPingTime > gpGlobals->curtime )
+	{
 		return;
+	}
 
 	// Ping!
-	EmitSound("NPC_CombineCamera.Ping");
+	EmitSound( "NPC_CombineCamera.Ping" );
 	m_flPingTime = gpGlobals->curtime + COMBINE_CAMERA_PING_TIME;
 }
 
@@ -970,11 +1001,11 @@ void CNPC_CombineCamera::Ping()
 //-----------------------------------------------------------------------------
 void CNPC_CombineCamera::Toggle()
 {
-	if (m_bEnabled)
+	if( m_bEnabled )
 	{
 		Disable();
 	}
-	else 
+	else
 	{
 		Enable();
 	}
@@ -987,7 +1018,7 @@ void CNPC_CombineCamera::Toggle()
 void CNPC_CombineCamera::Enable()
 {
 	m_bEnabled = true;
-	SetThink(&CNPC_CombineCamera::Deploy);
+	SetThink( &CNPC_CombineCamera::Deploy );
 	SetNextThink( gpGlobals->curtime + 0.05f );
 }
 
@@ -1006,7 +1037,7 @@ void CNPC_CombineCamera::Disable()
 //-----------------------------------------------------------------------------
 // Purpose: Toggle the camera's state via input function
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::InputToggle(inputdata_t &inputdata)
+void CNPC_CombineCamera::InputToggle( inputdata_t& inputdata )
 {
 	Toggle();
 }
@@ -1015,7 +1046,7 @@ void CNPC_CombineCamera::InputToggle(inputdata_t &inputdata)
 //-----------------------------------------------------------------------------
 // Purpose: Input handler to enable the camera.
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::InputEnable(inputdata_t &inputdata)
+void CNPC_CombineCamera::InputEnable( inputdata_t& inputdata )
 {
 	Enable();
 }
@@ -1024,7 +1055,7 @@ void CNPC_CombineCamera::InputEnable(inputdata_t &inputdata)
 //-----------------------------------------------------------------------------
 // Purpose: Input handler to disable the camera.
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::InputDisable(inputdata_t &inputdata)
+void CNPC_CombineCamera::InputDisable( inputdata_t& inputdata )
 {
 	Disable();
 }
@@ -1034,149 +1065,151 @@ void CNPC_CombineCamera::InputDisable(inputdata_t &inputdata)
 // Purpose: When we become angry, we make an angry sound and start photographing
 //			whatever target we are tracking.
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::SetAngry(bool bAngry)
+void CNPC_CombineCamera::SetAngry( bool bAngry )
 {
-	if ((bAngry) && (!m_bAngry))
+	if( ( bAngry ) && ( !m_bAngry ) )
 	{
 		m_bAngry = true;
 		m_nClickCount = 0;
 		m_flClickTime = gpGlobals->curtime + 0.4;
-		EmitSound("NPC_CombineCamera.Angry");
-		SetEyeState(CAMERA_EYE_ANGRY);
+		EmitSound( "NPC_CombineCamera.Angry" );
+		SetEyeState( CAMERA_EYE_ANGRY );
 	}
-	else if ((!bAngry) && (m_bAngry))
+	else if( ( !bAngry ) && ( m_bAngry ) )
 	{
 		m_bAngry = false;
 
 		// make sure the flash is off (we might be in mid-flash)
-		m_pEyeFlash->SetBrightness(0);
-		SetEyeState(GetTarget() ? CAMERA_EYE_SEEKING_TARGET : CAMERA_EYE_IDLE);
+		m_pEyeFlash->SetBrightness( 0 );
+		SetEyeState( GetTarget() ? CAMERA_EYE_SEEKING_TARGET : CAMERA_EYE_IDLE );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::InputSetAngry(inputdata_t &inputdata)
+void CNPC_CombineCamera::InputSetAngry( inputdata_t& inputdata )
 {
-	SetAngry(true);
+	SetAngry( true );
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::InputSetIdle(inputdata_t &inputdata)
+void CNPC_CombineCamera::InputSetIdle( inputdata_t& inputdata )
 {
-	SetAngry(false);
+	SetAngry( false );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_CombineCamera::DeathThink()
 {
-	if (PreThink(CAMERA_DEAD))
+	if( PreThink( CAMERA_DEAD ) )
+	{
 		return;
+	}
 
 	// Level out our angles
 	m_vecGoalAngles = GetAbsAngles();
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	if (m_lifeState != LIFE_DEAD)
+	if( m_lifeState != LIFE_DEAD )
 	{
 		m_lifeState = LIFE_DEAD;
 
-		EmitSound("NPC_CombineCamera.Die");
+		EmitSound( "NPC_CombineCamera.Die" );
 
 		// lots of smoke
 		Vector pos;
 		CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &pos );
-		
-		CBroadcastRecipientFilter filter;
-		
-		te->Smoke(filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10);
-		
-		g_pEffects->Sparks(pos);
 
-		SetActivity((Activity) ACT_COMBINE_CAMERA_CLOSE);
+		CBroadcastRecipientFilter filter;
+
+		te->Smoke( filter, 0.0, &pos, g_sModelIndexSmoke, 2.5, 10 );
+
+		g_pEffects->Sparks( pos );
+
+		SetActivity( ( Activity ) ACT_COMBINE_CAMERA_CLOSE );
 	}
 
 	StudioFrameAdvance();
 
-	if (IsActivityFinished() && (UpdateFacing() == false))
+	if( IsActivityFinished() && ( UpdateFacing() == false ) )
 	{
-		SetHeight(COMBINE_CAMERA_RETRACT_HEIGHT);
+		SetHeight( COMBINE_CAMERA_RETRACT_HEIGHT );
 
 		m_flPlaybackRate = 0;
-		SetThink(NULL);
+		SetThink( NULL );
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : height - 
+// Purpose:
+// Input  : height -
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::SetHeight(float height)
+void CNPC_CombineCamera::SetHeight( float height )
 {
 	Vector forward, right, up;
-	AngleVectors(GetLocalAngles(), &forward, &right, &up);
+	AngleVectors( GetLocalAngles(), &forward, &right, &up );
 
-	Vector mins = (forward * -16.0f) + (right * -16.0f);
-	Vector maxs = (forward *  16.0f) + (right *  16.0f) + (up * -height);
+	Vector mins = ( forward * -16.0f ) + ( right * -16.0f );
+	Vector maxs = ( forward *  16.0f ) + ( right *  16.0f ) + ( up * -height );
 
-	if (mins.x > maxs.x)
+	if( mins.x > maxs.x )
 	{
-		V_swap(mins.x, maxs.x);
+		V_swap( mins.x, maxs.x );
 	}
 
-	if (mins.y > maxs.y)
+	if( mins.y > maxs.y )
 	{
-		V_swap(mins.y, maxs.y);
+		V_swap( mins.y, maxs.y );
 	}
 
-	if (mins.z > maxs.z)
+	if( mins.z > maxs.z )
 	{
-		V_swap(mins.z, maxs.z);
+		V_swap( mins.z, maxs.z );
 	}
 
-	SetCollisionBounds(mins, maxs);
+	SetCollisionBounds( mins, maxs );
 
-	UTIL_SetSize(this, mins, maxs);
+	UTIL_SetSize( this, mins, maxs );
 }
 
 
 //-----------------------------------------------------------------------------
 // Purpose: Draw any debug text overlays
 //-----------------------------------------------------------------------------
-int CNPC_CombineCamera::DrawDebugTextOverlays(void) 
+int CNPC_CombineCamera::DrawDebugTextOverlays( void )
 {
 	int text_offset = BaseClass::DrawDebugTextOverlays();
 
-	if (m_debugOverlays & OVERLAY_TEXT_BIT) 
+	if( m_debugOverlays & OVERLAY_TEXT_BIT )
 	{
 		char tempstr[512];
 
-		Q_snprintf( tempstr, sizeof( tempstr ),"Enemy     : %s", m_hEnemyTarget ? m_hEnemyTarget->GetDebugName() : "<none>");
-		EntityText(text_offset,tempstr,0);
+		Q_snprintf( tempstr, sizeof( tempstr ), "Enemy     : %s", m_hEnemyTarget ? m_hEnemyTarget->GetDebugName() : "<none>" );
+		EntityText( text_offset, tempstr, 0 );
 		text_offset++;
 	}
 	return text_offset;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_CombineCamera::DrawDebugGeometryOverlays(void)
+void CNPC_CombineCamera::DrawDebugGeometryOverlays( void )
 {
 	// ------------------------------
 	// Draw viewcone if selected
 	// ------------------------------
-	if ((m_debugOverlays & OVERLAY_NPC_VIEWCONE_BIT))
+	if( ( m_debugOverlays & OVERLAY_NPC_VIEWCONE_BIT ) )
 	{
-		float flViewRange	= acos(CAMERA_FOV_NARROW);
+		float flViewRange	= acos( CAMERA_FOV_NARROW );
 		Vector vEyeDir = EyeDirection2D( );
 		Vector vLeftDir, vRightDir;
 		float fSin, fCos;
@@ -1185,15 +1218,15 @@ void CNPC_CombineCamera::DrawDebugGeometryOverlays(void)
 		vLeftDir.x			= vEyeDir.x * fCos - vEyeDir.y * fSin;
 		vLeftDir.y			= vEyeDir.x * fSin + vEyeDir.y * fCos;
 		vLeftDir.z			=  vEyeDir.z;
-		fSin				= sin(-flViewRange);
-		fCos				= cos(-flViewRange);
+		fSin				= sin( -flViewRange );
+		fCos				= cos( -flViewRange );
 		vRightDir.x			= vEyeDir.x * fCos - vEyeDir.y * fSin;
 		vRightDir.y			= vEyeDir.x * fSin + vEyeDir.y * fCos;
 		vRightDir.z			=  vEyeDir.z;
 
-		NDebugOverlay::BoxDirection(EyePosition(), Vector(0,0,-40), Vector(200,0,40), vLeftDir, 255, 255, 0, 50, 0 );
-		NDebugOverlay::BoxDirection(EyePosition(), Vector(0,0,-40), Vector(200,0,40), vRightDir, 255, 255, 0, 50, 0 );
-		NDebugOverlay::Box(EyePosition(), -Vector(2,2,2), Vector(2,2,2), 255, 255, 0, 128, 0 );
+		NDebugOverlay::BoxDirection( EyePosition(), Vector( 0, 0, -40 ), Vector( 200, 0, 40 ), vLeftDir, 255, 255, 0, 50, 0 );
+		NDebugOverlay::BoxDirection( EyePosition(), Vector( 0, 0, -40 ), Vector( 200, 0, 40 ), vRightDir, 255, 255, 0, 50, 0 );
+		NDebugOverlay::Box( EyePosition(), -Vector( 2, 2, 2 ), Vector( 2, 2, 2 ), 255, 255, 0, 128, 0 );
 	}
 
 	BaseClass::DrawDebugGeometryOverlays();

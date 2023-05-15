@@ -11,7 +11,7 @@
 #define IAVI_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "appframework/IAppSystem.h"
@@ -66,7 +66,7 @@ struct AVIParams_t
 typedef unsigned short AVIHandle_t;
 enum
 {
-	AVIHANDLE_INVALID = (AVIHandle_t)~0
+	AVIHANDLE_INVALID = ( AVIHandle_t )~0
 };
 
 
@@ -76,7 +76,7 @@ enum
 typedef unsigned short AVIMaterial_t;
 enum
 {
-	AVIMATERIAL_INVALID = (AVIMaterial_t)~0
+	AVIMATERIAL_INVALID = ( AVIMaterial_t )~0
 };
 
 
@@ -88,7 +88,7 @@ enum
 class IAvi : public IAppSystem
 {
 public:
-	// Necessary to call this before any other AVI interface methods 
+	// Necessary to call this before any other AVI interface methods
 	virtual void	SetMainWindow( void* hWnd ) = 0;
 
 	// Start/stop recording an AVI
@@ -96,13 +96,13 @@ public:
 	virtual void	FinishAVI( AVIHandle_t handle ) = 0;
 
 	// Add frames to an AVI
-	virtual void	AppendMovieSound( AVIHandle_t h, short *buf, size_t bufsize ) = 0;
-	virtual void	AppendMovieFrame( AVIHandle_t h, const BGR888_t *pRGBData ) = 0;
+	virtual void	AppendMovieSound( AVIHandle_t h, short* buf, size_t bufsize ) = 0;
+	virtual void	AppendMovieFrame( AVIHandle_t h, const BGR888_t* pRGBData ) = 0;
 
 	// Create/destroy an AVI material (a materialsystem IMaterial)
-	virtual AVIMaterial_t CreateAVIMaterial( const char *pMaterialName, const char *pFileName, const char *pPathID ) = 0;
+	virtual AVIMaterial_t CreateAVIMaterial( const char* pMaterialName, const char* pFileName, const char* pPathID ) = 0;
 	virtual void DestroyAVIMaterial( AVIMaterial_t hMaterial ) = 0;
-	
+
 	// Sets the time for an AVI material
 	virtual void SetTime( AVIMaterial_t hMaterial, float flTime ) = 0;
 
@@ -110,10 +110,10 @@ public:
 	virtual IMaterial* GetMaterial( AVIMaterial_t hMaterial ) = 0;
 
 	// Returns the max texture coordinate of the AVI
-	virtual void GetTexCoordRange( AVIMaterial_t hMaterial, float *pMaxU, float *pMaxV ) = 0;
+	virtual void GetTexCoordRange( AVIMaterial_t hMaterial, float* pMaxU, float* pMaxV ) = 0;
 
 	// Returns the frame size of the AVI (stored in a subrect of the material itself)
-	virtual void GetFrameSize( AVIMaterial_t hMaterial, int *pWidth, int *pHeight ) = 0;
+	virtual void GetFrameSize( AVIMaterial_t hMaterial, int* pWidth, int* pHeight ) = 0;
 
 	// Returns the frame rate of the AVI
 	virtual int GetFrameRate( AVIMaterial_t hMaterial ) = 0;
@@ -125,7 +125,7 @@ public:
 	virtual void SetFrame( AVIMaterial_t hMaterial, float flFrame ) = 0;
 
 	// Plays a given AVI/WMV file until it completes or the user presses ESC, SPACE, or ENTER
-	virtual void PlayWindowsMediaVideo( const char *filename, void *mainWindow, int width, int height, float forcedMinTime ) = 0;
+	virtual void PlayWindowsMediaVideo( const char* filename, void* mainWindow, int width, int height, float forcedMinTime ) = 0;
 
 };
 

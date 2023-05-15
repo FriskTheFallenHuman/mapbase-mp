@@ -6,7 +6,7 @@
 #include "in_sixense_gesture_bindings.h"
 #include "filesystem.h"
 #ifdef TF_CLIENT_DLL
-#include "tf_gamerules.h"
+	#include "tf_gamerules.h"
 #endif
 
 #include <isixense.h>
@@ -14,7 +14,7 @@
 #include <sixense_utils/interfaces.hpp>
 
 
-SixenseGestureBindings::SixenseGestureBindings() 
+SixenseGestureBindings::SixenseGestureBindings()
 {
 
 }
@@ -43,13 +43,13 @@ void SixenseGestureBindings::FreeStrings( GestureBinding binding )
 //   press_command_str is the concommand executed on start of the action (ie button press) and release_command_str on stop (ie button release)
 //   release_command_str can be the empty string if no stop action is desired
 //   if the press_command_str begins with "+", an equivalent "-" is set to the release_command automatically
-void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_str, CUtlString argument_str, CUtlString press_command_str, CUtlString release_command_str ) 
+void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_str, CUtlString argument_str, CUtlString press_command_str, CUtlString release_command_str )
 {
 	GestureBinding binding;
 
 	// Convert from strings to enums
 	sixenseUtils::IButtonStates::ActionType action;
-	if( !ActionFromString( action_str, &action ) ) 
+	if( !ActionFromString( action_str, &action ) )
 	{
 		return;
 	}
@@ -57,7 +57,8 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 	binding.m_Action = action;
 
 	int hand;
-	if( !HandFromString( hand_str, &hand ) ) {
+	if( !HandFromString( hand_str, &hand ) )
+	{
 		return;
 	}
 
@@ -65,7 +66,7 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 
 
 	// handle argument_str per-action type
-	if( action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS ) 
+	if( action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS )
 	{
 
 		// button_press takes a button argument
@@ -76,8 +77,8 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 		}
 
 		binding.m_iArgument = button_token;
-	} 
-	else if( action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS ) 
+	}
+	else if( action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS )
 	{
 		// trigger press has no argument
 		binding.m_iArgument = 0;
@@ -102,7 +103,7 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 	binding.m_bAutoMirrored = false;
 
 	// if there is an explicit release_command, use it
-	if ( !release_command_str.IsEmpty() )
+	if( !release_command_str.IsEmpty() )
 	{
 		binding.m_pDeactivateCommand = strdup( release_command_str.String() );
 	}
@@ -111,7 +112,7 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 		// otherwise try to generate a release command
 
 		// see if it starts with a +, if so, add an off command
-		if( press_command_str[0] == '+' ) 
+		if( press_command_str[0] == '+' )
 		{
 			binding.m_pDeactivateCommand = strdup( press_command_str.String() );
 			binding.m_pDeactivateCommand[0] = '-';
@@ -131,8 +132,8 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 		GestureBinding existing_binding = m_GestureBindingList[it];
 
 		if( binding.m_Action == existing_binding.m_Action &&
-			binding.m_iArgument == existing_binding.m_iArgument &&
-			binding.m_iHand == existing_binding.m_iHand ) 
+				binding.m_iArgument == existing_binding.m_iArgument &&
+				binding.m_iHand == existing_binding.m_iHand )
 		{
 			// Already the same binding active, delete it
 			FreeStrings( existing_binding );
@@ -147,7 +148,7 @@ void SixenseGestureBindings::AddBinding( CUtlString hand_str, CUtlString action_
 }
 
 // just return the binding count
-int SixenseGestureBindings::GetNumBindings() 
+int SixenseGestureBindings::GetNumBindings()
 {
 	return m_GestureBindingList.Count();
 }
@@ -156,59 +157,60 @@ int SixenseGestureBindings::GetNumBindings()
 void SixenseGestureBindings::ListBindings()
 {
 
-	const int strbuflen=256;
+	const int strbuflen = 256;
 	char strbuf[strbuflen];
 
 	// Just go through all the bindings, use helpers to convert from tokens to strings, and print.
-	int i=0;
+	int i = 0;
 	FOR_EACH_LL( m_GestureBindingList, it )
 	{
 		GestureBinding binding = m_GestureBindingList[it];
 
 		if( HandTokenToStr( binding.m_iHand, strbuf, strbuflen ) )
 		{
-			Msg("%d)\t%s", i, strbuf);
+			Msg( "%d)\t%s", i, strbuf );
 		}
 
-		if( ActionTokenToStr( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, strbuf, strbuflen ) )
+		if( ActionTokenToStr( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, strbuf, strbuflen ) )
 		{
-			Msg("\t%s", strbuf);
+			Msg( "\t%s", strbuf );
 		}
 
-		if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS ) 
+		if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS )
 		{
 
 			if( ButtonTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
-				Msg("\t%s", strbuf);
+				Msg( "\t%s", strbuf );
 			}
 
 		}
 
 		// these all have the same arguments (left, right, up...)
 		else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_JOYSTICK_MOVE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE )
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE ||
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE ||
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE )
 		{
 
 			if( DirectionTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
-				Msg("\t%s", strbuf);
+				Msg( "\t%s", strbuf );
 			}
 
-		} else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS ) 
+		}
+		else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS )
 		{
-			Msg("\t"); // no argument
+			Msg( "\t" ); // no argument
 		}
 
-		Msg("\t\"%s\"", binding.m_pActivateCommand);
+		Msg( "\t\"%s\"", binding.m_pActivateCommand );
 		if( binding.m_pDeactivateCommand && !binding.m_bAutoMirrored ) // only print deactivated command if we didn't generate it.
 		{
-			Msg("\t\"%s\"", binding.m_pDeactivateCommand);
-		} 
+			Msg( "\t\"%s\"", binding.m_pDeactivateCommand );
+		}
 
-		Msg("\n");
+		Msg( "\n" );
 		i++;
 	}
 }
@@ -232,15 +234,15 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 		Q_snprintf( filename, filenamelen, "%s\\cfg\\sixense_bindings.cfg", engine->GetGameDirectory() );
 	}
 
-	Msg("writing bindings to %s\n", filename );
-	hFile = filesystem->Open( filename, "wt" );	
+	Msg( "writing bindings to %s\n", filename );
+	hFile = filesystem->Open( filename, "wt" );
 
 	if( !hFile )
 	{
 		return;
 	}
-	
-	const int strbuflen=256;
+
+	const int strbuflen = 256;
 	char strbuf[strbuflen];
 	char writebuf[strbuflen];
 
@@ -251,55 +253,57 @@ void SixenseGestureBindings::WriteBindings( CUtlString filename_str )
 
 		if( HandTokenToStr( binding.m_iHand, strbuf, strbuflen ) )
 		{
-			Q_snprintf( writebuf, strbuflen, "sixense_bind \"%s\"", strbuf);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			Q_snprintf( writebuf, strbuflen, "sixense_bind \"%s\"", strbuf );
+			filesystem->Write( writebuf, strlen( writebuf ), hFile );
 		}
 
-		if( ActionTokenToStr( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, strbuf, strbuflen ) )
+		if( ActionTokenToStr( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, strbuf, strbuflen ) )
 		{
-			Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf );
+			filesystem->Write( writebuf, strlen( writebuf ), hFile );
 		}
 
-		if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS ) {
+		if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS )
+		{
 
 			if( ButtonTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
-				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-				filesystem->Write( writebuf, strlen(writebuf), hFile );
+				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf );
+				filesystem->Write( writebuf, strlen( writebuf ), hFile );
 			}
 
 		}
 
 		// these all have the same arguments (left, right, up...)
 		else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_JOYSTICK_MOVE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE ||
-			binding.m_Action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE )
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE ||
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE ||
+				 binding.m_Action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE )
 		{
 
 			if( DirectionTokenToStr( binding.m_iArgument, strbuf, strbuflen ) )
 			{
-				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf);
-				filesystem->Write( writebuf, strlen(writebuf), hFile );
+				Q_snprintf( writebuf, strbuflen, " \"%s\"", strbuf );
+				filesystem->Write( writebuf, strlen( writebuf ), hFile );
 			}
 
-		} else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS ) 
+		}
+		else if( binding.m_Action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS )
 		{
-			Q_snprintf( writebuf, strbuflen, " \"\""); // no argument
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
+			Q_snprintf( writebuf, strbuflen, " \"\"" ); // no argument
+			filesystem->Write( writebuf, strlen( writebuf ), hFile );
 		}
 
-		Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pActivateCommand);
-		filesystem->Write( writebuf, strlen(writebuf), hFile );
+		Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pActivateCommand );
+		filesystem->Write( writebuf, strlen( writebuf ), hFile );
 		if( binding.m_pDeactivateCommand && !binding.m_bAutoMirrored ) // only print deactivated command if we didn't generate it.
 		{
-			Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pDeactivateCommand);
-			filesystem->Write( writebuf, strlen(writebuf), hFile );
-		} 
+			Q_snprintf( writebuf, strbuflen, " \"%s\"", binding.m_pDeactivateCommand );
+			filesystem->Write( writebuf, strlen( writebuf ), hFile );
+		}
 
-		Q_snprintf( writebuf, strbuflen, "\n");
-		filesystem->Write( writebuf, strlen(writebuf), hFile );
+		Q_snprintf( writebuf, strbuflen, "\n" );
+		filesystem->Write( writebuf, strlen( writebuf ), hFile );
 	}
 
 	filesystem->Close( hFile );
@@ -319,16 +323,19 @@ void SixenseGestureBindings::ClearBindings()
 // Delete a specific binding by index. 'sixense_list_bindings' prints the indicies that can be passed to delete.
 void SixenseGestureBindings::DeleteBinding( int num )
 {
-	if( num < 0 || num > m_GestureBindingList.Count()-1 ) return;
+	if( num < 0 || num > m_GestureBindingList.Count() - 1 )
+	{
+		return;
+	}
 
-	int count=0;
+	int count = 0;
 	FOR_EACH_LL( m_GestureBindingList, it )
 	{
-		if( count == num ) 
+		if( count == num )
 		{
 			FreeStrings( m_GestureBindingList[it] );
-			m_GestureBindingList.Remove(it);
-			Msg("Removed %d\n", count );
+			m_GestureBindingList.Remove( it );
+			Msg( "Removed %d\n", count );
 			break;
 		}
 		count++;
@@ -486,7 +493,7 @@ void SixenseGestureBindings::CreateDefaultBindings()
 // Called each frame with the latest controller info. sixenseUtils::IButtonStates are sixenseUtils classes that look for various transitions of
 // controller state, whether it's 'buttonJustPressed', or analog joysticks 'joystickJustPushed(up)'. It now has support for motion triggers like
 // 'controllerJustTilted(left)'
-void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftButtonStates, sixenseUtils::IButtonStates *pRightButtonStates, bool bIsMenuVisible )
+void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates* pLeftButtonStates, sixenseUtils::IButtonStates* pRightButtonStates, bool bIsMenuVisible )
 {
 	// go through all the bindings and see if any of the desired actions just transitioned on or off
 	FOR_EACH_LL( m_GestureBindingList, it )
@@ -499,13 +506,13 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			// left hand
 
 			// just started?
-			if( pLeftButtonStates->justStarted( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, binding.m_iArgument ) )
+			if( pLeftButtonStates->justStarted( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, binding.m_iArgument ) )
 			{
 				if( binding.m_pActivateCommand )
 				{
 
 					// Allow per-game authorization of commmands when the menu is up
-					if( bIsMenuVisible && !AllowMenuCommand( binding.m_pActivateCommand )  ) 
+					if( bIsMenuVisible && !AllowMenuCommand( binding.m_pActivateCommand ) )
 					{
 						continue;
 					}
@@ -522,7 +529,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			}
 
 			// just stopped?
-			if( pLeftButtonStates->justStopped( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, binding.m_iArgument ) )
+			if( pLeftButtonStates->justStopped( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, binding.m_iArgument ) )
 			{
 				if( binding.m_pDeactivateCommand )
 				{
@@ -536,13 +543,13 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			// right hand
 
 			// just started?
-			if( pRightButtonStates->justStarted( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, binding.m_iArgument ) )
+			if( pRightButtonStates->justStarted( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, binding.m_iArgument ) )
 			{
 				if( binding.m_pActivateCommand )
 				{
 
 					// Allow per-game authorization of commmands when the menu is up
-					if( bIsMenuVisible && !AllowMenuCommand( binding.m_pActivateCommand )  ) 
+					if( bIsMenuVisible && !AllowMenuCommand( binding.m_pActivateCommand ) )
 					{
 						continue;
 					}
@@ -559,7 +566,7 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 			}
 
 			// just stopped?
-			if( pRightButtonStates->justStopped( (sixenseUtils::IButtonStates::ActionType)binding.m_Action, binding.m_iArgument ) )
+			if( pRightButtonStates->justStopped( ( sixenseUtils::IButtonStates::ActionType )binding.m_Action, binding.m_iArgument ) )
 			{
 				if( binding.m_pDeactivateCommand )
 				{
@@ -573,10 +580,10 @@ void SixenseGestureBindings::UpdateBindings( sixenseUtils::IButtonStates *pLeftB
 
 
 // Give games an opportunity to block commands
-bool SixenseGestureBindings::AllowCommand( char *pActivateCommand )
+bool SixenseGestureBindings::AllowCommand( char* pActivateCommand )
 {
 #ifdef TF_CLIENT_DLL
-	if ( TFGameRules() && TFGameRules()->IsInTraining() && TFGameRules()->IsWaitingForTrainingContinue() )
+	if( TFGameRules() && TFGameRules()->IsInTraining() && TFGameRules()->IsWaitingForTrainingContinue() )
 	{
 		if( Q_strcmp( pActivateCommand, "+jump" ) == 0 )
 		{
@@ -589,7 +596,7 @@ bool SixenseGestureBindings::AllowCommand( char *pActivateCommand )
 }
 
 // If the menu is up, most bindings are blocked. Allow some of them to be activated...
-bool SixenseGestureBindings::AllowMenuCommand( char *pActivateCommand )
+bool SixenseGestureBindings::AllowMenuCommand( char* pActivateCommand )
 {
 
 #ifdef TF_CLIENT_DLL
@@ -606,30 +613,30 @@ bool SixenseGestureBindings::AllowMenuCommand( char *pActivateCommand )
 
 // from here down are just helper funcs to convert between enums and strings and back
 
-bool SixenseGestureBindings::DirectionFromString( CUtlString dir_str, sixenseUtils::IButtonStates::Direction *dir ) 
+bool SixenseGestureBindings::DirectionFromString( CUtlString dir_str, sixenseUtils::IButtonStates::Direction* dir )
 {
 
-	if( dir_str == "up" ) 
+	if( dir_str == "up" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_UP;
 	}
-	else if( dir_str == "down" ) 
+	else if( dir_str == "down" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_DOWN;
 	}
-	else if( dir_str == "left" ) 
+	else if( dir_str == "left" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_LEFT;
 	}
-	else if( dir_str == "right" ) 
+	else if( dir_str == "right" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_RIGHT;
 	}
-	else if( dir_str == "cw" ) 
+	else if( dir_str == "cw" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_CW;
 	}
-	else if( dir_str == "ccw" ) 
+	else if( dir_str == "ccw" )
 	{
 		*dir = sixenseUtils::IButtonStates::DIR_CCW;
 	}
@@ -643,34 +650,34 @@ bool SixenseGestureBindings::DirectionFromString( CUtlString dir_str, sixenseUti
 }
 
 
-bool SixenseGestureBindings::ButtonMaskFromString( CUtlString button, unsigned short *button_token ) 
+bool SixenseGestureBindings::ButtonMaskFromString( CUtlString button, unsigned short* button_token )
 {
 
-	if ( button == "1" )
+	if( button == "1" )
 	{
 		*button_token = SIXENSE_BUTTON_1;
 	}
-	else if ( button == "2" )
+	else if( button == "2" )
 	{
 		*button_token = SIXENSE_BUTTON_2;
 	}
-	else if ( button == "3" )
+	else if( button == "3" )
 	{
 		*button_token = SIXENSE_BUTTON_3;
 	}
-	else if ( button == "4" )
+	else if( button == "4" )
 	{
 		*button_token = SIXENSE_BUTTON_4;
 	}
-	else if ( button == "start" )
+	else if( button == "start" )
 	{
 		*button_token = SIXENSE_BUTTON_START;
 	}
-	else if ( button == "bumper" )
+	else if( button == "bumper" )
 	{
 		*button_token = SIXENSE_BUTTON_BUMPER;
 	}
-	else if ( button == "joystick" )
+	else if( button == "joystick" )
 	{
 		*button_token = SIXENSE_BUTTON_JOYSTICK;
 	}
@@ -683,45 +690,45 @@ bool SixenseGestureBindings::ButtonMaskFromString( CUtlString button, unsigned s
 	return true;
 }
 
-bool SixenseGestureBindings::ActionFromString( CUtlString action_str, sixenseUtils::IButtonStates::ActionType *action ) 
+bool SixenseGestureBindings::ActionFromString( CUtlString action_str, sixenseUtils::IButtonStates::ActionType* action )
 {
-	if( action_str == "button_press" ) 
+	if( action_str == "button_press" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS;
 		return true;
 
-	} 
-	else if( action_str == "trigger_press" ) 
+	}
+	else if( action_str == "trigger_press" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS;
 		return true;
 
-	} 
-	else if( action_str == "tilt_gesture" ) 
+	}
+	else if( action_str == "tilt_gesture" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_TILT_GESTURE;
 		return true;
 
-	} 
-	else if( action_str == "point_gesture" ) 
+	}
+	else if( action_str == "point_gesture" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_POINT_GESTURE;
 		return true;
 
-	} 
-	else if( action_str == "velocity_gesture" ) 
+	}
+	else if( action_str == "velocity_gesture" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE;
 		return true;
 
-	} 
-	else if( action_str == "joystick_move" ) 
+	}
+	else if( action_str == "joystick_move" )
 	{
 		*action = sixenseUtils::IButtonStates::ACTION_JOYSTICK_MOVE;
 		return true;
 
-	} 
-	else 
+	}
+	else
 	{
 		Msg( "Unknown action %s, shoud be 'button_press' 'trigger_press' 'tilt_gesture' 'point_gesture' 'velocity_gesture' or 'joystick_move'\n", action_str.String() );
 		*action = sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS;
@@ -729,20 +736,20 @@ bool SixenseGestureBindings::ActionFromString( CUtlString action_str, sixenseUti
 	}
 }
 
-bool SixenseGestureBindings::HandFromString( CUtlString hand_str, int *hand ) 
+bool SixenseGestureBindings::HandFromString( CUtlString hand_str, int* hand )
 {
 
-	if( hand_str == "left" ) 
+	if( hand_str == "left" )
 	{
 		*hand = 0;
 
-	} 
-	else if( hand_str == "right" ) 
+	}
+	else if( hand_str == "right" )
 	{
 		*hand = 1;
 
-	} 
-	else 
+	}
+	else
 	{
 		Msg( "Unknown controller %s, should be 'left' or 'right'\n", hand_str.String() );
 		return false;
@@ -752,11 +759,15 @@ bool SixenseGestureBindings::HandFromString( CUtlString hand_str, int *hand )
 }
 
 
-bool SixenseGestureBindings::HandTokenToStr( int hand, char *buf, int buflen ) 
+bool SixenseGestureBindings::HandTokenToStr( int hand, char* buf, int buflen )
 {
-	if( buflen < 10 ) return false;
+	if( buflen < 10 )
+	{
+		return false;
+	}
 
-	if( hand == 0 ) {
+	if( hand == 0 )
+	{
 		Q_snprintf( buf, buflen, "left" );
 	}
 	else if( hand == 1 )
@@ -771,34 +782,37 @@ bool SixenseGestureBindings::HandTokenToStr( int hand, char *buf, int buflen )
 	return true;
 }
 
-bool SixenseGestureBindings::ButtonTokenToStr( int arg, char *buf, int buflen ) 
+bool SixenseGestureBindings::ButtonTokenToStr( int arg, char* buf, int buflen )
 {
-	if( buflen < 10 ) return false;
+	if( buflen < 10 )
+	{
+		return false;
+	}
 
 	if( arg == SIXENSE_BUTTON_1 )
 	{
 		Q_snprintf( buf, buflen, "1" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_2 )
 	{
 		Q_snprintf( buf, buflen, "2" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_3 )
 	{
 		Q_snprintf( buf, buflen, "3" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_4 )
 	{
 		Q_snprintf( buf, buflen, "4" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_START )
 	{
 		Q_snprintf( buf, buflen, "start" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_BUMPER )
 	{
 		Q_snprintf( buf, buflen, "bumper" );
-	} 
+	}
 	else if( arg == SIXENSE_BUTTON_JOYSTICK )
 	{
 		Q_snprintf( buf, buflen, "joystick" );
@@ -811,34 +825,37 @@ bool SixenseGestureBindings::ButtonTokenToStr( int arg, char *buf, int buflen )
 	return true;
 }
 
-bool SixenseGestureBindings::DirectionTokenToStr( int arg, char *buf, int buflen ) 
+bool SixenseGestureBindings::DirectionTokenToStr( int arg, char* buf, int buflen )
 {
-	if( buflen < 10 ) return false;
+	if( buflen < 10 )
+	{
+		return false;
+	}
 
 	if( arg == sixenseUtils::IButtonStates::DIR_LEFT )
 	{
 		Q_snprintf( buf, buflen, "left" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_RIGHT )
 	{
 		Q_snprintf( buf, buflen, "right" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_UP )
 	{
 		Q_snprintf( buf, buflen, "up" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_DOWN )
 	{
 		Q_snprintf( buf, buflen, "down" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_CW )
 	{
 		Q_snprintf( buf, buflen, "cw" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_CCW )
 	{
 		Q_snprintf( buf, buflen, "ccw" );
-	} 
+	}
 	else if( arg == sixenseUtils::IButtonStates::DIR_FORWARD )
 	{
 		Q_snprintf( buf, buflen, "forward" );
@@ -855,34 +872,37 @@ bool SixenseGestureBindings::DirectionTokenToStr( int arg, char *buf, int buflen
 	return true;
 }
 
-bool SixenseGestureBindings::ActionTokenToStr( sixenseUtils::IButtonStates::ActionType action, char *buf, int buflen ) 
+bool SixenseGestureBindings::ActionTokenToStr( sixenseUtils::IButtonStates::ActionType action, char* buf, int buflen )
 {
-	if( buflen < 20 ) return false;
+	if( buflen < 20 )
+	{
+		return false;
+	}
 
-	if( action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS ) 
+	if( action == sixenseUtils::IButtonStates::ACTION_BUTTON_PRESS )
 	{
 		Q_snprintf( buf, buflen, "button_press" );
 	}
-	else if( action == sixenseUtils::IButtonStates::ACTION_JOYSTICK_MOVE ) 
+	else if( action == sixenseUtils::IButtonStates::ACTION_JOYSTICK_MOVE )
 	{
 		Q_snprintf( buf, buflen, "joystick_move" );
 	}
-	else if( action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE ) 
+	else if( action == sixenseUtils::IButtonStates::ACTION_POINT_GESTURE )
 	{
 		Q_snprintf( buf, buflen, "point_gesture" );
 	}
-	else if( action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE ) 
+	else if( action == sixenseUtils::IButtonStates::ACTION_VELOCITY_GESTURE )
 	{
 		Q_snprintf( buf, buflen, "velocity_gesture" );
 	}
-	else if( action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE ) 
+	else if( action == sixenseUtils::IButtonStates::ACTION_TILT_GESTURE )
 	{
 		Q_snprintf( buf, buflen, "tilt_gesture" );
 	}
-	else if( action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS ) 
+	else if( action == sixenseUtils::IButtonStates::ACTION_TRIGGER_PRESS )
 	{
 		Q_snprintf( buf, buflen, "trigger_press" );
-	} 
+	}
 	else
 	{
 		return false;

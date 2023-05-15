@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -17,17 +17,17 @@
 #define TEMPENT_TEST_GAP		1.0f
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &vecOrigin - 
-//			&vecAngles - 
-//			*single_te - 
+// Purpose:
+// Input  : &vecOrigin -
+//			&vecAngles -
+//			*single_te -
 // Output : CBaseEntity
 //-----------------------------------------------------------------------------
-CBaseEntity *CTempEntTester::Create( const Vector &vecOrigin, const QAngle &vecAngles, const char *lifetime, const char *single_te )
+CBaseEntity* CTempEntTester::Create( const Vector& vecOrigin, const QAngle& vecAngles, const char* lifetime, const char* single_te )
 {
 	float life;
 	char classname[ 128 ];
-	if ( lifetime && lifetime[0] )
+	if( lifetime && lifetime[0] )
 	{
 		life = atoi( lifetime );
 		life = MAX( 1.0, life );
@@ -41,9 +41,9 @@ CBaseEntity *CTempEntTester::Create( const Vector &vecOrigin, const QAngle &vecA
 		return NULL;
 	}
 
-	if ( single_te && single_te[0] )
+	if( single_te && single_te[0] )
 	{
-		Q_strncpy( classname, single_te ,sizeof(classname));
+		Q_strncpy( classname, single_te , sizeof( classname ) );
 		strlwr( classname );
 	}
 	else
@@ -52,13 +52,13 @@ CBaseEntity *CTempEntTester::Create( const Vector &vecOrigin, const QAngle &vecA
 		return NULL;
 	}
 
-	CTempEntTester *p = ( CTempEntTester * )CBaseEntity::CreateNoSpawn( "te_tester", vecOrigin, vecAngles );
-	if ( !p )
+	CTempEntTester* p = ( CTempEntTester* )CBaseEntity::CreateNoSpawn( "te_tester", vecOrigin, vecAngles );
+	if( !p )
 	{
 		return NULL;
 	}
 
-	Q_strncpy( p->m_szClass, classname ,sizeof(p->m_szClass));
+	Q_strncpy( p->m_szClass, classname , sizeof( p->m_szClass ) );
 	p->m_fLifeTime = life;
 
 	p->Spawn();
@@ -77,12 +77,12 @@ void CTempEntTester::Spawn( void )
 	AddEffects( EF_NODRAW );
 
 	m_pCurrent = CBaseTempEntity::GetList();
-	while ( m_pCurrent )
+	while( m_pCurrent )
 	{
 		char name[ 128 ];
-		Q_strncpy( name, m_pCurrent->GetName() ,sizeof(name));
+		Q_strncpy( name, m_pCurrent->GetName() , sizeof( name ) );
 		strlwr( name );
-		if ( strstr( name, m_szClass ) )
+		if( strstr( name, m_szClass ) )
 		{
 			break;
 		}
@@ -90,9 +90,9 @@ void CTempEntTester::Spawn( void )
 		m_pCurrent = m_pCurrent->GetNext();
 	}
 
-	if ( !m_pCurrent )
+	if( !m_pCurrent )
 	{
-		DevMsg("Couldn't find temp entity '%s'\n", m_szClass );
+		DevMsg( "Couldn't find temp entity '%s'\n", m_szClass );
 		UTIL_Remove( this );
 		return;
 	}
@@ -107,7 +107,7 @@ void CTempEntTester::Spawn( void )
 void CTempEntTester::Think( void )
 {
 	// Should never happen
-	if ( !m_pCurrent )
+	if( !m_pCurrent )
 	{
 		UTIL_Remove( this );
 		return;
@@ -117,7 +117,7 @@ void CTempEntTester::Think( void )
 	SetNextThink( gpGlobals->curtime + TEMPENT_TEST_GAP );
 
 	// Time to destroy?
-	if ( gpGlobals->curtime >= m_fLifeTime )
+	if( gpGlobals->curtime >= m_fLifeTime )
 	{
 		UTIL_Remove( this );
 		return;

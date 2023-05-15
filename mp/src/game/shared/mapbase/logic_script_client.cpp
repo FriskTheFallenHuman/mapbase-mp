@@ -10,7 +10,7 @@
 #include "tier1/fmtstr.h"
 
 #ifdef CLIENT_DLL
-ConVar cl_script_think_interval( "cl_script_think_interval", "0.1" );
+	ConVar cl_script_think_interval( "cl_script_think_interval", "0.1" );
 #endif
 
 //-----------------------------------------------------------------------------
@@ -30,19 +30,22 @@ public:
 	void OnDataChanged( DataUpdateType_t type )
 	{
 		BaseClass::OnDataChanged( type );
-	
-		if ( !m_ScriptScope.IsInitialized() )
+
+		if( !m_ScriptScope.IsInitialized() )
 		{
 			RunVScripts();
 		}
 	}
 #else
-	int		UpdateTransmitState() { return SetTransmitState( FL_EDICT_ALWAYS ); }
+	int		UpdateTransmitState()
+	{
+		return SetTransmitState( FL_EDICT_ALWAYS );
+	}
 #endif
 
-	bool KeyValue( const char *szKeyName, const char *szValue )
+	bool KeyValue( const char* szKeyName, const char* szValue )
 	{
-		if ( FStrEq( szKeyName, "vscripts" ) )
+		if( FStrEq( szKeyName, "vscripts" ) )
 		{
 			Q_strcpy( m_iszClientScripts.GetForModify(), szValue );
 		}
@@ -53,13 +56,13 @@ public:
 	void RunVScripts()
 	{
 #ifdef CLIENT_DLL
-		if (m_iszClientScripts == NULL_STRING)
+		if( m_iszClientScripts == NULL_STRING )
 		{
 			CGMsg( 0, CON_GROUP_VSCRIPT, "%s has no client scripts", GetDebugName() );
 			return;
 		}
 
-		if (g_pScriptVM == NULL)
+		if( g_pScriptVM == NULL )
 		{
 			return;
 		}
@@ -77,19 +80,19 @@ public:
 		ScriptLanguage_t language = g_pScriptVM->GetLanguage();
 
 		// Make a call chainer for each in this entities scope
-		for (int j = 0; j < ARRAYSIZE( sCallChainFunctions ); ++j)
+		for( int j = 0; j < ARRAYSIZE( sCallChainFunctions ); ++j )
 		{
 
-			if (language == SL_PYTHON)
+			if( language == SL_PYTHON )
 			{
 				// UNDONE - handle call chaining in python
 				;
 			}
-			else if (language == SL_SQUIRREL)
+			else if( language == SL_SQUIRREL )
 			{
 				//TODO: For perf, this should be precompiled and the %s should be passed as a parameter
 				HSCRIPT hCreateChainScript = g_pScriptVM->CompileScript( CFmtStr( "%sCallChain <- CSimpleCallChainer(\"%s\", self.GetScriptScope(), true)", sCallChainFunctions[j], sCallChainFunctions[j] ) );
-				g_pScriptVM->Run( hCreateChainScript, (HSCRIPT)m_ScriptScope );
+				g_pScriptVM->Run( hCreateChainScript, ( HSCRIPT )m_ScriptScope );
 			}
 		}
 
@@ -99,29 +102,29 @@ public:
 
 		V_SplitString( szScriptsList, " ", szScripts );
 
-		for (int i = 0; i < szScripts.Count(); i++)
+		for( int i = 0; i < szScripts.Count(); i++ )
 		{
 			CGMsg( 0, CON_GROUP_VSCRIPT, "%s executing script: %s\n", GetDebugName(), szScripts[i] );
 
 			RunScriptFile( szScripts[i], IsWorld() );
 
-			for (int j = 0; j < ARRAYSIZE( sCallChainFunctions ); ++j)
+			for( int j = 0; j < ARRAYSIZE( sCallChainFunctions ); ++j )
 			{
-				if (language == SL_PYTHON)
+				if( language == SL_PYTHON )
 				{
 					// UNDONE - handle call chaining in python
 					;
 				}
-				else if (language == SL_SQUIRREL)
+				else if( language == SL_SQUIRREL )
 				{
 					//TODO: For perf, this should be precompiled and the %s should be passed as a parameter.
 					HSCRIPT hRunPostScriptExecute = g_pScriptVM->CompileScript( CFmtStr( "%sCallChain.PostScriptExecute()", sCallChainFunctions[j] ) );
-					g_pScriptVM->Run( hRunPostScriptExecute, (HSCRIPT)m_ScriptScope );
+					g_pScriptVM->Run( hRunPostScriptExecute, ( HSCRIPT )m_ScriptScope );
 				}
 			}
 		}
 
-		if (m_bClientThink)
+		if( m_bClientThink )
 		{
 			SetNextClientThink( CLIENT_THINK_ALWAYS );
 		}
@@ -129,7 +132,7 @@ public:
 		// Avoids issues from having m_iszVScripts set without actually having a script scope
 		ValidateScriptScope();
 
-		if (m_bRunOnServer)
+		if( m_bRunOnServer )
 		{
 			BaseClass::RunVScripts();
 		}
@@ -140,23 +143,27 @@ public:
 	void ClientThink()
 	{
 		ScriptVariant_t varThinkRetVal;
-		if (CallScriptFunction("ClientThink", &varThinkRetVal))
+		if( CallScriptFunction( "ClientThink", &varThinkRetVal ) )
 		{
 			float flThinkFrequency = 0.0f;
-			if (!varThinkRetVal.AssignTo(&flThinkFrequency))
+			if( !varThinkRetVal.AssignTo( &flThinkFrequency ) )
 			{
 				// use default think interval if script think function doesn't provide one
 				flThinkFrequency = cl_script_think_interval.GetFloat();
 			}
 
-			if (flThinkFrequency == CLIENT_THINK_ALWAYS)
+			if( flThinkFrequency == CLIENT_THINK_ALWAYS )
+			{
 				SetNextClientThink( CLIENT_THINK_ALWAYS );
+			}
 			else
+			{
 				SetNextClientThink( gpGlobals->curtime + flThinkFrequency );
+			}
 		}
 		else
 		{
-			DevWarning("%s FAILED to call client script think function!\n", GetDebugName());
+			DevWarning( "%s FAILED to call client script think function!\n", GetDebugName() );
 		}
 
 		BaseClass::ClientThink();
@@ -165,7 +172,7 @@ public:
 	void OnSave()
 	{
 		// HACKHACK: Save the next think in the VM since the VM is saved
-		if (m_bClientThink)
+		if( m_bClientThink )
 		{
 			g_pScriptVM->SetValue( m_ScriptScope, "__c_think", GetNextThink() );
 		}
@@ -176,10 +183,10 @@ public:
 	void OnRestore()
 	{
 		// HACKHACK: See OnSave()
-		if (m_bClientThink)
+		if( m_bClientThink )
 		{
 			ScriptVariant_t flNextThink;
-			if (g_pScriptVM->GetValue( m_ScriptScope, "__c_think", &flNextThink ))
+			if( g_pScriptVM->GetValue( m_ScriptScope, "__c_think", &flNextThink ) )
 			{
 				SetNextClientThink( flNextThink );
 			}
@@ -188,9 +195,9 @@ public:
 		BaseClass::OnRestore();
 	}
 
-	void ReceiveMessage( int classID, bf_read &msg )
+	void ReceiveMessage( int classID, bf_read& msg )
 	{
-		if ( classID != GetClientClass()->m_ClassID )
+		if( classID != GetClientClass()->m_ClassID )
 		{
 			BaseClass::ReceiveMessage( classID, msg );
 			return;
@@ -199,7 +206,7 @@ public:
 		char szFunction[64];
 		msg.ReadString( szFunction, sizeof( szFunction ) );
 
-		if ( m_ScriptScope.IsInitialized() )
+		if( m_ScriptScope.IsInitialized() )
 		{
 			CallScriptFunction( szFunction, NULL );
 		}
@@ -211,17 +218,17 @@ public:
 #endif
 
 #ifdef GAME_DLL
-	void InputCallScriptFunctionClient( inputdata_t &inputdata )
+	void InputCallScriptFunctionClient( inputdata_t& inputdata )
 	{
-		const char *pszFunction = inputdata.value.String();
-		if ( V_strlen( pszFunction ) >= 64 )
+		const char* pszFunction = inputdata.value.String();
+		if( V_strlen( pszFunction ) >= 64 )
 		{
-			Msg( "%s CallScriptFunctionClient: \"%s\" is too long at %i characters, must be 64 or less\n", GetDebugName(), pszFunction, V_strlen(pszFunction)+1 );
+			Msg( "%s CallScriptFunctionClient: \"%s\" is too long at %i characters, must be 64 or less\n", GetDebugName(), pszFunction, V_strlen( pszFunction ) + 1 );
 			return;
 		}
 
 		EntityMessageBegin( this, true );
-			WRITE_STRING( pszFunction );
+		WRITE_STRING( pszFunction );
 		MessageEnd();
 	}
 #endif
@@ -239,19 +246,19 @@ LINK_ENTITY_TO_CLASS( logic_script_client, CLogicScriptClient );
 
 BEGIN_DATADESC( CLogicScriptClient )
 
-	// TODO: Does this need to be saved?
-	//DEFINE_AUTO_ARRAY( m_iszClientScripts, FIELD_CHARACTER ),
+// TODO: Does this need to be saved?
+//DEFINE_AUTO_ARRAY( m_iszClientScripts, FIELD_CHARACTER ),
 
-	//DEFINE_KEYFIELD( m_iszGroupMembers[0], FIELD_STRING, "Group00"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[1], FIELD_STRING, "Group01"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[2], FIELD_STRING, "Group02"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[3], FIELD_STRING, "Group03"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[4], FIELD_STRING, "Group04"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[5], FIELD_STRING, "Group05"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[6], FIELD_STRING, "Group06"),
-	//DEFINE_KEYFIELD( m_iszGroupMembers[7], FIELD_STRING, "Group07"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[0], FIELD_STRING, "Group00"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[1], FIELD_STRING, "Group01"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[2], FIELD_STRING, "Group02"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[3], FIELD_STRING, "Group03"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[4], FIELD_STRING, "Group04"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[5], FIELD_STRING, "Group05"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[6], FIELD_STRING, "Group06"),
+//DEFINE_KEYFIELD( m_iszGroupMembers[7], FIELD_STRING, "Group07"),
 
-	DEFINE_KEYFIELD( m_bClientThink, FIELD_BOOLEAN, "ClientThink" ),
+DEFINE_KEYFIELD( m_bClientThink, FIELD_BOOLEAN, "ClientThink" ),
 
 #ifndef CLIENT_DLL
 	DEFINE_KEYFIELD( m_bRunOnServer, FIELD_BOOLEAN, "RunOnServer" ),
@@ -259,9 +266,9 @@ BEGIN_DATADESC( CLogicScriptClient )
 	DEFINE_INPUTFUNC( FIELD_STRING, "CallScriptFunctionClient", InputCallScriptFunctionClient ),
 #endif
 
-END_DATADESC()
+				 END_DATADESC()
 
-IMPLEMENT_NETWORKCLASS_DT( CLogicScriptClient, DT_LogicScriptClient )
+				 IMPLEMENT_NETWORKCLASS_DT( CLogicScriptClient, DT_LogicScriptClient )
 
 #ifdef CLIENT_DLL
 	//RecvPropArray( RecvPropString( RECVINFO( m_iszGroupMembers[0] ) ), m_iszGroupMembers ),
@@ -273,4 +280,4 @@ IMPLEMENT_NETWORKCLASS_DT( CLogicScriptClient, DT_LogicScriptClient )
 	SendPropBool( SENDINFO( m_bClientThink ) ),
 #endif
 
-END_NETWORK_TABLE()
+				 END_NETWORK_TABLE()

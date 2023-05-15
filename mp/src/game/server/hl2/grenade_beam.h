@@ -29,7 +29,7 @@ public:
 	DECLARE_CLASS( CGrenadeBeamChaser, CBaseAnimating );
 	DECLARE_DATADESC();
 
-	static CGrenadeBeamChaser* ChaserCreate( CGrenadeBeam *pTarget );
+	static CGrenadeBeamChaser* ChaserCreate( CGrenadeBeam* pTarget );
 
 	void			Spawn( void );
 	void 			ChaserThink();
@@ -43,21 +43,21 @@ public:
 	DECLARE_CLASS( CGrenadeBeam, CBaseGrenade );
 	DECLARE_DATADESC();
 
-	static CGrenadeBeam* Create( CBaseEntity* pOwner, const Vector &vStart);
+	static CGrenadeBeam* Create( CBaseEntity* pOwner, const Vector& vStart );
 
 public:
 	void		Spawn( void );
 	void		Precache( void );
-	void		Format( color32 clrColor, float flWidth);
-	void 		GrenadeBeamTouch( CBaseEntity *pOther );
+	void		Format( color32 clrColor, float flWidth );
+	void 		GrenadeBeamTouch( CBaseEntity* pOther );
 	void 		KillBeam();
-	void		CreateBeams(void);
-	void		UpdateBeams(void);
+	void		CreateBeams( void );
+	void		UpdateBeams( void );
 	//void		DebugBeams(void);
-	void		GetChaserTargetPos(Vector *vPosition);
-	void		GetNextTargetPos(Vector *vPosition);
-	int			UpdateTransmitState(void);
-	void		Shoot(Vector vDirection, float flSpeed, float flLifetime, float flLag, float flDamage );
+	void		GetChaserTargetPos( Vector* vPosition );
+	void		GetNextTargetPos( Vector* vPosition );
+	int			UpdateTransmitState( void );
+	void		Shoot( Vector vDirection, float flSpeed, float flLifetime, float flLag, float flDamage );
 
 	Vector		m_vLaunchPos;
 	float		m_flBeamWidth;

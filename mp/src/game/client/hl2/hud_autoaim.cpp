@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -21,18 +21,18 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-ConVar hud_draw_active_reticle("hud_draw_active_reticle", "0" );
-ConVar hud_draw_fixed_reticle("hud_draw_fixed_reticle", "0", FCVAR_ARCHIVE );
+ConVar hud_draw_active_reticle( "hud_draw_active_reticle", "0" );
+ConVar hud_draw_fixed_reticle( "hud_draw_fixed_reticle", "0", FCVAR_ARCHIVE );
 ConVar hud_autoaim_scale_icon( "hud_autoaim_scale_icon", "0" );
 ConVar hud_autoaim_method( "hud_autoaim_method", "1" );
 
-ConVar hud_reticle_scale("hud_reticle_scale", "1.0" );
+ConVar hud_reticle_scale( "hud_reticle_scale", "1.0" );
 ConVar hud_reticle_minalpha( "hud_reticle_minalpha", "125" );
 ConVar hud_reticle_maxalpha( "hud_reticle_maxalpha", "255" );
-ConVar hud_alpha_speed("hud_reticle_alpha_speed", "700" );
-ConVar hud_magnetism("hud_magnetism", "0.3" );
+ConVar hud_alpha_speed( "hud_reticle_alpha_speed", "700" );
+ConVar hud_magnetism( "hud_magnetism", "0.3" );
 
-enum 
+enum
 {
 	AUTOAIM_METHOD_RETICLE = 1,
 	AUTOAIM_METHOD_DRIFT,
@@ -44,10 +44,10 @@ class CHUDAutoAim : public CHudElement, public vgui::Panel
 {
 	DECLARE_CLASS_SIMPLE( CHUDAutoAim, vgui::Panel );
 public:
-	CHUDAutoAim( const char *pElementName );
+	CHUDAutoAim( const char* pElementName );
 	virtual ~CHUDAutoAim( void );
 
-	void ApplySchemeSettings( IScheme *scheme );
+	void ApplySchemeSettings( IScheme* scheme );
 	void Init( void );
 	void VidInit( void );
 	bool ShouldDraw( void );
@@ -55,9 +55,15 @@ public:
 	virtual void Paint();
 
 private:
-	void ResetAlpha() { m_alpha = 0; }
-	void ResetScale() { m_scale = 1.0f; }
-	
+	void ResetAlpha()
+	{
+		m_alpha = 0;
+	}
+	void ResetScale()
+	{
+		m_scale = 1.0f;
+	}
+
 	void ResetPosition()
 	{
 		m_vecPos.x = ScreenWidth() / 2;
@@ -77,10 +83,10 @@ private:
 
 DECLARE_HUDELEMENT( CHUDAutoAim );
 
-CHUDAutoAim::CHUDAutoAim( const char *pElementName ) :
+CHUDAutoAim::CHUDAutoAim( const char* pElementName ) :
 	CHudElement( pElementName ), BaseClass( NULL, "HUDAutoAim" )
 {
-	vgui::Panel *pParent = g_pClientMode->GetViewport();
+	vgui::Panel* pParent = g_pClientMode->GetViewport();
 	SetParent( pParent );
 	SetHiddenBits( HIDEHUD_CROSSHAIR );
 
@@ -90,15 +96,15 @@ CHUDAutoAim::CHUDAutoAim( const char *pElementName ) :
 
 CHUDAutoAim::~CHUDAutoAim( void )
 {
-	if ( vgui::surface() )
+	if( vgui::surface() )
 	{
-		if ( m_textureID_ActiveReticle != -1 )
+		if( m_textureID_ActiveReticle != -1 )
 		{
 			vgui::surface()->DestroyTextureID( m_textureID_ActiveReticle );
 			m_textureID_ActiveReticle = -1;
 		}
 
-		if ( m_textureID_FixedReticle != -1 )
+		if( m_textureID_FixedReticle != -1 )
 		{
 			vgui::surface()->DestroyTextureID( m_textureID_FixedReticle );
 			m_textureID_FixedReticle = -1;
@@ -107,7 +113,7 @@ CHUDAutoAim::~CHUDAutoAim( void )
 }
 
 
-void CHUDAutoAim::ApplySchemeSettings( IScheme *scheme )
+void CHUDAutoAim::ApplySchemeSettings( IScheme* scheme )
 {
 	BaseClass::ApplySchemeSettings( scheme );
 
@@ -126,13 +132,13 @@ void CHUDAutoAim::VidInit( void )
 	SetAlpha( 255 );
 	Init();
 
-	if ( m_textureID_ActiveReticle == -1 )
+	if( m_textureID_ActiveReticle == -1 )
 	{
 		m_textureID_ActiveReticle = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( m_textureID_ActiveReticle, "vgui/hud/autoaim", true, false );
 	}
 
-	if ( m_textureID_FixedReticle == -1 )
+	if( m_textureID_FixedReticle == -1 )
 	{
 		m_textureID_FixedReticle = vgui::surface()->CreateNewTextureID();
 		vgui::surface()->DrawSetTextureFile( m_textureID_FixedReticle, "vgui/hud/xbox_reticle", true, false );
@@ -141,14 +147,14 @@ void CHUDAutoAim::VidInit( void )
 
 //-----------------------------------------------------------------------------
 // Purpose: Save CPU cycles by letting the HUD system early cull
-// costly traversal.  Called per frame, return true if thinking and 
+// costly traversal.  Called per frame, return true if thinking and
 // painting need to occur.
 //-----------------------------------------------------------------------------
 bool CHUDAutoAim::ShouldDraw( void )
-{	
+{
 #ifndef HL1_CLIENT_DLL
-	C_BaseHLPlayer *pLocalPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();
-	if ( pLocalPlayer )
+	C_BaseHLPlayer* pLocalPlayer = ( C_BaseHLPlayer* )C_BasePlayer::GetLocalPlayer();
+	if( pLocalPlayer )
 	{
 		if( !pLocalPlayer->m_HL2Local.m_bDisplayReticle )
 		{
@@ -157,7 +163,7 @@ bool CHUDAutoAim::ShouldDraw( void )
 	}
 #endif
 
-	return ( (hud_draw_fixed_reticle.GetBool() || hud_draw_active_reticle.GetBool()) && CHudElement::ShouldDraw() && !engine->IsDrawingLoadingImage() );
+	return ( ( hud_draw_fixed_reticle.GetBool() || hud_draw_active_reticle.GetBool() ) && CHudElement::ShouldDraw() && !engine->IsDrawingLoadingImage() );
 }
 
 #define AUTOAIM_ALPHA_UP_SPEED		1000
@@ -165,7 +171,7 @@ bool CHUDAutoAim::ShouldDraw( void )
 #define AUTOAIM_MAX_ALPHA			120
 #define AUTOAIM_MAX_SCALE			1.0f
 #define AUTOAIM_MIN_SCALE			0.5f
-#define AUTOAIM_SCALE_SPEED			10.0f		
+#define AUTOAIM_SCALE_SPEED			10.0f
 #define AUTOAIM_ONTARGET_CROSSHAIR_SPEED		(ScreenWidth() / 3) // Can cross the whole screen in 3 seconds.
 #define AUTOAIM_OFFTARGET_CROSSHAIR_SPEED		(ScreenWidth() / 4)
 
@@ -177,8 +183,8 @@ void CHUDAutoAim::OnThink()
 	BaseClass::OnThink();
 
 	// Get the HL2 player
-	C_BaseHLPlayer *pLocalPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();
-	if ( pLocalPlayer == NULL )
+	C_BaseHLPlayer* pLocalPlayer = ( C_BaseHLPlayer* )C_BasePlayer::GetLocalPlayer();
+	if( pLocalPlayer == NULL )
 	{
 		// Just turn the autoaim crosshair off.
 		ResetPosition();
@@ -190,7 +196,7 @@ void CHUDAutoAim::OnThink()
 	}
 
 	// Get the autoaim target.
-	CBaseEntity *pTarget = pLocalPlayer->m_HL2Local.m_hAutoAimTarget.Get();
+	CBaseEntity* pTarget = pLocalPlayer->m_HL2Local.m_hAutoAimTarget.Get();
 
 	// Fixed element stuff
 	float flFixedAlphaGoal;
@@ -209,12 +215,12 @@ void CHUDAutoAim::OnThink()
 		flFixedAlphaGoal = 0.0f;
 	}
 
-	m_alphaFixed = Approach( flFixedAlphaGoal, m_alphaFixed, (hud_alpha_speed.GetFloat() * gpGlobals->frametime) );
-	
+	m_alphaFixed = Approach( flFixedAlphaGoal, m_alphaFixed, ( hud_alpha_speed.GetFloat() * gpGlobals->frametime ) );
+
 
 	switch( hud_autoaim_method.GetInt() )
 	{
-	case AUTOAIM_METHOD_RETICLE:
+		case AUTOAIM_METHOD_RETICLE:
 		{
 			if( pLocalPlayer->m_HL2Local.m_hAutoAimTarget.Get() && pLocalPlayer->m_HL2Local.m_bStickyAutoAim )
 			{
@@ -227,7 +233,7 @@ void CHUDAutoAim::OnThink()
 					float flSpeed = VectorNormalize( vecMove );
 					float flDot = DotProduct( vecLook, vecMove );
 
-					if( flSpeed >= 100 && fabs(flDot) <= 0.707f )
+					if( flSpeed >= 100 && fabs( flDot ) <= 0.707f )
 					{
 						QAngle viewangles;
 						QAngle targetangles;
@@ -236,7 +242,7 @@ void CHUDAutoAim::OnThink()
 						engine->GetViewAngles( viewangles );
 
 						Vector vecDir = pLocalPlayer->m_HL2Local.m_vecAutoAimPoint - pLocalPlayer->EyePosition();
-						VectorNormalize(vecDir);
+						VectorNormalize( vecDir );
 						VectorAngles( vecDir, targetangles );
 
 						float magnetism = hud_magnetism.GetFloat();
@@ -254,7 +260,7 @@ void CHUDAutoAim::OnThink()
 #if 0
 			bool doScaling = hud_autoaim_scale_icon.GetBool();
 
-			// These are the X & Y coords of where the crosshair should be. Default to 
+			// These are the X & Y coords of where the crosshair should be. Default to
 			// returning to the center of the screen if there is no target.
 			int goalx = ScreenWidth() / 2;
 			int goaly = ScreenHeight() / 2;
@@ -300,8 +306,8 @@ void CHUDAutoAim::OnThink()
 					ScreenTransform( vecMins, vecScreenMins );
 					ScreenTransform( vecMaxs, vecScreenMaxs );
 
-					vecScreenMins.y = (ScreenWidth()/2) - 0.5f * vecScreenMins.y * ScreenWidth() + 0.5f;
-					vecScreenMaxs.y = (ScreenWidth()/2) - 0.5f * vecScreenMaxs.y * ScreenWidth() + 0.5f;
+					vecScreenMins.y = ( ScreenWidth() / 2 ) - 0.5f * vecScreenMins.y * ScreenWidth() + 0.5f;
+					vecScreenMaxs.y = ( ScreenWidth() / 2 ) - 0.5f * vecScreenMaxs.y * ScreenWidth() + 0.5f;
 
 					float screenSize = vecScreenMins.y - vecScreenMaxs.y;
 
@@ -318,7 +324,7 @@ void CHUDAutoAim::OnThink()
 			Vector vecGoal( goalx, goaly, 0 );
 			Vector vecDir = vecGoal - m_vecPos;
 			float flDistRemaining = VectorNormalize( vecDir );
-			m_vecPos += vecDir * min(flDistRemaining, (speed * gpGlobals->frametime) );
+			m_vecPos += vecDir * min( flDistRemaining, ( speed * gpGlobals->frametime ) );
 
 			// Lerp and Clamp scale
 			float scaleDelta = fabs( goalscale - m_scale );
@@ -362,16 +368,16 @@ void CHUDAutoAim::OnThink()
 		}
 		break;
 
-	case AUTOAIM_METHOD_DRIFT:
+		case AUTOAIM_METHOD_DRIFT:
 		{
 			if( pLocalPlayer->m_HL2Local.m_hAutoAimTarget.Get() )
 			{
 				QAngle viewangles;
 
 				engine->GetViewAngles( viewangles );
-				
+
 				Vector vecDir = pLocalPlayer->m_HL2Local.m_vecAutoAimPoint - pLocalPlayer->EyePosition();
-				VectorNormalize(vecDir);
+				VectorNormalize( vecDir );
 
 				VectorAngles( vecDir, viewangles );
 
@@ -399,7 +405,7 @@ void CHUDAutoAim::Paint()
 
 		float uv1 = 0.5f / width, uv2 = 1.0f - uv1;
 
-		vgui::Vertex_t vert[4];	
+		vgui::Vertex_t vert[4];
 
 		Vector2D uv11( uv1, uv1 );
 		Vector2D uv12( uv1, uv2 );
@@ -433,7 +439,7 @@ void CHUDAutoAim::Paint()
 		int xCenter = ScreenWidth() / 2;
 		int yCenter = ScreenHeight() / 2;
 
-		vgui::Vertex_t vert[4];	
+		vgui::Vertex_t vert[4];
 
 		Vector2D uv11( 0, 0 );
 		Vector2D uv12( 0, 1 );
@@ -453,18 +459,18 @@ void CHUDAutoAim::Paint()
 
 		Color	clr;
 		clr = gHUD.m_clrNormal;
-		int r,g,b,a;
-		clr.GetColor( r,g,b,a );
+		int r, g, b, a;
+		clr.GetColor( r, g, b, a );
 
-		C_BaseHLPlayer *pLocalPlayer = (C_BaseHLPlayer *)C_BasePlayer::GetLocalPlayer();
+		C_BaseHLPlayer* pLocalPlayer = ( C_BaseHLPlayer* )C_BasePlayer::GetLocalPlayer();
 		if( pLocalPlayer && pLocalPlayer->m_HL2Local.m_hAutoAimTarget.Get() )
 		{
-			r = 250; 
+			r = 250;
 			g = 138;
 			b = 4;
 		}
 
-		clr.SetColor( r,g,b,m_alphaFixed);
+		clr.SetColor( r, g, b, m_alphaFixed );
 
 		vgui::surface()->DrawSetColor( clr );
 		vgui::surface()->DrawTexturedPolygon( 4, vert );

@@ -8,7 +8,7 @@
 #define CAMERAUTILS_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier2/tier2.h"
@@ -41,16 +41,16 @@ struct Camera_t
 //-----------------------------------------------------------------------------
 // accessors for generated matrices
 //-----------------------------------------------------------------------------
-void ComputeViewMatrix( VMatrix *pWorldToCamera, const Camera_t& camera );
-void ComputeViewMatrix( matrix3x4_t *pWorldToCamera, const Camera_t& camera );
-void ComputeProjectionMatrix( VMatrix *pCameraToProjection, const Camera_t& camera, int width, int height );
+void ComputeViewMatrix( VMatrix* pWorldToCamera, const Camera_t& camera );
+void ComputeViewMatrix( matrix3x4_t* pWorldToCamera, const Camera_t& camera );
+void ComputeProjectionMatrix( VMatrix* pCameraToProjection, const Camera_t& camera, int width, int height );
 
 
 //-----------------------------------------------------------------------------
 // Computes the screen space position given a screen size
 //-----------------------------------------------------------------------------
-void ComputeScreenSpacePosition( Vector2D *pScreenPosition, const Vector &vecWorldPosition, 
-	const Camera_t &camera, int width, int height );
+void ComputeScreenSpacePosition( Vector2D* pScreenPosition, const Vector& vecWorldPosition,
+								 const Camera_t& camera, int width, int height );
 
 
 #endif // CAMERAUTILS_H

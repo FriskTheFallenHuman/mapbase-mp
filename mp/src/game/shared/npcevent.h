@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NPCEVENT_H
 #define NPCEVENT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 class CBaseAnimating;
@@ -16,11 +16,11 @@ class CBaseAnimating;
 struct animevent_t
 {
 	int				event;
-	const char		*options;
+	const char*		options;
 	float			cycle;
 	float			eventtime;
 	int				type;
-	CBaseAnimating	*pSource;
+	CBaseAnimating*	pSource;
 };
 #define EVENT_SPECIFIC			0
 #define EVENT_SCRIPTED			1000		// see scriptevent.h

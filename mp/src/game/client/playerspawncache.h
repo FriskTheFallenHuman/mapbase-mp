@@ -5,7 +5,7 @@
 #ifndef PLAYERSPAWNCACHE_H
 #define PLAYERSPAWNCACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //--------------------------------------------------------------------------------
@@ -34,7 +34,7 @@
 // maintain some level of persistence in the face of your entire local player getting
 // nuked.
 //
-// Just add any data members you'd like to access to the CPlayerSpawnCache::Data_t 
+// Just add any data members you'd like to access to the CPlayerSpawnCache::Data_t
 // struct and it will be cleared automatically (via a memset) whenever a new map is
 // loaded.
 //
@@ -44,7 +44,7 @@
 class CPlayerSpawnCache : public CGameEventListener
 {
 public:
-	static CPlayerSpawnCache &Instance();
+	static CPlayerSpawnCache& Instance();
 
 	// Counters
 	struct Data_t
@@ -56,7 +56,7 @@ public:
 private:
 	CPlayerSpawnCache();
 
-	virtual void FireGameEvent( IGameEvent *pEvent );
+	virtual void FireGameEvent( IGameEvent* pEvent );
 
 	void Reset();
 };

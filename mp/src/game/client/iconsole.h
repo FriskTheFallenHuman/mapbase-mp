@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -13,14 +13,14 @@
 #if !defined( ICONSOLE_H )
 #define ICONSOLE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include <vgui/VGUI.h>
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 abstract_class IConsole
@@ -30,6 +30,6 @@ public:
 	virtual void		Destroy( void ) = 0;
 };
 
-extern IConsole *console;
+extern IConsole* console;
 
 #endif // ICONSOLE_H

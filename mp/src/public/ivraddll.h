@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef IVRADDLL_H
 #define IVRADDLL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -22,36 +22,36 @@
 class CBSPInfo
 {
 public:
-	byte			*dlightdata;
+	byte*			dlightdata;
 	int				lightdatasize;
 
-	dface_t			*dfaces;
-	unsigned char	*m_pFacesTouched;	// If non-null, then this has 1 byte for each face and
-										// tells which faces had their lightmaps updated.										
+	dface_t*			dfaces;
+	unsigned char*	m_pFacesTouched;	// If non-null, then this has 1 byte for each face and
+	// tells which faces had their lightmaps updated.
 	int				numfaces;
-	
-	dvertex_t		*dvertexes;
+
+	dvertex_t*		dvertexes;
 	int				numvertexes;
 
-	dedge_t			*dedges;
+	dedge_t*			dedges;
 	int				numedges;
 
-	int				*dsurfedges;
+	int*				dsurfedges;
 	int				numsurfedges;
 
-	texinfo_t		*texinfo;
+	texinfo_t*		texinfo;
 	int				numtexinfo;
 
-	dtexdata_t		*dtexdata;
+	dtexdata_t*		dtexdata;
 	int				numtexdata;
 
-	ddispinfo_t		*g_dispinfo;
+	ddispinfo_t*		g_dispinfo;
 	int				g_numdispinfo;
 
-	char				*texDataStringData;
+	char*				texDataStringData;
 	int					nTexDataStringData;
 
-	int					*texDataStringTable;
+	int*					texDataStringTable;
 	int					nTexDataStringTable;
 };
 
@@ -61,24 +61,24 @@ class IVRadDLL
 {
 public:
 	// All vrad.exe does is load the VRAD DLL and run this.
-	virtual int			main( int argc, char **argv ) = 0;
-	
-	
+	virtual int			main( int argc, char** argv ) = 0;
+
+
 	// Load the BSP file into memory.
-	virtual bool		Init( char const *pFilename ) = 0;
+	virtual bool		Init( char const* pFilename ) = 0;
 
 	// You must call this if you call Init(), to free resources.
 	virtual void		Release() = 0;
 
 	// Get some data from the BSP file that's in memory.
-	virtual void		GetBSPInfo( CBSPInfo *pInfo ) = 0;
+	virtual void		GetBSPInfo( CBSPInfo* pInfo ) = 0;
 
-	// Incrementally relight the BSP file in memory given the new entity 
+	// Incrementally relight the BSP file in memory given the new entity
 	// descriptions in pVMFFile. pVMFFile should only contain light entities.
 	//
-	// Returns true only if the lightmaps are updated. If the process is 
+	// Returns true only if the lightmaps are updated. If the process is
 	// interrupted or there is an error, false is returned.
-	virtual bool		DoIncrementalLight( char const *pVMFFile ) = 0;
+	virtual bool		DoIncrementalLight( char const* pVMFFile ) = 0;
 
 	// Calling DoIncrementalLight doesn't actually write anything to disk.
 	// Calling this will write the incremental light file out and will write the

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef PARTICLE_LIGHT_H
 #define PARTICLE_LIGHT_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -16,7 +16,7 @@
 
 
 //==================================================
-// CParticleLight. These are tied to 
+// CParticleLight. These are tied to
 //==================================================
 
 #define PARTICLELIGHT_ENTNAME	"env_particlelight"
@@ -27,7 +27,7 @@ public:
 	DECLARE_CLASS( CParticleLight, CServerOnlyPointEntity );
 	DECLARE_DATADESC();
 
-					CParticleLight();
+	CParticleLight();
 
 
 public:

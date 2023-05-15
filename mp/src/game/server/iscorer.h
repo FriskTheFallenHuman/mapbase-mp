@@ -9,7 +9,7 @@
 #ifndef ISCORER_H
 #define ISCORER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -20,9 +20,9 @@ abstract_class IScorer
 {
 public:
 	// Return the entity that should receive the score
-	virtual CBasePlayer *GetScorer( void ) = 0;
+	virtual CBasePlayer * GetScorer( void ) = 0;
 	// Return the entity that should get assistance credit
-	virtual CBasePlayer *GetAssistant( void ) = 0;
+	virtual CBasePlayer * GetAssistant( void ) = 0;
 };
 
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 #include <windows.h>
@@ -9,12 +9,12 @@
 //-----------------------------------------------------------------------------
 // Purpose: converts an english string to unicode
 //-----------------------------------------------------------------------------
-int ConvertANSIToUnicode(const char *ansi, wchar_t *unicode, int unicodeBufferSize)
+int ConvertANSIToUnicode( const char* ansi, wchar_t* unicode, int unicodeBufferSize )
 {
-	return ::MultiByteToWideChar(CP_ACP, 0, ansi, -1, unicode, unicodeBufferSize);
+	return ::MultiByteToWideChar( CP_ACP, 0, ansi, -1, unicode, unicodeBufferSize );
 }
 
-char *va( const char *fmt, ... )
+char* va( const char* fmt, ... )
 {
 	va_list args;
 	static char output[4][1024];

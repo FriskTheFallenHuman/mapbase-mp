@@ -5,13 +5,13 @@
 //===========================================================================//
 
 #if defined( WIN32 ) && !defined( _X360 )
-#define WIN32_LEAN_AND_MEAN
-#include <windows.h>
+	#define WIN32_LEAN_AND_MEAN
+	#include <windows.h>
 #elif defined( POSIX )
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+	#include <sys/mman.h>
+	#include <sys/types.h>
+	#include <sys/stat.h>
+	#include <fcntl.h>
 #endif
 
 #include "cbase.h"
@@ -20,11 +20,11 @@
 #include "mumble.h"
 
 #if !defined( _X360 ) && !defined( NO_STEAM )
-#include "steam/isteamuser.h"
-#include "steam/steam_api.h"
+	#include "steam/isteamuser.h"
+	#include "steam/steam_api.h"
 #endif
 
-const char *COM_GetModDirectory(); // return the mod dir (rather than the complete -game param, which can be a path)
+const char* COM_GetModDirectory(); // return the mod dir (rather than the complete -game param, which can be a path)
 
 struct MumbleSharedMemory_t
 {
@@ -52,9 +52,9 @@ struct MumbleSharedMemory_t
 	wchar_t description[2048];
 };
 
-MumbleSharedMemory_t *g_pMumbleMemory = NULL;
+MumbleSharedMemory_t* g_pMumbleMemory = NULL;
 #ifdef WIN32
-HANDLE g_hMapObject = NULL;
+	HANDLE g_hMapObject = NULL;
 #endif
 
 ConVar sv_mumble_positionalaudio( "sv_mumble_positionalaudio", "1", FCVAR_REPLICATED, "Allows players using Mumble to have support for positional audio." );
@@ -64,7 +64,7 @@ ConVar sv_mumble_positionalaudio( "sv_mumble_positionalaudio", "1", FCVAR_REPLIC
 //-----------------------------------------------------------------------------
 static CMumbleSystem g_MumbleSystem;
 
-IGameSystem *MumbleSystem()
+IGameSystem* MumbleSystem()
 {
 	return &g_MumbleSystem;
 }
@@ -83,16 +83,20 @@ bool CMumbleSystem::Init()
 
 void CMumbleSystem::LevelInitPostEntity()
 {
-	if ( g_pMumbleMemory )
+	if( g_pMumbleMemory )
+	{
 		return;
+	}
 
 #if defined( WIN32 ) && !defined( _X360 )
 	g_hMapObject = OpenFileMappingW( FILE_MAP_ALL_ACCESS, FALSE, L"MumbleLink" );
-	if ( g_hMapObject == NULL )
+	if( g_hMapObject == NULL )
+	{
 		return;
+	}
 
-	g_pMumbleMemory = (MumbleSharedMemory_t *) MapViewOfFile( g_hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(MumbleSharedMemory_t) );
-	if ( g_pMumbleMemory == NULL )
+	g_pMumbleMemory = ( MumbleSharedMemory_t* ) MapViewOfFile( g_hMapObject, FILE_MAP_ALL_ACCESS, 0, 0, sizeof( MumbleSharedMemory_t ) );
+	if( g_pMumbleMemory == NULL )
 	{
 		CloseHandle( g_hMapObject );
 		g_hMapObject = NULL;
@@ -104,14 +108,14 @@ void CMumbleSystem::LevelInitPostEntity()
 
 	int shmfd = shm_open( memname, O_RDWR, S_IRUSR | S_IWUSR );
 
-	if ( shmfd < 0 )
+	if( shmfd < 0 )
 	{
 		return;
 	}
 
-	g_pMumbleMemory = (MumbleSharedMemory_t *)( mmap( NULL, sizeof(struct MumbleSharedMemory_t), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd,0 ) );
+	g_pMumbleMemory = ( MumbleSharedMemory_t* )( mmap( NULL, sizeof( struct MumbleSharedMemory_t ), PROT_READ | PROT_WRITE, MAP_SHARED, shmfd, 0 ) );
 
-	if ( g_pMumbleMemory == (void *)(-1) )
+	if( g_pMumbleMemory == ( void* )( -1 ) )
 	{
 		g_pMumbleMemory = NULL;
 		return;
@@ -122,22 +126,22 @@ void CMumbleSystem::LevelInitPostEntity()
 void CMumbleSystem::LevelShutdownPreEntity()
 {
 #if defined( WIN32 ) && !defined( _X360 )
-	if ( g_hMapObject )
+	if( g_hMapObject )
 	{
 		CloseHandle( g_hMapObject );
 		g_pMumbleMemory = NULL;
 		g_hMapObject = NULL;
 	}
 #elif defined( POSIX )
-	if ( g_pMumbleMemory )
+	if( g_pMumbleMemory )
 	{
-		munmap( g_pMumbleMemory, sizeof(struct MumbleSharedMemory_t) );
+		munmap( g_pMumbleMemory, sizeof( struct MumbleSharedMemory_t ) );
 		g_pMumbleMemory = NULL;
 	}
 #endif
 }
 
-void VectorToMumbleFloatArray( const Vector &vec, float *rgfl )
+void VectorToMumbleFloatArray( const Vector& vec, float* rgfl )
 {
 	// Traditional left-handed coordinate system
 	rgfl[0] = vec.x; // X
@@ -148,14 +152,16 @@ void VectorToMumbleFloatArray( const Vector &vec, float *rgfl )
 void CMumbleSystem::PostRender()
 {
 #ifndef NO_STEAM
-	if ( !g_pMumbleMemory || !sv_mumble_positionalaudio.GetBool() )
+	if( !g_pMumbleMemory || !sv_mumble_positionalaudio.GetBool() )
+	{
 		return;
+	}
 
-	if ( g_pMumbleMemory->uiVersion != 2 )
+	if( g_pMumbleMemory->uiVersion != 2 )
 	{
 		V_wcscpy_safe( g_pMumbleMemory->name, L"Source engine: " );
 		wchar_t wcsGameDir[MAX_PATH];
-		Q_UTF8ToUnicode( COM_GetModDirectory(), wcsGameDir, sizeof(wcsGameDir) );
+		Q_UTF8ToUnicode( COM_GetModDirectory(), wcsGameDir, sizeof( wcsGameDir ) );
 		V_wcscat_safe( g_pMumbleMemory->name, wcsGameDir );
 
 		V_wcscpy_safe( g_pMumbleMemory->description, L"Links Source engine games to Mumble." );
@@ -167,8 +173,8 @@ void CMumbleSystem::PostRender()
 	Vector vecOriginPlayer, vecOriginCamera = MainViewOrigin();
 	QAngle anglesPlayer, anglesCamera = MainViewAngles();
 
-	C_BasePlayer *pPlayer = C_BasePlayer::GetLocalPlayer();
-	if ( pPlayer )
+	C_BasePlayer* pPlayer = C_BasePlayer::GetLocalPlayer();
+	if( pPlayer )
 	{
 		vecOriginPlayer = pPlayer->EyePosition();
 		anglesPlayer = pPlayer->GetAbsAngles();
@@ -198,23 +204,23 @@ void CMumbleSystem::PostRender()
 	VectorToMumbleFloatArray( vecCameraUp, g_pMumbleMemory->fCameraTop );
 	VectorToMumbleFloatArray( vecOriginCamera, g_pMumbleMemory->fCameraPosition );
 
-	if ( pPlayer && m_bHasSetPlayerUniqueId && m_nTeamSetInUniqueId != pPlayer->GetTeamNumber() )
+	if( pPlayer && m_bHasSetPlayerUniqueId && m_nTeamSetInUniqueId != pPlayer->GetTeamNumber() )
 	{
 		// Player changed team since we set the unique ID. Set it again.
 		m_bHasSetPlayerUniqueId = false;
 	}
 
-	if ( !m_bHasSetPlayerUniqueId && steamapicontext && steamapicontext->SteamUser() )
+	if( !m_bHasSetPlayerUniqueId && steamapicontext && steamapicontext->SteamUser() )
 	{
 		CSteamID steamid = steamapicontext->SteamUser()->GetSteamID();
-		if ( steamid.IsValid() )
+		if( steamid.IsValid() )
 		{
 			int unTeam = pPlayer ? pPlayer->GetTeamNumber() : 0;
 			char szSteamId[256];
 			V_sprintf_safe( szSteamId, "universe:%u;account_type:%u;id:%u;instance:%u;team:%d", steamid.GetEUniverse(), steamid.GetEAccountType(), steamid.GetAccountID(), steamid.GetUnAccountInstance(), unTeam );
 
 			wchar_t wcsSteamId[256];
-			Q_UTF8ToUnicode( szSteamId, wcsSteamId, sizeof(wcsSteamId) );
+			Q_UTF8ToUnicode( szSteamId, wcsSteamId, sizeof( wcsSteamId ) );
 
 			// Identifier which uniquely identifies a certain player in a context.
 			V_wcscpy_safe( g_pMumbleMemory->identity, wcsSteamId );
@@ -231,15 +237,17 @@ void CMumbleSystem::PostRender()
 #endif // NO_STEAM
 }
 
-void CMumbleSystem::FireGameEvent( IGameEvent *event )
+void CMumbleSystem::FireGameEvent( IGameEvent* event )
 {
 #ifndef NO_STEAM
-	const char *eventname = event->GetName();
+	const char* eventname = event->GetName();
 
-	if ( !eventname || !eventname[0] )
+	if( !eventname || !eventname[0] )
+	{
 		return;
+	}
 
-	if ( !Q_strcmp( "server_spawn", eventname ) )
+	if( !Q_strcmp( "server_spawn", eventname ) )
 	{
 		V_strcpy_safe( m_szSteamIDCurrentServer, event->GetString( "steamid", "" ) );
 		m_cubSteamIDCurrentServer = strlen( m_szSteamIDCurrentServer ) + 1;

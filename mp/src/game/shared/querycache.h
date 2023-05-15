@@ -1,20 +1,20 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
 #ifndef QUERYCACHE_H
 #define QUERYCACHE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/platform.h"
 #include "mathlib/vector.h"
 
 // this system provides several piece of functionality to ai or other systems which wish to do
-// traces and other trace-like queries. 
+// traces and other trace-like queries.
 
 // a. By maintaining a set of incrementally updated trace results, it makes it simple to have ai
 // code use hyteresis on traces as an optimization method.
@@ -40,7 +40,7 @@ enum EEntityOffsetMode_t
 
 
 #define QCACHE_MAXPNTS 3									// maximum number of points/entities
-															// involved in a query
+// involved in a query
 
 struct QueryCacheKey_t
 {
@@ -58,13 +58,13 @@ struct QueryCacheKey_t
 
 	void ComputeHashIndex( void );
 
-	bool Matches( QueryCacheKey_t const *pNode ) const ;
+	bool Matches( QueryCacheKey_t const* pNode ) const ;
 };
 
 struct QueryCacheEntry_t
 {
-	QueryCacheEntry_t *m_pNext;
-	QueryCacheEntry_t *m_pPrev;
+	QueryCacheEntry_t* m_pNext;
+	QueryCacheEntry_t* m_pPrev;
 	QueryCacheKey_t m_QueryParams;
 	float m_flLastUpdateTime;
 	bool m_bUsedSinceUpdated;								// was this cell referenced?
@@ -77,16 +77,16 @@ struct QueryCacheEntry_t
 
 
 
-bool IsLineOfSightBetweenTwoEntitiesClear( CBaseEntity *pSrcEntity,
-										   EEntityOffsetMode_t nSrcOffsetMode,
-										   CBaseEntity *pDestEntity,
-										   EEntityOffsetMode_t nDestOffsetMode,
-										   CBaseEntity *pSkipEntity,
-										   int nCollisionGroup,
-										   unsigned int nTraceMask,
-										   ShouldHitFunc_t pTraceFilterCallback,
-										   float flMinimumUpdateInterval = 0.2
-	);
+bool IsLineOfSightBetweenTwoEntitiesClear( CBaseEntity* pSrcEntity,
+		EEntityOffsetMode_t nSrcOffsetMode,
+		CBaseEntity* pDestEntity,
+		EEntityOffsetMode_t nDestOffsetMode,
+		CBaseEntity* pSkipEntity,
+		int nCollisionGroup,
+		unsigned int nTraceMask,
+		ShouldHitFunc_t pTraceFilterCallback,
+		float flMinimumUpdateInterval = 0.2
+										 );
 
 
 

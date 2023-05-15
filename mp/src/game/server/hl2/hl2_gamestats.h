@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef HL2_GAMESTATS_H
 #define HL2_GAMESTATS_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "gamestats.h"

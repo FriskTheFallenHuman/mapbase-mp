@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef IPLAYERANIMSTATE_H
 #define IPLAYERANIMSTATE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -40,7 +40,7 @@ public:
 
 	// The client uses this to figure out what angles to render the entity with (since as the guy turns,
 	// it will change his body_yaw pose parameter before changing his rendered angle).
-	virtual const QAngle& GetRenderAngles() = 0;
+	virtual const QAngle & GetRenderAngles() = 0;
 };
 
 

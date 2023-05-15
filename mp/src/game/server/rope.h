@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef ROPE_H
 #define ROPE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -23,68 +23,71 @@ public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
 
-					CRopeKeyframe();
+	CRopeKeyframe();
 	virtual			~CRopeKeyframe();
 
 	// Create a rope and attach it to two entities.
 	// Attachment points on the entities are optional.
 	static CRopeKeyframe* Create(
-		CBaseEntity *pStartEnt,
-		CBaseEntity *pEndEnt,
-		int iStartAttachment=0,
-		int iEndAttachment=0,
+		CBaseEntity* pStartEnt,
+		CBaseEntity* pEndEnt,
+		int iStartAttachment = 0,
+		int iEndAttachment = 0,
 		int ropeWidth = 2,
-		const char *pMaterialName = "cable/cable.vmt",		// Note: whoever creates the rope must
-															// use PrecacheModel for whatever material
-															// it specifies here.
+		const char* pMaterialName = "cable/cable.vmt",		// Note: whoever creates the rope must
+		// use PrecacheModel for whatever material
+		// it specifies here.
 #ifdef MAPBASE
 		int numSegments = 5,
-		const char *pClassName = "keyframe_rope"
+		const char* pClassName = "keyframe_rope"
 #else
 		int numSegments = 5
 #endif
-		);
+	);
 
 	static CRopeKeyframe* CreateWithSecondPointDetached(
-		CBaseEntity *pStartEnt,
+		CBaseEntity* pStartEnt,
 		int iStartAttachment = 0,	// must be 0 if you don't want to use a specific model attachment.
 		int ropeLength = 20,
 		int ropeWidth = 2,
-		const char *pMaterialName = "cable/cable.vmt",		// Note: whoever creates the rope
-															// use PrecacheModel for whatever material
-															// it specifies here.
+		const char* pMaterialName = "cable/cable.vmt",		// Note: whoever creates the rope
+		// use PrecacheModel for whatever material
+		// it specifies here.
 		int numSegments = 5,
 #ifdef MAPBASE
 		bool bInitialHang = false,
-		const char *pClassName = "keyframe_rope"
+		const char* pClassName = "keyframe_rope"
 #else
 		bool bInitialHang = false
 #endif
-		);
+	);
 
 	bool		SetupHangDistance( float flHangDist );
 	void		ActivateStartDirectionConstraints( bool bEnable );
 	void		ActivateEndDirectionConstraints( bool bEnable );
 
-	
+
 	// Shakes all ropes near vCenter. The higher flMagnitude is, the larger the shake will be.
-	static void ShakeRopes( const Vector &vCenter, float flRadius, float flMagnitude );
+	static void ShakeRopes( const Vector& vCenter, float flRadius, float flMagnitude );
 
 
 // CBaseEntity overrides.
 public:
-	
+
 	// don't cross transitions
-	virtual int		ObjectCaps( void ) { return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION; }
+	virtual int		ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() & ~FCAP_ACROSS_TRANSITION;
+	}
 	virtual void	Activate();
 	virtual void	Precache();
 #ifdef MAPBASE
 	virtual void	Spawn();
 #endif
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
-	virtual bool	KeyValue( const char *szKeyName, const char *szValue );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
+	virtual bool	KeyValue( const char* szKeyName, const char* szValue );
 
-	void			PropagateForce(CBaseEntity *pActivator, CBaseEntity *pCaller, CBaseEntity *pFirstLink, float x, float y, float z);
+	void			PropagateForce( CBaseEntity* pActivator, CBaseEntity* pCaller, CBaseEntity* pFirstLink, float x, float y, float z );
 
 	// Once-off length recalculation
 	void			RecalculateLength( void );
@@ -92,31 +95,31 @@ public:
 	// Kill myself when I next come to rest
 	void			DieAtNextRest( void );
 
-	virtual int		UpdateTransmitState(void);
-	virtual void	SetTransmit( CCheckTransmitInfo *pInfo, bool bAlways );
-	virtual void	SetParent( CBaseEntity *pParentEntity, int iAttachment );
+	virtual int		UpdateTransmitState( void );
+	virtual void	SetTransmit( CCheckTransmitInfo* pInfo, bool bAlways );
+	virtual void	SetParent( CBaseEntity* pParentEntity, int iAttachment );
 
 // Input functions.
 public:
 
-	void InputSetScrollSpeed( inputdata_t &inputdata );
-	void InputSetForce( inputdata_t &inputdata );
-	void InputBreak( inputdata_t &inputdata );
+	void InputSetScrollSpeed( inputdata_t& inputdata );
+	void InputSetForce( inputdata_t& inputdata );
+	void InputBreak( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void InputSetSlack( inputdata_t &inputdata );
-	void InputSetWidth( inputdata_t &inputdata );
-	void InputSetSubdivision( inputdata_t &inputdata );
+	void InputSetSlack( inputdata_t& inputdata );
+	void InputSetWidth( inputdata_t& inputdata );
+	void InputSetSubdivision( inputdata_t& inputdata );
 #endif
 
 public:
 
 #ifdef MAPBASE
-	bool			Break( CBaseEntity *pActivator = NULL );
+	bool			Break( CBaseEntity* pActivator = NULL );
 #else
 	bool			Break( void );
 #endif
 	void			DetachPoint( int iPoint );
-	
+
 	void			EndpointsChanged();
 
 	// By default, ropes don't collide with the world. Call this to enable it.
@@ -126,42 +129,57 @@ public:
 	void			EnableWind( bool bEnable );
 
 #ifdef MAPBASE
-	CBaseEntity*	GetStartPoint() { return m_hStartPoint.Get(); }
-	int				GetStartAttachment() { return m_iStartAttachment; };
+	CBaseEntity*	GetStartPoint()
+	{
+		return m_hStartPoint.Get();
+	}
+	int				GetStartAttachment()
+	{
+		return m_iStartAttachment;
+	};
 #else
 	// Unless this is called during initialization, the caller should have done
 	// PrecacheModel on whatever material they specify in here.
-	void			SetMaterial( const char *pName );
+	void			SetMaterial( const char* pName );
 #endif
 
-	CBaseEntity*	GetEndPoint() { return m_hEndPoint.Get(); }
+	CBaseEntity*	GetEndPoint()
+	{
+		return m_hEndPoint.Get();
+	}
 #ifdef MAPBASE
-	int				GetEndAttachment() { return m_iEndAttachment; };
+	int				GetEndAttachment()
+	{
+		return m_iEndAttachment;
+	};
 #else
-	int				GetEndAttachment() { return m_iStartAttachment; };
+	int				GetEndAttachment()
+	{
+		return m_iStartAttachment;
+	};
 #endif
 
-	void			SetStartPoint( CBaseEntity *pStartPoint, int attachment = 0 );
-	void			SetEndPoint( CBaseEntity *pEndPoint, int attachment = 0 );
+	void			SetStartPoint( CBaseEntity* pStartPoint, int attachment = 0 );
+	void			SetEndPoint( CBaseEntity* pEndPoint, int attachment = 0 );
 
 	// See ROPE_PLAYER_WPN_ATTACH for info.
 	void			EnablePlayerWeaponAttach( bool bAttach );
 
 
 	// IPositionWatcher
-	virtual void NotifyPositionChanged( CBaseEntity *pEntity );
+	virtual void NotifyPositionChanged( CBaseEntity* pEntity );
 
 private:
 
 #ifdef MAPBASE
 	// Unless this is called during initialization, the caller should have done
 	// PrecacheModel on whatever material they specify in here.
-	void			SetMaterial( const char *pName );
+	void			SetMaterial( const char* pName );
 
 protected:
 #endif
 
-	void			SetAttachmentPoint( CBaseHandle &hOutEnt, short &iOutAttachment, CBaseEntity *pEnt, int iAttachment );
+	void			SetAttachmentPoint( CBaseHandle& hOutEnt, short& iOutAttachment, CBaseEntity* pEnt, int iAttachment );
 
 	// This is normally called by Activate but if you create the rope at runtime,
 	// you must call it after you have setup its variables.
@@ -174,8 +192,8 @@ private:
 #endif
 
 	// These work just like the client-side versions.
-	bool			GetEndPointPos2( CBaseEntity *pEnt, int iAttachment, Vector &v );
-	bool			GetEndPointPos( int iPt, Vector &v );
+	bool			GetEndPointPos2( CBaseEntity* pEnt, int iAttachment, Vector& v );
+	bool			GetEndPointPos( int iPt, Vector& v );
 
 	void			UpdateBBox( bool bForceRelink );
 
@@ -183,7 +201,7 @@ private:
 public:
 
 	CNetworkVar( int, m_RopeFlags );		// Combination of ROPE_ defines in rope_shared.h
-	
+
 	string_t	m_iNextLinkName;
 	CNetworkVar( int, m_Slack );
 	CNetworkVar( float, m_Width );
@@ -193,17 +211,17 @@ public:
 
 	string_t m_strRopeMaterialModel;
 	CNetworkVar( int, m_iRopeMaterialModelIndex );	// Index of sprite model with the rope's material.
-	
+
 	// Number of subdivisions in between segments.
 	CNetworkVar( int, m_Subdiv );
-	
+
 #ifdef MAPBASE
 	// Used simply to wake up rope on the client side if it has gone to sleep
 	CNetworkVar( unsigned char, m_nChangeCount );
 #endif
-	
+
 	//EHANDLE		m_hNextLink;
-	
+
 	CNetworkVar( int, m_RopeLength );	// Rope length at startup, used to calculate tension.
 
 	CNetworkVar( int, m_fLockedPoints );
@@ -216,7 +234,7 @@ private:
 	// Used to detect changes.
 	bool		m_bStartPointValid;
 	bool		m_bEndPointValid;
-	
+
 	CNetworkHandle( CBaseEntity, m_hStartPoint );		// StartPoint/EndPoint are entities
 	CNetworkHandle( CBaseEntity, m_hEndPoint );
 	CNetworkVar( short, m_iStartAttachment );	// StartAttachment/EndAttachment are attachment points.

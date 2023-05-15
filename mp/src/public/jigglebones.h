@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $NoKeywords: $
@@ -9,7 +9,7 @@
 #define C_JIGGLEBONES_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "studio.h"
@@ -22,7 +22,7 @@
  */
 struct JiggleData
 {
-	void Init( int initBone, float currenttime, const Vector &initBasePos, const Vector &initTipPos )
+	void Init( int initBone, float currenttime, const Vector& initBasePos, const Vector& initTipPos )
 	{
 		bone = initBone;
 
@@ -65,7 +65,7 @@ struct JiggleData
 	Vector boingVelDir;		// current estimation of jiggle bone unit velocity vector for boing effect
 	float boingSpeed;		// current estimation of jiggle bone speed for boing effect
 	float boingTime;
-	
+
 	int useGoalMatrixCount;	// Count of times we need to fast draw using goal matrix.
 	int useJiggleBoneCount; // Count of times we need to draw using real jiggly bones.
 };
@@ -73,8 +73,8 @@ struct JiggleData
 class CJiggleBones
 {
 public:
-	JiggleData * GetJiggleData( int bone, float currenttime, const Vector &initBasePos, const Vector &initTipPos );
-	void BuildJiggleTransformations( int boneIndex, float currentime, const mstudiojigglebone_t *jiggleParams, const matrix3x4_t &goalMX, matrix3x4_t &boneMX );
+	JiggleData* GetJiggleData( int bone, float currenttime, const Vector& initBasePos, const Vector& initTipPos );
+	void BuildJiggleTransformations( int boneIndex, float currentime, const mstudiojigglebone_t* jiggleParams, const matrix3x4_t& goalMX, matrix3x4_t& boneMX );
 
 	CUtlLinkedList< JiggleData >	m_jiggleBoneState;
 };

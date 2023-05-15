@@ -25,7 +25,7 @@ public:
 
 	DECLARE_CLIENTCLASS();
 
-	void OnDataChanged(DataUpdateType_t updateType);
+	void OnDataChanged( DataUpdateType_t updateType );
 	bool ShouldDraw();
 
 private:
@@ -33,10 +33,10 @@ private:
 	float m_flCheapWaterEndDistance;
 };
 
-IMPLEMENT_CLIENTCLASS_DT(C_WaterLODControl, DT_WaterLODControl, CWaterLODControl)
-	RecvPropFloat(RECVINFO(m_flCheapWaterStartDistance)),
-	RecvPropFloat(RECVINFO(m_flCheapWaterEndDistance)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_DT( C_WaterLODControl, DT_WaterLODControl, CWaterLODControl )
+RecvPropFloat( RECVINFO( m_flCheapWaterStartDistance ) ),
+			   RecvPropFloat( RECVINFO( m_flCheapWaterEndDistance ) ),
+			   END_RECV_TABLE()
 
 
 //------------------------------------------------------------------------------
@@ -44,7 +44,7 @@ END_RECV_TABLE()
 // Input   :
 // Output  :
 //------------------------------------------------------------------------------
-void C_WaterLODControl::OnDataChanged(DataUpdateType_t updateType)
+			   void C_WaterLODControl::OnDataChanged( DataUpdateType_t updateType )
 {
 	g_pView->SetCheapWaterStartDistance( m_flCheapWaterStartDistance );
 	g_pView->SetCheapWaterEndDistance( m_flCheapWaterEndDistance );

@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef ITOOLSYSTEM_H
 #define ITOOLSYSTEM_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "itoolentity.h"
@@ -27,7 +27,7 @@ class IToolSystem
 {
 public:
 	// Name describing the tool
-	virtual char const *GetToolName() = 0;
+	virtual char const* GetToolName() = 0;
 
 	// Called at the end of engine startup (after client .dll and server .dll have been loaded)
 	virtual bool	Init() = 0;
@@ -36,19 +36,19 @@ public:
 	virtual void	Shutdown() = 0;
 
 	// Called after server.dll is loaded
-	virtual bool	ServerInit( CreateInterfaceFn serverFactory ) = 0; 
+	virtual bool	ServerInit( CreateInterfaceFn serverFactory ) = 0;
 	// Called after client.dll is loaded
-	virtual bool	ClientInit( CreateInterfaceFn clientFactory ) = 0; 
+	virtual bool	ClientInit( CreateInterfaceFn clientFactory ) = 0;
 
 	virtual void	ServerShutdown() = 0;
 	virtual void	ClientShutdown() = 0;
 
 	// Allow tool to override quitting, called before Shutdown(), return no to abort quitting
-	virtual bool	CanQuit() = 0; 
+	virtual bool	CanQuit() = 0;
 
 	// Called when another system wiches to post a message to the tool and/or a specific entity
 	// FIXME:  Are KeyValues too inefficient here?
-    virtual void	PostMessage( HTOOLHANDLE hEntity, KeyValues *message ) = 0;
+	virtual void	PostMessage( HTOOLHANDLE hEntity, KeyValues* message ) = 0;
 
 	// Called oncer per frame even when no level is loaded... (call ProcessMessages())
 	virtual void	Think( bool finalTick ) = 0;
@@ -73,7 +73,7 @@ public:
 	virtual void	ServerPreSetupVisibility() = 0;
 
 	// Used to allow the tool to spawn different entities when it's active
-	virtual const char* GetEntityData( const char *pActualEntityData ) = 0;
+	virtual const char* GetEntityData( const char* pActualEntityData ) = 0;
 
 // Client calls:
 	// Level init, shutdown
@@ -93,10 +93,10 @@ public:
 	virtual void	AdjustEngineViewport( int& x, int& y, int& width, int& height ) = 0;
 
 	// let tool override view/camera
-	virtual bool	SetupEngineView( Vector &origin, QAngle &angles, float &fov ) = 0;
+	virtual bool	SetupEngineView( Vector& origin, QAngle& angles, float& fov ) = 0;
 
 	// let tool override microphone
-	virtual bool	SetupAudioState( AudioState_t &audioState ) = 0;
+	virtual bool	SetupAudioState( AudioState_t& audioState ) = 0;
 
 	// Should the client be allowed to render the view normally?
 	virtual bool	ShouldGameRenderView() = 0;
@@ -105,7 +105,7 @@ public:
 	// is the current tool recording?
 	virtual bool	IsToolRecording() = 0;
 
-	virtual IMaterialProxy *LookupProxy( const char *proxyName ) = 0;
+	virtual IMaterialProxy* LookupProxy( const char* proxyName ) = 0;
 
 	// Possible hooks for rendering
 	// virtual void	Think( float curtime, float frametime ) = 0;
@@ -140,7 +140,7 @@ public:
 };
 
 // Pointer to a member method of IGameSystem
-typedef void (IToolSystem::*ToolSystemFunc_t)();
-typedef void (IToolSystem::*ToolSystemFunc_Int_t)( int arg );
+typedef void ( IToolSystem::*ToolSystemFunc_t )();
+typedef void ( IToolSystem::*ToolSystemFunc_Int_t )( int arg );
 
 #endif // ITOOLSYSTEM_H

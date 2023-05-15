@@ -44,17 +44,21 @@
 #include <google/protobuf/unknown_field_set.h>
 
 
-namespace google {
-namespace protobuf {
-  class DescriptorPool;
-  // Generated code needs these to have been forward-declared.  Easier to do it
-  // here than to print them inside every .pb.h file.
-  class FileDescriptor;
-  class EnumDescriptor;
+namespace google
+{
+namespace protobuf
+{
+class DescriptorPool;
+// Generated code needs these to have been forward-declared.  Easier to do it
+// here than to print them inside every .pb.h file.
+class FileDescriptor;
+class EnumDescriptor;
 }
 
-namespace protobuf {
-namespace internal {
+namespace protobuf
+{
+namespace internal
+{
 
 // Defined in this file.
 class GeneratedMessageReflection;
@@ -86,262 +90,263 @@ class ExtensionSet;             // extension_set.h
 //    of whatever type the individual field would be.  Strings and
 //    Messages use RepeatedPtrFields while everything else uses
 //    RepeatedFields.
-class LIBPROTOBUF_EXPORT GeneratedMessageReflection : public Reflection {
- public:
-  // Constructs a GeneratedMessageReflection.
-  // Parameters:
-  //   descriptor:    The descriptor for the message type being implemented.
-  //   default_instance:  The default instance of the message.  This is only
-  //                  used to obtain pointers to default instances of embedded
-  //                  messages, which GetMessage() will return if the particular
-  //                  sub-message has not been initialized yet.  (Thus, all
-  //                  embedded message fields *must* have non-NULL pointers
-  //                  in the default instance.)
-  //   offsets:       An array of ints giving the byte offsets, relative to
-  //                  the start of the message object, of each field.  These can
-  //                  be computed at compile time using the
-  //                  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET() macro, defined
-  //                  below.
-  //   has_bits_offset:  Offset in the message of an array of uint32s of size
-  //                  descriptor->field_count()/32, rounded up.  This is a
-  //                  bitfield where each bit indicates whether or not the
-  //                  corresponding field of the message has been initialized.
-  //                  The bit for field index i is obtained by the expression:
-  //                    has_bits[i / 32] & (1 << (i % 32))
-  //   unknown_fields_offset:  Offset in the message of the UnknownFieldSet for
-  //                  the message.
-  //   extensions_offset:  Offset in the message of the ExtensionSet for the
-  //                  message, or -1 if the message type has no extension
-  //                  ranges.
-  //   pool:          DescriptorPool to search for extension definitions.  Only
-  //                  used by FindKnownExtensionByName() and
-  //                  FindKnownExtensionByNumber().
-  //   factory:       MessageFactory to use to construct extension messages.
-  //   object_size:   The size of a message object of this type, as measured
-  //                  by sizeof().
-  GeneratedMessageReflection(const Descriptor* descriptor,
-                             const Message* default_instance,
-                             const int offsets[],
-                             int has_bits_offset,
-                             int unknown_fields_offset,
-                             int extensions_offset,
-                             const DescriptorPool* pool,
-                             MessageFactory* factory,
-                             int object_size);
-  ~GeneratedMessageReflection();
+class LIBPROTOBUF_EXPORT GeneratedMessageReflection : public Reflection
+{
+public:
+	// Constructs a GeneratedMessageReflection.
+	// Parameters:
+	//   descriptor:    The descriptor for the message type being implemented.
+	//   default_instance:  The default instance of the message.  This is only
+	//                  used to obtain pointers to default instances of embedded
+	//                  messages, which GetMessage() will return if the particular
+	//                  sub-message has not been initialized yet.  (Thus, all
+	//                  embedded message fields *must* have non-NULL pointers
+	//                  in the default instance.)
+	//   offsets:       An array of ints giving the byte offsets, relative to
+	//                  the start of the message object, of each field.  These can
+	//                  be computed at compile time using the
+	//                  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET() macro, defined
+	//                  below.
+	//   has_bits_offset:  Offset in the message of an array of uint32s of size
+	//                  descriptor->field_count()/32, rounded up.  This is a
+	//                  bitfield where each bit indicates whether or not the
+	//                  corresponding field of the message has been initialized.
+	//                  The bit for field index i is obtained by the expression:
+	//                    has_bits[i / 32] & (1 << (i % 32))
+	//   unknown_fields_offset:  Offset in the message of the UnknownFieldSet for
+	//                  the message.
+	//   extensions_offset:  Offset in the message of the ExtensionSet for the
+	//                  message, or -1 if the message type has no extension
+	//                  ranges.
+	//   pool:          DescriptorPool to search for extension definitions.  Only
+	//                  used by FindKnownExtensionByName() and
+	//                  FindKnownExtensionByNumber().
+	//   factory:       MessageFactory to use to construct extension messages.
+	//   object_size:   The size of a message object of this type, as measured
+	//                  by sizeof().
+	GeneratedMessageReflection( const Descriptor* descriptor,
+								const Message* default_instance,
+								const int offsets[],
+								int has_bits_offset,
+								int unknown_fields_offset,
+								int extensions_offset,
+								const DescriptorPool* pool,
+								MessageFactory* factory,
+								int object_size );
+	~GeneratedMessageReflection();
 
-  // implements Reflection -------------------------------------------
+	// implements Reflection -------------------------------------------
 
-  const UnknownFieldSet& GetUnknownFields(const Message& message) const;
-  UnknownFieldSet* MutableUnknownFields(Message* message) const;
+	const UnknownFieldSet& GetUnknownFields( const Message& message ) const;
+	UnknownFieldSet* MutableUnknownFields( Message* message ) const;
 
-  int SpaceUsed(const Message& message) const;
+	int SpaceUsed( const Message& message ) const;
 
-  bool HasField(const Message& message, const FieldDescriptor* field) const;
-  int FieldSize(const Message& message, const FieldDescriptor* field) const;
-  void ClearField(Message* message, const FieldDescriptor* field) const;
-  void RemoveLast(Message* message, const FieldDescriptor* field) const;
-  void Swap(Message* message1, Message* message2) const;
-  void SwapElements(Message* message, const FieldDescriptor* field,
-            int index1, int index2) const;
-  void ListFields(const Message& message,
-                  vector<const FieldDescriptor*>* output) const;
+	bool HasField( const Message& message, const FieldDescriptor* field ) const;
+	int FieldSize( const Message& message, const FieldDescriptor* field ) const;
+	void ClearField( Message* message, const FieldDescriptor* field ) const;
+	void RemoveLast( Message* message, const FieldDescriptor* field ) const;
+	void Swap( Message* message1, Message* message2 ) const;
+	void SwapElements( Message* message, const FieldDescriptor* field,
+					   int index1, int index2 ) const;
+	void ListFields( const Message& message,
+					 vector<const FieldDescriptor*>* output ) const;
 
-  int32  GetInt32 (const Message& message,
-                   const FieldDescriptor* field) const;
-  int64  GetInt64 (const Message& message,
-                   const FieldDescriptor* field) const;
-  uint32 GetUInt32(const Message& message,
-                   const FieldDescriptor* field) const;
-  uint64 GetUInt64(const Message& message,
-                   const FieldDescriptor* field) const;
-  float  GetFloat (const Message& message,
-                   const FieldDescriptor* field) const;
-  double GetDouble(const Message& message,
-                   const FieldDescriptor* field) const;
-  bool   GetBool  (const Message& message,
-                   const FieldDescriptor* field) const;
-  string GetString(const Message& message,
-                   const FieldDescriptor* field) const;
-  const string& GetStringReference(const Message& message,
-                                   const FieldDescriptor* field,
-                                   string* scratch) const;
-  const EnumValueDescriptor* GetEnum(const Message& message,
-                                     const FieldDescriptor* field) const;
-  const Message& GetMessage(const Message& message,
-                            const FieldDescriptor* field,
-                            MessageFactory* factory = NULL) const;
+	int32  GetInt32( const Message& message,
+					 const FieldDescriptor* field ) const;
+	int64  GetInt64( const Message& message,
+					 const FieldDescriptor* field ) const;
+	uint32 GetUInt32( const Message& message,
+					  const FieldDescriptor* field ) const;
+	uint64 GetUInt64( const Message& message,
+					  const FieldDescriptor* field ) const;
+	float  GetFloat( const Message& message,
+					 const FieldDescriptor* field ) const;
+	double GetDouble( const Message& message,
+					  const FieldDescriptor* field ) const;
+	bool   GetBool( const Message& message,
+					const FieldDescriptor* field ) const;
+	string GetString( const Message& message,
+					  const FieldDescriptor* field ) const;
+	const string& GetStringReference( const Message& message,
+									  const FieldDescriptor* field,
+									  string* scratch ) const;
+	const EnumValueDescriptor* GetEnum( const Message& message,
+										const FieldDescriptor* field ) const;
+	const Message& GetMessage( const Message& message,
+							   const FieldDescriptor* field,
+							   MessageFactory* factory = NULL ) const;
 
-  void SetInt32 (Message* message,
-                 const FieldDescriptor* field, int32  value) const;
-  void SetInt64 (Message* message,
-                 const FieldDescriptor* field, int64  value) const;
-  void SetUInt32(Message* message,
-                 const FieldDescriptor* field, uint32 value) const;
-  void SetUInt64(Message* message,
-                 const FieldDescriptor* field, uint64 value) const;
-  void SetFloat (Message* message,
-                 const FieldDescriptor* field, float  value) const;
-  void SetDouble(Message* message,
-                 const FieldDescriptor* field, double value) const;
-  void SetBool  (Message* message,
-                 const FieldDescriptor* field, bool   value) const;
-  void SetString(Message* message,
-                 const FieldDescriptor* field,
-                 const string& value) const;
-  void SetEnum  (Message* message, const FieldDescriptor* field,
-                 const EnumValueDescriptor* value) const;
-  Message* MutableMessage(Message* message, const FieldDescriptor* field,
-                          MessageFactory* factory = NULL) const;
+	void SetInt32( Message* message,
+				   const FieldDescriptor* field, int32  value ) const;
+	void SetInt64( Message* message,
+				   const FieldDescriptor* field, int64  value ) const;
+	void SetUInt32( Message* message,
+					const FieldDescriptor* field, uint32 value ) const;
+	void SetUInt64( Message* message,
+					const FieldDescriptor* field, uint64 value ) const;
+	void SetFloat( Message* message,
+				   const FieldDescriptor* field, float  value ) const;
+	void SetDouble( Message* message,
+					const FieldDescriptor* field, double value ) const;
+	void SetBool( Message* message,
+				  const FieldDescriptor* field, bool   value ) const;
+	void SetString( Message* message,
+					const FieldDescriptor* field,
+					const string& value ) const;
+	void SetEnum( Message* message, const FieldDescriptor* field,
+				  const EnumValueDescriptor* value ) const;
+	Message* MutableMessage( Message* message, const FieldDescriptor* field,
+							 MessageFactory* factory = NULL ) const;
 
-  int32  GetRepeatedInt32 (const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  int64  GetRepeatedInt64 (const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  uint32 GetRepeatedUInt32(const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  uint64 GetRepeatedUInt64(const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  float  GetRepeatedFloat (const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  double GetRepeatedDouble(const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  bool   GetRepeatedBool  (const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  string GetRepeatedString(const Message& message,
-                           const FieldDescriptor* field, int index) const;
-  const string& GetRepeatedStringReference(const Message& message,
-                                           const FieldDescriptor* field,
-                                           int index, string* scratch) const;
-  const EnumValueDescriptor* GetRepeatedEnum(const Message& message,
-                                             const FieldDescriptor* field,
-                                             int index) const;
-  const Message& GetRepeatedMessage(const Message& message,
-                                    const FieldDescriptor* field,
-                                    int index) const;
+	int32  GetRepeatedInt32( const Message& message,
+							 const FieldDescriptor* field, int index ) const;
+	int64  GetRepeatedInt64( const Message& message,
+							 const FieldDescriptor* field, int index ) const;
+	uint32 GetRepeatedUInt32( const Message& message,
+							  const FieldDescriptor* field, int index ) const;
+	uint64 GetRepeatedUInt64( const Message& message,
+							  const FieldDescriptor* field, int index ) const;
+	float  GetRepeatedFloat( const Message& message,
+							 const FieldDescriptor* field, int index ) const;
+	double GetRepeatedDouble( const Message& message,
+							  const FieldDescriptor* field, int index ) const;
+	bool   GetRepeatedBool( const Message& message,
+							const FieldDescriptor* field, int index ) const;
+	string GetRepeatedString( const Message& message,
+							  const FieldDescriptor* field, int index ) const;
+	const string& GetRepeatedStringReference( const Message& message,
+			const FieldDescriptor* field,
+			int index, string* scratch ) const;
+	const EnumValueDescriptor* GetRepeatedEnum( const Message& message,
+			const FieldDescriptor* field,
+			int index ) const;
+	const Message& GetRepeatedMessage( const Message& message,
+									   const FieldDescriptor* field,
+									   int index ) const;
 
-  // Set the value of a field.
-  void SetRepeatedInt32 (Message* message,
-                         const FieldDescriptor* field, int index, int32  value) const;
-  void SetRepeatedInt64 (Message* message,
-                         const FieldDescriptor* field, int index, int64  value) const;
-  void SetRepeatedUInt32(Message* message,
-                         const FieldDescriptor* field, int index, uint32 value) const;
-  void SetRepeatedUInt64(Message* message,
-                         const FieldDescriptor* field, int index, uint64 value) const;
-  void SetRepeatedFloat (Message* message,
-                         const FieldDescriptor* field, int index, float  value) const;
-  void SetRepeatedDouble(Message* message,
-                         const FieldDescriptor* field, int index, double value) const;
-  void SetRepeatedBool  (Message* message,
-                         const FieldDescriptor* field, int index, bool   value) const;
-  void SetRepeatedString(Message* message,
-                         const FieldDescriptor* field, int index,
-                         const string& value) const;
-  void SetRepeatedEnum(Message* message, const FieldDescriptor* field,
-                       int index, const EnumValueDescriptor* value) const;
-  // Get a mutable pointer to a field with a message type.
-  Message* MutableRepeatedMessage(Message* message,
-                                  const FieldDescriptor* field,
-                                  int index) const;
+	// Set the value of a field.
+	void SetRepeatedInt32( Message* message,
+						   const FieldDescriptor* field, int index, int32  value ) const;
+	void SetRepeatedInt64( Message* message,
+						   const FieldDescriptor* field, int index, int64  value ) const;
+	void SetRepeatedUInt32( Message* message,
+							const FieldDescriptor* field, int index, uint32 value ) const;
+	void SetRepeatedUInt64( Message* message,
+							const FieldDescriptor* field, int index, uint64 value ) const;
+	void SetRepeatedFloat( Message* message,
+						   const FieldDescriptor* field, int index, float  value ) const;
+	void SetRepeatedDouble( Message* message,
+							const FieldDescriptor* field, int index, double value ) const;
+	void SetRepeatedBool( Message* message,
+						  const FieldDescriptor* field, int index, bool   value ) const;
+	void SetRepeatedString( Message* message,
+							const FieldDescriptor* field, int index,
+							const string& value ) const;
+	void SetRepeatedEnum( Message* message, const FieldDescriptor* field,
+						  int index, const EnumValueDescriptor* value ) const;
+	// Get a mutable pointer to a field with a message type.
+	Message* MutableRepeatedMessage( Message* message,
+									 const FieldDescriptor* field,
+									 int index ) const;
 
-  void AddInt32 (Message* message,
-                 const FieldDescriptor* field, int32  value) const;
-  void AddInt64 (Message* message,
-                 const FieldDescriptor* field, int64  value) const;
-  void AddUInt32(Message* message,
-                 const FieldDescriptor* field, uint32 value) const;
-  void AddUInt64(Message* message,
-                 const FieldDescriptor* field, uint64 value) const;
-  void AddFloat (Message* message,
-                 const FieldDescriptor* field, float  value) const;
-  void AddDouble(Message* message,
-                 const FieldDescriptor* field, double value) const;
-  void AddBool  (Message* message,
-                 const FieldDescriptor* field, bool   value) const;
-  void AddString(Message* message,
-                 const FieldDescriptor* field, const string& value) const;
-  void AddEnum(Message* message,
-               const FieldDescriptor* field,
-               const EnumValueDescriptor* value) const;
-  Message* AddMessage(Message* message, const FieldDescriptor* field,
-                      MessageFactory* factory = NULL) const;
+	void AddInt32( Message* message,
+				   const FieldDescriptor* field, int32  value ) const;
+	void AddInt64( Message* message,
+				   const FieldDescriptor* field, int64  value ) const;
+	void AddUInt32( Message* message,
+					const FieldDescriptor* field, uint32 value ) const;
+	void AddUInt64( Message* message,
+					const FieldDescriptor* field, uint64 value ) const;
+	void AddFloat( Message* message,
+				   const FieldDescriptor* field, float  value ) const;
+	void AddDouble( Message* message,
+					const FieldDescriptor* field, double value ) const;
+	void AddBool( Message* message,
+				  const FieldDescriptor* field, bool   value ) const;
+	void AddString( Message* message,
+					const FieldDescriptor* field, const string& value ) const;
+	void AddEnum( Message* message,
+				  const FieldDescriptor* field,
+				  const EnumValueDescriptor* value ) const;
+	Message* AddMessage( Message* message, const FieldDescriptor* field,
+						 MessageFactory* factory = NULL ) const;
 
-  const FieldDescriptor* FindKnownExtensionByName(const string& name) const;
-  const FieldDescriptor* FindKnownExtensionByNumber(int number) const;
+	const FieldDescriptor* FindKnownExtensionByName( const string& name ) const;
+	const FieldDescriptor* FindKnownExtensionByNumber( int number ) const;
 
- private:
-  friend class GeneratedMessage;
+private:
+	friend class GeneratedMessage;
 
-  const Descriptor* descriptor_;
-  const Message* default_instance_;
-  const int* offsets_;
+	const Descriptor* descriptor_;
+	const Message* default_instance_;
+	const int* offsets_;
 
-  int has_bits_offset_;
-  int unknown_fields_offset_;
-  int extensions_offset_;
-  int object_size_;
+	int has_bits_offset_;
+	int unknown_fields_offset_;
+	int extensions_offset_;
+	int object_size_;
 
-  const DescriptorPool* descriptor_pool_;
-  MessageFactory* message_factory_;
+	const DescriptorPool* descriptor_pool_;
+	MessageFactory* message_factory_;
 
-  template <typename Type>
-  inline const Type& GetRaw(const Message& message,
-                            const FieldDescriptor* field) const;
-  template <typename Type>
-  inline Type* MutableRaw(Message* message,
-                          const FieldDescriptor* field) const;
-  template <typename Type>
-  inline const Type& DefaultRaw(const FieldDescriptor* field) const;
-  inline const Message* GetMessagePrototype(const FieldDescriptor* field) const;
+	template <typename Type>
+	inline const Type& GetRaw( const Message& message,
+							   const FieldDescriptor* field ) const;
+	template <typename Type>
+	inline Type* MutableRaw( Message* message,
+							 const FieldDescriptor* field ) const;
+	template <typename Type>
+	inline const Type& DefaultRaw( const FieldDescriptor* field ) const;
+	inline const Message* GetMessagePrototype( const FieldDescriptor* field ) const;
 
-  inline const uint32* GetHasBits(const Message& message) const;
-  inline uint32* MutableHasBits(Message* message) const;
-  inline const ExtensionSet& GetExtensionSet(const Message& message) const;
-  inline ExtensionSet* MutableExtensionSet(Message* message) const;
+	inline const uint32* GetHasBits( const Message& message ) const;
+	inline uint32* MutableHasBits( Message* message ) const;
+	inline const ExtensionSet& GetExtensionSet( const Message& message ) const;
+	inline ExtensionSet* MutableExtensionSet( Message* message ) const;
 
-  inline bool HasBit(const Message& message,
-                     const FieldDescriptor* field) const;
-  inline void SetBit(Message* message,
-                     const FieldDescriptor* field) const;
-  inline void ClearBit(Message* message,
-                       const FieldDescriptor* field) const;
+	inline bool HasBit( const Message& message,
+						const FieldDescriptor* field ) const;
+	inline void SetBit( Message* message,
+						const FieldDescriptor* field ) const;
+	inline void ClearBit( Message* message,
+						  const FieldDescriptor* field ) const;
 
-  template <typename Type>
-  inline const Type& GetField(const Message& message,
-                              const FieldDescriptor* field) const;
-  template <typename Type>
-  inline void SetField(Message* message,
-                       const FieldDescriptor* field, const Type& value) const;
-  template <typename Type>
-  inline Type* MutableField(Message* message,
-                            const FieldDescriptor* field) const;
-  template <typename Type>
-  inline const Type& GetRepeatedField(const Message& message,
-                                      const FieldDescriptor* field,
-                                      int index) const;
-  template <typename Type>
-  inline const Type& GetRepeatedPtrField(const Message& message,
-                                         const FieldDescriptor* field,
-                                         int index) const;
-  template <typename Type>
-  inline void SetRepeatedField(Message* message,
-                               const FieldDescriptor* field, int index,
-                               Type value) const;
-  template <typename Type>
-  inline Type* MutableRepeatedField(Message* message,
-                                    const FieldDescriptor* field,
-                                    int index) const;
-  template <typename Type>
-  inline void AddField(Message* message,
-                       const FieldDescriptor* field, const Type& value) const;
-  template <typename Type>
-  inline Type* AddField(Message* message,
-                        const FieldDescriptor* field) const;
+	template <typename Type>
+	inline const Type& GetField( const Message& message,
+								 const FieldDescriptor* field ) const;
+	template <typename Type>
+	inline void SetField( Message* message,
+						  const FieldDescriptor* field, const Type& value ) const;
+	template <typename Type>
+	inline Type* MutableField( Message* message,
+							   const FieldDescriptor* field ) const;
+	template <typename Type>
+	inline const Type& GetRepeatedField( const Message& message,
+										 const FieldDescriptor* field,
+										 int index ) const;
+	template <typename Type>
+	inline const Type& GetRepeatedPtrField( const Message& message,
+											const FieldDescriptor* field,
+											int index ) const;
+	template <typename Type>
+	inline void SetRepeatedField( Message* message,
+								  const FieldDescriptor* field, int index,
+								  Type value ) const;
+	template <typename Type>
+	inline Type* MutableRepeatedField( Message* message,
+									   const FieldDescriptor* field,
+									   int index ) const;
+	template <typename Type>
+	inline void AddField( Message* message,
+						  const FieldDescriptor* field, const Type& value ) const;
+	template <typename Type>
+	inline Type* AddField( Message* message,
+						   const FieldDescriptor* field ) const;
 
-  int GetExtensionNumberOrDie(const Descriptor* type) const;
+	int GetExtensionNumberOrDie( const Descriptor* type ) const;
 
-  GOOGLE_DISALLOW_EVIL_CONSTRUCTORS(GeneratedMessageReflection);
+	GOOGLE_DISALLOW_EVIL_CONSTRUCTORS( GeneratedMessageReflection );
 };
 
 // Returns the offset of the given field within the given aggregate type.
@@ -387,35 +392,40 @@ class LIBPROTOBUF_EXPORT GeneratedMessageReflection : public Reflection {
 // If you need to compile without RTTI, simply #define GOOGLE_PROTOBUF_NO_RTTI.
 // On MSVC, this should be detected automatically.
 template<typename To, typename From>
-inline To dynamic_cast_if_available(From from) {
+inline To dynamic_cast_if_available( From from )
+{
 #if defined(GOOGLE_PROTOBUF_NO_RTTI) || (defined(_MSC_VER)&&!defined(_CPPRTTI))
-  return NULL;
+	return NULL;
 #else
-  return dynamic_cast<To>(from);
+	return dynamic_cast<To>( from );
 #endif
 }
 
 // Helper for EnumType_Parse functions: try to parse the string 'name' as an
 // enum name of the given type, returning true and filling in value on success,
 // or returning false and leaving value unchanged on failure.
-LIBPROTOBUF_EXPORT bool ParseNamedEnum(const EnumDescriptor* descriptor,
-                    const string& name,
-                    int* value);
+LIBPROTOBUF_EXPORT bool ParseNamedEnum( const EnumDescriptor* descriptor,
+										const string& name,
+										int* value );
 
 template<typename EnumType>
-bool ParseNamedEnum(const EnumDescriptor* descriptor,
-                    const string& name,
-                    EnumType* value) {
-  int tmp;
-  if (!ParseNamedEnum(descriptor, name, &tmp)) return false;
-  *value = static_cast<EnumType>(tmp);
-  return true;
+bool ParseNamedEnum( const EnumDescriptor* descriptor,
+					 const string& name,
+					 EnumType* value )
+{
+	int tmp;
+	if( !ParseNamedEnum( descriptor, name, &tmp ) )
+	{
+		return false;
+	}
+	*value = static_cast<EnumType>( tmp );
+	return true;
 }
 
 // Just a wrapper around printing the name of a value. The main point of this
 // function is not to be inlined, so that you can do this without including
 // descriptor.h.
-LIBPROTOBUF_EXPORT const string& NameOfEnum(const EnumDescriptor* descriptor, int value);
+LIBPROTOBUF_EXPORT const string& NameOfEnum( const EnumDescriptor* descriptor, int value );
 
 }  // namespace internal
 }  // namespace protobuf

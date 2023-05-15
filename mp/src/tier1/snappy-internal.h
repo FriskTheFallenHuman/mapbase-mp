@@ -33,24 +33,30 @@
 
 #include "snappy-stubs-internal.h"
 
-namespace snappy {
-namespace internal {
+namespace snappy
+{
+namespace internal
+{
 
-class WorkingMemory {
- public:
-  WorkingMemory() : large_table_(NULL) { }
-  ~WorkingMemory() { delete[] large_table_; }
+class WorkingMemory
+{
+public:
+	WorkingMemory() : large_table_( NULL ) { }
+	~WorkingMemory()
+	{
+		delete[] large_table_;
+	}
 
-  // Allocates and clears a hash table using memory in "*this",
-  // stores the number of buckets in "*table_size" and returns a pointer to
-  // the base of the hash table.
-  uint16* GetHashTable(size_t input_size, int* table_size);
+	// Allocates and clears a hash table using memory in "*this",
+	// stores the number of buckets in "*table_size" and returns a pointer to
+	// the base of the hash table.
+	uint16* GetHashTable( size_t input_size, int* table_size );
 
- private:
-  uint16 small_table_[1<<10];    // 2KB
-  uint16* large_table_;          // Allocated only when needed
+private:
+	uint16 small_table_[1 << 10];  // 2KB
+	uint16* large_table_;          // Allocated only when needed
 
-  DISALLOW_COPY_AND_ASSIGN(WorkingMemory);
+	DISALLOW_COPY_AND_ASSIGN( WorkingMemory );
 };
 
 // Flat array compression that does not emit the "uncompressed length"
@@ -64,11 +70,11 @@ class WorkingMemory {
 //
 // Returns an "end" pointer into "op" buffer.
 // "end - op" is the compressed size of "input".
-char* CompressFragment(const char* input,
-                       size_t input_length,
-                       char* op,
-                       uint16* table,
-                       const int table_size);
+char* CompressFragment( const char* input,
+						size_t input_length,
+						char* op,
+						uint16* table,
+						const int table_size );
 
 // Return the largest n such that
 //
@@ -82,65 +88,80 @@ char* CompressFragment(const char* input,
 // Separate implementation for x86_64, for speed.  Uses the fact that
 // x86_64 is little endian.
 #if defined(ARCH_K8)
-static inline int FindMatchLength(const char* s1,
-                                  const char* s2,
-                                  const char* s2_limit) {
-  assert(s2_limit >= s2);
-  int matched = 0;
+static inline int FindMatchLength( const char* s1,
+								   const char* s2,
+								   const char* s2_limit )
+{
+	assert( s2_limit >= s2 );
+	int matched = 0;
 
-  // Find out how long the match is. We loop over the data 64 bits at a
-  // time until we find a 64-bit block that doesn't match; then we find
-  // the first non-matching bit and use that to calculate the total
-  // length of the match.
-  while (PREDICT_TRUE(s2 <= s2_limit - 8)) {
-    if (PREDICT_FALSE(UNALIGNED_LOAD64(s2) == UNALIGNED_LOAD64(s1 + matched))) {
-      s2 += 8;
-      matched += 8;
-    } else {
-      // On current (mid-2008) Opteron models there is a 3% more
-      // efficient code sequence to find the first non-matching byte.
-      // However, what follows is ~10% better on Intel Core 2 and newer,
-      // and we expect AMD's bsf instruction to improve.
-      uint64 x = UNALIGNED_LOAD64(s2) ^ UNALIGNED_LOAD64(s1 + matched);
-      int matching_bits = Bits::FindLSBSetNonZero64(x);
-      matched += matching_bits >> 3;
-      return matched;
-    }
-  }
-  while (PREDICT_TRUE(s2 < s2_limit)) {
-    if (PREDICT_TRUE(s1[matched] == *s2)) {
-      ++s2;
-      ++matched;
-    } else {
-      return matched;
-    }
-  }
-  return matched;
+	// Find out how long the match is. We loop over the data 64 bits at a
+	// time until we find a 64-bit block that doesn't match; then we find
+	// the first non-matching bit and use that to calculate the total
+	// length of the match.
+	while( PREDICT_TRUE( s2 <= s2_limit - 8 ) )
+	{
+		if( PREDICT_FALSE( UNALIGNED_LOAD64( s2 ) == UNALIGNED_LOAD64( s1 + matched ) ) )
+		{
+			s2 += 8;
+			matched += 8;
+		}
+		else
+		{
+			// On current (mid-2008) Opteron models there is a 3% more
+			// efficient code sequence to find the first non-matching byte.
+			// However, what follows is ~10% better on Intel Core 2 and newer,
+			// and we expect AMD's bsf instruction to improve.
+			uint64 x = UNALIGNED_LOAD64( s2 ) ^ UNALIGNED_LOAD64( s1 + matched );
+			int matching_bits = Bits::FindLSBSetNonZero64( x );
+			matched += matching_bits >> 3;
+			return matched;
+		}
+	}
+	while( PREDICT_TRUE( s2 < s2_limit ) )
+	{
+		if( PREDICT_TRUE( s1[matched] == *s2 ) )
+		{
+			++s2;
+			++matched;
+		}
+		else
+		{
+			return matched;
+		}
+	}
+	return matched;
 }
 #else
-static inline int FindMatchLength(const char* s1,
-                                  const char* s2,
-                                  const char* s2_limit) {
-  // Implementation based on the x86-64 version, above.
-  assert(s2_limit >= s2);
-  int matched = 0;
+static inline int FindMatchLength( const char* s1,
+								   const char* s2,
+								   const char* s2_limit )
+{
+	// Implementation based on the x86-64 version, above.
+	assert( s2_limit >= s2 );
+	int matched = 0;
 
-  while (s2 <= s2_limit - 4 &&
-         UNALIGNED_LOAD32(s2) == UNALIGNED_LOAD32(s1 + matched)) {
-    s2 += 4;
-    matched += 4;
-  }
-  if (LittleEndian::IsLittleEndian() && s2 <= s2_limit - 4) {
-    uint32 x = UNALIGNED_LOAD32(s2) ^ UNALIGNED_LOAD32(s1 + matched);
-    int matching_bits = Bits::FindLSBSetNonZero(x);
-    matched += matching_bits >> 3;
-  } else {
-    while ((s2 < s2_limit) && (s1[matched] == *s2)) {
-      ++s2;
-      ++matched;
-    }
-  }
-  return matched;
+	while( s2 <= s2_limit - 4 &&
+			UNALIGNED_LOAD32( s2 ) == UNALIGNED_LOAD32( s1 + matched ) )
+	{
+		s2 += 4;
+		matched += 4;
+	}
+	if( LittleEndian::IsLittleEndian() && s2 <= s2_limit - 4 )
+	{
+		uint32 x = UNALIGNED_LOAD32( s2 ) ^ UNALIGNED_LOAD32( s1 + matched );
+		int matching_bits = Bits::FindLSBSetNonZero( x );
+		matched += matching_bits >> 3;
+	}
+	else
+	{
+		while( ( s2 < s2_limit ) && ( s1[matched] == *s2 ) )
+		{
+			++s2;
+			++matched;
+		}
+	}
+	return matched;
 }
 #endif
 

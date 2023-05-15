@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //===========================================================================//
 #include "cbase.h"
@@ -11,7 +11,7 @@
 #include "fx_impact.h"
 #include "view.h"
 #ifdef TF_CLIENT_DLL
-#include "cdll_util.h"
+	#include "cdll_util.h"
 #endif
 #include "engine/IStaticPropMgr.h"
 #include "c_impact_effects.h"
@@ -26,10 +26,10 @@ extern ConVar r_drawmodeldecals;
 ImpactSoundRouteFn g_pImpactSoundRouteFn = NULL;
 
 #ifdef MAPBASE
-ConVar g_ragdoll_steal_impacts_client( "g_ragdoll_steal_impacts_client", "1", FCVAR_NONE, "Allows clientside death ragdolls to \"steal\" impacts from their source entities. This fixes issues with NPCs dying before decals are applied." );
-ConVar g_ragdoll_steal_impacts_server( "g_ragdoll_steal_impacts_server", "1", FCVAR_NONE, "Allows serverside death ragdolls to \"steal\" impacts from their source entities. This fixes issues with NPCs dying before decals are applied." );
+	ConVar g_ragdoll_steal_impacts_client( "g_ragdoll_steal_impacts_client", "1", FCVAR_NONE, "Allows clientside death ragdolls to \"steal\" impacts from their source entities. This fixes issues with NPCs dying before decals are applied." );
+	ConVar g_ragdoll_steal_impacts_server( "g_ragdoll_steal_impacts_server", "1", FCVAR_NONE, "Allows serverside death ragdolls to \"steal\" impacts from their source entities. This fixes issues with NPCs dying before decals are applied." );
 
-ConVar g_ragdoll_client_impact_decals( "g_ragdoll_client_impact_decals", "1", FCVAR_NONE, "Applies decals to clientside ragdolls when they are hit." );
+	ConVar g_ragdoll_client_impact_decals( "g_ragdoll_client_impact_decals", "1", FCVAR_NONE, "Applies decals to clientside ragdolls when they are hit." );
 #endif
 
 //==========================================================================================================================
@@ -46,26 +46,32 @@ CRagdollEnumerator::CRagdollEnumerator( Ray_t& shot, int iDamageType )
 #endif
 }
 
-IterationRetval_t CRagdollEnumerator::EnumElement( IHandleEntity *pHandleEntity )
+IterationRetval_t CRagdollEnumerator::EnumElement( IHandleEntity* pHandleEntity )
 {
-	C_BaseEntity *pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
-	if ( pEnt == NULL )
+	C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle( pHandleEntity->GetRefEHandle() );
+	if( pEnt == NULL )
+	{
 		return ITERATION_CONTINUE;
+	}
 
-	C_BaseAnimating *pModel = static_cast< C_BaseAnimating * >( pEnt );
+	C_BaseAnimating* pModel = static_cast< C_BaseAnimating* >( pEnt );
 
 	// If the ragdoll was created on this tick, then the forces were already applied on the server
-	if ( pModel == NULL || WasRagdollCreatedOnCurrentTick( pEnt ) )
+	if( pModel == NULL || WasRagdollCreatedOnCurrentTick( pEnt ) )
+	{
 		return ITERATION_CONTINUE;
+	}
 
-	IPhysicsObject *pPhysicsObject = pModel->VPhysicsGetObject();
-	if ( pPhysicsObject == NULL )
+	IPhysicsObject* pPhysicsObject = pModel->VPhysicsGetObject();
+	if( pPhysicsObject == NULL )
+	{
 		return ITERATION_CONTINUE;
+	}
 
 	trace_t tr;
 	enginetrace->ClipRayToEntity( m_rayShot, MASK_SHOT, pModel, &tr );
 
-	if ( tr.fraction < 1.0 )
+	if( tr.fraction < 1.0 )
 	{
 		pModel->ImpactTrace( &tr, m_iDamageType, NULL );
 #ifdef MAPBASE
@@ -83,13 +89,15 @@ IterationRetval_t CRagdollEnumerator::EnumElement( IHandleEntity *pHandleEntity 
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 bool FX_AffectRagdolls( Vector vecOrigin, Vector vecStart, int iDamageType )
 {
 	// don't do this when lots of ragdolls are simulating
-	if ( s_RagdollLRU.CountRagdolls(true) > 1 )
+	if( s_RagdollLRU.CountRagdolls( true ) > 1 )
+	{
 		return false;
+	}
 	Ray_t shotRay;
 	shotRay.Init( vecStart, vecOrigin );
 
@@ -100,11 +108,13 @@ bool FX_AffectRagdolls( Vector vecOrigin, Vector vecStart, int iDamageType )
 }
 
 #ifdef MAPBASE
-C_BaseAnimating *FX_AffectRagdolls_GetHit( Vector vecOrigin, Vector vecStart, int iDamageType )
+C_BaseAnimating* FX_AffectRagdolls_GetHit( Vector vecOrigin, Vector vecStart, int iDamageType )
 {
 	// don't do this when lots of ragdolls are simulating
-	if ( s_RagdollLRU.CountRagdolls(true) > 1 )
+	if( s_RagdollLRU.CountRagdolls( true ) > 1 )
+	{
 		return NULL;
+	}
 	Ray_t shotRay;
 	shotRay.Init( vecStart, vecOrigin );
 
@@ -116,10 +126,10 @@ C_BaseAnimating *FX_AffectRagdolls_GetHit( Vector vecOrigin, Vector vecStart, in
 #endif
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : &data - 
+// Purpose:
+// Input  : &data -
 //-----------------------------------------------------------------------------
-void RagdollImpactCallback( const CEffectData &data )
+void RagdollImpactCallback( const CEffectData& data )
 {
 	FX_AffectRagdolls( data.m_vOrigin, data.m_vStart, data.m_nDamageType );
 }
@@ -127,24 +137,24 @@ void RagdollImpactCallback( const CEffectData &data )
 DECLARE_CLIENT_EFFECT( "RagdollImpact", RagdollImpactCallback );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType, int iHitbox, C_BaseEntity *pEntity, trace_t &tr, int nFlags, int maxLODToDecal )
+bool Impact( Vector& vecOrigin, Vector& vecStart, int iMaterial, int iDamageType, int iHitbox, C_BaseEntity* pEntity, trace_t& tr, int nFlags, int maxLODToDecal )
 {
 	VPROF( "Impact" );
 
-	Assert ( pEntity );
+	Assert( pEntity );
 
 #ifdef MAPBASE
 	// If the entity already has a ragdoll that was created on the current tick, use that ragdoll instead.
 	// This allows the killing damage's decals to show up on the ragdoll.
-	if (C_BaseAnimating *pAnimating = pEntity->GetBaseAnimating())
+	if( C_BaseAnimating* pAnimating = pEntity->GetBaseAnimating() )
 	{
-		if (pAnimating->m_pClientsideRagdoll && WasRagdollCreatedOnCurrentTick( pAnimating->m_pClientsideRagdoll ) && g_ragdoll_steal_impacts_client.GetBool())
+		if( pAnimating->m_pClientsideRagdoll && WasRagdollCreatedOnCurrentTick( pAnimating->m_pClientsideRagdoll ) && g_ragdoll_steal_impacts_client.GetBool() )
 		{
 			pEntity = pAnimating->m_pClientsideRagdoll;
 		}
-		else if (pAnimating->m_pServerRagdoll && WasRagdollCreatedOnCurrentTick( pAnimating->m_pServerRagdoll ) && g_ragdoll_steal_impacts_server.GetBool())
+		else if( pAnimating->m_pServerRagdoll && WasRagdollCreatedOnCurrentTick( pAnimating->m_pServerRagdoll ) && g_ragdoll_steal_impacts_server.GetBool() )
 		{
 			pEntity = pAnimating->m_pServerRagdoll;
 		}
@@ -152,7 +162,7 @@ bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType
 #endif
 
 	// Clear out the trace
-	memset( &tr, 0, sizeof(trace_t));
+	memset( &tr, 0, sizeof( trace_t ) );
 	tr.fraction = 1.0f;
 
 	// Setup our shot information
@@ -162,18 +172,18 @@ bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType
 	VectorMA( vecStart, flLength + 8.0f, shotDir, traceExt );
 
 	// Attempt to hit ragdolls
-	
+
 	bool bHitRagdoll = false;
-	
+
 #ifdef MAPBASE
-	if ( !pEntity->IsClientCreated() )
+	if( !pEntity->IsClientCreated() )
 	{
-		C_BaseAnimating *pRagdoll = FX_AffectRagdolls_GetHit( vecOrigin, vecStart, iDamageType );
-		if (pRagdoll)
+		C_BaseAnimating* pRagdoll = FX_AffectRagdolls_GetHit( vecOrigin, vecStart, iDamageType );
+		if( pRagdoll )
 		{
 			bHitRagdoll = true;
 
-			if (g_ragdoll_client_impact_decals.GetBool() && pRagdoll->IsRagdoll())
+			if( g_ragdoll_client_impact_decals.GetBool() && pRagdoll->IsRagdoll() )
 			{
 				pEntity = pRagdoll;
 
@@ -181,15 +191,15 @@ bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType
 				int iNearestMaterial = 0;
 				float flNearestDistSqr = FLT_MAX;
 
-				IPhysicsObject *pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-				int count = pEntity->VPhysicsGetObjectList( pList, ARRAYSIZE(pList) );
-				for ( int i = 0; i < count; i++ )
+				IPhysicsObject* pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
+				int count = pEntity->VPhysicsGetObjectList( pList, ARRAYSIZE( pList ) );
+				for( int i = 0; i < count; i++ )
 				{
 					Vector vecPosition;
 					QAngle angAngles;
 					pList[i]->GetPosition( &vecPosition, &angAngles );
-					float flDistSqr = (vecStart - vecPosition).LengthSqr();
-					if (flDistSqr < flNearestDistSqr)
+					float flDistSqr = ( vecStart - vecPosition ).LengthSqr();
+					if( flDistSqr < flNearestDistSqr )
 					{
 						iNearestMaterial = pList[i]->GetMaterialIndex();
 						flNearestDistSqr = flDistSqr;
@@ -197,45 +207,47 @@ bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType
 				}
 
 				// Get the material from the surfaceprop
-				surfacedata_t *psurfaceData = physprops->GetSurfaceData( iNearestMaterial );
+				surfacedata_t* psurfaceData = physprops->GetSurfaceData( iNearestMaterial );
 				iMaterial = psurfaceData->game.material;
 			}
 		}
 	}
 #else
-	if ( !pEntity->IsClientCreated() )
+	if( !pEntity->IsClientCreated() )
 	{
 		bHitRagdoll = FX_AffectRagdolls( vecOrigin, vecStart, iDamageType );
 	}
 #endif
 
-	if ( (nFlags & IMPACT_NODECAL) == 0 )
+	if( ( nFlags & IMPACT_NODECAL ) == 0 )
 	{
-		const char *pchDecalName = GetImpactDecal( pEntity, iMaterial, iDamageType );
+		const char* pchDecalName = GetImpactDecal( pEntity, iMaterial, iDamageType );
 		int decalNumber = decalsystem->GetDecalIndexForName( pchDecalName );
-		if ( decalNumber == -1 )
+		if( decalNumber == -1 )
+		{
 			return false;
+		}
 
 		bool bSkipDecal = false;
 
 #ifdef TF_CLIENT_DLL
 		// Don't show blood decals if we're filtering them out (Pyro Goggles)
-		if ( IsLocalPlayerUsingVisionFilterFlags( TF_VISION_FILTER_PYRO ) || UTIL_IsLowViolence() )
+		if( IsLocalPlayerUsingVisionFilterFlags( TF_VISION_FILTER_PYRO ) || UTIL_IsLowViolence() )
 		{
-			if ( V_strstr( pchDecalName, "Flesh" ) )
+			if( V_strstr( pchDecalName, "Flesh" ) )
 			{
 				bSkipDecal = true;
 			}
 		}
 #endif
 
-		if ( !bSkipDecal )
+		if( !bSkipDecal )
 		{
-			if ( (pEntity->entindex() == 0) && (iHitbox != 0) )
+			if( ( pEntity->entindex() == 0 ) && ( iHitbox != 0 ) )
 			{
 				staticpropmgr->AddDecalToStaticProp( vecStart, traceExt, iHitbox - 1, decalNumber, true, tr );
 			}
-			else if ( pEntity )
+			else if( pEntity )
 			{
 				// Here we deal with decals on entities.
 				pEntity->AddDecal( vecStart, traceExt, vecOrigin, iHitbox, decalNumber, true, tr, maxLODToDecal );
@@ -248,36 +260,40 @@ bool Impact( Vector &vecOrigin, Vector &vecStart, int iMaterial, int iDamageType
 		Ray_t ray;
 		ray.Init( vecStart, traceExt );
 
-		if ( (pEntity->entindex() == 0) && (iHitbox != 0) )
+		if( ( pEntity->entindex() == 0 ) && ( iHitbox != 0 ) )
 		{
 			// Special case for world entity with hitbox (that's a static prop)
-			ICollideable *pCollideable = staticpropmgr->GetStaticPropByIndex( iHitbox - 1 ); 
+			ICollideable* pCollideable = staticpropmgr->GetStaticPropByIndex( iHitbox - 1 );
 			enginetrace->ClipRayToCollideable( ray, MASK_SHOT, pCollideable, &tr );
 		}
 		else
 		{
-			if ( !pEntity )
+			if( !pEntity )
+			{
 				return false;
+			}
 
 			enginetrace->ClipRayToEntity( ray, MASK_SHOT, pEntity, &tr );
 		}
 	}
 
 	// If we found the surface, emit debris flecks
-	bool bReportRagdollImpacts = (nFlags & IMPACT_REPORT_RAGDOLL_IMPACTS) != 0;
-	if ( ( tr.fraction == 1.0f ) || ( bHitRagdoll && !bReportRagdollImpacts ) )
+	bool bReportRagdollImpacts = ( nFlags & IMPACT_REPORT_RAGDOLL_IMPACTS ) != 0;
+	if( ( tr.fraction == 1.0f ) || ( bHitRagdoll && !bReportRagdollImpacts ) )
+	{
 		return false;
+	}
 
 	return true;
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-char const *GetImpactDecal( C_BaseEntity *pEntity, int iMaterial, int iDamageType )
+char const* GetImpactDecal( C_BaseEntity* pEntity, int iMaterial, int iDamageType )
 {
-	char const *decalName;
-	if ( !pEntity )
+	char const* decalName;
+	if( !pEntity )
 	{
 		decalName = "Impact.Concrete";
 	}
@@ -297,44 +313,44 @@ static ConVar cl_new_impact_effects( "cl_new_impact_effects", "0" );
 
 struct ImpactEffect_t
 {
-	const char *m_pName;
-	const char *m_pNameNoFlecks;
+	const char* m_pName;
+	const char* m_pNameNoFlecks;
 };
 
-static ImpactEffect_t s_pImpactEffect[26] = 
+static ImpactEffect_t s_pImpactEffect[26] =
 {
 	{ "impact_antlion",		NULL },							// CHAR_TEX_ANTLION
-	{ NULL,					NULL },							// CHAR_TEX_BLOODYFLESH	
-	{ "impact_concrete",	"impact_concrete_noflecks" },	// CHAR_TEX_CONCRETE		
-	{ "impact_dirt",		NULL },							// CHAR_TEX_DIRT			
-	{ NULL,					NULL },							// CHAR_TEX_EGGSHELL		
-	{ NULL,					NULL },							// CHAR_TEX_FLESH			
-	{ NULL,					NULL },							// CHAR_TEX_GRATE			
-	{ NULL,					NULL },							// CHAR_TEX_ALIENFLESH		
-	{ NULL,					NULL },							// CHAR_TEX_CLIP			
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ NULL,					NULL },							// CHAR_TEX_PLASTIC		
-	{ "impact_metal",		NULL },							// CHAR_TEX_METAL			
-	{ "impact_dirt",		NULL },							// CHAR_TEX_SAND			
-	{ NULL,					NULL },							// CHAR_TEX_FOLIAGE		
-	{ "impact_computer",	NULL },							// CHAR_TEX_COMPUTER		
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ NULL,					NULL },							// CHAR_TEX_SLOSH			
-	{ "impact_concrete",	"impact_concrete_noflecks" },	// CHAR_TEX_TILE			
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ "impact_metal",		NULL },							// CHAR_TEX_VENT			
-	{ "impact_wood",		"impact_wood_noflecks" },		// CHAR_TEX_WOOD			
-	{ NULL,					NULL },							// CHAR_TEX_UNUSED		
-	{ "impact_glass",		NULL },							// CHAR_TEX_GLASS			
-	{ "warp_shield_impact", NULL },							// CHAR_TEX_WARPSHIELD		
+	{ NULL,					NULL },							// CHAR_TEX_BLOODYFLESH
+	{ "impact_concrete",	"impact_concrete_noflecks" },	// CHAR_TEX_CONCRETE
+	{ "impact_dirt",		NULL },							// CHAR_TEX_DIRT
+	{ NULL,					NULL },							// CHAR_TEX_EGGSHELL
+	{ NULL,					NULL },							// CHAR_TEX_FLESH
+	{ NULL,					NULL },							// CHAR_TEX_GRATE
+	{ NULL,					NULL },							// CHAR_TEX_ALIENFLESH
+	{ NULL,					NULL },							// CHAR_TEX_CLIP
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ NULL,					NULL },							// CHAR_TEX_PLASTIC
+	{ "impact_metal",		NULL },							// CHAR_TEX_METAL
+	{ "impact_dirt",		NULL },							// CHAR_TEX_SAND
+	{ NULL,					NULL },							// CHAR_TEX_FOLIAGE
+	{ "impact_computer",	NULL },							// CHAR_TEX_COMPUTER
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ NULL,					NULL },							// CHAR_TEX_SLOSH
+	{ "impact_concrete",	"impact_concrete_noflecks" },	// CHAR_TEX_TILE
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ "impact_metal",		NULL },							// CHAR_TEX_VENT
+	{ "impact_wood",		"impact_wood_noflecks" },		// CHAR_TEX_WOOD
+	{ NULL,					NULL },							// CHAR_TEX_UNUSED
+	{ "impact_glass",		NULL },							// CHAR_TEX_GLASS
+	{ "warp_shield_impact", NULL },							// CHAR_TEX_WARPSHIELD
 };
 
-static void SetImpactControlPoint( CNewParticleEffect *pEffect, int nPoint, const Vector &vecImpactPoint, const Vector &vecForward, C_BaseEntity *pEntity )
+static void SetImpactControlPoint( CNewParticleEffect* pEffect, int nPoint, const Vector& vecImpactPoint, const Vector& vecForward, C_BaseEntity* pEntity )
 {
 	Vector vecImpactY, vecImpactZ;
-	VectorVectors( vecForward, vecImpactY, vecImpactZ ); 
+	VectorVectors( vecForward, vecImpactY, vecImpactZ );
 	vecImpactY *= -1.0f;
 
 	pEffect->SetControlPoint( nPoint, vecImpactPoint );
@@ -342,27 +358,31 @@ static void SetImpactControlPoint( CNewParticleEffect *pEffect, int nPoint, cons
 	pEffect->SetControlPointEntity( nPoint, pEntity );
 }
 
-static void PerformNewCustomEffects( const Vector &vecOrigin, trace_t &tr, const Vector &shotDir, int iMaterial, int iScale, int nFlags )
+static void PerformNewCustomEffects( const Vector& vecOrigin, trace_t& tr, const Vector& shotDir, int iMaterial, int iScale, int nFlags )
 {
 	bool bNoFlecks = !r_drawflecks.GetBool();
-	if ( !bNoFlecks )
+	if( !bNoFlecks )
 	{
-		bNoFlecks = ( ( nFlags & FLAGS_CUSTIOM_EFFECTS_NOFLECKS ) != 0  );
+		bNoFlecks = ( ( nFlags & FLAGS_CUSTIOM_EFFECTS_NOFLECKS ) != 0 );
 	}
 
 	// Compute the impact effect name
-	const ImpactEffect_t &effect = s_pImpactEffect[ iMaterial - 'A' ];
-	const char *pImpactName = effect.m_pName;
-	if ( bNoFlecks && effect.m_pNameNoFlecks )
+	const ImpactEffect_t& effect = s_pImpactEffect[ iMaterial - 'A' ];
+	const char* pImpactName = effect.m_pName;
+	if( bNoFlecks && effect.m_pNameNoFlecks )
 	{
 		pImpactName = effect.m_pNameNoFlecks;
 	}
-	if ( !pImpactName )
+	if( !pImpactName )
+	{
 		return;
+	}
 
 	CSmartPtr<CNewParticleEffect> pEffect = CNewParticleEffect::Create( NULL, pImpactName );
-	if ( !pEffect->IsValid() )
+	if( !pEffect->IsValid() )
+	{
 		return;
+	}
 
 	Vector	vecReflect;
 	float	flDot = DotProduct( shotDir, tr.plane.normal );
@@ -374,11 +394,11 @@ static void PerformNewCustomEffects( const Vector &vecOrigin, trace_t &tr, const
 	Vector vecImpactPoint = ( tr.fraction != 1.0f ) ? tr.endpos : vecOrigin;
 	Assert( VectorsAreEqual( vecOrigin, tr.endpos, 1e-1 ) );
 
-	SetImpactControlPoint( pEffect.GetObject(), 0, vecImpactPoint, tr.plane.normal, tr.m_pEnt ); 
-	SetImpactControlPoint( pEffect.GetObject(), 1, vecImpactPoint, vecReflect,		tr.m_pEnt ); 
-	SetImpactControlPoint( pEffect.GetObject(), 2, vecImpactPoint, vecShotBackward,	tr.m_pEnt ); 
+	SetImpactControlPoint( pEffect.GetObject(), 0, vecImpactPoint, tr.plane.normal, tr.m_pEnt );
+	SetImpactControlPoint( pEffect.GetObject(), 1, vecImpactPoint, vecReflect,		tr.m_pEnt );
+	SetImpactControlPoint( pEffect.GetObject(), 2, vecImpactPoint, vecShotBackward,	tr.m_pEnt );
 	pEffect->SetControlPoint( 3, Vector( iScale, iScale, iScale ) );
-	if ( pEffect->m_pDef->ReadsControlPoint( 4 ) )
+	if( pEffect->m_pDef->ReadsControlPoint( 4 ) )
 	{
 		Vector vecColor;
 		GetColorForSurface( &tr, &vecColor );
@@ -386,46 +406,48 @@ static void PerformNewCustomEffects( const Vector &vecOrigin, trace_t &tr, const
 	}
 }
 
-void PerformCustomEffects( const Vector &vecOrigin, trace_t &tr, const Vector &shotDir, int iMaterial, int iScale, int nFlags )
+void PerformCustomEffects( const Vector& vecOrigin, trace_t& tr, const Vector& shotDir, int iMaterial, int iScale, int nFlags )
 {
 	// Throw out the effect if any of these are true
-	if ( tr.surface.flags & (SURF_SKY|SURF_NODRAW|SURF_HINT|SURF_SKIP) )
+	if( tr.surface.flags & ( SURF_SKY | SURF_NODRAW | SURF_HINT | SURF_SKIP ) )
+	{
 		return;
+	}
 
-	if ( cl_new_impact_effects.GetInt() )
+	if( cl_new_impact_effects.GetInt() )
 	{
 		PerformNewCustomEffects( vecOrigin, tr, shotDir, iMaterial, iScale, nFlags );
 		return;
 	}
 
 	bool bNoFlecks = !r_drawflecks.GetBool();
-	if ( !bNoFlecks )
+	if( !bNoFlecks )
 	{
-		bNoFlecks = ( ( nFlags & FLAGS_CUSTIOM_EFFECTS_NOFLECKS ) != 0  );
+		bNoFlecks = ( ( nFlags & FLAGS_CUSTIOM_EFFECTS_NOFLECKS ) != 0 );
 	}
 
 	// Cement and wood have dust and flecks
-	if ( ( iMaterial == CHAR_TEX_CONCRETE ) || ( iMaterial == CHAR_TEX_TILE ) )
+	if( ( iMaterial == CHAR_TEX_CONCRETE ) || ( iMaterial == CHAR_TEX_TILE ) )
 	{
 		FX_DebrisFlecks( vecOrigin, &tr, iMaterial, iScale, bNoFlecks );
 	}
-	else if ( iMaterial == CHAR_TEX_WOOD )
+	else if( iMaterial == CHAR_TEX_WOOD )
 	{
 		FX_DebrisFlecks( vecOrigin, &tr, iMaterial, iScale, bNoFlecks );
 	}
-	else if ( ( iMaterial == CHAR_TEX_DIRT ) || ( iMaterial == CHAR_TEX_SAND ) )
+	else if( ( iMaterial == CHAR_TEX_DIRT ) || ( iMaterial == CHAR_TEX_SAND ) )
 	{
 		FX_DustImpact( vecOrigin, &tr, iScale );
 	}
-	else if ( iMaterial == CHAR_TEX_ANTLION )
+	else if( iMaterial == CHAR_TEX_ANTLION )
 	{
 		FX_AntlionImpact( vecOrigin, &tr );
 	}
-	else if ( ( iMaterial == CHAR_TEX_METAL ) || ( iMaterial == CHAR_TEX_VENT ) )
+	else if( ( iMaterial == CHAR_TEX_METAL ) || ( iMaterial == CHAR_TEX_VENT ) )
 	{
 		Vector	reflect;
 		float	dot = shotDir.Dot( tr.plane.normal );
-		reflect = shotDir + ( tr.plane.normal * ( dot*-2.0f ) );
+		reflect = shotDir + ( tr.plane.normal * ( dot * -2.0f ) );
 
 		reflect[0] += random->RandomFloat( -0.2f, 0.2f );
 		reflect[1] += random->RandomFloat( -0.2f, 0.2f );
@@ -433,13 +455,13 @@ void PerformCustomEffects( const Vector &vecOrigin, trace_t &tr, const Vector &s
 
 		FX_MetalSpark( vecOrigin, reflect, tr.plane.normal, iScale );
 	}
-	else if ( iMaterial == CHAR_TEX_COMPUTER )
+	else if( iMaterial == CHAR_TEX_COMPUTER )
 	{
 		Vector	offset = vecOrigin + ( tr.plane.normal * 1.0f );
 
 		g_pEffects->Sparks( offset );
 	}
-	else if ( iMaterial == CHAR_TEX_WARPSHIELD )
+	else if( iMaterial == CHAR_TEX_WARPSHIELD )
 	{
 		QAngle vecAngles;
 		VectorAngles( -shotDir, vecAngles );
@@ -448,24 +470,24 @@ void PerformCustomEffects( const Vector &vecOrigin, trace_t &tr, const Vector &s
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: Play a sound for an impact. If tr contains a valid hit, use that. 
+// Purpose: Play a sound for an impact. If tr contains a valid hit, use that.
 //			If not, use the passed in origin & surface.
 //-----------------------------------------------------------------------------
-void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin, int nServerSurfaceProp )
+void PlayImpactSound( CBaseEntity* pEntity, trace_t& tr, Vector& vecServerOrigin, int nServerSurfaceProp )
 {
 	VPROF( "PlayImpactSound" );
-	surfacedata_t *pdata;
+	surfacedata_t* pdata;
 	Vector vecOrigin;
 
 	// If the client-side trace hit a different entity than the server, or
-	// the server didn't specify a surfaceprop, then use the client-side trace 
+	// the server didn't specify a surfaceprop, then use the client-side trace
 	// material if it's valid.
-	if ( tr.DidHit() && (pEntity != tr.m_pEnt || nServerSurfaceProp == 0) )
+	if( tr.DidHit() && ( pEntity != tr.m_pEnt || nServerSurfaceProp == 0 ) )
 	{
 		nServerSurfaceProp = tr.surface.surfaceProps;
 	}
 	pdata = physprops->GetSurfaceData( nServerSurfaceProp );
-	if ( tr.fraction < 1.0 )
+	if( tr.fraction < 1.0 )
 	{
 		vecOrigin = tr.endpos;
 	}
@@ -475,11 +497,11 @@ void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin
 	}
 
 	// Now play the esound
-	if ( pdata->sounds.bulletImpact )
+	if( pdata->sounds.bulletImpact )
 	{
-		const char *pbulletImpactSoundName = physprops->GetString( pdata->sounds.bulletImpact );
-		
-		if ( g_pImpactSoundRouteFn )
+		const char* pbulletImpactSoundName = physprops->GetString( pdata->sounds.bulletImpact );
+
+		if( g_pImpactSoundRouteFn )
 		{
 			g_pImpactSoundRouteFn( pbulletImpactSoundName, vecOrigin );
 		}
@@ -493,7 +515,7 @@ void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin
 	}
 
 #ifdef _DEBUG
-	Msg("***ERROR: PlayImpactSound() on a surface with 0 bulletImpactCount!\n");
+	Msg( "***ERROR: PlayImpactSound() on a surface with 0 bulletImpactCount!\n" );
 #endif //_DEBUG
 }
 
@@ -506,29 +528,29 @@ void SetImpactSoundRoute( ImpactSoundRouteFn fn )
 
 //-----------------------------------------------------------------------------
 // Purpose: Pull the impact data out
-// Input  : &data - 
-//			*vecOrigin - 
-//			*vecAngles - 
-//			*iMaterial - 
-//			*iDamageType - 
-//			*iHitbox - 
-//			*iEntIndex - 
+// Input  : &data -
+//			*vecOrigin -
+//			*vecAngles -
+//			*iMaterial -
+//			*iDamageType -
+//			*iHitbox -
+//			*iEntIndex -
 //-----------------------------------------------------------------------------
-C_BaseEntity *ParseImpactData( const CEffectData &data, Vector *vecOrigin, Vector *vecStart, 
-	Vector *vecShotDir, short &nSurfaceProp, int &iMaterial, int &iDamageType, int &iHitbox )
+C_BaseEntity* ParseImpactData( const CEffectData& data, Vector* vecOrigin, Vector* vecStart,
+							   Vector* vecShotDir, short& nSurfaceProp, int& iMaterial, int& iDamageType, int& iHitbox )
 {
-	C_BaseEntity *pEntity = data.GetEntity( );
+	C_BaseEntity* pEntity = data.GetEntity( );
 	*vecOrigin = data.m_vOrigin;
 	*vecStart = data.m_vStart;
 	nSurfaceProp = data.m_nSurfaceProp;
 	iDamageType = data.m_nDamageType;
 	iHitbox = data.m_nHitBox;
 
-	*vecShotDir = (*vecOrigin - *vecStart);
+	*vecShotDir = ( *vecOrigin - *vecStart );
 	VectorNormalize( *vecShotDir );
 
 	// Get the material from the surfaceprop
-	surfacedata_t *psurfaceData = physprops->GetSurfaceData( data.m_nSurfaceProp );
+	surfacedata_t* psurfaceData = physprops->GetSurfaceData( data.m_nSurfaceProp );
 	iMaterial = psurfaceData->game.material;
 
 	return pEntity;

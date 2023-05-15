@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -28,7 +28,7 @@ CEventRegister::~CEventRegister()
 }
 
 
-void CEventRegister::Init( CTimedEventMgr *pMgr, IEventRegisterCallback *pCallback )
+void CEventRegister::Init( CTimedEventMgr* pMgr, IEventRegisterCallback* pCallback )
 {
 	Term();
 	m_pEventMgr = pMgr;
@@ -39,18 +39,18 @@ void CEventRegister::Init( CTimedEventMgr *pMgr, IEventRegisterCallback *pCallba
 void CEventRegister::Term()
 {
 	// Unregister.
-	if ( m_pEventMgr && m_bRegistered )
+	if( m_pEventMgr && m_bRegistered )
 	{
 		m_pEventMgr->RemoveEvent( this );
 	}
 }
-	
+
 
 void CEventRegister::SetUpdateInterval( float interval )
 {
 	Assert( m_pEventMgr );
 
-	if ( m_pEventMgr )
+	if( m_pEventMgr )
 	{
 		// Register for this event.
 		m_flUpdateInterval = interval;
@@ -63,7 +63,7 @@ void CEventRegister::SetUpdateInterval( float interval )
 
 void CEventRegister::StopUpdates()
 {
-	if ( m_pEventMgr )
+	if( m_pEventMgr )
 	{
 		// Unregister our next event.
 		m_pEventMgr->RemoveEvent( this );
@@ -73,9 +73,9 @@ void CEventRegister::StopUpdates()
 
 void CEventRegister::Reregister()
 {
-	if ( m_flUpdateInterval > 1e-6 && m_pEventMgr )
+	if( m_flUpdateInterval > 1e-6 && m_pEventMgr )
 	{
-		while ( m_flNextEventTime <= gpGlobals->curtime )
+		while( m_flNextEventTime <= gpGlobals->curtime )
 		{
 			m_flNextEventTime += m_flUpdateInterval;
 		}
@@ -89,7 +89,7 @@ void CEventRegister::Reregister()
 // CTimedEventMgr.
 // ------------------------------------------------------------------------------------------ //
 
-bool TimedEventMgr_LessFunc( CEventRegister* const &a, CEventRegister* const &b )
+bool TimedEventMgr_LessFunc( CEventRegister* const& a, CEventRegister* const& b )
 {
 	return a->m_flNextEventTime > b->m_flNextEventTime;
 }
@@ -104,11 +104,11 @@ CTimedEventMgr::CTimedEventMgr()
 void CTimedEventMgr::FireEvents()
 {
 	VPROF( "CTimedEventMgr::FireEvents" );
-	while ( m_Events.Count() )
+	while( m_Events.Count() )
 	{
 		// Fire the top element, then break out.
-		CEventRegister *pEvent = m_Events.ElementAtHead();
-		if ( gpGlobals->curtime >= pEvent->m_flNextEventTime )
+		CEventRegister* pEvent = m_Events.ElementAtHead();
+		if( gpGlobals->curtime >= pEvent->m_flNextEventTime )
 		{
 			// Reregister for the timed event, then fire the callback for the event.
 			m_Events.RemoveAtHead();
@@ -125,7 +125,7 @@ void CTimedEventMgr::FireEvents()
 }
 
 
-void CTimedEventMgr::RegisterForNextEvent( CEventRegister *pEvent )
+void CTimedEventMgr::RegisterForNextEvent( CEventRegister* pEvent )
 {
 	RemoveEvent( pEvent );
 	m_Events.Insert( pEvent );
@@ -133,15 +133,15 @@ void CTimedEventMgr::RegisterForNextEvent( CEventRegister *pEvent )
 }
 
 
-void CTimedEventMgr::RemoveEvent( CEventRegister *pEvent )
+void CTimedEventMgr::RemoveEvent( CEventRegister* pEvent )
 {
-	if ( pEvent->m_bRegistered )
+	if( pEvent->m_bRegistered )
 	{
 		// Find the event in the list and remove it.
 		int cnt = m_Events.Count();
-		for ( int i=0; i < cnt; i++ )
+		for( int i = 0; i < cnt; i++ )
 		{
-			if ( m_Events.Element( i ) == pEvent )
+			if( m_Events.Element( i ) == pEvent )
 			{
 				m_Events.RemoveAt( i );
 				break;

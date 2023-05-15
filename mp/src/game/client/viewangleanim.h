@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -14,7 +14,7 @@
 #define QAngleToVector(a,v) { v[0] = a[0]; v[1] = a[1]; v[2] = a[2]; }
 
 class CViewAngleKeyFrame
-{	
+{
 public:
 	CViewAngleKeyFrame( QAngle vecAngles, float flTime, int iFlags )
 	{
@@ -27,13 +27,13 @@ public:
 	QAngle m_vecAngles;
 
 	// time position of this keyframe
-	float m_flTime;	
+	float m_flTime;
 
 	int m_iFlags;
 };
 
 
-typedef void (*ViewAnimCompleteCallback)( void );
+typedef void ( *ViewAnimCompleteCallback )( void );
 
 class CViewAngleAnimation : public C_BaseEntity
 {
@@ -46,10 +46,10 @@ public:
 	void DeleteKeyFrames();
 
 
-	void LoadViewAnimFile( const char *pKeyFrameFileName );
-	void SaveAsAnimFile( const char *pKeyFrameFileName );
+	void LoadViewAnimFile( const char* pKeyFrameFileName );
+	void SaveAsAnimFile( const char* pKeyFrameFileName );
 
-	void AddKeyFrame( CViewAngleKeyFrame *pKeyFrame );
+	void AddKeyFrame( CViewAngleKeyFrame* pKeyFrame );
 	bool IsFinished( void );
 	void RunAnimation( QAngle angles );
 	void ClientThink();
@@ -65,7 +65,7 @@ private:
 	float m_flAnimStartTime;	// time this animation started
 	bool m_bFinished;
 
-	CUtlVector<CViewAngleKeyFrame *> m_KeyFrames;
+	CUtlVector<CViewAngleKeyFrame*> m_KeyFrames;
 
 	QAngle m_vecBaseAngles;
 

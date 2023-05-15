@@ -9,11 +9,11 @@
 
 #include "utlhashtable.h"
 #ifndef GC
-#include "igamesystem.h"
+	#include "igamesystem.h"
 #endif
 #include "gamestringpool.h"
 #if defined(MAPBASE) && defined(GAME_DLL)
-#include "mapbase/GlobalStrings.h"
+	#include "mapbase/GlobalStrings.h"
 #endif
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -28,11 +28,20 @@ class CGameStringPool
 class CGameStringPool : public CBaseGameSystem
 #endif
 {
-	virtual char const *Name() { return "CGameStringPool"; }
+	virtual char const* Name()
+	{
+		return "CGameStringPool";
+	}
 #if defined(MAPBASE) && defined(GAME_DLL)
-	virtual void LevelInitPreEntity() { InitGlobalStrings(); }
+	virtual void LevelInitPreEntity()
+	{
+		InitGlobalStrings();
+	}
 #endif
-	virtual void LevelShutdownPostEntity() { FreeAll(); }
+	virtual void LevelShutdownPostEntity()
+	{
+		FreeAll();
+	}
 
 	void FreeAll()
 	{
@@ -49,24 +58,31 @@ class CGameStringPool : public CBaseGameSystem
 
 public:
 
-	CGameStringPool() : m_Strings(256) { }
+	CGameStringPool() : m_Strings( 256 ) { }
 
-	~CGameStringPool() { FreeAll(); }
+	~CGameStringPool()
+	{
+		FreeAll();
+	}
 
 	void Dump( void )
 	{
 		CUtlVector<const char*> strings( 0, m_Strings.Count() );
-		for ( UtlHashHandle_t i = m_Strings.FirstHandle(); i != m_Strings.InvalidHandle(); i = m_Strings.NextHandle(i) )
+		for( UtlHashHandle_t i = m_Strings.FirstHandle(); i != m_Strings.InvalidHandle(); i = m_Strings.NextHandle( i ) )
 		{
 			strings.AddToTail( m_Strings[i] );
 		}
 
-		struct _Local {
-			static int __cdecl F(const char * const *a, const char * const *b) { return strcmp(*a, *b); }
+		struct _Local
+		{
+			static int __cdecl F( const char* const* a, const char* const* b )
+			{
+				return strcmp( *a, *b );
+			}
 		};
 		strings.Sort( _Local::F );
-		
-		for ( int i = 0; i < strings.Count(); ++i )
+
+		for( int i = 0; i < strings.Count(); ++i )
 		{
 			DevMsg( "  %d (0x%p) : %s\n", i, strings[i], strings[i] );
 		}
@@ -74,21 +90,21 @@ public:
 		DevMsg( "Size:  %d items\n", strings.Count() );
 	}
 
-	const char *Find(const char *string)
+	const char* Find( const char* string )
 	{
 		UtlHashHandle_t i = m_Strings.Find( string );
 		return i == m_Strings.InvalidHandle() ? NULL : m_Strings[ i ].Get();
 	}
 
-	const char *Allocate(const char *string)
+	const char* Allocate( const char* string )
 	{
 		return m_Strings[ m_Strings.Insert( string ) ].Get();
 	}
 
-	const char *AllocateWithKey(const char *string, const void* key)
+	const char* AllocateWithKey( const char* string, const void* key )
 	{
-		const char * &cached = m_KeyLookupCache[ m_KeyLookupCache.Insert( key, NULL ) ];
-		if (cached == NULL)
+		const char*& cached = m_KeyLookupCache[ m_KeyLookupCache.Insert( key, NULL ) ];
+		if( cached == NULL )
 		{
 			cached = Allocate( string );
 		}
@@ -102,7 +118,7 @@ static CGameStringPool g_GameStringPool;
 //-----------------------------------------------------------------------------
 // String system accessor
 //-----------------------------------------------------------------------------
-IGameSystem *GameStringSystem()
+IGameSystem* GameStringSystem()
 {
 	return &g_GameStringPool;
 }
@@ -112,34 +128,38 @@ IGameSystem *GameStringSystem()
 //-----------------------------------------------------------------------------
 // Purpose: The public accessor for the level-global pooled strings
 //-----------------------------------------------------------------------------
-string_t AllocPooledString( const char * pszValue )
+string_t AllocPooledString( const char* pszValue )
 {
-	if (pszValue && *pszValue)
+	if( pszValue && *pszValue )
+	{
 		return MAKE_STRING( g_GameStringPool.Allocate( pszValue ) );
+	}
 	return NULL_STRING;
 }
 
-string_t AllocPooledString_StaticConstantStringPointer( const char * pszGlobalConstValue )
+string_t AllocPooledString_StaticConstantStringPointer( const char* pszGlobalConstValue )
 {
-	Assert(pszGlobalConstValue && *pszGlobalConstValue);
+	Assert( pszGlobalConstValue && *pszGlobalConstValue );
 	return MAKE_STRING( g_GameStringPool.AllocateWithKey( pszGlobalConstValue, pszGlobalConstValue ) );
 }
 
-string_t FindPooledString( const char *pszValue )
+string_t FindPooledString( const char* pszValue )
 {
 	return MAKE_STRING( g_GameStringPool.Find( pszValue ) );
 }
 
 #if !defined(CLIENT_DLL) && !defined( GC )
 //------------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //------------------------------------------------------------------------------
 void CC_DumpGameStringTable( void )
 {
-	if ( !UTIL_IsCommandIssuedByServerAdmin() )
+	if( !UTIL_IsCommandIssuedByServerAdmin() )
+	{
 		return;
+	}
 
 	g_GameStringPool.Dump();
 }
-static ConCommand dumpgamestringtable("dumpgamestringtable", CC_DumpGameStringTable, "Dump the contents of the game string table to the console.", FCVAR_CHEAT);
+static ConCommand dumpgamestringtable( "dumpgamestringtable", CC_DumpGameStringTable, "Dump the contents of the game string table to the console.", FCVAR_CHEAT );
 #endif

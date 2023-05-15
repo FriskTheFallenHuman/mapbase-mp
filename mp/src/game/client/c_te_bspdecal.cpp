@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $Workfile:     $
 // $Date:         $
@@ -27,7 +27,7 @@ public:
 	DECLARE_CLASS( C_TEBSPDecal, C_BaseTempEntity );
 	DECLARE_CLIENTCLASS();
 
-					C_TEBSPDecal( void );
+	C_TEBSPDecal( void );
 	virtual			~C_TEBSPDecal( void );
 
 	virtual void	PostDataUpdate( DataUpdateType_t updateType );
@@ -41,7 +41,7 @@ public:
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEBSPDecal::C_TEBSPDecal( void )
 {
@@ -51,59 +51,59 @@ C_TEBSPDecal::C_TEBSPDecal( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 C_TEBSPDecal::~C_TEBSPDecal( void )
 {
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void C_TEBSPDecal::Precache( void )
 {
 }
 
 void TE_BSPDecal( IRecipientFilter& filter, float delay,
-	const Vector* pos, int entity, int index )
+				  const Vector* pos, int entity, int index )
 {
-	C_BaseEntity *ent;
-	if ( ( ent = cl_entitylist->GetEnt( entity ) ) == NULL )
+	C_BaseEntity* ent;
+	if( ( ent = cl_entitylist->GetEnt( entity ) ) == NULL )
 	{
 		DevMsg( 1, "Decal: entity = %i", entity );
 		return;
 	}
 
-	if ( r_decals.GetInt() )
+	if( r_decals.GetInt() )
 	{
 		effects->DecalShoot( index, entity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), *pos, 0, FDECAL_PERMANENT );
 	}
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Input  : bool - 
+// Purpose:
+// Input  : bool -
 //-----------------------------------------------------------------------------
 void C_TEBSPDecal::PostDataUpdate( DataUpdateType_t updateType )
 {
 	VPROF( "C_TEBSPDecal::PostDataUpdate" );
 
-	C_BaseEntity *ent;
-	if ( ( ent = cl_entitylist->GetEnt( m_nEntity ) ) == NULL )
+	C_BaseEntity* ent;
+	if( ( ent = cl_entitylist->GetEnt( m_nEntity ) ) == NULL )
 	{
 		DevMsg( 1, "Decal: entity = %i", m_nEntity );
 		return;
 	}
 
-	if ( r_decals.GetInt() )
+	if( r_decals.GetInt() )
 	{
 		effects->DecalShoot( m_nIndex, m_nEntity, ent->GetModel(), ent->GetAbsOrigin(), ent->GetAbsAngles(), m_vecOrigin, 0, FDECAL_PERMANENT );
 	}
 }
 
-IMPLEMENT_CLIENTCLASS_EVENT_DT(C_TEBSPDecal, DT_TEBSPDecal, CTEBSPDecal)
-	RecvPropVector( RECVINFO(m_vecOrigin)),
-	RecvPropInt( RECVINFO(m_nEntity)),
-	RecvPropInt( RECVINFO(m_nIndex)),
-END_RECV_TABLE()
+IMPLEMENT_CLIENTCLASS_EVENT_DT( C_TEBSPDecal, DT_TEBSPDecal, CTEBSPDecal )
+RecvPropVector( RECVINFO( m_vecOrigin ) ),
+				RecvPropInt( RECVINFO( m_nEntity ) ),
+				RecvPropInt( RECVINFO( m_nIndex ) ),
+				END_RECV_TABLE()
 

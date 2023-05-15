@@ -27,7 +27,7 @@
 #define GROUNDTURRET_VIEWCONE		60.0f // (degrees)
 #define GROUNDTURRET_RETIRE_TIME	7.0f
 
-ConVar ai_newgroundturret ( "ai_newgroundturret", "0" );
+ConVar ai_newgroundturret( "ai_newgroundturret", "0" );
 
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -39,34 +39,34 @@ LINK_ENTITY_TO_CLASS( npc_turret_ground, CNPC_GroundTurret );
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CNPC_GroundTurret )
-	DEFINE_FIELD( m_iAmmoType,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_pSmoke,			FIELD_CLASSPTR ),
-	DEFINE_FIELD( m_vecSpread,		FIELD_VECTOR ),
-	DEFINE_FIELD( m_bEnabled,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flTimeNextShoot, FIELD_TIME ),
-	DEFINE_FIELD( m_flTimeLastSawEnemy, FIELD_TIME ),
-	DEFINE_FIELD( m_iDeathSparks,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_bHasExploded,	FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_flSensingDist,	FIELD_FLOAT ),
-	DEFINE_FIELD( m_flTimeNextPing, FIELD_TIME ),
-	DEFINE_FIELD( m_bSeeEnemy,		FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_vecClosedPos,	FIELD_POSITION_VECTOR ),
-	DEFINE_FIELD( m_vecLightOffset,	FIELD_POSITION_VECTOR ),
+DEFINE_FIELD( m_iAmmoType,		FIELD_INTEGER ),
+				  DEFINE_FIELD( m_pSmoke,			FIELD_CLASSPTR ),
+				  DEFINE_FIELD( m_vecSpread,		FIELD_VECTOR ),
+				  DEFINE_FIELD( m_bEnabled,		FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_flTimeNextShoot, FIELD_TIME ),
+				  DEFINE_FIELD( m_flTimeLastSawEnemy, FIELD_TIME ),
+				  DEFINE_FIELD( m_iDeathSparks,	FIELD_INTEGER ),
+				  DEFINE_FIELD( m_bHasExploded,	FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_flSensingDist,	FIELD_FLOAT ),
+				  DEFINE_FIELD( m_flTimeNextPing, FIELD_TIME ),
+				  DEFINE_FIELD( m_bSeeEnemy,		FIELD_BOOLEAN ),
+				  DEFINE_FIELD( m_vecClosedPos,	FIELD_POSITION_VECTOR ),
+				  DEFINE_FIELD( m_vecLightOffset,	FIELD_POSITION_VECTOR ),
 
-	DEFINE_THINKFUNC( DeathEffects ),
+				  DEFINE_THINKFUNC( DeathEffects ),
 
-	DEFINE_OUTPUT( m_OnAreaClear, "OnAreaClear" ),
+				  DEFINE_OUTPUT( m_OnAreaClear, "OnAreaClear" ),
 
-	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
+				  DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
 
-	// DEFINE_FIELD( m_ShotSounds, FIELD_SHORT ),
-END_DATADESC()
+				  // DEFINE_FIELD( m_ShotSounds, FIELD_SHORT ),
+				  END_DATADESC()
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CNPC_GroundTurret::Precache( void )
+				  void CNPC_GroundTurret::Precache( void )
 {
 	PrecacheModel( GROUNDTURRET_BEAM_SPRITE );
 	PrecacheModel( DefaultOrCustomModel( "models/combine_turrets/ground_turret.mdl" ) );
@@ -82,7 +82,7 @@ void CNPC_GroundTurret::Precache( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::Spawn( void )
 {
@@ -95,7 +95,7 @@ void CNPC_GroundTurret::Spawn( void )
 
 	SetBloodColor( DONT_BLEED );
 	m_iHealth			= 125;
-	m_flFieldOfView		= cos( ((GROUNDTURRET_VIEWCONE / 2.0f) * M_PI / 180.0f) );
+	m_flFieldOfView		= cos( ( ( GROUNDTURRET_VIEWCONE / 2.0f ) * M_PI / 180.0f ) );
 	m_NPCState			= NPC_STATE_NONE;
 
 	m_vecSpread.x = 0.5;
@@ -129,9 +129,9 @@ void CNPC_GroundTurret::Spawn( void )
 
 	if( !GetParent() )
 	{
-		DevMsg("ERROR! npc_ground_turret with no parent!\n");
+		DevMsg( "ERROR! npc_ground_turret with no parent!\n" );
 #ifndef MAPBASE
-		UTIL_Remove(this);
+		UTIL_Remove( this );
 		return;
 #endif
 	}
@@ -157,7 +157,7 @@ void CNPC_GroundTurret::Spawn( void )
 bool CNPC_GroundTurret::CreateVPhysics( void )
 {
 	//Spawn our physics hull
-	if ( !VPhysicsInitStatic() )
+	if( !VPhysicsInitStatic() )
 	{
 		DevMsg( "npc_turret_ground unable to spawn physics object!\n" );
 	}
@@ -169,7 +169,7 @@ bool CNPC_GroundTurret::CreateVPhysics( void )
 //-----------------------------------------------------------------------------
 void CNPC_GroundTurret::PrescheduleThink()
 {
-	if( UTIL_FindClientInPVS(edict()) )
+	if( UTIL_FindClientInPVS( edict() ) )
 	{
 		SetNextThink( gpGlobals->curtime + 0.03f );
 	}
@@ -180,8 +180,8 @@ void CNPC_GroundTurret::PrescheduleThink()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
-// Output : 
+// Purpose:
+// Output :
 //-----------------------------------------------------------------------------
 Class_T	CNPC_GroundTurret::Classify( void )
 {
@@ -205,7 +205,7 @@ void CNPC_GroundTurret::PostNPCInit()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CNPC_GroundTurret::OnTakeDamage_Alive( const CTakeDamageInfo &info )
+int CNPC_GroundTurret::OnTakeDamage_Alive( const CTakeDamageInfo& info )
 {
 	if( !info.GetInflictor() )
 	{
@@ -232,16 +232,18 @@ int CNPC_GroundTurret::OnTakeDamage_Alive( const CTakeDamageInfo &info )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_GroundTurret::Event_Killed( const CTakeDamageInfo &info )
+void CNPC_GroundTurret::Event_Killed( const CTakeDamageInfo& info )
 {
 	BaseClass::Event_Killed( info );
 
-	if ( m_pSmoke != NULL )
+	if( m_pSmoke != NULL )
+	{
 		return;
+	}
 
 	m_pSmoke = SmokeTrail::CreateSmokeTrail();
-	
-	if ( m_pSmoke )
+
+	if( m_pSmoke )
 	{
 		m_pSmoke->m_SpawnRate			= 18;
 		m_pSmoke->m_ParticleLifetime	= 3.0;
@@ -251,7 +253,7 @@ void CNPC_GroundTurret::Event_Killed( const CTakeDamageInfo &info )
 		m_pSmoke->m_MinSpeed			= 8;
 		m_pSmoke->m_MaxSpeed			= 32;
 		m_pSmoke->m_Opacity 			= 0.6;
-		
+
 		m_pSmoke->m_StartColor.Init( 0.25f, 0.25f, 0.25f );
 		m_pSmoke->m_EndColor.Init( 0, 0, 0 );
 		m_pSmoke->SetLifetime( 30.0f );
@@ -284,7 +286,7 @@ void CNPC_GroundTurret::DeathEffects()
 
 		if( m_iDeathSparks == 0 )
 		{
-			SetThink(NULL);
+			SetThink( NULL );
 			return;
 		}
 
@@ -294,33 +296,35 @@ void CNPC_GroundTurret::DeathEffects()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_GroundTurret::DeathSound( const CTakeDamageInfo &info )
+void CNPC_GroundTurret::DeathSound( const CTakeDamageInfo& info )
 {
-	EmitSound("NPC_FloorTurret.Die");
+	EmitSound( "NPC_FloorTurret.Die" );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_GroundTurret::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int iTracerType )
+void CNPC_GroundTurret::MakeTracer( const Vector& vecTracerSrc, const trace_t& tr, int iTracerType )
 {
 #if 1
 	//BaseClass::MakeTracer( vecTracerSrc, tr, iTracerType );
 	UTIL_Tracer( vecTracerSrc, tr.endpos, 0, TRACER_DONT_USE_ATTACHMENT, 5000, true, "AR2Tracer" );
 #else
-	CBeam *pBeam;
+	CBeam* pBeam;
 	int	width = 2;
 
 	pBeam = CBeam::BeamCreate( GROUNDTURRET_BEAM_SPRITE, width );
-	if ( !pBeam )
+	if( !pBeam )
+	{
 		return;
-	
+	}
+
 	pBeam->SetStartPos( vecTracerSrc );
 	pBeam->SetEndPos( tr.endpos );
 	pBeam->SetWidth( width );
 	pBeam->SetEndWidth( width / 4.0f );
 
 	pBeam->SetBrightness( 100 );
-	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
+	pBeam->SetColor( 0, 145 + random->RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
 	pBeam->LiveForTime( random->RandomFloat( 0.2f, 0.5f ) );
 #endif
@@ -343,7 +347,7 @@ void CNPC_GroundTurret::GatherConditions()
 	// Throw away old enemies so the turret can retire
 	AIEnemiesIter_t iter;
 
-	for( AI_EnemyInfo_t *pEMemory = GetEnemies()->GetFirst(&iter); pEMemory != NULL; pEMemory = GetEnemies()->GetNext(&iter) )
+	for( AI_EnemyInfo_t* pEMemory = GetEnemies()->GetFirst( &iter ); pEMemory != NULL; pEMemory = GetEnemies()->GetNext( &iter ) )
 	{
 		if( pEMemory->timeLastSeen < gpGlobals->curtime - GROUNDTURRET_RETIRE_TIME )
 		{
@@ -353,7 +357,7 @@ void CNPC_GroundTurret::GatherConditions()
 
 	BaseClass::GatherConditions();
 
-	if( GetEnemy() && HasCondition(COND_SEE_ENEMY) )
+	if( GetEnemy() && HasCondition( COND_SEE_ENEMY ) )
 	{
 		m_flTimeLastSawEnemy = gpGlobals->curtime;
 	}
@@ -361,7 +365,7 @@ void CNPC_GroundTurret::GatherConditions()
 	{
 		if( gpGlobals->curtime - m_flTimeLastSawEnemy >= GROUNDTURRET_RETIRE_TIME )
 		{
-			m_OnAreaClear.FireOutput(this, this);
+			m_OnAreaClear.FireOutput( this, this );
 			m_flTimeLastSawEnemy = FLT_MAX;
 			return;
 		}
@@ -399,28 +403,32 @@ Vector CNPC_GroundTurret::EyePosition()
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CNPC_GroundTurret::FVisible( CBaseEntity *pEntity, int traceMask, CBaseEntity **ppBlocker )
+bool CNPC_GroundTurret::FVisible( CBaseEntity* pEntity, int traceMask, CBaseEntity** ppBlocker )
 {
-	if ( BaseClass::FVisible( pEntity, traceMask, ppBlocker ) )
+	if( BaseClass::FVisible( pEntity, traceMask, ppBlocker ) )
+	{
 		return true;
-	if ( ( pEntity->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square(10*12) &&
-		 FInViewCone( pEntity->GetAbsOrigin() ) &&
-		 BaseClass::FVisible( pEntity->GetAbsOrigin() + Vector( 0, 0, 1 ), traceMask, ppBlocker ) )
+	}
+	if( ( pEntity->GetAbsOrigin().AsVector2D() - GetAbsOrigin().AsVector2D() ).LengthSqr() < Square( 10 * 12 ) &&
+			FInViewCone( pEntity->GetAbsOrigin() ) &&
+			BaseClass::FVisible( pEntity->GetAbsOrigin() + Vector( 0, 0, 1 ), traceMask, ppBlocker ) )
+	{
 		return true;
+	}
 	return false;
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-bool CNPC_GroundTurret::QuerySeeEntity( CBaseEntity *pEntity, bool bOnlyHateOrFearIfNPC)
+bool CNPC_GroundTurret::QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC )
 {
 	float flDist;
 
-	flDist = (pEntity->GetAbsOrigin() - EyePosition()).Length2DSqr();
+	flDist = ( pEntity->GetAbsOrigin() - EyePosition() ).Length2DSqr();
 
 	if( flDist <= m_flSensingDist * m_flSensingDist )
 	{
-		return BaseClass::QuerySeeEntity(pEntity, bOnlyHateOrFearIfNPC);
+		return BaseClass::QuerySeeEntity( pEntity, bOnlyHateOrFearIfNPC );
 	}
 
 	return false;
@@ -444,38 +452,38 @@ bool CNPC_GroundTurret::IsOpen()
 {
 	// The method is hacky but in the end, this does actually give
 	// us a pretty good idea if the turret is open or closed.
-	return( fabs(GetAbsOrigin().z - m_vecClosedPos.z ) > 1.0f );
+	return( fabs( GetAbsOrigin().z - m_vecClosedPos.z ) > 1.0f );
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_GroundTurret::StartTask( const Task_t *pTask )
+void CNPC_GroundTurret::StartTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_GROUNDTURRET_SCAN:
-		Scan();
-		break;
+		case TASK_GROUNDTURRET_SCAN:
+			Scan();
+			break;
 
-	default:
-		BaseClass::StartTask( pTask );
-		break;
+		default:
+			BaseClass::StartTask( pTask );
+			break;
 	}
 }
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CNPC_GroundTurret::RunTask( const Task_t *pTask )
+void CNPC_GroundTurret::RunTask( const Task_t* pTask )
 {
 	switch( pTask->iTask )
 	{
-	case TASK_GROUNDTURRET_SCAN:
-		Scan();
-		break;
+		case TASK_GROUNDTURRET_SCAN:
+			Scan();
+			break;
 
-	default:
-		BaseClass::RunTask( pTask );
-		break;
+		default:
+			BaseClass::RunTask( pTask );
+			break;
 	}
 }
 
@@ -488,13 +496,13 @@ int CNPC_GroundTurret::SelectSchedule( void )
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-int CNPC_GroundTurret::TranslateSchedule( int scheduleType ) 
+int CNPC_GroundTurret::TranslateSchedule( int scheduleType )
 {
 	switch( scheduleType )
 	{
-	case SCHED_IDLE_STAND:
-		return SCHED_GROUND_TURRET_IDLE;
-		break;
+		case SCHED_IDLE_STAND:
+			return SCHED_GROUND_TURRET_IDLE;
+			break;
 	}
 
 	return BaseClass::TranslateSchedule( scheduleType );
@@ -524,7 +532,7 @@ void CNPC_GroundTurret::Shoot()
 	for( int i = 0 ; i < 1 ; i++ )
 	{
 		info.m_vecSrc = vecSrc;
-		
+
 		if( i > 0 || !GetEnemy()->IsPlayer() )
 		{
 			// Subsequent shots or shots at non-players random
@@ -537,7 +545,7 @@ void CNPC_GroundTurret::Shoot()
 			info.m_vecDirShooting = GetActualShootTrajectory( vecSrc );
 			info.m_vecSpread = VECTOR_CONE_PRECALCULATED;
 		}
-		
+
 		info.m_iTracerFreq = 1;
 		info.m_iShots = 1;
 		info.m_pAttacker = this;
@@ -569,16 +577,18 @@ void CNPC_GroundTurret::Shoot()
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_GroundTurret::ProjectBeam( const Vector &vecStart, const Vector &vecDir, int width, int brightness, float duration )
+void CNPC_GroundTurret::ProjectBeam( const Vector& vecStart, const Vector& vecDir, int width, int brightness, float duration )
 {
-	CBeam *pBeam;
+	CBeam* pBeam;
 	pBeam = CBeam::BeamCreate( GROUNDTURRET_BEAM_SPRITE, width );
-	if ( !pBeam )
+	if( !pBeam )
+	{
 		return;
+	}
 
 	trace_t tr;
 	AI_TraceLine( vecStart, vecStart + vecDir * m_flSensingDist, MASK_SHOT, this, COLLISION_GROUP_NONE, &tr );
-	
+
 	pBeam->SetStartPos( tr.endpos );
 	pBeam->SetEndPos( tr.startpos );
 	pBeam->SetWidth( width );
@@ -586,7 +596,7 @@ void CNPC_GroundTurret::ProjectBeam( const Vector &vecStart, const Vector &vecDi
 	pBeam->SetFadeLength( 16 );
 
 	pBeam->SetBrightness( brightness );
-	pBeam->SetColor( 0, 145+random->RandomInt( -16, 16 ), 255 );
+	pBeam->SetColor( 0, 145 + random->RandomInt( -16, 16 ), 255 );
 	pBeam->RelinkBeam();
 	pBeam->LiveForTime( duration );
 }
@@ -613,7 +623,7 @@ void CNPC_GroundTurret::Scan()
 		return;
 	}
 
-	if( !UTIL_FindClientInPVS(edict()) )
+	if( !UTIL_FindClientInPVS( edict() ) )
 	{
 		return;
 	}
@@ -630,37 +640,37 @@ void CNPC_GroundTurret::Scan()
 
 	// Draw the outer extents
 	scanAngle = GetAbsAngles();
-	scanAngle.y += (GROUNDTURRET_VIEWCONE / 2.0f);
+	scanAngle.y += ( GROUNDTURRET_VIEWCONE / 2.0f );
 	AngleVectors( scanAngle, &forward, NULL, NULL );
 	ProjectBeam( vecEye, forward, 1, 30, 0.1 );
 
 	scanAngle = GetAbsAngles();
-	scanAngle.y -= (GROUNDTURRET_VIEWCONE / 2.0f);
+	scanAngle.y -= ( GROUNDTURRET_VIEWCONE / 2.0f );
 	AngleVectors( scanAngle, &forward, NULL, NULL );
 	ProjectBeam( vecEye, forward, 1, 30, 0.1 );
 
 	// Draw a sweeping beam
 	scanAngle = GetAbsAngles();
-	scanAngle.y += (GROUNDTURRET_VIEWCONE / 2.0f) * sin( gpGlobals->curtime * 3.0f );
-	
+	scanAngle.y += ( GROUNDTURRET_VIEWCONE / 2.0f ) * sin( gpGlobals->curtime * 3.0f );
+
 	AngleVectors( scanAngle, &forward, NULL, NULL );
 	ProjectBeam( vecEye, forward, 1, 30, 0.3 );
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_GroundTurret::InputEnable( inputdata_t &inputdata )
+void CNPC_GroundTurret::InputEnable( inputdata_t& inputdata )
 {
 	m_bEnabled = true;
 
-	// Because the turret might not ever ACQUIRE an enemy, we need to arrange to 
+	// Because the turret might not ever ACQUIRE an enemy, we need to arrange to
 	// retire after a few seconds.
 	m_flTimeLastSawEnemy = gpGlobals->curtime;
 }
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CNPC_GroundTurret::InputDisable( inputdata_t &inputdata )
+void CNPC_GroundTurret::InputDisable( inputdata_t& inputdata )
 {
 	m_bEnabled = false;
 }
@@ -673,34 +683,34 @@ void CNPC_GroundTurret::InputDisable( inputdata_t &inputdata )
 
 AI_BEGIN_CUSTOM_NPC( npc_groundturret, CNPC_GroundTurret )
 
-	DECLARE_TASK( TASK_GROUNDTURRET_SCAN );
+DECLARE_TASK( TASK_GROUNDTURRET_SCAN );
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_GROUND_TURRET_IDLE,
+DEFINE_SCHEDULE
+(
+	SCHED_GROUND_TURRET_IDLE,
 
-		"	Tasks "
-		"		TASK_SET_ACTIVITY		ACTIVITY:ACT_IDLE"
-		"		TASK_GROUNDTURRET_SCAN	0"
-		""
-		"	Interrupts "
-		"		COND_NEW_ENEMY"
-		"		COND_SEE_ENEMY"
-		"		COND_LOST_ENEMY"
-	)
+	"	Tasks "
+	"		TASK_SET_ACTIVITY		ACTIVITY:ACT_IDLE"
+	"		TASK_GROUNDTURRET_SCAN	0"
+	""
+	"	Interrupts "
+	"		COND_NEW_ENEMY"
+	"		COND_SEE_ENEMY"
+	"		COND_LOST_ENEMY"
+)
 
-	DEFINE_SCHEDULE
-	(
-		SCHED_GROUND_TURRET_ATTACK,
+DEFINE_SCHEDULE
+(
+	SCHED_GROUND_TURRET_ATTACK,
 
-		"	Tasks "
-		"		TASK_WAIT_INDEFINITE	0"
-		""
-		"	Interrupts "
-		"		COND_NEW_ENEMY"
-		"		COND_LOST_ENEMY"
-		"		COND_SEE_ENEMY"
-	)
+	"	Tasks "
+	"		TASK_WAIT_INDEFINITE	0"
+	""
+	"	Interrupts "
+	"		COND_NEW_ENEMY"
+	"		COND_LOST_ENEMY"
+	"		COND_SEE_ENEMY"
+)
 
 AI_END_CUSTOM_NPC()
 

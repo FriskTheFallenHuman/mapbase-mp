@@ -1,19 +1,19 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
 //=============================================================================//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 
 #ifndef VEHICLE_CRANE_H
 #define VEHICLE_CRANE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "physobj.h"
@@ -56,7 +56,7 @@ public:
 
 	~CCraneTip( void )
 	{
-		if ( m_pSpring )
+		if( m_pSpring )
 		{
 			physenv->DestroySpring( m_pSpring );
 		}
@@ -65,11 +65,11 @@ public:
 	void	Spawn( void );
 	void	Precache( void );
 
-	bool				CreateConstraint( CBaseAnimating *pMagnet, IPhysicsConstraintGroup *pGroup );
-	static CCraneTip	*Create( CBaseAnimating *pCraneMagnet, IPhysicsConstraintGroup *pGroup, const Vector &vecOrigin, const QAngle &vecAngles );
+	bool				CreateConstraint( CBaseAnimating* pMagnet, IPhysicsConstraintGroup* pGroup );
+	static CCraneTip*	Create( CBaseAnimating* pCraneMagnet, IPhysicsConstraintGroup* pGroup, const Vector& vecOrigin, const QAngle& vecAngles );
 
 public:
-	IPhysicsSpring			*m_pSpring;
+	IPhysicsSpring*			m_pSpring;
 };
 
 //-----------------------------------------------------------------------------
@@ -80,21 +80,27 @@ class CCraneServerVehicle : public CBaseServerVehicle
 	typedef CBaseServerVehicle BaseClass;
 // IServerVehicle
 public:
-	void	GetVehicleViewPosition( int nRole, Vector *pAbsOrigin, QAngle *pAbsAngles, float *pFOV = NULL );
+	void	GetVehicleViewPosition( int nRole, Vector* pAbsOrigin, QAngle* pAbsAngles, float* pFOV = NULL );
 
 	// NPC Driving
-	void	NPC_SetDriver( CNPC_VehicleDriver *pDriver );
+	void	NPC_SetDriver( CNPC_VehicleDriver* pDriver );
 	void	NPC_DriveVehicle( void );
 
-	virtual bool	IsPassengerEntering( void ) { return false; }	// NOTE: This mimics the scenario HL2 would have seen
-	virtual bool	IsPassengerExiting( void ) { return false; }
+	virtual bool	IsPassengerEntering( void )
+	{
+		return false;    // NOTE: This mimics the scenario HL2 would have seen
+	}
+	virtual bool	IsPassengerExiting( void )
+	{
+		return false;
+	}
 
 protected:
-	CPropCrane *GetCrane( void );
+	CPropCrane* GetCrane( void );
 };
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 class CPropCrane : public CBaseProp, public IDrivableVehicle
 {
@@ -120,73 +126,124 @@ public:
 	void			UpdateOnRemove( void );
 	bool			CreateVPhysics( void );
 	void			InitCraneSpeeds( void );
-	void			Think(void);
-	virtual int		ObjectCaps( void ) { return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE; };
-	virtual void	Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void			Think( void );
+	virtual int		ObjectCaps( void )
+	{
+		return BaseClass::ObjectCaps() | FCAP_IMPULSE_USE;
+	};
+	virtual void	Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value );
 	virtual void	DrawDebugGeometryOverlays( void );
-	
-	virtual bool PassengerShouldReceiveDamage( CTakeDamageInfo &info ) 
-	{ 
-		if ( info.GetDamageType() & DMG_VEHICLE )
-			return true;
 
-		return (info.GetDamageType() & (DMG_RADIATION|DMG_BLAST) ) == 0; 
+	virtual bool PassengerShouldReceiveDamage( CTakeDamageInfo& info )
+	{
+		if( info.GetDamageType() & DMG_VEHICLE )
+		{
+			return true;
+		}
+
+		return ( info.GetDamageType() & ( DMG_RADIATION | DMG_BLAST ) ) == 0;
 	}
 
-	virtual Vector	BodyTarget( const Vector &posSrc, bool bNoisy = true );
-	virtual void	TraceAttack( const CTakeDamageInfo &info, const Vector &vecDir, trace_t *ptr, CDmgAccumulator *pAccumulator );
-	virtual int		OnTakeDamage( const CTakeDamageInfo &info );
+	virtual Vector	BodyTarget( const Vector& posSrc, bool bNoisy = true );
+	virtual void	TraceAttack( const CTakeDamageInfo& info, const Vector& vecDir, trace_t* ptr, CDmgAccumulator* pAccumulator );
+	virtual int		OnTakeDamage( const CTakeDamageInfo& info );
 
-	void			PlayerControlInit( CBasePlayer *pPlayer );
+	void			PlayerControlInit( CBasePlayer* pPlayer );
 	void			PlayerControlShutdown( void );
-	void			ResetUseKey( CBasePlayer *pPlayer );
+	void			ResetUseKey( CBasePlayer* pPlayer );
 
 	void			DriveCrane( int iDriverButtons, int iButtonsPressed, float flNPCSteering = 0.0 );
 	void			RunCraneMovement( float flTime );
 
 	void			TurnMagnetOn( void );
 	void			TurnMagnetOff( void );
-	const Vector	&GetCraneTipPosition( void );
-	float			GetExtensionRate( void ) { return m_flExtensionRate; }
-	float			GetTurnRate( void ) { return m_flTurn; }
-	float			GetMaxTurnRate( void ) { return m_flMaxTurnSpeed; }
-	CPhysMagnet		*GetMagnet( void ) { return m_hCraneMagnet; }
-	float			GetTotalMassOnCrane( void ) { return m_hCraneMagnet->GetTotalMassAttachedObjects(); }
-	bool			IsDropping( void ) { return m_bDropping; }
+	const Vector&	GetCraneTipPosition( void );
+	float			GetExtensionRate( void )
+	{
+		return m_flExtensionRate;
+	}
+	float			GetTurnRate( void )
+	{
+		return m_flTurn;
+	}
+	float			GetMaxTurnRate( void )
+	{
+		return m_flMaxTurnSpeed;
+	}
+	CPhysMagnet*		GetMagnet( void )
+	{
+		return m_hCraneMagnet;
+	}
+	float			GetTotalMassOnCrane( void )
+	{
+		return m_hCraneMagnet->GetTotalMassAttachedObjects();
+	}
+	bool			IsDropping( void )
+	{
+		return m_bDropping;
+	}
 
 	// Inputs
-	void			InputLock( inputdata_t &inputdata );
-	void			InputUnlock( inputdata_t &inputdata );
-	void			InputForcePlayerIn( inputdata_t &inputdata );
+	void			InputLock( inputdata_t& inputdata );
+	void			InputUnlock( inputdata_t& inputdata );
+	void			InputForcePlayerIn( inputdata_t& inputdata );
 
 	// Crane handling
-	void			GetCraneTipPosition( Vector *vecOrigin, QAngle *vecAngles );
+	void			GetCraneTipPosition( Vector* vecOrigin, QAngle* vecAngles );
 	void			RecalculateCraneTip( void );
-	void			GetVectors(Vector* pForward, Vector* pRight, Vector* pUp) const;
+	void			GetVectors( Vector* pForward, Vector* pRight, Vector* pUp ) const;
 
-	void			SetNPCDriver( CNPC_VehicleDriver *pDriver );
+	void			SetNPCDriver( CNPC_VehicleDriver* pDriver );
 
 // IDrivableVehicle
 public:
-	virtual CBaseEntity *GetDriver( void );
-	virtual void		ItemPostFrame( CBasePlayer *pPlayer );
-	virtual void		SetupMove( CBasePlayer *player, CUserCmd *ucmd, IMoveHelper *pHelper, CMoveData *move );
-	virtual void		ProcessMovement( CBasePlayer *pPlayer, CMoveData *pMoveData ) { return; }
-	virtual void		FinishMove( CBasePlayer *player, CUserCmd *ucmd, CMoveData *move ) { return; }
-	virtual bool		CanEnterVehicle( CBaseEntity *pEntity );
-	virtual bool		CanExitVehicle( CBaseEntity *pEntity );
-	virtual void		SetVehicleEntryAnim( bool bOn ) { m_bEnterAnimOn = bOn; }
-	virtual void		SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint ) { m_bExitAnimOn = bOn; if ( bOn ) m_vecEyeExitEndpoint = vecEyeExitEndpoint; }
-	virtual void		EnterVehicle( CBaseCombatCharacter *pPassenger );
+	virtual CBaseEntity* GetDriver( void );
+	virtual void		ItemPostFrame( CBasePlayer* pPlayer );
+	virtual void		SetupMove( CBasePlayer* player, CUserCmd* ucmd, IMoveHelper* pHelper, CMoveData* move );
+	virtual void		ProcessMovement( CBasePlayer* pPlayer, CMoveData* pMoveData )
+	{
+		return;
+	}
+	virtual void		FinishMove( CBasePlayer* player, CUserCmd* ucmd, CMoveData* move )
+	{
+		return;
+	}
+	virtual bool		CanEnterVehicle( CBaseEntity* pEntity );
+	virtual bool		CanExitVehicle( CBaseEntity* pEntity );
+	virtual void		SetVehicleEntryAnim( bool bOn )
+	{
+		m_bEnterAnimOn = bOn;
+	}
+	virtual void		SetVehicleExitAnim( bool bOn, Vector vecEyeExitEndpoint )
+	{
+		m_bExitAnimOn = bOn;
+		if( bOn )
+		{
+			m_vecEyeExitEndpoint = vecEyeExitEndpoint;
+		}
+	}
+	virtual void		EnterVehicle( CBaseCombatCharacter* pPassenger );
 
-	virtual bool		AllowBlockedExit( CBaseCombatCharacter *pPassenger, int nRole ) { return true; }
-	virtual bool		AllowMidairExit( CBaseCombatCharacter *pPassenger, int nRole ) { return false; }
-	virtual void		PreExitVehicle( CBaseCombatCharacter *pPassenger, int nRole );
+	virtual bool		AllowBlockedExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return true;
+	}
+	virtual bool		AllowMidairExit( CBaseCombatCharacter* pPassenger, int nRole )
+	{
+		return false;
+	}
+	virtual void		PreExitVehicle( CBaseCombatCharacter* pPassenger, int nRole );
 	virtual void		ExitVehicle( int nRole );
-	virtual string_t GetVehicleScriptName() { return m_vehicleScript; }
+	virtual string_t GetVehicleScriptName()
+	{
+		return m_vehicleScript;
+	}
 
 	// If this is a vehicle, returns the vehicle interface
-	virtual IServerVehicle *GetServerVehicle() { return &m_ServerVehicle; }
+	virtual IServerVehicle* GetServerVehicle()
+	{
+		return &m_ServerVehicle;
+	}
 
 protected:
 	// Contained IServerVehicle
@@ -197,7 +254,7 @@ protected:
 private:
 
 	CNetworkHandle( CBasePlayer, m_hPlayer );
-	CNetworkVar( bool, m_bMagnetOn ); 
+	CNetworkVar( bool, m_bMagnetOn );
 
 	// NPC Driving
 	CHandle<CNPC_VehicleDriver>		m_hNPCDriver;
@@ -207,7 +264,7 @@ private:
 	bool				m_bLocked;
 	CNetworkVar( bool,	m_bEnterAnimOn );
 	CNetworkVar( bool,	m_bExitAnimOn );
-	CNetworkVector(		m_vecEyeExitEndpoint );
+	CNetworkVector(	m_vecEyeExitEndpoint );
 	COutputEvent		m_playerOn;
 	COutputEvent		m_playerOff;
 
@@ -221,7 +278,7 @@ private:
 	float			m_flExtension;
 	float			m_flExtensionRate;
 
-	// Magnet movement	
+	// Magnet movement
 	bool			m_bDropping;
 	float			m_flNextDangerSoundTime;
 	float			m_flNextCreakSound;
@@ -241,7 +298,7 @@ private:
 	CHandle<CPhysMagnet>	m_hCraneMagnet;
 	CHandle<CCraneTip>		m_hCraneTip;
 	CHandle<CRopeKeyframe>	m_hRope;
-	IPhysicsConstraintGroup *m_pConstraintGroup;
+	IPhysicsConstraintGroup* m_pConstraintGroup;
 
 	// Vehicle script filename
 	string_t		m_vehicleScript;

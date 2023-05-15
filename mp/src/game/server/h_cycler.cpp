@@ -22,25 +22,25 @@ extern short		g_sModelIndexSmoke; // (in combatweapon.cpp) holds the index for t
 
 BEGIN_DATADESC( CCycler )
 
-	// Fields
-	DEFINE_FIELD( m_animate, FIELD_INTEGER ),
+// Fields
+DEFINE_FIELD( m_animate, FIELD_INTEGER ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_STRING, "SetSequence", InputSetSequence ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 //
 // we should get rid of all the other cyclers and replace them with this.
 //
-class CGenericCycler : public CCycler
+			  class CGenericCycler : public CCycler
 {
 public:
 	DECLARE_CLASS( CGenericCycler, CCycler );
 
 	void Spawn()
 	{
-		GenericCyclerSpawn( (char *)STRING( GetModelName() ), Vector(-16, -16, 0), Vector(16, 16, 72) );
+		GenericCyclerSpawn( ( char* )STRING( GetModelName() ), Vector( -16, -16, 0 ), Vector( 16, 16, 72 ) );
 	}
 };
 LINK_ENTITY_TO_CLASS( cycler, CGenericCycler );
@@ -49,9 +49,9 @@ LINK_ENTITY_TO_CLASS( model_studio, CGenericCycler ); // For now model_studios b
 
 // Cycler member functions
 
-void CCycler::GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax)
+void CCycler::GenericCyclerSpawn( char* szModel, Vector vecMin, Vector vecMax )
 {
-	if (!szModel || !*szModel)
+	if( !szModel || !*szModel )
 	{
 		Warning( "cycler at %.0f %.0f %0.f missing modelname\n", GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z );
 		UTIL_Remove( this );
@@ -66,22 +66,22 @@ void CCycler::GenericCyclerSpawn(char *szModel, Vector vecMin, Vector vecMax)
 
 	CCycler::Spawn( );
 
-	UTIL_SetSize(this, vecMin, vecMax);
+	UTIL_SetSize( this, vecMin, vecMax );
 }
 
 
 void CCycler::Precache()
 {
-	PrecacheModel( (const char *)STRING( GetModelName() ) );
+	PrecacheModel( ( const char* )STRING( GetModelName() ) );
 }
 
 
 void CCycler::Spawn( )
 {
 	InitBoneControllers();
-	
+
 	SetSolid( SOLID_BBOX );
-	if ( m_spawnflags & FCYCLER_NOTSOLID )
+	if( m_spawnflags & FCYCLER_NOTSOLID )
 	{
 		AddSolidFlags( FSOLID_NOT_SOLID );
 	}
@@ -95,7 +95,7 @@ void CCycler::Spawn( )
 	m_iHealth			= 80000;// no cycler should die
 	GetMotor()->SetIdealYaw( GetLocalAngles().y );
 	GetMotor()->SnapYaw();
-	
+
 	m_flPlaybackRate	= 1.0;
 	m_flGroundSpeed		= 0;
 
@@ -103,7 +103,7 @@ void CCycler::Spawn( )
 
 	ResetSequenceInfo( );
 
-	if (GetSequence() != 0 || m_flCycle != 0)
+	if( GetSequence() != 0 || m_flCycle != 0 )
 	{
 #ifdef TF2_DLL
 		m_animate = 1;
@@ -128,12 +128,12 @@ void CCycler::Think( void )
 {
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	if (m_animate)
+	if( m_animate )
 	{
-		StudioFrameAdvance ( );
+		StudioFrameAdvance( );
 		DispatchAnimEvents( this );
 	}
-	if (IsSequenceFinished() && !SequenceLoops())
+	if( IsSequenceFinished() && !SequenceLoops() )
 	{
 		// ResetSequenceInfo();
 		// hack to avoid reloading model every frame
@@ -142,32 +142,38 @@ void CCycler::Think( void )
 		m_bSequenceFinished = false;
 		m_flLastEventCheck = 0;
 		m_flCycle = 0;
-		if (!m_animate)
-			m_flPlaybackRate = 0.0;	// FIX: don't reset framerate
+		if( !m_animate )
+		{
+			m_flPlaybackRate = 0.0;    // FIX: don't reset framerate
+		}
 	}
 }
 
 //
 // CyclerUse - starts a rotation trend
 //
-void CCycler::Use ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+void CCycler::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE useType, float value )
 {
 	m_animate = !m_animate;
-	if (m_animate)
+	if( m_animate )
+	{
 		m_flPlaybackRate = 1.0;
+	}
 	else
+	{
 		m_flPlaybackRate = 0.0;
+	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Changes sequences when hurt.
 //-----------------------------------------------------------------------------
-int CCycler::OnTakeDamage( const CTakeDamageInfo &info )
+int CCycler::OnTakeDamage( const CTakeDamageInfo& info )
 {
-	if (m_animate)
+	if( m_animate )
 	{
 		int nSequence = GetSequence() + 1;
-		if ( !IsValidSequence(nSequence) )
+		if( !IsValidSequence( nSequence ) )
 		{
 			nSequence = 0;
 		}
@@ -178,7 +184,7 @@ int CCycler::OnTakeDamage( const CTakeDamageInfo &info )
 	else
 	{
 		m_flPlaybackRate = 1.0;
-		StudioFrameAdvance ();
+		StudioFrameAdvance();
 		m_flPlaybackRate = 0;
 		Msg( "sequence: %d, frame %.0f\n", GetSequence(), m_flCycle.Get() );
 	}
@@ -189,14 +195,14 @@ int CCycler::OnTakeDamage( const CTakeDamageInfo &info )
 //-----------------------------------------------------------------------------
 // Purpose: Input that sets the sequence of the cycler
 //-----------------------------------------------------------------------------
-void CCycler::InputSetSequence( inputdata_t &inputdata )
+void CCycler::InputSetSequence( inputdata_t& inputdata )
 {
-	if (m_animate)
+	if( m_animate )
 	{
 		// Legacy support: Try it as a number, and support '0'
-		const char *sChar = inputdata.value.String();
+		const char* sChar = inputdata.value.String();
 		int iSeqNum = atoi( sChar );
-		if ( !iSeqNum && sChar[0] != '0' )
+		if( !iSeqNum && sChar[0] != '0' )
 		{
 			// Treat it as a sequence name
 			ResetSequence( LookupSequence( sChar ) );
@@ -206,7 +212,7 @@ void CCycler::InputSetSequence( inputdata_t &inputdata )
 			ResetSequence( iSeqNum );
 		}
 
-		if (m_flPlaybackRate == 0.0)
+		if( m_flPlaybackRate == 0.0 )
 		{
 			ResetSequence( 0 );
 		}
@@ -230,12 +236,12 @@ public:
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
 	bool Deploy( void );
-	bool Holster( CBaseCombatWeapon *pSwitchingTo = NULL );
+	bool Holster( CBaseCombatWeapon* pSwitchingTo = NULL );
 	string_t m_iszModel;
 	int m_iModel;
 };
 
-IMPLEMENT_SERVERCLASS_ST(CWeaponCycler, DT_WeaponCycler)
+IMPLEMENT_SERVERCLASS_ST( CWeaponCycler, DT_WeaponCycler )
 END_SEND_TABLE()
 
 LINK_ENTITY_TO_CLASS( cycler_weapon, CWeaponCycler );
@@ -245,12 +251,12 @@ LINK_ENTITY_TO_CLASS( cycler_weapon, CWeaponCycler );
 //---------------------------------------------------------
 BEGIN_DATADESC( CWeaponCycler )
 
-	DEFINE_FIELD( m_iszModel,	FIELD_STRING ),
-	DEFINE_FIELD( m_iModel,		FIELD_INTEGER ),
+DEFINE_FIELD( m_iszModel,	FIELD_STRING ),
+				DEFINE_FIELD( m_iModel,		FIELD_INTEGER ),
 
-END_DATADESC()
+				END_DATADESC()
 
-void CWeaponCycler::Spawn( )
+				void CWeaponCycler::Spawn( )
 {
 	SetSolid( SOLID_BBOX );
 	AddSolidFlags( FSOLID_NOT_STANDABLE );
@@ -261,7 +267,7 @@ void CWeaponCycler::Spawn( )
 	m_iszModel = GetModelName();
 	m_iModel = GetModelIndex();
 
-	UTIL_SetSize(this, Vector(-16, -16, 0), Vector(16, 16, 16));
+	UTIL_SetSize( this, Vector( -16, -16, 0 ), Vector( 16, 16, 16 ) );
 	SetTouch( &CWeaponCycler::DefaultTouch );
 }
 
@@ -269,9 +275,9 @@ void CWeaponCycler::Spawn( )
 
 bool CWeaponCycler::Deploy( )
 {
-	CBaseCombatCharacter *pOwner = GetOwner();
+	CBaseCombatCharacter* pOwner = GetOwner();
 
-	if (pOwner)
+	if( pOwner )
 	{
 		pOwner->m_flNextAttack = gpGlobals->curtime + 1.0;
 		SendWeaponAnim( 0 );
@@ -283,10 +289,10 @@ bool CWeaponCycler::Deploy( )
 }
 
 
-bool CWeaponCycler::Holster( CBaseCombatWeapon *pSwitchingTo )
+bool CWeaponCycler::Holster( CBaseCombatWeapon* pSwitchingTo )
 {
-	CBaseCombatCharacter *pOwner = GetOwner();
-	if (pOwner)
+	CBaseCombatCharacter* pOwner = GetOwner();
+	if( pOwner )
 	{
 		pOwner->m_flNextAttack = gpGlobals->curtime + 0.5;
 	}
@@ -306,7 +312,7 @@ void CWeaponCycler::SecondaryAttack( void )
 {
 	float flFrameRate;
 
-	int nSequence = (GetSequence() + 1) % 8;
+	int nSequence = ( GetSequence() + 1 ) % 8;
 
 	// BUG:  Why do we set this here and then set to zero right after?
 	SetModelIndex( m_iModel );
@@ -314,7 +320,7 @@ void CWeaponCycler::SecondaryAttack( void )
 
 	SetModelIndex( 0 );
 
-	if (flFrameRate == 0.0)
+	if( flFrameRate == 0.0 )
 	{
 		nSequence = 0;
 	}
@@ -345,13 +351,13 @@ public:
 
 BEGIN_DATADESC( CWreckage )
 
-	DEFINE_FIELD( m_flStartTime, FIELD_TIME ),
-	DEFINE_FIELD( m_flDieTime, FIELD_TIME ),
+DEFINE_FIELD( m_flStartTime, FIELD_TIME ),
+			  DEFINE_FIELD( m_flDieTime, FIELD_TIME ),
 
-END_DATADESC()
+			  END_DATADESC()
 
 
-LINK_ENTITY_TO_CLASS( cycler_wreckage, CWreckage );
+			  LINK_ENTITY_TO_CLASS( cycler_wreckage, CWreckage );
 
 void CWreckage::Spawn( void )
 {
@@ -362,7 +368,7 @@ void CWreckage::Spawn( void )
 	SetCycle( 0 );
 	SetNextThink( gpGlobals->curtime + 0.1f );
 
-	if (GetModelName() != NULL_STRING)
+	if( GetModelName() != NULL_STRING )
 	{
 		PrecacheModel( STRING( GetModelName() ) );
 		SetModel( STRING( GetModelName() ) );
@@ -373,8 +379,10 @@ void CWreckage::Spawn( void )
 
 void CWreckage::Precache( )
 {
-	if ( GetModelName() != NULL_STRING )
+	if( GetModelName() != NULL_STRING )
+	{
 		PrecacheModel( STRING( GetModelName() ) );
+	}
 }
 
 void CWreckage::Think( void )
@@ -382,26 +390,26 @@ void CWreckage::Think( void )
 	StudioFrameAdvance( );
 	SetNextThink( gpGlobals->curtime + 0.2 );
 
-	if (m_flDieTime)
+	if( m_flDieTime )
 	{
-		if (m_flDieTime < gpGlobals->curtime)
+		if( m_flDieTime < gpGlobals->curtime )
 		{
 			UTIL_Remove( this );
 			return;
 		}
-		else if (random->RandomFloat( 0, m_flDieTime - m_flStartTime ) > m_flDieTime - gpGlobals->curtime)
+		else if( random->RandomFloat( 0, m_flDieTime - m_flStartTime ) > m_flDieTime - gpGlobals->curtime )
 		{
 			return;
 		}
 	}
-	
+
 	Vector vecSrc;
-	CollisionProp()->RandomPointInBounds( vec3_origin, Vector(1, 1, 1), &vecSrc );	
+	CollisionProp()->RandomPointInBounds( vec3_origin, Vector( 1, 1, 1 ), &vecSrc );
 	CPVSFilter filter( vecSrc );
-	te->Smoke( filter, 0.0, 
-		&vecSrc, g_sModelIndexSmoke,
-		random->RandomFloat(0,4.9) + 5.0,
-		random->RandomInt(0, 3) + 8 );
+	te->Smoke( filter, 0.0,
+			   &vecSrc, g_sModelIndexSmoke,
+			   random->RandomFloat( 0, 4.9 ) + 5.0,
+			   random->RandomInt( 0, 3 ) + 8 );
 }
 
 // BlendingCycler
@@ -413,9 +421,12 @@ public:
 	DECLARE_CLASS( CBlendingCycler, CCycler );
 
 	void Spawn( void );
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 	void Think( void );
-	virtual int	ObjectCaps( void ) { return (BaseClass::ObjectCaps() | FCAP_DONT_SAVE | FCAP_IMPULSE_USE); }
+	virtual int	ObjectCaps( void )
+	{
+		return ( BaseClass::ObjectCaps() | FCAP_DONT_SAVE | FCAP_IMPULSE_USE );
+	}
 
 	int m_iLowerBound;
 	int m_iUpperBound;
@@ -424,62 +435,66 @@ public:
 	string_t m_iszSequence;
 };
 LINK_ENTITY_TO_CLASS( cycler_blender, CBlendingCycler );
- 
+
 //---------------------------------------------------------
 // Save/Restore
 //---------------------------------------------------------
 BEGIN_DATADESC( CBlendingCycler )
 
-	DEFINE_FIELD( m_iLowerBound,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_iUpperBound,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_iCurrent,		FIELD_INTEGER ),
-	DEFINE_FIELD( m_iBlendspeed,	FIELD_INTEGER ),
-	DEFINE_FIELD( m_iszSequence,	FIELD_STRING ),
+DEFINE_FIELD( m_iLowerBound,	FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iUpperBound,	FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iCurrent,		FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iBlendspeed,	FIELD_INTEGER ),
+				 DEFINE_FIELD( m_iszSequence,	FIELD_STRING ),
 
-END_DATADESC()
+				 END_DATADESC()
 
-void CBlendingCycler::Spawn( void )
+				 void CBlendingCycler::Spawn( void )
 {
 	// Remove if it's not blending
-	if (m_iLowerBound == 0 && m_iUpperBound == 0)
+	if( m_iLowerBound == 0 && m_iUpperBound == 0 )
 	{
 		UTIL_Remove( this );
 		return;
 	}
 
-	GenericCyclerSpawn( (char *)STRING( GetModelName() ), Vector(-16,-16,-16), Vector(16,16,16));
-	if (!m_iBlendspeed)
+	GenericCyclerSpawn( ( char* )STRING( GetModelName() ), Vector( -16, -16, -16 ), Vector( 16, 16, 16 ) );
+	if( !m_iBlendspeed )
+	{
 		m_iBlendspeed = 5;
+	}
 
 	// Initialise Sequence
-	if (m_iszSequence != NULL_STRING)
+	if( m_iszSequence != NULL_STRING )
 	{
-		SetSequence( LookupSequence( STRING(m_iszSequence) ) );
+		SetSequence( LookupSequence( STRING( m_iszSequence ) ) );
 	}
 
 	m_iCurrent = m_iLowerBound;
 }
 
-bool CBlendingCycler::KeyValue( const char *szKeyName, const char *szValue )
+bool CBlendingCycler::KeyValue( const char* szKeyName, const char* szValue )
 {
-	if (FStrEq(szKeyName, "lowboundary"))
+	if( FStrEq( szKeyName, "lowboundary" ) )
 	{
-		m_iLowerBound = atoi(szValue);
+		m_iLowerBound = atoi( szValue );
 	}
-	else if (FStrEq(szKeyName, "highboundary"))
+	else if( FStrEq( szKeyName, "highboundary" ) )
 	{
-		m_iUpperBound = atoi(szValue);
+		m_iUpperBound = atoi( szValue );
 	}
-	else if (FStrEq(szKeyName, "blendspeed"))
+	else if( FStrEq( szKeyName, "blendspeed" ) )
 	{
-		m_iBlendspeed = atoi(szValue);
+		m_iBlendspeed = atoi( szValue );
 	}
-	else if (FStrEq(szKeyName, "blendsequence"))
+	else if( FStrEq( szKeyName, "blendsequence" ) )
 	{
-		m_iszSequence = AllocPooledString(szValue);
+		m_iszSequence = AllocPooledString( szValue );
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }
@@ -491,15 +506,17 @@ void CBlendingCycler::Think( void )
 
 	// Move
 	m_iCurrent += m_iBlendspeed;
-	if ( (m_iCurrent > m_iUpperBound) || (m_iCurrent < m_iLowerBound) )
+	if( ( m_iCurrent > m_iUpperBound ) || ( m_iCurrent < m_iLowerBound ) )
+	{
 		m_iBlendspeed = m_iBlendspeed * -1;
+	}
 
 	// Set blend
 	SetPoseParameter( 0, m_iCurrent );
 
 	Msg( "Current Blend: %d\n", m_iCurrent );
 
-	if (IsSequenceFinished() && !SequenceLoops())
+	if( IsSequenceFinished() && !SequenceLoops() )
 	{
 		// ResetSequenceInfo();
 		// hack to avoid reloading model every frame
@@ -508,7 +525,7 @@ void CBlendingCycler::Think( void )
 		m_bSequenceFinished = false;
 		m_flLastEventCheck = 0;
 		m_flCycle = 0;
-		if (!m_animate)
+		if( !m_animate )
 		{
 			m_flPlaybackRate = 0.0;	// FIX: don't reset framerate
 		}

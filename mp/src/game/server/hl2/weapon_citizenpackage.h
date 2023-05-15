@@ -1,12 +1,12 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================
 #ifndef WEAPON_CITIZENPACKAGE_H
 #define WEAPON_CITIZENPACKAGE_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "basehlcombatweapon.h"
@@ -21,11 +21,11 @@ class CWeaponCitizenPackage : public CBaseHLCombatWeapon
 public:
 
 	DECLARE_SERVERCLASS();
-	DECLARE_DATADESC();	
+	DECLARE_DATADESC();
 	DECLARE_ACTTABLE();
 
 	void ItemPostFrame( void );
-	void Drop( const Vector &vecVelocity );
+	void Drop( const Vector& vecVelocity );
 };
 
 #endif // WEAPON_CITIZENPACKAGE_H

@@ -7,7 +7,7 @@
 #ifndef IGAMEINFO_H
 #define IGAMEINFO_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "mathlib/vector.h"
@@ -20,16 +20,16 @@ public:
 	// returns an enumerated id for the current game type
 	virtual const int GetInfo_GameType() = 0;
 	// returns a name associated with the gametype, if defined.
-	virtual const char *GetInfo_GameTypeName() = 0;
+	virtual const char* GetInfo_GameTypeName() = 0;
 	// returns the team name associated with the number
-	virtual const char *GetInfo_GetTeamName(int teamNumber) = 0;
+	virtual const char* GetInfo_GetTeamName( int teamNumber ) = 0;
 	// returns how many teams the game has (typically always 4; 0 = unassigned, 1 = spectator, 2 = team1, 3 = team2)
 	virtual const int GetInfo_GetTeamCount() = 0;
 	// returns how many players are on a given team
-	virtual const int GetInfo_NumPlayersOnTeam(int teamNumber) = 0;
+	virtual const int GetInfo_NumPlayersOnTeam( int teamNumber ) = 0;
 
-	// accessor to hook mod specific information about the rules. for TF2, fields such as 
-	virtual bool GetInfo_Custom(int valueType, pluginvariant &outValue, pluginvariant options) = 0;
+	// accessor to hook mod specific information about the rules. for TF2, fields such as
+	virtual bool GetInfo_Custom( int valueType, pluginvariant & outValue, pluginvariant options ) = 0;
 
 };
 
@@ -40,6 +40,6 @@ public:
 abstract_class IGameInfoManager
 {
 public:
-	virtual IGameInfo *GetGameInfo() = 0;
+	virtual IGameInfo * GetGameInfo() = 0;
 };
 #endif // IGAMEINFO_H

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -10,7 +10,7 @@
 #define ISHADERDEVICE_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier1/interface.h"
@@ -36,7 +36,11 @@ class KeyValues;
 
 struct ShaderDisplayMode_t
 {
-	ShaderDisplayMode_t() { memset( this, 0, sizeof(ShaderDisplayMode_t) ); m_nVersion = SHADER_DISPLAY_MODE_VERSION; }
+	ShaderDisplayMode_t()
+	{
+		memset( this, 0, sizeof( ShaderDisplayMode_t ) );
+		m_nVersion = SHADER_DISPLAY_MODE_VERSION;
+	}
 
 	int m_nVersion;
 	int m_nWidth;					// 0 when running windowed means use desktop resolution
@@ -46,7 +50,7 @@ struct ShaderDisplayMode_t
 	int m_nRefreshRateDenominator;	// Refresh rate = numerator / denominator.
 };
 
-	
+
 //-----------------------------------------------------------------------------
 // Describes how to set the device
 //-----------------------------------------------------------------------------
@@ -54,7 +58,12 @@ struct ShaderDisplayMode_t
 
 struct ShaderDeviceInfo_t
 {
-	ShaderDeviceInfo_t() { memset( this, 0, sizeof(ShaderDeviceInfo_t) ); m_nVersion = SHADER_DEVICE_INFO_VERSION; m_DisplayMode.m_nVersion = SHADER_DISPLAY_MODE_VERSION; }
+	ShaderDeviceInfo_t()
+	{
+		memset( this, 0, sizeof( ShaderDeviceInfo_t ) );
+		m_nVersion = SHADER_DEVICE_INFO_VERSION;
+		m_DisplayMode.m_nVersion = SHADER_DISPLAY_MODE_VERSION;
+	}
 
 	int m_nVersion;
 	ShaderDisplayMode_t m_DisplayMode;
@@ -137,14 +146,15 @@ public:
 //-----------------------------------------------------------------------------
 // Mode chance callback
 //-----------------------------------------------------------------------------
-typedef void (*ShaderModeChangeCallbackFunc_t)( void );
+typedef void ( *ShaderModeChangeCallbackFunc_t )( void );
 
 
 //-----------------------------------------------------------------------------
 // Methods related to discovering and selecting devices
 //-----------------------------------------------------------------------------
 #define SHADER_DEVICE_MGR_INTERFACE_VERSION		"ShaderDeviceMgr001"
-abstract_class IShaderDeviceMgr : public IAppSystem
+abstract_class IShaderDeviceMgr :
+public IAppSystem
 {
 public:
 	// Gets the number of adapters...
@@ -154,7 +164,7 @@ public:
 	virtual void GetAdapterInfo( int nAdapter, MaterialAdapterInfo_t& info ) const = 0;
 
 	// Gets recommended congifuration for a particular adapter at a particular dx level
-	virtual bool GetRecommendedConfigurationInfo( int nAdapter, int nDXLevel, KeyValues *pConfiguration ) = 0;
+	virtual bool GetRecommendedConfigurationInfo( int nAdapter, int nDXLevel, KeyValues * pConfiguration ) = 0;
 
 	// Returns the number of modes
 	virtual int	 GetModeCount( int nAdapter ) const = 0;
@@ -172,9 +182,9 @@ public:
 	// Use the returned factory to get at an IShaderDevice and an IShaderRender
 	// and any other interfaces we decide to create.
 	// A returned factory of NULL indicates the mode was not set properly.
-	virtual CreateInterfaceFn SetMode( void *hWnd, int nAdapter, const ShaderDeviceInfo_t& mode ) = 0;
+	virtual CreateInterfaceFn SetMode( void* hWnd, int nAdapter, const ShaderDeviceInfo_t& mode ) = 0;
 
-	// Installs a callback to get called 
+	// Installs a callback to get called
 	virtual void AddModeChangeCallback( ShaderModeChangeCallbackFunc_t func ) = 0;
 	virtual void RemoveModeChangeCallback( ShaderModeChangeCallbackFunc_t func ) = 0;
 };
@@ -201,7 +211,7 @@ public:
 	// Are we using graphics?
 	virtual bool IsUsingGraphics() const = 0;
 
-	// Use this to spew information about the 3D layer 
+	// Use this to spew information about the 3D layer
 	virtual void SpewDriverInfo() const = 0;
 
 	// What's the bit depth of the stencil buffer?
@@ -214,7 +224,7 @@ public:
 	virtual void Present() = 0;
 
 	// Returns the window size
-	virtual void GetWindowSize( int &nWidth, int &nHeight ) const = 0;
+	virtual void GetWindowSize( int& nWidth, int& nHeight ) const = 0;
 
 	// Gamma ramp control
 	virtual void SetHardwareGammaRamp( float fGamma, float fGammaTVRangeMin, float fGammaTVRangeMax, float fGammaTVExponent, bool bTVEnabled ) = 0;
@@ -227,51 +237,51 @@ public:
 	virtual void SetView( void* hWnd ) = 0;
 
 	// Shader compilation
-	virtual IShaderBuffer* CompileShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion ) = 0;
+	virtual IShaderBuffer * CompileShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion ) = 0;
 
 	// Shader creation, destruction
-	virtual VertexShaderHandle_t CreateVertexShader( IShaderBuffer* pShaderBuffer ) = 0;
+	virtual VertexShaderHandle_t CreateVertexShader( IShaderBuffer * pShaderBuffer ) = 0;
 	virtual void DestroyVertexShader( VertexShaderHandle_t hShader ) = 0;
-	virtual GeometryShaderHandle_t CreateGeometryShader( IShaderBuffer* pShaderBuffer ) = 0;
+	virtual GeometryShaderHandle_t CreateGeometryShader( IShaderBuffer * pShaderBuffer ) = 0;
 	virtual void DestroyGeometryShader( GeometryShaderHandle_t hShader ) = 0;
-	virtual PixelShaderHandle_t CreatePixelShader( IShaderBuffer* pShaderBuffer ) = 0;
+	virtual PixelShaderHandle_t CreatePixelShader( IShaderBuffer * pShaderBuffer ) = 0;
 	virtual void DestroyPixelShader( PixelShaderHandle_t hShader ) = 0;
 
 	// Utility methods to make shader creation simpler
 	// NOTE: For the utlbuffer version, use a binary buffer for a compiled shader
 	// and a text buffer for a source-code (.fxc) shader
-	VertexShaderHandle_t CreateVertexShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion );
-	VertexShaderHandle_t CreateVertexShader( CUtlBuffer &buf, const char *pShaderVersion = NULL );
-	GeometryShaderHandle_t CreateGeometryShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion );
-	GeometryShaderHandle_t CreateGeometryShader( CUtlBuffer &buf, const char *pShaderVersion = NULL );
-	PixelShaderHandle_t CreatePixelShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion );
-	PixelShaderHandle_t CreatePixelShader( CUtlBuffer &buf, const char *pShaderVersion = NULL );
+	VertexShaderHandle_t CreateVertexShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion );
+	VertexShaderHandle_t CreateVertexShader( CUtlBuffer & buf, const char* pShaderVersion = NULL );
+	GeometryShaderHandle_t CreateGeometryShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion );
+	GeometryShaderHandle_t CreateGeometryShader( CUtlBuffer & buf, const char* pShaderVersion = NULL );
+	PixelShaderHandle_t CreatePixelShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion );
+	PixelShaderHandle_t CreatePixelShader( CUtlBuffer & buf, const char* pShaderVersion = NULL );
 
 	// NOTE: Deprecated!! Use CreateVertexBuffer/CreateIndexBuffer instead
 	// Creates/destroys Mesh
-	virtual IMesh* CreateStaticMesh( VertexFormat_t vertexFormat, const char *pTextureBudgetGroup, IMaterial * pMaterial = NULL ) = 0;
-	virtual void DestroyStaticMesh( IMesh* mesh ) = 0;
+	virtual IMesh * CreateStaticMesh( VertexFormat_t vertexFormat, const char* pTextureBudgetGroup, IMaterial* pMaterial = NULL ) = 0;
+	virtual void DestroyStaticMesh( IMesh * mesh ) = 0;
 
 	// Creates/destroys static vertex + index buffers
-	virtual IVertexBuffer *CreateVertexBuffer( ShaderBufferType_t type, VertexFormat_t fmt, int nVertexCount, const char *pBudgetGroup ) = 0;
-	virtual void DestroyVertexBuffer( IVertexBuffer *pVertexBuffer ) = 0;
+	virtual IVertexBuffer * CreateVertexBuffer( ShaderBufferType_t type, VertexFormat_t fmt, int nVertexCount, const char* pBudgetGroup ) = 0;
+	virtual void DestroyVertexBuffer( IVertexBuffer * pVertexBuffer ) = 0;
 
-	virtual IIndexBuffer *CreateIndexBuffer( ShaderBufferType_t bufferType, MaterialIndexFormat_t fmt, int nIndexCount, const char *pBudgetGroup ) = 0;
-	virtual void DestroyIndexBuffer( IIndexBuffer *pIndexBuffer ) = 0;
+	virtual IIndexBuffer * CreateIndexBuffer( ShaderBufferType_t bufferType, MaterialIndexFormat_t fmt, int nIndexCount, const char* pBudgetGroup ) = 0;
+	virtual void DestroyIndexBuffer( IIndexBuffer * pIndexBuffer ) = 0;
 
 	// Do we need to specify the stream here in the case of locking multiple dynamic VBs on different streams?
-	virtual IVertexBuffer *GetDynamicVertexBuffer( int nStreamID, VertexFormat_t vertexFormat, bool bBuffered = true ) = 0;
-	virtual IIndexBuffer *GetDynamicIndexBuffer( MaterialIndexFormat_t fmt, bool bBuffered = true ) = 0;
+	virtual IVertexBuffer * GetDynamicVertexBuffer( int nStreamID, VertexFormat_t vertexFormat, bool bBuffered = true ) = 0;
+	virtual IIndexBuffer * GetDynamicIndexBuffer( MaterialIndexFormat_t fmt, bool bBuffered = true ) = 0;
 
 	// A special path used to tick the front buffer while loading on the 360
-	virtual void EnableNonInteractiveMode( MaterialNonInteractiveMode_t mode, ShaderNonInteractiveInfo_t *pInfo = NULL ) = 0;
+	virtual void EnableNonInteractiveMode( MaterialNonInteractiveMode_t mode, ShaderNonInteractiveInfo_t* pInfo = NULL ) = 0;
 	virtual void RefreshFrontBufferNonInteractive( ) = 0;
 	virtual void HandleThreadEvent( uint32 threadEvent ) = 0;
 
 #ifdef DX_TO_GL_ABSTRACTION
 	virtual void DoStartupShaderPreloading( void ) = 0;
 #endif
-	virtual char *GetDisplayDeviceName() = 0;
+	virtual char* GetDisplayDeviceName() = 0;
 
 };
 
@@ -283,7 +293,7 @@ public:
 class CUtlShaderBuffer : public IShaderBuffer
 {
 public:
-	CUtlShaderBuffer( CUtlBuffer &buf ) : m_pBuf( &buf ) {}
+	CUtlShaderBuffer( CUtlBuffer& buf ) : m_pBuf( &buf ) {}
 
 	virtual size_t GetSize() const
 	{
@@ -301,32 +311,32 @@ public:
 	}
 
 private:
-	CUtlBuffer *m_pBuf;
+	CUtlBuffer* m_pBuf;
 };
 
 
 //-----------------------------------------------------------------------------
 // Inline methods of IShaderDevice
 //-----------------------------------------------------------------------------
-inline VertexShaderHandle_t IShaderDevice::CreateVertexShader( CUtlBuffer &buf, const char *pShaderVersion )
+inline VertexShaderHandle_t IShaderDevice::CreateVertexShader( CUtlBuffer& buf, const char* pShaderVersion )
 {
 	// NOTE: Text buffers are assumed to have source-code shader files
 	// Binary buffers are assumed to have compiled shader files
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		Assert( pShaderVersion );
-		return CreateVertexShader( (const char *)buf.Base(), buf.TellMaxPut(), pShaderVersion );
+		return CreateVertexShader( ( const char* )buf.Base(), buf.TellMaxPut(), pShaderVersion );
 	}
 
 	CUtlShaderBuffer shaderBuffer( buf );
 	return CreateVertexShader( &shaderBuffer );
 }
 
-inline VertexShaderHandle_t IShaderDevice::CreateVertexShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion )
+inline VertexShaderHandle_t IShaderDevice::CreateVertexShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion )
 {
 	VertexShaderHandle_t hVertexShader = VERTEX_SHADER_HANDLE_INVALID;
 	IShaderBuffer* pShaderBuffer = CompileShader( pProgram, nBufLen, pShaderVersion );
-	if ( pShaderBuffer )
+	if( pShaderBuffer )
 	{
 		hVertexShader = CreateVertexShader( pShaderBuffer );
 		pShaderBuffer->Release();
@@ -334,25 +344,25 @@ inline VertexShaderHandle_t IShaderDevice::CreateVertexShader( const char *pProg
 	return hVertexShader;
 }
 
-inline GeometryShaderHandle_t IShaderDevice::CreateGeometryShader( CUtlBuffer &buf, const char *pShaderVersion )
+inline GeometryShaderHandle_t IShaderDevice::CreateGeometryShader( CUtlBuffer& buf, const char* pShaderVersion )
 {
 	// NOTE: Text buffers are assumed to have source-code shader files
 	// Binary buffers are assumed to have compiled shader files
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		Assert( pShaderVersion );
-		return CreateGeometryShader( (const char *)buf.Base(), buf.TellMaxPut(), pShaderVersion );
+		return CreateGeometryShader( ( const char* )buf.Base(), buf.TellMaxPut(), pShaderVersion );
 	}
 
 	CUtlShaderBuffer shaderBuffer( buf );
 	return CreateGeometryShader( &shaderBuffer );
 }
 
-inline GeometryShaderHandle_t IShaderDevice::CreateGeometryShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion )
+inline GeometryShaderHandle_t IShaderDevice::CreateGeometryShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion )
 {
 	GeometryShaderHandle_t hGeometryShader = GEOMETRY_SHADER_HANDLE_INVALID;
 	IShaderBuffer* pShaderBuffer = CompileShader( pProgram, nBufLen, pShaderVersion );
-	if ( pShaderBuffer )
+	if( pShaderBuffer )
 	{
 		hGeometryShader = CreateGeometryShader( pShaderBuffer );
 		pShaderBuffer->Release();
@@ -360,25 +370,25 @@ inline GeometryShaderHandle_t IShaderDevice::CreateGeometryShader( const char *p
 	return hGeometryShader;
 }
 
-inline PixelShaderHandle_t IShaderDevice::CreatePixelShader( CUtlBuffer &buf, const char *pShaderVersion )
+inline PixelShaderHandle_t IShaderDevice::CreatePixelShader( CUtlBuffer& buf, const char* pShaderVersion )
 {
 	// NOTE: Text buffers are assumed to have source-code shader files
 	// Binary buffers are assumed to have compiled shader files
-	if ( buf.IsText() )
+	if( buf.IsText() )
 	{
 		Assert( pShaderVersion );
-		return CreatePixelShader( (const char *)buf.Base(), buf.TellMaxPut(), pShaderVersion );
+		return CreatePixelShader( ( const char* )buf.Base(), buf.TellMaxPut(), pShaderVersion );
 	}
 
 	CUtlShaderBuffer shaderBuffer( buf );
 	return CreatePixelShader( &shaderBuffer );
 }
 
-inline PixelShaderHandle_t IShaderDevice::CreatePixelShader( const char *pProgram, size_t nBufLen, const char *pShaderVersion )
+inline PixelShaderHandle_t IShaderDevice::CreatePixelShader( const char* pProgram, size_t nBufLen, const char* pShaderVersion )
 {
 	PixelShaderHandle_t hPixelShader = PIXEL_SHADER_HANDLE_INVALID;
 	IShaderBuffer* pShaderBuffer = CompileShader( pProgram, nBufLen, pShaderVersion );
-	if ( pShaderBuffer )
+	if( pShaderBuffer )
 	{
 		hPixelShader = CreatePixelShader( pShaderBuffer );
 		pShaderBuffer->Release();

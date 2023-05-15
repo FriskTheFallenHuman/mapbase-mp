@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -29,7 +29,7 @@ DECLARE_BUILD_FACTORY( RotatingProgressBar );
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-RotatingProgressBar::RotatingProgressBar(Panel *parent, const char *panelName) : ProgressBar(parent, panelName)
+RotatingProgressBar::RotatingProgressBar( Panel* parent, const char* panelName ) : ProgressBar( parent, panelName )
 {
 	m_flStartRadians = 0;
 	m_flEndRadians = 0;
@@ -40,9 +40,9 @@ RotatingProgressBar::RotatingProgressBar(Panel *parent, const char *panelName) :
 
 	m_flTickDelay = 30;
 
-	ivgui()->AddTickSignal(GetVPanel(), m_flTickDelay );
+	ivgui()->AddTickSignal( GetVPanel(), m_flTickDelay );
 
-	SetPaintBorderEnabled(false);
+	SetPaintBorderEnabled( false );
 }
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@ RotatingProgressBar::RotatingProgressBar(Panel *parent, const char *panelName) :
 //-----------------------------------------------------------------------------
 RotatingProgressBar::~RotatingProgressBar()
 {
-	if ( vgui::surface() && m_nTextureId != -1 )
+	if( vgui::surface() && m_nTextureId != -1 )
 	{
 		vgui::surface()->DestroyTextureID( m_nTextureId );
 		m_nTextureId = -1;
@@ -60,18 +60,18 @@ RotatingProgressBar::~RotatingProgressBar()
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void RotatingProgressBar::ApplySettings(KeyValues *inResourceData)
+void RotatingProgressBar::ApplySettings( KeyValues* inResourceData )
 {
-	const char *imageName = inResourceData->GetString("image", "");
-	if (*imageName)
+	const char* imageName = inResourceData->GetString( "image", "" );
+	if( *imageName )
 	{
 		SetImage( imageName );
 	}
 
 	// Find min and max rotations in radians
-	m_flStartRadians = DEG2RAD(inResourceData->GetFloat( "start_degrees", 0 ) );
+	m_flStartRadians = DEG2RAD( inResourceData->GetFloat( "start_degrees", 0 ) );
 	m_flEndRadians = DEG2RAD( inResourceData->GetFloat( "end_degrees", 0 ) );
 
 	// Start at 0 progress
@@ -89,49 +89,49 @@ void RotatingProgressBar::ApplySettings(KeyValues *inResourceData)
 	m_flRotatingY = inResourceData->GetFloat( "rotating_y", 0 );
 	m_flRotatingWide = inResourceData->GetFloat( "rotating_wide", 0 );
 	m_flRotatingTall = inResourceData->GetFloat( "rotating_tall", 0 );
-	
+
 	BaseClass::ApplySettings( inResourceData );
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void RotatingProgressBar::ApplySchemeSettings(IScheme *pScheme)
+void RotatingProgressBar::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
+	BaseClass::ApplySchemeSettings( pScheme );
 
-	if ( m_pszImageName && strlen( m_pszImageName ) > 0 )
+	if( m_pszImageName && strlen( m_pszImageName ) > 0 )
 	{
-		if ( m_nTextureId == -1 )
+		if( m_nTextureId == -1 )
 		{
 			m_nTextureId = surface()->CreateNewTextureID();
 		}
 
-		surface()->DrawSetTextureFile( m_nTextureId, m_pszImageName, true, false);
+		surface()->DrawSetTextureFile( m_nTextureId, m_pszImageName, true, false );
 	}
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: sets an image by file name
 //-----------------------------------------------------------------------------
-void RotatingProgressBar::SetImage(const char *imageName)
+void RotatingProgressBar::SetImage( const char* imageName )
 {
-	if ( m_pszImageName )
+	if( m_pszImageName )
 	{
 		delete [] m_pszImageName;
 		m_pszImageName = NULL;
 	}
 
-	const char *pszDir = "vgui/";
-	int len = Q_strlen(imageName) + 1;
-	len += strlen(pszDir);
+	const char* pszDir = "vgui/";
+	int len = Q_strlen( imageName ) + 1;
+	len += strlen( pszDir );
 	m_pszImageName = new char[ len ];
 	Q_snprintf( m_pszImageName, len, "%s%s", pszDir, imageName );
-	InvalidateLayout(false, true); // force applyschemesettings to run
+	InvalidateLayout( false, true ); // force applyschemesettings to run
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void RotatingProgressBar::PaintBackground()
 {
@@ -151,7 +151,7 @@ void RotatingProgressBar::OnTick( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void RotatingProgressBar::Paint()
 {
@@ -163,7 +163,7 @@ void RotatingProgressBar::Paint()
 	// ( m_flStartDegrees -> m_flEndDegrees )
 
 	vgui::surface()->DrawSetTexture( m_nTextureId );
-	vgui::surface()->DrawSetColor( Color(255,255,255,255) );
+	vgui::surface()->DrawSetColor( Color( 255, 255, 255, 255 ) );
 
 	int wide, tall;
 	GetSize( wide, tall );
@@ -171,18 +171,18 @@ void RotatingProgressBar::Paint()
 	float mid_x = m_flRotatingX + m_flRotOriginX * m_flRotatingWide;
 	float mid_y = m_flRotatingY + m_flRotOriginY * m_flRotatingTall;
 
-	Vertex_t vert[4];	
+	Vertex_t vert[4];
 
-	vert[0].Init( Vector2D( m_flRotatingX, m_flRotatingY ), Vector2D(0,0) );
-	vert[1].Init( Vector2D( m_flRotatingX+m_flRotatingWide, m_flRotatingY ), Vector2D(1,0) );
-	vert[2].Init( Vector2D( m_flRotatingX+m_flRotatingWide, m_flRotatingY+m_flRotatingTall ), Vector2D(1,1) );
-	vert[3].Init( Vector2D( m_flRotatingX, m_flRotatingY+m_flRotatingTall ), Vector2D(0,1) );
+	vert[0].Init( Vector2D( m_flRotatingX, m_flRotatingY ), Vector2D( 0, 0 ) );
+	vert[1].Init( Vector2D( m_flRotatingX + m_flRotatingWide, m_flRotatingY ), Vector2D( 1, 0 ) );
+	vert[2].Init( Vector2D( m_flRotatingX + m_flRotatingWide, m_flRotatingY + m_flRotatingTall ), Vector2D( 1, 1 ) );
+	vert[3].Init( Vector2D( m_flRotatingX, m_flRotatingY + m_flRotatingTall ), Vector2D( 0, 1 ) );
 
-	float flCosA = cos(m_flLastAngle);
-	float flSinA = sin(m_flLastAngle);
+	float flCosA = cos( m_flLastAngle );
+	float flSinA = sin( m_flLastAngle );
 
 	// rotate each point around (mid_x, mid_y) by flAngle radians
-	for ( int i=0;i<4;i++ )
+	for( int i = 0; i < 4; i++ )
 	{
 		Vector2D result;
 

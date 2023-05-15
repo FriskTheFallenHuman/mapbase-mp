@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -17,9 +17,9 @@ using namespace vgui;
 //-----------------------------------------------------------------------------
 // Purpose: Constructor
 //-----------------------------------------------------------------------------
-CheckButtonList::CheckButtonList(Panel *parent, const char *name) : BaseClass(parent, name)
+CheckButtonList::CheckButtonList( Panel* parent, const char* name ) : BaseClass( parent, name )
 {
-	m_pScrollBar = new ScrollBar(this, NULL, true);
+	m_pScrollBar = new ScrollBar( this, NULL, true );
 }
 
 //-----------------------------------------------------------------------------
@@ -33,17 +33,17 @@ CheckButtonList::~CheckButtonList()
 //-----------------------------------------------------------------------------
 // Purpose: adds a check button to the list
 //-----------------------------------------------------------------------------
-int CheckButtonList::AddItem(const char *itemText, bool startsSelected, KeyValues *userData)
+int CheckButtonList::AddItem( const char* itemText, bool startsSelected, KeyValues* userData )
 {
 	CheckItem_t newItem;
-	newItem.checkButton = new vgui::CheckButton(this, NULL, itemText);
+	newItem.checkButton = new vgui::CheckButton( this, NULL, itemText );
 	newItem.checkButton->SetSilentMode( true );
-	newItem.checkButton->SetSelected(startsSelected);
+	newItem.checkButton->SetSelected( startsSelected );
 	newItem.checkButton->SetSilentMode( false );
-	newItem.checkButton->AddActionSignalTarget(this);
+	newItem.checkButton->AddActionSignalTarget( this );
 	newItem.userData = userData;
 	InvalidateLayout();
-	return m_CheckItems.AddToTail(newItem);
+	return m_CheckItems.AddToTail( newItem );
 }
 
 //-----------------------------------------------------------------------------
@@ -51,10 +51,10 @@ int CheckButtonList::AddItem(const char *itemText, bool startsSelected, KeyValue
 //-----------------------------------------------------------------------------
 void CheckButtonList::RemoveAll()
 {
-	for (int i = 0; i < m_CheckItems.Count(); i++)
+	for( int i = 0; i < m_CheckItems.Count(); i++ )
 	{
 		m_CheckItems[i].checkButton->MarkForDeletion();
-		if (m_CheckItems[i].userData)
+		if( m_CheckItems[i].userData )
 		{
 			m_CheckItems[i].userData->deleteThis();
 		}
@@ -69,9 +69,9 @@ void CheckButtonList::RemoveAll()
 int CheckButtonList::GetCheckedItemCount()
 {
 	int count = 0;
-	for (int i = 0; i < m_CheckItems.Count(); i++)
+	for( int i = 0; i < m_CheckItems.Count(); i++ )
 	{
-		if (m_CheckItems[i].checkButton->IsSelected())
+		if( m_CheckItems[i].checkButton->IsSelected() )
 		{
 			count++;
 		}
@@ -88,30 +88,30 @@ void CheckButtonList::PerformLayout()
 	BaseClass::PerformLayout();
 
 	// get sizes
-	int x = 4, y = 4, wide = GetWide() - ((x * 2) + m_pScrollBar->GetWide()), tall = 22;
+	int x = 4, y = 4, wide = GetWide() - ( ( x * 2 ) + m_pScrollBar->GetWide() ), tall = 22;
 
 	// set scrollbar
-	int totalHeight = y + (m_CheckItems.Count() * tall);
-	if (totalHeight > GetTall())
+	int totalHeight = y + ( m_CheckItems.Count() * tall );
+	if( totalHeight > GetTall() )
 	{
-		m_pScrollBar->SetRange(0, totalHeight + 1);
-		m_pScrollBar->SetRangeWindow(GetTall());
-		m_pScrollBar->SetVisible(true);
-		m_pScrollBar->SetBounds(GetWide() - 21, 0, 19, GetTall() - 2);
-		SetPaintBorderEnabled(true);
+		m_pScrollBar->SetRange( 0, totalHeight + 1 );
+		m_pScrollBar->SetRangeWindow( GetTall() );
+		m_pScrollBar->SetVisible( true );
+		m_pScrollBar->SetBounds( GetWide() - 21, 0, 19, GetTall() - 2 );
+		SetPaintBorderEnabled( true );
 		y -= m_pScrollBar->GetValue();
 	}
 	else
 	{
-		m_pScrollBar->SetVisible(false);
-		SetPaintBorderEnabled(false);
+		m_pScrollBar->SetVisible( false );
+		SetPaintBorderEnabled( false );
 	}
 
 	// position the items
-	for (int i = 0; i < m_CheckItems.Count(); i++)
+	for( int i = 0; i < m_CheckItems.Count(); i++ )
 	{
-		CheckButton *btn = m_CheckItems[i].checkButton;
-		btn->SetBounds(x, y, wide, tall);
+		CheckButton* btn = m_CheckItems[i].checkButton;
+		btn->SetBounds( x, y, wide, tall );
 		y += tall;
 	}
 }
@@ -119,18 +119,18 @@ void CheckButtonList::PerformLayout()
 //-----------------------------------------------------------------------------
 // Purpose: Sets the border on the window
 //-----------------------------------------------------------------------------
-void CheckButtonList::ApplySchemeSettings(IScheme *pScheme)
+void CheckButtonList::ApplySchemeSettings( IScheme* pScheme )
 {
-	BaseClass::ApplySchemeSettings(pScheme);
-	SetBorder(pScheme->GetBorder("ButtonDepressedBorder"));
+	BaseClass::ApplySchemeSettings( pScheme );
+	SetBorder( pScheme->GetBorder( "ButtonDepressedBorder" ) );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: iteration
 //-----------------------------------------------------------------------------
-bool CheckButtonList::IsItemIDValid(int itemID)
+bool CheckButtonList::IsItemIDValid( int itemID )
 {
-	return m_CheckItems.IsValidIndex(itemID);
+	return m_CheckItems.IsValidIndex( itemID );
 }
 
 //-----------------------------------------------------------------------------
@@ -144,7 +144,7 @@ int CheckButtonList::GetHighestItemID()
 //-----------------------------------------------------------------------------
 // Purpose: iteration
 //-----------------------------------------------------------------------------
-KeyValues *CheckButtonList::GetItemData(int itemID)
+KeyValues* CheckButtonList::GetItemData( int itemID )
 {
 	return m_CheckItems[itemID].userData;
 }
@@ -160,7 +160,7 @@ int CheckButtonList::GetItemCount()
 //-----------------------------------------------------------------------------
 // Purpose: data accessor
 //-----------------------------------------------------------------------------
-bool CheckButtonList::IsItemChecked(int itemID)
+bool CheckButtonList::IsItemChecked( int itemID )
 {
 	return m_CheckItems[itemID].checkButton->IsSelected();
 }
@@ -168,23 +168,23 @@ bool CheckButtonList::IsItemChecked(int itemID)
 //-----------------------------------------------------------------------------
 // Purpose: Sets the state of the check button
 //-----------------------------------------------------------------------------
-void CheckButtonList::SetItemCheckable(int itemID, bool state)
+void CheckButtonList::SetItemCheckable( int itemID, bool state )
 {
-	m_CheckItems[itemID].checkButton->SetCheckButtonCheckable(state);
+	m_CheckItems[itemID].checkButton->SetCheckButtonCheckable( state );
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: Forwards up check button selected message
 //-----------------------------------------------------------------------------
-void CheckButtonList::OnCheckButtonChecked( KeyValues *pParams )
+void CheckButtonList::OnCheckButtonChecked( KeyValues* pParams )
 {
-	vgui::Panel *pPanel = (vgui::Panel *)pParams->GetPtr( "panel" );
+	vgui::Panel* pPanel = ( vgui::Panel* )pParams->GetPtr( "panel" );
 	int c = m_CheckItems.Count();
-	for ( int i = 0; i < c; ++i )
+	for( int i = 0; i < c; ++i )
 	{
-		if ( pPanel == m_CheckItems[i].checkButton )
+		if( pPanel == m_CheckItems[i].checkButton )
 		{
-			KeyValues *kv = new KeyValues( "CheckButtonChecked", "itemid", i );
+			KeyValues* kv = new KeyValues( "CheckButtonChecked", "itemid", i );
 			kv->SetInt( "state", pParams->GetInt( "state" ) );
 			PostActionSignal( kv );
 			break;
@@ -204,9 +204,9 @@ void CheckButtonList::OnScrollBarSliderMoved()
 //-----------------------------------------------------------------------------
 // Purpose: Mouse wheeled
 //-----------------------------------------------------------------------------
-void CheckButtonList::OnMouseWheeled(int delta)
+void CheckButtonList::OnMouseWheeled( int delta )
 {
 	int val = m_pScrollBar->GetValue();
-	val -= (delta * 15);
-	m_pScrollBar->SetValue(val);
+	val -= ( delta * 15 );
+	m_pScrollBar->SetValue( val );
 }

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: A panel "metaclass" is a name given to a particular type of 
+// Purpose: A panel "metaclass" is a name given to a particular type of
 // panel with particular instance data. Such panels tend to be dynamically
 // added and removed from their parent panels.
 //
@@ -11,7 +11,7 @@
 #if !defined( PANELMETACLASSMGR_H )
 #define PANELMETACLASSMGR_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "tier0/dbg.h"
@@ -26,7 +26,7 @@ class Color;
 
 namespace vgui
 {
-	class Panel;
+class Panel;
 }
 
 
@@ -37,7 +37,7 @@ abstract_class IPanelFactory
 {
 public:
 	// Creation, destruction methods
-	virtual vgui::Panel *Create( const char *pMetaClassName, KeyValues* pKeyValues, void *pInitData, vgui::Panel *pParent ) = 0;
+	virtual vgui::Panel * Create( const char* pMetaClassName, KeyValues * pKeyValues, void* pInitData, vgui::Panel * pParent ) = 0;
 };
 
 
@@ -50,22 +50,22 @@ abstract_class IPanelMetaClassMgr
 {
 public:
 	// Call this to load up a file containing metaclass definitions
-	virtual void LoadMetaClassDefinitionFile( const char *pFileName ) = 0;
+	virtual void LoadMetaClassDefinitionFile( const char* pFileName ) = 0;
 
 	// Call this to install a new panel type
 	// MetaClasses will refer to the panel type to create along with
 	// various initialization data
-	virtual void InstallPanelType( const char *pPanelName, IPanelFactory *pFactory ) = 0;
+	virtual void InstallPanelType( const char* pPanelName, IPanelFactory * pFactory ) = 0;
 
 	// Creates a metaclass panel with the specified parent panel.
 	// Chain name is used as a filter of the metaclass data; if specified,
 	// it recursively iterates through the keyvalue sections and calls
 	// chainKeyValue on sections whose name matches the chain name
-	virtual vgui::Panel *CreatePanelMetaClass( const char *pMetaClassType, 
-		int sortorder, void *pInitData, vgui::Panel *pParent, const char *pChainName = NULL ) = 0;
+	virtual vgui::Panel * CreatePanelMetaClass( const char* pMetaClassType,
+	int sortorder, void* pInitData, vgui::Panel * pParent, const char* pChainName = NULL ) = 0;
 
 	// removes a particular panel meta class
-	virtual void DestroyPanelMetaClass( vgui::Panel *pPanel ) = 0;
+	virtual void DestroyPanelMetaClass( vgui::Panel * pPanel ) = 0;
 
 protected:
 	// Don't delete me!
@@ -76,7 +76,7 @@ protected:
 //-----------------------------------------------------------------------------
 // Returns the panel meta class manager
 //-----------------------------------------------------------------------------
-IPanelMetaClassMgr *PanelMetaClassMgr();
+IPanelMetaClassMgr* PanelMetaClassMgr();
 
 
 //-----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ template< class CPanel, class CInitData >
 class CPanelFactory : public IPanelFactory
 {
 public:
-	CPanelFactory( const char *pTypeName )
+	CPanelFactory( const char* pTypeName )
 	{
 		// Hook us up baby
 		Assert( pTypeName );
@@ -103,16 +103,16 @@ public:
 	}
 
 	// Creation, destruction methods
-	virtual vgui::Panel *Create( const char *pMetaClassName, KeyValues* pKeyValues, void *pVoidInitData, vgui::Panel *pParent )
+	virtual vgui::Panel* Create( const char* pMetaClassName, KeyValues* pKeyValues, void* pVoidInitData, vgui::Panel* pParent )
 	{
 		// NOTE: make sure this matches the panel allocation pattern;
 		// it will break if panels are deleted differently
-		CPanel* pPanel = new CPanel( pParent, pMetaClassName ); 
-		if (pPanel)
+		CPanel* pPanel = new CPanel( pParent, pMetaClassName );
+		if( pPanel )
 		{
 			// Set parent before Init; it may be needed there...
-			CInitData* pInitData = (CInitData*)(pVoidInitData); 
-			if (!pPanel->Init( pKeyValues, pInitData ))
+			CInitData* pInitData = ( CInitData* )( pVoidInitData );
+			if( !pPanel->Init( pKeyValues, pInitData ) )
 			{
 				delete pPanel;
 				pPanel = NULL;
@@ -143,12 +143,12 @@ class CPanelWrapper
 public:
 	CPanelWrapper();
 	~CPanelWrapper();
-	void Activate( char const* pMetaClassName, vgui::Panel *pParent, int sortorder, void *pVoidInitData );
+	void Activate( char const* pMetaClassName, vgui::Panel* pParent, int sortorder, void* pVoidInitData );
 	void Deactivate( void );
-	vgui::Panel *GetPanel( );
+	vgui::Panel* GetPanel( );
 
 private:
-	vgui::Panel *m_pPanel;
+	vgui::Panel* m_pPanel;
 };
 
 

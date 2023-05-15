@@ -1,6 +1,6 @@
 //========= Copyright © 1996-2005, Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
@@ -10,7 +10,7 @@
 #include "utlvector.h"
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "AI_Criteria.h"
@@ -19,11 +19,11 @@
 // using ResponseRules::IResponseFilter;
 // using ResponseRules::IResponseSystem;
 
-ResponseRules::IResponseSystem *PrecacheCustomResponseSystem( const char *scriptfile );
-ResponseRules::IResponseSystem *BuildCustomResponseSystemGivenCriteria( const char *pszBaseFile, const char *pszCustomName, AI_CriteriaSet &criteriaSet, float flCriteriaScore );
+ResponseRules::IResponseSystem* PrecacheCustomResponseSystem( const char* scriptfile );
+ResponseRules::IResponseSystem* BuildCustomResponseSystemGivenCriteria( const char* pszBaseFile, const char* pszCustomName, AI_CriteriaSet& criteriaSet, float flCriteriaScore );
 void DestroyCustomResponseSystems();
 
-class ISaveRestoreBlockHandler *GetDefaultResponseSystemSaveRestoreBlockHandler();
-class ISaveRestoreOps *GetResponseSystemSaveRestoreOps();
+class ISaveRestoreBlockHandler* GetDefaultResponseSystemSaveRestoreBlockHandler();
+class ISaveRestoreOps* GetResponseSystemSaveRestoreOps();
 
 #endif // AI_RESPONSESYSTEM_H

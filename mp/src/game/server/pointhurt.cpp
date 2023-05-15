@@ -26,15 +26,15 @@ public:
 	void	HurtThink( void );
 
 	// Input handlers
-	void InputTurnOn(inputdata_t &inputdata);
-	void InputTurnOff(inputdata_t &inputdata);
-	void InputToggle(inputdata_t &inputdata);
-	void InputHurt(inputdata_t &inputdata);
-	
+	void InputTurnOn( inputdata_t& inputdata );
+	void InputTurnOff( inputdata_t& inputdata );
+	void InputToggle( inputdata_t& inputdata );
+	void InputHurt( inputdata_t& inputdata );
+
 #ifdef MAPBASE
-	bool KeyValue( const char *szKeyName, const char *szValue );
+	bool KeyValue( const char* szKeyName, const char* szValue );
 #endif
-	
+
 	DECLARE_DATADESC();
 
 	int			m_nDamage;
@@ -47,55 +47,55 @@ public:
 
 BEGIN_DATADESC( CPointHurt )
 
-	DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "DamageRadius" ),
-	DEFINE_KEYFIELD( m_nDamage, FIELD_INTEGER, "Damage" ),
-	DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "DamageDelay" ),
-	DEFINE_KEYFIELD( m_bitsDamageType, FIELD_INTEGER, "DamageType" ),
-	DEFINE_KEYFIELD( m_strTarget, FIELD_STRING, "DamageTarget" ),
-	
-	// Function Pointers
-	DEFINE_FUNCTION( HurtThink ),
+DEFINE_KEYFIELD( m_flRadius, FIELD_FLOAT, "DamageRadius" ),
+				 DEFINE_KEYFIELD( m_nDamage, FIELD_INTEGER, "Damage" ),
+				 DEFINE_KEYFIELD( m_flDelay, FIELD_FLOAT, "DamageDelay" ),
+				 DEFINE_KEYFIELD( m_bitsDamageType, FIELD_INTEGER, "DamageType" ),
+				 DEFINE_KEYFIELD( m_strTarget, FIELD_STRING, "DamageTarget" ),
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
-	DEFINE_INPUTFUNC( FIELD_VOID, "Hurt", InputHurt ),
+				 // Function Pointers
+				 DEFINE_FUNCTION( HurtThink ),
 
-	DEFINE_FIELD( m_pActivator, FIELD_EHANDLE ),
+				 // Inputs
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOn", InputTurnOn ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "TurnOff", InputTurnOff ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Toggle", InputToggle ),
+				 DEFINE_INPUTFUNC( FIELD_VOID, "Hurt", InputHurt ),
 
-END_DATADESC()
+				 DEFINE_FIELD( m_pActivator, FIELD_EHANDLE ),
 
-LINK_ENTITY_TO_CLASS( point_hurt, CPointHurt );
+				 END_DATADESC()
+
+				 LINK_ENTITY_TO_CLASS( point_hurt, CPointHurt );
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-void CPointHurt::Spawn(void)
+void CPointHurt::Spawn( void )
 {
 	SetThink( NULL );
 	SetUse( NULL );
-		
+
 	m_pActivator = NULL;
 
-	if ( HasSpawnFlags( SF_PHURT_START_ON ) )
+	if( HasSpawnFlags( SF_PHURT_START_ON ) )
 	{
 		SetThink( &CPointHurt::HurtThink );
 	}
 
 	SetNextThink( gpGlobals->curtime + 0.1f );
-	
-	if ( m_flRadius <= 0.0f )
+
+	if( m_flRadius <= 0.0f )
 	{
 		m_flRadius = 128.0f;
 	}
 
-	if ( m_nDamage <= 0 )
+	if( m_nDamage <= 0 )
 	{
 		m_nDamage = 2;
 	}
 
-	if ( m_flDelay <= 0 )
+	if( m_flDelay <= 0 )
 	{
 		m_flDelay = 0.1f;
 	}
@@ -104,7 +104,7 @@ void CPointHurt::Spawn(void)
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointHurt::Precache( void )
 {
@@ -112,18 +112,18 @@ void CPointHurt::Precache( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CPointHurt::HurtThink( void )
 {
-	if ( m_strTarget != NULL_STRING )
+	if( m_strTarget != NULL_STRING )
 	{
-		CBaseEntity	*pEnt = NULL;
-			
+		CBaseEntity*	pEnt = NULL;
+
 		CTakeDamageInfo info( this, m_pActivator, m_nDamage, m_bitsDamageType );
-		while ( ( pEnt = gEntList.FindEntityByName( pEnt, m_strTarget, NULL, m_pActivator ) ) != NULL )
+		while( ( pEnt = gEntList.FindEntityByName( pEnt, m_strTarget, NULL, m_pActivator ) ) != NULL )
 		{
-			GuessDamageForce( &info, (pEnt->GetAbsOrigin() - GetAbsOrigin()), pEnt->GetAbsOrigin() );
+			GuessDamageForce( &info, ( pEnt->GetAbsOrigin() - GetAbsOrigin() ), pEnt->GetAbsOrigin() );
 			pEnt->TakeDamage( info );
 		}
 	}
@@ -138,7 +138,7 @@ void CPointHurt::HurtThink( void )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for turning on the point hurt.
 //-----------------------------------------------------------------------------
-void CPointHurt::InputTurnOn( inputdata_t &data )
+void CPointHurt::InputTurnOn( inputdata_t& data )
 {
 	SetThink( &CPointHurt::HurtThink );
 
@@ -150,7 +150,7 @@ void CPointHurt::InputTurnOn( inputdata_t &data )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for turning off the point hurt.
 //-----------------------------------------------------------------------------
-void CPointHurt::InputTurnOff( inputdata_t &data )
+void CPointHurt::InputTurnOff( inputdata_t& data )
 {
 	SetThink( NULL );
 
@@ -160,11 +160,11 @@ void CPointHurt::InputTurnOff( inputdata_t &data )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for toggling the on/off state of the point hurt.
 //-----------------------------------------------------------------------------
-void CPointHurt::InputToggle( inputdata_t &data )
+void CPointHurt::InputToggle( inputdata_t& data )
 {
 	m_pActivator = data.pActivator;
 
-	if ( m_pfnThink == (void (CBaseEntity::*)())&CPointHurt::HurtThink )
+	if( m_pfnThink == ( void ( CBaseEntity::* )() )&CPointHurt::HurtThink )
 	{
 		SetThink( NULL );
 	}
@@ -177,7 +177,7 @@ void CPointHurt::InputToggle( inputdata_t &data )
 //-----------------------------------------------------------------------------
 // Purpose: Input handler for instantaneously hurting whatever is near us.
 //-----------------------------------------------------------------------------
-void CPointHurt::InputHurt( inputdata_t &data )
+void CPointHurt::InputHurt( inputdata_t& data )
 {
 	m_pActivator = data.pActivator;
 
@@ -186,17 +186,19 @@ void CPointHurt::InputHurt( inputdata_t &data )
 
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-bool CPointHurt::KeyValue( const char *szKeyName, const char *szValue )
+bool CPointHurt::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// Additional OR flags
-	if (FStrEq( szKeyName, "damageor" ) || FStrEq( szKeyName, "damagepresets" ))
+	if( FStrEq( szKeyName, "damageor" ) || FStrEq( szKeyName, "damagepresets" ) )
 	{
-		m_bitsDamageType |= atoi(szValue);
+		m_bitsDamageType |= atoi( szValue );
 	}
 	else
+	{
 		return BaseClass::KeyValue( szKeyName, szValue );
+	}
 
 	return true;
 }

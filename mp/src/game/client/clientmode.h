@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -13,8 +13,8 @@
 
 typedef struct
 {
-	char *name;
+	char* name;
 	bool draw;
 } ModeElements;
 
-#endif 
+#endif

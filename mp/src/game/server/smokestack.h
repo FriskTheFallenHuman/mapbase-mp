@@ -34,21 +34,21 @@ public:
 	DECLARE_DATADESC();
 	DECLARE_SERVERCLASS();
 
-					CSmokeStack();
-					~CSmokeStack();
+	CSmokeStack();
+	~CSmokeStack();
 
 	virtual void	Spawn( void );
 	virtual void	Activate();
-	virtual bool	KeyValue( const char *szKeyName, const char *szValue );
+	virtual bool	KeyValue( const char* szKeyName, const char* szValue );
 	virtual void	Precache();
 
 
 protected:
 
 	// Input handlers.
-	void	InputTurnOn(inputdata_t &data);
-	void	InputTurnOff(inputdata_t &data);
-	void	InputToggle(inputdata_t &data);
+	void	InputTurnOn( inputdata_t& data );
+	void	InputTurnOff( inputdata_t& data );
+	void	InputToggle( inputdata_t& data );
 
 	void	RecalcWindVector();
 
@@ -65,12 +65,12 @@ public:
 
 	CNetworkVar( int, m_bEmit );		// Emit particles?
 	CNetworkVar( float, m_flBaseSpread );
-	
+
 	CSmokeStackLightInfo		m_AmbientLight;
 	CSmokeStackLightInfo		m_DirLight;
 
 	CNetworkVar( float, m_flTwist );
-	
+
 	string_t		m_strMaterialModel;
 	CNetworkVar( int, m_iMaterialModel );
 

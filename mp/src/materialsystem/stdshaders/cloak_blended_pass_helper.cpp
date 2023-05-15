@@ -7,7 +7,7 @@
 			"$cloakPassEnabled" "1"
 
 		#include "cloak_blended_pass_helper.h"
- 
+
 		In BEGIN_SHADER_PARAMS:
 			// Cloak Pass
 			SHADER_PARAM( CLOAKPASSENABLED, SHADER_PARAM_TYPE_BOOL, "0", "Enables cloak render in a second pass" )
@@ -34,8 +34,8 @@
  				info.m_nBumpTransform = BUMPTRANSFORM;
 			}
 
-			bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const 
-			{ 
+			bool NeedsPowerOfTwoFrameBufferTexture( IMaterialVar **params, bool bCheckSpecificToThisFrame ) const
+			{
 				if ( params[CLOAKPASSENABLED]->GetIntValue() ) // If material supports cloaking
 				{
 					if ( bCheckSpecificToThisFrame == false ) // For setting model flag at load time
@@ -46,7 +46,7 @@
 				}
 
 				// Check flag2 if not drawing cloak pass
-				return IS_FLAG2_SET( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE ); 
+				return IS_FLAG2_SET( MATERIAL_VAR2_NEEDS_POWER_OF_TWO_FRAME_BUFFER_TEXTURE );
 			}
 
 			bool IsTranslucent( IMaterialVar **params ) const
@@ -59,7 +59,7 @@
 				}
 
 				// Check flag if not drawing cloak pass
-				return IS_FLAG_SET( MATERIAL_VAR_TRANSLUCENT ); 
+				return IS_FLAG_SET( MATERIAL_VAR_TRANSLUCENT );
 			}
 
 		In SHADER_INIT_PARAMS()
@@ -140,11 +140,11 @@
 #include "SDK_cloak_blended_pass_ps20b.inc"
 
 #ifndef _X360
-#include "SDK_cloak_blended_pass_vs30.inc"
-#include "SDK_cloak_blended_pass_ps30.inc"
+	#include "SDK_cloak_blended_pass_vs30.inc"
+	#include "SDK_cloak_blended_pass_ps30.inc"
 #endif
 
-void InitParamsCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, const char *pMaterialName, CloakBlendedPassVars_t &info )
+void InitParamsCloakBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, const char* pMaterialName, CloakBlendedPassVars_t& info )
 {
 	// Set material flags
 	SET_FLAGS2( MATERIAL_VAR2_SUPPORTS_HW_SKINNING );
@@ -152,41 +152,41 @@ void InitParamsCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, 
 	SET_FLAGS2( MATERIAL_VAR2_NEEDS_TANGENT_SPACES );
 
 	// Set material parameter default values
-	if ( ( info.m_nCloakFactor != -1 ) && ( !params[info.m_nCloakFactor]->IsDefined() ) )
+	if( ( info.m_nCloakFactor != -1 ) && ( !params[info.m_nCloakFactor]->IsDefined() ) )
 	{
 		params[info.m_nCloakFactor]->SetFloatValue( kDefaultCloakFactor );
 	}
 
-	if ( ( info.m_nRefractAmount != -1 ) && ( !params[info.m_nRefractAmount]->IsDefined() ) )
+	if( ( info.m_nRefractAmount != -1 ) && ( !params[info.m_nRefractAmount]->IsDefined() ) )
 	{
 		params[info.m_nRefractAmount]->SetFloatValue( kDefaultRefractAmount );
 	}
 
-	if ( ( info.m_nCloakColorTint != -1 ) && ( !params[info.m_nCloakColorTint]->IsDefined() ) )
+	if( ( info.m_nCloakColorTint != -1 ) && ( !params[info.m_nCloakColorTint]->IsDefined() ) )
 	{
 		params[info.m_nCloakColorTint]->SetVecValue( kDefaultCloakColorTint[0], kDefaultCloakColorTint[1], kDefaultCloakColorTint[2], kDefaultCloakColorTint[3] );
 	}
 
-	if( (info.m_nBumpFrame != -1 ) && !params[info.m_nBumpFrame]->IsDefined() )
+	if( ( info.m_nBumpFrame != -1 ) && !params[info.m_nBumpFrame]->IsDefined() )
 	{
 		params[info.m_nBumpFrame]->SetIntValue( 0 );
 	}
 }
 
-void InitCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, CloakBlendedPassVars_t &info )
+void InitCloakBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, CloakBlendedPassVars_t& info )
 {
 	// Load textures
-	if ( g_pConfig->UseBumpmapping() )
+	if( g_pConfig->UseBumpmapping() )
 	{
-		if ( (info.m_nBumpmap != -1) && params[info.m_nBumpmap]->IsDefined() )
+		if( ( info.m_nBumpmap != -1 ) && params[info.m_nBumpmap]->IsDefined() )
 		{
 			pShader->LoadTexture( info.m_nBumpmap );
 		}
 	}
 }
 
-void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShaderDynamicAPI *pShaderAPI,
-						  IShaderShadow* pShaderShadow, CloakBlendedPassVars_t &info, VertexCompressionType_t vertexCompression )
+void DrawCloakBlendedPass( CBaseVSShader* pShader, IMaterialVar** params, IShaderDynamicAPI* pShaderAPI,
+						   IShaderShadow* pShaderShadow, CloakBlendedPassVars_t& info, VertexCompressionType_t vertexCompression )
 {
 	bool bBumpMapping = ( !g_pConfig->UseBumpmapping() ) || ( info.m_nBumpmap == -1 ) || !params[info.m_nBumpmap]->IsTexture() ? 0 : 1;
 
@@ -202,7 +202,7 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 		pShaderShadow->VertexShaderVertexFormat( flags, nTexCoordCount, NULL, userDataSize );
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			// Vertex Shader
@@ -245,7 +245,7 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 		// Textures
 		pShaderShadow->EnableTexture( SHADER_SAMPLER0, true ); // Refraction texture
 		pShaderShadow->EnableSRGBRead( SHADER_SAMPLER0, true );
-		if ( bBumpMapping )
+		if( bBumpMapping )
 		{
 			pShaderShadow->EnableTexture( SHADER_SAMPLER1, true ); // Bump
 			pShaderShadow->EnableSRGBRead( SHADER_SAMPLER1, false ); // Not sRGB
@@ -264,20 +264,20 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 		// Reset render state manually since we're drawing from two materials
 		pShaderAPI->SetDefaultState();
 
-		// Set Vertex Shader Constants 
-		if ( ( bBumpMapping ) && ( info.m_nBumpTransform != -1 ) )
+		// Set Vertex Shader Constants
+		if( ( bBumpMapping ) && ( info.m_nBumpTransform != -1 ) )
 		{
 			pShader->SetVertexShaderTextureTransform( VERTEX_SHADER_SHADER_SPECIFIC_CONST_0, info.m_nBumpTransform );
 		}
 
 #ifndef _X360
-		if ( !g_pHardwareConfig->HasFastVertexTextures() )
+		if( !g_pHardwareConfig->HasFastVertexTextures() )
 #endif
 		{
 			// Set Vertex Shader Combos
 			DECLARE_DYNAMIC_VERTEX_SHADER( sdk_cloak_blended_pass_vs20 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_cloak_blended_pass_vs20 );
 
 			// Set Pixel Shader Combos
@@ -301,7 +301,7 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 			DECLARE_DYNAMIC_VERTEX_SHADER( sdk_cloak_blended_pass_vs30 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( SKINNING, pShaderAPI->GetCurrentNumBones() > 0 );
 			SET_DYNAMIC_VERTEX_SHADER_COMBO( MORPHING, pShaderAPI->IsHWMorphingEnabled() );
-			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, (int)vertexCompression );
+			SET_DYNAMIC_VERTEX_SHADER_COMBO( COMPRESSED_VERTS, ( int )vertexCompression );
 			SET_DYNAMIC_VERTEX_SHADER( sdk_cloak_blended_pass_vs30 );
 
 			// Set Pixel Shader Combos
@@ -312,12 +312,12 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 
 		// Bind textures
 		pShaderAPI->BindStandardTexture( SHADER_SAMPLER0, TEXTURE_FRAME_BUFFER_FULL_TEXTURE_0 ); // Refraction Map
-		if ( bBumpMapping )
+		if( bBumpMapping )
 		{
 			pShader->BindTexture( SHADER_SAMPLER1, info.m_nBumpmap, info.m_nBumpFrame );
 		}
 
-		// Set Pixel Shader Constants 
+		// Set Pixel Shader Constants
 		float vEyePos[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		pShaderAPI->GetWorldSpaceCameraPosition( vEyePos );
 		pShaderAPI->SetPixelShaderConstant( 5, vEyePos, 1 );
@@ -341,7 +341,7 @@ void DrawCloakBlendedPass( CBaseVSShader *pShader, IMaterialVar** params, IShade
 	pShader->Draw();
 }
 
-bool CloakBlendedPassIsFullyOpaque ( IMaterialVar** params, CloakBlendedPassVars_t &info )
+bool CloakBlendedPassIsFullyOpaque( IMaterialVar** params, CloakBlendedPassVars_t& info )
 {
 	float flCloakFactor = IS_PARAM_DEFINED( info.m_nCloakFactor ) ? params[info.m_nCloakFactor]->GetFloatValue() : kDefaultCloakFactor;
 	//float flRefractAmount = IS_PARAM_DEFINED( info.m_nRefractAmount ) ? params[info.m_nRefractAmount]->GetFloatValue() : kDefaultRefractAmount;
@@ -351,8 +351,10 @@ bool CloakBlendedPassIsFullyOpaque ( IMaterialVar** params, CloakBlendedPassVars
 	float flCloakLerpFactor = clamp( Lerp( clamp( flCloakFactor, 0.0f, 1.0f ), 1.0f, flFresnel - 1.35f ), 0.0f, 1.0f );
 	//flCloakLerpFactor = 1.0f - smoothstep( 0.4f, 0.425f, flCloakLerpFactor );
 
-	if ( flCloakLerpFactor <= 0.4f )
+	if( flCloakLerpFactor <= 0.4f )
+	{
 		return true;
+	}
 
 	return false;
 }

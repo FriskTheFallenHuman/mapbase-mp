@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -20,12 +20,12 @@ class CCoreDispInfo;
 class CDispCollTri
 {
 public:
-	
+
 	void Init( void );
 	inline void SetPoint( int index, Vector const& vert );
 	inline void SetPointNormal( int index, Vector const& normal );
 	void CalcPlane( void );
-	
+
 	inline void SetIntersect( bool bIntersect );
 	inline bool IsIntersect( void );
 
@@ -35,7 +35,7 @@ public:
 	float	m_Distance;			// plane distance
 	short	m_ProjAxes[2];		// projection axes (2 minor axes)
 	bool	m_bIntersect;		// intersected triangle???
-};	
+};
 
 //=============================================================================
 //
@@ -44,12 +44,12 @@ public:
 class CDispCollNode
 {
 public:
-	
+
 	CDispCollNode();
 	inline bool IsLeaf( void );
-	inline void SetBounds( Vector const &bMin, Vector const &bMax );
-	inline void GetBounds( Vector &bMin, Vector &bMax );
-	
+	inline void SetBounds( Vector const& bMin, Vector const& bMax );
+	inline void GetBounds( Vector& bMin, Vector& bMax );
+
 	Vector			m_Bounds[2];		// node minimum and maximum
 
 	bool			m_bIsLeaf;			// is the node a leaf? ( may have to make this an int for alignment!)
@@ -87,7 +87,7 @@ public:
 	// temps
 	//
 	int					m_TriListCount;
-	CDispCollTri		*m_ppTriList[TRILIST_CACHE_SIZE];
+	CDispCollTri*		m_ppTriList[TRILIST_CACHE_SIZE];
 
 	// collision tree node cache
 	float				m_AABBDistances[6];
@@ -112,17 +112,17 @@ public:
 	CDispCollTree();
 	~CDispCollTree();
 
-	virtual bool Create( CCoreDispInfo *pDisp );
+	virtual bool Create( CCoreDispInfo* pDisp );
 
 	//=========================================================================
 	//
 	// Collision Functions
 	//
-	bool RayTest( CDispCollData *pData );
-	bool RayTestAllTris( CDispCollData *pData, int power );
+	bool RayTest( CDispCollData* pData );
+	bool RayTestAllTris( CDispCollData* pData, int power );
 
-	bool AABBIntersect( CDispCollData *pData );
-	bool AABBSweep( CDispCollData *pData );
+	bool AABBIntersect( CDispCollData* pData );
+	bool AABBSweep( CDispCollData* pData );
 
 	//=========================================================================
 	//
@@ -141,7 +141,7 @@ protected:
 	int					m_Power;
 
 	int					m_NodeCount;
-	CDispCollNode		*m_pNodes;
+	CDispCollNode*		m_pNodes;
 
 	int					m_CheckCount;
 
@@ -152,34 +152,34 @@ protected:
 	// Creation/Destruction
 	//
 	void InitAABBData( void );
-	void InitLeaves( CCoreDispInfo *pDisp );
-	void CreateNodes( CCoreDispInfo *pDisp );
-	void CreateNodes_r( CCoreDispInfo *pDisp, int nodeIndex, int termLevel );
-	void CalcBounds( CDispCollNode *pNode, int nodeIndex );
+	void InitLeaves( CCoreDispInfo* pDisp );
+	void CreateNodes( CCoreDispInfo* pDisp );
+	void CreateNodes_r( CCoreDispInfo* pDisp, int nodeIndex, int termLevel );
+	void CalcBounds( CDispCollNode* pNode, int nodeIndex );
 
 	//=========================================================================
 	//
 	// Collision Functions
 	//
-	void CreatePlanesFromBounds( CDispCollTreeTempData *pTemp, Vector const &bbMin, Vector const &bbMax );
+	void CreatePlanesFromBounds( CDispCollTreeTempData* pTemp, Vector const& bbMin, Vector const& bbMax );
 
 //	void RayNodeTest_r( int nodeIndex, Vector &rayStart, Vector &rayEnd );
-	void RayNodeTest_r( CDispCollTreeTempData *pTemp, int nodeIndex, Vector rayStart, Vector rayEnd );
-	bool RayAABBTest( CDispCollTreeTempData *pTemp, Vector &rayStart, Vector &rayEnd );
-	bool RayTriListTest( CDispCollTreeTempData *pTemp, CDispCollData *pData );
-	bool RayTriTest( Vector const &rayStart, Vector const &rayDir, float const rayLength, CDispCollTri const *pTri, float *fraction );
+	void RayNodeTest_r( CDispCollTreeTempData* pTemp, int nodeIndex, Vector rayStart, Vector rayEnd );
+	bool RayAABBTest( CDispCollTreeTempData* pTemp, Vector& rayStart, Vector& rayEnd );
+	bool RayTriListTest( CDispCollTreeTempData* pTemp, CDispCollData* pData );
+	bool RayTriTest( Vector const& rayStart, Vector const& rayDir, float const rayLength, CDispCollTri const* pTri, float* fraction );
 
-	void BuildTriList_r( CDispCollTreeTempData *pTemp, int nodeIndex, Vector &rayStart, Vector &rayEnd, Vector &extents, bool bIntersect );
-	bool IntersectAABBAABBTest( CDispCollTreeTempData *pTemp, const Vector &pos, const Vector &extents );
-	bool SweptAABBAABBTest( CDispCollTreeTempData *pTemp, const Vector &rayStart, const Vector &rayEnd, const Vector &extents );
+	void BuildTriList_r( CDispCollTreeTempData* pTemp, int nodeIndex, Vector& rayStart, Vector& rayEnd, Vector& extents, bool bIntersect );
+	bool IntersectAABBAABBTest( CDispCollTreeTempData* pTemp, const Vector& pos, const Vector& extents );
+	bool SweptAABBAABBTest( CDispCollTreeTempData* pTemp, const Vector& rayStart, const Vector& rayEnd, const Vector& extents );
 
-	bool CullTriList( CDispCollTreeTempData *pTemp, Vector &rayStart, Vector &rayEnd, Vector &extents, bool bIntersect );
-	bool SweptAABBTriTest( Vector &rayStart, Vector &rayEnd, Vector &extents, CDispCollTri const *pTri );
-	bool AABBTriIntersect( CDispCollTreeTempData *pTemp, CDispCollData *pData );
-	bool IntersectAABBTriTest( Vector &rayStart, Vector &extents, CDispCollTri const *pTri );
-	bool SweptAABBTriIntersect( Vector &rayStart, Vector &rayEnd, Vector &extents,
-						        CDispCollTri const *pTri, Vector &plNormal, float *plDist,
-								float *fraction );
+	bool CullTriList( CDispCollTreeTempData* pTemp, Vector& rayStart, Vector& rayEnd, Vector& extents, bool bIntersect );
+	bool SweptAABBTriTest( Vector& rayStart, Vector& rayEnd, Vector& extents, CDispCollTri const* pTri );
+	bool AABBTriIntersect( CDispCollTreeTempData* pTemp, CDispCollData* pData );
+	bool IntersectAABBTriTest( Vector& rayStart, Vector& extents, CDispCollTri const* pTri );
+	bool SweptAABBTriIntersect( Vector& rayStart, Vector& rayEnd, Vector& extents,
+								CDispCollTri const* pTri, Vector& plNormal, float* plDist,
+								float* fraction );
 
 	//=========================================================================
 	//
@@ -207,7 +207,7 @@ inline void CDispCollTree::SetPower( int power )
 	m_Power = power;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CDispCollTree::GetPower( void )
@@ -223,7 +223,7 @@ inline void CDispCollTree::SetCheckCount( int count )
 	m_CheckCount = count;
 }
 
-	
+
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 inline int CDispCollTree::GetCheckCount( void )

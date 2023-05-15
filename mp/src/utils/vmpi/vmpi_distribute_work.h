@@ -1,13 +1,13 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 //=============================================================================//
 
 #ifndef VMPI_DISTRIBUTE_WORK_H
 #define VMPI_DISTRIBUTE_WORK_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -20,7 +20,10 @@ class IWorkUnitDistributorCallbacks
 public:
 	// Called every 200ms or so as it does the work.
 	// Return true to stop distributing work.
-	virtual bool Update() { return false; }
+	virtual bool Update()
+	{
+		return false;
+	}
 
 	// Called when a subsequent number of work units is completed.
 	// e.g. results received in the following order will trigger
@@ -31,7 +34,10 @@ public:
 	// that 3 subsequent work units completed, like wise by the time when wu3 is
 	// received we already have a full set { wu0, wu1, wu2, wu3, wu4, wu5, wu6 }
 	// and signal that 7 work units completed.
-	virtual void OnWorkUnitsCompleted( uint64 numWorkUnits ) { return; }
+	virtual void OnWorkUnitsCompleted( uint64 numWorkUnits )
+	{
+		return;
+	}
 };
 
 
@@ -46,19 +52,19 @@ EWorkUnitDistributor VMPI_GetActiveWorkUnitDistributor();
 
 
 // Before calling DistributeWork, you can set this and it'll call your virtual functions.
-extern IWorkUnitDistributorCallbacks *g_pDistributeWorkCallbacks;
+extern IWorkUnitDistributorCallbacks* g_pDistributeWorkCallbacks;
 
 
 // You must append data to pBuf with the work unit results.
 // Note: pBuf will be NULL if this is a local thread doing work on the master.
-typedef void (*ProcessWorkUnitFn)( int iThread, uint64 iWorkUnit, MessageBuffer *pBuf );
+typedef void ( *ProcessWorkUnitFn )( int iThread, uint64 iWorkUnit, MessageBuffer* pBuf );
 
 // pBuf is ready to read the results written to the buffer in ProcessWorkUnitFn.
-typedef void (*ReceiveWorkUnitFn)( uint64 iWorkUnit, MessageBuffer *pBuf, int iWorker );
+typedef void ( *ReceiveWorkUnitFn )( uint64 iWorkUnit, MessageBuffer* pBuf, int iWorker );
 
 
 // Use a CDispatchReg to register this function with whatever packet ID you give to DistributeWork.
-bool DistributeWorkDispatch( MessageBuffer *pBuf, int iSource, int iPacketID );
+bool DistributeWorkDispatch( MessageBuffer* pBuf, int iSource, int iPacketID );
 
 
 
@@ -72,13 +78,13 @@ bool DistributeWorkDispatch( MessageBuffer *pBuf, int iSource, int iPacketID );
 // The masters implement receiveFn to receive a work unit's results.
 //
 // Returns time it took to finish the work.
-double DistributeWork( 
+double DistributeWork(
 	uint64 nWorkUnits,				// how many work units to dole out
 	char cPacketID,					// This packet ID must be reserved for DistributeWork and DistributeWorkDispatch
-									// must be registered with it.
+	// must be registered with it.
 	ProcessWorkUnitFn processFn,	// workers implement this to process a work unit and send results back
 	ReceiveWorkUnitFn receiveFn		// the master implements this to receive a work unit
-	);
+);
 
 
 // VMPI calls this before shutting down because any threads that DistributeWork has running must stop,

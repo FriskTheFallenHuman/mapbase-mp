@@ -5,7 +5,7 @@
 #ifndef REPLAYPERFORMANCEPLAYER_H
 #define REPLAYPERFORMANCEPLAYER_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //-----------------------------------------------------------------------------
@@ -14,7 +14,7 @@
 
 //-----------------------------------------------------------------------------
 
-extern IReplayPerformancePlaybackHandler *g_pReplayPerformancePlaybackHandler;
+extern IReplayPerformancePlaybackHandler* g_pReplayPerformancePlaybackHandler;
 
 //-----------------------------------------------------------------------------
 

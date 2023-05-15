@@ -5,7 +5,7 @@
 #ifndef REPLAY_RAGDOLL_H
 #define REPLAY_RAGDOLL_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 //--------------------------------------------------------------------------------
@@ -16,7 +16,7 @@ class C_BaseAnimating;
 
 struct RagdollSimulationFrame_t
 {
-	RagdollSimulationFrame_t() : pPositions(NULL), pAngles(NULL), nTick(-1) {}
+	RagdollSimulationFrame_t() : pPositions( NULL ), pAngles( NULL ), nTick( -1 ) {}
 
 	static RagdollSimulationFrame_t* Alloc( int nNumBones );
 
@@ -70,7 +70,10 @@ public:
 	void CleanupStartupTicksAndDurations( int nStartTick );
 	bool DumpRagdollsToDisk( char const* pszFilename ) const;
 
-	bool IsRecording() const		{ return m_bIsRecording; }
+	bool IsRecording() const
+	{
+		return m_bIsRecording;
+	}
 
 private:
 	typedef unsigned short Iterator_t;
@@ -86,7 +89,7 @@ private:
 
 	CUtlLinkedList< RagdollSimulationData_t*, Iterator_t > m_lstRagdolls;
 	CUtlLinkedList< RagdollSimulationData_t*, Iterator_t > m_lstRagdollsToRecord;	// Contains some of the elements from m_lstRagdolls -
-																					// the ones which are still recording
+	// the ones which are still recording
 	bool m_bIsRecording;
 };
 
@@ -105,11 +108,14 @@ public:
 
 	void Think();
 
-	bool IsInitialized() const				{ return m_bInit; }
+	bool IsInitialized() const
+	{
+		return m_bInit;
+	}
 
 	//
 	// Returns false is no frame exists for the given entity at the given tick.
-	// Otherwise, returns a 
+	// Otherwise, returns a
 	//
 	bool GetFrame( C_BaseAnimating* pEntity, int nTick, bool* pBoneSimulated, CBoneAccessor* pBoneAccessor ) const;
 
@@ -118,9 +124,9 @@ private:
 	const RagdollSimulationData_t* FindRagdollEntry( C_BaseAnimating* pEntity, int nTick ) const;
 
 	bool FindFrame( RagdollSimulationFrame_t*& pFrameOut, RagdollSimulationFrame_t*& pNextFrameOut,
-		const RagdollSimulationData_t* pRagdollEntry, int nTick );
+					const RagdollSimulationData_t* pRagdollEntry, int nTick );
 	bool FindFrame( RagdollSimulationFrame_t*& pFrameOut, RagdollSimulationFrame_t*& pNextFrameOut,
-		const RagdollSimulationData_t* pRagdollEntry, int nTick ) const;
+					const RagdollSimulationData_t* pRagdollEntry, int nTick ) const;
 
 	typedef unsigned short Iterator_t;
 	bool m_bInit;
@@ -140,7 +146,7 @@ inline const RagdollSimulationData_t* CReplayRagdollCache::FindRagdollEntry( C_B
 }
 
 inline bool CReplayRagdollCache::FindFrame( RagdollSimulationFrame_t*& pFrameOut, RagdollSimulationFrame_t*& pNextFrameOut,
-											const RagdollSimulationData_t* pRagdollEntry, int nTick ) const
+		const RagdollSimulationData_t* pRagdollEntry, int nTick ) const
 {
 	return const_cast< CReplayRagdollCache* >( this )->FindFrame( pFrameOut, pNextFrameOut, pRagdollEntry, nTick );
 }

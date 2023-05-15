@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -17,33 +17,33 @@ template <class T> class NTreeNode
 public:
 	// constructor
 	NTreeNode<T>( T data );
-	
-	NTreeNode<T> *PrependChild( NTreeNode<T> *node );
-	NTreeNode<T> *AppendChild( NTreeNode<T> *node );
-	NTreeNode<T> *InsertChildAfterIndex( NTreeNode<T> *node, int index );
-	NTreeNode<T> *InsertChildBeforeIndex( NTreeNode<T> *node, int index );
-	NTreeNode<T> *RemoveChild( Position position );
-	NTreeNode<T> *RemoveChild( int index );
-	Position InsertAfter( NTreeNode<T> *node, Position position );
-	Position InsertBefore( NTreeNode<T> *node, Position position );
+
+	NTreeNode<T>* PrependChild( NTreeNode<T>* node );
+	NTreeNode<T>* AppendChild( NTreeNode<T>* node );
+	NTreeNode<T>* InsertChildAfterIndex( NTreeNode<T>* node, int index );
+	NTreeNode<T>* InsertChildBeforeIndex( NTreeNode<T>* node, int index );
+	NTreeNode<T>* RemoveChild( Position position );
+	NTreeNode<T>* RemoveChild( int index );
+	Position InsertAfter( NTreeNode<T>* node, Position position );
+	Position InsertBefore( NTreeNode<T>* node, Position position );
 	int GetNumChildren();
 	Position GetChildPosition( int childNum );
-	NTreeNode<T> *GetChild( int childNum );
-	NTreeNode<T> *GetChild( Position position );
+	NTreeNode<T>* GetChild( int childNum );
+	NTreeNode<T>* GetChild( Position position );
 	int GetIndexRelativeToParent();
 	T GetItem();
-	NTreeNode<T> *GetParent();
-	NTreeNode<T> *GetRoot();
-	NTreeNode<T> *GetNextSibling();
-	void Traverse( void (*VisitFunc)( T, int depth ), int maxTreeDepth );
-	NTreeNode<T> *ReentrantTraversalGetFirst( int maxTreeDepth );
-	NTreeNode<T> *ReentrantTraversalGetNext( void );
-	
+	NTreeNode<T>* GetParent();
+	NTreeNode<T>* GetRoot();
+	NTreeNode<T>* GetNextSibling();
+	void Traverse( void ( *VisitFunc )( T, int depth ), int maxTreeDepth );
+	NTreeNode<T>* ReentrantTraversalGetFirst( int maxTreeDepth );
+	NTreeNode<T>* ReentrantTraversalGetNext( void );
+
 protected:
-	GList<NTreeNode<T> * > *list;
+	GList<NTreeNode<T> * >* list;
 	T data;
-	NTreeNode<T> *parent;
-	ArrayStack<NTreeNode<T> *> *reentrantStack;
+	NTreeNode<T>* parent;
+	ArrayStack<NTreeNode<T> *>* reentrantStack;
 };
 
 template <class T>
@@ -56,21 +56,21 @@ NTreeNode<T>::NTreeNode( T data )
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::PrependChild( NTreeNode<T> *node )
+NTreeNode<T>* NTreeNode<T>::PrependChild( NTreeNode<T>* node )
 {
 	node->parent = this;
 	return list->GetItemAtPosition( list->InsertAtHead( node ) );
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::AppendChild( NTreeNode<T> *node )
+NTreeNode<T>* NTreeNode<T>::AppendChild( NTreeNode<T>* node )
 {
 	node->parent = this;
 	return list->GetItemAtPosition( list->InsertAtTail( node ) );
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::InsertChildAfterIndex( NTreeNode<T> *node, int index )
+NTreeNode<T>* NTreeNode<T>::InsertChildAfterIndex( NTreeNode<T>* node, int index )
 {
 	node->parent = this;
 	if( index < 0 )
@@ -93,7 +93,7 @@ NTreeNode<T> *NTreeNode<T>::InsertChildAfterIndex( NTreeNode<T> *node, int index
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::InsertChildBeforeIndex( NTreeNode<T> *node, int index )
+NTreeNode<T>* NTreeNode<T>::InsertChildBeforeIndex( NTreeNode<T>* node, int index )
 {
 	node->parent = this;
 	if( index < 0 )
@@ -116,31 +116,31 @@ NTreeNode<T> *NTreeNode<T>::InsertChildBeforeIndex( NTreeNode<T> *node, int inde
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::RemoveChild( Position position )
+NTreeNode<T>* NTreeNode<T>::RemoveChild( Position position )
 {
-	NTreeNode<T> **node = ( NTreeNode<T> ** )( void * )position;
+	NTreeNode<T>** node = ( NTreeNode<T>** )( void* )position;
 	( *node )->parent = NULL;
 	return list->Remove( position );
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::RemoveChild( int index )
+NTreeNode<T>* NTreeNode<T>::RemoveChild( int index )
 {
 	Position position = list->GetPositionAtIndex( index );
-	NTreeNode<T> **node = ( NTreeNode<T> ** )( void * )position;
+	NTreeNode<T>** node = ( NTreeNode<T>** )( void* )position;
 	( *node )->parent = NULL;
 	return list->Remove( position );
 }
 
 template <class T>
-Position NTreeNode<T>::InsertAfter( NTreeNode<T> *node, Position position )
+Position NTreeNode<T>::InsertAfter( NTreeNode<T>* node, Position position )
 {
 	node->parent = this;
 	return list->InsertAfter( node, position );
 }
 
 template <class T>
-Position NTreeNode<T>::InsertBefore( NTreeNode<T> *node, Position position )
+Position NTreeNode<T>::InsertBefore( NTreeNode<T>* node, Position position )
 {
 	node->parent = this;
 	return list->InsertBefore( node, position );
@@ -159,18 +159,18 @@ Position NTreeNode<T>::GetChildPosition( int childNum )
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::GetChild( int childNum )
+NTreeNode<T>* NTreeNode<T>::GetChild( int childNum )
 {
 	return list->GetItemAtIndex( childNum );
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::GetChild( Position position )
+NTreeNode<T>* NTreeNode<T>::GetChild( Position position )
 {
 	return list->GetItemAtIndex( position );
 }
 
-template <class T>	
+template <class T>
 int NTreeNode<T>::GetIndexRelativeToParent()
 {
 	if( !parent )
@@ -198,15 +198,15 @@ T NTreeNode<T>::GetItem()
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::GetParent()
+NTreeNode<T>* NTreeNode<T>::GetParent()
 {
 	return parent;
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::GetRoot()
+NTreeNode<T>* NTreeNode<T>::GetRoot()
 {
-	NTreeNode<T> *node;
+	NTreeNode<T>* node;
 	node = this;
 	while( node->GetParent() )
 	{
@@ -216,10 +216,10 @@ NTreeNode<T> *NTreeNode<T>::GetRoot()
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::GetNextSibling()
+NTreeNode<T>* NTreeNode<T>::GetNextSibling()
 {
 	int currentID, siblingID;
-	NTreeNode<T> *parent;
+	NTreeNode<T>* parent;
 	parent = this->GetParent();
 	if( !parent )
 	{
@@ -238,12 +238,12 @@ NTreeNode<T> *NTreeNode<T>::GetNextSibling()
 }
 
 template <class T>
-void NTreeNode<T>::Traverse( void (*VisitFunc)( T, int depth ), int maxTreeDepth )
+void NTreeNode<T>::Traverse( void ( *VisitFunc )( T, int depth ), int maxTreeDepth )
 {
 	ArrayStack<NTreeNode<T> *> stack( maxTreeDepth );
-	NTreeNode<T> *current, *nextSibling;
+	NTreeNode<T>* current, *nextSibling;
 
-	stack.Push( this );	
+	stack.Push( this );
 	Visit( this->GetItem(), 0 );
 	while( !stack.IsEmpty() )
 	{
@@ -264,13 +264,13 @@ void NTreeNode<T>::Traverse( void (*VisitFunc)( T, int depth ), int maxTreeDepth
 			{
 				stack.Push( nextSibling );
 				Visit( nextSibling->GetItem(), stack.GetDepth() - 1 );
-			}	
+			}
 		}
 	}
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::ReentrantTraversalGetFirst( int maxTreeDepth )
+NTreeNode<T>* NTreeNode<T>::ReentrantTraversalGetFirst( int maxTreeDepth )
 {
 	if( reentrantStack )
 	{
@@ -282,9 +282,9 @@ NTreeNode<T> *NTreeNode<T>::ReentrantTraversalGetFirst( int maxTreeDepth )
 }
 
 template <class T>
-NTreeNode<T> *NTreeNode<T>::ReentrantTraversalGetNext( void )
+NTreeNode<T>* NTreeNode<T>::ReentrantTraversalGetNext( void )
 {
-	NTreeNode<T> *current, *nextSibling;
+	NTreeNode<T>* current, *nextSibling;
 
 	while( !reentrantStack->IsEmpty() )
 	{
@@ -305,7 +305,7 @@ NTreeNode<T> *NTreeNode<T>::ReentrantTraversalGetNext( void )
 			{
 				reentrantStack->Push( nextSibling );
 				return nextSibling;
-			}	
+			}
 		}
 	}
 	delete reentrantStack;

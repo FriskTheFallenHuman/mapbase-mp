@@ -21,17 +21,17 @@
 // Global Savedata for changelevel trigger
 BEGIN_DATADESC( CGrenade_Brickbat )
 
-	DEFINE_FIELD( m_nType, FIELD_INTEGER ),
-	DEFINE_FIELD( m_bExplodes, FIELD_BOOLEAN ),
-	DEFINE_FIELD( m_bBounceToFlat, FIELD_BOOLEAN ),
+DEFINE_FIELD( m_nType, FIELD_INTEGER ),
+			  DEFINE_FIELD( m_bExplodes, FIELD_BOOLEAN ),
+			  DEFINE_FIELD( m_bBounceToFlat, FIELD_BOOLEAN ),
 
-	// Function Pointers
-	DEFINE_FUNCTION( BrickbatTouch ),
-	DEFINE_FUNCTION( BrickbatThink ),
+			  // Function Pointers
+			  DEFINE_FUNCTION( BrickbatTouch ),
+			  DEFINE_FUNCTION( BrickbatThink ),
 
-END_DATADESC()
+			  END_DATADESC()
 
-LINK_ENTITY_TO_CLASS( brickbat, CGrenade_Brickbat );
+			  LINK_ENTITY_TO_CLASS( brickbat, CGrenade_Brickbat );
 
 void CGrenade_Brickbat::Spawn( void )
 {
@@ -52,8 +52,8 @@ void CGrenade_Brickbat::Spawn( void )
 bool CGrenade_Brickbat::CreateVPhysics()
 {
 	VPhysicsInitNormal( SOLID_VPHYSICS, 0, false );
-	IPhysicsObject *pPhysics = VPhysicsGetObject();
-	if ( pPhysics )
+	IPhysicsObject* pPhysics = VPhysicsGetObject();
+	if( pPhysics )
 	{
 		// we want world touches
 		unsigned int flags = pPhysics->GetCallbackFlags();
@@ -68,20 +68,20 @@ bool CGrenade_Brickbat::CreateVPhysics()
 // Input  :
 // Output :
 //-----------------------------------------------------------------------------
-void CGrenade_Brickbat::BrickbatTouch( CBaseEntity *pOther )
+void CGrenade_Brickbat::BrickbatTouch( CBaseEntity* pOther )
 {
 	// -----------------------------------------------------------
 	// Might be physically simulated so get my velocity manually
 	// -----------------------------------------------------------
 	Vector vVelocity;
-	GetVelocity(&vVelocity,NULL);
+	GetVelocity( &vVelocity, NULL );
 
 	// -----------------------------------
 	// Do damage if we moving fairly fast
 	// -----------------------------------
-	if (vVelocity.Length() > 100)
+	if( vVelocity.Length() > 100 )
 	{
-		if (GetThrower())
+		if( GetThrower() )
 		{
 			trace_t tr;
 			tr = CBaseEntity::GetTouchTrace( );
@@ -95,13 +95,13 @@ void CGrenade_Brickbat::BrickbatTouch( CBaseEntity *pOther )
 			ApplyMultiDamage();
 		}
 		// If this thrown item explodes, blow it up
-		if (m_bExplodes) 
+		if( m_bExplodes )
 		{
 			Detonate();
 			return;
 		}
 	}
-	else if (pOther->GetFlags() & FL_CLIENT)
+	else if( pOther->GetFlags() & FL_CLIENT )
 	{
 		SpawnBrickbatWeapon();
 		return;
@@ -115,16 +115,16 @@ void CGrenade_Brickbat::BrickbatTouch( CBaseEntity *pOther )
 //------------------------------------------------------------------------------
 void CGrenade_Brickbat::SpawnBrickbatWeapon( void )
 {
-	CWeaponBrickbat *pBrickbat = (CWeaponBrickbat*)CBaseEntity::CreateNoSpawn( 
-		"weapon_brickbat", GetLocalOrigin(), GetLocalAngles(), NULL );
+	CWeaponBrickbat* pBrickbat = ( CWeaponBrickbat* )CBaseEntity::CreateNoSpawn(
+									 "weapon_brickbat", GetLocalOrigin(), GetLocalAngles(), NULL );
 	// Spawn after we set the ammo type so the correct model is used
-	if (pBrickbat)
+	if( pBrickbat )
 	{
 		pBrickbat->m_iCurrentAmmoType = m_nType;
 		pBrickbat->Spawn();
 		VPhysicsDestroyObject();
-		SetThink(NULL);
-		UTIL_Remove(this);
+		SetThink( NULL );
+		UTIL_Remove( this );
 	}
 }
 
@@ -140,11 +140,11 @@ void CGrenade_Brickbat::BrickbatThink( void )
 	// -----------------------------------------------------------
 	Vector vVelocity;
 	AngularImpulse vAngVel;
-	GetVelocity(&vVelocity,&vAngVel);
+	GetVelocity( &vVelocity, &vAngVel );
 
 	// See if I can lose my owner (has dropper moved out of way?)
 	// Want do this so owner can throw the brickbat
-	if (GetOwnerEntity())
+	if( GetOwnerEntity() )
 	{
 		trace_t tr;
 		Vector	vUpABit = GetAbsOrigin();
@@ -153,7 +153,7 @@ void CGrenade_Brickbat::BrickbatThink( void )
 		CBaseEntity* saveOwner = GetOwnerEntity();
 		SetOwnerEntity( NULL );
 		UTIL_TraceEntity( this, GetAbsOrigin(), vUpABit, MASK_SOLID, &tr );
-		if ( tr.startsolid || tr.fraction != 1.0 )
+		if( tr.startsolid || tr.fraction != 1.0 )
 		{
 			SetOwnerEntity( saveOwner );
 		}
@@ -162,27 +162,27 @@ void CGrenade_Brickbat::BrickbatThink( void )
 	// ---------------------------------------------------------------
 	//	Make sure we're not resting on a living thing's bounding box
 	// ---------------------------------------------------------------
-	if (vVelocity.Length() < 0.01)
+	if( vVelocity.Length() < 0.01 )
 	{
 		trace_t tr;
-		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector(0,0,10), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
+		UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() - Vector( 0, 0, 10 ), MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
 
-		if ( tr.fraction < 1.0 && tr.m_pEnt)
+		if( tr.fraction < 1.0 && tr.m_pEnt )
 		{
-			CBaseEntity *pEntity = tr.m_pEnt;
-			if (pEntity->GetFlags() & (FL_CLIENT | FL_NPC))
+			CBaseEntity* pEntity = tr.m_pEnt;
+			if( pEntity->GetFlags() & ( FL_CLIENT | FL_NPC ) )
 			{
 				// --------------------
-				// Bounce me off 
+				// Bounce me off
 				// --------------------
 				Vector vNewVel;
 				vNewVel.y = 100;
-				vNewVel.x = random->RandomInt(-100,100);
-				vNewVel.z = random->RandomInt(-100,100);
+				vNewVel.x = random->RandomInt( -100, 100 );
+				vNewVel.z = random->RandomInt( -100, 100 );
 
 				// If physically simulated
-				IPhysicsObject *pPhysicsObject = VPhysicsGetObject();
-				if ( pPhysicsObject )
+				IPhysicsObject* pPhysicsObject = VPhysicsGetObject();
+				if( pPhysicsObject )
 				{
 					pPhysicsObject->AddVelocity( &vNewVel, &vAngVel );
 				}
@@ -195,7 +195,7 @@ void CGrenade_Brickbat::BrickbatThink( void )
 		}
 	}
 
-	if (vVelocity.Length() < 0.01)
+	if( vVelocity.Length() < 0.01 )
 	{
 		SpawnBrickbatWeapon();
 	}
@@ -210,7 +210,7 @@ class CGrenadeRockBB : public CGrenade_Brickbat
 public:
 	DECLARE_CLASS( CGrenadeRockBB, CGrenade_Brickbat );
 
-	void Spawn(void)
+	void Spawn( void )
 	{
 		m_nType = BRICKBAT_ROCK;
 		SetModel( "models/props_junk/Rock001a.mdl" );
@@ -218,12 +218,12 @@ public:
 	}
 	void Precache( void )
 	{
-		PrecacheModel("models/props_junk/Rock001a.mdl");
+		PrecacheModel( "models/props_junk/Rock001a.mdl" );
 		BaseClass::Precache();
 	}
 };
 LINK_ENTITY_TO_CLASS( grenade_rockbb, CGrenadeRockBB );
-PRECACHE_REGISTER(grenade_rockbb);
+PRECACHE_REGISTER( grenade_rockbb );
 
 
 //=====================================================================
@@ -234,7 +234,7 @@ class CGrenadeBottle : public CGrenade_Brickbat
 public:
 	DECLARE_CLASS( CGrenadeBottle, CGrenade_Brickbat );
 
-	void Spawn(void)
+	void Spawn( void )
 	{
 		m_nType	= BRICKBAT_BOTTLE;
 		m_bExplodes	= true;
@@ -247,7 +247,7 @@ public:
 
 void CGrenadeBottle::Precache( void )
 {
-	PrecacheModel("models/weapons/w_bb_bottle.mdl");
+	PrecacheModel( "models/weapons/w_bb_bottle.mdl" );
 
 	PrecacheScriptSound( "GrenadeBottle.Detonate" );
 
@@ -255,20 +255,20 @@ void CGrenadeBottle::Precache( void )
 }
 
 void CGrenadeBottle::Detonate( void )
-{	
+{
 	trace_t trace;
 
-	UTIL_TraceLine ( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity(), MASK_SOLID, this, COLLISION_GROUP_NONE, &trace);
+	UTIL_TraceLine( GetAbsOrigin(), GetAbsOrigin() + GetAbsVelocity(), MASK_SOLID, this, COLLISION_GROUP_NONE, &trace );
 	UTIL_DecalTrace( &trace, "BeerSplash" );
 
 	EmitSound( "GrenadeBottle.Detonate" );
 
-	CSoundEnt::InsertSound(SOUND_COMBAT, GetAbsOrigin(), 400, 0.5);
+	CSoundEnt::InsertSound( SOUND_COMBAT, GetAbsOrigin(), 400, 0.5 );
 
 	UTIL_Remove( this );
 }
 
 LINK_ENTITY_TO_CLASS( grenade_beerbottle, CGrenadeBottle );
-PRECACHE_REGISTER(grenade_beerbottle);
+PRECACHE_REGISTER( grenade_beerbottle );
 
 

@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //
@@ -37,20 +37,20 @@ public:
 
 	void		 SpawnEntity( Vector vecAlternateOrigin = vec3_invalid, QAngle vecAlternateAngles = vec3_angle );
 	void		 CheckSpawnThink( void );
-	void		 InputForceSpawn( inputdata_t &inputdata );
-	void		 InputForceSpawnAtEntityOrigin( inputdata_t &inputdata );
+	void		 InputForceSpawn( inputdata_t& inputdata );
+	void		 InputForceSpawnAtEntityOrigin( inputdata_t& inputdata );
 #ifdef MAPBASE
-	void		 InputForceSpawnAtEntityCenter( inputdata_t &inputdata );
-	void		 InputForceSpawnAtPosition( inputdata_t &inputdata );
+	void		 InputForceSpawnAtEntityCenter( inputdata_t& inputdata );
+	void		 InputForceSpawnAtPosition( inputdata_t& inputdata );
 #endif
 
 	void		 SpawnEntityFromScript();
-	void		 SpawnEntityAtEntityOriginFromScript(HSCRIPT hEntity);
-	void		 SpawnEntityAtNamedEntityOriginFromScript(const char* pszName);
-	void		 SpawnEntityAtLocationFromScript(const Vector& vecAlternateOrigin, const Vector& vecAlternateAngles);
+	void		 SpawnEntityAtEntityOriginFromScript( HSCRIPT hEntity );
+	void		 SpawnEntityAtNamedEntityOriginFromScript( const char* pszName );
+	void		 SpawnEntityAtLocationFromScript( const Vector& vecAlternateOrigin, const Vector& vecAlternateAngles );
 private:
 
-	CPointTemplate *FindTemplate();
+	CPointTemplate* FindTemplate();
 
 	bool HasRoomToSpawn();
 	bool IsPlayerLooking();
@@ -77,48 +77,48 @@ private:
 };
 
 BEGIN_DATADESC( CEnvEntityMaker )
-	// DEFINE_FIELD( m_vecEntityMins, FIELD_VECTOR ),
-	// DEFINE_FIELD( m_vecEntityMaxs, FIELD_VECTOR ),
-	DEFINE_FIELD( m_hCurrentInstance, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_hCurrentBlocker, FIELD_EHANDLE ),
-	DEFINE_FIELD( m_vecBlockerOrigin, FIELD_VECTOR ),
-	DEFINE_KEYFIELD( m_iszTemplate, FIELD_STRING, "EntityTemplate" ),
-	DEFINE_KEYFIELD( m_angPostSpawnDirection, FIELD_VECTOR, "PostSpawnDirection" ),
-	DEFINE_KEYFIELD( m_flPostSpawnDirectionVariance, FIELD_FLOAT, "PostSpawnDirectionVariance" ),
-	DEFINE_KEYFIELD( m_flPostSpawnSpeed, FIELD_FLOAT, "PostSpawnSpeed" ),
-	DEFINE_KEYFIELD( m_bPostSpawnUseAngles, FIELD_BOOLEAN, "PostSpawnInheritAngles" ),
+// DEFINE_FIELD( m_vecEntityMins, FIELD_VECTOR ),
+// DEFINE_FIELD( m_vecEntityMaxs, FIELD_VECTOR ),
+DEFINE_FIELD( m_hCurrentInstance, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_hCurrentBlocker, FIELD_EHANDLE ),
+			  DEFINE_FIELD( m_vecBlockerOrigin, FIELD_VECTOR ),
+			  DEFINE_KEYFIELD( m_iszTemplate, FIELD_STRING, "EntityTemplate" ),
+			  DEFINE_KEYFIELD( m_angPostSpawnDirection, FIELD_VECTOR, "PostSpawnDirection" ),
+			  DEFINE_KEYFIELD( m_flPostSpawnDirectionVariance, FIELD_FLOAT, "PostSpawnDirectionVariance" ),
+			  DEFINE_KEYFIELD( m_flPostSpawnSpeed, FIELD_FLOAT, "PostSpawnSpeed" ),
+			  DEFINE_KEYFIELD( m_bPostSpawnUseAngles, FIELD_BOOLEAN, "PostSpawnInheritAngles" ),
 
-	// Outputs
-	DEFINE_OUTPUT( m_pOutputOnSpawned, "OnEntitySpawned" ),
-	DEFINE_OUTPUT( m_pOutputOnFailedSpawn, "OnEntityFailedSpawn" ),
+			  // Outputs
+			  DEFINE_OUTPUT( m_pOutputOnSpawned, "OnEntitySpawned" ),
+			  DEFINE_OUTPUT( m_pOutputOnFailedSpawn, "OnEntityFailedSpawn" ),
 #ifdef MAPBASE
 	DEFINE_OUTPUT( m_pOutputOutEntity, "OutSpawnedEntity" ),
 #endif
 
-	// Inputs
-	DEFINE_INPUTFUNC( FIELD_VOID, "ForceSpawn", InputForceSpawn ),
-	DEFINE_INPUTFUNC( FIELD_STRING, "ForceSpawnAtEntityOrigin", InputForceSpawnAtEntityOrigin ),
+			  // Inputs
+			  DEFINE_INPUTFUNC( FIELD_VOID, "ForceSpawn", InputForceSpawn ),
+			  DEFINE_INPUTFUNC( FIELD_STRING, "ForceSpawnAtEntityOrigin", InputForceSpawnAtEntityOrigin ),
 #ifdef MAPBASE
 	DEFINE_INPUTFUNC( FIELD_STRING, "ForceSpawnAtEntityCenter", InputForceSpawnAtEntityCenter ),
 	DEFINE_INPUTFUNC( FIELD_VECTOR, "ForceSpawnAtPosition", InputForceSpawnAtPosition ),
 #endif
 
-	// Functions
-	DEFINE_THINKFUNC( CheckSpawnThink ),
-END_DATADESC()
+			  // Functions
+			  DEFINE_THINKFUNC( CheckSpawnThink ),
+			  END_DATADESC()
 
-BEGIN_ENT_SCRIPTDESC( CEnvEntityMaker, CBaseEntity, "env_entity_maker" )
-	DEFINE_SCRIPTFUNC_NAMED( SpawnEntityFromScript, "SpawnEntity", "Create an entity at the location of the maker" )
-	DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtEntityOriginFromScript, "SpawnEntityAtEntityOrigin", "Create an entity at the location of a specified entity instance" )
-	DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtNamedEntityOriginFromScript, "SpawnEntityAtNamedEntityOrigin", "Create an entity at the location of a named entity" )
-	DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtLocationFromScript, "SpawnEntityAtLocation", "Create an entity at a specified location and orientaton, orientation is Euler angle in degrees (pitch, yaw, roll)" )
-END_SCRIPTDESC()
+			  BEGIN_ENT_SCRIPTDESC( CEnvEntityMaker, CBaseEntity, "env_entity_maker" )
+			  DEFINE_SCRIPTFUNC_NAMED( SpawnEntityFromScript, "SpawnEntity", "Create an entity at the location of the maker" )
+			  DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtEntityOriginFromScript, "SpawnEntityAtEntityOrigin", "Create an entity at the location of a specified entity instance" )
+			  DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtNamedEntityOriginFromScript, "SpawnEntityAtNamedEntityOrigin", "Create an entity at the location of a named entity" )
+			  DEFINE_SCRIPTFUNC_NAMED( SpawnEntityAtLocationFromScript, "SpawnEntityAtLocation", "Create an entity at a specified location and orientaton, orientation is Euler angle in degrees (pitch, yaw, roll)" )
+			  END_SCRIPTDESC()
 
-LINK_ENTITY_TO_CLASS( env_entity_maker, CEnvEntityMaker );
+			  LINK_ENTITY_TO_CLASS( env_entity_maker, CEnvEntityMaker );
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvEntityMaker::Spawn( void )
 {
@@ -130,14 +130,14 @@ void CEnvEntityMaker::Spawn( void )
 }
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
 void CEnvEntityMaker::Activate( void )
 {
 	BaseClass::Activate();
 
 	// check for valid template
-	if ( m_iszTemplate == NULL_STRING )
+	if( m_iszTemplate == NULL_STRING )
 	{
 		Warning( "env_entity_maker %s has no template entity!\n", GetEntityName().ToCStr() );
 		UTIL_Remove( this );
@@ -145,7 +145,7 @@ void CEnvEntityMaker::Activate( void )
 	}
 
 	// Spawn an instance
-	if ( m_spawnflags & SF_ENTMAKER_AUTOSPAWN )
+	if( m_spawnflags & SF_ENTMAKER_AUTOSPAWN )
 	{
 		SpawnEntity();
 	}
@@ -153,15 +153,15 @@ void CEnvEntityMaker::Activate( void )
 
 
 //-----------------------------------------------------------------------------
-// Purpose: 
+// Purpose:
 //-----------------------------------------------------------------------------
-CPointTemplate *CEnvEntityMaker::FindTemplate()
+CPointTemplate* CEnvEntityMaker::FindTemplate()
 {
 	// Find our point_template
-	CPointTemplate *pTemplate = dynamic_cast<CPointTemplate *>(gEntList.FindEntityByName( NULL, STRING(m_iszTemplate) ));
-	if ( !pTemplate )
+	CPointTemplate* pTemplate = dynamic_cast<CPointTemplate*>( gEntList.FindEntityByName( NULL, STRING( m_iszTemplate ) ) );
+	if( !pTemplate )
 	{
-		Warning( "env_entity_maker %s failed to find template %s.\n", GetEntityName().ToCStr(), STRING(m_iszTemplate) );
+		Warning( "env_entity_maker %s failed to find template %s.\n", GetEntityName().ToCStr(), STRING( m_iszTemplate ) );
 	}
 
 	return pTemplate;
@@ -173,9 +173,11 @@ CPointTemplate *CEnvEntityMaker::FindTemplate()
 //-----------------------------------------------------------------------------
 void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternateAngles )
 {
-	CPointTemplate *pTemplate = FindTemplate();
-	if (!pTemplate)
+	CPointTemplate* pTemplate = FindTemplate();
+	if( !pTemplate )
+	{
 		return;
+	}
 
 	// Spawn our template
 	Vector vecSpawnOrigin = GetAbsOrigin();
@@ -190,13 +192,17 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 	}
 
 	CUtlVector<CBaseEntity*> hNewEntities;
-	if ( !pTemplate->CreateInstance( vecSpawnOrigin, vecSpawnAngles, &hNewEntities ) )
+	if( !pTemplate->CreateInstance( vecSpawnOrigin, vecSpawnAngles, &hNewEntities ) )
+	{
 		return;
-	
+	}
+
 	//Adrian: oops we couldn't spawn the entity (or entities) for some reason!
-	if ( hNewEntities.Count() == 0 )
-		 return;
-	
+	if( hNewEntities.Count() == 0 )
+	{
+		return;
+	}
+
 	m_hCurrentInstance = hNewEntities[0];
 
 	// Assume it'll block us
@@ -204,7 +210,7 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 	m_vecBlockerOrigin = m_hCurrentBlocker->GetAbsOrigin();
 
 	// Store off the mins & maxs the first time we spawn
-	if ( m_vecEntityMins == vec3_origin )
+	if( m_vecEntityMins == vec3_origin )
 	{
 		m_hCurrentInstance->CollisionProp()->WorldSpaceAABB( &m_vecEntityMins, &m_vecEntityMaxs );
 		m_vecEntityMins -= m_hCurrentInstance->GetAbsOrigin();
@@ -215,32 +221,34 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 	m_pOutputOnSpawned.FireOutput( this, this );
 
 	// Start thinking
-	if ( m_spawnflags & SF_ENTMAKER_AUTOSPAWN )
+	if( m_spawnflags & SF_ENTMAKER_AUTOSPAWN )
 	{
 		SetThink( &CEnvEntityMaker::CheckSpawnThink );
 		SetNextThink( gpGlobals->curtime + 0.5f );
 	}
 
 	// If we have a specified post spawn speed, apply it to all spawned entities
-	if ( m_flPostSpawnSpeed )
+	if( m_flPostSpawnSpeed )
 	{
-		for ( int i = 0; i < hNewEntities.Count(); i++ )
+		for( int i = 0; i < hNewEntities.Count(); i++ )
 		{
-			CBaseEntity *pEntity = hNewEntities[i];
+			CBaseEntity* pEntity = hNewEntities[i];
 
 #ifdef MAPBASE
-			m_pOutputOutEntity.Set(pEntity, pEntity, this);
+			m_pOutputOutEntity.Set( pEntity, pEntity, this );
 #endif
 
-			if ( pEntity->GetMoveType() == MOVETYPE_NONE )
+			if( pEntity->GetMoveType() == MOVETYPE_NONE )
+			{
 				continue;
+			}
 
 			// Calculate a velocity for this entity
-			Vector vForward,vRight,vUp;
+			Vector vForward, vRight, vUp;
 			QAngle angSpawnDir( m_angPostSpawnDirection );
-			if ( m_bPostSpawnUseAngles )
+			if( m_bPostSpawnUseAngles )
 			{
-				if ( GetParent() )
+				if( GetParent() )
 				{
 					angSpawnDir += GetParent()->GetAbsAngles();
 				}
@@ -251,17 +259,17 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 			}
 			AngleVectors( angSpawnDir, &vForward, &vRight, &vUp );
 			Vector vecShootDir = vForward;
-			vecShootDir += vRight * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
-			vecShootDir += vForward * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
-			vecShootDir += vUp * random->RandomFloat(-1, 1) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vRight * random->RandomFloat( -1, 1 ) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vForward * random->RandomFloat( -1, 1 ) * m_flPostSpawnDirectionVariance;
+			vecShootDir += vUp * random->RandomFloat( -1, 1 ) * m_flPostSpawnDirectionVariance;
 			VectorNormalize( vecShootDir );
 			vecShootDir *= m_flPostSpawnSpeed;
 
 			// Apply it to the entity
-			IPhysicsObject *pPhysicsObject = pEntity->VPhysicsGetObject();
-			if ( pPhysicsObject )
+			IPhysicsObject* pPhysicsObject = pEntity->VPhysicsGetObject();
+			if( pPhysicsObject )
 			{
-				pPhysicsObject->AddVelocity(&vecShootDir, NULL);
+				pPhysicsObject->AddVelocity( &vecShootDir, NULL );
 			}
 			else
 			{
@@ -272,9 +280,9 @@ void CEnvEntityMaker::SpawnEntity( Vector vecAlternateOrigin, QAngle vecAlternat
 #ifdef MAPBASE
 	else
 	{
-		for ( int i = 0; i < hNewEntities.Count(); i++ )
+		for( int i = 0; i < hNewEntities.Count(); i++ )
 		{
-			m_pOutputOutEntity.Set(hNewEntities[i], hNewEntities[i], this);
+			m_pOutputOutEntity.Set( hNewEntities[i], hNewEntities[i], this );
 		}
 	}
 #endif
@@ -295,8 +303,8 @@ void CEnvEntityMaker::SpawnEntityFromScript()
 //-----------------------------------------------------------------------------
 void CEnvEntityMaker::SpawnEntityAtEntityOriginFromScript( HSCRIPT hEntity )
 {
-	CBaseEntity *pTargetEntity = ToEnt( hEntity );
-	if ( pTargetEntity )
+	CBaseEntity* pTargetEntity = ToEnt( hEntity );
+	if( pTargetEntity )
 	{
 		SpawnEntity( pTargetEntity->GetAbsOrigin(), pTargetEntity->GetAbsAngles() );
 	}
@@ -305,9 +313,9 @@ void CEnvEntityMaker::SpawnEntityAtEntityOriginFromScript( HSCRIPT hEntity )
 //-----------------------------------------------------------------------------
 // Purpose: Spawn an instance of the entity
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::SpawnEntityAtNamedEntityOriginFromScript( const char *pszName )
+void CEnvEntityMaker::SpawnEntityAtNamedEntityOriginFromScript( const char* pszName )
 {
-	CBaseEntity *pTargetEntity = gEntList.FindEntityByName( NULL, pszName, this, NULL, NULL );
+	CBaseEntity* pTargetEntity = gEntList.FindEntityByName( NULL, pszName, this, NULL, NULL );
 
 	if( pTargetEntity )
 	{
@@ -318,9 +326,9 @@ void CEnvEntityMaker::SpawnEntityAtNamedEntityOriginFromScript( const char *pszN
 //-----------------------------------------------------------------------------
 // Purpose: Spawn an instance of the entity
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::SpawnEntityAtLocationFromScript( const Vector &vecAlternateOrigin, const Vector &vecAlternateAngles )
+void CEnvEntityMaker::SpawnEntityAtLocationFromScript( const Vector& vecAlternateOrigin, const Vector& vecAlternateAngles )
 {
-	SpawnEntity( vecAlternateOrigin, *((QAngle *)&vecAlternateAngles) );
+	SpawnEntity( vecAlternateOrigin, *( ( QAngle* )&vecAlternateAngles ) );
 }
 
 //-----------------------------------------------------------------------------
@@ -330,10 +338,10 @@ void CEnvEntityMaker::SpawnEntityAtLocationFromScript( const Vector &vecAlternat
 bool CEnvEntityMaker::HasRoomToSpawn()
 {
 	// Do we have a blocker from last time?
-	if ( m_hCurrentBlocker )
+	if( m_hCurrentBlocker )
 	{
 		// If it hasn't moved, abort immediately
-		if ( m_vecBlockerOrigin == m_hCurrentBlocker->GetAbsOrigin() )
+		if( m_vecBlockerOrigin == m_hCurrentBlocker->GetAbsOrigin() )
 		{
 			return false;
 		}
@@ -342,11 +350,11 @@ bool CEnvEntityMaker::HasRoomToSpawn()
 	// Check to see if there's enough room to spawn
 	trace_t tr;
 	UTIL_TraceHull( GetAbsOrigin(), GetAbsOrigin(), m_vecEntityMins, m_vecEntityMaxs, MASK_SOLID, this, COLLISION_GROUP_NONE, &tr );
-	if ( tr.m_pEnt || tr.startsolid )
+	if( tr.m_pEnt || tr.startsolid )
 	{
 		// Store off our blocker to check later
 		m_hCurrentBlocker = tr.m_pEnt;
-		if ( m_hCurrentBlocker )
+		if( m_hCurrentBlocker )
 		{
 			m_vecBlockerOrigin = m_hCurrentBlocker->GetAbsOrigin();
 		}
@@ -363,19 +371,21 @@ bool CEnvEntityMaker::HasRoomToSpawn()
 //-----------------------------------------------------------------------------
 bool CEnvEntityMaker::IsPlayerLooking()
 {
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	for( int i = 1; i <= gpGlobals->maxClients; i++ )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( i );
-		if ( pPlayer )
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex( i );
+		if( pPlayer )
 		{
 			// Only spawn if the player's looking away from me
 			Vector vLookDir = pPlayer->EyeDirection3D();
 			Vector vTargetDir = GetAbsOrigin() - pPlayer->EyePosition();
 			VectorNormalize( vTargetDir );
 
-			float fDotPr = DotProduct( vLookDir,vTargetDir );
-			if ( fDotPr > 0 )
+			float fDotPr = DotProduct( vLookDir, vTargetDir );
+			if( fDotPr > 0 )
+			{
 				return true;
+			}
 		}
 	}
 
@@ -391,20 +401,26 @@ void CEnvEntityMaker::CheckSpawnThink( void )
 	SetNextThink( gpGlobals->curtime + 0.5f );
 
 	// Do we have an instance?
-	if ( m_hCurrentInstance )
+	if( m_hCurrentInstance )
 	{
 		// If Wait-For-Destruction is set, abort immediately
-		if ( m_spawnflags & SF_ENTMAKER_WAITFORDESTRUCTION )
+		if( m_spawnflags & SF_ENTMAKER_WAITFORDESTRUCTION )
+		{
 			return;
+		}
 	}
 
 	// Check to see if there's enough room to spawn
-	if ( !HasRoomToSpawn() )
+	if( !HasRoomToSpawn() )
+	{
 		return;
+	}
 
 	// We're clear, now check to see if the player's looking
-	if ( !( HasSpawnFlags( SF_ENTMAKER_IGNOREFACING ) ) && IsPlayerLooking() )
+	if( !( HasSpawnFlags( SF_ENTMAKER_IGNOREFACING ) ) && IsPlayerLooking() )
+	{
 		return;
+	}
 
 	// Clear, no player watching, so spawn!
 	SpawnEntity();
@@ -414,19 +430,21 @@ void CEnvEntityMaker::CheckSpawnThink( void )
 //-----------------------------------------------------------------------------
 // Purpose: Spawns the entities, checking for space if flagged to do so.
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::InputForceSpawn( inputdata_t &inputdata )
+void CEnvEntityMaker::InputForceSpawn( inputdata_t& inputdata )
 {
-	CPointTemplate *pTemplate = FindTemplate();
-	if (!pTemplate)
+	CPointTemplate* pTemplate = FindTemplate();
+	if( !pTemplate )
+	{
 		return;
+	}
 
-	if ( HasSpawnFlags( SF_ENTMAKER_CHECK_FOR_SPACE ) && !HasRoomToSpawn() )
+	if( HasSpawnFlags( SF_ENTMAKER_CHECK_FOR_SPACE ) && !HasRoomToSpawn() )
 	{
 		m_pOutputOnFailedSpawn.FireOutput( this, this );
 		return;
 	}
 
-	if ( HasSpawnFlags( SF_ENTMAKER_CHECK_PLAYER_LOOKING ) && IsPlayerLooking() )
+	if( HasSpawnFlags( SF_ENTMAKER_CHECK_PLAYER_LOOKING ) && IsPlayerLooking() )
 	{
 		m_pOutputOnFailedSpawn.FireOutput( this, this );
 		return;
@@ -437,10 +455,10 @@ void CEnvEntityMaker::InputForceSpawn( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::InputForceSpawnAtEntityOrigin( inputdata_t &inputdata )
+void CEnvEntityMaker::InputForceSpawnAtEntityOrigin( inputdata_t& inputdata )
 {
-	CBaseEntity *pTargetEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller );
-		
+	CBaseEntity* pTargetEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller );
+
 	if( pTargetEntity )
 	{
 		SpawnEntity( pTargetEntity->GetAbsOrigin(), pTargetEntity->GetAbsAngles() );
@@ -450,10 +468,10 @@ void CEnvEntityMaker::InputForceSpawnAtEntityOrigin( inputdata_t &inputdata )
 #ifdef MAPBASE
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::InputForceSpawnAtEntityCenter( inputdata_t &inputdata )
+void CEnvEntityMaker::InputForceSpawnAtEntityCenter( inputdata_t& inputdata )
 {
-	CBaseEntity *pTargetEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller );
-		
+	CBaseEntity* pTargetEntity = gEntList.FindEntityByName( NULL, inputdata.value.String(), this, inputdata.pActivator, inputdata.pCaller );
+
 	if( pTargetEntity )
 	{
 		SpawnEntity( pTargetEntity->WorldSpaceCenter(), pTargetEntity->GetAbsAngles() );
@@ -462,13 +480,13 @@ void CEnvEntityMaker::InputForceSpawnAtEntityCenter( inputdata_t &inputdata )
 
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-void CEnvEntityMaker::InputForceSpawnAtPosition(inputdata_t &inputdata)
+void CEnvEntityMaker::InputForceSpawnAtPosition( inputdata_t& inputdata )
 {
 	Vector vecPos;
-	inputdata.value.Vector3D(vecPos);
-	if (vecPos != vec3_origin && vecPos.IsValid())
+	inputdata.value.Vector3D( vecPos );
+	if( vecPos != vec3_origin && vecPos.IsValid() )
 	{
-		SpawnEntity(vecPos, GetLocalAngles());
+		SpawnEntity( vecPos, GetLocalAngles() );
 	}
 }
 #endif // MAPBASE

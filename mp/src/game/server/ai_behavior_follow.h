@@ -18,7 +18,7 @@
 #endif
 
 #if defined( _WIN32 )
-#pragma once
+	#pragma once
 #endif
 
 
@@ -63,10 +63,10 @@ class CAI_FollowGoal : public CAI_GoalEntity
 
 public:
 
-	virtual void EnableGoal( CAI_BaseNPC *pAI );
-	virtual void DisableGoal( CAI_BaseNPC *pAI  );
+	virtual void EnableGoal( CAI_BaseNPC* pAI );
+	virtual void DisableGoal( CAI_BaseNPC* pAI );
 #ifdef HL2_EPISODIC
-	virtual void InputOutsideTransition( inputdata_t &inputdata );
+	virtual void InputOutsideTransition( inputdata_t& inputdata );
 #endif
 
 	int m_iFormation;
@@ -80,7 +80,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-int AIGetNumFollowers( CBaseEntity *pEntity, string_t iszClassname = NULL_STRING );
+int AIGetNumFollowers( CBaseEntity* pEntity, string_t iszClassname = NULL_STRING );
 
 //-----------------------------------------------------------------------------
 
@@ -106,7 +106,7 @@ struct AI_FollowGroup_t;
 
 struct AI_FollowManagerInfoHandle_t
 {
-	AI_FollowGroup_t *m_pGroup;
+	AI_FollowGroup_t* m_pGroup;
 	int m_hFollower;
 };
 
@@ -115,14 +115,14 @@ struct AI_FollowManagerInfoHandle_t
 struct AI_FollowParams_t
 {
 	AI_FollowParams_t( AI_Formations_t formation = AIF_SIMPLE, bool bNormalMemoryDiscard = false )
-	 :	formation(formation),
-		bNormalMemoryDiscard( bNormalMemoryDiscard )
+		:	formation( formation ),
+		  bNormalMemoryDiscard( bNormalMemoryDiscard )
 	{
 	}
-	
+
 	AI_Formations_t formation;
 	bool			bNormalMemoryDiscard;
-	
+
 	DECLARE_SIMPLE_DATADESC();
 };
 
@@ -132,38 +132,62 @@ class CAI_FollowBehavior : public CAI_SimpleBehavior
 {
 	DECLARE_CLASS( CAI_FollowBehavior, CAI_SimpleBehavior );
 public:
-	CAI_FollowBehavior( const AI_FollowParams_t &params = AIF_SIMPLE );
+	CAI_FollowBehavior( const AI_FollowParams_t& params = AIF_SIMPLE );
 	~CAI_FollowBehavior();
 
 	virtual int		DrawDebugTextOverlays( int text_offset );
 	virtual void	DrawDebugGeometryOverlays();
-	
+
 	// Returns true if the NPC is actively following a target.
 	bool			IsActive( void );
 
-	void			SetParameters( const AI_FollowParams_t &params );
+	void			SetParameters( const AI_FollowParams_t& params );
 
-	virtual const char *GetName() {	return "Follow"; }
-	AI_Formations_t GetFormation() const { return m_params.formation; }
+	virtual const char* GetName()
+	{
+		return "Follow";
+	}
+	AI_Formations_t GetFormation() const
+	{
+		return m_params.formation;
+	}
 
 	virtual bool 	CanSelectSchedule();
 
-	const AI_FollowNavInfo_t &GetFollowGoalInfo();
-	CBaseEntity *	GetFollowTarget();
-	void			SetFollowTarget( CBaseEntity *pLeader, bool fFinishCurSchedule = false );
+	const AI_FollowNavInfo_t& GetFollowGoalInfo();
+	CBaseEntity* 	GetFollowTarget();
+	void			SetFollowTarget( CBaseEntity* pLeader, bool fFinishCurSchedule = false );
 
-	CAI_FollowGoal *GetFollowGoal()	{ return m_hFollowGoalEnt; } // if any
-	bool			SetFollowGoal( CAI_FollowGoal *pGoal, bool fFinishCurSchedule = false );
-	void			ClearFollowGoal( CAI_FollowGoal *pGoal );
-	void			SetFollowGoalDirect( CAI_FollowGoal *pGoal );
+	CAI_FollowGoal* GetFollowGoal()
+	{
+		return m_hFollowGoalEnt;    // if any
+	}
+	bool			SetFollowGoal( CAI_FollowGoal* pGoal, bool fFinishCurSchedule = false );
+	void			ClearFollowGoal( CAI_FollowGoal* pGoal );
+	void			SetFollowGoalDirect( CAI_FollowGoal* pGoal );
 
-	virtual bool	FarFromFollowTarget()	{ return ( m_hFollowTarget && (GetAbsOrigin() - m_hFollowTarget->GetAbsOrigin()).LengthSqr() > (75*12)*(75*12) ); }
+	virtual bool	FarFromFollowTarget()
+	{
+		return ( m_hFollowTarget && ( GetAbsOrigin() - m_hFollowTarget->GetAbsOrigin() ).LengthSqr() > ( 75 * 12 ) * ( 75 * 12 ) );
+	}
 
-	virtual bool	TargetIsUnreachable() { return m_bTargetUnreachable; }
-	
-	int				GetNumFailedFollowAttempts()	{ return m_nFailedFollowAttempts; }
-	float			GetTimeFailFollowStarted()		{ return m_flTimeFailFollowStarted; }
-	bool			FollowTargetVisible() { return HasCondition( COND_FOLLOW_TARGET_VISIBLE ); };
+	virtual bool	TargetIsUnreachable()
+	{
+		return m_bTargetUnreachable;
+	}
+
+	int				GetNumFailedFollowAttempts()
+	{
+		return m_nFailedFollowAttempts;
+	}
+	float			GetTimeFailFollowStarted()
+	{
+		return m_flTimeFailFollowStarted;
+	}
+	bool			FollowTargetVisible()
+	{
+		return HasCondition( COND_FOLLOW_TARGET_VISIBLE );
+	};
 
 	bool			IsMovingToFollowTarget();
 
@@ -172,14 +196,14 @@ public:
 
 	virtual Activity	NPC_TranslateActivity( Activity activity );
 	virtual int			TranslateSchedule( int scheduleType );
-	virtual void	StartTask( const Task_t *pTask );
+	virtual void	StartTask( const Task_t* pTask );
 	virtual int		SelectFailSchedule( int failedSchedule, int failedTask, AI_TaskFailureCode_t taskFailCode );
 	virtual void	TaskComplete( bool fIgnoreSetFailedCondition = false );
 	virtual void 	GatherConditions();
 
 protected:
 
-	const Vector	&GetGoalPosition();
+	const Vector&	GetGoalPosition();
 
 	virtual bool	ShouldFollow();
 
@@ -187,14 +211,17 @@ protected:
 
 	virtual void	BeginScheduleSelection();
 	virtual void	EndScheduleSelection();
-	
-	virtual void	CleanupOnDeath( CBaseEntity *pCulprit, bool bFireDeathOutput );
+
+	virtual void	CleanupOnDeath( CBaseEntity* pCulprit, bool bFireDeathOutput );
 
 	virtual void	Precache();
 	virtual int		SelectSchedule();
-	virtual int		FollowCallBaseSelectSchedule() { return BaseClass::SelectSchedule(); }
+	virtual int		FollowCallBaseSelectSchedule()
+	{
+		return BaseClass::SelectSchedule();
+	}
 	virtual void	OnStartSchedule( int scheduleType );
-	virtual void	RunTask( const Task_t *pTask );
+	virtual void	RunTask( const Task_t* pTask );
 	void			BuildScheduleTestBits();
 
 	bool			IsCurScheduleFollowSchedule();
@@ -202,12 +229,12 @@ protected:
 	virtual bool	IsCurTaskContinuousMove();
 	virtual void	OnMovementFailed();
 	virtual void	OnMovementComplete();
-	virtual bool	FValidateHintType( CAI_Hint *pHint );
-	
-	bool			IsValidCover( const Vector &vLocation, CAI_Hint const *pHint );
-	bool			IsValidShootPosition( const Vector &vLocation, CAI_Node *pNode, CAI_Hint const *pHint );
-	bool 			FindCoverFromEnemyAtFollowTarget( float coverRadius, Vector *pResult );
-	
+	virtual bool	FValidateHintType( CAI_Hint* pHint );
+
+	bool			IsValidCover( const Vector& vLocation, CAI_Hint const* pHint );
+	bool			IsValidShootPosition( const Vector& vLocation, CAI_Node* pNode, CAI_Hint const* pHint );
+	bool 			FindCoverFromEnemyAtFollowTarget( float coverRadius, Vector* pResult );
+
 	bool			ShouldAlwaysThink();
 
 	bool			ShouldMoveToFollowTarget();
@@ -216,22 +243,22 @@ protected:
 	int 			SelectScheduleFollowPoints();
 	int 			SelectScheduleMoveToFormation();
 
-	void			GetFollowTargetViewLoc( Vector *pResult);
-	bool			ValidateFaceTarget(  Vector *pFaceTarget );
+	void			GetFollowTargetViewLoc( Vector* pResult );
+	bool			ValidateFaceTarget( Vector* pFaceTarget );
 
 	//----------------------------
 
 	bool			ShouldUseFollowPoints();
 	bool			HasFollowPoint();
-	void 			SetFollowPoint( CAI_Hint *pHintNode );
+	void 			SetFollowPoint( CAI_Hint* pHintNode );
 	void			ClearFollowPoint();
-	const Vector &	GetFollowPoint();
-	CAI_Hint *		FindFollowPoint();
+	const Vector& 	GetFollowPoint();
+	CAI_Hint* 		FindFollowPoint();
 	bool			IsFollowPointInRange();
 	bool			ShouldIgnoreFollowPointFacing();
 
 	//----------------------------
-	
+
 	bool 			UpdateFollowPosition();
 	const int		GetGoalFlags();
 	float 			GetGoalTolerance();
@@ -288,17 +315,17 @@ protected:
 	};
 
 	DEFINE_CUSTOM_SCHEDULE_PROVIDER;
-	
+
 protected:
 
 	//----------------------------
-	
+
 	EHANDLE 		   				m_hFollowTarget;
 	AI_FollowNavInfo_t 				m_FollowNavGoal;
 	float							m_flTimeUpdatedFollowPosition;
 	bool							m_bFirstFacing;
 	float							m_flTimeFollowTargetVisible;
-	
+
 	CAI_MoveMonitor	   				m_TargetMonitor;
 	bool							m_bTargetUnreachable;
 	bool							m_bFollowNavFailed; // Set when pathfinding fails to limit impact of m_FollowDelay on ShouldFollow
@@ -310,42 +337,42 @@ protected:
 	bool							m_bMovingToCover;
 	float							m_flOriginalEnemyDiscardTime;
 	float							m_SavedDistTooFar;
-	
+
 	CRandStopwatch	   				m_FollowDelay;
 	CSimpleSimTimer					m_RepathOnFollowTimer;
-	
+
 	//---------------------------------
 
 	Activity						m_CurrentFollowActivity;
 
 	//---------------------------------
-	
+
 	CRandSimTimer					m_TimeBlockUseWaitPoint;
 	CSimTimer						m_TimeCheckForWaitPoint;
-	CAI_Hint *						m_pInterruptWaitPoint;
-	
+	CAI_Hint* 						m_pInterruptWaitPoint;
+
 	//---------------------------------
 
 	CRandSimTimer					m_TimeBeforeSpreadFacing;
 	CRandSimTimer					m_TimeNextSpreadFacing;
 
 	//---------------------------------
-	
+
 	AI_FollowManagerInfoHandle_t 	m_hFollowManagerInfo;
 	AI_FollowParams_t				m_params;
 
 	//---------------------------------
-	
+
 	CHandle<CAI_FollowGoal>			m_hFollowGoalEnt;
-	
+
 	//---------------------------------
-	
+
 	DECLARE_DATADESC();
 };
 
 //-------------------------------------
 
-inline const AI_FollowNavInfo_t &CAI_FollowBehavior::GetFollowGoalInfo()
+inline const AI_FollowNavInfo_t& CAI_FollowBehavior::GetFollowGoalInfo()
 {
 	return m_FollowNavGoal;
 }
@@ -359,7 +386,7 @@ inline const int CAI_FollowBehavior::GetGoalFlags()
 
 //-------------------------------------
 
-inline const Vector &CAI_FollowBehavior::GetGoalPosition()
+inline const Vector& CAI_FollowBehavior::GetGoalPosition()
 {
 	return m_FollowNavGoal.position;
 }

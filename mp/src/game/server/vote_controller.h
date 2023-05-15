@@ -9,7 +9,7 @@
 #define VOTE_CONTROLLER_H
 
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "shareddefs.h"
@@ -20,40 +20,52 @@
 class CBaseIssue	// Base class concept for vote issues (i.e. Kick Player).  Created per level-load and destroyed by CVoteController's dtor.
 {
 public:
-	CBaseIssue( const char *typeString );
+	CBaseIssue( const char* typeString );
 	virtual				 ~CBaseIssue();
-	const char			*GetTypeString( void );						// Connection between console command and specific type of issue
-	virtual const char	*GetTypeStringLocalized( void ) { return ""; }	// When empty, the client uses the classname string and prepends "#Vote_"
-	virtual const char	*GetDetailsString( void );
-	virtual void		SetIssueDetails( const char *pszDetails );	// We need to know the details part of the con command for later
+	const char*			GetTypeString( void );						// Connection between console command and specific type of issue
+	virtual const char*	GetTypeStringLocalized( void )
+	{
+		return "";    // When empty, the client uses the classname string and prepends "#Vote_"
+	}
+	virtual const char*	GetDetailsString( void );
+	virtual void		SetIssueDetails( const char* pszDetails );	// We need to know the details part of the con command for later
 	virtual void		OnVoteFailed( int iEntityHoldingVote );		// The moment the vote fails, also has some time for feedback before the window goes away
 	virtual void		OnVoteStarted( void ) {}					// Called as soon as the vote starts
-	virtual bool		IsEnabled( void ) { return false; }			// Query the issue to see if it's enabled
+	virtual bool		IsEnabled( void )
+	{
+		return false;    // Query the issue to see if it's enabled
+	}
 	virtual bool		CanTeamCallVote( int iTeam ) const;			// Can someone on the given team call this vote?
-	virtual bool		CanCallVote( int nEntIndex, const char *pszDetails, vote_create_failed_t &nFailCode, int &nTime ); // Can this guy hold a vote on this issue?
+	virtual bool		CanCallVote( int nEntIndex, const char* pszDetails, vote_create_failed_t& nFailCode, int& nTime ); // Can this guy hold a vote on this issue?
 	virtual bool		IsTeamRestrictedVote( void );				// Restrict access and visibility of this vote to a specific team?
-	virtual const char *GetDisplayString( void ) = 0;				// The string that will be passed to the client for display
+	virtual const char* GetDisplayString( void ) = 0;				// The string that will be passed to the client for display
 	virtual void		ExecuteCommand( void ) = 0;					// Where the magic happens.  Do your thing.
-	virtual void		ListIssueDetails( CBasePlayer *pForWhom ) = 0;	// Someone would like to know all your valid details
-	virtual const char *GetVotePassedString( void );				// Get the string an issue would like to display when it passes.
+	virtual void		ListIssueDetails( CBasePlayer* pForWhom ) = 0;	// Someone would like to know all your valid details
+	virtual const char* GetVotePassedString( void );				// Get the string an issue would like to display when it passes.
 	virtual int			CountPotentialVoters( void );
 	virtual int			GetNumberVoteOptions( void );				// How many choices this vote will have.  i.e. Returns 2 on a Yes/No issue (the default).
 	virtual bool		IsYesNoVote( void );
 	virtual void		SetYesNoVoteCount( int iNumYesVotes, int iNumNoVotes, int iNumPotentialVotes );
-	virtual bool		GetVoteOptions( CUtlVector <const char*> &vecNames );	// We use this to generate options for voting
-	virtual bool		BRecordVoteFailureEventForEntity( int iVoteCallingEntityIndex ) const { return iVoteCallingEntityIndex != DEDICATED_SERVER; }
-	void				SetIssueCooldownDuration( float flDuration ) { m_flNextCallTime = gpGlobals->curtime + flDuration; }	// The issue can not be raised again for this period of time (in seconds)
+	virtual bool		GetVoteOptions( CUtlVector <const char*>& vecNames );	// We use this to generate options for voting
+	virtual bool		BRecordVoteFailureEventForEntity( int iVoteCallingEntityIndex ) const
+	{
+		return iVoteCallingEntityIndex != DEDICATED_SERVER;
+	}
+	void				SetIssueCooldownDuration( float flDuration )
+	{
+		m_flNextCallTime = gpGlobals->curtime + flDuration;    // The issue can not be raised again for this period of time (in seconds)
+	}
 	virtual float		GetQuorumRatio( void );						// Each issue can decide the required ratio of voted-vs-abstained
 
 	CHandle< CBasePlayer > m_hPlayerTarget;							// If the target of the issue is a player, we should store them here
 
 protected:
-	static void			ListStandardNoArgCommand( CBasePlayer *forWhom, const char *issueString );		// List a Yes vote command
+	static void			ListStandardNoArgCommand( CBasePlayer* forWhom, const char* issueString );		// List a Yes vote command
 
 	struct FailedVote
 	{
 		char	szFailedVoteParameter[MAX_VOTE_DETAILS_LENGTH];
-		float	flLockoutTime;					
+		float	flLockoutTime;
 	};
 
 	CUtlVector< FailedVote* > m_FailedVotes;
@@ -68,7 +80,7 @@ protected:
 class CVoteController : public CBaseEntity
 {
 	DECLARE_CLASS( CVoteController, CBaseEntity );
-	
+
 public:
 	DECLARE_SERVERCLASS();
 	DECLARE_DATADESC();
@@ -92,25 +104,28 @@ public:
 	virtual bool	IsVoteSystemEnabled( void );
 
 	bool			SetupVote( int iEntIndex );	// This creates a list of issues for the UI
-	bool			CreateVote( int iEntIndex, const char *pszTypeString, const char *pszDetailString );	// This is what the UI passes in
-	TryCastVoteResult TryCastVote( int iEntIndex, const char *pszVoteString );
-	void			RegisterIssue( CBaseIssue *pNewIssue );
-	void			ListIssues( CBasePlayer *pForWhom );
-	bool			IsValidVoter( CBasePlayer *pWhom );
+	bool			CreateVote( int iEntIndex, const char* pszTypeString, const char* pszDetailString );	// This is what the UI passes in
+	TryCastVoteResult TryCastVote( int iEntIndex, const char* pszVoteString );
+	void			RegisterIssue( CBaseIssue* pNewIssue );
+	void			ListIssues( CBasePlayer* pForWhom );
+	bool			IsValidVoter( CBasePlayer* pWhom );
 	bool			CanTeamCastVote( int iTeam ) const;
-	void			SendVoteCreationFailedMessage( vote_create_failed_t nReason, CBasePlayer *pVoteCaller, int nTime = -1 );
+	void			SendVoteCreationFailedMessage( vote_create_failed_t nReason, CBasePlayer* pVoteCaller, int nTime = -1 );
 	void			SendVoteFailedToPassMessage( vote_create_failed_t nReason );
 	void			VoteChoice_Increment( int nVoteChoice );
 	void			VoteChoice_Decrement( int nVoteChoice );
 	int				GetVoteIssueIndexWithHighestCount( void );
-	void			TrackVoteCaller( CBasePlayer *pPlayer );
-	bool			CanEntityCallVote( CBasePlayer *pPlayer, int &nCooldown, vote_create_failed_t &nErrorCode );
-	bool			IsVoteActive( void ) { return m_iActiveIssueIndex != INVALID_ISSUE; }
+	void			TrackVoteCaller( CBasePlayer* pPlayer );
+	bool			CanEntityCallVote( CBasePlayer* pPlayer, int& nCooldown, vote_create_failed_t& nErrorCode );
+	bool			IsVoteActive( void )
+	{
+		return m_iActiveIssueIndex != INVALID_ISSUE;
+	}
 	int				GetNumVotesCast( void );
 
 	void			AddPlayerToKickWatchList( CSteamID steamID, float flDuration );		// Band-aid until we figure out how player's avoid kick votes
 	void			AddPlayerToNameLockedList( CSteamID steamID, float flDuration, int nUserID );
-	bool			IsPlayerBeingKicked( CBasePlayer *pPlayer );
+	bool			IsPlayerBeingKicked( CBasePlayer* pPlayer );
 
 protected:
 	void			ResetData( void );
@@ -124,17 +139,17 @@ protected:
 	CNetworkVar( bool, m_bIsYesNoVote );						// Is the current issue Yes/No?
 	CountdownTimer	m_acceptingVotesTimer;						// How long from vote start until we count the ballots
 	CountdownTimer	m_executeCommandTimer;						// How long after end of vote time until we execute a passed vote
-	CountdownTimer	m_resetVoteTimer;							// when the current vote will end 
+	CountdownTimer	m_resetVoteTimer;							// when the current vote will end
 	int				m_nVotesCast[MAX_PLAYERS + 1];				// arrays are zero-based and player indices are one-based
 	int				m_iEntityHoldingVote;
-	
-	CUtlVector <CBaseIssue *>	m_potentialIssues;
-	CUtlVector <const char *>	m_VoteOptions;
+
+	CUtlVector <CBaseIssue*>	m_potentialIssues;
+	CUtlVector <const char*>	m_VoteOptions;
 	CUtlMap <uint64, float>		m_VoteCallers;					// History of SteamIDs that have tried to call votes.
 
 	friend class CVoteControllerSystem;
 };
 
-extern CVoteController *g_voteController;
+extern CVoteController* g_voteController;
 
 #endif // VOTE_CONTROLLER_H

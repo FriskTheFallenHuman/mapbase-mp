@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef C_AI_BASENPC_H
 #define C_AI_BASENPC_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 
@@ -24,25 +24,52 @@ public:
 
 	C_AI_BaseNPC();
 	virtual unsigned int	PhysicsSolidMaskForEntity( void ) const;
-	virtual bool			IsNPC( void ) { return true; }
-	bool					IsMoving( void ){ return m_bIsMoving; }
-	bool					ShouldAvoidObstacle( void ){ return m_bPerformAvoidance; }
-	virtual bool			AddRagdollToFadeQueue( void ) { return m_bFadeCorpse; }
+	virtual bool			IsNPC( void )
+	{
+		return true;
+	}
+	bool					IsMoving( void )
+	{
+		return m_bIsMoving;
+	}
+	bool					ShouldAvoidObstacle( void )
+	{
+		return m_bPerformAvoidance;
+	}
+	virtual bool			AddRagdollToFadeQueue( void )
+	{
+		return m_bFadeCorpse;
+	}
 
-	virtual bool			GetRagdollInitBoneArrays( matrix3x4_t *pDeltaBones0, matrix3x4_t *pDeltaBones1, matrix3x4_t *pCurrentBones, float boneDt ) OVERRIDE;
+	virtual bool			GetRagdollInitBoneArrays( matrix3x4_t* pDeltaBones0, matrix3x4_t* pDeltaBones1, matrix3x4_t* pCurrentBones, float boneDt ) OVERRIDE;
 
-	int						GetDeathPose( void ) { return m_iDeathPose; }
+	int						GetDeathPose( void )
+	{
+		return m_iDeathPose;
+	}
 
-	bool					ShouldModifyPlayerSpeed( void ) { return m_bSpeedModActive;	}
-	int						GetSpeedModifyRadius( void ) { return m_iSpeedModRadius; }
-	int						GetSpeedModifySpeed( void ) { return m_iSpeedModSpeed;	}
+	bool					ShouldModifyPlayerSpeed( void )
+	{
+		return m_bSpeedModActive;
+	}
+	int						GetSpeedModifyRadius( void )
+	{
+		return m_iSpeedModRadius;
+	}
+	int						GetSpeedModifySpeed( void )
+	{
+		return m_iSpeedModSpeed;
+	}
 
 	void					ClientThink( void );
 	void					OnDataChanged( DataUpdateType_t type );
-	bool					ImportantRagdoll( void ) { return m_bImportanRagdoll;	}
+	bool					ImportantRagdoll( void )
+	{
+		return m_bImportanRagdoll;
+	}
 
 private:
-	C_AI_BaseNPC( const C_AI_BaseNPC & ); // not defined, not accessible
+	C_AI_BaseNPC( const C_AI_BaseNPC& );  // not defined, not accessible
 	float m_flTimePingEffect;
 	int  m_iDeathPose;
 	int	 m_iDeathFrame;
