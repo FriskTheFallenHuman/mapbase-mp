@@ -9,9 +9,10 @@
 #include "hl2_gamerules.h"
 #include "ammodef.h"
 #include "hl2_shareddefs.h"
+#include "gamestringpool.h"
 
 #ifdef CLIENT_DLL
-
+	#include "c_user_message_register.h"
 #else
 	#include "player.h"
 	#include "game.h"
@@ -470,6 +471,117 @@ bool CHalfLife2::Damage_IsTimeBased( int iDmgType )
 	return BaseClass::Damage_IsTimeBased( iDmgType );
 #endif
 }
+
+#ifdef MAPBASE_MP
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+bool CHalfLife2::HaveSavedConvar( ConVarRef const& cvar )
+{
+	Assert( cvar.IsValid() );
+
+	UtlSymId_t iSymbol = m_SavedConvars.Find( cvar.GetName() );
+	if ( iSymbol == m_SavedConvars.InvalidIndex() )
+		return false;
+
+	return m_SavedConvars[ iSymbol ] != NULL_STRING;
+}
+
+#if defined( CLIENT_DLL )
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void __MsgFunc_SavedConvar( bf_read &msg )
+{
+	Assert( HL2GameRules() );
+	if ( !HL2GameRules() )
+		return;
+
+	char szKey[64];
+	bool bReadKey = msg.ReadString( szKey, sizeof( szKey ) );
+	Assert( bReadKey );
+
+	char szValue[256];
+	bool bReadValue = msg.ReadString( szValue, sizeof( szValue ) );
+	Assert( bReadValue );
+
+	if ( bReadKey && bReadValue )
+	{
+		ConVarRef cvar( szKey );
+
+		if ( cvar.IsValid() && cvar.IsFlagSet( FCVAR_REPLICATED ) )
+			HL2GameRules()->m_SavedConvars[ szKey ] = AllocPooledString( szValue );
+	}
+}
+USER_MESSAGE_REGISTER( SavedConvar );
+#endif
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHalfLife2::SaveConvar( ConVarRef const& cvar )
+{
+	Assert( cvar.IsValid() );
+
+	if ( HaveSavedConvar( cvar ) )
+	{
+		// already saved, don't override.
+		return;
+	}
+
+#if defined( GAME_DLL )
+	// BenLubar: Send saved replicated convars to the client so that it can reset them if the player disconnects.
+	if ( cvar.IsFlagSet( FCVAR_REPLICATED ) )
+	{
+		CReliableBroadcastRecipientFilter filter;
+		UserMessageBegin( filter, "SavedConvar" );
+			WRITE_STRING( cvar.GetName() );
+			WRITE_STRING( cvar.GetString() );
+		MessageEnd();
+	}
+#endif
+	m_SavedConvars[ cvar.GetName() ] = AllocPooledString( cvar.GetString() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHalfLife2::RevertSingleConvar( ConVarRef &cvar )
+{
+	Assert( cvar.IsValid() );
+
+	if ( !HaveSavedConvar( cvar ) )
+	{
+		// don't have a saved value
+		return;
+	}
+
+	string_t &saved = m_SavedConvars[ cvar.GetName() ];
+	cvar.SetValue( STRING( saved ) );
+	saved = NULL_STRING;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CHalfLife2::RevertSavedConvars()
+{
+	// revert saved convars
+	for ( int i = 0; i < m_SavedConvars.GetNumStrings(); i++ )
+	{
+		const char *pszName = m_SavedConvars.String( i );
+		string_t iszValue = m_SavedConvars[i];
+
+		ConVarRef cvar( pszName );
+		Assert( cvar.IsValid() );
+
+		if ( iszValue != NULL_STRING )
+			cvar.SetValue( STRING( iszValue ) );
+	}
+
+	m_SavedConvars.Purge();
+}
+#endif // MAPBASE_MP
 
 #ifdef CLIENT_DLL
 #else

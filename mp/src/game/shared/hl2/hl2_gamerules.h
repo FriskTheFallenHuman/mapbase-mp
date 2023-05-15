@@ -10,13 +10,14 @@
 #pragma once
 #endif
 
+#include "tier1/UtlStringMap.h"
 #include "gamerules.h"
 #ifdef MAPBASE_MP
-#include "teamplay_gamerules.h"
-#define CGameRulesClass CTeamplayRules
+	#include "teamplay_gamerules.h"
+	#define CGameRulesClass CTeamplayRules
 #else
-#include "singleplay_gamerules.h"
-#define CGameRulesClass CSingleplayRules
+	#include "singleplay_gamerules.h"
+	#define CGameRulesClass CSingleplayRules
 #endif
 #include "hl2_shareddefs.h"
 
@@ -90,6 +91,14 @@ public:
 	virtual float			GetAmmoQuantityScale( int iAmmoIndex );
 	virtual void			LevelInitPreEntity();
 #endif
+
+#ifdef MAPBASE_MP
+	CUtlStringMap<string_t> m_SavedConvars;
+	bool			HaveSavedConvar( ConVarRef const& cvar );
+	void			SaveConvar( ConVarRef const& cvar );
+	void			RevertSingleConvar( ConVarRef &cvar );
+	void			RevertSavedConvars();
+#endif // MAPBASE_MP
 
 #ifdef MAPBASE_VSCRIPT
 	virtual void			RegisterScriptFunctions( void );

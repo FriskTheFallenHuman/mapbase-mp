@@ -49,6 +49,10 @@ void RegisterUserMessages( void )
 	usermessages->Register( "CreditsMsg", 1 );
 	usermessages->Register( "LogoTimeMsg", 4 );
 #endif
+#if MAPBASE_MP
+	usermessages->Register( "SavedConvar", -1 ); // script changed a convar, save it off for reset
+#endif // MAPBASE_MP
+
 	usermessages->Register( "AchievementEvent", -1 );
 	usermessages->Register( "UpdateJalopyRadar", -1 );
 
