@@ -145,7 +145,61 @@ static const char *s_PreserveEnts[] =
 	"", // END Marker
 };
 
+#ifdef MAPBASE_MP
+static const char *g_aTaggedConVars[] =
+{
+	"sv_cheats",
+	"cheats",
 
+	"sv_gravity",
+	"gravity",
+
+	"sv_alltalk",
+	"alltalk",
+
+	"sv_hl2mp_weapon_respawn_time",
+	"weaponrespawntime",
+
+	"sv_hl2mp_item_respawn_time",
+	"itemrespawntime",
+
+	"sv_report_client_settings",
+	"reportclientsettings",
+
+	"mp_fraglimit",
+	"fraglimit",
+
+	"mp_timelimit",
+	"timelimit",
+
+	"mp_falldamage",
+	"falldamage",
+
+	"mp_teamplay",
+	"teamplay",
+
+	"mp_weaponstay",
+	"weaponstay",
+
+	"mp_forcerespawn",
+	"forcerespawn",
+
+	"mp_footsteps",
+	"footsteps",
+
+	"mp_flashlight",
+	"flashlight",
+
+	"mp_autocrosshair",
+	"autocrosshair",
+
+	"mp_fadetoblack",
+	"fadetoblack",
+
+	"mp_friendlyfire",
+	"friendlyfire",
+};
+#endif // MAPBASE_MP
 
 #ifdef CLIENT_DLL
 	void RecvProxy_HL2MPRules( const RecvProp *pProp, void **pOut, void *pData, int objectID )
@@ -261,6 +315,26 @@ void CHL2MPRules::CreateStandardEntities( void )
 	Assert( pEnt );
 #endif
 }
+
+#ifdef MAPBASE_MP
+#ifndef CLIENT_DLL
+void CHL2MPRules::GetTaggedConVarList( KeyValues *pCvarTagList )
+{
+	COMPILE_TIME_ASSERT( ARRAYSIZE( g_aTaggedConVars ) % 2 == 0 );
+
+	BaseClass::GetTaggedConVarList( pCvarTagList );
+
+	for ( int i = 0; i < ARRAYSIZE( g_aTaggedConVars ); i += 2 )
+	{
+		KeyValues *pKeyValue = new KeyValues( g_aTaggedConVars[i] );
+		pKeyValue->SetString( "convar", g_aTaggedConVars[i] );
+		pKeyValue->SetString( "tag", g_aTaggedConVars[i+1] );
+
+		pCvarTagList->AddSubKey( pKeyValue );
+	}
+}
+#endif // CLIENT_DLL
+#endif // MAPBASE_MP
 
 //=========================================================
 // FlWeaponRespawnTime - what is the time in the future

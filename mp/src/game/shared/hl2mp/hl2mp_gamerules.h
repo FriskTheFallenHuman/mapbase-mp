@@ -132,6 +132,10 @@ public:
 	void	ManageObjectRelocation( void );
 	const char *GetChatFormat( bool bTeamOnly, CBasePlayer *pPlayer );
 
+#ifdef MAPBASE_MP
+	virtual void GetTaggedConVarList( KeyValues *pCvarTagList );
+#endif // MAPBASE_MP
+
 #endif
 	virtual void ClientDisconnected( edict_t *pClient );
 
