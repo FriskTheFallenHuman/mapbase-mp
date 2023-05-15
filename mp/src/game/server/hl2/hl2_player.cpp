@@ -1891,7 +1891,7 @@ bool CHL2_Player::CommanderFindGoal( commandgoal_t* pGoal )
 	CBaseEntity* pHeldEntity = GetPlayerHeldEntity( this );
 	if( !pHeldEntity )
 	{
-		PhysCannonGetHeldEntity( GetActiveWeapon() );
+		pHeldEntity = PhysCannonGetHeldEntity( GetActiveWeapon() );
 	}
 
 	CTraceFilterSkipTwoEntities filter( this, pHeldEntity, COLLISION_GROUP_INTERACTIVE_DEBRIS );
