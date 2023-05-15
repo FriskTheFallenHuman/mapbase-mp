@@ -87,6 +87,9 @@
 #include "ihudlcd.h"
 #include "toolframework_client.h"
 #include "hltvcamera.h"
+#ifdef MAPBASE
+#include "shaderapihack.h"
+#endif // MAPBASE
 #if defined( REPLAY_ENABLED )
 #include "replay/replaycamera.h"
 #include "replay/replay_ragdoll.h"
@@ -365,6 +368,19 @@ bool g_bTextMode = false;
 class IClientPurchaseInterfaceV2 *g_pClientPurchaseInterface = (class IClientPurchaseInterfaceV2 *)(&g_bTextMode + 156);
 
 static ConVar *g_pcv_ThreadMode = NULL;
+
+#ifdef MAPBASE
+void ApplyShaderConstantHack()
+{
+	CMaterialConfigWrapper Wrapper;
+
+	Wrapper.PrintPixelConstants();
+	Wrapper.SetNumPixelConstants(225);
+	Wrapper.SetNumBooleanPixelConstants(225);
+	Wrapper.SetNumIntegerPixelConstants(225);
+	Wrapper.PrintPixelConstants();
+}
+#endif // MAPBASE
 
 //-----------------------------------------------------------------------------
 // Purpose: interface for gameui to modify voice bans
@@ -1059,13 +1075,15 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	IGameSystem::Add( ClientSoundscapeSystem() );
 	IGameSystem::Add( PerfVisualBenchmark() );
 	IGameSystem::Add( MumbleSystem() );
+
+#ifdef MAPBASE
+	ApplyShaderConstantHack();
+#endif // MAPBASE
 	
-	#if defined( TF_CLIENT_DLL )
+#if defined( TF_CLIENT_DLL )
 	IGameSystem::Add( CustomTextureToolCacheGameSystem() );
 	IGameSystem::Add( TFSharedContentManager() );
-	#endif
 
-#if defined( TF_CLIENT_DLL )
 	if ( g_AbuseReportMgr != NULL )
 	{
 		IGameSystem::Add( g_AbuseReportMgr );

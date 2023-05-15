@@ -69,6 +69,7 @@ Here's a list of Mapbase's other external code sources:
 - https://github.com/DeathByNukes/source-sdk-2013 (VBSP manifest fixes)
 - https://github.com/entropy-zero/source-sdk-2013 (skill_changed game event)
 - https://github.com/Nbc66/source-sdk-2013-ce/tree/v142 (Base for VS2019 toolset support)
+- https://github.com/Nbc66/source-sdk-2013-ce/tree/master (Shader api hack)
 - https://github.com/hrgve/hl2dm-bugfix (Most of our HL2MP fixes comes from this repo)
 - https://github.com/Adrianilloo/SourceSDK2013 (More fixes for HL2MP)
 - https://github.com/zm-reborn/zmr-game (Misc Fixes & Improvements to the HL2MPAnimstates & New C_Hands system)

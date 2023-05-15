@@ -23,6 +23,7 @@ set(
 	"${CLIENT_MAPBASE_DIR}/c_movie_display.h"
 	"${CLIENT_MAPBASE_DIR}/vgui_movie_display.cpp"
 	"${CLIENT_MAPBASE_DIR}/convarproxy.cpp"
+
 	
 	# Mapbase
 	"${SRCDIR}/game/shared/mapbase/mapbase_shared.cpp"
@@ -41,6 +42,7 @@ set(
 	"${CLIENT_MAPBASE_DIR}/mapbase/c_point_glow.cpp"
 	"${CLIENT_MAPBASE_DIR}/mapbase/c_vgui_text_display.cpp"
 	"${CLIENT_MAPBASE_DIR}/mapbase/mapbase_autocubemap.cpp"
+	"${CLIENT_MAPBASE_DIR}/mapbase/shaderapihack.h"
 )
 
 function(target_use_client_mapbase_features target)
