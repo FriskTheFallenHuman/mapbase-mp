@@ -45,14 +45,7 @@ elseif (${BUILD_GROUP} STREQUAL "everything")
 
 	if (${IS_WINDOWS})
 		include("${SRCDIR}/utils/captioncompiler/captioncompiler.cmake")
-		include("${SRCDIR}/utils/glview/glview.cmake")
-		include("${SRCDIR}/utils/height2normal/height2normal.cmake")
-		include("${SRCDIR}/utils/motionmapper/motionmapper.cmake")
-		include("${SRCDIR}/utils/qc_eyes/qc_eyes.cmake")
-		include("${SRCDIR}/utils/tgadiff/tgadiff.cmake")
 		include("${SRCDIR}/utils/vice/vice.cmake")
-		include("${SRCDIR}/utils/vtf2tga/vtf2tga.cmake")
-		include("${SRCDIR}/utils/vtfdiff/vtfdiff.cmake")
 	endif()
 
 	# This Tools where ported to linux
