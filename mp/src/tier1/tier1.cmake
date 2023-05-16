@@ -152,6 +152,8 @@ add_library(
 	${TIER1_SOURCE_FILES}
 )
 
+set_property(TARGET tier1 PROPERTY FOLDER "Libs")
+
 target_compile_definitions(
 	tier1 PRIVATE
 	TIER1_STATIC_LIB

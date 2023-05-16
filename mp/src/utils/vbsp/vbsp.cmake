@@ -157,6 +157,8 @@ endif()
 
 add_executable(vbsp ${VBSP_SOURCE_FILES})
 
+set_property(TARGET vbsp PROPERTY FOLDER "Tools//Map Compilers")
+
 set_target_properties(
 	vbsp PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

@@ -24,6 +24,8 @@ set(
 
 add_library( responserules STATIC ${RESPONSE_RULES_SOURCE_FILES} )
 
+set_property(TARGET responserules PROPERTY FOLDER "Libs")
+
 target_compile_definitions(
 	responserules PRIVATE
 	RR_RUNTIME

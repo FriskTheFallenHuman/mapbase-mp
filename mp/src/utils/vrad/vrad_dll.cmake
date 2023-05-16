@@ -181,6 +181,8 @@ set(
 
 add_library(vrad_dll MODULE ${VRAD_DLL_SOURCE_FILES})
 
+set_property(TARGET vrad_dll PROPERTY FOLDER "Tools//Map Compilers")
+
 set_target_properties(
 	vrad_dll PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

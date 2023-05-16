@@ -73,6 +73,8 @@ set(
 
 add_library(vvis_dll MODULE ${VVIS_DLL_SOURCE_FILES})
 
+set_property(TARGET vvis_dll PROPERTY FOLDER "Tools//Map Compilers")
+
 set_target_properties(
 	vvis_dll PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

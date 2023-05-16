@@ -6,6 +6,7 @@ add_library(game_shader_dx9_hl2 MODULE)
 
 set_target_properties(
 	game_shader_dx9_hl2 PROPERTIES
+	OUTPUT_NAME "game_shader_dx9"
 	PREFIX ""
 	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${BUILD_FOLDER}/bin"
 )

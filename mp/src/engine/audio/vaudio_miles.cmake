@@ -15,6 +15,8 @@ set(
 
 add_library(vaudio_miles MODULE ${VAUDIO_MINIMP3_SOURCE_FILES})
 
+set_property(TARGET vaudio_miles PROPERTY FOLDER "Engine//Audio")
+
 set_target_properties(
 	vaudio_miles PROPERTIES
 	LIBRARY_OUTPUT_DIRECTORY "${GAMEDIR}/${BUILD_FOLDER}/bin"

@@ -16,6 +16,8 @@ set(
 
 add_executable(vice ${VICE_SOURCE_FILES})
 
+set_property(TARGET vice PROPERTY FOLDER "Tools//Compilers")
+
 set_target_properties(
 	vice PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

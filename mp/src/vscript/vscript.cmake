@@ -68,6 +68,8 @@ set_source_files_properties(
 
 add_library( vscript STATIC ${VSCRIPT_SOURCE_FILES} )
 
+set_property(TARGET vscript PROPERTY FOLDER "Libs")
+
 target_compile_definitions(
 	vscript PRIVATE
 	$<$<BOOL:${MAPBASE_VSCRIPT}>:MAPBASE_VSCRIPT>

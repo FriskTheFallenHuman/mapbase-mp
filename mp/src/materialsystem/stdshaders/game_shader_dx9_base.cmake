@@ -33,6 +33,8 @@ set(
 )
 
 function(target_use_game_shader_dx9_base target)
+	set_property(TARGET ${target} PROPERTY FOLDER "Shaders")
+
 	target_sources(
 		${target} PRIVATE
 		${GAME_SHADER_DX9_BASE_SOURCE_FILES}

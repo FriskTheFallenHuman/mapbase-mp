@@ -60,6 +60,8 @@ set(
 
 add_library(mathlib STATIC ${MATHLIB_SOURCE_FILES})
 
+set_property(TARGET mathlib PROPERTY FOLDER "Libs")
+
 target_include_directories(
 	mathlib PRIVATE
 	"${SRCDIR}/public/mathlib"

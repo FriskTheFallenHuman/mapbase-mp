@@ -31,6 +31,8 @@ set(
 
 add_library(serverplugin_empty MODULE ${SERVERPLUGIN_EMPTY_SOURCE_FILES})
 
+set_property(TARGET serverplugin_empty PROPERTY FOLDER "Tools//Plugins")
+
 set_target_properties(
 	serverplugin_empty
 	PROPERTIES

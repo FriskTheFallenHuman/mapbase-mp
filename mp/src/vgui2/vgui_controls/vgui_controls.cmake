@@ -175,6 +175,9 @@ set(
 )
 
 add_library(vgui_controls STATIC ${VGUI_CONTROLS_SOURCE_FILES})
+
+set_property(TARGET vgui_controls PROPERTY FOLDER "Libs")
+
 target_include_directories(
 	vgui_controls PRIVATE
 	"${SRCDIR}/thirdparty"

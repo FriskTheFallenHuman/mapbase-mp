@@ -20,6 +20,8 @@ set(
 
 add_executable(vrad_launcher ${VRAD_LAUNCHER_SOURCE_FILES})
 
+set_property(TARGET vrad_launcher PROPERTY FOLDER "Tools//Map Compilers")
+
 set_target_properties(
 	vrad_launcher PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

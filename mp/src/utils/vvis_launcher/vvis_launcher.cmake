@@ -14,6 +14,8 @@ set(
 
 add_executable(vvis_launcher ${VVIS_LAUNCHER_SOURCE_FILES})
 
+set_property(TARGET vvis_launcher PROPERTY FOLDER "Tools//Map Compilers")
+
 set_target_properties(
 	vvis_launcher PROPERTIES
 	RUNTIME_OUTPUT_DIRECTORY "${GAMEDIR}/bin"

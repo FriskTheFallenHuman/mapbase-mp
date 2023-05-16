@@ -941,6 +941,7 @@ function(target_use_server_base target EXCLUDE_SOURCES)
 		list(REMOVE_ITEM USED_SOURCES ${${EXCLUDE_SOURCES}})
 	endif()
 
+	set_property(TARGET ${target} PROPERTY FOLDER "Game")
 
 	target_sources(
 		${target} PRIVATE
