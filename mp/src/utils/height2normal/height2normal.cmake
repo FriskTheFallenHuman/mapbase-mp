@@ -28,6 +28,11 @@ target_include_directories(
 	"${SRCDIR}/utils/common"
 )
 
+target_link_options(
+	height2normal PRIVATE 
+	"$<$<C_COMPILER_ID:MSVC>:-SAFESEH:NO>"
+)
+
 target_compile_definitions(
 	height2normal PRIVATE
 	_HAS_ITERATOR_DEBUGGING=0

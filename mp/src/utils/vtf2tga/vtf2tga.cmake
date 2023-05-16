@@ -33,6 +33,11 @@ set_target_properties(
 	RUNTIME_OUTPUT_DIRECTORY "${GAMEDIR}/bin"
 )
 
+target_link_options(
+	vtf2tga PRIVATE 
+	"$<$<C_COMPILER_ID:MSVC>:-SAFESEH:NO>"
+)
+
 target_link_libraries(
 	vtf2tga PRIVATE
 	"${LIBPUBLIC}/bitmap${STATIC_LIB_EXT}"
