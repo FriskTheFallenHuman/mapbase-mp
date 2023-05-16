@@ -25,7 +25,9 @@
 #include "engine/IEngineSound.h"
 #include "team.h"
 #include "viewport_panel_names.h"
-
+#ifdef ENABLE_BOTS
+	#include "mapbase/bots/bot.h"
+#endif // ENABLE_BOTS
 #include "tier0/vprof.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -192,10 +194,10 @@ void GameStartFrame( void )
 
 	gpGlobals->teamplay = ( teamplay.GetInt() != 0 );
 
-#ifdef DEBUG
+#ifdef ENABLE_BOTS
 	extern void Bot_RunAll();
 	Bot_RunAll();
-#endif
+#endif // ENABLE_BOTS
 }
 
 //=========================================================

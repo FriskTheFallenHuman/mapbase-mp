@@ -162,11 +162,102 @@ function(target_use_server_mapbase_features target)
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h"
 		)
+		
+		# Multiplayer Only: Bots!
+		if (${MAPBASE_BOTS})
+			list(
+				APPEND 
+				SERVER_MAPBASE_SOURCE_FILES
+
+				# Multiplayer Bots
+				# HL2MP->Bots->Base Code
+				
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_ai.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_debug.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_defs.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_manager.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_manager.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_memory.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_senses.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_skill.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_state.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_utils.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_utils.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/in_utils.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/in_utils.h"
+
+				# HL2MP->Bots->Components
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_attack.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_decision.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_follow.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_locomotion.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_memory.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_component_vision.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/components/bot_components.h"
+
+				# HL2MP->Bots->Entities
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_maker.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_maker.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_squad.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/bot_squad.h"
+
+				# HL2MP->Bots->Interfaces
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibot.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotattack.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotcomponent.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotdecision.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotfollow.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotlocomotion.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotmemory.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotschedule.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/ibotvision.h"
+
+				# HL2MP->Bots->Navigation
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces/improv.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/nav_path.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/nav_path.h"
+
+				# HL2MP->Bots->Schedules
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_call_backup.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_change_weapon.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_cover.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_defend_spawn.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_hide_and_heal.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_hide_and_reload.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_hunt_enemy.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_investigate_location.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_move_aside.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule_reload.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedules.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules/bot_schedule.cpp"
+
+				# HL2MP->Bots->Squad
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/squad.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/squad.h"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/squad_manager.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/squad_manager.h"
+
+				# HL2MP->Bots->Mod Code
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/mapbase_bot.cpp"
+				"${SERVER_MAPBASE_DIR}/mapbase/bots/mapbase_bot.h"
+			)
+		endif()
 	endif()
 
 	target_sources(
 		${target} PRIVATE
 		${SERVER_MAPBASE_SOURCE_FILES}
+	)
+	
+	target_include_directories(
+		${target} PRIVATE
+		"${SERVER_MAPBASE_DIR}/mapbase"
+		"${SERVER_MAPBASE_DIR}/mapbase/bots"
+		"${SERVER_MAPBASE_DIR}/mapbase/bots/components"
+		"${SERVER_MAPBASE_DIR}/mapbase/bots/interfaces"
+		"${SERVER_MAPBASE_DIR}/mapbase/bots/schedules"
 	)
 
 	target_compile_definitions(
@@ -179,6 +270,7 @@ function(target_use_server_mapbase_features target)
 		$<$<BOOL:${MAPBASE_RPC}>:STEAM_RPC>
 		$<$<BOOL:${MAPBASE_VSCRIPT}>:MAPBASE_VSCRIPT>
 		$<$<BOOL:${MAPBASE_RESPONSE_SYSTEM}>:NEW_RESPONSE_SYSTEM>
+		$<$<BOOL:${MAPBASE_BOTS}>:ENABLE_BOTS>
 	)
 
 	target_link_libraries(

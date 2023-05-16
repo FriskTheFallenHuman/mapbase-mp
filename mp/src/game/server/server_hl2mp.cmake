@@ -251,8 +251,6 @@ set(
 	"${SERVER_HL2MP_DIR}/hl2/vehicle_apc.cpp"
 
 	# HL2MP
-	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_bot_temp.cpp"
-	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_bot_temp.h"
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_client.cpp"
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_cvars.cpp"
 	"${SERVER_HL2MP_DIR}/hl2mp/hl2mp_gameinterface.cpp"

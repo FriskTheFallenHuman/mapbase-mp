@@ -18,6 +18,10 @@
 #include "hintsystem.h"
 #include "SoundEmitterSystem/isoundemittersystembase.h"
 #include "util_shared.h"
+#ifdef ENABLE_BOTS
+	#include "ai_senses.h"
+	#include "soundent.h"
+#endif // ENABLE_BOTS
 
 #if defined USES_ECON_ITEMS
 	#include "game_item_schema.h"
@@ -239,9 +243,18 @@ public:
 
 	virtual CBotCmd GetLastUserCommand();
 
+#ifdef ENABLE_BOTS
+public:
+#else
 private:
+#endif // ENABLE_BOTS
 	CBasePlayer* m_pParent;
 };
+
+#ifdef ENABLE_BOTS
+	class IBot;
+	class CSquad;
+#endif // ENABLE_BOTS
 
 class CBasePlayer : public CBaseCombatCharacter
 {
@@ -265,10 +278,54 @@ public:
 	{
 		return &m_PlayerInfo;
 	}
+#ifdef ENABLE_BOTS
+	virtual IBot* GetBotController()
+	{
+		return NULL;
+	}
+
+	virtual void SetBotController( IBot* pBot ) { }
+	virtual void SetUpBot() { }
+
+	virtual CAI_Senses* GetSenses()
+	{
+		return NULL;
+	}
+
+	virtual const CAI_Senses* GetSenses() const
+	{
+		return NULL;
+	}
+
+	virtual CSound* GetBestSound( int validTypes = ALL_SOUNDS )
+	{
+		return NULL;
+	}
+
+	virtual CSound* GetBestScent( void )
+	{
+		return NULL;
+	}
+
+	// Squad
+	virtual CSquad* GetSquad()
+	{
+		return NULL;
+	}
+
+	virtual void SetSquad( CSquad* pSquad ) { }
+	virtual void SetSquad( const char* name ) { }
+
+	virtual void OnNewLeader( CBasePlayer* pMember ) { }
+	virtual void OnMemberTakeDamage( CBasePlayer* pMember, const CTakeDamageInfo& info ) { }
+	virtual void OnMemberDeath( CBasePlayer* pMember, const CTakeDamageInfo& info ) { }
+	virtual void OnMemberReportEnemy( CBasePlayer* pMember, CBaseEntity* pEnemy ) { }
+#else
 	IBotController* GetBotController()
 	{
 		return &m_PlayerInfo;
 	}
+#endif // ENABLE_BOTS
 
 	virtual void			SetModel( const char* szModelName );
 	void					SetBodyPitch( float flPitch );

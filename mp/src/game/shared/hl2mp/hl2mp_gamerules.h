@@ -135,6 +135,10 @@ public:
 	void	ManageObjectRelocation( void );
 	const char* GetChatFormat( bool bTeamOnly, CBasePlayer* pPlayer );
 
+#ifdef ENABLE_BOTS
+	virtual void PlayerSpawn( CBasePlayer* pPlayer );
+#endif // ENABLE_BOTS
+
 #ifdef MAPBASE_MP
 	virtual void GetTaggedConVarList( KeyValues* pCvarTagList );
 #endif // MAPBASE_MP

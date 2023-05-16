@@ -14,7 +14,6 @@
 #ifdef CLIENT_DLL
 #include "c_hl2mp_player.h"
 #else
-
 #include "eventqueue.h"
 #include "player.h"
 #include "gamerules.h"
@@ -32,10 +31,10 @@
 #include "voice_gamemgr.h"
 #include "hl2mp_gameinterface.h"
 #include "hl2mp_cvars.h"
+#ifdef ENABLE_BOTS
+	#include "mapbase_bot.h"
+#endif // ENABLE_BOTS
 
-#if defined ( DEBUG ) || defined ( MAPBASE_MP )
-	#include "hl2mp_bot_temp.h"
-#endif
 
 extern void respawn( CBaseEntity* pEdict, bool fCopyCorpse );
 
@@ -58,6 +57,9 @@ bool FindInList( const char** pStrings, const char* pToFind )
 ConVar sv_hl2mp_weapon_respawn_time( "sv_hl2mp_weapon_respawn_time", "20", FCVAR_GAMEDLL | FCVAR_NOTIFY );
 ConVar sv_hl2mp_item_respawn_time( "sv_hl2mp_item_respawn_time", "30", FCVAR_GAMEDLL | FCVAR_NOTIFY );
 ConVar sv_report_client_settings( "sv_report_client_settings", "0", FCVAR_GAMEDLL | FCVAR_NOTIFY );
+#ifdef ENABLE_BOTS
+	ConVar sv_bot_fillserver( "sv_bot_fillserver", "0", FCVAR_GAMEDLL | FCVAR_NOTIFY );
+#endif // ENABLE_BOTS
 
 extern ConVar mp_chattime;
 
@@ -335,6 +337,22 @@ void CHL2MPRules::GetTaggedConVarList( KeyValues* pCvarTagList )
 		pCvarTagList->AddSubKey( pKeyValue );
 	}
 }
+
+#ifdef ENABLE_BOTS
+extern ConVar sv_bot_fillserver;
+
+void CHL2MPRules::PlayerSpawn( CBasePlayer* pPlayer )
+{
+	BaseClass::PlayerSpawn( pPlayer );
+
+	if( sv_bot_fillserver.GetBool() && !pPlayer->IsBot() )
+	{
+		int imaxClients = gpGlobals->maxClients - 1;
+		SpawnGameBots( imaxClients );
+	}
+}
+#endif // ENABLE_BOTS
+
 #endif // CLIENT_DLL
 #endif // MAPBASE_MP
 
@@ -1101,32 +1119,6 @@ ConVar cl_autowepswitch(
 	"Automatically switch to picked up weapons (if more powerful)" );
 
 #else
-
-#if defined ( DEBUG ) || defined ( MAPBASE_MP )
-
-// Handler for the "bot" command.
-void Bot_f()
-{
-	// Look at -count.
-	int count = 1;
-	count = clamp( count, 1, 16 );
-
-	int iTeam = TEAM_COMBINE;
-
-	// Look at -frozen.
-	bool bFrozen = false;
-
-	// Ok, spawn all the bots.
-	while( --count >= 0 )
-	{
-		BotPutInServer( bFrozen, iTeam );
-	}
-}
-
-
-ConCommand cc_Bot( "bot", Bot_f, "Add a bot.", FCVAR_CHEAT );
-
-#endif
 
 bool CHL2MPRules::FShouldSwitchWeapon( CBasePlayer* pPlayer, CBaseCombatWeapon* pWeapon )
 {

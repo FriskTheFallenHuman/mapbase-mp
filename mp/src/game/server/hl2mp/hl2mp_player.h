@@ -159,6 +159,52 @@ public:
 
 	virtual	bool ShouldCollide( int collisionGroup, int contentsMask ) const;
 
+#ifdef ENABLE_BOTS
+protected:
+	IBot* m_pBotController;
+	CAI_Senses* m_pSenses;
+
+public:
+	// Bot
+	virtual IBot* GetBotController()
+	{
+		return m_pBotController;
+	}
+
+	virtual void SetBotController( IBot* pBot );
+	virtual void SetUpBot();
+
+	// Senses
+	virtual CAI_Senses* GetSenses()
+	{
+		return m_pSenses;
+	}
+
+	virtual const CAI_Senses* GetSenses() const
+	{
+		return m_pSenses;
+	}
+
+	virtual void CreateSenses();
+
+	virtual void SetDistLook( float flDistLook );
+
+	virtual int GetSoundInterests();
+	virtual int GetSoundPriority( CSound* pSound );
+
+	virtual bool QueryHearSound( CSound* pSound );
+	virtual bool QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFearIfNPC = false );
+
+	virtual void OnLooked( int iDistance );
+	virtual void OnListened();
+
+	virtual CSound* GetLoudestSoundOfType( int iType );
+	virtual bool SoundIsVisible( CSound* pSound );
+
+	virtual CSound* GetBestSound( int validTypes = ALL_SOUNDS );
+	virtual CSound* GetBestScent( void );
+#endif // ENABLE_BOTS
+
 private:
 
 	CHL2MPPlayerAnimState* m_PlayerAnimState;

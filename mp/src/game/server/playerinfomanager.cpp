@@ -79,6 +79,9 @@ CGlobalVars* CPlayerInfoManager::GetGlobalVars()
 
 IBotController* CPluginBotManager::GetBotController( edict_t* pEdict )
 {
+#ifdef ENABLE_BOTS
+	return NULL;
+#else
 	CBasePlayer* pPlayer = ( ( CBasePlayer* )CBaseEntity::Instance( pEdict ) );
 	if( pPlayer && pPlayer->IsBot() )
 	{
@@ -88,6 +91,8 @@ IBotController* CPluginBotManager::GetBotController( edict_t* pEdict )
 	{
 		return NULL;
 	}
+#endif // ENABLE_BOTS
+
 }
 
 edict_t* CPluginBotManager::CreateBot( const char* botname )

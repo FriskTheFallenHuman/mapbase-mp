@@ -32,7 +32,11 @@
 #ifdef MAPBASE_MP
 	#include "EntityFlame.h"
 	#include "mapbase/mapbase_viewmodel.h"
-#endif
+	#ifdef ENABLE_BOTS
+		#include "mapbase/bots/mapbase_bot.h"
+	#endif // ENABLE_BOTS
+
+#endif // MAPBASE_MP
 #include "weapon_physcannon.h"
 
 // memdbgon must be the last include file in a .cpp file!!!
@@ -472,11 +476,52 @@ void CHL2MP_Player::HL2MPPushawayThink( void )
 	SetNextThink( gpGlobals->curtime + PUSHAWAY_THINK_INTERVAL, HL2MP_PUSHAWAY_THINK_CONTEXT );
 }
 
+#ifdef ENABLE_BOTS
+	extern ConVar bot_team;
+#endif // ENABLE_BOTS
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets HL2 specific defaults.
 //-----------------------------------------------------------------------------
 void CHL2MP_Player::Spawn( void )
 {
+#ifdef ENABLE_BOTS
+	if( GetBotController() )
+	{
+		if( GetTeamNumber() == TEAM_SPECTATOR )
+		{
+			if( bot_team.GetInt() > 0 )
+			{
+				ChangeTeam( bot_team.GetInt() );
+			}
+			else
+			{
+				//force this bot to be on teams
+				if( HL2MPRules()->IsTeamplay() == true )
+				{
+					if( random->RandomInt( 0, 1 ) == 0 )
+					{
+						ChangeTeam( TEAM_REBELS );
+					}
+					else
+					{
+						ChangeTeam( TEAM_COMBINE );
+					}
+				}
+				else
+				{
+					ChangeTeam( TEAM_UNASSIGNED );
+				}
+			}
+
+
+			StopObserverMode();
+			State_Transition( STATE_ACTIVE );
+		}
+	}
+#endif // ENABLE_BOTS
+
 	m_flNextModelChangeTime = 0.0f;
 	m_flNextTeamChangeTime = 0.0f;
 
@@ -524,6 +569,13 @@ void CHL2MP_Player::Spawn( void )
 	m_Local.m_bDucked = false;
 
 	SetPlayerUnderwater( false );
+
+#ifdef ENABLE_BOTS
+	if( GetBotController() )
+	{
+		GetBotController()->Spawn();
+	}
+#endif // ENABLE_BOTS
 
 	m_cycleLatchTimer.Start( CYCLELATCH_UPDATE_INTERVAL );
 
@@ -1256,6 +1308,13 @@ void CHL2MP_Player::Event_Killed( const CTakeDamageInfo& info )
 
 	RemoveEffects( EF_NODRAW );	// still draw player body
 	StopZooming();
+
+#ifdef ENABLE_BOTS
+	if( GetBotController() )
+	{
+		GetBotController()->OnDeath( info );
+	}
+#endif // ENABLE_BOTS
 }
 
 int CHL2MP_Player::OnTakeDamage( const CTakeDamageInfo& inputInfo )
@@ -1269,6 +1328,13 @@ int CHL2MP_Player::OnTakeDamage( const CTakeDamageInfo& inputInfo )
 	m_vecTotalBulletForce += inputInfo.GetDamageForce();
 
 	gamestats->Event_PlayerDamage( this, inputInfo );
+
+#ifdef ENABLE_BOTS
+	if( GetBotController() )
+	{
+		GetBotController()->OnTakeDamage( inputInfo );
+	}
+#endif // ENABLE_BOTS
 
 	return BaseClass::OnTakeDamage( inputInfo );
 }
@@ -1597,13 +1663,13 @@ void CHL2MP_Player::State_PreThink_OBSERVER_MODE()
 {
 	// Make sure nobody has changed any of our state.
 	//	Assert( GetMoveType() == MOVETYPE_FLY );
-	Assert( m_takedamage == DAMAGE_NO );
-	Assert( IsSolidFlagSet( FSOLID_NOT_SOLID ) );
+	//Assert( m_takedamage == DAMAGE_NO );
+	//Assert( IsSolidFlagSet( FSOLID_NOT_SOLID ) );
 	//	Assert( IsEffectActive( EF_NODRAW ) );
 
 	// Must be dead.
-	Assert( m_lifeState == LIFE_DEAD );
-	Assert( pl.deadflag );
+	//Assert( m_lifeState == LIFE_DEAD );
+	//Assert( pl.deadflag );
 }
 
 
@@ -1749,5 +1815,221 @@ void CHL2MP_Player::SetupBones( matrix3x4_t* pBoneToWorld, int boneMask )
 		boneMask );
 }
 
+#ifdef ENABLE_BOTS
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::SetBotController( IBot* pBot )
+{
+	if( m_pBotController )
+	{
+		delete m_pBotController;
+		m_pBotController = NULL;
+	}
 
+	m_pBotController = pBot;
+}
 
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::SetUpBot()
+{
+	CreateSenses();
+	SetBotController( new CMapBaseBot( this ) );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::CreateSenses()
+{
+	m_pSenses = new CAI_Senses;
+	m_pSenses->SetOuter( this );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::SetDistLook( float flDistLook )
+{
+	if( GetSenses() )
+	{
+		GetSenses()->SetDistLook( flDistLook );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+int CHL2MP_Player::GetSoundInterests()
+{
+	return SOUND_DANGER | SOUND_COMBAT | SOUND_PLAYER | SOUND_CARCASS | SOUND_MEAT | SOUND_GARBAGE;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+int CHL2MP_Player::GetSoundPriority( CSound* pSound )
+{
+	if( pSound->IsSoundType( SOUND_COMBAT ) )
+	{
+		return SOUND_PRIORITY_HIGH;
+	}
+
+	if( pSound->IsSoundType( SOUND_DANGER ) )
+	{
+		if( pSound->IsSoundType( SOUND_CONTEXT_FROM_SNIPER | SOUND_CONTEXT_EXPLOSION ) )
+		{
+			return SOUND_PRIORITY_HIGHEST;
+		}
+		else if( pSound->IsSoundType( SOUND_CONTEXT_GUNFIRE | SOUND_BULLET_IMPACT ) )
+		{
+			return SOUND_PRIORITY_VERY_HIGH;
+		}
+
+		return SOUND_PRIORITY_HIGH;
+	}
+
+	if( pSound->IsSoundType( SOUND_CARCASS | SOUND_MEAT | SOUND_GARBAGE ) )
+	{
+		return SOUND_PRIORITY_VERY_LOW;
+	}
+
+	return SOUND_PRIORITY_NORMAL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+bool CHL2MP_Player::QueryHearSound( CSound* pSound )
+{
+	CBaseEntity* pOwner = pSound->m_hOwner.Get();
+
+	if( pOwner == this )
+	{
+		return false;
+	}
+
+	if( pSound->IsSoundType( SOUND_PLAYER ) && !pOwner )
+	{
+		return false;
+	}
+
+	if( pSound->IsSoundType( SOUND_CONTEXT_ALLIES_ONLY ) )
+	{
+		if( Classify() != CLASS_PLAYER_ALLY && Classify() != CLASS_PLAYER_ALLY_VITAL )
+		{
+			return false;
+		}
+	}
+
+	if( pOwner )
+	{
+		// Solo escuchemos sonidos provocados por nuestros aliados si son de combate.
+		if( TheGameRules->PlayerRelationship( this, pOwner ) == GR_ALLY )
+		{
+			if( pSound->IsSoundType( SOUND_COMBAT ) && !pSound->IsSoundType( SOUND_CONTEXT_GUNFIRE ) )
+			{
+				return true;
+			}
+
+			return false;
+		}
+	}
+
+	if( ShouldIgnoreSound( pSound ) )
+	{
+		return false;
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+bool CHL2MP_Player::QuerySeeEntity( CBaseEntity* pEntity, bool bOnlyHateOrFear )
+{
+	if( bOnlyHateOrFear )
+	{
+		if( HL2MPRules()->PlayerRelationship( this, pEntity ) == GR_NOTTEAMMATE )
+		{
+			return true;
+		}
+
+		Disposition_t disposition = IRelationType( pEntity );
+		return ( disposition == D_HT || disposition == D_FR );
+	}
+
+	return true;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::OnLooked( int iDistance )
+{
+	if( GetBotController() )
+	{
+		GetBotController()->OnLooked( iDistance );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHL2MP_Player::OnListened()
+{
+	if( GetBotController() )
+	{
+		GetBotController()->OnListened();
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+CSound* CHL2MP_Player::GetLoudestSoundOfType( int iType )
+{
+	return CSoundEnt::GetLoudestSoundOfType( iType, EarPosition() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: Returns if we can see the source of the sound
+//-----------------------------------------------------------------------------
+bool CHL2MP_Player::SoundIsVisible( CSound* pSound )
+{
+	return ( FVisible( pSound->GetSoundReactOrigin() ) && IsInFieldOfView( pSound->GetSoundReactOrigin() ) );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+CSound* CHL2MP_Player::GetBestSound( int validTypes )
+{
+	CSound* pResult = GetSenses()->GetClosestSound( false, validTypes );
+
+	if( pResult == NULL )
+	{
+		DevMsg( "NULL Return from GetBestSound\n" );
+	}
+
+	return pResult;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+CSound* CHL2MP_Player::GetBestScent()
+{
+	CSound* pResult = GetSenses()->GetClosestSound( true );
+
+	if( pResult == NULL )
+	{
+		DevMsg( "NULL Return from GetBestScent\n" );
+	}
+
+	return pResult;
+}
+#endif // ENABLE_BOTS

@@ -88,6 +88,11 @@ class CCommand;
 
 #define FCVAR_MATERIAL_THREAD_MASK ( FCVAR_RELOAD_MATERIALS | FCVAR_RELOAD_TEXTURES | FCVAR_MATERIAL_SYSTEM_THREAD )
 
+#ifdef MAPBASE
+	#define FCVAR_SERVER            FCVAR_REPLICATED | FCVAR_DEMO
+	#define FCVAR_ADMIN_ONLY        FCVAR_SERVER_CAN_EXECUTE | FCVAR_SERVER
+#endif // MAPBASE
+
 //-----------------------------------------------------------------------------
 // Called when a ConVar changes value
 // NOTE: For FCVAR_NEVER_AS_STRING ConVars, pOldValue == NULL
@@ -113,6 +118,18 @@ public:
 	// if you call these methods multiple times on the same IConVar
 	virtual bool IsFlagSet( int nFlag ) const = 0;
 };
+
+#ifdef MAPBASE
+	// Quick CVAR Macros for easy creation
+	#define DECLARE_CVAR( name, value, description, flags )				ConVar name( #name, value, flags, description );
+	#define DECLARE_ADMIN_CVAR( name, value, description )				DECLARE_CVAR( name, value, description, FCVAR_ADMIN_ONLY )
+	#define DECLARE_REPLICATED_CHEAT_CVAR( name, value, description )	DECLARE_CVAR( name, value, description, FCVAR_REPLICATED | FCVAR_CHEAT )
+	#define DECLARE_REPLICATED_CVAR( name, value, description )			DECLARE_CVAR( name, value, description, FCVAR_SERVER )
+	#define DECLARE_DEBUG_CVAR( name, value, description )				DECLARE_CVAR( name, value, description, FCVAR_ADMIN_ONLY | FCVAR_CHEAT | FCVAR_NOTIFY )
+
+	#define DECLARE_CHEAT_CVAR											DECLARE_REPLICATED_CHEAT_CVAR
+	#define DECLARE_NOTIFY_CVAR( name, value, description )				DECLARE_CVAR( name, value, description, FCVAR_SERVER | FCVAR_NOTIFY )
+#endif // MAPBASE
 
 
 #endif // ICONVAR_H

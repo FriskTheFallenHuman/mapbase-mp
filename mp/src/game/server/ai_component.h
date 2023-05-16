@@ -28,51 +28,65 @@ class CAI_Component
 {
 	DECLARE_CLASS_NOBASE( CAI_Component );
 protected:
+#ifdef ENABLE_BOTS
+	CAI_Component( CAI_BaseNPC* pOuter = NULL );
+#else
 	CAI_Component( CAI_BaseNPC* pOuter = NULL )
 		: m_pOuter( pOuter )
 	{
 	}
+#endif // ENABLE_BOTS
 
 	virtual ~CAI_Component() {}
 
 public:
+#ifdef ENABLE_BOTS
+	virtual void SetOuter( CBaseCombatCharacter* pOuter )
+#else
 	virtual void SetOuter( CAI_BaseNPC* pOuter )
+#endif // ENABLE_BOTS
 	{
 		m_pOuter = pOuter;
 	}
 
-	CAI_BaseNPC* 		GetOuter()
-	{
-		return m_pOuter;
-	}
-	const CAI_BaseNPC* 	GetOuter() const
+	CAI_BaseNPC* GetOuter();
+	const CAI_BaseNPC* GetOuter() const;
+
+#ifdef ENABLE_BOTS
+	CBaseCombatCharacter* GetCharacter()
 	{
 		return m_pOuter;
 	}
 
+	const CBaseCombatCharacter* GetCharacter() const
+	{
+		return m_pOuter;
+	}
+#endif // ENABLE_BOTS
+
 	Hull_t				GetHullType() const;
 	float 				GetHullWidth() const;
 	float 				GetHullHeight() const;
-	const Vector& 		GetHullMins() const;
-	const Vector& 		GetHullMaxs() const;
+	const Vector& GetHullMins() const;
+	const Vector& GetHullMaxs() const;
 
 protected:
 	//
 	// Common services provided by CAI_BaseNPC, Convenience methods to simplify derived code
 	//
-	edict_t* 			GetEdict();
+	edict_t* GetEdict();
 
-	const Vector& 		GetLocalOrigin() const;
+	const Vector& GetLocalOrigin() const;
 	void 				SetLocalOrigin( const Vector& origin );
 
-	const Vector& 		GetAbsOrigin() const;
-	const QAngle&		GetAbsAngles() const;
+	const Vector& GetAbsOrigin() const;
+	const QAngle& GetAbsAngles() const;
 
 	void				SetLocalAngles( const QAngle& angles );
-	const QAngle& 		GetLocalAngles( void ) const;
+	const QAngle& GetLocalAngles( void ) const;
 
-	const Vector&		WorldAlignMins() const;
-	const Vector&		WorldAlignMaxs() const;
+	const Vector& WorldAlignMins() const;
+	const Vector& WorldAlignMaxs() const;
 	Vector 				WorldSpaceCenter() const;
 
 	int 				GetCollisionGroup() const;
@@ -83,14 +97,14 @@ protected:
 	float				GetGravity() const;
 	void				SetGravity( float );
 
-	CBaseEntity*		GetEnemy();
-	const Vector& 		GetEnemyLKP() const;
+	CBaseEntity* GetEnemy();
+	const Vector& GetEnemyLKP() const;
 	void				TranslateNavGoal( CBaseEntity* pEnemy, Vector& chasePosition );
 
-	CBaseEntity*		GetTarget();
+	CBaseEntity* GetTarget();
 	void				SetTarget( CBaseEntity* pTarget );
 
-	const Task_t*		GetCurTask( void );
+	const Task_t* GetCurTask( void );
 	virtual void		TaskFail( AI_TaskFailureCode_t );
 	void				TaskFail( const char* pszGeneralFailText );
 	virtual void		TaskComplete( bool fIgnoreSetFailedCondition = false );
@@ -110,16 +124,16 @@ protected:
 
 	void				SetGroundEntity( CBaseEntity* ground );
 
-	CBaseEntity*		GetGoalEnt();
+	CBaseEntity* GetGoalEnt();
 	void				SetGoalEnt( CBaseEntity* pGoalEnt );
 
 	void				Remember( int iMemory );
 	void				Forget( int iMemory );
 	bool				HasMemory( int iMemory );
 
-	CAI_Enemies* 		GetEnemies();
+	CAI_Enemies* GetEnemies();
 
-	const char* 		GetEntClassname();
+	const char* GetEntClassname();
 
 	int					CapabilitiesGet();
 
@@ -147,7 +161,11 @@ public:
 	}
 
 private:
+#ifdef ENABLE_BOTS
+	CBaseCombatCharacter* m_pOuter;
+#else
 	CAI_BaseNPC* m_pOuter;
+#endif // ENABLE_BOTS
 };
 
 //-----------------------------------------------------------------------------
@@ -167,11 +185,11 @@ public:
 	{
 		BASE_COMPONENT::SetOuter( ( CAI_BaseNPC* )pOuter );
 	}
-	NPC_CLASS* 		GetOuter()
+	NPC_CLASS* GetOuter()
 	{
 		return ( NPC_CLASS* )( BASE_COMPONENT::GetOuter() );
 	}
-	const NPC_CLASS* 	GetOuter() const
+	const NPC_CLASS* GetOuter() const
 	{
 		return ( NPC_CLASS* )( BASE_COMPONENT::GetOuter() );
 	}
