@@ -1227,4 +1227,8 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		include("${CMAKE_CURRENT_LIST_DIR}/client_mapbase.cmake")
 		target_use_client_mapbase_features(${target})
 	endif()
+	
+	# Imgui specific files
+	#include("${CMAKE_CURRENT_LIST_DIR}/imgui_system.cmake")
+	#target_use_imgui(${target})
 endfunction()

@@ -46,6 +46,8 @@ elseif (${BUILD_GROUP} STREQUAL "everything")
 	if (${IS_WINDOWS})
 		include("${SRCDIR}/utils/captioncompiler/captioncompiler.cmake")
 		include("${SRCDIR}/utils/vice/vice.cmake")
+		include("${SRCDIR}/utils/hlmv/hlmv.cmake")
+		include("${SRCDIR}/thirdparty/mxtk/mxtk.cmake")
 	endif()
 
 	# This Tools where ported to linux
