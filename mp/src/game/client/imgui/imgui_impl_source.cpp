@@ -1,18 +1,18 @@
 /*********************************************************************************
 *  MIT License
-*  
+*
 *  Copyright (c) 2023 Strata Source Contributors
-*  
+*
 *  Permission is hereby granted, free of charge, to any person obtaining a copy
 *  of this software and associated documentation files (the "Software"), to deal
 *  in the Software without restriction, including without limitation the rights
 *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 *  copies of the Software, and to permit persons to whom the Software is
 *  furnished to do so, subject to the following conditions:
-*  
+*
 *  The above copyright notice and this permission notice shall be included in all
 *  copies or substantial portions of the Software.
-*  
+*
 *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,7 +36,7 @@
 
 #include "tier0/memdbgon.h"
 
-static IMaterial *g_pFontMat = nullptr;
+static IMaterial* g_pFontMat = nullptr;
 
 class CDearImGuiFontTextureRegenerator : public ITextureRegenerator
 {
@@ -44,10 +44,10 @@ public:
 	CDearImGuiFontTextureRegenerator() = default;
 
 	// Inherited from ITextureRegenerator
-	void RegenerateTextureBits( ITexture *pTexture, IVTFTexture *pVTFTexture, Rect_t *pRect ) override
+	void RegenerateTextureBits( ITexture* pTexture, IVTFTexture* pVTFTexture, Rect_t* pRect ) override
 	{
-		ImGuiIO &io = ImGui::GetIO();
-		unsigned char *pixels;
+		ImGuiIO& io = ImGui::GetIO();
+		unsigned char* pixels;
 		int width, height;
 		io.Fonts->GetTexDataAsRGBA32( &pixels, &width, &height );
 
@@ -63,7 +63,7 @@ public:
 	}
 };
 
-void ImGui_ImplSource_SetupRenderState( IMatRenderContext *ctx, ImDrawData *draw_data )
+void ImGui_ImplSource_SetupRenderState( IMatRenderContext* ctx, ImDrawData* draw_data )
 {
 	// Apply imgui's display dimensions
 	ctx->Viewport( draw_data->DisplayPos.x, draw_data->DisplayPos.y, draw_data->DisplaySize.x, draw_data->DisplaySize.y );
@@ -84,11 +84,13 @@ void ImGui_ImplSource_SetupRenderState( IMatRenderContext *ctx, ImDrawData *draw
 	ctx->LoadIdentity();
 }
 
-void ImGui_ImplSource_RenderDrawData( ImDrawData *draw_data )
+void ImGui_ImplSource_RenderDrawData( ImDrawData* draw_data )
 {
 	// Avoid rendering when minimized
-	if ( draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f )
+	if( draw_data->DisplaySize.x <= 0.0f || draw_data->DisplaySize.y <= 0.0f )
+	{
 		return;
+	}
 
 	CMatRenderContextPtr ctx( materials );
 
@@ -101,51 +103,57 @@ void ImGui_ImplSource_RenderDrawData( ImDrawData *draw_data )
 
 	// Render command lists
 	ImVec2 clip_off = draw_data->DisplayPos;
-	for ( int n = 0; n < draw_data->CmdListsCount; n++ )
+	for( int n = 0; n < draw_data->CmdListsCount; n++ )
 	{
-		const ImDrawList *cmd_list = draw_data->CmdLists[n];
-		const ImDrawIdx *idx_buffer = cmd_list->IdxBuffer.Data;
+		const ImDrawList* cmd_list = draw_data->CmdLists[n];
+		const ImDrawIdx* idx_buffer = cmd_list->IdxBuffer.Data;
 
 		// Draw the mesh
-		for ( int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++ )
+		for( int cmd_i = 0; cmd_i < cmd_list->CmdBuffer.Size; cmd_i++ )
 		{
-			const ImDrawCmd *pcmd = &cmd_list->CmdBuffer[cmd_i];
-			if ( pcmd->UserCallback != nullptr )
+			const ImDrawCmd* pcmd = &cmd_list->CmdBuffer[cmd_i];
+			if( pcmd->UserCallback != nullptr )
 			{
 				// User callback, registered via ImDrawList::AddCallback()
 				// (ImDrawCallback_ResetRenderState is a special callback value used by the user to request the renderer to reset render state.)
-				if ( pcmd->UserCallback == ImDrawCallback_ResetRenderState )
+				if( pcmd->UserCallback == ImDrawCallback_ResetRenderState )
+				{
 					ImGui_ImplSource_SetupRenderState( ctx, draw_data );
+				}
 				else
+				{
 					pcmd->UserCallback( cmd_list, pcmd );
+				}
 			}
 			else
 			{
-				if ( pcmd->GetTexID() )
+				if( pcmd->GetTexID() )
 				{
 					Vector2D clipmin = { pcmd->ClipRect.x - clip_off.x, pcmd->ClipRect.y - clip_off.y };
 					Vector2D clipmax = { pcmd->ClipRect.z - clip_off.x, pcmd->ClipRect.w - clip_off.y };
 
 					// Avoid rendering completely clipped draws
-					if ( clipmax.x <= clipmin.x || clipmax.y <= clipmin.y )
+					if( clipmax.x <= clipmin.x || clipmax.y <= clipmin.y )
+					{
 						continue;
+					}
 
 					ctx->SetScissorRect( clipmin.x, clipmin.y, clipmax.x, clipmax.y, true );
-					IMesh *mesh = ctx->GetDynamicMesh( false, nullptr, nullptr, static_cast<IMaterial*>( pcmd->GetTexID() ) );
+					IMesh* mesh = ctx->GetDynamicMesh( false, nullptr, nullptr, static_cast<IMaterial*>( pcmd->GetTexID() ) );
 					CMeshBuilder mb;
 					mb.Begin( mesh, MATERIAL_TRIANGLES, cmd_list->VtxBuffer.Size, pcmd->ElemCount );
 
-					const ImDrawVert *vtx_src = cmd_list->VtxBuffer.Data;
-					for ( int i = 0; i < cmd_list->VtxBuffer.Size; i++ )
+					const ImDrawVert* vtx_src = cmd_list->VtxBuffer.Data;
+					for( int i = 0; i < cmd_list->VtxBuffer.Size; i++ )
 					{
 						mb.Position3f( Vector2DExpand( vtx_src->pos ), 0 );
 						mb.Color4ubv( reinterpret_cast<const unsigned char*>( &vtx_src->col ) );
 						mb.TexCoord2fv( 0, &vtx_src->uv.x );
-						mb.AdvanceVertexF<VTX_HAVEPOS | VTX_HAVECOLOR, 1>();
+						mb.AdvanceVertexF < VTX_HAVEPOS | VTX_HAVECOLOR, 1 > ();
 						vtx_src++;
 					}
 
-					static_cast<CIndexBuilder &>( mb ).FastIndexList( idx_buffer + pcmd->IdxOffset, 0, pcmd->ElemCount );
+					static_cast<CIndexBuilder&>( mb ).FastIndexList( idx_buffer + pcmd->IdxOffset, 0, pcmd->ElemCount );
 					mb.End( false, true );
 					ctx->SetScissorRect( clipmin.x, clipmin.y, clipmax.x, clipmax.y, false );
 				}
@@ -162,21 +170,23 @@ void ImGui_ImplSource_RenderDrawData( ImDrawData *draw_data )
 bool ImGui_ImplSource_Init()
 {
 	// Setup backend capabilities flags
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	io.BackendPlatformName = "source";
 	io.BackendRendererName = "imgui_impl_source";
 	io.BackendFlags = ImGuiBackendFlags_None;
-	io.SetClipboardTextFn = []( void *, const char *c )
+	io.SetClipboardTextFn = []( void*, const char* c )
 	{
 		vgui::system()->SetClipboardText( c, V_strlen( c ) );
 	};
-	io.GetClipboardTextFn = []( void *ctx ) -> const char *
+	io.GetClipboardTextFn = []( void* ctx ) -> const char*
 	{
-		auto &g = *static_cast<ImGuiContext *>( ctx );
+		auto& g = *static_cast<ImGuiContext*>( ctx );
 		g.ClipboardHandlerData.clear();
 		auto len = vgui::system()->GetClipboardTextCount();
-		if ( !len )
+		if( !len )
+		{
 			return nullptr;
+		}
 		g.ClipboardHandlerData.resize( len );
 		vgui::system()->GetClipboardText( 0, g.ClipboardHandlerData.Data, g.ClipboardHandlerData.Size );
 		return g.ClipboardHandlerData.Data;
@@ -193,20 +203,22 @@ void ImGui_ImplSource_Shutdown()
 
 static bool ImGui_ImplSource_CreateFontsTexture()
 {
-	if ( g_pFontMat )
+	if( g_pFontMat )
+	{
 		return true;
+	}
 
 	// Build texture atlas
-	ImGuiIO &io = ImGui::GetIO();
+	ImGuiIO& io = ImGui::GetIO();
 	int width, height;
 	unsigned char* pixels;
 	io.Fonts->GetTexDataAsRGBA32( &pixels, &width, &height );
 
 	// Create a material for the texture
-	ITexture *fonttex = g_pMaterialSystem->CreateProceduralTexture( "imgui_font", TEXTURE_GROUP_OTHER, width, height, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_NOMIP | TEXTUREFLAGS_POINTSAMPLE | TEXTUREFLAGS_PROCEDURAL | TEXTUREFLAGS_SINGLECOPY | TEXTUREFLAGS_NOLOD );
+	ITexture* fonttex = g_pMaterialSystem->CreateProceduralTexture( "imgui_font", TEXTURE_GROUP_OTHER, width, height, IMAGE_FORMAT_RGBA8888, TEXTUREFLAGS_NOMIP | TEXTUREFLAGS_POINTSAMPLE | TEXTUREFLAGS_PROCEDURAL | TEXTUREFLAGS_SINGLECOPY | TEXTUREFLAGS_NOLOD );
 	fonttex->SetTextureRegenerator( new CDearImGuiFontTextureRegenerator );
 
-	KeyValues *vmt = new KeyValues( "UnlitGeneric" );
+	KeyValues* vmt = new KeyValues( "UnlitGeneric" );
 	vmt->SetString( "$basetexture", "imgui_font" );
 	vmt->SetInt( "$nocull", 1 );
 	vmt->SetInt( "$vertexcolor", 1 );
@@ -228,7 +240,7 @@ bool ImGui_ImplSource_CreateDeviceObjects()
 
 void ImGui_ImplSource_InvalidateDeviceObjects()
 {
-	if ( g_pFontMat )
+	if( g_pFontMat )
 	{
 		g_pFontMat->DecrementReferenceCount();
 		g_pFontMat = nullptr;
@@ -237,7 +249,7 @@ void ImGui_ImplSource_InvalidateDeviceObjects()
 
 // The following functions are declared in imconfig_source.h and must not be renamed
 
-ImFileHandle ImFileOpen( const char *filename, const char *mode )
+ImFileHandle ImFileOpen( const char* filename, const char* mode )
 {
 	Assert( g_pFullFileSystem );
 	return g_pFullFileSystem->Open( filename, mode );
@@ -245,8 +257,10 @@ ImFileHandle ImFileOpen( const char *filename, const char *mode )
 
 bool ImFileClose( ImFileHandle f )
 {
-	if ( f == nullptr )
+	if( f == nullptr )
+	{
 		return false;
+	}
 
 	Assert( g_pFullFileSystem );
 	g_pFullFileSystem->Close( f );
@@ -260,14 +274,14 @@ uint64 ImFileGetSize( ImFileHandle f )
 	return g_pFullFileSystem->Size( f );
 }
 
-uint64 ImFileRead( void *data, uint64 sz, uint64 count, ImFileHandle f )
+uint64 ImFileRead( void* data, uint64 sz, uint64 count, ImFileHandle f )
 {
 	Assert( g_pFullFileSystem && f );
 
 	return g_pFullFileSystem->Read( data, sz * count, f );
 }
 
-uint64 ImFileWrite( const void *data, uint64 sz, uint64 count, ImFileHandle f )
+uint64 ImFileWrite( const void* data, uint64 sz, uint64 count, ImFileHandle f )
 {
 	Assert( g_pFullFileSystem && f );
 

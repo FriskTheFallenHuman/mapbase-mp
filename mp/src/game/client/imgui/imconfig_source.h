@@ -1,5 +1,10 @@
 #pragma once
 
+#ifdef PROTECTED_THINGS_ENABLE
+	#undef PROTECTED_THINGS_ENABLE
+	#define PROTECTED_THINGS_DISABLE
+#endif
+
 //#define IMGUI_DISABLE                                     // Disable everything: all headers and source files will be empty.
 
 // Use tier0's asserts
@@ -12,7 +17,7 @@
 #define IMGUI_DISABLE_DEFAULT_ALLOCATORS
 
 
-// We do not define Dear ImGui's api to cross dll boundaries. 
+// We do not define Dear ImGui's api to cross dll boundaries.
 // Instead, everything that wants to use Dear ImGui can link devui_static.lib.
 #define IMGUI_API
 
@@ -26,17 +31,17 @@
 // We need to disable Dear ImGui's file functions, so we can pass them to Source's filesystem. Otherwise, we won't be able to access VPKs
 #define IMGUI_DISABLE_DEFAULT_FILE_FUNCTIONS
 using ImFileHandle = void*;
-IMGUI_API ImFileHandle	ImFileOpen( const char *filename, const char *mode );
+IMGUI_API ImFileHandle	ImFileOpen( const char* filename, const char* mode );
 IMGUI_API bool			ImFileClose( ImFileHandle file );
 IMGUI_API uint64		ImFileGetSize( ImFileHandle file );
-IMGUI_API uint64		ImFileRead( void *data, uint64 size, uint64 count, ImFileHandle file );
-IMGUI_API uint64		ImFileWrite( const void *data, uint64 size, uint64 count, ImFileHandle file );
+IMGUI_API uint64		ImFileRead( void* data, uint64 size, uint64 count, ImFileHandle file );
+IMGUI_API uint64		ImFileWrite( const void* data, uint64 size, uint64 count, ImFileHandle file );
 
 
 // Source's colors are stored as BGRA. Setting this allows us to avoid per vertex swizzles in mesh builder.
 // On Linux and Mac, mesh builder already does these swizzles regardless
 #if !defined( OPENGL_COLOR_SWAP )
-#define IMGUI_USE_BGRA_PACKED_COLOR
+	#define IMGUI_USE_BGRA_PACKED_COLOR
 #endif
 
 
@@ -44,7 +49,7 @@ IMGUI_API uint64		ImFileWrite( const void *data, uint64 size, uint64 count, ImFi
 // Compatibility checks of arguments and formats done by clang and GCC will be disabled in order to support the extra formats provided by stb_sprintf.h.
 //#define IMGUI_USE_STB_SPRINTF
 
-
+#include "mathlib/vector.h"
 #include "mathlib/vector2d.h"
 #include "mathlib/vector4d.h"
 #define IM_VEC2_CLASS_EXTRA												\

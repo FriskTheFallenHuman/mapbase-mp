@@ -1,18 +1,18 @@
 /*********************************************************************************
 *  MIT License
-*  
+*
 *  Copyright (c) 2023 Strata Source Contributors
-*  
+*
 *  Permission is hereby granted, free of charge, to any person obtaining a copy
 *  of this software and associated documentation files (the "Software"), to deal
 *  in the Software without restriction, including without limitation the rights
 *  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 *  copies of the Software, and to permit persons to whom the Software is
 *  furnished to do so, subject to the following conditions:
-*  
+*
 *  The above copyright notice and this permission notice shall be included in all
 *  copies or substantial portions of the Software.
-*  
+*
 *  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 *  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 *  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,14 +28,15 @@
 struct ImDrawData;
 bool     ImGui_ImplSource_Init();
 void     ImGui_ImplSource_Shutdown();
-void     ImGui_ImplSource_RenderDrawData(ImDrawData* draw_data);
+void     ImGui_ImplSource_RenderDrawData( ImDrawData* draw_data );
 
 // Use if you want to reset your rendering device without losing Dear ImGui state.
 bool     ImGui_ImplSource_CreateDeviceObjects();
 void     ImGui_ImplSource_InvalidateDeviceObjects();
 
 // Translation table for imgui keys
-constexpr ImGuiKey IMGUI_KEY_TABLE[] = {
+constexpr ImGuiKey IMGUI_KEY_TABLE[] =
+{
 
 	/*KEY_NONE*/			ImGuiKey_None,
 	/*KEY_0*/				ImGuiKey_0,
@@ -94,7 +95,7 @@ constexpr ImGuiKey IMGUI_KEY_TABLE[] = {
 	/*KEY_RBRACKET*/		ImGuiKey_RightBracket,
 	/*KEY_SEMICOLON*/		ImGuiKey_Semicolon,
 	/*KEY_APOSTROPHE*/		ImGuiKey_Apostrophe,
-	/*KEY_BACKQUOTE*/		ImGuiKey_None,			// ? 
+	/*KEY_BACKQUOTE*/		ImGuiKey_None,			// ?
 	/*KEY_COMMA*/			ImGuiKey_Comma,
 	/*KEY_PERIOD*/			ImGuiKey_Period,
 	/*KEY_SLASH*/			ImGuiKey_Slash,
