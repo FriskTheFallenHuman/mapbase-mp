@@ -1281,8 +1281,9 @@ void CHudIcons::Init()
 	LoadHudTextures( textureList, "scripts/instructor_textures", NULL );
 #ifdef HL2_CLIENT_DLL
 	LoadHudTextures( textureList, "scripts/instructor_textures_hl2", NULL );
-#endif
+#else
 	LoadHudTextures( textureList, "scripts/instructor_modtextures", NULL );
+#endif
 
 	int c = textureList.Count();
 	for( int index = 0; index < c; index++ )
@@ -1415,7 +1416,11 @@ void CHudIcons::RefreshHudTextures()
 	LoadHudTextures( textureList, "scripts/mod_textures", NULL );
 
 	LoadHudTextures( textureList, "scripts/instructor_textures", NULL );
-
+#ifdef HL2_CLIENT_DLL
+	LoadHudTextures( textureList, "scripts/instructor_textures_hl2", NULL );
+#else
+	LoadHudTextures( textureList, "scripts/instructor_modtextures", NULL );
+#endif
 
 	// fix up all the texture icons first
 	int c = textureList.Count();
