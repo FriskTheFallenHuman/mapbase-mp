@@ -41,9 +41,12 @@ extern ConVar gameinstructor_verbose_lesson;
 extern ConVar gameinstructor_find_errors;
 
 #ifdef MAPBASE
-	// Mapbase was originally going to use a HL2-style default color (245,232,179).
-	// This is no longer the case, but mods are free to change this cvar in their config files.
-	ConVar gameinstructor_default_captioncolor( "gameinstructor_default_captioncolor", "255,255,255", FCVAR_NONE );
+#ifdef HL2_CLIENT_DLL
+#define GAMEINSTRUCTOR_COLOR "245,232,179"
+#else
+#define GAMEINSTRUCTOR_COLOR "255,255,255"
+#endif // HL2_CLIENT_DLL
+	ConVar gameinstructor_default_captioncolor( "gameinstructor_default_captioncolor", GAMEINSTRUCTOR_COLOR, FCVAR_NONE );
 	ConVar gameinstructor_default_bindingcolor( "gameinstructor_default_bindingcolor", "0,0,0", FCVAR_NONE );
 #endif
 
