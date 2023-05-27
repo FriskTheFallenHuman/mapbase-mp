@@ -261,6 +261,7 @@ enum SolidFlags_t
 #ifdef MAPBASE
 	// From https://developer.valvesoftware.com/wiki/Owner
 	FSOLID_COLLIDE_WITH_OWNER	= 0X0400,	// Can hit our m_hOwner
+	FSOLID_NOT_MOVEABLE			= 0x0800,	// Assume this object will not move
 #endif
 
 	FSOLID_MAX_BITS = 11
