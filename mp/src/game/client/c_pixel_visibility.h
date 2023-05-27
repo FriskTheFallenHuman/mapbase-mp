@@ -75,7 +75,6 @@ public:
 	void EndQueryDrawing( void );
 	int QueryNumPixelsRendered( void );
 	float QueryPercentageOfScreenRendered( void );
-	int QueryNumPixelsRenderedForAllViewsLastFrame( void );
 	int GetLastFrameDrawn( void );
 
 private:

@@ -1138,12 +1138,6 @@ int COcclusionQuerySet::QueryNumPixelsRenderedForAllViewsLastFrame()
 	return iResult;
 }
 
-int COcclusionQuerySet::QueryNumPixelsRenderedForAllViewsLastFrame( void )
-{
-	return QueryNumPixelsRenderedForAllViewsLastFrame();
-}
-
-
 int COcclusionQuerySet::GetLastFrameDrawn( int iViewID )
 {
 	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
