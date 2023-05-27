@@ -1318,6 +1318,18 @@ void CBaseEntity::VPhysicsSetObject( IPhysicsObject* pPhysics )
 		Warning( "Overwriting physics object for %s\n", GetClassname() );
 	}
 	m_pPhysicsObject = pPhysics;
+#ifndef CLIENT_DLL
+	RemoveSolidFlags( FSOLID_NOT_MOVEABLE );
+#endif
+	if( m_pPhysicsObject )
+	{
+#ifndef CLIENT_DLL
+		if( m_pPhysicsObject->IsStatic() )
+		{
+			AddSolidFlags( FSOLID_NOT_MOVEABLE );
+		}
+#endif
+	}
 	if( pPhysics && !m_pPhysicsObject )
 	{
 		CollisionRulesChanged();
