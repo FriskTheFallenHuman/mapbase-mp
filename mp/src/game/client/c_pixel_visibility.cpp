@@ -49,6 +49,40 @@ extern ConVar building_cubemaps;
 	const float MIN_PROXY_PIXELS = 25.0f;
 #endif
 
+#ifdef MAPBASE
+extern view_id_t CurrentViewID();
+
+struct OcclusionHandleViewIDPair_t
+{
+	OcclusionQueryObjectHandle_t hOcclusionHandle;
+	int iViewID;
+	int iLastFrameRendered;
+};
+
+struct OcclusionQueryHiddenData_t
+{
+	COcclusionQuerySet* pOwner;
+	CUtlVector<OcclusionHandleViewIDPair_t> occlusionHandles;
+};
+
+static CUtlVector<OcclusionQueryHiddenData_t> s_OcclusionQueries;
+static inline int FindQueryHandlePairIndex( OcclusionQueryHiddenData_t* pData, int iViewID )
+{
+	int iPairCount = pData->occlusionHandles.Count();
+	OcclusionHandleViewIDPair_t* pPairs = pData->occlusionHandles.Base();
+
+	for( int i = 0; i != iPairCount; ++i )
+	{
+		if( pPairs[i].iViewID == iViewID )
+		{
+			return i;
+		}
+	}
+
+	return pData->occlusionHandles.InvalidIndex();
+}
+#endif // MAPBASE
+
 float PixelVisibility_DrawProxy( IMatRenderContext* pRenderContext, OcclusionQueryObjectHandle_t queryHandle, Vector origin, float scale, float proxyAspect, IMaterial* pMaterial, bool screenspace )
 {
 	Vector point;
@@ -896,7 +930,238 @@ void PixelVisibility_ShiftVisibilityViews( int iSourceViewID, int iDestViewID )
 
 		node = next;
 	}
+
+#ifdef MAPBASE
+	for( int i = 0; i != s_OcclusionQueries.Count(); ++i )
+	{
+		int iPairCount = s_OcclusionQueries[i].occlusionHandles.Count();
+		OcclusionHandleViewIDPair_t* pPairs = s_OcclusionQueries[i].occlusionHandles.Base();
+		int iSourceIndex, iDestIndex, iInvalidIndex;
+		iDestIndex = iSourceIndex = iInvalidIndex = s_OcclusionQueries[i].occlusionHandles.InvalidIndex();
+		for( int j = 0; j != iPairCount; ++j )
+		{
+			if( pPairs[j].iViewID == iSourceViewID )
+			{
+				iSourceIndex = j;
+				if( iDestIndex != iInvalidIndex )
+				{
+					break;
+				}
+			}
+
+			if( pPairs[j].iViewID == iDestViewID )
+			{
+				iDestIndex = j;
+				if( iSourceIndex != iInvalidIndex )
+				{
+					break;
+				}
+			}
+		}
+
+		if( iSourceIndex != iInvalidIndex )
+		{
+			//change view id on source
+			pPairs[iSourceIndex].iViewID = iDestViewID;
+		}
+
+		if( iDestIndex != iInvalidIndex )
+		{
+			//destroy dest
+			materials->GetRenderContext()->DestroyOcclusionQueryObject( pPairs[iDestIndex].hOcclusionHandle );
+			s_OcclusionQueries[i].occlusionHandles.FastRemove( iDestIndex );
+		}
+	}
+#endif // MAPBASE
 }
+
+
+
+#ifdef MAPBASE
+COcclusionQuerySet::COcclusionQuerySet( void )
+{
+	OcclusionQueryHiddenData_t& data = s_OcclusionQueries[s_OcclusionQueries.AddToTail()];
+	data.pOwner = this;
+	m_pManagedData = &data;
+
+	//handle base address shifting
+	if( s_OcclusionQueries.Count() > 1 )
+	{
+		OcclusionQueryHiddenData_t& baseData = s_OcclusionQueries[0];
+		if( baseData.pOwner->m_pManagedData != &baseData )
+		{
+			for( int i = 0; i != s_OcclusionQueries.Count(); ++i )
+			{
+				s_OcclusionQueries[i].pOwner->m_pManagedData = &s_OcclusionQueries[i];
+			}
+		}
+	}
+}
+
+COcclusionQuerySet::~COcclusionQuerySet( void )
+{
+	int iIndex;
+	for( iIndex = 0; iIndex != s_OcclusionQueries.Count(); ++iIndex )
+	{
+		if( &s_OcclusionQueries[iIndex] == m_pManagedData )
+		{
+			break;
+		}
+	}
+	if( iIndex != s_OcclusionQueries.Count() )
+	{
+		//destroy query handles
+		{
+			CMatRenderContextPtr pRenderContext( materials );
+			OcclusionQueryHiddenData_t& data = s_OcclusionQueries[iIndex];
+			for( int j = 0; j != data.occlusionHandles.Count(); ++j )
+			{
+				pRenderContext->DestroyOcclusionQueryObject( data.occlusionHandles.Element( j ).hOcclusionHandle );
+			}
+		}
+
+		s_OcclusionQueries.FastRemove( iIndex );
+		if( s_OcclusionQueries.Count() != 0 )
+		{
+			s_OcclusionQueries[iIndex].pOwner->m_pManagedData = &s_OcclusionQueries[iIndex];
+			//handle base address shifting
+			if( s_OcclusionQueries.Count() > 1 )
+			{
+				OcclusionQueryHiddenData_t& baseData = s_OcclusionQueries[iIndex == 0 ? 1 : 0];
+				if( baseData.pOwner->m_pManagedData != &baseData )
+				{
+					for( int i = 0; i != s_OcclusionQueries.Count(); ++i )
+					{
+						s_OcclusionQueries[i].pOwner->m_pManagedData = &s_OcclusionQueries[i];
+					}
+				}
+			}
+		}
+	}
+}
+
+
+
+void COcclusionQuerySet::BeginQueryDrawing( int iViewID )
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+
+	int iIndex = FindQueryHandlePairIndex( pData, iViewID );
+	if( iIndex == pData->occlusionHandles.InvalidIndex() )
+	{
+		//create a new one
+		iIndex = pData->occlusionHandles.AddToTail();
+		OcclusionHandleViewIDPair_t& Entry = pData->occlusionHandles.Element( iIndex );
+		Entry.iViewID = iViewID;
+		Entry.hOcclusionHandle = materials->GetRenderContext()->CreateOcclusionQueryObject();
+		materials->GetRenderContext()->ResetOcclusionQueryObject( Entry.hOcclusionHandle );
+	}
+
+	materials->GetRenderContext()->BeginOcclusionQueryDrawing( pData->occlusionHandles.Element( iIndex ).hOcclusionHandle );
+	pData->occlusionHandles.Element( iIndex ).iLastFrameRendered = gpGlobals->framecount;
+}
+
+void COcclusionQuerySet::BeginQueryDrawing( void )
+{
+	return BeginQueryDrawing( CurrentViewID() );
+}
+
+void COcclusionQuerySet::EndQueryDrawing( int iViewID )
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+
+	int iIndex = FindQueryHandlePairIndex( pData, iViewID );
+	if( iIndex != pData->occlusionHandles.InvalidIndex() )
+	{
+		materials->GetRenderContext()->EndOcclusionQueryDrawing( pData->occlusionHandles.Element( iIndex ).hOcclusionHandle );
+	}
+}
+
+void COcclusionQuerySet::EndQueryDrawing( void )
+{
+	return EndQueryDrawing( CurrentViewID() );
+}
+
+int COcclusionQuerySet::QueryNumPixelsRendered( int iViewID )
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+
+	int iIndex = FindQueryHandlePairIndex( pData, iViewID );
+	if( iIndex != pData->occlusionHandles.InvalidIndex() )
+	{
+		return materials->GetRenderContext()->OcclusionQuery_GetNumPixelsRendered( pData->occlusionHandles.Element( iIndex ).hOcclusionHandle );
+	}
+
+	return 0;
+}
+
+int COcclusionQuerySet::QueryNumPixelsRendered( void )
+{
+	return QueryNumPixelsRendered( CurrentViewID() );
+}
+
+float COcclusionQuerySet::QueryPercentageOfScreenRendered( int iViewID )
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+
+	int iIndex = FindQueryHandlePairIndex( pData, iViewID );
+	if( iIndex != pData->occlusionHandles.InvalidIndex() )
+	{
+		int iX, iY, iWidth, iHeight;
+		materials->GetRenderContext()->GetViewport( iX, iY, iWidth, iHeight );
+		return ( ( float )materials->GetRenderContext()->OcclusionQuery_GetNumPixelsRendered( pData->occlusionHandles.Element( iIndex ).hOcclusionHandle ) ) / ( ( float )( iWidth * iHeight ) );
+	}
+
+	return 0.0f;
+}
+
+float COcclusionQuerySet::QueryPercentageOfScreenRendered( void )
+{
+	return QueryPercentageOfScreenRendered( CurrentViewID() );
+}
+
+int COcclusionQuerySet::QueryNumPixelsRenderedForAllViewsLastFrame()
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+	int iMatchFrame = gpGlobals->framecount - 1;
+	int iResult = 0;
+	CMatRenderContextPtr pRenderContext( materials );
+
+	for( int i = 0; i != pData->occlusionHandles.Count(); ++i )
+	{
+		if( pData->occlusionHandles.Element( i ).iLastFrameRendered == iMatchFrame )
+		{
+			iResult += pRenderContext->OcclusionQuery_GetNumPixelsRendered( pData->occlusionHandles.Element( i ).hOcclusionHandle );
+		}
+	}
+
+	return iResult;
+}
+
+int COcclusionQuerySet::QueryNumPixelsRenderedForAllViewsLastFrame( void )
+{
+	return QueryNumPixelsRenderedForAllViewsLastFrame();
+}
+
+
+int COcclusionQuerySet::GetLastFrameDrawn( int iViewID )
+{
+	OcclusionQueryHiddenData_t* pData = ( OcclusionQueryHiddenData_t* )m_pManagedData;
+
+	int iIndex = FindQueryHandlePairIndex( pData, iViewID );
+	if( iIndex != pData->occlusionHandles.InvalidIndex() )
+	{
+		return pData->occlusionHandles.Element( iIndex ).iLastFrameRendered;
+	}
+
+	return -1;
+}
+
+int COcclusionQuerySet::GetLastFrameDrawn( void )
+{
+	return GetLastFrameDrawn( CurrentViewID() );
+}
+#endif // MAPBASE
 
 CON_COMMAND( pixelvis_debug, "Dump debug info" )
 {
