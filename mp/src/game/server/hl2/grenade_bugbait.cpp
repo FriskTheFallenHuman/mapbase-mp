@@ -37,6 +37,9 @@ CBugBaitSensor* GetBugBaitSensorList()
 CBugBaitSensor::CBugBaitSensor( void )
 {
 	g_BugBaitSensorList.Insert( this );
+#ifdef MAPBASE
+	m_bUseRadius = true;
+#endif
 }
 
 CBugBaitSensor::~CBugBaitSensor( void )
