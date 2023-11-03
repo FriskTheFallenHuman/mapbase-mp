@@ -1316,6 +1316,13 @@ bool CTraceFilterMelee::ShouldHitEntity( IHandleEntity* pHandleEntity, int conte
 			return false;
 		}
 
+#ifdef MAPBASE // Moved from CheckTraceHullAttack()
+		if( m_pPassEnt && !pEntity->CanBeHitByMeleeAttack( const_cast<CBaseEntity*>( EntityFromEntityHandle( m_pPassEnt ) ) ) )
+		{
+			return false;
+		}
+#endif
+
 		// FIXME: Do not translate this to the driver because the driver only accepts damage from the vehicle
 		// Translate the vehicle into its driver for damage
 		/*
@@ -1363,7 +1370,11 @@ bool CTraceFilterMelee::ShouldHitEntity( IHandleEntity* pHandleEntity, int conte
 		}
 		else
 		{
-			m_pHit = pEntity;
+#ifdef MAPBASE
+			// Do not override an existing hit entity
+			if( !m_pHit )
+#endif
+				m_pHit = pEntity;
 
 			// Make sure if the player is holding this, he drops it
 			Pickup_ForcePlayerToDropThisObject( pEntity );
@@ -1438,11 +1449,13 @@ CBaseEntity* CBaseCombatCharacter::CheckTraceHullAttack( const Vector& vStart, c
 		pEntity = traceFilter.m_pHit;
 	}
 
+#ifndef MAPBASE // Moved to CTraceFilterMelee
 	if( pEntity && !pEntity->CanBeHitByMeleeAttack( this ) )
 	{
 		// If we touched something, but it shouldn't be hit, return nothing.
 		pEntity = NULL;
 	}
+#endif
 
 	return pEntity;
 
@@ -3613,7 +3626,9 @@ void CBaseCombatCharacter::AddRelationship( const char* pszRelationship, CBaseEn
 					}
 
 					if( !bFoundEntity )
+					{
 						DevWarning( "Couldn't set relationship to unknown entity or class (%s)!\n", entityString );
+					}
 				}
 			}
 		}
@@ -3723,7 +3738,7 @@ CBaseEntity* CBaseCombatCharacter::Weapon_FindUsable( const Vector& range )
 	else if( hl2_episodic.GetBool() && !GetActiveWeapon() )
 	{
 		// Unarmed citizens are conservative in their weapon finding...in Episode One
-		if (Classify() != CLASS_PLAYER_ALLY_VITAL && Q_strncmp(STRING(gpGlobals->mapname), "ep1_", 4) == 0)
+		if( Classify() != CLASS_PLAYER_ALLY_VITAL && Q_strncmp( STRING( gpGlobals->mapname ), "ep1_", 4 ) == 0 )
 		{
 			bConservative = true;
 		}
@@ -4857,7 +4872,7 @@ void CBaseCombatCharacter::ScriptSetRelationship( HSCRIPT pTarget, int dispositi
 //-----------------------------------------------------------------------------
 void CBaseCombatCharacter::ScriptSetClassRelationship( int classify, int disposition, int priority )
 {
-	AddClassRelationship( (Class_T)classify, (Disposition_t)disposition, priority);
+	AddClassRelationship( ( Class_T )classify, ( Disposition_t )disposition, priority );
 }
 
 //-----------------------------------------------------------------------------
