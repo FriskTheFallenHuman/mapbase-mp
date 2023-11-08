@@ -53,6 +53,15 @@ static ConVar cc_smallfontlength( "cc_smallfontlength", "300", 0, "If text strea
 #define CAPTION_PAN_FADE_TIME		0.5			// The time it takes for a line to fade while panning over a large entry
 #define CAPTION_PAN_SLIDE_TIME		0.5			// The time it takes for a line to slide on while panning over a large entry
 
+#ifdef MAPBASE_SUBTITLES
+	#define FILE_TXT	"resource/subtitles_%language%.txt"
+	#define FILE_STRING	"resource/subtitles_%s.txt"
+	#define FILE_DAT	"resource/subtitles_%s.dat"
+#else
+	#define FILE_TXT	"resource/closecaption_%language%.txt"
+	#define FILE_STRING	"resource/closecaption_%s.txt"
+	#define FILE_DAT	"resource/closecaption_%s.dat"
+#endif // MAPBASE_SUBTITLES
 
 // A work unit is a pre-processed chunk of CC text to display
 // Any state changes (font/color/etc) cause a new work unit to be precomputed
@@ -846,7 +855,7 @@ CHudCloseCaption::CHudCloseCaption( const char* pElementName )
 
 	if( !IsX360() )
 	{
-		g_pVGuiLocalize->AddFile( "resource/closecaption_%language%.txt", "GAME", true );
+		g_pVGuiLocalize->AddFile( FILE_TXT, "GAME", true );
 	}
 
 	HOOK_HUD_MESSAGE( CHudCloseCaption, CloseCaption );
@@ -865,7 +874,7 @@ CHudCloseCaption::CHudCloseCaption( const char* pElementName )
 	}
 
 	char dbfile [ 512 ];
-	Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", uilanguage );
+	Q_snprintf( dbfile, sizeof( dbfile ), FILE_DAT, uilanguage );
 	InitCaptionDictionary( dbfile );
 }
 
@@ -2880,7 +2889,7 @@ void CHudCloseCaption::AddAdditionalCaptionDictionary( const char* dbfile, CUtlV
 void CHudCloseCaption::AddCustomCaptionFile( char const* file, CUtlVector<CUtlSymbol>& outPathSymbols )
 {
 	//
-	// 'file' should be something like "maps/mapbase_demo01_closecaption_%language%"
+	// 'file' should be something like "maps/mapbase_demo01_%file%_%language%"
 	//
 
 	CGMsg( 1, CON_GROUP_MAPBASE_MISC, "Adding custom caption file \"%s\"\n", file );
@@ -2902,7 +2911,7 @@ void CHudCloseCaption::AddCustomCaptionFile( char const* file, CUtlVector<CUtlSy
 void CHudCloseCaption::RemoveCaptionDictionary( const CUtlSymbol& dbFileSymbol )
 {
 	//
-	// 'file' should be something like "maps/mapbase_demo01_closecaption_%language%"
+	// 'file' should be something like "maps/mapbase_demo01_%file%_%language%"
 	//
 
 	CGMsg( 1, CON_GROUP_MAPBASE_MISC, "Removing custom caption file \"%s\"\n", dbFileSymbol.String() );
@@ -3052,12 +3061,12 @@ void OnCaptionLanguageChanged( IConVar* pConVar, const char* pOldString, float f
 	ConVarRef var( pConVar );
 
 	char fn[ 512 ];
-	Q_snprintf( fn, sizeof( fn ), "resource/closecaption_%s.txt", var.GetString() );
+	Q_snprintf( fn, sizeof( fn ), FILE_STRING, var.GetString() );
 
 	// Re-adding the file, even if it's "english" will overwrite the tokens as needed
 	if( !IsX360() )
 	{
-		g_pVGuiLocalize->AddFile( "resource/closecaption_%language%.txt", "GAME", true );
+		g_pVGuiLocalize->AddFile( FILE_TXT, "GAME", true );
 	}
 
 	char uilanguage[ 64 ];
@@ -3078,7 +3087,7 @@ void OnCaptionLanguageChanged( IConVar* pConVar, const char* pOldString, float f
 			else
 			{
 				char fallback[ 512 ];
-				Q_snprintf( fallback, sizeof( fallback ), "resource/closecaption_%s.txt", uilanguage );
+				Q_snprintf( fallback, sizeof( fallback ), FILE_STRING, uilanguage );
 
 				Msg( "%s not found\n", fn );
 				Msg( "%s will be used\n", fallback );
@@ -3088,7 +3097,7 @@ void OnCaptionLanguageChanged( IConVar* pConVar, const char* pOldString, float f
 		if( hudCloseCaption )
 		{
 			char dbfile [ 512 ];
-			Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", var.GetString() );
+			Q_snprintf( dbfile, sizeof( dbfile ), FILE_DAT, var.GetString() );
 			hudCloseCaption->InitCaptionDictionary( dbfile );
 		}
 	}
@@ -3097,7 +3106,7 @@ void OnCaptionLanguageChanged( IConVar* pConVar, const char* pOldString, float f
 		if( hudCloseCaption )
 		{
 			char dbfile [ 512 ];
-			Q_snprintf( dbfile, sizeof( dbfile ), "resource/closecaption_%s.dat", uilanguage );
+			Q_snprintf( dbfile, sizeof( dbfile ), FILE_DAT, uilanguage );
 			hudCloseCaption->InitCaptionDictionary( dbfile );
 		}
 	}

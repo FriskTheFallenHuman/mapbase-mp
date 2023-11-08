@@ -51,6 +51,7 @@ set(MAPBASE_RPC "OFF" CACHE BOOL "Build the game code with Mapbase's Rich Presen
 set(MAPBASE_VSCRIPT "ON" CACHE BOOL "Build the game code with VScript implementation (note: interfaces still exist, just the provided implementation is not present)")
 set(MAPBASE_RESPONSE_SYSTEM "ON" CACHE BOOL "Build the game code with new Response System library based on the Alien Swarm SDK.")
 set(MAPBASE_BOTS "ON" CACHE BOOL "Build the game code with Bots code.")
+set(MAPBASE_SUBTITLES "OFF" CACHE BOOL "changes closecaption_%lang% to subtitles_%lang% to match L4D2.")
 
 # Stock source engine options
 option(RETAIL "Build in retail mode" OFF)
