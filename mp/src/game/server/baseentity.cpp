@@ -2342,6 +2342,10 @@ DEFINE_FIELD( m_iszContext,	FIELD_STRING ),
 	DEFINE_SCRIPTFUNC( GetContextCount, "Get the number of response contexts" )
 	DEFINE_SCRIPTFUNC_NAMED( ScriptGetContextIndex, "GetContextIndex", "Get a response context at a specific index in the form of a table" )
 
+
+	DEFINE_SCRIPTFUNC_NAMED( ScriptGetGroundEntity, "GetGroundEntity", "Get the entity we're standing on." )
+	DEFINE_SCRIPTFUNC_NAMED( ScriptSetGroundEntity, "SetGroundEntity", "Set the entity we're standing on." )
+
 	DEFINE_SCRIPTFUNC_NAMED( ScriptFollowEntity, "FollowEntity", "Begin following the specified entity. This makes this entity non-solid, parents it to the target entity, and teleports it to the specified entity's origin. The second parameter is whether or not to use bonemerging while following." )
 	DEFINE_SCRIPTFUNC( StopFollowingEntity, "Stops following an entity if we're following one." )
 	DEFINE_SCRIPTFUNC( IsFollowingEntity, "Returns true if this entity is following another entity." )

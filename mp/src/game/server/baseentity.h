@@ -1614,6 +1614,11 @@ public:
 		return const_cast<CBaseEntity*>( this )->GetGroundEntity();
 	}
 
+#ifdef MAPBASE_VSCRIPT
+	HSCRIPT ScriptGetGroundEntity();
+	void ScriptSetGroundEntity( HSCRIPT hGroundEnt );
+#endif
+
 	// Gets the velocity we impart to a player standing on us
 	virtual void			GetGroundVelocityToApply( Vector& vecGroundVel )
 	{
