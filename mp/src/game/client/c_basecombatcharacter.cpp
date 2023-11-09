@@ -198,7 +198,7 @@ RecvPropDataTable( "bcc_localdata", 0, 0, &REFERENCE_RECV_TABLE( DT_BCCLocalPlay
 
 #ifdef MAPBASE_VSCRIPT
 
-				   BEGIN_ENT_SCRIPTDESC( C_BaseCombatCharacter, CBaseEntity, "" )
+				   BEGIN_ENT_SCRIPTDESC( C_BaseCombatCharacter, C_BaseAnimating, "" )
 				   DEFINE_SCRIPTFUNC_NAMED( ScriptGetAmmoCount, "GetAmmoCount", "" )
 				   DEFINE_SCRIPTFUNC_NAMED( ScriptGetActiveWeapon, "GetActiveWeapon", "" )
 				   DEFINE_SCRIPTFUNC_NAMED( ScriptGetWeapon, "GetWeapon", "" )

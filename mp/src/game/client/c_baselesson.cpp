@@ -41,11 +41,11 @@ extern ConVar gameinstructor_verbose_lesson;
 extern ConVar gameinstructor_find_errors;
 
 #ifdef MAPBASE
-#ifdef HL2_CLIENT_DLL
-#define GAMEINSTRUCTOR_COLOR "245,232,179"
-#else
-#define GAMEINSTRUCTOR_COLOR "255,255,255"
-#endif // HL2_CLIENT_DLL
+	#ifdef HL2_CLIENT_DLL
+		#define GAMEINSTRUCTOR_COLOR "245,232,179"
+	#else
+		#define GAMEINSTRUCTOR_COLOR "255,255,255"
+	#endif // HL2_CLIENT_DLL
 	ConVar gameinstructor_default_captioncolor( "gameinstructor_default_captioncolor", GAMEINSTRUCTOR_COLOR, FCVAR_NONE );
 	ConVar gameinstructor_default_bindingcolor( "gameinstructor_default_bindingcolor", "0,0,0", FCVAR_NONE );
 #endif
