@@ -14,16 +14,16 @@ on:
       - develop
     paths:
       - '.github/workflows/mapbase_build-sp-rel-maptools.yml'
-      - 'mp/src/vpc_scripts/**'
-      - 'mp/src/utils/vbsp/**'
-      - 'mp/src/utils/vvis/**'
-      - 'mp/src/utils/vvis_launcher/**'
-      - 'mp/src/utils/vrad/**'
-      - 'mp/src/utils/vrad_launcher/**'
-      - 'mp/src/mathlib/**'
-      - 'mp/src/tier1/**'
-      - 'mp/src/vgui2/vgui_controls/**'
-      - 'mp/src/vscript/**'
+      - 'sp/src/vpc_scripts/**'
+      - 'sp/src/utils/vbsp/**'
+      - 'sp/src/utils/vvis/**'
+      - 'sp/src/utils/vvis_launcher/**'
+      - 'sp/src/utils/vrad/**'
+      - 'sp/src/utils/vrad_launcher/**'
+      - 'sp/src/mathlib/**'
+      - 'sp/src/tier1/**'
+      - 'sp/src/vgui2/vgui_controls/**'
+      - 'sp/src/vscript/**'
 
 jobs:
   maptools:

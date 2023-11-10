@@ -14,9 +14,9 @@ on:
       - develop
     paths:
       - '.github/workflows/mapbase_build-sp-rel-shaders.yml'
-      - 'mp/src/vpc_scripts/**'
-      - 'mp/src/materialsystem/**'
-      - 'mp/src/mathlib/**'
+      - 'sp/src/vpc_scripts/**'
+      - 'sp/src/materialsystem/**'
+      - 'sp/src/mathlib/**'
 
 jobs:
   shaders:

@@ -13,14 +13,15 @@ on:
     branches:
       - develop
     paths:
+      - '.github/workflows/mapbase_build-base.yml'
       - '.github/workflows/mapbase_build-sp-rel-games.yml'
-      - 'mp/src/vpc_scripts/**'
-      - 'mp/src/game/**'
-      - 'mp/src/mathlib/**'
-      - 'mp/src/responserules/runtime/**'
-      - 'mp/src/tier1/**'
-      - 'mp/src/vgui2/vgui_controls/**'
-      - 'mp/src/vscript/**'
+      - 'sp/src/vpc_scripts/**'
+      - 'sp/src/game/**'
+      - 'sp/src/mathlib/**'
+      - 'sp/src/responserules/runtime/**'
+      - 'sp/src/tier1/**'
+      - 'sp/src/vgui2/vgui_controls/**'
+      - 'sp/src/vscript/**'
 
 jobs:
   games:
