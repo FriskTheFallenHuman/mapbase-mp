@@ -564,6 +564,8 @@ public:
 		m_bIsActive = false;
 	}
 
+	void Activate();
+
 	bool KeyValue( const char* szKeyName, const char* szValue );
 
 	void ChangeRelationships( int disposition, int iReverting, CBaseEntity* pActivator = NULL, CBaseEntity* pCaller = NULL );
@@ -593,6 +595,19 @@ DEFINE_FIELD( m_iSubjectClass, FIELD_INTEGER ),
 			  DEFINE_FIELD( m_iTargetClass, FIELD_INTEGER ),
 
 			  END_DATADESC()
+
+//---------------------------------------------------------
+//---------------------------------------------------------
+void CAI_ClassRelationship::Activate()
+{
+	BaseClass::Activate();
+
+	// Must re-apply every time a save is loaded
+	if ( m_bIsActive )
+	{
+		ApplyRelationship();
+	}
+}
 
 //-----------------------------------------------------------------------------
 // Purpose: Caches entity key values until spawn is called.
