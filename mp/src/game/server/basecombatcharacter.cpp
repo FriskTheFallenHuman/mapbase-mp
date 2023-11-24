@@ -3591,7 +3591,7 @@ void CBaseCombatCharacter::AddRelationship( const char* pszRelationship, CBaseEn
 				}
 				else
 				{
-#ifdef MAPBASE // I know the extra #ifdef is pointless, but it's there so you know this is new
+					// NEW: Classify class relationships
 					if( !Q_strnicmp( entityString, "CLASS_", 5 ) )
 					{
 						// Go through all of the classes and find which one this is
@@ -3612,7 +3612,6 @@ void CBaseCombatCharacter::AddRelationship( const char* pszRelationship, CBaseEn
 					}
 
 					if( !bFoundEntity )
-#endif
 						DevWarning( "Couldn't set relationship to unknown entity or class (%s)!\n", entityString );
 				}
 			}

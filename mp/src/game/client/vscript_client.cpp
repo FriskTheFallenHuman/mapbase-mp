@@ -1,4 +1,4 @@
-//========== Copyright © 2008, Valve Corporation, All rights reserved. ========
+//========== Copyright ï¿½ 2008, Valve Corporation, All rights reserved. ========
 //
 // Purpose:
 //
@@ -461,7 +461,6 @@ const Vector& CScriptMaterialProxy::GetVarVector( int i )
 		return vec3_origin;
 	}
 
-	// This is really bad. Too bad!
 	return *( reinterpret_cast<const Vector*>( m_MaterialVars[i]->GetVecValue() ) );
 }
 
