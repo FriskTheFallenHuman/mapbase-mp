@@ -65,6 +65,7 @@ Mapbase may also contain new third-party software distributed under specific lic
 - [Adrianilloo/SourceSDK2013](https://github.com/Adrianilloo/SourceSDK2013): More fixes for HL2MP.
 - [zm-reborn/zmr-game](https://github.com/zm-reborn/zmr-game): Misc Fixes & Improvements to the HL2MPAnimstates & New C_Hands system.
 - [weaponcubemap/source-sdk-2013](https://github.com/weaponcubemap/source-sdk-2013): More Fixes to HL2MP and fixes for null pointers.
+- [reactivedrop_public_src/reactivedrop_beta](https://github.com/ReactiveDrop/reactivedrop_public_src/tree/reactivedrop_beta): Added LanguagePreference
 
 ## Valve Developer Community (VDC) sources:
 
