@@ -500,9 +500,9 @@ public:
 
 				AI_TraceHull( baseNPC->GetAbsOrigin(), vUpBit, baseNPC->GetHullMins(), baseNPC->GetHullMaxs(),
 							  MASK_NPCSOLID, baseNPC, COLLISION_GROUP_NONE, &tr );
-							  
+
 				// NEW: For vphysics/flying entities, do a second attempt which teleports based on bounding box
-				if ( (baseNPC->GetMoveType() == MOVETYPE_VPHYSICS || baseNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY) && (tr.startsolid || tr.fraction < 1.0) )
+				if( ( baseNPC->GetMoveType() == MOVETYPE_VPHYSICS || baseNPC->CapabilitiesGet() & bits_CAP_MOVE_FLY ) && ( tr.startsolid || tr.fraction < 1.0 ) )
 				{
 					vUpBit.z += baseNPC->BoundingRadius();
 					baseNPC->Teleport( &vUpBit, NULL, NULL );
@@ -511,7 +511,7 @@ public:
 					Vector	vUpBit2 = vUpBit;
 					vUpBit2.z += 1;
 					AI_TraceHull( vUpBit, vUpBit2, baseNPC->CollisionProp()->OBBMins(), baseNPC->CollisionProp()->OBBMaxs(),
-						MASK_NPCSOLID, baseNPC, COLLISION_GROUP_NONE, &tr );
+								  MASK_NPCSOLID, baseNPC, COLLISION_GROUP_NONE, &tr );
 				}
 
 				if( tr.startsolid || ( tr.fraction < 1.0 ) )

@@ -598,12 +598,12 @@ DEFINE_FIELD( m_iSubjectClass, FIELD_INTEGER ),
 
 //---------------------------------------------------------
 //---------------------------------------------------------
-void CAI_ClassRelationship::Activate()
+			  void CAI_ClassRelationship::Activate()
 {
 	BaseClass::Activate();
 
 	// Must re-apply every time a save is loaded
-	if ( m_bIsActive )
+	if( m_bIsActive )
 	{
 		ApplyRelationship();
 	}
@@ -615,7 +615,7 @@ void CAI_ClassRelationship::Activate()
 //			szValue -
 // Output :
 //-----------------------------------------------------------------------------
-			  bool CAI_ClassRelationship::KeyValue( const char* szKeyName, const char* szValue )
+bool CAI_ClassRelationship::KeyValue( const char* szKeyName, const char* szValue )
 {
 	// Override regular subject and target from ai_relationship
 	if( FStrEq( szKeyName, "subject" ) )
@@ -669,8 +669,10 @@ void CAI_ClassRelationship::ChangeRelationships( int disposition, int iReverting
 		return;
 	}
 
-	if ( !CBaseCombatCharacter::DefaultRelationshipsLoaded() )
+	if( !CBaseCombatCharacter::DefaultRelationshipsLoaded() )
+	{
 		return;
+	}
 
 	if( m_iPreviousDisposition == -1 && iReverting == NOT_REVERTING )
 	{

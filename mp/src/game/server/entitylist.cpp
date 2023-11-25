@@ -771,7 +771,7 @@ CBaseEntity* CGlobalEntityList::FindEntityCustomProcedural( CBaseEntity* pStartE
 			g_pScriptVM->ExecuteFunction( g_CustomProcedurals[i].hFunc, args, 5, &functionReturn, NULL, true );
 
 
-			if (pStartEntity && ToEnt( functionReturn.m_hScript ) == pStartEntity)
+			if( pStartEntity && ToEnt( functionReturn.m_hScript ) == pStartEntity )
 			{
 				Warning( "WARNING: Custom procedural %s returned entity identical to start entity (%s), returning null\n", g_CustomProcedurals[i].szName, pStartEntity->GetDebugName() );
 				return NULL;

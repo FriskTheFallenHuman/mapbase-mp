@@ -1,7 +1,7 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
 // Purpose: Material proxy for changing a texture based on the user's language preference.
-// 
+//
 // Example:
 //	UnlitGeneric {
 //		$basetexture "example/translated_texture_english"
@@ -15,7 +15,7 @@
 //			}
 //		}
 //	}
-// 
+//
 // $NoKeywords: $
 //=============================================================================//
 #include "cbase.h"
@@ -32,26 +32,26 @@
 class CLanguagePreferenceProxy : public CResultProxy
 {
 public:
-	bool Init( IMaterial *pMaterial, KeyValues *pKeyValues ) override;
-	void OnBind( void *pC_BaseEntity ) override;
+	bool Init( IMaterial* pMaterial, KeyValues* pKeyValues ) override;
+	void OnBind( void* pC_BaseEntity ) override;
 
-	ITexture *m_pTexture{};
+	ITexture* m_pTexture{};
 };
 
-bool CLanguagePreferenceProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues )
+bool CLanguagePreferenceProxy::Init( IMaterial* pMaterial, KeyValues* pKeyValues )
 {
-	if ( !CResultProxy::Init( pMaterial, pKeyValues ) )
+	if( !CResultProxy::Init( pMaterial, pKeyValues ) )
 	{
 		return false;
 	}
 
-	const char *szTextureName = pKeyValues->GetString( "default", NULL );
+	const char* szTextureName = pKeyValues->GetString( "default", NULL );
 	if( steamapicontext && steamapicontext->SteamApps() )
 	{
 		szTextureName = pKeyValues->GetString( steamapicontext->SteamApps()->GetCurrentGameLanguage(), szTextureName );
 	}
 
-	if ( !szTextureName )
+	if( !szTextureName )
 	{
 		Warning( "No default or language-specific texture for LanguagePreference proxy in %s\n", pMaterial->GetName() );
 		return false;
@@ -62,7 +62,7 @@ bool CLanguagePreferenceProxy::Init( IMaterial *pMaterial, KeyValues *pKeyValues
 	return !IsErrorTexture( m_pTexture );
 }
 
-void CLanguagePreferenceProxy::OnBind( void *pC_BaseEntity )
+void CLanguagePreferenceProxy::OnBind( void* pC_BaseEntity )
 {
 	Assert( m_pResult && m_pTexture );
 	Assert( m_pResult->GetType() == MATERIAL_VAR_TYPE_TEXTURE );
