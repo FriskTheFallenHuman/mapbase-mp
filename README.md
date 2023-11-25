@@ -131,7 +131,7 @@ Mapbase may also contain new third-party software distributed under specific lic
 - [Pull Request #206](https://github.com/mapbase-source/source-sdk-2013/pull/206): Fix `CScriptNetMsgHelper::WriteEntity()`.
 - [Pull Request #213](https://github.com/mapbase-source/source-sdk-2013/pull/213): VScript HUD visibility control, optimizations for 3D skybox angles/fake worldportals.
 - [Pull Request #221](https://github.com/mapbase-source/source-sdk-2013/pull/221): VScript serialisation rewrite.
-- [Pull Request #217](https://github.com/mapbase-source/source-sdk-2013/pull/217): Vscript vgui hud viewport parent.
+- [Pull Request #217](https://github.com/mapbase-source/source-sdk-2013/pull/217): VScript VGUI HUD viewport parenting, game_text and vgui_text_display VScript font fallback
 
 ## Contributions from z33ky:
 
@@ -175,6 +175,10 @@ Mapbase may also contain new third-party software distributed under specific lic
 ## Contributions from Crimson-X1:
 
 - [Pull Request #236](https://github.com/mapbase-source/source-sdk-2013/pull/236): Toggleable "Prop Sprinting" Mechanic.
+
+## Contribution from arbabf
+
+- [Assets Repo Pull Request #1](https://github.com/mapbase-source/mapbase-game-src/pull/1): Advanced video options duplicate field name fix by arbabf, This is asset-based and not reflected in the code.
 
 # Other sources:
 
