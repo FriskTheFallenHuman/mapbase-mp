@@ -2647,6 +2647,7 @@ public:
 	virtual void Touch( CBaseEntity* pOther ) OVERRIDE;
 
 	string_t m_iLandmark;
+	bool m_bReorientLandmark;
 
 	DECLARE_DATADESC();
 };
@@ -2656,6 +2657,7 @@ LINK_ENTITY_TO_CLASS( trigger_teleport, CTriggerTeleport );
 BEGIN_DATADESC( CTriggerTeleport )
 
 DEFINE_KEYFIELD( m_iLandmark, FIELD_STRING, "landmark" ),
+				 DEFINE_KEYFIELD( m_bReorientLandmark, FIELD_BOOLEAN, "reorient_landmark" ),
 
 				 END_DATADESC()
 
@@ -2674,7 +2676,8 @@ DEFINE_KEYFIELD( m_iLandmark, FIELD_STRING, "landmark" ),
 //
 //			If a landmark was specified, the toucher is offset from the target
 //			by their initial offset from the landmark and their angles are
-//			left alone.
+//			left alone unless reorient_landmark is set, in which case their
+//			velocity and angles are reoriented to the destination's angles.
 //
 // Input  : pOther - The entity that touched us.
 //-----------------------------------------------------------------------------
@@ -2688,7 +2691,7 @@ void CTriggerTeleport::Touch( CBaseEntity* pOther )
 	}
 
 	// The activator and caller are the same
-	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, NULL, pOther, pOther );
+	pentTarget = gEntList.FindEntityByName( pentTarget, m_target, this, pOther, pOther );
 	if( !pentTarget )
 	{
 		return;
@@ -2702,7 +2705,7 @@ void CTriggerTeleport::Touch( CBaseEntity* pOther )
 	if( m_iLandmark != NULL_STRING )
 	{
 		// The activator and caller are the same
-		pentLandmark = gEntList.FindEntityByName( pentLandmark, m_iLandmark, NULL, pOther, pOther );
+		pentLandmark = gEntList.FindEntityByName( pentLandmark, m_iLandmark, this, pOther, pOther );
 		if( pentLandmark )
 		{
 			vecLandmarkOffset = pOther->GetAbsOrigin() - pentLandmark->GetAbsOrigin();
@@ -2711,37 +2714,44 @@ void CTriggerTeleport::Touch( CBaseEntity* pOther )
 
 	pOther->SetGroundEntity( NULL );
 
-	Vector tmp = pentTarget->GetAbsOrigin();
-
-	if( !pentLandmark && pOther->IsPlayer() )
-	{
-		// make origin adjustments in case the teleportee is a player. (origin in center, not at feet)
-		tmp.z -= pOther->WorldAlignMins().z;
-	}
-
-	//
-	// Only modify the toucher's angles and zero their velocity if no landmark was specified.
-	//
-	const QAngle* pAngles = NULL;
-	Vector* pVelocity = NULL;
-
-#ifdef HL1_DLL
-	Vector vecZero( 0, 0, 0 );
-#endif
+	Vector vecPentTargetOrigin = pentTarget->GetAbsOrigin();
 
 	if( !pentLandmark && !HasSpawnFlags( SF_TELEPORT_PRESERVE_ANGLES ) )
 	{
-		pAngles = &pentTarget->GetAbsAngles();
-
-#ifdef HL1_DLL
-		pVelocity = &vecZero;
-#else
-		pVelocity = NULL;	//BUGBUG - This does not set the player's velocity to zero!!!
-#endif
+		pOther->Teleport( &pentTarget->GetAbsOrigin(), &pentTarget->GetAbsAngles(), NULL );
 	}
+	else if( pentLandmark && m_bReorientLandmark )
+	{
+		// Transform the activator's origin, angles, and velocity into the world space of the destination landmark
+		matrix3x4_t pTransformMatrix;
+		matrix3x4_t pLocalLandmarkMatrix;
+		matrix3x4_t pRemoteLandmarkMatrix = pentTarget->EntityToWorldTransform();
 
-	tmp += vecLandmarkOffset;
-	pOther->Teleport( &tmp, pAngles, pVelocity );
+		MatrixInvert( pentLandmark->EntityToWorldTransform(), pLocalLandmarkMatrix );
+		ConcatTransforms( pRemoteLandmarkMatrix, pLocalLandmarkMatrix, pTransformMatrix );
+
+		Vector vecNewActivatorOrigin;
+		Vector vecNewActivatorVelocity;
+		QAngle qActivatorEyeAngles = pOther->GetAbsAngles();
+
+		if( pOther->IsPlayer() )
+		{
+			qActivatorEyeAngles = pOther->EyeAngles();
+		}
+
+		QAngle qNewActivatorEyeAngles = TransformAnglesToWorldSpace( qActivatorEyeAngles, pTransformMatrix );
+		VectorTransform( pOther->GetAbsOrigin(), pTransformMatrix, vecNewActivatorOrigin );
+		VectorRotate( pOther->GetAbsVelocity(), pTransformMatrix, vecNewActivatorVelocity );
+
+		pOther->Teleport( &vecNewActivatorOrigin, &qNewActivatorEyeAngles, &vecNewActivatorVelocity );
+	}
+	else
+	{
+		// Preserve angles flag is set or old landmark behavior
+		Vector vecNewActivatorOrigin = pentTarget->GetAbsOrigin() + vecLandmarkOffset;
+
+		pOther->Teleport( &vecNewActivatorOrigin, NULL, NULL );
+	}
 }
 
 
