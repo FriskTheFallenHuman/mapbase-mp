@@ -6748,6 +6748,9 @@ void CAboveWaterView::CReflectionView::Setup( bool bReflectEntities )
 	// NOTE: Clearing the color is unnecessary since we're drawing the skybox
 	// and dest-alpha is never used in the reflection
 	m_DrawFlags = DF_RENDER_REFLECTION | DF_CLIP_Z | DF_CLIP_BELOW |
+#ifdef MAPBASE
+				  DF_RENDER_UNDERWATER | // draw partial underwater to fix ugly water edge
+#endif // MAPBASE
 				  DF_RENDER_ABOVEWATER;
 
 	// NOTE: This will cause us to draw the 2d skybox in the reflection
