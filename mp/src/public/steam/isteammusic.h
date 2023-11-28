@@ -3,17 +3,17 @@
 #ifndef ISTEAMMUSIC_H
 #define ISTEAMMUSIC_H
 #ifdef _WIN32
-	#pragma once
+#pragma once
 #endif
 
-#include "isteamclient.h"
+#include "steam_api_common.h"
 
 //-----------------------------------------------------------------------------
-// Purpose:
+// Purpose: 
 //-----------------------------------------------------------------------------
 enum AudioPlayback_Status
 {
-	AudioPlayback_Undefined = 0,
+	AudioPlayback_Undefined = 0, 
 	AudioPlayback_Playing = 1,
 	AudioPlayback_Paused = 2,
 	AudioPlayback_Idle = 3
@@ -28,8 +28,8 @@ class ISteamMusic
 public:
 	virtual bool BIsEnabled() = 0;
 	virtual bool BIsPlaying() = 0;
-
-	virtual AudioPlayback_Status GetPlaybackStatus() = 0;
+	
+	virtual AudioPlayback_Status GetPlaybackStatus() = 0; 
 
 	virtual void Play() = 0;
 	virtual void Pause() = 0;
@@ -39,27 +39,31 @@ public:
 	// volume is between 0.0 and 1.0
 	virtual void SetVolume( float flVolume ) = 0;
 	virtual float GetVolume() = 0;
-
+	
 };
 
 #define STEAMMUSIC_INTERFACE_VERSION "STEAMMUSIC_INTERFACE_VERSION001"
 
+// Global interface accessor
+inline ISteamMusic *SteamMusic();
+STEAM_DEFINE_USER_INTERFACE_ACCESSOR( ISteamMusic *, SteamMusic, STEAMMUSIC_INTERFACE_VERSION );
+
 // callbacks
 #if defined( VALVE_CALLBACK_PACK_SMALL )
-	#pragma pack( push, 4 )
+#pragma pack( push, 4 )
 #elif defined( VALVE_CALLBACK_PACK_LARGE )
-	#pragma pack( push, 8 )
+#pragma pack( push, 8 )
 #else
-	#error isteamclient.h must be included
-#endif
+#error steam_api_common.h should define VALVE_CALLBACK_PACK_xxx
+#endif 
 
 
-DEFINE_CALLBACK( PlaybackStatusHasChanged_t, k_iSteamMusicCallbacks + 1 )
-END_DEFINE_CALLBACK_0()
+STEAM_CALLBACK_BEGIN( PlaybackStatusHasChanged_t, k_iSteamMusicCallbacks + 1 )
+STEAM_CALLBACK_END(0)
 
-DEFINE_CALLBACK( VolumeHasChanged_t, k_iSteamMusicCallbacks + 2 )
-CALLBACK_MEMBER( 0,	float, m_flNewVolume )
-END_DEFINE_CALLBACK_1()
+STEAM_CALLBACK_BEGIN( VolumeHasChanged_t, k_iSteamMusicCallbacks + 2 )
+ 	STEAM_CALLBACK_MEMBER( 0,	float, m_flNewVolume )
+STEAM_CALLBACK_END(1)
 
 #pragma pack( pop )
 

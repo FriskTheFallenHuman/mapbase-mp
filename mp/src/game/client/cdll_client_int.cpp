@@ -15,7 +15,9 @@
 #include "prediction.h"
 #include "clientsideeffects.h"
 #include "particlemgr.h"
+#ifndef NO_STEAM
 #include "steam/steam_api.h"
+#endif
 #include "initializer.h"
 #include "smoke_fog_overlay.h"
 #include "view.h"
