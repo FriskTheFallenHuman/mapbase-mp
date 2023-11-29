@@ -1960,7 +1960,20 @@ void CBreakableProp::Break( CBaseEntity* pBreaker, const CTakeDamageInfo& info )
 	{
 		// don't automatically make anything COLLISION_GROUP_NONE or it will
 		// collide with debris being ejected by breaking
+#ifdef MAPBASE
+		// Use the debris flag only for item_item_crate this is for purely gameplay
+		// purposes
+		if( FClassnameIs( this, "item_item_crate" ) )
+		{
+			params.defCollisionGroup = COLLISION_GROUP_DEBRIS;
+		}
+		else
+		{
+			params.defCollisionGroup = COLLISION_GROUP_INTERACTIVE;
+		}
+#else
 		params.defCollisionGroup = COLLISION_GROUP_INTERACTIVE;
+#endif
 	}
 	params.defBurstScale = 100;
 
