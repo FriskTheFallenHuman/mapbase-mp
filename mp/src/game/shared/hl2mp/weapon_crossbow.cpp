@@ -33,6 +33,9 @@
 	#include "te_effect_dispatch.h"
 	#include "soundent.h"
 	#include "game.h"
+#ifdef MAPBASE
+	#include "func_break.h"
+#endif // MAPBASE
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
@@ -428,9 +431,20 @@ void CCrossbowBolt::BoltTouch( CBaseEntity* pOther )
 
 			if( ( hitDot < 0.5f ) && ( speed > 100 ) )
 			{
+				// Go through glass
 				if( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
 				{
 					return;
+				}
+
+				// Go through thin material types
+				if( FClassnameIs( pOther, "func_breakable" ) || FClassnameIs( pOther, "func_breakable_surf" ) )
+				{
+					CBreakable* pOtherEntity = static_cast<CBreakable*>( pOther );
+					if( ( pOtherEntity->GetMaterialType() == matGlass ) || ( pOtherEntity->GetMaterialType() == matWeb ) )
+					{
+						return;
+					}
 				}
 
 				Vector vReflection = 2.0f * tr.plane.normal * hitDot + vecDir;
@@ -445,9 +459,20 @@ void CCrossbowBolt::BoltTouch( CBaseEntity* pOther )
 			}
 			else
 			{
+				// Go through glass
 				if( pOther->GetCollisionGroup() == COLLISION_GROUP_BREAKABLE_GLASS )
 				{
 					return;
+				}
+
+				// Go through thin material types
+				if( FClassnameIs( pOther, "func_breakable" ) || FClassnameIs( pOther, "func_breakable_surf" ) )
+				{
+					CBreakable* pOtherEntity = static_cast<CBreakable*>( pOther );
+					if( ( pOtherEntity->GetMaterialType() == matGlass ) || ( pOtherEntity->GetMaterialType() == matWeb ) )
+					{
+						return;
+					}
 				}
 
 				SetThink( &CCrossbowBolt::SUB_Remove );
