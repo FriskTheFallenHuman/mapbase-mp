@@ -31,6 +31,7 @@ public:
 public:
 	float			m_fDisappearDist;
 #ifdef MAPBASE
+	bool			m_bInvertAlpha;
 	float			m_fDisappearMaxDist;
 #endif
 };
@@ -47,6 +48,7 @@ ConVar lod_TransitionDist( "lod_TransitionDist", "800" );
 IMPLEMENT_CLIENTCLASS_DT( C_Func_LOD, DT_Func_LOD, CFunc_LOD )
 RecvPropFloat( RECVINFO( m_fDisappearDist ) ),
 #ifdef MAPBASE
+	RecvPropBool( RECVINFO( m_bInvertAlpha ) ),
 	RecvPropFloat( RECVINFO( m_fDisappearMaxDist ) ),
 #endif
 			   END_RECV_TABLE()
@@ -71,7 +73,8 @@ RecvPropFloat( RECVINFO( m_fDisappearDist ) ),
 unsigned char C_Func_LOD::GetClientSideFade()
 {
 #ifdef MAPBASE
-	return UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + ( m_fDisappearMaxDist != 0 ? m_fDisappearMaxDist : lod_TransitionDist.GetFloat() ), 1.0f );
+	unsigned char alpha = UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + ( m_fDisappearMaxDist != 0 ? m_fDisappearMaxDist : lod_TransitionDist.GetFloat() ), 1.0f );
+	return m_bInvertAlpha ? 255 - alpha : alpha;
 #else
 	return UTIL_ComputeEntityFade( this, m_fDisappearDist, m_fDisappearDist + lod_TransitionDist.GetFloat(), 1.0f );
 #endif
