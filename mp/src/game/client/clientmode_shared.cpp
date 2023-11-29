@@ -66,10 +66,6 @@
 	#include "econ_item_description.h"
 #endif
 
-#ifdef GLOWS_ENABLE
-	#include "clienteffectprecachesystem.h"
-#endif
-
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
@@ -99,13 +95,6 @@ CON_COMMAND( cl_reload_localization_files, "Reloads all localization files" )
 {
 	g_pVGuiLocalize->ReloadLocalizationFiles();
 }
-
-#ifdef GLOWS_ENABLE
-	CLIENTEFFECT_REGISTER_BEGIN( PrecachePostProcessingEffectsGlow )
-	CLIENTEFFECT_MATERIAL( "dev/glow_color" )
-	CLIENTEFFECT_MATERIAL( "dev/halo_add_to_screen" )
-	CLIENTEFFECT_REGISTER_END_CONDITIONAL( engine->GetDXSupportLevel() >= 90 )
-#endif
 
 #ifdef VOICE_VOX_ENABLE
 void VoxCallback( IConVar* var, const char* oldString, float oldFloat )
@@ -858,7 +847,7 @@ int ClientModeShared::HudElementKeyInput( int down, ButtonCode_t keynum, const c
 bool ClientModeShared::DoPostScreenSpaceEffects( const CViewSetup* pSetup )
 {
 #ifdef GLOWS_ENABLE
-	g_GlowObjectManager.RenderGlowEffects( pSetup, 0 );
+	g_GlowObjectManager.RenderGlowEffects( pSetup );
 #endif
 
 #if defined( REPLAY_ENABLED )
