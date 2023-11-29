@@ -1150,15 +1150,14 @@ bool CMultiplayRules::PlayFootstepSounds( CBasePlayer* pl )
 
 bool CMultiplayRules::FAllowFlashlight( void )
 {
-	return flashlight.GetInt() != 0;
+	return ( flashlight.GetBool() != false );
 }
 
 //=========================================================
 //=========================================================
 bool CMultiplayRules::FAllowNPCs( void )
 {
-	return true; // E3 hack
-	return ( allowNPCs.GetInt() != 0 );
+	return ( allowNPCs.GetBool() != false );
 }
 
 //=========================================================
