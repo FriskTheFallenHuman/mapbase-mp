@@ -37,6 +37,7 @@ set(
 	"${SRCDIR}/game/shared/mapbase/matchers.cpp"
 	"${SRCDIR}/game/shared/mapbase/matchers.h"
 	"${CLIENT_MAPBASE_DIR}/mapbase/languagepreferenceproxy.cpp"
+	"${CLIENT_MAPBASE_DIR}/mapbase/c_beamspotlight.cpp"
 	"${CLIENT_MAPBASE_DIR}/mapbase/c_func_clientclip.cpp"
 	"${CLIENT_MAPBASE_DIR}/mapbase/c_func_fake_worldportal.cpp"
 	"${CLIENT_MAPBASE_DIR}/mapbase/c_func_fake_worldportal.h"
