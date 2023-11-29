@@ -1169,6 +1169,13 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		"${SRCDIR}/thirdparty/sixensesdk/include"
 	)
 
+	if (NOT ${MAPBASE_GIGALIB})
+		target_link_libraries(
+			${target} PRIVATE
+			$<$<AND:${IS_WINDOWS},${BUILD_REPLAY}>:CURL_STATICLIB>
+		)
+	endif()
+
 	target_compile_definitions(
 		${target} PRIVATE
 		NO_STRING_T
@@ -1180,13 +1187,32 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		_snprintf=use_Q_snprintf_instead
 		$<${IS_WINDOWS}:fopen=dont_use_fopen>
 		$<${IS_LINUX}:USE_WEBM_FOR_REPLAY>
-		$<$<AND:${IS_WINDOWS},${BUILD_REPLAY}>:CURL_STATICLIB>
 	)
 
 	target_precompile_headers(
 		${target} PRIVATE
 		"${CLIENT_BASE_DIR}/cbase.h"
 	)
+	
+	if (NOT ${MAPBASE_GIGALIB})
+		target_link_libraries(
+			${target} PRIVATE
+
+			"$<$<AND:${IS_WINDOWS},${BUILD_REPLAY}>:wsock32;Ws2_32>"
+
+			#"$<${IS_POSIX}:${LIBCOMMON}/libcrypto${STATIC_LIB_EXT}>"
+
+			#"$<${IS_OSX}:${LIBCOMMON}/curl${STATIC_LIB_EXT}>"
+
+			#"$<${IS_WINDOWS}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
+			"$<$<OR:${IS_WINDOWS},${IS_LINUX}>:${LIBPUBLIC}/libz${STATIC_LIB_EXT}>"
+
+			#"$<${IS_LINUX}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
+			#"$<${IS_LINUX}:${LIBCOMMON}/libcurlssl${STATIC_LIB_EXT}>"
+
+			#"$<${IS_LINUX}:${LIBCOMMON}/libssl${STATIC_LIB_EXT}>"
+		)
+	endif()
 
 	target_link_libraries(
 		${target} PRIVATE
@@ -1194,7 +1220,6 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		"$<${IS_OSX}:-framework Carbon>"
 		$<${IS_LINUX}:rt>
 		$<${IS_WINDOWS}:winmm>
-		"$<$<AND:${IS_WINDOWS},${BUILD_REPLAY}>:wsock32;Ws2_32>"
 		"${LIBPUBLIC}/particles${STATIC_LIB_EXT}"
 
 		"${LIBPUBLIC}/bitmap${STATIC_LIB_EXT}"
@@ -1208,24 +1233,50 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		vgui_controls
 		"${LIBPUBLIC}/vtf${STATIC_LIB_EXT}"
 		steam_api
-
-		#"$<${IS_POSIX}:${LIBCOMMON}/libcrypto${STATIC_LIB_EXT}>"
-
-		#"$<${IS_OSX}:${LIBCOMMON}/curl${STATIC_LIB_EXT}>"
-
-		#"$<${IS_WINDOWS}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
-		"$<$<OR:${IS_WINDOWS},${IS_LINUX}>:${LIBPUBLIC}/libz${STATIC_LIB_EXT}>"
-
-		#"$<${IS_LINUX}:${LIBCOMMON}/libcurl${STATIC_LIB_EXT}>"
-		#"$<${IS_LINUX}:${LIBCOMMON}/libcurlssl${STATIC_LIB_EXT}>"
-
-		#"$<${IS_LINUX}:${LIBCOMMON}/libssl${STATIC_LIB_EXT}>"
 	)
 
 	# Mapbase specific files
 	if (${MAPBASE})
 		include("${CMAKE_CURRENT_LIST_DIR}/client_mapbase.cmake")
 		target_use_client_mapbase_features(${target})
+	endif()
+	
+	if (${MAPBASE_GIGALIB})
+		include("${SRCDIR}/thirdparty/gigalib/mapbase-gigalib.cmake")
+		target_mapbase_gigalib(${target})
+		
+		configure_file(
+			"${SRCDIR}/thirdparty/gigalib/gigalib_config.h.in"
+			"${SRCDIR}/thirdparty/gigalib/gigalib_config.h"
+		)
+		
+		target_compile_definitions(
+			${target} PRIVATE
+			# Enable bytepatching engine binaries with various fixes and tweaks
+			$<$<BOOL:${MAPBASE_ENGINE_PATCHES}>:BIN_PATCHES>
+			
+			# Enable detouring engine functions with various fixes and tweaks, including an anti server lag measure
+			# similar to tf2's net_chan_limit_msec
+			# also required for hooking other engine funcs for misc functionality
+			$<$<BOOL:${MAPBASE_ENGINE_DETOURS}>:ENGINE_DETOURS>
+			
+			# Enable blacklisting certain server IPs from all clients
+			# REQUIRES engine detours
+			$<$<BOOL:${MAPBASE_SERVER_BLACKLISTS}>:BLACKLISTS>
+			
+			# Enable optionally flushing server downloadables every time the client disconnects from a server
+			# this includes sprays, all custom content, and map overrides, with the first two being controlled by client cvars,
+			# and map overrides being done automatically to prevent servers from abusing clients
+			# see cl_flush_sprays_on_dc (default 1) and cl_flush_downloads_on_dc (default 0)
+			# REQUIRES engine detours
+			$<$<BOOL:${MAPBASE_FLUSH_DLS}>:FLUSH_DLS>
+			
+			# Enable SentryIO telemetry / crash reporting
+			# You *NEED* a privacy policy if you want to not run afoul of the GDPR
+			$<$<BOOL:${MAPBASE_SENTRY_IO}>:SENTRY>
+			
+			SDKCURL
+		)
 	endif()
 	
 	# Imgui specific files

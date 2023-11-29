@@ -993,4 +993,20 @@ function(target_use_server_base target EXCLUDE_SOURCES)
 		include("${CMAKE_CURRENT_LIST_DIR}/server_mapbase.cmake")
 		target_use_server_mapbase_features(${target})
 	endif()
+	
+	if (${MAPBASE_GIGALIB})
+		include("${SRCDIR}/thirdparty/gigalib/mapbase-gigalib.cmake")
+		target_mapbase_gigalib(${target})
+		
+		target_compile_definitions(
+			${target} PRIVATE
+			# Enable bytepatching engine binaries with various fixes and tweaks
+			$<$<BOOL:${MAPBASE_ENGINE_PATCHES}>:BIN_PATCHES>
+			
+			# Enable detouring engine functions with various fixes and tweaks, including an anti server lag measure
+			# similar to tf2's net_chan_limit_msec
+			# also required for hooking other engine funcs for misc functionality
+			$<$<BOOL:${MAPBASE_ENGINE_DETOURS}>:ENGINE_DETOURS>
+		)
+	endif()
 endfunction()

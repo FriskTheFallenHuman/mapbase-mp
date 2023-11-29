@@ -325,6 +325,10 @@ set_target_properties(
 
 target_use_server_base(server_hl2mp SERVER_HL2MP_EXCLUDE_SOURCES)
 
+if (${MAPBASE_GIGALIB})
+	TargetBuildAndAddProto(server_hl2mp "${SRCDIR}/thirdparty/gigalib/src/networking/messages.proto" "${SRCDIR}/thirdparty/gigalib/src/networking")
+endif()
+
 target_include_directories(
 	server_hl2mp PRIVATE
 	"${SERVER_HL2MP_DIR}/hl2"

@@ -39,6 +39,9 @@ struct studiohdr_t;
 
 #ifdef MAPBASE
 	#include "tier1/mapbase_con_groups.h"
+	#ifdef MAPBASE_GIGALIB
+		#include "../thirdparty/gigalib/gigalib_config.h"
+	#endif
 #endif
 
 
