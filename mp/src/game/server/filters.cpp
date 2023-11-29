@@ -692,7 +692,7 @@ protected:
 		}
 #endif
 		//Tony; these are bitflags. check them as so.
-		return ((info.GetDamageType() & m_iDamageType) == m_iDamageType);
+		return ( ( info.GetDamageType() & m_iDamageType ) == m_iDamageType );
 	}
 
 #ifdef MAPBASE

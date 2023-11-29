@@ -1,6 +1,6 @@
 //========= Copyright Valve Corporation, All rights reserved. ============//
 //
-// Purpose: 
+// Purpose:
 //
 // $NoKeywords: $
 //=============================================================================//
@@ -8,7 +8,7 @@
 #ifndef NPC_ASSASSIN_H
 #define NPC_ASSASSIN_H
 #ifdef _WIN32
-#pragma once
+	#pragma once
 #endif
 
 #include "ai_basenpc.h"
@@ -36,39 +36,45 @@ public:
 	DECLARE_DATADESC();
 
 	CNPC_Assassin( void );
-	
-	Class_T		Classify( void )			{ return CLASS_COMBINE;	}
-	int			GetSoundInterests ( void )	{ return ( SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_DANGER | SOUND_PHYSICS_DANGER | SOUND_BULLET_IMPACT | SOUND_MOVE_AWAY );	}
 
-	int			SelectSchedule ( void );
-	int			MeleeAttack1Conditions ( float flDot, float flDist );
-	int			RangeAttack1Conditions ( float flDot, float flDist );
-	int			RangeAttack2Conditions ( float flDot, float flDist );
+	Class_T		Classify( void )
+	{
+		return CLASS_COMBINE;
+	}
+	int			GetSoundInterests( void )
+	{
+		return ( SOUND_WORLD | SOUND_COMBAT | SOUND_PLAYER | SOUND_DANGER | SOUND_PHYSICS_DANGER | SOUND_BULLET_IMPACT | SOUND_MOVE_AWAY );
+	}
+
+	int			SelectSchedule( void );
+	int			MeleeAttack1Conditions( float flDot, float flDist );
+	int			RangeAttack1Conditions( float flDot, float flDist );
+	int			RangeAttack2Conditions( float flDot, float flDist );
 
 	void		Precache( void );
 	void		Spawn( void );
 	void		PrescheduleThink( void );
-	void		HandleAnimEvent( animevent_t *pEvent );
-	void		StartTask( const Task_t *pTask );
-	void		RunTask( const Task_t *pTask );
+	void		HandleAnimEvent( animevent_t* pEvent );
+	void		StartTask( const Task_t* pTask );
+	void		RunTask( const Task_t* pTask );
 	void		OnScheduleChange( void );
-	void		GatherEnemyConditions( CBaseEntity *pEnemy );
+	void		GatherEnemyConditions( CBaseEntity* pEnemy );
 	void		BuildScheduleTestBits( void );
-	void		Event_Killed( const CTakeDamageInfo &info );
+	void		Event_Killed( const CTakeDamageInfo& info );
 
-	bool		FValidateHintType ( CAI_Hint *pHint );
-	bool		IsJumpLegal(const Vector &startPos, const Vector &apex, const Vector &endPos) const;
-	bool		MovementCost( int moveType, const Vector &vecStart, const Vector &vecEnd, float *pCost );
+	bool		FValidateHintType( CAI_Hint* pHint );
+	bool		IsJumpLegal( const Vector& startPos, const Vector& apex, const Vector& endPos ) const;
+	bool		MovementCost( int moveType, const Vector& vecStart, const Vector& vecEnd, float* pCost );
 
 	float		MaxYawSpeed( void );
 
-	const Vector &GetViewOffset( void );
+	const Vector& GetViewOffset( void );
 
 private:
 
 	void		SetEyeState( eyeState_t state );
 	void		FirePistol( int hand );
-	bool		CanFlip( int flipType, Activity &activity, const Vector *avoidPosition );
+	bool		CanFlip( int flipType, Activity& activity, const Vector* avoidPosition );
 
 	int			m_nNumFlips;
 	int			m_nLastFlipType;
@@ -80,8 +86,8 @@ private:
 	bool		m_bAggressive;		// Sets certain state, including whether or not her eye is visible
 	bool		m_bBlinkState;
 
-	CSprite				*m_pEyeSprite;
-	CSpriteTrail		*m_pEyeTrail;
+	CSprite*				m_pEyeSprite;
+	CSpriteTrail*		m_pEyeTrail;
 
 public:
 

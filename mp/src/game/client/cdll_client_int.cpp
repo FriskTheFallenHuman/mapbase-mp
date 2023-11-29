@@ -16,7 +16,7 @@
 #include "clientsideeffects.h"
 #include "particlemgr.h"
 #ifndef NO_STEAM
-#include "steam/steam_api.h"
+	#include "steam/steam_api.h"
 #endif
 #include "initializer.h"
 #include "smoke_fog_overlay.h"
@@ -1122,7 +1122,7 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 		return false;
 	}
 
-#ifdef MAPBASE_MP	
+#ifdef MAPBASE_MP
 	engine->SetRestrictServerCommands( true );
 	engine->SetRestrictClientCommands( true );
 #endif
@@ -1244,9 +1244,9 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	// ------------------------------
 	// Force CELT audio codec, instead of the one from Steam
 	// ------------------------------
-	ConVar *sv_voicecodec = NULL;
+	ConVar* sv_voicecodec = NULL;
 	sv_voicecodec = g_pCVar->FindVar( "sv_voicecodec" );
-	if ( sv_voicecodec )
+	if( sv_voicecodec )
 	{
 		sv_voicecodec->SetValue( "vaudio_celt" );
 	}
@@ -1296,30 +1296,30 @@ int CHLClient::Init( CreateInterfaceFn appSystemFactory, CreateInterfaceFn physi
 	// ------------------------------
 	// Force async loading to be on
 	// ------------------------------
-	ConVar *mod_forcedata = NULL;
+	ConVar* mod_forcedata = NULL;
 	mod_forcedata = g_pCVar->FindVar( "mod_forcedata" );
-	if ( mod_forcedata )
+	if( mod_forcedata )
 	{
 		mod_forcedata->SetValue( 0 );
 	}
 
-	ConVar *mod_load_mesh_async = NULL;
+	ConVar* mod_load_mesh_async = NULL;
 	mod_load_mesh_async = g_pCVar->FindVar( "mod_load_mesh_async" );
-	if ( mod_load_mesh_async )
+	if( mod_load_mesh_async )
 	{
 		mod_load_mesh_async->SetValue( 1 );
 	}
 
-	ConVar *mod_load_anims_async = NULL;
+	ConVar* mod_load_anims_async = NULL;
 	mod_load_anims_async = g_pCVar->FindVar( "mod_load_anims_async" );
-	if ( mod_load_anims_async )
+	if( mod_load_anims_async )
 	{
 		mod_load_anims_async->SetValue( 1 );
 	}
 
-	ConVar *mod_load_vcollide_async = NULL;
+	ConVar* mod_load_vcollide_async = NULL;
 	mod_load_vcollide_async = g_pCVar->FindVar( "mod_load_vcollide_async" );
-	if ( mod_load_vcollide_async )
+	if( mod_load_vcollide_async )
 	{
 		mod_load_vcollide_async->SetValue( 1 );
 	}
@@ -1413,18 +1413,22 @@ void CHLClient::PostInit()
 	// ------------------------------
 	// Set update rate to 66
 	// ------------------------------
-	ConVar *cl_updaterate = NULL;
+	ConVar* cl_updaterate = NULL;
 	cl_updaterate = g_pCVar->FindVar( "cl_updaterate" );
 	if( cl_updaterate )
+	{
 		cl_updaterate->SetDefault( "66" );
+	}
 
 	// ------------------------------
 	// Set CMD rate to 67
 	// ------------------------------
-	ConVar *cl_cmdrate = NULL;
+	ConVar* cl_cmdrate = NULL;
 	cl_cmdrate = g_pCVar->FindVar( "cl_cmdrate" );
 	if( cl_cmdrate )
+	{
 		cl_cmdrate->SetDefault( "67" );
+	}
 #endif
 }
 
