@@ -97,11 +97,8 @@ void CGlowObjectManager::RenderGlowEffects( const CViewSetup* pSetup )
 		{
 			CMatRenderContextPtr pRenderContext( materials );
 
-			int nX, nY, nWidth, nHeight;
-			pRenderContext->GetViewport( nX, nY, nWidth, nHeight );
-
 			PIXEvent _pixEvent( pRenderContext, "EntityGlowEffects" );
-			ApplyEntityGlowEffects( pSetup, pRenderContext, glow_outline_effect_width.GetFloat(), nX, nY, nWidth, nHeight );
+			ApplyEntityGlowEffects( pSetup, pRenderContext, glow_outline_effect_width.GetFloat() );
 		}
 	}
 }
@@ -262,7 +259,7 @@ void CGlowObjectManager::DrawGlowVisible( CMatRenderContextPtr& pRenderContext )
 	}
 }
 
-void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup* pSetup, CMatRenderContextPtr& pRenderContext, float flBloomScale, int x, int y, int w, int h )
+void CGlowObjectManager::ApplyEntityGlowEffects( const CViewSetup* pSetup, CMatRenderContextPtr& pRenderContext, float flBloomScale )
 {
 	const PIXEvent pixEvent( pRenderContext, "ApplyEntityGlowEffects" );
 

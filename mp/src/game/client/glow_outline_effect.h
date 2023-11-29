@@ -114,7 +114,7 @@ public:
 
 private:
 
-	void ApplyEntityGlowEffects( const CViewSetup *pSetup, CMatRenderContextPtr &pRenderContext, float flBloomScale, int x, int y, int w, int h );
+	void ApplyEntityGlowEffects( const CViewSetup *pSetup, CMatRenderContextPtr &pRenderContext, float flBloomScale );
 
 	struct GlowObjectDefinition_t
 	{
