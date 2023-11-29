@@ -1141,6 +1141,10 @@ void CTriggerOnce::Spawn( void )
 // ##################################################################################
 #define SF_TRIGGERLOOK_FIREONCE		128
 #define SF_TRIGGERLOOK_USEVELOCITY	256
+#ifdef MAPBASE
+	#define SF_TRIGGERLOOK_INVERT 512
+#endif // MAPBASE
+
 
 class CTriggerLook : public CTriggerOnce
 {
@@ -1373,12 +1377,21 @@ void CTriggerLook::Touch( CBaseEntity* pOther )
 
 			if( m_flLookTimeTotal >= m_flLookTime )
 			{
-				Trigger( pOther, false, hLookingAtEntity );
+				if( !HasSpawnFlags( SF_TRIGGERLOOK_INVERT ) )
+				{
+					Trigger( pOther, false, hLookingAtEntity );
+				}
 			}
 		}
 		else
 		{
 			m_flLookTimeTotal	= -1;
+
+
+			if( HasSpawnFlags( SF_TRIGGERLOOK_INVERT ) )
+			{
+				Trigger( pOther, false, hLookingAtEntity );
+			}
 		}
 #else
 		Vector vTargetDir = m_hLookTarget->GetAbsOrigin() - pOther->EyePosition();
