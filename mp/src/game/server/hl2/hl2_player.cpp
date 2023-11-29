@@ -2715,14 +2715,17 @@ int CHL2_Player::FlashlightIsOn( void )
 	return IsEffectActive( EF_DIMLIGHT );
 }
 
-#ifdef MAPBASE_MP
-	extern ConVar flashlight;
-#endif
-
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 void CHL2_Player::FlashlightTurnOn( void )
 {
+#ifdef MAPBASE_MP
+	if( ( g_pGameRules && g_pGameRules->IsMultiplayer() && !g_pGameRules->FAllowFlashlight() ) )
+	{
+		return;
+	}
+#endif
+
 	if( m_bFlashlightDisabled )
 	{
 		return;
@@ -2743,7 +2746,7 @@ void CHL2_Player::FlashlightTurnOn( void )
 #endif
 
 #ifdef MAPBASE_MP
-	if( flashlight.GetInt() > 0 && IsAlive() )
+	if( IsAlive() )
 #endif
 	{
 		AddEffects( EF_DIMLIGHT );
