@@ -3257,7 +3257,7 @@ public:
 		vGlowColor.y = g * ( 1.0f / 255.0f );
 		vGlowColor.z = b * ( 1.0f / 255.0f );
 		float flGlowAlpha = a * ( 1.0f / 255.0f );
-		int idx = g_GlowObjectManager.RegisterGlowObject( ToEnt( hEntity ), vGlowColor, flGlowAlpha, bRenderWhenOccluded, bRenderWhenUnoccluded, -1 );
+		int idx = g_GlowObjectManager.RegisterGlowObject( ToEnt( hEntity ), vGlowColor, flGlowAlpha, bRenderWhenOccluded, bRenderWhenOccluded );
 		m_RegisteredObjects.AddToTail( idx );
 		return idx;
 	}
