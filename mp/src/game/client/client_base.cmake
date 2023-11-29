@@ -1159,6 +1159,10 @@ function(target_use_client_base target EXCLUDE_SOURCES)
 		${USED_SOURCES}
 	)
 
+	if(MSVC)
+		set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT ${target})
+	endif()
+
 	target_include_directories(
 		${target} PRIVATE
 		"${CLIENT_BASE_DIR}"
