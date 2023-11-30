@@ -19,6 +19,10 @@
 
 static void PlatSpawnInsideTrigger( edict_t* pevPlatform );
 
+ConVar sv_train_smoothing_mode( "sv_train_smoothing_mode", "2", FCVAR_CHEAT, "Options are: 0.valve, 1.approach, 2.quaternion_slerp or 3.spline_quaternion_slerp" );
+ConVar sv_train_smoothness( "sv_train_smoothness", "0.29", FCVAR_CHEAT );
+ConVar sv_show_train_path( "sv_show_train_path", "0", FCVAR_CHEAT );
+
 #define SF_PLAT_TOGGLE				0x0001
 
 class CBasePlatTrain : public CBaseToggle
@@ -1264,6 +1268,15 @@ DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeedReal", InputSetSpeedReal ),
 DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeedDirAccel", InputSetSpeedDirAccel ),
 DEFINE_INPUTFUNC( FIELD_STRING, "TeleportToPathTrack", InputTeleportToPathTrack ),
 DEFINE_INPUTFUNC( FIELD_FLOAT, "SetSpeedForwardModifier", InputSetSpeedForwardModifier ),
+#ifdef MAPBASE
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "ApplyBrakes", InputApplyBrakes ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "EnableControls", InputEnableControls ),
+	DEFINE_INPUTFUNC( FIELD_VOID, "DisableControls", InputDisableControls ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetManualAccelSpeed", InputSetManualAccelSpeed ),
+	DEFINE_INPUTFUNC( FIELD_FLOAT, "SetManualDecelSpeed", InputSetManualDecelSpeed ),
+	DEFINE_THINKFUNC( VisualizeThink ),
+#endif // MAPBASE
+
 
 // Outputs
 DEFINE_OUTPUT( m_OnStart, "OnStart" ),
@@ -1610,6 +1623,90 @@ void CFuncTrackTrain::InputTeleportToPathTrack( inputdata_t& inputdata )
 	}
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::InputApplyBrakes( inputdata_t& inputdata )
+{
+	ApplyBrakes( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::InputEnableControls( inputdata_t& inputdata )
+{
+	EnableControls();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::InputDisableControls( inputdata_t& inputdata )
+{
+	DisableControls();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::InputSetManualAccelSpeed( inputdata_t& inputdata )
+{
+	SetManualAccelSpeed( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::InputSetManualDecelSpeed( inputdata_t& inputdata )
+{
+	SetManualDecelSpeed( inputdata.value.Float() );
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::ApplyBrakes( float flTimeToStop )
+{
+	m_flDesiredSpeed = 0;
+	m_flSpeedChangeTime = flTimeToStop;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::EnableControls()
+{
+	m_spawnflags &= ~SF_TRACKTRAIN_NOCONTROL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::DisableControls()
+{
+	m_spawnflags |= SF_TRACKTRAIN_NOCONTROL;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::SetManualAccelSpeed( float flSpeed )
+{
+	m_flAccelSpeed = flSpeed;
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::SetManualDecelSpeed( float flSpeed )
+{
+	m_flDecelSpeed = flSpeed;
+}
+#endif // MAPBASE
+
+
 //-----------------------------------------------------------------------------
 // Purpose: Sets the speed of the train to the given value in units per second.
 //-----------------------------------------------------------------------------
@@ -1633,7 +1730,16 @@ void CFuncTrackTrain::SetSpeed( float flSpeed, bool bAccel /*= false */ )
 
 		if( m_flSpeed == 0 && abs( m_flDesiredSpeed ) > 0 )
 		{
-			m_flSpeed = 0.1;	// little push to get us going
+#ifdef MAPBASE
+			if( HasSpawnFlags( SF_TRACKTRAIN_BOUNCEBACK ) )
+			{
+				m_flSpeed = 0.1f * m_dir;    // hard stop when we hit a wall
+			}
+			else
+#endif // MAPBASE
+			{
+				m_flSpeed = 0.1;    // little push to get us going
+			}
 		}
 
 		Start();
@@ -1849,7 +1955,7 @@ void CFuncTrackTrain::SoundUpdate( void )
 	}
 
 	// In multiplayer, only update the sound once a second
-	if( g_pGameRules->IsMultiplayer() && m_bSoundPlaying )
+	if( g_pGameRules && g_pGameRules->IsMultiplayer() && m_bSoundPlaying )
 	{
 		if( m_flNextMPSoundTime > gpGlobals->curtime )
 		{
@@ -2086,6 +2192,15 @@ TrainOrientationType_t CFuncTrackTrain::GetTrainOrientationType()
 //-----------------------------------------------------------------------------
 void CFuncTrackTrain::UpdateTrainOrientation( CPathTrack* pPrev, CPathTrack* pNext, const Vector& nextPos, float flInterval )
 {
+#ifdef MAPBASE
+	// Use the new orientation code if we have the flag on
+	if( HasSpawnFlags( SF_TRACKTRAIN_NEW_ORIENTATION ) )
+	{
+		UpdateTrainNewOrientation( pNext, pNext, nextPos, flInterval );
+		return;
+	}
+#endif // MAPBASE
+
 	// FIXME: old way of doing fixed orienation trains, remove!
 	if( HasSpawnFlags( SF_TRACKTRAIN_FIXED_ORIENTATION ) )
 	{
@@ -2119,6 +2234,153 @@ void CFuncTrackTrain::UpdateTrainOrientation( CPathTrack* pPrev, CPathTrack* pNe
 	}
 }
 
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose:
+// Input  : pnext -
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::UpdateTrainNewOrientation( CPathTrack* pNext, CPathTrack* pNextNext, const Vector& nextPos, float flInterval )
+{
+	if( !m_ppath )
+	{
+		return;
+	}
+
+	CPathTrack* pNextNode = NULL;
+	CPathTrack* pPrevNode = NULL;
+
+	Vector nextFront = GetLocalOrigin();
+	Vector prevFront = GetLocalOrigin();
+
+	nextFront.z -= m_height;
+	prevFront.z -= m_height;
+	if( m_length > 0 )
+	{
+		m_ppath->LookAhead( nextFront, IsDirForward() ? m_length : -m_length, 0, &pNextNode );
+		m_ppath->LookAhead( prevFront, IsDirForward() ? -m_length : m_length, 0, &pPrevNode );
+	}
+	else
+	{
+		m_ppath->LookAhead( nextFront, IsDirForward() ? 100 : -100, 0, &pNextNode );
+		m_ppath->LookAhead( prevFront, IsDirForward() ? -100 : 100, 0, &pPrevNode );
+	}
+	nextFront.z += m_height;
+	prevFront.z += m_height;
+
+	Vector vecFaceDir;
+
+	if( IsDirForward() )
+	{
+		vecFaceDir = pNextNode->GetAbsOrigin() - GetAbsOrigin();
+	}
+	else
+	{
+		vecFaceDir = pPrevNode->GetAbsOrigin() - GetAbsOrigin();
+	}
+
+	QAngle wantedAngles;
+	VectorAngles( vecFaceDir, wantedAngles );
+	FixupAngles( wantedAngles );
+
+	QAngle curAngles = GetLocalAngles();
+	FixupAngles( curAngles );
+
+	switch( sv_train_smoothing_mode.GetInt() )
+	{
+		case 1:
+		{
+			QAngle vecAngVel;
+			vecAngVel.x = UTIL_AngleDistance( UTIL_ApproachAngle( wantedAngles.x, curAngles.x, m_flSpeed * sv_train_smoothness.GetFloat() ), curAngles.x ) * sv_train_smoothness.GetFloat();
+			vecAngVel.y = UTIL_AngleDistance( UTIL_ApproachAngle( wantedAngles.y, curAngles.y, m_flSpeed * sv_train_smoothness.GetFloat() ), curAngles.y ) * sv_train_smoothness.GetFloat();
+			vecAngVel.z = UTIL_AngleDistance( UTIL_ApproachAngle( wantedAngles.z, curAngles.z, m_flSpeed * sv_train_smoothness.GetFloat() ), curAngles.z ) * sv_train_smoothness.GetFloat();
+
+			SetLocalAngularVelocity( vecAngVel );
+			return;
+		}
+
+		case 2:
+		{
+			Quaternion smoothedQuaternion;
+			QuaternionSlerp( RadianEuler( curAngles ), RadianEuler( wantedAngles ), gpGlobals->frametime * ( 1 / sv_train_smoothness.GetFloat() ), smoothedQuaternion );
+			QAngle smoothedAngles;
+			QuaternionAngles( smoothedQuaternion, smoothedAngles );
+
+			const float vx = UTIL_AngleDistance( smoothedAngles.x, curAngles.x );
+			const float vy = UTIL_AngleDistance( smoothedAngles.y, curAngles.y );
+			const float vz = UTIL_AngleDistance( smoothedAngles.z, curAngles.z );
+
+			/*if (fabsf(vx) < 0.1f)
+			vx = 0;
+
+			if (fabsf(vy) < 0.1f)
+			vy = 0;
+
+			if (fabsf(vz) < 0.1f)
+			vz = 0;*/
+
+			if( flInterval != 0 )
+			{
+				SetLocalAngularVelocity( QAngle( vx / flInterval, vy / flInterval, vz / flInterval ) );
+			}
+			return;
+		}
+
+		case 3:
+		{
+			float p = 0;
+			CPathTrack* pForwardSplineNode = IsDirForward() ? pNextNode : pPrevNode;
+			CPathTrack* pBackwardSplineNode = IsDirForward() ? pPrevNode : pNextNode;
+
+			if( pForwardSplineNode && pBackwardSplineNode )
+			{
+				Vector vecSegment = pForwardSplineNode->GetLocalOrigin() - pBackwardSplineNode->GetLocalOrigin();
+				const float flSegmentLen = vecSegment.Length();
+				if( flSegmentLen )
+				{
+					Vector vecCurOffset = GetLocalOrigin() - pBackwardSplineNode->GetLocalOrigin();
+					p = vecCurOffset.Length() / flSegmentLen;
+				}
+			}
+
+			p = SimpleSplineRemapVal( p, 0.0f, 1.0f, 0.0f, 1.0f );
+
+			Quaternion smoothedQuaternion;
+			QuaternionSlerp( RadianEuler( curAngles ), RadianEuler( wantedAngles ), gpGlobals->frametime * p * sv_train_smoothness.GetFloat(), smoothedQuaternion );
+			QAngle smoothedAngles;
+			QuaternionAngles( smoothedQuaternion, smoothedAngles );
+
+			float vx = UTIL_AngleDistance( smoothedAngles.x, curAngles.x );
+			float vy = UTIL_AngleDistance( smoothedAngles.y, curAngles.y );
+			float vz = UTIL_AngleDistance( smoothedAngles.z, curAngles.z );
+
+			if( fabsf( vx ) < 0.1f )
+			{
+				vx = 0;
+			}
+
+			if( fabsf( vy ) < 0.1f )
+			{
+				vy = 0;
+			}
+
+			if( fabsf( vz ) < 0.1f )
+			{
+				vz = 0;
+			}
+
+			if( flInterval == 0 )
+			{
+				flInterval = 0.1f;
+			}
+
+			SetLocalAngularVelocity( QAngle( vx / flInterval, vy / flInterval, vz / flInterval ) );
+			return;
+		}
+
+		NO_DEFAULT
+	}
+}
+#endif // MAPBASE
 
 //-----------------------------------------------------------------------------
 // Purpose: Adjusts our angles as we hit each path track. This is for support of
@@ -2565,6 +2827,13 @@ bool CFuncTrackTrain::OnControls( CBaseEntity* pTest )
 {
 	Vector offset = pTest->GetLocalOrigin() - GetLocalOrigin();
 
+#ifdef MAPBASE
+	if( !CanBeControlled() )
+	{
+		return false;
+	}
+#endif // MAPBASE
+
 	if( m_spawnflags & SF_TRACKTRAIN_NOCONTROL )
 	{
 		return false;
@@ -2786,6 +3055,10 @@ void CFuncTrackTrain::Spawn( void )
 // start trains on the next frame, to make sure their targets have had
 // a chance to spawn/activate
 	SetThink( &CFuncTrackTrain::Find );
+#ifdef MAPBASE
+	SetContextThink( &CFuncTrackTrain::VisualizeThink, gpGlobals->curtime + 0.1f, "VisualizeThink" );
+#endif // MAPBASE
+
 	SetNextThink( gpGlobals->curtime );
 	Precache();
 
@@ -2798,7 +3071,64 @@ bool CFuncTrackTrain::CreateVPhysics( void )
 	VPhysicsInitShadow( false, false );
 	return true;
 }
+#ifdef MAPBASE
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void VisitPath( CPathTrack* current, const Vector* pos, const Color* clr )
+{
+	if( current->HasBeenVisited() )
+	{
+		return;
+	}
 
+	if( pos )
+	{
+		current->Visit();
+		NDebugOverlay::Line( *pos, current->GetAbsOrigin(), clr->r(), clr->g(), clr->b(), true, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+	}
+
+	if( current->m_pnext )
+	{
+		Color next( 0, 128, 255 );
+		VisitPath( current->m_pnext, &current->GetAbsOrigin(), clr ? clr : &next );
+	}
+
+	if( current->m_paltpath )
+	{
+		Color alt( 0, 255, 128 );
+		VisitPath( current->m_paltpath, &current->GetAbsOrigin(), &alt );
+	}
+
+	if( current->m_pprevious && !current->m_pprevious->HasBeenVisited() )
+	{
+		Color prev( 255, 128, 0 );
+		VisitPath( current->m_pprevious, &current->GetAbsOrigin(), clr ? clr : &prev );
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CFuncTrackTrain::VisualizeThink()
+{
+	if( sv_show_train_path.GetBool() )
+	{
+		CPathTrack::BeginIteration();
+		VisitPath( m_ppath, NULL, NULL );
+		CPathTrack::EndIteration();
+
+		// show segment of path train is actually on
+		if( m_ppath && m_ppath->GetNext() )
+		{
+			NDebugOverlay::HorzArrow( m_ppath->GetAbsOrigin(), m_ppath->GetNext()->GetAbsOrigin(), 5.0f, 255, 0, 0, 255, false, NDEBUG_PERSIST_TILL_NEXT_SERVER );
+		}
+		SetContextThink( &CFuncTrackTrain::VisualizeThink, gpGlobals->curtime, "VisualizeThink" );
+		return;
+	}
+	SetContextThink( &CFuncTrackTrain::VisualizeThink, gpGlobals->curtime + 1.f, "VisualizeThink" );
+}
+#endif // MAPBASE
 
 //-----------------------------------------------------------------------------
 // Purpose: Precaches the train sounds.

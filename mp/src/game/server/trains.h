@@ -28,6 +28,10 @@
 #define SF_TRACKTRAIN_HL1TRAIN					0x0080
 #define SF_TRACKTRAIN_USE_MAXSPEED_FOR_PITCH	0x0100
 #define SF_TRACKTRAIN_UNBLOCKABLE_BY_PLAYER		0x0200
+#ifdef MAPBASE
+	#define SF_TRACKTRAIN_NEW_ORIENTATION		0x0400
+	#define SF_TRACKTRAIN_BOUNCEBACK		0x0800
+#endif // MAPBASE
 
 #define TRAIN_ACTIVE	0x80
 #define TRAIN_NEW		0xc0
@@ -114,6 +118,13 @@ public:
 	void InputSetSpeedDirAccel( inputdata_t& inputdata );
 	void InputTeleportToPathTrack( inputdata_t& inputdata );
 	void InputSetSpeedForwardModifier( inputdata_t& inputdata );
+#ifdef MAPBASE
+	void InputApplyBrakes( inputdata_t& inputdata );
+	void InputEnableControls( inputdata_t& inputdata );
+	void InputDisableControls( inputdata_t& inputdata );
+	void InputSetManualAccelSpeed( inputdata_t& inputdata );
+	void InputSetManualDecelSpeed( inputdata_t& inputdata );
+#endif // MAPBASE
 
 	static CFuncTrackTrain* Instance( edict_t* pent );
 
@@ -161,6 +172,19 @@ public:
 		m_bDamageChild = bDamageChild;
 	}
 
+#ifdef MAPBASE
+	void VisualizeThink();
+	bool CanBeControlled() const
+	{
+		return ( m_spawnflags & SF_TRACKTRAIN_NOCONTROL ) == 0;
+	}
+	void ApplyBrakes( float flTimeToStop );
+	void EnableControls();
+	void DisableControls();
+	void SetManualAccelSpeed( float flSpeed );
+	void SetManualDecelSpeed( float flSpeed );
+#endif // MAPBASE
+
 private:
 
 	void ArriveAtNode( CPathTrack* pNode );
@@ -183,6 +207,9 @@ private:
 	void UpdateTrainVelocity( CPathTrack* pnext, CPathTrack* pNextNext, const Vector& nextPos, float flInterval );
 
 	TrainOrientationType_t GetTrainOrientationType();
+#ifdef MAPBASE
+	void UpdateTrainNewOrientation( CPathTrack* pNext, CPathTrack* pNextNext, const Vector& nextPos, float flInterval );
+#endif // MAPBASE
 	void UpdateTrainOrientation( CPathTrack* pnext, CPathTrack* pNextNext, const Vector& nextPos, float flInterval );
 	void UpdateOrientationAtPathTracks( CPathTrack* pnext, CPathTrack* pNextNext, const Vector& nextPos, float flInterval );
 	void UpdateOrientationBlend( TrainOrientationType_t eOrientationType, CPathTrack* pPrev, CPathTrack* pNext, const Vector& nextPos, float flInterval );
