@@ -8,7 +8,7 @@
 #define GLOW_OUTLINE_EFFECT_H
 
 #if defined( COMPILER_MSVC )
-#pragma once
+	#pragma once
 #endif
 
 #include "utlvector.h"
@@ -24,14 +24,14 @@ class CGlowObjectManager
 {
 public:
 	CGlowObjectManager() :
-	m_nFirstFreeSlot( GlowObjectDefinition_t::END_OF_FREE_LIST )
+		m_nFirstFreeSlot( GlowObjectDefinition_t::END_OF_FREE_LIST )
 	{
 	}
 
-	int RegisterGlowObject( C_BaseEntity *pEntity, const Vector &vGlowColor, float flGlowAlpha, bool bRenderWhenOccluded, bool bRenderWhenUnoccluded )
+	int RegisterGlowObject( C_BaseEntity* pEntity, const Vector& vGlowColor, float flGlowAlpha, bool bRenderWhenOccluded, bool bRenderWhenUnoccluded )
 	{
 		int nIndex;
-		if ( m_nFirstFreeSlot == GlowObjectDefinition_t::END_OF_FREE_LIST )
+		if( m_nFirstFreeSlot == GlowObjectDefinition_t::END_OF_FREE_LIST )
 		{
 			nIndex = m_GlowObjectDefinitions.AddToTail();
 		}
@@ -40,7 +40,7 @@ public:
 			nIndex = m_nFirstFreeSlot;
 			m_nFirstFreeSlot = m_GlowObjectDefinitions[nIndex].m_nNextFreeSlot;
 		}
-		
+
 		m_GlowObjectDefinitions[nIndex].m_hEntity = pEntity;
 		m_GlowObjectDefinitions[nIndex].m_vGlowColor = vGlowColor;
 		m_GlowObjectDefinitions[nIndex].m_flGlowAlpha = flGlowAlpha;
@@ -60,20 +60,20 @@ public:
 		m_nFirstFreeSlot = nGlowObjectHandle;
 	}
 
-	void SetEntity( int nGlowObjectHandle, C_BaseEntity *pEntity )
+	void SetEntity( int nGlowObjectHandle, C_BaseEntity* pEntity )
 	{
 		Assert( !m_GlowObjectDefinitions[nGlowObjectHandle].IsUnused() );
 		m_GlowObjectDefinitions[nGlowObjectHandle].m_hEntity = pEntity;
 	}
 
-	void SetColor( int nGlowObjectHandle, const Vector &vGlowColor ) 
-	{ 
+	void SetColor( int nGlowObjectHandle, const Vector& vGlowColor )
+	{
 		Assert( !m_GlowObjectDefinitions[nGlowObjectHandle].IsUnused() );
 		m_GlowObjectDefinitions[nGlowObjectHandle].m_vGlowColor = vGlowColor;
 	}
 
-	void SetAlpha( int nGlowObjectHandle, float flAlpha ) 
-	{ 
+	void SetAlpha( int nGlowObjectHandle, float flAlpha )
+	{
 		Assert( !m_GlowObjectDefinitions[nGlowObjectHandle].IsUnused() );
 		m_GlowObjectDefinitions[nGlowObjectHandle].m_flGlowAlpha = flAlpha;
 	}
@@ -90,18 +90,18 @@ public:
 		Assert( !m_GlowObjectDefinitions[nGlowObjectHandle].IsUnused() );
 		return m_GlowObjectDefinitions[nGlowObjectHandle].m_bRenderWhenOccluded;
 	}
-	
+
 	bool IsRenderingWhenUnoccluded( int nGlowObjectHandle ) const
 	{
 		Assert( !m_GlowObjectDefinitions[nGlowObjectHandle].IsUnused() );
 		return m_GlowObjectDefinitions[nGlowObjectHandle].m_bRenderWhenUnoccluded;
 	}
 
-	bool HasGlowEffect( C_BaseEntity *pEntity ) const
+	bool HasGlowEffect( C_BaseEntity* pEntity ) const
 	{
-		for ( int i = 0; i < m_GlowObjectDefinitions.Count(); ++ i )
+		for( int i = 0; i < m_GlowObjectDefinitions.Count(); ++ i )
 		{
-			if ( !m_GlowObjectDefinitions[i].IsUnused() && m_GlowObjectDefinitions[i].m_hEntity.Get() == pEntity )
+			if( !m_GlowObjectDefinitions[i].IsUnused() && m_GlowObjectDefinitions[i].m_hEntity.Get() == pEntity )
 			{
 				return true;
 			}
@@ -110,23 +110,26 @@ public:
 		return false;
 	}
 
-	void RenderGlowEffects( const CViewSetup *pSetup );
+	void RenderGlowEffects( const CViewSetup* pSetup );
 
 private:
 
-	void ApplyEntityGlowEffects( const CViewSetup *pSetup, CMatRenderContextPtr &pRenderContext, float flBloomScale );
+	void ApplyEntityGlowEffects( const CViewSetup* pSetup, CMatRenderContextPtr& pRenderContext, float flBloomScale );
 
 	struct GlowObjectDefinition_t
 	{
 		bool ShouldDraw() const
 		{
-			return m_hEntity.Get() && 
-				   ( m_bRenderWhenOccluded || m_bRenderWhenUnoccluded ) && 
-				   m_hEntity->ShouldDraw() && 
+			return m_hEntity.Get() &&
+				   ( m_bRenderWhenOccluded || m_bRenderWhenUnoccluded ) &&
+				   m_hEntity->ShouldDraw() &&
 				   !m_hEntity->IsDormant();
 		}
 
-		bool IsUnused() const { return m_nNextFreeSlot != GlowObjectDefinition_t::ENTRY_IN_USE; }
+		bool IsUnused() const
+		{
+			return m_nNextFreeSlot != GlowObjectDefinition_t::ENTRY_IN_USE;
+		}
 		void DrawModel();
 
 		EHANDLE m_hEntity;
@@ -161,7 +164,7 @@ extern CGlowObjectManager g_GlowObjectManager;
 class CGlowObject
 {
 public:
-	CGlowObject( C_BaseEntity *pEntity, const Vector &vGlowColor = Vector( 1.0f, 1.0f, 1.0f ), float flGlowAlpha = 1.0f, bool bRenderWhenOccluded = false, bool bRenderWhenUnoccluded = false )
+	CGlowObject( C_BaseEntity* pEntity, const Vector& vGlowColor = Vector( 1.0f, 1.0f, 1.0f ), float flGlowAlpha = 1.0f, bool bRenderWhenOccluded = false, bool bRenderWhenUnoccluded = false )
 	{
 		m_nGlowObjectHandle = g_GlowObjectManager.RegisterGlowObject( pEntity, vGlowColor, flGlowAlpha, bRenderWhenOccluded, bRenderWhenUnoccluded );
 	}
@@ -171,12 +174,12 @@ public:
 		g_GlowObjectManager.UnregisterGlowObject( m_nGlowObjectHandle );
 	}
 
-	void SetEntity( C_BaseEntity *pEntity )
+	void SetEntity( C_BaseEntity* pEntity )
 	{
 		g_GlowObjectManager.SetEntity( m_nGlowObjectHandle, pEntity );
 	}
 
-	void SetColor( const Vector &vGlowColor )
+	void SetColor( const Vector& vGlowColor )
 	{
 		g_GlowObjectManager.SetColor( m_nGlowObjectHandle, vGlowColor );
 	}
@@ -212,8 +215,8 @@ private:
 	int m_nGlowObjectHandle;
 
 	// Assignment & copy-construction disallowed
-	CGlowObject( const CGlowObject &other );
-	CGlowObject& operator=( const CGlowObject &other );
+	CGlowObject( const CGlowObject& other );
+	CGlowObject& operator=( const CGlowObject& other );
 };
 
 #endif // GLOWS_ENABLE

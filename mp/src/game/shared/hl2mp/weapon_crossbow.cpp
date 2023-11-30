@@ -33,9 +33,9 @@
 	#include "te_effect_dispatch.h"
 	#include "soundent.h"
 	#include "game.h"
-#ifdef MAPBASE
-	#include "func_break.h"
-#endif // MAPBASE
+	#ifdef MAPBASE
+		#include "func_break.h"
+	#endif // MAPBASE
 #endif
 
 #include "weapon_hl2mpbasehlmpcombatweapon.h"
