@@ -6724,7 +6724,7 @@ void CBasePlayer::ImpulseCommands( )
 
 	m_nImpulse = 0;
 }
-
+#ifdef HL2_DLL
 #ifdef HL2_EPISODIC
 
 //-----------------------------------------------------------------------------
@@ -6813,7 +6813,6 @@ void CC_CH_CreateJeep( void )
 
 static ConCommand ch_createjeep( "ch_createjeep", CC_CH_CreateJeep, "Spawn jeep in front of the player.", FCVAR_CHEAT );
 
-
 //-----------------------------------------------------------------------------
 // Create an airboat in front of the specified player
 //-----------------------------------------------------------------------------
@@ -6838,7 +6837,6 @@ static void CreateAirboat( CBasePlayer* pPlayer )
 	}
 }
 
-
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -6855,7 +6853,7 @@ void CC_CH_CreateAirboat( void )
 }
 
 static ConCommand ch_createairboat( "ch_createairboat", CC_CH_CreateAirboat, "Spawn airboat in front of the player.", FCVAR_CHEAT );
-
+#endif // HL2_DLL
 
 //=========================================================
 //=========================================================
