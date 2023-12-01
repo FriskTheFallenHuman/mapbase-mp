@@ -417,8 +417,43 @@ DECLARE_CLIENT_EFFECT( "AR2Impact", AR2ImpactCallback );
 //-----------------------------------------------------------------------------
 // Creates a muzzleflash elight
 //-----------------------------------------------------------------------------
-void CreateMuzzleflashELight( const Vector& origin, int exponent, int nMinRadius, int nMaxRadius, ClientEntityHandle_t hEntity )
+void CreateMuzzleflashELight( const Vector& origin, int exponent, int nMinRadius, int nMaxRadius, ClientEntityHandle_t hEntity, bool bUseCustomColor = false, int nColorR = 255, int nColorG = 255, int nColorB = 255 )
 {
+#ifdef MAPBASE
+	switch ( muzzleflash_light.GetInt() )
+	{
+	case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
+		break;
+	default:
+	case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
+			int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
+			if( entityIndex >= 0 )
+			{
+				dlight_t* el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + entityIndex );
+
+				el->origin = origin;
+
+				// Original color values
+				int originalR = bUseCustomColor ? nColorR : 255;
+				int originalG = bUseCustomColor ? nColorG : 192;
+				int originalB = bUseCustomColor ? nColorB : 64;
+
+				// Randomize color components within the range of +/- 20
+				el->color.r = originalR + random->RandomInt(-20, 20);
+				el->color.g = originalG + random->RandomInt(-20, 20);
+				el->color.b = originalB + random->RandomInt(0, 0);
+				el->color.exponent = exponent;
+
+				// Randomize the die value by +/- 0.01
+				el->die = gpGlobals->curtime + 0.05f + random->RandomFloat(-0.01f, 0.01f);
+				el->radius	= random->RandomInt( nMinRadius, nMaxRadius );
+
+				// Randomize the decay value
+				el->decay = random->RandomFloat(400.0f, 600.0f);
+			}
+		break;
+	}
+#else
 	if( muzzleflash_light.GetInt() )
 	{
 		int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
@@ -438,6 +473,7 @@ void CreateMuzzleflashELight( const Vector& origin, int exponent, int nMinRadius
 			el->die		= gpGlobals->curtime + 0.1f;
 		}
 	}
+#endif // MAPBASE
 }
 
 
@@ -518,8 +554,11 @@ void MuzzleFlash_Airboat( ClientEntityHandle_t hEntity, int attachmentIndex )
 	pParticle->m_flRollDelta	= 0.0f;
 
 #ifndef _XBOX
+	// Don't do this check, CreateMuzzleflashELight already does this.
+#ifndef MAPBASE
 	// Grab the origin out of the transform for the attachment
 	if( muzzleflash_light.GetInt() )
+#endif // !MAPBASE
 	{
 		// If the client hasn't seen this entity yet, bail.
 		matrix3x4_t	matAttachment;
@@ -695,7 +734,9 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 	// Grab the origin out of the transform for the attachment
 	Vector		origin;
 	MatrixGetColumn( matAttachment, 3, &origin );
-
+#ifdef MAPBASE
+	CreateMuzzleflashELight( origin, 5, 120, 120, hEntity, true, 50, 222, 213 );
+#else
 	dlight_t* el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH );
 	el->origin = origin;// + Vector( 12.0f, 0, 0 );
 
@@ -707,6 +748,7 @@ void MuzzleFlash_Hunter( ClientEntityHandle_t hEntity, int attachmentIndex )
 	el->radius = random->RandomInt( 120, 200 );
 	el->decay = el->radius / 0.05f;
 	el->die = gpGlobals->curtime + 0.05f;
+#endif // MAPBASE
 }
 
 

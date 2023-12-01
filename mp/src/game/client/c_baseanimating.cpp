@@ -3837,6 +3837,39 @@ extern ConVar muzzleflash_light;
 
 void C_BaseAnimating::ProcessMuzzleFlashEvent()
 {
+#ifdef MAPBASE
+	switch ( muzzleflash_light.GetInt() )
+	{
+	case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
+		break;
+	default:
+	case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
+		{
+			Vector vAttachment, vAng;
+			QAngle angles;
+
+			GetAttachment( 1, vAttachment, angles );
+			AngleVectors(angles, &vAng);
+			vAttachment += vAng * 2;
+
+			dlight_t * el = effects->CL_AllocDlight( m_index );
+			el->origin = vAttachment;
+
+			el->color.r = 255;
+			el->color.g = 192;
+			el->color.b = 64;
+			el->color.exponent = 5;
+
+			// Randomize the die value by +/- 0.01
+			el->die = gpGlobals->curtime + 0.05f + random->RandomFloat(-0.01f, 0.01f);
+			el->radius = random->RandomFloat(245.0f, 256.0f);
+
+			// Randomize the decay value
+			el->decay = random->RandomFloat(400.0f, 600.0f);
+		}
+		break;
+	}
+#else
 	// If we have an attachment, then stick a light on it.
 	if( muzzleflash_light.GetBool() )
 	{
@@ -3859,6 +3892,7 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			el->color.exponent = 5;
 		}
 	}
+#endif // MAPBASE
 }
 
 //-----------------------------------------------------------------------------

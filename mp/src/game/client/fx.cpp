@@ -52,7 +52,13 @@
 #endif
 
 //Whether or not we should emit a dynamic light
-ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_ARCHIVE );
+ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_ARCHIVE,
+#ifdef MAPBASE
+	"Whether or not muzzleflashes should emit a dynamic light.\n  0 = No muzzleflashes ligth.\n  1 = Valve's muzzleflashes ligth implementation."
+#else
+	"Whether or not muzzleflashes should emit a dynamic light."
+#endif // MAPBASE
+);
 
 extern void FX_TracerSound( const Vector& start, const Vector& end, int iTracerType );
 

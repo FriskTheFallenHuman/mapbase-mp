@@ -21,6 +21,14 @@ class CGameTrace;
 typedef CGameTrace trace_t;
 //struct trace_t;
 
+#ifdef MAPBASE
+enum eMuzzleFlashLigthType
+{
+	MUZZLEFLASH_NONE = 0,
+	MUZZLEFLASH_VALVE
+};
+#endif // MAPBASE
+
 enum
 {
 	FX_ENERGYSPLASH_EXPLOSIVE		= 0x1,
