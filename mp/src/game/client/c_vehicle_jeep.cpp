@@ -37,12 +37,7 @@ RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
 {
 	m_vecEyeSpeed.Init();
 	m_flViewAngleDeltaTime = 0.0f;
-#ifdef MAPBASE
-	m_pHeadlightR = NULL;
-	m_pHeadlightL = NULL;
-#else
 	m_pHeadlight = NULL;
-#endif // MAPBASE
 
 	ConVarRef r_JeepFOV( "r_JeepFOV" );
 	m_ViewSmoothingData.flFOV = r_JeepFOV.GetFloat();
@@ -53,22 +48,10 @@ RecvPropBool( RECVINFO( m_bHeadlightIsOn ) ),
 //-----------------------------------------------------------------------------
 C_PropJeep::~C_PropJeep()
 {
-#ifdef MAPBASE
-	if( m_pHeadlightR )
-	{
-		delete m_pHeadlightR;
-	}
-
-	if( m_pHeadlightL )
-	{
-		delete m_pHeadlightL;
-	}
-#else
 	if( m_pHeadlight )
 	{
 		delete m_pHeadlight;
 	}
-#endif // MAPBASE
 }
 
 void C_PropJeep::Simulate( void )
@@ -76,33 +59,6 @@ void C_PropJeep::Simulate( void )
 	// The dim light is the flashlight.
 	if( m_bHeadlightIsOn )
 	{
-#ifdef MAPBASE
-		if( m_pHeadlightR == NULL )
-		{
-			// Turned on the headlight; create it.
-			m_pHeadlightR = new CHeadlightEffect;
-
-			if( m_pHeadlightR == NULL )
-			{
-				return;
-			}
-
-			m_pHeadlightR->TurnOn();
-		}
-
-		if( m_pHeadlightL == NULL )
-		{
-			// Turned on the headlight; create it.
-			m_pHeadlightL = new CHeadlightEffect;
-
-			if( m_pHeadlightL == NULL )
-			{
-				return;
-			}
-
-			m_pHeadlightL->TurnOn();
-		}
-#else
 		if( m_pHeadlight == NULL )
 		{
 			// Turned on the headlight; create it.
@@ -115,32 +71,11 @@ void C_PropJeep::Simulate( void )
 
 			m_pHeadlight->TurnOn();
 		}
-#endif // MAPBASE
 
 		QAngle vAngle;
 		Vector vVector;
 		Vector vecForward, vecRight, vecUp;
 
-#ifdef MAPBASE
-		int iAttachmentR = LookupAttachment( "headlight_r" );
-		int iAttachmentL = LookupAttachment( "headlight_l" );
-
-		if( iAttachmentR != INVALID_PARTICLE_ATTACHMENT )
-		{
-			GetAttachment( iAttachmentR, vVector, vAngle );
-			AngleVectors( vAngle, &vecForward, &vecRight, &vecUp );
-
-			m_pHeadlightR->UpdateLight( vVector, vecForward, vecRight, vecUp, JEEP_HEADLIGHT_DISTANCE );
-		}
-
-		if( iAttachmentL != INVALID_PARTICLE_ATTACHMENT )
-		{
-			GetAttachment( iAttachmentL, vVector, vAngle );
-			AngleVectors( vAngle, &vecForward, &vecRight, &vecUp );
-
-			m_pHeadlightL->UpdateLight( vVector, vecForward, vecRight, vecUp, JEEP_HEADLIGHT_DISTANCE );
-		}
-#else
 		int iAttachment = LookupAttachment( "headlight" );
 
 		if( iAttachment != INVALID_PARTICLE_ATTACHMENT )
@@ -150,34 +85,13 @@ void C_PropJeep::Simulate( void )
 
 			m_pHeadlight->UpdateLight( vVector, vecForward, vecRight, vecUp, JEEP_HEADLIGHT_DISTANCE );
 		}
-#endif // MAPBASE
-
-
 	}
-#ifdef MAPBASE
-	else
-	{
-		// Turned off the flashlight; delete it.
-		if( m_pHeadlightR )
-		{
-			delete m_pHeadlightR;
-			m_pHeadlightR = NULL;
-		}
-
-		if( m_pHeadlightL )
-		{
-			delete m_pHeadlightL;
-			m_pHeadlightL = NULL;
-		}
-	}
-#else
 	else if( m_pHeadlight )
 	{
 		// Turned off the flashlight; delete it.
 		delete m_pHeadlight;
 		m_pHeadlight = NULL;
 	}
-#endif // MAPBASE
 
 	BaseClass::Simulate();
 }

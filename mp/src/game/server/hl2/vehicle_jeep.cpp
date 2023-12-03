@@ -1184,14 +1184,8 @@ void CPropJeep::Use( CBaseEntity* pActivator, CBaseEntity* pCaller, USE_TYPE use
 	if( tr.m_pEnt == this && tr.hitgroup == JEEP_AMMOCRATE_HITGROUP )
 	{
 		// Player's using the crate.
-
-#ifdef MAPBASE
-		// Fill the player's current ammo
-		pPlayer->GiveAmmo( pPlayer->GetActiveWeapon()->GetPrimaryAmmoCount(), pPlayer->GetActiveWeapon()->GetPrimaryAmmoType() );
-#else
 		// Fill up his SMG ammo.
 		pPlayer->GiveAmmo( 300, "SMG1" );
-#endif // MAPBASE
 
 		if( ( GetSequence() != LookupSequence( "ammo_open" ) ) && ( GetSequence() != LookupSequence( "ammo_close" ) ) )
 		{
@@ -1365,17 +1359,17 @@ void CPropJeep::DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButtonsDow
 	int iButtons = ucmd->buttons;
 
 	//Adrian: No headlights on Superfly.
-	if( ucmd->impulse == 100 )
-	{
-		if( HeadlightIsOn() )
+	/*	if ( ucmd->impulse == 100 )
 		{
-			HeadlightTurnOff();
-		}
-		else
-		{
-			HeadlightTurnOn();
-		}
-	}
+			if (HeadlightIsOn())
+			{
+				HeadlightTurnOff();
+			}
+	        else
+			{
+				HeadlightTurnOn();
+			}
+		}*/
 
 	// Only handle the cannon if the vehicle has one
 	if( m_bHasGun )
@@ -1541,26 +1535,6 @@ void CPropJeep::ExitVehicle( int nRole )
 		}
 	}
 }
-
-#ifdef MAPBASE
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CPropJeep::HeadlightTurnOn( void )
-{
-	EmitSound( "Airboat_headlight_on" );
-	m_bHeadlightIsOn = true;
-}
-
-//-----------------------------------------------------------------------------
-// Purpose:
-//-----------------------------------------------------------------------------
-void CPropJeep::HeadlightTurnOff( void )
-{
-	EmitSound( "Airboat_headlight_off" );
-	m_bHeadlightIsOn = false;
-}
-#endif // MAPBASE
 
 //-----------------------------------------------------------------------------
 // Purpose: See if we should spawn a seagull on the jeep

@@ -613,10 +613,14 @@ static void KillBlockingEnemyNPCs( CBasePlayer* pPlayer, CBaseEntity* pVehicleEn
 
 void CPropHL2Buggy::DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButtonsDown, int iButtonsReleased )
 {
-	//Adrian: No headlights on Superfly.
-	if( ucmd->impulse == 100 )
+	/* The car headlight hurts perf, there's no timer to turn it off automatically,
+	   and we haven't built any gameplay around it.
+
+	   Furthermore, I don't think I've ever seen a playtester turn it on.
+
+	if ( ucmd->impulse == 100 )
 	{
-		if( HeadlightIsOn() )
+		if (HeadlightIsOn())
 		{
 			HeadlightTurnOff();
 		}
@@ -624,7 +628,7 @@ void CPropHL2Buggy::DriveVehicle( float flFrameTime, CUserCmd* ucmd, int iButton
 		{
 			HeadlightTurnOn();
 		}
-	}
+	}*/
 
 	if( ucmd->forwardmove != 0.0f )
 	{

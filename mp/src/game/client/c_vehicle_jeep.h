@@ -59,12 +59,7 @@ private:
 	float		m_flViewAngleDeltaTime;
 
 	float		m_flJeepFOV;
-#ifdef MAPBASE
-	CHeadlightEffect* m_pHeadlightR;
-	CHeadlightEffect* m_pHeadlightL;
-#else
 	CHeadlightEffect* m_pHeadlight;
-#endif // MAPBASE
 	bool		m_bHeadlightIsOn;
 };
 
