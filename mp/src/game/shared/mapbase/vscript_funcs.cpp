@@ -8,7 +8,7 @@
 #include "cbase.h"
 #if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
 	#include "hl2_gamerules.h"
-	#define TheGameRules	TheGameRules
+	#define TheGameRules	HL2GameRules()
 #else
 	#include "sdk_gamerules.h"
 	#define TheGameRules	SDKGameRules()

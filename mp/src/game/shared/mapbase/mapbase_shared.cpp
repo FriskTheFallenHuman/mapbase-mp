@@ -522,7 +522,7 @@ public:
 			{
 				ParseCustomActbusyFile( value );
 			}
-			break
+			break;
 #endif // HL2_DLL
 #endif
 #ifdef MAPBASE_VSCRIPT

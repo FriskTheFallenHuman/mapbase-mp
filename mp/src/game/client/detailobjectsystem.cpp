@@ -27,7 +27,7 @@
 #include "tier0/valve_minmax_on.h"
 
 //Tony; add the SDK into this as well by default.
-#if defined(DOD_DLL) || defined(CSTRIKE_DLL) || defined( SDK_DLL )
+#if defined(DOD_DLL) || defined(CSTRIKE_DLL) || defined(SDK_DLL) || defined(HL2MP)
 	#define USE_DETAIL_SHAPES
 #endif
 
