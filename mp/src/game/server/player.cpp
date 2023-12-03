@@ -84,10 +84,11 @@
 #ifdef HL2_DLL
 	#include "combine_mine.h"
 	#include "weapon_physcannon.h"
-	#ifdef MAPBASE
-		#include "mapbase/GlobalStrings.h"
-		#include "mapbase/matchers.h"
-	#endif
+#endif
+
+#ifdef MAPBASE
+	#include "mapbase/GlobalStrings.h"
+	#include "mapbase/matchers.h"
 #endif
 
 #ifdef MAPBASE_VSCRIPT
@@ -6724,7 +6725,9 @@ void CBasePlayer::ImpulseCommands( )
 
 	m_nImpulse = 0;
 }
+
 #ifdef HL2_DLL
+
 #ifdef HL2_EPISODIC
 
 //-----------------------------------------------------------------------------
@@ -6813,6 +6816,7 @@ void CC_CH_CreateJeep( void )
 
 static ConCommand ch_createjeep( "ch_createjeep", CC_CH_CreateJeep, "Spawn jeep in front of the player.", FCVAR_CHEAT );
 
+
 //-----------------------------------------------------------------------------
 // Create an airboat in front of the specified player
 //-----------------------------------------------------------------------------
@@ -6836,6 +6840,7 @@ static void CreateAirboat( CBasePlayer* pPlayer )
 		pJeep->Activate();
 	}
 }
+
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -6890,6 +6895,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			GiveNamedItem( "weapon_cubemap" );
 			break;
 
+#ifdef HL2_DLL
 		case 82:
 			// Cheat to create a jeep in front of the player
 			CreateJeep( this );
@@ -6899,6 +6905,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 			// Cheat to create a airboat in front of the player
 			CreateAirboat( this );
 			break;
+#endif // HL2_DLL
 
 		case 101:
 			gEvilImpulse101 = true;
@@ -7142,10 +7149,14 @@ bool CBasePlayer::ClientCommand( const CCommand& args )
 				return true;
 			}
 
-			if( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() && !IsReplay() )
+			ConVarRef mp_allowspectators( "mp_allowspectators" );
+			if( mp_allowspectators.IsValid() )
 			{
-				ClientPrint( this, HUD_PRINTCENTER, "#Cannot_Be_Spectator" );
-				return true;
+				if( ( mp_allowspectators.GetBool() == false ) && !IsHLTV() && !IsReplay() )
+				{
+					ClientPrint( this, HUD_PRINTCENTER, "#Cannot_Be_Spectator" );
+					return true;
+				}
 			}
 
 			if( !IsDead() )

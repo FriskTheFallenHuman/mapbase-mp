@@ -222,6 +222,7 @@ bool ClientModeHL2MPNormal::ShouldDrawCrosshair( void )
 	return ( g_bRollingCredits == false );
 }
 
+#ifdef MAPBASE
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -289,6 +290,7 @@ void ClientModeHL2MPNormal::OverrideView( CViewSetup* pSetup )
 		pSetup->m_OrthoBottom = h;
 	}
 }
+#endif // MAPBASE
 
 // Instance the singleton and expose the interface to it.
 IClientMode* GetClientModeNormal()

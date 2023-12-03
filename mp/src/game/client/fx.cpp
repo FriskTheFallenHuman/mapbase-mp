@@ -36,7 +36,7 @@
 	CLIENTEFFECT_MATERIAL( "effects/muzzleflash2" )
 	CLIENTEFFECT_MATERIAL( "effects/muzzleflash3" )
 	CLIENTEFFECT_MATERIAL( "effects/muzzleflash4" )
-	#ifndef CSTRIKE_DLL
+	#if !defined ( CSTRIKE_DLL ) && !defined ( SDK_DLL )
 		CLIENTEFFECT_MATERIAL( "effects/bluemuzzle" )
 		CLIENTEFFECT_MATERIAL( "effects/gunshipmuzzle" )
 		CLIENTEFFECT_MATERIAL( "effects/gunshiptracer" )
@@ -58,7 +58,7 @@ ConVar muzzleflash_light( "muzzleflash_light", "1", FCVAR_ARCHIVE,
 #else
 	"Whether or not muzzleflashes should emit a dynamic light."
 #endif // MAPBASE
-);
+						);
 
 extern void FX_TracerSound( const Vector& start, const Vector& end, int iTracerType );
 

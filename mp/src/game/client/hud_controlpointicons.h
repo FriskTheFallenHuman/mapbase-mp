@@ -19,7 +19,12 @@
 #include "vgui_controls/AnimationController.h"
 #include "vgui_controls/CircularProgressBar.h"
 #include <vgui/ISurface.h>
-#include "tf_controls.h"
+#ifdef TF_CLIENT_DLL
+	#include "tf_controls.h"
+#else
+	#define CExLabel vgui::Label
+	#include <vgui/IVGui.h>
+#endif // TF_CLIENT_DLL
 #include "IconPanel.h"
 
 #define PULSE_TIME_PER_ICON		1.5f

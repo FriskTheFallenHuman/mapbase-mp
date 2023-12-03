@@ -59,7 +59,7 @@ public:
 	void	InputEnable( inputdata_t& inputdata );
 	void	InputDisable( inputdata_t& inputdata );
 
-#ifdef MAPBASE
+#if defined ( MAPBASE ) && ( defined( HL2_CLIENT_DLL ) || defined( HL2_DLL ) )
 	void	InputForcePlayerOn( inputdata_t& inputdata );
 	void	InputCheckPlayerOn( inputdata_t& inputdata );
 #endif

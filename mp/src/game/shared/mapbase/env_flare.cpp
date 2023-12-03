@@ -91,7 +91,11 @@ CFlare* CFlare::GetActiveFlares( void )
 
 Class_T CFlare::Classify( void )
 {
+#ifdef HL2_DLL
 	return CLASS_FLARE;
+#else
+	return CLASS_NONE;
+#endif // HL2_DLL
 }
 
 CBaseEntity* CreateFlare( Vector vOrigin, QAngle Angles, CBaseEntity* pOwner, float flDuration )

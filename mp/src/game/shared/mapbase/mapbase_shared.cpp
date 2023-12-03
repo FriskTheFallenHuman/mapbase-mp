@@ -62,7 +62,9 @@ ConVar mapbase_load_default_manifest( "mapbase_load_default_manifest", "1", FCVA
 
 	extern void MapbaseGameLog_Init();
 
-	extern void ParseCustomActbusyFile( const char* file );
+	#ifdef HL2_DLL
+		extern void ParseCustomActbusyFile( const char* file );
+	#endif // HL2_DLL
 
 	extern bool LoadResponseSystemFile( const char* scriptfile );
 	extern void ReloadResponseSystem();
@@ -114,7 +116,9 @@ enum
 #else
 	MANIFEST_TALKER,
 	//MANIFEST_SENTENCES,
+#ifdef HL2_DLL
 	MANIFEST_ACTBUSY,
+#endif // HL2_DLL
 #endif
 #ifdef MAPBASE_VSCRIPT
 	MANIFEST_VSCRIPT,
@@ -155,8 +159,10 @@ static const ManifestType_t gm_szManifestFileStrings[MANIFEST_NUM_TYPES] =
 #else
 	{ "talker",			"mapbase_load_talker",			"Should we load map-specific talker files? e.g. \"maps/<mapname>_talker.txt\"" },
 	//{ "sentences",	"mapbase_load_sentences",		"Should we load map-specific sentences? e.g. \"maps/<mapname>_sentences.txt\"" },
+#ifdef HL2_DLL
 	{ "actbusy",		"mapbase_load_actbusy",			"Should we load map-specific actbusy files? e.g. \"maps/<mapname>_actbusy.txt\"" },
-#endif
+#endif // HL2_DLL
+#endif // CLIENT_DLL
 #ifdef MAPBASE_VSCRIPT
 	{ "vscript",		"mapbase_load_vscript",			"Should we load map-specific VScript map spawn files? e.g. \"maps/<mapname>_mapspawn.nut\"" },
 #endif
@@ -509,13 +515,15 @@ public:
 				LoadResponseSystemFile( value ); //PrecacheCustomResponseSystem( value );
 			}
 			break;
-			//case MANIFEST_SOUNDSCAPES: { g_SoundscapeSystem.AddSoundscapeFile(value); } break;
-			//case MANIFEST_SENTENCES: { engine->PrecacheSentenceFile(value); } break;
+				//case MANIFEST_SOUNDSCAPES: { g_SoundscapeSystem.AddSoundscapeFile(value); } break;
+				//case MANIFEST_SENTENCES: { engine->PrecacheSentenceFile(value); } break;
+#ifdef HL2_DLL
 			case MANIFEST_ACTBUSY:
 			{
 				ParseCustomActbusyFile( value );
 			}
-			break;
+			break
+#endif // HL2_DLL
 #endif
 #ifdef MAPBASE_VSCRIPT
 			case MANIFEST_VSCRIPT:
@@ -691,10 +699,12 @@ public:
 	{
 		LoadFromValue( szScript, MANIFEST_TALKER, false );
 	}
+#ifdef HL2_DLL
 	void LoadCustomActbusyFile( const char* szScript )
 	{
 		LoadFromValue( szScript, MANIFEST_ACTBUSY, false );
 	}
+#endif // HL2_DLL
 #endif
 
 	const char* GetModName()
@@ -751,7 +761,9 @@ END_DATADESC()
 		DEFINE_SCRIPTFUNC( LoadCustomHUDLayoutFile, "Loads a custom HUD layout override file." )
 	#else
 		DEFINE_SCRIPTFUNC( LoadCustomTalkerFile, "Loads a custom talker file." )
-		DEFINE_SCRIPTFUNC( LoadCustomActbusyFile, "Loads a custom actbusy file." )
+		#ifdef HL2_DLL
+			DEFINE_SCRIPTFUNC( LoadCustomActbusyFile, "Loads a custom actbusy file." )
+		#endif // HL2_DLL
 	#endif
 
 	DEFINE_SCRIPTFUNC( GetModName, "Gets the name of the mod. This is the name which shows up on Steam, RPC, etc." )
@@ -761,7 +773,9 @@ END_DATADESC()
 	DEFINE_SCRIPTFUNC_NAMED( LoadCustomSoundscriptFile, "LoadSoundscriptFile", SCRIPT_HIDE )
 	#ifndef CLIENT_DLL
 		DEFINE_SCRIPTFUNC_NAMED( LoadCustomTalkerFile, "LoadTalkerFile", SCRIPT_HIDE )
-		DEFINE_SCRIPTFUNC_NAMED( LoadCustomActbusyFile, "LoadActbusyFile", SCRIPT_HIDE )
+		#ifdef HL2_DLL
+			DEFINE_SCRIPTFUNC_NAMED( LoadCustomActbusyFile, "LoadActbusyFile", SCRIPT_HIDE )
+		#endif // HL2_DLL
 	#endif
 
 	END_SCRIPTDESC();

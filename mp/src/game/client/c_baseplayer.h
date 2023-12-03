@@ -749,6 +749,9 @@ private:
 	friend class CHL2GameMovement;
 	friend class CDODGameMovement;
 	friend class CPortalGameMovement;
+#if defined ( SDK_DLL )
+	friend class CSDKGameMovement;
+#endif
 
 	// Accessors for gamemovement
 	float GetStepSize( void ) const

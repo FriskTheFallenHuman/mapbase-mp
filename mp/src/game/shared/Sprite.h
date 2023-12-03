@@ -16,6 +16,7 @@
 
 #define SF_SPRITE_STARTON		0x0001
 #define SF_SPRITE_ONCE			0x0002
+#define SF_SPRITE_IGNOREPVS		0x0004
 #define SF_SPRITE_TEMPORARY		0x8000
 
 class CBasePlayer;
@@ -91,7 +92,21 @@ public:
 	DECLARE_NETWORKCLASS();
 
 	CSprite();
+	virtual ~CSprite();
+
 	virtual void SetModel( const char* szModelName );
+
+#if defined( CLIENT_DLL )
+	virtual bool IsSprite( void ) const
+	{
+		return true;
+	};
+
+	bool IsClientOnly() const
+	{
+		return m_bClientOnly;
+	}
+#endif
 
 	void Spawn( void );
 	void Precache( void );
@@ -250,6 +265,7 @@ public:
 
 #if defined( CLIENT_DLL )
 	virtual float	GetRenderScale( void );
+	virtual float	GetMaxRenderScale( void );
 	virtual int		GetRenderBrightness( void );
 
 	virtual int		DrawModel( int flags );
@@ -269,6 +285,16 @@ public:
 	virtual void	ClientThink( void );
 	virtual void	OnDataChanged( DataUpdateType_t updateType );
 
+	static void RecreateAllClientside();
+	static void DestroyAllClientside();
+	static void ParseAllClientsideEntities( const char* pMapData );
+	static const char* ParseClientsideEntity( const char* pEntData );
+
+	bool InitializeClientside();
+
+	virtual bool KeyValue( const char* szKeyName, const char* szValue );
+	string_t m_iszSpriteControllerName{};
+	CHandle<CSprite> m_hSpriteController{};
 #endif
 public:
 	CNetworkHandle( CBaseEntity, m_hAttachedToEntity );
@@ -302,6 +328,10 @@ private:
 	int			m_nStartBrightness;
 	int			m_nDestBrightness;		//Destination brightness
 	float		m_flBrightnessTimeStart;//Real time for brightness
+
+#ifdef CLIENT_DLL
+	bool		m_bClientOnly;
+#endif
 };
 
 

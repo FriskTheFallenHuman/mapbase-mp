@@ -634,7 +634,7 @@ void C_BaseCombatWeapon::EnsureCorrectRenderingModel()
 	C_BasePlayer* localplayer = C_BasePlayer::GetLocalPlayer();
 	if( localplayer &&
 			localplayer == GetOwner() &&
-			!ShouldDrawUsingViewModel() )
+			!ShouldDrawLocalPlayerViewModel() )
 	{
 		return;
 	}

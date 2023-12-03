@@ -44,6 +44,7 @@ set(BUILD_FOLDER "mapbase_hl2mp" CACHE STRING "Build Game")
 
 set_property(
 	CACHE BUILD_GAME PROPERTY STRINGS
+	"scratch"
 	"hl2mp"
 	"hl2"
 	"episodic"

@@ -83,7 +83,7 @@ function(target_use_client_mapbase_features target)
 			"${SRCDIR}/game/shared/mapbase/vscript_funcs_shared.h"
 			"${SRCDIR}/game/shared/mapbase/vscript_singletons.cpp"
 			"${SRCDIR}/game/shared/mapbase/vscript_singletons.h"
-			"${SRCDIR}/game/shared/mapbase/vscript_funcs_hl2.cpp"
+			"${SRCDIR}/game/shared/mapbase/vscript_funcs.cpp"
 			"${SRCDIR}/game/shared/mapbase/vscript_consts_shared.cpp"
 			"${SRCDIR}/game/shared/mapbase/vscript_consts_weapons.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_custom_scripted.cpp"
@@ -109,6 +109,23 @@ function(target_use_client_mapbase_features target)
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp"
 			"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h"
 		)
+
+		# Only add these under HL2MP!
+		if ( ${BUILD_GAME} STREQUAL "scratch" )
+			list(
+				REMOVE_ITEM 
+				CLIENT_MAPBASE_SOURCE_FILES
+
+				# This guns where ported from SP to MP
+				# HL2MP->Weapons
+				"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.cpp"
+				"${SRCDIR}/game/shared/mapbase/weapon_alyxgun.h"
+				"${SRCDIR}/game/shared/mapbase/weapon_annabelle.cpp"
+				"${SRCDIR}/game/shared/mapbase/weapon_bugbait.cpp"
+				"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.cpp"
+				"${SRCDIR}/game/shared/mapbase/weapon_citizenpackage.h"
+			)
+		endif()
 	endif()
 
 	target_sources(

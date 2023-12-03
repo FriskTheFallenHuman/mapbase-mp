@@ -3838,21 +3838,21 @@ extern ConVar muzzleflash_light;
 void C_BaseAnimating::ProcessMuzzleFlashEvent()
 {
 #ifdef MAPBASE
-	switch ( muzzleflash_light.GetInt() )
+	switch( muzzleflash_light.GetInt() )
 	{
-	case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
-		break;
-	default:
-	case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
+		case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
+			break;
+		default:
+		case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
 		{
 			Vector vAttachment, vAng;
 			QAngle angles;
 
 			GetAttachment( 1, vAttachment, angles );
-			AngleVectors(angles, &vAng);
+			AngleVectors( angles, &vAng );
 			vAttachment += vAng * 2;
 
-			dlight_t * el = effects->CL_AllocDlight( m_index );
+			dlight_t* el = effects->CL_AllocDlight( m_index );
 			el->origin = vAttachment;
 
 			el->color.r = 255;
@@ -3861,11 +3861,11 @@ void C_BaseAnimating::ProcessMuzzleFlashEvent()
 			el->color.exponent = 5;
 
 			// Randomize the die value by +/- 0.01
-			el->die = gpGlobals->curtime + 0.05f + random->RandomFloat(-0.01f, 0.01f);
-			el->radius = random->RandomFloat(245.0f, 256.0f);
+			el->die = gpGlobals->curtime + 0.05f + random->RandomFloat( -0.01f, 0.01f );
+			el->radius = random->RandomFloat( 245.0f, 256.0f );
 
 			// Randomize the decay value
-			el->decay = random->RandomFloat(400.0f, 600.0f);
+			el->decay = random->RandomFloat( 400.0f, 600.0f );
 		}
 		break;
 	}
@@ -4779,7 +4779,38 @@ void C_BaseAnimating::FireObsoleteEvent( const Vector& origin, const QAngle& ang
 					bFirstPerson = false;
 					break;
 			}
+#if defined ( SDK_DLL )
+			// HACKHACKHACK for third person. Will hacks ever be unnecessary? -- These Events are obsolete
+			// in third person, make first person muzzle flashes NOT dispatch!
+			if( IsViewModel() )
+			{
+				C_BasePlayer* pPlayer = ToBasePlayer( dynamic_cast<C_BaseViewModel*>( this )->GetOwner() );
+				if( pPlayer && pPlayer == C_BasePlayer::GetLocalPlayer() )
+				{
+					if( ::input->CAM_IsThirdPerson() )
+					{
+// Don't do anything now, the sample weapon models in the new SDK don't use these events anymore - just back out if any models are 'taken' from other mods like css.
+#if 0
+						// Dispatch on the weapon
+						C_BaseCombatWeapon* pWeapon = pPlayer->GetActiveWeapon();
+						if( !pWeapon )
+						{
+							break;
+						}
 
+						if( iAttachment != -1 )
+						{
+							if( pWeapon->GetAttachment( iAttachment + 1, attachOrigin, attachAngles ) )
+							{
+								tempents->MuzzleFlash( attachOrigin, attachAngles, atoi( options ), pWeapon->GetRefEHandle(), false );
+							}
+						}
+#endif
+						break;
+					}
+				}
+			}
+#endif
 			if( iAttachment != -1 && m_Attachments.Count() > iAttachment )
 			{
 				GetAttachment( iAttachment + 1, attachOrigin, attachAngles );

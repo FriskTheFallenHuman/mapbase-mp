@@ -32,6 +32,7 @@ LINK_ENTITY_TO_CLASS( env_sprite, CSprite );
 LINK_ENTITY_TO_CLASS( env_sprite_oriented, CSpriteOriented );
 #if !defined( CLIENT_DLL )
 	LINK_ENTITY_TO_CLASS( env_glow, CSprite ); // For backwards compatibility, remove when no longer needed.
+	LINK_ENTITY_TO_CLASS( env_sprite_clientside, CSprite );
 #endif
 
 #if !defined( CLIENT_DLL )
@@ -174,8 +175,16 @@ BEGIN_NETWORK_TABLE( CSprite, DT_Sprite )
 END_NETWORK_TABLE()
 
 
+
+#ifdef CLIENT_DLL
+	extern CUtlVector< CSprite* > g_ClientsideSprites;
+#endif
+
 CSprite::CSprite()
 {
+#ifdef CLIENT_DLL
+	m_bClientOnly = false;
+#endif
 	m_flGlowProxySize = 2.0f;
 	m_flHDRColorScale = 1.0f;
 
@@ -184,6 +193,17 @@ CSprite::CSprite()
 	m_bDrawInPortalRender = true;
 #endif
 }
+
+CSprite::~CSprite()
+{
+#ifdef CLIENT_DLL
+	if( m_bClientOnly )
+	{
+		g_ClientsideSprites.FindAndFastRemove( this );
+	}
+#endif
+}
+
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -205,6 +225,13 @@ void CSprite::Spawn( void )
 #endif
 
 #if !defined( CLIENT_DLL )
+	if( m_flGlowProxySize > MAX_GLOW_PROXY_SIZE )
+	{
+		// Clamp on Spawn to prevent per-frame spew
+		DevWarning( "env_sprite at setpos %0.0f %0.0f %0.0f has invalid glow size %f - clamping to %f\n",
+					GetAbsOrigin().x, GetAbsOrigin().y, GetAbsOrigin().z, m_flGlowProxySize.Get(), MAX_GLOW_PROXY_SIZE );
+		m_flGlowProxySize = MAX_GLOW_PROXY_SIZE;
+	}
 	if( GetEntityName() != NULL_STRING && !( m_spawnflags & SF_SPRITE_STARTON ) )
 	{
 		TurnOff();
@@ -246,6 +273,18 @@ void CSprite::Spawn( void )
 	m_nStartBrightness = m_nDestBrightness = m_nBrightness;
 #endif
 
+#ifndef CLIENT_DLL
+	// Server has no use for client-only entities.
+	// Seems like a waste to create the entity, only to UTIL_Remove it on Spawn, but this pattern works safely...
+	if( FClassnameIs( this, "env_sprite_clientside" ) )
+	{
+		if( FStrEq( STRING( GetEntityName() ), "" ) && !GetMoveParent() )
+		{
+			//remove all with empty name and without moveparent, we do not parse same on client
+			UTIL_Remove( this );
+		}
+	}
+#endif
 }
 
 
@@ -326,7 +365,7 @@ void CSprite::SpriteInit( const char* pSpriteName, const Vector& origin )
 
 int CSprite::UpdateTransmitState( void )
 {
-	if( GetMoveParent() )
+	if( GetMoveParent() && !HasSpawnFlags( SF_SPRITE_IGNOREPVS ) )
 	{
 		// we must call ShouldTransmit() if we have a move parent
 		return SetTransmitState( FL_EDICT_FULLCHECK );
@@ -344,7 +383,7 @@ int CSprite::ShouldTransmit( const CCheckTransmitInfo* pInfo )
 	// the client. Otherwise, the server will have to send big bursts of data with the entity states
 	// as they come in and out of the PVS.
 
-	if( GetMoveParent() )
+	if( GetMoveParent() && !HasSpawnFlags( SF_SPRITE_IGNOREPVS ) )
 	{
 		CBaseViewModel* pViewModel = dynamic_cast<CBaseViewModel*>( GetMoveParent() );
 
@@ -662,12 +701,28 @@ float CSprite::GetRenderScale( void )
 	return ( m_flStartScale + ( ( m_flDestScale - m_flStartScale ) * timeDelta ) );
 }
 
+float CSprite::GetMaxRenderScale( void )
+{
+	//See if we're done scaling
+	if( m_flScaleTime == 0 )
+	{
+		return m_flSpriteScale;
+	}
+
+	// return the max scale over the interval
+	return MAX( m_flStartScale, m_flDestScale );
+}
+
 //-----------------------------------------------------------------------------
 // Purpose: Get the rendered extents of the sprite
 //-----------------------------------------------------------------------------
 void CSprite::GetRenderBounds( Vector& vecMins, Vector& vecMaxs )
 {
-	float flScale = GetRenderScale() * 0.5f;
+	// NOTE: Don't call GetRenderScale here because the bounds will get cached
+	// if we don't blow away that cache every time the interpolant (curtime) changes
+	// then it will be wrong as long as this is animating.
+	// instead while animating just use the
+	float flScale = GetMaxRenderScale() * 0.5f;
 
 	// If our scale is normalized we need to convert that to actual world units
 	if( m_bWorldSpaceScale == false )
@@ -715,9 +770,6 @@ int	CSprite::GetRenderBrightness( void )
 void CSprite::OnDataChanged( DataUpdateType_t updateType )
 {
 	BaseClass::OnDataChanged( updateType );
-
-	// Only think when sapping
-	SetNextClientThink( CLIENT_THINK_ALWAYS );
 	if( updateType == DATA_UPDATE_CREATED )
 	{
 		m_flStartScale = m_flDestScale = m_flSpriteScale;
@@ -725,18 +777,27 @@ void CSprite::OnDataChanged( DataUpdateType_t updateType )
 	}
 
 	UpdateVisibility();
+
+	if( m_flSpriteScale != m_flDestScale || m_nBrightness != m_nDestBrightness )
+	{
+		SetNextClientThink( CLIENT_THINK_ALWAYS );
+	}
+	else
+	{
+		SetNextClientThink( CLIENT_THINK_NEVER );
+	}
 }
 
 void CSprite::ClientThink( void )
 {
-	BaseClass::ClientThink();
-
+	bool bDisableThink = true;
 	// Module render colors over time
 	if( m_flSpriteScale != m_flDestScale )
 	{
 		m_flStartScale		= m_flDestScale;
 		m_flDestScale		= m_flSpriteScale;
 		m_flScaleTimeStart	= gpGlobals->curtime;
+		bDisableThink = false;
 	}
 
 	if( m_nBrightness != m_nDestBrightness )
@@ -744,6 +805,14 @@ void CSprite::ClientThink( void )
 		m_nStartBrightness		= m_nDestBrightness;
 		m_nDestBrightness		= m_nBrightness;
 		m_flBrightnessTimeStart = gpGlobals->curtime;
+		bDisableThink = false;
+	}
+
+	// changed bounds
+	//InvalidatePhysicsRecursive( BOUNDS_CHANGED );
+	if( bDisableThink )
+	{
+		SetNextClientThink( CLIENT_THINK_NEVER );
 	}
 }
 
@@ -758,8 +827,40 @@ extern ConVar r_drawviewmodel;
 int CSprite::DrawModel( int flags )
 {
 	VPROF_BUDGET( "CSprite::DrawModel", VPROF_BUDGETGROUP_PARTICLE_RENDERING );
+
+	CSprite* pSpriteDataSource = this;
+
+	if( m_iszSpriteControllerName != NULL_STRING && !m_hSpriteController )
+	{
+		for( C_BaseEntity* pEnt = ClientEntityList().FirstBaseEntity(); pEnt; pEnt = ClientEntityList().NextBaseEntity( pEnt ) )
+		{
+			const char* szEntName = pEnt->GetEntityName();
+			if( szEntName && !V_stricmp( szEntName, STRING( m_iszSpriteControllerName ) ) )
+			{
+				m_hSpriteController = dynamic_cast< CSprite* >( pEnt );
+				if( m_hSpriteController )
+				{
+					break;
+				}
+
+				Warning( "Sprite controller must be a sprite: %s is %s\n", szEntName, pEnt->GetClassname() );
+			}
+		}
+
+		if( !m_hSpriteController )
+		{
+			Warning( "Sprite controller not found: %s; clearing sprite controller (mapper: check to make sure the entity exists and is unparented or has the always transmit flag set)\n", STRING( m_iszSpriteControllerName ) );
+			m_iszSpriteControllerName = NULL_STRING;
+		}
+	}
+
+	if( m_hSpriteController )
+	{
+		pSpriteDataSource = m_hSpriteController;
+	}
+
 	//See if we should draw
-	if( !IsVisible() || ( m_bReadyToDraw == false ) )
+	if( !pSpriteDataSource->IsVisible() || ( m_bReadyToDraw == false ) )
 	{
 		return 0;
 	}
@@ -786,7 +887,11 @@ int CSprite::DrawModel( int flags )
 	//Must be a sprite
 	if( modelinfo->GetModelType( GetModel() ) != mod_sprite )
 	{
-		Assert( 0 );
+		const char* modelName = modelinfo->GetModelName( GetModel() );
+		char msg[256];
+		V_snprintf( msg, 256, "Sprite %d has non-mod_sprite model %s (type %d)\n",
+					entindex(), modelName, modelinfo->GetModelType( GetModel() ) );
+		AssertMsgOnce( 0, msg );
 		return 0;
 	}
 

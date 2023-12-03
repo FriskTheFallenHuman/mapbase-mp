@@ -32,10 +32,14 @@ struct DeathNoticeItem
 		wzInfoText[0] = 0;
 		wzInfoTextEnd[0] = 0;
 		iconDeath = NULL;
+#ifdef TF_CLIENT_DLL
 		iconCritDeath = NULL;
+#endif // TF_CLIENT_DLL
 		bSelfInflicted = false;
 		bLocalPlayerInvolved = false;
+#ifdef TF_CLIENT_DLL
 		bCrit = false;
+#endif // TF_CLIENT_DLL
 		flCreationTime = 0;
 		iCount = 0;
 		iWeaponID = -1;
@@ -56,7 +60,9 @@ struct DeathNoticeItem
 	wchar_t		wzInfoText[32];	// any additional text to display next to icon
 	wchar_t		wzInfoTextEnd[32];	// any additional text to display next to victim name
 	CHudTexture* iconDeath;
+#ifdef TF_CLIENT_DLL
 	CHudTexture* iconCritDeath;	// crit background icon
+#endif // TF_CLIENT_DLL
 
 	CHudTexture* iconPreKillerName;
 
@@ -67,7 +73,9 @@ struct DeathNoticeItem
 
 	bool		bSelfInflicted;
 	bool		bLocalPlayerInvolved;
+#ifdef TF_CLIENT_DLL
 	bool		bCrit;
+#endif // TF_CLIENT_DLL
 	float		flCreationTime;
 	int			iWeaponID;
 	int			iKillerID;
@@ -123,8 +131,9 @@ protected:
 	{
 		return -1;
 	}
-
+#ifdef TF_CLIENT_DLL
 	void GetLocalizedControlPointName( IGameEvent* event, char* namebuf, int namelen );
+#endif // TF_CLIENT_DLL
 	virtual Color GetInfoTextColor( int iDeathNoticeMsg )
 	{
 		return Color( 255, 255, 255, 255 );
@@ -143,7 +152,9 @@ protected:
 	CPanelAnimationVar( Color, m_clrIcon, "IconColor", "255 80 0 255" );
 	CPanelAnimationVar( Color, m_clrBaseBGColor, "BaseBackgroundColor", "46 43 42 220" );
 	CPanelAnimationVar( Color, m_clrLocalBGColor, "LocalBackgroundColor", "245 229 196 200" );
+#ifdef TF_CLIENT_DLL
 	CPanelAnimationVar( Color, m_clrKillStreakBg, "KillStreakBackgroundColor", "224 223 219 200" );
+#endif // TF_CLIENT_DLL
 
 	CUtlVector<DeathNoticeItem> m_DeathNotices;
 

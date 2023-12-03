@@ -65,8 +65,11 @@ DEFINE_KEYFIELD( m_Master, FIELD_STRING, "master" ),
 
 
 // These are the new entry points to entities.
-				 LINK_ENTITY_TO_CLASS( info_player_deathmatch, CBaseDMStart );
-LINK_ENTITY_TO_CLASS( info_player_start, CPointEntity );
+#if !defined( SDK_DLL )		//Tony; don't use the normal info_player_deathmatch in the SDK, use the custom one.
+	LINK_ENTITY_TO_CLASS( info_player_deathmatch, CBaseDMStart );
+#endif
+
+				 LINK_ENTITY_TO_CLASS( info_player_start, CPointEntity );
 LINK_ENTITY_TO_CLASS( info_landmark, CPointEntity );
 
 bool CBaseDMStart::IsTriggered( CBaseEntity* pEntity )

@@ -18,7 +18,11 @@
 #include "collisionutils.h"
 #include "tier0/vprof.h"
 #ifdef MAPBASE
-	#include "weapon_flaregun.h"
+	#ifdef HL2_DLL
+		#include "weapon_flaregun.h"
+	#else
+		#include "mapbase/env_flare.h"
+	#endif // HL2_DLL
 	#include "mapbase/GlobalStrings.h"
 #endif
 

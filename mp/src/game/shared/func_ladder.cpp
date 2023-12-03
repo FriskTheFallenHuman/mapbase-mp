@@ -5,7 +5,7 @@
 //=============================================================================//
 #include "cbase.h"
 #include "func_ladder.h"
-#ifdef MAPBASE
+#if defined ( MAPBASE ) && ( defined( HL2_CLIENT_DLL ) || defined( HL2_DLL ) )
 	#include "hl_gamemovement.h"
 #endif
 
@@ -16,7 +16,7 @@
 	/*static*/ ConVar sv_showladders( "sv_showladders", "0", 0, "Show bbox and dismount points for all ladders (must be set before level load.)\n" );
 #endif
 
-#if MAPBASE
+#if defined ( MAPBASE ) && ( defined( HL2_CLIENT_DLL ) || defined( HL2_DLL ) )
 	extern IGameMovement* g_pGameMovement;
 #endif
 
@@ -404,7 +404,7 @@ void CFuncLadder::InputDisable( inputdata_t& inputdata )
 	m_bDisabled = true;
 }
 
-#ifdef MAPBASE
+#if defined ( MAPBASE ) && ( defined( HL2_CLIENT_DLL ) || defined( HL2_DLL ) )
 //-----------------------------------------------------------------------------
 // Purpose:
 // Input  : &inputdata -
@@ -503,7 +503,7 @@ DEFINE_KEYFIELD( m_vecPlayerMountPositionTop,	FIELD_VECTOR, "point0" ),
 	DEFINE_KEYFIELD( m_surfacePropName, FIELD_STRING,	"ladderSurfaceProperties" ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Enable", InputEnable ),
 	DEFINE_INPUTFUNC( FIELD_VOID, "Disable", InputDisable ),
-	#ifdef MAPBASE
+	#if defined ( MAPBASE ) && ( defined( HL2_CLIENT_DLL ) || defined( HL2_DLL ) )
 		DEFINE_INPUTFUNC( FIELD_VOID, "ForcePlayerOn", InputForcePlayerOn ),
 		DEFINE_INPUTFUNC( FIELD_VOID, "CheckPlayerOn", InputCheckPlayerOn ),
 	#endif

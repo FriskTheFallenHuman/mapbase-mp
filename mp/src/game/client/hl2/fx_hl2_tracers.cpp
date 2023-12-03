@@ -420,12 +420,12 @@ DECLARE_CLIENT_EFFECT( "AR2Impact", AR2ImpactCallback );
 void CreateMuzzleflashELight( const Vector& origin, int exponent, int nMinRadius, int nMaxRadius, ClientEntityHandle_t hEntity, bool bUseCustomColor = false, int nColorR = 255, int nColorG = 255, int nColorB = 255 )
 {
 #ifdef MAPBASE
-	switch ( muzzleflash_light.GetInt() )
+	switch( muzzleflash_light.GetInt() )
 	{
-	case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
-		break;
-	default:
-	case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
+		case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
+			break;
+		default:
+		case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
 			int entityIndex = ClientEntityList().HandleToEntIndex( hEntity );
 			if( entityIndex >= 0 )
 			{
@@ -439,19 +439,19 @@ void CreateMuzzleflashELight( const Vector& origin, int exponent, int nMinRadius
 				int originalB = bUseCustomColor ? nColorB : 64;
 
 				// Randomize color components within the range of +/- 20
-				el->color.r = originalR + random->RandomInt(-20, 20);
-				el->color.g = originalG + random->RandomInt(-20, 20);
-				el->color.b = originalB + random->RandomInt(0, 0);
+				el->color.r = originalR + random->RandomInt( -20, 20 );
+				el->color.g = originalG + random->RandomInt( -20, 20 );
+				el->color.b = originalB + random->RandomInt( 0, 0 );
 				el->color.exponent = exponent;
 
 				// Randomize the die value by +/- 0.01
-				el->die = gpGlobals->curtime + 0.05f + random->RandomFloat(-0.01f, 0.01f);
+				el->die = gpGlobals->curtime + 0.05f + random->RandomFloat( -0.01f, 0.01f );
 				el->radius	= random->RandomInt( nMinRadius, nMaxRadius );
 
 				// Randomize the decay value
-				el->decay = random->RandomFloat(400.0f, 600.0f);
+				el->decay = random->RandomFloat( 400.0f, 600.0f );
 			}
-		break;
+			break;
 	}
 #else
 	if( muzzleflash_light.GetInt() )

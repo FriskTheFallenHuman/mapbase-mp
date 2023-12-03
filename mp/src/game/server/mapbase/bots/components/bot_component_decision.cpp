@@ -633,7 +633,11 @@ bool CBotDecision::ShouldGrabWeapon( CBaseWeapon* pWeapon ) const
 
 	// We are an player ally, we try not to take the weapons close to a human player
 	// TODO: Apply this even if we are on the enemy team with enemy human players. (Teamplay)
-	if( GetHost()->Classify() == CLASS_PLAYER_ALLY || GetHost()->Classify() == CLASS_PLAYER_ALLY_VITAL )
+	if( GetHost()->Classify() == CLASS_PLAYER_ALLY
+#ifdef HL2_DLL
+			|| GetHost()->Classify() == CLASS_PLAYER_ALLY_VITAL
+#endif // HL2_DLL
+	  )
 	{
 		if( Utils::IsSpotOccupiedByClass( pWeapon->GetAbsOrigin(), CLASS_PLAYER, NULL, nearDistance ) )
 		{

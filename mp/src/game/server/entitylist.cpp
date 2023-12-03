@@ -22,9 +22,12 @@
 	#include "npc_playercompanion.h"
 	#ifdef MAPBASE
 		#include "hl2_player.h"
-		#include "mapbase_matchers_base.h"
 	#endif
 #endif // HL2_DLL
+
+#ifdef MAPBASE
+	#include "mapbase_matchers_base.h"
+#endif
 
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"

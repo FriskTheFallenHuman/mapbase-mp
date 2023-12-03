@@ -2892,14 +2892,14 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 	}
 
 #ifdef MAPBASE
-	switch ( muzzleflash_light.GetInt() )
+	switch( muzzleflash_light.GetInt() )
 	{
-	case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
-		break;
-	default:
-	case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
-			C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle(hEntity);
-			if ( pEnt )
+		case eMuzzleFlashLigthType::MUZZLEFLASH_NONE:
+			break;
+		default:
+		case eMuzzleFlashLigthType::MUZZLEFLASH_VALVE:
+			C_BaseEntity* pEnt = ClientEntityList().GetBaseEntityFromHandle( hEntity );
+			if( pEnt )
 			{
 				dlight_t* el = effects->CL_AllocElight( LIGHT_INDEX_MUZZLEFLASH + pEnt->entindex() );
 				el->origin = origin;
@@ -2910,13 +2910,13 @@ void CTempEnts::MuzzleFlash_Combine_NPC( ClientEntityHandle_t hEntity, int attac
 				el->color.exponent = 5;
 
 				// Randomize the die value by +/- 0.01
-				el->die = gpGlobals->curtime + 0.05f + random->RandomFloat(-0.01f, 0.01f);
-				el->radius = random->RandomFloat(245.0f, 256.0f);
+				el->die = gpGlobals->curtime + 0.05f + random->RandomFloat( -0.01f, 0.01f );
+				el->radius = random->RandomFloat( 245.0f, 256.0f );
 
 				// Randomize the decay value
-				el->decay = random->RandomFloat(400.0f, 600.0f);
+				el->decay = random->RandomFloat( 400.0f, 600.0f );
 			}
-		break;
+			break;
 	}
 #else
 	if( muzzleflash_light.GetBool() )

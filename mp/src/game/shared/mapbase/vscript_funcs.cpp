@@ -1,13 +1,19 @@
 //========= Mapbase - https://github.com/mapbase-source/source-sdk-2013 ============//
 //
-// Purpose: VScript functions for Half-Life 2.
+// Purpose: VScript functions.
 //
 // $NoKeywords: $
 //=============================================================================//
 
 #include "cbase.h"
+#if defined( HL2_DLL ) || defined( HL2_CLIENT_DLL )
+	#include "hl2_gamerules.h"
+	#define TheGameRules	TheGameRules
+#else
+	#include "sdk_gamerules.h"
+	#define TheGameRules	SDKGameRules()
+#endif // HL2_DLL || HL2_CLIENT_DLL
 
-#include "hl2_gamerules.h"
 #ifndef CLIENT_DLL
 	#include "eventqueue.h"
 #endif
@@ -100,28 +106,28 @@ public:
 			{
 				cvar.SetValue( value.m_int );
 
-				HL2GameRules()->SaveConvar( cvar );
+				TheGameRules->SaveConvar( cvar );
 				break;
 			}
 			case FIELD_BOOLEAN:
 			{
 				cvar.SetValue( value.m_bool );
 
-				HL2GameRules()->SaveConvar( cvar );
+				TheGameRules->SaveConvar( cvar );
 				break;
 			}
 			case FIELD_FLOAT:
 			{
 				cvar.SetValue( value.m_float );
 
-				HL2GameRules()->SaveConvar( cvar );
+				TheGameRules->SaveConvar( cvar );
 				break;
 			}
 			case FIELD_CSTRING:
 			{
 				cvar.SetValue( value.m_pszString );
 
-				HL2GameRules()->SaveConvar( cvar );
+				TheGameRules->SaveConvar( cvar );
 				break;
 			}
 			default:
@@ -202,22 +208,24 @@ HSCRIPT ScriptGameOver( const char* pszMessage, float flDelay, float flFadeTime,
 	return ToHScript( pReload );
 }
 
+#ifdef HL2_DLL
 bool ScriptMegaPhyscannonActive()
 {
-	return HL2GameRules()->MegaPhyscannonActive();
+	return TheGameRules->MegaPhyscannonActive();
 }
+#endif // HL2_DLL
 #endif // GAME_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CHalfLife2::RegisterScriptFunctions( void )
+void RegisterGameScriptFunctions( void )
 {
-	BaseClass::RegisterScriptFunctions();
-
 #ifndef CLIENT_DLL
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptGameOver, "GameOver", "Ends the game and reloads the last save." );
+#ifdef HL2_DLL
 	ScriptRegisterFunctionNamed( g_pScriptVM, ScriptMegaPhyscannonActive, "MegaPhyscannonActive", "Checks if supercharged gravity gun mode is enabled." );
+#endif // HL2_DLL
 #endif
 
 #ifdef MAPBASE_MP

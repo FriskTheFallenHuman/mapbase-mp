@@ -15,8 +15,10 @@
 #include "hud_macros.h"
 #include "spectatorgui.h"
 #include "c_team.h"
-#include "tf_hud_freezepanel.h"
-#include "tf_hud_objectivestatus.h"
+#ifdef TF_CLIENT_DLL
+	#include "tf_hud_freezepanel.h"
+	#include "tf_hud_objectivestatus.h"
+#endif // TF_CLIENT_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose:
@@ -1214,6 +1216,7 @@ void CHudControlPointIcons::UpdateProgressBarFor( int iIndex )
 		return;
 	}
 
+#ifdef TF_CLIENT_DLL
 	// This can happen at level load
 	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
 	if( pStatus && pStatus->GetControlPointProgressBar() )
@@ -1235,6 +1238,7 @@ void CHudControlPointIcons::UpdateProgressBarFor( int iIndex )
 			}
 		}
 	}
+#endif // TF_CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1244,6 +1248,7 @@ void CHudControlPointIcons::InitIcons( void )
 {
 	ShutdownIcons();
 
+#ifdef TF_CLIENT_DLL
 	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
 	if( pStatus )
 	{
@@ -1255,7 +1260,10 @@ void CHudControlPointIcons::InitIcons( void )
 			pProgressBar->SetupForPoint( NULL );
 		}
 	}
+#endif // TF_CLIENT_DLL
 
+
+#ifdef TF_CLIENT_DLL
 	// Create an icon for each visible control point in this miniround
 	int iPoints = ObjectiveResource()->GetNumControlPoints();
 	for( int i = 0; i < iPoints; i++ )
@@ -1266,6 +1274,7 @@ void CHudControlPointIcons::InitIcons( void )
 			m_Icons.AddToTail( vgui::SETUP_PANEL( pIcon ) );
 		}
 	}
+#endif // TF_CLIENT_DLL
 
 	InvalidateLayout();
 }
@@ -1281,6 +1290,7 @@ void CHudControlPointIcons::ShutdownIcons( void )
 	}
 	m_Icons.RemoveAll();
 
+#ifdef TF_CLIENT_DLL
 	// if we remove all the icons, we need to make sure the progress bar isn't holding onto one
 	CTFHudObjectiveStatus* pStatus = GET_HUDELEMENT( CTFHudObjectiveStatus );
 	if( pStatus )
@@ -1292,6 +1302,7 @@ void CHudControlPointIcons::ShutdownIcons( void )
 			pProgressBar->SetupForPoint( NULL );
 		}
 	}
+#endif // TF_CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -1620,7 +1631,11 @@ void CControlPointProgressBar::UpdateBarText( void )
 		// If the opponents can never recapture this point back, we use a different string
 		if( iPlayerTeam != TEAM_UNASSIGNED )
 		{
+#ifdef TF_CLIENT_DLL
 			int iEnemyTeam = ( iPlayerTeam == TF_TEAM_RED ) ? TF_TEAM_BLUE : TF_TEAM_RED;
+#else
+			int iEnemyTeam = ( iPlayerTeam == SDK_TEAM_RED ) ? SDK_TEAM_BLUE : SDK_TEAM_RED;
+#endif
 			if( !ObjectiveResource()->TeamCanCapPoint( iCP, iEnemyTeam ) )
 			{
 				m_pBarText->SetText( "#Team_Capture_Owned" );
@@ -1867,8 +1882,13 @@ void CControlPointCountdown::OnTick( void )
 {
 	BaseClass::OnTick();
 
+#ifdef TF_CLIENT_DLL
 	C_TFPlayer* pLocalPlayer = C_TFPlayer::GetLocalTFPlayer();
 	if( !pLocalPlayer || ( m_flUnlockTime <= 0.0f ) )
+#else
+	C_BasePlayer* pLocalPlayer = C_BasePlayer::GetLocalPlayer();
+	if( !pLocalPlayer || ( m_flUnlockTime <= 0.0f ) )
+#endif // TF_CLIENT_DLL
 	{
 		if( IsVisible() )
 		{
@@ -1876,6 +1896,7 @@ void CControlPointCountdown::OnTick( void )
 		}
 		return;
 	}
+
 
 	if( TeamplayRoundBasedRules() )
 	{

@@ -3258,7 +3258,7 @@ void CViewRender::ViewDrawScene_Intro( const CViewSetup& view, int nClearFlags, 
 		CViewSetup playerView( view );
 		playerView.origin = introData.m_vecCameraView;
 		playerView.angles = introData.m_vecCameraViewAngles;
-#ifdef MAPBASE
+#if defined ( MAPBASE ) && defined ( USE_MONITORS )
 		// Ortho handling (change this code if we ever use m_hCameraEntity for other things)
 		if( introData.m_hCameraEntity /*&& introData.m_hCameraEntity->IsOrtho()*/ )
 		{

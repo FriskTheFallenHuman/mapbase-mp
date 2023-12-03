@@ -18,9 +18,11 @@
 #include "clientmode_shared.h"
 #include "c_baseplayer.h"
 #include "c_team.h"
-#include "tf_shareddefs.h"
-#include "tf_shareddefs.h"
-#include "tf_gamerules.h"
+#ifdef TF_CLIENT_DLL
+	#include "tf_shareddefs.h"
+	#include "tf_shareddefs.h"
+	#include "tf_gamerules.h"
+#endif // TF_CLIENT_DLL
 
 #include "hud_basedeathnotice.h"
 
@@ -61,11 +63,13 @@ void CHudBaseDeathNotice::ApplySchemeSettings( IScheme* scheme )
 void CHudBaseDeathNotice::Init( void )
 {
 	ListenForGameEvent( "player_death" );
+#ifdef TF_CLIENT_DLL
 	ListenForGameEvent( "object_destroyed" );
 	ListenForGameEvent( "teamplay_point_captured" );
 	ListenForGameEvent( "teamplay_capture_blocked" );
 	ListenForGameEvent( "teamplay_flag_event" );
 	ListenForGameEvent( "rd_robot_killed" );
+#endif // TF_CLIENT_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -257,11 +261,13 @@ void CHudBaseDeathNotice::Paint()
 			x += iconPostkillerWide + xSpacing;
 		}
 
+#ifdef TF_CLIENT_DLL
 		// Draw glow behind weapon icon to show it was a crit death
 		if( msg.bCrit && msg.iconCritDeath )
 		{
 			msg.iconCritDeath->DrawSelf( x, yIcon, iconActualWide, iconTall, m_clrIcon );
 		}
+#endif // TF_CLIENT_DLL
 
 		// Draw death icon
 		if( icon )
@@ -386,8 +392,9 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 	const char* pszEventName = event->GetName();
 
 	bool bPlayerDeath = EventIsPlayerDeath( pszEventName );
-	bool bObjectDeath = FStrEq( pszEventName, "object_destroyed" );
 
+#ifdef TF_CLIENT_DLL
+	bool bObjectDeath = FStrEq( pszEventName, "object_destroyed" );
 	bool bIsFeignDeath = event->GetInt( "death_flags" ) & TF_DEATH_FEIGN_DEATH;
 	if( bPlayerDeath )
 	{
@@ -415,6 +422,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			}
 		}
 	}
+#endif // TF_CLIENT_DLL
 
 	// Add a new death message.  Note we always look it up by index rather than create a reference or pointer to it;
 	// additional messages may get added during this function that cause the underlying array to get realloced, so don't
@@ -429,19 +437,25 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 		iMsg = AddDeathNoticeItem();
 	}
 
+#ifdef TF_CLIENT_DLL
 	if( bPlayerDeath || bObjectDeath )
+#else
+	if( bPlayerDeath )
+#endif // TF_CLIENT_DLL
 	{
 		int victim = engine->GetPlayerForUserID( event->GetInt( "userid" ) );
 		int killer = engine->GetPlayerForUserID( event->GetInt( "attacker" ) );
 		const char* killedwith = event->GetString( "weapon" );
 		const char* killedwithweaponlog = event->GetString( "weapon_logclassname" );
 
+#ifdef TF_CLIENT_DLL
 		if( bObjectDeath && victim == 0 )
 		{
 			// for now, no death notices of map placed objects
 			m_DeathNotices.Remove( iMsg );
 			return;
 		}
+#endif // TF_CLIENT_DLL
 
 		// Get the names of the players
 		const char* killer_name = ( killer > 0 ) ? g_PR->GetPlayerName( killer ) : "";
@@ -463,6 +477,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			bLocalPlayerInvolved = true;
 		}
 
+#ifdef TF_CLIENT_DLL
 		if( event->GetInt( "death_flags" ) & TF_DEATH_AUSTRALIUM )
 		{
 			m_DeathNotices[iMsg].bCrit = true;
@@ -478,6 +493,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			m_DeathNotices[iMsg].bCrit = false;
 			m_DeathNotices[iMsg].iconCritDeath = NULL;
 		}
+#endif // TF_CLIENT_DLL
 
 		m_DeathNotices[iMsg].bLocalPlayerInvolved = bLocalPlayerInvolved;
 		m_DeathNotices[iMsg].Killer.iTeam = ( killer > 0 ) ? g_PR->GetTeam( killer ) : 0;
@@ -493,21 +509,24 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			m_DeathNotices[iMsg].bSelfInflicted = true;
 			m_DeathNotices[iMsg].Killer.szName[0] = 0;
 
+#ifdef TF_CLIENT_DLL
 			if( event->GetInt( "death_flags" ) & TF_DEATH_PURGATORY )
 			{
 				// special case icon for dying in purgatory
 				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_purgatory", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
 			}
-			else if( event->GetInt( "damagebits" ) & DMG_FALL )
-			{
-				// special case text for falling death
-				V_wcsncpy( m_DeathNotices[iMsg].wzInfoText, g_pVGuiLocalize->Find( "#DeathMsg_Fall" ), sizeof( m_DeathNotices[iMsg].wzInfoText ) );
-			}
-			else if( ( event->GetInt( "damagebits" ) & DMG_VEHICLE ) || ( 0 == Q_stricmp( m_DeathNotices[iMsg].szIcon, "d_tracktrain" ) ) )
-			{
-				// special case icon for hit-by-vehicle death
-				Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_vehicle", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
-			}
+			else
+#endif // TF_CLIENT_DLL
+				if( event->GetInt( "damagebits" ) & DMG_FALL )
+				{
+					// special case text for falling death
+					V_wcsncpy( m_DeathNotices[iMsg].wzInfoText, g_pVGuiLocalize->Find( "#DeathMsg_Fall" ), sizeof( m_DeathNotices[iMsg].wzInfoText ) );
+				}
+				else if( ( event->GetInt( "damagebits" ) & DMG_VEHICLE ) || ( 0 == Q_stricmp( m_DeathNotices[iMsg].szIcon, "d_tracktrain" ) ) )
+				{
+					// special case icon for hit-by-vehicle death
+					Q_strncpy( m_DeathNotices[iMsg].szIcon, "d_vehicle", ARRAYSIZE( m_DeathNotices[iMsg].szIcon ) );
+				}
 		}
 
 		m_DeathNotices[iMsg].iWeaponID = event->GetInt( "weaponid" );
@@ -542,18 +561,21 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			}
 		}
 
-		if( FStrEq( pszEventName, "player_death" ) )
+		if( bPlayerDeath )
 		{
+#ifdef TF_CLIENT_DLL
 			if( m_DeathNotices[iMsg].bCrit )
 			{
 				Msg( "%s (crit)\n", sDeathMsg );
 			}
 			else
+#endif // TF_CLIENT_DLL
 			{
 				Msg( "%s\n", sDeathMsg );
 			}
 		}
 	}
+#ifdef TF_CLIENT_DLL
 	else if( FStrEq( "teamplay_point_captured", pszEventName ) )
 	{
 		GetLocalizedControlPointName( event, m_DeathNotices[iMsg].Victim.szName, ARRAYSIZE( m_DeathNotices[iMsg].Victim.szName ) );
@@ -685,6 +707,7 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 			m_DeathNotices[iMsg].bLocalPlayerInvolved = true;
 		}
 	}
+#endif // TF_CLIENT_DLL
 
 	OnGameEvent( event, iMsg );
 
@@ -701,11 +724,16 @@ void CHudBaseDeathNotice::FireGameEvent( IGameEvent* event )
 		if( !m_DeathNotices[iMsg].iconDeath )
 		{
 			// Can't find it, so use the default skull & crossbones icon
+#ifdef TF_CLIENT_DLL
 			m_DeathNotices[iMsg].iconDeath = GetIcon( "d_skull_tf", m_DeathNotices[iMsg].bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
+#else
+			m_DeathNotices[iMsg].iconDeath = GetIcon( "d_skull", m_DeathNotices[iMsg].bLocalPlayerInvolved ? kDeathNoticeIcon_Inverted : kDeathNoticeIcon_Standard );
+#endif // TF_CLIENT_DLL
 		}
 	}
 }
 
+#ifdef TF_CLIENT_DLL
 //-----------------------------------------------------------------------------
 // Purpose: Gets the localized name of the control point sent in the event
 //-----------------------------------------------------------------------------
@@ -724,6 +752,7 @@ void CHudBaseDeathNotice::GetLocalizedControlPointName( IGameEvent* event, char*
 		Q_strncpy( namebuf, pName, namelen );
 	}
 }
+#endif // TF_CLIENT_DLL
 
 //-----------------------------------------------------------------------------
 // Purpose: Adds a new death notice to the queue

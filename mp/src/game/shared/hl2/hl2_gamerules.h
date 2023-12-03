@@ -92,17 +92,15 @@ public:
 	virtual void			LevelInitPreEntity();
 #endif
 
-#ifdef MAPBASE_MP
+#ifdef MAPBASE_VSCRIPT
 	CUtlStringMap<string_t> m_SavedConvars;
 	bool			HaveSavedConvar( ConVarRef const& cvar );
 	void			SaveConvar( ConVarRef const& cvar );
 	void			RevertSingleConvar( ConVarRef& cvar );
 	void			RevertSavedConvars();
-#endif // MAPBASE_MP
 
-#ifdef MAPBASE_VSCRIPT
 	virtual void			RegisterScriptFunctions( void );
-#endif
+#endif // MAPBASE_VSCRIPT
 
 #ifdef MAPBASE
 	//Allow thirdperson camera.

@@ -525,7 +525,7 @@ bool CHalfLife2::AllowThirdPersonCamera( void )
 #endif // MAPBASE
 
 
-#ifdef MAPBASE_MP
+#ifdef MAPBASE_VSCRIPT
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
@@ -642,7 +642,7 @@ void CHalfLife2::RevertSavedConvars()
 
 	m_SavedConvars.Purge();
 }
-#endif // MAPBASE_MP
+#endif // MAPBASE_VSCRIPT
 
 #ifdef CLIENT_DLL
 #else
@@ -2208,6 +2208,20 @@ bool CHalfLife2::ShouldUseRobustRadiusDamage( CBaseEntity* pEntity )
 
 	return true;
 }
+
+#ifdef MAPBASE_VSCRIPT
+extern void RegisterGameScriptFunctions( void );
+
+//-----------------------------------------------------------------------------
+// Purpose:
+//-----------------------------------------------------------------------------
+void CHalfLife2::RegisterScriptFunctions( void )
+{
+	BaseClass::RegisterScriptFunctions();
+
+	RegisterGameScriptFunctions();
+}
+#endif
 
 #ifndef CLIENT_DLL
 //---------------------------------------------------------

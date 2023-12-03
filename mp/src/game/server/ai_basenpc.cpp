@@ -715,10 +715,12 @@ bool CAI_BaseNPC::FriendlyFireEnabled()
 		return m_FriendlyFireOverride == TRS_TRUE;
 	}
 
+#ifdef HL2_DLL
 	if( HL2GameRules()->GlobalFriendlyFire() != TRS_NONE )
 	{
 		return HL2GameRules()->GlobalFriendlyFire() == TRS_TRUE;
 	}
+#endif // HL2_DLL
 
 	return !( CapabilitiesGet() & bits_CAP_FRIENDLY_DMG_IMMUNE );
 }
@@ -16350,6 +16352,7 @@ bool CanNPCsTradePlaces( CAI_BaseNPC* pNPC1, CAI_BaseNPC* pNPC2, bool bDebug )
 #ifdef MAPBASE
 bool CAI_BaseNPC::InteractionIsAllowed( CAI_BaseNPC* pOtherNPC, ScriptedNPCInteraction_t* pInteraction )
 {
+#ifdef HL2_DLL
 	// Now that female citizens have hunter interactions, Alyx is vulnerable to being murdered by hunters *dynamically*!
 	// Citizens also have antlion interaction kill animations, so antlions could potentially murder her as well.
 	//
@@ -16359,6 +16362,7 @@ bool CAI_BaseNPC::InteractionIsAllowed( CAI_BaseNPC* pOtherNPC, ScriptedNPCInter
 	{
 		return false;
 	}
+#endif // HL2_DLL
 
 	// This convar allows all NPCs to perform Mapbase interactions for both testing and player fun.
 	if( ai_dynint_always_enabled.GetBool() && m_iDynamicInteractionsAllowed != TRS_FALSE )

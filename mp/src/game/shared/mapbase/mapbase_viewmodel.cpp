@@ -54,7 +54,7 @@ CBaseCombatWeapon* CMapbaseViewModel::GetOwningWeapon()
 	// Arm viewmodel does not have an owning. Ask our brother.
 	if( ViewModelIndex() == VMINDEX_HANDS )
 	{
-		auto* pPlayer = ToHL2MPPlayer( GetOwner() );
+		auto* pPlayer = ThePlayerCast( GetOwner() );
 
 		if( pPlayer )
 		{
@@ -75,18 +75,18 @@ CBaseCombatWeapon* CMapbaseViewModel::GetOwningWeapon()
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CHL2MP_Player* CMapbaseViewModel::GetOwner() const
+TheBasePlayer* CMapbaseViewModel::GetOwner() const
 {
-	return ToHL2MPPlayer( CBaseViewModel::GetOwner() );
+	return ThePlayerCast( CBaseViewModel::GetOwner() );
 }
 
 #ifdef CLIENT_DLL
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-CWeaponHL2MPBase* CMapbaseViewModel::GetWeapon() const
+TheBaseWeapon* CMapbaseViewModel::GetWeapon() const
 {
-	return static_cast<CWeaponHL2MPBase*>( CBaseViewModel::GetWeapon() );
+	return static_cast<TheBaseWeapon*>( CBaseViewModel::GetWeapon() );
 }
 
 //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ C_BaseAnimating* C_MapbaseViewModel::FindFollowedEntity()
 {
 	if( ViewModelIndex() == VMINDEX_HANDS )
 	{
-		CHL2MP_Player* pPlayer = ToHL2MPPlayer( GetOwner() );
+		TheBasePlayer* pPlayer = ThePlayerCast( GetOwner() );
 
 		if( pPlayer )
 		{
@@ -129,7 +129,7 @@ C_BaseAnimating* C_MapbaseViewModel::FindFollowedEntity()
 //-----------------------------------------------------------------------------
 bool C_MapbaseViewModel::ShouldPredict()
 {
-	if( GetOwner() && GetOwner() == CHL2MP_Player::GetLocalPlayer() )
+	if( GetOwner() && GetOwner() == TheBasePlayer::TheLocalPlayer )
 	{
 		return true;
 	}

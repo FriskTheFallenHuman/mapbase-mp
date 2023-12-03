@@ -17,13 +17,37 @@
 #endif
 
 #include "predicted_viewmodel.h"
-#include "weapon_hl2mpbase.h"
+#ifdef HL2MP
+	#include "weapon_hl2mpbase.h"
+#else
+	#include "weapon_sdkbase.h"
+#endif // HL2MP
 
 #ifdef CLIENT_DLL
-	#include "c_hl2mp_player.h"
+	#ifdef HL2MP
+		#include "c_hl2mp_player.h"
+	#else
+		#include "c_sdk_player.h"
+	#endif // HL2MP
 #else
-	#include "hl2mp_player.h"
+	#ifdef HL2MP
+		#include "hl2mp_player.h"
+	#else
+		#include "sdk_player.h"
+	#endif // HL2MP
 #endif
+
+#ifdef HL2MP
+	#define TheBaseWeapon CWeaponHL2MPBase
+	#define TheBasePlayer CHL2MP_Player
+	#define ThePlayerCast ToHL2MPPlayer
+	#define TheLocalPlayer GetLocalPlayer()
+#else
+	#define TheBaseWeapon CWeaponSDKBase
+	#define TheBasePlayer CSDKPlayer
+	#define ThePlayerCast ToSDKPlayer
+	#define TheLocalPlayer GetLocalSDKPlayer()
+#endif // HL2MP
 
 //
 // Viewmodel Indeces
@@ -48,10 +72,10 @@ public:
 	virtual C_BaseAnimating*	FindFollowedEntity() OVERRIDE;
 	virtual bool	ShouldPredict() OVERRIDE;
 
-	CWeaponHL2MPBase* GetWeapon() const;
+	TheBaseWeapon* GetWeapon() const;
 #endif
 
-	virtual CHL2MP_Player* GetOwner() const;
+	virtual TheBasePlayer* GetOwner() const;
 	virtual CBaseCombatWeapon* GetOwningWeapon();
 
 #ifdef CLIENT_DLL

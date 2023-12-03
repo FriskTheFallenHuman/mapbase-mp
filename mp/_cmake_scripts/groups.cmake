@@ -2,7 +2,11 @@
 
 if (${BUILD_GROUP} STREQUAL "game")
 
-	if (${BUILD_GAME} STREQUAL "hl2mp")
+	if (${BUILD_GAME} STREQUAL "scratch")
+		include("${SRCDIR}/game/client/client_scratch.cmake")
+		include("${SRCDIR}/game/server/server_scratch.cmake")
+		include("${SRCDIR}/engine/audio/vaudio_miles.cmake")
+	elseif (${BUILD_GAME} STREQUAL "hl2mp")
 		include("${SRCDIR}/game/client/client_hl2mp.cmake")
 		include("${SRCDIR}/game/server/server_hl2mp.cmake")
 		include("${SRCDIR}/engine/audio/vaudio_miles.cmake")
@@ -26,7 +30,12 @@ if (${BUILD_GROUP} STREQUAL "game")
 
 elseif (${BUILD_GROUP} STREQUAL "everything")
 
-	if (${BUILD_GAME} STREQUAL "hl2mp")
+	if (${BUILD_GAME} STREQUAL "scratch")
+		include("${SRCDIR}/game/client/client_scratch.cmake")
+		include("${SRCDIR}/game/server/server_scratch.cmake")
+		include("${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_scratch.cmake")
+		include("${SRCDIR}/engine/audio/vaudio_miles.cmake")
+	elseif (${BUILD_GAME} STREQUAL "hl2mp")
 		include("${SRCDIR}/game/client/client_hl2mp.cmake")
 		include("${SRCDIR}/game/server/server_hl2mp.cmake")
 		include("${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_hl2mp.cmake")
@@ -68,7 +77,9 @@ elseif (${BUILD_GROUP} STREQUAL "everything")
 
 elseif (${BUILD_GROUP} STREQUAL "shaders")
 
-	if (${BUILD_GAME} STREQUAL "hl2mp")
+	if (${BUILD_GAME} STREQUAL "scratch")
+		include("${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_scratch.cmake")
+	elseif (${BUILD_GAME} STREQUAL "hl2mp")
 		include("${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_hl2mp.cmake")
 	elseif(${BUILD_GAME} STREQUAL "hl2")
 		include("${SRCDIR}/materialsystem/stdshaders/game_shader_dx9_hl2.cmake")
