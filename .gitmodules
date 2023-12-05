@@ -4,4 +4,4 @@
 [submodule "mp/src/thirdparty/gigalib"]
 	path = mp/src/thirdparty/gigalib
 	url = https://github.com/FriskTheFallenHuman/mapbase-mp-gigalib
-	branch = main-with-networking
+	branch = main
